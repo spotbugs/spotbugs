@@ -22,7 +22,7 @@ package edu.umd.cs.findbugs.bcp;
 import edu.umd.cs.daveho.ba.ValueNumber;
 
 public class LocalVariable implements Variable {
-	private ValueNumber valueNumber;
+	private final ValueNumber valueNumber;
 
 	public LocalVariable(ValueNumber valueNumber) {
 		this.valueNumber = valueNumber;
