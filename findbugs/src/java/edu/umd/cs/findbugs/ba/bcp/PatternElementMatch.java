@@ -77,6 +77,17 @@ public class PatternElementMatch {
 	public PatternElementMatch getPrev() {
 		return prev;
 	}
+
+	public String toString() {
+		StringBuffer buf = new StringBuffer();
+		PatternElementMatch cur = this;
+		buf.append(cur.patternElement.toString());
+		buf.append(", ");
+		buf.append(cur.matchedInstruction.toString());
+		buf.append(", ");
+		buf.append(cur.matchCount);
+		return buf.toString();
+	}
 }
 
 // vim:ts=4
