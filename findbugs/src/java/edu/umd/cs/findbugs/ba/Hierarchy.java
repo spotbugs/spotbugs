@@ -34,6 +34,14 @@ import org.apache.bcel.generic.*;
  * @author David Hovemeyer
  */
 public class Hierarchy {
+
+	/** Type of java.lang.Exception. */
+	public static final ObjectType EXCEPTION_TYPE = new ObjectType("java.lang.Exception");
+	/** Type of java.lang.Error. */
+	public static final ObjectType ERROR_TYPE = new ObjectType("java.lang.Error");
+	/** Type of java.lang.RuntimeException. */
+	public static final ObjectType RUNTIME_EXCEPTION_TYPE = new ObjectType("java.lang.RuntimeException");
+
 	/**
 	 * Determine whether one class (or reference type) is a subtype
 	 * of another.
@@ -69,6 +77,14 @@ public class Hierarchy {
 	 */
 	public static boolean isUniversalExceptionHandler(ObjectType catchType) {
 		return catchType == null || catchType.equals(Type.THROWABLE);
+	}
+
+	/**
+	 * Determine if the given ObjectType refers to an unchecked
+	 * exception (RuntimeException or Error).
+	 */
+	public static boolean isUncheckedException(ObjectType type) throws ClassNotFoundException {
+		return isSubtype(type, RUNTIME_EXCEPTION_TYPE) || isSubtype(type, ERROR_TYPE);
 	}
 
 	/**

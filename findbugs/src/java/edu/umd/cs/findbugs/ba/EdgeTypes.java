@@ -70,10 +70,10 @@ public interface EdgeTypes {
      * ---------------------------------------------------------------------- */
 
     /**
-     * Flag indicating that an exception edge represents only
-     * checked exceptions.
+     * Flag indicating that an exception edge represents
+     * at least some explicit checked exceptions.
      */
-    public static final int CHECKED_EXCEPTIONS_ONLY_FLAG = 1;
+    public static final int CHECKED_EXCEPTIONS_FLAG = 1;
 
     /**
      * Flag indicating that an exception edge represents only
@@ -81,7 +81,7 @@ public interface EdgeTypes {
      * mean that the unchecked exception is either thrown directly
      * or explicitly declared to be thrown from a called method.
      */
-    public static final int EXPLICIT_CHECKED_EXCEPTIONS_ONLY_FLAG = 2;
+    public static final int EXPLICIT_UNCHECKED_EXCEPTIONS_FLAG = 2;
 
     /**
      * Flag indicating that an exception edge represents only
@@ -90,5 +90,5 @@ public interface EdgeTypes {
      * since they represent abnormal program behavior and should
      * never occur at runtime.
      */
-    public static final int IMPLICIT_CHECKED_EXCEPTIONS_ONLY_FLAG = 4;
+    public static final int IMPLICIT_UNCHECKED_EXCEPTIONS_FLAG = 4;
 }

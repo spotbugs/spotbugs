@@ -177,7 +177,7 @@ public class ClassContext implements AnalysisFeatures {
 		if (PRUNE_INFEASIBLE_EXCEPTION_EDGES && !cfg.isFlagSet(PRUNED_INFEASIBLE_EXCEPTIONS)) {
 			try {
 				TypeDataflow typeDataflow = getTypeDataflow(method);
-				new PruneInfeasibleExceptionEdges(cfg, typeDataflow, getConstantPoolGen()).execute();
+				new PruneInfeasibleExceptionEdges(cfg, getMethodGen(method), typeDataflow, getConstantPoolGen()).execute();
 			} catch (DataflowAnalysisException e) {
 				// FIXME: should report the error
 			} catch (ClassNotFoundException e) {

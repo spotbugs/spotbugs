@@ -29,6 +29,21 @@ import org.apache.bcel.generic.*;
  * explicit ATHROW instructions, type analysis must first be
  * performed on the unpruned CFG.
  *
+ * <p> We also attempt to classify the remaining exception edges
+ * into categories:
+ * <ul>
+ * <li> Checked exceptions
+ * <li> Explicit unchecked exceptions
+ * <li> Implicit unchecked exceptions
+ * </ul>
+ *
+ * <p> The idea is that implicit unchecked exceptions
+ * are not likely to be interesting in practice, and analyses
+ * may want to ignore them.
+ *
+ * <p> FIXME: finally blocks can end in an ATHROW.
+ * Need a way to mark these as implicit.
+ *
  * @see CFG
  * @see TypeAnalysis
  * @author David Hovemeyer
@@ -37,22 +52,6 @@ public class PruneInfeasibleExceptionEdges implements EdgeTypes {
 	private static final boolean DEBUG = Boolean.getBoolean("cfg.prune.debug");
 	private static final boolean STATS = Boolean.getBoolean("cfg.prune.stats");
 	private static int numEdgesPruned = 0;
-
-	/**
-	 * Property to prune all implicit unchecked exception edges.
-	 * For analyses which find bugs, this is a reasonable behavior:
-	 * runtime exceptions and errors should not occur (and in general
-	 * should never be caught).
-	 *
-	 * Note that this will preserve edges for unchecked exceptions that are:
-	 * <ul>
-	 * <li> Declared to be thrown from a called method
-	 * <li> Thrown directly (i.e., with ATHROW)
-	 * <li> Caught explicitly - if the user thinks it can happen,
-	 *      we'll assume it can happen
-	 * </ul>
-	 */
-	private static final boolean PRUNE_IMPLICIT_UNCHECKED_EXCEPTIONS = Boolean.getBoolean("cfg.prune.implicitUnchecked");
 
 	static {
 		if (STATS) {
@@ -65,43 +64,129 @@ public class PruneInfeasibleExceptionEdges implements EdgeTypes {
 	}
 
 	/**
+	 * An exception thrown from an instruction.
+	 * These can be implicit (i.e., runtime exceptions and errors),
+	 * or explicit (athrow, or declared exception from called method).
+	 */
+	private static class ThrownException {
+		private ObjectType type;
+		private boolean explicit;
+
+		public ThrownException(ObjectType type, boolean explicit) {
+			this.type = type;
+			this.explicit = explicit;
+		}
+
+		public ObjectType getType() {
+			return type;
+		}
+
+		public boolean isExplicit() {
+			return explicit;
+		}
+
+		public void setExplicit(boolean explicit) {
+			this.explicit = explicit;
+		}
+	}
+
+	/**
 	 * Class for keeping track of exceptions that can be
 	 * thrown by an instruction.  As we examine exception handlers,
 	 * we remove exception types that are guaranteed to be
 	 * caught.
 	 */
 	private static class ExceptionSet {
-		private Set<ObjectType> set = new HashSet<ObjectType>();
+		private Map<ObjectType, ThrownException> map = new HashMap<ObjectType, ThrownException>();
 		private boolean universalHandler = false;
 
-		public Iterator<ObjectType> iterator() { return set.iterator(); }
+		public Iterator<ThrownException> iterator() { return map.values().iterator(); }
 
-		public boolean isEmpty() { return set.isEmpty(); }
+		public boolean isEmpty() { return map.isEmpty(); }
 
-		public boolean add(ObjectType type) { return set.add(type); }
+		public void addExplicit(ObjectType type) {
+			add(new ThrownException(type, true));
+		}
+
+		public void addImplicit(ObjectType type) {
+			add(new ThrownException(type, false));
+		}
+
+		private void add(ThrownException thrownException) {
+			ThrownException old = map.put(thrownException.getType(), thrownException);
+
+			// Avoid replacing an explicit exception with an identical
+			// implicit exception.
+			if (old != null && old.isExplicit())
+				thrownException.setExplicit(true);
+		}
 
 		public void sawUniversal() {
 			universalHandler = true;
-			set.clear();
+			map.clear();
 		}
 
 		public boolean sawUniversalHandler() {
 			return universalHandler;
 		}
+
+		public boolean containsCheckedExceptions() throws ClassNotFoundException {
+			for (Iterator<ThrownException> i = iterator(); i.hasNext(); ) {
+				ThrownException thrownException = i.next();
+				if (!Hierarchy.isUncheckedException(thrownException.getType()))
+					return true;
+			}
+			return false;
+		}
+
+		public boolean containsExplicitExceptions() {
+			for (Iterator<ThrownException> i = iterator(); i.hasNext(); ) {
+				if (i.next().isExplicit())
+					return true;
+			}
+			return false;
+		}
+	}
+
+	/**
+	 * A momento to remind us of how we classified a particular
+	 * exception edge.  If pruning and classifying succeeds,
+	 * then these momentos can be applied to actually change
+	 * the state of the edges.  The issue is that the entire
+	 * pruning/classifying operation must either fail or succeed
+	 * as a whole.  Thus, we don't commit any CFG changes until
+	 * we know everything was successful.
+	 */
+	private static class MarkedEdge {
+		private Edge edge;
+		private int flag;
+
+		public MarkedEdge(Edge edge, int flag) {
+			this.edge = edge;
+			this.flag = flag;
+		}
+
+		public void apply() {
+			int flags = edge.getFlags();
+			flags |= this.flag;
+			edge.setFlags(flags);
+		}
 	}
 
 	private CFG cfg;
+	private MethodGen methodGen;
 	private TypeDataflow typeDataflow;
 	private ConstantPoolGen cpg;
 
 	/**
 	 * Constructor.
 	 * @param cfg the CFG to prune
+	 * @param methodGen the method
 	 * @param typeDataflow initialized TypeDataflow object for the CFG,
 	 *   indicating the types of all stack locations
 	 * @param cpg the ConstantPoolGen for the method
 	 */
-	public PruneInfeasibleExceptionEdges(CFG cfg, TypeDataflow typeDataflow, ConstantPoolGen cpg) {
+	public PruneInfeasibleExceptionEdges(CFG cfg, MethodGen methodGen, TypeDataflow typeDataflow, ConstantPoolGen cpg) {
 		this.cfg = cfg;
 		this.typeDataflow = typeDataflow;
 		this.cpg = cpg;
@@ -119,6 +204,7 @@ public class PruneInfeasibleExceptionEdges implements EdgeTypes {
 	 */
 	public void execute() throws ClassNotFoundException, DataflowAnalysisException {
 		HashSet<Edge> deletedEdgeSet = new HashSet<Edge>();
+		List<MarkedEdge> markedEdgeList = new LinkedList<MarkedEdge>();
 
 		// Scan all basic blocks for infeasible exception edges
 		Iterator<BasicBlock> i = cfg.blockIterator();
@@ -137,9 +223,7 @@ public class PruneInfeasibleExceptionEdges implements EdgeTypes {
 				for (Iterator<Edge> j = cfg.outgoingEdgeIterator(basicBlock); j.hasNext(); ) {
 					Edge edge = j.next();
 					if (edge.getType() == HANDLED_EXCEPTION_EDGE) {
-						if (!reachable(edge, thrownExceptionSet)) {
-							deletedEdgeSet.add(edge);
-						}
+						checkReachability(edge, thrownExceptionSet, deletedEdgeSet, markedEdgeList);
 					}
 				}
 
@@ -150,6 +234,26 @@ public class PruneInfeasibleExceptionEdges implements EdgeTypes {
 					if (edge != null) {
 						deletedEdgeSet.add(edge);
 					}
+				} else {
+					// Unhandled exceptions can be thrown.
+					// Check whether they are implicit or explicit.
+					int flag;
+					if (thrownExceptionSet.containsCheckedExceptions())
+						flag = CHECKED_EXCEPTIONS_FLAG;
+					else if (thrownExceptionSet.containsExplicitExceptions())
+						flag = EXPLICIT_UNCHECKED_EXCEPTIONS_FLAG;
+					else
+						flag = IMPLICIT_UNCHECKED_EXCEPTIONS_FLAG;
+					Edge edge = cfg.getOutgoingEdgeWithType(basicBlock, UNHANDLED_EXCEPTION_EDGE);
+					if (edge == null) {
+						// Raw CFGs are built conservatively,
+						// so this exception should never happen.
+						// If it does happen, it indicates a bug in the CFG builder.
+						throw new DataflowAnalysisException("In method " +
+							SignatureConverter.convertMethodSignature(methodGen) +
+							" block " + basicBlock.getId() + " has missing unhandled exception edge");
+					}
+					markedEdgeList.add(new MarkedEdge(edge, flag));
 				}
 			}
 		}
@@ -157,14 +261,16 @@ public class PruneInfeasibleExceptionEdges implements EdgeTypes {
 		// Remove deleted edges
 		for (Iterator<Edge> j = deletedEdgeSet.iterator(); j.hasNext(); ) {
 			Edge edge = j.next();
+			//if (edge == null) throw new IllegalStateException("null edge");
 			cfg.removeEdge(edge);
 			if (STATS) ++numEdgesPruned;
 		}
-	}
 
-	private static final ObjectType EXCEPTION_TYPE = new ObjectType("java.lang.Exception");
-	private static final ObjectType ERROR_TYPE = new ObjectType("java.lang.Error");
-	private static final ObjectType RUNTIME_EXCEPTION_TYPE = new ObjectType("java.lang.RuntimeException");
+		// Mark edges
+		for (Iterator<MarkedEdge> j = markedEdgeList.iterator(); j.hasNext(); ) {
+			j.next().apply();
+		}
+	}
 
 	private ExceptionSet enumerateExceptionTypes(BasicBlock basicBlock)
 		throws ClassNotFoundException, DataflowAnalysisException {
@@ -175,18 +281,14 @@ public class PruneInfeasibleExceptionEdges implements EdgeTypes {
 
 		// Get the exceptions that BCEL knows about.
 		// Note that all of these are unchecked.
-		if (!PRUNE_IMPLICIT_UNCHECKED_EXCEPTIONS) {
-			ExceptionThrower exceptionThrower = (ExceptionThrower) ins;
-			Class[] exceptionList = exceptionThrower.getExceptions();
-			for (int i = 0; i < exceptionList.length; ++i) {
-				exceptionTypeSet.add(new ObjectType(exceptionList[i].getName()));
-			}
+		ExceptionThrower exceptionThrower = (ExceptionThrower) ins;
+		Class[] exceptionList = exceptionThrower.getExceptions();
+		for (int i = 0; i < exceptionList.length; ++i) {
+			exceptionTypeSet.addImplicit(new ObjectType(exceptionList[i].getName()));
 		}
 
 		// Assume that an Error may be thrown by any instruction.
-		if (!PRUNE_IMPLICIT_UNCHECKED_EXCEPTIONS) {
-			exceptionTypeSet.add(ERROR_TYPE);
-		}
+		exceptionTypeSet.addImplicit(Hierarchy.ERROR_TYPE);
 
 		// If it's an ATHROW, get the type from the TypeDataflow
 		if (ins instanceof ATHROW) {
@@ -200,12 +302,12 @@ public class PruneInfeasibleExceptionEdges implements EdgeTypes {
 			// a conservative assumption that anything could be
 			// thrown at this ATHROW.
 			if (!frame.isValid()) {
-				exceptionTypeSet.add(Type.THROWABLE);
+				exceptionTypeSet.addExplicit(Type.THROWABLE);
 			} else {
 				Type throwType = frame.getTopValue();
 				if (!(throwType instanceof ObjectType))
 					throw new DataflowAnalysisException("Non object type thrown by " + pei);
-				exceptionTypeSet.add((ObjectType) throwType);
+				exceptionTypeSet.addExplicit((ObjectType) throwType);
 			}
 		}
 
@@ -218,16 +320,14 @@ public class PruneInfeasibleExceptionEdges implements EdgeTypes {
 				// so conservatively assume it could thrown any checked exception.
 				if (DEBUG) System.out.println("Couldn't find declared exceptions for " +
 					SignatureConverter.convertMethodSignature(inv, cpg));
-				exceptionTypeSet.add(EXCEPTION_TYPE);
+				exceptionTypeSet.addExplicit(Hierarchy.EXCEPTION_TYPE);
 			} else {
 				for (int i = 0; i < declaredExceptionList.length; ++i) {
-					exceptionTypeSet.add(declaredExceptionList[i]);
+					exceptionTypeSet.addExplicit(declaredExceptionList[i]);
 				}
 			}
 
-			if (!PRUNE_IMPLICIT_UNCHECKED_EXCEPTIONS) {
-				exceptionTypeSet.add(RUNTIME_EXCEPTION_TYPE);
-			}
+			exceptionTypeSet.addImplicit(Hierarchy.RUNTIME_EXCEPTION_TYPE);
 		}
 
 		if (DEBUG) System.out.println(pei + " can throw " + exceptionTypeSet);
@@ -235,8 +335,11 @@ public class PruneInfeasibleExceptionEdges implements EdgeTypes {
 		return exceptionTypeSet;
 	}
 
-	private boolean reachable(Edge edge, ExceptionSet thrownExceptionSet)
-		throws ClassNotFoundException {
+	/**
+	 * Check the reachability of an exception handler.
+	 */
+	private void checkReachability(Edge edge, ExceptionSet thrownExceptionSet, Set<Edge> deletedEdgeSet,
+		List<MarkedEdge> markedEdgeList) throws ClassNotFoundException {
 
 		if (DEBUG) System.out.println("Checking reachability of edge:\n\t" + edge);
 
@@ -244,59 +347,59 @@ public class PruneInfeasibleExceptionEdges implements EdgeTypes {
 		CodeExceptionGen handler = handlerBlock.getExceptionGen();
 		ObjectType catchType = handler.getCatchType();
 
-		if (Hierarchy.isUniversalExceptionHandler(catchType)) {
-			// Universal handler: it catches all exceptions
-			thrownExceptionSet.sawUniversal();
-			return true;
-		}
-
-		String catchClassName = SignatureConverter.convert(catchType.getSignature());
 		boolean reachable = false;
 
-		// Go through the set of thrown execeptions.
-		// Any that will DEFINITELY be caught be this handler, remove.
-		// Any that MIGHT be caught, but won't definitely be caught,
-		// remain.
-		for (Iterator<ObjectType> i = thrownExceptionSet.iterator(); i.hasNext(); ) {
-			ObjectType thrownException = i.next();
-
-			String thrownClassName = SignatureConverter.convert(thrownException.getSignature());
-
-			if (DEBUG) System.out.println("\texception type " + thrownClassName + ", catch type " + catchClassName);
-
-			if (Hierarchy.isSubtype(thrownClassName, catchClassName)) {
-				// The thrown exception is a subtype of the catch type,
-				// so this exception will DEFINITELY be caught by
-				// this handler.
-				if (DEBUG) System.out.println("\tException is subtype of catch type: will definitely catch");
-				reachable = true;
-				i.remove();
-			} else if (Hierarchy.isSubtype(catchClassName, thrownClassName)) {
-				// The thrown exception is a supertype of the catch type,
-				// so it MIGHT get caught by this handler.
-				if (DEBUG) System.out.println("\tException is supertype of catch type: might catch");
-				reachable = true;
+		if (Hierarchy.isUniversalExceptionHandler(catchType)) {
+			// Universal handler: it catches all exceptions
+			int flag = thrownExceptionSet.containsCheckedExceptions()
+				? CHECKED_EXCEPTIONS_FLAG 
+				: EXPLICIT_UNCHECKED_EXCEPTIONS_FLAG;
+			markedEdgeList.add(new MarkedEdge(edge, flag));
+			thrownExceptionSet.sawUniversal();
+			reachable = true;
+		} else {
+			// Go through the set of thrown execeptions.
+			// Any that will DEFINITELY be caught be this handler, remove.
+			// Any that MIGHT be caught, but won't definitely be caught,
+			// remain.
+			for (Iterator<ThrownException> i = thrownExceptionSet.iterator(); i.hasNext(); ) {
+				ThrownException thrownException = i.next();
+	
+				ObjectType thrownType = thrownException.getType();
+	
+				if (DEBUG) System.out.println("\texception type " + thrownType + ", catch type " + catchType);
+	
+				if (Hierarchy.isSubtype(thrownType, catchType)) {
+					// The thrown exception is a subtype of the catch type,
+					// so this exception will DEFINITELY be caught by
+					// this handler.
+					if (DEBUG) System.out.println("\tException is subtype of catch type: will definitely catch");
+					reachable = true;
+					i.remove();
+				} else if (Hierarchy.isSubtype(catchType, thrownType)) {
+					// The thrown exception is a supertype of the catch type,
+					// so it MIGHT get caught by this handler.
+					if (DEBUG) System.out.println("\tException is supertype of catch type: might catch");
+					reachable = true;
+				}
+			}
+	
+			if (reachable) {
+				// Classify the edge.
+				// We assume that if the user bothered to write
+				// a reachable exception handler, then the
+				// exception edge is "explicit", meaning that it
+				// should be assumed to be feasible at runtime.
+				int flag = Hierarchy.isUncheckedException(catchType)
+					? EXPLICIT_UNCHECKED_EXCEPTIONS_FLAG
+					: CHECKED_EXCEPTIONS_FLAG;
+				markedEdgeList.add(new MarkedEdge(edge, flag));
 			}
 		}
 
-		// Special case: if the handler is for an unchecked exception,
-		// and we haven't seen a universal handler, then assume
-		// the handler is reachable.
-		if (!thrownExceptionSet.sawUniversalHandler()
-			&& (Hierarchy.isSubtype(catchType, RUNTIME_EXCEPTION_TYPE) ||
-				Hierarchy.isSubtype(catchType, ERROR_TYPE)))
-			reachable = true;
-
-		if (DEBUG) System.out.println(reachable ? "\tReachable" : "\tNot reachable");
-
-		return reachable;
+		if (!reachable)
+			deletedEdgeSet.add(edge);
 	}
-
-/*
-	private void setEdgeFlags(Edge edge, ObjectType catchType, ExceptionSet exceptionSet)
-		throws ClassNotFoundException {
-	}
-*/
 }
 
 // vim:ts=4
