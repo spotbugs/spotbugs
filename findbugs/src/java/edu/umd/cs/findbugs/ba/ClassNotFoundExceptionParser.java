@@ -34,13 +34,19 @@ import java.util.regex.Pattern;
  * @author David Hovemeyer
  */
 public class ClassNotFoundExceptionParser {
+	// BCEL reports missing classes in this format
 	private static final Pattern BCEL_MISSING_CLASS_PATTERN =
 		Pattern.compile("^.*while looking for class ([^:]*):.*$");
+
+	// edu.umd.cs.findbugs.ba.type.TypeRepository uses this format
+	private static final Pattern TYPE_REPOSITORY_MISSING_CLASS_PATTERN =
+		Pattern.compile("^Class ([^ ]*) cannot be resolved.*$");
 
 	private static final Pattern[] patternList;
 	static {
 		ArrayList<Pattern> list = new ArrayList<Pattern>();
 		list.add(BCEL_MISSING_CLASS_PATTERN);
+		list.add(TYPE_REPOSITORY_MISSING_CLASS_PATTERN);
 
 		patternList = list.toArray(new Pattern[0]);
 	}
