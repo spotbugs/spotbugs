@@ -1,4 +1,7 @@
 <FindbugsPlugin>
+  <Detector class="edu.umd.cs.findbugs.detect.VolatileUsage" 
+	speed="fast"
+   reports="VO_VOLATILE_REFERENCE_TO_ARRAY" /> 
   <Detector class="edu.umd.cs.findbugs.detect.InheritanceUnsafeGetResource" 
 	speed="fast"
    reports="UI_INHERITANCE_UNSAFE_GETRESOURCE" /> 
@@ -124,6 +127,8 @@
    <Detector class="edu.umd.cs.findbugs.detect.FindBugsSummaryStats" speed="fast" />
 
   <BugPattern abbrev="SW" type="SW_SWING_METHODS_INVOKED_IN_SWING_THREAD" category="CORRECTNESS" 
+    experimental="true"/>
+  <BugPattern abbrev="VO" type="VO_VOLATILE_REFERENCE_TO_ARRAY" category="MT_CORRECTNESS" 
     experimental="true"/>
   <BugPattern abbrev="UI" type="UI_INHERITANCE_UNSAFE_GETRESOURCE" category="CORRECTNESS" 
     experimental="true"/>

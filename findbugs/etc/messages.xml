@@ -6,6 +6,7 @@
   **********************************************************************
    -->
 
+
   <Detector class="edu.umd.cs.findbugs.detect.InheritanceUnsafeGetResource">
     <Details>
 <![CDATA[
@@ -13,6 +14,13 @@
 unexpected results if the class is extended by a class in
 another package.
 
+]]>
+    </Details>
+  </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.VolatileUsage">
+    <Details>
+<![CDATA[
+<p> Looks for bug patterns in the usage of volatile fields.
 ]]>
     </Details>
   </Detector>
@@ -578,6 +586,23 @@ could result in deadlocks or other related threading issues. A pack call causes
 components to be realized. As they are being realized (that is, not necessarily 
 visible), they could trigger listener notification on the event dispatch thread.
 
+]]>
+    </Details>
+  </BugPattern>
+
+
+  <BugPattern type="VO_VOLATILE_REFERENCE_TO_ARRAY">
+    <ShortDescription>A volatile reference to an array doesn't treat the array elements as volatile</ShortDescription>
+    <LongDescription>{1} is a volatile reference to an array; the array elements
+are non-volatile.</LongDescription>
+    <Details>
+<![CDATA[
+<p>This declares a volatile reference to an array, which might not be what
+you want. With a volatile reference to an array, reads and writes of
+the reference to the array are treated as volatile, but the array elements
+are non-volatile. To get volatile array elements, you will need to use
+one of the atomic array classes in java.util.concurrent (provided
+in Java 5.0).
 ]]>
     </Details>
   </BugPattern>
@@ -2348,6 +2373,7 @@ is of the type requested.
   **********************************************************************
    -->
 
+  <BugCode abbrev="VO" >Use of volatile</BugCode>
   <BugCode abbrev="UI" >Unsafe inheritance</BugCode>
   <BugCode abbrev="FL" >Use of floating point precision</BugCode>
   <BugCode abbrev="TEST" >Testing prototype and incomplete bug pattern</BugCode>
