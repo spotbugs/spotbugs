@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.detect;
 import edu.umd.cs.findbugs.*;
 import java.util.*;
+import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.*;
 import edu.umd.cs.pugh.visitclass.Constants2;
 import edu.umd.cs.pugh.visitclass.PreorderVisitor;
@@ -27,9 +28,9 @@ import edu.umd.cs.pugh.visitclass.PreorderVisitor;
 public class DroppedException extends PreorderVisitor implements Detector, Constants2 {
     private static final boolean DEBUG = Boolean.getBoolean("de.debug");
 
-    static Set<String> reported = new HashSet<String>();
-    static Set<String> causes = new HashSet<String>();
-    static Set<String> checkedCauses = new HashSet<String>();
+    Set<String> reported = new HashSet<String>();
+    Set<String> causes = new HashSet<String>();
+    Set<String> checkedCauses = new HashSet<String>();
     private BugReporter bugReporter;
 
     public DroppedException(BugReporter bugReporter) {
@@ -45,11 +46,10 @@ public class DroppedException extends PreorderVisitor implements Detector, Const
     boolean isChecked(String c) {
 	if (!causes.add(c)) return checkedCauses.contains(c);
 	try {
-		Class cl = Class.forName(c);
-		if (Exception.class.isAssignableFrom(cl)
-			&& !RuntimeException.class.isAssignableFrom(cl))
+		if (Repository.instanceOf(c, "java.lang.Exception")
+			&& !Repository.instanceOf(c, "java.lang.RuntimeException"))
 		   checkedCauses.add(c);
-		   return true;
+		return true;
 	    }
 	catch (ClassNotFoundException e) {
 		bugReporter.reportMissingClass(e);
