@@ -629,7 +629,10 @@ public class BugInstance implements Comparable, XMLConvertible {
 		}
 	}
 
+	static int dummy; // XXX: needed to allow BugCollection to force static init in JDK 1.5
+
 	static {
+		System.out.println("BugInstance static initializer");
 		XMLTranslatorRegistry.instance().registerTranslator(new BugInstanceXMLTranslator());
 	}
 

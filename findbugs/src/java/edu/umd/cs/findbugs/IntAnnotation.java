@@ -107,6 +107,8 @@ public class IntAnnotation implements BugAnnotation {
 		}
 	}
 
+	static int dummy; // XXX: needed to allow BugCollection to force static init in JDK 1.5
+
 	static {
 		XMLTranslatorRegistry.instance().registerTranslator(new IntAnnotationXMLTranslator());
 	}

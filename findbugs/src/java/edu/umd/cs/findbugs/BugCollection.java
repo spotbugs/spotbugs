@@ -39,16 +39,16 @@ import org.dom4j.io.OutputFormat;
  */
 public abstract class BugCollection {
 
+	static int x;
+
 	static {
+		System.out.println("BugCollection static initializer");
 		// Make sure BugInstance and all of the annotation classes
-		// are loaded, to ensure that their XMLTranslators are registered.
-		Class c;
-		c = BugInstance.class;
-		c = ClassAnnotation.class;
-		c = FieldAnnotation.class;
-		c = MethodAnnotation.class;
-		c = SourceLineAnnotation.class;
-		c = IntAnnotation.class;
+		// are loaded, and that their static initializers run,
+		// to ensure that their XMLTranslators are registered.
+		x = BugInstance.dummy + ClassAnnotation.dummy +
+			FieldAnnotation.dummy + MethodAnnotation.dummy +
+			SourceLineAnnotation.dummy + IntAnnotation.dummy;
 	}
 
 	public void addAll(Collection<BugInstance> collection) {
