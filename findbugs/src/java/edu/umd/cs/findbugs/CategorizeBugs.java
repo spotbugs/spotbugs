@@ -59,6 +59,9 @@ public class CategorizeBugs {
 			updateStats(bugInstance.getType(), statsByType, isBug, severity);
 			updateStats(bugInstance.getAbbrev(), statsByCode, isBug, severity);
 		}
+
+		dumpStats("Statistics by bug pattern", statsByType);
+		dumpStats("Statistics by bug code", statsByCode);
 	}
 
 	private static void dumpBug(BugInstance bugInstance) {
@@ -80,6 +83,29 @@ public class CategorizeBugs {
 		arr[ALL]++;
 		if (severity >= 0)
 			arr[severity]++;
+	}
+
+	private static void dumpStats(String banner, Map<String, Stats> map) {
+		System.out.println("\n" + banner + ":");
+		Iterator<Map.Entry<String, Stats>> i = map.entrySet().iterator();
+		while(i.hasNext()) {
+			Map.Entry<String, Stats> entry = i.next();
+			String key = entry.getKey();
+			Stats stats = entry.getValue();
+			System.out.print(key + ":\t");
+			for (int j = 0; j < 4; ++j)
+				System.out.print(stats.bug[j] + "\t");
+			for (int j = 0; j < 4; ++j)
+				System.out.print(stats.notBug[j] + "\t");
+
+			int total = stats.bug[ALL] + stats.notBug[ALL];
+			if (total > 0){
+				double accuracy = ((double) stats.bug[ALL] / (double) total) * 100.0;
+				System.out.print(accuracy);
+			}
+
+			System.out.println();
+		}
 	}
 }
 
