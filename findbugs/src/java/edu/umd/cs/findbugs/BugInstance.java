@@ -166,6 +166,22 @@ public class BugInstance {
 	}
 
 	/**
+	 * Add a field annotation for the field which has just been accessed
+	 * by the method currently being visited by given visitor.
+	 * Assumes that a getfield/putfield or getstatic/putstatic
+	 * has just been seen.
+	 * @param visitor the DismantleBytecode object
+	 * @return this object
+	 */
+	public BugInstance addReferencedField(DismantleBytecode visitor) {
+		String className = visitor.getBetterClassConstant();
+		String fieldName = visitor.getNameConstant();
+		String fieldSig = visitor.getBetterSigConstant();
+		addField(className, fieldName, fieldSig);
+		return this;
+	}
+
+	/**
 	 * Add a method annotation for the method which the given visitor is currently visiting.
 	 * @param visitor the BetterVisitor
 	 * @return this object
