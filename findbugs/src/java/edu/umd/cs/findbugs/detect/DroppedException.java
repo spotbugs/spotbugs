@@ -240,11 +240,15 @@ public class DroppedException extends PreorderVisitor implements Detector, Const
 		   priority)
 			.addClassAndMethod(this);
 
+		// If the catch block has a comment (or other text) in it,
+		// downgrade to low priority.
 		SourceLineAnnotation srcLine = bugInstance.addSourceLine(this, handled).getPrimarySourceLineAnnotation();
-		if (srcLine == null || !catchBlockHasComment(srcLine)) {
-			bugInstance.addClass(c).describe("CLASS_EXCEPTION");
-			bugReporter.reportBug(bugInstance);
+		if (srcLine != null && catchBlockHasComment(srcLine)) {
+			priority = LOW_PRIORITY;
 		}
+
+		bugInstance.addClass(c).describe("CLASS_EXCEPTION");
+		bugReporter.reportBug(bugInstance);
 	}
 
 	}
