@@ -11,7 +11,7 @@
 	<target name="fbjars">
 		<ant dir="${findbugs.dir}" inheritall="false" target="build"/>
 		<copy todir="${fbeclipse.dir}">
-			<fileset dir="${findbugs.dir}" includes="findbugs.jar,bcel.jar"/>
+			<fileset dir="${findbugs.dir}/lib" includes="findbugs.jar,bcel.jar"/>
 		</copy>
 		<copy todir="${fbeclipse.dir}/plugin">
 			<fileset dir="${findbugs.dir}/plugin" includes="coreplugin.jar"/>
