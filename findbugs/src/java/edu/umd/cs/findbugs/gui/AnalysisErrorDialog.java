@@ -48,7 +48,8 @@ public class AnalysisErrorDialog extends javax.swing.JDialog {
         });
 
         errorLabel.setFont(new java.awt.Font("Dialog", 0, 12));
-        errorLabel.setText("Errors occurred during the analysis:");
+        errorLabel.setText("Errors occured during the analysis:");
+        errorLabel.setText(L10N.getLocalString("dlg.analysiserror_lbl", "Errors occurred during analysis:"));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
@@ -92,6 +93,7 @@ public class AnalysisErrorDialog extends javax.swing.JDialog {
 
         okButton.setMnemonic('O');
         okButton.setText("OK");
+        okButton.setText(L10N.getLocalString("dlg.ok_btn", "OK"));
         okButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 okButtonActionPerformed(evt);
@@ -107,14 +109,16 @@ public class AnalysisErrorDialog extends javax.swing.JDialog {
         analysisMenuBar.setFont(new java.awt.Font("Dialog", 0, 12));
         editMenu.setText("Edit");
         editMenu.setFont(new java.awt.Font("Dialog", 0, 12));
+        editMenu.setText(L10N.getLocalString("menu.edit_menu", "Edit"));
         editMenu.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 editMenuActionPerformed(evt);
-}
+            }
         });
 
-        selectAllMenuItem.setText("Select All");
         selectAllMenuItem.setFont(new java.awt.Font("Dialog", 0, 12));
+        selectAllMenuItem.setText("Select All");
+        selectAllMenuItem.setText(L10N.getLocalString("menu.selectall_item", "Select All"));
         selectAllMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 selectAllItemActionListener(evt);
@@ -123,8 +127,9 @@ public class AnalysisErrorDialog extends javax.swing.JDialog {
 
         editMenu.add(selectAllMenuItem);
 
-        copyMenuItem.setText("Copy");
         copyMenuItem.setFont(new java.awt.Font("Dialog", 0, 12));
+        copyMenuItem.setText("Copy");
+        copyMenuItem.setText(L10N.getLocalString("menu.copy_item", "Copy"));
         copyMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 copyMenuItemActionPerformed(evt);
