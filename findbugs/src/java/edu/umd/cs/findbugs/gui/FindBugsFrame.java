@@ -2086,6 +2086,11 @@ public class FindBugsFrame extends javax.swing.JFrame {
 			// Leave room for the growBox on Mac
 			growBoxSpacer.setMinimumSize(new java.awt.Dimension(16,16));
 
+			// Remove Unnecessary/Redundant menu items.
+			fileMenu.remove(exitItem);
+			fileMenu.remove(jSeparator6);
+			theMenuBar.remove(helpMenu);
+
 			// Set up listeners for Quit and About menu items using
 			// Apple's EAWT API.
 			// We use reflection here, so there is no posible chance that the
