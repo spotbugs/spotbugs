@@ -116,6 +116,25 @@ public abstract class AbstractDominatorsAnalysis implements DataflowAnalysis<Bit
 		// Meet is intersection
 		result.and(fact);
 	}
+
+	/**
+	 * Get all blocks in CFG dominated (or postdominated, depending
+	 * on how the analysis was done) by given block.
+	 * @param dominator we want to get all blocks dominated (or postdominated)
+	 *    by this block
+	 * @return BitSet of the ids of all blocks dominated by the given block
+	 */
+	public BitSet getAllDominatedBy(BasicBlock dominator) {
+		BitSet allDominated = new BitSet();
+		for (Iterator<BasicBlock> i = cfg.blockIterator(); i.hasNext(); ) {
+			BasicBlock block = i.next();
+			BitSet dominators = getResultFact(block);
+			if (dominators.get(dominator.getId()))
+				allDominated.set(block.getId());
+		}
+		return allDominated;
+	}
+	
 }
 
 // vim:ts=4
