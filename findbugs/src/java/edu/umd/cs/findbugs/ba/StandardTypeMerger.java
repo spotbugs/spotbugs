@@ -108,6 +108,19 @@ public class StandardTypeMerger implements TypeMerger, Constants, ExtendedTypes 
 		// Interfaces are NOT considered!
 		// This will use the Repository to look up classes.
 		try {
+			// Special case: ExceptionObjectTypes.
+			// We want to preserve the ExceptionSets associated,
+			// in order to track the exact set of exceptions
+			if (aRef instanceof ExceptionObjectType || bRef instanceof ExceptionObjectType) {
+				ExceptionSet union = new ExceptionSet();
+				if (aRef instanceof ExceptionObjectType)
+					union.addAll(((ExceptionObjectType) aRef).getExceptionSet());
+				if (bRef instanceof ExceptionObjectType)
+					union.addAll(((ExceptionObjectType) bRef).getExceptionSet());
+
+				return ExceptionObjectType.fromExceptionSet(union);
+			}
+
 			return aRef.getFirstCommonSuperclass(bRef);
 		} catch (ClassNotFoundException e) {
 			lookupFailureCallback.reportMissingClass(e);
