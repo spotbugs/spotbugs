@@ -28,12 +28,17 @@ import java.io.*;
 import edu.umd.cs.findbugs.visitclass.Constants2;
 
 public class FindDoubleCheck extends BytecodeScanningDetector implements   Constants2 {
+    static final boolean debug = false;
     int stage = 0;
     int startPC, endPC;
     int count;
     boolean sawMonitorEnter;
     HashSet<FieldAnnotation> fields = new HashSet<FieldAnnotation>();
     HashSet<FieldAnnotation> twice = new HashSet<FieldAnnotation>();
+    FieldAnnotation pendingFieldLoad;
+
+    int countSinceGetReference;
+    int countSinceGetBoolean;
     private BugReporter bugReporter;
 
     public FindDoubleCheck(BugReporter bugReporter) {
@@ -41,55 +46,94 @@ public class FindDoubleCheck extends BytecodeScanningDetector implements   Const
 	}
 
     public void visit(Method obj) {
+	 if (debug)  System.out.println(getFullyQualifiedMethodName());
         super.visit(obj);
 	fields.clear();
 	twice.clear();
 	stage = 0;
 	count = 0;
+	countSinceGetReference = 1000;
+	countSinceGetBoolean = 1000;
 	sawMonitorEnter = false;
+        pendingFieldLoad = null;
 	}
 
     public void sawOpcode(int seen) {
+	if (debug) System.out.println(getPC() + "	" + OPCODE_NAMES[seen] + "	" + stage + "	" + count + "	" + countSinceGetReference); 
 
 	if (seen == MONITORENTER) sawMonitorEnter = true;
 	if (seen == GETFIELD || seen == GETSTATIC)  {
-		FieldAnnotation f = FieldAnnotation.fromReferencedField(this);
-		if (!sawMonitorEnter) {
-			fields.add(f);
-			startPC = getPC();
+		pendingFieldLoad = FieldAnnotation.fromReferencedField(this);
+		if (debug)  System.out.println("	" + pendingFieldLoad);
+		String sig = getSigConstantOperand();
+		if (sig.equals("Z")) {
+			countSinceGetBoolean = 0;
+			countSinceGetReference++;
 			}
-		else if(fields.contains(f))
-			twice.add(f);
+		else if (sig.startsWith("L") || sig.startsWith("[") ) {
+			countSinceGetBoolean++;
+			countSinceGetReference = 0;
+			}
+		}
+	else {
+		countSinceGetReference++;
 		}
 	switch (stage) {
 	 case 0:
-		if (seen == IFNULL || seen == IFNONNULL) {
+		if ( ((seen == IFNULL || seen == IFNONNULL) && countSinceGetReference < 5) 
+			|| ((seen == IFEQ || seen == IFNE)  && countSinceGetBoolean < 5)) {
 			int b = getBranchOffset();
-			if (b > 0 && (seen == IFNONNULL || b < 10))
-				stage++;
+			if (debug) {
+				System.out.println("branch offset is : " + b);
+				}
+			if (b > 0 
+				&& !(seen == IFNULL && b > 9)
+				&& !(seen == IFEQ && (b > 9 && b < 34))
+				&& !(seen == IFNE && (b > 9 && b < 34))
+				&& (!sawMonitorEnter)) {
+					fields.add(pendingFieldLoad);
+					startPC = getPC();
+					stage = 1;
+					}
 			}
 		count = 0;
 		break;
 	 case 1:
-		if (seen == MONITORENTER)  stage++;
+		if (seen == MONITORENTER)  {
+			stage = 2;
+			count = 0;
+			}
+		else if ( ((seen == IFNULL || seen == IFNONNULL) && countSinceGetReference < 5) 
+			|| ((seen == IFEQ || seen == IFNE)  && countSinceGetBoolean < 5)) {
+			int b = getBranchOffset();
+			if (b > 0 && (seen == IFNONNULL || b < 10)) {
+					fields.add(pendingFieldLoad);
+					startPC = getPC();
+				count = 0;
+				}
+			}
 		else { 
 			count++;
 			if (count > 10) stage = 0;
 			}
 		break;
 	 case 2:
-		if ((seen == IFNULL || seen == IFNONNULL) && getBranchOffset() >= 0) {
+		if ( ((seen == IFNULL || seen == IFNONNULL) && countSinceGetReference < 5) 
+			|| ((seen == IFEQ || seen == IFNE)  && countSinceGetBoolean < 5))  {
+		  if (getBranchOffset() >= 0 && fields.contains(pendingFieldLoad)) {
 			endPC = getPC();
 			stage++;
+                         twice.add(pendingFieldLoad);
+			break;
 			}
-		else { 
-			count++;
-			if (count > 10) stage = 0;
 			}
+		count++;
+		if (count > 10) stage = 0;
 		break;
 	 case 3:
 		if (seen == PUTFIELD || seen == PUTSTATIC) {
 			FieldAnnotation f = FieldAnnotation.fromReferencedField(this);
+			if (debug) System.out.println("	" + f);
 			if (twice.contains(f) && !getNameConstantOperand().startsWith("class$")
 					&& !getSigConstantOperand().equals("Ljava/lang/String;")) {
 				Field declaration = findField(getClassConstantOperand(), getNameConstantOperand());
