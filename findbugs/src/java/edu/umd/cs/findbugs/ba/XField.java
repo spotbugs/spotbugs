@@ -46,6 +46,11 @@ public interface XField extends Comparable<XField> {
 	public String getFieldSignature();
 
 	/**
+	 * Is the type of the field a reference type?
+	 */
+	public boolean isReferenceType();
+
+	/**
 	 * Get the field's access flags.
 	 */
 	public int getAccessFlags();

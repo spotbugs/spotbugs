@@ -47,6 +47,10 @@ public abstract class AbstractField implements XField {
 		return fieldSig;
 	}
 
+	public boolean isReferenceType() {
+		return fieldSig.startsWith("L");
+	}
+
 	public int getAccessFlags() {
 		return accessFlags;
 	}
