@@ -111,28 +111,31 @@ public class ValueNumberFrameModelingVisitor
 			ValueNumberFrame frame = getFrame();
 	
 			try {
-				InstanceField instanceField = Lookup.findInstanceField(obj, getCPG());
-				if (instanceField != null) {
-					ValueNumber reference = frame.popValue();
-					AvailableLoad availableLoad = new AvailableLoad(reference, instanceField);
-					if (RLE_DEBUG) System.out.print("[getfield of " + availableLoad + "]");
-					ValueNumber[] loadedValue = frame.getAvailableLoad(availableLoad);
+				XField xfield = Lookup.findXField(obj, getCPG());
+				if (xfield != null) {
+					if (xfield instanceof InstanceField) {
+						InstanceField instanceField = (InstanceField) xfield;
+						ValueNumber reference = frame.popValue();
+						AvailableLoad availableLoad = new AvailableLoad(reference, instanceField);
+						if (RLE_DEBUG) System.out.print("[getfield of " + availableLoad + "]");
+						ValueNumber[] loadedValue = frame.getAvailableLoad(availableLoad);
+		
+						if (loadedValue == null) {
+							// Get (or create) the cached result for this instruction
+							ValueNumber[] inputValueList = new ValueNumber[]{reference};
+							loadedValue = getOutputValues(inputValueList, getNumWordsProduced(obj));
 	
-					if (loadedValue == null) {
-						// Get (or create) the cached result for this instruction
-						ValueNumber[] inputValueList = new ValueNumber[]{reference};
-						loadedValue = getOutputValues(inputValueList, getNumWordsProduced(obj));
-
-						// Make the load available
-						frame.addAvailableLoad(availableLoad, loadedValue);
-						if (RLE_DEBUG) System.out.print("[Making load available "+ loadedValue[0] + "]");
-					} else {
-						// Found an available load!
-						if (RLE_DEBUG) System.out.print("[Found available load " + availableLoad + "]");
+							// Make the load available
+							frame.addAvailableLoad(availableLoad, loadedValue);
+							if (RLE_DEBUG) System.out.print("[Making load available "+ loadedValue[0] + "]");
+						} else {
+							// Found an available load!
+							if (RLE_DEBUG) System.out.print("[Found available load " + availableLoad + "]");
+						}
+	
+						pushOutputValues(loadedValue);
+						return;
 					}
-
-					pushOutputValues(loadedValue);
-					return;
 				}
 			} catch (ClassNotFoundException e) {
 				lookupFailureCallback.reportMissingClass(e);
@@ -148,23 +151,27 @@ public class ValueNumberFrameModelingVisitor
 			ValueNumberFrame frame = getFrame();
 	
 			try {
-				InstanceField instanceField = Lookup.findInstanceField(obj, getCPG());
+				XField xfield = Lookup.findXField(obj, getCPG());
 
-				if (instanceField != null) {
-					int numWordsConsumed = getNumWordsConsumed(obj);
-					ValueNumber[] inputValueList = popInputValues(numWordsConsumed);
-					ValueNumber reference = inputValueList[0];
-					ValueNumber[] loadedValue = new ValueNumber[inputValueList.length - 1];
-					System.arraycopy(inputValueList, 1, loadedValue, 0, inputValueList.length - 1);
+				if (xfield != null) {
+					if (xfield instanceof InstanceField) {
+						InstanceField instanceField = (InstanceField) xfield;
 
-					// Kill all previous loads of the same field,
-					// in case there is aliasing we don't know about
-					frame.killLoadsOfField(instanceField);
-
-					// Forward substitution
-					frame.addAvailableLoad(new AvailableLoad(reference, instanceField), loadedValue);
-
-					return;
+						int numWordsConsumed = getNumWordsConsumed(obj);
+						ValueNumber[] inputValueList = popInputValues(numWordsConsumed);
+						ValueNumber reference = inputValueList[0];
+						ValueNumber[] loadedValue = new ValueNumber[inputValueList.length - 1];
+						System.arraycopy(inputValueList, 1, loadedValue, 0, inputValueList.length - 1);
+	
+						// Kill all previous loads of the same field,
+						// in case there is aliasing we don't know about
+						frame.killLoadsOfField(instanceField);
+	
+						// Forward substitution
+						frame.addAvailableLoad(new AvailableLoad(reference, instanceField), loadedValue);
+	
+						return;
+					}
 				}
 
 			} catch (ClassNotFoundException e) {

@@ -26,11 +26,11 @@ import org.apache.bcel.generic.*;
 
 public class AssignedFieldMap implements Constants {
 	private final ClassContext classContext;
-	private final Map<Method, Set<InstanceField>> assignedFieldSetForMethodMap;
+	private final Map<Method, Set<XField>> assignedFieldSetForMethodMap;
 
 	public AssignedFieldMap(ClassContext classContext) {
 		this.classContext = classContext;
-		this.assignedFieldSetForMethodMap = new IdentityHashMap<Method, Set<InstanceField>>();
+		this.assignedFieldSetForMethodMap = new IdentityHashMap<Method, Set<XField>>();
 	}
 
 	public void build() throws ClassNotFoundException {
@@ -38,7 +38,7 @@ public class AssignedFieldMap implements Constants {
 
 		// Build a set of all fields that could be assigned
 		// by methods in this class
-		HashSet<InstanceField> assignableFieldSet = new HashSet<InstanceField>();
+		HashSet<XField> assignableFieldSet = new HashSet<XField>();
 		scanFields(jclass, assignableFieldSet);
 		JavaClass[] superClassList = jclass.getSuperClasses();
 		if (superClassList != null) {
@@ -58,16 +58,16 @@ public class AssignedFieldMap implements Constants {
 		}
 	}
 
-	public Set<InstanceField> getAssignedFieldSetForMethod(Method method) {
-		Set<InstanceField> set = assignedFieldSetForMethodMap.get(method);
+	public Set<XField> getAssignedFieldSetForMethod(Method method) {
+		Set<XField> set = assignedFieldSetForMethodMap.get(method);
 		if (set == null) {
-			set = new HashSet<InstanceField>();
+			set = new HashSet<XField>();
 			assignedFieldSetForMethodMap.put(method, set);
 		}
 		return set;
 	}
 
-	private void scanFields(JavaClass jclass, Set<InstanceField> assignableFieldSet) {
+	private void scanFields(JavaClass jclass, Set<XField> assignableFieldSet) {
 		JavaClass myClass = classContext.getJavaClass();
 		String myClassName = myClass.getClassName();
 		String myPackageName = myClass.getPackageName();
@@ -94,7 +94,7 @@ public class AssignedFieldMap implements Constants {
 		}
 	}
 
-	private void scanMethod(Method method, Set<InstanceField> assignableFieldSet) throws ClassNotFoundException {
+	private void scanMethod(Method method, Set<XField> assignableFieldSet) throws ClassNotFoundException {
 		MethodGen methodGen = classContext.getMethodGen(method);
 		InstructionList il = methodGen.getInstructionList();
 		InstructionHandle handle = il.getStart();
@@ -107,9 +107,9 @@ public class AssignedFieldMap implements Constants {
 			if (opcode == Constants.PUTFIELD) {
 				PUTFIELD putfield = (PUTFIELD) ins;
 
-				InstanceField instanceField = Lookup.findInstanceField(putfield, cpg);
+				XField instanceField = Lookup.findXField(putfield, cpg);
 				if (instanceField != null && assignableFieldSet.contains(instanceField)) {
-					Set<InstanceField> assignedFieldSetForMethod = getAssignedFieldSetForMethod(method);
+					Set<XField> assignedFieldSetForMethod = getAssignedFieldSetForMethod(method);
 					assignedFieldSetForMethod.add(instanceField);
 				}
 			}
