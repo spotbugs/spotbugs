@@ -59,6 +59,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
      * Custom cell renderer for the bug tree.
      */
     private static class BugCellRenderer extends DefaultTreeCellRenderer {
+	private ImageIcon bugGroupIcon;
+	private ImageIcon packageIcon;
 	private ImageIcon bugIcon;
 	private ImageIcon classIcon;
 	private ImageIcon methodIcon;
@@ -66,6 +68,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	
 	public BugCellRenderer() {
 	    ClassLoader classLoader = this.getClass().getClassLoader();
+	    bugGroupIcon = new ImageIcon(classLoader.getResource("edu/umd/cs/findbugs/gui/bug.png"));
+	    packageIcon = new ImageIcon(classLoader.getResource("edu/umd/cs/findbugs/gui/package.png"));
 	    bugIcon = new ImageIcon(classLoader.getResource("edu/umd/cs/findbugs/gui/bug2.png"));
 	    classIcon = new ImageIcon(classLoader.getResource("edu/umd/cs/findbugs/gui/class.png"));
 	    methodIcon = new ImageIcon(classLoader.getResource("edu/umd/cs/findbugs/gui/method.png"));
@@ -88,14 +92,16 @@ public class FindBugsFrame extends javax.swing.JFrame {
 		setIcon(methodIcon);
 	    } else if (obj instanceof FieldAnnotation) {
 		setIcon(fieldIcon);
-	    } else if (obj instanceof String) {
+	    } else if (obj instanceof BugInstanceGroup) {
 		// This is a "group" node
-		if (obj == BY_CLASS) {
+		BugInstanceGroup groupNode = (BugInstanceGroup) obj;
+		String groupType = groupNode.getGroupType();
+		if (groupType == BY_CLASS) {
 		    setIcon(classIcon);
-		} else if (obj == BY_PACKAGE) {
-		    //setIcon(packageIcon);
-		} else if (obj == BY_CATEGORY) {
-		    //setIcon(bugTypeIcon);
+		} else if (groupType == BY_PACKAGE) {
+		    setIcon(packageIcon);
+		} else if (groupType == BY_CATEGORY) {
+		    setIcon(bugGroupIcon);
 		}
 	    } else {
 		setIcon(null);
@@ -941,13 +947,13 @@ public class FindBugsFrame extends javax.swing.JFrame {
     /**
      * Populate an analysis run's tree model for given sort order.
      */
-    private void populateAnalysisRunTreeModel(AnalysisRun analysisRun, String sortOrder) {
+    private void populateAnalysisRunTreeModel(AnalysisRun analysisRun, final String sortOrder) {
 	// Set busy cursor - this is potentially a time-consuming operation
 	Cursor orig = this.getCursor();
 	this.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 	
-	DefaultTreeModel bugTreeModel = analysisRun.getTreeModel();
-	DefaultMutableTreeNode bugRootNode = (DefaultMutableTreeNode) bugTreeModel.getRoot();
+	final DefaultTreeModel bugTreeModel = analysisRun.getTreeModel();
+	final DefaultMutableTreeNode bugRootNode = (DefaultMutableTreeNode) bugTreeModel.getRoot();
 	
 	// Delete all children from root node
 	bugRootNode.removeAllChildren();
@@ -956,16 +962,62 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	TreeSet sortedCollection = new TreeSet(getBugInstanceComparator(sortOrder));
 	sortedCollection.addAll(analysisRun.getBugInstances());
 	
-	// Create an appropriate grouper object
-//	Grouper grouper = getGrouper(sortOrder);
+	// Create an appropriate grouper object to create the group
+	// nodes in the bug tree
+	Grouper.Callback callback = new Grouper.Callback() {
+	    private DefaultMutableTreeNode currentGroupNode;
+	    
+	    public void startGroup(Object member_) {
+		BugInstance member = (BugInstance) member_;
+		String groupName;
+		if (sortOrder == BY_CLASS)
+		    groupName = member.getPrimaryClass().getClassName();
+		else if (sortOrder == BY_PACKAGE)
+		    groupName = member.getPrimaryClass().getPackageName();
+		else if (sortOrder == BY_CATEGORY) {
+		    String desc = member.toString();
+		    groupName = desc.substring(0, desc.indexOf(':'));
+		} else
+		    throw new IllegalStateException("Unknown sort order: " + sortOrder);
+		BugInstanceGroup currentGroup = new BugInstanceGroup(sortOrder, groupName);
+		currentGroupNode = new DefaultMutableTreeNode(currentGroup);
+		bugTreeModel.insertNodeInto(currentGroupNode, bugRootNode, bugRootNode.getChildCount());
+		
+		insertIntoGroup(member);
+	    }
+	    
+	    public void addToGroup(Object member_) {
+		BugInstance member = (BugInstance) member_;
+		insertIntoGroup(member);
+	    }
+	    
+	    private void insertIntoGroup(BugInstance member) {
+		if (currentGroupNode == null)
+		    throw new IllegalStateException("Why?");
+		DefaultMutableTreeNode bugNode = new DefaultMutableTreeNode(member);
+		bugTreeModel.insertNodeInto(bugNode, currentGroupNode, currentGroupNode.getChildCount());
+
+		// Insert annotations
+		Iterator j = member.annotationIterator();
+		while (j.hasNext()) {
+		    BugAnnotation annotation = (BugAnnotation) j.next();
+		    DefaultMutableTreeNode annotationNode = new DefaultMutableTreeNode(annotation);
+		    bugTreeModel.insertNodeInto(annotationNode, bugNode,  bugNode.getChildCount());
+		}
+		
+	    }
+	};
+	
+	Grouper grouper = new Grouper(callback);
 	
 	// Add all instances as children of the root, in sorted order
+/*
 	Iterator i = sortedCollection.iterator();
 	while (i.hasNext()) {
 	    BugInstance bugInstance = (BugInstance) i.next();
 	    DefaultMutableTreeNode bugNode = new DefaultMutableTreeNode(bugInstance);
 	    bugTreeModel.insertNodeInto(bugNode, bugRootNode, bugRootNode.getChildCount());
-	    
+ 
 	    // Insert annotations
 	    Iterator j = bugInstance.annotationIterator();
 	    while (j.hasNext()) {
@@ -974,6 +1026,10 @@ public class FindBugsFrame extends javax.swing.JFrame {
 		bugTreeModel.insertNodeInto(annotationNode, bugNode,  bugNode.getChildCount());
 	    }
 	}
+ */
+	Comparator groupComparator = getGroupComparator(sortOrder);
+	
+	grouper.group(sortedCollection, groupComparator);
 	
 	// Sort order is up to date now
 	analysisRun.setSortOrder(sortOrder);
