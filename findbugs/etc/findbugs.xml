@@ -156,6 +156,8 @@ It is a fast detector.
   <Detector class="edu.umd.cs.findbugs.detect.LockedFields" disabled="true" >
     <Details>
 <![CDATA[
+<p> This detector looks for fields that are accessed in an inconsistent manner
+with respect to locking.  It is a fast detector.
 ]]>
     </Details>
   </Detector>
@@ -163,6 +165,8 @@ It is a fast detector.
   <Detector class="edu.umd.cs.findbugs.detect.MutableLock" >
     <Details>
 <![CDATA[
+<p> This detector looks for synchronization on objects read from
+modified fields.  It is a fast detector.
 ]]>
     </Details>
   </Detector>
@@ -170,6 +174,8 @@ It is a fast detector.
   <Detector class="edu.umd.cs.findbugs.detect.MutableStaticFields" >
     <Details>
 <![CDATA[
+<p> This detector looks for static fields that may be modified by
+malicious code.  It is a fast detector.
 ]]>
     </Details>
   </Detector>
@@ -177,6 +183,7 @@ It is a fast detector.
   <Detector class="edu.umd.cs.findbugs.detect.Naming" >
     <Details>
 <![CDATA[
+<p> This detector looks for suspiciously-named methods.  It is a fast detector.
 ]]>
     </Details>
   </Detector>
@@ -184,6 +191,8 @@ It is a fast detector.
   <Detector class="edu.umd.cs.findbugs.detect.ReadReturnShouldBeChecked" >
     <Details>
 <![CDATA[
+<p> This detector looks for calls to InputStream.read() where the
+return value is ignored.  It is a fast detector.
 ]]>
     </Details>
   </Detector>
@@ -191,6 +200,8 @@ It is a fast detector.
   <Detector class="edu.umd.cs.findbugs.detect.SerializableIdiom" >
     <Details>
 <![CDATA[
+<p> This detector looks for potential problems in the implementation
+of Serializable classes.  It is a fast detector.
 ]]>
     </Details>
   </Detector>
@@ -198,6 +209,8 @@ It is a fast detector.
   <Detector class="edu.umd.cs.findbugs.detect.SimplePathsFindDoubleCheck" disabled="true" >
     <Details>
 <![CDATA[
+<p> This detector looks for instances of double checked locking.
+It is a slow detector.  (It will probably be removed from FindBugs at some point.)
 ]]>
     </Details>
   </Detector>
@@ -205,6 +218,7 @@ It is a fast detector.
   <Detector class="edu.umd.cs.findbugs.detect.StartInConstructor" >
     <Details>
 <![CDATA[
+<p> This detector looks for constructors that start threads.  It is a fast detector.
 ]]>
     </Details>
   </Detector>
@@ -212,6 +226,7 @@ It is a fast detector.
   <Detector class="edu.umd.cs.findbugs.detect.UnreadFields" >
     <Details>
 <![CDATA[
+<p> This detector looks for fields whose value is never read.  It is a fast detector.
 ]]>
     </Details>
   </Detector>
@@ -219,6 +234,8 @@ It is a fast detector.
   <Detector class="edu.umd.cs.findbugs.detect.WaitInLoop" >
     <Details>
 <![CDATA[
+<p> This detector looks for calls to wait() that are not in a loop.
+It is a fast detector.
 ]]>
     </Details>
   </Detector>
@@ -226,6 +243,10 @@ It is a fast detector.
   <Detector class="edu.umd.cs.findbugs.detect.BCPDoubleCheck" disabled="true" >
     <Details>
 <![CDATA[
+<p> This detector looks for instances of double checked locking.
+It is implemented using the ByteCodePattern class.  You might want to
+take a look at its source code as an example of an easy way to implement a bug
+pattern detector.  It is a fairly fast detector.
 ]]>
     </Details>
   </Detector>
@@ -233,6 +254,8 @@ It is a fast detector.
   <Detector class="edu.umd.cs.findbugs.detect.BCPMethodReturnCheck" >
     <Details>
 <![CDATA[
+<p> This detector looks for calls to methods where the return value
+is suspiciously ignored.  It is a fairly fast detector.
 ]]>
     </Details>
   </Detector>
