@@ -44,6 +44,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 	private ArrayList<String> elementStack;
 	private StringBuffer textBuffer;
 	private BugInstance bugInstance;
+	private MethodAnnotation methodAnnotation;
 
 	public SAXBugCollectionHandler(BugCollection bugCollection, Project project) {
 		this.bugCollection = bugCollection;
@@ -98,32 +99,17 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 					String fieldOrMethodName = getRequiredAttribute(attributes, "name", qName);
 					String signature = getRequiredAttribute(attributes, "signature", qName);
 					if (qName.equals("Method")) {
-						bugAnnotation = new MethodAnnotation(classname, fieldOrMethodName, signature);
+						// Save in field in case of nested SourceLine elements.
+						methodAnnotation =
+							new MethodAnnotation(classname, fieldOrMethodName, signature);
+						bugAnnotation = methodAnnotation;
 					} else {
 						String isStatic = getRequiredAttribute(attributes, "isStatic", qName);
 						bugAnnotation = new FieldAnnotation(classname, fieldOrMethodName, signature,
 							Boolean.valueOf(isStatic).booleanValue());
 					}
 				} else if (qName.equals("SourceLine")) {
-					String classname = getRequiredAttribute(attributes, "classname", qName);
-					String sourceFile = attributes.getValue("sourceFile");
-					if (sourceFile == null)
-						sourceFile = SourceLineAnnotation.UNKNOWN_SOURCE_FILE;
-					String startLine = getRequiredAttribute(attributes, "start", qName);
-					String endLine = getRequiredAttribute(attributes, "end", qName);
-					String startBytecode = attributes.getValue("startBytecode");
-					String endBytecode = attributes.getValue("endBytecode");
-
-					try {
-						int sl = Integer.parseInt(startLine);
-						int el = Integer.parseInt(endLine);
-						int sb = startBytecode != null ? Integer.parseInt(startBytecode) : -1;
-						int eb = endBytecode != null ? Integer.parseInt(endBytecode) : -1;
-
-						bugAnnotation = new SourceLineAnnotation(classname, sourceFile, sl, el, sb, eb);
-					} catch (NumberFormatException e) {
-						throw new SAXException("Bad integer value in SourceLine element", e);
-					}
+					bugAnnotation = createSourceLineAnnotation(qName, attributes);
 				} else if (qName.equals("Int")) {
 					try {
 						String value = getRequiredAttribute(attributes, "value", qName);
@@ -138,12 +124,40 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 
 				if (bugAnnotation != null)
 					bugInstance.add(bugAnnotation);
+			} else if (outerElement.equals("Method")) {
+				// Method elements can contain nested SourceLineAnnotation
+				// elements.
+				methodAnnotation.setSourceLines(createSourceLineAnnotation(qName, attributes));
 			}
 		}
 
 		textBuffer.delete(0, textBuffer.length());
 		elementStack.add(qName);
 	}
+
+	private SourceLineAnnotation createSourceLineAnnotation(String qName, Attributes attributes)
+			throws SAXException {
+		String classname = getRequiredAttribute(attributes, "classname", qName);
+		String sourceFile = attributes.getValue("sourceFile");
+		if (sourceFile == null)
+			sourceFile = SourceLineAnnotation.UNKNOWN_SOURCE_FILE;
+		String startLine = getRequiredAttribute(attributes, "start", qName);
+		String endLine = getRequiredAttribute(attributes, "end", qName);
+		String startBytecode = attributes.getValue("startBytecode");
+		String endBytecode = attributes.getValue("endBytecode");
+
+		try {
+			int sl = Integer.parseInt(startLine);
+			int el = Integer.parseInt(endLine);
+			int sb = startBytecode != null ? Integer.parseInt(startBytecode) : -1;
+			int eb = endBytecode != null ? Integer.parseInt(endBytecode) : -1;
+
+			return new SourceLineAnnotation(classname, sourceFile, sl, el, sb, eb);
+		} catch (NumberFormatException e) {
+			throw new SAXException("Bad integer value in SourceLine element", e);
+		}
+	}
+
 
 	public void endElement(String uri, String name, String qName) throws SAXException {
 		// URI should always be empty.
@@ -157,6 +171,10 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 					bugCollection.setSummaryHTML(textBuffer.toString());
 				else if (qName.equals("BugInstance"))
 					bugCollection.add(bugInstance);
+				else if (qName.equals(BugCollection.ANALYSIS_ERROR_ELEMENT_NAME))
+					bugCollection.addError(textBuffer.toString());
+				else if (qName.equals(BugCollection.MISSING_CLASS_ELEMENT_NAME))
+					bugCollection.addMissingClass(textBuffer.toString());
 			} else if (outerElement.equals("Project")) {
 				//System.out.println("Adding project element " + qName + ": " + textBuffer.toString());
 				if (qName.equals("Jar"))
