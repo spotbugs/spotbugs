@@ -96,6 +96,15 @@ public abstract class AbstractDataflowAnalysis<Fact> implements DataflowAnalysis
 		return factAtLocationMap.values().iterator();
 	}
 
+	/**
+	 * Call this to get a dataflow value as a String.
+	 * By default, we just call toString().
+	 * Subclasses may override to get different behavior.
+	 */
+	public String factToString(Fact fact) {
+		return fact.toString();
+	}
+
 	/* ----------------------------------------------------------------------
 	 * Implementations of interface methods
 	 * ---------------------------------------------------------------------- */
