@@ -70,7 +70,7 @@ public class FindFieldSelfAssignment extends BytecodeScanningDetector implements
 
                                 bugReporter.reportBug(new BugInstance("SA_FIELD_SELF_ASSIGNMENT", NORMAL_PRIORITY)
                                         .addClass(className)
-                                        .addMethod(className, methodName, methodSig)
+                                        .addMethod(betterClassName, methodName, methodSig)
                                         .addField(betterClassConstant, nameConstant, 
 						betterSigConstant, false)
                                         .addSourceLine(this)

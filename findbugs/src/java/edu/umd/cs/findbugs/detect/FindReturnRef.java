@@ -91,7 +91,7 @@ public class FindReturnRef extends BytecodeScanningDetector implements   Constan
 			&& MutableStaticFields.mutableSignature(sigConstant) ) {
 			bugReporter.reportBug(new BugInstance("EI_EXPOSE_REP2", HIGH_PRIORITY)
 				.addClassAndMethod(this)
-				.addField(classConstant, nameConstant, sigConstant, 
+				.addField(betterClassConstant, nameConstant, betterSigConstant, 
 						true)
 				.addSourceLine(this));
 		}
@@ -99,7 +99,7 @@ public class FindReturnRef extends BytecodeScanningDetector implements   Constan
 			&& MutableStaticFields.mutableSignature(sigConstant) ) {
 		bugReporter.reportBug(new BugInstance("EI_EXPOSE_REP2", NORMAL_PRIORITY)
 			.addClassAndMethod(this)
-			.addField(classConstant, nameConstant, sigConstant, 
+			.addField(betterClassConstant, nameConstant, betterSigConstant, 
 					true)
 			.addSourceLine(this));
 		/*
@@ -109,7 +109,7 @@ public class FindReturnRef extends BytecodeScanningDetector implements   Constan
 				+ " in " + betterMethodName);
 			bugReporter.reportBug(new BugInstance("EI_EXPOSE_REP2", NORMAL_PRIORITY)
 				.addClassAndMethod(this)
-				.addField(classConstant, nameConstant, sigConstant, 
+				.addField(betterClassConstant, nameConstant, betterSigConstant, 
 						false)
 				.addSourceLine(this));
 	`	*/

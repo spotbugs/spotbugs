@@ -185,9 +185,15 @@ public void report() {
 			  int priority = LOW_PRIORITY;
 			  if (easyChange && !isAnonymousInnerClass) 
 				priority = NORMAL_PRIORITY;
- 
-			   bugReporter.reportBug(new BugInstance("SIC_INNER_SHOULD_BE_STATIC", 
-					priority)
+
+			   String bug = "SIC_INNER_SHOULD_BE_STATIC";
+			   if (isAnonymousInnerClass)
+			   	bug = "SIC_INNER_SHOULD_BE_STATIC_ANON";
+			   else if (easyChange)
+			   	bug = "SIC_INNER_SHOULD_BE_STATIC_NEEDS_THIS";
+			 
+			   bugReporter.reportBug(new BugInstance(
+				bug, priority)
 				.addClass(className));
 			   }
 			}

@@ -63,7 +63,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.StartInConstructor" speed="fast"
     reports="SC_START_IN_CTOR" />
   <Detector class="edu.umd.cs.findbugs.detect.UnreadFields" speed="fast"
-    reports="UWF_UNWRITTEN_FIELD,SS_SHOULD_BE_STATIC,UUF_UNUSED_FIELD,URF_UNREAD_FIELD,SIC_INNER_SHOULD_BE_STATIC" />
+    reports="UWF_UNWRITTEN_FIELD,SS_SHOULD_BE_STATIC,UUF_UNUSED_FIELD,URF_UNREAD_FIELD,SIC_INNER_SHOULD_BE_STATIC,SIC_INNER_SHOULD_BE_STATIC_ANON,SIC_INNER_SHOULD_BE_STATIC_NEEDS_THIS" />
   <Detector class="edu.umd.cs.findbugs.detect.WaitInLoop" speed="fast"
     reports="WA_NOT_IN_LOOP,NO_NOTIFY_NOT_NOTIFYALL" />
   <Detector class="edu.umd.cs.findbugs.detect.BCPDoubleCheck" speed="moderate" disabled="true"
@@ -168,6 +168,8 @@
   <BugPattern abbrev="UrF" type="URF_UNREAD_FIELD" category="CORRECTNESS" />
   <BugPattern abbrev="UwF" type="UWF_UNWRITTEN_FIELD" category="CORRECTNESS" />
   <BugPattern abbrev="SIC" type="SIC_INNER_SHOULD_BE_STATIC" category="PERFORMANCE" />
+  <BugPattern abbrev="SIC" type="SIC_INNER_SHOULD_BE_STATIC_NEEDS_THIS" category="PERFORMANCE" />
+  <BugPattern abbrev="SIC" type="SIC_INNER_SHOULD_BE_STATIC_ANON" category="PERFORMANCE" />
   <BugPattern abbrev="Wa" type="WA_NOT_IN_LOOP" category="MT_CORRECTNESS" />
   <BugPattern abbrev="No" type="NO_NOTIFY_NOT_NOTIFYALL" category="MT_CORRECTNESS" />
   <BugPattern abbrev="BcpDC" type="BCPDC_DOUBLECHECK" category="MT_CORRECTNESS" />
