@@ -83,13 +83,12 @@ public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes {
 				// Analyze exception paths of called method
 				// to see if it always throws an unhandled exception.
 				CFG calledCFG = classContext.getCFG(method);
-				ExceptionPathValueDataflow pathDataflow = classContext.getExceptionPathValueDataflow(method);
-				ExceptionPathValue pathValue = pathDataflow.getStartFact(calledCFG.getExit());
+				ReturnPathDataflow pathDataflow = classContext.getReturnPathDataflow(method);
+				ReturnPath pathValue = pathDataflow.getStartFact(calledCFG.getExit());
 
-				if (DEBUG) System.out.println("\tException path result ==> " + pathValue.toString());
-
-				if (pathValue.getKind() == ExceptionPathValue.UNHANDLED_EXCEPTION) {
-					// Method always throws an exception.
+				if (pathValue.getKind() != ReturnPath.RETURNS) {
+					// Method always throws an unhandled exception
+					// or calls System.exit().
 					// Remove the normal control flow edge from the CFG.
 					Edge fallThrough = cfg.getOutgoingEdgeWithType(basicBlock, FALL_THROUGH_EDGE);
 					if (fallThrough != null) {
