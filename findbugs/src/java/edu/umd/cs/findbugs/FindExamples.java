@@ -7,17 +7,26 @@ public class FindExamples {
 
 	public static void main(String[] argv) throws Exception {
 		if (argv.length < 1) {
-			System.err.println("Usage: " + FindExamples.class.getName() + " <results file>");
+			System.err.println("Usage: " + FindExamples.class.getName() +
+				" [-category <category>]" +
+				" <results file>");
 			System.exit(1);
 		}
 
 		DetectorFactoryCollection.instance(); // load plugins
 
-		for (int i = 0; i < argv.length; ++i)
-			scan(argv[i]);
+		int start = 0;
+		String category = null;
+		if (argv[0].equals("-category")) {
+			category = argv[1];
+			start = 2;
+		}
+
+		for (int i = start; i < argv.length; ++i)
+			scan(argv[i], category);
 	}
 
-	public static void scan(String filename) throws Exception {
+	public static void scan(String filename, String category) throws Exception {
 
 		BugCollection bugCollection = new SortedBugCollection();
 		bugCollection.readXML(filename, new Project());
@@ -27,6 +36,9 @@ public class FindExamples {
 			BugInstance bugInstance = i.next();
 			String annotation = bugInstance.getAnnotationText();
 			if (annotation.equals(""))
+				continue;
+
+			if (category != null && !bugInstance.getAbbrev().equals(category))
 				continue;
 
 			Set<String> contents = parseAnnotation(annotation);
