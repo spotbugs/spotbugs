@@ -22,4 +22,5 @@ public @interface SuppressWarnings {
      * to ensure that the same names work across multiple compilers.
      */
     String[] value() default {};
+    String justification() default "";
 }
