@@ -161,8 +161,10 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 				String methodName = obj.getName(getCPG());
 				// System.out.println(className + "." + methodName);
 
-				if (methodName.equals("intern") && className.equals("java.lang.String"))
+				if (methodName.equals("intern") && className.equals("java.lang.String")) {
+					sawStringIntern = true;
 					pushValue(staticStringTypeInstance);
+					}
 				else if (methodName.equals("toString") 
 				    || className.equals("java.lang.String")) {
 					pushValue(dynamicStringTypeInstance);
@@ -285,9 +287,12 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 		this.analysisContext = analysisContext;
 	}
 
+	// XXX BAD EVIL NOT THREAD SAFE YUCK FIXME
+	static boolean sawStringIntern;
 	public void visitClassContext(ClassContext classContext) {
 		JavaClass jclass = classContext.getJavaClass();
 		Method[] methodList = jclass.getMethods();
+		sawStringIntern = false;
 
 		for (int i = 0; i < methodList.length; ++i) {
 			Method method = methodList[i];
@@ -438,6 +443,8 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 				else if (type1 == T_DYNAMIC_STRING || type2 == T_DYNAMIC_STRING)
 					priority = HIGH_PRIORITY;
 				else if (type1 == T_STATIC_STRING || type2 == T_STATIC_STRING)
+					priority = LOW_PRIORITY;
+				else if (sawStringIntern)
 					priority = LOW_PRIORITY;
 
 				if (priority <= LOW_PRIORITY) {
