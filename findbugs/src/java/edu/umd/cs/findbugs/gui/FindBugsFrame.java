@@ -9,6 +9,9 @@ package edu.umd.cs.findbugs.gui;
 import java.awt.CardLayout;
 import java.awt.Component;
 import java.awt.Cursor;
+import java.awt.Graphics;
+import java.awt.Shape;
+import java.awt.Rectangle;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,6 +21,7 @@ import java.util.*;
 import javax.swing.*;
 import javax.swing.tree.*;
 import javax.swing.event.*;
+import javax.swing.text.*;
 import javax.swing.filechooser.*;
 import edu.umd.cs.daveho.ba.SourceFinder;
 import edu.umd.cs.findbugs.*;
@@ -899,6 +903,34 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	groupByChooser.addItem(GROUP_BY_BUG_TYPE);
 	
 	bugTreeSourceViewSplitter.setDividerLocation(1.0);
+
+        // We use a special highlight painter to ensure that the highlights cover
+        // complete source lines, even though the source text doesn't
+        // fill the lines completely.
+        final Highlighter.HighlightPainter painter =
+            new DefaultHighlighter.DefaultHighlightPainter(sourceTextArea.getSelectionColor()) {
+                public Shape paintLayer(Graphics g, int offs0, int offs1,
+		    Shape bounds, JTextComponent c, View view) {
+                    try {
+                        Shape extent = view.modelToView(offs0, Position.Bias.Forward, offs1, Position.Bias.Backward, bounds);
+                        Rectangle rect = extent.getBounds();
+                        rect.x = 0;
+                        rect.width = bounds.getBounds().width;
+                        g.setColor(getColor());
+                        g.fillRect(rect.x, rect.y, rect.width, rect.height);
+                        return rect;
+                    } catch (BadLocationException e) {
+                        return null;
+                    }
+                }
+            };
+        Highlighter sourceHighlighter = new DefaultHighlighter() {
+            public Object addHighlight(int p0, int p1, Highlighter.HighlightPainter p)
+                throws BadLocationException {
+                return super.addHighlight(p0, p1, painter);
+            }
+        };
+        sourceTextArea.setHighlighter(sourceHighlighter);
     }
     
     /**
