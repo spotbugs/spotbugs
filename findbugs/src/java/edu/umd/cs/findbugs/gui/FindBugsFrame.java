@@ -1931,10 +1931,11 @@ public class FindBugsFrame extends javax.swing.JFrame {
             }
             
             private void insertIntoGroup(BugInstance member) {
+		int count = currentGroup.getMemberCount();
                 currentGroup.incrementMemberCount();
                 BugTreeNode bugNode = new BugTreeNode(member);
 		if (BUG_COUNT)
-		    bugNode.setCount(currentGroup.getMemberCount());
+		    bugNode.setCount(count);
                 bugTreeModel.insertNodeInto(bugNode, currentGroupNode, currentGroupNode.getChildCount());
                 
                 // Insert annotations
