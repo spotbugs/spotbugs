@@ -51,7 +51,17 @@ public abstract class QueryBugAnnotations {
 	public void scan(String filename) throws Exception {
 		BugCollection bugCollection = new SortedBugCollection();
 		bugCollection.readXML(filename, new Project());
+		scan(bugCollection, filename);
+	}
 
+	/**
+	 * Scan bug instances contained in given bug collection,
+	 * reporting those whose text annotations contain at least
+	 * one of the keywords in the query.
+	 * @param bugCollection the bug collection
+	 * @param filename the XML file from which the bug collection was read
+	 */
+	public void scan(BugCollection bugCollection, String filename) throws Exception {
 		boolean first = false;
 		Iterator<BugInstance> i = bugCollection.iterator();
 		while (i.hasNext()) {
