@@ -47,13 +47,15 @@ public class SwitchFallthrough extends BytecodeScanningDetector implements   Con
                 }
 
     public void sawOpcode(int seen) {
-	int[] switchOffsets = getSwitchOffsets();
-	int[] switchLabels = getSwitchLabels();
+	int[] switchOffsets = null;
+	int[] switchLabels = null;
 
 	switch (seen) {
 		case TABLESWITCH:
 		case LOOKUPSWITCH:
 		switchPC = getPC();
+		switchOffsets = getSwitchOffsets();
+		switchLabels = getSwitchLabels();
 		inSwitch = true;
 		reachable = false;
 		nextIndex = 0;
