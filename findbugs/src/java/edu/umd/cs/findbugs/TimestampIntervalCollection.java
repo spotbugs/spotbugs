@@ -1,0 +1,136 @@
+/*
+ * FindBugs - Find bugs in Java programs
+ * Copyright (C) 2005, University of Maryland
+ * 
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ * 
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+package edu.umd.cs.findbugs;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.StringTokenizer;
+
+/**
+ * A collection of TimestampIntervals.
+ * 
+ * @author David Hovemeyer
+ */
+public class TimestampIntervalCollection {
+	private List<TimestampInterval> intervalList;
+	
+	/**
+	 * Constructor.
+	 * Creates empty collection.
+	 */
+	private TimestampIntervalCollection() {
+		this.intervalList = new ArrayList<TimestampInterval>();
+	}
+	
+	/**
+	 * Get an Iterator over the TimestampIntervals in the collection.
+	 * Returns them in ascending order.
+	 * 
+	 * @return an Iterator over the intervals in ascending order
+	 */
+	public Iterator<TimestampInterval> intervalIterator() {
+		return intervalList.iterator();
+	}
+	
+	/**
+	 * Return whether or not the interval collection contains the
+	 * given timestamp.
+	 * 
+	 * @param timestamp the timestamp
+	 * @return true if the timestamp is contained in one of the intervals
+	 *         in the collection, false if not
+	 */
+	public boolean contains(long timestamp) {
+		// FIXME: could use binary search, since the intervals are sorted
+		for (Iterator<TimestampInterval> i = intervalIterator(); i.hasNext();) {
+			if (i.next().contains(timestamp))
+				return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Decode TimestampIntervalCollection from String.
+	 * The String should be a list of encoded TimeStampIntervals separated
+	 * by commas.
+	 * 
+	 * @param s the encoded String
+	 * @return the decoded TimestampIntervalCollection
+	 */
+	public static TimestampIntervalCollection decode(String s) {
+		TimestampIntervalCollection result = new TimestampIntervalCollection();
+		StringTokenizer t = new StringTokenizer(s, ",");
+		while (t.hasMoreTokens()) {
+			String token = t.nextToken();
+			result.intervalList.add(TimestampInterval.decode(token));
+		}
+		Collections.sort(result.intervalList);
+		result.simplify();
+		return result;
+	}
+	
+	/**
+	 * Encode a TimestampIntervalCollection as a String.
+	 * The String will be a list of encoded TimeStampIntervals separated
+	 * by commas.
+	 * 
+	 * @param the TimestampIntervalCollection
+	 * @return the encoded String representing the collection
+	 */
+	public static String encode(TimestampIntervalCollection collection) {
+		return collection.toString();
+	}
+	
+	@Override
+	public String toString() {
+		StringBuffer buf = new StringBuffer();
+		for (Iterator<TimestampInterval> i = intervalIterator(); i.hasNext();) {
+			if (buf.length() > 0)
+				buf.append(",");
+			buf.append(TimestampInterval.encode(i.next()));
+		}
+		return buf.toString().intern();// Save memory for identical interval collections
+	}
+
+	/**
+	 * Coalesce overlapping intervals.
+	 */
+	private void simplify() {
+		int origSize = intervalList.size();
+		if (origSize == 0)
+			return;
+		
+		// Merge adjacent intervals if they overlap.
+		int cur = 0, next = 1;
+		while (next < origSize) {
+			TimestampInterval a = intervalList.get(cur), b = intervalList.get(next);
+			if (TimestampInterval.overlap(a,b)) {
+				intervalList.set(cur, TimestampInterval.merge(a,b));
+			} else {
+				intervalList.set(++cur, b);
+			}
+			++next;
+		}
+		
+		// Remove excess elements
+		intervalList.subList(cur+1, origSize).clear();
+	}
+}
