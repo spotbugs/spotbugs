@@ -35,12 +35,6 @@ package edu.umd.cs.daveho.ba;
 public interface RepositoryLookupFailureCallback {
 	/**
 	 * Called to report a lookup failure.
-	 * @param message a message describing the failure
-	 */
-	public void lookupFailure(String message);
-
-	/**
-	 * Called to report a lookup failure.
 	 * @param ex a ClassNotFoundException resulting from the failure
 	 */
 	public void lookupFailure(ClassNotFoundException ex);
