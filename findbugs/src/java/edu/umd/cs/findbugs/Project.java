@@ -148,6 +148,13 @@ public class Project {
 		jarList.remove(num);
 		isModified = true;
 	}
+
+	/**
+	 * Get the list of jar files, directories, and zip file.
+	 */
+	public List<String> getJarFileList() {
+		return jarList;
+	}
 	
 	/**
 	 * Get the number of source directories in the project.
