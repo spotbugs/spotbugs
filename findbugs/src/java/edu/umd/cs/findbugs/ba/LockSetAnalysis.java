@@ -53,7 +53,13 @@ public class LockSetAnalysis extends ForwardDataflowAnalysis<LockSet> {
 
 	public void initEntryFact(LockSet result) {
 		result.makeZero();
-		// TODO: "this" value for synchronized instance methods should be 1 on entry
+
+		// Set lock count of "this value" to 1 for synchronized
+		// instance methods.
+		if (methodGen.isSynchronized() && !methodGen.isStatic()) {
+			ValueNumber thisValue = valueNumberAnalysis.getEntryValue(0);
+			result.setCount(thisValue.getNumber(), 1);
+		}
 	}
 
 	public void initResultFact(LockSet result) {
@@ -69,9 +75,19 @@ public class LockSetAnalysis extends ForwardDataflowAnalysis<LockSet> {
 	}
 
 	public void meetInto(LockSet fact, Edge edge, LockSet result) throws DataflowAnalysisException {
+		result.mergeWith(fact);
 	}
 
-	public void transferInstruction(InstructionHandle handle, LockSet fact) throws DataflowAnalysisException {
+	public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, LockSet fact) throws DataflowAnalysisException {
+/*
+		Instruction ins = handle.getInstruction();
+
+		if (ins instanceof MONITORENTER) {
+			// See what's on the top of the stack
+			ValueNumberFrame frame = valueNumberAnalysis();
+		} else if (ins instanceof MONITOREXIT) {
+		}
+*/
 	}
 
 	public boolean isFactValid(LockSet fact) {

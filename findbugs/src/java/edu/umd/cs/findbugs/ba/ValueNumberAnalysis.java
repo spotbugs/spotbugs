@@ -99,7 +99,7 @@ public class ValueNumberAnalysis extends ForwardDataflowAnalysis<ValueNumberFram
 		return fact1.sameAs(fact2);
 	}
 
-	public void transferInstruction(InstructionHandle handle, ValueNumberFrame fact) throws DataflowAnalysisException {
+	public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, ValueNumberFrame fact) throws DataflowAnalysisException {
 		ValueNumberFrameModelingVisitor visitor = new ValueNumberFrameModelingVisitor(fact, methodGen.getConstantPool(), factory, cache);
 		Instruction ins = handle.getInstruction();
 		ins.accept(visitor);

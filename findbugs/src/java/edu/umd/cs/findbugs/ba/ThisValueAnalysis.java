@@ -81,7 +81,7 @@ public class ThisValueAnalysis extends ForwardDataflowAnalysis<ThisValueFrame> {
 		return fact1.sameAs(fact2);
 	}
 
-	public void transferInstruction(InstructionHandle handle, ThisValueFrame fact) throws DataflowAnalysisException {
+	public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, ThisValueFrame fact) throws DataflowAnalysisException {
 		handle.getInstruction().accept(new ThisValueFrameModelingVisitor(fact, methodGen.getConstantPool()));
 	}
 

@@ -82,7 +82,7 @@ public abstract class LockCountAnalysis extends ForwardDataflowAnalysis<LockCoun
 		return fact1.getCount() == fact2.getCount();
 	}
 
-	public void transferInstruction(InstructionHandle handle, LockCount fact) throws DataflowAnalysisException {
+	public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, LockCount fact) throws DataflowAnalysisException {
 		Instruction ins = handle.getInstruction();
 
 		// Optimization: don't even bother with instructions
@@ -92,7 +92,7 @@ public abstract class LockCountAnalysis extends ForwardDataflowAnalysis<LockCoun
 
 		// Determine where the "this" reference values are in the frame.
 		// (Note that null is returned if we are analyzing a static method.)
-		ThisValueFrame frame = getFrame(handle);
+		ThisValueFrame frame = getFrame(handle, basicBlock);
 
 		// Get the lock count delta for the instruction
 		int delta = getDelta(ins, frame);
@@ -102,10 +102,10 @@ public abstract class LockCountAnalysis extends ForwardDataflowAnalysis<LockCoun
 		fact.setCount(count);
 	}
 
-	private ThisValueFrame getFrame(InstructionHandle handle) {
+	private ThisValueFrame getFrame(InstructionHandle handle, BasicBlock basicBlock) {
 		ThisValueFrame result = null;
 		if (tvaDataflowAnalysis != null)
-			result = tvaDataflowAnalysis.getFactAtInstruction(handle);
+			result = tvaDataflowAnalysis.getFactAtLocation(new Location(handle, basicBlock));
 		return result;
 	}
 

@@ -68,7 +68,7 @@ public abstract class DataflowTestDriver<Fact> {
 				return " EXCEPTION" + e;
 			}
 */
-			Fact result = analysis.getFactAtInstruction(handle);
+			Fact result = analysis.getFactAtLocation(new Location(handle, bb));
 			return " " + result;
 		}
 	}

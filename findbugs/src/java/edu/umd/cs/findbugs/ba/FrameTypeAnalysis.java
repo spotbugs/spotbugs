@@ -96,7 +96,7 @@ public class FrameTypeAnalysis extends ForwardDataflowAnalysis<TypedFrame> {
 		return fact1.sameAs(fact2);
 	}
 
-	public void transferInstruction(InstructionHandle handle, TypedFrame fact) throws DataflowAnalysisException {
+	public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, TypedFrame fact) throws DataflowAnalysisException {
 		FrameTypeModelingVisitor visitor = new FrameTypeModelingVisitor(fact, methodGen.getConstantPool());
 		handle.getInstruction().accept(visitor);
 	}

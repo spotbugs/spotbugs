@@ -76,7 +76,7 @@ public class StackDepthAnalysis extends ForwardDataflowAnalysis<StackDepth> {
 		return fact1.getDepth() == fact2.getDepth();
 	}
 
-	public void transferInstruction(InstructionHandle handle, StackDepth fact) throws DataflowAnalysisException {
+	public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, StackDepth fact) throws DataflowAnalysisException {
 		Instruction ins = handle.getInstruction();
 		int produced = ins.produceStack(cpg);
 		int consumed = ins.consumeStack(cpg);

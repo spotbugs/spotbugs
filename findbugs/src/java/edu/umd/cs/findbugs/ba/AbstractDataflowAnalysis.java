@@ -27,7 +27,7 @@ import java.util.*;
  * for most dataflow analysis implementations.  In particular, it implements
  * the meetPredecessorFacts() and transfer() functions by calling down
  * to the meetInto() and transferInstruction() functions, respectively.
- * It also maintains a map of the dataflow fact for every instruction,
+ * It also maintains a map of the dataflow fact for every location in the CFG,
  * which is useful when using the results of the analysis.
  *
  * @see Dataflow
@@ -35,7 +35,7 @@ import java.util.*;
  * @author David Hovemeyer
  */
 public abstract class AbstractDataflowAnalysis<Fact> implements DataflowAnalysis<Fact> {
-	private IdentityHashMap<InstructionHandle, Fact> factAtInstructionMap = new IdentityHashMap<InstructionHandle, Fact>();
+	private HashMap<Location, Fact> factAtLocationMap = new HashMap<Location, Fact>();
 
 	/* ----------------------------------------------------------------------
 	 * Public methods
@@ -52,9 +52,11 @@ public abstract class AbstractDataflowAnalysis<Fact> implements DataflowAnalysis
 	/**
 	 * Transfer function for a single instruction.
 	 * @param handle the instruction
+	 * @param basicBlock the BasicBlock containing the instruction; needed to disambiguate
+	 *  instructions in inlined JSR subroutines
 	 * @param fact which should be modified based on the instruction
 	 */
-	public abstract void transferInstruction(InstructionHandle handle, Fact fact) throws DataflowAnalysisException;
+	public abstract void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, Fact fact) throws DataflowAnalysisException;
 
 	/**
 	 * Determine whether the given fact is <em>valid</em>
@@ -63,17 +65,17 @@ public abstract class AbstractDataflowAnalysis<Fact> implements DataflowAnalysis
 	public abstract boolean isFactValid(Fact fact);
 
 	/**
-	 * Get the dataflow fact representing the point just before given instruction.
+	 * Get the dataflow fact representing the point just before given Location.
 	 * Note "before" is meant in the logical sense, so for backward analyses,
-	 * before means after the instruction in the control flow sense.
-	 * @param handle the instruction
-	 * @return the fact at the point just before the instruction
+	 * before means after the location in the control flow sense.
+	 * @param location the location
+	 * @return the fact at the point just before the location
 	 */
-	public Fact getFactAtInstruction(InstructionHandle handle) {
-		Fact fact = factAtInstructionMap.get(handle);
+	public Fact getFactAtLocation(Location location) {
+		Fact fact = factAtLocationMap.get(location);
 		if (fact == null) {
 			fact = createFact();
-			factAtInstructionMap.put(handle, fact);
+			factAtLocationMap.put(location, fact);
 		}
 		return fact;
 	}
@@ -107,12 +109,12 @@ public abstract class AbstractDataflowAnalysis<Fact> implements DataflowAnalysis
 				if (handle == end)
 					break;
 	
-				// Record the fact at this instruction
-				Fact factAtInstruction  = getFactAtInstruction(handle);
-				copy(result, factAtInstruction);
+				// Record the fact at this location
+				Fact factAtLocation = getFactAtLocation(new Location(handle, basicBlock));
+				copy(result, factAtLocation);
 	
 				// Transfer the dataflow value
-				transferInstruction(handle, result);
+				transferInstruction(handle, basicBlock, result);
 			}
 		}
 	}
