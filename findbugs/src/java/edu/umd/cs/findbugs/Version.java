@@ -27,16 +27,16 @@ public class Version {
 	public static final int MAJOR = 0;
 
 	/** Minor version number. */
-	public static final int MINOR = 7;
+	public static final int MINOR = 6;
 
 	/** Patch level. */
-	public static final int PATCHLEVEL = 0;
+	public static final int PATCHLEVEL = 9;
 
 	/** Release version string. */
 	public static final String RELEASE = MAJOR + "." + MINOR + "." + PATCHLEVEL;
 
 	/** Release date. */
-	public static final String DATE = "October 7, 2003";
+	public static final String DATE = "October 17, 2003";
 
 	public static void main(String[] argv) {
 		if (argv.length != 1)
