@@ -23,6 +23,7 @@ public class StaticField implements XField {
 	private String className;
 	private String fieldName;
 	private String fieldSig;
+	private int cachedHashCode = 0;
 
 	public StaticField(String className, String fieldName, String fieldSig) {
 		this.className = className;
@@ -58,6 +59,26 @@ public class StaticField implements XField {
 		if (cmp != 0)
 			return cmp;
 		return fieldSig.compareTo(other.getFieldSignature());
+	}
+
+	public int hashCode() {
+		if (cachedHashCode == 0) {
+			cachedHashCode = className.hashCode() ^ fieldName.hashCode() ^ fieldSig.hashCode();
+		}
+		return cachedHashCode;
+	}
+
+	public boolean equals(Object o) {
+		if (this.getClass() != o.getClass())
+			return false;
+		StaticField other = (StaticField) o;
+		return className.equals(other.className)
+			&& fieldName.equals(other.fieldName)
+			&& fieldSig.equals(other.fieldSig);
+	}
+
+	public String toString() {
+		return className + "." + fieldName;
 	}
 }
 
