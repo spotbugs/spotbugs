@@ -42,8 +42,7 @@ public class BCELRepositoryClassResolver implements ClassResolver {
 		if (superclassIndex > 0) {
 			// Type has a superclass
 			String superclassName = getClassString(javaClass, superclassIndex);
-			String superclassSig = "L" + superclassName + ";";
-			repos.addSuperclassLink(type, repos.classTypeFromSlashedClassName(superclassSig));
+			repos.addSuperclassLink(type, repos.classTypeFromSlashedClassName(superclassName));
 		}
 
 		// Set interface links (if any)
@@ -51,8 +50,7 @@ public class BCELRepositoryClassResolver implements ClassResolver {
 		for (int i = 0; i < interfaceIndexList.length; ++i) {
 			int index = interfaceIndexList[i];
 			String interfaceName = getClassString(javaClass, index);
-			String interfaceSig = "L" + interfaceName + ";";
-			repos.addInterfaceLink(type, repos.classTypeFromSlashedClassName(interfaceSig));
+			repos.addInterfaceLink(type, repos.classTypeFromSlashedClassName(interfaceName));
 		}
 	}
 
