@@ -334,6 +334,7 @@ public class ConfigureDetectorsDialog extends javax.swing.JDialog {
 					factory.getShortName(),
 					factory.getSpeed(),
 					UserPreferences.getUserPreferences().isDetectorEnabled(factory)
+						? Boolean.TRUE : Boolean.FALSE
 					});
 			factoryList.add(factory);
 		}
