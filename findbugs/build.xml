@@ -38,7 +38,7 @@
     <property name="tools.src.dir" value="${findbugs.dir}/src/tools"/>
     <property name="script.src.dir" value="${findbugs.dir}/src/scripts"/>
     <property name="findbugs.jar.name" value="findbugs.jar" />
-    <property name="findbugs.attributes.jar.name" value="findbugsAttributes.jar"/>
+    <property name="findbugs.annotations.jar.name" value="findbugsAnnotations.jar"/>
     <property name="findbugsgui.jar.name" value="findbugsGUI.jar" />
     <property name="coreplugin.jar.name" value="coreplugin.jar" />
     <property name="styleplugin.jar.name" value="styleplugin.jar" />
@@ -147,7 +147,7 @@
       <delete file="${doc.src.dir}/bugDescriptions.html"/>
       <delete file="${release.prop.file}" />
       <delete file="${jar.dir}/${findbugs.jar.name}" />
-      <delete file="${jar.dir}/${findbugs.attributes.jar.name}" />
+      <delete file="${jar.dir}/${findbugs.annotations.jar.name}" />
       <delete file="${jar.dir}/${findbugsgui.jar.name}" />
       <delete file="${jar.dir}/${anttask.jar.name}" />
       <delete>
@@ -203,9 +203,9 @@
       </jar>
 
       <!--
-        JDK 1.5 attributes supported by FindBugs.
+        JDK 1.5 annotations supported by FindBugs.
       -->
-      <jar destfile="${jar.dir}/${findbugs.attributes.jar.name}"
+      <jar destfile="${jar.dir}/${findbugs.annotations.jar.name}"
            basedir="${class.dir}">
         <include name="edu/umd/cs/findbugs/annotations/**"/>
       </jar>
