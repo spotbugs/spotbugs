@@ -25,15 +25,18 @@ import java.util.*;
  * A ByteCodePattern is a pattern matching a sequence of bytecode instructions.
  */
 public class ByteCodePattern {
-	private List<PatternElement> patternElementList = new LinkedList<PatternElement>();
+	private PatternElement first, last;
 
 	public void addPatternElement(PatternElement element) {
-		patternElementList.add(element);
+		if (first == null) {
+			first = last = element;
+		} else {
+			last.setNext(element);
+			last = element;
+		}
 	}
 
-	public Iterator<PatternElement> patternElementIterator() {
-		return patternElementList.iterator();
-	}
+	public PatternElement getFirst() { return first; }
 }
 
 // vim:ts=4

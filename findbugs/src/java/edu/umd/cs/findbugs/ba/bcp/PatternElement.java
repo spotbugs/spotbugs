@@ -25,7 +25,23 @@ import org.apache.bcel.generic.InstructionHandle;
  * A PatternElement is an element of a ByteCodePattern.
  * It potentially matches some number of bytecode instructions.
  */
-public interface PatternElement {
+public abstract class PatternElement {
+	private PatternElement next;
+
+	/**
+	 * Get the next PatternElement.
+	 */
+	public PatternElement getNext() {
+		return next;
+	}
+
+	/**
+	 * Set the next PatternElement.
+	 */
+	public void setNext(PatternElement patternElement) {
+		this.next = patternElement;
+	}
+
 	/**
 	 * Return whether or not this element matches the given
 	 * instruction with the given Bindings in effect.
@@ -34,19 +50,19 @@ public interface PatternElement {
 	 * @return if the match is successful, returns an updated BindingSet;
 	 *   if the match is not successful, returns null
 	 */
-	public BindingSet match(InstructionHandle handle, BindingSet bindingSet);
+	public abstract BindingSet match(InstructionHandle handle, BindingSet bindingSet);
 
 	/**
 	 * Return the minimum number of instructions this PatternElement
 	 * must match in the ByteCodePattern.
 	 */
-	public int minOccur();
+	public abstract int minOccur();
 
 	/**
 	 * Return the maximum number of instructions this PatternElement
 	 * must match in the ByteCodePattern.
 	 */
-	public int maxOccur();
+	public abstract int maxOccur();
 }
 
 // vim:ts=4
