@@ -1377,6 +1377,15 @@ public class FindBugs implements Constants2, ExitCodes {
 
 	private static FindBugs createEngine(FindBugsCommandLine commandLine, String[] argv)
 	        throws java.io.IOException, FilterException {
+		
+		// Expand option files in command line.
+		// An argument beginning with "@" is treated as specifying
+		// the name of an option file.
+		// Each line of option files are treated as a single argument.
+		// Blank lines and comment lines (beginning with "#")
+		// are ignored.
+		argv = CommandLine.expandOptionFiles(argv, true, true);
+		
 		int argCount = commandLine.parse(argv);
 
 		Project project = commandLine.getProject();
