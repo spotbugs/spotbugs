@@ -11,5 +11,9 @@ class TryLock {
 	lock1.tryLock();
 	lock2.tryLock();
 	lock3.tryLock();
+
+	synchronized (lock1) {
+		System.out.println("Howdy");
+	}
   }
 }
