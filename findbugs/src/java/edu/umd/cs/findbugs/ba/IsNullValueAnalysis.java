@@ -26,14 +26,10 @@ import org.apache.bcel.generic.*;
 
 /**
  * A dataflow analysis to detect potential null pointer dereferences.
- * TODO: this should really be a base class to allow deriving other
- * analyses.  I.e., right now we only keep track of when values
- * are definitely null on some incoming path; that approach eliminates
- * false positives.  Another approach would be to keep track of whether
- * they <em>might</em> be null on some incoming path, which could produce
- * false positives.
  *
  * @see IsNullValue
+ * @see IsNullValueFrame
+ * @see IsNullValueFrameModelingVisitor
  * @author David Hovemeyer
  */
 public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNullValueFrame> implements EdgeTypes {
@@ -75,9 +71,18 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
 			result.setValue(i, IsNullValue.doNotReportValue());
 	}
 
+	public void transfer(BasicBlock basicBlock, InstructionHandle end, IsNullValueFrame start, IsNullValueFrame result)
+		throws DataflowAnalysisException {
+
+		super.transfer(basicBlock, end, start, result);
+
+		// Determine if this basic block ends in a redundant branch.
+	}
+
 	public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, IsNullValueFrame fact)
 		throws DataflowAnalysisException {
 
+		// Model the instruction
 		visitor.setFrame(fact);
 		Instruction ins = handle.getInstruction();
 		ins.accept(visitor);
@@ -132,6 +137,13 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
 				: IsNullValue.flowSensitiveNullValue(conditionValue);
 		}
 	}
+
+	private static final boolean REDUNDANT_COMPARISON_HACK = Boolean.getBoolean("inva.redundant.hack");
+/*
+	static {
+		if (REDUNDANT_COMPARISON_HACK) System.out.println("Using redundant comparison hack");
+	}
+*/
 
 	public void meetInto(IsNullValueFrame fact, Edge edge, IsNullValueFrame result)
 		throws DataflowAnalysisException {
@@ -198,6 +210,9 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
 				final InstructionHandle lastInSourceHandle = sourceBlock.getLastInstruction();
 				final int edgeType = edge.getType();
 
+				// Get ValueNumberFrame at entry to the edge's target block.
+				final ValueNumberFrame targetVnaFrame = vnaDataflow.getStartFact(destBlock);
+
 				// Handle IFNULL, IFNONNULL, IF_ACMPEQ, and IF_ACMPNE to
 				// produce flow-sensitive information about whether or not the
 				// compared value or values were null.
@@ -217,6 +232,7 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
 						case Constants.IFNONNULL:
 							{
 								tmpFact = replaceValues(fact, tmpFact, prevVnaFrame.getTopValue(), prevVnaFrame,
+									targetVnaFrame,
 									ifNullComparison(lastInSourceOpcode, edgeType, conditionValue));
 							}
 							break;
@@ -226,20 +242,41 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
 								IsNullValue tos = prevIsNullValueFrame.getValue(prevNumSlots - 1);
 								IsNullValue nextToTOS = prevIsNullValueFrame.getValue(prevNumSlots - 2);
 
-								// NOTE: both of the following tests are necessary if
-								// the comparison is redundant.
+								boolean tosNull = tos.isDefinitelyNull();
+								boolean nextToTosNull = nextToTOS.isDefinitelyNull();
 
+if (REDUNDANT_COMPARISON_HACK) {
 								if (tos.isDefinitelyNull()) {
 									// TOS is null, so next-to-TOS is flow-sensitively null
 									tmpFact = replaceValues(fact, tmpFact, prevVnaFrame.getValue(prevNumSlots-2), prevVnaFrame,
+										targetVnaFrame,
 										ifNullComparison(lastInSourceOpcode, edgeType, conditionValue));
 								}
-
 								if (nextToTOS.isDefinitelyNull()) {
 									// Next-to-TOS is null, so TOS is flow-sensitively null
 									tmpFact = replaceValues(fact, tmpFact, prevVnaFrame.getTopValue(), prevVnaFrame,
+										targetVnaFrame,
 										ifNullComparison(lastInSourceOpcode, edgeType, conditionValue));
 								}
+} else {
+								if (tosNull && nextToTosNull) {
+									// Both values compared are known to be null.
+									// They should naturally propagate into the
+									// target frame without anything special
+									// being done.
+									if (DEBUG) System.out.println("Redundant comparison: " + atIf);
+								} else if (tos.isDefinitelyNull()) {
+									// TOS is null, so next-to-TOS is flow-sensitively null
+									tmpFact = replaceValues(fact, tmpFact, prevVnaFrame.getValue(prevNumSlots-2), prevVnaFrame,
+										targetVnaFrame,
+										ifNullComparison(lastInSourceOpcode, edgeType, conditionValue));
+								} else if (nextToTOS.isDefinitelyNull()) {
+									// Next-to-TOS is null, so TOS is flow-sensitively null
+									tmpFact = replaceValues(fact, tmpFact, prevVnaFrame.getTopValue(), prevVnaFrame,
+										targetVnaFrame,
+										ifNullComparison(lastInSourceOpcode, edgeType, conditionValue));
+								}
+}
 							}
 							break;
 						}
@@ -262,7 +299,7 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
 						throw new DataflowAnalysisException("Unpredictable stack consumption for " + firstInDest);
 					ValueNumber replaceMe = vnaFrame.getValue(numSlots - numSlotsConsumed);
 
-					tmpFact = replaceValues(fact, tmpFact, replaceMe, vnaFrame, IsNullValue.nonNullValue());
+					tmpFact = replaceValues(fact, tmpFact, replaceMe, vnaFrame, targetVnaFrame, IsNullValue.nonNullValue());
 				}
 			}
 
@@ -274,8 +311,32 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
 		result.mergeWith(fact);
 	}
 
+	private static final boolean BUGGY_REPLACE_VALUES = Boolean.getBoolean("inva.replace.bug");
+/*
+	static {
+		if (BUGGY_REPLACE_VALUES)
+			System.out.println("Using buggy replaceValues()");
+	}
+*/
+
+	/**
+	 * Update is-null information at a branch target based on information gained at a
+	 * null comparison branch.
+	 * @param origFrame the original is-null frame at entry to basic block
+	 * @param frame the modified version of the is-null entry frame;
+	 *   null if the entry frame has not been modified yet
+	 * @param replaceMe the ValueNumber in the value number frame at the if comparison
+	 *   whose is-null information will be updated
+	 * @param prevVnaFrame the ValueNumberFrame at the if comparison
+	 * @param targetVnaFrame the ValueNumberFrame at entry to the basic block
+	 * @param replacementValue the IsNullValue representing the updated
+	 *   is-null information
+	 * @return a modified IsNullValueFrame with updated is-null information
+	 */
 	private IsNullValueFrame replaceValues(IsNullValueFrame origFrame, IsNullValueFrame frame,
-		ValueNumber replaceMe, ValueNumberFrame vnaFrame, IsNullValue replacementValue) {
+		ValueNumber replaceMe, ValueNumberFrame prevVnaFrame, ValueNumberFrame targetVnaFrame, IsNullValue replacementValue) {
+
+		assert frame.getNumSlots() == targetVnaFrame.getNumSlots();
 
 		// If required, make a copy of the frame
 		frame = modifyFrame(origFrame, frame);
@@ -284,12 +345,35 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
 		// if it was produced by an IF comparison (whose operand or operands
 		// are subsequently popped off the stack).
 
-		final int numSlots = Math.min(frame.getNumSlots(), vnaFrame.getNumSlots());
+		final int targetNumSlots = targetVnaFrame.getNumSlots();
+		final int prefixNumSlots = Math.min(frame.getNumSlots(), prevVnaFrame.getNumSlots());
 
-		for (int i = 0; i < numSlots; ++i) {
-			if (vnaFrame.getValue(i).equals(replaceMe))
+if (BUGGY_REPLACE_VALUES) {
+		for (int i = 0; i < prefixNumSlots; ++i) {
+			if (prevVnaFrame.getValue(i).equals(replaceMe))
 				frame.setValue(i, replacementValue);
 		}
+} else {
+		// Here's the deal:
+		// - "replaceMe" is the value number from the previous frame (at the if branch)
+		//   which indicates a value that we have updated is-null information about
+		// - in the target value number frame (at entry to the target block),
+		//   we find the value number in the stack slot corresponding to the "replaceMe"
+		//   value; this is the "corresponding" value
+		// - all instances of the "corresponding" value in the target frame have
+		//   their is-null information updated to "replacementValue"
+		// This should thoroughly make use of the updated information.
+
+		for (int i = 0; i < prefixNumSlots; ++i) {
+			if (prevVnaFrame.getValue(i).equals(replaceMe)) {
+				ValueNumber corresponding = targetVnaFrame.getValue(i);
+				for (int j = 0; j < targetNumSlots; ++j) {
+					if (targetVnaFrame.getValue(j).equals(corresponding))
+						frame.setValue(j, replacementValue);
+				}
+			}
+		}
+}
 
 		return frame;
 
