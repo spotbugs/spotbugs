@@ -26,7 +26,7 @@ import org.apache.bcel.*;
 import org.apache.bcel.classfile.*;
 import org.apache.bcel.generic.*;
 
-public class BetterCFGBuilder implements EdgeTypes {
+public class BetterCFGBuilder implements CFGBuilder, EdgeTypes {
 
 	private static final boolean DEBUG = Boolean.getBoolean("cfgbuilder.debug");
 
