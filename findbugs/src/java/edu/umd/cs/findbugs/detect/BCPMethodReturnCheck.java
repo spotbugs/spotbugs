@@ -156,15 +156,7 @@ public class BCPMethodReturnCheck extends ByteCodePatternDetector {
 					"()Ljava/lang/Object;", 
 					Invoke.INSTANCE, 
 					bugReporter));
-				/*
-				new Invoke("java.util.concurrent.locks.ReentrantLock",
-					"tryLock", 
-					"()Z", 
-					Invoke.INSTANCE, 
-					bugReporter),
-				*/
 		}
-
 		return list.toArray(new PatternElement[list.size()]);
 	}
 
@@ -200,21 +192,53 @@ public class BCPMethodReturnCheck extends ByteCodePatternDetector {
 
 		// Ignore inner-class access methods
 		InvokeInstruction inv = (InvokeInstruction) call.getInstruction();
-		String calledMethodName = inv.getMethodName(methodGen.getConstantPool());
+		ConstantPoolGen cp = methodGen.getConstantPool();
+		String calledMethodName = inv.getMethodName(cp);
 		if (calledMethodName.startsWith("access$")
 		    || calledMethodName.startsWith("access+"))
 			return;
 
-		// System.out.println("Found " + calledMethodName);
+		/*
+		System.out.println("Found " + calledMethodName);
+		System.out.println(inv.getSignature(cp));
+		System.out.println(inv.getClassName(cp));
+		*/
+		String calledMethodClass = inv.getClassName(cp);
+		if (calledMethodClass.equals(javaClass.getClassName()))
+			return;
 		String sourceFile = javaClass.getSourceFileName();
+		/*
+		System.out.println("CalledMethodClass: " + calledMethodClass);
+		System.out.println("CalledMethodName: " + calledMethodName);
+		*/
+		int priority = NORMAL_PRIORITY;
+		if (calledMethodName.equals("createNewFile"))
+			priority = LOW_PRIORITY;
+		else if (calledMethodClass.startsWith("java.lang")
+			|| calledMethodClass.endsWith("Error")
+			|| calledMethodClass.endsWith("Exception"))
+			priority = HIGH_PRIORITY;
+		String calledPackage = extractPackageName(calledMethodClass);
+		String callingPackage = extractPackageName(javaClass.getClassName());
+		if (calledPackage.length() > 0
+			&& callingPackage.length() > 0
+			&& (calledPackage.startsWith(callingPackage)
+			    || callingPackage.startsWith(calledPackage)))
+			priority++;
+		// System.out.println("priority: " + priority);
+				
 		bugReporter.reportBug(new BugInstance("RV_RETURN_VALUE_IGNORED", 
-			calledMethodName.equals("createNewFile") 
-				? LOW_PRIORITY : NORMAL_PRIORITY
+			priority
 			)
 			.addClassAndMethod(methodGen, sourceFile)
 			.addCalledMethod(methodGen, inv)
 			.addSourceLine(methodGen, sourceFile, call));
 	}
+	public static String extractPackageName(String className) {
+		int i = className.lastIndexOf('.');
+		if (i == -1) return "";
+		return className.substring(0,i);
+		}
 
 }
 
