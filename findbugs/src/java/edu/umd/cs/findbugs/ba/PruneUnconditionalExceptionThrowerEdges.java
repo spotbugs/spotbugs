@@ -34,6 +34,7 @@ public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes {
 
 	public PruneUnconditionalExceptionThrowerEdges(MethodGen methodGen, CFG cfg, ConstantPoolGen cpg,
 		RepositoryLookupFailureCallback lookupFailureCallback) {
+		assert lookupFailureCallback != null;
 		this.methodGen = methodGen;
 		this.cfg = cfg;
 		this.cpg = cpg;

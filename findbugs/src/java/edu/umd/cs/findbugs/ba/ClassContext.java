@@ -62,6 +62,7 @@ public class ClassContext {
 	 * @param jclass the JavaClass
 	 */
 	public ClassContext(JavaClass jclass, RepositoryLookupFailureCallback lookupFailureCallback) {
+		if (lookupFailureCallback == null) throw new IllegalArgumentException();
 		this.jclass = jclass;
 		this.lookupFailureCallback = lookupFailureCallback;
 		this.classGen = null;
