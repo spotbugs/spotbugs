@@ -76,16 +76,18 @@ public class ConstantAnalysis extends FrameDataflowAnalysis<Constant, ConstantFr
 			Edge edge,
 			ConstantFrame result) throws DataflowAnalysisException {
 		
-		ConstantFrame tmpFact = null;
+		if (fact.isValid()) {
+			ConstantFrame tmpFact = null;
 		
-		if (edge.isExceptionEdge()) {
-			tmpFact = modifyFrame(fact, tmpFact);
-			tmpFact.clearStack();
-			tmpFact.pushValue(Constant.NOT_CONSTANT);
-		}
+			if (edge.isExceptionEdge()) {
+				tmpFact = modifyFrame(fact, tmpFact);
+				tmpFact.clearStack();
+				tmpFact.pushValue(Constant.NOT_CONSTANT);
+			}
 		
-		if (tmpFact != null) {
-			fact = tmpFact;
+			if (tmpFact != null) {
+				fact = tmpFact;
+			}
 		}
 		
 		mergeInto(fact, result);
