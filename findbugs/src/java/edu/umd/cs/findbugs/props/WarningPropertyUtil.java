@@ -185,4 +185,22 @@ public abstract class WarningPropertyUtil {
 			// Ignore
 		}
 	}
+	
+	/**
+	 * Add all general warning properties to the given property set
+	 * for the given Location.
+	 * 
+	 * @param propertySet  the WarningPropertySet
+	 * @param classContext the ClassContext
+	 * @param method       the Method
+	 * @param location     the Location
+	 */
+	public static void addPropertiesForLocation(
+			WarningPropertySet propertySet,
+			ClassContext classContext,
+			Method method,
+			Location location) {
+		addReceiverObjectType(propertySet, classContext, method, location);
+		addRecentlyCalledMethods(propertySet, classContext, method, location);
+	}
 }
