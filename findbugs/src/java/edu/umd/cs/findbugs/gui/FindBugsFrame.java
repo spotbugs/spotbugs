@@ -7,6 +7,9 @@
 package edu.umd.cs.findbugs.gui;
 
 import java.awt.CardLayout;
+import javax.swing.tree.TreeModel;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.DefaultMutableTreeNode;
 
 /**
  * This frame contains all of the controls used by the FindBugs GUI.
@@ -21,7 +24,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
     /** Creates new form FindBugsFrame */
     public FindBugsFrame() {
 	initComponents();
-        this.viewPanelLayout = (CardLayout) viewPanel.getLayout();
+        postInitComponents();
     }
     
     /** This method is called from within the constructor to
@@ -33,8 +36,11 @@ public class FindBugsFrame extends javax.swing.JFrame {
         java.awt.GridBagConstraints gridBagConstraints;
 
         jSplitPane1 = new javax.swing.JSplitPane();
+        jScrollPane1 = new javax.swing.JScrollPane();
         navigatorTree = new javax.swing.JTree();
+        jScrollPane2 = new javax.swing.JScrollPane();
         viewPanel = new javax.swing.JPanel();
+        emptyPanel = new javax.swing.JPanel();
         bugTree = new javax.swing.JTree();
         reportPanel = new javax.swing.JPanel();
         editProjectPanel = new javax.swing.JPanel();
@@ -55,6 +61,13 @@ public class FindBugsFrame extends javax.swing.JFrame {
         browseSrcDirButton = new javax.swing.JButton();
         editProjectLabel = new javax.swing.JLabel();
         jSeparator2 = new javax.swing.JSeparator();
+        jMenuBar1 = new javax.swing.JMenuBar();
+        fileMenu = new javax.swing.JMenu();
+        newProjectItem = new javax.swing.JMenuItem();
+        openProjectItem = new javax.swing.JMenuItem();
+        closeProjectItem = new javax.swing.JMenuItem();
+        jSeparator3 = new javax.swing.JSeparator();
+        exitItem = new javax.swing.JMenuItem();
 
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
@@ -62,9 +75,14 @@ public class FindBugsFrame extends javax.swing.JFrame {
             }
         });
 
-        jSplitPane1.setLeftComponent(navigatorTree);
+        navigatorTree.setModel(createTreeModel());
+        jScrollPane1.setViewportView(navigatorTree);
+
+        jSplitPane1.setLeftComponent(jScrollPane1);
 
         viewPanel.setLayout(new java.awt.CardLayout());
+
+        viewPanel.add(emptyPanel, "EmptyPanel");
 
         viewPanel.add(bugTree, "BugTree");
 
@@ -225,12 +243,59 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
         viewPanel.add(editProjectPanel, "EditProjectPanel");
 
-        jSplitPane1.setRightComponent(viewPanel);
+        jScrollPane2.setViewportView(viewPanel);
+
+        jSplitPane1.setRightComponent(jScrollPane2);
 
         getContentPane().add(jSplitPane1, java.awt.BorderLayout.CENTER);
 
+        fileMenu.setText("File");
+        newProjectItem.setText("New Project");
+        newProjectItem.setToolTipText("null");
+        fileMenu.add(newProjectItem);
+
+        openProjectItem.setText("Open Project");
+        fileMenu.add(openProjectItem);
+
+        closeProjectItem.setText("Close Project");
+        fileMenu.add(closeProjectItem);
+
+        fileMenu.add(jSeparator3);
+
+        exitItem.setText("Exit");
+        exitItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                exitItemActionPerformed(evt);
+            }
+        });
+
+        fileMenu.add(exitItem);
+
+        jMenuBar1.add(fileMenu);
+
+        setJMenuBar(jMenuBar1);
+
         pack();
     }//GEN-END:initComponents
+
+    /**
+     * This is called from the constructor to perform post-initialization
+     * of the components in the form.
+     */
+    private void postInitComponents() {
+        this.viewPanelLayout = (CardLayout) viewPanel.getLayout();
+    }
+    
+    private TreeModel createTreeModel() {
+        this.projectCollection = new ProjectCollection();
+        this.rootNode = new DefaultMutableTreeNode(projectCollection);
+        this.navigatorTreeModel = new DefaultTreeModel(rootNode);
+        return this.navigatorTreeModel;
+    }
+    
+    private void exitItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitItemActionPerformed
+        exitFindBugs();
+    }//GEN-LAST:event_exitItemActionPerformed
 
     private void removeSrcDirButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeSrcDirButtonActionPerformed
 	// if (sourceDirList.hasCurrentSelect()) {
@@ -270,8 +335,13 @@ public class FindBugsFrame extends javax.swing.JFrame {
     
     /** Exit the Application */
     private void exitForm(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_exitForm
-	System.exit(0);
+	exitFindBugs();
     }//GEN-LAST:event_exitForm
+    
+    public void exitFindBugs() {
+        // TODO: offer to save work, etc.
+        System.exit(0);
+    }
     
     /**
      * Set the view panel to display the named view.
@@ -286,7 +356,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
     public static void main(String args[]) {
 	FindBugsFrame frame = new FindBugsFrame();
         frame.setView("EditProjectPanel");
-        frame.setSize(600, 400);
+        frame.setSize(640, 480);
         frame.show();
     }
     
@@ -295,12 +365,18 @@ public class FindBugsFrame extends javax.swing.JFrame {
     private javax.swing.JLabel editProjectLabel;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JButton removeSrcDirButton;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JMenu fileMenu;
+    private javax.swing.JMenuItem closeProjectItem;
+    private javax.swing.JMenuItem newProjectItem;
     private javax.swing.JTextField jarNameTextField;
     private javax.swing.JButton browseJarButton;
     private javax.swing.JSplitPane jSplitPane1;
+    private javax.swing.JMenuItem openProjectItem;
     private javax.swing.JList jarFileList;
     private javax.swing.JLabel jarFileLabel;
     private javax.swing.JButton addSourceDirButton;
+    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JLabel sourceDirLabel;
     private javax.swing.JPanel viewPanel;
     private javax.swing.JButton removeJarButton;
@@ -314,9 +390,16 @@ public class FindBugsFrame extends javax.swing.JFrame {
     private javax.swing.JButton browseSrcDirButton;
     private javax.swing.JTextField srcDirTextField;
     private javax.swing.JLabel sourceDirListLabel;
+    private javax.swing.JMenuItem exitItem;
+    private javax.swing.JPanel emptyPanel;
+    private javax.swing.JSeparator jSeparator3;
     private javax.swing.JTree bugTree;
+    private javax.swing.JMenuBar jMenuBar1;
     // End of variables declaration//GEN-END:variables
     
     // My variable declarations
     private CardLayout viewPanelLayout;
+    private ProjectCollection projectCollection;
+    private DefaultTreeModel navigatorTreeModel;
+    private DefaultMutableTreeNode rootNode;
 }
