@@ -20,6 +20,8 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import java.util.HashMap;
+
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Field;
@@ -34,6 +36,8 @@ import edu.umd.cs.findbugs.visitclass.Constants2;
 
 public class InstantiateStaticClass extends BytecodeScanningDetector implements Constants2 {
 	private BugReporter bugReporter;
+
+	HashMap<String,Boolean> isStaticClass = new HashMap<String,Boolean>();
 	
 	public InstantiateStaticClass(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
@@ -47,46 +51,17 @@ public class InstantiateStaticClass extends BytecodeScanningDetector implements 
 				String clsName = getClassConstantOperand();
 				if (clsName.equals("java/lang/Object"))
 					return;
-				
+			
 				//ignore superclass synthesized ctor calls
 				if (getMethodName().equals("<init>") && (getPC() == 1))
 					return;
 				
-				JavaClass cls = Repository.lookupClass(clsName);
-				if (cls.getInterfaceNames().length > 0)
-					return;
-				String superClassName = cls.getSuperclassName();
-				if (!superClassName.equals("java.lang.Object"))
-					return;
-				
-				Method[] methods = cls.getMethods();
-				for (int i = 0; i < methods.length; i++) {
-					Method m = methods[i];
-					if (m.isStatic())
-						continue;
-					
-					if (m.getName().equals("<init>")) {
-						if (!m.getSignature().equals("()V"))
-							return;
-						
-						Code c = m.getCode();
-
-						if (c.getCode().length > 5)
-							return;
-					} else {
-						return;
+				Boolean b = isStaticClass.get(clsName);
+				if (b == null) {
+					b = Boolean.valueOf(isStaticOnlyClass(clsName));
+					isStaticClass.put(clsName, b);
 					}
-				}
-				
-				Field[] fields = cls.getFields();
-				for (int i = 0; i < fields.length; i++) {
-					Field f = fields[i];
-					if (f.isStatic())
-						continue;
-					
-					if (!f.isPrivate())
-						return;
-				}
+				if (b.booleanValue())
 				
 				bugReporter.reportBug(new BugInstance(this, "ISC_INSTANTIATE_STATIC_CLASS", LOW_PRIORITY)
 				        .addClassAndMethod(this)
@@ -96,5 +71,51 @@ public class InstantiateStaticClass extends BytecodeScanningDetector implements 
 			bugReporter.reportMissingClass(cnfe);
 		}
 	}
+
+   private boolean isStaticOnlyClass(String clsName) throws ClassNotFoundException {
+				JavaClass cls = Repository.lookupClass(clsName);
+				if (cls.getInterfaceNames().length > 0)
+					return false;
+				String superClassName = cls.getSuperclassName();
+				if (!superClassName.equals("java.lang.Object"))
+					return false;
+				
+				Method[] methods = cls.getMethods();
+				int staticCount = 0;
+				for (int i = 0; i < methods.length; i++) {
+					Method m = methods[i];
+					if (m.isStatic()) {
+						staticCount++;
+						continue;
+						}
+					
+					if (m.getName().equals("<init>")) {
+						if (!m.getSignature().equals("()V"))
+							return false;
+						
+						Code c = m.getCode();
+
+						if (c.getCode().length > 5)
+							return false;
+					} else {
+						return false;
+					}
+				}
+				
+				Field[] fields = cls.getFields();
+				for (int i = 0; i < fields.length; i++) {
+					Field f = fields[i];
+					if (f.isStatic()) {
+						staticCount++;
+						continue;
+						}
+					
+					if (!f.isPrivate())
+						return false;
+				}
+
+				if (staticCount == 0) return false;
+				return true;
+				}
 
 }
