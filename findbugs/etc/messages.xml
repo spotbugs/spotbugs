@@ -2080,7 +2080,7 @@ should be corrected to: </p>
 <blockquote>
 <pre>
 String dateString = getHeaderField(name);
-dataString = dateString.trim();
+dateString = dateString.trim();
 </pre>
 </blockquote>
 ]]>
