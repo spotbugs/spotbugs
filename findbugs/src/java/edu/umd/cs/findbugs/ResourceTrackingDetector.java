@@ -30,12 +30,12 @@ import edu.umd.cs.findbugs.*;
 public abstract class ResourceTrackingDetector<Resource> implements Detector {
 
 	public abstract boolean prescreen(ClassContext classContext, Method method);
-	public abstract ResourceTracker<Resource> getResourceTracker();
+	public abstract ResourceTracker<Resource> getResourceTracker(ClassContext classContext, Method method)
+		throws DataflowAnalysisException, CFGBuilderException;
 	public abstract void inspectResult(JavaClass javaClass, MethodGen methodGen, CFG cfg,
 		Dataflow<ResourceValueFrame> dataflow, Resource resource);
 
 	public void visitClassContext(ClassContext classContext) {
-		final ResourceTracker<Resource> resourceTracker = getResourceTracker();
 
 		try {
 			final JavaClass jclass = classContext.getJavaClass();
@@ -47,6 +47,8 @@ public abstract class ResourceTrackingDetector<Resource> implements Detector {
 
 				if (!prescreen(classContext, method))
 					continue;
+
+				final ResourceTracker<Resource> resourceTracker = getResourceTracker(classContext, method);
 
 				final MethodGen methodGen = classContext.getMethodGen(method);
 				if (methodGen == null)
@@ -75,7 +77,9 @@ public abstract class ResourceTrackingDetector<Resource> implements Detector {
 				});
 			}
 		} catch (CFGBuilderException e) {
-			throw new AnalysisException(e.getMessage());
+			throw new AnalysisException(e.toString(), e);
+		} catch (DataflowAnalysisException e) {
+			throw new AnalysisException(e.toString(), e);
 		}
 
 	}
