@@ -150,7 +150,7 @@ public class PluginLoader extends URLClassLoader {
 				// Find Detector node in one of the messages files,
 				// to get the detail HTML.
 				Node node = findMessageNode(messageCollectionList,
-					"/MessageCollection/Detector[@class='" + className + "']",
+					"/MessageCollection/Detector[@class='" + className + "']/Details",
 					"Missing Detector description for detector " + className);
 
 				Element details = (Element) node;
