@@ -157,6 +157,7 @@ public class CountBugs {
 	private Set<Key> keySet;
 	private TreeMap<Key, Integer> countMap;
 	private int minPriority;
+	private boolean onlySerious;
 
 	public CountBugs(String resultsFileName) throws IOException, DocumentException {
 		this(new SortedBugCollection(), new Project());
@@ -171,6 +172,7 @@ public class CountBugs {
 		this.keySet = new HashSet<Key>();
 		this.countMap = new TreeMap<Key, Integer>();
 		this.minPriority = 3;
+		this.onlySerious = false;
 	}
 
 	public SortedBugCollection getBugCollection() {
@@ -227,11 +229,22 @@ public class CountBugs {
 			if (keySet.size() > 0 && !keySet.contains(key))
 				continue;
 
+			if (onlySerious && !isSerious(bugInstance))
+				continue;
+
 			Integer count = countMap.get(key);
 			if (count == null)
 				count = new Integer(0);
 			countMap.put(key, new Integer(count.intValue() + 1));
 		}
+	}
+
+	private boolean isSerious(BugInstance bugInstance) {
+		if (bugInstance.getAnnotationText().equals(""))
+			return false;
+		Set<String> annotationWords =bugInstance.getTextAnnotationWords();
+		return annotationWords.contains("BUG")
+			&& !annotationWords.contains("HARMLESS");
 	}
 
 	public void diffCounts(CountBugs newer) {
@@ -281,6 +294,7 @@ public class CountBugs {
 		String keyMode = "-categories";
 		boolean diffMode = false;
 		int minPriority = 3;
+		boolean onlySerious = false;
 
 		while (arg < argv.length - 1) {
 			String option = argv[arg];
@@ -299,6 +313,8 @@ public class CountBugs {
 					throw new IllegalArgumentException("-minPriority option requires argument");
 				minPriority = Integer.parseInt(argv[arg]);
 				//System.err.println("Min priority is " + minPriority);
+			} else if (option.equals("-onlySerious")) {
+				onlySerious = true;
 			} else
 				break;
 
@@ -313,6 +329,7 @@ public class CountBugs {
 		countBugs.setKeyFactory(keyMode);
 		countBugs.setKeys(keyList);
 		countBugs.minPriority = minPriority;
+		countBugs.onlySerious = onlySerious;
 		countBugs.execute();
 
 		if (diffMode) {
