@@ -61,6 +61,10 @@ public class FindBugsFrame extends javax.swing.JFrame {
     /* ----------------------------------------------------------------------
      * Helper classes
      * ---------------------------------------------------------------------- */
+
+    private static final Color HIGH_PRIORITY_COLOR = new Color(0xff0000);
+    private static final Color NORMAL_PRIORITY_COLOR = new Color(0x9f0000);
+    private static final Color LOW_PRIORITY_COLOR = Color.BLACK;
     
     /**
      * Custom cell renderer for the bug tree.
@@ -137,11 +141,11 @@ public class FindBugsFrame extends javax.swing.JFrame {
                 BugInstance bugInstance = (BugInstance) value;
                 switch (bugInstance.getPriority()) {
                 case Detector.LOW_PRIORITY:
-                    color = Color.BLACK; break;
+                    color = LOW_PRIORITY_COLOR; break;
                 case Detector.NORMAL_PRIORITY:
-                    color = new Color(0x9f0000); break;
+                    color = NORMAL_PRIORITY_COLOR; break;
                 case Detector.HIGH_PRIORITY:
-                    color = new Color(0xff0000); break;
+                    color = HIGH_PRIORITY_COLOR; break;
                 }
             }
             return color;
