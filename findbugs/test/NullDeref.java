@@ -9,11 +9,15 @@ public class NullDeref {
 
 		if (n == null) {
 			System.out.println("Hey yo, it's null");
+			System.out.println("Bad idea: " + n.x);
 		} else {
 			System.out.println("Safe to deref here: " + n.x);
 		}
 
-		// Oops, might be null!
+		// We don't detect that this can fail, because
+		// currently we don't have a way of remembering that
+		// n was originally null and that the IF statement didn't
+		// modify it.
 		n.x = 42;
 	}
 
