@@ -96,8 +96,12 @@ public class PluginLoader extends URLClassLoader {
 	}
 
 	private void init() throws PluginException {
-		Document pluginDescriptor; // a.k.a, "findbugs.xml"
-		Document messageCollection; // a.k.a., "messages.xml" or localization thereof
+		// Plugin descriptor (a.k.a, "findbugs.xml").  Defines
+		// the bug detectors and bug patterns that the plugin provides.
+		Document pluginDescriptor;
+
+		// List of message translation files in decreasing order of precedence
+		ArrayList<Document> messageCollectionList = new ArrayList<Document>();
 
 		try {
 			URL descriptorURL = findResource("findbugs.xml");
@@ -111,26 +115,14 @@ public class PluginLoader extends URLClassLoader {
 		}
 
 		try {
-			URL messageURL = null;
-
 			Locale locale = Locale.getDefault();
 			String language = locale.getLanguage();
 			String country = locale.getCountry();
 
-			if (!country.equals(""))
-				messageURL = findResource("messages_" + language + "_" + country + ".xml");
-
-			if (messageURL == null)
-				messageURL = findResource("messages_" + language + ".xml");
-
-			if (messageURL == null)
-				messageURL = findResource("messages.xml");
-
-			if (messageURL == null)
-				throw new PluginException("Couldn't find messages.xml");
-
-			SAXReader reader = new SAXReader();
-			messageCollection = reader.read(messageURL);
+			if (country != null)
+				addCollection(messageCollectionList, "messages_" + language + "_" + country + ".xml");
+			addCollection(messageCollectionList, "messages_" + language + ".xml");
+			addCollection(messageCollectionList, "messages.xml");
 		} catch (DocumentException e) {
 			e.printStackTrace();
 			throw new PluginException("Couldn't parse \"messages.xml\"", e);
@@ -154,23 +146,14 @@ public class PluginLoader extends URLClassLoader {
 				DetectorFactory factory = new DetectorFactory(detectorClass, !disabled.equals("true"), speed, reports);
 				detectorFactoryList.add(factory);
 				detectorFactoryMap.put(className, factory);
-			}
-		} catch (ClassNotFoundException e) {
-			throw new PluginException("Could not instantiate detector class: " + e, e);
-		}
 
-		// Get detail HTML for Detectors
-		List detectorMessageList = messageCollection.selectNodes("/MessageCollection/Detector");
-		for (Iterator i = detectorMessageList.iterator(); i.hasNext(); ) {
-			Element detector = (Element) i.next();
+				// Find Detector node in one of the messages files,
+				// to get the detail HTML.
+				Node node = findMessageNode(messageCollectionList,
+					"/MessageCollection/Detector[@class='" + className + "']",
+					"Missing Detector description for detector " + className);
 
-			Element details = detector.element("Details");
-			String className = detector.valueOf("@class");
-			DetectorFactory factory = detectorFactoryMap.get(className);
-			if (factory == null)
-				throw new PluginException("In \"messages.xml\": unknown detector \"" + className + "\"");
-
-			if (details != null) {
+				Element details = (Element) node;
 				String detailHTML = details.getText();
 				StringBuffer buf = new StringBuffer();
 				buf.append("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">\n");
@@ -179,6 +162,8 @@ public class PluginLoader extends URLClassLoader {
 				buf.append("</BODY></HTML>\n");
 				factory.setDetailHTML(buf.toString());
 			}
+		} catch (ClassNotFoundException e) {
+			throw new PluginException("Could not instantiate detector class: " + e, e);
 		}
 
 		// Create BugPatterns
@@ -191,11 +176,11 @@ public class PluginLoader extends URLClassLoader {
 			String category = bugPatternNode.valueOf("@category");
 			String experimental = bugPatternNode.valueOf("@experimental");
 
-			// Find the matching element in messages.xml
+			// Find the matching element in messages.xml (or translations)
 			String query = "/MessageCollection/BugPattern[@type='" + type + "']";
-			Node messageNode = (Node) messageCollection.selectSingleNode(query);
-			if (messageNode == null)
-				throw new PluginException("messages.xml missing BugPattern element for type " + type);
+			Node messageNode = findMessageNode(messageCollectionList, query,
+				"messages.xml missing BugPattern element for type " + type);
+
 			String shortDesc = getChildText(messageNode, "ShortDescription");
 			String longDesc = getChildText(messageNode, "LongDescription");
 			String detailText = getChildText(messageNode, "Details");
@@ -207,18 +192,49 @@ public class PluginLoader extends URLClassLoader {
 		}
 
 		// Create BugCodes
+		HashSet<String> definedBugCodes = new HashSet<String>();
 		bugCodeList = new ArrayList<BugCode>();
-		List bugCodeNodeList = messageCollection.selectNodes("/MessageCollection/BugCode");
-		for (Iterator i = bugCodeNodeList.iterator(); i.hasNext(); ) {
-			Node bugCodeNode = (Node) i.next();
-			String abbrev = bugCodeNode.valueOf("@abbrev");
-			if (abbrev.equals(""))
-				throw new PluginException("BugCode element with missing abbrev attribute");
-			String description = bugCodeNode.getText();
-			BugCode bugCode = new BugCode(abbrev, description);
-			bugCodeList.add(bugCode);
+		for (Iterator<Document> i = messageCollectionList.iterator(); i.hasNext(); ) {
+			Document messageCollection = i.next();
+
+			List bugCodeNodeList = messageCollection.selectNodes("/MessageCollection/BugCode");
+			for (Iterator j = bugCodeNodeList.iterator(); j.hasNext(); ) {
+				Node bugCodeNode = (Node) j.next();
+				String abbrev = bugCodeNode.valueOf("@abbrev");
+				if (abbrev.equals(""))
+					throw new PluginException("BugCode element with missing abbrev attribute");
+				if (definedBugCodes.contains(abbrev))
+					continue;
+				String description = bugCodeNode.getText();
+				BugCode bugCode = new BugCode(abbrev, description);
+				bugCodeList.add(bugCode);
+				definedBugCodes.add(abbrev);
+			}
+
 		}
 
+	}
+
+	private void addCollection(List<Document> messageCollectionList, String filename)
+		throws DocumentException {
+		URL messageURL = findResource(filename);
+		if (messageURL != null) {
+			SAXReader reader = new SAXReader();
+			Document messageCollection = reader.read(messageURL);
+			messageCollectionList.add(messageCollection);
+		}
+	}
+
+	private static Node findMessageNode(List<Document> messageCollectionList, String xpath,
+		String missingMsg) throws PluginException {
+
+		for (Iterator<Document> i = messageCollectionList.iterator(); i.hasNext(); ) {
+			Document document = i.next();
+			Node node = document.selectSingleNode(xpath);
+			if (node != null)
+				return node;
+		}
+		throw new PluginException(missingMsg);
 	}
 
 	private static String getChildText(Node node, String childName) throws PluginException {
