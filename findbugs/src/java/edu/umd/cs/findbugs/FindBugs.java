@@ -316,16 +316,6 @@ public class FindBugs implements Constants2, ExitCodes
   }
 
   /**
-   * Get the source file in which the given class is defined.
-   * Assumes that execute() has already been called.
-   * @param className fully qualified class name
-   * @return name of the source file in which the class is defined
-   */
-  public String getSourceFile(String className) {
-	return bugReporter.getSourceForClass(className);
-  }
-
-  /**
    * Get the number of bug instances that were reported during analysis.
    */
   public int getBugCount() {
@@ -481,7 +471,6 @@ public class FindBugs implements Constants2, ExitCodes
 		throw new AnalysisException("Could not find class " + className + " in Repository", e);
 	}
 
-	bugReporter.mapClassToSource(javaClass.getClassName(), javaClass.getSourceFileName());
 	ClassContext classContext = new ClassContext(javaClass);
 
 	for (int i = 0; i < detectors.length; ++i) {
