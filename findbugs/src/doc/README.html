@@ -15,7 +15,7 @@
 <li> <a href="#Using">Using FindBugs</a>
 <li> <a href="#Free">FindBugs is free software</a>
 <li> <a href="#Authors">Authors</a>
-<li> <a href="#Acknowledgements">Acknowledgements</a>
+<li> <a href="#Acknowledgments">Acknowledgments</a>
 </ol>
 
 <h1><a name="Intro">1. Introduction</a></h1>
@@ -23,8 +23,8 @@
 <p> FindBugs is a program to find bugs in Java programs.  It looks for instances
 of "bug patterns" --- code instances that are likely to be errors.
 
-<p> This document describes version @VERSION@ of FindBugs.&nbsp; This is a very
-early release of the tool, so you should expect to find problems with it.&nbsp; We
+<p> This document describes version @VERSION@ of FindBugs.&nbsp; This is an
+early release of the tool, so you may find problems with it.&nbsp; We
 are very interested in getting your feedback on FindBugs.&nbsp; Please visit
 the <a href="http://www.cs.umd.edu/~pugh/java/bugs">FindBugs web page</a> for
 the latest information on FindBugs, contact information, and support resources such
@@ -40,10 +40,28 @@ interface.
 <p>To use the graphical interface, execute the command
 
 <pre>
-  java -jar $INST_DIR/lib/findbugsGUI.jar
+  java -jar $INST_DIR/lib/findbugsGUI.jar [options...]
 </pre>
 
 where "$INST_DIR" is the directory in which you installed the FindBugs distribution.
+
+<h3>2.1.1 Command line options</h3>
+
+<p> Several command line options are available.
+
+<ul>
+<li> The <code>-plastic</code> option makes the user interface use the Plastic
+look and feel from <a href="http://www.jgoodies.com/">jgoodies.com</a>.&nbsp; To use this
+option, download the plastic look and feel, and copy the <code>plastic.jar</code>
+file into the $INST_DIR/lib directory.&nbsp; The Plastic look and feel more
+closely resembles common desktop GUI environments than does Swing's default
+Metal look and feel.
+<li> The <code>-debug</code> option causes the FindBugs program to print
+the names of classes and the analyses being performed to the standard
+output descriptor.
+</ul>
+
+<h3>2.1.2 Creating a project</h3>
 
 <p> To start a new project, choose the "File:New Project" menu option.&nbsp; You will see
 a dialog which looks like this:
@@ -56,6 +74,8 @@ Optionally, you can add the source directories which contain the source code for
 the Jar files you are analyzing.&nbsp; This will enable FindBugs to highlight the
 source code which contains a possible error.
 
+<h3>2.1.3 Running the analysis</h3>
+
 <p> Once you have added all of the Jar files and source directories, click the 
 "Find Bugs!" button to analyze the classes contained in the Jar files.&nbsp;
 Note that for a very large program on an older computer, this may take quite a while (tens of minutes).&nbsp;
@@ -63,6 +83,8 @@ A recent computer with ample memory will typically be able to analyze a large
 program in only a few minutes.&nbsp; For example, on a 1.8 GHz Pentium 4 Xeon, we can
 analyze the <code>rt.jar</code> file (26 MB) from Sun's JDK 1.4.2-beta in about 6 minutes.&nbsp;
 In any case, a dialog will report the progress of the analysis.
+
+<h3>2.1.4 Browsing results</h3>
 
 <p> When the analysis completes, you will see a screen like the following:
 
@@ -112,11 +134,13 @@ and <a href="http://www.cs.umd.edu/~daveho/">David Hovemeyer</a> as part of
 research on the Java programming language at the <a href="http://www.cs.umd.edu/">University
 of Maryland Department of Computer Science</a>.
 
-<h1><a name="Acknowledgements">5. Acknowledgements</a></h1>
+<h1><a name="Acknowledgments">5. Acknowledgments</a></h1>
 
-<p> FindBugs uses the <a href="http://jakarta.apache.org/bcel/">Byte Code Engineering Library</a>.
+<p> This product includes software developed by the
+Apache Software Foundation (<a href="http://www.apache.org/">http://www.apache.org/</a>).&nbsp;
+Specifically, it uses the <a href="http://jakarta.apache.org/bcel/">Byte Code Engineering Library</a>.
 
-<p> Some of the icons in the FindBugs graphical interface were taken from the
+<p> Some of the icons used in the FindBugs graphical interface were taken from the
 <a href="http://www.netbeans.org/">NetBeans</a> and <a href="http://www.kde.org/">KDE</a>
 projects.
 
