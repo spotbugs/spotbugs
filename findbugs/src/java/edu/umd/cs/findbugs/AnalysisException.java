@@ -32,6 +32,16 @@ public class AnalysisException extends RuntimeException {
 	public AnalysisException(String message) {
 		super(message);
 	}
+
+	/**
+	 * Constructor from another Throwable object.
+	 * This is useful for chaining exceptions.
+	 * @param message reason for the error
+	 * @param throwable cause of the error
+	 */
+	public AnalysisException(String message, Throwable throwable) {
+		super(message, throwable);
+	}
 }
 
 // vim:ts=4
