@@ -52,6 +52,9 @@ import org.apache.bcel.generic.*;
  * @author David Hovemeyer
  */
 public class ValueNumberAnalysis extends ForwardDataflowAnalysis<ValueNumberFrame> {
+
+	private static final boolean DEBUG = Boolean.getBoolean("vna.debug");
+
 	private MethodGen methodGen;
 	private ValueNumberFactory factory;
 	private ValueNumberCache cache;
@@ -193,8 +196,15 @@ public class ValueNumberAnalysis extends ForwardDataflowAnalysis<ValueNumberFram
 			markFrameValues(frame);
 		}
 
+		int before = factory.getNumValuesAllocated();
+
 		// Now the factory can modify the ValueNumbers.
 		factory.compact(discovered, numValuesUsed);
+
+		int after = factory.getNumValuesAllocated();
+
+		if (DEBUG && after < before && before > 0) System.out.println("Value compaction: " + after + "/" + before + " (" +
+			((after * 100) / before) + "%)");
 
 	}
 
@@ -202,6 +212,10 @@ public class ValueNumberAnalysis extends ForwardDataflowAnalysis<ValueNumberFram
 	 * Mark value numbers in a value number frame for compaction.
 	 */
 	private void markFrameValues(ValueNumberFrame frame) {
+		// We don't need to do anything for top and bottom frames.
+		if (!frame.isValid())
+			return;
+
 		for (int j = 0; j < frame.getNumSlots(); ++j) {
 			ValueNumber value = frame.getValue(j);
 			int number = value.getNumber();
