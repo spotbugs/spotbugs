@@ -103,6 +103,54 @@ public class BetterCFGBuilder implements CFGBuilder, EdgeTypes {
 		}
 	}
 
+	/**
+	 * A hash key representing a basic block.
+	 * This is the combination of the InstructionHandle *and* the JSR
+	 * stack.  Control flow in a JSR subroutine requires us to duplicate
+	 * all of the basic blocks in the subroutine.
+	 *
+	 * <p> Temporary hack - the JSR stack checking is disabled because
+	 * it doesn't work on some methods.  Need to fix.
+	 */
+	private static class BlockKey {
+		private final InstructionHandle start;
+		private final List<InstructionHandle> jsrStack;
+
+		public BlockKey(InstructionHandle start, List<InstructionHandle> jsrStack) {
+			this.start = start;
+			this.jsrStack = cloneJsrStack(jsrStack);
+		}
+
+		public boolean equals(Object o) {
+			if (!(o instanceof BlockKey))
+				return false;
+			BlockKey other = (BlockKey) o;
+			return start == other.start /*&& jsrStack.equals(other.jsrStack)*/;
+		}
+
+		public int hashCode() {
+			return (101 * start.hashCode()) /*+ jsrStack.hashCode()*/;
+		}
+
+		public String toString() {
+			StringBuffer buf = new StringBuffer();
+			buf.append("[start=");
+			buf.append(start.toString());
+			buf.append(", jsrStack=[");
+			boolean first = true;
+			for (Iterator<InstructionHandle> i = jsrStack.iterator(); i.hasNext(); ) {
+				InstructionHandle handle = i.next();
+				if (first)
+					first = false;
+				else
+					buf.append(',');
+				buf.append(handle.getPosition());
+			}
+			buf.append("]]");
+			return buf.toString();
+		}
+	}
+
 	/* ----------------------------------------------------------------------
 	 * Constants
 	 * ---------------------------------------------------------------------- */
@@ -134,8 +182,11 @@ public class BetterCFGBuilder implements CFGBuilder, EdgeTypes {
 	/** Work list representing basic blocks which need to be constructed. */
 	private LinkedList<WorkListItem> workList;
 
-	/** Map of start instructions to the basic block represented by the start instruction. */
-	private IdentityHashMap<InstructionHandle, BasicBlock> basicBlockMap;
+	/**
+	 * Map of block keys (start instruction + JSR stack)
+	 * to the basic block represented by the start instruction.
+	 */
+	private HashMap<BlockKey, BasicBlock> basicBlockMap;
 
 	/** Map of all instructions to the first basic block they were placed in.
 	    Note that because of a JSRs some instructions are in multiple basic blocks. */
@@ -158,7 +209,7 @@ public class BetterCFGBuilder implements CFGBuilder, EdgeTypes {
 		this.cpg = methodGen.getConstantPool();
 		this.cfg = new CFG();
 		this.workList = new LinkedList<WorkListItem>();
-		this.basicBlockMap = new IdentityHashMap<InstructionHandle, BasicBlock>();
+		this.basicBlockMap = new HashMap<BlockKey, BasicBlock>();
 		this.allHandlesToBasicBlockMap = new IdentityHashMap<InstructionHandle, BasicBlock>();
 		this.exceptionHandlerMap = new ExceptionHandlerMap(methodGen);
 	}
@@ -181,9 +232,10 @@ public class BetterCFGBuilder implements CFGBuilder, EdgeTypes {
 
 			if (DEBUG) System.out.println("START BLOCK " + basicBlock.getId());
 
-			boolean isCanonical = (basicBlockMap.get(start) == basicBlock);
+			BlockKey key = new BlockKey(start, jsrStack);
+			boolean isCanonical = (basicBlockMap.get(key) == basicBlock);
 			if (DEBUG) System.out.println("  Block " + basicBlock.getId() + (isCanonical ? " is" : " is not") +
-				" the canonical block for " + start);
+				" the canonical block for " + key);
 
 			// See if the block is an exception handler.
 			// Note that when we create an empty ETB for a block which begins
@@ -385,6 +437,8 @@ public class BetterCFGBuilder implements CFGBuilder, EdgeTypes {
 		return true;
 	}
 
+	private static final int MAX_BLOCKS = Integer.getInteger("cfgbuilder.maxBlocks", 5000).intValue();
+
 	/**
 	 * Get the basic block for given start instruction.
 	 * <p> If no basic block exists for this start instruction, a basic block is
@@ -402,14 +456,20 @@ public class BetterCFGBuilder implements CFGBuilder, EdgeTypes {
 	 * @return the basic block
 	 */
 	private BasicBlock getBlock(InstructionHandle start, LinkedList<InstructionHandle> jsrStack) {
-		BasicBlock basicBlock = basicBlockMap.get(start);
+		BlockKey key = new BlockKey(start, jsrStack);
+		BasicBlock basicBlock = basicBlockMap.get(key);
 		if (basicBlock == null) {
+			if (DEBUG) System.out.println("** Creating new block for " + key.toString());
+
+			if (cfg.getNumBasicBlocks() > MAX_BLOCKS)
+				throw new IllegalStateException("Too many blocks for method " + methodGen.getClassName() + "." + methodGen.getName());
+
 			basicBlock = cfg.allocate();
-			basicBlockMap.put(start, basicBlock);
+			basicBlockMap.put(key, basicBlock);
 			WorkListItem item = new WorkListItem(start, basicBlock, cloneJsrStack(jsrStack), false);
 			workList.add(item);
 		}
-		if (DEBUG) System.out.println("** Start ins " + start + " -> block " + basicBlock.getId());
+		if (DEBUG) System.out.println("** Start key " + key.toString() + " -> block " + basicBlock.getId());
 		return basicBlock;
 	}
 
@@ -437,7 +497,7 @@ public class BetterCFGBuilder implements CFGBuilder, EdgeTypes {
 	 * These are modified, so they can't be shared between work list items.
 	 * @param jsrStack the JSR stack
 	 */
-	private LinkedList<InstructionHandle> cloneJsrStack(LinkedList<InstructionHandle> jsrStack) {
+	private static LinkedList<InstructionHandle> cloneJsrStack(List<InstructionHandle> jsrStack) {
 		LinkedList<InstructionHandle> dup = new LinkedList<InstructionHandle>();
 		dup.addAll(jsrStack);
 		return dup;
@@ -486,6 +546,39 @@ public class BetterCFGBuilder implements CFGBuilder, EdgeTypes {
 			System.out.println(handle.toString());
 		}
 		System.out.println("END");
+	}
+
+	public static void main(String[] argv) throws Exception {
+		if (argv.length != 1) {
+			System.err.println("Usage: " + BetterCFGBuilder.class.getName() + " <class file>");
+			System.exit(1);
+		}
+
+		JavaClass jclass = new ClassParser(argv[0]).parse();
+		Method[] methodList = jclass.getMethods();
+		ClassGen classGen = new ClassGen(jclass);
+
+		final String methodName = System.getProperty("cfgbuilder.method");
+
+		for (int i = 0; i < methodList.length; ++i) {
+			Method method = methodList[i];
+			if (method.isAbstract() || method.isNative())
+				continue;
+
+			MethodGen methodGen = new MethodGen(method, jclass.getClassName(), classGen.getConstantPool());
+			if (methodName != null && !methodName.equals(methodGen.getName()))
+				continue;
+
+			System.out.println("Method " + jclass.getClassName() + "." + methodGen.getName() + ":" + methodGen.getSignature());
+
+			BetterCFGBuilder cfgBuilder = new BetterCFGBuilder(methodGen);
+			cfgBuilder.build();
+			CFG cfg = cfgBuilder.getCFG();
+			cfg.assignEdgeIds(0);
+
+			CFGPrinter cfgPrinter = new CFGPrinter(cfg);
+			cfgPrinter.print(System.out);
+		}
 	}
 }
 
