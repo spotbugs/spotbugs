@@ -353,6 +353,7 @@
             fork="true">
          <jvmarg value="-Dfindbugs.home=${findbugs.dir}"/>
          <classpath refid="tools.classpath"/>
+         <arg value="FindBugs Bug Descriptions"/>
          <arg value="${doc.html.gen.header}"/>
          <arg value="${doc.html.gen.beginBody}"/>
          <arg value="${doc.html.gen.bugDescriptions.prologue}"/>
