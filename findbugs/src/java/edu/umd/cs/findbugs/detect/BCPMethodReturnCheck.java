@@ -271,9 +271,9 @@ public class BCPMethodReturnCheck extends ByteCodePatternDetector {
 		        || calledMethodClass.endsWith("Error")
 		        || calledMethodClass.endsWith("Exception"))
 			priority = HIGH_PRIORITY;
+		/*
 		String calledPackage = extractPackageName(calledMethodClass);
 		String callingPackage = extractPackageName(javaClass.getClassName());
-		/*
 		if (calledPackage.length() > 0
 		        && callingPackage.length() > 0
 		        && (calledPackage.startsWith(callingPackage)
