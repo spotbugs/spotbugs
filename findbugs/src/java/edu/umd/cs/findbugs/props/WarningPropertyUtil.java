@@ -33,6 +33,9 @@ import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.TypeDataflow;
 import edu.umd.cs.findbugs.ba.TypeFrame;
+import edu.umd.cs.findbugs.ba.ca.Call;
+import edu.umd.cs.findbugs.ba.ca.CallList;
+import edu.umd.cs.findbugs.ba.ca.CallListDataflow;
 
 /**
  * Utility methods for creating general warning properties.
@@ -48,22 +51,26 @@ public abstract class WarningPropertyUtil {
 	 * @param classContext ClassContext of the class containing the method 
 	 * @param method       the method
 	 * @param location     Location within the method
-	 * @throws DataflowAnalysisException
-	 * @throws CFGBuilderException
 	 */
 	public static void addReceiverObjectType(
 			WarningPropertySet propertySet,
 			ClassContext classContext,
 			Method method,
-			Location location) throws DataflowAnalysisException, CFGBuilderException {
-		TypeDataflow typeDataflow = classContext.getTypeDataflow(method);
-		TypeFrame frame = typeDataflow.getFactAtLocation(location);
-		if (frame.isValid()) {
-			Type type = frame.getInstance(
-					location.getHandle().getInstruction(), classContext.getConstantPoolGen());
-			if (type instanceof ReferenceType) {
-				propertySet.setProperty(GeneralWarningProperty.RECEIVER_OBJECT_TYPE, type.toString());
+			Location location) {
+		try {
+			TypeDataflow typeDataflow = classContext.getTypeDataflow(method);
+			TypeFrame frame = typeDataflow.getFactAtLocation(location);
+			if (frame.isValid()) {
+				Type type = frame.getInstance(
+						location.getHandle().getInstruction(), classContext.getConstantPoolGen());
+				if (type instanceof ReferenceType) {
+					propertySet.setProperty(GeneralWarningProperty.RECEIVER_OBJECT_TYPE, type.toString());
+				}
 			}
+		} catch (DataflowAnalysisException e) {
+			// Ignore
+		} catch (CFGBuilderException e) {
+			// Ignore
 		}
 	}
 	
@@ -75,60 +82,107 @@ public abstract class WarningPropertyUtil {
 	 * @param classContext ClassContext of the class containing the method 
 	 * @param method       the method
 	 * @param pc           PC value of the instruction
-	 * @throws DataflowAnalysisException
-	 * @throws CFGBuilderException
 	 */
 	public static void addReceiverObjectType(
 			WarningPropertySet propertySet,
 			ClassContext classContext,
 			Method method,
 			int pc) throws CFGBuilderException, DataflowAnalysisException {
-		CFG cfg = classContext.getCFG(method);
-		
-		// Get all Locations for the given PC value.
-		// There may be more than one because of JSR subroutines.
-		List<Location> locationList = new LinkedList<Location>();
-		for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
-			Location location = i.next();
-			if (location.getHandle().getPosition() == pc) {
-				locationList.add(location);
-			}
-		}
-		
-		TypeDataflow typeDataflow = classContext.getTypeDataflow(method);
-		
-		// Get all types for those locations
-		List<Type> typeList = new LinkedList<Type>();
-		for (Iterator<Location> i = locationList.iterator(); i.hasNext();) {
-			Location location = i.next();
-			TypeFrame frame = typeDataflow.getFactAtLocation(location);
-			if (frame.isValid()) {
-				Type type = frame.getInstance(
-						location.getHandle().getInstruction(), classContext.getConstantPoolGen());
-				typeList.add(type);
-			}
-		}
-		
-		if (!typeList.isEmpty()) {
-			// Find least upper bound of collected types
-			ReferenceType lub = null;
-			for (Iterator<Type> i = typeList.iterator(); i.hasNext();) {
-				Type type = i.next();
-				if (!(type instanceof ReferenceType))
-					return;
-				ReferenceType refType = (ReferenceType) type;
-				if (lub == null) {
-					lub = refType;
-				} else {
-					try {
-						lub = lub.getFirstCommonSuperclass(refType);
-					} catch (ClassNotFoundException e) {
-						return;
-					}
+		try {
+			CFG cfg = classContext.getCFG(method);
+			
+			// Get all Locations for the given PC value.
+			// There may be more than one because of JSR subroutines.
+			List<Location> locationList = new LinkedList<Location>();
+			for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
+				Location location = i.next();
+				if (location.getHandle().getPosition() == pc) {
+					locationList.add(location);
 				}
 			}
 			
-			propertySet.setProperty(GeneralWarningProperty.RECEIVER_OBJECT_TYPE, lub.toString());
+			TypeDataflow typeDataflow = classContext.getTypeDataflow(method);
+			
+			// Get all types for those locations
+			List<Type> typeList = new LinkedList<Type>();
+			for (Iterator<Location> i = locationList.iterator(); i.hasNext();) {
+				Location location = i.next();
+				TypeFrame frame = typeDataflow.getFactAtLocation(location);
+				if (frame.isValid()) {
+					Type type = frame.getInstance(
+							location.getHandle().getInstruction(), classContext.getConstantPoolGen());
+					typeList.add(type);
+				}
+			}
+			
+			if (!typeList.isEmpty()) {
+				// Find least upper bound of collected types
+				ReferenceType lub = null;
+				for (Iterator<Type> i = typeList.iterator(); i.hasNext();) {
+					Type type = i.next();
+					if (!(type instanceof ReferenceType))
+						return;
+					ReferenceType refType = (ReferenceType) type;
+					if (lub == null) {
+						lub = refType;
+					} else {
+						try {
+							lub = lub.getFirstCommonSuperclass(refType);
+						} catch (ClassNotFoundException e) {
+							return;
+						}
+					}
+				}
+				
+				propertySet.setProperty(GeneralWarningProperty.RECEIVER_OBJECT_TYPE, lub.toString());
+			}
+		} catch (CFGBuilderException e) {
+			// Ignore
+		} catch (DataflowAnalysisException e) {
+			// Ignore
+		}
+	}
+	
+	/**
+	 * Add CALLED_METHOD_<i>n</i> warning properties based on methods
+	 * which have been called and returned normally at given Location.
+	 * 
+	 * @param propertySet  the WarningPropertySet
+	 * @param classContext the ClassContext
+	 * @param method       the Method
+	 * @param location     the Location
+	 */
+	public static void addRecentlyCalledMethods(
+			WarningPropertySet propertySet,
+			ClassContext classContext,
+			Method method,
+			Location location) {
+		try {
+			CallListDataflow dataflow = classContext.getCallListDataflow(method);
+			CallList callList = dataflow.getFactAtLocation(location);
+			if (!callList.isValid())
+				return;
+			int count = 0;
+			for (Iterator<Call> i = callList.callIterator(); count < 4 && i.hasNext(); ++count) {
+				Call call = i.next();
+				WarningProperty prop = null;
+				switch (count) {
+				case 0:
+					prop = GeneralWarningProperty.CALLED_METHOD_1; break;
+				case 1:
+					prop = GeneralWarningProperty.CALLED_METHOD_2; break;
+				case 2:
+					prop = GeneralWarningProperty.CALLED_METHOD_3; break;
+				case 3:
+					prop = GeneralWarningProperty.CALLED_METHOD_4; break;
+				}
+				// XXX: encode class name? signature? break down as words?
+				propertySet.setProperty(prop, call.getMethodName());
+			}
+		} catch (CFGBuilderException e) {
+			// Ignore
+		} catch (DataflowAnalysisException e) {
+			// Ignore
 		}
 	}
 }
