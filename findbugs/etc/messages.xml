@@ -683,7 +683,15 @@ accurate, to use the constant instead.</p>
     </Details>
   </Detector>
 
-  <Detector class="edu.umd.cs.findbugs.detect.FindBugsSummaryStats">
+  <Detector class="edu.umd.cs.findbugs.detect.FindCircularDependencies">
+    <Details>
+<![CDATA[
+<p>This detector looks circular dependencies among classes. It is a fast detector.</p>
+]]>
+    </Details>
+  </Detector>
+  
+    <Detector class="edu.umd.cs.findbugs.detect.FindBugsSummaryStats">
     <Details>
 <![CDATA[
 <p> This detector just collects summary statistics information about the analysis process. </p>
@@ -2880,6 +2888,20 @@ just use the constant. Methods detected are:
     </Details>
   </BugPattern>
   
+    <BugPattern type="CD_CIRCULAR_DEPENDENCY">
+	  <ShortDescription>Test for circular dependencies among classes.</ShortDescription>
+	  <LongDescription>Class {0} has a circular dependency with other classes.</LongDescription>
+	  <Details>
+	<![CDATA[
+    <p>
+    This class has a circular dependency with other classes. This makes building these classes
+    difficult, as each is dependent on the other to build correctly. Consider using interfaces
+    to break the hard dependency.
+    </p>
+    ]]>
+  	  </Details>
+    </BugPattern>
+
   <!--
   **********************************************************************
    BugCodes
@@ -2969,4 +2991,5 @@ just use the constant. Methods detected are:
   <BugCode abbrev="REC">RuntimeException capture</BugCode>
   <BugCode abbrev="FE">Test for floating point equality</BugCode>
   <BugCode abbrev="UM">Unnecessary Math on constants</BugCode>
-</MessageCollection>
+  <BugCode abbrev="CD">Circular Dependencies</BugCode>
+  </MessageCollection>
