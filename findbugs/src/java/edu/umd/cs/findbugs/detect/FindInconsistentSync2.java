@@ -113,15 +113,21 @@ public class FindInconsistentSync2 implements Detector {
 
 	public void visitClassContext(ClassContext classContext) {
 		try {
+			JavaClass javaClass = classContext.getJavaClass();
+			if (DEBUG) System.out.println("******** Analyzing class " + javaClass.getClassName());
+
 			Set<Method> lockedMethodSet = findLockedMethods(classContext);
 
-			JavaClass javaClass = classContext.getJavaClass();
 			Method[] methodList = javaClass.getMethods();
 			for (int i = 0; i < methodList.length; ++i) {
 				Method method = methodList[i];
 				if (classContext.getMethodGen(method) == null)
 					continue;
 				if (isConstructor(method.getName()))
+					continue;
+				if (method.getName().startsWith("access$"))
+					// Ignore inner class access methods;
+					// we will treat calls to them as field accesses
 					continue;
 				analyzeMethod(classContext, method, lockedMethodSet);
 			}
@@ -239,12 +245,40 @@ public class FindInconsistentSync2 implements Detector {
 					}
 
 					if (xfield != null) {
-						handleAccess(classContext, method,
-							vnaDataflow.getFactAtLocation(location),
-							!method.isStatic() ? vnaDataflow.getAnalysis().getThisValue() : null,
-							lockDataflow.getFactAtLocation(location),
-							xfield, location.getHandle(), isWrite, isLocal, cpg,
-							lockedMethodSet);
+						// We only care about ordinary mutable nonpublic instance fields.
+						if (xfield.isStatic() || xfield.isPublic() || xfield.isVolatile() || xfield.isFinal())
+							return;
+
+						ValueNumberFrame frame = vnaDataflow.getFactAtLocation(location);
+						ValueNumber thisValue = !method.isStatic() ? vnaDataflow.getAnalysis().getThisValue() : null;
+						LockSet lockSet = lockDataflow.getFactAtLocation(location);
+						InstructionHandle handle = location.getHandle();
+				
+						// Is the instance locked?
+						// We consider the access to be locked if either
+						//   - the object is explicitly locked, or
+						//   - the field is accessed through the "this" reference,
+						//     and the method is in the locked method set
+						ValueNumber instance = frame.getInstance(handle.getInstruction(), cpg);
+						boolean isLocked = lockSet.getLockCount(instance.getNumber()) > 0
+							|| (lockedMethodSet.contains(method) && thisValue != null && thisValue.equals(instance));
+				
+						int kind = 0;
+						kind |= isLocked ? LOCKED : UNLOCKED;
+						kind |= isWrite ? WRITE : READ;
+				
+						if (DEBUG) System.out.println("IS2:\t" +
+							SignatureConverter.convertMethodSignature(classContext.getMethodGen(method)) +
+							"\t" + xfield + "\t" + ((isWrite ? "W" : "R") + "/" + (isLocked ? "L" : "U")));
+				
+						FieldStats stats = getStats(xfield);
+						stats.addAccess(kind);
+				
+						if (isLocked && isLocal)
+							stats.addLocalLock();
+				
+						if (!isLocked)
+							stats.addUnsyncAccess(classContext, method, handle);
 					}
 					// FIXME: should we do something for static fields?
 				} catch (ClassNotFoundException e) {
@@ -252,58 +286,6 @@ public class FindInconsistentSync2 implements Detector {
 				}
 			}
 		});
-	}
-
-	/**
-	 * Examine a field access to determine whether it is locked or unlocked.
-	 * @param classContext the ClassContext for the class
-	 * @param method the method making the field access
-	 * @param frame the value numbers in the Java stack frame
-	 * @param thisValue the ValueNumber of the "this" reference
-	 * @param lockSet the set of locked objects
-	 * @param xfield the field being accessed
-	 * @param handle the instruction performing the access
-	 * @param isWrite true if the access is a store
-	 * @param isLocal true if the access is to an object of the same class
-	 *   as the method
-	 * @param cpg the ConstantPoolGen for the method
-	 * @param lockedMethodSet set of methods which appear to always be called
-	 *   from a locked context
-	 */
-	private void handleAccess(ClassContext classContext, Method method,
-								ValueNumberFrame frame, ValueNumber thisValue,
-								LockSet lockSet, XField xfield,
-								InstructionHandle handle, boolean isWrite, boolean isLocal, ConstantPoolGen cpg,
-								Set<Method> lockedMethodSet)
-		throws DataflowAnalysisException {
-
-		// We only care about ordinary mutable nonpublic instance fields.
-		if (xfield.isStatic() || xfield.isPublic() || xfield.isVolatile() || xfield.isFinal())
-			return;
-
-		// Is the instance locked?
-		// We consider the access to be locked if either
-		//   - the object is explicitly locked, or
-		//   - the field is accessed through the "this" reference,
-		//     and the method is in the locked method set
-		ValueNumber instance = frame.getInstance(handle.getInstruction(), cpg);
-		boolean isLocked = lockSet.getLockCount(instance.getNumber()) > 0
-			|| (lockedMethodSet.contains(method) && thisValue != null && thisValue.equals(instance));
-
-		int kind = 0;
-		kind |= isLocked ? LOCKED : UNLOCKED;
-		kind |= isWrite ? WRITE : READ;
-
-		if (DEBUG) System.out.println();
-
-		FieldStats stats = getStats(xfield);
-		stats.addAccess(kind);
-
-		if (isLocked && isLocal)
-			stats.addLocalLock();
-
-		if (!isLocked)
-			stats.addUnsyncAccess(classContext, method, handle);
 	}
 
 	/**
@@ -379,6 +361,14 @@ public class FindInconsistentSync2 implements Detector {
 					change = true;
 			}
 		} while (change);
+
+		if (DEBUG) {
+			System.out.println("Apparently locked methods:");
+			for (Iterator<Method> i = lockedMethodSet.iterator(); i.hasNext(); ) {
+				Method method = i.next();
+				System.out.println("\t" + method.getName());
+			}
+		}
 
 		// We assume that any methods left in the locked set
 		// are called only from a locked context.
