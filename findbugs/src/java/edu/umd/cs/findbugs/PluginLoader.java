@@ -60,6 +60,17 @@ public class PluginLoader extends URLClassLoader {
 		super(new URL[]{url});
 		init();
 	}
+	
+	/**
+	 * Constructor.
+	 * @param url the URL of the plugin Jar file
+	 * @param parent the parent classloader
+	 * @throws PluginException if the plugin cannot be fully loaded
+	 */
+	public PluginLoader(URL url, ClassLoader parent) throws PluginException {
+		super(new URL[]{url}, parent);
+		init();
+	}
 
 	/**
 	 * Get the DetectorFactory array containing factories for creating all

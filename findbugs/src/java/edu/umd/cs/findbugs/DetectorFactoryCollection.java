@@ -128,7 +128,7 @@ public class DetectorFactoryCollection {
 			File file = pluginList[i];
 			try {
 				URL url = file.toURL();
-				PluginLoader pluginLoader = new PluginLoader(url);
+				PluginLoader pluginLoader = new PluginLoader(url, this.getClass().getClassLoader());
 	
 				// Register all of the detectors that this plugin contains
 				DetectorFactory[] detectorFactoryList = pluginLoader.getDetectorFactoryList();
