@@ -45,12 +45,22 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame> {
 	 * Constructor.
 	 * @param methodGen the MethodGen whose CFG we'll be analyzing
 	 * @param typeMerger object to merge types
-	 * @param lookupFailureCallback callback for Repository lookup failures
+	 * @param visitor a TypeFrameModelingVisitor to use to model the effect
+	 *   of instructions
 	 */
-	public TypeAnalysis(MethodGen methodGen, TypeMerger typeMerger) {
+	public TypeAnalysis(MethodGen methodGen, TypeMerger typeMerger, TypeFrameModelingVisitor visitor) {
 		this.methodGen = methodGen;
 		this.typeMerger = typeMerger;
-		this.visitor = new TypeFrameModelingVisitor(methodGen.getConstantPool());
+		this.visitor = visitor;
+	}
+
+	/**
+	 * Constructor.
+	 * @param methodGen the MethodGen whose CFG we'll be analyzing
+	 * @param typeMerger object to merge types
+	 */
+	public TypeAnalysis(MethodGen methodGen, TypeMerger typeMerger) {
+		this(methodGen, typeMerger, new TypeFrameModelingVisitor(methodGen.getConstantPool()));
 	}
 
 	/**
