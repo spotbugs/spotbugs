@@ -40,6 +40,9 @@ import java.util.Map;
  * @author David Hovemeyer
  */
 public class ExecutionPlan {
+
+	private static final boolean DEBUG = Boolean.getBoolean("findbugs.execplan.debug");
+
 	private List<Plugin> pluginList;
 	private List<AnalysisPass> passList;
 
@@ -79,18 +82,14 @@ public class ExecutionPlan {
 
 		// Build inter-pass constraint graph
 		ConstraintGraph interPassConstraintGraph = buildConstraintGraph(factoryMap, interPassConstraintList);
+		if (DEBUG) System.out.println(interPassConstraintGraph.getNumVertices() +
+			" nodes in inter-pass constraint graph");
 
 		// Depth first search of constraint graph.  Will throw exception
 		// if the graph contains a cycle.
 		DepthFirstSearch<ConstraintGraph, ConstraintEdge, DetectorNode> dfs =
 			getDepthFirstSearch(interPassConstraintGraph);
 
-/*
-		// Get a topological sort.
-		// This will determine a sequence of passes.
-		List<DetectorNode> passRepresentativeList = new LinkedList<DetectorNode>();
-		copyTo(dfs.topologicalSortIterator(), passRepresentativeList);
-*/
 		// Build list of analysis passes.
 		buildPassList(interPassConstraintGraph);
 	}
@@ -139,25 +138,22 @@ public class ExecutionPlan {
 		for (Iterator<DetectorOrderingConstraint> i = constraintList.iterator(); i.hasNext(); ) {
 			DetectorOrderingConstraint constraint = i.next();
 
-			DetectorNode earlier =
-				addOrCreateDetectorNode(constraint.getEarlierDetector(), nodeMap, factoryMap);
-			DetectorNode later =
-				addOrCreateDetectorNode(constraint.getLaterDetector(), nodeMap, factoryMap);
+			DetectorNode earlier = addOrCreateDetectorNode(
+				constraint.getEarlierDetector(), nodeMap, factoryMap, result);
+			DetectorNode later = addOrCreateDetectorNode(
+				constraint.getLaterDetector(), nodeMap, factoryMap, result);
 
-			result.addVertex(earlier);
-			result.addVertex(later);
-
-			// The constraints are specified such that the earlier detector node
-			// points to the later detector node.  When a topological sort is performed,
-			// the earlier detector will be ordered before the later detector.
-			result.createEdge(earlier, later);
+			result.createEdge(later, earlier);
 		}
 
 		return result;
 	}
 
 	private DetectorNode addOrCreateDetectorNode(
-			String className, Map<String, DetectorNode> nodeMap, Map<String, DetectorFactory> factoryMap)
+			String className,
+			Map<String, DetectorNode> nodeMap,
+			Map<String, DetectorFactory> factoryMap,
+			ConstraintGraph constraintGraph)
 		throws OrderingConstraintException {
 		DetectorNode node = nodeMap.get(className);
 		if (node == null) {
@@ -166,6 +162,7 @@ public class ExecutionPlan {
 				throw new OrderingConstraintException("Unknown detector in ordering constraint: " + className);
 			node = new DetectorNode(factory);
 			nodeMap.put(className, node);
+			constraintGraph.addVertex(node);
 		}
 		return node;
 	}
@@ -220,6 +217,37 @@ public class ExecutionPlan {
 			// Add pass to list of passes in the execution plan.
 			passList.add(pass);
 		}
+	}
+
+	private void print() {
+		int passCount = 0;
+		for (Iterator<AnalysisPass> i = passList.iterator(); i.hasNext(); ++passCount) {
+			System.out.println("Pass " + passCount);
+			AnalysisPass pass = i.next();
+			for (Iterator<DetectorFactory> j = pass.detectorFactoryIterator(); j.hasNext(); ) {
+				DetectorFactory factory = j.next();
+				System.out.println("  " + factory.getFullName());
+			}
+		}
+	}
+
+	public static void main(String[] argv) throws Exception {
+		edu.umd.cs.findbugs.DetectorFactoryCollection detectorFactoryCollection =
+			edu.umd.cs.findbugs.DetectorFactoryCollection.instance();
+
+		ExecutionPlan execPlan = new ExecutionPlan();
+
+		for (int i = 0; i < argv.length; ++i) {
+			String pluginId = argv[i];
+			Plugin plugin = detectorFactoryCollection.getPluginById(pluginId);
+			if (plugin != null)
+				execPlan.addPlugin(plugin);
+		}
+
+		execPlan.build();
+
+		System.out.println(execPlan.passList.size() + " passes in plan");
+		execPlan.print();
 	}
 }
 
