@@ -165,14 +165,12 @@ public class MutableStaticFields extends BytecodeScanningDetector implements   C
 	if (isFinal && !isHashtable && !isArray) {
 		// System.out.println( name +" is a safe zero length array");
 		continue;
-	} else if (movedOutofInterface && couldBeFinal) {
-		bugType = "MS_FINAL_OOI_PKGPROTECT";
+	} else if (movedOutofInterface) {
+		bugType = "MS_OOI_PKGPROTECT";
 	} else if (couldBePackage && couldBeFinal && (isHashtable || isArray)) 
 		bugType = "MS_FINAL_PKGPROTECT";
 	else if (couldBeFinal && !isHashtable && !isArray)
 		bugType = "MS_SHOULD_BE_FINAL";
-	else if (movedOutofInterface)
-		bugType = "MS_OOI_PKGPROTECT";
 	else if (couldBePackage)
 		bugType = "MS_PKGPROTECT";
 	else if (isHashtable) 
