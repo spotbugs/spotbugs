@@ -1,0 +1,65 @@
+#! /bin/sh
+
+# Launch FindBugs from the command line.
+
+Usage() {
+	echo "Usage: findbugs [options]"
+	echo "   -jvmArgs=args   Pass args to JVM"
+	echo "   -help           Display this message"
+	echo "All other options are passed to the FindBugs application"
+	exit 0;
+}
+
+# Find absolute path of this script
+command=$0
+if [ `expr $command : '/'` -ne 1 ]; then
+	# We were invoked using a relative path.
+	# Prepend pwd to command to make it absolute.
+	# NOTE: I can't think of any reason why this could fail,
+	# but I'm not 100% sure.
+	currDirectory=`pwd`
+	if [ "$currDirectory" = "/" ]; then
+		command="/$command"
+	else
+		command=`pwd`"/$command"
+	fi
+fi
+
+# Extract findbugs_home
+findbugs_home=`echo $command | sed -e 's/\(.*\)\/bin\/findbugs$/\1/'`
+if [ ! -d "$findbugs_home" ]; then
+	echo "The path $findbugs_home,"
+	echo "which is where I think FindBugs is located,"
+	echo "does not seem to be a directory."
+	exit 1
+fi
+
+# Process command line arguments.
+# All options that aren't consumed by this script are sent
+# to the FindBugs main() method.
+argList=''
+jvmArgs="-Xmx128m"
+while [ $# -gt 0 ]; do
+	arg=$1
+	shift
+
+	case $arg in
+	-jvmArgs=*)
+		jvmArgs=`echo $arg | sed -e 's/^-jvmArgs=\(.*\)$/\1/'`
+		echo "jvmArgs=$jvmArgs"
+		;;
+
+	-help)
+		Usage
+		;;
+
+	*)
+		argList="$argList $arg"
+		;;
+	esac
+done
+
+# Launch FindBugs!
+java $jvmArgs -jar $findbugs_home/lib/findbugsGUI.jar $argList
+
+# vim:ts=4
