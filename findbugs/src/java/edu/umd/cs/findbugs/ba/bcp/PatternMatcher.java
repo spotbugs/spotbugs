@@ -29,6 +29,9 @@ public class PatternMatcher {
 		this.pattern = pattern;
 		this.cfg = cfg;
 	}
+
+	public void execute() {
+	}
 }
 
 // vim:ts=4
