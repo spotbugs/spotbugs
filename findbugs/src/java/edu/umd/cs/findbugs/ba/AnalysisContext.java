@@ -67,6 +67,8 @@ public class AnalysisContext implements AnalysisFeatures {
 	private static final int MAX_SIZE = CONSERVE_SPACE ? 1 : 60;
 
 	private static class ClassContextCache extends LinkedHashMap<JavaClass, ClassContext> {
+		private static final long serialVersionUID = 3258410621153196086L;
+
 		public boolean removeEldestEntry(Map.Entry<JavaClass, ClassContext> entry) {
 			return size() >= MAX_SIZE;
 		}
