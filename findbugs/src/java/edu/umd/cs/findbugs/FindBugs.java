@@ -504,6 +504,7 @@ public class FindBugs implements Constants2, ExitCodes
   private List<ClassObserver> classObserverList;
   private Detector detectors [];
   private FindBugsProgress progressCallback;
+  private String currentClass;
 
   /* ----------------------------------------------------------------------
    * Public methods
@@ -633,6 +634,15 @@ public class FindBugs implements Constants2, ExitCodes
 
 	// Flush any queued error reports
 	bugReporter.reportQueuedErrors();
+  }
+
+  /**
+   * Get the name of the most recent class to be analyzed.
+   * This is useful for diagnosing an unexpected exception.
+   * Returns null if no class has been analyzed.
+   */
+  public String getCurrentClass() {
+	return currentClass;
   }
 
   /**
@@ -816,6 +826,8 @@ public class FindBugs implements Constants2, ExitCodes
   private void examineClass(String className) throws InterruptedException {
 	if (DEBUG) System.out.println("Examining class " + className);
 
+	this.currentClass = className;
+
 	try {
 		JavaClass javaClass = Repository.lookupClass(className);
 
@@ -936,7 +948,22 @@ public class FindBugs implements Constants2, ExitCodes
 
   public static void main(String[] argv) {
 	try {
-		runMain(argv);
+		FindBugsCommandLine commandLine = new FindBugsCommandLine();
+		FindBugs findBugs = createEngine(commandLine, argv);
+
+		try {
+			runMain(findBugs, commandLine);
+		} catch (RuntimeException e) {
+			System.err.println("Fatal exception: " + e.toString());
+			String currentClass = findBugs.getCurrentClass();
+			if (currentClass != null) {
+				System.err.println("\tWhile analyzing " + currentClass);
+			}
+			e.printStackTrace();
+			System.err.println("Please report the failure to " + Version.SUPPORT_EMAIL);
+			System.exit(1);
+		}
+
 	} catch (java.io.IOException e) {
 		// Probably a missing file
 		System.err.println("IO Error: " + e.getMessage());
@@ -947,18 +974,11 @@ public class FindBugs implements Constants2, ExitCodes
 		// Probably an illegal command line argument
 		System.err.println("Illegal argument: " + e.getMessage());
 		System.exit(1);
-	} catch (RuntimeException e) {
-		System.err.println("Fatal exception: " + e.toString());
-		e.printStackTrace();
-		System.err.println("Please report the failure to " + Version.SUPPORT_EMAIL);
-		System.exit(1);
 	}
   }
-  
-  private static void runMain(String[] argv)
-	throws java.io.IOException, RuntimeException, FilterException
-  { 
-	FindBugsCommandLine commandLine = new FindBugsCommandLine();
+
+  private static FindBugs createEngine(FindBugsCommandLine commandLine, String[] argv)
+	throws java.io.IOException, FilterException {
 	int argCount = commandLine.parse(argv);
 
 	Project project = commandLine.getProject();
@@ -970,10 +990,15 @@ public class FindBugs implements Constants2, ExitCodes
 		System.out.println("Usage: findbugs -textui [options...] [jar/zip/class files, directories...]");
 		System.out.println("Options:");
 		commandLine.printUsage(System.out);
-		return;
+		System.exit(0);
 	}
 
-	FindBugs findBugs = commandLine.createEngine();
+	return commandLine.createEngine();
+  }
+  
+  private static void runMain(FindBugs findBugs, FindBugsCommandLine commandLine)
+	throws java.io.IOException, RuntimeException, FilterException
+  { 
 	try {
 		findBugs.execute();
 	} catch (InterruptedException e) {
