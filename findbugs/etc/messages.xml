@@ -1856,12 +1856,28 @@ have problems communicating with the database.
 
   <BugPattern type="SBSC_USE_STRINGBUFFER_CONCATENATION">
     <ShortDescription>Method concatenates strings using + in a loop</ShortDescription>
-    <LongDescription>Method concatenates strings using + in a loop, StringBuffer should be used</LongDescription>
+    <LongDescription>Method {1} concatenates strings using + in a loop</LongDescription>
     <Details>
 <![CDATA[
 <p> The method concatenates strings using + in a loop. Each time this occurs, a new temporary
-implied StringBuffer is allocated to perform this concatenation. This causes many StringBuffer
+StringBuffer is allocated to perform this concatenation. This causes many StringBuffer
 object allocations. It is better to use StringBuffer explicitly, and only create one instance.
+
+<p> For example:
+<pre>
+  // This is bad
+  String s = "";
+  for (int i = 0; i &lt; n; ++i) {
+    s = s + "foo";
+  }
+
+  // This is better
+  StringBuffer buf = new StringBuffer();
+  for (int i = 0; i &lt; n; ++i) {
+    buf.append("foo");
+  }
+  String s = buf.toString();
+</pre>
 ]]>
     </Details>
   </BugPattern>
@@ -1929,6 +1945,6 @@ object allocations. It is better to use StringBuffer explicitly, and only create
   <BugCode abbrev="EI2">Storing reference to mutable object</BugCode>
   <BugCode abbrev="NS">Suspicious use of non-short-circuit boolean operator</BugCode>
   <BugCode abbrev="ODR">Database resource not closed on all paths</BugCode>
-  <BugCode abbrev="SBSC">Use StringBuffer for String concatenation</BugCode>
+  <BugCode abbrev="SBSC">String concatenation in loop using + operator</BugCode>
 
 </MessageCollection>
