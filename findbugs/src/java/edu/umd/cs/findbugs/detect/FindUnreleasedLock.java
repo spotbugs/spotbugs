@@ -40,7 +40,7 @@ class Lock extends ResourceCreationPoint {
 	}
 }
 
-public class FindUnreleasedLock extends ResourceTrackingDetector<Lock> {
+public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnreleasedLock.LockResourceTracker> {
 
 	private static final boolean DEBUG = Boolean.getBoolean("ful.debug");
 
@@ -102,7 +102,7 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock> {
 		}
 	}
 
-	private static class LockResourceTracker implements ResourceTracker<Lock> {
+	static class LockResourceTracker implements ResourceTracker<Lock> {
 		private RepositoryLookupFailureCallback lookupFailureCallback;
 		private ValueNumberDataflow vnaDataflow;
 
@@ -192,7 +192,7 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock> {
 		return bytecodeSet.get(Constants.INVOKEVIRTUAL) || bytecodeSet.get(Constants.INVOKEINTERFACE);
 	}
 
-	public ResourceTracker<Lock> getResourceTracker(ClassContext classContext, Method method)
+	public LockResourceTracker getResourceTracker(ClassContext classContext, Method method)
 		throws CFGBuilderException, DataflowAnalysisException {
 		return new LockResourceTracker(bugReporter, classContext.getValueNumberDataflow(method));
 	}
@@ -236,8 +236,9 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock> {
 		String methodName = argv[1];
 		int offset = Integer.parseInt(argv[2]);
 
-		ResourceValueAnalysisTestDriver<Lock> driver = new ResourceValueAnalysisTestDriver<Lock>() {
-			public ResourceTracker<Lock> createResourceTracker(ClassContext classContext, Method method)
+		ResourceValueAnalysisTestDriver<Lock, LockResourceTracker> driver =
+			new ResourceValueAnalysisTestDriver<Lock, LockResourceTracker>() {
+			public LockResourceTracker createResourceTracker(ClassContext classContext, Method method)
 				throws CFGBuilderException, DataflowAnalysisException {
 
 				ValueNumberDataflow vnaDataflow = classContext.getValueNumberDataflow(method);

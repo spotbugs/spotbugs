@@ -26,9 +26,9 @@ import edu.umd.cs.daveho.ba.DataflowAnalysisException;
 import org.apache.bcel.classfile.*;
 import org.apache.bcel.generic.*;
 
-public abstract class ResourceValueAnalysisTestDriver<Resource> {
+public abstract class ResourceValueAnalysisTestDriver<Resource, ResourceTrackerType extends ResourceTracker<Resource>> {
 
-	public abstract ResourceTracker<Resource> createResourceTracker(ClassContext classContext, Method method)
+	public abstract ResourceTrackerType createResourceTracker(ClassContext classContext, Method method)
 		throws CFGBuilderException, DataflowAnalysisException;
 
 	public void execute(String classFile, String methodName, int offset)
@@ -72,7 +72,7 @@ public abstract class ResourceValueAnalysisTestDriver<Resource> {
 
 			if (creationInstruction == null) throw new IllegalArgumentException("No bytecode with offset " + offset);
 
-			final ResourceTracker<Resource> resourceTracker = createResourceTracker(classContext, method);
+			final ResourceTrackerType resourceTracker = createResourceTracker(classContext, method);
 			final Resource resource =
 				resourceTracker.isResourceCreation(creationBlock, creationInstruction, classContext.getConstantPoolGen());
 

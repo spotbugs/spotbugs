@@ -27,7 +27,9 @@ import org.apache.bcel.generic.*;
 import edu.umd.cs.daveho.ba.*;
 import edu.umd.cs.findbugs.*;
 
-public abstract class ResourceTrackingDetector<Resource> implements Detector {
+public abstract class ResourceTrackingDetector<Resource, ResourceTrackerType extends ResourceTracker<Resource>>
+	implements Detector {
+
 	private static final boolean DEBUG = Boolean.getBoolean("rtd.debug");
 
 	protected BugReporter bugReporter;
@@ -37,7 +39,7 @@ public abstract class ResourceTrackingDetector<Resource> implements Detector {
 	}
 
 	public abstract boolean prescreen(ClassContext classContext, Method method);
-	public abstract ResourceTracker<Resource> getResourceTracker(ClassContext classContext, Method method)
+	public abstract ResourceTrackerType getResourceTracker(ClassContext classContext, Method method)
 		throws DataflowAnalysisException, CFGBuilderException;
 	public abstract void inspectResult(JavaClass javaClass, MethodGen methodGen, CFG cfg,
 		Dataflow<ResourceValueFrame, ResourceValueAnalysis<Resource>> dataflow, Resource resource);
@@ -59,7 +61,7 @@ public abstract class ResourceTrackingDetector<Resource> implements Detector {
 				if (!prescreen(classContext, method))
 					continue;
 
-				ResourceTracker<Resource> resourceTracker = getResourceTracker(classContext, method);
+				ResourceTrackerType resourceTracker = getResourceTracker(classContext, method);
 				analyzeMethod(classContext, method, resourceTracker);
 			}
 		} catch (CFGBuilderException e) {
@@ -70,7 +72,7 @@ public abstract class ResourceTrackingDetector<Resource> implements Detector {
 
 	}
 
-	public void analyzeMethod(final ClassContext classContext, Method method, final ResourceTracker<Resource> resourceTracker)
+	public void analyzeMethod(final ClassContext classContext, Method method, final ResourceTrackerType resourceTracker)
 		throws CFGBuilderException, DataflowAnalysisException {
 
 		final MethodGen methodGen = classContext.getMethodGen(method);

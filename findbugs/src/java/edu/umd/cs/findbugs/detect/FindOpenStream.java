@@ -47,7 +47,7 @@ class Stream extends ResourceCreationPoint {
 	public InstructionHandle getConstructorHandle() { return ctorHandle; }
 }
 
-public class FindOpenStream extends ResourceTrackingDetector<Stream>  {
+public class FindOpenStream extends ResourceTrackingDetector<Stream, FindOpenStream.StreamResourceTracker>  {
 	private static final boolean DEBUG = Boolean.getBoolean("fos.debug");
 	private static final boolean IGNORE_WRAPPED_BYTE_ARRAY_STREAMS = Boolean.getBoolean("fos.iwbas");
 
@@ -148,7 +148,7 @@ public class FindOpenStream extends ResourceTrackingDetector<Stream>  {
 	 * Resource tracker which determines where streams are created,
 	 * and how they are used within the method.
 	 */
-	private static class StreamResourceTracker implements ResourceTracker<Stream> {
+	static class StreamResourceTracker implements ResourceTracker<Stream> {
 		private RepositoryLookupFailureCallback lookupFailureCallback;
 
 		/** Set of all stream construction points. */
@@ -351,15 +351,14 @@ public class FindOpenStream extends ResourceTrackingDetector<Stream>  {
 		return bytecodeSet.get(Constants.NEW);
 	}
 
-	public ResourceTracker<Stream> getResourceTracker(ClassContext classContext, Method method) {
+	public StreamResourceTracker getResourceTracker(ClassContext classContext, Method method) {
 		return new StreamResourceTracker(bugReporter);
 	}
 
-	public void analyzeMethod(ClassContext classContext, Method method, ResourceTracker<Stream> resourceTracker_)
+	public void analyzeMethod(ClassContext classContext, Method method, StreamResourceTracker resourceTracker)
 		throws CFGBuilderException, DataflowAnalysisException {
 
 		potentialOpenStreamList.clear();
-		StreamResourceTracker resourceTracker = (StreamResourceTracker) resourceTracker_;
 
 		super.analyzeMethod(classContext, method, resourceTracker);
 
@@ -422,8 +421,9 @@ public class FindOpenStream extends ResourceTrackingDetector<Stream>  {
 		String methodName = argv[1];
 		int offset = Integer.parseInt(argv[2]);
 
-		ResourceValueAnalysisTestDriver<Stream> driver = new ResourceValueAnalysisTestDriver<Stream>() {
-			public ResourceTracker<Stream> createResourceTracker(ClassContext classContext, Method method) {
+		ResourceValueAnalysisTestDriver<Stream, StreamResourceTracker> driver =
+			new ResourceValueAnalysisTestDriver<Stream, StreamResourceTracker>() {
+			public StreamResourceTracker createResourceTracker(ClassContext classContext, Method method) {
 				return new StreamResourceTracker(classContext.getLookupFailureCallback());
 			}
 		};
