@@ -1636,6 +1636,12 @@ The list of configurable analysis properties is shown in
       only one such warning is issued per method.&nbsp; Default
       is false.</entry>
     </row>
+    <row>
+      <entry>findbugs.maskedfields.locals</entry>
+      <entry>true or false</entry>
+      <entry>If true, emit low priority warnings for local variables
+      which obscure fields.  Default is false.</entry>
+    </row>
 <!--
     <row>
       <entry></entry>

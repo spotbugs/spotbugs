@@ -117,9 +117,15 @@ public class FindMaskedFields extends BytecodeScanningDetector implements Consta
 		staticMethod = obj.isStatic();
 	}
 
+	/**
+	 * This property enables production of warnings for
+	 * locals which obscure fields.
+	 */
+	private static final boolean ENABLE_LOCALS =
+		Boolean.getBoolean("findbugs.maskedfields.locals");
 
 	public void visit(LocalVariableTable obj) {
-		if (false) {
+		if (ENABLE_LOCALS) {
 			if (staticMethod)
 				return;
 
