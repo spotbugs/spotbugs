@@ -20,23 +20,35 @@
 package edu.umd.cs.findbugs.tools.html;
 
 import edu.umd.cs.findbugs.BugPattern;
+import edu.umd.cs.findbugs.DetectorFactory;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.I18N;
 
 import java.io.IOException;
 
+import java.util.HashSet;
 import java.util.Iterator;
 
 public abstract class PrintBugDescriptions {
 	public void print() throws IOException {
 		// Ensure bug patterns are loaded
-		DetectorFactoryCollection.instance();
+		DetectorFactoryCollection factories = DetectorFactoryCollection.instance();
+
+		// Find all bug patterns reported by at least one non-disabled detector.
+		HashSet<BugPattern> enabledPatternSet = new HashSet<BugPattern>();
+		for (Iterator<DetectorFactory> i = factories.factoryIterator(); i.hasNext(); ) {
+			DetectorFactory factory = i.next();
+			if (factory.isEnabled())
+				enabledPatternSet.addAll(factory.getReportedBugPatterns());
+		}
 
 		prologue();
 
 		Iterator<BugPattern> i = I18N.instance().bugPatternIterator();
 		while (i.hasNext()) {
 			BugPattern bugPattern = i.next();
+			if (!enabledPatternSet.contains(bugPattern))
+				continue;
 			emit(bugPattern);
 		}
 
