@@ -47,6 +47,7 @@ import java.awt.datatransfer.*;
 import edu.umd.cs.findbugs.*;
 import edu.umd.cs.findbugs.ba.SourceFinder;
 
+import edu.umd.cs.findbugs.config.ProjectFilterSettings;
 import edu.umd.cs.findbugs.config.UserPreferences;
 
 /**
@@ -442,9 +443,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
 		UserPreferences prefs = UserPreferences.getUserPreferences();
 		prefs.read();
-
 		prefs.loadUserDetectorPreferences();
-		priorityThreshold = prefs.getUserDetectorThreshold();
 
 		initComponents();
 		postInitComponents();
@@ -1480,11 +1479,11 @@ public class FindBugsFrame extends javax.swing.JFrame {
             filterWarningsMenu.setText("Filter Warnings");
             filterWarningsMenu.setFont(new java.awt.Font("Dialog", 0, 12));
             localiseButton(filterWarningsMenu, "menu.filterwarnings_menu", "Filter &Warnings", true);
+            priorityButtonGroup.add(expPriorityButton);
             expPriorityButton.setFont(new java.awt.Font("Dialog", 0, 12));
             expPriorityButton.setText("Experimental Priority");
-            priorityButtonGroup.add(expPriorityButton);
             localiseButton(expPriorityButton, "menu.exppriority_item", "&Experimental Priority", true);
-            expPriorityButton.setSelected(priorityThreshold == Detector.EXP_PRIORITY);
+            expPriorityButton.setSelected(getPriorityThreshold() == Detector.EXP_PRIORITY);
             expPriorityButton.addActionListener(new java.awt.event.ActionListener() {
                 public void actionPerformed(java.awt.event.ActionEvent evt) {
                     expPriorityButtonActionPerformed(evt);
@@ -1493,11 +1492,11 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
             filterWarningsMenu.add(expPriorityButton);
 
+            priorityButtonGroup.add(lowPriorityButton);
             lowPriorityButton.setFont(new java.awt.Font("Dialog", 0, 12));
             lowPriorityButton.setText("Low Priority");
-            priorityButtonGroup.add(lowPriorityButton);
             localiseButton(lowPriorityButton, "menu.lowpriority_item", "&Low Priority", true);
-            lowPriorityButton.setSelected(priorityThreshold == Detector.LOW_PRIORITY);
+            lowPriorityButton.setSelected(getPriorityThreshold() == Detector.LOW_PRIORITY);
             lowPriorityButton.addActionListener(new java.awt.event.ActionListener() {
                 public void actionPerformed(java.awt.event.ActionEvent evt) {
                     lowPriorityButtonActionPerformed(evt);
@@ -1506,11 +1505,11 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
             filterWarningsMenu.add(lowPriorityButton);
 
+            priorityButtonGroup.add(mediumPriorityButton);
             mediumPriorityButton.setFont(new java.awt.Font("Dialog", 0, 12));
             mediumPriorityButton.setText("Medium Priority");
-            priorityButtonGroup.add(mediumPriorityButton);
             localiseButton(mediumPriorityButton, "menu.mediumpriority_item", "&Medium Priority", true);
-            mediumPriorityButton.setSelected(priorityThreshold == Detector.NORMAL_PRIORITY);
+            mediumPriorityButton.setSelected(getPriorityThreshold() == Detector.NORMAL_PRIORITY);
             mediumPriorityButton.addActionListener(new java.awt.event.ActionListener() {
                 public void actionPerformed(java.awt.event.ActionEvent evt) {
                     mediumPriorityButtonActionPerformed(evt);
@@ -1519,11 +1518,11 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
             filterWarningsMenu.add(mediumPriorityButton);
 
+            priorityButtonGroup.add(highPriorityButton);
             highPriorityButton.setFont(new java.awt.Font("Dialog", 0, 12));
             highPriorityButton.setText("High Priority");
-            priorityButtonGroup.add(highPriorityButton);
             localiseButton(highPriorityButton, "menu.highpriority_item", "&High Priority", true);
-            highPriorityButton.setSelected(priorityThreshold == Detector.HIGH_PRIORITY);
+            highPriorityButton.setSelected(getPriorityThreshold() == Detector.HIGH_PRIORITY);
             highPriorityButton.addActionListener(new java.awt.event.ActionListener() {
                 public void actionPerformed(java.awt.event.ActionEvent evt) {
                     highPriorityButtonActionPerformed(evt);
@@ -1741,7 +1740,6 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	}//GEN-LAST:event_viewBugsItemActionPerformed
 
 	private void viewProjectItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_viewProjectItemActionPerformed
-
 		setView("EditProjectPanel");
 	}//GEN-LAST:event_viewProjectItemActionPerformed
 
@@ -2582,8 +2580,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	 * @param threshold the threshold
 	 */
 	private void setPriorityThreshold(int threshold) {
-		if (threshold != priorityThreshold) {
-			priorityThreshold = threshold;
+		if (threshold != getFilterSettings().getMinPriorityAsInt()) {
+			getFilterSettings().setMinPriority(ProjectFilterSettings.getIntPriorityAsString(threshold));
 			if (currentAnalysisRun != null)
 				synchAnalysisRun(currentAnalysisRun);
 		}
@@ -2837,7 +2835,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 		TreeSet<BugInstance> sortedCollection = new TreeSet<BugInstance>(getBugInstanceComparator(groupBy));
 		for (Iterator<BugInstance> i = analysisRun.getBugInstances().iterator(); i.hasNext();) {
 			BugInstance bugInstance = i.next();
-			if (bugInstance.getPriority() <= priorityThreshold)
+			if (getFilterSettings().displayWarning(bugInstance))
 				sortedCollection.add(bugInstance);
 		}
 		
@@ -3294,7 +3292,6 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	void exitFindBugs() {
 		// TODO: offer to save work, etc.
 		UserPreferences.getUserPreferences().storeUserDetectorPreferences();
-		UserPreferences.getUserPreferences().setUserDetectorThreshold(priorityThreshold);
 		UserPreferences.getUserPreferences().write();
 		System.exit(0);
 	}
@@ -3398,6 +3395,20 @@ public class FindBugsFrame extends javax.swing.JFrame {
 		
 		//Something bad has happened
 		return pickedFile;
+	}
+	
+	/**
+	 * Get the current ProjectFilterSettings.
+	 */
+	public ProjectFilterSettings getFilterSettings() {
+		return UserPreferences.getUserPreferences().getFilterSettings();
+	}
+	
+	/**
+	 * Get the current priority threshold.
+	 */
+	public int getPriorityThreshold() {
+		return getFilterSettings().getMinPriorityAsInt();
 	}
 	
 	/* ----------------------------------------------------------------------
@@ -3606,7 +3617,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	private BugInstance currentBugInstance; // be lazy in switching bug instance details
 	private SourceLineAnnotation currentSourceLineAnnotation; // as above
 	private String currentBugDetailsKey;
-	private int priorityThreshold;
+	//private int priorityThreshold;
 	private JCheckBoxMenuItem[] bugCategoryCheckBoxList;
 	private String[] bugCategoryList;
 
