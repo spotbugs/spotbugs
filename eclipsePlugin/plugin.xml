@@ -107,6 +107,11 @@
             </enablement>
          </action>
       </objectContribution>
+      <!-- 
+      	"Show Details" context menu entry for markers in the editor margin.
+	    The existing FindBugs marker action cannot be used, as the editor margin 
+	    markers are not FindBugs markers 
+	  -->
       <viewerContribution
             targetID="#CompilationUnitRulerContext"
             id="de.tobject.findbugs.actions.ShowBugDetailsAction">
@@ -139,13 +144,15 @@
             </enablement>
          </action>
       </objectContribution>
+
+	<!-- "Show Details" context menu entry for all FindBugs markers -->
       <objectContribution
             objectClass="org.eclipse.core.resources.IMarker"
             id="de.tobject.findbugs.showDescription">
          <action
-               label="Description..."
-               icon="icons/help.gif"
-               class="de.tobject.findbugs.actions.ShowDescriptionAction"
+               label="Show Bug Details"
+               icon="icons/bug.gif"              
+               class="de.tobject.findbugs.actions.MarkerShowDetailsAction"
                menubarPath="additions"
                enablesFor="1"
                id="de.tobject.findbugs.showDescription">

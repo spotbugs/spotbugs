@@ -40,8 +40,6 @@ import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.IEditorActionDelegate;
 import org.eclipse.ui.IEditorPart;
-import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.texteditor.AbstractMarkerAnnotationModel;
 import org.eclipse.ui.texteditor.IDocumentProvider;
 import org.eclipse.ui.texteditor.ITextEditor;
@@ -51,8 +49,6 @@ import org.eclipse.ui.texteditor.IUpdate;
 import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.marker.FindBugsMarker;
 import de.tobject.findbugs.view.DetailsView;
-import edu.umd.cs.findbugs.BugPattern;
-import edu.umd.cs.findbugs.I18N;
 
 /**
  * An action that can display a bug marker's details in the FindBugs details view.
@@ -190,29 +186,8 @@ public class MarkerRulerAction implements IEditorActionDelegate, IUpdate, MouseL
 	 */
 	public void update() {
 		if (markers.size() > 0) {
-			// Obtain the current workbench page, and show the details view
-			IWorkbenchPage[] pages = FindbugsPlugin.getActiveWorkbenchWindow().getPages();
-			if (pages.length > 0) {
-				try {
-					pages[0].showView("de.tobject.findbugs.view.detailsview");
-					IMarker marker = (IMarker) markers.get(0);
-
-					String bugType = (String) marker.getAttribute(FindBugsMarker.BUG_TYPE, "");
-					BugPattern pattern = I18N.instance().lookupBugPattern(bugType);
-					if (pattern != null) {
-						String shortDescription = pattern.getShortDescription();
-						String detailText = pattern.getDetailText();
-						DetailsView.getDetailsView().setContent(
-							shortDescription,
-							detailText);
-					}
-
-				}
-				catch (PartInitException e) {
-					FindbugsPlugin.getDefault().logException(
-							e, "Could not update bug details view");
-				}
-			}
+			IMarker marker = (IMarker) markers.get(0);
+			DetailsView.showMarker(marker);
 		}
 	}
 
@@ -266,7 +241,6 @@ public class MarkerRulerAction implements IEditorActionDelegate, IUpdate, MouseL
 	 * @see IMenuListener#menuAboutToShow(org.eclipse.jface.action.IMenuManager)
 	 */
 	public void menuAboutToShow(IMenuManager manager) {
-		System.out.println("menu about to show called.");
 		if (action != null) {
 			obtainFindBugsMarkers();
 			action.setEnabled((markers.size() > 0));
