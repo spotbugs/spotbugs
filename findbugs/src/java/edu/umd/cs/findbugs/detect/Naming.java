@@ -205,6 +205,9 @@ public class Naming extends PreorderVisitor implements Detector, Constants2 {
 	s.add(mm);
 	}
 
+	if (methodName.equals("equal") && methodSig.equals("(Ljava/lang/Object;)Z"))  
+		System.out.println("Found bad definition of equals: " 
+			+ betterMethodName);
 	if (methodName.equals("hashcode") && methodSig.equals("()I")) 
 		bugReporter.reportBug(new BugInstance("NM_LCASE_HASHCODE", HIGH_PRIORITY)
 			.addClassAndMethod(this));

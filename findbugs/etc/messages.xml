@@ -6,6 +6,22 @@
   **********************************************************************
    -->
 
+  <Detector class="edu.umd.cs.findbugs.detect.DontCatchIllegalMonitorStateException">
+    <Details>
+<![CDATA[
+<p> This detector looks for try-catch blocks that catch a IllegalMonitorStateException.
+]]>
+    </Details>
+  </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.CloneIdiom">
+    <Details>
+<![CDATA[
+<p> This detector looks for violations of the idioms for writing
+cloneable classes.
+]]>
+    </Details>
+  </Detector>
   <Detector class="edu.umd.cs.findbugs.detect.DroppedException">
     <Details>
 <![CDATA[
@@ -382,6 +398,40 @@ It is a fast detector.
   **********************************************************************
    -->
 
+  <BugPattern type="IMSE_DONT_CATCH_IMSE">
+    <ShortDescription>Dubious catching of IllegalMonitorStateException </ShortDescription>
+    <LongDescription>Dubious catching of IllegalMonitorStateException </LongDescription>
+    <Details>
+<![CDATA[
+<p>Dubious catching of IllegalMonitorStateException
+]]>
+    </Details>
+  </BugPattern>
+
+
+
+  <BugPattern type="CN_IDIOM">
+    <ShortDescription>
+	Class implements Cloneable but does not define or
+	use clone method.
+	</ShortDescription>
+    <LongDescription>
+	Class implements Cloneable but does not define or
+	use clone method.
+	</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+	Class implements Cloneable but does not define or
+	use clone method.
+]]>
+    </Details>
+  </BugPattern>
+
+
+
+
+
   <BugPattern type="DE_MIGHT_DROP">
     <ShortDescription>Method might drop exception</ShortDescription>
     <LongDescription>{1} might drop {3}</LongDescription>
@@ -732,14 +782,32 @@ using the <code>equals</code> method instead.
     </Details>
   </BugPattern>
   <BugPattern type="EI_EXPOSE_REP">
-    <ShortDescription>Method may expose internal representation by returning array</ShortDescription>
+    <ShortDescription>Method may expose internal representation by returning reference to mutable object</ShortDescription>
     <LongDescription>{1} may expose internal representation by returning {2}</LongDescription>
     <Details>
 <![CDATA[
-  <p> Returning an array value stored in one of the object's fields
-  exposes the internal representation of the object.&nbsp; For classes shared
-  by other untrusted classes, this could potentially be a security issue.&nbsp;
-  Returning a new copy of the array is better approach in many situations.
+  <p> Returning a reference to a mutable object value stored in one of the object's fields
+  exposes the internal representation of the object.&nbsp; 
+	If instances
+	are accessed by untrusted code, and unchecked changes to
+	the mutable object would compromise security or other
+	important properties, you will need to do something different.
+  Returning a new copy of the object is better approach in many situations.
+]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="EI_EXPOSE_REP2">
+    <ShortDescription>Method may expose internal representation by incorporating reference to mutable object</ShortDescription>
+    <LongDescription>{1} may expose internal representation by storing an externally mutable object into {2}</LongDescription>
+    <Details>
+<![CDATA[
+  <p> This code stores a reference to an externally mutable object into the
+  internal representation of the object.&nbsp; 
+	If instances
+	are accessed by untrusted code, and unchecked changes to
+	the mutable object would compromise security or other
+	important properties, you will need to do something different.
+  Storing a copy of the object is better approach in many situations.
 ]]>
     </Details>
   </BugPattern>
@@ -1584,6 +1652,8 @@ removed.
   **********************************************************************
    -->
 
+  <BugCode abbrev="IMSE" >Dubious catching of IllegalMonitorStateException</BugCode>
+  <BugCode abbrev="CN" >Bad implementation of cloneable idiom </BugCode>
   <BugCode abbrev="FI" >Incorrect use of finalizers</BugCode>
   <BugCode abbrev="ES" >Checking String equality using == or !=</BugCode>
   <BugCode abbrev="ML" >Synchronization on updated field (Mutable Lock)</BugCode>

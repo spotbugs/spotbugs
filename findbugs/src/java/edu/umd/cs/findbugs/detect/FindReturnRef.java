@@ -26,32 +26,59 @@ public class FindReturnRef extends BytecodeScanningDetector implements   Constan
     boolean check = false;
     boolean thisOnTOS = false;
     boolean fieldOnTOS = false;
+    boolean publicClass = false;
     boolean staticMethod = false;
+    boolean dangerousToStoreIntoField = false;
     String nameOnStack;
     String classNameOnStack;
     String sigOnStack;
+    int parameterCount;
+	int r;
+    int timesRead [] = new int[256];
     boolean fieldIsStatic;
     private BugReporter bugReporter;
+    private LocalVariableTable variableNames; 
 
     public FindReturnRef(BugReporter bugReporter) {
 	this.bugReporter = bugReporter;
 	}
 
   public void visit(JavaClass obj)     {
+        publicClass = obj.isPublic();
 	super.visit(obj);
 	}
 
     public void visit(Method obj) {
-        check =  (obj.getAccessFlags() & (ACC_PUBLIC )) != 0;
+        check =  publicClass && (obj.getAccessFlags() & (ACC_PUBLIC )) != 0;
+	if (!check) return;
+	dangerousToStoreIntoField = false;
         staticMethod =  (obj.getAccessFlags() & (ACC_STATIC)) != 0;
-        if (check) 
-		super.visit(obj);
+	variableNames = obj.getLocalVariableTable();
+	parameterCount = obj.getArgumentTypes().length;
+	/*
+	System.out.println(betterMethodName);
+	for(int i = 0; i < parameterCount; i++) 
+		System.out.println("parameter " + i + ": " + obj.getArgumentTypes()[i]);	
+	*/
+
+	if (!staticMethod) parameterCount++;
+		
+	for(int i = 0; i < parameterCount; i++)
+		timesRead[i] = 0;
+        thisOnTOS = false;
+        fieldOnTOS = false;
+	super.visit(obj);
         thisOnTOS = false;
         fieldOnTOS = false;
 	}
 
 
+    public void visit(Code obj) {
+	if (check) super.visit(obj);
+	}
+
     public void sawOpcode(int seen) {
+	assert check;
 	/*
 	System.out.println("Saw " + OPCODE_NAMES[seen] + "	" 
 			+ thisOnTOS
@@ -59,11 +86,78 @@ public class FindReturnRef extends BytecodeScanningDetector implements   Constan
 			+ fieldOnTOS
 			);
 	*/
-	if (seen == ALOAD_0)  {
+
+	if (staticMethod && dangerousToStoreIntoField && seen == PUTSTATIC 
+			&& MutableStaticFields.mutableSignature(sigConstant) ) {
+			bugReporter.reportBug(new BugInstance("EI_EXPOSE_REP2", HIGH_PRIORITY)
+				.addClassAndMethod(this)
+				.addField(classConstant, nameConstant, sigConstant, 
+						true)
+				.addSourceLine(this));
+		}
+	if (!staticMethod && dangerousToStoreIntoField && seen == PUTFIELD 
+			&& MutableStaticFields.mutableSignature(sigConstant) ) {
+		/*
+		System.out.println("Store of parameter " 
+				+ r +"/" + parameterCount 
+				+ " into field of type " + sigConstant
+				+ " in " + betterMethodName);
+			bugReporter.reportBug(new BugInstance("EI_EXPOSE_REP2", NORMAL_PRIORITY)
+				.addClassAndMethod(this)
+				.addField(classConstant, nameConstant, sigConstant, 
+						false)
+				.addSourceLine(this));
+	`	*/
+		}
+	dangerousToStoreIntoField = false;
+	int reg = -1; // this value should never bee seen
+	checkStore: {
+		switch(seen) {
+			case ALOAD_0: reg = 0; break;
+			case ALOAD_1: reg = 1; break;
+			case ALOAD_2: reg = 2; break;
+			case ALOAD_3: reg = 3; break;
+			case ALOAD: reg = register; break;
+			default: break checkStore;
+			}
+		if (reg < parameterCount)
+			timesRead[reg]++;
+		}
+	if (thisOnTOS && !staticMethod)  {
+		switch(seen) {
+			case ALOAD_1: 
+			case ALOAD_2: 
+			case ALOAD_3: 
+			case ALOAD:  
+				if (reg < parameterCount )  {
+					r = reg;
+					dangerousToStoreIntoField = true;
+					// System.out.println("Found dangerous value from parameter " + reg);
+					}
+			default: 
+			}
+		}
+	else if (staticMethod)  {
+		switch(seen) {
+			case ALOAD_0: 
+			case ALOAD_1: 
+			case ALOAD_2: 
+			case ALOAD_3: 
+			case ALOAD: 
+				if (reg < parameterCount ) {
+					r = reg;
+					dangerousToStoreIntoField = true;
+					}
+			default: 
+			}
+		}
+
+	if (seen == ALOAD_0 && !staticMethod)  {
 		thisOnTOS = true;
 		fieldOnTOS = false;
 		return;
 		}
+			
 
 	if (thisOnTOS && seen == GETFIELD && classConstant == className)  {
 		fieldOnTOS = true;
@@ -86,9 +180,13 @@ public class FindReturnRef extends BytecodeScanningDetector implements   Constan
 		}
 	thisOnTOS = false;
 	if (check && fieldOnTOS && seen == ARETURN 
+		/*
 		&& !sigOnStack.equals("Ljava/lang/String;")
 		&& sigOnStack.indexOf("Exception") == -1
 		&& sigOnStack.indexOf("[") >= 0
+		*/
+		&& nameOnStack.indexOf("EMPTY") == -1
+		&& MutableStaticFields.mutableSignature(sigOnStack) 
 		) {
 			bugReporter.reportBug(new BugInstance(staticMethod ? "MS_EXPOSE_REP" : "EI_EXPOSE_REP", NORMAL_PRIORITY)
 				.addClassAndMethod(this)

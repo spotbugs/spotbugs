@@ -1,4 +1,9 @@
 <FindbugsPlugin>
+  <Detector class="edu.umd.cs.findbugs.detect.DontCatchIllegalMonitorStateException" 
+	speed="fast" disable="false"
+    reports="IMSE_DONT_CATCH_IMSE" />
+  <Detector class="edu.umd.cs.findbugs.detect.CloneIdiom" speed="fast" disable="true"
+    reports="CN_IDIOM" />
   <Detector class="edu.umd.cs.findbugs.detect.FindFieldSelfAssignment" speed="fast"
     reports="SA_FIELD_SELF_ASSIGNMENT"/>
   <Detector class="edu.umd.cs.findbugs.detect.DroppedException" speed="fast"
@@ -14,7 +19,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.FindNakedNotify" speed="fast"
     reports="NN_NAKED_NOTIFY"/>
   <Detector class="edu.umd.cs.findbugs.detect.FindReturnRef" speed="fast"
-    reports="MS_EXPOSE_REP,EI_EXPOSE_REP"/>
+    reports="MS_EXPOSE_REP,EI_EXPOSE_REP,EI_EXPOSE_REP2"/>
   <Detector class="edu.umd.cs.findbugs.detect.FindRunInvocations" speed="fast"
     reports="RU_INVOKE_RUN"/>
   <Detector class="edu.umd.cs.findbugs.detect.SwitchFallthrough" speed="fast"
@@ -86,6 +91,8 @@
     reports="UPM_UNCALLED_PRIVATE_METHOD"/>
   <Detector class="edu.umd.cs.findbugs.detect.FindBugsSummaryStats" speed="fast" />
 
+  <BugPattern abbrev="IMSE" type="IMSE_DONT_CATCH_IMSE" category="CORRECTNESS" />
+  <BugPattern abbrev="CN" type="CN_IDIOM" category="CORRECTNESS" />
   <BugPattern abbrev="DE" type="DE_MIGHT_DROP" category="CORRECTNESS" />
   <BugPattern abbrev="DE" type="DE_MIGHT_IGNORE" category="CORRECTNESS" />
   <BugPattern abbrev="Dm" type="DM_STRING_CTOR" category="PERFORMANCE" />
@@ -113,6 +120,7 @@
   <BugPattern abbrev="NN" type="NN_NAKED_NOTIFY" category="MT_CORRECTNESS" />
   <BugPattern abbrev="MS" type="MS_EXPOSE_REP" category="MALICIOUS_CODE" />
   <BugPattern abbrev="EI" type="EI_EXPOSE_REP" category="MALICIOUS_CODE" />
+  <BugPattern abbrev="EI2" type="EI_EXPOSE_REP2" category="MALICIOUS_CODE" />
   <BugPattern abbrev="Ru" type="RU_INVOKE_RUN" category="MT_CORRECTNESS" />
   <BugPattern abbrev="SP" type="SP_SPIN_ON_FIELD" category="MT_CORRECTNESS" />
   <BugPattern abbrev="NS" type="NS_NON_SHORT_CIRCUIT" category="CORRECTNESS" />

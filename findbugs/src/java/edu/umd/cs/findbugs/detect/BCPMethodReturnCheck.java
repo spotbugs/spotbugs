@@ -62,6 +62,10 @@ public class BCPMethodReturnCheck extends ByteCodePatternDetector {
 					"/.*", 
 					Invoke.CONSTRUCTOR, 
 					bugReporter));
+		list.add(new Invoke("+java.lang.Throwable", "<init>", 
+					"/.*", 
+					Invoke.CONSTRUCTOR, 
+					bugReporter));
 		list.add(new Invoke("java.security.MessageDigest", 
 					"digest", "([B)[B", 
 					Invoke.INSTANCE, bugReporter));
@@ -71,6 +75,8 @@ public class BCPMethodReturnCheck extends ByteCodePatternDetector {
 					Invoke.INSTANCE, bugReporter));
 		list.add(new Invoke("java.math.BigInteger", "/.*", "/.*", 
 					Invoke.INSTANCE, bugReporter));
+		list.add(new Invoke("+java.util.Enumerator", "hasMoreElements", "()Z", Invoke.INSTANCE, bugReporter));
+		list.add(new Invoke("+java.util.Iterator", "hasNext", "()Z", Invoke.INSTANCE, bugReporter));
 		list.add(new Invoke("java.io.File", "createNewFile", "()Z", Invoke.INSTANCE, bugReporter));
 		/*
 		new Invoke("java.lang.Thread", "currentThread", 

@@ -33,6 +33,7 @@ public class MutableStaticFields extends BytecodeScanningDetector implements   C
 	}
   static boolean mutableSignature(String sig) {
 	return sig.equals("Ljava/util/Hashtable;")
+		|| sig.equals("Ljava/util/Date;")
 		 || sig.charAt(0) == '[';
 	}
    static class FieldRecord {
