@@ -142,9 +142,9 @@ public class SerializableIdiom extends PreorderVisitor
     public void visit(Field obj) {
 	int flags = obj.getAccessFlags();
 
-	if (isSerializable && fieldSig.startsWith("L") && !obj.isTransient() && !obj.isStatic()) {
+	if (isSerializable && fieldSig.indexOf("L")  >= 0 && !obj.isTransient() && !obj.isStatic()) {
 		try {
-			String fieldClassName = fieldSig.substring(1, fieldSig.length() - 1).replace('/', '.');
+			String fieldClassName = fieldSig.substring(fieldSig.indexOf("L")+1, fieldSig.length() - 1).replace('/', '.');
 			JavaClass fieldClass = Repository.lookupClass(fieldClassName);
 
 			if (!fieldClassName.equals("java.lang.Object") &&
