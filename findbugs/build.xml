@@ -10,10 +10,10 @@
        Set this to the location where you installed the generics-enabled
        version of javac.
      -->
-<!--
     <property name="jsr14.home" value="/export/home/daveho/linux/java/jsr14_adding_generics-1_3-ea"/>
--->
+<!--
     <property name="jsr14.home" value="/home/software/java/jsr14_adding_generics-1_3-ea"/>
+-->
 
     <!-- You should not need to change anything beyond this point. -->
 
@@ -77,8 +77,14 @@
          <srcfiles dir="${class.dir}" />
       </uptodate>
 
+      <!--
+        FindBugs engine - all classes except those in the GUI.
+        TODO: exclude the detectors as well, since those will go in a plugin.
+      -->
       <jar destfile="${jar.dir}/${findbugs.jar.name}"
-           basedir="${class.dir}" manifest="${findbugs.dir}/etc/MANIFEST-findbugs.MF" />
+           basedir="${class.dir}" manifest="${findbugs.dir}/etc/MANIFEST-findbugs.MF">
+        <exclude name="edu/umd/cs/findbugs/gui/**" />
+      </jar>
     </target>
 
 
