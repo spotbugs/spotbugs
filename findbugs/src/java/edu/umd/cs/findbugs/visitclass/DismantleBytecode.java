@@ -229,6 +229,25 @@ abstract public class DismantleBytecode extends PreorderVisitor implements   Con
 	switchOffsets = switchLabels = null;
     }
 
+    private static void sortByOffset(int [] switchOffsets, int [] switchLabels) {
+		int npairs = switchOffsets.length;		
+		// Sort by offset
+		for(int j = 0; j < npairs; j++) {
+		  int min = j;
+		  for(int k = j+1; k < npairs; k++) 
+			if (switchOffsets[min] > switchOffsets[k])
+				min = k;
+		  if (min > j) {
+			int tmp = switchOffsets[min];
+			switchOffsets[min] = switchOffsets[j];
+			switchOffsets[j] = tmp;
+			tmp = switchLabels[min];
+			switchLabels[min] = switchLabels[j];
+			switchLabels[j] = tmp;
+			}
+		}
+	}
+
     public void visit(Code obj) { 
 
         codeBytes = obj.getCode();
@@ -265,21 +284,7 @@ abstract public class DismantleBytecode extends PreorderVisitor implements   Con
                             switchOffsets[o] = byteStream.readInt();
                             i += 8;
                         };
-			// Sort by offset
-                        for(int j = 0; j < npairs; j++) {
-			  int min = j;
-                          for(int k = j+1; k < npairs; k++) 
-				if (switchOffsets[min] > switchOffsets[k])
-					min = k;
-			  if (min > j) {
-				int tmp = switchOffsets[min];
-				switchOffsets[min] = switchOffsets[j];
-				switchOffsets[j] = tmp;
-				tmp = switchLabels[min];
-				switchLabels[min] = switchLabels[j];
-				switchLabels[j] = tmp;
-				}
-			}
+			sortByOffset(switchOffsets, switchLabels);
                     }
                     else if (opcode == TABLESWITCH) {
                         int pad = 4 - (i & 3);
@@ -302,21 +307,7 @@ abstract public class DismantleBytecode extends PreorderVisitor implements   Con
                             switchOffsets[o] = byteStream.readInt();
                             i += 4;
                         };
-			// Sort by offset
-                        for(int j = 0; j < npairs; j++) {
-			  int min = j;
-                          for(int k = j+1; k < npairs; k++) 
-				if (switchOffsets[min] > switchOffsets[k])
-					min = k;
-			  if (min > j) {
-				int tmp = switchOffsets[min];
-				switchOffsets[min] = switchOffsets[j];
-				switchOffsets[j] = tmp;
-				tmp = switchLabels[min];
-				switchLabels[min] = switchLabels[j];
-				switchLabels[j] = tmp;
-				}
-			}
+			sortByOffset(switchOffsets, switchLabels);
                     }
                     else if (opcode == WIDE) {
 			opcodeIsWide = true;
