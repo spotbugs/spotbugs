@@ -50,6 +50,9 @@ public class Version {
 	/** Downloads website. */
 	public static final String DOWNLOADS_WEBSITE = "http://prdownloads.sourceforge.net/findbugs";
 
+	/** Support email. */
+	public static final String SUPPORT_EMAIL = "daveho@cs.umd.edu";
+
 	public static void main(String[] argv) {
 		if (argv.length != 1)
 			usage();
