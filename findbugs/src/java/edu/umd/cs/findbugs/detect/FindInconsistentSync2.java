@@ -476,13 +476,13 @@ public class FindInconsistentSync2 implements Detector {
 			  case Constants.LASTORE:
 			  case Constants.SASTORE:
 			  case Constants.AASTORE:
+			  case Constants.PUTSTATIC:
 			    return false;
 			  case Constants.INVOKESTATIC:
 			  case Constants.INVOKEVIRTUAL:
 			  case Constants.INVOKEINTERFACE:
 			  case Constants.INVOKESPECIAL:
 			  case Constants.GETSTATIC:
-			  case Constants.PUTSTATIC:
 				// no-op
 			  
 			}
