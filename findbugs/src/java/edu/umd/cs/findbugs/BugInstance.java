@@ -95,7 +95,8 @@ public class BugInstance implements Comparable, XMLWriteable {
 	 */
 	public BugInstance(String type, int priority) {
 		this.type = type;
-		this.priority = priority;
+		this.priority = priority < Detector.HIGH_PRIORITY 
+			? Detector.HIGH_PRIORITY : priority;
 		annotationList = new ArrayList<BugAnnotation>(4);
 		primaryClassAnnotation = null;
 		cachedHashCode = INVALID_HASH_CODE;
@@ -164,7 +165,8 @@ public class BugInstance implements Comparable, XMLWriteable {
 	 * Set the bug priority.
 	 */
 	public void setPriority(int p) {
-		priority = p;
+		priority = p < Detector.HIGH_PRIORITY 
+			? Detector.HIGH_PRIORITY : p;
 	}
 
 	/**
