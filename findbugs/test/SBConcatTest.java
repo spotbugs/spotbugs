@@ -25,7 +25,7 @@ public class SBConcatTest
 		return result;			
 	}
 	
-	public String doConcat3( String[] tokens )
+	public String doConcat3DoNotReport( String[] tokens )
 	{
 		// should not complain
 		StringBuffer result = new StringBuffer();
@@ -35,7 +35,7 @@ public class SBConcatTest
 		return result.toString();
 	}
 	
-	public String doConcat4( String[] tokens )
+	public String doConcat4DoNotReport( String[] tokens )
 	{
 		// should not complain
 		int a = 0, b = 1, c = 2, d = 3, e = 4, f = 5, g = 6;
@@ -46,10 +46,21 @@ public class SBConcatTest
 		return result.toString();
 	}
 
-	public void doConcat5( String[] tokens ) 
+	public void doConcat5DoNotReport( String[] tokens ) 
 	{
 		// should not complain
 		for(int i = 0; i < tokens.length; i++) 
 			tokens[i] += i;
 	}
+
+	public void doConcat6DoNotReport(int n) {
+		for (int i = 0; i < n; ++i) {
+			StringBuffer b = new StringBuffer();
+			b.append("yeah");
+			b.append(i);
+			System.out.println(b.toString());
+		}
+	}
 }
+
+// vim:ts=3
