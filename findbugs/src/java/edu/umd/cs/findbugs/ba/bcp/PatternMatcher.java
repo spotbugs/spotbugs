@@ -216,12 +216,13 @@ public class PatternMatcher implements DFSEdgeTypes {
 				if (dfs.getDFSEdgeType(edge) == BACK_EDGE)
 					continue;
 
+
 				// If we have just matched an instruction, then we allow the
 				// matching PatternElement to choose which edges are acceptable.
 				// This allows PatternElements to select particular control edges;
 				// for example, only continue the pattern on the true branch
 				// of an "if" comparison.
-				if (matchedInstruction == null || matchedPatternElement.acceptBranch(edge, matchedInstruction)) {
+				if (matchedInstruction == null || acceptBranch(matchedPatternElement, edge, matchedInstruction)) {
 					BasicBlock destBlock = edge.getDest();
 					int destId = destBlock.getId();
 
@@ -234,6 +235,16 @@ public class PatternMatcher implements DFSEdgeTypes {
 				}
 			}
 		}
+
+	}
+
+	private static boolean acceptBranch(PatternElement matchedPatternElement,
+		Edge edge, InstructionHandle matchedInstruction) {
+
+		if (edge.isExceptionEdge() && !matchedPatternElement.matchExceptionEdges())
+			return false;
+
+		return matchedPatternElement.acceptBranch(edge, matchedInstruction);
 
 	}
 }
