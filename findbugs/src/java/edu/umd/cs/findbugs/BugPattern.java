@@ -51,6 +51,17 @@ public class BugPattern implements Comparable {
 		return type.compareTo(other.type);
 	}
 
+	public int hashCode() {
+		return type.hashCode();
+	}
+
+	public boolean equals(Object o) {
+		if (!(o instanceof BugPattern))
+			return false;
+		BugPattern other = (BugPattern) o;
+		return type.equals(other.type);
+	}
+
 }
 
 // vim:ts=4
