@@ -22,10 +22,10 @@ package edu.umd.cs.findbugs;
 public class FilterBugReporter extends DelegatingBugReporter {
 	private static final boolean DEBUG = Boolean.getBoolean("filter.debug");
 
-	private Filter filter;
+	private Matcher filter;
 	private boolean include;
 
-	public FilterBugReporter(BugReporter realBugReporter, Filter filter, boolean include) {
+	public FilterBugReporter(BugReporter realBugReporter, Matcher filter, boolean include) {
 		super(realBugReporter);
 		this.filter = filter;
 		this.include = include;
