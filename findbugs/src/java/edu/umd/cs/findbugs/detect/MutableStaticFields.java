@@ -203,14 +203,21 @@ public class MutableStaticFields extends BytecodeScanningDetector implements Con
 				bugType = "MS_FINAL_PKGPROTECT";
 			else if (couldBeFinal && !isHashtable && !isArray) {
 				bugType = "MS_SHOULD_BE_FINAL";
-				if (fieldName.equals(fieldName.toUpperCase()))
+				if (fieldName.equals(fieldName.toUpperCase())
+					|| fieldSig.charAt(0) == 'L')
 					priority = HIGH_PRIORITY;
 			} else if (couldBePackage)
 				bugType = "MS_PKGPROTECT";
-			else if (isHashtable)
+			else if (isHashtable) {
 				bugType = "MS_MUTABLE_HASHTABLE";
-			else if (isArray)
+				if (!isFinal)
+					priority = HIGH_PRIORITY;
+				}
+			else if (isArray) {
 				bugType = "MS_MUTABLE_ARRAY";
+				if (fieldSig.indexOf("L") >= 0 || !isFinal)
+					priority = HIGH_PRIORITY;
+				}
 			else if (!isFinal)
 				bugType = "MS_CANNOT_BE_FINAL";
 			else
