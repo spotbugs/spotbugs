@@ -81,7 +81,7 @@ public class AddMessages {
 				continue;
 			Element details = root.addElement("Details");
 			details.addAttribute("type", bugType);
-			details.addCDATA(bugPattern.getDetailHTML());
+			details.addCDATA(bugPattern.getDetailText());
 		}
 	}
 }
