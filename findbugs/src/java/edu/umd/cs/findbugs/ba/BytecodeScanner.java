@@ -63,7 +63,10 @@ public class BytecodeScanner implements org.apache.bcel.Constants {
 	 * @param offset the offset in the array
 	 */
 	private static int extractInt(byte[] arr, int offset) {
-		return (arr[offset] << 24) | (arr[offset + 1] << 16) | (arr[offset + 2] << 8) | arr[offset + 3];
+		return	((arr[offset] & 0xFF) << 24) |
+				((arr[offset + 1] & 0xFF) << 16) |
+				((arr[offset + 2] & 0xFF) << 8) |
+				(arr[offset + 3] & 0xFF);
 	}
 
 	private static final int PAD[] = {0, 3, 2, 1};
@@ -207,25 +210,45 @@ public class BytecodeScanner implements org.apache.bcel.Constants {
 			// TABLESWITCH - variable length.
 			case TABLESWITCH:
 				{
-					int pad = PAD[index & 3];
-					assert ((index + pad) & 3) == 0;
-					int offset = index + pad;
+					// Skip padding.
+					int offset = index + 1; // skip the opcode
+					offset += PAD[offset & 3];
+					assert (offset & 3) == 0;
+
+					// offset should now be posited at the default value
+
+					// Extract min and max values.
 					int low = extractInt(instructionList, offset + 4);
 					int high = extractInt(instructionList, offset + 8);
 					int tableSize = (high - low) + 1;
 					if (DEBUG) System.out.println("tableswitch: low=" + low + ", high=" + high + ", tableSize=" + tableSize);
-					index += pad + 12 + (tableSize * 4);
+
+					// Skip to next instruction.
+					index = offset + 12 + (tableSize * 4);
 				}
 				break;
 
 			// LOOKUPSWITCH - variable length.
 			case LOOKUPSWITCH:
 				{
-					int pad = PAD[index & 3];
-					assert ((index + pad) & 3) == 0;
-					int offset = index + pad;
+					// Skip padding.
+					int offset = index + 1; // skip the opcode
+					offset += PAD[offset & 3];
+					assert (offset & 3) == 0;
+
+					// offset should now be posited at the default value
+
+					System.out.println("byte1="+instructionList[offset+4]+
+						", byte2="+instructionList[offset+5]+
+						", byte3="+instructionList[offset+6]+
+						", byte4="+instructionList[offset+7]);
+
+					// Extract number of value/offset pairs.
 					int numPairs = extractInt(instructionList, offset + 4);
-					index += pad + 8 + (numPairs * 8);
+					if (DEBUG) System.out.println("lookupswitch: numPairs=" + numPairs);
+
+					// Skip to next instruction.
+					index = offset + 8 + (numPairs * 8);
 				}
 				break;
 
