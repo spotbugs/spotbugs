@@ -26,14 +26,33 @@ import org.apache.bcel.*;
 import org.apache.bcel.classfile.*;
 import org.apache.bcel.generic.*;
 
+/**
+ * This class provides a convenient way of determine the exception handlers
+ * for instructions in a method.  Essentially, it's a
+ * a map of InstructionHandles to lists of CodeExceptionGen objects.
+ * 
+ * @author David Hovemeyer
+ */
 public class ExceptionHandlerMap {
 	private IdentityHashMap<InstructionHandle, List<CodeExceptionGen>> handlerMap;
 
+	/**
+	 * Constructor.
+	 * @param methodGen the method to build the map for
+	 */
 	public ExceptionHandlerMap(MethodGen methodGen) {
 		handlerMap = new IdentityHashMap<InstructionHandle, List<CodeExceptionGen>>();
 		build(methodGen);
 	}
 
+	/**
+	 * Get the list of exception handlers (CodeExceptionGen objects)
+	 * which are specified to handle exceptions for the instruction whose
+	 * handle is given.
+	 * @param handle the handle of the instruction we want the exception handlers for
+	 * @return the list of exception handlers, or null if there are no handlers
+	 *   registered for the instruction
+	 */
 	public List<CodeExceptionGen> getHandlerList(InstructionHandle handle) {
 		return handlerMap.get(handle);
 	}
