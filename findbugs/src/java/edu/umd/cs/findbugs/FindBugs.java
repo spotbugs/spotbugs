@@ -198,6 +198,8 @@ public class FindBugs implements Constants2
   private void addFileToRepository(String fileName, List<String> repositoryClassList)
 	throws IOException, InterruptedException {
 
+     try {
+
 	if (fileName.endsWith(".jar") || fileName.endsWith(".zip")) {
 		ZipFile zipFile = new ZipFile(fileName);
 		Enumeration entries = zipFile.entries();
@@ -223,6 +225,12 @@ public class FindBugs implements Constants2
 	}
 
 	progressCallback.finishArchive();
+
+     } catch (IOException e) {
+	// You'd think that the message for a FileNotFoundException would include
+	// the filename, but you'd be wrong.  So, we'll add it explicitly.
+	throw new IOException("Could not analyze " + fileName + ": " + e.getMessage());
+     }
   }
 
   /**
