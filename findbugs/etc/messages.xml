@@ -1518,8 +1518,8 @@ which is probably what was intended.
   </BugPattern>
 
   <BugPattern type="SF_SWITCH_FALLTHROUGH">
-  	<ShortDescription>A switch statement found where one case fall thru to the next case</ShortDescription>
-  	<LongDescription>A switch statement found where one case fall thru to the next case</LongDescription>
+  	<ShortDescription>A switch statement found where one case falls thru to the next case</ShortDescription>
+  	<LongDescription>A switch statement found where one case falls thru to the next case</LongDescription>
     <Details>
 <![CDATA[
   <p> This method contains a switch statement where one case branch will fall thru to the next case.
