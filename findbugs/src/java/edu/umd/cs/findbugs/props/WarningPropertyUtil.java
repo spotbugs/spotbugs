@@ -18,11 +18,12 @@
  */
 package edu.umd.cs.findbugs.props;
 
+import java.util.BitSet;
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
 
+import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
 
@@ -43,6 +44,45 @@ import edu.umd.cs.findbugs.ba.ca.CallListDataflow;
  * @author David Hovemeyer
  */
 public abstract class WarningPropertyUtil {
+	
+	/** Set of instructions which operate on a receiver object. */
+	private static final BitSet receiverObjectInstructionSet= new BitSet();
+	static {
+		receiverObjectInstructionSet.set(Constants.INVOKEINTERFACE);
+		receiverObjectInstructionSet.set(Constants.INVOKEVIRTUAL);
+		receiverObjectInstructionSet.set(Constants.INVOKESPECIAL);
+		receiverObjectInstructionSet.set(Constants.GETFIELD);
+		receiverObjectInstructionSet.set(Constants.PUTFIELD);
+		receiverObjectInstructionSet.set(Constants.CHECKCAST);
+		receiverObjectInstructionSet.set(Constants.INSTANCEOF);
+	}
+
+	/**
+	 * Get a Location matching the given PC value.
+	 * Because of JSR subroutines, there may be multiple
+	 * Locations referring to the given instruction.  This method simply
+	 * returns one of them arbitrarily.
+	 * 
+	 * @param classContext the ClassContext containing the method
+	 * @param method       the method
+	 * @param pc           a PC value of an instruction in the method
+	 * @return a Location corresponding to the PC value, or null
+	 *         if no such Location can be found
+	 * @throws CFGBuilderException
+	 */
+	private static Location pcToLocation(
+			ClassContext classContext,
+			Method method,
+			int pc) throws CFGBuilderException {
+		CFG cfg = classContext.getCFG(method);
+		for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
+			Location location = i.next();
+			if (location.getHandle().getPosition() == pc)
+				return location;
+		}
+		return null;
+	}
+	
 	/**
 	 * Add a RECEIVER_OBJECT_TYPE warning property for a particular
 	 * location in a method to given warning property set.
@@ -58,11 +98,15 @@ public abstract class WarningPropertyUtil {
 			Method method,
 			Location location) {
 		try {
+			Instruction ins = location.getHandle().getInstruction();
+			
+			if (!receiverObjectInstructionSet.get(ins.getOpcode()))
+				return;
+			
 			TypeDataflow typeDataflow = classContext.getTypeDataflow(method);
 			TypeFrame frame = typeDataflow.getFactAtLocation(location);
 			if (frame.isValid()) {
-				Type type = frame.getInstance(
-						location.getHandle().getInstruction(), classContext.getConstantPoolGen());
+				Type type = frame.getInstance(ins, classContext.getConstantPoolGen());
 				if (type instanceof ReferenceType) {
 					propertySet.setProperty(GeneralWarningProperty.RECEIVER_OBJECT_TYPE, type.toString());
 				}
@@ -87,58 +131,13 @@ public abstract class WarningPropertyUtil {
 			WarningPropertySet propertySet,
 			ClassContext classContext,
 			Method method,
-			int pc) throws CFGBuilderException, DataflowAnalysisException {
+			int pc) {
 		try {
-			CFG cfg = classContext.getCFG(method);
-			
-			// Get all Locations for the given PC value.
-			// There may be more than one because of JSR subroutines.
-			List<Location> locationList = new LinkedList<Location>();
-			for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
-				Location location = i.next();
-				if (location.getHandle().getPosition() == pc) {
-					locationList.add(location);
-				}
-			}
-			
-			TypeDataflow typeDataflow = classContext.getTypeDataflow(method);
-			
-			// Get all types for those locations
-			List<Type> typeList = new LinkedList<Type>();
-			for (Iterator<Location> i = locationList.iterator(); i.hasNext();) {
-				Location location = i.next();
-				TypeFrame frame = typeDataflow.getFactAtLocation(location);
-				if (frame.isValid()) {
-					Type type = frame.getInstance(
-							location.getHandle().getInstruction(), classContext.getConstantPoolGen());
-					typeList.add(type);
-				}
-			}
-			
-			if (!typeList.isEmpty()) {
-				// Find least upper bound of collected types
-				ReferenceType lub = null;
-				for (Iterator<Type> i = typeList.iterator(); i.hasNext();) {
-					Type type = i.next();
-					if (!(type instanceof ReferenceType))
-						return;
-					ReferenceType refType = (ReferenceType) type;
-					if (lub == null) {
-						lub = refType;
-					} else {
-						try {
-							lub = lub.getFirstCommonSuperclass(refType);
-						} catch (ClassNotFoundException e) {
-							return;
-						}
-					}
-				}
-				
-				propertySet.setProperty(GeneralWarningProperty.RECEIVER_OBJECT_TYPE, lub.toString());
+			Location location = pcToLocation(classContext, method, pc);
+			if (location != null) {
+				addReceiverObjectType(propertySet, classContext, method, location);
 			}
 		} catch (CFGBuilderException e) {
-			// Ignore
-		} catch (DataflowAnalysisException e) {
 			// Ignore
 		}
 	}
@@ -187,7 +186,7 @@ public abstract class WarningPropertyUtil {
 	}
 	
 	/**
-	 * Add all general warning properties to the given property set
+	 * Add all relevant general warning properties to the given property set
 	 * for the given Location.
 	 * 
 	 * @param propertySet  the WarningPropertySet
