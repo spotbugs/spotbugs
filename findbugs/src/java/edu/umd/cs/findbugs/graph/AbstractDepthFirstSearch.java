@@ -270,10 +270,8 @@ public abstract class AbstractDepthFirstSearch
 				// No more work to do
 				break;
 
-			if (searchTreeRoot != null) {
-				if (searchTreeCallback != null)
-					searchTreeCallback.startSearchTree(searchTreeRoot);
-			}
+			if (searchTreeCallback != null)
+				searchTreeCallback.startSearchTree(searchTreeRoot);
 
 			ArrayList<Visit> stack = new ArrayList<Visit>(graph.getNumVertexLabels());
 			stack.add(new Visit(searchTreeRoot));
