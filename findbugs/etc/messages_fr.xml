@@ -11,7 +11,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.InheritanceUnsafeGetResource">
     <Details>
 <![CDATA[
-<p>Détecte les utilisations de <code>this.getClass().getResource(...)</code>, qui peuvent donner des résultats inattendus si la classe est étendue par une classe d'un autre package.</p>
+<p>Détecte les utilisations de this.getClass().getResource(...), qui peuvent donner des résultats inattendus si la classe est étendue par une classe d'un autre package.</p>
 ]]>
     </Details>
   </Detector>
@@ -51,7 +51,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.SwitchFallthrough">
     <Details>
 <![CDATA[
-<p>Ce détecteur recherche les ordres <code>switch</code> dont un cas déborde sur le suivant. C'est un détecteur rapide.</p>
+<p>Ce détecteur recherche les ordres switch dont un cas déborde sur le suivant. C'est un détecteur rapide.</p>
 ]]>
     </Details>
   </Detector>
@@ -67,7 +67,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.FindNonShortCircuit">
     <Details>
 <![CDATA[
-<p>Ce détecteur recherche les utilisations suspectes des opérateurs booléens binaires (<code>|</code> et <code>&amp;</code> au lieu de <code>||</code> et <code>&amp;&amp;</code>).</p>
+<p>Ce détecteur recherche les utilisations suspectes des opérateurs booléens binaires (| et &amp; au lieu de || et &amp;&amp;).</p>
 ]]>
     </Details>
   </Detector>
@@ -75,7 +75,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.DontCatchIllegalMonitorStateException">
     <Details>
 <![CDATA[
-<p>Ce détecteur recherche les blocs <code>try-catch</code> qui interceptent une <code>IllegalMonitorStateException</code>.</p>
+<p>Ce détecteur recherche les blocs try-catch qui interceptent une IllegalMonitorStateException.</p>
 ]]>
     </Details>
   </Detector>
@@ -83,7 +83,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.FindFloatMath">
     <Details>
 <![CDATA[
-<p>Ce détecteur repère les utilisations d'opérations mathématiques en simple précision (<code>float</code>).</p>
+<p>Ce détecteur repère les utilisations d'opérations mathématiques en simple précision (float).</p>
 ]]>
     </Details>
   </Detector>
@@ -91,7 +91,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.CloneIdiom">
     <Details>
 <![CDATA[
-<p>Ce détecteur recherche les erreurs dans l'implémentation de l'idiome des classes <code>Cloneable</code>.</p>
+<p>Ce détecteur recherche les erreurs dans l'implémentation de l'idiome des classes Cloneable.</p>
 ]]>
     </Details>
   </Detector>
@@ -106,7 +106,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.DumbMethods">
     <Details>
 <![CDATA[
-<p>Ce détecteur recherche les appels de méthodes inutiles, telle que le constructeur sans argument de <code>String</code>. C'est un détecteur rapide.</p>
+<p>Ce détecteur recherche les appels de méthodes inutiles, telle que le constructeur sans argument de String. C'est un détecteur rapide.</p>
 ]]>
     </Details>
   </Detector>
@@ -122,7 +122,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.FindFinalizeInvocations" >
     <Details>
 <![CDATA[
-<p>Ce détecteur repère les appels à <code>finalize()</code> et autres méthodes liées aux finaliseurs. C'est un détecteur rapide.</p>
+<p>Ce détecteur repère les appels à finalize() et autres méthodes liées aux finaliseurs. C'est un détecteur rapide.</p>
 ]]>
     </Details>
   </Detector>
@@ -130,7 +130,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.FindHEmismatch" >
     <Details>
 <![CDATA[
-<p>Ce détecteur repère les problèmes dans la définition des méthodes <code>hashCode()</code> et <code>equals()</code>. C'est un détecteur rapide.</p>
+<p>Ce détecteur repère les problèmes dans la définition des méthodes hashCode() et equals(). C'est un détecteur rapide.</p>
 ]]>
     </Details>
   </Detector>
@@ -138,7 +138,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.FindNakedNotify" >
     <Details>
 <![CDATA[
-<p>Ce détecteur recherche les appels à <code>notify()</code> qui ne semblent pas changer l'état d'un objet modifiable. C'est un détecteur rapide.</p>
+<p>Ce détecteur recherche les appels à notify() qui ne semblent pas changer l'état d'un objet modifiable. C'est un détecteur rapide.</p>
 ]]>
     </Details>
   </Detector>
@@ -154,7 +154,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.FindRunInvocations" >
     <Details>
 <![CDATA[
-<p>Ce détecteur détecte les appels à <code>Thread.run()</code>. C'est un détecteur rapide.</p>
+<p>Ce détecteur détecte les appels à Thread.run(). C'est un détecteur rapide.</p>
 ]]>
     </Details>
   </Detector>
@@ -170,7 +170,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.FindTwoLockWait" >
     <Details>
 <![CDATA[
-<p>Ce détecteur recherche les appels à <code>wait()</code> avec deux (ou plus) verrous en suspend. C'est un détecteur lent.</p>
+<p>Ce détecteur recherche les appels à wait() avec deux (ou plus) verrous en suspend. C'est un détecteur lent.</p>
 ]]>
     </Details>
   </Detector>
@@ -178,7 +178,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.FindUnconditionalWait" >
     <Details>
 <![CDATA[
-<p>Ce détecteur recherche les appels à <code>wait()</code> qui ne sont pas dans une condition ou une boucle. C'est un détecteur rapide.</p>
+<p>Ce détecteur recherche les appels à wait() qui ne sont pas dans une condition ou une boucle. C'est un détecteur rapide.</p>
 ]]>
     </Details>
   </Detector>
@@ -194,7 +194,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.FindUnsyncGet" >
     <Details>
 <![CDATA[
-<p>Ce détecteur recherche les méthodes <code>getXXX</code> et <code>setXXX</code> dont le <code>getXXX</code> n'est pas synchronisé alors que le <code>setXXX</code> l'est. C'est un détecteur rapide.</p>
+<p>Ce détecteur recherche les méthodes getXXX et setXXX dont le getXXX n'est pas synchronisé alors que le setXXX l'est. C'est un détecteur rapide.</p>
 ]]>
     </Details>
   </Detector>
@@ -210,7 +210,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.IteratorIdioms" >
     <Details>
 <![CDATA[
-<p>Ce détecteur recherche les problèmes dans la définition des classes <code>Iterator</code>. C'est un détecteur rapide.</p>
+<p>Ce détecteur recherche les problèmes dans la définition des classes Iterator. C'est un détecteur rapide.</p>
 ]]>
     </Details>
   </Detector>
@@ -226,7 +226,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.EqStringTest" >
     <Details>
 <![CDATA[
-<p>Ce détecteur repère les comparaisons d'objets <code>String</code> utilisant les opérateurs <code>==</code> ou <code>!=</code>. C'est un détecteur rapide.</p>
+<p>Ce détecteur repère les comparaisons d'objets String utilisant les opérateurs == ou !=. C'est un détecteur rapide.</p>
 ]]>
     </Details>
   </Detector>
@@ -258,7 +258,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.ReadReturnShouldBeChecked" >
     <Details>
 <![CDATA[
-<p>Ce détecteur recherche les appels à <code>InputStream.read()</code> ou <code>InputStream.skip()</code> qui ignorent la valeur renvoyée. C'est un détecteur rapide.</p>
+<p>Ce détecteur recherche les appels à InputStream.read() ou InputStream.skip() qui ignorent la valeur renvoyée. C'est un détecteur rapide.</p>
 ]]>
     </Details>
   </Detector>
@@ -266,7 +266,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.SerializableIdiom" >
     <Details>
 <![CDATA[
-<p>Ce détecteur recherche les problèmes potentiels dans l'implémentation des classes <code>Serializable</code>. C'est un détecteur rapide.</p>
+<p>Ce détecteur recherche les problèmes potentiels dans l'implémentation des classes Serializable. C'est un détecteur rapide.</p>
 ]]>
     </Details>
   </Detector>
@@ -290,7 +290,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.WaitInLoop" >
     <Details>
 <![CDATA[
-<p>Ce détecteur détecte les appels à <code>wait()</code> qui ne sont pas dans une boucle. C'est un détecteur rapide.</p>
+<p>Ce détecteur détecte les appels à wait() qui ne sont pas dans une boucle. C'est un détecteur rapide.</p>
 ]]>
     </Details>
   </Detector>
@@ -298,7 +298,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.BCPDoubleCheck" disabled="true" >
     <Details>
 <![CDATA[
-<p>Ce détecteur recherche les occurrences de verrous par double-vérification. Il est implémenté au moyen de la classe <code>ByteCodePattern</code>. Vous voudrez peut-être étudier son source, comme exemple de la façon d'implémenter simplement un détecteur de bogue générique. C'est un détecteur assez rapide.</p>
+<p>Ce détecteur recherche les occurrences de verrous par double-vérification. Il est implémenté au moyen de la classe ByteCodePattern. Vous voudrez peut-être étudier son source, comme exemple de la façon d'implémenter simplement un détecteur de bogue générique. C'est un détecteur assez rapide.</p>
 ]]>
     </Details>
   </Detector>
@@ -314,7 +314,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.FindNullDeref">
     <Details>
 <![CDATA[
-<p>Ce détecteur recherche les endroits où une <code>NullPointerException</code> pourrait être déclenchée. Il recherche également les comparaisons redondantes de références avec <code>null</code>. C'est un détecteur modérément rapide.</p>
+<p>Ce détecteur recherche les endroits où une NullPointerException pourrait être déclenchée. Il recherche également les comparaisons redondantes de références avec null. C'est un détecteur modérément rapide.</p>
 ]]>
     </Details>
   </Detector>
@@ -330,7 +330,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.PreferZeroLengthArrays">
     <Details>
 <![CDATA[
-<p>Ce détecteur recherche les méthodes qui renvoient soit un tableau, soit une référence explicite à <code>null</code>. Renvoyer un tableau de longueur nulle est généralement préférable dans ce cas au renvoi d'une référence à <code>null</code>. C'est un détecteur rapide.</p>
+<p>Ce détecteur recherche les méthodes qui renvoient soit un tableau, soit une référence explicite à null. Renvoyer un tableau de longueur nulle est généralement préférable dans ce cas au renvoi d'une référence à null. C'est un détecteur rapide.</p>
 ]]>
     </Details>
   </Detector>
@@ -346,7 +346,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.FindUnreleasedLock">
     <Details>
 <![CDATA[
-<p>Ce détecteur recherche les verrous type JSR-166 (<code>java.util.concurrent</code>) qui sont acquis mais non libérés dans tous les chemins d'exécution possible d'une méthode. C'est un détecteur modérément rapide. Notez que pour utiliser ce détecteur vous devez avoir le package <code>java.util.concurrent</code> dans le classpath (ou être en train d'analyser le package lui-même).</p>
+<p>Ce détecteur recherche les verrous type JSR-166 (java.util.concurrent) qui sont acquis mais non libérés dans tous les chemins d'exécution possible d'une méthode. C'est un détecteur modérément rapide. Notez que pour utiliser ce détecteur vous devez avoir le package java.util.concurrent dans le classpath (ou être en train d'analyser le package lui-même).</p>
 ]]>
     </Details>
   </Detector>
@@ -354,7 +354,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.FindRefComparison">
     <Details>
 <![CDATA[
-<p>Ce détecteur recherche les endroits où deux valeurs sont comparées par référence avec l'opérateur <code>==</code> ou <code>!=</code>, et que la classe est d'un type (<code>java.lang.String</code> par exemple) tel que comparer les valeurs par références est généralement une erreur. C'est un détecteur modérément rapide.</p>
+<p>Ce détecteur recherche les endroits où deux valeurs sont comparées par référence avec l'opérateur == ou !=, et que la classe est d'un type (java.lang.String par exemple) tel que comparer les valeurs par références est généralement une erreur. C'est un détecteur modérément rapide.</p>
 ]]>
     </Details>
   </Detector>
@@ -362,7 +362,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.FindMismatchedWaitOrNotify">
     <Details>
 <![CDATA[
-<p>Ce détecteur recherche les appels à <code>wait()</code>, <code>notify()</code> ou <code>notifyAll()</code> qui ne semblent pas être effectués sur un objet verrouillé. C'est un détecteur modérément rapide. <b>Ce détecteur est désactivé parce qu'il est toujours en cours de développement et produit trop de fausses alarmes.</b></p>
+<p>Ce détecteur recherche les appels à wait(), notify() ou notifyAll() qui ne semblent pas être effectués sur un objet verrouillé. C'est un détecteur modérément rapide. <b>Ce détecteur est désactivé parce qu'il est toujours en cours de développement et produit trop de fausses alarmes.</b></p>
 ]]>
     </Details>
   </Detector>
@@ -418,7 +418,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.StringConcatenation">
     <Details>
 <![CDATA[
-<p>Ce détecteur recherche les boucles contenant des concaténations de <code>String</code> utilisant <code>+</code>. C'est un détecteur rapide.</p>
+<p>Ce détecteur recherche les boucles contenant des concaténations de String utilisant +. C'est un détecteur rapide.</p>
 ]]>
     </Details>
   </Detector>
@@ -426,7 +426,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.InefficientToArray">
     <Details>
 <![CDATA[
-<p>Ce détecteur recherche le code qui transforme des <code>Collections</code> en tableaux en passant un tableau de longueur nulle à la méthode <code>toArray()</code>. C'est un détecteur rapide.</p>
+<p>Ce détecteur recherche le code qui transforme des Collections en tableaux en passant un tableau de longueur nulle à la méthode toArray(). C'est un détecteur rapide.</p>
 ]]>
     </Details>
   </Detector>
@@ -450,7 +450,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.BadlyOverriddenAdapter">
     <Details>
 <![CDATA[
-<p>Ce détecteur recherche le code qui étend une classe <code>Adapter</code> et surcharge une méthode <code>Listener</code> avec une signature erronée. C'est un détecteur rapide.</p>
+<p>Ce détecteur recherche le code qui étend une classe Adapter et surcharge une méthode Listener avec une signature erronée. C'est un détecteur rapide.</p>
 ]]>
     </Details>
   </Detector>
@@ -458,7 +458,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.BadResultSetAccess">
     <Details>
 <![CDATA[
-<p>Ce détecteur repère les appels aux méthodes <code>getXXX</code> ou <code>setXXX</code> d'un <code>ResultSet</code> avec un champ index à 0. Les indexes des champs <code>ResultSet</code> commençant à 1, c'est toujours une erreur. C'est un détecteur rapide.</p>
+<p>Ce détecteur repère les appels aux méthodes getXXX ou setXXX d'un ResultSet avec un champ index à 0. Les indexes des champs ResultSet commençant à 1, c'est toujours une erreur. C'est un détecteur rapide.</p>
 ]]>
     </Details>
   </Detector>
@@ -466,7 +466,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.SuperfluousInstanceOf">
     <Details>
 <![CDATA[
-<p>Ce détecteur recherche les tests de type effectués avec l'opérateur <code>instanceof</code> alors qu'une détermination statique serait possible. C'est un détecteur rapide.</p>
+<p>Ce détecteur recherche les tests de type effectués avec l'opérateur instanceof alors qu'une détermination statique serait possible. C'est un détecteur rapide.</p>
 ]]>
     </Details>
   </Detector>
@@ -519,7 +519,7 @@
     <Details>
 <![CDATA[
 <p>(<a href="http://java.sun.com/developer/JDCTechTips/2003/tt1208.html#1">Dixit JDC Tech Tip</a>): The Swing methods
-<code>show()</code>, <code>setVisible()</code>, and <code>pack()</code> will create the associated peer for the frame. With the creation of the peer, the system creates the event dispatch thread. This makes things problematic because the event dispatch thread could be notifying listeners while pack and validate are still processing. This situation could result in two threads going through the Swing component-based GUI -- it's a serious flaw that could result in deadlocks or other related threading issues. A pack call causes components to be realized. As they are being realized (that is, not necessarily visible), they could trigger listener notification on the event dispatch thread.</p>
+show(), setVisible(), and pack() will create the associated peer for the frame. With the creation of the peer, the system creates the event dispatch thread. This makes things problematic because the event dispatch thread could be notifying listeners while pack and validate are still processing. This situation could result in two threads going through the Swing component-based GUI -- it's a serious flaw that could result in deadlocks or other related threading issues. A pack call causes components to be realized. As they are being realized (that is, not necessarily visible), they could trigger listener notification on the event dispatch thread.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -539,17 +539,17 @@
     <LongDescription>{1} est une référence volatile à un tableau ; les éléments du tableau ne sont pas volatiles.</LongDescription>
     <Details>
 <![CDATA[
-<p>Ceci déclare une référence volatile à un tableau, ce qui n'est peut-être pas ce que vous voulez. Avec une référence volatile à un tableau, les lectures et écritures de la référence au tableau sont traitées comme volatiles, mais les éléments ne sont pas volatiles. Pour obtenir des éléments volatiles, vous devez utiliser l'une des classes de tableaux atomiques de <code>java.util.concurrent</code> (inclus dans Java 5.0).</p>
+<p>Ceci déclare une référence volatile à un tableau, ce qui n'est peut-être pas ce que vous voulez. Avec une référence volatile à un tableau, les lectures et écritures de la référence au tableau sont traitées comme volatiles, mais les éléments ne sont pas volatiles. Pour obtenir des éléments volatiles, vous devez utiliser l'une des classes de tableaux atomiques de java.util.concurrent (inclus dans Java 5.0).</p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="UI_INHERITANCE_UNSAFE_GETRESOURCE">
-    <ShortDescription>L'utilisation de <code>GetResource</code> peut-être instable si la classe est étendue</ShortDescription>
-    <LongDescription>L'utilisation de <code>GetResource</code> dans {1} peut-être instable si la classe est étendue</LongDescription>
+    <ShortDescription>L'utilisation de GetResource peut-être instable si la classe est étendue</ShortDescription>
+    <LongDescription>L'utilisation de GetResource dans {1} peut-être instable si la classe est étendue</LongDescription>
     <Details>
 <![CDATA[
-<p>Appeler <code>this.getClass().getResource(...)</code> peut rendre des résultats différents de ceux attendus si la classe est étendue par une classe d'un autre package.</p>
+<p>Appeler this.getClass().getResource(...) peut rendre des résultats différents de ceux attendus si la classe est étendue par une classe d'un autre package.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -569,8 +569,8 @@
     <LongDescription>Entrée de fichier Zip vide créée dans {1}</LongDescription>
     <Details>
 <![CDATA[
-<p>Le code appelle <code>putNextEntry()</code>, immédiatement suivi d'un appel à <code>closeEntry()</code>. Ceci crée une entrée de fichier Zip vide. Le contenu des entrées devrait être écrit dans le fichier Zip entre les appels à
-<code>putNextEntry()</code> et <code>closeEntry()</code>.</p>
+<p>Le code appelle putNextEntry(), immédiatement suivi d'un appel à closeEntry(). Ceci crée une entrée de fichier Zip vide. Le contenu des entrées devrait être écrit dans le fichier Zip entre les appels à
+putNextEntry() et closeEntry().</p>
 ]]>
     </Details>
   </BugPattern>
@@ -580,51 +580,51 @@
     <LongDescription>Entrée de fichier Jar vide créée dans {1}</LongDescription>
     <Details>
 <![CDATA[
-<p>Le code appelle <code>putNextEntry()</code>, immédiatement suivi d'un appel à <code>closeEntry()</code>. Ceci crée une entrée de fichier Jar vide. Le contenu des entrées devrait être écrit dans le fichier Jar entre les appels à
-<code>putNextEntry()</code> et <code>closeEntry()</code>.</p>
+<p>Le code appelle putNextEntry(), immédiatement suivi d'un appel à closeEntry(). Ceci crée une entrée de fichier Jar vide. Le contenu des entrées devrait être écrit dans le fichier Jar entre les appels à
+putNextEntry() et closeEntry().</p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="IMSE_DONT_CATCH_IMSE">
-    <ShortDescription>Interception douteuse d'une <code>IllegalMonitorStateException</code></ShortDescription>
-    <LongDescription>Interception douteuse d'une <code>IllegalMonitorStateException</code> dans {1}</LongDescription>
+    <ShortDescription>Interception douteuse d'une IllegalMonitorStateException</ShortDescription>
+    <LongDescription>Interception douteuse d'une IllegalMonitorStateException dans {1}</LongDescription>
     <Details>
 <![CDATA[
-<p><code>IllegalMonitorStateException</code> n'est généralement déclenchée que dans le cas d'une faille dans la conception du code (appeler <code>wait()</code> ou <code>notify()</code> sur un objet dont on ne possède pas le verrou).</p>
+<p>IllegalMonitorStateException n'est généralement déclenchée que dans le cas d'une faille dans la conception du code (appeler wait() ou notify() sur un objet dont on ne possède pas le verrou).</p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="FL_MATH_USING_FLOAT_PRECISION">
-    <ShortDescription>La méthode effectue des calculs en simple précision (<code>float</code>)</ShortDescription>
-    <LongDescription>{1} effectue des calculs en simple précision (<code>float</code>)</LongDescription>
+    <ShortDescription>La méthode effectue des calculs en simple précision (float)</ShortDescription>
+    <LongDescription>{1} effectue des calculs en simple précision (float)</LongDescription>
     <Details>
 <![CDATA[
-<p>La méthode effectue des opérations mathématiques en simple précision (<code>float</code>). Les <code>float</code> peuvent être très imprécis. Par exemple, 16777216.0f + 1.0f = 16777216.0f. Envisagez d'utiliser la double précision à la place.</p>
+<p>La méthode effectue des opérations mathématiques en simple précision (float). Les float peuvent être très imprécis. Par exemple, 16777216.0f + 1.0f = 16777216.0f. Envisagez d'utiliser la double précision à la place.</p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="CN_IDIOM">
-    <ShortDescription>La classe implémente <code>Cloneable</code> mais ne définie et n'utilise pas la méthode <code>clone()</code></ShortDescription>
-    <LongDescription>La classe {0} implémente <code>Cloneable</code> mais ne définie et n'utilise pas la méthode <code>clone()</code></LongDescription>
+    <ShortDescription>La classe implémente Cloneable mais ne définie et n'utilise pas la méthode clone()</ShortDescription>
+    <LongDescription>La classe {0} implémente Cloneable mais ne définie et n'utilise pas la méthode clone()</LongDescription>
     <Details>
 <![CDATA[
-<p>La classe implémente <code>Cloneable</code> sans définir ou utiliser la méthode <code>clone()</code>.</p>
+<p>La classe implémente Cloneable sans définir ou utiliser la méthode clone().</p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="CN_IDIOM_NO_SUPER_CALL">
-    <ShortDescription>La méthode <code>clone()</code> n'appelle pas <code>super.clone()</code></ShortDescription>
-    <LongDescription>La méthode <code>clone()</code> {1} n'appelle pas <code>super.clone()</code></LongDescription>
+    <ShortDescription>La méthode clone() n'appelle pas super.clone()</ShortDescription>
+    <LongDescription>La méthode clone() {1} n'appelle pas super.clone()</LongDescription>
     <Details>
 <![CDATA[
-<p>Cette classe définie une méthode <code>clone()</code> qui n'appelle pas <code>super.clone()</code>,
+<p>Cette classe définie une méthode clone() qui n'appelle pas super.clone(),
 et n'est pas finale. Si cette classe ("<i>A</i>") est étendue par une classe fille ("<i>B</i>"),
-et que la classe fille <i>B</i> appelle <code>super.clone()</code>, alors il est probable que la méthode <code>clone()</code> de <i>B</i> retournera un objet de type <i>A</i>, ce qui viole le contrat standard de <code>clone()</code>.</p>
-<p>Si toutes les méthodes <code>clone()</code> appellent <code>super.clone()</code>, alors elles sont garanties d'utiliser <code>Object.clone()</code>, qui retourne toujours un objet du type correct.</p>
+et que la classe fille <i>B</i> appelle super.clone(), alors il est probable que la méthode clone() de <i>B</i> retournera un objet de type <i>A</i>, ce qui viole le contrat standard de clone().</p>
+<p>Si toutes les méthodes clone() appellent super.clone(), alors elles sont garanties d'utiliser Object.clone(), qui retourne toujours un objet du type correct.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -650,41 +650,41 @@ et que la classe fille <i>B</i> appelle <code>super.clone()</code>, alors il est
   </BugPattern>
 
   <BugPattern type="DM_EXIT">
-    <ShortDescription>La méthode invoque <code>System.exit(...)</code></ShortDescription>
-    <LongDescription>{1} invoque <code>System.exit(...)</code>, qui stoppe toute la JVM</LongDescription>
+    <ShortDescription>La méthode invoque System.exit(...)</ShortDescription>
+    <LongDescription>{1} invoque System.exit(...), qui stoppe toute la JVM</LongDescription>
     <Details>
 <![CDATA[
-  <p>Invoquer <code>System.exit()</code> arrête toute la JVM. Cela ne doit être fait que lorsque c'est nécessaire. De tels appels rendent difficile ou impossible l'invocation de votre code par d'autre code. Envisagez de déclencher une <code>RuntimeException</code> à la place.</p>
+  <p>Invoquer System.exit() arrête toute la JVM. Cela ne doit être fait que lorsque c'est nécessaire. De tels appels rendent difficile ou impossible l'invocation de votre code par d'autre code. Envisagez de déclencher une RuntimeException à la place.</p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="DM_STRING_CTOR">
-    <ShortDescription>La méthode invoque le constructeur inutile <code>String(String)</code> ; utilisez juste l'argument</ShortDescription>
-    <LongDescription>{1} invoque le constructeur inutile <code>String(String)</code> ; utilisez juste l'argument</LongDescription>
+    <ShortDescription>La méthode invoque le constructeur inutile String(String) ; utilisez juste l'argument</ShortDescription>
+    <LongDescription>{1} invoque le constructeur inutile String(String) ; utilisez juste l'argument</LongDescription>
     <Details>
 <![CDATA[
-  <p>Utiliser le constructeur <code>java.lang.String(String)</code> gaspille de la mémoire puisque l'objet ainsi construit serait fonctionnellement identique à la chaîne passée en paramètre. Utilisez juste la chaîne en argument directement.</p>
+  <p>Utiliser le constructeur java.lang.String(String) gaspille de la mémoire puisque l'objet ainsi construit serait fonctionnellement identique à la chaîne passée en paramètre. Utilisez juste la chaîne en argument directement.</p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="DM_STRING_VOID_CTOR">
-    <ShortDescription>La méthode invoque le constructeur inutile <code>String()</code> ; utilisez juste <code>""</code></ShortDescription>
-    <LongDescription>{1} invoque le constructeur inutile <code>String()</code> ; utilisez juste <code>""</code></LongDescription>
+    <ShortDescription>La méthode invoque le constructeur inutile String() ; utilisez juste ""</ShortDescription>
+    <LongDescription>{1} invoque le constructeur inutile String() ; utilisez juste ""</LongDescription>
     <Details>
 <![CDATA[
-  <p>Créer un nouveau objet <code>java.lang.String</code> en utilisant le constructeur sans argument gaspille de la mémoire parce que l'objet ainsi créé serait fonctionnellement identique à la constante de chaîne vide <code>""</code>. Java garantie que les chaînes constantes identiques seront représentées par le même objet <code>String</code>. C'est pourquoi vous devriez directement utiliser la constante de chaîne vide.</p>
+  <p>Créer un nouveau objet java.lang.String en utilisant le constructeur sans argument gaspille de la mémoire parce que l'objet ainsi créé serait fonctionnellement identique à la constante de chaîne vide "". Java garantie que les chaînes constantes identiques seront représentées par le même objet String. C'est pourquoi vous devriez directement utiliser la constante de chaîne vide.</p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="DM_STRING_TOSTRING">
-    <ShortDescription>La méthode appel <code>toString()</code> sur un objet <code>String</code> ; utilisez directement l'objet <code>String</code></ShortDescription>
-    <LongDescription>La méthode {1} appel <code>toString()</code> sur un objet <code>String</code> ; utilisez directement l'objet <code>String</code></LongDescription>
+    <ShortDescription>La méthode appel toString() sur un objet String ; utilisez directement l'objet String</ShortDescription>
+    <LongDescription>La méthode {1} appel toString() sur un objet String ; utilisez directement l'objet String</LongDescription>
     <Details>
 <![CDATA[
-  <p>Appeler <code>String.toString()</code> est juste une opération redondante. Utilisez directement l'objet <code>String</code>.</p>
+  <p>Appeler String.toString() est juste une opération redondante. Utilisez directement l'objet String.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -695,49 +695,49 @@ et que la classe fille <i>B</i> appelle <code>super.clone()</code>, alors il est
     <Details>
 <![CDATA[
   <p>Le code appel explicitement le ramasse-miettes. A part pour l'emploi spécifique dans un benchmark, c'est très douteux.</p>
-  <p>Dans le passé, les cas où des personnes ont explicitement invoqué le ramasse-miettes dans des méthodes telles que <code>close()</code> ou <code>finalize()</code> ont creusés des gouffres dans les performances. Le ramasse-miette peut-être très coûteux. Toute situation qui force des centaines ou des milliers de ramasse-miette mettra à genoux une machine.</p>
+  <p>Dans le passé, les cas où des personnes ont explicitement invoqué le ramasse-miettes dans des méthodes telles que close() ou finalize() ont creusés des gouffres dans les performances. Le ramasse-miette peut-être très coûteux. Toute situation qui force des centaines ou des milliers de ramasse-miette mettra à genoux une machine.</p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="DM_BOOLEAN_CTOR">
-    <ShortDescription>La méthode invoque le constructeur inutile <code>Boolean()</code> ; utilisez <code>Boolean.valueOf(...)</code> à la place</ShortDescription>
-    <LongDescription>{1} invoque le constructeur inutile <code>Boolean()</code> ; utilisez <code>Boolean.valueOf(...)</code> à la place</LongDescription>
+    <ShortDescription>La méthode invoque le constructeur inutile Boolean() ; utilisez Boolean.valueOf(...) à la place</ShortDescription>
+    <LongDescription>{1} invoque le constructeur inutile Boolean() ; utilisez Boolean.valueOf(...) à la place</LongDescription>
     <Details>
 <![CDATA[
-  <p>Créer de nouvelles instances de <code>java.lang.Boolean</code> gaspille la mémoire puisque les objets <code>Boolean</code> sont immuables et qu'il n'y a que deux valeurs utiles de ce type. Utilisez à la place la méthode <code>Boolean.valueOf()</code> pour créer des objets <code>Boolean</code>.</p>
+  <p>Créer de nouvelles instances de java.lang.Boolean gaspille la mémoire puisque les objets Boolean sont immuables et qu'il n'y a que deux valeurs utiles de ce type. Utilisez à la place la méthode Boolean.valueOf() pour créer des objets Boolean.</p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="DM_STRING_EMPTY_EQUALS">
-    <ShortDescription>La méthode invoque <code>String.equals("")</code> ; utilisez <code>String.length() == 0</code> à la place</ShortDescription>
-    <LongDescription>La méthode {1} invoque <code>String.equals("")</code> ; utilisez <code>String.length() == 0</code> à la place</LongDescription>
+    <ShortDescription>La méthode invoque String.equals("") ; utilisez String.length() == 0 à la place</ShortDescription>
+    <LongDescription>La méthode {1} invoque String.equals("") ; utilisez String.length() == 0 à la place</LongDescription>
     <Details>
 <![CDATA[
-  <p>Un objet est ici comparé la l'objet <code>String</code> vide au moyen de la méthode <code>equals()</code>. Vérifier que l'objet <code>String</code> à une longueur de zéro peut-être plus rapide, et retire des constantes <code>String</code> du fichier de la classe.</p>
+  <p>Un objet est ici comparé la l'objet String vide au moyen de la méthode equals(). Vérifier que l'objet String à une longueur de zéro peut-être plus rapide, et retire des constantes String du fichier de la classe.</p>
 ]]>
     </Details>
   </BugPattern>
 
 <!--
   <BugPattern type="DM_ARRAY_COMPARE">
-    <ShortDescription>La méthode invoque la méthode <code>equals()</code> inutile d'un tableau. Utilisez <code>Arrays.equals()</code> à la place</ShortDescription>
-    <LongDescription>La méthode {1} appel la méthode <code>equals()</code> inutile d'un tableau. Utilisez <code>Arrays.equals()</code> à la place</LongDescription>
+    <ShortDescription>La méthode invoque la méthode equals() inutile d'un tableau. Utilisez Arrays.equals() à la place</ShortDescription>
+    <LongDescription>La méthode {1} appel la méthode equals() inutile d'un tableau. Utilisez Arrays.equals() à la place</LongDescription>
     <Details>
 <![CDATA[
-  <p>Un tableau est comparé à un autre objet au moyen de la méthode <code>equals()</code> du tableau. Cela revient à comparer les objets en utilisant <code>==</code>, ce qui signifie que cela vérifie si le tableau est le même objet que celui passé en argument. Pour comparer le contenu de tableaux, utilisez <code>Arrays.equals(array1, array2)</code>.</p>
+  <p>Un tableau est comparé à un autre objet au moyen de la méthode equals() du tableau. Cela revient à comparer les objets en utilisant ==, ce qui signifie que cela vérifie si le tableau est le même objet que celui passé en argument. Pour comparer le contenu de tableaux, utilisez Arrays.equals(array1, array2).</p>
 ]]>
     </Details>
   </BugPattern>
 -->
 
   <BugPattern type="DM_CONVERT_CASE">
-    <ShortDescription>La méthode appelle les <code>String.toUpperCase()</code> ou <code>String.toLowerCase</code> ; utilisez plutôt la version paramètrée par une <code>Locale</code></ShortDescription>
-    <LongDescription>La méthode {1} invoque <code>String.toUpperCase()</code> ou <code>String.toLowerCase</code> ; utilisez plutôt la version acceptant une <code>Locale</code></LongDescription>
+    <ShortDescription>La méthode appelle les String.toUpperCase() ou String.toLowerCase ; utilisez plutôt la version paramètrée par une Locale</ShortDescription>
+    <LongDescription>La méthode {1} invoque String.toUpperCase() ou String.toLowerCase ; utilisez plutôt la version acceptant une Locale</LongDescription>
     <Details>
 <![CDATA[
-<p>Une chaîne est mise en majuscules ou minuscules en fonction de jeu de caractères par défaut de la machine. Ceci peut entraîner des conversions erronées sur les caractères internationaux. Utilisez <code>String.toUpperCase(Locale l)</code> ou <code>String.toLowerCase(Locale l)</code> à la place.</p>
+<p>Une chaîne est mise en majuscules ou minuscules en fonction de jeu de caractères par défaut de la machine. Ceci peut entraîner des conversions erronées sur les caractères internationaux. Utilisez String.toUpperCase(Locale l) ou String.toLowerCase(Locale l) à la place.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -758,8 +758,8 @@ et que la classe fille <i>B</i> appelle <code>super.clone()</code>, alors il est
     <LongDescription>{1} est public ; il devrait être protégé</LongDescription>
     <Details>
 <![CDATA[
-  <p>La méthode <code>finalize()</code> d'une classe devrait avoir un accès <code>protected</code>,
-pas <code>public</code>.</p>
+  <p>La méthode finalize() d'une classe devrait avoir un accès protected,
+pas public.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -769,37 +769,37 @@ pas <code>public</code>.</p>
     <LongDescription>{1} est vide et devrait être supprimé</LongDescription>
     <Details>
 <![CDATA[
-  <p>Les méthodes <code>finalize()</code> vides sont inutiles, donc elles devraient être supprimées.</p>
+  <p>Les méthodes finalize() vides sont inutiles, donc elles devraient être supprimées.</p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="FI_NULLIFY_SUPER">
     <ShortDescription>Un finaliseur rend inutile celui de sa superclasse</ShortDescription>
-    <LongDescription><code>{1}</code> rend inutile <code>{2}.finalize()</code> ; est-ce voulu ?</LongDescription>
+    <LongDescription>{1} rend inutile {2}.finalize() ; est-ce voulu ?</LongDescription>
     <Details>
 <![CDATA[
-  <p>Cette méthode <code>finalize()</code> vide rend explicitement inutile tout finaliseur défini dans les superclasses. Toute action définie dans un finaliseur d'une superclasse sera ignorée. A moins que cela ne soit voulu, supprimer cette méthode.</p>
+  <p>Cette méthode finalize() vide rend explicitement inutile tout finaliseur défini dans les superclasses. Toute action définie dans un finaliseur d'une superclasse sera ignorée. A moins que cela ne soit voulu, supprimer cette méthode.</p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="FI_USELESS">
     <ShortDescription>Le finaliseur ne fait rien sauf appeler celui de la superclasse</ShortDescription>
-    <LongDescription>{1} ne fait rien d'autre qu'appeler <code>super.finalize()</code> ; supprimez le</LongDescription>
+    <LongDescription>{1} ne fait rien d'autre qu'appeler super.finalize() ; supprimez le</LongDescription>
     <Details>
 <![CDATA[
-  <p>La seule chose que cette méthode <code>finalize()</code> fait est d'appeler la méthode <code>finalize()</code> de la superclasse, ce qui la rend redondante. Supprimez la.</p>
+  <p>La seule chose que cette méthode finalize() fait est d'appeler la méthode finalize() de la superclasse, ce qui la rend redondante. Supprimez la.</p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="FI_MISSING_SUPER_CALL">
     <ShortDescription>Le finaliseur n'appelle pas le finaliseur de la superclasse</ShortDescription>
-    <LongDescription>{1} oublie d'appeler <code>super.finalize()</code>, donc <code>{2}.finalize()</code> n'est jamais appelé</LongDescription>
+    <LongDescription>{1} oublie d'appeler super.finalize(), donc {2}.finalize() n'est jamais appelé</LongDescription>
     <Details>
 <![CDATA[
-  <p>Cette méthode <code>finalize()</code> n'appelle pas la méthode <code>finalize()</code> de sa classe mère ; donc toutes les actions définies au niveau de la classe mère seront ignorées. Ajoutez un appel à <code>super.finalize()</code>.</p>
+  <p>Cette méthode finalize() n'appelle pas la méthode finalize() de sa classe mère ; donc toutes les actions définies au niveau de la classe mère seront ignorées. Ajoutez un appel à super.finalize().</p>
 ]]>
     </Details>
   </BugPattern>
@@ -809,120 +809,120 @@ pas <code>public</code>.</p>
     <LongDescription>{1} invoque explicitement {2}</LongDescription>
     <Details>
 <![CDATA[
-  <p>Cette méthode contient un appel explicite à la méthode <code>finalize()</code> d'un objet. Les méthodes <code>finalize()</code> étant sensées n'être appelées qu'une fois, et uniquement par la JVM, c'est une mauvaise idée.</p>
+  <p>Cette méthode contient un appel explicite à la méthode finalize() d'un objet. Les méthodes finalize() étant sensées n'être appelées qu'une fois, et uniquement par la JVM, c'est une mauvaise idée.</p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="EQ_SELF_USE_OBJECT">
-    <ShortDescription>Définition d'une méthode <code>equals()</code> covariante, <code>Object.equals(Object)</code> est hérité</ShortDescription>
-    <LongDescription>{0} défini une méthode <code>equals({0})</code> et utilise <code>Object.equals(Object)</code></LongDescription>
+    <ShortDescription>Définition d'une méthode equals() covariante, Object.equals(Object) est hérité</ShortDescription>
+    <LongDescription>{0} défini une méthode equals({0}) et utilise Object.equals(Object)</LongDescription>
     <Details>
 <![CDATA[
-  <p>Cette classe défini une version covariante de la méthode <code>equals()</code>, mais appelle la méthode normale <code>equals(Object)</code> définie dans la classe de base <code>java.lang.Object</code>. La classe devrait probablement définir une version non covariante de <code>equals()</code>. (C'est-à-dire une méthode avec la signature <code>boolean equals(java.lang.Object)</code>.</p>
+  <p>Cette classe défini une version covariante de la méthode equals(), mais appelle la méthode normale equals(Object) définie dans la classe de base java.lang.Object. La classe devrait probablement définir une version non covariante de equals(). (C'est-à-dire une méthode avec la signature boolean equals(java.lang.Object).</p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="EQ_SELF_NO_OBJECT">
-    <ShortDescription>Définition d'une méthode <code>equals()</code> covariante</ShortDescription>
-    <LongDescription>{0} défini la méthode <code>equals({0})</code> mais pas <code>equals(Object)</code></LongDescription>
+    <ShortDescription>Définition d'une méthode equals() covariante</ShortDescription>
+    <LongDescription>{0} défini la méthode equals({0}) mais pas equals(Object)</LongDescription>
     <Details>
 <![CDATA[
-  <p>Cette classe défini une version covariante de <code>equals()</code>. Pour surcharger correctement la méthode <code>equals()</code> de <code>java.lang.Object</code>, le paramètre de <code>equals()</code> doit être du type <code>java.lang.Object</code>.</p>
+  <p>Cette classe défini une version covariante de equals(). Pour surcharger correctement la méthode equals() de java.lang.Object, le paramètre de equals() doit être du type java.lang.Object.</p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="CO_SELF_NO_OBJECT">
-    <ShortDescription>Définition d'une méthode <code>compareTo()</code> covariante</ShortDescription>
-    <LongDescription>{0} défini une méthode <code>compareTo({0})</code> mais pas <code>compareTo(Object)</code></LongDescription>
+    <ShortDescription>Définition d'une méthode compareTo() covariante</ShortDescription>
+    <LongDescription>{0} défini une méthode compareTo({0}) mais pas compareTo(Object)</LongDescription>
     <Details>
 <![CDATA[
-  <p>Cette classe défini une version covariante de <code>compareTo()</code>. Pour correctement surcharger la méthode <code>compareTo()</code> de l'interface <code>Comparable</code>, le paramètre de <code>compareTo()</code> doit être du type <code>java.lang.Object</code>.</p>
+  <p>Cette classe défini une version covariante de compareTo(). Pour correctement surcharger la méthode compareTo() de l'interface Comparable, le paramètre de compareTo() doit être du type java.lang.Object.</p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="HE_HASHCODE_USE_OBJECT_EQUALS">
-    <ShortDescription>La classe défini <code>hashCode()</code> et utilise <code>Object.equals()</code></ShortDescription>
-    <LongDescription>{0} défini <code>hashCode()</code> et utilise <code>Object.equals()</code></LongDescription>
+    <ShortDescription>La classe défini hashCode() et utilise Object.equals()</ShortDescription>
+    <LongDescription>{0} défini hashCode() et utilise Object.equals()</LongDescription>
     <Details>
 <![CDATA[
-  <p>Cette classe défini une méthode <code>hashCode()</code> mais hérite la méthode <code>equals()</code> de <code>java.lang.Object</code> (qui défini l'égalité par comparaison des références des objets). Bien que cela satisfasse certainement le contrat indiquant que les objets égaux doivent avoir des hashcodes égaux, ce n'est certainement pas ce qui était voulu lors de la surcharge de la méthode <code>hashCode()</code> (Surcharger <code>hashCode()</code>
+  <p>Cette classe défini une méthode hashCode() mais hérite la méthode equals() de java.lang.Object (qui défini l'égalité par comparaison des références des objets). Bien que cela satisfasse certainement le contrat indiquant que les objets égaux doivent avoir des hashcodes égaux, ce n'est certainement pas ce qui était voulu lors de la surcharge de la méthode hashCode() (Surcharger hashCode()
 implique que l'identité des objets soit basée sur des critères plus compliqués qu'une simple égalités des références.)</p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="HE_HASHCODE_NO_EQUALS">
-    <ShortDescription>La classe défini <code>hashCode()</code> mais pas <code>equals()</code></ShortDescription>
-    <LongDescription>{0} défini <code>hashCode()</code> mais pas <code>equals()</code></LongDescription>
+    <ShortDescription>La classe défini hashCode() mais pas equals()</ShortDescription>
+    <LongDescription>{0} défini hashCode() mais pas equals()</LongDescription>
     <Details>
 <![CDATA[
-  <p>Cette classe défini une méthode <code>hashCode()</code> mais pas de méthode <code>equals()</code>. C'est pourquoi cette classe peut violer le contrat indiquant que des objets identiques doivent avoir des hashcodes identiques.</p>
+  <p>Cette classe défini une méthode hashCode() mais pas de méthode equals(). C'est pourquoi cette classe peut violer le contrat indiquant que des objets identiques doivent avoir des hashcodes identiques.</p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="HE_EQUALS_USE_HASHCODE">
-    <ShortDescription>La classe défini <code>equals()</code> et utilise <code>Object.hashCode()</code></ShortDescription>
-    <LongDescription>{0} défini <code>equals()</code> et utilise <code>Object.hashCode()</code></LongDescription>
+    <ShortDescription>La classe défini equals() et utilise Object.hashCode()</ShortDescription>
+    <LongDescription>{0} défini equals() et utilise Object.hashCode()</LongDescription>
     <Details>
 <![CDATA[
-  <p>Cette classe surcharge <code>equals(Object)</code>, pas <code>hashCode()</code>, et hérite de l'implémentation de <code>hashCode()</code> issue de <code>java.lang.Object</code> (qui renvoie le hascode d'identité, une valeur arbitraire assignée à l'objet par la JVM). C'est pourquoi la classe a des chances de violer le contrat impliquant que des objets égaux doivent avoir des hashcodes identiques.</p>
-  <p>Si vous ne souhaitez pas définir une méthode <code>hashcode()</code> et/ou ne croyez pas que l'objet soit un jour mis dans des <code>HashMap</code>/<code>Hashtable</code>, définissez une méthode <code>hashCode()</code> qui déclenche une <code>UnsupportedOperationException</code>.</p>
+  <p>Cette classe surcharge equals(Object), pas hashCode(), et hérite de l'implémentation de hashCode() issue de java.lang.Object (qui renvoie le hascode d'identité, une valeur arbitraire assignée à l'objet par la JVM). C'est pourquoi la classe a des chances de violer le contrat impliquant que des objets égaux doivent avoir des hashcodes identiques.</p>
+  <p>Si vous ne souhaitez pas définir une méthode hashcode() et/ou ne croyez pas que l'objet soit un jour mis dans des HashMap/Hashtable, définissez une méthode hashCode() qui déclenche une UnsupportedOperationException.</p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="HE_INHERITS_EQUALS_USE_HASHCODE">
-    <ShortDescription>La classe hérite de <code>equals()</code> et utilise <code>Object.hashCode()</code></ShortDescription>
-    <LongDescription>{0} hérite de <code>equals()</code> et utilise de <code>Object.hashCode()</code></LongDescription>
+    <ShortDescription>La classe hérite de equals() et utilise Object.hashCode()</ShortDescription>
+    <LongDescription>{0} hérite de equals() et utilise de Object.hashCode()</LongDescription>
     <Details>
 <![CDATA[
-  <p>Cette classe hérite de la méthode <code>equals()(Object)</code> d'une superclasse abstraite, et de la méthode <code>hashCode()</code> de l'objet <code>java.lang.Object</code> (qui renvoi le hascode d'identité, une valeur arbitraire assignée à l'objet par la JVM). C'est pourquoi la classe viole probablement le contrat indiquant que des objets égaux doivent avoir des hashcodes identiques.</p>
-  <p>Si vous ne souhaitez pas définir une méthode <code>hashCode()</code> et/ou ne pensez pas que l'objet puisse un jour être mis dans des <code>HashMap</code>/<code>Hashtable</code>, définissez une méthode <code>hashCode()</code> déclenchant une <code>UnsupportedOperationException</code>.</p>
+  <p>Cette classe hérite de la méthode equals()(Object) d'une superclasse abstraite, et de la méthode hashCode() de l'objet java.lang.Object (qui renvoi le hascode d'identité, une valeur arbitraire assignée à l'objet par la JVM). C'est pourquoi la classe viole probablement le contrat indiquant que des objets égaux doivent avoir des hashcodes identiques.</p>
+  <p>Si vous ne souhaitez pas définir une méthode hashCode() et/ou ne pensez pas que l'objet puisse un jour être mis dans des HashMap/Hashtable, définissez une méthode hashCode() déclenchant une UnsupportedOperationException.</p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="HE_EQUALS_NO_HASHCODE">
-    <ShortDescription>La classe défini <code>equals()</code> mais pas <code>hashCode()</code></ShortDescription>
-    <LongDescription>{0} défini <code>equals()</code> mais pas <code>hashCode()</code></LongDescription>
+    <ShortDescription>La classe défini equals() mais pas hashCode()</ShortDescription>
+    <LongDescription>{0} défini equals() mais pas hashCode()</LongDescription>
     <Details>
 <![CDATA[
-  <p>Cette classe surcharge <code>equals(Object)</code>, mais pas <code>hashCode()</code>. C'est pourquoi la classe peut violer le contrat indiquant des objets égaux doivent avoir des hashcodes identiques.</p>
+  <p>Cette classe surcharge equals(Object), mais pas hashCode(). C'est pourquoi la classe peut violer le contrat indiquant des objets égaux doivent avoir des hashcodes identiques.</p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="EQ_ABSTRACT_SELF">
-    <ShortDescription>Une classe abstraite définie une méthode <code>equals()</code> covariante</ShortDescription>
-    <LongDescription>La classe abstraite {0} définie une méthode <code>equals({0})</code></LongDescription>
+    <ShortDescription>Une classe abstraite définie une méthode equals() covariante</ShortDescription>
+    <LongDescription>La classe abstraite {0} définie une méthode equals({0})</LongDescription>
     <Details>
 <![CDATA[
-  <p>Cette classe définie une version covariante de la méthode <code>equals()</code>. Pour surcharge correctement la méthode <code>equals()</code> de <code>java.lang.Object</code>, le paramètre de <code>equals()</code> doit être du type <code>java.lang.Object</code>.</p>
+  <p>Cette classe définie une version covariante de la méthode equals(). Pour surcharge correctement la méthode equals() de java.lang.Object, le paramètre de equals() doit être du type java.lang.Object.</p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="ES_COMPARING_STRINGS_WITH_EQ">
-    <ShortDescription>Comparaison d'objets <code>String</code> utilisant <code>==</code> ou <code>!=</code></ShortDescription>
-    <LongDescription>Comparaison d'objets <code>String</code> utilisant <code>==</code> ou <code>!=</code> dans {1} </LongDescription>
+    <ShortDescription>Comparaison d'objets String utilisant == ou !=</ShortDescription>
+    <LongDescription>Comparaison d'objets String utilisant == ou != dans {1} </LongDescription>
     <Details>
 <![CDATA[
-  <p>Ce code compare des objets <code>java.lang.String</code> au moyen de l'égalité par référence des opérateurs <code>==</code> ou <code>!=</code>. A moins que les deux chaînes soient des constantes dans le fichier source ou aient été internalisées au moyen de la méthode <code>String.intern()</code>, deux chaînes identiques peuvent être représentées par deux objets <code>String</code> différents. Envisagez d'utiliser la méthode <code>equals(Object)</code> à la place.</p>
+  <p>Ce code compare des objets java.lang.String au moyen de l'égalité par référence des opérateurs == ou !=. A moins que les deux chaînes soient des constantes dans le fichier source ou aient été internalisées au moyen de la méthode String.intern(), deux chaînes identiques peuvent être représentées par deux objets String différents. Envisagez d'utiliser la méthode equals(Object) à la place.</p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="CO_ABSTRACT_SELF">
-    <ShortDescription>Une classe abstraite définie une méthode <code>compareTo()</code> covariante</ShortDescription>
-    <LongDescription>La classe abstraite {0} définie une méthode <code>compareTo({0})</code></LongDescription>
+    <ShortDescription>Une classe abstraite définie une méthode compareTo() covariante</ShortDescription>
+    <LongDescription>La classe abstraite {0} définie une méthode compareTo({0})</LongDescription>
     <Details>
 <![CDATA[
-  <p>Cette classe définie une version covariante de <code>compareTo()</code>. Pour surcharger correctement la méthode <code>compareTo()</code> de l'interface <code>Comparable</code>, le paramètre de <code>compareTo()</code> doit être du type <code>java.lang.Object</code>.</p>
+  <p>Cette classe définie une version covariante de compareTo(). Pour surcharger correctement la méthode compareTo() de l'interface Comparable, le paramètre de compareTo() doit être du type java.lang.Object.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -948,11 +948,11 @@ implique que l'identité des objets soit basée sur des critères plus compliqués q
   </BugPattern>
 
   <BugPattern type="NN_NAKED_NOTIFY">
-    <ShortDescription>Appel <code>notify()</code> isolé dans une méthode</ShortDescription>
-    <LongDescription>Présence d'un <code>notify()</code> isolé dans {1}</LongDescription>
+    <ShortDescription>Appel notify() isolé dans une méthode</ShortDescription>
+    <LongDescription>Présence d'un notify() isolé dans {1}</LongDescription>
     <Details>
 <![CDATA[
-  <p>Un appel à <code>notify()</code> ou <code>notifyAll()</code> a été faite sans aucun changement (apparent) de l'état d'un objet modifiable. En général, appeler une méthode <code>notify()</code> dans un moniteur est fait parce que qu'une condition quelconque attendue par un autre thread est devenue vraie. Dans tous les cas, pour que la condition ait un sens, elle doit porter sur un objet visible des deux threads.</p>
+  <p>Un appel à notify() ou notifyAll() a été faite sans aucun changement (apparent) de l'état d'un objet modifiable. En général, appeler une méthode notify() dans un moniteur est fait parce que qu'une condition quelconque attendue par un autre thread est devenue vraie. Dans tous les cas, pour que la condition ait un sens, elle doit porter sur un objet visible des deux threads.</p>
   <p>Ce bogue n'indique pas nécessairement une erreur puisque la modification de l'état de l'objet peut avoir eu lieu dans une méthode qui appelle la méthode contenant la notification.</p>
 ]]>
     </Details>
@@ -1000,11 +1000,11 @@ Tout code appelant cette méthode peut librement modifier le tableau sousjacent.	
   </BugPattern>
 
   <BugPattern type="RU_INVOKE_RUN">
-    <ShortDescription>Invocation de <code>run()</code> sur un thread (Vouliez-vous plutôt dire <code>start()</code> ?)</ShortDescription>
-    <LongDescription>{1} appelle explicitement <code>run()</code> sur un thread (Vouliez-vous plutôt dire <code>start()</code> ?)</LongDescription>
+    <ShortDescription>Invocation de run() sur un thread (Vouliez-vous plutôt dire start() ?)</ShortDescription>
+    <LongDescription>{1} appelle explicitement run() sur un thread (Vouliez-vous plutôt dire start() ?)</LongDescription>
     <Details>
 <![CDATA[
-  <p>Cette méthode appelle explicitement <code>run()</code> sur un objet. En général, les classes implémentent l'interface <code>Runnable</code> parce qu'elles vont avoir leur méthode <code>run()</code> invoquée dans un nouveau thread, auquel cas <code>Thread.start()</code> est la bonne méthode à appeler.</p>
+  <p>Cette méthode appelle explicitement run() sur un objet. En général, les classes implémentent l'interface Runnable parce qu'elles vont avoir leur méthode run() invoquée dans un nouveau thread, auquel cas Thread.start() est la bonne méthode à appeler.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1014,7 +1014,7 @@ Tout code appelant cette méthode peut librement modifier le tableau sousjacent.	
     <LongDescription>Boucle sur {3} dans {1}</LongDescription>
     <Details>
 <![CDATA[
-  <p>Cette méthode tourne en rond sur une boucle qui lit un champs. Le compilateur est autorisé à sortir la lecture de la boucle, créant ainsi une boucle infinie. La classe devrait être modifiée afin d'être correctement synchronisée (avec des appels à <code>wait()</code> et <code>notify()</code>).</p>
+  <p>Cette méthode tourne en rond sur une boucle qui lit un champs. Le compilateur est autorisé à sortir la lecture de la boucle, créant ainsi une boucle infinie. La classe devrait être modifiée afin d'être correctement synchronisée (avec des appels à wait() et notify()).</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1024,27 +1024,27 @@ Tout code appelant cette méthode peut librement modifier le tableau sousjacent.	
     <LongDescription>Utilisation discutable de logique binaire dans {1}</LongDescription>
     <Details>
 <![CDATA[
-  <p>Ce code semble utiliser de la logique binaire (Ex. : <code>&amp;</code> ou <code>|</code>) plutôt que les opérateurs booléens (<code>&amp;&amp;</code> ou <code>||</code>). La logique binaire entraîne l'évaluation systématique de toute l'expression, même quand le résultat pourrait être immédiatement déduit. Ceci est moins performant et peut provoquer des erreurs la partie gauche de l'expression protège le reste de cas d'erreurs.</p>
+  <p>Ce code semble utiliser de la logique binaire (Ex. : &amp; ou |) plutôt que les opérateurs booléens (&amp;&amp; ou ||). La logique binaire entraîne l'évaluation systématique de toute l'expression, même quand le résultat pourrait être immédiatement déduit. Ceci est moins performant et peut provoquer des erreurs la partie gauche de l'expression protège le reste de cas d'erreurs.</p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="2LW_TWO_LOCK_WAIT">
-    <ShortDescription><code>wait()</code> avec deux verrous en attente</ShortDescription>
-    <LongDescription>La méthode <code>wait()</code> a deux verrous en attente dans {1}</LongDescription>
+    <ShortDescription>wait() avec deux verrous en attente</ShortDescription>
+    <LongDescription>La méthode wait() a deux verrous en attente dans {1}</LongDescription>
     <Details>
 <![CDATA[
-  <p>Attendre sur on moniteur alors que deux verrous sont détenus peut entraîner une étreinte fatale (deadlock). Exécuter un <code>wait()</code> ne libère que le verrou sur l'objet accueillant le <code>wait()</code>, mais aucun autre verrou. Ce n'est pas obligatoirement un bogue, mais il vaut mieux examiner ça en détails.</p>
+  <p>Attendre sur on moniteur alors que deux verrous sont détenus peut entraîner une étreinte fatale (deadlock). Exécuter un wait() ne libère que le verrou sur l'objet accueillant le wait(), mais aucun autre verrou. Ce n'est pas obligatoirement un bogue, mais il vaut mieux examiner ça en détails.</p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="UW_UNCOND_WAIT">
-    <ShortDescription>Méthode contenant un <code>wait()</code> non conditionné</ShortDescription>
-    <LongDescription>La méthode {1} contient un <code>wait()</code> non conditionné</LongDescription>
+    <ShortDescription>Méthode contenant un wait() non conditionné</ShortDescription>
+    <LongDescription>La méthode {1} contient un wait() non conditionné</LongDescription>
     <Details>
 <![CDATA[
-  <p>Cette méthode contient un appel à <code>java.lang.Object.wait()</code> qui n'est pas protégé par une condition. Si la condition que la méthode essaye d'attendre a déjà été remplie, le thread risque d'attendre indéfiniment.</p>
+  <p>Cette méthode contient un appel à java.lang.Object.wait() qui n'est pas protégé par une condition. Si la condition que la méthode essaye d'attendre a déjà été remplie, le thread risque d'attendre indéfiniment.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1060,11 +1060,11 @@ Tout code appelant cette méthode peut librement modifier le tableau sousjacent.	
   </BugPattern>
 
   <BugPattern type="UG_SYNC_SET_UNSYNC_GET">
-    <ShortDescription>Méthode <code>getXXX</code> non synchronisée, méthode <code>setXXX</code> synchronisée</ShortDescription>
+    <ShortDescription>Méthode getXXX non synchronisée, méthode setXXX synchronisée</ShortDescription>
     <LongDescription>{1} n'est pas synchronisée alors que {2} l'est</LongDescription>
     <Details>
 <![CDATA[
-  <p>Cette classe contient des méthodes <code>getXXX</code> et <code>setXXX</code> similaires dont la méthode <code>setXXX</code> est synchronisée tandis que la méthode <code>getXXX</code> ne l'est pas. Ceci peut entraîner un comportement incorrect à l'exécution car l'appelant de la méthode <code>getXXX</code> ne verra pas obligatoirement l'objet dans un état consistant. La méthode <code>getXXX</code> devrait être synchronisée.</p>
+  <p>Cette classe contient des méthodes getXXX et setXXX similaires dont la méthode setXXX est synchronisée tandis que la méthode getXXX ne l'est pas. Ceci peut entraîner un comportement incorrect à l'exécution car l'appelant de la méthode getXXX ne verra pas obligatoirement l'objet dans un état consistant. La méthode getXXX devrait être synchronisée.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1080,12 +1080,12 @@ Tout code appelant cette méthode peut librement modifier le tableau sousjacent.	
   </BugPattern>
 
   <BugPattern type="IT_NO_SUCH_ELEMENT">
-    <ShortDescription>La méthode <code>next()</code> de <code>Iterator</code> ne peut pas déclencher une exception <code>NoSuchElement</code></ShortDescription>
-    <LongDescription>{1} ne peut pas déclencher l'exception <code>NoSuchElement</code></LongDescription>
+    <ShortDescription>La méthode next() de Iterator ne peut pas déclencher une exception NoSuchElement</ShortDescription>
+    <LongDescription>{1} ne peut pas déclencher l'exception NoSuchElement</LongDescription>
     <Details>
 <![CDATA[
-  <p>Cette classe implémente l'interface <code>java.util.Iterator</code>. Néanmoins, sa méthode <code>next()</code> n'est pas capable de déclencher <code>java.util.NoSuchElementException</code>. La méthode <code>next()</code>
-devrait être modifiée pour déclencher <code>NoSuchElementException</code> si elle est appelée alors qu'il n'y a plus d'éléments à renvoyer.</p>
+  <p>Cette classe implémente l'interface java.util.Iterator. Néanmoins, sa méthode next() n'est pas capable de déclencher java.util.NoSuchElementException. La méthode next()
+devrait être modifiée pour déclencher NoSuchElementException si elle est appelée alors qu'il n'y a plus d'éléments à renvoyer.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1119,51 +1119,51 @@ devrait être modifiée pour déclencher <code>NoSuchElementException</code> si ell
   </BugPattern>
 
   <BugPattern type="MS_OOI_PKGPROTECT">
-    <ShortDescription>Le champs devrait sorti de l'interface et mis en <code>package protected</code></ShortDescription>
-    <LongDescription>{1} devrait être sorti de l'interface et mis en <code>package protected</code></LongDescription>
+    <ShortDescription>Le champs devrait sorti de l'interface et mis en package protected</ShortDescription>
+    <LongDescription>{1} devrait être sorti de l'interface et mis en package protected</LongDescription>
     <Details>
 <![CDATA[
-<p>Un champs <code>final static</code> défini dans une interface référence un objet modifiable tel qu'un tableau ou une hashtable. Cet objet pourrait être modifié par accident ou par du code sournois d'un autre package. Pour résoudre cela et éviter cette vulnérabilité, le champs doit être intégré dans une classe et passé en <code>package protected</code>.</p>
+<p>Un champs final static défini dans une interface référence un objet modifiable tel qu'un tableau ou une hashtable. Cet objet pourrait être modifié par accident ou par du code sournois d'un autre package. Pour résoudre cela et éviter cette vulnérabilité, le champs doit être intégré dans une classe et passé en package protected.</p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="MS_FINAL_PKGPROTECT">
-    <ShortDescription>Le champs devrait être à la fois <code>final</code> et <code>package protected</code></ShortDescription>
-    <LongDescription>{1} devrait être à la fois <code>final</code> et <code>package protected</code></LongDescription>
+    <ShortDescription>Le champs devrait être à la fois final et package protected</ShortDescription>
+    <LongDescription>{1} devrait être à la fois final et package protected</LongDescription>
     <Details>
 <![CDATA[
-<p>Un champs statique modifiable peut-être changé par accident ou par du code malveillant d'un autre package. Le champs devrait être <code>package protected</code> et/ou <code>final</code> pour éviter cette vulnérabilité.</p>
+<p>Un champs statique modifiable peut-être changé par accident ou par du code malveillant d'un autre package. Le champs devrait être package protected et/ou final pour éviter cette vulnérabilité.</p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="MS_SHOULD_BE_FINAL">
-    <ShortDescription>Un champs n'est pas <code>final</code> alors qu'il devrait l'être</ShortDescription>
-    <LongDescription>{1} n'est pas <code>final</code> mais devrait l'être</LongDescription>
+    <ShortDescription>Un champs n'est pas final alors qu'il devrait l'être</ShortDescription>
+    <LongDescription>{1} n'est pas final mais devrait l'être</LongDescription>
     <Details>
 <![CDATA[
-<p>Un champs statique modifiable peut-être changé par accident ou par du code malveillant d'un autre package. Le champs devrait être <code>final</code> pour éviter cette vulnérabilité.</p>
+<p>Un champs statique modifiable peut-être changé par accident ou par du code malveillant d'un autre package. Le champs devrait être final pour éviter cette vulnérabilité.</p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="MS_PKGPROTECT">
-    <ShortDescription>Un champs devrait être <code>package protected</code></ShortDescription>
-    <LongDescription>{1} devrait être <code>package protected</code></LongDescription>
+    <ShortDescription>Un champs devrait être package protected</ShortDescription>
+    <LongDescription>{1} devrait être package protected</LongDescription>
     <Details>
 <![CDATA[
-<p>Un champs statique modifiable peut-être changé par accident ou par du code malveillant d'un autre package. Le champs devrait être <code>package protected</code> pour éviter cette vulnérabilité.</p>
+<p>Un champs statique modifiable peut-être changé par accident ou par du code malveillant d'un autre package. Le champs devrait être package protected pour éviter cette vulnérabilité.</p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="MS_MUTABLE_HASHTABLE">
-    <ShortDescription>Un champs modifiable est une <code>Hashtable</code></ShortDescription>
-    <LongDescription>{1} une <code>Hashtable</code> modifiable</LongDescription>
+    <ShortDescription>Un champs modifiable est une Hashtable</ShortDescription>
+    <LongDescription>{1} une Hashtable modifiable</LongDescription>
     <Details>
 <![CDATA[
-<p>Le champs est une référence <code>final static</code> à une <code>Hashtable</code> et peut-être modifié par accident ou par du code malveillant d'un autre package. Ce code peut librement modifier le contenu de la <code>Hashtable</code>.</p>
+<p>Le champs est une référence final static à une Hashtable et peut-être modifié par accident ou par du code malveillant d'un autre package. Ce code peut librement modifier le contenu de la Hashtable.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1179,8 +1179,8 @@ devrait être modifiée pour déclencher <code>NoSuchElementException</code> si ell
   </BugPattern>
 
   <BugPattern type="MS_CANNOT_BE_FINAL">
-    <ShortDescription>Un champs n'est pas <code>final</code> et ne peut pas être protégé face à du code malveillant</ShortDescription>
-    <LongDescription>{1} n'est pas <code>final</code> et n'est pas protégé face à du code malveillant</LongDescription>
+    <ShortDescription>Un champs n'est pas final et ne peut pas être protégé face à du code malveillant</ShortDescription>
+    <LongDescription>{1} n'est pas final et n'est pas protégé face à du code malveillant</LongDescription>
     <Details>
 <![CDATA[
 <p>Un champs statique modifiable peut-être modifié par accident ou par du code malveillant. Malheureusement, la façon dont ce champs est utilisé ne permet une correction aisée de ce problème.</p>
@@ -1219,141 +1219,141 @@ devrait être modifiée pour déclencher <code>NoSuchElementException</code> si ell
   </BugPattern>
 
   <BugPattern type="NM_LCASE_HASHCODE">
-    <ShortDescription>La classe définie <code>hashcode()</code> ; ne devrait ce pas être <code>hashCode()</code> ?</ShortDescription>
-    <LongDescription>La classe {0} définie <code>hashcode()</code> ; ne devrait ce pas êtres <code>hashCode()</code> ?</LongDescription>
+    <ShortDescription>La classe définie hashcode() ; ne devrait ce pas être hashCode() ?</ShortDescription>
+    <LongDescription>La classe {0} définie hashcode() ; ne devrait ce pas êtres hashCode() ?</LongDescription>
     <Details>
 <![CDATA[
-<p>Cette classe définie une méthode nommée <code>hashcode()</code>. Cette méthode ne surcharge pas la méthode <code>hashCode()</code> de <code>java.lang.Object</code>, ce qui est probablement ce qui était voulu.</p>
+<p>Cette classe définie une méthode nommée hashcode(). Cette méthode ne surcharge pas la méthode hashCode() de java.lang.Object, ce qui est probablement ce qui était voulu.</p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="NM_LCASE_TOSTRING">
-    <ShortDescription>La classe définie <code>tostring()</code> ; ne devrait ce pas être <code>toString()</code> ?</ShortDescription>
-    <LongDescription>La classe {0} défini <code>tostring()</code> ; ne devrait ce pas être <code>toString()</code> ?</LongDescription>
+    <ShortDescription>La classe définie tostring() ; ne devrait ce pas être toString() ?</ShortDescription>
+    <LongDescription>La classe {0} défini tostring() ; ne devrait ce pas être toString() ?</LongDescription>
     <Details>
 <![CDATA[
-<p>Cette classe définie une méthode appelée <code>tostring()</code>. Cette méthode ne surcharge pas la méthode <code>toString()</code> de <code>java.lang.Object</code>, ce qui est probablement ce qui était voulu.</p>
+<p>Cette classe définie une méthode appelée tostring(). Cette méthode ne surcharge pas la méthode toString() de java.lang.Object, ce qui est probablement ce qui était voulu.</p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="NM_BAD_EQUAL">
-    <ShortDescription>La classe défini <code>equal()</code> ; ne devrait ce pas être <code>equals()</code> ?</ShortDescription>
-    <LongDescription>La classe {0} défini <code>equal()</code> ; ne devrait-ce pas être <code>equals()</code> ?</LongDescription>
+    <ShortDescription>La classe défini equal() ; ne devrait ce pas être equals() ?</ShortDescription>
+    <LongDescription>La classe {0} défini equal() ; ne devrait-ce pas être equals() ?</LongDescription>
     <Details>
 <![CDATA[
-<p>Cette classe défini une méthode <code>equal(Object)</code>. Cette méthode ne surcharge pas la méthode <code>equals(Object)</code> de <code>java.lang.Object</code>, ce qui est probablement ce qui était voulu.</p>
+<p>Cette classe défini une méthode equal(Object). Cette méthode ne surcharge pas la méthode equals(Object) de java.lang.Object, ce qui est probablement ce qui était voulu.</p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="RR_NOT_CHECKED">
-    <ShortDescription>La méthode ignore le résultat de <code>InputStream.read()</code></ShortDescription>
+    <ShortDescription>La méthode ignore le résultat de InputStream.read()</ShortDescription>
     <LongDescription>{1} ignore le résultat de {2}</LongDescription>
     <Details>
 <![CDATA[
-<p>Cette méthode ignore la code retour d'une des variantes de <code>java.io.InputStream.read()</code> qui peut renvoyer de multiples octets. Si la valeur renvoyée n'est pas vérifiée, l'appelant ne sera pas capable de gérer correctement le cas ou moins d'octets que prévu auront été lus. C'est un bogue particulièrement insidieux car dans la plupart des programmes les lectures renvoient effectivement souvent le nombre d'octets demandé, les plantages restant sporadiques.</p>
+<p>Cette méthode ignore la code retour d'une des variantes de java.io.InputStream.read() qui peut renvoyer de multiples octets. Si la valeur renvoyée n'est pas vérifiée, l'appelant ne sera pas capable de gérer correctement le cas ou moins d'octets que prévu auront été lus. C'est un bogue particulièrement insidieux car dans la plupart des programmes les lectures renvoient effectivement souvent le nombre d'octets demandé, les plantages restant sporadiques.</p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="SR_NOT_CHECKED">
-    <ShortDescription>La méthode ignore le résultat de <code>InputStream.skip()</code></ShortDescription>
+    <ShortDescription>La méthode ignore le résultat de InputStream.skip()</ShortDescription>
     <LongDescription>{1} ignore le résultat de {2}</LongDescription>
     <Details>
 <![CDATA[
-<p>Cette méthode ignore la valeur renvoyée par <code>java.io.InputStream.skip()</code>, qui peut sauter de multiples octets. Si la valeur renvoyée n'est pas vérifiée, l'appelant n'est pas capable de gérer correctement les cas ou moins d'octets que prévu auront été sautés. C'est un type de bogue particulièrement insidieux car la plupart du temps le bon nombre d'octet sera effectivement sauté, et les plantages seront sporadiques. Néanmoins, sur les flux bufferisés, <code>skip()</code> ne s'applique qu'aux données du buffer et échoue fréquemment à sauter le nombre d'octets demandé.</p>
+<p>Cette méthode ignore la valeur renvoyée par java.io.InputStream.skip(), qui peut sauter de multiples octets. Si la valeur renvoyée n'est pas vérifiée, l'appelant n'est pas capable de gérer correctement les cas ou moins d'octets que prévu auront été sautés. C'est un type de bogue particulièrement insidieux car la plupart du temps le bon nombre d'octet sera effectivement sauté, et les plantages seront sporadiques. Néanmoins, sur les flux bufferisés, skip() ne s'applique qu'aux données du buffer et échoue fréquemment à sauter le nombre d'octets demandé.</p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="SE_NO_SUITABLE_CONSTRUCTOR_FOR_EXTERNALIZATION">
-    <ShortDescription>La classe est <code>Externalizable</code> mais ne définie pas de constructeur par défaut</ShortDescription>
-    <LongDescription>{0} est <code>Externalizable</code> mais ne défini pas de constructeur par défaut</LongDescription>
+    <ShortDescription>La classe est Externalizable mais ne définie pas de constructeur par défaut</ShortDescription>
+    <LongDescription>{0} est Externalizable mais ne défini pas de constructeur par défaut</LongDescription>
     <Details>
 <![CDATA[
-<p>Cette classe implémente l'interface <code>Externalizable</code>, mais ne défini pas de constructeur par défaut. Quand les objets <code>Externalizable</code> sont déserialisés, ils doivent d'abord être construit au moyen du constructeur par défaut. Cette classe n'en ayant pas, sérialisation et désérialisation échoueront à l'exécution.</p>
+<p>Cette classe implémente l'interface Externalizable, mais ne défini pas de constructeur par défaut. Quand les objets Externalizable sont déserialisés, ils doivent d'abord être construit au moyen du constructeur par défaut. Cette classe n'en ayant pas, sérialisation et désérialisation échoueront à l'exécution.</p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="SE_NO_SUITABLE_CONSTRUCTOR">
-    <ShortDescription>La classe est <code>Serializable</code> mais sa superclasse ne possède pas de constructeur par défaut visible</ShortDescription>
-    <LongDescription>{0} est <code>Serializable</code> mais sa superclasse ne possède pas de constructeur par défaut visible</LongDescription>
+    <ShortDescription>La classe est Serializable mais sa superclasse ne possède pas de constructeur par défaut visible</ShortDescription>
+    <LongDescription>{0} est Serializable mais sa superclasse ne possède pas de constructeur par défaut visible</LongDescription>
     <Details>
 <![CDATA[
-<p>Cette classe implémente l'interface <code>Serializable</code> mais pas sa superclasse. Quand un tel objet est désérialisé, les champs de la classe mère doivent être initialisés en invoquant le constructeur par défaut de la superclasse. Comme la superclasse n'en a pas, sérialisation et désérialisation échouent à l'exécution.</p>
+<p>Cette classe implémente l'interface Serializable mais pas sa superclasse. Quand un tel objet est désérialisé, les champs de la classe mère doivent être initialisés en invoquant le constructeur par défaut de la superclasse. Comme la superclasse n'en a pas, sérialisation et désérialisation échouent à l'exécution.</p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="SE_NO_SERIALVERSIONID">
-    <ShortDescription>La classe est <code>Serializable</code>, mais ne défini pas <code>serialVersionUID</code></ShortDescription>
-    <LongDescription>{0} est <code>Serializable</code> ; pensez à déclarer <code>serialVersionUID</code></LongDescription>
+    <ShortDescription>La classe est Serializable, mais ne défini pas serialVersionUID</ShortDescription>
+    <LongDescription>{0} est Serializable ; pensez à déclarer serialVersionUID</LongDescription>
     <Details>
 <![CDATA[
-<p>Cette classe implémente l'interface <code>Serializable</code> mais ne défini pas de champs <code>serialVersionUID</code>. Une modification aussi simple qu'ajouter une référence vers un objet .class ajoutera des champs synthétiques à la classe, ce qui malheureusement changera la valeur implicite de <code>serialVersionUID</code> (Ex. : ajouter une référence à <code>String.class</code> générera un champs statique <code>class$java$lang$String</code>). De plus, différents compilateurs source vers bytecode peuvent utiliser différentes conventions de nommage pour les variables synthétiques générées pour référencer les objets classes et les classes internes. Afin de garantir l'interopérabilité de <code>Serializable</code> suivant les versions, pensez à ajouter un champs <code>serialVersionUID</code> explicite.</p>
+<p>Cette classe implémente l'interface Serializable mais ne défini pas de champs serialVersionUID. Une modification aussi simple qu'ajouter une référence vers un objet .class ajoutera des champs synthétiques à la classe, ce qui malheureusement changera la valeur implicite de serialVersionUID (Ex. : ajouter une référence à String.class générera un champs statique class$java$lang$String). De plus, différents compilateurs source vers bytecode peuvent utiliser différentes conventions de nommage pour les variables synthétiques générées pour référencer les objets classes et les classes internes. Afin de garantir l'interopérabilité de Serializable suivant les versions, pensez à ajouter un champs serialVersionUID explicite.</p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="SF_SWITCH_FALLTHROUGH">
-  	<ShortDescription>Un <code>switch</code> comporte un cas qui déborde sur le suivant</ShortDescription>
-  	<LongDescription>Un <code>switch</code> de {1} comporte un cas qui déborde sur le suivant</LongDescription>
+  	<ShortDescription>Un switch comporte un cas qui déborde sur le suivant</ShortDescription>
+  	<LongDescription>Un switch de {1} comporte un cas qui déborde sur le suivant</LongDescription>
     <Details>
 <![CDATA[
-<p>Cette méthode contient un <code>switch</code> dont l'un des cas déborde sur le suivant. Normalement, vous devez terminer chaque cas avec un <code>break</code> ou un <code>return</code>.</p>
+<p>Cette méthode contient un switch dont l'un des cas déborde sur le suivant. Normalement, vous devez terminer chaque cas avec un break ou un return.</p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="WS_WRITEOBJECT_SYNC">
-    <ShortDescription>Seule la méthode <code>writeObject()</code> est synchronisée</ShortDescription>
-    <LongDescription>Seule la méthode <code>writeObject()</code> de {0} est synchronisée</LongDescription>
+    <ShortDescription>Seule la méthode writeObject() est synchronisée</ShortDescription>
+    <LongDescription>Seule la méthode writeObject() de {0} est synchronisée</LongDescription>
     <Details>
 <![CDATA[
-<p>Cette classe a une méthode <code>writeObject()</code> qui est synchronisée ; mais aucune autre méthode de cette classe n'est synchronisée.</p>
+<p>Cette classe a une méthode writeObject() qui est synchronisée ; mais aucune autre méthode de cette classe n'est synchronisée.</p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="RS_READOBJECT_SYNC">
-    <ShortDescription>Seule la méthode <code>readObject()</code> est synchronisée</ShortDescription>
-    <LongDescription>Seule la méthode <code>readObject()</code> de {0} est synchronisée</LongDescription>
+    <ShortDescription>Seule la méthode readObject() est synchronisée</ShortDescription>
+    <LongDescription>Seule la méthode readObject() de {0} est synchronisée</LongDescription>
     <Details>
 <![CDATA[
-<p>Cette classe <code>Serializable</code> défini une méthode <code>readObject()</code> qui est synchronisée. Par définition, un objet créé par désérialisation n'est accessible que par un unique thread, donc il n'y a aucun intérêt de synchroniser <code>readObject()</code>. Si la méthode <code>readObject()</code> en elle-même rend l'objet visible d'un autre thread, vous avez un exemple de style de code très douteux.</p>
+<p>Cette classe Serializable défini une méthode readObject() qui est synchronisée. Par définition, un objet créé par désérialisation n'est accessible que par un unique thread, donc il n'y a aucun intérêt de synchroniser readObject(). Si la méthode readObject() en elle-même rend l'objet visible d'un autre thread, vous avez un exemple de style de code très douteux.</p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="SE_NONSTATIC_SERIALVERSIONID">
-    <ShortDescription><code>serialVersionUID</code> n'est pas <code>static</code></ShortDescription>
-    <LongDescription>{1} n'est pas <code>static</code></LongDescription>
+    <ShortDescription>serialVersionUID n'est pas static</ShortDescription>
+    <LongDescription>{1} n'est pas static</LongDescription>
     <Details>
 <![CDATA[
-<p>Cette classe définie un champs <code>serialVersionUID</code> qui n'est pas statique. Le champs devrait être rendu statique si son but est de préciser l'identifiant de version utilisé pour la sérialisation.</p>
+<p>Cette classe définie un champs serialVersionUID qui n'est pas statique. Le champs devrait être rendu statique si son but est de préciser l'identifiant de version utilisé pour la sérialisation.</p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="SE_NONFINAL_SERIALVERSIONID">
-    <ShortDescription><code>serialVersionUID</code> n'est pas <code>final</code></ShortDescription>
-    <LongDescription>{1} n'est pas <code>final</code></LongDescription>
+    <ShortDescription>serialVersionUID n'est pas final</ShortDescription>
+    <LongDescription>{1} n'est pas final</LongDescription>
     <Details>
 <![CDATA[
-<p>Cette classe définie un champs <code>serialVersionUID</code> qui n'est pas <code>final</code>. Ce champs devrait être rendu <code>final</code> si son but est de préciser l'identifiant de version utilisé pour la sérialisation.</p>
+<p>Cette classe définie un champs serialVersionUID qui n'est pas final. Ce champs devrait être rendu final si son but est de préciser l'identifiant de version utilisé pour la sérialisation.</p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="SE_NONLONG_SERIALVERSIONID">
-    <ShortDescription><code>serialVersionUID</code> n'est pas de type <code>long</code></ShortDescription>
-    <LongDescription>{1} n'est pas <code>long</code></LongDescription>
+    <ShortDescription>serialVersionUID n'est pas de type long</ShortDescription>
+    <LongDescription>{1} n'est pas long</LongDescription>
     <Details>
 <![CDATA[
-<p>Cette classe définie un champs <code>serialVersionUID</code> qui n'est pas de type <code>long</code>. Ce champs devrait être de type <code>long</code> si son but est de préciser l'identifiant de version utilisé pour la sérialisation.</p>
+<p>Cette classe définie un champs serialVersionUID qui n'est pas de type long. Ce champs devrait être de type long si son but est de préciser l'identifiant de version utilisé pour la sérialisation.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1363,13 +1363,13 @@ devrait être modifiée pour déclencher <code>NoSuchElementException</code> si ell
     <LongDescription>La classe {0} définie le champs d'instance {1} non transient et non sérialisable</LongDescription>
     <Details>
 <![CDATA[
-<p>Cette classe <code>Serializable</code> définie un champs d'instance non primitif qui n'est ni <code>transient</code>, ni <code>Serializable</code> ou <code>java.lang.Object</code>, et qui ne semble pas implémenter l'interface <code>Externalizable</code> ou les méthodes <code>readObject()</code> et <code>writeObject()</code>. Les objets de cette classe ne seront pas désérialisés correctement si un objet non <code>Serializable</code> est stocké dans ce champs.</p>
+<p>Cette classe Serializable définie un champs d'instance non primitif qui n'est ni transient, ni Serializable ou java.lang.Object, et qui ne semble pas implémenter l'interface Externalizable ou les méthodes readObject() et writeObject(). Les objets de cette classe ne seront pas désérialisés correctement si un objet non Serializable est stocké dans ce champs.</p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="SC_START_IN_CTOR">
-    <ShortDescription>Un constructeur invoque <code>Thread.start()</code></ShortDescription>
+    <ShortDescription>Un constructeur invoque Thread.start()</ShortDescription>
     <LongDescription>{1} invoque {2}</LongDescription>
     <Details>
 <![CDATA[
@@ -1383,7 +1383,7 @@ devrait être modifiée pour déclencher <code>NoSuchElementException</code> si ell
     <LongDescription>Champs non lu : {1} devrait-il être statique ?</LongDescription>
     <Details>
 <![CDATA[
-<p>Cette classe contient un champs d'instance final qui est initialisé par une valeur statique déterminée à la compilation. Envisagez de rendre ce champs <code>static</code>.</p>
+<p>Cette classe contient un champs d'instance final qui est initialisé par une valeur statique déterminée à la compilation. Envisagez de rendre ce champs static.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1420,7 +1420,7 @@ devrait être modifiée pour déclencher <code>NoSuchElementException</code> si ell
 
   <BugPattern type="SIC_INNER_SHOULD_BE_STATIC">
     <ShortDescription>Devrait être une classe interne statique</ShortDescription>
-    <LongDescription>La classe {0} devrait-elle être une classe interne <code>static</code> ?</LongDescription>
+    <LongDescription>La classe {0} devrait-elle être une classe interne static ?</LongDescription>
     <Details>
 <![CDATA[
 <p>Cette classe est une classe interne, mais n'utilise pas sa référence vers l'objet qui l'a créée. Cette référence rend les instances de cette classe plus gros et peut garder active la référence à l'objet créateur plus longtemps que nécessaire. Si possible, la classe devrait être transformée en classe interne <em>static</em>.</p>
@@ -1430,10 +1430,10 @@ devrait être modifiée pour déclencher <code>NoSuchElementException</code> si ell
 
   <BugPattern type="SIC_INNER_SHOULD_BE_STATIC_ANON">
     <ShortDescription>Peut-être transformée en classe interne statique nommée</ShortDescription>
-    <LongDescription>La classe {0} pourrait-être transformée en classe interne <code>static</code></LongDescription>
+    <LongDescription>La classe {0} pourrait-être transformée en classe interne static</LongDescription>
     <Details>
 <![CDATA[
-<p>Cette classe est une classe interne qui n'utilise pas sa référence vers l'objet qui l'a créée. Cette référence rend l'objet plus gros et peut garder active la référence de l'objet créateur plus longtemps que nécessaire. Si possible, la classe devrait être transformée en classe interne <em>static</em>. Puisque les classes anonymes ne peuvent pas être marquées comme <code>static</code>, il faudrait également nommer cette classe.</p>
+<p>Cette classe est une classe interne qui n'utilise pas sa référence vers l'objet qui l'a créée. Cette référence rend l'objet plus gros et peut garder active la référence de l'objet créateur plus longtemps que nécessaire. Si possible, la classe devrait être transformée en classe interne <em>static</em>. Puisque les classes anonymes ne peuvent pas être marquées comme static, il faudrait également nommer cette classe.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1449,21 +1449,21 @@ devrait être modifiée pour déclencher <code>NoSuchElementException</code> si ell
   </BugPattern>
 
   <BugPattern type="WA_NOT_IN_LOOP">
-    <ShortDescription>Méthode contenant un <code>wait()</code> en dehors d'une boucle</ShortDescription>
-    <LongDescription><code>wait()</code> en dehors d'une boucle dans {1}</LongDescription>
+    <ShortDescription>Méthode contenant un wait() en dehors d'une boucle</ShortDescription>
+    <LongDescription>wait() en dehors d'une boucle dans {1}</LongDescription>
     <Details>
 <![CDATA[
-<p>Cette méthode contient un appel à <code>java.lang.Object.wait()</code> qui n'est pas dans une boucle. Si le moniteur est utilisé pour des conditions multiples, la condition que l'appelant attend peut ne pas être celle qui s'est réellement déclenchée.</p>
+<p>Cette méthode contient un appel à java.lang.Object.wait() qui n'est pas dans une boucle. Si le moniteur est utilisé pour des conditions multiples, la condition que l'appelant attend peut ne pas être celle qui s'est réellement déclenchée.</p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="NO_NOTIFY_NOT_NOTIFYALL">
-    <ShortDescription>Utilisation de <code>notify()</code> plutôt que <code>notifyAll()</code> dans une méthode</ShortDescription>
-    <LongDescription>Utilisation de <code>notify()</code> plutôt que <code>notifyAll()</code> dans {1}</LongDescription>
+    <ShortDescription>Utilisation de notify() plutôt que notifyAll() dans une méthode</ShortDescription>
+    <LongDescription>Utilisation de notify() plutôt que notifyAll() dans {1}</LongDescription>
     <Details>
 <![CDATA[
-<p>Cette méthode appelle <code>notify()</code> plutôt que <code>notifyAll()</code>. Le moniteur Java est souvent utilisé pour de multiples conditions. Appeler <code>notify()</code> ne réveille qu'un thread, ce qui signifie que le thread réveillé peut ne pas être celui qui attend la condition que l'appelant vient de remplir.</p>
+<p>Cette méthode appelle notify() plutôt que notifyAll(). Le moniteur Java est souvent utilisé pour de multiples conditions. Appeler notify() ne réveille qu'un thread, ce qui signifie que le thread réveillé peut ne pas être celui qui attend la condition que l'appelant vient de remplir.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1473,7 +1473,7 @@ devrait être modifiée pour déclencher <code>NoSuchElementException</code> si ell
     <LongDescription>Possible double-vérification de {2} dans {1}</LongDescription>
     <Details>
 <![CDATA[
-<p>Ceci est une double-vérification découverte par le détecteur basé sur <code>ByteCodePattern</code>.</p>
+<p>Ceci est une double-vérification découverte par le détecteur basé sur ByteCodePattern.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1489,53 +1489,53 @@ devrait être modifiée pour déclencher <code>NoSuchElementException</code> si ell
   </BugPattern>
 
   <BugPattern type="NP_ALWAYS_NULL">
-    <ShortDescription>Déréférencement d'un pointeur <code>null</code> dans la méthode</ShortDescription>
-    <LongDescription>Déréférencement d'un pointeur <code>null</code> dans la méthode {1}</LongDescription>
+    <ShortDescription>Déréférencement d'un pointeur null dans la méthode</ShortDescription>
+    <LongDescription>Déréférencement d'un pointeur null dans la méthode {1}</LongDescription>
     <Details>
 <![CDATA[
-<p>Un pointeur à <code>null</code> est déréférencé ici. Ceci va mener à une <code>NullPointerException</code> quand le code sera exécuté.</p>
+<p>Un pointeur à null est déréférencé ici. Ceci va mener à une NullPointerException quand le code sera exécuté.</p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="NP_ALWAYS_NULL_EXCEPTION">
-    <ShortDescription>Déréférencement d'un pointeur <code>null</code> dans le chemin d'exception d'une méthode</ShortDescription>
-    <LongDescription>Déréférencement d'un pointeur <code>null</code> dans le chemin d'exception de {1}</LongDescription>
+    <ShortDescription>Déréférencement d'un pointeur null dans le chemin d'exception d'une méthode</ShortDescription>
+    <LongDescription>Déréférencement d'un pointeur null dans le chemin d'exception de {1}</LongDescription>
     <Details>
 <![CDATA[
-<p>Un pointeur à <code>null</code> dans le chemin d'exception est déréférencée ici. Cela va mener à une <code>NullPointerException</code> quand le code sera exécuté. Notez que puisque FindBugs ne détecte pas les chemins d'exception irréalisables, cette alarme peut-être sans raison.</p>
-<p>Notez aussi que FindBugs considère le choix par défaut d'un <code>switch</code> comme étant dans le chemin d'exception, puisque ce choix est souvent irréalisable.</p>
+<p>Un pointeur à null dans le chemin d'exception est déréférencée ici. Cela va mener à une NullPointerException quand le code sera exécuté. Notez que puisque FindBugs ne détecte pas les chemins d'exception irréalisables, cette alarme peut-être sans raison.</p>
+<p>Notez aussi que FindBugs considère le choix par défaut d'un switch comme étant dans le chemin d'exception, puisque ce choix est souvent irréalisable.</p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="NP_NULL_ON_SOME_PATH">
-    <ShortDescription>Possible déréférencement d'un pointeur <code>null</code> dans une méthode</ShortDescription>
-    <LongDescription>Possible déréférencement d'un pointeur <code>null</code> dans {1}</LongDescription>
+    <ShortDescription>Possible déréférencement d'un pointeur null dans une méthode</ShortDescription>
+    <LongDescription>Possible déréférencement d'un pointeur null dans {1}</LongDescription>
     <Details>
 <![CDATA[
-<p>Une valeur par référence déréférencée ici peut-être à <code>null</code> à l'exécution. Cela peut conduire à une <code>NullPointerException</code> quand le code est exécuté.</p>
+<p>Une valeur par référence déréférencée ici peut-être à null à l'exécution. Cela peut conduire à une NullPointerException quand le code est exécuté.</p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="NP_NULL_ON_SOME_PATH_EXCEPTION">
-    <ShortDescription>Possible déréférencement d'un pointeur <code>null</code> dans le chemin d'exception d'une méthode</ShortDescription>
-    <LongDescription>Possible déréférencement d'un pointeur <code>null</code> dans le chemin d'exception de {1}</LongDescription>
+    <ShortDescription>Possible déréférencement d'un pointeur null dans le chemin d'exception d'une méthode</ShortDescription>
+    <LongDescription>Possible déréférencement d'un pointeur null dans le chemin d'exception de {1}</LongDescription>
     <Details>
 <![CDATA[
-<p>Une valeur par référence qui est à <code>null</code> dans un des chemin d'exception est déréférencée ici. Ceci peut conduire à une <code>NullPointerException</code> à l'exécution du code. Notez que comme FindBugs ne repère pas les chemins d'exception irréalisables, il est possible que cette alarme soit injustifiée.</p>
-<p>Notez également que FindBugs considère le cas par défaut d'un <code>switch</code> comme faisant partie du chemin d'exception puisque ce cas est souvent inattendu.</p>
+<p>Une valeur par référence qui est à null dans un des chemin d'exception est déréférencée ici. Ceci peut conduire à une NullPointerException à l'exécution du code. Notez que comme FindBugs ne repère pas les chemins d'exception irréalisables, il est possible que cette alarme soit injustifiée.</p>
+<p>Notez également que FindBugs considère le cas par défaut d'un switch comme faisant partie du chemin d'exception puisque ce cas est souvent inattendu.</p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="SI_INSTANCE_BEFORE_FINALS_ASSIGNED">
-    <ShortDescription>Initialiseur statique de classe créant une instance avant que tous les champs <code>static final</code> soient alimentés</ShortDescription>
-    <LongDescription>L'initialiseur statique de {0} créé une instance avant que tous les champs <code>static final</code> soient alimentés</LongDescription>
+    <ShortDescription>Initialiseur statique de classe créant une instance avant que tous les champs static final soient alimentés</ShortDescription>
+    <LongDescription>L'initialiseur statique de {0} créé une instance avant que tous les champs static final soient alimentés</LongDescription>
     <Details>
 <![CDATA[
-<p>L'initialiseur static de la classe créé une instance de la classe avant que tous les champs <code>static final</code> soient alimentés.</p>
+<p>L'initialiseur static de la classe créé une instance de la classe avant que tous les champs static final soient alimentés.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1545,7 +1545,7 @@ devrait être modifiée pour déclencher <code>NoSuchElementException</code> si ell
     <LongDescription>La méthode {1} peut ne pas fermer un flux</LongDescription>
     <Details>
 <![CDATA[
-<p>La méthode créé un objet de flux d'E/S, ne l'assigne à aucun champs, ne le passe à aucune méthode, ne le renvoi pas et ne semble pas le fermer dans tous les chemins d'exécution. Ceci peut entraîner le blocage d'un descripteur de fichier. C'est généralement une bonne idée d'utiliser un bloc <code>finally</code> pour s'assurer de la fermeture des flux.</p>
+<p>La méthode créé un objet de flux d'E/S, ne l'assigne à aucun champs, ne le passe à aucune méthode, ne le renvoi pas et ne semble pas le fermer dans tous les chemins d'exécution. Ceci peut entraîner le blocage d'un descripteur de fichier. C'est généralement une bonne idée d'utiliser un bloc finally pour s'assurer de la fermeture des flux.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1555,18 +1555,18 @@ devrait être modifiée pour déclencher <code>NoSuchElementException</code> si ell
     <LongDescription>La méthode {1} peut ne pas fermer un flux en cas d'exception</LongDescription>
     <Details>
 <![CDATA[
-<p>La méthode créé un flux d'E/S, ne l'affecte à aucun champs, ne le passe à aucune méthode, ne le renvoi pas, et ne semble pas le fermer dans tous les chemins d'exception possible. Ceci peut provoquer le blocage d'un descripteur de fichier. C'est généralement une bonne idée d'utiliser une bloc <code>finally</code> pour garantir la fermeture des flux.</p>
+<p>La méthode créé un flux d'E/S, ne l'affecte à aucun champs, ne le passe à aucune méthode, ne le renvoi pas, et ne semble pas le fermer dans tous les chemins d'exception possible. Ceci peut provoquer le blocage d'un descripteur de fichier. C'est généralement une bonne idée d'utiliser une bloc finally pour garantir la fermeture des flux.</p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="PZLA_PREFER_ZERO_LENGTH_ARRAYS">
-    <ShortDescription>Envisagez de renvoyer un tableau vide plutôt que <code>null</code></ShortDescription>
-    <LongDescription>La méthode {1} devrait-elle renvoyer un tableau vide plutôt que <code>null</code> ?</LongDescription>
+    <ShortDescription>Envisagez de renvoyer un tableau vide plutôt que null</ShortDescription>
+    <LongDescription>La méthode {1} devrait-elle renvoyer un tableau vide plutôt que null ?</LongDescription>
     <Details>
 <![CDATA[
-<p>Renvoyer un tableau vide est souvent une meilleure conception que de renvoyer une référence à <code>null</code> pour signaler qu'il n'y a pas de résultat (c'est-à-dire, une liste vide de résultats). De cette façon, aucune vérification explicite du <code>null</code> n'est nécessaire dans les méthodes clientes.</p>
-<p>D'un autre côté, utiliser <code>null</code> signifie "il n'y a pas de réponse à cette question". Cela peut donc être approprié. Par exemple, <code>File.listFiles()</code> renvoi une liste vide si un répertoire donné ne contient pas de fichiers, et renvoi <code>null</code> si le fichier n'est pas un répertoire.</p>
+<p>Renvoyer un tableau vide est souvent une meilleure conception que de renvoyer une référence à null pour signaler qu'il n'y a pas de résultat (c'est-à-dire, une liste vide de résultats). De cette façon, aucune vérification explicite du null n'est nécessaire dans les méthodes clientes.</p>
+<p>D'un autre côté, utiliser null signifie "il n'y a pas de réponse à cette question". Cela peut donc être approprié. Par exemple, File.listFiles() renvoi une liste vide si un répertoire donné ne contient pas de fichiers, et renvoi null si le fichier n'est pas un répertoire.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1586,20 +1586,20 @@ devrait être modifiée pour déclencher <code>NoSuchElementException</code> si ell
   </BugPattern>
 
   <BugPattern type="RCN_REDUNDANT_COMPARISON_TO_NULL">
-    <ShortDescription>Comparaison redondante à <code>null</code></ShortDescription>
-    <LongDescription>Comparaison redondante à <code>null</code> dans {1}</LongDescription>
+    <ShortDescription>Comparaison redondante à null</ShortDescription>
+    <LongDescription>Comparaison redondante à null dans {1}</LongDescription>
     <Details>
 <![CDATA[
-<p>Cette méthode contient une comparaison redondante d'une référence avec <code>null</code>. Deux types de redondances sont signalés :
+<p>Cette méthode contient une comparaison redondante d'une référence avec null. Deux types de redondances sont signalés :
 <ul>
-<li>les deux valeurs comparées sont définitivement à <code>null</code></li>
-<li>une valeur est définitivement à <code>null</code> tandis que l'autre ne pourra jamais l'être</li>
+<li>les deux valeurs comparées sont définitivement à null</li>
+<li>une valeur est définitivement à null tandis que l'autre ne pourra jamais l'être</li>
 </ul>
 </p>
 <p>Cette alarme particulière représente deux sortes de comparaisons redondantes :
 <ol>
-<li>Une valeur a été déréférencée, puis explicitement comparée à <code>null</code> : ceci indique souvent une erreur dans la méthode</li>
-<li>Une value littérale <code>null</code> a été explicitement comparée à <code>null</code> : ceci peut indiquer que la méthode a été modifiée sans comprendre tous ces invariants</li>
+<li>Une valeur a été déréférencée, puis explicitement comparée à null : ceci indique souvent une erreur dans la méthode</li>
+<li>Une value littérale null a été explicitement comparée à null : ceci peut indiquer que la méthode a été modifiée sans comprendre tous ces invariants</li>
 </ol>
 </p>
 ]]>
@@ -1607,17 +1607,17 @@ devrait être modifiée pour déclencher <code>NoSuchElementException</code> si ell
   </BugPattern>
 
   <BugPattern type="RCN_REDUNDANT_CHECKED_NULL_COMPARISION">
-    <ShortDescription>Comparaison redondante à <code>null</code> d'une valeur préalablement vérifiée</ShortDescription>
-    <LongDescription>Comparaison redondante à <code>null</code> d'une valeur préalablement vérifiée dans {1}</LongDescription>
+    <ShortDescription>Comparaison redondante à null d'une valeur préalablement vérifiée</ShortDescription>
+    <LongDescription>Comparaison redondante à null d'une valeur préalablement vérifiée dans {1}</LongDescription>
     <Details>
 <![CDATA[
-<p>Cette méthode contient une comparaison redondante d'une référence à <code>null</code>. Deux types de comparaisons redondantes sont signalés :
+<p>Cette méthode contient une comparaison redondante d'une référence à null. Deux types de comparaisons redondantes sont signalés :
 <ul>
-<li>les deux valeurs sont définitivement à <code>null</code></li>
-<li>une valeur est définitivement à <code>null</code> et l'autre ne pourra jamais l'être</li>
+<li>les deux valeurs sont définitivement à null</li>
+<li>une valeur est définitivement à null et l'autre ne pourra jamais l'être</li>
 </ul>
 </p>
-<p>Cette alarme signale généralement qu'une variable connue pour être différente de <code>null</code> est comparée avec <code>null</code>. Bien que le test ne soit pas nécessaire, ce peut-être un simple cas de programmation défensive.</p>
+<p>Cette alarme signale généralement qu'une variable connue pour être différente de null est comparée avec null. Bien que le test ne soit pas nécessaire, ce peut-être un simple cas de programmation défensive.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1627,7 +1627,7 @@ devrait être modifiée pour déclencher <code>NoSuchElementException</code> si ell
     <LongDescription>La méthode {1} ne libère pas un verrou dans tous les chemins d'exécution</LongDescription>
     <Details>
 <![CDATA[
-<p>Cette méthode acquière un verrou JSR-166 (<code>java.util.concurrent</code>), mais ne le libère pas dans tous les chemins d'exécution. En général, l'idiome correct pour utiliser un verrou JSR-166 est :</p>
+<p>Cette méthode acquière un verrou JSR-166 (java.util.concurrent), mais ne le libère pas dans tous les chemins d'exécution. En général, l'idiome correct pour utiliser un verrou JSR-166 est :</p>
 <pre>
     Lock l = ...;
     l.lock();
@@ -1646,7 +1646,7 @@ devrait être modifiée pour déclencher <code>NoSuchElementException</code> si ell
     <LongDescription>La méthode {1} ne libère pas un verrou dans tous les chemins d'exception</LongDescription>
     <Details>
 <![CDATA[
-<p>Cette méthode acquière un verrou JSR-166 (<code>java.util.concurrent</code>), mais ne le libère pas dans tous les chemins d'exception. En général, l'idiome correct pour utiliser un verrou JSR-166 est :</p>
+<p>Cette méthode acquière un verrou JSR-166 (java.util.concurrent), mais ne le libère pas dans tous les chemins d'exception. En général, l'idiome correct pour utiliser un verrou JSR-166 est :</p>
 <pre>
     Lock l = ...;
     l.lock();
@@ -1665,57 +1665,57 @@ devrait être modifiée pour déclencher <code>NoSuchElementException</code> si ell
     <LongDescription>Comparaison suspecte des références {3} dans {1}</LongDescription>
     <Details>
 <![CDATA[
-<p>Cette méthode compare deux références avec l'opérateur <code>==</code> ou <code>!=</code>, alors que la façon correcte de comparer les instances de ce type est généralement d'utiliser la méthode <code>equals()</code>. Des exemples de classes qui ne doivent généralement pas être comparées par référence sont <code>java.lang.Integer</code>, <code>java.lang.Float</code>, etc...</p>
+<p>Cette méthode compare deux références avec l'opérateur == ou !=, alors que la façon correcte de comparer les instances de ce type est généralement d'utiliser la méthode equals(). Des exemples de classes qui ne doivent généralement pas être comparées par référence sont java.lang.Integer, java.lang.Float, etc...</p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="EC_UNRELATED_TYPES">
-    <ShortDescription>Appel de <code>equals()</code> comparant des types différents</ShortDescription>
-    <LongDescription>Appel de <code>equals()</code> comparant des types différents dans {1}</LongDescription>
+    <ShortDescription>Appel de equals() comparant des types différents</ShortDescription>
+    <LongDescription>Appel de equals() comparant des types différents dans {1}</LongDescription>
     <Details>
 <![CDATA[
-<p>Cette méthode appelle <code>equals(Object)</code> pour deux références de type différents. D'après le contrat de <code>equals()</code>, les objets de classes différentes devraient toujours être inégaux, c'est pourquoi la comparaison a de forte chances de toujours renvoyer <code>false</code> à l'exécution.</p>
+<p>Cette méthode appelle equals(Object) pour deux références de type différents. D'après le contrat de equals(), les objets de classes différentes devraient toujours être inégaux, c'est pourquoi la comparaison a de forte chances de toujours renvoyer false à l'exécution.</p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="EC_UNRELATED_INTERFACES">
-    <ShortDescription>Appel de <code>equals()</code> comparant différentes interfaces</ShortDescription>
-    <LongDescription>Appel de <code>equals()</code> comparant différents types d'interface dans {1}</LongDescription>
+    <ShortDescription>Appel de equals() comparant différentes interfaces</ShortDescription>
+    <LongDescription>Appel de equals() comparant différents types d'interface dans {1}</LongDescription>
     <Details>
 <![CDATA[
-<p>Cette méthode appelle <code>equals(Object)</code> pour deux références d'interfaces sans rapport (aucune n'est un sous-type de l'autre). D'après le contrat de <code>equals()</code>, les objets de classes différentes devraient toujours être inégaux. Notez qu'il est possible que le programme contienne des classes qui implémentent les deux interfaces, donc la comparaison peut-être valide. Dans tous les cas, il est utile de regarder ça de plus prêt.</p>
+<p>Cette méthode appelle equals(Object) pour deux références d'interfaces sans rapport (aucune n'est un sous-type de l'autre). D'après le contrat de equals(), les objets de classes différentes devraient toujours être inégaux. Notez qu'il est possible que le programme contienne des classes qui implémentent les deux interfaces, donc la comparaison peut-être valide. Dans tous les cas, il est utile de regarder ça de plus prêt.</p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="EC_NULL_ARG">
-    <ShortDescription>Appel de <code>equals()</code> avec un argument à <code>null</code></ShortDescription>
-    <LongDescription>Appel de <code>equals()</code> avec un argument à <code>null</code> dans {1}</LongDescription>
+    <ShortDescription>Appel de equals() avec un argument à null</ShortDescription>
+    <LongDescription>Appel de equals() avec un argument à null dans {1}</LongDescription>
     <Details>
 <![CDATA[
-<p>Cette méthode appelle <code>equals(Object)</code>, passant une valeur à <code>null</code> comme argument. D'après le contrat de la méthode <code>equals()</code>, cet appel devrait systématiquement renvoyer <code>false</code>.</p>
+<p>Cette méthode appelle equals(Object), passant une valeur à null comme argument. D'après le contrat de la méthode equals(), cet appel devrait systématiquement renvoyer false.</p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="MWN_MISMATCHED_WAIT">
-    <ShortDescription><code>wait()</code> non appareillé</ShortDescription>
-    <LongDescription><code>wait()</code> non appareillé dans {1}</LongDescription>
+    <ShortDescription>wait() non appareillé</ShortDescription>
+    <LongDescription>wait() non appareillé dans {1}</LongDescription>
     <Details>
 <![CDATA[
-<p>Cette méthode appelle <code>Object.wait()</code> sans détenir, visiblement, de verrou sur l'objet. Appeler <code>wait()</code> sans détenir de verrou entraîne le déclenchement d'une <code>IllegalMonitorStateException</code>.</p>
+<p>Cette méthode appelle Object.wait() sans détenir, visiblement, de verrou sur l'objet. Appeler wait() sans détenir de verrou entraîne le déclenchement d'une IllegalMonitorStateException.</p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="MWN_MISMATCHED_NOTIFY">
-    <ShortDescription><code>notify()</code> non appareillé</ShortDescription>
-    <LongDescription><code>notify()</code> non appareillé dans {1}</LongDescription>
+    <ShortDescription>notify() non appareillé</ShortDescription>
+    <LongDescription>notify() non appareillé dans {1}</LongDescription>
     <Details>
 <![CDATA[
-<p>Cette méthode appelle <code>Object.notify()</code> ou <code>Object.notifyAll()</code> sans détenir, visiblement, de verrou sur l'objet. Appeler <code>notify()</code> ou <code>notifyAll()</code> sans détenir de verrou entraîne le déclenchement d'une <code>IllegalMonitorStateException</code>.</p>
+<p>Cette méthode appelle Object.notify() ou Object.notifyAll() sans détenir, visiblement, de verrou sur l'objet. Appeler notify() ou notifyAll() sans détenir de verrou entraîne le déclenchement d'une IllegalMonitorStateException.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1759,7 +1759,7 @@ De telles affectations sont inutiles et peuvent indiquer une faute de frappe ou 
     <LongDescription>Des masques binaires incompatibles renvoient un résultat constant dans {1}</LongDescription>
     <Details>
 <![CDATA[
-<p>Cette méthode compare une expression de la forme <code>(a &amp; C)</code> avec D, qui est toujours inégale en raison des valeurs spécifiques des constantes C et D. Cela peut indiquer une faute de frappe ou une erreur logique.</p>
+<p>Cette méthode compare une expression de la forme (a &amp; C) avec D, qui est toujours inégale en raison des valeurs spécifiques des constantes C et D. Cela peut indiquer une faute de frappe ou une erreur logique.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1769,7 +1769,7 @@ De telles affectations sont inutiles et peuvent indiquer une faute de frappe ou 
     <LongDescription>Des masques binaires incompatibles renvoient un résultat constant dans {1}</LongDescription>
     <Details>
 <![CDATA[
-<p>Cette méthode compare une expression de la forme <code>(a &amp; 0)</code> avec 0, qui est toujours égale. Ceci peut indiquer une faute de frappe ou une erreur logique.</p>
+<p>Cette méthode compare une expression de la forme (a &amp; 0) avec 0, qui est toujours égale. Ceci peut indiquer une faute de frappe ou une erreur logique.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1779,8 +1779,8 @@ De telles affectations sont inutiles et peuvent indiquer une faute de frappe ou 
     <LongDescription>Des masques binaires incompatibles renvoient un résultat constant dans {1}</LongDescription>
     <Details>
 <![CDATA[
-<p>Cette méthode compare une expression de la forme <code>(a | C)</code> avec D, qui est toujours inégale en raison des valeurs spécifiques des constantes C et D. Ceci peut indiquer une erreur logique ou une faute de frappe.</p>
-<p>Typiquement, ce bogue arrive quand du code essaye d'effectuer un test d'apparition d'un bit mais utilise l'opérateur OU ("<code>|</code>") au lieu de l'opérateur ET ("<code>&amp;</code>").</p>
+<p>Cette méthode compare une expression de la forme (a | C) avec D, qui est toujours inégale en raison des valeurs spécifiques des constantes C et D. Ceci peut indiquer une erreur logique ou une faute de frappe.</p>
+<p>Typiquement, ce bogue arrive quand du code essaye d'effectuer un test d'apparition d'un bit mais utilise l'opérateur OU ("|") au lieu de l'opérateur ET ("&amp;").</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1790,7 +1790,7 @@ De telles affectations sont inutiles et peuvent indiquer une faute de frappe ou 
     <LongDescription>Initialisation paresseuse incorrecte du champs d'instance {2} dans {1}</LongDescription>
     <Details>
 <![CDATA[
-<p>Cette méthode contient une initialisation paresseuse non synchronisée d'un champs non volatile. Comme le compilateur ou le processeur peuvent réordonner les instructions, les threads ne sont pas certains de voir un objet complètement initialisé, <em>si la méthode peut-être appelée par de multiples threads</em>. Vous pouvez rendre le champs <code>volatile</code> pour corriger le problème. Pour plus d'informations, cf. <a href="http://www.cs.umd.edu/~pugh/java/memoryModel/">site Web sur le modèle mémoire de Java</a>.</p>
+<p>Cette méthode contient une initialisation paresseuse non synchronisée d'un champs non volatile. Comme le compilateur ou le processeur peuvent réordonner les instructions, les threads ne sont pas certains de voir un objet complètement initialisé, <em>si la méthode peut-être appelée par de multiples threads</em>. Vous pouvez rendre le champs volatile pour corriger le problème. Pour plus d'informations, cf. <a href="http://www.cs.umd.edu/~pugh/java/memoryModel/">site Web sur le modèle mémoire de Java</a>.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1800,17 +1800,17 @@ De telles affectations sont inutiles et peuvent indiquer une faute de frappe ou 
     <LongDescription>Initialisation paresseuse incorrecte du champs statique {2} dans {1}</LongDescription>
     <Details>
 <![CDATA[
-<p>Cette méthode contient une initialisation paresseuse non synchronisée d'un champs statique non volatile. Comme le compilateur ou le processeur peuvent réordonner les instructions, les threads ne sont pas certains de voir un objet complètement initialisé, <em>si la méthode peut-être appelée par de multiples threads</em>. Vous pouvez rendre le champs <code>volatile</code> pour corriger le problème. Pour plus d'informations, cf. <a href="http://www.cs.umd.edu/~pugh/java/memoryModel/">site Web sur le modèle mémoire de Java</a>.</p>
+<p>Cette méthode contient une initialisation paresseuse non synchronisée d'un champs statique non volatile. Comme le compilateur ou le processeur peuvent réordonner les instructions, les threads ne sont pas certains de voir un objet complètement initialisé, <em>si la méthode peut-être appelée par de multiples threads</em>. Vous pouvez rendre le champs volatile pour corriger le problème. Pour plus d'informations, cf. <a href="http://www.cs.umd.edu/~pugh/java/memoryModel/">site Web sur le modèle mémoire de Java</a>.</p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="JLM_JSR166_LOCK_MONITORENTER">
-    <ShortDescription>Synchronisation effectuée sur un <code>Lock</code> JSR166</ShortDescription>
-    <LongDescription>Synchronisation effectuée sur un <code>Lock</code> JSR166 dans la méthode {1}</LongDescription>
+    <ShortDescription>Synchronisation effectuée sur un Lock JSR166</ShortDescription>
+    <LongDescription>Synchronisation effectuée sur un Lock JSR166 dans la méthode {1}</LongDescription>
 <Details>
 <![CDATA[
-<p>Cette méthode se synchronise au moyen d'une implémentation de <code>java.util.concurrent.locks.Lock</code>. Vous devriez plutôt utiliser les méthodes <code>lock()</code> et <code>unlock()</code>.</p>
+<p>Cette méthode se synchronise au moyen d'une implémentation de java.util.concurrent.locks.Lock. Vous devriez plutôt utiliser les méthodes lock() et unlock().</p>
 ]]>
 </Details>
   </BugPattern>
@@ -1831,7 +1831,7 @@ De telles affectations sont inutiles et peuvent indiquer une faute de frappe ou 
     <LongDescription>La méthode {1} peut ne pas fermer une ressource base de données</LongDescription>
     <Details>
 <![CDATA[
-<p>Cette méthode créé une ressource base de données (telle qu'une connexion ou un <code>RowSet</code>), ne l'affecte à aucun champs, ne la passe à aucune autre méthode, ne la renvoie pas, et ne semble pas la fermer dans tous les chemins d'exécution. Ne pas fermer une ressource base de données dans tous les chemins d'exécution peut entraîner de faibles performances et poser des problèmes de communication entre la base de données et l'application.</p>
+<p>Cette méthode créé une ressource base de données (telle qu'une connexion ou un RowSet), ne l'affecte à aucun champs, ne la passe à aucune autre méthode, ne la renvoie pas, et ne semble pas la fermer dans tous les chemins d'exécution. Ne pas fermer une ressource base de données dans tous les chemins d'exécution peut entraîner de faibles performances et poser des problèmes de communication entre la base de données et l'application.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1841,18 +1841,18 @@ De telles affectations sont inutiles et peuvent indiquer une faute de frappe ou 
     <LongDescription>La méthode {1} peut ne pas fermer une ressource de base de données en cas d'exception</LongDescription>
     <Details>
 <![CDATA[
-<p>Cette méthode créé une ressource base de données (telle qu'une connexion ou un <code>RowSet</code>), ne l'affecte à aucun champs, ne la passe à aucune autre méthode, ne la renvoie pas, et ne semble pas la fermer dans tous les chemins d'exception. Ne pas fermer une ressource base de données peut entraîner de faibles performances et poser des problèmes de communication entre la base de données et l'application.</p>
+<p>Cette méthode créé une ressource base de données (telle qu'une connexion ou un RowSet), ne l'affecte à aucun champs, ne la passe à aucune autre méthode, ne la renvoie pas, et ne semble pas la fermer dans tous les chemins d'exception. Ne pas fermer une ressource base de données peut entraîner de faibles performances et poser des problèmes de communication entre la base de données et l'application.</p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="SBSC_USE_STRINGBUFFER_CONCATENATION">
-    <ShortDescription>La méthode concatène des chaînes au moyen de <code>+</code> en boucle</ShortDescription>
-    <LongDescription>La méthode {1} concatène des chaînes au moyen de <code>+</code> en boucle</LongDescription>
+    <ShortDescription>La méthode concatène des chaînes au moyen de + en boucle</ShortDescription>
+    <LongDescription>La méthode {1} concatène des chaînes au moyen de + en boucle</LongDescription>
     <Details>
 <![CDATA[
-<p>Cette méthode semble construire une <code>String</code> en utilisant une concaténation en boucle. A chaque itération, l'objet <code>String</code> est converti en <code>StringBuffer</code>/<code>StringBuilder</code>, complété, puis de nouveau converti en <code>String</code>. Ceci a un coût exponentiel en fonction du nombre d'itérations, puisque la chaîne est recopiée à chaque itération.</p>
-<p>De meilleurs performances peuvent être obtenues en utilisant explicitement <code>StringBuffer</code> (ou <code>StringBuilder</code> en Java 1.5).</p>
+<p>Cette méthode semble construire une String en utilisant une concaténation en boucle. A chaque itération, l'objet String est converti en StringBuffer/StringBuilder, complété, puis de nouveau converti en String. Ceci a un coût exponentiel en fonction du nombre d'itérations, puisque la chaîne est recopiée à chaque itération.</p>
+<p>De meilleurs performances peuvent être obtenues en utilisant explicitement StringBuffer (ou StringBuilder en Java 1.5).</p>
 <p>Par exemple :</p>
 <pre>
   // C'est mal !
@@ -1873,11 +1873,11 @@ De telles affectations sont inutiles et peuvent indiquer une faute de frappe ou 
   </BugPattern>
 
   <BugPattern type="ITA_INEFFICIENT_TO_ARRAY">
-    <ShortDescription>La méthode utilise <code>toArray()</code> avec un tableau vide en paramètre</ShortDescription>
-    <LongDescription>La méthode {1} utilise <code>Collection.toArray()</code> avec un tableau vide en paramètre</LongDescription>
+    <ShortDescription>La méthode utilise toArray() avec un tableau vide en paramètre</ShortDescription>
+    <LongDescription>La méthode {1} utilise Collection.toArray() avec un tableau vide en paramètre</LongDescription>
     <Details>
 <![CDATA[
-<p>Cette méthode utilise la méthode <code>toArray()</code> d'une classe dérivant de <code>Collection</code>, en lui passant en paramètre un tableau vide. Il est plus efficace d'utiliser
+<p>Cette méthode utilise la méthode toArray() d'une classe dérivant de Collection, en lui passant en paramètre un tableau vide. Il est plus efficace d'utiliser
 <pre>myCollection.toArray(new Foo[myCollection.size()])</pre>
 Si le tableau transmis est assez grand pour stocker tous les éléments de la collection, alors il est alimenté et renvoyé directement. Ceci évite la nécessité de créer un nouveau tableau (par réflexion) pour renvoyer le résultat.</p>
 ]]>
@@ -1885,61 +1885,61 @@ Si le tableau transmis est assez grand pour stocker tous les éléments de la coll
   </BugPattern>
 
   <BugPattern type="IJU_SETUP_NO_SUPER">
-    <ShortDescription>Une classe dérivant de <code>TestCase</code> implémente <code>setUp()</code> sans appeler <code>super.setUp()</code></ShortDescription>
-    <LongDescription>La classe {0} dérivant de <code>TestCase</code> implémente <code>setUp()</code> sans appeler <code>super.setUp()</code></LongDescription>
+    <ShortDescription>Une classe dérivant de TestCase implémente setUp() sans appeler super.setUp()</ShortDescription>
+    <LongDescription>La classe {0} dérivant de TestCase implémente setUp() sans appeler super.setUp()</LongDescription>
     <Details>
 <![CDATA[
-<p>La classe dérive de la classe <code>TestCase</code> de JUnit est implémente la méthode <code>setUp()</code>. La méthode <code>setUp()</code> devrait appeler <code>super.setUp()</code>, mais ne le fait pas.</p>
+<p>La classe dérive de la classe TestCase de JUnit est implémente la méthode setUp(). La méthode setUp() devrait appeler super.setUp(), mais ne le fait pas.</p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="IJU_TEARDOWN_NO_SUPER">
-    <ShortDescription>Une classe dérivant de <code>TestCase</code> implémente <code>tearDown()</code> sans appeler <code>super.tearDown()</code></ShortDescription>
-    <LongDescription>La classe {0} dérivant de <code>TestCase</code> implémente <code>tearDown()</code> sans appeler <code>super.tearDown()</code></LongDescription>
+    <ShortDescription>Une classe dérivant de TestCase implémente tearDown() sans appeler super.tearDown()</ShortDescription>
+    <LongDescription>La classe {0} dérivant de TestCase implémente tearDown() sans appeler super.tearDown()</LongDescription>
     <Details>
 <![CDATA[
-<p>La classe dérive de la classe <code>TestCase</code> de JUnit et implémente la méthode <code>tearDown()</code>. La méthode <code>tearDown()</code> devrait appeler <code>super.tearDown()</code>, mais ne le fait pas.</p>
+<p>La classe dérive de la classe TestCase de JUnit et implémente la méthode tearDown(). La méthode tearDown() devrait appeler super.tearDown(), mais ne le fait pas.</p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="IJU_SUITE_NOT_STATIC">
-    <ShortDescription>Une classe dérivant de <code>TestCase</code> implémente une méthode <code>suite()</code> non statique</ShortDescription>
-    <LongDescription>La classe {0} dérivant de <code>TestCase</code> implémente une méthode <code>suite()</code> non statique</LongDescription>
+    <ShortDescription>Une classe dérivant de TestCase implémente une méthode suite() non statique</ShortDescription>
+    <LongDescription>La classe {0} dérivant de TestCase implémente une méthode suite() non statique</LongDescription>
     <Details>
 <![CDATA[
-<p>La classe dérive de <code>TestCase</code> de JUnit et implémente une méthode <code>suite()</code>. La méthode <code>suite</code> devrait-être comme étant <code>static</code>, ce qui n'est pas fait.</p>
+<p>La classe dérive de TestCase de JUnit et implémente une méthode suite(). La méthode suite devrait-être comme étant static, ce qui n'est pas fait.</p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="BOA_BADLY_OVERRIDDEN_ADAPTER">
-    <ShortDescription>La classe surcharge mal une méthode implémentée dans une superclasse <code>Adapter</code></ShortDescription>
-    <LongDescription>La classe {0} surcharge mal la méthode {1} implémentée dans une superclasse <code>Adapter</code></LongDescription>
+    <ShortDescription>La classe surcharge mal une méthode implémentée dans une superclasse Adapter</ShortDescription>
+    <LongDescription>La classe {0} surcharge mal la méthode {1} implémentée dans une superclasse Adapter</LongDescription>
     <Details>
 <![CDATA[
-<p>Cette méthode surcharge une méthode provenant d'une classe mère qui est un <code>Adapter</code> qui implémente un <code>Listener</code> défini dans le package <code>java.awt.event</code> ou <code>javax.swing.event</code>. En conséquence, cette méthode ne sera pas appelée quand l'évènement se produira.</p>
+<p>Cette méthode surcharge une méthode provenant d'une classe mère qui est un Adapter qui implémente un Listener défini dans le package java.awt.event ou javax.swing.event. En conséquence, cette méthode ne sera pas appelée quand l'évènement se produira.</p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="BRSA_BAD_RESULTSET_ACCESS">
-    <ShortDescription>La méthode essaye d'accéder à un champs de <code>ResultSet</code> avec l'index 0</ShortDescription>
-    <LongDescription>La méthode {1} essaye au champs d'index 0 d'un <code>ResultSet</code></LongDescription>
+    <ShortDescription>La méthode essaye d'accéder à un champs de ResultSet avec l'index 0</ShortDescription>
+    <LongDescription>La méthode {1} essaye au champs d'index 0 d'un ResultSet</LongDescription>
     <Details>
 <![CDATA[
-<p>Un appel à la méthode <code>getXXX()</code> ou <code>updateXXX()</code> d'un <code>ResultSet</code> est effectué avec l'index de champs 0. Comme l'index des champs de <code>ResultSet</code> commence à 1 c'est toujours une erreur.</p>
+<p>Un appel à la méthode getXXX() ou updateXXX() d'un ResultSet est effectué avec l'index de champs 0. Comme l'index des champs de ResultSet commence à 1 c'est toujours une erreur.</p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="SIO_SUPERFLUOUS_INSTANCEOF">
-    <ShortDescription>Vérification de type inutile avec l'opérateur <code>instanceof</code></ShortDescription>
-    <LongDescription>La méthode {1} effectue une vérification de type inutile avec l'opérateur <code>instanceof</code> alors que cela pourrait-être déterminé statiquement</LongDescription>
+    <ShortDescription>Vérification de type inutile avec l'opérateur instanceof</ShortDescription>
+    <LongDescription>La méthode {1} effectue une vérification de type inutile avec l'opérateur instanceof alors que cela pourrait-être déterminé statiquement</LongDescription>
     <Details>
 <![CDATA[
-<p>Vérification de type effectuée avec l'opérateur <code>instanceof</code> alors que cela pourrait-être déterminé statiquement.</p>
+<p>Vérification de type effectuée avec l'opérateur instanceof alors que cela pourrait-être déterminé statiquement.</p>
 ]]>
     </Details>
   </BugPattern>
