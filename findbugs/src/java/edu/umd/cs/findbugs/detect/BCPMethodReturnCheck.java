@@ -27,9 +27,22 @@ import edu.umd.cs.findbugs.*;
 import edu.umd.cs.daveho.ba.*;
 import edu.umd.cs.daveho.ba.bcp.*;
 
+/**
+ * This detector looks for places where the return value of a method
+ * is suspiciously ignored.  Ignoring the return values from immutable
+ * objects such as java.lang.String are a common and easily found type of bug.
+ *
+ * @author David Hovemeyer
+ * @author Bill Pugh
+ */
 public class BCPMethodReturnCheck extends ByteCodePatternDetector {
 	private BugReporter bugReporter;
 
+	/**
+	 * The ByteCodePattern which specifies the kind of code pattern
+	 * we're looking for.  We want to match the invocation of certain methods
+	 * followed by a POP or POP2 instruction.
+	 */
 	private static final ByteCodePattern pattern = new ByteCodePattern()
 		.add(new MatchAny(new PatternElement[] {
 			new Invoke("/^java\\.lang\\.(String|Byte|Boolean|Character|Short|Integer|Long|Float|Double)$", "/.*", "/.*",
@@ -41,6 +54,10 @@ public class BCPMethodReturnCheck extends ByteCodePatternDetector {
 		}).label("call"))
 		.add(new MatchAny(new PatternElement[] {new Opcode(Constants.POP), new Opcode(Constants.POP2)}));
 
+	/**
+	 * Constructor.
+	 * @param bugReporter the BugReporter to report bug instances with
+	 */
 	public BCPMethodReturnCheck(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 	}
