@@ -311,7 +311,7 @@ public class FindInconsistentSync extends CFGBuildingDetector {
 	}
 
 	private boolean isLocal(FieldAnnotation field) {
-		return field.className.equals(getJavaClass().getClassName());
+		return field.getClassName().equals(getJavaClass().getClassName());
 	}
 
 	public void report() {
@@ -320,10 +320,6 @@ public class FindInconsistentSync extends CFGBuildingDetector {
 
 		JavaClass jclass = getJavaClass();
 		String className = jclass.getClassName();
-/*
-		String superclassName = jclass.getSuperclassName();
-		String pkgName = jclass.getPackageName();
-*/
 
 		Iterator<Map.Entry<FieldAnnotation, FieldStats>> i = statMap.entrySet().iterator();
 		while (i.hasNext()) {
@@ -363,20 +359,13 @@ public class FindInconsistentSync extends CFGBuildingDetector {
 				++couldBeFinal;
 				continue;
 			}
-/*
 			if (!localLocks.contains(field)) {
 				noLocalLocks++;
 				continue;
 			}
-*/
 
 			// At this point, we report the field as being inconsistently synchronized
 			int freq = (100 * locked) / (locked + unlocked);
-/*
-			String fieldName = field.className + "." + field.fieldName;
-			bugReporter.reportBug(BugInstance.create("IS2_INCONSISTENT_SYNC", UNKNOWN_PRIORITY, className, superclassName, pkgName, fieldName,
-				"none", "none", "none", UNKNOWN_LINE_NUMBER, freq));
-*/
 			bugReporter.reportBug(new BugInstance("IS2_INCONSISTENT_SYNC", NORMAL_PRIORITY)
 				.addClass(className)
 				.addField(field)
