@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import org.apache.bcel.classfile.JavaClass;
-import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
@@ -43,7 +42,6 @@ import org.eclipse.jdt.core.compiler.ITerminalSymbols;
 import org.eclipse.jdt.core.compiler.InvalidInputException;
 import org.eclipse.jdt.internal.core.CompilationUnit;
 import org.eclipse.jdt.internal.core.SourceType;
-import de.tobject.findbugs.marker.FindBugsMarker;
 import edu.umd.cs.findbugs.AbstractBugReporter;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.PackageMemberAnnotation;
@@ -115,24 +113,23 @@ public class Reporter extends AbstractBugReporter {
 		}
 		if (resource != null) {
 			// default - first class line
-			int startLine = 1;
-			if (bug.getPrimarySourceLineAnnotation() != null) {
-				startLine = bug.getPrimarySourceLineAnnotation().getStartLine();
-			}
-			// TODO: DHH - Eclipse can help us find the line number for fields.
-			// Need a way to distinguish bugs where the field is the
-			// primary item of interest.
+		
+			int startLine = 1; 
+			if (bug.getPrimarySourceLineAnnotation() != null) 
+				  startLine = bug.getPrimarySourceLineAnnotation().getStartLine();
+			/* TODO: DHH - Eclipse can help us find the line number for fields. //
+			 * Need a way to distinguish bugs where the field is the // primary item
+			 * of interest.
+			 */
+			 
 			if (DEBUG) {
 				System.out.println("Creating marker for " //$NON-NLS-1$
 				+ resource.getLocation() + ": line " //$NON-NLS-1$
 				+ startLine);
 			}
 			try {
-				IMarker marker = resource.createMarker(FindBugsMarker.NAME);
-				marker.setAttribute(IMarker.LINE_NUMBER, startLine);
-				marker.setAttribute(FindBugsMarker.BUG_TYPE, bug.getType());
-				marker.setAttribute(IMarker.MESSAGE, bug.getMessage());
-				marker.setAttribute(IMarker.SEVERITY, IMarker.SEVERITY_WARNING);
+				this.project.getWorkspace().run(
+					new MarkerReporter(bug, resource, startLine), /* Progress window*/ null);
 			}
 			catch (CoreException e) {
 				e.printStackTrace();
@@ -140,6 +137,7 @@ public class Reporter extends AbstractBugReporter {
 		}
 	}
 	
+
 	private IResource getUnderlyingResource(BugInstance bug)
 		throws JavaModelException {
 		SourceLineAnnotation primarySourceLineAnnotation = bug.getPrimarySourceLineAnnotation();
