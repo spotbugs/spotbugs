@@ -96,6 +96,26 @@ public class TypeRepository {
 	private InheritanceGraph inheritanceGraph;
 	private ClassResolver resolver;
 
+	// Store basic and special types in fields so they
+	// can be accessed easily and without worrying about
+	// InvalidSignatureExceptions.
+
+	private BasicType booleanType;
+	private BasicType byteType;
+	private BasicType charType;
+	private BasicType shortType;
+	private BasicType intType;
+	private BasicType longType;
+	private BasicType floatType;
+	private BasicType doubleType;
+	private BasicType voidType;
+
+	private Type topType;
+	private Type bottomType;
+	private Type nullType;
+	private Type longExtraType;
+	private Type doubleExtraType;
+
 	/* ----------------------------------------------------------------------
 	 * Public methods
 	 * ---------------------------------------------------------------------- */
@@ -285,11 +305,83 @@ public class TypeRepository {
 	}
 
 	/**
+	 * Get the void type.
+	 * @return the void type
+	 */
+	public BasicType getVoidType() {
+		return voidType;
+	}
+
+	/**
+	 * Get the boolean type.
+	 * @return the boolean type
+	 */
+	public BasicType getBooleanType() {
+		return booleanType;
+	}
+
+	/**
+	 * Get the byte type.
+	 * @return the byte type
+	 */
+	public BasicType getByteType() {
+		return byteType;
+	}
+
+	/**
+	 * Get the char type.
+	 * @return the char type
+	 */
+	public BasicType getCharType() {
+		return charType;
+	}
+
+	/**
+	 * Get the short type.
+	 * @return the short type
+	 */
+	public BasicType getShortType() {
+		return shortType;
+	}
+
+	/**
+	 * Get the int type.
+	 * @return the int type
+	 */
+	public BasicType getIntType() {
+		return intType;
+	}
+
+	/**
+	 * Get the long type.
+	 * @return the long type
+	 */
+	public BasicType getLongType() {
+		return longType;
+	}
+
+	/**
+	 * Get the float type.
+	 * @return the float type
+	 */
+	public BasicType getFloatType() {
+		return floatType;
+	}
+
+	/**
+	 * Get the double type.
+	 * @return the double type
+	 */
+	public BasicType getDoubleType() {
+		return doubleType;
+	}
+
+	/**
 	 * Get the instance of the special TOP type.
 	 * @return the TOP instance
 	 */
 	public Type getTopType() {
-		return signatureToTypeMap.get(SpecialTypeSignatures.TOP_TYPE_SIGNATURE);
+		return topType;
 	}
 
 	/**
@@ -297,7 +389,7 @@ public class TypeRepository {
 	 * @return the BOTTOM instance
 	 */
 	public Type getBottomType() {
-		return signatureToTypeMap.get(SpecialTypeSignatures.BOTTOM_TYPE_SIGNATURE);
+		return bottomType;
 	}
 
 	/**
@@ -305,7 +397,7 @@ public class TypeRepository {
 	 * @return the NULL type
 	 */
 	public Type getNullType() {
-		return signatureToTypeMap.get(SpecialTypeSignatures.NULL_TYPE_SIGNATURE);
+		return nullType;
 	}
 
 	/**
@@ -313,7 +405,7 @@ public class TypeRepository {
 	 * @return the long extra type
 	 */
 	public Type getLongExtraType() {
-		return signatureToTypeMap.get(SpecialTypeSignatures.LONG_EXTRA_TYPE_SIGNATURE);
+		return longExtraType;
 	}
 
 	/**
@@ -321,7 +413,7 @@ public class TypeRepository {
 	 * @return the double extra type
 	 */
 	public Type getDoubleExtraType() {
-		return signatureToTypeMap.get(SpecialTypeSignatures.DOUBLE_EXTRA_TYPE_SIGNATURE);
+		return doubleExtraType;
 	}
 
 	/**
@@ -449,23 +541,23 @@ public class TypeRepository {
 	 * ---------------------------------------------------------------------- */
 
 	private void addBasicTypes() {
-		signatureToTypeMap.put("Z", new BasicType(Constants.T_BOOLEAN));
-		signatureToTypeMap.put("B", new BasicType(Constants.T_BYTE));
-		signatureToTypeMap.put("C", new BasicType(Constants.T_CHAR));
-		signatureToTypeMap.put("S", new BasicType(Constants.T_SHORT));
-		signatureToTypeMap.put("I", new BasicType(Constants.T_INT));
-		signatureToTypeMap.put("L", new BasicType(Constants.T_LONG));
-		signatureToTypeMap.put("F", new BasicType(Constants.T_FLOAT));
-		signatureToTypeMap.put("D", new BasicType(Constants.T_DOUBLE));
-		signatureToTypeMap.put("V", new BasicType(Constants.T_VOID));
+		signatureToTypeMap.put("Z", booleanType = new BasicType(Constants.T_BOOLEAN));
+		signatureToTypeMap.put("B", byteType = new BasicType(Constants.T_BYTE));
+		signatureToTypeMap.put("C", charType = new BasicType(Constants.T_CHAR));
+		signatureToTypeMap.put("S", shortType = new BasicType(Constants.T_SHORT));
+		signatureToTypeMap.put("I", intType = new BasicType(Constants.T_INT));
+		signatureToTypeMap.put("J", longType = new BasicType(Constants.T_LONG));
+		signatureToTypeMap.put("F", floatType = new BasicType(Constants.T_FLOAT));
+		signatureToTypeMap.put("D", doubleType = new BasicType(Constants.T_DOUBLE));
+		signatureToTypeMap.put("V", voidType = new BasicType(Constants.T_VOID));
 	}
 
 	private void addSpecialTypes() {
-		signatureToTypeMap.put(SpecialTypeSignatures.NULL_TYPE_SIGNATURE, new NullType());
-		signatureToTypeMap.put(SpecialTypeSignatures.TOP_TYPE_SIGNATURE, new TopType());
-		signatureToTypeMap.put(SpecialTypeSignatures.BOTTOM_TYPE_SIGNATURE, new BottomType());
-		signatureToTypeMap.put(SpecialTypeSignatures.LONG_EXTRA_TYPE_SIGNATURE, new LongExtraType());
-		signatureToTypeMap.put(SpecialTypeSignatures.DOUBLE_EXTRA_TYPE_SIGNATURE, new DoubleExtraType());
+		signatureToTypeMap.put(SpecialTypeSignatures.NULL_TYPE_SIGNATURE, nullType = new NullType());
+		signatureToTypeMap.put(SpecialTypeSignatures.TOP_TYPE_SIGNATURE, topType = new TopType());
+		signatureToTypeMap.put(SpecialTypeSignatures.BOTTOM_TYPE_SIGNATURE, bottomType = new BottomType());
+		signatureToTypeMap.put(SpecialTypeSignatures.LONG_EXTRA_TYPE_SIGNATURE, longExtraType = new LongExtraType());
+		signatureToTypeMap.put(SpecialTypeSignatures.DOUBLE_EXTRA_TYPE_SIGNATURE, doubleExtraType = new DoubleExtraType());
 	}
 
 	private ClassType createClassType(String signature) {
