@@ -31,6 +31,7 @@ public class InitializationChain extends BytecodeScanningDetector implements   C
     Map<String, Set<String>> classRequires = new TreeMap<String, Set<String>>();
     private BugReporter bugReporter;
     private boolean instanceCreated;
+    private int instanceCreatedPC;
     private boolean instanceCreatedWarningGiven;
 
     private static final boolean DEBUG = Boolean.getBoolean("ic.debug");
@@ -66,14 +67,16 @@ public class InitializationChain extends BytecodeScanningDetector implements   C
 		if (instanceCreated && !instanceCreatedWarningGiven)  {
 			String okSig = "L" + className + ";";
 			if (!okSig.equals(sigConstant)) {
-			  System.out.println("Instance created in static initializer before static field " + nameConstant + " assigned");
-			  System.out.println("Class is " + className);
+			  bugReporter.reportBug(new BugInstance("SI_INSTANCE_BEFORE_FINALS_ASSIGNED", NORMAL_PRIORITY)
+				.addClassAndMethod(this)
+				.addSourceLine(this, instanceCreatedPC));
 			  instanceCreatedWarningGiven = true;
 			  }
 			}
 		}
         else if (seen == NEW && classConstant.equals(className))  {
 		instanceCreated = true;
+		instanceCreatedPC = PC;
 		}
         else if (seen == PUTSTATIC || seen == GETSTATIC || seen == INVOKESTATIC
 			|| seen == NEW)  
