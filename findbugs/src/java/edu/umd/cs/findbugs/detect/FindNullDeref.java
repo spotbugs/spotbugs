@@ -50,6 +50,10 @@ public class FindNullDeref implements Detector {
 			this.handle = handle;
 			this.lineNumber = lineNumber;
 		}
+
+		public String toString() {
+			return handle.toString() + ": line " + lineNumber;
+		}
 	}
 
 	private static final boolean DEBUG = Boolean.getBoolean("fnd.debug");
@@ -93,6 +97,7 @@ public class FindNullDeref implements Detector {
 
 		JavaClass jclass = classContext.getJavaClass();
 
+		if (DEBUG) System.out.println("Clearing redundant branch information");
 		redundantBranchList.clear();
 		definitelySameBranchSet.clear();
 		definitelyDifferentBranchSet.clear();
@@ -137,6 +142,7 @@ public class FindNullDeref implements Detector {
 		Iterator<RedundantBranch> i = redundantBranchList.iterator();
 		while (i.hasNext()) {
 			RedundantBranch redundantBranch = i.next();
+			if (DEBUG) System.out.println("Redundant branch: " + redundantBranch);
 			InstructionHandle handle = redundantBranch.handle;
 			int lineNumber = redundantBranch.lineNumber;
 
@@ -161,7 +167,7 @@ public class FindNullDeref implements Detector {
 		InstructionHandle exceptionThrowerHandle = basicBlock.getExceptionThrower();
 		Instruction exceptionThrower = exceptionThrowerHandle.getInstruction();
 
-		// Figure out where the reference operand is in the stack frame.
+		// Figurinformation out where the reference operand is in the stack frame.
 		int consumed = exceptionThrower.consumeStack(classContext.getConstantPoolGen());
 		if (consumed == Constants.UNPREDICTABLE)
 			throw new DataflowAnalysisException("Unpredictable stack consumption for " + exceptionThrower);
@@ -223,7 +229,9 @@ public class FindNullDeref implements Detector {
 			}
 
 			//reportUselessControlFlow(classContext, method, lastHandle);
-			redundantBranchList.add(new RedundantBranch(lastHandle, lineNumber));
+			RedundantBranch redundantBranch = new RedundantBranch(lastHandle, lineNumber);
+			if (DEBUG) System.out.println("Adding redundant branch: " + redundantBranch);
+			redundantBranchList.add(redundantBranch);
 		} else {
 			if (DEBUG) System.out.println("Line " + lineNumber + " undetermined");
 			undeterminedBranchSet.set(lineNumber);
@@ -259,6 +267,9 @@ public class FindNullDeref implements Detector {
 				definitelyDifferentBranchSet.set(lineNumber);
 			}
 			//reportUselessControlFlow(classContext, method, lastHandle);
+			RedundantBranch redundantBranch = new RedundantBranch(lastHandle, lineNumber);
+			if (DEBUG) System.out.println("Adding redundant branch: " + redundantBranch);
+			redundantBranchList.add(redundantBranch);
 		} else {
 			if (DEBUG) System.out.println("Line " + lineNumber + " undetermined");
 			undeterminedBranchSet.set(lineNumber);
