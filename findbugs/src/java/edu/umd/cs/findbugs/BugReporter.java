@@ -23,6 +23,19 @@ package edu.umd.cs.findbugs;
  * Generic interface for bug reporter objects.
  */
 public interface BugReporter {
+
+	/** Silent error-reporting verbosity level. */
+	public static final int SILENT = 0;
+
+	/** Normal error-reporting verbosity level. */
+	public static final int NORMAL = 1;
+
+	/**
+	 * Set the error-reporting verbosity level.
+	 * @param level the verbosity level
+	 */
+	public void setErrorVerbosity(int level);
+
 	/**
 	 * Report a bug.
 	 * The implementation may report the bug immediately,

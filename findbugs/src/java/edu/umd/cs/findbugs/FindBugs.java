@@ -347,6 +347,7 @@ public class FindBugs implements Constants2
 
   public static void main(String argv[]) throws Exception
   { 
+	boolean quiet = false;
 	boolean sortByClass = false;
 	LinkedList<String> visitorNames = null;
 	boolean omit = false;
@@ -374,6 +375,8 @@ public class FindBugs implements Constants2
 			if (argCount == argv.length) throw new IllegalArgumentException(option + " option requires argument");
 			filterFile = argv[argCount];
 			include = option.equals("-include");
+		} else if (option.equals("-q")) {
+			quiet = true;
 		} else
 			throw new IllegalArgumentException("Unknown option: " + option);
 		++argCount;
@@ -386,6 +389,7 @@ public class FindBugs implements Constants2
 			System.out.println("usage: java -jar findbugs.jar [options] <classfiles, zip files or jar files>");
 			System.out.println("Example: java -jar findbugs.jar rt.jar");
 			System.out.println("Options:");
+			System.out.println("   -q                                     suppress error messages");
 			System.out.println("   -sortByClass                           sort bug reports by class");
 			System.out.println("   -visitors <visitor 1>,<visitor 2>,...  run only named visitors");
 			System.out.println("   -omitVisitors <v1>,<v2>,...            omit named visitors");
@@ -398,6 +402,9 @@ public class FindBugs implements Constants2
 		}
 
 	BugReporter bugReporter = sortByClass ? (BugReporter)new SortingBugReporter() : (BugReporter)new PrintingBugReporter();
+
+	if (quiet)
+		bugReporter.setErrorVerbosity(BugReporter.SILENT);
 
 	FindBugs findBugs = new FindBugs(bugReporter, visitorNames, omit);
 

@@ -32,6 +32,10 @@ public class FilterBugReporter implements BugReporter {
 		this.include = include;
 	}
 
+	public void setErrorVerbosity(int level) {
+		realBugReporter.setErrorVerbosity(level);
+	}
+
 	public void reportBug(BugInstance bugInstance) {
 		if (DEBUG) System.out.print("Match ==> ");
 		boolean match = filter.match(bugInstance);

@@ -25,13 +25,20 @@ import java.util.regex.Matcher;
 
 public abstract class AbstractBugReporter implements BugReporter {
 
+	private int verbosityLevel = NORMAL;
 	private HashSet<String> missingClassMessageSet = new HashSet<String>();
 	private LinkedList<String> missingClassMessageList = new LinkedList<String>();
 	private LinkedList<String> errorMessageList = new LinkedList<String>();
 
 	private static final Pattern missingClassPattern = Pattern.compile("^.*while looking for class ([^:]*):.*$");
 
+	public void setErrorVerbosity(int level) {
+		this.verbosityLevel = level;
+	}
+
 	public void reportMissingClass(String message) {
+		if (verbosityLevel == SILENT)
+			return;
 
 		// Try to decode the error message by extracting the class name.
 		// BCEL seems to report missing classes in a fairly consistent way.
@@ -46,6 +53,9 @@ public abstract class AbstractBugReporter implements BugReporter {
 	}
 
 	public void logError(String message) {
+		if (verbosityLevel == SILENT)
+			return;
+
 		errorMessageList.add(message);
 	}
 
