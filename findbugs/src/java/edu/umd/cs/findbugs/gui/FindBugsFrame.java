@@ -117,6 +117,9 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	    return this;
 	}
     }
+    
+    /** The instance of BugCellRenderer. */
+    private static final FindBugsFrame.BugCellRenderer bugCellRenderer = new FindBugsFrame.BugCellRenderer();
  
     /**
      * Tree node type for BugInstances.
@@ -1227,7 +1230,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
         for (int i = 0; i < bugTreeList.length; ++i) {
             JTree bugTree = bugTreeList[i];
             bugTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
-            bugTree.setCellRenderer(new FindBugsFrame.BugCellRenderer());
+            bugTree.setCellRenderer(bugCellRenderer);
             bugTree.setRootVisible(false);
             bugTree.setShowsRootHandles(true);
             bugTree.addTreeSelectionListener(new TreeSelectionListener() {
