@@ -42,7 +42,9 @@ public class FindFinalizeInvocations extends DismantleBytecode implements   Cons
 			if (extendsObject)
 				bugReporter.reportBug(new BugInstance("FI_EMPTY", NORMAL_PRIORITY).addClassAndMethod(this));
 			else
-				bugReporter.reportBug(new BugInstance("FI_NULLIFY_SUPER", NORMAL_PRIORITY).addClassAndMethod(this));
+				bugReporter.reportBug(new BugInstance("FI_NULLIFY_SUPER", NORMAL_PRIORITY)
+					.addClassAndMethod(this)
+					.addCalledMethod(this));
 			}
 		    else if (obj.getCode().length == 5 && sawSuperFinalize) 
 			bugReporter.reportBug(new BugInstance("FI_USELESS", NORMAL_PRIORITY).addClassAndMethod(this));
@@ -52,7 +54,9 @@ public class FindFinalizeInvocations extends DismantleBytecode implements   Cons
 		}
    public void sawOpcode(int seen) {
 	if (seen == INVOKEVIRTUAL && nameConstant.equals("finalize"))
-		bugReporter.reportBug(new BugInstance("FI_EXPLICIT_INVOCATION", NORMAL_PRIORITY).addClassAndMethod(this));
+		bugReporter.reportBug(new BugInstance("FI_EXPLICIT_INVOCATION", NORMAL_PRIORITY)
+			.addClassAndMethod(this)
+			.addCalledMethod(this));
 	if (seen == INVOKESPECIAL && nameConstant.equals("finalize")) 
 		sawSuperFinalize = true;
 	}
