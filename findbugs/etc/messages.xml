@@ -796,7 +796,7 @@ to use Object.clone(), which always returns an object of the correct type.</p>
     <Details>
 <![CDATA[
   <p> Code explicitly invokes garbage collection.
-  Except for specific use in benchmarking, this is very dubious.
+  Except for specific use in benchmarking, this is very dubious.</p>
   <p>In the past, situations where people have explicitly invoked 
   the garbage collector in routines such as close or finalize methods
   has led to huge performance black holes. Garbage collection 
@@ -1081,7 +1081,7 @@ using the <code>equals(Object)</code> method instead.</p>
   to synchronization.&nbsp; This bug report indicates that the bug pattern detector
   judged that
   <ol>
-  <li> The class contains a mix of locked and unlocked accesses,<li>
+  <li> The class contains a mix of locked and unlocked accesses,</li>
   <li> At least one locked access was performed by one of the class's own methods, and</li>
   <li> The number of unsynchronized field accesses (reads and writes) was no more than
        one third of all accesses, with writes being weighed twice as high as reads</li>
@@ -1412,7 +1412,7 @@ defined in an interface references a mutable
     <LongDescription>{1} is a mutable array</LongDescription>
     <Details>
 <![CDATA[
- A final static field references an array
+<p> A final static field references an array
 	and can be accessed by malicious code or
         by accident from another package.
 	This code can freely modify the contents of the array.</p>
