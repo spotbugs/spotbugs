@@ -70,15 +70,14 @@ public class ResourceValueAnalysis<Resource> extends FrameDataflowAnalysis<Resou
 		ResourceValueFrame tmpFact = null;
 
 		if (edge.isExceptionEdge()) {
-			InstructionHandle handle = source.getExceptionThrower();
-			if (isFinalFieldLoad(handle)) {
-				// Ignore exceptions thrown by load of final instance fields.
-				// We'll just assume (in the name of reducing false positives)
-				// that they got initialized to something.
-				if (DEBUG) System.out.println("Making resource nonexistent on load of final field from block " + source.getId());
-				tmpFact = modifyFrame(fact, tmpFact);
-				tmpFact.setStatus(ResourceValueFrame.NONEXISTENT);
-			} else if (fact.getStatus() == ResourceValueFrame.OPEN) {
+			// If this edge throws only implicit exceptions
+			// (as determined by TypeAnalysis and PruneInfeasibleExceptionEdges),
+			// ignore it.
+			if (ClassContext.PRUNE_INFEASIBLE_EXCEPTION_EDGES &&
+				!edge.isFlagSet(EXPLICIT_EXCEPTIONS_FLAG))
+				return;
+
+			if (fact.getStatus() == ResourceValueFrame.OPEN) {
 				// If status is OPEN, downgrade to OPEN_ON_EXCEPTION_PATH
 				tmpFact = modifyFrame(fact, tmpFact);
 				tmpFact.setStatus(ResourceValueFrame.OPEN_ON_EXCEPTION_PATH);
@@ -151,36 +150,6 @@ public class ResourceValueAnalysis<Resource> extends FrameDataflowAnalysis<Resou
 
 	private final BitSet checked = new BitSet();
 	private final BitSet finalFieldLoadSet = new BitSet();
-
-	private boolean isFinalFieldLoad(InstructionHandle handle) {
-		if (DEBUG) System.out.print("[Checking " + handle + " for load of final field ");
-		int offset = handle.getPosition();
-		if (!checked.get(offset)) {
-			checked.set(offset);
-
-			Instruction ins = handle.getInstruction();
-			if (ins instanceof GETFIELD || ins instanceof GETSTATIC) {
-				FieldInstruction fins = (FieldInstruction) ins;
-
-				ConstantPoolGen cpg = methodGen.getConstantPool();
-				String className = fins.getClassName(cpg);
-				String fieldName = fins.getName(cpg);
-
-				if (DEBUG) System.out.print("field=" + className + "." + fieldName);
-
-				try {
-					Field field = Hierarchy.findField(className, fieldName);
-					if (field != null)
-						finalFieldLoadSet.set(offset, field.isFinal());
-				} catch (ClassNotFoundException e) {
-					lookupFailureCallback.reportMissingClass(e);
-				}
-			}
-		}
-		boolean result = finalFieldLoadSet.get(offset);
-		if (DEBUG) System.out.print(" ==> " + result + "]");
-		return result;
-	}
 
 }
 
