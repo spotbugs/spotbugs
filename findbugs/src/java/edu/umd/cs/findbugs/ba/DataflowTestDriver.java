@@ -50,16 +50,16 @@ public abstract class DataflowTestDriver<Fact, AnalysisType extends AbstractData
 		}
 
 		public String blockStartAnnotate(BasicBlock bb) {
-			return " " + dataflow.getStartFact(bb);
+			return " " + analysis.factToString(dataflow.getStartFact(bb));
 		}
 
 		public String blockAnnotate(BasicBlock bb) {
-			return " " + dataflow.getResultFact(bb);
+			return " " + analysis.factToString(dataflow.getResultFact(bb));
 		}
 
 		public String instructionAnnotate(InstructionHandle handle, BasicBlock bb) {
 			Fact result = analysis.getFactAtLocation(new Location(handle, bb));
-			return " " + result;
+			return " " + analysis.factToString(result);
 		}
 	}
 
