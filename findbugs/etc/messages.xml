@@ -722,6 +722,15 @@ It is a fast detector.</p>
     </Details>
   </Detector>
   
+  <Detector class="edu.umd.cs.findbugs.detect.MethodReturnCheck">
+    <Details>
+<![CDATA[
+<p> This detector looks for calls to methods where the return value
+is suspiciously ignored.  It is a fast detector.</p>
+]]>
+    </Details>
+  </Detector>
+  
   <Detector class="edu.umd.cs.findbugs.detect.FindBugsSummaryStats">
     <Details>
 <![CDATA[

@@ -324,6 +324,10 @@
   <Detector class="edu.umd.cs.findbugs.detect.PublicSemaphores"
   			speed="fast"
   			reports="PS_PUBLIC_SEMAPHORES"/>
+
+  <Detector class="edu.umd.cs.findbugs.detect.MethodReturnCheck"
+            speed="fast"
+            reports="RV_RETURN_VALUE_IGNORED"/>
   			
   <Detector class="edu.umd.cs.findbugs.detect.FindBugsSummaryStats" 
             speed="fast"
