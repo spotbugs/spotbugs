@@ -76,17 +76,104 @@ public class ClassContext implements AnalysisFeatures {
 	private static void indent() {
 		for (int i = 0; i < depth; ++i) System.out.print("  ");
 	}
+	
+	/**
+	 * An AnalysisResult stores the result of requesting an analysis
+	 * from an AnalysisFactory.  It can represent a successful outcome
+	 * (where the Analysis object can be returned), or an unsuccessful
+	 * outcome (where an exception was thrown trying to create the
+	 * analysis).  For unsuccessful outcomes, we rethrow the original
+	 * exception rather than making another attempt to create the analysis
+	 * (since if it fails once, it will never succeed). 
+	 */
+	private static class AnalysisResult<Analysis> {
+		private Analysis analysis;
+		private AnalysisException analysisException;
+		private CFGBuilderException cfgBuilderException;
+		private DataflowAnalysisException dataflowAnalysisException;
+		
+		public Analysis getAnalysis() throws CFGBuilderException, DataflowAnalysisException {
+			if (analysis != null)
+				return analysis;
+			if (dataflowAnalysisException != null)
+				throw dataflowAnalysisException;
+			if (analysisException != null)
+				throw analysisException;
+			if (cfgBuilderException != null)
+				throw cfgBuilderException;
+			throw new IllegalStateException();
+		}
+		
+		/**
+		 * Record a successful outcome, where the analysis was created.
+		 * 
+		 * @param analysis the Analysis
+		 */
+		public void setAnalysis(Analysis analysis) {
+			this.analysis = analysis;
+		}
+		
+		/**
+		 * Record that an AnalysisException occurred while attempting
+		 * to create the Analysis.
+		 * 
+		 * @param analysisException the AnalysisException
+		 */
+		public void setAnalysisException(AnalysisException analysisException) {
+			this.analysisException = analysisException;
+		}
+		
+		/**
+		 * Record that a CFGBuilderException occurred while attempting
+		 * to create the Analysis.
+		 * 
+		 * @param cfgBuilderException the CFGBuilderException
+		 */
+		public void setCFGBuilderException(CFGBuilderException cfgBuilderException) {
+			this.cfgBuilderException = cfgBuilderException;
+		}
+		
+		/**
+		 * Record that a DataflowAnalysisException occurred while attempting
+		 * to create the Analysis.
+		 *  
+		 * @param dataflowException the DataflowAnalysisException
+		 */
+		public void setDataflowAnalysisException(DataflowAnalysisException dataflowException) {
+			this.dataflowAnalysisException = dataflowException;
+		}
+	}
 
-	private abstract class AnalysisFactory <AnalysisResult> {
+	/**
+	 * Abstract factory class for creating analysis objects.
+	 * Handles caching of analysis results for a method.
+	 */
+	private abstract class AnalysisFactory <Analysis> {
 		private String analysisName;
-		private IdentityHashMap<Method, AnalysisResult> map = new IdentityHashMap<Method, AnalysisResult>();
+		private HashMap<Method, ClassContext.AnalysisResult<Analysis>> map =
+			new HashMap<Method, ClassContext.AnalysisResult<Analysis>>();
 
+		/**
+		 * Constructor.
+		 * 
+		 * @param analysisName name of the analysis factory: for diagnostics/debugging
+		 */
 		public AnalysisFactory(String analysisName) {
 			this.analysisName = analysisName;
 		}
 
-		public AnalysisResult getAnalysis(Method method) throws CFGBuilderException, DataflowAnalysisException {
-			AnalysisResult result = map.get(method);
+		/**
+		 * Get the Analysis for given method.
+		 * If Analysis has already been performed, the cached result is
+		 * returned.
+		 * 
+		 * @param method the method to analyze
+		 * @return the Analysis object representing the result of analyzing the method
+		 * @throws CFGBuilderException       if the CFG can't be constructed for the method
+		 * @throws DataflowAnalysisException if dataflow analysis fails on the method
+		 */
+		public Analysis getAnalysis(Method method) throws CFGBuilderException, DataflowAnalysisException {
+			AnalysisResult<Analysis> result = map.get(method);
 			if (result == null) {
 				if (TIME_ANALYSES) {
 					++depth;
@@ -96,9 +183,18 @@ public class ClassContext implements AnalysisFeatures {
 				}
 
 				long begin = System.currentTimeMillis();
+				
+				// Create a new AnalysisResult
+				result = new AnalysisResult<Analysis>();
 
+				// Attempt to create the Analysis and store it in the AnalysisResult.
+				// If an exception occurs, record it in the AnalysisResult.
+				Analysis analysis = null;
 				try {
-					result = analyze(method);
+					analysis = analyze(method);
+					result.setAnalysis(analysis);
+				} catch (CFGBuilderException e) {
+					result.setCFGBuilderException(e);
 				} catch (DataflowAnalysisException e) {
 					if (TIME_ANALYSES) {
 						long end = System.currentTimeMillis();
@@ -108,7 +204,9 @@ public class ClassContext implements AnalysisFeatures {
 						e.printStackTrace();
 						--depth;
 					}
-					throw e;
+					result.setDataflowAnalysisException(e);
+				} catch (AnalysisException e) {
+					result.setAnalysisException(e);
 				}
 
 				if (TIME_ANALYSES) {
@@ -118,12 +216,14 @@ public class ClassContext implements AnalysisFeatures {
 					--depth;
 				}
 
+				// Cache the outcome of this analysis attempt.
 				map.put(method, result);
 			}
-			return result;
+			
+			return result.getAnalysis();
 		}
 
-		protected abstract AnalysisResult analyze(Method method)
+		protected abstract Analysis analyze(Method method)
 		        throws CFGBuilderException, DataflowAnalysisException;
 	}
 
