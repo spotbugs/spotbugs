@@ -31,7 +31,7 @@ public class InnerClassAccessMap {
 		this.classToAccessMap = new HashMap<String, Map<String, XField>>();
 	}
 
-	private InnerClassAccessMap instance = new InnerClassAccessMap();
+	private static InnerClassAccessMap instance = new InnerClassAccessMap();
 
 	public static InnerClassAccessMap instance() { return instance; }
 
