@@ -232,7 +232,7 @@ public class Project {
 	/**
 	 * Return the list of aux classpath entries.
 	 */
-	public List getAuxClasspathEntryList() {
+	public List<String> getAuxClasspathEntryList() {
 		return auxClasspathEntryList;
 	}
 
