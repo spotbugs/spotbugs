@@ -19,8 +19,6 @@
 
 package edu.umd.cs.daveho.ba;
 
-import org.apache.bcel.generic.InstructionHandle;
-
 /**
  * A control decision which resulted in information being gained
  * about whether a particular value is null or non-null.
@@ -29,26 +27,26 @@ import org.apache.bcel.generic.InstructionHandle;
  * @see IsNullValueAnalysis
  */
 public class IsNullConditionDecision {
-	private InstructionHandle branchHandle;
+	private Location branchLocation;
 	private ValueNumber value;
 	private IsNullValue decision;
 
 	/**
 	 * Constructor.
-	 * @param branchHandle the instruction handle of the branch
+	 * @param branchLocation the location of the branch
 	 * @param value the ValueNumber for which we have new information
 	 * @param decision the decision reached about the value;
 	 *   i.e., whether it is null or not null
 	 */
-	public IsNullConditionDecision(InstructionHandle branchHandle, ValueNumber value, IsNullValue decision) {
-		this.branchHandle = branchHandle;
+	public IsNullConditionDecision(Location branchLocation, ValueNumber value, IsNullValue decision) {
+		this.branchLocation = branchLocation;
 		this.value = value;
 		this.decision = decision;
 	}
 
-	/** Get the branch handle.  */
-	public InstructionHandle getBranchHandle() {
-		return branchHandle;
+	/** Get the branch location.  */
+	public Location getBranchLocation() {
+		return branchLocation;
 	}
 
 	/** Get the value about which the branch yields information.  */
