@@ -17,6 +17,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.io.FileOutputStream;
+import java.io.FileInputStream;
 import java.util.*;
 import javax.swing.*;
 import javax.swing.tree.*;
@@ -251,6 +253,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
         fileMenu = new javax.swing.JMenu();
         newProjectItem = new javax.swing.JMenuItem();
         openProjectItem = new javax.swing.JMenuItem();
+        saveProjectItem = new javax.swing.JMenuItem();
         closeProjectItem = new javax.swing.JMenuItem();
         jSeparator3 = new javax.swing.JSeparator();
         exitItem = new javax.swing.JMenuItem();
@@ -611,7 +614,24 @@ public class FindBugsFrame extends javax.swing.JFrame {
         openProjectItem.setFont(new java.awt.Font("Dialog", 0, 12));
         openProjectItem.setMnemonic('O');
         openProjectItem.setText("Open Project");
+        openProjectItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                openProjectItemActionPerformed(evt);
+            }
+        });
+
         fileMenu.add(openProjectItem);
+
+        saveProjectItem.setFont(new java.awt.Font("Dialog", 0, 12));
+        saveProjectItem.setMnemonic('S');
+        saveProjectItem.setText("Save project");
+        saveProjectItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                saveProjectItemActionPerformed(evt);
+            }
+        });
+
+        fileMenu.add(saveProjectItem);
 
         closeProjectItem.setFont(new java.awt.Font("Dialog", 0, 12));
         closeProjectItem.setMnemonic('C');
@@ -669,6 +689,65 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
         pack();
     }//GEN-END:initComponents
+
+    private static class ProjectFileFilter extends FileFilter {
+        public boolean accept(File file) { return file.isDirectory() || file.getName().endsWith(".fb"); }
+        public String getDescription() { return "FindBugs projects (*.fb)"; }
+    }
+    private static final FileFilter projectFileFilter = new ProjectFileFilter();
+
+    private void openProjectItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openProjectItemActionPerformed
+        JFileChooser chooser = new JFileChooser();
+        chooser.setFileFilter(projectFileFilter);
+        int result = chooser.showOpenDialog(this);
+        if (result == JFileChooser.CANCEL_OPTION)
+            return;
+        try {
+            File file = chooser.getSelectedFile();
+            Project project = new Project(file.getPath());
+            FileInputStream in = new FileInputStream(file);
+            project.read(in);
+            addProject(project);
+        } catch (IOException e) {
+            logger.logMessage(ConsoleLogger.ERROR, "Could not open project: " + e.getMessage());
+        }
+    }//GEN-LAST:event_openProjectItemActionPerformed
+    
+    private void saveProjectItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveProjectItemActionPerformed
+        try {
+            Project project = getCurrentProject();
+            if (project == null)
+                return;
+            
+            File file;
+            String fileName = project.getFileName();
+
+            if (!fileName.startsWith("<")) {
+                file = new File(fileName);
+            } else {
+                JFileChooser chooser = new JFileChooser();
+                chooser.setFileFilter(projectFileFilter);
+
+                int result = chooser.showSaveDialog(this);
+                if (result == JFileChooser.CANCEL_OPTION)
+                    return;
+                file = chooser.getSelectedFile();
+            }
+            
+            FileOutputStream out = new FileOutputStream(file);
+            project.write(out);
+            logger.logMessage(ConsoleLogger.INFO, "Project saved");
+            
+            // Project filename may have changed, so update the node in
+            // the navigator tree
+            DefaultMutableTreeNode projectNode = (DefaultMutableTreeNode)
+                navigatorTree.getSelectionPath().getPath()[1];
+            navigatorTreeModel.nodeChanged(projectNode);
+
+        } catch (IOException e) {
+            logger.logMessage(ConsoleLogger.ERROR, "Could not save project: " + e.getMessage());
+        }
+    }//GEN-LAST:event_saveProjectItemActionPerformed
 
     private void bugTreeMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_bugTreeMousePressed
 	if (evt.getClickCount() == 2) {
@@ -820,13 +899,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
     private void newProjectItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newProjectItemActionPerformed
 	String projectName = "<<project " + (++projectCount) + ">>";
 	Project project = new Project(projectName);
-	projectCollection.addProject(project);
-	DefaultMutableTreeNode projectNode = new DefaultMutableTreeNode(project);
-	DefaultTreeModel treeModel = (DefaultTreeModel) navigatorTree.getModel();
-	treeModel.insertNodeInto(projectNode, rootNode, rootNode.getChildCount());
-	TreePath projPath = new TreePath(new Object[]{rootNode, projectNode});
-	navigatorTree.makeVisible(projPath);
-	navigatorTree.setSelectionPath(projPath);
+        addProject(project);
     }//GEN-LAST:event_newProjectItemActionPerformed
     
     private void exitItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitItemActionPerformed
@@ -962,6 +1035,20 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	    synchAnalysisRun((AnalysisRun) nodeInfo);
 	    setView("BugTree");
 	}
+    }
+    
+    /**
+     * Add a new project to the UI.
+     * @param project the new project
+     */
+    private void addProject(Project project) {
+	projectCollection.addProject(project);
+	DefaultMutableTreeNode projectNode = new DefaultMutableTreeNode(project);
+	DefaultTreeModel treeModel = (DefaultTreeModel) navigatorTree.getModel();
+	treeModel.insertNodeInto(projectNode, rootNode, rootNode.getChildCount());
+	TreePath projPath = new TreePath(new Object[]{rootNode, projectNode});
+	navigatorTree.makeVisible(projPath);
+	navigatorTree.setSelectionPath(projPath);
     }
     
     /**
@@ -1282,6 +1369,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane5;
     private javax.swing.JTree navigatorTree;
     private javax.swing.JList sourceDirList;
+    private javax.swing.JMenuItem saveProjectItem;
     private javax.swing.JPanel emptyPanel;
     private javax.swing.JTextArea consoleMessageArea;
     private javax.swing.JSeparator jSeparator3;
