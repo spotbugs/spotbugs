@@ -31,6 +31,7 @@ public class ReadReturnShouldBeChecked extends BytecodeScanningDetector implemen
    boolean sawRead = false;
    int sawAvailable = 0;
    private BugReporter bugReporter;
+   private int readPC;
 
    public ReadReturnShouldBeChecked(BugReporter bugReporter) {
 	this.bugReporter = bugReporter;
@@ -73,12 +74,14 @@ public class ReadReturnShouldBeChecked extends BytecodeScanningDetector implemen
 		*/
 
 		sawRead = true;
+		readPC = PC;
 		return;
 		}
 	if (seen == POP && sawRead)  {
 		bugReporter.reportBug(new BugInstance("RR_NOT_CHECKED", NORMAL_PRIORITY)
 			.addClassAndMethod(this)
-			.addCalledMethod(this));
+			.addCalledMethod(this)
+			.addSourceLine(this, readPC));
 		}
 	sawRead = false;
 	}
