@@ -16,6 +16,7 @@ set start=start "FindBugs"
 set jvmargs=
 set debugArg=
 set conserveSpaceArg=
+set workHardArg=
 set args=
 set javaProps=
 set start=
@@ -75,6 +76,9 @@ if "%firstArg%"=="-debug" goto shift1
 if "%firstArg%"=="-conserveSpace" set conserveSpaceArg=-Dfindbugs.conserveSpace=true
 if "%firstArg%"=="-conserveSpace" goto shift1
 
+if "%firstArg%"="-workHard" set workHardArg=-Dfindbugs.workHard=true
+if "%firstArg%"="-workHard" goto shift1
+
 if "%firstArg%"=="-javahome" set javahome=%secondArg%\bin\
 if "%firstArg%"=="-javahome" goto shift2
 
@@ -105,7 +109,7 @@ if not exist "%FINDBUGS_HOME%\lib\%appjar%" goto homeNotSet
 
 :found_home
 :: Launch FindBugs!
-%start% "%javahome%%launcher%" %debugArg% %conserveSpaceArg% %javaProps% "-Dfindbugs.home=%FINDBUGS_HOME%" -Xmx%maxheap%m %jvmargs% -jar "%FINDBUGS_HOME%\lib\%appjar%" %args%
+%start% "%javahome%%launcher%" %debugArg% %conserveSpaceArg% %workHardArg% %javaProps% "-Dfindbugs.home=%FINDBUGS_HOME%" -Xmx%maxheap%m %jvmargs% -jar "%FINDBUGS_HOME%\lib\%appjar%" %args%
 goto end
 
 :: ----------------------------------------------------------------------

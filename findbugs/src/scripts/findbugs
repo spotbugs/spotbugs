@@ -18,6 +18,7 @@ Usage() {
 	echo "   -help           Display this message"
 	echo "   -debug          Enable debug tracing in FindBugs"
 	echo "   -conserveSpace  Conserve memory at the expense of precision"
+	echo "   -workHard       Do extra work to make the analysis more precise"
 	echo "All other options are passed to the FindBugs application"
 	exit 0
 }
@@ -27,6 +28,7 @@ fb_appjar="$findbugs_home/lib/findbugsGUI.jar"
 user_jvmargs=''
 debug_arg=''
 conservespace_arg=''
+workhard_arg=''
 user_props=''
 
 # Handle command line arguments.
@@ -63,6 +65,10 @@ while [ $# -gt 0 ]; do
 		conservespace_arg="-Dfindbugs.conserveSpace=true"
 		;;
 
+	-workHard)
+		workhard_arg="-Dfindbugs.workHard=true"
+		;;
+
 	-property)
 		shift
 		user_props="-D$1 $user_props"
@@ -92,7 +98,7 @@ while [ $# -gt 0 ]; do
 	shift
 done
 
-fb_jvmargs="$user_jvmargs $debug_arg $conservespace_arg $user_props"
+fb_jvmargs="$user_jvmargs $debug_arg $conservespace_arg $workhard_arg $user_props"
 fb_maxheap="-Xmx${maxheap}m"
 
 # Extra JVM args for MacOSX.
