@@ -2233,7 +2233,6 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	private boolean isSplitterMaximized(JSplitPane splitter, java.beans.PropertyChangeEvent evt) {
 		Integer location = (Integer) evt.getNewValue();
 
-		java.awt.Container parent = splitter.getParent();
 		int height = splitter.getHeight();
 		int hopefullyMaxDivider = height - (splitter.getDividerSize() + DIVIDER_FUDGE);
 		//System.out.println("Splitter: "+(splitter==consoleSplitter?"consoleSplitter":"bugTreeBugDetailsSplitter")+
@@ -2327,7 +2326,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	 *         cancels or an error occurs
 	 */
 	private boolean saveProject(Project project, String dialogTitle, boolean chooseFilename) {
-		boolean useRelativePaths = false;
+		boolean useRelativePaths;
 		try {
 			if (project == null)
 				return true;
@@ -2838,7 +2837,6 @@ public class FindBugsFrame extends javax.swing.JFrame {
 					// return this information, but no.
 					JViewport viewport = sourceTextAreaScrollPane.getViewport();
 					Rectangle viewportRect = viewport.getViewRect();
-					int height = sourceTextArea.getHeight();
 					int topRow = sourceTextArea.getLineOfOffset(sourceTextArea.viewToModel(viewportRect.getLocation()));
 					int bottomRow = sourceTextArea.getLineOfOffset(sourceTextArea.viewToModel(new Point(viewportRect.x, (viewportRect.y + viewportRect.height) - 1)));
 					int numRowsVisible = bottomRow - topRow;

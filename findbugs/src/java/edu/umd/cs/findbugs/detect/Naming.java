@@ -167,7 +167,6 @@ public class Naming extends PreorderVisitor implements Detector, Constants2 {
 		try {
 			JavaClass supers[] = Repository.getSuperClasses(obj);
 			for (int i = 0; i < supers.length; i++) {
-				JavaClass sup = supers[i];
 				visitJavaClass(supers[i]);
 			}
 		} catch (ClassNotFoundException e) {
