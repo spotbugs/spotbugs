@@ -20,9 +20,9 @@
 package edu.umd.cs.daveho.ba;
 
 /**
- * Modes which can be set in BasicCFGBuilder to affect how the CFG is constructed.
+ * Modes which can be set in CFGBuilder to affect how the CFG is constructed.
  *
- * @see BasicCFGBuilder
+ * @see CFGBuilder
  * @author David Hovemeyer
  */
 public interface CFGBuilderModes {
