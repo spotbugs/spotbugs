@@ -49,6 +49,8 @@ public class ClassContext implements AnalysisFeatures {
 
 	private static final boolean TIME_ANALYSES = Boolean.getBoolean("classContext.timeAnalyses");
 
+	private static final boolean DEBUG_CFG = Boolean.getBoolean("classContext.debugCFG");
+
 	/* ----------------------------------------------------------------------
 	 * Helper classes
 	 * ---------------------------------------------------------------------- */
@@ -161,6 +163,10 @@ public class ClassContext implements AnalysisFeatures {
 			// request for the pruned CFG of a method.  In this case,
 			// we just return the raw CFG.
 			String methodId = methodGen.getClassName()+"."+methodGen.getName()+":"+methodGen.getSignature();
+			if (DEBUG_CFG) {
+				indent();
+				System.out.println("CC: getting refined CFG for " + methodId);
+			}
 			if (DEBUG) System.out.println("ClassContext: request to prune " + methodId);
 			if (!busyCFGSet.add(methodId))
 				return cfg;
@@ -340,7 +346,7 @@ public class ClassContext implements AnalysisFeatures {
 	private AnalysisFactory<ReturnPathDataflow> returnPathDataflowFactory =
 	new AnalysisFactory<ReturnPathDataflow>("return path analysis") {
 		protected ReturnPathDataflow analyze(Method method) throws DataflowAnalysisException, CFGBuilderException {
-			CFG cfg = getCFG(method);
+			CFG cfg = getRawCFG(method);
 			DepthFirstSearch dfs = getDepthFirstSearch(method);
 			ReturnPathAnalysis analysis = new ReturnPathAnalysis(dfs);
 			ReturnPathDataflow dataflow = new ReturnPathDataflow(cfg, analysis);
