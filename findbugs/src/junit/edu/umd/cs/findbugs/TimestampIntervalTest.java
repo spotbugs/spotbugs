@@ -73,13 +73,13 @@ public class TimestampIntervalTest extends TestCase {
 		Assert.assertTrue(t4.compareTo(t4SameBegin) < 0);
 	}
 	
-	public void testDecodeMoment() {
+	public void testDecodeMoment() throws InvalidTimestampIntervalException {
 		TimestampInterval m = TimestampInterval.decode("1");
 		Assert.assertEquals(m.getBegin(), 1L);
 		Assert.assertEquals(m.getEnd(), 1L);
 	}
 	
-	public void testDecodeInterval() {
+	public void testDecodeInterval() throws InvalidTimestampIntervalException {
 		TimestampInterval m = TimestampInterval.decode("1-4");
 		Assert.assertEquals(m.getBegin(), 1L);
 		Assert.assertEquals(m.getEnd(), 4L);
