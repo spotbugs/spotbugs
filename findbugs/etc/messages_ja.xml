@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="Shift_JIS"?>
-<MessageCollection>
 
+<!-- This messages file is based on revision 1.157 of message.xml. -->
+
+<MessageCollection xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:noNamespaceSchemaLocation="messagecollection.xsd">
   <!--
   **********************************************************************
   Plugin information
@@ -68,7 +71,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.EmptyZipFileEntry">
     <Details>
 <![CDATA[
-<p> 空のzip fileエントリーを検出します。高速ディテクタです。</p>
+<p> 空のzip fileエントリーを検出します。中速ディテクタです。</p>
 ]]>
     </Details>
   </Detector>
@@ -116,7 +119,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.FindFloatMath">
     <Details>
 <![CDATA[
-<p> このディテクタは、floatを使った浮動小数演算を発見します。高速ディテクタです。</p>
+<p> このディテクタは、floatを使った浮動小数演算を発見します。中速ディテクタです。</p>
 ]]>
     </Details>
   </Detector>
@@ -332,7 +335,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.BCPDoubleCheck" disabled="true" >
     <Details>
 <![CDATA[
-<p> このディテクタは、ダブルチェックロッキングを発見します。ByteCodePatternクラスを使って実装されているので、バグパターンディテクタの簡単な実装例として参照するのに適しています。準高速ディテクタです。</p>
+<p> このディテクタは、ダブルチェックロッキングを発見します。ByteCodePatternクラスを使って実装されているので、バグパターンディテクタの簡単な実装例として参照するのに適しています。中速ディテクタです。</p>
 ]]>
     </Details>
   </Detector>
@@ -348,7 +351,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.FindNullDeref">
     <Details>
 <![CDATA[
-<p> このディテクタは、NullPointerExceptionが起きる可能性のある場所を発見します。また、無駄な参照変数とnullとの比較を発見します。中速ディテクタです。</p>
+<p> このディテクタは、NullPointerExceptionが起きる可能性のある場所を発見します。また、無駄な参照変数とnullとの比較を発見します。低速ディテクタです。</p>
 ]]>
     </Details>
   </Detector>
@@ -356,7 +359,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.FindOpenStream">
     <Details>
 <![CDATA[
-<p> このディテクタは、入出力ストリームオブジェクトが、あるメソッド内でだけ使われており、そのメソッドを起点とする全てのパスで、オブジェクトがクローズされている事を調べます。中速ディテクタです。</p>
+<p> このディテクタは、入出力ストリームオブジェクトが、あるメソッド内でだけ使われており、そのメソッドを起点とする全てのパスで、オブジェクトがクローズされている事を調べます。低速ディテクタです。</p>
 ]]>
     </Details>
   </Detector>
@@ -391,7 +394,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.FindRefComparison">
     <Details>
 <![CDATA[
-<p> このディテクタは、参照変数を == や != で比較しており、そのクラスが一般に、そのような比較が間違っている (例えば <code>java.lang.String</code>のように)ケースを発見します。中速ディテクタです。</p>
+<p> このディテクタは、参照変数を == や != で比較しており、そのクラスが一般に、そのような比較が間違っている (例えば <code>java.lang.String</code>のように)ケースを発見します。低速ディテクタです。</p>
 ]]>
     </Details>
   </Detector>
@@ -413,6 +416,14 @@
   </Detector>
 
   <Detector class="edu.umd.cs.findbugs.detect.FindLocalSelfAssignment">
+    <Details>
+<![CDATA[
+<p> このディテクタは、ローカル変数の自己代入を発見します。低速ディテクタです。</p>
+]]>
+    </Details>
+  </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.FindLocalSelfAssignment2">
     <Details>
 <![CDATA[
 <p> このディテクタは、ローカル変数の自己代入を発見します。高速ディテクタです。</p>
@@ -534,7 +545,7 @@
     <Details>
 <![CDATA[
 <p>
-このディテクタは、その後読み出されることのないローカル変数への代入を発見します。final宣言されたローカル変数によって生成されるバイトコードが間違って検出されるケースがあるため、現在は、このディテクタは無効化されています。準高速ディテクタです。
+このディテクタは、その後読み出されることのないローカル変数への代入を発見します。final宣言されたローカル変数によって生成されるバイトコードが間違って検出されるケースがあるため、現在は、このディテクタは無効化されています。中速ディテクタです。
 </p>
 ]]>
     </Details>
@@ -564,14 +575,6 @@
    </Details>
   </Detector>
   
-  <Detector class="edu.umd.cs.findbugs.detect.FindBugsSummaryStats">
-    <Details>
-<![CDATA[
-<p> このディテクタは、分析結果の集計をとるために使用されます。</p>
-]]>
-    </Details>
-  </Detector>
-
   <Detector class="edu.umd.cs.findbugs.detect.RuntimeExceptionCapture">
     <Details>
 <![CDATA[
@@ -579,6 +582,62 @@
 ]]>
   </Details>
 </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.FindFloatEquality">
+      <Details>
+<![CDATA[
+<p> このディテクタは、浮動小数の同値比較を発見します。高速ディテクタです。 </p>
+]]>
+      </Details>
+  </Detector>  
+  
+  <Detector class="edu.umd.cs.findbugs.detect.FindUnsatisfiedObligation">
+    <Details>
+<![CDATA[
+<p>このディテクタは、メソッドを起点とするパスの中にI/Oストリーム、データベースリソースのクリーンアップ処理を忘れているケースがあるコードを発見します。低速ディテクタです。</p>
+]]>
+    </Details>
+  </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.UnnecessaryMath">
+    <Details>
+<![CDATA[
+<p>このディテクタは、java.lang.Mathのstaticメソッドを定数に対して呼び出して得た値を、定数として定義しているコードを発見します。計算後の値を定数として定義する方が、高速であり、また時として正確です。</p>
+]]>
+    </Details>
+  </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.FindCircularDependencies">
+    <Details>
+<![CDATA[
+<p>このディテクタは、クラス間の循環依存関係を発見します。高速ディテクタです。</p>
+]]>
+    </Details>
+  </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.RedundantInterfaces">
+    <Details>
+<![CDATA[
+<p>このディテクタは、親クラスが実装を宣言しているインターフェースを、自分でも宣言しているコードを発見します。既に親クラスが実装を宣言しているなら、サブクラスで同じインターフェースの実装を宣言するのは冗長です。</p>
+]]>
+    </Details>
+  </Detector>
+  
+  <Detector class="edu.umd.cs.findbugs.detect.MultithreadedInstanceAccess">
+    <Details>
+<![CDATA[
+<p>このディテクタは、Strutsフレームワークを実装する際の潜在的な問題を発見します。高速ディテクタです。</p>
+]]>
+    </Details>
+  </Detector>
+  
+  <Detector class="edu.umd.cs.findbugs.detect.FindBugsSummaryStats">
+    <Details>
+<![CDATA[
+<p> このディテクタは、分析結果の集計をとるために使用されます。</p>
+]]>
+    </Details>
+  </Detector>
 
   <!--
   **********************************************************************
@@ -1120,7 +1179,7 @@
 
   <BugPattern type="EI_EXPOSE_STATIC_REP2">
     <ShortDescription>このメソッドは、ミュータブルなオブジェクトをstaticフィールドに格納する事で、内部の状態を外部に晒す危険があります</ShortDescription>
-    <LongDescription>{1} は、ミュータブルオブジェクトをstaticフィールド {2} に格納する事で、内部の状態を、外部に晒す危険があります<LongDescription>
+    <LongDescription>{1} は、ミュータブルオブジェクトをstaticフィールド {2} に格納する事で、内部の状態を、外部に晒す危険があります</LongDescription>
     <Details>
 <![CDATA[
   <p> このコードは、外部から変更可能なオブジェクトをstaticフィールドに格納しています。ミュータブルオブジェクトのチェックされない変更が、セキュリティや、重要な情報を危機に晒す可能性があるなら、違うやり方を検討してください。防御的コピーは、一つの良いアイデアです。</p>
@@ -1652,7 +1711,20 @@ finalでないフィールド名は、最初の文字以外の構成単語の最初の文字を大文字として、�
     <LongDescription>{1} は {2} の戻り値を無視しています。</LongDescription>
     <Details>
 <![CDATA[
-   <p> このメソッドの戻り値をチェックするべきです。</p>
+   <p> このメソッドの戻り値をチェックするべきです。このようなコードを書いてしまった原因の1つとして、イミュータブルなオブジェクトのメソッド呼び出しが、そのオブジェクトの状態を変化させると誤解しているケースが考えられます。例えば、</p>
+<blockquote>
+<pre>
+String dateString = getHeaderField(name);
+dateString.trim();
+</pre>
+</blockquote>
+<p>このプログラムは、trim()メソッドがdateStringが参照しているStringの状態を変えると考えているように思われます。しかしStringはイミュータブルであり、trim()メソッドは新しいStringオブジェクトを返すので、これでは戻されたオブジェクトが捨てられてしまいます。このコードは、以下のように修正すべきです。</p>
+<blockquote>
+<pre>
+String dateString = getHeaderField(name);
+dateString = dateString.trim();
+</pre>
+</blockquote>
 ]]>
     </Details>
   </BugPattern>
@@ -1761,8 +1833,8 @@ finalでないフィールド名は、最初の文字以外の構成単語の最初の文字を大文字として、�
 <li> 参照外しを行った後に、nullと比較しています。これは、メソッドのプログラミングミスをしばしば意味します。</li>
 <li> 直定数のnullをnullと比較しています。メソッドの不変式を良く理解していない担当者がメソッドを変更した疑いがあります。</li>
 </ol>
-]]>
 </p>
+]]>
     </Details>
   </BugPattern>
 
@@ -2141,7 +2213,7 @@ finalでないフィールド名は、最初の文字以外の構成単語の最初の文字を大文字として、�
     <Details>
 <![CDATA[
 <p>
-Objectのequalsメソッドをオーバーライドしていないfinalクラスの.equals(Object o)メソッドが呼び出されています。これは==による参照の比較と同値です。このクラスでequalsメソッドをオーバーライドすることを検討してください。
+Objectのequalsメソッドをオーバーライドしていないfinalクラスの.equals(Object o)メソッドが呼び出されています。これは==による参照の比較と同値です。equalsメソッドを使うのは良いのですが、このクラスでequalsメソッドをオーバーライドすることを検討してください。
 </p>
 ]]>    
     </Details>
@@ -2221,7 +2293,7 @@ Objectのequalsメソッドをオーバーライドしていないfinalクラスの.equals(Object o)メ
         <LongDescription>メソッド {1} はentrySetイテレータを使用すべき場所で、keySetイテレータを使用しているため非効率なコードになっています</LongDescription>
         <Details>
 <![CDATA[
-<p> このディテクタは、Mapの内容にkeySetイテレータから取り出したキーを用いてアクセスしているコードを発見します。このようなケースはentrySetを用いれば、無駄なMap.get(key)呼び出しを回避できます。</p>
+<p> Mapの内容にkeySetイテレータから取り出したキーを用いてアクセスしています。このようなケースはentrySetを用いれば、無駄なMap.get(key)呼び出しを回避できます。</p>
 ]]>
         </Details>
     </BugPattern>
@@ -2231,7 +2303,7 @@ Objectのequalsメソッドをオーバーライドしていないfinalクラスの.equals(Object o)メ
         <LongDescription>メソッド {1} は、staticメソッドしか提供していないクラスのインスタンスを無駄に生成しています</LongDescription>
         <Details>
 <![CDATA[
-<p> このディテクタはstaticメソッドしか提供していないクラスのインスタンスの生成を発見します。このインスタンス生成は無駄です。クラス名を使用して直接メソッドを呼び出してください。
+<p> staticメソッドしか提供していないクラスのインスタンスの生成が行なわれています。このインスタンス生成は無駄です。クラス名を使用して直接メソッドを呼び出してください。
 </p>
 ]]>
         </Details>
@@ -2243,11 +2315,110 @@ Objectのequalsメソッドをオーバーライドしていないfinalクラスの.equals(Object o)メ
 	  <Details>
   <![CDATA[
   <p>
-このディテクタはtry節の中でExceptionをスローしないのにExceptionのキャッチ節があり、RuntimExceptionのキャッチ節がないtry-catchブロックを発見します。これは同じ内容のキャッチ節を書くのが面倒でtry { ... } catch (Exception e) { something }と記述してしまい、間違ってRuntimeExceptionまでキャッチしてしまうというバグパターンです。
+このtry-catchブロックはtry節の中でExceptionをスローしないのにExceptionのキャッチ節があり、RuntimExceptionのキャッチ節がありません。これは同じ内容のキャッチ節を書くのが面倒でtry { ... } catch (Exception e) { something }と記述してしまい、間違ってRuntimeExceptionまでキャッチしてしまうというバグパターンです。
   </p>
   ]]>
 	  </Details>
 	</BugPattern>
+
+    <BugPattern type="FE_FLOATING_POINT_EQUALITY">
+	  <ShortDescription>浮動小数の同値比較</ShortDescription>
+	  <LongDescription>{1}で浮動小数の同値比較が行なわれています</LongDescription>
+	  <Details>
+	<![CDATA[
+    <p>
+2つの浮動小数の値が同値であるか比較されています。浮動小数は桁丸めが行なわれるためfloat、doubleの値は誤差を含む場合があります。勘定系の処理のように正確な値が必要な場合には、BigDecimalのような固定小数を使用する事を検討してください。誤差があっても良いケースならば、値の差がある範囲ならば同値であると判断する事を検討してください。これは例えば次のようにします。
+    <code>if ( Math.abs(x - y) < .0000001 )</code>.
+詳しくはJava言語仕様4.2.4.を参照してください。
+    </p>
+    ]]>
+  	  </Details>
+    </BugPattern>
+    
+  <BugPattern type="UM_UNNECESSARY_MATH">
+    <ShortDescription>定数に対するMathクラスのstaticメソッド呼び出し</ShortDescription>
+    <LongDescription>定数に対してMathクラスのstaticメソッドが呼び出されています</LongDescription>
+    <Details>
+<![CDATA[
+<p> このメソッド内でjava.lang.Mathのstaticメソッドを定数に対して呼び出しています。この結果は予め計算しておく事が可能であり、その方が高速で場合によってはより正確です。以下のメソッド呼び出しが検出されます。
+<table>
+<tr><th>メソッド</th><th>パラメータ</th></tr>
+<tr>abs<td></td><td>-任意-</td></tr>
+<tr>acos<td></td><td>0.0 か 1.0</td></tr>
+<tr>asin<td></td><td>0.0 か 1.0</td></tr>
+<tr>atan<td></td><td>0.0 か 1.0</td></tr>
+<tr>atan2<td></td><td>0.0</td></tr>
+<tr>cbrt<td></td><td>0.0 か 1.0</td></tr>
+<tr>ceil<td></td><td>-任意-</td></tr>
+<tr>cos<td></td><td>0.0</td></tr>
+<tr>cosh<td></td><td>0.0</td></tr>
+<tr>exp<td></td><td>0.0 か 1.0</td></tr>
+<tr>expm1<td></td><td>0.0</td></tr>
+<tr>floor<td></td><td>-任意-</td></tr>
+<tr>log<td></td><td>0.0 か 1.0</td></tr>
+<tr>log10<td></td><td>0.0 か 1.0</td></tr>
+<tr>rint<td></td><td>-任意-</td></tr>
+<tr>round<td></td><td>-任意-</td></tr>
+<tr>sin<td></td><td>0.0</td></tr>
+<tr>sinh<td></td><td>0.0</td></tr>
+<tr>sqrt<td></td><td>0.0 か 1.0</td></tr>
+<tr>tan<td></td><td>0.0</td></tr>
+<tr>tanh<td></td><td>0.0</td></tr>
+<tr>toDegrees<td></td><td>0.0 か 1.0</td></tr>
+<tr>toRadians<td></td><td>0.0</td></tr>
+</table>
+</p>
+]]>
+    </Details>
+  </BugPattern>
+  
+    <BugPattern type="CD_CIRCULAR_DEPENDENCY">
+	  <ShortDescription>クラス間の循環依存関係</ShortDescription>
+	  <LongDescription>クラス {0} は、他のクラスと循環依存関係にあります</LongDescription>
+	  <Details>
+	<![CDATA[
+    <p>
+このクラスは、他のクラスと循環依存関係にあります。このため、それぞれクラスのコンパイルの際に別のクラスがコンパイル済である必要があり、全体のコンパイルが難しいものになっています。インターフェースを用いて強い依存関係を断ち切る事を検討してください。
+    </p>
+    ]]>
+  	  </Details>
+    </BugPattern>
+    
+    <BugPattern type="RI_REDUNDANT_INTERFACES">
+	  <ShortDescription>親クラスが実装しているインターフェースをもう一度実装宣言しています</ShortDescription>
+	  <LongDescription>クラス {0} は親クラスが実装しているインターフェースをもう一度実装宣言しています</LongDescription>
+	  <Details>
+	<![CDATA[
+    <p>
+このクラスで実装を宣言しているインターフェースは、親クラスでも実装が宣言されています。一度実装が宣言されたインターフェースは、全サブクラスで自動的に実装されることになるため、この記述は冗長です。このクラスが作成された後に継承関係が変更された可能性があります。実装するべきインターフェースについて再度検討する必要があります。
+    </p>
+    ]]>
+  	  </Details>
+    </BugPattern>
+    
+    <BugPattern type="MTIA_SUSPECT_STRUTS_INSTANCE_FIELD">
+	  <ShortDescription>Struts Actionの継承クラスでのインスタンスフィールドの使用</ShortDescription>
+	  <LongDescription>クラス {0} はStruts Actionクラスを継承しており、インスタンスフィールドを使用しています</LongDescription>
+	  <Details>
+	<![CDATA[
+    <p>
+このクラスはStruts Actionクラスを継承しており、インスタンスフィールドを使用しています。Struts Actionクラスのインスタンスは複数のリクエストに対して1つしか生成されません。このためインスタンスフィールドは複数のスレッドから同時にアクセスされることになるので、このクラスでのインスタンスフィールドの使用は控えるべきであり、また恐らく使い方が間違っています。ローカル変数のみを使用するように変更することを検討してください。
+    </p>
+    ]]>
+      </Details>
+    </BugPattern>
+
+    <BugPattern type="MTIA_SUSPECT_SERVLET_INSTANCE_FIELD">
+	  <ShortDescription>Servletクラスを継承しているクラスでのインスタンスフィールドの使用</ShortDescription>
+	  <LongDescription>クラス {0} はServletクラスを継承しており、インスタンスフィールドを使用しています</LongDescription>
+	  <Details>
+	<![CDATA[
+    <p>
+このクラスはServletクラスを継承しており、インスタンスフィールドを使用しています。サーブレットクラスのインスタンスは複数のリクエストに対して1つしか生成されません。このためインスタンスフィールドは複数のスレッドから同時にアクセスされることになるので、このクラスでのインスタンスフィールドの使用は控えるべきであり、また恐らく使い方が間違っています。ローカル変数のみを使用するように変更することを検討してください。
+    </p>
+    ]]>
+      </Details>
+    </BugPattern>
 
   <!--
   **********************************************************************
@@ -2336,4 +2507,9 @@ Objectのequalsメソッドをオーバーライドしていないfinalクラスの.equals(Object o)メ
   <BugCode abbrev="WMI">間違ったMapイテレータ</BugCode>
   <BugCode abbrev="ISC">staticクラスのインスタンス生成</BugCode>
   <BugCode abbrev="REC">RuntimeExceptionの捕捉</BugCode>
+  <BugCode abbrev="FE">浮動小数の同値比較</BugCode>
+  <BugCode abbrev="UM">不要なMath定数</BugCode>
+  <BugCode abbrev="CD">循環依存</BugCode>
+  <BugCode abbrev="RI">冗長なインターフェース</BugCode>
+  <BugCode abbrev="MTIA">インスタンスへのマルチスレッドアクセス</BugCode>
 </MessageCollection>

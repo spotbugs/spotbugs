@@ -279,8 +279,8 @@
 
 	 <SchemaValidator xml="${findbugs.dir}/etc/findbugs.xml" failonerror="true"/>
 	 <SchemaValidator xml="${findbugs.dir}/etc/messages.xml" failonerror="true"/>
+	 <SchemaValidator xml="${findbugs.dir}/etc/messages_ja.xml" failonerror="true"/>
 <!--	 <SchemaValidator xml="${findbugs.dir}/etc/messages_fr.xml" failonerror="true"/> -->
-<!--	 <SchemaValidator xml="${findbugs.dir}/etc/messages_ja.xml" failonerror="true"/> -->
      <antcall target="plugin">
        <param name="plugin.xml.dir" value="${findbugs.dir}/etc"/>
        <param name="plugin.subpkg.name" value="detect"/>
