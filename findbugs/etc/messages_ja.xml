@@ -1,14 +1,4 @@
 <?xml version="1.0" encoding="Shift_JIS"?>
-<!-- Using Shift_JIS encoding, because Eclipse 2.x doesn't display Japanese 
-character correctly if it is using UTF-8 encoding. -->
-
-<!--
-  Note: as of FindBugs 0.7.4, translations of messages.xml
-  do not need to duplicate untranslated messages.
-  In other words, any messages that are omitted from this
-  file will be taken from the default messages.xml file.
--->
-
 <MessageCollection>
 
   <!--
@@ -17,13 +7,420 @@ character correctly if it is using UTF-8 encoding. -->
   **********************************************************************
    -->
 
-  <!-- None of the detector descriptions are translated -->
+  <Detector class="edu.umd.cs.findbugs.detect.DontCatchIllegalMonitorStateException">
+    <Details>
+<![CDATA[
+<p> This detector looks for try-catch blocks that catch a IllegalMonitorStateException.
+]]>
+    </Details>
+  </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.CloneIdiom">
+    <Details>
+<![CDATA[
+<p> This detector looks for violations of the idioms for writing
+cloneable classes.
+]]>
+    </Details>
+  </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.DroppedException">
+    <Details>
+<![CDATA[
+<p> This detector looks for code where an exception is caught,
+but nothing is done to handle the exception.  It is a fast detector.
+]]>
+    </Details>
+  </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.DumbMethods">
+    <Details>
+<![CDATA[
+<p> This detector looks for calls to pointless methods,
+such as the no-argument String constructor.
+It is a fast detector.
+]]>
+    </Details>
+  </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.FindDoubleCheck" >
+    <Details>
+<![CDATA[
+<p> This detector looks for instances of double checked locking.
+It is a fast detector.
+]]>
+    </Details>
+  </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.FindFinalizeInvocations" >
+    <Details>
+<![CDATA[
+<p> This detector looks for calls to finalize() and other finalizer-related
+issues.  It is a fast detector.
+]]>
+    </Details>
+  </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.FindHEmismatch" >
+    <Details>
+<![CDATA[
+<p> This detector looks for problems in the definition of the hashCode() and equals()
+methods.  It is a fast detector.
+]]>
+    </Details>
+  </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.FindNakedNotify" >
+    <Details>
+<![CDATA[
+<p> This detector looks for calls to notify() that don't seem
+to modify mutable object state.  It is a fast detector.
+]]>
+    </Details>
+  </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.FindReturnRef" >
+    <Details>
+<![CDATA[
+<p> This detector looks for methods that return mutable static data.
+It is a fast detector.
+]]>
+    </Details>
+  </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.FindRunInvocations" >
+    <Details>
+<![CDATA[
+<p> This detector looks for calls to Thread.run().  It is a fast
+detector.
+]]>
+    </Details>
+  </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.FindSpinLoop" >
+    <Details>
+<![CDATA[
+<p> This detector looks for loops that spin reading from a field.
+It is a fast detector.
+]]>
+    </Details>
+  </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.FindTwoLockWait" >
+    <Details>
+<![CDATA[
+<p> This detector looks for calls to wait() with two (or more) locks held.
+It is a slow detector.
+]]>
+    </Details>
+  </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.FindUnconditionalWait" >
+    <Details>
+<![CDATA[
+<p> This detector looks for calls to wait() not in a conditional or loop.
+It is a fast detector.
+]]>
+    </Details>
+  </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.FindUninitializedGet" >
+    <Details>
+<![CDATA[
+<p> This detector looks for reads of uninitialized fields in constructors.
+It is a fast detector.
+]]>
+    </Details>
+  </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.FindUnsyncGet" >
+    <Details>
+<![CDATA[
+<p> This detector looks for get and set methods where the get is unsynchronized
+while the set is synchronized.  It is a fast detector.
+]]>
+    </Details>
+  </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.InitializationChain" >
+    <Details>
+<![CDATA[
+<p> This detector looks for potentially circular class initialization
+dependencies.  It is a fast detector.
+]]>
+    </Details>
+  </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.IteratorIdioms" >
+    <Details>
+<![CDATA[
+<p> This iterator looks for problems in how Iterator classes are defined.
+It is a fast detector.
+]]>
+    </Details>
+  </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.LockedFields" disabled="true" >
+    <Details>
+<![CDATA[
+<p> This detector looks for fields that are accessed in an inconsistent manner
+with respect to locking.  It is a fast detector.
+]]>
+    </Details>
+  </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.EqStringTest" >
+    <Details>
+<![CDATA[
+<p> This detector looks for comparisons of String objects using the == or !=
+operators.
+ It is a fast detector.
+]]>
+    </Details>
+  </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.MutableLock" >
+    <Details>
+<![CDATA[
+<p> This detector looks for synchronization on objects read from
+modified fields.  It is a fast detector.
+]]>
+    </Details>
+  </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.MutableStaticFields" >
+    <Details>
+<![CDATA[
+<p> This detector looks for static fields that may be modified by
+malicious code.  It is a fast detector.
+]]>
+    </Details>
+  </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.Naming" >
+    <Details>
+<![CDATA[
+<p> This detector looks for suspiciously-named methods.  It is a fast detector.
+]]>
+    </Details>
+  </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.ReadReturnShouldBeChecked" >
+    <Details>
+<![CDATA[
+<p> This detector looks for calls to InputStream.read() where the
+return value is ignored.  It is a fast detector.
+]]>
+    </Details>
+  </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.SerializableIdiom" >
+    <Details>
+<![CDATA[
+<p> This detector looks for potential problems in the implementation
+of Serializable classes.  It is a fast detector.
+]]>
+    </Details>
+  </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.StartInConstructor" >
+    <Details>
+<![CDATA[
+<p> This detector looks for constructors that start threads.  It is a fast detector.
+]]>
+    </Details>
+  </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.UnreadFields" >
+    <Details>
+<![CDATA[
+<p> This detector looks for fields whose value is never read.  It is a fast detector.
+]]>
+    </Details>
+  </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.WaitInLoop" >
+    <Details>
+<![CDATA[
+<p> This detector looks for calls to wait() that are not in a loop.
+It is a fast detector.
+]]>
+    </Details>
+  </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.BCPDoubleCheck" disabled="true" >
+    <Details>
+<![CDATA[
+<p> This detector looks for instances of double checked locking.
+It is implemented using the ByteCodePattern class.  You might want to
+take a look at its source code as an example of an easy way to implement a bug
+pattern detector.  It is a fairly fast detector.
+]]>
+    </Details>
+  </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.BCPMethodReturnCheck" >
+    <Details>
+<![CDATA[
+<p> This detector looks for calls to methods where the return value
+is suspiciously ignored.  It is a fairly fast detector.
+]]>
+    </Details>
+  </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.FindNullDeref">
+    <Details>
+<![CDATA[
+<p> This detector looks for places where a null pointer exception might
+occur.  It also looks for redundant comparisons of reference values against
+null.  It is a moderately fast detector.
+]]>
+    </Details>
+  </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.FindOpenStream">
+    <Details>
+<![CDATA[
+<p> This detector looks for IO stream objects which do not escape the
+method and do not appear to be closed on all paths out of the method.
+It is a moderately fast detector.
+]]>
+    </Details>
+  </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.PreferZeroLengthArrays">
+    <Details>
+<![CDATA[
+<p> This detector looks for methods that return either arrays or an explicit null reference.
+Returning a zero length array is generally preferred in this context to returning a null reference.
+It is a fast detector.
+]]>
+    </Details>
+  </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.FindUselessControlFlow">
+    <Details>
+<![CDATA[
+<p> This detector looks for control flow statements which have no effect.
+It is a fast detector.
+]]>
+    </Details>
+  </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.FindUnreleasedLock">
+    <Details>
+<![CDATA[
+<p> This detector looks for JSR-166 (<code>java.util.concurrent</code>)
+locks which are acquired, but not released on all paths out of the method.&nbsp;
+It is a moderately fast detector.&nbsp; Note that in order to use this
+detector, you need to have the <code>java.util.concurrent</code> package
+in the auxiliary classpath (or be analyzing the package itself).
+]]>
+    </Details>
+  </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.FindRefComparison">
+    <Details>
+<![CDATA[
+<p> This detector looks for places where two reference values are compared
+with the == or != operator, and the class is of a type (such as <code>java.lang.String</code>)
+where comparing reference values is generally an error.  It is a moderately
+fast detector.
+]]>
+    </Details>
+  </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.FindMismatchedWaitOrNotify">
+    <Details>
+<![CDATA[
+<p> This detector looks for calls to wait(), notify(), or notifyAll()
+which do not appear to be made on an object which is currently locked.&nbsp;
+It is a moderately fast detector.&nbsp; <b>This detector is disabled because
+it is still under development, and produces too many false positives.</b>
+]]>
+    </Details>
+  </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.FindInconsistentSync2" >
+    <Details>
+<![CDATA[
+<p> This detector looks for fields that are accessed in an inconsistent manner
+with respect to locking.  It is a slow detector.
+]]>
+    </Details>
+  </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.FindLocalSelfAssignment">
+    <Details>
+<![CDATA[
+<p> This detector looks for self assignments of local variables.
+It is a fast detector.
+]]>
+    </Details>
+  </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.LazyInit">
+    <Details>
+<![CDATA[
+<p> This detector looks for lazy field initialization where the
+field is not volatile.  It is a moderately fast detector.
+]]>
+    </Details>
+  </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.FindJSR166LockMonitorenter">
+    <Details>
+<![CDATA[
+<p> This detector looks for ordinary synchronization performed
+on JSR166 locks.  It is a moderately fast detector.
+]]>
+    </Details>
+  </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.FindUncalledPrivateMethods">
+    <Details>
+<![CDATA[
+<p> This detector looks for private methods that are never called.
+It is a fast detector.
+]]>
+    </Details>
+  </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.FindBugsSummaryStats">
+    <Details>
+<![CDATA[
+<p> This dectector just collects summary statistics information about the analysis process. 
+]]>
+    </Details>
+  </Detector>
 
   <!--
   **********************************************************************
   BugPatterns
   **********************************************************************
    -->
+
+  <BugPattern type="IMSE_DONT_CATCH_IMSE">
+    <ShortDescription>IllegalMonitorStateException の疑わしいキャッチ。</ShortDescription>
+    <LongDescription>{1} での、IllegalMonitorStateException の疑わしいキャッチ。</LongDescription>
+    <Details>
+<![CDATA[
+<p>Dubious catching of IllegalMonitorStateException.
+]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="CN_IDIOM">
+    <ShortDescription>クラスは、Cloneable を実装していますが、close メソッドを定義していないか使用しません。</ShortDescription>
+    <LongDescription>クラス {0} は、Cloneable を実装していますが、clone メソッドを定義していないか使用しません。</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+	Class implements Cloneable but does not define or
+	use clone method.
+]]>
+    </Details>
+  </BugPattern>
 
   <BugPattern type="DE_MIGHT_DROP">
     <ShortDescription>メソッドで例外を落としている可能性があります。</ShortDescription>
@@ -379,10 +776,28 @@ using the <code>equals</code> method instead.
     <LongDescription>{1} は {2} を戻すことにより内部表現を暴露してしまう可能性があります。</LongDescription>
     <Details>
 <![CDATA[
-  <p> Returning an array value stored in one of the object's fields
-  exposes the internal representation of the object.&nbsp; For classes shared
-  by other untrusted classes, this could potentially be a security issue.&nbsp;
-  Returning a new copy of the array is better approach in many situations.
+  <p> Returning a reference to a mutable object value stored in one of the object's fields
+  exposes the internal representation of the object.&nbsp; 
+	If instances
+	are accessed by untrusted code, and unchecked changes to
+	the mutable object would compromise security or other
+	important properties, you will need to do something different.
+  Returning a new copy of the object is better approach in many situations.
+]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="EI_EXPOSE_REP2">
+    <ShortDescription>メソッドは可変オブジェクトへの参照と結びつくことにより内部表現を暴露してしまう可能性があります。</ShortDescription>
+    <LongDescription>{1} は {2} の中に外部の可変オブジェクトを格納することにより内部表現を暴露してしまう可能性があります。</LongDescription>
+    <Details>
+<![CDATA[
+  <p> This code stores a reference to an externally mutable object into the
+  internal representation of the object.&nbsp; 
+	If instances
+	are accessed by untrusted code, and unchecked changes to
+	the mutable object would compromise security or other
+	important properties, you will need to do something different.
+  Storing a copy of the object is better approach in many situations.
 ]]>
     </Details>
   </BugPattern>
@@ -410,13 +825,34 @@ using the <code>equals</code> method instead.
 ]]>
     </Details>
   </BugPattern>
+  <BugPattern type="NS_NON_SHORT_CIRCUIT">
+    <ShortDescription>non-short-circuit ロジックの疑わしい使用。</ShortDescription>
+    <LongDescription>{1} での non-short-circuit ロジックの疑わしい使用。</LongDescription>
+    <Details>
+<![CDATA[
+  <p> THis code seems to be using non-short-circuit logic (e.g., &amp;
+or |) 
+rather than short-circuit logic (&amp;&amp; or ||).
+Non-short-circuit logic causes both sides of the expression
+to be evaluated even when the result can be inferred from
+knowing the left-hand side. This can be less efficient and
+can result in errors if the left-hand side guards cases
+when evaluating the right-hand side can generate an error.
+]]>
+    </Details>
+  </BugPattern>
   <BugPattern type="2LW_TWO_LOCK_WAIT">
-    <ShortDescription>２つのロックを持ったままwaitしています。</ShortDescription>
-    <LongDescription>{1} で２つのロックを持ったままwait()しています。</LongDescription>
+    <ShortDescription>２つのロックを持ったまま wait しています。</ShortDescription>
+    <LongDescription>{1} で２つのロックを持ったまま wait() しています。</LongDescription>
     <Details>
 <![CDATA[
   <p> Waiting on a monitor while two locks are held may cause
-  deadlock.&nbsp; This not necessarily a bug, but is worth examining
+  deadlock.
+	&nbsp; 
+	Performing a wait only releases the lock on the object
+	being waited on, not any other locks.
+	&nbsp; 
+This not necessarily a bug, but is worth examining
   closely.
 ]]>
     </Details>
@@ -795,10 +1231,9 @@ object is stored in this field.
     <LongDescription>読まれないフィールド {1} があります。このフィールドは static になるべきではないのですか？</LongDescription>
     <Details>
 <![CDATA[
-  <p> This class contains an instance final field which is never read.&nbsp;
-  The fact that it is not read may indicate that the Java source to bytecode
-  compiler has propagated its constant value.&nbsp; Consider making it
-  static.
+  <p> This class contains an instance final field that
+	is initialized to a compile-time static value.
+	Consider making the field static.
 ]]>
     </Details>
   </BugPattern>
@@ -1021,6 +1456,7 @@ to null. Two types of redundant comparison are reported:
 <li> Both values compared are definitely null
 <li> One value is definitely null and the other is definitely not null
 </ul>
+<p>
 In either case, the result of the comparison will always be the same at
 runtime.  This is likely to inidicate a logic error in the method.
 Often, it means that the reference was dereferenced first, and then
@@ -1175,12 +1611,39 @@ For more information, see the
     </Details>
   </BugPattern>
 
+  <BugPattern type="JLM_JSR166_LOCK_MONITORENTER">
+    <ShortDescription>メソッド内で、JSR166 の Lock による同期がおこなわれます。</ShortDescription>
+    <LongDescription>メソッド {1} 内で、JSR166 の Lock による同期がおこなわれます。</LongDescription>
+<Details>
+<![CDATA[
+<p> This method performs synchronization on an implementation of
+<code>java.util.concurrent.locks.Lock</code>.  You should use
+the <code>lock()</code> and <code>unlock()</code> methods instead.
+]]>
+</Details>
+  </BugPattern>
+
+  <BugPattern type="UPM_UNCALLED_PRIVATE_METHOD">
+    <ShortDescription>private メソッドは一度も呼ばれません。</ShortDescription>
+    <LongDescription>private メソッド {1} は一度も呼ばれません。</LongDescription>
+<Details>
+<![CDATA[
+<p> This private method is never called. Although it is
+possible that the method will be invoked through reflection,
+it is more likely that the method is never used, and should be
+removed.
+]]>
+</Details>
+  </BugPattern>
+
   <!--
   **********************************************************************
    BugCodes
   **********************************************************************
    -->
 
+  <BugCode abbrev="IMSE" >IllegalMonitorStateException の疑わしいキャッチ。</BugCode>
+  <BugCode abbrev="CN" >cloneable 表現の誤った実装。</BugCode>
   <BugCode abbrev="FI" >ファイナライザの使用方法が間違っています。</BugCode>
   <BugCode abbrev="ES" >文字列の一致を == や != を使って比較しています</BugCode>
   <BugCode abbrev="ML" >更新されるフィールドで同期を取ろうとしています。(ミュータブルロック)</BugCode>
@@ -1229,5 +1692,7 @@ For more information, see the
   <BugCode abbrev="MWN">wait() か notify()の組み合せが間違っています。</BugCode>
   <BugCode abbrev="SA">無駄な自己代入です。</BugCode>
   <BugCode abbrev="LI">同期化(synchronized)されていない遅延初期化です。</BugCode>
+  <BugCode abbrev="JLM">JSR166 の Lock による同期。</BugCode>
+  <BugCode abbrev="UPM">private メソッドは一度も呼ばれません。</BugCode>
 
 </MessageCollection>
