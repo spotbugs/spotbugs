@@ -7,7 +7,7 @@
 use strict qw(refs vars);
 
 my @jarList = (
-	'/export/home/daveho/linux/java/j2sdk1.4.2/jre/lib/rt.jar', # JDK 1.4.2-beta rt.jar file (build 1.4.2-beta-b19)
+	#'/export/home/daveho/linux/java/j2sdk1.4.2/jre/lib/rt.jar', # JDK 1.4.2-beta rt.jar file (build 1.4.2-beta-b19)
 	'/export/home/daveho/t/classpath.jar', # Classpath 0.05
 );
 
@@ -23,8 +23,7 @@ foreach my $jar (@jarList) {
 
 	my $outFile = "build/$shortName.out";
 
-	my $rc =
-	system("java $JVM_ARGS -jar build/lib/findbugs.jar $jar | etc/summarizeBugs > $outFile");
+	my $rc = system("bin/findbugs -textui -jvmArgs=$JVM_ARGS $jar | etc/summarizeBugs > $outFile");
 	if ($rc/256 != 0) {
 		print STDERR "Command failed!\n";
 		exit 1;
