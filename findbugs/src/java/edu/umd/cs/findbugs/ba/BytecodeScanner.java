@@ -27,6 +27,8 @@ package edu.umd.cs.daveho.ba;
  * @author David Hovemeyer
  */
 public class BytecodeScanner implements org.apache.bcel.Constants {
+	private static final boolean DEBUG = Boolean.getBoolean("bs.debug");
+
 	/**
 	 * Callback interface to report scanned instructions.
 	 */
@@ -78,6 +80,8 @@ public class BytecodeScanner implements org.apache.bcel.Constants {
 		for (int index = 0; index < instructionList.length; ) {
 			short opcode = unsignedValueOf(instructionList[index]);
 			callback.handleInstruction(opcode);
+
+			if (DEBUG) System.out.println(index + ": " + OPCODE_NAMES[opcode]);
 
 			switch (opcode) {
 
@@ -209,6 +213,7 @@ public class BytecodeScanner implements org.apache.bcel.Constants {
 					int low = extractInt(instructionList, offset + 4);
 					int high = extractInt(instructionList, offset + 8);
 					int tableSize = (high - low) + 1;
+					if (DEBUG) System.out.println("tableswitch: low=" + low + ", high=" + high + ", tableSize=" + tableSize);
 					index += pad + 12 + (tableSize * 4);
 				}
 				break;
@@ -233,6 +238,9 @@ public class BytecodeScanner implements org.apache.bcel.Constants {
 			default:
 				throw new IllegalArgumentException("Bad opcode " + opcode + " at offset " + index);
 			}
+
+			if (index < 0)
+				throw new IllegalStateException("index=" + index + ", opcode=" + opcode);
 
 		}
 	}
