@@ -60,6 +60,21 @@ public abstract class XMLOutputUtil {
 			xmlOutput.closeTag(tagName);
 		}
 	}
+
+	/**
+	 * Write a Collection of XMLWriteable objects.
+	 *
+	 * @param xmlOutput  the XMLOutput object to write to
+	 * @param collection Collection of XMLWriteable objects
+	 */
+	public static void writeCollection(XMLOutput xmlOutput, Collection<? extends XMLWriteable> collection)
+			throws IOException {
+		Iterator<? extends XMLWriteable> i = collection.iterator();
+		while (i.hasNext()) {
+			XMLWriteable obj = i.next();
+			obj.writeXML(xmlOutput);
+		}
+	}
 }
 
 // vim:ts=4
