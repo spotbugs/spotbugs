@@ -41,6 +41,8 @@ import org.apache.bcel.generic.InstructionList;
 import org.apache.bcel.generic.INVOKESTATIC;
 import org.apache.bcel.generic.MethodGen;
 
+import edu.umd.cs.findbugs.ba.ca.CallListAnalysis;
+import edu.umd.cs.findbugs.ba.ca.CallListDataflow;
 import edu.umd.cs.findbugs.ba.constant.ConstantAnalysis;
 import edu.umd.cs.findbugs.ba.constant.ConstantDataflow;
 
@@ -654,6 +656,23 @@ public class ClassContext implements AnalysisFeatures {
 				}
 			};
 
+	private AnalysisFactory<CallListDataflow> callListDataflowFactory =
+		new AnalysisFactory<CallListDataflow>("call list analysis") {
+			//@Override
+			protected CallListDataflow analyze(Method method) throws CFGBuilderException, DataflowAnalysisException {
+
+				CallListAnalysis analysis = new CallListAnalysis(
+						getCFG(method),
+						getDepthFirstSearch(method),
+						getConstantPoolGen());
+				
+				CallListDataflow dataflow = new CallListDataflow(getCFG(method), analysis);
+				dataflow.execute();
+				
+				return dataflow;
+			}
+		};
+			
 	private ClassGen classGen;
 	private AssignedFieldMap assignedFieldMap;
 	private AssertionMethods assertionMethods;
@@ -953,9 +972,30 @@ public class ClassContext implements AnalysisFeatures {
 		return assertionMethods;
 	}
 	
+	/**
+	 * Get ConstantDataflow for method.
+	 * 
+	 * @param method the method
+	 * @return the ConstantDataflow
+	 * @throws CFGBuilderException
+	 * @throws DataflowAnalysisException
+	 */
 	public ConstantDataflow getConstantDataflow(Method method)
 			throws CFGBuilderException, DataflowAnalysisException {
 		return constantDataflowFactory.getAnalysis(method);
+	}
+	
+	/**
+	 * Get CallListDataflow for method.
+	 * 
+	 * @param method the method
+	 * @return the CallListDataflow
+	 * @throws CFGBuilderException
+	 * @throws DataflowAnalysisException
+	 */
+	public CallListDataflow getCallListDataflow(Method method)
+			throws CFGBuilderException, DataflowAnalysisException {
+		return callListDataflowFactory.getAnalysis(method);
 	}
 }
 
