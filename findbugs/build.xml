@@ -45,6 +45,7 @@
     <property name="anttask.jar.name" value="findbugs-ant.jar" />
     <property name="doc.src.dir" value="${findbugs.dir}/src/doc" />
     <property name="doc.dir" value="${findbugs.dir}/doc" />
+    <property name="javadoc.dir" value="${findbugs.dir}/doc/api" />
     <property name="build.dir" value="${findbugs.dir}/build" />
     <property name="jar.dir" value="lib" />
     <property name="script.dir" value="bin" />
@@ -339,6 +340,16 @@
 
     <!-- Target to build the docs. -->
     <target name="docs" depends="docfiles,manual">
+    </target>
+
+    <!-- Build Javadocs.  This is experimental, and requires a 1.5 JDK. -->
+    <target name="javadoc" depends="init">
+      <delete dir="${javadoc.dir}"/>
+      <mkdir dir="${javadoc.dir}"/>
+      <javadoc destdir="${javadoc.dir}"
+               source="1.5">
+        <fileset dir="${findbugs.src.dir}"/>
+      </javadoc>
     </target>
 
     <!-- Default target: just compile the code
