@@ -74,6 +74,23 @@ public class DetectorFactoryCollection {
 	}
 
 	/**
+	 * Return an Iterator over all available Plugin objects.
+	 */
+	public Iterator<Plugin> pluginIterator() {
+		return pluginByIdMap.values().iterator();
+	}
+
+	/**
+	 * Get a Plugin by its unique id.
+	 *
+	 * @param pluginId the unique id
+	 * @return the Plugin with that id, or null if no such Plugin is found
+	 */
+	public Plugin getPluginById(String pluginId) {
+		return pluginByIdMap.get(pluginId);
+	}
+
+	/**
 	 * Return an Iterator over the DetectorFactory objects for all
 	 * registered Detectors.
 	 */
@@ -202,6 +219,8 @@ public class DetectorFactoryCollection {
 				++numLoaded;
 			} catch (Exception e) {
 				System.err.println("Warning: could not load plugin " + file.getPath() + ": " + e.toString());
+				if (FindBugs.DEBUG)
+					e.printStackTrace();
 			}
 		}
 	

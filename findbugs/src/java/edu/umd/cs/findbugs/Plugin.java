@@ -36,6 +36,7 @@ public class Plugin {
 	private ArrayList<DetectorFactory> detectorFactoryList;
 	private ArrayList<BugPattern> bugPatternList;
 	private ArrayList<BugCode> bugCodeList;
+	private boolean enabled;
 
 	/**
 	 * Constructor.
@@ -48,6 +49,24 @@ public class Plugin {
 		this.detectorFactoryList = new ArrayList<DetectorFactory>();
 		this.bugPatternList = new ArrayList<BugPattern>();
 		this.bugCodeList = new ArrayList<BugCode>();
+	}
+
+	/**
+	 * Set whether or not this Plugin is enabled.
+	 *
+	 * @param enabled true if the Plugin is enabled, false if not
+	 */
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
+	}
+
+	/**
+	 * Return whether or not the Plugin is enabled.
+	 *
+	 * @return true if the Plugin is enabled, false if not
+	 */
+	public boolean isEnabled() {
+		return enabled;
 	}
 
 	/**

@@ -398,6 +398,20 @@ public class FindBugs implements Constants2, ExitCodes {
 		}
 	}
 
+	/**
+	 * Handling callback for choose() method,
+	 * used to implement the -chooseVisitors and -choosePlugins options.
+	 */
+	private interface Chooser {
+		/**
+		 * Choose a detector, plugin, etc.
+		 *
+		 * @param enable whether or not the item should be enabled
+		 * @param what   the item
+		 */
+		public void choose(boolean enable, String what);
+	}
+
 	private static final int PRINTING_REPORTER = 0;
 	private static final int SORTING_REPORTER = 1;
 	private static final int XML_REPORTER = 2;
@@ -443,6 +457,7 @@ public class FindBugs implements Constants2, ExitCodes {
 			addOption("-visitors", "v1[,v2...]", "run only named visitors");
 			addOption("-omitVisitors", "v1[,v2...]", "omit named visitors");
 			addOption("-chooseVisitors", "+v1,-v2,...", "selectively enable/disable detectors");
+			addOption("-choosePlugins", "+p1,-p2,...", "selectively enable/disable plugins");
 			addSwitch("-adjustExperimental", "lower the priority of Bug Patterns that are experimental");
 			addOption("-adjustPriority", "v1=(raise|lower)[,...]",
 					"raise/lower priority of warnings for given visitor(s)");
@@ -553,22 +568,25 @@ public class FindBugs implements Constants2, ExitCodes {
 				// you can selectively enable and disable detectors,
 				// starting from the default set (or whatever set
 				// happens to be in effect).
-				StringTokenizer tok = new StringTokenizer(argument, ",");
-				while (tok.hasMoreTokens()) {
-					String visitorName = tok.nextToken();
-					if (!visitorName.startsWith("+") && !visitorName.startsWith("-"))
-						throw new IllegalArgumentException("Detector choices must start with " +
-							"\"+\" or \"-\" (saw " + visitorName + ")");
-					DetectorFactory factory = DetectorFactoryCollection.instance()
-						.getFactory(visitorName.substring(1));
-					if (factory == null)
-						throw new IllegalArgumentException("Unknown detector: " +
-							visitorName.substring(1));
-					if (visitorName.startsWith("+"))
-						factory.setEnabled(true);
-					else
-						factory.setEnabled(false);
-				}
+				choose(argument, "Detector choices", new Chooser() {
+					public void choose(boolean enabled, String what) {
+						DetectorFactory factory = DetectorFactoryCollection.instance()
+							.getFactory(what);
+						if (factory == null)
+							throw new IllegalArgumentException("Unknown detector: " + what);
+						factory.setEnabled(enabled);
+					}
+				});
+			} else if (option.equals("-choosePlugins")) {
+				// Selectively enable/disable plugins
+				choose(argument, "Plugin choices", new Chooser() {
+					public void choose(boolean enabled, String what) {
+						Plugin plugin = DetectorFactoryCollection.instance().getPluginById(what);
+						if (plugin == null)
+							throw new IllegalArgumentException("Unknown plugin: " + what);
+						plugin.setEnabled(enabled);
+					}
+				});
 			} else if (option.equals("-adjustPriority")) {
 				// Selectively raise or lower the priority of warnings
 				// produced by specified detectors.
@@ -634,6 +652,25 @@ public class FindBugs implements Constants2, ExitCodes {
 					e.printStackTrace(System.err);
 					throw e;
 				}
+			}
+		}
+
+		/**
+		 * Common handling code for -chooseVisitors and -choosePlugins options.
+		 *
+		 * @param argument the list of visitors or plugins to be chosen
+		 * @param desc     String describing what is being chosen
+		 * @param chooser  callback object to selectively choose list members
+		 */
+		private void choose(String argument, String desc, Chooser chooser) {
+			StringTokenizer tok = new StringTokenizer(argument, ",");
+			while (tok.hasMoreTokens()) {
+				String what = tok.nextToken();
+				if (!what.startsWith("+") && !what.startsWith("-"))
+					throw new IllegalArgumentException(desc + " must start with " +
+						"\"+\" or \"-\" (saw " + what + ")");
+				boolean enabled = what.startsWith("+");
+				chooser.choose(enabled, what.substring(1));
 			}
 		}
 
@@ -986,7 +1023,7 @@ public class FindBugs implements Constants2, ExitCodes {
 		Iterator<DetectorFactory> i = DetectorFactoryCollection.instance().factoryIterator();
 		while (i.hasNext()) {
 			DetectorFactory factory = i.next();
-			if (factory.isEnabled()) {
+			if (factory.getPlugin().isEnabled() && factory.isEnabled()) {
 				Detector detector = factory.create(bugReporter);
 				detector.setAnalysisContext(analysisContext);
 				result.add(detector);

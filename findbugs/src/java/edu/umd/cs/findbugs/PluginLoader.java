@@ -123,6 +123,12 @@ public class PluginLoader extends URLClassLoader {
 			}
 		}
 
+		// See if the plugin is enabled or disabled by default.
+		// Note that if there is no "defaultenabled" attribute,
+		// then we assume that the plugin IS enabled by default.
+		String defaultEnabled = pluginDescriptor.valueOf("/FindbugsPlugin/@defaultenabled");
+		boolean pluginEnabled = defaultEnabled.equals("") ? true : Boolean.valueOf(defaultEnabled);
+
 		// Load the message collections
 		try {
 			Locale locale = Locale.getDefault();
@@ -141,6 +147,7 @@ public class PluginLoader extends URLClassLoader {
 		// Create the Plugin object (but don't assign to the plugin field yet,
 		// since we're still not sure if everything will load correctly)
 		Plugin plugin = new Plugin(pluginId);
+		plugin.setEnabled(pluginEnabled);
 
 		// Create a DetectorFactory for all Detector nodes
 		HashMap<String, DetectorFactory> detectorFactoryMap = new HashMap<String, DetectorFactory>();
