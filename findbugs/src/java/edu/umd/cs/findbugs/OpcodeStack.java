@@ -34,6 +34,7 @@ import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.LocalVariableTable;
 import org.apache.bcel.classfile.LocalVariable;
 import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.BasicType;
 import org.apache.bcel.generic.Type;
 import edu.umd.cs.findbugs.visitclass.Constants2;
 import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
@@ -54,6 +55,7 @@ public class OpcodeStack implements Constants2
 	{ 		
  		private String signature;
  		private Object constValue;
+ 		private boolean isNull;
  		
  		public Item(String s) {
  			this(s, null);
@@ -62,6 +64,13 @@ public class OpcodeStack implements Constants2
  		public Item(String s, Object v) {
  			signature = s;
  			constValue = v;
+ 			isNull = false;
+ 		}
+ 		
+ 		public Item() {
+ 			signature = "Ljava/lang/Object;";
+ 			constValue = null;
+ 			isNull = true;
  		}
  		 		 		
  		public JavaClass getJavaClass() throws ClassNotFoundException {
@@ -82,7 +91,7 @@ public class OpcodeStack implements Constants2
  			baseSig = baseSig.replace('/', '.');
  			return Repository.lookupClass(baseSig);
  		}
- 		
+ 		 		
  		public boolean isArray() {
  			return signature.startsWith("[");
  		}
@@ -110,6 +119,10 @@ public class OpcodeStack implements Constants2
  			return signature;
  		}
  		
+ 		public boolean isNull() {
+ 			return isNull;
+ 		}
+ 		
  		public Object getConstant() {
  			return constValue;
  		}
@@ -126,7 +139,6 @@ public class OpcodeStack implements Constants2
  		LocalVariable lv;
  		JavaClass cls;
  		String signature;
- 		String[] tokens;
  		Method m;
  		Item it, it2;
  		
@@ -270,6 +282,10 @@ public class OpcodeStack implements Constants2
 	 				push(new Item("I", new Integer(seen-ICONST_0)));
 	 			break;
 	 			
+	 			case ACONST_NULL:
+	 				push(new Item());
+	 			break;
+	 			
 	 			case ILOAD:
 	 			case ILOAD_0:
 	 			case ILOAD_1:
@@ -305,10 +321,20 @@ public class OpcodeStack implements Constants2
 	 			break;
 	 			
 	 			case ISUB:
+	 			case IADD:
+	 			case IMUL:
+	 			case IDIV:
 	 				it = pop();
 	 				it2 = pop();
 	 				if ((it.getConstant() != null) && it2.getConstant() != null) {
-	 					push(new Item("I", ((Integer)it2.getConstant()).intValue() - ((Integer)it.getConstant()).intValue()));
+						if (seen == IADD)
+	 						push(new Item("I", ((Integer)it2.getConstant()).intValue() + ((Integer)it.getConstant()).intValue()));
+	 					else if (seen == ISUB)
+	 						push(new Item("I", ((Integer)it2.getConstant()).intValue() - ((Integer)it.getConstant()).intValue()));
+						else if (seen == IMUL)
+	 						push(new Item("I", ((Integer)it2.getConstant()).intValue() * ((Integer)it.getConstant()).intValue()));
+						else if (seen == IDIV)
+	 						push(new Item("I", ((Integer)it2.getConstant()).intValue() / ((Integer)it.getConstant()).intValue()));
 	 				} else {
 	 					push(new Item("I"));
 	 				}
@@ -317,10 +343,17 @@ public class OpcodeStack implements Constants2
 	 			case NEW:
 	 				pushBySignature(dbc.getClassConstantOperand());
 	 			break;
-/*	 			
+	 			
 	 			case NEWARRAY:
 	 				pop();
-	 				pushBySignature(dbc.getClassConstantOperand());
+	 				signature = BasicType.getType((byte)dbc.getIntConstant()).getSignature();
+	 				pushBySignature(signature);
+	 			break;
+/*	 			
+	 			case ANEWARRAY:
+	 				pop();
+	 				signature = ?
+	 				pushBySignature(signature);
 	 			break;
 */	 				
 	 			case AALOAD:
