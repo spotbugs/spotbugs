@@ -1,8 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
 <!--
 	Plugin descriptor for FindBugs style plugin.
--->
 
-<FindbugsPlugin pluginid="style">
+	This plugin contains detectors that report style issues,
+	which may make the code confusing or hard to maintain,
+	but don't generally result in misbehavior at runtime.
+
+	This plugin is not enabled by default.
+	Users should add -choosePlugins +style to the command line
+	to enable it.
+-->
+<FindbugsPlugin pluginid="style" defaultenabled="false">
 	<Detector
 		class="edu.umd.cs.findbugs.style.FindDeadLocalStores"
 		speed="moderate"
