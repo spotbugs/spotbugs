@@ -35,6 +35,7 @@ public abstract class PatternElement {
 	private PatternElement next;
 	private String label;
 	private int index;
+	private boolean matchExceptionEdges = true;
 
 	/**
 	 * Get the next PatternElement.
@@ -72,6 +73,22 @@ public abstract class PatternElement {
 	public void setIndex(int index) {
 		this.index = index;
 	}
+
+	/**
+	 * Set whether or not this PatternElement may match exception edges.
+	 * By default, exception edges may be matched.
+	 * @param matchExceptionEdges true if exception edges may be matched,
+	 *  false if exception edges will never be matched
+	 */
+	public PatternElement setMatchExceptionEdges(boolean matchExceptionEdges) {
+		this.matchExceptionEdges = matchExceptionEdges;
+		return this;
+	}
+
+	/**
+	 * Return whether or not this PatternElement may match exception edges.
+	 */
+	public boolean matchExceptionEdges() { return matchExceptionEdges; }
 
 	/**
 	 * Look up a variable definition in given BindingSet.
