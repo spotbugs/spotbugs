@@ -26,7 +26,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.FindRunInvocations" speed="fast"
     reports="RU_INVOKE_RUN"/>
   <Detector class="edu.umd.cs.findbugs.detect.SwitchFallthrough" speed="fast"
-	  disable="true"
+	  disabled="true"
     reports="SF_SWITCH_FALLTHROUGH"/>
   <Detector class="edu.umd.cs.findbugs.detect.FindSpinLoop" speed="fast"
     reports="SP_SPIN_ON_FIELD"/>
