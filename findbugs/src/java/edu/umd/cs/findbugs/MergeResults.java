@@ -37,16 +37,19 @@ public class MergeResults {
 		SortedBugCollection origCollection = new SortedBugCollection();
 		SortedBugCollection newCollection = new SortedBugCollection();
 
-		origCollection.readXML(origResultsFile, classToSourceFileMap);
+		origCollection.readXML(origResultsFile, new HashMap<String,String>());
 		newCollection.readXML(newResultsFile, classToSourceFileMap);
 
 		Iterator<BugInstance> i = origCollection.iterator();
 		while (i.hasNext()) {
 			BugInstance orig = i.next();
 			if (newCollection.contains(orig)) {
-				newCollection.getMatching(orig);
+				BugInstance matching = newCollection.getMatching(orig);
+				matching.setAnnotationText(orig.getAnnotationText());
 			}
 		}
+
+		newCollection.writeXML(System.out, classToSourceFileMap);
 
 	}
 }
