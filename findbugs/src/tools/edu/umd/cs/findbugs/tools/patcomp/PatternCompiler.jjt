@@ -189,17 +189,17 @@ TOKEN :
 SimpleNode unit() :
 { }
 {
-	opt_prescreen() match() opt_check() report()
+	[ prescreen() ] match() [ check() ] report()
 	{ return jjtThis; }
 }
 
 // The optional "prescreen" section specifies simple/fast checks
 // done on the method to determine whether or not the method
 // might contain an instance of the pattern.
-void opt_prescreen() :
+void prescreen() :
 { }
 {
-	[ <PRESCREEN> <LBRACE> [ <LBRACKET> declaration_list() <RBRACKET> ] expression() <RBRACE> ]
+	<PRESCREEN> <LBRACE> [ <LBRACKET> ( declaration() )+ <RBRACKET> ] expression() <RBRACE>
 }
 
 // The required "match" section specifies a bytecode pattern
@@ -207,17 +207,17 @@ void opt_prescreen() :
 void match() :
 { }
 {
-	<MATCH> <LBRACE> instruction_list() <RBRACE>
+	<MATCH> <LBRACE> ( instruction() )+ <RBRACE>
 }
 
 // The optional "check" section performs tests on the code matched
 // by the pattern in the "match" section to determine whether
 // it is really an instance of the pattern.  These checks may make
 // use of more extensive analysis such as computing lock sets.
-void opt_check() :
+void check() :
 { }
 {
-	[ <CHECK> <LBRACE> [ <LBRACKET> declaration_list() <RBRACKET> ] expression() <RBRACE> ]
+	<CHECK> <LBRACE> [ <LBRACKET> ( declaration() )+ <RBRACKET> ] expression() <RBRACE>
 }
 
 // The required "report" section emits a bug warning based on the
@@ -225,13 +225,7 @@ void opt_check() :
 void report() :
 { }
 {
-	<REPORT> <LBRACE> [ <LBRACKET> declaration_list() <RBRACKET> ] expression() <RBRACE>
-}
-
-void declaration_list() :
-{ }
-{
-    declaration() [ declaration_list() ]
+	<REPORT> <LBRACE> [ <LBRACKET> ( declaration() )+ <RBRACKET> ] expression() <RBRACE>
 }
 
 void declaration() :
@@ -240,25 +234,19 @@ void declaration() :
 	type_spec() <ID> <ASSIGN> expression() <SEMICOLON>
 }
 
-void instruction_list() :
-{ }
-{
-	[ instruction() instruction_list() ]
-}
-
 void instruction() :
 { }
 {
-	opt_label() <ID> [ instruction_arg_list() ]
+	[ label() ] <ID> [ instruction_arg_list() ]
 		[ <DOMINATEDBY> <LPAREN> <ID> <RPAREN> ]
 		[ <WHERE> <LPAREN> expression() <RPAREN> ]
 		<SEMICOLON>
 }
 
-void opt_label() :
+void label() :
 { }
 {
-	[ <ID> <COLON> ]
+	<ID> <COLON>
 }
 
 void instruction_arg_list() :
@@ -336,16 +324,17 @@ void equality_expression() :
 void relational_expression() :
 { }
 {
-	shift_expression() relational_expression_rest()
+	shift_expression() ( <INSTANCEOF> type_spec()
+						| ( (<LT> | <GT> | <LE> | <GE>) shift_expression() )* )
 }
-
+/*
 void relational_expression_rest() :
 { }
 {
 	<INSTANCEOF> type_spec()
 |	( (<LT> | <GT> | <LE> | <GE>) shift_expression() )*
 }
-
+*/
 void shift_expression() :
 { }
 {
@@ -409,7 +398,7 @@ void primary_expression() :
 |	<THIS>
 |	<SUPER>
 |	<LPAREN> expression() <RPAREN>
-|	builtin_type() opt_array_spec() <DOT> <CLASS>
+|	builtin_type() [ array_spec() ] <DOT> <CLASS>
 |	<BLOCKS> <ID> <WHERE> <LPAREN> expression() <RPAREN>
 }
 
@@ -435,7 +424,7 @@ void type_spec() :
 void class_type_spec() :
 { }
 {
-	class_or_interface_type_name() opt_array_spec()
+	class_or_interface_type_name() [ array_spec() ]
 }
 
 void class_or_interface_type_name() :
@@ -447,7 +436,7 @@ void class_or_interface_type_name() :
 void builtin_type_spec() :
 { }
 {
-	builtin_type() opt_array_spec()
+	builtin_type() [ array_spec() ]
 }
 
 void builtin_type() :
@@ -456,10 +445,10 @@ void builtin_type() :
 	<VOID> | <BOOLEAN> | <BYTE> | <CHAR> | <SHORT> | <INT> | <FLOAT> | <LONG> | <DOUBLE>
 }
 
-void opt_array_spec() :
+void array_spec() :
 { }
 {
-	( <LBRACKET> <RBRACKET> )*
+	( <LBRACKET> <RBRACKET> )+
 }
 
 void arg_list() :
