@@ -29,10 +29,12 @@ import org.apache.bcel.generic.*;
 public class ValueNumberAnalysis extends ForwardDataflowAnalysis<ValueNumberFrame> {
 	private MethodGen methodGen;
 	private ValueNumberFactory factory;
+	private ValueNumberCache cache;
 
 	public ValueNumberAnalysis(MethodGen methodGen) {
 		this.methodGen = methodGen;
 		this.factory = new ValueNumberFactory();
+		this.cache = new ValueNumberCache();
 	}
 
 	public ValueNumberFrame createFact() {
@@ -70,7 +72,7 @@ public class ValueNumberAnalysis extends ForwardDataflowAnalysis<ValueNumberFram
 	}
 
 	public void transferInstruction(InstructionHandle handle, ValueNumberFrame fact) throws DataflowAnalysisException {
-		ValueNumberFrameModelingVisitor visitor = new ValueNumberFrameModelingVisitor(fact, methodGen.getConstantPool(), factory);
+		ValueNumberFrameModelingVisitor visitor = new ValueNumberFrameModelingVisitor(fact, methodGen.getConstantPool(), factory, cache);
 		Instruction ins = handle.getInstruction();
 		ins.accept(visitor);
 	}
