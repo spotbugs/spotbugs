@@ -17,7 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-// $Revision: 1.10 $
+// $Revision: 1.11 $
 
 package edu.umd.cs.findbugs.graph;
 
@@ -67,10 +67,10 @@ public class StronglyConnectedComponents
 
 		// Perform the initial depth first search
 		DepthFirstSearch<GraphType, EdgeType, VertexType> initialDFS =
-		        new DepthFirstSearch<GraphType, EdgeType, VertexType>();
+		        new DepthFirstSearch<GraphType, EdgeType, VertexType>(g);
 		if (m_vertexChooser != null)
 			initialDFS.setVertexChooser(m_vertexChooser);
-		initialDFS.search(g);
+		initialDFS.search();
 
 		// Create a transposed graph
 		Transpose<GraphType, EdgeType, VertexType> t =
@@ -89,19 +89,33 @@ public class StronglyConnectedComponents
 			descendingByFinishTimeSet.add(i.next());
 		}
 
+		// Create a SearchTreeBuilder for transposed DFS
+		SearchTreeBuilder<VertexType> searchTreeBuilder = new SearchTreeBuilder<VertexType>();
+
 		// Now perform a DFS on the transpose, choosing the vertices
 		// to visit in the main loop by descending finish time
+		final Iterator<VertexType> vertexIter = descendingByFinishTimeSet.iterator();
 		DepthFirstSearch<GraphType, EdgeType, VertexType> transposeDFS =
-		        new DepthFirstSearch<GraphType, EdgeType, VertexType>();
+		        new DepthFirstSearch<GraphType, EdgeType, VertexType>(transpose) {
+			protected VertexType getNextSearchTreeRoot() {
+				while(vertexIter.hasNext()) {
+					VertexType vertex = vertexIter.next();
+					if (getColor(vertex) == WHITE)
+						return vertex;
+				}
+				return null;
+			}
+		};
 		if (m_vertexChooser != null)
 			transposeDFS.setVertexChooser(m_vertexChooser);
-		transposeDFS.search(transpose, descendingByFinishTimeSet.iterator());
+		transposeDFS.setSearchTreeCallback(searchTreeBuilder);
+		transposeDFS.search();
 
 		// The search tree roots of the second DFS represent the
 		// strongly connected components.  Note that we call copySearchTree()
 		// to make the returned search trees relative to the original
 		// graph, not the transposed graph (which would be very confusing).
-		Iterator<SearchTree<VertexType>> j = transposeDFS.searchTreeIterator();
+		Iterator<SearchTree<VertexType>> j = searchTreeBuilder.searchTreeIterator();
 		while (j.hasNext()) {
 			m_stronglyConnectedSearchTreeList.add(copySearchTree(j.next(), t));
 		}
