@@ -146,6 +146,8 @@ public class IsNullValueAnalysis extends ForwardDataflowAnalysis<IsNullValueFram
 						switch (nullInfo) {
 						case TOS_NULL:
 						case TOS_NON_NULL:
+						case NEXT_TO_TOS_NULL:
+						case NEXT_TO_TOS_NON_NULL:
 							{
 								// What we know here is that the value that was
 								// just popped off the stack is either null or non-null.
@@ -155,15 +157,22 @@ public class IsNullValueAnalysis extends ForwardDataflowAnalysis<IsNullValueFram
 								BasicBlock sourceBlock = edge.getSource();
 								Location atIf = new Location(sourceBlock.getLastInstruction(), sourceBlock);
 
-								ValueNumberFrame prevVnaFrame = vnaDataflow.getFactAtLocation(atIf);
 								IsNullValueFrame prevIsNullValueFrame = getFactAtLocation(atIf);
+								ValueNumberFrame prevVnaFrame = vnaDataflow.getFactAtLocation(atIf);
+
+								int prevNumSlots = prevIsNullValueFrame.getNumSlots();
+								assert prevNumSlots == prevVnaFrame.getNumSlots();
 
 								if (prevVnaFrame != null && prevIsNullValueFrame != null) {
-									ValueNumber replaceMe = prevVnaFrame.getTopValue();
-									IsNullValue origIsNullValue = prevIsNullValueFrame.getTopValue();
+									int slotToReplace = (nullInfo == TOS_NULL || nullInfo == TOS_NON_NULL)
+										? prevNumSlots - 1
+										: prevNumSlots - 2;
+
+									ValueNumber replaceMe = prevVnaFrame.getValue(slotToReplace);
+									IsNullValue origIsNullValue = prevIsNullValueFrame.getValue(slotToReplace);
 
 									fact = replaceValues(fact, replaceMe, vnaFrame,
-										nullInfo == TOS_NULL
+										(nullInfo == TOS_NULL || nullInfo == NEXT_TO_TOS_NULL)
 											? IsNullValue.flowSensitiveNullValue(origIsNullValue)
 											: IsNullValue.flowSensitiveNonNullValue(origIsNullValue));
 								} else
@@ -198,16 +207,23 @@ public class IsNullValueAnalysis extends ForwardDataflowAnalysis<IsNullValueFram
 
 	private static final int TOS_NULL = 0;
 	private static final int TOS_NON_NULL = 1;
-	private static final int REF_OPERAND_NON_NULL = 2;
+	private static final int NEXT_TO_TOS_NULL = 2;
+	private static final int NEXT_TO_TOS_NON_NULL = 3;
+	private static final int REF_OPERAND_NON_NULL = 4;
 	private static final int NO_INFO = -1;
 
 	/**
 	 * Return a value indicating what information about the null/non-null
 	 * status of values in the stack frame is conveyed by the
-	 * given edge.
+	 * given edge.  Note that when we talk about top of stack here,
+	 * we really mean top of stack at the time of the last IF comparison
+	 * (which is the source of the edge).
+	 *
 	 * @param edge the edge
 	 * @return TOS_NULL if the value on top of the stack is null,
 	 *   TOS_NON_NULL if the value on top of the stack is non-null,
+	 *   NEXT_TO_TOS_NULL if the value next to TOS is null,
+	 *   NEXT_TO_TOS_NON_NULL if the value next to TOS is non-null,
 	 *   REF_OPERAND_NON_NULL if the reference operand to the
 	 *   first instruction in the destination block is non-null,
 	 *   or NO_INFO if the edge conveys no extra information
@@ -224,6 +240,32 @@ public class IsNullValueAnalysis extends ForwardDataflowAnalysis<IsNullValueFram
 				return edgeType == IFCMP_EDGE ? TOS_NULL : TOS_NON_NULL;
 			else if (opcode == Constants.IFNONNULL)
 				return edgeType == IFCMP_EDGE ? TOS_NON_NULL : TOS_NULL;
+			else if (opcode == Constants.IF_ACMPEQ || opcode == Constants.IF_ACMPNE) {
+				Location atIf = new Location(lastInSourceHandle, edge.getSource());
+				IsNullValueFrame frame = getFactAtLocation(atIf);
+
+				int numSlots = frame.getNumSlots();
+				IsNullValue tos = frame.getValue(numSlots - 1); // top of stack
+				IsNullValue nextToTos = frame.getValue(numSlots - 2); // next to top of stack
+
+				// If one of the values being compared is null, then
+				// we learn something about the other one.
+
+				boolean tosNull = tos.isDefinitelyNull();
+				boolean nextToTosNull = nextToTos.isDefinitelyNull();
+
+				if (tosNull || nextToTosNull) {
+					int[] info = new int[]{
+						tosNull ? NEXT_TO_TOS_NULL : TOS_NULL,
+						tosNull ? NEXT_TO_TOS_NON_NULL : TOS_NON_NULL
+					};
+
+					if (edgeType == IFCMP_EDGE)
+						return info[opcode == Constants.IF_ACMPEQ ? 0 : 1];
+					else
+						return info[opcode == Constants.IF_ACMPEQ ? 1 : 0];
+				}
+			}
 		} else if (edge.getSource().isNullCheck() && edge.getType() == FALL_THROUGH_EDGE) {
 			return REF_OPERAND_NON_NULL;
 		}
