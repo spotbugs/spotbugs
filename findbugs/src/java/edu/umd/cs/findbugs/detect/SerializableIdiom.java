@@ -32,6 +32,7 @@ public class SerializableIdiom extends PreorderVisitor
 
     boolean sawSerialVersionUID;
     boolean isSerializable, implementsSerializableDirectly;
+    boolean isGUIClass;
     boolean foundSynthetic;
     boolean foundSynchronizedMethods;
     boolean writeObjectIsSynchronized;
@@ -69,6 +70,7 @@ public class SerializableIdiom extends PreorderVisitor
 			   || (flags & ACC_INTERFACE) != 0;
         sawSerialVersionUID = false;
         isSerializable = implementsSerializableDirectly = false;
+	isGUIClass = false;
 
         // Does this class directly implement Serializable?
         String [] interface_names = obj.getInterfaceNames();
@@ -91,6 +93,14 @@ public class SerializableIdiom extends PreorderVisitor
 		bugReporter.reportMissingClass(e);
 	    }
 	}
+
+	// Is this a GUI class?
+	try {
+	    isGUIClass = Repository.instanceOf(obj, "java.awt.Component");
+	} catch (ClassNotFoundException e) {
+	    bugReporter.reportMissingClass(e);
+	}
+
 	foundSynthetic = false;
 	foundSynchronizedMethods = false;
 	writeObjectIsSynchronized = false;
@@ -99,12 +109,15 @@ public class SerializableIdiom extends PreorderVisitor
 	}
 
 	public void visitAfter(JavaClass obj) {
+	// Downgrade class-level warnings if it's a GUI class.
+	int priority = isGUIClass ? LOW_PRIORITY : NORMAL_PRIORITY;
+
 	if (foundSynthetic 
 		&& isSerializable && !isAbstract && !sawSerialVersionUID)
-		bugReporter.reportBug(new BugInstance("SE_NO_SERIALVERSIONID", NORMAL_PRIORITY).addClass(this));
+		bugReporter.reportBug(new BugInstance("SE_NO_SERIALVERSIONID", priority).addClass(this));
 
 	if (writeObjectIsSynchronized && !foundSynchronizedMethods)
-		bugReporter.reportBug(new BugInstance("WS_WRITEOBJECT_SYNC", NORMAL_PRIORITY).addClass(this));
+		bugReporter.reportBug(new BugInstance("WS_WRITEOBJECT_SYNC", priority).addClass(this));
         }
 
     public void visit(Method obj) {
@@ -154,9 +167,17 @@ public class SerializableIdiom extends PreorderVisitor
 			if (!fieldClassName.equals("java.lang.Object") &&
 			    !(Repository.instanceOf(fieldClass, "java.io.Serializable")
 				|| Repository.instanceOf(fieldClass, "java.io.Externalizable"))) {
-				// Priority is higher if the class directly
-				// implements Serializable.
-				int priority = implementsSerializableDirectly ? HIGH_PRIORITY : NORMAL_PRIORITY;
+
+				// Priority is LOW for GUI classes (unless explicitly marked Serializable),
+				// HIGH if the class directly implements Serializable,
+				// NORMAL otherwise.
+				int priority;
+				if (isGUIClass && !implementsSerializableDirectly)
+				    priority = LOW_PRIORITY;
+				else if (implementsSerializableDirectly)
+				    priority = HIGH_PRIORITY;
+				else
+				    priority = NORMAL_PRIORITY;
 
 				// Lower the priority for fields which are of an interface
 				// or abstract type, since the user may know that all subtypes of
