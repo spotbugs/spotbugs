@@ -90,11 +90,23 @@ public class FindBugs implements Constants2, ExitCodes
 
   /**
    * ClassProducer for .zip and .jar files.
+   * Nested jar and zip files are also scanned for classes;
+   * this is needed for .ear and .war files associated with EJBs.
    */
   private static class ZipClassProducer implements ClassProducer {
 	private String fileName;
+	private String nestedFileName;
 	private ZipFile zipFile;
 	private Enumeration entries;
+	private ZipInputStream zipStream;
+
+	// a DataInputStream wrapper that cannot be closed
+	private static class DupDataStream extends DataInputStream {
+		public DupDataStream( InputStream in ) {
+			super( in );
+		}
+		public void close() { };
+	}
 
 	/**
 	 * Constructor.
@@ -104,26 +116,74 @@ public class FindBugs implements Constants2, ExitCodes
 		this.fileName = fileName;
 		this.zipFile = new ZipFile(fileName);
 		this.entries = zipFile.entries();
+		this.zipStream = null;
+		this.nestedFileName = null;
+	}
+
+	private void setZipStream( ZipInputStream in, String fileName ) {
+		zipStream = in;
+		nestedFileName = fileName;
+	}
+
+	private void closeZipStream() throws IOException {
+		zipStream.close();
+		zipStream = null;
+		nestedFileName = null;
+	}
+
+	private JavaClass getNextNestedClass() throws IOException, InterruptedException {
+		JavaClass parsedClass = null;
+        	if ( zipStream != null ) {
+
+			ZipEntry entry = zipStream.getNextEntry();
+			while ( entry != null ) {
+				if (Thread.interrupted()) throw new InterruptedException();
+				if ( entry.getName().endsWith( ".class" ) ) {
+					try {
+						parsedClass = new ClassParser( new DupDataStream(zipStream), entry.getName()).parse();
+						break;	
+					} catch (ClassFormatException e) {
+						throw new ClassFormatException("Invalid class file format for " +
+							fileName + ":" + nestedFileName + ":" + 
+							entry.getName() + ": " + e.getMessage());
+					}
+				}
+				entry = zipStream.getNextEntry();
+			}
+            		if ( parsedClass == null ) {
+				closeZipStream();
+			}
+		}
+		return parsedClass;
 	}
 
 	public JavaClass getNextClass() throws IOException, InterruptedException {
-		ZipEntry classEntry = null;
-		while (classEntry == null && entries.hasMoreElements()) {
-			if (Thread.interrupted())
-				throw new InterruptedException();
-			ZipEntry entry = (ZipEntry) entries.nextElement();
-			if (entry.getName().endsWith(".class"))
-				classEntry = entry;
+		JavaClass parsedClass = getNextNestedClass();
+		if ( parsedClass == null ) {
+			while (entries.hasMoreElements()) {
+				if (Thread.interrupted()) throw new InterruptedException();
+				ZipEntry entry = (ZipEntry) entries.nextElement();
+				String name = entry.getName();
+				if (name.endsWith(".class")) {
+					try {
+						parsedClass =  new ClassParser(zipFile.getInputStream(entry), name).parse();
+						break;
+					} catch (ClassFormatException e) {
+						throw new ClassFormatException("Invalid class file format for " +
+							fileName + ":" + name + ": " + e.getMessage());
+					}
+				} else if ( name.endsWith(".jar") || name.endsWith( ".zip" ) ) {
+					setZipStream(new ZipInputStream(zipFile.getInputStream(entry)),
+								 name );
+					parsedClass = getNextNestedClass();
+					if ( parsedClass != null ) {
+						break;
+					}
+				}
+
+			}
 		}
-		if (classEntry == null)
-			return null;
-		String fullEntryName = fileName + ":" + classEntry.getName();
-		try {
-			return new ClassParser(zipFile.getInputStream(classEntry), classEntry.getName()).parse();
-		} catch (ClassFormatException e) {
-			throw new ClassFormatException("Invalid class file format for " +
-				fullEntryName + ": " + e.getMessage());
-		}
+        	return parsedClass;
 	}
   }
 
@@ -467,26 +527,23 @@ public class FindBugs implements Constants2, ExitCodes
 	JavaClass javaClass;
 	try {
 		javaClass = Repository.lookupClass(className);
-	} catch (ClassNotFoundException e) {
-		throw new AnalysisException("Could not find class " + className + " in Repository", e);
-	}
 
-	ClassContext classContext = new ClassContext(javaClass);
+		ClassContext classContext = new ClassContext(javaClass);
 
-	for (int i = 0; i < detectors.length; ++i) {
-		if (Thread.interrupted())
-			throw new InterruptedException();
-		try {
-			Detector detector = detectors[i];
-			if (DEBUG) System.out.println("  running " + detector.getClass().getName());
+		for (int i = 0; i < detectors.length; ++i) {
+			if (Thread.interrupted())
+				throw new InterruptedException();
 			try {
+				Detector detector = detectors[i];
+				if (DEBUG) System.out.println("  running " + detector.getClass().getName());
 				detector.visitClassContext(classContext);
 			} catch (AnalysisException e) {
-				bugReporter.logError(e.toString());
+				bugReporter.logError("Analysis exception: " + e.toString());
 			}
-		} catch (AnalysisException e) {
-			bugReporter.logError("Analysis exception: " + e.toString());
 		}
+	} catch (ClassNotFoundException e) {
+		bugReporter.reportMissingClass(e);
+		bugReporter.logError("Could not find class " + className + " in Repository: " + e.getMessage());
 	}
 
 	progressCallback.finishClass();
@@ -600,7 +657,7 @@ public class FindBugs implements Constants2, ExitCodes
 		} else if (option.equals("-exitcode")) {
 			setExitCode = true;
 		} else
-			throw new IllegalArgumentException("Unknown option: " + option);
+			throw new IllegalArgumentException("Unknown option: [" + option + "]");
 		++argCount;
 	}
 
