@@ -110,6 +110,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
             }
         });
 
+        jSplitPane1.setResizeWeight(0.3);
         navigatorTree.setModel(createNavigatorTreeModel());
         jScrollPane1.setViewportView(navigatorTree);
 
