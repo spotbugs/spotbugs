@@ -57,9 +57,8 @@ public class FindBugs implements Constants2
     registerDetector("InitializationChain", edu.umd.cs.findbugs.InitializationChain.class);
     registerDetector("LockedFields", edu.umd.cs.findbugs.LockedFields.class);
     registerDetector("FindHEmismatch", edu.umd.cs.findbugs.FindHEmismatch.class);
+    registerDetector("DumbMethods", edu.umd.cs.findbugs.DumbMethods.class);
 /*
-    registerDetector("DumbMethods", 
-       edu.umd.cs.pugh.visitclass.DumbMethods.class);
     registerDetector("FindUninitializedGet", 
        edu.umd.cs.pugh.visitclass.FindUninitializedGet.class);
     registerDetector("ReadReturnShouldBeChecked", 
