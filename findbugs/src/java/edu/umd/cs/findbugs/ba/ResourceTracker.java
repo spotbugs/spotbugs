@@ -40,7 +40,8 @@ public interface ResourceTracker<Resource> {
 	 * @return an opaque Resource object if it is a creation site, or
 	 *   null if it is not a creation site
 	 */
-	public Resource isResourceCreation(BasicBlock basicBlock, InstructionHandle handle, ConstantPoolGen cpg);
+	public Resource isResourceCreation(BasicBlock basicBlock, InstructionHandle handle, ConstantPoolGen cpg)
+		throws DataflowAnalysisException;
 
 	/**
 	 * Determine if the given instruction is the site where a resource
