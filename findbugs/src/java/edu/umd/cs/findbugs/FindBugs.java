@@ -58,6 +58,11 @@ public class FindBugs implements Constants2, ExitCodes
 	 * @throws InterruptedException if the thread is interrupted
 	 */
 	public JavaClass getNextClass() throws IOException, InterruptedException;
+
+	/**
+	 * Did this class producer scan any Java source files?
+	 */
+	public boolean containsSourceFiles();
   }
 
   /**
@@ -90,6 +95,10 @@ public class FindBugs implements Constants2, ExitCodes
 				fileNameToParse + ": " + e.getMessage());
 		}
 	}
+
+	public boolean containsSourceFiles() {
+		return false;
+	}
   }
 
   /**
@@ -103,6 +112,7 @@ public class FindBugs implements Constants2, ExitCodes
 	private ZipFile zipFile;
 	private Enumeration entries;
 	private ZipInputStream zipStream;
+	private boolean containsSourceFiles;
 
 	// a DataInputStream wrapper that cannot be closed
 	private static class DupDataStream extends DataInputStream {
@@ -122,6 +132,7 @@ public class FindBugs implements Constants2, ExitCodes
 		this.entries = zipFile.entries();
 		this.zipStream = null;
 		this.nestedFileName = null;
+		this.containsSourceFiles = false;
 	}
 
 	private void setZipStream( ZipInputStream in, String fileName ) {
@@ -183,11 +194,16 @@ public class FindBugs implements Constants2, ExitCodes
 					if ( parsedClass != null ) {
 						break;
 					}
-				}
+				} else if (name.endsWith(".java"))
+					containsSourceFiles = true;
 
 			}
 		}
         	return parsedClass;
+	}
+
+	public boolean containsSourceFiles() {
+		return containsSourceFiles;
 	}
   }
 
@@ -197,11 +213,17 @@ public class FindBugs implements Constants2, ExitCodes
    */
   private static class DirectoryClassProducer implements ClassProducer {
 	private Iterator<String> rfsIter;
+	private boolean containsSourceFiles;
 
 	public DirectoryClassProducer(String dirName) throws InterruptedException {
 		FileFilter filter = new FileFilter() {
 			public boolean accept(File file) {
-				return file.isDirectory() || file.getName().endsWith(".class");
+				String fileName = file.getName();
+				if (file.isDirectory() || fileName.endsWith(".class"))
+					return true;
+				if (fileName.endsWith(".java"))
+					containsSourceFiles = true;
+				return false;
 			}
 		};
 
@@ -209,6 +231,7 @@ public class FindBugs implements Constants2, ExitCodes
 		// interrupted.
 		RecursiveFileSearch rfs = new RecursiveFileSearch(dirName, filter).search();
 		this.rfsIter = rfs.fileNameIterator();
+		this.containsSourceFiles = false;
 	}
 
 	public JavaClass getNextClass() throws IOException, InterruptedException {
@@ -221,6 +244,10 @@ public class FindBugs implements Constants2, ExitCodes
 			throw new ClassFormatException("Invalid class file format for " +
 				fileName + ": " + e.getMessage());
 		}
+	}
+
+	public boolean containsSourceFiles() {
+		return containsSourceFiles;
 	}
   }
 
