@@ -1310,7 +1310,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
         boolean hasProject = getCurrentProject() != null;
         saveProjectItem.setEnabled(hasProject);
         saveProjectAsItem.setEnabled(hasProject);
-        reloadProjectItem.setEnabled(hasProject);
+        reloadProjectItem.setEnabled(hasProject && !getCurrentProject().getFileName().equals( Project.UNNAMED_PROJECT ));
         closeProjectItem.setEnabled(hasProject);
 
         // Save bugs is only enabled if there is a current analysis run
