@@ -23,25 +23,31 @@ import edu.umd.cs.findbugs.ba.type.Type;
 import edu.umd.cs.findbugs.ba.type.TypeMerger;
 import edu.umd.cs.findbugs.ba.type.TypeRepository;
 
+import org.apache.bcel.generic.CodeExceptionGen;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.MethodGen;
 
 public class BetterTypeAnalysis extends FrameDataflowAnalysis<Type, BetterTypeFrame> {
+	private static final String JAVA_LANG_THROWABLE_SIGNATURE = "Ljava/lang/Throwable;";
+
 	private MethodGen methodGen;
 	private String[] parameterSignatureList;
 	private CFG cfg;
 	private TypeRepository typeRepository;
 	private TypeMerger typeMerger;
+	private RepositoryLookupFailureCallback lookupFailureCallback;
 
 	public BetterTypeAnalysis(MethodGen methodGen, String[] parameterSignatureList,
 			CFG cfg, DepthFirstSearch dfs,
-			TypeRepository typeRepository, TypeMerger typeMerger) {
+			TypeRepository typeRepository, TypeMerger typeMerger,
+			RepositoryLookupFailureCallback lookupFailureCallback) {
 		super(dfs);
 		this.methodGen = methodGen;
 		this.parameterSignatureList = parameterSignatureList;
 		this.cfg = cfg;
 		this.typeRepository = typeRepository;
 		this.typeMerger = typeMerger;
+		this.lookupFailureCallback = lookupFailureCallback;
 	}
 
 	public BetterTypeFrame createFact() {
@@ -52,18 +58,49 @@ public class BetterTypeAnalysis extends FrameDataflowAnalysis<Type, BetterTypeFr
 		// TODO: implement
 	}
 
-	public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, BetterTypeFrame fact) throws DataflowAnalysisException {
+	public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, BetterTypeFrame fact)
+		throws DataflowAnalysisException {
 		// TODO: implement
 	}
 
-	public void meetInto(BetterTypeFrame fact, Edge edge, BetterTypeFrame result) throws DataflowAnalysisException {
-		// TODO: implement
+	public void meetInto(BetterTypeFrame fact, Edge edge, BetterTypeFrame result)
+		throws DataflowAnalysisException {
+
+		// TODO: implement ACCURATE_EXCEPTIONS
+
+		if (fact.isValid() && edge.getTarget().isExceptionHandler()) {
+			BetterTypeFrame tmpFact = null;
+
+			// Exception handler.
+			// Clear stack and push exception handler catch type.
+
+			tmpFact = modifyFrame(fact, tmpFact);
+			tmpFact.clearStack();
+
+			CodeExceptionGen exceptionGen = edge.getTarget().getExceptionGen();
+			org.apache.bcel.generic.ObjectType catchType = exceptionGen.getCatchType();
+			if (catchType == null) {
+				tmpFact.pushValue(typeRepository.classTypeFromSignature(JAVA_LANG_THROWABLE_SIGNATURE));
+			} else {
+				tmpFact.pushValue(typeRepository.classTypeFromDottedClassName(catchType.getClassName()));
+			}
+
+			if (tmpFact != null)
+				fact = tmpFact;
+		}
+
+		mergeInto(fact, result);
+
 	}
 
 	protected Type mergeValues(BetterTypeFrame frame, int slot, Type a, Type b)
 		throws DataflowAnalysisException {
-		// TODO: implement
-		return typeRepository.getBottomType();
+		try {
+			return typeMerger.mergeTypes(a, b);
+		} catch (ClassNotFoundException e) {
+			lookupFailureCallback.reportMissingClass(e);
+			throw new DataflowAnalysisException("Missing class for type analysis", e);
+		}
 	}
 }
 
