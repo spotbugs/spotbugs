@@ -35,7 +35,7 @@ public abstract class PatternElement {
 	private PatternElement next;
 	private String label;
 	private int index;
-	private boolean matchExceptionEdges = true;
+	private boolean allowTrailingEdges = true;
 
 	/**
 	 * Get the next PatternElement.
@@ -75,20 +75,22 @@ public abstract class PatternElement {
 	}
 
 	/**
-	 * Set whether or not this PatternElement may match exception edges.
-	 * By default, exception edges may be matched.
-	 * @param matchExceptionEdges true if exception edges may be matched,
-	 *  false if exception edges will never be matched
+	 * Set whether or not this PatternElement allows trailing edges to be matched.
+	 * By default, trailing edges may be matched.  When this value is set
+	 * to false, it ensures that the successor instruction must be in the
+	 * same basic block.
+	 * @param allowTrailingEdges true if trailing edges may be matched,
+	 *  false if trailing edges will never be matched
 	 */
-	public PatternElement setMatchExceptionEdges(boolean matchExceptionEdges) {
-		this.matchExceptionEdges = matchExceptionEdges;
+	public PatternElement setAllowTrailingEdges(boolean allowTrailingEdges) {
+		this.allowTrailingEdges = allowTrailingEdges;
 		return this;
 	}
 
 	/**
-	 * Return whether or not this PatternElement may match exception edges.
+	 * Return whether or not this PatternElement may match trailing edges.
 	 */
-	public boolean matchExceptionEdges() { return matchExceptionEdges; }
+	public boolean allowTrailingEdges() { return allowTrailingEdges; }
 
 	/**
 	 * Look up a variable definition in given BindingSet.

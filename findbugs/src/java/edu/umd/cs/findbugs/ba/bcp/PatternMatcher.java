@@ -205,7 +205,7 @@ public class PatternMatcher implements DFSEdgeTypes {
 		if (instructionIterator.hasNext()) {
 			// Easy case; continue matching in the same basic block.
 			work(basicBlock, instructionIterator, patternElement, matchCount, currentMatch, bindingSet, canFork);
-		} else {
+		} else if (matchedPatternElement.allowTrailingEdges()) {
 			// We've reached the end of the basic block.
 			// Try to advance to the successors of this basic block,
 			// ignoring loop backedges.
@@ -222,7 +222,7 @@ public class PatternMatcher implements DFSEdgeTypes {
 				// This allows PatternElements to select particular control edges;
 				// for example, only continue the pattern on the true branch
 				// of an "if" comparison.
-				if (matchedInstruction == null || acceptBranch(matchedPatternElement, edge, matchedInstruction)) {
+				if (matchedInstruction == null || matchedPatternElement.acceptBranch(edge, matchedInstruction)) {
 					BasicBlock destBlock = edge.getDest();
 					int destId = destBlock.getId();
 
@@ -235,16 +235,6 @@ public class PatternMatcher implements DFSEdgeTypes {
 				}
 			}
 		}
-
-	}
-
-	private static boolean acceptBranch(PatternElement matchedPatternElement,
-		Edge edge, InstructionHandle matchedInstruction) {
-
-		if (edge.isExceptionEdge() && !matchedPatternElement.matchExceptionEdges())
-			return false;
-
-		return matchedPatternElement.acceptBranch(edge, matchedInstruction);
 
 	}
 }

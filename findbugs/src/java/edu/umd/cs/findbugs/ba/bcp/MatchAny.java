@@ -52,12 +52,12 @@ public class MatchAny extends PatternElement {
 		return this;
 	}
 
-	public PatternElement setMatchExceptionEdges(boolean matchExceptionEdges) {
+	public PatternElement setAllowTrailingEdges(boolean allowTrailingEdges) {
 		// Just forward this on to all children,
 		// since it is the children that the PatternMatcher will ask
 		// about edges.
 		for (int i = 0; i < childList.length; ++i)
-			childList[i].setMatchExceptionEdges(matchExceptionEdges);
+			childList[i].setAllowTrailingEdges(allowTrailingEdges);
 
 		return this;
 	}
