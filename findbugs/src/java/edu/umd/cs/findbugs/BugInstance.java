@@ -73,6 +73,7 @@ public class BugInstance implements Comparable, XMLWriteable {
 	private String annotationText;
 	private BugProperty propertyListHead, propertyListTail;
 	private String uniqueId;
+	private String activeIntervalCollection;
 
 	/**
 	 * This value is used to indicate that the cached hashcode
@@ -99,6 +100,7 @@ public class BugInstance implements Comparable, XMLWriteable {
 		annotationList = new ArrayList<BugAnnotation>(4);
 		cachedHashCode = INVALID_HASH_CODE;
 		annotationText = "";
+		activeIntervalCollection = "";
 		
 		if (adjustExperimental && isExperimental())
 			this.priority = Detector.EXP_PRIORITY;
@@ -311,6 +313,29 @@ public class BugInstance implements Comparable, XMLWriteable {
 	 */
 	public void setUniqueId(String uniqueId) {
 		this.uniqueId = uniqueId;
+	}
+
+	/**
+	 * Get the collection of TimestampIntervals indicating when this
+	 * BugInstance is/was active.  Note that modications made to the
+	 * object returned will <em>not</em> affect the BugInstance.
+	 * 
+	 * @return the TimestampIntervalCollection
+	 * @throws InvalidTimestampIntervalException if the interval collection is invalid
+	 */
+	public TimestampIntervalCollection getActiveIntervalCollection()
+			throws InvalidTimestampIntervalException {
+		return TimestampIntervalCollection.decode(activeIntervalCollection);
+	}
+	
+	/**
+	 * Set the collection of TimestampIntervals indicating when this
+	 * BugInstance is/was active.
+	 * 
+	 * @param collection the TimestampIntervalCollection
+	 */
+	public void setActiveIntervalCollection(TimestampIntervalCollection collection) {
+		this.activeIntervalCollection = TimestampIntervalCollection.encode(collection);
 	}
 	
 	/* ----------------------------------------------------------------------
