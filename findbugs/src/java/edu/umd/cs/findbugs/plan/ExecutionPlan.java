@@ -197,25 +197,6 @@ public class ExecutionPlan {
 		return node;
 	}
 
-	/**
-	 * Perform a DepthFirstSearch on a ConstraintGraph.
-	 *
-	 * @param constraintGraph the ConstraintGraph
-	 * @return a DepthFirstSearch on the ConstraintGraph
-	 * @throws OrderingConstraintException if the ConstraintGraph contains cycles
-	 */
-	public DepthFirstSearch<ConstraintGraph, ConstraintEdge, DetectorNode>
-			getDepthFirstSearch(ConstraintGraph constraintGraph)
-		throws OrderingConstraintException {
-
-		DepthFirstSearch<ConstraintGraph, ConstraintEdge, DetectorNode> dfs =	
-			new DepthFirstSearch<ConstraintGraph, ConstraintEdge, DetectorNode>(constraintGraph);
-		dfs.search();
-		if (dfs.containsCycle())
-			throw new OrderingConstraintException("Cycle in detector ordering constraints!");
-		return dfs;
-	}
-
 	private void buildPassList(ConstraintGraph constraintGraph)
 			throws OrderingConstraintException {
 		while (constraintGraph.getNumVertices() > 0) {
@@ -290,6 +271,20 @@ public class ExecutionPlan {
 				passConstraintList.add(constraint);
 			}
 		}
+
+		// Build intra-pass constraint graph
+		Map<String, DetectorNode> nodeMap = new HashMap<String, DetectorNode>();
+		ConstraintGraph constraintGraph = buildConstraintGraph(
+			nodeMap, factoryMap, passConstraintList);
+
+		// Perform DFS, check for cycles
+		DepthFirstSearch<ConstraintGraph, ConstraintEdge, DetectorNode> dfs =
+			new DepthFirstSearch<ConstraintGraph, ConstraintEdge, DetectorNode>(constraintGraph);
+		dfs.search();
+		if (dfs.containsCycle())
+			throw new OrderingConstraintException("Cycle in intra-pass ordering constraints!");
+
+		// TODO: topological sort
 	}
 
 	private void print() {
