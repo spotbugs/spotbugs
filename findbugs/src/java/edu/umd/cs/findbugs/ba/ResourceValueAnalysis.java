@@ -27,7 +27,7 @@ import org.apache.bcel.generic.*;
 public class ResourceValueAnalysis<Resource> extends FrameDataflowAnalysis<ResourceValue, ResourceValueFrame>
 	implements EdgeTypes {
 
-	private static final boolean DEBUG = Boolean.getBoolean("dataflow.debug");
+	private static final boolean DEBUG = Boolean.getBoolean("rva.debug");
 
 	private MethodGen methodGen;
 	private CFG cfg;
@@ -128,7 +128,8 @@ public class ResourceValueAnalysis<Resource> extends FrameDataflowAnalysis<Resou
 						if (topValue.isInstance()) {
 							if ((lastInSource instanceof IFNULL && edgeType == IFCMP_EDGE) ||
 								(lastInSource instanceof IFNONNULL && edgeType == FALL_THROUGH_EDGE)) {
-								//System.out.println("**** making resource nonexistent on edge "+edge.getId());
+								if (DEBUG) System.out.println("**** making resource nonexistent on edge "+
+									edge.getSource().getId() + " to " + edge.getTarget().getId());
 								tmpFact = modifyFrame(fact, tmpFact);
 								tmpFact.setStatus(ResourceValueFrame.NONEXISTENT);
 							}
