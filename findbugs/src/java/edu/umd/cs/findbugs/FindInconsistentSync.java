@@ -26,6 +26,7 @@ public class FindInconsistentSync extends CFGBuildingDetector {
 	private static class FieldStats {
 		public int nReadLocked, nReadUnlocked;
 		public int nWriteLocked, nWriteUnlocked;
+		public List<SourceLineAnnotation> unsyncAccessList = new LinkedList<SourceLineAnnotation>();
 
 		public FieldStats() {
 			nReadLocked = 0;
@@ -264,6 +265,7 @@ public class FindInconsistentSync extends CFGBuildingDetector {
 				} else if (lockCount.getCount() == 0) {
 					if (DEBUG) debug(field, methodGen, "R/U");
 					stats.nReadUnlocked++;
+					addUnsyncAccess(stats, methodGen, handle);
 				}
 			} else if ((field = FieldAnnotation.isWrite(ins, cpg)) != null) {
 				writtenOutsideOfConstructor.add(field);
@@ -279,11 +281,18 @@ public class FindInconsistentSync extends CFGBuildingDetector {
 				} else if (lockCount.getCount() == 0) {
 					if (DEBUG) debug(field, methodGen, "W/U");
 					stats.nWriteUnlocked++;
+					addUnsyncAccess(stats, methodGen, handle);
 				}
 			}
 		} catch (DataflowAnalysisException e) {
 			throw new AnalysisException(e.getMessage());
 		}
+	}
+
+	private void addUnsyncAccess(FieldStats stats, MethodGen methodGen, InstructionHandle handle) {
+		SourceLineAnnotation accessSourceLine = SourceLineAnnotation.fromVisitedInstruction(methodGen, handle);
+		if (accessSourceLine != null)
+			stats.unsyncAccessList.add(accessSourceLine);
 	}
 
 	private void debug(FieldAnnotation field, MethodGen mg, String accessType) {
@@ -366,10 +375,19 @@ public class FindInconsistentSync extends CFGBuildingDetector {
 
 			// At this point, we report the field as being inconsistently synchronized
 			int freq = (100 * locked) / (locked + unlocked);
-			bugReporter.reportBug(new BugInstance("IS2_INCONSISTENT_SYNC", NORMAL_PRIORITY)
+			BugInstance bugInstance = new BugInstance("IS2_INCONSISTENT_SYNC", NORMAL_PRIORITY)
 				.addClass(className)
 				.addField(field)
-				.addInt(freq).describe("INT_SYNC_PERCENT"));
+				.addInt(freq).describe("INT_SYNC_PERCENT");
+
+			// Add source lines for all of the instructions where
+			// unsynchronized accesses occur.
+			for (Iterator<SourceLineAnnotation> j = stats.unsyncAccessList.iterator(); j.hasNext(); ) {
+				SourceLineAnnotation accessSourceLine = j.next();
+				bugInstance.addSourceLine(accessSourceLine).describe("SOURCE_LINE_UNSYNC_ACCESS");
+			}
+			bugReporter.reportBug(bugInstance);
+
 			if (DEBUG) {
 				System.out.println(freq + "\t" + stats.nReadLocked + "\t" + stats.nWriteLocked + "\t" + stats.nReadUnlocked + "\t"
 					+ stats.nWriteUnlocked + "\t" + field.toString());
