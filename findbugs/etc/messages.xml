@@ -529,6 +529,17 @@ can be done statically. It is a fast detector.</p>
 ]]>
     </Details>
   </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.FindDeadLocalStores">
+    <Details>
+<![CDATA[
+<p>
+This detector looks for assignments to local variables that
+are never subsequently read.  it is a moderately fast detector.
+</p>
+]]>
+    </Details>
+  </Detector>
   
   <Detector class="edu.umd.cs.findbugs.detect.FindBugsSummaryStats">
     <Details>
@@ -2396,6 +2407,21 @@ is of the type requested. </p>
 ]]>
     </Details>
   </BugPattern>
+
+  <BugPattern type="DLS_DEAD_LOCAL_STORE">
+    <ShortDescription>Dead store to local variable</ShortDescription>
+    <LongDescription>Dead store to local variable in method {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+This instruction assigns a value to a local variable,
+but the value is not read by any subsequent instruction.
+Often, this indicates an error, because the value computed 
+is never used.
+</p>
+]]>
+    </Details>
+  </BugPattern>
   
    <!--
   **********************************************************************
@@ -2475,4 +2501,5 @@ is of the type requested. </p>
   <BugCode abbrev="SF">Switch case falls thru</BugCode>
   <BugCode abbrev="BRSA">Bad ResultSet access</BugCode>
   <BugCode abbrev="SIO">Superfluous instanceof</BugCode>
+  <BugCode abbrev="DLS">Dead local store</BugCode>
   </MessageCollection>
