@@ -38,9 +38,10 @@ Send your comments to <a href="mailto:daveho@cs.umd.edu">daveho@cs.umd.edu</a>.
 
 <ul>
 <!-- new detectors -->
-<li> Extend Naming detector to look for classes that are named XXXException but that are not Exceptions
+<li> Extend Naming detector to look for classes that are named XXXException but that are 
+     not Exceptions (Dave Brosius)
 <li> New detector to find classes that expose semaphores in the public implementation through
-     the 'this' reference.
+     the 'this' reference. (Dave Brosius)
 <li> New Style detector to find Struts Action/Servlet derived classes that reference instance
      member variable not in synchronized blocks. (Dave Brosius)
 <li> New Style detector to find classes that declare implementation of interfaces
@@ -56,6 +57,7 @@ Send your comments to <a href="mailto:daveho@cs.umd.edu">daveho@cs.umd.edu</a>.
 <li> New tab in gui for showing bugs grouped by category (Dave Brosius)
 <li> Option '-onlySerious' to only count serious warnings (David Hovemeyer)
 <!-- Bug fixes -->
+<li> Don't scan equals methods in FindHEMismatch if code is native (Greg Bentz)
 <li> French translation fixes (David Cotton)
 <li> Internationalization report fixes (K.Hashimoto)
 <li> Japanese translations updates (SHISEI Hanai)
