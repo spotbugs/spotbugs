@@ -1,6 +1,7 @@
 import java.io.*;
 
 public class TwoStreams {
+	int x;
 	public void twoStreamsWrong() throws IOException {
 		BufferedReader r = null;
 		Writer w = null;
@@ -23,6 +24,13 @@ public class TwoStreams {
 		}
 	}
 
+	public void nullDereferenceCheck(TwoStreams o) throws IOException {
+		BufferedReader r = new BufferedReader(
+			new InputStreamReader(
+			new FileInputStream("hello")));
+		int i = o.x;
+		r.close();
+		}
 	public void twoStreamsRight() throws IOException {
 		BufferedReader r = null;
 		Writer w = null;
