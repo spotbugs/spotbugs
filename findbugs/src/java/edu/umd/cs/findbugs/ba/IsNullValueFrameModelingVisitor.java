@@ -33,18 +33,34 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
 
 	// Overrides of specific instruction visitor methods.
 	// ACONST_NULL obviously produces a value that is DEFINITELY NULL.
-	// If a reference value is dereferenced (by a load, store, or
-	// method invocation), then afterwards it is NOT NULL.
 	// LDC produces values that are NOT NULL.
 	// NEW produces values that are NOT NULL.
+
+	// Note that all instructions that have an implicit null
+	// check (field access, invoke, etc.) are handled in IsNullValueAnalysis,
+	// because handling them relies on control flow (the existence of
+	// an ETB and exception edge prior to the block containing the
+	// instruction with the null check.)
 
 	// Note that we don't override IFNULL and IFNONNULL.
 	// Those are handled in the analysis itself, because we need
 	// to produce different values in each of the control successors.
 
-	public void visitACONST_NULL(ACONST_NULL obj) {
+	private void produce(IsNullValue value) {
 		Frame<IsNullValue> frame = getFrame();
-		frame.pushValue(IsNullValue.nullValue());
+		frame.pushValue(value);
+	}
+
+	public void visitACONST_NULL(ACONST_NULL obj) {
+		produce(IsNullValue.nullValue());
+	}
+
+	public void visitNEW(NEW obj) {
+		produce(IsNullValue.nonNullValue());
+	}
+
+	public void visitLDC(LDC obj) {
+		produce(IsNullValue.nonNullValue());
 	}
 
 }
