@@ -698,6 +698,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
         classpathEntryListScrollPane.setPreferredSize(new java.awt.Dimension(259, 1));
         classpathEntryList.setBorder(new javax.swing.border.BevelBorder(javax.swing.border.BevelBorder.LOWERED));
+        classpathEntryList.setFont(new java.awt.Font("Dialog", 0, 12));
         classpathEntryListScrollPane.setViewportView(classpathEntryList);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -980,14 +981,16 @@ public class FindBugsFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_bugTreeBugDetailsSplitterPropertyChange
 
     private void openProjectItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openProjectItemActionPerformed
+
+        if (!closeProjectHook(getCurrentProject(), "Open Project"))
+            return;
+        
         JFileChooser chooser = new JFileChooser();
         chooser.setFileFilter(projectFileFilter);
         int result = chooser.showOpenDialog(this);
         if (result == JFileChooser.CANCEL_OPTION)
             return;
         try {
-            // TODO: offer to save current project if modified
-            
             File file = chooser.getSelectedFile();
             Project project = new Project(file.getPath());
             FileInputStream in = new FileInputStream(file);
@@ -999,33 +1002,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_openProjectItemActionPerformed
     
     private void saveProjectItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveProjectItemActionPerformed
-        try {
-            Project project = getCurrentProject();
-            if (project == null)
-                return;
-            
-            File file;
-            String fileName = project.getFileName();
-
-            if (!fileName.startsWith("<")) {
-                file = new File(fileName);
-            } else {
-                JFileChooser chooser = new JFileChooser();
-                chooser.setFileFilter(projectFileFilter);
-
-                int result = chooser.showSaveDialog(this);
-                if (result == JFileChooser.CANCEL_OPTION)
-                    return;
-                file = chooser.getSelectedFile();
-                project.setFileName(file.getPath());
-            }
-            
-            FileOutputStream out = new FileOutputStream(file);
-            project.write(out);
-            logger.logMessage(ConsoleLogger.INFO, "Project saved");
-        } catch (IOException e) {
-            logger.logMessage(ConsoleLogger.ERROR, "Could not save project: " + e.getMessage());
-        }
+        saveProject(getCurrentProject());
     }//GEN-LAST:event_saveProjectItemActionPerformed
 
     private void aboutItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aboutItemActionPerformed
@@ -1334,8 +1311,75 @@ public class FindBugsFrame extends javax.swing.JFrame {
     
     private void setProject(Project project) {
         currentProject = project;
-        synchProject(project);
-        setView("EditProjectPanel");
+        if (project != null) {
+            synchProject(project);
+            setView("EditProjectPanel");
+        } else
+            setView("EmptyPanel");
+    }
+
+    /**
+     * Offer to save the current Project to a file.
+     * @param project the Project to save
+     * @return true if the project is saved successfully, false if the user
+     *   cancels or an error occurs
+     */
+    private boolean saveProject(Project project) {
+        try {
+            if (project == null)
+                return true;
+            
+            File file;
+            String fileName = project.getFileName();
+
+            if (!fileName.startsWith("<")) {
+                file = new File(fileName);
+            } else {
+                JFileChooser chooser = new JFileChooser();
+                chooser.setFileFilter(projectFileFilter);
+
+                int result = chooser.showSaveDialog(this);
+                if (result == JFileChooser.CANCEL_OPTION)
+                    return false;
+                file = chooser.getSelectedFile();
+                project.setFileName(file.getPath());
+            }
+            
+            FileOutputStream out = new FileOutputStream(file);
+            project.write(out);
+            logger.logMessage(ConsoleLogger.INFO, "Project saved");
+            
+            return true;
+        } catch (IOException e) {
+            logger.logMessage(ConsoleLogger.ERROR, "Could not save project: " + e.toString());
+            return false;
+        }
+    }
+    
+    /**
+     * Hook to call before closing a project.
+     * @param project the project being closed
+     * @param savePromptTitle title to use for the "Save project?" dialog
+     * @return true if user has confirmed that the project should be closed,
+     *   false if the close is cancelled
+     */
+    private boolean closeProjectHook(Project project, String savePromptTitle) {
+        if (project == null || !project.isModified())
+            return true;
+
+        // Confirm that the project should be closed.
+        int option = JOptionPane.showConfirmDialog(this, "Save project?", savePromptTitle,
+            JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+
+        if (option == JOptionPane.CANCEL_OPTION)
+            return false;
+        else if (option == JOptionPane.YES_OPTION) {
+            boolean result = saveProject(project);
+            if (result)
+                JOptionPane.showMessageDialog(this, "Project saved");
+            return result;
+        } else
+            return true;
     }
     
     /**
