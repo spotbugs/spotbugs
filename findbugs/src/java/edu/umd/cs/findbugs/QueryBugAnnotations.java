@@ -63,11 +63,9 @@ public abstract class QueryBugAnnotations {
 	 * @param filename      the XML file from which the bug collection was read
 	 */
 	public void scan(BugCollection bugCollection, String filename) throws Exception {
-		boolean first = false;
 		Iterator<BugInstance> i = bugCollection.iterator();
 		while (i.hasNext()) {
 			BugInstance bugInstance = i.next();
-			String annotation = bugInstance.getAnnotationText();
 
 			Set<String> contents = bugInstance.getTextAnnotationWords();
 			for (Iterator<String> j = keywordSet.iterator(); j.hasNext();) {

@@ -90,7 +90,6 @@ public class InnerClassAccessMap {
 		String methodName = inv.getMethodName(cpg);
 		if (methodName.startsWith("access$")) {
 			String className = inv.getClassName(cpg);
-			String methodSig = inv.getSignature(cpg);
 
 			return getInnerClassAccess(className, methodName);
 		}
@@ -255,7 +254,6 @@ public class InnerClassAccessMap {
 			String classSig = "L" + javaClass.getClassName().replace('.', '/') + ";";
 			StringBuffer buf = new StringBuffer();
 			buf.append('(');
-			String fieldSig = field.getFieldSignature();
 			if (!field.isStatic())
 				buf.append(classSig); // the OuterClass.this reference
 			if (!isLoad)
