@@ -76,8 +76,8 @@ if "%firstArg%"=="-debug" goto shift1
 if "%firstArg%"=="-conserveSpace" set conserveSpaceArg=-Dfindbugs.conserveSpace=true
 if "%firstArg%"=="-conserveSpace" goto shift1
 
-if "%firstArg%"="-workHard" set workHardArg=-Dfindbugs.workHard=true
-if "%firstArg%"="-workHard" goto shift1
+if "%firstArg%"=="-workHard" set workHardArg=-Dfindbugs.workHard=true
+if "%firstArg%"=="-workHard" goto shift1
 
 if "%firstArg%"=="-javahome" set javahome=%secondArg%\bin\
 if "%firstArg%"=="-javahome" goto shift2
