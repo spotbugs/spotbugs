@@ -20,16 +20,16 @@ public class Project {
     private String fileName;
     
     /** The list of jar files. */
-    private List jarList;
+    private ArrayList jarList;
     
     /** The list of source directories. */
-    private List srcDirList;
+    private ArrayList srcDirList;
     
     /** Creates a new instance of Project */
     public Project(String fileName) {
         this.fileName = fileName;
-	jarList = new LinkedList();
-	srcDirList = new LinkedList();
+	jarList = new ArrayList();
+	srcDirList = new ArrayList();
     }
     
     /** Get the project filename. */
@@ -78,6 +78,20 @@ public class Project {
      * @return the source directory
      */
     public String getSourceDir(int num) { return (String) srcDirList.get(num); }
+    
+    /**
+     * Get Jar files as an array of Strings.
+     */
+    public String[] getJarFileArray() {
+	return (String[]) jarList.toArray(new String[0]);
+    }
+    
+    /**
+     * Get source dirs as an array of Strings.
+     */
+    public String[] getSourceDirArray() {
+	return (String[]) srcDirList.toArray(new String[0]);
+    }
     
     public String toString() { return fileName; }
 }
