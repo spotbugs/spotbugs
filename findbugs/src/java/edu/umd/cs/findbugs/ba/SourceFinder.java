@@ -90,7 +90,7 @@ public class SourceFinder {
 				InputStream in = null;
 
 				try {
-					in = /*new BufferedInputStream(*/new FileInputStream(fullFileName)/*)*/;
+					in = new BufferedInputStream(new FileInputStream(fullFileName));
 					ByteArrayOutputStream out = new ByteArrayOutputStream();
 
 					// Copy all of the data from the file into the byte array output stream
