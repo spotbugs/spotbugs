@@ -151,8 +151,9 @@ public class PrettyPrintBugDescriptions extends PlainPrintBugDescriptions {
 			++argCount;
 			// Unabridged mode: emit all warnings reported by at least one
 			// detector, even for disabled detectors.
-			DetectorFactoryCollection factories = DetectorFactoryCollection.instance();
-			factories.enableAll();
+			// FIXME: enabled/disabled not static any more
+//			DetectorFactoryCollection factories = DetectorFactoryCollection.instance();
+//			factories.enableAll();
 		}
 
 		String docTitle = "FindBugs Bug Descriptions";
