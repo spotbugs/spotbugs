@@ -180,7 +180,7 @@ public class StackDepthAnalysis extends ForwardDataflowAnalysis<StackDepth> {
 
 				MethodGen methodGen = new MethodGen(method, jclass.getClassName(), cpg);
 
-				BasicCFGBuilder cfgBuilder = new BasicCFGBuilder(methodGen);
+				CFGBuilder cfgBuilder = CFGBuilderFactory.create(methodGen);
 				cfgBuilder.build();
 
 				CFG cfg = cfgBuilder.getCFG();

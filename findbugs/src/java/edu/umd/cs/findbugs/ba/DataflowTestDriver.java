@@ -94,7 +94,7 @@ public abstract class DataflowTestDriver<Fact> {
 
 			MethodGen methodGen = new MethodGen(method, jclass.getClassName(), cpg);
 
-			BasicCFGBuilder cfgBuilder = new BasicCFGBuilder(methodGen);
+			CFGBuilder cfgBuilder = CFGBuilderFactory.create(methodGen);
 			cfgBuilder.setMode(cfgBuilderMode);
 			cfgBuilder.build();
 
