@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.detect;
 import edu.umd.cs.findbugs.*;
+import edu.umd.cs.findbugs.ba.ClassContext;
 import org.apache.bcel.classfile.*;
 import edu.umd.cs.findbugs.visitclass.Constants2;
 
@@ -37,6 +38,14 @@ public class SwitchFallthrough extends BytecodeScanningDetector implements   Con
 	this.bugReporter = bugReporter;
 	}
 
+   public void visitClassContext(ClassContext classContext) {
+	// DHH - 6/25/04
+	// People have been reporting NPEs from this
+	// detector.  For now, I am hacking it so it doesn't
+	// actually do anything.
+
+	/* DO NOTHING - no visitation methods will be called */
+   }
 
    public void visit(Code obj) {
 		inSwitch = false;
