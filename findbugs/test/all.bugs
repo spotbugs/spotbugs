@@ -94,6 +94,8 @@ M RCN: Redundant comparison to null in NullDeref6.bar(Object)  At NullDeref6.jav
 M RCN: Redundant comparison to null in NullDeref6.foo(Object)  At NullDeref6.java:[line 16]
 M NP: Possible null pointer dereference in NullDeref7.bar(Object)  At NullDeref7.java:[line 19]
 M OS: NullDeref8.foo(String) may fail to close stream  At NullDeref8.java:[line 8]
+M NP: Possible null pointer dereference in NullDeref9.bar(Object)  At NullDeref9.java:[line 20]
+M NP: Possible null pointer dereference in NullDeref9.foo(Object)  At NullDeref9.java:[line 16]
 L NP: Null pointer dereference in OpenStream.main(String[]) on exception path  At OpenStream.java:[line 12]
 M Dm: Overloaded.foo(int) invokes dubious Boolean constructor; use Boolean.valueOf(...) instead  At Overloaded.java:[line 3]
 M Dm: Overloaded.foo(String) invokes dubious Boolean constructor; use Boolean.valueOf(...) instead  At Overloaded.java:[line 7]

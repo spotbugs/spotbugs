@@ -1,10 +1,10 @@
 
-class NullDeref9 {
+final class NullDeref9 {
 
-	protected void error() {
+	void error() {
 		throw new RuntimeException("You've got error");
 		}
-	protected void jspError() {
+	void jspError() {
 		throw new RuntimeException("You've got error");
 		}
 	static void oops() {
