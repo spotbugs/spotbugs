@@ -163,6 +163,7 @@ public class OpcodeStack implements Constants2
 	 			case LLOAD_2:
 	 			case LLOAD_3:
 	 				push(new Item("L"));
+	 			break;
 	 			
 	 			case GETSTATIC:
 	 				pushBySignature(dbc.getSigConstantOperand());
@@ -297,9 +298,14 @@ public class OpcodeStack implements Constants2
 	 			
 	 			case LCONST_0:
 	 			case LCONST_1:
-	 				push(new Item("J", new Integer(seen-LCONST_0)));
+	 				push(new Item("J", new Long(seen-LCONST_0)));
 	 			break;
 	 			
+	 			case DCONST_0:
+	 			case DCONST_1:
+	 				push(new Item("D", new Double(seen-DCONST_0)));
+	 			break;
+
 	 			case ACONST_NULL:
 	 				push(new Item());
 	 			break;
@@ -374,7 +380,7 @@ public class OpcodeStack implements Constants2
 	 				it2 = pop();
 	 				pushByLongMath(seen, it, it2);
 	 			break;
-/*	 			
+ 			
 	 			case LCMP:
 	 				it = pop();
 	 				it2 = pop();
@@ -391,7 +397,7 @@ public class OpcodeStack implements Constants2
 	 					push(new Item("I"));
 	 				}
 	 			break;
-*/	 				
+	 				
 	 			case DADD:
 	 			case DSUB:
 	 			case DMUL:
