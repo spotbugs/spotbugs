@@ -50,7 +50,7 @@ public class InitializationChain extends BytecodeScanningDetector implements   C
 		}
 	if (!requires.isEmpty()) {
 	  classRequires.put(betterClassName,requires);
-	  requires = new TreeSet();
+	  requires = new TreeSet<String>();
 	  }
     }
 
@@ -68,11 +68,11 @@ public class InitializationChain extends BytecodeScanningDetector implements   C
 	Set<String> emptyClasses = new TreeSet<String>();
 	for(Iterator i = allClasses.iterator(); i.hasNext(); ) {
 		String c = (String) i.next();
-		Set needs = (Set) classRequires.get(c);
+		Set<String> needs = classRequires.get(c);
 		needs.retainAll(allClasses);
-		Set extra = new TreeSet();
+		Set<String> extra = new TreeSet<String>();
 		for(Iterator j = needs.iterator(); j.hasNext(); ) 
-			extra.addAll((Set)classRequires.get(j.next()));
+			extra.addAll(classRequires.get(j.next()));
 		needs.addAll(extra);
 		needs.retainAll(allClasses);
 		classRequires.put(c,needs);
@@ -95,7 +95,7 @@ public class InitializationChain extends BytecodeScanningDetector implements   C
         compute();
         compute();
         compute();
-	Set allClasses = classRequires.keySet();
+	Set<String> allClasses = classRequires.keySet();
 
 	for(Iterator<String> i = allClasses.iterator(); i.hasNext(); ) {
 		String c = i.next();
