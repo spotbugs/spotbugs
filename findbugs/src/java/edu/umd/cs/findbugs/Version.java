@@ -33,19 +33,19 @@ public class Version {
 	public static final int PATCHLEVEL = 4;
 
 	/** Development version? */
-	public static final boolean IS_DEVELOPMENT = true;
+	public static final boolean IS_DEVELOPMENT = false;
 
 	/** Release version string. */
 	public static final String RELEASE = MAJOR + "." + MINOR + "." + PATCHLEVEL + (IS_DEVELOPMENT ? "-dev" : "");
 
 	/** Release date. */
-	public static final String DATE = "May 28, 2004";
+	public static final String DATE = "May 27, 2004";
 
 	/**
 	 * Version of Eclipse "core" plugin, which is just a repackaged
 	 * form of the main FindBugs application.  This is slightly
 	 * different than the RELEASE constant because Eclipse doesn't
-	 * like the "=" character in plugin versions.
+	 * like the "-" character in plugin versions.
 	 */
 	public static final String ECLIPSE_CORE_VERSION = MAJOR + "." + MINOR + "." +
 		PATCHLEVEL + (IS_DEVELOPMENT ? ".dev" : "");
