@@ -28,11 +28,26 @@ import org.apache.bcel.Constants;
  * but excludes array types.
  */
 public class XClassType extends XObjectType {
-	private static final int CLASS_OR_INTERFACE_KNOWN = 1;
-	private static final int IS_INTERFACE = 2;
+	/**
+	 * Whether the type is a class or interface has not been
+	 * checked.
+	 */
+	public static final int UNCHECKED = 0;
+
+	/**
+	 * The type is definitely known to be a class or an interface.
+	 */
+	public static final int KNOWN = 1;
+
+	/**
+	 * The check to see if the type is a class or an interface
+	 * was unsuccessful.
+	 */
+	public static final int UNKNOWN = 2;
 
 	private String className;
-	private int flags;
+	private int state;
+	private boolean isInterface;
 
 	XClassType(String typeSignature) throws InvalidSignatureException {
 		super(typeSignature);
@@ -40,18 +55,49 @@ public class XClassType extends XObjectType {
 			throw new InvalidSignatureException("Bad type signature for class/interface: " + typeSignature);
 	}
 
+	/**
+	 * Mark the type as an interface.
+	 */
 	public void setIsInterface() throws UnknownTypeException {
-		if ((flags & CLASS_OR_INTERFACE_KNOWN) != 0 && !isInterface())
-			throw new UnknownTypeException("Class " + getClassName() + " registered as both class and interface");
-		flags |= CLASS_OR_INTERFACE_KNOWN;
-		flags |= IS_INTERFACE;
+		if (state == KNOWN && !isInterface())
+			throw new UnknownTypeException("Type " + getSignature() +
+				" marked as both class and interface");
+		state = KNOWN;
+		isInterface = true;
 	}
 
+	/**
+	 * Mark the type as a class.
+	 */
 	public void setIsClass() throws UnknownTypeException {
-		if ((flags & CLASS_OR_INTERFACE_KNOWN) != 0 && isInterface())
-			throw new UnknownTypeException("Class " + getClassName() + " registered as both class and interface");
-		flags |= CLASS_OR_INTERFACE_KNOWN;
-		flags &= ~(IS_INTERFACE);
+		if (state == KNOWN && isInterface())
+			throw new UnknownTypeException("Type " + getSignature() +
+				" marked as both class and interface");
+		state = KNOWN;
+		isInterface = false;
+	}
+
+	/**
+	 * Mark the type as unknown: a check to determine
+	 * whether it was a class or interface failed.
+	 */
+	public void setUnknown() {
+		state = UNKNOWN;
+	}
+
+	/**
+	 * Get the state of the type, which will indicate whether
+	 * <ol>
+	 * <li> we haven't checked whether the type is a class
+	 *      or interface (UNCHECKED),
+	 * <li> we know whether the type is a class or an interface
+	 *      (KNOWN),
+	 * <li> we checked by but couldn't find out whether
+	 *      the type is a class or interface (UNKNOWN)
+	 * </ol>
+	 */
+	public int getState() {
+		return state;
 	}
 
 	public int getTypeCode() {
@@ -88,11 +134,11 @@ public class XClassType extends XObjectType {
 	}
 
 	public boolean isInterface() throws UnknownTypeException {
-		if ((flags & CLASS_OR_INTERFACE_KNOWN) == 0)
+		if (state != KNOWN)
 			throw new UnknownTypeException("Don't know whether type " + getClassName() +
 				" is a class or interface");
 
-		return (flags & IS_INTERFACE) != 0;
+		return isInterface;
 	}
 
 	public boolean isArray() {
