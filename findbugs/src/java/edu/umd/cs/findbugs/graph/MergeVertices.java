@@ -17,7 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-// $Revision: 1.8 $
+// $Revision: 1.9 $
 
 package edu.umd.cs.findbugs.graph;
 
@@ -87,7 +87,7 @@ public class MergeVertices
 			if (g.lookupEdge(source, target) != null)
 				continue;
 
-			EdgeType compositeEdge = g.addEdge(source, target);
+			EdgeType compositeEdge = g.createEdge(source, target);
 			// FIXME: we really should have an EdgeCombinator here
 			toolkit.copyEdge(e, compositeEdge);
 		}

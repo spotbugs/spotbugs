@@ -37,11 +37,11 @@ public interface GraphToolkit
 	public GraphType createGraph();
 
 	/**
-	 * Copy auxiliary information from one vertex to another.
-	 * @param source the source vertex
-	 * @param dest the destination vertex
+	 * Make a copy of given vertex.
+	 * @param v the vertex to copy
+	 * @return an exact duplicate of the vertex
 	 */
-	public void copyVertex(VertexType source, VertexType dest);
+	public VertexType duplicateVertex(VertexType original);
 
 	/**
 	 * Copy auxiliary information from one edge to another.

@@ -30,14 +30,15 @@ public class CallGraph extends AbstractGraph<CallGraphEdge, CallGraphNode> {
 		this.methodToNodeMap = new IdentityHashMap<Method, CallGraphNode>();
 	}
 
-	public CallGraphEdge addEdge(CallGraphNode source, CallGraphNode target, CallSite callSite) {
-		CallGraphEdge edge = addEdge(source, target);
+	public CallGraphEdge createEdge(CallGraphNode source, CallGraphNode target, CallSite callSite) {
+		CallGraphEdge edge = createEdge(source, target);
 		edge.setCallSite(callSite);
 		return edge;
 	}
 
 	public CallGraphNode addNode(Method method) {
-		CallGraphNode node = addVertex();
+		CallGraphNode node = new CallGraphNode();
+		addVertex(node);
 		node.setMethod(method);
 		methodToNodeMap.put(method, node);
 		return node;
@@ -47,12 +48,8 @@ public class CallGraph extends AbstractGraph<CallGraphEdge, CallGraphNode> {
 		return methodToNodeMap.get(method);
 	}
 
-	protected CallGraphEdge createEdge(CallGraphNode source, CallGraphNode target) {
+	protected CallGraphEdge allocateEdge(CallGraphNode source, CallGraphNode target) {
 		return new CallGraphEdge(source, target);
-	}
-
-	protected CallGraphNode createVertex() {
-		return new CallGraphNode();
 	}
 }
 

@@ -148,8 +148,8 @@ public class CFG extends AbstractGraph<Edge, BasicBlock> implements Debug {
 	 * @throws IllegalStateException if there is already an edge in the CFG
 	 *   with the same source and destination block
 	 */
-	public Edge addEdge(BasicBlock source, BasicBlock dest, int type) {
-		Edge edge = addEdge(source, dest);
+	public Edge createEdge(BasicBlock source, BasicBlock dest, int type) {
+		Edge edge = createEdge(source, dest);
 		edge.setType(type);
 		return edge;
 	}
@@ -232,7 +232,9 @@ public class CFG extends AbstractGraph<Edge, BasicBlock> implements Debug {
 	 * any node in the graph.
 	 */
 	public BasicBlock allocate() {
-		return addVertex();
+		BasicBlock b = new BasicBlock();
+		addVertex(b);
+		return b;
 	}
 
 	/**
@@ -268,11 +270,7 @@ public class CFG extends AbstractGraph<Edge, BasicBlock> implements Debug {
 		}
 	}
 
-	protected BasicBlock createVertex() {
-		return new BasicBlock();
-	}
-
-	protected Edge createEdge(BasicBlock source, BasicBlock target) {
+	protected Edge allocateEdge(BasicBlock source, BasicBlock target) {
 		return new Edge(source, target);
 	}
 }

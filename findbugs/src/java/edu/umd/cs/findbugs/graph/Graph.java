@@ -17,7 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-// $Revision: 1.8 $
+// $Revision: 1.9 $
 
 package edu.umd.cs.findbugs.graph;
 
@@ -51,19 +51,20 @@ public interface Graph
 	public Iterator<VertexType> vertexIterator();
 
 	/**
-	 * Add a vertex to the graph.
-	 * @return the new vertex
+	 * Add given vertex to the graph.
+	 * The vertex should not be part of any other graph.
+	 * @param v the vertex to add
 	 */
-	public VertexType addVertex();
+	public void addVertex(VertexType v);
 
 	/**
-	 * Add an edge to the graph.
+	 * Add a new edge to the graph.
 	 * Duplicate edges (with same source and target vertices) are allowed.
 	 * @param source the source vertex
 	 * @param target the target vertex
 	 * @return the new edge
 	 */
-	public EdgeType addEdge(VertexType source, VertexType target);
+	public EdgeType createEdge(VertexType source, VertexType target);
 
 	/**
 	 * Look up an edge by source and target vertex.

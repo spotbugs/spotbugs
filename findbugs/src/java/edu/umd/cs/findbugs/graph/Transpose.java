@@ -17,7 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-// $Revision: 1.10 $
+// $Revision: 1.11 $
 
 package edu.umd.cs.findbugs.graph;
 
@@ -60,12 +60,11 @@ public class Transpose
 		for (Iterator<VertexType> i = orig.vertexIterator(); i.hasNext(); ) {
 			VertexType v = (VertexType) i.next();
 
-			// Ensure transposed graph has same labeling as original
-			VertexType dupVertex = trans.addVertex();
+			// Make a duplicate of original vertex
+			// (Ensuring that transposed graph has same labeling as original)
+			VertexType dupVertex = toolkit.duplicateVertex(v);
 			dupVertex.setLabel(v.getLabel());
-
-			// Copy auxiliary information for vertex
-			toolkit.copyVertex(v, dupVertex);
+			trans.addVertex(v);
 
 			// Keep track of correspondence between equivalent vertices
 			m_origToTransposeMap.put(v, dupVertex);
@@ -81,7 +80,7 @@ public class Transpose
 			VertexType transSource = m_origToTransposeMap.get(e.getTarget());
 			VertexType transTarget = m_origToTransposeMap.get(e.getSource());
 
-			EdgeType dupEdge = trans.addEdge(transSource, transTarget);
+			EdgeType dupEdge = trans.createEdge(transSource, transTarget);
 			dupEdge.setLabel(e.getLabel());
 
 			// Copy auxiliary information for edge

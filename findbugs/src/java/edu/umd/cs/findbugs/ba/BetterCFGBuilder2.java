@@ -318,7 +318,7 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 						": exception handler " + destBlock.getFirstInstruction() + " reachable by non exception edge type " +
 						edgeType);
 			}
-			cfg.addEdge(sourceBlock, destBlock, edgeType);
+			cfg.createEdge(sourceBlock, destBlock, edgeType);
 		}
 
 		/**
@@ -697,7 +697,7 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 		rootContext.mapBlock(topLevelSubroutine.getExit(), result.getExit());
 
 		BasicBlock resultStartBlock = rootContext.getBlock(topLevelSubroutine.getStartBlock());
-		result.addEdge(result.getEntry(), resultStartBlock, START_EDGE);
+		result.createEdge(result.getEntry(), resultStartBlock, START_EDGE);
 
 		inline(rootContext);
 
@@ -755,7 +755,7 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 					// The start block in the JSR subroutine maps to the first
 					// inlined block in the result CFG.
 					BasicBlock resultJSRStartBlock = jsrContext.getBlock(jsrSub.getStartBlock());
-					result.addEdge(resultBlock, resultJSRStartBlock, GOTO_EDGE);
+					result.createEdge(resultBlock, resultJSRStartBlock, GOTO_EDGE);
 
 					// The exit block in the JSR subroutine maps to the result block
 					// corresponding to the instruction following the JSR.
@@ -770,7 +770,7 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 				} else {
 					// Ordinary control edge
 					BasicBlock resultTarget = context.getBlock(edge.getTarget());
-					result.addEdge(resultBlock, resultTarget, edge.getType());
+					result.createEdge(resultBlock, resultTarget, edge.getType());
 				}
 			}
 
@@ -797,23 +797,23 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 				BasicBlock resultCallerTargetBlock = caller.getBlock(subCallerTargetBlock);
 
 				// Add an edge to caller context
-				result.addEdge(resultBlock, resultCallerTargetBlock, escapeTarget.getEdgeType());
+				result.createEdge(resultBlock, resultCallerTargetBlock, escapeTarget.getEdgeType());
 			}
 
 			// If the block returns from the method, add a return edge
 			if (subroutine.isReturnBlock(subBlock)) {
-				result.addEdge(resultBlock, result.getExit(), RETURN_EDGE);
+				result.createEdge(resultBlock, result.getExit(), RETURN_EDGE);
 			}
 
 			// If the block calls System.exit(), add an exit edge
 			if (subroutine.isExitBlock(subBlock)) {
-				result.addEdge(resultBlock, result.getExit(), EXIT_EDGE);
+				result.createEdge(resultBlock, result.getExit(), EXIT_EDGE);
 			}
 
 			// If the block throws an unhandled exception, add an unhandled
 			// exception edge
 			if (subroutine.isUnhandledExceptionBlock(subBlock)) {
-				result.addEdge(resultBlock, result.getExit(), UNHANDLED_EXCEPTION_EDGE);
+				result.createEdge(resultBlock, result.getExit(), UNHANDLED_EXCEPTION_EDGE);
 			}
 
 		}

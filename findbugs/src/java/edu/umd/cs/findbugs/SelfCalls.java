@@ -145,7 +145,7 @@ public class SelfCalls {
 					if (called != null) {
 						// Add edge to call graph
 						CallSite callSite = new CallSite(method, block, handle);
-						callGraph.addEdge(node, callGraph.getNodeForMethod(called), callSite);
+						callGraph.createEdge(node, callGraph.getNodeForMethod(called), callSite);
 
 						// Add to called method set
 						calledMethodSet.add(called);

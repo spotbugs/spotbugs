@@ -127,16 +127,14 @@ public abstract class AbstractGraph
 		return vertexList.iterator();
 	}
 
-	public VertexType addVertex() {
-		VertexType v = createVertex();
+	public void addVertex(VertexType v) {
 		vertexList.add(v);
 		v.setId(nextVertexId++);
 		v.setLabel(maxVertexLabel++);
-		return v;
 	}
 
-	public EdgeType addEdge(VertexType source, VertexType target) {
-		EdgeType edge = createEdge(source, target);
+	public EdgeType createEdge(VertexType source, VertexType target) {
+		EdgeType edge = allocateEdge(source, target);
 		edgeList.add(edge);
 		source.addOutgoingEdge(edge);
 		target.addIncomingEdge(edge);
@@ -218,8 +216,7 @@ public abstract class AbstractGraph
 	 * Downcall methods
 	 * ---------------------------------------------------------------------- */
 
-	protected abstract VertexType createVertex();
-	protected abstract EdgeType createEdge(VertexType source, VertexType target);
+	protected abstract EdgeType allocateEdge(VertexType source, VertexType target);
 
 }
 
