@@ -1523,12 +1523,14 @@ public class FindBugsFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_closeProjectItemActionPerformed
     
     private void removeClasspathEntryButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeClasspathEntryButtonActionPerformed
-        int selIndex = classpathEntryList.getSelectedIndex();
-        if (selIndex >= 0) {
-            Project project = getCurrentProject();
-            project.removeAuxClasspathEntry(selIndex);
-            DefaultListModel listModel = (DefaultListModel) classpathEntryList.getModel();
-            listModel.removeElementAt(selIndex);
+        Project project = getCurrentProject();
+        DefaultListModel listModel = (DefaultListModel) classpathEntryList.getModel();
+        
+        int[] selIndices = classpathEntryList.getSelectedIndices();
+        for (int i = selIndices.length - 1; i >= 0; i--) {
+        	int sel = selIndices[i];
+        	project.removeAuxClasspathEntry(sel);
+        	listModel.remove(sel);
         }
     }//GEN-LAST:event_removeClasspathEntryButtonActionPerformed
     
