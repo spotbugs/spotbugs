@@ -38,6 +38,7 @@
     <property name="findbugs.src.dir" value="${findbugs.dir}/src/java" />
     <property name="anttask.src.dir" value="${findbugs.dir}/src/antTask" />
     <property name="tools.src.dir" value="${findbugs.dir}/src/tools"/>
+    <property name="eclipse.src.dir" value="${findbugs.dir}/src/eclipsePlugin"/>
     <property name="findbugs.jar.name" value="findbugs.jar" />
     <property name="findbugsgui.jar.name" value="findbugsGUI.jar" />
     <property name="coreplugin.jar.name" value="coreplugin.jar" />
@@ -74,6 +75,13 @@
         <include name="**/*.jar"/>
       </fileset>
       <pathelement path="${java.class.path}"/>
+    </path>
+
+    <!-- Classpath for running build tools. -->
+    <path id="tools.classpath">
+      <pathelement location="${tools.dir}"/>
+      <pathelement location="${jar.dir}/bcel.jar" />
+      <pathelement location="${jar.dir}/dom4j-full.jar" />
     </path>
 
     <target name="clean">
@@ -183,6 +191,22 @@
           basedir="${class.dir}" includes="edu/umd/cs/findbugs/anttask/**" />
     </target>
 
+    <!-- Target to build the Eclipse plugin. -->
+    <target name="eclipsePlugin" depends="findbugs,coreplugin,tools">
+       <!-- Generate build properties for core Eclipse plugin. -->
+       <java dir="${findbugs.dir}"
+             fork="true"
+             classname="edu.umd.cs.findbugs.EclipseClasspath"
+             output="${eclipse.src.dir}/edu.umd.cs.findbugs/build.properties">
+         <classpath refid="tools.classpath"/>
+         <arg value="${eclipse.home}"/>
+         <arg value="${eclipse.src.dir}/edu.umd.cs.findbugs"/>
+       </java>
+
+       <!-- Spawn Ant subtask to build the core Eclipse plugin. -->
+       <ant dir="${eclipse.src.dir}/edu.umd.cs.findbugs"/>
+    </target>
+
     <!-- Build jar file of test cases.  -->
     <target name="testjar" depends="init,anttask" >
     <taskdef name="findbugs"
@@ -208,8 +232,11 @@
             includes="IgnoredReturnValue*.class,TryLock*.class" />
     </target>
 
-    <!-- Target to build the Eclipse plugin classpath extractor. -->
-    <target name="eclipseClasspath" depends="init">
+    <!--
+       Build tools. This includes:
+         - Eclipse plugin classpath extractor
+    -->
+    <target name="tools" depends="init">
       <javac srcdir="${tools.src.dir}" destdir="${tools.dir}"
              source="1.5"
              debug="true">
