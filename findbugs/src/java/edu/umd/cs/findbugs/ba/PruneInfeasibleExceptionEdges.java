@@ -41,27 +41,44 @@ public class PruneInfeasibleExceptionEdges implements EdgeTypes {
 			BasicBlock basicBlock = i.next();
 			if (basicBlock.isExceptionThrower()) {
 				// Enumerate the kinds of exceptions this block can throw
-				Set<Type> thrownExceptionSet = enumerateExceptionTypes(basicBlock);
+				Set<ObjectType> thrownExceptionSet = enumerateExceptionTypes(basicBlock);
 
 				// For each exception edge, determine if
 				// the handler is reachable.  If not, delete it.
+				// This ABSOLUTELY relies on the exception handlers being
+				// enumerated in decreasing order of priority,
+				// because we eliminate thrown types as we encounter
+				// handlers where they are guaranteed to be caught.
 				HashSet<Edge> deletedEdgeSet = new HashSet<Edge>();
-				Iterator<Edge> j = cfg.outgoingEdgeIterator(basicBlock);
-				while (j.hasNext()) {
+				for (Iterator<Edge> j = cfg.outgoingEdgeIterator(basicBlock); j.hasNext(); ) {
 					Edge edge = j.next();
 					if (edge.getType() == HANDLED_EXCEPTION_EDGE) {
 						if (!reachable(edge, thrownExceptionSet))
 							deletedEdgeSet.add(edge);
 					}
 				}
+
+				// Remove deleted edges
+				for (Iterator<Edge> j = deletedEdgeSet.iterator(); j.hasNext(); ) {
+					Edge edge = j.next();
+					cfg.removeEdge(edge);
+				}
+
+				// If all exceptions are caught, remove the unhandled exception edge
+				if (thrownExceptionSet.isEmpty()) {
+					Edge edge = cfg.getOutgoingEdgeWithType(basicBlock, UNHANDLED_EXCEPTION_EDGE);
+					if (edge != null) {
+						cfg.removeEdge(edge);
+					}
+				}
 			}
 		}
 	}
 
-	private Set<Type> enumerateExceptionTypes(BasicBlock basicBlock)
+	private Set<ObjectType> enumerateExceptionTypes(BasicBlock basicBlock)
 		throws ClassNotFoundException, DataflowAnalysisException {
 
-		Set<Type> exceptionTypeSet = new HashSet<Type>();
+		Set<ObjectType> exceptionTypeSet = new HashSet<ObjectType>();
 		InstructionHandle pei = basicBlock.getExceptionThrower();
 		Instruction ins = pei.getInstruction();
 
@@ -76,7 +93,9 @@ public class PruneInfeasibleExceptionEdges implements EdgeTypes {
 		if (ins instanceof ATHROW) {
 			TypeFrame frame = typeDataflow.getFactAtLocation(new Location(pei, basicBlock));
 			Type throwType = frame.getTopValue();
-			exceptionTypeSet.add(throwType);
+			if (!(throwType instanceof ObjectType))
+				throw new DataflowAnalysisException("Non object type thrown by " + pei);
+			exceptionTypeSet.add((ObjectType) throwType);
 		}
 
 		// If it's an InvokeInstruction, add declared exceptions
@@ -97,11 +116,44 @@ public class PruneInfeasibleExceptionEdges implements EdgeTypes {
 		return exceptionTypeSet;
 	}
 
-	private boolean reachable(Edge edge, Set<Type> thrownExceptionSet)
+	private boolean reachable(Edge edge, Set<ObjectType> thrownExceptionSet)
 		throws ClassNotFoundException {
 		BasicBlock handlerBlock = edge.getDest();
+		CodeExceptionGen handler = handlerBlock.getExceptionGen();
+		ObjectType catchType = handler.getCatchType();
 
-		return true;
+		if (catchType == null) {
+			// This handler catches all exceptions
+			thrownExceptionSet.clear();
+			return true;
+		}
+
+		boolean reachable = false;
+
+		// Go through the set of thrown execeptions.
+		// Any that will DEFINITELY be caught be this handler, remove.
+		// Any that MIGHT be caught, but won't definitely be caught,
+		// remain.
+		for (Iterator<ObjectType> i = thrownExceptionSet.iterator(); i.hasNext(); ) {
+			ObjectType thrownException = i.next();
+
+			String thrownClassName = SignatureConverter.convert(thrownException.getSignature());
+			String catchClassName = SignatureConverter.convert(catchType.getSignature());
+
+			if (Repository.instanceOf(thrownClassName, catchClassName)) {
+				// The thrown exception is a subtype of the catch type,
+				// so this exception will DEFINITELY be caught by
+				// this handler.
+				reachable = true;
+				i.remove();
+			} else if (Repository.instanceOf(catchClassName, thrownClassName)) {
+				// The thrown exception is a supertype of the catch type,
+				// so it MIGHT get caught by this handler.
+				reachable = true;
+			}
+		}
+
+		return reachable;
 	}
 }
 
