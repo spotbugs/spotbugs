@@ -33,6 +33,8 @@ public class DataflowCFGPrinter <Fact, AnalysisType extends AbstractDataflowAnal
 		super(cfg);
 		this.dataflow = dataflow;
 		this.analysis = analysis;
+
+		setIsForwards(analysis.isForwards());
 	}
 
 	public String blockStartAnnotate(BasicBlock bb) {
