@@ -54,6 +54,15 @@ public class AnalysisPass {
 	}
 
 	/**
+	 * Add a DetectorFactory to the beginning of the pass.
+	 *
+	 * @param factory the DetectorFactory
+	 */
+	public void prependDetectorFactory(DetectorFactory factory) {
+		factoryList.addFirst(factory);
+	}
+
+	/**
 	 * Get the List of DetectorFactory objects in the pass.
 	 */
 	public List<DetectorFactory> getDetectorFactoryList() {
