@@ -156,8 +156,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
     private void initComponents() {//GEN-BEGIN:initComponents
         java.awt.GridBagConstraints gridBagConstraints;
 
-        jSplitPane2 = new javax.swing.JSplitPane();
-        jSplitPane1 = new javax.swing.JSplitPane();
+        consoleSplitter = new javax.swing.JSplitPane();
+        navigatorViewSplitter = new javax.swing.JSplitPane();
         jScrollPane1 = new javax.swing.JScrollPane();
         navigatorTree = new javax.swing.JTree();
         viewPanel = new javax.swing.JPanel();
@@ -214,14 +214,21 @@ public class FindBugsFrame extends javax.swing.JFrame {
             }
         });
 
-        jSplitPane2.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
-        jSplitPane2.setResizeWeight(1.0);
-        jSplitPane1.setEnabled(false);
+        consoleSplitter.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
+        consoleSplitter.setResizeWeight(1.0);
+        consoleSplitter.setOneTouchExpandable(true);
+        consoleSplitter.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
+            public void propertyChange(java.beans.PropertyChangeEvent evt) {
+                consoleSplitterPropertyChange(evt);
+            }
+        });
+
+        navigatorViewSplitter.setEnabled(false);
         jScrollPane1.setPreferredSize(new java.awt.Dimension(200, 0));
         navigatorTree.setModel(createNavigatorTreeModel());
         jScrollPane1.setViewportView(navigatorTree);
 
-        jSplitPane1.setLeftComponent(jScrollPane1);
+        navigatorViewSplitter.setLeftComponent(jScrollPane1);
 
         viewPanel.setLayout(new java.awt.CardLayout());
 
@@ -508,21 +515,22 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
         viewPanel.add(bugTreePanel, "BugTree");
 
-        jSplitPane1.setRightComponent(viewPanel);
+        navigatorViewSplitter.setRightComponent(viewPanel);
 
-        jSplitPane2.setTopComponent(jSplitPane1);
+        consoleSplitter.setTopComponent(navigatorViewSplitter);
 
+        jScrollPane5.setMinimumSize(new java.awt.Dimension(22, 100));
         jScrollPane5.setPreferredSize(new java.awt.Dimension(0, 100));
         consoleMessageArea.setBackground(new java.awt.Color(204, 204, 204));
         consoleMessageArea.setEditable(false);
         consoleMessageArea.setFont(new java.awt.Font("Courier", 0, 12));
         consoleMessageArea.setMinimumSize(new java.awt.Dimension(0, 0));
-        consoleMessageArea.setPreferredSize(new java.awt.Dimension(0, 0));
+        consoleMessageArea.setPreferredSize(new java.awt.Dimension(0, 5));
         jScrollPane5.setViewportView(consoleMessageArea);
 
-        jSplitPane2.setBottomComponent(jScrollPane5);
+        consoleSplitter.setBottomComponent(jScrollPane5);
 
-        getContentPane().add(jSplitPane2, java.awt.BorderLayout.CENTER);
+        getContentPane().add(consoleSplitter, java.awt.BorderLayout.CENTER);
 
         jMenuBar1.setFont(new java.awt.Font("Dialog", 0, 12));
         fileMenu.setMnemonic('F');
@@ -571,6 +579,12 @@ public class FindBugsFrame extends javax.swing.JFrame {
         viewConsoleItem.setMnemonic('C');
         viewConsoleItem.setSelected(true);
         viewConsoleItem.setText("Console");
+        viewConsoleItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                viewConsoleItemActionPerformed(evt);
+            }
+        });
+
         viewMenu.add(viewConsoleItem);
 
         jMenuBar1.add(viewMenu);
@@ -579,6 +593,52 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
         pack();
     }//GEN-END:initComponents
+    
+    /**
+     * A fudge value required in our hack to get the REAL maximum
+     * divider location for the consoleSplitter.  Experience suggests that
+     * the value "1" would work here, but setting it a little higher
+     * makes the code a bit more robust.
+     */
+    private static final int DIVIDER_FUDGE = 3;
+
+    private void consoleSplitterPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_consoleSplitterPropertyChange
+        // The idea here is to keep the View:Console checkbox up to date with
+        // the real location of the divider of the consoleSplitter.
+        // What we want is if any part of the console window is visible,
+        // then the checkbox should be checked.
+        String propertyName = evt.getPropertyName();
+        if (propertyName.equals(JSplitPane.DIVIDER_LOCATION_PROPERTY)) {
+            Integer location = (Integer) evt.getNewValue();
+            /*
+            if (location.intValue() > consoleSplitter.getMaximumDividerLocation())
+                throw new IllegalStateException("JSplitPane is stupid");
+            viewConsoleItem.setSelected(location.intValue() != consoleSplitter.getMaximumDividerLocation());
+             */
+            // FIXME - I need to find out the REAL maximum divider value.
+            // getMaximumDividerLocation() is based on minimum component sizes,
+            // but it may be violated if the user clicks the little "contracter"
+            // button put in place when the "one touch expandable" property was set.
+            // Here is a nasty hack which makes a guess based on the current size
+            // of the frame's content pane.
+            int contentPaneHeight = this.getContentPane().getHeight();
+            int hopefullyMaxDivider = contentPaneHeight - (consoleSplitter.getDividerSize() + DIVIDER_FUDGE);
+/*
+            System.out.println("pane height = " + contentPaneHeight + ", dividerLoc=" + location.intValue() +
+                ", hopefullyMaxDivider=" + hopefullyMaxDivider);
+ */
+            
+            viewConsoleItem.setSelected(location.intValue() < hopefullyMaxDivider);
+        }
+    }//GEN-LAST:event_consoleSplitterPropertyChange
+
+    private void viewConsoleItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_viewConsoleItemActionPerformed
+        if (viewConsoleItem.isSelected()) {
+            consoleSplitter.resetToPreferredSizes();
+        } else {
+            consoleSplitter.setDividerLocation(1.0);
+        }
+    }//GEN-LAST:event_viewConsoleItemActionPerformed
 
     private void sortOrderChooserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sortOrderChooserActionPerformed
         String selection = sortOrderChooser.getSelectedItem().toString();
@@ -964,6 +1024,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel editProjectLabel;
+    private javax.swing.JSplitPane navigatorViewSplitter;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JButton removeSrcDirButton;
     private javax.swing.JCheckBoxMenuItem viewConsoleItem;
@@ -972,13 +1033,12 @@ public class FindBugsFrame extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JMenu fileMenu;
     private javax.swing.JMenuItem closeProjectItem;
-    private javax.swing.JSplitPane jSplitPane2;
     private javax.swing.JMenuItem newProjectItem;
     private javax.swing.JTextField jarNameTextField;
     private javax.swing.JLabel leftFiller;
     private javax.swing.JButton browseJarButton;
     private javax.swing.JScrollPane jScrollPane4;
-    private javax.swing.JSplitPane jSplitPane1;
+    private javax.swing.JSplitPane consoleSplitter;
     private javax.swing.JMenuItem openProjectItem;
     private javax.swing.JLabel sortOrderLabel;
     private javax.swing.JList jarFileList;
