@@ -23,57 +23,53 @@ package edu.umd.cs.findbugs.ba;
  * A class to abstractly represent values in stack slots,
  * indicating whether thoses values can be null, non-null,
  * null on some incoming path, or unknown.
- * Null and non-null values produced by flow-sensitivity are treated specially
- * so that they don't flow out of the regions protected by the condition
- * which makes them precise (the WEAK_NULL and WEAK_NN values).
  *
  * @see IsNullValueFrame
  * @see IsNullValueAnalysis
  * @author David Hovemeyer
  */
 public class IsNullValue {
-	private static final boolean NO_WEAK_VALUES = !Boolean.getBoolean("inv.weak");
+	private static final boolean NO_CHECKED_VALUES = Boolean.getBoolean("inv.noChecked");
 	private static final boolean DEBUG_EXCEPTION = Boolean.getBoolean("inv.debugException");
 
-	private static final int NULL      = 0;
-	private static final int WEAK_NULL = 1;
-	private static final int NN        = 2;
-	private static final int WEAK_NN   = 3;
-	private static final int NSP       = 4;
-	private static final int DNR       = 5;
+	private static final int NULL         = 0;
+	private static final int CHECKED_NULL = 1;
+	private static final int NN           = 2;
+	private static final int CHECKED_NN   = 3;
+	private static final int NSP          = 4;
+	private static final int DNR          = 5;
 
 	// This can be bitwise-OR'ed to indicate the value was propagated
 	// along an exception path.
 	private static final int EXCEPTION = 0x100;
 
-	// TODO: think about this some more
-	private static final int[][] weakValueMergeMatrix = {
-		// NULL,      WEAK_NULL, NN,        WEAK_NN,   NSP,       DNR
-		{  NULL                                                         }, // NULL
-		{  WEAK_NULL, WEAK_NULL,                                        }, // WEAK_NULL
-		{  NSP,       DNR,       NN                                     }, // NN
-		{  NSP,       DNR,       WEAK_NN,   WEAK_NN,                    }, // WEAK_NN
-		{  NSP,       NSP,       NSP,       NSP,       NSP              }, // NSP
-		{  NSP,       DNR,       DNR,       DNR,       DNR,       DNR   }  // DNR
+	private static final int[][] checkedValueMergeMatrix = {
+		// NULL,    CHECKED_NULL, NN,      CHECKED_NN, NSP,     DNR
+		{  NULL                                                       }, // NULL
+		{  NULL,    CHECKED_NULL,                                     }, // CHECKED_NULL
+		{  NSP,     NSP,          NN                                  }, // NN
+		{  NSP,     NSP,          NN,      CHECKED_NN,                }, // CHECKED_NN
+		{  NSP,     NSP,          NSP,     NSP,        NSP            }, // NSP
+		{  NSP,     NSP,          DNR,     DNR,        DNR,       DNR }  // DNR
 	};
 
-	private static final int[][] noWeakValueMergeMatrix = {
+	private static final int[][] noCheckedValueMergeMatrix = {
 		{  NULL                                                         }, // NULL
-		{  -1,        -1,                                               }, // WEAK_NULL
+		{  -1,        -1,                                               }, // CHECKED_NULL
 		{  NSP,       -1,       NN                                      }, // NN
-		{  -1,        -1,       -1,        -1,    	                    }, // WEAK_NN
+		{  -1,        -1,       -1,        -1,    	                    }, // CHECKED_NN
 		{  NSP,       -1,       NSP,       -1,         NSP              }, // NSP
 		{  NSP,       -1,       DNR,       -1,         DNR,       DNR   }  // DNR
 	};
 
 	private static final int[][] mergeMatrix =
-		NO_WEAK_VALUES ? noWeakValueMergeMatrix : weakValueMergeMatrix;
+		NO_CHECKED_VALUES ? noCheckedValueMergeMatrix : checkedValueMergeMatrix;
 
 	private static IsNullValue[] instanceList = {
 		new IsNullValue(NULL),
-		new IsNullValue(WEAK_NULL),
+		new IsNullValue(CHECKED_NULL),
 		new IsNullValue(NN),
-		new IsNullValue(WEAK_NN),
+		new IsNullValue(CHECKED_NN),
 		new IsNullValue(NSP),
 		new IsNullValue(DNR)
 	};
@@ -106,6 +102,13 @@ public class IsNullValue {
 		return (kind & EXCEPTION) != 0;
 	}
 
+	/**
+	 * Is this value known because of an explicit null check?
+	 */
+	public boolean isChecked() {
+		return getBaseKind() == CHECKED_NULL || getBaseKind() == CHECKED_NN;
+	}
+
 	private IsNullValue toBaseValue() {
 		if (!isException())
 			return this;
@@ -134,6 +137,15 @@ public class IsNullValue {
 	}
 
 	/**
+	 * Get the instance representing a value known to be non-null
+	 * because it was compared against null value, or because
+	 * we saw the object creation.
+	 */
+	public static IsNullValue checkedNonNullValue() {
+		return instanceList[CHECKED_NN];
+	}
+
+	/**
 	 * Get the instance representing values that are definitely null
 	 * on some incoming path.
 	 */
@@ -150,11 +162,11 @@ public class IsNullValue {
 	}
 
 	public static IsNullValue flowSensitiveNullValue() {
-		return instanceList[NO_WEAK_VALUES ? NULL : WEAK_NULL];
+		return instanceList[NO_CHECKED_VALUES ? NULL : CHECKED_NULL];
 	}
 
 	public static IsNullValue flowSensitiveNonNullValue() {
-		return instanceList[NO_WEAK_VALUES ? NN : WEAK_NN];
+		return instanceList[NO_CHECKED_VALUES ? NN : CHECKED_NN];
 	}
 
 	/** Merge two values. */
@@ -181,7 +193,7 @@ public class IsNullValue {
 	/** Is this value definitely null? */
 	public boolean isDefinitelyNull() {
 		int baseKind = getBaseKind();
-		return baseKind == NULL || baseKind == WEAK_NULL;
+		return baseKind == NULL || baseKind == CHECKED_NULL;
 	}
 
 	/** Is this value null on some path? */
@@ -193,7 +205,7 @@ public class IsNullValue {
 	/** Is this value definitely not null? */
 	public boolean isDefinitelyNotNull() {
 		int baseKind = getBaseKind();
-		return baseKind == NN || baseKind == WEAK_NN;
+		return baseKind == NN || baseKind == CHECKED_NN;
 	}
 
 	public String toString() {
@@ -204,11 +216,11 @@ public class IsNullValue {
 		switch (kind & ~EXCEPTION) {
 		case NULL:
 			return pfx + "n";
-		case WEAK_NULL:
+		case CHECKED_NULL:
 			return pfx + "w";
 		case NN:
 			return pfx + "N";
-		case WEAK_NN:
+		case CHECKED_NN:
 			return pfx + "W";
 		case NSP:
 			return pfx + "s";

@@ -267,9 +267,13 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
 						throw new IllegalStateException("no vna frame at block entry?");
 
 					Instruction firstInDest = edge.getTarget().getFirstInstruction().getInstruction();
-					// Update the is-null information for the dereferenced value.
-					ValueNumber replaceMe = vnaFrame.getInstance(firstInDest, methodGen.getConstantPool());
-					tmpFact = replaceValues(fact, tmpFact, replaceMe, vnaFrame, targetVnaFrame, IsNullValue.nonNullValue());
+					// If we're not sure that the instance is definitely non-null,
+					// update the is-null information for the dereferenced value.
+					IsNullValue instance = fact.getInstance(firstInDest, methodGen.getConstantPool());
+					if (!instance.isDefinitelyNotNull()) {
+						ValueNumber replaceMe = vnaFrame.getInstance(firstInDest, methodGen.getConstantPool());
+						tmpFact = replaceValues(fact, tmpFact, replaceMe, vnaFrame, targetVnaFrame, IsNullValue.nonNullValue());
+					}
 				}
 			}
 

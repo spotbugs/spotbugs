@@ -45,10 +45,12 @@ public class FindNullDeref implements Detector {
 	private static class RedundantBranch {
 		public final InstructionHandle handle;
 		public final int lineNumber;
+		public boolean redundantNullCheck;
 
-		public RedundantBranch(InstructionHandle handle, int lineNumber) {
+		public RedundantBranch(InstructionHandle handle, int lineNumber, boolean redundantNullCheck) {
 			this.handle = handle;
 			this.lineNumber = lineNumber;
+			this.redundantNullCheck = redundantNullCheck;
 		}
 
 		public String toString() {
@@ -152,7 +154,7 @@ public class FindNullDeref implements Detector {
 			// place it is duplicated, and that it is determined in the same way.
 			if (!undeterminedBranchSet.get(lineNumber) &&
 				!(definitelySameBranchSet.get(lineNumber) && definitelyDifferentBranchSet.get(lineNumber))) {
-				reportUselessControlFlow(classContext, method, handle);
+				reportRedundantNullCheck(classContext, method, handle, redundantBranch);
 			}
 		}
 	}
@@ -228,8 +230,14 @@ public class FindNullDeref implements Detector {
 				definitelyDifferentBranchSet.set(lineNumber);
 			}
 
-			//reportUselessControlFlow(classContext, method, lastHandle);
-			RedundantBranch redundantBranch = new RedundantBranch(lastHandle, lineNumber);
+			// If at least one of the values compared was
+			// the result of an explicit null check,
+			// remember it.  We report these cases as low
+			// priority.
+			boolean redundantNullCheck = top.isChecked() || topNext.isChecked();
+
+			//reportRedundantNullCheck(classContext, method, lastHandle);
+			RedundantBranch redundantBranch = new RedundantBranch(lastHandle, lineNumber, redundantNullCheck);
 			if (DEBUG) System.out.println("Adding redundant branch: " + redundantBranch);
 			redundantBranchList.add(redundantBranch);
 		} else {
@@ -238,6 +246,7 @@ public class FindNullDeref implements Detector {
 		}
 	}
 
+	// This is called for both IFNULL and IFNONNULL instructions.
 	private void analyzeIfNullBranch(Method method, IsNullValueDataflow invDataflow, BasicBlock basicBlock,
 		InstructionHandle lastHandle) throws DataflowAnalysisException {
 
@@ -254,26 +263,34 @@ public class FindNullDeref implements Detector {
 		if (lineNumber < 0)
 			return;
 
-		boolean definitelySame = top.isDefinitelyNull();
-		boolean definitelyDifferent = top.isDefinitelyNotNull();
-
-		if (definitelySame || definitelyDifferent) {
-			if (definitelySame) {
-				if (DEBUG) System.out.println("Line " + lineNumber + " always same");
-				definitelySameBranchSet.set(lineNumber);
-			}
-			if (definitelyDifferent) {
-				if (DEBUG) System.out.println("Line " + lineNumber + " always different");
-				definitelyDifferentBranchSet.set(lineNumber);
-			}
-			//reportUselessControlFlow(classContext, method, lastHandle);
-			RedundantBranch redundantBranch = new RedundantBranch(lastHandle, lineNumber);
-			if (DEBUG) System.out.println("Adding redundant branch: " + redundantBranch);
-			redundantBranchList.add(redundantBranch);
-		} else {
+		if (!(top.isDefinitelyNull() || top.isDefinitelyNotNull())) {
 			if (DEBUG) System.out.println("Line " + lineNumber + " undetermined");
 			undeterminedBranchSet.set(lineNumber);
+			return;
 		}
+
+		// Figure out if the branch is always taken
+		// or always not taken.
+		short opcode = lastHandle.getInstruction().getOpcode();
+		boolean definitelySame = top.isDefinitelyNull();
+		if (opcode != Constants.IFNULL) definitelySame = !definitelySame;
+
+		if (definitelySame) {
+			if (DEBUG) System.out.println("Line " + lineNumber + " always same");
+			definitelySameBranchSet.set(lineNumber);
+		} else {
+			if (DEBUG) System.out.println("Line " + lineNumber + " always different");
+			definitelyDifferentBranchSet.set(lineNumber);
+		}
+
+		// Is this a null check made redundant by an earlier check?
+		// Such code is not as likely to be an error
+		// as when a check is done after an explicit dereference.
+		boolean redundantNullCheck = top.isChecked();
+
+		RedundantBranch redundantBranch = new RedundantBranch(lastHandle, lineNumber, redundantNullCheck);
+		if (DEBUG) System.out.println("Adding redundant branch: " + redundantBranch);
+		redundantBranchList.add(redundantBranch);
 	}
 
 	private static int getLineNumber(Method method, InstructionHandle handle) {
@@ -298,11 +315,14 @@ public class FindNullDeref implements Detector {
 		bugReporter.reportBug(bugInstance);
 	}
 
-	private void reportUselessControlFlow(ClassContext classContext, Method method, InstructionHandle handle) {
+	private void reportRedundantNullCheck(ClassContext classContext, Method method, InstructionHandle handle,
+		RedundantBranch redundantBranch) {
 		String sourceFile = classContext.getJavaClass().getSourceFileName();
 		MethodGen methodGen = classContext.getMethodGen(method);
 
-		bugReporter.reportBug(new BugInstance("RCN_REDUNDANT_COMPARISON_TO_NULL", NORMAL_PRIORITY)
+		int priority = redundantBranch.redundantNullCheck ? LOW_PRIORITY : NORMAL_PRIORITY;
+
+		bugReporter.reportBug(new BugInstance("RCN_REDUNDANT_COMPARISON_TO_NULL", priority)
 			.addClassAndMethod(methodGen, sourceFile)
 			.addSourceLine(methodGen, sourceFile, handle));
 	}
