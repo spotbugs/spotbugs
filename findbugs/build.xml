@@ -284,12 +284,15 @@
     <target name="bindist" depends="release">
       <mkdir dir="${build.dir}/bin" />
       <tar tarfile="${build.dir}/bin/findbugs-${release.number}.tar.gz"
-           basedir="${build.dir}/bin"
-           includes="findbugs-${release.number}/**"
-           compression="gzip" />
-      <zip destfile="${build.dir}/bin/findbugs-${release.number}.zip"
-           basedir="${build.dir}/bin"
-           includes="findbugs-${release.number}/**" />
+           longfile="gnu"
+           compression="gzip">
+         <tarfileset dir="${build.dir}/bin" includes="findbugs-${release.number}/**" excludes="findbugs-${release.number}/bin/findbugs" />
+         <tarfileset dir="${build.dir}/bin" includes="findbugs-${release.number}/bin/findbugs" mode="555" />
+      </tar>
+      <zip destfile="${build.dir}/bin/findbugs-${release.number}.zip">
+         <zipfileset dir="${build.dir}/bin" includes="findbugs-${release.number}/**" excludes="findbugs-${release.number}/bin/findbugs" />
+         <zipfileset dir="${build.dir}/bin" includes="findbugs-${release.number}/bin/findbugs" filemode="555" />
+      </zip>
     </target>
 
     <!-- Create a source distribution. -->
@@ -307,11 +310,17 @@
          <fileset dir="${doc.dir}" />
        </copy>
 
+       <property name="src.base" value="findbugs-${release.number}" />
+
+       <property name="src.scripts"
+                 value="${src.base}/bin/findbugs,${src.base}/etc/createXML,${src.base}/etc/runTests,${src.base}/etc/summarizeBugs,${src.base}/etc/diffBugSummaries" />
+
        <!-- Put it in a tarball. -->
        <tar tarfile="${build.dir}/src/findbugs-${release.number}-source.tar.gz"
-            basedir="${build.dir}/src"
-            compression="gzip"
-            includes="findbugs-${release.number}/**" />
+            compression="gzip">
+         <tarfileset dir="${build.dir}/src" includes="findbugs-${release.number}/**" excludes="${src.scripts}" />
+         <tarfileset dir="${build.dir}/src" includes="${src.scripts}" mode="555" />
+       </tar>
     </target>
 
     <!-- Update the FindBugs web page. -->
