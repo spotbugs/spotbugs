@@ -620,6 +620,22 @@ public class ClassContext implements AnalysisFeatures {
 				}
 			};
 
+	private AnalysisFactory<Dataflow<BlockType, BlockTypeAnalysis>> blockTypeDataflowFactory =
+			new AnalysisFactory<Dataflow<BlockType, BlockTypeAnalysis>>("block type analysis") {
+				protected Dataflow<BlockType, BlockTypeAnalysis> analyze(Method method)
+						throws DataflowAnalysisException, CFGBuilderException {
+					CFG cfg = getCFG(method);
+					DepthFirstSearch dfs = getDepthFirstSearch(method);
+
+					BlockTypeAnalysis analysis = new BlockTypeAnalysis(dfs);
+					Dataflow<BlockType, BlockTypeAnalysis> dataflow =
+						new Dataflow<BlockType, BlockTypeAnalysis>(cfg, analysis);
+					dataflow.execute();
+
+					return dataflow;
+				}
+			};
+
 	private ClassGen classGen;
 	private AssignedFieldMap assignedFieldMap;
 	private AssertionMethods assertionMethods;
@@ -874,6 +890,17 @@ public class ClassContext implements AnalysisFeatures {
 	public Dataflow<BitSet, LiveLocalStoreAnalysis> getLiveLocalStoreDataflow(Method method)
 			throws DataflowAnalysisException, CFGBuilderException {
 		return liveLocalStoreDataflowFactory.getAnalysis(method);
+	}
+
+	/**
+	 * Get BlockType dataflow for given method.
+	 *
+	 * @param method the method
+	 * @return the Dataflow object for BlockTypeAnalysis on the method
+	 */
+	public Dataflow<BlockType, BlockTypeAnalysis> getBlockTypeDataflow(Method method)
+			throws DataflowAnalysisException, CFGBuilderException {
+		return blockTypeDataflowFactory.getAnalysis(method);
 	}
 
 	/**
