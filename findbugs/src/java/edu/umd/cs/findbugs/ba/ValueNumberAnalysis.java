@@ -26,11 +26,26 @@ import org.apache.bcel.*;
 import org.apache.bcel.classfile.*;
 import org.apache.bcel.generic.*;
 
+/**
+ * A dataflow analysis to track the production and flow of values in the Java
+ * stack frame.  This is essentially a def/use analysis.  See the
+ * {@link ValueNumber ValueNumber} class for an explanation of what the
+ * value numbers mean, and when they can be compared.  In general,
+ * you need to know the dominator relationships of the blocks in a CFG
+ * to make sense of the value numbers.
+ *
+ * <p> This class is still experimental.
+ *
+ * @see ValueNumber
+ * @see DominatorsAnalysis
+ * @author David Hovemeyer
+ */
 public class ValueNumberAnalysis extends ForwardDataflowAnalysis<ValueNumberFrame> {
 	private MethodGen methodGen;
 	private ValueNumberFactory factory;
 	private ValueNumberCache cache;
 	private ValueNumber[] entryLocalValueList;
+	private IdentityHashMap<BasicBlock, ValueNumber> exceptionHandlerValueNumberMap;
 
 	public ValueNumberAnalysis(MethodGen methodGen) {
 		this.methodGen = methodGen;
@@ -41,6 +56,8 @@ public class ValueNumberAnalysis extends ForwardDataflowAnalysis<ValueNumberFram
 		this.entryLocalValueList = new ValueNumber[numLocals];
 		for (int i = 0; i < numLocals; ++i)
 			this.entryLocalValueList[i] = factory.createFreshValue();
+
+		this.exceptionHandlerValueNumberMap = new IdentityHashMap<BasicBlock, ValueNumber>();
 	}
 
 	public ValueNumberFrame createFact() {
@@ -89,6 +106,12 @@ public class ValueNumberAnalysis extends ForwardDataflowAnalysis<ValueNumberFram
 			// an exception handler, we clear the stack and push a
 			// single entry for the exception object.  That way, the locals
 			// can still be merged.
+
+			// Get the value number for the exception
+			BasicBlock handlerBlock = edge.getDest();
+			ValueNumber exceptionValueNumber = getExceptionValueNumber(handlerBlock);
+
+			// Set up the stack frame
 			ValueNumberFrame tmpFact = createFact();
 			tmpFact.copyFrom(fact);
 			tmpFact.clearStack();
@@ -119,6 +142,15 @@ public class ValueNumberAnalysis extends ForwardDataflowAnalysis<ValueNumberFram
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	private ValueNumber getExceptionValueNumber(BasicBlock handlerBlock) {
+		ValueNumber valueNumber = exceptionHandlerValueNumberMap.get(handlerBlock);
+		if (valueNumber == null) {
+			valueNumber = factory.createFreshValue();
+			exceptionHandlerValueNumberMap.put(handlerBlock, valueNumber);
+		}
+		return valueNumber;
 	}
 }
 
