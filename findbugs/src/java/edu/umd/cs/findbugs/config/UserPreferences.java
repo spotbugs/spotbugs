@@ -56,7 +56,7 @@ public class UserPreferences implements Cloneable {
 	private static final String DETECTOR_THRESHOLD_KEY = "detector_threshold";
 	private static final String FILTER_SETTINGS_KEY = "filter_settings";
 	private LinkedList<String> recentProjectsList = new LinkedList<String>();
-	private HashMap<String, Boolean> detectorEnablementMap = new HashMap<String, Boolean>();
+	private Map<String, Boolean> detectorEnablementMap = new HashMap<String, Boolean>();
 	private ProjectFilterSettings filterSettings;
 	private static UserPreferences preferencesSingleton = new UserPreferences();
 
@@ -192,11 +192,11 @@ public class UserPreferences implements Cloneable {
 			props.put(key, projectName);
 		}
 
-		Iterator it = detectorEnablementMap.entrySet().iterator();
+		Iterator<Map.Entry<String, Boolean>> it = detectorEnablementMap.entrySet().iterator();
 		int i = 0;
 		while (it.hasNext()) {
-			Map.Entry entry = (Map.Entry) it.next();
-			props.put("detector" + i, entry.getKey() + "|" + String.valueOf(((Boolean) entry.getValue()).booleanValue()));
+			Map.Entry<String, Boolean> entry = it.next();
+			props.put("detector" + i, entry.getKey() + "|" + String.valueOf(entry.getValue().booleanValue()));
 			i++;
 		}
 
