@@ -17,7 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-// $Revision: 1.5 $
+// $Revision: 1.6 $
 
 package edu.umd.cs.daveho.graph;
 
@@ -45,10 +45,10 @@ public interface Graph
 	public int getNumVertices();
 
 	/** Get Iterator over all edges in the graph. */
-	public Iterator<EdgeType> getEdgeIterator();
+	public Iterator<EdgeType> edgeIterator();
 
 	/** Get Iterator over all vertices in the graph. */
-	public Iterator<VertexType> getVertexIterator();
+	public Iterator<VertexType> vertexIterator();
 
 	/**
 	 * Add a vertex to the graph.
@@ -125,12 +125,20 @@ public interface Graph
 	public Iterator<EdgeType> incomingEdgeIterator(VertexType target);
 
 	/**
-	 * Get an iterator over the adjacency list
-	 * (vertices reachable through this vertex's outgoing edges).
+	 * Get an iterator over the successors of this vertex;
+	 * i.e., the targets of the vertex's outgoing edges.
 	 * @param source the source vertex
 	 * @return an Iterator over the successors of the vertex
 	 */
-	public Iterator<VertexType> adjacencyListIterator(VertexType source);
+	public Iterator<VertexType> successorIterator(VertexType source);
+
+	/**
+	 * Get an iterator over the predecessors of this vertex;
+	 * i.e., the sources of the vertex's incoming edges.
+	 * @param target the target vertex
+	 * @return an Iterator over the predecessors of the vertex
+	 */
+	public Iterator<VertexType> predecessorIterator(VertexType target);
 
 }
 

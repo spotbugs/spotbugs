@@ -17,7 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-// $Revision: 1.5 $
+// $Revision: 1.6 $
 
 package edu.umd.cs.daveho.graph;
 
@@ -56,7 +56,7 @@ public class MergeVertices
 		// or from which we have incoming edges, since they'll need
 		// to be fixed
 		TreeSet<EdgeType> edgeSet = new TreeSet<EdgeType>();
-		for (Iterator<EdgeType> i = g.getEdgeIterator(); i.hasNext(); ) {
+		for (Iterator<EdgeType> i = g.edgeIterator(); i.hasNext(); ) {
 			EdgeType e = i.next();
 			if (vertexSet.contains(e.getSource()) || vertexSet.contains(e.getTarget()))
 				edgeSet.add(e);

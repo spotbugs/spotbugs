@@ -119,11 +119,11 @@ public abstract class AbstractGraph
 		return vertexList.size();
 	}
 
-	public Iterator<EdgeType> getEdgeIterator() {
+	public Iterator<EdgeType> edgeIterator() {
 		return edgeList.iterator();
 	}
 
-	public Iterator<VertexType> getVertexIterator() {
+	public Iterator<VertexType> vertexIterator() {
 		return vertexList.iterator();
 	}
 
@@ -192,11 +192,20 @@ public abstract class AbstractGraph
 		return new IncomingEdgeIterator<EdgeType, VertexType>(target);
 	}
 
-	public Iterator<VertexType> adjacencyListIterator(final VertexType source) {
+	public Iterator<VertexType> successorIterator(final VertexType source) {
 		return new Iterator<VertexType>() {
 			private Iterator<EdgeType> iter = outgoingEdgeIterator(source);
 			public boolean hasNext() { return iter.hasNext(); }
 			public VertexType next() { return iter.next().getTarget(); }
+			public void remove() { iter.remove(); }
+		};
+	}
+
+	public Iterator<VertexType> predecessorIterator(final VertexType target) {
+		return new Iterator<VertexType>() {
+			private Iterator<EdgeType> iter = incomingEdgeIterator(target);
+			public boolean hasNext() { return iter.hasNext(); }
+			public VertexType next() { return iter.next().getSource(); }
 			public void remove() { iter.remove(); }
 		};
 	}

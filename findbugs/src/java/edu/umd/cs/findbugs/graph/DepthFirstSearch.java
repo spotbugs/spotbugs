@@ -17,7 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-// $Revision: 1.6 $
+// $Revision: 1.7 $
 
 package edu.umd.cs.daveho.graph;
 
@@ -48,7 +48,6 @@ public class DepthFirstSearch
 	private int[] m_finishTimeList;
 
 	/** Predecessors for the vertices. */
-	//private VertexType[] m_predecessorList;
 	private ArrayList<VertexType> m_predecessorList;
 
 	/** Depth first search tree forest. */
@@ -85,7 +84,7 @@ public class DepthFirstSearch
 
 	/** Perform the depth first search. */
 	public void search(GraphType g) {
-		search(g, g.getVertexIterator());
+		search(g, g.vertexIterator());
 	}
 
 	/**
@@ -127,11 +126,10 @@ public class DepthFirstSearch
 		m_startTimeList[ vertexNum ] = ++m_time;
 
 		// Visit unvisited adjacent vertices
-		Iterator<VertexType> i = g.adjacencyListIterator(v);
+		Iterator<VertexType> i = g.successorIterator(v);
 		while (i.hasNext()) {
 			VertexType next = i.next();
 			if (m_vertexChooser.isChosen(next) && m_colorList[ next.getLabel() ] == WHITE) {
-				//m_predecessorList[ next.getLabel() ] = v;
 				m_predecessorList.set(next.getLabel(), v);
 				tree.addChild(visit(g, next));
 			}

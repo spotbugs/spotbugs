@@ -17,7 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-// $Revision: 1.7 $
+// $Revision: 1.8 $
 
 package edu.umd.cs.daveho.graph;
 
@@ -57,7 +57,7 @@ public class Transpose
 		// vertex in the transposed graph,
 		// ensuring that vertex labels in the transposed graph
 		// match vertex labels in the original graph
-		for (Iterator<VertexType> i = orig.getVertexIterator(); i.hasNext(); ) {
+		for (Iterator<VertexType> i = orig.vertexIterator(); i.hasNext(); ) {
 			VertexType v = (VertexType) i.next();
 
 			// Ensure transposed graph has same labeling as original
@@ -75,7 +75,7 @@ public class Transpose
 
 		// For each edge in the original graph, create a reversed edge
 		// in the transposed graph
-		for (Iterator<EdgeType> i = orig.getEdgeIterator(); i.hasNext(); ) {
+		for (Iterator<EdgeType> i = orig.edgeIterator(); i.hasNext(); ) {
 			EdgeType e = i.next();
 
 			VertexType transSource = m_origToTransposeMap.get(e.getTarget());
