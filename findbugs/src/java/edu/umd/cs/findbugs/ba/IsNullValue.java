@@ -32,6 +32,8 @@ package edu.umd.cs.daveho.ba;
  * @author David Hovemeyer
  */
 public class IsNullValue {
+	private static final boolean NO_WEAK_VALUES = Boolean.getBoolean("inv.noWeak");
+
 	private static final int NULL      = 0;
 	private static final int WEAK_NULL = 1;
 	private static final int NN        = 2;
@@ -44,7 +46,7 @@ public class IsNullValue {
 	private static final int EXCEPTION = 0x100;
 
 	// TODO: think about this some more
-	private static final int[][] mergeMatrix = {
+	private static final int[][] weakValueMergeMatrix = {
 		// NULL,      WEAK_NULL, NN,        WEAK_NN,   NSP,       DNR
 		{  NULL                                                         }, // NULL
 		{  WEAK_NULL, WEAK_NULL,                                        }, // WEAK_NULL
@@ -53,6 +55,18 @@ public class IsNullValue {
 		{  NSP,       NSP,       NSP,       NSP,       NSP              }, // NSP
 		{  NSP,       DNR,       DNR,       DNR,       DNR,       DNR   }  // DNR
 	};
+
+	private static final int[][] noWeakValueMergeMatrix = {
+		{  NULL                                                         }, // NULL
+		{  -1,        -1,                                               }, // WEAK_NULL
+		{  NSP,       -1,       NN                                      }, // NN
+		{  -1,        -1,       -1,        -1,    	                    }, // WEAK_NN
+		{  NSP,       -1,       NSP,       -1,         NSP              }, // NSP
+		{  NSP,       -1,       DNR,       -1,         DNR,       DNR   }  // DNR
+	};
+
+	private static final int[][] mergeMatrix =
+		NO_WEAK_VALUES ? noWeakValueMergeMatrix : weakValueMergeMatrix;
 
 	private static IsNullValue[] instanceList = {
 		new IsNullValue(NULL),
@@ -108,12 +122,6 @@ public class IsNullValue {
 		return instanceList[NULL];
 	}
 
-	/** Get the instance representing values which we know are null by virtual
-	    of having been made more precise by an IFNULL or IFNONNULL instruction. */
-	public static IsNullValue weakNullValue() {
-		return instanceList[WEAK_NULL];
-	}
-
 	/** Get the instance representing values that are definitely not null. */
 	public static IsNullValue nonNullValue() {
 		return instanceList[NN];
@@ -136,11 +144,11 @@ public class IsNullValue {
 	}
 
 	public static IsNullValue flowSensitiveNullValue(IsNullValue conditionValue) {
-		return instanceList[WEAK_NULL];
+		return instanceList[NO_WEAK_VALUES ? NULL : WEAK_NULL];
 	}
 
 	public static IsNullValue flowSensitiveNonNullValue(IsNullValue conditionValue) {
-		return instanceList[WEAK_NN];
+		return instanceList[NO_WEAK_VALUES ? NN : WEAK_NN];
 	}
 
 	/** Merge two values. */
