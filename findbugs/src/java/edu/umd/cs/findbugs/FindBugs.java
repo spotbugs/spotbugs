@@ -403,7 +403,7 @@ public class FindBugs implements Constants2
   private static final int SORTING_REPORTER = 1;
   private static final int XML_REPORTER = 2;
 
-  public static int lowestPriorityReported = Detector.NORMAL_PRIORITY;
+  static int lowestPriorityReported = Detector.NORMAL_PRIORITY;
   public static void main(String argv[]) throws Exception
   { 
 	int bugReporterType = PRINTING_REPORTER;
