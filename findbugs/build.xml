@@ -264,6 +264,7 @@
       <findbugs home="." reportLevel="low"
                 output="text" outputFile="${test.dir}/dumb.bugs">
         <class location="${test.dir}/dumb.jar"/>
+        <systemProperty name="findbugs.assertionmethods" value="UserAss3rtion.makeSureItIsOK"/>
       </findbugs>
     </target>
 
