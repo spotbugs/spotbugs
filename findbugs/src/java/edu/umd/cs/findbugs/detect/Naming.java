@@ -177,9 +177,18 @@ public class Naming extends PreorderVisitor implements Detector, Constants2 {
 	}
 
     public void visit(Method obj) {
+	if (getMethodName().length() == 1) return;
+
+	if (getMethodName().equals(baseClassName)) {
+		bugReporter.reportBug(new BugInstance("NM_CONFUSING_METHOD_NAME", 
+				(getMethodSig().endsWith("V") &&  !obj.isNative() )
+					? HIGH_PRIORITY : NORMAL_PRIORITY)
+			.addClassAndMethod(this));
+		return;
+		}
+
 	if (obj.isAbstract()) return;
 	if (obj.isPrivate()) return;
-	if (getMethodName().length() == 1) return;
 
 	if (getMethodName().equals("equal") && getMethodSig().equals("(Ljava/lang/Object;)Z"))  {
 		bugReporter.reportBug(new BugInstance("NM_BAD_EQUAL", HIGH_PRIORITY)
@@ -198,11 +207,6 @@ public class Naming extends PreorderVisitor implements Detector, Constants2 {
 		}
 
 
-	if (getMethodName().equals(baseClassName)) {
-		bugReporter.reportBug(new BugInstance("NM_CONFUSING_METHOD_NAME", HIGH_PRIORITY)
-			.addClassAndMethod(this));
-		return;
-		}
 
 	if (obj.isPrivate()
 			|| obj.isStatic()
