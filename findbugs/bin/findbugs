@@ -28,7 +28,8 @@ if [ `expr $command : '\/'` -ne 1 ]; then
 fi
 
 # Extract findbugs_home
-findbugs_home=`echo $command | sed -e 's/\(.*\)\/bin\/findbugs$/\1/'`
+# Thanks to Peter D. Stout for making this more robust.
+findbugs_home=`echo $command | sed -e 's/\(.*\)\/bin\(\/.\)\{0,1\}\/findbugs$/\1/'`
 if [ ! -d "$findbugs_home" ]; then
 	echo "The path $findbugs_home,"
 	echo "which is where I think FindBugs is located,"
@@ -71,7 +72,12 @@ while [ $# -gt 0 ]; do
 	esac
 done
 
+os=`uname`
+if [ `expr "$os" : CYGWIN` -ne 0 ]; then
+    findbugs_home=`cygpath --mixed "$findbugs_home"`
+fi
+
 # Launch FindBugs!
-java $jvmArgs -Dfindbugs.home=$findbugs_home -jar $findbugs_home/lib/$appJar $argList
+java $jvmArgs "-Dfindbugs.home=$findbugs_home" -jar "$findbugs_home/lib/$appJar" $argList
 
 # vim:ts=4
