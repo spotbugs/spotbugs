@@ -372,8 +372,9 @@ public class BugInstance implements Comparable, XMLWriteable {
 	 * 
 	 * @param name  name of the property to set
 	 * @param value the value of the property
+	 * @return this object, so calls can be chained
 	 */
-	public void setProperty(String name, String value) {
+	public BugInstance setProperty(String name, String value) {
 		BugProperty prop = lookupProperty(name);
 		if (prop != null) {
 			prop.setValue(value);
@@ -381,6 +382,7 @@ public class BugInstance implements Comparable, XMLWriteable {
 			prop = new BugProperty(name, value);
 			addProperty(prop);
 		}
+		return this;
 	}
 	
 	/**
