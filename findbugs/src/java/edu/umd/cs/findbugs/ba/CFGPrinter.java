@@ -31,7 +31,7 @@ import org.apache.bcel.generic.*;
  * Print out a representation of a control-flow graph.
  * For debugging.
  * @see CFG
- * @see BasicCFGBuilder
+ * @see CFGBuilder
  */
 public class CFGPrinter {
     private CFG cfg;
@@ -44,7 +44,7 @@ public class CFGPrinter {
 	Iterator<BasicBlock> i = cfg.blockIterator();
 	while (i.hasNext()) {
 	    BasicBlock bb = i.next();
-	    out.println("BASIC BLOCK: " + bb.getId() + blockStartAnnotate(bb));
+	    out.println("BASIC BLOCK: " + bb.getId() + (bb.isExceptionThrower() ? " [EXCEPTION THROWER]" : "") + blockStartAnnotate(bb));
 	    CodeExceptionGen exceptionGen = bb.getExceptionGen();
 	    if (exceptionGen != null) {
 		System.out.println("    CATCHES " + exceptionGen.getCatchType());
@@ -100,13 +100,15 @@ public class CFGPrinter {
 		    continue;
 		MethodGen methodGen = new MethodGen(method, cls.getClassName(), cp);
 
-		BasicCFGBuilder builder = new BasicCFGBuilder(methodGen);
+		CFGBuilder builder = CFGBuilderFactory.create(methodGen);
 		builder.setMode(Integer.getInteger("cfg.mode", CFGBuilderModes.NORMAL_MODE).intValue());
 		builder.build();
 
 		System.out.println("---------------------------------------------------");
 		System.out.println("Method " + method.getName());
-		CFGPrinter printer = new CFGPrinter(builder.getCFG());
+		CFG cfg = builder.getCFG();
+		cfg.assignEdgeIds(0);
+		CFGPrinter printer = new CFGPrinter(cfg);
 		printer.print(System.out);
 	    }
 	} catch (Exception e) {
