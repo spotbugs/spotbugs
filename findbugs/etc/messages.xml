@@ -1072,6 +1072,14 @@ using r.nextInt(n) Rather than using (int)(r.nextDouble() * n).
     </Details>
   </BugPattern>  
   
+  <BugPattern type="DM_SQL_STATEMENT_EXECUTE">
+    <ShortDescription>Someone needs to fill in</ShortDescription>
+    <LongDescription>Someone needs to fill in</LongDescription>
+    <Details>
+<![CDATA[Someone needs to fill in]]>
+    </Details>
+  </BugPattern>
+  
   <BugPattern type="DC_DOUBLECHECK">
     <ShortDescription>Possible double check of field</ShortDescription>
     <LongDescription>Possible doublecheck on {2} in {1}</LongDescription>
