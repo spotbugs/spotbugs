@@ -39,7 +39,7 @@ import org.apache.bcel.util.Repository;
  * <ol>
  * <li> Classpath elements may be added at any time, not
  *      just when the object is created.
- * <li> Classpath elements can't be URLs.  This allows repository
+ * <li> Classpath elements can be URLs.  This allows repository
  *      lookups to find classes via http URLs, jar URLs, etc.
  * </ol>
  * FindBugs requires and uses both of these capabilities.
