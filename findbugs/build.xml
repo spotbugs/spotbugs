@@ -1,0 +1,158 @@
+<!--
+  Ant build script for FindBugs
+  Contributed by Mike Fagan <mfagan@tde.com>
+  Minor changes by David Hovemeyer <daveho@cs.umd.edu>
+-->
+
+<project name="find-bugs" default="release">
+
+    <!--
+       Set this to the location where you installed the generics-enabled
+       version of javac.
+     -->
+    <property name="jsr14.home" value="/export/home/daveho/linux/java/jsr14_adding_generics-1_3-ea"/>
+
+    <!-- You should not need to change anything beyond this point. -->
+
+    <property name="findbugs.dir" value="../findbugs" />
+    <property name="findbugs.src.dir" value="${findbugs.dir}/src" />
+    <property name="findbugs.jar.name" value="findbugs.jar" />
+    <property name="findbugsgui.dir" value="." />
+    <property name="findbugsgui.src.dir" value="${findbugsgui.dir}/src" />
+    <property name="findbugsgui.jar.name" value="findbugsGUI.jar" />
+    <property name="doc.dir" value="${findbugsgui.dir}/doc" />
+    <property name="web.dir" value="${findbugsgui.dir}/web" />
+    <property name="build.dir" value="${findbugsgui.dir}/build" />
+    <property name="jar.dir" value="${build.dir}/lib" />
+    <property name="class.dir" value="${build.dir}/classes" />
+    <property name="release.dir" value="${build.dir}/release" />
+    <property name="release.prop.file" value="release.properties" />
+
+    <!-- define our classpath as all the jar files in the lib dir -->
+     <path id="classpath">
+      <fileset dir="lib">
+        <include name="*.jar"/>
+      </fileset>
+    </path>
+
+    <target name="clean" depends="init">
+      <delete dir="${build.dir}"/>
+      <delete dir="${web.dir}"/>
+      <delete dir="${release.dir}"/>
+      <delete file="${release.prop.file}"/>
+    </target>
+
+    <target name="init" >
+      <mkdir dir="${jar.dir}" />
+      <mkdir dir="${class.dir}" />
+      <mkdir dir="${release.dir}" />
+      <mkdir dir="${web.dir}" />
+      <mkdir dir="${build.dir}" />
+    </target>
+
+
+    <!-- target to build the main engine -->
+    <target name="findbugs" depends="init">
+      <javac srcdir="${findbugs.src.dir}" destdir="${class.dir}"
+             source="1.5"
+             compiler="com.cortexeb.Jsr14CompilerAdapter">
+        <classpath refid="classpath" />
+      </javac>
+
+      <copy todir="${class.dir}">
+        <fileset dir="${findbugs.src.dir}" includes="**/*.properties"/>
+      </copy>
+
+      <copy todir="${jar.dir}">
+        <fileset dir="lib" includes="*.jar"/>
+      </copy>
+
+      <uptodate property="findbugs.jarBuild.notRequired" 
+                targetfile="${jar.dir}/${findbugs.jar.name}" >
+         <srcfiles dir="${class.dir}" />
+      </uptodate>
+
+      <jar destfile="${jar.dir}/${findbugs.jar.name}"
+           basedir="${class.dir}" manifest="${findbugs.dir}/etc/MANIFEST.MF" />
+    </target>
+
+
+    <!-- target to build the GUI -->
+    <target name="findbugsgui" depends="init,findbugs">
+      <!--
+         The FindBugs GUI is developed using NetBeans (http://www.netbeans.org/).
+         Because NetBeans doesn't support generics yet, the GUI is written in
+         plain Java.  So, just use a standard Java compiler to compile it,
+         to avoid seeing all of the unchecked warnings.
+
+         We don't need to set an explicit classpath here
+         because the class files from the findbugs target are available
+         in ${class.dir}.
+      -->
+      <javac srcdir="${findbugsgui.src.dir}" destdir="${class.dir}">
+        <classpath refid="classpath" />
+      </javac>
+
+      <copy todir="${class.dir}">
+        <fileset dir="${findbugsgui.src.dir}" includes="**/*.png"/>
+        <fileset dir="${findbugsgui.src.dir}" includes="**/*.html"/>
+      </copy>
+
+      <uptodate property="findbugsgui.jarBuild.notRequired" 
+                targetfile="${jar.dir}/${findbugsgui.jar.name}" >
+         <srcfiles dir="${class.dir}" />
+      </uptodate>
+
+      <jar destfile="${jar.dir}/${findbugsgui.jar.name}"
+           basedir="${class.dir}" 
+           manifest="${findbugsgui.dir}/etc/MANIFEST.MF" />
+    </target>
+
+    <!-- target to get the release version info -->
+    <target name="version" depends="findbugs">
+      <java classname="edu.umd.cs.findbugs.Version" 
+             failonerror="true" output="${release.prop.file}">
+         <classpath>
+           <pathelement location="${jar.dir}/${findbugs.jar.name}"/>
+         </classpath>
+         <arg value="-props"/> 
+      </java>
+      <loadproperties srcFile="${release.prop.file}" />
+    </target>
+
+    <!-- target to build the docs -->
+    <target name="docs" depends="version">
+       <copy todir="${release.dir}/findbugs-${release.number}/doc">
+         <fileset dir="${doc.dir}" includes="**/*.png"/>
+       </copy>
+       <copy todir="${release.dir}/findbugs-${release.number}/doc">
+         <fileset dir="${doc.dir}" excludes="**/*.png"/>
+         <filterset>
+            <filter token="VERSION" value="${release.number}" />
+            <filter token="RELEASE_DATE" value="${release.date}" />
+        </filterset>  
+       </copy>
+    </target>
+
+    <!-- target to build the web pages -->
+    <target name="web" depends="docs">
+       <copy todir="${web.dir}">
+         <fileset dir="${release.dir}/findbugs-${release.number}/doc">
+            <include name="*.png"/>
+            <include name="*.html"/>
+         </fileset>
+       </copy>
+
+       <chmod dir="${web.dir}" perm="a+r" includes="*"/>
+    </target>
+
+    <!-- target to build the release -->
+    <target name="release" depends="findbugs,findbugsgui,docs,web">
+       <copy todir="${release.dir}/findbugs-${release.number}/lib">
+         <fileset dir="${jar.dir}" includes="**/*.jar"/>
+       </copy>
+    </target>
+
+    
+</project>
+
