@@ -41,6 +41,8 @@ import org.apache.bcel.generic.MethodGen;
  * @see BugAnnotation
  */
 public class SourceLineAnnotation implements BugAnnotation {
+	private static final long serialVersionUID = 1L;
+
 	private static final String DEFAULT_ROLE = "SOURCE_LINE_DEFAULT";
 
 	/**

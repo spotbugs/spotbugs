@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs;
 import java.util.*;
 
 import java.io.IOException;
+import java.io.Serializable;
 
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.bcp.FieldVariable;
@@ -65,7 +66,9 @@ import org.apache.bcel.generic.MethodGen;
  * @author David Hovemeyer
  * @see BugAnnotation
  */
-public class BugInstance implements Comparable, XMLWriteable {
+public class BugInstance implements Comparable, XMLWriteable, Serializable {
+	private static final long serialVersionUID = 1L;
+	
 	private String type;
 	private int priority;
 	private ArrayList<BugAnnotation> annotationList;

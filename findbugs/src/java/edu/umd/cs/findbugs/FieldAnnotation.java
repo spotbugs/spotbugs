@@ -38,6 +38,8 @@ import org.apache.bcel.generic.*;
  * @see BugAnnotation
  */
 public class FieldAnnotation extends PackageMemberAnnotation {
+	private static final long serialVersionUID = 1L;
+
 	private static final String DEFAULT_ROLE = "FIELD_DEFAULT";
 
 	private String fieldName;

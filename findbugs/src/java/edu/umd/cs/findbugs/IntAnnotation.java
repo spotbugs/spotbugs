@@ -31,6 +31,8 @@ import java.io.IOException;
  * @see BugAnnotation
  */
 public class IntAnnotation implements BugAnnotation {
+	private static final long serialVersionUID = 1L;
+
 	private static final String DEFAULT_ROLE = "INT_DEFAULT";
 
 	private int value;

@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs;
 
+import java.io.Serializable;
+
 import edu.umd.cs.findbugs.xml.XMLWriteable;
 
 /**
@@ -27,7 +29,7 @@ import edu.umd.cs.findbugs.xml.XMLWriteable;
  * @author David Hovemeyer
  * @see BugInstance
  */
-public interface BugAnnotation extends Comparable<BugAnnotation>, XMLWriteable {
+public interface BugAnnotation extends Comparable<BugAnnotation>, XMLWriteable, Serializable {
 	/**
 	 * Accept a BugAnnotationVisitor.
 	 *

@@ -32,6 +32,8 @@ import java.io.IOException;
  * @see BugInstance
  */
 public class ClassAnnotation extends PackageMemberAnnotation {
+	private static final long serialVersionUID = 1L;
+
 	private static final String DEFAULT_ROLE = "CLASS_DEFAULT";
 
 	/**

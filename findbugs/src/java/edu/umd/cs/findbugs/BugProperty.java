@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs;
 
 import java.io.IOException;
+import java.io.Serializable;
 
 import edu.umd.cs.findbugs.xml.XMLAttributeList;
 import edu.umd.cs.findbugs.xml.XMLOutput;
@@ -32,9 +33,11 @@ import edu.umd.cs.findbugs.xml.XMLWriteable;
  * 
  * @author David Hovemeyer
  */
-public class BugProperty implements XMLWriteable {
+public class BugProperty implements XMLWriteable, Serializable {
+	private static final long serialVersionUID = 1L;
+
 	// Constants defining some standard bug properties
-	
+
 	/** Boolean property defining whether or not the BugInstance is reall a bug. */
 	public static final String IS_BUG = "isBug";
 	
