@@ -20,14 +20,10 @@
 package edu.umd.cs.findbugs.tools.html;
 
 import edu.umd.cs.findbugs.BugPattern;
-import edu.umd.cs.findbugs.DetectorFactoryCollection;
-import edu.umd.cs.findbugs.I18N;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
-
-import java.util.Iterator;
 
 public class PlainPrintBugDescriptions extends PrintBugDescriptions {
 	private String docTitle;
@@ -38,18 +34,22 @@ public class PlainPrintBugDescriptions extends PrintBugDescriptions {
 		this.out = new PrintStream(out);
 	}
 
-	protected void prologue() {
+	protected String getDocTitle() { return docTitle; }
+
+	protected PrintStream getPrintStream() { return out; }
+
+	protected void prologue() throws IOException {
 		out.println("<html><head><title>" + docTitle + "</title></head><body>");
 		out.println("<h1>" + docTitle + "</h1>");
 	}
 
-	protected void emit(BugPattern bugPattern) {
+	protected void emit(BugPattern bugPattern) throws IOException {
 		out.println("<h2>" + bugPattern.getAbbrev() + ": " +
 			bugPattern.getShortDescription() + "</h2>");
 		out.println(bugPattern.getDetailText());
 	}
 
-	protected void epilogue() {
+	protected void epilogue() throws IOException {
 		out.println("</body></html>");
 	}
 
