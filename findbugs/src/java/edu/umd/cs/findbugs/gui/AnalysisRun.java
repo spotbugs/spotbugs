@@ -33,12 +33,14 @@ public class AnalysisRun {
     private Project project;
     private FindBugs findBugs;
     private Reporter reporter;
+    private int runNumber;
     
     /** Creates a new instance of AnalysisRun. */
     public AnalysisRun(Project project) {
         this.project = project;
         reporter = new Reporter();
         findBugs = new FindBugs(reporter);
+	runNumber = project.getNextAnalysisRun();
     }
     
     /**
@@ -58,6 +60,10 @@ public class AnalysisRun {
         
         // Run the analysis!
         findBugs.execute(project.getJarFileArray());
+    }
+    
+    public String toString() {
+	return "Run " + runNumber;
     }
     
 }
