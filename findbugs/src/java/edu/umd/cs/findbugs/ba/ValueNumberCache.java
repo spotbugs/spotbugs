@@ -31,6 +31,8 @@ import org.apache.bcel.generic.Instruction;
  * @author David Hovemeyer
  */
 public class ValueNumberCache {
+	private static final boolean DEBUG = Boolean.getBoolean("vn.debug");
+
 	/**
 	 * An entry in the cache.
 	 * It represents an instruction with specific input values.
@@ -73,6 +75,16 @@ public class ValueNumberCache {
 			}
 			return cachedHashCode;
 		}
+
+		public String toString() {
+			StringBuffer buf = new StringBuffer();
+			buf.append(instruction.toString());
+			for (int i = 0; i < inputValueList.length; ++i) {
+				buf.append(", ");
+				buf.append(inputValueList[i].toString());
+			}
+			return buf.toString();
+		}
 	}
 
 	/** Map of entries to output values. */
@@ -85,7 +97,10 @@ public class ValueNumberCache {
 	 *   in the cache
 	 */
 	public ValueNumber[] lookupOutputValues(Entry entry) {
-		return entryToOutputMap.get(entry);
+		if (DEBUG) System.out.println("VN cache lookup: " + entry);
+		ValueNumber[] result = entryToOutputMap.get(entry);
+		if (DEBUG) System.out.println("   result ==> " + result);
+		return result;
 	}
 
 	/**
