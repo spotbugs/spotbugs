@@ -86,11 +86,11 @@ public class FindCircularDependencies extends BytecodeScanningDetector implement
 			boolean changed = true;
 			while (changed) {
 				changed = false;
-				Iterator it = dependencyGraph.entrySet().iterator();
+				Iterator<Map.Entry<String, Set<String>>> it = dependencyGraph.entrySet().iterator();
 				while (it.hasNext()) {
-					Map.Entry entry = (Map.Entry)it.next();
-					String clsName = (String)entry.getKey();
-					Set<String> dependencies = (Set<String>)entry.getValue();
+					Map.Entry<String, Set<String>> entry = it.next();
+					String clsName = entry.getKey();
+					Set<String> dependencies = entry.getValue();
 					
 					boolean foundClass = false;
 					Iterator dit = dependencies.iterator();
@@ -108,11 +108,11 @@ public class FindCircularDependencies extends BytecodeScanningDetector implement
 		}
 		
 		{	//Remove references that are not roots
-			Iterator it = dependencyGraph.entrySet().iterator();
+			Iterator<Map.Entry<String, Set<String>>> it = dependencyGraph.entrySet().iterator();
 			while (it.hasNext()) {
-				Map.Entry entry = (Map.Entry)it.next();
-				String clsName = (String)entry.getKey();
-				Set<String> dependencies = (Set<String>)entry.getValue();
+				Map.Entry<String, Set<String>> entry = it.next();
+				String clsName = entry.getKey();
+				Set<String> dependencies = entry.getValue();
 				Iterator dit = dependencies.iterator();
 				while (dit.hasNext()) {
 					if (!dependencyGraph.containsKey(dit.next()))
@@ -122,15 +122,15 @@ public class FindCircularDependencies extends BytecodeScanningDetector implement
 		}
 		
 		Set<String> alreadyReported = new HashSet<String>();
-		Iterator it = dependencyGraph.entrySet().iterator();
+		Iterator<Map.Entry<String, Set<String>>> it = dependencyGraph.entrySet().iterator();
 		while (it.hasNext()) {
-			Map.Entry entry = (Map.Entry)it.next();
-			String clsName = (String)entry.getKey();
+			Map.Entry<String, Set<String>> entry = it.next();
+			String clsName = entry.getKey();
 			if (alreadyReported.contains(clsName))
 				continue;
 			
 			alreadyReported.add(clsName);
-			Set<String> dependencies = (Set<String>)entry.getValue();
+			Set<String> dependencies = entry.getValue();
 			
 			BugInstance bug = new BugInstance(
 					this,
