@@ -30,15 +30,12 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 	}
 
 	/**
-	 * Constructor.
-	 * The method annotation is initialized using the method the given
-	 * visitor is currently visiting.
-	 * @param visitor the BetterVisitor
+	 * Factory method to create a MethodAnnotation from the method the
+	 * given visitor is currently visiting.
+	 * @param visitor the BetterVisitor currently visiting the method
 	 */
-	public MethodAnnotation(BetterVisitor visitor) {
-		super(visitor.getBetterClassName(), "METHOD_DEFAULT");
-		this.methodName = visitor.getMethodName();
-		this.methodSig = visitor.getMethodSig();
+	public static MethodAnnotation fromVisitedMethod(BetterVisitor visitor) {
+		return new MethodAnnotation(visitor.getBetterClassName(), visitor.getMethodName(), visitor.getMethodSig());
 	}
 
 	/** Get the method name. */
