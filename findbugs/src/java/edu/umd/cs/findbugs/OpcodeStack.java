@@ -46,7 +46,15 @@ import edu.umd.cs.findbugs.visitclass.LVTHelper;
  * each method, and call <p>stack.sawOpcode(this,seen);</p> at the bottom of their sawOpcode method.
  * at any point you can then inspect the stack and see what the types of objects are on
  * the stack, including constant values if they were pushed. The types described are of
- * course, only the static types. This class is far, far from being done.
+ * course, only the static types. 
+ * There are some outstanding opcodes that have yet to be implemented, I couldn't
+ * find any code that actually generated these, so i didn't put them in because
+ * I couldn't test them:
+ * <ul>
+ *   <li>dup2_x2</li>
+ * 	 <li>jsr_w</li>
+ *   <li>wide</li>
+ * </ul>  
  */
 public class OpcodeStack implements Constants2
 {
