@@ -34,7 +34,7 @@ public abstract class ResourceValueFrameModelingVisitor extends AbstractFrameMod
 	 * Subclasses must override this to model the effect of the
 	 * given instruction on the current frame.
 	 */
-	public abstract void transferInstruction(InstructionHandle handle, BasicBlock basicBlock);
+	public abstract void transferInstruction(InstructionHandle handle, BasicBlock basicBlock) throws DataflowAnalysisException;
 
 	// Things to do:
 	// Automatically detect when resource instances escape:
