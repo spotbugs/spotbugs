@@ -177,6 +177,34 @@ public class Plugin {
 	public void addIntraPassOrderingConstraint(DetectorOrderingConstraint constraint) {
 		intraPassConstraintList.add(constraint);
 	}
+
+	/**
+	 * Look up a DetectorFactory by short name.
+	 *
+	 * @param shortName the short name
+	 * @return the DetectorFactory
+	 */
+	public DetectorFactory getFactoryByShortName(final String shortName) {
+		return chooseFactory(new FactoryChooser() {
+			public boolean choose(DetectorFactory factory) {
+				return factory.getShortName().equals(shortName);
+			}
+		});
+	}
+
+	/**
+	 * Look up a DetectorFactory by full name.
+	 *
+	 * @param longName the full name
+	 * @return the DetectorFactory
+	 */
+	public DetectorFactory getFactoryByFullName(final String fullName) {
+		return chooseFactory(new FactoryChooser() {
+			public boolean choose(DetectorFactory factory) {
+				return factory.getFullName().equals(fullName);
+			}
+		});
+	}
 	
 	/**
 	 * Get Iterator over DetectorFactory objects in the Plugin.
@@ -218,12 +246,25 @@ public class Plugin {
 	public Iterator<DetectorOrderingConstraint> intraPassConstraintIterator() {
 		return intraPassConstraintList.iterator();
 	}
-	
+
 	/**
 	 * @return Returns the pluginId.
 	 */
 	public String getPluginId() {
 		return pluginId;
+	}
+
+	private interface FactoryChooser {
+		public boolean choose(DetectorFactory factory);
+	}
+
+	private DetectorFactory chooseFactory(FactoryChooser chooser) {
+		for (Iterator<DetectorFactory> i = detectorFactoryIterator(); i.hasNext(); ) {
+			DetectorFactory factory = i.next();
+			if (chooser.choose(factory))
+				return factory;
+		}
+		return null;
 	}
 }
 
