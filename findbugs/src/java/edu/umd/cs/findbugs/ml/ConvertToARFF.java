@@ -19,10 +19,13 @@
 
 package edu.umd.cs.findbugs.ml;
 
+import edu.umd.cs.findbugs.CommandLine;
+
 import java.io.BufferedOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.io.PrintStream;
 import java.io.Writer;
 
 import java.util.Iterator;
@@ -255,37 +258,90 @@ public class ConvertToARFF {
 		}
 	}
 
-	public static void main(String[] argv) throws Exception {
-		if (argv.length != 3) {
-			System.err.println("Usage: " + ConvertToARFF.class.getName() +
-				" <findbugs results> <relation name> <output file>");
-			System.exit(1);
+	public void addDefaultAttributes() {
+		// This conversion scheme is arbitrary.
+		// FIXME: method and field signatures?
+		addNominalAttribute("bugtype", "@type");
+		addNominalAttribute("class", "./Class[1]/@classname");
+		addNominalAttribute("methodname", "./Method[1]/@name");
+		addNominalAttribute("auxmethodclass", "./Method[2]/@classname");
+		addNominalAttribute("auxmethodname", "./Method[2]/@name");
+		addNominalAttribute("fieldclass", "./Field[1]/@classname");
+		addNominalAttribute("fieldname", "./Field[1]/@name");
+		addNumericAttribute("priority", "@priority");
+		addClassificationAttribute();
+	}
+
+	private static class C2ACommandLine extends CommandLine {
+		private ConvertToARFF converter = new ConvertToARFF();
+
+		public C2ACommandLine() {
+			addSwitch("-default", "add default attributes");
+			addOption("-nominal", "attrName,xpath", "add a nominal attribute");
+			addOption("-numeric", "attrName,xpath", "add a numeric attribute");
+			addSwitch("-classification", "add bug classification attribute");
 		}
 
-		String fileName = argv[0];
-		String relationName = argv[1];
-		String outputFileName = argv[2];
+		public ConvertToARFF getConverter() {
+			return converter;
+		}
 
+		protected void handleOption(String option, String optionExtraPart)
+				throws IOException {
+			if (option.equals("-default")) {
+				converter.addDefaultAttributes();
+			} else if (option.equals("-classification")) {
+				converter.addClassificationAttribute();
+			}
+		}
+
+		protected void handleOptionWithArgument(String option, String argument)
+				throws IOException {
+			if (option.equals("-nominal") || option.equals("-numeric")) {
+				int comma = argument.indexOf(',');
+				if (comma < 0) {
+					throw new IllegalArgumentException("Missing comma separating attribute name and xpath in " +
+						option + " option: " + argument);
+				}
+				String attrName = argument.substring(0, comma);
+				String xpath = argument.substring(comma + 1);
+				converter.addAttribute(option.equals("-nominal")
+					? new NominalAttribute(attrName, xpath)
+					: new NumericAttribute(attrName, xpath));
+			}
+		}
+
+		public void printUsage(PrintStream out) {
+			out.println("Usage: " + ConvertToARFF.class.getName() +
+				" [options] <findbugs results> <relation name> <output file>");
+			super.printUsage(out);
+		}
+	}
+
+	public static void main(String[] argv) throws Exception {
+		// Parse command line arguments
+		C2ACommandLine commandLine = new C2ACommandLine();
+		int argCount = commandLine.parse(argv);
+		if (argCount != argv.length - 3) {
+			commandLine.printUsage(System.err);
+			System.exit(1);
+		}
+		String fileName = argv[argCount++];
+		String relationName = argv[argCount++];
+		String outputFileName = argv[argCount++];
+
+		// Create the converter
+		ConvertToARFF converter = commandLine.getConverter();
+
+		// Read input file as dom4j tree
 		SAXReader reader = new SAXReader();
 		Document document = reader.read(fileName);
 
-		ConvertToARFF converter = new ConvertToARFF();
-
-		// FIXME: this conversion scheme is arbitrary
-		// FIXME: method and field signatures?
-		converter.addNominalAttribute("bugtype", "@type");
-		converter.addNominalAttribute("class", "./Class[1]/@classname");
-		converter.addNominalAttribute("methodname", "./Method[1]/@name");
-		converter.addNominalAttribute("auxmethodclass", "./Method[2]/@classname");
-		converter.addNominalAttribute("auxmethodname", "./Method[2]/@name");
-		converter.addNominalAttribute("fieldclass", "./Field[1]/@classname");
-		converter.addNominalAttribute("fieldname", "./Field[1]/@name");
-		converter.addNumericAttribute("priority", "@priority");
-		converter.addClassificationAttribute();
-
+		// Open output file
 		Writer out = new OutputStreamWriter(new BufferedOutputStream(
 			new FileOutputStream(outputFileName)));
 
+		// Convert input XML to output
 		converter.convert(relationName, document, out);
 		out.close();
 	}
