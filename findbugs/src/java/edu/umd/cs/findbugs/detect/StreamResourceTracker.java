@@ -30,9 +30,11 @@ import edu.umd.cs.findbugs.ba.ResourceValue;
 import edu.umd.cs.findbugs.ba.ResourceValueFrame;
 import edu.umd.cs.findbugs.ba.ResourceValueFrameModelingVisitor;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeSet;
 
 import org.apache.bcel.Constants;
@@ -53,24 +55,36 @@ import org.apache.bcel.generic.TypedInstruction;
 /**
  * Resource tracker which determines where streams are created,
  * and how they are used within the method.
+ * @author David Hovemeyer
  */
 public class StreamResourceTracker implements ResourceTracker<Stream> {
 	private StreamFactory[] streamFactoryList;
 	private RepositoryLookupFailureCallback lookupFailureCallback;
-	//private Map<Location, Stream> locationToResourceMap;
 	private ResourceCollection<Stream> resourceCollection;
 
 	/**
-	 * Set of all locations where any stream is opened in the
-	 * analyzed method.
+	 * Map of locations where streams are opened to the actual
+	 * Stream objects.
 	 */
-	private HashSet<Location> streamOpenLocationSet;
+	private Map<Location, Stream> streamOpenLocationMap;
 
 	/** Set of all open locations and escapes of uninteresting streams. */
-	private HashSet<Location> uninterestingStreamEscapeSet;
+	//private HashSet<Location> uninterestingStreamEscapeSet;
+	private HashSet<Stream> uninterestingStreamEscapeSet;
 
 	/** Set of all (potential) stream escapes. */
 	private TreeSet<StreamEscape> streamEscapeSet;
+
+//	FIXME: this isn't quite ready yet
+//	/**
+//	 * Map of individual streams to equivalence classes.
+//	 * Any time a stream "A" is wrapped with a stream "B",
+//	 * "A" and "B" belong to the same equivalence class.
+//	 * If any stream in an equivalence class is closed,
+//	 * then we consider all of the streams in the equivalence
+//	 * class as having been closed.
+//	 */
+//	private Map<Stream, Set<Stream>> streamEquivalenceMap;
 
 	/**
 	 * Constructor.
@@ -83,9 +97,11 @@ public class StreamResourceTracker implements ResourceTracker<Stream> {
 
 		this.streamFactoryList = streamFactoryList;
 		this.lookupFailureCallback = lookupFailureCallback;
-		this.streamOpenLocationSet = new HashSet<Location>();
-		this.uninterestingStreamEscapeSet = new HashSet<Location>();
+		this.streamOpenLocationMap = new HashMap<Location, Stream>();
+		this.uninterestingStreamEscapeSet = new HashSet<Stream>();
 		this.streamEscapeSet = new TreeSet<StreamEscape>();
+//		FIXME: not ready yet
+//		this.streamEquivalenceMap = new HashMap<Stream, Set<Stream>>();
 	}
 
 	/**
@@ -96,12 +112,11 @@ public class StreamResourceTracker implements ResourceTracker<Stream> {
 	}
 
 	/**
-	 * Indicate that a stream created at given source Location
-	 * escapes at the given target Location.
-	 * @param source the source Location (where the escaping stream is opened)
+	 * Indicate that a stream escapes at the given target Location.
+	 * @param source the Stream that is escaping
 	 * @param target the target Location (where the stream escapes)
 	 */
-	public void addStreamEscape(Location source, Location target) {
+	public void addStreamEscape(Stream source, Location target) {
 		StreamEscape streamEscape = new StreamEscape(source, target);
 		streamEscapeSet.add(streamEscape);
 		if (FindOpenStream.DEBUG)
@@ -129,7 +144,7 @@ public class StreamResourceTracker implements ResourceTracker<Stream> {
 		// Starting with the set of uninteresting stream open location points,
 		// propagate all uninteresting stream escapes.  Iterate until there
 		// is no change.
-		HashSet<Location> orig = new HashSet<Location>();
+		HashSet<Stream> orig = new HashSet<Stream>();
 		do {
 			orig.clear();
 			orig.addAll(uninterestingStreamEscapeSet);
@@ -139,7 +154,10 @@ public class StreamResourceTracker implements ResourceTracker<Stream> {
 				if (isUninterestingStreamEscape(streamEscape.source)) {
 					if (FindOpenStream.DEBUG)
 						System.out.println("Propagating stream escape " + streamEscape);
-					uninterestingStreamEscapeSet.add(streamEscape.target);
+					Stream target = streamOpenLocationMap.get(streamEscape.target);
+					if (target == null)
+						throw new IllegalStateException();
+					uninterestingStreamEscapeSet.add(target);
 				}
 			}
 		} while (!orig.equals(uninterestingStreamEscapeSet));
@@ -151,23 +169,21 @@ public class StreamResourceTracker implements ResourceTracker<Stream> {
 	 * @param location the Location
 	 * @return true if an uninteresting stream escapes at the location
 	 */
-	public boolean isUninterestingStreamEscape(Location location) {
-		return uninterestingStreamEscapeSet.contains(location);
+	public boolean isUninterestingStreamEscape(Stream stream) {
+		return uninterestingStreamEscapeSet.contains(stream);
 	}
 
 	/**
 	 * Indicate that a stream is constructed at this Location.
 	 * @param streamOpenLocation the Location
-	 * @param isUninteresting true if the stream is "uninteresting", like System.out;
-	 *   this defines the root set of uninteresting streams that
-	 *   markTransitiveUninterestingStreamEscapes() will build upon
+	 * @param stream the Stream opened at this Location
 	 */
-	public void addStreamOpenLocation(Location streamOpenLocation, boolean isUninteresting) {
+	public void addStreamOpenLocation(Location streamOpenLocation, Stream stream) {
 		if (FindOpenStream.DEBUG)
 			System.out.println("Stream open location at " + streamOpenLocation);
-		streamOpenLocationSet.add(streamOpenLocation);
-		if (isUninteresting)
-			uninterestingStreamEscapeSet.add(streamOpenLocation);
+		streamOpenLocationMap.put(streamOpenLocation, stream);
+		if (stream.isUninteresting())
+			uninterestingStreamEscapeSet.add(stream);
 	}
 
 	/**
@@ -175,7 +191,7 @@ public class StreamResourceTracker implements ResourceTracker<Stream> {
 	 * @param location the Location
 	 */
 	private boolean isStreamOpenLocation(Location location) {
-		return streamOpenLocationSet.contains(location);
+		return streamOpenLocationMap.get(location) != null;
 	}
 
 	public Stream isResourceCreation(BasicBlock basicBlock, InstructionHandle handle,

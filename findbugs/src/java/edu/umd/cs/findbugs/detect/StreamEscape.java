@@ -24,19 +24,20 @@ import edu.umd.cs.findbugs.ba.Location;
 /**
  * A StreamEscape is an object representing the escape of a Stream
  * to a called method.
- * The "source" is the Location where the stream is opened.
+ * The "source" is the Stream which is escaping.
  * The "target" is the Location where the stream instance escapes.
  */
 public class StreamEscape implements Comparable<StreamEscape> {
-	public final Location source;
+	public final Stream source;
 	public final Location target;
 
 	/**
 	 * Constructor.
 	 * @param source Location where stream is opened
-	 * @param target Location where stream escapes
+	 * @param target Location where stream escapes by being
+	 *   passed to a method
 	 */
-	public StreamEscape(Location source, Location target) {
+	public StreamEscape(Stream source, Location target) {
 		this.source = source;
 		this.target = target;
 	}

@@ -309,7 +309,7 @@ public class FindOpenStream extends ResourceTrackingDetector<Stream, StreamResou
 				continue;
 
 			if (IGNORE_WRAPPED_UNINTERESTING_STREAMS
-				&& resourceTracker.isUninterestingStreamEscape(openLocation))
+				&& resourceTracker.isUninterestingStreamEscape(stream))
 				continue;
 
 			String sourceFile = javaClass.getSourceFileName();

@@ -66,7 +66,7 @@ public class StreamFrameModelingVisitor extends ResourceValueFrameModelingVisito
 			if (stream.isOpenOnCreation()) {
 				status = ResourceValueFrame.OPEN;
 				stream.setOpenLocation(location);
-				resourceTracker.addStreamOpenLocation(location, stream.isUninteresting());
+				resourceTracker.addStreamOpenLocation(location, stream);
 			} else {
 				status = ResourceValueFrame.CREATED;
 			}
@@ -75,7 +75,7 @@ public class StreamFrameModelingVisitor extends ResourceValueFrameModelingVisito
 			// Resource opened
 			status = ResourceValueFrame.OPEN;
 			stream.setOpenLocation(location);
-			resourceTracker.addStreamOpenLocation(location, stream.isUninteresting());
+			resourceTracker.addStreamOpenLocation(location, stream);
 		} else if (resourceTracker.isResourceClose(basicBlock, handle, cpg, stream, frame)) {
 			// Resource closed
 			status = ResourceValueFrame.CLOSED;
@@ -106,7 +106,7 @@ public class StreamFrameModelingVisitor extends ResourceValueFrameModelingVisito
 
 		// Record the fact that this might be a stream escape
 		if (stream.getOpenLocation() != null)
-			resourceTracker.addStreamEscape(stream.getOpenLocation(), location);
+			resourceTracker.addStreamEscape(stream, location);
 
 		return escapes;
 	}
