@@ -183,13 +183,17 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame> {
 
 	public void endTransfer(BasicBlock basicBlock, InstructionHandle end, Object result) throws DataflowAnalysisException {
 		// Figure out what exceptions can be thrown out
-		// of the basic block.  That way, we'll remember
-		// exactly what kinds of exceptions can
-		// be caught later on.
+		// of the basic block, and mark each exception edge
+		// with the set of exceptions which can be propagated
+		// along the edge.
 
 		if (basicBlock.isExceptionThrower()) {
 			try {
-				computeExceptionTypes(basicBlock, (TypeFrame) result);
+				ExceptionSet exceptionSet = computeExceptionTypes(basicBlock, (TypeFrame) result).duplicate();
+/*
+				for (Iterator<Edge> i = cfg.outgoingEdgeIterator(basicBlock); i.hasNext(); ) {
+				}
+*/
 			} catch (ClassNotFoundException e) {
 				lookupFailureCallback.reportMissingClass(e);
 				throw new DataflowAnalysisException("Could not enumerate exception types for block", e);
@@ -253,19 +257,21 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame> {
 		return cachedExceptionSet;
 	}
 
-	private void computeExceptionTypes(BasicBlock basicBlock, TypeFrame result)
+	private ExceptionSet computeExceptionTypes(BasicBlock basicBlock, TypeFrame result)
 		throws ClassNotFoundException, DataflowAnalysisException {
 
 		CachedExceptionSet cachedExceptionSet = getCachedExceptionSet(basicBlock);
-		if (cachedExceptionSet.isUpToDate(result))
-			return;
 
-		ExceptionSet exceptionSet = enumerateExceptionTypes(basicBlock);
-		TypeFrame copyOfResult = createFact();
-		copy(result, copyOfResult);
+		if (!cachedExceptionSet.isUpToDate(result)) {
+			ExceptionSet exceptionSet = enumerateExceptionTypes(basicBlock);
+			TypeFrame copyOfResult = createFact();
+			copy(result, copyOfResult);
 
-		cachedExceptionSet = new CachedExceptionSet(copyOfResult, exceptionSet);
-		exceptionSetMap.put(basicBlock, cachedExceptionSet);
+			cachedExceptionSet = new CachedExceptionSet(copyOfResult, exceptionSet);
+			exceptionSetMap.put(basicBlock, cachedExceptionSet);
+		}
+
+		return cachedExceptionSet.getExceptionSet();
 	}
 
 	private ExceptionSet enumerateExceptionTypes(BasicBlock basicBlock)
