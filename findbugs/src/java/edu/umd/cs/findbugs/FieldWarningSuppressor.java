@@ -17,6 +17,7 @@ public class FieldWarningSuppressor extends ClassWarningSuppressor {
 	FieldAnnotation bugField = bugInstance.getPrimaryField();
 	if (bugField != null &&
 		!field.equals(bugField)) return false;
+	if (DEBUG)
 	System.out.println("Suppressing " + bugInstance);
 	return true;
 	}
