@@ -77,7 +77,7 @@
             
   <Detector class="edu.umd.cs.findbugs.detect.FindHEmismatch" 
             speed="fast"
-            reports="EQ_SELF_USE_OBJECT,EQ_SELF_NO_OBJECT,CO_SELF_NO_OBJECT,HE_HASHCODE_USE_OBJECT_EQUALS,HE_HASHCODE_NO_EQUALS,HE_EQUALS_USE_HASHCODE,HE_EQUALS_NO_HASHCODE,HE_INHERITS_EQUALS_USE_HASHCODE" />
+            reports="EQ_SELF_USE_OBJECT,EQ_SELF_NO_OBJECT,CO_SELF_NO_OBJECT,HE_HASHCODE_USE_OBJECT_EQUALS,HE_HASHCODE_NO_EQUALS,HE_EQUALS_USE_HASHCODE,HE_EQUALS_NO_HASHCODE,HE_INHERITS_EQUALS_USE_HASHCODE,CO_ABSTRACT_SELF,EQ_ABSTRACT_SELF" />
 
   <Detector class="edu.umd.cs.findbugs.detect.FindNakedNotify" 
             speed="fast"
@@ -85,7 +85,7 @@
             
   <Detector class="edu.umd.cs.findbugs.detect.FindReturnRef" 
             speed="fast"
-            reports="MS_EXPOSE_REP,EI_EXPOSE_REP,EI_EXPOSE_REP,EI_EXPOSE_STATIC_REP2" />
+            reports="MS_EXPOSE_REP,EI_EXPOSE_REP,EI_EXPOSE_REP2,EI_EXPOSE_STATIC_REP2" />
             
   <Detector class="edu.umd.cs.findbugs.detect.FindRunInvocations" 
             speed="fast"
@@ -150,7 +150,7 @@
             
   <Detector class="edu.umd.cs.findbugs.detect.Naming" 
             speed="fast"
-            reports="NM_VERY_CONFUSING,NM_CONFUSING,NM_CONFUSING_METHOD_NAME,NM_LCASE_HASHCODE,NM_LCASE_TOSTRING,NM_BAD_EQUAL" />
+            reports="NM_VERY_CONFUSING,NM_CONFUSING,NM_CONFUSING_METHOD_NAME,NM_LCASE_HASHCODE,NM_LCASE_TOSTRING,NM_BAD_EQUAL,NM_CLASS_NAMING_CONVENTION,NM_FIELD_NAMING_CONVENTION,NM_METHOD_NAMING_CONVENTION" />
             
   <Detector class="edu.umd.cs.findbugs.detect.ReadReturnShouldBeChecked" 
             speed="fast"
@@ -213,7 +213,6 @@
             
   <Detector class="edu.umd.cs.findbugs.detect.FindLocalSelfAssignment" 
             speed="slow" 
-            disabled="true"
             reports="SA_LOCAL_SELF_ASSIGNMENT" />
             
   <Detector class="edu.umd.cs.findbugs.detect.IncompatMask" 
@@ -281,7 +280,7 @@
             
   <Detector class="edu.umd.cs.findbugs.detect.WrongMapIterator" 
             speed="fast"
-            reports="MVI_WRONG_MAP_ITERATOR" />
+            reports="WMI_WRONG_MAP_ITERATOR" />
             
   <Detector class="edu.umd.cs.findbugs.detect.InstantiateStaticClass"
   			speed="fast"
@@ -371,6 +370,9 @@
   <BugPattern abbrev="MS" type="MS_MUTABLE_HASHTABLE" category="MALICIOUS_CODE" />
   <BugPattern abbrev="MS" type="MS_MUTABLE_ARRAY" category="MALICIOUS_CODE" />
   <BugPattern abbrev="MS" type="MS_CANNOT_BE_FINAL" category="MALICIOUS_CODE" />
+  <BugPattern abbrev="Nm" type="NM_METHOD_NAMING_CONVENTION" category="STYLE" />
+  <BugPattern abbrev="Nm" type="NM_FIELD_NAMING_CONVENTION" category="STYLE" />
+  <BugPattern abbrev="Nm" type="NM_CLASS_NAMING_CONVENTION" category="STYLE" />
   <BugPattern abbrev="Nm" type="NM_VERY_CONFUSING" category="CORRECTNESS" />
   <BugPattern abbrev="Nm" type="NM_CONFUSING" category="CORRECTNESS" />
   <BugPattern abbrev="Nm" type="NM_CONFUSING_METHOD_NAME" category="CORRECTNESS" />
@@ -389,7 +391,7 @@
   <BugPattern abbrev="Se" type="SE_NONLONG_SERIALVERSIONID" category="CORRECTNESS" />
   <BugPattern abbrev="Se" type="SE_BAD_FIELD" category="CORRECTNESS" />
   <BugPattern abbrev="SC" type="SC_START_IN_CTOR" category="MT_CORRECTNESS" />
-  <BugPattern abbrev="SF" type="SF_SWITCH_FALLTHROUGH" category="CORRECTNESS" />
+  <BugPattern abbrev="SF" type="SF_SWITCH_FALLTHROUGH" category="STYLE" />
   <BugPattern abbrev="SS" type="SS_SHOULD_BE_STATIC" category="PERFORMANCE" />
   <BugPattern abbrev="UuF" type="UUF_UNUSED_FIELD" category="PERFORMANCE" />
   <BugPattern abbrev="UrF" type="URF_UNREAD_FIELD" category="PERFORMANCE" />
@@ -419,7 +421,7 @@
   <BugPattern abbrev="EC" type="EC_UNRELATED_INTERFACES" category="CORRECTNESS"/>
   <BugPattern abbrev="MWN" type="MWN_MISMATCHED_WAIT" category="CORRECTNESS" />
   <BugPattern abbrev="MWN" type="MWN_MISMATCHED_NOTIFY" category="CORRECTNESS" />
-  <BugPattern abbrev="SA" type="SA_LOCAL_SELF_ASSIGNMENT" category="CORRECTNESS" />
+  <BugPattern abbrev="SA" type="SA_LOCAL_SELF_ASSIGNMENT" category="STYLE" />
   <BugPattern abbrev="BIT" type="BIT_AND"    category="CORRECTNESS" />
   <BugPattern abbrev="BIT" type="BIT_AND_ZZ" category="CORRECTNESS" />
   <BugPattern abbrev="BIT" type="BIT_IOR"    category="CORRECTNESS" />

@@ -1600,6 +1600,45 @@ defined in an interface references a mutable
 ]]>
     </Details>
   </BugPattern>
+
+  <BugPattern type="NM_CLASS_NAMING_CONVENTION">
+    <ShortDescription>Class names should start with an upper case letter</ShortDescription>
+    <LongDescription>The class name {0} doesn't start with an upper case letter</LongDescription>
+    <Details>
+<![CDATA[
+  <p> Class names should be nouns, in mixed case with the first letter of each internal word capitalized. Try to keep your class names simple and descriptive. Use whole words-avoid acronyms and abbreviations (unless the abbreviation is much more widely used than the long form, such as URL or HTML).
+</p>
+]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="NM_METHOD_NAMING_CONVENTION">
+    <ShortDescription>Method names should start with an lower case letter</ShortDescription>
+    <LongDescription>The method name {1} doesn't start with an lower case letter</LongDescription>
+    <Details>
+<![CDATA[
+  <p> 
+Methods should be verbs, in mixed case with the first letter lowercase, with the first letter of each internal word capitalized.
+</p>
+]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="NM_FIELD_NAMING_CONVENTION">
+    <ShortDescription>Field names should start with an lower case letter</ShortDescription>
+    <LongDescription>The field name {1} doesn't start with an lower case letter</LongDescription>
+    <Details>
+<![CDATA[
+  <p> 
+Names of fields that are not final should be in mixed case with a lowercase first letter and the first letters of subsequent words capitalized. 
+</p>
+]]>
+    </Details>
+  </BugPattern>
+
+
+
+
   <BugPattern type="NM_VERY_CONFUSING">
     <ShortDescription>Very confusing method names</ShortDescription>
     <LongDescription>VERY confusing to have methods {1} and {3}</LongDescription>
@@ -1609,6 +1648,8 @@ defined in an interface references a mutable
 ]]>
     </Details>
   </BugPattern>
+
+
   <BugPattern type="NM_CONFUSING">
     <ShortDescription>Confusing method names</ShortDescription>
     <LongDescription>Confusing to have methods {1} and {3}</LongDescription>
