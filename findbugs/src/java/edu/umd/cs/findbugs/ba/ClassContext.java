@@ -34,7 +34,7 @@ import org.apache.bcel.generic.*;
  * @author David Hovemeyer
  */
 public class ClassContext {
-	private static final boolean PRUNE_INFEASIBLE_EXCEPTION_EDGES = Boolean.getBoolean("cfg.prune");
+	public static final boolean PRUNE_INFEASIBLE_EXCEPTION_EDGES = Boolean.getBoolean("cfg.prune");
 
 	private JavaClass jclass;
 	private RepositoryLookupFailureCallback lookupFailureCallback;
