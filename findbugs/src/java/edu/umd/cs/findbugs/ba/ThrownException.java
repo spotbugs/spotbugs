@@ -50,6 +50,13 @@ public class ThrownException {
 		this.explicit = explicit;
 	}
 
+	/**
+	 * Return an identical copy of this object.
+	 */
+	public ThrownException duplicate() {
+		return new ThrownException(type, explicit);
+	}
+
 	/** Get the exception type. */
 	public ObjectType getType() {
 		return type;
