@@ -31,6 +31,7 @@ import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.ObjectType;
+import org.apache.bcel.generic.ReferenceType;
 
 /**
  * StreamFactory for streams that are created as the result
@@ -99,7 +100,7 @@ public class MethodReturnValueStreamFactory implements StreamFactory {
 			// Is invoked class a subtype of the base class we want
 			// FIXME: should test be different for INVOKESPECIAL and INVOKESTATIC?
 			InvokeInstruction inv = (InvokeInstruction) ins;
-			ObjectType classType = inv.getClassType(cpg);
+			ReferenceType classType = inv.getReferenceType(cpg);
 			if (!Hierarchy.isSubtype(classType, baseClassType))
 				return null;
 
