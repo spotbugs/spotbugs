@@ -23,6 +23,19 @@
   A simple XSLT stylesheet to transform FindBugs XML results
   annotated with messages into HTML.
 
+  If you want to experiment with modifying this stylesheet,
+  or write your own, you need to generate XML output from FindBugs
+  using a special option which lets it know to include
+  human-readable messages in the XML.  Invoke the findbugs script
+  as follows:
+
+    findbugs -textui -xml:withMessages -project myProject.fb > results.xml
+
+  Then you can use your favorite XSLT implementation to transform
+  the XML output into HTML. (But don't use xsltproc. It generates well-nigh
+  unreadable output, and generates incorrect output for the
+  <script> element.)
+
   Authors:
   David Hovemeyer
 -->
