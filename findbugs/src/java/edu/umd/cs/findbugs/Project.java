@@ -626,6 +626,9 @@ public class Project {
 			base = base.toLowerCase();
 		}
 
+		if (base.equals(srcFile))
+			return ".";
+			
 		if (!base.endsWith(slash))
 			base = base + slash;
 
@@ -637,8 +640,6 @@ public class Project {
 			return srcFile;
 
 		// Strip off the base directory, make relative
-		if (root.length() == srcFile.length())
-			return ".";
 		return "." + System.getProperty("file.separator") + srcFile.substring(base.length());
 	}
 	
