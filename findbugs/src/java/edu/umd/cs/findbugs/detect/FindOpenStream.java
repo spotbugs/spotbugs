@@ -99,8 +99,10 @@ public class FindOpenStream implements Detector {
 			ConstantPoolGen cpg = getCPG();
 			String className = inv.getClassName(cpg);
 
+			//System.out.print("[Passed as arg="+instanceArgNum+" at " + inv + "]");
+
 			boolean escapes = (inv.getOpcode() == Constants.INVOKESTATIC || instanceArgNum != 0);
-			//if (escapes) System.out.println("Escape at " + inv + " argNum=" + instanceArgNum);
+			//if (escapes) System.out.print("[Escape at " + inv + " argNum=" + instanceArgNum + "]");
 			return escapes;
 		}
 	}
@@ -253,8 +255,19 @@ public class FindOpenStream implements Detector {
 
 							ResourceValueFrame exitFrame = dataflow.getResultFact(cfg.getExit());
 
-							if (exitFrame.getStatus() == ResourceValueFrame.OPEN) {
-								bugReporter.reportBug(new BugInstance("OS_OPEN_STREAM", NORMAL_PRIORITY)
+							int exitStatus = exitFrame.getStatus();
+							if (exitStatus == ResourceValueFrame.OPEN || exitStatus == ResourceValueFrame.OPEN_ON_EXCEPTION_PATH) {
+								String bugType;
+								int priority;
+								if (exitStatus == ResourceValueFrame.OPEN) {
+									bugType = "OS_OPEN_STREAM";
+									priority = NORMAL_PRIORITY;
+								} else {
+									bugType = "OS_OPEN_STREAM_EXCEPTION_PATH";
+									priority = LOW_PRIORITY;
+								}
+
+								bugReporter.reportBug(new BugInstance(bugType, priority)
 									.addClassAndMethod(methodGen)
 									.addSourceLine(methodGen, stream.creationPoint.getHandle())
 								);
