@@ -710,6 +710,18 @@ It is a fast detector.</p>
     </Details>
   </Detector>
   
+  <Detector class="edu.umd.cs.findbugs.detect.PublicSemaphores">
+    <Details>
+<![CDATA[
+<p>This detector looks for public classes that synchronize and use wait(), notify() or notifyAll()
+on <b>this</b>. This exposes a synchronization implementation as a public artifact of the class.
+Clients of the class may use an instance of the class as it's own synchronizing object, and cause
+havoc to the base implementation.
+It is a fast detector.</p>
+]]>
+    </Details>
+  </Detector>
+  
   <Detector class="edu.umd.cs.findbugs.detect.FindBugsSummaryStats">
     <Details>
 <![CDATA[
@@ -2967,7 +2979,23 @@ just use the constant. Methods detected are:
       </Details>
     </BugPattern>
 
-  <!--
+    <BugPattern type="PS_PUBLIC_SEMAPHORES">
+	  <ShortDescription>Class exposes synchronization and semaphores in its public interface.</ShortDescription>
+	  <LongDescription>Class {0} exposes synchronization and semaphores in its public interface.</LongDescription>
+	  <Details>
+	<![CDATA[
+    <p>
+    This class uses synchronization along with wait(), notify() or notifyAll() on itself (the this
+    reference). Client classes that use this class, may, in addition, use an instance of this class
+    as a synchronizing object. Because two classes are using the same object for synchronization, 
+    Multithread correctness is suspect. You should not synchronize nor call semaphore methods on 
+    a public reference. Consider using a internal private member variable to control synchronization.
+    </p>
+    ]]>
+      </Details>
+    </BugPattern>
+    
+    <!--
   **********************************************************************
    BugCodes
   **********************************************************************
@@ -3059,4 +3087,5 @@ just use the constant. Methods detected are:
   <BugCode abbrev="CD">Circular Dependencies</BugCode>
   <BugCode abbrev="RI">Redundant Interfaces</BugCode>
   <BugCode abbrev="MTIA">Multithreaded Instance Access</BugCode>
+  <BugCode abbrev="PS">Public Semaphores</BugCode>
   </MessageCollection>

@@ -322,6 +322,10 @@
   			speed="fast"
   			reports="MTIA_SUSPECT_STRUTS_INSTANCE_FIELD,MTIA_SUSPECT_SERVLET_INSTANCE_FIELD"/>
   			
+  <Detector class="edu.umd.cs.findbugs.detect.PublicSemaphores"
+  			speed="fast"
+  			reports="PS_PUBLIC_SEMAPHORES"/>
+  			
   <Detector class="edu.umd.cs.findbugs.detect.FindBugsSummaryStats" 
             speed="fast"
             hidden="true" />
@@ -498,4 +502,5 @@
   <BugPattern abbrev="RI" type="RI_REDUNDANT_INTERFACES" category="STYLE" experimental="true"/>
   <BugPattern abbrev="MTIA" type="MTIA_SUSPECT_STRUTS_INSTANCE_FIELD" category="STYLE" experimental="true"/>
   <BugPattern abbrev="MTIA" type="MTIA_SUSPECT_SERVLET_INSTANCE_FIELD" category="STYLE" experimental="true"/>
+  <BugPattern abbrev="PS" type="PS_PUBLIC_SEMAPHORES" category="STYLE" experimental="true"/>
 </FindbugsPlugin>
