@@ -907,7 +907,7 @@ public class FindBugs implements Constants2, ExitCodes {
 
 		// Clear the repository of classes
 		clearRepository();
-
+		
 		// Get list of files to analyze.
 		// Note that despite the name getJarFileArray(),
 		// they can also be zip files, directories,
@@ -968,6 +968,9 @@ public class FindBugs implements Constants2, ExitCodes {
 
 		// Flush any queued error reports
 		bugReporter.reportQueuedErrors();
+
+		// Free up memory for reports
+		clearRepository();
 	}
 
 	/**
