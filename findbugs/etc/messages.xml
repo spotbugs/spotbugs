@@ -1617,12 +1617,36 @@ to null. Two types of redundant comparison are reported:
 <li> Both values compared are definitely null
 <li> One value is definitely null and the other is definitely not null
 </ul>
-<p>
-In either case, the result of the comparison will always be the same at
-runtime.  This is likely to indicate a logic error in the method.
-Often, it means that the reference was dereferenced first, and then
-tested for null; this can happen because a method was changed without
-the programmer realizing that the dereferenced value could be null.
+
+<p> This particular warning represents two specific kinds of
+redundant comparisions:
+<ol>
+<li> A value was dereferenced, and later explicitly compared to null:
+     this often indicates an error in the method
+<li> A literal null value was explicitly compared to null:
+     this may indicate that the method was modified without
+     complete understanding of the invariants of the method
+</ol>
+]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="RCN_REDUNDANT_CHECKED_NULL_COMPARISION">
+    <ShortDescription>Redundant comparision to null of previously checked value</ShortDescription>
+    <LongDescription>Redundant comparision to null of previously checked value in {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p> This method contains a redundant comparison of a reference value
+to null. Two types of redundant comparison are reported:
+<ul>
+<li> Both values compared are definitely null
+<li> One value is definitely null and the other is definitely not null
+</ul>
+
+<p> This particular warning generally indicates that a
+value known not to be null was checked against null.
+While the check is not necessary, it may simply be a case
+of defensive programming.
 ]]>
     </Details>
   </BugPattern>
