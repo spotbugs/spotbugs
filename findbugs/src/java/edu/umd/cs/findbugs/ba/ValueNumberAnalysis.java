@@ -33,6 +33,20 @@ import org.apache.bcel.generic.*;
  *
  * <p> This class is still experimental.
  *
+ * <p> TODO: we will need redundant load elimination in order to
+ * successfully capture the programmer's intent in a lot of cases.
+ * For example:
+ * <pre>
+ *    synchronized (foo) {
+ *       foo.blat();
+ *    }
+ * </pre>
+ * Assuming foo is an instance field, there will be two GETFIELD instructions;
+ * one for the MONITORENTER, and one for the call to blat().  At runtime,
+ * it is more or less certain that the JIT will reuse the value of the
+ * first GETFIELD, and this is almost certainly what the programmer intended to
+ * happen.
+ *
  * @see ValueNumber
  * @see DominatorsAnalysis
  * @author David Hovemeyer
