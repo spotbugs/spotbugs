@@ -58,7 +58,9 @@ there were no 0.6.7 or 0.6.8 releases.
      inconsistent synchronization detector
 <li> Improved heuristics in open stream and dropped exception detectors;
      fewer false positives should be reported
-<li> Save HTML summary in XML results files, rather than recomputing
+<li> Save HTML summary in XML results files, rather than recomputing;
+     this makes loading results in GUI much faster
+<li> Report at most one String comparison using == or != per method
 <li> The findbugs.bat script on Windows autodetects FINDBUGS_HOME,
      and doesn't open a DOS window when launching the GUI
      (contributed by TJSB)

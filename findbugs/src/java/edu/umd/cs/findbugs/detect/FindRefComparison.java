@@ -240,6 +240,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 	 * ---------------------------------------------------------------------- */
 
 	private BugReporter bugReporter;
+	private BugInstance stringComparison; 
 
 	/* ----------------------------------------------------------------------
 	 * Implementation
@@ -268,6 +269,10 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 
 				if (DEBUG) System.out.println("FindRefComparison: analyzing " +
 					SignatureConverter.convertMethodSignature(methodGen));
+
+				// Report at most one String comparison per method.
+				// We report the first highest priority warning.
+				stringComparison = null;
 
 				final CFG cfg = classContext.getCFG(method);
 				final DepthFirstSearch dfs = classContext.getDepthFirstSearch(method);
@@ -319,11 +324,14 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 
 										if (priority <= LOW_PRIORITY) {
 											String sourceFile = jclass.getSourceFileName();
-											bugReporter.reportBug(new BugInstance("ES_COMPARING_STRINGS_WITH_EQ", priority)
-												.addClassAndMethod(methodGen, sourceFile)
-												.addSourceLine(methodGen, sourceFile, handle)
-												.addClass("java.lang.String").describe("CLASS_REFTYPE")
-											);
+											BugInstance instance = 
+												new BugInstance("ES_COMPARING_STRINGS_WITH_EQ", priority)
+													.addClassAndMethod(methodGen, sourceFile)
+													.addSourceLine(methodGen, sourceFile, handle)
+													.addClass("java.lang.String").describe("CLASS_REFTYPE");
+
+											if (stringComparison == null || priority < stringComparison.getPriority())
+												stringComparison = instance;
 										}
 	
 									} else if (suspiciousSet.contains(lhs) && suspiciousSet.contains(rhs)) {
@@ -341,6 +349,11 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 						}
 					}
 				});
+
+				// If a String reference comparison was found in the method,
+				// report it
+				if (stringComparison != null)
+					bugReporter.reportBug(stringComparison);
 			}
 
 		} catch (DataflowAnalysisException e) {
