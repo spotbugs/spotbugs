@@ -35,6 +35,17 @@ public class InnerClassAccessMap {
 
 	public static InnerClassAccessMap instance() { return instance; }
 
+	private static int toInt(byte b) {
+		int value = b & 0x7F;
+		if ((b & 0x80) != 0)
+			value |= 0x80;
+		return value;
+	}
+
+	private static int getIndex(byte[] instructionList, int index) {
+		return (toInt(instructionList[index+1]) << 8) | toInt(instructionList[index+2]);
+	}
+
 	private static class InstructionCallback implements BytecodeScanner.Callback {
 		private JavaClass javaClass;
 		private String methodName;
@@ -52,17 +63,13 @@ public class InnerClassAccessMap {
 			switch (opcode) {
 			case Constants.GETFIELD:
 			case Constants.PUTFIELD:
-				setField(getIndex(index), false);
+				setField(getIndex(instructionList, index), false);
 				break;
 			case Constants.GETSTATIC:
 			case Constants.PUTSTATIC:
-				setField(getIndex(index), true);
+				setField(getIndex(instructionList, index), true);
 				break;
 			}
-		}
-
-		private int getIndex(int index) {
-			return (instructionList[index+1] << 8) | instructionList[index+2];
 		}
 
 		private void setField(int cpIndex, boolean isStatic) {
