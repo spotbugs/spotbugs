@@ -1581,9 +1581,9 @@ The list of configurable analysis properties is shown in
       methods.</entry>
     </row>
     <row>
-      <entry>findbugs.eqstring.reportAll</entry>
+      <entry>findbugs.refcomp.reportAll</entry>
       <entry>true or false</entry>
-      <entry>If true, all suspicious comparisons of String objects
+      <entry>If true, all suspicious reference comparisons
       using the == and != operators are reported.&nbsp; If false,
       only one such warning is issued per method.&nbsp; Default
       is false.</entry>
