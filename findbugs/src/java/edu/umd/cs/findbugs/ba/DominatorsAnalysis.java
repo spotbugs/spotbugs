@@ -20,6 +20,9 @@
 package edu.umd.cs.findbugs.ba;
 
 import java.util.*;
+import org.apache.bcel.classfile.ClassParser;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.InstructionHandle;
 
 /**
@@ -122,6 +125,47 @@ public class DominatorsAnalysis implements DataflowAnalysis<BitSet> {
 
 		// Meet is intersection
 		result.and(fact);
+	}
+
+	public static void main(String[] argv) throws Exception {
+		if (argv.length != 1) {
+			System.err.println("Usage: " + DominatorsAnalysis.class.getName() + " <classfile>");
+			System.exit(1);
+		}
+
+		RepositoryLookupFailureCallback lookupFailureCallback = new RepositoryLookupFailureCallback() {
+			public void reportMissingClass(ClassNotFoundException ex) {
+				ex.printStackTrace();
+				System.exit(1);
+			}
+		};
+
+		JavaClass jclass = new ClassParser(argv[0]).parse();
+		ClassContext classContext = new ClassContext(jclass, lookupFailureCallback);
+
+		String methodName = System.getProperty("dominators.method");
+		boolean ignoreExceptionEdges = Boolean.getBoolean("dominators.ignoreExceptionEdges");
+
+		Method[] methodList = jclass.getMethods();
+		for (int i = 0; i < methodList.length; ++i) {
+			Method method = methodList[i];
+
+			if (method.isNative() || method.isAbstract())
+				continue;
+
+			if (methodName != null && !methodName.equals(method.getName()))
+				continue;
+
+			System.out.println("Method: " + method.getName());
+
+			CFG cfg = classContext.getCFG(method);
+			DepthFirstSearch dfs = classContext.getDepthFirstSearch(method);
+
+			DominatorsAnalysis analysis = new DominatorsAnalysis(cfg, dfs, ignoreExceptionEdges);
+			Dataflow<BitSet, DominatorsAnalysis> dataflow =
+				new Dataflow<BitSet, DominatorsAnalysis>(cfg, analysis);
+			dataflow.execute();
+		}
 	}
 }
 
