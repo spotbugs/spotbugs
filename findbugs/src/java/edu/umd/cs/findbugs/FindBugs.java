@@ -231,6 +231,7 @@ public class FindBugs implements Constants2, ExitCodes
 	private int bugCount;
 	private int missingClassCount;
 	private int errorCount;
+	private Set<String> missingClassSet = new HashSet<String>();
 
 	public ErrorCountingBugReporter(BugReporter realBugReporter) {
 		super(realBugReporter);
@@ -266,7 +267,10 @@ public class FindBugs implements Constants2, ExitCodes
 	}
 
 	public void reportMissingClass(ClassNotFoundException ex) {
-		++missingClassCount;
+		//++missingClassCount;
+		String missing = AbstractBugReporter.getMissingClassName(ex);
+		if (missingClassSet.add(missing))
+			++missingClassCount;
 		super.reportMissingClass(ex);
 	}
   }
