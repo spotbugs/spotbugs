@@ -27,6 +27,8 @@
         path="ECLIPSE_HOME/plugins/org.eclipse.jdt.core_2.1.2/jdtcore.jar" sourcepath="ORG_ECLIPSE_JDT_SOURCE_SRC/org.eclipse.jdt.core_2.1.2/jdtcoresrc.zip"/>
     <classpathentry kind="var"
         path="ECLIPSE_HOME/plugins/org.eclipse.jdt.ui_2.1.2/jdt.jar" sourcepath="ORG_ECLIPSE_JDT_SOURCE_SRC/org.eclipse.jdt.ui_2.1.2/jdtsrc.zip"/>
+    <classpathentry kind="var"
+        path="ECLIPSE_HOME/plugins/org.eclipse.jdt.launching_2.1.1/launching.jar" sourcepath="ORG_ECLIPSE_JDT_SOURCE_SRC/org.eclipse.jdt.launching_2.1.1/launchingsrc.zip"/>
     <classpathentry kind="src" path="/edu.umd.cs.findbugs"/>
     <classpathentry kind="var"
         path="ECLIPSE_HOME/plugins/org.eclipse.core.boot_2.1.2/boot.jar" sourcepath="ORG_ECLIPSE_PLATFORM_SOURCE_SRC/org.eclipse.core.boot_2.1.2/bootsrc.zip"/>

@@ -50,12 +50,13 @@ import org.eclipse.ui.texteditor.IUpdate;
 
 import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.marker.FindBugsMarker;
+import de.tobject.findbugs.view.DetailsView;
 import edu.umd.cs.findbugs.BugPattern;
 import edu.umd.cs.findbugs.I18N;
 
 /**
  * An action that can display a bug marker's details in the FindBugs DetailsView.
- * 
+ * TODO (PeterF) We should replace this action with a marker resolution or a marker help contribution.
  * @author Phil Crosby
  */
 public class MarkerRulerAction
@@ -193,7 +194,7 @@ public class MarkerRulerAction
 					if (pattern != null) {
 						String shortDescription = pattern.getShortDescription();
 						String detailText = pattern.getDetailText();
-						FindbugsPlugin.getViewDetails().setContent(shortDescription, detailText);
+						DetailsView.getDetailsView().setContent(shortDescription, detailText);
 					}
 					
 				}

@@ -14,10 +14,12 @@
    <requires>
       <import plugin="org.eclipse.core.resources"/>
       <import plugin="org.eclipse.ui"/>
-      <import plugin="org.eclipse.ui.editors" />
+      <import plugin="org.eclipse.ui.editors"/>
       <import plugin="org.eclipse.jdt.core"/>
       <import plugin="org.eclipse.jdt.ui"/>
       <import plugin="org.eclipse.jface.text"/>
+      <import plugin="org.eclipse.jdt.launching"/>
+      <import plugin="org.eclipse.jdt"/>
       <import plugin="edu.umd.cs.findbugs"/>
    </requires>
 
@@ -79,23 +81,22 @@
                id="de.tobject.findbugs.newAction">
          </action>
       </objectContribution>
-      
-       <viewerContribution
-        id="de.tobject.findbugs.actions.FindBugsAction"
-        targetID="#CompilationUnitRulerContext">
-	    <action id="de.tobject.findbugs.actions.markerruleraction"
-	       label="Show Bug Details"
-	       icon="icons/bug.gif"
-	       menubarPath="additions"
-	       class="de.tobject.findbugs.actions.MarkerRulerAction">
-	       <selection class="org.eclipse.core.resources.IMarker">
-	       </selection>
-	    </action>
-       </viewerContribution>
-      
+      <viewerContribution
+            targetID="#CompilationUnitRulerContext"
+            id="de.tobject.findbugs.actions.FindBugsAction">
+         <action
+               label="Show Bug Details"
+               icon="icons/bug.gif"
+               class="de.tobject.findbugs.actions.MarkerRulerAction"
+               menubarPath="additions"
+               id="de.tobject.findbugs.actions.markerruleraction">
+            <selection
+                  class="org.eclipse.core.resources.IMarker">
+            </selection>
+         </action>
+      </viewerContribution>
    </extension>
-   
-   <!-- Details view -->
+<!-- Details view -->
    <extension
          id="de.tobject.findbugs.DetailsView"
          name="Bug Details View"
@@ -106,10 +107,10 @@
       </category>
       <view
             name="Bug Details"
+            icon="icons/bugview.gif"
             category="de.tobject.findbugs.view.findBugsCategory"
             class="de.tobject.findbugs.view.DetailsView"
-            id="de.tobject.findbugs.view.detailsview"
-            icon="icons/bugview.gif">
+            id="de.tobject.findbugs.view.detailsview">
       </view>
    </extension>
 

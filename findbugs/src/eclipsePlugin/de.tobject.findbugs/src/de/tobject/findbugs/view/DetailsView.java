@@ -30,17 +30,22 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.part.ViewPart;
 
-import de.tobject.findbugs.FindbugsPlugin;
-
 /**
  * View which shows bug details.
+ * TODO (PeterF) This info should be displayed in the help system or maybe a marker popup.
  * @author Phil Crosby
  * @since 19.04.2004
  */
 public class DetailsView extends ViewPart {
+	
+	private static DetailsView detailsView;
+	
 	private StyledText control;
+	
 	private String description = "";
+	
 	private String title = "";
+	
 	//HTML presentation classes
 	private DefaultInformationControl.IInformationPresenter presenter;
 	private TextPresentation presentation = new TextPresentation();
@@ -60,20 +65,23 @@ public class DetailsView extends ViewPart {
 			}
 		});
 		presenter = new HTMLTextPresenter(false);
-		FindbugsPlugin.setViewDetails(this);
+		DetailsView.detailsView = this;
 	}
+	
 	/*
 	 * @see org.eclipse.ui.part.WorkbenchPart#setFocus()
 	 */
 	public void setFocus() {
 		control.setFocus();
 	}
+	
 	/*
 	 * @see org.eclipse.ui.IWorkbenchPart#dispose()
 	 */
 	public void dispose() {
 		control.dispose();
 	}
+	
 	/**
 	 * Updates the control using the current window size and the contents
 	 * of the title and description fields.
@@ -89,6 +97,7 @@ public class DetailsView extends ViewPart {
 			TextPresentation.applyTextPresentation(presentation, control);
 		}
 	}
+	
 	/**
 	 * Set the content to be displayed.
 	 * @param title the title of the bug
@@ -99,4 +108,22 @@ public class DetailsView extends ViewPart {
 		this.description = (description == null) ? "" : description.trim();
 		updateDisplay();
 	}
+	
+	/**
+	 * Accessor for the details view associated with this plugin.
+	 * @return the details view, or null if it has not been initialized yet
+	 */
+	public static DetailsView getDetailsView() {
+		return detailsView;
+	}
+	
+	/**
+	 * Set the details view for the rest of the plugin. Details view should call this
+	 * when it has been initialized.
+	 * @param view the details view
+	 */
+	public static void setDetailsView(DetailsView view) {
+		detailsView = view;
+	}
+
 }
