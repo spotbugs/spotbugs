@@ -166,17 +166,11 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock> {
 	}
 
 	/* ----------------------------------------------------------------------
-	 * Fields
-	 * ---------------------------------------------------------------------- */
-
-	private BugReporter bugReporter;
-
-	/* ----------------------------------------------------------------------
 	 * Implementation
 	 * ---------------------------------------------------------------------- */
 
 	public FindUnreleasedLock(BugReporter bugReporter) {
-		this.bugReporter = bugReporter;
+		super(bugReporter);
 	}
 
 	public boolean prescreen(ClassContext classContext, Method method) {
