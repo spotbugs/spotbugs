@@ -263,7 +263,7 @@ public class EclipseClasspath {
 				// HACK - see if we can deduce the value of the special "ws" variable.
 				if (pluginId.startsWith("org.eclipse.swt.")) {
 					String ws = pluginId.substring("org.eclipse.swt.".length());
-					varMap.put("ws", new File(dirList[i] + File.separator + "ws" + File.separator + ws).getPath());
+					varMap.put("ws", new File(dirList[i] + File.separator + "ws" + File.separator + ws).getPath().replace('\\', '/'));
 				}
 			}
 		}
