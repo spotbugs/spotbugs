@@ -191,9 +191,9 @@
           <uptodate>
             <srcfiles dir="${findbugs.dir}"
                       includes="etc/findbugs.xml,etc/messages.xml,etc/messages_ja.xml"/>
-            <mapper type="glob"
-                    from="etc/*.xml"
-                    to="${class.dir}/*.xml"/>
+            <mapper type="regexp"
+                    from="^etc(/|\\)(.*)\.xml$$"
+                    to="${class.dir}/\2.xml"/>
           </uptodate>
         </and>
       </condition>
@@ -256,9 +256,9 @@
           <!-- Generated scripts must be newer than src scripts -->
           <uptodate>
             <srcfiles dir="${findbugs.dir}" includes="src/scripts/*"/>
-            <mapper type="glob"
-                    from="src/scripts/*"
-                    to="${script.dir}/*"/>
+            <mapper type="regexp"
+                    from="^src(/|\\)scripts(/|\\)(.*)$$"
+                    to="${script.dir}/\3"/>
           </uptodate>
           <!-- And, generated scripts must be newer than etc/script.properties -->
           <uptodate targetfile="${scripts.uptodate.stamp}">
@@ -473,15 +473,15 @@
           <!-- Generated html and css files must be newer than src html and css files -->
           <uptodate>
             <srcfiles dir="${findbugs.dir}" includes="src/doc/*.html"/>
-            <mapper type="glob"
-                    from="src/doc/*.html"
-                    to="${doc.dir}/*.html"/>
+            <mapper type="regexp"
+                    from="^src(/|\\)doc(/|\\)(.*)\.html$$"
+                    to="${doc.dir}/\3.html"/>
           </uptodate>
           <uptodate>
             <srcfiles dir="${findbugs.dir}" includes="src/doc/*.css"/>
-            <mapper type="glob"
-                    from="src/doc/*.css"
-                    to="${doc.dir}/*.css"/>
+            <mapper type="regexp"
+                    from="^src(/|\\)doc(/|\\)(.*)\.css"
+                    to="${doc.dir}/\3.css"/>
           </uptodate>
           <!-- And, generated html files must be newer than etc/doc.properties -->
           <uptodate targetfile="${html.uptodate.stamp}">
