@@ -47,7 +47,7 @@ public class InheritanceGraphEdge
 	 * Set the type of inheritance edge.
 	 *
 	 * @param type the type of inheritance edge
-	 * @see {@link InheritanceGraphEdgeTypes}
+	 * @see InheritanceGraphEdgeTypes
 	 */
 	void setType(int type) {
 		this.type = type;
@@ -56,8 +56,8 @@ public class InheritanceGraphEdge
 	/**
 	 * Get the type of inheritance edge.
 	 *
-	 * @returns type the type of inheritance edge
-	 * @see {@link InheritanceGraphEdgeTypes}
+	 * @return type the type of inheritance edge
+	 * @see InheritanceGraphEdgeTypes
 	 */
 	public int getType() {
 		return type;

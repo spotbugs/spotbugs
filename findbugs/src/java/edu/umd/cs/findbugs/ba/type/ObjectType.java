@@ -80,7 +80,7 @@ public abstract class ObjectType
 	 * Set the state: UNCHECKED, KNOWN, or UNKNOWN.
 	 *
 	 * @param state the state
-	 * @see {@link #getState()}
+	 * @link #getState()
 	 */
 	void setState(int state) {
 		this.state = state;

@@ -166,7 +166,7 @@ public class StreamResourceTracker implements ResourceTracker<Stream> {
 	 * Determine if an uninteresting stream escapes at given location.
 	 * markTransitiveUninterestingStreamEscapes() should be called first.
 	 *
-	 * @param location the Location
+	 * @param stream the stream
 	 * @return true if an uninteresting stream escapes at the location
 	 */
 	public boolean isUninterestingStreamEscape(Stream stream) {

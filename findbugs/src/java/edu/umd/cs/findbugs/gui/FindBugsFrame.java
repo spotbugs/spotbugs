@@ -1991,12 +1991,12 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	/**
 	 * Localise the given AbstractButton, setting the text and optionally mnemonic
 	 * Note that AbstractButton includes menus and menu items.
-	 * @arg button        The button to localise
-	 * @arg key           The key to look up in resource bundle
-	 * @arg defaultString default String to use if key not found
-	 * @arg setMnemonic   whether or not to set the mnemonic. According to Sun's
-	 *                    guidelines, default/cancel buttons should not have mnemonics
-	 *                    but instead should use Return/Escape
+	 * @param button        The button to localise
+	 * @param key           The key to look up in resource bundle
+	 * @param defaultString default String to use if key not found
+	 * @param setMnemonic   whether or not to set the mnemonic. According to Sun's
+	 *                      guidelines, default/cancel buttons should not have mnemonics
+	 *                      but instead should use Return/Escape
 	 */
 	private void localiseButton(AbstractButton button, String key, String defaultString,
 	                            boolean setMnemonic) {

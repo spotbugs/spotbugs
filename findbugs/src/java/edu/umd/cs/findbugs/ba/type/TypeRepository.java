@@ -43,7 +43,7 @@ import org.apache.bcel.Constants;
  * <p> Another way to use TypeRepository is to explicitly mark
  * ClassType objects as interfaces or classes, and add the
  * subtype relationships using {@link #addSuperclassLink}
- * and {@link @addInterfaceLink} for ClassTypes.  Subtype
+ * and {@link #addInterfaceLink} for ClassTypes.  Subtype
  * relationships for array types are always added automatically
  * based on the class hierarchy.  Note that if you use this
  * approach, you must explicitly add <code>java.lang.Object</code>,
@@ -170,7 +170,7 @@ public class TypeRepository {
 	 * using dots to separate package components,
 	 * creating it if it doesn't exist.
 	 *
-	 * @param param dottedClassName the class name in dotted format
+	 * @param dottedClassName the class name in dotted format
 	 * @return the ClassType representing the class
 	 */
 	public ClassType classTypeFromDottedClassName(String dottedClassName) {

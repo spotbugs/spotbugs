@@ -31,7 +31,7 @@ import org.apache.bcel.generic.*;
  *
  * @see ValueNumber
  * @see ValueNumberFrame
- * @see ValueNumberAnalaysis
+ * @see ValueNumberAnalysis
  * @author David Hovemeyer
  */
 public class ValueNumberFrameModelingVisitor
@@ -439,7 +439,6 @@ public class ValueNumberFrameModelingVisitor
 	 * Load an instance field.
 	 *
 	 * @param instanceField the field
-	 * @param reference     the ValueNumber of the object reference
 	 * @param obj           the Instruction loading the field
 	 */
 	private void loadInstanceField(InstanceField instanceField, Instruction obj) {

@@ -637,7 +637,7 @@ public class ClassContext implements AnalysisFeatures {
 	 * Get a ReverseDepthFirstSearch for given method.
 	 *
 	 * @param method the method
-	 * @param the    ReverseDepthFirstSearch
+	 * @return the ReverseDepthFirstSearch
 	 */
 	public ReverseDepthFirstSearch getReverseDepthFirstSearch(Method method)
 	        throws CFGBuilderException {

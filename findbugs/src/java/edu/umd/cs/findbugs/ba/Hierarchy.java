@@ -30,7 +30,7 @@ import org.apache.bcel.generic.*;
 /**
  * Facade for class hierarchy queries.
  * These typically access the class hierarchy using
- * the {@link Repository} class.  Callers should generally
+ * the {@link org.apache.bcel.Repository} class.  Callers should generally
  * expect to handle ClassNotFoundException for when referenced
  * classes can't be found.
  *
@@ -240,7 +240,7 @@ public class Hierarchy {
 	 *
 	 * @param javaClass  the class
 	 * @param methodName the name of the method
-	 * @param signature  the signature of the method
+	 * @param methodSig  the signature of the method
 	 * @return the Method, or null if no such method exists in the class
 	 */
 	public static Method findMethod(JavaClass javaClass, String methodName, String methodSig) {
@@ -258,9 +258,9 @@ public class Hierarchy {
 	 * Find a method in given list of classes,
 	 * searching the classes in order.
 	 *
-	 * @param javaClass  the class
+	 * @param classList  list of classes in which to search
 	 * @param methodName the name of the method
-	 * @param signature  the signature of the method
+	 * @param methodSig  the signature of the method
 	 * @return the Method, or null if no such method exists in the class
 	 */
 	public static Method findMethod(JavaClass[] classList, String methodName, String methodSig) {

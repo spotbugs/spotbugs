@@ -40,7 +40,7 @@ public interface GraphToolkit
 	/**
 	 * Make a copy of given vertex.
 	 *
-	 * @param v the vertex to copy
+	 * @param original the vertex to copy
 	 * @return an exact duplicate of the vertex
 	 */
 	public VertexType duplicateVertex(VertexType original);

@@ -56,7 +56,7 @@ public class Stream extends ResourceCreationPoint implements Comparable<Stream> 
 	 *
 	 * @param location    where the stream is created
 	 * @param streamClass type of Stream
-	 * @param baseClass   highest class in the class hierarchy through which
+	 * @param streamBase   highest class in the class hierarchy through which
 	 *                    stream's close() method could be called
 	 */
 	public Stream(Location location, String streamClass, String streamBase) {
