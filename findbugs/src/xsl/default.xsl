@@ -137,7 +137,7 @@
 
 	<xsl:call-template name="generateWarningTable">
 		<xsl:with-param name="warningSet" select="/BugCollection/BugInstance[@category='I18N']"/>
-		<xsl:with-param name="sectionTitle">Internationalizatino Warnings</xsl:with-param>
+		<xsl:with-param name="sectionTitle">Internationalization Warnings</xsl:with-param>
 		<xsl:with-param name="sectionId">Warnings_I18N</xsl:with-param>
 	</xsl:call-template>
 
