@@ -5,6 +5,9 @@
   </HEAD>
   <BODY>
   <h1>Unconditional wait in method</h1>
-  <p> The description of this bug hasn't been written yet.
+  <p> This method contains a call to <code>java.lang.Object.wait()</code> which
+  is not guarded by conditional control flow.&nbsp; If the condition that
+  the method intends to wait for has already happened, the thread could
+  wait indefinitely.
   </BODY>
 </HTML>

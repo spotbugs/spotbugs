@@ -5,6 +5,9 @@
   </HEAD>
   <BODY>
   <h1>Method spins on field</h1>
-  <p> The description of this bug hasn't been written yet.
+  <p> This method spins in a loop which reads a field.&nbsp; The compiler
+  may legally hoist the read out of the loop, turning the code into an
+  infinite loop.&nbsp; The class should be changed so it uses proper
+  synchronization (including wait and notify calls).
   </BODY>
 </HTML>
