@@ -1,6 +1,6 @@
 /*
  * FindBugs - Find bugs in Java programs
- * Copyright (C) 2004, University of Maryland
+ * Copyright (C) 2004,2005 University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,10 +19,30 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import java.util.BitSet;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+
+import org.apache.bcel.Constants;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.ANEWARRAY;
+import org.apache.bcel.generic.ASTORE;
+import org.apache.bcel.generic.IINC;
+import org.apache.bcel.generic.INVOKESPECIAL;
+import org.apache.bcel.generic.IndexedInstruction;
+import org.apache.bcel.generic.Instruction;
+import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.LoadInstruction;
+import org.apache.bcel.generic.MULTIANEWARRAY;
+import org.apache.bcel.generic.MethodGen;
+import org.apache.bcel.generic.NEWARRAY;
+import org.apache.bcel.generic.StoreInstruction;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
-
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.AnalysisException;
 import edu.umd.cs.findbugs.ba.CFG;
@@ -33,32 +53,10 @@ import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.LiveLocalStoreAnalysis;
 import edu.umd.cs.findbugs.ba.Location;
 
-import java.util.HashSet;
-import java.util.BitSet;
-import java.util.Iterator;
-
-import org.apache.bcel.Constants;
-
-import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.classfile.Method;
-
-import org.apache.bcel.generic.INVOKESPECIAL;
-import org.apache.bcel.generic.NEWARRAY;
-import org.apache.bcel.generic.ANEWARRAY;
-import org.apache.bcel.generic.MULTIANEWARRAY;
-import org.apache.bcel.generic.ASTORE;
-import org.apache.bcel.generic.IndexedInstruction;
-import org.apache.bcel.generic.IINC;
-import org.apache.bcel.generic.Instruction;
-import org.apache.bcel.generic.InstructionHandle;
-import org.apache.bcel.generic.MethodGen;
-import org.apache.bcel.generic.StoreInstruction;
-import org.apache.bcel.generic.LoadInstruction;
-
 public class FindDeadLocalStores implements Detector {
 	private static final boolean DEBUG = Boolean.getBoolean("fdls.debug");
 
-	private static final HashSet classesAlreadyReportedOn = new HashSet();
+	private static final Set<String> classesAlreadyReportedOn = new HashSet<String>();
 	/**
 	 * Opcodes of instructions that load constant values that
 	 * often indicate defensive programming.
