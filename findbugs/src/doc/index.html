@@ -45,32 +45,14 @@ invited talk, MASPLAS 2003
 
 <h1>Changes since last version</h1>
 
-<p> Changes since version 0.6.0:
+<p> Changes since version 0.6.1:
 
 <ul>
-<li> New bug pattern detector which looks for places where a
-     null pointer might be dereferenced
-<li> New bug pattern detector which looks for IO streams that are opened,
-     do not escape the method, and are not closed on all paths out of the method
-<li> New bug pattern detector to find methods that can return null instead
-     of a zero-length array
-<li> New bug pattern detector to find places where the == or != operators
-     are used to compare String objects
-<li> Command line interface can save bugs as XML
-<li> GUI can save bugs to and load bugs from XML
-<li> An "Annotations" window in the GUI allows the user to add
-     textual annotations to bug reports; these annotations are preserved
-     when bugs are saved as XML
-<li> In this release, the Japanese bug summary translations by
-     Germano Leichsenring are really included (they were inadvertently
-     omitted in the previous release)
-<li> Completely rewrote the control flow graph builder, hopefully
-     for the last time
-<li> Simplified implementation of control flow graphs, which should reduce
-     memory use and possibly improve performance
-<li> Improvements to command line interface (list bug priorities, filter by priority,
-     specify aux classpath, specify project to analyze)
-<li> Various bug fixes and enhancements
+<li> Fixed bug in resolution of source files (only the first
+     source directory was searched)
+<li> Fixed a NullPointerException in the bytecode pattern matching code
+<li> Look for places where return value of java.io.File.createNewFile()
+     is ignored (suggested by Richard P. King)
 </ul>
 
 <p> <a href="Changes.html">Older versions...</a>
