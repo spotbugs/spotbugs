@@ -88,6 +88,15 @@ public class FindBugsFrame extends javax.swing.JFrame {
 		setIcon(methodIcon);
 	    } else if (obj instanceof FieldAnnotation) {
 		setIcon(fieldIcon);
+	    } else if (obj instanceof String) {
+		// This is a "group" node
+		if (obj == BY_CLASS) {
+		    setIcon(classIcon);
+		} else if (obj == BY_PACKAGE) {
+		    //setIcon(packageIcon);
+		} else if (obj == BY_CATEGORY) {
+		    //setIcon(bugTypeIcon);
+		}
 	    } else {
 		setIcon(null);
 	    }
