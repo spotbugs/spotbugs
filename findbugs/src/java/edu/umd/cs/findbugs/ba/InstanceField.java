@@ -19,7 +19,7 @@
 
 package edu.umd.cs.daveho.ba;
 
-public class InstanceField implements Comparable<InstanceField> {
+public class InstanceField implements XField {
 	private String className;
 	private String fieldName;
 	private String fieldSig;
@@ -43,20 +43,30 @@ public class InstanceField implements Comparable<InstanceField> {
 		return fieldSig;
 	}
 
-	public int compareTo(InstanceField other) {
+	public boolean isStatic() {
+		return false;
+	}
+
+	public int compareTo(XField other) {
+		// This may be compared to any kind of XField object.
+		// If the other object is a different kind of field,
+		// just compare class names.
+		if (this.getClass() != other.getClass())
+			return this.getClass().getName().compareTo(other.getClass().getName());
+
 		int cmp;
-		cmp = className.compareTo(other.className);
+		cmp = className.compareTo(other.getClassName());
 		if (cmp != 0)
 			return cmp;
-		cmp = fieldName.compareTo(other.fieldName);
+		cmp = fieldName.compareTo(other.getFieldName());
 		if (cmp != 0)
 			return cmp;
-		return fieldSig.compareTo(other.fieldSig);
+		return fieldSig.compareTo(other.getFieldSignature());
 	}
 
 	public int hashCode() {
 		if (cachedHashCode == 0) {
-			cachedHashCode = (className.hashCode() * 1009) + (fieldName.hashCode() * 433) + fieldSig.hashCode();
+			cachedHashCode = className.hashCode() ^ fieldName.hashCode() ^ fieldSig.hashCode();
 		}
 		return cachedHashCode;
 	}
