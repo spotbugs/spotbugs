@@ -26,7 +26,9 @@ import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Constant;
 import org.apache.bcel.classfile.ConstantUtf8;
 import org.apache.bcel.classfile.ConstantInteger;
+import org.apache.bcel.classfile.ConstantDouble;
 import org.apache.bcel.classfile.ConstantFloat;
+import org.apache.bcel.classfile.ConstantLong;
 import org.apache.bcel.classfile.ConstantString;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.LocalVariableTable;
@@ -75,6 +77,8 @@ public class OpcodeStack implements Constants2
  				baseSig = signature;
  			}
  			
+ 			if (baseSig.length() == 0)
+ 				return null;
  			return Repository.lookupClass(baseSig);
  		}
  		
@@ -105,8 +109,9 @@ public class OpcodeStack implements Constants2
  		LocalVariableTable lvt;
  		LocalVariable lv;
  		JavaClass cls;
- 		String signature = null;
- 		Method m = null;
+ 		String signature;
+ 		Method m;
+ 		Item it;
  		
  		try
  		{
@@ -120,8 +125,10 @@ public class OpcodeStack implements Constants2
 	 				if (lvt != null) {
 	 					lv = lvt.getLocalVariable(register);
  						signature = lv.getSignature();
+ 						pushBySignature(signature);
+	  				} else {
+	  					pushBySignature("");
 	  				}
-	 				pushBySignature(signature);
 	 			break;
 	 			
 	 			case ALOAD_0:
@@ -134,8 +141,11 @@ public class OpcodeStack implements Constants2
 	 				if (lvt != null) {
 	 					lv = lvt.getLocalVariable(register);
  						signature = lv.getSignature();
+ 						pushBySignature(signature);
+	  				} else {
+	  					pushBySignature("");
 	  				}
-	 				pushBySignature(signature);
+	 				
 	 			break;
 	 			
 	 			case GETSTATIC:
@@ -206,20 +216,20 @@ public class OpcodeStack implements Constants2
 	 			case IF_ICMPGE:
 	 			case POP2:
 	 			case PUTFIELD:
-	 				pop();
-	 				pop();
+	 				pop(2);
 	 			break;
 	 			
 	 			case DUP:
-	 				Item i = pop();
-	 				push(i);
-	 				push(i);
+	 				it = pop();
+	 				push(it);
+	 				push(it);
 	 			break;
 	 			
 	 			case ATHROW:
 	 			case CHECKCAST:
 	 			case GOTO:
 	 			case GOTO_W:
+	 			case IINC:
 	 			case NOP:
 	 			case RET:
 	 			case RETURN:
@@ -230,6 +240,49 @@ public class OpcodeStack implements Constants2
 	 				Item i2 = pop();
 	 				push(i2);
 	 				push(i1);
+	 			break;
+	 			
+	 			case ICONST_M1:
+	 			case ICONST_0:
+	 			case ICONST_1:
+	 			case ICONST_2:
+	 			case ICONST_3:
+	 			case ICONST_4:
+	 			case ICONST_5:
+	 				push(new Item("I", new Integer(seen-ICONST_0)));
+	 			break;
+	 			
+	 			case ILOAD:
+	 			case ILOAD_0:
+	 			case ILOAD_1:
+	 			case ILOAD_2:
+	 			case ILOAD_3:
+	 				push(new Item("I"));
+	 			break;
+	 			
+	 			case GETFIELD:
+	 				pop();
+	 				push(new Item(dbc.getSigConstantOperand()));
+	 			break;
+	 			
+	 			case ARRAYLENGTH:
+	 				pop();
+	 				push(new Item("I"));
+	 			break;
+	 			
+	 			case BALOAD:
+	 				it = pop();
+	 				pop();
+	 				signature = it.getSignature();
+	 				push(new Item(signature));
+	 			break;
+	 			
+	 			case BASTORE:
+	 				pop(3);
+	 			break;
+	 			
+	 			case SIPUSH:
+	 				push(new Item("S", new Short((short)dbc.getIntConstant())));
 	 			break;
 	 				
 	 			case INVOKEVIRTUAL:
@@ -278,14 +331,19 @@ public class OpcodeStack implements Constants2
  	}
  	
  	private void pushByConstant(DismantleBytecode dbc, Constant c) {
+ 		
 		if (c instanceof ConstantInteger)
 			push(new Item("I", new Integer(((ConstantInteger) c).getBytes())));
-		else if (c instanceof ConstantFloat)
-			push(new Item("F", new Float(((ConstantInteger) c).getBytes())));
 		else if (c instanceof ConstantString) {
 			int s = ((ConstantString) c).getStringIndex();
 			push(new Item("Ljava/lang/String;", getStringFromIndex(dbc, s)));
 		}
+		else if (c instanceof ConstantFloat)
+			push(new Item("F", new Float(((ConstantInteger) c).getBytes())));
+		else if (c instanceof ConstantDouble)
+			push(new Item("D", new Double(((ConstantDouble) c).getBytes())));
+		else if (c instanceof ConstantLong)
+			push(new Item("D", new Long(((ConstantLong) c).getBytes())));
 		else
 			throw new UnsupportedOperationException("Constant type not expected" );
  	}
@@ -298,6 +356,6 @@ public class OpcodeStack implements Constants2
 	private void pushBySignature(String s) {
  		if ("V".equals(s))
  			return;
-	 	push(new Item(s, null));
+ 	 	push(new Item(s, null));
  	}
 }
