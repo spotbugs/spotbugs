@@ -2365,7 +2365,7 @@ super.tearDown(), but doesn't.</p>
   </BugPattern>  
   
   <BugPattern type="BOA_BADLY_OVERRIDDEN_ADAPTER">
-    <ShortDescription>Class {0} overrides a method implemented in super class Adapter wrongly</ShortDescription>
+    <ShortDescription>Class overrides a method implemented in super class Adapter wrongly</ShortDescription>
     <LongDescription>Class {0} overrides a method {1} implemented in super class Adapter wrongly</LongDescription>
     <Details>
 <![CDATA[
