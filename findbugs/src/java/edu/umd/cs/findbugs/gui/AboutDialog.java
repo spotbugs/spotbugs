@@ -206,9 +206,9 @@ public class AboutDialog extends javax.swing.JDialog {
                 Runtime rt = Runtime.getRuntime();
                 if (os.indexOf( "win" ) >= 0) {
                     rt.exec( "rundll32 url.dll,FileProtocolHandler " + url.toString());
-                } else if (os.indexOf( "mac" ) >= 0) {
+                } /* else if (os.indexOf( "mac" ) >= 0) {
                     rt.exec( "open " + url.toString());
-                }
+                    } */
             }
         }
         catch (Exception e) {
