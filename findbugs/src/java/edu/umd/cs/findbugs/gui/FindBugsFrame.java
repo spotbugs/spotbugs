@@ -801,7 +801,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 		browseJarButton.setMaximumSize(new java.awt.Dimension(90, 25));
 		browseJarButton.setMinimumSize(new java.awt.Dimension(90, 25));
 		browseJarButton.setPreferredSize(new java.awt.Dimension(90, 25));
-		browseJarButton.setText(L10N.getLocalString("dlg.browse_btn", "Browse"));
+		browseJarButton.setText(L10N.getLocalString("dlg.browse_btn", "Browse..."));
 		browseJarButton.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				browseJarButtonActionPerformed(evt);
@@ -819,7 +819,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 		browseSrcDirButton.setMaximumSize(new java.awt.Dimension(90, 25));
 		browseSrcDirButton.setMinimumSize(new java.awt.Dimension(90, 25));
 		browseSrcDirButton.setPreferredSize(new java.awt.Dimension(90, 25));
-		browseSrcDirButton.setText(L10N.getLocalString("dlg.browse_btn", "Browse"));
+		browseSrcDirButton.setText(L10N.getLocalString("dlg.browse_btn", "Browse..."));
 		browseSrcDirButton.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				browseSrcDirButtonActionPerformed(evt);
@@ -958,7 +958,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 		browseClasspathEntryButton.setMaximumSize(new java.awt.Dimension(90, 25));
 		browseClasspathEntryButton.setMinimumSize(new java.awt.Dimension(90, 25));
 		browseClasspathEntryButton.setPreferredSize(new java.awt.Dimension(90, 25));
-		browseClasspathEntryButton.setText(L10N.getLocalString("dlg.browse_btn", "Browse"));
+		browseClasspathEntryButton.setText(L10N.getLocalString("dlg.browse_btn", "Browse..."));
 		browseClasspathEntryButton.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				browseClasspathEntryButtonActionPerformed(evt);
@@ -1255,8 +1255,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
 			consoleMessageArea.setBackground(new java.awt.Color(204, 204, 204));
 			consoleMessageArea.setEditable(false);
 			consoleMessageArea.setFont(new java.awt.Font("Lucida Sans Typewriter", 0, 12));
-			consoleMessageArea.setMinimumSize(new java.awt.Dimension(0, 0));
 			consoleMessageArea.setAutoscrolls(false);
+			consoleMessageArea.setMinimumSize(new java.awt.Dimension(0, 0));
 			consoleMessageArea.addFocusListener(new java.awt.event.FocusAdapter() {
 				public void focusGained(java.awt.event.FocusEvent evt) {
 					focusGainedHandler(evt);
@@ -1326,7 +1326,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
 			openProjectItem.setFont(new java.awt.Font("Dialog", 0, 12));
 			openProjectItem.setText("Open Project...");
-			localiseButton(openProjectItem, "menu.open_item", "&Open Project", true);
+			localiseButton(openProjectItem, "menu.open_item", "&Open Project...", true);
 			openProjectItem.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent evt) {
 					openProjectItemActionPerformed(evt);
@@ -1345,7 +1345,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
 			closeProjectItem.setFont(new java.awt.Font("Dialog", 0, 12));
 			closeProjectItem.setText("Close Project");
-			localiseButton(closeProjectItem, "menu.close_item", "&Close", true);
+			localiseButton(closeProjectItem, "menu.close_item", "&Close Project", true);
 			closeProjectItem.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent evt) {
 					closeProjectItemActionPerformed(evt);
@@ -1533,9 +1533,9 @@ public class FindBugsFrame extends javax.swing.JFrame {
 			filterWarningsMenu.setText("Filter Warnings");
 			filterWarningsMenu.setFont(new java.awt.Font("Dialog", 0, 12));
 			localiseButton(filterWarningsMenu, "menu.filterwarnings_menu", "Filter &Warnings", true);
+			priorityButtonGroup.add(expPriorityButton);
 			expPriorityButton.setFont(new java.awt.Font("Dialog", 0, 12));
 			expPriorityButton.setText("Experimental Priority");
-			priorityButtonGroup.add(expPriorityButton);
 			localiseButton(expPriorityButton, "menu.exppriority_item", "&Experimental Priority", true);
 			expPriorityButton.setSelected(getPriorityThreshold() == Detector.EXP_PRIORITY);
 			expPriorityButton.addActionListener(new java.awt.event.ActionListener() {
@@ -1546,9 +1546,9 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
 			filterWarningsMenu.add(expPriorityButton);
 
+			priorityButtonGroup.add(lowPriorityButton);
 			lowPriorityButton.setFont(new java.awt.Font("Dialog", 0, 12));
 			lowPriorityButton.setText("Low Priority");
-			priorityButtonGroup.add(lowPriorityButton);
 			localiseButton(lowPriorityButton, "menu.lowpriority_item", "&Low Priority", true);
 			lowPriorityButton.setSelected(getPriorityThreshold() == Detector.LOW_PRIORITY);
 			lowPriorityButton.addActionListener(new java.awt.event.ActionListener() {
@@ -1559,9 +1559,9 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
 			filterWarningsMenu.add(lowPriorityButton);
 
+			priorityButtonGroup.add(mediumPriorityButton);
 			mediumPriorityButton.setFont(new java.awt.Font("Dialog", 0, 12));
 			mediumPriorityButton.setText("Medium Priority");
-			priorityButtonGroup.add(mediumPriorityButton);
 			localiseButton(mediumPriorityButton, "menu.mediumpriority_item", "&Medium Priority", true);
 			mediumPriorityButton.setSelected(getPriorityThreshold() == Detector.NORMAL_PRIORITY);
 			mediumPriorityButton.addActionListener(new java.awt.event.ActionListener() {
@@ -1572,9 +1572,9 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
 			filterWarningsMenu.add(mediumPriorityButton);
 
+			priorityButtonGroup.add(highPriorityButton);
 			highPriorityButton.setFont(new java.awt.Font("Dialog", 0, 12));
 			highPriorityButton.setText("High Priority");
-			priorityButtonGroup.add(highPriorityButton);
 			localiseButton(highPriorityButton, "menu.highpriority_item", "&High Priority", true);
 			highPriorityButton.setSelected(getPriorityThreshold() == Detector.HIGH_PRIORITY);
 			highPriorityButton.addActionListener(new java.awt.event.ActionListener() {
@@ -1628,7 +1628,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 			localiseButton(settingsMenu, "menu.settings_menu", "&Settings", true);
 			configureDetectorsItem.setFont(new java.awt.Font("Dialog", 0, 12));
 			configureDetectorsItem.setText("Configure Detectors...");
-			localiseButton(configureDetectorsItem, "menu.configure_item", "&Configure detectors", true);
+			localiseButton(configureDetectorsItem, "menu.configure_item", "&Configure Detectors...", true);
 			configureDetectorsItem.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent evt) {
 					configureDetectorsItemActionPerformed(evt);

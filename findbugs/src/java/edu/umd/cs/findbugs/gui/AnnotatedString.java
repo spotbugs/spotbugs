@@ -61,6 +61,14 @@ public class AnnotatedString {
 
 				return myAnnotatedString.substring(0, endIndex);
 			}
+
+			// Support annotations like "File(&F)..."
+			if (myAnnotatedString.matches("[^&]+\\(&\\p{Alnum}\\)\\.\\.\\.")) {
+				int startIndex = myAnnotatedString.length() - "(&X)...".length();
+				int endIndex = startIndex + "(&X)".length();
+
+				return new StringBuffer(myAnnotatedString).delete(startIndex, endIndex).toString();
+			}
 		}
 		return myAnnotatedString.replaceFirst("&", "");
 	}
