@@ -34,6 +34,7 @@ public class FindNakedNotify extends BytecodeScanningDetector implements   Const
     int stage = 0;
     private BugReporter bugReporter;
     boolean synchronizedMethod;
+    private int notifyPC;
 
     public FindNakedNotify(BugReporter bugReporter) {
 	this.bugReporter = bugReporter;
@@ -50,7 +51,8 @@ public class FindNakedNotify extends BytecodeScanningDetector implements   Const
 	if (synchronizedMethod && stage == 4) 
 		bugReporter.reportBug(
 			new BugInstance("NN_NAKED_NOTIFY", NORMAL_PRIORITY)
-			.addClassAndMethod(this));
+			.addClassAndMethod(this)
+			.addSourceLine(this, notifyPC));
 	}
 
     public void sawOpcode(int seen) {
@@ -66,8 +68,10 @@ public class FindNakedNotify extends BytecodeScanningDetector implements   Const
 			if (seen == INVOKEVIRTUAL 
 				&& (nameConstant.equals("notify")
 				   || nameConstant.equals("notifyAll"))
-				&& sigConstant.equals("()V"))
+				&& sigConstant.equals("()V")) {
 			  stage = 3;
+			  notifyPC = PC;
+			  }
 			else stage = 0;
 			break;
 		case 3:
@@ -76,7 +80,8 @@ public class FindNakedNotify extends BytecodeScanningDetector implements   Const
 		case 4:
 			if (seen == MONITOREXIT) {
 				bugReporter.reportBug(new BugInstance("NN_NAKED_NOTIFY", NORMAL_PRIORITY)
-					.addClassAndMethod(this));
+					.addClassAndMethod(this)
+					.addSourceLine(this, notifyPC));
 				stage = 5;
 				}
 			else
