@@ -34,7 +34,7 @@ import java.util.*;
  * @see CFG
  * @author David Hovemeyer
  */
-public class DepthFirstSearch implements DFSEdgeTypes /*, Debug*/ {
+public class DepthFirstSearch implements DFSEdgeTypes {
 	public final static boolean DEBUG = false;
 
 	private CFG cfg;
@@ -79,13 +79,7 @@ public class DepthFirstSearch implements DFSEdgeTypes /*, Debug*/ {
 	 * @return this object
 	 */
 	public DepthFirstSearch search() {
-		// Control flow graphs have a unique entry block
-		// from which all other blocks can be reached,
-		// so there's no need to iterate over start blocks
-		// (as is needed in more general graph traversals).
-		visit(cfg.getEntry());
-
-		// Classify CROSS and FORWARD edges
+		visitAll();
 		classifyUnknownEdges();
 
 		return this;
@@ -133,69 +127,76 @@ public class DepthFirstSearch implements DFSEdgeTypes /*, Debug*/ {
 
 	private int indentLevel = 0;
 
-	private void visit(BasicBlock block) {
-		assert getColor(block) == WHITE;
+	private class Visit {
+		private BasicBlock block;
+		private Iterator<Edge> outgoingEdgeIterator;
 
-		String indent = "";
-		if (DEBUG) {
-			for (int i = 0; i < indentLevel; ++i)
-				indent = indent + "  ";
+		public Visit(BasicBlock block) {
+			this.block = block;
+			this.outgoingEdgeIterator = cfg.outgoingEdgeIterator(block);
+
+			// Mark the block as visited, and set its timestamp
+			setColor(block, GRAY);
+			setDiscoveryTime(block, timestamp++);
 		}
 
-		if (DEBUG) System.out.println(indent + "Visiting block " + block.getId());
-
-		// Mark the block as visited, and set its timestamp
-		setColor(block, GRAY);
-		setDiscoveryTime(block, timestamp++);
-
-		// For each successor of the block...
-		Iterator<BasicBlock> succIter = cfg.successorIterator(block);
-		while (succIter.hasNext()) {
-			// Get the successor
-			BasicBlock succ = succIter.next();
-			int succColor = getColor(succ);
-
-			// Get the Edge connecting the block to the successor
-			Edge edge = cfg.lookupEdge(block, succ);
-			assert edge != null;
-			assert edge.getSource() == block;
-			assert edge.getDest() == succ;
-
-			// Classify edge type (if possible)
-			int dfsEdgeType = 0;
-			if (DEBUG) System.out.print(indent + "successor " + succ.getId());
-			switch (succColor) {
-			case WHITE:
-				if (DEBUG) System.out.println(" is WHITE");
-				dfsEdgeType = TREE_EDGE;
-				break;
-			case GRAY:
-				if (DEBUG) System.out.println(" is GRAY");
-				dfsEdgeType = BACK_EDGE;
-				break;
-			case BLACK:
-				if (DEBUG) System.out.println(" is BLACK");
-				dfsEdgeType = UNKNOWN_EDGE;
-				break;// We can't distinguish between CROSS and FORWARD edges at this point
-			default:
-				assert false;
-			}
-			setDFSEdgeType(edge, dfsEdgeType);
-
-			// If successor hasn't been visited yet, visit it
-			if (succColor == WHITE) {
-				if (DEBUG) ++indentLevel;
-				visit(succ);
-				if (DEBUG) --indentLevel;
-			}
-		}
-
-		if (DEBUG) System.out.println(indent + "Finish block " + block.getId());
-		setColor(block, BLACK);
-		topologicalSortList.addFirst(block);
-		setFinishTime(block, timestamp++);
+		public BasicBlock getBlock() { return block; }
+		public boolean hasNextEdge() { return outgoingEdgeIterator.hasNext(); }
+		public Edge getNextEdge() { return outgoingEdgeIterator.next(); }
 	}
 
+	private void visitAll() {
+		ArrayList<Visit> stack = new ArrayList<Visit>(cfg.getNumBasicBlocks());
+		stack.add(new Visit(cfg.getEntry()));
+
+		while (!stack.isEmpty()) {
+			Visit visit = stack.get(stack.size() - 1);
+
+			if (visit.hasNextEdge()) {
+				// Continue visiting successors
+				Edge edge = visit.getNextEdge();
+				visitSuccessor(stack, edge);
+			} else {
+				// Finish the block
+				BasicBlock block = visit.getBlock();
+				setColor(block, BLACK);
+				topologicalSortList.addFirst(block);
+				setFinishTime(block, timestamp++);
+
+				stack.remove(stack.size() - 1);
+			}
+		}
+	}
+
+	private void visitSuccessor(ArrayList<Visit> stack, Edge edge) {
+		// Get the successor
+		BasicBlock succ = edge.getDest();
+		int succColor = getColor(succ);
+
+		// Classify edge type (if possible)
+		int dfsEdgeType = 0;
+		switch (succColor) {
+		case WHITE:
+			dfsEdgeType = TREE_EDGE;
+			break;
+		case GRAY:
+			dfsEdgeType = BACK_EDGE;
+			break;
+		case BLACK:
+			dfsEdgeType = UNKNOWN_EDGE;
+			break;// We can't distinguish between CROSS and FORWARD edges at this point
+		default:
+			assert false;
+		}
+		setDFSEdgeType(edge, dfsEdgeType);
+
+		// If successor hasn't been visited yet, visit it
+		if (succColor == WHITE) {
+			stack.add(new Visit(succ));
+		}
+	}
+
+	// Classify CROSS and FORWARD edges
 	private void classifyUnknownEdges() {
 		Iterator<Edge> edgeIter = cfg.edgeIterator();
 		while (edgeIter.hasNext()) {
