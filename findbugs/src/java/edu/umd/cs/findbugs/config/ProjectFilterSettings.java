@@ -307,7 +307,7 @@ public class ProjectFilterSettings implements Cloneable {
 			
 		}
 		
-		// Whether or display false warnings
+		// Whether to display false warnings
 		buf.append(FIELD_DELIMITER);
 		buf.append(displayFalseWarnings ? "true" : "false");
 		
