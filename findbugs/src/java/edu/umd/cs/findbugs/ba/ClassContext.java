@@ -87,13 +87,14 @@ public class ClassContext implements AnalysisFeatures {
 	 * (since if it fails once, it will never succeed). 
 	 */
 	private static class AnalysisResult<Analysis> {
+		private boolean analysisSetExplicitly;
 		private Analysis analysis;
 		private AnalysisException analysisException;
 		private CFGBuilderException cfgBuilderException;
 		private DataflowAnalysisException dataflowAnalysisException;
 		
 		public Analysis getAnalysis() throws CFGBuilderException, DataflowAnalysisException {
-			if (analysis != null)
+			if (analysisSetExplicitly)
 				return analysis;
 			if (dataflowAnalysisException != null)
 				throw dataflowAnalysisException;
@@ -110,6 +111,7 @@ public class ClassContext implements AnalysisFeatures {
 		 * @param analysis the Analysis
 		 */
 		public void setAnalysis(Analysis analysis) {
+			this.analysisSetExplicitly = true;
 			this.analysis = analysis;
 		}
 		
