@@ -192,19 +192,15 @@ public class FindDeadLocalStores implements Detector {
      
             // Determine whether we should ignore this local variable...
             if (lvt != null) {
-                // Get the name of the local...
-                String localName = null;
-                LocalVariable[] lvs = lvt.getLocalVariableTable();
-                for (int j=0; j<lvs.length; j++) {
-                    if (lvs[j].getIndex() == local) {
-                        localName = lvs[j].getName();
-                    }
-                }
-                
-                // Is it in our set of excluded names?
-                if (EXCLUDED_LOCALS.contains(localName)) {
-                    continue;
-                }
+            	LocalVariable lv = lvt.getLocalVariable(local);
+            	if (lv != null) {
+            		String localName = lv.getName();
+   
+	                // Is it in our set of excluded names?
+	                if (EXCLUDED_LOCALS.contains(localName)) {
+	                    continue;
+	                }
+            	}
             }
                 
 			int localsThatAreParameters = method.getArgumentTypes().length;
