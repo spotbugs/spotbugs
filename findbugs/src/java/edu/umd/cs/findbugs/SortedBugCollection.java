@@ -19,7 +19,15 @@
 
 package edu.umd.cs.findbugs;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 /**
  * An implementation of {@link BugCollection} that keeps the BugInstances
@@ -50,6 +58,9 @@ public class SortedBugCollection extends BugCollection {
 	private TreeSet<String> missingClassSet;
 	private String summaryHTML;
 
+	private Map<String, BugInstance> uniqueIdToBugInstanceMap;
+	private int generatedUniqueIdCount;
+
 	/**
 	 * Constructor.
 	 * Creates an empty object.
@@ -59,10 +70,47 @@ public class SortedBugCollection extends BugCollection {
 		errorList = new LinkedList<String>();
 		missingClassSet = new TreeSet<String>();
 		summaryHTML = "";
+		uniqueIdToBugInstanceMap = new HashMap<String, BugInstance>();
+		generatedUniqueIdCount = 0;
 	}
 
 	public boolean add(BugInstance bugInstance) {
+		registerUniqueId(bugInstance);
+		
 		return bugSet.add(bugInstance);
+	}
+
+	/**
+	 * Create a unique id for a BugInstance if it doesn't already have one,
+	 * or if the unique id it has conflicts with a BugInstance that is
+	 * already in the collection.
+	 * 
+	 * @param bugInstance the BugInstance
+	 */
+	private void registerUniqueId(BugInstance bugInstance) {
+		// If the BugInstance has no unique id, generate one.
+		// If the BugInstance has a unique id which conflicts with
+		// an existing BugInstance, then we also generate a new
+		// unique id.
+		String uniqueId = bugInstance.getUniqueId();
+		if (uniqueId == null || uniqueIdToBugInstanceMap.get(uniqueId) != null) {
+			assignUniqueId(bugInstance);
+		}
+		uniqueIdToBugInstanceMap.put(uniqueId, bugInstance);
+	}
+
+	/**
+	 * Assign a unique id to given BugInstance.
+	 * 
+	 * @param bugInstance the BugInstance to be assigned a unique id
+	 */
+	private void assignUniqueId(BugInstance bugInstance) {
+		String uniqueId;
+		do {
+			uniqueId = String.valueOf(generatedUniqueIdCount++);
+		} while (uniqueIdToBugInstanceMap.get(uniqueId) != null);
+		
+		bugInstance.setUniqueId(uniqueId);
 	}
 
 	public boolean remove(BugInstance bugInstance) {
@@ -111,6 +159,13 @@ public class SortedBugCollection extends BugCollection {
 
 	public String getSummaryHTML() {
 		return summaryHTML;
+	}
+
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.BugCollection#lookupFromUniqueId(java.lang.String)
+	 */
+	public BugInstance lookupFromUniqueId(String uniqueId) {
+		return uniqueIdToBugInstanceMap.get(uniqueId);
 	}
 }
 
