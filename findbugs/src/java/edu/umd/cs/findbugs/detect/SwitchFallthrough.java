@@ -39,7 +39,6 @@ public class SwitchFallthrough extends BytecodeScanningDetector implements Const
 	private int[] swOffsets = null;
 	private int[] swLabels = null;
 	private int defSwOffset = 0;
-	private int lastSeen = 0;
 	private int lastPC = 0;
 
 	public SwitchFallthrough(BugReporter bugReporter) {
@@ -56,7 +55,6 @@ public class SwitchFallthrough extends BytecodeScanningDetector implements Const
 		swOffsets = null;
 		swLabels = null;
 		defSwOffset = 0;
-		lastSeen = 0;
 		lastPC = 0;
 /*		lineNumbers = obj.getLineNumberTable();
 		if (lineNumbers != null)
@@ -87,11 +85,10 @@ public class SwitchFallthrough extends BytecodeScanningDetector implements Const
 				if ((getPC() == (switchPC + swOffsets[nextIndex]))
 				&&  (swOffsets[nextIndex] != defSwOffset)) {
 					if (nextIndex > 0 && reachable) {
-						if ((lastSeen != GOTO) && (lastSeen != GOTO_W)) {
-							bugReporter.reportBug(new BugInstance("SF_SWITCH_FALLTHROUGH", LOW_PRIORITY)
-			        			.addClassAndMethod(this)
-			        			.addSourceLineRange(this, lastPC, getPC()));
-			        	}
+						bugReporter.reportBug(new BugInstance("SF_SWITCH_FALLTHROUGH", LOW_PRIORITY)
+		        			.addClassAndMethod(this)
+		        			.addSourceLineRange(this, lastPC, getPC()));
+
 
 /*	Not sure why this is here, isn't lack of goto enough? 				
 						int endOfPreviousCase = lineNumbers.getSourceLine(getPC() - 1);
@@ -136,7 +133,6 @@ public class SwitchFallthrough extends BytecodeScanningDetector implements Const
 			}
 		}
 		
-		lastSeen = seen;
 		lastPC = getPC();
 	}
 }
