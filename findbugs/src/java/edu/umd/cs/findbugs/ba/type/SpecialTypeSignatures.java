@@ -69,6 +69,11 @@ public interface SpecialTypeSignatures {
 	 * and the JVM treats doubles as taking up two local slots.
 	 */
 	public static final String DOUBLE_EXTRA_TYPE_SIGNATURE = "@doubleextra";
+
+	/**
+	 * Signature of special return address type.
+	 */
+	public static final String RETURN_ADDRESS_TYPE_SIGNATURE = "@returnaddress";
 }
 
 // vim:ts=4
