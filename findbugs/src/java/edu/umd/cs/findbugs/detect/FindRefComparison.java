@@ -355,7 +355,8 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 				InvokeInstruction inv = (InvokeInstruction) ins;
 				String methodName = inv.getMethodName(cpg);
 				String methodSig = inv.getSignature(cpg);
-				if (methodName.equals("equals") && methodSig.equals("(Ljava/lang/Object;)Z")) {
+				if ((methodName.equals("equals") && methodSig.equals("(Ljava/lang/Object;)Z"))
+				    || (methodName.equals("equalIgnoreCases") && methodSig.equals("(Ljava/lang/String;)Z"))) {
 					sawCallToEquals = true;
 					checkEqualsComparison(location, jclass, methodGen, typeDataflow);
 				}
