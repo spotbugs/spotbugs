@@ -53,6 +53,16 @@ public class OpenStream {
 		PrintStream ps = new PrintStream(outputStream);
 		ps.println("Hello");
 	}
+
+	public void wrappedStreamClosedDoNotReport() throws IOException {
+		FileOutputStream f= new FileOutputStream("Hello.txt");
+		PrintStream ps = new PrintStream(f);
+		try {
+			ps.println("Hello");
+		} finally {
+			f.close();
+		}
+	}
 }
 
 // vim:ts=4
