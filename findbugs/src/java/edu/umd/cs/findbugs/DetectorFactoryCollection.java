@@ -127,6 +127,7 @@ public class DetectorFactoryCollection {
 	 * Register a DetectorFactory.
 	 */
 	private void registerDetector(DetectorFactory factory) {
+		if (FindBugs.DEBUG) System.out.println("Registering detector: " + factory.getFullName());
 		String detectorName = factory.getShortName();
 		factoryList.add(factory);
 		factoriesByName.put(detectorName, factory);
@@ -157,8 +158,10 @@ public class DetectorFactoryCollection {
 
 			ArrayList<File> arr = new ArrayList<File>();
 			for (int i = 0; i < contentList.length; ++i) {
-				if (contentList[i].getName().endsWith(".jar"))
+				if (contentList[i].getName().endsWith(".jar")) {
+					if (FindBugs.DEBUG) System.out.println("Found plugin: " + contentList[i].toString());
 					arr.add(contentList[i]);
+				}
 			}
 			pluginList = (File[]) arr.toArray(new File[arr.size()]);
 		}
@@ -167,6 +170,7 @@ public class DetectorFactoryCollection {
 		for (int i = 0; i < pluginList.length; ++i) {
 			File file = pluginList[i];
 			try {
+				if (FindBugs.DEBUG) System.out.println("Loading plugin: " + file.toString());
 				URL url = file.toURL();
 				PluginLoader pluginLoader = new PluginLoader(url, this.getClass().getClassLoader());
 	
