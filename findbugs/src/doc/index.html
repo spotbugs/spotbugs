@@ -56,13 +56,16 @@ compares several Java bug checkers, including FindBugs.
 <li> New detector to find empty zip or jar entries (Bill Pugh)
 
 <!-- feature enhancements -->
-<li> Allow URLs to be specified to analyze zip/jar files and single classfiles. (Dave Hovemeyer)
-<li> Allow win32 to show source code in jar files (Dave Brosius)
+<li> Allow URLs to be specified to analyze zip/jar files,
+  local directories, and single classfiles (David Hovemeyer)
+<li> Allow Swing GUI to show source code in jar files on Windows systems (Dave Brosius)
 
 <!-- Bug fixes -->
-<li> Fix the Switch Fall Thru detector (Dave Brosius, Dave Hovemeyer, Bill Pugh)
+<li> Fix the Switch Fall Thru detector (Dave Brosius, David Hovemeyer, Bill Pugh)
 <li> MacOS GUI fixes (Rohan Lloyd)
 <li> Fix false positive in BOA in case where method is correctly and 'incorrectly' overridden (Dave Brosius)
+<li> Fixed memory blowup when analyzing methods which access
+     a large number of fields (David Hovemeyer)
 </ul>
 
 
