@@ -185,13 +185,18 @@ public class FindBugs implements Constants2
 					return s1.compareTo(s2);
 					}
 			});
+
+		int classCount = 0;
 		for( Enumeration<ZipEntry> e = z.entries(); e.hasMoreElements(); )  {
 			if (Thread.interrupted())
 				throw new InterruptedException();
-			zipEntries.add(e.nextElement());
+			ZipEntry entry = e.nextElement();
+			if (entry.getName().endsWith(".class"))
+				++classCount;
+			zipEntries.add(entry);
 			}
 
-		progressCallback.startArchive(fileName, zipEntries.size());
+		progressCallback.startArchive(fileName, classCount);
 			
 		for( Iterator j = zipEntries.iterator(); j.hasNext(); ) {
 			ZipEntry ze = (ZipEntry)j.next();
