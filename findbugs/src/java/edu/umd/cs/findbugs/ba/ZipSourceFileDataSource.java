@@ -19,6 +19,7 @@
 
 package edu.umd.cs.daveho.ba;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.zip.ZipEntry;
@@ -30,19 +31,23 @@ import java.util.zip.ZipFile;
  */
 public class ZipSourceFileDataSource implements SourceFileDataSource {
 	private ZipFile zipFile;
+	private String entryName;
 	private ZipEntry zipEntry;
 
-	public ZipSourceFileDataSource(ZipFile zipFile, ZipEntry zipEntry) {
+	public ZipSourceFileDataSource(ZipFile zipFile, String entryName) {
 		this.zipFile = zipFile;
-		this.zipEntry = zipEntry;
+		this.entryName = entryName;
+		this.zipEntry = zipFile.getEntry(entryName);
 	}
 
 	public InputStream open() throws IOException {
+		if (zipEntry == null)
+			throw new FileNotFoundException("No zip entry for " + entryName);
 		return zipFile.getInputStream(zipEntry);
 	}
 
 	public String getFullFileName() {
-		return zipEntry.getName();
+		return entryName;
 	}
 }
 
