@@ -46,7 +46,7 @@ public class CallSite {
 	public InstructionHandle getHandle() { return handle; }
 
 	public int hashCode() {
-		return System.identityHashCode(method) + basicBlock.getId() + System.identityHashCode(handle);
+		return System.identityHashCode(method) ^ basicBlock.getId() ^ System.identityHashCode(handle);
 	}
 
 	public boolean equals(Object o) {
