@@ -1,6 +1,6 @@
 /*
  * FindBugs - Find bugs in Java programs
- * Copyright (C) 2003,2004 University of Maryland
+ * Copyright (C) 2003-2005, University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,7 +19,11 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.*;
+import java.util.BitSet;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -32,8 +36,36 @@ import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
-import org.apache.bcel.generic.*;
+import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.FieldInstruction;
+import org.apache.bcel.generic.GETFIELD;
+import org.apache.bcel.generic.GETSTATIC;
+import org.apache.bcel.generic.INVOKEINTERFACE;
+import org.apache.bcel.generic.INVOKESPECIAL;
+import org.apache.bcel.generic.INVOKESTATIC;
+import org.apache.bcel.generic.INVOKEVIRTUAL;
+import org.apache.bcel.generic.Instruction;
+import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.InvokeInstruction;
+import org.apache.bcel.generic.LDC;
+import org.apache.bcel.generic.LDC2_W;
+import org.apache.bcel.generic.MethodGen;
+import org.apache.bcel.generic.ObjectType;
+import org.apache.bcel.generic.ReferenceType;
+import org.apache.bcel.generic.Type;
 
+/**
+ * Find suspicious reference comparisons.
+ * This includes:
+ * <ul>
+ * <li>Strings and other java.lang objects compared by reference equality</li>
+ * <li>Calls to equals(Object) where the argument is a different type than
+ *     the receiver object</li>
+ * </ul>
+ * 
+ * @author David Hovemeyer
+ * @author Bill Pugh
+ */
 public class FindRefComparison implements Detector, ExtendedTypes {
 	private static final boolean DEBUG = Boolean.getBoolean("frc.debug");
 	private static final boolean REPORT_ALL_REF_COMPARISONS = Boolean.getBoolean("findbugs.refcomp.reportAll");
