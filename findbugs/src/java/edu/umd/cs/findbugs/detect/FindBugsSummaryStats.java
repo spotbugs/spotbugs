@@ -24,8 +24,6 @@ import edu.umd.cs.pugh.visitclass.PreorderVisitor;
 import edu.umd.cs.daveho.ba.ClassContext;
 
 import java.util.*;
-import java.text.SimpleDateFormat;
-import java.text.DateFormat;
 import java.io.*;
 
 import org.apache.bcel.Repository;
@@ -43,38 +41,26 @@ import org.dom4j.io.OutputFormat;
 
 public class FindBugsSummaryStats extends PreorderVisitor 
                                   implements Detector, BugReporterObserver, SummaryReport {
-  private HashMap<String, PackageStats> packageStatsMap = new HashMap<String, PackageStats>();
   private BugReporter bugReporter;
-  int totalErrors;
-  int totalClasses;
-
+  private ProjectStats stats;
 
   public FindBugsSummaryStats(BugReporter bugReporter) {
-	this.bugReporter = bugReporter;
+    this.bugReporter = bugReporter;
+    this.stats = new ProjectStats();
     bugReporter.addObserver( this );
-    this.totalErrors = 0;
-    this.totalClasses = 0;
   }
 
   public void visitClassContext(ClassContext classContext) {
-	classContext.getJavaClass().accept(this);
+    classContext.getJavaClass().accept(this);
   }
 
   public void report() { }
 
   public void reportSummary( OutputStream out ) {
      Document document = DocumentHelper.createDocument();
-     Element root = document.addElement("FindBugsSummary");
-     DateFormat df = new SimpleDateFormat( "EEE, d MMM yyyy HH:mm:ss Z" );
-     root.addAttribute("timestamp", df.format(new Date() ));
-     root.addAttribute( "total_classes", String.valueOf( totalClasses ) );
-     root.addAttribute( "total_bugs", String.valueOf( totalErrors ) );
-     root.addAttribute( "num_packages", String.valueOf( packageStatsMap.size() ) );
-	 Iterator<PackageStats> i = packageStatsMap.values().iterator();
-     while( i.hasNext() ) {
-       PackageStats stats = i.next();
-       stats.toElement( root );
-     } 
+
+     stats.setDate(new Date());
+     stats.toElement(document);
 
      try {
        XMLWriter writer = new XMLWriter(out, OutputFormat.createPrettyPrint());
@@ -86,25 +72,12 @@ public class FindBugsSummaryStats extends PreorderVisitor
   }
 
   public void visit(JavaClass obj)     {
-	super.visit(obj);
-    PackageStats stat = getPackageStats( packageName );
-    stat.addClass( betterClassName, obj.isInterface() );
-    totalClasses++;
+    super.visit(obj);
+    stats.addClass( betterClassName, obj.isInterface() );
   }
 
   public void reportBug( BugInstance bug ) {
-    PackageStats stat = getPackageStats( bug.getPrimaryClass().getPackageName() );
-    stat.addError( bug );
-    totalErrors++;
-  }
-
-  private PackageStats getPackageStats( String packageName ) {
-    PackageStats stat = packageStatsMap.get( packageName );
-    if ( stat == null ) {
-      stat = new PackageStats( packageName );
-      packageStatsMap.put( packageName, stat );
-    }
-    return stat;
+    stats.addBug(bug);
   }
 
 }
