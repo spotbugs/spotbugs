@@ -136,8 +136,9 @@ public class ClassContext implements AnalysisFeatures {
 		}
 	}
 
+	private static final Set<String> busyCFGSet = new HashSet<String>();
+
 	private class CFGFactory extends AnalysisFactory<CFG> {
-		private Set<String> busyCFGSet = new HashSet<String>();
 
 		public CFGFactory() { super("CFG construction"); }
 
@@ -346,7 +347,7 @@ public class ClassContext implements AnalysisFeatures {
 	private AnalysisFactory<ReturnPathDataflow> returnPathDataflowFactory =
 	new AnalysisFactory<ReturnPathDataflow>("return path analysis") {
 		protected ReturnPathDataflow analyze(Method method) throws DataflowAnalysisException, CFGBuilderException {
-			CFG cfg = getRawCFG(method);
+			CFG cfg = getCFG(method);
 			DepthFirstSearch dfs = getDepthFirstSearch(method);
 			ReturnPathAnalysis analysis = new ReturnPathAnalysis(dfs);
 			ReturnPathDataflow dataflow = new ReturnPathDataflow(cfg, analysis);
