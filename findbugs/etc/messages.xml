@@ -1,5 +1,7 @@
 <MessageCollection>
 
+  <!-- Detectors -->
+
   <Detector class="edu.umd.cs.findbugs.detect.DroppedException">
     <Details>
 <![CDATA[
@@ -260,6 +262,17 @@ is suspiciously ignored.  It is a fairly fast detector.
 ]]>
     </Details>
   </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.FindNullDeref">
+    <Details>
+<![CDATA[
+<p> This detector looks for places where a null pointer exception might
+occur.  Is is a moderately fast detector.
+]]>
+    </Details>
+  </Detector>
+
+  <!-- BugPatterns -->
 
   <BugPattern type="DE_MIGHT_DROP">
     <ShortDescription>Method might drop exception</ShortDescription>
@@ -983,6 +996,7 @@ defined in an interface references a mutable
 ]]>
     </Details>
   </BugPattern>
+
   <BugPattern type="SE_NONFINAL_SERIALVERSIONID">
     <ShortDescription>serialVersionUID isn't final</ShortDescription>
     <LongDescription>{1} isn't final</LongDescription>
@@ -1135,6 +1149,30 @@ defined in an interface references a mutable
     </Details>
   </BugPattern>
 
+  <BugPattern type="NP_ALWAYS_NULL">
+    <ShortDescription>Null pointer dereference in method</ShortDescription>
+    <LongDescription>Null pointer dereference in {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p> A null pointer is dereferenced here.&nbsp; This will lead to a 
+<code>NullPointerException</code> when the code is executed.
+]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="NP_NULL_ON_SOME_PATH">
+    <ShortDescription>Possible null pointer dereference in method</ShortDescription>
+    <LongDescription>Possible null pointer dereference in {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p> A reference value dereferenced here might be null at runtime.&nbsp;
+This may lead to a <code>NullPointerException</code> when the code is executed.
+]]>
+    </Details>
+  </BugPattern>
+
+  <!-- BugCodes -->
+
   <BugCode abbrev="FI" >Incorrect use of finalizers</BugCode>
   <BugCode abbrev="ML" >Synchronization on updated field (Mutable Lock)</BugCode>
   <BugCode abbrev="UG" >Unsynchronized get method, synchronized set method</BugCode>
@@ -1172,4 +1210,5 @@ defined in an interface references a mutable
   <BugCode abbrev="2LW" >Wait with two locks held</BugCode>
   <BugCode abbrev="BcpDC">Possible double check of field</BugCode>
   <BugCode abbrev="RV" >Return value of method is ignored</BugCode>
+  <BugCode abbrev="NP" >Null pointer dereference</BugCode>
 </MessageCollection>

@@ -28,6 +28,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.WaitInLoop" speed="fast" />
   <Detector class="edu.umd.cs.findbugs.detect.BCPDoubleCheck" speed="moderate" disabled="true" />
   <Detector class="edu.umd.cs.findbugs.detect.BCPMethodReturnCheck" speed="fast" />
+  <Detector class="edu.umd.cs.findbugs.detect.FindNullDeref" speed="moderate" />
 
   <BugPattern abbrev="DE" type="DE_MIGHT_DROP" category="CORRECTNESS" />
   <BugPattern abbrev="DE" type="DE_MIGHT_IGNORE" category="CORRECTNESS" />
@@ -96,4 +97,6 @@
   <BugPattern abbrev="No" type="NO_NOTIFY_NOT_NOTIFYALL" category="MT_CORRECTNESS" />
   <BugPattern abbrev="BcpDC" type="BCPDC_DOUBLECHECK" category="MT_CORRECTNESS" />
   <BugPattern abbrev="RV" type="RV_RETURN_VALUE_IGNORED" category="CORRECTNESS" />
+  <BugPattern abbrev="NP" type="NP_ALWAYS_NULL" category="CORRECTNESS" />
+  <BugPattern abbrev="NP" type="NP_NULL_ON_SOME_PATH" category="CORRECTNESS" />
 </FindbugsPlugin>
