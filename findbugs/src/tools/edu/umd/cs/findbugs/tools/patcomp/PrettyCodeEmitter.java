@@ -77,6 +77,7 @@ public class PrettyCodeEmitter implements CodeEmitter {
 	}
 
 	public void finish() throws IOException {
+		out.println();
 		out.flush();
 	}
 

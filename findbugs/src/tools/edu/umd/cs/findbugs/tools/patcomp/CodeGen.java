@@ -36,6 +36,7 @@ public class CodeGen implements PatternCompilerTreeConstants {
 	public void generate(SimpleNode root, CodeEmitter emitter) throws IOException {
 		this.emitter = emitter;
 		visit(root);
+		emitter.finish();
 	}
 
 	private void visit(SimpleNode node) throws IOException {
