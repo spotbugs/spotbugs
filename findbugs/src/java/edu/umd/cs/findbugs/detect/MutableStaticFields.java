@@ -74,8 +74,9 @@ public class MutableStaticFields extends BytecodeScanningDetector implements Con
 		int flags = obj.getAccessFlags();
 		publicClass = (flags & ACC_PUBLIC) != 0
 		        && !getDottedClassName().startsWith("sun.");
-		if ((flags & ACC_INTERFACE) != 0)
+		if ((flags & ACC_INTERFACE) != 0) {
 			interfaces.add(getDottedClassName());
+			}
 
 		packageName = extractPackage(getClassName());
 	}
@@ -146,7 +147,8 @@ public class MutableStaticFields extends BytecodeScanningDetector implements Con
 		boolean isProtected = publicClass && (flags & ACC_PROTECTED) != 0;
 		if (!isPublic && !isProtected) return;
 
-		boolean isHashtable = getFieldSig().equals("Ljava/util/Hashtable;");
+		boolean isHashtable = 
+			getFieldSig().equals("Ljava/util/Hashtable;");
 		boolean isArray = getFieldSig().charAt(0) == '[';
 
 		if (isFinal && !(isHashtable || isArray)) return;
@@ -181,7 +183,7 @@ public class MutableStaticFields extends BytecodeScanningDetector implements Con
 			boolean couldBePackage = !outsidePackage.contains(name);
 			boolean movedOutofInterface = couldBePackage &&
 			        interfaces.contains(className);
-			boolean isHashtable = fieldSig.equals("Ljava/util/Hashtable;");
+			boolean isHashtable = fieldSig.equals("Ljava.util.Hashtable;");
 			boolean isArray = fieldSig.charAt(0) == '['
 			        && unsafeValue.contains(name);
 			/*
@@ -191,10 +193,10 @@ public class MutableStaticFields extends BytecodeScanningDetector implements Con
 					+ "	" + isArray
 						);
 			*/
+
 			String bugType;
 			int priority = NORMAL_PRIORITY;
 			if (isFinal && !isHashtable && !isArray) {
-				// System.out.println( name +" is a safe zero length array");
 				continue;
 			} else if (movedOutofInterface) {
 				bugType = "MS_OOI_PKGPROTECT";
