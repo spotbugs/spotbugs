@@ -82,12 +82,15 @@ import java.util.List;
  * <li>sort            (boolean default true)
  * <li>debug           (boolean default false) 
  * <li>output          (enum text|xml - default xml)
+ * <li>outputFile      (name of output file to create)
  * <li>visitors        (collection - comma seperated)
  * <li>omitVisitors    (collection - comma seperated)
  * <li>excludeFilter   (filter filename)
  * <li>includeFilter   (filter filename)
  * <li>projectFile     (project filename)
  * <li>jvmargs          (any additional jvm arguments)
+ * <li>classpath       (classpath for running FindBugs)
+ * <li>pluginList      (list of plugin Jar files to load)
  * </ul>
  * Of these arguments, the <b>home</b> is required.
  * <b>projectFile</b> is required if nested &lt;class&gt; are not
@@ -106,8 +109,6 @@ import java.util.List;
 
 public class FindBugsTask extends Task {
 
-    private static final String FAIL_MSG
-        = "Findbugs found errors; see the error output for details.";
     private static final String FINDBUGS_JAR = "findbugs.jar";
     private static final long DEFAULT_TIMEOUT = 600000; // ten minutes
 
@@ -128,6 +129,8 @@ public class FindBugsTask extends Task {
 	private String outputFileName = null;
     private List classLocations = new ArrayList();
 	private long timeout = DEFAULT_TIMEOUT;
+	private Path classpath = null;
+	private Path pluginList = null;
 
 	private Java findbugsEngine = null;
 
@@ -318,16 +321,87 @@ public class FindBugsTask extends Task {
 		execFindbugs();
 	}
 
+	/**
+	 * the classpath to use.
+	 */
+	public void setClassPath(Path src) {
+		if (classpath == null) {
+			classpath = src;
+		} else {
+			classpath.append(src);
+		}
+	}
+
+	/**
+	 * Path to use for classpath.
+	 */
+	public Path createClassPath() {
+		if (classpath == null) {
+			classpath = new Path(project);
+		}
+		return classpath.createPath();
+	}
+
+	/**
+	 * Adds a reference to a classpath defined elsewhere.
+	 */
+	public void setClassPathRef(Reference r) {
+		createClassPath().setRefid(r);
+	}
+
+	/**
+	 * the plugin list to use.
+	 */
+	public void setPluginList(Path src) {
+		if (pluginList == null) {
+			pluginList = src;
+		} else {
+			pluginList.append(src);
+		}
+	}
+
+	/**
+	 * Path to use for plugin list.
+	 */
+	public Path createPluginList() {
+		if (pluginList == null) {
+			pluginList = new Path(project);
+		}
+		return pluginList.createPath();
+	}
+
+	/**
+	 * Adds a reference to a plugin list defined elsewhere.
+	 */
+	public void setPluginListRef(Reference r) {
+		createPluginList().setRefid(r);
+	}
+
     /**
      * Check that all required attributes have been set
      *
      * @since Ant 1.5
      */
 	private void checkParameters() {
-		if ( homeDir == null ) {
-			throw new BuildException( "home attribute must be defined for task <"
+		if ( homeDir == null && (classpath == null || pluginList == null) ) {
+			throw new BuildException( "either home attribute or " +
+									  "classpath and pluginList attributes " +
+									  " must be defined for task <"
 										+ getTaskName() + "/>",
 									  getLocation() );
+		}
+
+		if (pluginList != null) {
+			// Make sure that all plugins are actually Jar files.
+			String[] pluginFileList = pluginList.list();
+			for (int i = 0; i < pluginFileList.length; ++i) {
+				String pluginFile = pluginFileList[i];
+				if (!pluginFile.endsWith(".jar")) {
+					throw new BuildException("plugin file " + pluginFile + " is not a Jar file " +
+											"in task <" + getTaskName() + "/>",
+											getLocation());
+				}
+			}
 		}
 
 		if ( projectFile == null && classLocations.size() == 0 ) {
@@ -381,17 +455,33 @@ public class FindBugsTask extends Task {
 
 		findbugsEngine.setTaskName( getTaskName() );
 		findbugsEngine.setFork( true );
-		findbugsEngine.setDir( new File(homeDir + File.separator + "lib"));
-		findbugsEngine.setJar( new File( homeDir + File.separator + "lib" + 
-                                         File.separator + FINDBUGS_JAR ) );
 		findbugsEngine.setTimeout( new Long( timeout ) );
 
 		if ( debug )
 			jvmargs = jvmargs + " -Dfindbugs.debug=true";
 		findbugsEngine.createJvmarg().setLine( jvmargs ); 
 
-		addArg("-home");
-		addArg(homeDir.getPath());
+		if (homeDir != null) {
+			// Use findbugs.home to locate findbugs.jar and the standard
+			// plugins.  This is the usual means of initialization.
+
+			findbugsEngine.setDir( new File(homeDir + File.separator + "lib"));
+			findbugsEngine.setJar( new File( homeDir + File.separator + "lib" + 
+                                         File.separator + FINDBUGS_JAR ) );
+
+			addArg("-home");
+			addArg(homeDir.getPath());
+		} else {
+			// Use an explicitly specified classpath and list of plugin Jars
+			// to initialize.  This is useful for other tools which may have
+			// FindBugs installed using a non-standard directory layout.
+
+			findbugsEngine.setClasspath(classpath);
+			findbugsEngine.setClassname("edu.umd.cs.findbugs.FindBugs");
+
+			addArg("-pluginList");
+			addArg(pluginList.toString());
+		}
 
 		if ( sorted ) addArg("-sortByClass");
 		if ( outputFormat != null && 
