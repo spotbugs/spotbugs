@@ -126,6 +126,7 @@ public class EclipseClasspath {
 		private Document document;
 		private boolean isDependent;
 		private String pluginId;
+		private String pluginVersion;
 		private List<String> requiredPluginIdList;
 		private List<String> exportedLibraryList;
 
@@ -143,6 +144,9 @@ public class EclipseClasspath {
 			if (pluginId.equals(""))
 				throw new EclipseClasspathException("Cannot determine plugin id");
 			//System.out.println("Plugin id is " + pluginId);
+			pluginVersion = plugin.valueOf("@version");
+			if (pluginVersion.equals(""))
+				throw new EclipseClasspathException("Cannot determine plugin version");
 
 			// Extract required plugins
 			requiredPluginIdList = new LinkedList<String>();
@@ -187,6 +191,10 @@ public class EclipseClasspath {
 			return pluginId;
 		}
 
+		public String getVersion() {
+			return pluginVersion;
+		}
+
 		public Iterator<String> requiredPluginIdIterator() {
 			return requiredPluginIdList.iterator();
 		}
@@ -203,6 +211,7 @@ public class EclipseClasspath {
 	private String rootPluginDir;
 	private Map<String, File> pluginDirectoryMap;
 	private Map<String, String> varMap;
+	private Plugin rootPlugin;
 	private List<String> importList;
 
 	public EclipseClasspath(String eclipseDir, String rootPluginDir) {
@@ -275,6 +284,11 @@ public class EclipseClasspath {
 			Plugin plugin = new Plugin(item.getDirectory(), doc, item.isDependent());
 			requiredPluginMap.put(plugin.getId(), plugin);
 
+			if (!plugin.isDependent()) {
+				if (rootPlugin != null) throw new IllegalStateException("multiple root plugins");
+				this.rootPlugin = plugin;
+			}
+
 			// Add unresolved required plugins to the worklist
 			for (Iterator<String> i = plugin.requiredPluginIdIterator(); i.hasNext(); ) {
 				String requiredPluginId = i.next();
@@ -327,6 +341,10 @@ public class EclipseClasspath {
 		return buf.toString();
 	}
 
+	public Plugin getRootPlugin() {
+		return rootPlugin;
+	}
+
 	/**
 	 * Get the plugin id for given directory name.
 	 * Returns null if the directory name does not seem to
@@ -373,7 +391,13 @@ public class EclipseClasspath {
 			ec.addRequiredPlugin(argv[i], argv[i+1]);
 		}
 
-		System.out.println(ec.execute().getClasspath());
+		// Generate a build.properties file which communicates to Ant:
+		//   - what the build classpath should be
+		//   - what the plugin id and version are
+		ec.execute();
+		System.out.println("plugin.build.classpath=" + ec.getClasspath());
+		System.out.println("plugin.id=" + ec.getRootPlugin().getId());
+		System.out.println("plugin.version=" + ec.getRootPlugin().getVersion());
 	}
 }
 
