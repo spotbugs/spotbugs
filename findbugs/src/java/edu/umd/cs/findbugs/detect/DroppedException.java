@@ -279,8 +279,7 @@ public class DroppedException extends PreorderVisitor implements Detector, Const
 		}
 }
 
-  private int getNextExecutableLineNumber(LineNumberTable linenumbers,
-			int PC) {
+  private int getNextExecutableLineNumber(LineNumberTable linenumbers, int PC) {
 	LineNumber [] entries = linenumbers.getLineNumberTable();
 	int beforePC = 0;
 	int i = 0;
@@ -288,15 +287,20 @@ public class DroppedException extends PreorderVisitor implements Detector, Const
 		int line = entries[i].getLineNumber();
 		if (line > beforePC)
 			beforePC = line;
-		}
-	int secondChoice = entries[i].getLineNumber();
-	for(; i < entries.length; i++)  {
-		int line = entries[i].getLineNumber();
-		if (line > beforePC)
-			return line;
-		}
-	return secondChoice;
 	}
+	
+	if (i < entries.length) {
+		int secondChoice = entries[i].getLineNumber();
+		for(; i < entries.length; i++)  {
+			int line = entries[i].getLineNumber();
+			if (line > beforePC)
+				return line;
+			}
+		return secondChoice;
+	}
+	else
+		return entries[entries.length-1].getLineNumber();
+  }
 		
 		
 
