@@ -19,8 +19,6 @@ public class FindHEmismatch extends BytecodeScanningDetector implements   Consta
    boolean extendsObject = false;
    private BugReporter bugReporter;
 
- //  private static final int UNKNOWN_PRIORITY = -1;
-
    public FindHEmismatch(BugReporter bugReporter) {
 	this.bugReporter = bugReporter;
    }
