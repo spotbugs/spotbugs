@@ -27,6 +27,7 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.FieldAnnotation;
 import edu.umd.cs.findbugs.visitclass.Constants2;
+import edu.umd.cs.findbugs.ba.ClassContext;
 import org.apache.bcel.classfile.*;
 
 public class FindMaskedFields extends BytecodeScanningDetector implements Constants2 {
@@ -40,9 +41,13 @@ public class FindMaskedFields extends BytecodeScanningDetector implements Consta
 		this.bugReporter = bugReporter;
 	}
 
+	public void visitClassContext(ClassContext classContext) {
+		JavaClass obj = classContext.getJavaClass();
+		if (!obj.isInterface())
+			classContext.getJavaClass().accept(this);
+	}
+
 	public void visit(JavaClass obj) {
-		if (obj.isInterface())
-			return;
 		classFields.clear();
 
 		Field[] fields = obj.getFields();
