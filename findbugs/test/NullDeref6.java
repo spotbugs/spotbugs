@@ -18,4 +18,22 @@ class NullDeref6 {
 	// no warning should be generated here
 	return o.getClass();
 	}
+
+  Object bar(Object o) {
+	if (o != null) return o;
+
+	if (o == null) 
+		System.out.println("Got null");
+
+	// Should get high priority
+	System.out.println(o.hashCode());
+
+	if (o == null) 
+		return o;
+	// Unreachable code
+	return o.getClass();
+	}
+
+
+
 }

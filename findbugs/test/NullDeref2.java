@@ -6,6 +6,7 @@ public class NullDeref2 {
 	System.out.println("hello");
 	thisIsNull = "notnull";
       } catch (Exception ex) {
+        // Should generate a low warning here
 	System.out.println(thisIsNull.getClass());
       }
     }
@@ -19,6 +20,7 @@ public class NullDeref2 {
 	thisIsNull = "notnull";
       } catch (Exception ex) {
       }
+      // Should generate a low warning here
       System.out.println(thisIsNull.getClass());
     }
   }
@@ -31,6 +33,7 @@ public class NullDeref2 {
       } catch (Exception ex) {
 	thisIsNull = "notnull";
       }
+      // Should generate a medium warning here
       System.out.println(thisIsNull.getClass());
     }
   }
