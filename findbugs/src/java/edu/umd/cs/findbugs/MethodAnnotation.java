@@ -65,7 +65,13 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 	 * @param visitor the BetterVisitor currently visiting the method
 	 */
 	public static MethodAnnotation fromVisitedMethod(BetterVisitor visitor) {
-		return new MethodAnnotation(visitor.getBetterClassName(), visitor.getMethodName(), visitor.getMethodSig());
+		MethodAnnotation result = new MethodAnnotation(visitor.getBetterClassName(), visitor.getMethodName(), visitor.getMethodSig());
+
+		// Try to find the source lines for the method
+		SourceLineAnnotation srcLines = SourceLineAnnotation.fromVisitedMethod(visitor);
+		result.setSourceLines(srcLines);
+
+		return result;
 	}
 
 	/** Get the method name. */
