@@ -125,6 +125,17 @@ public class SourceLineAnnotation implements BugAnnotation {
 	}
 
 	/**
+	 * Get the package name.
+	 */
+	public String getPackageName() {
+		int lastDot = className.lastIndexOf('.');
+		if (lastDot < 0)
+			return "";
+		else
+			return className.substring(0, lastDot);
+	}
+
+	/**
 	 * Get the start line (inclusive).
 	 */
 	public int getStartLine() {

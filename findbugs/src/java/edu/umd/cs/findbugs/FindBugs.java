@@ -150,6 +150,7 @@ public class FindBugs implements Constants2
 		createDetectors();
 
 	classNameToSourceFileMap.put(c.getClassName(), c.getSourceFileName());
+	//bugReporter.logError("map " + c.getClassName() + " -> " + c.getSourceFileName());
 
 	ClassContext classContext = new ClassContext(c);
 
