@@ -15,6 +15,7 @@ public class FindBugs implements Constants2
   private LinkedList<String> detectorNames;
   private boolean omit;
   private HashMap<String, String> classNameToSourceFileMap;
+  private FindBugsProgress progressCallback;
 
   public FindBugs(BugReporter bugReporter, LinkedList<String> detectorNames, boolean omit) {
 	if (bugReporter == null)
@@ -23,8 +24,28 @@ public class FindBugs implements Constants2
 	this.detectorNames = detectorNames;
 	this.omit = omit;
 	this.classNameToSourceFileMap = new HashMap<String, String>();
+
+	// Create a no-op progress callback.
+	this.progressCallback = new FindBugsProgress() {
+		public void reportNumberOfArchives(int numArchives) { }
+		public void startArchive(String archiveName, int numClasses) { }
+		public void finishClass() { }
+		public void finishArchive() { }
+	};
   }
 
+  public FindBugs(BugReporter bugReporter) {
+	this(bugReporter, null, false);
+  }
+
+  /**
+   * Set the progress callback that will be used to keep track
+   * of the progress of the analysis.
+   * @param progressCallback the progress callback
+   */
+  public void setProgressCallback(FindBugsProgress progressCallback) {
+	this.progressCallback = progressCallback;
+  }
 
   private static ArrayList<Class> factories = new ArrayList<Class>();
   private static HashMap<String, Class> factoriesByName = new HashMap<String, Class>();
@@ -124,7 +145,7 @@ public class FindBugs implements Constants2
     }
   }
 
-  public void examine(JavaClass c) {
+  public void examine(JavaClass c) throws InterruptedException {
 	if (detectors == null)
 		createDetectors();
 
@@ -133,12 +154,16 @@ public class FindBugs implements Constants2
 	ClassContext classContext = new ClassContext(c);
 
 	for(int i = 0; i < detectors.length; i++)  {
+		if (Thread.interrupted())
+			throw new InterruptedException();
 		Detector detector = detectors[i];
 		detector.visitClassContext(classContext);
 		}
+
+	progressCallback.finishClass();
 	}
 
-  public void examineFile(String fileName) throws IOException {
+  public void examineFile(String fileName) throws IOException, InterruptedException {
 	if (fileName.endsWith(".zip") || fileName.endsWith(".jar")) {
 		//if (argv.length > 1) System.out.println(fileName);
 		ZipFile z = new ZipFile(fileName);
@@ -160,8 +185,13 @@ public class FindBugs implements Constants2
 					return s1.compareTo(s2);
 					}
 			});
-		for( Enumeration<ZipEntry> e = z.entries(); e.hasMoreElements(); ) 
+		for( Enumeration<ZipEntry> e = z.entries(); e.hasMoreElements(); )  {
+			if (Thread.interrupted())
+				throw new InterruptedException();
 			zipEntries.add(e.nextElement());
+			}
+
+		progressCallback.startArchive(fileName, zipEntries.size());
 			
 		for( Iterator j = zipEntries.iterator(); j.hasNext(); ) {
 			ZipEntry ze = (ZipEntry)j.next();
@@ -170,20 +200,48 @@ public class FindBugs implements Constants2
 				examine(
 				new ClassParser(z.getInputStream(ze),name).parse());
 				}
+			}
+
+		progressCallback.finishArchive();
 		}
-		}
-	else
+	else {
+		progressCallback.startArchive(fileName, 1);
 		examine( new ClassParser(fileName).parse());
+		progressCallback.finishArchive();
+		}
   }
 
-  public void reportFinal() {
+  public void reportFinal() throws InterruptedException {
 	for (int i = 0; i < detectors.length; ++i) {
+		if (Thread.interrupted())
+			throw new InterruptedException();
 		detectors[i].report();
 	}
   }
 
   public String getSourceFile(String className) {
 	return classNameToSourceFileMap.get(className);
+  }
+
+  /**
+   * Execute FindBugs on given list of files (which may be jar files or class files).
+   * All bugs found are reported to the BugReporter object which was set
+   * when this object was constructed.
+   * @param argv list of files to analyze
+   * @throws java.io.IOException if an I/O exception occurs analyzing one of the files
+   * @throws InterruptedException if the thread is interrupted while conducting the analysis
+   */
+  public void execute(String[] argv) throws java.io.IOException, InterruptedException {
+	progressCallback.reportNumberOfArchives(argv.length);
+
+	for(int i=0; i < argv.length; i++) {
+		this.examineFile(argv[i]);
+		}  
+
+	this.reportFinal();
+
+	// Flush any queued bug reports
+	bugReporter.finish();
   }
 
   public static void main(String argv[]) throws Exception
@@ -233,14 +291,10 @@ public class FindBugs implements Constants2
 
 	FindBugs findBugs = new FindBugs(bugReporter, visitorNames, omit);
 
-	for(int i=argCount; i < argv.length; i++) {
-		findBugs.examineFile(argv[i]);
-		}  
+	String[] fileList = new String[argv.length - argCount];
+	System.arraycopy(argv, argCount, fileList, 0, fileList.length);
 
-	findBugs.reportFinal();
-
-	// Flush any queued bug reports
-	bugReporter.finish();
+	findBugs.execute(fileList);
 
   }
 }
