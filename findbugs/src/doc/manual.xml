@@ -908,8 +908,11 @@ You can find the latest version of FindBugs, along with its source code, from th
 David Hovemeyer (<email>daveho@cs.umd.edu</email>) implemented some of the
 detectors, added the GUI, and is the current maintainer.</para>
 
-<para>Mike Fagan (<email>mfagan@tde.com</email>) contributed the &Ant; build script
-and several enhancements and bug fixes to the GUI.</para>
+<para>Mike Fagan (<email>mfagan@tde.com</email>) contributed the &Ant; build script,
+the &Ant; task, and several enhancements and bug fixes to the GUI.</para>
+
+<para>Germano Leichsenring contributed Japanese translations of the bug
+summaries.</para>
 
 </sect1>
 
