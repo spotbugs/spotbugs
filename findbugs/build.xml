@@ -40,6 +40,13 @@
 		<path refid="findbugs.classpath"/>
 	</path>
 
+	<!-- Some of the test classes require a real JDK 1.5 -->
+	<condition property="jsr14.excludes"
+	           value="IgnoredReturnValue.java,JSR166.java,TryLock.java,UnnecessaryMathTest.java">
+		<equals arg1="${build.compiler}"
+		        arg2="com.cortexeb.Jsr14CompilerAdapter"/>
+	</condition>
+
 	<!-- Default target builds scripts and jars, allowing execution using
 		the working directory as FINDBUGS_HOME.  Also build test case jarfile. -->
 	<target name="build" depends="jars,scripts,testjar"/>
@@ -178,9 +185,10 @@
 	<!-- Test cases (for detectors) -->
 	<target name="testjar" depends="classes">
 		<javac srcdir="${test.dir}"
-				destdir="${test.dir}"
-				source="1.5"
-				debug="on">
+		       excludes="${jsr14.excludes}"
+		       destdir="${test.dir}"
+		       source="1.5"
+		       debug="on">
 			<classpath refid="tools.classpath"/>
 		</javac>
 		<jar destfile="${test.jar}">
