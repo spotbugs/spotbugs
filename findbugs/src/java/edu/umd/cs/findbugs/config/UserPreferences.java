@@ -51,6 +51,7 @@ import edu.umd.cs.findbugs.DetectorFactoryCollection;
  * @author Dave Brosius
  */
 public class UserPreferences implements Cloneable {
+	private static final String PREF_FILE_NAME = ".Findbugs_prefs";
 	private static final int MAX_RECENT_FILES = 9;
 	private static final String DETECTOR_THRESHOLD_KEY = "detector_threshold";
 	private static final String FILTER_SETTINGS_KEY = "filter_settings";
@@ -88,7 +89,7 @@ public class UserPreferences implements Cloneable {
 	 * the user's home directory.
 	 */
 	public void read() {
-		File prefFile = new File(System.getProperty("user.home"), "Findbugs.prefs");
+		File prefFile = new File(System.getProperty("user.home"), PREF_FILE_NAME);
 		if (!prefFile.exists() || !prefFile.isFile())
 			return;
 		try {
@@ -169,7 +170,7 @@ public class UserPreferences implements Cloneable {
 	 */
 	public void write() {
 		try {
-			File prefFile = new File(System.getProperty("user.home"), "Findbugs.prefs"); 
+			File prefFile = new File(System.getProperty("user.home"), PREF_FILE_NAME); 
 			write(new FileOutputStream(prefFile));
 		} catch (IOException e) {
 			// Ignore
