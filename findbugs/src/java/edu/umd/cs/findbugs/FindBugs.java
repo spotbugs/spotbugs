@@ -19,21 +19,37 @@
 
 package edu.umd.cs.findbugs;
 
-import java.io.*;
-
+import java.io.BufferedOutputStream;
+import java.io.DataInputStream;
+import java.io.File;
+import java.io.FileFilter;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintStream;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+import java.util.StringTokenizer;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
-import java.util.*;
-import java.util.zip.*;
-
-import edu.umd.cs.findbugs.ba.*;
-import edu.umd.cs.findbugs.visitclass.Constants2;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.ClassFormatException;
 import org.apache.bcel.classfile.ClassParser;
 import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.util.ClassPath;
-import org.apache.bcel.util.SyntheticRepository;
+
+import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.ba.AnalysisException;
+import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.ba.ClassObserver;
+import edu.umd.cs.findbugs.ba.InnerClassAccessMap;
+import edu.umd.cs.findbugs.visitclass.Constants2;
 
 /**
  * An instance of this class is used to apply the selected set of
