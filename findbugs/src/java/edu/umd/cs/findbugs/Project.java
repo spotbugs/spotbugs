@@ -279,23 +279,37 @@ public class Project {
 		
 		BufferedReader reader = new BufferedReader(new InputStreamReader(in));
 		String line;
-		line = reader.readLine();
+		line = getLine(reader);
 		if (line == null || !line.equals(JAR_FILES_KEY)) throw new IOException("Bad format: missing jar files key");
-		while ((line = reader.readLine()) != null && !line.equals(SRC_DIRS_KEY)) {
+		while ((line = getLine(reader)) != null && !line.equals(SRC_DIRS_KEY)) {
 			jarList.add(line);
 		}
 		if (line == null) throw new IOException("Bad format: missing source dirs key");
-		while ((line = reader.readLine()) != null && !line.equals(AUX_CLASSPATH_ENTRIES_KEY)) {
+		while ((line = getLine(reader)) != null && !line.equals(AUX_CLASSPATH_ENTRIES_KEY)) {
 			srcDirList.add(line);
 		}
 		if (line != null) {
 			// The list of aux classpath entries is optional
-			while ((line = reader.readLine()) != null) {
+			while ((line = getLine(reader)) != null) {
 				auxClasspathEntryList.add(line);
 			}
 		}
 		
 		reader.close();
+	}
+
+	/**
+	 * Read a line from a BufferedReader, ignoring blank lines
+	 * and comments.
+	 */
+	private static String getLine(BufferedReader reader) throws IOException {
+		String line;
+		while ((line = reader.readLine()) != null) {
+			line = line.trim();
+			if (!line.equals("") && !line.startsWith("#"))
+				break;
+		}
+		return line;
 	}
 	
 	/**
