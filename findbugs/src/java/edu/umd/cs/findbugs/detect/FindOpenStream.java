@@ -240,7 +240,7 @@ public class FindOpenStream extends ResourceTrackingDetector<Stream>  {
 		return bytecodeSet.get(Constants.NEW);
 	}
 
-	public ResourceTracker<Stream> getResourceTracker() {
+	public ResourceTracker<Stream> getResourceTracker(ClassContext classContext, Method method) {
 		return resourceTracker;
 	}
 
@@ -280,7 +280,8 @@ public class FindOpenStream extends ResourceTrackingDetector<Stream>  {
 		int offset = Integer.parseInt(argv[2]);
 
 		ResourceValueAnalysisTestDriver<Stream> driver = new ResourceValueAnalysisTestDriver<Stream>() {
-			public ResourceTracker<Stream> createResourceTracker(RepositoryLookupFailureCallback lookupFailureCallback) {
+			public ResourceTracker<Stream> createResourceTracker(RepositoryLookupFailureCallback lookupFailureCallback,
+				MethodGen methodGen, CFG cfg) {
 				return new StreamResourceTracker(lookupFailureCallback);
 			}
 		};
