@@ -390,6 +390,10 @@ public class FindBugsFrame extends javax.swing.JFrame {
         if (dirProp != null) {
             currentDirectory = new File(dirProp);
         }
+        
+  	UserPreferences prefs = UserPreferences.getUserPreferences();
+  	prefs.read();
+        
         initComponents();
         postInitComponents();
     }
@@ -467,6 +471,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
         fileMenu = new javax.swing.JMenu();
         newProjectItem = new javax.swing.JMenuItem();
         openProjectItem = new javax.swing.JMenuItem();
+        recentProjectsMenu = new javax.swing.JMenu();
         saveProjectItem = new javax.swing.JMenuItem();
         saveProjectAsItem = new javax.swing.JMenuItem();
         reloadProjectItem = new javax.swing.JMenuItem();
@@ -971,6 +976,12 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
         fileMenu.add(openProjectItem);
 
+        recentProjectsMenu.setMnemonic('E');
+        recentProjectsMenu.setText("Recent Projects");
+        recentProjectsMenu.setFont(new java.awt.Font("Dialog", 0, 12));
+        rebuildRecentProjectsMenu();
+        fileMenu.add(recentProjectsMenu);
+
         saveProjectItem.setFont(new java.awt.Font("Dialog", 0, 12));
         saveProjectItem.setMnemonic('S');
         saveProjectItem.setText("Save Project");
@@ -1403,6 +1414,9 @@ public class FindBugsFrame extends javax.swing.JFrame {
             Project project = new Project();
             project.read(file.getPath());
             setProject(project);
+            UserPreferences.getUserPreferences().useProject(file.getPath());
+            rebuildRecentProjectsMenu();
+
         } catch (IOException e) {
             logger.logMessage(ConsoleLogger.ERROR, "Could not open project: " + e.getMessage());
         }
@@ -1580,6 +1594,29 @@ public class FindBugsFrame extends javax.swing.JFrame {
         }
     }
     
+    private void openRecentProjectItemActionPerformed(java.awt.event.ActionEvent evt) {
+        if (!closeProjectHook(getCurrentProject(), "Open Project"))
+            return;
+            
+	JMenuItem recentProjectItem = (JMenuItem)evt.getSource();
+	File file = new File(recentProjectItem.getText());        
+	try {
+            System.setProperty("user.dir", file.getParent());
+            Project project = new Project();
+            project.read(file.getPath());
+            setProject(project);
+            UserPreferences.getUserPreferences().useProject(file.getPath());
+        } catch (IOException e) {
+            UserPreferences.getUserPreferences().removeProject(file.getPath());
+            logger.logMessage(ConsoleLogger.ERROR, "Could not open project: " + e.getMessage());
+        }
+        finally {
+            rebuildRecentProjectsMenu();
+        }
+
+    }
+
+    
     /* ----------------------------------------------------------------------
      * Component initialization support
      * ---------------------------------------------------------------------- */
@@ -1656,6 +1693,34 @@ public class FindBugsFrame extends javax.swing.JFrame {
         logoLabel.setIcon(logoIcon);
     }
     
+    private void rebuildRecentProjectsMenu() {
+    	UserPreferences prefs = UserPreferences.getUserPreferences();
+    	final List<String> recentProjects = prefs.getRecentProjects();
+    	SwingUtilities.invokeLater( new Runnable() {
+            public void run() {
+                recentProjectsMenu.removeAll();
+    		java.awt.Font ft = new java.awt.Font("Dialog", 0, 12);
+    		if (recentProjects.size() == 0) {
+                    JMenuItem emptyItem = new JMenuItem("Empty");
+                    emptyItem.setFont(ft);
+                    emptyItem.setEnabled(false);
+                    recentProjectsMenu.add(emptyItem);
+                } else {
+                    for (int i = 0; i < recentProjects.size(); i++) {
+                        JMenuItem projectItem = new JMenuItem(recentProjects.get(i));
+                        projectItem.setFont(ft);
+                        projectItem.addActionListener( new java.awt.event.ActionListener() {
+                            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                openRecentProjectItemActionPerformed(evt);	
+                            }
+                        });
+                        recentProjectsMenu.add(projectItem);
+                    }
+    		}
+            }
+    	});
+    }
+
     /* ----------------------------------------------------------------------
      * Helpers for accessing and modifying UI components
      * ---------------------------------------------------------------------- */
@@ -1833,6 +1898,9 @@ public class FindBugsFrame extends javax.swing.JFrame {
                 file.getParent());
             logger.logMessage(ConsoleLogger.INFO, "Project saved");
             project.setFileName(file.getPath());
+
+            UserPreferences prefs = UserPreferences.getUserPreferences();
+            prefs.read();
             
             updateTitle(project);
             
@@ -2364,6 +2432,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
      */
     private void exitFindBugs() {
         // TODO: offer to save work, etc.
+        UserPreferences.getUserPreferences().write();
         System.exit(0);
     }
 
@@ -2584,6 +2653,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
     private javax.swing.JRadioButtonMenuItem mediumPriorityButton;
     private javax.swing.JMenuItem newProjectItem;
     private javax.swing.JMenuItem openProjectItem;
+    private javax.swing.JMenu recentProjectsMenu;
     private javax.swing.JMenuItem reloadProjectItem;
     private javax.swing.JButton removeClasspathEntryButton;
     private javax.swing.JButton removeJarButton;
