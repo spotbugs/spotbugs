@@ -32,11 +32,14 @@ public class Version {
 	/** Patch level. */
 	public static final int PATCHLEVEL = 3;
 
+	/** Development version? */
+	public static final boolean IS_DEVELOPMENT = true;
+
 	/** Release version string. */
-	public static final String RELEASE = MAJOR + "." + MINOR + "." + PATCHLEVEL;
+	public static final String RELEASE = MAJOR + "." + MINOR + "." + PATCHLEVEL + (IS_DEVELOPMENT ? "-dev" : "");
 
 	/** Release date. */
-	public static final String DATE = "May 7, 2004";
+	public static final String DATE = "May 13, 2004";
 
 	/** Version of Eclipse UI plugin. */
 	public static final String ECLIPSE_UI_VERSION = "0.0.5";
