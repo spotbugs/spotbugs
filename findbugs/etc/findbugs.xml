@@ -1,0 +1,92 @@
+<FindbugsPlugin>
+  <Detector class="edu.umd.cs.findbugs.detect.DroppedException" />
+  <Detector class="edu.umd.cs.findbugs.detect.DumbMethods" />
+  <Detector class="edu.umd.cs.findbugs.detect.FindDoubleCheck" />
+  <Detector class="edu.umd.cs.findbugs.detect.FindExceptionGetMessage" />
+  <Detector class="edu.umd.cs.findbugs.detect.FindFinalizeInvocations" />
+  <Detector class="edu.umd.cs.findbugs.detect.FindHEmismatch" />
+  <Detector class="edu.umd.cs.findbugs.detect.FindInconsistentSync" />
+  <Detector class="edu.umd.cs.findbugs.detect.FindNakedNotify" />
+  <Detector class="edu.umd.cs.findbugs.detect.FindReturnRef" />
+  <Detector class="edu.umd.cs.findbugs.detect.FindRunInvocations" />
+  <Detector class="edu.umd.cs.findbugs.detect.FindSpinLoop" />
+  <Detector class="edu.umd.cs.findbugs.detect.FindTwoLockWait" />
+  <Detector class="edu.umd.cs.findbugs.detect.FindUnconditionalWait" />
+  <Detector class="edu.umd.cs.findbugs.detect.FindUninitializedGet" />
+  <Detector class="edu.umd.cs.findbugs.detect.FindUnsyncGet" />
+  <Detector class="edu.umd.cs.findbugs.detect.InitializationChain" />
+  <Detector class="edu.umd.cs.findbugs.detect.IteratorIdioms" />
+  <Detector class="edu.umd.cs.findbugs.detect.LockedFields" />
+  <Detector class="edu.umd.cs.findbugs.detect.MutableLock" />
+  <Detector class="edu.umd.cs.findbugs.detect.MutableStaticFields" />
+  <Detector class="edu.umd.cs.findbugs.detect.Naming" />
+  <Detector class="edu.umd.cs.findbugs.detect.ReadReturnShouldBeChecked" />
+  <Detector class="edu.umd.cs.findbugs.detect.SerializableIdiom" />
+  <Detector class="edu.umd.cs.findbugs.detect.SimplePathsFindDoubleCheck" />
+  <Detector class="edu.umd.cs.findbugs.detect.StartInConstructor" />
+  <Detector class="edu.umd.cs.findbugs.detect.UnreadFields" />
+  <Detector class="edu.umd.cs.findbugs.detect.WaitInLoop" />
+  <BugPattern abbrev="DE" type="DE_MIGHT_DROP" category="CORRECTNESS" />
+  <BugPattern abbrev="DE" type="DE_MIGHT_IGNORE" category="CORRECTNESS" />
+  <BugPattern abbrev="Dm" type="DM_STRING_CTOR" category="PERFORMANCE" />
+  <BugPattern abbrev="Dm" type="DM_STRING_VOID_CTOR" category="PERFORMANCE" />
+  <BugPattern abbrev="Dm" type="DM_GC" category="PERFORMANCE" />
+  <BugPattern abbrev="Dm" type="DM_BOOLEAN_CTOR" category="PERFORMANCE" />
+  <BugPattern abbrev="DC" type="DC_DOUBLECHECK" category="MT_CORRECTNESS" />
+  <BugPattern abbrev="Dm" type="DM_EXCEPTION_GETMESSAGE" category="CORRECTNESS" />
+  <BugPattern abbrev="FI" type="FI_PUBLIC_SHOULD_BE_PROTECTED" category="MALICIOUS_CODE" />
+  <BugPattern abbrev="FI" type="FI_EMPTY" category="PERFORMANCE" />
+  <BugPattern abbrev="FI" type="FI_NULLIFY_SUPER" category="CORRECTNESS" />
+  <BugPattern abbrev="FI" type="FI_USELESS" category="PERFORMANCE" />
+  <BugPattern abbrev="FI" type="FI_MISSING_SUPER_CALL" category="CORRECTNESS" />
+  <BugPattern abbrev="FI" type="FI_EXPLICIT_INVOCATION" category="CORRECTNESS" />
+  <BugPattern abbrev="Eq" type="EQ_SELF_USE_OBJECT" category="CORRECTNESS" />
+  <BugPattern abbrev="Eq" type="EQ_SELF_NO_OBJECT" category="CORRECTNESS" />
+  <BugPattern abbrev="Co" type="CO_SELF_NO_OBJECT" category="CORRECTNESS" />
+  <BugPattern abbrev="HE" type="HE_HASHCODE_USE_OBJECT_EQUALS" category="CORRECTNESS" />
+  <BugPattern abbrev="HE" type="HE_HASHCODE_NO_EQUALS" category="CORRECTNESS" />
+  <BugPattern abbrev="HE" type="HE_EQUALS_USE_HASHCODE" category="CORRECTNESS" />
+  <BugPattern abbrev="HE" type="HE_EQUALS_NO_HASHCODE" category="CORRECTNESS" />
+  <BugPattern abbrev="Eq" type="EQ_ABSTRACT_SELF" category="CORRECTNESS" />
+  <BugPattern abbrev="Co" type="CO_ABSTRACT_SELF" category="CORRECTNESS" />
+  <BugPattern abbrev="IS2" type="IS2_INCONSISTENT_SYNC" category="MT_CORRECTNESS" />
+  <BugPattern abbrev="NN" type="NN_NAKED_NOTIFY" category="MT_CORRECTNESS" />
+  <BugPattern abbrev="MS" type="MS_EXPOSE_REP" category="MALICIOUS_CODE" />
+  <BugPattern abbrev="EI" type="EI_EXPOSE_REP" category="MALICIOUS_CODE" />
+  <BugPattern abbrev="Ru" type="RU_INVOKE_RUN" category="MT_CORRECTNESS" />
+  <BugPattern abbrev="SP" type="SP_SPIN_ON_FIELD" category="MT_CORRECTNESS" />
+  <BugPattern abbrev="2LW" type="2LW_TWO_LOCK_WAIT" category="MT_CORRECTNESS" />
+  <BugPattern abbrev="UW" type="UW_UNCOND_WAIT" category="MT_CORRECTNESS" />
+  <BugPattern abbrev="UR" type="UR_UNINIT_READ" category="CORRECTNESS" />
+  <BugPattern abbrev="UG" type="UG_SYNC_SET_UNSYNC_GET" category="MT_CORRECTNESS" />
+  <BugPattern abbrev="IC" type="IC_INIT_CIRCULARITY" category="CORRECTNESS" />
+  <BugPattern abbrev="It" type="IT_NO_SUCH_ELEMENT" category="CORRECTNESS" />
+  <BugPattern abbrev="IS" type="IS_INCONSISTENT_SYNC" category="MT_CORRECTNESS" disabled="true" />
+  <BugPattern abbrev="ML" type="ML_SYNC_ON_UPDATED_FIELD" category="MT_CORRECTNESS" />
+  <BugPattern abbrev="MS" type="MS_OOI_PKGPROTECT" category="MALICIOUS_CODE" />
+  <BugPattern abbrev="MS" type="MS_FINAL_PKGPROTECT" category="MALICIOUS_CODE" />
+  <BugPattern abbrev="MS" type="MS_SHOULD_BE_FINAL" category="MALICIOUS_CODE" />
+  <BugPattern abbrev="MS" type="MS_PKGPROTECT" category="MALICIOUS_CODE" />
+  <BugPattern abbrev="MS" type="MS_MUTABLE_HASHTABLE" category="MALICIOUS_CODE" />
+  <BugPattern abbrev="MS" type="MS_MUTABLE_ARRAY" category="MALICIOUS_CODE" />
+  <BugPattern abbrev="MS" type="MS_CANNOT_BE_FINAL" category="MALICIOUS_CODE" />
+  <BugPattern abbrev="Nm" type="NM_VERY_CONFUSING" category="CORRECTNESS" />
+  <BugPattern abbrev="Nm" type="NM_CONFUSING" category="CORRECTNESS" />
+  <BugPattern abbrev="Nm" type="NM_CONFUSING_METHOD_NAME" category="CORRECTNESS" />
+  <BugPattern abbrev="Nm" type="NM_LCASE_HASHCODE" category="CORRECTNESS" />
+  <BugPattern abbrev="Nm" type="NM_LCASE_TOSTRING" category="CORRECTNESS" />
+  <BugPattern abbrev="RR" type="RR_NOT_CHECKED" category="CORRECTNESS" />
+  <BugPattern abbrev="Se" type="SE_NO_SERIALVERSIONID" category="CORRECTNESS" />
+  <BugPattern abbrev="WS" type="WS_WRITEOBJECT_SYNC" category="MT_CORRECTNESS" />
+  <BugPattern abbrev="RS" type="RS_READOBJECT_SYNC" category="MT_CORRECTNESS" />
+  <BugPattern abbrev="Se" type="SE_NONSTATIC_SERIALVERSIONID" category="CORRECTNESS" />
+  <BugPattern abbrev="SPSDC" type="SPDC_STATIC_DOUBLECHECK" category="MT_CORRECTNESS" />
+  <BugPattern abbrev="SPDC" type="SPDC_DOUBLECHECK" category="MT_CORRECTNESS" />
+  <BugPattern abbrev="SC" type="SC_START_IN_CTOR" category="MT_CORRECTNESS" />
+  <BugPattern abbrev="SS" type="SS_SHOULD_BE_STATIC" category="CORRECTNESS" />
+  <BugPattern abbrev="UuF" type="UUF_UNUSED_FIELD" category="CORRECTNESS" />
+  <BugPattern abbrev="UrF" type="URF_UNREAD_FIELD" category="CORRECTNESS" />
+  <BugPattern abbrev="SIC" type="SIC_INNER_SHOULD_BE_STATIC" category="PERFORMANCE" />
+  <BugPattern abbrev="Wa" type="WA_NOT_IN_LOOP" category="MT_CORRECTNESS" />
+  <BugPattern abbrev="No" type="NO_NOTIFY_NOT_NOTIFYALL" category="MT_CORRECTNESS" />
+</FindbugsPlugin>

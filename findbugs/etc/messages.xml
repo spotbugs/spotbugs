@@ -1,0 +1,702 @@
+<MessageCollection>
+  <BugPattern type="DE_MIGHT_DROP">
+    <ShortDescription>Method might drop exception</ShortDescription>
+    <LongDescription>{1} might drop {2}</LongDescription>
+    <Details>
+  &lt;p&gt; This method might drop an exception.&amp;nbsp; In general, exceptions
+  should be handled or reported in some way, or they should be thrown
+  out of the method.
+    </Details>
+  </BugPattern>
+  <BugPattern type="DE_MIGHT_IGNORE">
+    <ShortDescription>Method might ignore exception</ShortDescription>
+    <LongDescription>{1} might ignore {2}</LongDescription>
+    <Details>
+  &lt;p&gt; This method might ignore an exception.&amp;nbsp; In general, exceptions
+  should be handled or reported in some way, or they should be thrown
+  out of the method.
+    </Details>
+  </BugPattern>
+  <BugPattern type="DM_STRING_CTOR">
+    <ShortDescription>Method invokes dubious new String(String) constructor; just use the argument</ShortDescription>
+    <LongDescription>{1} invokes dubious new String(String) constructor; just use the argument</LongDescription>
+    <Details>
+  &lt;p&gt; Using the &lt;code&gt;java.lang.String(String)&lt;/code&gt; constructor wastes memory
+  because the object so constructed will be functionally indistinguishable
+  from the &lt;code&gt;String&lt;/code&gt; passed as a parameter.&amp;nbsp; Just use the
+  argument &lt;code&gt;String&lt;/code&gt; directly.
+    </Details>
+  </BugPattern>
+  <BugPattern type="DM_STRING_VOID_CTOR">
+    <ShortDescription>Method invokes dubious new String() constructor; just use ""</ShortDescription>
+    <LongDescription>{1} invokes dubious new String() constructor; just use ""</LongDescription>
+    <Details>
+  &lt;p&gt; Creating a new &lt;code&gt;java.lang.String&lt;/code&gt; object using the
+  no-argument constructor wastes memory because the object so created will
+  be functionally indistinguishable from the empty string constant
+  &lt;code&gt;""&lt;/code&gt;.&amp;nbsp; Java guarantees that identical string constants
+  will be represented by the same &lt;code&gt;String&lt;/code&gt; object.&amp;nbsp; Therefore,
+  you should just use the empty string constant directly.
+    </Details>
+  </BugPattern>
+  <BugPattern type="DM_GC">
+    <ShortDescription>Explicit garbage collection; extremely dubious except in benchmarking code</ShortDescription>
+    <LongDescription>{1} forces garbage collection; extremely dubious except in benchmarking code</LongDescription>
+    <Details>
+  &lt;p&gt; Code explicitly invokes garbage collection.
+  Except for specific use in benchmarking, this is very dubious.
+  &lt;p&gt;In the past, situations where people have explicitly invoked 
+  the garbage collector in routines such as close or finalize methods
+  has led to huge performance black holes. Garbage collection 
+	can be expensive. Any situation that forces hundreds or thousands
+	of garbage collections will bring the machine to a crawl.
+    </Details>
+  </BugPattern>
+  <BugPattern type="DM_BOOLEAN_CTOR">
+    <ShortDescription>Method invokes dubious Boolean constructor; use Boolean.valueOf(...) instead</ShortDescription>
+    <LongDescription>{1} invokes dubious Boolean constructor; use Boolean.valueOf(...) instead</LongDescription>
+    <Details>
+  &lt;p&gt; Creating new instances of &lt;code&gt;java.lang.Boolean&lt;/code&gt; wastes
+  memory, since &lt;code&gt;Boolean&lt;/code&gt; objects are immutable and there are
+  only two useful values of this type.&amp;nbsp; Use the &lt;code&gt;Boolean.valueOf()&lt;/code&gt;
+  method to create &lt;code&gt;Boolean&lt;/code&gt; objects instead.
+    </Details>
+  </BugPattern>
+  <BugPattern type="DC_DOUBLECHECK">
+    <ShortDescription>Possible double check of field</ShortDescription>
+    <LongDescription>Possible doublecheck on {2} in {1}</LongDescription>
+    <Details>
+  &lt;p&gt; This method may contain an instance of double-checked locking.&amp;nbsp;
+  This idiom is not correct according to the semantics of the Java memory
+  model.&amp;nbsp; For more information, see the web page
+  &lt;a href="http://www.cs.umd.edu/~pugh/java/memoryModel/DoubleCheckedLocking.html"
+  &gt;http://www.cs.umd.edu/~pugh/java/memoryModel/DoubleCheckedLocking.html&lt;/a&gt;.
+    </Details>
+  </BugPattern>
+  <BugPattern type="DM_EXCEPTION_GETMESSAGE">
+    <ShortDescription>Class invokes Exception.getMessage(); consider calling toString() instead</ShortDescription>
+    <LongDescription>{1} invokes Exception.getMessage(); consider calling toString() instead</LongDescription>
+    <Details>
+
+  &lt;p&gt; When reporting an exception, either by printing it or using it to produce
+  another exception, it is better to use the &lt;code&gt;toString()&lt;/code&gt; method than
+  the &lt;code&gt;getMessage()&lt;/code&gt; method.&amp;nbsp; The reason is that the &lt;code&gt;toString()&lt;/code&gt;
+  method indicates what kind of exception is thrown.
+    </Details>
+  </BugPattern>
+  <BugPattern type="FI_PUBLIC_SHOULD_BE_PROTECTED">
+    <ShortDescription>Finalizer should be protected, not public</ShortDescription>
+    <LongDescription>{1} is public; should be protected</LongDescription>
+    <Details>
+  &lt;p&gt; A class's &lt;code&gt;finalize()&lt;/code&gt; method should have protected access,
+   not public.
+    </Details>
+  </BugPattern>
+  <BugPattern type="FI_EMPTY">
+    <ShortDescription>Empty finalizer should be deleted</ShortDescription>
+    <LongDescription>{1} is empty and should be deleted</LongDescription>
+    <Details>
+  &lt;p&gt; Empty &lt;code&gt;finalize()&lt;/code&gt; methods are useless, so they should
+  be deleted.
+    </Details>
+  </BugPattern>
+  <BugPattern type="FI_NULLIFY_SUPER">
+    <ShortDescription>Finalizer nullifies superclass finalizer</ShortDescription>
+    <LongDescription>{1} is nullifying {2}.finalize(); is this intended?</LongDescription>
+    <Details>
+  &lt;p&gt; This empty &lt;code&gt;finalize()&lt;/code&gt; method explicitly negates the
+  effect of any finalizer defined by its superclass.&amp;nbsp; Any finalizer
+  actions defined for the superclass will not be performed.&amp;nbsp;
+  Unless this is intended, delete this method.
+    </Details>
+  </BugPattern>
+  <BugPattern type="FI_USELESS">
+    <ShortDescription>Finalizer does nothing but call superclass finalizer</ShortDescription>
+    <LongDescription>{1} does nothing except call super.finalize(); delete it</LongDescription>
+    <Details>
+  &lt;p&gt; The only thing this &lt;code&gt;finalize()&lt;/code&gt; method does is call
+  the superclass's &lt;code&gt;finalize()&lt;/code&gt; method, making it
+  redundant.&amp;nbsp; Delete it.
+    </Details>
+  </BugPattern>
+  <BugPattern type="FI_MISSING_SUPER_CALL">
+    <ShortDescription>Finalizer does not call superclass finalizer</ShortDescription>
+    <LongDescription>{1} missing call to super.finalize(), so {2}.finalize() doesn't get called</LongDescription>
+    <Details>
+  &lt;p&gt; This &lt;code&gt;finalize()&lt;/code&gt; method does not make a call to its
+  superclass's &lt;code&gt;finalize()&lt;/code&gt; method.&amp;nbsp; So, any finalizer
+  actions defined for the superclass will not be performed.&amp;nbsp;
+  Add a call to &lt;code&gt;super.finalize()&lt;/code&gt;.
+    </Details>
+  </BugPattern>
+  <BugPattern type="FI_EXPLICIT_INVOCATION">
+    <ShortDescription>Explicit invocation of finalizer</ShortDescription>
+    <LongDescription>{1} explicitly invokes {2}</LongDescription>
+    <Details>
+  &lt;p&gt; This method contains an explicit invocation of the &lt;code&gt;finalize()&lt;/code&gt;
+  method on an object.&amp;nbsp; Because finalizer methods are supposed to be
+  executed once, and only by the VM, this is a bad idea.
+    </Details>
+  </BugPattern>
+  <BugPattern type="EQ_SELF_USE_OBJECT">
+    <ShortDescription>Covariant equals() method defined, Object.equals(Object) inherited</ShortDescription>
+    <LongDescription>{0} defines equals({0}) method and uses Object.equals(Object)</LongDescription>
+    <Details>
+  &lt;p&gt; This class defines a covariant version of the &lt;code&gt;equals()&lt;/code&gt;
+  method, but calls the normal &lt;code&gt;equals(Object)&lt;/code&gt; method
+  defined in the base &lt;code&gt;java.lang.Object&lt;/code&gt; class.&amp;nbsp;
+  The class should probably define a non-covariant version of &lt;code&gt;equals()&lt;/code&gt;.&amp;nbsp;
+  (I.e., a method with the signature &lt;code&gt;boolean equals(java.lang.Object)&lt;/code&gt;.
+    </Details>
+  </BugPattern>
+  <BugPattern type="EQ_SELF_NO_OBJECT">
+    <ShortDescription>Covariant equals() method defined</ShortDescription>
+    <LongDescription>{0} defines equals({0}) method but not equals(Object)</LongDescription>
+    <Details>
+  &lt;p&gt; This class defines a covariant version of &lt;code&gt;equals()&lt;/code&gt;.&amp;nbsp;
+  To correctly override the &lt;code&gt;equals()&lt;/code&gt; method in
+  &lt;code&gt;java.lang.Object&lt;/code&gt;, the parameter of &lt;code&gt;equals()&lt;/code&gt;
+  must have type &lt;code&gt;java.lang.Object&lt;/code&gt;.
+    </Details>
+  </BugPattern>
+  <BugPattern type="CO_SELF_NO_OBJECT">
+    <ShortDescription>Covariant compareTo() method defined</ShortDescription>
+    <LongDescription>{0} defines comparesTo({0}) method but not comparesTo(Object)</LongDescription>
+    <Details>
+  &lt;p&gt; This class defines a covariant version of &lt;code&gt;compareTo()&lt;/code&gt;.&amp;nbsp;
+  To correctly override the &lt;code&gt;compareTo()&lt;/code&gt; method in the
+  &lt;code&gt;Comparable&lt;/code&gt; interface, the parameter of &lt;code&gt;compareTo()&lt;/code&gt;
+  must have type &lt;code&gt;java.lang.Object&lt;/code&gt;.
+    </Details>
+  </BugPattern>
+  <BugPattern type="HE_HASHCODE_USE_OBJECT_EQUALS">
+    <ShortDescription>Class defines hashCode() and uses Object.equals()</ShortDescription>
+    <LongDescription>{0} defines hashCode and uses Object.equals()</LongDescription>
+    <Details>
+  &lt;p&gt; This class defines a &lt;code&gt;hashCode()&lt;/code&gt; method but inherits its
+  &lt;code&gt;equals()&lt;/code&gt; method from &lt;code&gt;java.lang.Object&lt;/code&gt;
+  (which defines equality by comparing object references).&amp;nbsp; Although
+  this will probably satisfy the contract that equal objects must have
+  equal hashcodes, it is probably not what was intended by overriding
+  the &lt;code&gt;hashCode()&lt;/code&gt; method.&amp;nbsp; (Overriding &lt;code&gt;hashCode()&lt;/code&gt;
+  implies that the object's identity is based on criteria more complicated
+  than simple reference equality.)
+    </Details>
+  </BugPattern>
+  <BugPattern type="HE_HASHCODE_NO_EQUALS">
+    <ShortDescription>Class defines hashCode() but not equals()</ShortDescription>
+    <LongDescription>{0} defines hashCode but not equals</LongDescription>
+    <Details>
+  &lt;p&gt; This class defines a &lt;code&gt;hashCode()&lt;/code&gt; method but not an
+  &lt;code&gt;equals()&lt;/code&gt; method.&amp;nbsp; Therefore, the class may
+  violate the invariant that equal objects must have equal hashcodes.
+    </Details>
+  </BugPattern>
+  <BugPattern type="HE_EQUALS_USE_HASHCODE">
+    <ShortDescription>Class defines equals() and uses Object.hashCode()</ShortDescription>
+    <LongDescription>{0} defines equals and uses Object.hashCode()</LongDescription>
+    <Details>
+  &lt;p&gt; This class overrides &lt;code&gt;equals(Object)&lt;/code&gt;, but does not
+  override &lt;code&gt;hashCode()&lt;/code&gt;, and inherits the implementation of
+  &lt;code&gt;hashCode()&lt;/code&gt; from &lt;code&gt;java.lang.Object&lt;/code&gt; (which returns
+  the identity hash code, an arbitrary value assigned to the object
+  by the VM).&amp;nbsp; Therefore, the class is very likely to violate the
+  invariant that equal objects must have equal hashcodes.
+    </Details>
+  </BugPattern>
+  <BugPattern type="HE_EQUALS_NO_HASHCODE">
+    <ShortDescription>Class defines equals() but not hashCode()</ShortDescription>
+    <LongDescription>{0} defines equals but not hashCode</LongDescription>
+    <Details>
+  &lt;p&gt; This class overrides &lt;code&gt;equals(Object)&lt;/code&gt;, but does not
+  override &lt;code&gt;hashCode()&lt;/code&gt;.&amp;nbsp; Therefore, the class may violate the
+  invariant that equal objects must have equal hashcodes.
+    </Details>
+  </BugPattern>
+  <BugPattern type="EQ_ABSTRACT_SELF">
+    <ShortDescription>Abstract class defines covariant equals() method</ShortDescription>
+    <LongDescription>Abstract {0} defines equals({0}) method</LongDescription>
+    <Details>
+  &lt;p&gt; This class defines a covariant version of &lt;code&gt;equals()&lt;/code&gt;.&amp;nbsp;
+  To correctly override the &lt;code&gt;equals()&lt;/code&gt; method in
+  &lt;code&gt;java.lang.Object&lt;/code&gt;, the parameter of &lt;code&gt;equals()&lt;/code&gt;
+  must have type &lt;code&gt;java.lang.Object&lt;/code&gt;.
+    </Details>
+  </BugPattern>
+  <BugPattern type="CO_ABSTRACT_SELF">
+    <ShortDescription>Abstract class defines covariant compareTo() method</ShortDescription>
+    <LongDescription>Abstract {0} defines compareTo({0}) method</LongDescription>
+    <Details>
+  &lt;p&gt; This class defines a covariant version of &lt;code&gt;compareTo()&lt;/code&gt;.&amp;nbsp;
+  To correctly override the &lt;code&gt;compareTo()&lt;/code&gt; method in the
+  &lt;code&gt;Comparable&lt;/code&gt; interface, the parameter of &lt;code&gt;compareTo()&lt;/code&gt;
+  must have type &lt;code&gt;java.lang.Object&lt;/code&gt;.
+    </Details>
+  </BugPattern>
+  <BugPattern type="IS2_INCONSISTENT_SYNC">
+    <ShortDescription>Inconsistent synchronization</ShortDescription>
+    <LongDescription>Inconsistent synchronization of {1}; locked {2}% of time</LongDescription>
+    <Details>
+  &lt;p&gt; The fields of this class appear to be accessed inconsistently with respect
+  to synchronization.&amp;nbsp; This bug report indicates that the bug pattern detector
+  judged that
+  &lt;ol&gt;
+  &lt;li&gt; The class contains a mix of locked and unlocked accesses,
+  &lt;li&gt; At least one locked access was performed by one of the class's own methods, and
+  &lt;li&gt; The number of unsynchronized field accesses (reads and writes) was no more than
+       one third of all accesses, with writes being weighed twice as high as reads
+  &lt;/ol&gt;
+
+  &lt;p&gt; A typical bug matching this bug pattern is forgetting to synchronize
+  one of the methods in a class that is intended to be thread-safe.
+
+  &lt;p&gt; You can select the nodes labeled "Unsynchronized access" to show the
+  code locations where the detector believed that a field was accessed
+  without synchronization.
+
+  &lt;p&gt; Note that there are various sources of inaccuracy in this detector;
+  for example, the detector cannot statically detect all situations in which
+  a lock is held.&amp;nbsp; Also, even when the detector is accurate in
+  distinguishing locked vs. unlocked accesses, the code in question may still
+  be correct.
+
+  &lt;p&gt; This description refers to the "IS2" version of the pattern detector,
+  which has more accurate ways of detecting locked vs. unlocked accesses
+  than the older "IS" detector.
+
+    </Details>
+  </BugPattern>
+  <BugPattern type="NN_NAKED_NOTIFY">
+    <ShortDescription>Naked notify in method</ShortDescription>
+    <LongDescription>Naked notify in {1}</LongDescription>
+    <Details>
+  &lt;p&gt; A call to &lt;code&gt;notify()&lt;/code&gt; or &lt;code&gt;notifyAll()&lt;/code&gt;
+  was made without any (apparent) accompanying
+  modification to mutable object state.&amp;nbsp; In general, calling a notify
+  method on a monitor is done because some condition another thread is
+  waiting for has become true.&amp;nbsp; However, for the condition to be meaningful,
+  it must involve a heap object that is visible to both threads.
+
+  &lt;p&gt; This bug does not necessarily indicate an error, since the change to
+  mutable object state may have taken place in a method which then called
+  the method containing the notification.
+    </Details>
+  </BugPattern>
+  <BugPattern type="NN_NAKED_NOTIFY">
+    <ShortDescription>Naked notify in method</ShortDescription>
+    <LongDescription>Naked notify in {1}</LongDescription>
+    <Details>
+  &lt;p&gt; A call to &lt;code&gt;notify()&lt;/code&gt; or &lt;code&gt;notifyAll()&lt;/code&gt;
+  was made without any (apparent) accompanying
+  modification to mutable object state.&amp;nbsp; In general, calling a notify
+  method on a monitor is done because some condition another thread is
+  waiting for has become true.&amp;nbsp; However, for the condition to be meaningful,
+  it must involve a heap object that is visible to both threads.
+
+  &lt;p&gt; This bug does not necessarily indicate an error, since the change to
+  mutable object state may have taken place in a method which then called
+  the method containing the notification.
+    </Details>
+  </BugPattern>
+  <BugPattern type="MS_EXPOSE_REP">
+    <ShortDescription>Public static method may expose internal representation by returning array</ShortDescription>
+    <LongDescription>public static {1} may expose internal representation by returning {2}</LongDescription>
+    <Details>
+  &lt;p&gt; A public static method returns a reference to
+	an array that is part of the static state of the class. 
+	Any code that calls this method can freely modify
+	the underlying array.
+	One fix is to return a copy of the array.
+    </Details>
+  </BugPattern>
+  <BugPattern type="EI_EXPOSE_REP">
+    <ShortDescription>Method may expose internal representation by returning array</ShortDescription>
+    <LongDescription>{1} may expose internal representation by returning {2}</LongDescription>
+    <Details>
+  &lt;p&gt; Returning an array value stored in one of the object's fields
+  exposes the internal representation of the object.&amp;nbsp; For classes shared
+  by other untrusted classes, this could potentially be a security issue.&amp;nbsp;
+  Returning a new copy of the array is better approach in many situations.
+    </Details>
+  </BugPattern>
+  <BugPattern type="RU_INVOKE_RUN">
+    <ShortDescription>Invokes run on a thread (did you mean to start it instead?)</ShortDescription>
+    <LongDescription>{1} explicitly invokes run on a thread (did you mean to start it instead?)</LongDescription>
+    <Details>
+  &lt;p&gt; This method explicitly invokes &lt;code&gt;run()&lt;/code&gt; on an object.&amp;nbsp;
+  In general, classes implement the &lt;code&gt;Runnable&lt;/code&gt; interface because
+  they are going to have their &lt;code&gt;run()&lt;/code&gt; method invoked in a new thread,
+  in which case &lt;code&gt;Thread.start()&lt;/code&gt; is the right method to call.
+    </Details>
+  </BugPattern>
+  <BugPattern type="SP_SPIN_ON_FIELD">
+    <ShortDescription>Method spins on field</ShortDescription>
+    <LongDescription>Spinning on {2} in {1}</LongDescription>
+    <Details>
+  &lt;p&gt; This method spins in a loop which reads a field.&amp;nbsp; The compiler
+  may legally hoist the read out of the loop, turning the code into an
+  infinite loop.&amp;nbsp; The class should be changed so it uses proper
+  synchronization (including wait and notify calls).
+    </Details>
+  </BugPattern>
+  <BugPattern type="2LW_TWO_LOCK_WAIT">
+    <ShortDescription>Wait with two locks held</ShortDescription>
+    <LongDescription>wait() with two locks held in {1}</LongDescription>
+    <Details>
+  &lt;p&gt; Waiting on a monitor while two locks are held may cause
+  deadlock.&amp;nbsp; This not necessarily a bug, but is worth examining
+  closely.
+    </Details>
+  </BugPattern>
+  <BugPattern type="UW_UNCOND_WAIT">
+    <ShortDescription>Unconditional wait in method</ShortDescription>
+    <LongDescription>Unconditional wait in {1}</LongDescription>
+    <Details>
+  &lt;p&gt; This method contains a call to &lt;code&gt;java.lang.Object.wait()&lt;/code&gt; which
+  is not guarded by conditional control flow.&amp;nbsp; If the condition that
+  the method intends to wait for has already happened, the thread could
+  wait indefinitely.
+    </Details>
+  </BugPattern>
+  <BugPattern type="UR_UNINIT_READ">
+    <ShortDescription>Unitialized read of field in constructor</ShortDescription>
+    <LongDescription>Unitialized read of {2} in {1}</LongDescription>
+    <Details>
+  &lt;p&gt; This constructor reads a field which has not yet been assigned a value.&amp;nbsp;
+  This is often caused when the programmer mistakenly uses the field instead
+  of one of the constructor's parameters.
+    </Details>
+  </BugPattern>
+  <BugPattern type="UG_SYNC_SET_UNSYNC_GET">
+    <ShortDescription>Unsynchronized get method, synchronized set method</ShortDescription>
+    <LongDescription>{1} is unsynchronized, {2} is synchronized</LongDescription>
+    <Details>
+  &lt;p&gt; This class contains similarly-named get and set
+  methods where the set method is synchronized and the get method is not.&amp;nbsp;
+  This may result in incorrect behavior at runtime, as callers of the get
+  method will not necessarily see a consistent state for the object.&amp;nbsp;
+  The get method should be made synchronized.
+    </Details>
+  </BugPattern>
+  <BugPattern type="IC_INIT_CIRCULARITY">
+    <ShortDescription>Initialization circularity</ShortDescription>
+    <LongDescription>Initialization circularity between {0} and {1}</LongDescription>
+    <Details>
+  &lt;p&gt; A circularity was detected in the static initializers of the two
+  classes referenced by the bug instance.&amp;nbsp; Many kinds of unexpected
+  behavior may arise from such circularity.
+    </Details>
+  </BugPattern>
+  <BugPattern type="IT_NO_SUCH_ELEMENT">
+    <ShortDescription>Iterator next() method can't throw NoSuchElement exception</ShortDescription>
+    <LongDescription>{1} can't throw NoSuchElement exception</LongDescription>
+    <Details>
+  &lt;p&gt; This class implements the &lt;code&gt;java.util.Iterator&lt;/code&gt; interface.&amp;nbsp;
+  However, its &lt;code&gt;next()&lt;/code&gt; method is not capable of throwing
+  &lt;code&gt;java.util.NoSuchElementException&lt;/code&gt;.&amp;nbsp; The &lt;code&gt;next()&lt;/code&gt;
+  method should be changed so it throws &lt;code&gt;NoSuchElementException&lt;/code&gt;
+  if is called when there are no more elements to return.
+    </Details>
+  </BugPattern>
+  <BugPattern type="IS_INCONSISTENT_SYNC">
+    <ShortDescription>Inconsistent synchronization</ShortDescription>
+    <LongDescription>Inconsistent synchronization of {1}; locked {2}% of the time</LongDescription>
+    <Details>
+  &lt;p&gt; The fields of this class appear to be accessed inconsistently with respect
+  to synchronization.&amp;nbsp; This bug report indicates that the bug pattern detector
+  judged that
+  &lt;ol&gt;
+  &lt;li&gt; The class contains a mix of locked and unlocked accesses,
+  &lt;li&gt; At least one locked access was performed by one of the class's own methods, and
+  &lt;li&gt; The number of unsynchronized field accesses (reads and writes) was no more than
+       one third of all accesses, with writes being weighed twice as high as reads
+  &lt;/ol&gt;
+
+  &lt;p&gt; A typical bug matching this bug pattern is forgetting to synchronize
+  one of the methods in a class that is intended to be thread-safe.
+
+  &lt;p&gt; Note that there are various sources of inaccuracy in this detector;
+  for example, the detector cannot statically detect all situations in which
+  a lock is held.&amp;nbsp; Also, even when the detector is accurate in
+  distinguishing locked vs. unlocked accesses, the code in question may still
+  be correct.
+    </Details>
+  </BugPattern>
+  <BugPattern type="ML_SYNC_ON_UPDATED_FIELD">
+    <ShortDescription>Method synchronizes on an updated field</ShortDescription>
+    <LongDescription>{1} synchronizes on updated field {2}</LongDescription>
+    <Details>
+  &lt;p&gt; This method synchronizes on an object 
+	references from a mutable field.
+	This is unlikely to have useful semantics, since different
+threads may be synchronizing on different objects.
+  
+    </Details>
+  </BugPattern>
+  <BugPattern type="MS_OOI_PKGPROTECT">
+    <ShortDescription>Field should be moved out of an interface and made package protected</ShortDescription>
+    <LongDescription>{1} should be moved out of an interface and made package protected</LongDescription>
+    <Details>
+&lt;p&gt;
+ A final static field that is 
+defined in an interface references a mutable
+	object such as an array or hashtable.
+	This mutable object could 
+	be changed by malicious code or
+        by accident from another package.
+	So solve this, the field needs to be moved to a class
+	and made package protected 
+	to avoid
+        this vulnerability.
+    </Details>
+  </BugPattern>
+  <BugPattern type="MS_FINAL_PKGPROTECT">
+    <ShortDescription>Field should be both final and package protected</ShortDescription>
+    <LongDescription>{1} should be both final and package protected</LongDescription>
+    <Details>
+ &lt;p&gt;
+	A mutable static field could be changed by malicious code or
+        by accident from another package.
+        The field could be made package protected and/or made final 
+	to avoid
+        this vulnerability.
+    </Details>
+  </BugPattern>
+  <BugPattern type="MS_SHOULD_BE_FINAL">
+    <ShortDescription>Field isn't final but should be</ShortDescription>
+    <LongDescription>{1} isn't final but should be</LongDescription>
+    <Details>
+	&lt;p&gt;
+ A mutable static field could be changed by malicious code or
+        by accident from another package.
+        The field could be made final to avoid
+        this vulnerability.
+    </Details>
+  </BugPattern>
+  <BugPattern type="MS_PKGPROTECT">
+    <ShortDescription>Field should be package protected</ShortDescription>
+    <LongDescription>{1} should be package protected</LongDescription>
+    <Details>
+  &lt;p&gt; A mutable static field could be changed by malicious code or
+	by accident.
+	The field could be made package protected to avoid
+	this vulnerability.
+    </Details>
+  </BugPattern>
+  <BugPattern type="MS_MUTABLE_HASHTABLE">
+    <ShortDescription>Field is a mutable Hashtable</ShortDescription>
+    <LongDescription>{1} is a mutable Hashtable</LongDescription>
+    <Details>
+ &lt;p&gt;A final static field references an Hashtable
+	and can be accessed by malicious code or
+        by accident from another package.
+	This code can freely modify the contents of the array.
+    </Details>
+  </BugPattern>
+  <BugPattern type="MS_MUTABLE_ARRAY">
+    <ShortDescription>Field is a mutable array</ShortDescription>
+    <LongDescription>{1} is a mutable array</LongDescription>
+    <Details>
+ A final static field references an array
+	and can be accessed by malicious code or
+        by accident from another package.
+	This code can freely modify the contents of the array.
+    </Details>
+  </BugPattern>
+  <BugPattern type="MS_CANNOT_BE_FINAL">
+    <ShortDescription>Field isn't final and can't be</ShortDescription>
+    <LongDescription>{1} isn't final and can't be</LongDescription>
+    <Details>
+  &lt;p&gt; 
+ A mutable static field could be changed by malicious code or
+        by accident from another package.
+	Unfortunately, the way the field is used doesn't allow
+	any easy fix to this problem.
+    </Details>
+  </BugPattern>
+  <BugPattern type="NM_VERY_CONFUSING">
+    <ShortDescription>Very confusing method names</ShortDescription>
+    <LongDescription>VERY confusing to have methods {1} and {3}</LongDescription>
+    <Details>
+  &lt;p&gt; The referenced methods have names that differ only by capitalization.
+    </Details>
+  </BugPattern>
+  <BugPattern type="NM_CONFUSING">
+    <ShortDescription>Confusing method names</ShortDescription>
+    <LongDescription>Confusing to have methods {1} and {3}</LongDescription>
+    <Details>
+  &lt;p&gt; The referenced methods have names that differ only by capitalization.
+    </Details>
+  </BugPattern>
+  <BugPattern type="NM_CONFUSING_METHOD_NAME">
+    <ShortDescription>Confusing method name</ShortDescription>
+    <LongDescription>Confusing method name: {1}</LongDescription>
+    <Details>
+  &lt;p&gt; This method has the same name as the superclass of the class it
+  is defined in.
+    </Details>
+  </BugPattern>
+  <BugPattern type="NM_LCASE_HASHCODE">
+    <ShortDescription>Class defines hashcode(); should it be hashCode()?</ShortDescription>
+    <LongDescription>Class {0} defines hashcode(); should it be hashCode()?</LongDescription>
+    <Details>
+  &lt;p&gt; This class defines a method called &lt;code&gt;hashcode()&lt;/code&gt;.&amp;nbsp; This method
+  does not override the &lt;code&gt;hashCode()&lt;/code&gt; method in &lt;code&gt;java.lang.Object&lt;/code&gt;,
+  which is probably what was intended.
+    </Details>
+  </BugPattern>
+  <BugPattern type="NM_LCASE_TOSTRING">
+    <ShortDescription>Class defines tostring(); should it be toString()?</ShortDescription>
+    <LongDescription>Class {0} defines tostring(); should it be toString()?</LongDescription>
+    <Details>
+  &lt;p&gt; This class defines a method called &lt;code&gt;tostring()&lt;/code&gt;.&amp;nbsp; This method
+  does not override the &lt;code&gt;toString()&lt;/code&gt; method in &lt;code&gt;java.lang.Object&lt;/code&gt;,
+  which is probably what was intended.
+    </Details>
+  </BugPattern>
+  <BugPattern type="RR_NOT_CHECKED">
+    <ShortDescription>Method ignores results of InputStream.read()</ShortDescription>
+    <LongDescription>{1} ignores result of {2}</LongDescription>
+    <Details>
+  &lt;p&gt; This method ignores the return value of one of the variants of
+  &lt;code&gt;java.io.InputStream.read()&lt;/code&gt; which can return multiple bytes.&amp;nbsp;
+  If the return value is not checked, the caller will not be able to correctly
+  handle the case where fewer bytes were read than the caller requested.&amp;nbsp;
+  This is a particularly insidious kind of bug, because in many programs,
+  reads from input streams usually do read the full amount of data requested,
+  causing the program to fail only sporadically.
+    </Details>
+  </BugPattern>
+  <BugPattern type="SE_NO_SERIALVERSIONID">
+    <ShortDescription>Class is Serializable, but doesn't define serialVersionUID</ShortDescription>
+    <LongDescription>{0} is Serializable; consider declaring a serialVersionUID</LongDescription>
+    <Details>
+  &lt;p&gt; This class implements the &lt;code&gt;Serializable&lt;/code&gt; interface, but does
+  not define a &lt;code&gt;serialVersionUID&lt;/code&gt; field.&amp;nbsp; 
+  A change as simple as adding a reference to a .class object 
+	 will add synthetic fields to the class,
+	which will unfortunately change the implicit
+	serialVersionUID (e.g., adding a reference to &lt;code&gt;String.class&lt;/code&gt;
+	will generate a static field &lt;code&gt;class$java$lang$String&lt;/code&gt;).
+   Also, different source code to bytecode compilers may use different 
+   naming conventions for synthetic variables generated for 
+   references to class objects or inner classes.
+   To ensure interoperability of Serializable across versions,
+	consider adding an explicit serialVersionUID.
+    </Details>
+  </BugPattern>
+  <BugPattern type="WS_WRITEOBJECT_SYNC">
+    <ShortDescription>Class's writeObject() method is synchronized but nothing else is</ShortDescription>
+    <LongDescription>{0}'s writeObject method is synchronized but nothing else is</LongDescription>
+    <Details>
+  &lt;p&gt; This class has a &lt;code&gt;writeObject()&lt;/code&gt; method which is synchronized;
+  however, no other method of the class is synchronized.
+    </Details>
+  </BugPattern>
+  <BugPattern type="RS_READOBJECT_SYNC">
+    <ShortDescription>Class's readObject() method is synchronized</ShortDescription>
+    <LongDescription>{0}'s readObject method is synchronized</LongDescription>
+    <Details>
+  &lt;p&gt; This serializable class defines a &lt;code&gt;readObject()&lt;/code&gt; which is
+  synchronized.&amp;nbsp; By definition, an object created by unserialization
+  is only reachable by one thread, and thus there is no need for
+  &lt;code&gt;readObject()&lt;/code&gt; to be synchronized.&amp;nbsp; If the &lt;code&gt;readObject()&lt;/code&gt;
+  method itself is causing the object to become visible to another thread,
+  that is an example of very dubious coding style.
+    </Details>
+  </BugPattern>
+  <BugPattern type="SE_NONSTATIC_SERIALVERSIONID">
+    <ShortDescription>serialVersionUID isn't static</ShortDescription>
+    <LongDescription>{1} isn't static</LongDescription>
+    <Details>
+  &lt;p&gt; This class defines a &lt;code&gt;serialVersionUID&lt;/code&gt; field that is not static.&amp;nbsp;
+  The field should be made static.
+    </Details>
+  </BugPattern>
+  <BugPattern type="SPDC_STATIC_DOUBLECHECK">
+    <ShortDescription>Possible double check of static field</ShortDescription>
+    <LongDescription>Possible double check on static field {2} in {1}</LongDescription>
+    <Details>
+  &lt;p&gt; This method may contain an instance of double-checked locking.&amp;nbsp;
+  This idiom is not correct according to the semantics of the Java memory
+  model.&amp;nbsp; For more information, see the web page
+  &lt;a href="http://www.cs.umd.edu/~pugh/java/memoryModel/DoubleCheckedLocking.html"
+  &gt;http://www.cs.umd.edu/~pugh/java/memoryModel/DoubleCheckedLocking.html&lt;/a&gt;.
+    </Details>
+  </BugPattern>
+  <BugPattern type="SPDC_DOUBLECHECK">
+    <ShortDescription>Possible double check of field</ShortDescription>
+    <LongDescription>Possible double check on {2} in {1}</LongDescription>
+    <Details>
+  &lt;p&gt; This method may contain an instance of double-checked locking.&amp;nbsp;
+  This idiom is not correct according to the semantics of the Java memory
+  model.&amp;nbsp; For more information, see the web page
+  &lt;a href="http://www.cs.umd.edu/~pugh/java/memoryModel/DoubleCheckedLocking.html"
+  &gt;http://www.cs.umd.edu/~pugh/java/memoryModel/DoubleCheckedLocking.html&lt;/a&gt;.
+    </Details>
+  </BugPattern>
+  <BugPattern type="SC_START_IN_CTOR">
+    <ShortDescription>Constructor invokes Thread.start()</ShortDescription>
+    <LongDescription>{1} invokes {2}</LongDescription>
+    <Details>
+  &lt;p&gt; The constructor starts a thread. This is likely to be wrong if
+	the class is ever extended/subclasses, since the thread will be started
+	before the subclass constructor is started.
+    </Details>
+  </BugPattern>
+  <BugPattern type="SS_SHOULD_BE_STATIC">
+    <ShortDescription>Unread field: should this field be static?</ShortDescription>
+    <LongDescription>Unread field: {1}; should this field be static?</LongDescription>
+    <Details>
+  &lt;p&gt; This class contains an instance final field which is never read.&amp;nbsp;
+  The fact that it is not read may indicate that the Java source to bytecode
+  compiler has propagated its constant value.&amp;nbsp; Consider making it
+  static.
+    </Details>
+  </BugPattern>
+  <BugPattern type="UUF_UNUSED_FIELD">
+    <ShortDescription>Unused field</ShortDescription>
+    <LongDescription>Unused field: {1}</LongDescription>
+    <Details>
+  &lt;p&gt; This field is never used.&amp;nbsp; Consider removing it from the class.
+    </Details>
+  </BugPattern>
+  <BugPattern type="URF_UNREAD_FIELD">
+    <ShortDescription>Unread field</ShortDescription>
+    <LongDescription>Unread field: {1}</LongDescription>
+    <Details>
+  &lt;p&gt; This field is never read.&amp;nbsp; Consider removing it from the class.
+    </Details>
+  </BugPattern>
+  <BugPattern type="SIC_INNER_SHOULD_BE_STATIC">
+    <ShortDescription>Should be a static inner class?</ShortDescription>
+    <LongDescription>Should {0} be a _static_ inner class?</LongDescription>
+    <Details>
+  &lt;p&gt; This class is an inner class, but does not use its embedded reference
+  to the object which created it.&amp;nbsp; This reference makes the instances
+  of the class larger, and may keep the reference to the creator object
+  alive longer than necessary.&amp;nbsp; If possible, the class should be
+  made into a &lt;em&gt;static&lt;/EM&gt; inner class.
+    </Details>
+  </BugPattern>
+  <BugPattern type="WA_NOT_IN_LOOP">
+    <ShortDescription>Wait not in loop in method</ShortDescription>
+    <LongDescription>Wait not in loop in {1}</LongDescription>
+    <Details>
+  &lt;p&gt; This method contains a call to &lt;code&gt;java.lang.Object.wait()&lt;/code&gt; 
+  which is not in a loop.&amp;nbsp; If the monitor is used for multiple conditions,
+  the condition the caller intended to wait for might not be the one
+  that actually occurred.
+    </Details>
+  </BugPattern>
+  <BugPattern type="NO_NOTIFY_NOT_NOTIFYALL">
+    <ShortDescription>Using notify() rather than notifyAll() in method</ShortDescription>
+    <LongDescription>Using notify rather than notifyAll in {1}</LongDescription>
+    <Details>
+  &lt;p&gt; This method calls &lt;code&gt;notify()&lt;/code&gt; rather than &lt;code&gt;notifyAll()&lt;/code&gt;.&amp;nbsp;
+  Java monitors are often used for multiple conditions.&amp;nbsp; Calling &lt;code&gt;notify()&lt;/code&gt;
+  only wakes up one thread, meaning that the thread woken up might not be the
+  one waiting for the condition that the caller just satisfied.
+    </Details>
+  </BugPattern>
+</MessageCollection>
