@@ -1024,11 +1024,11 @@ public class FindBugsFrame extends javax.swing.JFrame {
                 return;
             }
             
-            JFileChooser chooser = new JFileChooser(currentDirectory);
+	    JFileChooser chooser = createFileChooser();
             chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
             chooser.setFileFilter(xmlFileFilter);
             
-            int result = chooser.showDialog(this, "Save bugs");
+	    int result = chooseFile(chooser, "Save bugs");
             
             if (result != JFileChooser.CANCEL_OPTION) {
                 // Make sure current annotation text is up to date with its
@@ -1051,11 +1051,11 @@ public class FindBugsFrame extends javax.swing.JFrame {
         
         try {
             
-            JFileChooser chooser = new JFileChooser(currentDirectory);
+	    JFileChooser chooser = createFileChooser();
             chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
             chooser.setFileFilter(xmlFileFilter);
         
-            int result = chooser.showDialog(this, "Load bugs");
+	    int result = chooseFile(chooser, "Load bugs");
 
             if (result != JFileChooser.CANCEL_OPTION) {
                 File selectedFile = chooser.getSelectedFile();
@@ -1145,13 +1145,12 @@ public class FindBugsFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_addClasspathEntryButtonActionPerformed
     
     private void browseClasspathEntryButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_browseClasspathEntryButtonActionPerformed
-        // Add your handling code here:
-        JFileChooser chooser = new JFileChooser(currentDirectory);
+	JFileChooser chooser = createFileChooser();
         chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
         chooser.setFileFilter(auxClasspathEntryFileFilter);
         chooser.setMultiSelectionEnabled(true);
         
-        int result = chooser.showDialog(this, "Add entry");
+	int result = chooseFile(chooser, "Add entry");
 
         if (result != JFileChooser.CANCEL_OPTION) {
             File[] selectedFileList = chooser.getSelectedFiles();
@@ -1211,14 +1210,14 @@ public class FindBugsFrame extends javax.swing.JFrame {
         if (!closeProjectHook(getCurrentProject(), "Open Project"))
             return;
         
-        JFileChooser chooser = new JFileChooser(currentDirectory);
+	JFileChooser chooser = createFileChooser();
         chooser.setFileFilter(projectFileFilter);
-        int result = chooser.showOpenDialog(this);
+	int result = chooseFileToOpen(chooser);
+
         if (result == JFileChooser.CANCEL_OPTION)
             return;
         try {
             File file = chooser.getSelectedFile();
-            currentDirectory = file.getParentFile();
             Project project = new Project(file.getPath());
             FileInputStream in = new FileInputStream(file);
             project.read(in);
@@ -1293,11 +1292,10 @@ public class FindBugsFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_findBugsButtonActionPerformed
     
     private void browseSrcDirButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_browseSrcDirButtonActionPerformed
-        JFileChooser chooser = new JFileChooser(currentDirectory);
+	JFileChooser chooser = createFileChooser();
         chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-        int rc = chooser.showDialog(this, "Add source directory");
+	int rc = chooseFile(chooser, "Add source directory");
         if (rc == JFileChooser.APPROVE_OPTION) {
-            currentDirectory = chooser.getSelectedFile().getParentFile();
             srcDirTextField.setText(chooser.getSelectedFile().getPath());
             addSourceDirToList();
         }
@@ -1312,7 +1310,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_jarNameTextFieldActionPerformed
     
     private void browseJarButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_browseJarButtonActionPerformed
-        JFileChooser chooser = new JFileChooser(currentDirectory);
+	JFileChooser chooser = createFileChooser();
         FileFilter filter = new FileFilter() {
             public boolean accept(File file) { return file.isDirectory() || file.getName().endsWith(".jar")
 							|| file.getName().endsWith(".class"); }
@@ -1322,7 +1320,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
         chooser.setMultiSelectionEnabled(true);
         chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
         
-        int rc = chooser.showDialog(this, "Add Jar file");
+	int rc = chooseFile(chooser, "Add Jar file");
         if (rc == JFileChooser.APPROVE_OPTION) {
             File[] selectedFileList = chooser.getSelectedFiles();
             for (int i = 0; i < selectedFileList.length; ++i) {
@@ -1597,10 +1595,10 @@ public class FindBugsFrame extends javax.swing.JFrame {
             if (!fileName.startsWith("<") && !chooseFilename) {
                 file = new File(fileName);
             } else {
-                JFileChooser chooser = new JFileChooser(currentDirectory);
+		JFileChooser chooser = createFileChooser();
                 chooser.setFileFilter(projectFileFilter);
                 
-                int result = chooser.showDialog(this, dialogTitle);
+		int result = chooseFile(chooser, dialogTitle);
                 if (result == JFileChooser.CANCEL_OPTION)
                     return false;
                 file = chooser.getSelectedFile();
@@ -2096,6 +2094,46 @@ public class FindBugsFrame extends javax.swing.JFrame {
     private void exitFindBugs() {
         // TODO: offer to save work, etc.
         System.exit(0);
+    }
+
+    /**
+     * Create a file chooser dialog.
+     * Ensures that the dialog will start in the current directory.
+     * @return the file chooser
+     */
+    private JFileChooser createFileChooser() {
+	return new JFileChooser(currentDirectory);
+    }
+
+    /**
+     * Run a file chooser dialog.
+     * If a file is chosen, then the current directory is updated.
+     * @param dialog the file chooser dialog
+     * @param dialogTitle the dialog title
+     * @return the outcome
+     */
+    private int chooseFile(JFileChooser dialog, String dialogTitle) {
+	int outcome = dialog.showDialog(this, dialogTitle);
+	return updateCurrentDirectoryFromDialog(dialog, outcome);
+    }
+
+    /**
+     * Run a file chooser dialog to choose a file to open.
+     * If a file is chosen, then the current directory is updated.
+     * @param dialog the file chooser dialog
+     * @return the outcome
+     */
+    private int chooseFileToOpen(JFileChooser dialog) {
+	int outcome = dialog.showOpenDialog(this);
+	return updateCurrentDirectoryFromDialog(dialog, outcome);
+    }
+
+    private int updateCurrentDirectoryFromDialog(JFileChooser dialog, int outcome) {
+	if (outcome != JFileChooser.CANCEL_OPTION) {
+	    File selectedFile = dialog.getSelectedFile();
+	    currentDirectory = selectedFile.getParentFile();
+	}
+	return outcome;
     }
     
     /**
