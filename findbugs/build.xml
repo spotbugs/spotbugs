@@ -72,13 +72,6 @@
     <property name="html.xsl.stylesheet" value="${xsl.stylesheet.home}/html/chunk.xsl" />
     <property name="fo.xsl.stylesheet" value="${xsl.stylesheet.home}/fo/docbook.xsl" />
 
-    <!-- This is for testing the Ant task, and assumes that
-         findbugs-ant.jar, findbugs.jar, and bcel.jar have been copied into
-         the "lib" directory of your Ant installation. -->
-<!--
-    <taskdef classname="edu.umd.cs.findbugs.anttask.FindBugsTask" name="findbugs"/>
--->
-
     <!-- Classpath for compiling FindBugs. -->
     <path id="classpath">
       <pathelement location="${jar.dir}/bcel.jar" />
@@ -292,6 +285,13 @@
     <!-- Target to build the release. This just means copying generated files
          (code and docs). -->
     <target name="release" depends="buildAll">
+
+       <property name="release.base" value="findbugs-${release.number}" />
+       <property name="bin.release.scripts"
+                 value="${release.base}/bin/findbugs,${release.base}/bin/mergeResults" />
+       <property name="src.release.scripts"
+                value="${bin.release.scripts},${release.base}/etc/createXML,${release.base}/etc/runTests,${release.base}/etc/summarizeBugs,${release.base}/etc/diffBugSummaries" />
+
        <copy todir="${release.dir}/lib">
          <fileset dir="${jar.dir}" includes="**/*.jar" excludes="plastic.jar"  />
        </copy>
@@ -304,7 +304,9 @@
        <copy todir="${release.dir}/bin">
          <fileset dir="${script.dir}" />
        </copy>
-       <chmod file="${release.dir}/bin/findbugs" perm="a+rx"/>
+       <chmod perm="a+rx">
+         <fileset dir="${build.dir}/bin" includes="${src.release.scripts}" />
+       </chmod>
        <copy file="LICENSE.txt" todir="${release.dir}" />
        <copy file="README.txt" todir="${release.dir}" />
     </target>
@@ -315,12 +317,12 @@
       <tar tarfile="${build.dir}/bin/findbugs-${release.number}.tar.gz"
            longfile="gnu"
            compression="gzip">
-         <tarfileset dir="${build.dir}/bin" includes="findbugs-${release.number}/**" excludes="findbugs-${release.number}/bin/findbugs" />
-         <tarfileset dir="${build.dir}/bin" includes="findbugs-${release.number}/bin/findbugs" mode="555" />
+         <tarfileset dir="${build.dir}/bin" includes="findbugs-${release.number}/**" excludes="${bin.release.scripts}" />
+         <tarfileset dir="${build.dir}/bin" includes="${bin.release.scripts}" mode="555" />
       </tar>
       <zip destfile="${build.dir}/bin/findbugs-${release.number}.zip">
-         <zipfileset dir="${build.dir}/bin" includes="findbugs-${release.number}/**" excludes="findbugs-${release.number}/bin/findbugs" />
-         <zipfileset dir="${build.dir}/bin" includes="findbugs-${release.number}/bin/findbugs" filemode="555" />
+         <zipfileset dir="${build.dir}/bin" includes="findbugs-${release.number}/**" excludes="${bin.release.scripts}" />
+         <zipfileset dir="${build.dir}/bin" includes="${bin.release.scripts}" filemode="555" />
       </zip>
     </target>
 
@@ -339,16 +341,11 @@
          <fileset dir="${doc.dir}" />
        </copy>
 
-       <property name="src.base" value="findbugs-${release.number}" />
-
-       <property name="src.scripts"
-                 value="${src.base}/bin/findbugs,${src.base}/bin/mergeResults,${src.base}/etc/createXML,${src.base}/etc/runTests,${src.base}/etc/summarizeBugs,${src.base}/etc/diffBugSummaries" />
-
        <!-- Put it in a tarball. -->
        <tar tarfile="${build.dir}/src/findbugs-${release.number}-source.tar.gz"
             compression="gzip">
-         <tarfileset dir="${build.dir}/src" includes="findbugs-${release.number}/**" excludes="${src.scripts}" />
-         <tarfileset dir="${build.dir}/src" includes="${src.scripts}" mode="555" />
+         <tarfileset dir="${build.dir}/src" includes="findbugs-${release.number}/**" excludes="${src.release.scripts}" />
+         <tarfileset dir="${build.dir}/src" includes="${src.release.scripts}" mode="555" />
        </tar>
     </target>
 
@@ -363,14 +360,5 @@
       </copy>
     </target>
 
-    <!-- This is a test for the Ant task. -->
-<!--
-    <target name="runfindbugs" depends="build">
-      <findbugs classdir="${test.dir}" home="${findbugs.dir}" >
-        <include name="dumb.jar" />
-      </findbugs>
-    </target>
--->
-    
 </project>
 
