@@ -30,18 +30,22 @@ import org.apache.bcel.generic.*;
  * This class provides a convenient way of determining the exception handlers
  * for instructions in a method.  Essentially, it's a
  * a map of InstructionHandles to lists of CodeExceptionGen objects.
+ * This class also maps instructions which are the start of exception handlers
+ * to the CodeExceptionGen object representing the handler.
  * 
  * @author David Hovemeyer
  */
 public class ExceptionHandlerMap {
-	private IdentityHashMap<InstructionHandle, List<CodeExceptionGen>> handlerMap;
+	private IdentityHashMap<InstructionHandle, List<CodeExceptionGen>> codeToHandlerMap;
+	private IdentityHashMap<InstructionHandle, CodeExceptionGen> startInstructionToHandlerMap;
 
 	/**
 	 * Constructor.
 	 * @param methodGen the method to build the map for
 	 */
 	public ExceptionHandlerMap(MethodGen methodGen) {
-		handlerMap = new IdentityHashMap<InstructionHandle, List<CodeExceptionGen>>();
+		codeToHandlerMap = new IdentityHashMap<InstructionHandle, List<CodeExceptionGen>>();
+		startInstructionToHandlerMap = new IdentityHashMap<InstructionHandle, CodeExceptionGen>();
 		build(methodGen);
 	}
 
@@ -54,13 +58,26 @@ public class ExceptionHandlerMap {
 	 *   registered for the instruction
 	 */
 	public List<CodeExceptionGen> getHandlerList(InstructionHandle handle) {
-		return handlerMap.get(handle);
+		return codeToHandlerMap.get(handle);
+	}
+
+	/**
+	 * If the given instruction is the start of an exception  handler,
+	 * get the CodeExceptionGen object representing the handler.
+	 * @param start the instruction
+	 * @return the CodeExceptionGen object, or null if the instruction is not the
+	 *   start of an exception handler
+	 */
+	public CodeExceptionGen getHandlerForStartInstruction(InstructionHandle start) {
+		return startInstructionToHandlerMap.get(start);
 	}
 
 	private void build(MethodGen methodGen) {
 		CodeExceptionGen[] handlerList = methodGen.getExceptionHandlers();
 		for (int i = 0; i < handlerList.length; ++i) {
 			CodeExceptionGen exceptionHandler = handlerList[i];
+
+			startInstructionToHandlerMap.put(exceptionHandler.getHandlerPC(), exceptionHandler);
 
 			InstructionHandle handle;
 			InstructionHandle next = exceptionHandler.getStartPC();
@@ -75,10 +92,10 @@ public class ExceptionHandlerMap {
 	}
 
 	private void addHandler(InstructionHandle handle, CodeExceptionGen exceptionHandler) {
-		List<CodeExceptionGen> handlerList = handlerMap.get(handle);
+		List<CodeExceptionGen> handlerList = codeToHandlerMap.get(handle);
 		if (handlerList == null) {
 			handlerList = new LinkedList<CodeExceptionGen>();
-			handlerMap.put(handle, handlerList);
+			codeToHandlerMap.put(handle, handlerList);
 		}
 		handlerList.add(exceptionHandler);
 	}
