@@ -95,12 +95,12 @@ public class BCPMethodReturnCheck extends ByteCodePatternDetector {
 					// Add JDK 1.5 and later return check functions
 					list.add(new Invoke("+java.util.concurrent.locks.ReadWriteLock", 
 							"readLock", 
-							"()Ljava/util/concurrent/Lock;", 
+							"()Ljava/util/concurrent/locks/Lock;", 
 							Invoke.INSTANCE, 
 							bugReporter));
 					list.add(new Invoke("+java.util.concurrent.locks.ReadWriteLock", 
 							"writeLock", 
-							"()Ljava/util/concurrent/Lock;", 
+							"()Ljava/util/concurrent/locks/Lock;", 
 							Invoke.INSTANCE, 
 							bugReporter));
 					list.add(new Invoke("+java.util.concurrent.locks.Condition", 
@@ -131,6 +131,11 @@ public class BCPMethodReturnCheck extends ByteCodePatternDetector {
 					list.add(new Invoke("+java.util.concurrent.locks.Lock", 
 							"tryLock", 
 							"(JLjava/util/concurrent/TimeUnit;)Z", 
+							Invoke.INSTANCE, 
+							bugReporter));
+					list.add(new Invoke("+java.util.concurrent.locks.Lock", 
+							"newCondition", 
+							"()Ljava/util/concurrent/locks/Condition;", 
 							Invoke.INSTANCE, 
 							bugReporter));
 					list.add(new Invoke("+java.util.concurrent.locks.Lock", 
