@@ -40,7 +40,8 @@ import org.apache.bcel.generic.StoreInstruction;
  *
  * @author David Hovemeyer
  */
-public class LiveLocalStoreAnalysis extends BackwardDataflowAnalysis<BitSet> {
+public class LiveLocalStoreAnalysis extends BackwardDataflowAnalysis<BitSet>
+		implements Debug {
 	private int topBit ;
 
 	public LiveLocalStoreAnalysis(MethodGen methodGen, ReverseDepthFirstSearch rdfs) {
@@ -77,7 +78,7 @@ public class LiveLocalStoreAnalysis extends BackwardDataflowAnalysis<BitSet> {
 	public void meetInto(BitSet fact, Edge edge, BitSet result) throws DataflowAnalysisException {
 		if (isTop(fact)) {
 			// Nothing to do, result stays the same
-		} if (isTop(result)) {
+		} else if (isTop(result)) {
 			// Result is top, so it takes the value of fact
 			copy(fact, result);
 		} else {
@@ -88,6 +89,7 @@ public class LiveLocalStoreAnalysis extends BackwardDataflowAnalysis<BitSet> {
 
 	public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, BitSet fact)
 		throws DataflowAnalysisException {
+
 		Instruction ins = handle.getInstruction();
 
 		if (ins instanceof StoreInstruction || ins instanceof IINC) {
@@ -110,6 +112,10 @@ public class LiveLocalStoreAnalysis extends BackwardDataflowAnalysis<BitSet> {
 	}
 
 	public boolean isFactValid(BitSet fact) {
+		if (VERIFY_INTEGRITY) {
+			if (isTop(fact) && fact.nextSetBit(0) < topBit)
+				throw new IllegalStateException();
+		}
 		return !isTop(fact);
 	}
 
@@ -120,7 +126,10 @@ public class LiveLocalStoreAnalysis extends BackwardDataflowAnalysis<BitSet> {
 			return fact.toString();
 	}
 
-	private boolean isTop(BitSet fact) {
+	/**
+	 * Return whether or not given fact is the special TOP value.
+	 */
+	public boolean isTop(BitSet fact) {
 		return fact.get(topBit);
 	}
 
