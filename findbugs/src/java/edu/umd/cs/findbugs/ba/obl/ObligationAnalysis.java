@@ -23,8 +23,12 @@ import edu.umd.cs.findbugs.ba.BasicBlock;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.DepthFirstSearch;
 import edu.umd.cs.findbugs.ba.Edge;
+import edu.umd.cs.findbugs.ba.EdgeTypes;
 import edu.umd.cs.findbugs.ba.ForwardDataflowAnalysis;
+import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.RepositoryLookupFailureCallback;
+import edu.umd.cs.findbugs.ba.TypeDataflow;
+import edu.umd.cs.findbugs.ba.TypeFrame;
 
 import java.util.Map;
 import java.util.Iterator;
@@ -36,6 +40,8 @@ import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.MethodGen;
+import org.apache.bcel.generic.ObjectType;
+import org.apache.bcel.generic.Type;
 
 /**
  * Dataflow analysis to track obligations (i/o streams and other
@@ -53,6 +59,7 @@ public class ObligationAnalysis
 	
 	private static final boolean DEBUG = Boolean.getBoolean("oa.debug");
 
+	private TypeDataflow typeDataflow;
 	private MethodGen methodGen;
 	private ObligationFactory factory;
 	private PolicyDatabase database;
@@ -71,11 +78,13 @@ public class ObligationAnalysis
 	 */
 	public ObligationAnalysis(
 			DepthFirstSearch dfs,
+			TypeDataflow typeDataflow,
 			MethodGen methodGen,
 			ObligationFactory factory,
 			PolicyDatabase database,
 			RepositoryLookupFailureCallback lookupFailureCallback) {
 		super(dfs);
+		this.typeDataflow = typeDataflow;
 		this.methodGen = methodGen;
 		this.factory = factory;
 		this.database = database;
@@ -92,7 +101,7 @@ public class ObligationAnalysis
 
 	public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, StateSet fact)
 			throws DataflowAnalysisException {
-
+		
 		Obligation obligation;
 		
 		if ((obligation = addsObligation(handle)) != null) {
@@ -232,6 +241,22 @@ public class ObligationAnalysis
 				deleteObligation(fact, obligation, handle);
 			}
 		}
+		
+		// Similarly, if the incoming edge is from a reference comparision
+		// which has established that a reference of an obligation type
+		// is null, then we remove one occurrence of that type of
+		// obligation from all states.
+		if (isPossibleIfComparison(edge)) {
+			Obligation obligation;
+			if ((obligation = comparesObligationTypeToNull(edge)) != null) {
+				fact = fact.duplicate();
+				if (DEBUG) {
+					System.out.println("Deleting " + obligation.toString() +
+							" on edge from comparision " + edge.getSource().getLastInstruction());
+				}
+				deleteObligation(fact, obligation, edge.getSource().getLastInstruction());
+			}
+		}
 
 		final StateSet inputFact = fact;
 
@@ -290,6 +315,58 @@ public class ObligationAnalysis
 				throw new DataflowAnalysisException("This shouldn't happen", e);
 			}
 		}
+	}
+	
+	private boolean isPossibleIfComparison(Edge edge) {
+		return edge.getType() == EdgeTypes.IFCMP_EDGE
+			|| edge.getType() == EdgeTypes.FALL_THROUGH_EDGE;
+	}
+	
+	private Obligation comparesObligationTypeToNull(Edge edge)
+			throws DataflowAnalysisException {
+		BasicBlock sourceBlock = edge.getSource();
+		InstructionHandle last = sourceBlock.getLastInstruction();
+		if (last == null)
+			return null;
+		
+		Type type;
+		
+		short opcode = last.getInstruction().getOpcode();
+		switch (opcode) {
+		case Constants.IFNULL:
+		case Constants.IFNONNULL:
+			if (   (edge.getType() == EdgeTypes.IFCMP_EDGE && opcode == Constants.IFNONNULL)
+				|| (edge.getType() == EdgeTypes.FALL_THROUGH_EDGE && opcode == Constants.IFNULL))
+				return null;
+			
+			Location location = new Location(last, sourceBlock);
+			TypeFrame typeFrame = typeDataflow.getFactAtLocation(location);
+			type = typeFrame.getTopValue();
+			break;
+			
+/*
+		// FIXME: handle IF_ACMPXX
+ 		case Constants.IFACMP_EQ:
+ 		case Constants.IFACMP_NE:
+ 			// ...
+ 			break;
+ 		
+ */
+		
+		default:
+			return null;
+		}
+		
+		if (!(type instanceof ObjectType))
+			return null;
+		
+		try {
+			return factory.getObligationByType((ObjectType) type);
+		} catch (ClassNotFoundException e) {
+			throw new DataflowAnalysisException(
+					"Subtype query failed during ObligationAnalysis", e);
+		}
+
 	}
 }
 
