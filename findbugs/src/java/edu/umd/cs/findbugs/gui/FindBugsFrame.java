@@ -697,6 +697,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
         editProjectPanel.add(removeClasspathEntryButton, gridBagConstraints);
 
         classpathEntryListScrollPane.setPreferredSize(new java.awt.Dimension(259, 1));
+        classpathEntryList.setBorder(new javax.swing.border.BevelBorder(javax.swing.border.BevelBorder.LOWERED));
         classpathEntryListScrollPane.setViewportView(classpathEntryList);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
