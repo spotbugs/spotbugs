@@ -187,6 +187,12 @@ public class FindBugsFrame extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 3);
         editProjectPanel.add(sourceDirLabel, gridBagConstraints);
 
+        srcDirTextField.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                srcDirTextFieldActionPerformed(evt);
+            }
+        });
+
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 5;
@@ -375,6 +381,10 @@ public class FindBugsFrame extends javax.swing.JFrame {
         pack();
     }//GEN-END:initComponents
 
+    private void srcDirTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_srcDirTextFieldActionPerformed
+        addSourceDirToList();
+    }//GEN-LAST:event_srcDirTextFieldActionPerformed
+
     private void jarNameTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jarNameTextFieldActionPerformed
         addJarToList();
     }//GEN-LAST:event_jarNameTextFieldActionPerformed
@@ -426,12 +436,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_removeJarButtonActionPerformed
 
     private void addSourceDirButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addSourceDirButtonActionPerformed
-	// if (!sourceDirTextField.isEmpty()) {
-	//    Project project = getCurrentProject();
-	//    String sourceDir = sourceDirTextField.getValue();
-	//    project.addSourceDir(sourceDir);
-	//    sourceDirTextField.clear();
-	//  }
+        addSourceDirToList();
     }//GEN-LAST:event_addSourceDirButtonActionPerformed
 
     private void addJarButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addJarButtonActionPerformed
@@ -562,6 +567,21 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	    listModel.addElement(jarFile);
 	    jarNameTextField.setText("");
 	}
+    }
+    
+    /**
+     * Called to add the source directory in the sourceDirTextField
+     * to the source directory list (and the project it represents).
+     */
+    private void addSourceDirToList() {
+        String sourceDir = srcDirTextField.getText();
+        if (!sourceDir.equals("")) {
+            Project project = getCurrentProject();
+            project.addSourceDir(sourceDir);
+            DefaultListModel listModel = (DefaultListModel) sourceDirList.getModel();
+            listModel.addElement(sourceDir);
+            srcDirTextField.setText("");
+        }
     }
     
     /**
