@@ -110,12 +110,17 @@ public class Path {
 		return true;
 	}
 	
+	private static final String SYMBOLS =
+		"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz!@#$%^&*()";
+	
 	public String toString() {
 		StringBuffer buf = new StringBuffer();
 		for (int i = 0; i < length; ++i) {
-			if (i != 0)
-				buf.append("->");
-			buf.append(blockIdList[i]);
+			int block = blockIdList[i];
+			if (block < SYMBOLS.length())
+				buf.append(SYMBOLS.charAt(block));
+			else
+				buf.append("'" + block + "'");
 		}
 		return buf.toString();
 	}
