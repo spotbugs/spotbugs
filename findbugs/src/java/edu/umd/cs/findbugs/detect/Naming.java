@@ -167,7 +167,7 @@ public class Naming extends PreorderVisitor implements Detector, Constants2 {
 		}
   public void visit(JavaClass obj)     {
 	String name = obj.getClassName();
-	String[] parts = name.split("[$.]");
+	String[] parts = name.split("[$+.]");
         baseClassName = parts[parts.length-1];
 	super.visit(obj);
 	}

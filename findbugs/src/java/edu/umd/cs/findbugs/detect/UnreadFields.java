@@ -49,7 +49,8 @@ public class UnreadFields extends BytecodeScanningDetector implements   Constant
 
   public void visit(JavaClass obj)     {
 	hasNativeMethods = false;
-	if (superclassName.indexOf("$") >= 0) {
+	if (superclassName.indexOf("$") >= 0
+		|| superclassName.indexOf("+") >= 0) {
 		// System.out.println("hicfsc: " + betterClassName);
 		innerClassCannotBeStatic.add(betterClassName);
 		// System.out.println("hicfsc: " + betterSuperclassName);
@@ -89,7 +90,8 @@ public class UnreadFields extends BytecodeScanningDetector implements   Constant
 	count_aload_1 = 0;
 	super.visit(obj);
 	if (methodName.equals("<init>") && count_aload_1 > 1 
-			&& className.indexOf('$') >= 0) {
+			&& (className.indexOf('$') >= 0
+			    || className.indexOf('+') >= 0)) {
 		needsOuterObjectInConstructor.add(betterClassName);
 		// System.out.println(betterClassName + " needs outer object in constructor");
 		}
@@ -150,7 +152,9 @@ public void report() {
 		FieldAnnotation f = i.next();
 		String fieldName = f.getFieldName();
 		String className = f.getClassName();
-		int lastDollar = className.lastIndexOf('$');
+		int lastDollar = 
+			Math.max(className.lastIndexOf('$'),
+				className.lastIndexOf('+'));
 		boolean isAnonymousInnerClass =
 			   (lastDollar > 0)
 			&& (lastDollar < className.length() - 1)
@@ -158,7 +162,9 @@ public void report() {
 		boolean allUpperCase = 
 				fieldName.equals(fieldName.toUpperCase());
 		if (superReadFields.contains(f.getFieldName()))  continue;
-		if (!fieldName.startsWith("this$"))  {
+		if (!fieldName.startsWith("this$")
+		    && !fieldName.startsWith("this+")
+			)  {
 		  if (constantFields.contains(f) )
 		    bugReporter.reportBug(new BugInstance("SS_SHOULD_BE_STATIC", NORMAL_PRIORITY)
 			.addClass(className)

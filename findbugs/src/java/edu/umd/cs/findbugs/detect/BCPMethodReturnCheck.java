@@ -204,7 +204,8 @@ public class BCPMethodReturnCheck extends ByteCodePatternDetector {
 		// Ignore inner-class access methods
 		InvokeInstruction inv = (InvokeInstruction) call.getInstruction();
 		String calledMethodName = inv.getMethodName(methodGen.getConstantPool());
-		if (calledMethodName.startsWith("access$"))
+		if (calledMethodName.startsWith("access$")
+		    || calledMethodName.startsWith("access+"))
 			return;
 
 		// System.out.println("Found " + calledMethodName);
