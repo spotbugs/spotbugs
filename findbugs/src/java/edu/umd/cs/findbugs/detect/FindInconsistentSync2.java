@@ -217,10 +217,10 @@ public class FindInconsistentSync2 implements Detector {
 	}
 
 	public void report() {
-		for (Iterator<Map.Entry<XField, FieldStats>> i = statMap.entrySet().iterator(); i.hasNext();) {
-			Map.Entry<XField, FieldStats> entry = i.next();
-			XField xfield = entry.getKey();
-			FieldStats stats = entry.getValue();
+		//for (Iterator<Map.Entry<XField, FieldStats>> i = statMap.entrySet().iterator(); i.hasNext();) {
+		for (Iterator<XField> i = statMap.keySet().iterator(); i.hasNext(); ) {
+			XField xfield = i.next();
+			FieldStats stats = statMap.get(xfield);
 
 			int numReadUnlocked = stats.getNumAccesses(READ_UNLOCKED);
 			int numWriteUnlocked = stats.getNumAccesses(WRITE_UNLOCKED);

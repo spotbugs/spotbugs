@@ -213,10 +213,6 @@ public class CountBugs {
 		return total;
 	}
 
-	public Iterator<Map.Entry<Key, Integer>> entryIterator() {
-		return countMap.entrySet().iterator();
-	}
-
 	public void execute() {
 		DetectorFactoryCollection.instance(); // load plugins
 
@@ -253,12 +249,13 @@ public class CountBugs {
 	public void printCounts(OutputStream out, boolean deltas) {
 		PrintStream pout = new PrintStream(out);
 
-		Iterator<Map.Entry<Key, Integer>> j = entryIterator();
+		Iterator<Key> j = countMap.keySet().iterator();
 		while (j.hasNext()) {
-			Map.Entry<Key, Integer> entry = j.next();
-			int count = entry.getValue().intValue();
+			Key key = j.next();
+			int count = countMap.get(key).intValue();
+
 			if (count != 0) {
-				pout.print(entry.getKey() + ":\t");
+				pout.print(key + ":\t");
 				if (deltas && count > 0)
 					pout.print("+");
 				pout.println(count);

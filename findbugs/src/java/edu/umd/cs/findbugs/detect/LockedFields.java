@@ -242,10 +242,11 @@ public class LockedFields extends BytecodeScanningDetector implements Constants2
 		int volatileOrFinalCount = 0;
 		int mostlyUnlocked = 0;
 
-		for (Iterator<Map.Entry<FieldAnnotation, int[]>> i = stats.entrySet().iterator(); i.hasNext();) {
-			Map.Entry<FieldAnnotation, int[]> e = i.next();
-			FieldAnnotation f = e.getKey();
-			int[] theseStats = e.getValue();
+		//for (Iterator<Map.Entry<FieldAnnotation, int[]>> i = stats.entrySet().iterator(); i.hasNext();) {
+		for (Iterator<FieldAnnotation> i = stats.keySet().iterator(); i.hasNext(); ) {
+			FieldAnnotation f = i.next();
+			int[] theseStats = stats.get(f);
+			
 			int locked = theseStats[READ_LOCKED] + theseStats[WRITTEN_LOCKED];
 			int biasedLocked = theseStats[READ_LOCKED] + 2 * theseStats[WRITTEN_LOCKED];
 			int unlocked = theseStats[READ_UNLOCKED] + theseStats[WRITTEN_UNLOCKED];
