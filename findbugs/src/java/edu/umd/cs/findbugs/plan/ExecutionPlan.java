@@ -100,7 +100,8 @@ public class ExecutionPlan {
 
 		// All detectors not involved in inter-pass constraints are
 		// added to the final pass.
-		Set<String> remainingDetectorSet = factoryMap.keySet();
+		Set<String> remainingDetectorSet = new HashSet<String>();
+		remainingDetectorSet.addAll(factoryMap.keySet());
 		remainingDetectorSet.removeAll(nodeMap.keySet());
 		for (Iterator<String> i = remainingDetectorSet.iterator(); i.hasNext(); ) {
 			String detectorClass = i.next();
@@ -148,11 +149,14 @@ public class ExecutionPlan {
 	/**
 	 * Build a constraint graph.
 	 * This represents ordering constraints between Detectors.
-	 * A topological sort of the constraint graph will yield the
+	 * A topological sort of the constraint graph will yield a
 	 * correct ordering of the detectors (which may mean either
 	 * passes or an ordering within a single pass, depending on
 	 * whether the constraints are inter-pass or intra-pass).
 	 *
+	 * @param nodeMap        map to be populated with detector
+	 *                       class names to constraint graph nodes for
+	 *                       those detectors
 	 * @param factoryMap     map of class names to DetectorFactory objects
 	 *                       (needed to create graph nodes)
 	 * @param constraintList List of ordering constraints
@@ -200,33 +204,33 @@ public class ExecutionPlan {
 	private void buildPassList(ConstraintGraph constraintGraph)
 			throws OrderingConstraintException {
 		while (constraintGraph.getNumVertices() > 0) {
-			List<DetectorNode> outDegreeZeroList = new LinkedList<DetectorNode>();
+			List<DetectorNode> inDegreeZeroList = new LinkedList<DetectorNode>();
 
-			// Get all of the detectors nodes with out-degree 0.
+			// Get all of the detectors nodes with in-degree 0.
 			// These have no unsatisfied prerequisites, and thus can
 			// be chosen for the current pass.
-			int outDegreeZeroCount = 0;
+			int inDegreeZeroCount = 0;
 			for (Iterator<DetectorNode> i = constraintGraph.vertexIterator(); i.hasNext(); ) {
 				DetectorNode node = i.next();
 
-				if (constraintGraph.getNumOutgoingEdges(node) == 0) {
-					++outDegreeZeroCount;
-					outDegreeZeroList.add(node);
+				if (constraintGraph.getNumIncomingEdges(node) == 0) {
+					++inDegreeZeroCount;
+					inDegreeZeroList.add(node);
 				}
 			}
 
-			if (outDegreeZeroCount == 0)
+			if (inDegreeZeroCount == 0)
 				throw new OrderingConstraintException("Cycle in inter-pass ordering constraints");
 
 			// Remove all of the chosen detectors from the constraint graph.
-			for (Iterator<DetectorNode> i = outDegreeZeroList.iterator(); i.hasNext(); ) {
+			for (Iterator<DetectorNode> i = inDegreeZeroList.iterator(); i.hasNext(); ) {
 				DetectorNode node = i.next();
 				constraintGraph.removeVertex(node);
 			}
 
 			// Create analysis pass and add detector factories.
 			AnalysisPass pass = new AnalysisPass();
-			for (Iterator<DetectorNode> i = outDegreeZeroList.iterator(); i.hasNext(); ) {
+			for (Iterator<DetectorNode> i = inDegreeZeroList.iterator(); i.hasNext(); ) {
 				DetectorNode node = i.next();
 				pass.addDetectorFactory(node.getFactory());
 			}
@@ -241,6 +245,10 @@ public class ExecutionPlan {
 			Map<String, DetectorFactory> factoryMap,
 			AnalysisPass pass)
 		throws OrderingConstraintException {
+
+		// Preserve original order of detectors in pass
+		List<DetectorFactory> origDetectorList = new LinkedList<DetectorFactory>();
+		origDetectorList.addAll(pass.getDetectorFactoryList());
 
 		// Build set of all detectors in pass
 		Set<String> detectorSet = new HashSet<String>();
@@ -276,6 +284,10 @@ public class ExecutionPlan {
 		Map<String, DetectorNode> nodeMap = new HashMap<String, DetectorNode>();
 		ConstraintGraph constraintGraph = buildConstraintGraph(
 			nodeMap, factoryMap, passConstraintList);
+		if (DEBUG) {
+			System.out.println("Pass constraint graph:");
+			dumpGraph(constraintGraph);
+		}
 
 		// Perform DFS, check for cycles
 		DepthFirstSearch<ConstraintGraph, ConstraintEdge, DetectorNode> dfs =
@@ -284,7 +296,22 @@ public class ExecutionPlan {
 		if (dfs.containsCycle())
 			throw new OrderingConstraintException("Cycle in intra-pass ordering constraints!");
 
-		// TODO: topological sort
+		// Do a topological sort to put the detectors in the pass
+		// in the right order.
+		pass.clear();
+		for (Iterator<DetectorNode> i = dfs.topologicalSortIterator(); i.hasNext(); ) {
+			DetectorNode node = i.next();
+			pass.addDetectorFactory(node.getFactory());
+		}
+
+		// Add back detectors that aren't involved in any intra-pass
+		// ordering constraints.
+		for (Iterator<DetectorFactory> i = origDetectorList.iterator(); i.hasNext(); ) {
+			DetectorFactory factory = i.next();
+			if (nodeMap.get(factory.getFullName()) == null) {
+				pass.addDetectorFactory(factory);
+			}
+		}
 	}
 
 	private void print() {
@@ -296,6 +323,15 @@ public class ExecutionPlan {
 				DetectorFactory factory = j.next();
 				System.out.println("  " + factory.getFullName());
 			}
+		}
+	}
+
+	private void dumpGraph(ConstraintGraph graph) {
+		for (Iterator<ConstraintEdge> i = graph.edgeIterator(); i.hasNext();) {
+			ConstraintEdge edge = i.next();
+			System.out.println(
+				edge.getSource().getFactory().getFullName() + " ==> " +
+				edge.getTarget().getFactory().getFullName());
 		}
 	}
 
