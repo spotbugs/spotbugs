@@ -425,6 +425,7 @@ public class FindBugs implements Constants2, ExitCodes {
 			addOption("-outputFile", "filename", "Save output in named file");
 			addOption("-visitors", "v1[,v2...]", "run only named visitors");
 			addOption("-omitVisitors", "v1[,v2...]", "omit named visitors");
+			addOption("-chooseVisitors", "+v1,-v2,...", "selectively enable/disable detectors");
 			addOption("-bugCategories", "cat1[,cat2...]", "only report bugs in given categories");
 			addOption("-onlyAnalyze", "classes/packages", "only analyze given classes and packages");
 			addOption("-exclude", "filter file", "exclude bugs matching given filter");
@@ -522,6 +523,27 @@ public class FindBugs implements Constants2, ExitCodes {
 					if (factory == null)
 						throw new IllegalArgumentException("Unknown detector: " + visitorName);
 					factory.setEnabled(!omit);
+				}
+			} else if (option.equals("-chooseVisitors")) {
+				// This is like -visitors and -omitVisitors, but
+				// you can selectively enable and disable detectors,
+				// starting from the default set (or whatever set
+				// happens to be in effect).
+				StringTokenizer tok = new StringTokenizer(argument, ",");
+				while (tok.hasMoreTokens()) {
+					String visitorName = tok.nextToken();
+					if (!visitorName.startsWith("+") && !visitorName.startsWith("-"))
+						throw new IllegalArgumentException("Detector choices must start with " +
+							"\"+\" or \"-\" (saw " + visitorName + ")");
+					DetectorFactory factory = DetectorFactoryCollection.instance()
+						.getFactory(visitorName.substring(1));
+					if (factory == null)
+						throw new IllegalArgumentException("Unknown detector: " +
+							visitorName.substring(1));
+					if (visitorName.startsWith("+"))
+						factory.setEnabled(true);
+					else
+						factory.setEnabled(false);
 				}
 			} else if (option.equals("-bugCategories")) {
 				this.bugCategorySet = handleBugCategories(argument);
