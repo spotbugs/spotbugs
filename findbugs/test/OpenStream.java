@@ -24,19 +24,19 @@ public class OpenStream {
 		// oops!  exiting the method without closing the stream
 	}
 
-	public void doNotReport() {
+	public void byteArrayStreamDoNotReport() {
 		ByteArrayOutputStream b = new ByteArrayOutputStream();
 		PrintStream out = new PrintStream(b);
 
 		out.println("Hello, world!");
 	}
 
-	public void systemIn() throws IOException {
+	public void systemInDoNotReport() throws IOException {
 		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 		System.out.println(reader.readLine());
 	}
 
-	public void socket(java.net.Socket socket) throws IOException {
+	public void socketDoNotReport(java.net.Socket socket) throws IOException {
 		BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 		System.out.println(reader.readLine());
 	}
