@@ -839,6 +839,8 @@ public class FindBugs implements Constants2, ExitCodes
 				reportRecoverableException(className, e);
 			} catch (ArrayIndexOutOfBoundsException e) {
 				reportRecoverableException(className, e);
+			} catch (ClassCastException e) {
+				reportRecoverableException(className, e);
 			}
 		}
 	} catch (ClassNotFoundException e) {
