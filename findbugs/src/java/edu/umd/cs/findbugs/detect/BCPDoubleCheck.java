@@ -12,7 +12,21 @@ public class BCPDoubleCheck implements Detector {
 
 	private BugReporter bugReporter;
 
+	/**
+	 * Default maximum number of "wildcard" instructions to accept between explicit
+	 * pattern instructions.
+	 */
 	private static final int MAX_WILD = 8;
+
+	/**
+	 * Maximum number of "wildcard" instructions to accept for object creation
+	 * in the doublecheck.  This needs to be a lot higher than MAX_WILD.
+	 */
+	private static final int CREATE_OBJ_WILD = 40;
+
+	/**
+	 * The doublecheck pattern.
+	 */
 	private static final ByteCodePattern pattern = new ByteCodePattern();
 	static {
 		pattern
@@ -22,7 +36,7 @@ public class BCPDoubleCheck implements Detector {
 			.add(new Monitorenter(pattern.dummyVariable()))
 			.add(new Load("h", "y"))
 			.add(new IfNull("y"))
-			//.add(new New("z"))
+			.addWild(CREATE_OBJ_WILD)
 			.add(new Store("h", pattern.dummyVariable()));
 	}
 
