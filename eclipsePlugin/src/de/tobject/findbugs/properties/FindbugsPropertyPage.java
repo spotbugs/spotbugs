@@ -94,6 +94,7 @@ public class FindbugsPropertyPage extends PropertyPage {
 	private IProject project;
 	protected TableViewer availableFactoriesTableViewer;
 	protected Map factoriesToBugAbbrev;
+	private Button restoreDefaultsButton;
 
 	/**
 	 * Constructor for FindbugsPropertyPage.
@@ -156,25 +157,69 @@ public class FindbugsPropertyPage extends PropertyPage {
 		activeCategoriesLabel.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1));
 		buildBugCategoryList(categoryGroup, project);
 		
+		addSeparator(composite);
+
+		buildLabel(composite, "Select bug patterns to check for:");
+		Table availableRulesTable =
+			buildAvailableRulesTableViewer(composite, project);
+		GridData tableLayoutData = new GridData();
+		tableLayoutData.grabExcessHorizontalSpace = true;
+		tableLayoutData.grabExcessVerticalSpace = true;
+		tableLayoutData.horizontalAlignment = GridData.FILL;
+		tableLayoutData.verticalAlignment = GridData.FILL;
+		tableLayoutData.heightHint = 50;
+		availableRulesTable.setLayoutData(tableLayoutData);
+
+		addSeparator(composite);
+		
+		restoreDefaultsButton = new Button(composite, SWT.NONE);
+		restoreDefaultsButton.setText("Restore default settings");
+		restoreDefaultsButton.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
+		restoreDefaultsButton.addSelectionListener(new SelectionAdapter() {
+			/* (non-Javadoc)
+			 * @see org.eclipse.swt.events.SelectionAdapter#widgetSelected(org.eclipse.swt.events.SelectionEvent)
+			 */
+			public void widgetSelected(SelectionEvent e) {
+				restoreDefaultSettings();
+			}
+		});
+		
+		return composite;
+	}
+
+	/**
+	 * Restore default settings.
+	 * This just changes the dialog widgets - the user still needs
+	 * to confirm by clicking the "OK" button.
+	 */
+	private void restoreDefaultSettings() {
+		// By default, don't run FindBugs automatically
+		chkEnableFindBugs.setSelection(false);
+		
+		// Use the default minimum priority (which is medium)
+		minPriorityCombo.setText(ProjectFilterSettings.DEFAULT_PRIORITY);
+		
+		// By default, all bug categories are enabled
+		for (int i = 0; i < chkEnableBugCategoryList.length; ++i) {
+			chkEnableBugCategoryList[i].setSelection(true);
+		}
+		
+		// Enable only those detectors that are enabled by default
+		// TODO: implement this
+	}
+
+	/**
+	 * Add a horizontal separator to given panel.
+	 * 
+	 * @param composite the panel
+	 */
+	private void addSeparator(Composite composite) {
 		Label separator =
 			new Label(composite, SWT.SEPARATOR | SWT.SHADOW_IN | SWT.HORIZONTAL);
 		GridData data = new GridData();
 		data.horizontalAlignment = GridData.FILL;
 		data.grabExcessHorizontalSpace = true;
 		separator.setLayoutData(data);
-
-		buildLabel(composite, "Select bug patterns to check for:");
-		Table availableRulesTable =
-			buildAvailableRulesTableViewer(composite, project);
-		data = new GridData();
-		data.grabExcessHorizontalSpace = true;
-		data.grabExcessVerticalSpace = true;
-		data.horizontalAlignment = GridData.FILL;
-		data.verticalAlignment = GridData.FILL;
-		data.heightHint = 50;
-		availableRulesTable.setLayoutData(data);
-
-		return composite;
 	}
 
 	/**
