@@ -1,39 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-    <classpathentry kind="src" path="src"/>
-    <classpathentry kind="var"
-        path="ECLIPSE_HOME/plugins/org.eclipse.core.resources_2.1.1/resources.jar" sourcepath="ORG_ECLIPSE_PLATFORM_SOURCE_SRC/org.eclipse.core.resources_2.1.1/resourcessrc.zip"/>
-    <classpathentry kind="var"
-        path="ECLIPSE_HOME/plugins/org.eclipse.ui_2.1.1/ui.jar" sourcepath="ORG_ECLIPSE_PLATFORM_SOURCE_SRC/org.eclipse.ui_2.1.1/uisrc.zip"/>
-    <classpathentry kind="var"
-        path="ECLIPSE_HOME/plugins/org.eclipse.swt.win32_2.1.2/ws/win32/swt.jar" sourcepath="ORG_ECLIPSE_PLATFORM_WIN32_SOURCE_SRC/org.eclipse.swt.win32_2.1.2/ws/win32/swtsrc.zip"/>
-    <classpathentry kind="var"
-        path="ECLIPSE_HOME/plugins/org.eclipse.text_2.1.0/text.jar" sourcepath="ORG_ECLIPSE_PLATFORM_SOURCE_SRC/org.eclipse.text_2.1.0/textsrc.zip"/>
-    <classpathentry kind="var"
-        path="ECLIPSE_HOME/plugins/org.eclipse.jface_2.1.1/jface.jar" sourcepath="ORG_ECLIPSE_PLATFORM_SOURCE_SRC/org.eclipse.jface_2.1.1/jfacesrc.zip"/>
-    <classpathentry kind="var"
-        path="ECLIPSE_HOME/plugins/org.eclipse.jface.text_2.1.0/jfacetext.jar" sourcepath="ORG_ECLIPSE_PLATFORM_SOURCE_SRC/org.eclipse.jface.text_2.1.0/jfacetextsrc.zip"/>
-    <classpathentry kind="var"
-        path="ECLIPSE_HOME/plugins/org.eclipse.ui.views_2.1.0/views.jar" sourcepath="ORG_ECLIPSE_PLATFORM_SOURCE_SRC/org.eclipse.ui.views_2.1.0/viewssrc.zip"/>
-    <classpathentry kind="var"
-        path="ECLIPSE_HOME/plugins/org.eclipse.ui.workbench_2.1.1/workbench.jar" sourcepath="ORG_ECLIPSE_PLATFORM_SOURCE_SRC/org.eclipse.ui.workbench_2.1.1/workbenchsrc.zip"/>
-    <classpathentry kind="var"
-        path="ECLIPSE_HOME/plugins/org.eclipse.ui.win32_2.1.0/workbenchwin32.jar" sourcepath="ORG_ECLIPSE_PLATFORM_WIN32_SOURCE_SRC/org.eclipse.ui.win32_2.1.0/workbenchwin32src.zip"/>
-    <classpathentry kind="var"
-        path="ECLIPSE_HOME/plugins/org.eclipse.ui.workbench.texteditor_2.1.0/texteditor.jar" sourcepath="ORG_ECLIPSE_PLATFORM_SOURCE_SRC/org.eclipse.ui.workbench.texteditor_2.1.0/texteditorsrc.zip"/>
-    <classpathentry kind="var"
-        path="ECLIPSE_HOME/plugins/org.eclipse.ui.editors_2.1.0/editors.jar" sourcepath="ORG_ECLIPSE_PLATFORM_SOURCE_SRC/org.eclipse.ui.editors_2.1.0/editorssrc.zip"/>
-    <classpathentry kind="var"
-        path="ECLIPSE_HOME/plugins/org.eclipse.jdt.core_2.1.2/jdtcore.jar" sourcepath="ORG_ECLIPSE_JDT_SOURCE_SRC/org.eclipse.jdt.core_2.1.2/jdtcoresrc.zip"/>
-    <classpathentry kind="var"
-        path="ECLIPSE_HOME/plugins/org.eclipse.jdt.ui_2.1.2/jdt.jar" sourcepath="ORG_ECLIPSE_JDT_SOURCE_SRC/org.eclipse.jdt.ui_2.1.2/jdtsrc.zip"/>
-    <classpathentry kind="var"
-        path="ECLIPSE_HOME/plugins/org.eclipse.jdt.launching_2.1.1/launching.jar" sourcepath="ORG_ECLIPSE_JDT_SOURCE_SRC/org.eclipse.jdt.launching_2.1.1/launchingsrc.zip"/>
-    <classpathentry kind="src" path="/edu.umd.cs.findbugs"/>
-    <classpathentry kind="var"
-        path="ECLIPSE_HOME/plugins/org.eclipse.core.boot_2.1.2/boot.jar" sourcepath="ORG_ECLIPSE_PLATFORM_SOURCE_SRC/org.eclipse.core.boot_2.1.2/bootsrc.zip"/>
-    <classpathentry kind="var"
-        path="ECLIPSE_HOME/plugins/org.eclipse.core.runtime_2.1.1/runtime.jar" sourcepath="ORG_ECLIPSE_PLATFORM_SOURCE_SRC/org.eclipse.core.runtime_2.1.1/runtimesrc.zip"/>
-    <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-    <classpathentry kind="output" path="bin"/>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry sourcepath="ECLIPSE_HOME/plugins/org.eclipse.core.resources_3.1.0/resources.jar" kind="var" path="ECLIPSE_HOME/plugins/org.eclipse.core.resources_3.1.0/resources.jar"/>
+	<classpathentry kind="var" path="ECLIPSE_HOME/plugins/org.eclipse.ui_3.1.0/ui.jar"/>
+	<classpathentry kind="var" path="ECLIPSE_HOME/plugins/org.eclipse.swt.gtk64_3.1.0/ws/gtk/swt.jar"/>
+	<classpathentry kind="var" path="ECLIPSE_HOME/plugins/org.eclipse.text_3.1.0/text.jar"/>
+	<classpathentry kind="var" path="ECLIPSE_HOME/plugins/org.eclipse.jface_3.1.0/jface.jar"/>
+	<classpathentry kind="var" path="ECLIPSE_HOME/plugins/org.eclipse.jface.text_3.1.0/jfacetext.jar"/>
+	<classpathentry kind="var" path="ECLIPSE_HOME/plugins/org.eclipse.ui.views_3.1.0/views.jar"/>
+	<classpathentry kind="var" path="ECLIPSE_HOME/plugins/org.eclipse.ui.workbench_3.1.0/workbench.jar"/>
+	<classpathentry kind="var" path="ECLIPSE_HOME/plugins/org.eclipse.ui.workbench.texteditor_3.1.0/texteditor.jar"/>
+	<classpathentry kind="var" path="ECLIPSE_HOME/plugins/org.eclipse.ui.editors_3.1.0/editors.jar"/>
+	<classpathentry kind="var" path="ECLIPSE_HOME/plugins/org.eclipse.jdt.core_3.1.0/jdtcore.jar"/>
+	<classpathentry kind="var" path="ECLIPSE_HOME/plugins/org.eclipse.jdt.ui_3.1.0/jdt.jar"/>
+	<classpathentry kind="var" path="ECLIPSE_HOME/plugins/org.eclipse.jdt.launching_3.1.0/launching.jar"/>
+	<classpathentry kind="var" path="ECLIPSE_HOME/plugins/org.eclipse.core.boot_3.0.0/boot.jar"/>
+	<classpathentry kind="var" path="ECLIPSE_HOME/plugins/org.eclipse.core.runtime_3.1.0/runtime.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="var" path="ECLIPSE_HOME/plugins/org.eclipse.osgi_3.1.0/osgi.jar"/>
+	<classpathentry kind="var" path="FINDBUGS_HOME/lib/findbugs.jar"/>
+	<classpathentry kind="var" path="FINDBUGS_HOME/lib/bcel.jar"/>
+	<classpathentry kind="var" path="FINDBUGS_HOME/lib/dom4j-full.jar"/>
+	<classpathentry kind="var" path="FINDBUGS_HOME/lib/findbugsAttributes.jar"/>
+	<classpathentry kind="src" path="/edu.umd.cs.findbugs"/>
+	<classpathentry kind="var" path="ECLIPSE_HOME/plugins/org.eclipse.ui.ide_3.1.0/ide.jar"/>
+	<classpathentry kind="output" path="bin"/>
 </classpath>

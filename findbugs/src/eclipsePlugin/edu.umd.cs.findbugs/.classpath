@@ -1,12 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-    <classpathentry exported="true" kind="lib" path="bcel.jar"/>
-    <classpathentry exported="true" kind="lib" path="dom4j-full.jar"/>
-    <classpathentry exported="true" kind="lib" path="findbugs.jar"/>
-    <classpathentry kind="var"
-        path="ECLIPSE_HOME/plugins/org.eclipse.core.boot_2.1.2/boot.jar" sourcepath="ORG_ECLIPSE_PLATFORM_SOURCE_SRC/org.eclipse.core.boot_2.1.2/bootsrc.zip"/>
-    <classpathentry kind="var"
-        path="ECLIPSE_HOME/plugins/org.eclipse.core.runtime_2.1.1/runtime.jar" sourcepath="ORG_ECLIPSE_PLATFORM_SOURCE_SRC/org.eclipse.core.runtime_2.1.1/runtimesrc.zip"/>
-    <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-    <classpathentry kind="output" path="bin"/>
+	<classpathentry kind="var" path="ECLIPSE_HOME/plugins/org.eclipse.core.boot_3.0.0/boot.jar"/>
+	<classpathentry kind="var" path="ECLIPSE_HOME/plugins/org.eclipse.core.runtime_3.1.0/runtime.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="var" path="FINDBUGS_HOME/lib/bcel.jar"/>
+	<classpathentry kind="var" path="FINDBUGS_HOME/lib/dom4j-full.jar"/>
+	<classpathentry kind="output" path="bin"/>
 </classpath>
