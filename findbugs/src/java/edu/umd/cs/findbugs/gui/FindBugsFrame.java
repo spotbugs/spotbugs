@@ -837,6 +837,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
         jarFileListScrollPane.setPreferredSize(new java.awt.Dimension(259, 1));
         jarFileList.setBorder(new javax.swing.border.BevelBorder(javax.swing.border.BevelBorder.LOWERED));
         jarFileList.setFont(new java.awt.Font("Dialog", 0, 12));
+        disableEditKeyBindings(jarFileList);
+
         jarFileList.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusGained(java.awt.event.FocusEvent evt) {
                 focusGainedHandler(evt);
@@ -857,6 +859,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
         sourceDirListScrollPane.setPreferredSize(new java.awt.Dimension(259, 1));
         sourceDirList.setBorder(new javax.swing.border.BevelBorder(javax.swing.border.BevelBorder.LOWERED));
         sourceDirList.setFont(new java.awt.Font("Dialog", 0, 12));
+        disableEditKeyBindings(sourceDirList);
         sourceDirList.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusGained(java.awt.event.FocusEvent evt) {
                 focusGainedHandler(evt);
@@ -966,6 +969,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
         classpathEntryListScrollPane.setPreferredSize(new java.awt.Dimension(259, 1));
         classpathEntryList.setBorder(new javax.swing.border.BevelBorder(javax.swing.border.BevelBorder.LOWERED));
         classpathEntryList.setFont(new java.awt.Font("Dialog", 0, 12));
+        disableEditKeyBindings(classpathEntryList);
         classpathEntryList.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusGained(java.awt.event.FocusEvent evt) {
                 focusGainedHandler(evt);
@@ -1527,6 +1531,12 @@ public class FindBugsFrame extends javax.swing.JFrame {
             pack();
         }//GEN-END:initComponents
 
+    private void disableEditKeyBindings(JList list) {
+        list.getInputMap().put(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_X, java.awt.event.InputEvent.CTRL_MASK), "none");
+        list.getInputMap().put(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_C, java.awt.event.InputEvent.CTRL_MASK), "none");
+        list.getInputMap().put(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_V, java.awt.event.InputEvent.CTRL_MASK), "none");
+    }
+    
     private String buildSelectPath(JList list) {
         StringBuffer path = new StringBuffer();
         int[] indices = list.getSelectedIndices();
