@@ -1,5 +1,5 @@
 /*
- * FindBugs - Find bugs in Java programs
+ * Bytecode Analysis Framework
  * Copyright (C) 2005, University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
@@ -24,7 +24,6 @@ import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.MethodGen;
 
 import edu.umd.cs.findbugs.ba.BasicBlock;
-import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.Dataflow;
@@ -100,6 +99,9 @@ public class ConstantAnalysis extends FrameDataflowAnalysis<Constant, ConstantFr
 		return Constant.merge(a, b);
 	}
 	
+	/*
+	 * Test driver.
+	 */
 	public static void main(String[] argv) throws Exception {
 		if (argv.length != 1) {
 			System.err.println("Usage: " + ConstantAnalysis.class.getName() + " <class file>");
@@ -111,18 +113,7 @@ public class ConstantAnalysis extends FrameDataflowAnalysis<Constant, ConstantFr
 				public Dataflow<ConstantFrame, ConstantAnalysis> createDataflow(
 						ClassContext classContext,
 						Method method) throws CFGBuilderException, DataflowAnalysisException {
-					
-					CFG cfg = classContext.getCFG(method);
-					
-					ConstantAnalysis analysis = new ConstantAnalysis(
-							classContext.getMethodGen(method),
-							classContext.getDepthFirstSearch(method));
-					
-					Dataflow<ConstantFrame, ConstantAnalysis> dataflow =
-						new Dataflow<ConstantFrame, ConstantAnalysis>(cfg, analysis);
-					dataflow.execute();
-					
-					return dataflow;
+					return classContext.getConstantDataflow(method);
 				}
 			};
 			
