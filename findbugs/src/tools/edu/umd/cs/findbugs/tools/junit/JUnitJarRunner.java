@@ -80,7 +80,7 @@ public class JUnitJarRunner {
 			}
 		}
 
-		ClassLoader cl = new URLClassLoader(urlList.toArray(new URL[0]));
+		ClassLoader cl = new URLClassLoader(urlList.toArray(new URL[urlList.size()]));
 
 		Class<?> testCaseClass = cl.loadClass("junit.framework.TestCase");
 
