@@ -587,11 +587,6 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 	 * @return the CFG for the method
 	 */
 	private CFG inlineAll() throws CFGBuilderException {
-		// Special case: if there are no JSR subroutines, then
-		// the top level subroutine is the complete CFG for the method
-		if (jsrSubroutineMap.isEmpty())
-			return topLevelSubroutine.getCFG();
-
 		CFG result = new CFG();
 
 		Context rootContext = new Context(null, topLevelSubroutine, result);
