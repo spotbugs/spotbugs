@@ -340,9 +340,9 @@ public class DroppedException extends PreorderVisitor implements Detector, Const
 		case OPEN_PAREN:
 		    if (value.equals(")")) {
 			if (level == 0)
-		    	state = CLOSE_PAREN;
+			    state = CLOSE_PAREN;
 			else
-		    	--level;
+			    --level;
 		    } else if (value.equals("(")) {
 			++level;
 		    }
