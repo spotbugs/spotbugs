@@ -51,7 +51,7 @@ public class Version {
 	/**
 	 * Release date.
 	 */
-	public static final String DATE = "September 13, 2004";
+	public static final String DATE = "October 6, 2004";
 
 	/**
 	 * Version of Eclipse "core" plugin, which is just a repackaged
