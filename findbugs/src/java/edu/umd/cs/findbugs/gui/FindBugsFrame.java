@@ -535,6 +535,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
         jarFileLabel.setFont(new java.awt.Font("Dialog", 0, 12));
         jarFileLabel.setText("Archive or directory:");
+        jarFileLabel.setText(L10N.getLocalString("dlg.jarfile_lbl", "Archive or Directory:"));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;
@@ -561,6 +562,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
         addJarButton.setMaximumSize(new java.awt.Dimension(80, 25));
         addJarButton.setMinimumSize(new java.awt.Dimension(80, 25));
         addJarButton.setPreferredSize(new java.awt.Dimension(80, 25));
+        addJarButton.setText(L10N.getLocalString("dlg.add_btn", "Add"));
         addJarButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 addJarButtonActionPerformed(evt);
@@ -576,6 +578,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
         jarFileListLabel.setFont(new java.awt.Font("Dialog", 0, 12));
         jarFileListLabel.setText("Archives/directories:");
+        jarFileListLabel.setText(L10N.getLocalString("dlg.jarlist_lbl", "Archives/Directories:"));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 3;
@@ -585,6 +588,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
         sourceDirLabel.setFont(new java.awt.Font("Dialog", 0, 12));
         sourceDirLabel.setText("Source directory:");
+        sourceDirLabel.setText(L10N.getLocalString("dlg.srcfile_lbl", "Source directory:"));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 8;
@@ -611,6 +615,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
         addSourceDirButton.setMaximumSize(new java.awt.Dimension(80, 25));
         addSourceDirButton.setMinimumSize(new java.awt.Dimension(80, 25));
         addSourceDirButton.setPreferredSize(new java.awt.Dimension(80, 25));
+        addSourceDirButton.setText(L10N.getLocalString("dlg.add_btn", "Add"));
         addSourceDirButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 addSourceDirButtonActionPerformed(evt);
@@ -626,6 +631,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
         sourceDirListLabel.setFont(new java.awt.Font("Dialog", 0, 12));
         sourceDirListLabel.setText("Source directories:");
+        sourceDirListLabel.setText(L10N.getLocalString("dlg.srclist_lbl", "Source directories:"));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 9;
@@ -638,6 +644,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
         removeJarButton.setMaximumSize(new java.awt.Dimension(80, 25));
         removeJarButton.setMinimumSize(new java.awt.Dimension(80, 25));
         removeJarButton.setPreferredSize(new java.awt.Dimension(80, 25));
+        removeJarButton.setText(L10N.getLocalString("dlg.remove_btn", "Remove"));
         removeJarButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 removeJarButtonActionPerformed(evt);
@@ -656,6 +663,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
         removeSrcDirButton.setMaximumSize(new java.awt.Dimension(80, 25));
         removeSrcDirButton.setMinimumSize(new java.awt.Dimension(80, 25));
         removeSrcDirButton.setPreferredSize(new java.awt.Dimension(80, 25));
+        removeSrcDirButton.setText(L10N.getLocalString("dlg.remove_btn", "Remove"));
         removeSrcDirButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 removeSrcDirButtonActionPerformed(evt);
@@ -682,6 +690,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
         browseJarButton.setMaximumSize(new java.awt.Dimension(80, 25));
         browseJarButton.setMinimumSize(new java.awt.Dimension(80, 25));
         browseJarButton.setPreferredSize(new java.awt.Dimension(80, 25));
+        browseJarButton.setText(L10N.getLocalString("dlg.browse_btn", "Browse"));
         browseJarButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 browseJarButtonActionPerformed(evt);
@@ -699,6 +708,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
         browseSrcDirButton.setMaximumSize(new java.awt.Dimension(80, 25));
         browseSrcDirButton.setMinimumSize(new java.awt.Dimension(80, 25));
         browseSrcDirButton.setPreferredSize(new java.awt.Dimension(80, 25));
+        browseSrcDirButton.setText(L10N.getLocalString("dlg.browse_btn", "Browse"));
         browseSrcDirButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 browseSrcDirButtonActionPerformed(evt);
@@ -716,6 +726,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
         editProjectLabel.setForeground(new java.awt.Color(255, 255, 255));
         editProjectLabel.setText("Project");
         editProjectLabel.setOpaque(true);
+        editProjectLabel.setText(L10N.getLocalString("dlg.project_lbl", "Project"));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
@@ -785,6 +796,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
         classpathEntryLabel.setFont(new java.awt.Font("Dialog", 0, 12));
         classpathEntryLabel.setText("Classpath entry:");
+        classpathEntryLabel.setText(L10N.getLocalString("dlg.classpathfile_lbl", "Classpath entry:"));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 15;
@@ -794,6 +806,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
         classpathEntryListLabel.setFont(new java.awt.Font("Dialog", 0, 12));
         classpathEntryListLabel.setText("Classpath entries:");
+        classpathEntryListLabel.setText(L10N.getLocalString("dlg.classpathlist_lbl", "Classpath entries:"));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 16;
@@ -813,6 +826,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
         browseClasspathEntryButton.setMaximumSize(new java.awt.Dimension(80, 25));
         browseClasspathEntryButton.setMinimumSize(new java.awt.Dimension(80, 25));
         browseClasspathEntryButton.setPreferredSize(new java.awt.Dimension(80, 25));
+        browseClasspathEntryButton.setText(L10N.getLocalString("dlg.browse_btn", "Browse"));
         browseClasspathEntryButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 browseClasspathEntryButtonActionPerformed(evt);
@@ -829,6 +843,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
         addClasspathEntryButton.setMaximumSize(new java.awt.Dimension(80, 25));
         addClasspathEntryButton.setMinimumSize(new java.awt.Dimension(80, 25));
         addClasspathEntryButton.setPreferredSize(new java.awt.Dimension(80, 25));
+        addClasspathEntryButton.setText(L10N.getLocalString("dlg.add_btn", "Add"));
         addClasspathEntryButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 addClasspathEntryButtonActionPerformed(evt);
@@ -847,6 +862,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
         removeClasspathEntryButton.setMaximumSize(new java.awt.Dimension(80, 25));
         removeClasspathEntryButton.setMinimumSize(new java.awt.Dimension(80, 25));
         removeClasspathEntryButton.setPreferredSize(new java.awt.Dimension(80, 25));
+        removeClasspathEntryButton.setText(L10N.getLocalString("dlg.remove_btn", "Remove"));
         removeClasspathEntryButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 removeClasspathEntryButtonActionPerformed(evt);
@@ -888,6 +904,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
         sourceUpButton.setMaximumSize(new java.awt.Dimension(80, 25));
         sourceUpButton.setMinimumSize(new java.awt.Dimension(80, 25));
         sourceUpButton.setPreferredSize(new java.awt.Dimension(80, 25));
+        sourceUpButton.setText(L10N.getLocalString("dlg.up_btn", "Up"));
         sourceUpButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 sourceUpButtonActionPerformed(evt);
@@ -905,6 +922,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
         sourceDownButton.setMaximumSize(new java.awt.Dimension(80, 25));
         sourceDownButton.setMinimumSize(new java.awt.Dimension(80, 25));
         sourceDownButton.setPreferredSize(new java.awt.Dimension(80, 25));
+        sourceDownButton.setText(L10N.getLocalString("dlg.down_btn", "Down"));
         sourceDownButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 sourceDownButtonActionPerformed(evt);
@@ -920,6 +938,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
         classpathUpButton.setMaximumSize(new java.awt.Dimension(80, 25));
         classpathUpButton.setMinimumSize(new java.awt.Dimension(80, 25));
         classpathUpButton.setPreferredSize(new java.awt.Dimension(80, 25));
+        classpathUpButton.setText(L10N.getLocalString("dlg.up_btn", "Up"));
         classpathUpButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 classpathUpButtonActionPerformed(evt);
@@ -937,6 +956,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
         classpathDownButton.setMaximumSize(new java.awt.Dimension(80, 25));
         classpathDownButton.setMinimumSize(new java.awt.Dimension(80, 25));
         classpathDownButton.setPreferredSize(new java.awt.Dimension(80, 25));
+        classpathDownButton.setText(L10N.getLocalString("dlg.down_btn", "Down"));
         classpathDownButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 classpathDownButtonActionPerformed(evt);
