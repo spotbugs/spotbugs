@@ -1,6 +1,6 @@
 /*
  * FindBugs - Find bugs in Java programs
- * Copyright (C) 2003,2004 University of Maryland
+ * Copyright (C) 2003-2005 University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -1237,6 +1237,15 @@ public class FindBugs implements Constants2, ExitCodes {
 				if (Thread.interrupted())
 					throw new InterruptedException();
 				Detector detector = detectors[i];
+				if (detector instanceof StatelessDetector) {
+					try {
+						detector = (Detector)((StatelessDetector)detector).clone();
+					} catch (CloneNotSupportedException cnfe) {
+						detector = detectors[i]; // this shouldn't happen
+					}
+				}
+					
+				
 				try {
 					if (DEBUG) System.out.println("  running " + detector.getClass().getName());
 					detector.visitClassContext(classContext);
