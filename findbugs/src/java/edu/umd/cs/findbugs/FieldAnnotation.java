@@ -1,12 +1,15 @@
 package edu.umd.cs.findbugs;
 
+import edu.umd.cs.pugh.visitclass.BetterVisitor;
+import edu.umd.cs.pugh.visitclass.DismantleBytecode;
+
 /**
  * A BugAnnotation specifying a particular field in particular class.
  *
  * @see BugAnnotation
  * @author David Hovemeyer
  */
-public class FieldAnnotation extends PackageMemberAnnotation {
+public class FieldAnnotation extends PackageMemberAnnotation implements Comparable {
 	public String fieldName;
 	public String fieldSig;
 
@@ -20,6 +23,27 @@ public class FieldAnnotation extends PackageMemberAnnotation {
 		super(className);
 		this.fieldName = fieldName;
 		this.fieldSig = fieldSig;
+	}
+
+	/**
+	 * Factory method. Class name, field name, and field signatures are taken from
+	 * the given visitor, which is visiting the field.
+	 * @param visitor the visitor which is visiting the field
+	 * @return the FieldAnnotation object
+	 */
+	public static FieldAnnotation fromVisitedField(BetterVisitor visitor) {
+		return new FieldAnnotation(visitor.getBetterClassName(), visitor.getFieldName(), visitor.getFieldSig());
+	}
+
+	/**
+	 * Factory method. Class name, field name, and field signatures are taken from
+	 * the given visitor, which is visiting a reference to the field
+	 * (i.e., a getfield or getstatic instruction).
+	 * @param visitor the visitor which is visiting the field reference
+	 * @return the FieldAnnotation object
+	 */
+	public static FieldAnnotation fromReferencedField(DismantleBytecode visitor) {
+		return new FieldAnnotation(visitor.getBetterClassConstant(), visitor.getNameConstant(), visitor.getSigConstant());
 	}
 
 	/**
@@ -55,6 +79,35 @@ public class FieldAnnotation extends PackageMemberAnnotation {
 			return result.toString();
 		} else
 			throw new IllegalArgumentException("unknown key " + key);
+	}
+
+	public String toString() {
+		return format("");
+	}
+
+	public int hashCode() {
+		return className.hashCode() + fieldName.hashCode() + fieldSig.hashCode();
+	}
+
+	public boolean equals(Object o) {
+		if (!(o instanceof FieldAnnotation))
+			return false;
+		FieldAnnotation other = (FieldAnnotation) o;
+		return className.equals(other.className)
+			&& fieldName.equals(other.fieldName)
+			&& fieldSig.equals(other.fieldSig);
+	}
+
+	public int compareTo(Object o) {
+		FieldAnnotation other = (FieldAnnotation) o;
+		int cmp;
+		cmp = className.compareTo(other.className);
+		if (cmp != 0)
+			return cmp;
+		cmp = fieldName.compareTo(other.fieldName);
+		if (cmp != 0)
+			return cmp;
+		return fieldSig.compareTo(other.fieldSig);
 	}
 }
 
