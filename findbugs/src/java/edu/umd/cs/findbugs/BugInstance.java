@@ -40,10 +40,6 @@ import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.MethodGen;
 
-import org.dom4j.Branch;
-import org.dom4j.DocumentException;
-import org.dom4j.Element;
-
 /**
  * An instance of a bug pattern.
  * A BugInstance consists of several parts:
@@ -69,7 +65,7 @@ import org.dom4j.Element;
  * @author David Hovemeyer
  * @see BugAnnotation
  */
-public class BugInstance implements Comparable/*, XMLConvertible*/, XMLWriteable {
+public class BugInstance implements Comparable, XMLWriteable {
 	private String type;
 	private int priority;
 	private ArrayList<BugAnnotation> annotationList;
@@ -723,82 +719,6 @@ public class BugInstance implements Comparable/*, XMLConvertible*/, XMLWriteable
 
 	private static final String ELEMENT_NAME = "BugInstance";
 	private static final String USER_ANNOTATION_ELEMENT_NAME = "UserAnnotation";
-
-/*
-	private static class BugInstanceXMLTranslator implements XMLTranslator {
-		public String getElementName() {
-			return ELEMENT_NAME;
-		}
-
-		public XMLConvertible fromElement(Element element) throws DocumentException {
-			try {
-				String type = element.attributeValue("type");
-				int priority = Integer.parseInt(element.attributeValue("priority"));
-
-				BugInstance bugInstance = new BugInstance(type, priority);
-
-				// Child elements are BugAnnotations or the UserAnnotation text
-				Iterator i = element.elements().iterator();
-				while (i.hasNext()) {
-					Element child = (Element) i.next();
-					String childName = child.getName();
-
-					if (childName.equals(USER_ANNOTATION_ELEMENT_NAME)) {
-						bugInstance.setAnnotationText(child.getText());
-					} else {
-						XMLTranslator translator = XMLTranslatorRegistry.instance().getTranslator(childName);
-						if (translator == null)
-							throw new DocumentException("Bad element type: " + childName);
-
-						BugAnnotation annotation = (BugAnnotation) translator.fromElement(child);
-						bugInstance.add(annotation);
-					}
-				}
-
-				return bugInstance;
-
-			} catch (NumberFormatException e) {
-				throw new DocumentException("Invalid attribute value: " + e.toString());
-			}
-		}
-	}
-
-	static int dummy; // XXX: needed to allow BugCollection to force static init in JDK 1.5
-
-	static {
-		XMLTranslatorRegistry.instance().registerTranslator(new BugInstanceXMLTranslator());
-	}
-
-	public Element toElement(Branch parent) {
-		Element element = parent.addElement(ELEMENT_NAME)
-		        .addAttribute("type", type)
-		        .addAttribute("priority", String.valueOf(priority));
-
-		BugPattern pattern = getBugPattern();
-		if (pattern != null) {
-			// The bug abbreviation and pattern category are
-			// emitted into the XML for informational purposes only.
-			// (The information is redundant, but might be useful
-			// for processing tools that want to make sense of
-			// bug instances without looking at the plugin descriptor.)
-			element.addAttribute("abbrev", pattern.getAbbrev());
-			element.addAttribute("category", pattern.getCategory());
-		}
-
-		if (!annotationText.equals("")) {
-			Element annotationElement = element.addElement("UserAnnotation");
-			annotationElement.addCDATA(annotationText);
-		}
-
-		Iterator<BugAnnotation> i = annotationList.iterator();
-		while (i.hasNext()) {
-			BugAnnotation child = i.next();
-			child.toElement(element);
-		}
-
-		return element;
-	}
-*/
 
 	/* ----------------------------------------------------------------------
 	 * Implementation

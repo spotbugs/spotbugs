@@ -31,13 +31,6 @@ import java.util.*;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentFactory;
-/*
-import org.dom4j.DocumentHelper;
-import org.dom4j.Element;
-import org.dom4j.io.OutputFormat;
-import org.dom4j.io.SAXReader;
-import org.dom4j.io.XMLWriter;
-*/
 
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -52,18 +45,6 @@ import org.xml.sax.XMLReader;
  * @see BugInstance
  */
 public abstract class BugCollection {
-/*
-	static int x;
-
-	static {
-		// Make sure BugInstance and all of the annotation classes
-		// are loaded, and that their static initializers run,
-		// to ensure that their XMLTranslators are registered.
-		x = BugInstance.dummy + ClassAnnotation.dummy +
-		        FieldAnnotation.dummy + MethodAnnotation.dummy +
-		        SourceLineAnnotation.dummy + IntAnnotation.dummy;
-	}
-*/
 
 	public void addAll(Collection<BugInstance> collection) {
 		Iterator<BugInstance> i = collection.iterator();
@@ -137,57 +118,7 @@ public abstract class BugCollection {
 	private void doReadXML(InputStream in, Project project) throws IOException, DocumentException {
 
 		checkInputStream(in);
-/*
-		SAXReader reader = new SAXReader();
-		Document document = reader.read(in);
 
-		Map<String, String> classToSourceFileMap = new HashMap<String, String>();
-
-		for (Iterator i = document.getRootElement().elements().iterator(); i.hasNext();) {
-			Element element = (Element) i.next();
-			String elementName = element.getName();
-
-			if (elementName.equals(SRCMAP_ELEMENT_NAME)) {
-				// Note: this is just for backwards compatibility.
-				classToSourceFileMap.put(element.attributeValue("classname"), element.attributeValue("srcfile"));
-			} else if (elementName.equals(PROJECT_ELEMENT_NAME)) {
-				project.readElement(element);
-			} else if (elementName.equals(ERRORS_ELEMENT_NAME)) {
-				readErrors(element);
-			} else if (elementName.equals(SUMMARY_HTML_ELEMENT_NAME)) {
-				setSummaryHTML(element.getText());
-			} else if (elementName.equals(APP_CLASS_ELEMENT_NAME)) {
-				// Ignore for backwards compatibility
-			} else {
-				XMLTranslator translator = XMLTranslatorRegistry.instance().getTranslator(elementName);
-				if (translator == null)
-					throw new DocumentException("Unknown element type: " + elementName);
-
-				BugInstance bugInstance = (BugInstance) translator.fromElement(element);
-
-				add(bugInstance);
-			}
-		}
-
-		// For any bug instances lacking source information,
-		// use the source map to add the information (if possible).
-		// This is just for backwards compatibility with the old
-		// SrcMap elements.
-		for (Iterator<BugInstance> i = this.iterator(); i.hasNext();) {
-			BugInstance bugInstance = i.next();
-
-			for (Iterator<BugAnnotation> j = bugInstance.annotationIterator(); j.hasNext();) {
-				BugAnnotation annotation = j.next();
-				if (annotation instanceof SourceLineAnnotation) {
-					updateSourceFile((SourceLineAnnotation) annotation, classToSourceFileMap);
-				} else if (annotation instanceof MethodAnnotation) {
-					SourceLineAnnotation srcLines = ((MethodAnnotation) annotation).getSourceLines();
-					if (srcLines != null)
-						updateSourceFile(srcLines, classToSourceFileMap);
-				}
-			}
-		}
-*/
 		try {
 			SAXBugCollectionHandler handler = new SAXBugCollectionHandler(this, project);
 
@@ -209,34 +140,6 @@ public abstract class BugCollection {
 		project.setModified(false);
 	}
 
-/*
-	private static void updateSourceFile(SourceLineAnnotation annotation, Map<String, String> classToSourceFileMap) {
-		if (!annotation.isSourceFileKnown()) {
-			String className = annotation.getClassName();
-			String sourceFile = classToSourceFileMap.get(className);
-			if (sourceFile != null)
-				annotation.setSourceFile(sourceFile);
-		}
-	}
-*/
-
-/*
-	private void readErrors(Element element) throws DocumentException {
-		Iterator i = element.elements().iterator();
-		while (i.hasNext()) {
-			Element child = (Element) i.next();
-			String elementName = child.getName();
-
-			if (elementName.equals(ANALYSIS_ERROR_ELEMENT_NAME)) {
-				addError(child.getText());
-			} else if (elementName.equals(MISSING_CLASS_ELEMENT_NAME)) {
-				addMissingClass(child.getText());
-			} else
-				throw new DocumentException("Unknown element type: " + elementName);
-		}
-	}
-*/
-
 	public void writeXML(String fileName, Project project) throws IOException {
 		BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(fileName));
 		writeXML(out, project);
@@ -247,42 +150,6 @@ public abstract class BugCollection {
 		writeXML(out, project);
 	}
 
-/*
-	public Document toDocument(Project project) {
-		Document document = DocumentHelper.createDocument();
-		Element root = document.addElement(ROOT_ELEMENT_NAME);
-
-		// Set the version attribute of the root element
-		root.addAttribute("version", Version.RELEASE);
-
-		// Save the project information
-		Element projectElement = root.addElement(PROJECT_ELEMENT_NAME);
-		project.writeElement(projectElement);
-
-		// Save all of the bug instances
-		for (Iterator<BugInstance> i = this.iterator(); i.hasNext();) {
-			BugInstance bugInstance = i.next();
-			bugInstance.toElement(root);
-		}
-
-		// Save the error information
-		Element errorsElement = root.addElement(ERRORS_ELEMENT_NAME);
-		for (Iterator<String> i = errorIterator(); i.hasNext();) {
-			errorsElement.addElement(ANALYSIS_ERROR_ELEMENT_NAME).setText(i.next());
-		}
-		for (Iterator<String> i = missingClassIterator(); i.hasNext();) {
-			errorsElement.addElement(MISSING_CLASS_ELEMENT_NAME).setText(i.next());
-		}
-
-		// Save the HTML summary
-		String html = getSummaryHTML();
-		if (!html.equals("")) {
-			document.getRootElement().addElement(SUMMARY_HTML_ELEMENT_NAME).addCDATA(html);
-		}
-
-		return document;
-	}
-*/
 	public Document toDocument(Project project) {
 		DocumentFactory docFactory = new DocumentFactory();
 		Document document = docFactory.createDocument();
@@ -298,13 +165,6 @@ public abstract class BugCollection {
 	}
 
 	public void writeXML(OutputStream out, Project project) throws IOException {
-/*
-		Document document = toDocument(project);
-
-		XMLWriter writer = new XMLWriter(out, OutputFormat.createPrettyPrint());
-		writer.write(document);
-*/
-
 		XMLOutput xmlOutput = new OutputStreamXMLOutput(out);
 
 		writeXML(xmlOutput, project);

@@ -30,9 +30,6 @@ import java.io.IOException;
 
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.generic.*;
-import org.dom4j.Branch;
-import org.dom4j.DocumentException;
-import org.dom4j.Element;
 
 /**
  * A BugAnnotation specifying a particular field in particular class.
@@ -202,47 +199,6 @@ public class FieldAnnotation extends PackageMemberAnnotation {
 	 * ---------------------------------------------------------------------- */
 
 	private static final String ELEMENT_NAME = "Field";
-/*
-	private static class FieldAnnotationXMLTranslator implements XMLTranslator {
-		public String getElementName() {
-			return ELEMENT_NAME;
-		}
-
-		public XMLConvertible fromElement(Element element) throws DocumentException {
-			String className = element.attributeValue("classname");
-			String fieldName = element.attributeValue("name");
-			String fieldSig = element.attributeValue("signature");
-			boolean isStatic = Boolean.valueOf(element.attributeValue("isStatic")).booleanValue();
-			FieldAnnotation annotation = new FieldAnnotation(className, fieldName, fieldSig, isStatic);
-
-			String role = element.attributeValue("role");
-			if (role != null)
-				annotation.setDescription(role);
-
-			return annotation;
-		}
-	}
-
-	static int dummy; // XXX: needed to allow BugCollection to force static init in JDK 1.5
-
-	static {
-		XMLTranslatorRegistry.instance().registerTranslator(new FieldAnnotationXMLTranslator());
-	}
-
-	public Element toElement(Branch parent) {
-		Element element = parent.addElement(ELEMENT_NAME)
-		        .addAttribute("classname", getClassName())
-		        .addAttribute("name", getFieldName())
-		        .addAttribute("signature", getFieldSignature())
-		        .addAttribute("isStatic", String.valueOf(isStatic()));
-
-		String role = getDescription();
-		if (!role.equals(DEFAULT_ROLE))
-			element.addAttribute("role", role);
-
-		return element;
-	}
-*/
 
 	public void writeXML(XMLOutput xmlOutput) throws IOException {
 		XMLAttributeList attributeList = new XMLAttributeList()

@@ -27,10 +27,6 @@ import edu.umd.cs.findbugs.xml.XMLOutput;
 
 import java.io.IOException;
 
-import org.dom4j.Branch;
-import org.dom4j.DocumentException;
-import org.dom4j.Element;
-
 /**
  * A BugAnnotation specifying a particular method in a particular class.
  * A MethodAnnotation may (optionally) have a SourceLineAnnotation directly
@@ -208,61 +204,6 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 	 * ---------------------------------------------------------------------- */
 
 	private static final String ELEMENT_NAME = "Method";
-/*
-	private static class MethodAnnotationXMLTranslator implements XMLTranslator {
-		public String getElementName() {
-			return ELEMENT_NAME;
-		}
-
-		public XMLConvertible fromElement(Element element) throws DocumentException {
-			String className = element.attributeValue("classname");
-			String methodName = element.attributeValue("name");
-			String methodSig = element.attributeValue("signature");
-			MethodAnnotation annotation = new MethodAnnotation(className, methodName, methodSig);
-
-			String role = element.attributeValue("role");
-			if (role != null)
-				annotation.setDescription(role);
-
-			// SourceLines may be present as a nested element
-			java.util.Iterator i = element.elements().iterator();
-			while (i.hasNext()) {
-				Element child = (Element) i.next();
-				String childName = child.getName();
-
-				XMLTranslator translator = XMLTranslatorRegistry.instance().getTranslator(childName);
-				if (translator == null)
-					throw new DocumentException("Bad element type: " + childName);
-
-				annotation.setSourceLines((SourceLineAnnotation) translator.fromElement(child));
-			}
-
-			return annotation;
-		}
-	}
-
-	static int dummy; // XXX: needed to allow BugCollection to force static init in JDK 1.5
-
-	static {
-		XMLTranslatorRegistry.instance().registerTranslator(new MethodAnnotationXMLTranslator());
-	}
-
-	public Element toElement(Branch parent) {
-		Element element = parent.addElement(ELEMENT_NAME)
-		        .addAttribute("classname", getClassName())
-		        .addAttribute("name", getMethodName())
-		        .addAttribute("signature", getMethodSignature());
-
-		String role = getDescription();
-		if (!role.equals(DEFAULT_ROLE))
-			element.addAttribute("role", role);
-
-		if (sourceLines != null)
-			sourceLines.toElement(element);
-
-		return element;
-	}
-*/
 
 	public void writeXML(XMLOutput xmlOutput) throws IOException {
 		XMLAttributeList attributeList = new XMLAttributeList()

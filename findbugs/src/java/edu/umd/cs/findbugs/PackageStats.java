@@ -32,7 +32,7 @@ import org.dom4j.Element;
  *
  * @author Mike Fagan
  */
-public class PackageStats implements XMLConvertible {
+public class PackageStats {
 	public static final String ELEMENT_NAME = "PackageStats";
 	public static final int ALL_ERRORS = 0;
 	private final String packageName;

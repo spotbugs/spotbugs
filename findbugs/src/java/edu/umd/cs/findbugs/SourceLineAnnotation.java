@@ -32,9 +32,6 @@ import org.apache.bcel.classfile.LineNumber;
 import org.apache.bcel.classfile.LineNumberTable;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.MethodGen;
-import org.dom4j.Branch;
-import org.dom4j.DocumentException;
-import org.dom4j.Element;
 
 /**
  * A BugAnnotation that records a range of source lines
@@ -406,63 +403,6 @@ public class SourceLineAnnotation implements BugAnnotation {
 	 * ---------------------------------------------------------------------- */
 
 	private static final String ELEMENT_NAME = "SourceLine";
-/*
-	private static class SourceLineAnnotationXMLTranslator implements XMLTranslator {
-		public String getElementName() {
-			return ELEMENT_NAME;
-		}
-
-		public XMLConvertible fromElement(Element element) throws DocumentException {
-			try {
-				String className = element.attributeValue("classname");
-				String sourceFile = element.attributeValue("sourcefile");
-				if (sourceFile == null)
-					sourceFile = UNKNOWN_SOURCE_FILE;
-				int startLine = Integer.parseInt(element.attributeValue("start"));
-				int endLine = Integer.parseInt(element.attributeValue("end"));
-				int startBytecode = -1, endBytecode = -1;
-				if (element.attributeValue("startBytecode") != null)
-					startBytecode = Integer.parseInt(element.attributeValue("startBytecode"));
-				if (element.attributeValue("endBytecode") != null)
-					endBytecode = Integer.parseInt(element.attributeValue("endBytecode"));
-
-				SourceLineAnnotation annotation = new SourceLineAnnotation(className, sourceFile, startLine, endLine,
-				        startBytecode, endBytecode);
-				String role = element.attributeValue("role");
-				if (role != null)
-					annotation.setDescription(role);
-
-				return annotation;
-			} catch (NumberFormatException e) {
-				throw new DocumentException("Invalid attribute value: " + e.toString());
-			}
-		}
-	}
-
-	static int dummy; // XXX: needed to allow BugCollection to force static init in JDK 1.5
-
-	static {
-		XMLTranslatorRegistry.instance().registerTranslator(new SourceLineAnnotationXMLTranslator());
-	}
-
-	public Element toElement(Branch parent) {
-		Element element = parent.addElement(ELEMENT_NAME)
-		        .addAttribute("classname", getClassName())
-		        .addAttribute("start", String.valueOf(getStartLine()))
-		        .addAttribute("end", String.valueOf(getEndLine()))
-		        .addAttribute("startBytecode", String.valueOf(getStartBytecode()))
-		        .addAttribute("endBytecode", String.valueOf(getEndBytecode()));
-
-		if (isSourceFileKnown())
-			element.addAttribute("sourcefile", sourceFile);
-
-		String role = getDescription();
-		if (!role.equals(DEFAULT_ROLE))
-			element.addAttribute("role", getDescription());
-
-		return element;
-	}
-*/
 
 	public void writeXML(XMLOutput xmlOutput) throws IOException {
 		XMLAttributeList attributeList = new XMLAttributeList()

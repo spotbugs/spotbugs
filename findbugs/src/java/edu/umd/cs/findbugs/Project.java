@@ -653,53 +653,6 @@ public class Project implements XMLWriteable {
 	private static final String SRC_DIR_ELEMENT_NAME = "SrcDir";
 	private static final String FILENAME_ATTRIBUTE_NAME = "filename";
 
-	/**
-	 * Populate Project object from a <code>&lt;Project&gt;</code> element
-	 * in a FindBugs saved bugs XML file.
-	 */
-	public void readElement(Element element) throws DocumentException {
-		Iterator i = element.elements().iterator();
-
-		String projectName = element.attributeValue(FILENAME_ATTRIBUTE_NAME);
-		if (projectName != null)
-			projectFileName = projectName;
-		else
-			projectFileName = UNNAMED_PROJECT;
-
-		while (i.hasNext()) {
-			Element child = (Element) i.next();
-			String name = child.getName();
-			String text = child.getText();
-			if (name.equals(JAR_ELEMENT_NAME))
-				addJar(text);
-			else if (name.equals(AUX_CLASSPATH_ENTRY_ELEMENT_NAME))
-				addAuxClasspathEntry(text);
-			else if (name.equals(SRC_DIR_ELEMENT_NAME))
-				addSourceDir(text);
-			else
-				throw new DocumentException("Unknown project node: " + name);
-		}
-	}
-
-	/**
-	 * Popular an XML Element from Project object.
-	 */
-	public void writeElement(Element element) {
-		element.addAttribute(FILENAME_ATTRIBUTE_NAME, projectFileName);
-
-		for (Iterator<String> i = jarList.iterator(); i.hasNext();) {
-			element.addElement(JAR_ELEMENT_NAME).setText(i.next());
-		}
-
-		for (Iterator<String> i = auxClasspathEntryList.iterator(); i.hasNext();) {
-			element.addElement(AUX_CLASSPATH_ENTRY_ELEMENT_NAME).setText(i.next());
-		}
-
-		for (Iterator<String> i = srcDirList.iterator(); i.hasNext();) {
-			element.addElement(SRC_DIR_ELEMENT_NAME).setText(i.next());
-		}
-	}
-
 	public void writeXML(XMLOutput xmlOutput) throws IOException {
 		xmlOutput.openTag(BugCollection.PROJECT_ELEMENT_NAME);
 

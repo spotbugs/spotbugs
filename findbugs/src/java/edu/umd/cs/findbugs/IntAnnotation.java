@@ -24,10 +24,6 @@ import edu.umd.cs.findbugs.xml.XMLOutput;
 
 import java.io.IOException;
 
-import org.dom4j.Branch;
-import org.dom4j.DocumentException;
-import org.dom4j.Element;
-
 /**
  * Bug annotation class for integer values.
  *
@@ -102,45 +98,6 @@ public class IntAnnotation implements BugAnnotation {
 	 * ---------------------------------------------------------------------- */
 
 	private static final String ELEMENT_NAME = "Int";
-/*
-	private static class IntAnnotationXMLTranslator implements XMLTranslator {
-		public String getElementName() {
-			return ELEMENT_NAME;
-		}
-
-		public XMLConvertible fromElement(Element element) throws DocumentException {
-			try {
-				int value = Integer.parseInt(element.attributeValue("value"));
-				IntAnnotation annotation = new IntAnnotation(value);
-
-				String role = element.attributeValue("role");
-				if (role != null)
-					annotation.setDescription(role);
-
-				return annotation;
-			} catch (NumberFormatException e) {
-				throw new DocumentException("Bad attribute value: " + e.toString());
-			}
-		}
-	}
-
-	static int dummy; // XXX: needed to allow BugCollection to force static init in JDK 1.5
-
-	static {
-		XMLTranslatorRegistry.instance().registerTranslator(new IntAnnotationXMLTranslator());
-	}
-
-	public Element toElement(Branch parent) {
-		Element element = parent.addElement(ELEMENT_NAME)
-		        .addAttribute("value", String.valueOf(value));
-
-		String role = getDescription();
-		if (!role.equals(DEFAULT_ROLE))
-			element.addAttribute("role", role);
-
-		return element;
-	}
-*/
 
 	public void writeXML(XMLOutput xmlOutput) throws IOException {
 		XMLAttributeList attributeList = new XMLAttributeList()

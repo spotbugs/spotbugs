@@ -40,7 +40,7 @@ import org.dom4j.io.XMLWriter;
 /**
  * Statistics resulting from analyzing a project.
  */
-public class ProjectStats implements XMLConvertible {
+public class ProjectStats {
 	private HashMap<String, PackageStats> packageStatsMap;
 	private int totalErrors;
 	private int totalClasses;

@@ -24,10 +24,6 @@ import edu.umd.cs.findbugs.xml.XMLOutput;
 
 import java.io.IOException;
 
-import org.dom4j.Branch;
-import org.dom4j.DocumentException;
-import org.dom4j.Element;
-
 /**
  * A BugAnnotation object specifying a Java class involved in the bug.
  *
@@ -81,38 +77,6 @@ public class ClassAnnotation extends PackageMemberAnnotation {
 	 * ---------------------------------------------------------------------- */
 
 	private static final String ELEMENT_NAME = "Class";
-/*
-	private static class ClassAnnotationXMLTranslator implements XMLTranslator {
-		public String getElementName() {
-			return ELEMENT_NAME;
-		}
-
-		public XMLConvertible fromElement(Element element) throws DocumentException {
-			String className = element.attributeValue("classname");
-			ClassAnnotation annotation = new ClassAnnotation(className);
-			String role = element.attributeValue("role");
-			if (role != null)
-				annotation.setDescription(role);
-
-			return annotation;
-		}
-	}
-
-	static int dummy; // XXX: needed to allow BugCollection to force static init in JDK 1.5
-
-	static {
-		XMLTranslatorRegistry.instance().registerTranslator(new ClassAnnotationXMLTranslator());
-	}
-
-	public Element toElement(Branch parent) {
-		Element element = parent.addElement(ELEMENT_NAME)
-		        .addAttribute("classname", getClassName());
-		String role = getDescription();
-		if (!role.equals(DEFAULT_ROLE))
-			element.addAttribute("role", role);
-		return element;
-	}
-*/
 
 	public void writeXML(XMLOutput xmlOutput) throws IOException {
 		XMLAttributeList attributeList = new XMLAttributeList()
