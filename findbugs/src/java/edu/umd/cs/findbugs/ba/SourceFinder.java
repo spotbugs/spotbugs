@@ -41,6 +41,10 @@ public class SourceFinder {
 	private List<String> sourceBaseList;
 	private Cache cache;
 
+	public interface SourceRepository {
+		public boolean contains();
+	}
+
 	/**
 	 * Constructor.
 	 * @param path the source path, in the same format as a classpath
@@ -104,7 +108,7 @@ public class SourceFinder {
 				File file = new File(fullFileName);
 				if (file.exists()) {
 					// Found it
-					sourceFile = new SourceFile(fullFileName);
+					sourceFile = new SourceFile(new FileSourceFileDataSource(fullFileName));
 					cache.put(fileName, sourceFile);
 					break;
 				}

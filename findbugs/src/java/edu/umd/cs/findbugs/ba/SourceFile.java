@@ -97,10 +97,11 @@ public class SourceFile {
 
 	/**
 	 * Constructor.
-	 * Creates an empty SourceFile object.
+	 * @param dataSource the SourceFileDataSource object which will
+	 *   provide the data of the source file
 	 */
-	public SourceFile(String fullFileName) {
-		this.dataSource = new FileSourceFileDataSource(fullFileName);
+	public SourceFile(SourceFileDataSource dataSource) {
+		this.dataSource = dataSource;
 		this.lineNumberMap = new int[DEFAULT_SIZE];
 		this.numLines = 0;
 	}
