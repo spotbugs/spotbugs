@@ -111,7 +111,7 @@ public class StandardTypeMerger implements TypeMerger, Constants, ExtendedTypes 
 			return aRef.getFirstCommonSuperclass(bRef);
 		} catch (ClassNotFoundException e) {
 			lookupFailureCallback.reportMissingClass(e);
-			throw new DataflowAnalysisException("Repository lookup failure", e);
+			throw new DataflowAnalysisException("Repository lookup failure: " + e.toString(), e);
 		}
 	}
 
