@@ -42,7 +42,6 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
 	private static final boolean DEBUG = Boolean.getBoolean("vna.debug");
 
 	private MethodGen methodGen;
-	private LoadedFieldSet loadedFieldSet;
 	private ValueNumberFactory factory;
 	private ValueNumberCache cache;
 	private ValueNumberFrameModelingVisitor visitor;
@@ -58,7 +57,6 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
 
 		super(dfs);
 		this.methodGen = methodGen;
-		this.loadedFieldSet = loadedFieldSet;
 		this.factory = new ValueNumberFactory();
 		this.cache = new ValueNumberCache();
 		this.visitor = new ValueNumberFrameModelingVisitor(methodGen, factory, cache,

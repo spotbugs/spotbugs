@@ -35,7 +35,7 @@ public class SwitchFallthrough extends BytecodeScanningDetector implements Const
 	boolean inSwitch = false;
 	int switchPC;
 	private BugReporter bugReporter;
-	LineNumberTable lineNumbers;
+//	LineNumberTable lineNumbers;
 	private int[] swOffsets = null;
 //	private int[] swLabels = null;
 	private int defSwOffset = 0;
