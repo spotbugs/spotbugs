@@ -438,6 +438,19 @@ public class ClassContext implements AnalysisFeatures {
 		fieldInstructionOpcodeSet.set(Constants.PUTSTATIC);
 	}
 
+	/**
+	 * Factory to determine which fields are loaded and stored
+	 * by the instructions in a method, and the overall method.
+	 * The main purpose is to support efficient redundant load elimination
+	 * and forward substitution in ValueNumberAnalysis (there is no need to
+	 * remember stores of fields that are never read,
+	 * or loads of fields that are only loaded in one location).
+	 * However, it might be useful for other kinds of analysis.
+	 *
+	 * <p> The tricky part is that in addition to fields loaded and stored
+	 * with get/putfield and get/putstatic, we also try to figure
+	 * out field accessed through calls to inner-class access methods.
+	 */
 	private NoExceptionAnalysisFactory<LoadedFieldSet> loadedFieldSetFactory =
 			new NoExceptionAnalysisFactory<LoadedFieldSet>("loaded field set factory") {
 				protected LoadedFieldSet analyze(Method method) {
@@ -454,6 +467,13 @@ public class ClassContext implements AnalysisFeatures {
 								INVOKESTATIC inv = (INVOKESTATIC) ins;
 								if (Hierarchy.isInnerClassAccess(inv, getConstantPoolGen())) {
 									InnerClassAccess access = Hierarchy.getInnerClassAccess(inv, getConstantPoolGen());
+/*
+									if (access == null) {
+										System.out.println("Missing inner class access in " +
+											SignatureConverter.convertMethodSignature(methodGen) + " at " +
+											inv);
+									}
+*/
 									if (access != null) {
 										if (access.isLoad())
 											loadedFieldSet.addLoad(handle, access.getField());
