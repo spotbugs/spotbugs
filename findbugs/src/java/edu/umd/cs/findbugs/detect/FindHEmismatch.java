@@ -52,6 +52,10 @@ public class FindHEmismatch extends BytecodeScanningDetector implements   Consta
   	visibleOutsidePackage = obj.isPublic() || obj.isProtected();
 	String whereEqual = getDottedClassName();
 	boolean classThatDefinesEqualsIsAbstract = false;
+	boolean inheritedHashCodeIsFinal = false;
+	boolean inheritedEqualsIsFinal = false;
+	boolean inheritedHashCodeIsAbstract = false;
+	boolean inheritedEqualsIsAbstract = false;
 	if (!hasEqualsObject)  {
 		JavaClass we = Lookup.findSuperImplementor(obj, "equals",
 					"(Ljava/lang/Object;)Z", bugReporter);
@@ -61,6 +65,9 @@ public class FindHEmismatch extends BytecodeScanningDetector implements   Consta
 		else {
 			whereEqual = we.getClassName();
 			classThatDefinesEqualsIsAbstract = we.isAbstract();;
+			Method m = findMethod(we, "equals", "(Ljava/lang/Object;)Z");
+			if (m != null && m.isFinal()) inheritedEqualsIsFinal = true;
+			if (m != null && m.isAbstract()) inheritedEqualsIsAbstract = true;
 			}
 		}
 	boolean usesDefaultEquals = whereEqual.equals("java.lang.Object");
@@ -71,7 +78,12 @@ public class FindHEmismatch extends BytecodeScanningDetector implements   Consta
 		if (wh == null) {
 			whereHashCode = "java.lang.Object";
 			}
-		else whereHashCode = wh.getClassName();
+		else {
+			whereHashCode = wh.getClassName();
+			Method m = findMethod(wh, "hashCode", "()I");
+			if (m != null && m.isFinal()) inheritedHashCodeIsFinal = true;
+			if (m != null && m.isAbstract()) inheritedHashCodeIsAbstract = true;
+			}
 		}
 	boolean usesDefaultHashCode = whereHashCode.equals("java.lang.Object");
 	if (false && (usesDefaultEquals ||  usesDefaultHashCode)) {
@@ -122,10 +134,11 @@ public class FindHEmismatch extends BytecodeScanningDetector implements   Consta
 		int priority = LOW_PRIORITY;
 		if (usesDefaultEquals) 
 		  bugReporter.reportBug(new BugInstance("HE_HASHCODE_USE_OBJECT_EQUALS", priority).addClass(getDottedClassName()));
-		else
+		else if (!inheritedEqualsIsFinal)
 		  bugReporter.reportBug(new BugInstance("HE_HASHCODE_NO_EQUALS", priority). addClass(getDottedClassName()));
 		}
-	if (!hasHashCode && (hasEqualsObject && !equalsObjectIsAbstract ||  hasEqualsSelf))  {
+	if (!hasHashCode 
+		&& (hasEqualsObject && !equalsObjectIsAbstract ||  hasEqualsSelf))  {
 		if (usesDefaultHashCode) {
 		  int priority = HIGH_PRIORITY;
 		  if (equalsMethodIsInstanceOfEquals) priority+= 2;
@@ -136,8 +149,10 @@ public class FindHEmismatch extends BytecodeScanningDetector implements   Consta
 		  bugReporter.reportBug(new BugInstance("HE_EQUALS_USE_HASHCODE", 
 				priority ).addClass(getDottedClassName()));
 		  }
-		else {
+		else if (!inheritedHashCodeIsFinal) {
 		  int priority = LOW_PRIORITY;
+		  if (hasEqualsObject && inheritedEqualsIsAbstract)
+			priority++;
 		  if (hasFields) priority--;
 		  if (equalsMethodIsInstanceOfEquals || !hasEqualsObject) priority+= 2;
 		  else if (obj.isAbstract()) priority++;
@@ -180,12 +195,15 @@ public class FindHEmismatch extends BytecodeScanningDetector implements   Consta
 	String sig = obj.getSignature();
 	if ((accessFlags & ACC_ABSTRACT) != 0) {
 		if (name.equals("equals")
-			&& sig.equals("(L"+getClassName()+";)Z"))
+			&& sig.equals("(L"+getClassName()+";)Z"))  {
 		  bugReporter.reportBug(new BugInstance("EQ_ABSTRACT_SELF", LOW_PRIORITY).addClass(getDottedClassName()));
+		  return;
+		  } 
 		else if (name.equals("compareTo")
-			&& sig.equals("(L"+getClassName()+";)I"))
+			&& sig.equals("(L"+getClassName()+";)I")) {
 		  bugReporter.reportBug(new BugInstance("CO_ABSTRACT_SELF", LOW_PRIORITY).addClass(getDottedClassName()));
 		return;
+		}
 		}
 	boolean sigIsObject = sig.equals("(Ljava/lang/Object;)Z");
 	if (name.equals("hashCode")
@@ -221,5 +239,14 @@ public class FindHEmismatch extends BytecodeScanningDetector implements   Consta
 		else if (sig.equals("(L"+getClassName()+";)I"))
 				hasCompareToSelf = true;
 		}
+	}
+
+  Method findMethod(JavaClass clazz, String name, String sig) {
+                Method [] m = clazz.getMethods();
+                for(int i = 0; i < m.length; i++)
+                        if (m[i].getName().equals(name)
+                            && m[i].getSignature().equals(sig))
+                                return m[i];
+                return null;
 	}
 }
