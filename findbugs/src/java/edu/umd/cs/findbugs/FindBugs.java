@@ -30,10 +30,12 @@ import java.io.PrintStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.zip.ZipEntry;
@@ -794,6 +796,7 @@ public class FindBugs implements Constants2, ExitCodes {
 	private ClassScreener classScreener;
 	private AnalysisContext analysisContext;
 	private String currentClass;
+	private Map<String,Long> detectorTimings;
 
 	/* ----------------------------------------------------------------------
 	 * Public methods
@@ -951,11 +954,34 @@ public class FindBugs implements Constants2, ExitCodes {
 		// Don't examine the same class more than once.
 		// (The user might specify two jar files that contain
 		// the same class.)
+		
+		if (DEBUG)
+			detectorTimings = new HashMap<String,Long>();
+		
 		Set<String> examinedClassSet = new HashSet<String>();
 		for (Iterator<String> i = repositoryClassList.iterator(); i.hasNext();) {
 			String className = i.next();
 			if (examinedClassSet.add(className))
 				examineClass(className);
+		}
+		
+		if (DEBUG) {
+			long total = 0;
+			Iterator it = detectorTimings.values().iterator();
+			while (it.hasNext()) {
+				total += ((Long)it.next()).longValue();
+			}
+			System.out.println();
+			System.out.println("Detector Timings");
+			it = detectorTimings.entrySet().iterator();
+			while (it.hasNext()) {
+				Map.Entry entry = (Map.Entry)it.next();
+				String detectorName = (String)entry.getKey();
+				long detectorTime = ((Long)entry.getValue()).longValue();
+				System.out.println(detectorName + ": " + detectorTime + " ms  -> (" + (detectorTime * 100.0f / (float)total) + ") %");
+			}
+			System.out.println();
+			detectorTimings = null;
 		}
 
 		// Callback for progress dialog: analysis finished
@@ -1247,8 +1273,25 @@ public class FindBugs implements Constants2, ExitCodes {
 					
 				
 				try {
-					if (DEBUG) System.out.println("  running " + detector.getClass().getName());
+					long start = 0, end;
+					
+					if (DEBUG) {
+						System.out.println("  running " + detector.getClass().getName());
+						start = System.currentTimeMillis();
+					}
 					detector.visitClassContext(classContext);
+					
+					if (DEBUG) {
+						end = System.currentTimeMillis();
+						long delta = end - start;
+						String detectorName = detector.getClass().getName();
+						Long total = detectorTimings.get(detectorName);
+						if (total == null)
+							total = new Long(delta);
+						else
+							total = new Long(total.longValue() + delta);
+						detectorTimings.put(detectorName, total);
+					}
 				} catch (AnalysisException e) {
 					reportRecoverableDetectorException(className, detector, e);
 				} catch (ArrayIndexOutOfBoundsException e) {
