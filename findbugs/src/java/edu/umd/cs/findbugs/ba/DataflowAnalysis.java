@@ -53,7 +53,7 @@ public interface DataflowAnalysis<Fact> {
 	/**
 	 * Initialize the "entry" fact for the graph.
 	 */
-	public void initEntryFact(Fact result);
+	public void initEntryFact(Fact result) throws DataflowAnalysisException;
 
 	/**
 	 * Initialize result fact for block.
