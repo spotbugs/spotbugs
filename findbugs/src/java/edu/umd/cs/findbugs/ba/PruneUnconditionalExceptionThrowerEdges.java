@@ -61,6 +61,8 @@ public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes, Analy
 			InvokeInstruction inv = (InvokeInstruction) exceptionThrower;
 			try {
 				String className = inv.getClassName(cpg);
+				if (className.startsWith("["))
+					continue;
 				JavaClass javaClass = Repository.lookupClass(className);
 				ClassContext classContext = AnalysisContext.instance().getClassContext(javaClass);
 
