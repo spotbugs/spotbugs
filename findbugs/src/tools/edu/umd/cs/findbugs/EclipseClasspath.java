@@ -357,7 +357,7 @@ public class EclipseClasspath {
 
 	/**
 	 * Expand variables of the form $varname$ in library names.
-	 * This is used to handle the "$ws" substitution used to refer to
+	 * This is used to handle the "$ws$" substitution used to refer to
 	 * the plugin containing swt.jar.
 	 */
 	private String replaceSpecial(String value) {
@@ -365,7 +365,7 @@ public class EclipseClasspath {
 			for (Iterator<String> i = varMap.keySet().iterator(); i.hasNext(); ) {
 				String key = i.next();
 				String replace = varMap.get(key);
-				Pattern pat = Pattern.compile("\\$" + key + "\\$");
+				Pattern pat = Pattern.compile("\\$\\Q" + key + "\\E\\$");
 				Matcher m = pat.matcher(value);
 				StringBuffer buf = new StringBuffer();
 	
