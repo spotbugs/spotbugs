@@ -22,11 +22,10 @@ package edu.umd.cs.findbugs;
 import java.util.*;
 
 public class SuppressionMatcher implements Matcher {
-	private HashMap <ClassAnnotation, Collection<WarningSuppressor>> suppressedWarnings
-			= new HashMap();
-	private HashMap <String, Collection<WarningSuppressor>> 
-		suppressedPackageWarnings
-			= new HashMap();
+	private Map <ClassAnnotation, Collection<WarningSuppressor>> suppressedWarnings
+            = new HashMap<ClassAnnotation, Collection<WarningSuppressor>>();
+	private Map <String, Collection<WarningSuppressor>> suppressedPackageWarnings
+            = new HashMap<String, Collection<WarningSuppressor>>();
 	int count = 0;
 
 	public void addPackageSuppressor(PackageWarningSuppressor suppressor) {
