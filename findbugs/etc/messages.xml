@@ -648,6 +648,14 @@ It is a fast detector.
     </Details>
   </Detector>
 
+	<Detector class="edu.umd.cs.findbugs.detect.RuntimeExceptionCapture">
+	  <Details>
+  <![CDATA[
+  <p> This detector looks for catch clauses that catch Exception, when no code in the block throws Exception. </p>
+  ]]>
+	  </Details>
+	</Detector>
+
   <!--
   **********************************************************************
   BugPatterns
@@ -2722,7 +2730,24 @@ do not need to be created, just access the static methods directly using the cla
 ]]>
         </Details>
     </BugPattern>
-    
+
+	<BugPattern type="REC_CATCH_EXCEPTION">
+	  <ShortDescription>java.lang.Exception is caught when Exception is not thrown</ShortDescription>
+	  <LongDescription>Method {1} catches Exception, but Exception is not thrown in the try block and RuntimeException is not explicitly caught</LongDescription>
+	  <Details>
+  <![CDATA[
+  <p>
+  This detector looks for try-catch blocks where there is a catch block for Exception, but Exception is not
+  thrown within the try block, and RuntimeException is not explicitly caught.  It is a common bug pattern to
+  say try { ... } catch (Exception e) { something } as a shorthand for catching a number of types of exception
+  each of whose catch blocks is identical, but this constract also accidentally catches RuntimeException as well,
+  masking potential bugs.
+  </p>
+  ]]>
+	  </Details>
+	</BugPattern>
+
+
   <!--
   **********************************************************************
    BugCodes
@@ -2809,5 +2834,6 @@ do not need to be created, just access the static methods directly using the cla
   <BugCode abbrev="MF">Masked Field</BugCode>
   <BugCode abbrev="WMI">Wrong Map Iterator</BugCode>
   <BugCode abbrev="ISC">Instantiated Static Class</BugCode>
+	<BugCode abbrev="REC">RuntimeException capture</BugCode>
 
   </MessageCollection>

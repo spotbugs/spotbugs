@@ -43,7 +43,7 @@ public class Test {
 		}
 
 		try { bar(); }
-		catch (Exception e) { System.out.println(e);} 
+		catch (Exception e) { System.out.println(e);}
 
 		try { syncBar(); }
 		catch (Exception e) { System.out.println(e);} 

@@ -45,8 +45,8 @@
   <Detector class="edu.umd.cs.findbugs.detect.DontCatchIllegalMonitorStateException" 
 	        speed="fast"
             reports="IMSE_DONT_CATCH_IMSE" />
-            
-  <Detector class="edu.umd.cs.findbugs.detect.FindFloatMath" 
+
+  <Detector class="edu.umd.cs.findbugs.detect.FindFloatMath"
             speed="moderate" 
 	        disabled="true"
             reports="FL_MATH_USING_FLOAT_PRECISION" />
@@ -291,7 +291,12 @@
   <Detector class="edu.umd.cs.findbugs.detect.FindBugsSummaryStats" 
             speed="fast" />
 
-  <BugPattern abbrev="SW" type="SW_SWING_METHODS_INVOKED_IN_SWING_THREAD" category="CORRECTNESS" 
+	<Detector class="edu.umd.cs.findbugs.detect.RuntimeExceptionCapture"
+		reports="REC_CATCH_EXCEPTION"
+		speed="fast" />
+
+
+  <BugPattern abbrev="SW" type="SW_SWING_METHODS_INVOKED_IN_SWING_THREAD" category="CORRECTNESS"
     experimental="true"/>
   <BugPattern abbrev="IL" type="IL_INFINITE_RECURSIVE_LOOP" category="CORRECTNESS" 
     experimental="true"/>
@@ -457,5 +462,6 @@
               experimental="true"/>
   <BugPattern abbrev="ISC" type="ISC_INSTANTIATE_STATIC_CLASS" category="CORRECTNESS"
     experimental="true"/>
+	<BugPattern abbrev="REC" type="REC_CATCH_EXCEPTION" category="CORRECTNESS" experimental="true" />
 
 </FindbugsPlugin>
