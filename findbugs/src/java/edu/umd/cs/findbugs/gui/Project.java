@@ -30,8 +30,14 @@ import java.io.*;
 
 /**
  * A project in the GUI.
- * This consists of some number of Jar files, and (optionally)
- * some number of source directories.
+ * This consists of some number of Jar files to analyze for bugs, and optionally
+ *
+ * <ul>
+ * <li> some number of source directories, for locating the program's
+ *      source code
+ * <li> some number of auxiliary classpath entries, for locating classes
+ *      referenced by the program which the user doesn't want to analyze
+ * </ul>
  *
  * @author David Hovemeyer
  */
@@ -40,10 +46,13 @@ public class Project {
     private String fileName;
     
     /** The list of jar files. */
-    private ArrayList jarList;
+    private LinkedList jarList;
     
     /** The list of source directories. */
-    private ArrayList srcDirList;
+    private LinkedList srcDirList;
+    
+    /** The list of auxiliary classpath entries. */
+    private LinkedList auxClasspathEntryList;
     
     /** Number of analysis runs done so far on this project. */
     private int numAnalysisRuns;
@@ -51,8 +60,9 @@ public class Project {
     /** Creates a new instance of Project */
     public Project(String fileName) {
         this.fileName = fileName;
-	jarList = new ArrayList();
-	srcDirList = new ArrayList();
+	jarList = new LinkedList();
+	srcDirList = new LinkedList();
+        auxClasspathEntryList = new LinkedList();
 	numAnalysisRuns = 0;
     }
     
@@ -158,12 +168,47 @@ public class Project {
 	return srcDirList;
     }
     
+//    /**
+//     * Get the number of the next analysis run.
+//     * The runs are numbered starting at 1.
+//     */
+//    public int getNextAnalysisRun() {
+//	return ++numAnalysisRuns;
+//    }
+    
     /**
-     * Get the number of the next analysis run.
-     * The runs are numbered starting at 1.
+     * Add an auxiliary classpath entry
+     * @param entry the entry
+     * @return true if the entry was added successfully, or false
+     *   if the given entry is already in the list
      */
-    public int getNextAnalysisRun() {
-	return ++numAnalysisRuns;
+    public boolean addAuxClasspathEntry(String auxClasspathEntry) {
+        if (!auxClasspathEntryList.contains(auxClasspathEntry)) {
+            auxClasspathEntryList.add(auxClasspathEntry);
+            return true;
+        } else
+            return false;
+    }
+    
+    /**
+     * Get the number of auxiliary classpath entries.
+     */
+    public int getNumAuxClasspathEntries() {
+        return auxClasspathEntryList.size();
+    }
+    
+    /**
+     * Get the n'th auxiliary classpath entry.
+     */
+    public String getAuxClasspathEntry(int n) {
+        return (String) auxClasspathEntryList.get(n);
+    }
+    
+    /**
+     * Remove the n'th auxiliary classpath entry.
+     */
+    public void removeAuxClasspathEntry(int n) {
+        auxClasspathEntryList.remove(n);
     }
 
     private static final String JAR_FILES_KEY = "[Jar files]";
