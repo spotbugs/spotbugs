@@ -473,6 +473,8 @@ public class BetterCFGBuilder implements CFGBuilder, EdgeTypes {
 		return basicBlock;
 	}
 
+	private static final ObjectType nullPointerExceptionType = new ObjectType("java.lang.NullPointerException");
+
 	/**
 	 * Add HANDLED_EXCEPTION edges for given basic block.
 	 * @param handle the execption-throwing instruction
@@ -483,9 +485,21 @@ public class BetterCFGBuilder implements CFGBuilder, EdgeTypes {
 		List<CodeExceptionGen> exceptionHandlerList = exceptionHandlerMap.getHandlerList(handle);
 		if (exceptionHandlerList == null)
 			return;
+
+		Instruction instruction = handle.getInstruction();
+		boolean isFieldInstruction = instruction instanceof FieldInstruction;
+
 		Iterator<CodeExceptionGen> i = exceptionHandlerList.iterator();
 		while (i.hasNext()) {
 			CodeExceptionGen exceptionHandler = i.next();
+
+			// Do some easy pruning
+			if (isFieldInstruction) {
+				// Field instructions can only throw NullPointerException
+				ObjectType catchType = exceptionHandler.getCatchType();
+				if (catchType != null && !catchType.equals(nullPointerExceptionType))
+					continue;
+			}
 
 			BasicBlock handlerBlock = getBlock(exceptionHandler.getHandlerPC(), jsrStack);
 			addEdge(sourceBlock, handlerBlock, HANDLED_EXCEPTION_EDGE);
