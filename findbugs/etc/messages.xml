@@ -822,6 +822,17 @@ defined in an interface references a mutable
 ]]>
     </Details>
   </BugPattern>
+
+  <BugPattern type="BCPDC_DOUBLECHECK">
+    <ShortDescription>Possible double check of field</ShortDescription>
+    <LongDescription>Possible doublecheck on {2} in {1}</LongDescription>
+    <Details>
+<![CDATA[
+  <p> This is a double check found by the ByteCodePattern-based detector.
+]]>
+    </Details>
+  </BugPattern>
+
   <BugCode abbrev="FI" >Incorrect use of finalizers</BugCode>
   <BugCode abbrev="ML" >Synchronization on updated field (Mutable Lock)</BugCode>
   <BugCode abbrev="UG" >Unsynchronized get method, synchronized set method</BugCode>
