@@ -183,6 +183,13 @@ public class ProjectFilterSettings {
 	public void removeCategory(String category) {
 		this.activeBugCategorySet.remove(category);
 	}
+
+	/**
+	 * Clear all bug categories.
+	 */
+	public void clearAllCategories() {
+		this.activeBugCategorySet.clear();
+	}
 	
 	/**
 	 * Return whether or not the given category is enabled
