@@ -50,7 +50,7 @@ public class AboutDialog extends javax.swing.JDialog {
             licenseEditorPane.setPage(getClass().getClassLoader().getResource("edu/umd/cs/findbugs/gui/help/License.html"));
             acknowldgementsEditorPane.setPage(getClass().getClassLoader().getResource("edu/umd/cs/findbugs/gui/help/Acknowledgements.html"));
         } catch (IOException e) {
-            parent.getLogger().logMessage(ConsoleLogger.ERROR, e.getMessage());
+            parent.getLogger().logMessage(ConsoleLogger.ERROR, e.toString());
         }
 
         setTitle("About FindBugs " + Version.RELEASE);
