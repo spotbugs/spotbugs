@@ -73,9 +73,8 @@ public class FindBugs implements Constants2
     registerDetector("FindReturnRef", edu.umd.cs.findbugs.FindReturnRef.class);
     registerDetector("Naming", edu.umd.cs.findbugs.Naming.class);
     registerDetector("UnreadFields", edu.umd.cs.findbugs.UnreadFields.class);
+    registerDetector("MutableStaticFields", edu.umd.cs.findbugs.MutableStaticFields.class);
 /*
-    registerDetector("MutableStaticFields", 
-       edu.umd.cs.pugh.visitclass.MutableStaticFields.class);
     registerDetector("SimplePathsFindDoubleCheck", 
        edu.umd.cs.daveho.findbugs.SimplePathsFindDoubleCheck.class);
     registerDetector("FindTwoLockWait", 
