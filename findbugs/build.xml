@@ -197,7 +197,8 @@
        <java dir="${findbugs.dir}"
              fork="true"
              classname="edu.umd.cs.findbugs.EclipseClasspath"
-             output="${eclipse.src.dir}/edu.umd.cs.findbugs/build.properties">
+             output="${eclipse.src.dir}/edu.umd.cs.findbugs/build.properties"
+             failonerror="true">
          <classpath refid="tools.classpath"/>
          <arg value="${eclipse.home}"/>
          <arg value="${eclipse.src.dir}/edu.umd.cs.findbugs"/>
@@ -205,6 +206,22 @@
 
        <!-- Spawn Ant subtask to build the core Eclipse plugin. -->
        <ant dir="${eclipse.src.dir}/edu.umd.cs.findbugs"/>
+
+       <!-- Generate build properties for UI Eclipse plugin. -->
+       <java dir="${findbugs.dir}"
+             fork="true"
+             classname="edu.umd.cs.findbugs.EclipseClasspath"
+             output="${eclipse.src.dir}/de.tobject.findbugs/build.properties"
+             failonerror="true">
+         <classpath refid="tools.classpath"/>
+         <arg value="${eclipse.home}"/>
+         <arg value="${eclipse.src.dir}/de.tobject.findbugs"/>
+         <arg value="edu.umd.cs.findbugs"/>
+         <arg value="${eclipse.src.dir}/edu.umd.cs.findbugs"/>
+       </java>
+
+       <!-- Spawn Ant subtask to build the UI Eclipse plugin. -->
+       <ant dir="${eclipse.src.dir}/de.tobject.findbugs"/>
     </target>
 
     <!-- Build jar file of test cases.  -->
