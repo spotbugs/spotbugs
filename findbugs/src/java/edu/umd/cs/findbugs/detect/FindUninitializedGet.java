@@ -121,7 +121,9 @@ public class FindUninitializedGet extends BytecodeScanningDetector implements   
 			&& getClassConstantOperand().equals("java/security/AccessController")
 				)
 		 || (seen == INVOKEVIRTUAL
-				&& getClassConstantOperand().equals(getClassName()))) {
+				&& getClassConstantOperand().equals(getClassName()))
+		 || (seen == INVOKEVIRTUAL
+				&& getNameConstantOperand().equals("start"))) {
 			/*
 			System.out.println("Saw invocation of " 
 				+ classConstant + "." + nameConstant
