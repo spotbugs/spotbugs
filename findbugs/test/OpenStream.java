@@ -40,4 +40,11 @@ public class OpenStream {
 		BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 		System.out.println(reader.readLine());
 	}
+
+	public void paramStreamDoNotReport(java.io.OutputStream os) throws IOException {
+		PrintStream ps = new PrintStream(os);
+		ps.println("Hello");
+	}
 }
+
+// vim:ts=4
