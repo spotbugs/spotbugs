@@ -127,12 +127,18 @@ public class IsNullValueAnalysis extends ForwardDataflowAnalysis<IsNullValueFram
 
 								BasicBlock sourceBlock = edge.getSource();
 								Location atIf = new Location(sourceBlock.getLastInstruction(), sourceBlock);
-								ValueNumberFrame prevVnaFrame = vnaDataflow.getFactAtLocation(atIf);
 
-								if (prevVnaFrame != null) {
+								ValueNumberFrame prevVnaFrame = vnaDataflow.getFactAtLocation(atIf);
+								IsNullValueFrame prevIsNullValueFrame = getFactAtLocation(atIf);
+
+								if (prevVnaFrame != null && prevIsNullValueFrame != null) {
 									ValueNumber replaceMe = prevVnaFrame.getTopValue();
+									IsNullValue origIsNullValue = prevIsNullValueFrame.getTopValue();
+
 									fact = replaceValues(fact, replaceMe, vnaFrame,
-										nullInfo == TOS_NULL ? IsNullValue.nullValue() : IsNullValue.nonNullValue());
+										nullInfo == TOS_NULL
+											? IsNullValue.flowSensitiveNullValue(origIsNullValue)
+											: IsNullValue.flowSensitiveNonNullValue(origIsNullValue));
 								} else
 									throw new IllegalStateException("No value number frame?");
 							}
