@@ -139,7 +139,7 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 
 	public void copyFrom(Frame<ValueNumber> other) {
 		// If merged value list hasn't been created yet, create it.
-		if (mergedValueList == null) {
+		if (mergedValueList == null && other.isValid()) {
 			// This is where this frame gets its size.
 			// It will have the same size as long as it remains valid.
 			mergedValueList = new ArrayList<ValueNumber>();
