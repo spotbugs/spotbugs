@@ -66,21 +66,6 @@ public interface BugReporter extends RepositoryLookupFailureCallback {
 	public void logError(String message);
 
 	/**
-	 * Map a class to its source file.
-	 * @param className the name of the class
-	 * @param sourceFileName the name of the source file
-	 */
-	public void mapClassToSource(String className, String sourceFileName);
-
-	/**
-	 * Get the source file for given class.
-	 * @param className the name of the class
-	 * @return the name of the source file, or null if we
-	 *   don't have a source file for the class
-	 */
-	public String getSourceForClass(String className);
-
-	/**
 	 * Finish reporting bugs.
 	 * If any bug reports have been queued, calling this method
 	 * will flush them.

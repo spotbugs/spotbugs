@@ -60,14 +60,6 @@ public class DelegatingBugReporter implements BugReporter {
 		realBugReporter.reportMissingClass(ex);
 	}
 
-	public void mapClassToSource(String className, String sourceFileName) {
-		realBugReporter.mapClassToSource(className, sourceFileName);
-	}
-
-	public String getSourceForClass(String className) {
-		return realBugReporter.getSourceForClass(className);
-	}
-
 	public void finish() {
 		realBugReporter.finish();
 	}

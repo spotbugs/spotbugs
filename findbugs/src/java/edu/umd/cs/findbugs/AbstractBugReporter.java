@@ -30,7 +30,6 @@ public abstract class AbstractBugReporter implements BugReporter {
 	private HashSet<String> missingClassMessageSet = new HashSet<String>();
 	private LinkedList<String> missingClassMessageList = new LinkedList<String>();
 	private LinkedList<String> errorMessageList = new LinkedList<String>();
-	protected Map<String, String> classToSourceMap = new HashMap<String, String>();
 	private List<BugReporterObserver> observerList = new LinkedList<BugReporterObserver>();
 
 	private static final Pattern missingClassPattern = Pattern.compile("^.*while looking for class ([^:]*):.*$");
@@ -78,14 +77,6 @@ public abstract class AbstractBugReporter implements BugReporter {
 			return;
 
 		errorMessageList.add(message);
-	}
-
-	public void mapClassToSource(String className, String sourceFileName) {
-		classToSourceMap.put(className, sourceFileName);
-	}
-
-	public String getSourceForClass(String className) {
-		return classToSourceMap.get(className);
 	}
 
 	public void reportQueuedErrors() {
