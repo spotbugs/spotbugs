@@ -17,12 +17,10 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-// $Revision: 1.6 $
+// $Revision: 1.7 $
 
 package edu.umd.cs.findbugs.graph;
 
-import java.io.Serializable;
-import java.lang.Comparable;
 import java.util.Set;
 
 import edu.umd.cs.findbugs.graph.GraphVertex;
@@ -31,7 +29,7 @@ import edu.umd.cs.findbugs.graph.GraphVertex;
  * GraphEdge interface; represents an edge in a graph.
  */
 public interface GraphEdge<ActualEdgeType, VertexType extends GraphVertex<VertexType>>
-	extends Serializable, Comparable<ActualEdgeType> {
+	extends Comparable<ActualEdgeType> {
 
 	/** Get the source vertex. */
 	public VertexType getSource();

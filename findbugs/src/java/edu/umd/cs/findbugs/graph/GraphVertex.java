@@ -17,18 +17,15 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-// $Revision: 1.5 $
+// $Revision: 1.6 $
 
 package edu.umd.cs.findbugs.graph;
-
-import java.io.Serializable;
-import java.lang.Comparable;
 
 /**
  * GraphVertex interface; represents a vertex in a graph.
  */
 public interface GraphVertex<ActualVertexType>
-	extends Serializable, Comparable<ActualVertexType> {
+	extends Comparable<ActualVertexType> {
 
 	/** Get the numeric label for this vertex. */
 	public int getLabel();
