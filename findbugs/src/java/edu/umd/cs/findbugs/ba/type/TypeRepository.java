@@ -165,10 +165,10 @@ public class TypeRepository {
 	 * @param typeCode the basic type code (T_BOOLEAN, etc.)
 	 * @return the BasicType representing the basic type
 	 */
-	public BasicType basicTypeFromTypeCode(byte typeCode) throws InvalidSignatureException {
+	public BasicType basicTypeFromTypeCode(byte typeCode) {
 		String signature = basicTypeCodeToSignatureMap.get(new Byte(typeCode));
 		if (signature == null)
-			throw new InvalidSignatureException("Invalid basic type code: " + typeCode);
+			throw new IllegalArgumentException("Invalid basic type code: " + typeCode);
 		BasicType type = (BasicType) signatureToTypeMap.get(signature);
 		if (type == null) {
 			type = new BasicType(typeCode);
@@ -270,7 +270,7 @@ public class TypeRepository {
 		// Keep track of missing classes
 		LinkedList<String> missingClassList = new LinkedList<String>();
 
-		boolean answer = false;
+		boolean isSubtype = false;
 
 		// Until we have examined all supertypes...
 		while (!work.isEmpty()) {
@@ -279,7 +279,7 @@ public class TypeRepository {
 				continue;
 
 			if (type.equals(supertype)) {
-				answer = true;
+				isSubtype = true;
 				// NOTE: we keep going finding all supertypes,
 				// in order that when we finished we have enumerated
 				// the complete set of supertypes, which could
@@ -307,13 +307,16 @@ public class TypeRepository {
 		// throw an exception.
 		if (missingClassList.isEmpty()) {
 			// TODO: cache bit vector of known supertypes
-			return answer;
+			return isSubtype;
 		} else {
-			// FIXME: the answer could conceivably be "true"
-			// at this point, even though there were missing classes.
-			// Perhaps we should just answer the query in that case,
-			// since the answer is definite.
-			throw new ClassNotFoundException("Class not found: " + missingClassList);
+			// There were missing classes.  However, an answer of
+			// "true" is still definitive.  We just won't cache the
+			// result.  FIXME: need to hook in a missing class
+			// reporter so caller still knows about the problem.
+			if (isSubtype)
+				return true;
+			else
+				throw new ClassNotFoundException("Class not found: " + missingClassList);
 		}
 	}
 
