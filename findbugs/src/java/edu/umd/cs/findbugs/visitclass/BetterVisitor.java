@@ -223,5 +223,5 @@ public abstract class BetterVisitor implements Visitor {
 		{ visit(obj); }
    public void visitStackMap(StackMap obj)
 		{ visit(obj); }
-//   public void report(PrintStream out) {}
+   public void report(PrintStream out) {}
 }
