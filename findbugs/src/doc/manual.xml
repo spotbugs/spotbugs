@@ -122,30 +122,14 @@ On Unix-like systems, use the following command to invoke the wrapper script:
 <para>
 On Windows systems, the command to invoke the wrapper script is 
 <screen>
-<prompt>C:\My Directory></prompt><command>&FBHome;\bin\findbugs.bat -home &FBHome; <replaceable>options...</replaceable></command>
+<prompt>C:\My Directory></prompt><command>&FBHome;\bin\findbugs.bat <replaceable>options...</replaceable></command>
 </screen>
 </para>
 
 <para>
-To make invoking the wrapper script more convenient, you may want to create a GUI shortcut.
-Another possibility is to add the <filename class="directory">&FBHome;/bin</filename>
-directory to your <envar>PATH</envar> environment variable, which allows you
-to simply run the command <command>findbugs</command> from the command prompt.
-(On Windows, you can set the
-<envar>FINDBUGS_HOME</envar> environment variable to avoid having to use the
-<command>-home</command> option to the wrapper script.)
-<important>
-<title>Specifying &FBHome; on Windows</title>
-<para>
-  If you install &FindBugs; in a directory which contains space characters
-  then you must put quote characters around the value you pass using the
-  <command>-home</command> option.  For example:
-  <screen>
-    <prompt>C:\My Directory></prompt><command>set PATH=C:\Program Files\findbugs-@VERSION@\bin;%PATH%</command>
-    <prompt>C:\My Directory></prompt><command>findbugs -home "C:\Program Files\findbugs-@VERSION@"</command>
-  </screen>
-</para>
-</important>
+On both Unix-like and Windows systems, you can simply add the <filename><replaceable>$FINDBUGS_HOME</replaceable>/bin</filename>
+directory to your <filename>PATH</filename> environment variable and then invoke
+FindBugs using the <command>findbugs</command> command.
 </para>
 
 </sect1>
@@ -179,13 +163,10 @@ These options may be used with both the GUI and Text UI.
     <term><command>-jvmArgs <replaceable>args</replaceable></command></term>
     <listitem>
        <para>
-         Specifies arguments to pass to the JVM.  For example,
-         you can use this option to increase the maximum Java heap size
-         if you are analyzing a very large program.  You may specify multiple
-         JVM arguments by surrounding <replaceable>args</replaceable> with
-         quotes.  For example:
+         Specifies arguments to pass to the JVM.  For example, you might want
+         to set a JVM property:
 <screen>
-<prompt>$ </prompt><command>findbugs -textui -jvmArgs "-Xms128m -Xmx256m" <replaceable>myApp.jar</replaceable></command>
+<prompt>$ </prompt><command>findbugs -textui -jvmArgs "-Duser.language=ja" <replaceable>myApp.jar</replaceable></command>
 </screen>
        </para>
     </listitem>
@@ -200,6 +181,17 @@ These options may be used with both the GUI and Text UI.
       </para>
     </listitem>
   </varlistentry>
+
+  <varlistentry>
+    <term><command>-maxHeap <replaceable>size</replaceable></command></term>
+    <listitem>
+      <para>
+      Specifies the maximum Java heap size in megabytes. The default is 256.
+      More memory may be required to analyze very large programs or libraries.
+      </para>
+    </listitem>
+  </varlistentry>
+
 </variablelist>
 </para>
 
@@ -297,6 +289,15 @@ These options are only accepted by the Text User Interface.
     <para>
     Produce the bug reports as XML.  The XML data produced may be
     viewed in the GUI at a later time.
+    </para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term><command>-emacs</command></term>
+  <listitem>
+    <para>
+    Produce the bug reports in Emacs format.
     </para>
   </listitem>
   </varlistentry>
@@ -443,28 +444,37 @@ a working directory.  A typical command to do this is:
 </sect1>
 
 <sect1>
-<title>Modifying <filename>build.xml</filename></title>
+<title>Modifying <filename>build.properties</filename></title>
 <para>
-You will need to modify the <filename>build.xml</filename> file
-used by <ulink url="http://ant.apache.org/">&Ant;</ulink> to build &FindBugs;.
-At the top of <filename>build.xml</filename> you will see several property
-definitions which look like this:
+You will need to modify the <filename>build.properties</filename> file
+used by the <ulink url="http://ant.apache.org/">&Ant;</ulink>
+<filename>build.xml</filename> file to build &FindBugs;.
+The <filename>build.properties</filename> looks like this:
 <programlisting>
 <![CDATA[
-    <!-- Set this to the location where you installed the generics-enabled
-         version of javac. -->
-    <property name="jsr14.home"
-              value="/home/software/java/jsr14_adding_generics-1_3-ea" />
+# User Configuration:
+# This section must be modified to reflect your system.
 
-    <!-- Set this to the directory containing the DocBook Modular XSL Stylesheets
-         from http://docbook.sourceforge.net/projects/xsl/ -->
-    <property name="xsl.stylesheet.home"
-              value="/export/home/daveho/linux/docbook/docbook-xsl-1.61.0" />
+local.software.home     =/export/home/daveho/linux
 
-    <!-- Set this to the directory where Saxon (http://saxon.sourceforge.net/)
-         is installed. -->
-    <property name="saxon.home"
-              value="/export/home/daveho/linux/java/saxon-6.5.2" />
+# Set this to the location where you installed the generics-enabled
+# version of javac.  Note: you need to install the JSR-14 Compiler Adapter,
+# http://www.thecortex.net/clover/generics/jsr14adapter-1.1.jar,
+# in the lib subdirectory of your Ant installation.
+# If you are using version 2.2 of the generics-enabled javac,
+#  then you will need to rename "gjc-rt.jar" to "javac.jar".
+
+jsr14.home              =${local.software.home}/java/adding_generics-2_2-ea
+
+# Set this to the directory containing the DocBook Modular XSL Stylesheets
+#  from http://docbook.sourceforge.net/projects/xsl/
+
+xsl.stylesheet.home     =${local.software.home}/docbook/docbook-xsl-1.61.0
+
+# Set this to the directory where Saxon (http://saxon.sourceforge.net/)
+# is installed. 
+
+saxon.home              =${local.software.home}/java/saxon-6.5.2
 ]]>
 </programlisting>
 </para>
@@ -962,6 +972,7 @@ using the &FindBugs; task.
        Optional attribute.
        It specifies the output format.  If set to "xml" (the default), output
        is in XML format.  If set to "text", output is in ad-hoc text format.
+       If set to "emacs", output is in <ulink url="http://www.gnu.org/software/emacs/">Emacs</ulink> error message format.
        </para>
     </listitem>
   </varlistentry>
@@ -1368,6 +1379,8 @@ the &Ant; task, and several enhancements and bug fixes to the GUI.</para>
 
 <para>Germano Leichsenring contributed Japanese translations of the bug
 summaries.</para>
+
+<para>David Li contributed the Emacs bug report format.</para>
 
 </sect1>
 
