@@ -241,6 +241,7 @@ public class PatternMatcher implements DFSEdgeTypes {
 			// Try to advance to the successors of this basic block,
 			// ignoring loop backedges.
 			Iterator<Edge> i = cfg.outgoingEdgeIterator(basicBlock);
+			BitSet visitedSuccessorSet = new BitSet();
 			while (i.hasNext()) {
 				Edge edge = i.next();
 				if (dfs.getDFSEdgeType(edge) == BACK_EDGE)
@@ -253,6 +254,13 @@ public class PatternMatcher implements DFSEdgeTypes {
 				// of an "if" comparison.
 				if (matchedInstruction == null || patternElement.acceptBranch(edge, matchedInstruction)) {
 					BasicBlock destBlock = edge.getDest();
+					int destId = destBlock.getId();
+
+					// CFGs can have duplicate edges
+					if (visitedSuccessorSet.get(destId))
+						continue;
+					visitedSuccessorSet.set(destId, true);
+
 					work(destBlock, destBlock.instructionIterator(), patternElement, matchCount, currentMatch, bindingSet);
 				}
 			}
