@@ -35,6 +35,7 @@ import edu.umd.cs.pugh.visitclass.DismantleBytecode;
  * @author David Hovemeyer
  */
 public class SourceLineAnnotation implements BugAnnotation {
+	private static final String DEFAULT_ROLE = "SOURCE_LINE_DEFAULT";
 
 	private String description;
 	private String className;
@@ -48,7 +49,7 @@ public class SourceLineAnnotation implements BugAnnotation {
 	 * @param endLine the ending line (inclusive)
 	 */
 	public SourceLineAnnotation(String className, int startLine, int endLine) {
-		this.description = "SOURCE_LINE_DEFAULT";
+		this.description = DEFAULT_ROLE;
 		this.className = className;
 		this.startLine = startLine;
 		this.endLine = endLine;
@@ -307,7 +308,9 @@ public class SourceLineAnnotation implements BugAnnotation {
 				int endLine = Integer.parseInt(element.attributeValue("end"));
 
 				SourceLineAnnotation annotation = new SourceLineAnnotation(className, startLine, endLine);
-				annotation.setDescription(element.attributeValue("role"));
+				String role = element.attributeValue("role");
+				if (role != null)
+					annotation.setDescription(role);
 
 				return annotation;
 			} catch (NumberFormatException e) {
@@ -324,8 +327,11 @@ public class SourceLineAnnotation implements BugAnnotation {
 		Element element = parent.addElement(ELEMENT_NAME)
 			.addAttribute("classname", getClassName())
 			.addAttribute("start", String.valueOf(getStartLine()))
-			.addAttribute("end", String.valueOf(getEndLine()))
-			.addAttribute("role", getDescription());
+			.addAttribute("end", String.valueOf(getEndLine()));
+
+		String role = getDescription();
+		if (!role.equals(DEFAULT_ROLE))
+			element.addAttribute("role", getDescription());
 
 		return element;
 	}

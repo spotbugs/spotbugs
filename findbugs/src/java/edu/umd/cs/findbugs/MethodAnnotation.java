@@ -38,6 +38,8 @@ import org.dom4j.DocumentException;
 public class MethodAnnotation extends PackageMemberAnnotation {
 	private static final boolean UGLY_METHODS = Boolean.getBoolean("ma.ugly");
 
+	private static final String DEFAULT_ROLE = "METHOD_DEFAULT";
+
 	private String methodName;
 	private String methodSig;
 	private String fullMethod;
@@ -50,7 +52,7 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 	 * @param methodSig the Java type signature of the method
 	 */
 	public MethodAnnotation(String className, String methodName, String methodSig) {
-		super(className, "METHOD_DEFAULT");
+		super(className, DEFAULT_ROLE);
 		this.methodName = methodName;
 		this.methodSig = methodSig;
 		fullMethod = null;
@@ -195,7 +197,10 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 			String methodName = element.attributeValue("name");
 			String methodSig = element.attributeValue("signature");
 			MethodAnnotation annotation = new MethodAnnotation(className, methodName, methodSig);
-			annotation.setDescription(element.attributeValue("role"));
+
+			String role = element.attributeValue("role");
+			if (role != null)
+				annotation.setDescription(role);
 
 			// SourceLines may be present as a nested element
 			java.util.Iterator i = element.elements().iterator();
@@ -222,8 +227,11 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 		Element element = parent.addElement(ELEMENT_NAME)
 			.addAttribute("classname", getClassName())
 			.addAttribute("name", getMethodName())
-			.addAttribute("signature", getMethodSignature())
-			.addAttribute("role", getDescription());
+			.addAttribute("signature", getMethodSignature());
+
+		String role = getDescription();
+		if (!role.equals(DEFAULT_ROLE))
+			element.addAttribute("role", role);
 
 		if (sourceLines != null)
 			sourceLines.toElement(element);

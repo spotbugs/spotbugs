@@ -34,6 +34,8 @@ import org.dom4j.DocumentException;
  * @author David Hovemeyer
  */
 public class FieldAnnotation extends PackageMemberAnnotation {
+	private static final String DEFAULT_ROLE = "FIELD_DEFAULT";
+
 	private String fieldName;
 	private String fieldSig;
 	private boolean isStatic;
@@ -45,7 +47,7 @@ public class FieldAnnotation extends PackageMemberAnnotation {
 	 * @param fieldSig the type signature of the field
 	 */
 	public FieldAnnotation(String className, String fieldName, String fieldSig, boolean isStatic) {
-		super(className, "FIELD_DEFAULT");
+		super(className, DEFAULT_ROLE);
 		this.fieldName = fieldName;
 		this.fieldSig = fieldSig;
 		this.isStatic = isStatic;
@@ -191,7 +193,10 @@ public class FieldAnnotation extends PackageMemberAnnotation {
 			String fieldSig  = element.attributeValue("signature");
 			boolean isStatic = Boolean.valueOf(element.attributeValue("isStatic")).booleanValue();
 			FieldAnnotation annotation = new FieldAnnotation(className, fieldName, fieldSig, isStatic);
-			annotation.setDescription(element.attributeValue("role"));
+
+			String role = element.attributeValue("role");
+			if (role != null)
+				annotation.setDescription(role);
 
 			return annotation;
 		}
@@ -206,8 +211,11 @@ public class FieldAnnotation extends PackageMemberAnnotation {
 			.addAttribute("classname", getClassName())
 			.addAttribute("name", getFieldName())
 			.addAttribute("signature", getFieldSignature())
-			.addAttribute("isStatic", String.valueOf(isStatic()))
-			.addAttribute("role", getDescription());
+			.addAttribute("isStatic", String.valueOf(isStatic()));
+
+		String role = getDescription();
+		if (!role.equals(DEFAULT_ROLE))
+			element.addAttribute("role", role);
 
 		return element;
 	}

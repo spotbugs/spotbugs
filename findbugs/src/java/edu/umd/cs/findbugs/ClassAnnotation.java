@@ -31,13 +31,15 @@ import org.dom4j.DocumentException;
  * @author David Hovemeyer
  */
 public class ClassAnnotation extends PackageMemberAnnotation {
+	private static final String DEFAULT_ROLE = "CLASS_DEFAULT";
+
 	/**
 	 * Constructor.
 	 * @param className the name of the class
 	 * @param sourceFile the name of the source file where the class is defined
 	 */
 	public ClassAnnotation(String className) {
-		super(className, "CLASS_DEFAULT");
+		super(className, DEFAULT_ROLE);
 	}
 
 	public void accept(BugAnnotationVisitor visitor) {
@@ -83,7 +85,9 @@ public class ClassAnnotation extends PackageMemberAnnotation {
 		public XMLConvertible fromElement(Element element) throws DocumentException {
 			String className = element.attributeValue("classname");
 			ClassAnnotation annotation = new ClassAnnotation(className);
-			annotation.setDescription(element.attributeValue("role"));
+			String role = element.attributeValue("role");
+			if (role != null)
+				annotation.setDescription(role);
 
 			return annotation;
 		}
@@ -94,9 +98,12 @@ public class ClassAnnotation extends PackageMemberAnnotation {
 	}
 
 	public Element toElement(Branch parent) {
-		return parent.addElement(ELEMENT_NAME)
-			.addAttribute("classname", getClassName())
-			.addAttribute("role", getDescription());
+		Element element = parent.addElement(ELEMENT_NAME)
+			.addAttribute("classname", getClassName());
+		String role = getDescription();
+		if (!role.equals(DEFAULT_ROLE))
+			element.addAttribute("role", role);
+		return element;
 	}
 }
 

@@ -30,6 +30,8 @@ import org.dom4j.Branch;
  * @author David Hovemeyer
  */
 public class IntAnnotation implements BugAnnotation {
+	private static final String DEFAULT_ROLE = "INT_DEFAULT";
+
 	private int value;
 	private String description;
 
@@ -39,7 +41,7 @@ public class IntAnnotation implements BugAnnotation {
 	 */
 	public IntAnnotation(int value) {
 		this.value = value;
-		this.description = "INT_DEFAULT";
+		this.description = DEFAULT_ROLE;
 	}
 
 	public void accept(BugAnnotationVisitor visitor) {
@@ -93,7 +95,10 @@ public class IntAnnotation implements BugAnnotation {
 			try {
 				int value = Integer.parseInt(element.attributeValue("value"));
 				IntAnnotation annotation = new IntAnnotation(value);
-				annotation.setDescription(element.attributeValue("role"));
+
+				String role = element.attributeValue("role");
+				if (role != null)
+					annotation.setDescription(role);
 
 				return annotation;
 			} catch (NumberFormatException e) {
@@ -108,8 +113,11 @@ public class IntAnnotation implements BugAnnotation {
 
 	public Element toElement(Branch parent) {
 		Element element = parent.addElement(ELEMENT_NAME)
-			.addAttribute("value", String.valueOf(value))
-			.addAttribute("role", getDescription());
+			.addAttribute("value", String.valueOf(value));
+
+		String role = getDescription();
+		if (!role.equals(DEFAULT_ROLE))
+			element.addAttribute("role", role);
 
 		return element;
 	}
