@@ -52,7 +52,7 @@ public class SerializableIdiom extends PreorderVisitor
 
     private void flush() {
 	if (!isAbstract &&
-	    !((sawReadExternal && sawWriteExternal) || (sawReadObject || sawWriteObject))) {
+	    !((sawReadExternal && sawWriteExternal) || (sawReadObject && sawWriteObject))) {
 		Iterator<BugInstance> i = fieldWarningList.iterator();
 		while (i.hasNext())
 			bugReporter.reportBug(i.next());
