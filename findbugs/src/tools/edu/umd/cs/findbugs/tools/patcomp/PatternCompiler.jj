@@ -82,6 +82,8 @@ TOKEN :
 
 	// Expression keywords
 |	<WHERE: "where">
+|	<DOMINATEDBY: "dominatedby">
+|	<BLOCKS: "blocks">
 
 	// Java keywords - needed to understand Java expressions
 |	<VOID: "void">
@@ -140,11 +142,36 @@ TOKEN :
 |	<MOD: "%">
 |	<COMPL: "~">
 |	<NOT: "!">
+|	<ASSIGN: "=">
+
+	// Literals
+|	<INT_LITERAL: <DEC_LITERAL>|<HEX_LITERAL>>
+|	<FP_LITERAL:
+		  (<DIGIT>)+ "." (<DIGIT>)* (<EXP>)? (<FP_SUFFIX>)?
+		| "." (<DIGIT>)+ (<EXP>)? (<FP_SUFFIX>)?
+		| (<DIGIT>)+ <EXP> (<FP_SUFFIX>)?
+		| (<DIGIT>)+ (<EXP>)? (<FP_SUFFIX>)>
+|	<CHAR_LITERAL:
+		"'" (<NOT_SPECIAL_IN_CHAR_LITERAL>|<STRING_ESCAPE>) "'">
+|	<STRING_LITERAL:
+		"\"" (<NOT_SPECIAL_IN_STRING_LITERAL>|<STRING_ESCAPE>)* "\"">
+
+|	<#DEC_LITERAL: (<DIGIT>)+(["L","l"])?>
+|	<#HEX_LITERAL: "0" ("X"|"x") (["A"-"F","a"-"f"])+>
+|	<#EXP: (["E","e"]) (["+","-"])? (<DIGIT>)+>
+|	<#STRING_ESCAPE: "\\" (<ORDINARY_STRING_ESCAPE>|<OCTAL_ESCAPE>)>
+|	<#OCTAL_ESCAPE: (<OCTAL_DIGIT> (<OCTAL_DIGIT>)?) | (<ZERO_TO_THREE> <OCTAL_DIGIT> <OCTAL_DIGIT>)>
 
 	// Character classes
 |	<#IDSTART: (["A"-"Z"]|["a"-"z"]|"_")>
 |	<#IDCHAR: (["A"-"Z"]|["a"-"z"]|<DIGIT>|"_")>
 |	<#DIGIT: ["0"-"9"]>
+|	<#OCTAL_DIGIT: ["0"-"7"]>
+|	<#ZERO_TO_THREE: ["0"-"3"]>
+|	<#FP_SUFFIX: (["F","f","D","d"])>
+|	<#NOT_SPECIAL_IN_CHAR_LITERAL: ~["'","\\","\n","\r"]>
+|	<#NOT_SPECIAL_IN_STRING_LITERAL: ~["\"","\\","\n","\r"]> 
+|	<#ORDINARY_STRING_ESCAPE: (["t","r","n","f","b","\\","'","\""])>
 }
 
 // Top level production.
@@ -160,7 +187,7 @@ void unit() :
 void opt_prescreen() :
 { }
 {
-	[ <PRESCREEN> <LBRACE> <RBRACE> ]
+	[ <PRESCREEN> <LBRACE> [ <LBRACKET> declaration_list() <RBRACKET> ] expression() <RBRACE> ]
 }
 
 // The required "match" section specifies a bytecode pattern
@@ -178,7 +205,7 @@ void match() :
 void opt_check() :
 { }
 {
-	[ <CHECK> <LBRACE> <RBRACE> ]
+	[ <CHECK> <LBRACE> [ <LBRACKET> declaration_list() <RBRACKET> ] expression() <RBRACE> ]
 }
 
 // The required "report" section emits a bug warning based on the
@@ -186,7 +213,19 @@ void opt_check() :
 void report() :
 { }
 {
-	<REPORT> <LBRACE> <RBRACE>
+	<REPORT> <LBRACE> [ <LBRACKET> declaration_list() <RBRACKET> ] expression() <RBRACE>
+}
+
+void declaration_list() :
+{ }
+{
+    declaration() [ declaration_list() ]
+}
+
+void declaration() :
+{ }
+{
+	type_spec() <ID> <ASSIGN> expression() <SEMICOLON>
 }
 
 void instruction_list() :
@@ -198,7 +237,10 @@ void instruction_list() :
 void instruction() :
 { }
 {
-	opt_label() <ID> [ instruction_arg_list() ] [ <WHERE> <LPAREN> expression() <RPAREN> ] <SEMICOLON>
+	opt_label() <ID> [ instruction_arg_list() ]
+		[ <DOMINATEDBY> <LPAREN> <ID> <RPAREN> ]
+		[ <WHERE> <LPAREN> expression() <RPAREN> ]
+		<SEMICOLON>
 }
 
 void opt_label() :
@@ -225,7 +267,13 @@ void instruction_arg_list_rest() :
  * at http://www.thecortex.net/clover/generics/javaG.g,
  * which is in the public domain.
  *
+ * Augmented expressions:
+ * - "blocks b where (exp)": select a subset of blocks from CFG
+ *   by evaluating expression for each basic block "b".
+ *   Result is a Region.
+ *
  * Limitations:
+ * - Assignment operators are not allowed.
  * - Generics are not allowed.
  * - Casts are not allowed.
  * - "new" expressions are not allowed.
@@ -342,6 +390,7 @@ void primary_expression() :
 { }
 {
 	ident_primary() [ <DOT> <CLASS> ]
+|	constant()
 |	<TRUE>
 |	<FALSE>
 |	<NULL>
@@ -349,12 +398,19 @@ void primary_expression() :
 |	<SUPER>
 |	<LPAREN> expression() <RPAREN>
 |	builtin_type() opt_array_spec() <DOT> <CLASS>
+|	<BLOCKS> <ID> <WHERE> <LPAREN> expression() <RPAREN>
 }
 
 void ident_primary() :
 { }
 {
 	<ID> ( <DOT> <ID> )* [ <LPAREN> [ arg_list() ] <RPAREN> ] 
+}
+
+void constant() :
+{ }
+{
+	<INT_LITERAL> | <FP_LITERAL> | <CHAR_LITERAL> | <STRING_LITERAL>
 }
 
 void type_spec() :
