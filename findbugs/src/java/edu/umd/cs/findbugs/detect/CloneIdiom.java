@@ -53,15 +53,15 @@ public class CloneIdiom extends DismantleBytecode implements Detector, Constants
 	}
 
     public void visit(Code obj)  {
-	if (methodName.equals("clone") && 
-		methodSig.startsWith("()"))
+	if (getMethodName().equals("clone") &&
+		getMethodSig().startsWith("()"))
 		super.visit(obj);
 	}
 
  public void sawOpcode(int seen) {
 	if (seen == INVOKESPECIAL
-		&& nameConstant.equals("clone")
-		&& sigConstant.startsWith("()")) {
+		&& getNameConstantOperand().equals("clone")
+		&& getSigConstantOperand().startsWith("()")) {
 		/*
 		System.out.println("Saw call to " + nameConstant
 					+ ":" + sigConstant 
@@ -128,8 +128,8 @@ public class CloneIdiom extends DismantleBytecode implements Detector, Constants
 	}
 
      public void visit(ConstantNameAndType obj) { 
-		String methodName = obj.getName(constant_pool);
-		String methodSig = obj.getSignature(constant_pool);
+		String methodName = obj.getName(getConstantPool());
+		String methodSig = obj.getSignature(getConstantPool());
 		if (!methodName.equals("clone")) return;
 		if (!methodSig.startsWith("()")) return;
 		referencesCloneMethod = true;
@@ -138,8 +138,8 @@ public class CloneIdiom extends DismantleBytecode implements Detector, Constants
     public void visit(Method obj) {
 	if (obj.isAbstract()) return;
 	if (!obj.isPublic()) return;
-	if (!methodName.equals("clone")) return;
-	if (!methodSig.startsWith("()")) return;
+	if (!getMethodName().equals("clone")) return;
+	if (!getMethodSig().startsWith("()")) return;
 	hasCloneMethod = true;
 	cloneMethodAnnotation = MethodAnnotation.fromVisitedMethod(this);
 	ExceptionTable tbl = obj.getExceptionTable();

@@ -47,7 +47,7 @@ public class FindBugsSummaryStats extends PreorderVisitor
 
   public void visit(JavaClass obj)     {
     super.visit(obj);
-    stats.addClass( betterClassName, obj.isInterface() );
+    stats.addClass( getDottedClassName(), obj.isInterface() );
   }
 
   public void reportBug( BugInstance bug ) {

@@ -67,7 +67,7 @@ public class FindUselessControlFlow extends BytecodeScanningDetector {
 
     public void sawOpcode(int seen) {
 		if (ifInstructionSet.get(seen)) {
-			if (branchTarget == branchFallThrough) {
+			if (getBranchTarget() == getBranchFallThrough()) {
 				bugReporter.reportBug(new BugInstance("UCF_USELESS_CONTROL_FLOW", NORMAL_PRIORITY)
 					.addClassAndMethod(this)
 					.addSourceLine(this));

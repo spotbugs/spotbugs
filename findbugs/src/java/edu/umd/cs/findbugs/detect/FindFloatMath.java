@@ -34,9 +34,9 @@ public class FindFloatMath extends BytecodeScanningDetector implements   Constan
 	switch(seen) {
 		case FMUL:
 		case FDIV:
-			if (betterMethodName.indexOf("float") == -1
-			    && betterMethodName.indexOf("Float") == -1
-			    && betterMethodName.indexOf("FLOAT") == -1)
+			if (getFullyQualifiedMethodName().indexOf("float") == -1
+			    && getFullyQualifiedMethodName().indexOf("Float") == -1
+			    && getFullyQualifiedMethodName().indexOf("FLOAT") == -1)
                         bugReporter.reportBug(new BugInstance("FL_MATH_USING_FLOAT_PRECISION", 
 					LOW_PRIORITY)
                                 .addClassAndMethod(this)
@@ -48,9 +48,9 @@ public class FindFloatMath extends BytecodeScanningDetector implements   Constan
 		case FADD:
 		case FSUB:
 		case FREM:
-			if (betterMethodName.indexOf("float") == -1
-			    && betterMethodName.indexOf("Float") == -1
-			    && betterMethodName.indexOf("FLOAT") == -1)
+			if (getFullyQualifiedMethodName().indexOf("float") == -1
+			    && getFullyQualifiedMethodName().indexOf("Float") == -1
+			    && getFullyQualifiedMethodName().indexOf("FLOAT") == -1)
 		 
                         bugReporter.reportBug(new BugInstance("FL_MATH_USING_FLOAT_PRECISION", 
 					NORMAL_PRIORITY)

@@ -59,7 +59,7 @@ public class FindUnsyncGet extends BytecodeScanningDetector implements   Constan
 	}
    public void visit(JavaClass obj) {
 	report();
-	prevClassName = betterClassName;
+	prevClassName = getDottedClassName();
 	}
 
     public void visit(Method obj) {

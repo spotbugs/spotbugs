@@ -19,12 +19,11 @@
 
 package edu.umd.cs.findbugs;
 
-import edu.umd.cs.findbugs.visitclass.BetterVisitor;
-import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
 import edu.umd.cs.findbugs.ba.SignatureConverter;
-import org.dom4j.Element;
+import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 import org.dom4j.Branch;
 import org.dom4j.DocumentException;
+import org.dom4j.Element;
 
 /**
  * A BugAnnotation specifying a particular method in a particular class.
@@ -64,8 +63,8 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 	 * given visitor is currently visiting.
 	 * @param visitor the BetterVisitor currently visiting the method
 	 */
-	public static MethodAnnotation fromVisitedMethod(BetterVisitor visitor) {
-		MethodAnnotation result = new MethodAnnotation(visitor.getBetterClassName(), visitor.getMethodName(), visitor.getMethodSig());
+	public static MethodAnnotation fromVisitedMethod(PreorderVisitor visitor) {
+		MethodAnnotation result = new MethodAnnotation(visitor.getDottedClassName(), visitor.getMethodName(), visitor.getMethodSig());
 
 		// Try to find the source lines for the method
 		SourceLineAnnotation srcLines = SourceLineAnnotation.fromVisitedMethod(visitor);

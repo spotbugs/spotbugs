@@ -172,9 +172,9 @@ public class Naming extends PreorderVisitor implements Detector, Constants2 {
 
     public void visit(Method obj) {
 	if (obj.isAbstract()) return;
-	if (methodName.length() == 1) return;
+	if (getMethodName().length() == 1) return;
 
-	if (methodName.equals(baseClassName)) 
+	if (getMethodName().equals(baseClassName))
 		bugReporter.reportBug(new BugInstance("NM_CONFUSING_METHOD_NAME", NORMAL_PRIORITY)
 			.addClassAndMethod(this));
 
@@ -182,10 +182,10 @@ public class Naming extends PreorderVisitor implements Detector, Constants2 {
 			|| obj.isStatic()
 			) return;
 
-	String trueName = methodName + methodSig;
-	String allSmall = methodName.toLowerCase() + methodSig;
+	String trueName = getMethodName() + getMethodSig();
+	String allSmall = getMethodName().toLowerCase() + getMethodSig();
 	
-	MyMethod mm = new MyMethod( thisClass, methodName, methodSig);
+	MyMethod mm = new MyMethod( getThisClass(), getMethodName(), getMethodSig());
 	{
 	HashSet<String> s = canonicalToTrueMapping.get(allSmall);
 	if (s == null) {
@@ -203,13 +203,13 @@ public class Naming extends PreorderVisitor implements Detector, Constants2 {
 	s.add(mm);
 	}
 
-	if (methodName.equals("equal") && methodSig.equals("(Ljava/lang/Object;)Z")) 
+	if (getMethodName().equals("equal") && getMethodSig().equals("(Ljava/lang/Object;)Z")) 
 		bugReporter.reportBug(new BugInstance("NM_BAD_EQUAL", HIGH_PRIORITY)
 			.addClassAndMethod(this));
-	if (methodName.equals("hashcode") && methodSig.equals("()I")) 
+	if (getMethodName().equals("hashcode") && getMethodSig().equals("()I"))
 		bugReporter.reportBug(new BugInstance("NM_LCASE_HASHCODE", HIGH_PRIORITY)
 			.addClassAndMethod(this));
-	if (methodName.equals("tostring") && methodSig.equals("()Ljava/lang/String;")) 
+	if (getMethodName().equals("tostring") && getMethodSig().equals("()Ljava/lang/String;"))
 		bugReporter.reportBug(new BugInstance("NM_LCASE_TOSTRING", HIGH_PRIORITY)
 			.addClassAndMethod(this));
 	}

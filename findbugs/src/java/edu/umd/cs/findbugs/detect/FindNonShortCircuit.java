@@ -82,7 +82,7 @@ public class FindNonShortCircuit extends BytecodeScanningDetector implements   C
 				new BugInstance("NS_NON_SHORT_CIRCUIT", 
 						NORMAL_PRIORITY)
                                         .addClassAndMethod(this)
-					.addSourceLine(this, PC));
+					.addSourceLine(this, getPC()));
 				}
 			stage2 = 0;
 			break;
@@ -95,7 +95,7 @@ public class FindNonShortCircuit extends BytecodeScanningDetector implements   C
 				new BugInstance("NS_NON_SHORT_CIRCUIT", 
 						LOW_PRIORITY)
                                         .addClassAndMethod(this)
-					.addSourceLine(this, PC));
+					.addSourceLine(this, getPC()));
 				}
 			stage2 = 0;
 			break;

@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs;
 
 import edu.umd.cs.findbugs.visitclass.BetterVisitor;
 import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
+import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 import edu.umd.cs.findbugs.ba.SignatureConverter;
 import org.apache.bcel.generic.*;
 import org.dom4j.Element;
@@ -59,8 +60,8 @@ public class FieldAnnotation extends PackageMemberAnnotation {
 	 * @param visitor the visitor which is visiting the field
 	 * @return the FieldAnnotation object
 	 */
-	public static FieldAnnotation fromVisitedField(BetterVisitor visitor) {
-		return new FieldAnnotation(visitor.getBetterClassName(), visitor.getFieldName(), visitor.getFieldSig(),
+	public static FieldAnnotation fromVisitedField(PreorderVisitor visitor) {
+		return new FieldAnnotation(visitor.getDottedClassName(), visitor.getFieldName(), visitor.getFieldSig(),
 			visitor.getFieldIsStatic());
 	}
 
@@ -72,7 +73,7 @@ public class FieldAnnotation extends PackageMemberAnnotation {
 	 * @return the FieldAnnotation object
 	 */
 	public static FieldAnnotation fromReferencedField(DismantleBytecode visitor) {
-		return new FieldAnnotation(visitor.getBetterClassConstant(), visitor.getNameConstant(), visitor.getSigConstant(),
+		return new FieldAnnotation(visitor.getDottedClassConstantOperand(), visitor.getNameConstantOperand(), visitor.getSigConstantOperand(),
 			visitor.getRefFieldIsStatic());
 	}
 

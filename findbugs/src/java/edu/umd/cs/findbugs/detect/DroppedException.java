@@ -99,7 +99,7 @@ public class DroppedException extends PreorderVisitor implements Detector, Const
 			exitInTryBlock =  true;
 			if (DEBUG) 
 			System.out.println("	exit: " + opcode 
-				+ " in " + betterMethodName);
+				+ " in " + getFullyQualifiedMethodName());
 			break;
 			}
 		if (NO_OF_OPERANDS[opcode] < 0)  {
@@ -120,7 +120,7 @@ public class DroppedException extends PreorderVisitor implements Detector, Const
 	  else
 		{
 		c = Utility.compactClassName(
-		  constant_pool.getConstantString(cause, 
+		  getConstantPool().getConstantString(cause,
 					CONSTANT_Class), false);
 		if (!isChecked(c)) continue;
 		}
@@ -235,7 +235,7 @@ public class DroppedException extends PreorderVisitor implements Detector, Const
 		System.out.println("reporting warning");
 		}
 			
-	String key = (exitInTryBlock ? "mightDrop," : "mightIgnore,") + betterMethodName + "," + c;
+	String key = (exitInTryBlock ? "mightDrop," : "mightIgnore,") + getFullyQualifiedMethodName() + "," + c;
 	if (reported.add(key)) {
 		BugInstance bugInstance = new BugInstance(
 		   exitInTryBlock ? "DE_MIGHT_DROP" : "DE_MIGHT_IGNORE", 

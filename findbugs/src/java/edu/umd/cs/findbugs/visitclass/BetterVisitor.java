@@ -30,48 +30,6 @@ import org.apache.bcel.classfile.*;
  */
 public abstract class BetterVisitor implements Visitor {
 
-   public ConstantPool constant_pool;
-   protected String className = "none";
-   protected String betterClassName = "none";
-   protected String packageName = "none";
-   protected String sourceFile = "none";
-   protected JavaClass thisClass;
-   protected String methodSig = "none";
-   protected String betterMethodSig = "none";
-   protected Method method = null;
-   protected String methodName = "none";
-   protected String betterMethodName = "none";
-   protected String betterFieldName = "none";
-   protected String fieldName = "none";
-   protected String fieldSig = "none";
-   protected String betterFieldSig = "none";
-   protected boolean fieldIsStatic;
-   protected String superclassName = "none";
-   protected String betterSuperclassName = "none";
-
-   protected String getStringFromIndex(int i) {
-        ConstantUtf8 name = (ConstantUtf8)constant_pool.getConstant(i);
-        return name.getBytes();
-        }
-
-    protected int asUnsignedByte(byte b) {
-        return 0xff & b;
-        }
-
-  // Accessors
-  public String getBetterClassName() { return betterClassName; }
-  public String getPackageName() { return packageName; }
-  public String getSourceFile() { return sourceFile; }
-  public String getBetterMethodName() { return betterMethodName; }
-  public String getSuperclassName() { return superclassName; }
-  public String getBetterSuperclassName() { return betterSuperclassName; }
-  public String getFieldName() { return fieldName; }
-  public String getFieldSig() { return fieldSig; }
-  public boolean getFieldIsStatic() { return fieldIsStatic; }
-  public Method getMethod() { return method; }
-  public String getMethodName() { return methodName; }
-  public String getMethodSig() { return methodSig; }
-
   ////////////////// In short form //////////////////////
    // General classes
    public void visit(JavaClass obj) {}
@@ -158,12 +116,6 @@ public abstract class BetterVisitor implements Visitor {
   public void visitExceptionTable(ExceptionTable obj)    
 		{ visit(obj); }
   public void visitField(Field obj)     {
-	        fieldName = getStringFromIndex(obj.getNameIndex());
-	        fieldSig = getStringFromIndex(obj.getSignatureIndex());
-		betterFieldSig = fieldSig.replace('/','.');
-		betterFieldName = betterClassName + "." + fieldName
-				+ " : " + betterFieldSig;
-		fieldIsStatic = obj.isStatic();
 		visit(obj); 
 		}
   // Extra classes (i.e. leaves in this context)
@@ -173,15 +125,6 @@ public abstract class BetterVisitor implements Visitor {
 		{ visit(obj); }
   // General classes
   public void visitJavaClass(JavaClass obj)     {
-	constant_pool = obj.getConstantPool();
-        thisClass = obj;
-	ConstantClass c = (ConstantClass)constant_pool.getConstant(obj.getClassNameIndex());
-        className = getStringFromIndex(c.getNameIndex());
-	betterClassName = className.replace('/','.');
-	packageName = obj.getPackageName();
-	sourceFile = obj.getSourceFileName();
-        superclassName = obj.getSuperclassName();
-	betterSuperclassName = superclassName.replace('/','.');
 	visit(obj); 
 	}
   public void visitLineNumber(LineNumber obj)    
@@ -193,22 +136,6 @@ public abstract class BetterVisitor implements Visitor {
   public void visitLocalVariableTable(LocalVariableTable obj)    
 		{ visit(obj); }
   public void visitMethod(Method obj)    {
-		method = obj;
-	        methodName = getStringFromIndex(obj.getNameIndex());
-	        methodSig = getStringFromIndex(obj.getSignatureIndex());
-		betterMethodSig = methodSig.replace('/','.');
-		StringBuffer ref = new StringBuffer(
-				5+betterClassName.length()
-				+methodName.length()
-				+betterMethodSig.length());
-
-		ref.append( betterClassName )
-		.append( "." )
-		.append( methodName )
-		.append( " : " )
-		.append( betterMethodSig );
-		betterMethodName = ref.toString();
-
 		visit(obj); 
 		}
   public void visitSignature(Signature obj)
@@ -224,4 +151,5 @@ public abstract class BetterVisitor implements Visitor {
    public void visitStackMap(StackMap obj)
 		{ visit(obj); }
    public void report(PrintStream out) {}
+
 }

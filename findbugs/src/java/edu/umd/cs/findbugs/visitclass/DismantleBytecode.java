@@ -26,31 +26,34 @@ import java.io.*;
 
 abstract public class DismantleBytecode extends PreorderVisitor implements   Constants2 {
 
-  protected  int opCode;
-  protected  int branchOffset;
-  protected  int branchTarget;
-  protected  int branchFallThrough;
-  protected  int PC;
-  protected  int[] switchOffsets;
-  protected  int[] switchLabels;
-  protected  int switchLow;
-  protected  int switchHigh;
-  protected  int defaultSwitchOffset;
-  protected  String betterClassConstant;
-  protected  String classConstant;
-  protected  String nameConstant;
-  protected  String sigConstant;
-  protected  String betterSigConstant;
-  protected  String stringConstant;
-  protected  String refConstant;
-  protected  boolean refFieldIsStatic;
-  protected  int intConstant;
-  protected  long longConstant;
-  protected  float floatConstant;
-  protected  double doubleConstant;
-  protected  int register;
-  protected  Constant constantRef;
-  protected  boolean wide;
+  private int opcode;
+  private boolean opcodeIsWide;
+  private int PC;
+  private int branchOffset;
+  private int branchTarget;
+  private int branchFallThrough;
+  private int[] switchOffsets;
+  private int[] switchLabels;
+  private int switchLow;
+  private int switchHigh;
+  private int defaultSwitchOffset;
+  private String classConstantOperand;
+  private String dottedClassConstantOperand;
+  private String nameConstantOperand;
+  private String sigConstantOperand;
+  private String dottedSigConstantOperand;
+  private String stringConstantOperand;
+  private String refConstantOperand;
+  private boolean refFieldIsStatic;
+  private Constant constantRefOperand;
+  private int intConstant;
+  private long longConstant;
+  private float floatConstant;
+  private double doubleConstant;
+  private int registerOperand;
+
+  private static final int INVALID_OFFSET = Integer.MIN_VALUE;
+  private static final String NOT_AVAILABLE = "none";
 
   protected static final int R_INT = 0;
   protected static final int R_LONG = 1;
@@ -59,14 +62,13 @@ abstract public class DismantleBytecode extends PreorderVisitor implements   Con
   protected static final int R_REF = 4;
   protected int registerKind;
 
-  static HashMap<String,String>  replaceDashsWithDotsCache = new HashMap<String,String>();
- 
+  private static HashMap<String,String>  replaceSlashesWithDotsCache = new HashMap<String,String>();
 
-  synchronized static String replaceDashsWithDots(String c) {
-	String result = replaceDashsWithDotsCache.get(c);
+  synchronized static String replaceSlashesWithDots(String c) {
+	String result = replaceSlashesWithDotsCache.get(c);
 	if (result != null) return result;
 	result = c.replace('/','.');
-	replaceDashsWithDotsCache.put(c, result);
+	replaceSlashesWithDotsCache.put(c, result);
 	return result;
 	}
 
@@ -123,13 +125,109 @@ abstract public class DismantleBytecode extends PreorderVisitor implements   Con
   protected LineNumberTable lineNumberTable;
 
   // Accessors
-  public String getBetterClassConstant() { return betterClassConstant; }
-  public String getRefConstant() { return refConstant; }
-  public boolean getRefFieldIsStatic() { return refFieldIsStatic; }
-  public String getNameConstant() { return nameConstant; }
-  public String getBetterSigConstant() { return betterSigConstant; }
-  public String getSigConstant() { return sigConstant; }
-  public int getPC() { return PC; }
+  public String getDottedClassConstantOperand() {
+      if (dottedClassConstantOperand == NOT_AVAILABLE)
+	  throw new IllegalStateException("getDottedClassConstantOperand called but value not available");
+      return dottedClassConstantOperand;
+  }
+
+    public String getRefConstantOperand() {
+	if (dottedClassConstantOperand == NOT_AVAILABLE)
+	    throw new IllegalStateException("getRefConstantOperand called but value not available");
+	return refConstantOperand;
+    }
+
+    public String getNameConstantOperand() {
+	if (nameConstantOperand == NOT_AVAILABLE)
+	    throw new IllegalStateException("getNameConstantOperand called but value not available");
+	return nameConstantOperand;
+    }
+
+    public String getDottedSigConstantOperand() {
+	if (dottedSigConstantOperand == NOT_AVAILABLE)
+	    throw new IllegalStateException("getDottedSigConstantOperand called but value not available");
+	return dottedSigConstantOperand;
+    }
+
+    public String getSigConstantOperand() {
+	if (sigConstantOperand == NOT_AVAILABLE)
+	    throw new IllegalStateException("getSigConstantOperand called but value not available");
+	return sigConstantOperand;
+    }
+
+    public String getClassConstantOperand() {
+	if (classConstantOperand == NOT_AVAILABLE)
+	    throw new IllegalStateException("getClassConstantOperand called but value not available");
+	return classConstantOperand;
+    }
+
+    public String getStringConstantOperand() {
+	if (stringConstantOperand == NOT_AVAILABLE)
+	    throw new IllegalStateException("getStringConstantOperand called but value not available");
+	return stringConstantOperand;
+    }
+
+    public Constant getConstantRefOperand() {
+	if (constantRefOperand == null)
+	    throw new IllegalStateException("getConstantRefOperand called but value not available");
+	return constantRefOperand;
+    }
+
+    public int getRegisterOperand() {
+	return registerOperand;
+    }
+
+    public int getBranchOffset() {
+	if (branchOffset == INVALID_OFFSET)
+	    throw new IllegalStateException("getBranchOffset called but value not available");
+	return branchOffset;
+    }
+
+    public int getBranchTarget() {
+	if (branchTarget == INVALID_OFFSET)
+	    throw new IllegalStateException("getBranchTarget called but value not available");
+	return branchTarget;
+    }
+
+    public int getBranchFallThrough() {
+	if (branchFallThrough == INVALID_OFFSET)
+	    throw new IllegalStateException("getBranchFallThrough called but value not available");
+	return branchFallThrough;
+    }
+
+    public int getDefaultSwitchOffset() {
+	if (defaultSwitchOffset == INVALID_OFFSET)
+	    throw new IllegalStateException("getDefaultSwitchOffset called but value not available");
+	return defaultSwitchOffset;
+    }
+
+    public boolean getRefFieldIsStatic() {
+	return refFieldIsStatic;
+    }
+
+    public int getPC() {
+	return PC;
+    }
+
+    public int[] getSwitchOffsets() {
+	if (switchOffsets == null)
+	    throw new IllegalStateException("getSwitchOffsets called but value not available");
+	return switchOffsets;
+    }
+
+    public int[] getSwitchLabels() {
+	if (switchLabels == null)
+	    throw new IllegalStateException("getSwitchOffsets called but value not available");
+	return switchLabels;
+    }
+
+    private void resetState() {
+	dottedClassConstantOperand = classConstantOperand = nameConstantOperand = sigConstantOperand = dottedSigConstantOperand = stringConstantOperand = refConstantOperand = NOT_AVAILABLE;
+	refFieldIsStatic = false;
+	constantRefOperand = null;
+	branchOffset = branchTarget = branchFallThrough = defaultSwitchOffset = INVALID_OFFSET;
+	switchOffsets = switchLabels = null;
+    }
 
     public void visit(Code obj) { 
 
@@ -140,15 +238,16 @@ abstract public class DismantleBytecode extends PreorderVisitor implements   Con
 
         try {
             for(int i = 0; i < codeBytes.length; ) {
+		resetState();
 		PC = i;
-		wide = false;
-                opCode = byteStream.readUnsignedByte(); 
+		opcodeIsWide = false;
+                opcode = byteStream.readUnsignedByte();
                 i++;
 		// System.out.println(OPCODE_NAMES[opCode]);
-                int byteStreamArgCount = NO_OF_OPERANDS[opCode];
+                int byteStreamArgCount = NO_OF_OPERANDS[opcode];
                 if (byteStreamArgCount == UNPREDICTABLE) {
 
-                    if (opCode == LOOKUPSWITCH) {
+                    if (opcode == LOOKUPSWITCH) {
                         int pad = 4 - (i & 3);
 			if (pad == 4) pad = 0;
                         byteStream.skipBytes(pad); 
@@ -182,7 +281,7 @@ abstract public class DismantleBytecode extends PreorderVisitor implements   Con
 				}
 			}
                     }
-                    else if (opCode == TABLESWITCH) {
+                    else if (opcode == TABLESWITCH) {
                         int pad = 4 - (i & 3);
 			if (pad == 4) pad = 0;
                         byteStream.skipBytes(pad); 
@@ -219,11 +318,11 @@ abstract public class DismantleBytecode extends PreorderVisitor implements   Con
 				}
 			}
                     }
-                    else if (opCode == WIDE) {
-			wide = true;
-                        opCode = byteStream.readUnsignedByte(); 
+                    else if (opcode == WIDE) {
+			opcodeIsWide = true;
+                        opcode = byteStream.readUnsignedByte();
                         i++;
-                        switch (opCode) {
+                        switch (opcode) {
                             case ILOAD:
                                 case FLOAD:
                                 case ALOAD:
@@ -235,28 +334,28 @@ abstract public class DismantleBytecode extends PreorderVisitor implements   Con
                                 case LSTORE:
                                 case DSTORE:
                                 case RET:
-                                register = byteStream.readUnsignedShort(); 
+                                registerOperand = byteStream.readUnsignedShort();
                                 i+=2;
                                 break;
                             case IINC:
-                                register = byteStream.readUnsignedShort(); 
+                                registerOperand = byteStream.readUnsignedShort();
                                 i+=2;
                                 intConstant = byteStream.readShort(); 
                                 i+=2;
                                 break;
                         default:
-                            throw new IllegalStateException("bad wide bytecode: " + OPCODE_NAMES[opCode]);
+                            throw new IllegalStateException("bad wide bytecode: " + OPCODE_NAMES[opcode]);
                         }
                     }
-                    else throw new IllegalStateException("bad unpredicatable bytecode: " + OPCODE_NAMES[opCode]);
+                    else throw new IllegalStateException("bad unpredicatable bytecode: " + OPCODE_NAMES[opcode]);
                 }
                 else {
-                    if (byteStreamArgCount < 0) throw new IllegalStateException("bad length for bytecode: " + OPCODE_NAMES[opCode]);
-                    for(int k = 0; k < TYPE_OF_OPERANDS[opCode].length; k++) {
+                    if (byteStreamArgCount < 0) throw new IllegalStateException("bad length for bytecode: " + OPCODE_NAMES[opcode]);
+                    for(int k = 0; k < TYPE_OF_OPERANDS[opcode].length; k++) {
 
                         int v;
-                        int t = TYPE_OF_OPERANDS[opCode][k];
-                        int m = MEANING_OF_OPERANDS[opCode][k];
+                        int t = TYPE_OF_OPERANDS[opcode][k];
+                        int m = MEANING_OF_OPERANDS[opcode][k];
                         boolean unsigned = (m == M_CP || m == M_R || m == M_UINT);
                         switch(t) {
                         case T_BYTE:  
@@ -286,60 +385,51 @@ abstract public class DismantleBytecode extends PreorderVisitor implements   Con
 			    branchFallThrough = i;
 			    break;
                         case M_CP : 
-			    constantRef = constant_pool.getConstant(v);
-			    if (constantRef instanceof ConstantClass)  {
-				ConstantClass clazz = (ConstantClass)constantRef;
-				classConstant 
-					= getStringFromIndex(clazz.getNameIndex())
-					  .intern();
-				betterClassConstant 
-					= replaceDashsWithDots(classConstant);
+			    constantRefOperand = getConstantPool().getConstant(v);
+			    if (constantRefOperand instanceof ConstantClass)  {
+				ConstantClass clazz = (ConstantClass)constantRefOperand;
+				classConstantOperand = getStringFromIndex(clazz.getNameIndex()).intern();
+				dottedClassConstantOperand = replaceSlashesWithDots(classConstantOperand);
 				}
-			    if (constantRef instanceof ConstantInteger) 
-				intConstant = ((ConstantInteger)constantRef).getBytes();
-			    else if (constantRef instanceof ConstantLong) 
-				longConstant = ((ConstantLong)constantRef).getBytes();
-			    else if (constantRef instanceof ConstantFloat) 
-				floatConstant = ((ConstantFloat)constantRef).getBytes();
-			    else if (constantRef instanceof ConstantDouble) 
-				doubleConstant = ((ConstantDouble)constantRef).getBytes();
-			    else if (constantRef instanceof ConstantString) {
-				int s = ((ConstantString)constantRef).getStringIndex();
+			    if (constantRefOperand instanceof ConstantInteger)
+				intConstant = ((ConstantInteger)constantRefOperand).getBytes();
+			    else if (constantRefOperand instanceof ConstantLong)
+				longConstant = ((ConstantLong)constantRefOperand).getBytes();
+			    else if (constantRefOperand instanceof ConstantFloat)
+				floatConstant = ((ConstantFloat)constantRefOperand).getBytes();
+			    else if (constantRefOperand instanceof ConstantDouble)
+				doubleConstant = ((ConstantDouble)constantRefOperand).getBytes();
+			    else if (constantRefOperand instanceof ConstantString) {
+				int s = ((ConstantString)constantRefOperand).getStringIndex();
 				
-			        stringConstant = getStringFromIndex(s);
+			        stringConstantOperand = getStringFromIndex(s);
 				}
-			    else if (constantRef instanceof ConstantCP) {
-				ConstantCP cp = (ConstantCP) constantRef;
+			    else if (constantRefOperand instanceof ConstantCP) {
+				ConstantCP cp = (ConstantCP) constantRefOperand;
 				ConstantClass  clazz
-				  = (ConstantClass) constant_pool.getConstant(cp.getClassIndex());
-				classConstant  
-					= getStringFromIndex(clazz.getNameIndex())
-					  .intern();
-				betterClassConstant 
-					= replaceDashsWithDots(classConstant);
+				  = (ConstantClass) getConstantPool().getConstant(cp.getClassIndex());
+				classConstantOperand = getStringFromIndex(clazz.getNameIndex()).intern();
+				dottedClassConstantOperand = replaceSlashesWithDots(classConstantOperand);
 				ConstantNameAndType sig 
-				  = (ConstantNameAndType) constant_pool.getConstant(cp.getNameAndTypeIndex());
-				nameConstant = getStringFromIndex(sig.getNameIndex());
-				sigConstant 
-				  = getStringFromIndex(sig.getSignatureIndex())
-				    .intern();
-				betterSigConstant 
-					= replaceDashsWithDots(sigConstant);
+				  = (ConstantNameAndType) getConstantPool().getConstant(cp.getNameAndTypeIndex());
+				nameConstantOperand = getStringFromIndex(sig.getNameIndex());
+				sigConstantOperand = getStringFromIndex(sig.getSignatureIndex()).intern();
+				dottedSigConstantOperand = replaceSlashesWithDots(sigConstantOperand);
 				StringBuffer ref = new StringBuffer(
-						5+betterClassConstant.length()
-						+nameConstant.length()
-						+betterSigConstant.length());
+						5+dottedClassConstantOperand.length()
+						+nameConstantOperand.length()
+						+dottedSigConstantOperand.length());
 			
-				ref.append( betterClassConstant )
+				ref.append( dottedClassConstantOperand )
 				.append( "." )
-				.append( nameConstant )
+				.append( nameConstantOperand )
 				.append( " : " )
-				.append( betterSigConstant );
-				refConstant = ref.toString();
+				.append( dottedSigConstantOperand );
+				refConstantOperand = ref.toString();
 				}
 			    break;
                         case M_R : 
-                            register = v;
+                            registerOperand = v;
 			    break;
                         case M_UINT : 
                         case M_INT : 
@@ -348,20 +438,20 @@ abstract public class DismantleBytecode extends PreorderVisitor implements   Con
                     }
 
                 }
-	switch (opCode) {
+	switch (opcode) {
 	    case ILOAD:
 		case FLOAD:
 		case ALOAD:
 		case LLOAD:
 		case DLOAD:
-		registerKind = opCode - ILOAD;
+		registerKind = opcode - ILOAD;
 		break;
 		case ISTORE:
 		case FSTORE:
 		case ASTORE:
 		case LSTORE:
 		case DSTORE:
-		registerKind = opCode - ISTORE;
+		registerKind = opcode - ISTORE;
 		break;
 		case RET:
 		registerKind = R_REF;
@@ -375,9 +465,9 @@ abstract public class DismantleBytecode extends PreorderVisitor implements   Con
 			refFieldIsStatic = false;
 			break;
 		}
-	sawOpcode(opCode);
+	sawOpcode(opcode);
 
-        if (opCode == TABLESWITCH) {
+        if (opcode == TABLESWITCH) {
 		sawInt(switchLow);
 		sawInt(switchHigh);
 		int prevOffset = i-PC;
@@ -387,7 +477,7 @@ abstract public class DismantleBytecode extends PreorderVisitor implements   Con
 			}
 		sawOffset(defaultSwitchOffset - prevOffset);
 		}
-        else if (opCode == LOOKUPSWITCH) {
+        else if (opcode == LOOKUPSWITCH) {
 		sawInt(switchOffsets.length);
 		int prevOffset = i-PC;
 		for(int o = 0; o < switchOffsets.length; o++) {
@@ -398,8 +488,8 @@ abstract public class DismantleBytecode extends PreorderVisitor implements   Con
 		sawOffset(defaultSwitchOffset - prevOffset);
 		}
 	else 
-	    for(int k = 0; k < TYPE_OF_OPERANDS[opCode].length; k++) {
-		int m = MEANING_OF_OPERANDS[opCode][k];
+	    for(int k = 0; k < TYPE_OF_OPERANDS[opcode].length; k++) {
+		int m = MEANING_OF_OPERANDS[opcode][k];
 		switch(m) {
                         case M_BR : 
 			    if (branchOffset > 0)
@@ -408,27 +498,27 @@ abstract public class DismantleBytecode extends PreorderVisitor implements   Con
 				    sawOffset(branchOffset);
 			    break;
                         case M_CP : 
-			    if (constantRef instanceof ConstantInteger) 
+			    if (constantRefOperand instanceof ConstantInteger)
 				sawInt(intConstant);
-			    else if (constantRef instanceof ConstantLong) 
+			    else if (constantRefOperand instanceof ConstantLong)
 				sawLong(longConstant);
-			    else if (constantRef instanceof ConstantFloat) 
+			    else if (constantRefOperand instanceof ConstantFloat)
 				sawFloat(floatConstant);
-			    else if (constantRef instanceof ConstantDouble) 
+			    else if (constantRefOperand instanceof ConstantDouble)
 				sawDouble(doubleConstant);
-			    else if (constantRef instanceof ConstantString) 
-				sawString(stringConstant);
-			    else if (constantRef instanceof ConstantFieldref) 
+			    else if (constantRefOperand instanceof ConstantString)
+				sawString(stringConstantOperand);
+			    else if (constantRefOperand instanceof ConstantFieldref)
 				sawField();
-			    else if (constantRef instanceof ConstantMethodref) 
+			    else if (constantRefOperand instanceof ConstantMethodref)
 				sawMethod();
-			    else if (constantRef instanceof ConstantInterfaceMethodref)
+			    else if (constantRefOperand instanceof ConstantInterfaceMethodref)
 				sawIMethod();
-			    else if (constantRef instanceof ConstantClass)
+			    else if (constantRefOperand instanceof ConstantClass)
 				sawClass();
 			    break;
                         case M_R : 
-			    sawRegister(register);
+			    sawRegister(registerOperand);
 			    break;
                         case M_INT : 
 		            sawInt(intConstant);
@@ -449,16 +539,16 @@ abstract public class DismantleBytecode extends PreorderVisitor implements   Con
 		}
     }
 
-public void sawDouble(double seen) {}
-public void sawFloat(float seen) {}
-public void sawRegister(int r) {}
-public void sawInt(int seen) {}
-public void sawLong(long seen) {}
-public void sawOffset(int seen) {}
-public void sawOpcode(int seen) {}
-public void sawString(String seen) {}
-public void sawField() {}
-public void sawMethod() {}
-public void sawIMethod() {}
-public void sawClass() {}
+    public void sawDouble(double seen) {}
+    public void sawFloat(float seen) {}
+    public void sawRegister(int r) {}
+    public void sawInt(int seen) {}
+    public void sawLong(long seen) {}
+    public void sawOffset(int seen) {}
+    public void sawOpcode(int seen) {}
+    public void sawString(String seen) {}
+    public void sawField() {}
+    public void sawMethod() {}
+    public void sawIMethod() {}
+    public void sawClass() {}
 }

@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs;
 import java.util.*;
 import edu.umd.cs.findbugs.visitclass.BetterVisitor;
 import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
+import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 import edu.umd.cs.findbugs.ba.bcp.FieldVariable;
 import edu.umd.cs.findbugs.ba.XField;
 import org.apache.bcel.classfile.*;
@@ -211,7 +212,7 @@ public class BugInstance implements Comparable, XMLConvertible {
 	 * @param visitor the BetterVisitor
 	 * @return this object
 	 */
-	public BugInstance addClassAndMethod(BetterVisitor visitor) {
+	public BugInstance addClassAndMethod(PreorderVisitor visitor) {
 		addClass(visitor);
 		addMethod(visitor);
 		return this;
@@ -261,8 +262,8 @@ public class BugInstance implements Comparable, XMLConvertible {
 	 * @param visitor the BetterVisitor
 	 * @return this object
 	 */
-	public BugInstance addClass(BetterVisitor visitor) {
-		String className = visitor.getBetterClassName();
+	public BugInstance addClass(PreorderVisitor visitor) {
+		String className = visitor.getDottedClassName();
 		addClass(className);
 		return this;
 	}
@@ -273,7 +274,7 @@ public class BugInstance implements Comparable, XMLConvertible {
 	 * @param visitor the BetterVisitor
 	 * @return this object
 	 */
-	public BugInstance addSuperclass(BetterVisitor visitor) {
+	public BugInstance addSuperclass(PreorderVisitor visitor) {
 		String className = visitor.getSuperclassName();
 		addClass(className);
 		return this;
@@ -339,12 +340,20 @@ public class BugInstance implements Comparable, XMLConvertible {
 	}
 
 	/**
+	 * Add a field annotation for the field referenced by the FieldAnnotation parameter
+	 */
+	public BugInstance addReferencedField(FieldAnnotation fa) {
+		addField(fa);
+		return this;
+	}
+
+	/**
 	 * Add a field annotation for the field which is being visited by
 	 * given visitor.
 	 * @param visitor the visitor
 	 * @return this object
 	 */
-	public BugInstance addVisitedField(BetterVisitor visitor) {
+	public BugInstance addVisitedField(PreorderVisitor visitor) {
 		FieldAnnotation f = FieldAnnotation.fromVisitedField(visitor);
 		addField(f);
 		return this;
@@ -391,7 +400,7 @@ public class BugInstance implements Comparable, XMLConvertible {
 	 * @param visitor the BetterVisitor
 	 * @return this object
 	 */
-	public BugInstance addMethod(BetterVisitor visitor) {
+	public BugInstance addMethod(PreorderVisitor visitor) {
 		MethodAnnotation methodAnnotation = MethodAnnotation.fromVisitedMethod(visitor);
 		addMethod(methodAnnotation);
 		addSourceLinesForMethod(methodAnnotation, SourceLineAnnotation.fromVisitedMethod(visitor));
@@ -407,9 +416,19 @@ public class BugInstance implements Comparable, XMLConvertible {
 	 * @return this object
 	 */
 	public BugInstance addCalledMethod(DismantleBytecode visitor) {
-		String className = visitor.getBetterClassConstant();
-		String methodName = visitor.getNameConstant();
-		String methodSig = visitor.getBetterSigConstant();
+		String className = visitor.getDottedClassConstantOperand();
+		String methodName = visitor.getNameConstantOperand();
+		String methodSig = visitor.getDottedSigConstantOperand();
+		addMethod(className, methodName, methodSig);
+		describe("METHOD_CALLED");
+		return this;
+	}
+
+	/**
+	 * Add a method annotation.
+	 * @return this object
+	 */
+	public BugInstance addCalledMethod(String className, String methodName, String methodSig) {
 		addMethod(className, methodName, methodSig);
 		describe("METHOD_CALLED");
 		return this;
@@ -480,7 +499,7 @@ public class BugInstance implements Comparable, XMLConvertible {
 	 * @param pc bytecode offset of the instruction
 	 * @return this object
 	 */
-	public BugInstance addSourceLine(BetterVisitor visitor, int pc) {
+	public BugInstance addSourceLine(PreorderVisitor visitor, int pc) {
 		SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation.fromVisitedInstruction(visitor, pc);
 		if (sourceLineAnnotation != null)
 			add(sourceLineAnnotation);
@@ -535,7 +554,7 @@ public class BugInstance implements Comparable, XMLConvertible {
 	 * @param endPC the bytecode offset of the end instruction in the range
 	 * @return this object
 	 */
-	public BugInstance addSourceLineRange(BetterVisitor visitor, int startPC, int endPC) {
+	public BugInstance addSourceLineRange(PreorderVisitor visitor, int startPC, int endPC) {
 		SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation.fromVisitedInstructionRange(visitor, startPC, endPC);
 		if (sourceLineAnnotation != null)
 			add(sourceLineAnnotation);

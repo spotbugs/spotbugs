@@ -49,12 +49,12 @@ public class UnreadFields extends BytecodeScanningDetector implements   Constant
 
   public void visit(JavaClass obj)     {
 	hasNativeMethods = false;
-	if (superclassName.indexOf("$") >= 0
-		|| superclassName.indexOf("+") >= 0) {
+	if (getSuperclassName().indexOf("$") >= 0
+		|| getSuperclassName().indexOf("+") >= 0) {
 		// System.out.println("hicfsc: " + betterClassName);
-		innerClassCannotBeStatic.add(betterClassName);
+		innerClassCannotBeStatic.add(getDottedClassName());
 		// System.out.println("hicfsc: " + betterSuperclassName);
-		innerClassCannotBeStatic.add(betterSuperclassName);
+		innerClassCannotBeStatic.add(getDottedSuperclassName());
 		}
 	super.visit(obj);
 	}
@@ -69,7 +69,7 @@ public class UnreadFields extends BytecodeScanningDetector implements   Constant
         super.visit(obj);
 	int flags = obj.getAccessFlags();
 	if ((flags & doNotConsider) == 0 
-			&& !fieldName.equals("serialVersionUID"))  {
+			&& !getFieldName().equals("serialVersionUID"))  {
 
 		FieldAnnotation f = FieldAnnotation.fromVisitedField(this);
 		myFields.add(f);
@@ -89,10 +89,10 @@ public class UnreadFields extends BytecodeScanningDetector implements   Constant
     public void visit(Code obj) {
 	count_aload_1 = 0;
 	super.visit(obj);
-	if (methodName.equals("<init>") && count_aload_1 > 1 
-			&& (className.indexOf('$') >= 0
-			    || className.indexOf('+') >= 0)) {
-		needsOuterObjectInConstructor.add(betterClassName);
+	if (getMethodName().equals("<init>") && count_aload_1 > 1
+			&& (getClassName().indexOf('$') >= 0
+			    || getClassName().indexOf('+') >= 0)) {
+		needsOuterObjectInConstructor.add(getDottedClassName());
 		// System.out.println(betterClassName + " needs outer object in constructor");
 		}
 	}
@@ -113,18 +113,18 @@ public class UnreadFields extends BytecodeScanningDetector implements   Constant
 		FieldAnnotation f = FieldAnnotation.fromReferencedField(this);
 		if (DEBUG) System.out.println("get: " + f);
 		readFields.add(f);
-		if (classConstant.equals(className) && 
+		if (getClassConstantOperand().equals(getClassName()) &&
 			!myFields.contains(f)) {
-			superReadFields.add(nameConstant);
+			superReadFields.add(getNameConstantOperand());
 			}
 		}
 	else if (seen == PUTFIELD) {
 		FieldAnnotation f = FieldAnnotation.fromReferencedField(this);
 		if (DEBUG) System.out.println("put: " + f);
 		writtenFields.add(f);
-		if (classConstant.equals(className) && 
+		if (getClassConstantOperand().equals(getClassName()) &&
 			!myFields.contains(f)) {
-			superWrittenFields.add(nameConstant);
+			superWrittenFields.add(getNameConstantOperand());
 			}
 		}
 	}

@@ -43,10 +43,10 @@ public class InitializationChain extends BytecodeScanningDetector implements   C
     public void visit(Code obj) {
 	instanceCreated = false;
 	instanceCreatedWarningGiven = false;
-        if (!methodName.equals("<clinit>")) return;
+        if (!getMethodName().equals("<clinit>")) return;
         super.visit(obj);
-	requires.remove(betterClassName);
-	if (betterClassName.equals("java.lang.System")) {
+	requires.remove(getDottedClassName());
+	if (getDottedClassName().equals("java.lang.System")) {
 		requires.add("java.io.FileInputStream");
 		requires.add("java.io.FileOutputStream");
 		requires.add("java.io.BufferedInputStream");
@@ -54,7 +54,7 @@ public class InitializationChain extends BytecodeScanningDetector implements   C
 		requires.add("java.io.PrintStream");
 		}
 	if (!requires.isEmpty()) {
-	  classRequires.put(betterClassName,requires);
+	  classRequires.put(getDottedClassName(),requires);
 	  requires = new TreeSet<String>();
 	  }
     }
@@ -63,13 +63,13 @@ public class InitializationChain extends BytecodeScanningDetector implements   C
     public void sawOpcode(int seen) {
 
 
-        if (seen == PUTSTATIC && classConstant.equals(className))  {
+        if (seen == PUTSTATIC && getClassConstantOperand().equals(getClassName()))  {
 		// Don't do this check; it generates too many false
 		// positives. We need to do a more detailed check
 		// of which variables could be seen.
 		if (false && instanceCreated && !instanceCreatedWarningGiven)  {
-			String okSig = "L" + className + ";";
-			if (!okSig.equals(sigConstant)) {
+			String okSig = "L" + getClassName() + ";";
+			if (!okSig.equals(getSigConstantOperand())) {
 			  bugReporter.reportBug(new BugInstance("SI_INSTANCE_BEFORE_FINALS_ASSIGNED", NORMAL_PRIORITY)
 				.addClassAndMethod(this)
 				.addSourceLine(this, instanceCreatedPC));
@@ -77,14 +77,14 @@ public class InitializationChain extends BytecodeScanningDetector implements   C
 			  }
 			}
 		}
-        else if (seen == NEW && classConstant.equals(className))  {
+        else if (seen == NEW && getClassConstantOperand().equals(getClassName()))  {
 		instanceCreated = true;
-		instanceCreatedPC = PC;
+		instanceCreatedPC = getPC();
 		}
         else if (seen == PUTSTATIC || seen == GETSTATIC || seen == INVOKESTATIC
 			|| seen == NEW)  
-		if (PC + 6 < codeBytes.length) 
-			requires.add(betterClassConstant);
+		if (getPC() + 6 < codeBytes.length)
+			requires.add(getDottedClassConstantOperand());
 	}
 
     public void compute() {

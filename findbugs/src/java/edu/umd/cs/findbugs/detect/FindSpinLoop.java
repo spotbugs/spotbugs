@@ -28,13 +28,14 @@ public class FindSpinLoop extends BytecodeScanningDetector implements   Constant
     int stage = 0;
     int start;
     private BugReporter bugReporter;
+    private FieldAnnotation lastFieldSeen;
 
     public FindSpinLoop(BugReporter bugReporter) {
 	this.bugReporter = bugReporter;
 	}
 
     public void visit(Method obj) {
-	if (DEBUG) System.out.println("Saw " + betterMethodName);
+	if (DEBUG) System.out.println("Saw " + getFullyQualifiedMethodName());
 	stage = 0;
 	}
 
@@ -43,12 +44,13 @@ public class FindSpinLoop extends BytecodeScanningDetector implements   Constant
 	// System.out.println("PC: " + PC + ", stage: " + stage1);
 	switch (seen) {
 		case ALOAD_0: 
-			if (DEBUG) System.out.println("   ALOAD_0 at PC " + PC);
-			start = PC;
+			if (DEBUG) System.out.println("   ALOAD_0 at PC " + getPC());
+			start = getPC();
 			stage  = 1;
 			break;
 		case GETFIELD:
 			if (DEBUG) System.out.println("   getfield in stage " + stage);
+			lastFieldSeen = FieldAnnotation.fromReferencedField(this);
 			if (stage == 1) {
 				stage = 2;
 				}
@@ -59,15 +61,15 @@ public class FindSpinLoop extends BytecodeScanningDetector implements   Constant
 		case IFEQ:
 		case IFNULL:
 		case IFNONNULL:
-			if (DEBUG) System.out.println("   conditional branch in stage " + stage + " to " + branchTarget );
-			if (stage == 2 && branchTarget == start) {
+			if (DEBUG) System.out.println("   conditional branch in stage " + stage + " to " + getBranchTarget() );
+			if (stage == 2 && getBranchTarget() == start) {
 				bugReporter.reportBug(new BugInstance("SP_SPIN_ON_FIELD", NORMAL_PRIORITY)
 					.addClassAndMethod(this)
 					.addSourceLine(this, start)
-					.addReferencedField(this));
+					.addReferencedField(lastFieldSeen));
 				stage = 0;
 				}
-			else if (branchTarget < PC)
+			else if (getBranchTarget() < getPC())
 				stage = 0;
 			break;
 		default:

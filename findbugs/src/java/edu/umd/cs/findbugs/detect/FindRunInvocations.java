@@ -43,9 +43,9 @@ public class FindRunInvocations extends BytecodeScanningDetector implements   Co
 	}
    public void sawOpcode(int seen) {
 	if ((seen == INVOKEVIRTUAL || seen == INVOKEINTERFACE) 
-				&& nameConstant.equals("run")
-				&& sigConstant.equals("()V")
-				&& isThread(betterClassConstant)
+				&& getNameConstantOperand().equals("run")
+				&& getSigConstantOperand().equals("()V")
+				&& isThread(getDottedClassConstantOperand())
 				)
 		bugReporter.reportBug(new BugInstance("RU_INVOKE_RUN", NORMAL_PRIORITY)
 			.addClassAndMethod(this)

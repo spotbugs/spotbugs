@@ -43,18 +43,18 @@ public class FindHEmismatch extends BytecodeScanningDetector implements   Consta
    public void visitAfter(JavaClass obj) {
 	try {
 	if (!obj.isClass()) return;
-	if (betterClassName.equals("java.lang.Object")) return;
+	if (getDottedClassName().equals("java.lang.Object")) return;
 	int accessFlags = obj.getAccessFlags();
 	// if ((accessFlags & ACC_ABSTRACT) != 0) return;
 	if ((accessFlags & ACC_INTERFACE) != 0) return;
-	String whereEqual = betterClassName;
+	String whereEqual = getDottedClassName();
 	if (!hasEqualsObject)  {
 		whereEqual = Lookup.findSuperImplementor(obj, "equals",
 					"(Ljava/lang/Object;)Z", bugReporter)
 			  .getClassName();
 		}
 	boolean usesDefaultEquals = whereEqual.equals("java.lang.Object");
-	String whereHashCode = betterClassName;
+	String whereHashCode = getDottedClassName();
 	if (!hasHashCode)
 		whereHashCode = Lookup.findSuperImplementor(obj, "hashCode",
 					"()I", bugReporter)
@@ -62,9 +62,9 @@ public class FindHEmismatch extends BytecodeScanningDetector implements   Consta
 	boolean usesDefaultHashCode = whereHashCode.equals("java.lang.Object");
 	if (!hasEqualsObject &&  hasEqualsSelf) {
 		if (usesDefaultEquals) 
-		  bugReporter.reportBug(new BugInstance("EQ_SELF_USE_OBJECT", HIGH_PRIORITY).addClass(betterClassName));
+		  bugReporter.reportBug(new BugInstance("EQ_SELF_USE_OBJECT", HIGH_PRIORITY).addClass(getDottedClassName()));
 		else
-		  bugReporter.reportBug(new BugInstance("EQ_SELF_NO_OBJECT", NORMAL_PRIORITY).addClass(betterClassName));
+		  bugReporter.reportBug(new BugInstance("EQ_SELF_NO_OBJECT", NORMAL_PRIORITY).addClass(getDottedClassName()));
 		}
 	/*
 	System.out.println("Class " + betterClassName);
@@ -76,7 +76,7 @@ public class FindHEmismatch extends BytecodeScanningDetector implements   Consta
 
 	if (!hasCompareToObject &&  hasCompareToSelf) {
 		if (!extendsObject)
-		  bugReporter.reportBug(new BugInstance("CO_SELF_NO_OBJECT", NORMAL_PRIORITY).addClass(betterClassName));
+		  bugReporter.reportBug(new BugInstance("CO_SELF_NO_OBJECT", NORMAL_PRIORITY).addClass(getDottedClassName()));
 		}
 
 	// if (!hasFields) return;
@@ -87,18 +87,18 @@ public class FindHEmismatch extends BytecodeScanningDetector implements   Consta
 		System.out.println("extendsObject: " + extendsObject);
 		*/
 		if (usesDefaultEquals) 
-		  bugReporter.reportBug(new BugInstance("HE_HASHCODE_USE_OBJECT_EQUALS", LOW_PRIORITY).addClass(betterClassName));
+		  bugReporter.reportBug(new BugInstance("HE_HASHCODE_USE_OBJECT_EQUALS", LOW_PRIORITY).addClass(getDottedClassName()));
 		else
-		  bugReporter.reportBug(new BugInstance("HE_HASHCODE_NO_EQUALS", LOW_PRIORITY). addClass(betterClassName));
+		  bugReporter.reportBug(new BugInstance("HE_HASHCODE_NO_EQUALS", LOW_PRIORITY). addClass(getDottedClassName()));
 		}
 	if (!hasHashCode && (hasEqualsObject ||  hasEqualsSelf))  {
 		if (usesDefaultHashCode) 
-		  bugReporter.reportBug(new BugInstance("HE_EQUALS_USE_HASHCODE", HIGH_PRIORITY).addClass(betterClassName));
+		  bugReporter.reportBug(new BugInstance("HE_EQUALS_USE_HASHCODE", HIGH_PRIORITY).addClass(getDottedClassName()));
 		else
 		  bugReporter.reportBug(
 		    new BugInstance("HE_EQUALS_NO_HASHCODE", 
 			hasFields ? NORMAL_PRIORITY : LOW_PRIORITY)
-		    .addClass(betterClassName));
+		    .addClass(getDottedClassName()));
 		}
 	} catch (NullPointerException e) {
 		/*
@@ -108,7 +108,7 @@ public class FindHEmismatch extends BytecodeScanningDetector implements   Consta
 		}
 	}
    public void visit(JavaClass obj) {
-	extendsObject = betterSuperclassName.equals("java.lang.Object");
+	extendsObject = getDottedSuperclassName().equals("java.lang.Object");
 	hasFields = false;
 	hasHashCode = false;
 	hasCompareToObject = false;
@@ -147,13 +147,13 @@ public class FindHEmismatch extends BytecodeScanningDetector implements   Consta
 		}
 	else if (name.equals("equals")) {
 		if (sigIsObject) hasEqualsObject = true;
-		else if (sig.equals("(L"+className+";)Z"))
+		else if (sig.equals("(L"+getClassName()+";)Z"))
 				hasEqualsSelf = true;
 		}
 	else if (name.equals("compareTo")) {
 		if (sig.equals("(Ljava/lang/Object;)I")) 
 			hasCompareToObject = true;
-		else if (sig.equals("(L"+className+";)I"))
+		else if (sig.equals("(L"+getClassName()+";)I"))
 				hasCompareToSelf = true;
 		}
 	}

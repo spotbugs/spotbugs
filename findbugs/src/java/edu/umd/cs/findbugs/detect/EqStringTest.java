@@ -57,8 +57,8 @@ public class EqStringTest extends BytecodeScanningDetector implements   Constant
 		// stringOnTop = stringConstant;
 		return;
  	case INVOKEVIRTUAL:
-		if (refConstant.equals("java.lang.String.intern : ()Ljava.lang.String;")
-		 || refConstant.equals("java.lang.String.equals : (Ljava.lang.Object;)Z"))
+		if (getRefConstantOperand().equals("java.lang.String.intern : ()Ljava.lang.String;")
+		 || getRefConstantOperand().equals("java.lang.String.equals : (Ljava.lang.Object;)Z"))
 			callToInternSeen = true;
 		break;
  	case IF_ACMPEQ:
@@ -66,7 +66,7 @@ public class EqStringTest extends BytecodeScanningDetector implements   Constant
 		if (constantOnTOS && !callToInternSeen) 
                   bugReporter.reportBug(new BugInstance("ES_COMPARING_STRINGS_WITH_EQ", NORMAL_PRIORITY)
                         .addClassAndMethod(this)
-                        .addSourceLine(this, PC));
+                        .addSourceLine(this, getPC()));
 		break;
 	default: 
 		break;

@@ -59,16 +59,16 @@ public class WaitInLoop extends BytecodeScanningDetector implements   Constants2
     public void sawOpcode(int seen) {
 
 	if ((seen == INVOKEVIRTUAL || seen == INVOKEINTERFACE)
-		&& nameConstant.equals("notify")
-		&& sigConstant.equals("()V")){
+		&& getNameConstantOperand().equals("notify")
+		&& getSigConstantOperand().equals("()V")){
 		sawNotify = true;
-		notifyPC = PC;
+		notifyPC = getPC();
 		}
 	if (!sawWait && (seen == INVOKEVIRTUAL || seen == INVOKEINTERFACE)
-		&& nameConstant.equals("wait")
-		&& (sigConstant.equals("()V")
-		    || sigConstant.equals("(J)V")
-		    || sigConstant.equals("(JI)V"))
+		&& getNameConstantOperand().equals("wait")
+		&& (getSigConstantOperand().equals("()V")
+		    || getSigConstantOperand().equals("(J)V")
+		    || getSigConstantOperand().equals("(JI)V"))
 		){
 		/*
 		System.out.println("Saw invocation of "
@@ -78,14 +78,14 @@ public class WaitInLoop extends BytecodeScanningDetector implements   Constants2
 		*/
 
 		sawWait = true;
-		waitHasTimeout = !sigConstant.equals("()V");
-		waitAt = PC;
-		earliestJump = PC+1;
+		waitHasTimeout = !getSigConstantOperand().equals("()V");
+		waitAt = getPC();
+		earliestJump = getPC()+1;
 		return;
 		}
 	if (seen >= IFEQ && seen <= GOTO
 		|| seen >= IFNULL && seen <= GOTO_W)  
-		earliestJump = Math.min(earliestJump, branchTarget);
+		earliestJump = Math.min(earliestJump, getBranchTarget());
 
 	}
 

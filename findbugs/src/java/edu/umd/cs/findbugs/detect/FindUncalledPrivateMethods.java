@@ -47,17 +47,17 @@ public class FindUncalledPrivateMethods extends BytecodeScanningDetector {
 	public void visitMethod(Method obj) {
 		super.visitMethod(obj);
 		if (obj.isPrivate() 
-				&& !methodName.equals("writeReplace")
-				&& !methodName.equals("readResolve")
-				&& !methodName.equals("readObject")
-				&& !methodName.equals("readObjectNoData")
-				&& !methodName.equals("writeObject")
-				&& methodName.indexOf("debug") == -1
-				&& methodName.indexOf("Debug") == -1
-				&& methodName.indexOf("trace") == -1
-				&& methodName.indexOf("Trace") == -1
-				&& !methodName.equals("<init>")
-				&& !methodName.equals("<clinit>")
+				&& !getMethodName().equals("writeReplace")
+				&& !getMethodName().equals("readResolve")
+				&& !getMethodName().equals("readObject")
+				&& !getMethodName().equals("readObjectNoData")
+				&& !getMethodName().equals("writeObject")
+				&& getMethodName().indexOf("debug") == -1
+				&& getMethodName().indexOf("Debug") == -1
+				&& getMethodName().indexOf("trace") == -1
+				&& getMethodName().indexOf("Trace") == -1
+				&& !getMethodName().equals("<init>")
+				&& !getMethodName().equals("<clinit>")
 				)
 			definedPrivateMethods.add(MethodAnnotation.fromVisitedMethod(this));
 	}
@@ -67,10 +67,10 @@ public class FindUncalledPrivateMethods extends BytecodeScanningDetector {
 		case INVOKEVIRTUAL:
 		case INVOKESPECIAL:
 		case INVOKESTATIC:
-			if (betterClassConstant.equals(className)) {
-				MethodAnnotation called = new MethodAnnotation(betterClassConstant, nameConstant, sigConstant);
+			if (getDottedClassConstantOperand().equals(className)) {
+				MethodAnnotation called = new MethodAnnotation(getDottedClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand());
 				calledMethods.add(called);
-				calledMethodNames.add(nameConstant.toLowerCase());
+				calledMethodNames.add(getNameConstantOperand().toLowerCase());
 				// System.out.println("Saw call to " + called);
 				
 			}

@@ -147,7 +147,7 @@ public class SerializableIdiom extends PreorderVisitor
 		&& !superClassImplementsSerializable)
 		bugReporter.reportBug(new BugInstance("SE_NO_SUITABLE_CONSTRUCTOR", implementsSerializableDirectly ?
 					HIGH_PRIORITY : NORMAL_PRIORITY)
-			.addClass(thisClass.getClassName()));
+			.addClass(getThisClass().getClassName()));
 
 	// Is this a GUI class?
 	try {
@@ -165,7 +165,7 @@ public class SerializableIdiom extends PreorderVisitor
 
 	public void visitAfter(JavaClass obj) {
 	if (false) {
-	System.out.println(betterClassName);
+	System.out.println(getDottedClassName());
 	System.out.println("  hasPublicVoidConstructor: " + hasPublicVoidConstructor);
 	System.out.println("  superClassHasVoidConstructor: " + superClassHasVoidConstructor);
 	System.out.println("  isExternalizable: " + isExternalizable);
@@ -181,7 +181,7 @@ public class SerializableIdiom extends PreorderVisitor
 		bugReporter.reportBug(new BugInstance("SE_NO_SUITABLE_CONSTRUCTOR_FOR_EXTERNALIZATION", 
 					directlyImplementsExternalizable ?
 					HIGH_PRIORITY : NORMAL_PRIORITY)
-			.addClass(thisClass.getClassName()));
+			.addClass(getThisClass().getClassName()));
 	if (foundSynthetic  && !isExternalizable
 		&& isSerializable && !isAbstract && !sawSerialVersionUID)
 		bugReporter.reportBug(new BugInstance("SE_NO_SERIALVERSIONID", priority).addClass(this));
@@ -193,29 +193,29 @@ public class SerializableIdiom extends PreorderVisitor
     public void visit(Method obj) {
 	int accessFlags = obj.getAccessFlags();
         boolean isSynchronized = (accessFlags & ACC_SYNCHRONIZED) != 0;
-	if (methodName.equals("<init>") && methodSig.equals("()V")
+	if (getMethodName().equals("<init>") && getMethodSig().equals("()V")
 			&& (accessFlags & ACC_PUBLIC) != 0
 			) 
 		hasPublicVoidConstructor = true;
-	if (!methodName.equals("<init>") 
+	if (!getMethodName().equals("<init>")
 		&& isSynthetic(obj)) foundSynthetic = true;
 	// System.out.println(methodName + isSynchronized);
 
-	if (methodName.equals("readExternal"))
+	if (getMethodName().equals("readExternal"))
 		sawReadExternal = true;
-	else if (methodName.equals("writeExternal"))
+	else if (getMethodName().equals("writeExternal"))
 		sawWriteExternal = true;
-	else if (methodName.equals("readObject"))
+	else if (getMethodName().equals("readObject"))
 		sawReadObject = true;
-	else if (methodName.equals("writeObject"))
+	else if (getMethodName().equals("writeObject"))
 		sawWriteObject = true;
 
 	if (!isSynchronized) return;
-	if (methodName.equals("readObject") &&
-		methodSig.equals("(Ljava/io/ObjectInputStream;)V") &&
+	if (getMethodName().equals("readObject") &&
+		getMethodSig().equals("(Ljava/io/ObjectInputStream;)V") &&
 		isSerializable) 
 		bugReporter.reportBug(new BugInstance("RS_READOBJECT_SYNC", NORMAL_PRIORITY).addClass(this));
-	else if (methodName.equals("writeObject")) 
+	else if (getMethodName().equals("writeObject"))
 		writeObjectIsSynchronized = true;
 	else foundSynchronizedMethods = true;
 
@@ -232,12 +232,12 @@ public class SerializableIdiom extends PreorderVisitor
     public void visit(Field obj) {
 	int flags = obj.getAccessFlags();
 
-	if (className.indexOf("ObjectStreamClass") == -1
+	if (getClassName().indexOf("ObjectStreamClass") == -1
 	    && isSerializable 
 		&& !isExternalizable
-		&& fieldSig.indexOf("L")  >= 0 && !obj.isTransient() && !obj.isStatic()) {
+		&& getFieldSig().indexOf("L")  >= 0 && !obj.isTransient() && !obj.isStatic()) {
 		try {
-			String fieldClassName = fieldSig.substring(fieldSig.indexOf("L")+1, fieldSig.length() - 1).replace('/', '.');
+			String fieldClassName = getFieldSig().substring(getFieldSig().indexOf("L")+1, getFieldSig().length() - 1).replace('/', '.');
 			JavaClass fieldClass = Repository.lookupClass(fieldClassName);
 
 			if (!fieldClassName.equals("java.lang.Object") &&
@@ -267,22 +267,22 @@ public class SerializableIdiom extends PreorderVisitor
 				    }
 				// Report is queued until after the entire class has been seen.
 				fieldWarningList.add(new BugInstance("SE_BAD_FIELD", priority)
-					.addClass(thisClass.getClassName())
-					.addField(fieldClassName, obj.getName(), fieldSig, false));
+					.addClass(getThisClass().getClassName())
+					.addField(fieldClassName, obj.getName(), getFieldSig(), false));
 			}
 		} catch (ClassNotFoundException e) {
 			bugReporter.reportMissingClass(e);
 		}
 	}
 
-	if (!fieldName.startsWith("this") 
+	if (!getFieldName().startsWith("this")
 		&& isSynthetic(obj)) foundSynthetic = true;
-	if (!fieldName.equals("serialVersionUID")) return;
+	if (!getFieldName().equals("serialVersionUID")) return;
 	int mask = ACC_STATIC | ACC_FINAL;
-	if ( !fieldSig.equals("I")
-			 && !fieldSig.equals("J")) return;
+	if ( !getFieldSig().equals("I")
+			 && !getFieldSig().equals("J")) return;
 	if ((flags & mask) == mask 
-		&& fieldSig.equals("I")) {
+		&& getFieldSig().equals("I")) {
 		bugReporter.reportBug(new BugInstance("SE_NONLONG_SERIALVERSIONID", LOW_PRIORITY)
 			.addClass(this)
 			.addVisitedField(this));

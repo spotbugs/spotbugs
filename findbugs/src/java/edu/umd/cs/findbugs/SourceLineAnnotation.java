@@ -26,6 +26,7 @@ import org.dom4j.Element;
 import org.dom4j.Branch;
 import edu.umd.cs.findbugs.visitclass.BetterVisitor;
 import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
+import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
 /**
  * A BugAnnotation that records a range of source lines
@@ -94,9 +95,9 @@ public class SourceLineAnnotation implements BugAnnotation {
 	 * @param visitor a BetterVisitor which is visiting the method
 	 * @return the SourceLineAnnotation
 	 */
-	public static SourceLineAnnotation fromVisitedMethod(BetterVisitor visitor) {
+	public static SourceLineAnnotation fromVisitedMethod(PreorderVisitor visitor) {
 		LineNumberTable lineNumberTable = getLineNumberTable(visitor);
-		String className = visitor.getBetterClassName();
+		String className = visitor.getDottedClassName();
 		String sourceFile = visitor.getSourceFile();
 		Code code = visitor.getMethod().getCode();
 		int codeSize = (code != null) ? code.getCode().length : 0;
@@ -142,7 +143,7 @@ public class SourceLineAnnotation implements BugAnnotation {
 	 * @return the SourceLineAnnotation, or null if we do not have line number information
 	 *   for the instruction
 	 */
-	public static SourceLineAnnotation fromVisitedInstruction(BetterVisitor visitor, int pc) {
+	public static SourceLineAnnotation fromVisitedInstruction(PreorderVisitor visitor, int pc) {
 		return fromVisitedInstructionRange(visitor, pc, pc);
 	}
 
@@ -156,9 +157,9 @@ public class SourceLineAnnotation implements BugAnnotation {
 	 * @return the SourceLineAnnotation, or null if we do not have line number information
 	 *   for the instruction
 	 */
-	public static SourceLineAnnotation fromVisitedInstructionRange(BetterVisitor visitor, int startPC, int endPC) {
+	public static SourceLineAnnotation fromVisitedInstructionRange(PreorderVisitor visitor, int startPC, int endPC) {
 		LineNumberTable lineNumberTable = getLineNumberTable(visitor);
-		String className = visitor.getBetterClassName();
+		String className = visitor.getDottedClassName();
 		String sourceFile = visitor.getSourceFile();
 
 		if (lineNumberTable == null)
@@ -220,7 +221,7 @@ public class SourceLineAnnotation implements BugAnnotation {
 		return new SourceLineAnnotation(className, sourceFile, startLine, endLine, start.getPosition(), end.getPosition());
 	}
 
-	private static LineNumberTable getLineNumberTable(BetterVisitor visitor) {
+	private static LineNumberTable getLineNumberTable(PreorderVisitor visitor) {
 		Code code = visitor.getMethod().getCode();
 		if (code == null)
 			return null;

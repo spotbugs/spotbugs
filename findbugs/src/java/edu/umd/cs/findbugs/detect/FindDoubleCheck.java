@@ -55,7 +55,7 @@ public class FindDoubleCheck extends BytecodeScanningDetector implements   Const
 		FieldAnnotation f = FieldAnnotation.fromReferencedField(this);
 		if (!sawMonitorEnter) {
 			fields.add(f);
-			startPC = PC;
+			startPC = getPC();
 			}
 		else if(fields.contains(f))
 			twice.add(f);
@@ -74,7 +74,7 @@ public class FindDoubleCheck extends BytecodeScanningDetector implements   Const
 		break;
 	 case 2:
 		if (seen == IFNULL || seen == IFNONNULL) {
-			endPC = PC;
+			endPC = getPC();
 			stage++;
 			}
 		else { 
@@ -85,7 +85,7 @@ public class FindDoubleCheck extends BytecodeScanningDetector implements   Const
 	 case 3:
 		if (seen == PUTFIELD || seen == PUTSTATIC) {
 			FieldAnnotation f = FieldAnnotation.fromReferencedField(this);
-			if (fields.contains(f) && !nameConstant.startsWith("class$")) {
+			if (fields.contains(f) && !getNameConstantOperand().startsWith("class$")) {
 				bugReporter.reportBug(new BugInstance("DC_DOUBLECHECK", NORMAL_PRIORITY)
 					.addClassAndMethod(this)
 					.addField(f).describe("FIELD_ON")

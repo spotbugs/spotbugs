@@ -67,11 +67,11 @@ public class FindNakedNotify extends BytecodeScanningDetector implements   Const
 			break;
 		case 2:
 			if (seen == INVOKEVIRTUAL 
-				&& (nameConstant.equals("notify")
-				   || nameConstant.equals("notifyAll"))
-				&& sigConstant.equals("()V")) {
+				&& (getNameConstantOperand().equals("notify")
+				   || getNameConstantOperand().equals("notifyAll"))
+				&& getSigConstantOperand().equals("()V")) {
 			  stage = 3;
-			  notifyPC = PC;
+			  notifyPC = getPC();
 			  }
 			else stage = 0;
 			break;

@@ -47,11 +47,13 @@ public class SwitchFallthrough extends BytecodeScanningDetector implements   Con
                 }
 
     public void sawOpcode(int seen) {
+	int[] switchOffsets = getSwitchOffsets();
+	int[] switchLabels = getSwitchLabels();
 
 	switch (seen) {
 		case TABLESWITCH:
 		case LOOKUPSWITCH:
-		switchPC = PC;
+		switchPC = getPC();
 		inSwitch = true;
 		reachable = false;
 		nextIndex = 0;
@@ -61,12 +63,12 @@ public class SwitchFallthrough extends BytecodeScanningDetector implements   Con
 	if (inSwitch && nextIndex >= switchOffsets.length) 
 		inSwitch = false;
 	if (inSwitch) {
-	  if (PC == switchPC + switchOffsets[nextIndex]
-		&& switchOffsets[nextIndex] != defaultSwitchOffset
+	  if (getPC() == switchPC + switchOffsets[nextIndex]
+		&& switchOffsets[nextIndex] != getDefaultSwitchOffset()
 		) {
 		if ( nextIndex>0 && reachable) {
-		    int endOfPreviousCase = lineNumbers.getSourceLine(PC-1);
-		    int startOfNextCase = lineNumbers.getSourceLine(PC);
+		    int endOfPreviousCase = lineNumbers.getSourceLine(getPC()-1);
+		    int startOfNextCase = lineNumbers.getSourceLine(getPC());
 		    int previousLabel = switchLabels[nextIndex-1];
 		    int nextLabel = switchLabels[nextIndex];
 		  if (!(previousLabel == 10 && nextLabel == 13)
@@ -74,7 +76,7 @@ public class SwitchFallthrough extends BytecodeScanningDetector implements   Con
 		       && startOfNextCase - endOfPreviousCase <= 2) {
 		  System.out.println("Reached the switch for " + switchLabels[nextIndex]
 				+ " at line number " +  startOfNextCase 
-				+ " in " + betterMethodName);
+				+ " in " + getFullyQualifiedMethodName());
 		    }
 		 /*
 		  System.out.println("switchPC: " + switchPC);
@@ -91,7 +93,7 @@ public class SwitchFallthrough extends BytecodeScanningDetector implements   Con
 				inSwitch = false;
 				break;
 				}
-		} while (PC == switchPC + switchOffsets[nextIndex]);
+		} while (getPC() == switchPC + switchOffsets[nextIndex]);
 		}
 	}
 

@@ -58,19 +58,19 @@ public class MutableLock extends BytecodeScanningDetector implements   Constants
 		setFields.clear();
 		break;
 	case PUTFIELD:
-		if (classConstant.equals(className))
-			setFields.add(nameConstant);
+		if (getClassConstantOperand().equals(getClassName()))
+			setFields.add(getNameConstantOperand());
 		break;
 	case GETFIELD: 
-		if (thisOnTOS && classConstant.equals(className)
-			&& setFields.contains(nameConstant)
-			&& asUnsignedByte(codeBytes[PC+3]) == DUP
-			&& asUnsignedByte(codeBytes[PC+5]) == MONITORENTER
+		if (thisOnTOS && getClassConstantOperand().equals(getClassName())
+			&& setFields.contains(getNameConstantOperand())
+			&& asUnsignedByte(codeBytes[getPC()+3]) == DUP
+			&& asUnsignedByte(codeBytes[getPC()+5]) == MONITORENTER
 			) 
 		  bugReporter.reportBug(new BugInstance("ML_SYNC_ON_UPDATED_FIELD", NORMAL_PRIORITY)
 			.addClassAndMethod(this)
 			.addReferencedField(this)
-			.addSourceLine(this, PC + 5));
+			.addSourceLine(this, getPC() + 5));
 		break;
 	default: 
 	}

@@ -88,18 +88,18 @@ public class FindReturnRef extends BytecodeScanningDetector implements   Constan
 	*/
 
 	if (staticMethod && dangerousToStoreIntoField && seen == PUTSTATIC 
-			&& MutableStaticFields.mutableSignature(sigConstant) ) {
+			&& MutableStaticFields.mutableSignature(getSigConstantOperand()) ) {
 			bugReporter.reportBug(new BugInstance("EI_EXPOSE_REP2", HIGH_PRIORITY)
 				.addClassAndMethod(this)
-				.addField(betterClassConstant, nameConstant, betterSigConstant, 
+				.addField(getClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand(),
 						true)
 				.addSourceLine(this));
 		}
 	if (!staticMethod && dangerousToStoreIntoField && seen == PUTFIELD 
-			&& MutableStaticFields.mutableSignature(sigConstant) ) {
+			&& MutableStaticFields.mutableSignature(getSigConstantOperand()) ) {
 		bugReporter.reportBug(new BugInstance("EI_EXPOSE_REP2", NORMAL_PRIORITY)
 			.addClassAndMethod(this)
-			.addField(betterClassConstant, nameConstant, betterSigConstant, 
+			.addField(getClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand(),
 					true)
 			.addSourceLine(this));
 		/*
@@ -115,14 +115,14 @@ public class FindReturnRef extends BytecodeScanningDetector implements   Constan
 	`	*/
 		}
 	dangerousToStoreIntoField = false;
-	int reg = -1; // this value should never bee seen
+	int reg = -1; // this value should never be seen
 	checkStore: {
 		switch(seen) {
 			case ALOAD_0: reg = 0; break;
 			case ALOAD_1: reg = 1; break;
 			case ALOAD_2: reg = 2; break;
 			case ALOAD_3: reg = 3; break;
-			case ALOAD: reg = register; break;
+			case ALOAD: reg = getRegisterOperand(); break;
 			default: break checkStore;
 			}
 		if (reg < parameterCount)
@@ -164,22 +164,22 @@ public class FindReturnRef extends BytecodeScanningDetector implements   Constan
 		}
 			
 
-	if (thisOnTOS && seen == GETFIELD && classConstant.equals(className))  {
+	if (thisOnTOS && seen == GETFIELD && getClassConstantOperand().equals(getClassName()))  {
 		fieldOnTOS = true;
 		thisOnTOS = false;
-		nameOnStack = nameConstant;
-		classNameOnStack = betterClassConstant;
-		sigOnStack = sigConstant;
+		nameOnStack = getNameConstantOperand();
+		classNameOnStack = getDottedClassConstantOperand();
+		sigOnStack = getSigConstantOperand();
 		fieldIsStatic = false;
 		 // System.out.println("Saw getfield");
 		return;
 		}
-	if (seen == GETSTATIC && classConstant.equals(className))  {
+	if (seen == GETSTATIC && getClassConstantOperand().equals(getClassName()))  {
 		fieldOnTOS = true;
 		thisOnTOS = false;
-		nameOnStack = nameConstant;
-		classNameOnStack = betterClassConstant;
-		sigOnStack = sigConstant;
+		nameOnStack = getNameConstantOperand();
+		classNameOnStack = getDottedClassConstantOperand();
+		sigOnStack = getSigConstantOperand();
 		fieldIsStatic = true;
 		return;
 		}

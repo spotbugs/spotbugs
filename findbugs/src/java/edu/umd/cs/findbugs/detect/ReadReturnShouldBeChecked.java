@@ -33,6 +33,7 @@ public class ReadReturnShouldBeChecked extends BytecodeScanningDetector implemen
    int sawAvailable = 0;
    private BugReporter bugReporter;
    private int readPC;
+   private String lastCallClass = null, lastCallMethod = null, lastCallSig = null;
 
    public ReadReturnShouldBeChecked(BugReporter bugReporter) {
 	this.bugReporter = bugReporter;
@@ -46,26 +47,32 @@ public class ReadReturnShouldBeChecked extends BytecodeScanningDetector implemen
 
     public void sawOpcode(int seen) {
 
+	if (seen == INVOKEVIRTUAL || seen == INVOKEINTERFACE) {
+	    lastCallClass = getDottedClassConstantOperand();
+	    lastCallMethod = getNameConstantOperand();
+	    lastCallSig = getDottedSigConstantOperand();
+	}
+
 	if ((seen == INVOKEVIRTUAL || seen == INVOKEINTERFACE)
-		&& nameConstant.equals("available")
-		&& sigConstant.equals("()I")
+		&& getNameConstantOperand().equals("available")
+		&& getSigConstantOperand().equals("()I")
 	    || (seen == INVOKEVIRTUAL || seen == INVOKEINTERFACE)
-		&& nameConstant.startsWith("get")
-		&& nameConstant.endsWith("Length")
-		&& sigConstant.equals("()I")
+		&& getNameConstantOperand().startsWith("get")
+		&& getNameConstantOperand().endsWith("Length")
+		&& getSigConstantOperand().equals("()I")
 	    || (seen == INVOKEVIRTUAL || seen == INVOKEINTERFACE)
-		&& classConstant.equals("java/io/File")
-		&& nameConstant.equals("length")
-		&& sigConstant.equals("()J"))   {
+		&& getClassConstantOperand().equals("java/io/File")
+		&& getNameConstantOperand().equals("length")
+		&& getSigConstantOperand().equals("()J"))   {
 		sawAvailable = 70;
 		return;
 		}
 	sawAvailable--;
 	if ((seen == INVOKEVIRTUAL || seen == INVOKEINTERFACE)
-		&& !classConstant.equals("ByteArrayInputStream")
-		&& nameConstant.equals("read")
-		&& (sigConstant.startsWith("([B")
-		   || sigConstant.startsWith("([C"))
+		&& !getClassConstantOperand().equals("ByteArrayInputStream")
+		&& getNameConstantOperand().equals("read")
+		&& (getSigConstantOperand().startsWith("([B")
+		   || getSigConstantOperand().startsWith("([C"))
 		&& sawAvailable <= 0)   {
 		/*
 		System.out.println("Saw invocation of "
@@ -75,13 +82,13 @@ public class ReadReturnShouldBeChecked extends BytecodeScanningDetector implemen
 		*/
 
 		sawRead = true;
-		readPC = PC;
+		readPC = getPC();
 		return;
 		}
 	if (seen == POP && sawRead)  {
 		bugReporter.reportBug(new BugInstance("RR_NOT_CHECKED", NORMAL_PRIORITY)
 			.addClassAndMethod(this)
-			.addCalledMethod(this)
+			.addCalledMethod(lastCallClass, lastCallMethod, lastCallSig)
 			.addSourceLine(this, readPC));
 		}
 	sawRead = false;

@@ -65,33 +65,33 @@ public class MutableStaticFields extends BytecodeScanningDetector implements   C
 	super.visit(obj);
 	int flags = obj.getAccessFlags();
 	publicClass = (flags & ACC_PUBLIC) != 0 
-				&& !betterClassName.startsWith("sun.");
+				&& !getDottedClassName().startsWith("sun.");
 	if ((flags & ACC_INTERFACE) != 0)
-		interfaces.add(betterClassName);
+		interfaces.add(getDottedClassName());
 
-	packageName = extractPackage(className);
+	packageName = extractPackage(getClassName());
 	}
     public void visit(Method obj) {
 	zeroOnTOS = false;
 	// System.out.println(methodName);
-	inStaticInitializer = methodName.equals("<clinit>");
+	inStaticInitializer = getMethodName().equals("<clinit>");
 	}
     public void sawOpcode(int seen) {
 	// System.out.println("saw	"	+ OPCODE_NAMES[seen] + "	" + zeroOnTOS);
 	switch (seen) {
 		case GETSTATIC:
 		case PUTSTATIC:
-			String packageConstant = extractPackage(classConstant);
+			String packageConstant = extractPackage(getClassConstantOperand());
 			boolean samePackage =
-			   packageName.equals(extractPackage(classConstant));
+			   packageName.equals(extractPackage(getClassConstantOperand()));
 			boolean initOnly =
 			   seen == GETSTATIC ||
-			   className.equals(classConstant)
+			   getClassName().equals(getClassConstantOperand())
 			   && inStaticInitializer;
 			boolean safeValue =
 			   seen == GETSTATIC || emptyArrayOnTOS
-				|| !mutableSignature(sigConstant);
-			String name = (classConstant + "." + nameConstant)
+				|| !mutableSignature(getSigConstantOperand());
+			String name = (getClassConstantOperand() + "." + getNameConstantOperand())
                                         .replace('/','.');
 			/*
 			System.out.println("In " + betterClassName
@@ -136,15 +136,15 @@ public class MutableStaticFields extends BytecodeScanningDetector implements   C
 	boolean isProtected = publicClass && (flags & ACC_PROTECTED) != 0;
 	if (!isPublic && !isProtected) return;
 
-	boolean isHashtable = fieldSig.equals("Ljava/util/Hashtable;");
-	boolean isArray = fieldSig.charAt(0) == '[';
+	boolean isHashtable = getFieldSig().equals("Ljava/util/Hashtable;");
+	boolean isArray = getFieldSig().charAt(0) == '[';
 
 	if (isFinal && !(isHashtable || isArray)) return;
 
 	FieldRecord f = new FieldRecord();
-	f.className = betterClassName;
-	f.name = fieldName;
-	f.signature = betterFieldSig;
+	f.className = getDottedClassName();
+	f.name = getFieldName();
+	f.signature = getDottedFieldSig();
 	f.isPublic = isPublic;
 	f.isFinal = isFinal;
 

@@ -37,7 +37,7 @@ public class PreferZeroLengthArrays extends BytecodeScanningDetector implements 
   }
 
    public void visit(Code obj) {
-	String returnType = methodSig.substring(methodSig.indexOf(")")+1);
+	String returnType = getMethodSig().substring(getMethodSig().indexOf(")")+1);
 	if (returnType.startsWith("[")) {
 		nullOnTOS = false;
 		super.visit(obj);
@@ -55,7 +55,7 @@ public class PreferZeroLengthArrays extends BytecodeScanningDetector implements 
 		if (nullOnTOS) 
                   bugReporter.reportBug(new BugInstance("PZLA_PREFER_ZERO_LENGTH_ARRAYS", LOW_PRIORITY)
                         .addClassAndMethod(this)
-                        .addSourceLine(this, PC));
+                        .addSourceLine(this, getPC()));
 		break;
 	}
 	nullOnTOS = false;

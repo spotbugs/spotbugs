@@ -32,8 +32,8 @@ public class IteratorIdioms extends BytecodeScanningDetector implements   Consta
 
    boolean sawNoSuchElement;
    public void visit(Code obj) {
-		if (methodName.equals("next")
-			&& methodSig.equals("()Ljava/lang/Object;")) {
+		if (getMethodName().equals("next")
+			&& getMethodSig().equals("()Ljava/lang/Object;")) {
 		sawNoSuchElement = false;
 		super.visit(obj);
 		if (!sawNoSuchElement) 
@@ -45,13 +45,13 @@ public class IteratorIdioms extends BytecodeScanningDetector implements   Consta
 
    public void sawOpcode(int seen) {
 	if (seen == NEW 
-		&& classConstant.equals("java/util/NoSuchElementException"))
+		&& getClassConstantOperand().equals("java/util/NoSuchElementException"))
 		sawNoSuchElement = true;
 	else  if ( seen == INVOKESPECIAL 
 		   || seen == INVOKEVIRTUAL 
 		   || seen == INVOKEINTERFACE) {
 		// System.out.println("Saw call to " + nameConstant);
-        	if ( nameConstant.indexOf("next") >= 0)
+        	if ( getNameConstantOperand().indexOf("next") >= 0)
 			sawNoSuchElement = true;
 		}
 	}

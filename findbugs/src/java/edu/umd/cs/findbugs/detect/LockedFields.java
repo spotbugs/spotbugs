@@ -76,7 +76,7 @@ public class LockedFields extends BytecodeScanningDetector implements   Constant
 	*/
 	for(Iterator<FieldAnnotation> i = fields.iterator(); i.hasNext(); ) {
 		FieldAnnotation f = i.next();
-		if (f.getClassName().equals(betterClassName) && mode <= WRITTEN_LOCKED) 
+		if (f.getClassName().equals(getDottedClassName()) && mode <= WRITTEN_LOCKED)
 			localLocks.add(f);
 		int  [] theseStats = (int []) stats.get(f); 
 		if (theseStats == null) {
@@ -85,7 +85,7 @@ public class LockedFields extends BytecodeScanningDetector implements   Constant
 			}
 		if (DEBUG) System.out.println(names[mode]
 				+ "	" 
-				+ betterMethodName
+				+ getFullyQualifiedMethodName()
 				+ "	" 
 				+ f.toString());
 		
@@ -122,12 +122,12 @@ public class LockedFields extends BytecodeScanningDetector implements   Constant
 	else state = 0;
 	fieldsWritten.clear();
 	fieldsRead.clear();
-        inConstructor = methodName.equals("<init>")
-        		||  methodName.equals("<clinit>")
-        		||  methodName.equals("readObject")
-        		||  methodName.equals("clone")
-        		||  methodName.equals("close")
-        		||  methodName.equals("finalize");
+        inConstructor = getMethodName().equals("<init>")
+        		||  getMethodName().equals("<clinit>")
+        		||  getMethodName().equals("readObject")
+        		||  getMethodName().equals("clone")
+        		||  getMethodName().equals("close")
+        		||  getMethodName().equals("finalize");
 	/*
         privateMethod = (flags & ACC_PRIVATE) != 0
         		|| methodName.startsWith("access$");
@@ -192,13 +192,13 @@ public class LockedFields extends BytecodeScanningDetector implements   Constant
 		{
 		 FieldAnnotation f = FieldAnnotation.fromReferencedField(this);
 		 writtenOutsideOfConstructor.add(f);
-		 if (!className.equals(classConstant)) break;
+		 if (!getClassName().equals(getClassConstantOperand())) break;
 		 // System.out.println("putfield	" + f + ", state = " + state);
 		 fieldsWritten.add(f);
 		}
 		break;
 	case GETFIELD:
-		int next = codeBytes[PC+3] & 0xff;
+		int next = codeBytes[getPC()+3] & 0xff;
 		if (!thisOnTopOfStack) break;
 		if (next != IFNULL &&  next != IFNONNULL) {
 		   FieldAnnotation f = FieldAnnotation.fromReferencedField(this);

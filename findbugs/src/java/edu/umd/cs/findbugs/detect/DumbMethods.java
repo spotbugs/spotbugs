@@ -52,60 +52,60 @@ public class DumbMethods extends BytecodeScanningDetector implements   Constants
 
    public void sawOpcode(int seen) {
 	if ((seen == INVOKESPECIAL)
-				&& classConstant.equals("java/lang/String")
-				&& nameConstant.equals("<init>")
-				&& sigConstant.equals("(Ljava/lang/String;)V"))
-		if (alreadyReported.add(refConstant))
+				&& getClassConstantOperand().equals("java/lang/String")
+				&& getNameConstantOperand().equals("<init>")
+				&& getSigConstantOperand().equals("(Ljava/lang/String;)V"))
+		if (alreadyReported.add(getRefConstantOperand()))
 			bugReporter.reportBug(new BugInstance("DM_STRING_CTOR", NORMAL_PRIORITY)
 				.addClassAndMethod(this)
 				.addSourceLine(this));
 	if ((seen == INVOKESPECIAL)
-				&& classConstant.equals("java/lang/String")
-				&& nameConstant.equals("<init>")
-				&& sigConstant.equals("()V"))
-		if (alreadyReported.add(refConstant))
+				&& getClassConstantOperand().equals("java/lang/String")
+				&& getNameConstantOperand().equals("<init>")
+				&& getSigConstantOperand().equals("()V"))
+		if (alreadyReported.add(getRefConstantOperand()))
 			bugReporter.reportBug(new BugInstance("DM_STRING_VOID_CTOR", NORMAL_PRIORITY)
 				.addClassAndMethod(this)
 				.addSourceLine(this));
 	if (((seen == INVOKESTATIC
-				&& classConstant.equals("java/lang/System"))
+				&& getClassConstantOperand().equals("java/lang/System"))
 	    || (seen == INVOKEVIRTUAL
-				&& classConstant.equals("java/lang/Runtime")))
-				&& nameConstant.equals("gc")
-				&& sigConstant.equals("()V")
-				&& !betterClassName.startsWith("java.lang"))
-		if (alreadyReported.add(refConstant)) {
+				&& getClassConstantOperand().equals("java/lang/Runtime")))
+				&& getNameConstantOperand().equals("gc")
+				&& getSigConstantOperand().equals("()V")
+				&& !getDottedClassName().startsWith("java.lang"))
+		if (alreadyReported.add(getRefConstantOperand())) {
 			// Just save this report in a field; it will be flushed
 			// IFF there were no calls to System.currentTimeMillis();
 			// in the method.
 			gcInvocationBugReport = new BugInstance("DM_GC", HIGH_PRIORITY)
 				.addClassAndMethod(this)
 				.addSourceLine(this);
-			gcInvocationPC = PC;
+			gcInvocationPC = getPC();
 			//System.out.println("GC invocation at pc " + PC);
 			}
 	if ((seen == INVOKESPECIAL)
-				&& classConstant.equals("java/lang/Boolean")
-				&& nameConstant.equals("<init>")
-				&& !className.equals("java/lang/Boolean")
+				&& getClassConstantOperand().equals("java/lang/Boolean")
+				&& getNameConstantOperand().equals("<init>")
+				&& !getClassName().equals("java/lang/Boolean")
 				)
-		if (alreadyReported.add(refConstant))
+		if (alreadyReported.add(getRefConstantOperand()))
 			bugReporter.reportBug(new BugInstance("DM_BOOLEAN_CTOR", NORMAL_PRIORITY)
 				.addClassAndMethod(this)
 				.addSourceLine(this));
 	if ((seen == INVOKESTATIC)
-				&& classConstant.equals("java/lang/System")
-				&& nameConstant.equals("currentTimeMillis"))
+				&& getClassConstantOperand().equals("java/lang/System")
+				&& getNameConstantOperand().equals("currentTimeMillis"))
 			sawCurrentTimeMillis = true;
 	if ((seen == INVOKEVIRTUAL)
 				&& sawLDCEmptyString
-				&& nameConstant.equals("equals"))
+				&& getNameConstantOperand().equals("equals"))
 		bugReporter.reportBug(new BugInstance("DM_STRING_EMPTY_EQUALS", LOW_PRIORITY)
 				.addClassAndMethod(this)
 				.addSourceLine(this));
 	if ((seen == LDC)
-				&& (constantRef instanceof ConstantString)
-				&& (stringConstant.length() == 0))
+				&& (getConstantRefOperand() instanceof ConstantString)
+				&& (getStringConstantOperand().length() == 0))
 		sawLDCEmptyString = true;
 	else
 		sawLDCEmptyString = false;
@@ -133,7 +133,7 @@ public class DumbMethods extends BytecodeScanningDetector implements   Constants
 				continue;
 			int catchTypeIndex = handler.getCatchType();
 			if (catchTypeIndex > 0) {
-				ConstantPool cp = thisClass.getConstantPool();
+				ConstantPool cp = getThisClass().getConstantPool();
 				Constant constant = cp.getConstant(catchTypeIndex);
 				if (constant instanceof ConstantClass) {
 					String exClassName = (String) ((ConstantClass) constant).getConstantValue(cp);
