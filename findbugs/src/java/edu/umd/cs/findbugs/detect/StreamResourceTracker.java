@@ -75,16 +75,15 @@ public class StreamResourceTracker implements ResourceTracker<Stream> {
 	/** Set of all (potential) stream escapes. */
 	private TreeSet<StreamEscape> streamEscapeSet;
 
-//	FIXME: this isn't quite ready yet
-//	/**
-//	 * Map of individual streams to equivalence classes.
-//	 * Any time a stream "A" is wrapped with a stream "B",
-//	 * "A" and "B" belong to the same equivalence class.
-//	 * If any stream in an equivalence class is closed,
-//	 * then we consider all of the streams in the equivalence
-//	 * class as having been closed.
-//	 */
-//	private Map<Stream, Set<Stream>> streamEquivalenceMap;
+	/**
+	 * Map of individual streams to equivalence classes.
+	 * Any time a stream "A" is wrapped with a stream "B",
+	 * "A" and "B" belong to the same equivalence class.
+	 * If any stream in an equivalence class is closed,
+	 * then we consider all of the streams in the equivalence
+	 * class as having been closed.
+	 */
+	private Map<Stream, StreamEquivalenceClass> streamEquivalenceMap;
 
 	/**
 	 * Constructor.
@@ -100,8 +99,7 @@ public class StreamResourceTracker implements ResourceTracker<Stream> {
 		this.streamOpenLocationMap = new HashMap<Location, Stream>();
 		this.uninterestingStreamEscapeSet = new HashSet<Stream>();
 		this.streamEscapeSet = new TreeSet<StreamEscape>();
-//		FIXME: not ready yet
-//		this.streamEquivalenceMap = new HashMap<Stream, Set<Stream>>();
+		this.streamEquivalenceMap = new HashMap<Stream, StreamEquivalenceClass>();
 	}
 
 	/**
@@ -141,9 +139,19 @@ public class StreamResourceTracker implements ResourceTracker<Stream> {
 			}
 		}
 
+		// Build initial stream equivalence classes.
+		// Each stream starts out in its own separate
+		// equivalence class.
+		for (Iterator<Stream> i = resourceCollection.resourceIterator(); i.hasNext(); ) {
+			Stream stream = i.next();
+			StreamEquivalenceClass equivalenceClass = new StreamEquivalenceClass();
+			equivalenceClass.addMember(stream);
+			streamEquivalenceMap.put(stream, equivalenceClass);
+		}
+
 		// Starting with the set of uninteresting stream open location points,
 		// propagate all uninteresting stream escapes.  Iterate until there
-		// is no change.
+		// is no change.  This also builds the map of stream equivalence classes.
 		HashSet<Stream> orig = new HashSet<Stream>();
 		do {
 			orig.clear();
@@ -158,6 +166,17 @@ public class StreamResourceTracker implements ResourceTracker<Stream> {
 					if (target == null)
 						throw new IllegalStateException();
 					uninterestingStreamEscapeSet.add(target);
+
+					// Combine equivalence classes for source and target
+					StreamEquivalenceClass sourceClass = streamEquivalenceMap.get(streamEscape.source);
+					StreamEquivalenceClass targetClass = streamEquivalenceMap.get(target);
+					if (sourceClass != targetClass) {
+						sourceClass.addAll(targetClass);
+						for (Iterator<Stream> j = targetClass.memberIterator(); j.hasNext(); ) {
+							Stream stream = j.next();
+							streamEquivalenceMap.put(stream, sourceClass);
+						}
+					}
 				}
 			}
 		} while (!orig.equals(uninterestingStreamEscapeSet));
@@ -184,6 +203,17 @@ public class StreamResourceTracker implements ResourceTracker<Stream> {
 		streamOpenLocationMap.put(streamOpenLocation, stream);
 		if (stream.isUninteresting())
 			uninterestingStreamEscapeSet.add(stream);
+	}
+
+	/**
+	 * Get the equivalence class for given stream.
+	 * May only be called if markTransitiveUninterestingStreamEscapes()
+	 * has been called.
+	 * @param stream the stream
+	 * @return the set containing the equivalence class for the given stream
+	 */
+	public StreamEquivalenceClass getStreamEquivalenceClass(Stream stream) {
+		return streamEquivalenceMap.get(stream);
 	}
 
 	/**

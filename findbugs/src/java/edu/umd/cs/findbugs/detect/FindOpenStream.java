@@ -292,14 +292,37 @@ public class FindOpenStream extends ResourceTrackingDetector<Stream, StreamResou
 
 		super.analyzeMethod(classContext, method, resourceTracker, resourceCollection);
 
-
+		// Compute streams that escape into other streams:
+		// this takes wrapper streams into account.
+		// This will also compute equivalence classes of streams,
+		// so that if one stream in a class is closed,
+		// they are all considered closed.
+		// (FIXME: this is too simplistic, especially if buffering
+		// is involved.  Sometime we should really think harder
+		// about how this should work.)
 		resourceTracker.markTransitiveUninterestingStreamEscapes();
 
-		Iterator<PotentialOpenStream> i = potentialOpenStreamList.iterator();
-		while (i.hasNext()) {
+		// For each stream closed on all paths, mark its equivalence
+		// class as being closed.
+		for (Iterator<Stream> i = resourceCollection.resourceIterator(); i.hasNext(); ) {
+			Stream stream = i.next();
+			StreamEquivalenceClass equivalenceClass = resourceTracker.getStreamEquivalenceClass(stream);
+			if (stream.isClosed())
+				equivalenceClass.setClosed();
+		}
+
+		// Iterate through potential open streams, reporting warnings
+		// for the "interesting" streams that haven't been closed
+		// (and aren't in an equivalence class with another stream
+		// that was closed).
+		for (Iterator<PotentialOpenStream> i = potentialOpenStreamList.iterator(); i.hasNext(); ) {
 			PotentialOpenStream pos = i.next();
 
 			Stream stream = pos.stream;
+			if (stream.isClosed())
+				// Stream was in an equivalence class with another
+				// stream that was properly closed.
+				continue;
 
 			if (stream.isUninteresting())
 				continue;
@@ -340,6 +363,11 @@ public class FindOpenStream extends ResourceTrackingDetector<Stream, StreamResou
 			}
 
 			potentialOpenStreamList.add(new PotentialOpenStream(bugType, priority, stream));
+		} else if (exitStatus == ResourceValueFrame.CLOSED) {
+			// Remember that this stream was closed on all paths.
+			// Later, we will mark all of the streams in its equivalence class
+			// as having been closed.
+			stream.setClosed();
 		}
 	}
 

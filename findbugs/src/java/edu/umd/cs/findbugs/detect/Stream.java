@@ -60,6 +60,7 @@ public class Stream extends ResourceCreationPoint implements Comparable<Stream> 
 	private boolean ignoreImplicitExceptions;
 	private String bugType;
 	private int instanceParam;
+	private boolean isClosed;
 
 	/**
 	 * Constructor.
@@ -118,6 +119,14 @@ public class Stream extends ResourceCreationPoint implements Comparable<Stream> 
 		this.instanceParam = instanceParam;
 	}
 
+	/**
+	 * Set this Stream has having been closed on all
+	 * paths out of the method.
+	 */
+	public void setClosed() {
+		isClosed = true;
+	}
+
 	public String getStreamBase() { return streamBase; }
 
 	public boolean isUninteresting() { return isUninteresting; }
@@ -136,6 +145,14 @@ public class Stream extends ResourceCreationPoint implements Comparable<Stream> 
 
 	public String getBugType() {
 		return bugType;
+	}
+
+	/**
+	 * Return whether or not the Stream is closed on all paths
+	 * out of the method.
+	 */
+	public boolean isClosed() {
+		return isClosed;
 	}
 
 	public boolean isStreamOpen(BasicBlock basicBlock, InstructionHandle handle,
