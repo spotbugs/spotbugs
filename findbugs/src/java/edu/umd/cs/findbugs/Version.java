@@ -39,7 +39,7 @@ public class Version {
 	public static final String RELEASE = MAJOR + "." + MINOR + "." + PATCHLEVEL + (IS_DEVELOPMENT ? "-dev" : "");
 
 	/** Release date. */
-	public static final String DATE = "August 6, 2004";
+	public static final String DATE = "August 7, 2004";
 
 	/**
 	 * Version of Eclipse "core" plugin, which is just a repackaged
