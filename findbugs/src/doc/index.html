@@ -38,6 +38,8 @@ Having said that, we invite you to try it out, and especially
 <ul>
 <li> The <a href="manual/index.html">FindBugs manual</a> describes how to
 install and use FindBugs.
+<li> A <a href="http://www.simeji.com/findbugs/doc/manual_ja/index.html">Japanese translation</a>
+of the FindBugs manual contributed by Hiroshi Okugawa.
 <li> The <a href="FAQ.html">FindBugs FAQ</a> contains answers to frequently asked
 questions about FindBugs.
 <li> A <a href="@WEBSITE@/docs/findbugsPaper.pdf">paper describing FindBugs</a>,
@@ -65,26 +67,12 @@ invited talk, MASPLAS 2003
 
 <h1>Changes since last version</h1>
 
-<p> Changes since version 0.7.1:
+<p> Changes since version 0.7.2:
 
 <ul>
-<li> Incorporated patched version of BCEL, which allows classes compiled
-     with JDK 1.5.0 beta to be analyzed
-<li> Fixed some bugs related to lookups of array classes
-<li> Fixed bug that prevented GUI from loading XML result files
-     when running under JDK 1.5.0 beta
-<li> Added new experimental bug detector, LazyInit, which looks for potentially buggy
-     lazy initializations of static fields
-<li> Because of long filenames, switched to distributing the source archive
-     as a zip file rather than a tar file
-<li> The 0.7.1 source tarfile was botched - 0.7.2 has a valid
-     source archive
-<li> Fixed some problems in the Ant build script
-<li> Fixed NullPointerException when checking Class-Path attribute for
-     Jar files without manifests
-<li> Generate version numbers for the core and UI Eclipse plugins
-     using the Version class; all version numbers are now in a common
-     location
+<li> FindBugs web page has a link to a
+<a href="http://www.simeji.com/findbugs/doc/manual_ja/index.html">Japanese translation</a>
+of the FindBugs manual, contributed by Hiroshi Okugawa
 </ul>
 
 <p> <a href="Changes.html">Older versions...</a>

@@ -7,6 +7,28 @@
 
 <h1>FindBugs Changes</h1>
 
+<p> Changes since version 0.7.1:
+
+<ul>
+<li> Incorporated patched version of BCEL, which allows classes compiled
+     with JDK 1.5.0 beta to be analyzed
+<li> Fixed some bugs related to lookups of array classes
+<li> Fixed bug that prevented GUI from loading XML result files
+     when running under JDK 1.5.0 beta
+<li> Added new experimental bug detector, LazyInit, which looks for potentially buggy
+     lazy initializations of static fields
+<li> Because of long filenames, switched to distributing the source archive
+     as a zip file rather than a tar file
+<li> The 0.7.1 source tarfile was botched - 0.7.2 has a valid
+     source archive
+<li> Fixed some problems in the Ant build script
+<li> Fixed NullPointerException when checking Class-Path attribute for
+     Jar files without manifests
+<li> Generate version numbers for the core and UI Eclipse plugins
+     using the Version class; all version numbers are now in a common
+     location
+</ul>
+
 <p> Changes since version 0.7.0:
 
 <ul>
