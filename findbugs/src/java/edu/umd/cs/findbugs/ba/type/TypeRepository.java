@@ -374,30 +374,22 @@ public class TypeRepository {
 			return a;
 
 		if (a.isArray() && b.isArray()) {
-			// FIXME: this is wrong
-
 			ArrayType aArrayType = (ArrayType) a;
 			ArrayType bArrayType = (ArrayType) b;
 
-			if (aArrayType.getNumDimensions() != bArrayType.getNumDimensions())
-				return classTypeFromSignature(JAVA_LANG_OBJECT_SIGNATURE);
+			Type aElementType = aArrayType.getElementType(this);
+			Type bElementType = bArrayType.getElementType(this);
 
-			Type aBaseType = aArrayType.getBaseType();
-			Type bBaseType = bArrayType.getBaseType();
+			if (aElementType.isReferenceType() && bElementType.isReferenceType()) {
+				ObjectType aElementObjectType = (ObjectType) aElementType;
+				ObjectType bElementObjectType = (ObjectType) bElementType;
 
-			if (aBaseType.isBasicType() || bBaseType.isBasicType())
-				// Arrays are of different base types (recall that
-				// types a and b did not compare as equal).
-				return classTypeFromSignature(JAVA_LANG_OBJECT_SIGNATURE);
+				ObjectType mergedElementType =
+					getFirstCommonSuperclass(aElementObjectType, bElementObjectType);
+				return arrayTypeFromElementType(mergedElementType);
+			}
 
-			// OK, the base types are reference types.
-			// Get the first common superclass of the
-			// base type, and return an array of same dimensionality
-			// using the common superclass as the base type.
-			ObjectType baseTypeCommonSuperclass =
-				getFirstCommonSuperclass((ObjectType) aBaseType, (ObjectType) bBaseType);
-
-			return arrayTypeFromDimensionsAndBaseType(aArrayType.getNumDimensions(), baseTypeCommonSuperclass);
+			return classTypeFromSignature(JAVA_LANG_OBJECT_SIGNATURE);
 		}
 
 		// FIXME:
