@@ -10,6 +10,18 @@
 (define %chapter-autolabel% #t)
 (define %section-autolabel% #t)
 
+;; Root of document is "index"
+(define %root-filename% "index")
+
+;; Use extension ".html"
+(define %html-ext% ".html")
+
+;; When we actually generate the manual into the "doc" directory
+;; of the FindBugs working directory, we'll place it in the
+;; "manual" subdirectory.
+(define use-output-dir #t)
+(define %output-dir% "manual")
+
 </style-specification-body>
 </style-specification>
 <external-specification id="docbook" document="dbstyle">
