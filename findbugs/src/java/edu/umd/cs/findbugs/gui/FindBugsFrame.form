@@ -63,7 +63,7 @@
                 </Property>
               </Properties>
               <AuxValues>
-                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="recentProjectsMenu.setText(L10N.getLocalString(&quot;menu_recent_menu&quot;, &quot;Recent Projects...&quot;));rebuildRecentProjectsMenu();"/>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="recentProjectsMenu.setText(L10N.getLocalString(&quot;menu.recent_menu&quot;, &quot;Recent Projects...&quot;));rebuildRecentProjectsMenu();"/>
               </AuxValues>
             </Menu>
             <MenuItem class="javax.swing.JMenuItem" name="saveProjectItem">

@@ -393,7 +393,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 		}
 
 //      Uncomment one of these to test I18N	    
-//	    Locale.setDefault( Locale.FRANCE );
+//	    Locale.setDefault( Locale.FRENCH );
 //	    Locale.setDefault( Locale.GERMAN );
 //		Locale.setDefault( Locale.JAPANESE );
 //	    Locale.setDefault( new Locale( "et" ));
@@ -1124,7 +1124,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
         recentProjectsMenu.setMnemonic('E');
         recentProjectsMenu.setText("Recent Projects");
         recentProjectsMenu.setFont(new java.awt.Font("Dialog", 0, 12));
-        recentProjectsMenu.setText(L10N.getLocalString("menu_recent_menu", "Recent Projects..."));rebuildRecentProjectsMenu();
+        recentProjectsMenu.setText(L10N.getLocalString("menu.recent_menu", "Recent Projects..."));rebuildRecentProjectsMenu();
         fileMenu.add(recentProjectsMenu);
 
         saveProjectItem.setFont(new java.awt.Font("Dialog", 0, 12));
