@@ -23,6 +23,12 @@ import edu.umd.cs.daveho.ba.RepositoryLookupFailureCallback;
 
 /**
  * Generic interface for bug reporter objects.
+ * A BugReporter accumulates all of the information reported
+ * by the analyses, which includes bug reports, and also auxiliary
+ * information such as analysis errors, missing classes,
+ * and class to source file mapping.
+ *
+ * @author David Hovemeyer
  */
 public interface BugReporter extends RepositoryLookupFailureCallback {
 
@@ -51,6 +57,21 @@ public interface BugReporter extends RepositoryLookupFailureCallback {
 	 * @param message the error message
 	 */
 	public void logError(String message);
+
+	/**
+	 * Map a class to its source file.
+	 * @param className the name of the class
+	 * @param sourceFileName the name of the source file
+	 */
+	public void mapClassToSource(String className, String sourceFileName);
+
+	/**
+	 * Get the source file for given class.
+	 * @param className the name of the class
+	 * @return the name of the source file, or null if we
+	 *   don't have a source file for the class
+	 */
+	public String getSourceForClass(String className);
 
 	/**
 	 * Finish reporting bugs.

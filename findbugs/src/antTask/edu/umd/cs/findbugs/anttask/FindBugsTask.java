@@ -412,6 +412,10 @@ public class FindBugsTask extends MatchingTask {
 			outputErrorMessage(message);
 		}
 
+		public void mapClassToSource(String className, String sourceFileName) { }
+
+		public String getSourceForClass(String className) { return null; }
+
 		public void reportMissingClass(ClassNotFoundException ex) {
 			String message = ex.getMessage();
 

@@ -48,6 +48,14 @@ public class FilterBugReporter implements BugReporter {
 		realBugReporter.logError(message);
 	}
 
+	public void mapClassToSource(String className, String sourceFileName) {
+		realBugReporter.mapClassToSource(className, sourceFileName);
+	}
+
+	public String getSourceForClass(String className) {
+		return realBugReporter.getSourceForClass(className);
+	}
+
 	public void reportMissingClass(ClassNotFoundException ex) {
 		realBugReporter.reportMissingClass(ex);
 	}
