@@ -9,10 +9,6 @@ import edu.umd.cs.findbugs.BytecodeScanningDetector;
 public class IDivResultCastToDouble extends BytecodeScanningDetector {
 	private static final boolean DEBUG = Boolean.getBoolean("idcd.debug");
 	
-	private static final int SCAN = 0;
-	private static final int SAW_IDIV = 1;
-	private static final int SAW_IDIV_BUG = 2;
-	
 	private BugReporter bugReporter;
 	private int prevOpCode;
 	
