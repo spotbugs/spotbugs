@@ -424,8 +424,13 @@ public class FindBugsFrame extends javax.swing.JFrame {
             DefaultTreeModel treeModel = (DefaultTreeModel) navigatorTree.getModel();
             TreePath treePath = navigatorTree.getSelectionPath();
             DefaultMutableTreeNode projectNode = (DefaultMutableTreeNode) treePath.getPath()[1];
-            treeModel.insertNodeInto(
-                new DefaultMutableTreeNode(analysisRun), projectNode, projectNode.getChildCount());
+            DefaultMutableTreeNode analysisRunNode = new DefaultMutableTreeNode(analysisRun);
+            treeModel.insertNodeInto(analysisRunNode, projectNode, projectNode.getChildCount());
+            
+            // Make the new node the currently selected node
+            TreePath path = new TreePath(new Object[]{rootNode, projectNode, analysisRunNode});
+            navigatorTree.makeVisible(path);
+            navigatorTree.setSelectionPath(path);
         }
     }//GEN-LAST:event_findBugsButtonActionPerformed
 
