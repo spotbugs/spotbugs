@@ -58,7 +58,6 @@ public class AnalysisRun {
     private ConsoleLogger logger;
     private FindBugs findBugs;
     private Reporter reporter;
-    private int runNumber;
     private HashMap treeModelMap;
     
     /** Creates a new instance of AnalysisRun. */
@@ -67,7 +66,6 @@ public class AnalysisRun {
         this.logger = logger;
         reporter = new Reporter();
         findBugs = new FindBugs(reporter);
-	runNumber = project.getNextAnalysisRun();
         treeModelMap = new HashMap();
     }
     
@@ -122,10 +120,6 @@ public class AnalysisRun {
      */
     public String getSourceFile(String className) {
 	return findBugs.getSourceFile(className);
-    }
-    
-    public String toString() {
-	return "Run " + runNumber;
     }
     
 }
