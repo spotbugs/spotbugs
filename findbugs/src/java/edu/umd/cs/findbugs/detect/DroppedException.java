@@ -219,7 +219,11 @@ public class DroppedException extends PreorderVisitor implements Detector, Const
   private static final int CLOSE_PAREN = 3;
   private static final int OPEN_BRACE = 4;
 
-  private static final int MAX_LINES = 5;
+  /**
+   * The number of lines that we'll scan to look at the source
+   * for a catch block.
+   */
+  private static final int MAX_LINES = 2;
 
   /**
    * Analyze a class's source code to see if there is a comment
@@ -239,44 +243,30 @@ public class DroppedException extends PreorderVisitor implements Detector, Const
 	int startLine = srcLine.getStartLine();
 	int offset = sourceFile.getLineOffset(startLine - 1);
 	if (offset >= 0) {
-	    // Yes, the following code uses a StreamTokenizer.
-	    // It does more or less what we need for scanning through
-	    // the source code of the catch block.
 	    InputStreamReader reader = new InputStreamReader(sourceFile.getInputStreamFromOffset(offset));
-	    StreamTokenizer tok = new StreamTokenizer(reader);
-
-	    // We want to see comments.
-	    tok.ordinaryChar('/');
-	    tok.slashSlashComments(false);
-	    tok.slashStarComments(false);
-
-	    // We want to see EOL.
-	    tok.eolIsSignificant(true);
+	    Tokenizer tokenizer = new Tokenizer(reader);
 
 	    boolean done = false;
 	    int numLines = 0;
 	    int state = START;
 	    int level = 0;
 	    do {
-		int type = tok.nextToken();
+		Token token = tokenizer.next();
+		int type = token.getKind();
+		String value = token.getLexeme();
+
 		switch (type) {
-		case StreamTokenizer.TT_EOL:
+		case Token.EOL:
 		    if (DEBUG) System.out.println("Saw token: [EOL]");
 		    ++numLines;
 		    if (numLines >= MAX_LINES)
 			done = true;
 		    break;
-		case StreamTokenizer.TT_EOF:
+		case Token.EOF:
+		    if (DEBUG) System.out.println("Saw token: [EOF]");
 		    done = true;
 		    break;
-		case StreamTokenizer.TT_WORD:
-		case StreamTokenizer.TT_NUMBER:
 		default:
-		    String value = tok.sval;
-		    if (value == null)
-			value = type == StreamTokenizer.TT_NUMBER
-			    ? String.valueOf(tok.nval)
-			    : String.valueOf((char) type);
 		    if (DEBUG) System.out.println("Got token: " + value);
 		    switch (state) {
 		    case START:
@@ -312,6 +302,7 @@ public class DroppedException extends PreorderVisitor implements Detector, Const
 	}
     } catch (IOException e) {
 	// Ignored; we'll just assume there is no comment
+	if (DEBUG) e.printStackTrace();
     }
     return false;
   }
