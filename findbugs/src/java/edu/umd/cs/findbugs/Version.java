@@ -41,7 +41,7 @@ public class Version {
 	/**
 	 * Development version?
 	 */
-	public static final boolean IS_DEVELOPMENT = true;
+	public static final boolean IS_DEVELOPMENT = false;
 
 	/**
 	 * Release version string.
@@ -51,7 +51,7 @@ public class Version {
 	/**
 	 * Release date.
 	 */
-	public static final String DATE = "October 6, 2004";
+	public static final String DATE = "October 8, 2004";
 
 	/**
 	 * Version of Eclipse "core" plugin, which is just a repackaged
