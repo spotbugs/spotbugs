@@ -162,14 +162,35 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 		if (RLE_DEBUG) {
 			StringBuffer buf = new StringBuffer();
 			buf.append(frameValues);
-			Iterator<AvailableLoad> i = availableLoadMap.keySet().iterator();
+			Iterator<Map.Entry<AvailableLoad,ValueNumber[]>> i = availableLoadMap.entrySet().iterator();
+			boolean first = true;
 			while (i.hasNext()) {
-				buf.append(i.next() + ",");
+				Map.Entry<AvailableLoad,ValueNumber[]> entry = i.next();
+				if (first)
+					first = false;
+				else
+					buf.append(',');
+				buf.append(entry.getKey() + "=" + valueToString(entry.getValue()));
 			}
 			return buf.toString();
 		} else {
 			return frameValues;
 		}
+	}
+
+	private static String valueToString(ValueNumber[] valueNumberList) {
+		StringBuffer buf = new StringBuffer();
+		buf.append('[');
+		boolean first = true;
+		for (int i = 0; i < valueNumberList.length; ++i) {
+			if (first)
+				first = false;
+			else
+				buf.append(',');
+			buf.append(valueNumberList[i].getNumber());
+		}
+		buf.append(']');
+		return buf.toString();
 	}
 }
 
