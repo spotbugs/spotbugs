@@ -61,7 +61,7 @@ public class IsNullValue {
 	}
 
 	/** Get the instance representing values that are definitely not null. */
-	public static IsNullValue notNullValue() {
+	public static IsNullValue nonNullValue() {
 		return instanceList[NN];
 	}
 
