@@ -78,6 +78,12 @@ public class ResourceValueFrame extends Frame<ResourceValue> {
 		return ResourceValue.notInstance();
 	}
 
+	private static final String[] statusList = { "(escaped)", "(open)", "(closed)", "(nonexistent)" };
+
+	public String toString() {
+		return super.toString() + statusList[status];
+	}
+
 }
 
 // vim:ts=4
