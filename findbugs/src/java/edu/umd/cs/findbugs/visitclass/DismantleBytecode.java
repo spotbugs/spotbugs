@@ -410,6 +410,11 @@ abstract public class DismantleBytecode extends PreorderVisitor implements   Con
 	    e.printStackTrace();
         }
 
+	try {
+		byteStream.close();
+        } catch (IOException e) {
+		assert false;
+		}
     }
 
 public void sawDouble(double seen) {}
