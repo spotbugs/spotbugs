@@ -77,7 +77,6 @@ public class AboutDialog extends javax.swing.JDialog {
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 8;
         gridBagConstraints.gridwidth = 2;
-        gridBagConstraints.insets = new java.awt.Insets(10, 0, 10, 0);
         getContentPane().add(okButton, gridBagConstraints);
 
         jLabel1.setText("FindBugs");
