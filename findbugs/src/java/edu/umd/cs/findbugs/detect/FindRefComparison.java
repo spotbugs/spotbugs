@@ -88,6 +88,8 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 	 * equality.
 	 */
 	private static class DynamicStringType extends ObjectType {
+		private static final long serialVersionUID = 1L;
+
 		public DynamicStringType() {
 			super("java.lang.String");
 		}
@@ -118,6 +120,8 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 	 * using reference equality.
 	 */
 	private static class StaticStringType extends ObjectType {
+		private static final long serialVersionUID = 1L;
+
 		public StaticStringType() {
 			super("java.lang.String");
 		}
@@ -143,10 +147,18 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 
 	private static class RefComparisonTypeFrameModelingVisitor extends TypeFrameModelingVisitor {
 		private RepositoryLookupFailureCallback lookupFailureCallback;
+		private boolean sawStringIntern;
 
-		public RefComparisonTypeFrameModelingVisitor(ConstantPoolGen cpg, RepositoryLookupFailureCallback lookupFailureCallback) {
+		public RefComparisonTypeFrameModelingVisitor(
+				ConstantPoolGen cpg,
+				RepositoryLookupFailureCallback lookupFailureCallback) {
 			super(cpg);
 			this.lookupFailureCallback = lookupFailureCallback;
+			this.sawStringIntern = false;
+		}
+		
+		public boolean sawStringIntern() {
+			return sawStringIntern;
 		}
 
 		// Override handlers for bytecodes that may return String objects
@@ -314,13 +326,12 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 		//this.analysisContext = analysisContext;
 	}
 
-	// XXX BAD EVIL NOT THREAD SAFE YUCK FIXME
-	static boolean sawStringIntern;
+//	boolean sawStringIntern;
 
 	public void visitClassContext(ClassContext classContext) {
 		JavaClass jclass = classContext.getJavaClass();
 		Method[] methodList = jclass.getMethods();
-		sawStringIntern = false;
+//		sawStringIntern = false;
 
 		for (int i = 0; i < methodList.length; ++i) {
 			Method method = methodList[i];
@@ -371,7 +382,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 		// which ones appear to be dynamically created)
 		RefComparisonTypeMerger typeMerger =
 		        new RefComparisonTypeMerger(bugReporter, exceptionSetFactory);
-		TypeFrameModelingVisitor visitor =
+		RefComparisonTypeFrameModelingVisitor visitor =
 		        new RefComparisonTypeFrameModelingVisitor(methodGen.getConstantPool(), bugReporter);
 		TypeAnalysis typeAnalysis =
 		        new TypeAnalysis(methodGen, cfg, dfs, typeMerger, visitor, bugReporter, exceptionSetFactory);
@@ -384,7 +395,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 			Instruction ins = location.getHandle().getInstruction();
 			short opcode = ins.getOpcode();
 			if (opcode == Constants.IF_ACMPEQ || opcode == Constants.IF_ACMPNE) {
-				checkRefComparison(location, jclass, methodGen, typeDataflow);
+				checkRefComparison(location, jclass, methodGen, visitor, typeDataflow);
 			} else if (invokeInstanceSet.get(opcode)) {
 				InvokeInstruction inv = (InvokeInstruction) ins;
 				String methodName = inv.getMethodName(cpg);
@@ -425,8 +436,12 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 		}
 	}
 
-	private void checkRefComparison(Location location, JavaClass jclass, MethodGen methodGen,
-	                                TypeDataflow typeDataflow) throws DataflowAnalysisException {
+	private void checkRefComparison(
+			Location location,
+			JavaClass jclass,
+			MethodGen methodGen,
+			RefComparisonTypeFrameModelingVisitor visitor,
+			TypeDataflow typeDataflow) throws DataflowAnalysisException {
 
 		InstructionHandle handle = location.getHandle();
 
@@ -471,7 +486,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 					priority = HIGH_PRIORITY;
 				else if (type1 == T_STATIC_STRING || type2 == T_STATIC_STRING)
 					priority = LOW_PRIORITY;
-				else if (sawStringIntern)
+				else if (visitor.sawStringIntern())
 					priority = LOW_PRIORITY;
 
 				if (priority <= LOW_PRIORITY) {
