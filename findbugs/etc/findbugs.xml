@@ -1,4 +1,14 @@
-<FindbugsPlugin pluginid="core">
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  Plugin descriptor for FindBugs "core" plugin.
+  This plugin contains the detectors for which at least 50%
+  of the reported high and medium priority warnings
+  are real bugs.
+
+  This plugin is enabled by default.
+-->
+<FindbugsPlugin pluginid="core" defaultenabled="true">
   <Detector class="edu.umd.cs.findbugs.detect.NoteSuppressedWarnings" 
 	speed="fast"
 	   reports="TESTING"
