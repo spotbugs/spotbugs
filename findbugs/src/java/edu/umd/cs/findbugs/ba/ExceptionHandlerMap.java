@@ -38,7 +38,6 @@ import org.apache.bcel.generic.*;
 public class ExceptionHandlerMap {
 	private IdentityHashMap<InstructionHandle, List<CodeExceptionGen>> codeToHandlerMap;
 	private IdentityHashMap<InstructionHandle, CodeExceptionGen> startInstructionToHandlerMap;
-	private HashSet<InstructionHandle> coveredByUniversalHandler;
 
 	/**
 	 * Constructor.
@@ -47,7 +46,6 @@ public class ExceptionHandlerMap {
 	public ExceptionHandlerMap(MethodGen methodGen) {
 		codeToHandlerMap = new IdentityHashMap<InstructionHandle, List<CodeExceptionGen>>();
 		startInstructionToHandlerMap = new IdentityHashMap<InstructionHandle, CodeExceptionGen>();
-		coveredByUniversalHandler = new HashSet<InstructionHandle>();
 		build(methodGen);
 	}
 
@@ -77,33 +75,36 @@ public class ExceptionHandlerMap {
 	private void build(MethodGen methodGen) {
 		CodeExceptionGen[] handlerList = methodGen.getExceptionHandlers();
 
-		// Process exception handlers in decreasing order of priority.
+		// Map handler start instructions to the actual exception handlers
 		for (int i = 0; i < handlerList.length; ++i) {
 			CodeExceptionGen exceptionHandler = handlerList[i];
-			boolean isUniversalHandler = (exceptionHandler.getCatchType() == null);
-
 			startInstructionToHandlerMap.put(exceptionHandler.getHandlerPC(), exceptionHandler);
+		}
 
-			InstructionHandle handle;
-			InstructionHandle next = exceptionHandler.getStartPC();
-			InstructionHandle end = exceptionHandler.getEndPC();
+		// For each instruction, determine which handlers it can reach
+		InstructionHandle handle = methodGen.getInstructionList().getStart();
+		while (handle != null) {
+			int offset = handle.getPosition();
 
-			do {
-				handle = next;
+		handlerLoop:
+			for (int i = 0; i < handlerList.length; ++i) {
+				CodeExceptionGen exceptionHandler = handlerList[i];
+				int startOfRange = exceptionHandler.getStartPC().getPosition();
+				int endOfRange = exceptionHandler.getEndPC().getPosition();
 
-				// We can only add an exception edge if the instruction isn't already handled
-				// by a universal handler.
-				if (!coveredByUniversalHandler.contains(handle)) {
+				if (offset >= startOfRange && offset <= endOfRange) {
+					// This handler is reachable from the instruction
 					addHandler(handle, exceptionHandler);
 
-					// If this is a universal handler, then no other (lower-priority)
-					// exception handlers are reachable.
-					if (isUniversalHandler)
-						coveredByUniversalHandler.add(handle);
+					// If this handler handles all exception types
+					// (i.e., an ANY handler), then no further (lower-priority)
+					// handlers are reachable from the instruction.
+					if (exceptionHandler.getCatchType() == null)
+						break handlerLoop;
 				}
+			}
 
-				next = handle.getNext();
-			} while (handle != end);
+			handle = handle.getNext();
 		}
 	}
 
