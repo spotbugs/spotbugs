@@ -141,7 +141,15 @@ public class DumbMethods extends BytecodeScanningDetector implements Constants2 
 				bugReporter.reportBug(new BugInstance("DM_STRING_TOSTRING", NORMAL_PRIORITY)
 				        .addClassAndMethod(this)
 				        .addSourceLine(this));
-
+		if ((seen == INVOKEVIRTUAL)
+		        && getClassConstantOperand().equals("java/lang/String")
+		        && (getNameConstantOperand().equals("toUpperCase")
+		        ||  getNameConstantOperand().equals("toLowerCase"))
+		        && getSigConstantOperand().equals("()Ljava/lang/String;"))
+			if (alreadyReported.add(getRefConstantOperand()))
+				bugReporter.reportBug(new BugInstance("DM_CONVERT_CASE", LOW_PRIORITY)
+				        .addClassAndMethod(this)
+				        .addSourceLine(this));
 /*
 	//
 	// TODO: put this back in when we have a standard way

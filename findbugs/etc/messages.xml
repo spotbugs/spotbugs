@@ -837,6 +837,18 @@ to use Object.clone(), which always returns an object of the correct type.</p>
 ]]>
     </Details>
   </BugPattern>
+  <BugPattern type="DM_CONVERT_CASE">
+    <ShortDescription>Method invokes dubious String.toUpperCase() or String.toLowerCase; use the Locale parameterized version instead</ShortDescription>
+    <LongDescription>Method {1} invokes dubious String.toUpperCase() or String.toLowerCase; use the Locale parameterized version instead</LongDescription>
+    <Details>
+<![CDATA[
+  <p> A String is being converted to upper or lowercase, using the platform's default encoding. This may
+      result in improper conversions when used with international characters. Use the </p>
+      <table><tr><td>String.toUpperCase( Locale l )</td></tr><tr><td>String.toLowerCase( Locale l )</td></tr></table>
+      <p>versions instead.</p>
+]]>
+    </Details>
+  </BugPattern>
   <BugPattern type="DC_DOUBLECHECK">
     <ShortDescription>Possible double check of field</ShortDescription>
     <LongDescription>Possible doublecheck on {2} in {1}</LongDescription>
