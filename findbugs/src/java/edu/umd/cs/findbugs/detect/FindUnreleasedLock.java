@@ -158,7 +158,7 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock> {
 
 	public boolean prescreen(ClassContext classContext, Method method) {
 		BitSet bytecodeSet = classContext.getBytecodeSet(method);
-		return bytecodeSet.get(Constants.NEW);
+		return bytecodeSet.get(Constants.NEW) && bytecodeSet.get(Constants.INVOKEVIRTUAL);
 	}
 
 	public ResourceTracker<Lock> getResourceTracker() {
@@ -167,6 +167,27 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock> {
 
 	public void inspectResult(JavaClass javaClass, MethodGen methodGen, CFG cfg,
 		Dataflow<ResourceValueFrame> dataflow, Lock resource) {
+
+		ResourceValueFrame exitFrame = dataflow.getResultFact(cfg.getExit());
+		int exitStatus = exitFrame.getStatus();
+
+		if (exitStatus == ResourceValueFrame.OPEN || exitStatus == ResourceValueFrame.OPEN_ON_EXCEPTION_PATH) {
+			String bugType;
+			int priority;
+			if (exitStatus == ResourceValueFrame.OPEN) {
+				bugType = "UL_UNRELEASED_LOCK";
+				priority = HIGH_PRIORITY;
+			} else {
+				bugType = "UL_UNRELEASED_LOCK_EXCEPTION_PATH";
+				priority = NORMAL_PRIORITY;
+			}
+
+			String sourceFile = javaClass.getSourceFileName();
+			bugReporter.reportBug(new BugInstance(bugType, priority)
+				.addClassAndMethod(methodGen, sourceFile)
+				.addSourceLine(methodGen, sourceFile, resource.getLocation().getHandle())
+			);
+		}
 	}
 }
 
