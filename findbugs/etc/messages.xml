@@ -562,7 +562,19 @@ before the init() method, these methods will fail in the constructor. It is a fa
     </Details>
   </Detector>
   
-  <Detector class="edu.umd.cs.findbugs.detect.FindBugsSummaryStats">
+  <Detector class="edu.umd.cs.findbugs.detect.UseObjectEquals">
+    <Details>
+<![CDATA[
+<p>
+This detector looks calls to equals(java.lang.Object) on arrays, or final classes that do not
+override the equals method in the Object class. This means that equals semantics is the same as
+==, and probably a mistake.
+</p>
+]]>    
+    </Details>
+  </Detector>
+  
+    <Detector class="edu.umd.cs.findbugs.detect.FindBugsSummaryStats">
     <Details>
 <![CDATA[
 <p> This detector just collects summary statistics information about the analysis process. </p>
@@ -2486,6 +2498,34 @@ correctly.
     </Details>
   </BugPattern>
   
+  <BugPattern type="UOE_BAD_ARRAY_COMPARE">
+    <ShortDescription>Calls to equals on an Array equates to ==</ShortDescription>
+    <LongDescription>Calls to equals on an Array equates to ==</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+This method invokes the .equals(Object o) method on an array. Since arrays do not override the equals
+method of Object, calling equals on an array is the same as comparing they're addresses. To compare the 
+contents of the arrays, use java.util.Array.equals(Object[], Object[]);
+</p>
+]]>    
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="UOE_USE_OBJECT_EQUALS">
+    <ShortDescription>Calls to equals on a final object that doesn't override Object's version</ShortDescription>
+    <LongDescription>Calls to equals on a final object that doesn't override Object's version</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+This method invokes the .equals(Object o) method on a final class that doesn't override the equals method
+in the Object class, effectively making the equals method test for sameness, like ==. Consider adding an .equals
+method in this class.
+</p>
+]]>    
+    </Details>
+  </BugPattern>
+  
   <!--
   **********************************************************************
    BugCodes
@@ -2567,4 +2607,5 @@ correctly.
   <BugCode abbrev="SIO">Superfluous instanceof</BugCode>
   <BugCode abbrev="DLS">Dead local store</BugCode>
   <BugCode abbrev="BAC">Bad Applet Constructor</BugCode>
+  <BugCode abbrev="UOE">Use Object Equals</BugCode>
   </MessageCollection>

@@ -131,6 +131,8 @@
     reports="DLS_DEAD_LOCAL_STORE" disabled="true"/>
    <Detector class="edu.umd.cs.findbugs.detect.BadAppletConstructor" speed="fast"
     reports="BAC_BAD_APPLET_CONSTRUCTOR" disabled="true"/> 
+   <Detector class="edu.umd.cs.findbugs.detect.UseObjectEquals" speed="fast"
+    reports="UOE_BAD_ARRAY_COMPARE,UOE_USE_OBJECT_EQUALS"/>
    <Detector class="edu.umd.cs.findbugs.detect.FindBugsSummaryStats" speed="fast" />
 
   <BugPattern abbrev="SW" type="SW_SWING_METHODS_INVOKED_IN_SWING_THREAD" category="CORRECTNESS" 
@@ -284,5 +286,9 @@
   <BugPattern abbrev="DLS" type="DLS_DEAD_LOCAL_STORE" category="CORRECTNESS"
     experimental="true"/>
   <BugPattern abbrev="BAC" type="BAC_BAD_APPLET_CONSTRUCTOR" category="CORRECTNESS"
+    experimental="true"/>
+  <BugPattern abbrev="UOE" type="UOE_USE_OBJECT_EQUALS" category="CORRECTNESS"
+    experimental="true"/>  
+  <BugPattern abbrev="UOE" type="UOE_BAD_ARRAY_COMPARE" category="CORRECTNESS"
     experimental="true"/>
 </FindbugsPlugin>
