@@ -47,32 +47,15 @@ will present a paper,
 at <a href="http://www.issre.org/2004/">ISSRE 2004</a>.&nbsp; The paper
 compares several Java bug checkers, including FindBugs.
 
-<p> Changes since version 0.8.4:
+<p> Changes since version 0.8.5:
 
 <ul>
 <!-- new detectors -->
-<li> Extend dumb methods detector to look for calls to equals() on arrays (Dave Brosius)
-<li> New detector for violatile references to arrays (Bill Pugh)
-<li> New detector to find instanceof usage where inheritance can be determined statically (Dave Brosius)
-<li> New detector to find ResultSet.getXXX updateXXX calls using index 0 (Dave Brosius)
-<li> New detector to find empty zip or jar entries (Bill Pugh)
 
 <!-- feature enhancements -->
-<li> HTML output generation using built-in XSLT stylesheet or
-     user-defined stylesheet (David Hovemeyer)
-<li> Detector dialog columns are now sortable (Dave Brosius)
-<li> Allow URLs to be specified to analyze zip/jar files,
-  local directories, and single classfiles (David Hovemeyer)
-<li> New command line option -onlyAnalyze restricts analysis to selected
-     classes and packages without reducing accuracy (David Hovemeyer)
-<li> Allow Swing GUI to show source code in jar files on Windows systems (Dave Brosius)
+<li> French translation supplied by David Cotton
 
 <!-- Bug fixes -->
-<li> Fix the Switch Fall Thru detector (Dave Brosius, David Hovemeyer, Bill Pugh)
-<li> MacOS GUI fixes (Rohan Lloyd)
-<li> Fix false positive in BOA in case where method is correctly and 'incorrectly' overridden (Dave Brosius)
-<li> Fixed memory blowup when analyzing methods which access
-     a large number of fields (David Hovemeyer)
 </ul>
 
 
