@@ -1,11 +1,29 @@
 <?xml version="1.0"?>
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
 	
+	<xsd:simpleType name="ClassType">
+		<xsd:restriction base="xsd:string">
+			<xsd:pattern value="[A-Za-z_][A-Za-z0-9_]*(.[A-Za-z_][A-Za-z0-9_]*)*"/> 
+		</xsd:restriction>
+	</xsd:simpleType>
+		
 	<xsd:simpleType name="SpeedType">
 		<xsd:restriction base="xsd:string">
 			<xsd:enumeration value="fast"/>
 			<xsd:enumeration value="moderate"/>
 			<xsd:enumeration value="slow"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	
+	<xsd:simpleType name="BugPatternListType">
+		<xsd:restriction base="xsd:string">
+			<xsd:pattern value="[A-Za-z0-9_]*(,[A-Za-z0-9_]*)*"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	
+	<xsd:simpleType name="IdentifierType">
+		<xsd:restriction base="xsd:string">
+			<xsd:pattern value="[A-Za-z0-9_]*"/>
 		</xsd:restriction>
 	</xsd:simpleType>
 	
@@ -21,17 +39,17 @@
 	</xsd:simpleType>
 	
 	<xsd:complexType name="DetectorType">
-		<xsd:attribute name="class" type="xsd:string"/>
+		<xsd:attribute name="class" type="ClassType"/>
 		<xsd:attribute name="speed" type="SpeedType"/>
-		<xsd:attribute name="reports" type="xsd:string"/>
+		<xsd:attribute name="reports" type="BugPatternListType"/>
 		<xsd:attribute name="requirejre" type="xsd:string"/>
 		<xsd:attribute name="disabled" type="xsd:boolean" use="optional"/>
 		<xsd:attribute name="hidden" type="xsd:boolean" use="optional"/>
 	</xsd:complexType>
 	
 	<xsd:complexType name="BugPatternType">
-		<xsd:attribute name="abbrev" type="xsd:string"/>
-		<xsd:attribute name="type" type="xsd:string"/>
+		<xsd:attribute name="abbrev" type="IdentifierType"/>
+		<xsd:attribute name="type" type="IdentifierType"/>
 		<xsd:attribute name="category" type="CategoryType"/>
 		<xsd:attribute name="experimental" type="xsd:boolean" use="optional"/>
 	</xsd:complexType>
