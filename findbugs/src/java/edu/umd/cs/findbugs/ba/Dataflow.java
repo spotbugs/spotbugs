@@ -80,6 +80,16 @@ public class Dataflow<Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 	 */
 	public void execute() throws DataflowAnalysisException {
 		boolean change;
+
+		if (DEBUG) {
+			String shortAnalysisName = analysis.getClass().getName();
+			int pkgEnd = shortAnalysisName.lastIndexOf('.');
+			if (pkgEnd >= 0) {
+				shortAnalysisName = shortAnalysisName.substring(pkgEnd + 1);
+			}
+			System.out.println("Executing " + shortAnalysisName);
+		}
+
 		do {
 			change = false;
 			++numIterations;
