@@ -88,36 +88,33 @@ public class FrameTypeAnalysis extends ForwardDataflowAnalysis<TypedFrame> {
 		fact.setTop();
 	}
 
+	public boolean isFactValid(TypedFrame fact) {
+		return fact.isValid();
+	}
+
 	public boolean same(TypedFrame fact1, TypedFrame fact2) {
 		return fact1.sameAs(fact2);
 	}
 
-	public void transfer(BasicBlock basicBlock, InstructionHandle end, TypedFrame start, TypedFrame result) throws DataflowAnalysisException {
-		if (basicBlock.isExceptionHandler()) {
-			// The block is an exception handler, so change the stack so that only
-			// the exception type is on it.  This means we ignore the start
-			// value given to us, because it is almost certainly the BOTTOM frame.
-			CodeExceptionGen exceptionGen = basicBlock.getExceptionGen(); 
-			result.clearStack();
-			result.pushValue(exceptionGen.getCatchType());
-		} else {
-			// Ordinary basic block (not an exception handler).
-			// Just use the start value.
-			result.copyFrom(start);
-		}
-
-		// Now the fun part: modeling every bytecode!
-		FrameTypeModelingVisitor visitor = new FrameTypeModelingVisitor(result, methodGen.getConstantPool());
-		Iterator<InstructionHandle> i = basicBlock.instructionIterator();
-		while (i.hasNext()) {
-			InstructionHandle handle = i.next();
-			if (handle == end)
-				break;
-			handle.getInstruction().accept(visitor);
-		}
+	public void transferInstruction(InstructionHandle handle, TypedFrame fact) throws DataflowAnalysisException {
+		FrameTypeModelingVisitor visitor = new FrameTypeModelingVisitor(fact, methodGen.getConstantPool());
+		handle.getInstruction().accept(visitor);
 	}
 
 	public void meetInto(TypedFrame fact, Edge edge, TypedFrame result) throws DataflowAnalysisException {
+		BasicBlock basicBlock = edge.getDest();
+		if (basicBlock.isExceptionHandler() && fact.isValid()) {
+			// Special case: when merging predecessor facts for entry to
+			// an exception handler, we clear the stack and push a
+			// single entry for the exception object.  That way, the locals
+			// can still be merged.
+			CodeExceptionGen exceptionGen = basicBlock.getExceptionGen(); 
+			TypedFrame tmpFact = createFact();
+			tmpFact.copyFrom(fact);
+			tmpFact.clearStack();
+			tmpFact.pushValue(exceptionGen.getCatchType());
+			fact = tmpFact;
+		}
 		result.mergeWith(fact);
 	}
 }
