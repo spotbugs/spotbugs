@@ -35,6 +35,10 @@ public abstract class ForwardDataflowAnalysis<Fact> extends AbstractDataflowAnal
 		this.dfs = dfs;
 	}
 
+	protected DepthFirstSearch getDepthFirstSearch() {
+		return dfs;
+	}
+
 	public boolean isForwards() {
 		return true;
 	}
