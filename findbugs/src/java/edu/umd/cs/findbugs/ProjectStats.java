@@ -135,10 +135,8 @@ public class ProjectStats {
 
 		ByteArrayOutputStream summaryOut = new ByteArrayOutputStream(8096);
 		reportSummary(summaryOut);
-		String summaryXML = summaryOut.toString();
 
-
-		StreamSource in = new StreamSource(new StringReader(summaryXML));
+		StreamSource in = new StreamSource(new ByteArrayInputStream(summaryOut.toByteArray()));
 		StreamResult out = new StreamResult(htmlWriter);
 		InputStream xslInputStream = this.getClass().getClassLoader().getResourceAsStream("summary.xsl");
 		if (xslInputStream == null)
