@@ -126,6 +126,8 @@ public class FindOpenStream extends ResourceTrackingDetector<Stream, StreamResou
 		streamFactoryCollection.add(new InstanceFieldLoadStreamFactory("java.io.OutputStream"));
 		streamFactoryCollection.add(new InstanceFieldLoadStreamFactory("java.io.Writer"));
 
+/*
+		// TODO: enable support for this eventually
 		// Ignore streams returned by any other method.
 		// However, we want to keep track of them, so that if they
 		// are closed, all other streams in the same equivalence
@@ -138,6 +140,7 @@ public class FindOpenStream extends ResourceTrackingDetector<Stream, StreamResou
 			.setBugType(DO_NOT_REPORT));
 		streamFactoryCollection.add(new AnyMethodReturnValueStreamFactory("java.io.Writer")
 			.setBugType(DO_NOT_REPORT));
+*/
 
 		// JDBC objects
 		streamFactoryCollection.add(new MethodReturnValueStreamFactory("java.sql.Connection",
