@@ -253,7 +253,7 @@ public class ConvertToARFF {
 				nextId = String.valueOf(count++);
 			}
 			
-			return appName + "-" + nextId;
+			return "\"" + appName + "-" + nextId + "\"";
 		}
 	}
 
