@@ -648,21 +648,27 @@ It is a fast detector.
     </Details>
   </Detector>
 
-	<Detector class="edu.umd.cs.findbugs.detect.RuntimeExceptionCapture">
+  <Detector class="edu.umd.cs.findbugs.detect.RuntimeExceptionCapture">
 	  <Details>
-  <![CDATA[
-  <p> This detector looks for catch clauses that catch Exception, when no code in the block throws Exception. </p>
-  ]]>
+<![CDATA[
+<p> This detector looks for catch clauses that catch Exception, when no code in the block throws Exception. </p>
+]]>
 	  </Details>
-	</Detector>
-
+  </Detector>
+  
+  <Detector class="edu.umd.cs.findbugs.detect.FindFloatEquality">
+      <Details>
+<![CDATA[
+Looks for floating point equality expressions. A fast detector.
+]]>
+      </Details>
+  </Detector>  
+  
   <!--
   **********************************************************************
   BugPatterns
   **********************************************************************
    -->
-
-
 
   <BugPattern type="SW_SWING_METHODS_INVOKED_IN_SWING_THREAD">
     <ShortDescription>Certain swing methods should only be invoked from the Swing event thread</ShortDescription>
@@ -2788,6 +2794,25 @@ do not need to be created, just access the static methods directly using the cla
 	  </Details>
 	</BugPattern>
 
+    <BugPattern type="FE_FLOATING_POINT_EQUALITY">
+	  <ShortDescription>Test for floating point equality.</ShortDescription>
+	  <LongDescription>Test for floating point equality in {1}.</LongDescription>
+	  <Details>
+	<![CDATA[
+    <p>
+    This operation compares two floating point values for equality.
+    Because floating point calculations may involve rounding, 
+	calculated float and double values may not be accurate. 
+    For values that must be precise, such as monetary values, 
+	consider using a fixed-precision type such as BigDecimal.
+    For values that need not be precise, consider comparing for equality
+    within some range, for example: 
+    <code>if ( Math.abs(x - y) < .0000001 )</code>.
+	See the Java Language Specification, section 4.2.4.
+    </p>
+    ]]>
+  	  </Details>
+    </BugPattern>
 
   <!--
   **********************************************************************
@@ -2875,6 +2900,6 @@ do not need to be created, just access the static methods directly using the cla
   <BugCode abbrev="MF">Masked Field</BugCode>
   <BugCode abbrev="WMI">Wrong Map Iterator</BugCode>
   <BugCode abbrev="ISC">Instantiated Static Class</BugCode>
-	<BugCode abbrev="REC">RuntimeException capture</BugCode>
-
-  </MessageCollection>
+  <BugCode abbrev="REC">RuntimeException capture</BugCode>
+  <BugCode abbrev="FE">Test for floating point equality</BugCode>
+</MessageCollection>

@@ -290,6 +290,10 @@
             reports="REC_CATCH_EXCEPTION"
             speed="fast" />
 
+  <Detector class="edu.umd.cs.findbugs.detect.FindFloatEquality" 
+            speed="fast"
+            reports="FE_FLOATING_POINT_EQUALITY"/>
+
   <Detector class="edu.umd.cs.findbugs.detect.FindBugsSummaryStats" 
             speed="fast"
             hidden="true" />
@@ -464,6 +468,7 @@
               experimental="true"/>
   <BugPattern abbrev="ISC" type="ISC_INSTANTIATE_STATIC_CLASS" category="CORRECTNESS"
     experimental="true"/>
-	<BugPattern abbrev="REC" type="REC_CATCH_EXCEPTION" category="STYLE" experimental="true" />
+  <BugPattern abbrev="REC" type="REC_CATCH_EXCEPTION" category="STYLE" experimental="true" />
+  <BugPattern abbrev="FE" type="FE_FLOATING_POINT_EQUALITY" category="CORRECTNESS" experimental="true" />
 
 </FindbugsPlugin>
