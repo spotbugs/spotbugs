@@ -2,12 +2,14 @@ package edu.umd.cs.daveho.ba;
 
 import java.util.*;
 import org.apache.bcel.Constants;
+import org.apache.bcel.classfile.*;
 import org.apache.bcel.generic.*;
 
 /**
  * A CFGBuilder that really tries to construct accurate control flow graphs.
- * The CFGs is creates have accurate exception edges, and have accurately
- * inlined JSR subroutines.
+ * The CFGs it creates have accurate exception edges, and have accurately
+ * inlined JSR subroutines.  This is the fourth version of CFGBuilder I've
+ * written!
  *
  * @see CFG
  * @author David Hovemeyer
@@ -20,6 +22,9 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes {
 	 * Helper classes
 	 * ---------------------------------------------------------------------- */
 
+	/**
+	 * A work list item for creating the CFG for a context.
+	 */
 	private static class WorkListItem {
 		private final InstructionHandle start;
 		private final BasicBlock basicBlock;
@@ -33,6 +38,11 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes {
 		public BasicBlock			getBasicBlock()			{ return basicBlock; }
 	}
 
+	/**
+	 * A placeholder for a control edge that escapes its context to return
+	 * control back to an outer (calling) context.  It will turn into a
+	 * real edge during inlining.
+	 */
 	private static class EscapeTarget {
 		private final InstructionHandle target;
 		private final int edgeType;
@@ -46,9 +56,17 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes {
 		public int					getEdgeType()			{ return edgeType; }
 	}
 
+	/**
+	 * A Context for inlining JSR subroutines.  The top level
+	 * context is where execution starts.  Each JSR subroutine is
+	 * its own context.  Each context has its own CFG.  Eventually,
+	 * all JSR subroutines will be inlined into the top level context,
+	 * resulting in an accurate CFG for the overall method which is
+	 * free from JSR subroutines.
+	 */
 	private class Context {
 		private final InstructionHandle start;
-		private final BitSet instructionMap;
+		private final BitSet instructionSet;
 		private final CFG cfg;
 		private IdentityHashMap<InstructionHandle, BasicBlock> blockMap;
 		private IdentityHashMap<BasicBlock, List<EscapeTarget>> escapeTargetListMap;
@@ -56,7 +74,7 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes {
 
 		public Context(InstructionHandle start) {
 			this.start = start;
-			this.instructionMap = new BitSet();
+			this.instructionSet = new BitSet();
 			this.cfg = new CFG();
 			this.blockMap = new IdentityHashMap<InstructionHandle, BasicBlock>();
 			this.escapeTargetListMap = new IdentityHashMap<BasicBlock, List<EscapeTarget>>();
@@ -70,6 +88,15 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes {
 		public WorkListItem			nextItem()				{ return workList.removeFirst(); }
 		public BasicBlock			getEntry()				{ return cfg.getEntry(); }
 		public BasicBlock			getExit()				{ return cfg.getExit(); }
+		public CFG					getCFG()				{ return cfg; }
+
+		public void addInstruction(InstructionHandle handle) throws CFGBuilderException {
+			int position = handle.getPosition();
+			if (usedInstructionSet.get(position))
+				throw new CFGBuilderException("Instruction " + handle + " visited in multiple contexts");
+			instructionSet.set(position);
+			usedInstructionSet.set(position);
+		}
 
 		public BasicBlock getBlock(InstructionHandle start) {
 			BasicBlock block = blockMap.get(start);
@@ -113,8 +140,8 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes {
 	private ConstantPoolGen cpg;
 	private ExceptionHandlerMap exceptionHandlerMap;
 	private BitSet usedInstructionSet;
-
 	private LinkedList<Context> contextWorkList;
+	private Context topLevelContext;
 
 	/* ----------------------------------------------------------------------
 	 * Public methods
@@ -129,7 +156,7 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes {
 	}
 
 	public void build() throws CFGBuilderException {
-		Context topLevelContext = new Context(methodGen.getInstructionList().getStart());
+		topLevelContext = new Context(methodGen.getInstructionList().getStart());
 		contextWorkList.add(topLevelContext);
 
 		while (!contextWorkList.isEmpty()) {
@@ -141,17 +168,19 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes {
 	}
 
 	public CFG getCFG() {
-		return null;
+		// FIXME
+		return topLevelContext.getCFG();
 	}
 
 	/* ----------------------------------------------------------------------
 	 * Implementation
 	 * ---------------------------------------------------------------------- */
 
-	private void build(Context context) {
+	private void build(Context context) throws CFGBuilderException {
 		// Prime the work list
 		context.addEdgeAndExplore(context.getEntry(), context.getStartInstruction(), START_EDGE);
 
+		// Keep going until all basic blocks in the context have been added
 		while (context.hasMoreWork()) {
 			WorkListItem item = context.nextItem();
 
@@ -159,23 +188,20 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes {
 			Instruction ins = handle.getInstruction();
 			BasicBlock basicBlock = item.getBasicBlock();
 
-			if (usedInstructionSet.get(handle.getPosition()))
-				throw new IllegalStateException("Visiting instruction " + handle + " again");
-			usedInstructionSet.set(handle.getPosition());
-
 			// Add exception handler block (ETB) for exception-throwing instructions
 			if (isPEI(handle)) {
-				handleExceptions(handle, basicBlock);
+				handleExceptions(context, handle, basicBlock);
 				BasicBlock body = context.allocateBasicBlock();
 				context.addEdge(basicBlock, body, FALL_THROUGH_EDGE);
 				basicBlock = body;
 			}
 
+			// Add instructions until we get to the end of the block
 			boolean endOfBasicBlock = false;
 			do {
-
 				// Add the instruction to the block
 				basicBlock.addInstruction(handle);
+				context.addInstruction(handle);
 
 				short opcode = ins.getOpcode();
 
@@ -188,8 +214,8 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes {
 					// we haven't built a CFG for it yet
 
 					// This ends the basic block.
-					// Add a JSR_EDGE to the successor.  When we eventually
-					// inline the JSR subroutine, this edge will be removed.
+					// Add a JSR_EDGE to the successor.
+					// It will be replaced later by the inlined JSR subroutine.
 					context.addEdgeAndExplore(basicBlock, handle.getNext(), JSR_EDGE);
 					endOfBasicBlock = true;
 				} else if (opcode == Constants.RET) {
@@ -203,29 +229,30 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes {
 
 						// Add control edges as appropriate
 						if (visitor.instructionIsThrow()) {
-							handleExceptions(handle, basicBlock);
+							handleExceptions(context, handle, basicBlock);
 						} else {
 							Iterator<Target> i = visitor.targetIterator();
 							while (i.hasNext()) {
 								Target target = i.next();
-								context.addEdgeAndExplore(basicBlock, target.getTargetInstruction(), target.getEdgeType());
+								context.addEdgeAndExplore(basicBlock, target.getTargetInstruction(),
+									target.getEdgeType());
 							}
 						}
 					}
 				}
 
 				if (!endOfBasicBlock) {
-
 					InstructionHandle next = handle.getNext();
-					if (next != null) {
-						// Is the next instruction a control merge or a PEI?
-						if (isMerge(next) || isPEI(next)) {
-							context.addEdgeAndExplore(basicBlock, next, FALL_THROUGH_EDGE);
-							endOfBasicBlock = true;
-						} else {
-							// Basic block continues
-							handle = next;
-						}
+					if (next == null)
+						throw new CFGBuilderException("Control falls off end of method: " + handle);
+
+					// Is the next instruction a control merge or a PEI?
+					if (isMerge(next) || isPEI(next)) {
+						context.addEdgeAndExplore(basicBlock, next, FALL_THROUGH_EDGE);
+						endOfBasicBlock = true;
+					} else {
+						// Basic block continues
+						handle = next;
 					}
 				}
 				
@@ -233,8 +260,18 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes {
 		}
 	}
 
-	private void handleExceptions(InstructionHandle pei, BasicBlock etb) {
-		// TODO: implement
+	private void handleExceptions(Context context, InstructionHandle pei, BasicBlock etb) {
+		List<CodeExceptionGen> exceptionHandlerList = exceptionHandlerMap.getHandlerList(pei);
+		if (exceptionHandlerList == null)
+			return;
+
+		// TODO: should try to prune some obviously infeasible exception edges
+		Iterator<CodeExceptionGen> i = exceptionHandlerList.iterator();
+		while (i.hasNext()) {
+			CodeExceptionGen exceptionHandler = i.next();
+			InstructionHandle handlerStart = exceptionHandler.getHandlerPC();
+			context.addEdgeAndExplore(etb, handlerStart, HANDLED_EXCEPTION_EDGE);
+		}
 	}
 
 	private boolean isPEI(InstructionHandle handle) {
@@ -264,6 +301,42 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes {
 			}
 		}
 		return false;
+	}
+
+	public static void main(String[] argv) throws Exception {
+		if (argv.length != 1) {
+			System.err.println("Usage: " + BetterCFGBuilder2.class.getName() + " <class file>");
+			System.exit(1);
+		}
+
+		String methodName = System.getProperty("cfgbuilder.method");
+
+		JavaClass jclass = new ClassParser(argv[0]).parse();
+		ClassGen classGen = new ClassGen(jclass);
+
+		Method[] methodList = jclass.getMethods();
+		for (int i = 0; i < methodList.length; ++i) {
+			Method method = methodList[i];
+
+			if (method.isAbstract() || method.isNative())
+				continue;
+
+			if (methodName != null && !method.getName().equals(methodName))
+				continue;
+
+			MethodGen methodGen = new MethodGen(method, jclass.getClassName(), classGen.getConstantPool());
+
+			CFGBuilder cfgBuilder = new BetterCFGBuilder2(methodGen);
+			cfgBuilder.build();
+
+			CFG cfg = cfgBuilder.getCFG();
+
+			CFGPrinter cfgPrinter = new CFGPrinter(cfg);
+			System.out.println("---------------------------------------------------------------------");
+			System.out.println("Method: " + SignatureConverter.convertMethodSignature(methodGen));
+			System.out.println("---------------------------------------------------------------------");
+			cfgPrinter.print(System.out);
+		}
 	}
 
 }
