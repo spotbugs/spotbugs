@@ -373,12 +373,6 @@ public class TypeRepository {
 		if (a.equals(b))
 			return a;
 
-		// Other easy cases
-		if (isSubtype(a, b))
-			return b;
-		else if (isSubtype(b, a))
-			return a;
-
 		if (a.isArray() && b.isArray()) {
 			ArrayType aArrayType = (ArrayType) a;
 			ArrayType bArrayType = (ArrayType) b;
@@ -417,7 +411,7 @@ public class TypeRepository {
 		SubtypeQueryResult cachedResultForA = findSupertypes(a);
 		SubtypeQueryResult cachedResultForB = findSupertypes(b);
 
-		for (Iterator<ObjectType> i = cachedResultForB.properSupertypeInBFSOrderIterator(); i.hasNext(); ) {
+		for (Iterator<ObjectType> i = cachedResultForB.supertypeInBFSOrderIterator(); i.hasNext(); ) {
 			ObjectType bSuper = i.next();
 			if (DEBUG) System.out.print("  ....considering " + bSuper);
 			if (bSuper.isInterface()) {
@@ -500,7 +494,7 @@ public class TypeRepository {
 				if (!visited.add(type))
 					continue;
 	
-				cachedResult.addSupertype(subtype, type);
+				cachedResult.addSupertype(type);
 				if (DEBUG) System.out.println("  ...added " + type);
 	
 				try {

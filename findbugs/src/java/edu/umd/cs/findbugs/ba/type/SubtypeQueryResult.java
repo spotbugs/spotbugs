@@ -28,13 +28,13 @@ import java.util.Set;
 /**
  * Class to cache the result of an isSubtype() query
  * so future lookups are fast.  Also caches a complete
- * list of proper supertypes in BFS order.
+ * list of  supertypes in BFS order.
  * @see TypeRepository
  * @author David Hovemeyer
  */
 public class SubtypeQueryResult {
 	private BitSet supertypeSet;
-	private ArrayList<ObjectType> properSupertypeListInBFSOrder;
+	private ArrayList<ObjectType> supertypeListInBFSOrder;
 	private String[] missingClassList;
 
 	private static final String[] emptyList = new String[0];
@@ -44,7 +44,7 @@ public class SubtypeQueryResult {
 	 */
 	public SubtypeQueryResult() {
 		this.supertypeSet = new BitSet();
-		this.properSupertypeListInBFSOrder = new ArrayList<ObjectType>();
+		this.supertypeListInBFSOrder = new ArrayList<ObjectType>();
 		this.missingClassList = emptyList;
 	}
 
@@ -53,14 +53,12 @@ public class SubtypeQueryResult {
 	 * This method should be called on supertypes in
 	 * breadth-first order.  This allows first-common-superclass
 	 * searches to be performed using a linear search
-	 * of the proper supertypes in BFS order.
-	 * @param subtype the subtype
+	 * of the  supertypes in BFS order.
 	 * @param supertype the supertype
 	 */
-	public void addSupertype(ObjectType subtype, ObjectType supertype) {
+	public void addSupertype(ObjectType supertype) {
 		supertypeSet.set(supertype.getLabel());
-		if (!subtype.equals(supertype))
-			properSupertypeListInBFSOrder.add(supertype);
+		supertypeListInBFSOrder.add(supertype);
 	}
 
 	/**
@@ -70,7 +68,7 @@ public class SubtypeQueryResult {
 	public void finish(String[] missingClassList) {
 		if (missingClassList.length > 0)
 			this.missingClassList = missingClassList;
-		properSupertypeListInBFSOrder.trimToSize();
+		supertypeListInBFSOrder.trimToSize();
 	}
 
 	/**
@@ -91,13 +89,13 @@ public class SubtypeQueryResult {
 	}
 
 	/**
-	 * Get set of proper supertypes.
-	 * This is all supertypes except the object type itself.
+	 * Get set of supertypes.
+	 * This is all supertypes including the object type itself.
 	 * @param subtype the subtype (for which this object stores the set of supertypes)
 	 * @param repos the TypeRepository
 	 * @return the set of supertypes (a new object, can be modified)
 	 */
-	public Set<ObjectType> getProperSupertypeSet(ObjectType subtype, TypeRepository repos)
+	public Set<ObjectType> getSupertypeSet(ObjectType subtype, TypeRepository repos)
 		throws ClassNotFoundException {
 
 		// Throw ClassNotFoundException if we can't answer the
@@ -105,14 +103,14 @@ public class SubtypeQueryResult {
 		if (missingClassList.length > 0)
 			throw new ClassNotFoundException("Class not found: " + missingClassList);
 
-		return new HashSet<ObjectType>(properSupertypeListInBFSOrder);
+		return new HashSet<ObjectType>(supertypeListInBFSOrder);
 	}
 
 	/**
-	 * Get iterator over proper supertypes in BFS order.
+	 * Get iterator over  supertypes in BFS order.
 	 */
-	public Iterator<ObjectType> properSupertypeInBFSOrderIterator() {
-		return properSupertypeListInBFSOrder.iterator();
+	public Iterator<ObjectType> supertypeInBFSOrderIterator() {
+		return supertypeListInBFSOrder.iterator();
 	}
 }
 
