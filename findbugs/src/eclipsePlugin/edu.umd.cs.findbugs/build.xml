@@ -40,6 +40,7 @@
 	<!-- Remove generated files and directories. -->
 	<target name="clean">
 		<delete file="${plugin.zip}"/>
+		<delete dir="${build.dir}/plugin"/>
 		<delete>
 			<fileset dir="${build.dir}" includes="${core.libs}"/>
 		</delete>
