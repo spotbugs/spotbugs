@@ -1,7 +1,7 @@
 package edu.umd.cs.findbugs;
-import java.lang.ref.*;
-import java.util.*;
-import edu.umd.cs.findbugs.ba.*;
+import java.util.Map;
+
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 
 public class AnalysisLocal<T> {
     protected T initialValue() {
