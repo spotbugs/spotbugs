@@ -506,6 +506,9 @@ public class FindBugs implements Constants2, ExitCodes
 	// Purge repository of previous contents
 	Repository.clearCache();
 
+	// Clear the cache in the AnalysisContext.
+	AnalysisContext.instance().clearCache();
+
 	// Create a SyntheticRepository based on the current project,
 	// and make it current.
 
