@@ -3,6 +3,8 @@ package edu.umd.cs.findbugs;
 import java.util.*;
 import edu.umd.cs.pugh.visitclass.BetterVisitor;
 import edu.umd.cs.pugh.visitclass.DismantleBytecode;
+import org.apache.bcel.classfile.*;
+import org.apache.bcel.generic.*;
 
 /**
  * An instance of a bug pattern.
@@ -29,7 +31,7 @@ import edu.umd.cs.pugh.visitclass.DismantleBytecode;
  * @see BugAnnotation
  * @author David Hovemeyer
  */
-public class BugInstance {
+public class BugInstance implements Comparable {
 	private String type;
 	private int priority;
 	private int count;
@@ -96,6 +98,17 @@ public class BugInstance {
 	}
 
 	/**
+	 * Add a class annotation.  If this is the first class annotation added,
+	 * it becomes the primary class annotation.
+	 * @param jclass the JavaClass object for the class
+	 * @return this object
+	 */
+	public BugInstance addClass(JavaClass jclass) {
+		addClass(jclass.getClassName());
+		return this;
+	}
+
+	/**
 	 * Add a field annotation.
 	 * @param className name of the class containing the field
 	 * @param fieldName the name of the field
@@ -128,6 +141,17 @@ public class BugInstance {
 	 */
 	public BugInstance addMethod(String className, String methodName, String methodSig) {
 		addMethod(new MethodAnnotation(className, methodName, methodSig));
+		return this;
+	}
+
+	/**
+	 * Add a method annotation.  If this is the first method annotation added,
+	 * it becomes the primary method annotation.
+	 * @param methodGen the MethodGen object for the method
+	 * @return this object
+	 */
+	public BugInstance addMethod(MethodGen methodGen) {
+		addMethod(methodGen.getClassName(), methodGen.getName(), methodGen.getSignature());
 		return this;
 	}
 
@@ -255,6 +279,46 @@ public class BugInstance {
 
 	private void add(BugAnnotation annotation) {
 		annotationList.add(annotation);
+	}
+
+	public int hashCode() {
+		int hashcode = type.hashCode() + priority;
+		Iterator<BugAnnotation> i = annotationIterator();
+		while (i.hasNext())
+			hashcode += i.next().hashCode();
+		return hashcode;
+	}
+
+	public boolean equals(Object o) {
+		if (!(o instanceof BugInstance))
+			return false;
+		BugInstance other = (BugInstance) o;
+		return type.equals(other.type) && priority == other.priority && annotationList.equals(other.annotationList);
+	}
+
+	public int compareTo(Object o) {
+		BugInstance other = (BugInstance) o;
+		int cmp;
+		cmp = type.compareTo(other.type);
+		if (cmp != 0)
+			return cmp;
+		cmp = priority - other.priority;
+		if (cmp != 0)
+			return cmp;
+
+		// Compare BugAnnotations lexicographically
+		int pfxLen = Math.min(annotationList.size(), other.annotationList.size());
+		for (int i = 0; i < pfxLen; ++i) {
+			BugAnnotation lhs = annotationList.get(i);
+			BugAnnotation rhs = other.annotationList.get(i);
+			cmp = lhs.compareTo(rhs);
+			if (cmp != 0)
+				return cmp;
+		}
+
+		// All elements in prefix were the same,
+		// so use number of elements to decide
+		return annotationList.size() - other.annotationList.size();
 	}
 }
 
