@@ -324,7 +324,7 @@ public class FindBugsTask extends Task {
 	/**
 	 * the classpath to use.
 	 */
-	public void setClassPath(Path src) {
+	public void setClasspath(Path src) {
 		if (classpath == null) {
 			classpath = src;
 		} else {
@@ -335,7 +335,7 @@ public class FindBugsTask extends Task {
 	/**
 	 * Path to use for classpath.
 	 */
-	public Path createClassPath() {
+	public Path createClasspath() {
 		if (classpath == null) {
 			classpath = new Path(project);
 		}
@@ -345,8 +345,8 @@ public class FindBugsTask extends Task {
 	/**
 	 * Adds a reference to a classpath defined elsewhere.
 	 */
-	public void setClassPathRef(Reference r) {
-		createClassPath().setRefid(r);
+	public void setClasspathRef(Reference r) {
+		createClasspath().setRefid(r);
 	}
 
 	/**
