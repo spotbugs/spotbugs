@@ -8,20 +8,13 @@ import java.io.*;
 import edu.umd.cs.pugh.visitclass.DismantleBytecode;
 import edu.umd.cs.pugh.visitclass.Constants2;
 
-public class FindFinalizeInvocations extends DismantleBytecode implements   Constants2, Detector {
+public class FindFinalizeInvocations extends BytecodeScanningDetector implements   Constants2 {
 
    private BugReporter bugReporter;
 
    public FindFinalizeInvocations(BugReporter bugReporter) {
 	this.bugReporter = bugReporter;
    }
-
-   public void visitClassContext(ClassContext classContext) {
-	JavaClass jclass = classContext.getJavaClass();
-	jclass.accept(this);
-   }
-
-   public void report() { }
 
    boolean sawSuperFinalize;
    public void visit(Method obj) {

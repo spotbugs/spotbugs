@@ -8,7 +8,7 @@ import java.io.*;
 import edu.umd.cs.pugh.visitclass.DismantleBytecode;
 import edu.umd.cs.pugh.visitclass.Constants2;
 
-public class MutableLock extends DismantleBytecode implements   Constants2, Detector {
+public class MutableLock extends BytecodeScanningDetector implements   Constants2 {
     HashSet setFields = new HashSet();
     boolean thisOnTOS = false;
     private BugReporter bugReporter;
@@ -16,12 +16,6 @@ public class MutableLock extends DismantleBytecode implements   Constants2, Dete
   public MutableLock(BugReporter bugReporter) {
 	this.bugReporter = bugReporter;
   }
-
-  public void visitClassContext(ClassContext classContext) {
-	classContext.getJavaClass().accept(this);
-  }
-
-  public void report() { }
 
   public void visit(JavaClass obj)     {
 	super.visit(obj);
@@ -53,7 +47,6 @@ public class MutableLock extends DismantleBytecode implements   Constants2, Dete
 			&& asUnsignedByte(codeBytes[PC+3]) == DUP
 			&& asUnsignedByte(codeBytes[PC+5]) == MONITORENTER
 			) 
-//		  bugReporter.reportBug(BugInstance.inMethod("ML_SYNC_ON_UPDATED_FIELD", UNKNOWN_PRIORITY, this));
 		  bugReporter.reportBug(new BugInstance("ML_SYNC_ON_UPDATED_FIELD", NORMAL_PRIORITY)
 			.addClassAndMethod(this)
 			.addReferencedField(this));
