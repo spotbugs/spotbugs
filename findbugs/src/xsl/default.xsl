@@ -98,7 +98,15 @@
 	<body>
 
 	<h1>FindBugs Report</h1>
-	<p> Some metadata about the report would be nice. </p>
+
+	<h2>Contents</h2>
+	<ul>
+		<li><a href="#Warnings_CORRECTNESS">Correctness Warnings</a></li>
+		<li><a href="#Warnings_MT_CORRECTNESS">Multithreaded Correctness Warnings</a></li>
+		<li><a href="#Warnings_MALICIOUS_CODE">Malicious Code Vulnerability Warnings</a></li>
+		<li><a href="#Warnings_PERFORMANCE">Performance Warnings</a></li>
+		<li><a href="#Details">Details</a></li>
+	</ul>
 
 	<h1>Warnings</h1>
 
@@ -148,7 +156,7 @@
 	</table>
 	</p>
 
-	<h1>Details</h1>
+	<h1><a name="Details">Details</a></h1>
 
 	<xsl:apply-templates select="/BugCollection/BugPattern">
 		<xsl:sort select="@abbrev"/>
@@ -191,7 +199,7 @@
 </xsl:template>
 
 <xsl:template match="BugPattern">
-	<h2><a name="{@type}"><xsl:value-of select="@abbrev"/>: <xsl:value-of select="ShortDescription"/></a></h2>
+	<h2><a name="{@type}"><xsl:value-of select="@type"/>: <xsl:value-of select="ShortDescription"/></a></h2>
 	<xsl:value-of select="Details" disable-output-escaping="yes"/>
 </xsl:template>
 
