@@ -536,7 +536,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 	}
 
 	private static UserPreferences createDefaultUserPreferences(IProject project) {
-		UserPreferences prefs = new UserPreferences();
+		UserPreferences prefs = UserPreferences.createDefaultUserPreferences();
 		
 		try {
 			
