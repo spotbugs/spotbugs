@@ -1,7 +1,7 @@
 /*
  * FindBugs - Find bugs in Java programs
- * Copyright (C) 2005 Dave Brosius
- * Copyright (C) 2003,2004 University of Maryland
+ * Copyright (C) 2004,2005 Dave Brosius
+ * Copyright (C) 2004,2005 University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -36,9 +36,8 @@ import javax.swing.table.JTableHeader;
 import javax.swing.table.TableModel;
 
 /**
- * This Table Model is a currently a noop (passthru) table model.
- * This will be embellished to build a white box sortable table model.
- * In this way, the base JTables that use it, need not change.
+ * A Table model that sits between the JTable and the real model.
+ * This model converts view row indexes, into sorted model row indexes.
  */
 public class DefaultSortedTableModel extends AbstractTableModel
 {
@@ -74,8 +73,7 @@ public class DefaultSortedTableModel extends AbstractTableModel
 		if (baseHeader != null)
 			baseHeader.removeMouseListener(headerListener);
 		baseHeader = header;
-		baseHeader.addMouseListener(headerListener);
-		
+		baseHeader.addMouseListener(headerListener);	
 	}
 	
 	// Listener handling
@@ -255,5 +253,5 @@ public class DefaultSortedTableModel extends AbstractTableModel
 			super.mouseClicked(e);
 			DefaultSortedTableModel.this.fireTableDataChanged();
 		}
-}
+	}
 }
