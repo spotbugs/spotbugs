@@ -156,6 +156,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
     private void initComponents() {//GEN-BEGIN:initComponents
         java.awt.GridBagConstraints gridBagConstraints;
 
+        jSplitPane2 = new javax.swing.JSplitPane();
         jSplitPane1 = new javax.swing.JSplitPane();
         jScrollPane1 = new javax.swing.JScrollPane();
         navigatorTree = new javax.swing.JTree();
@@ -191,6 +192,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
         sortOrderLabel = new javax.swing.JLabel();
         leftFiller = new javax.swing.JLabel();
         rightFiller = new javax.swing.JLabel();
+        jScrollPane5 = new javax.swing.JScrollPane();
         jMenuBar1 = new javax.swing.JMenuBar();
         fileMenu = new javax.swing.JMenu();
         newProjectItem = new javax.swing.JMenuItem();
@@ -209,6 +211,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
             }
         });
 
+        jSplitPane2.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
         jSplitPane1.setResizeWeight(0.4);
         navigatorTree.setModel(createNavigatorTreeModel());
         jScrollPane1.setViewportView(navigatorTree);
@@ -458,6 +461,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
         jScrollPane4.setViewportView(bugTree);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
         gridBagConstraints.gridwidth = 4;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.weightx = 1.0;
@@ -472,7 +477,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
-        gridBagConstraints.gridy = 1;
+        gridBagConstraints.gridy = 0;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         bugTreePanel.add(sortOrderChooser, gridBagConstraints);
 
@@ -480,20 +485,19 @@ public class FindBugsFrame extends javax.swing.JFrame {
         sortOrderLabel.setText("Sort order:");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 1;
+        gridBagConstraints.gridy = 0;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
         bugTreePanel.add(sortOrderLabel, gridBagConstraints);
 
-        leftFiller.setToolTipText("null");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 1;
+        gridBagConstraints.gridy = 0;
         gridBagConstraints.weightx = 0.5;
         bugTreePanel.add(leftFiller, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 3;
-        gridBagConstraints.gridy = 1;
+        gridBagConstraints.gridy = 0;
         gridBagConstraints.weightx = 0.5;
         bugTreePanel.add(rightFiller, gridBagConstraints);
 
@@ -501,7 +505,11 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
         jSplitPane1.setRightComponent(viewPanel);
 
-        getContentPane().add(jSplitPane1, java.awt.BorderLayout.CENTER);
+        jSplitPane2.setTopComponent(jSplitPane1);
+
+        jSplitPane2.setBottomComponent(jScrollPane5);
+
+        getContentPane().add(jSplitPane2, java.awt.BorderLayout.CENTER);
 
         jMenuBar1.setFont(new java.awt.Font("Dialog", 0, 12));
         fileMenu.setMnemonic('F');
@@ -616,7 +624,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_formWindowOpened
 
     private void newProjectItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newProjectItemActionPerformed
-        String projectName = "<<untitled project " + (++projectCount) + ">>";
+        String projectName = "<<project " + (++projectCount) + ">>";
         System.out.println("Adding " + projectName);
         Project project = new Project(projectName);
         projectCollection.addProject(project);
@@ -925,6 +933,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JMenu fileMenu;
     private javax.swing.JMenuItem closeProjectItem;
+    private javax.swing.JSplitPane jSplitPane2;
     private javax.swing.JMenuItem newProjectItem;
     private javax.swing.JTextField jarNameTextField;
     private javax.swing.JLabel leftFiller;
@@ -944,6 +953,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
     private javax.swing.JButton removeJarButton;
     private javax.swing.JLabel jarFileListLabel;
     private javax.swing.JButton addJarButton;
+    private javax.swing.JScrollPane jScrollPane5;
     private javax.swing.JList sourceDirList;
     private javax.swing.JTree navigatorTree;
     private javax.swing.JSeparator jSeparator1;
