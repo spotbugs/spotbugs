@@ -74,10 +74,12 @@ public class BCPMethodReturnCheck extends ByteCodePatternDetector {
 					"/.*", 
 					Invoke.CONSTRUCTOR, 
 					bugReporter),
+				/*
 				new Invoke("java.lang.Thread", "currentThread", 
 					"()Ljava/lang/Thread;", 
 					Invoke.STATIC, 
 					bugReporter),
+				*/
 				new Invoke("java.security.MessageDigest", 
 					"digest", "([B)[B", 
 					Invoke.INSTANCE, bugReporter),
