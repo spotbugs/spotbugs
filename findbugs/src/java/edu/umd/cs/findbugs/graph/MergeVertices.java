@@ -17,7 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-// $Revision: 1.4 $
+// $Revision: 1.5 $
 
 package edu.umd.cs.daveho.graph;
 
@@ -42,8 +42,10 @@ public class MergeVertices
 	 * @param vertexSet the set of vertices to be merged
 	 * @param g the graph to be modified
 	 * @param combinator object used to combine vertices
+	 * @param toolkit GraphToolkit used to copy auxiliary information for edges
 	 */
-	public void mergeVertices(Set<VertexType> vertexSet, GraphType g, VertexCombinator<VertexType> combinator) {
+	public void mergeVertices(Set<VertexType> vertexSet, GraphType g, VertexCombinator<VertexType> combinator,
+		GraphToolkit<GraphType, EdgeType, VertexType> toolkit) {
 
 		// Special case: if the vertex set contains a single vertex
 		// or is empty, there is nothing to do
@@ -85,7 +87,9 @@ public class MergeVertices
 			if (g.lookupEdge(source, target) != null)
 				continue;
 
-			g.addEdge(source, target);
+			EdgeType compositeEdge = g.addEdge(source, target);
+			// FIXME: we really should have an EdgeCombinator here
+			toolkit.copyEdge(e, compositeEdge);
 		}
 
 		// Remove all of the vertices in the vertex set; this will

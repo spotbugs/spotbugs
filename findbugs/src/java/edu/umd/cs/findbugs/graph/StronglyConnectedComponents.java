@@ -17,7 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-// $Revision: 1.4 $
+// $Revision: 1.5 $
 
 package edu.umd.cs.daveho.graph;
 
@@ -56,11 +56,11 @@ public class StronglyConnectedComponents
 	/**
 	 * Find the strongly connected components in given graph.
 	 * @param g the graph
-	 * @param factory a GraphFactory, used to create temporary graphs
+	 * @param toolkit a GraphToolkit, used to create temporary graphs
 	 *   used by the algorithm
 	 */
 	public void findStronglyConnectedComponents(GraphType g,
-		GraphFactory<GraphType, EdgeType, VertexType> factory) {
+		GraphToolkit<GraphType, EdgeType, VertexType> toolkit) {
 
 		// Perform the initial depth first search
 		DepthFirstSearch<GraphType, EdgeType, VertexType> initialDFS =
@@ -72,7 +72,7 @@ public class StronglyConnectedComponents
 		// Create a transposed graph
 		Transpose<GraphType, EdgeType, VertexType> t =
 			new Transpose<GraphType, EdgeType, VertexType>();
-		GraphType transpose = t.transpose(g, factory);
+		GraphType transpose = t.transpose(g, toolkit);
 
 		// Create a set of vertices in the transposed graph,
 		// in descending order of finish time in the initial

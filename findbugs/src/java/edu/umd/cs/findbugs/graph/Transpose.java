@@ -17,7 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-// $Revision: 1.4 $
+// $Revision: 1.5 $
 
 package edu.umd.cs.daveho.graph;
 
@@ -46,12 +46,12 @@ public class Transpose
 	 * Transpose a graph.  Note that the original graph is not modified;
 	 * the new graph and its vertices and edges are new objects.
 	 * @param orig the graph to transpose
-	 * @param factory a GraphFactory to be used to create the transposed Graph
+	 * @param toolkit a GraphToolkit to be used to create the transposed Graph
 	 * @return the transposed Graph
 	 */
-	public GraphType transpose(GraphType orig, GraphFactory<GraphType, EdgeType, VertexType> factory) {
+	public GraphType transpose(GraphType orig, GraphToolkit<GraphType, EdgeType, VertexType> toolkit) {
 
-		GraphType trans = factory.createGraph();
+		GraphType trans = toolkit.createGraph();
 
 		// For each vertex in original graph, create an equivalent
 		// vertex in the transposed graph,
