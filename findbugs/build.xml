@@ -209,7 +209,7 @@
 	</target>
 
 	<!-- Run JUnit test cases -->
-	<target name="runjunit" depends="junittests">
+	<target name="runjunit" depends="junittests,jars">
 		<echo>Running JUnit test cases for FindBugs...</echo>
 		<java dir="."
 			fork="true"
