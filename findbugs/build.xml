@@ -152,6 +152,16 @@
 
     <!-- Target to compile classes. -->
     <target name="classes" depends="init">
+      <!-- Compile with the JSR14 prototype compiler and compiler adapter -->
+<!--
+      <javac srcdir="${findbugs.src.dir}" destdir="${class.dir}"
+             source="1.5"
+             debug="true"
+             compiler="com.cortexeb.Jsr14CompilerAdapter">
+        <classpath refid="classpath" />
+      </javac>
+-->
+
       <!-- Use the following to compile using JDK 1.5 javac -->
       <javac srcdir="${findbugs.src.dir}" destdir="${class.dir}"
              source="1.5"
@@ -294,6 +304,18 @@
 
     <!-- Target to build the anttask -->
     <target name="anttask" depends="findbugs">
+
+      <!-- Compile with JSR-14 prototype compiler. -->
+<!--
+      <javac srcdir="${anttask.src.dir}" 
+             source="1.5"
+             target="jsr14" debug="true" destdir="${class.dir}"
+             compiler="com.cortexeb.Jsr14CompilerAdapter">
+        <classpath refid="classpath" />
+      </javac>
+-->
+
+      <!-- Compile with JDK 1.5 javac.  (Recommended.) -->
       <javac srcdir="${anttask.src.dir}" 
              source="1.5"
              target="jsr14" debug="true" destdir="${class.dir}" >
@@ -356,6 +378,16 @@
 
     <!-- Build jar file of test cases.  -->
     <target name="testjar" depends="init,anttask" >
+       <!-- Compile with JSR-14 compiler. -->
+<!--
+       <javac srcdir="${test.dir}" 
+              source="1.5"
+              target="jsr14"
+              excludes="IgnoredReturnValue.java,TryLock.java,JSR166.java" debug="true" 
+              compiler="com.cortexeb.Jsr14CompilerAdapter"/>
+-->
+
+       <!-- Compile with JDK 1.5 javac. (Recommended.) -->
        <javac srcdir="${test.dir}" 
               source="1.5"
               target="jsr14"
@@ -388,6 +420,16 @@
 
     <!-- Build test cases that require JSR166 library. -->
     <target name="jsr166test">
+       <!-- Compile with JSR-14 compiler. -->
+<!--
+       <javac srcdir="${test.dir}"
+              source="1.5"
+              target="jsr14"
+              includes="IgnoredReturnValue.java,TryLock.java,JSR166.java" debug="true"
+              compiler="com.cortexeb.Jsr14CompilerAdapter"/>
+-->
+
+       <!-- Compile with JDK 1.5 javac. (Recommended.) -->
        <javac srcdir="${test.dir}"
               source="1.5"
               target="jsr14"
@@ -406,6 +448,18 @@
     <target name="junit" depends="findbugs,tools,junitTestJarCheck" unless="junit.jar.uptodate">
       <mkdir dir="${junit.build.dir}" />
 
+      <!-- Compile with JSR-14 compiler. -->
+<!--
+      <javac srcdir="${junit.src.dir}" destdir="${junit.build.dir}"
+             source="1.5"
+             target="jsr14"
+             debug="true"
+             compiler="com.cortexeb.Jsr14CompilerAdapter">
+        <classpath refid="junit.classpath"/>
+      </javac>
+-->
+
+      <!-- Compile with JDK 1.5 javac. (Recommended.) -->
       <javac srcdir="${junit.src.dir}" destdir="${junit.build.dir}"
              source="1.5"
              target="jsr14"
@@ -443,7 +497,19 @@
          - Eclipse plugin classpath extractor
     -->
     <target name="tools" depends="classes">
-      <!-- Use the following to compile using JDK 1.5 javac -->
+      <!-- Compile with JSR-14 compiler. -->
+<!--
+      <javac srcdir="${tools.src.dir}" destdir="${tools.dir}"
+             excludes="edu/umd/cs/findbugs/tools/patcomp/*"
+             source="1.5"
+             target="jsr14"
+             debug="true"
+             compiler="com.cortexeb.Jsr14CompilerAdapter">
+        <classpath refid="tools.buildclasspath"/>
+      </javac> 
+-->
+
+      <!-- Compile with JDK 1.5 javac. (Recommended.) -->
       <javac srcdir="${tools.src.dir}" destdir="${tools.dir}"
              excludes="edu/umd/cs/findbugs/tools/patcomp/*"
              source="1.5"
