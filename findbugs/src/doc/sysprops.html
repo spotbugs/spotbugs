@@ -1,0 +1,70 @@
+<html>
+<head>
+<title>FindBugs Optional System Properties</title>
+<link rel="stylesheet" type="text/css" href="findbugs.css">
+</head>
+<body>
+
+<table width="100%"><tr>
+
+@HTML_SIDEBAR@
+
+<td align="left" valign="top">
+
+<h1>FindBugs Optional System Properties</h1>
+
+<p> These system properties can be added to the command line to alter the way
+findbugs works. These options should be considered experimental. The description
+gives information if the field is set to true.
+</p>
+
+<table width="100%" border="1">
+	<tr bgColor="#F0F0F0"><th>System Property</th><th>Description</th></tr>
+	
+
+	<tr>
+		<td>de.comment</td>
+		<td>Don't report empty catch blocks if a source comment is found in the block.</td>
+	</tr>
+	<tr>
+		<td>findbugs.maskedfields.locals</td>
+		<td>Report on local variables that mask fields.</td>
+	</tr>
+	<tr>
+		<td>findbugs.refcomp.reportAll</td>
+		<td>?</td>
+	</tr>
+	<tr>
+		<td>fis.eval</td>
+		<td>?</td>
+	</tr>
+	<tr>
+		<td>fis.noAdjustSubclass</td>
+		<td>?</td>
+	</tr>
+	<tr>
+		<td>fos.allowWUS</td>
+		<td>Ignore wrapping streams that are wrapping uninteresting streams (like in memory streams).</td>
+	</tr>
+	<tr>
+		<td>ic.createInstance</td>
+		<td>?</td>
+	</tr>
+	<tr>
+		<td>mrc.checkall</td>
+		<td>Check for 1.5 specific method return values being ignored</td>
+	</tr>
+	<tr>
+		<td>sf.comment</td>
+		<td>Ignore switch fall thru cases if a source comment is found with the word 'fall' in it.</td>
+	</tr>
+</table>
+
+@HTML_FOOTER@
+
+</td>
+
+</tr></table>
+
+</body>
+</html>
