@@ -1,0 +1,46 @@
+<html>
+<head>
+<title>FindBugs Fact Sheet</title>
+</head>
+<body>
+
+<table width="100%"><tr>
+
+@HTML_SIDEBAR@
+
+<td align="left" valign="top">
+
+<h1>FindBugs Fact Sheet</h1>
+
+<p> FindBugs looks for bugs in Java programs.&nbsp; It is based
+on the concept of <i>bug patterns</i>.&nbsp; A bug pattern is a code
+idiom that is often an error.&nbsp; Bug patterns arise for a variety
+of reasons:
+
+<ul>
+<li> Difficult language features
+<li> Misunderstood API methods
+<li> Misunderstood invariants when code is modified during maintenance
+<li> Garden variety mistakes: typos, use of the wrong boolean operator
+</ul>
+
+<p> FindBugs uses <i>static analysis</i> to inspect Java bytecode
+for occurrences of bug patterns.&nbsp; We have found that FindBugs finds
+real errors in most Java software.&nbsp; Because its analysis is
+sometimes imprecise, FindBugs sometimes reports <i>false warnings</i>,
+which are warnings that do not indicate real errors.&nbsp; 
+In practice, the false positive rate for the bug pattern detectors
+implemented in FindBugs is generally 50% or less.
+
+<p> FindBugs is free software, available under the terms of the
+<a href="http://www.gnu.org/copyleft/lesser.html">Lesser GNU Public License</a>.&nbsp;
+It is written in Java, and can be run with any virtual machine compatible
+with Sun's JDK 1.4.&nbsp; It can analyze programs written for any version
+of Java.
+
+</td>
+
+</tr></table>
+
+</body>
+</html>
