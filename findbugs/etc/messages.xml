@@ -2952,6 +2952,21 @@ just use the constant. Methods detected are:
       </Details>
     </BugPattern>
 
+    <BugPattern type="MTIA_SUSPECT_SERVLET_INSTANCE_FIELD">
+	  <ShortDescription>Class extends Servlet class and uses instance variables.</ShortDescription>
+	  <LongDescription>Class {0} extends Servlet class and uses instance variables.</LongDescription>
+	  <Details>
+	<![CDATA[
+    <p>
+    This class extends from a Servlet class, and uses a instance member variable. Since only
+    one instance of a Servlet class is created by the j2ee framework, and used in a 
+    multithreaded way, this paradigm is highly discouraged and most likely problematic. Consider
+    only using method local variables.
+    </p>
+    ]]>
+      </Details>
+    </BugPattern>
+
   <!--
   **********************************************************************
    BugCodes
