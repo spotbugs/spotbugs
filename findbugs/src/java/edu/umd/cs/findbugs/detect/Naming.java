@@ -178,6 +178,7 @@ public class Naming extends PreorderVisitor implements Detector, Constants2 {
 
     public void visit(Method obj) {
 	if (obj.isAbstract()) return;
+	if (obj.isPrivate()) return;
 	if (getMethodName().length() == 1) return;
 
 	if (getMethodName().equals("equal") && getMethodSig().equals("(Ljava/lang/Object;)Z"))  {
