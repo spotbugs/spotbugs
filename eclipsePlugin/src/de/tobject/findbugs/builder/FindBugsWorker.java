@@ -44,6 +44,7 @@ import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.FindBugs;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.SortedBugCollection;
+import edu.umd.cs.findbugs.UpdateBugCollection;
 import edu.umd.cs.findbugs.config.UserPreferences;
 
 /**
@@ -54,6 +55,7 @@ import edu.umd.cs.findbugs.config.UserPreferences;
  * @since 26.09.2003
  */
 public class FindBugsWorker {
+	private static final boolean INCREMENTAL_UPDATE = false;
 	
 	/** Controls debugging. */
 	public static boolean DEBUG;
@@ -148,7 +150,6 @@ public class FindBugsWorker {
 			
 			// Merge new results into existing results.
 			updateBugCollection(findBugsProject, bugReporter);
-
 		}
 		catch (InterruptedException e) {
 			if (DEBUG) {
@@ -163,10 +164,62 @@ public class FindBugsWorker {
 		}
 	}
 
-	private void updateBugCollection(Project findBugsProject, Reporter bugReporter) throws CoreException, IOException, DocumentException {
-		// FIXME we do this destructively for now: should do incrementally
+	/**
+	 * Update the BugCollection for the project.
+	 * 
+	 * @param findBugsProject FindBugs project representing analyzed classes
+	 * @param bugReporter     Reporter used to collect the new warnings
+	 * @throws CoreException
+	 * @throws IOException
+	 * @throws DocumentException
+	 */
+	private void updateBugCollection(Project findBugsProject, Reporter bugReporter)
+			throws CoreException, IOException, DocumentException {
 		SortedBugCollection oldBugCollection = FindbugsPlugin.readBugCollection(project, monitor);
 		SortedBugCollection newBugCollection = bugReporter.getBugCollection();
+
+		if (INCREMENTAL_UPDATE) {
+			updateBugCollectionIncrementally(bugReporter, oldBugCollection, newBugCollection);
+		} else {
+			updateBugCollectionDestructively(bugReporter, oldBugCollection, newBugCollection);
+		}
+
+		// Store updated BugCollection
+		FindbugsPlugin.storeBugCollection(project, oldBugCollection, findBugsProject, monitor);
+	}
+
+	/**
+	 * Update the original bug collection to include the information in
+	 * the new bug collection, preserving the history and classification
+	 * of each warning.
+	 * 
+	 * @param bugReporter      Reporter used to collect the new warnings
+	 * @param oldBugCollection original warnings
+	 * @param newBugCollection new warnings
+	 */
+	private void updateBugCollectionIncrementally(
+			Reporter bugReporter,
+			SortedBugCollection oldBugCollection,
+			SortedBugCollection newBugCollection) {
+		UpdateBugCollection updater = new UpdateBugCollection(oldBugCollection, newBugCollection);
+		updater.setUpdatedClassNameSet(bugReporter.getAnalyzedClassNames());
+		updater.execute();
+	}
+
+	/**
+	 * Update the original bug collection destructively.
+	 * Each warning in the set of analyzed classes is replaced with
+	 * warnings from the new bug collection.  Past history is discarded.
+	 * 
+	 * @param bugReporter      Reporter used to collect the new warnings
+	 * @param oldBugCollection original warnings
+	 * @param newBugCollection new warnings
+	 */
+	private void updateBugCollectionDestructively(
+			Reporter bugReporter,
+			SortedBugCollection oldBugCollection,
+			SortedBugCollection newBugCollection) {
+		// FIXME we do this destructively for now: should do incrementally
 
 		// Algorithm:
 		// Remove all old warnings for classes which were just analyzed.
@@ -186,15 +239,6 @@ public class FindBugsWorker {
 		for (Iterator i = newBugCollection.iterator(); i.hasNext(); ) {
 			BugInstance newWarning = (BugInstance) i.next();
 			oldBugCollection.add(newWarning);
-		}
-
-		// Store updated BugCollection
-		try {
-			FindbugsPlugin.storeBugCollection(project, oldBugCollection, findBugsProject, monitor);
-		} catch (IOException e) {
-			FindbugsPlugin.getDefault().logException(e, "Could not save FindBugs warnings for project");
-		} catch (CoreException e) {
-			FindbugsPlugin.getDefault().logException(e, "Could not save FindBugs warnings for project");
 		}
 	}
 
