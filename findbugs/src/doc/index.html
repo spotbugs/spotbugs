@@ -38,12 +38,18 @@ Send your comments to <a href="mailto:daveho@cs.umd.edu">daveho@cs.umd.edu</a>.
 <ul>
 <li> New detector to find calls to Collection.toArray() with zero-length
      array argument; it is more efficient to pass an array the size
-     of the collection, which can be populated and returned as the result
+     of the collection, which can be populated and returned as the result (Dave Brosius)
+<li> New detector to find comparisions of values computed
+     with bitwise operators that always the same at runtime
+     (Tom Truscott)
 <li> In Swing GUI, analysis error dialog supports "Select All"
      and "Copy" operations for easy generation of error reports
      (Dave Brosius)
 <li> Enhancement to DumbMethods detector (Dave Brosius)
 <li> Fixed bug in DroppedException detector (Dave Brosius)
+<!--
+<li> Major overhaul of internal representation of Java types
+-->
 <li> The source distribution defaults to using JDK 1.5 javac
      to compile, but support for compiling with JSR-14 prototype
      is still supported
