@@ -30,7 +30,16 @@ public class OSXAdapter extends ApplicationAdapter {
 	public void handleAbout(ApplicationEvent ae) {
 		if (mainApp != null) {
 			ae.setHandled(true);
-			mainApp.about();
+                        // We need to invoke modal About Dialog asynchronously
+                        // otherwise the Application queue is locked for the duration
+                        // of the about Dialog, which results in a deadlock if a URL is
+                        // selected, and we get a ReOpenApplication event when user
+                        // switches back to Findbugs.
+                        javax.swing.SwingUtilities.invokeLater(new Runnable() {
+                                public void run() {
+                                    mainApp.about();
+                                }
+                            });
 		} else {
 			throw new IllegalStateException("handleAbout: " +
                                                         "MyApp instance detached from listener");
