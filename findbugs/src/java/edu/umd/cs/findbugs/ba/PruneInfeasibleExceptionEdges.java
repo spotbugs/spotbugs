@@ -64,6 +64,12 @@ public class PruneInfeasibleExceptionEdges implements EdgeTypes {
 		}
 	}
 
+	/**
+	 * Class for keeping track of exceptions that can be
+	 * thrown by an instruction.  As we examine exception handlers,
+	 * we remove exception types that are guaranteed to be
+	 * caught.
+	 */
 	private static class ExceptionSet {
 		private Set<ObjectType> set = new HashSet<ObjectType>();
 		private boolean universalHandler = false;
@@ -73,8 +79,6 @@ public class PruneInfeasibleExceptionEdges implements EdgeTypes {
 		public boolean isEmpty() { return set.isEmpty(); }
 
 		public boolean add(ObjectType type) { return set.add(type); }
-
-		public boolean remove(ObjectType type) { return set.remove(type); }
 
 		public void sawUniversal() {
 			universalHandler = true;
@@ -240,7 +244,7 @@ public class PruneInfeasibleExceptionEdges implements EdgeTypes {
 		CodeExceptionGen handler = handlerBlock.getExceptionGen();
 		ObjectType catchType = handler.getCatchType();
 
-		if (catchType == null || catchType.equals(Type.THROWABLE)) {
+		if (Hierarchy.isUniversalExceptionHandler(catchType)) {
 			// Universal handler: it catches all exceptions
 			thrownExceptionSet.sawUniversal();
 			return true;
@@ -287,6 +291,12 @@ public class PruneInfeasibleExceptionEdges implements EdgeTypes {
 
 		return reachable;
 	}
+
+/*
+	private void setEdgeFlags(Edge edge, ObjectType catchType, ExceptionSet exceptionSet)
+		throws ClassNotFoundException {
+	}
+*/
 }
 
 // vim:ts=4

@@ -607,31 +607,28 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 	private void handleExceptions(Subroutine subroutine, InstructionHandle pei, BasicBlock etb) {
 		etb.setExceptionThrower(pei);
 
-		// Remember whether or not an ANY exception type handler
+		// Remember whether or not a universal exception handler
 		// is reachable.  If so, then we know that exceptions raised
 		// at this instruction cannot propagate out of the method.
-		boolean sawAnyExceptionHandler = false;
+		boolean sawUniversalExceptionHandler = false;
 
 		List<CodeExceptionGen> exceptionHandlerList = exceptionHandlerMap.getHandlerList(pei);
 		if (exceptionHandlerList != null) {
-			// TODO: should try to prune some obviously infeasible exception edges
 			Iterator<CodeExceptionGen> i = exceptionHandlerList.iterator();
 			while (i.hasNext()) {
 				CodeExceptionGen exceptionHandler = i.next();
 				InstructionHandle handlerStart = exceptionHandler.getHandlerPC();
 				subroutine.addEdgeAndExplore(etb, handlerStart, HANDLED_EXCEPTION_EDGE);
 	
-				if (exceptionHandler.getCatchType() == null ||
-					exceptionHandler.getCatchType().equals(ObjectType.THROWABLE))
-					sawAnyExceptionHandler = true;
+				if (Hierarchy.isUniversalExceptionHandler(exceptionHandler.getCatchType()))
+					sawUniversalExceptionHandler = true;
 			}
 		}
 
 		// If required, mark this block as throwing an unhandled exception.
 		// For now, we assume that if there is no reachable handler that handles
 		// ANY exception type, then the exception can be thrown out of the method.
-		// FIXME: this is more conservative than necessary.
-		if (!sawAnyExceptionHandler) {
+		if (!sawUniversalExceptionHandler) {
 			if (DEBUG) System.out.println("Adding unhandled exception edge from " + pei);
 			subroutine.setUnhandledExceptionBlock(etb);
 		}

@@ -60,6 +60,18 @@ public class Hierarchy {
 	}
 
 	/**
+	 * Determine if the given ObjectType reference represents
+	 * a <em>universal</em> exception handler.  That is,
+	 * one that will catch any kind of exception.
+	 * @param catchType the ObjectType of the exception handler
+	 * @return true if catchType is null, or if catchType is
+	 *   java.lang.Throwable
+	 */
+	public static boolean isUniversalExceptionHandler(ObjectType catchType) {
+		return catchType == null || catchType.equals(Type.THROWABLE);
+	}
+
+	/**
 	 * Determine if method whose name and signature is specified
 	 * is a monitor wait operation.
 	 * @param methodName name of the method

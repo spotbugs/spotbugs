@@ -102,8 +102,7 @@ public class ExceptionHandlerMap {
 					// i.e., an ANY handler, or catch(Throwable...),
 					// then no further (lower-priority)
 					// handlers are reachable from the instruction.
-					if (exceptionHandler.getCatchType() == null ||
-						exceptionHandler.getCatchType().equals(ObjectType.THROWABLE))
+					if (Hierarchy.isUniversalExceptionHandler(exceptionHandler.getCatchType()))
 						break handlerLoop;
 				}
 			}
