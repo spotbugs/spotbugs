@@ -160,6 +160,7 @@
              debug="true">
         <classpath refid="classpath" />
         <compilerarg value="-Xlint:unchecked"/>
+        <compilerarg value="-Xlint:deprecation"/>
       </javac>
     </target>
 
@@ -298,6 +299,7 @@
              target="jsr14" debug="true" destdir="${class.dir}" >
         <classpath refid="classpath" />
         <compilerarg value="-Xlint:unchecked"/>
+        <compilerarg value="-Xlint:deprecation"/>
       </javac>
  
       <copy file="${anttask.src.dir}/edu/umd/cs/findbugs/anttask/tasks.properties" 
@@ -404,6 +406,7 @@
              debug="true">
         <classpath refid="junit.classpath"/>
         <compilerarg value="-Xlint:unchecked"/>
+        <compilerarg value="-Xlint:deprecation"/>
       </javac>
 
       <jar destfile="${junit.build.dir}/junitTests.jar"
@@ -428,6 +431,7 @@
              debug="true">
         <classpath refid="tools.buildclasspath"/>
         <compilerarg value="-Xlint:unchecked"/>
+        <compilerarg value="-Xlint:deprecation"/>
       </javac> 
     </target>
 
