@@ -337,10 +337,18 @@ public class FindBugsTask extends MatchingTask {
 
             errorCount = 0;            
 	        BugReporter bugReporter = new Reporter( sorted, suppressList ); 
-	        FindBugs findBugs = new FindBugs(bugReporter);
          
             try { 
-              findBugs.execute( (String[])checkList.toArray( new String[0] ) ); 
+			  edu.umd.cs.findbugs.Project findBugsProject = new edu.umd.cs.findbugs.Project();
+	          FindBugs findBugs = new FindBugs(bugReporter, findBugsProject);
+
+			  Iterator i = checkList.iterator();
+			  while (i.hasNext()) {
+				String fileName = (String) i.next();
+				findBugsProject.addJar(fileName);
+			  }
+
+              findBugs.execute(); 
             } catch ( Exception e ) {
 				log( e.getMessage(), Project.MSG_ERR );
                 errorCount++;

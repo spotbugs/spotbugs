@@ -30,9 +30,6 @@ import java.io.IOException;
 import java.util.*;
 import javax.swing.tree.DefaultTreeModel;
 import edu.umd.cs.findbugs.*;
-import org.apache.bcel.Repository;
-import org.apache.bcel.util.ClassPath;
-import org.apache.bcel.util.SyntheticRepository;
 
 /**
  * Representation of a run of the FindBugs analysis on a Project.
@@ -85,7 +82,7 @@ public class AnalysisRun {
         this.frame = frame;
         this.logger = frame.getLogger();
         this.reporter = new Reporter();
-        this.findBugs = new FindBugs(reporter);
+        this.findBugs = new FindBugs(reporter, project);
         this.treeModelMap = new HashMap<String, DefaultTreeModel>();
     }
     
@@ -104,29 +101,8 @@ public class AnalysisRun {
     public void execute(FindBugsProgress progressCallback) throws java.io.IOException, InterruptedException {
         findBugs.setProgressCallback(progressCallback);
 
-	// Create a ClassPath and SyntheticRepository to reflect the exact classpath
-	// that should be used for the analysis.
-
-	// Add aux class path entries specified in project
-	StringBuffer buf = new StringBuffer();
-	List auxClasspathEntryList = project.getAuxClasspathEntryList();
-	Iterator i = auxClasspathEntryList.iterator();
-	while (i.hasNext()) {
-	    String entry = (String) i.next();
-	    buf.append(entry);
-	    buf.append(File.pathSeparatorChar);
-	}
-
-	// Add the system classpath entries
-	buf.append(ClassPath.getClassPath());
-
-	// Set up the Repository to use the combined classpath
-	ClassPath classPath = new ClassPath(buf.toString());
-	SyntheticRepository repository = SyntheticRepository.getInstance(classPath);
-	Repository.setRepository(repository);
-        
         // Run the analysis!
-        findBugs.execute(project.getJarFileArray());
+        findBugs.execute();
     }
 
     /**

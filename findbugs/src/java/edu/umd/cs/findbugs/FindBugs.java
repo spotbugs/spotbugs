@@ -26,6 +26,8 @@ import edu.umd.cs.pugh.io.IO;
 import edu.umd.cs.pugh.visitclass.Constants2;
 import org.apache.bcel.classfile.*;
 import org.apache.bcel.Repository;
+import org.apache.bcel.util.ClassPath;
+import org.apache.bcel.util.SyntheticRepository;
 
 /**
  * An instance of this class is used to apply the selected set of
@@ -145,6 +147,7 @@ public class FindBugs implements Constants2
   private static final boolean DEBUG = Boolean.getBoolean("findbugs.debug");
 
   private BugReporter bugReporter;
+  private Project project;
   private Detector detectors [];
   private FindBugsProgress progressCallback;
 
@@ -156,11 +159,17 @@ public class FindBugs implements Constants2
    * Constructor.
    * @param bugReporter the BugReporter object that will be used to report
    *   BugInstance objects, analysis errors, class to source mapping, etc.
+   * @param project the Project indicating which files to analyze and
+   *   the auxiliary classpath to use
    */
-  public FindBugs(BugReporter bugReporter) {
+  public FindBugs(BugReporter bugReporter, Project project) {
 	if (bugReporter == null)
 		throw new IllegalArgumentException("null bugReporter");
+	if (project == null)
+		throw new IllegalArgumentException("null project");
+
 	this.bugReporter = bugReporter;
+	this.project = project;
 
 	// Create a no-op progress callback.
 	this.progressCallback = new FindBugsProgress() {
@@ -193,19 +202,19 @@ public class FindBugs implements Constants2
   }
 
   /**
-   * Execute FindBugs on given list of files (which may be jar files or class files).
+   * Execute FindBugs on the Project.
    * All bugs found are reported to the BugReporter object which was set
    * when this object was constructed.
-   * @param argv list of files to analyze
    * @throws java.io.IOException if an I/O exception occurs analyzing one of the files
    * @throws InterruptedException if the thread is interrupted while conducting the analysis
    */
-  public void execute(String[] argv) throws java.io.IOException, InterruptedException {
+  public void execute() throws java.io.IOException, InterruptedException {
 	if (detectors == null)
 		createDetectors();
 
-	// Purge repository of previous contents
-	Repository.clearCache();
+	clearRepository();
+
+	String[] argv = project.getJarFileArray();
 
 	progressCallback.reportNumberOfArchives(argv.length);
 
@@ -263,6 +272,36 @@ public class FindBugs implements Constants2
 	}
 
 	detectors = result.toArray(new Detector[0]);
+  }
+
+  /**
+   * Clear the Repository and update it to reflect the classpath
+   * specified by the current project.
+   */
+  private void clearRepository() {
+	// Purge repository of previous contents
+	Repository.clearCache();
+
+	// Create a SyntheticRepository based on the current project,
+	// and make it current.
+
+	// Add aux class path entries specified in project
+	StringBuffer buf = new StringBuffer();
+	List auxClasspathEntryList = project.getAuxClasspathEntryList();
+	Iterator i = auxClasspathEntryList.iterator();
+	while (i.hasNext()) {
+	    String entry = (String) i.next();
+	    buf.append(entry);
+	    buf.append(File.pathSeparatorChar);
+	}
+
+	// Add the system classpath entries
+	buf.append(ClassPath.getClassPath());
+
+	// Set up the Repository to use the combined classpath
+	ClassPath classPath = new ClassPath(buf.toString());
+	SyntheticRepository repository = SyntheticRepository.getInstance(classPath);
+	Repository.setRepository(repository);
   }
 
   /**
@@ -364,6 +403,7 @@ public class FindBugs implements Constants2
   public static void main(String argv[]) throws Exception
   { 
 	BugReporter bugReporter = null;
+	Project project = new Project();
 	boolean quiet = false;
 	String filterFile = null;
 	boolean include = false;
@@ -417,25 +457,47 @@ public class FindBugs implements Constants2
 			include = option.equals("-include");
 		} else if (option.equals("-quiet")) {
 			quiet = true;
+		} else if (option.equals("-auxclasspath")) {
+			++argCount;
+			if (argCount == argv.length)
+				throw new IllegalArgumentException(option + " option requires argument");
+
+			String auxClassPath = argv[argCount];
+			StringTokenizer tok = new StringTokenizer(auxClassPath, File.pathSeparator);
+			while (tok.hasMoreTokens())
+				project.addAuxClasspathEntry(tok.nextToken());
+		} else if (option.equals("-project")) {
+			++argCount;
+			if (argCount == argv.length)
+				throw new IllegalArgumentException(option + " option requires argument");
+
+			String projectFile = argv[argCount];
+			project = new Project();
+			project.read(new BufferedInputStream(new FileInputStream(projectFile)));
 		} else
 			throw new IllegalArgumentException("Unknown option: " + option);
 		++argCount;
 	}
 
-	if (argCount == argv.length) {
+	if (project.getNumJarFiles() == 0) {
 		InputStream in = FindBugs.class.getClassLoader().getResourceAsStream("USAGE");
 		if (in == null)  {
 			System.out.println("FindBugs tool, version " + Version.RELEASE);
 			System.out.println("usage: java -jar findbugs.jar [options] <classfiles, zip files or jar files>");
 			System.out.println("Example: java -jar findbugs.jar rt.jar");
 			System.out.println("Options:");
-			System.out.println("   -quiet                                 suppress error messages");
-			System.out.println("   -sortByClass                           sort bug reports by class");
-			System.out.println("   -xml                                   XML output");
-			System.out.println("   -visitors <visitor 1>,<visitor 2>,...  run only named visitors");
-			System.out.println("   -omitVisitors <v1>,<v2>,...            omit named visitors");
-			System.out.println("   -exclude <filter file>                 exclude bugs matching given filter");
-			System.out.println("   -include <filter file>                 include only bugs matching given filter");
+			System.out.println("   -quiet                        suppress error messages");
+			System.out.println("   -low                          report all bugs");
+			System.out.println("   -medium                       report medium and high priority bugs [default]");
+			System.out.println("   -high                         report high priority bugs only");
+			System.out.println("   -sortByClass                  sort bug reports by class");
+			System.out.println("   -xml                          XML output");
+			System.out.println("   -visitors <v1>,<v2>,...       run only named visitors");
+			System.out.println("   -omitVisitors <v1>,<v2>,...   omit named visitors");
+			System.out.println("   -exclude <filter file>        exclude bugs matching given filter");
+			System.out.println("   -include <filter file>        include only bugs matching given filter");
+			System.out.println("   -auxclasspath <classpath>     set aux classpath for analysis");
+			System.out.println("   -project <project>            analyze given project");
 			}
 		else
 			IO.copy(in,System.out);
@@ -448,15 +510,15 @@ public class FindBugs implements Constants2
 	if (quiet)
 		bugReporter.setErrorVerbosity(BugReporter.SILENT);
 
-	FindBugs findBugs = new FindBugs(bugReporter);
+	for (int i = argCount; i < argv.length; ++i)
+		project.addJar(argv[i]);
+
+	FindBugs findBugs = new FindBugs(bugReporter, project);
 
 	if (filterFile != null)
 		findBugs.setFilter(filterFile, include);
 
-	String[] fileList = new String[argv.length - argCount];
-	System.arraycopy(argv, argCount, fileList, 0, fileList.length);
-
-	findBugs.execute(fileList);
+	findBugs.execute();
 
   }
 }

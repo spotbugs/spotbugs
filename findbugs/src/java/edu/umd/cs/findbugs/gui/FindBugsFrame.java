@@ -279,7 +279,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
      * Constants
      * ---------------------------------------------------------------------- */
     
-    private static final String DEFAULT_PROJECT_NAME = "<<unnamed project>>";
+    private static final String DEFAULT_PROJECT_NAME = Project.UNNAMED_PROJECT;
     
     private static final String GROUP_BY_CLASS = "By class";
     private static final String GROUP_BY_PACKAGE = "By package";

@@ -56,6 +56,14 @@ public class Project {
 
 	/** Flag to indicate that this Project has been modified. */
 	private boolean isModified;
+
+	/** Constant used to name anonymous projects. */
+	public static final String UNNAMED_PROJECT = "<<unnamed project>>";
+
+	/** Create an anonymous project.  */
+	public Project() {
+		this(UNNAMED_PROJECT);
+	}
 	
 	/** Creates a new instance of Project */
 	public Project(String fileName) {
