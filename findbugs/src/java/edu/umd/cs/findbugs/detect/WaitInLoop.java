@@ -51,7 +51,7 @@ public class WaitInLoop extends BytecodeScanningDetector implements   Constants2
 			.addClassAndMethod(this)
 			.addSourceLine(this, waitAt));
 	if (sawNotify)
-		bugReporter.reportBug(new BugInstance("NO_NOTIFY_NOT_NOTIFYALL", NORMAL_PRIORITY)
+		bugReporter.reportBug(new BugInstance("NO_NOTIFY_NOT_NOTIFYALL", LOW_PRIORITY)
 			.addClassAndMethod(this)
 			.addSourceLine(this, notifyPC));
 	}
