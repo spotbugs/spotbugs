@@ -524,6 +524,7 @@ public class FindBugs implements Constants2, ExitCodes
 
 	// Add the system classpath entries
 	buf.append(ClassPath.getClassPath());
+	if (DEBUG) System.out.println("System classpath: " + buf.toString());
 
 	// Set up the Repository to use the combined classpath
 	ClassPath classPath = new ClassPath(buf.toString());
