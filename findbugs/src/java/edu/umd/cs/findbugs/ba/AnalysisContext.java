@@ -26,6 +26,8 @@ import edu.umd.cs.findbugs.ba.type.TypeRepository;
 */
 
 import java.util.*;
+import java.util.concurrent.*;
+import edu.umd.cs.findbugs.AnalysisLocal;
 
 import org.apache.bcel.classfile.JavaClass;
 
@@ -40,6 +42,11 @@ public class AnalysisContext implements AnalysisFeatures {
 	private RepositoryLookupFailureCallback lookupFailureCallback;
 	private SourceFinder sourceFinder;
 	private ClassContextCache classContextCache;
+	public Map analysisLocals = 
+		Collections.synchronizedMap(new HashMap());
+
+	private static InheritableThreadLocal<AnalysisContext> currentAnalysisContext
+		= new InheritableThreadLocal<AnalysisContext>();
 /*
 	// Not yet
 	private TypeRepository typeRepository;
@@ -70,6 +77,15 @@ public class AnalysisContext implements AnalysisFeatures {
 		// FIXME: eventually change to not use BCEL global repository
 		this.typeRepository = new TypeRepository(new BCELRepositoryClassResolver());
 */
+
+		currentAnalysisContext.set(this);
+	}
+
+	/**
+	 * Get the AnalysisContext associated with this thread
+	 */
+	static public AnalysisContext currentAnalysisContext() {
+		return currentAnalysisContext.get();
 	}
 
 	/**
