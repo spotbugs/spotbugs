@@ -90,29 +90,6 @@ public interface XMLOutput {
 	public void writeCDATA(String cdata) throws IOException;
 
 	/**
-	 * Write a list of Strings to document as elements
-	 * with given tag name.
-	 *
-	 * @param tagName    the tag name
-	 * @param listValues Collection of String values to write
-	 */
-	public void writeElementList(String tagName, Collection<String> listValues) throws IOException;
-
-	/**
-	 * Write an object that implements the XMLWriteable interface.
-	 *
-	 * @param obj the object
-	 */
-	public void write(XMLWriteable obj) throws IOException;
-
-	/**
-	 * Write a Collection of XMLWriteable objects.
-	 *
-	 * @param collection Collection of XMLWriteable objects
-	 */
-	public void writeCollection(Collection<? extends XMLWriteable> collection) throws IOException;
-
-	/**
 	 * End the XML document.
 	 * The underlying output stream will be closed.
 	 */

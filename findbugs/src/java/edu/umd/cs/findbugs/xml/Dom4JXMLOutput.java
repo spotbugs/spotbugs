@@ -91,6 +91,13 @@ public class Dom4JXMLOutput implements XMLOutput {
 		top.addCDATA(cdata);
 	}
 
+	/**
+	 * Add a list of Strings to document as elements
+	 * with given tag name to the tree.
+	 *
+	 * @param tagName    the tag name
+	 * @param listValues Collection of String values to add
+	 */
 	public void writeElementList(String tagName, Collection<String> listValues) {
 		Iterator<String> i = listValues.iterator();
 		while (i.hasNext()) {
@@ -100,6 +107,11 @@ public class Dom4JXMLOutput implements XMLOutput {
 		}
 	}
 
+	/**
+	 * Add given object to the tree.
+	 *
+	 * @param obj the object
+	 */
 	public void write(XMLWriteable obj) {
 		try {
 			obj.writeXML(this);
@@ -108,6 +120,11 @@ public class Dom4JXMLOutput implements XMLOutput {
 		}
 	}
 
+	/**
+	 * Add a Collection of XMLWriteable objects to the tree.
+	 *
+	 * @param collection Collection of XMLWriteable objects
+	 */
 	public void writeCollection(Collection<? extends XMLWriteable> collection) {
 		for (Iterator<? extends XMLWriteable> i = collection.iterator();
 			i.hasNext(); ) {

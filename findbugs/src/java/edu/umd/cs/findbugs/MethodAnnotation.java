@@ -278,7 +278,7 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 			xmlOutput.openCloseTag(ELEMENT_NAME, attributeList);
 		} else {
 			xmlOutput.openTag(ELEMENT_NAME, attributeList);
-			xmlOutput.write(sourceLines);
+			sourceLines.writeXML(xmlOutput);
 			xmlOutput.closeTag(ELEMENT_NAME);
 		}
 	}

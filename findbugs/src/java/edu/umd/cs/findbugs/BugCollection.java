@@ -302,9 +302,10 @@ public abstract class BugCollection {
 		xmlOutput.openTag(ROOT_ELEMENT_NAME,
 			new XMLAttributeList().addAttribute("version",Version.RELEASE));
 
-		xmlOutput.write(project);
+		project.writeXML(xmlOutput);
 
-		xmlOutput.writeCollection(getCollection());
+		// Write BugInstances
+		XMLOutputUtil.writeCollection(xmlOutput, getCollection());
 
 		// Errors, missing classes
 		xmlOutput.openTag(ERRORS_ELEMENT_NAME);

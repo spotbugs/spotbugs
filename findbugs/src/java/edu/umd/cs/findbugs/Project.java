@@ -26,6 +26,7 @@
 package edu.umd.cs.findbugs;
 
 import edu.umd.cs.findbugs.xml.XMLOutput;
+import edu.umd.cs.findbugs.xml.XMLOutputUtil;
 import edu.umd.cs.findbugs.xml.XMLWriteable;
 
 import java.io.*;
@@ -702,9 +703,9 @@ public class Project implements XMLWriteable {
 	public void writeXML(XMLOutput xmlOutput) throws IOException {
 		xmlOutput.openTag(BugCollection.PROJECT_ELEMENT_NAME);
 
-		xmlOutput.writeElementList(JAR_ELEMENT_NAME, jarList);
-		xmlOutput.writeElementList(AUX_CLASSPATH_ENTRY_ELEMENT_NAME, auxClasspathEntryList);
-		xmlOutput.writeElementList(SRC_DIR_ELEMENT_NAME, srcDirList);
+		XMLOutputUtil.writeElementList(xmlOutput, JAR_ELEMENT_NAME, jarList);
+		XMLOutputUtil.writeElementList(xmlOutput, AUX_CLASSPATH_ENTRY_ELEMENT_NAME, auxClasspathEntryList);
+		XMLOutputUtil.writeElementList(xmlOutput, SRC_DIR_ELEMENT_NAME, srcDirList);
 
 		xmlOutput.closeTag(BugCollection.PROJECT_ELEMENT_NAME);
 	}

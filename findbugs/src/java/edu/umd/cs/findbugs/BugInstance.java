@@ -31,6 +31,7 @@ import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
 import edu.umd.cs.findbugs.xml.XMLAttributeList;
 import edu.umd.cs.findbugs.xml.XMLOutput;
+import edu.umd.cs.findbugs.xml.XMLOutputUtil;
 import edu.umd.cs.findbugs.xml.XMLWriteable;
 
 import org.apache.bcel.classfile.JavaClass;
@@ -715,7 +716,7 @@ public class BugInstance implements Comparable/*, XMLConvertible*/, XMLWriteable
 			xmlOutput.closeTag("UserAnnotation");
 		}
 
-		xmlOutput.writeCollection(annotationList);
+		XMLOutputUtil.writeCollection(xmlOutput, annotationList);
 
 		xmlOutput.closeTag(ELEMENT_NAME);
 	}

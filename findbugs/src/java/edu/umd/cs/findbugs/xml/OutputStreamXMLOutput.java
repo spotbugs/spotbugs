@@ -148,24 +148,6 @@ public class OutputStreamXMLOutput implements XMLOutput {
 		newLine = false;
 	}
 
-	public void writeElementList(String tagName, Collection<String> listValues) throws IOException {
-		for (Iterator<String> i = listValues.iterator(); i.hasNext(); ) {
-			openTag(tagName);
-			writeText(i.next());
-			closeTag(tagName);
-		}
-	}
-
-	public void write(XMLWriteable obj) throws IOException {
-		obj.writeXML(this);
-	}
-
-	public void writeCollection(Collection<? extends XMLWriteable> collection) throws IOException {
-		for (Iterator<? extends XMLWriteable> i = collection.iterator(); i.hasNext(); ) {
-			write(i.next());
-		}
-	}
-
 	public void endDocument() throws IOException {
 		out.close();
 	}
