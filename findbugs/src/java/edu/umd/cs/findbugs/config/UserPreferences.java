@@ -1,6 +1,7 @@
 /*
  * FindBugs - Find bugs in Java programs
- * Copyright (C) 2004 Dave Brosius <dbrosius@qis.net>
+ * Copyright (C) 2004,2005 Dave Brosius <dbrosius@qis.net>
+ * Copyright (C) 2004,2005 University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -25,23 +26,21 @@
 
 package edu.umd.cs.findbugs.config;
 
-import edu.umd.cs.findbugs.Detector;
-import edu.umd.cs.findbugs.DetectorFactory;
-import edu.umd.cs.findbugs.DetectorFactoryCollection;
-
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+
+import edu.umd.cs.findbugs.DetectorFactory;
+import edu.umd.cs.findbugs.DetectorFactoryCollection;
 
 /**
  * User Preferences outside of any one Project.
