@@ -120,8 +120,7 @@ public class BetterTypeAnalysis extends FrameDataflowAnalysis<Type, BetterTypeFr
 				tmpFact.pushValue(typeRepository.classTypeFromDottedClassName(catchType.getClassName()));
 			}
 
-			if (tmpFact != null)
-				fact = tmpFact;
+			fact = tmpFact;
 		}
 
 		mergeInto(fact, result);
