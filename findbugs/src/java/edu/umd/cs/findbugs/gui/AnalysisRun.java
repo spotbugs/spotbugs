@@ -21,7 +21,7 @@ public class AnalysisRun {
     /**
      * Our BugReporter just puts the reported BugInstances into a HashSet.
      */
-    private static class Reporter implements BugReporter {
+    private class Reporter implements BugReporter {
         HashSet bugSet = new HashSet();
         
         public void finish() { }
@@ -29,9 +29,14 @@ public class AnalysisRun {
         public void reportBug(edu.umd.cs.findbugs.BugInstance bugInstance) {
             bugSet.add(bugInstance);
         }
+        
+        public void logError(String message) {
+            logger.logMessage(ConsoleLogger.ERROR, message);
+        }
     }
 
     private Project project;
+    private ConsoleLogger logger;
     private FindBugs findBugs;
     private Reporter reporter;
     private int runNumber;
@@ -39,8 +44,9 @@ public class AnalysisRun {
     private String sortOrder;
     
     /** Creates a new instance of AnalysisRun. */
-    public AnalysisRun(Project project) {
+    public AnalysisRun(Project project, ConsoleLogger logger) {
         this.project = project;
+        this.logger = logger;
         reporter = new Reporter();
         findBugs = new FindBugs(reporter);
 	runNumber = project.getNextAnalysisRun();
