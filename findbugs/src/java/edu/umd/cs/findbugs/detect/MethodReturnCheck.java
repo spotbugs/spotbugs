@@ -18,16 +18,23 @@
  */
 package edu.umd.cs.findbugs.detect;
 
+import java.util.ArrayList;
 import java.util.BitSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Method;
 
+import edu.umd.cs.findbugs.AnalysisLocal;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.ba.Hierarchy;
 
 /**
  * Look for calls to methods where the return value is
@@ -49,7 +56,125 @@ public class MethodReturnCheck extends BytecodeScanningDetector {
 		INVOKE_OPCODE_SET.set(Constants.INVOKESTATIC);
 		INVOKE_OPCODE_SET.set(Constants.INVOKEVIRTUAL);
 	}
+	
+	private static final String ANY = null;
+	
+	// Methods to look for, as tuples "class, method, signature".
+	// Null means "any".  In method and signature, a string with a "*"
+	// character in it is treated as a regexp, where the * can match
+	// any sequence of characters.  Otherwise, the string is matched
+	// exactly.
+	private static final String[][] STANDARD_POLICY_DATABASE = {
+		// Class                        Method              Signature
+		{ANY,                           "equals",           "(Ljava/lang/Object;)Z"},
+		{"java.lang.String",            ANY,                "*)Ljava/lang/String;"},
+//		{"",                            "",                 ""},
+	};
+	
+	private static class PolicyDatabaseEntry {
+		private String className, methodName, signature;
+		private Pattern methodPattern, signaturePattern;
+		
+		public PolicyDatabaseEntry(String className, String methodName, String signature) {
+			this.className = className;
+			this.methodName = methodName;
+			this.signature = signature;
+			this.methodPattern = createPattern(methodName);
+			this.signaturePattern = createPattern(signature);
+		}
+		
+		public boolean match(String className, String methodName, String signature) throws ClassNotFoundException {
+			return matchClass(className)
+				&& matchElement(methodName, this.methodName, this.methodPattern)
+				&& matchElement(signature, this.signature, this.signaturePattern);
+		}
 
+		private boolean matchClass(String className) throws ClassNotFoundException {
+			return this.className == null
+				|| Hierarchy.isSubtype(className, this.className);
+		}
+
+		private boolean matchElement(String value, String expected, Pattern pattern) {
+			if (expected == null) {
+				return true;
+			} else if (pattern == null) {
+				return value.equals(expected); 
+			} else {
+				Matcher matcher = pattern.matcher(value);
+				return matcher.matches();
+			}
+		}
+
+		private Pattern createPattern(String s) {
+			if (s == null || s.indexOf('*') < 0)
+				return null;
+
+			StringBuffer regex = new StringBuffer();
+			regex.append('^');
+			while (s.length() > 0) {
+				int star = s.indexOf('*');
+				if (star < 0) {
+					appendLiteral(regex, s);
+					s = "";
+				} else {
+					appendLiteral(regex, s.substring(0, star));
+					regex.append(".*");
+					s = s.substring(star+1);
+				}
+			}
+			regex.append('$');
+			
+			return Pattern.compile(regex.toString());
+		}
+
+		private void appendLiteral(StringBuffer regex, String s) {
+			regex.append("\\Q");
+			regex.append(s);
+			regex.append("\\E");
+		}
+	}
+
+	private static class PolicyDatabase {
+		private List<PolicyDatabaseEntry> database;
+		
+		public PolicyDatabase() {
+			this.database = new ArrayList<PolicyDatabaseEntry>();
+		}
+		
+		public void add(PolicyDatabaseEntry entry) {
+			database.add(entry);
+		}
+		
+		public boolean match(String className, String methodName, String signature)
+				throws ClassNotFoundException {
+			for (Iterator<PolicyDatabaseEntry> i = database.iterator(); i.hasNext(); ) {
+				PolicyDatabaseEntry entry = i.next();
+				if (entry.match(className, methodName, signature))
+					return true;
+			}
+			return false;
+		}
+	}
+	
+	static AnalysisLocal<PolicyDatabase> policyDatabaseLocal =
+		new AnalysisLocal<PolicyDatabase>();
+
+	static PolicyDatabase getDatabase() {
+		PolicyDatabase database = policyDatabaseLocal.get();
+		if (database == null) {
+			database = new PolicyDatabase();
+			for (int i = 0; i < STANDARD_POLICY_DATABASE.length; ++i) {
+				String[] tuple = STANDARD_POLICY_DATABASE[i];
+				database.add(new PolicyDatabaseEntry(tuple[0], tuple[1], tuple[2]));
+			}
+			
+			// TODO: should add policies set by @CheckReturnValue annotations
+			
+			policyDatabaseLocal.set(database);
+		}
+		return database;
+	}
+		
 	private BugReporter bugReporter;
 	private ClassContext classContext;
 	private Method method;
@@ -146,9 +271,11 @@ public class MethodReturnCheck extends BytecodeScanningDetector {
 		if (DEBUG) {
 			System.out.println("Trying: "+className+"."+methodName+":"+signature);
 		}
-		
-		// FIXME: just look for String methods for now
-		return className.equals("java.lang.String")
-			&& signature.endsWith(")Ljava/lang/String;");
+		try {
+			return getDatabase().match(className, methodName, signature);
+		} catch (ClassNotFoundException e) {
+			bugReporter.reportMissingClass(e);
+			return false;
+		}
 	}
 }
