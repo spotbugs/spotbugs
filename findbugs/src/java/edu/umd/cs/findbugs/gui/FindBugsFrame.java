@@ -965,6 +965,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	// The grouper callback is what actually adds the group and bug
 	// nodes to the tree.
 	Grouper.Callback callback = new Grouper.Callback() {
+	    private BugInstanceGroup currentGroup;
 	    private DefaultMutableTreeNode currentGroupNode;
 	    
 	    public void startGroup(Object member_) {
@@ -979,7 +980,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 		    groupName = desc.substring(0, desc.indexOf(':'));
 		} else
 		    throw new IllegalStateException("Unknown sort order: " + sortOrder);
-		BugInstanceGroup currentGroup = new BugInstanceGroup(sortOrder, groupName);
+		currentGroup = new BugInstanceGroup(sortOrder, groupName);
 		currentGroupNode = new DefaultMutableTreeNode(currentGroup);
 		bugTreeModel.insertNodeInto(currentGroupNode, bugRootNode, bugRootNode.getChildCount());
 		
@@ -992,8 +993,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	    }
 	    
 	    private void insertIntoGroup(BugInstance member) {
-		if (currentGroupNode == null)
-		    throw new IllegalStateException("Why?");
+		currentGroup.incrementMemberCount();
 		DefaultMutableTreeNode bugNode = new DefaultMutableTreeNode(member);
 		bugTreeModel.insertNodeInto(bugNode, currentGroupNode, currentGroupNode.getChildCount());
 
