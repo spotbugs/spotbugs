@@ -225,7 +225,7 @@ public class FindHEmismatch extends BytecodeScanningDetector implements Constant
 				hasEqualsObject = true;
 				if (obj.isAbstract())
 					equalsObjectIsAbstract = true;
-				else {
+				else if (!obj.isNative()) {
 					Code code = obj.getCode();
 					byte[] codeBytes = code.getCode();
 
