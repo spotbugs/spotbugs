@@ -1741,8 +1741,8 @@ Names of fields that are not final should be in mixed case with a lowercase firs
     <LongDescription>Confusing method name: {1}</LongDescription>
     <Details>
 <![CDATA[
-  <p> This method has the same name as the superclass of the class it
-  is defined in.</p>
+  <p> This regular method has the same name as the class it is defined in. It is likely that this was intended to be a constructor.
+      If it was intended to be a constructor, remove the declaration of a return value.</p>
 ]]>
     </Details>
   </BugPattern>

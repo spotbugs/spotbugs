@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="Shift_JIS"?>
 
-<!-- This messages file is based on revision 1.157 of message.xml. -->
+<!-- This messages file is based on revision 1.161 of message.xml. -->
 
 <MessageCollection xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xsi:noNamespaceSchemaLocation="messagecollection.xsd">
@@ -631,6 +631,14 @@
     </Details>
   </Detector>
   
+  <Detector class="edu.umd.cs.findbugs.detect.PublicSemaphores">
+    <Details>
+<![CDATA[
+<p>このディテクタは、公開クラスで<b>this</b>に対する同期化、wait(), notify(), notifyAll()呼び出しを行なっているコードを発見します。このようなコードは、同期化の実装詳細を公開してしまいます。このクラスの利用者は、自分のクラスの中で、このクラスのインスタンスを同期化のために用いるかもしれず、ロジックを破壊に導くかもしれません。高速ディテクタです。</p>
+]]>
+    </Details>
+  </Detector>
+  
   <Detector class="edu.umd.cs.findbugs.detect.FindBugsSummaryStats">
     <Details>
 <![CDATA[
@@ -707,7 +715,7 @@
 
   <BugPattern type="AM_CREATES_EMPTY_JAR_FILE_ENTRY">
     <ShortDescription>空のjarファイルエントリを作成しています</ShortDescription>
-    <LongDescription>{1}の中で空のzipファイルエントリを作成しています</LongDescription>
+    <LongDescription>{1}の中で空のjarファイルエントリを作成しています</LongDescription>
     <Details>
 <![CDATA[
 <p>このコードでは<code>putNextEntry()</code>を<code>closeEntry()</code>呼び出しのすぐあとに呼び出しています。これは、空のjarファイルエントリを生成してしまいます。jarファイルへのエントリ書き込みは<code>putNextEntry()</code>と<code>closeEntry()</code>の間に行う必要があります。</p>
@@ -917,6 +925,14 @@
 ]]>
     </Details>
   </BugPattern>  
+  
+  <BugPattern type="DM_SQL_STATEMENT_EXECUTE">
+    <ShortDescription>Someone needs to fill in</ShortDescription>
+    <LongDescription>Someone needs to fill in</LongDescription>
+    <Details>
+<![CDATA[Someone needs to fill in]]>
+    </Details>
+  </BugPattern>
   
   <BugPattern type="DC_DOUBLECHECK">
     <ShortDescription>フィールドのダブルチェックをおこなっている可能性があります。</ShortDescription>
@@ -1438,7 +1454,7 @@ finalでないフィールド名は、最初の文字以外の構成単語の最初の文字を大文字として、�
     <LongDescription>{1} のメソッド名はまぎらわしいです。</LongDescription>
     <Details>
 <![CDATA[
-<p>メソッド名が、親クラスと同じです。</p>
+<p>メソッド名が、クラス名と同じです。恐らくコンストラクタを定義しようとして失敗しています。</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1472,8 +1488,18 @@ finalでないフィールド名は、最初の文字以外の構成単語の最初の文字を大文字として、�
 ]]>
     </Details>
   </BugPattern>
+ 
+  <BugPattern type="NM_CLASS_NOT_EXCEPTION">
+    <ShortDescription>例外クラスのような名前を持った、非例外クラス</ShortDescription>
+    <LongDescription>クラス {0} はExceptionの継承クラスではないのに、例外クラスのごとく命名されています。</LongDescription>
+    <Details>
+<![CDATA[
+<p> このクラスはExceptionクラス継承していないのに、クラス名が"Exception"で終了しています。これは利用者を混乱へと導きます。</p>
+]]>
+    </Details>
+  </BugPattern>
 
-  <BugPattern type="RR_NOT_CHECKED">
+ <BugPattern type="RR_NOT_CHECKED">
     <ShortDescription>メソッドは InputStream.read() の戻り値を無視しています。</ShortDescription>
     <LongDescription>{1} は {2} の戻り値を無視しています。</LongDescription>
     <Details>
@@ -2420,6 +2446,18 @@ Objectのequalsメソッドをオーバーライドしていないfinalクラスの.equals(Object o)メ
       </Details>
     </BugPattern>
 
+    <BugPattern type="PS_PUBLIC_SEMAPHORES">
+	  <ShortDescription>同期化とセマフォの公開インターフェースへの暴露</ShortDescription>
+	  <LongDescription>クラス {0} は同期化とセマフォを公開インターフェースに暴露しています。</LongDescription>
+	  <Details>
+	<![CDATA[
+    <p>
+このクラスは、thisに対するwait(), notify() notifyAll()呼び出しによって、同期化を行なっています。利用者は、更に自分が作成したクラスの中で、このクラスのインスタンスを同期化のために使用してしまうかもしれません。これにより2つのクラスが同じオブジェクトを使って同期化を行なってしまうので、マルチスレッド処理が正しく行なわれなくなる可能性があります。外から見える参照を使って同期化、セマフォメソッド呼び出しを行なうべきではありません。privateメンバフィールドを利用して同期化を行なうことを検討してください。
+    </p>
+    ]]>
+      </Details>
+    </BugPattern>
+
   <!--
   **********************************************************************
    BugCodes
@@ -2512,4 +2550,5 @@ Objectのequalsメソッドをオーバーライドしていないfinalクラスの.equals(Object o)メ
   <BugCode abbrev="CD">循環依存</BugCode>
   <BugCode abbrev="RI">冗長なインターフェース</BugCode>
   <BugCode abbrev="MTIA">インスタンスへのマルチスレッドアクセス</BugCode>
+  <BugCode abbrev="PS">公開セマフォ</BugCode>
 </MessageCollection>
