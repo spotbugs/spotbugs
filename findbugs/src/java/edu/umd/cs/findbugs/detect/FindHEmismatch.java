@@ -92,7 +92,7 @@ public class FindHEmismatch extends BytecodeScanningDetector implements   Consta
 	if (!hasHashCode && (hasEqualsObject ||  hasEqualsSelf))  {
 		if (usesDefaultHashCode) 
 		  bugReporter.reportBug(new BugInstance("HE_EQUALS_USE_HASHCODE", 
-				obj.isAbstract() ? LOW_PRIORITY : HIGH_PRIORITY).addClass(getDottedClassName()));
+				obj.isAbstract() ? NORMAL_PRIORITY : HIGH_PRIORITY).addClass(getDottedClassName()));
 		else {
 		  int priority = hasFields ? NORMAL_PRIORITY : LOW_PRIORITY;
 		  if (obj.isAbstract()) priority++;
