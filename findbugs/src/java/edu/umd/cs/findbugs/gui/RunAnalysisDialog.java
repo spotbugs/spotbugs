@@ -11,10 +11,57 @@ import javax.swing.*;
 import edu.umd.cs.findbugs.*;
 
 /**
+ * A modal dialog to run the actual FindBugs analysis on a project.
+ * The analysis is done in a separate thread, so that the GUI can
+ * still stay current while the analysis is running.  We provide support
+ * for reporting the progress of the analysis, and for asynchronously
+ * cancelling the analysis before it completes.
  *
- * @author  daveho
+ * @author David Hovemeyer
  */
 public class RunAnalysisDialog extends javax.swing.JDialog {
+    
+    private class RunAnalysisProgress implements FindBugsProgress {
+        private int numArchives;
+        private int archiveCount = 0;
+        
+        public void reportNumberOfArchives(final int numArchives) {
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    RunAnalysisProgress.this.numArchives = numArchives;
+                    archiveCountLabel.setText("0/" + numArchives);
+                }
+            });
+        }
+        
+        public void startArchive(final String archiveFile, final int numClasses) {
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    archiveName.setText(archiveFile);
+                    classesProgress.setValue(0);
+                    classesProgress.setMinimum(0);
+                    classesProgress.setMaximum(numClasses);
+                }
+            });
+        }
+        
+        public void finishClass() {
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    classesProgress.setValue(classesProgress.getValue() + 1);
+                }
+            });
+        }
+        
+        public void finishArchive() {
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    archiveCount++;
+                    archiveCountLabel.setText(archiveCount + "/" + numArchives);
+                }
+            });
+        }
+    }
     
     private final AnalysisRun analysisRun;
     private Thread analysisThread;
@@ -29,43 +76,7 @@ public class RunAnalysisDialog extends javax.swing.JDialog {
         
         // Create a progress callback to give the user feedback
         // about how far along we are.
-        final FindBugsProgress progress = new FindBugsProgress() {
-            public void reportNumberOfArchives(final int numArchives) {
-                SwingUtilities.invokeLater(new Runnable() {
-                    public void run() {
-                        archivesProgress.setMinimum(0);
-                        archivesProgress.setMaximum(numArchives);
-                    }
-                });
-            }     
-            
-            public void startArchive(final String archiveFile, final int numClasses) {
-                SwingUtilities.invokeLater(new Runnable() {
-                    public void run() {
-                        archiveName.setText(archiveFile);
-                        classesProgress.setValue(0);
-                        classesProgress.setMinimum(0);
-                        classesProgress.setMaximum(numClasses);
-                    }
-                });
-            }
-            
-            public void finishClass() {
-                SwingUtilities.invokeLater(new Runnable() {
-                    public void run() {
-                        classesProgress.setValue(classesProgress.getValue() + 1);
-                    }
-                });
-            }
-            
-            public void finishArchive() {
-                SwingUtilities.invokeLater(new Runnable() {
-                    public void run() {
-                        archivesProgress.setValue(archivesProgress.getValue() + 1);
-                    }
-                });
-            }
-        };
+        final FindBugsProgress progress = new RunAnalysisProgress();
         
         // This is the thread that will actually run the analysis.
         this.analysisThread = new Thread() {
@@ -79,11 +90,11 @@ public class RunAnalysisDialog extends javax.swing.JDialog {
                     // TODO: log the fact that the user cancelled the analysis
                     System.out.println("User cancelled the analysis!");
                 }
-                
+
+                // Send a message to the dialog that it should close
+                // That way, it goes away without any need for user intervention
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
-                        // Send a message to the dialog that it should close
-                        // That way, it goes away without any need for user intervention
                         closeDialog(new WindowEvent(RunAnalysisDialog.this, WindowEvent.WINDOW_CLOSING));
                     }
                 });
@@ -112,7 +123,6 @@ public class RunAnalysisDialog extends javax.swing.JDialog {
         findBugsLabel = new javax.swing.JLabel();
         archivesLabel = new javax.swing.JLabel();
         classesLabel = new javax.swing.JLabel();
-        archivesProgress = new javax.swing.JProgressBar();
         classesProgress = new javax.swing.JProgressBar();
         cancelButton = new javax.swing.JButton();
         jSeparator1 = new javax.swing.JSeparator();
@@ -120,6 +130,7 @@ public class RunAnalysisDialog extends javax.swing.JDialog {
         archiveName = new javax.swing.JLabel();
         topVerticalFiller = new javax.swing.JLabel();
         bottomVerticalFiller = new javax.swing.JLabel();
+        archiveCountLabel = new javax.swing.JLabel();
 
         getContentPane().setLayout(new java.awt.GridBagLayout());
 
@@ -162,13 +173,6 @@ public class RunAnalysisDialog extends javax.swing.JDialog {
         gridBagConstraints.insets = new java.awt.Insets(3, 3, 3, 3);
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
         getContentPane().add(classesLabel, gridBagConstraints);
-
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 3;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 3);
-        getContentPane().add(archivesProgress, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
@@ -229,6 +233,13 @@ public class RunAnalysisDialog extends javax.swing.JDialog {
         gridBagConstraints.weighty = 0.5;
         getContentPane().add(bottomVerticalFiller, gridBagConstraints);
 
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 0);
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        getContentPane().add(archiveCountLabel, gridBagConstraints);
+
         pack();
     }//GEN-END:initComponents
 
@@ -253,7 +264,7 @@ public class RunAnalysisDialog extends javax.swing.JDialog {
     private javax.swing.JProgressBar classesProgress;
     private javax.swing.JLabel archiveName;
     private javax.swing.JLabel classesLabel;
-    private javax.swing.JProgressBar archivesProgress;
+    private javax.swing.JLabel archiveCountLabel;
     private javax.swing.JLabel archiveLabel;
     private javax.swing.JButton cancelButton;
     private javax.swing.JSeparator jSeparator1;
