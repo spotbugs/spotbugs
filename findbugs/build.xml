@@ -262,6 +262,7 @@
     <target name="plugin" depends="classes,tools,pluginXML">
       <jar destfile="${plugin.dir}/${plugin.jar.name}">
          <fileset dir="${plugin.xml.dir}" includes="*.xml"/>
+         <fileset dir="${plugin.xml.dir}" includes="*.xsd"/>
          <fileset dir="${class.dir}" includes="edu/umd/cs/findbugs/${plugin.subpkg.name}/*.class" />
       </jar>
     </target>
