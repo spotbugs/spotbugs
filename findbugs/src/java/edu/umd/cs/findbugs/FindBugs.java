@@ -166,7 +166,7 @@ public class FindBugs implements Constants2, ExitCodes
 				}
 				entry = zipStream.getNextEntry();
 			}
-            		if ( parsedClass == null ) {
+			if ( parsedClass == null ) {
 				closeZipStream();
 			}
 		}
@@ -559,7 +559,7 @@ public class FindBugs implements Constants2, ExitCodes
   private void addFileToRepository(String fileName, List<String> repositoryClassList)
 	throws IOException, InterruptedException {
 
-     try {
+   try {
 	ClassProducer classProducer;
 
 	// Create the ClassProducer
@@ -598,11 +598,11 @@ public class FindBugs implements Constants2, ExitCodes
 	if (classProducer.containsSourceFiles())
 		project.addSourceDir(fileName);
 
-     } catch (IOException e) {
+   } catch (IOException e) {
 	// You'd think that the message for a FileNotFoundException would include
 	// the filename, but you'd be wrong.  So, we'll add it explicitly.
 	throw new IOException("Could not analyze " + fileName + ": " + e.getMessage());
-     }
+   }
   }
 
   /**
@@ -864,13 +864,13 @@ public class FindBugs implements Constants2, ExitCodes
 			projectFile = new File(projectFile).getAbsolutePath();
 
 			try {
-			project = new Project(projectFile);
-			project.read(new BufferedInputStream(new FileInputStream(projectFile)));
+				project = new Project(projectFile);
+				project.read(new BufferedInputStream(new FileInputStream(projectFile)));
 			} catch (IOException e) {
 				System.err.println("Error opening " + projectFile);
 				e.printStackTrace(System.err);
 				throw e;
-				}
+			}
 		} else if (option.equals("-exitcode")) {
 			setExitCode = true;
 		} else
@@ -922,11 +922,11 @@ public class FindBugs implements Constants2, ExitCodes
 	case XML_REPORTER:
 		bugReporter = new XMLBugReporter(project); break;
 	case EMACS_REPORTER:
-                bugReporter = new EmacsBugReporter(); break;
+		bugReporter = new EmacsBugReporter(); break;
 	case HTML_REPORTER:
 		bugReporter = new HTMLBugReporter(project, stylesheet); break;
 	case XDOCS_REPORTER:
-                bugReporter = new XDocsBugReporter(project); break;
+		bugReporter = new XDocsBugReporter(project); break;
 	default:
 		throw new IllegalStateException();
 	}
@@ -975,3 +975,5 @@ public class FindBugs implements Constants2, ExitCodes
 	}
   }
 }
+
+// vim:ts=4
