@@ -101,7 +101,7 @@ import java.util.List;
  *
  * @author Mike Fagan <a href="mailto:mfagan@tde.com">mfagan@tde.com</a>
  *
- * @version $Revision: 1.27 $
+ * @version $Revision: 1.28 $
  *
  * @since Ant 1.5
  *
@@ -132,11 +132,11 @@ public class FindBugsTask extends Task {
 	private String omitVisitors = null;
 	private String outputFileName = null;
 	private String stylesheet = null;
-    private List classLocations = new ArrayList();
+    private List<ClassLocation> classLocations = new ArrayList<ClassLocation>();
 	private long timeout = DEFAULT_TIMEOUT;
 	private Path classpath = null;
 	private Path pluginList = null;
-	private List systemPropertyList = new ArrayList();
+	private List<SystemProperty> systemPropertyList = new ArrayList<SystemProperty>();
 
 	private Java findbugsEngine = null;
 
