@@ -374,28 +374,46 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 
 	/**
 	 * Read stored BugCollection for project.
-	 * Returns null if there is no stored bug collection for the project.
+	 * If there is no stored bug collection for the project,
+	 * or if an error occurs reading the stored bug collection,
+	 * a default empty collection is created and returned.
 	 * 
 	 * @param project the eclipse project
 	 * @param monitor a progress monitor
-	 * @return the stored BugCollection, or null if there is no bug collection
-	 * @throws CoreException
-	 * @throws IOException
-	 * @throws DocumentException
+	 * @return the stored BugCollection
+	 * @throws CoreException 
 	 */
 	public static SortedBugCollection readBugCollection(
-			IProject project, IProgressMonitor monitor)
-			throws CoreException, IOException, DocumentException {
+			IProject project, IProgressMonitor monitor) throws CoreException {
 		SortedBugCollection bugCollection = (SortedBugCollection) project.getSessionProperty(
 				SESSION_PROPERTY_BUG_COLLECTION);
 		if (bugCollection == null) {
-			readBugCollectionAndProject(project, monitor);
-			bugCollection = (SortedBugCollection) project.getSessionProperty(
-					SESSION_PROPERTY_BUG_COLLECTION);
+			try {
+				readBugCollectionAndProject(project, monitor);
+				bugCollection = (SortedBugCollection) project.getSessionProperty(
+						SESSION_PROPERTY_BUG_COLLECTION);
+			} catch (IOException e) {
+				FindbugsPlugin.getDefault().logException(e, "Could not read bug collection for project");
+				bugCollection = createDefaultEmptyBugCollection(project);
+			} catch (DocumentException e) {
+				FindbugsPlugin.getDefault().logException(e, "Could not read bug collection for project");
+				bugCollection = createDefaultEmptyBugCollection(project);
+			}
 		}
 		return bugCollection;
 	}
 	
+	private static SortedBugCollection createDefaultEmptyBugCollection(IProject project)
+			throws CoreException {
+		SortedBugCollection bugCollection = new SortedBugCollection();
+		Project fbProject = new Project();
+		
+		project.setSessionProperty(SESSION_PROPERTY_BUG_COLLECTION, bugCollection);
+		project.setSessionProperty(SESSION_PROPERTY_FB_PROJECT, fbProject);
+		
+		return bugCollection;
+	}
+
 	/**
 	 * Read stored findbugs Project for a project.
 	 * Returns null if there is no stored project.
