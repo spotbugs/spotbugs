@@ -101,7 +101,10 @@ public class FindBugsFrame extends javax.swing.JFrame {
         public int compare(Object a, Object b) {
             BugInstance lhs = (BugInstance) a;
             BugInstance rhs = (BugInstance) b;
-            return lhs.getPrimaryClass().getClassName().compareTo(rhs.getPrimaryClass().getClassName());
+            int cmp = lhs.getPrimaryClass().getClassName().compareTo(rhs.getPrimaryClass().getClassName());
+            if (cmp != 0)
+                return cmp;
+            return lhs.compareTo(rhs);
         }
     }
     private static Comparator bugInstanceByClassComparator = new FindBugsFrame.BugInstanceByClassComparator();
@@ -111,23 +114,29 @@ public class FindBugsFrame extends javax.swing.JFrame {
         public int compare(Object a, Object b) {
             BugInstance lhs = (BugInstance) a;
             BugInstance rhs = (BugInstance) b;
-            return lhs.getPrimaryClass().getPackageName().compareTo(rhs.getPrimaryClass().getPackageName());
+            int cmp = lhs.getPrimaryClass().getPackageName().compareTo(rhs.getPrimaryClass().getPackageName());
+            if (cmp != 0)
+                return cmp;
+            return lhs.compareTo(rhs);
         }
     }
     private static Comparator bugInstanceByPackageComparator = new FindBugsFrame.BugInstanceByPackageComparator();
     
-    private static class BugInstanceByCategory implements Comparator {
+    private static class BugInstanceByCategoryComparator implements Comparator {
         public int compare(Object a, Object b) {
             BugInstance lhs = (BugInstance) a;
             BugInstance rhs = (BugInstance) b;
             // FIXME: we're just sorting them by type, sort of.
             // Need to do something more intelligent here.
-            String lhsType = lhs.getType();
-            String rhsType = rhs.getType();
-            return lhsType.substring(0, lhsType.indexOf('_')).compareTo(rhsType.substring(0, rhsType.indexOf('_')));
+            String lhsString = lhs.toString();
+            String rhsString = rhs.toString();
+            int cmp = lhsString.substring(0, lhsString.indexOf(':')).compareTo(rhsString.substring(0, rhsString.indexOf(':')));
+            if (cmp != 0)
+                return cmp;
+            return lhs.compareTo(rhs);
         }
     }
-    private static Comparator bugInstanceByCategoryComparator = new FindBugsFrame.BugInstanceByCategory();
+    private static Comparator bugInstanceByCategoryComparator = new FindBugsFrame.BugInstanceByCategoryComparator();
 
     private static final String BY_CLASS = "By class";
     private static final String BY_PACKAGE = "By package";
@@ -455,6 +464,12 @@ public class FindBugsFrame extends javax.swing.JFrame {
         gridBagConstraints.weighty = 1.0;
         bugTreePanel.add(jScrollPane4, gridBagConstraints);
 
+        sortOrderChooser.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                sortOrderChooserActionPerformed(evt);
+            }
+        });
+
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 1;
@@ -533,6 +548,12 @@ public class FindBugsFrame extends javax.swing.JFrame {
         pack();
     }//GEN-END:initComponents
 
+    private void sortOrderChooserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sortOrderChooserActionPerformed
+        String selection = sortOrderChooser.getSelectedItem().toString();
+        if (selection != null && currentAnalysisRun != null)
+            populateAnalysisRunTreeModel(currentAnalysisRun, selection);
+    }//GEN-LAST:event_sortOrderChooserActionPerformed
+
     private void findBugsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_findBugsButtonActionPerformed
         Project project = getCurrentProject();
         AnalysisRun analysisRun = new AnalysisRun(project);
@@ -550,8 +571,6 @@ public class FindBugsFrame extends javax.swing.JFrame {
             DefaultMutableTreeNode projectNode = (DefaultMutableTreeNode) treePath.getPath()[1];
             DefaultMutableTreeNode analysisRunNode = new DefaultMutableTreeNode(analysisRun);
             treeModel.insertNodeInto(analysisRunNode, projectNode, projectNode.getChildCount());
-
-            
             
             // Make the new node the currently selected node
             TreePath path = new TreePath(new Object[]{rootNode, projectNode, analysisRunNode});
@@ -760,44 +779,54 @@ public class FindBugsFrame extends javax.swing.JFrame {
      * @param analysisRun the selected analysis run
      */
     private void synchAnalysisRun(AnalysisRun analysisRun) {
+        boolean modelChanged = false;
+        
         if (analysisRun != currentAnalysisRun) {
-            // If this is the first time the analysis run is being shown in 
+            modelChanged = true;
+            // If this is the first time the analysis run is being shown in
             // the bug tree, it won't have a tree model yet.
             if (analysisRun.getTreeModel() == null) {
+                System.out.println("Creating new tree model for analysis run...");
                 DefaultMutableTreeNode bugRootNode = new DefaultMutableTreeNode();
                 DefaultTreeModel bugTreeModel = new DefaultTreeModel(bugRootNode);
                 analysisRun.setTreeModel(bugTreeModel);
             }
             
-            // Make sure that the sort order is correct.
-            String currentSortOrder = (String) sortOrderChooser.getSelectedItem();
-            if (!analysisRun.getSortOrder().equals(currentSortOrder)) {
-                populateAnalysisRunTreeModel(analysisRun, currentSortOrder);
-            }
-            
+        }
+        
+        // Make sure that the sort order is correct.
+        String currentSortOrder = sortOrderChooser.getSelectedItem().toString();
+        if (!analysisRun.getSortOrder().equals(currentSortOrder)) {
+            populateAnalysisRunTreeModel(analysisRun, currentSortOrder);
+        }
+
+        if (modelChanged) {
+            System.out.println("Setting analysis run's tree model in bug tree...");
             bugTree.setModel(analysisRun.getTreeModel());
-            // TODO: restore state of tree! I.e., which nodes expanded, and selection
             currentAnalysisRun = analysisRun;
         }
+        
+        // TODO: restore state of tree! I.e., which nodes expanded, and selection
     }
-
+    
     /**
      * Populate an analysis run's tree model for given sort order.
      */
     private void populateAnalysisRunTreeModel(AnalysisRun analysisRun, String sortOrder) {
+        // Set busy cursor - this is potentially a time-consuming operation
         Cursor orig = this.getCursor();
         this.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-
+        
         DefaultTreeModel bugTreeModel = analysisRun.getTreeModel();
         DefaultMutableTreeNode bugRootNode = (DefaultMutableTreeNode) bugTreeModel.getRoot();
-
+        
         // Delete all children from root node
         bugRootNode.removeAllChildren();
         
         // Sort the instances
         TreeSet sortedCollection = new TreeSet(getBugInstanceComparator(sortOrder));
         sortedCollection.addAll(analysisRun.getBugInstances());
-
+        
         // Add all instances as children of the root, in sorted order
         Iterator i = sortedCollection.iterator();
         while (i.hasNext()) {
@@ -814,8 +843,13 @@ public class FindBugsFrame extends javax.swing.JFrame {
             }
         }
 
+        // Sort order is up to date now
         analysisRun.setSortOrder(sortOrder);
 
+        // Let the tree know it needs to update itself
+        bugTreeModel.nodeStructureChanged(bugRootNode);
+        
+        // Now we're done
         this.setCursor(orig);
     }
     
