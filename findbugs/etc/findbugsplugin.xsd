@@ -49,7 +49,7 @@
 	
 	<xsd:complexType name="BugPatternType">
 		<xsd:attribute name="abbrev" type="IdentifierType"/>
-		<xsd:attribute name="type" type="IdentifierType"/>
+		<xsd:attribute name="type" type="xsd:ID"/>
 		<xsd:attribute name="category" type="CategoryType"/>
 		<xsd:attribute name="experimental" type="xsd:boolean" use="optional"/>
 	</xsd:complexType>

@@ -1186,7 +1186,7 @@ Tout code appelant cette méthode peut librement modifier le tableau sousjacent.	
     </Details>
   </BugPattern>
 
-  <BugPattern type="2LW_TWO_LOCK_WAIT">
+  <BugPattern type="TLW_TWO_LOCK_WAIT">
     <ShortDescription>wait() avec deux verrous en attente</ShortDescription>
     <LongDescription>La méthode wait() a deux verrous en attente dans {1}</LongDescription>
     <Details>
@@ -2370,7 +2370,7 @@ Cf section 4.2.4 des spécifications du langage Java.</p>
   <BugCode abbrev="UrF">Champs inutilisé</BugCode>
   <BugCode abbrev="UwF">Champs jamais alimenté</BugCode>
   <BugCode abbrev="SIC">Classe interne pouvant être rendue statique</BugCode>
-  <BugCode abbrev="2LW">wait() avec deux verrous en attente</BugCode>
+  <BugCode abbrev="TLW">wait() avec deux verrous en attente</BugCode>
   <BugCode abbrev="BcpDC">Possible double-vérification d'un champs</BugCode>
   <BugCode abbrev="RV">Valeur de retour d'une méthode ignorée</BugCode>
   <BugCode abbrev="NP">Déréférencement d'un pointeur à null</BugCode>

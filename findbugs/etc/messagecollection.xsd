@@ -38,7 +38,7 @@
 	</xsd:complexType>
 	
 	<xsd:complexType name="BugCodeType" mixed="true">
-		<xsd:attribute name="abbrev" type="IdentifierType"/>
+		<xsd:attribute name="abbrev" type="xsd:ID"/>
 	</xsd:complexType>
 
 	<xsd:complexType name="MessageCollectionType" mixed="true">

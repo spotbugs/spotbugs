@@ -1450,7 +1450,7 @@ when evaluating the right-hand side can generate an error.</p>
 ]]>
     </Details>
   </BugPattern>
-  <BugPattern type="2LW_TWO_LOCK_WAIT">
+  <BugPattern type="TLW_TWO_LOCK_WAIT">
     <ShortDescription>Wait with two locks held</ShortDescription>
     <LongDescription>wait() with two locks held in {1}</LongDescription>
     <Details>
@@ -3017,7 +3017,7 @@ just use the constant. Methods detected are:
   <BugCode abbrev="UrF" >Unread field</BugCode>
   <BugCode abbrev="UwF" >Unwritten field</BugCode>
   <BugCode abbrev="SIC" >Inner class could be made static</BugCode>
-  <BugCode abbrev="2LW" >Wait with two locks held</BugCode>
+  <BugCode abbrev="TLW" >Wait with two locks held</BugCode>
   <BugCode abbrev="BcpDC">Possible double check of field</BugCode>
   <BugCode abbrev="RV" >Return value of method is ignored</BugCode>
   <BugCode abbrev="NP" >Null pointer dereference</BugCode>

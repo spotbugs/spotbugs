@@ -1217,7 +1217,7 @@
     </Details>
   </BugPattern>
 
-  <BugPattern type="2LW_TWO_LOCK_WAIT">
+  <BugPattern type="TLW_TWO_LOCK_WAIT">
     <ShortDescription>２つのロックを持ったまま wait しています。</ShortDescription>
     <LongDescription>{1} で２つのロックを持ったまま wait() しています。</LongDescription>
     <Details>
@@ -2470,7 +2470,7 @@ Objectのequalsメソッドをオーバーライドしていないfinalクラスの.equals(Object o)メ
   <BugCode abbrev="UrF" >読まれないフィールドがあります。</BugCode>
   <BugCode abbrev="UwF" >書かれないフィールドがあります。</BugCode>
   <BugCode abbrev="SIC" >スタティックな内部クラスにする事が可能です</BugCode>
-  <BugCode abbrev="2LW" >２つのロックを持ったままwaitしています。</BugCode>
+  <BugCode abbrev="TLW" >２つのロックを持ったままwaitしています。</BugCode>
   <BugCode abbrev="BcpDC">フィールドのダブルチェックをしている可能性があります。</BugCode>
   <BugCode abbrev="RV" >メソッドのreturn値が無視されています。</BugCode>
   <BugCode abbrev="NP" >nullポインタを参照外ししています。</BugCode>
