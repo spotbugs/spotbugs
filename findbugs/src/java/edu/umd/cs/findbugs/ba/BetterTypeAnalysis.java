@@ -62,11 +62,16 @@ public class BetterTypeAnalysis extends FrameDataflowAnalysis<Type, BetterTypeFr
 			result.setValid();
 
 			int local = 0;
+
+			// Instance methods have the "this" reference in local slot zero
+			if (!methodGen.isStatic()) {
+				result.setValue(local++, typeRepository.classTypeFromDottedClassName(methodGen.getClassName()));
+			}
+
+			// Fill in parameter types
 			for (int i = 0; i < parameterSignatureList.length; ++i) {
 				String signature = parameterSignatureList[i];
 				Type type = typeRepository.typeFromSignature(signature);
-
-				result.setValue(local++, type);
 
 				// Long and double values occupy an extra local slot
 				if (type.getTypeCode() == Constants.T_LONG) {
@@ -74,6 +79,14 @@ public class BetterTypeAnalysis extends FrameDataflowAnalysis<Type, BetterTypeFr
 				} else if (type.getTypeCode() == Constants.T_DOUBLE) {
 					result.setValue(local++, typeRepository.getDoubleExtraType());
 				}
+
+				// The parameter type
+				result.setValue(local++, type);
+			}
+
+			// Fill remaining locals with the bottom type.
+			for (int i = local; i < methodGen.getMaxLocals(); ++i) {
+				result.setValue(i, typeRepository.getBottomType());
 			}
 		} catch (InvalidSignatureException e) {
 			throw new DataflowAnalysisException("Invalid parameter type signature", e);
