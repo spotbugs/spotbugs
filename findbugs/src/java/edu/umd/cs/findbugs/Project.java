@@ -51,7 +51,7 @@ public class Project {
 	/** Project filename. */
 	private String projectFileName;
 	
-	/**Options*/
+	/** Options. */
 	private Map<String,Boolean> optionsMap;
 	
 	/** The list of jar files. */
@@ -71,12 +71,7 @@ public class Project {
 
 	/** Create an anonymous project.  */
 	public Project() {
-		this(UNNAMED_PROJECT);
-	}
-	
-	/** Creates a new instance of Project */
-	public Project(String projectFileName) {
-		this.projectFileName = projectFileName;
+		this.projectFileName = UNNAMED_PROJECT;
 		optionsMap = new HashMap<String,Boolean>();
 		optionsMap.put(RELATIVE_PATHS, false);
 		jarList = new LinkedList<String>();
@@ -84,7 +79,7 @@ public class Project {
 		auxClasspathEntryList = new LinkedList<String>();
 		isModified = false;
 	}
-	
+
 	/** Return whether or not this Project has unsaved modifications. */
 	public boolean isModified() {
 		return isModified;
@@ -113,15 +108,7 @@ public class Project {
 	 *   file was already present
 	 */
 	public boolean addJar(String fileName) {
-		if (!getOption(RELATIVE_PATHS))
-			fileName = convertToAbsolute(fileName);
-			
-		if (!jarList.contains(fileName)) {
-			jarList.add(fileName);
-			isModified = true;
-			return true;
-		} else
-			return false;
+		return addToListInternal(jarList, makeAbsoluteCWD(fileName));
 	}
 	
 	/*
@@ -131,36 +118,17 @@ public class Project {
 	 *   source directory was already present
 	 */
 	public boolean addSourceDir(String dirName) {
-		if (!getOption(RELATIVE_PATHS))
-			dirName = convertToAbsolute(dirName);
-		if (!srcDirList.contains(dirName)) {
-			srcDirList.add(dirName);
-			isModified = true;
-			return true;
-		} else
-			return false;
+		return addToListInternal(srcDirList, makeAbsoluteCWD(dirName));
 	}
 	
 	/**
-	 * Retrieve the Options value
+	 * Retrieve the Options value.
 	 * @param option the name of option to get
+	 * @return the value of the option
 	 */
 	 public boolean getOption(String option) {
 		Boolean value = optionsMap.get(option);
 	 	return value != null && value.booleanValue();
-	 }
-	
-	/**
-	 * Parse one line in the [Options] section
-	 * @param option one line in the [Options] section
-	 */
-	 private void parseOption(String option) throws IOException {
-	 	int equalPos = option.indexOf("=");
-	 	if (equalPos < 0)
-	 		throw new IOException("Bad format: invalid option format");
-	 	String name = option.substring(0, equalPos);
-	 	String value = option.substring(equalPos+1);
-	 	optionsMap.put(name,Boolean.valueOf(value));
 	 }
 	
 	/**
@@ -242,14 +210,7 @@ public class Project {
 	 *   if the given entry is already in the list
 	 */
 	public boolean addAuxClasspathEntry(String auxClasspathEntry) {
-		if (!getOption(RELATIVE_PATHS))
-			auxClasspathEntry = convertToAbsolute(auxClasspathEntry);
-		if (!auxClasspathEntryList.contains(auxClasspathEntry)) {
-			auxClasspathEntryList.add(auxClasspathEntry);
-			isModified = true;
-			return true;
-		} else
-			return false;
+		return addToListInternal(auxClasspathEntryList, makeAbsoluteCWD(auxClasspathEntry));
 	}
 	
 	/**
@@ -377,7 +338,8 @@ public class Project {
 	 * Process the specified jar file and add any new jar files on which it
 	 * depends to the list of implicit classpath entries.
 	 */
-	private void processComponentJar(final File jar, final HashSet<File> processedJars, final LinkedList<String> implicitClasspath) {
+	private void processComponentJar(final File jar, final HashSet<File> processedJars,
+		final LinkedList<String> implicitClasspath) {
 		String jarClassPath = getClassPath(jar);
 
 		if (jarClassPath != null) {
@@ -410,12 +372,12 @@ public class Project {
 	private static final String SRC_DIRS_KEY = "[Source dirs]";
 	private static final String AUX_CLASSPATH_ENTRIES_KEY = "[Aux classpath entries]";
 	
-	//Option keys
+	// Option keys
 	public static final String RELATIVE_PATHS = "relative_paths";
 	
 	/**
-	 * Save the project to an output stream.
-	 * @param out the OutputStream to write the project to
+	 * Save the project to an output file.
+	 * @param outputFile name of output file
 	 * @param useRelativePaths true if the project should be written
 	 *   using only relative paths
 	 * @param relativeBase if useRelativePaths is true,
@@ -423,11 +385,10 @@ public class Project {
 	 *   all files should be made relative
 	 * @throws IOException if an error occurs while writing
 	 */
-	public void write(OutputStream out, boolean useRelativePaths, String relativeBase) throws IOException {
-		PrintWriter writer = new PrintWriter(new OutputStreamWriter(out));
+	public void write(String outputFile, boolean useRelativePaths, String relativeBase)
+		throws IOException {
+		PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(outputFile)));
 		try {
-			writer.println(OPTIONS_KEY);
-			writer.println(RELATIVE_PATHS + "=" + useRelativePaths);
 			writer.println(JAR_FILES_KEY);
 			for (Iterator<String> i = jarList.iterator(); i.hasNext(); ) {
 				String jarFile = i.next();
@@ -435,6 +396,7 @@ public class Project {
 					jarFile = convertToRelative(jarFile,relativeBase);
 				writer.println(jarFile);
 			}
+
 			writer.println(SRC_DIRS_KEY);
 			for (Iterator<String> i = srcDirList.iterator(); i.hasNext(); ) {
 				String srcDir = i.next();
@@ -442,12 +404,18 @@ public class Project {
 					srcDir = convertToRelative(srcDir,relativeBase);
 				writer.println(srcDir);
 			}
+
 			writer.println(AUX_CLASSPATH_ENTRIES_KEY);
 			for (Iterator<String> i = auxClasspathEntryList.iterator(); i.hasNext(); ) {
 				String auxClasspathEntry = i.next();
 				if (useRelativePaths)
 					auxClasspathEntry = convertToRelative(auxClasspathEntry,relativeBase);
 				writer.println(auxClasspathEntry);
+			}
+
+			if (useRelativePaths) {
+				writer.println(OPTIONS_KEY);
+				writer.println(RELATIVE_PATHS + "=true");
 			}
 		} finally {
 			writer.close();
@@ -458,45 +426,72 @@ public class Project {
 	}
 	
 	/**
-	 * Read the project from an input stream.
-	 * @param in the InputStream to read the project from
+	 * Read the project from an input file.
+	 * This method should only be used on an empty Project
+	 * (created with the default constructor).
+	 *
+	 * @param inputFile name of the input file to read the project from
 	 * @throws IOException if an error occurs while reading
 	 */
-	public void read(InputStream in) throws IOException {
+	public void read(String inputFile) throws IOException {
 		if (isModified)
 			throw new IllegalStateException("Reading into a modified Project!");
+
+		// Make the input file absolute, if necessary
+		File file = new File(inputFile);
+		if (!file.isAbsolute())
+			inputFile = file.getAbsolutePath();
+
+		// Store the project filename
+		setFileName(inputFile);
 		
 		BufferedReader reader = null;
 		
-		try
-		{
-			reader = new BufferedReader(new InputStreamReader(in));
+		try {
+			reader = new BufferedReader(new FileReader(inputFile));
 			String line;
 			line = getLine(reader);
-			//The Options section is optional to support older files
+
+			if (line == null || !line.equals(JAR_FILES_KEY))
+				throw new IOException("Bad format: missing jar files key");
+			while ((line = getLine(reader)) != null && !line.equals(SRC_DIRS_KEY)) {
+				addToListInternal(jarList, line);
+			}
+
+			if (line == null)
+				throw new IOException("Bad format: missing source dirs key");
+			while ((line = getLine(reader)) != null && !line.equals(AUX_CLASSPATH_ENTRIES_KEY)) {
+				addToListInternal(srcDirList, line);
+			}
+
+			// The list of aux classpath entries is optional
+			if (line != null) {
+				while ((line = getLine(reader)) != null) {
+					if (line.equals(OPTIONS_KEY))
+						break;
+					addToListInternal(auxClasspathEntryList, line);
+				}
+			}
+
+			// The Options section is also optional
 			if (line != null && line.equals(OPTIONS_KEY)) {
 				while ((line = getLine(reader)) != null && !line.equals(JAR_FILES_KEY))
 					parseOption(line);
 			}
-			if (line == null || !line.equals(JAR_FILES_KEY)) throw new IOException("Bad format: missing jar files key");
-			while ((line = getLine(reader)) != null && !line.equals(SRC_DIRS_KEY)) {
-				addJar(line);
-			}
-			if (line == null) throw new IOException("Bad format: missing source dirs key");
-			while ((line = getLine(reader)) != null && !line.equals(AUX_CLASSPATH_ENTRIES_KEY)) {
-				addSourceDir(line);
-			}
-			if (line != null) {
-				// The list of aux classpath entries is optional
-				while ((line = getLine(reader)) != null) {
-					addAuxClasspathEntry(line);
-				}
+
+			// If this project has the relative paths option set,
+			// resolve all internal relative paths into absolute
+			// paths, using the absolute path of the project
+			// file as a base directory.
+			if (getOption(RELATIVE_PATHS)) {
+				makeListAbsoluteProject(jarList);
+				makeListAbsoluteProject(srcDirList);
+				makeListAbsoluteProject(auxClasspathEntryList);
 			}
 	
 			// Clear the modification flag set by the various "add" methods.
 			isModified = false;
-		}
-		finally {
+		} finally {
 			if (reader != null)
 				reader.close();
 		}
@@ -529,6 +524,81 @@ public class Project {
 			name = name.substring(0, dot);
 		return name;
 	}
+
+	/**
+	 * Transform a user-entered filename into a proper filename,
+	 * by adding the ".fb" file extension if it isn't already present.
+	 */
+	public static String transformFilename(String fileName) {
+		if (!fileName.endsWith(".fb"))
+			fileName = fileName + ".fb";
+		return fileName;
+	}
+
+	private static final String JAR_ELEMENT_NAME = "Jar";
+	private static final String AUX_CLASSPATH_ENTRY_ELEMENT_NAME = "AuxClasspathEntry";
+	private static final String SRC_DIR_ELEMENT_NAME = "SrcDir";
+	private static final String FILENAME_ATTRIBUTE_NAME = "filename";
+
+	/**
+	 * Populate Project object from a <code>&lt;Project&gt;</code> element
+	 * in a FindBugs saved bugs XML file.
+	 */
+	public void readElement(Element element) throws DocumentException {
+		Iterator i = element.elements().iterator();
+
+		String projectName = element.attributeValue(FILENAME_ATTRIBUTE_NAME);
+		if (projectName != null)
+			projectFileName = projectName;
+		else
+			projectFileName = UNNAMED_PROJECT;
+
+		while (i.hasNext()) {
+			Element child = (Element) i.next();
+			String name = child.getName();
+			String text = child.getText();
+			if (name.equals(JAR_ELEMENT_NAME))
+				addJar(text);
+			else if (name.equals(AUX_CLASSPATH_ENTRY_ELEMENT_NAME))
+				addAuxClasspathEntry(text);
+			else if (name.equals(SRC_DIR_ELEMENT_NAME))
+				addSourceDir(text);
+			else
+				throw new DocumentException("Unknown project node: " + name);
+		}
+	}
+
+	/**
+	 * Popular an XML Element from Project object.
+	 */
+	public void writeElement(Element element) {
+		element.addAttribute(FILENAME_ATTRIBUTE_NAME, projectFileName);
+
+		for (Iterator<String> i = jarList.iterator(); i.hasNext(); ) {
+			element.addElement(JAR_ELEMENT_NAME).setText(i.next());
+		}
+
+		for (Iterator<String> i = auxClasspathEntryList.iterator(); i.hasNext(); ) {
+			element.addElement(AUX_CLASSPATH_ENTRY_ELEMENT_NAME).setText(i.next());
+		}
+
+		for (Iterator<String> i = srcDirList.iterator(); i.hasNext(); ) {
+			element.addElement(SRC_DIR_ELEMENT_NAME).setText(i.next());
+		}
+	}
+	
+	/**
+	 * Parse one line in the [Options] section.
+	 * @param option one line in the [Options] section
+	 */
+	 private void parseOption(String option) throws IOException {
+	 	int equalPos = option.indexOf("=");
+	 	if (equalPos < 0)
+	 		throw new IOException("Bad format: invalid option format");
+	 	String name = option.substring(0, equalPos);
+	 	String value = option.substring(equalPos+1);
+	 	optionsMap.put(name,Boolean.valueOf(value));
+	 }
 
 	/**
 	 * Hack for whether files are case insensitive.
@@ -573,83 +643,74 @@ public class Project {
 	}
 	
 	/**
-	 * Converts a relative path to an absolute path if possible
+	 * Converts a relative path to an absolute path if possible.
 	 * @param fileName path to convert
 	 * @return the converted filename
 	 */
-	private String convertToAbsolute(String srcFile) {
-/*
+	private String convertToAbsolute(String fileName) throws IOException {
 		// At present relative paths are only calculated if the fileName is
 		// below the project file. This need not be the case, and we could use ..
 		// syntax to move up the tree. (To Be Added)
 
-		if (srcFile.startsWith(".")) {
-			if (srcFile.length() == 1)
-				return projectFileName;
-			String slash = System.getProperty("file.separator");
-			String base = new File(projectFileName).getParent();
-			if (base.endsWith(slash))
-				base = base.substring(0,base.length()-1);
-			return base + srcFile.substring(1);
-		}
-		return srcFile;
-*/
-		return new File(srcFile).getAbsolutePath();
-	}
+		File file = new File(fileName);
 
-	/**
-	 * Transform a user-entered filename into a proper filename,
-	 * by adding the ".fb" file extension if it isn't already present.
-	 */
-	public static String transformFilename(String fileName) {
-		if (!fileName.endsWith(".fb"))
-			fileName = fileName + ".fb";
+		if (!file.isAbsolute()) {
+			// Only try to make the relative path absolute
+			// if the project file is absolute.
+			File projectFile = new File(projectFileName);
+			if (projectFile.isAbsolute()) {
+				// Get base directory (parent of the project file)
+				String base = new File(projectFileName).getParent();
+
+				// Make the file absolute in terms of the parent directory
+				fileName = new File(base, fileName).getCanonicalPath();
+			}
+		}
 		return fileName;
 	}
 
-	private static final String JAR_ELEMENT_NAME = "Jar";
-	private static final String AUX_CLASSPATH_ENTRY_ELEMENT_NAME = "AuxClasspathEntry";
-	private static final String SRC_DIR_ELEMENT_NAME = "SrcDir";
-	private static final String FILENAME_ATTRIBUTE_NAME = "filename";
-
-	public void readElement(Element element) throws DocumentException {
-		Iterator i = element.elements().iterator();
-
-		String projectName = element.attributeValue(FILENAME_ATTRIBUTE_NAME);
-		if (projectName != null)
-			projectFileName = projectName;
-		else
-			projectFileName = UNNAMED_PROJECT;
-
-		while (i.hasNext()) {
-			Element child = (Element) i.next();
-			String name = child.getName();
-			String text = child.getText();
-			if (name.equals(JAR_ELEMENT_NAME))
-				addJar(text);
-			else if (name.equals(AUX_CLASSPATH_ENTRY_ELEMENT_NAME))
-				addAuxClasspathEntry(text);
-			else if (name.equals(SRC_DIR_ELEMENT_NAME))
-				addSourceDir(text);
-			else
-				throw new DocumentException("Unknown project node: " + name);
-		}
+	/**
+	 * Make the given filename absolute relative to the
+	 * current working directory.
+	 */
+	private static String makeAbsoluteCWD(String fileName) {
+		File file = new File(fileName);
+		if (!file.isAbsolute())
+			fileName = file.getAbsolutePath();
+		return fileName;
 	}
 
-	public void writeElement(Element element) {
-		element.addAttribute(FILENAME_ATTRIBUTE_NAME, projectFileName);
+	/**
+	 * Add a value to given list, making the Project modified
+	 * if the value is not already present in the list.
+	 * @param list the list
+	 * @param value the value to be added
+	 * @return true if the value was not already present in the list,
+	 *    false otherwise
+	 */
+	private boolean addToListInternal(List<String> list, String value) {
+		if (!list.contains(value)) {
+			list.add(value);
+			isModified = true;
+			return true;
+		} else
+			return false;
+	}
 
-		for (Iterator<String> i = jarList.iterator(); i.hasNext(); ) {
-			element.addElement(JAR_ELEMENT_NAME).setText(i.next());
+	/**
+	 * Make the given list of pathnames absolute relative
+	 * to the absolute path of the project file.
+	 */
+	private void makeListAbsoluteProject(List<String> list) throws IOException {
+		List<String> replace = new LinkedList<String>();
+		for (Iterator<String> i = list.iterator(); i.hasNext(); ) {
+			String fileName = i.next();
+			fileName = convertToAbsolute(fileName);
+			replace.add(fileName);
 		}
 
-		for (Iterator<String> i = auxClasspathEntryList.iterator(); i.hasNext(); ) {
-			element.addElement(AUX_CLASSPATH_ENTRY_ELEMENT_NAME).setText(i.next());
-		}
-
-		for (Iterator<String> i = srcDirList.iterator(); i.hasNext(); ) {
-			element.addElement(SRC_DIR_ELEMENT_NAME).setText(i.next());
-		}
+		list.clear();
+		list.addAll(replace);
 	}
 }
 

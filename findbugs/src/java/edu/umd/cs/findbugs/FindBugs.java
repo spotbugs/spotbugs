@@ -443,8 +443,8 @@ public class FindBugs implements Constants2, ExitCodes
 			projectFile = new File(projectFile).getAbsolutePath();
 
 			try {
-				project = new Project(projectFile);
-				project.read(new BufferedInputStream(new FileInputStream(projectFile)));
+				project = new Project();
+				project.read(projectFile);
 			} catch (IOException e) {
 				System.err.println("Error opening " + projectFile);
 				e.printStackTrace(System.err);
@@ -963,7 +963,7 @@ public class FindBugs implements Constants2, ExitCodes
 	for (int i = argCount; i < argv.length; ++i)
 		project.addJar(argv[i]);
 
-	if (argCount == argv.length && project.getNumJarFiles() == 0) {
+	if (project.getNumJarFiles() == 0) {
 		System.out.println("FindBugs version " + Version.RELEASE + ", " + Version.WEBSITE);
 		System.out.println("Usage: findbugs -textui [options...] [jar/zip/class files, directories...]");
 		System.out.println("Options:");

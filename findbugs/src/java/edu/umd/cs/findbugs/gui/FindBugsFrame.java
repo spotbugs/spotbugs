@@ -362,8 +362,6 @@ public class FindBugsFrame extends javax.swing.JFrame {
      * Constants
      * ---------------------------------------------------------------------- */
     
-    private static final String DEFAULT_PROJECT_NAME = Project.UNNAMED_PROJECT;
-    
     private static final String GROUP_BY_CLASS = "By class";
     private static final String GROUP_BY_PACKAGE = "By package";
     private static final String GROUP_BY_BUG_TYPE = "By bug type";
@@ -1271,10 +1269,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
         
         try {
             String filename = current.getFileName();
-            File file = new File( filename );
-            Project project = new Project(file.getPath());
-            FileInputStream in = new FileInputStream(file);
-            project.read(in);
+            Project project = new Project();
+            project.read(filename);
             setProject( null );
             setProject(project);
             findBugsButtonActionPerformed( evt );
@@ -1399,9 +1395,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
             return;
         try {
             File file = chooser.getSelectedFile();
-            Project project = new Project(file.getPath());
-            FileInputStream in = new FileInputStream(file);
-            project.read(in);
+            Project project = new Project();
+            project.read(file.getPath());
             setProject(project);
         } catch (IOException e) {
             logger.logMessage(ConsoleLogger.ERROR, "Could not open project: " + e.getMessage());
@@ -1522,7 +1517,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_browseJarButtonActionPerformed
     
     private void newProjectItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newProjectItemActionPerformed
-        Project project = new Project(DEFAULT_PROJECT_NAME);
+        Project project = new Project();
         setProject(project);
     }//GEN-LAST:event_newProjectItemActionPerformed
     
@@ -1824,8 +1819,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
                 file = new File(fileName);
             }
             
-            FileOutputStream out = new FileOutputStream(file);
-            project.write(out, (relativePaths != null) && relativePaths.isSelected(),file.getParent());
+            project.write(file.getPath(), (relativePaths != null) && relativePaths.isSelected(),
+                file.getParent());
             logger.logMessage(ConsoleLogger.INFO, "Project saved");
             project.setFileName(file.getPath());
             
@@ -2490,14 +2485,11 @@ public class FindBugsFrame extends javax.swing.JFrame {
 		if (i == args.length)
 		    throw new IllegalArgumentException(arg + " option requires argument");
 
-		// Convert project file to be an absolute path
-		String projectFile = new File(args[i]).getAbsolutePath();
+		String projectFile = args[i];
 
 		try {
-		  project = new Project(projectFile);
-		  InputStream in = new BufferedInputStream(new FileInputStream(projectFile));
-		  project.read(in);
-		  in.close();
+		  project = new Project();
+		  project.read(projectFile);
 		} catch (IOException e) {
 		  System.err.println("Couldn't load project: " + e.getMessage());
 		}
