@@ -12,7 +12,7 @@
 in Java code.&nbsp; It is free software, distributed under the terms
 of the <a href="http://www.gnu.org/licenses/lgpl.html">Lesser GNU Public License</a>.
 
-<h1>Software</h1>
+<h1>Downloads</h1>
 
 <p> The current release is @VERSION@:
 <ul>
@@ -23,37 +23,53 @@ of the <a href="http://www.gnu.org/licenses/lgpl.html">Lesser GNU Public License
 
 <p> You can also browse a list of <a href="http://www.cs.umd.edu/~pugh/java/bugs/release/">all releases</a>.
 
-<!--
-<p> The <a href="README.html">documentation for the latest version</a> describes how
-to use FindBugs.&nbsp; It also has some screen shots, if you're curious what it
-looks like in action.&nbsp; You might also be interested in
-<a href="BuildFromSource.html">instructions on how to build FindBugs from source</a>.
--->
-<p> The <a href="manual/index.html">FindBugs manual</a> describes how to
-install and use FindBugs.
-
 <p> Please note that FindBugs is alpha-quality software.&nbsp; You may find bugs in it,
 and the features and source code may change significantly in future releases.&nbsp;
 Having said that, we invite you to try it out, and especially
 <a href="mailto:findbugs-discuss@cs.umd.edu">send us feedback</a>.
 
-<p> If you have a bug fix or feature enhancement you would like to contribute,
-we would be happy to consider it for inclusion.&nbsp; Just send a patch
-(be sure to use the "-u" or "-c" option to diff) or send the source files you've
-modified to <a href="mailto:daveho@cs.umd.edu">daveho@cs.umd.edu</a>.
+<h1>Changes since last version</h1>
+
+<p>Changes since version 0.5.2
+
+<ul>
+<li> All of the source code and related files are in a single directory tree.
+<li> Updated some of the detectors to produce source line information.
+<!--
+<li> Added an <a href="http://ant.apache.org/">Ant</a> build script (contributed by Mike Fagan)
+<li> Added "File:Reload Project" menu option (contributed by Mike Fagan)
+<li> File browsing dialogs start in the last directory visited (contributed by Mike Fagan)
+<li> Ensure details and source code windows are clear when a new project is 
+     loaded (contributed by Mike Fagan)
+-->
+<li> <a href="http://ant.apache.org/">Ant</a> build script and several
+     GUI enhancements and fixes contributed by Mike Fagan.
+<li> Converted to use a <a href="AddingDetectors.txt">plugin architecture</a> for
+     loading bug detectors.
+<li> Eliminated generics-related compiler warnings.
+<li> More complete documentation has been added.
+</ul>
+
+<p> <a href="Changes.html">Older versions...</a>
 
 <h1>Documents</h1>
 
 <ul>
-
+<li> The <a href="manual/index.html">FindBugs manual</a> describes how to
+install and use FindBugs.
 <li> A <a href="http://www.cs.umd.edu/~pugh/java/bugs/docs/findbugsPaper.pdf">paper describing FindBugs</a>,
 submitted for publication.&nbsp; This is the best general
 description of what FindBugs does, and how it works.
-
 <li> Presentation slides from <a href="http://www.cs.umd.edu/~pugh/java/bugs/docs/FindBugsTalk.pdf">Finding Bugs is Easy</a>,
 invited talk, MASPLAS 2003
-
 </ul>
+
+<h1>Contributing</h1>
+
+<p> If you have a bug fix or feature enhancement you would like to contribute,
+we would be happy to consider it for inclusion.&nbsp; Just send a patch
+(be sure to use the "-u" or "-c" option to diff) or send the source files you've
+modified to <a href="mailto:daveho@cs.umd.edu">daveho@cs.umd.edu</a>.
 
 <h1>Resources</h1>
 
