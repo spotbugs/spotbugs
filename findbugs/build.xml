@@ -201,7 +201,20 @@
     </target>
 
     <!-- Target to build the Eclipse plugin. -->
-    <target name="eclipsePlugin" depends="findbugs,coreplugin,tools">
+    <target name="eclipsePlugin" depends="findbugs,coreplugin,tools,version">
+       <!-- Create the plugin descriptor files.
+            We use a filter set to ensure that the plugin version numbers
+            are up-to-date with the global version properties from
+            the edu.umd.cs.findbugs.Version class. -->
+       <copy file="${eclipse.src.dir}/edu.umd.cs.findbugs/plugin.xml.in"
+             tofile="${eclipse.src.dir}/edu.umd.cs.findbugs/plugin.xml">
+         <filterset refid="findbugsFilters"/>
+       </copy>
+       <copy file="${eclipse.src.dir}/de.tobject.findbugs/plugin.xml.in"
+             tofile="${eclipse.src.dir}/de.tobject.findbugs/plugin.xml">
+         <filterset refid="findbugsFilters"/>
+       </copy>
+
        <!-- Generate build properties for core Eclipse plugin. -->
        <java dir="${findbugs.dir}"
              fork="true"
@@ -282,6 +295,16 @@
       </java>
       <loadproperties srcFile="${release.prop.file}" />
       <property name="release.dir" value="${build.dir}/bin/findbugs-${release.number}" />
+
+      <!-- Filter set used for generating text substitution values for
+           documentation and Eclipse plugin descriptors. -->
+      <filterset id="findbugsFilters">
+        <filter token="VERSION" value="${release.number}" />
+        <filter token="RELEASE_DATE" value="${release.date}" />
+        <filter token="ECLIPSE_UI_VERSION" value="${eclipse.ui.version}" />
+        <filter token="WEBSITE" value="${findbugs.website}"/>
+        <filter token="HTML_XSL_STYLESHEET" value="${html.xsl.stylesheet}" />
+      </filterset>  
     </target>
 
     <!-- Target to generate documentation files from their sources. -->
@@ -299,13 +322,7 @@
            It also tells the doc formatting tools where to find
            stylesheets and the like.
          -->
-         <filterset>
-            <filter token="VERSION" value="${release.number}" />
-            <filter token="RELEASE_DATE" value="${release.date}" />
-            <filter token="ECLIPSE_UI_VERSION" value="${eclipse.ui.version}" />
-            <filter token="WEBSITE" value="${findbugs.website}"/>
-            <filter token="HTML_XSL_STYLESHEET" value="${html.xsl.stylesheet}" />
-        </filterset>  
+        <filterset refid="findbugsFilters"/>
       </copy>
 
       <!-- The manual is up to date as long as the generated HTML
@@ -433,10 +450,10 @@
     </target>
 
     <!-- Update the FindBugs web page. -->
-    <property name="findbugs.web.dir" value="/fs/www/users/pugh/java/bugs" />
 <!--
-    <property name="findbugs.web.dir" value="/fs/www/users/daveho/findbugs" />
+    <property name="findbugs.web.dir" value="/fs/www/users/pugh/java/bugs" />
 -->
+    <property name="findbugs.web.dir" value="/export/home/daveho/bugs" />
     <target name="web" depends="docs" >
       <copy todir="${findbugs.web.dir}" >
         <fileset dir="${doc.dir}" />
