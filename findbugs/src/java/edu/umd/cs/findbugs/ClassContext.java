@@ -29,15 +29,18 @@ import org.apache.bcel.generic.*;
 import edu.umd.cs.daveho.ba.*;
 
 /**
- * Object which creates and caches MethodGen and CFG objects for a class,
- * so they don't have to be created repeatedly by different visitors.
- * This results in a small but significant speedup when running multiple
- * visitors which use CFGs.
+ * A ClassContext caches all of the auxiliary objects used to analyze
+ * the methods of a class.  That way, they are shared by all of the
+ * Detectors, rather than being recreated for each Detector.
+ *
+ * @author David Hovemeyer
  */
 public class ClassContext {
 	private JavaClass jclass;
 	private IdentityHashMap<Method, MethodGen> methodGenMap = new IdentityHashMap<Method, MethodGen>();
 	private IdentityHashMap<Method, CFG> cfgMap = new IdentityHashMap<Method, CFG>();
+	private IdentityHashMap<Method, ValueNumberDataflow> vnaDataflowMap = new IdentityHashMap<Method, ValueNumberDataflow>();
+	private IdentityHashMap<Method, DepthFirstSearch> dfsMap = new IdentityHashMap<Method, DepthFirstSearch>();
 	private ClassGen classGen;
 
 	/**
@@ -87,6 +90,40 @@ public class ClassContext {
 			cfgMap.put(method, cfg);
 		}
 		return cfg;
+	}
+
+	/**
+	 * Get a ValueNumberDataflow for given method.
+	 * @param method the method
+	 * @return the ValueNumberDataflow
+	 */
+	public ValueNumberDataflow getValueNumberDataflow(Method method) throws DataflowAnalysisException {
+		ValueNumberDataflow vnaDataflow = vnaDataflowMap.get(method);
+		if (vnaDataflow == null) {
+			MethodGen methodGen = getMethodGen(method);
+			ValueNumberAnalysis analysis = new ValueNumberAnalysis(methodGen);
+			CFG cfg = getCFG(method);
+			vnaDataflow = new ValueNumberDataflow(cfg, analysis);
+			vnaDataflow.execute();
+			vnaDataflowMap.put(method, vnaDataflow);
+		}
+		return vnaDataflow;
+	}
+
+	/**
+	 * Get a DepthFirstSearch for given method.
+	 * @param method the method
+	 * @return the DepthFirstSearch
+	 */
+	public DepthFirstSearch getDepthFirstSearch(Method method) {
+		DepthFirstSearch dfs = dfsMap.get(method);
+		if (dfs == null) {
+			CFG cfg = getCFG(method);
+			dfs = new DepthFirstSearch(cfg);
+			dfs.search();
+			dfsMap.put(method, dfs);
+		}
+		return dfs;
 	}
 }
 
