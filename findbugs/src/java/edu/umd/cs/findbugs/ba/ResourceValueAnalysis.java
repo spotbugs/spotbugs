@@ -30,14 +30,16 @@ public class ResourceValueAnalysis<Resource> extends FrameDataflowAnalysis<Resou
 	private static final boolean DEBUG = Boolean.getBoolean("dataflow.debug");
 
 	private MethodGen methodGen;
+	private CFG cfg;
 	private ResourceTracker<Resource> resourceTracker;
 	private Resource resource;
 	private ResourceValueFrameModelingVisitor visitor;
 	private RepositoryLookupFailureCallback lookupFailureCallback;
 
-	public ResourceValueAnalysis(MethodGen methodGen, ResourceTracker<Resource> resourceTracker, Resource resource,
+	public ResourceValueAnalysis(MethodGen methodGen, CFG cfg, ResourceTracker<Resource> resourceTracker, Resource resource,
 		RepositoryLookupFailureCallback lookupFailureCallback) {
 		this.methodGen = methodGen;
+		this.cfg = cfg;
 		this.resourceTracker = resourceTracker;
 		this.resource = resource;
 		this.visitor = resourceTracker.createVisitor(resource, methodGen.getConstantPool());
@@ -76,6 +78,18 @@ public class ResourceValueAnalysis<Resource> extends FrameDataflowAnalysis<Resou
 				tmpFact = modifyFrame(fact, tmpFact);
 				tmpFact.setStatus(ResourceValueFrame.OPEN_ON_EXCEPTION_PATH);
 			}
+
+			// Special case: if the instruction that closes the resource
+			// throws an exception, we consider the resource to be successfully
+			// closed anyway.
+			InstructionHandle exceptionThrower = source.getExceptionThrower();
+			BasicBlock fallThroughSuccessor = cfg.getSuccessorWithEdgeType(source, FALL_THROUGH_EDGE);
+			if (fallThroughSuccessor != null &&
+				resourceTracker.isResourceClose(fallThroughSuccessor, exceptionThrower, methodGen.getConstantPool(), resource, fact)) {
+				tmpFact = modifyFrame(fact, tmpFact);
+				tmpFact.setStatus(ResourceValueFrame.CLOSED);
+				if (DEBUG) System.out.print("(failed attempt to close)");
+			}
 		}
 
 		if (dest.isExceptionHandler()) {
@@ -84,16 +98,6 @@ public class ResourceValueAnalysis<Resource> extends FrameDataflowAnalysis<Resou
 				tmpFact = modifyFrame(fact, tmpFact);
 				tmpFact.clearStack();
 				tmpFact.pushValue(ResourceValue.notInstance());
-
-				// Special case: if the instruction that closes the resource
-				// throws an exception, we consider the resource to be successfully
-				// closed anyway.
-				InstructionHandle exceptionThrower = source.getExceptionThrower();
-				assert exceptionThrower != null; // is it possible to reach an exception handler by a non-exception edge?
-				if (resourceTracker.isResourceClose(dest, exceptionThrower, methodGen.getConstantPool(), resource, fact)) {
-					tmpFact.setStatus(ResourceValueFrame.CLOSED);
-					if (DEBUG) System.out.print("(failed attempt to close)");
-				}
 			}
 		}
 
