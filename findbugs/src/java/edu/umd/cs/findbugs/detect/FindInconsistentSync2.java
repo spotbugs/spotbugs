@@ -333,7 +333,7 @@ public class FindInconsistentSync2 implements Detector {
 		ConstantPoolGen cpg = classContext.getConstantPoolGen();
 		MethodGen methodGen = classContext.getMethodGen(method);
 		CFG cfg = classContext.getCFG(method);
-		LockDataflow lockDataflow = classContext.getLockDataflow(method);
+		LockChecker lockChecker = classContext.getLockChecker(method);
 		ValueNumberDataflow vnaDataflow = classContext.getValueNumberDataflow(method);
 		boolean isGetterMethod = isGetterMethod(classContext, method);
 
@@ -385,7 +385,7 @@ public class FindInconsistentSync2 implements Detector {
 
 				// Get lock set and instance value
 				ValueNumber thisValue = !method.isStatic() ? vnaDataflow.getAnalysis().getThisValue() : null;
-				LockSet lockSet = lockDataflow.getFactAtLocation(location);
+				LockSet lockSet = lockChecker.getFactAtLocation(location);
 				InstructionHandle handle = location.getHandle();
 				ValueNumber instance = frame.getInstance(handle.getInstruction(), cpg);
 			
@@ -738,8 +738,8 @@ public class FindInconsistentSync2 implements Detector {
 				continue;
 
 			// Get lock set for site
-			LockDataflow lockDataflow = classContext.getLockDataflow(method);
-			LockSet lockSet = lockDataflow.getFactAtLocation(location);
+			LockChecker lockChecker = classContext.getLockChecker(method);
+			LockSet lockSet = lockChecker.getFactAtLocation(location);
 
 			// Get value number frame for site
 			ValueNumberDataflow vnaDataflow = classContext.getValueNumberDataflow(method);
