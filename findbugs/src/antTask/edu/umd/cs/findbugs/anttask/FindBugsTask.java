@@ -63,9 +63,6 @@ import org.apache.tools.ant.types.Reference;
 import org.apache.tools.ant.taskdefs.Java;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -89,10 +86,11 @@ import java.util.List;
  * <li>excludeFilter   (filter filename)
  * <li>includeFilter   (filter filename)
  * <li>projectFile     (project filename)
- * <li>jvmargs          (any additional jvm arguments)
+ * <li>jvmargs         (any additional jvm arguments)
  * <li>classpath       (classpath for running FindBugs)
  * <li>pluginList      (list of plugin Jar files to load)
  * <li>systemProperty  (a system property to set)
+ * <li>workHard        (boolean default false)
  * </ul>
  * Of these arguments, the <b>home</b> is required.
  * <b>projectFile</b> is required if nested &lt;class&gt; are not
@@ -102,7 +100,7 @@ import java.util.List;
  *
  * @author Mike Fagan <a href="mailto:mfagan@tde.com">mfagan@tde.com</a>
  *
- * @version $Revision: 1.24 $
+ * @version $Revision: 1.25 $
  *
  * @since Ant 1.5
  *
@@ -119,6 +117,7 @@ public class FindBugsTask extends Task {
 	private boolean sorted = true;
 	private boolean quietErrors = false;
 	private boolean failOnError = false;
+	private boolean workHard = false;
 	private File homeDir = null;
 	private File projectFile = null;
 	private File excludeFile = null;
@@ -179,6 +178,15 @@ public class FindBugsTask extends Task {
 		this.jvmargs = args;
 	}
 
+	/**
+	 * Set the workHard flag.
+	 * 
+	 * @param workHard true if we want findbugs to run with workHard option enabled
+	 */
+	public void setWorkHard(boolean workHard){
+		this.workHard = workHard;   
+	}
+    
 	/**
 	 * Set the specific visitors to use 
 	 */
@@ -514,6 +522,9 @@ public class FindBugsTask extends Task {
 		findbugsEngine.setFork( true );
 		findbugsEngine.setTimeout( new Long( timeout ) );
 
+		if ( workHard ){
+			jvmargs = jvmargs + " -Dfindbugs.workHard=true";
+		}
 		if ( debug )
 			jvmargs = jvmargs + " -Dfindbugs.debug=true";
 		if ( conserveSpace )
@@ -586,6 +597,7 @@ public class FindBugsTask extends Task {
 			addArg("-outputFile");
 			addArg(outputFileName);
 		}
+        
 		addArg("-exitcode");
         Iterator itr = classLocations.iterator();
         while ( itr.hasNext() ) {
