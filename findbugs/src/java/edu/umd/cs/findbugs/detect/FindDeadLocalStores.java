@@ -30,15 +30,13 @@ import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.Dataflow;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
-import edu.umd.cs.findbugs.ba.ExtendedTypes;
 import edu.umd.cs.findbugs.ba.LiveLocalStoreAnalysis;
 import edu.umd.cs.findbugs.ba.Location;
-import edu.umd.cs.findbugs.ba.TypeAnalysis;
-import edu.umd.cs.findbugs.ba.TypeDataflow;
-import edu.umd.cs.findbugs.ba.TypeFrame;
 
 import java.util.BitSet;
 import java.util.Iterator;
+
+import org.apache.bcel.Constants;
 
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
@@ -46,12 +44,22 @@ import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.IndexedInstruction;
 import org.apache.bcel.generic.IINC;
 import org.apache.bcel.generic.Instruction;
+import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.MethodGen;
 import org.apache.bcel.generic.StoreInstruction;
-import org.apache.bcel.generic.Type;
 
 public class FindDeadLocalStores implements Detector {
 	private static final boolean DEBUG = Boolean.getBoolean("fdls.debug");
+
+	/**
+	 * Opcodes of instructions that load constant values that
+	 * often indicate defensive programming.
+	 */
+	private static final BitSet defensiveConstantValueOpcodes = new BitSet();
+	static {
+		defensiveConstantValueOpcodes.set(Constants.ACONST_NULL);
+		defensiveConstantValueOpcodes.set(Constants.ICONST_0);
+	}
 
 	private BugReporter bugReporter;
 
@@ -122,17 +130,11 @@ public class FindDeadLocalStores implements Detector {
 
 			// Store is dead
 
-			// Ignore dead assignments of null.
-			// This is generally just defensive programming.
-			TypeDataflow typeDataflow = classContext.getTypeDataflow(method);
-			TypeFrame frame = typeDataflow.getFactAtLocation(location);
-			if (!frame.isValid() || frame.getStackDepth() == 0)
+			// Ignore dead assignments of null and 0.
+			// These often indicate defensive programming.
+			InstructionHandle prev = location.getBasicBlock().getPredecessorOf(location.getHandle());
+			if (prev != null && defensiveConstantValueOpcodes.get(prev.getInstruction().getOpcode()))
 				continue;
-			Type tos = frame.getTopValue();
-			if (tos.getType() == ExtendedTypes.T_NULL) {
-				if (DEBUG) System.out.println("Ignoring dead store of null value");
-				continue;
-			}
 
 			BugInstance bugInstance = new BugInstance("DLS_DEAD_LOCAL_STORE", NORMAL_PRIORITY)
 				.addClassAndMethod(methodGen, javaClass.getSourceFileName())
