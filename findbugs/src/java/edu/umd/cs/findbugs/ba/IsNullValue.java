@@ -1,6 +1,6 @@
 /*
  * Bytecode Analysis Framework
- * Copyright (C) 2003,2004 University of Maryland
+ * Copyright (C) 2003-2005 University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -31,27 +31,37 @@ package edu.umd.cs.findbugs.ba;
 public class IsNullValue {
 	private static final boolean DEBUG_EXCEPTION = Boolean.getBoolean("inv.debugException");
 
+	/** Definitely null. */
 	private static final int NULL = 0;
+	/** Definitely null because of a comparison to a known null value. */
 	private static final int CHECKED_NULL = 1;
+	/** Definitely not null. */
 	private static final int NN = 2;
+	/** Definitely not null because of a comparison to a known null value. */
 	private static final int CHECKED_NN = 3;
+	/** Null on some simple path (at most one branch) to current location. */
 	private static final int NSP = 4;
-	private static final int NN_DNR = 5;
-	private static final int NSP_DNR = 6;
+	/** Unknown value (method param, value read from heap, etc.), assumed not null. */
+	private static final int NN_UNKNOWN = 5;
+	/** Null on some complex path (at least two branches) to current location. */
+	private static final int NCP2 = 6;
+	/** Null on some complex path (at least three branches) to current location. */
+	private static final int NCP3 = 7;
 
 	// This can be bitwise-OR'ed to indicate the value was propagated
 	// along an exception path.
 	private static final int EXCEPTION = 0x100;
 
 	private static final int[][] mergeMatrix = {
-		// NULL,    CHECKED_NULL, NN,      CHECKED_NN, NSP,     NN_DNR,   NSP_DNR
-		{NULL}, // NULL
-		{NULL, CHECKED_NULL, }, // CHECKED_NULL
-		{NSP, NSP, NN}, // NN
-		{NSP, NSP, NN, CHECKED_NN, }, // CHECKED_NN
-		{NSP, NSP, NSP, NSP, NSP}, // NSP
-		{NSP, NSP, NN_DNR, NN_DNR, NSP, NN_DNR, }, // NN_DNR
-		{NSP_DNR, NSP_DNR, NSP_DNR, NSP_DNR, NSP_DNR, NSP_DNR, NSP_DNR, }  // NSP_DNR
+		// NULL, CHECKED_NULL, NN,         CHECKED_NN, NSP,  NN_UNKNOWN, NCP2, NCP3
+		{NULL},                                                                      // NULL
+		{NULL,   CHECKED_NULL, },                                                    // CHECKED_NULL
+		{NSP,    NSP,          NN},                                                  // NN
+		{NSP,    NSP,          NN,         CHECKED_NN, },                            // CHECKED_NN
+		{NSP,    NSP,          NSP,        NSP,        NSP},                         // NSP
+		{NSP,    NSP,          NN_UNKNOWN, NN_UNKNOWN, NSP,  NN_UNKNOWN, },          // NN_UNKNOWN
+		{NCP2,   NCP2,         NCP2,       NCP2,       NCP2, NCP2,        NCP2,},    // NCP2
+		{NCP3,   NCP3,         NCP3,       NCP3,       NCP3, NCP3,        NCP3, NCP3}// NCP3
 	};
 
 	private static IsNullValue[] instanceList = {
@@ -60,8 +70,9 @@ public class IsNullValue {
 		new IsNullValue(NN),
 		new IsNullValue(CHECKED_NN),
 		new IsNullValue(NSP),
-		new IsNullValue(NN_DNR),
-		new IsNullValue(NSP_DNR)
+		new IsNullValue(NN_UNKNOWN),
+		new IsNullValue(NCP2),
+		new IsNullValue(NCP3),
 	};
 
 	private static IsNullValue[] exceptionInstanceList = {
@@ -70,8 +81,9 @@ public class IsNullValue {
 		new IsNullValue(NN | EXCEPTION),
 		new IsNullValue(CHECKED_NN | EXCEPTION),
 		new IsNullValue(NSP | EXCEPTION),
-		new IsNullValue(NN_DNR | EXCEPTION),
-		new IsNullValue(NSP_DNR | EXCEPTION)
+		new IsNullValue(NN_UNKNOWN | EXCEPTION),
+		new IsNullValue(NCP2 | EXCEPTION),
+		new IsNullValue(NCP3 | EXCEPTION),
 	};
 
 	private final int kind;
@@ -145,9 +157,9 @@ public class IsNullValue {
 
 	/**
 	 * Get the instance representing values that are definitely null
-	 * on some incoming path.
+	 * on some simple (no branches) incoming path.
 	 */
-	public static IsNullValue nullOnSomePathValue() {
+	public static IsNullValue nullOnSimplePathValue() {
 		return instanceList[NSP];
 	}
 
@@ -156,21 +168,40 @@ public class IsNullValue {
 	 * This is what we use for unknown values.
 	 */
 	public static IsNullValue nonReportingNotNullValue() {
-		return instanceList[NN_DNR];
+		return instanceList[NN_UNKNOWN];
 	}
 
 	/**
-	 * Get non-reporting null on some path value.
+	 * Get null on complex path value.
+	 * This is like null on simple path value, but there
+	 * are at least two branches between the explicit null value
+	 * and the current location.  If the conditions are correlated,
+	 * then the path on which the value is null may be infeasible.
 	 */
-	public static IsNullValue nonReportingNullOnSomePathValue() {
-		return instanceList[NSP_DNR];
+	public static IsNullValue nullOnComplexPathValue() {
+		return instanceList[NCP2];
+	}
+	
+	/**
+	 * Like "null on complex path" except that there are at least
+	 * <em>three</em> branches between the explicit null value
+	 * and the current location.
+	 */
+	public static IsNullValue nullOnComplexPathValue3() {
+		return instanceList[NCP3];
 	}
 
-	public static IsNullValue flowSensitiveNullValue() {
+	/**
+	 * Get null value resulting from comparison to explicit null.
+	 */
+	public static IsNullValue pathSensitiveNullValue() {
 		return instanceList[CHECKED_NULL];
 	}
 
-	public static IsNullValue flowSensitiveNonNullValue() {
+	/**
+	 * Get non-null value resulting from comparison to explicit null.
+	 */
+	public static IsNullValue pathSensitiveNonNullValue() {
 		return instanceList[CHECKED_NN];
 	}
 
@@ -237,9 +268,9 @@ public class IsNullValue {
 			return pfx + "W";
 		case NSP:
 			return pfx + "s";
-		case NN_DNR:
+		case NN_UNKNOWN:
 			return pfx + "-";
-		case NSP_DNR:
+		case NCP2:
 			return pfx + "/";
 		default:
 			throw new IllegalStateException("unknown kind of IsNullValue: " + kind);

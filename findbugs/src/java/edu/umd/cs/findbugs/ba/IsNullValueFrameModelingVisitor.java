@@ -1,6 +1,6 @@
 /*
  * Bytecode Analysis Framework
- * Copyright (C) 2003,2004 University of Maryland
+ * Copyright (C) 2003-2005 University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -86,7 +86,7 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
 			if (numWordsProduced > 0) {
 				Type type = obj.getType(getCPG());
 				if (type instanceof ReferenceType) {
-					frame.pushValue(IsNullValue.nullOnSomePathValue());
+					frame.pushValue(IsNullValue.nullOnSimplePathValue());
 				} else {
 					while (numWordsProduced-- > 0) {
 						frame.pushValue(IsNullValue.nonReportingNotNullValue());

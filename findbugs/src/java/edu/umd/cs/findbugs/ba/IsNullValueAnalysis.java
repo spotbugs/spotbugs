@@ -1,6 +1,6 @@
 /*
  * Bytecode Analysis Framework
- * Copyright (C) 2003,2004 University of Maryland
+ * Copyright (C) 2003-2005 University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -33,22 +33,14 @@ import org.apache.bcel.generic.*;
  * @see IsNullValueFrame
  * @see IsNullValueFrameModelingVisitor
  */
-public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNullValueFrame> implements EdgeTypes {
+public class IsNullValueAnalysis
+		extends FrameDataflowAnalysis<IsNullValue, IsNullValueFrame>
+		implements EdgeTypes, IsNullValueAnalysisFeatures {
 	private static final boolean DEBUG = Boolean.getBoolean("inva.debug");
 
 	static {
 		if (DEBUG) System.out.println("Debug enabled");
 	}
-
-	private static final boolean NO_SPLIT_DOWNGRADE_NSP = Boolean.getBoolean("inva.noSplitDowngradeNSP");
-	private static final boolean NO_SWITCH_DEFAULT_AS_EXCEPTION = Boolean.getBoolean("inva.noSwitchDefaultAsException");
-
-	/**
-	 * If this property is true, then we assume parameters
-	 * and return values can be null (but aren't definitely null).
-	 */
-	static final boolean UNKNOWN_VALUES_ARE_NSP =
-		Boolean.getBoolean("findbugs.nullderef.assumensp");
 
 	private MethodGen methodGen;
 	private IsNullValueFrameModelingVisitor visitor;
@@ -89,7 +81,7 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
 			IsNullValue paramValue;
 
 			if (UNKNOWN_VALUES_ARE_NSP && !(instanceMethod && i == 0))
-				paramValue = IsNullValue.nullOnSomePathValue();
+				paramValue = IsNullValue.nullOnSimplePathValue();
 			else
 				paramValue = IsNullValue.nonReportingNotNullValue();
 
@@ -207,9 +199,12 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
 					tmpFact = modifyFrame(fact, tmpFact);
 
 					for (int i = 0; i < numSlots; ++i) {
+//						IsNullValue value = tmpFact.getValue(i);
+//						if (value.equals(IsNullValue.nullOnSimplePathValue()))
+//							tmpFact.setValue(i, IsNullValue.nullOnComplexPathValue());
 						IsNullValue value = tmpFact.getValue(i);
-						if (value.equals(IsNullValue.nullOnSomePathValue()))
-							tmpFact.setValue(i, IsNullValue.nonReportingNullOnSomePathValue());
+						value = downgradeOnControlSplit(value);
+						tmpFact.setValue(i, value);
 					}
 				}
 			}
@@ -240,7 +235,7 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
 						for (int i = 0; i < tmpFact.getNumSlots(); ++i) {
 							IsNullValue value = tmpFact.getValue(i);
 							if (value.isDefinitelyNull() || value.isNullOnSomePath())
-								tmpFact.setValue(i, IsNullValue.nonReportingNullOnSomePathValue());
+								tmpFact.setValue(i, IsNullValue.nullOnComplexPathValue());
 						}
 					}
 				}
@@ -307,6 +302,30 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
 		mergeInto(fact, result);
 	}
 
+	/**
+	 * Control split: move given value down in the lattice
+	 * if it is a conditionally-null value.
+	 * 
+	 * @param value the value
+	 * @return another value (equal or further down in the lattice)
+	 */
+	private IsNullValue downgradeOnControlSplit(IsNullValue value) {
+		if (NCP_EXTRA_BRANCH) {
+			// Experimental: track two distinct kinds of "null on complex path" values.
+			if (value.equals(IsNullValue.nullOnSimplePathValue()))
+				value = IsNullValue.nullOnComplexPathValue();
+			else if (value.equals(IsNullValue.nullOnComplexPathValue()))
+				value = IsNullValue.nullOnComplexPathValue3();
+				
+		} else {
+			// Downgrade "null on simple path" values to
+			// "null on complex path".
+			if (value.equals(IsNullValue.nullOnSimplePathValue()))
+				value = IsNullValue.nullOnComplexPathValue();
+		}
+		return value;
+	}
+
 	protected IsNullValue mergeValues(IsNullValueFrame frame, int slot, IsNullValue a, IsNullValue b)
 	        throws DataflowAnalysisException {
 		return IsNullValue.merge(a, b);
@@ -353,19 +372,19 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
 				if (tos.isDefinitelyNull()) {
 					// Predetermined comparison - one branch is infeasible
 					if (ifnull)
-						ifcmpDecision = IsNullValue.flowSensitiveNullValue();
+						ifcmpDecision = IsNullValue.pathSensitiveNullValue();
 					else // ifnonnull
-						fallThroughDecision = IsNullValue.flowSensitiveNullValue();
+						fallThroughDecision = IsNullValue.pathSensitiveNullValue();
 				} else if (tos.isDefinitelyNotNull()) {
 					// Predetermined comparison - one branch is infeasible
 					if (ifnull)
-						fallThroughDecision = IsNullValue.flowSensitiveNonNullValue();
+						fallThroughDecision = IsNullValue.pathSensitiveNonNullValue();
 					else // ifnonnull
-						ifcmpDecision = IsNullValue.flowSensitiveNonNullValue();
+						ifcmpDecision = IsNullValue.pathSensitiveNonNullValue();
 				} else {
 					// As far as we know, both branches feasible
-					ifcmpDecision = ifnull ? IsNullValue.flowSensitiveNullValue() : IsNullValue.flowSensitiveNonNullValue();
-					fallThroughDecision = ifnull ? IsNullValue.flowSensitiveNonNullValue() : IsNullValue.flowSensitiveNullValue();
+					ifcmpDecision = ifnull ? IsNullValue.pathSensitiveNullValue() : IsNullValue.pathSensitiveNonNullValue();
+					fallThroughDecision = ifnull ? IsNullValue.pathSensitiveNonNullValue() : IsNullValue.pathSensitiveNullValue();
 				}
 				return new IsNullConditionDecision(prevVnaFrame.getTopValue(), ifcmpDecision, fallThroughDecision);
 			}
@@ -389,15 +408,15 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
 					// Redundant comparision: both values are null, only one branch is feasible
 					value = null; // no value will be replaced - just want to indicate that one of the branches is infeasible
 					if (cmpeq)
-						ifcmpDecision = IsNullValue.flowSensitiveNullValue();
+						ifcmpDecision = IsNullValue.pathSensitiveNullValue();
 					else // cmpne
-						fallThroughDecision = IsNullValue.flowSensitiveNullValue();
+						fallThroughDecision = IsNullValue.pathSensitiveNullValue();
 				} else if (tosNull || nextToTOSNull) {
 					// We have updated information about whichever value is not null;
 					// both branches are feasible
 					value = prevVnaFrame.getStackValue(tosNull ? 1 : 0);
-					ifcmpDecision = cmpeq ? IsNullValue.flowSensitiveNullValue() : IsNullValue.flowSensitiveNonNullValue();
-					fallThroughDecision = cmpeq ? IsNullValue.flowSensitiveNonNullValue() : IsNullValue.flowSensitiveNullValue();
+					ifcmpDecision = cmpeq ? IsNullValue.pathSensitiveNullValue() : IsNullValue.pathSensitiveNonNullValue();
+					fallThroughDecision = cmpeq ? IsNullValue.pathSensitiveNonNullValue() : IsNullValue.pathSensitiveNullValue();
 				} else {
 					// No information gained
 					break;
