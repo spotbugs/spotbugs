@@ -354,6 +354,8 @@ public abstract class Frame<ValueType> implements Debug {
 	 */
 	public abstract ValueType getDefaultValue();
 
+	private static final boolean STACK_ONLY = Boolean.getBoolean("dataflow.stackonly");
+
 	/**
 	 * Convert to string.
 	 */
@@ -363,7 +365,8 @@ public abstract class Frame<ValueType> implements Debug {
 		StringBuffer buf = new StringBuffer();
 		buf.append('[');
 		int numSlots = getNumSlots();
-		for (int i = 0; i < numSlots; ++i) {
+		int start = STACK_ONLY ? getNumLocals() : 0;
+		for (int i = start; i < numSlots; ++i) {
 			String value = valueToString(getValue(i));
 			if (i == numSlots - 1 && value.endsWith(","))
 				value = value.substring(0, value.length() - 1);
