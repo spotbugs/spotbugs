@@ -22,45 +22,67 @@ import edu.umd.cs.findbugs.*;
 public class RunAnalysisDialog extends javax.swing.JDialog {
     
     private class RunAnalysisProgress implements FindBugsProgress {
-        private int numArchives;
-        private int archiveCount = 0;
-        
+	private int goal, count;
+	
+	private synchronized int getGoal() { return goal; }
+	private synchronized int getCount() { return count; }
+	
         public void reportNumberOfArchives(final int numArchives) {
-            SwingUtilities.invokeLater(new Runnable() {
-                public void run() {
-                    RunAnalysisProgress.this.numArchives = numArchives;
-                    archiveCountLabel.setText("0/" + numArchives);
-                }
-            });
-        }
-        
-        public void startArchive(final String archiveFile, final int numClasses) {
-            SwingUtilities.invokeLater(new Runnable() {
-                public void run() {
-                    archiveName.setText(archiveFile);
-                    classesProgress.setValue(0);
-                    classesProgress.setMinimum(0);
-                    classesProgress.setMaximum(numClasses);
-                }
-            });
-        }
-        
-        public void finishClass() {
-            SwingUtilities.invokeLater(new Runnable() {
-                public void run() {
-                    classesProgress.setValue(classesProgress.getValue() + 1);
-                }
-            });
+	    beginStage("Scanning archives", numArchives);
         }
         
         public void finishArchive() {
-            SwingUtilities.invokeLater(new Runnable() {
-                public void run() {
-                    archiveCount++;
-                    archiveCountLabel.setText(archiveCount + "/" + numArchives);
-                }
-            });
+	    step();
         }
+	
+	public void startAnalysis(int numClasses) {
+	    beginStage("Analyzing classes", numClasses);
+	}
+        
+        public void finishClass() {
+	    step();
+        }
+	
+	public void finishPerClassAnalysis() {
+	    SwingUtilities.invokeLater(new Runnable() {
+		public void run() {
+		    stageNameLabel.setText("Finishing analysis");
+		}
+	    });
+	}
+	
+	private void beginStage(final String stageName, final int goal) {
+	    synchronized (this) {
+		this.count = 0;
+		this.goal = goal;
+	    }
+	    
+	    SwingUtilities.invokeLater(new Runnable() {
+		public void run() {
+		    int goal = getGoal();
+		    stageNameLabel.setText(stageName);
+		    countValueLabel.setText("0/" + goal);
+		    progressBar.setMaximum(goal);
+		    progressBar.setValue(0);
+		}
+	    });
+	}
+	
+	private void step() {
+	    synchronized (this) {
+		count++;
+	    }
+	    
+	    SwingUtilities.invokeLater(new Runnable() {
+		public void run() {
+		    int count = getCount();
+		    int goal = getGoal();
+		    countValueLabel.setText(count+"/"+goal);
+		    progressBar.setValue(count);
+		}
+	    });
+	}
+	
     }
     
     private final AnalysisRun analysisRun;
@@ -123,25 +145,25 @@ public class RunAnalysisDialog extends javax.swing.JDialog {
         java.awt.GridBagConstraints gridBagConstraints;
 
         findBugsLabel = new javax.swing.JLabel();
-        archivesLabel = new javax.swing.JLabel();
-        classesLabel = new javax.swing.JLabel();
-        classesProgress = new javax.swing.JProgressBar();
+        countLabel = new javax.swing.JLabel();
+        progressLabel = new javax.swing.JLabel();
+        progressBar = new javax.swing.JProgressBar();
         cancelButton = new javax.swing.JButton();
         jSeparator1 = new javax.swing.JSeparator();
-        archiveLabel = new javax.swing.JLabel();
-        archiveName = new javax.swing.JLabel();
+        stageLabel = new javax.swing.JLabel();
+        stageNameLabel = new javax.swing.JLabel();
         topVerticalFiller = new javax.swing.JLabel();
         bottomVerticalFiller = new javax.swing.JLabel();
-        archiveCountLabel = new javax.swing.JLabel();
+        countValueLabel = new javax.swing.JLabel();
 
         getContentPane().setLayout(new java.awt.GridBagLayout());
 
         addWindowListener(new java.awt.event.WindowAdapter() {
-            public void windowOpened(java.awt.event.WindowEvent evt) {
-                formWindowOpened(evt);
-            }
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 closeDialog(evt);
+            }
+            public void windowOpened(java.awt.event.WindowEvent evt) {
+                formWindowOpened(evt);
             }
         });
 
@@ -158,30 +180,30 @@ public class RunAnalysisDialog extends javax.swing.JDialog {
         gridBagConstraints.insets = new java.awt.Insets(0, 0, 3, 0);
         getContentPane().add(findBugsLabel, gridBagConstraints);
 
-        archivesLabel.setFont(new java.awt.Font("Dialog", 0, 12));
-        archivesLabel.setText("Total archives:");
+        countLabel.setFont(new java.awt.Font("Dialog", 0, 12));
+        countLabel.setText("Count:");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 3;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
         gridBagConstraints.insets = new java.awt.Insets(3, 3, 3, 3);
-        getContentPane().add(archivesLabel, gridBagConstraints);
+        getContentPane().add(countLabel, gridBagConstraints);
 
-        classesLabel.setFont(new java.awt.Font("Dialog", 0, 12));
-        classesLabel.setText("Classes:");
+        progressLabel.setFont(new java.awt.Font("Dialog", 0, 12));
+        progressLabel.setText("Progress:");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 5;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
         gridBagConstraints.insets = new java.awt.Insets(3, 3, 3, 3);
-        getContentPane().add(classesLabel, gridBagConstraints);
+        getContentPane().add(progressLabel, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 5;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 3);
-        getContentPane().add(classesProgress, gridBagConstraints);
+        getContentPane().add(progressBar, gridBagConstraints);
 
         cancelButton.setFont(new java.awt.Font("Dialog", 0, 12));
         cancelButton.setText("Cancel");
@@ -205,21 +227,21 @@ public class RunAnalysisDialog extends javax.swing.JDialog {
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         getContentPane().add(jSeparator1, gridBagConstraints);
 
-        archiveLabel.setFont(new java.awt.Font("Dialog", 0, 12));
-        archiveLabel.setText("Current archive:");
+        stageLabel.setFont(new java.awt.Font("Dialog", 0, 12));
+        stageLabel.setText("Stage:");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
         gridBagConstraints.insets = new java.awt.Insets(3, 3, 3, 3);
-        getContentPane().add(archiveLabel, gridBagConstraints);
+        getContentPane().add(stageLabel, gridBagConstraints);
 
-        archiveName.setFont(new java.awt.Font("Dialog", 0, 12));
+        stageNameLabel.setFont(new java.awt.Font("Dialog", 0, 12));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 2;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        getContentPane().add(archiveName, gridBagConstraints);
+        getContentPane().add(stageNameLabel, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -240,7 +262,7 @@ public class RunAnalysisDialog extends javax.swing.JDialog {
         gridBagConstraints.gridy = 3;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 0);
-        getContentPane().add(archiveCountLabel, gridBagConstraints);
+        getContentPane().add(countValueLabel, gridBagConstraints);
 
         pack();
     }//GEN-END:initComponents
@@ -263,16 +285,16 @@ public class RunAnalysisDialog extends javax.swing.JDialog {
     }//GEN-LAST:event_closeDialog
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JProgressBar classesProgress;
-    private javax.swing.JLabel archiveName;
-    private javax.swing.JLabel classesLabel;
-    private javax.swing.JLabel archiveCountLabel;
-    private javax.swing.JLabel archiveLabel;
+    private javax.swing.JLabel stageNameLabel;
+    private javax.swing.JLabel progressLabel;
+    private javax.swing.JLabel countValueLabel;
+    private javax.swing.JLabel stageLabel;
     private javax.swing.JButton cancelButton;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JLabel findBugsLabel;
+    private javax.swing.JLabel countLabel;
     private javax.swing.JLabel bottomVerticalFiller;
-    private javax.swing.JLabel archivesLabel;
+    private javax.swing.JProgressBar progressBar;
     private javax.swing.JLabel topVerticalFiller;
     // End of variables declaration//GEN-END:variables
     
