@@ -7,6 +7,7 @@
 package edu.umd.cs.findbugs.gui;
 
 import java.util.*;
+import java.io.*;
 
 /**
  * A project in the GUI.
@@ -38,6 +39,14 @@ public class Project {
     
     /** Get the project filename. */
     public String getFileName() { return fileName; }
+    
+    /**
+     * Set the project filename.
+     * @param fileName the new filename
+     */
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
+    }
     
     /**
      * Add a Jar file to the project.
@@ -127,6 +136,56 @@ public class Project {
     public int getNextAnalysisRun() {
 	return ++numAnalysisRuns;
     }
+
+    private static final String JAR_FILES_KEY = "[Jar files]";
+    private static final String SRC_DIRS_KEY = "[Source dirs]";
     
-    public String toString() { return fileName; }
+    /**
+     * Save the project to an output stream.
+     * @param out the OutputStream to write the project to
+     * @throws IOException if an error occurs while writing
+     */
+    public void write(OutputStream out) throws IOException {
+        PrintWriter writer = new PrintWriter(new OutputStreamWriter(out));
+        writer.println(JAR_FILES_KEY);
+        for (Iterator i = jarList.iterator(); i.hasNext(); ) {
+            String jarFile = (String) i.next();
+            writer.println(jarFile);
+        }
+        writer.println(SRC_DIRS_KEY);
+        for (Iterator i = srcDirList.iterator(); i.hasNext(); ) {
+            String srcDir = (String) i.next();
+            writer.println(srcDir);
+        }
+        writer.close();
+    }
+    
+    /**
+     * Read the project from an input stream.
+     * @param in the InputStream to read the project from
+     * @throws IOException if an error occurs while reading
+     */
+    public void read(InputStream in) throws IOException {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+        String line;
+        line = reader.readLine();
+        if (line == null || !line.equals(JAR_FILES_KEY)) throw new IOException("Bad format: missing jar files key");
+        while ((line = reader.readLine()) != null && !line.equals(SRC_DIRS_KEY)) {
+            jarList.add(line);
+        }
+        if (line == null) throw new IOException("Bad format: missing source dirs key");
+        while ((line = reader.readLine()) != null) {
+            srcDirList.add(line);
+        }
+        
+        reader.close();
+    }
+    
+    public String toString() {
+        String name = fileName;
+        int lastSep = name.lastIndexOf(File.separatorChar);
+        if (lastSep >= 0)
+            name = name.substring(lastSep + 1);
+        return name;
+    }
 }
