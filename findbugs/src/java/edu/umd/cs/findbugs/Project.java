@@ -27,6 +27,8 @@ package edu.umd.cs.findbugs;
 
 import java.util.*;
 import java.io.*;
+import org.dom4j.DocumentException;
+import org.dom4j.Element;
 
 /**
  * A project in the GUI.
@@ -313,6 +315,51 @@ public class Project {
 		if (!fileName.endsWith(".fb"))
 			fileName = fileName + ".fb";
 		return fileName;
+	}
+
+	private static final String JAR_ELEMENT_NAME = "Jar";
+	private static final String AUX_CLASSPATH_ENTRY_ELEMENT_NAME = "AuxClasspathEntry";
+	private static final String SRC_DIR_ELEMENT_NAME = "SrcDir";
+	private static final String FILENAME_ATTRIBUTE_NAME = "filename";
+
+	public void readElement(Element element) throws DocumentException {
+		Iterator i = element.elements().iterator();
+
+		String projectName = element.attributeValue(FILENAME_ATTRIBUTE_NAME);
+		if (projectName != null)
+			fileName = projectName;
+		else
+			fileName = UNNAMED_PROJECT;
+
+		while (i.hasNext()) {
+			Element child = (Element) i.next();
+			String name = child.getName();
+			String text = child.getText();
+			if (name.equals(JAR_ELEMENT_NAME))
+				addJar(text);
+			else if (name.equals(AUX_CLASSPATH_ENTRY_ELEMENT_NAME))
+				addAuxClasspathEntry(text);
+			else if (name.equals(SRC_DIR_ELEMENT_NAME))
+				addSourceDir(text);
+			else
+				throw new DocumentException("Unknown project node: " + name);
+		}
+	}
+
+	public void writeElement(Element element) {
+		element.addAttribute(FILENAME_ATTRIBUTE_NAME, fileName);
+
+		for (Iterator<String> i = jarList.iterator(); i.hasNext(); ) {
+			element.addElement(JAR_ELEMENT_NAME).setText(i.next());
+		}
+
+		for (Iterator<String> i = auxClasspathEntryList.iterator(); i.hasNext(); ) {
+			element.addElement(AUX_CLASSPATH_ENTRY_ELEMENT_NAME).setText(i.next());
+		}
+
+		for (Iterator<String> i = srcDirList.iterator(); i.hasNext(); ) {
+			element.addElement(SRC_DIR_ELEMENT_NAME).setText(i.next());
+		}
 	}
 }
 

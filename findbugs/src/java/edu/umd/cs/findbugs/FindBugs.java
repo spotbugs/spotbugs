@@ -399,10 +399,14 @@ public class FindBugs implements Constants2
    * main() method
    * ---------------------------------------------------------------------- */
 
+  private static final int PRINTING_REPORTER = 0;
+  private static final int SORTING_REPORTER = 1;
+  private static final int XML_REPORTER = 2;
+
   public static int lowestPriorityReported = Detector.NORMAL_PRIORITY;
   public static void main(String argv[]) throws Exception
   { 
-	BugReporter bugReporter = null;
+	int bugReporterType = PRINTING_REPORTER;
 	Project project = new Project();
 	boolean quiet = false;
 	String filterFile = null;
@@ -421,9 +425,9 @@ public class FindBugs implements Constants2
 		else if (option.equals("-high"))
 			lowestPriorityReported = Detector.HIGH_PRIORITY;
 		else if (option.equals("-sortByClass"))
-			bugReporter = new SortingBugReporter();
+			bugReporterType = SORTING_REPORTER;
 		else if (option.equals("-xml"))
-			bugReporter = new XMLBugReporter();
+			bugReporterType = XML_REPORTER;
 		else if (option.equals("-visitors") || option.equals("-omitVisitors")) {
 			++argCount;
 			if (argCount == argv.length) throw new IllegalArgumentException(option + " option requires argument");
@@ -479,11 +483,11 @@ public class FindBugs implements Constants2
 		++argCount;
 	}
 
-	if (project.getNumJarFiles() == 0) {
+	if (argCount == argv.length && project.getNumJarFiles() == 0) {
 		InputStream in = FindBugs.class.getClassLoader().getResourceAsStream("USAGE");
 		if (in == null)  {
 			System.out.println("FindBugs tool, version " + Version.RELEASE);
-			System.out.println("usage: java -jar findbugs.jar [options] <classfiles, zip files or jar files>");
+			System.out.println("usage: java -jar findbugs.jar [options] <classfiles, zip/jar files, or directories>");
 			System.out.println("Example: java -jar findbugs.jar rt.jar");
 			System.out.println("Options:");
 			System.out.println("   -quiet                        suppress error messages");
@@ -504,8 +508,17 @@ public class FindBugs implements Constants2
 		return;
 		}
 
-	if (bugReporter == null)
-		bugReporter = new PrintingBugReporter();
+	BugReporter bugReporter = null;
+	switch (bugReporterType) {
+	case PRINTING_REPORTER:
+		bugReporter = new PrintingBugReporter(); break;
+	case SORTING_REPORTER:
+		bugReporter = new SortingBugReporter(); break;
+	case XML_REPORTER:
+		bugReporter = new XMLBugReporter(project); break;
+	default:
+		throw new IllegalStateException();
+	}
 
 	if (quiet)
 		bugReporter.setErrorVerbosity(BugReporter.SILENT);

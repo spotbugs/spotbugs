@@ -109,14 +109,14 @@ public class AnalysisRun {
      * Load bugs from a file.
      */
     public void loadBugsFromFile(File file) throws IOException, org.dom4j.DocumentException {
-        reporter.bugCollection.readXML(file, reporter.getClassToSourceMap());
+        reporter.bugCollection.readXML(file, project, reporter.getClassToSourceMap());
     }
     
     /**
      * Save bugs to a file.
      */
     public void saveBugsToFile(File file) throws IOException {
-	reporter.bugCollection.writeXML(file, reporter.getClassToSourceMap());
+	reporter.bugCollection.writeXML(file, project, reporter.getClassToSourceMap());
     }
     
     /**

@@ -1060,7 +1060,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
             if (result != JFileChooser.CANCEL_OPTION) {
                 File selectedFile = chooser.getSelectedFile();
                 
-                Project project = currentProject != null ? currentProject : new Project(DEFAULT_PROJECT_NAME);
+                Project project = new Project();
                 AnalysisRun analysisRun = new AnalysisRun(project, this);
                 
                 analysisRun.loadBugsFromFile(selectedFile);

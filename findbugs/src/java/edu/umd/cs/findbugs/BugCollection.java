@@ -56,18 +56,23 @@ public abstract class BugCollection {
 
 	private static final String ROOT_ELEMENT_NAME = "BugCollection";
 	private static final String SRCMAP_ELEMENT_NAME= "SrcMap";
+	private static final String PROJECT_ELEMENT_NAME = "Project";
 
-	public void readXML(String fileName, Map<String, String> classToSourceFileMap) throws IOException, DocumentException {
+	public void readXML(String fileName, Project project, Map<String, String> classToSourceFileMap)
+		throws IOException, DocumentException {
 		BufferedInputStream in = new BufferedInputStream(new FileInputStream(fileName));
-		readXML(in, classToSourceFileMap);
+		readXML(in, project, classToSourceFileMap);
 	}
 
-	public void readXML(File file, Map<String, String> classToSourceFileMap) throws IOException, DocumentException {
+	public void readXML(File file, Project project, Map<String, String> classToSourceFileMap)
+		throws IOException, DocumentException {
 		BufferedInputStream in = new BufferedInputStream(new FileInputStream(file));
-		readXML(in, classToSourceFileMap);
+		readXML(in, project, classToSourceFileMap);
 	}
 
-	public void readXML(InputStream in, Map<String, String> classToSourceFileMap ) throws IOException, DocumentException {
+	public void readXML(InputStream in, Project project, Map<String, String> classToSourceFileMap)
+		throws IOException, DocumentException {
+
 		SAXReader reader = new SAXReader();
 		Document document = reader.read(in);
 
@@ -78,6 +83,8 @@ public abstract class BugCollection {
 
 			if (elementName.equals(SRCMAP_ELEMENT_NAME)) {
 				classToSourceFileMap.put(element.attributeValue("classname"), element.attributeValue("srcfile"));
+			} else if (elementName.equals(PROJECT_ELEMENT_NAME)) {
+				project.readElement(element);
 			} else {
 				XMLTranslator translator = XMLTranslatorRegistry.instance().getTranslator(elementName);
 				if (translator == null)
@@ -90,17 +97,17 @@ public abstract class BugCollection {
 		}
 	}
 
-	public void writeXML(String fileName, Map<String, String> classToSourceFileMap) throws IOException {
+	public void writeXML(String fileName, Project project, Map<String, String> classToSourceFileMap) throws IOException {
 		BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(fileName));
-		writeXML(out, classToSourceFileMap);
+		writeXML(out, project, classToSourceFileMap);
 	}
 	
-	public void writeXML(File file, Map<String, String> classToSourceFileMap) throws IOException {
+	public void writeXML(File file, Project project, Map<String, String> classToSourceFileMap) throws IOException {
 		BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(file));
-		writeXML(out, classToSourceFileMap);
+		writeXML(out, project, classToSourceFileMap);
 	}
 
-	public void writeXML(OutputStream out, Map<String, String> classToSourceFileMap) throws IOException {
+	public void writeXML(OutputStream out, Project project, Map<String, String> classToSourceFileMap) throws IOException {
 		Document document = DocumentHelper.createDocument();
 		Element root = document.addElement(ROOT_ELEMENT_NAME);
 
@@ -110,6 +117,9 @@ public abstract class BugCollection {
 			BugInstance bugInstance = i.next();
 			bugInstance.toElement(root);
 		}
+
+		Element projectElement = root.addElement(PROJECT_ELEMENT_NAME);
+		project.writeElement(projectElement);
 
 		Iterator<Map.Entry<String, String>> j = classToSourceFileMap.entrySet().iterator();
 		while (j.hasNext()) {
