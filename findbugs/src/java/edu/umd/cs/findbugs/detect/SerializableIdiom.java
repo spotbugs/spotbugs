@@ -124,14 +124,18 @@ public class SerializableIdiom extends PreorderVisitor
 		for(int i = 0; i < superClassMethods.length; i++) {
 			Method m = superClassMethods[i];
 			/*
-			System.out.println("Supercase has method named " + m.getName()
+			if (!m.isPrivate())
+			System.out.println("Supercase of " + className 
+				+ " has an accessible method named " + m.getName()
 				+ " with sig " + m.getSignature());
 			*/
 			if (m.getName().equals("<init>")
 				 && m.getSignature().equals("()V")
-				 && m.isPublic()
-				)
+				 && !m.isPrivate()
+				) {
+			  // System.out.println("  super has void constructor");
 			  superClassHasVoidConstructor = true;
+			  }
 			}
 		}
 	} catch (ClassNotFoundException e) {
