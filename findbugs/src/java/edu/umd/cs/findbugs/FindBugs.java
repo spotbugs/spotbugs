@@ -773,6 +773,10 @@ public class FindBugs implements Constants2, ExitCodes
 	if (filterFile != null)
 		findBugs.setFilter(filterFile, include);
 
+	// Configure the analysis context
+	AnalysisContext analysisContext = AnalysisContext.instance();
+	analysisContext.setSourcePath(project.getSourceDirList());
+
 	findBugs.execute();
 
 	int bugCount = findBugs.getBugCount();
