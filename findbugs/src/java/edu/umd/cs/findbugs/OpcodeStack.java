@@ -503,6 +503,7 @@ public class OpcodeStack implements Constants2
 	 			case DSUB:
 	 			case DMUL:
 	 			case DDIV:
+	 			case DREM:
 	 				it = pop();
 	 				it2 = pop();
 	 				pushByDoubleMath(seen, it, it2);
@@ -580,6 +581,15 @@ public class OpcodeStack implements Constants2
 	 				}
 	 			break;
 
+	 			case D2L:
+	 				it = pop();
+	 				if (it.getConstant() != null) {
+	 					push(new Item("J", new Long((long)((Double)it.getConstant()).doubleValue())));
+	 				} else {
+	 					push(new Item("J"));
+	 				}
+	 			break;
+
 	 			case L2I:
 	 				it = pop();
 	 				if (it.getConstant() != null) {
@@ -598,6 +608,15 @@ public class OpcodeStack implements Constants2
 	 				}
 	 			break;
 	 			
+	 			case L2F:
+	 				it = pop();
+	 				if (it.getConstant() != null) {
+	 					push(new Item("F", new Float((float)((Long)it.getConstant()).longValue())));
+	 				} else {
+	 					push(new Item("F"));
+	 				}
+	 			break;
+
 	 			case F2I:
 	 				it = pop();
 	 				if (it.getConstant() != null) {
@@ -629,6 +648,14 @@ public class OpcodeStack implements Constants2
 	 			case ANEWARRAY:
 	 				pop();
 	 				pushBySignature("L"+dbc.getClassConstantOperand()+";");
+	 			break;
+	 			
+	 			case MULTIANEWARRAY:
+	 				int dims = dbc.getIntConstant();
+	 				while ((dims--) > 0) {
+	 					pop();
+	 				}
+	 				push(new Item(dbc.getClassConstantOperand()));
 	 			break;
 	 				
 	 			case AALOAD:
@@ -795,7 +822,9 @@ public class OpcodeStack implements Constants2
 				push(new Item("D", new Double(((Double)it2.getConstant()).doubleValue() * ((Double)it.getConstant()).doubleValue())));
 			else if (seen == DDIV)
 				push(new Item("D", new Double(((Double)it2.getConstant()).doubleValue() / ((Double)it.getConstant()).doubleValue())));
-		} else {
+			else if (seen == DREM)
+				push(new Item("D"));	//?	
+			} else {
 			push(new Item("D"));
 		}
 	}
