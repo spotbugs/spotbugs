@@ -203,7 +203,7 @@ public class BugInstance implements Comparable, XMLWriteable {
 	 * @return the first matching BugAnnotation of the given type,
 	 *         or null if there is no such BugAnnotation
 	 */
-	private BugAnnotation findAnnotationOfType(Class cls) {
+	private BugAnnotation findAnnotationOfType(Class<? extends BugAnnotation> cls) {
 		for (Iterator<BugAnnotation> i = annotationIterator(); i.hasNext();) {
 			BugAnnotation annotation = i.next();
 			if (cls.isAssignableFrom(annotation.getClass()))
