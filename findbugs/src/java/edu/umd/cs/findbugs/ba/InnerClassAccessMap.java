@@ -24,17 +24,60 @@ import org.apache.bcel.Constants;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.*;
 
+/**
+ * Singleton class to determine which methods are accessors used
+ * by inner classes to access fields in their enclosing classes.
+ * This has been tested with javac from the Sun JDK 1.4.x,
+ * but will probably not work with other source to bytecode compilers.
+ * 
+ * @see InnerClassAccess
+ * @author David Hovemeyer
+ */
 public class InnerClassAccessMap {
+	/* ----------------------------------------------------------------------
+	 * Fields
+	 * ---------------------------------------------------------------------- */
+
+	/**
+	 * Map of class names to maps of method names to InnerClassAccess objects
+	 * representing access methods.
+	 */
 	private Map<String, Map<String, InnerClassAccess>> classToAccessMap;
 
+	/** The single instance. */
+	private static InnerClassAccessMap instance = new InnerClassAccessMap();
+
+	/* ----------------------------------------------------------------------
+	 * Public interface
+	 * ---------------------------------------------------------------------- */
+
+	/**
+	 * Get the single instance.
+	 */
+	public static InnerClassAccessMap instance() { return instance; }
+
+	/**
+	 * Get the InnerClassAccess in given class with the given method name.
+	 * @param className the name of the class
+	 * @param methodName the name of the access method
+	 * @return the InnerClassAccess object for the method, or null if
+	 *   the method doesn't seem to be an inner class access
+	 */
+	public InnerClassAccess getInnerClassAccess(String className, String methodName) throws ClassNotFoundException {
+		Map<String, InnerClassAccess> map = getAccessMapForClass(className);
+		return map.get(methodName);
+	}
+
+	/* ----------------------------------------------------------------------
+	 * Implementation
+	 * ---------------------------------------------------------------------- */
+
+	/** Constructor. */
 	private InnerClassAccessMap() {
 		this.classToAccessMap = new HashMap<String, Map<String, InnerClassAccess>>();
 	}
 
-	private static InnerClassAccessMap instance = new InnerClassAccessMap();
-
-	public static InnerClassAccessMap instance() { return instance; }
-
+	/** Convert byte to unsigned int. */
 	private static int toInt(byte b) {
 		int value = b & 0x7F;
 		if ((b & 0x80) != 0)
@@ -42,10 +85,15 @@ public class InnerClassAccessMap {
 		return value;
 	}
 
+	/** Get an unsigned 16 bit constant pool index from a byte array. */
 	private static int getIndex(byte[] instructionList, int index) {
 		return (toInt(instructionList[index+1]) << 8) | toInt(instructionList[index+2]);
 	}
 
+	/**
+	 * Callback to scan an access method to determine what
+	 * field it accesses, and whether the field is loaded or stored.
+	 */
 	private static class InstructionCallback implements BytecodeScanner.Callback {
 		private JavaClass javaClass;
 		private String methodName;
@@ -54,6 +102,13 @@ public class InnerClassAccessMap {
 		private InnerClassAccess access;
 		private int accessCount;
 
+		/**
+		 * Constructor.
+		 * @param javaClass the class containing the access method
+	 	 * @param methodName the name of the access method
+	 	 * @param methodSig the signature of the access method
+		 * @param instructionList the bytecode of the method
+		 */
 		public InstructionCallback(JavaClass javaClass, String methodName, String methodSig, byte[] instructionList) {
 			this.javaClass = javaClass;
 			this.methodName = methodName;
@@ -76,10 +131,22 @@ public class InnerClassAccessMap {
 			}
 		}
 
+		/**
+		 * Get the InnerClassAccess object representing the method.
+		 * @return the InnerClassAccess, or null if the method
+		 *  was not found to be a simple load or store in the
+		 *  expected form
+		 */
 		public InnerClassAccess getAccess() {
 			return access;
 		}
 
+		/**
+		 * Called to indicate that a field load or store was encountered.
+		 * @param cpIndex the constant pool index of the fieldref
+		 * @param isStatic true if it is a static field access
+		 * @param isLoad true if the access is a load
+		 */
 		private void setField(int cpIndex, boolean isStatic, boolean isLoad) {
 			// We only allow one field access for an accessor method.
 			accessCount++;
@@ -106,6 +173,13 @@ public class InnerClassAccessMap {
 				access = new InnerClassAccess(methodName, methodSig, xfield, isLoad);
 		}
 
+		/**
+		 * Determine if the method appears to be an accessor of the expected form.
+		 * This has only been tested with the Sun JDK 1.4 javac.
+		 * @param methodSig the method's signature
+		 * @param field the field accessed by the method
+		 * @param isLoad true if the access is a load
+		 */
 		private boolean isValidAccessMethod(String methodSig, XField field, boolean isLoad) {
 			// Figure out what the expected method signature should be
 			String classSig = "L" + javaClass.getClassName().replace('.', '/') + ";";
@@ -142,7 +216,7 @@ public class InnerClassAccessMap {
 	 * @param className the name of the class
 	 * @return map of access method names to the fields they access
 	 */
-	public Map<String, InnerClassAccess> getAccessMapForClass(String className)
+	private Map<String, InnerClassAccess> getAccessMapForClass(String className)
 		throws ClassNotFoundException {
 
 		Map<String, InnerClassAccess> map = classToAccessMap.get(className);
