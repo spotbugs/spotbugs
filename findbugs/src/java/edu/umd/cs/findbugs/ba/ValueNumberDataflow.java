@@ -34,6 +34,10 @@ public class ValueNumberDataflow extends Dataflow<ValueNumberFrame> {
 	public ValueNumberFrame getFactAtLocation(Location loc) {
 		return analysis.getFactAtLocation(loc);
 	}
+
+	public ValueNumberFrame getFactAfterLocation(Location loc) {
+		return analysis.getFactAfterLocation(loc);
+	}
 }
 
 // vim:ts=4

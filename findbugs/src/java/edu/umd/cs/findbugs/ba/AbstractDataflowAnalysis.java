@@ -35,6 +35,7 @@ import java.util.*;
  */
 public abstract class AbstractDataflowAnalysis<Fact> implements DataflowAnalysis<Fact> {
 	private HashMap<Location, Fact> factAtLocationMap = new HashMap<Location, Fact>();
+	private HashMap<Location, Fact> factAfterLocationMap = new HashMap<Location, Fact>();
 
 	/* ----------------------------------------------------------------------
 	 * Public methods
@@ -72,6 +73,20 @@ public abstract class AbstractDataflowAnalysis<Fact> implements DataflowAnalysis
 	}
 
 	/**
+	 * Get the dataflow fact representing the point just after given Location.
+	 * Note "after" is meant in the logical sense, so for backward analyses,
+	 * after means before the location in the control flow sense.
+	 */
+	public Fact getFactAfterLocation(Location location) {
+		Fact fact = factAfterLocationMap.get(location);
+		if (fact == null) {
+			fact = createFact();
+			factAfterLocationMap.put(location, fact);
+		}
+		return fact;
+	}
+
+	/**
 	 * Get an Iterator over all dataflow facts that we've recorded for
 	 * the Locations in the CFG.
 	 */
@@ -88,17 +103,34 @@ public abstract class AbstractDataflowAnalysis<Fact> implements DataflowAnalysis
 
 		if (isFactValid(result)) {
 			Iterator<InstructionHandle> i = isForwards() ? basicBlock.instructionIterator() : basicBlock.instructionReverseIterator();
+
+			Location prevLocation = null;
+
 			while (i.hasNext()) {
 				InstructionHandle handle = i.next();
 				if (handle == end)
 					break;
 	
 				// Record the fact at this location
-				Fact factAtLocation = getFactAtLocation(new Location(handle, basicBlock));
+				Location location = new Location(handle, basicBlock);
+				Fact factAtLocation = getFactAtLocation(location);
 				copy(result, factAtLocation);
+
+				// The fact AT this location is also the fact AFTER the
+				// previous location.
+				if (end == null && prevLocation != null)
+					factAfterLocationMap.put(prevLocation, factAtLocation);
+				prevLocation = location;
 	
 				// Transfer the dataflow value
 				transferInstruction(handle, basicBlock, result);
+			}
+
+			if (end == null && prevLocation != null) {
+				// The fact AFTER the last location is the result fact.
+				Location lastLocation = prevLocation;
+				Fact factAfterLocation = getFactAfterLocation(lastLocation);
+				copy(result, factAfterLocation);
 			}
 		}
 	}
