@@ -247,14 +247,14 @@ public class BCPMethodReturnCheck extends ByteCodePatternDetector {
 		        || calledMethodName.startsWith("access+"))
 			return;
 
-		if (inv.getSignature(cp).endsWith("V"))
-			return;
 		/*
 		System.out.println("Found " + calledMethodName);
 		System.out.println(inv.getSignature(cp));
 		System.out.println(inv.getClassName(cp));
 		*/
 		String calledMethodClass = inv.getClassName(cp);
+		if (inv.getSignature(cp).endsWith("V") && !calledMethodName.equals("<init>"))
+			return;
 		/*
 		if (calledMethodClass.equals(javaClass.getClassName()))
 			return;
