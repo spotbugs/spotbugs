@@ -28,11 +28,8 @@ import org.apache.bcel.generic.*;
 
 /**
  * A dataflow analysis to track the production and flow of values in the Java
- * stack frame.  This is essentially a def/use analysis.  See the
- * {@link ValueNumber ValueNumber} class for an explanation of what the
- * value numbers mean, and when they can be compared.  In general,
- * you need to know the dominator relationships of the blocks in a CFG
- * to make sense of the value numbers.
+ * stack frame.  See the {@link ValueNumber ValueNumber} class for an explanation
+ * of what the value numbers mean, and when they can be compared.
  *
  * <p> This class is still experimental.
  *

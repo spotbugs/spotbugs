@@ -57,11 +57,6 @@ public class ValueNumber {
 
 	public boolean equals(Object o) {
 		return this == o;
-/*
-		if (!(o instanceof Object))
-			return false;
-		return number == ((ValueNumber) o).number;
-*/
 	}
 
 }
