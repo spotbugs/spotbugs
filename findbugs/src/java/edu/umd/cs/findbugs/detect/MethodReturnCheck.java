@@ -45,6 +45,7 @@ import edu.umd.cs.findbugs.ba.Hierarchy;
  */
 public class MethodReturnCheck extends BytecodeScanningDetector {
 	private static boolean DEBUG = Boolean.getBoolean("mrc.debug");
+	private static boolean CHECK_ALL = Boolean.getBoolean("mrc.checkall");
 	
 	private static final int SCAN =0;
 	private static final int SAW_INVOKE = 1;
@@ -60,15 +61,44 @@ public class MethodReturnCheck extends BytecodeScanningDetector {
 	private static final String ANY = null;
 	
 	// Methods to look for, as tuples "class, method, signature".
-	// Null means "any".  In method and signature, a string with a "*"
-	// character in it is treated as a regexp, where the * can match
-	// any sequence of characters.  Otherwise, the string is matched
-	// exactly.
+	// Null means "any".  In method and signature, the string
+	// is treated as a pattern, where the * can match
+	// any sequence of characters, and all other characters are
+	// matched literally.
 	private static final String[][] STANDARD_POLICY_DATABASE = {
 		// Class                        Method              Signature
 		{ANY,                           "equals",           "(Ljava/lang/Object;)Z"},
 		{"java.lang.String",            ANY,                "*)Ljava/lang/String;"},
+		{"java.lang.StringBuffer",      "toString",         "*)Ljava/lang/String;"},
+		{"java.lang.Thread",            "<init>",           ANY},
+		{"java.lang.Throwable",         "<init>",           ANY},
+		{"java.security.MessageDigest", "digest",           "([B)[B"},
+		{"java.sql.Connection",         ANY,                ANY},
+		{"java.net.InetAddress",        ANY,                ANY},
+		{"java.math.BigDecimal",        ANY,                ANY},
+		{"java.math.BigInteger",        ANY,                ANY},
+		{"java.util.Enumeration",       "hasMoreElements",  "()Z"},
+		{"java.util.Iterator",          "hasNext",          "()Z"},
+		{"java.io.File",                "createNewFile",    "()Z"},
 //		{"",                            "",                 ""},
+	};
+	private static final String[][] JDK15_POLICY_DATABASE = {
+		// Class                                    Method        Signature
+		{"java.util.concurrent.locks.ReadWriteLock","readLock",   "()Ljava/util/concurrent/locks/Lock;"},
+		{"java.util.concurrent.locks.ReadWriteLock","writeLock",  "()Ljava/util/concurrent/locks/Lock;"},
+		{"java.util.concurrent.locks.Condition",    "await",      "(JLjava/util/concurrent/TimeUnit;)Z"},
+		{"java.util.concurrent.locks.Condition",    "awaitUtil",  "(Ljava/util/Date;)Z"},
+		{"java.util.concurrent.locks.Condition",    "awaitNanos", "(J)Z"},
+		{"java.util.concurrent.Semaphore",          "tryAcquire", "(JLjava/util/concurrent/TimeUnit;)Z"},
+		{"java.util.concurrent.Semaphore",          "tryAcquire", "()Z"},
+		{"java.util.concurrent.locks.Lock",         "tryLock",    "(JLjava/util/concurrent/TimeUnit;)Z"},
+		{"java.util.concurrent.locks.Lock",         "newCondition","()Ljava/util/concurrent/locks/Condition;"},
+		{"java.util.concurrent.locks.Lock",         "tryLock",     "()Z"},
+		{"java.util.Queue",                         "offer",       "(Ljava/lang/Object;)Z"},
+		{"java.util.concurrent.BlockingQueue",      "offer",       "(Ljava/lang/Object;JLjava/util/concurrent/TimeUnit;)Z"},
+		{"java.util.concurrent.BlockingQueue",      "poll",        "(JLjava/util/concurrent/TimeUnit;)Ljava/lang/Object;"},
+		{"java.util.Queue",                         "poll",        "()Ljava/lang/Object;"},
+//		{"",                                        "",            ""},
 	};
 	
 	private static class PolicyDatabaseEntry {
