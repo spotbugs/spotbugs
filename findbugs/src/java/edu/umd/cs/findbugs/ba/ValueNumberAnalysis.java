@@ -44,6 +44,9 @@ public class ValueNumberAnalysis extends ForwardDataflowAnalysis<ValueNumberFram
 	}
 
 	public void initEntryFact(ValueNumberFrame result) {
+		// Change the frame from TOP to something valid.
+		result.setValid();
+
 		// At entry to the method, each local has (as far as we know) a unique value.
 		int numSlots = result.getNumSlots();
 		for (int i = 0; i < numSlots; ++i)
