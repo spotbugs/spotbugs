@@ -585,18 +585,28 @@ public class FindBugs implements Constants2, ExitCodes
 	if (detectors == null)
 		createDetectors();
 
+	// Clear the repository of classes
 	clearRepository();
 
+	// Get list of files to analyze.
+	// Note that despite the name getJarFileArray(),
+	// they can also be zip files, directories,
+	// and single class files.
 	String[] argv = project.getJarFileArray();
 
+	// Report how many archives/directories/files will be analyzed,
+	// for progress dialog in GUI
 	progressCallback.reportNumberOfArchives(argv.length);
 
+	// Keep track of the names of all classes to be analyzed
 	List<String> repositoryClassList = new LinkedList<String>();
 
+	// Add all classes in analyzed archives/directories/files
 	for (int i = 0; i < argv.length; i++) {
 		addFileToRepository(argv[i], repositoryClassList);
 		}
 
+	// Callback for progress dialog: analysis is starting
 	progressCallback.startAnalysis(repositoryClassList.size());
 
 	// Examine all classes for bugs.
@@ -610,8 +620,11 @@ public class FindBugs implements Constants2, ExitCodes
 			examineClass(className);
 		}
 
+	// Callback for progress dialog: analysis finished
 	progressCallback.finishPerClassAnalysis();
 
+	// Force any detectors which defer work until all classes have
+	// been seen to do that work.
 	this.reportFinal();
 
 	// Flush any queued bug reports
@@ -913,8 +926,30 @@ public class FindBugs implements Constants2, ExitCodes
   /* ----------------------------------------------------------------------
    * main() method
    * ---------------------------------------------------------------------- */
+
+  public static void main(String[] argv) {
+	try {
+		runMain(argv);
+	} catch (java.io.IOException e) {
+		// Probably a missing file
+		System.err.println("IO Error: " + e.getMessage());
+		System.exit(1);
+	} catch (FilterException e) {
+		System.err.println("Filter exception: " + e.getMessage());
+	} catch (IllegalArgumentException e) {
+		// Probably an illegal command line argument
+		System.err.println("Illegal argument: " + e.getMessage());
+		System.exit(1);
+	} catch (RuntimeException e) {
+		System.err.println("Fatal exception: " + e.toString());
+		e.printStackTrace();
+		System.err.println("Please report the failure to " + Version.SUPPORT_EMAIL);
+		System.exit(1);
+	}
+  }
   
-  public static void main(String argv[]) throws Exception
+  private static void runMain(String[] argv)
+	throws java.io.IOException, RuntimeException, FilterException
   { 
 	FindBugsCommandLine commandLine = new FindBugsCommandLine();
 	int argCount = commandLine.parse(argv);
@@ -932,7 +967,11 @@ public class FindBugs implements Constants2, ExitCodes
 	}
 
 	FindBugs findBugs = commandLine.createEngine();
-	findBugs.execute();
+	try {
+		findBugs.execute();
+	} catch (InterruptedException e) {
+		// Not possible when running from the command line
+	}
 
 	int bugCount = findBugs.getBugCount();
 	int missingClassCount = findBugs.getMissingClassCount();
