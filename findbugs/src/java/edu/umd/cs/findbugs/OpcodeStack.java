@@ -170,6 +170,7 @@ public class OpcodeStack implements Constants2
 	 			break;
 	 			
 	 			case LDC:
+	 			case LDC_W:
 				case LDC2_W:
 	 				cons = dbc.getConstantRefOperand();
 	 				pushByConstant(dbc, cons);
