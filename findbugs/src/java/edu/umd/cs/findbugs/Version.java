@@ -30,16 +30,16 @@ public class Version {
 	public static final int MINOR = 7;
 
 	/** Patch level. */
-	public static final int PATCHLEVEL = 2;
+	public static final int PATCHLEVEL = 3;
 
 	/** Release version string. */
 	public static final String RELEASE = MAJOR + "." + MINOR + "." + PATCHLEVEL;
 
 	/** Release date. */
-	public static final String DATE = "March 22, 2004";
+	public static final String DATE = "May 7, 2004";
 
 	/** Version of Eclipse UI plugin. */
-	public static final String ECLIPSE_UI_VERSION = "0.0.4";
+	public static final String ECLIPSE_UI_VERSION = "0.0.5";
 
 	/** FindBugs website. */
 	public static final String WEBSITE = "http://findbugs.sourceforge.net";
