@@ -130,7 +130,7 @@ public class AnalysisRun {
 		// Run the analysis!
 		findBugs.execute();
 
-		if (Boolean.getBoolean("findbugs.noSummary")) {
+		if (!Boolean.getBoolean("findbugs.noSummary")) {
 			// Get the summary!
 			createSummary(reporter.getProjectStats());
 		}
