@@ -25,25 +25,61 @@ import java.io.*;
 import org.dom4j.*;
 import org.dom4j.io.*;
 
+/**
+ * Loader for a FindBugs plugin.
+ * A plugin is a jar file containing two metadata files,
+ * "findbugs.xml" and "messages.xml".  Those files specify
+ * <ul>
+ * <li> the bug pattern detector classes,
+ * <li> the bug patterns detected (including all text for displaying
+ *    detected instances of those patterns), and
+ * <li> the "bug codes" which group together related bug instances
+ * </ul>
+ *
+ * <p> The PluginLoader creates instances of DetectorFactory, BugPattern, and BugCode,
+ * and provides methods for accessing those instances.
+ *
+ * @see DetectorFactory
+ * @see BugPattern
+ * @see BugCode
+ * @see PluginException
+ * @author David Hovemeyer
+ */
 public class PluginLoader extends URLClassLoader {
 
 	private ArrayList<DetectorFactory> detectorFactoryList;
 	private ArrayList<BugPattern> bugPatternList;
 	private ArrayList<BugCode> bugCodeList;
 
+	/**
+	 * Constructor.
+	 * @param url the URL of the plugin Jar file
+	 * @throws PluginException if the plugin cannot be fully loaded
+	 */
 	public PluginLoader(URL url) throws PluginException {
 		super(new URL[]{url});
 		init();
 	}
 
+	/**
+	 * Get the DetectorFactory array containing factories for creating all
+	 * of the non-disabled detectors in the plugin.
+	 */
 	public DetectorFactory[] getDetectorFactoryList() {
 		return detectorFactoryList.toArray(new DetectorFactory[0]);
 	}
 
+	/**
+	 * Get array of BugPattern objects for bug patterns reported by
+	 * the plugin.
+	 */
 	public BugPattern[] getBugPatternList() {
 		return bugPatternList.toArray(new BugPattern[0]);
 	}
 
+	/**
+	 * Get array of BugCode objects for bug codes reported by this plugin.
+	 */
 	public BugCode[] getBugCodeList() {
 		return bugCodeList.toArray(new BugCode[0]);
 	}
@@ -151,22 +187,6 @@ public class PluginLoader extends URLClassLoader {
 		if (child == null)
 			throw new PluginException("Could not find child \"" + childName + "\" for node");
 		return child.getText();
-	}
-
-	public static void main(String[] argv) {
-		try {
-
-			if (argv.length != 1) {
-				System.out.println("Usage: " + PluginLoader.class.getName() + " <url>");
-				System.exit(1);
-			}
-
-			URL url = new URL(argv[0]);
-			PluginLoader loader = new PluginLoader(url);
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 	}
 
 }
