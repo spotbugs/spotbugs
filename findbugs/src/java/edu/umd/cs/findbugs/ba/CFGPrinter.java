@@ -44,6 +44,7 @@ public class CFGPrinter {
 	Iterator<BasicBlock> i = cfg.blockIterator();
 	while (i.hasNext()) {
 	    BasicBlock bb = i.next();
+	    out.println();
 	    out.println("BASIC BLOCK: " + bb.getId() + (bb.isExceptionThrower() ? " [EXCEPTION THROWER]" : "") + blockStartAnnotate(bb));
 	    CodeExceptionGen exceptionGen = bb.getExceptionGen();
 	    if (exceptionGen != null) {
