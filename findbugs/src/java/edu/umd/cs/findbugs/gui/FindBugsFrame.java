@@ -193,6 +193,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
         leftFiller = new javax.swing.JLabel();
         rightFiller = new javax.swing.JLabel();
         jScrollPane5 = new javax.swing.JScrollPane();
+        consoleMessageField = new javax.swing.JTextArea();
         jMenuBar1 = new javax.swing.JMenuBar();
         fileMenu = new javax.swing.JMenu();
         newProjectItem = new javax.swing.JMenuItem();
@@ -506,6 +507,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
         jSplitPane1.setRightComponent(viewPanel);
 
         jSplitPane2.setTopComponent(jSplitPane1);
+
+        jScrollPane5.setViewportView(consoleMessageField);
 
         jSplitPane2.setBottomComponent(jScrollPane5);
 
@@ -944,6 +947,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
     private javax.swing.JLabel sortOrderLabel;
     private javax.swing.JList jarFileList;
     private javax.swing.JLabel jarFileLabel;
+    private javax.swing.JTextArea consoleMessageField;
     private javax.swing.JButton addSourceDirButton;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JButton findBugsButton;
