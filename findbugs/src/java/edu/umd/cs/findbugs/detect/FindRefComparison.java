@@ -72,8 +72,11 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 	private static final Type staticStringTypeInstance = new StaticStringType();
 
 	private static class RefComparisonTypeFrameModelingVisitor extends TypeFrameModelingVisitor {
-		public RefComparisonTypeFrameModelingVisitor(ConstantPoolGen cpg) {
+		private RepositoryLookupFailureCallback lookupFailureCallback;
+
+		public RefComparisonTypeFrameModelingVisitor(ConstantPoolGen cpg, RepositoryLookupFailureCallback lookupFailureCallback) {
 			super(cpg);
+			this.lookupFailureCallback = lookupFailureCallback;
 		}
 
 		// Override handlers for bytecodes that may return String objects
@@ -139,6 +142,40 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 
 		private boolean isString(Type type) {
 			return type.getSignature().equals(STRING_SIGNATURE);
+		}
+
+		public void visitGETSTATIC(GETSTATIC obj) {
+			handleLoad(obj);
+		}
+
+		public void visitGETFIELD(GETFIELD obj) {
+			handleLoad(obj);
+		}
+
+		private void handleLoad(FieldInstruction obj) {
+			consumeStack(obj);
+
+			Type type = obj.getType(getCPG());
+			if (type.getSignature().equals(STRING_SIGNATURE)) {
+				try {
+					String className = obj.getClassName(getCPG());
+					String fieldName = obj.getName(getCPG());
+					Field field = edu.umd.cs.daveho.ba.Lookup.findField(className, fieldName);
+
+					// If the field is final, we'll assume that the String value
+					// is static.
+					if (field.isFinal())
+						pushValue(staticStringTypeInstance);
+					else
+						pushValue(type);
+
+					return;
+				} catch (ClassNotFoundException ex) {
+					lookupFailureCallback.reportMissingClass(ex);
+				}
+			}
+
+			pushValue(type);
 		}
 	}
 
@@ -216,7 +253,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 
 				final CFG cfg = classContext.getCFG(method);
 				RefComparisonTypeMerger typeMerger = new RefComparisonTypeMerger(bugReporter);
-				TypeFrameModelingVisitor visitor = new RefComparisonTypeFrameModelingVisitor(methodGen.getConstantPool());
+				TypeFrameModelingVisitor visitor = new RefComparisonTypeFrameModelingVisitor(methodGen.getConstantPool(), bugReporter);
 				TypeAnalysis typeAnalysis = new TypeAnalysis(methodGen, typeMerger, visitor);
 				final TypeDataflow typeDataflow = new TypeDataflow(cfg, typeAnalysis);
 				typeDataflow.execute();
@@ -260,7 +297,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 
 										if (priority <= LOW_PRIORITY) {
 											String sourceFile = jclass.getSourceFileName();
-											bugReporter.reportBug(new BugInstance("RC_REF_COMPARISON", NORMAL_PRIORITY)
+											bugReporter.reportBug(new BugInstance("RC_REF_COMPARISON", priority)
 												.addClassAndMethod(methodGen, sourceFile)
 												.addSourceLine(methodGen, sourceFile, handle)
 												.addClass("java.lang.String").describe("CLASS_REFTYPE")
@@ -302,7 +339,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 		DataflowTestDriver<TypeFrame, TypeAnalysis> driver = new DataflowTestDriver<TypeFrame, TypeAnalysis>() {
 			public TypeAnalysis createAnalysis(MethodGen methodGen, CFG cfg) {
 				TypeMerger typeMerger = new RefComparisonTypeMerger(lookupFailureCallback);
-				TypeFrameModelingVisitor visitor = new RefComparisonTypeFrameModelingVisitor(methodGen.getConstantPool());
+				TypeFrameModelingVisitor visitor = new RefComparisonTypeFrameModelingVisitor(methodGen.getConstantPool(), lookupFailureCallback);
 				TypeAnalysis analysis = new TypeAnalysis(methodGen, typeMerger, visitor);
 				return analysis;
 			}
