@@ -341,9 +341,9 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 			try {
 				analyzeMethod(classContext, method);
 			} catch (CFGBuilderException e) {
-				bugReporter.logError(e.toString());
+				bugReporter.logError("Error analyzing " + method.toString(), e);
 			} catch (DataflowAnalysisException e) {
-				bugReporter.logError(e.toString());
+				bugReporter.logError("Error analyzing " + method.toString(), e);
 			}
 		}
 	}

@@ -78,9 +78,9 @@ public class FindTwoLockWait implements Detector, StatelessDetector {
 			try {
 				analyzeMethod(classContext, method);
 			} catch (DataflowAnalysisException e) {
-				bugReporter.logError(e.toString());
+				bugReporter.logError("Error analyzing " + method.toString(), e);
 			} catch (CFGBuilderException e) {
-				bugReporter.logError(e.toString());
+				bugReporter.logError("Error analyzing " + method.toString(), e);
 			}
 		}
 	}

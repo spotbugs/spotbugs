@@ -155,13 +155,11 @@ public class FindUnsatisfiedObligation implements Detector {
 		} catch (CFGBuilderException e) {
 			bugReporter.logError(
 					"Error building CFG for " +
-					SignatureConverter.convertMethodSignature(methodGen) +
-					": " + e.toString());
+					SignatureConverter.convertMethodSignature(methodGen), e);
 		} catch (DataflowAnalysisException e) {
 			bugReporter.logError(
 					"ObligationAnalysis error while analyzing " +
-					SignatureConverter.convertMethodSignature(methodGen) +
-					": " + e.toString());
+					SignatureConverter.convertMethodSignature(methodGen), e);
 		}
 	}
 

@@ -1188,7 +1188,7 @@ public class FindBugs implements Constants2, ExitCodes {
 				repository.addURL(entry);
 			} catch (IOException e) {
 				bugReporter.logError("Warning: could not add URL "  +
-					entry + " to classpath: " + e.toString());
+					entry + " to classpath", e);
 			}
 		}
 	}
@@ -1258,8 +1258,8 @@ public class FindBugs implements Constants2, ExitCodes {
 					Repository.addClass(jclass);
 					repositoryClassList.add(jclass.getClassName());
 				} catch (ClassFormatException e) {
-					e.printStackTrace();
-					bugReporter.logError(e.getMessage());
+					if (DEBUG) e.printStackTrace();
+					bugReporter.logError("Invalid classfile format", e);
 				}
 			}
 
@@ -1374,7 +1374,7 @@ public class FindBugs implements Constants2, ExitCodes {
 		if (DEBUG) {
 			e.printStackTrace();
 		}
-		bugReporter.logError("Exception analyzing " + className + ": " + e.toString());
+		bugReporter.logError("Exception analyzing " + className, e);
 	}
 
 	private void reportRecoverableDetectorException(String className, Detector detector, Exception e) {
@@ -1382,8 +1382,7 @@ public class FindBugs implements Constants2, ExitCodes {
 			e.printStackTrace();
 		}
 		bugReporter.logError("Exception analyzing " + className +
-			" using detector " + detector.getClass().getName() +
-			": " + e.toString());
+			" using detector " + detector.getClass().getName(), e);
 	}
 
 	/**

@@ -78,7 +78,7 @@ public class HTMLBugReporter extends BugCollectionBugReporter {
 			// Do the transformation
 			transformer.transform(source, result);
 		} catch (Exception e) {
-			logError("Could not generate HTML output: " + e.toString());
+			logError("Could not generate HTML output", e);
 			if (FindBugs.DEBUG) e.printStackTrace();
 		}
 	}

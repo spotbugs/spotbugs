@@ -63,7 +63,7 @@ public class XMLBugReporter extends BugCollectionBugReporter {
 				writer.write(document);
 			}
 		} catch (Exception e) {
-			logError("Couldn't write XML output: " + e.toString());
+			logError("Couldn't write XML output", e);
 		}
 	}
 }

@@ -81,6 +81,14 @@ public interface BugReporter extends RepositoryLookupFailureCallback, ClassObser
 	 * @param message the error message
 	 */
 	public void logError(String message);
+	
+	/**
+	 * Log an error that occurs while looking for bugs.
+	 *
+	 * @param message the error message
+	 * @param e       the exception which is the underlying cause of the error
+	 */
+	public void logError(String message, Throwable e);
 
 	/**
 	 * Finish reporting bugs.

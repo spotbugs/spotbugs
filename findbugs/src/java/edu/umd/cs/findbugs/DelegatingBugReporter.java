@@ -85,6 +85,10 @@ public class DelegatingBugReporter implements BugReporter {
 	public ProjectStats getProjectStats() {
 		return realBugReporter.getProjectStats();
 	}
+
+	public void logError(String message, Throwable e) {
+		realBugReporter.logError(message, e);
+	}
 }
 
 // vim:ts=4

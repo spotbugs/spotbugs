@@ -84,12 +84,9 @@ public class XDocsBugReporter extends TextUIBugReporter {
 
 	protected void printBug(BugInstance bugInstance) {
 		try {
-
 			toElement(bugInstance);
-
-
 		} catch (Exception e) {
-			logError("Couldn't add Element: " + e.toString());
+			logError("Couldn't add Element", e);
 		}
 	}
 
@@ -98,7 +95,7 @@ public class XDocsBugReporter extends TextUIBugReporter {
 		try {
 			writeXML(outputStream, project);
 		} catch (Exception e) {
-			logError("Couldn't write XML output: " + e.toString());
+			logError("Couldn't write XML output", e);
 		}
 		outputStream.close();
 	}

@@ -28,13 +28,35 @@ import edu.umd.cs.findbugs.ba.ClassNotFoundExceptionParser;
  * required of all BugReporter objects.
  */
 public abstract class AbstractBugReporter implements BugReporter {
+	private static class Error {
+		private String message;
+		private Throwable cause;
+		
+		public Error(String message) {
+			this.message = message;
+		}
+		
+		public Error(String message, Throwable cause) {
+			this.message = message;
+			this.cause = cause;
+		}
+		
+		public String getMessage() {
+			return message;
+		}
+		
+		public Throwable getCause() {
+			return cause;
+		}
+	}
 
 	private FindBugs engine;
 	private int verbosityLevel = NORMAL;
 	private int priorityThreshold;
 	private HashSet<String> missingClassMessageSet = new HashSet<String>();
 	private LinkedList<String> missingClassMessageList = new LinkedList<String>();
-	private LinkedList<String> errorMessageList = new LinkedList<String>();
+	//private LinkedList<String> errorMessageList = new LinkedList<String>();
+	private LinkedList<Error> errorMessageList = new LinkedList<Error>();
 	private List<BugReporterObserver> observerList = new LinkedList<BugReporterObserver>();
 	private ProjectStats projectStats = new ProjectStats();
 
@@ -99,7 +121,14 @@ public abstract class AbstractBugReporter implements BugReporter {
 		if (verbosityLevel == SILENT)
 			return;
 
-		errorMessageList.add(message);
+		errorMessageList.add(new Error(message));
+	}
+	
+	public void logError(String message, Throwable e) {
+		if (verbosityLevel == SILENT)
+			return;
+		
+		errorMessageList.add(new Error(message, e));
 	}
 
 	public void reportQueuedErrors() {
@@ -109,8 +138,18 @@ public abstract class AbstractBugReporter implements BugReporter {
 		beginReport();
 		if (!errorMessageList.isEmpty()) {
 			reportLine("The following errors occured during analysis:");
-			for (Iterator<String> i = errorMessageList.iterator(); i.hasNext();)
-				reportLine("\t" + i.next());
+			for (Iterator<Error> i = errorMessageList.iterator(); i.hasNext();) {
+				Error error = i.next();
+				reportLine("\t" + error.getMessage());
+				Throwable cause = error.getCause();
+				if (cause != null) {
+					reportLine("\t\t" + cause.toString());
+					StackTraceElement[] stackTrace = cause.getStackTrace();
+					for (int j = 0; j < stackTrace.length; ++j) {
+						reportLine("\t\t\t" + stackTrace[j].toString());
+					}
+				}
+			}
 		}
 		if (!missingClassMessageList.isEmpty()) {
 			reportLine("The following classes needed for analysis were missing:");

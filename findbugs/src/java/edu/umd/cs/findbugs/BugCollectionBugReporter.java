@@ -68,9 +68,9 @@ public abstract class BugCollectionBugReporter extends TextUIBugReporter {
 			String html = writer.toString();
 			bugCollection.setSummaryHTML(html);
 		} catch (IOException e) {
-			logError("Couldn't generate summary HTML: " + e.toString());
+			logError("Couldn't generate summary HTML", e);
 		} catch (TransformerException e) {
-			logError("Couldn't generate summary HTML: " + e.toString());
+			logError("Couldn't generate summary HTML", e);
 		}
 	}
 }

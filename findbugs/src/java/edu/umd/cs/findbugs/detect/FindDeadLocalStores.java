@@ -138,9 +138,9 @@ public class FindDeadLocalStores implements Detector {
 			try {
 				analyzeMethod(classContext, method);
 			} catch (DataflowAnalysisException e) {
-				throw new AnalysisException("FindDeadLocalStores caught exception", methodGen, e);
+				bugReporter.logError("Error analyzing " + method.toString(), e);
 			} catch (CFGBuilderException e) {
-				throw new AnalysisException("FindDeadLocalStores caught exception", methodGen, e);
+				bugReporter.logError("Error analyzing " + method.toString(), e);
 			}
 		}
 	}

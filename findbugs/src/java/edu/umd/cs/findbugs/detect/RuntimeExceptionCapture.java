@@ -195,9 +195,9 @@ public class RuntimeExceptionCapture extends BytecodeScanningDetector implements
 				}
 			}
 		} catch (DataflowAnalysisException e) {
-			bugReporter.logError("Error checking for dead exception store: " + e.toString());
+			bugReporter.logError("Error checking for dead exception store", e);
 		} catch (CFGBuilderException e) {
-			bugReporter.logError("Error checking for dead exception store: " + e.toString());
+			bugReporter.logError("Error checking for dead exception store", e);
 		}
 	}
 

@@ -106,9 +106,9 @@ public abstract class ResourceTrackingDetector <Resource, ResourceTrackerType ex
 
 				analyzeMethod(classContext, method, resourceTracker, resourceCollection);
 			} catch (CFGBuilderException e) {
-				bugReporter.logError(e.toString());
+				bugReporter.logError("Error analyzing method " + method.toString(), e);
 			} catch (DataflowAnalysisException e) {
-				bugReporter.logError(e.toString());
+				bugReporter.logError("Error analyzing method " + method.toString(), e);
 			}
 		}
 
