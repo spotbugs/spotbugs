@@ -158,6 +158,7 @@ public class CountBugs {
 	private TreeMap<Key, Integer> countMap;
 	private int minPriority;
 	private boolean onlySerious;
+	private boolean onlyClassified;
 
 	public CountBugs(String resultsFileName) throws IOException, DocumentException {
 		this(new SortedBugCollection(), new Project());
@@ -173,6 +174,7 @@ public class CountBugs {
 		this.countMap = new TreeMap<Key, Integer>();
 		this.minPriority = 3;
 		this.onlySerious = false;
+		this.onlyClassified = false;
 	}
 
 	public SortedBugCollection getBugCollection() {
@@ -229,6 +231,9 @@ public class CountBugs {
 			if (keySet.size() > 0 && !keySet.contains(key))
 				continue;
 
+			if (onlyClassified && !isClassified(bugInstance))
+				continue;
+
 			if (onlySerious && !isSerious(bugInstance))
 				continue;
 
@@ -237,6 +242,10 @@ public class CountBugs {
 				count = new Integer(0);
 			countMap.put(key, new Integer(count.intValue() + 1));
 		}
+	}
+
+	private boolean isClassified(BugInstance bugInstance) {
+		return !bugInstance.getAnnotationText().equals("");
 	}
 
 	private boolean isSerious(BugInstance bugInstance) {
@@ -295,6 +304,7 @@ public class CountBugs {
 		boolean diffMode = false;
 		int minPriority = 3;
 		boolean onlySerious = false;
+		boolean onlyClassified = false;
 
 		while (arg < argv.length - 1) {
 			String option = argv[arg];
@@ -315,6 +325,8 @@ public class CountBugs {
 				//System.err.println("Min priority is " + minPriority);
 			} else if (option.equals("-onlySerious")) {
 				onlySerious = true;
+			} else if (option.equals("-onlyClassified")) {
+				onlyClassified = true;
 			} else
 				break;
 
@@ -330,6 +342,7 @@ public class CountBugs {
 		countBugs.setKeys(keyList);
 		countBugs.minPriority = minPriority;
 		countBugs.onlySerious = onlySerious;
+		countBugs.onlyClassified = onlyClassified;
 		countBugs.execute();
 
 		if (diffMode) {
@@ -339,6 +352,8 @@ public class CountBugs {
 			countBugs2.setKeyFactory(keyMode);
 			countBugs2.setKeys(keyList);
 			countBugs2.minPriority = minPriority;
+			countBugs2.onlySerious = onlySerious;
+			countBugs2.onlyClassified = onlyClassified;
 			countBugs2.execute();
 
 			countBugs.diffCounts(countBugs2);
