@@ -36,6 +36,7 @@ import org.apache.bcel.generic.*;
  * @author David Hovemeyer
  */
 public class IsNullValueAnalysis extends ForwardDataflowAnalysis<IsNullValueFrame> implements EdgeTypes {
+	private static final boolean DEBUG = Boolean.getBoolean("inva.debug");
 
 	private MethodGen methodGen;
 	private CFG cfg;
@@ -119,10 +120,10 @@ public class IsNullValueAnalysis extends ForwardDataflowAnalysis<IsNullValueFram
 	public void meetInto(IsNullValueFrame fact, Edge edge, IsNullValueFrame result)
 		throws DataflowAnalysisException {
 
-		if (fact.isValid() && result.isValid()) {
+		if (fact.isValid()) {
 			// Determine if the edge conveys any information about the
 			// null/non-null status of operands in the incoming frame.
-			final int numSlots = result.getNumSlots();
+			final int numSlots = fact.getNumSlots();
 			final BasicBlock destBlock = edge.getDest();
 
 			int nullInfo = getNullInfoFromEdge(edge);
