@@ -5,26 +5,26 @@ import junit.framework.TestCase;
 
 import org.apache.bcel.Constants;
 
-public class XArrayTypeTest extends TestCase {
-	private XBasicType byteType;
-	private XBasicType intType;
-	private XClassType stringType;
+public class ArrayTypeTest extends TestCase {
+	private BasicType byteType;
+	private BasicType intType;
+	private ClassType stringType;
 
-	private XArrayType byteArray1;
-	private XArrayType byteArray2;
+	private ArrayType byteArray1;
+	private ArrayType byteArray2;
 
-	private XArrayType intArray2;
+	private ArrayType intArray2;
 
-	private XArrayType stringArray3;
+	private ArrayType stringArray3;
 
 	protected void setUp() throws InvalidSignatureException {
-		byteType = new XBasicType(Constants.T_BYTE);
-		intType = new XBasicType(Constants.T_INT);
-		stringType = new XClassType("Ljava/lang/String;");
-		byteArray1 = new XArrayType(1, byteType);
-		byteArray2 = new XArrayType(2, byteType);
-		intArray2 = new XArrayType(2, intType);
-		stringArray3 = new XArrayType(3, stringType);
+		byteType = new BasicType(Constants.T_BYTE);
+		intType = new BasicType(Constants.T_INT);
+		stringType = new ClassType("Ljava/lang/String;");
+		byteArray1 = new ArrayType(1, byteType);
+		byteArray2 = new ArrayType(2, byteType);
+		intArray2 = new ArrayType(2, intType);
+		stringArray3 = new ArrayType(3, stringType);
 	}
 
 	public void testByteArraySig() {
@@ -49,10 +49,10 @@ public class XArrayTypeTest extends TestCase {
 	}
 
 	public void testEquals() {
-		XArrayType byteArray1Dup = new XArrayType(1, byteType);
-		XArrayType byteArray2Dup = new XArrayType(2, byteType);
-		XArrayType intArray2Dup = new XArrayType(2, intType);
-		XArrayType stringArray3Dup = new XArrayType(3, stringType);
+		ArrayType byteArray1Dup = new ArrayType(1, byteType);
+		ArrayType byteArray2Dup = new ArrayType(2, byteType);
+		ArrayType intArray2Dup = new ArrayType(2, intType);
+		ArrayType stringArray3Dup = new ArrayType(3, stringType);
 
 		Assert.assertEquals(byteArray1, byteArray1Dup);
 		Assert.assertEquals(byteArray2, byteArray2Dup);

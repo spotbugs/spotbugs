@@ -3,11 +3,11 @@ package edu.umd.cs.findbugs.ba.type;
 import junit.framework.Assert;
 import junit.framework.TestCase;
 
-public class XTopTypeTest extends TestCase {
-	private XTopType top;
+public class TopTypeTest extends TestCase {
+	private TopType top;
 
 	protected void setUp() {
-		top = new XTopType();
+		top = new TopType();
 	}
 
 	public void testNotReferenceType() {
@@ -23,8 +23,8 @@ public class XTopTypeTest extends TestCase {
 	}
 
 	public void testEquals() {
-		XTopType otherTop = new XTopType();
-		XBottomType bottom = new XBottomType();
+		TopType otherTop = new TopType();
+		BottomType bottom = new BottomType();
 
 		Assert.assertEquals(top, otherTop);
 		Assert.assertFalse(top.equals(bottom));

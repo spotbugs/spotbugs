@@ -25,15 +25,15 @@ import junit.framework.TestCase;
 import org.apache.bcel.Constants;
 
 /**
- * JUnit tests for XClassType class.
+ * JUnit tests for ClassType class.
  */
-public class XClassTypeTest extends TestCase {
+public class ClassTypeTest extends TestCase {
 	private static final String FOO_SIG = "Lcom/foobar/Foo;";
 
-	private XClassType fooType;
+	private ClassType fooType;
 
-	protected void setUp() throws InvalidSignatureException {
-		fooType = new XClassType(FOO_SIG);
+	protected void setUp() {
+		fooType = new ClassType(FOO_SIG);
 	}
 
 	public void testGetSignature() {
@@ -44,17 +44,8 @@ public class XClassTypeTest extends TestCase {
 		Assert.assertTrue(fooType.getClassName().equals("com.foobar.Foo"));
 	}
 
-	public void testBadSignature() {
-		try {
-			new XClassType("This is not a class signature");
-		} catch (InvalidSignatureException e) {
-			return;
-		}
-		Assert.assertTrue(false);
-	}
-
 	public void testEquals() throws InvalidSignatureException {
-		XClassType other = new XClassType(FOO_SIG);
+		ClassType other = new ClassType(FOO_SIG);
 		Assert.assertTrue(other.equals(fooType));
 	}
 

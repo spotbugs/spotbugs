@@ -25,29 +25,29 @@ import junit.framework.TestCase;
 import org.apache.bcel.Constants;
 
 /**
- * JUnit tests for XBasicType class.
+ * JUnit tests for BasicType class.
  */
-public class XBasicTypeTest extends TestCase {
-	private XBasicType booleanType;
-	private XBasicType byteType;
-	private XBasicType charType;
-	private XBasicType shortType;
-	private XBasicType intType;
-	private XBasicType longType;
-	private XBasicType floatType;
-	private XBasicType doubleType;
-	private XBasicType voidType;
+public class BasicTypeTest extends TestCase {
+	private BasicType booleanType;
+	private BasicType byteType;
+	private BasicType charType;
+	private BasicType shortType;
+	private BasicType intType;
+	private BasicType longType;
+	private BasicType floatType;
+	private BasicType doubleType;
+	private BasicType voidType;
 
 	protected void setUp() {
-		booleanType = new XBasicType(Constants.T_BOOLEAN);
-		byteType = new XBasicType(Constants.T_BYTE);
-		charType = new XBasicType(Constants.T_CHAR);
-		shortType = new XBasicType(Constants.T_SHORT);
-		intType = new XBasicType(Constants.T_INT);
-		longType = new XBasicType(Constants.T_LONG);
-		floatType = new XBasicType(Constants.T_FLOAT);
-		doubleType = new XBasicType(Constants.T_DOUBLE);
-		voidType = new XBasicType(Constants.T_VOID);
+		booleanType = new BasicType(Constants.T_BOOLEAN);
+		byteType = new BasicType(Constants.T_BYTE);
+		charType = new BasicType(Constants.T_CHAR);
+		shortType = new BasicType(Constants.T_SHORT);
+		intType = new BasicType(Constants.T_INT);
+		longType = new BasicType(Constants.T_LONG);
+		floatType = new BasicType(Constants.T_FLOAT);
+		doubleType = new BasicType(Constants.T_DOUBLE);
+		voidType = new BasicType(Constants.T_VOID);
 	}
 
 	public void testSignatures() {
@@ -77,7 +77,7 @@ public class XBasicTypeTest extends TestCase {
 	}
 
 	public void testEquals() {
-		XBasicType other = new XBasicType(Constants.T_BOOLEAN);
+		BasicType other = new BasicType(Constants.T_BOOLEAN);
 		Assert.assertTrue(booleanType.equals(other));
 		Assert.assertFalse(booleanType.equals(voidType));
 	}

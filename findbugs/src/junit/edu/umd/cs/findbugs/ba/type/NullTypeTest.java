@@ -3,11 +3,11 @@ package edu.umd.cs.findbugs.ba.type;
 import junit.framework.Assert;
 import junit.framework.TestCase;
 
-public class XNullTypeTest extends TestCase {
-	private XNullType nullType;
+public class NullTypeTest extends TestCase {
+	private NullType nullType;
 
 	protected void setUp() {
-		nullType = new XNullType();
+		nullType = new NullType();
 	}
 
 	public void testIsReferenceType() {
@@ -23,8 +23,8 @@ public class XNullTypeTest extends TestCase {
 	}
 
 	public void testEquals() {
-		XNullType otherNull = new XNullType();
-		XBottomType bottom = new XBottomType();
+		NullType otherNull = new NullType();
+		BottomType bottom = new BottomType();
 
 		Assert.assertEquals(nullType, otherNull);
 		Assert.assertFalse(nullType.equals(bottom));
