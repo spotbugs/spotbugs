@@ -1,11 +1,15 @@
 <?xml version="1.0" standalone="no"?>
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
-                    "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd">
+                    "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd" [
+<!ENTITY FindBugs "<application>FindBugs</application>">
+<!ENTITY Ant "<application>Ant</application>">
+<!ENTITY Saxon "<application>Saxon</application>">
+]>
  
 <book lang="en" id="findbugs-manual">
  
 <bookinfo>
-<title>Using <application>FindBugs</application></title>
+<title>Using &FindBugs;</title>
 
 <author>
   <firstname>David</firstname>
@@ -17,37 +21,49 @@
 <pubdate>@RELEASE_DATE@</pubdate>
 
 </bookinfo>
+
+<!--
+   **************************************************************************
+   Introduction
+   **************************************************************************
+-->
  
 <chapter id="introduction">
 <title>Introduction</title>
 
-<para> <application>FindBugs</application> is a program to find bugs in Java programs.  It looks for instances
+<para> &FindBugs; is a program to find bugs in Java programs.  It looks for instances
 of "bug patterns" --- code instances that are likely to be errors.</para>
 
-<para> This document describes version @VERSION@ of <application>FindBugs</application>. This is an
+<para> This document describes version @VERSION@ of &FindBugs;. This is an
 early release of the tool, so you may find problems with it. We
-are very interested in getting your feedback on <application>FindBugs</application>. Please visit
-the <ulink url="http://www.cs.umd.edu/~pugh/java/bugs/"><application>FindBugs</application> web page</ulink> for
-the latest information on <application>FindBugs</application>, contact information, and support resources such
-as information about the <application>FindBugs</application> mailing lists.</para>
+are very interested in getting your feedback on &FindBugs;. Please visit
+the <ulink url="http://www.cs.umd.edu/~pugh/java/bugs/">&FindBugs; web page</ulink> for
+the latest information on &FindBugs;, contact information, and support resources such
+as information about the &FindBugs; mailing lists.</para>
 
 <sect1>
 <title>Requirements</title>
-<para> To use <application>FindBugs</application>, you need a runtime environment compatible with
+<para> To use &FindBugs;, you need a runtime environment compatible with
 <ulink url="http://java.sun.com/j2se">Java 2 Standard Edition</ulink>, version 1.4.0 or later.
-<application>FindBugs</application> is platform independent, and is known to run on GNU/Linux, Windows, and
+&FindBugs; is platform independent, and is known to run on GNU/Linux, Windows, and
 MacOS X platforms.</para>
 
-<para>You should have at least 256 MB of memory to use <application>FindBugs</application>.</para>
+<para>You should have at least 256 MB of memory to use &FindBugs;.</para>
 </sect1>
  
 </chapter>
 
+<!--
+   **************************************************************************
+   Installing FindBugs
+   **************************************************************************
+-->
+
 <chapter id="installing">
-<title>Installing <application>FindBugs</application></title>
+<title>Installing &FindBugs;</title>
 
 <para>
-The easiest way to install <application>FindBugs</application> is to download a binary distribution.
+The easiest way to install &FindBugs; is to download a binary distribution.
 Binary distributions are available in
 <ulink url="http://www.cs.umd.edu/~pugh/java/bugs/release/findbugs-@VERSION@.tar.gz">gzipped tar format</ulink> and
 <ulink url="http://www.cs.umd.edu/~pugh/java/bugs/release/findbugs-@VERSION@.zip">zip format</ulink>.
@@ -72,9 +88,9 @@ Extracting a zip format distribution:
 Usually, extracting a binary distribution will create a directory ending in
 <filename class="directory">findbugs-@VERSION@</filename>. For example, if you extracted
 the binary distribution from the <filename class="directory">C:\Software</filename>
-directory, then the <application>FindBugs</application> software will be extracted into the directory
+directory, then the &FindBugs; software will be extracted into the directory
 <filename class="directory">C:\Software\findbugs-@VERSION@</filename>.
-This directory is the <application>FindBugs</application> home directory.  We'll refer to it as
+This directory is the &FindBugs; home directory.  We'll refer to it as
 <replaceable>$FINDBUGS_HOME</replaceable> throughout this manual.
 </para>
 
@@ -110,12 +126,18 @@ Here are the required commands on Windows systems:
 
 </chapter>
 
+<!--
+   **************************************************************************
+   Compiling FindBugs from Source
+   **************************************************************************
+-->
+
 <chapter id="building">
-<title>Building <application>FindBugs</application> from Source</title>
+<title>Building &FindBugs; from Source</title>
 
 <para>
-This chapter describes how to build <application>FindBugs</application> from source code.  Unless you are
-interesting in modifying <application>FindBugs</application>, you will probably want to skip to the
+This chapter describes how to build &FindBugs; from source code.  Unless you are
+interesting in modifying &FindBugs;, you will probably want to skip to the
 <link linkend="gui">next chapter</link>.
 </para>
 
@@ -123,12 +145,12 @@ interesting in modifying <application>FindBugs</application>, you will probably 
 <title>Prerequisites</title>
 
 <para>
-You will need the following:
+To compile &FindBugs; from source, you will need the following:
 <itemizedlist>
   <listitem>
     <para>
       The <ulink url="http://www.cs.umd.edu/~pugh/java/bugs/release/findbugs-@VERSION@-source.tar.gz"
-      ><application>FindBugs</application> source distribution</ulink>
+      >&FindBugs; source distribution</ulink>
     </para>
   </listitem>
   <listitem>
@@ -146,37 +168,199 @@ You will need the following:
   </listitem>
   <listitem>
     <para>
-      <ulink url="http://ant.apache.org/">Apache Ant</ulink>, version 1.5 or later
+      <ulink url="http://ant.apache.org/">Apache &Ant;</ulink>, version 1.5 or later
     </para>
   </listitem>
   <listitem>
     <para>
       The <ulink url="http://www.thecortex.net/clover/generics/jsr14adapter-1.1.jar"
-     >JSR 14 adapter for Ant</ulink>.  Put the file <filename>jsr14adapter-1.1.jar</filename> in the
-     <filename class="directory">lib</filename> subdirectory of your Ant installation.
+     >JSR 14 adapter for &Ant;</ulink>.  Put the file <filename>jsr14adapter-1.1.jar</filename> in the
+     <filename class="directory">lib</filename> subdirectory of your &Ant; installation.
     </para>
   </listitem>
 </itemizedlist>
 </para>
 
+<para>
+If you want to be able to generate formatted versions of the &FindBugs; documentation,
+you will also need the following software:
+<itemizedlist>
+  <listitem>
+    <para>
+    The <ulink url="http://docbook.sourceforge.net/projects/xsl/index.html">DocBook XSL Stylesheets</ulink>.
+    These are required to convert the &FindBugs; manual into HTML and PDF formats.
+    </para>
+  </listitem>
+  <listitem>
+    <para>
+      The <ulink url="http://saxon.sourceforge.net/">&Saxon; XSLT Processor</ulink>.
+      The file <filename>saxon.jar</filename> should be in your <envar>CLASSPATH</envar>.
+    </para>
+  </listitem>
+<!--
+  <listitem>
+    <para>
+    </para>
+  </listitem>
+-->
+</itemizedlist>
+</para>
+
+</sect1>
+
+<sect1>
+<title>Extracting the Source Distribution</title>
+<para>
+After you download the source distribution, you'll need to extract it into
+a working directory.  A typical command to do this is:
+
+<screen>
+<prompt>$ </prompt><command>gunzip -c findbugs-@VERSION@-source.tar.gz | tar xvf -</command>
+</screen>
+
+</para>
+</sect1>
+
+<sect1>
+<title>Modifying <filename>build.xml</filename></title>
+<para>
+You will need to make two modifications to the <filename>build.xml</filename> file
+used by <ulink url="http://ant.apache.org/">&Ant;</ulink> to build &FindBugs;.
+At the top of <filename>build.xml</filename> you will see two property
+definitions which look like this:
+<programlisting>
+<![CDATA[
+    <!-- Set this to the location where you installed the generics-enabled
+         version of javac. -->
+    <property name="jsr14.home"
+              value="/home/software/java/jsr14_adding_generics-1_3-ea" />
+
+    <!-- Set this to the full path to the HTML XSL stylesheet "chunk.xsl"
+         from the DocBook modular stylesheets,
+         http://docbook.sourceforge.net/projects/xsl/ -->
+    <property name="html.xsl.stylesheet"
+              value="/home/software/docbook/docbook-xsl-1.61.0/html/chunk.xsl" />
+]]>
+</programlisting>
+</para>
+
+<para>
+The first property, <varname>jsr14.home</varname> specifies the directory containing your installation
+of the generics-enabled version of javac.  You must update the value
+of this property to match your system.
+</para>
+
+<para>
+The second property, <varname>html.xsl.stylesheet</varname> specifies the full
+path to the DocBook XSL stylesheet <filename>html/chunk.xsl</filename>.
+You will need to set this property only if you want to generate the HTML
+version of this manual.
+</para>
+
+</sect1>
+
+<sect1>
+<title>Running &Ant;</title>
+
+<para>
+Once you have extracted the source distribution, modified <filename>build.xml</filename>
+to reflect your system, and configured the tools (such as &Saxon; and the the JSR-14 adapter
+for &Ant;), you are ready to build &FindBugs;.  Invoking &Ant; is a simple matter
+of running the command
+<screen>
+<prompt>$ </prompt><command>ant <replaceable>target</replaceable></command>
+</screen>
+where <replaceable>target</replaceable> is one of the following:
+<variablelist>
+  <varlistentry>
+    <term><command>build</command></term>
+    <listitem>
+       <para>
+         This target compiles the code for &FindBugs;.
+       </para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><command>buildAll</command></term>
+    <listitem>
+       <para>
+       This target compiles the code and formats the documentation.
+       </para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><command>release</command></term>
+    <listitem>
+       <para>
+       This target generates a complete binary release of &FindBugs; into the
+       <filename class="directory">build/release</filename> subdirectory.
+       You will probably not need to use this target unless you want to
+       distribute your own modified version of &FindBugs;.
+       </para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><command>docs</command></term>
+    <listitem>
+       <para>
+       This target just formats the documentation.  (It also compiles some of
+       the source code as a side-effect.)
+       </para>
+    </listitem>
+  </varlistentry>
+</variablelist>
+</para>
+
+<para>
+After running an &Ant; command, you should see output similar to
+the following (after some other messages regarding the tasks that
+&Ant; is running):
+<screen>
+<computeroutput>
+BUILD SUCCESSFUL
+Total time: 17 seconds
+</computeroutput>
+</screen>
+</para>
+
+</sect1>
+
+<sect1>
+<title>Running &FindBugs;</title>
+<para>
+The &Ant; build script for &FindBugs; is set up such that after 
+building the <command>build</command> target, the working directory
+is set up just like a binary distribution.  So, the information about
+installing a binary distribution of &FindBugs; in <xref linkend="installing" />
+apply to source distributions, too.
+</para>
 </sect1>
 
 </chapter>
 
 
+<!--
+   **************************************************************************
+   Using the FindBugs Graphical Interface
+   **************************************************************************
+-->
+
 <chapter id="gui">
 <title>Using the Findbugs Graphical User Interface</title>
 
 <para>
-<application>FindBugs</application> has two user interfaces: a graphical user interface (GUI) and a
+&FindBugs; has two user interfaces: a graphical user interface (GUI) and a
 command line user interface.  This chapter describes the graphical user interface.
 </para>
 
 <sect1>
-<title>Executing the <application>FindBugs</application> GUI</title>
+<title>Executing the &FindBugs; GUI</title>
 
 <para>
-To start <application>FindBugs</application> using the GUI, simply run the <command>findbugs</command>
+To start &FindBugs; using the GUI, simply run the <command>findbugs</command>
 command.  (This assumes you have set up your executable path as described in the
 <link linkend="installing">installation section</link>.
 </para>
@@ -224,7 +408,7 @@ The <command>findbugs</command> can take several options:
 <sect1>
 <title>Creating a Project</title>
 <para>
-After you have started <application>FindBugs</application> using the <command>findbugs</command> command,
+After you have started &FindBugs; using the <command>findbugs</command> command,
 choose the <menuchoice><guimenu>File</guimenu><guimenuitem>New Project</guimenuitem></menuchoice>
 menu item.  You will see a dialog which looks like this:
 <mediaobject>
@@ -243,7 +427,7 @@ Jar files.
 <para>
 You can also add the source directories which contain
 the source code for the Jar files you are analyzing.  This will enable
-<application>FindBugs</application> to highlight the source code which contains a possible error.
+&FindBugs; to highlight the source code which contains a possible error.
 The source directories you add should be the roots of the Java
 package hierarchy.  For example, if your application is contained in the
 <varname>org.foobar.myapp</varname> package, you should add the
@@ -256,9 +440,9 @@ Another optional step is to add additional Jar files or directories as
 classpath entries.  You should do this if the Jar files you are analyzing
 have references to other classes which are not included in the analyzed
 jar files and are not in the standard runtime classpath.  Some of the bug
-pattern detectors in <application>FindBugs</application> make use of class hierarchy information,
+pattern detectors in &FindBugs; make use of class hierarchy information,
 so you will get more accurate results if the entire class hierarchy is
-available which <application>FindBugs</application> performs its analysis.
+available which &FindBugs; performs its analysis.
 </para>
 
 </sect1>
@@ -310,16 +494,23 @@ of Jar files and source directories.  A saved project may be loaded with
 the <menuchoice><guimenu>File</guimenu><guimenuitem>Open project</guimenuitem></menuchoice> menu option.
 Note that the analysis results are
 not saved, so you will have to run the analysis again.  (Saving results
-may be added to a future <application>FindBugs</application> release).
+may be added to a future &FindBugs; release).
 </para>
 
 </sect1>
 
-
 </chapter>
 
+
+
+<!--
+   **************************************************************************
+   Using the FindBugs Command Line Interface
+   **************************************************************************
+-->
+
 <chapter id="textui">
-<title>Using the <application>FindBugs</application> Command Line Interface</title>
+<title>Using the &FindBugs; Command Line Interface</title>
 
 <para>Yep.</para>
 
