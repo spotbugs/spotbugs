@@ -38,6 +38,8 @@ public class MergeResults {
 			System.exit(1);
 		}
 
+		DetectorFactoryCollection.instance(); // as a side effect, loads detector plugins
+
 		String origResultsFile = argv[0];
 		String newResultsFile = argv[1];
 		String outputFile = argv[2];
@@ -64,8 +66,15 @@ public class MergeResults {
 				numPreserved++;
 			} else {
 				numLost++;
-				if (!orig.getAnnotationText().equals(""))
+				if (!orig.getAnnotationText().equals("")) {
+					System.out.println("Losing a bug with an annotation:");
+					System.out.println(orig.getMessage());
+					SourceLineAnnotation srcLine = orig.getPrimarySourceLineAnnotation();
+					if (srcLine != null)
+						System.out.println("\t" + srcLine.toString());
+					System.out.println(orig.getAnnotationText());
 					numLostWithAnnotations++;
+				}
 			}
 		}
 
