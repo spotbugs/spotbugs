@@ -100,6 +100,7 @@ public class SimplePathsFindDoubleCheck extends SimplePathEnumeratingDetector im
 		private ConstantPoolGen cpg;
 		private int state;
 		private FieldAnnotation field;
+		private InstructionHandle start, end;
 
 		/**
 		 * Constructor.
@@ -136,7 +137,8 @@ public class SimplePathsFindDoubleCheck extends SimplePathEnumeratingDetector im
 		/**
 		 * Handle an instruction in the simple path.
 		 */
-		public void scanInstruction(Instruction ins) {
+		public void scanInstruction(InstructionHandle handle) {
+			Instruction ins = handle.getInstruction();
 			FieldAnnotation f;
 			switch (state) {
 			case START_STATE:
@@ -144,6 +146,7 @@ public class SimplePathsFindDoubleCheck extends SimplePathEnumeratingDetector im
 					if (DEBUG) debug(ins, "START -> GETFIELD1");
 					field = f;
 					state = GETFIELD1_STATE;
+					start = handle;
 				}
 				else if (DEBUG) debug(ins, "not a read!");
 				break;
@@ -157,6 +160,7 @@ public class SimplePathsFindDoubleCheck extends SimplePathEnumeratingDetector im
 				if ((f = FieldAnnotation.isRead(ins, cpg)) != null && f.equals(field)) {
 					if (DEBUG) debug(ins, "LOCK -> GETFIELD2");
 					state = GETFIELD2_STATE;
+					end = handle;
 				}
 				break;
 			case IFNULL2_STATE:
@@ -174,17 +178,8 @@ public class SimplePathsFindDoubleCheck extends SimplePathEnumeratingDetector im
 						.addClass(getJavaClass())
 						.addMethod(methodGen)
 						.addField(field)
+						.addSourceLine(methodGen, start, end)
 					);
-/*
-					if (field.isStatic())
-					    bugReporter.reportBug(BugInstance.inMethodWithField("SPDC_STATIC_DOUBLECHECK", UNKNOWN_PRIORITY,
-						getJavaClass(), methodGen.getName() + " : " + methodGen.getSignature(),
-						field.className, field.fieldName));
-					else
-					    bugReporter.reportBug(BugInstance.inMethodWithField("SPDC_DOUBLECHECK", UNKNOWN_PRIORITY,
-						getJavaClass(), methodGen.getName() + " : " + methodGen.getSignature(),
-						field.className, field.fieldName));
-*/
 					break;
 				}
 			}
@@ -242,7 +237,8 @@ public class SimplePathsFindDoubleCheck extends SimplePathEnumeratingDetector im
 			this.methodGen = methodGen;
 		}
 
-		public boolean start(org.apache.bcel.generic.Instruction ins) {
+		public boolean start(InstructionHandle handle) {
+			Instruction ins = handle.getInstruction();
 			return (ins instanceof GETFIELD) || (ins instanceof GETSTATIC);
 		}
 
