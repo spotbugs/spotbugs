@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs;
 
+import edu.umd.cs.daveho.ba.ClassContext;
 import edu.umd.cs.pugh.visitclass.DismantleBytecode;
 
 /**

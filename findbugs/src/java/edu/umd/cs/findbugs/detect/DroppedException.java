@@ -24,6 +24,7 @@ import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.*;
 import edu.umd.cs.pugh.visitclass.Constants2;
 import edu.umd.cs.pugh.visitclass.PreorderVisitor;
+import edu.umd.cs.daveho.ba.ClassContext;
 
 public class DroppedException extends PreorderVisitor implements Detector, Constants2 {
     private static final boolean DEBUG = Boolean.getBoolean("de.debug");

@@ -28,6 +28,7 @@ import org.apache.bcel.classfile.*;
 import org.apache.bcel.Repository;
 import org.apache.bcel.util.ClassPath;
 import org.apache.bcel.util.SyntheticRepository;
+import edu.umd.cs.daveho.ba.ClassContext;
 
 /**
  * An instance of this class is used to apply the selected set of

@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs.detect;
 
 import edu.umd.cs.findbugs.*;
 import edu.umd.cs.pugh.visitclass.PreorderVisitor;
+import edu.umd.cs.daveho.ba.ClassContext;
 
 import java.util.*;
 import java.text.SimpleDateFormat;

@@ -24,6 +24,7 @@ import org.apache.bcel.classfile.*;
 import edu.umd.cs.pugh.visitclass.PreorderVisitor;
 import edu.umd.cs.pugh.visitclass.Constants2;
 import java.util.*;
+import edu.umd.cs.daveho.ba.ClassContext;
 
 public class SerializableIdiom extends PreorderVisitor 
 	implements Detector, Constants2 {
