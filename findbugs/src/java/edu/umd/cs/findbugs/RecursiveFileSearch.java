@@ -27,7 +27,10 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 /**
- * Recursively search a directory, its subdirectories, etc. for files.
+ * Recursively search a directory, its subdirectories, etc.
+ * Note that the search algorithm uses a worklist, so its implementation does
+ * not use recursive method calls.
+ *
  * @author David Hovemeyer
  */
 public class RecursiveFileSearch {
@@ -57,7 +60,6 @@ public class RecursiveFileSearch {
 		directoryWorkList.add(new File(baseDir));
 
 		while (!directoryWorkList.isEmpty()) {
-
 			File dir = directoryWorkList.removeFirst();
 			if (!dir.isDirectory())
 				continue;
