@@ -43,7 +43,8 @@ import org.apache.bcel.generic.*;
  * to know a priori what basic block they are part of, since they
  * may be part of several.
  *
- * <p> FIXME: this class is overdue to be rewritten.
+ * <p> Note: this class has been superceded by BetterCFGBuilder,
+ * and will be removed in the near future.
  *
  * @see CFGBuilder
  * @author David Hovemeyer
