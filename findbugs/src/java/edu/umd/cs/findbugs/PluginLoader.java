@@ -185,6 +185,7 @@ public class PluginLoader extends URLClassLoader {
 	
 				//System.out.println("Found detector: class="+className+", disabled="+disabled);
 	
+				// Create DetectorFactory for the detector
 				Class detectorClass = loadClass(className);
 				DetectorFactory factory = new DetectorFactory(
 						plugin,
@@ -192,6 +193,18 @@ public class PluginLoader extends URLClassLoader {
 				        speed, reports, requireJRE);
 				plugin.addDetectorFactory(factory);
 				detectorFactoryMap.put(className, factory);
+
+				// Add Detector ordering constraints (if any)
+				String detectorInEarlierPass = detectorNode.valueOf("@afterpass");
+				if (!detectorInEarlierPass.equals(""))
+					plugin.addInterPassOrderingConstraint(
+						new DetectorOrderingConstraint(className, detectorInEarlierPass)
+						);
+				String detectorEarlierInSamePass = detectorNode.valueOf("@after");
+				if (!detectorEarlierInSamePass.equals(""))
+					plugin.addIntraPassOrderingConstraint(
+						new DetectorOrderingConstraint(className, detectorEarlierInSamePass)
+						);
 
 				// Find Detector node in one of the messages files,
 				// to get the detail HTML.
