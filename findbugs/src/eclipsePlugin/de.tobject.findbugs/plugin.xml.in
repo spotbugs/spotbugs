@@ -18,6 +18,7 @@
       <import plugin="org.eclipse.ui.editors" />
       <import plugin="org.eclipse.jdt.core"/>
       <import plugin="org.eclipse.jdt.ui"/>
+      <import plugin="org.eclipse.jface.text"/>
       <import plugin="edu.umd.cs.findbugs"/>
    </requires>
 
@@ -83,7 +84,7 @@
        <viewerContribution
         id="de.tobject.findbugs.actions.FindBugsAction"
         targetID="#CompilationUnitRulerContext">
-	    <action id="de.tobject.findbugs.actions.markerruleaction"
+	    <action id="de.tobject.findbugs.actions.markerruleraction"
 	       label="Show Bug Details"
 	       icon="icons/bug.gif"
 	       menubarPath="additions"
