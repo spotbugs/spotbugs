@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.detect;
 
 import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.visitclass.Constants2;
@@ -35,98 +36,107 @@ public class SwitchFallthrough extends BytecodeScanningDetector implements Const
 	int switchPC;
 	private BugReporter bugReporter;
 	LineNumberTable lineNumbers;
+	private int[] swOffsets = null;
+	private int[] swLabels = null;
+	private int defSwOffset = 0;
+	private int lastSeen = 0;
+	private int lastPC = 0;
 
 	public SwitchFallthrough(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 	}
 
 	public void visitClassContext(ClassContext classContext) {
-		// DHH - 6/25/04
-		// People have been reporting NPEs from this
-		// detector.  For now, I am hacking it so it doesn't
-		// actually do anything.
-
-		/* DO NOTHING - no visitation methods will be called */
+		classContext.getJavaClass().accept(this);
 	}
 
 	public void visit(Code obj) {
 		inSwitch = false;
 		reachable = true;
-		lineNumbers = obj.getLineNumberTable();
+		swOffsets = null;
+		swLabels = null;
+		defSwOffset = 0;
+		lastSeen = 0;
+		lastPC = 0;
+/*		lineNumbers = obj.getLineNumberTable();
 		if (lineNumbers != null)
-			super.visit(obj);
+*/			super.visit(obj);
 	}
 
 	public void sawOpcode(int seen) {
-		int[] switchOffsets = null;
-		int[] switchLabels = null;
-
+		
 		switch (seen) {
 		case TABLESWITCH:
 		case LOOKUPSWITCH:
 			switchPC = getPC();
-			switchOffsets = getSwitchOffsets();
-			switchLabels = getSwitchLabels();
 			inSwitch = true;
+			swOffsets = getSwitchOffsets();
+			swLabels = getSwitchLabels();
+			defSwOffset = getDefaultSwitchOffset();
 			reachable = false;
 			nextIndex = 0;
-			break;
+			break;		
 		default:
 		}
-		if (inSwitch && nextIndex >= switchOffsets.length)
-			inSwitch = false;
+		
 		if (inSwitch) {
-			if (getPC() == switchPC + switchOffsets[nextIndex]
-			        && switchOffsets[nextIndex] != getDefaultSwitchOffset()
-			) {
-				if (nextIndex > 0 && reachable) {
-					int endOfPreviousCase = lineNumbers.getSourceLine(getPC() - 1);
-					int startOfNextCase = lineNumbers.getSourceLine(getPC());
-					int previousLabel = switchLabels[nextIndex - 1];
-					int nextLabel = switchLabels[nextIndex];
-					if (!(previousLabel == 10 && nextLabel == 13)
-					        && !(previousLabel == 13 && nextLabel == 10)
-					        && startOfNextCase - endOfPreviousCase <= 2) {
-						System.out.println("Reached the switch for " + switchLabels[nextIndex]
-						        + " at line number " + startOfNextCase
-						        + " in " + getFullyQualifiedMethodName());
+			if (nextIndex >= swOffsets.length)
+				inSwitch = false;
+
+			if (inSwitch) {
+				if ((getPC() == (switchPC + swOffsets[nextIndex]))
+				&&  (swOffsets[nextIndex] != defSwOffset)) {
+					if (nextIndex > 0 && reachable) {
+						if ((lastSeen != GOTO) && (lastSeen != GOTO_W)) {
+							bugReporter.reportBug(new BugInstance("SF_SWITCH_FALLTHROUGH", NORMAL_PRIORITY)
+			        			.addClassAndMethod(this)
+			        			.addSourceLineRange(this, lastPC, getPC()));
+			        	}
+
+/*	Not sure why this is here, isn't lack of goto enough? 				
+						int endOfPreviousCase = lineNumbers.getSourceLine(getPC() - 1);
+						int startOfNextCase = lineNumbers.getSourceLine(getPC());
+						int previousLabel = swLabels[nextIndex - 1];
+						int nextLabel = swLabels[nextIndex];
+						if (!(previousLabel == 10 && nextLabel == 13)
+						        && !(previousLabel == 13 && nextLabel == 10)
+						        && startOfNextCase - endOfPreviousCase <= 2) {
+							System.out.println("Reached the switch for " + swLabels[nextIndex]
+							        + " at line number " + startOfNextCase
+							        + " in " + getFullyQualifiedMethodName());
+						}
+*/
 					}
-					/*
-					System.out.println("switchPC: " + switchPC);
-					System.out.println("nextIndex: " + nextIndex);
-					System.out.println("switchOffset[nextIndex]: " + switchOffsets[nextIndex]);
-					for(int i = 0; i < switchOffsets.length; i++)
-						System.out.println("	" + switchLabels[i] + "	" +
-							(switchPC + switchOffsets[i]));
-					*/
+					do {
+						nextIndex++;
+						if (nextIndex >= swOffsets.length) {
+							inSwitch = false;
+							break;
+						}
+					} while (getPC() == switchPC + swOffsets[nextIndex]);
 				}
-				do {
-					nextIndex++;
-					if (nextIndex >= switchOffsets.length) {
-						inSwitch = false;
-						break;
-					}
-				} while (getPC() == switchPC + switchOffsets[nextIndex]);
+			}
+	
+			switch (seen) {
+			case TABLESWITCH:
+			case LOOKUPSWITCH:
+			case ATHROW:
+			case RETURN:
+			case ARETURN:
+			case IRETURN:
+			case LRETURN:
+			case DRETURN:
+			case FRETURN:
+			case GOTO_W:
+			case GOTO:
+				reachable = false;
+				break;
+			default:
+				reachable = true;
 			}
 		}
-
-		switch (seen) {
-		case TABLESWITCH:
-		case LOOKUPSWITCH:
-		case ATHROW:
-		case RETURN:
-		case ARETURN:
-		case IRETURN:
-		case LRETURN:
-		case DRETURN:
-		case FRETURN:
-		case GOTO_W:
-		case GOTO:
-			reachable = false;
-			break;
-		default:
-			reachable = true;
-		}
+		
+		lastSeen = seen;
+		lastPC = getPC();
 	}
-
 }

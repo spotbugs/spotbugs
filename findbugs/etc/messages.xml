@@ -1517,7 +1517,16 @@ which is probably what was intended.
     </Details>
   </BugPattern>
 
-
+  <BugPattern type="SF_SWITCH_FALLTHROUGH">
+  	<ShortDescription>A switch statement found where one case fall thru to the next case</ShortDescription>
+  	<LongDescription>A switch statement found where one case fall thru to the next case</LongDescription>
+    <Details>
+<![CDATA[
+  <p> This method contains a switch statement where one case branch will fall thru to the next case.
+  Usually you need to end this case with a break or return.
+]]>
+    </Details>  
+  </BugPattern>
 
   <BugPattern type="WS_WRITEOBJECT_SYNC">
     <ShortDescription>Class's writeObject() method is synchronized but nothing else is</ShortDescription>
@@ -2366,4 +2375,5 @@ get called when the event occurs.
   <BugCode abbrev="MF">Masked Field</BugCode>
   <BugCode abbrev="IJU">Improperly implemented JUnit TestCase</BugCode>
   <BugCode abbrev="BOA">Badly Overridden Adapter</BugCode>
+  <BugCode abbrev="SF">Switch case falls thru</BugCode>
 </MessageCollection>
