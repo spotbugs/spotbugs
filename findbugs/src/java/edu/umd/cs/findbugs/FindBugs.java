@@ -375,7 +375,7 @@ public class FindBugs implements Constants2
 			if (argCount == argv.length) throw new IllegalArgumentException(option + " option requires argument");
 			filterFile = argv[argCount];
 			include = option.equals("-include");
-		} else if (option.equals("-q")) {
+		} else if (option.equals("-quiet")) {
 			quiet = true;
 		} else
 			throw new IllegalArgumentException("Unknown option: " + option);
@@ -389,7 +389,7 @@ public class FindBugs implements Constants2
 			System.out.println("usage: java -jar findbugs.jar [options] <classfiles, zip files or jar files>");
 			System.out.println("Example: java -jar findbugs.jar rt.jar");
 			System.out.println("Options:");
-			System.out.println("   -q                                     suppress error messages");
+			System.out.println("   -quiet                                 suppress error messages");
 			System.out.println("   -sortByClass                           sort bug reports by class");
 			System.out.println("   -visitors <visitor 1>,<visitor 2>,...  run only named visitors");
 			System.out.println("   -omitVisitors <v1>,<v2>,...            omit named visitors");
