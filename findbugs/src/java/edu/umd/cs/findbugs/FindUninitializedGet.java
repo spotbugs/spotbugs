@@ -85,6 +85,7 @@ public class FindUninitializedGet extends BytecodeScanningDetector implements   
 		return;
 		}
 
+/*
 	if (thisOnTOS && seen == GETFIELD) {
 		System.out.println("Saw getfield of " + classConstant 
 				+ "." + nameConstant);
@@ -93,6 +94,7 @@ public class FindUninitializedGet extends BytecodeScanningDetector implements   
 		if (declaredFields.contains(nameConstant))
 		    System.out.println("   declared");
 		}
+*/
 			
 	if (seen == PUTFIELD && classConstant.equals(className))
 		initializedFields.add(FieldAnnotation.fromReferencedField(this));
