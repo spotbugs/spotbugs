@@ -56,7 +56,7 @@ public class StandardTypeMerger implements TypeMerger, Constants, ExtendedTypes 
 			return BottomType.instance();
 		else if (isReferenceType(aType) && isReferenceType(bType)) {	// Two object types!
 			// Handle the Null type, which serves as a special "top"
-			// value for object types.
+			// value for reference types.
 			if (aType == T_NULL)
 				return b;
 			else if (bType == T_NULL)
@@ -76,13 +76,21 @@ public class StandardTypeMerger implements TypeMerger, Constants, ExtendedTypes 
 	}
 
 	/**
-	 * Determine if the given typecode refers to an Object (reference) type.
+	 * Determine if the given typecode refers to a reference type.
 	 * This implementation just checks that the type code is T_OBJECT,
 	 * T_ARRAY, T_NULL, or T_EXCEPTION.  Subclasses should override this
 	 * if they have defined new object types with different type codes.
 	 */
 	protected boolean isReferenceType(byte type) {
 		return type == T_OBJECT || type == T_ARRAY || type == T_NULL || type == T_EXCEPTION;
+	}
+
+	/**
+	 * Determine if the given typecode refers to an Object type.
+	 * Subclasses should override with any new object types.
+	 */
+	protected boolean isObjectType(byte type) {
+		return type == T_OBJECT || type == T_EXCEPTION;
 	}
 
 	/**
@@ -95,11 +103,11 @@ public class StandardTypeMerger implements TypeMerger, Constants, ExtendedTypes 
 		return type == T_INT || type == T_BYTE || type == T_BOOLEAN || type == T_CHAR || type == T_SHORT;
 	}
 
-	private static void updateExceptionSet(ExceptionSet exceptionSet, ReferenceType type) {
+	private static void updateExceptionSet(ExceptionSet exceptionSet, ObjectType type) {
 		if (type instanceof ExceptionObjectType)
 			exceptionSet.addAll(((ExceptionObjectType) type).getExceptionSet());
 		else
-			exceptionSet.addExplicit((ObjectType) type);
+			exceptionSet.addExplicit(type);
 	}
 
 	/**
@@ -122,11 +130,12 @@ public class StandardTypeMerger implements TypeMerger, Constants, ExtendedTypes 
 			// Special case: ExceptionObjectTypes.
 			// We want to preserve the ExceptionSets associated,
 			// in order to track the exact set of exceptions
-			if (aRef instanceof ExceptionObjectType || bRef instanceof ExceptionObjectType) {
+			if (isObjectType(aRef.getType()) && isObjectType(bRef.getType()) &&
+				(aRef.getType() == T_EXCEPTION || bRef.getType() == T_EXCEPTION)) {
 				ExceptionSet union = exceptionSetFactory.createExceptionSet();
 
-				updateExceptionSet(union, aRef);
-				updateExceptionSet(union, bRef);
+				updateExceptionSet(union, (ObjectType) aRef);
+				updateExceptionSet(union, (ObjectType) bRef);
 
 				return ExceptionObjectType.fromExceptionSet(union);
 			}

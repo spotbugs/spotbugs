@@ -31,17 +31,16 @@ import java.util.Iterator;
  * Keeps track of the entire set of exceptions that can be caught,
  * and whether they are explicit or implicit.
  */
-public class ExceptionObjectType extends ReferenceType implements Constants, ExtendedTypes {
+public class ExceptionObjectType extends ObjectType implements Constants, ExtendedTypes {
 	private ExceptionSet exceptionSet;
 
 	/**
 	 * Constructor.
-	 * @param type type code
-	 * @param sig type signature
+	 * @param className the class name
 	 * @param exceptionSet the set of exceptions
 	 */
-	private ExceptionObjectType(byte type, String sig, ExceptionSet exceptionSet) {
-		super(type, sig);
+	private ExceptionObjectType(String className, ExceptionSet exceptionSet) {
+		super(className);
 		this.exceptionSet = exceptionSet;
 	}
 
@@ -57,7 +56,11 @@ public class ExceptionObjectType extends ReferenceType implements Constants, Ext
 			return commonSupertype;
 
 		ObjectType exceptionSupertype = (ObjectType) commonSupertype;
-		return new ExceptionObjectType(T_EXCEPTION, exceptionSupertype.getSignature(), exceptionSet);
+		return new ExceptionObjectType(exceptionSupertype.getClassName(), exceptionSet);
+	}
+
+	public byte getType() {
+		return T_EXCEPTION;
 	}
 
 	public int hashCode() {
