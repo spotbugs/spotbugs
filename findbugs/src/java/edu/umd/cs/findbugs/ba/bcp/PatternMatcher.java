@@ -33,6 +33,8 @@ import edu.umd.cs.daveho.ba.*;
  * @author David Hovemeyer
  */
 public class PatternMatcher implements DFSEdgeTypes {
+	private static final boolean DEBUG = Boolean.getBoolean("bcp.debug");
+
 	private ByteCodePattern pattern;
 	private CFG cfg;
 	private ConstantPoolGen cpg;
@@ -129,6 +131,7 @@ public class PatternMatcher implements DFSEdgeTypes {
 		// Have we reached the end of the pattern?
 		if (patternElement == null) {
 			// This is a complete match.
+			if (DEBUG) System.out.println("FINISHED A MATCH!");
 			resultList.add(new ByteCodePatternMatch(bindingSet, currentMatch));
 			return;
 		}
@@ -158,7 +161,9 @@ public class PatternMatcher implements DFSEdgeTypes {
 				: vnaDataflow.getResultFact(basicBlock);
 
 			// Try to match the instruction against the pattern element.
+			if (DEBUG) System.out.println("Match " + patternElement + " against " + handle + "...");
 			bindingSet = patternElement.match(handle, cpg, before, after, bindingSet);
+			if (DEBUG) System.out.println("\t" + ((bindingSet != null) ? " ==> MATCH" : " ==> NOT A MATCH"));
 			if (bindingSet == null)
 				// Not a match.
 				return;
