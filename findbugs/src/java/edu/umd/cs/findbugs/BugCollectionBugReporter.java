@@ -19,7 +19,10 @@
 
 package edu.umd.cs.findbugs;
 
+import java.io.IOException;
 import java.io.StringWriter;
+
+import javax.xml.transform.TransformerException;
 
 import org.apache.bcel.classfile.JavaClass;
 
@@ -57,12 +60,18 @@ public abstract class BugCollectionBugReporter extends TextUIBugReporter {
 			notifyObservers(bugInstance);
 	}
 
-	protected void generateSummary() throws Exception {
-		StringWriter writer = new StringWriter();
-		ProjectStats stats = getProjectStats();
-		stats.transformSummaryToHTML(writer);
-		String html = writer.toString();
-		bugCollection.setSummaryHTML(html);
+	protected void generateSummary() {
+		try {
+			StringWriter writer = new StringWriter();
+			ProjectStats stats = getProjectStats();
+			stats.transformSummaryToHTML(writer);
+			String html = writer.toString();
+			bugCollection.setSummaryHTML(html);
+		} catch (IOException e) {
+			logError("Couldn't generate summary HTML: " + e.toString());
+		} catch (TransformerException e) {
+			logError("Couldn't generate summary HTML: " + e.toString());
+		}
 	}
 }
 

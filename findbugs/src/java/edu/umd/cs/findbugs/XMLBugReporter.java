@@ -39,8 +39,8 @@ public class XMLBugReporter extends BugCollectionBugReporter {
 	}
 
 	public void finish() {
+		generateSummary();
 		try {
-			generateSummary();
 			if (!addMessages) {
 				// Plain XML output.
 				// Write XML directly to the output stream.
