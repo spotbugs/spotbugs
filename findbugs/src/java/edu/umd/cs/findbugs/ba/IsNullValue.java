@@ -19,6 +19,15 @@
 
 package edu.umd.cs.daveho.ba;
 
+/**
+ * A class to abstractly represent values in stack slots,
+ * indicating whether thoses values can be null, non-null,
+ * or either.
+ *
+ * @see IsNullValueFrame
+ * @see IsNullValueAnalysis
+ * @author David Hovemeyer
+ */
 public class IsNullValue {
 	private static final int DEFINITELY_NULL = 2;
 	private static final int DEFINITELY_NULL_ON_SOME_PATH = 1;
@@ -36,18 +45,36 @@ public class IsNullValue {
 		new IsNullValue(NOT_DEFINITELY_NULL)
 	};
 
+	/**
+	 * Return the single instance representing a value that
+	 * is definitely null.
+	 */
 	public static IsNullValue definitelyNull() {
 		return instanceList[DEFINITELY_NULL];
 	}
 
+	/**
+	 * Return the single instance representing a value that
+	 * is definitely null on some incoming path.
+	 */
 	public static IsNullValue definitelyNullOnSomePath() {
 		return instanceList[DEFINITELY_NULL_ON_SOME_PATH];
 	}
 
+	/**
+	 * Return the single instance representing a value that
+	 * is not definitely null on any incoming path.
+	 */
 	public static IsNullValue notDefinitelyNull() {
 		return instanceList[NOT_DEFINITELY_NULL];
 	}
 
+	/**
+	 * Merge two values.
+	 * @param a a value
+	 * @param b a value
+	 * @return the value which conservatively approximates both values
+	 */
 	public static IsNullValue merge(IsNullValue a, IsNullValue b) {
 		return instanceList[Math.min(a.kind, b.kind)];
 	}
