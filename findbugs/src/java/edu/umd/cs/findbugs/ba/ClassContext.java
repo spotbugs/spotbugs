@@ -47,17 +47,30 @@ public class ClassContext implements AnalysisFeatures {
 	private static final int PRUNED_INFEASIBLE_EXCEPTIONS = 1;
 	private static final int PRUNED_UNCONDITIONAL_THROWERS = 2;
 
+	private static final boolean TIME_ANALYSES = Boolean.getBoolean("classContext.timeAnalyses");
+
 	/* ----------------------------------------------------------------------
 	 * Helper classes
 	 * ---------------------------------------------------------------------- */
 
 	private abstract class AnalysisFactory<AnalysisResult> {
+		private String analysisName;
 		private IdentityHashMap<Method, AnalysisResult> map = new IdentityHashMap<Method, AnalysisResult>();
+
+		public AnalysisFactory(String analysisName) {
+			this.analysisName = analysisName;
+		}
 
 		public AnalysisResult getAnalysis(Method method) throws CFGBuilderException, DataflowAnalysisException {
 			AnalysisResult result = map.get(method);
 			if (result == null) {
+				long begin = System.currentTimeMillis();
 				result = analyze(method);
+				long end = System.currentTimeMillis();
+				if (TIME_ANALYSES) {
+					System.out.println("ClassContext: " + analysisName + " for " +
+						SignatureConverter.convertMethodSignature(jclass, method) + " took " + (end - begin) + " millis");
+				}
 				map.put(method, result);
 			}
 			return result;
@@ -68,6 +81,8 @@ public class ClassContext implements AnalysisFeatures {
 	}
 
 	private abstract class NoExceptionAnalysisFactory<AnalysisResult> extends AnalysisFactory<AnalysisResult> {
+		public NoExceptionAnalysisFactory(String analysisName) { super(analysisName); }
+
 		public AnalysisResult getAnalysis(Method method) {
 			try {
 				return super.getAnalysis(method);
@@ -80,6 +95,8 @@ public class ClassContext implements AnalysisFeatures {
 	}
 
 	private abstract class NoDataflowAnalysisFactory<AnalysisResult> extends AnalysisFactory<AnalysisResult> {
+		public NoDataflowAnalysisFactory(String analysisName) { super(analysisName); }
+
 		public AnalysisResult getAnalysis(Method method) throws CFGBuilderException {
 			try {
 				return super.getAnalysis(method);
@@ -91,6 +108,8 @@ public class ClassContext implements AnalysisFeatures {
 
 	private class CFGFactory extends AnalysisFactory<CFG> {
 		private Set<String> busyCFGSet = new HashSet<String>();
+
+		public CFGFactory() { super("CFG construction"); }
 
 		public CFG getAnalysis(Method method) throws CFGBuilderException {
 			try {
@@ -159,7 +178,8 @@ public class ClassContext implements AnalysisFeatures {
 
 	private JavaClass jclass;
 	private RepositoryLookupFailureCallback lookupFailureCallback;
-	private NoExceptionAnalysisFactory<MethodGen> methodGenFactory = new NoExceptionAnalysisFactory<MethodGen>() {
+	private NoExceptionAnalysisFactory<MethodGen> methodGenFactory =
+	new NoExceptionAnalysisFactory<MethodGen>("MethodGen construction") {
 		protected MethodGen analyze(Method method) {
 			if (method.getCode() == null)
 				return null;
@@ -169,7 +189,8 @@ public class ClassContext implements AnalysisFeatures {
 
 	private CFGFactory cfgFactory = new CFGFactory();
 
-	private AnalysisFactory<ValueNumberDataflow> vnaDataflowFactory = new AnalysisFactory<ValueNumberDataflow>() {
+	private AnalysisFactory<ValueNumberDataflow> vnaDataflowFactory =
+	new AnalysisFactory<ValueNumberDataflow>("value number analysis") {
 		protected ValueNumberDataflow analyze(Method method) throws DataflowAnalysisException, CFGBuilderException {
 			MethodGen methodGen = getMethodGen(method);
 			DepthFirstSearch dfs = getDepthFirstSearch(method);
@@ -181,7 +202,8 @@ public class ClassContext implements AnalysisFeatures {
 		}
 	};
 
-	private AnalysisFactory<IsNullValueDataflow> invDataflowFactory = new AnalysisFactory<IsNullValueDataflow>() {
+	private AnalysisFactory<IsNullValueDataflow> invDataflowFactory =
+	new AnalysisFactory<IsNullValueDataflow>("null value analysis") {
 		protected IsNullValueDataflow analyze(Method method) throws DataflowAnalysisException, CFGBuilderException {
 			MethodGen methodGen = getMethodGen(method);
 			CFG cfg = getCFG(method);
@@ -196,7 +218,8 @@ public class ClassContext implements AnalysisFeatures {
 		}
 	};
 
-	private AnalysisFactory<TypeDataflow> typeDataflowFactory = new AnalysisFactory<TypeDataflow>() {
+	private AnalysisFactory<TypeDataflow> typeDataflowFactory =
+	new AnalysisFactory<TypeDataflow>("type analysis") {
 		protected TypeDataflow analyze(Method method) throws DataflowAnalysisException, CFGBuilderException {
 			MethodGen methodGen = getMethodGen(method);
 			CFG cfg = getRawCFG(method);
@@ -210,7 +233,8 @@ public class ClassContext implements AnalysisFeatures {
 		}
 	};
 
-	private NoDataflowAnalysisFactory<DepthFirstSearch> dfsFactory = new NoDataflowAnalysisFactory<DepthFirstSearch>() {
+	private NoDataflowAnalysisFactory<DepthFirstSearch> dfsFactory =
+	new NoDataflowAnalysisFactory<DepthFirstSearch>("depth first search") {
 		protected DepthFirstSearch analyze(Method method) throws CFGBuilderException {
 			CFG cfg = getRawCFG(method);
 			DepthFirstSearch dfs = new DepthFirstSearch(cfg);
@@ -220,7 +244,7 @@ public class ClassContext implements AnalysisFeatures {
 	};
 
 	private NoDataflowAnalysisFactory<ReverseDepthFirstSearch> rdfsFactory =
-	new NoDataflowAnalysisFactory<ReverseDepthFirstSearch>() {
+	new NoDataflowAnalysisFactory<ReverseDepthFirstSearch>("reverse depth first search") {
 		protected ReverseDepthFirstSearch analyze(Method method) throws CFGBuilderException {
 			CFG cfg = getRawCFG(method);
 			ReverseDepthFirstSearch rdfs = new ReverseDepthFirstSearch(cfg);
@@ -229,7 +253,8 @@ public class ClassContext implements AnalysisFeatures {
 		}
 	};
 
-	private NoExceptionAnalysisFactory<BitSet> bytecodeSetFactory = new NoExceptionAnalysisFactory<BitSet>() {
+	private NoExceptionAnalysisFactory<BitSet> bytecodeSetFactory =
+	new NoExceptionAnalysisFactory<BitSet>("bytecode set construction") {
 		protected BitSet analyze(Method method) {
 			final BitSet result = new BitSet();
 
@@ -254,7 +279,8 @@ public class ClassContext implements AnalysisFeatures {
 		}
 	};
 
-	private AnalysisFactory<LockCountDataflow> anyLockCountDataflowFactory = new AnalysisFactory<LockCountDataflow>() {
+	private AnalysisFactory<LockCountDataflow> anyLockCountDataflowFactory =
+	new AnalysisFactory<LockCountDataflow>("lock count analysis (any lock)") {
 		protected LockCountDataflow analyze(Method method) throws DataflowAnalysisException, CFGBuilderException {
 			MethodGen methodGen = getMethodGen(method);
 			ValueNumberDataflow vnaDataflow = getValueNumberDataflow(method);
@@ -268,7 +294,8 @@ public class ClassContext implements AnalysisFeatures {
 		}
 	};
 
-	private AnalysisFactory<LockDataflow> lockDataflowFactory = new AnalysisFactory<LockDataflow>() {
+	private AnalysisFactory<LockDataflow> lockDataflowFactory =
+	new AnalysisFactory<LockDataflow>("lock set analysis") {
 		protected LockDataflow analyze(Method method) throws DataflowAnalysisException, CFGBuilderException {
 			MethodGen methodGen = getMethodGen(method);
 			ValueNumberDataflow vnaDataflow = getValueNumberDataflow(method);
@@ -282,7 +309,8 @@ public class ClassContext implements AnalysisFeatures {
 		}
 	};
 
-	private AnalysisFactory<ReturnPathDataflow> returnPathDataflowFactory = new AnalysisFactory<ReturnPathDataflow>() {
+	private AnalysisFactory<ReturnPathDataflow> returnPathDataflowFactory =
+	new AnalysisFactory<ReturnPathDataflow>("return path analysis") {
 		protected ReturnPathDataflow analyze(Method method) throws DataflowAnalysisException, CFGBuilderException {
 			CFG cfg = getCFG(method);
 			DepthFirstSearch dfs = getDepthFirstSearch(method);
@@ -294,7 +322,7 @@ public class ClassContext implements AnalysisFeatures {
 	};
 
 	private AnalysisFactory<DominatorsAnalysis> nonExceptionDominatorsAnalysisFactory =
-	new AnalysisFactory<DominatorsAnalysis>() {
+	new AnalysisFactory<DominatorsAnalysis>("non-exception dominators analysis") {
 		protected DominatorsAnalysis analyze(Method method) throws DataflowAnalysisException, CFGBuilderException {
 			CFG cfg = getCFG(method);
 			DepthFirstSearch dfs = getDepthFirstSearch(method);
@@ -307,7 +335,7 @@ public class ClassContext implements AnalysisFeatures {
 	};
 
 	private AnalysisFactory<PostDominatorsAnalysis> nonExceptionPostDominatorsAnalysisFactory =
-	new AnalysisFactory<PostDominatorsAnalysis>() {
+	new AnalysisFactory<PostDominatorsAnalysis>("non-exception postdominators analysis") {
 		protected PostDominatorsAnalysis analyze(Method method) throws DataflowAnalysisException, CFGBuilderException {
 			CFG cfg = getCFG(method);
 			ReverseDepthFirstSearch rdfs = getReverseDepthFirstSearch(method);
