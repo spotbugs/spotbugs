@@ -286,6 +286,8 @@ public class FindDeadLocalStores implements Detector {
 				propertySet.addProperty(DeadLocalStoreProperty.PARAM_DEAD_ON_ENTRY);
 			}
 
+			if (localStoreCount[local] > 3) 
+				propertySet.addProperty(DeadLocalStoreProperty.MANY_STORES);
 			int priority = propertySet.computePriority(NORMAL_PRIORITY);
 			if (priority <= Detector.EXP_PRIORITY) {	
 				// Report the warning

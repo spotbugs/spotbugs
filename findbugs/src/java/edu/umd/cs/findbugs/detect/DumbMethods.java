@@ -43,7 +43,6 @@ public class DumbMethods extends BytecodeScanningDetector implements Constants2,
 	private boolean ctorSeen;
 	private boolean isPublicStaticVoidMain;
         private int randomNextIntState;
-	private boolean constantOnTopOfStack;
 
 	public DumbMethods(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
@@ -69,7 +68,6 @@ public class DumbMethods extends BytecodeScanningDetector implements Constants2,
 		primitiveObjCtorSeen = null;
 		ctorSeen = false;
 		randomNextIntState = 0;
-		constantOnTopOfStack = false;
 	}
 
 	public void sawOpcode(int seen) {
@@ -263,14 +261,6 @@ public class DumbMethods extends BytecodeScanningDetector implements Constants2,
 			ctorSeen = false;
 		}
 
-		if (!constantOnTopOfStack && (seen == INVOKEINTERFACE) 
-		&&  getNameConstantOperand().startsWith("execute")
-		&&  getClassConstantOperand().equals("java/sql/Statement")) {
-			bugReporter.reportBug(new BugInstance(this, "DM_SQL_STATEMENT_EXECUTE", NORMAL_PRIORITY)
-				.addClassAndMethod(this)
-				.addSourceLine(this));
-		}
-		constantOnTopOfStack = (seen == LDC);
 
 
 		if ((seen == INVOKESPECIAL) 

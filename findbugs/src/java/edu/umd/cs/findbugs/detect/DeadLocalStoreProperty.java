@@ -54,6 +54,9 @@ public class DeadLocalStoreProperty implements WarningProperty {
 	/** Caching value */
 	public static final DeadLocalStoreProperty CACHING_VALUE =
 		new DeadLocalStoreProperty("CACHING_VALUE", PriorityAdjustment.LOWER_PRIORITY);
+	/** many stores */
+	public static final DeadLocalStoreProperty MANY_STORES =
+		new DeadLocalStoreProperty("MANY_STORES", PriorityAdjustment.LOWER_PRIORITY);
 
 	//@Override
 	public PriorityAdjustment getPriorityAdjustment() {

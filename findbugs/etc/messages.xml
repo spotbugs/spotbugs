@@ -624,18 +624,29 @@ is always called on the current thread.
     </Details>
   </Detector>
 
-  <Detector class="edu.umd.cs.findbugs.detect.FindDeadLocalStores">
-    <Details>
+<Detector class="edu.umd.cs.findbugs.detect.FindSqlInjection">
+<Details>
 <![CDATA[
 <p>
-This detector looks for assignments to local variables that
-are never subsequently read.  Due to the way byte code is generated for final local variables,
-false positives for these cases are often seen, which is why the detector is currently disabled.
- It is a moderately fast detector.
+This detector uses data flow analysis to look for invocations of execute methods
+on SQL statements in switch something other than a constant string is passed as an argument.
 </p>
 ]]>
     </Details>
   </Detector>
+
+<Detector class="edu.umd.cs.findbugs.detect.FindDeadLocalStores">
+<Details>
+<![CDATA[
+ This detector looks for assignments to local variables that
+ are never subsequently read.  Due to the way byte code is generated for final local variables,
+ false positives for these cases are often seen, which is why the detector is currently disabled.
+  It is a moderately fast detector.
+]]>
+    </Details>
+  </Detector>
+
+
 
   <Detector class="edu.umd.cs.findbugs.detect.FindMaskedFields">
     <Details>
@@ -1125,9 +1136,9 @@ using r.nextInt(n) Rather than using (int)(r.nextDouble() * n).
 
 
 
-  <BugPattern type="DM_SQL_STATEMENT_EXECUTE">
-    <ShortDescription>Use of an execute method on an SQL statement</ShortDescription>
-    <LongDescription>Method {1} invokes the execute method on an SQL statement</LongDescription>
+  <BugPattern type="SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE">
+    <ShortDescription>Nonconstant string passed to execute method on an SQL statement</ShortDescription>
+    <LongDescription>Method {1} passes a nonconstant String to an execute method on an SQL statement</LongDescription>
     <Details>
 <![CDATA[
   <p>The method invokes the execute method on an SQL statement with a String that seems
@@ -1138,7 +1149,7 @@ SQL injection attacks.
 ]]>
     </Details>
   </BugPattern>  
-  
+
   <BugPattern type="DM_USELESS_THREAD">
     <ShortDescription>A thread was created using the default empty run method</ShortDescription>
     <LongDescription>Method {1} creates a thread using the default empty run method</LongDescription>
@@ -1150,14 +1161,6 @@ SQL injection attacks.
 ]]>
     </Details>
   </BugPattern>  
-  
-  <BugPattern type="DM_SQL_STATEMENT_EXECUTE">
-    <ShortDescription>Someone needs to fill in</ShortDescription>
-    <LongDescription>Someone needs to fill in</LongDescription>
-    <Details>
-<![CDATA[Someone needs to fill in]]>
-    </Details>
-  </BugPattern>
   
   <BugPattern type="DC_DOUBLECHECK">
     <ShortDescription>Possible double check of field</ShortDescription>
