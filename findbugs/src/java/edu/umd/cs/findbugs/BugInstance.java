@@ -103,7 +103,17 @@ public class BugInstance {
 	 * @return this object
 	 */
 	public BugInstance addField(String className, String fieldName, String fieldSig) {
-		add(new FieldAnnotation(className, fieldName, fieldSig));
+		addField(new FieldAnnotation(className, fieldName, fieldSig));
+		return this;
+	}
+
+	/**
+	 * Add a field annotation
+	 * @param fieldAnnotation the field annotation
+	 * @return this object
+	 */
+	public BugInstance addField(FieldAnnotation fieldAnnotation) {
+		add(fieldAnnotation);
 		return this;
 	}
 
@@ -207,6 +217,16 @@ public class BugInstance {
 	public BugInstance addClassAndMethod(BetterVisitor visitor) {
 		addClass(visitor);
 		addMethod(visitor);
+		return this;
+	}
+
+	/**
+	 * Add an integer annotation.
+	 * @param value the integer value
+	 * @return this object
+	 */
+	public BugInstance addInt(int value) {
+		add(new IntAnnotation(value));
 		return this;
 	}
 
