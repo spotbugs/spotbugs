@@ -67,6 +67,14 @@ public class Project {
     public String getJarFile(int num) { return (String) jarList.get(num); }
     
     /**
+     * Remove jar file at given index.
+     * @param num index of the jar file to remove
+     */
+    public void removeJarFile(int num) {
+        jarList.remove(num);
+    }
+    
+    /**
      * Get the number of source directories in the project.
      * @return the number of source directories in the project
      */
@@ -78,6 +86,14 @@ public class Project {
      * @return the source directory
      */
     public String getSourceDir(int num) { return (String) srcDirList.get(num); }
+    
+    /**
+     * Remove source directory at given index.
+     * @param num index of the source directory to remove
+     */
+    public void removeSourceDir(int num) {
+        srcDirList.remove(num);
+    }
     
     /**
      * Get Jar files as an array of Strings.
