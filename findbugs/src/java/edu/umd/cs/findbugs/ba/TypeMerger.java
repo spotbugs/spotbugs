@@ -21,6 +21,14 @@ package edu.umd.cs.daveho.ba;
 
 import org.apache.bcel.generic.Type;
 
+/**
+ * Interface for object which merges types for TypeAnalysis.
+ * By allowing multiple implementations, we allow creation of
+ * specialized type systems.
+ *
+ * @see TypeAnalysis
+ * @author David Hovemeyer
+ */
 public interface TypeMerger {
 	public Type mergeTypes(Type a, Type b) throws DataflowAnalysisException;
 }
