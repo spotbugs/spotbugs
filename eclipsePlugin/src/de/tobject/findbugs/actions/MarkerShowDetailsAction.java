@@ -34,7 +34,7 @@ import de.tobject.findbugs.marker.FindBugsMarker;
 import de.tobject.findbugs.view.DetailsView;
 
 /**
- * Run FindBugs on the currently selected element(s) in the package explorer.
+ * Show details on a selected FindBugs marker.
  * 
  * @author Phil Crosby
  */
@@ -74,7 +74,8 @@ public class MarkerShowDetailsAction implements IObjectActionDelegate {
 			if (!selection.isEmpty()) {
 				if (selection instanceof IStructuredSelection) {
 					IStructuredSelection structuredSelection = (IStructuredSelection) selection;
-					for (Iterator iter = structuredSelection.iterator(); iter.hasNext();) {
+					for (Iterator iter = structuredSelection.iterator(); iter
+							.hasNext();) {
 						IMarker marker = (IMarker) iter.next();
 						if (!marker.getType().equals(FindBugsMarker.NAME))
 							continue;
