@@ -30,7 +30,10 @@ import edu.umd.cs.daveho.ba.DataflowAnalysisException;
  * It potentially matches some number of bytecode instructions.
  */
 public abstract class PatternElement {
+	private static final boolean DEBUG = Boolean.getBoolean("bcp.debug");
+
 	private PatternElement next;
+	private int index;
 
 	/**
 	 * Get the next PatternElement.
@@ -44,6 +47,13 @@ public abstract class PatternElement {
 	 */
 	public void setNext(PatternElement patternElement) {
 		this.next = patternElement;
+	}
+
+	/**
+	 * Set the index.  This is just for debugging.
+	 */
+	public void setIndex(int index) {
+		this.index = index;
 	}
 
 	/**
@@ -109,13 +119,25 @@ public abstract class PatternElement {
 	protected static BindingSet addOrCheckDefinition(String varName, Variable variable, BindingSet bindingSet) {
 		Variable existingVariable = lookup(varName, bindingSet);
 		if (existingVariable == null) {
-			bindingSet = new BindingSet(new Binding(varName, existingVariable), bindingSet);
+			bindingSet = new BindingSet(new Binding(varName, variable), bindingSet);
 		} else {
-			if (!existingVariable.equals(variable))
+			if (!existingVariable.sameAs(variable)) {
+				if (DEBUG) System.out.println("\tConflicting variable " + varName);
 				return null;
+			}
 		}
 
 		return bindingSet;
+	}
+
+	public String toString() {
+		StringBuffer buf = new StringBuffer();
+		String className = this.getClass().getName();
+		buf.append(className.substring(className.lastIndexOf('.') + 1));
+		buf.append('(');
+		buf.append(index);
+		buf.append(')');
+		return buf.toString();
 	}
 }
 
