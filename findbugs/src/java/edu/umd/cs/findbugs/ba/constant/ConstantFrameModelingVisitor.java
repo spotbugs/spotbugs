@@ -58,7 +58,7 @@ public class ConstantFrameModelingVisitor
 		}
 	}
 	
-	@Override
+	//@Override
 	public void visitLDC2_W(LDC2_W obj) {
 		Object value = obj.getValue(getCPG());
 		if (value instanceof String) {
