@@ -44,6 +44,14 @@ public class IntAnnotation implements BugAnnotation {
 		this.description = DEFAULT_ROLE;
 	}
 
+	/**
+	 * Get the integer value.
+	 * @return the integer value
+	 */
+	public int getValue() {
+		return value;
+	}
+
 	public void accept(BugAnnotationVisitor visitor) {
 		visitor.visitIntAnnotation(this);
 	}
