@@ -281,6 +281,8 @@
     -->
     <target name="tools" depends="init">
       <javac srcdir="${tools.src.dir}" destdir="${tools.dir}"
+             includes="${tools.src.dir}"
+             excludes="${tools.src.dir}/edu/umd/cs/findbugs/tools/patcomp/*"
              source="1.5"
              debug="true"
              compiler="com.cortexeb.Jsr14CompilerAdapter">
