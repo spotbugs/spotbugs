@@ -24,18 +24,48 @@ import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.*;
 import org.apache.bcel.generic.*;
 
+/**
+ * Prune a CFG to remove infeasible exception edges.
+ * In order to determine what kinds of exceptions can be thrown by
+ * explicit ATHROW instructions, type analysis must first be
+ * performed on the unpruned CFG.
+ *
+ * @see CFG
+ * @see TypeAnalysis
+ * @author David Hovemeyer
+ */
 public class PruneInfeasibleExceptionEdges implements EdgeTypes {
 	private CFG cfg;
 	private TypeDataflow typeDataflow;
 	private ConstantPoolGen cpg;
 
+	/**
+	 * Constructor.
+	 * @param cfg the CFG to prune
+	 * @param typeDataflow initialized TypeDataflow object for the CFG,
+	 *   indicating the types of all stack locations
+	 * @param cpg the ConstantPoolGen for the method
+	 */
 	public PruneInfeasibleExceptionEdges(CFG cfg, TypeDataflow typeDataflow, ConstantPoolGen cpg) {
 		this.cfg = cfg;
 		this.typeDataflow = typeDataflow;
 		this.cpg = cpg;
 	}
 
+	/**
+	 * Prune infeasible exception edges from the CFG.
+	 * If the method returns normally, then the operation
+	 * was successful, and the CFG should no longer contain infeasible
+	 * exception edges.  If ClassNotFoundException or DataflowAnalysisException
+	 * are thrown, then the operation was unsuccessful,
+	 * <em>but the CFG is still valid because it was not modified</em>.
+	 * If a runtime exception is thrown, then the CFG may be
+	 * partially modified and should be considered invalid.
+	 */
 	public void execute() throws ClassNotFoundException, DataflowAnalysisException {
+		HashSet<Edge> deletedEdgeSet = new HashSet<Edge>();
+
+		// Scan all basic blocks for infeasible exception edges
 		Iterator<BasicBlock> i = cfg.blockIterator();
 		while (i.hasNext()) {
 			BasicBlock basicBlock = i.next();
@@ -45,11 +75,10 @@ public class PruneInfeasibleExceptionEdges implements EdgeTypes {
 
 				// For each exception edge, determine if
 				// the handler is reachable.  If not, delete it.
-				// This ABSOLUTELY relies on the exception handlers being
+				// This ABSOLUTELY relies on the handled exception edges being
 				// enumerated in decreasing order of priority,
 				// because we eliminate thrown types as we encounter
 				// handlers where they are guaranteed to be caught.
-				HashSet<Edge> deletedEdgeSet = new HashSet<Edge>();
 				for (Iterator<Edge> j = cfg.outgoingEdgeIterator(basicBlock); j.hasNext(); ) {
 					Edge edge = j.next();
 					if (edge.getType() == HANDLED_EXCEPTION_EDGE) {
@@ -58,20 +87,21 @@ public class PruneInfeasibleExceptionEdges implements EdgeTypes {
 					}
 				}
 
-				// Remove deleted edges
-				for (Iterator<Edge> j = deletedEdgeSet.iterator(); j.hasNext(); ) {
-					Edge edge = j.next();
-					cfg.removeEdge(edge);
-				}
-
-				// If all exceptions are caught, remove the unhandled exception edge
+				// If all exceptions are caught, mark the unhandled exception edge
+				// for deletion
 				if (thrownExceptionSet.isEmpty()) {
 					Edge edge = cfg.getOutgoingEdgeWithType(basicBlock, UNHANDLED_EXCEPTION_EDGE);
 					if (edge != null) {
-						cfg.removeEdge(edge);
+						deletedEdgeSet.add(edge);
 					}
 				}
 			}
+		}
+
+		// Remove deleted edges
+		for (Iterator<Edge> j = deletedEdgeSet.iterator(); j.hasNext(); ) {
+			Edge edge = j.next();
+			cfg.removeEdge(edge);
 		}
 	}
 
