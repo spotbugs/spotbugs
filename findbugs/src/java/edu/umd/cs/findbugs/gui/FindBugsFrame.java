@@ -28,116 +28,140 @@ public class FindBugsFrame extends javax.swing.JFrame {
      * Custom cell renderer for the navigator tree.
      */
     private static class NavigatorCellRenderer extends DefaultTreeCellRenderer {
-        private ImageIcon projectIcon;
-        private ImageIcon analysisRunIcon;
-
-        public NavigatorCellRenderer() {
-            ClassLoader classLoader = this.getClass().getClassLoader();
-            projectIcon = new ImageIcon(classLoader.getResource("edu/umd/cs/findbugs/gui/project.png"));
-            analysisRunIcon = new ImageIcon(classLoader.getResource("edu/umd/cs/findbugs/gui/execute.png"));
-        }
-
-        public Component getTreeCellRendererComponent(JTree tree, Object value, boolean sel,
-             boolean expanded, boolean leaf, int row, boolean hasFocus) {
-
-            super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
-
-            // Set the icon, depending on what kind of node it is
-            DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
-            Object obj = node.getUserObject();
-            if (obj instanceof Project) {
-                setIcon(projectIcon);
-            } else if (obj instanceof AnalysisRun) {
-                setIcon(analysisRunIcon);
-            }
-
-            return this;
-        }
+	private ImageIcon projectIcon;
+	private ImageIcon analysisRunIcon;
+	
+	public NavigatorCellRenderer() {
+	    ClassLoader classLoader = this.getClass().getClassLoader();
+	    projectIcon = new ImageIcon(classLoader.getResource("edu/umd/cs/findbugs/gui/project.png"));
+	    analysisRunIcon = new ImageIcon(classLoader.getResource("edu/umd/cs/findbugs/gui/execute.png"));
+	}
+	
+	public Component getTreeCellRendererComponent(JTree tree, Object value, boolean sel,
+	boolean expanded, boolean leaf, int row, boolean hasFocus) {
+	    
+	    super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
+	    
+	    // Set the icon, depending on what kind of node it is
+	    DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
+	    Object obj = node.getUserObject();
+	    if (obj instanceof Project) {
+		setIcon(projectIcon);
+	    } else if (obj instanceof AnalysisRun) {
+		setIcon(analysisRunIcon);
+	    }
+	    
+	    return this;
+	}
     }
-
+    
     /**
      * Custom cell renderer for the bug tree.
      */
     private static class BugCellRenderer extends DefaultTreeCellRenderer {
-        private ImageIcon bugIcon;
-        private ImageIcon classIcon;
-        private ImageIcon methodIcon;
-        private ImageIcon fieldIcon;
-        
-        public BugCellRenderer() {
-            ClassLoader classLoader = this.getClass().getClassLoader();
-            bugIcon = new ImageIcon(classLoader.getResource("edu/umd/cs/findbugs/gui/bug2.png"));
-            classIcon = new ImageIcon(classLoader.getResource("edu/umd/cs/findbugs/gui/class.png"));
-            methodIcon = new ImageIcon(classLoader.getResource("edu/umd/cs/findbugs/gui/method.png"));
-            fieldIcon = new ImageIcon(classLoader.getResource("edu/umd/cs/findbugs/gui/field.png"));
-        }
-        
-        public Component getTreeCellRendererComponent(JTree tree, Object value, boolean sel,
-            boolean expanded, boolean leaf, int row, boolean hasFocus) {
-                 
-            super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
-            
-            // Set the icon, depending on what kind of node it is
-            DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
-            Object obj = node.getUserObject();
-            if (obj instanceof BugInstance) {
-                setIcon(bugIcon);
-            } else if (obj instanceof ClassAnnotation) {
-                setIcon(classIcon);
-            } else if (obj instanceof MethodAnnotation) {
-                setIcon(methodIcon);
-            } else if (obj instanceof FieldAnnotation) {
-                setIcon(fieldIcon);
-            } else {
-                setIcon(null);
-            }
-            
-            return this;
-        }
+	private ImageIcon bugIcon;
+	private ImageIcon classIcon;
+	private ImageIcon methodIcon;
+	private ImageIcon fieldIcon;
+	
+	public BugCellRenderer() {
+	    ClassLoader classLoader = this.getClass().getClassLoader();
+	    bugIcon = new ImageIcon(classLoader.getResource("edu/umd/cs/findbugs/gui/bug2.png"));
+	    classIcon = new ImageIcon(classLoader.getResource("edu/umd/cs/findbugs/gui/class.png"));
+	    methodIcon = new ImageIcon(classLoader.getResource("edu/umd/cs/findbugs/gui/method.png"));
+	    fieldIcon = new ImageIcon(classLoader.getResource("edu/umd/cs/findbugs/gui/field.png"));
+	}
+	
+	public Component getTreeCellRendererComponent(JTree tree, Object value, boolean sel,
+	boolean expanded, boolean leaf, int row, boolean hasFocus) {
+	    
+	    super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
+	    
+	    // Set the icon, depending on what kind of node it is
+	    DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
+	    Object obj = node.getUserObject();
+	    if (obj instanceof BugInstance) {
+		setIcon(bugIcon);
+	    } else if (obj instanceof ClassAnnotation) {
+		setIcon(classIcon);
+	    } else if (obj instanceof MethodAnnotation) {
+		setIcon(methodIcon);
+	    } else if (obj instanceof FieldAnnotation) {
+		setIcon(fieldIcon);
+	    } else {
+		setIcon(null);
+	    }
+	    
+	    return this;
+	}
     }
+    
+    /** Compare BugInstance class names. */
+    private static class BugInstanceClassComparator implements Comparator {
+	public int compare(Object a, Object b) {
+	    BugInstance lhs = (BugInstance) a;
+	    BugInstance rhs = (BugInstance) b;
+	    return lhs.getPrimaryClass().compareTo(rhs.getPrimaryClass());
+	}
+    }
+    private static final Comparator bugInstanceClassComparator = new BugInstanceClassComparator();
+    
+    /** Compare BugInstance package names. */
+    private static class BugInstancePackageComparator implements Comparator {
+	public int compare(Object a, Object b) {
+	    BugInstance lhs = (BugInstance) a;
+	    BugInstance rhs = (BugInstance) b;
+	    return lhs.getPrimaryClass().getPackageName().compareTo(
+	    rhs.getPrimaryClass().getPackageName());
+	}
+    }
+    private static final Comparator bugInstancePackageComparator = new BugInstancePackageComparator();
+    
+    /** Compare BugInstance bug types. */
+    private static class BugInstanceTypeComparator implements Comparator {
+	public int compare(Object a, Object b) {
+	    BugInstance lhs = (BugInstance) a;
+	    BugInstance rhs = (BugInstance) b;
+	    String lhsString = lhs.toString();
+	    String rhsString = rhs.toString();
+	    return lhsString.substring(0, lhsString.indexOf(':')).compareTo(
+		rhsString.substring(0, rhsString.indexOf(':')));
+	}
+    }
+    private static final Comparator bugInstanceTypeComparator = new BugInstanceTypeComparator();
     
     /** Compare BugInstances by class name. */
     private static class BugInstanceByClassComparator implements Comparator {
-        public int compare(Object a, Object b) {
-            BugInstance lhs = (BugInstance) a;
-            BugInstance rhs = (BugInstance) b;
-            int cmp = lhs.getPrimaryClass().getClassName().compareTo(rhs.getPrimaryClass().getClassName());
-            if (cmp != 0)
-                return cmp;
-            return lhs.compareTo(rhs);
-        }
+	public int compare(Object a, Object b) {
+	    int cmp = bugInstanceClassComparator.compare(a, b);
+	    if (cmp != 0)
+		return cmp;
+	    return ((Comparable)a).compareTo(b);
+	}
     }
-    private static Comparator bugInstanceByClassComparator = new FindBugsFrame.BugInstanceByClassComparator();
+    private static final Comparator bugInstanceByClassComparator = new FindBugsFrame.BugInstanceByClassComparator();
     
     /** Compare BugInstances by package name. */
     private static class BugInstanceByPackageComparator implements Comparator {
-        public int compare(Object a, Object b) {
-            BugInstance lhs = (BugInstance) a;
-            BugInstance rhs = (BugInstance) b;
-            int cmp = lhs.getPrimaryClass().getPackageName().compareTo(rhs.getPrimaryClass().getPackageName());
-            if (cmp != 0)
-                return cmp;
-            return lhs.compareTo(rhs);
-        }
+	public int compare(Object a, Object b) {
+	    int cmp = bugInstancePackageComparator.compare(a, b);
+	    if (cmp != 0)
+		return cmp;
+	    return ((Comparable)a).compareTo(b);
+	}
     }
-    private static Comparator bugInstanceByPackageComparator = new FindBugsFrame.BugInstanceByPackageComparator();
+    private static final Comparator bugInstanceByPackageComparator = new FindBugsFrame.BugInstanceByPackageComparator();
     
     private static class BugInstanceByCategoryComparator implements Comparator {
-        public int compare(Object a, Object b) {
-            BugInstance lhs = (BugInstance) a;
-            BugInstance rhs = (BugInstance) b;
-            // FIXME: we're just sorting them by type, sort of.
-            // Need to do something more intelligent here.
-            String lhsString = lhs.toString();
-            String rhsString = rhs.toString();
-            int cmp = lhsString.substring(0, lhsString.indexOf(':')).compareTo(rhsString.substring(0, rhsString.indexOf(':')));
-            if (cmp != 0)
-                return cmp;
-            return lhs.compareTo(rhs);
-        }
+	public int compare(Object a, Object b) {
+	    int cmp = bugInstanceTypeComparator.compare(a, b);
+	    if (cmp != 0)
+		return cmp;
+	    return ((Comparable)a).compareTo(b);
+	}
     }
-    private static Comparator bugInstanceByCategoryComparator = new FindBugsFrame.BugInstanceByCategoryComparator();
-
+    private static final Comparator bugInstanceByCategoryComparator = new FindBugsFrame.BugInstanceByCategoryComparator();
+    
     private static final String BY_CLASS = "By class";
     private static final String BY_PACKAGE = "By package";
     private static final String BY_CATEGORY = "By category";
@@ -145,7 +169,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
     /** Creates new form FindBugsFrame */
     public FindBugsFrame() {
 	initComponents();
-        postInitComponents();
+	postInitComponents();
     }
     
     /** This method is called from within the constructor to
@@ -599,161 +623,161 @@ public class FindBugsFrame extends javax.swing.JFrame {
      * makes the code a bit more robust.
      */
     private static final int DIVIDER_FUDGE = 3;
-
+    
     private void consoleSplitterPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_consoleSplitterPropertyChange
-        // The idea here is to keep the View:Console checkbox up to date with
-        // the real location of the divider of the consoleSplitter.
-        // What we want is if any part of the console window is visible,
-        // then the checkbox should be checked.
-        String propertyName = evt.getPropertyName();
-        if (propertyName.equals(JSplitPane.DIVIDER_LOCATION_PROPERTY)) {
-            Integer location = (Integer) evt.getNewValue();
-            /*
-            if (location.intValue() > consoleSplitter.getMaximumDividerLocation())
-                throw new IllegalStateException("JSplitPane is stupid");
-            viewConsoleItem.setSelected(location.intValue() != consoleSplitter.getMaximumDividerLocation());
-             */
-            // FIXME - I need to find out the REAL maximum divider value.
-            // getMaximumDividerLocation() is based on minimum component sizes,
-            // but it may be violated if the user clicks the little "contracter"
-            // button put in place when the "one touch expandable" property was set.
-            // Here is a nasty hack which makes a guess based on the current size
-            // of the frame's content pane.
-            int contentPaneHeight = this.getContentPane().getHeight();
-            int hopefullyMaxDivider = contentPaneHeight - (consoleSplitter.getDividerSize() + DIVIDER_FUDGE);
+	// The idea here is to keep the View:Console checkbox up to date with
+	// the real location of the divider of the consoleSplitter.
+	// What we want is if any part of the console window is visible,
+	// then the checkbox should be checked.
+	String propertyName = evt.getPropertyName();
+	if (propertyName.equals(JSplitPane.DIVIDER_LOCATION_PROPERTY)) {
+	    Integer location = (Integer) evt.getNewValue();
+	    /*
+	    if (location.intValue() > consoleSplitter.getMaximumDividerLocation())
+		throw new IllegalStateException("JSplitPane is stupid");
+	    viewConsoleItem.setSelected(location.intValue() != consoleSplitter.getMaximumDividerLocation());
+	     */
+	    // FIXME - I need to find out the REAL maximum divider value.
+	    // getMaximumDividerLocation() is based on minimum component sizes,
+	    // but it may be violated if the user clicks the little "contracter"
+	    // button put in place when the "one touch expandable" property was set.
+	    // Here is a nasty hack which makes a guess based on the current size
+	    // of the frame's content pane.
+	    int contentPaneHeight = this.getContentPane().getHeight();
+	    int hopefullyMaxDivider = contentPaneHeight - (consoleSplitter.getDividerSize() + DIVIDER_FUDGE);
 /*
-            System.out.println("pane height = " + contentPaneHeight + ", dividerLoc=" + location.intValue() +
-                ", hopefullyMaxDivider=" + hopefullyMaxDivider);
+	    System.out.println("pane height = " + contentPaneHeight + ", dividerLoc=" + location.intValue() +
+		", hopefullyMaxDivider=" + hopefullyMaxDivider);
  */
-            
-            viewConsoleItem.setSelected(location.intValue() < hopefullyMaxDivider);
-        }
+	    
+	    viewConsoleItem.setSelected(location.intValue() < hopefullyMaxDivider);
+	}
     }//GEN-LAST:event_consoleSplitterPropertyChange
-
+    
     private void viewConsoleItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_viewConsoleItemActionPerformed
-        if (viewConsoleItem.isSelected()) {
-            consoleSplitter.resetToPreferredSizes();
-        } else {
-            consoleSplitter.setDividerLocation(1.0);
-        }
+	if (viewConsoleItem.isSelected()) {
+	    consoleSplitter.resetToPreferredSizes();
+	} else {
+	    consoleSplitter.setDividerLocation(1.0);
+	}
     }//GEN-LAST:event_viewConsoleItemActionPerformed
-
+    
     private void sortOrderChooserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sortOrderChooserActionPerformed
-        String selection = sortOrderChooser.getSelectedItem().toString();
-        if (selection != null && currentAnalysisRun != null)
-            populateAnalysisRunTreeModel(currentAnalysisRun, selection);
+	String selection = sortOrderChooser.getSelectedItem().toString();
+	if (selection != null && currentAnalysisRun != null)
+	    populateAnalysisRunTreeModel(currentAnalysisRun, selection);
     }//GEN-LAST:event_sortOrderChooserActionPerformed
-
+    
     private void findBugsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_findBugsButtonActionPerformed
-        Project project = getCurrentProject();
-        AnalysisRun analysisRun = new AnalysisRun(project, logger);
-        
-        logger.logMessage(ConsoleLogger.INFO, "Beginning analysis of " + project);
-        
-        // Run the analysis!
-        RunAnalysisDialog dialog = new RunAnalysisDialog(this, analysisRun);
-        dialog.setSize(400, 300);
+	Project project = getCurrentProject();
+	AnalysisRun analysisRun = new AnalysisRun(project, logger);
+	
+	logger.logMessage(ConsoleLogger.INFO, "Beginning analysis of " + project);
+	
+	// Run the analysis!
+	RunAnalysisDialog dialog = new RunAnalysisDialog(this, analysisRun);
+	dialog.setSize(400, 300);
 	dialog.setLocationRelativeTo(null); // center the dialog
-        dialog.show();
-
-        if (dialog.isCompleted()) {
-            logger.logMessage(ConsoleLogger.INFO, "Analysis " + project + " completed");
-            
-            // Create a navigator tree node for the analysis run
-            DefaultTreeModel treeModel = (DefaultTreeModel) navigatorTree.getModel();
-            TreePath treePath = navigatorTree.getSelectionPath();
-            DefaultMutableTreeNode projectNode = (DefaultMutableTreeNode) treePath.getPath()[1];
-            DefaultMutableTreeNode analysisRunNode = new DefaultMutableTreeNode(analysisRun);
-            treeModel.insertNodeInto(analysisRunNode, projectNode, projectNode.getChildCount());
-            
-            // Make the new node the currently selected node
-            TreePath path = new TreePath(new Object[]{rootNode, projectNode, analysisRunNode});
-            navigatorTree.makeVisible(path);
-            navigatorTree.setSelectionPath(path);
-        } else {
-            logger.logMessage(ConsoleLogger.INFO, "Analysis of " + project + " cancelled by user");
-        }
+	dialog.show();
+	
+	if (dialog.isCompleted()) {
+	    logger.logMessage(ConsoleLogger.INFO, "Analysis " + project + " completed");
+	    
+	    // Create a navigator tree node for the analysis run
+	    DefaultTreeModel treeModel = (DefaultTreeModel) navigatorTree.getModel();
+	    TreePath treePath = navigatorTree.getSelectionPath();
+	    DefaultMutableTreeNode projectNode = (DefaultMutableTreeNode) treePath.getPath()[1];
+	    DefaultMutableTreeNode analysisRunNode = new DefaultMutableTreeNode(analysisRun);
+	    treeModel.insertNodeInto(analysisRunNode, projectNode, projectNode.getChildCount());
+	    
+	    // Make the new node the currently selected node
+	    TreePath path = new TreePath(new Object[]{rootNode, projectNode, analysisRunNode});
+	    navigatorTree.makeVisible(path);
+	    navigatorTree.setSelectionPath(path);
+	} else {
+	    logger.logMessage(ConsoleLogger.INFO, "Analysis of " + project + " cancelled by user");
+	}
     }//GEN-LAST:event_findBugsButtonActionPerformed
-
+    
     private void browseSrcDirButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_browseSrcDirButtonActionPerformed
-        JFileChooser chooser = new JFileChooser();
-        chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-        int rc = chooser.showDialog(this, "Add source directory");
-        if (rc == JFileChooser.APPROVE_OPTION) {
-            srcDirTextField.setText(chooser.getSelectedFile().getPath());
+	JFileChooser chooser = new JFileChooser();
+	chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+	int rc = chooser.showDialog(this, "Add source directory");
+	if (rc == JFileChooser.APPROVE_OPTION) {
+	    srcDirTextField.setText(chooser.getSelectedFile().getPath());
 	    addSourceDirToList();
 	}
     }//GEN-LAST:event_browseSrcDirButtonActionPerformed
-
+    
     private void srcDirTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_srcDirTextFieldActionPerformed
-        addSourceDirToList();
+	addSourceDirToList();
     }//GEN-LAST:event_srcDirTextFieldActionPerformed
-
+    
     private void jarNameTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jarNameTextFieldActionPerformed
-        addJarToList();
+	addJarToList();
     }//GEN-LAST:event_jarNameTextFieldActionPerformed
-
+    
     private void browseJarButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_browseJarButtonActionPerformed
-        JFileChooser chooser = new JFileChooser();
-        FileFilter filter = new FileFilter() {
-            public boolean accept(File file) { return file.isDirectory() || file.getName().endsWith(".jar"); }
-            public String getDescription() { return "Jar files (*.jar)"; }
-        };
-        chooser.setFileFilter(filter);
-        int rc = chooser.showDialog(this, "Add Jar file");
-        if (rc == JFileChooser.APPROVE_OPTION) {
-            jarNameTextField.setText(chooser.getSelectedFile().getPath());
+	JFileChooser chooser = new JFileChooser();
+	FileFilter filter = new FileFilter() {
+	    public boolean accept(File file) { return file.isDirectory() || file.getName().endsWith(".jar"); }
+	    public String getDescription() { return "Jar files (*.jar)"; }
+	};
+	chooser.setFileFilter(filter);
+	int rc = chooser.showDialog(this, "Add Jar file");
+	if (rc == JFileChooser.APPROVE_OPTION) {
+	    jarNameTextField.setText(chooser.getSelectedFile().getPath());
 	    addJarToList();
 	}
     }//GEN-LAST:event_browseJarButtonActionPerformed
-
+    
     private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
 	navigatorTree.setSelectionPath(new TreePath(rootNode));
     }//GEN-LAST:event_formWindowOpened
-
+    
     private void newProjectItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newProjectItemActionPerformed
-        String projectName = "<<project " + (++projectCount) + ">>";
-        System.out.println("Adding " + projectName);
-        Project project = new Project(projectName);
-        projectCollection.addProject(project);
-        DefaultMutableTreeNode projectNode = new DefaultMutableTreeNode(project);
-        DefaultTreeModel treeModel = (DefaultTreeModel) navigatorTree.getModel();
-        treeModel.insertNodeInto(projectNode, rootNode, rootNode.getChildCount());
-        TreePath projPath = new TreePath(new Object[]{rootNode, projectNode});
-        navigatorTree.makeVisible(projPath);
-        navigatorTree.setSelectionPath(projPath);
+	String projectName = "<<project " + (++projectCount) + ">>";
+	System.out.println("Adding " + projectName);
+	Project project = new Project(projectName);
+	projectCollection.addProject(project);
+	DefaultMutableTreeNode projectNode = new DefaultMutableTreeNode(project);
+	DefaultTreeModel treeModel = (DefaultTreeModel) navigatorTree.getModel();
+	treeModel.insertNodeInto(projectNode, rootNode, rootNode.getChildCount());
+	TreePath projPath = new TreePath(new Object[]{rootNode, projectNode});
+	navigatorTree.makeVisible(projPath);
+	navigatorTree.setSelectionPath(projPath);
     }//GEN-LAST:event_newProjectItemActionPerformed
     
     private void exitItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitItemActionPerformed
-        exitFindBugs();
+	exitFindBugs();
     }//GEN-LAST:event_exitItemActionPerformed
-
+    
     private void removeSrcDirButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeSrcDirButtonActionPerformed
-        int selIndex = sourceDirList.getSelectedIndex();
-        if (selIndex >= 0) {
-            Project project = getCurrentProject();
-            project.removeSourceDir(selIndex);
-            DefaultListModel listModel = (DefaultListModel) sourceDirList.getModel();
-            listModel.removeElementAt(selIndex);
-        }
+	int selIndex = sourceDirList.getSelectedIndex();
+	if (selIndex >= 0) {
+	    Project project = getCurrentProject();
+	    project.removeSourceDir(selIndex);
+	    DefaultListModel listModel = (DefaultListModel) sourceDirList.getModel();
+	    listModel.removeElementAt(selIndex);
+	}
     }//GEN-LAST:event_removeSrcDirButtonActionPerformed
-
+    
     private void removeJarButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeJarButtonActionPerformed
-        int selIndex = jarFileList.getSelectedIndex();
-        if (selIndex >= 0) {
-            Project project = getCurrentProject();
-            project.removeJarFile(selIndex);
-            DefaultListModel listModel = (DefaultListModel) jarFileList.getModel();
-            listModel.removeElementAt(selIndex);
-        }
+	int selIndex = jarFileList.getSelectedIndex();
+	if (selIndex >= 0) {
+	    Project project = getCurrentProject();
+	    project.removeJarFile(selIndex);
+	    DefaultListModel listModel = (DefaultListModel) jarFileList.getModel();
+	    listModel.removeElementAt(selIndex);
+	}
     }//GEN-LAST:event_removeJarButtonActionPerformed
-
+    
     private void addSourceDirButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addSourceDirButtonActionPerformed
-        addSourceDirToList();
+	addSourceDirToList();
     }//GEN-LAST:event_addSourceDirButtonActionPerformed
-
+    
     private void addJarButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addJarButtonActionPerformed
-        addJarToList();
+	addJarToList();
     }//GEN-LAST:event_addJarButtonActionPerformed
     
     /** Exit the Application */
@@ -765,44 +789,44 @@ public class FindBugsFrame extends javax.swing.JFrame {
      * Create the tree model that will be used by the navigator tree.
      */
     private TreeModel createNavigatorTreeModel() {
-        projectCollection = new ProjectCollection();
-        rootNode = new DefaultMutableTreeNode(projectCollection);
-        navigatorTreeModel = new DefaultTreeModel(rootNode);
-        return navigatorTreeModel;
+	projectCollection = new ProjectCollection();
+	rootNode = new DefaultMutableTreeNode(projectCollection);
+	navigatorTreeModel = new DefaultTreeModel(rootNode);
+	return navigatorTreeModel;
     }
-
+    
     /**
      * This is called from the constructor to perform post-initialization
      * of the components in the form.
      */
     private void postInitComponents() {
-        logger = new ConsoleLogger(this);
-        
-        viewPanelLayout = (CardLayout) viewPanel.getLayout();
-        navigatorTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
-
-        // Add a tree selection listener to the navigator tree, so we can
-        // ensure that the view is always consistent with the current selection.
-        navigatorTree.addTreeSelectionListener(new TreeSelectionListener() {
-            public void valueChanged(TreeSelectionEvent e) {
-                navigatorTreeSelectionChanged(e);
-            }
-        });
-
-        navigatorTree.setCellRenderer(new FindBugsFrame.NavigatorCellRenderer());
-        navigatorTree.setRootVisible(false);
-        navigatorTree.setShowsRootHandles(false);
-
-        bugTree.setCellRenderer(new FindBugsFrame.BugCellRenderer());
-        bugTree.setRootVisible(false);
-        bugTree.setShowsRootHandles(true);
-        
+	logger = new ConsoleLogger(this);
+	
+	viewPanelLayout = (CardLayout) viewPanel.getLayout();
+	navigatorTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+	
+	// Add a tree selection listener to the navigator tree, so we can
+	// ensure that the view is always consistent with the current selection.
+	navigatorTree.addTreeSelectionListener(new TreeSelectionListener() {
+	    public void valueChanged(TreeSelectionEvent e) {
+		navigatorTreeSelectionChanged(e);
+	    }
+	});
+	
+	navigatorTree.setCellRenderer(new FindBugsFrame.NavigatorCellRenderer());
+	navigatorTree.setRootVisible(false);
+	navigatorTree.setShowsRootHandles(false);
+	
+	bugTree.setCellRenderer(new FindBugsFrame.BugCellRenderer());
+	bugTree.setRootVisible(false);
+	bugTree.setShowsRootHandles(true);
+	
 	jarFileList.setModel(new DefaultListModel());
 	sourceDirList.setModel(new DefaultListModel());
-        
-        sortOrderChooser.addItem(BY_CLASS);
-        sortOrderChooser.addItem(BY_PACKAGE);
-        sortOrderChooser.addItem(BY_CATEGORY);
+	
+	sortOrderChooser.addItem(BY_CLASS);
+	sortOrderChooser.addItem(BY_PACKAGE);
+	sortOrderChooser.addItem(BY_CATEGORY);
     }
     
     /**
@@ -811,24 +835,24 @@ public class FindBugsFrame extends javax.swing.JFrame {
      * @param e the TreeSelectionEvent
      */
     private void navigatorTreeSelectionChanged(TreeSelectionEvent e) {
-        DefaultMutableTreeNode node = (DefaultMutableTreeNode) navigatorTree.getLastSelectedPathComponent();
-
-        if (node == null)
-            return;
-
-        Object nodeInfo = node.getUserObject();
-        if (nodeInfo instanceof ProjectCollection) {
-            // Project collection node - there is no view associated with this node
-            setView("EmptyPanel");
-        } else if (nodeInfo instanceof Project) {
-            synchProject((Project) nodeInfo);
-            setView("EditProjectPanel");
-        } else if (nodeInfo instanceof AnalysisRun) {
-            synchAnalysisRun((AnalysisRun) nodeInfo);
-            setView("BugTree");
-        }
+	DefaultMutableTreeNode node = (DefaultMutableTreeNode) navigatorTree.getLastSelectedPathComponent();
+	
+	if (node == null)
+	    return;
+	
+	Object nodeInfo = node.getUserObject();
+	if (nodeInfo instanceof ProjectCollection) {
+	    // Project collection node - there is no view associated with this node
+	    setView("EmptyPanel");
+	} else if (nodeInfo instanceof Project) {
+	    synchProject((Project) nodeInfo);
+	    setView("EditProjectPanel");
+	} else if (nodeInfo instanceof AnalysisRun) {
+	    synchAnalysisRun((AnalysisRun) nodeInfo);
+	    setView("BugTree");
+	}
     }
-  
+    
     /**
      * Get the currently selected project.
      * @return the current project, or null if no project is selected
@@ -852,12 +876,12 @@ public class FindBugsFrame extends javax.swing.JFrame {
      * @param project the selected project
      */
     private void synchProject(Project project) {
-        System.out.println("Synch with project " + project.toString());
-        
+	System.out.println("Synch with project " + project.toString());
+	
 	// Clear text fields
 	jarNameTextField.setText("");
 	srcDirTextField.setText("");
-
+	
 	// Populate jar and source dir lists
 	DefaultListModel jarListModel = (DefaultListModel) jarFileList.getModel();
 	jarListModel.clear();
@@ -877,102 +901,119 @@ public class FindBugsFrame extends javax.swing.JFrame {
      * @param analysisRun the selected analysis run
      */
     private void synchAnalysisRun(AnalysisRun analysisRun) {
-        boolean modelChanged = false;
-        
-        if (analysisRun != currentAnalysisRun) {
-            modelChanged = true;
-            // If this is the first time the analysis run is being shown in
-            // the bug tree, it won't have a tree model yet.
-            if (analysisRun.getTreeModel() == null) {
-                DefaultMutableTreeNode bugRootNode = new DefaultMutableTreeNode();
-                DefaultTreeModel bugTreeModel = new DefaultTreeModel(bugRootNode);
-                analysisRun.setTreeModel(bugTreeModel);
-            }
-            
-        }
-        
-        // Make sure that the sort order is correct.
-        String currentSortOrder = sortOrderChooser.getSelectedItem().toString();
-        if (!analysisRun.getSortOrder().equals(currentSortOrder)) {
-            populateAnalysisRunTreeModel(analysisRun, currentSortOrder);
-        }
-
-        if (modelChanged) {
-            bugTree.setModel(analysisRun.getTreeModel());
-            currentAnalysisRun = analysisRun;
-        }
-        
-        // TODO: restore state of tree! I.e., which nodes expanded, and selection
+	boolean modelChanged = false;
+	
+	if (analysisRun != currentAnalysisRun) {
+	    modelChanged = true;
+	    // If this is the first time the analysis run is being shown in
+	    // the bug tree, it won't have a tree model yet.
+	    if (analysisRun.getTreeModel() == null) {
+		DefaultMutableTreeNode bugRootNode = new DefaultMutableTreeNode();
+		DefaultTreeModel bugTreeModel = new DefaultTreeModel(bugRootNode);
+		analysisRun.setTreeModel(bugTreeModel);
+	    }
+	    
+	}
+	
+	// Make sure that the sort order is correct.
+	String currentSortOrder = sortOrderChooser.getSelectedItem().toString();
+	if (!analysisRun.getSortOrder().equals(currentSortOrder)) {
+	    populateAnalysisRunTreeModel(analysisRun, currentSortOrder);
+	}
+	
+	if (modelChanged) {
+	    bugTree.setModel(analysisRun.getTreeModel());
+	    currentAnalysisRun = analysisRun;
+	}
+	
+	// TODO: restore state of tree! I.e., which nodes expanded, and selection
     }
     
     /**
      * Populate an analysis run's tree model for given sort order.
      */
     private void populateAnalysisRunTreeModel(AnalysisRun analysisRun, String sortOrder) {
-        // Set busy cursor - this is potentially a time-consuming operation
-        Cursor orig = this.getCursor();
-        this.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-        
-        DefaultTreeModel bugTreeModel = analysisRun.getTreeModel();
-        DefaultMutableTreeNode bugRootNode = (DefaultMutableTreeNode) bugTreeModel.getRoot();
-        
-        // Delete all children from root node
-        bugRootNode.removeAllChildren();
-        
-        // Sort the instances
-        TreeSet sortedCollection = new TreeSet(getBugInstanceComparator(sortOrder));
-        sortedCollection.addAll(analysisRun.getBugInstances());
-        
-        // Add all instances as children of the root, in sorted order
-        Iterator i = sortedCollection.iterator();
-        while (i.hasNext()) {
-            BugInstance bugInstance = (BugInstance) i.next();
-            DefaultMutableTreeNode bugNode = new DefaultMutableTreeNode(bugInstance);
-            bugTreeModel.insertNodeInto(bugNode, bugRootNode, bugRootNode.getChildCount());
-            
-            // Insert annotations
-            Iterator j = bugInstance.annotationIterator();
-            while (j.hasNext()) {
-                BugAnnotation annotation = (BugAnnotation) j.next();
-                DefaultMutableTreeNode annotationNode = new DefaultMutableTreeNode(annotation);
-                bugTreeModel.insertNodeInto(annotationNode, bugNode,  bugNode.getChildCount());
-            }
-        }
-
-        // Sort order is up to date now
-        analysisRun.setSortOrder(sortOrder);
-
-        // Let the tree know it needs to update itself
-        bugTreeModel.nodeStructureChanged(bugRootNode);
-        
-        // Now we're done
-        this.setCursor(orig);
+	// Set busy cursor - this is potentially a time-consuming operation
+	Cursor orig = this.getCursor();
+	this.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+	
+	DefaultTreeModel bugTreeModel = analysisRun.getTreeModel();
+	DefaultMutableTreeNode bugRootNode = (DefaultMutableTreeNode) bugTreeModel.getRoot();
+	
+	// Delete all children from root node
+	bugRootNode.removeAllChildren();
+	
+	// Sort the instances
+	TreeSet sortedCollection = new TreeSet(getBugInstanceComparator(sortOrder));
+	sortedCollection.addAll(analysisRun.getBugInstances());
+	
+	// Create an appropriate grouper object
+//	Grouper grouper = getGrouper(sortOrder);
+	
+	// Add all instances as children of the root, in sorted order
+	Iterator i = sortedCollection.iterator();
+	while (i.hasNext()) {
+	    BugInstance bugInstance = (BugInstance) i.next();
+	    DefaultMutableTreeNode bugNode = new DefaultMutableTreeNode(bugInstance);
+	    bugTreeModel.insertNodeInto(bugNode, bugRootNode, bugRootNode.getChildCount());
+	    
+	    // Insert annotations
+	    Iterator j = bugInstance.annotationIterator();
+	    while (j.hasNext()) {
+		BugAnnotation annotation = (BugAnnotation) j.next();
+		DefaultMutableTreeNode annotationNode = new DefaultMutableTreeNode(annotation);
+		bugTreeModel.insertNodeInto(annotationNode, bugNode,  bugNode.getChildCount());
+	    }
+	}
+	
+	// Sort order is up to date now
+	analysisRun.setSortOrder(sortOrder);
+	
+	// Let the tree know it needs to update itself
+	bugTreeModel.nodeStructureChanged(bugRootNode);
+	
+	// Now we're done
+	this.setCursor(orig);
     }
     
     /**
      * Get a BugInstance Comparator for given sort order.
      */
     private Comparator getBugInstanceComparator(String sortOrder) {
-        if (sortOrder.equals(BY_CLASS))
-            return bugInstanceByClassComparator;
-        else if (sortOrder.equals(BY_PACKAGE))
-            return bugInstanceByPackageComparator;
-        else if (sortOrder.equals(BY_CATEGORY))
-            return bugInstanceByCategoryComparator;
-        else
-            throw new IllegalArgumentException("Bad sort order: " + sortOrder);
+	if (sortOrder.equals(BY_CLASS))
+	    return bugInstanceByClassComparator;
+	else if (sortOrder.equals(BY_PACKAGE))
+	    return bugInstanceByPackageComparator;
+	else if (sortOrder.equals(BY_CATEGORY))
+	    return bugInstanceByCategoryComparator;
+	else
+	    throw new IllegalArgumentException("Bad sort order: " + sortOrder);
+    }
+    
+    /**
+     * Get a Grouper for a given sort order.
+     */
+    private Comparator getGroupComparator(String sortOrder) {
+	if (sortOrder.equals(BY_CLASS)) {
+	    return bugInstanceClassComparator;
+	} else if (sortOrder.equals(BY_PACKAGE)) {
+	    return bugInstancePackageComparator;
+	} else if (sortOrder.equals(BY_CATEGORY)) {
+	    return bugInstanceTypeComparator;
+	} else
+	    throw new IllegalArgumentException("Bad sort order: " + sortOrder);
     }
     
     private void exitFindBugs() {
-        // TODO: offer to save work, etc.
-        System.exit(0);
+	// TODO: offer to save work, etc.
+	System.exit(0);
     }
     
     /**
      * Set the view panel to display the named view.
      */
     private void setView(String viewName) {
-        viewPanelLayout.show(viewPanel, viewName);
+	viewPanelLayout.show(viewPanel, viewName);
     }
     
     /**
@@ -980,14 +1021,14 @@ public class FindBugsFrame extends javax.swing.JFrame {
      * Jar file list (and the project it represents).
      */
     private void addJarToList() {
-        String jarFile = jarNameTextField.getText();
-        if (!jarFile.equals("")) {
-            Project project = getCurrentProject();
-            project.addJar(jarFile);
-            DefaultListModel listModel = (DefaultListModel)  jarFileList.getModel();
-            listModel.addElement(jarFile);
-            jarNameTextField.setText("");
-        }
+	String jarFile = jarNameTextField.getText();
+	if (!jarFile.equals("")) {
+	    Project project = getCurrentProject();
+	    project.addJar(jarFile);
+	    DefaultListModel listModel = (DefaultListModel)  jarFileList.getModel();
+	    listModel.addElement(jarFile);
+	    jarNameTextField.setText("");
+	}
     }
     
     /**
@@ -995,28 +1036,28 @@ public class FindBugsFrame extends javax.swing.JFrame {
      * to the source directory list (and the project it represents).
      */
     private void addSourceDirToList() {
-        String sourceDir = srcDirTextField.getText();
-        if (!sourceDir.equals("")) {
-            Project project = getCurrentProject();
-            project.addSourceDir(sourceDir);
-            DefaultListModel listModel = (DefaultListModel) sourceDirList.getModel();
-            listModel.addElement(sourceDir);
-            srcDirTextField.setText("");
-        }
+	String sourceDir = srcDirTextField.getText();
+	if (!sourceDir.equals("")) {
+	    Project project = getCurrentProject();
+	    project.addSourceDir(sourceDir);
+	    DefaultListModel listModel = (DefaultListModel) sourceDirList.getModel();
+	    listModel.addElement(sourceDir);
+	    srcDirTextField.setText("");
+	}
     }
     
     public void writeToConsole(String message) {
-        consoleMessageArea.append(message);
-        consoleMessageArea.append("\n");
+	consoleMessageArea.append(message);
+	consoleMessageArea.append("\n");
     }
     
     /**
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        FindBugsFrame frame = new FindBugsFrame();
-        frame.setSize(750, 550);
-        frame.show();
+	FindBugsFrame frame = new FindBugsFrame();
+	frame.setSize(750, 550);
+	frame.show();
     }
     
     
