@@ -296,7 +296,7 @@ public class CountBugs {
 				if (arg >= argv.length)
 					throw new IllegalArgumentException("-minPriority option requires argument");
 				minPriority = Integer.parseInt(argv[arg]);
-				System.err.println("Min priority is " + minPriority);
+				//System.err.println("Min priority is " + minPriority);
 			} else
 				break;
 
