@@ -32,7 +32,7 @@ import org.apache.bcel.generic.*;
  * @see CFG
  * @author David Hovemeyer
  */
-public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes {
+public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 
 	private static final boolean DEBUG = Boolean.getBoolean("cfgbuilder.debug");
 
@@ -107,7 +107,7 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes {
 		private final CFG cfg;
 		private IdentityHashMap<InstructionHandle, BasicBlock> blockMap;
 		private IdentityHashMap<BasicBlock, List<EscapeTarget>> escapeTargetListMap;
-		private HashSet<BasicBlock> returnBlockSet;
+		private BitSet returnBlockSet;
 		private LinkedList<WorkListItem> workList;
 
 		/**
@@ -120,7 +120,7 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes {
 			this.cfg = new CFG();
 			this.blockMap = new IdentityHashMap<InstructionHandle, BasicBlock>();
 			this.escapeTargetListMap = new IdentityHashMap<BasicBlock, List<EscapeTarget>>();
-			this.returnBlockSet = new HashSet<BasicBlock>();
+			this.returnBlockSet = new BitSet();
 			this.workList = new LinkedList<WorkListItem>();
 		}
 
@@ -203,14 +203,14 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes {
 		 * @param block the returning block
 		 */
 		public void setReturnBlock(BasicBlock block) {
-			returnBlockSet.add(block);
+			returnBlockSet.set(block.getId());
 		}
 
 		/**
 		 * Does the method return at the end of this block?
 		 */
-		public boolean blockReturns(BasicBlock block) {
-			return returnBlockSet.contains(block);
+		public boolean isReturnBlock(BasicBlock block) {
+			return returnBlockSet.get(block.getId());
 		}
 
 		/**
@@ -249,6 +249,12 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes {
 		 * @param edgeType the type of edge
 		 */
 		public void addEdge(BasicBlock sourceBlock, BasicBlock destBlock, int edgeType) {
+			if (VERIFY_INTEGRITY) {
+				if (destBlock.isExceptionHandler() && edgeType != HANDLED_EXCEPTION_EDGE)
+					throw new IllegalStateException("In method " + SignatureConverter.convertMethodSignature(methodGen) +
+						": exception handler " + destBlock.getFirstInstruction() + " reachable by non exception edge type " +
+						edgeType);
+			}
 			cfg.addEdge(sourceBlock, destBlock, edgeType);
 		}
 
@@ -390,6 +396,9 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes {
 
 		// Inline everything into the top level subroutine
 		cfg = inlineAll();
+
+		if (VERIFY_INTEGRITY)
+			cfg.checkIntegrity();
 	}
 
 	public CFG getCFG() {
@@ -424,7 +433,6 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes {
 			if (isPEI(handle)) {
 				if (DEBUG) System.out.println("ETB block " + basicBlock.getId() + " for " + handle);
 				handleExceptions(subroutine, handle, basicBlock);
-				basicBlock.setExceptionThrower(handle);
 				BasicBlock body = subroutine.allocateBasicBlock();
 				subroutine.addEdge(basicBlock, body, FALL_THROUGH_EDGE);
 				basicBlock = body;
@@ -519,6 +527,8 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes {
 	 * @parem etb the exception thrower block (ETB) for the instruction
 	 */
 	private void handleExceptions(Subroutine subroutine, InstructionHandle pei, BasicBlock etb) {
+		etb.setExceptionThrower(pei);
+
 		List<CodeExceptionGen> exceptionHandlerList = exceptionHandlerMap.getHandlerList(pei);
 		if (exceptionHandlerList == null)
 			return;
@@ -692,7 +702,7 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes {
 			}
 
 			// If the block returns from the method, add a return edge
-			if (subroutine.blockReturns(subBlock)) {
+			if (subroutine.isReturnBlock(subBlock)) {
 				result.addEdge(resultBlock, result.getExit(), RETURN_EDGE);
 			}
 
