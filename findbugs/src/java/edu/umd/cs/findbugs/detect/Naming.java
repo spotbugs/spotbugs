@@ -58,8 +58,14 @@ public class Naming extends PreorderVisitor implements Detector, Constants2 {
 	if (old != null && !old.equals(methodName) && !reported.contains(allSmall)) {
 		reported.add(allSmall);
 		String oldClass = classes.get(old);
-		String type = betterSuperclassName.equals(oldClass) ? "NM_VERY_CONFUSING" : "NM_CONFUSING";
-		bugReporter.reportBug(new BugInstance(type, NORMAL_PRIORITY)
+		if (betterSuperclassName.equals(oldClass)) 
+		  bugReporter.reportBug(new BugInstance("NM_VERY_CONFUSING", HIGH_PRIORITY)
+			.addClass(betterClassName)
+			.addMethod(betterClassName, methodName, methodSig)
+			.addClass(classes.get(old))
+			.addMethod(classes.get(old), old, oldSig));
+		else 
+		  bugReporter.reportBug(new BugInstance( "NM_CONFUSING", LOW_PRIORITY)
 			.addClass(betterClassName)
 			.addMethod(betterClassName, methodName, methodSig)
 			.addClass(classes.get(old))
@@ -69,13 +75,13 @@ public class Naming extends PreorderVisitor implements Detector, Constants2 {
 	// Need to look at the code that sets it.
 	//System.out.println("methodName="+methodName+", baseClassName="+baseClassName);
 	if (methodName.equals(baseClassName)) 
-		bugReporter.reportBug(new BugInstance("NM_CONFUSING_METHOD_NAME", NORMAL_PRIORITY)
+		bugReporter.reportBug(new BugInstance("NM_CONFUSING_METHOD_NAME", HIGH_PRIORITY)
 			.addClassAndMethod(this));
 	if (methodName.equals("hashcode") && methodSig.equals("()I")) 
-		bugReporter.reportBug(new BugInstance("NM_LCASE_HASHCODE", NORMAL_PRIORITY)
+		bugReporter.reportBug(new BugInstance("NM_LCASE_HASHCODE", HIGH_PRIORITY)
 			.addClassAndMethod(this));
 	if (methodName.equals("tostring") && methodSig.equals("()Ljava/lang/String;")) 
-		bugReporter.reportBug(new BugInstance("NM_LCASE_TOSTRING", NORMAL_PRIORITY)
+		bugReporter.reportBug(new BugInstance("NM_LCASE_TOSTRING", HIGH_PRIORITY)
 			.addClassAndMethod(this));
 	}
 

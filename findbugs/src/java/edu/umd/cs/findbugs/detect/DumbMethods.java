@@ -60,7 +60,7 @@ public class DumbMethods extends BytecodeScanningDetector implements   Constants
 				&& sigConstant.equals("()V")
 				&& !betterClassName.startsWith("java.lang"))
 		if (alreadyReported.add(betterMethodName))
-			bugReporter.reportBug(new BugInstance("DM_GC", NORMAL_PRIORITY)
+			bugReporter.reportBug(new BugInstance("DM_GC", HIGH_PRIORITY)
 				.addClassAndMethod(this)
 				.addSourceLine(this));
 	if ((seen == INVOKESPECIAL)
