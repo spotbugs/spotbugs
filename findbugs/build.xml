@@ -318,6 +318,7 @@
         <filter token="SET_DEFAULT_JAVA" value="${script.set.default.java}"/>
         <filter token="WRAP_JAVA" value="${script.wrap.java}"/>
         <filter token="WRAP_JAR" value="${script.wrap.jar}"/>
+        <filter token="DEFINE_ESCAPE_ARG" value="${script.define.escape_arg}"/>
       </filterset>
 
       <copy todir="${script.dir}" overwrite="true">

@@ -2,6 +2,8 @@
 
 # Launch FindBugs from the command line.
 
+@DEFINE_ESCAPE_ARG@
+
 @GET_FBHOME@
 
 @SET_DEFAULT_JAVA@
@@ -91,7 +93,7 @@ while [ $# -gt 0 ]; do
 	# All unrecognized arguments will be accumulated and
 	# passed to the application.
 	*)
-		fb_appargs="$fb_appargs $1"
+		fb_appargs="$fb_appargs `escape_arg "$1"`"
 		;;
 	esac
 
