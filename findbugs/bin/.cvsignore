@@ -9,4 +9,5 @@ generateUIDs
 graphIS2FalsePositives
 mergeResults
 unionResults
+updateBugCollection
 xpathFind
