@@ -220,9 +220,9 @@ public class AboutDialog extends javax.swing.JDialog {
         try{
 	        if (os.indexOf( "win" ) >= 0) {
 	        	// this doesn't support showing urls in the form of "page.html#nameLink" 
-	            rt.exec( "rundll32 url.dll,FileProtocolHandler " + url.toString());
+	            rt.exec( "rundll32 url.dll,FileProtocolHandler " + url);
 	        } else if (os.indexOf( "mac" ) >= 0) {
-	            rt.exec( "open " + url.toString());
+	            rt.exec( "open " + url);
 	        } else if (os.indexOf( "nix") >=0 || os.indexOf( "nux") >=0) {
 	        	// Do a best guess on unix until we get a platform independent way
 	        	// Build a list of browsers to try, in this order.
