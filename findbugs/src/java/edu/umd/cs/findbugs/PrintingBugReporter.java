@@ -16,6 +16,10 @@ public class PrintingBugReporter implements BugReporter {
 		}
 	}
 
+	public void logError(String message) {
+		System.err.println(message);
+	}
+
 	public void finish() { }
 }
 

@@ -13,6 +13,12 @@ public interface BugReporter {
 	public void reportBug(BugInstance bugInstance);
 
 	/**
+	 * Log an error that occurs while looking for bugs.
+	 * @param message the error message
+	 */
+	public void logError(String message);
+
+	/**
 	 * Finish reporting bugs.
 	 * If any bug reports have been queued, calling this method
 	 * will flush them.

@@ -26,6 +26,10 @@ public class SortingBugReporter implements BugReporter {
 		}
 	}
 
+	public void logError(String message) {
+		System.err.println(message);
+	}
+
 	public void finish() {
 		Iterator i = bugInstanceSet.iterator();
 		while (i.hasNext()) {
