@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs.detect;
 import edu.umd.cs.findbugs.*;
 import java.util.*;
 import java.io.PrintStream;
+import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.*;
 import java.util.zip.*;
 import java.io.*;
@@ -71,7 +72,7 @@ public class ReadReturnShouldBeChecked extends BytecodeScanningDetector implemen
 		}
 	sawAvailable--;
 	if ((seen == INVOKEVIRTUAL || seen == INVOKEINTERFACE)
-		&& !getClassConstantOperand().equals("ByteArrayInputStream")
+		&& !getClassConstantOperand().equals("java/io/ByteArrayInputStream")
 		&& getNameConstantOperand().equals("read")
 		&& (getSigConstantOperand().startsWith("([B")
 		   || getSigConstantOperand().startsWith("([C"))
@@ -83,15 +84,29 @@ public class ReadReturnShouldBeChecked extends BytecodeScanningDetector implemen
 			+")");
 		*/
 
-		sawRead = true;
-		readPC = getPC();
-		return;
+		boolean b = false;
+		try {
+		b = Repository.instanceOf(getClassConstantOperand(), "java/io/ByteArrayInputStream");
+		} catch (ClassNotFoundException e) {
+		}
+		if (!b) {
+			sawRead = true;
+			readPC = getPC();
+			return;	
+			}
 	} else if ((seen == INVOKEVIRTUAL || seen == INVOKEINTERFACE)
-		&& !getClassConstantOperand().equals("ByteArrayInputStream")
+		&& !getClassConstantOperand().equals("java/io/ByteArrayInputStream")
 		&& getNameConstantOperand().equals("skip")) {
-		sawSkip = true;
-		skipPC = getPC();
-		return;	
+		boolean b = false;
+		try {
+		b = Repository.instanceOf(getClassConstantOperand(), "java/io/ByteArrayInputStream");
+		} catch (ClassNotFoundException e) {
+		}
+		if (!b) {
+			sawSkip = true;
+			skipPC = getPC();
+			return;	
+			}
 	}
 	
 	if ((seen == POP) || (seen == POP2)) {
@@ -101,7 +116,14 @@ public class ReadReturnShouldBeChecked extends BytecodeScanningDetector implemen
 				.addCalledMethod(lastCallClass, lastCallMethod, lastCallSig)
 				.addSourceLine(this, readPC));
 		} else if (sawSkip) {
-			bugReporter.reportBug(new BugInstance("SR_NOT_CHECKED", (lastCallClass.contains("Buffer") ? HIGH_PRIORITY : NORMAL_PRIORITY))
+				boolean isBufferedInputStream = false;
+				try {
+				isBufferedInputStream = Repository.instanceOf(lastCallClass, "java/io/BufferedInputStream");
+				} catch (ClassNotFoundException e) {
+				}
+
+			bugReporter.reportBug(new BugInstance("SR_NOT_CHECKED", 
+				(isBufferedInputStream ? HIGH_PRIORITY : NORMAL_PRIORITY))
 				.addClassAndMethod(this)
 				.addCalledMethod(lastCallClass, lastCallMethod, lastCallSig)
 				.addSourceLine(this, skipPC));
