@@ -24,6 +24,7 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.visitclass.Constants2;
+import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.classfile.LocalVariableTable;
@@ -57,10 +58,12 @@ public class SuperfluousInstanceOf extends BytecodeScanningDetector implements C
 			super.visit(obj);
 	}
 	
+	public void visit(Code obj) {
+		if (varTable != null)
+			super.visit(obj);
+	}
+	
 	public void sawOpcode(int seen) {
-		if (varTable == null)
-			return;
-
 		switch (state) {
 			case SEEN_NOTHING:
 				if (seen == ALOAD)
