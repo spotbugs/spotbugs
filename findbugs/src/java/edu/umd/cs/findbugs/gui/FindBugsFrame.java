@@ -2564,7 +2564,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
                         hasSelection = list.getSelectedIndices().length > 0;
                     } else if (selectedComponent instanceof JTextField) {
                         JTextField tf = (JTextField)selectedComponent;
-                        hasSelection = tf.getSelectedText().length() > 0;
+                        hasSelection = ((tf.getSelectedText() != null) && 
+                                        (tf.getSelectedText().length() > 0));
                     }
                                     
                     cutItem.setEnabled(hasSelection);
