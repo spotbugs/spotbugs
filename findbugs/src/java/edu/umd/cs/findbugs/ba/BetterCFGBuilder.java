@@ -36,16 +36,21 @@ import org.apache.bcel.generic.*;
  * exception thrown by a MONITORENTER instruction means that the monitor
  * was not actually acquired.
  *
- * <p> TODO: ATHROW should really have exception edges both before
- * (NullPointerException if TOS has the null value) and after (the thrown exception)
- * the instruction.  Right now we only have after.
- *
  * <p> Because of the accurate treatment of exceptions, CFGs produced with this
  * CFGBuilder can be used to perform dataflow analysis on.  Assuming that the
  * Java source-to-bytecode compiler generated good code, all dataflow values
  * should merge successfully at control joins, including at exception handlers
  * (with the usual rule that the stack is cleared of all values exception for the
  * thrown exception).
+ *
+ * <p> Things that should be fixed or improved at some point:
+ * <ul>
+ * <li> ATHROW should really have exception edges both before
+ * (NullPointerException if TOS has the null value) and after (the thrown exception)
+ * the instruction.  Right now we only have after.
+ * <li> Edges should be annotated with bytecode and source line information.
+ * <li> UNHANDLED_EXCEPTION edges should be added.
+ * </ul>
  *
  * @see CFG
  * @see CFGBuilder
@@ -268,11 +273,16 @@ public class BetterCFGBuilder implements CFGBuilder, EdgeTypes {
 				} else {
 					// The TargetEnumeratingVisitor takes care of telling us what the targets are.
 					// (This includes the fall through edges for IF branches.)
+					// Note that switches may have multiple targets with the same destination;
+					// we consider these as a single edge.
 					Iterator<Target> i = visitor.targetIterator();
 					while (i.hasNext()) {
 						Target target = i.next();
 						BasicBlock targetBlock = getBlock(target.getTargetInstruction(), jsrStack);
-						addEdge(basicBlock, targetBlock, target.getEdgeType());
+
+						if (cfg.lookupEdge(basicBlock, targetBlock) == null)
+							// Add only if no edge with same source and target already exists
+							addEdge(basicBlock, targetBlock, target.getEdgeType());
 					}
 				}
 	
