@@ -38,6 +38,9 @@ abstract public class DismantleBytecode extends PreorderVisitor implements Const
 	private int branchFallThrough;
 	private int[] switchOffsets;
 	private int[] switchLabels;
+	private int[] prevOpcode = new int[32];
+	private int currentPosInPrevOpcodeBuffer;
+	private int sizePrevOpcodeBuffer;
 	private int defaultSwitchOffset;
 	private String classConstantOperand;
 	private String dottedClassConstantOperand;
@@ -232,6 +235,18 @@ abstract public class DismantleBytecode extends PreorderVisitor implements Const
 	public int getPC() {
 		return PC;
 	}
+
+	/** 
+  	 * return previous opcode; 
+	 * @param offset 0 for current opcode, 1 for one before that, etc.
+	*/
+	public int getPrevOpcode(int offset) {
+		if (offset >= prevOpcode.length || offset > sizePrevOpcodeBuffer)
+			return NOP;
+		int pos = currentPosInPrevOpcodeBuffer - offset;
+		if (pos < 0) pos += prevOpcode.length;
+		return prevOpcode[pos];
+	}
 	
 	/**
 	 * Return whether or not given opcode is a branch instruction.
@@ -299,6 +314,8 @@ abstract public class DismantleBytecode extends PreorderVisitor implements Const
 	}
 
 	public void visit(Code obj) {
+		sizePrevOpcodeBuffer = 0;
+		currentPosInPrevOpcodeBuffer = prevOpcode.length-1;;
 
 		int switchLow = 1000000;
 		int switchHigh = -1000000;
@@ -313,6 +330,11 @@ abstract public class DismantleBytecode extends PreorderVisitor implements Const
 				PC = i;
 				opcodeIsWide = false;
 				opcode = byteStream.readUnsignedByte();
+				sizePrevOpcodeBuffer++;
+				currentPosInPrevOpcodeBuffer++;
+				if (currentPosInPrevOpcodeBuffer >= prevOpcode.length)
+					currentPosInPrevOpcodeBuffer = 0;
+				prevOpcode[currentPosInPrevOpcodeBuffer] = opcode;
 				i++;
 				// System.out.println(OPCODE_NAMES[opCode]);
 				int byteStreamArgCount = NO_OF_OPERANDS[opcode];
