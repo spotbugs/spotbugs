@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -35,12 +36,14 @@ import org.eclipse.jdt.launching.JavaRuntime;
 import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.marker.FindBugsMarker;
 import de.tobject.findbugs.reporter.Reporter;
-import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.ClassAnnotation;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.DetectorFactory;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.FindBugs;
 import edu.umd.cs.findbugs.Project;
+import edu.umd.cs.findbugs.SortedBugCollection;
 
 /**
  * Execute FindBugs on a collection of Java resources in a project.
@@ -124,7 +127,7 @@ public class FindBugsWorker {
 			}
 		}
 
-		BugReporter bugReporter = new Reporter(this.project, this.monitor, findBugsProject);
+		Reporter bugReporter = new Reporter(this.project, this.monitor, findBugsProject);
 		bugReporter.setPriorityThreshold(Detector.LOW_PRIORITY);
 		FindBugs findBugs = new FindBugs(bugReporter, findBugsProject);
 
@@ -148,10 +151,39 @@ public class FindBugsWorker {
 		}
 
 		try {
+			// Perform the analysis!
 			findBugs.execute();
-		}
-		catch (IOException e) {
-			e.printStackTrace();
+			
+			// Merge new results into existing results.
+			// FIXME we do this destructively for now: should do incrementally
+			SortedBugCollection oldBugCollection = FindbugsPlugin.readBugCollection(project, monitor);
+			SortedBugCollection newBugCollection = bugReporter.getBugCollection();
+
+			// Algorithm:
+			// Remove all old warnings for classes which were just analyzed.
+			// Then add all new warnings.
+			Set analyzedClassNameSet = bugReporter.getAnalyzedClassNames();
+			for (Iterator i = oldBugCollection.iterator(); i.hasNext(); ) {
+				BugInstance oldWarning = (BugInstance) i.next();
+				ClassAnnotation warningClass = oldWarning.getPrimaryClass();
+				if (warningClass != null && analyzedClassNameSet.contains(warningClass.getClassName())) {
+					i.remove();
+				}
+			}
+			for (Iterator i = newBugCollection.iterator(); i.hasNext(); ) {
+				BugInstance newWarning = (BugInstance) i.next();
+				oldBugCollection.add(newWarning);
+			}
+
+			// Store updated BugCollection
+			try {
+				FindbugsPlugin.storeBugCollection(project, oldBugCollection, findBugsProject, monitor);
+			} catch (IOException e) {
+				FindbugsPlugin.getDefault().logException(e, "Could not save FindBugs warnings for project");
+			} catch (CoreException e) {
+				FindbugsPlugin.getDefault().logException(e, "Could not save FindBugs warnings for project");
+			}
+
 		}
 		catch (InterruptedException e) {
 			if (DEBUG) {
@@ -159,6 +191,10 @@ public class FindBugsWorker {
 			}
 			// @see IncrementalProjectBuilder.build
 			//throw new OperationCanceledException("FindBugs operation cancelled by user");
+		} catch (RuntimeException e) {
+			throw e;
+		} catch (Exception e) {
+			FindbugsPlugin.getDefault().logException(e, "Error performing FindBugs analysis");
 		}
 	}
 

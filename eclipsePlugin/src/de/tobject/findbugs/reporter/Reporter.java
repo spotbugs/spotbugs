@@ -20,7 +20,8 @@
  
 package de.tobject.findbugs.reporter;
 
-import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.apache.bcel.classfile.JavaClass;
 import org.eclipse.core.resources.IProject;
@@ -64,17 +65,29 @@ public class Reporter extends AbstractBugReporter {
 	/** Persistent store of reported warnings. */
 	private SortedBugCollection bugCollection;
 	
+	/** Set of names of analyzed classes. */
+	private Set analyzedClassNameSet;
+	
 	/** Current filter settings for the project. */
 	private ProjectFilterSettings filterSettings;
 	
 	private boolean workStarted;
 	
+	/**
+	 * Constructor.
+	 * 
+	 * @param project         the project whose classes are being analyzed for bugs
+	 * @param monitor         progress monitor
+	 * @param findBugsProject the FindBugs Project object
+	 */
 	public Reporter(IProject project, IProgressMonitor monitor, Project findBugsProject) {
 		super();
 		this.monitor = monitor;
 		this.project = project;
 		this.findBugsProject = findBugsProject;
 		this.project = project;
+		this.bugCollection = new SortedBugCollection();
+		this.analyzedClassNameSet = new HashSet();
 		try {
 			this.filterSettings = FindbugsPlugin.getProjectFilterSettings(project);
 		} catch (CoreException e) {
@@ -125,15 +138,6 @@ public class Reporter extends AbstractBugReporter {
 		if (DEBUG) {
 			System.out.println("Finish: Found " + getBugCollection().getCollection().size() + " bugs."); //$NON-NLS-1$//$NON-NLS-2$
 		}
-		
-		// FIXME: should update, not just overwrite
-		try {
-			FindbugsPlugin.storeBugCollection(project, getBugCollection(), findBugsProject, monitor);
-		} catch (IOException e) {
-			FindbugsPlugin.getDefault().logException(e, "Could not save FindBugs warnings for project");
-		} catch (CoreException e) {
-			FindbugsPlugin.getDefault().logException(e, "Could not save FindBugs warnings for project");
-		}
 	}
 	
 	/**
@@ -143,9 +147,6 @@ public class Reporter extends AbstractBugReporter {
 	 * @return The collection that hold the bugs found in this project.
 	 */
 	public SortedBugCollection getBugCollection() {
-		if (bugCollection == null) {
-			bugCollection = new SortedBugCollection();
-		}
 		return bugCollection;
 	}
 	
@@ -156,6 +157,15 @@ public class Reporter extends AbstractBugReporter {
 	 */
 	public IProject getProject() {
 		return project;
+	}
+	
+	/**
+	 * Get set containing full names of analyzed classes.
+	 * 
+	 * @return Set containing names of all analyzed classes
+	 */
+	public Set getAnalyzedClassNames() {
+		return analyzedClassNameSet;
 	}
 	
 	/**
@@ -174,6 +184,11 @@ public class Reporter extends AbstractBugReporter {
 		if (DEBUG) {
 			System.out.println("Observing class: " + clazz.getClassName()); //$NON-NLS-1$
 		}
+
+		// Keep track of classes analyzed
+		analyzedClassNameSet.add(clazz.getClassName());
+		
+		// Update progress monitor
 		if (monitor == null) {
 			return;
 		}
