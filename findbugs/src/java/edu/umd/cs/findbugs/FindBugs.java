@@ -121,6 +121,7 @@ public class FindBugs implements Constants2
     registerDetector("Naming", edu.umd.cs.findbugs.Naming.class);
     registerDetector("UnreadFields", edu.umd.cs.findbugs.UnreadFields.class);
     registerDetector("MutableStaticFields", edu.umd.cs.findbugs.MutableStaticFields.class);
+    registerDetector("FindExceptionGetMessage", edu.umd.cs.findbugs.FindExceptionGetMessage.class);
   }
 
   private void createDetectors() {
