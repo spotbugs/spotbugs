@@ -222,8 +222,7 @@ public class DefaultSortedTableModel extends AbstractTableModel
 			viewToModelMapping.add(new Integer(i));
 		
 		Collections.sort( viewToModelMapping, new Comparator<Integer>() {
-			public int compare( Integer a, Integer b ) 
-			{
+			public int compare( Integer a, Integer b ) {
 				if ((sortDirection == SORT_NO_ORDER) || (sortColumn == -1))
 					return a.compareTo(b);
 				
@@ -244,6 +243,7 @@ public class DefaultSortedTableModel extends AbstractTableModel
 		public void mouseClicked(MouseEvent e) {
 			JTableHeader header = (JTableHeader)e.getSource();
 			int column = header.columnAtPoint(e.getPoint());
+			column = header.getTable().convertColumnIndexToModel(column);
 			if (column != sortColumn) {
 				sortColumn = column;
 				sortDirection = SORT_ASCENDING_ORDER;
