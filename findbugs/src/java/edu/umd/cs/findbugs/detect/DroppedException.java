@@ -322,10 +322,6 @@ public class DroppedException extends PreorderVisitor implements Detector, Const
 		if (numLines >= MAX_LINES)
 		    done = true;
 		break;
-	    case Token.EOF:
-		if (DEBUG) System.out.println("Saw token: [EOF]");
-		done = true;
-		break;
 	    default:
 		if (DEBUG) System.out.println("Got token: " + value);
 		switch (state) {
