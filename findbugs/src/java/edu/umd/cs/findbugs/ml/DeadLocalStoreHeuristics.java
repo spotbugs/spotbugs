@@ -57,5 +57,8 @@ public interface DeadLocalStoreHeuristics {
 	
 	/** No loads of the dead store. */
 	public static final String NO_LOADS = "dls.noLoads";
+	
+	/** Parameter is dead on entry to the method. */
+	public static final String PARAM_DEAD_ON_ENTRY = "dls.paramDeadOnEntry";
 
 }
