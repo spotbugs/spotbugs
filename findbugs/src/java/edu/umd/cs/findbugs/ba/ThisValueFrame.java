@@ -40,11 +40,12 @@ public class ThisValueFrame extends Frame<ThisValue> {
 
 	/**
 	 * Merge two slot values.
+	 * @param slot the slot number
 	 * @param a a slot value
 	 * @param b another slot value
 	 * @return the merged value
 	 */
-	public ThisValue mergeValues(ThisValue a, ThisValue b) {
+	public ThisValue mergeValues(int slot, ThisValue a, ThisValue b) {
 		if (a.isTop())
 			return b;
 		else if (b.isTop())

@@ -39,13 +39,40 @@ public class ValueNumberFrame extends Frame<ValueNumber> {
 		this.factory = factory;
 	}
 
-	public ValueNumber mergeValues(ValueNumber a, ValueNumber b) {
-		// This method is not needed for ValueNumberFrame.
-		throw new IllegalStateException("mergeValues called on a ValueNumberFrame");
+	public ValueNumber mergeValues(int slot, ValueNumber mine, ValueNumber other) {
+		// Merging slot values:
+		//   - Merging identical values results in no change
+		//   - If the values are different, and the value in the result
+		//     frame is not the result of a previous result, a fresh value
+		//     is allocated.
+		//   - If the value in the result frame is the result of a
+		//     previous merge, IT STAYS THE SAME.
+		//
+		// The "one merge" rule means that merged values are essentially like
+		// phi nodes.  They combine some number of other values.
+
+		// I believe that this strategy is correct - slots with the same
+		// value number will have identical values at runtime.
+		// The lattice has a finite height because the CFGs have a finite
+		// maximum length path, which limits the number of times a value
+		// merge can propagate through the CFG; so, the analysis terminates.
+		// Each merge results in a lowering in the lattice.
+
+		// I need to think about this a bit more before trusting the results
+		// of ValueNumberAnalysis.
+
+		if (mine != getValue(slot)) throw new IllegalStateException();
+		ValueNumber mergedValue = mergedValueList.get(slot);
+		if (mergedValue == null && !mine.equals(other)) {
+			mergedValue = factory.createFreshValue();
+			mergedValueList.set(slot, mergedValue);
+			mine = mergedValue;
+		}
+		return mine;
 	}
 
 	public ValueNumber getDefaultValue() {
-		//return factory.topValue();
+		// Default values should never be looked at.
 		return null;
 	}
 

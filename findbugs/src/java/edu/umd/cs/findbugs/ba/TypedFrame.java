@@ -146,11 +146,12 @@ public class TypedFrame extends Frame<Type> implements Constants, ExtendedTypes 
 
 	/**
 	 * Merge two types together.  This is somewhat complicated!
+	 * @param slot the slot number
 	 * @param a a type to be merged
 	 * @param b a type to be merged
 	 * @return the merged type
 	 */
-	public Type mergeValues(Type a, Type b) {
+	public Type mergeValues(int slot, Type a, Type b) {
 		byte aType = a.getType(), bType = b.getType();
 
 		if (aType == T_TOP)			// Top is the identity element

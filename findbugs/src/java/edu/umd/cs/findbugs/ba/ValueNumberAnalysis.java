@@ -119,57 +119,7 @@ public class ValueNumberAnalysis extends ForwardDataflowAnalysis<ValueNumberFram
 			fact = tmpFact;
 		}
 
-		if (result.isTop())
-			result.copyFrom(fact);
-		else if (result.isValid()) {
-			if (result.getNumSlots() != fact.getNumSlots()) {
-				result.setBottom();
-				return;
-			}
-
-			// Usual case - merge two frames by merging each pair of
-			// corresponding slot values.
-			//   - Merging identical values results in no change
-			//   - If the values are different, and the value in the result
-			//     frame is not the result of a previous result, a fresh value
-			//     is allocated.
-			//   - If the value in the result frame is the result of a
-			//     previous merge, IT STAYS THE SAME.
-			//
-			// The "one merge" rule means that merged values are essentially like
-			// phi nodes.  They combine some number of other values.
-
-			// I believe that this strategy is correct - slots with the same
-			// value number will have identical values at runtime.
-			// The lattice has a finite height because the CFGs have a finite
-			// maximum length path, which limits the number of times a value
-			// merge can propagate through the CFG.
-
-			// I need to think about this a bit more before trusting the results
-			// of this analysis.
-
-			int numSlots = result.getNumSlots();
-			for (int i = 0; i < numSlots; ++i) {
-				ValueNumber mergedValue = result.getMergedValue(i);
-				// TODO: if mergedValue != null,
-				// could make a note of the other value (to remember that
-				// it is a contributor to the merged value)
-
-				if (mergedValue == null) {
-					ValueNumber oldVal = result.getValue(i);
-					ValueNumber newVal = fact.getValue(i);
-
-					if (!oldVal.equals(newVal)) {
-						// Merge of two unequal values.
-						// We allocate a fixed value, which will remain
-						// in this stack slot permanently.
-						mergedValue = factory.createFreshValue();
-						result.setMergedValue(i, mergedValue);
-						result.setValue(i, mergedValue);
-					}
-				}
-			}
-		}
+		result.mergeWith(fact);
 	}
 
 	/**

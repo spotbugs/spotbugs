@@ -335,16 +335,17 @@ public abstract class Frame<ValueType> {
 		// Usual case: ordinary Frames consisting of the same number of values.
 		// Merge each value in the two slot lists element-wise.
 		for (int i = 0; i < slotList.size(); ++i)
-			slotList.set(i, mergeValues(slotList.get(i), other.slotList.get(i)));
+			slotList.set(i, mergeValues(i, slotList.get(i), other.slotList.get(i)));
 	}
 
 	/**
 	 * Merge two values.
+	 * @param slot the slot number
 	 * @param a first value to merge
 	 * @param b second value to merge
 	 * @return the merged value
 	 */
-	public abstract ValueType mergeValues(ValueType a, ValueType b);
+	public abstract ValueType mergeValues(int slot, ValueType a, ValueType b);
 
 	/**
 	 * Get the default value (to be put in slots of newly created frames).
