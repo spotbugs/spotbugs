@@ -41,7 +41,7 @@
             </Property>
           </Properties>
           <AuxValues>
-            <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="&#xa;{&#xa;    DefaultTableModel m = (DefaultTableModel)detectorTable.getModel();&#xa;    m.setColumnIdentifiers( new String[]&#xa;    {&#xa;        L10N.getLocalString(&quot;dlg.bugdetector_lbl&quot;, &quot;Bug Detector&quot;),&#xa;        L10N.getLocalString(&quot;dlg.speed_lbl&quot;, &quot;Speed&quot;),&#xa;        L10N.getLocalString(&quot;dlg.enabled_lbl&quot;, &quot;Enabled&quot;),&#xa;    });&#xa;&#xa;&#xa;    DefaultSortedTableModel sortedModel = new DefaultSortedTableModel(m);&#xa;    detectorTable.setModel(sortedModel);&#xa;    sortedModel.setBaseTableHeader(detectorTable.getTableHeader());&#xa;}  &#xa;"/>
+            <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="&#xa;{&#xa;    DefaultTableModel m = (DefaultTableModel)detectorTable.getModel();&#xa;    m.setColumnIdentifiers( new String[]&#xa;    {&#xa;        L10N.getLocalString(&quot;dlg.bugdetector_lbl&quot;, &quot;Bug Detector&quot;),&#xa;        L10N.getLocalString(&quot;dlg.speed_lbl&quot;, &quot;Speed&quot;),&#xa;        L10N.getLocalString(&quot;dlg.enabled_lbl&quot;, &quot;Enabled&quot;),&#xa;    });&#xa;&#xa;&#xa;    DefaultSortedTableModel sortedModel = new DefaultSortedTableModel(m, detectorTable.getTableHeader());&#xa;    detectorTable.setModel(sortedModel);&#xa;}  &#xa;"/>
           </AuxValues>
         </Component>
       </SubComponents>
