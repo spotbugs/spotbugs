@@ -1271,7 +1271,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
         ConfigureDetectorsDialog dialog = new ConfigureDetectorsDialog(this, true);
         dialog.setSize(700, 520);
         dialog.setLocationRelativeTo(null); // center the dialog
-        dialog.show();
+        dialog.setVisible(true);
     }//GEN-LAST:event_configureDetectorsItemActionPerformed
 
     private void reloadProjectItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_reloadProjectItemActionPerformed
@@ -1432,7 +1432,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
         AboutDialog dialog = new AboutDialog(this, true);
         dialog.setSize(500, 354);
         dialog.setLocationRelativeTo(null); // center the dialog
-        dialog.show();
+        dialog.setVisible(true);
     }//GEN-LAST:event_aboutItemActionPerformed
     
     private void consoleSplitterPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_consoleSplitterPropertyChange
@@ -1473,7 +1473,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
         RunAnalysisDialog dialog = new RunAnalysisDialog(this, analysisRun);
         dialog.setSize(400, 300);
         dialog.setLocationRelativeTo(null); // center the dialog
-        dialog.show();
+        dialog.setVisible(true);
         
         if (dialog.isCompleted()) {
             logger.logMessage(ConsoleLogger.INFO, "Analysis " + project + " completed");
@@ -1495,7 +1495,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 		err.finish();
 		err.setSize(650,500);
                 err.setLocationRelativeTo(null); // center the dialog
-		err.show();
+		err.setVisible(true);
 	    } else {
 		// Cancelled by user
                 logger.logMessage(ConsoleLogger.INFO, "Analysis of " + project + " cancelled by user");
@@ -2588,7 +2588,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	}
         frame.setSize(800, 600);
         frame.setLocationRelativeTo(null); // center the frame
-        frame.show();
+        frame.setVisible(true);
     }
     
     /* ----------------------------------------------------------------------
