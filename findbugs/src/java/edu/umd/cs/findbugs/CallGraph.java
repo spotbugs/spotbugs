@@ -31,13 +31,13 @@ public class CallGraph extends AbstractGraph<CallGraphEdge, CallGraphNode> {
 	}
 
 	public CallGraphEdge addEdge(CallGraphNode source, CallGraphNode target, CallSite callSite) {
-		CallGraphEdge edge = createEdge(source, target);
+		CallGraphEdge edge = addEdge(source, target);
 		edge.setCallSite(callSite);
 		return edge;
 	}
 
 	public CallGraphNode addNode(Method method) {
-		CallGraphNode node = createVertex();
+		CallGraphNode node = addVertex();
 		node.setMethod(method);
 		methodToNodeMap.put(method, node);
 		return node;
