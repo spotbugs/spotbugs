@@ -29,6 +29,7 @@ package edu.umd.cs.findbugs.gui;
 import java.awt.CardLayout;
 import java.awt.Component;
 import java.awt.Cursor;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Shape;
 import java.awt.Rectangle;
@@ -1038,346 +1039,363 @@ public class FindBugsFrame extends javax.swing.JFrame {
         consoleSplitter.setTopComponent(viewPanel);
 
         {
-            groupByTabbedPane.setTitleAt(0, L10N.getLocalString( "dlg.byclass_tab", "By Class"));
-            groupByTabbedPane.setTitleAt(1, L10N.getLocalString( "dlg.bypackage_tab", "By Package"));
-            groupByTabbedPane.setTitleAt(2, L10N.getLocalString( "dlg.bybugtype_tab", "By Bug Type"));
-            groupByTabbedPane.setTitleAt(3, L10N.getLocalString( "dlg.summary_tab", "Summary"));
-            bugDetailsTabbedPane.setTitleAt(0, L10N.getLocalString( "dlg.details_tab", "Details"));
-            bugDetailsTabbedPane.setTitleAt(1, L10N.getLocalString( "dlg.sourcecode_tab", "Source Code"));
-            bugDetailsTabbedPane.setTitleAt(2, L10N.getLocalString( "dlg.annotations_tab", "Annotations"));
-        }
-        consoleScrollPane.setMinimumSize(new java.awt.Dimension(22, 100));
-        consoleScrollPane.setPreferredSize(new java.awt.Dimension(0, 100));
-        consoleMessageArea.setBackground(new java.awt.Color(204, 204, 204));
-        consoleMessageArea.setEditable(false);
-        consoleMessageArea.setFont(new java.awt.Font("Lucida Sans Typewriter", 0, 12));
-        consoleMessageArea.setMinimumSize(new java.awt.Dimension(0, 0));
-        consoleMessageArea.setAutoscrolls(false);
-        consoleScrollPane.setViewportView(consoleMessageArea);
+            equalizeControls( new JComponent[]
+                {
+                    browseJarButton,
+                    browseSrcDirButton,
+                    browseClasspathEntryButton,
+                    addJarButton,
+                    addSourceDirButton,
+                    addClasspathEntryButton,
+                    removeJarButton,
+                    removeSrcDirButton,
+                    removeClasspathEntryButton,
+                    sourceUpButton,
+                    sourceDownButton,
+                    classpathUpButton,
+                    classpathDownButton
+                });
 
-        consoleSplitter.setBottomComponent(consoleScrollPane);
-
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.gridwidth = 2;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 1.0;
-        getContentPane().add(consoleSplitter, gridBagConstraints);
-
-        urlLabel.setFont(new java.awt.Font("Dialog", 0, 12));
-        urlLabel.setText("FindBugs - http://findbugs.sourceforge.net/");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 0);
-        getContentPane().add(urlLabel, gridBagConstraints);
-
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-        gridBagConstraints.insets = new java.awt.Insets(2, 0, 2, 2);
-        getContentPane().add(logoLabel, gridBagConstraints);
-
-        theMenuBar.setFont(new java.awt.Font("Dialog", 0, 12));
-        fileMenu.setMnemonic('F');
-        fileMenu.setText("File");
-        fileMenu.setFont(new java.awt.Font("Dialog", 0, 12));
-        fileMenu.setText(L10N.getLocalString("menu.file_menu", "File"));
-        fileMenu.addMenuListener(new javax.swing.event.MenuListener() {
-            public void menuCanceled(javax.swing.event.MenuEvent evt) {
+                groupByTabbedPane.setTitleAt(0, L10N.getLocalString( "dlg.byclass_tab", "By Class"));
+                groupByTabbedPane.setTitleAt(1, L10N.getLocalString( "dlg.bypackage_tab", "By Package"));
+                groupByTabbedPane.setTitleAt(2, L10N.getLocalString( "dlg.bybugtype_tab", "By Bug Type"));
+                groupByTabbedPane.setTitleAt(3, L10N.getLocalString( "dlg.summary_tab", "Summary"));
+                bugDetailsTabbedPane.setTitleAt(0, L10N.getLocalString( "dlg.details_tab", "Details"));
+                bugDetailsTabbedPane.setTitleAt(1, L10N.getLocalString( "dlg.sourcecode_tab", "Source Code"));
+                bugDetailsTabbedPane.setTitleAt(2, L10N.getLocalString( "dlg.annotations_tab", "Annotations"));
             }
-            public void menuDeselected(javax.swing.event.MenuEvent evt) {
-            }
-            public void menuSelected(javax.swing.event.MenuEvent evt) {
-                fileMenuMenuSelected(evt);
-            }
-        });
+            consoleScrollPane.setMinimumSize(new java.awt.Dimension(22, 100));
+            consoleScrollPane.setPreferredSize(new java.awt.Dimension(0, 100));
+            consoleMessageArea.setBackground(new java.awt.Color(204, 204, 204));
+            consoleMessageArea.setEditable(false);
+            consoleMessageArea.setFont(new java.awt.Font("Lucida Sans Typewriter", 0, 12));
+            consoleMessageArea.setMinimumSize(new java.awt.Dimension(0, 0));
+            consoleMessageArea.setAutoscrolls(false);
+            consoleScrollPane.setViewportView(consoleMessageArea);
 
-        newProjectItem.setFont(new java.awt.Font("Dialog", 0, 12));
-        newProjectItem.setMnemonic('N');
-        newProjectItem.setText("New Project");
-        newProjectItem.setText(L10N.getLocalString("menu.new_item", "New Project"));
-        newProjectItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                newProjectItemActionPerformed(evt);
-            }
-        });
+            consoleSplitter.setBottomComponent(consoleScrollPane);
 
-        fileMenu.add(newProjectItem);
+            gridBagConstraints = new java.awt.GridBagConstraints();
+            gridBagConstraints.gridx = 0;
+            gridBagConstraints.gridy = 0;
+            gridBagConstraints.gridwidth = 2;
+            gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+            gridBagConstraints.weightx = 1.0;
+            gridBagConstraints.weighty = 1.0;
+            getContentPane().add(consoleSplitter, gridBagConstraints);
 
-        openProjectItem.setFont(new java.awt.Font("Dialog", 0, 12));
-        openProjectItem.setMnemonic('O');
-        openProjectItem.setText("Open Project...");
-        openProjectItem.setText(L10N.getLocalString("menu.open_item", "Open Project..."));
-        openProjectItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                openProjectItemActionPerformed(evt);
-            }
-        });
+            urlLabel.setFont(new java.awt.Font("Dialog", 0, 12));
+            urlLabel.setText("FindBugs - http://findbugs.sourceforge.net/");
+            gridBagConstraints = new java.awt.GridBagConstraints();
+            gridBagConstraints.gridx = 0;
+            gridBagConstraints.gridy = 1;
+            gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+            gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 0);
+            getContentPane().add(urlLabel, gridBagConstraints);
 
-        fileMenu.add(openProjectItem);
+            gridBagConstraints = new java.awt.GridBagConstraints();
+            gridBagConstraints.gridx = 1;
+            gridBagConstraints.gridy = 1;
+            gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+            gridBagConstraints.insets = new java.awt.Insets(2, 0, 2, 2);
+            getContentPane().add(logoLabel, gridBagConstraints);
 
-        recentProjectsMenu.setMnemonic('E');
-        recentProjectsMenu.setText("Recent Projects");
-        recentProjectsMenu.setFont(new java.awt.Font("Dialog", 0, 12));
-        recentProjectsMenu.setText(L10N.getLocalString("menu.recent_menu", "Recent Projects..."));rebuildRecentProjectsMenu();
-        fileMenu.add(recentProjectsMenu);
+            theMenuBar.setFont(new java.awt.Font("Dialog", 0, 12));
+            fileMenu.setMnemonic('F');
+            fileMenu.setText("File");
+            fileMenu.setFont(new java.awt.Font("Dialog", 0, 12));
+            fileMenu.setText(L10N.getLocalString("menu.file_menu", "File"));
+            fileMenu.addMenuListener(new javax.swing.event.MenuListener() {
+                public void menuCanceled(javax.swing.event.MenuEvent evt) {
+                }
+                public void menuDeselected(javax.swing.event.MenuEvent evt) {
+                }
+                public void menuSelected(javax.swing.event.MenuEvent evt) {
+                    fileMenuMenuSelected(evt);
+                }
+            });
 
-        saveProjectItem.setFont(new java.awt.Font("Dialog", 0, 12));
-        saveProjectItem.setMnemonic('S');
-        saveProjectItem.setText("Save Project");
-        saveProjectItem.setText(L10N.getLocalString("menu.save_item", "Save Project"));
-        saveProjectItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                saveProjectItemActionPerformed(evt);
-            }
-        });
+            newProjectItem.setFont(new java.awt.Font("Dialog", 0, 12));
+            newProjectItem.setMnemonic('N');
+            newProjectItem.setText("New Project");
+            newProjectItem.setText(L10N.getLocalString("menu.new_item", "New Project"));
+            newProjectItem.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    newProjectItemActionPerformed(evt);
+                }
+            });
 
-        fileMenu.add(saveProjectItem);
+            fileMenu.add(newProjectItem);
 
-        saveProjectAsItem.setFont(new java.awt.Font("Dialog", 0, 12));
-        saveProjectAsItem.setMnemonic('A');
-        saveProjectAsItem.setText("Save Project As...");
-        saveProjectAsItem.setText(L10N.getLocalString("menu.saveas_item", "Save Project As..."));
-        saveProjectAsItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                saveProjectAsItemActionPerformed(evt);
-            }
-        });
+            openProjectItem.setFont(new java.awt.Font("Dialog", 0, 12));
+            openProjectItem.setMnemonic('O');
+            openProjectItem.setText("Open Project...");
+            openProjectItem.setText(L10N.getLocalString("menu.open_item", "Open Project..."));
+            openProjectItem.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    openProjectItemActionPerformed(evt);
+                }
+            });
 
-        fileMenu.add(saveProjectAsItem);
+            fileMenu.add(openProjectItem);
 
-        reloadProjectItem.setFont(new java.awt.Font("Dialog", 0, 12));
-        reloadProjectItem.setMnemonic('R');
-        reloadProjectItem.setText("Reload Project");
-        reloadProjectItem.setText(L10N.getLocalString("menu.reload_item", "Reload Project"));
-        reloadProjectItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                reloadProjectItemActionPerformed(evt);
-            }
-        });
+            recentProjectsMenu.setMnemonic('E');
+            recentProjectsMenu.setText("Recent Projects");
+            recentProjectsMenu.setFont(new java.awt.Font("Dialog", 0, 12));
+            recentProjectsMenu.setText(L10N.getLocalString("menu.recent_menu", "Recent Projects..."));rebuildRecentProjectsMenu();
+            fileMenu.add(recentProjectsMenu);
 
-        fileMenu.add(reloadProjectItem);
+            saveProjectItem.setFont(new java.awt.Font("Dialog", 0, 12));
+            saveProjectItem.setMnemonic('S');
+            saveProjectItem.setText("Save Project");
+            saveProjectItem.setText(L10N.getLocalString("menu.save_item", "Save Project"));
+            saveProjectItem.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    saveProjectItemActionPerformed(evt);
+                }
+            });
 
-        closeProjectItem.setFont(new java.awt.Font("Dialog", 0, 12));
-        closeProjectItem.setMnemonic('C');
-        closeProjectItem.setText("Close Project");
-        closeProjectItem.setText(L10N.getLocalString("menu.close_item", "Close"));
-        closeProjectItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                closeProjectItemActionPerformed(evt);
-            }
-        });
+            fileMenu.add(saveProjectItem);
 
-        fileMenu.add(closeProjectItem);
+            saveProjectAsItem.setFont(new java.awt.Font("Dialog", 0, 12));
+            saveProjectAsItem.setMnemonic('A');
+            saveProjectAsItem.setText("Save Project As...");
+            saveProjectAsItem.setText(L10N.getLocalString("menu.saveas_item", "Save Project As..."));
+            saveProjectAsItem.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    saveProjectAsItemActionPerformed(evt);
+                }
+            });
 
-        fileMenu.add(jSeparator3);
+            fileMenu.add(saveProjectAsItem);
 
-        loadBugsItem.setFont(new java.awt.Font("Dialog", 0, 12));
-        loadBugsItem.setMnemonic('L');
-        loadBugsItem.setText("Load Bugs...");
-        loadBugsItem.setText(L10N.getLocalString("menu.loadbugs_item", "Load Bugs..."));
-        loadBugsItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                loadBugsItemActionPerformed(evt);
-            }
-        });
+            reloadProjectItem.setFont(new java.awt.Font("Dialog", 0, 12));
+            reloadProjectItem.setMnemonic('R');
+            reloadProjectItem.setText("Reload Project");
+            reloadProjectItem.setText(L10N.getLocalString("menu.reload_item", "Reload Project"));
+            reloadProjectItem.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    reloadProjectItemActionPerformed(evt);
+                }
+            });
 
-        fileMenu.add(loadBugsItem);
+            fileMenu.add(reloadProjectItem);
 
-        saveBugsItem.setFont(new java.awt.Font("Dialog", 0, 12));
-        saveBugsItem.setMnemonic('B');
-        saveBugsItem.setText("Save Bugs");
-        saveBugsItem.setText(L10N.getLocalString("menu.savebugs_item", "Save Bugs..."));
-        saveBugsItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                saveBugsItemActionPerformed(evt);
-            }
-        });
+            closeProjectItem.setFont(new java.awt.Font("Dialog", 0, 12));
+            closeProjectItem.setMnemonic('C');
+            closeProjectItem.setText("Close Project");
+            closeProjectItem.setText(L10N.getLocalString("menu.close_item", "Close"));
+            closeProjectItem.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    closeProjectItemActionPerformed(evt);
+                }
+            });
 
-        fileMenu.add(saveBugsItem);
+            fileMenu.add(closeProjectItem);
 
-        fileMenu.add(jSeparator6);
+            fileMenu.add(jSeparator3);
 
-        exitItem.setFont(new java.awt.Font("Dialog", 0, 12));
-        exitItem.setMnemonic('X');
-        exitItem.setText("Exit");
-        exitItem.setText(L10N.getLocalString("menu.exit_item", "Exit"));
-        exitItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                exitItemActionPerformed(evt);
-            }
-        });
+            loadBugsItem.setFont(new java.awt.Font("Dialog", 0, 12));
+            loadBugsItem.setMnemonic('L');
+            loadBugsItem.setText("Load Bugs...");
+            loadBugsItem.setText(L10N.getLocalString("menu.loadbugs_item", "Load Bugs..."));
+            loadBugsItem.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    loadBugsItemActionPerformed(evt);
+                }
+            });
 
-        fileMenu.add(exitItem);
+            fileMenu.add(loadBugsItem);
 
-        theMenuBar.add(fileMenu);
+            saveBugsItem.setFont(new java.awt.Font("Dialog", 0, 12));
+            saveBugsItem.setMnemonic('B');
+            saveBugsItem.setText("Save Bugs");
+            saveBugsItem.setText(L10N.getLocalString("menu.savebugs_item", "Save Bugs..."));
+            saveBugsItem.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    saveBugsItemActionPerformed(evt);
+                }
+            });
 
-        viewMenu.setMnemonic('V');
-        viewMenu.setText("View");
-        viewMenu.setFont(new java.awt.Font("Dialog", 0, 12));
-        viewMenu.setText(L10N.getLocalString("menu.view_menu", "View"));
-        viewMenu.addMenuListener(new javax.swing.event.MenuListener() {
-            public void menuCanceled(javax.swing.event.MenuEvent evt) {
-            }
-            public void menuDeselected(javax.swing.event.MenuEvent evt) {
-            }
-            public void menuSelected(javax.swing.event.MenuEvent evt) {
-                viewMenuMenuSelected(evt);
-            }
-        });
+            fileMenu.add(saveBugsItem);
 
-        viewConsoleItem.setFont(new java.awt.Font("Dialog", 0, 12));
-        viewConsoleItem.setMnemonic('C');
-        viewConsoleItem.setText("Console");
-        viewConsoleItem.setText(L10N.getLocalString("menu.console_item", "Console"));
-        viewConsoleItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                viewConsoleItemActionPerformed(evt);
-            }
-        });
+            fileMenu.add(jSeparator6);
 
-        viewMenu.add(viewConsoleItem);
+            exitItem.setFont(new java.awt.Font("Dialog", 0, 12));
+            exitItem.setMnemonic('X');
+            exitItem.setText("Exit");
+            exitItem.setText(L10N.getLocalString("menu.exit_item", "Exit"));
+            exitItem.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    exitItemActionPerformed(evt);
+                }
+            });
 
-        viewBugDetailsItem.setFont(new java.awt.Font("Dialog", 0, 12));
-        viewBugDetailsItem.setMnemonic('D');
-        viewBugDetailsItem.setSelected(true);
-        viewBugDetailsItem.setText("Bug Details");
-        viewBugDetailsItem.setText(L10N.getLocalString("menu.bugdetails_item", "Bug Details"));
-        viewBugDetailsItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                viewBugDetailsItemActionPerformed(evt);
-            }
-        });
+            fileMenu.add(exitItem);
 
-        viewMenu.add(viewBugDetailsItem);
+            theMenuBar.add(fileMenu);
 
-        fullDescriptionsItem.setFont(new java.awt.Font("Dialog", 0, 12));
-        fullDescriptionsItem.setMnemonic('F');
-        fullDescriptionsItem.setSelected(true);
-        fullDescriptionsItem.setText("Full Descriptions");
-        fullDescriptionsItem.setText(L10N.getLocalString("menu.fulldescriptions_item", "Full Descriptions"));
-        fullDescriptionsItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                fullDescriptionsItemActionPerformed(evt);
-            }
-        });
+            viewMenu.setMnemonic('V');
+            viewMenu.setText("View");
+            viewMenu.setFont(new java.awt.Font("Dialog", 0, 12));
+            viewMenu.setText(L10N.getLocalString("menu.view_menu", "View"));
+            viewMenu.addMenuListener(new javax.swing.event.MenuListener() {
+                public void menuCanceled(javax.swing.event.MenuEvent evt) {
+                }
+                public void menuDeselected(javax.swing.event.MenuEvent evt) {
+                }
+                public void menuSelected(javax.swing.event.MenuEvent evt) {
+                    viewMenuMenuSelected(evt);
+                }
+            });
 
-        viewMenu.add(fullDescriptionsItem);
+            viewConsoleItem.setFont(new java.awt.Font("Dialog", 0, 12));
+            viewConsoleItem.setMnemonic('C');
+            viewConsoleItem.setText("Console");
+            viewConsoleItem.setText(L10N.getLocalString("menu.console_item", "Console"));
+            viewConsoleItem.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    viewConsoleItemActionPerformed(evt);
+                }
+            });
 
-        viewMenu.add(jSeparator7);
+            viewMenu.add(viewConsoleItem);
 
-        lowPriorityButton.setFont(new java.awt.Font("Dialog", 0, 12));
-        lowPriorityButton.setMnemonic('L');
-        lowPriorityButton.setText("Low Priority");
-        lowPriorityButton.setText(L10N.getLocalString("menu.lowpriority_item", "Low Priority"));
-        lowPriorityButton.setSelected(priorityThreshold == Detector.LOW_PRIORITY);
-        lowPriorityButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                lowPriorityButtonActionPerformed(evt);
-            }
-        });
+            viewBugDetailsItem.setFont(new java.awt.Font("Dialog", 0, 12));
+            viewBugDetailsItem.setMnemonic('D');
+            viewBugDetailsItem.setSelected(true);
+            viewBugDetailsItem.setText("Bug Details");
+            viewBugDetailsItem.setText(L10N.getLocalString("menu.bugdetails_item", "Bug Details"));
+            viewBugDetailsItem.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    viewBugDetailsItemActionPerformed(evt);
+                }
+            });
 
-        viewMenu.add(lowPriorityButton);
+            viewMenu.add(viewBugDetailsItem);
 
-        mediumPriorityButton.setFont(new java.awt.Font("Dialog", 0, 12));
-        mediumPriorityButton.setMnemonic('M');
-        mediumPriorityButton.setText("Medium Priority");
-        mediumPriorityButton.setText(L10N.getLocalString("menu.mediumpriority_item", "Medium Priority"));
-        mediumPriorityButton.setSelected(priorityThreshold == Detector.NORMAL_PRIORITY);
-        mediumPriorityButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                mediumPriorityButtonActionPerformed(evt);
-            }
-        });
+            fullDescriptionsItem.setFont(new java.awt.Font("Dialog", 0, 12));
+            fullDescriptionsItem.setMnemonic('F');
+            fullDescriptionsItem.setSelected(true);
+            fullDescriptionsItem.setText("Full Descriptions");
+            fullDescriptionsItem.setText(L10N.getLocalString("menu.fulldescriptions_item", "Full Descriptions"));
+            fullDescriptionsItem.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    fullDescriptionsItemActionPerformed(evt);
+                }
+            });
 
-        viewMenu.add(mediumPriorityButton);
+            viewMenu.add(fullDescriptionsItem);
 
-        highPriorityButton.setFont(new java.awt.Font("Dialog", 0, 12));
-        highPriorityButton.setMnemonic('H');
-        highPriorityButton.setText("High Priority");
-        highPriorityButton.setText(L10N.getLocalString("menu.highpriority_item", "High Priority"));
-        highPriorityButton.setSelected(priorityThreshold == Detector.HIGH_PRIORITY);
-        highPriorityButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                highPriorityButtonActionPerformed(evt);
-            }
-        });
+            viewMenu.add(jSeparator7);
 
-        viewMenu.add(highPriorityButton);
+            lowPriorityButton.setFont(new java.awt.Font("Dialog", 0, 12));
+            lowPriorityButton.setMnemonic('L');
+            lowPriorityButton.setText("Low Priority");
+            lowPriorityButton.setText(L10N.getLocalString("menu.lowpriority_item", "Low Priority"));
+            lowPriorityButton.setSelected(priorityThreshold == Detector.LOW_PRIORITY);
+            lowPriorityButton.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    lowPriorityButtonActionPerformed(evt);
+                }
+            });
 
-        viewMenu.add(jSeparator8);
+            viewMenu.add(lowPriorityButton);
 
-        viewProjectItem.setFont(new java.awt.Font("Dialog", 0, 12));
-        viewProjectItem.setText("View Project Details");
-        viewProjectItem.setEnabled(false);
-        viewProjectItem.setText(L10N.getLocalString("menu.viewprojectdetails_item", "View Project Details"));
-        viewProjectItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                viewProjectItemActionPerformed(evt);
-            }
-        });
+            mediumPriorityButton.setFont(new java.awt.Font("Dialog", 0, 12));
+            mediumPriorityButton.setMnemonic('M');
+            mediumPriorityButton.setText("Medium Priority");
+            mediumPriorityButton.setText(L10N.getLocalString("menu.mediumpriority_item", "Medium Priority"));
+            mediumPriorityButton.setSelected(priorityThreshold == Detector.NORMAL_PRIORITY);
+            mediumPriorityButton.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    mediumPriorityButtonActionPerformed(evt);
+                }
+            });
 
-        viewMenu.add(viewProjectItem);
+            viewMenu.add(mediumPriorityButton);
 
-        viewBugsItem.setFont(new java.awt.Font("Dialog", 0, 12));
-        viewBugsItem.setText("View Bugs");
-        viewBugsItem.setEnabled(false);
-        viewBugsItem.setText(L10N.getLocalString("menu.viewbugs_item", "View Bugs"));
-        viewBugsItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                viewBugsItemActionPerformed(evt);
-            }
-        });
+            highPriorityButton.setFont(new java.awt.Font("Dialog", 0, 12));
+            highPriorityButton.setMnemonic('H');
+            highPriorityButton.setText("High Priority");
+            highPriorityButton.setText(L10N.getLocalString("menu.highpriority_item", "High Priority"));
+            highPriorityButton.setSelected(priorityThreshold == Detector.HIGH_PRIORITY);
+            highPriorityButton.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    highPriorityButtonActionPerformed(evt);
+                }
+            });
 
-        viewMenu.add(viewBugsItem);
+            viewMenu.add(highPriorityButton);
 
-        theMenuBar.add(viewMenu);
+            viewMenu.add(jSeparator8);
 
-        settingsMenu.setMnemonic('S');
-        settingsMenu.setText("Settings");
-        settingsMenu.setFont(new java.awt.Font("Dialog", 0, 12));
-        settingsMenu.setText(L10N.getLocalString("menu.settings_menu", "Settings"));
-        configureDetectorsItem.setFont(new java.awt.Font("Dialog", 0, 12));
-        configureDetectorsItem.setMnemonic('C');
-        configureDetectorsItem.setText("Configure Detectors...");
-        configureDetectorsItem.setText(L10N.getLocalString("menu.configure_item", "Configure Detectors"));
-        configureDetectorsItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                configureDetectorsItemActionPerformed(evt);
-            }
-        });
+            viewProjectItem.setFont(new java.awt.Font("Dialog", 0, 12));
+            viewProjectItem.setText("View Project Details");
+            viewProjectItem.setEnabled(false);
+            viewProjectItem.setText(L10N.getLocalString("menu.viewprojectdetails_item", "View Project Details"));
+            viewProjectItem.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    viewProjectItemActionPerformed(evt);
+                }
+            });
 
-        settingsMenu.add(configureDetectorsItem);
+            viewMenu.add(viewProjectItem);
 
-        theMenuBar.add(settingsMenu);
+            viewBugsItem.setFont(new java.awt.Font("Dialog", 0, 12));
+            viewBugsItem.setText("View Bugs");
+            viewBugsItem.setEnabled(false);
+            viewBugsItem.setText(L10N.getLocalString("menu.viewbugs_item", "View Bugs"));
+            viewBugsItem.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    viewBugsItemActionPerformed(evt);
+                }
+            });
 
-        helpMenu.setMnemonic('H');
-        helpMenu.setText("Help");
-        helpMenu.setFont(new java.awt.Font("Dialog", 0, 12));
-        helpMenu.setText(L10N.getLocalString("menu.help_menu", "Help"));
-        aboutItem.setFont(new java.awt.Font("Dialog", 0, 12));
-        aboutItem.setMnemonic('A');
-        aboutItem.setText("About...");
-        aboutItem.setText(L10N.getLocalString("menu.about_item", "About..."));
-        aboutItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                aboutItemActionPerformed(evt);
-            }
-        });
+            viewMenu.add(viewBugsItem);
 
-        helpMenu.add(aboutItem);
+            theMenuBar.add(viewMenu);
 
-        theMenuBar.add(helpMenu);
+            settingsMenu.setMnemonic('S');
+            settingsMenu.setText("Settings");
+            settingsMenu.setFont(new java.awt.Font("Dialog", 0, 12));
+            settingsMenu.setText(L10N.getLocalString("menu.settings_menu", "Settings"));
+            configureDetectorsItem.setFont(new java.awt.Font("Dialog", 0, 12));
+            configureDetectorsItem.setMnemonic('C');
+            configureDetectorsItem.setText("Configure Detectors...");
+            configureDetectorsItem.setText(L10N.getLocalString("menu.configure_item", "Configure Detectors"));
+            configureDetectorsItem.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    configureDetectorsItemActionPerformed(evt);
+                }
+            });
 
-        setJMenuBar(theMenuBar);
+            settingsMenu.add(configureDetectorsItem);
 
-        pack();
-    }//GEN-END:initComponents
+            theMenuBar.add(settingsMenu);
+
+            helpMenu.setMnemonic('H');
+            helpMenu.setText("Help");
+            helpMenu.setFont(new java.awt.Font("Dialog", 0, 12));
+            helpMenu.setText(L10N.getLocalString("menu.help_menu", "Help"));
+            aboutItem.setFont(new java.awt.Font("Dialog", 0, 12));
+            aboutItem.setMnemonic('A');
+            aboutItem.setText("About...");
+            aboutItem.setText(L10N.getLocalString("menu.about_item", "About..."));
+            aboutItem.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    aboutItemActionPerformed(evt);
+                }
+            });
+
+            helpMenu.add(aboutItem);
+
+            theMenuBar.add(helpMenu);
+
+            setJMenuBar(theMenuBar);
+
+            pack();
+        }//GEN-END:initComponents
 
     private void classpathUpButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_classpathUpButtonActionPerformed
         if (moveEntriesUp(classpathEntryList))
@@ -1815,6 +1833,35 @@ public class FindBugsFrame extends javax.swing.JFrame {
     private void exitForm(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_exitForm
         exitFindBugs();
     }//GEN-LAST:event_exitForm
+    
+    /**
+     * This makes the set of controls passed in all the same size, equal to 
+     * the minimum needed of the largest control.
+     */
+    private void equalizeControls(JComponent[] components) {
+        Dimension d;
+        
+        int minX = 0, minY = 0;
+        for (int i = 0; i < components.length; i++) {
+            JComponent comp = components[i];
+            comp.setMaximumSize(null);
+            comp.setMinimumSize(null);
+            comp.setPreferredSize(null);
+            d = comp.getPreferredSize();
+            if (d.width > minX)
+                minX = d.width;
+            if (d.height > minY)
+                minY = d.height;
+        }
+        
+        d = new Dimension(minX, minY);
+        for (int i = 0; i < components.length; i++) {
+            JComponent comp = components[i];
+            comp.setMinimumSize(d);
+            comp.setMaximumSize(d);
+            comp.setPreferredSize(d);
+        }
+    }
     
     /**
      * This is called whenever the selection is changed in the bug tree.
