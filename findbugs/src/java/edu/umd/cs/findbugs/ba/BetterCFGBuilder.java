@@ -26,6 +26,28 @@ import org.apache.bcel.*;
 import org.apache.bcel.classfile.*;
 import org.apache.bcel.generic.*;
 
+/**
+ * An accurate CFGBuilder.  This implementation of CFGBuilder is intended
+ * to produce CFGs that are accurate with respect to exceptions.
+ * Specifically, exception edges are always inserted <em>before</em>
+ * potentially excepting instructions (PEIs).  In general, it is useful and
+ * accurate to view the occurance of an exception as precluding the
+ * execution of the instruction throwing the exception.
+ *
+ * <p> TODO: ATHROW should really have exception edges both before
+ * (NullPointerException if TOS has the null value) and after (the thrown exception)
+ * the instruction.  Right now we only have after.
+ *
+ * <p> Because of the accurate treatment of exceptions, CFGs produced with this
+ * CFGBuilder can be used to perform dataflow analysis on.  Assuming that the
+ * Java source-to-bytecode compiler generated good code, all dataflow values
+ * should merge successfully at control joins.
+ *
+ * @see CFG
+ * @see CFGBuilder
+ * @see Dataflow
+ * @author David Hovemeyer
+ */
 public class BetterCFGBuilder implements CFGBuilder, EdgeTypes {
 
 	private static final boolean DEBUG = Boolean.getBoolean("cfgbuilder.debug");
