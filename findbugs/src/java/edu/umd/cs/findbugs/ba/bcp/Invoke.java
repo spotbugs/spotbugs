@@ -66,7 +66,7 @@ public class Invoke extends PatternElement {
 		this.isStatic = isStatic;
 	}
 
-	private Pattern createRE(String name) {
+	private static Pattern createRE(String name) {
 		String pattern;
 		if (name.startsWith("/")) {
 			// Regular expression match
