@@ -80,6 +80,11 @@ public class Project {
 	public boolean isModified() {
 		return isModified;
 	}
+
+	/** Set whether or not this Project has unsaved modifications. */
+	public void setModified(boolean isModified) {
+		this.isModified = isModified;
+	}
 	
 	/** Get the project filename. */
 	public String getFileName() { return fileName; }
