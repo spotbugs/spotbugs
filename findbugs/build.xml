@@ -82,6 +82,7 @@
     <path id="classpath">
       <pathelement location="${jar.dir}/bcel.jar" />
       <pathelement location="${jar.dir}/dom4j-full.jar" />
+      <pathelement location="${jar.dir}/AppleJavaExtensions.jar" />
     </path>
 
     <!-- Classpath for running Saxon -->

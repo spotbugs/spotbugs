@@ -26,6 +26,7 @@
 
 package edu.umd.cs.findbugs.gui;
 
+import java.lang.reflect.Method;
 import java.awt.*;
 import java.io.*;
 import java.util.*;
@@ -1716,10 +1717,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	}//GEN-LAST:event_saveProjectItemActionPerformed
 
 	private void aboutItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aboutItemActionPerformed
-		AboutDialog dialog = new AboutDialog(this, true);
-		dialog.setSize(500, 354);
-		dialog.setLocationRelativeTo(null); // center the dialog
-		dialog.setVisible(true);
+		about();
 	}//GEN-LAST:event_aboutItemActionPerformed
 
 	private void consoleSplitterPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_consoleSplitterPropertyChange
@@ -2084,9 +2082,38 @@ public class FindBugsFrame extends javax.swing.JFrame {
 		ImageIcon logoIcon = new ImageIcon(classLoader.getResource("edu/umd/cs/findbugs/gui/logo_umd.png"));
 		logoLabel.setIcon(logoIcon);
 		
-		// Leave room for the growBox on Mac
 		if (MAC_OS_X) {
+			// Leave room for the growBox on Mac
 			growBoxSpacer.setMinimumSize(new java.awt.Dimension(16,16));
+
+			// Set up listeners for Quit and About menu items using
+			// Apple's EAWT API.
+			// We use reflection here, so there is no posible chance that the
+			// class loader will try to load OSXAdapter on a non Mac system
+			try {
+				Class osxAdapter = Class.forName("edu.umd.cs.findbugs.gui.OSXAdapter");
+                	
+				Class[] defArgs = {FindBugsFrame.class};
+				Method registerMethod = osxAdapter.getDeclaredMethod("registerMacOSXApplication", defArgs);
+				if (registerMethod != null) {
+					Object[] args = {this};
+					registerMethod.invoke(osxAdapter, args);
+				}
+			}
+			catch (NoClassDefFoundError e) {
+				// This will be thrown first if the OSXAdapter is loaded on a system without the EAWT
+				// because OSXAdapter extends ApplicationAdapter in its def
+				System.err.println("This version of Mac OS X does not support the Apple EAWT. Application Menu handling has been disabled (" + e + ")");
+			}
+			catch (ClassNotFoundException e) {
+				// This shouldn't be reached; if there's a problem with the OSXAdapter we should get the
+				// above NoClassDefFoundError first.
+				System.err.println("This version of Mac OS X does not support the Apple EAWT. Application Menu handling has been disabled (" + e + ")");
+			}
+			catch (Exception e) {
+				System.err.println("Exception while loading the OSXAdapter:");
+				e.printStackTrace();
+			}
 		}
 
 	}
@@ -2869,9 +2896,19 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	 * ---------------------------------------------------------------------- */
 
 	/**
+	 * Show About
+	 */
+	void about() {
+		AboutDialog dialog = new AboutDialog(this, true);
+		dialog.setSize(500, 354);
+		dialog.setLocationRelativeTo(null); // center the dialog
+		dialog.setVisible(true);
+	}
+
+	/**
 	 * Exit the application.
 	 */
-	private void exitFindBugs() {
+	void exitFindBugs() {
 		// TODO: offer to save work, etc.
 		UserPreferences.getUserPreferences().storeUserDetectorPreferences();
 		UserPreferences.getUserPreferences().setUserDetectorThreshold(priorityThreshold);
