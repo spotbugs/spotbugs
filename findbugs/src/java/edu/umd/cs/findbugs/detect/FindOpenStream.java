@@ -235,50 +235,48 @@ public class FindOpenStream implements Detector {
 				if (!bytecodeSet.get(Constants.NEW))
 					continue; // no streams created in this method
 
-				MethodGen methodGen = classContext.getMethodGen(method);
-				CFG cfg = classContext.getCFG(method);
+				final MethodGen methodGen = classContext.getMethodGen(method);
+				final CFG cfg = classContext.getCFG(method);
 
-				Iterator<BasicBlock> bbIter = cfg.blockIterator();
-				while (bbIter.hasNext()) {
-					BasicBlock basicBlock = bbIter.next();
-
-					Iterator<InstructionHandle> insIter = basicBlock.instructionIterator();
-					while (insIter.hasNext()) {
-						InstructionHandle handle = insIter.next();
+				new LocationScanner(cfg).scan(new LocationScanner.Callback() {
+					public void visitLocation(Location location) {
+						BasicBlock basicBlock = location.getBasicBlock();
+						InstructionHandle handle = location.getHandle();
 
 						Stream stream = resourceTracker.isResourceCreation(basicBlock, handle, methodGen.getConstantPool());
 						if (stream != null) {
 							ResourceValueAnalysis<Stream> analysis = new ResourceValueAnalysis<Stream>(methodGen, resourceTracker, stream);
 							Dataflow<ResourceValueFrame> dataflow = new Dataflow<ResourceValueFrame>(cfg, analysis);
 
-							dataflow.execute();
+							try {
+								dataflow.execute();
 
-							ResourceValueFrame exitFrame = dataflow.getResultFact(cfg.getExit());
+								ResourceValueFrame exitFrame = dataflow.getResultFact(cfg.getExit());
 
-							int exitStatus = exitFrame.getStatus();
-							if (exitStatus == ResourceValueFrame.OPEN || exitStatus == ResourceValueFrame.OPEN_ON_EXCEPTION_PATH) {
-								String bugType;
-								int priority;
-								if (exitStatus == ResourceValueFrame.OPEN) {
-									bugType = "OS_OPEN_STREAM";
-									priority = NORMAL_PRIORITY;
-								} else {
-									bugType = "OS_OPEN_STREAM_EXCEPTION_PATH";
-									priority = LOW_PRIORITY;
+								int exitStatus = exitFrame.getStatus();
+								if (exitStatus == ResourceValueFrame.OPEN || exitStatus == ResourceValueFrame.OPEN_ON_EXCEPTION_PATH) {
+									String bugType;
+									int priority;
+									if (exitStatus == ResourceValueFrame.OPEN) {
+										bugType = "OS_OPEN_STREAM";
+										priority = NORMAL_PRIORITY;
+									} else {
+										bugType = "OS_OPEN_STREAM_EXCEPTION_PATH";
+										priority = LOW_PRIORITY;
+									}
+
+									bugReporter.reportBug(new BugInstance(bugType, priority)
+										.addClassAndMethod(methodGen)
+										.addSourceLine(methodGen, stream.creationPoint.getHandle())
+									);
 								}
-
-								bugReporter.reportBug(new BugInstance(bugType, priority)
-									.addClassAndMethod(methodGen)
-									.addSourceLine(methodGen, stream.creationPoint.getHandle())
-								);
+							} catch (DataflowAnalysisException e) {
+								throw new AnalysisException("FindOpenStream caught exception: " + e.toString(), e);
 							}
 						}
 					}
-				}
+				});
 			}
-
-		} catch (DataflowAnalysisException e) {
-			throw new AnalysisException("FindOpenStream caught exception: " + e.toString(), e);
 		} catch (CFGBuilderException e) {
 			throw new AnalysisException(e.getMessage());
 		}
