@@ -15,10 +15,7 @@ import javax.swing.event.*;
 import javax.swing.filechooser.*;
 
 /**
- * This frame contains all of the controls used by the FindBugs GUI.
- * I suppose this code should be modularized some more, maybe turning some of
- * component into Bean classes.  However, this is my first Swing program,
- * so I'm taking the most straightforward approach I can.
+ * The main GUI frame for FindBugs.
  *
  * @author David Hovemeyer
  */
@@ -47,9 +44,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
             // Set the icon, depending on what kind of node it is
             DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
             Object obj = node.getUserObject();
-            if (obj instanceof ProjectCollection) {
-                setIcon(rootIcon);
-            } else if (obj instanceof Project) {
+            if (obj instanceof Project) {
                 setIcon(projectIcon);
             } else if (obj instanceof AnalysisRun) {
                 setIcon(mgIcon);
@@ -554,6 +549,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
         DefaultTreeCellRenderer renderer = new DefaultTreeCellRenderer();
         navigatorTree.setCellRenderer(new FindBugsFrame.MyCellRenderer());
+        navigatorTree.setRootVisible(false);
+        navigatorTree.setShowsRootHandles(true);
 	
 	jarFileList.setModel(new DefaultListModel());
 	sourceDirList.setModel(new DefaultListModel());
