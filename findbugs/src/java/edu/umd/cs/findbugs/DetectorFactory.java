@@ -39,6 +39,7 @@ public class DetectorFactory {
 	private final String requireJRE;
 	private String detailHTML;
 	private int priorityAdjustment;
+	private boolean hidden;
 	private boolean firstInPass;
 
 	/**
@@ -65,6 +66,7 @@ public class DetectorFactory {
 		this.reports = reports;
 		this.requireJRE = requireJRE;
 		this.priorityAdjustment = 0;
+		this.hidden = false;
 		this.firstInPass = false;
 	}
 
@@ -96,6 +98,24 @@ public class DetectorFactory {
 		} catch (JavaVersionException e) {
 			return false;
 		}
+	}
+
+	/**
+	 * Set visibility of the factory (to GUI dialogs to configure detectors).
+	 * Invisible detectors are those that are needed behind the scenes,
+	 * but shouldn't be explicitly enabled or disabled by the user.
+	 *
+	 * @param hidden true if this factory should be hidden, false if not
+	 */
+	public void setHidden(boolean hidden) {
+		this.hidden = hidden;
+	}
+
+	/**
+	 * Get visibility of the factory (to GUI dialogs to configure detectors).
+	 */
+	public boolean isHidden() {
+		return hidden;
 	}
 
 	/**

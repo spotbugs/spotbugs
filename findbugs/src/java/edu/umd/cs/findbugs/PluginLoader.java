@@ -184,6 +184,7 @@ public class PluginLoader extends URLClassLoader {
 				String disabled = detectorNode.valueOf("@disabled");
 				String reports = detectorNode.valueOf("@reports");
 				String requireJRE = detectorNode.valueOf("@requirejre");
+				String hidden = detectorNode.valueOf("@hidden");
 	
 				//System.out.println("Found detector: class="+className+", disabled="+disabled);
 	
@@ -193,6 +194,8 @@ public class PluginLoader extends URLClassLoader {
 						plugin,
 						detectorClass, !disabled.equals("true"),
 				        speed, reports, requireJRE);
+				if (Boolean.valueOf(hidden).booleanValue())
+					factory.setHidden(true);
 				plugin.addDetectorFactory(factory);
 
 				// Find Detector node in one of the messages files,
