@@ -21,7 +21,6 @@ package edu.umd.cs.daveho.ba;
 
 import java.util.*;
 
-// We require BCEL 5.0 or later.
 import org.apache.bcel.Constants;
 import org.apache.bcel.generic.*;
 

@@ -23,7 +23,6 @@ import edu.umd.cs.daveho.graph.AbstractGraph;
 
 import java.util.*;
 
-// We require BCEL 5.0 or later.
 import org.apache.bcel.*;
 import org.apache.bcel.classfile.*;
 import org.apache.bcel.generic.*;

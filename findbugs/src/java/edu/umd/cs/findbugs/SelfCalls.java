@@ -21,7 +21,6 @@ package edu.umd.cs.findbugs;
 
 import java.util.*;
 
-// We require BCEL 5.1 or later.
 import org.apache.bcel.*;
 import org.apache.bcel.classfile.*;
 import org.apache.bcel.generic.*;
