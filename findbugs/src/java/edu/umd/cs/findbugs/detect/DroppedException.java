@@ -31,6 +31,7 @@ import edu.umd.cs.pugh.visitclass.PreorderVisitor;
 
 public class DroppedException extends PreorderVisitor implements Detector, Constants2 {
     private static final boolean DEBUG = Boolean.getBoolean("de.debug");
+    private static final boolean IGNORE_COMMENTED_CATCH_BLOCKS = Boolean.getBoolean("de.comment");
 
     Set<String> reported = new HashSet<String>();
     Set<String> causes = new HashSet<String>();
@@ -220,10 +221,17 @@ public class DroppedException extends PreorderVisitor implements Detector, Const
 
   private static final int MAX_LINES = 5;
 
+  /**
+   * Analyze a class's source code to see if there is a comment
+   * (or other text) in a catch block we have marked as dropping
+   * an exception.
+   * @return true if there is a comment in the catch block,
+   *   false if not (or if we can't tell)
+   */
   private boolean catchBlockHasComment(SourceLineAnnotation srcLine) {
-    return false;
+    if (!IGNORE_COMMENTED_CATCH_BLOCKS)
+	return false;
 
-/*
     AnalysisContext analysisContext = AnalysisContext.instance();
     SourceFinder sourceFinder = analysisContext.getSourceFinder();
     try {
@@ -231,8 +239,19 @@ public class DroppedException extends PreorderVisitor implements Detector, Const
 	int startLine = srcLine.getStartLine();
 	int offset = sourceFile.getLineOffset(startLine - 1);
 	if (offset >= 0) {
+	    // Yes, the following code uses a StreamTokenizer.
+	    // It does more or less what we need for scanning through
+	    // the source code of the catch block.
 	    InputStreamReader reader = new InputStreamReader(sourceFile.getInputStreamFromOffset(offset));
 	    StreamTokenizer tok = new StreamTokenizer(reader);
+
+	    // We want to see comments.
+	    tok.ordinaryChar('/');
+	    tok.slashSlashComments(false);
+	    tok.slashStarComments(false);
+
+	    // We want to see EOL.
+	    tok.eolIsSignificant(true);
 
 	    boolean done = false;
 	    int numLines = 0;
@@ -242,6 +261,7 @@ public class DroppedException extends PreorderVisitor implements Detector, Const
 		int type = tok.nextToken();
 		switch (type) {
 		case StreamTokenizer.TT_EOL:
+		    if (DEBUG) System.out.println("Saw token: [EOL]");
 		    ++numLines;
 		    if (numLines >= MAX_LINES)
 			done = true;
@@ -251,7 +271,13 @@ public class DroppedException extends PreorderVisitor implements Detector, Const
 		    break;
 		case StreamTokenizer.TT_WORD:
 		case StreamTokenizer.TT_NUMBER:
+		default:
 		    String value = tok.sval;
+		    if (value == null)
+			value = type == StreamTokenizer.TT_NUMBER
+			    ? String.valueOf(tok.nval)
+			    : String.valueOf((char) type);
+		    if (DEBUG) System.out.println("Got token: " + value);
 		    switch (state) {
 		    case START:
 			if (value.equals("catch"))
@@ -276,7 +302,9 @@ public class DroppedException extends PreorderVisitor implements Detector, Const
 			    state = OPEN_BRACE;
 			break;
 		    case OPEN_BRACE:
-			return !value.equals("}");
+			boolean closeBrace = value.equals("}");
+			if (DEBUG && !closeBrace) System.out.println("Found a comment in catch block: " + value);
+			return !closeBrace;
 		    }
 		    break;
 		}
@@ -286,6 +314,5 @@ public class DroppedException extends PreorderVisitor implements Detector, Const
 	// Ignored; we'll just assume there is no comment
     }
     return false;
-*/
   }
 }
