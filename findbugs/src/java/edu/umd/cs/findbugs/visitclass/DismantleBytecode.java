@@ -34,8 +34,6 @@ abstract public class DismantleBytecode extends PreorderVisitor implements   Con
   private int branchFallThrough;
   private int[] switchOffsets;
   private int[] switchLabels;
-  private int switchLow;
-  private int switchHigh;
   private int defaultSwitchOffset;
   private String classConstantOperand;
   private String dottedClassConstantOperand;
@@ -176,6 +174,9 @@ abstract public class DismantleBytecode extends PreorderVisitor implements   Con
     public int getRegisterOperand() {
 	return registerOperand;
     }
+    public int getIntConstant() {
+	return intConstant;
+    }
 
     public int getBranchOffset() {
 	if (branchOffset == INVALID_OFFSET)
@@ -250,6 +251,8 @@ abstract public class DismantleBytecode extends PreorderVisitor implements   Con
 
     public void visit(Code obj) { 
 
+	int switchLow = 1000000;
+	int switchHigh = -1000000;
         codeBytes = obj.getCode();
         DataInputStream byteStream = new DataInputStream (new ByteArrayInputStream(codeBytes));
 
@@ -295,9 +298,9 @@ abstract public class DismantleBytecode extends PreorderVisitor implements   Con
                             branchOffset = defaultSwitchOffset;
                             branchTarget = branchOffset+PC;
                         i += 4; 
-                        int switchLow = byteStream.readInt(); 
+                        switchLow = byteStream.readInt(); 
                         i += 4;
-                        int switchHigh = byteStream.readInt(); 
+                        switchHigh = byteStream.readInt(); 
                         i += 4;
 			int npairs = switchHigh - switchLow +1;
 			switchOffsets = new int[npairs];
