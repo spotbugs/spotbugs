@@ -78,6 +78,7 @@ public class IncompatMask extends BytecodeScanningDetector implements Constants2
 		}
 
 	public void sawOpcode(int seen) {
+		// System.out.println("BIT: " + state + ": " + OPCODE_NAMES[seen]);
 
 		switch (seen) {
 		case ICONST_M1: noteVal(-1); return;
@@ -111,10 +112,15 @@ public class IncompatMask extends BytecodeScanningDetector implements Constants2
 				return;
 			break; /* the only break in this switch!  gross */
 
+		case GOTO:
+			state = -1;
+			return;
+
 		default:
 			state = 0;
 			return;
 		}
+
 
 		/* We have matched the instruction pattern, so check the args */
 		long dif; String t;
@@ -126,10 +132,12 @@ public class IncompatMask extends BytecodeScanningDetector implements Constants2
 		else
 			{ dif = 1; t = "BIT_AND_ZZ"; }
 
-		if (dif != 0)
+		if (dif != 0) {
+			// System.out.println("Match at offset " + getPC());
 			bugReporter.reportBug(new BugInstance(t, NORMAL_PRIORITY)
 						.addClassAndMethod(this)
 						.addSourceLine(this));
+			}
 		state = 0;
 		}
 }
