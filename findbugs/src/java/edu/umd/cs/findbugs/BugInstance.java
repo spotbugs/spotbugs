@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs;
 import java.util.*;
 import edu.umd.cs.pugh.visitclass.BetterVisitor;
 import edu.umd.cs.pugh.visitclass.DismantleBytecode;
+import edu.umd.cs.daveho.ba.bcp.FieldVariable;
 import org.apache.bcel.classfile.*;
 import org.apache.bcel.generic.*;
 
@@ -237,6 +238,15 @@ public class BugInstance implements Comparable {
 	public BugInstance addField(FieldAnnotation fieldAnnotation) {
 		add(fieldAnnotation);
 		return this;
+	}
+
+	/**
+	 * Add a field annotation for a FieldVariable matched in a ByteCodePattern.
+	 * @param field the FieldVariable
+	 * @return this object
+	 */
+	public BugInstance addField(FieldVariable field) {
+		return addField(field.getClassName(), field.getFieldName(), field.getFieldSig(), field.isStatic());
 	}
 
 	/**
