@@ -186,15 +186,17 @@ public class FindOpenStream extends ResourceTrackingDetector<Stream, StreamResou
 		int exitStatus = exitFrame.getStatus();
 		if (exitStatus == ResourceValueFrame.OPEN
 			|| exitStatus == ResourceValueFrame.OPEN_ON_EXCEPTION_PATH) {
-			String bugType;
-			int priority;
-			if (exitStatus == ResourceValueFrame.OPEN) {
-				bugType = "OS_OPEN_STREAM";
-				priority = NORMAL_PRIORITY;
-			} else {
-				bugType = "OS_OPEN_STREAM_EXCEPTION_PATH";
+
+			// FIXME: Stream object should be queried for the
+			// priority.
+
+			String bugType = stream.getBugType();
+			int priority = NORMAL_PRIORITY;
+			if (exitStatus == ResourceValueFrame.OPEN_ON_EXCEPTION_PATH) {
+				bugType += "_EXCEPTION_PATH";
 				priority = LOW_PRIORITY;
 			}
+
 			potentialOpenStreamList.add(new PotentialOpenStream(bugType, priority, stream));
 		}
 	}
