@@ -46,6 +46,26 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 		suspiciousSet.add("java.lang.Short");
 	}
 
+	/**
+	 * Set of opcodes that invoke instance methods on an object.
+	 */
+	private static final BitSet invokeInstanceSet = new BitSet();
+	static {
+		invokeInstanceSet.set(Constants.INVOKEVIRTUAL);
+		invokeInstanceSet.set(Constants.INVOKEINTERFACE);
+		invokeInstanceSet.set(Constants.INVOKESPECIAL);
+	}
+
+	/**
+	 * Set of bytecodes using for prescreening.
+	 */
+	private static final BitSet prescreenSet = new BitSet();
+	static {
+		prescreenSet.or(invokeInstanceSet);
+		prescreenSet.set(Constants.IF_ACMPEQ);
+		prescreenSet.set(Constants.IF_ACMPNE);
+	}
+
 	/* ----------------------------------------------------------------------
 	 * Helper classes
 	 * ---------------------------------------------------------------------- */
@@ -60,10 +80,11 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 	 * This sort of String should never be compared using reference
 	 * equality.
 	 */
-	private static class DynamicStringType extends ReferenceType {
+	private static class DynamicStringType extends ObjectType {
 		public DynamicStringType() {
-			super(T_DYNAMIC_STRING, STRING_SIGNATURE);
+			super("java.lang.String");
 		}
+		public byte getType() { return T_DYNAMIC_STRING; }
 		public int hashCode() { return System.identityHashCode(this); }
 		public boolean equals(Object o) { return o == this; }
 		public String toString() { return "<dynamic string>"; }
@@ -77,10 +98,11 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 	 * It is generally OK to compare this sort of String
 	 * using reference equality.
 	 */
-	private static class StaticStringType extends ReferenceType {
+	private static class StaticStringType extends ObjectType {
 		public StaticStringType() {
-			super(T_STATIC_STRING, STRING_SIGNATURE);
+			super("java.lang.String");
 		}
+		public byte getType() { return T_STATIC_STRING; }
 		public int hashCode() { return System.identityHashCode(this); }
 		public boolean equals(Object o) { return o == this; }
 		public String toString() { return "<static string>"; }
@@ -262,9 +284,10 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 			if (methodGen == null)
 				continue;
 
-			// Prescreening - must have IF_ACMPEQ or IF_ACMPNE
+			// Prescreening - must have IF_ACMPEQ, IF_ACMPNE,
+			// or an invocation of an instance method
 			BitSet bytecodeSet = classContext.getBytecodeSet(method);
-			if (!(bytecodeSet.get(Constants.IF_ACMPEQ) || bytecodeSet.get(Constants.IF_ACMPNE)))
+			if (!bytecodeSet.intersects(prescreenSet))
 				continue;
 
 			if (DEBUG) System.out.println("FindRefComparison: analyzing " +
@@ -284,6 +307,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 		throws CFGBuilderException, DataflowAnalysisException {
 
 		JavaClass jclass = classContext.getJavaClass();
+		ConstantPoolGen cpg = classContext.getConstantPoolGen();
 		MethodGen methodGen = classContext.getMethodGen(method);
 
 		// Report at most one String comparison per method.
@@ -314,6 +338,12 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 			short opcode = ins.getOpcode();
 			if (opcode == Constants.IF_ACMPEQ || opcode == Constants.IF_ACMPNE) {
 				checkRefComparison(location, jclass, methodGen, typeDataflow);
+			} else if (invokeInstanceSet.get(opcode)) {
+				InvokeInstruction inv = (InvokeInstruction) ins;
+				String methodName = inv.getMethodName(cpg);
+				String methodSig = inv.getSignature(cpg);
+				if (methodName.equals("equals") && methodSig.equals("(Ljava/lang/Object;)Z"))
+					checkEqualsComparison(location, jclass, methodGen, typeDataflow);
 			}
 		}
 
@@ -330,7 +360,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 
 		TypeFrame frame = typeDataflow.getFactAtLocation(location);
 		if (frame.getStackDepth() < 2)
-			throw new AnalysisException("Stack underflow", methodGen, handle);
+			throw new DataflowAnalysisException("Stack underflow", methodGen, handle);
 
 		int numSlots = frame.getNumSlots();
 		Type lhsType = frame.getValue(numSlots - 1);
@@ -383,6 +413,59 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 				);
 			}
 		}
+	}
+
+	private void checkEqualsComparison(Location location, JavaClass jclass, MethodGen methodGen,
+		TypeDataflow typeDataflow) throws DataflowAnalysisException {
+
+		InstructionHandle handle = location.getHandle();
+
+		TypeFrame frame = typeDataflow.getFactAtLocation(location);
+		if (frame.getStackDepth() < 2)
+			throw new DataflowAnalysisException("Stack underflow", methodGen, handle);
+
+		int numSlots = frame.getNumSlots();
+		Type lhsType_ = frame.getValue(numSlots - 2);
+		Type rhsType_ = frame.getValue(numSlots - 1);
+
+		if (lhsType_.equals(rhsType_))
+			return;
+
+		if (!(lhsType_ instanceof ReferenceType) || !(rhsType_ instanceof ReferenceType)) {
+			bugReporter.logError("equals() used to compare non-object type(s) in " +
+				SignatureConverter.convertMethodSignature(methodGen) +
+				" at " + location.getHandle());
+			return;
+		}
+
+		// For now, ignore the case where either reference is not
+		// of an object type.  (It could be either an array or null.)
+		if (!(lhsType_ instanceof ObjectType) || !(rhsType_ instanceof ObjectType))
+			return;
+
+		ObjectType lhsType = (ObjectType) lhsType_;
+		ObjectType rhsType = (ObjectType) rhsType_;
+
+		int priority = LOW_PRIORITY;
+
+		// If neither object is a subtype of the other,
+		// make it medium priority
+		try {
+			if (!Hierarchy.isSubtype(lhsType, rhsType) &&
+				!Hierarchy.isSubtype(rhsType, lhsType))
+				priority = NORMAL_PRIORITY;
+		} catch (ClassNotFoundException e) {
+			bugReporter.reportMissingClass(e);
+			return;
+		}
+
+		String sourceFile = jclass.getSourceFileName();
+		bugReporter.reportBug(new BugInstance("RC_SUSPCIOUS_EQUALS", priority)
+			.addClassAndMethod(methodGen, sourceFile)
+			.addSourceLine(methodGen, sourceFile, location.getHandle())
+			.addClass(lhsType.getClassName()).describe("CLASS_REFTYPE")
+			.addClass(rhsType.getClassName()).describe("CLASS_REFTYPE")
+			);
 	}
 
 	public void report() {
