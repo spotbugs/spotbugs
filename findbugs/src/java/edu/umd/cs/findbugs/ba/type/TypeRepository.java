@@ -373,25 +373,6 @@ public class TypeRepository {
 		if (a.equals(b))
 			return a;
 
-		if (a.isArray() && b.isArray()) {
-			ArrayType aArrayType = (ArrayType) a;
-			ArrayType bArrayType = (ArrayType) b;
-
-			Type aElementType = aArrayType.getElementType(this);
-			Type bElementType = bArrayType.getElementType(this);
-
-			if (aElementType.isReferenceType() && bElementType.isReferenceType()) {
-				ObjectType aElementObjectType = (ObjectType) aElementType;
-				ObjectType bElementObjectType = (ObjectType) bElementType;
-
-				ObjectType mergedElementType =
-					getFirstCommonSuperclass(aElementObjectType, bElementObjectType);
-				return arrayTypeFromElementType(mergedElementType);
-			}
-
-			return classTypeFromSignature(JAVA_LANG_OBJECT_SIGNATURE);
-		}
-
 		// FIXME:
 		// This algorithm could easily be extended to find the set
 		// of common unrelated supertypes.  Just keep iterating
