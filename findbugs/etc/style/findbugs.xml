@@ -4,12 +4,12 @@
 
 <FindbugsPlugin pluginid="style">
 	<Detector
-		class="edu.umd.cs.findbugs.detect.FindDeadLocalStores"
+		class="edu.umd.cs.findbugs.style.FindDeadLocalStores"
 		speed="moderate"
 		reports="DLS_DEAD_LOCAL_STORE"/>
 
 	<Detector
-		class="edu.umd.cs.findbugs.detect.FindMaskedFields"
+		class="edu.umd.cs.findbugs.style.FindMaskedFields"
 		speed="fast"
 		reports="MF_METHOD_MASKS_FIELD,MF_CLASS_MASKS_FIELD"/>
 

@@ -6,7 +6,7 @@
 
 	<!-- Detectors -->
 
-	<Detector class="edu.umd.cs.findbugs.detect.FindDeadLocalStores">
+	<Detector class="edu.umd.cs.findbugs.style.FindDeadLocalStores">
 		<Details>
 <![CDATA[
 <p>
@@ -19,7 +19,7 @@ false positives for these cases are often seen, which is why the detector is cur
 		</Details>
 	</Detector>
 
-	<Detector class="edu.umd.cs.findbugs.detect.FindMaskedFields">
+	<Detector class="edu.umd.cs.findbugs.style.FindMaskedFields">
 		<Details>
 <![CDATA[
 <p> This detector looks for class level fields that are masked by
