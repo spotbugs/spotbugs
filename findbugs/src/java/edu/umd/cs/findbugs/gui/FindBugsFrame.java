@@ -525,10 +525,11 @@ public class FindBugsFrame extends javax.swing.JFrame {
 		newProjectItem = new javax.swing.JMenuItem();
 		openProjectItem = new javax.swing.JMenuItem();
 		recentProjectsMenu = new javax.swing.JMenu();
+		closeProjectItem = new javax.swing.JMenuItem();
+		jSeparator9 = new javax.swing.JSeparator();
 		saveProjectItem = new javax.swing.JMenuItem();
 		saveProjectAsItem = new javax.swing.JMenuItem();
 		reloadProjectItem = new javax.swing.JMenuItem();
-		closeProjectItem = new javax.swing.JMenuItem();
 		jSeparator3 = new javax.swing.JSeparator();
 		loadBugsItem = new javax.swing.JMenuItem();
 		saveBugsItem = new javax.swing.JMenuItem();
@@ -1192,6 +1193,20 @@ public class FindBugsFrame extends javax.swing.JFrame {
 		rebuildRecentProjectsMenu();
 		fileMenu.add(recentProjectsMenu);
 
+		closeProjectItem.setFont(new java.awt.Font("Dialog", 0, 12));
+		closeProjectItem.setMnemonic('C');
+		closeProjectItem.setText("Close Project");
+		closeProjectItem.setText(L10N.getLocalString("menu.close_item", "Close"));
+		closeProjectItem.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				closeProjectItemActionPerformed(evt);
+			}
+		});
+
+		fileMenu.add(closeProjectItem);
+
+		fileMenu.add(jSeparator9);
+
 		saveProjectItem.setFont(new java.awt.Font("Dialog", 0, 12));
 		saveProjectItem.setMnemonic('S');
 		saveProjectItem.setText("Save Project");
@@ -1227,18 +1242,6 @@ public class FindBugsFrame extends javax.swing.JFrame {
 		});
 
 		fileMenu.add(reloadProjectItem);
-
-		closeProjectItem.setFont(new java.awt.Font("Dialog", 0, 12));
-		closeProjectItem.setMnemonic('C');
-		closeProjectItem.setText("Close Project");
-		closeProjectItem.setText(L10N.getLocalString("menu.close_item", "Close"));
-		closeProjectItem.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				closeProjectItemActionPerformed(evt);
-			}
-		});
-
-		fileMenu.add(closeProjectItem);
 
 		fileMenu.add(jSeparator3);
 
@@ -3154,6 +3157,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	private javax.swing.JSeparator jSeparator6;
 	private javax.swing.JSeparator jSeparator7;
 	private javax.swing.JSeparator jSeparator8;
+	private javax.swing.JSeparator jSeparator9;
 	private javax.swing.JLabel jarFileLabel;
 	private javax.swing.JList jarFileList;
 	private javax.swing.JLabel jarFileListLabel;
