@@ -11,6 +11,7 @@ set jvmargs=-Xmx256m -Xss2m
 set javacmd=java
 set debugArg=
 set args=
+set javaProps=
 
 :: Honor JAVA_HOME environment variable if it is set
 if "%JAVA_HOME%"=="" goto nojavahome
@@ -52,6 +53,9 @@ if "%firstArg%"=="-debug" goto shift1
 if "%firstArg%"=="-javahome" set javacmd=%secondArg%\bin\java
 if "%firstArg%"=="-javahome" goto shift2
 
+if "%firstArg%"=="-property" set javaProps=-D%secondArg% %javaProps%
+if "%firstArg%"=="-property" goto shift2
+
 if "%firstArg%"=="-help" goto help
 
 if "%firstArg%"=="" goto launch
@@ -72,7 +76,7 @@ if "%FINDBUGS_HOME%"=="" goto homeNotSet
 :: echo appjar is %appjar%
 :: echo args is %args%
 :: echo jvmargs is %jvmargs%
-"%javacmd%" %debugArg% "-Dfindbugs.home=%FINDBUGS_HOME%" %jvmargs% -jar "%FINDBUGS_HOME%\lib\%appjar%" %args%
+"%javacmd%" %debugArg% %javaProps% "-Dfindbugs.home=%FINDBUGS_HOME%" %jvmargs% -jar "%FINDBUGS_HOME%\lib\%appjar%" %args%
 goto end
 
 :: ----------------------------------------------------------------------
