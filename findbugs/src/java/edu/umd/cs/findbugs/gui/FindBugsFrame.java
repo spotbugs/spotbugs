@@ -318,10 +318,10 @@ public class FindBugsFrame extends javax.swing.JFrame {
         bugTreeScrollPane = new javax.swing.JScrollPane();
         bugTree = new javax.swing.JTree();
         bugDetailsTabbedPane = new javax.swing.JTabbedPane();
+        bugDescriptionScrollPane = new javax.swing.JScrollPane();
+        bugDescriptionEditorPane = new javax.swing.JEditorPane();
         sourceTextAreaScrollPane = new javax.swing.JScrollPane();
         sourceTextArea = new javax.swing.JTextArea();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        jEditorPane1 = new javax.swing.JEditorPane();
         consoleScrollPane = new javax.swing.JScrollPane();
         consoleMessageArea = new javax.swing.JTextArea();
         theMenuBar = new javax.swing.JMenuBar();
@@ -334,6 +334,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
         exitItem = new javax.swing.JMenuItem();
         viewMenu = new javax.swing.JMenu();
         viewConsoleItem = new javax.swing.JCheckBoxMenuItem();
+        viewBugDetailsItem = new javax.swing.JCheckBoxMenuItem();
         helpMenu = new javax.swing.JMenu();
         aboutItem = new javax.swing.JMenuItem();
 
@@ -619,6 +620,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
+        gridBagConstraints.insets = new java.awt.Insets(3, 3, 3, 0);
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
         bugTreePanel.add(groupByLabel, gridBagConstraints);
 
@@ -629,6 +631,10 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
         bugTreeBugDetailsSplitter.setLeftComponent(bugTreeScrollPane);
 
+        bugDescriptionScrollPane.setViewportView(bugDescriptionEditorPane);
+
+        bugDetailsTabbedPane.addTab("Details", bugDescriptionScrollPane);
+
         sourceTextAreaScrollPane.setMinimumSize(new java.awt.Dimension(22, 180));
         sourceTextAreaScrollPane.setPreferredSize(new java.awt.Dimension(0, 100));
         sourceTextArea.setEditable(false);
@@ -636,10 +642,6 @@ public class FindBugsFrame extends javax.swing.JFrame {
         sourceTextAreaScrollPane.setViewportView(sourceTextArea);
 
         bugDetailsTabbedPane.addTab("Source code", sourceTextAreaScrollPane);
-
-        jScrollPane1.setViewportView(jEditorPane1);
-
-        bugDetailsTabbedPane.addTab("Details", jScrollPane1);
 
         bugTreeBugDetailsSplitter.setRightComponent(bugDetailsTabbedPane);
 
@@ -731,6 +733,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
         viewMenu.setMnemonic('V');
         viewMenu.setText("View");
         viewMenu.setFont(new java.awt.Font("Dialog", 0, 12));
+        viewConsoleItem.setFont(new java.awt.Font("Dialog", 0, 12));
         viewConsoleItem.setMnemonic('C');
         viewConsoleItem.setSelected(true);
         viewConsoleItem.setText("Console");
@@ -741,6 +744,12 @@ public class FindBugsFrame extends javax.swing.JFrame {
         });
 
         viewMenu.add(viewConsoleItem);
+
+        viewBugDetailsItem.setFont(new java.awt.Font("Dialog", 0, 12));
+        viewBugDetailsItem.setMnemonic('D');
+        viewBugDetailsItem.setSelected(true);
+        viewBugDetailsItem.setText("Bug Details");
+        viewMenu.add(viewBugDetailsItem);
 
         theMenuBar.add(viewMenu);
 
@@ -832,26 +841,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	// then the checkbox should be checked.
 	String propertyName = evt.getPropertyName();
 	if (propertyName.equals(JSplitPane.DIVIDER_LOCATION_PROPERTY)) {
-	    Integer location = (Integer) evt.getNewValue();
-	    /*
-	    if (location.intValue() > consoleSplitter.getMaximumDividerLocation())
-		throw new IllegalStateException("JSplitPane is stupid");
-	    viewConsoleItem.setSelected(location.intValue() != consoleSplitter.getMaximumDividerLocation());
-	     */
-	    // FIXME - I need to find out the REAL maximum divider value.
-	    // getMaximumDividerLocation() is based on minimum component sizes,
-	    // but it may be violated if the user clicks the little "contracter"
-	    // button put in place when the "one touch expandable" property was set.
-	    // Here is a nasty hack which makes a guess based on the current size
-	    // of the frame's content pane.
-	    int contentPaneHeight = this.getContentPane().getHeight();
-	    int hopefullyMaxDivider = contentPaneHeight - (consoleSplitter.getDividerSize() + DIVIDER_FUDGE);
-/*
-	    System.out.println("pane height = " + contentPaneHeight + ", dividerLoc=" + location.intValue() +
-		", hopefullyMaxDivider=" + hopefullyMaxDivider);
- */
-	    
-	    viewConsoleItem.setSelected(location.intValue() < hopefullyMaxDivider);
+            boolean isMaximized = isSplitterMaximized(consoleSplitter, evt);
+	    viewConsoleItem.setSelected(!isMaximized);
 	}
     }//GEN-LAST:event_consoleSplitterPropertyChange
     
@@ -1152,6 +1143,28 @@ public class FindBugsFrame extends javax.swing.JFrame {
      */
     private BugInstance getCurrentBugInstance() {
 	return (BugInstance) getTreeSelectionOf(bugTree, BugInstance.class);
+    }
+    
+    /**
+     * Return whether or not the given splitter is "maximized", meaning that
+     * the top window of the split has been given all of the space.
+     * Note that this window assumes that the split is vertical (meaning
+     * that we have top and bottom components).
+     * @param splitter the JSplitPane
+     * @param evt the event that is changing the splitter value
+     */
+    private boolean isSplitterMaximized(JSplitPane splitter, java.beans.PropertyChangeEvent evt) {
+	Integer location = (Integer) evt.getNewValue();
+
+        java.awt.Container parent = splitter.getParent();
+        int parentHeight = parent.getHeight();
+	int hopefullyMaxDivider = parentHeight - (splitter.getDividerSize() + DIVIDER_FUDGE);
+/*
+	    System.out.println("pane height = " + contentPaneHeight + ", dividerLoc=" + location.intValue() +
+		", hopefullyMaxDivider=" + hopefullyMaxDivider);
+ */
+	boolean isMaximized = location.intValue() >= hopefullyMaxDivider;
+        return isMaximized;
     }
     
     /* ----------------------------------------------------------------------
@@ -1480,7 +1493,6 @@ public class FindBugsFrame extends javax.swing.JFrame {
      * ---------------------------------------------------------------------- */
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JEditorPane jEditorPane1;
     private javax.swing.JLabel editProjectLabel;
     private javax.swing.JButton removeSrcDirButton;
     private javax.swing.JSeparator jSeparator2;
@@ -1504,6 +1516,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
     private javax.swing.JList sourceDirList;
     private javax.swing.JMenuItem saveProjectItem;
     private javax.swing.JSplitPane bugTreeBugDetailsSplitter;
+    private javax.swing.JEditorPane bugDescriptionEditorPane;
     private javax.swing.JTabbedPane bugDetailsTabbedPane;
     private javax.swing.JPanel emptyPanel;
     private javax.swing.JTextArea consoleMessageArea;
@@ -1513,14 +1526,15 @@ public class FindBugsFrame extends javax.swing.JFrame {
     private javax.swing.JSplitPane navigatorViewSplitter;
     private javax.swing.JLabel groupByLabel;
     private javax.swing.JCheckBoxMenuItem viewConsoleItem;
-    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JMenuItem closeProjectItem;
+    private javax.swing.JCheckBoxMenuItem viewBugDetailsItem;
     private javax.swing.JTextField jarNameTextField;
     private javax.swing.JScrollPane consoleScrollPane;
     private javax.swing.JButton browseJarButton;
     private javax.swing.JTextArea sourceTextArea;
     private javax.swing.JButton findBugsButton;
     private javax.swing.JPanel bugTreePanel;
+    private javax.swing.JScrollPane bugDescriptionScrollPane;
     private javax.swing.JLabel sourceDirLabel;
     private javax.swing.JPanel viewPanel;
     private javax.swing.JLabel jarFileListLabel;
