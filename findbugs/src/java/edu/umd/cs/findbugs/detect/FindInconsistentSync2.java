@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs.detect;
 import edu.umd.cs.daveho.ba.*;
 
 import edu.umd.cs.findbugs.AnalysisException;
+import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.CallGraph;
 import edu.umd.cs.findbugs.CallGraphNode;
@@ -88,6 +89,10 @@ public class FindInconsistentSync2 implements Detector {
 			if (accessSourceLine != null)
 				unsyncAccessList.add(accessSourceLine);
 		}
+
+		public Iterator<SourceLineAnnotation> unsyncAccessIterator() {
+			return unsyncAccessList.iterator();
+		}
 	}
 
 	/* ----------------------------------------------------------------------
@@ -96,7 +101,6 @@ public class FindInconsistentSync2 implements Detector {
 
 	private BugReporter bugReporter;
 	private Map<XField, FieldStats> statMap = new HashMap<XField, FieldStats>();
-	private Set<XField> publicFields = new HashSet<XField>();
 	private Set<XField> writtenOutsideOfConstructor = new HashSet<XField>();
 
 	/* ----------------------------------------------------------------------
@@ -117,6 +121,8 @@ public class FindInconsistentSync2 implements Detector {
 				Method method = methodList[i];
 				if (classContext.getMethodGen(method) == null)
 					continue;
+				if (isConstructor(method.getName()))
+					continue;
 				analyzeMethod(classContext, method, lockedMethodSet);
 			}
 
@@ -128,11 +134,69 @@ public class FindInconsistentSync2 implements Detector {
 	}
 
 	public void report() {
+		for (Iterator<Map.Entry<XField, FieldStats>> i = statMap.entrySet().iterator(); i.hasNext(); ) {
+			Map.Entry<XField, FieldStats> entry = i.next();
+			XField xfield = entry.getKey();
+			FieldStats stats = entry.getValue();
+
+			int numReadUnlocked = stats.getNumAccesses(READ_UNLOCKED);
+			int numWriteUnlocked = stats.getNumAccesses(WRITE_UNLOCKED);
+			int numReadLocked = stats.getNumAccesses(READ_LOCKED);
+			int numWriteLocked = stats.getNumAccesses(WRITE_LOCKED);
+
+			int locked =  numReadLocked + numWriteLocked;
+			int biasedLocked =  numReadLocked + 2 * numWriteLocked;
+			int unlocked =  numReadUnlocked + numWriteUnlocked;
+			int biasedUnlocked =  numReadUnlocked + 2 * numWriteUnlocked;
+			int writes =  numWriteLocked + numWriteUnlocked;
+
+			if (locked == 0)
+				continue;
+
+			if (unlocked == 0) 
+				continue;
+
+			if (numReadUnlocked > 0 && 2 * biasedUnlocked > biasedLocked)
+				continue;
+
+			// NOTE: we ignore access to public, volatile, and final fields
+
+			if (numWriteUnlocked + numWriteLocked == 0)
+				// No writes outside of constructor
+				continue;
+
+			if (stats.getNumLocalLocks() == 0)
+				continue;
+
+			// At this point, we report the field as being inconsistently synchronized
+			int freq = (100 * locked) / (locked + unlocked);
+			BugInstance bugInstance = new BugInstance("IS2_INCONSISTENT_SYNC", NORMAL_PRIORITY)
+				.addClass(xfield.getClassName())
+				.addField(xfield)
+				.addInt(freq).describe("INT_SYNC_PERCENT");
+
+			// Add source lines for unsynchronized accesses
+			for (Iterator<SourceLineAnnotation> j = stats.unsyncAccessIterator(); j.hasNext(); ) {
+				SourceLineAnnotation accessSourceLine = j.next();
+				bugInstance.addSourceLine(accessSourceLine).describe("SOURCE_LINE_UNSYNC_ACCESS");
+			}
+
+			bugReporter.reportBug(bugInstance);
+		}
 	}
 
 	/* ----------------------------------------------------------------------
 	 * Implementation
 	 * ---------------------------------------------------------------------- */
+
+	private static boolean isConstructor(String methodName) {
+        return methodName.equals("<init>")
+        		||  methodName.equals("<clinit>")
+        		||  methodName.equals("readObject")
+        		||  methodName.equals("clone")
+        		||  methodName.equals("close")
+        		||  methodName.equals("finalize");
+	}
 
 	private void analyzeMethod(final ClassContext classContext, final Method method, final Set<Method> lockedMethodSet)
 		throws CFGBuilderException, DataflowAnalysisException {
@@ -142,6 +206,9 @@ public class FindInconsistentSync2 implements Detector {
 		final CFG cfg = classContext.getCFG(method);
 		final LockDataflow lockDataflow = classContext.getLockDataflow(method);
 		final ValueNumberDataflow vnaDataflow = classContext.getValueNumberDataflow(method);
+
+		if (DEBUG) System.out.println("**** Analyzing method " +
+			SignatureConverter.convertMethodSignature(classContext.getMethodGen(method)));
 
 		new LocationScanner(cfg).scan(new LocationScanner.Callback() {
 			public void visitLocation(Location location) throws CFGBuilderException, DataflowAnalysisException {
@@ -157,6 +224,8 @@ public class FindInconsistentSync2 implements Detector {
 						xfield = Lookup.findXField(fins, cpg);
 						isWrite = ins.getOpcode() == Constants.PUTFIELD;
 						isLocal = fins.getClassName(cpg).equals(classContext.getJavaClass().getClassName());
+						if (DEBUG) System.out.println("Handling field access: " + location.getHandle() +
+							" (frame=" + vnaDataflow.getFactAtLocation(location) + ")");
 					} else if (ins instanceof INVOKESTATIC) {
 						INVOKESTATIC inv = (INVOKESTATIC) ins;
 						InnerClassAccess access = icam.getInnerClassAccess(inv, cpg);
@@ -164,6 +233,8 @@ public class FindInconsistentSync2 implements Detector {
 							xfield = access.getField();
 							isWrite = !access.isLoad();
 							isLocal = false;
+							if (DEBUG) System.out.println("Handling inner class access: " + location.getHandle() +
+								" (frame=" + vnaDataflow.getFactAtLocation(location) + ")");
 						}
 					}
 
