@@ -74,6 +74,10 @@ public class Location implements Comparable<Location> {
 		Location other = (Location) o;
 		return basicBlock == other.basicBlock && handle == other.handle;
 	}
+
+	public String toString() {
+		return handle.toString() + " in basic block " + basicBlock.getId();
+	}
 }
 
 // vim:ts=4
