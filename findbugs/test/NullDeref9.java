@@ -7,6 +7,9 @@ class NullDeref9 {
 	protected void jspError() {
 		throw new RuntimeException("You've got error");
 		}
+	static void oops() {
+		throw new RuntimeException("You've got error");
+		}
 
 	public void foo(Object o) {
 		if (o == null) error();
@@ -14,6 +17,10 @@ class NullDeref9 {
 		}
 	public void bar(Object o) {
 		if (o == null) jspError();
+		System.out.println(o.hashCode());
+		}
+	public void baz(Object o) {
+		if (o == null) oops();
 		System.out.println(o.hashCode());
 		}
 	}
