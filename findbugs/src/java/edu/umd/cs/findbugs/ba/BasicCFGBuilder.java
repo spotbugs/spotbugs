@@ -48,7 +48,7 @@ import org.apache.bcel.generic.*;
  * @see CFGBuilder
  * @author David Hovemeyer
  */
-public class BasicCFGBuilder extends CFGBuilder implements EdgeTypes, CFGBuilderModes {
+public class BasicCFGBuilder extends BaseCFGBuilder implements EdgeTypes, CFGBuilderModes {
 
 	private LinkedList<WorkListItem> workList;
 	private IdentityHashMap<InstructionHandle, List<InstructionHandle>> exceptionHandlerMap;
