@@ -93,8 +93,14 @@ public abstract class AbstractDominatorsAnalysis implements DataflowAnalysis<Bit
 		makeFactTop(result);
 	}
 
+	public boolean isTop(BitSet fact) {
+		// We represent TOP as a bitset with an illegal bit set
+		return fact.get(cfg.getNumBasicBlocks());
+	}
+
 	public void makeFactTop(BitSet fact) {
-		fact.set(0, cfg.getNumBasicBlocks());
+		// We represent TOP as a bitset with an illegal bit set
+		fact.set(cfg.getNumBasicBlocks());
 	}
 
 	public boolean same(BitSet fact1, BitSet fact2) {
@@ -105,16 +111,23 @@ public abstract class AbstractDominatorsAnalysis implements DataflowAnalysis<Bit
 		// Start with intersection of dominators of predecessors
 		copy(start, result);
 
-		// Every block dominates itself
-		result.set(basicBlock.getId());
+		if (!isTop(result)) {
+			// Every block dominates itself
+			result.set(basicBlock.getId());
+		}
 	}
 
 	public void meetInto(BitSet fact, Edge edge, BitSet result) throws DataflowAnalysisException {
 		if (ignoreExceptionEdges && edge.isExceptionEdge())
 			return;
 
-		// Meet is intersection
-		result.and(fact);
+		if (isTop(fact))
+			return;
+		else if (isTop(result))
+			copy(fact, result);
+		else
+			// Meet is intersection
+			result.and(fact);
 	}
 
 	/**
