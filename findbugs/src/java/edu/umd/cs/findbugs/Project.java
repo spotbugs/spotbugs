@@ -73,7 +73,7 @@ public class Project {
 	public Project() {
 		this.projectFileName = UNNAMED_PROJECT;
 		optionsMap = new HashMap<String,Boolean>();
-		optionsMap.put(RELATIVE_PATHS, false);
+		optionsMap.put(RELATIVE_PATHS, Boolean.FALSE);
 		jarList = new LinkedList<String>();
 		srcDirList = new LinkedList<String>();
 		auxClasspathEntryList = new LinkedList<String>();
