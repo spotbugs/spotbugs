@@ -135,6 +135,13 @@ public class AnalysisRun {
     }
     
     /**
+     * Save bugs to a file.
+     */
+    public void saveBugsToFile(File file) throws IOException {
+	reporter.bugCollection.writeXML(file, classNameToSourceFileMap);
+    }
+    
+    /**
      * Report any errors that may have occurred during analysis.
      */
     public void reportAnalysisErrors() {
