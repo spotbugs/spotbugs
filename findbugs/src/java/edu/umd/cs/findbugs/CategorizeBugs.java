@@ -13,10 +13,37 @@ public class CategorizeBugs {
 		public int total = 0;
 		public int[] bug = new int[4];
 		public int[] notBug = new int[4];
+
+		public void addTo(boolean isBug, int severity) {
+			int[] arr = isBug ? bug : notBug;
+
+			arr[ALL]++;
+			if (severity >= 0)
+				arr[severity]++;
+		}
+
+		public String toString() {
+			StringBuffer buf = new StringBuffer();
+
+			for (int j = 0; j < 4; ++j)
+				buf.append(bug[j] + "\t");
+			for (int j = 0; j < 4; ++j)
+				buf.append(notBug[j] + "\t");
+
+			int total = bug[ALL] + notBug[ALL];
+			if (total > 0) {
+				int serious = bug[ALL] - bug[BENIGN];
+				double accuracy = ((double) serious / (double) total) * 100.0;
+				buf.append(String.valueOf(accuracy));
+			}
+
+			return buf.toString();
+		}
 	}
 
 	private static TreeMap<String, Stats> statsByType = new TreeMap<String, Stats>();
 	private static TreeMap<String, Stats> statsByCode = new TreeMap<String, Stats>();
+	private static Stats aggregateStats = new Stats();
 
 	private static final boolean BY_CODE_ONLY = Boolean.getBoolean("findbugs.categorize.byCodeOnly");
 
@@ -61,11 +88,14 @@ public class CategorizeBugs {
 
 			updateStats(bugInstance.getType(), statsByType, isBug, severity);
 			updateStats(bugInstance.getAbbrev(), statsByCode, isBug, severity);
+			aggregateStats.addTo(isBug, severity);
 		}
 
 		if (!BY_CODE_ONLY)
 			dumpStats("Statistics by bug pattern", statsByType);
 		dumpStats("Statistics by bug code", statsByCode);
+		System.out.println("\nAggregate statistics\n");
+		System.out.println(aggregateStats.toString());
 	}
 
 	private static void dumpBug(BugInstance bugInstance) {
@@ -82,11 +112,8 @@ public class CategorizeBugs {
 			stats = new Stats();
 			map.put(key, stats);
 		}
-		int[] arr = isBug ? stats.bug : stats.notBug;
 
-		arr[ALL]++;
-		if (severity >= 0)
-			arr[severity]++;
+		stats.addTo(isBug, severity);
 	}
 
 	private static void dumpStats(String banner, Map<String, Stats> map) {
@@ -98,16 +125,7 @@ public class CategorizeBugs {
 			Stats stats = entry.getValue();
 
 			System.out.print(key + ":\t");
-			for (int j = 0; j < 4; ++j)
-				System.out.print(stats.bug[j] + "\t");
-			for (int j = 0; j < 4; ++j)
-				System.out.print(stats.notBug[j] + "\t");
-
-			int total = stats.bug[ALL] + stats.notBug[ALL];
-			if (total > 0) {
-				double accuracy = ((double) stats.bug[ALL] / (double) total) * 100.0;
-				System.out.print(accuracy);
-			}
+			System.out.print(stats.toString());
 
 			System.out.println();
 		}
