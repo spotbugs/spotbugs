@@ -2700,8 +2700,8 @@ contents of the arrays, use java.util.Array.equals(Object[], Object[]).
 <![CDATA[
 <p>
 This method invokes the .equals(Object o) method on a final class that doesn't override the equals method
-in the Object class, effectively making the equals method test for sameness, like ==. Consider adding an .equals
-method in this class.
+in the Object class, effectively making the equals method test for sameness, like ==. It is good to use
+the .equals method, but you should consider adding an .equals method in this class.
 </p>
 ]]>    
     </Details>

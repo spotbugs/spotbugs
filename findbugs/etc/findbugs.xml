@@ -471,7 +471,7 @@
     experimental="true"/>
   <BugPattern abbrev="BAC" type="BAC_BAD_APPLET_CONSTRUCTOR" category="CORRECTNESS"
     experimental="true"/>
-  <BugPattern abbrev="UOE" type="UOE_USE_OBJECT_EQUALS" category="CORRECTNESS"
+  <BugPattern abbrev="UOE" type="UOE_USE_OBJECT_EQUALS" category="STYLE"
     experimental="true"/>  
   <BugPattern abbrev="UOE" type="UOE_BAD_ARRAY_COMPARE" category="CORRECTNESS"
     experimental="true"/>

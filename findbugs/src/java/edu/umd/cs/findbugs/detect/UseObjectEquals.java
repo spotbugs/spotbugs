@@ -20,6 +20,7 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -59,7 +60,6 @@ public class UseObjectEquals extends BytecodeScanningDetector implements Constan
 			        		.addClassAndMethod(this)
 			        		.addSourceLine(this));
 				} else {
-/*
 					try {
 						JavaClass cls = item.getJavaClass();
 
@@ -77,7 +77,6 @@ public class UseObjectEquals extends BytecodeScanningDetector implements Constan
 						//cnfe.printStackTrace();
 						bugReporter.reportMissingClass(cnfe);
 					}
-*/
 				}
 			}
 		}
