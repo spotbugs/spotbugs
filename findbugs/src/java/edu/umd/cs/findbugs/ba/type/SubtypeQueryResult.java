@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs.ba.type;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 /**
@@ -105,6 +106,13 @@ public class SubtypeQueryResult {
 			throw new ClassNotFoundException("Class not found: " + missingClassList);
 
 		return new HashSet<ObjectType>(properSupertypeListInBFSOrder);
+	}
+
+	/**
+	 * Get iterator over proper supertypes in BFS order.
+	 */
+	public Iterator<ObjectType> properSupertypeInBFSOrderIterator() {
+		return properSupertypeListInBFSOrder.iterator();
 	}
 }
 

@@ -99,6 +99,8 @@ public class TypeRepository {
 		basicTypeCodeToSignatureMap.put(new Byte(Constants.T_VOID), "V");
 	}
 
+	private static final String JAVA_LANG_OBJECT_SIGNATURE = "Ljava/lang/Object;";
+
 	/* ----------------------------------------------------------------------
 	 * Fields
 	 * ---------------------------------------------------------------------- */
@@ -124,7 +126,19 @@ public class TypeRepository {
 	}
 
 	/**
-	 * Get an ClassType from a class or interface name
+	 * Get a ClassType from a signature, e.g.,
+	 * JAVA_LANG_OBJECT_SIGNATURE.
+	 * @param signature the class signature
+	 * @return the ClassType representing the class
+	 */
+	public ClassType classTypeFromSignature(String signature) {
+		if (Debug.CHECK_ASSERTIONS && !signature.startsWith("L") && !signature.endsWith(";"))
+			throw new IllegalArgumentException("Illegal class type signature: " + signature);
+		return createClassType(signature);
+	}
+
+	/**
+	 * Get a ClassType from a class or interface name
 	 * using slashes to separate package components,
 	 * creating it if it doesn't exist.
 	 * (A name with components separated by slashes
@@ -141,7 +155,7 @@ public class TypeRepository {
 	}
 
 	/**
-	 * Get an ClassType from a class or interface name
+	 * Get a ClassType from a class or interface name
 	 * using dots to separate package components,
 	 * creating it if it doesn't exist.
 	 * @param param dottedClassName the class name in dotted format
@@ -293,6 +307,78 @@ public class TypeRepository {
 		return null;
 	}
 
+	/**
+	 * Get the first common superclass of two object types, in the
+	 * sense used by the VM Spec.  This means that interfaces
+	 * are always considered to have java.lang.Object as
+	 * their common superclass, even if a more accurate interface
+	 * type could be used.  Similarly, arrays of interface types
+	 * of same dimensionality are considered to have an
+	 * array of java.lang.Object as their common superclass.
+	 *
+	 * <p> This operation is commutative.
+	 *
+	 * @param a an ObjectType
+	 * @param b another ObjectType
+	 * @return the first common superclass of a and b
+	 */
+	public ObjectType getFirstCommonSuperclass(ObjectType a, ObjectType b) throws ClassNotFoundException {
+		// Easy case
+		if (a.equals(b))
+			return a;
+
+		if (a.isArray() && b.isArray()) {
+			ArrayType aArrayType = (ArrayType) a;
+			ArrayType bArrayType = (ArrayType) b;
+
+			if (aArrayType.getNumDimensions() != bArrayType.getNumDimensions())
+				return classTypeFromSignature(JAVA_LANG_OBJECT_SIGNATURE);
+
+			Type aBaseType = aArrayType.getBaseType();
+			Type bBaseType = bArrayType.getBaseType();
+
+			if (aBaseType.isBasicType() || bBaseType.isBasicType())
+				// Arrays are of different base types (recall that
+				// types a and b did not compare as equal).
+				return classTypeFromSignature(JAVA_LANG_OBJECT_SIGNATURE);
+
+			// OK, the base types are reference types.
+			// Get the first common superclass of the
+			// base type, and return an array of same dimensionality
+			// using the common superclass as the base type.
+			ObjectType baseTypeCommonSuperclass =
+				getFirstCommonSuperclass((ObjectType) aBaseType, (ObjectType) bBaseType);
+
+			return arrayTypeFromDimensionsAndElementType(aArrayType.getNumDimensions(), baseTypeCommonSuperclass);
+		}
+
+		// FIXME:
+		// This algorithm could easily be extended to find the set
+		// of common unrelated supertypes.  Just keep iterating
+		// adding common supertypes to the set.  When a common
+		// supertype is found, eliminate its supertypes from
+		// consideration (since they would be not be "least" supertypes).
+
+		// For now, we just use the stupid JVM bytecode verifier
+		// algorithm that loses all sorts of information.
+
+		SubtypeQueryResult cachedResultForA = findSupertypes(a);
+		SubtypeQueryResult cachedResultForB = findSupertypes(b);
+
+		for (Iterator<ObjectType> i = cachedResultForB.properSupertypeInBFSOrderIterator(); i.hasNext(); ) {
+			ObjectType bSuper = i.next();
+			if (bSuper.isInterface())
+				// FIXME: stupid loss of information
+				continue;
+			if (cachedResultForA.isSupertype(bSuper))
+				return bSuper;
+		}
+
+		// This should not be possible
+		throw new IllegalStateException("Failed to find a common supertype: " +
+			" for object types " + a.getSignature() + " and " + b.getSignature() + ": impossible");
+	}
+
 	/* ----------------------------------------------------------------------
 	 * Implementation
 	 * ---------------------------------------------------------------------- */
@@ -400,7 +486,7 @@ public class TypeRepository {
 
 		Type baseType = type.getBaseType();
 
-		if (baseType.getSignature().equals("Ljava/lang/Object;")) {
+		if (baseType.getSignature().equals(JAVA_LANG_OBJECT_SIGNATURE)) {
 			// Special case: an array whose base type is java.lang.Object
 			// is a direct subtype of an array of Object with one less dimension.
 			// Except, a single dimensional array of Object is a
@@ -419,7 +505,7 @@ public class TypeRepository {
 			Type elementType = type.getElementType(this);
 			if (elementType.isBasicType()) {
 				// All arrays of basic types are subtypes of java.lang.Object
-				ClassType javaLangObjectType = classTypeFromSlashedClassName("java/lang/Object");
+				ClassType javaLangObjectType = classTypeFromSignature(JAVA_LANG_OBJECT_SIGNATURE);
 				addSuperclassLink(type, javaLangObjectType);
 			} else {
 				// Array is a direct subtype of all arrays (same dimensionality)
@@ -437,8 +523,8 @@ public class TypeRepository {
 		}
 
 		// All arrays implement Serializable and Cloneable
-		addInterfaceLink(type, classTypeFromSlashedClassName("java/io/Serializable"));
-		addInterfaceLink(type, classTypeFromSlashedClassName("java/lang/Cloneable"));
+		addInterfaceLink(type, classTypeFromSignature("Ljava/io/Serializable;"));
+		addInterfaceLink(type, classTypeFromSignature("Ljava/lang/Cloneable;"));
 
 		type.setState(ObjectType.KNOWN);
 	}
@@ -459,22 +545,13 @@ public class TypeRepository {
 			// subclass of java.lang.Object.  This is a convenient
 			// fiction that makes things a bit simpler.
 			if (type.isInterface())
-				addInterfaceLink(type, classTypeFromSlashedClassName("java/lang/Object"));
+				addInterfaceLink(type, classTypeFromSignature(JAVA_LANG_OBJECT_SIGNATURE));
 		} catch (ClassNotFoundException e) {
 			type.setState(ObjectType.UNKNOWN);
 			type.setResolverFailure(e);
 			throw new ClassNotFoundException("Class " + type.getClassName() +
 				" cannot be resolved", e);
 		}
-	}
-
-	/**
-	 * Get an ObjectType by its vertex label in the inheritance graph.
-	 * @param label the vertex label
-	 * @return the ObjectType with that label
-	 */
-	ObjectType getObjectTypeByVertexLabel(int label) {
-		return inheritanceGraph.getVertexByLabel(label);
 	}
 }
 
