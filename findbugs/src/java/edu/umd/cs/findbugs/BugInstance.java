@@ -799,8 +799,8 @@ public class BugInstance implements Comparable, XMLWriteable {
 			Iterator<BugAnnotation> i = annotationIterator();
 			while (i.hasNext())
 				hashcode += i.next().hashCode();
-			if (hashCode == INVALID_HASH_CODE)
-				hashCode = INVALID_HASH_CODE+1;
+			if (hashcode == INVALID_HASH_CODE)
+				hashcode = INVALID_HASH_CODE+1;
 			cachedHashCode = hashcode;
 		}
 
