@@ -26,9 +26,9 @@ public class ValueNumberFrameModelingVisitor extends AbstractFrameModelingVisito
 	private ValueNumberFactory factory;
 	private ValueNumberCache cache;
 
-	public ValueNumberFrameModelingVisitor(ValueNumberFrame frame, ConstantPoolGen cpg, ValueNumberFactory factory,
+	public ValueNumberFrameModelingVisitor(ConstantPoolGen cpg, ValueNumberFactory factory,
 		ValueNumberCache cache) {
-		super(frame, cpg);
+		super(cpg);
 		this.factory = factory;
 		this.cache = cache;
 	}

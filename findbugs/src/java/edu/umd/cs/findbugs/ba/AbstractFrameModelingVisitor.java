@@ -49,10 +49,16 @@ public abstract class AbstractFrameModelingVisitor<Value, FrameType extends Fram
 	 * @param frame the frame to be transformed
 	 * @param cpg the ConstantPoolGen of the method to be analyzed
 	 */
-	public AbstractFrameModelingVisitor(FrameType frame, ConstantPoolGen cpg) {
-		this.frame = frame;
+	public AbstractFrameModelingVisitor(ConstantPoolGen cpg) {
+		this.frame = null;
 		this.cpg = cpg;
 	}
+
+	/**
+	 * Set the frame.
+	 * @param frame the Frame object
+	 */
+	public void setFrame(FrameType frame) { this.frame = frame; }
 
 	/**
 	 * Get the frame.

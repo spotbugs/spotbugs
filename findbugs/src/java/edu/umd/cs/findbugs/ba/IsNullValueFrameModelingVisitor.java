@@ -23,8 +23,8 @@ import org.apache.bcel.generic.*;
 
 public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisitor<IsNullValue, IsNullValueFrame> {
 
-	public IsNullValueFrameModelingVisitor(IsNullValueFrame frame, ConstantPoolGen cpg) {
-		super(frame, cpg);
+	public IsNullValueFrameModelingVisitor(ConstantPoolGen cpg) {
+		super(cpg);
 	}
 
 	public IsNullValue getDefaultValue() {

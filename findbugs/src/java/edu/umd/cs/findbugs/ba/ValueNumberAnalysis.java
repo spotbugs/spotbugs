@@ -58,6 +58,7 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
 	private MethodGen methodGen;
 	private ValueNumberFactory factory;
 	private ValueNumberCache cache;
+	private ValueNumberFrameModelingVisitor visitor;
 	private ValueNumber[] entryLocalValueList;
 	private IdentityHashMap<BasicBlock, ValueNumber> exceptionHandlerValueNumberMap;
 	private ValueNumber thisValue;
@@ -66,6 +67,7 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
 		this.methodGen = methodGen;
 		this.factory = new ValueNumberFactory();
 		this.cache = new ValueNumberCache();
+		this.visitor = new ValueNumberFrameModelingVisitor(methodGen.getConstantPool(), factory, cache);
 
 		int numLocals = methodGen.getMaxLocals();
 		this.entryLocalValueList = new ValueNumber[numLocals];
@@ -106,8 +108,9 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
 			result.setValue(i, entryLocalValueList[i]);
 	}
 
-	public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, ValueNumberFrame fact) throws DataflowAnalysisException {
-		ValueNumberFrameModelingVisitor visitor = new ValueNumberFrameModelingVisitor(fact, methodGen.getConstantPool(), factory, cache);
+	public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, ValueNumberFrame fact)
+		throws DataflowAnalysisException {
+		visitor.setFrame(fact);
 		Instruction ins = handle.getInstruction();
 		ins.accept(visitor);
 	}

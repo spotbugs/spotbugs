@@ -45,12 +45,10 @@ public interface ResourceTracker<Resource> {
 	 * Create a ResourceValueFrameModelingVisitor to model the effect
 	 * of instructions on the state of the resource.
 	 * @param resource the resource we are tracking
-	 * @param frame the ResourceValueFrame representing the resource state
 	 * @param cpg the ConstantPoolGen of the method
 	 * @return a ResourceValueFrameModelingVisitor
 	 */
-	public ResourceValueFrameModelingVisitor createVisitor(Resource resource, ResourceValueFrame frame,
-		ConstantPoolGen cpg);
+	public ResourceValueFrameModelingVisitor createVisitor(Resource resource, ConstantPoolGen cpg);
 }
 
 // vim:ts=4

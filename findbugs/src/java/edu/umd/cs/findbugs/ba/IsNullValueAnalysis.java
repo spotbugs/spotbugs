@@ -40,13 +40,13 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
 	private static final boolean NO_SPLIT_DOWNGRADE_NSP = Boolean.getBoolean("inva.noSplitDowngradeNSP");
 
 	private MethodGen methodGen;
-	private CFG cfg;
+	private IsNullValueFrameModelingVisitor visitor;
 	private ValueNumberDataflow vnaDataflow;
 	private int[] numNonExceptionSuccessorMap;
 
 	public IsNullValueAnalysis(MethodGen methodGen, CFG cfg, ValueNumberDataflow vnaDataflow) {
 		this.methodGen = methodGen;
-		this.cfg = cfg;
+		this.visitor = new IsNullValueFrameModelingVisitor(methodGen.getConstantPool());
 		this.vnaDataflow = vnaDataflow;
 		this.numNonExceptionSuccessorMap = new int[cfg.getNumBasicBlocks()];
 
@@ -75,8 +75,7 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
 	public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, IsNullValueFrame fact)
 		throws DataflowAnalysisException {
 
-		IsNullValueFrameModelingVisitor visitor =
-			new IsNullValueFrameModelingVisitor(fact, methodGen.getConstantPool());
+		visitor.setFrame(fact);
 		handle.getInstruction().accept(visitor);
 
 	}

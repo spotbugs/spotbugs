@@ -25,15 +25,13 @@ public class ResourceValueAnalysis<Resource> extends FrameDataflowAnalysis<Resou
 
 	private MethodGen methodGen;
 	private CFG cfg;
-	private ResourceTracker<Resource> resourceTracker;
-	private Resource resource;
+	private ResourceValueFrameModelingVisitor visitor;
 
 	public ResourceValueAnalysis(MethodGen methodGen, CFG cfg, ResourceTracker<Resource> resourceTracker,
 		Resource resource) {
 		this.methodGen = methodGen;
 		this.cfg = cfg;
-		this.resourceTracker = resourceTracker;
-		this.resource = resource;
+		this.visitor = resourceTracker.createVisitor(resource, methodGen.getConstantPool());
 	}
 
 	public ResourceValueFrame createFact() {
@@ -63,8 +61,7 @@ public class ResourceValueAnalysis<Resource> extends FrameDataflowAnalysis<Resou
 	public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, ResourceValueFrame fact)
 		throws DataflowAnalysisException {
 
-		ResourceValueFrameModelingVisitor visitor =
-			resourceTracker.createVisitor(resource, fact, methodGen.getConstantPool());
+		visitor.setFrame(fact);
 		handle.getInstruction().accept(visitor);
 
 	}

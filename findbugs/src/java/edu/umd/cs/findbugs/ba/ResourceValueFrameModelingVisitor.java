@@ -22,8 +22,8 @@ package edu.umd.cs.daveho.ba;
 import org.apache.bcel.generic.*;
 
 public abstract class ResourceValueFrameModelingVisitor extends AbstractFrameModelingVisitor<ResourceValue, ResourceValueFrame> {
-	public ResourceValueFrameModelingVisitor(ResourceValueFrame frame, ConstantPoolGen cpg) {
-		super(frame, cpg);
+	public ResourceValueFrameModelingVisitor(ConstantPoolGen cpg) {
+		super(cpg);
 	}
 
 	public ResourceValue getDefaultValue() {
