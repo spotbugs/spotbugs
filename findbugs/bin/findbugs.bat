@@ -1,5 +1,5 @@
 @echo off
-:: Launch FindBugs GUI on a Windows system.
+:: Launch FindBugs on a Windows system.
 :: Adapted from scripts found at http://www.ericphelps.com/batch/
 :: This will only work on Windows NT or later!
 
@@ -12,9 +12,13 @@ set javacmd=java
 set debugArg=
 set args=
 set javaProps=
+set start=
 
 :: Honor JAVA_HOME environment variable if it is set
 if "%JAVA_HOME%"=="" goto nojavahome
+if not exist %JAVA_HOME%\bin\javaw.exe goto nojavahome
+set javacmd=%JAVA_HOME%\bin\javaw
+set start=start "FindBugs"
 set javacmd=%JAVA_HOME%\bin\java
 :nojavahome
 
@@ -70,13 +74,16 @@ goto shift1
 :: Make sure FINDBUGS_HOME is set.
 :: Note that this will fail miserably if the value of FINDBUGS_HOME
 :: has quote characters in it.
-if "%FINDBUGS_HOME%"=="" goto homeNotSet
+if not "%FINDBUGS_HOME%"=="" goto found_home
+set FINDBUGS_HOME=%~dp0..
+if not exist %FINDBUGS_HOME%\lib\%appjar% goto homeNotSet
 
+:found_home
 :: echo FINDBUGS_HOME is %FINDBUGS_HOME%
 :: echo appjar is %appjar%
 :: echo args is %args%
 :: echo jvmargs is %jvmargs%
-"%javacmd%" %debugArg% %javaProps% "-Dfindbugs.home=%FINDBUGS_HOME%" %jvmargs% -jar "%FINDBUGS_HOME%\lib\%appjar%" %args%
+%start% "%javacmd%" %debugArg% %javaProps% "-Dfindbugs.home=%FINDBUGS_HOME%" %jvmargs% -jar "%FINDBUGS_HOME%\lib\%appjar%" %args%
 goto end
 
 :: ----------------------------------------------------------------------
@@ -98,7 +105,9 @@ goto end
 :: Report that FINDBUGS_HOME is not set (and was not specified)
 :: ----------------------------------------------------------------------
 :homeNotSet
-echo Please set FINDBUGS_HOME before running findbugs.bat
+echo Could not find FindBugs home directory.  There may be a problem
+echo with the FindBugs installation.  Try setting FINDBUGS_HOME, or
+echo re-installing.
 goto end
 
 :end
