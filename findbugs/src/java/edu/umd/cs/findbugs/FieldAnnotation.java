@@ -23,6 +23,9 @@ import edu.umd.cs.pugh.visitclass.BetterVisitor;
 import edu.umd.cs.pugh.visitclass.DismantleBytecode;
 import edu.umd.cs.daveho.ba.SignatureConverter;
 import org.apache.bcel.generic.*;
+import org.dom4j.Element;
+import org.dom4j.Branch;
+import org.dom4j.DocumentException;
 
 /**
  * A BugAnnotation specifying a particular field in particular class.
@@ -169,6 +172,44 @@ public class FieldAnnotation extends PackageMemberAnnotation {
 		if (cmp != 0)
 			return cmp;
 		return fieldSig.compareTo(other.fieldSig);
+	}
+
+	/* ----------------------------------------------------------------------
+	 * XML Conversion support
+	 * ---------------------------------------------------------------------- */
+
+	private static final String ELEMENT_NAME = "Field";
+
+	private static class FieldAnnotationXMLTranslator implements XMLTranslator {
+		public String getElementName() {
+			return ELEMENT_NAME;
+		}
+
+		public XMLConvertible fromElement(Element element) throws DocumentException {
+			String className = element.attributeValue("classname");
+			String fieldName = element.attributeValue("name");
+			String fieldSig  = element.attributeValue("signature");
+			boolean isStatic = Boolean.valueOf(element.attributeValue("isStatic")).booleanValue();
+			FieldAnnotation annotation = new FieldAnnotation(className, fieldName, fieldSig, isStatic);
+			annotation.setDescription(element.attributeValue("role"));
+
+			return annotation;
+		}
+	}
+
+	static {
+		XMLTranslatorRegistry.instance().registerTranslator(new FieldAnnotationXMLTranslator());
+	}
+
+	public Element toElement(Branch parent) {
+		Element element = parent.addElement(ELEMENT_NAME)
+			.addAttribute("classname", getClassName())
+			.addAttribute("name", getFieldName())
+			.addAttribute("signature", getFieldSignature())
+			.addAttribute("isStatic", String.valueOf(isStatic()))
+			.addAttribute("role", getDescription());
+
+		return element;
 	}
 }
 

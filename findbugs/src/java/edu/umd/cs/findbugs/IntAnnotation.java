@@ -19,6 +19,10 @@
 
 package edu.umd.cs.findbugs;
 
+import org.dom4j.DocumentException;
+import org.dom4j.Element;
+import org.dom4j.Branch;
+
 /**
  * Bug annotation class for integer values.
  *
@@ -67,10 +71,47 @@ public class IntAnnotation implements BugAnnotation {
 			return this.getClass().getName().compareTo(o.getClass().getName());
 		return value - ((IntAnnotation) o).value;
 	}
+
 	public String toString() {
 		String pattern = I18N.instance().getAnnotationDescription(description);
 		FindBugsMessageFormat format = new FindBugsMessageFormat(pattern);
 		return format.format(new BugAnnotation[]{this});
+	}
+
+	/* ----------------------------------------------------------------------
+	 * XML Conversion support
+	 * ---------------------------------------------------------------------- */
+
+	private static final String ELEMENT_NAME = "Int";
+
+	private static class IntAnnotationXMLTranslator implements XMLTranslator {
+		public String getElementName() {
+			return ELEMENT_NAME;
+		}
+
+		public XMLConvertible fromElement(Element element) throws DocumentException {
+			try {
+				int value = Integer.parseInt(element.attributeValue("value"));
+				IntAnnotation annotation = new IntAnnotation(value);
+				annotation.setDescription(element.attributeValue("role"));
+
+				return annotation;
+			} catch (NumberFormatException e) {
+				throw new DocumentException("Bad attribute value: " + e.toString());
+			}
+		}
+	}
+
+	static {
+		XMLTranslatorRegistry.instance().registerTranslator(new IntAnnotationXMLTranslator());
+	}
+
+	public Element toElement(Branch parent) {
+		Element element = parent.addElement(ELEMENT_NAME)
+			.addAttribute("value", String.valueOf(value))
+			.addAttribute("role", getDescription());
+
+		return element;
 	}
 }
 

@@ -19,6 +19,10 @@
 
 package edu.umd.cs.findbugs;
 
+import org.dom4j.Element;
+import org.dom4j.Branch;
+import org.dom4j.DocumentException;
+
 /**
  * A BugAnnotation object specifying a Java class involved in the bug.
  *
@@ -63,6 +67,36 @@ public class ClassAnnotation extends PackageMemberAnnotation {
 			return this.getClass().getName().compareTo(o.getClass().getName());
 		ClassAnnotation other = (ClassAnnotation) o;
 		return className.compareTo(other.className);
+	}
+
+	/* ----------------------------------------------------------------------
+	 * XML Conversion support
+	 * ---------------------------------------------------------------------- */
+
+	private static final String ELEMENT_NAME = "Class";
+
+	private static class ClassAnnotationXMLTranslator implements XMLTranslator {
+		public String getElementName() {
+			return ELEMENT_NAME;
+		}
+
+		public XMLConvertible fromElement(Element element) throws DocumentException {
+			String className = element.attributeValue("classname");
+			ClassAnnotation annotation = new ClassAnnotation(className);
+			annotation.setDescription(element.attributeValue("role"));
+
+			return annotation;
+		}
+	}
+
+	static {
+		XMLTranslatorRegistry.instance().registerTranslator(new ClassAnnotationXMLTranslator());
+	}
+
+	public Element toElement(Branch parent) {
+		return parent.addElement(ELEMENT_NAME)
+			.addAttribute("classname", getClassName())
+			.addAttribute("role", getDescription());
 	}
 }
 

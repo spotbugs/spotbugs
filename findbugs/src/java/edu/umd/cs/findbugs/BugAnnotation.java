@@ -24,7 +24,7 @@ package edu.umd.cs.findbugs;
  * @see BugInstance
  * @author David Hovemeyer
  */
-public interface BugAnnotation extends Comparable<BugAnnotation> {
+public interface BugAnnotation extends Comparable<BugAnnotation>, XMLConvertible {
 	/**
 	 * Accept a BugAnnotationVisitor.
 	 * @param visitor the visitor to accept

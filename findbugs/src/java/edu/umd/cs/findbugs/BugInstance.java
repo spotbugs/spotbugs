@@ -25,6 +25,9 @@ import edu.umd.cs.pugh.visitclass.DismantleBytecode;
 import edu.umd.cs.daveho.ba.bcp.FieldVariable;
 import org.apache.bcel.classfile.*;
 import org.apache.bcel.generic.*;
+import org.dom4j.DocumentException;
+import org.dom4j.Element;
+import org.dom4j.Branch;
 
 /**
  * An instance of a bug pattern.
@@ -51,7 +54,7 @@ import org.apache.bcel.generic.*;
  * @see BugAnnotation
  * @author David Hovemeyer
  */
-public class BugInstance implements Comparable {
+public class BugInstance implements Comparable, XMLConvertible {
 	private String type;
 	private int priority;
 	private ArrayList<BugAnnotation> annotationList;
@@ -184,8 +187,6 @@ public class BugInstance implements Comparable {
 	 */
 	public BugInstance addClass(String className) {
 		ClassAnnotation classAnnotation = new ClassAnnotation(className);
-		if (primaryClassAnnotation == null)
-			primaryClassAnnotation = classAnnotation;
 		add(classAnnotation);
 		return this;
 	}
@@ -374,8 +375,6 @@ public class BugInstance implements Comparable {
 	 * @return this object
 	 */
 	public BugInstance addMethod(MethodAnnotation methodAnnotation) {
-		if (primaryMethodAnnotation == null)
-			primaryMethodAnnotation = methodAnnotation;
 		add(methodAnnotation);
 		return this;
 	}
@@ -529,16 +528,83 @@ public class BugInstance implements Comparable {
 	}
 
 	/* ----------------------------------------------------------------------
+	 * XML Conversion support
+	 * ---------------------------------------------------------------------- */
+
+	private static final String ELEMENT_NAME = "BugInstance";
+
+	private static class BugInstanceXMLTranslator implements XMLTranslator {
+		public String getElementName() {
+			return ELEMENT_NAME;
+		}
+
+		public XMLConvertible fromElement(Element element) throws DocumentException {
+			try {
+				String type = element.attributeValue("type");
+				int priority = Integer.parseInt(element.attributeValue("priority"));
+
+				BugInstance bugInstance = new BugInstance(type, priority);
+
+				// Child elements are BugAnnotations
+				Iterator i = element.elements().iterator();
+				while (i.hasNext()) {
+					Element child = (Element) i.next();
+					String childName = child.getName();
+
+					XMLTranslator translator = XMLTranslatorRegistry.instance().getTranslator(childName);
+					if (translator == null)
+						throw new DocumentException("Bad element type: " + childName);
+
+					BugAnnotation annotation = (BugAnnotation) translator.fromElement(child);
+					bugInstance.add(annotation);
+				}
+
+				return bugInstance;
+
+			} catch (NumberFormatException e) {
+				throw new DocumentException("Invalid attribute value: " + e.toString());
+			}
+		}
+	}
+
+	static {
+		XMLTranslatorRegistry.instance().registerTranslator(new BugInstanceXMLTranslator());
+	}
+
+	public Element toElement(Branch parent) {
+		Element element = parent.addElement(ELEMENT_NAME)
+			.addAttribute("type", type)
+			.addAttribute("priority", String.valueOf(priority));
+
+		Iterator<BugAnnotation> i = annotationList.iterator();
+		while (i.hasNext()) {
+			BugAnnotation child = i.next();
+			child.toElement(element);
+		}
+
+		return element;
+	}
+
+	/* ----------------------------------------------------------------------
 	 * Implementation
 	 * ---------------------------------------------------------------------- */
 
 	private void add(BugAnnotation annotation) {
 		if (annotation == null)
 			throw new IllegalStateException("Missing BugAnnotation!");
+
+		// Add to list
+		annotationList.add(annotation);
+
 		// This object is being modified, so the cached hashcode
 		// must be invalidated
 		cachedHashCode = INVALID_HASH_CODE;
-		annotationList.add(annotation);
+
+		if ((annotation instanceof ClassAnnotation) && primaryClassAnnotation == null)
+			primaryClassAnnotation = (ClassAnnotation) annotation;
+
+		if ((annotation instanceof MethodAnnotation) && primaryMethodAnnotation == null)
+			primaryMethodAnnotation = (MethodAnnotation) annotation;
 	}
 
 	private void addSourceLinesForMethod(MethodAnnotation methodAnnotation, SourceLineAnnotation sourceLineAnnotation) {

@@ -22,6 +22,9 @@ package edu.umd.cs.findbugs;
 import edu.umd.cs.pugh.visitclass.BetterVisitor;
 import edu.umd.cs.pugh.visitclass.DismantleBytecode;
 import edu.umd.cs.daveho.ba.SignatureConverter;
+import org.dom4j.Element;
+import org.dom4j.Branch;
+import org.dom4j.DocumentException;
 
 /**
  * A BugAnnotation specifying a particular method in a particular class.
@@ -176,13 +179,57 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 		return methodSig.compareTo(other.methodSig);
 	}
 
-/*
-	public static void main(String[] argv) {
-		MethodAnnotation m = new MethodAnnotation("edu.umd.cs.daveho.ba.CFG", "fooIterator",
-			"(I[[BLjava/util/Iterator;Ljava/lang/String;)Ledu/umd/cs/daveho/ba/BasicBlock;");
-		System.out.println(m.toString());
+	/* ----------------------------------------------------------------------
+	 * XML Conversion support
+	 * ---------------------------------------------------------------------- */
+
+	private static final String ELEMENT_NAME = "Method";
+
+	private static class MethodAnnotationXMLTranslator implements XMLTranslator {
+		public String getElementName() {
+			return ELEMENT_NAME;
+		}
+
+		public XMLConvertible fromElement(Element element) throws DocumentException {
+			String className = element.attributeValue("classname");
+			String methodName = element.attributeValue("name");
+			String methodSig = element.attributeValue("signature");
+			MethodAnnotation annotation = new MethodAnnotation(className, methodName, methodSig);
+			annotation.setDescription(element.attributeValue("role"));
+
+			// SourceLines may be present as a nested element
+			java.util.Iterator i = element.elements().iterator();
+			while (i.hasNext()) {
+				Element child = (Element) i.next();
+				String childName = child.getName();
+
+				XMLTranslator translator = XMLTranslatorRegistry.instance().getTranslator(childName);
+				if (translator == null)
+					throw new DocumentException("Bad element type: " + childName);
+
+				annotation.setSourceLines((SourceLineAnnotation) translator.fromElement(child));
+			}
+
+			return annotation;
+		}
 	}
-*/
+
+	static {
+		XMLTranslatorRegistry.instance().registerTranslator(new MethodAnnotationXMLTranslator());
+	}
+
+	public Element toElement(Branch parent) {
+		Element element = parent.addElement(ELEMENT_NAME)
+			.addAttribute("classname", getClassName())
+			.addAttribute("name", getMethodName())
+			.addAttribute("signature", getMethodSignature())
+			.addAttribute("role", getDescription());
+
+		if (sourceLines != null)
+			sourceLines.toElement(element);
+
+		return element;
+	}
 }
 
 // vim:ts=4

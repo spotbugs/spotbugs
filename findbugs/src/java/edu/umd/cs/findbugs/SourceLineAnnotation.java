@@ -21,6 +21,9 @@ package edu.umd.cs.findbugs;
 
 import org.apache.bcel.classfile.*;
 import org.apache.bcel.generic.*;
+import org.dom4j.DocumentException;
+import org.dom4j.Element;
+import org.dom4j.Branch;
 import edu.umd.cs.pugh.visitclass.BetterVisitor;
 import edu.umd.cs.pugh.visitclass.DismantleBytecode;
 
@@ -284,6 +287,47 @@ public class SourceLineAnnotation implements BugAnnotation {
 		return className.equals(other.className)
 			&& startLine == other.startLine
 			&& endLine == other.endLine;
+	}
+
+	/* ----------------------------------------------------------------------
+	 * XML Conversion support
+	 * ---------------------------------------------------------------------- */
+
+	private static final String ELEMENT_NAME = "SourceLine";
+
+	private static class SourceLineAnnotationXMLTranslator implements XMLTranslator {
+		public String getElementName() {
+			return ELEMENT_NAME;
+		}
+
+		public XMLConvertible fromElement(Element element) throws DocumentException {
+			try {
+				String className = element.attributeValue("classname");
+				int startLine = Integer.parseInt(element.attributeValue("start"));
+				int endLine = Integer.parseInt(element.attributeValue("end"));
+
+				SourceLineAnnotation annotation = new SourceLineAnnotation(className, startLine, endLine);
+				annotation.setDescription(element.attributeValue("role"));
+
+				return annotation;
+			} catch (NumberFormatException e) {
+				throw new DocumentException("Invalid attribute value: " + e.toString());
+			}
+		}
+	}
+
+	static {
+		XMLTranslatorRegistry.instance().registerTranslator(new SourceLineAnnotationXMLTranslator());
+	}
+
+	public Element toElement(Branch parent) {
+		Element element = parent.addElement(ELEMENT_NAME)
+			.addAttribute("classname", getClassName())
+			.addAttribute("start", String.valueOf(getStartLine()))
+			.addAttribute("end", String.valueOf(getEndLine()))
+			.addAttribute("role", getDescription());
+
+		return element;
 	}
 }
 
