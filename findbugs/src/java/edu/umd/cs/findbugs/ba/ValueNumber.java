@@ -47,6 +47,10 @@ public class ValueNumber {
 		this.number = number;
 	}
 
+	public int getNumber() {
+		return number;
+	}
+
 	public String toString() {
 		return "(" + number + ")";
 	}
