@@ -1,20 +1,49 @@
 package edu.umd.cs.findbugs;
 
+/**
+ * Convert part or all of a Java type signature into something
+ * closer to what types look like in the source code.
+ * Both field and method signatures may be processed by this class.
+ * For a field signature, just call parseNext() once.
+ * For a method signature, parseNext() must be called multiple times,
+ * and the parens around the arguments must be skipped manually
+ * (by calling the skip() method).
+ *
+ * @author David Hovemeyer
+ */
 public class SignatureConverter {
 	private String signature;
 
+	/**
+	 * Constructor.
+	 * @param signature the field or method signature to convert
+	 */
 	public SignatureConverter(String signature) {
 		this.signature = signature;
 	}
 
+	/**
+	 * Get the first character of the remaining part of the signature.
+	 */
 	public char getFirst() {
 		return signature.charAt(0);
 	}
 
+	/**
+	 * Skip the first character of the remaining part of the signature.
+	 */
 	public void skip() {
 		signature = signature.substring(1);
 	}
 
+	/**
+	 * Parse a single type out of the signature, starting at the beginning
+	 * of the remaining part of the signature.  For example, if the first
+	 * character of the remaining part is "I", then this method will return
+	 * "int", and the "I" will be consumed.  Arrays, reference types,
+	 * and basic types are all handled.
+	 * @return the parsed type string
+	 */
 	public String parseNext() {
 		StringBuffer result = new StringBuffer();
 
