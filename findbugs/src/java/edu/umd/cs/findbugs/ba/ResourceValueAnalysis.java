@@ -24,13 +24,10 @@ import org.apache.bcel.generic.*;
 public class ResourceValueAnalysis<Resource> extends FrameDataflowAnalysis<ResourceValue, ResourceValueFrame> {
 
 	private MethodGen methodGen;
-	private CFG cfg;
 	private ResourceValueFrameModelingVisitor visitor;
 
-	public ResourceValueAnalysis(MethodGen methodGen, CFG cfg, ResourceTracker<Resource> resourceTracker,
-		Resource resource) {
+	public ResourceValueAnalysis(MethodGen methodGen, ResourceTracker<Resource> resourceTracker, Resource resource) {
 		this.methodGen = methodGen;
-		this.cfg = cfg;
 		this.visitor = resourceTracker.createVisitor(resource, methodGen.getConstantPool());
 	}
 
