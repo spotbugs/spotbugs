@@ -25,6 +25,13 @@ public interface AnalysisFeatures {
 	 * conserve space at the expense of precision.
 	 */
 	public static final boolean CONSERVE_SPACE = Boolean.getBoolean("findbugs.conserveSpace");
+
+	/**
+	 * A boolean flag which if set means that analyses should
+	 * do extra work to try to favor precision at the expense
+	 * of speed.
+	 */
+	public static final boolean WORK_HARD = Boolean.getBoolean("findbugs.workHard");
 }
 
 // vim:ts=4
