@@ -175,7 +175,7 @@ public class CountBugs {
 		if (diffMode) {
 			if (arg >= argv.length)
 				usage();
-			CountBugs countBugs2 = new CountBugs(argv[arg]);
+			CountBugs countBugs2 = new CountBugs(argv[arg++]);
 			countBugs2.setCategories(categoryList);
 			countBugs2.execute();
 
