@@ -108,6 +108,12 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
 				IsNullValueFrame tmpFrame = createFact();
 				tmpFrame.copyFrom(fact);
 				tmpFrame.clearStack();
+
+				// Mark all values as having occurred on an exception path
+				for (int i = 0; i < tmpFrame.getNumSlots(); ++i)
+					tmpFrame.setValue(i, tmpFrame.getValue(i).toExceptionValue());
+
+				// Push the exception value
 				tmpFrame.pushValue(IsNullValue.nonNullValue());
 				fact = tmpFrame;
 			} else {

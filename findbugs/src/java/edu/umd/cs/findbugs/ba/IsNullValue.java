@@ -39,6 +39,10 @@ public class IsNullValue {
 	private static final int NSP       = 4;
 	private static final int DNR       = 5;
 
+	// This can be bitwise-OR'ed to indicate the value was propagated
+	// along an exception path.
+	private static final int EXCEPTION = 0x100;
+
 	// TODO: think about this some more
 	private static final int[][] mergeMatrix = {
 		// NULL,      WEAK_NULL, NN,        WEAK_NN,   NSP,       DNR
@@ -59,10 +63,44 @@ public class IsNullValue {
 		new IsNullValue(DNR)
 	};
 
+	private static IsNullValue[] exceptionInstanceList = {
+		new IsNullValue(NULL | EXCEPTION),
+		new IsNullValue(WEAK_NULL | EXCEPTION),
+		new IsNullValue(NN | EXCEPTION),
+		new IsNullValue(WEAK_NN | EXCEPTION),
+		new IsNullValue(NSP | EXCEPTION),
+		new IsNullValue(DNR | EXCEPTION)
+	};
+
 	private int kind;
 
 	private IsNullValue(int kind) {
 		this.kind = kind;
+	}
+
+	private int getBaseKind() {
+		return kind & ~EXCEPTION;
+	}
+
+	/**
+	 * Was this value propagated on an exception path?
+	 */
+	public boolean isException() {
+		return (kind & EXCEPTION) != 0;
+	}
+
+	private IsNullValue toBaseValue() {
+		if (!isException())
+			return this;
+		else
+			return instanceList[getBaseKind()];
+	}
+
+	/**
+	 * Convert to an exception path value.
+	 */
+	public IsNullValue toExceptionValue() {
+		return exceptionInstanceList[getBaseKind()];
 	}
 
 	/** Get the instance representing values that are definitely null. */
@@ -107,6 +145,10 @@ public class IsNullValue {
 
 	/** Merge two values. */
 	public static IsNullValue merge(IsNullValue a, IsNullValue b) {
+		boolean isException = a.isException() || b.isException();
+		a = a.toBaseValue();
+		b = b.toBaseValue();
+
 		// Left hand value should be >=, since it is used
 		// as the first dimension of the matrix to index.
 		if (a.kind < b.kind) {
@@ -116,21 +158,23 @@ public class IsNullValue {
 		}
 
 		int result = mergeMatrix[a.kind][b.kind];
-		return instanceList[result];
+		return (isException ? exceptionInstanceList : instanceList)[result];
 	}
 
 	/** Is this value definitely null? */
 	public boolean isDefinitelyNull() {
-		return kind == NULL || kind == WEAK_NULL;
+		int baseKind = getBaseKind();
+		return baseKind == NULL || baseKind == WEAK_NULL;
 	}
 
 	/** Is this value null on some path? */
 	public boolean isNullOnSomePath() {
-		return kind == NSP;
+		int baseKind = getBaseKind();
+		return baseKind == NSP;
 	}
 
 	public String toString() {
-		switch (kind) {
+		switch (kind & ~EXCEPTION) {
 		case NULL:
 			return "n";
 		case WEAK_NULL:

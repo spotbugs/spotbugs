@@ -985,7 +985,7 @@ defined in an interface references a mutable
     <Details>
 <![CDATA[
   <p> This serializable class defines a <code>readObject()</code> which is
-  synchronized.&nbsp; By definition, an object created by unserialization
+  synchronized.&nbsp; By definition, an object created by deserialization
   is only reachable by one thread, and thus there is no need for
   <code>readObject()</code> to be synchronized.&nbsp; If the <code>readObject()</code>
   method itself is causing the object to become visible to another thread,
@@ -1170,6 +1170,17 @@ defined in an interface references a mutable
     </Details>
   </BugPattern>
 
+  <BugPattern type="NP_ALWAYS_NULL_EXCEPTION">
+    <ShortDescription>Null pointer dereference in method on exception path</ShortDescription>
+    <LongDescription>Null pointer dereference in {1} on exception path</LongDescription>
+    <Details>
+<![CDATA[
+<p> A pointer which is null on an exception path is dereferenced here.&nbsp;
+This will lead to a <code>NullPointerException</code> when the code is executed.
+]]>
+    </Details>
+  </BugPattern>
+
   <BugPattern type="NP_NULL_ON_SOME_PATH">
     <ShortDescription>Possible null pointer dereference in method</ShortDescription>
     <LongDescription>Possible null pointer dereference in {1}</LongDescription>
@@ -1177,6 +1188,18 @@ defined in an interface references a mutable
 <![CDATA[
 <p> A reference value dereferenced here might be null at runtime.&nbsp;
 This may lead to a <code>NullPointerException</code> when the code is executed.
+]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="NP_NULL_ON_SOME_PATH_EXCEPTION">
+    <ShortDescription>Possible null pointer dereference in method on exception path</ShortDescription>
+    <LongDescription>Possible null pointer dereference in {1} on exception path</LongDescription>
+    <Details>
+<![CDATA[
+<p> A reference value which is null on some exception control path is
+dereferenced here.&nbsp; This may lead to a <code>NullPointerException</code>
+when the code is executed.
 ]]>
     </Details>
   </BugPattern>

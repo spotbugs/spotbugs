@@ -72,10 +72,16 @@ public class FindNullDeref implements Detector {
 						// Could the reference be null?
 						IsNullValue refValue = frame.getValue(frame.getNumSlots() - consumed);
 
-						if (refValue.isDefinitelyNull())
-							reportNullDeref(classContext, method, exceptionThrowerHandle, "NP_ALWAYS_NULL");
-						else if (refValue.isNullOnSomePath())
-							reportNullDeref(classContext, method, exceptionThrowerHandle, "NP_NULL_ON_SOME_PATH");
+						boolean onExceptionPath = refValue.isException();
+						if (refValue.isDefinitelyNull()) {
+							String type = onExceptionPath ? "NP_ALWAYS_NULL_EXCEPTION" : "NP_ALWAYS_NULL";
+							int priority = onExceptionPath ? LOW_PRIORITY : NORMAL_PRIORITY;
+							reportNullDeref(classContext, method, exceptionThrowerHandle, type, priority);
+						} else if (refValue.isNullOnSomePath()) {
+							String type = onExceptionPath ? "NP_NULL_ON_SOME_PATH_EXCEPTION" : "NP_NULL_ON_SOME_PATH";
+							int priority = onExceptionPath ? LOW_PRIORITY : NORMAL_PRIORITY;
+							reportNullDeref(classContext, method, exceptionThrowerHandle, type, priority);
+						}
 					}
 				}
 			}
@@ -87,10 +93,11 @@ public class FindNullDeref implements Detector {
 		}
 	}
 
-	private void reportNullDeref(ClassContext classContext, Method method, InstructionHandle exceptionThrowerHandle, String type) {
+	private void reportNullDeref(ClassContext classContext, Method method, InstructionHandle exceptionThrowerHandle,
+		String type, int priority) {
 		MethodGen methodGen = classContext.getMethodGen(method);
 
-		bugReporter.reportBug(new BugInstance(type, NORMAL_PRIORITY)
+		bugReporter.reportBug(new BugInstance(type, priority)
 			.addClassAndMethod(methodGen)
 			.addSourceLine(methodGen, exceptionThrowerHandle)
 			.addInt(exceptionThrowerHandle.getPosition()).describe("INT_BYTECODE_OFFSET")
