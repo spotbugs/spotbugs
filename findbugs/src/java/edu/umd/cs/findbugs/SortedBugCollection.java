@@ -42,6 +42,7 @@ public class SortedBugCollection extends BugCollection {
 	private TreeSet<String> missingClassSet;
 	private TreeSet<String> applicationClassSet;
 	private HashSet<String> interfaceClassSet;
+	private String summaryHTML;
 
 	public SortedBugCollection() {
 		bugSet = new TreeSet<BugInstance>(comparator);
@@ -49,6 +50,7 @@ public class SortedBugCollection extends BugCollection {
 		missingClassSet = new TreeSet<String>();
 		applicationClassSet = new TreeSet<String>();
 		interfaceClassSet = new HashSet<String>();
+		summaryHTML = "";
 	}
 
 	public boolean add(BugInstance bugInstance) {
@@ -79,20 +81,6 @@ public class SortedBugCollection extends BugCollection {
 		return missingClassSet.iterator();
 	}
 
-	public void addApplicationClass(String className, boolean isInterface) {
-		applicationClassSet.add(className);
-		if (isInterface)
-			interfaceClassSet.add(className);
-	}
-
-	public Iterator<String> applicationClassIterator() {
-		return applicationClassSet.iterator();
-	}
-
-	public boolean isInterface(String appClassName) {
-		return interfaceClassSet.contains(appClassName);
-	}
-
 	public boolean contains(BugInstance bugInstance) {
 		return bugSet.contains(bugInstance);
 	}
@@ -105,6 +93,13 @@ public class SortedBugCollection extends BugCollection {
 		return bugInstance.equals(first) ? first : null;
 	}
 
+	public void setSummaryHTML(String html) {
+		this.summaryHTML = html;
+	}
+
+	public String getSummaryHTML() {
+		return summaryHTML;
+	}
 }
 
 // vim:ts=4

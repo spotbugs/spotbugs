@@ -65,10 +65,8 @@ public abstract class BugCollection {
 	public abstract void addMissingClass(String message);
 	public abstract Iterator<String> errorIterator();
 	public abstract Iterator<String> missingClassIterator();
-
-	public abstract void addApplicationClass(String className, boolean isInterface);
-	public abstract Iterator<String> applicationClassIterator();
-	public abstract boolean isInterface(String appClassName);
+	public abstract void setSummaryHTML(String html);
+	public abstract String getSummaryHTML();
 
 	private static final String ROOT_ELEMENT_NAME = "BugCollection";
 	private static final String SRCMAP_ELEMENT_NAME= "SrcMap";
@@ -76,7 +74,7 @@ public abstract class BugCollection {
 	private static final String ERRORS_ELEMENT_NAME = "Errors";
 	private static final String ANALYSIS_ERROR_ELEMENT_NAME = "AnalysisError";
 	private static final String MISSING_CLASS_ELEMENT_NAME = "MissingClass";
-	private static final String APP_CLASS_ELEMENT_NAME = "AppClass";
+	private static final String SUMMARY_HTML_ELEMENT_NAME = "SummaryHTML";
 
 	public void readXML(String fileName, Project project)
 		throws IOException, DocumentException {
@@ -111,10 +109,8 @@ public abstract class BugCollection {
 				project.readElement(element);
 			} else if (elementName.equals(ERRORS_ELEMENT_NAME)) {
 				readErrors(element);
-			} else if (elementName.equals(APP_CLASS_ELEMENT_NAME)) {
-				String isInterface = element.attributeValue("interface");
-				addApplicationClass(element.getText(),
-									isInterface != null && Boolean.valueOf(isInterface).booleanValue());
+			} else if (elementName.equals(SUMMARY_HTML_ELEMENT_NAME)) {
+				setSummaryHTML(element.getText());
 			} else {
 				XMLTranslator translator = XMLTranslatorRegistry.instance().getTranslator(elementName);
 				if (translator == null)
@@ -183,22 +179,13 @@ public abstract class BugCollection {
 		writeXML(out, project);
 	}
 
-	public void writeXML(OutputStream out, Project project) throws IOException {
+	public Document toDocument(Project project) {
 		Document document = DocumentHelper.createDocument();
 		Element root = document.addElement(ROOT_ELEMENT_NAME);
 
 		// Save the project information
 		Element projectElement = root.addElement(PROJECT_ELEMENT_NAME);
 		project.writeElement(projectElement);
-
-		// Save the application classes
-		for (Iterator<String> i = applicationClassIterator(); i.hasNext(); ) {
-			Element child = root.addElement(APP_CLASS_ELEMENT_NAME);
-			String className = i.next();
-			if (isInterface(className))
-				child.addAttribute("interface", "true");
-			child.setText(className);
-		}
 
 		// Save all of the bug instances
 		for (Iterator<BugInstance> i = this.iterator(); i.hasNext(); ) {
@@ -214,6 +201,18 @@ public abstract class BugCollection {
 		for (Iterator<String> i = missingClassIterator(); i.hasNext(); ) {
 			errorsElement.addElement(MISSING_CLASS_ELEMENT_NAME).setText(i.next());
 		}
+
+		// Save the HTML summary
+		String html = getSummaryHTML();
+		if (!html.equals("")) {
+			document.getRootElement().addElement(SUMMARY_HTML_ELEMENT_NAME).addCDATA(html);
+		}
+
+		return document;
+	}
+
+	public void writeXML(OutputStream out, Project project) throws IOException {
+		Document document = toDocument(project);
 
 		XMLWriter writer = new XMLWriter(out, OutputFormat.createPrettyPrint());
 		writer.write(document);

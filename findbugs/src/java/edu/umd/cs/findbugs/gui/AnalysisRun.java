@@ -53,7 +53,6 @@ public class AnalysisRun {
         private SortedBugCollection bugCollection = new SortedBugCollection();
 
 	public void observeClass(JavaClass javaClass) {
-	    bugCollection.addApplicationClass(javaClass.getClassName(), javaClass.isInterface());
 	}
 
 	public void reportMissingClass(ClassNotFoundException ex) {
@@ -157,10 +156,7 @@ public class AnalysisRun {
         reporter.bugCollection.readXML(file, project);
 
 	// Update summary stats
-	ProjectStats stats = reporter.getProjectStats();
-	stats.initFrom(reporter.bugCollection);
-	if (CREATE_SUMMARY && stats.getNumClasses() > 0)
-	    createSummary(stats);
+	summary = reporter.bugCollection.getSummaryHTML();
     }
     
     /**

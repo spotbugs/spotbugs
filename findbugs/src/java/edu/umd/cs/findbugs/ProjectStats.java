@@ -127,18 +127,6 @@ public class ProjectStats implements XMLConvertible {
      }
   }
 
-  /** Initialize empty ProjectStats from a BugCollection. */
-  public void initFrom(BugCollection bugCollection) {
-    for (Iterator<String> i = bugCollection.applicationClassIterator(); i.hasNext(); ) {
-      String appClassName = i.next();
-      this.addClass(appClassName, bugCollection.isInterface(appClassName));
-    }
-
-    for (Iterator<BugInstance> i = bugCollection.iterator(); i.hasNext(); ) {
-      addBug(i.next());
-    }
-  }
-
   /**
    * Transform summary information to HTML.
    * @param htmlWriter the Writer to write the HTML output to

@@ -19,8 +19,17 @@
 
 package edu.umd.cs.findbugs;
 
+import java.io.StringWriter;
 import java.util.*;
 import org.apache.bcel.classfile.JavaClass;
+
+import org.dom4j.Element;
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.DocumentHelper;
+import org.dom4j.io.SAXReader;
+import org.dom4j.io.XMLWriter;
+import org.dom4j.io.OutputFormat;
 
 public class XMLBugReporter extends TextUIBugReporter {
 	private SortedBugCollection bugCollection = new SortedBugCollection();
@@ -31,7 +40,6 @@ public class XMLBugReporter extends TextUIBugReporter {
 	}
 
 	public void observeClass(JavaClass javaClass) {
-		bugCollection.addApplicationClass(javaClass.getClassName(), javaClass.isInterface());
 	}
 
 	public void logError(String message) {
@@ -51,7 +59,15 @@ public class XMLBugReporter extends TextUIBugReporter {
 
 	public void finish() {
 		try {
+			StringWriter writer = new StringWriter();
+			ProjectStats stats = getProjectStats();
+			stats.transformSummaryToHTML(writer);
+
+			String html = writer.toString();
+
+			bugCollection.setSummaryHTML(html);
 			bugCollection.writeXML(outputStream, project);
+
 		} catch (Exception e) {
 			logError("Couldn't write XML output: " + e.toString());
 		}
