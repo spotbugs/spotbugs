@@ -36,5 +36,17 @@ class SwitchFallthrough {
 		}
 	}
 	
+	void test3(int i, int j) {
+		switch (i) {
+			case 0:
+				if (j == 0)
+					return;
+				
+			case 1:
+				j = 1;
+			break;
+		}
+	}
+	
 		
 }
