@@ -31,6 +31,7 @@ public abstract class CommandLine {
 	private List<String> optionList;
 	private Set<String> requiresArgumentSet;
 	private Map<String, String> optionDescriptionMap;
+	private Map<String, String> optionExtraPartSynopsisMap;
 	private Map<String, String> argumentDescriptionMap;
 	int maxWidth;
 
@@ -38,6 +39,7 @@ public abstract class CommandLine {
 		this.optionList = new LinkedList<String>();
 		this.requiresArgumentSet = new HashSet<String>();
 		this.optionDescriptionMap = new HashMap<String, String>();
+		this.optionExtraPartSynopsisMap = new HashMap<String, String>();
 		this.argumentDescriptionMap = new HashMap<String, String>();
 		this.maxWidth = 0;
 	}
@@ -56,6 +58,26 @@ public abstract class CommandLine {
 
 		if (option.length() > maxWidth)
 			maxWidth = option.length();
+	}
+
+	/**
+	 * Add a command line switch that allows optional extra
+	 * information to be specified as part of it.
+	 *
+	 * @param option                  the option, must start with "-"
+	 * @param optionExtraPartSynopsis synopsis of the optional extra information
+	 * @param description             single-line description of the option
+	 */
+	public void addSwitchWithOptionalExtraPart(String option, String optionExtraPartSynopsis,
+			String description) {
+		optionList.add(option);
+		optionExtraPartSynopsisMap.put(option, optionExtraPartSynopsis);
+		optionDescriptionMap.put(option, description);
+
+		// Option will display as -foo[:extraPartSynopsis]
+		int length = option.length() + optionExtraPartSynopsis.length() + 3;
+		if (length > maxWidth)
+			maxWidth = length;
 	}
 
 	/**
@@ -152,6 +174,12 @@ public abstract class CommandLine {
 
 			StringBuffer buf = new StringBuffer();
 			buf.append(option);
+			if (optionExtraPartSynopsisMap.get(option) != null) {
+				String optionExtraPartSynopsis = optionExtraPartSynopsisMap.get(option);
+				buf.append("[:");
+				buf.append(optionExtraPartSynopsis);
+				buf.append("]");
+			}
 			if (requiresArgumentSet.contains(option)) {
 				buf.append(" <");
 				buf.append(argumentDescriptionMap.get(option));

@@ -416,9 +416,11 @@ public class FindBugs implements Constants2, ExitCodes {
 			addSwitch("-medium", "report only medium and high priority warnings [default]");
 			addSwitch("-high", "report only high priority warnings");
 			addSwitch("-sortByClass", "sort warnings by class");
-			addSwitch("-xml", "XML output");
+			addSwitchWithOptionalExtraPart("-xml", "withMessages",
+				"XML output (optionally with messages)");
 			addSwitch("-xdocs", "xdoc XML output to use with Apache Maven");
-			addSwitch("-html", "Generate HTML output");
+			addSwitchWithOptionalExtraPart("-html", "stylesheet",
+				"Generate HTML output (default stylesheet is default.xsl)");
 			addSwitch("-emacs", "Use emacs reporting format");
 			addOption("-outputFile", "filename", "Save output in named file");
 			addOption("-visitors", "v1[,v2...]", "run only named visitors");
