@@ -42,6 +42,13 @@ boolean operators (<code>|</code> and <code>&amp;</code> instead of
     </Details>
   </Detector>
 
+  <Detector class="edu.umd.cs.findbugs.detect.FindFloatMath">
+    <Details>
+<![CDATA[
+<p> This detector looks for uses of floating path math.
+]]>
+    </Details>
+  </Detector>
   <Detector class="edu.umd.cs.findbugs.detect.CloneIdiom">
     <Details>
 <![CDATA[
@@ -432,7 +439,22 @@ It is a fast detector.
     <LongDescription>Dubious catching of IllegalMonitorStateException in {1}</LongDescription>
     <Details>
 <![CDATA[
-<p>Dubious catching of IllegalMonitorStateException.
+<p>IllegalMonitorStateException is generally only
+	thrown in case of a design flaw in your code (calling wait or
+	notify on an object you do not hold a lock on).
+]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="FL_MATH_USING_FLOAT_PRECISION">
+    <ShortDescription>Method performs math using floating point precision</ShortDescription>
+    <LongDescription>{1} performs math using floating point precision</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+	The method performs math operations using floating point precision.
+	Floating point precision is very imprecise. For example,
+	16777216.0f + 1.0f = 16777216.0f. Consider using double math instead.
 ]]>
     </Details>
   </BugPattern>
@@ -1065,8 +1087,8 @@ defined in an interface references a mutable
     </Details>
   </BugPattern>
   <BugPattern type="MS_CANNOT_BE_FINAL">
-    <ShortDescription>Field isn't final and can't be</ShortDescription>
-    <LongDescription>{1} isn't final and can't be</LongDescription>
+    <ShortDescription>Field isn't final and can't be protected from malicious code</ShortDescription>
+    <LongDescription>{1} isn't final and can't be protected malicious code </LongDescription>
     <Details>
 <![CDATA[
   <p> 
@@ -1669,6 +1691,7 @@ removed.
   **********************************************************************
    -->
 
+  <BugCode abbrev="FL" >Use of floating point precision</BugCode>
   <BugCode abbrev="IMSE" >Dubious catching of IllegalMonitorStateException</BugCode>
   <BugCode abbrev="CN" >Bad implementation of cloneable idiom</BugCode>
   <BugCode abbrev="FI" >Incorrect use of finalizers</BugCode>

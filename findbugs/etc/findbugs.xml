@@ -3,7 +3,7 @@
 	speed="fast" disable="false"
     reports="IMSE_DONT_CATCH_IMSE" />
   <Detector class="edu.umd.cs.findbugs.detect.FindFloatMath" speed="moderate" 
-	disable="false"
+	disable="true"
     reports="FL_MATH_USING_FLOAT_PRECISION" />
   <Detector class="edu.umd.cs.findbugs.detect.CloneIdiom" speed="fast" disable="true"
     reports="CN_IDIOM" />

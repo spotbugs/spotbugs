@@ -44,7 +44,13 @@ boolean operators (<code>|</code> and <code>&amp;</code> instead of
 ]]>
     </Details>
   </Detector>
-
+  <Detector class="edu.umd.cs.findbugs.detect.FindFloatMath">
+    <Details>
+<![CDATA[
+<p> This detector looks for uses of floating path math.
+]]>
+    </Details>
+  </Detector>
   <Detector class="edu.umd.cs.findbugs.detect.CloneIdiom">
     <Details>
 <![CDATA[
