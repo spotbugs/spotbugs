@@ -129,6 +129,7 @@ public abstract class AbstractGraph
 
 	public VertexType addVertex() {
 		VertexType v = createVertex();
+		vertexList.add(v);
 		v.setId(nextVertexId++);
 		v.setLabel(maxVertexLabel++);
 		return v;
@@ -136,6 +137,9 @@ public abstract class AbstractGraph
 
 	public EdgeType addEdge(VertexType source, VertexType target) {
 		EdgeType edge = createEdge(source, target);
+		edgeList.add(edge);
+		source.addOutgoingEdge(edge);
+		target.addIncomingEdge(edge);
 		edge.setLabel(maxEdgeLabel++);
 		return edge;
 	}
