@@ -34,8 +34,10 @@ public class BadResultSetAccess extends BytecodeScanningDetector implements Cons
 	static final int SEEN_ICONST_0 = 1;
 	static final int SEEN_ANEWARRAY = 2;
 
-	static private HashSet<String> dbFieldTypesSet = new HashSet<String>() 
-	{{ 
+	static private Set<String> dbFieldTypesSet = new HashSet<String>() 
+	{
+		static final long serialVersionUID = -3510636899394546735L;
+		{ 
 		add("Array");
 		add("AsciiStream");
 		add("BigDecimal");
@@ -59,7 +61,8 @@ public class BadResultSetAccess extends BytecodeScanningDetector implements Cons
 		add("Timestamp");
 		add("UnicodeStream");
 		add("URL");
-	}};
+		}
+	};
 
 	private BugReporter bugReporter;
 	private int state = SEEN_NOTHING;
