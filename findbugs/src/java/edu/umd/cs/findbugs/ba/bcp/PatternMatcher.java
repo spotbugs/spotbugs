@@ -196,7 +196,8 @@ public class PatternMatcher implements DFSEdgeTypes {
 			matchedPatternElement = matchResult.getPatternElement();
 			++matchCount;
 			canFork = true;
-			currentMatch = new PatternElementMatch(matchedPatternElement, handle, matchCount, currentMatch);
+			currentMatch = new PatternElementMatch(matchedPatternElement, handle, basicBlock,
+				matchCount, currentMatch);
 			bindingSet = matchResult.getBindingSet();
 		}
 

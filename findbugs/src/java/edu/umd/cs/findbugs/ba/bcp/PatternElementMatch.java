@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.ba.bcp;
 
+import edu.umd.cs.findbugs.ba.BasicBlock;
 import java.util.*;
 import org.apache.bcel.generic.InstructionHandle;
 
@@ -32,6 +33,7 @@ import org.apache.bcel.generic.InstructionHandle;
 public class PatternElementMatch {
 	private final PatternElement patternElement;
 	private final InstructionHandle matchedInstruction;
+	private final BasicBlock basicBlock;
 	private final int matchCount;
 	private final PatternElementMatch prev;
 
@@ -39,15 +41,18 @@ public class PatternElementMatch {
 	 * Constructor.
 	 * @param patternElement the PatternElement being matched
 	 * @param matchedInstruction the instruction which matched the PatternElement
+	 * @param basicBlock the basic block containing the matched instruction
 	 * @param matchCount the index (starting at zero) of the instructions
 	 *   matching the PatternElement; multiple instructions can match the
 	 *   same PatternElement
 	 * @param prev the previous PatternElementMatch
 	 */
 	public PatternElementMatch(PatternElement patternElement, InstructionHandle matchedInstruction,
+		BasicBlock basicBlock,
 		int matchCount, PatternElementMatch prev) {
 		this.patternElement = patternElement;
 		this.matchedInstruction = matchedInstruction;
+		this.basicBlock = basicBlock;
 		this.matchCount = matchCount;
 		this.prev = prev;
 	}
@@ -60,6 +65,11 @@ public class PatternElementMatch {
 	/** Get the matched instruction. */
 	public InstructionHandle getMatchedInstructionInstructionHandle() {
 		return matchedInstruction;
+	}
+
+	/** Get the basic block containing the matched instruction. */
+	public BasicBlock getBasicBlock() {
+		return basicBlock;
 	}
 
 	/*
