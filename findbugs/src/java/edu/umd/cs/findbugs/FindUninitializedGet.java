@@ -103,7 +103,9 @@ public class FindUninitializedGet extends BytecodeScanningDetector implements   
 		FieldAnnotation f = FieldAnnotation.fromReferencedField(this);
 		if (!initializedFields.contains(f) && declaredFields.contains(f))  {
 	  		bugReporter.reportBug(new BugInstance("UR_UNINIT_READ", NORMAL_PRIORITY)
-				.addClassAndMethod(this).addField(f));
+				.addClassAndMethod(this)
+				.addField(f)
+				.addSourceLine(this));
 			  initializedFields.add(FieldAnnotation.fromReferencedField(this));
 			}
 		}
