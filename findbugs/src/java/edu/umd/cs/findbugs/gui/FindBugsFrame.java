@@ -1354,16 +1354,18 @@ public class FindBugsFrame extends javax.swing.JFrame {
                 if (result == JFileChooser.CANCEL_OPTION)
                     return false;
                 file = chooser.getSelectedFile();
-                project.setFileName(file.getPath());
             }
             
             FileOutputStream out = new FileOutputStream(file);
             project.write(out);
             logger.logMessage(ConsoleLogger.INFO, "Project saved");
+            project.setFileName(file.getPath());
             
             return true;
         } catch (IOException e) {
             logger.logMessage(ConsoleLogger.ERROR, "Could not save project: " + e.toString());
+            JOptionPane.showMessageDialog(this, "Error saving project: " + e.toString(),
+                "Error", JOptionPane.ERROR_MESSAGE);
             return false;
         }
     }
