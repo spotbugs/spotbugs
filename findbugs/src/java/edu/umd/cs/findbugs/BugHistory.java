@@ -31,69 +31,6 @@ import java.util.*;
  */
 public class BugHistory {
 
-	/**
-	 * Compare bug instances by only those criteria which we would expect to
-	 * remain constant between versions.
-	 */
-	private static class VersionInsensitiveBugComparator implements Comparator<BugInstance> {
-		public int compare(BugInstance lhs, BugInstance rhs) {
-			// Attributes of BugInstance.
-			// Compare type and priority.
-			// Compare class and method annotations (ignoring line numbers).
-			// Compare field annotations.
-
-			int cmp;
-
-			cmp = lhs.getType().compareTo(rhs.getType());
-			if (cmp != 0) return cmp;
-
-			cmp = lhs.getPriority() - rhs.getPriority();
-			if (cmp != 0) return cmp;
-
-			Iterator<BugAnnotation> lhsIter = lhs.annotationIterator();
-			Iterator<BugAnnotation> rhsIter = rhs.annotationIterator();
-
-			while (lhsIter.hasNext() && rhsIter.hasNext()) {
-				BugAnnotation lhsAnnotation = lhsIter.next();
-				BugAnnotation rhsAnnotation = rhsIter.next();
-
-				// Different annotation types obviously cannot be equal,
-				// so just compare by class name.
-				if (lhsAnnotation.getClass() != rhsAnnotation.getClass())
-					return lhsAnnotation.getClass().getName().compareTo(rhsAnnotation.getClass().getName());
-
-				if (lhsAnnotation.getClass() == ClassAnnotation.class ||
-					lhsAnnotation.getClass() == MethodAnnotation.class ||
-					lhsAnnotation.getClass() == FieldAnnotation.class) {
-					// ClassAnnotations, MethodAnnotations, and FieldAnnotations
-					// may all be compared directly.
-					cmp = lhsAnnotation.compareTo(rhsAnnotation);
-					if (cmp != 0) return cmp;
-				} else if (lhsAnnotation.getClass() == SourceLineAnnotation.class) {
-					// We assume that source lines may change, but source files will not.
-					SourceLineAnnotation lhsSource = (SourceLineAnnotation) lhsAnnotation;
-					SourceLineAnnotation rhsSource = (SourceLineAnnotation) rhsAnnotation;
-					cmp = lhsSource.getSourceFile().compareTo(rhsSource.getSourceFile());
-					if (cmp != 0) return cmp;
-				} else if (lhsAnnotation.getClass() == IntAnnotation.class) {
-					// Just ignore IntAnnotations.
-				} else
-					throw new IllegalStateException("Unknown annotation type: " + lhsAnnotation.getClass().getName());
-			}
-
-			if (rhsIter.hasNext())
-				return -1;
-			else if (lhsIter.hasNext())
-				return 1;
-			else
-				return 0;
-		}
-	}
-
-	/** The instance of the version-insensitive comparator. */
-	private static final VersionInsensitiveBugComparator versionInsensitiveBugComparator =
-		new VersionInsensitiveBugComparator();
-
 	public static void main(String[] argv) throws Exception {
 		if (argv.length != 3) {
 			System.err.println("Usage: " + BugHistory.class.getName() +
@@ -131,7 +68,7 @@ public class BugHistory {
 	private static TreeSet<BugInstance> readSet(String filename, Project project) throws Exception {
 		SortedBugCollection bugCollection = new SortedBugCollection();
 		bugCollection.readXML(filename, project);
-		TreeSet<BugInstance> result = new TreeSet<BugInstance>(versionInsensitiveBugComparator);
+		TreeSet<BugInstance> result = new TreeSet<BugInstance>(VersionInsensitiveBugComparator.instance());
 		result.addAll(bugCollection.getCollection());
 		return result;
 	}
