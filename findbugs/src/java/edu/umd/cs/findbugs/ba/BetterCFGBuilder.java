@@ -496,6 +496,10 @@ public class BetterCFGBuilder implements CFGBuilder, EdgeTypes {
 			// Do some easy pruning
 			if (isFieldInstruction) {
 				// Field instructions can only throw NullPointerException
+
+				// FIXME: we actually need to have a successful class hierarchy lookup
+				// that shows that the type caught is NOT a supertype of NullPointerException
+
 				ObjectType catchType = exceptionHandler.getCatchType();
 				if (catchType != null && !catchType.equals(nullPointerExceptionType))
 					continue;
