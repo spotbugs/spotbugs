@@ -763,7 +763,7 @@ public class BugInstance implements Comparable, XMLConvertible {
 	 * Implementation
 	 * ---------------------------------------------------------------------- */
 
-	private void add(BugAnnotation annotation) {
+	void add(BugAnnotation annotation) {
 		if (annotation == null)
 			throw new IllegalStateException("Missing BugAnnotation!");
 
