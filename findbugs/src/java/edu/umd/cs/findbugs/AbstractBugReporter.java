@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs;
 
 import java.util.*;
 
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassNotFoundExceptionParser;
 
 /**
@@ -53,9 +54,9 @@ public abstract class AbstractBugReporter implements BugReporter {
 	private FindBugs engine;
 	private int verbosityLevel = NORMAL;
 	private int priorityThreshold;
+	private boolean analysisUnderway, relaxed;
 	private HashSet<String> missingClassMessageSet = new HashSet<String>();
 	private LinkedList<String> missingClassMessageList = new LinkedList<String>();
-	//private LinkedList<String> errorMessageList = new LinkedList<String>();
 	private LinkedList<Error> errorMessageList = new LinkedList<Error>();
 	private List<BugReporterObserver> observerList = new LinkedList<BugReporterObserver>();
 	private ProjectStats projectStats = new ProjectStats();
@@ -78,7 +79,16 @@ public abstract class AbstractBugReporter implements BugReporter {
 
 	// Subclasses must override doReportBug(), not this method.
 	public final void reportBug(BugInstance bugInstance) {
-		if (bugInstance.getPriority() <= priorityThreshold)
+		if (!analysisUnderway) {
+			if (AnalysisContext.currentAnalysisContext().getBoolProperty(
+					FindBugsAnalysisProperties.RELAXED_REPORTING_MODE)) {
+				relaxed = true;
+			}
+
+			analysisUnderway = true;
+		}
+		
+		if (bugInstance.getPriority() <= priorityThreshold || relaxed)
 			doReportBug(bugInstance);
 	}
 
