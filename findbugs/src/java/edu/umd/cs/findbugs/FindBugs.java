@@ -547,8 +547,10 @@ public class FindBugs implements Constants2, ExitCodes
 			i.next().observeClass(javaClass);
 		}
 
+		// Create a ClassContext for the class
 		ClassContext classContext = new ClassContext(javaClass, bugReporter);
 
+		// Run the Detectors
 		for (int i = 0; i < detectors.length; ++i) {
 			if (Thread.interrupted())
 				throw new InterruptedException();
@@ -557,18 +559,23 @@ public class FindBugs implements Constants2, ExitCodes
 				if (DEBUG) System.out.println("  running " + detector.getClass().getName());
 				detector.visitClassContext(classContext);
 			} catch (AnalysisException e) {
-				if (DEBUG) {
-					e.printStackTrace();
-				}
-				bugReporter.logError("Analysis exception: " + e.toString());
+				reportRecoverableException(className, e);
 			}
 		}
 	} catch (ClassNotFoundException e) {
+		// This should never happen unless there are bugs in BCEL.
 		bugReporter.reportMissingClass(e);
-		bugReporter.logError("Could not find class " + className + " in Repository: " + e.getMessage());
+		reportRecoverableException(className, e);
+	} catch (ClassFormatException e) {
+		reportRecoverableException(className, e);
 	}
 
 	progressCallback.finishClass();
+  }
+
+  private void reportRecoverableException(String className, Exception e) {
+	if (DEBUG) { e.printStackTrace(); }
+	bugReporter.logError("Exception analyzing " + className + ": " + e.toString());
   }
 
   /**
