@@ -48,7 +48,9 @@ public class Obligation {
 	}
 	
 	public String toString() {
-		return className;
+		// Make dataflow output more compact by dropping package
+		int lastDot = className.lastIndexOf('.');
+		return lastDot >= 0 ? className.substring(lastDot+1) : className;
 	}
 }
 
