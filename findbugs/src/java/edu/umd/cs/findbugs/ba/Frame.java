@@ -360,8 +360,12 @@ public abstract class Frame<ValueType> {
 		if (isBottom()) return "[BOTTOM]";
 		StringBuffer buf = new StringBuffer();
 		buf.append('[');
-		for (int i = 0; i < getNumSlots(); ++i) {
-			buf.append(getValue(i));
+		int numSlots = getNumSlots();
+		for (int i = 0; i < numSlots; ++i) {
+			String value = getValue(i).toString();
+			if (i == numSlots - 1 && value.endsWith(","))
+				value = value.substring(0, value.length() - 1);
+			buf.append(value);
 		}
 		buf.append(']');
 		return buf.toString();
