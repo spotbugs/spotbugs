@@ -42,6 +42,15 @@ public class Wild extends PatternElement {
 	}
 
 	/**
+	 * Constructor.  Matches any number of instructions from 0 to the maximum specified.
+	 * @param max the maximum number of instructions the wildcard may match
+	 */
+	public Wild(int max) {
+		this.min = 0;
+		this.max = max;
+	}
+
+	/**
 	 * Constructor.
 	 * @param min minimum number of times the wildcard must match
 	 * @param max maximum number of times the wildcard may match
