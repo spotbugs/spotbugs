@@ -28,29 +28,31 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 
 public class Naming extends PreorderVisitor implements Detector, Constants2 {
   String baseClassName;
+  Map<String, String> superClass = new HashMap<String, String>();
 
   static class MyMethod {
-	final String superClass;
-	final String className;
+	final JavaClass clazz;
 	final String methodName;
 	final String methodSig;
-	MyMethod(String sc, String c, String n, String s) {
-		superClass = sc;
-		className = c;
+	MyMethod(JavaClass c, String n, String s) {
+		clazz = c;
 		methodName = n;
 		methodSig = s;
+		}
+	public String getClassName() {
+		return clazz.getClassName();
 		}
 	public boolean equals(Object o) {
 		if (!(o instanceof MyMethod)) return false;
 		MyMethod m2 = (MyMethod) o;
 		return 
-			className.equals(m2.className)
+			clazz.equals(m2.clazz)
 			&& methodName.equals(m2.methodName)
 			&& methodSig.equals(m2.methodSig);
 			}
 
 	public int hashCode() {
-		return className.hashCode()
+		return clazz.hashCode()
 			+methodName.hashCode()
 			+methodSig.hashCode();
 		}
@@ -59,8 +61,8 @@ public class Naming extends PreorderVisitor implements Detector, Constants2 {
 			& !methodName.equals(m.methodName);
 		}
 	public String toString() {
-		return superClass  + " -> "
-			+ className + "." + methodName
+		return getClassName() 
+			+ "." + methodName
 				+ ":" + methodSig;
 		}
 	}
@@ -89,25 +91,21 @@ public class Naming extends PreorderVisitor implements Detector, Constants2 {
   private boolean checkSuper(MyMethod m, HashSet<MyMethod> others) {
 	for(Iterator<MyMethod> i = others.iterator(); i.hasNext() ; ) {
 		MyMethod m2 =  i.next();
-		if (m2.superClass == null)
-			throw new RuntimeException("This is wrong");
+		try {
 		if (m.confusingMethodNames(m2)
-				&& m.superClass.equals(m2.className)) {
-		  MyMethod m3 = new MyMethod(null,
-					m.className, m2.methodName, m.methodSig);
-		  int size1 = others.size();
+				&& Repository.instanceOf(m.clazz, m2.clazz)) {
+		  MyMethod m3 = new MyMethod(
+					m.clazz, m2.methodName, m.methodSig);
 		  boolean r = others.contains(m3);
-		  int size2 = others.size();
-		  if (size1 != size2)
-			throw new RuntimeException ("this is wrong");
 		  if (r) continue;
 		  bugReporter.reportBug(new BugInstance("NM_VERY_CONFUSING", HIGH_PRIORITY)
-			.addClass(m.className)
-			.addMethod(m.className, m.methodName, m.methodSig)
-			.addClass(m2.className)
-			.addMethod(m2.className, m2.methodName, m2.methodSig));
+			.addClass(m.getClassName())
+			.addMethod(m.getClassName(), m.methodName, m.methodSig)
+			.addClass(m2.getClassName())
+			.addMethod(m2.getClassName(), m2.methodName, m2.methodSig));
 			return true;
 		}
+		} catch (ClassNotFoundException e) {}
 	}
 	return false;
 	}
@@ -117,10 +115,10 @@ public class Naming extends PreorderVisitor implements Detector, Constants2 {
 		MyMethod m2 =  i.next();
 		if (m.confusingMethodNames(m2)) {
 		  bugReporter.reportBug(new BugInstance("NM_CONFUSING", LOW_PRIORITY)
-			.addClass(m.className)
-			.addMethod(m.className, m.methodName, m.methodSig)
-			.addClass(m2.className)
-			.addMethod(m2.className, m2.methodName, m2.methodSig));
+			.addClass(m.getClassName())
+			.addMethod(m.getClassName(), m.methodName, m.methodSig)
+			.addClass(m2.getClassName())
+			.addMethod(m2.getClassName(), m2.methodName, m2.methodSig));
 			return true;
 		}
 	}
@@ -153,11 +151,13 @@ public class Naming extends PreorderVisitor implements Detector, Constants2 {
  }
 
   public void visitJavaClass(JavaClass obj)     {
+	if (obj.isInterface()) return;
 	String name = obj.getClassName();
 	if (!visited.add(name)) return;
 	try {
 	JavaClass supers[] = Repository.getSuperClasses(obj);
 		for(int i = 0; i < supers.length; i++) {
+			JavaClass sup = supers[i];
 			visitJavaClass(supers[i]);
 			}
 	} catch (ClassNotFoundException e) {
@@ -173,6 +173,7 @@ public class Naming extends PreorderVisitor implements Detector, Constants2 {
 	}
 
     public void visit(Method obj) {
+	if (obj.isAbstract()) return;
 	if (methodName.length() == 1) return;
 
 	if (methodName.equals(baseClassName)) 
@@ -186,8 +187,7 @@ public class Naming extends PreorderVisitor implements Detector, Constants2 {
 	String trueName = methodName + methodSig;
 	String allSmall = methodName.toLowerCase() + methodSig;
 	
-	MyMethod mm = new MyMethod(betterSuperclassName, 
-					betterClassName, methodName, methodSig);
+	MyMethod mm = new MyMethod( thisClass, methodName, methodSig);
 	{
 	HashSet<String> s = canonicalToTrueMapping.get(allSmall);
 	if (s == null) {
