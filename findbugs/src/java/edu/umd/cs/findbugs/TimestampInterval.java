@@ -76,18 +76,22 @@ public class TimestampInterval implements Comparable<TimestampInterval> {
 	 * 
 	 * @param token the interval
 	 * @return the TimestampInterval
-	 * @throws NumberFormatException if the interval is invalid
-	 * @throws IllegalArgumentException if the interval is invalid
 	 */
-	public static TimestampInterval decode(String token) {
-		int dash = token.indexOf('-');
-		if (dash < 0) {
-			long moment = Long.parseLong(token);
-			return new TimestampInterval(moment, moment);
-		} else {
-			String begin = token.substring(0, dash);
-			String end = token.substring(dash+1);
-			return new TimestampInterval(Long.parseLong(begin), Long.parseLong(end));
+	public static TimestampInterval decode(String token) throws InvalidTimestampIntervalException {
+		try {
+			int dash = token.indexOf('-');
+			if (dash < 0) {
+				long moment = Long.parseLong(token);
+				return new TimestampInterval(moment, moment);
+			} else {
+				String begin = token.substring(0, dash);
+				String end = token.substring(dash+1);
+				return new TimestampInterval(Long.parseLong(begin), Long.parseLong(end));
+			}
+		} catch (NumberFormatException e) {
+			throw new InvalidTimestampIntervalException("Invalid interval: " + token, e);
+		} catch (IllegalArgumentException e) {
+			throw new InvalidTimestampIntervalException("Invalid interval: " + token, e);
 		}
 	}
 

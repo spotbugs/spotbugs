@@ -36,7 +36,7 @@ public class TimestampIntervalCollection {
 	 * Constructor.
 	 * Creates empty collection.
 	 */
-	private TimestampIntervalCollection() {
+	public TimestampIntervalCollection() {
 		this.intervalList = new ArrayList<TimestampInterval>();
 	}
 	
@@ -110,8 +110,10 @@ public class TimestampIntervalCollection {
 	 * 
 	 * @param s the encoded String
 	 * @return the decoded TimestampIntervalCollection
+	 * @throws InvalidTimestampIntervalException if any specified interval is invalid
 	 */
-	public static TimestampIntervalCollection decode(String s) {
+	public static TimestampIntervalCollection decode(String s)
+			throws InvalidTimestampIntervalException {
 		TimestampIntervalCollection result = new TimestampIntervalCollection();
 		StringTokenizer t = new StringTokenizer(s, ",");
 		while (t.hasMoreTokens()) {
