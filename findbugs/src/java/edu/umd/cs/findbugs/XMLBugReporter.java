@@ -36,7 +36,7 @@ public class XMLBugReporter extends TextUIBugReporter {
 
 	public void finish() {
 		try {
-			bugCollection.writeXML(System.out, project, classToSourceMap);
+			bugCollection.writeXML(System.out, project);
 		} catch (Exception e) {
 			logError("Couldn't write XML output: " + e.toString());
 		}

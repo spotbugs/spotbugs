@@ -58,23 +58,25 @@ public abstract class BugCollection {
 	private static final String SRCMAP_ELEMENT_NAME= "SrcMap";
 	private static final String PROJECT_ELEMENT_NAME = "Project";
 
-	public void readXML(String fileName, Project project, Map<String, String> classToSourceFileMap)
+	public void readXML(String fileName, Project project)
 		throws IOException, DocumentException {
 		BufferedInputStream in = new BufferedInputStream(new FileInputStream(fileName));
-		readXML(in, project, classToSourceFileMap);
+		readXML(in, project);
 	}
 
-	public void readXML(File file, Project project, Map<String, String> classToSourceFileMap)
+	public void readXML(File file, Project project)
 		throws IOException, DocumentException {
 		BufferedInputStream in = new BufferedInputStream(new FileInputStream(file));
-		readXML(in, project, classToSourceFileMap);
+		readXML(in, project);
 	}
 
-	public void readXML(InputStream in, Project project, Map<String, String> classToSourceFileMap)
+	public void readXML(InputStream in, Project project)
 		throws IOException, DocumentException {
 
 		SAXReader reader = new SAXReader();
 		Document document = reader.read(in);
+
+		Map<String, String> classToSourceFileMap = new HashMap<String, String>();
 
 		for (Iterator i = document.getRootElement().elements().iterator(); i.hasNext(); ) {
 			Element element = (Element) i.next();
@@ -128,17 +130,17 @@ public abstract class BugCollection {
 		}
 	}
 
-	public void writeXML(String fileName, Project project, Map<String, String> classToSourceFileMap) throws IOException {
+	public void writeXML(String fileName, Project project) throws IOException {
 		BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(fileName));
-		writeXML(out, project, classToSourceFileMap);
+		writeXML(out, project);
 	}
 	
-	public void writeXML(File file, Project project, Map<String, String> classToSourceFileMap) throws IOException {
+	public void writeXML(File file, Project project) throws IOException {
 		BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(file));
-		writeXML(out, project, classToSourceFileMap);
+		writeXML(out, project);
 	}
 
-	public void writeXML(OutputStream out, Project project, Map<String, String> classToSourceFileMap) throws IOException {
+	public void writeXML(OutputStream out, Project project) throws IOException {
 		Document document = DocumentHelper.createDocument();
 		Element root = document.addElement(ROOT_ELEMENT_NAME);
 

@@ -63,10 +63,6 @@ public class AnalysisRun {
 	public void endReport() {
             errorDialog.finish();
         }
-
-	public Map<String, String> getClassToSourceMap() {
-	    return classToSourceMap;
-	}
     }
 
     private Project project;
@@ -111,14 +107,14 @@ public class AnalysisRun {
      * Load bugs from a file.
      */
     public void loadBugsFromFile(File file) throws IOException, org.dom4j.DocumentException {
-        reporter.bugCollection.readXML(file, project, reporter.getClassToSourceMap());
+        reporter.bugCollection.readXML(file, project);
     }
     
     /**
      * Save bugs to a file.
      */
     public void saveBugsToFile(File file) throws IOException {
-	reporter.bugCollection.writeXML(file, project, reporter.getClassToSourceMap());
+	reporter.bugCollection.writeXML(file, project);
     }
     
     /**
@@ -156,14 +152,4 @@ public class AnalysisRun {
     public DefaultTreeModel getTreeModel(String groupByOrder) {
         return (DefaultTreeModel) treeModelMap.get(groupByOrder);
     }
-    
-    /**
-     * Look up the source file for given class.
-     * @return the source file name, or null if we don't have a source filename
-     *   for the class
-     */
-    public String getSourceFile(String className) {
-	return findBugs.getSourceFile(className);
-    }
-    
 }

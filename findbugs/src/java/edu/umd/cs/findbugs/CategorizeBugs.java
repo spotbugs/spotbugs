@@ -28,7 +28,7 @@ public class CategorizeBugs {
 
 		BugCollection bugCollection = new SortedBugCollection();
 
-		bugCollection.readXML(argv[0], new Project(), new HashMap<String, String>());
+		bugCollection.readXML(argv[0], new Project());
 
 		Iterator<BugInstance> i = bugCollection.iterator();
 		while (i.hasNext()) {

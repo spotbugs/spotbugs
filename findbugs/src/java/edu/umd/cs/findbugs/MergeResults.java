@@ -44,14 +44,13 @@ public class MergeResults {
 		String newResultsFile = argv[1];
 		String outputFile = argv[2];
 
-		HashMap<String, String> classToSourceFileMap = new HashMap<String, String>();
 		Project project = new Project();
 
 		SortedBugCollection origCollection = new SortedBugCollection();
 		SortedBugCollection newCollection = new SortedBugCollection();
 
-		origCollection.readXML(origResultsFile, new Project(), new HashMap<String,String>());
-		newCollection.readXML(newResultsFile, project, classToSourceFileMap);
+		origCollection.readXML(origResultsFile, new Project());
+		newCollection.readXML(newResultsFile, project);
 
 		int numPreserved = 0;
 		int numLost = 0;
@@ -81,7 +80,7 @@ public class MergeResults {
 		System.out.println(numPreserved + " preserved, " +
 			numLost + " lost (" + numLostWithAnnotations + " lost with annotations)");
 
-		newCollection.writeXML(outputFile, project, classToSourceFileMap);
+		newCollection.writeXML(outputFile, project);
 	}
 }
 
