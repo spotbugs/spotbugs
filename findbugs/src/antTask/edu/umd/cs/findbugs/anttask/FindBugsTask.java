@@ -102,7 +102,7 @@ import java.util.List;
  *
  * @author Mike Fagan <a href="mailto:mfagan@tde.com">mfagan@tde.com</a>
  *
- * @version $Revision: 1.23 $
+ * @version $Revision: 1.24 $
  *
  * @since Ant 1.5
  *
@@ -463,9 +463,10 @@ public class FindBugsTask extends Task {
 		if ( outputFormat != null  && 
 			!( outputFormat.trim().equalsIgnoreCase("xml" ) || 
 			   outputFormat.trim().equalsIgnoreCase("text" ) ||
+			   outputFormat.trim().equalsIgnoreCase("xdocs" ) ||
 			   outputFormat.trim().equalsIgnoreCase("emacs") ) ) { 
 			throw new BuildException( "output attribute must be either " +
-  									  "'text', 'xml', or 'emacs' for task <"
+  									  "'text', 'xml', 'xdocs' or 'emacs' for task <"
 										+ getTaskName() + "/>",
 									  getLocation() );
 		}
