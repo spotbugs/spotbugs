@@ -24,6 +24,8 @@ import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
 
+import java.util.Iterator;
+
 /**
  * Special ReferenceType representing the type of a caught exception.
  * Keeps track of the entire set of exceptions that can be caught,
@@ -64,6 +66,21 @@ public class ExceptionObjectType extends ReferenceType implements Constants, Ext
 	 */
 	public ExceptionSet getExceptionSet() {
 		return exceptionSet;
+	}
+
+	public String toString() {
+		StringBuffer buf = new StringBuffer();
+		buf.append("<exception:");
+		boolean first = true;
+		for (Iterator<ThrownException> i = exceptionSet.iterator(); i.hasNext(); ) {
+			if (first)
+				first = false;
+			else
+				buf.append(',');
+			buf.append(i.next().getType().toString());
+		}
+		buf.append(">");
+		return buf.toString();
 	}
 }
 
