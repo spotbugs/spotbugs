@@ -134,6 +134,16 @@ public class BugInstance implements Comparable {
 		return annotationList.iterator();
 	}
 
+	/**
+	 * Get the abbreviation of this bug instance's BugPattern.
+	 * This is the same abbreviation used by the BugCode which
+	 * the BugPattern is a particular species of.
+	 */
+	public String getAbbrev() {
+		BugPattern pattern = I18N.instance().lookupBugPattern(getType());
+		return pattern != null ? pattern.getAbbrev() : "<unknown bug pattern>";
+	}
+
 	/* ----------------------------------------------------------------------
 	 * Combined annotation adders
 	 * ---------------------------------------------------------------------- */
