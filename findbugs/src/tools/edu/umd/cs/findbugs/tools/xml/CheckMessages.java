@@ -23,8 +23,16 @@ import java.io.File;
 
 import java.net.MalformedURLException;
 
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+
+import org.dom4j.Attribute;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
+import org.dom4j.Element;
+import org.dom4j.Node;
 
 import org.dom4j.io.SAXReader;
 
@@ -33,11 +41,22 @@ import org.dom4j.io.SAXReader;
  * are valid and complete.
  */
 public class CheckMessages {
-	private static class MessagesDoc {
+
+	private static class CheckMessagesException extends DocumentException {
+		public CheckMessagesException(String msg, XMLFile xmlFile, Node node) {
+			super("In " + xmlFile.getFilename() + ", " + node.toString() + ": " + msg);
+		}
+
+		public CheckMessagesException(String msg, XMLFile xmlFile) {
+			super("In " + xmlFile.getFilename() + ": " + msg);
+		}
+	}
+
+	private static class XMLFile {
 		private String filename;
 		private Document document;
 
-		public MessagesDoc(String filename) throws DocumentException, MalformedURLException {
+		public XMLFile(String filename) throws DocumentException, MalformedURLException {
 			this.filename = filename;
 
 			File file = new File(filename);
@@ -48,34 +67,157 @@ public class CheckMessages {
 		public String getFilename() { return filename; }
 
 		public Document getDocument() { return document; }
+
+		/**
+		 * Get iterator over Nodes selected by
+		 * given XPath expression.
+		 */
+		public Iterator xpathIterator(String xpath) {
+			return document.selectNodes(xpath).iterator();
+		}
+
+		/**
+		 * Build collection of the values of given attribute
+		 * in all nodes matching given XPath expression.
+		 */
+		public Set<String> collectAttributes(String xpath, String attrName)
+			throws DocumentException {
+			HashSet<String> result = new HashSet<String>();
+
+			for (Iterator i = xpathIterator(xpath); i.hasNext(); ) {
+				Node node = (Node) i.next();
+				String value = checkAttribute(node, attrName).getValue();
+				result.add(value);
+			}
+
+			return result;
+		}
+
+		public Attribute checkAttribute(Node node, String attrName) throws DocumentException {
+			if (!(node instanceof Element))
+				throw new CheckMessagesException("Node is not an element", this, node);
+			Element element = (Element) node;
+			Attribute attr = element.attribute(attrName);
+			if (attr == null)
+				throw new CheckMessagesException("Missing " + attrName + " attribute", this, node);
+			return attr;
+		}
+
+		public Element checkElement(Node node, String elementName) throws DocumentException {
+			if (!(node instanceof Element))
+				throw new CheckMessagesException("Node is not an element", this, node);
+			Element element = (Element) node;
+			Element child = element.element(elementName);
+			if (child == null)
+				throw new CheckMessagesException("Missing " + elementName + " element", this, node);
+			return child;
+		}
+
+		public String checkNonEmptyText(Node node) throws DocumentException {
+			if (!(node instanceof Element))
+				throw new CheckMessagesException("Node is not an element", this, node);
+			Element element = (Element) node;
+			String text = element.getText();
+			if (text.equals(""))
+				throw new CheckMessagesException("Empty text in element", this, node);
+			return text;
+		}
 	}
 
-	private MessagesDoc masterMessagesDoc;
+	private XMLFile pluginDescriptorDoc;
+	private Set<String> declaredDetectorsSet;
+	private Set<String> declaredAbbrevsSet;
 
-	public CheckMessages(String filename) throws DocumentException, MalformedURLException {
-		masterMessagesDoc = new MessagesDoc(filename);
-		checkMessages(masterMessagesDoc);
+	public CheckMessages(String pluginDescriptorFilename)
+		throws DocumentException, MalformedURLException {
+
+		pluginDescriptorDoc = new XMLFile(pluginDescriptorFilename);
+
+		declaredDetectorsSet =
+			pluginDescriptorDoc.collectAttributes("/FindbugsPlugin/Detector", "class");
+
+		declaredAbbrevsSet =
+			pluginDescriptorDoc.collectAttributes("/FindbugsPlugin/BugPattern", "abbrev");
 	}
 
-	public void checkMessages(MessagesDoc messagesDoc) throws DocumentException {
+	/**
+	 * Check given messages file for validity.
+	 * @throws DocumentException if the messages file is invalid
+	 */
+	public void checkMessages(XMLFile messagesDoc) throws DocumentException {
+		// Detector elements must all have a class attribute
+		// and details child element.
+		for (Iterator i = messagesDoc.xpathIterator("/MessageCollection/Detector"); i.hasNext(); ) {
+			Node node = (Node) i.next();
+			messagesDoc.checkAttribute(node, "class");
+			messagesDoc.checkElement(node, "Details");
+		}
+
+		// BugPattern elements must all have type attribute
+		// and ShortDescription, LongDescription, and Details
+		// child elements.
+		for (Iterator i = messagesDoc.xpathIterator("/MessageCollection/BugPattern"); i.hasNext(); ) {
+			Node node = (Node) i.next();
+			messagesDoc.checkAttribute(node, "type");
+			messagesDoc.checkElement(node, "ShortDescription");
+			messagesDoc.checkElement(node, "LongDescription");
+			messagesDoc.checkElement(node, "Details");
+		}
+
+		// BugCode elements must contain abbrev attribute
+		// and have non-empty text
+		for (Iterator i = messagesDoc.xpathIterator("/MessageCollection/BugCode"); i.hasNext(); ) {
+			Node node = (Node) i.next();
+			messagesDoc.checkAttribute(node, "abbrev");
+			messagesDoc.checkNonEmptyText(node);
+		}
+
+		// Check that all Detectors are described
+		Set<String> describedDetectorsSet =
+			messagesDoc.collectAttributes("/MessageCollection/Detector", "class");
+		checkDescribed("Bug detectors not described by Detector elements",
+			messagesDoc, declaredDetectorsSet, describedDetectorsSet);
+
+		// Check that all BugCodes are described
+		Set<String> describedAbbrevsSet =
+			messagesDoc.collectAttributes("/MessageCollection/BugCode", "abbrev");
+		checkDescribed("Abbreviations not described by BugCode elements",
+			messagesDoc, declaredAbbrevsSet, describedAbbrevsSet);
 	}
 
-	public void checkTranslation(MessagesDoc translatedMessagesDoc) throws DocumentException {
+	public void checkDescribed(String description, XMLFile xmlFile,
+		Set<String> declared, Set<String> described) throws DocumentException {
+
+		Set<String> notDescribed = new HashSet<String>();
+		notDescribed.addAll(declared);
+		notDescribed.removeAll(described);
+
+		if (!notDescribed.isEmpty())
+			throw new CheckMessagesException(description + ": " + notDescribed.toString(), xmlFile);
 	}
 
 	public static void main(String[] argv) throws Exception {
-		if (argv.length < 1) {
+		if (argv.length < 2) {
 			System.err.println("Usage: " + CheckMessages.class.getName() +
-				" <master messages xml> [<translation xml> ...]");
+				" <plugin descriptor xml> <bug description xml> [<bug description xml>...]");
 			System.exit(1);
 		}
 
-		String masterFile = argv[0];
+		String pluginDescriptor = argv[0];
 
-		CheckMessages checkMessages = new CheckMessages(masterFile);
-		for (int i = 1; i < argv.length; ++i) {
-			checkMessages.checkTranslation(new MessagesDoc(argv[i]));
+		try {
+			CheckMessages checkMessages = new CheckMessages(pluginDescriptor);
+			for (int i = 1; i < argv.length; ++i) {
+				String messagesFile = argv[i];
+				System.out.println("Checking messages file " + messagesFile);
+				checkMessages.checkMessages(new XMLFile(messagesFile));
+			}
+		} catch (DocumentException e) {
+			System.err.println("Could not verify messages files: " + e.getMessage());
+			System.exit(1);
 		}
+
+		System.out.println("Messages files look OK!");
 	}
 }
 
