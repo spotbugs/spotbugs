@@ -8,8 +8,14 @@
 :: ----------------------------------------------------------------------
 set appjar=findbugsGUI.jar
 set jvmargs=-Xmx256m -Xss2m
+set javacmd=java
 set debugArg=
 set args=
+
+:: Honor JAVA_HOME environment variable if it is set
+if "%JAVA_HOME%"=="" goto nojavahome
+set javacmd=%JAVA_HOME%\bin\java
+:nojavahome
 
 goto loop
 
@@ -40,8 +46,11 @@ if "%firstArg%"=="-home" goto shift2
 if "%firstArg%"=="-jvmArgs" set jvmargs=%secondArg%
 if "%firstArg%"=="-jvmArgs" goto shift2
 
-if "%firstArg%"=="-debug" set debugArg="-Dfindbugs.debug=true"
+if "%firstArg%"=="-debug" set debugArg=-Dfindbugs.debug=true
 if "%firstArg%"=="-debug" goto shift1
+
+if "%firstArg%"=="-javahome" set javacmd=%secondArg%\bin\java
+if "%firstArg%"=="-javahome" goto shift2
 
 if "%firstArg%"=="-help" goto help
 
@@ -63,7 +72,7 @@ if "%FINDBUGS_HOME%"=="" goto homeNotSet
 :: echo appjar is %appjar%
 :: echo args is %args%
 :: echo jvmargs is %jvmargs%
-java %debugArg% "-Dfindbugs.home=%FINDBUGS_HOME%" %jvmargs% -jar "%FINDBUGS_HOME%\lib\%appjar%" %args%
+"%javacmd%" "%debugArg%" "-Dfindbugs.home=%FINDBUGS_HOME%" %jvmargs% -jar "%FINDBUGS_HOME%\lib\%appjar%" %args%
 goto end
 
 :: ----------------------------------------------------------------------
@@ -75,6 +84,7 @@ echo    -home dir       Use dir as FINDBUGS_HOME
 echo    -gui            Use the Graphical UI (default behavior)
 echo    -textui         Use the Text UI
 echo    -jvmArgs args   Pass args to JVM
+echo    -javahome dir   Specify location of JRE
 echo    -help           Display this message
 echo    -debug          Enable debug tracing in FindBugs
 echo All other options are passed to the FindBugs application
