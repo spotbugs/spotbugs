@@ -1,0 +1,120 @@
+package edu.umd.cs.daveho.ba;
+
+import java.util.*;
+
+/**
+ * Object to enumerate (some subset of) the simple paths in a CFG.
+ * A simple path is a path from entry to exit, ignoring backedges
+ * and unhandled exceptions.
+ *
+ * <p> FIXME: instead of storing the simple paths,
+ * should invoke a callback as each simple path is produced.
+ * That would save memory.
+ *
+ * @see CFG
+ * @author David Hovemeyer
+ */
+public class SimplePathEnumerator implements EdgeTypes, DFSEdgeTypes {
+	private CFG cfg;
+	private DepthFirstSearch dfs;
+	private int maxPaths;
+	private int maxWork;
+	private int work;
+	private List<List<Edge>> pathList;
+
+	private static final boolean DEBUG = Boolean.getBoolean("spe.debug");
+
+	/**
+	 * Default number of steps to be performed in path enumeration.
+	 */
+	public static final int DEFAULT_MAX_WORK = 200000;
+
+	/**
+	 * Constructor.
+	 * @param cfg the control flow graph to enumerate simple paths of
+	 * @param maxPaths maximum number of simple paths to find
+	 * @param maxWork maximum number of steps to be performed in the path
+	 *   enumeration (to handle exponential blowup of search space)
+	 */
+	public SimplePathEnumerator(CFG cfg, int maxPaths, int maxWork) {
+		this.cfg = cfg;
+		this.dfs = new DepthFirstSearch(cfg).search();
+		this.maxPaths = maxPaths;
+		this.maxWork = maxWork;
+		this.work = 0;
+		this.pathList = new LinkedList<List<Edge>>();
+	}
+
+	/**
+	 * Constructor; max work is set to DEFAULT_MAX_WORK.
+	 * @param cfg the control flow graph to enumerate simple paths of
+	 * @param maxPaths maximum number of simple paths to find
+	 */
+	public SimplePathEnumerator(CFG cfg, int maxPaths) {
+		this(cfg, maxPaths, DEFAULT_MAX_WORK);
+	}
+
+	/**
+	 * Enumerate the simple paths.
+	 * @return this object
+	 */
+	public SimplePathEnumerator enumerate() {
+		Iterator<Edge> entryOut = cfg.outgoingEdgeIterator(cfg.getEntry());
+		if (!entryOut.hasNext()) throw new IllegalStateException();
+		Edge entryEdge = entryOut.next();
+
+		LinkedList<Edge> init = new LinkedList<Edge>();
+		init.add(entryEdge);
+
+		work(init);
+		if (DEBUG && work == maxWork) System.out.println("**** Reached max work! ****");
+
+		return this;
+	}
+
+	/**
+	 * Iterate over simple paths.
+	 */
+	public Iterator<List<Edge>> iterator() {
+		return pathList.iterator();
+	}
+
+	private void work(LinkedList<Edge> partialPath) {
+		if (pathList.size() == maxPaths)
+			return;
+
+		Edge last = partialPath.getLast();
+
+		// Is this a complete path?
+		if (last.getDest() == cfg.getExit()) {
+			pathList.add(new LinkedList<Edge>(partialPath));
+			return;
+		}
+
+		// Look for non-backedge, non-unhandled-exception outgoing edges, and recur.
+		Iterator<Edge> i = cfg.outgoingEdgeIterator(last.getDest());
+		while (i.hasNext()) {
+			Edge outEdge = i.next();
+
+			// Ignore back edges and unhandled exception edges
+			if (dfs.getDFSEdgeType(outEdge) == BACK_EDGE || outEdge.getType() == UNHANDLED_EXCEPTION_EDGE)
+				continue;
+
+			// Add the edge to the current partial path, and recur
+			partialPath.add(outEdge);
+			work(partialPath);
+			partialPath.removeLast();
+
+			// Have we done the maximum amount of work?
+			if (work == maxWork)
+				return;
+			++work;
+
+			// Did we reach the maximum number of simple paths?
+			if (pathList.size() == maxPaths)
+				return;
+		}
+	}
+}
+
+// vim:ts=4
