@@ -967,6 +967,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
     private void configureDetectorsItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_configureDetectorsItemActionPerformed
         ConfigureDetectorsDialog dialog = new ConfigureDetectorsDialog(this, true);
+        dialog.setSize(600, 400);
         dialog.show();
     }//GEN-LAST:event_configureDetectorsItemActionPerformed
 
