@@ -417,7 +417,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
         editProjectPanel.setLayout(new java.awt.GridBagLayout());
 
         jarFileLabel.setFont(new java.awt.Font("Dialog", 0, 12));
-        jarFileLabel.setText("Jar file:");
+        jarFileLabel.setText("Archive or directory:");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 3;
@@ -455,7 +455,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
         editProjectPanel.add(addJarButton, gridBagConstraints);
 
         jarFileListLabel.setFont(new java.awt.Font("Dialog", 0, 12));
-        jarFileListLabel.setText("Jar Files:");
+        jarFileListLabel.setText("Archives/directories:");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 4;
@@ -1309,18 +1309,35 @@ public class FindBugsFrame extends javax.swing.JFrame {
         addJarToList();
     }//GEN-LAST:event_jarNameTextFieldActionPerformed
     
+    private static final HashSet<String> archiveExtensionSet = new HashSet<String>();
+    static {
+        archiveExtensionSet.add(".jar");
+        archiveExtensionSet.add(".zip");
+        archiveExtensionSet.add(".ear");
+        archiveExtensionSet.add(".war");
+    }
+    
     private void browseJarButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_browseJarButtonActionPerformed
 	JFileChooser chooser = createFileChooser();
         FileFilter filter = new FileFilter() {
-            public boolean accept(File file) { return file.isDirectory() || file.getName().endsWith(".jar")
-							|| file.getName().endsWith(".class"); }
-            public String getDescription() { return "Jar files (*.jar)"; }
+            public boolean accept(File file) {
+                   if (file.isDirectory())
+                       return true;
+                   
+                   String fileName = file.getName();
+                   int dot = fileName.lastIndexOf('.');
+                   if (dot < 0)
+                       return false;
+                   String extension = fileName.substring(dot);
+                   return archiveExtensionSet.contains(extension);
+            }
+            public String getDescription() { return "Java archives (*.jar,*.zip,*.ear,*.war)"; }
         };
         chooser.setFileFilter(filter);
         chooser.setMultiSelectionEnabled(true);
         chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
         
-	int rc = chooseFile(chooser, "Add Jar file");
+	int rc = chooseFile(chooser, "Add archive or directory");
         if (rc == JFileChooser.APPROVE_OPTION) {
             File[] selectedFileList = chooser.getSelectedFiles();
             for (int i = 0; i < selectedFileList.length; ++i) {
