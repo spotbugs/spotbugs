@@ -84,10 +84,11 @@ public class Reporter extends AbstractBugReporter {
 		
 		if (DEBUG) {
 			System.out.println("BUG in class: " + packageName + "." + className + ": " + bug.getMessage() + " / Annotation: " + bug.getAnnotationText() + " / Source Line: " + bug.getPrimarySourceLineAnnotation());
-		}
+		}		
 		
 		IResource resource = getUnderlyingResource(bug);
 		if (resource != null) {
+			
 			int startLine = bug.getPrimarySourceLineAnnotation().getStartLine();
 			
 			if (DEBUG) {
@@ -107,12 +108,13 @@ public class Reporter extends AbstractBugReporter {
 				marker.setAttribute(IMarker.LINE_NUMBER, startLine);
 				
 				BugPattern pattern = I18N.instance().lookupBugPattern(bug.getType());
-				if (pattern != null) {
-					System.out.println("Pattern detail text: " + pattern.getDetailText());
-					String detailText = pattern.getDetailText();
-				}
+				if (pattern != null){
+					marker.setAttribute("shortDescription",pattern.getShortDescription());
+					marker.setAttribute("detailText",pattern.getDetailText());
+				}				
 				marker.setAttribute(IMarker.MESSAGE, bug.getMessage());
-				marker.setAttribute(IMarker.SEVERITY, IMarker.SEVERITY_WARNING);
+				marker.setAttribute(IMarker.SEVERITY, IMarker.SEVERITY_WARNING);				
+				
 			}
 			catch (CoreException e) {
 				e.printStackTrace();
