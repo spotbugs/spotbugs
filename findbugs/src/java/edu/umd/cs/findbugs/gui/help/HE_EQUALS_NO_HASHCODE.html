@@ -5,6 +5,8 @@
   </HEAD>
   <BODY>
   <h1>Class defines equals() but not hashCode()</h1>
-  <p> The description of this bug hasn't been written yet.
+  <p> This class overrides <code>equals(Object)</code>, but does not
+  override <code>hashCode()</code>.&nbsp; Therefore, the class may violate the
+  invariant that equal objects must have equal hashcodes.
   </BODY>
 </HTML>

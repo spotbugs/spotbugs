@@ -5,6 +5,9 @@
   </HEAD>
   <BODY>
   <h1>Using notify() rather than notifyAll() in method</h1>
-  <p> The description of this bug hasn't been written yet.
+  <p> This method calls <code>notify()</code> rather than <code>notifyAll()</code>.&nbsp;
+  Java monitors are often used for multiple conditions.&nbsp; Calling <code>notify()</code>
+  only wakes up one thread, meaning that the thread woken up might not be the
+  one waiting for the condition that the caller just satisfied.
   </BODY>
 </HTML>
