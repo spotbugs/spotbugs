@@ -45,7 +45,6 @@ import org.apache.bcel.generic.NEWARRAY;
 import org.apache.bcel.generic.StoreInstruction;
 
 import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.BugProperty;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.FindBugsAnalysisProperties;
@@ -58,6 +57,7 @@ import edu.umd.cs.findbugs.ba.Dataflow;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.LiveLocalStoreAnalysis;
 import edu.umd.cs.findbugs.ba.Location;
+import edu.umd.cs.findbugs.ml.DeadLocalStoreHeuristics;
 import edu.umd.cs.findbugs.ml.HeuristicPropertySet;
 import edu.umd.cs.findbugs.ml.HeuristicPropertySetSchema;
 
@@ -91,7 +91,7 @@ public class FindDeadLocalStores implements Detector {
 		}
 	}   
 	
-	private static final Set<String> classesAlreadyReportedOn = new HashSet<String>();
+	//private static final Set<String> classesAlreadyReportedOn = new HashSet<String>();
 	/**
 	 * Opcodes of instructions that load constant values that
 	 * often indicate defensive programming.
@@ -150,16 +150,30 @@ public class FindDeadLocalStores implements Detector {
 	private static final int KILLED_BY_SUBSEQUENT_STORE = 0;
 	private static final int DEFENSIVE_CONSTANT_OPCODE = 1;
 	private static final int EXCEPTION_HANDLER = 2;
+	private static final int DEAD_INCREMENT = 3;
+	private static final int SINGLE_DEAD_INCREMENT = 4;
+	private static final int DEAD_OBJECT_STORE = 5;
+	private static final int TWO_STORES_MULTIPLE_LOADS = 6;
+	private static final int SINGLE_STORE = 7;
+	private static final int NO_LOADS = 8;
+	private static final int PARAM_DEAD_ON_ENTRY = 9;
 	private static final String[] boolPropertyNameList = {
-		BugProperty.KILLED_BY_SUBSEQUENT_STORE,
-		BugProperty.DEFENSIVE_CONSTANT_OPCODE,
-		BugProperty.EXCEPTION_HANDLER,
+		DeadLocalStoreHeuristics.KILLED_BY_SUBSEQUENT_STORE,
+		DeadLocalStoreHeuristics.DEFENSIVE_CONSTANT_OPCODE,
+		DeadLocalStoreHeuristics.EXCEPTION_HANDLER,
+		DeadLocalStoreHeuristics.DEAD_INCREMENT,
+		DeadLocalStoreHeuristics.SINGLE_DEAD_INCREMENT,
+		DeadLocalStoreHeuristics.DEAD_OBJECT_STORE,
+		DeadLocalStoreHeuristics.TWO_STORES_MULTIPLE_LOADS,
+		DeadLocalStoreHeuristics.SINGLE_STORE,
+		DeadLocalStoreHeuristics.NO_LOADS,
+		DeadLocalStoreHeuristics.PARAM_DEAD_ON_ENTRY,
 	};
 	private static final HeuristicPropertySetSchema schema =
 		new HeuristicPropertySetSchema(boolPropertyNameList);
 	
 	private void analyzeMethod(ClassContext classContext, Method method)
-	throws DataflowAnalysisException, CFGBuilderException {
+			throws DataflowAnalysisException, CFGBuilderException {
 		
 		JavaClass javaClass = classContext.getJavaClass();
 		
@@ -167,7 +181,7 @@ public class FindDeadLocalStores implements Detector {
 			classContext.getLiveLocalStoreDataflow(method);
 		
 		int numLocals = method.getCode().getMaxLocals();
-		int [] localUpdateCount = new int[numLocals];
+		int [] localStoreCount = new int[numLocals];
 		int [] localLoadCount = new int[numLocals];
 		int [] localIncrementCount = new int[numLocals];
 		MethodGen methodGen = classContext.getMethodGen(method);
@@ -182,7 +196,7 @@ public class FindDeadLocalStores implements Detector {
 		// Scan method to determine number of loads, stores, and increments
 		// of local variables.
 		countLocalStoresLoadsAndIncrements(
-				localUpdateCount, localLoadCount, localIncrementCount, cfg);
+				localStoreCount, localLoadCount, localIncrementCount, cfg);
 		
 		// Scan method for
 		// - dead stores
@@ -242,60 +256,59 @@ public class FindDeadLocalStores implements Detector {
 					prev != null && defensiveConstantValueOpcodes.get(prev.getInstruction().getOpcode())
 			);
 			
-			// TODO: further heuristic properties
-			
-			int priority = LOW_PRIORITY;
-			// special handling of IINC
 			if (ins instanceof IINC) {
+				// special handling of IINC
 				
-				if (localIncrementCount[local] == 1) 
-					priority = NORMAL_PRIORITY;
-				else continue;
+				propertySet.setBoolProperty(DEAD_INCREMENT, true);
+				if (localIncrementCount[local] == 1)
+					propertySet.setBoolProperty(SINGLE_DEAD_INCREMENT, true);
 				
-			}
-			
-			else if (ins instanceof ASTORE
-					&& prev != null) { 
+			} else if (ins instanceof ASTORE && prev != null) { 
+				// Look for objects created but never used
+				
 				Instruction prevIns = prev.getInstruction();
 				if ((prevIns instanceof INVOKESPECIAL &&
 						((INVOKESPECIAL)prevIns).getMethodName(methodGen.getConstantPool()).equals("<init>"))
 						|| prevIns instanceof ANEWARRAY
 						|| prevIns instanceof NEWARRAY
-						|| prevIns instanceof MULTIANEWARRAY)
-					priority--;
+						|| prevIns instanceof MULTIANEWARRAY) {
+					propertySet.setBoolProperty(DEAD_OBJECT_STORE, true);
+				}
+				
+			} else if (localStoreCount[local] == 2 && localLoadCount[local] > 0) {
+				// TODO: why is this significant?
+				
+				propertySet.setBoolProperty(TWO_STORES_MULTIPLE_LOADS, true);
+				
+			} else if (localStoreCount[local] == 1) {
+				// TODO: why is this significant?
+				
+				propertySet.setBoolProperty(SINGLE_STORE, true);
+				
+			} else if (localLoadCount[local] == 0) {
+				// TODO: why is this significant?
+				
+				propertySet.setBoolProperty(NO_LOADS, true);
+				
 			}
 			
-			
-			else if (localUpdateCount[local] == 2
-					&& localLoadCount[local] > 0) priority--; // raise priority
-			else if (localUpdateCount[local] == 1)
-				priority++;
-			
-			else if (localLoadCount[local] == 0) priority++; // lower priority
 			if (parameterThatIsDeadAtEntry) {
 				if (DEBUG) System.out.println("Raising priority");
-				priority--;
+				propertySet.setBoolProperty(PARAM_DEAD_ON_ENTRY, true);
 			}
-			
-			if (priority < HIGH_PRIORITY)
-				priority =  HIGH_PRIORITY;
-			if (DEBUG) System.out.println(" considering reporting bug:" + priority);
-			if (priority != LOW_PRIORITY 
-					|| classesAlreadyReportedOn.add(javaClass.getClassName())) {
+
+			int priority = determineWarningPriority(); 
+			if (priority >= 0) {	
+				// Report the warning
+				BugInstance bugInstance = new BugInstance(this, "DLS_DEAD_LOCAL_STORE", priority)
+					.addClassAndMethod(methodGen, javaClass.getSourceFileName())
+					.addSourceLine(methodGen, javaClass.getSourceFileName(), location.getHandle());
+				if (DEBUG) System.out.println("Reporting " + bugInstance);
 				
-				if (reportWarning()) {	
-					
-					// Report the bug
-					BugInstance bugInstance = new BugInstance(this, "DLS_DEAD_LOCAL_STORE", priority)
-						.addClassAndMethod(methodGen, javaClass.getSourceFileName())
-						.addSourceLine(methodGen, javaClass.getSourceFileName(), location.getHandle());
-					if (DEBUG) System.out.println("Reporting " + bugInstance);
-					
-					// Encode heuristic information.
-					propertySet.decorateBugInstance(bugInstance, schema);
-					
-					bugReporter.reportBug(bugInstance);
-				}
+				// Encode heuristic information.
+				propertySet.decorateBugInstance(bugInstance, schema);
+				
+				bugReporter.reportBug(bugInstance);
 			}
 		}
 	}
@@ -304,12 +317,12 @@ public class FindDeadLocalStores implements Detector {
 	 * Count stores, loads, and increments of local variables
 	 * in method whose CFG is given.
 	 * 
-	 * @param localUpdateCount    counts of local stores (indexed by local)
+	 * @param localStoreCount     counts of local stores (indexed by local)
 	 * @param localLoadCount      counts of local loads (indexed by local)
 	 * @param localIncrementCount counts of local increments (indexed by local)
 	 * @param cfg                 control flow graph (CFG) of method
 	 */
-	private void countLocalStoresLoadsAndIncrements(int[] localUpdateCount, int[] localLoadCount, int[] localIncrementCount, CFG cfg) {
+	private void countLocalStoresLoadsAndIncrements(int[] localStoreCount, int[] localLoadCount, int[] localIncrementCount, CFG cfg) {
 		for (Iterator<Location> i = cfg.locationIterator(); i.hasNext(); ) {
 			Location location = i.next();
 			
@@ -324,11 +337,11 @@ public class FindDeadLocalStores implements Detector {
 			IndexedInstruction ins = (IndexedInstruction) location.getHandle().getInstruction();
 			int local = ins.getIndex();
 			if (ins instanceof IINC) {
-				localUpdateCount[local]++;
+				localStoreCount[local]++;
 				localLoadCount[local]++;
 				localIncrementCount[local]++;
 			} else if (isStore) 
-				localUpdateCount[local]++;
+				localStoreCount[local]++;
 			else 
 				localLoadCount[local]++;
 		}
@@ -347,7 +360,7 @@ public class FindDeadLocalStores implements Detector {
 			LocalVariable lv = lvt.getLocalVariable(local, pc);
 			if (lv != null) {
 				String localName = lv.getName();
-				propertySet.setStringProperty(BugProperty.LOCAL_NAME, localName);
+				propertySet.setStringProperty(DeadLocalStoreHeuristics.LOCAL_NAME, localName);
 			}
 		}
 		
@@ -355,35 +368,62 @@ public class FindDeadLocalStores implements Detector {
 	
 	/**
 	 * Based on current HeuristicPropertySet contents, decide whether
-	 * or not to report a warning.
+	 * or not to report a warning, and at what priority.
 	 * 
-	 * @return true if the warning should be reported, false if not
+	 * @return a valid warning priority if the warning should be
+	 *         reported, or &lt;0 if the warning should not be
+	 *         reported
 	 */
-	private boolean reportWarning() {
+	private int determineWarningPriority() {
 		// Allow "relaxed" reporting mode where we just report
 		// everything and let the machine learning ranking find the
 		// real problems.
 		if (AnalysisContext.currentAnalysisContext().getBoolProperty(
 				FindBugsAnalysisProperties.RELAXED_REPORTING_MODE)) {
-			return true;
+			int priority = computeWarningPriority();
+			return (priority <= LOW_PRIORITY) ? priority : LOW_PRIORITY;
 		}
 		
 		if (DO_EXCLUDE_LOCALS) {
-			String localName = propertySet.getStringProperty(BugProperty.LOCAL_NAME);
+			String localName = propertySet.getStringProperty(DeadLocalStoreHeuristics.LOCAL_NAME);
 			if (localName != null && EXCLUDED_LOCALS.contains(localName))
-				return false;
+				return -1;
 		}
 		
 		if (propertySet.getBoolProperty(EXCEPTION_HANDLER))
-			return false;
+			return -1;
 		
 		if (propertySet.getBoolProperty(KILLED_BY_SUBSEQUENT_STORE))
-			return false;
+			return -1;
 		
 		if (propertySet.getBoolProperty(DEFENSIVE_CONSTANT_OPCODE))
-			return false;
+			return -1;
 		
-		return true;
+		if (propertySet.getBoolProperty(DEAD_INCREMENT) 
+				&& !propertySet.getBoolProperty(SINGLE_DEAD_INCREMENT))
+			return -1;
+		
+		return computeWarningPriority();
+	}
+	
+	private int computeWarningPriority() {
+		int priority = LOW_PRIORITY;
+		
+		if (propertySet.getBoolProperty(SINGLE_DEAD_INCREMENT)
+				||propertySet.getBoolProperty(DEAD_OBJECT_STORE)
+				|| propertySet.getBoolProperty(TWO_STORES_MULTIPLE_LOADS))
+			--priority; // raise
+		else if (propertySet.getBoolProperty(SINGLE_STORE)
+				|| propertySet.getBoolProperty(NO_LOADS))
+			++priority; // lower
+		
+		if (propertySet.getBoolProperty(PARAM_DEAD_ON_ENTRY))
+			--priority; // raise
+		
+		if (priority < HIGH_PRIORITY)
+			priority = HIGH_PRIORITY;
+		
+		return priority;
 	}
 	
 	/**
