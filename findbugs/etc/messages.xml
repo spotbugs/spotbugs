@@ -1431,4 +1431,5 @@ for using a JSR-166 lock is:
   <BugCode abbrev="OS">Stream not closed on all paths</BugCode>
   <BugCode abbrev="PZLA" >Prefer zero length arrays to null to indicate no results</BugCode>
   <BugCode abbrev="UCF">Useless control flow</BugCode>
+  <BugCode abbrev="UL">Lock not released on all paths</BugCode>
 </MessageCollection>
