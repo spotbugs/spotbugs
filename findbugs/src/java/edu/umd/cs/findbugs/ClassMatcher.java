@@ -20,6 +20,8 @@
 package edu.umd.cs.findbugs;
 
 public class ClassMatcher implements Matcher {
+	private static final boolean DEBUG = Boolean.getBoolean("filter.debug");
+
 	private String className;
 
 	public ClassMatcher(String className) {
@@ -28,7 +30,10 @@ public class ClassMatcher implements Matcher {
 
 	public boolean match(BugInstance bugInstance) {
 		ClassAnnotation primaryClassAnnotation = bugInstance.getPrimaryClass();
-		return primaryClassAnnotation.getClassName().equals(className);
+		String bugClassName = primaryClassAnnotation.getClassName();
+		if (DEBUG) System.out.println("Compare " + bugClassName + " with " + className);
+
+		return bugClassName.equals(className);
 	}
 }
 

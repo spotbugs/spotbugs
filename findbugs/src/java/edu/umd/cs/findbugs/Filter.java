@@ -25,6 +25,8 @@ import org.dom4j.*;
 import org.dom4j.io.*;
 
 public class Filter extends OrMatcher {
+	private static final boolean DEBUG = Boolean.getBoolean("filter.debug");
+
 	public Filter(String fileName) throws IOException, FilterException {
 		parse(fileName);
 	}
@@ -40,41 +42,41 @@ public class Filter extends OrMatcher {
 			throw new FilterException("Couldn't parse filter file " + fileName, e);
 		}
 
-		// Iterate over Exclude elements
-		Iterator i = filterDoc.selectNodes("/FindBugsFilter/Exclude").iterator();
+		// Iterate over Match elements
+		Iterator i = filterDoc.selectNodes("/FindBugsFilter/Match").iterator();
 		while (i.hasNext()) {
-			Element excludeNode = (Element) i.next();
+			Element matchNode = (Element) i.next();
 
-			AndMatcher excludeMatcher = new AndMatcher();
+			AndMatcher matchMatcher = new AndMatcher();
 
-			// Each exclude node must have either "class" or "classregex" attributes
+			// Each match node must have either "class" or "classregex" attributes
 			Matcher classMatcher = null;
-			String classAttr = excludeNode.valueOf("@class");
+			String classAttr = matchNode.valueOf("@class");
 			if (!classAttr.equals("")) {
 				classMatcher = new ClassMatcher(classAttr);
 			} else {
-				String classRegex = excludeNode.valueOf("@classregex");
+				String classRegex = matchNode.valueOf("@classregex");
 				if (!classRegex.equals(""))
 					classMatcher = new ClassRegexMatcher(classRegex);
 			}
 
 			if (classMatcher == null)
-				throw new FilterException("Exclude node must specify either class or classregex attribute");
+				throw new FilterException("Match node must specify either class or classregex attribute");
 
-			excludeMatcher.addChild(classMatcher);
+			matchMatcher.addChild(classMatcher);
 
-			System.out.println("Exclude node");
+			if (DEBUG) System.out.println("Match node");
 
-			// Iterate over child elements of Exclude node.
-			Iterator j = excludeNode.elementIterator();
+			// Iterate over child elements of Match node.
+			Iterator j = matchNode.elementIterator();
 			while (j.hasNext()) {
 				Element child = (Element) j.next();
 				Matcher matcher = getMatcher(child);
-				excludeMatcher.addChild(matcher);
+				matchMatcher.addChild(matcher);
 			}
 
-			// Add the Exclude matcher to the overall Filter
-			this.addChild(excludeMatcher);
+			// Add the Match matcher to the overall Filter
+			this.addChild(matchMatcher);
 		}
 
 	}
