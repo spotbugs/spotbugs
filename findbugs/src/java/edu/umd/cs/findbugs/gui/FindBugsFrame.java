@@ -1738,7 +1738,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 			chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 			chooser.setFileFilter(xmlFileFilter);
 
-			int result = chooseFile(chooser, "Save Bugs");
+			int result = chooseFile(chooser, L10N.getLocalString("dlg.savebugs_ttl", "Save Bugs"));	
 
 			if (result != JFileChooser.CANCEL_OPTION) {
 				// Make sure current annotation text is up to date with its
@@ -1765,7 +1765,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 			chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 			chooser.setFileFilter(xmlFileFilter);
 
-			int result = chooseFile(chooser, "Load Bugs");
+			int result = chooseFile(chooser, L10N.getLocalString("dlg.loadbugs_ttl", "Load Bugs..."));
 
 			if (result != JFileChooser.CANCEL_OPTION) {
 				File selectedFile = chooser.getSelectedFile();
@@ -1812,7 +1812,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	}//GEN-LAST:event_reloadProjectItemActionPerformed
 
 	private void saveProjectAsItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveProjectAsItemActionPerformed
-		saveProject(getCurrentProject(), "Save Project As", true);
+		saveProject(getCurrentProject(), L10N.getLocalString("dlg.saveprojectas_ttl", "Save Project As..."), true);
 	}//GEN-LAST:event_saveProjectAsItemActionPerformed
 
 	private void viewMenuMenuSelected(javax.swing.event.MenuEvent evt) {//GEN-FIRST:event_viewMenuMenuSelected
@@ -1838,7 +1838,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	}//GEN-LAST:event_fileMenuMenuSelected
 
 	private void closeProjectItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_closeProjectItemActionPerformed
-		if (closeProjectHook(getCurrentProject(), "Close Project")) {
+		if (closeProjectHook(getCurrentProject(), L10N.getLocalString("dlg.closeproject_lbl", "Close Project"))) {
 			setProject(null);
 		}
 	}//GEN-LAST:event_closeProjectItemActionPerformed
@@ -1923,7 +1923,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
 	private void openProjectItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openProjectItemActionPerformed
 
-		if (!closeProjectHook(getCurrentProject(), "Open Project"))
+		if (!closeProjectHook(getCurrentProject(), L10N.getLocalString("msg.openproject_txt", "Open Project")))
 			return;
 
 		JFileChooser chooser = createFileChooser();
@@ -2624,7 +2624,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 				file = new File(fileName);
 				useRelativePaths = project.getOption( Project.RELATIVE_PATHS );
 			} else {
-				JRadioButton relativePaths = new JRadioButton("Use Relative Paths");
+				JRadioButton relativePaths = new JRadioButton(L10N.getLocalString("msg.userelativepaths_txt", "Use Relative Paths"));
 				relativePaths.setSelected(project.getOption(Project.RELATIVE_PATHS));
 				JFileChooser chooser = createFileChooser(relativePaths);
 				chooser.setFileFilter(projectFileFilter);
@@ -2670,7 +2670,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 			return true;
 
 		// Confirm that the project should be closed.
-		int option = JOptionPane.showConfirmDialog(this, "Save project?", savePromptTitle,
+		int option = JOptionPane.showConfirmDialog(this, L10N.getLocalString("msg.saveprojectquery_txt", "Save Project?"), savePromptTitle,
 		        JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
 
 		if (option == JOptionPane.CANCEL_OPTION)
@@ -3403,7 +3403,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 		}
 
 //      Uncomment one of these to test I18N    
-//	    Locale.setDefault( Locale.FRENCH );
+	    Locale.setDefault( Locale.FRENCH );
 //	    Locale.setDefault( Locale.GERMAN );
 //	    Locale.setDefault( Locale.JAPANESE );
 //	    Locale.setDefault( new Locale( "et" ));
