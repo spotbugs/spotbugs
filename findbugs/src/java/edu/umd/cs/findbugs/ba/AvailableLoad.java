@@ -76,21 +76,30 @@ public class AvailableLoad implements Comparable<AvailableLoad> {
 	}
 
 	public int compareTo(AvailableLoad other) {
-		int cmp = reference.compareTo(other.reference);
+		int cmp = field.compareTo(other.field);
 		if (cmp != 0)
 			return cmp;
-		return field.compareTo(other.field);
+		else if (reference == other.reference)
+			return 0;
+		else if (reference == null)
+			return -1;
+		else if (other.reference == null)
+			return 1;
+		else
+			return reference.compareTo(other.reference);
 	}
 
 	public int hashCode() {
-		return reference.hashCode() ^ field.hashCode();
+		return (reference == null ? 0 : reference.hashCode()) ^ field.hashCode();
 	}
 
 	public boolean equals(Object o) {
 		if (this.getClass() != o.getClass())
 			return false;
 		AvailableLoad other = (AvailableLoad) o;
-		return reference.equals(other.reference) && field.equals(other.field);
+		return  (reference == other.reference ||
+				 (reference != null && other.reference != null && reference.equals(other.reference)))
+				&& field.equals(other.field);
 	}
 
 	public String toString() {
