@@ -20,7 +20,6 @@
 package edu.umd.cs.findbugs;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
@@ -80,7 +79,7 @@ public class SwitchHandler
 		return details.getDefaultOffset();
 	}
 	
-	public class SwitchDetails
+	public static class SwitchDetails
 	{
 		int   switchPC;
 		int[] swOffsets;

@@ -84,7 +84,7 @@ public class GenerateUIDs {
 			Element element = (Element) i.next();
 			Attribute uidAttr = element.attribute("uid");
 			if (uidAttr == null) {
-				element.addAttribute("uid", new Integer(count++).toString());
+				element.addAttribute("uid", Integer.toString(count++));
 			}
 		}
 		
