@@ -32,7 +32,9 @@ import org.apache.bcel.generic.*;
  * Specifically, exception edges are always inserted <em>before</em>
  * potentially excepting instructions (PEIs).  In general, it is useful and
  * accurate to view the occurance of an exception as precluding the
- * execution of the instruction throwing the exception.
+ * execution of the instruction throwing the exception.  For example, an
+ * exception thrown by a MONITORENTER instruction means that the monitor
+ * was not actually acquired.
  *
  * <p> TODO: ATHROW should really have exception edges both before
  * (NullPointerException if TOS has the null value) and after (the thrown exception)
@@ -41,7 +43,9 @@ import org.apache.bcel.generic.*;
  * <p> Because of the accurate treatment of exceptions, CFGs produced with this
  * CFGBuilder can be used to perform dataflow analysis on.  Assuming that the
  * Java source-to-bytecode compiler generated good code, all dataflow values
- * should merge successfully at control joins.
+ * should merge successfully at control joins, including at exception handlers
+ * (with the usual rule that the stack is cleared of all values exception for the
+ * thrown exception).
  *
  * @see CFG
  * @see CFGBuilder
