@@ -440,7 +440,7 @@ public class FindBugs implements Constants2, ExitCodes {
 		private int priorityThreshold = Detector.NORMAL_PRIORITY;
 		private PrintStream outputStream = null;
 		private Set<String> bugCategorySet = null;
-		private UserPreferences userPreferences = new UserPreferences();
+		private UserPreferences userPreferences = UserPreferences.createDefaultUserPreferences();
 
 		public FindBugsCommandLine() {
 			addOption("-home", "home directory", "specify FindBugs home directory");
@@ -832,7 +832,7 @@ public class FindBugs implements Constants2, ExitCodes {
 		this.bugReporter = new ErrorCountingBugReporter(bugReporter);
 		this.relaxedReportingMode = false;
 		this.project = project.duplicate();
-		this.userPreferences = new UserPreferences();
+		this.userPreferences = UserPreferences.createDefaultUserPreferences();
 		this.classObserverList = new LinkedList<ClassObserver>();
 
 		// Create a no-op progress callback.

@@ -57,8 +57,12 @@ public class UserPreferences {
 	private ProjectFilterSettings filterSettings;
 	private static UserPreferences preferencesSingleton = new UserPreferences();
 
-	public UserPreferences() {
+	private UserPreferences() {
 		this.filterSettings = ProjectFilterSettings.createDefault();
+	}
+	
+	public static UserPreferences createDefaultUserPreferences() {
+		return new UserPreferences();
 	}
 
 	public static UserPreferences getUserPreferences() {
