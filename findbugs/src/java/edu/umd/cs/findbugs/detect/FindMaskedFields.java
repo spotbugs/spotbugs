@@ -67,7 +67,7 @@ public class FindMaskedFields extends BytecodeScanningDetector implements Consta
 													  fld.getSignature(), 
 													  fld.isStatic());
 				                                bugReporter.reportBug(
-									new BugInstance("MF_CLASS_MASKS_FIELD", NORMAL_PRIORITY)
+									new BugInstance("MF_CLASS_MASKS_FIELD", LOW_PRIORITY)
 				                                        	.addClass(this)
 				                                        	.addField(fa));
 							}
