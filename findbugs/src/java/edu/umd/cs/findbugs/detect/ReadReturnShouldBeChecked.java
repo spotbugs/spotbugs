@@ -86,7 +86,7 @@ public class ReadReturnShouldBeChecked extends BytecodeScanningDetector implemen
 
 			boolean b = false;
 			try {
-				b = Repository.instanceOf(getClassConstantOperand(), "java/io/ByteArrayInputStream");
+				b = Repository.instanceOf(getDottedClassConstantOperand(), "java.io.ByteArrayInputStream");
 			} catch (ClassNotFoundException e) {
 			}
 			if (!b) {
@@ -100,8 +100,8 @@ public class ReadReturnShouldBeChecked extends BytecodeScanningDetector implemen
 			boolean bais = false;
 			boolean bis = false;
 			try {
-				bais = Repository.instanceOf(getClassConstantOperand(), "java/io/ByteArrayInputStream");
-				bis = Repository.instanceOf(getClassConstantOperand(), "java/io/BufferedInputStream");
+				bais = Repository.instanceOf(getDottedClassConstantOperand(), "java.io.ByteArrayInputStream");
+				bis = Repository.instanceOf(getDottedClassConstantOperand(), "java.io.BufferedInputStream");
 			} catch (ClassNotFoundException e) {
 			}
 			// if not ByteArrayInput Stream
@@ -124,7 +124,7 @@ public class ReadReturnShouldBeChecked extends BytecodeScanningDetector implemen
 			} else if (sawSkip) {
 				boolean isBufferedInputStream = false;
 				try {
-					isBufferedInputStream = Repository.instanceOf(lastCallClass, "java/io/BufferedInputStream");
+					isBufferedInputStream = Repository.instanceOf(lastCallClass, "java.io.BufferedInputStream");
 				} catch (ClassNotFoundException e) {
 				}
 
