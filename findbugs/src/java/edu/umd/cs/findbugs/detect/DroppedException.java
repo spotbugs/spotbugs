@@ -340,7 +340,6 @@ public class DroppedException extends PreorderVisitor implements Detector, Const
     if (!LOOK_IN_SOURCE_TO_FIND_COMMENTED_CATCH_BLOCKS)
 	return false;
 
-    AnalysisContext analysisContext = classContext.getAnalysisContext();
     SourceFinder sourceFinder = analysisContext.getSourceFinder();
     try {
 	SourceFile sourceFile = sourceFinder.findSourceFile(srcLine.getPackageName(), srcLine.getSourceFile());
