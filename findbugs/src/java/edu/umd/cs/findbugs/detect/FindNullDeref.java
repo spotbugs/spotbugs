@@ -91,6 +91,7 @@ public class FindNullDeref implements Detector {
 		bugReporter.reportBug(new BugInstance(type, NORMAL_PRIORITY)
 			.addClassAndMethod(methodGen)
 			.addSourceLine(methodGen, exceptionThrowerHandle)
+			.addInt(exceptionThrowerHandle.getPosition()).describe("INT_BYTECODE_OFFSET")
 		);
 	}
 
