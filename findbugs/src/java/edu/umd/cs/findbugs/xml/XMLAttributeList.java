@@ -29,7 +29,7 @@ import java.util.List;
  * @author David Hovemeyer
  */
 public class XMLAttributeList {
-	private static class NameValuePair {
+	public static class NameValuePair {
 		private String name;
 		private String value;
 
@@ -117,6 +117,13 @@ public class XMLAttributeList {
 			buf.append(getQuotedAttributeValue(pair.getValue()));
 		}
 		return buf.toString();
+	}
+
+	/**
+	 * Return an Iterator over NameValuePairs.
+	 */
+	public Iterator<NameValuePair> iterator() {
+		return nameValuePairList.iterator();
 	}
 
 	/**
