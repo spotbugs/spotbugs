@@ -542,6 +542,30 @@
       </java>
     </target>
 
+    <!-- Generate unabridged HTML bug descriptions.
+         This isn't something we do for any release
+    -->
+   <target name="allBugDescriptions" depends="tools,findbugs,coreplugin,version">
+     <java classname="edu.umd.cs.findbugs.tools.html.PrettyPrintBugDescriptions"
+           output="${doc.src.dir}/allBugDescriptions.html"
+           failonerror="true"
+           fork="true">
+        <jvmarg value="-Dfindbugs.home=${findbugs.dir}"/>
+        <classpath refid="tools.classpath"/>
+        <arg value="-unabridged"/>
+        <arg value="FindBugs Bug Descriptions (Unabridged)"/>
+        <arg value="${doc.html.gen.header}"/>
+        <arg value="${doc.html.gen.beginBody}"/>
+        <arg value="${doc.html.gen.allBugDescriptions.prologue}"/>
+        <arg value="${doc.html.gen.endBody}"/>
+     </java>
+
+     <copy todir="${doc.dir}">
+       <filterset refid="docFilters"/>
+       <fileset dir="${doc.src.dir}" includes="allBugDescriptions.html"/>
+     </copy>
+   </target>
+
     <!-- Check whether the HTML docfiles are up to date. -->
     <target name="docfilesHTMLCheck">
       <condition property="docfiles.html.uptodate">

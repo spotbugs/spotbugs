@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.tools.html;
 
 import edu.umd.cs.findbugs.BugPattern;
+import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.I18N;
 import edu.umd.cs.findbugs.Version;
 
@@ -144,18 +145,33 @@ public class PrettyPrintBugDescriptions extends PlainPrintBugDescriptions {
 	}
 
 	public static void main(String[] args) throws Exception {
+		int argCount = 0;
+
+		if (argCount < args.length && args[argCount].equals("-unabridged")) {
+			++argCount;
+			// Unabridged mode: emit all warnings reported by at least one
+			// detector, even for disabled detectors.
+			DetectorFactoryCollection factories = DetectorFactoryCollection.instance();
+			factories.enableAll();
+		}
+
 		String docTitle = "FindBugs Bug Descriptions";
-		if (args.length > 0)
-			docTitle = args[0];
+		if (argCount < args.length) {
+			docTitle = args[argCount++];
+		}
 		PrettyPrintBugDescriptions pp = new PrettyPrintBugDescriptions(docTitle, System.out);
-		if (args.length >= 2)
-			pp.setHeaderText(args[1]);
-		if (args.length >= 3)
-			pp.setBeginBodyText(args[2]);
-		if (args.length >= 4)
-			pp.setPrologueText(args[3]);
-		if (args.length >= 5)
-			pp.setEndBodyText(args[4]);
+		if (argCount < args.length) {
+			pp.setHeaderText(args[argCount++]);
+		}
+		if (argCount < args.length) {
+			pp.setBeginBodyText(args[argCount++]);
+		}
+		if (argCount < args.length) {
+			pp.setPrologueText(args[argCount++]);
+		}
+		if (argCount < args.length) {
+			pp.setEndBodyText(args[argCount++]);
+		}
 		pp.print();
 	}
 }
