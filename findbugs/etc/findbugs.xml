@@ -93,8 +93,7 @@
             
   <Detector class="edu.umd.cs.findbugs.detect.SwitchFallthrough" 
             speed="fast"
-            reports="SF_SWITCH_FALLTHROUGH" 
-            disabled="true" />
+            reports="SF_SWITCH_FALLTHROUGH" />
             
   <Detector class="edu.umd.cs.findbugs.detect.FindSpinLoop" 
             speed="fast"
