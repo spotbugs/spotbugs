@@ -96,11 +96,11 @@ public class FindBugsFrame extends javax.swing.JFrame {
 		// This is a "group" node
 		BugInstanceGroup groupNode = (BugInstanceGroup) obj;
 		String groupType = groupNode.getGroupType();
-		if (groupType == BY_CLASS) {
+		if (groupType == GROUP_BY_CLASS) {
 		    setIcon(classIcon);
-		} else if (groupType == BY_PACKAGE) {
+		} else if (groupType == GROUP_BY_PACKAGE) {
 		    setIcon(packageIcon);
-		} else if (groupType == BY_CATEGORY) {
+		} else if (groupType == GROUP_BY_BUG_TYPE) {
 		    setIcon(bugGroupIcon);
 		}
 	    } else {
@@ -177,9 +177,9 @@ public class FindBugsFrame extends javax.swing.JFrame {
     }
     private static final Comparator bugInstanceByCategoryComparator = new FindBugsFrame.BugInstanceByCategoryComparator();
     
-    private static final String BY_CLASS = "By class";
-    private static final String BY_PACKAGE = "By package";
-    private static final String BY_CATEGORY = "By category";
+    private static final String GROUP_BY_CLASS = "By class";
+    private static final String GROUP_BY_PACKAGE = "By package";
+    private static final String GROUP_BY_BUG_TYPE = "By bug type";
     
     /** Creates new form FindBugsFrame */
     public FindBugsFrame() {
@@ -227,10 +227,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
         bugTreePanel = new javax.swing.JPanel();
         jScrollPane4 = new javax.swing.JScrollPane();
         bugTree = new javax.swing.JTree();
-        sortOrderChooser = new javax.swing.JComboBox();
-        sortOrderLabel = new javax.swing.JLabel();
-        leftFiller = new javax.swing.JLabel();
-        rightFiller = new javax.swing.JLabel();
+        groupByChooser = new javax.swing.JComboBox();
+        groupByLabel = new javax.swing.JLabel();
         jScrollPane5 = new javax.swing.JScrollPane();
         consoleMessageArea = new javax.swing.JTextArea();
         jMenuBar1 = new javax.swing.JMenuBar();
@@ -519,9 +517,9 @@ public class FindBugsFrame extends javax.swing.JFrame {
         gridBagConstraints.weighty = 1.0;
         bugTreePanel.add(jScrollPane4, gridBagConstraints);
 
-        sortOrderChooser.addActionListener(new java.awt.event.ActionListener() {
+        groupByChooser.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                sortOrderChooserActionPerformed(evt);
+                groupByChooserActionPerformed(evt);
             }
         });
 
@@ -529,27 +527,15 @@ public class FindBugsFrame extends javax.swing.JFrame {
         gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        bugTreePanel.add(sortOrderChooser, gridBagConstraints);
+        bugTreePanel.add(groupByChooser, gridBagConstraints);
 
-        sortOrderLabel.setFont(new java.awt.Font("Dialog", 0, 12));
-        sortOrderLabel.setText("Sort order:");
+        groupByLabel.setFont(new java.awt.Font("Dialog", 0, 12));
+        groupByLabel.setText("Group:");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-        bugTreePanel.add(sortOrderLabel, gridBagConstraints);
-
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.weightx = 0.5;
-        bugTreePanel.add(leftFiller, gridBagConstraints);
-
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 3;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.weightx = 0.5;
-        bugTreePanel.add(rightFiller, gridBagConstraints);
+        bugTreePanel.add(groupByLabel, gridBagConstraints);
 
         viewPanel.add(bugTreePanel, "BugTree");
 
@@ -677,11 +663,11 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	}
     }//GEN-LAST:event_viewConsoleItemActionPerformed
     
-    private void sortOrderChooserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sortOrderChooserActionPerformed
-	String selection = sortOrderChooser.getSelectedItem().toString();
+    private void groupByChooserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_groupByChooserActionPerformed
+	String selection = groupByChooser.getSelectedItem().toString();
 	if (selection != null && currentAnalysisRun != null)
 	    populateAnalysisRunTreeModel(currentAnalysisRun, selection);
-    }//GEN-LAST:event_sortOrderChooserActionPerformed
+    }//GEN-LAST:event_groupByChooserActionPerformed
     
     private void findBugsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_findBugsButtonActionPerformed
 	Project project = getCurrentProject();
@@ -839,9 +825,9 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	jarFileList.setModel(new DefaultListModel());
 	sourceDirList.setModel(new DefaultListModel());
 	
-	sortOrderChooser.addItem(BY_CLASS);
-	sortOrderChooser.addItem(BY_PACKAGE);
-	sortOrderChooser.addItem(BY_CATEGORY);
+	groupByChooser.addItem(GROUP_BY_CLASS);
+	groupByChooser.addItem(GROUP_BY_PACKAGE);
+	groupByChooser.addItem(GROUP_BY_BUG_TYPE);
     }
     
     /**
@@ -931,7 +917,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	}
 	
 	// Make sure that the sort order is correct.
-	String currentSortOrder = sortOrderChooser.getSelectedItem().toString();
+	String currentSortOrder = groupByChooser.getSelectedItem().toString();
 	if (!analysisRun.getSortOrder().equals(currentSortOrder)) {
 	    populateAnalysisRunTreeModel(analysisRun, currentSortOrder);
 	}
@@ -947,7 +933,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
     /**
      * Populate an analysis run's tree model for given sort order.
      */
-    private void populateAnalysisRunTreeModel(AnalysisRun analysisRun, final String sortOrder) {
+    private void populateAnalysisRunTreeModel(AnalysisRun analysisRun, final String groupBy) {
 	// Set busy cursor - this is potentially a time-consuming operation
 	Cursor orig = this.getCursor();
 	this.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
@@ -959,7 +945,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	bugRootNode.removeAllChildren();
 	
 	// Sort the instances
-	TreeSet sortedCollection = new TreeSet(getBugInstanceComparator(sortOrder));
+	TreeSet sortedCollection = new TreeSet(getBugInstanceComparator(groupBy));
 	sortedCollection.addAll(analysisRun.getBugInstances());
 	
 	// The grouper callback is what actually adds the group and bug
@@ -971,16 +957,16 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	    public void startGroup(Object member_) {
 		BugInstance member = (BugInstance) member_;
 		String groupName;
-		if (sortOrder == BY_CLASS)
+		if (groupBy == GROUP_BY_CLASS)
 		    groupName = member.getPrimaryClass().getClassName();
-		else if (sortOrder == BY_PACKAGE)
+		else if (groupBy == GROUP_BY_PACKAGE)
 		    groupName = member.getPrimaryClass().getPackageName();
-		else if (sortOrder == BY_CATEGORY) {
+		else if (groupBy == GROUP_BY_BUG_TYPE) {
 		    String desc = member.toString();
 		    groupName = desc.substring(0, desc.indexOf(':'));
 		} else
-		    throw new IllegalStateException("Unknown sort order: " + sortOrder);
-		currentGroup = new BugInstanceGroup(sortOrder, groupName);
+		    throw new IllegalStateException("Unknown sort order: " + groupBy);
+		currentGroup = new BugInstanceGroup(groupBy, groupName);
 		currentGroupNode = new DefaultMutableTreeNode(currentGroup);
 		bugTreeModel.insertNodeInto(currentGroupNode, bugRootNode, bugRootNode.getChildCount());
 		
@@ -1010,11 +996,11 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	
 	// Create the grouper, and execute it to populate the bug tree
 	Grouper grouper = new Grouper(callback);
-	Comparator groupComparator = getGroupComparator(sortOrder);
+	Comparator groupComparator = getGroupComparator(groupBy);
 	grouper.group(sortedCollection, groupComparator);
 	
 	// Sort order is up to date now
-	analysisRun.setSortOrder(sortOrder);
+	analysisRun.setSortOrder(groupBy);
 	
 	// Let the tree know it needs to update itself
 	bugTreeModel.nodeStructureChanged(bugRootNode);
@@ -1027,11 +1013,11 @@ public class FindBugsFrame extends javax.swing.JFrame {
      * Get a BugInstance Comparator for given sort order.
      */
     private Comparator getBugInstanceComparator(String sortOrder) {
-	if (sortOrder.equals(BY_CLASS))
+	if (sortOrder.equals(GROUP_BY_CLASS))
 	    return bugInstanceByClassComparator;
-	else if (sortOrder.equals(BY_PACKAGE))
+	else if (sortOrder.equals(GROUP_BY_PACKAGE))
 	    return bugInstanceByPackageComparator;
-	else if (sortOrder.equals(BY_CATEGORY))
+	else if (sortOrder.equals(GROUP_BY_BUG_TYPE))
 	    return bugInstanceByCategoryComparator;
 	else
 	    throw new IllegalArgumentException("Bad sort order: " + sortOrder);
@@ -1040,15 +1026,15 @@ public class FindBugsFrame extends javax.swing.JFrame {
     /**
      * Get a Grouper for a given sort order.
      */
-    private Comparator getGroupComparator(String sortOrder) {
-	if (sortOrder.equals(BY_CLASS)) {
+    private Comparator getGroupComparator(String groupBy) {
+	if (groupBy.equals(GROUP_BY_CLASS)) {
 	    return bugInstanceClassComparator;
-	} else if (sortOrder.equals(BY_PACKAGE)) {
+	} else if (groupBy.equals(GROUP_BY_PACKAGE)) {
 	    return bugInstancePackageComparator;
-	} else if (sortOrder.equals(BY_CATEGORY)) {
+	} else if (groupBy.equals(GROUP_BY_BUG_TYPE)) {
 	    return bugInstanceTypeComparator;
 	} else
-	    throw new IllegalArgumentException("Bad sort order: " + sortOrder);
+	    throw new IllegalArgumentException("Bad sort order: " + groupBy);
     }
     
     private void exitFindBugs() {
@@ -1110,6 +1096,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel editProjectLabel;
+    private javax.swing.JLabel groupByLabel;
     private javax.swing.JSplitPane navigatorViewSplitter;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JButton removeSrcDirButton;
@@ -1121,12 +1108,10 @@ public class FindBugsFrame extends javax.swing.JFrame {
     private javax.swing.JMenuItem closeProjectItem;
     private javax.swing.JMenuItem newProjectItem;
     private javax.swing.JTextField jarNameTextField;
-    private javax.swing.JLabel leftFiller;
     private javax.swing.JButton browseJarButton;
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JSplitPane consoleSplitter;
     private javax.swing.JMenuItem openProjectItem;
-    private javax.swing.JLabel sortOrderLabel;
     private javax.swing.JList jarFileList;
     private javax.swing.JLabel jarFileLabel;
     private javax.swing.JButton addSourceDirButton;
@@ -1134,6 +1119,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
     private javax.swing.JButton findBugsButton;
     private javax.swing.JPanel bugTreePanel;
     private javax.swing.JLabel sourceDirLabel;
+    private javax.swing.JComboBox groupByChooser;
     private javax.swing.JPanel viewPanel;
     private javax.swing.JButton removeJarButton;
     private javax.swing.JLabel jarFileListLabel;
@@ -1142,10 +1128,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
     private javax.swing.JList sourceDirList;
     private javax.swing.JTree navigatorTree;
     private javax.swing.JSeparator jSeparator1;
-    private javax.swing.JComboBox sortOrderChooser;
     private javax.swing.JPanel reportPanel;
     private javax.swing.JPanel editProjectPanel;
-    private javax.swing.JLabel rightFiller;
     private javax.swing.JButton browseSrcDirButton;
     private javax.swing.JTextField srcDirTextField;
     private javax.swing.JLabel sourceDirListLabel;
