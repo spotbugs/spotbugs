@@ -29,6 +29,7 @@ import java.io.PrintStream;
 import java.io.Writer;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -50,6 +51,24 @@ import org.dom4j.io.SAXReader;
  * @author David Hovemeyer
  */
 public class ConvertToARFF {
+	// ------------------------------------------------------------
+	// Helper classes
+	// ------------------------------------------------------------
+
+	private static class DataFile {
+		private Document document;
+		private String appName;
+
+		public DataFile(Document document, String appName) {
+			this.document = document;
+			this.appName = appName;
+		}
+
+		public Document getDocument() { return document; }
+
+		public String getAppName() { return appName; }
+	}
+
 	private static class MissingNodeException extends Exception {
 		public MissingNodeException(String msg) {
 			super(msg);
@@ -58,9 +77,11 @@ public class ConvertToARFF {
 
 	public interface Attribute {
 		public String getName();
-		public void scan(Element element) throws MissingNodeException;
+		public void scan(Element element, String appName)
+			throws MissingNodeException;
 		public String getRange();
-		public String getInstanceValue(Element element) throws MissingNodeException;
+		public String getInstanceValue(Element element, String appName)
+			throws MissingNodeException;
 	}
 
 	private abstract static class XPathAttribute implements Attribute {
@@ -76,7 +97,7 @@ public class ConvertToARFF {
 			return name;
 		}
 
-		public String getInstanceValue(Element element) throws MissingNodeException {
+		public String getInstanceValue(Element element, String appName) throws MissingNodeException {
 			Object value = element.selectObject(xpath);
 			if (value == null)
 				throw new MissingNodeException("Could not get value from element (path=" +
@@ -109,29 +130,20 @@ public class ConvertToARFF {
 			this.possibleValueSet = new TreeSet<String>();
 		}
 
-		public void scan(Element element) {
+		public void scan(Element element, String appName) {
 			try {
-				possibleValueSet.add(getInstanceValue(element));
+				possibleValueSet.add(getInstanceValue(element, appName));
 			} catch (MissingNodeException ignore) {
 				// Ignore: we'll just use an n/a value for this instance
 			}
 		}
 
 		public String getRange() {
-			StringBuffer buf = new StringBuffer();
-			buf.append("{");
-			for (Iterator<String> i = possibleValueSet.iterator(); i.hasNext();) {
-				if (buf.length() > 1)
-					buf.append(',');
-				buf.append(i.next());
-			}
-			buf.append("}");
-
-			return buf.toString();
+			return collectionToRange(possibleValueSet);
 		}
 
-		public String getInstanceValue(Element element) throws MissingNodeException {
-			return "\"" + super.getInstanceValue(element) + "\"";
+		public String getInstanceValue(Element element, String appName) throws MissingNodeException {
+			return "\"" + super.getInstanceValue(element, appName) + "\"";
 		}
 	}
 
@@ -139,39 +151,29 @@ public class ConvertToARFF {
 	private static final int BUG = 1;
 	private static final int NOT_BUG = 2;
 	private static final int HARMLESS = 4;
+	private static final int HARMLESS_BUG = HARMLESS | BUG;
 
 	public static class ClassificationAttribute implements Attribute {
 		public String getName() {
 			return "classification";
 		}
 
-		public void scan(Element element) throws MissingNodeException {
+		public void scan(Element element, String appName) throws MissingNodeException {
 		}
 
 		public String getRange() {
 			return "{bug,not_bug,harmless_bug}";
 		}
 
-		public String getInstanceValue(Element element) throws MissingNodeException {
+		public String getInstanceValue(Element element, String appName) throws MissingNodeException {
 			String annotationText = element.valueOf("./UserAnnotation[text()]");
-			StringTokenizer tok = new StringTokenizer(annotationText, " \t\r\n\f.,:;-");
 
-			int state = UNCLASSIFIED;
+			int state = getBugClassification(annotationText);
 
-			while (tok.hasMoreTokens()) {
-				String s = tok.nextToken();
-				if (s.equals("BUG"))
-					state |= BUG;
-				else if (s.equals("NOT_BUG"))
-					state |= NOT_BUG;
-				else if (s.equals("HARMLESS"))
-					state |= HARMLESS;
-			}
-
-			if ((state & NOT_BUG) != 0)
+			if (state == NOT_BUG)
 				return "not_bug";
-			else if ((state & BUG) != 0)
-				return ((state & HARMLESS) != 0) ? "harmless_bug" : "bug";
+			else if (state == BUG)
+				return "bug";
 			else
 				throw new MissingNodeException("Unclassified warning");
 		}
@@ -182,7 +184,7 @@ public class ConvertToARFF {
 			super(name, xpath);
 		}
 
-		public void scan(Element element) throws MissingNodeException {
+		public void scan(Element element, String appName) throws MissingNodeException {
 		}
 
 		public String getRange() {
@@ -195,14 +197,14 @@ public class ConvertToARFF {
 			return "priority";
 		}
 
-		public void scan(Element element) throws MissingNodeException {
+		public void scan(Element element, String appName) throws MissingNodeException {
 		}
 
 		public String getRange() {
 			return "{low,medium,high}";
 		}
 
-		public String getInstanceValue(Element element) throws MissingNodeException {
+		public String getInstanceValue(Element element, String appName) throws MissingNodeException {
 			org.dom4j.Attribute attribute = element.attribute("priority");
 			if (attribute ==  null)
 				throw new MissingNodeException("Missing priority attribute");
@@ -230,21 +232,70 @@ public class ConvertToARFF {
 		private int count = 0;
 
 		public String getName() { return "id"; }
-		public void scan(Element element) throws MissingNodeException { }
+		public void scan(Element element, String appName) throws MissingNodeException { }
 		public String getRange() { return "numeric"; }
-		public String getInstanceValue(Element element) throws MissingNodeException {
+		public String getInstanceValue(Element element, String appName) throws MissingNodeException {
 			return String.valueOf(count++);
 		}
+	}
+
+	public static class AppNameAttribute implements Attribute {
+		private Set<String> appNameSet = new TreeSet<String>();
+
+		public String getName() {
+			return "appname";
+		}
+
+		public void scan(Element element, String appName)
+			throws MissingNodeException {
+			appNameSet.add(appName);
+		}
+
+		public String getRange() {
+			return collectionToRange(appNameSet);
+		}
+
+		public String getInstanceValue(Element element, String appName)
+			throws MissingNodeException {
+			return "\"" + appName + "\"";
+		}
+	}
+
+	public static String collectionToRange(Collection<String> collection) {
+		StringBuffer buf = new StringBuffer();
+		buf.append("{");
+		for (Iterator<String> i = collection.iterator(); i.hasNext();) {
+			if (buf.length() > 1)
+				buf.append(',');
+			buf.append(i.next());
+		}
+		buf.append("}");
+
+		return buf.toString();
 	}
 
 	public interface AttributeCallback {
 		public void apply(Attribute attribute) throws MissingNodeException, IOException;
 	}
 
+	// ------------------------------------------------------------
+	// Fields
+	// ------------------------------------------------------------
+
 	private List<Attribute> attributeList;
+	private boolean dropUnclassifiedWarnings;
+
+	// ------------------------------------------------------------
+	// Public methods
+	// ------------------------------------------------------------
 
 	public ConvertToARFF() {
 		this.attributeList = new LinkedList<Attribute>();
+		this.dropUnclassifiedWarnings = false;
+	}
+
+	public void dropUnclassifiedWarnings() {
+		this.dropUnclassifiedWarnings = true;
 	}
 
 	public void addAttribute(Attribute attribute) {
@@ -271,18 +322,23 @@ public class ConvertToARFF {
 		addAttribute(new IdAttribute());
 	}
 
+	public void addAppNameAttribute() {
+		addAttribute(new AppNameAttribute());
+	}
+
 	/**
 	 * Convert a single Document to ARFF format.
 	 *
 	 * @param relationName the relation name
 	 * @param document     the Document
+	 * @param appName      the application name
 	 * @param out          Writer to write the ARFF output to
 	 */
-	public void convert(String relationName, Document document, final Writer out)
+	public void convert(String relationName, Document document, String appName, final Writer out)
 			throws IOException, MissingNodeException {
-		scan(document);
+		scan(document, appName);
 		generateHeader(relationName, out);
-		generateInstances(document, out);
+		generateInstances(document, appName, out);
 	}
 
 	/**
@@ -291,15 +347,16 @@ public class ConvertToARFF {
 	 * header and instances.
 	 *
 	 * @param document the Document
+	 * @param appName  the application name
 	 */
-	public void scan(Document document) throws MissingNodeException, IOException {
-		List bugInstanceList = document.selectNodes("/BugCollection/BugInstance");
+	public void scan(Document document, final String appName) throws MissingNodeException, IOException {
+		List bugInstanceList = getBugInstanceList(document);
 
 		for (Iterator i = bugInstanceList.iterator(); i.hasNext(); ) {
 			final Element element = (Element) i.next();
 			scanAttributeList(new AttributeCallback() {
 				public void apply(Attribute attribute) throws MissingNodeException {
-					attribute.scan(element);
+					attribute.scan(element, appName);
 				}
 			});
 		}
@@ -337,11 +394,12 @@ public class ConvertToARFF {
 	 * Document should already have been scanned, and the ARFF header generated.
 	 *
 	 * @param document the Document
+	 * @param appName  the application name
 	 * @param out      Writer to write the ARFF output to
 	 */
-	public void generateInstances(Document document, final Writer out)
+	public void generateInstances(Document document, final String appName, final Writer out)
 			throws MissingNodeException, IOException {
-		List bugInstanceList = document.selectNodes("/BugCollection/BugInstance");
+		List bugInstanceList = getBugInstanceList(document);
 
 		for (Iterator i = bugInstanceList.iterator(); i.hasNext(); ) {
 			final Element element = (Element) i.next();
@@ -353,7 +411,7 @@ public class ConvertToARFF {
 					first = false;
 					String value;
 					try {
-						value = attribute.getInstanceValue(element);
+						value = attribute.getInstanceValue(element, appName);
 					} catch (MissingNodeException e) {
 						value = "?";
 					}
@@ -393,11 +451,54 @@ public class ConvertToARFF {
 		addClassificationAttribute();
 	}
 
+	// ------------------------------------------------------------
+	// Implementation
+	// ------------------------------------------------------------
+
+	private static int getBugClassification(String annotationText) {
+		StringTokenizer tok = new StringTokenizer(annotationText, " \t\r\n\f.,:;-");
+
+		int state = UNCLASSIFIED;
+
+		while (tok.hasMoreTokens()) {
+			String s = tok.nextToken();
+			if (s.equals("BUG"))
+				state |= BUG;
+			else if (s.equals("NOT_BUG"))
+				state |= NOT_BUG;
+			else if (s.equals("HARMLESS"))
+				state |= HARMLESS;
+		}
+
+		if ((state & NOT_BUG) != 0)
+			return NOT_BUG;
+		else if ((state & BUG) != 0)
+			return ((state & HARMLESS) != 0) ? HARMLESS_BUG : BUG;
+		else
+			return UNCLASSIFIED;
+	}
+
+	private List getBugInstanceList(Document document) {
+		List bugInstanceList = document.selectNodes("/BugCollection/BugInstance");
+		if (dropUnclassifiedWarnings) {
+			for (Iterator i = bugInstanceList.iterator(); i.hasNext(); ) {
+				Element element = (Element) i.next();
+				String annotationText = element.valueOf("./UserAnnotation[text()]");
+				int classification = getBugClassification(annotationText);
+				if (classification == UNCLASSIFIED)
+					i.remove();
+			}
+		}
+		return bugInstanceList;
+	}
+
 	private static class C2ACommandLine extends CommandLine {
 		private ConvertToARFF converter = new ConvertToARFF();
 
 		public C2ACommandLine() {
+			addSwitch("-train", "drop unclassified warnings");
 			addSwitch("-id", "add unique id attribute");
+			addSwitch("-app", "add application name attribute");
 			addSwitch("-default", "add default attributes");
 			addOption("-nominal", "attrName,xpath", "add a nominal attribute");
 			addOption("-numeric", "attrName,xpath", "add a numeric attribute");
@@ -411,8 +512,12 @@ public class ConvertToARFF {
 
 		protected void handleOption(String option, String optionExtraPart)
 				throws IOException {
-			if (option.equals("-id")) {
+			if (option.equals("-train")) {
+				converter.dropUnclassifiedWarnings();
+			} else if (option.equals("-id")) {
 				converter.addIdAttribute();
+			} else if (option.equals("-app")) {
+				converter.addAppNameAttribute();
 			} else if (option.equals("-default")) {
 				converter.addDefaultAttributes();
 			} else if (option.equals("-classification")) {
@@ -445,9 +550,17 @@ public class ConvertToARFF {
 		}
 	}
 
+	public static String toAppName(String fileName) {
+		// Remove file extension, if any
+		int lastDot = fileName.lastIndexOf('.');
+		if (lastDot >= 0)
+			fileName = fileName.substring(0, lastDot);
+		return fileName;
+	}
+
 	public static void main(String[] argv) throws Exception {
 		// Expand any option files
-		argv = CommandLine.expandOptionFiles(argv);
+		argv = CommandLine.expandOptionFiles(argv, true, true);
 
 		// Parse command line arguments
 		C2ACommandLine commandLine = new C2ACommandLine();
@@ -468,25 +581,27 @@ public class ConvertToARFF {
 
 		// Read documents,
 		// scan documents to find ranges of attributes
-		List<Document> documentList = new ArrayList<Document>();
+		List<DataFile> dataFileList = new ArrayList<DataFile>();
 		while (argCount < argv.length) {
 			String fileName = argv[argCount++];
 
 			// Read input file as dom4j tree
 			SAXReader reader = new SAXReader();
 			Document document = reader.read(fileName);
-			documentList.add(document);
 
-			converter.scan(document);
+			DataFile dataFile = new DataFile(document, toAppName(fileName));
+			dataFileList.add(dataFile);
+
+			converter.scan(dataFile.getDocument(), dataFile.getAppName());
 		}
 
 		// Generate ARFF header
 		converter.generateHeader(relationName, out);
 
 		// Generate instances from each document
-		for (Iterator<Document> i = documentList.iterator(); i.hasNext(); ) {
-			Document document = i.next();
-			converter.generateInstances(document, out);
+		for (Iterator<DataFile> i = dataFileList.iterator(); i.hasNext(); ) {
+			DataFile dataFile = i.next();
+			converter.generateInstances(dataFile.getDocument(), dataFile.getAppName(), out);
 		}
 
 		out.close();
