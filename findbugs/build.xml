@@ -216,7 +216,7 @@
        <!-- Generate build properties for core Eclipse plugin. -->
        <java dir="${findbugs.dir}"
              fork="true"
-             classname="edu.umd.cs.findbugs.EclipseClasspath"
+             classname="edu.umd.cs.findbugs.tools.eclipse.EclipseClasspath"
              output="${eclipse.src.dir}/edu.umd.cs.findbugs/build.properties"
              failonerror="true">
          <classpath refid="tools.classpath"/>
@@ -230,7 +230,7 @@
        <!-- Generate build properties for UI Eclipse plugin. -->
        <java dir="${findbugs.dir}"
              fork="true"
-             classname="edu.umd.cs.findbugs.EclipseClasspath"
+             classname="edu.umd.cs.findbugs.tools.eclipse.EclipseClasspath"
              output="${eclipse.src.dir}/de.tobject.findbugs/build.properties"
              failonerror="true">
          <classpath refid="tools.classpath"/>
