@@ -40,6 +40,7 @@ import java.util.*;
 public class FindInconsistentSync2 implements Detector {
 	private static final boolean DEBUG = Boolean.getBoolean("fis.debug");
 	private static final boolean SYNC_ACCESS = Boolean.getBoolean("fis.syncAccess");
+	private static final boolean ADJUST_SUBCLASS_ACCESSES = !Boolean.getBoolean("fis.noAdjustSubclass");
 
 	/* ----------------------------------------------------------------------
 	 * Helper classes
@@ -294,8 +295,38 @@ public class FindInconsistentSync2 implements Detector {
 						//     and the method is in the locked method set
 						ValueNumber instance = frame.getInstance(handle.getInstruction(), cpg);
 						boolean isExplicitlyLocked = lockSet.getLockCount(instance.getNumber()) > 0;
+						boolean isAccessedThroughThis = thisValue != null && thisValue.equals(instance);
 						boolean isLocked = isExplicitlyLocked
-							|| (lockedMethodSet.contains(method) && thisValue != null && thisValue.equals(instance));
+							|| (lockedMethodSet.contains(method) && isAccessedThroughThis);
+
+						// Special case:
+						// If it's an access from an instance method where
+						//   1. the field is in a superclass, and
+						//   2. the instance is "this"
+						// then we consider the field to be "owned" by the
+						// referring class, not the class where the field is defined.
+						// This is intended to discount cases where a thread safe base
+						// class is extended by a subclass that doesn't care about 
+						// thread safety.  In that situation, we don't want the 
+						// subclass to pollute the results for the base class.
+						if (ADJUST_SUBCLASS_ACCESSES && isAccessedThroughThis) {
+							// XFields are normally "canonicalized" so that the class
+							// name is the class that the field is defined in,
+							// and not some random subclass to which the field is
+							// visible.  So, we just check whether or not the
+							// class name of the field is the same as the accessing class.
+							// If not, then this is a subclass access, and we
+							// adjust the field so that the class name is the subclass.
+
+							String accessingClassName = classContext.getJavaClass().getClassName();
+							if (!accessingClassName.equals(xfield.getClassName()))
+								xfield = new InstanceField(
+									accessingClassName,
+									xfield.getFieldName(),
+									xfield.getFieldSignature(),
+									xfield.getAccessFlags()
+								);
+						}
 				
 						int kind = 0;
 						kind |= isLocked ? LOCKED : UNLOCKED;
