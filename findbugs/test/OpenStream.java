@@ -55,12 +55,14 @@ public class OpenStream {
 	}
 
 	public void wrappedStreamClosedDoNotReport() throws IOException {
-		FileOutputStream f= new FileOutputStream("Hello.txt");
-		PrintStream ps = new PrintStream(f);
+		FileOutputStream f = null;
 		try {
+			f= new FileOutputStream("Hello.txt");
+			PrintStream ps = new PrintStream(f);
 			ps.println("Hello");
 		} finally {
-			f.close();
+			if (f != null)
+				f.close();
 		}
 	}
 }
