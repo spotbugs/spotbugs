@@ -399,7 +399,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 	 * @return the IFile (which may not actually exist in the filesystem yet)
 	 */
 	public static IFile getBugCollectionFile(IProject project) {
-		IFile file = project.getFile("fbwarnings.xml");
+		IFile file = project.getFile(".fbwarnings");
 		return file;
 	}
 
