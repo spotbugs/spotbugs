@@ -36,12 +36,12 @@ public class Version {
 	/**
 	 * Patch level.
 	 */
-	public static final int PATCHLEVEL = 4;
+	public static final int PATCHLEVEL = 5;
 
 	/**
 	 * Development version?
 	 */
-	public static final boolean IS_DEVELOPMENT = false;
+	public static final boolean IS_DEVELOPMENT = true;
 
 	/**
 	 * Release version string.
@@ -51,7 +51,7 @@ public class Version {
 	/**
 	 * Release date.
 	 */
-	public static final String DATE = "August 11, 2004";
+	public static final String DATE = "September 13, 2004";
 
 	/**
 	 * Version of Eclipse "core" plugin, which is just a repackaged
@@ -65,7 +65,7 @@ public class Version {
 	/**
 	 * Version of Eclipse UI plugin.
 	 */
-	public static final String ECLIPSE_UI_VERSION = "0.0.11" + (IS_DEVELOPMENT ? ".dev" : "");
+	public static final String ECLIPSE_UI_VERSION = "0.0.12" + (IS_DEVELOPMENT ? ".dev" : "");
 
 	/**
 	 * FindBugs website.
