@@ -1,9 +1,6 @@
 package edu.umd.cs.findbugs;
 import java.util.*;
-import java.io.PrintStream;
 import org.apache.bcel.classfile.*;
-import java.util.zip.*;
-import java.io.*;
 import edu.umd.cs.pugh.visitclass.Constants2;
 
 public class FindUnsyncGet extends BytecodeScanningDetector implements   Constants2 {
@@ -41,7 +38,7 @@ public class FindUnsyncGet extends BytecodeScanningDetector implements   Constan
 	setMethods.clear();
 	}
    public void visit(JavaClass obj) {
-	report(System.out);
+	report();
 	prevClassName = betterClassName;
 	}
 
