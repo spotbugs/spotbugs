@@ -20,8 +20,10 @@ class Infeasible {
 		}
 	catch (IOException e) {
 		e.printStackTrace();
+		// a should always be initialized here
+		return a.hashCode();
 		}
-	// a should also be initialized here
+	// a should always be initialized here
 	return a.hashCode();
 	} 
 }
