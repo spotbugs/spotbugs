@@ -59,6 +59,7 @@ Usage() {
 	echo "   -textui         Use the Text UI"
 	echo "   -jvmArgs args   Pass args to JVM"
 	echo "   -help           Display this message"
+	echo "   -debug          Enable debug tracing in FindBugs"
 	echo "All other options are passed to the FindBugs application"
 	exit 0;
 }
@@ -107,6 +108,7 @@ fi
 # to the FindBugs main() method.
 argList=''
 jvmArgs="-Xmx256m -Xss2m"
+debugArg=""
 appJar="findbugsGUI.jar"
 while [ $# -gt 0 ]; do
 	arg=$1
@@ -125,6 +127,10 @@ while [ $# -gt 0 ]; do
 		jvmArgs=$1
 		shift
 		#echo "jvmArgs='$jvmArgs'"
+		;;
+
+	-debug)
+		debugArg="-Dfindbugs.debug=true"
 		;;
 
 	-help)
@@ -155,6 +161,6 @@ if [ ! -z "$JAVA_HOME" ] && [ -x "$JAVA_HOME/bin/java" ]; then
 fi
 
 # Launch FindBugs!
-$jvmCmd $jvmArgs "-Dfindbugs.home=$findbugs_home" -jar "$findbugs_home/lib/$appJar" $argList
+$jvmCmd $jvmArgs $debugArg "-Dfindbugs.home=$findbugs_home" -jar "$findbugs_home/lib/$appJar" $argList
 
 # vim:ts=4

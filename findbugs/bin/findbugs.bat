@@ -8,6 +8,7 @@
 :: ----------------------------------------------------------------------
 set appjar=findbugsGUI.jar
 set jvmargs=-Xmx256m -Xss2m
+set debugArg=
 set args=
 
 goto loop
@@ -39,6 +40,9 @@ if "%firstArg%"=="-home" goto shift2
 if "%firstArg%"=="-jvmArgs" set jvmargs=%secondArg%
 if "%firstArg%"=="-jvmArgs" goto shift2
 
+if "%firstArg%"=="-debug" set debugArg="-Dfindbugs.debug=true"
+if "%firstArg%"=="-debug" goto shift1
+
 if "%firstArg%"=="-help" goto help
 
 if "%firstArg%"=="" goto launch
@@ -59,7 +63,7 @@ if "%FINDBUGS_HOME%"=="" goto homeNotSet
 :: echo appjar is %appjar%
 :: echo args is %args%
 :: echo jvmargs is %jvmargs%
-java "-Dfindbugs.home=%FINDBUGS_HOME%" %jvmargs% -jar "%FINDBUGS_HOME%\lib\%appjar%" %args%
+java %debugArg% "-Dfindbugs.home=%FINDBUGS_HOME%" %jvmargs% -jar "%FINDBUGS_HOME%\lib\%appjar%" %args%
 goto end
 
 :: ----------------------------------------------------------------------
