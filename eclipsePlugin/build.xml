@@ -1,0 +1,20 @@
+<!--
+	At the moment, the only purpose of this Ant script is
+	to copy jar files from the main findbugs project
+	(which should be a sibling of this project).
+-->
+
+<project name="fbeclipse" default="fbjars">
+	<property name="fbeclipse.dir" value="."/>
+	<property name="findbugs.dir" value="../findbugs"/>
+	
+	<target name="fbjars">
+		<ant dir="${findbugs.dir}" inheritall="false" target="build"/>
+		<copy todir="${fbeclipse.dir}">
+			<fileset dir="${findbugs.dir}" includes="findbugs.jar,bcel.jar"/>
+		</copy>
+		<copy todir="${fbeclipse.dir}/plugin">
+			<fileset dir="${findbugs.dir}/plugin" includes="coreplugin.jar"/>
+		</copy>
+	</target>
+</project>
