@@ -25,6 +25,9 @@ public class Project {
     /** The list of source directories. */
     private ArrayList srcDirList;
     
+    /** Number of analysis runs done so far on this project. */
+    private int numAnalysisRuns;
+    
     /** Creates a new instance of Project */
     public Project(String fileName) {
         this.fileName = fileName;
@@ -107,6 +110,13 @@ public class Project {
      */
     public String[] getSourceDirArray() {
 	return (String[]) srcDirList.toArray(new String[0]);
+    }
+    
+    /**
+     * Get the number of the next analysis run.
+     */
+    public int getNextAnalysisRun() {
+	return numAnalysisRuns++;
     }
     
     public String toString() { return fileName; }
