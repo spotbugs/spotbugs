@@ -3,6 +3,12 @@
   Contributed by Mike Fagan <mfagan@tde.com>
   With changes by David Hovemeyer <daveho@cs.umd.edu>
 
+  If you are building FindBugs for the first time, please see
+  the manual for important information.  You can find it in
+  "doc/manual/index.html" in the FindBugs directory, or online at
+
+     http://www.cs.umd.edu/~pugh/java/bugs/manual/index.html
+
   The general idea behind building FindBugs is that the top-level
   working directory (i.e., the directory containing "build.xml")
   looks like a findbugs binary installation (once the default "build"
@@ -14,6 +20,12 @@
 -->
 
 <project name="find-bugs" default="build">
+
+    <property name="local.software.home" value="/export/home/daveho/linux" />
+<!--
+    <property name="local.software.home" value="/home/software" />
+    <property name="local.software.home" value="/user/daveho/local" />
+-->
 
     <!--
       *****************************************************************
@@ -30,22 +42,22 @@
          then you will need to rename "gjc-rt.jar" to "javac.jar".
      -->
     <property name="jsr14.home"
-              value="/export/home/daveho/linux/java/adding_generics-2_2-ea"/>
+              value="${local.software.home}/java/adding_generics-2_2-ea"/>
 
     <!-- Set this to the directory containing the DocBook Modular XSL Stylesheets
          from http://docbook.sourceforge.net/projects/xsl/ -->
     <property name="xsl.stylesheet.home"
-              value="/export/home/daveho/linux/docbook/docbook-xsl-1.61.0" />
+              value="${local.software.home}/docbook/docbook-xsl-1.61.0" />
 
     <!-- Set this to the directory where Saxon (http://saxon.sourceforge.net/)
          is installed. -->
     <property name="saxon.home"
-              value="/export/home/daveho/linux/java/saxon-6.5.2" />
+              value="${local.software.home}/java/saxon-6.5.2" />
 
     <!-- Set this to the directory where FOP (http://xml.apache.org/fop/)
          is installed.  (Note: this is disabled for now.) -->
     <property name="fop.home"
-              value="/export/home/daveho/linux/java/fop-0.20.5rc2" />
+              value="${local.software.home}/java/fop-0.20.5rc2" />
 
     <!--
       *****************************************************************
