@@ -69,17 +69,22 @@ public class SchemaValidatorTask extends Task
 				public void error(SAXParseException exception) {
 					if (exceptionLevel < ERROR) {
 						ex = exception;
+						exceptionLevel = ERROR;
 					}
 				}
 				
 				public void fatalError(SAXParseException exception) {
-					if (exceptionLevel < FATAL)
+					if (exceptionLevel < FATAL) {
 						ex = exception;
+						exceptionLevel = FATAL;
+					}
 				}
 				
 				public void warning(SAXParseException exception) {
-					if (exceptionLevel < WARN)
+					if (exceptionLevel < WARN) {
 						ex = exception;
+						exceptionLevel = WARN;
+					}
 				}
 			});
 			reader.parse(new InputSource( xmlPath ));
