@@ -1,6 +1,6 @@
 /*
  * FindBugs - Find bugs in Java programs
- * Copyright (C) 2003,2004 University of Maryland
+ * Copyright (C) 2003-2005, University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -284,6 +284,16 @@ public abstract class BugCollection {
 		writeXML(xmlOutput, project);
 	}
 
+	public void writePrologue(XMLOutput xmlOutput, Project project) throws IOException {
+		xmlOutput.beginDocument();
+		xmlOutput.openTag(ROOT_ELEMENT_NAME,
+			new XMLAttributeList()
+				.addAttribute("version",Version.RELEASE)
+				.addAttribute("timestamp",String.valueOf(getTimestamp()))
+		);
+		project.writeXML(xmlOutput);
+	}
+
 	/**
 	 * Write the BugCollection to an XMLOutput object.
 	 * The finish() method of the XMLOutput object is guaranteed
@@ -294,38 +304,34 @@ public abstract class BugCollection {
 	 */
 	public void writeXML(XMLOutput xmlOutput, Project project) throws IOException {
 		try {
-			xmlOutput.beginDocument();
-			xmlOutput.openTag(ROOT_ELEMENT_NAME,
-				new XMLAttributeList()
-					.addAttribute("version",Version.RELEASE)
-					.addAttribute("timestamp",String.valueOf(getTimestamp()))
-			);
-
-			project.writeXML(xmlOutput);
+			writePrologue(xmlOutput, project);
 
 			// Write BugInstances
 			XMLOutputUtil.writeCollection(xmlOutput, getCollection());
 
-			// Errors, missing classes
-			xmlOutput.openTag(ERRORS_ELEMENT_NAME);
-			XMLOutputUtil.writeElementList(xmlOutput, ANALYSIS_ERROR_ELEMENT_NAME,
-				errorIterator());
-			XMLOutputUtil.writeElementList(xmlOutput, MISSING_CLASS_ELEMENT_NAME,
-				missingClassIterator());
-			xmlOutput.closeTag(ERRORS_ELEMENT_NAME);
-
-			// Summary HTML
-			String html = getSummaryHTML();
-			if (!html.equals("")) {
-				xmlOutput.openTag(SUMMARY_HTML_ELEMENT_NAME);
-				xmlOutput.writeCDATA(html);
-				xmlOutput.closeTag(SUMMARY_HTML_ELEMENT_NAME);
-			}
-
-			xmlOutput.closeTag(ROOT_ELEMENT_NAME);
+			writeEpilogue(xmlOutput);
 		} finally {
 			xmlOutput.finish();
 		}
+	}
+
+	public void writeEpilogue(XMLOutput xmlOutput) throws IOException {
+		// Errors, missing classes
+		xmlOutput.openTag(ERRORS_ELEMENT_NAME);
+		XMLOutputUtil.writeElementList(xmlOutput, ANALYSIS_ERROR_ELEMENT_NAME,
+			errorIterator());
+		XMLOutputUtil.writeElementList(xmlOutput, MISSING_CLASS_ELEMENT_NAME,
+			missingClassIterator());
+		xmlOutput.closeTag(ERRORS_ELEMENT_NAME);
+		// Summary HTML
+		String html = getSummaryHTML();
+		if (!html.equals("")) {
+			xmlOutput.openTag(SUMMARY_HTML_ELEMENT_NAME);
+			xmlOutput.writeCDATA(html);
+			xmlOutput.closeTag(SUMMARY_HTML_ELEMENT_NAME);
+		}
+
+		xmlOutput.closeTag(ROOT_ELEMENT_NAME);
 	}
 
 	private void checkInputStream(InputStream in) throws IOException {
