@@ -260,14 +260,22 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 		pushValue(obj.getType(getCPG()));
 	}
 
-	public void visitNEWARRAY(NEWARRAY obj)			{ consumeStack(obj); pushValue(obj.getType()); }
-	public void visitANEWARRAY(ANEWARRAY obj)		{ consumeStack(obj); pushValue(obj.getType(getCPG())); }
+	public void visitNEWARRAY(NEWARRAY obj) {
+		consumeStack(obj);
+		Type elementType = obj.getType();
+		pushValue(new ArrayType(elementType, 1));
+	}
+
+	public void visitANEWARRAY(ANEWARRAY obj) {
+		consumeStack(obj);
+		Type elementType = obj.getType(getCPG());
+		pushValue(new ArrayType(elementType, 1));
+	}
 
 	public void visitMULTIANEWARRAY(MULTIANEWARRAY obj) {
 		consumeStack(obj);
-		// TODO: I'm a bit skeptical that the implementation of getType() used
-		// by MULTIANEWARRAY is correct.  Trust it for now.
-		pushValue(obj.getType(getCPG()));
+		Type elementType = obj.getType(getCPG());
+		pushValue(new ArrayType(elementType, obj.getDimensions()));
 	}
 
 	public void visitJSR(JSR obj)					{ pushValue(ReturnaddressType.NO_TARGET); }
