@@ -1,5 +1,5 @@
 Adding Detectors to FindBugs
-May 5, 2003
+May 6, 2003
 
 ===============
 1. Introduction
@@ -18,9 +18,18 @@ At startup, FindBugs loads all plugin Jar files.  At analysis time,
 all detectors named in the findbugs.xml files from those plugins
 are instantiated and applied to analyzed class files.
 
-A side benefit to findbugs.xml is that it consolidates the information
-that is currently in FindBugsMessages.properties, FindBugsShortMessages.properties,
-and all of the HTML help files.
+In order to format reported BugInstances as text for display,
+a messages file is loaded from the plugin.  In order to support multiple
+language translations, a locale search is performed in a manner
+similar to the handling of resource bundles.  For example, if the
+locale is "pt_BR", then the files
+
+  messages_pt_BR.xml
+  messages_pt.xml
+  messages.xml
+
+are tried, in that order.
+
 
 ============================
 2. Example findbugs.xml file
@@ -28,85 +37,83 @@ and all of the HTML help files.
 
 <DetectorPlugin>
 
-  <Detector>
-    <Class>org.foobar.findbugs.FindUnreleasedLocks</Class>
+  <Detector class="org.foobar.findbugs.FindUnreleasedLocks" />
+  <Detector class="org.foobar.findbugs.ExperimentalDetector" disabled="true" />
 
-    <!-- Remove this tag when the detector is ready for production! -->
-    <Disabled />
+  <!-- More Detector elements would go here... -->
 
-    <BugPattern>
-      <Type>UBL_UNRELEASED_LOCK</Type>
-      <Category>MT_CORRECTNESS</Category>
-      <Abbrev>UL</Abbrev>
+  <BugPattern type="UBL_UNRELEASED_LOCK" abbrev="UL" category="MT_CORRECTNESS" />
 
-      <Description>
-        <ShortDescription>Lock not released on all paths out of method</ShortDescription>
-        <LongDescription>{1} does not release lock on all paths out of method</LongDescription>
-        <Details>
-        A JSR-166 lock acquired in this method is not released on all paths
-        out of the method. This could result in a deadlock if another thread
-        tries to acquire the lock.  Generally, you should use a finally
-        block to ensure that acquired locks are always released.
-        </Details>
-      </Description>
-
-      <Description lang="de">
-         ... a German description would go here ...
-      </Description>
-
-      <!-- Other description nodes would go here ... -->
-
-    </BugPattern>
-
-    <!-- More BugPattern nodes would go here... -->
-
-  </Detector>
-
-  <!-- More Detector nodes would go here... -->
+  <!-- More BugPattern elements would go here... -->
 
 </DetectorPlugin>
 
-This XML file gives FindBugs all of the information it needs to run the
-detector and display its results in the UI at runtime.
 
-======================
-3. Meaning of elements
-======================
+======================================
+3. Meaning of elements in findbugs.xml
+======================================
 
-  <DetectorPlugin> a collection of <Detector> elements.  Each plugin Jar file
-  can (and usually will) provide multiple detectors.
+  <DetectorPlugin> a collection of <Detector> and <BugPattern> elements.
+  Each plugin Jar file can (and usually will) provide multiple detectors
+  and define multiple bug patterns.
 
-  <Detector> general node bundling all info for a particular bug pattern
-    detector in the plugin
+  <Detector> specifies a class which implements the edu.umd.cs.findbugs.Detector
+  interface and has a constructor that takes a single parameter of type
+  edu.umd.cs.findbugs.BugReporter.  The optional "disabled" attribute, if
+  set to "true", means that the detector will not be used at runtime.
+  This is useful for detectors that aren't quite ready for prime time.
 
-  <Disabled> this is an optional tag which, if present in a Detector node,
-  disables the detector.  This is useful for supressing detectors which
-  either aren't ready for prime time, or are being phased out.
+  <BugPattern> specifies a kind of bug that will be reported.
+  It has three required attributes:
 
-  <Class> is the full Java class name of a bug pattern detector.
-  It must implement the edu.umd.cs.findbugs.Detector interface,
-  and have a constructor which takes a single parameter of type
-  edu.umd.cs.findbugs.BugReporter.  It will be instantiated using
-  reflection.
+    1. "type" is a unique code identifying the bug.  Only one BugPattern
+       can have a a particular type.
 
-  <Type> is a unique key describing the bug pattern
+    2. "abbrev" is a short alphanumeric code for the bug.
+       Note that multiple BugPatterns can use the same abbreviation
+       if they are related.
 
-  <Category> is the bug pattern category; one of the following
-     CORRECTNESS - general correctness issues
-     MT_CORRECTNESS - multithreaded correctness issues
-     MALICIOUS_CODE - a potential vulnerability if exposed to malicious code
-     PERFORMANCE - a performance issue
+    3. "category" is one of the following:
 
-  <Abbrev> abbreviation for reported instances.
-  Note that many bug patterns may share the same abbreviation if
-  they are related.
+       CORRECTNESS - general correctness issues
+       MT_CORRECTNESS - multithreaded correctness issues
+       MALICIOUS_CODE - a potential vulnerability if exposed to malicious code
+       PERFORMANCE - a performance issue
 
-  <Description> general node bundling all text descriptions of a bug pattern.
-  May optionally have a "lang" attribute, which indicates the language
-  of the description.  Multiple descriptions may be present with different languages.
-  There must always be one Description node without a "lang" attribute,
-  which will be used as the default if a more specific translation can't
-  be found.
+
+============================
+4. Example messages.xml file
+============================
+
+<MessageCollection>
+
+  <BugPattern type="UBL_UNRELEASED_LOCK">
+    <ShortDescription>Lock not released on all paths out of method</ShortDescription>
+
+    <LongDescription>{1} does not release lock on all paths out of method</LongDescription>
+
+    <Details>
+    A JSR-166 lock acquired in this method is not released on all paths
+    out of the method. This could result in a deadlock if another thread
+    tries to acquire the lock.  Generally, you should use a finally
+    block to ensure that acquired locks are always released.
+    </Details>
+  </BugPattern>
+
+    <!-- More BugPattern nodes would go here... -->
+
+</MessageCollection>
+
+
+======================================
+5. Meaning of elements in messages.xml
+======================================
+
+  <MessageCollection> is the top level element
+
+  <BugPattern> holds all of the human-readable messages for the bug pattern
+  identified by the "type" attribute.  The type corresponds to the
+  type attribute of the BugPattern elements described in findbugs.xml.
 
   <ShortDescription> this is used for when "View:Full Descriptions"
   is turned off in the GUI, and it's also used as the title for 
