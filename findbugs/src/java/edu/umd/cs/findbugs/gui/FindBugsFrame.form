@@ -38,7 +38,7 @@
             <Component class="javax.swing.JTree" name="bugTree">
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignCardLayout" value="org.netbeans.modules.form.compat2.layouts.DesignCardLayout$CardConstraintsDescription">
-                  <CardConstraints cardName="Tree"/>
+                  <CardConstraints cardName="BugTree"/>
                 </Constraint>
               </Constraints>
             </Component>
@@ -54,7 +54,7 @@
             <Container class="javax.swing.JPanel" name="editProjectPanel">
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignCardLayout" value="org.netbeans.modules.form.compat2.layouts.DesignCardLayout$CardConstraintsDescription">
-                  <CardConstraints cardName="card4"/>
+                  <CardConstraints cardName="EditProjectPanel"/>
                 </Constraint>
               </Constraints>
 

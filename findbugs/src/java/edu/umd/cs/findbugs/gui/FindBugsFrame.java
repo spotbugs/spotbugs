@@ -6,6 +6,8 @@
 
 package edu.umd.cs.findbugs.gui;
 
+import java.awt.CardLayout;
+
 /**
  * This frame contains all of the controls used by the FindBugs GUI.
  * I suppose this code should be modularized some more, maybe turning some of
@@ -19,6 +21,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
     /** Creates new form FindBugsFrame */
     public FindBugsFrame() {
 	initComponents();
+        this.viewPanelLayout = (CardLayout) viewPanel.getLayout();
     }
     
     /** This method is called from within the constructor to
@@ -63,7 +66,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
         viewPanel.setLayout(new java.awt.CardLayout());
 
-        viewPanel.add(bugTree, "Tree");
+        viewPanel.add(bugTree, "BugTree");
 
         viewPanel.add(reportPanel, "ReportPanel");
 
@@ -220,7 +223,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(3, 0, 3, 0);
         editProjectPanel.add(jSeparator2, gridBagConstraints);
 
-        viewPanel.add(editProjectPanel, "card4");
+        viewPanel.add(editProjectPanel, "EditProjectPanel");
 
         jSplitPane1.setRightComponent(viewPanel);
 
@@ -271,10 +274,20 @@ public class FindBugsFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_exitForm
     
     /**
+     * Set the view panel to display the named view.
+     */
+    public void setView(String viewName) {
+        viewPanelLayout.show(viewPanel, viewName);
+    }
+    
+    /**
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-	new FindBugsFrame().show();
+	FindBugsFrame frame = new FindBugsFrame();
+        frame.setView("EditProjectPanel");
+        frame.setSize(600, 400);
+        frame.show();
     }
     
     
@@ -304,4 +317,6 @@ public class FindBugsFrame extends javax.swing.JFrame {
     private javax.swing.JTree bugTree;
     // End of variables declaration//GEN-END:variables
     
+    // My variable declarations
+    private CardLayout viewPanelLayout;
 }
