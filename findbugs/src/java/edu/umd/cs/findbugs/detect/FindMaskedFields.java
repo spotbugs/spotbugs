@@ -118,6 +118,7 @@ public class FindMaskedFields extends BytecodeScanningDetector implements Consta
 	
 
 	public void visit(LocalVariableTable obj) {
+		if (false) {
 		if (staticMethod)
 			return;
 			
@@ -145,6 +146,7 @@ public class FindMaskedFields extends BytecodeScanningDetector implements Consta
 							.addField(fa)
 							.addSourceLine(this, var.getStartPC()-1));
 			}
+		}
 		}
 		super.visit(obj);
 	}
