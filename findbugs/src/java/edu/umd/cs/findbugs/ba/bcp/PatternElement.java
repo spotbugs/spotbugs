@@ -20,6 +20,7 @@
 package edu.umd.cs.daveho.ba.bcp;
 
 import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.ConstantPoolGen;
 import edu.umd.cs.daveho.ba.Edge;
 import edu.umd.cs.daveho.ba.ValueNumberFrame;
 import edu.umd.cs.daveho.ba.DataflowAnalysisException;
@@ -62,21 +63,25 @@ public abstract class PatternElement {
 	 * Return whether or not this element matches the given
 	 * instruction with the given Bindings in effect.
 	 * @param handle the instruction
-	 * @param frame the ValueNumberFrame representing values in the Java stack frame
-	 *   just prior to the execution of the instruction
+	 * @param cpg the ConstantPoolGen from the method
+	 * @param before the ValueNumberFrame representing values in the Java stack frame
+	 *   just before the execution of the instruction
+	 * @param after the ValueNumberFrame representing values in the Java stack frame
+	 *   just after the execution of the instruction
 	 * @param bindingSet the set of Bindings
 	 * @return if the match is successful, returns an updated BindingSet;
 	 *   if the match is not successful, returns null
 	 */
-	public abstract BindingSet match(InstructionHandle handle, ValueNumberFrame frame, BindingSet bindingSet)
-		throws DataflowAnalysisException;
+	public abstract BindingSet match(InstructionHandle handle, ConstantPoolGen cpg,
+		ValueNumberFrame before, ValueNumberFrame after, BindingSet bindingSet) throws DataflowAnalysisException;
 
 	/**
 	 * Return whether or not it is acceptable to take the given branch.
 	 * @param edge the Edge representing the branch
+	 * @param source the source instruction of the branch
 	 * @return true if the Edge is acceptable, false if not
 	 */
-	public abstract boolean acceptBranch(Edge edge);
+	public abstract boolean acceptBranch(Edge edge, InstructionHandle source);
 
 	/**
 	 * Return the minimum number of instructions this PatternElement
@@ -89,6 +94,29 @@ public abstract class PatternElement {
 	 * must match in the ByteCodePattern.
 	 */
 	public abstract int maxOccur();
+
+	/**
+	 * Add a variable definition to the given BindingSet, or if
+	 * there is an existing definition, make sure it is consistent with
+	 * the new definition.
+	 * @param varName the name of the variable
+	 * @param variable the Variable which should be added or checked for consistency
+	 * @param bindingSet the existing set of bindings
+	 * @return the updated BindingSet (if the variable is consistent with the
+	 *   previous bindings), or null if the new variable is inconsistent with
+	 *   the previous bindings
+	 */
+	protected static BindingSet addOrCheckDefinition(String varName, Variable variable, BindingSet bindingSet) {
+		Variable existingVariable = lookup(varName, bindingSet);
+		if (existingVariable == null) {
+			bindingSet = new BindingSet(new Binding(varName, existingVariable), bindingSet);
+		} else {
+			if (!existingVariable.equals(variable))
+				return null;
+		}
+
+		return bindingSet;
+	}
 }
 
 // vim:ts=4
