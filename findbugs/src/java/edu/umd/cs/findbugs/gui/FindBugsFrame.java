@@ -1021,7 +1021,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
     
     private void browseClasspathEntryButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_browseClasspathEntryButtonActionPerformed
         // Add your handling code here:
-        JFileChooser chooser = new JFileChooser();
+        JFileChooser chooser = new JFileChooser(currentDirectory);
         chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
         chooser.setFileFilter(auxClasspathEntryFileFilter);
         int result = chooser.showDialog(this, "Add entry");
@@ -1034,6 +1034,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
             }
              */
             File selectedFile = chooser.getSelectedFile();
+            currentDirectory = selectedFile.getParentFile();
             classpathEntryTextField.setText(selectedFile.getPath());
             addClasspathEntryToList();
         }
@@ -1088,13 +1089,14 @@ public class FindBugsFrame extends javax.swing.JFrame {
         if (!closeProjectHook(getCurrentProject(), "Open Project"))
             return;
         
-        JFileChooser chooser = new JFileChooser();
+        JFileChooser chooser = new JFileChooser(currentDirectory);
         chooser.setFileFilter(projectFileFilter);
         int result = chooser.showOpenDialog(this);
         if (result == JFileChooser.CANCEL_OPTION)
             return;
         try {
             File file = chooser.getSelectedFile();
+            currentDirectory = file.getParentFile();
             Project project = new Project(file.getPath());
             FileInputStream in = new FileInputStream(file);
             project.read(in);
@@ -1143,6 +1145,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
             return;
         }
         
+        bugDescriptionEditorPane.setText("");
+        sourceTextArea.setText("");
         AnalysisRun analysisRun = new AnalysisRun(project, logger);
         
         logger.logMessage(ConsoleLogger.INFO, "Beginning analysis of " + project);
@@ -1166,10 +1170,11 @@ public class FindBugsFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_findBugsButtonActionPerformed
     
     private void browseSrcDirButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_browseSrcDirButtonActionPerformed
-        JFileChooser chooser = new JFileChooser();
+        JFileChooser chooser = new JFileChooser(currentDirectory);
         chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         int rc = chooser.showDialog(this, "Add source directory");
         if (rc == JFileChooser.APPROVE_OPTION) {
+            currentDirectory = chooser.getSelectedFile().getParentFile();
             srcDirTextField.setText(chooser.getSelectedFile().getPath());
             addSourceDirToList();
         }
@@ -1184,7 +1189,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_jarNameTextFieldActionPerformed
     
     private void browseJarButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_browseJarButtonActionPerformed
-        JFileChooser chooser = new JFileChooser();
+        JFileChooser chooser = new JFileChooser(currentDirectory);
         FileFilter filter = new FileFilter() {
             public boolean accept(File file) { return file.isDirectory() || file.getName().endsWith(".jar"); }
             public String getDescription() { return "Jar files (*.jar)"; }
@@ -1192,6 +1197,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
         chooser.setFileFilter(filter);
         int rc = chooser.showDialog(this, "Add Jar file");
         if (rc == JFileChooser.APPROVE_OPTION) {
+            currentDirectory = chooser.getSelectedFile().getParentFile();
             jarNameTextField.setText(chooser.getSelectedFile().getPath());
             addJarToList();
         }
@@ -1463,7 +1469,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
             if (!fileName.startsWith("<") && !chooseFilename) {
                 file = new File(fileName);
             } else {
-                JFileChooser chooser = new JFileChooser();
+                JFileChooser chooser = new JFileChooser(currentDirectory);
                 chooser.setFileFilter(projectFileFilter);
                 
                 int result = chooser.showDialog(this, dialogTitle);
@@ -2045,6 +2051,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
     private ConsoleLogger logger;
     private CardLayout viewPanelLayout;
     private String currentView;
+    private File currentDirectory;
     private Project currentProject;
     private JTree[] bugTreeList;
     private AnalysisRun currentAnalysisRun;
