@@ -190,6 +190,10 @@ public class FindNullDeref implements Detector {
 		InstructionHandle lastHandle) throws DataflowAnalysisException {
 
 		IsNullValueFrame frame = invDataflow.getFactAtLocation(new Location(lastHandle, basicBlock));
+		if (!frame.isValid()) {
+			// Probably dead code due to pruning infeasible exception edges.
+			return;
+		}
 		if (frame.getStackDepth() < 2)
 			throw new AnalysisException("Stack underflow at " + lastHandle);
 
@@ -229,6 +233,11 @@ public class FindNullDeref implements Detector {
 		InstructionHandle lastHandle) throws DataflowAnalysisException {
 
 		IsNullValueFrame frame = invDataflow.getFactAtLocation(new Location(lastHandle, basicBlock));
+		if (!frame.isValid()) {
+			// This is probably dead code due to an infeasible exception edge.
+			return;
+		}
+
 		IsNullValue top = frame.getTopValue();
 
 		// Find the line number.
