@@ -253,6 +253,76 @@ These options are only accepted by the Text User Interface.
        </para>
     </listitem>
   </varlistentry>
+
+  <varlistentry>
+  <term><command>-low</command></term>
+  <listitem>
+    <para>
+    Report all bugs.
+    </para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term><command>-medium</command></term>
+  <listitem>
+    <para>
+    Report medium and high priority bugs.  This is the default setting.
+    </para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term><command>-high</command></term>
+  <listitem>
+    <para>
+    Report only high priority bugs.
+    </para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term><command>-xml</command></term>
+  <listitem>
+    <para>
+    Produce the bug reports as XML.  The XML data produced may be
+    viewed in the GUI at a later time.
+    </para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term><command>-auxclasspath</command> <replaceable>classpath</replaceable></term>
+  <listitem>
+    <para>
+    Set the auxiliary classpath for analysis.  This classpath should include all
+    jar files and directories containing classes that are part of the program
+    being analyzed but you do not want to have analyzed for bugs.
+    </para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term><command>-project</command> <replaceable>project</replaceable></term>
+  <listitem>
+    <para>
+    Specify a project to be analyzed.  The project file you specify should
+    be one that was created using the GUI interface.  It will typically end
+    in the extension <filename>.fb</filename>.
+    </para>
+  </listitem>
+  </varlistentry>
+
+<!--
+  <varlistentry>
+  <term><command></command> <replaceable></replaceable></term>
+  <listitem>
+    <para>
+    </para>
+  </listitem>
+  </varlistentry>
+-->
+
 </variablelist>
 </para>
 
