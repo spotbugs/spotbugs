@@ -32,6 +32,7 @@ public class ValueNumberFrameModelingVisitor
 	 * Fields
 	 * ---------------------------------------------------------------------- */
 
+	private MethodGen methodGen;
 	private ValueNumberFactory factory;
 	private ValueNumberCache cache;
 	private HashMap<String, ValueNumber> classObjectValueMap;
@@ -44,10 +45,11 @@ public class ValueNumberFrameModelingVisitor
 	 * Public interface
 	 * ---------------------------------------------------------------------- */
 
-	public ValueNumberFrameModelingVisitor(ConstantPoolGen cpg, ValueNumberFactory factory,
+	public ValueNumberFrameModelingVisitor(MethodGen methodGen, ValueNumberFactory factory,
 		ValueNumberCache cache, RepositoryLookupFailureCallback lookupFailureCallback) {
 
-		super(cpg);
+		super(methodGen.getConstantPool());
+		this.methodGen = methodGen;
 		this.factory = factory;
 		this.cache = cache;
 		this.classObjectValueMap = new HashMap<String, ValueNumber>();
@@ -194,7 +196,7 @@ public class ValueNumberFrameModelingVisitor
 						return;
 					}
 				} catch (DataflowAnalysisException e) {
-					throw new IllegalStateException("stack underflow at " + handle);
+					throw new AnalysisException("stack underflow", methodGen, handle, e);
 				}
 			} else if (methodName.startsWith("access$")) {
 				String className = obj.getClassName(cpg);
@@ -337,7 +339,7 @@ public class ValueNumberFrameModelingVisitor
 	
 			pushOutputValues(loadedValue);
 		} catch (DataflowAnalysisException e) {
-			throw new IllegalStateException("ValueNumberFrameModelingVisitor caught exception: " + e.toString());
+			throw new AnalysisException("ValueNumberFrameModelingVisitor caught exception: " + e.toString(), e);
 		}
 	}
 

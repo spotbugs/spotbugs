@@ -71,7 +71,7 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
 		this.methodGen = methodGen;
 		this.factory = new ValueNumberFactory();
 		this.cache = new ValueNumberCache();
-		this.visitor = new ValueNumberFrameModelingVisitor(methodGen.getConstantPool(), factory, cache,
+		this.visitor = new ValueNumberFrameModelingVisitor(methodGen, factory, cache,
 			lookupFailureCallback);
 
 		int numLocals = methodGen.getMaxLocals();
