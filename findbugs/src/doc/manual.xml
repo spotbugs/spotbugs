@@ -319,6 +319,26 @@ These options are only accepted by the Text User Interface.
   </varlistentry>
 
   <varlistentry>
+    <term><command>-onlyAnalyze</command> <replaceable>com.foobar.MyClass,com.foobar.mypkg.*</replaceable></term>
+    <listitem>
+      <para>
+      Restrict analysis to find bugs to given comma-separated list of 
+      classes and packages.
+      Unlike filtering, this option avoids running analysis on
+      classes and packages that are not explicitly matched:
+      for large projects, this may greatly reduce the amount of time
+      needed to run the analysis.  (However, some detectors may produce
+      inaccurate results if they aren't run on the entire application.)
+      Classes should be specified using their full classnames (including
+      package), and packages should be specified in the same way
+      they would in a Java <literal>import</literal> statement to
+      import all classes in the package (i.e., add <literal>.*</literal>
+      to the full name of the package.)
+      </para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
   <term><command>-low</command></term>
   <listitem>
     <para>
