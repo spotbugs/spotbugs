@@ -21,10 +21,12 @@
     <property name="findbugs.src.dir" value="${findbugs.dir}/src" />
     <property name="findbugs.jar.name" value="findbugs.jar" />
     <property name="findbugsgui.jar.name" value="findbugsGUI.jar" />
+    <property name="coreplugin.jar.name" value="coreplugin.jar" />
     <property name="doc.dir" value="${findbugs.dir}/doc" />
     <property name="web.dir" value="${findbugs.dir}/web" />
     <property name="build.dir" value="${findbugs.dir}/build" />
     <property name="jar.dir" value="${build.dir}/lib" />
+    <property name="plugin.dir" value="${build.dir}/plugin" />
     <property name="class.dir" value="${build.dir}/classes" />
     <property name="release.dir" value="${build.dir}/release" />
     <property name="release.prop.file" value="release.properties" />
@@ -45,6 +47,7 @@
 
     <target name="init" >
       <mkdir dir="${jar.dir}" />
+      <mkdir dir="${plugin.dir}" />
       <mkdir dir="${class.dir}" />
       <mkdir dir="${release.dir}" />
       <mkdir dir="${web.dir}" />
@@ -55,10 +58,11 @@
     <!-- target to build the main engine -->
     <target name="findbugs" depends="init">
       <javac srcdir="${findbugs.src.dir}" destdir="${class.dir}"
-             excludes="${findbugs.src.dir}/edu/umd/cs/findbugs/gui/*"
              source="1.5"
              compiler="com.cortexeb.Jsr14CompilerAdapter">
         <classpath refid="classpath" />
+        <exclude name="${findbugs.src.dir}/edu/umd/cs/findbugs/gui/**" />
+        <exclude name="${findbugs.src.dir}/edu/umd/cs/findbugs/detect/**" />
       </javac>
 
       <copy todir="${class.dir}">
@@ -80,15 +84,41 @@
       </uptodate>
 
       <!--
-        FindBugs engine - all classes except those in the GUI.
-        TODO: exclude the detectors as well, since those will go in a plugin.
+        FindBugs engine - all classes except those in the GUI
+        and the Detector implementations (which are part of the core plugin).
       -->
       <jar destfile="${jar.dir}/${findbugs.jar.name}"
            basedir="${class.dir}" manifest="${findbugs.dir}/etc/MANIFEST-findbugs.MF">
         <exclude name="edu/umd/cs/findbugs/gui/**" />
+        <exclude name="edu/umd/cs/findbugs/detect/*" />
+        <exclude name="*.xml" />
       </jar>
     </target>
 
+    <!--
+      The core plugin. This is all of the standard bug pattern detectors.
+    -->
+    <target name="coreplugin" depends="init,findbugs">
+
+      <javac srcdir="${findbugs.src.dir}" destdir="${class.dir}"
+             includes="edu/umd/cs/findbugs/detect/*.java">
+        <classpath refid="classpath" />
+      </javac>
+
+      <copy file="etc/findbugs.xml" todir="${class.dir}" />
+      <copy file="etc/messages.xml" todir="${class.dir}" />
+
+      <uptodate property="coreplugin.jarBuild.notRequired" 
+                targetfile="${plugin.dir}/${coreplugin.jar.name}" >
+         <srcfiles dir="${class.dir}" />
+      </uptodate>
+
+      <jar destfile="${plugin.dir}/${coreplugin.jar.name}" basedir="${class.dir}">
+         <include name="*.xml" />
+         <include name="edu/umd/cs/findbugs/detect/*.class" />
+      </jar>
+
+    </target>
 
     <!-- target to build the GUI -->
     <target name="findbugsgui" depends="init,findbugs">
@@ -169,7 +199,7 @@
     </target>
 
     <!-- target to build the release -->
-    <target name="release" depends="findbugs,findbugsgui,docs,web">
+    <target name="release" depends="findbugs,coreplugin,findbugsgui,docs,web">
        <copy todir="${release.dir}/findbugs-${release.number}/lib">
          <fileset dir="${jar.dir}" includes="**/*.jar"/>
        </copy>
