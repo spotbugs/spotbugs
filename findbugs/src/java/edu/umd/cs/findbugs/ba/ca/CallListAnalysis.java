@@ -120,7 +120,7 @@ public class CallListAnalysis extends AbstractDataflowAnalysis<CallList> {
 	}
 	
 	public boolean isFactValid(CallList fact) {
-		return !(fact.isTop() || fact.isBottom());
+		return fact.isValid();
 	}
 	
 	public static void main(String[] argv) throws Exception {
