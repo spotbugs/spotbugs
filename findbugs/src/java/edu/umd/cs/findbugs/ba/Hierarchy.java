@@ -97,7 +97,102 @@ public class Hierarchy {
 		String methodSig = inv.getSignature(cpg);
 
 		JavaClass jclass = Repository.lookupClass(className);
-		Method[] methodList = jclass.getMethods();
+		return findMethod(jclass, methodName, methodSig);
+	}
+
+	/**
+	 * Get the method which serves as a "prototype" for the
+	 * given InvokeInstruction.  The "prototype" is the method
+	 * which defines the contract for the invoked method,
+	 * in particular the declared list of exceptions that the
+	 * method can throw.
+	 *
+	 * <ul>
+	 * <li> For invokestatic and invokespecial, this is simply an
+	 * exact lookup.
+	 * <li> For invokevirtual, the named class is searched,
+	 * followed by superclasses  up to the root of the object
+	 * hierarchy (java.lang.Object).
+	 * <li> For invokeinterface, the named class is searched,
+	 * followed by all interfaces transitively declared by the class.
+	 * (Question: is the order important here? Maybe the VM spec
+	 * requires that the actual interface desired is given,
+	 * so the extended lookup will not be required. Should check.)
+	 * </ul>
+	 *
+	 * @param inv the InvokeInstruction
+	 * @param cpg the ConstantPoolGen used by the class the InvokeInstruction belongs to
+	 * @return the Method, or null if no matching method can be found
+	 */
+	public static Method findPrototypeMethod(InvokeInstruction inv, ConstantPoolGen cpg)
+		throws ClassNotFoundException {
+		Method m = null;
+
+		String className = inv.getClassName(cpg);
+		String methodName = inv.getName(cpg);
+		String methodSig = inv.getSignature(cpg);
+
+		// Find the method
+		if (inv instanceof INVOKESTATIC || inv instanceof INVOKESPECIAL) {
+			// Non-virtual dispatch
+			m = findExactMethod(inv, cpg);
+			if (inv instanceof INVOKESTATIC && !m.isStatic())
+				m = null;
+		} else if (inv instanceof INVOKEVIRTUAL) {
+			// Virtual dispatch
+			m = findMethod(Repository.lookupClass(className), methodName, methodSig);
+			if (m == null) {
+				JavaClass[] superClassList = Repository.getSuperClasses(className);
+				m = findMethod(superClassList, methodName, methodSig);
+			}
+		} else if (inv instanceof INVOKEINTERFACE) {
+			// Interface dispatch
+			m = findMethod(Repository.lookupClass(className), methodName, methodSig);
+			if (m == null) {
+				JavaClass[] interfaceList = Repository.getInterfaces(className);
+				m = findMethod(interfaceList, methodName, methodSig);
+			}
+		}
+
+		return m;
+	}
+
+	/**
+	 * Find the declared exceptions for the method called
+	 * by given instruction.
+	 * @param inv the InvokeInstruction
+	 * @param cpg the ConstantPoolGen used by the class the InvokeInstruction belongs to
+	 * @return array of ObjectTypes of thrown exceptions, or null
+	 *   if we can't find the list of declared exceptions
+	 */
+	public static ObjectType[] findDeclaredExceptions(InvokeInstruction inv, ConstantPoolGen cpg)
+		throws ClassNotFoundException {
+		Method m = findPrototypeMethod(inv, cpg);
+
+		if (m == null)
+			return null;
+
+		ExceptionTable exTable = m.getExceptionTable();
+		if (exTable == null)
+			return new ObjectType[0];
+
+		String[] exNameList = exTable.getExceptionNames();
+		ObjectType[] result = new ObjectType[exNameList.length];
+		for (int i = 0; i < exNameList.length; ++i) {
+			result[i] = new ObjectType(exNameList[i]);
+		}
+		return result;
+	}
+
+	/**
+	 * Find a method in given class.
+	 * @param javaClass the class
+	 * @param methodName the name of the method
+	 * @param signature the signature of the method
+	 * @return the Method, or null if no such method exists in the class
+	 */
+	public static Method findMethod(JavaClass javaClass, String methodName, String methodSig) {
+		Method[] methodList = javaClass.getMethods();
 		for (int i = 0; i < methodList.length; ++i) {
 			Method method = methodList[i];
 			if (method.getName().equals(methodName) && method.getSignature().equals(methodSig))
@@ -105,6 +200,26 @@ public class Hierarchy {
 		}
 
 		return null;
+	}
+
+	/**
+	 * Find a method in given list of classes,
+	 * searching the classes in order.
+	 * @param javaClass the class
+	 * @param methodName the name of the method
+	 * @param signature the signature of the method
+	 * @return the Method, or null if no such method exists in the class
+	 */
+	public static Method findMethod(JavaClass[] classList, String methodName, String methodSig) {
+		Method m = null;
+
+		for (int i = 0; i < classList.length; ++i) {
+			JavaClass cls = classList[i];
+			if ((m = findMethod(cls, methodName, methodSig)) != null)
+				break;
+		}
+
+		return m;
 	}
 
 	/**
