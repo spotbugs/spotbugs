@@ -29,21 +29,31 @@ java.lang.NoSuchMethodError: org.apache.bcel.Repository.setRepository(Lorg/apach
         at edu.umd.cs.findbugs.FindBugs.clearRepository(FindBugs.java:483)
         ...
 </pre>
-The problem here is that the wrong version of the <a href="http://jakarta.apache.org/bcel/">Apache BCEL</a>
-library is being found.&nbsp; The probable cause is that you have installed libraries from
-the <a href="http://java.sun.com/webservices/downloads/webservicespack.html">Java(TM) Web Services Developer Pack 1.2</a>
+
+<p> The problem here is that the wrong version of the
+<a href="http://jakarta.apache.org/bcel/">Apache BCEL</a>
+library is being found.&nbsp;
+There are (at least) two possible reasons this is happening.
+
+<p> First, if you install the
+<a href="http://java.sun.com/webservices/downloads/webservicespack.html">Java(TM) Web Services Developer Pack 1.2</a>
 in the <code>lib/endorsed</code> directory of your Java Runtime Environment (JRE).&nbsp;
 The file <code>xsltc.jar</code> contains an old version of BCEL that is incompatible with
-FindBugs.
-
-<p> Unfortunately, there is no easy solution to this problem, because files in the
-<code>lib/endorsed</code> directory take precedence over those those in the
-application's CLASSPATH.&nbsp; Therefore, FindBugs will not worked with these
-Jar files installed in this way.&nbsp; A workaround is to move these Jar files
+FindBugs.&nbsp; Because jar files in the <code>lib/endorsed</code> directory
+take precedence over those in the application, there is no easy way to
+fix the problem except to remove the offending jar file.&nbsp;
+A workaround is to move these Jar files
 into a different directory, and use the <code>java.endorsed.dirs</code> system
 property to specify the new location for programs that require these files.
 
-<p> Many thanks to Peter Meulmeester for tracking down the cause of this problem.
+<p> The other possibility is that you are using the IBM JDK.&nbsp;
+Some versions include a version of BCEL which conflicts with the
+one required by FindBugs.&nbsp; This problem is fixed in version 1.4.1 SP1,
+so upgrading your JDK should allow FindBugs to run correctly.
+
+<p> Many thanks to Peter Meulmeester for identifying the problem
+with the Web Services Developer Pack, and to Michael Levi for reporting
+the problem with the IBM JDK.
 
 <h2>Q3: FindBugs is running out of memory, or is taking a long time to finish</h2>
 
