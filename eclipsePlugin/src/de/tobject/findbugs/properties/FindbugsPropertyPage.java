@@ -284,14 +284,14 @@ public class FindbugsPropertyPage extends PropertyPage {
 
 		TableColumn factoryNameColumn = new TableColumn(factoriesTable, SWT.LEFT);
 		factoryNameColumn.setResizable(true);
-		factoryNameColumn.setText(getMessage("Factory name"));
+		factoryNameColumn.setText(getMessage("Detector name"));
 		factoryNameColumn.setWidth(200);
 		addColumnSelectionListener(sorter, factoryNameColumn, ++currentColumnIdx);
 
 		TableColumn factorySpeedColumn =
 			new TableColumn(factoriesTable, SWT.LEFT);
 		factorySpeedColumn.setResizable(true);
-		factorySpeedColumn.setText(getMessage("Factory speed"));
+		factorySpeedColumn.setText(getMessage("Detector speed"));
 		factorySpeedColumn.setWidth(90);
 		addColumnSelectionListener(
 			sorter,
