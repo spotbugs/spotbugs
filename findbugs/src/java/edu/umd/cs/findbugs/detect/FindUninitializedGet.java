@@ -102,7 +102,9 @@ public class FindUninitializedGet extends BytecodeScanningDetector implements   
 
 	else if (thisOnTOS && seen == GETFIELD && getClassConstantOperand().equals(getClassName())) {
 		FieldAnnotation f = FieldAnnotation.fromReferencedField(this);
-		if (!initializedFields.contains(f) && declaredFields.contains(f))  {
+		int nextOpcode = codeBytes[getPC()+3];
+		// System.out.println("Next opcode: " + OPCODE_NAMES[nextOpcode]);
+		if (nextOpcode != POP && !initializedFields.contains(f) && declaredFields.contains(f))  {
 	  		bugReporter.reportBug(new BugInstance("UR_UNINIT_READ", NORMAL_PRIORITY)
 				.addClassAndMethod(this)
 				.addField(f)
