@@ -180,9 +180,28 @@ public class Naming extends PreorderVisitor implements Detector, Constants2 {
 	if (obj.isAbstract()) return;
 	if (getMethodName().length() == 1) return;
 
-	if (getMethodName().equals(baseClassName))
-		bugReporter.reportBug(new BugInstance("NM_CONFUSING_METHOD_NAME", NORMAL_PRIORITY)
+	if (getMethodName().equals("equal") && getMethodSig().equals("(Ljava/lang/Object;)Z"))  {
+		bugReporter.reportBug(new BugInstance("NM_BAD_EQUAL", HIGH_PRIORITY)
 			.addClassAndMethod(this));
+		return;
+		}
+	if (getMethodName().equals("hashcode") && getMethodSig().equals("()I")) {
+		bugReporter.reportBug(new BugInstance("NM_LCASE_HASHCODE", HIGH_PRIORITY)
+			.addClassAndMethod(this));
+		return;
+		}
+	if (getMethodName().equals("tostring") && getMethodSig().equals("()Ljava/lang/String;")) {
+		bugReporter.reportBug(new BugInstance("NM_LCASE_TOSTRING", HIGH_PRIORITY)
+			.addClassAndMethod(this));
+		return;
+		}
+
+
+	if (getMethodName().equals(baseClassName)) {
+		bugReporter.reportBug(new BugInstance("NM_CONFUSING_METHOD_NAME", HIGH_PRIORITY)
+			.addClassAndMethod(this));
+		return;
+		}
 
 	if (obj.isPrivate()
 			|| obj.isStatic()
@@ -209,15 +228,6 @@ public class Naming extends PreorderVisitor implements Detector, Constants2 {
 	s.add(mm);
 	}
 
-	if (getMethodName().equals("equal") && getMethodSig().equals("(Ljava/lang/Object;)Z")) 
-		bugReporter.reportBug(new BugInstance("NM_BAD_EQUAL", HIGH_PRIORITY)
-			.addClassAndMethod(this));
-	if (getMethodName().equals("hashcode") && getMethodSig().equals("()I"))
-		bugReporter.reportBug(new BugInstance("NM_LCASE_HASHCODE", HIGH_PRIORITY)
-			.addClassAndMethod(this));
-	if (getMethodName().equals("tostring") && getMethodSig().equals("()Ljava/lang/String;"))
-		bugReporter.reportBug(new BugInstance("NM_LCASE_TOSTRING", HIGH_PRIORITY)
-			.addClassAndMethod(this));
 	}
 
 
