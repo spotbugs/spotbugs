@@ -23,10 +23,8 @@ import java.util.*;
 
 public class XMLBugReporter extends TextUIBugReporter {
 	private SortedBugCollection bugCollection = new SortedBugCollection();
-	private Map<String, String> classNameToSourceFileMap;
 
-	public XMLBugReporter(Map<String, String> classNameToSourceFileMap) {
-		this.classNameToSourceFileMap = classNameToSourceFileMap;
+	public XMLBugReporter() {
 	}
 
 	public void reportBug(BugInstance bugInstance) {
@@ -35,7 +33,7 @@ public class XMLBugReporter extends TextUIBugReporter {
 
 	public void finish() {
 		try {
-			bugCollection.writeXML(System.out, classNameToSourceFileMap);
+			bugCollection.writeXML(System.out, classToSourceMap);
 		} catch (Exception e) {
 			logError("Couldn't write XML output: " + e.toString());
 		}

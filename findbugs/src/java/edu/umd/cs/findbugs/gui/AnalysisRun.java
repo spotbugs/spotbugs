@@ -65,12 +65,15 @@ public class AnalysisRun {
 	public void endReport() {
             errorDialog.finish();
         }
+
+	public Map<String, String> getClassToSourceMap() {
+	    return classToSourceMap;
+	}
     }
 
     private Project project;
     private FindBugsFrame frame;
     private ConsoleLogger logger;
-    private Map<String, String> classNameToSourceFileMap;
     private FindBugs findBugs;
     private Reporter reporter;
     private HashMap<String, DefaultTreeModel> treeModelMap;
@@ -82,8 +85,7 @@ public class AnalysisRun {
         this.frame = frame;
         this.logger = frame.getLogger();
         this.reporter = new Reporter();
-	this.classNameToSourceFileMap = new HashMap<String, String>();
-        this.findBugs = new FindBugs(reporter, classNameToSourceFileMap);
+        this.findBugs = new FindBugs(reporter);
         this.treeModelMap = new HashMap<String, DefaultTreeModel>();
     }
     
@@ -131,14 +133,14 @@ public class AnalysisRun {
      * Load bugs from a file.
      */
     public void loadBugsFromFile(File file) throws IOException, org.dom4j.DocumentException {
-        reporter.bugCollection.readXML(file, classNameToSourceFileMap);
+        reporter.bugCollection.readXML(file, reporter.getClassToSourceMap());
     }
     
     /**
      * Save bugs to a file.
      */
     public void saveBugsToFile(File file) throws IOException {
-	reporter.bugCollection.writeXML(file, classNameToSourceFileMap);
+	reporter.bugCollection.writeXML(file, reporter.getClassToSourceMap());
     }
     
     /**

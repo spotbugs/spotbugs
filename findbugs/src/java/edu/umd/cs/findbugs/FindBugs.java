@@ -148,7 +148,6 @@ public class FindBugs implements Constants2
 
   private BugReporter bugReporter;
   private Detector detectors [];
-  private Map<String, String> classNameToSourceFileMap;
   private FindBugsProgress progressCallback;
 
   /* ----------------------------------------------------------------------
@@ -158,15 +157,12 @@ public class FindBugs implements Constants2
   /**
    * Constructor.
    * @param bugReporter the BugReporter object that will be used to report
-   *   BugInstance objects, analysis errors, etc.
-   * @param classNameToSourceFileMap map of class names to source files;
-   *   this will be populated by the analysis
+   *   BugInstance objects, analysis errors, class to source mapping, etc.
    */
-  public FindBugs(BugReporter bugReporter, Map<String, String> classNameToSourceFileMap) {
+  public FindBugs(BugReporter bugReporter) {
 	if (bugReporter == null)
 		throw new IllegalArgumentException("null bugReporter");
 	this.bugReporter = bugReporter;
-	this.classNameToSourceFileMap = classNameToSourceFileMap;
 
 	// Create a no-op progress callback.
 	this.progressCallback = new FindBugsProgress() {
@@ -246,14 +242,7 @@ public class FindBugs implements Constants2
    * @return name of the source file in which the class is defined
    */
   public String getSourceFile(String className) {
-	return classNameToSourceFileMap.get(className);
-  }
-
-  /**
-   * Get the complete map of classes to source files.
-   */
-  public Map<String, String> getClassToSourceFileMap() {
-	return classNameToSourceFileMap;
+	return bugReporter.getSourceForClass(className);
   }
 
   /* ----------------------------------------------------------------------
@@ -335,7 +324,7 @@ public class FindBugs implements Constants2
 		throw new AnalysisException("Could not find class " + className + " in Repository", e);
 	}
 
-	classNameToSourceFileMap.put(javaClass.getClassName(), javaClass.getSourceFileName());
+	bugReporter.mapClassToSource(javaClass.getClassName(), javaClass.getSourceFileName());
 	ClassContext classContext = new ClassContext(javaClass);
 
 	for (int i = 0; i < detectors.length; ++i) {
@@ -381,8 +370,6 @@ public class FindBugs implements Constants2
 	String filterFile = null;
 	boolean include = false;
 
-	HashMap<String, String> classNameToSourceFileMap = new HashMap<String, String>();
-
 	// Process command line options
 	int argCount = 0;
 	while (argCount < argv.length) {
@@ -398,7 +385,7 @@ public class FindBugs implements Constants2
 		else if (option.equals("-sortByClass"))
 			bugReporter = new SortingBugReporter();
 		else if (option.equals("-xml"))
-			bugReporter = new XMLBugReporter(classNameToSourceFileMap);
+			bugReporter = new XMLBugReporter();
 		else if (option.equals("-visitors") || option.equals("-omitVisitors")) {
 			++argCount;
 			if (argCount == argv.length) throw new IllegalArgumentException(option + " option requires argument");
@@ -463,7 +450,7 @@ public class FindBugs implements Constants2
 	if (quiet)
 		bugReporter.setErrorVerbosity(BugReporter.SILENT);
 
-	FindBugs findBugs = new FindBugs(bugReporter, classNameToSourceFileMap);
+	FindBugs findBugs = new FindBugs(bugReporter);
 
 	if (filterFile != null)
 		findBugs.setFilter(filterFile, include);
