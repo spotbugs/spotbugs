@@ -1,6 +1,6 @@
 /*
  * FindBugs - Find bugs in Java programs
- * Copyright (C) 2003,2004 University of Maryland
+ * Copyright (C) 2003-2005, University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,11 +23,20 @@ import java.util.*;
 
 import edu.umd.cs.findbugs.*;
 import edu.umd.cs.findbugs.ba.*;
+
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.*;
 
+/**
+ * Find instance fields which are sometimes accessed (read or written)
+ * with the receiver lock held and sometimes without.
+ * These are candidates to be data races.
+ * 
+ * @author David Hovemeyer
+ * @author Bill Pugh
+ */
 public class FindInconsistentSync2 implements Detector {
 	private static final boolean DEBUG = Boolean.getBoolean("fis.debug");
 	private static final boolean SYNC_ACCESS = true;
@@ -166,58 +175,62 @@ public class FindInconsistentSync2 implements Detector {
 	}
 
 	public void visitClassContext(ClassContext classContext) {
+		JavaClass javaClass = classContext.getJavaClass();
+		if (DEBUG) System.out.println("******** Analyzing class " + javaClass.getClassName());
+		
+		// Build self-call graph
+		SelfCalls selfCalls = new SelfCalls(classContext) {
+			public boolean wantCallsFor(Method method) {
+				return !method.isPublic();
+			}
+		};
+		
+		Set<Method> lockedMethodSet;
+		Set<Method> publicReachableMethods;
+		
 		try {
-			JavaClass javaClass = classContext.getJavaClass();
-			if (DEBUG) System.out.println("******** Analyzing class " + javaClass.getClassName());
-
-			// Build self-call graph
-			SelfCalls selfCalls = new SelfCalls(classContext) {
-				public boolean wantCallsFor(Method method) {
-					return !method.isPublic();
-				}
-			};
-
 			selfCalls.execute();
 			CallGraph callGraph = selfCalls.getCallGraph();
 			if (DEBUG)
 				System.out.println("Call graph (not unlocked methods): " + callGraph.getNumVertices() + " nodes, " +
-				        callGraph.getNumEdges() + " edges");
-
+						callGraph.getNumEdges() + " edges");
 			// Find call edges that are obviously locked
 			Set<CallSite> obviouslyLockedSites = findObviouslyLockedCallSites(classContext, selfCalls);
-
-			Set<Method> lockedMethodSet = findNotUnlockedMethods(classContext, selfCalls, obviouslyLockedSites);
+			lockedMethodSet = findNotUnlockedMethods(classContext, selfCalls, obviouslyLockedSites);
 			lockedMethodSet.retainAll(findLockedMethods(classContext, selfCalls, obviouslyLockedSites));
-
-			Set<Method> publicReachableMethods
-			        = findPublicReachableMethods(classContext, selfCalls);
-
-			Iterator<Method> i = publicReachableMethods.iterator();
-			while (i.hasNext()) {
-				Method method = i.next();
-				if (classContext.getMethodGen(method) == null)
-					continue;
-				/*
-				if (isConstructor(method.getName()))
-					continue;
-				*/
-				if (method.getName().startsWith("access$"))
+			publicReachableMethods = findPublicReachableMethods(classContext, selfCalls);
+		} catch (CFGBuilderException e) {
+			bugReporter.logError("Error finding locked call sites", e);
+			return;
+		} catch (DataflowAnalysisException e) {
+			bugReporter.logError("Error finding locked call sites", e);
+			return;
+		}
+		
+		Iterator<Method> i = publicReachableMethods.iterator();
+		while (i.hasNext()) {
+			Method method = i.next();
+			if (classContext.getMethodGen(method) == null)
+				continue;
+			/*
+			 if (isConstructor(method.getName()))
+			 continue;
+			 */
+			if (method.getName().startsWith("access$"))
 				// Ignore inner class access methods;
 				// we will treat calls to them as field accesses
-					continue;
+				continue;
+			try {
 				analyzeMethod(classContext, method, lockedMethodSet);
+			} catch (CFGBuilderException e) {
+				bugReporter.logError("Error analyzing method", e);
+			} catch (DataflowAnalysisException e) {
+				bugReporter.logError("Error analyzing method", e);
 			}
-
-		} catch (CFGBuilderException e) {
-			throw new AnalysisException("FindInconsistentSync2 caught exception: " + e.toString(), e);
-		} catch (DataflowAnalysisException e) {
-			//e.printStackTrace();
-			throw new AnalysisException("FindInconsistentSync2 caught exception: " + e.toString(), e);
 		}
 	}
 
 	public void report() {
-		//for (Iterator<Map.Entry<XField, FieldStats>> i = statMap.entrySet().iterator(); i.hasNext();) {
 		for (Iterator<XField> i = statMap.keySet().iterator(); i.hasNext(); ) {
 			XField xfield = i.next();
 			FieldStats stats = statMap.get(xfield);
@@ -418,7 +431,7 @@ public class FindInconsistentSync2 implements Detector {
 					// in which case we won't adjust the field type.
 					if (instanceType != TypeFrame.getNullType()) {
 						if (!(instanceType instanceof ObjectType)) {
-							throw new AnalysisException("Field accessed through non-object reference " + instanceType,
+							throw new DataflowAnalysisException("Field accessed through non-object reference " + instanceType,
 							        methodGen, handle);
 						}
 						ObjectType objType = (ObjectType) instanceType;
@@ -754,7 +767,10 @@ public class FindInconsistentSync2 implements Detector {
 			// Find the ValueNumber of the receiver object
 			int numConsumed = ins.consumeStack(cpg);
 			if (numConsumed == Constants.UNPREDICTABLE)
-				throw new AnalysisException("Unpredictable stack consumption: " + handle);
+				throw new DataflowAnalysisException(
+						"Unpredictable stack consumption",
+						classContext.getMethodGen(method),
+						handle);
 			//if (DEBUG) System.out.println("Getting receiver for frame: " + frame);
 			ValueNumber instance = frame.getStackValue(numConsumed - 1);
 
