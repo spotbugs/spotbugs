@@ -22,7 +22,7 @@ information about FindBugs, have a look at the
 <h2>Contents</h2>
 <ol>
 <li> <a href="#q1">I'm getting java.lang.UnsupportedClassVersionError when I try to run FindBugs</a>
-<li> <a href="#q2">When I click the "Find Bugs!" button, I get a NoSuchMethodError</a>
+<li> <a href="#q2">When I click the "Find Bugs!" button, I get a NoSuchMethodError or VerifyError</a>
 <li> <a href="#q3">FindBugs is running out of memory, or is taking a long time to finish</a>
 <li> <a href="#q4">What is the "auxiliary classpath"?  Why should I specify it?</a>
 <li> <a href="#q5">The Eclipse plugin doesn't load</a>
@@ -40,7 +40,7 @@ edu/umd/cs/findbugs/gui/FindBugsFrame (Unsupported major.minor version 48.0)
 </pre>
 The solution is to upgrade to JRE 1.4.0 or later.
 
-<h2><a name="q2">Q2: When I click the "Find Bugs!" button, I get a NoSuchMethodError</a></h2>
+<h2><a name="q2">Q2: When I click the "Find Bugs!" button, I get a NoSuchMethodError or VerifyError</a></h2>
 
 <p> The symptom of this bug is that when you start the FindBugs analysis,
 you see an exception similar to the following:
@@ -50,30 +50,50 @@ java.lang.NoSuchMethodError: org.apache.bcel.Repository.setRepository(Lorg/apach
         ...
 </pre>
 
+or
+
+<pre>
+java.lang.VerifyError: Cannot inherit from final class
+	at java.lang.ClassLoader.defineClass0(Native Method)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:537)
+	...
+</pre>
+
 <p> The problem here is that the wrong version of the
 <a href="http://jakarta.apache.org/bcel/">Apache BCEL</a>
-library is being found.&nbsp;
-There are (at least) two possible reasons this is happening.
+library is being found.&nbsp; FindBugs requires its own
+version of BCEL, which normally will be used automatically
+when you invoke the <code>findbugs</code> or <code>findbugs.bat</code>
+scripts used to launch FindBugs.&nbsp; If an old version of BCEL is installed
+in a location, such as "lib/endorsed" in the JRE installation,
+where it overrides classes on the application classpath,
+FindBugs will not execute properly.&nbsp;
+We know of several reasons this could happen
 
-<p> First, if you install the
-<a href="http://java.sun.com/webservices/downloads/webservicespack.html">Java(TM) Web Services Developer Pack 1.2</a>
+<ul>
+<li> If you install the
+<a href="http://java.sun.com/webservices/downloads/webservicespack.html">Java(TM) Web Services
+Developer Pack 1.2</a>
 in the <code>lib/endorsed</code> directory of your Java Runtime Environment (JRE).&nbsp;
 The file <code>xsltc.jar</code> contains an old version of BCEL that is incompatible with
-FindBugs.&nbsp; Because jar files in the <code>lib/endorsed</code> directory
-take precedence over those in the application, there is no easy way to
-fix the problem except to remove the offending jar file.&nbsp;
-A workaround is to move these Jar files
-into a different directory, and use the <code>java.endorsed.dirs</code> system
-property to specify the new location for programs that require these files.
+FindBugs.&nbsp;
 
-<p> The other possibility is that you are using the IBM JDK.&nbsp;
+<li> Another possibility is that you are using the IBM JDK.&nbsp;
 Some versions include a version of BCEL which conflicts with the
 one required by FindBugs.&nbsp; This problem is fixed in version 1.4.1 SP1,
 so upgrading your JDK should allow FindBugs to run correctly.
 
-<p> Many thanks to Peter Meulmeester for identifying the problem
-with the Web Services Developer Pack, and to Michael Levi for reporting
-the problem with the IBM JDK.
+<li> Some versions of the Apache Xalan XSLT processor include
+an old version of BCEL in <code>xalan.jar</code>.
+
+</ul>
+
+<p> In all of these cases, you should be able to run FindBugs
+by either removing the offending version of BCEL from your JRE,
+or installing a clean JRE or JDK and using that to run FindBugs.
+
+<p> Many thanks to Peter Meulmeester, Michael Levi, and Thomas Klaeger
+for providing information on this problem.
 
 <h2><a name="q3">Q3: FindBugs is running out of memory, or is taking a long time to finish</a></h2>
 
