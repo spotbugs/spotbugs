@@ -701,7 +701,7 @@ the subclass.</p>
     </Details>
   </Detector>
   
-  <Detector class="edu.umd.cs.findbugs.detect.SuspectStruts">
+  <Detector class="edu.umd.cs.findbugs.detect.MultithreadedInstanceAccess">
     <Details>
 <![CDATA[
 <p>This detector looks for potential problems in implementing the Struts framework.
@@ -2937,7 +2937,7 @@ just use the constant. Methods detected are:
   	  </Details>
     </BugPattern>
     
-    <BugPattern type="SS_SUSPECT_STRUTS_INSTANCE_FIELD">
+    <BugPattern type="MTIA_SUSPECT_STRUTS_INSTANCE_FIELD">
 	  <ShortDescription>Class extends Struts Action class and uses instance variables.</ShortDescription>
 	  <LongDescription>Class {0} extends Struts Action class and uses instance variables.</LongDescription>
 	  <Details>
@@ -3043,5 +3043,5 @@ just use the constant. Methods detected are:
   <BugCode abbrev="UM">Unnecessary Math on constants</BugCode>
   <BugCode abbrev="CD">Circular Dependencies</BugCode>
   <BugCode abbrev="RI">Redundant Interfaces</BugCode>
-  <BugCode abbrev="SS">Suspect Struts</BugCode>
+  <BugCode abbrev="MTIA">Multithreaded Instance Access</BugCode>
   </MessageCollection>

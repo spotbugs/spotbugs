@@ -318,9 +318,9 @@
   			speed="fast"
   			reports="RI_REDUNDANT_INTERFACES"/>
 
-  <Detector class="edu.umd.cs.findbugs.detect.SuspectStruts"
+  <Detector class="edu.umd.cs.findbugs.detect.MultithreadedInstanceAccess"
   			speed="fast"
-  			reports="SS_SUSPECT_STRUTS_INSTANCE_FIELD"/>
+  			reports="MTIA_SUSPECT_STRUTS_INSTANCE_FIELD"/>
   			
   <Detector class="edu.umd.cs.findbugs.detect.FindBugsSummaryStats" 
             speed="fast"
@@ -496,5 +496,5 @@
   <BugPattern abbrev="UM" type="UM_UNNECESSARY_MATH" category="STYLE" experimental="true"/>
   <BugPattern abbrev="CD" type="CD_CIRCULAR_DEPENDENCY" category="STYLE" experimental="true"/>
   <BugPattern abbrev="RI" type="RI_REDUNDANT_INTERFACES" category="STYLE" experimental="true"/>
-  <BugPattern abbrev="SS" type="SS_SUSPECT_STRUTS_INSTANCE_FIELD" category="STYLE" experimental="true"/>
+  <BugPattern abbrev="MTIA" type="MTIA_SUSPECT_STRUTS_INSTANCE_FIELD" category="STYLE" experimental="true"/>
 </FindbugsPlugin>
