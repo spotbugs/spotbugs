@@ -2,7 +2,7 @@
 <plugin
    id="de.tobject.findbugs"
    name="%pluginName"
-   version="0.0.13.dev"
+   version="@ECLIPSE_UI_VERSION@"
    provider-name="%providerName"
    class="de.tobject.findbugs.FindbugsPlugin">
 
