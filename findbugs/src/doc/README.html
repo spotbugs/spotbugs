@@ -9,7 +9,15 @@
 
 <p> @RELEASE_DATE@, Version @VERSION@
 
-<h2>1. Introduction</h2>
+<h1>Contents</h1>
+<ol>
+<li> <a href="#Intro">Introduction</a>
+<li> <a href="#Using">Using FindBugs</a>
+<li> <a href="#Free">FindBugs is free software</a>
+<li> <a href="#Authors">Authors</a>
+</ol>
+
+<h1><a name="Intro">1. Introduction</a></h1>
 
 <p> FindBugs is a program to find bugs in Java programs.  It looks for instances
 of "bug patterns" --- code instances that are likely to be errors.
@@ -21,12 +29,12 @@ the <a href="http://www.cs.umd.edu/~pugh/java/bugs">FindBugs web page</a> for
 the latest information on FindBugs, contact information, and support resources such
 as information about the FindBugs mailing lists.
 
-<h2>2. Using FindBugs</h2>
+<h1><a name="Using">2. Using FindBugs</a></h1>
 
 <p> FindBugs has two user interfaces, a graphical interface and a command line
 interface.
 
-<h3>2.1 Using the Graphical interface</h3>
+<h2>2.1 Using the Graphical interface</h2>
 
 <p>To use the graphical interface, execute the command
 
@@ -76,7 +84,32 @@ with the "File:Open project" menu option.&nbsp; Note that the analysis results
 are not saved, so you will have to run the analysis again.&nbsp; (Saving results
 may be added to a future FindBugs release).
 
-<h3>2.2 Using the command line interface</h3>
+<h2>2.2 Using the command line interface</h2>
+
+<p> To use the command line interface, execute the command
+
+<pre>
+  java -jar $INST_DIR/lib/findbugs.jar [-sortByClass] <em>file1.jar</em> <em>file2.jar</em>
+</pre>
+
+where "$INST_DIR" is the directory in which you installed FindBugs.&nbsp; You can list any
+number of Jar files (or plain class files).&nbsp; The -sortByClass option may be used
+to sort the reported bug instances by class name.&nbsp; The results will be sent
+to the standard output file descriptor.
+
+<h1><a name="Free">3. FindBugs is free software</a></h1>
+
+<p> FindBugs is free software distributed under the terms of the
+<a href="http://www.gnu.org/licenses/lgpl.html">Lesser GNU Public License</a>.&nbsp;
+You can find the latest version of FindBugs, along with its source code, from the
+FindBugs web page: <a href="http://www.cs.umd.edu/~pugh/java/bugs">http://www.cs.umd.edu/~pugh/java/bugs</a>.
+
+<h1><a name="Authors">4. Authors</a></h1>
+
+<p> FindBugs was written by <a href="http://www.cs.umd.edu/~pugh/">William Pugh</a>
+and <a href="http://www.cs.umd.edu/~daveho/">David Hovemeyer</a> as part of
+research on the Java programming language at the <a href="http://www.cs.umd.edu/">University
+of Maryland Department of Computer Science</a>.
 
 </body>
 </html>
