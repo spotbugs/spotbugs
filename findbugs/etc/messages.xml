@@ -1708,9 +1708,6 @@ Names of fields that are not final should be in mixed case with a lowercase firs
     </Details>
   </BugPattern>
 
-
-
-
   <BugPattern type="NM_VERY_CONFUSING">
     <ShortDescription>Very confusing method names</ShortDescription>
     <LongDescription>VERY confusing to have methods {1} and {3}</LongDescription>
@@ -1772,6 +1769,17 @@ Names of fields that are not final should be in mixed case with a lowercase firs
 <p> This class defines a method <code>equal(Object)</code>.&nbsp; This method does
 not override the <code>equals(Object)</code> method in <code>java.lang.Object</code>,
 which is probably what was intended.</p>
+]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="NM_CLASS_NOT_EXCEPTION">
+    <ShortDescription>Class is not derived from an Exception, even though it is named as such</ShortDescription>
+    <LongDescription>Class {0} is not derived from an Exception, even though it is named as such</LongDescription>
+    <Details>
+<![CDATA[
+<p> This class is not derived from another exception, but ends with 'Exception'. This will
+be confusing to users of this class.</p>
 ]]>
     </Details>
   </BugPattern>

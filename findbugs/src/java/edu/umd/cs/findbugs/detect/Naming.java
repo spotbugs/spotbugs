@@ -193,6 +193,16 @@ public class Naming extends PreorderVisitor implements Detector, Constants2 {
 				: LOW_PRIORITY
 					)
 			        .addClass(this));
+		if (name.endsWith("Exception") 
+		&&  (!obj.getSuperclassName().endsWith("Exception"))
+		&&  (!obj.getSuperclassName().endsWith("Error"))
+		&&  (!obj.getSuperclassName().endsWith("Throwable"))) {
+			bugReporter.reportBug(new BugInstance(this, 
+					"NM_CLASS_NOT_EXCEPTION", 
+					NORMAL_PRIORITY )
+				        .addClass(this));
+		}
+			
 		super.visit(obj);
 	}
 
