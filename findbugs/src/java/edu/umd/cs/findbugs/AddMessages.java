@@ -72,16 +72,23 @@ public class AddMessages {
 			element.addElement("LongMessage").addText(bugInstance.getMessage());
 		}
 
-		// Add Details elements for each referenced bug types.
+		// Add BugPattern elements for each referenced bug types.
 		Element root = document.getRootElement();
 		for (Iterator<String> bugTypeIter = bugTypeSet.iterator(); bugTypeIter.hasNext(); ) {
 			String bugType = bugTypeIter.next();
 			BugPattern bugPattern = I18N.instance().lookupBugPattern(bugType);
 			if (bugPattern == null)
 				continue;
-			Element details = root.addElement("Details");
-			details.addAttribute("type", bugType);
-			details.addCDATA(bugPattern.getDetailText());
+			Element details = root.addElement("BugPattern");
+			details
+				.addAttribute("type", bugType)
+				.addAttribute("category", bugPattern.getCategory());
+			details
+				.addElement("ShortDescription")
+				.addText(bugPattern.getShortDescription());
+			details
+				.addElement("Details")
+				.addCDATA(bugPattern.getDetailText());
 		}
 	}
 }
