@@ -137,6 +137,18 @@ public class PluginLoader extends URLClassLoader {
 	
 				Class detectorClass = loadClass(className);
 				DetectorFactory factory = new DetectorFactory(detectorClass, !disabled.equals("true"));
+
+				Element details = ((Element) detectorNode).element("Details");
+				if (details != null) {
+					String detailHTML = details.getText();
+					StringBuffer buf = new StringBuffer();
+					buf.append("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">\n");
+					buf.append("<HTML><HEAD><TITLE>Detector Description</TITLE></HEAD><BODY>\n");
+					buf.append(detailHTML);
+					buf.append("</BODY></HTML>\n");
+					factory.setDetailHTML(buf.toString());
+				}
+
 				detectorFactoryList.add(factory);
 			}
 		} catch (ClassNotFoundException e) {

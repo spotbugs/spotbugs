@@ -25,6 +25,7 @@ import java.lang.reflect.InvocationTargetException;
 public class DetectorFactory {
 	private final Class detectorClass;
 	private boolean enabled;
+	private String detailHTML;
 
 	public DetectorFactory(Class detectorClass, boolean enabled) {
 		this.detectorClass = detectorClass;
@@ -39,6 +40,14 @@ public class DetectorFactory {
 
 	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
+	}
+
+	public String getDetailHTML() {
+		return detailHTML;
+	}
+
+	public void setDetailHTML(String detailHTML) {
+		this.detailHTML = detailHTML;
 	}
 
 	public Detector create(BugReporter bugReporter) {
