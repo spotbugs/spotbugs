@@ -41,6 +41,7 @@ import java.util.Map;
  */
 public class ExecutionPlan {
 	private List<Plugin> pluginList;
+	private List<AnalysisPass> passList;
 
 	/**
 	 * Constructor.
@@ -48,6 +49,7 @@ public class ExecutionPlan {
 	 */
 	public ExecutionPlan() {
 		this.pluginList = new LinkedList<Plugin>();
+		this.passList = new LinkedList<AnalysisPass>();
 	}
 
 	/**
@@ -82,6 +84,11 @@ public class ExecutionPlan {
 		// if the graph contains a cycle.
 		DepthFirstSearch<ConstraintGraph, ConstraintEdge, DetectorNode> dfs =
 			getDepthFirstSearch(interPassConstraintGraph);
+
+		// Get a topological sort.
+		// This will determine a sequence of passes.
+		List<DetectorNode> passRepresentativeList = new LinkedList<DetectorNode>();
+		copyTo(dfs.topologicalSortIterator(), passRepresentativeList);
 	}
 
 	private static<T> void copyTo(Iterator<T> iter, List<T> dest) {
