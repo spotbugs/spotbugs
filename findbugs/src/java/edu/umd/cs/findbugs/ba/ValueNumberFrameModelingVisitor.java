@@ -230,10 +230,14 @@ public class ValueNumberFrameModelingVisitor
 							else
 								loadInstanceField((InstanceField) xfield, obj);
 						} else {
+							// Some inner class access store methods
+							// return the value stored.
+							boolean pushValue = !methodSig.endsWith(")V");
+
 							if (xfield.isStatic())
-								storeStaticField((StaticField) xfield, obj, true);
+								storeStaticField((StaticField) xfield, obj, pushValue);
 							else
-								storeInstanceField((InstanceField) xfield, obj, true);
+								storeInstanceField((InstanceField) xfield, obj, pushValue);
 						}
 						return;
 					}
