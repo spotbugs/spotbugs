@@ -46,6 +46,11 @@ import org.xml.sax.XMLReader;
  */
 public abstract class BugCollection {
 
+	/**
+	 * Add a Collection of BugInstances to this BugCollection object.
+	 *
+	 * @param collection the Collection of BugInstances to add
+	 */
 	public void addAll(Collection<BugInstance> collection) {
 		Iterator<BugInstance> i = collection.iterator();
 		while (i.hasNext()) {
@@ -53,24 +58,67 @@ public abstract class BugCollection {
 		}
 	}
 
+	/**
+	 * Add a BugInstance to this BugCollection.
+	 *
+	 * @param bugInstance the BugInstance
+	 * @return true if the BugInstance was added, or false if a matching
+	 *         BugInstance was already in the BugCollection
+	 */
 	public abstract boolean add(BugInstance bugInstance);
 
+	/**
+	 * Remove a BugInstance from this BugCollection.
+	 *
+	 * @param bugInstance the BugInstance
+	 * @return true if the BugInstance was removed, or false if
+	 *         it (or an equivalent BugInstance) was not present originally
+	 */
 	public abstract boolean remove(BugInstance bugInstance);
 
+	/**
+	 * Return an Iterator over all the BugInstance objects in
+	 * the BugCollection.
+	 */
 	public abstract Iterator<BugInstance> iterator();
 
+	/**
+	 * Return the Collection storing the BugInstance objects.
+	 */
 	public abstract Collection<BugInstance> getCollection();
 
+	/**
+	 * Add an analysis error message.
+	 *
+	 * @param message the error message
+	 */
 	public abstract void addError(String message);
 
+	/**
+	 * Add a missing class message.
+	 *
+	 * @param message the missing class message
+	 */
 	public abstract void addMissingClass(String message);
 
+	/**
+	 * Return an Iterator over error messages.
+	 */
 	public abstract Iterator<String> errorIterator();
 
+	/**
+	 * Return an Iterator over missing class messages.
+	 */
 	public abstract Iterator<String> missingClassIterator();
 
+	/**
+	 * Set the summary HTML text.
+	 */
 	public abstract void setSummaryHTML(String html);
 
+	/**
+	 * Get the summary HTML text.
+	 */
 	public abstract String getSummaryHTML();
 
 	static final String ROOT_ELEMENT_NAME = "BugCollection";
@@ -82,12 +130,26 @@ public abstract class BugCollection {
 	static final String SUMMARY_HTML_ELEMENT_NAME = "SummaryHTML";
 	static final String APP_CLASS_ELEMENT_NAME = "AppClass";
 
+	/**
+	 * Read XML data from given file into this object,
+	 * populating given Project as a side effect.
+	 *
+	 * @param fileName name of the file to read
+	 * @param project  the Project
+	 */
 	public void readXML(String fileName, Project project)
 	        throws IOException, DocumentException {
 		BufferedInputStream in = new BufferedInputStream(new FileInputStream(fileName));
 		readXML(in, project);
 	}
 
+	/**
+	 * Read XML data from given file into this object,
+	 * populating given Project as a side effect.
+	 *
+	 * @param file    the file
+	 * @param project the Project
+	 */
 	public void readXML(File file, Project project)
 	        throws IOException, DocumentException {
 		BufferedInputStream in = new BufferedInputStream(new FileInputStream(file));
@@ -140,16 +202,34 @@ public abstract class BugCollection {
 		project.setModified(false);
 	}
 
+	/**
+	 * Write this BugCollection to a file as XML.
+	 *
+	 * @param fileName the file to write to
+	 * @param project  the Project from which the BugCollection was generated
+	 */
 	public void writeXML(String fileName, Project project) throws IOException {
 		BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(fileName));
 		writeXML(out, project);
 	}
 
+	/**
+	 * Write this BugCollection to a file as XML.
+	 *
+	 * @param file    the file to write to
+	 * @param project the Project from which the BugCollection was generated
+	 */
 	public void writeXML(File file, Project project) throws IOException {
 		BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(file));
 		writeXML(out, project);
 	}
 
+	/**
+	 * Convert the BugCollection into a dom4j Document object.
+	 *
+	 * @param project the Project from which the BugCollection was generated
+	 * @return the Document representing the BugCollection as a dom4j tree
+	 */
 	public Document toDocument(Project project) {
 		DocumentFactory docFactory = new DocumentFactory();
 		Document document = docFactory.createDocument();
@@ -164,40 +244,58 @@ public abstract class BugCollection {
 		return document;
 	}
 
+	/**
+	 * Write the BugCollection to given output stream as XML.
+	 * The output stream will be closed, even if an exception is thrown.
+	 *
+	 * @param out     the OutputStream to write to
+	 * @param project the Project from which the BugCollection was generated
+	 */
 	public void writeXML(OutputStream out, Project project) throws IOException {
 		XMLOutput xmlOutput = new OutputStreamXMLOutput(out);
 
 		writeXML(xmlOutput, project);
 	}
 
+	/**
+	 * Write the BugCollection to an XMLOutput object.
+	 * The finish() method of the XMLOutput object is guaranteed
+	 * to be called.
+	 *
+	 * @param xmlOutput the XMLOutput object
+	 * @param project   the Project from which the BugCollection was generated
+	 */
 	public void writeXML(XMLOutput xmlOutput, Project project) throws IOException {
-		xmlOutput.beginDocument();
-		xmlOutput.openTag(ROOT_ELEMENT_NAME,
-			new XMLAttributeList().addAttribute("version",Version.RELEASE));
+		try {
+			xmlOutput.beginDocument();
+			xmlOutput.openTag(ROOT_ELEMENT_NAME,
+				new XMLAttributeList().addAttribute("version",Version.RELEASE));
 
-		project.writeXML(xmlOutput);
+			project.writeXML(xmlOutput);
 
-		// Write BugInstances
-		XMLOutputUtil.writeCollection(xmlOutput, getCollection());
+			// Write BugInstances
+			XMLOutputUtil.writeCollection(xmlOutput, getCollection());
 
-		// Errors, missing classes
-		xmlOutput.openTag(ERRORS_ELEMENT_NAME);
-		XMLOutputUtil.writeElementList(xmlOutput, ANALYSIS_ERROR_ELEMENT_NAME,
-			errorIterator());
-		XMLOutputUtil.writeElementList(xmlOutput, MISSING_CLASS_ELEMENT_NAME,
-			missingClassIterator());
-		xmlOutput.closeTag(ERRORS_ELEMENT_NAME);
+			// Errors, missing classes
+			xmlOutput.openTag(ERRORS_ELEMENT_NAME);
+			XMLOutputUtil.writeElementList(xmlOutput, ANALYSIS_ERROR_ELEMENT_NAME,
+				errorIterator());
+			XMLOutputUtil.writeElementList(xmlOutput, MISSING_CLASS_ELEMENT_NAME,
+				missingClassIterator());
+			xmlOutput.closeTag(ERRORS_ELEMENT_NAME);
 
-		// Summary HTML
-		String html = getSummaryHTML();
-		if (!html.equals("")) {
-			xmlOutput.openTag(SUMMARY_HTML_ELEMENT_NAME);
-			xmlOutput.writeCDATA(html);
-			xmlOutput.closeTag(SUMMARY_HTML_ELEMENT_NAME);
+			// Summary HTML
+			String html = getSummaryHTML();
+			if (!html.equals("")) {
+				xmlOutput.openTag(SUMMARY_HTML_ELEMENT_NAME);
+				xmlOutput.writeCDATA(html);
+				xmlOutput.closeTag(SUMMARY_HTML_ELEMENT_NAME);
+			}
+
+			xmlOutput.closeTag(ROOT_ELEMENT_NAME);
+		} finally {
+			xmlOutput.finish();
 		}
-
-		xmlOutput.closeTag(ROOT_ELEMENT_NAME);
-		xmlOutput.endDocument();
 	}
 
 	private void checkInputStream(InputStream in) throws IOException {
