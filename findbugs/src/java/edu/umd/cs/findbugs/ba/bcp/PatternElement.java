@@ -26,8 +26,24 @@ import org.apache.bcel.generic.InstructionHandle;
  * It potentially matches some number of bytecode instructions.
  */
 public interface PatternElement {
+	/**
+	 * Return whether or not this element matches the given
+	 * instruction with the given Bindings in effect.
+	 * @param handle the instruction
+	 * @param bindingSet the set of Bindings
+	 */
 	public boolean match(InstructionHandle handle, BindingSet bindingSet);
+
+	/**
+	 * Return the minimum number of instructions this PatternElement
+	 * must match in the ByteCodePattern.
+	 */
 	public int minOccur();
+
+	/**
+	 * Return the maximum number of instructions this PatternElement
+	 * must match in the ByteCodePattern.
+	 */
 	public int maxOccur();
 }
 
