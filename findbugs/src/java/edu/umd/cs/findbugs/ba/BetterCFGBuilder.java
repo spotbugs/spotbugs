@@ -114,7 +114,8 @@ public class BetterCFGBuilder implements CFGBuilder, EdgeTypes {
 	}
 
 	public void build() {
-		getBlock(methodGen.getInstructionList().getStart(), new LinkedList<InstructionHandle>());
+		BasicBlock startBlock = getBlock(methodGen.getInstructionList().getStart(), new LinkedList<InstructionHandle>());
+		addEdge(cfg.getEntry(), startBlock, START_EDGE);
 
 	workListLoop:
 		while (!workList.isEmpty()) {
