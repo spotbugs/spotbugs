@@ -12,6 +12,7 @@ package edu.umd.cs.findbugs.gui;
  * @author David Hovemeyer
  */
 public class AnalysisErrorDialog extends javax.swing.JDialog {
+	private static final long serialVersionUID = 3256728359756379184L;
 
 	/**
 	 * Creates new form AnalysisErrorDialog
