@@ -266,7 +266,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
             }
         });
 
-        jScrollPane1.setPreferredSize(new java.awt.Dimension(200, 0));
+        jScrollPane1.setPreferredSize(new java.awt.Dimension(140, 0));
         navigatorTree.setModel(createNavigatorTreeModel());
         jScrollPane1.setViewportView(navigatorTree);
 
@@ -1123,53 +1123,53 @@ public class FindBugsFrame extends javax.swing.JFrame {
     
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel editProjectLabel;
-    private javax.swing.JLabel groupByLabel;
-    private javax.swing.JSplitPane navigatorViewSplitter;
-    private javax.swing.JSeparator jSeparator2;
-    private javax.swing.JButton removeSrcDirButton;
-    private javax.swing.JSeparator jSeparator4;
-    private javax.swing.JCheckBoxMenuItem viewConsoleItem;
-    private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JMenu viewMenu;
-    private javax.swing.JMenu fileMenu;
-    private javax.swing.JMenuItem closeProjectItem;
-    private javax.swing.JMenuItem newProjectItem;
-    private javax.swing.JTextField jarNameTextField;
-    private javax.swing.JButton browseJarButton;
-    private javax.swing.JScrollPane jScrollPane4;
-    private javax.swing.JSplitPane consoleSplitter;
-    private javax.swing.JMenuItem openProjectItem;
-    private javax.swing.JList jarFileList;
-    private javax.swing.JLabel jarFileLabel;
     private javax.swing.JMenuItem aboutItem;
-    private javax.swing.JButton addSourceDirButton;
-    private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JButton findBugsButton;
-    private javax.swing.JPanel bugTreePanel;
-    private javax.swing.JLabel sourceDirLabel;
-    private javax.swing.JComboBox groupByChooser;
-    private javax.swing.JPanel viewPanel;
-    private javax.swing.JButton removeJarButton;
-    private javax.swing.JLabel jarFileListLabel;
     private javax.swing.JButton addJarButton;
-    private javax.swing.JScrollPane jScrollPane5;
-    private javax.swing.JList sourceDirList;
-    private javax.swing.JTree navigatorTree;
-    private javax.swing.JSeparator jSeparator1;
-    private javax.swing.JPanel reportPanel;
-    private javax.swing.JPanel editProjectPanel;
-    private javax.swing.JMenu helpMenu;
+    private javax.swing.JButton addSourceDirButton;
+    private javax.swing.JButton browseJarButton;
     private javax.swing.JButton browseSrcDirButton;
-    private javax.swing.JTextField srcDirTextField;
-    private javax.swing.JLabel sourceDirListLabel;
-    private javax.swing.JScrollPane jScrollPane3;
-    private javax.swing.JMenuItem exitItem;
-    private javax.swing.JPanel emptyPanel;
-    private javax.swing.JTextArea consoleMessageArea;
-    private javax.swing.JSeparator jSeparator3;
     private javax.swing.JTree bugTree;
+    private javax.swing.JPanel bugTreePanel;
+    private javax.swing.JMenuItem closeProjectItem;
+    private javax.swing.JTextArea consoleMessageArea;
+    private javax.swing.JSplitPane consoleSplitter;
+    private javax.swing.JLabel editProjectLabel;
+    private javax.swing.JPanel editProjectPanel;
+    private javax.swing.JPanel emptyPanel;
+    private javax.swing.JMenuItem exitItem;
+    private javax.swing.JMenu fileMenu;
+    private javax.swing.JButton findBugsButton;
+    private javax.swing.JComboBox groupByChooser;
+    private javax.swing.JLabel groupByLabel;
+    private javax.swing.JMenu helpMenu;
     private javax.swing.JMenuBar jMenuBar1;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JScrollPane jScrollPane4;
+    private javax.swing.JScrollPane jScrollPane5;
+    private javax.swing.JSeparator jSeparator1;
+    private javax.swing.JSeparator jSeparator2;
+    private javax.swing.JSeparator jSeparator3;
+    private javax.swing.JSeparator jSeparator4;
+    private javax.swing.JLabel jarFileLabel;
+    private javax.swing.JList jarFileList;
+    private javax.swing.JLabel jarFileListLabel;
+    private javax.swing.JTextField jarNameTextField;
+    private javax.swing.JTree navigatorTree;
+    private javax.swing.JSplitPane navigatorViewSplitter;
+    private javax.swing.JMenuItem newProjectItem;
+    private javax.swing.JMenuItem openProjectItem;
+    private javax.swing.JButton removeJarButton;
+    private javax.swing.JButton removeSrcDirButton;
+    private javax.swing.JPanel reportPanel;
+    private javax.swing.JLabel sourceDirLabel;
+    private javax.swing.JList sourceDirList;
+    private javax.swing.JLabel sourceDirListLabel;
+    private javax.swing.JTextField srcDirTextField;
+    private javax.swing.JCheckBoxMenuItem viewConsoleItem;
+    private javax.swing.JMenu viewMenu;
+    private javax.swing.JPanel viewPanel;
     // End of variables declaration//GEN-END:variables
     
     // My variable declarations

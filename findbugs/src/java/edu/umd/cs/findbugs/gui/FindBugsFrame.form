@@ -154,7 +154,7 @@
             <Container class="javax.swing.JScrollPane" name="jScrollPane1">
               <Properties>
                 <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-                  <Dimension value="[200, 0]"/>
+                  <Dimension value="[140, 0]"/>
                 </Property>
               </Properties>
               <Constraints>
