@@ -601,7 +601,7 @@ public class BugInstance implements Comparable, XMLConvertible {
 		
 		if (!annotationText.equals("")) {
 			Element annotationElement = element.addElement("UserAnnotation");
-			annotationElement.setText(annotationText);
+			annotationElement.addCDATA(annotationText);
 		}
 
 		Iterator<BugAnnotation> i = annotationList.iterator();
