@@ -1190,7 +1190,7 @@ which is probably what was intended.
   </BugPattern>
   <BugPattern type="SE_NO_SUITABLE_CONSTRUCTOR">
     <ShortDescription>Class is Serializable but its superclass doesn't define a void constructor</ShortDescription>
-    <LongDescription>{0} is Serializable  but its superclass doesn't define a void constructor</LongDescription>
+    <LongDescription>{0} is Serializable  but its superclass doesn't define an accessible void constructor</LongDescription>
     <Details>
 <![CDATA[
   <p> This class implements the <code>Serializable</code> interface
