@@ -251,6 +251,7 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 
 	public void meetInto(TypeFrame fact, Edge edge, TypeFrame result) throws DataflowAnalysisException {
 		BasicBlock basicBlock = edge.getTarget();
+
 		if (basicBlock.isExceptionHandler() && fact.isValid()) {
 			// Special case: when merging predecessor facts for entry to
 			// an exception handler, we clear the stack and push a
@@ -496,9 +497,14 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 					} else if (throwType instanceof ExceptionObjectType) {
 						exceptionTypeSet.addAll(((ExceptionObjectType)throwType).getExceptionSet());
 					} else {
-						throw new DataflowAnalysisException("Non object type " + throwType +
-							" thrown by " + pei + " in " +
-							SignatureConverter.convertMethodSignature(methodGen));
+						// Not sure what is being thrown here.
+						// Be conservative.
+						if (DEBUG) {
+							System.out.println("Non object type " + throwType +
+								" thrown by " + pei + " in " +
+								SignatureConverter.convertMethodSignature(methodGen));
+						}
+						exceptionTypeSet.addExplicit(Type.THROWABLE);
 					}
 				}
 			}
