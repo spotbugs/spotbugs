@@ -1,6 +1,7 @@
 /*
  * FindBugs - Find bugs in Java programs
- * Copyright (C) 2003,2004 University of Maryland
+ * Copyright (C) 2005 Dave Brosius <dbrosius@users.sourceforge.net>
+ * Copyright (C) 2005 University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -33,9 +34,15 @@ import org.xml.sax.helpers.DefaultHandler;
 
 public class SchemaValidatorTask extends Task
 {
+	public static final int NONE = 0;
+	public static final int WARN = 1;
+	public static final int ERROR = 2;
+	public static final int FATAL = 3;
+
 	private String xmlPath = null;
 	private boolean failOnError = false;
 	private SAXParseException ex = null;
+	private int exceptionLevel = NONE;
 	
 	public void setXml(String xml)
 	{
@@ -60,17 +67,18 @@ public class SchemaValidatorTask extends Task
 			reader.setContentHandler(new DefaultHandler());
 			reader.setErrorHandler( new ErrorHandler() {							
 				public void error(SAXParseException exception) {
-					if (ex == null)
+					if (exceptionLevel < ERROR) {
 						ex = exception;
+					}
 				}
 				
 				public void fatalError(SAXParseException exception) {
-					if (ex == null)
+					if (exceptionLevel < FATAL)
 						ex = exception;
 				}
 				
 				public void warning(SAXParseException exception) {
-					if (ex == null)
+					if (exceptionLevel < WARN)
 						ex = exception;
 				}
 			});
