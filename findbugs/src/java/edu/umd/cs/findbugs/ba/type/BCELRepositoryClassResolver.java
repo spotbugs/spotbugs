@@ -35,10 +35,7 @@ public class BCELRepositoryClassResolver implements ClassResolver {
 		JavaClass javaClass = Repository.lookupClass(type.getClassName());
 
 		// Determine whether the type is a class or an interface
-		if (javaClass.isInterface())
-			type.setIsInterface();
-		else
-			type.setIsClass();
+		type.setIsInterface(javaClass.isInterface());
 
 		// Set superclass link (if any)
 		int superclassIndex = javaClass.getSuperclassNameIndex();
