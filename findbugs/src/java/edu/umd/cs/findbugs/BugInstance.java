@@ -72,6 +72,7 @@ public class BugInstance implements Comparable, XMLWriteable {
 	private int cachedHashCode;
 	private String annotationText;
 	private BugProperty propertyListHead, propertyListTail;
+	private String uniqueId;
 
 	/**
 	 * This value is used to indicate that the cached hashcode
@@ -292,6 +293,24 @@ public class BugInstance implements Comparable, XMLWriteable {
 			result.add(tok.nextToken());
 		}
 		return result;
+	}
+	
+	/**
+	 * Get the BugInstance's unique id.
+	 * 
+	 * @return the unique id, or null if no unique id has been assigned
+	 */
+	public String getUniqueId() {
+		return uniqueId;
+	}
+	
+	/**
+	 * Set the unique id of the BugInstance.
+	 * 
+	 * @param uniqueId the unique id
+	 */
+	private void setUniqueId(String uniqueId) {
+		this.uniqueId = uniqueId;
 	}
 	
 	/* ----------------------------------------------------------------------
@@ -903,6 +922,11 @@ public class BugInstance implements Comparable, XMLWriteable {
 			// bug instances without looking at the plugin descriptor.)
 			attributeList.addAttribute("abbrev", pattern.getAbbrev());
 			attributeList.addAttribute("category", pattern.getCategory());
+		}
+		
+		// Add a uid attribute, if we have a unique id.
+		if (getUniqueId() != null) {
+			attributeList.addAttribute("uid", getUniqueId());
 		}
 
 		xmlOutput.openTag(ELEMENT_NAME, attributeList);
