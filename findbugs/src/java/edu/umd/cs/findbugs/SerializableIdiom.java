@@ -57,8 +57,13 @@ public class SerializableIdiom extends PreorderVisitor
                        }
                }
 
-	isSerializable = isSerializable
-		|| Repository.instanceOf(obj,"java.io.Serializable");
+	try {
+	  if (Repository.instanceOf(obj,"java.io.Serializable"))
+		isSerializable = true;
+	  }
+	catch (RuntimeException e) {
+		assert true;
+		}
 	foundSynthetic = false;
 	foundSynchronizedMethods = false;
 	writeObjectIsSynchronized = false;

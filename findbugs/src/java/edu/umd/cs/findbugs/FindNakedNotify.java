@@ -66,7 +66,7 @@ public class FindNakedNotify extends BytecodeScanningDetector implements   Const
 			if (seen == INVOKEVIRTUAL 
 				&& (nameConstant.equals("notify")
 				   || nameConstant.equals("notifyAll"))
-				&& sigConstants.equals("()V"))
+				&& sigConstant.equals("()V"))
 			  stage = 3;
 			else stage = 0;
 			break;
