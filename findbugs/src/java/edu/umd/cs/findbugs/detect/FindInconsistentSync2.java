@@ -278,7 +278,8 @@ public class FindInconsistentSync2 implements Detector {
 						//   - the field is accessed through the "this" reference,
 						//     and the method is in the locked method set
 						ValueNumber instance = frame.getInstance(handle.getInstruction(), cpg);
-						boolean isLocked = lockSet.getLockCount(instance.getNumber()) > 0
+						boolean isExplicitlyLocked = lockSet.getLockCount(instance.getNumber()) > 0;
+						boolean isLocked = isExplicitlyLocked
 							|| (lockedMethodSet.contains(method) && thisValue != null && thisValue.equals(instance));
 				
 						int kind = 0;
@@ -292,7 +293,7 @@ public class FindInconsistentSync2 implements Detector {
 						FieldStats stats = getStats(xfield);
 						stats.addAccess(kind);
 				
-						if (isLocked && isLocal)
+						if (isExplicitlyLocked && isLocal)
 							stats.addLocalLock();
 				
 						stats.addAccess(classContext, method, handle, isLocked);
