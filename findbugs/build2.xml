@@ -37,6 +37,9 @@
 	<!-- Default target builds scripts and jars, allowing execution using
 		the working directory as FINDBUGS_HOME. -->
 	<target name="build" depends="jars,scripts"/>
+	
+	<!-- Rebuild from scratch. -->
+	<target name="rebuild" depends="clean,build"/>
 
 	<!-- Compile Java source files, and copy other auxiliary files
 		needed to execute the classes. -->
