@@ -33,7 +33,7 @@ public class FindBugs implements Constants2
 {
   private static final boolean DEBUG = Boolean.getBoolean("findbugs.debug");
 
-  private final BugReporter bugReporter;
+  private BugReporter bugReporter;
   private Detector detectors [];
   private LinkedList<String> detectorNames;
   private boolean omit;
@@ -69,6 +69,14 @@ public class FindBugs implements Constants2
    */
   public void setProgressCallback(FindBugsProgress progressCallback) {
 	this.progressCallback = progressCallback;
+  }
+
+  /**
+   * Set filter of bug instances to include or exclude.
+   */
+  public void setFilter(String filterFileName, boolean include) throws IOException, FilterException {
+	Filter filter = new Filter(filterFileName);
+	bugReporter = new FilterBugReporter(bugReporter, filter, include);
   }
 
   private static ArrayList<DetectorFactory> factories = new ArrayList<DetectorFactory>();
@@ -324,6 +332,8 @@ public class FindBugs implements Constants2
 	boolean sortByClass = false;
 	LinkedList<String> visitorNames = null;
 	boolean omit = false;
+	String filterFile = null;
+	boolean include = false;
 
 	// Process command line options
 	int argCount = 0;
@@ -341,6 +351,11 @@ public class FindBugs implements Constants2
 			visitorNames = new LinkedList<String>();
 			while (tok.hasMoreTokens())
 				visitorNames.add(tok.nextToken());
+		} else if (option.equals("-exclude") || option.equals("-include")) {
+			++argCount;
+			if (argCount == argv.length) throw new IllegalArgumentException(option + " option requires argument");
+			filterFile = argv[argCount];
+			include = option.equals("-include");
 		} else
 			throw new IllegalArgumentException("Unknown option: " + option);
 		++argCount;
@@ -356,6 +371,8 @@ public class FindBugs implements Constants2
 			System.out.println("   -sortByClass                           sort bug reports by class");
 			System.out.println("   -visitors <visitor 1>,<visitor 2>,...  run only named visitors");
 			System.out.println("   -omitVisitors <v1>,<v2>,...            omit named visitors");
+			System.out.println("   -exclude <filter file>                 exclude bugs matching given filter");
+			System.out.println("   -include <filter file>                 include only bugs matching given filter");
 			}
 		else
 			IO.copy(in,System.out);
@@ -365,6 +382,9 @@ public class FindBugs implements Constants2
 	BugReporter bugReporter = sortByClass ? (BugReporter)new SortingBugReporter() : (BugReporter)new PrintingBugReporter();
 
 	FindBugs findBugs = new FindBugs(bugReporter, visitorNames, omit);
+
+	if (filterFile != null)
+		findBugs.setFilter(filterFile, include);
 
 	String[] fileList = new String[argv.length - argCount];
 	System.arraycopy(argv, argCount, fileList, 0, fileList.length);
