@@ -114,6 +114,13 @@ public class Project {
     }
     
     /**
+     * Get the source dir list.
+     */
+    public List getSourceDirList() {
+	return srcDirList;
+    }
+    
+    /**
      * Get the number of the next analysis run.
      * The runs are numbered starting at 1.
      */
