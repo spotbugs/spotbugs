@@ -534,11 +534,6 @@ public class FindBugsTask extends Task {
 		if ((rc & ExitCodes.ERROR_FLAG) != 0) {
 			throw new BuildException("Execution of findbugs failed.");
 		}
-		if ((rc & ExitCodes.BUGS_FOUND_FLAG) != 0) {
-			log("Bugs were found");
-		} else {
-			log("No bugs were found");
-		}
 		if ((rc & ExitCodes.MISSING_CLASS_FLAG) != 0) {
 			log("Classes needed for analysis were missing");
 		}
