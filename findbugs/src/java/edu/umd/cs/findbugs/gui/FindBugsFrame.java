@@ -627,6 +627,12 @@ public class FindBugsFrame extends javax.swing.JFrame {
         bugTreeBugDetailsSplitter.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
         bugTreeBugDetailsSplitter.setResizeWeight(1.0);
         bugTreeBugDetailsSplitter.setOneTouchExpandable(true);
+        bugTreeBugDetailsSplitter.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
+            public void propertyChange(java.beans.PropertyChangeEvent evt) {
+                bugTreeBugDetailsSplitterPropertyChange(evt);
+            }
+        });
+
         bugTreeScrollPane.setViewportView(bugTree);
 
         bugTreeBugDetailsSplitter.setLeftComponent(bugTreeScrollPane);
@@ -747,8 +753,13 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
         viewBugDetailsItem.setFont(new java.awt.Font("Dialog", 0, 12));
         viewBugDetailsItem.setMnemonic('D');
-        viewBugDetailsItem.setSelected(true);
         viewBugDetailsItem.setText("Bug Details");
+        viewBugDetailsItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                viewBugDetailsItemActionPerformed(evt);
+            }
+        });
+
         viewMenu.add(viewBugDetailsItem);
 
         theMenuBar.add(viewMenu);
@@ -773,6 +784,31 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
         pack();
     }//GEN-END:initComponents
+
+    private void viewBugDetailsItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_viewBugDetailsItemActionPerformed
+        if (viewBugDetailsItem.isSelected()) {
+            bugTreeBugDetailsSplitter.resetToPreferredSizes();
+        } else {
+            bugTreeBugDetailsSplitter.setDividerLocation(1.0);
+        }
+    }//GEN-LAST:event_viewBugDetailsItemActionPerformed
+
+    private void bugTreeBugDetailsSplitterPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_bugTreeBugDetailsSplitterPropertyChange
+        // Here we want to
+        //   (1) Keep the View:Bug details checkbox item up to date, and
+        //   (2) keep the details window synchronized with the current bug instance
+        String propertyName = evt.getPropertyName();
+	if (propertyName.equals(JSplitPane.DIVIDER_LOCATION_PROPERTY)) {
+            boolean isMaximized = isSplitterMaximized(bugTreeBugDetailsSplitter, evt);
+            viewBugDetailsItem.setSelected(!isMaximized);
+            if (!isMaximized) {
+                // Details window is shown, so make sure it is populated
+                // with bug detail information
+                BugInstance bugInstance = getCurrentBugInstance();
+                synchBugInstance(bugInstance);
+            }
+        }
+    }//GEN-LAST:event_bugTreeBugDetailsSplitterPropertyChange
 
     private void openProjectItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openProjectItemActionPerformed
         JFileChooser chooser = new JFileChooser();
@@ -1000,7 +1036,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
      */
     private void bugTreeSelectionChanged(TreeSelectionEvent e) {
 	BugInstance selected = getCurrentBugInstance();
-	if (selected != null && selected != currentBugInstance) {
+	if (selected != null) {
 	    synchBugInstance(selected);
 	}
     }
@@ -1058,6 +1094,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	groupByChooser.addItem(GROUP_BY_PACKAGE);
 	groupByChooser.addItem(GROUP_BY_BUG_TYPE);
 	
+        // Bug details window starts not selected
 	bugTreeBugDetailsSplitter.setDividerLocation(1.0);
 
         // We use a special highlight painter to ensure that the highlights cover
@@ -1157,12 +1194,12 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	Integer location = (Integer) evt.getNewValue();
 
         java.awt.Container parent = splitter.getParent();
-        int parentHeight = parent.getHeight();
-	int hopefullyMaxDivider = parentHeight - (splitter.getDividerSize() + DIVIDER_FUDGE);
-/*
-	    System.out.println("pane height = " + contentPaneHeight + ", dividerLoc=" + location.intValue() +
-		", hopefullyMaxDivider=" + hopefullyMaxDivider);
- */
+        //int parentHeight = parent.getHeight();
+        int height = splitter.getHeight();
+	int hopefullyMaxDivider = height - (splitter.getDividerSize() + DIVIDER_FUDGE);
+        System.out.println("Splitter: "+(splitter==consoleSplitter?"consoleSplitter":"bugTreeBugDetailsSplitter")+
+            ": height="+height+",location="+location+
+            ",hopefullyMax="+hopefullyMaxDivider);
 	boolean isMaximized = location.intValue() >= hopefullyMaxDivider;
         return isMaximized;
     }
@@ -1392,9 +1429,13 @@ public class FindBugsFrame extends javax.swing.JFrame {
      * window (source view, details window, etc.)
      */
     private void synchBugInstance(BugInstance selected) {
-	// Update source view
-	// TODO: only do this when the detail window is displayed AND
-	// the source code tab is chosen.
+         if (selected == currentBugInstance)
+            return;
+         
+         if (!viewBugDetailsItem.isSelected())
+             return;
+        
+        // Show source code.
 	SourceLineAnnotation primarySrcLine = selected.getPrimarySourceLineAnnotation();
 	if (primarySrcLine != null) {
 	    Project project = getCurrentProject();
@@ -1421,7 +1462,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	}
 	
 	sourceTextArea.setText("");
-	bugTreeBugDetailsSplitter.resetToPreferredSizes();
+	//bugTreeBugDetailsSplitter.resetToPreferredSizes();
 
 	// Try to open the source file and display its contents
 	// in the source text area.
