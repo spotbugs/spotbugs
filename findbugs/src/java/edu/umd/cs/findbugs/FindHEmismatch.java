@@ -7,15 +7,12 @@ import java.io.*;
 import edu.umd.cs.pugh.visitclass.Constants2;
 
 public class FindHEmismatch extends BytecodeScanningDetector implements   Constants2 {
-   String prevClassName = " none ";
-   boolean firstTime = true;
    boolean hasFields = false;
    boolean hasHashCode = false;
    boolean hasEqualsObject = false;
    boolean hasCompareToObject = false;
    boolean hasEqualsSelf = false;
    boolean hasCompareToSelf = false;
-   boolean isInterface = false;
    boolean extendsObject = false;
    private BugReporter bugReporter;
 
@@ -23,39 +20,63 @@ public class FindHEmismatch extends BytecodeScanningDetector implements   Consta
 	this.bugReporter = bugReporter;
    }
 
-   public void report() {
+   public void visitAfter(JavaClass obj) {
+	if (betterClassName.equals("java.lang.Object")) return;
+	int accessFlags = obj.getAccessFlags();
+	// if ((accessFlags & ACC_ABSTRACT) != 0) return;
+	if ((accessFlags & ACC_INTERFACE) != 0) return;
+	String whereEqual = betterClassName;
+	if (!hasEqualsObject)
+		whereEqual = Lookup.findSuperImplementor(obj, "equals",
+					"(Ljava/lang/Object;)Z")
+			  .getClassName();
+	boolean usesDefaultEquals = whereEqual.equals("java.lang.Object");
+	String whereHashCode = betterClassName;
+	if (!hasHashCode)
+		whereHashCode = Lookup.findSuperImplementor(obj, "hashCode",
+					"()I")
+			  .getClassName();
+	boolean usesDefaultHashCode = whereHashCode.equals("java.lang.Object");
 	if (!hasEqualsObject &&  hasEqualsSelf) {
-		if (extendsObject) 
-		  bugReporter.reportBug(new BugInstance("EQ_SELF_USE_OBJECT", NORMAL_PRIORITY).addClass(prevClassName));
+		if (usesDefaultEquals) 
+		  bugReporter.reportBug(new BugInstance("EQ_SELF_USE_OBJECT", HIGH_PRIORITY).addClass(betterClassName));
 		else
-		  bugReporter.reportBug(new BugInstance("EQ_SELF_NO_OBJECT", NORMAL_PRIORITY).addClass(prevClassName));
+		  bugReporter.reportBug(new BugInstance("EQ_SELF_NO_OBJECT", NORMAL_PRIORITY).addClass(betterClassName));
 		}
-
+	/*
+	System.out.println("Class " + betterClassName);
+	System.out.println("usesDefaultEquals: " + usesDefaultEquals);
+	System.out.println("hasHashCode: : " + hasHashCode);
+	System.out.println("usesDefaultHashCode: " + usesDefaultHashCode);
+	System.out.println("hasEquals: : " + hasEqualsObject);
+	*/
 
 	if (!hasCompareToObject &&  hasCompareToSelf) {
 		if (!extendsObject)
-		  bugReporter.reportBug(new BugInstance("CO_SELF_NO_OBJECT", NORMAL_PRIORITY).addClass(prevClassName));
+		  bugReporter.reportBug(new BugInstance("CO_SELF_NO_OBJECT", NORMAL_PRIORITY).addClass(betterClassName));
 		}
 
-	if (!hasFields) return;
-	if (hasHashCode && !(hasEqualsObject ||  hasEqualsSelf))  {
-		if (extendsObject) 
-		  bugReporter.reportBug(new BugInstance("HE_HASHCODE_USE_OBJECT_EQUALS", NORMAL_PRIORITY).addClass(prevClassName));
+	// if (!hasFields) return;
+	if (hasHashCode && !(hasEqualsObject ||  hasEqualsSelf))  { 
+		/*
+		System.out.println("has hashCode, missing equals");
+		System.out.println("equals defined in " + whereEqual);
+		System.out.println("extendsObject: " + extendsObject);
+		*/
+		if (usesDefaultEquals) 
+		  bugReporter.reportBug(new BugInstance("HE_HASHCODE_USE_OBJECT_EQUALS", NORMAL_PRIORITY).addClass(betterClassName));
 		else
-		  bugReporter.reportBug(new BugInstance("HE_HASHCODE_NO_EQUALS", NORMAL_PRIORITY). addClass(prevClassName));
+		  bugReporter.reportBug(new BugInstance("HE_HASHCODE_NO_EQUALS", LOW_PRIORITY). addClass(betterClassName));
 		}
 	if (!hasHashCode && (hasEqualsObject ||  hasEqualsSelf))  {
-		if (extendsObject) 
-		  bugReporter.reportBug(new BugInstance("HE_EQUALS_USE_HASHCODE", NORMAL_PRIORITY).addClass(prevClassName));
+		if (usesDefaultHashCode) 
+		  bugReporter.reportBug(new BugInstance("HE_EQUALS_USE_HASHCODE", HIGH_PRIORITY).addClass(betterClassName));
 		else
-		  bugReporter.reportBug(new BugInstance("HE_EQUALS_NO_HASHCODE", NORMAL_PRIORITY).addClass(prevClassName));
+		  bugReporter.reportBug(new BugInstance("HE_EQUALS_NO_HASHCODE", NORMAL_PRIORITY).addClass(betterClassName));
 		}
 	}
    public void visit(JavaClass obj) {
-	if (!isInterface && !firstTime) report();
 	extendsObject = betterSuperclassName.equals("java.lang.Object");
-	firstTime = false;
-	prevClassName = betterClassName;
 	hasFields = false;
 	hasHashCode = false;
 	hasCompareToObject = false;
@@ -63,7 +84,6 @@ public class FindHEmismatch extends BytecodeScanningDetector implements   Consta
 	hasEqualsObject = false;
 	hasEqualsSelf = false;
 	int accessFlags = obj.getAccessFlags();
-	isInterface = ((accessFlags & ACC_INTERFACE) != 0);
 	}
 
     public void visit(Field obj) {
@@ -83,11 +103,14 @@ public class FindHEmismatch extends BytecodeScanningDetector implements   Consta
 		else if (name.equals("compareTo")
 			&& sig.equals("(L"+className+";)I"))
 		  bugReporter.reportBug(new BugInstance("CO_ABSTRACT_SELF", NORMAL_PRIORITY).addClass(betterClassName));
-		return;
 		
 		}
 	boolean sigIsObject = sig.equals("(Ljava/lang/Object;)Z");
-	if (name.equals("hashCode")) hasHashCode = true;
+	if (name.equals("hashCode")
+		&& sig.equals("()I")) {
+		hasHashCode = true;
+		// System.out.println("Found hashCode for " + betterClassName);
+		}
 	else if (name.equals("equals")) {
 		if (sigIsObject) hasEqualsObject = true;
 		else if (sig.equals("(L"+className+";)Z"))

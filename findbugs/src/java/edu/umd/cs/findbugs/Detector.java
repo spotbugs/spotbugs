@@ -5,7 +5,9 @@ package edu.umd.cs.findbugs;
  */
 public interface Detector {
 	/** Normal priority for bug instances. */
-	public static final int NORMAL_PRIORITY = 0;
+	public static final int LOW_PRIORITY = 3;
+	public static final int NORMAL_PRIORITY = 2;
+	public static final int HIGH_PRIORITY = 1;
 
 	/**
 	 * Visit the ClassContext for a class which should be analyzed
