@@ -43,6 +43,7 @@ class Lock extends ResourceCreationPoint {
 public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnreleasedLock.LockResourceTracker> {
 
 	private static final boolean DEBUG = Boolean.getBoolean("ful.debug");
+	private static int numAcquires = 0;
 
 	/* ----------------------------------------------------------------------
 	 * Helper classes
@@ -131,6 +132,7 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
 					ValueNumberFrame frame = vnaDataflow.getFactAtLocation(location);
 					ValueNumber lockValue = frame.getTopValue();
 					if (DEBUG) System.out.println("Lock value is " + lockValue.getNumber() + ", frame=" + frame.toString());
+					if (DEBUG) ++numAcquires;
 					return new Lock(location, className, lockValue);
 				}
 			} catch (ClassNotFoundException e) {
@@ -220,6 +222,10 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
 				.addSourceLine(methodGen, sourceFile, resource.getLocation().getHandle())
 			);
 		}
+	}
+
+	public void report() {
+		if (DEBUG) System.out.println("numAcquires="+numAcquires);
 	}
 
 	/* ----------------------------------------------------------------------
