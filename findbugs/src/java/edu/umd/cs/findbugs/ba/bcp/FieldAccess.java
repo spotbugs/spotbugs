@@ -51,14 +51,19 @@ public abstract class FieldAccess extends SingleInstruction implements org.apach
 	 * @param field Variable representing the field
 	 * @param value Variable representing the value loaded/stored
 	 * @param bindingSet previous definitions
+	 * @return a MatchResult containing an updated BindingSet if successful,
+	 *   or null if unsucessful
 	 */
-	protected BindingSet checkConsistent(Variable field, Variable value, BindingSet bindingSet) {
+	protected MatchResult checkConsistent(Variable field, Variable value, BindingSet bindingSet) {
 		// Ensure that the field and value variables are consistent with
 		// previous definitions (if any)
 		bindingSet = addOrCheckDefinition(fieldVarName, field, bindingSet);
 		if (bindingSet == null)
 			return null;
-		return addOrCheckDefinition(valueVarName, value, bindingSet);
+		bindingSet = addOrCheckDefinition(valueVarName, value, bindingSet);
+		if (bindingSet == null)
+			return null;
+		return new MatchResult(this, bindingSet);
 	}
 
 	/**

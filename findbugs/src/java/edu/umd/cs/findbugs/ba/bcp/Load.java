@@ -40,7 +40,7 @@ public class Load extends FieldAccess {
 		super(fieldVarName, resultVarName);
 	}
 
-	public BindingSet match(InstructionHandle handle, ConstantPoolGen cpg,
+	public MatchResult match(InstructionHandle handle, ConstantPoolGen cpg,
 		ValueNumberFrame before, ValueNumberFrame after, BindingSet bindingSet) throws DataflowAnalysisException {
 
 		Variable field;

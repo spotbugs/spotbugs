@@ -184,9 +184,9 @@ public class PatternMatcher implements DFSEdgeTypes {
 			boolean isWild = patternElement instanceof Wild;
 			if (DEBUG && (!isWild || SHOW_WILD)) System.out.println("Match " + patternElement + " against " + handle + " " +
 				(bindingSet != null ? bindingSet.toString() : "[]") + "...");
-			bindingSet = patternElement.match(handle, cpg, before, after, bindingSet);
-			if (DEBUG && (!isWild || SHOW_WILD)) System.out.println("\t" + ((bindingSet != null) ? " ==> MATCH" : " ==> NOT A MATCH"));
-			if (bindingSet == null)
+			MatchResult matchResult = patternElement.match(handle, cpg, before, after, bindingSet);
+			if (DEBUG && (!isWild || SHOW_WILD)) System.out.println("\t" + ((matchResult != null) ? " ==> MATCH" : " ==> NOT A MATCH"));
+			if (matchResult == null)
 				// Not a match.
 				return;
 
@@ -194,7 +194,8 @@ public class PatternMatcher implements DFSEdgeTypes {
 			matchedInstruction = handle;
 			++matchCount;
 			canFork = true;
-			currentMatch = new PatternElementMatch(patternElement, handle, matchCount, currentMatch);
+			currentMatch = new PatternElementMatch(matchResult.getPatternElement(), handle, matchCount, currentMatch);
+			bindingSet = matchResult.getBindingSet();
 		}
 
 		// Continue the match at each successor instruction,

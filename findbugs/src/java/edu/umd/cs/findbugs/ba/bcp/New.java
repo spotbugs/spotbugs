@@ -38,7 +38,7 @@ public class New extends OneVariableInstruction {
 		super(resultVarName);
 	}
 
-	public BindingSet match(InstructionHandle handle, ConstantPoolGen cpg,
+	public MatchResult match(InstructionHandle handle, ConstantPoolGen cpg,
 		ValueNumberFrame before, ValueNumberFrame after, BindingSet bindingSet) throws DataflowAnalysisException {
 
 		Instruction ins = handle.getInstruction();

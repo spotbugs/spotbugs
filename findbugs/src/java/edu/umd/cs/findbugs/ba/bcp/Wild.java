@@ -74,9 +74,9 @@ public class Wild extends PatternElement {
 	public int maxOccur() { return max; }
 	public boolean acceptBranch(Edge edge, InstructionHandle source) { return true; }
 
-	public BindingSet match(InstructionHandle handle, ConstantPoolGen cpg,
+	public MatchResult match(InstructionHandle handle, ConstantPoolGen cpg,
 		ValueNumberFrame before, ValueNumberFrame after, BindingSet bindingSet) throws DataflowAnalysisException {
-		return bindingSet;
+		return new MatchResult(this, bindingSet);
 	}
 }
 

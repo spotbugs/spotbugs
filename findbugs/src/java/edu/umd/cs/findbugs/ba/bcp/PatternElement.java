@@ -96,10 +96,10 @@ public abstract class PatternElement {
 	 * @param after the ValueNumberFrame representing values in the Java stack frame
 	 *   just after the execution of the instruction
 	 * @param bindingSet the set of Bindings
-	 * @return if the match is successful, returns an updated BindingSet;
-	 *   if the match is not successful, returns null
+	 * @return if the match is successful, returns a MatchResult with the PatternElement
+	 *   and BindingSet; if the match is not successful, returns null
 	 */
-	public abstract BindingSet match(InstructionHandle handle, ConstantPoolGen cpg,
+	public abstract MatchResult match(InstructionHandle handle, ConstantPoolGen cpg,
 		ValueNumberFrame before, ValueNumberFrame after, BindingSet bindingSet) throws DataflowAnalysisException;
 
 	/**

@@ -42,12 +42,15 @@ public abstract class OneVariableInstruction extends SingleInstruction {
 	 * the new definition.
 	 * @param variable the Variable which should be added or checked for consistency
 	 * @param bindingSet the existing set of bindings
-	 * @return the updated BindingSet (if the variable is consistent with the
+	 * @return a MatchResult containing the updated BindingSet (if the variable is consistent with the
 	 *   previous bindings), or null if the new variable is inconsistent with
 	 *   the previous bindings
 	 */
-	protected BindingSet addOrCheckDefinition(Variable variable, BindingSet bindingSet) {
-		return addOrCheckDefinition(varName, variable, bindingSet);
+	protected MatchResult addOrCheckDefinition(Variable variable, BindingSet bindingSet) {
+		bindingSet = addOrCheckDefinition(varName, variable, bindingSet);
+		return bindingSet != null
+			? new MatchResult(this, bindingSet)
+			: null;
 	}
 
 }

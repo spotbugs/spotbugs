@@ -39,7 +39,7 @@ public class Monitorenter extends OneVariableInstruction {
 		super(varName);
 	}
 
-	public BindingSet match(InstructionHandle handle, ConstantPoolGen cpg,
+	public MatchResult match(InstructionHandle handle, ConstantPoolGen cpg,
 		ValueNumberFrame before, ValueNumberFrame after, BindingSet bindingSet) throws DataflowAnalysisException {
 
 		// Instruction must be MONITORENTER.
