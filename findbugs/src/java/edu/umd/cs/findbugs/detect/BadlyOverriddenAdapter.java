@@ -40,6 +40,7 @@ public class BadlyOverriddenAdapter extends BytecodeScanningDetector implements 
     	try {
 	    	methodMap.clear();
 			JavaClass superClass = obj.getSuperClass();
+			if (superClass == null) return;
 			String packageName = superClass.getPackageName();
 			String className = superClass.getClassName();
 			isAdapter = ((className.endsWith("Adapter")) && (packageName.equals( "java.awt.event") || packageName.equals( "javax.swing.event" )));
