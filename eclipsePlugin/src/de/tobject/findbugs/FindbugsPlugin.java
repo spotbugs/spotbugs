@@ -303,60 +303,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 		IStatus status = new Status(IStatus.ERROR, FindbugsPlugin.PLUGIN_ID, 0, message, e);
 		getLog().log(status);
 	}
-	
-	/**
-	 * Get a sub ruleset from a rule list
-	 * TODO move this to a more sensible location!
-	 */
-	public static List getDetectorFactoriesFromProperty(String ruleList) {
-		ArrayList factoryList = new ArrayList();
-		StringTokenizer st = new StringTokenizer(ruleList, LIST_DELIMITER);
-		while (st.hasMoreTokens()) {
-			try {
-				DetectorFactory factory =
-					DetectorFactoryCollection.instance().getFactory(st.nextToken());
-				if (factory != null) {
-					factoryList.add(factory);
-				}
-			}
-			catch (RuntimeException e) {
-				FindbugsPlugin.getDefault().logException(
-						e, "Could not parse selected detectors for project");
-			}
-		}
-		return factoryList;
-	}
-	
-	/*
-	 * TODO move this to a more sensible location!
-	 */	
-	public static List readDetectorFactories(IProject project)
-		throws CoreException {
-		List factoryList =
-			(List) project.getSessionProperty(SESSION_PROPERTY_ACTIVE_DETECTORS);
-		if (factoryList == null) {
-			String activeDetectorList =
-				project.getPersistentProperty(PERSISTENT_PROPERTY_ACTIVE_DETECTORS);
-			if (activeDetectorList != null) {
-				factoryList = getDetectorFactoriesFromProperty(activeDetectorList);
-			}
-			else {
-				factoryList = new ArrayList();
-				Iterator iterator =
-					DetectorFactoryCollection.instance().factoryIterator();
-				while (iterator.hasNext()) {
-					DetectorFactory factory = (DetectorFactory) iterator.next();
-					if (factory.isEnabled())
-						factoryList.add(factory);
-				}
-			}
-			project.setSessionProperty(
-				PERSISTENT_PROPERTY_ACTIVE_DETECTORS,
-				factoryList);
-		}
-		return factoryList;
-	}
-	
+
 	/**
 	 * Get ProjectFilterSettings for given project.
 	 * If no settings exist yet, default settings are created.

@@ -59,7 +59,7 @@ public class FindBugsWorker {
 	public static boolean DEBUG;
 
 	private IProgressMonitor monitor;
-	private List selectedDetectorFactories;
+	private List<DetectorFactory> selectedDetectorFactories;
 	private IProject project;
 
 	/**
@@ -73,11 +73,12 @@ public class FindBugsWorker {
 		this.project = project;
 		this.monitor = monitor;
 		try {
-			selectedDetectorFactories = FindbugsPlugin.readDetectorFactories(project);
+			  selectedDetectorFactories = FindbugsPlugin.getProjectFilterSettings(project).getDetectorFactories();
 		}
 		catch (CoreException e) {
 			FindbugsPlugin.getDefault().logException(e, "Could not get selected detectors for project");
 		}
+		
 	}
 
 	/**

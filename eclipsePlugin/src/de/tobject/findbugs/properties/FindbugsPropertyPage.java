@@ -55,7 +55,9 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
@@ -76,6 +78,7 @@ import edu.umd.cs.findbugs.config.ProjectFilterSettings;
  * @author Andrei Loskutov
  * @author Peter Friese 
  * @author David Hovemeyer
+ * @author Phil Crosby
  * @version 1.0
  * @since 17.06.2004
  */
@@ -90,7 +93,17 @@ public class FindbugsPropertyPage extends PropertyPage {
 	private Combo minPriorityCombo;
 	private Button[] chkEnableBugCategoryList;
 	private String[] bugCategoryList;
-	private ProjectFilterSettings origFilterSettings;
+	/**
+	 * Maintain filter settings that we modify on the gui and then commit
+	 * permanently when the OK buton is pressed.
+	 */
+	private ProjectFilterSettings filterSettings;
+
+	/**
+	 * Keep track of old filter settings to compare with new; if they are the same, we do not
+	 * commit settings, as it is expensive 
+	 */
+	private ProjectFilterSettings oldFilterSettings;
 	private IProject project;
 	protected TableViewer availableFactoriesTableViewer;
 	protected Map factoriesToBugAbbrev;
@@ -116,13 +129,17 @@ public class FindbugsPropertyPage extends PropertyPage {
 		this.project = (IProject) resource.getAdapter(IProject.class);
 		
 		try {
-			// Get the ProjectFilterSettings for the project.
-			this.origFilterSettings = FindbugsPlugin.getProjectFilterSettings(project);
+			this.oldFilterSettings = FindbugsPlugin.getProjectFilterSettings(project);
+			
+			// Modify settings in memory and commit them when OK is presed
+			this.filterSettings = (ProjectFilterSettings) this.oldFilterSettings.clone();
+			
 		} catch (CoreException e) {
 			FindbugsPlugin.getDefault().logException(e, "Could not get filter settings for project");
 			
 			// Use default settings
-			this.origFilterSettings = ProjectFilterSettings.createDefault();
+			this.oldFilterSettings = ProjectFilterSettings.createDefault();
+			this.filterSettings = (ProjectFilterSettings) this.oldFilterSettings.clone();
 		}
 
 		Composite composite = new Composite(parent, SWT.NONE);
@@ -146,7 +163,7 @@ public class FindbugsPropertyPage extends PropertyPage {
 		minPriorityCombo.add(ProjectFilterSettings.HIGH_PRIORITY);
 		minPriorityCombo.add(ProjectFilterSettings.MEDIUM_PRIORITY);
 		minPriorityCombo.add(ProjectFilterSettings.LOW_PRIORITY);
-		minPriorityCombo.setText(origFilterSettings.getMinPriority());
+		minPriorityCombo.setText(filterSettings.getMinPriority());
 		minPriorityCombo.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
 		
 		Composite categoryGroup = new Composite(composite, SWT.NONE);
@@ -235,18 +252,30 @@ public class FindbugsPropertyPage extends PropertyPage {
 	 * @param categoryGroup control checkboxes should be added to
 	 * @param project       the project being configured
 	 */
-	private void buildBugCategoryList(Composite categoryGroup, IProject project) {
+	private void buildBugCategoryList(Composite categoryGroup, final IProject project) {
 		List bugCategoryList = new LinkedList(I18N.instance().getBugCategories());
 		List checkBoxList = new LinkedList();
 		for (Iterator i = bugCategoryList.iterator(); i.hasNext(); ) {
 			String category = (String) i.next();
 			Button checkBox = new Button(categoryGroup, SWT.CHECK);
 			checkBox.setText(I18N.instance().getBugCategoryDescription(category));
-			checkBox.setSelection(origFilterSettings.containsCategory(category));
+			checkBox.setSelection(filterSettings.containsCategory(category));
 			
 			GridData layoutData = new GridData();
 			layoutData.horizontalIndent = 15;
 			checkBox.setLayoutData(layoutData);
+			
+			// Every time a checkbox is clicked, rebuild the detector factory table
+			// to show only relevant entries
+			
+			checkBox.addListener(SWT.Selection, 
+				new Listener(){
+					public void handleEvent(Event e){
+						syncProjectFilterWithTable(filterSettings);
+						populateAvailableRulesTable(project, getSelectedCategories());
+					}				
+				} 
+			);
 			
 			checkBoxList.add(checkBox);
 		}
@@ -270,6 +299,7 @@ public class FindbugsPropertyPage extends PropertyPage {
 				| SWT.SINGLE
 				| SWT.FULL_SELECTION
 				| SWT.CHECK;
+		
 		availableFactoriesTableViewer =
 			CheckboxTableViewer.newCheckList(parent, tableStyle);
 
@@ -303,6 +333,7 @@ public class FindbugsPropertyPage extends PropertyPage {
 		bugsDescriptionColumn.setResizable(true);
 		bugsDescriptionColumn.setText(getMessage("Detector description"));
 		bugsDescriptionColumn.setWidth(200);
+		
 
 		factoriesTable.setLinesVisible(true);
 		factoriesTable.setHeaderVisible(true);
@@ -320,7 +351,7 @@ public class FindbugsPropertyPage extends PropertyPage {
 
 		availableFactoriesTableViewer.setSorter(sorter);
 
-		populateAvailableRulesTable(project);
+		populateAvailableRulesTable(project, getSelectedCategories());
 		factoriesTable.setEnabled(true);
 
 		return factoriesTable;
@@ -341,20 +372,32 @@ public class FindbugsPropertyPage extends PropertyPage {
 			}
 		});
 	}
+	
+	/**
+	 * Checks whether a detector factory has a reported bug pattern that matches one of the
+	 * given categories.
+	 * @param factory the DetectorFactory
+	 * @param categories the categories to match against
+	 * @return true if the detector factory is contained in one of the given categories, false otherwise
+	 */
+	private boolean inCategory(DetectorFactory factory, List<String> categories)
+	{
+		for (BugPattern pattern : factory.getReportedBugPatterns()){
+			for (String category : categories){
+				if (pattern.getCategory().equals(category))
+					return true;
+			}
+		}
+		return false;			
+	}
 
 	/**
-	 * Populate the rule table
+	 * Populate the rules table with the detector factories that fall into
+	 * the given list of categories.
+	 * @param project 
+	 * @param categories the list of bug categories to filter against.
 	 */
-	private void populateAvailableRulesTable(IProject project) {
-		List selectedFactoryList;
-		try {
-			selectedFactoryList = FindbugsPlugin.readDetectorFactories(project);
-		}
-		catch (CoreException e) {
-			FindbugsPlugin.getDefault().logException(e, "Could not populate detector table");
-			return;
-		}
-
+	private void populateAvailableRulesTable(IProject project, List<String> categories) {
 		List allAvailableList = new ArrayList();
 		factoriesToBugAbbrev = new HashMap();
 		Iterator iterator =
@@ -367,20 +410,19 @@ public class FindbugsPropertyPage extends PropertyPage {
 				System.out.println("Factory " + factory.getFullName() + " is hidden");
 				continue;
 			}
-			
-			allAvailableList.add(factory);
-			addBugsAbbreviation(factory);
-			// XXX factory list from FindBugs is singleton - we share!!!
-			// same factories between multiple projects!!!
-			factory.setEnabled(selectedFactoryList.contains(factory));
+			if (inCategory(factory, categories)){
+				allAvailableList.add(factory);
+				addBugsAbbreviation(factory);
+			}
 		}
 
 		availableFactoriesTableViewer.setInput(allAvailableList);
 		TableItem[] itemList =
 			availableFactoriesTableViewer.getTable().getItems();
+		List<DetectorFactory> selectedFactoryList = this.filterSettings.getDetectorFactories();
 		for (int i = 0; i < itemList.length; i++) {
 			Object rule = itemList[i].getData();
-			//set enabled if defined in configuration
+			// set enabled if defined in configuration
 			if (selectedFactoryList.contains(rule)) {
 				itemList[i].setChecked(true);
 			}
@@ -444,17 +486,16 @@ public class FindbugsPropertyPage extends PropertyPage {
 	public boolean performOk() {
 		boolean selection = this.chkEnableFindBugs.getSelection();
 		boolean result = true;
-		storeDetectorFactories(project, getSelectedDetectorFactories());
 		
 		// Keep of track of whether we need to update
 		// which warning markers are shown.
 		boolean filterOptionsChanged = false;
 		
-		ProjectFilterSettings updatedFilterSettings = getUpdatedProjectFilterSettings();
-		if (!updatedFilterSettings.equals(origFilterSettings)) {
+		updateProjectFilterSettings();
+		if (!this.filterSettings.equals(this.oldFilterSettings)) {
 			filterOptionsChanged = true;
 			try {
-				FindbugsPlugin.storeProjectFilterSettings(project, updatedFilterSettings);
+				FindbugsPlugin.storeProjectFilterSettings(project, this.filterSettings);
 			} catch (CoreException e) {
 				FindbugsPlugin.getDefault().logException(e, "Could not store filter settings for project");
 			}
@@ -580,72 +621,55 @@ public class FindbugsPropertyPage extends PropertyPage {
 	}
 
 	/**
-	 * Get user selected bug factories from view
-	 * @return list with elements instanceof DetectorFactory
+	 * Disables all unchecked detector factories and enables checked factory detectors, leaving
+	 * those not in the table unmodified.
+	 * @param settings the ProjectFilterSettings to adjust to match the UI table
 	 */
-	protected List getSelectedDetectorFactories() {
+	protected void syncProjectFilterWithTable(ProjectFilterSettings settings){
 		TableItem[] itemList =
 			availableFactoriesTableViewer.getTable().getItems();
-		List detectorFactoriesList = new ArrayList();
+		List<DetectorFactory> factories = settings.getDetectorFactories();
 		for (int i = 0; i < itemList.length; i++) {
-			Object factory = itemList[i].getData();
+			DetectorFactory factory = (DetectorFactory) itemList[i].getData();			
 			//set enabled if defined in configuration
 			if (itemList[i].getChecked()) {
-				detectorFactoriesList.add(factory);
-			}
-		}
-		return detectorFactoriesList;
+				if (!factories.contains(factory))
+					factories.add(factory);
+			}else
+				factories.remove(factory);
+		}	
 	}
-
+	
 	/**
-	 * Get the updated project filter settings chosen by the user.
-	 * 
-	 * @return the updated ProjectFilterSettings
+	 * Get the user selected categories.
+	 * @return a list of user selected categories.
 	 */
-	private ProjectFilterSettings getUpdatedProjectFilterSettings() {
-		ProjectFilterSettings settings = ProjectFilterSettings.createDefault();
-		settings.clearAllCategories();
-		
+	private List<String> getSelectedCategories()
+	{
+		List<String> result = new ArrayList<String>();
 		for (int i = 0; i < chkEnableBugCategoryList.length; ++i) {
 			Button checkBox = chkEnableBugCategoryList[i];
 			String category = bugCategoryList[i];
 			if (checkBox.getSelection())
-				settings.addCategory(category);
-			else
-				settings.removeCategory(category);
+				result.add(category);
 		}
+		return result;
+	}
+
+	/**
+	 * Update this project's filter settings to the options selected by the user.
+	 */
+	private void updateProjectFilterSettings() {
+		this.filterSettings.clearAllCategories();
+		List<String> selectedCategories = getSelectedCategories();
+		for (String category : selectedCategories)
+			this.filterSettings.addCategory(category);
 		
-		settings.setMinPriority(minPriorityCombo.getText());
+		filterSettings.setMinPriority(minPriorityCombo.getText());
 		
-		return settings;
+		syncProjectFilterWithTable(this.filterSettings);
 	}
 	
-	/**
-	 * Store the detectors selection in project property
-	 */
-	protected void storeDetectorFactories(IProject project, List factoryList) {
-		try {
-			StringBuffer selectionList = new StringBuffer();
-			Iterator i = factoryList.iterator();
-			while (i.hasNext()) {
-				DetectorFactory rule = (DetectorFactory) i.next();
-				selectionList.append(rule.getShortName()).append(
-					FindbugsPlugin.LIST_DELIMITER);
-			}
-
-			project.setPersistentProperty(
-				FindbugsPlugin.PERSISTENT_PROPERTY_ACTIVE_DETECTORS,
-				selectionList.toString());
-			project.setSessionProperty(
-				FindbugsPlugin.PERSISTENT_PROPERTY_ACTIVE_DETECTORS,
-				factoryList);
-		}
-		catch (CoreException e) {
-			FindbugsPlugin.getDefault().logException(
-					e, "Could not store selected detectors for project");
-		}
-	}
-
 	/**
 	 * @author Andrei
 	 */
@@ -818,6 +842,7 @@ public class FindbugsPropertyPage extends PropertyPage {
 				default :
 					return null;
 			}
+
 		}
 
 	}
