@@ -438,6 +438,7 @@
                     </Component>
                     <Component class="javax.swing.JButton" name="findBugsButton">
                       <Properties>
+                        <Property name="mnemonic" type="int" value="70"/>
                         <Property name="text" type="java.lang.String" value="Find Bugs!"/>
                       </Properties>
                       <Events>
