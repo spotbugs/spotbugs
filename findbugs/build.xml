@@ -39,6 +39,7 @@
     <property name="anttask.src.dir" value="${findbugs.dir}/src/antTask" />
     <property name="tools.src.dir" value="${findbugs.dir}/src/tools"/>
     <property name="eclipse.src.dir" value="${findbugs.dir}/src/eclipsePlugin"/>
+    <property name="script.src.dir" value="${findbugs.dir}/src/scripts"/>
     <property name="findbugs.jar.name" value="findbugs.jar" />
     <property name="findbugsgui.jar.name" value="findbugsGUI.jar" />
     <property name="coreplugin.jar.name" value="coreplugin.jar" />
@@ -58,6 +59,8 @@
     <property name="fo.xsl.stylesheet" value="${xsl.stylesheet.home}/fo/docbook.xsl" />
     <property name="doc.props.file" value="${findbugs.dir}/etc/doc.properties"/>
     <property name="html.uptodate.stamp" value="${build.dir}/html-uptodate.stamp"/>
+    <property name="script.props.file" value="${findbugs.dir}/etc/script.properties"/>
+    <property name="scripts.uptodate.stamp" value="${findbugs.dir}/build/scripts-uptodate.stamp"/>
 
     <!--
       *****************************************************************
@@ -216,6 +219,47 @@
       </jar>
     </target>
 
+    <target name="scriptsCheck">
+      <condition property="scripts.uptodate">
+        <and>
+          <!-- Generated scripts must be newer than src scripts -->
+          <uptodate>
+            <srcfiles dir="${findbugs.dir}" includes="src/scripts/*"/>
+            <mapper type="glob"
+                    from="src/scripts/*"
+                    to="${script.dir}/*"/>
+          </uptodate>
+          <!-- And, generated scripts must be newer than etc/script.properties -->
+          <uptodate targetfile="${scripts.uptodate.stamp}">
+            <srcfiles file="${script.props.file}"/>
+          </uptodate>
+        </and>
+      </condition>
+    </target>
+
+    <!-- Target to copy the scripts (substituting script fragments
+         as needed). -->
+    <target name="scripts" depends="init,scriptsCheck" unless="scripts.uptodate">
+      <loadproperties srcFile="${script.props.file}"/>
+
+      <filterset id="scriptFilters">
+        <filter token="GET_FBHOME" value="${script.get.fbhome}" />
+        <filter token="SET_DEFAULT_JAVA" value="${script.set.default.java}"/>
+        <filter token="WRAP_JAVA" value="${script.wrap.java}"/>
+        <filter token="WRAP_JAR" value="${script.wrap.jar}"/>
+      </filterset>
+
+      <copy todir="${script.dir}" overwrite="true">
+        <fileset dir="${script.src.dir}"/>
+        <filterset refid="scriptFilters"/>
+      </copy>
+
+      <!-- Make the Unix scripts executable. -->
+      <chmod dir="${script.dir}" perm="a+x" includes="*" excludes="*.bat"/>
+
+      <touch file="${scripts.uptodate.stamp}"/>
+    </target>
+
     <!-- Target to build the anttask -->
     <target name="anttask" depends="findbugs">
       <javac srcdir="${anttask.src.dir}" debug="true" destdir="${class.dir}" >
@@ -234,11 +278,11 @@
             the edu.umd.cs.findbugs.Version class. -->
        <copy file="${eclipse.src.dir}/edu.umd.cs.findbugs/plugin.xml.in"
              tofile="${eclipse.src.dir}/edu.umd.cs.findbugs/plugin.xml">
-         <filterset refid="findbugsFilters"/>
+         <filterset refid="docFilters"/>
        </copy>
        <copy file="${eclipse.src.dir}/de.tobject.findbugs/plugin.xml.in"
              tofile="${eclipse.src.dir}/de.tobject.findbugs/plugin.xml">
-         <filterset refid="findbugsFilters"/>
+         <filterset refid="docFilters"/>
        </copy>
 
        <!-- Generate build properties for core Eclipse plugin. -->
@@ -350,7 +394,7 @@
 
       <!-- Filter set used for generating text substitution values for
            documentation and Eclipse plugin descriptors. -->
-      <filterset id="findbugsFilters">
+      <filterset id="docFilters">
         <filter token="VERSION" value="${release.number}" />
         <filter token="RELEASE_DATE" value="${release.date}" />
         <filter token="ECLIPSE_UI_VERSION" value="${eclipse.ui.version}" />
@@ -417,7 +461,7 @@
             unless="docfiles.html.uptodate">
        <copy todir="${doc.dir}" overwrite="true">
          <fileset dir="${doc.src.dir}" includes="*.html"/>
-         <filterset refid="findbugsFilters"/>
+         <filterset refid="docFilters"/>
       </copy>
       <touch file="${html.uptodate.stamp}"/>
     </target>
@@ -432,7 +476,7 @@
       <!-- XML/XSL source for the manual -->
       <copy todir="${doc.dir}">
         <fileset dir="${doc.src.dir}" includes="manual.xml,manual.xsl"/>
-        <filterset refid="findbugsFilters"/>
+        <filterset refid="docFilters"/>
       </copy>
 
       <!-- The manual is up to date as long as the generated HTML
@@ -489,7 +533,7 @@
 
     <!-- Default target: just compile the code
          and build the Jar files. -->
-    <target name="build" depends="findbugs,coreplugin,findbugsgui,anttask,testjar" />
+    <target name="build" depends="findbugs,coreplugin,findbugsgui,scripts,anttask,testjar" />
 
     <!-- Rebuild. -->
     <target name="rebuild" depends="clean,build" />
