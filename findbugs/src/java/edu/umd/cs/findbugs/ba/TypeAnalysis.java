@@ -46,6 +46,12 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 
 	private static final boolean DEBUG  = Boolean.getBoolean("ta.debug");
 
+	/**
+	 * Compute what kinds of exceptions can propagate
+	 * on each exception edge.
+	 */
+	private static final boolean ACCURATE_EXCEPTIONS = Boolean.getBoolean("ta.accurateExceptions");
+
 	private static class CachedExceptionSet {
 		private TypeFrame result;
 		private ExceptionSet exceptionSet;
@@ -208,6 +214,11 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 
 	public void endTransfer(BasicBlock basicBlock, InstructionHandle end, Object result)
 		throws DataflowAnalysisException {
+
+		// Do nothing if we're not computing propagated exceptions
+		if (!ACCURATE_EXCEPTIONS)
+			return;
+
 		// Figure out what exceptions can be thrown out
 		// of the basic block, and mark each exception edge
 		// with the set of exceptions which can be propagated
@@ -252,15 +263,47 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 			TypeFrame tmpFact = createFact();
 			tmpFact.copyFrom(fact);
 			tmpFact.clearStack();
-			Type catchType = exceptionGen.getCatchType();
-			if (catchType == null)
-				catchType = Type.THROWABLE; // handle catches anything throwable
+
+			// Determine the type of exception(s) caught.
+			Type catchType = null;
+
+			if (ACCURATE_EXCEPTIONS) {
+				try {
+					// Ideally, the exceptions that can be propagated
+					// on this edge has already been computed.
+					CachedExceptionSet cachedExceptionSet = getCachedExceptionSet(edge.getSource());
+					ExceptionSet edgeExceptionSet = cachedExceptionSet.getEdgeExceptionSet(edge);
+					if (!edgeExceptionSet.isEmpty()) {
+						//System.out.println("Using computed edge exception set!");
+						catchType = ExceptionObjectType.fromExceptionSet(edgeExceptionSet);
+					}
+				} catch (ClassNotFoundException e) {
+					lookupFailureCallback.reportMissingClass(e);
+				}
+			}
+
+			if (catchType == null) {
+				// No information about propagated exceptions, so
+				// pick a type conservatively using the handler catch type.
+				catchType = exceptionGen.getCatchType();
+				if (catchType == null)
+					catchType = Type.THROWABLE; // handle catches anything throwable
+			}
+
 			tmpFact.pushValue(catchType);
 			fact = tmpFact;
 		}
 		result.mergeWith(fact);
 	}
 
+	/**
+	 * Get the cached set of exceptions that can be thrown
+	 * from given basic block.  If this information hasn't
+	 * been computed yet, then an empty exception set is
+	 * returned.
+	 * @param basicBlock the block to get the cached exception set for
+	 * @return the CachedExceptionSet for the block
+	 */
 	private CachedExceptionSet getCachedExceptionSet(BasicBlock basicBlock) {
 		CachedExceptionSet cachedExceptionSet = thrownExceptionSetMap.get(basicBlock);
 		if (cachedExceptionSet == null) {
@@ -281,13 +324,22 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 		return cachedExceptionSet;
 	}
 
+	/**
+	 * If necessary, compute the set of exceptions that can be
+	 * thrown from the given basic block.
+	 * @param basicBlock the basic block
+	 * @param result the result fact for the block; this is used
+	 *    to determine whether or not the cached exception
+	 *    set is up to date
+	 * @return the cached exception set for the block
+	 */
 	private CachedExceptionSet computeBlockExceptionSet(BasicBlock basicBlock, TypeFrame result)
 		throws ClassNotFoundException, DataflowAnalysisException {
 
 		CachedExceptionSet cachedExceptionSet = getCachedExceptionSet(basicBlock);
 
 		if (!cachedExceptionSet.isUpToDate(result)) {
-			ExceptionSet exceptionSet = enumerateExceptionTypes(basicBlock);
+			ExceptionSet exceptionSet = computeThrownExceptionTypes(basicBlock);
 			TypeFrame copyOfResult = createFact();
 			copy(result, copyOfResult);
 
@@ -298,6 +350,21 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 		return cachedExceptionSet;
 	}
 
+	/**
+	 * Based on the set of exceptions that can be thrown
+	 * from the source basic block,
+	 * compute the set of exceptions that can propagate
+	 * along given exception edge.  This method should be
+	 * called for each outgoing exception edge in sequence,
+	 * so the caught exceptions can be removed from the
+	 * thrown exception set as needed.
+	 * @param edge the exception edge
+	 * @param thrownExceptionSet current set of exceptions that
+	 *   can be thrown, taking earlier (higher priority)
+	 *   exception edges into account
+	 * @return the set of exceptions that can propagate
+	 *   along this edge
+	 */
 	private ExceptionSet computeEdgeExceptionSet(Edge edge, ExceptionSet thrownExceptionSet)
 		throws ClassNotFoundException {
 
@@ -353,7 +420,13 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 		return result;
 	}
 
-	private ExceptionSet enumerateExceptionTypes(BasicBlock basicBlock)
+	/**
+	 * Compute the set of exception types that can
+	 * be thrown by given basic block.
+	 * @param basicBlock the basic block
+	 * @return the set of exceptions that can be thrown by the block
+	 */
+	private ExceptionSet computeThrownExceptionTypes(BasicBlock basicBlock)
 		throws ClassNotFoundException, DataflowAnalysisException {
 
 		ExceptionSet exceptionTypeSet = new ExceptionSet();
