@@ -72,6 +72,13 @@ public class Edge implements EdgeTypes, Comparable {
 	return type;
     }
 
+    /**
+     * Is the edge an exception edge?
+     */
+    public boolean isExceptionEdge() {
+	return type == HANDLED_EXCEPTION_EDGE || type == UNHANDLED_EXCEPTION_EDGE;
+    }
+
     /** Set the edge's unique id. */
     public void setId(int id) {
 	this.id = id;
