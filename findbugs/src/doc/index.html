@@ -29,7 +29,7 @@ can analyze programs compiled for any version of Java.
 <p> Please note that FindBugs is beta-quality software.&nbsp; You may find bugs in it,
 and the features and source code may change significantly in future releases.&nbsp;
 Having said that, we invite you to try it out, and especially
-<a href="mailto:findbugs-discuss@cs.umd.edu">send us feedback</a>.
+<a href="mailto:daveho@cs.umd.edu">send us feedback</a>.
 
 <h1>Documents</h1>
 
@@ -47,12 +47,19 @@ invited talk, MASPLAS 2003
 
 <h1>Changes since last version</h1>
 
+<p> Note that the version number jumped from 0.6.6 to 0.6.9;
+there were no 0.6.7 or 0.6.8 releases.
+
 <p> Changes since version 0.6.6:
 
 <ul>
+<li> The null pointer dereference detector is more powerful
 <li> Significantly improved heuristics and bug fixes in
      inconsistent synchronization detector
-<li> Improved heuristics in open stream, and dropped exception detectors
+<li> Improved heuristics in open stream and dropped exception detectors;
+     fewer false positives should be reported
+<li> The findbugs.bat script on Windows autodetects FINDBUGS_HOME,
+     and doesn't open a DOS window when launching the GUI
 <li> Various bug fixes
 </ul>
 
