@@ -86,6 +86,8 @@
     reports="IS2_INCONSISTENT_SYNC" />
   <Detector class="edu.umd.cs.findbugs.detect.FindLocalSelfAssignment" speed="fast"
     reports="SA_LOCAL_SELF_ASSIGNMENT" />
+  <Detector class="edu.umd.cs.findbugs.detect.IncompatMask" speed="fast"
+    reports="BIT_AND,BIT_AND_ZZ,BIT_IOR" />
   <Detector class="edu.umd.cs.findbugs.detect.LazyInit" speed="moderate"
     reports="LI_LAZY_INIT_STATIC"/>
   <Detector class="edu.umd.cs.findbugs.detect.FindJSR166LockMonitorenter" speed="moderate" 
@@ -198,6 +200,9 @@
   <BugPattern abbrev="MWN" type="MWN_MISMATCHED_WAIT" category="CORRECTNESS" />
   <BugPattern abbrev="MWN" type="MWN_MISMATCHED_NOTIFY" category="CORRECTNESS" />
   <BugPattern abbrev="SA" type="SA_LOCAL_SELF_ASSIGNMENT" category="CORRECTNESS" />
+  <BugPattern abbrev="BIT" type="BIT_AND"    category="CORRECTNESS" />
+  <BugPattern abbrev="BIT" type="BIT_AND_ZZ" category="CORRECTNESS" />
+  <BugPattern abbrev="BIT" type="BIT_IOR"    category="CORRECTNESS" />
   <BugPattern abbrev="SA" type="SA_FIELD_SELF_ASSIGNMENT" category="CORRECTNESS" />
   <BugPattern abbrev="LI" type="LI_LAZY_INIT_INSTANCE" category="MT_CORRECTNESS" experimental="true"/>
   <BugPattern abbrev="LI" type="LI_LAZY_INIT_STATIC" category="MT_CORRECTNESS" experimental="true"/>

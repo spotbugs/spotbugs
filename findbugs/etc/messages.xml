@@ -391,6 +391,15 @@ It is a fast detector.
     </Details>
   </Detector>
 
+  <Detector class="edu.umd.cs.findbugs.detect.IncompatMask">
+    <Details>
+<![CDATA[
+<p> This detector looks for suspicious bitwise logical expressions.
+It is a fast detector.
+]]>
+    </Details>
+  </Detector>
+
   <Detector class="edu.umd.cs.findbugs.detect.LazyInit">
     <Details>
 <![CDATA[
@@ -1824,6 +1833,48 @@ Such assignments are useless, and may indicate a logic error or typo.
     </Details>
   </BugPattern>
 
+  <BugPattern type="BIT_AND">
+    <ShortDescription>Incompatible bit masks</ShortDescription>
+    <LongDescription>Incompatible bit masks yield a constant result in {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p> This method compares an expression of the form (a & C) to D,
+which will always compare unequal
+due to the specific values of constants C and D.
+This may indicate a logic error or typo.
+]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="BIT_AND_ZZ">
+    <ShortDescription>Incompatible bit masks</ShortDescription>
+    <LongDescription>Incompatible bit masks yield a constant result in {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p> This method compares an expression of the form (a & 0) to 0,
+which will always compare equal.
+This may indicate a logic error or typo.
+]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="BIT_IOR">
+    <ShortDescription>Incompatible bit masks</ShortDescription>
+    <LongDescription>Incompatible bit masks yield a constant result in {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p> This method compares an expression of the form (a | C) to D.
+which will always compare unequal
+due to the specific values of constants C and D.
+This may indicate a logic error or typo.
+
+<p> Typically, this bug occurs because the code wants to perform
+a membership test in a bit set, but uses the bitwise OR
+operator ("|") instead of bitwise AND ("&").
+]]>
+    </Details>
+  </BugPattern>
+
   <BugPattern type="LI_LAZY_INIT_INSTANCE">
     <ShortDescription>Incorrect lazy initialization of instance field</ShortDescription>
     <LongDescription>Incorrect lazy initialization of instance field {2} in {1}</LongDescription>
@@ -2020,6 +2071,7 @@ directly. This avoids the need to create a second array
   <BugCode abbrev="EC">Suspicious equals() comparison</BugCode>
   <BugCode abbrev="MWN">Mismatched wait() or notify()</BugCode>
   <BugCode abbrev="SA">Useless self-assignment</BugCode>
+  <BugCode abbrev="BIT">Suspicious bitwise logical expression</BugCode>
   <BugCode abbrev="LI">Unsynchronized Lazy Initialization</BugCode>
   <BugCode abbrev="JLM">Synchronization on JSR166 Lock</BugCode>
   <BugCode abbrev="UPM">Private method is never called</BugCode>
