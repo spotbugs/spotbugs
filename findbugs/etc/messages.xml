@@ -788,6 +788,14 @@ This detector looks for bad casts of object references.
     </Details>
   </Detector>
   
+  <Detector class="edu.umd.cs.findbugs.detect.BadSyntaxForRegularExpression">
+    <Details>
+<![CDATA[
+<p> This detector looks for regular expressions that have invalid syntax.  </p>
+]]>
+    </Details>
+  </Detector>
+
   <Detector class="edu.umd.cs.findbugs.detect.FindBugsSummaryStats">
     <Details>
 <![CDATA[
@@ -3265,6 +3273,7 @@ double value2 =  x / (double) y;
 ]]>
     </Details>
   </BugPattern>
+
   <BugPattern type="BC_BAD_CAST_TO_CONCRETE_COLLECTION">
     <ShortDescription>Questionable cast to concrete collection</ShortDescription>
     <LongDescription>Questionable cast from {3} to concrete class {4} in {1}</LongDescription>
@@ -3277,6 +3286,20 @@ This might not be correct, and it may make your code fragile, since
 it makes it harder to switch to other concrete implementations at a future 
 point. Unless you have a particular reason to do so, just use the abstract
 collection class.
+</p>
+]]>
+    </Details>
+  </BugPattern>
+   
+  <BugPattern type="RE_BAD_SYNTAX_FOR_REGULAR_EXPRESSION">
+    <ShortDescription>Invalid syntax for regular expression</ShortDescription>
+    <LongDescription>Invalid syntax for regular expression in {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+The code here uses a regular expression that is invalid according to the syntax
+for regular expressions. This statement throw a PatternSyntaxException when
+executed.
 </p>
 ]]>
     </Details>
@@ -3376,5 +3399,10 @@ collection class.
   <BugCode abbrev="RI">Redundant Interfaces</BugCode>
   <BugCode abbrev="MTIA">Multithreaded Instance Access</BugCode>
   <BugCode abbrev="PS">Public Semaphores</BugCode>
-  <BugCode abbrev="IDCD">Integer division result cast to double</BugCode>
+  <BugCode abbrev="ICAST">Casting from integer values</BugCode>
+  <BugCode abbrev="RE">Regular expressions</BugCode>
+  <BugCode abbrev="SQL">SQL Injection</BugCode>
+  <BugCode abbrev="ESync">Empty Synchronized blocks</BugCode>
+  <BugCode abbrev="QF">Questionable for loops</BugCode>
+  <BugCode abbrev="BC">Bad casts of object references</BugCode>
   </MessageCollection>

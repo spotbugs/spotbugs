@@ -1,4 +1,6 @@
 public class DeadStore {
+
+	int x,y;
 	public static void main(String[] args) {
 		String live = "Hello, world";
 		String dead = "Oops!";
@@ -48,4 +50,13 @@ public class DeadStore {
 		}
 		return o.hashCode();
 	}
+
+
+	public int cachingFields(int a, int b, int c, int d, int e) {
+		a = x;
+		b = 5;
+		c = x+1;
+		d = hashCode();
+		return e;
+		}
 }
