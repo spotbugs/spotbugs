@@ -217,7 +217,7 @@ public class LazyInit extends ByteCodePatternDetector {
 			boolean isDefaultAccess =
 				(method.getAccessFlags() & (Constants.ACC_PUBLIC|Constants.ACC_PRIVATE|Constants.ACC_PROTECTED)) == 0;
 			if (method.isPublic())
-				priority = HIGH_PRIORITY;
+				priority = NORMAL_PRIORITY;
 			else if (method.isProtected() || isDefaultAccess)
 				priority = NORMAL_PRIORITY;
 
