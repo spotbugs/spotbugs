@@ -41,16 +41,20 @@ import org.apache.bcel.generic.*;
  * @see TypeFrame
  * @author David Hovemeyer
  */
-public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame> {
+public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
+	implements EdgeTypes {
+
 	private static final boolean DEBUG  = Boolean.getBoolean("ta.debug");
 
 	private static class CachedExceptionSet {
 		private TypeFrame result;
 		private ExceptionSet exceptionSet;
+		private Map<Edge, ExceptionSet> edgeExceptionMap;
 
 		public CachedExceptionSet(TypeFrame result, ExceptionSet exceptionSet) {
 			this.result = result;
 			this.exceptionSet = exceptionSet;
+			this.edgeExceptionMap = new HashMap<Edge, ExceptionSet>();
 		}
 
 		public boolean isUpToDate(TypeFrame result) {
@@ -60,53 +64,74 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame> {
 		public ExceptionSet getExceptionSet() {
 			return exceptionSet;
 		}
+
+		public void setEdgeExceptionSet(Edge edge, ExceptionSet exceptionSet) {
+			edgeExceptionMap.put(edge, exceptionSet);
+		}
+
+		public ExceptionSet getEdgeExceptionSet(Edge edge) {
+			ExceptionSet edgeExceptionSet = edgeExceptionMap.get(edge);
+			if (edgeExceptionSet == null) {
+				edgeExceptionSet = new ExceptionSet();
+				edgeExceptionMap.put(edge, edgeExceptionSet);
+			}
+			return edgeExceptionSet;
+		}
 	}
 
 	private MethodGen methodGen;
+	private CFG cfg;
 	private TypeMerger typeMerger;
 	private TypeFrameModelingVisitor visitor;
-	private Map<BasicBlock, CachedExceptionSet> exceptionSetMap;
+	private Map<BasicBlock, CachedExceptionSet> thrownExceptionSetMap;
 	private RepositoryLookupFailureCallback lookupFailureCallback;
 
 	/**
 	 * Constructor.
 	 * @param methodGen the MethodGen whose CFG we'll be analyzing
+	 * @param cfg the control flow graph
 	 * @param dfs DepthFirstSearch of the method
 	 * @param typeMerger object to merge types
 	 * @param visitor a TypeFrameModelingVisitor to use to model the effect
 	 *   of instructions
 	 * @param lookupFailureCallback lookup failure callback
 	 */
-	public TypeAnalysis(MethodGen methodGen, DepthFirstSearch dfs, TypeMerger typeMerger, TypeFrameModelingVisitor visitor,
+	public TypeAnalysis(MethodGen methodGen, CFG cfg, DepthFirstSearch dfs,
+		TypeMerger typeMerger, TypeFrameModelingVisitor visitor,
 		RepositoryLookupFailureCallback lookupFailureCallback) {
 		super(dfs);
 		this.methodGen = methodGen;
+		this.cfg = cfg;
 		this.typeMerger = typeMerger;
 		this.visitor = visitor;
+		this.thrownExceptionSetMap = new HashMap<BasicBlock, CachedExceptionSet>();
 		this.lookupFailureCallback = lookupFailureCallback;
-		this.exceptionSetMap = new HashMap<BasicBlock, CachedExceptionSet>();
 	}
 
 	/**
 	 * Constructor.
 	 * @param methodGen the MethodGen whose CFG we'll be analyzing
+	 * @param cfg the control flow graph
 	 * @param dfs DepthFirstSearch of the method
 	 * @param typeMerger object to merge types
 	 * @param lookupFailureCallback lookup failure callback
 	 */
-	public TypeAnalysis(MethodGen methodGen, DepthFirstSearch dfs, TypeMerger typeMerger,
-		RepositoryLookupFailureCallback lookupFailureCallback) {
-		this(methodGen, dfs, typeMerger, new TypeFrameModelingVisitor(methodGen.getConstantPool()), lookupFailureCallback);
+	public TypeAnalysis(MethodGen methodGen, CFG cfg, DepthFirstSearch dfs,
+		TypeMerger typeMerger, RepositoryLookupFailureCallback lookupFailureCallback) {
+		this(methodGen, cfg, dfs, typeMerger,
+			new TypeFrameModelingVisitor(methodGen.getConstantPool()), lookupFailureCallback);
 	}
 
 	/**
 	 * Constructor which uses StandardTypeMerger.
 	 * @param methodGen the MethodGen whose CFG we'll be analyzing
+	 * @param cfg the control flow graph
 	 * @param dfs DepthFirstSearch of the method
 	 * @param lookupFailureCallback callback for Repository lookup failures
 	 */
-	public TypeAnalysis(MethodGen methodGen, DepthFirstSearch dfs, RepositoryLookupFailureCallback lookupFailureCallback) {
-		this(methodGen, dfs, new StandardTypeMerger(lookupFailureCallback), lookupFailureCallback);
+	public TypeAnalysis(MethodGen methodGen, CFG cfg, DepthFirstSearch dfs,
+		RepositoryLookupFailureCallback lookupFailureCallback) {
+		this(methodGen, cfg, dfs, new StandardTypeMerger(lookupFailureCallback), lookupFailureCallback);
 	}
 
 	public TypeFrame createFact() {
@@ -181,7 +206,8 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame> {
 		handle.getInstruction().accept(visitor);
 	}
 
-	public void endTransfer(BasicBlock basicBlock, InstructionHandle end, Object result) throws DataflowAnalysisException {
+	public void endTransfer(BasicBlock basicBlock, InstructionHandle end, Object result)
+		throws DataflowAnalysisException {
 		// Figure out what exceptions can be thrown out
 		// of the basic block, and mark each exception edge
 		// with the set of exceptions which can be propagated
@@ -189,11 +215,25 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame> {
 
 		if (basicBlock.isExceptionThrower()) {
 			try {
-				ExceptionSet exceptionSet = computeExceptionTypes(basicBlock, (TypeFrame) result).duplicate();
-/*
+				// Compute exceptions that can be thrown by the
+				// basic block.
+				CachedExceptionSet cachedExceptionSet =
+					computeBlockExceptionSet(basicBlock, (TypeFrame) result);
+
+				// For each outgoing exception edge, compute exceptions
+				// that can be thrown.  This assumes that the exception
+				// edges are enumerated in decreasing order of priority.
+				// In the process, this will remove exceptions from
+				// the thrown exception set.
+				ExceptionSet thrownExceptionSet = cachedExceptionSet.getExceptionSet().duplicate();
 				for (Iterator<Edge> i = cfg.outgoingEdgeIterator(basicBlock); i.hasNext(); ) {
+					Edge edge = i.next();
+					if (!edge.isExceptionEdge())
+						continue;
+
+					cachedExceptionSet.setEdgeExceptionSet(
+						edge, computeEdgeExceptionSet(edge, thrownExceptionSet));
 				}
-*/
 			} catch (ClassNotFoundException e) {
 				lookupFailureCallback.reportMissingClass(e);
 				throw new DataflowAnalysisException("Could not enumerate exception types for block", e);
@@ -221,24 +261,8 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame> {
 		result.mergeWith(fact);
 	}
 
-	public static void main(String[] argv) throws Exception {
-		if (argv.length != 1) {
-			System.err.println("Usage: " + TypeAnalysis.class.getName() + " <class file>");
-			System.exit(1);
-		}
-
-		DataflowTestDriver<TypeFrame, TypeAnalysis> driver = new DataflowTestDriver<TypeFrame, TypeAnalysis>() {
-			public Dataflow<TypeFrame, TypeAnalysis> createDataflow(ClassContext classContext, Method method)
-				throws CFGBuilderException, DataflowAnalysisException {
-				return classContext.getTypeDataflow(method);
-			}
-		};
-
-		driver.execute(argv[0]);
-	}
-
 	private CachedExceptionSet getCachedExceptionSet(BasicBlock basicBlock) {
-		CachedExceptionSet cachedExceptionSet = exceptionSetMap.get(basicBlock);
+		CachedExceptionSet cachedExceptionSet = thrownExceptionSetMap.get(basicBlock);
 		if (cachedExceptionSet == null) {
 			// When creating the cached exception type set for the first time:
 			// - the block result is set to TOP, so it won't match
@@ -251,13 +275,13 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame> {
 			makeFactTop(top);
 			cachedExceptionSet = new CachedExceptionSet(top, new ExceptionSet());
 
-			exceptionSetMap.put(basicBlock, cachedExceptionSet);
+			thrownExceptionSetMap.put(basicBlock, cachedExceptionSet);
 		}
 
 		return cachedExceptionSet;
 	}
 
-	private ExceptionSet computeExceptionTypes(BasicBlock basicBlock, TypeFrame result)
+	private CachedExceptionSet computeBlockExceptionSet(BasicBlock basicBlock, TypeFrame result)
 		throws ClassNotFoundException, DataflowAnalysisException {
 
 		CachedExceptionSet cachedExceptionSet = getCachedExceptionSet(basicBlock);
@@ -268,10 +292,65 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame> {
 			copy(result, copyOfResult);
 
 			cachedExceptionSet = new CachedExceptionSet(copyOfResult, exceptionSet);
-			exceptionSetMap.put(basicBlock, cachedExceptionSet);
+			thrownExceptionSetMap.put(basicBlock, cachedExceptionSet);
 		}
 
-		return cachedExceptionSet.getExceptionSet();
+		return cachedExceptionSet;
+	}
+
+	private ExceptionSet computeEdgeExceptionSet(Edge edge, ExceptionSet thrownExceptionSet)
+		throws ClassNotFoundException {
+
+		ExceptionSet result = new ExceptionSet();
+
+		if (edge.getType() == UNHANDLED_EXCEPTION_EDGE) {
+			// The unhandled exception edge always comes
+			// after all of the handled exception edges.
+			result.addAll(thrownExceptionSet);
+			thrownExceptionSet.clear();
+			return result;
+		}
+
+		BasicBlock handlerBlock = edge.getTarget();
+		CodeExceptionGen handler = handlerBlock.getExceptionGen();
+		ObjectType catchType = handler.getCatchType();
+
+		if (Hierarchy.isUniversalExceptionHandler(catchType)) {
+			result.addAll(thrownExceptionSet);
+			thrownExceptionSet.clear();
+		} else {
+			// Go through the set of thrown exceptions.
+			// Any that will DEFINITELY be caught be this handler, remove.
+			// Any that MIGHT be caught, but won't definitely be caught,
+			// remain.
+
+			for (Iterator<ThrownException> i = thrownExceptionSet.iterator(); i.hasNext(); ) {
+				ThrownException thrownException = i.next();
+				ObjectType thrownType = thrownException.getType();
+
+				if (DEBUG) System.out.println("\texception type " + thrownType +
+					", catch type " + catchType);
+
+				if (Hierarchy.isSubtype(thrownType, catchType)) {
+					// Exception can be thrown along this edge
+					result.addAndAdopt(thrownException.duplicate());
+
+					// And it will definitely be caught
+					i.remove();
+
+					if (DEBUG) System.out.println("\tException is subtype of catch type: " +
+						"will definitely catch");
+				} else if (Hierarchy.isSubtype(catchType, thrownType)) {
+					// Exception possibly thrown along this edge
+					result.addAndAdopt(thrownException.duplicate());
+
+					if (DEBUG) System.out.println("\tException is supertype of catch type: " +
+						"might catch");
+				}
+			}
+		}
+
+		return result;
 	}
 
 	private ExceptionSet enumerateExceptionTypes(BasicBlock basicBlock)
@@ -357,6 +436,22 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame> {
 
 		return exceptionTypeSet;
 	}
+
+	public static void main(String[] argv) throws Exception {
+		if (argv.length != 1) {
+			System.err.println("Usage: " + TypeAnalysis.class.getName() + " <class file>");
+			System.exit(1);
+		}
+
+		DataflowTestDriver<TypeFrame, TypeAnalysis> driver = new DataflowTestDriver<TypeFrame, TypeAnalysis>() {
+			public Dataflow<TypeFrame, TypeAnalysis> createDataflow(ClassContext classContext, Method method)
+				throws CFGBuilderException, DataflowAnalysisException {
+				return classContext.getTypeDataflow(method);
+			}
+		};
+
+		driver.execute(argv[0]);
+	}
 }
 
-// vim:ts=4
+// vim:ts=3
