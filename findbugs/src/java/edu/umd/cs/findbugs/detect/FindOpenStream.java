@@ -27,27 +27,32 @@ import org.apache.bcel.generic.*;
 import edu.umd.cs.daveho.ba.*;
 import edu.umd.cs.findbugs.*;
 
-public class FindOpenStream implements Detector {
+/**
+ * A stream created by an analyzed method.
+ */
+class Stream {
+	/** Location in the method where the stream is created. */
+	public final Location creationPoint;
+
+	/** The type of the stream. */
+	public final String streamClass;
+
+	/**
+	 * Constructor.
+	 * @param creationPoint location where stream is created
+	 * @param streamClass the name of the stream's class
+	 */
+	public Stream(Location creationPoint, String streamClass) {
+		this.creationPoint = creationPoint;
+		this.streamClass = streamClass;
+	}
+}
+
+public class FindOpenStream extends ResourceTrackingDetector<Stream>  {
 
 	/* ----------------------------------------------------------------------
 	 * Helper classes
 	 * ---------------------------------------------------------------------- */
-
-	/**
-	 * A stream created by the method.
-	 */
-	private static class Stream {
-		/** Location in the method where the stream is created. */
-		public final Location creationPoint;
-
-		/** The type of the stream. */
-		public final String streamClass;
-
-		public Stream(Location creationPoint, String streamClass) {
-			this.creationPoint = creationPoint;
-			this.streamClass = streamClass;
-		}
-	}
 
 	/**
 	 * A visitor to model the effect of instructions on the status
@@ -220,70 +225,35 @@ public class FindOpenStream implements Detector {
 		this.resourceTracker = new StreamResourceTracker(bugReporter);
 	}
 
-	public void visitClassContext(ClassContext classContext) {
-
-		try {
-
-			JavaClass jclass = classContext.getJavaClass();
-			Method[] methodList = jclass.getMethods();
-			for (int i = 0; i < methodList.length; ++i) {
-				Method method = methodList[i];
-				if (method.isAbstract() || method.isNative())
-					continue;
-
-				BitSet bytecodeSet = classContext.getBytecodeSet(method);
-				if (!bytecodeSet.get(Constants.NEW))
-					continue; // no streams created in this method
-
-				final MethodGen methodGen = classContext.getMethodGen(method);
-				final CFG cfg = classContext.getCFG(method);
-
-				new LocationScanner(cfg).scan(new LocationScanner.Callback() {
-					public void visitLocation(Location location) {
-						BasicBlock basicBlock = location.getBasicBlock();
-						InstructionHandle handle = location.getHandle();
-
-						Stream stream = resourceTracker.isResourceCreation(basicBlock, handle, methodGen.getConstantPool());
-						if (stream != null) {
-							ResourceValueAnalysis<Stream> analysis = new ResourceValueAnalysis<Stream>(methodGen, resourceTracker, stream);
-							Dataflow<ResourceValueFrame> dataflow = new Dataflow<ResourceValueFrame>(cfg, analysis);
-
-							try {
-								dataflow.execute();
-
-								ResourceValueFrame exitFrame = dataflow.getResultFact(cfg.getExit());
-
-								int exitStatus = exitFrame.getStatus();
-								if (exitStatus == ResourceValueFrame.OPEN || exitStatus == ResourceValueFrame.OPEN_ON_EXCEPTION_PATH) {
-									String bugType;
-									int priority;
-									if (exitStatus == ResourceValueFrame.OPEN) {
-										bugType = "OS_OPEN_STREAM";
-										priority = NORMAL_PRIORITY;
-									} else {
-										bugType = "OS_OPEN_STREAM_EXCEPTION_PATH";
-										priority = LOW_PRIORITY;
-									}
-
-									bugReporter.reportBug(new BugInstance(bugType, priority)
-										.addClassAndMethod(methodGen)
-										.addSourceLine(methodGen, stream.creationPoint.getHandle())
-									);
-								}
-							} catch (DataflowAnalysisException e) {
-								throw new AnalysisException("FindOpenStream caught exception: " + e.toString(), e);
-							}
-						}
-					}
-				});
-			}
-		} catch (CFGBuilderException e) {
-			throw new AnalysisException(e.getMessage());
-		}
-
+	public boolean prescreen(ClassContext classContext, Method method) {
+		BitSet bytecodeSet = classContext.getBytecodeSet(method);
+		return bytecodeSet.get(Constants.NEW);
 	}
 
-	public void report() {
+	public ResourceTracker<Stream> getResourceTracker() {
+		return resourceTracker;
+	}
+
+	public void inspectResult(MethodGen methodGen, CFG cfg, Dataflow<ResourceValueFrame> dataflow, Stream stream) {
+		ResourceValueFrame exitFrame = dataflow.getResultFact(cfg.getExit());
+
+		int exitStatus = exitFrame.getStatus();
+		if (exitStatus == ResourceValueFrame.OPEN || exitStatus == ResourceValueFrame.OPEN_ON_EXCEPTION_PATH) {
+			String bugType;
+			int priority;
+			if (exitStatus == ResourceValueFrame.OPEN) {
+				bugType = "OS_OPEN_STREAM";
+				priority = NORMAL_PRIORITY;
+			} else {
+				bugType = "OS_OPEN_STREAM_EXCEPTION_PATH";
+				priority = LOW_PRIORITY;
+			}
+
+			bugReporter.reportBug(new BugInstance(bugType, priority)
+				.addClassAndMethod(methodGen)
+				.addSourceLine(methodGen, stream.creationPoint.getHandle())
+			);
+		}
 	}
 
 	public static void main(String[] argv) throws Exception {
@@ -323,15 +293,7 @@ public class FindOpenStream implements Detector {
 
 			BasicBlock creationBlock = null;
 			InstructionHandle creationInstruction = null;
-/*
-			InstructionList il = methodGen.getInstructionList();
-			for (InstructionHandle handle = il.getStart(); handle != null; handle = handle.getNext()) {
-				if (handle.getPosition() == offset) {
-					creationInstruction = handle;
-					break;
-				}
-			}
-*/
+
 		blockLoop:
 			for (Iterator<BasicBlock> ii = cfg.blockIterator(); ii.hasNext(); ) {
 				BasicBlock basicBlock = ii.next();
