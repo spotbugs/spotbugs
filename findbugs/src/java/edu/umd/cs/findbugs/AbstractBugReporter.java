@@ -19,9 +19,9 @@
 
 package edu.umd.cs.findbugs;
 
+import edu.umd.cs.findbugs.ba.ClassNotFoundExceptionParser;
+
 import java.util.*;
-import java.util.regex.Pattern;
-import java.util.regex.Matcher;
 
 /**
  * An abstract class which provides much of the functionality
@@ -36,8 +36,6 @@ public abstract class AbstractBugReporter implements BugReporter {
 	private LinkedList<String> errorMessageList = new LinkedList<String>();
 	private List<BugReporterObserver> observerList = new LinkedList<BugReporterObserver>();
 	private ProjectStats projectStats = new ProjectStats();
-
-	private static final Pattern missingClassPattern = Pattern.compile("^.*while looking for class ([^:]*):.*$");
 
 	public void setErrorVerbosity(int level) {
 		this.verbosityLevel = level;
@@ -57,11 +55,12 @@ public abstract class AbstractBugReporter implements BugReporter {
 		String message = ex.getMessage();
 
 		// Try to decode the error message by extracting the class name.
-		// BCEL seems to report missing classes in a fairly consistent way.
-		Matcher matcher = missingClassPattern.matcher(message);
-		if (matcher.matches())
-			message = matcher.group(1);
+		String className = ClassNotFoundExceptionParser.getMissingClassName(ex);
+		if (className != null)
+			return className;
 
+		// Just return the entire message.
+		// It hopefully will still make sense to the user.
 		return message;
 	}
 
