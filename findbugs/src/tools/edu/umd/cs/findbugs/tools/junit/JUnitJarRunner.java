@@ -82,7 +82,7 @@ public class JUnitJarRunner {
 
 		ClassLoader cl = new URLClassLoader(urlList.toArray(new URL[0]));
 
-		Class testCaseClass = cl.loadClass("junit.framework.TestCase");
+		Class<?> testCaseClass = cl.loadClass("junit.framework.TestCase");
 
 		JarFile jarFile = new JarFile(jarFileName);
 		Enumeration e = jarFile.entries();
@@ -96,7 +96,7 @@ public class JUnitJarRunner {
 					continue;
 				System.out.println("Loading test class: " + className);
 				System.out.flush();
-				Class jarClass = cl.loadClass(className);
+				Class<?> jarClass = cl.loadClass(className);
 				if (testCaseClass.isAssignableFrom(jarClass))
 					suite.addTestSuite(jarClass);
 			}
