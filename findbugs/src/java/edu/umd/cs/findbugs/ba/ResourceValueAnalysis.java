@@ -47,7 +47,9 @@ public class ResourceValueAnalysis<Resource> extends FrameDataflowAnalysis<Resou
 	}
 
 	public ResourceValueFrame createFact() {
-		return new ResourceValueFrame(methodGen.getMaxLocals());
+		ResourceValueFrame fact = new ResourceValueFrame(methodGen.getMaxLocals());
+		fact.setTop();
+		return fact;
 	}
 
 	public void initEntryFact(ResourceValueFrame result) {
@@ -110,15 +112,20 @@ public class ResourceValueAnalysis<Resource> extends FrameDataflowAnalysis<Resou
 				Instruction lastInSource = lastInSourceHandle.getInstruction();
 				if (lastInSource instanceof IFNULL || lastInSource instanceof IFNONNULL) {
 					// Get the frame at the if statement
-					ResourceValueFrame frameAtIf = getFactAtLocation(new Location(lastInSourceHandle, source));
-					ResourceValue topValue = frameAtIf.getValue(frameAtIf.getNumSlots() - 1);
+					ResourceValueFrame startFrame = getStartFact(source);
+					if (startFrame.isValid()) {
+						// The source block has a valid start fact.
+						// That means it is safe to inspect the frame at the If instruction.
+						ResourceValueFrame frameAtIf = getFactAtLocation(new Location(lastInSourceHandle, source));
+						ResourceValue topValue = frameAtIf.getValue(frameAtIf.getNumSlots() - 1);
 
-					if (topValue.isInstance()) {
-						if ((lastInSource instanceof IFNULL && edgeType == IFCMP_EDGE) ||
-							(lastInSource instanceof IFNONNULL && edgeType == FALL_THROUGH_EDGE)) {
-							//System.out.println("**** making resource nonexistent on edge "+edge.getId());
-							tmpFact = modifyFrame(fact, tmpFact);
-							tmpFact.setStatus(ResourceValueFrame.NONEXISTENT);
+						if (topValue.isInstance()) {
+							if ((lastInSource instanceof IFNULL && edgeType == IFCMP_EDGE) ||
+								(lastInSource instanceof IFNONNULL && edgeType == FALL_THROUGH_EDGE)) {
+								//System.out.println("**** making resource nonexistent on edge "+edge.getId());
+								tmpFact = modifyFrame(fact, tmpFact);
+								tmpFact.setStatus(ResourceValueFrame.NONEXISTENT);
+							}
 						}
 					}
 				}
