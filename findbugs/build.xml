@@ -58,7 +58,7 @@
 			<classpath refid="findbugs.classpath"/>
 		</javac>
 		<!-- Copy codebase data files. -->
-		<copy todir="${classes.dir}" overwrite="true">
+		<copy todir="${classes.dir}">
 			<fileset dir="${src.dir}">
 				<include name="**/*.properties"/>
 				<include name="**/*.png"/>
