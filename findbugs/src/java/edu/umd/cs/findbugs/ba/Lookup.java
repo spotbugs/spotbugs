@@ -24,17 +24,48 @@ import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.*;
 import org.apache.bcel.generic.*;
 
+/**
+ * Facade for class hierarchy queries.
+ * These typically access the class hierarchy using
+ * the {@link Repository} class.  Callers should generally
+ * expect to handle ClassNotFoundException for when referenced
+ * classes can't be found.
+ *
+ * @author David Hovemeyer
+ */
 public class Lookup {
+	/**
+	 * Determine if method whose name and signature is specified
+	 * is a monitor wait operation.
+	 * @param methodName name of the method
+	 * @param methodSig signature of the method
+	 * @return true if the method is a monitor wait, false if not
+	 */
 	public static boolean isMonitorWait(String methodName, String methodSig) {
 		return methodName.equals("wait") &&
 			(methodSig.equals("()V") || methodSig.equals("(J)V") || methodSig.equals("(JI)V"));
 	}
 
+	/**
+	 * Determine if method whose name and signature is specified
+	 * is a monitor notify operation.
+	 * @param methodName name of the method
+	 * @param methodSig signature of the method
+	 * @return true if the method is a monitor notify, false if not
+	 */
 	public static boolean isMonitorNotify(String methodName, String methodSig) {
 		return (methodName.equals("notify") || methodName.equals("notifyAll")) &&
 			methodSig.equals("()V");
 	}
 
+	/**
+	 * Look up the method referenced by given InvokeInstruction.
+	 * This method does <em>not</em> look for implementations in
+	 * super or subclasses according to the virtual dispatch rules.
+	 * @param inv the InvokeInstruction
+	 * @param cpg the ConstantPoolGen used by the class the InvokeInstruction belongs to
+	 * @return the Method, or null if no such method is defined in the class
+	 */
 	public static Method findExactMethod(InvokeInstruction inv, ConstantPoolGen cpg) throws ClassNotFoundException {
 		String className = inv.getClassName(cpg);
 		String methodName = inv.getName(cpg);
@@ -51,6 +82,12 @@ public class Lookup {
 		return null;
 	}
 
+	/**
+	 * Find a field with given name defined in given class.
+	 * @param className the name of the class
+	 * @param fieldName the name of the field
+	 * @return the Field, or null if no such field could be found
+	 */
 	public static Field findField(String className, String fieldName) throws ClassNotFoundException {
 		JavaClass jclass = Repository.lookupClass(className);
 
@@ -91,6 +128,18 @@ public class Lookup {
 	}
 */
 
+	/**
+	 * Look up a field with given name and signature in given class,
+	 * returning it as an {@link XField XField} object.
+	 * If a field can't be found in the immediate class,
+	 * its superclass is search, and so forth.
+	 *
+	 * @param className name of the class through which the field
+	 *   is referenced
+	 * @param fieldName name of the field
+	 * @param fieldSig signature of the field
+	 * @return an XField object representing the field, or null if no such field could be found
+	 */
 	public static XField findXField(String className, String fieldName, String fieldSig)
 		throws ClassNotFoundException {
 
@@ -121,6 +170,14 @@ public class Lookup {
 		}
 	}
 
+	/**
+	 * Look up the field referenced by given FieldInstruction,
+	 * returning it as an {@link XField XField} object.
+	 * @param fins the FieldInstruction
+	 * @param cpg the ConstantPoolGen used by the class containing the instruction
+	 * @return an XField object representing the field, or null
+	 *   if no such field could be found
+	 */
 	public static XField findXField(FieldInstruction fins, ConstantPoolGen cpg)
 		throws ClassNotFoundException {
 
