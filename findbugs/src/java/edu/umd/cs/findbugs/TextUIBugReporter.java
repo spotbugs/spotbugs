@@ -20,8 +20,18 @@
 package edu.umd.cs.findbugs;
 
 import java.io.PrintStream;
+import java.util.HashMap;
 
 public abstract class TextUIBugReporter extends AbstractBugReporter {
+
+	// Map of category codes to abbreviations used in printBug()
+	private static final HashMap<String, String> categoryMap = new HashMap<String, String>();
+	static {
+		categoryMap.put("CORRECTNESS", "C "); // "C"orrectness
+		categoryMap.put("MT_CORRECTNESS", "M "); // "M"ultithreaded correctness
+		categoryMap.put("MALICIOUS_CODE", "V "); // malicious code "V"ulnerability
+		categoryMap.put("PERFORMANCE", "P "); // "P"erformance
+	}
 
 	protected PrintStream outputStream = System.out;
 
@@ -41,6 +51,14 @@ public abstract class TextUIBugReporter extends AbstractBugReporter {
 			outputStream.print("H ");
 			break;
 		}
+
+		BugPattern pattern = bugInstance.getBugPattern();
+		if (pattern != null) {
+			String categoryAbbrev = categoryMap.get(pattern.getCategory());
+			if (categoryAbbrev != null)
+				outputStream.print(categoryAbbrev);
+		}
+
 		SourceLineAnnotation line = 
 			bugInstance.getPrimarySourceLineAnnotation();
 		if (line == null) 

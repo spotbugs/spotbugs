@@ -686,6 +686,17 @@ public class BugInstance implements Comparable, XMLConvertible {
 		Element element = parent.addElement(ELEMENT_NAME)
 			.addAttribute("type", type)
 			.addAttribute("priority", String.valueOf(priority));
+
+		BugPattern pattern = getBugPattern();
+		if (pattern != null) {
+			// The bug abbreviation and pattern category are
+			// emitted into the XML for informational purposes only.
+			// (The information is redundant, but might be useful
+			// for processing tools that want to make sense of
+			// bug instances without looking at the plugin descriptor.)
+			element.addAttribute("abbrev", pattern.getAbbrev());
+			element.addAttribute("category", pattern.getCategory());
+		}
 		
 		if (!annotationText.equals("")) {
 			Element annotationElement = element.addElement("UserAnnotation");
