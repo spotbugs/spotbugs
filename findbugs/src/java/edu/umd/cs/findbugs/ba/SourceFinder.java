@@ -66,7 +66,7 @@ public class SourceFinder {
 	 */
 	public InputStream openSource(String packageName, String fileName) throws IOException {
 		SourceFile sourceFile = findSourceFile(packageName, fileName);
-		return new ByteArrayInputStream(sourceFile.getData());
+		return sourceFile.getInputStream();
 	}
 
 	/**
