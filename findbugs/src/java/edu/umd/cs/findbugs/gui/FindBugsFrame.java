@@ -30,11 +30,13 @@ public class FindBugsFrame extends javax.swing.JFrame {
     private static class MyCellRenderer extends DefaultTreeCellRenderer {
         private ImageIcon rootIcon;
         private ImageIcon projectIcon;
+        private ImageIcon mgIcon;
 
         public MyCellRenderer() {
             ClassLoader classLoader = this.getClass().getClassLoader();
             rootIcon = new ImageIcon(classLoader.getResource("edu/umd/cs/findbugs/gui/bug2.png"));
             projectIcon = new ImageIcon(classLoader.getResource("edu/umd/cs/findbugs/gui/gear.png"));
+            mgIcon = new ImageIcon(classLoader.getResource("edu/umd/cs/findbugs/gui/mg-3.png"));
         }
 
         public Component getTreeCellRendererComponent(JTree tree, Object value, boolean sel,
@@ -49,6 +51,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
                 setIcon(rootIcon);
             } else if (obj instanceof Project) {
                 setIcon(projectIcon);
+            } else if (obj instanceof AnalysisRun) {
+                setIcon(mgIcon);
             }
 
             return this;
@@ -309,6 +313,12 @@ public class FindBugsFrame extends javax.swing.JFrame {
         editProjectPanel.add(jSeparator2, gridBagConstraints);
 
         findBugsButton.setText("Find Bugs!");
+        findBugsButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                findBugsButtonActionPerformed(evt);
+            }
+        });
+
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 9;
@@ -399,6 +409,16 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
         pack();
     }//GEN-END:initComponents
+
+    private void findBugsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_findBugsButtonActionPerformed
+        Project project = getCurrentProject();
+        AnalysisRun analysisRun = new AnalysisRun(project);
+        DefaultTreeModel treeModel = (DefaultTreeModel) navigatorTree.getModel();
+        TreePath treePath = navigatorTree.getSelectionPath();
+        DefaultMutableTreeNode projectNode = (DefaultMutableTreeNode) treePath.getPath()[1];
+        treeModel.insertNodeInto(
+            new DefaultMutableTreeNode(analysisRun), projectNode, projectNode.getChildCount());
+    }//GEN-LAST:event_findBugsButtonActionPerformed
 
     private void browseSrcDirButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_browseSrcDirButtonActionPerformed
         JFileChooser chooser = new JFileChooser();
@@ -500,6 +520,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
         viewPanelLayout = (CardLayout) viewPanel.getLayout();
         navigatorTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 
+        // Add a tree selection listener to the navigator tree, so we can
+        // ensure that the view is always consistent with the current selection.
         navigatorTree.addTreeSelectionListener(new TreeSelectionListener() {
             public void valueChanged(TreeSelectionEvent e) {
                 navigatorTreeSelectionChanged(e);
@@ -507,7 +529,6 @@ public class FindBugsFrame extends javax.swing.JFrame {
         });
 
         DefaultTreeCellRenderer renderer = new DefaultTreeCellRenderer();
-        
         navigatorTree.setCellRenderer(new FindBugsFrame.MyCellRenderer());
 	
 	jarFileList.setModel(new DefaultListModel());
@@ -532,6 +553,9 @@ public class FindBugsFrame extends javax.swing.JFrame {
         } else if (nodeInfo instanceof Project) {
             synchProject((Project) nodeInfo);
             setView("EditProjectPanel");
+        } else if (nodeInfo instanceof AnalysisRun) {
+            // TODO: synch analysis run with bug tree
+            setView("BugTree");
         }
     }
   
