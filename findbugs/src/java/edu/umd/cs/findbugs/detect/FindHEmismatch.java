@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.detect;
 import edu.umd.cs.findbugs.*;
 import java.util.*;
+import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.*;
 import java.util.zip.*;
 import java.io.*;
@@ -29,6 +30,7 @@ public class FindHEmismatch extends BytecodeScanningDetector implements   Consta
    boolean hasFields = false;
    boolean hasHashCode = false;
    boolean hasEqualsObject = false;
+   boolean equalsMethodIsInstanceOfEquals = false;
    boolean hasCompareToObject = false;
    boolean hasEqualsSelf = false;
    boolean hasCompareToSelf = false;
@@ -40,29 +42,50 @@ public class FindHEmismatch extends BytecodeScanningDetector implements   Consta
    }
 
    public void visitAfter(JavaClass obj) {
-	try {
 	if (!obj.isClass()) return;
 	if (getDottedClassName().equals("java.lang.Object")) return;
 	int accessFlags = obj.getAccessFlags();
 	if ((accessFlags & ACC_INTERFACE) != 0) return;
 	String whereEqual = getDottedClassName();
 	if (!hasEqualsObject)  {
-		whereEqual = Lookup.findSuperImplementor(obj, "equals",
-					"(Ljava/lang/Object;)Z", bugReporter)
-			  .getClassName();
+		JavaClass we = Lookup.findSuperImplementor(obj, "equals",
+					"(Ljava/lang/Object;)Z", bugReporter);
+		if (we == null) whereEqual = "java.lang.Object";
+		else whereEqual = we.getClassName();
 		}
 	boolean usesDefaultEquals = whereEqual.equals("java.lang.Object");
 	String whereHashCode = getDottedClassName();
-	if (!hasHashCode)
-		whereHashCode = Lookup.findSuperImplementor(obj, "hashCode",
-					"()I", bugReporter)
-			  .getClassName();
+	if (!hasHashCode) {
+		JavaClass wh = Lookup.findSuperImplementor(obj, "hashCode",
+					"()I", bugReporter);
+		if (wh == null) whereHashCode = "java.lang.Object";
+		else whereHashCode = wh.getClassName();
+		}
 	boolean usesDefaultHashCode = whereHashCode.equals("java.lang.Object");
+	if (false && (usesDefaultEquals ||  usesDefaultHashCode)) {
+		try {
+		  if (Repository.implementationOf(obj, "java/util/Set")
+		    || Repository.implementationOf(obj, "java/util/List")
+		    || Repository.implementationOf(obj, "java/util/Map")) {
+		  // System.out.println(getDottedClassName() + " uses default hashCode or equals");
+		  }
+                } catch (ClassNotFoundException e) {
+			// e.printStackTrace();
+                }
+	}
+
 	if (!hasEqualsObject &&  hasEqualsSelf) {
+		
 		if (usesDefaultEquals) 
-		  bugReporter.reportBug(new BugInstance("EQ_SELF_USE_OBJECT", HIGH_PRIORITY).addClass(getDottedClassName()));
-		else
+		  bugReporter.reportBug(new BugInstance("EQ_SELF_USE_OBJECT", 
+				(usesDefaultHashCode || obj.isAbstract()) 
+				? NORMAL_PRIORITY : HIGH_PRIORITY).addClass(getDottedClassName()));
+		else {
+		  int priority = hasFields ? NORMAL_PRIORITY : LOW_PRIORITY;
+		  if (obj.isAbstract()) priority++;
+		  if (priority <= LOW_PRIORITY)
 		  bugReporter.reportBug(new BugInstance("EQ_SELF_NO_OBJECT", NORMAL_PRIORITY).addClass(getDottedClassName()));
+		}
 		}
 	/*
 	System.out.println("Class " + betterClassName);
@@ -90,24 +113,24 @@ public class FindHEmismatch extends BytecodeScanningDetector implements   Consta
 		  bugReporter.reportBug(new BugInstance("HE_HASHCODE_NO_EQUALS", LOW_PRIORITY). addClass(getDottedClassName()));
 		}
 	if (!hasHashCode && (hasEqualsObject ||  hasEqualsSelf))  {
-		if (usesDefaultHashCode) 
+		if (usesDefaultHashCode) {
+		  int priority = HIGH_PRIORITY;
+		  if (equalsMethodIsInstanceOfEquals) priority+= 2;
+		  else if (obj.isAbstract() || !hasEqualsObject) priority++;
 		  bugReporter.reportBug(new BugInstance("HE_EQUALS_USE_HASHCODE", 
-				obj.isAbstract() ? NORMAL_PRIORITY : HIGH_PRIORITY).addClass(getDottedClassName()));
+				priority ).addClass(getDottedClassName()));
+		  }
 		else {
-		  int priority = hasFields ? NORMAL_PRIORITY : LOW_PRIORITY;
+		  int priority = NORMAL_PRIORITY;
+		  if (hasFields) priority++;
 		  if (obj.isAbstract()) priority++;
+		  if (equalsMethodIsInstanceOfEquals) priority++;
 		  if (priority <= LOW_PRIORITY)
 		   bugReporter.reportBug(
 		    new BugInstance("HE_EQUALS_NO_HASHCODE", 
 			priority)
 		    .addClass(getDottedClassName()));
 		}
-		}
-	} catch (NullPointerException e) {
-		/*
-		System.err.println("That was strange. Error in doing HE check on " + betterClassName);
-		e.printStackTrace();
-		*/
 		}
 	}
    public void visit(JavaClass obj) {
@@ -118,6 +141,7 @@ public class FindHEmismatch extends BytecodeScanningDetector implements   Consta
 	hasCompareToSelf = false;
 	hasEqualsObject = false;
 	hasEqualsSelf = false;
+        equalsMethodIsInstanceOfEquals = false;
 	}
 
     public void visit(Field obj) {
@@ -130,17 +154,15 @@ public class FindHEmismatch extends BytecodeScanningDetector implements   Consta
 	if ((accessFlags & ACC_STATIC) != 0) return;
 	String name = obj.getName();
 	String sig = obj.getSignature();
-	/*
 	if ((accessFlags & ACC_ABSTRACT) != 0) {
 		if (name.equals("equals")
-			&& sig.equals("(L"+className+";)Z"))
-		  bugReporter.reportBug(new BugInstance("EQ_ABSTRACT_SELF", NORMAL_PRIORITY).addClass(betterClassName));
+			&& sig.equals("(L"+getClassName()+";)Z"))
+		  bugReporter.reportBug(new BugInstance("EQ_ABSTRACT_SELF", LOW_PRIORITY).addClass(getDottedClassName()));
 		else if (name.equals("compareTo")
-			&& sig.equals("(L"+className+";)I"))
-		  bugReporter.reportBug(new BugInstance("CO_ABSTRACT_SELF", NORMAL_PRIORITY).addClass(betterClassName));
-		
+			&& sig.equals("(L"+getClassName()+";)I"))
+		  bugReporter.reportBug(new BugInstance("CO_ABSTRACT_SELF", LOW_PRIORITY).addClass(getDottedClassName()));
+		return;
 		}
-	*/
 	boolean sigIsObject = sig.equals("(Ljava/lang/Object;)Z");
 	if (name.equals("hashCode")
 		&& sig.equals("()I")) {
@@ -148,7 +170,16 @@ public class FindHEmismatch extends BytecodeScanningDetector implements   Consta
 		// System.out.println("Found hashCode for " + betterClassName);
 		}
 	else if (name.equals("equals")) {
-		if (sigIsObject) hasEqualsObject = true;
+		if (sigIsObject) {
+			hasEqualsObject = true; 
+			Code code = obj.getCode();
+			byte [] codeBytes = code.getCode();
+			if (codeBytes.length == 5 &&
+				(codeBytes[1] & 0xff) == INSTANCEOF) {
+			equalsMethodIsInstanceOfEquals = true;
+				return;
+				}
+			}
 		else if (sig.equals("(L"+getClassName()+";)Z"))
 				hasEqualsSelf = true;
 		}
