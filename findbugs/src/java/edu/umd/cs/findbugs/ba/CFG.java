@@ -108,8 +108,6 @@ public class CFG implements Debug {
 		}
 
 		Edge edge = new Edge(source, dest, type);
-		if (VERIFY_INTEGRITY && edgeList.contains(edge))
-			throw new IllegalArgumentException("CFG already contains edge " + edge);
 
 		edgeList.add(edge);
 		source.addOutgoingEdge(edge);

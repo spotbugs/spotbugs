@@ -234,11 +234,7 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 			} else {
 				// Edge within the current subroutine
 				BasicBlock targetBlock = getBlock(target);
-
-				// Add only if no edge with same source and target already exists.
-				// (Switches can create multiple edges from source to target.)
-				if (cfg.lookupEdge(sourceBlock, targetBlock) == null)
-					addEdge(sourceBlock, targetBlock, edgeType);
+				addEdge(sourceBlock, targetBlock, edgeType);
 			}
 		}
 
