@@ -395,6 +395,7 @@ public class FindBugs implements Constants2, ExitCodes {
 	 */
 	private static class FindBugsCommandLine extends CommandLine {
 		private int bugReporterType = PRINTING_REPORTER;
+		private boolean xmlWithMessages = false;
 		private String stylesheet = null;
 		private Project project = new Project();
 		private boolean quiet = false;
@@ -444,7 +445,7 @@ public class FindBugs implements Constants2, ExitCodes {
 			return quiet;
 		}
 
-		protected void handleOption(String option) {
+		protected void handleOption(String option, String optionExtraPart) {
 			if (option.equals("-low"))
 				priorityThreshold = Detector.LOW_PRIORITY;
 			else if (option.equals("-medium"))
@@ -453,9 +454,15 @@ public class FindBugs implements Constants2, ExitCodes {
 				priorityThreshold = Detector.HIGH_PRIORITY;
 			else if (option.equals("-sortByClass"))
 				bugReporterType = SORTING_REPORTER;
-			else if (option.equals("-xml"))
+			else if (option.equals("-xml")) {
 				bugReporterType = XML_REPORTER;
-			else if (option.equals("-emacs"))
+				if (!optionExtraPart.equals("")) {
+					if (optionExtraPart.equals("withMessages"))
+						xmlWithMessages = true;
+					else
+						throw new IllegalArgumentException("Unknown option: -xml:" + optionExtraPart);
+				}
+			} else if (option.equals("-emacs"))
 				bugReporterType = EMACS_REPORTER;
 			else if (option.equals("-xdocs"))
 				bugReporterType = XDOCS_REPORTER;
@@ -562,7 +569,11 @@ public class FindBugs implements Constants2, ExitCodes {
 				textuiBugReporter = new SortingBugReporter();
 				break;
 			case XML_REPORTER:
-				textuiBugReporter = new XMLBugReporter(project);
+				{
+					XMLBugReporter xmlBugReporter = new XMLBugReporter(project);
+					xmlBugReporter.setAddMessages(xmlWithMessages);
+					textuiBugReporter = xmlBugReporter;
+				}
 				break;
 			case EMACS_REPORTER:
 				textuiBugReporter = new EmacsBugReporter();

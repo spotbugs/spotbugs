@@ -19,17 +19,55 @@
 
 package edu.umd.cs.findbugs;
 
+import edu.umd.cs.findbugs.xml.Dom4JXMLOutput;
 
+import org.dom4j.Document;
+import org.dom4j.DocumentFactory;
+import org.dom4j.io.OutputFormat;
+import org.dom4j.io.XMLWriter;
 
+/**
+ * Report warnings as an XML document.
+ */
 public class XMLBugReporter extends BugCollectionBugReporter {
+	private boolean addMessages;
+
 	public XMLBugReporter(Project project) {
 		super(project);
+		this.addMessages = false;
+	}
+
+	public void setAddMessages(boolean enable) {
+		this.addMessages = enable;
 	}
 
 	public void finish() {
 		try {
 			generateSummary();
-			getBugCollection().writeXML(outputStream, getProject());
+			if (!addMessages) {
+				// Plain XML output.
+				// Write XML directly to the output stream.
+				getBugCollection().writeXML(outputStream, getProject());
+			} else {
+				// XML output with messages.
+				// This requires us to build a dom4j tree,
+				// add the messages to it, and then
+				// write the tree to the output stream.
+
+				// Build tree
+				DocumentFactory docFactory = new DocumentFactory();
+				Document document = docFactory.createDocument();
+				Dom4JXMLOutput treeBuilder = new Dom4JXMLOutput(document);
+				getBugCollection().writeXML(treeBuilder, getProject());
+
+				// Add messages
+				AddMessages addMessages = new AddMessages(getBugCollection(), document);
+				addMessages.execute();
+
+				// Write to output stream
+				XMLWriter writer = new XMLWriter(outputStream, OutputFormat.createPrettyPrint());
+				writer.write(document);
+			}
 		} catch (Exception e) {
 			logError("Couldn't write XML output: " + e.toString());
 		}

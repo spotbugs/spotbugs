@@ -94,6 +94,13 @@ public abstract class CommandLine {
 			if (!option.startsWith("-"))
 				break;
 
+			String optionExtraPart = "";
+			int colon = option.indexOf(':');
+			if (colon >= 0) {
+				optionExtraPart = option.substring(colon + 1);
+				option = option.substring(0, colon);
+			}
+
 			if (optionDescriptionMap.get(option) == null)
 				throw new IllegalArgumentException("Unknown option: " + option);
 
@@ -105,7 +112,7 @@ public abstract class CommandLine {
 				handleOptionWithArgument(option, argument);
 				++arg;
 			} else {
-				handleOption(option);
+				handleOption(option, optionExtraPart);
 				++arg;
 			}
 		}
@@ -116,9 +123,13 @@ public abstract class CommandLine {
 	/**
 	 * Callback method for handling an option.
 	 *
-	 * @param option the option
+	 * @param option          the option
+	 * @param optionExtraPart the "extra" part of the option (everything after the
+	 *                        colon: e.g., "withMessages" in "-xml:withMessages");
+	 *                        the empty string if there was no extra part
 	 */
-	protected abstract void handleOption(String option) throws IOException;
+	protected abstract void handleOption(String option, String optionExtraPart)
+		throws IOException;
 
 	/**
 	 * Callback method for handling an option with an argument.
