@@ -34,7 +34,7 @@ import java.util.*;
 public class DetectorFactoryCollection {
 	private ArrayList<DetectorFactory> factoryList = new ArrayList<DetectorFactory>();
 	private HashMap<String, DetectorFactory> factoriesByName = new HashMap<String, DetectorFactory>();
-	private HashMap<String, DetectorFactory> factoriesByClassName =
+	private HashMap<String, DetectorFactory> factoriesByDetectorClassName =
 		new HashMap<String, DetectorFactory>();
 
 	private static DetectorFactoryCollection theInstance;
@@ -98,7 +98,7 @@ public class DetectorFactoryCollection {
 	 *         that class name
 	 */
 	public DetectorFactory getFactoryByClassName(String className) {
-		return factoriesByClassName.get(className);
+		return factoriesByDetectorClassName.get(className);
 	}
 
 	/**
@@ -130,7 +130,7 @@ public class DetectorFactoryCollection {
 		String detectorName = factory.getShortName();
 		factoryList.add(factory);
 		factoriesByName.put(detectorName, factory);
-		factoriesByClassName.put(factory.getClass().getName(), factory);
+		factoriesByDetectorClassName.put(factory.getFullName(), factory);
 	}
 
 	/**
