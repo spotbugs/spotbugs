@@ -188,7 +188,7 @@
          <arg value="-props"/> 
       </java>
       <loadproperties srcFile="${release.prop.file}" />
-      <property name="release.dir" value="${build.dir}/findbugs-${release.number}" />
+      <property name="release.dir" value="${build.dir}/bin/findbugs-${release.number}" />
     </target>
 
     <!-- Target to generate documentation files from their sources. -->
@@ -264,7 +264,7 @@
          (code and docs). -->
     <target name="release" depends="buildAll">
        <copy todir="${release.dir}/lib">
-         <fileset dir="${jar.dir}" includes="**/*.jar"/>
+         <fileset dir="${jar.dir}" includes="**/*.jar" excludes="plastic.jar"  />
        </copy>
        <copy todir="${release.dir}/plugin">
          <fileset dir="${plugin.dir}" includes="**/*.jar"/>
@@ -278,6 +278,40 @@
        <chmod file="${release.dir}/bin/findbugs" perm="a+rx"/>
        <copy file="LICENSE.txt" todir="${release.dir}" />
        <copy file="README.txt" todir="${release.dir}" />
+    </target>
+
+    <!-- Create binary distribution files (.tar.gz and .zip) -->
+    <target name="bindist" depends="release">
+      <mkdir dir="${build.dir}/bin" />
+      <tar tarfile="${build.dir}/bin/findbugs-${release.number}.tar.gz"
+           basedir="${build.dir}/bin"
+           includes="findbugs-${release.number}/**"
+           compression="gzip" />
+      <zip destfile="${build.dir}/bin/findbugs-${release.number}.zip"
+           basedir="${build.dir}/bin"
+           includes="findbugs-${release.number}/**" />
+    </target>
+
+    <!-- Create a source distribution. -->
+    <target name="srcdist" depends="release" >
+       <mkdir dir="${build.dir}/src" />
+       <delete dir="${build.dir}/src/findbugs-${release.number}" />
+
+       <!-- Export the code from CVS. -->
+       <cvs cvsRoot="/fs/pugh/p/cvs"
+            dest="${build.dir}/src"
+            command="export -r HEAD -d findbugs-${release.number} findbugsAll" />
+
+       <!-- Copy generated documentation -->
+       <copy todir="${build.dir}/src/findbugs-${release.number}/doc" >
+         <fileset dir="${doc.dir}" />
+       </copy>
+
+       <!-- Put it in a tarball. -->
+       <tar tarfile="${build.dir}/src/findbugs-${release.number}-source.tar.gz"
+            basedir="${build.dir}/src"
+            compression="gzip"
+            includes="findbugs-${release.number}/**" />
     </target>
 
     <!-- Update the FindBugs web page. -->
