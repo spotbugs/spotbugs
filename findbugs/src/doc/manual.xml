@@ -133,6 +133,18 @@ to simply run the command <command>findbugs</command> from the command prompt.
 (On Windows, you can set the
 <envar>FINDBUGS_HOME</envar> environment variable to avoid having to use the
 <arg>-home</arg> option to the wrapper script.)
+<important>
+<title>Specifying &FBHome; on Windows</title>
+<para>
+  If you install &FindBugs; in a directory which contains space characters
+  then you must put quote characters around the value you pass using the
+  <arg>-home</arg> option.  For example:
+  <screen>
+    <prompt>C:\My Directory> </prompt><command>set PATH=C:\Program Files\findbugs-@VERSION@\bin;%PATH%</command>
+    <prompt>C:\My Directory> </prompt><command>findbugs -home "C:\Program Files\findbugs-@VERSION@"</command>
+  </screen>
+</para>
+</important>
 </para>
 
 </sect1>
