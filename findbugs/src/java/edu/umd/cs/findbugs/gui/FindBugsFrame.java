@@ -444,8 +444,10 @@ public class FindBugsFrame extends javax.swing.JFrame {
         JFileChooser chooser = new JFileChooser();
         chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         int rc = chooser.showDialog(this, "Add source directory");
-        if (rc == JFileChooser.APPROVE_OPTION)
+        if (rc == JFileChooser.APPROVE_OPTION) {
             srcDirTextField.setText(chooser.getSelectedFile().getPath());
+	    addSourceDirToList();
+	}
     }//GEN-LAST:event_browseSrcDirButtonActionPerformed
 
     private void srcDirTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_srcDirTextFieldActionPerformed
@@ -464,8 +466,10 @@ public class FindBugsFrame extends javax.swing.JFrame {
         };
         chooser.setFileFilter(filter);
         int rc = chooser.showDialog(this, "Add Jar file");
-        if (rc == JFileChooser.APPROVE_OPTION)
+        if (rc == JFileChooser.APPROVE_OPTION) {
             jarNameTextField.setText(chooser.getSelectedFile().getPath());
+	    addJarToList();
+	}
     }//GEN-LAST:event_browseJarButtonActionPerformed
 
     private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
