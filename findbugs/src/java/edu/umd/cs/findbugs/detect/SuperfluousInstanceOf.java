@@ -24,6 +24,7 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.visitclass.Constants2;
+import edu.umd.cs.findbugs.visitclass.LVTHelper;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
@@ -63,6 +64,7 @@ public class SuperfluousInstanceOf extends BytecodeScanningDetector implements C
 			super.visit(obj);
 	}
 	
+	
 	public void sawOpcode(int seen) {
 		switch (state) {
 			case SEEN_NOTHING:
@@ -78,17 +80,19 @@ public class SuperfluousInstanceOf extends BytecodeScanningDetector implements C
 			case SEEN_ALOAD:
 				try {
 					if (seen == INSTANCEOF) {
-						LocalVariable lv = varTable.getLocalVariable(register);
-						String objSignature = lv.getSignature();
-						if (objSignature.charAt(0) == 'L') {
-							objSignature = objSignature.substring(1, objSignature.length()-1).replace('/', '.');
-							String clsSignature = getDottedClassConstantOperand();
-							
-							if (clsSignature.charAt(0) != '[') {
-								if (org.apache.bcel.Repository.instanceOf( objSignature, clsSignature )) {
-									bugReporter.reportBug(new BugInstance(this, "SIO_SUPERFLUOUS_INSTANCEOF", LOW_PRIORITY)
-							        	.addClassAndMethod(this)
-							        	.addSourceLine(this));
+						LocalVariable lv = LVTHelper.getLocalVariableAtPC(varTable, register, getPC());
+						if (lv != null) {
+							String objSignature = lv.getSignature();
+							if (objSignature.charAt(0) == 'L') {
+								objSignature = objSignature.substring(1, objSignature.length()-1).replace('/', '.');
+								String clsSignature = getDottedClassConstantOperand();
+								
+								if (clsSignature.charAt(0) != '[') {
+									if (org.apache.bcel.Repository.instanceOf( objSignature, clsSignature )) {
+										bugReporter.reportBug(new BugInstance(this, "SIO_SUPERFLUOUS_INSTANCEOF", LOW_PRIORITY)
+								        	.addClassAndMethod(this)
+								        	.addSourceLine(this));
+									}
 								}
 							}
 						}
