@@ -295,6 +295,7 @@
          <filterset>
             <filter token="VERSION" value="${release.number}" />
             <filter token="RELEASE_DATE" value="${release.date}" />
+            <filter token="ECLIPSE_UI_VERSION" value="${eclipse.ui.version}" />
             <filter token="HTML_XSL_STYLESHEET" value="${html.xsl.stylesheet}" />
         </filterset>  
       </copy>
