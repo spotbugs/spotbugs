@@ -421,7 +421,7 @@ It is a fast detector.
   <Detector class="edu.umd.cs.findbugs.detect.FindBugsSummaryStats">
     <Details>
 <![CDATA[
-<p> This dectector just collects summary statistics information about the analysis process. 
+<p> This detector just collects summary statistics information about the analysis process. 
 ]]>
     </Details>
   </Detector>
@@ -679,7 +679,7 @@ to use Object.clone(), which always returns an object of the correct type.
   </BugPattern>
   <BugPattern type="CO_SELF_NO_OBJECT">
     <ShortDescription>Covariant compareTo() method defined</ShortDescription>
-    <LongDescription>{0} defines comparesTo({0}) method but not comparesTo(Object)</LongDescription>
+    <LongDescription>{0} defines compareTo({0}) method but not compareTo(Object)</LongDescription>
     <Details>
 <![CDATA[
   <p> This class defines a covariant version of <code>compareTo()</code>.&nbsp;
@@ -905,7 +905,7 @@ using the <code>equals</code> method instead.
     <LongDescription>Questionable use of non-short-circuit logic in {1}</LongDescription>
     <Details>
 <![CDATA[
-  <p> THis code seems to be using non-short-circuit logic (e.g., &amp;
+  <p> This code seems to be using non-short-circuit logic (e.g., &amp;
 or |) 
 rather than short-circuit logic (&amp;&amp; or ||).
 Non-short-circuit logic causes both sides of the expression
@@ -1577,7 +1577,7 @@ to null. Two types of redundant comparison are reported:
 </ul>
 <p>
 In either case, the result of the comparison will always be the same at
-runtime.  This is likely to inidicate a logic error in the method.
+runtime.  This is likely to indicate a logic error in the method.
 Often, it means that the reference was dereferenced first, and then
 tested for null; this can happen because a method was changed without
 the programmer realizing that the dereferenced value could be null.
@@ -1699,7 +1699,7 @@ Such assignments are useless, and may indicate a logic error or typo.
   </BugPattern>
 
   <BugPattern type="LI_LAZY_INIT_INSTANCE">
-    <ShortDescription>Incorrect lazy initalization of instance field</ShortDescription>
+    <ShortDescription>Incorrect lazy initialization of instance field</ShortDescription>
     <LongDescription>Incorrect lazy initialization of instance field {2} in {1}</LongDescription>
     <Details>
 <![CDATA[
@@ -1715,7 +1715,7 @@ For more information, see the
   </BugPattern>
 
   <BugPattern type="LI_LAZY_INIT_STATIC">
-    <ShortDescription>Incorrect lazy initalization of static field</ShortDescription>
+    <ShortDescription>Incorrect lazy initialization of static field</ShortDescription>
     <LongDescription>Incorrect lazy initialization of static field {2} in {1}</LongDescription>
     <Details>
 <![CDATA[
