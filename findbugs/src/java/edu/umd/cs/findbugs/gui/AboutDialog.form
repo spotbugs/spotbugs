@@ -34,6 +34,9 @@
               <Properties>
                 <Property name="editable" type="boolean" value="false"/>
               </Properties>
+              <Events>
+                <EventHandler event="hyperlinkUpdate" listener="javax.swing.event.HyperlinkListener" parameters="javax.swing.event.HyperlinkEvent" handler="editorPaneHyperlinkUpdate"/>
+              </Events>
             </Component>
           </SubComponents>
         </Container>
@@ -52,6 +55,9 @@
               <Properties>
                 <Property name="editable" type="boolean" value="false"/>
               </Properties>
+              <Events>
+                <EventHandler event="hyperlinkUpdate" listener="javax.swing.event.HyperlinkListener" parameters="javax.swing.event.HyperlinkEvent" handler="editorPaneHyperlinkUpdate"/>
+              </Events>
             </Component>
           </SubComponents>
         </Container>
@@ -70,6 +76,9 @@
               <Properties>
                 <Property name="editable" type="boolean" value="false"/>
               </Properties>
+              <Events>
+                <EventHandler event="hyperlinkUpdate" listener="javax.swing.event.HyperlinkListener" parameters="javax.swing.event.HyperlinkEvent" handler="editorPaneHyperlinkUpdate"/>
+              </Events>
             </Component>
           </SubComponents>
         </Container>
