@@ -100,10 +100,11 @@ public class BugInstance {
 	 * @param className name of the class containing the field
 	 * @param fieldName the name of the field
 	 * @param fieldSig type signature of the field
+	 * @param isStatic whether or not the field is static
 	 * @return this object
 	 */
-	public BugInstance addField(String className, String fieldName, String fieldSig) {
-		addField(new FieldAnnotation(className, fieldName, fieldSig));
+	public BugInstance addField(String className, String fieldName, String fieldSig, boolean isStatic) {
+		addField(new FieldAnnotation(className, fieldName, fieldSig, isStatic));
 		return this;
 	}
 
@@ -191,10 +192,20 @@ public class BugInstance {
 	 * @return this object
 	 */
 	public BugInstance addReferencedField(DismantleBytecode visitor) {
-		String className = visitor.getBetterClassConstant();
-		String fieldName = visitor.getNameConstant();
-		String fieldSig = visitor.getBetterSigConstant();
-		addField(className, fieldName, fieldSig);
+		FieldAnnotation f = FieldAnnotation.fromReferencedField(visitor);
+		addField(f);
+		return this;
+	}
+
+	/**
+	 * Add a field annotation for the field which is being visited by
+	 * given visitor.
+	 * @param visitor the visitor
+	 * @return this object
+	 */
+	public BugInstance addVisitedField(BetterVisitor visitor) {
+		FieldAnnotation f = FieldAnnotation.fromVisitedField(visitor);
+		addField(f);
 		return this;
 	}
 

@@ -10,6 +10,7 @@ public class FindReturnRef extends BytecodeScanningDetector implements   Constan
     String nameOnStack;
     String classNameOnStack;
     String sigOnStack;
+    boolean fieldIsStatic;
     private BugReporter bugReporter;
 
     public FindReturnRef(BugReporter bugReporter) {
@@ -50,6 +51,7 @@ public class FindReturnRef extends BytecodeScanningDetector implements   Constan
 		nameOnStack = nameConstant;
 		classNameOnStack = betterClassConstant;
 		sigOnStack = sigConstant;
+		fieldIsStatic = false;
 		// System.out.println("Saw getfield");
 		return;
 		}
@@ -59,6 +61,7 @@ public class FindReturnRef extends BytecodeScanningDetector implements   Constan
 		nameOnStack = nameConstant;
 		classNameOnStack = betterClassConstant;
 		sigOnStack = sigConstant;
+		fieldIsStatic = true;
 		return;
 		}
 	thisOnTOS = false;
@@ -69,7 +72,7 @@ public class FindReturnRef extends BytecodeScanningDetector implements   Constan
 		) {
 			bugReporter.reportBug(new BugInstance(staticMethod ? "MS_EXPOSE_REP" : "EI_EXPOSE_REP", NORMAL_PRIORITY)
 				.addClassAndMethod(this)
-				.addField(classNameOnStack, nameOnStack, sigOnStack));
+				.addField(classNameOnStack, nameOnStack, sigOnStack, fieldIsStatic));
 		}
 
 	fieldOnTOS = false;

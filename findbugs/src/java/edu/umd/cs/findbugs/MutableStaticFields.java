@@ -185,7 +185,7 @@ public class MutableStaticFields extends BytecodeScanningDetector implements   C
 
 	bugReporter.reportBug(new BugInstance(bugType, NORMAL_PRIORITY)
 		.addClass(className)
-		.addField(className, f.name, f.signature));
+		.addField(className, f.name, f.signature, true));
 
 	}
 	}

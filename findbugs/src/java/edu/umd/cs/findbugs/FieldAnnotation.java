@@ -10,8 +10,9 @@ import edu.umd.cs.pugh.visitclass.DismantleBytecode;
  * @author David Hovemeyer
  */
 public class FieldAnnotation extends PackageMemberAnnotation implements Comparable {
-	public String fieldName;
-	public String fieldSig;
+	private String fieldName;
+	private String fieldSig;
+	private boolean isStatic;
 
 	/**
 	 * Constructor.
@@ -19,10 +20,11 @@ public class FieldAnnotation extends PackageMemberAnnotation implements Comparab
 	 * @param fieldName the name of the field
 	 * @param fieldSig the type signature of the field
 	 */
-	public FieldAnnotation(String className, String fieldName, String fieldSig) {
+	public FieldAnnotation(String className, String fieldName, String fieldSig, boolean isStatic) {
 		super(className);
 		this.fieldName = fieldName;
 		this.fieldSig = fieldSig;
+		this.isStatic = isStatic;
 	}
 
 	/**
@@ -32,7 +34,8 @@ public class FieldAnnotation extends PackageMemberAnnotation implements Comparab
 	 * @return the FieldAnnotation object
 	 */
 	public static FieldAnnotation fromVisitedField(BetterVisitor visitor) {
-		return new FieldAnnotation(visitor.getBetterClassName(), visitor.getFieldName(), visitor.getFieldSig());
+		return new FieldAnnotation(visitor.getBetterClassName(), visitor.getFieldName(), visitor.getFieldSig(),
+			visitor.getFieldIsStatic());
 	}
 
 	/**
@@ -43,7 +46,8 @@ public class FieldAnnotation extends PackageMemberAnnotation implements Comparab
 	 * @return the FieldAnnotation object
 	 */
 	public static FieldAnnotation fromReferencedField(DismantleBytecode visitor) {
-		return new FieldAnnotation(visitor.getBetterClassConstant(), visitor.getNameConstant(), visitor.getSigConstant());
+		return new FieldAnnotation(visitor.getBetterClassConstant(), visitor.getNameConstant(), visitor.getSigConstant(),
+			visitor.getRefFieldIsStatic());
 	}
 
 	/**
@@ -58,6 +62,13 @@ public class FieldAnnotation extends PackageMemberAnnotation implements Comparab
 	 */
 	public String getFieldSignature() {
 		return fieldSig;
+	}
+
+	/**
+	 * Return whether or not the field is static.
+	 */
+	public boolean isStatic() {
+		return isStatic;
 	}
 
 	public void accept(BugAnnotationVisitor visitor) {

@@ -71,10 +71,9 @@ sawSerialVersionUID = false;
 	// System.out.println("Saw " + betterClassName + "." + fieldName);
 	int flags = obj.getAccessFlags();
 	if ((flags & ACC_STATIC) == 0) {
-//		bugReporter.reportBug(BugInstance.inClass("SE_NONSTATIC_SERIALVERSIONID", UNKNOWN_PRIORITY, this));
 		bugReporter.reportBug(new BugInstance("SE_NONSTATIC_SERIALVERSIONID", NORMAL_PRIORITY)
 			.addClass(this)
-			.addField(FieldAnnotation.fromVisitedField(this)));
+			.addVisitedField(this));
 		return;
 		}
 	sawSerialVersionUID = true;
