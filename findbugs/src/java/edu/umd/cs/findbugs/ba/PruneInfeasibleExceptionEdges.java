@@ -96,8 +96,9 @@ public class PruneInfeasibleExceptionEdges implements EdgeTypes {
 				for (Iterator<Edge> j = cfg.outgoingEdgeIterator(basicBlock); j.hasNext(); ) {
 					Edge edge = j.next();
 					if (edge.getType() == HANDLED_EXCEPTION_EDGE) {
-						if (!reachable(edge, thrownExceptionSet))
+						if (!reachable(edge, thrownExceptionSet)) {
 							deletedEdgeSet.add(edge);
+						}
 					}
 				}
 
@@ -189,6 +190,9 @@ public class PruneInfeasibleExceptionEdges implements EdgeTypes {
 
 	private boolean reachable(Edge edge, Set<ObjectType> thrownExceptionSet)
 		throws ClassNotFoundException {
+
+		if (DEBUG) System.out.println("Checking reachability of edge:\n\t" + edge);
+
 		BasicBlock handlerBlock = edge.getDest();
 		CodeExceptionGen handler = handlerBlock.getExceptionGen();
 		ObjectType catchType = handler.getCatchType();
@@ -211,18 +215,24 @@ public class PruneInfeasibleExceptionEdges implements EdgeTypes {
 
 			String thrownClassName = SignatureConverter.convert(thrownException.getSignature());
 
+			if (DEBUG) System.out.println("\texception type " + thrownClassName + ", catch type " + catchClassName);
+
 			if (Repository.instanceOf(thrownClassName, catchClassName)) {
 				// The thrown exception is a subtype of the catch type,
 				// so this exception will DEFINITELY be caught by
 				// this handler.
+				if (DEBUG) System.out.println("\tException is subtype of catch type: will definitely catch");
 				reachable = true;
 				i.remove();
 			} else if (Repository.instanceOf(catchClassName, thrownClassName)) {
 				// The thrown exception is a supertype of the catch type,
 				// so it MIGHT get caught by this handler.
+				if (DEBUG) System.out.println("\tException is supertype of catch type: might catch");
 				reachable = true;
 			}
 		}
+
+		if (DEBUG) System.out.println(reachable ? "\tReachable" : "\tNot reachable");
 
 		return reachable;
 	}
