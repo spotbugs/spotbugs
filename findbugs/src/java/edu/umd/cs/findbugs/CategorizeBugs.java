@@ -24,6 +24,8 @@ public class CategorizeBugs {
 			System.exit(1);
 		}
 
+		DetectorFactoryCollection.instance(); // load plugins
+
 		BugCollection bugCollection = new SortedBugCollection();
 
 		bugCollection.readXML(argv[0], new Project(), new HashMap<String, String>());
