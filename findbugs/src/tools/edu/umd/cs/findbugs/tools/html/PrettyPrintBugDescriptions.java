@@ -58,7 +58,7 @@ public class PrettyPrintBugDescriptions extends PlainPrintBugDescriptions {
 		PrintStream out = getPrintStream();
 
 		out.println(
-			"<p> This document lists the bug patterns that are reported by\n" +
+			"<p> This document lists the standard bug patterns that are reported by\n" +
 			"<a href=\"" + Version.WEBSITE + "\">FindBugs</a>.&nbsp; Note that some of\n" +
 			"these bug patterns may be experimental or disabled by default"
 		);
