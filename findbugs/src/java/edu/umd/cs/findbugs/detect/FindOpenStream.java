@@ -194,7 +194,7 @@ public class FindOpenStream extends ResourceTrackingDetector<Stream, StreamResou
 		
 	public void analyzeMethod(ClassContext classContext, Method method,
 		StreamResourceTracker resourceTracker,
-		Map<Location, Stream> locationToResourceMap)
+		ResourceCollection<Stream> resourceCollection)
 		throws CFGBuilderException, DataflowAnalysisException {
 
 		if (isMainMethod(method)) return;
@@ -204,9 +204,9 @@ public class FindOpenStream extends ResourceTrackingDetector<Stream, StreamResou
 		// Set precomputed map of Locations to Stream creation points.
 		// That way, the StreamResourceTracker won't have to
 		// repeatedly try to figure out where Streams are created.
-		resourceTracker.setLocationToStreamMap(locationToResourceMap);
+		resourceTracker.setResourceCollection(resourceCollection);
 
-		super.analyzeMethod(classContext, method, resourceTracker, locationToResourceMap);
+		super.analyzeMethod(classContext, method, resourceTracker, resourceCollection);
 
 		JavaClass javaClass = classContext.getJavaClass();
 		MethodGen methodGen = classContext.getMethodGen(method);

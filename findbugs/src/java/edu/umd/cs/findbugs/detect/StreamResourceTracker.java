@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import edu.umd.cs.findbugs.ResourceCollection;
+
 import edu.umd.cs.findbugs.ba.BasicBlock;
 import edu.umd.cs.findbugs.ba.Hierarchy;
 import edu.umd.cs.findbugs.ba.Location;
@@ -55,7 +57,8 @@ import org.apache.bcel.generic.TypedInstruction;
 public class StreamResourceTracker implements ResourceTracker<Stream> {
 	private StreamFactory[] streamFactoryList;
 	private RepositoryLookupFailureCallback lookupFailureCallback;
-	private Map<Location, Stream> locationToResourceMap;
+	//private Map<Location, Stream> locationToResourceMap;
+	private ResourceCollection<Stream> resourceCollection;
 
 	/**
 	 * Set of all locations where any stream is opened in the
@@ -86,10 +89,10 @@ public class StreamResourceTracker implements ResourceTracker<Stream> {
 	}
 
 	/**
-	 * Set precomputed map of Locations to Stream creation points.
+	 * Set the precomputed ResourceCollection for the method.
 	 */
-	public void setLocationToStreamMap(Map<Location, Stream> locationToResourceMap) {
-		this.locationToResourceMap = locationToResourceMap;
+	public void setResourceCollection(ResourceCollection<Stream> resourceCollection) {
+		this.resourceCollection = resourceCollection;
 	}
 
 	/**
@@ -179,9 +182,10 @@ public class StreamResourceTracker implements ResourceTracker<Stream> {
 		ConstantPoolGen cpg) {
 
 		// Use precomputed map of Locations to Stream creations,
-		// if present
-		if (locationToResourceMap != null)
-			return locationToResourceMap.get(new Location(handle, basicBlock));
+		// if present.  Note that we don't care about preexisting
+		// resources here.
+		if (resourceCollection != null)
+			return resourceCollection.getCreatedResource(new Location(handle, basicBlock));
 
 		Instruction ins = handle.getInstruction();
 		if (!(ins instanceof TypedInstruction))

@@ -96,12 +96,12 @@ public abstract class ResourceTrackingDetector<Resource, ResourceTrackerType ext
 			try {
 				ResourceTrackerType resourceTracker = getResourceTracker(classContext, method);
 
-				Map<Location, Resource> locationToResourceMap =
-					buildLocationToResourceMap(classContext, method, resourceTracker);
-				if (locationToResourceMap.isEmpty())
+				ResourceCollection<Resource> resourceCollection =
+					buildResourceCollection(classContext, method, resourceTracker);
+				if (resourceCollection.isEmpty())
 					continue;
 
-				analyzeMethod(classContext, method, resourceTracker, locationToResourceMap);
+				analyzeMethod(classContext, method, resourceTracker, resourceCollection);
 			} catch (CFGBuilderException e) {
 				bugReporter.logError(e.toString());
 			} catch (DataflowAnalysisException e) {
@@ -111,11 +111,11 @@ public abstract class ResourceTrackingDetector<Resource, ResourceTrackerType ext
 
 	}
 
-	private Map<Location, Resource> buildLocationToResourceMap(ClassContext classContext,
+	private ResourceCollection<Resource> buildResourceCollection(ClassContext classContext,
 		Method method, ResourceTrackerType resourceTracker)
 		throws CFGBuilderException, DataflowAnalysisException {
 
-		Map<Location, Resource> locationToResourceMap = new HashMap<Location, Resource>();
+		ResourceCollection<Resource> resourceCollection = new ResourceCollection<Resource>();
 
 		CFG cfg = classContext.getCFG(method);
 		ConstantPoolGen cpg = classContext.getConstantPoolGen();
@@ -125,14 +125,14 @@ public abstract class ResourceTrackingDetector<Resource, ResourceTrackerType ext
 			Resource resource = resourceTracker.isResourceCreation(location.getBasicBlock(),
 				location.getHandle(), cpg);
 			if (resource != null)
-				locationToResourceMap.put(location, resource);
+				resourceCollection.addCreatedResource(location, resource);
 		}
 
-		return locationToResourceMap;
+		return resourceCollection;
 	}
 
 	public void analyzeMethod(ClassContext classContext, Method method,
-		ResourceTrackerType resourceTracker, Map<Location, Resource> locationToResourceMap)
+		ResourceTrackerType resourceTracker, ResourceCollection<Resource> resourceCollection)
 		throws CFGBuilderException, DataflowAnalysisException {
 
 		MethodGen methodGen = classContext.getMethodGen(method);
@@ -141,16 +141,9 @@ public abstract class ResourceTrackingDetector<Resource, ResourceTrackerType ext
 
 		if (DEBUG) System.out.println(SignatureConverter.convertMethodSignature(methodGen));
 
-		for (Iterator<Map.Entry<Location, Resource>> i = locationToResourceMap.entrySet().iterator();
-			i.hasNext(); ) {
-			Map.Entry<Location, Resource> entry = i.next();
+		for (Iterator<Resource> i = resourceCollection.resourceIterator(); i.hasNext(); ) {
+			Resource resource = i.next();
 
-			Location location = entry.getKey();
-			Resource resource = entry.getValue();
-
-			InstructionHandle handle = location.getHandle();
-
-			if (DEBUG) System.out.println("Resource creation at " + handle.getPosition());
 			ResourceValueAnalysis<Resource> analysis =
 				new ResourceValueAnalysis<Resource>(methodGen, cfg, dfs, resourceTracker, resource );
 			Dataflow<ResourceValueFrame, ResourceValueAnalysis<Resource>> dataflow =
