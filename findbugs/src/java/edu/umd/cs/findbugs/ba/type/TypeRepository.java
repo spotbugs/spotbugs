@@ -35,22 +35,37 @@ import org.apache.bcel.Constants;
  * Queries on the type hierarchy can be performed
  * on the types instantiated by the repository.
  *
- * <p> The caller is responsible for explicitly adding edges
- * to the inheritance graph for class types.  Inheritance edges
- * for array types are added automatically, based on known
- * class hierarchy information for class types.
+ * <p> Typically, this class is used by specifying a
+ * {@link ClassResolver ClassResolver} that does the work of
+ * finding class representations, which will determine
+ * whether particular types are classes or interfaces,
+ * and what the superclasses and superinterfaces of
+ * class and interface types are.  The {@link #isSubtype}
+ * method will automatically construct the class hierarchy
+ * using the ClassResolver to determine the hierarchy.
  *
- * <p> TODO: Perhaps this should be an interface.
- * We might want to have both eager and lazy implementations
- * depending on what services are needed by clients.
+ * <p> Another way to use TypeRepository is to explicitly mark
+ * ClassType objects as interfaces or classes, and add the
+ * subtype relationships using {@link #addSuperclassLink}
+ * and {@link @addInterfaceLink} for ClassTypes.  Subtype
+ * relationships for array types are always added automatically
+ * based on the class hierarchy.  Note that if you use this
+ * approach, you must explicitly add <code>java.lang.Object</code>,
+ * <code>java.io.Serializable</code>, and <code>java.lang.Cloneable</code>
+ * to the repository.
  *
  * @see Type
+ * @see ClassResolver
  * @author David Hovemeyer
  */
 public class TypeRepository {
 	// FIME:
 	// - signatures should probably be interned
 	//   (do experiment, see if it makes any difference in memory use)
+
+	/* ----------------------------------------------------------------------
+	 * Static data
+	 * ---------------------------------------------------------------------- */
 
 	/**
 	 * Basic type signatures to type codes.
@@ -251,73 +266,55 @@ public class TypeRepository {
 					supertype.getSignature());
 		}
 
-		// TODO: precompute subtypes and store in a table of bit vectors
-		// based on type ids.  That would be really fast.
-		// For now, we do a slow traversal of the inheritance graph.
-
-		// Breadth first search through superinterfaces
-		// and interfaces implemented by superclasses
-
-		// TODO: cache the result as a bit vector of type ids.
-
-		// Work queue
-		LinkedList<ObjectType> work = new LinkedList<ObjectType>();
-		work.add(subtype);
-
-		// Keep track of where we've been
-		HashSet<ObjectType> visited = new HashSet<ObjectType>();
-
-		// Keep track of missing classes
-		LinkedList<String> missingClassList = new LinkedList<String>();
-
-		boolean isSubtype = false;
-
-		// Until we have examined all supertypes...
-		while (!work.isEmpty()) {
-			ObjectType type = work.removeFirst();
-			if (!visited.add(type))
-				continue;
-
-			if (type.equals(supertype)) {
-				isSubtype = true;
-				// NOTE: we keep going finding all supertypes,
-				// in order that when we finished we have enumerated
-				// the complete set of supertypes, which could
-				// then be cached.
+		// See if there is a cached query result.
+		SubtypeQueryResult cachedResult = subtype.getSubtypeQueryResult();
+		if (cachedResult == null) {
+			// Breadth first traversal of supertypes
+	
+			// Work queue
+			LinkedList<ObjectType> work = new LinkedList<ObjectType>();
+			work.add(subtype);
+	
+			// Keep track of where we've been
+			HashSet<ObjectType> visited = new HashSet<ObjectType>();
+	
+			// Keep track of missing classes
+			LinkedList<String> missingClassList = new LinkedList<String>();
+	
+			// Cached result for future queries
+			cachedResult = new SubtypeQueryResult();
+	
+			// Keep going until we have examined all supertypes.
+			while (!work.isEmpty()) {
+				ObjectType type = work.removeFirst();
+				if (!visited.add(type))
+					continue;
+	
+				cachedResult.addSupertype(type);
+	
+				try {
+					// Resolve the type so we know its supertypes.
+					resolveObjectType(type);
+	
+					// Add all supertypes to work queue.
+					for (Iterator<ObjectType> i = inheritanceGraph.successorIterator(type); i.hasNext(); )
+						work.add(i.next());
+				} catch (ClassNotFoundException e) {
+					String missingClassName = ClassNotFoundExceptionParser.getMissingClassName(e);
+					if (missingClassName == null)
+						missingClassName = "<unknown class>";
+					missingClassList.add(missingClassName);
+				}
 			}
-
-			try {
-				// Resolve the type so we know its supertypes.
-				resolveObjectType(type);
-
-				// Add all supertypes to work queue.
-				for (Iterator<ObjectType> i = inheritanceGraph.successorIterator(type); i.hasNext(); )
-					work.add(i.next());
-			} catch (ClassNotFoundException e) {
-				String missingClassName = ClassNotFoundExceptionParser.getMissingClassName(e);
-				if (missingClassName == null)
-					missingClassName = "<unknown class>";
-				missingClassList.add(missingClassName);
-			}
+	
+			if (!missingClassList.isEmpty())
+				cachedResult.setAndAdoptMissingClassList(missingClassList.toArray(new String[0]));
+	
+			// Cache result for future queries
+			subtype.setSubtypeQueryResult(cachedResult);
 		}
 
-		// Search terminated without finding the superinterface.
-		// If no part of the class hierarchy was unknown,
-		// then we have a definitive answer.  Otherwise,
-		// throw an exception.
-		if (missingClassList.isEmpty()) {
-			// TODO: cache bit vector of known supertypes
-			return isSubtype;
-		} else {
-			// There were missing classes.  However, an answer of
-			// "true" is still definitive.  We just won't cache the
-			// result.  FIXME: need to hook in a missing class
-			// reporter so caller still knows about the problem.
-			if (isSubtype)
-				return true;
-			else
-				throw new ClassNotFoundException("Class not found: " + missingClassList);
-		}
+		return cachedResult.isSupertype(supertype);
 	}
 
 	/**

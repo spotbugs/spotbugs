@@ -45,6 +45,7 @@ public abstract class ObjectType
 
 	private String typeSignature;
 	private int state;
+	private SubtypeQueryResult subtypeQueryResult;
 
 	protected ObjectType(String typeSignature) {
 		this.typeSignature = typeSignature;
@@ -82,6 +83,20 @@ public abstract class ObjectType
 	 */
 	void setState(int state) {
 		this.state = state;
+	}
+
+	/**
+	 * Set the SubtypeQueryResult.
+	 */
+	void setSubtypeQueryResult(SubtypeQueryResult subtypeQueryResult) {
+		this.subtypeQueryResult = subtypeQueryResult;
+	}
+
+	/**
+	 * Get the SubtypeQueryResult.
+	 */
+	SubtypeQueryResult getSubtypeQueryResult() {
+		return subtypeQueryResult;
 	}
 
 	public String getSignature() {
