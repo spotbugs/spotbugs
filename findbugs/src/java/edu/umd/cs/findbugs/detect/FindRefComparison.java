@@ -326,7 +326,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 					String rhs = SignatureConverter.convert(rhsType.getSignature());
 
 					if (!lhs.equals(rhs))
-						return;
+						continue;
 	
 					if (lhs.equals("java.lang.String") && rhs.equals("java.lang.String")) {
 						if (DEBUG) System.out.println("String/String comparison at " +

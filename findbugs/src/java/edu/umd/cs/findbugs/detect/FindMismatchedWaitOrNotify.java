@@ -79,7 +79,7 @@ public class FindMismatchedWaitOrNotify implements Detector {
 
 			Instruction ins = handle.getInstruction();
 			if (!(ins instanceof INVOKEVIRTUAL))
-				return;
+				continue;
 			INVOKEVIRTUAL inv = (INVOKEVIRTUAL) ins;
 
 			String methodName = inv.getName(cpg);
@@ -94,7 +94,7 @@ public class FindMismatchedWaitOrNotify implements Detector {
 				ValueNumberFrame frame = vnaDataflow.getFactAtLocation(location);
 				if (!frame.isValid())
 					// Probably dead code
-					return;
+					continue;
 				if (frame.getStackDepth() - numConsumed < 0)
 					throw new AnalysisException("Stack underflow", methodGen, handle);
 				ValueNumber ref = frame.getValue(frame.getNumSlots() - numConsumed);
