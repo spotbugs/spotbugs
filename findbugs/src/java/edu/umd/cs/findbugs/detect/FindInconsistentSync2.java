@@ -133,8 +133,23 @@ public class FindInconsistentSync2 implements Detector {
 			JavaClass javaClass = classContext.getJavaClass();
 			if (DEBUG) System.out.println("******** Analyzing class " + javaClass.getClassName());
 
-			Set<Method> lockedMethodSet = findNotUnlockedMethods(classContext);
-			lockedMethodSet.retainAll(findLockedMethods(classContext));
+			// Build self-call graph
+			SelfCalls selfCalls = new SelfCalls(classContext) {
+				public boolean wantCallsFor(Method method) {
+					return !method.isPublic();
+				}
+			};
+
+			selfCalls.execute();
+			CallGraph callGraph = selfCalls.getCallGraph();
+			if (DEBUG) System.out.println("Call graph (not unlocked methods): " + callGraph.getNumVertices() + " nodes, " +
+				callGraph.getNumEdges() + " edges");
+
+			// Find call edges that are obviously locked
+			Set<CallSite> obviouslyLockedSites = findObviouslyLockedCallSites(classContext, selfCalls);
+
+			Set<Method> lockedMethodSet = findNotUnlockedMethods(classContext, selfCalls, obviouslyLockedSites);
+			lockedMethodSet.retainAll(findLockedMethods(classContext, selfCalls, obviouslyLockedSites));
 
 			Method[] methodList = javaClass.getMethods();
 			for (int i = 0; i < methodList.length; ++i) {
@@ -153,6 +168,7 @@ public class FindInconsistentSync2 implements Detector {
 		} catch (CFGBuilderException e) {
 			throw new AnalysisException("FindInconsistentSync2 caught exception: " + e.toString(), e);
 		} catch (DataflowAnalysisException e) {
+			e.printStackTrace();
 			throw new AnalysisException("FindInconsistentSync2 caught exception: " + e.toString(), e);
 		}
 	}
@@ -427,24 +443,14 @@ public class FindInconsistentSync2 implements Detector {
 	 * We assume that nonpublic methods will only be called from
 	 * within the class, which is not really a valid assumption.
 	 */
-	private Set<Method> findNotUnlockedMethods(ClassContext classContext)
+	private Set<Method> findNotUnlockedMethods(ClassContext classContext, SelfCalls selfCalls,
+		Set<CallSite> obviouslyLockedSites)
 		throws CFGBuilderException, DataflowAnalysisException {
 
 		JavaClass javaClass = classContext.getJavaClass();
 		Method[] methodList = javaClass.getMethods();
 
-		// Build self-call graph
-		SelfCalls selfCalls = new SelfCalls(classContext) {
-			public boolean wantCallsFor(Method method) {
-				return !method.isPublic();
-			}
-		};
-
-		selfCalls.execute();
 		CallGraph callGraph = selfCalls.getCallGraph();
-
-		// Find call edges that are obviously locked
-		Set<CallSite> obviouslyLockedSites = findObviouslyLockedCallSites(classContext, selfCalls);
 
 		// Initially, assume all methods are locked
 		Set<Method> lockedMethodSet = new HashSet<Method>();
@@ -485,7 +491,7 @@ public class FindInconsistentSync2 implements Detector {
 		} while (change);
 
 		if (DEBUG) {
-			System.out.println("Apparently locked methods:");
+			System.out.println("Apparently not unlocked methods:");
 			for (Iterator<Method> i = lockedMethodSet.iterator(); i.hasNext(); ) {
 				Method method = i.next();
 				System.out.println("\t" + method.getName());
@@ -517,24 +523,14 @@ public class FindInconsistentSync2 implements Detector {
 	 * We assume that nonpublic methods will only be called from
 	 * within the class, which is not really a valid assumption.
 	 */
-	private Set<Method> findLockedMethods(ClassContext classContext)
+	private Set<Method> findLockedMethods(ClassContext classContext, SelfCalls selfCalls,
+		Set<CallSite> obviouslyLockedSites)
 		throws CFGBuilderException, DataflowAnalysisException {
 
 		JavaClass javaClass = classContext.getJavaClass();
 		Method[] methodList = javaClass.getMethods();
 
-		// Build self-call graph
-		SelfCalls selfCalls = new SelfCalls(classContext) {
-			public boolean wantCallsFor(Method method) {
-				return !method.isPublic();
-			}
-		};
-
-		selfCalls.execute();
 		CallGraph callGraph = selfCalls.getCallGraph();
-
-		// Find call edges that are obviously locked
-		Set<CallSite> obviouslyLockedSites = findObviouslyLockedCallSites(classContext, selfCalls);
 
 		// Initially, assume all methods are locked
 		Set<Method> lockedMethodSet = new HashSet<Method>();
@@ -651,7 +647,7 @@ public class FindInconsistentSync2 implements Detector {
 			int numConsumed = ins.consumeStack(cpg);
 			if (numConsumed == Constants.UNPREDICTABLE)
 				throw new AnalysisException("Unpredictable stack consumption: " + handle);
-			ValueNumber instance = frame.getStackValue(numConsumed);
+			ValueNumber instance = frame.getStackValue(numConsumed - 1);
 
 			// Is the instance locked?
 			int lockCount = lockSet.getLockCount(instance.getNumber());
