@@ -20,9 +20,16 @@
 package edu.umd.cs.findbugs.ba;
 
 public interface Debug {
-    /**
-     * Set this to true to enable data structure integrity checks.
-     * These checks are somewhat expensive, but hey, computers are fast.
-     */
-    public static final boolean VERIFY_INTEGRITY = Boolean.getBoolean("ba.verifyIntegrity");
+	/**
+	 * Check assertions.
+	 */
+	public static final boolean CHECK_ASSERTIONS = Boolean.getBoolean("ba.checkAssertions");
+
+	/**
+	 * Set this to true to enable data structure integrity checks.
+	 * These checks are somewhat expensive, but hey, computers are fast.
+	 */
+	public static final boolean VERIFY_INTEGRITY = Boolean.getBoolean("ba.verifyIntegrity");
 }
+
+// vim:ts=4
