@@ -65,6 +65,24 @@ public class FindBugs implements Constants2, ExitCodes {
 		}
 	}
 
+	private static class ArchiveWorkListItem {
+		private String fileName;
+		private boolean explicit;
+
+		public ArchiveWorkListItem(String fileName, boolean explicit) {
+			this.fileName = fileName;
+			this.explicit = explicit;
+		}
+
+		public String getFileName() {
+			return fileName;
+		}
+
+		public boolean isExplicit() {
+			return explicit;
+		}
+	}
+
 	/**
 	 * Interface for an object representing a source of class files to analyze.
 	 */
@@ -127,12 +145,15 @@ public class FindBugs implements Constants2, ExitCodes {
 	 */
 	private static class ZipClassProducer implements ClassProducer {
 		private URL url;
+		private LinkedList<ArchiveWorkListItem> archiveWorkList;
 		private ZipInputStream zipInputStream;
 		private boolean containsSourceFiles;
 
-		public ZipClassProducer(URL url) throws IOException {
+		public ZipClassProducer(URL url, LinkedList<ArchiveWorkListItem> archiveWorkList)
+				throws IOException {
 			this.url = url;
-			System.out.println("Opening jar/zip input stream for " + url.toString());
+			this.archiveWorkList = archiveWorkList;
+			if (DEBUG) System.out.println("Opening jar/zip input stream for " + url.toString());
 			this.zipInputStream = new ZipInputStream(url.openStream());
 			this.containsSourceFiles = false;
 		}
@@ -150,7 +171,10 @@ public class FindBugs implements Constants2, ExitCodes {
 						if (fileExtension.equals(".class")) {
 							return parseClass(url.toString(), new NoCloseInputStream(zipInputStream), entryName);
 						} else if (archiveExtensionSet.contains(fileExtension)) {
-							// TODO: add nested archive to archive work list
+							// Add nested archive to archive work list
+							ArchiveWorkListItem nestedItem =
+								new ArchiveWorkListItem("jar:" + url.toString() + "!/" + entryName, false);
+							archiveWorkList.addFirst(nestedItem);
 						} else if (fileExtension.equals(".java")) {
 							containsSourceFiles = true;
 						}
@@ -607,8 +631,12 @@ public class FindBugs implements Constants2, ExitCodes {
 		// Note that despite the name getJarFileArray(),
 		// they can also be zip files, directories,
 		// and single class files.
-		LinkedList<String> archiveWorkList = new LinkedList<String>();
-		archiveWorkList.addAll(project.getJarFileList());
+		LinkedList<ArchiveWorkListItem> archiveWorkList = new LinkedList<ArchiveWorkListItem>();
+		//archiveWorkList.addAll(project.getJarFileList());
+		for (Iterator<String> i = project.getJarFileList().iterator(); i.hasNext(); ) {
+			String fileName = i.next();
+			archiveWorkList.add(new ArchiveWorkListItem(fileName, true));
+		}
 
 		// Report how many archives/directories/files will be analyzed,
 		// for progress dialog in GUI
@@ -619,8 +647,8 @@ public class FindBugs implements Constants2, ExitCodes {
 
 		// Add all classes in analyzed archives/directories/files
 		while (!archiveWorkList.isEmpty()) {
-			String archive = archiveWorkList.removeFirst();
-			addFileToRepository(archive, archiveWorkList, repositoryClassList);
+			ArchiveWorkListItem item = archiveWorkList.removeFirst();
+			addFileToRepository(item, archiveWorkList, repositoryClassList);
 		}
 
 		// Callback for progress dialog: analysis is starting
@@ -786,16 +814,20 @@ public class FindBugs implements Constants2, ExitCodes {
 	/**
 	 * Add all classes contained in given file to the BCEL Repository.
 	 *
-	 * @param fileName            the file, which may be a jar/zip archive, a single class file,
-	 *                            or a directory to be recursively searched for class files
+	 * @param item                work list item representing the file, which may be a jar/zip
+	 *                            archive, a single class file, or a directory to be recursively
+	 *                            searched for class files
 	 * @param archiveWorkList     work list of archives to analyze: this method
 	 *                            may add to the work list if it finds nested archives
 	 * @param repositoryClassList a List to which all classes found in
 	 *                            the archive or directory are added, so we later know
 	 *                            which files to analyze
 	 */
-	private void addFileToRepository(String fileName, List<String> archiveWorkList, List<String> repositoryClassList)
+	private void addFileToRepository(ArchiveWorkListItem item,
+			LinkedList<ArchiveWorkListItem> archiveWorkList, List<String> repositoryClassList)
 	        throws IOException, InterruptedException {
+
+		String fileName = item.getFileName();
 
 		try {
 			ClassProducer classProducer;
@@ -819,7 +851,7 @@ public class FindBugs implements Constants2, ExitCodes {
 
 			// Create the ClassProducer
 			if (fileExtension != null && archiveExtensionSet.contains(fileExtension))
-				classProducer = new ZipClassProducer(url);
+				classProducer = new ZipClassProducer(url, archiveWorkList);
 			else if (fileExtension != null && fileExtension.equals(".class"))
 				classProducer = new SingleClassProducer(url);
 			else if (protocol.equals("file")) {
@@ -849,7 +881,8 @@ public class FindBugs implements Constants2, ExitCodes {
 				}
 			}
 
-			progressCallback.finishArchive();
+			if (item.isExplicit())
+				progressCallback.finishArchive();
 
 			// If the archive or directory scanned contained source files,
 			// add it to the end of the source path.
