@@ -72,6 +72,7 @@ public abstract class ResourceTrackingDetector<Resource> implements Detector {
 						try {
 							Resource resource = resourceTracker.isResourceCreation(basicBlock, handle, methodGen.getConstantPool());
 							if (resource != null) {
+								if (DEBUG) System.out.println("Resource creation at " + handle.getPosition());
 								ResourceValueAnalysis<Resource> analysis =
 									new ResourceValueAnalysis<Resource>(methodGen, cfg, resourceTracker, resource, bugReporter);
 								Dataflow<ResourceValueFrame, ResourceValueAnalysis<Resource>> dataflow =
