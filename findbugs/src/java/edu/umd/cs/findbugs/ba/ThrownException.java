@@ -71,6 +71,18 @@ public class ThrownException {
 	public void setExplicit(boolean explicit) {
 		this.explicit = explicit;
 	}
+
+	public int hashCode() {
+		return type.hashCode();
+	}
+
+	public boolean equals(Object o) {
+		if (o == null) return false;
+		if (o.getClass() != this.getClass()) return false;
+
+		ThrownException other = (ThrownException) o;
+		return this.type.equals(other.type) && this.explicit == other.explicit;
+	}
 }
 
 // vim:ts=4
