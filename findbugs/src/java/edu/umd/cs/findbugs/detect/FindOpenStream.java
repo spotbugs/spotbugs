@@ -53,11 +53,13 @@ public class FindOpenStream implements Detector {
 	 * A visitor to model the effect of instructions on the status
 	 * of the resource.
 	 */
-	private class StreamFrameModelingVisitor extends ResourceValueFrameModelingVisitor {
+	private static class StreamFrameModelingVisitor extends ResourceValueFrameModelingVisitor {
+		private StreamResourceTracker resourceTracker;
 		private Stream stream;
 
-		public StreamFrameModelingVisitor(ConstantPoolGen cpg, Stream stream) {
+		public StreamFrameModelingVisitor(ConstantPoolGen cpg, StreamResourceTracker resourceTracker, Stream stream) {
 			super(cpg);
+			this.resourceTracker = resourceTracker;
 			this.stream = stream;
 		}
 
@@ -96,7 +98,13 @@ public class FindOpenStream implements Detector {
 	 * Resource tracker which determines where streams are created,
 	 * and how they are used within the method.
 	 */
-	private class StreamResourceTracker implements ResourceTracker<Stream> {
+	private static class StreamResourceTracker implements ResourceTracker<Stream> {
+		private RepositoryLookupFailureCallback lookupFailureCallback;
+
+		public StreamResourceTracker(RepositoryLookupFailureCallback lookupFailureCallback) {
+			this.lookupFailureCallback = lookupFailureCallback;
+		}
+
 		public Stream isResourceCreation(BasicBlock basicBlock, InstructionHandle handle, ConstantPoolGen cpg) {
 			Instruction ins = handle.getInstruction();
 			if (!(ins instanceof NEW))
@@ -121,7 +129,7 @@ public class FindOpenStream implements Detector {
 					
 				return isStream ? new Stream(new Location(handle, basicBlock), className) : null;
 			} catch (ClassNotFoundException e) {
-				bugReporter.reportMissingClass(e);
+				lookupFailureCallback.reportMissingClass(e);
 				return null;
 			}
 		}
@@ -146,7 +154,7 @@ public class FindOpenStream implements Detector {
 		}
 
 		public ResourceValueFrameModelingVisitor createVisitor(Stream resource, ConstantPoolGen cpg) {
-			return new StreamFrameModelingVisitor(cpg, resource);
+			return new StreamFrameModelingVisitor(cpg, this, resource);
 		}
 	}
 
@@ -163,7 +171,7 @@ public class FindOpenStream implements Detector {
 
 	public FindOpenStream(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
-		this.resourceTracker = new StreamResourceTracker();
+		this.resourceTracker = new StreamResourceTracker(bugReporter);
 	}
 
 	public void visitClassContext(ClassContext classContext) {
@@ -221,6 +229,9 @@ public class FindOpenStream implements Detector {
 	}
 
 	public void report() {
+	}
+
+	public static void main(String[] argv) throws Exception {
 	}
 
 }
