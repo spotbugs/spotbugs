@@ -78,6 +78,9 @@ public class Dataflow<Fact> {
 		}
 	}
 
+	// Maximum number of iterations before we assume there is a bug and give up.
+	private static final int MAX_ITERS = 10000;
+
 	/**
 	 * Run the algorithm.
 	 * Afterwards, caller can use the getStartFact() and getResultFact() methods to 
@@ -88,6 +91,9 @@ public class Dataflow<Fact> {
 		do {
 			change = false;
 			++numIterations;
+
+			if (numIterations >= MAX_ITERS)
+				throw new DataflowAnalysisException("Too many iterations (" + numIterations + ") in dataflow!");
 	
 			// For each block in CFG...
 			Iterator<BasicBlock> i = blockOrder.blockIterator();
