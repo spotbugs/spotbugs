@@ -276,7 +276,7 @@ public class ValueNumberFrameModelingVisitor
 				frame.popValue();
 			}
 		} catch (DataflowAnalysisException e) {
-			throw new IllegalStateException("ValueNumberFrameModelingVisitor caught exception: " + e.toString());
+			throw new AnalysisException("ValueNumberFrameModelingVisitor caught exception: " + e.toString(), e);
 		}
 
 		return inputValueList;

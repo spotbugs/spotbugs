@@ -28,6 +28,7 @@ import org.apache.bcel.classfile.*;
 import org.apache.bcel.Repository;
 import org.apache.bcel.util.ClassPath;
 import org.apache.bcel.util.SyntheticRepository;
+import edu.umd.cs.daveho.ba.AnalysisException;
 import edu.umd.cs.daveho.ba.ClassContext;
 import edu.umd.cs.daveho.ba.ClassObserver;
 
@@ -556,6 +557,9 @@ public class FindBugs implements Constants2, ExitCodes
 				if (DEBUG) System.out.println("  running " + detector.getClass().getName());
 				detector.visitClassContext(classContext);
 			} catch (AnalysisException e) {
+				if (DEBUG) {
+					e.printStackTrace();
+				}
 				bugReporter.logError("Analysis exception: " + e.toString());
 			}
 		}
