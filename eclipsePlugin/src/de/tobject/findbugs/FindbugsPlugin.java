@@ -24,12 +24,8 @@ import java.io.IOException;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
-import java.util.StringTokenizer;
 
 import org.dom4j.DocumentException;
 import org.eclipse.core.resources.IFile;
@@ -57,8 +53,6 @@ import de.tobject.findbugs.builder.FindBugsWorker;
 import de.tobject.findbugs.nature.FindBugsNature;
 import de.tobject.findbugs.reporter.Reporter;
 import de.tobject.findbugs.view.DetailsView;
-import edu.umd.cs.findbugs.DetectorFactory;
-import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.config.ProjectFilterSettings;
@@ -110,6 +104,8 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 		new QualifiedName(FindbugsPlugin.PLUGIN_ID + ".sessionprops", "bugcollection");
 	public static final QualifiedName SESSION_PROPERTY_FB_PROJECT =
 		new QualifiedName(FindbugsPlugin.PLUGIN_ID + ".sessionprops", "fbproject");
+	public static final QualifiedName SESSION_PROPERTY_BUG_COLLECTION_UPTODATE =
+		new QualifiedName(FindbugsPlugin.PLUGIN_ID + ".sessionprops", "bugcollection_uptodate");
 	public static final String LIST_DELIMITER = ";"; //$NON-NLS-1$
 	
 	
