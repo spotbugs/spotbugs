@@ -7,6 +7,9 @@ public class NullDeref {
 
 		n = null;
 
+		if (null == n)
+			System.out.println("This is silly");
+
 		if (n == null) {
 			System.out.println("Hey yo, it's null");
 			System.out.println("Bad idea: " + n.x);
