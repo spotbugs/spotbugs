@@ -398,11 +398,25 @@ public class BugInstance implements Comparable, XMLWriteable, Serializable {
 	 * 
 	 * @param name name of the property to get
 	 * @return the value of the named property, or null if
-	 *         there is no such property
+	 *         the property has not been set
 	 */
 	public String getProperty(String name) {
 		BugProperty prop = lookupProperty(name);
 		return prop != null ? prop.getValue() : null;
+	}
+	
+	/**
+	 * Get value of given property, returning given default
+	 * value if the property has not been set.
+	 * 
+	 * @param name         name of the property to get
+	 * @param defaultValue default value to return if propery is not set
+	 * @return the value of the named property, or the default
+	 *         value if the property has not been set
+	 */
+	public String getProperty(String name, String defaultValue) {
+		String value = getProperty(name);
+		return value != null ? value : defaultValue;
 	}
 	
 	/**
@@ -437,7 +451,7 @@ public class BugInstance implements Comparable, XMLWriteable, Serializable {
 	 * 
 	 * @param name name of the property to look for
 	 * @return the BugProperty with the given name,
-	 *         or null if there is no such property
+	 *         or null if the property has not been set
 	 */
 	public BugProperty lookupProperty(String name) {
 		BugProperty prop = propertyListHead;
