@@ -168,14 +168,6 @@ public class Project {
 	return srcDirList;
     }
     
-//    /**
-//     * Get the number of the next analysis run.
-//     * The runs are numbered starting at 1.
-//     */
-//    public int getNextAnalysisRun() {
-//	return ++numAnalysisRuns;
-//    }
-    
     /**
      * Add an auxiliary classpath entry
      * @param entry the entry
@@ -213,6 +205,7 @@ public class Project {
 
     private static final String JAR_FILES_KEY = "[Jar files]";
     private static final String SRC_DIRS_KEY = "[Source dirs]";
+    private static final String AUX_CLASSPATH_ENTRIES_KEY = "[Aux classpath entries]";
     
     /**
      * Save the project to an output stream.
@@ -231,6 +224,11 @@ public class Project {
             String srcDir = (String) i.next();
             writer.println(srcDir);
         }
+        writer.println(AUX_CLASSPATH_ENTRIES_KEY);
+        for (Iterator i = auxClasspathEntryList.iterator(); i.hasNext(); ) {
+            String auxClasspathEntry = (String) i.next();
+            writer.println(auxClasspathEntry);
+        }
         writer.close();
     }
     
@@ -248,8 +246,14 @@ public class Project {
             jarList.add(line);
         }
         if (line == null) throw new IOException("Bad format: missing source dirs key");
-        while ((line = reader.readLine()) != null) {
+        while ((line = reader.readLine()) != null && !line.equals(AUX_CLASSPATH_ENTRIES_KEY)) {
             srcDirList.add(line);
+        }
+        if (line != null) {
+            // The list of aux classpath entries is optional
+            while ((line = reader.readLine()) != null) {
+                auxClasspathEntryList.add(line);
+            }
         }
         
         reader.close();

@@ -253,6 +253,18 @@ public class FindBugsFrame extends javax.swing.JFrame {
     
     /** The instance of ProjectFileFilter. */
     private static final FileFilter projectFileFilter = new ProjectFileFilter();
+    
+    /**
+     * Swing FileFilter for choosing an auxiliary classpath entry.
+     * Both Jar files and directories can be chosen.
+     */
+    private static class AuxClasspathEntryFileFilter extends FileFilter {
+        public boolean accept(File file) { return file.isDirectory() || file.getName().endsWith(".jar"); }
+        public String getDescription() { return "Jar files and directories"; }
+    }
+    
+    /** The instance of AuxClasspathEntry. */
+    private static final FileFilter auxClasspathEntryFileFilter = new AuxClasspathEntryFileFilter();
 
     /* ----------------------------------------------------------------------
      * Constants
@@ -327,8 +339,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
         browseClasspathEntryButton = new javax.swing.JButton();
         addClasspathEntryButton = new javax.swing.JButton();
         removeClasspathEntryButton = new javax.swing.JButton();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        jList1 = new javax.swing.JList();
+        classpathEntryListScrollPane = new javax.swing.JScrollPane();
+        classpathEntryList = new javax.swing.JList();
         jSeparator5 = new javax.swing.JSeparator();
         bugTreePanel = new javax.swing.JPanel();
         bugTreeBugDetailsSplitter = new javax.swing.JSplitPane();
@@ -428,8 +440,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 4;
-        gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 3);
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 3);
         editProjectPanel.add(jarFileListLabel, gridBagConstraints);
 
         sourceDirLabel.setFont(new java.awt.Font("Dialog", 0, 12));
@@ -471,7 +483,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
         editProjectPanel.add(addSourceDirButton, gridBagConstraints);
 
         sourceDirListLabel.setFont(new java.awt.Font("Dialog", 0, 12));
-        sourceDirListLabel.setText("Source Directories:");
+        sourceDirListLabel.setText("Source directories:");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 7;
@@ -597,7 +609,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
         gridBagConstraints.gridy = 4;
         gridBagConstraints.gridwidth = 2;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.weighty = 0.7;
+        gridBagConstraints.weighty = 0.6;
         gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 3);
         editProjectPanel.add(jarFileListScrollPane, gridBagConstraints);
 
@@ -612,7 +624,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
         gridBagConstraints.gridy = 7;
         gridBagConstraints.gridwidth = 2;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.weighty = 0.3;
+        gridBagConstraints.weighty = 0.2;
         gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 3);
         editProjectPanel.add(sourceDirListScrollPane, gridBagConstraints);
 
@@ -621,8 +633,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 9;
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 3);
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 3);
         editProjectPanel.add(classpathEntryLabel, gridBagConstraints);
 
         classpathEntryListLabel.setFont(new java.awt.Font("Dialog", 0, 12));
@@ -630,8 +642,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 10;
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 3);
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 3);
         editProjectPanel.add(classpathEntryListLabel, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -643,6 +655,12 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
         browseClasspathEntryButton.setFont(new java.awt.Font("Dialog", 0, 12));
         browseClasspathEntryButton.setText("Browse");
+        browseClasspathEntryButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                browseClasspathEntryButtonActionPerformed(evt);
+            }
+        });
+
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 9;
@@ -650,31 +668,45 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
         addClasspathEntryButton.setFont(new java.awt.Font("Dialog", 0, 12));
         addClasspathEntryButton.setText("Add");
+        addClasspathEntryButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                addClasspathEntryButtonActionPerformed(evt);
+            }
+        });
+
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 3;
         gridBagConstraints.gridy = 9;
-        gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 0);
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 0);
         editProjectPanel.add(addClasspathEntryButton, gridBagConstraints);
 
         removeClasspathEntryButton.setFont(new java.awt.Font("Dialog", 0, 12));
         removeClasspathEntryButton.setText("Remove");
+        removeClasspathEntryButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                removeClasspathEntryButtonActionPerformed(evt);
+            }
+        });
+
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 3;
         gridBagConstraints.gridy = 10;
-        gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 0);
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 0);
         editProjectPanel.add(removeClasspathEntryButton, gridBagConstraints);
 
-        jScrollPane1.setViewportView(jList1);
+        classpathEntryListScrollPane.setPreferredSize(new java.awt.Dimension(259, 1));
+        classpathEntryListScrollPane.setViewportView(classpathEntryList);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 10;
         gridBagConstraints.gridwidth = 2;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weighty = 0.2;
         gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 3);
-        editProjectPanel.add(jScrollPane1, gridBagConstraints);
+        editProjectPanel.add(classpathEntryListScrollPane, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -868,6 +900,40 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
         pack();
     }//GEN-END:initComponents
+
+    private void removeClasspathEntryButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeClasspathEntryButtonActionPerformed
+        int selIndex = classpathEntryList.getSelectedIndex();
+	if (selIndex >= 0) {
+	    Project project = getCurrentProject();
+	    project.removeAuxClasspathEntry(selIndex);
+	    DefaultListModel listModel = (DefaultListModel) classpathEntryList.getModel();
+	    listModel.removeElementAt(selIndex);
+	}
+    }//GEN-LAST:event_removeClasspathEntryButtonActionPerformed
+
+    private void addClasspathEntryButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addClasspathEntryButtonActionPerformed
+        addClasspathEntryToList();
+    }//GEN-LAST:event_addClasspathEntryButtonActionPerformed
+
+    private void browseClasspathEntryButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_browseClasspathEntryButtonActionPerformed
+        // Add your handling code here:
+        JFileChooser chooser = new JFileChooser();
+        chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+        chooser.setFileFilter(auxClasspathEntryFileFilter);
+        int result = chooser.showDialog(this, "Add entry");
+        if (result != JFileChooser.CANCEL_OPTION) {
+            /*
+            File[] selectedFileList = chooser.getSelectedFiles();
+            for (int i = 0; i < selectedFileList.length; ++i) {
+                String entry = selectedFileList[i].getPath();
+                addClasspathEntryToList(entry);
+            }
+             */
+            File selectedFile = chooser.getSelectedFile();
+            classpathEntryTextField.setText(selectedFile.getPath());
+            addClasspathEntryToList();
+        }
+    }//GEN-LAST:event_browseClasspathEntryButtonActionPerformed
 
     private void fullDescriptionsItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fullDescriptionsItemActionPerformed
         JTree bugTree = getCurrentBugTree();
@@ -1141,6 +1207,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	
 	jarFileList.setModel(new DefaultListModel());
 	sourceDirList.setModel(new DefaultListModel());
+        classpathEntryList.setModel(new DefaultListModel());
 	
         // We use a special highlight painter to ensure that the highlights cover
         // complete source lines, even though the source text doesn't
@@ -1278,8 +1345,10 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	// Clear text fields
 	jarNameTextField.setText("");
 	srcDirTextField.setText("");
+        classpathEntryTextField.setText("");
 	
-	// Populate jar and source dir lists
+	// Populate jar file, source directory, and aux classpath entry lists
+        
 	DefaultListModel jarListModel = (DefaultListModel) jarFileList.getModel();
 	jarListModel.clear();
 	for (int i = 0; i < project.getNumJarFiles(); ++i) {
@@ -1291,6 +1360,12 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	for (int i = 0; i < project.getNumSourceDirs(); ++i) {
 	    srcDirListModel.addElement(project.getSourceDir(i));
 	}
+        
+        DefaultListModel classpathEntryListModel = (DefaultListModel) classpathEntryList.getModel();
+        classpathEntryListModel.clear();
+        for (int i = 0; i < project.getNumAuxClasspathEntries(); ++i) {
+            classpathEntryListModel.addElement(project.getAuxClasspathEntry(i));
+        }
     }
     
     /**
@@ -1449,8 +1524,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	    if (project.addJar(jarFile)) {
                 DefaultListModel listModel = (DefaultListModel)  jarFileList.getModel();
                 listModel.addElement(jarFile);
-                jarNameTextField.setText("");
             }
+            jarNameTextField.setText("");
 	}
     }
     
@@ -1465,9 +1540,25 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	    if (project.addSourceDir(sourceDir)) {
                 DefaultListModel listModel = (DefaultListModel) sourceDirList.getModel();
                 listModel.addElement(sourceDir);
-                srcDirTextField.setText("");
             }
+            srcDirTextField.setText("");
 	}
+    }
+    
+    /**
+     * Called to add the classpath entry in the classpathEntryTextField
+     * to the classpath entry list (and the project it represents).
+     */
+    private void addClasspathEntryToList() {
+        String classpathEntry = classpathEntryTextField.getText();
+        if (!classpathEntry.equals("")) {
+            Project project = getCurrentProject();
+            if (project.addAuxClasspathEntry(classpathEntry)) {
+                DefaultListModel listModel = (DefaultListModel) classpathEntryList.getModel();
+                listModel.addElement(classpathEntry);
+            }
+            classpathEntryTextField.setText("");
+        }
     }
 
     /**
@@ -1651,71 +1742,71 @@ public class FindBugsFrame extends javax.swing.JFrame {
      * ---------------------------------------------------------------------- */
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JMenuItem aboutItem;
+    private javax.swing.JButton addClasspathEntryButton;
+    private javax.swing.JButton addJarButton;
+    private javax.swing.JButton addSourceDirButton;
+    private javax.swing.JButton browseClasspathEntryButton;
+    private javax.swing.JButton browseJarButton;
+    private javax.swing.JButton browseSrcDirButton;
+    private javax.swing.JEditorPane bugDescriptionEditorPane;
+    private javax.swing.JScrollPane bugDescriptionScrollPane;
+    private javax.swing.JTabbedPane bugDetailsTabbedPane;
+    private javax.swing.JSplitPane bugTreeBugDetailsSplitter;
+    private javax.swing.JPanel bugTreePanel;
+    private javax.swing.JTree byBugTypeBugTree;
+    private javax.swing.JScrollPane byBugTypeScrollPane;
+    private javax.swing.JTree byClassBugTree;
+    private javax.swing.JScrollPane byClassScrollPane;
+    private javax.swing.JTree byPackageBugTree;
+    private javax.swing.JScrollPane byPackageScrollPane;
+    private javax.swing.JLabel classpathEntryLabel;
+    private javax.swing.JList classpathEntryList;
+    private javax.swing.JLabel classpathEntryListLabel;
+    private javax.swing.JScrollPane classpathEntryListScrollPane;
+    private javax.swing.JTextField classpathEntryTextField;
+    private javax.swing.JMenuItem closeProjectItem;
+    private javax.swing.JTextArea consoleMessageArea;
+    private javax.swing.JScrollPane consoleScrollPane;
+    private javax.swing.JSplitPane consoleSplitter;
     private javax.swing.JLabel editProjectLabel;
-    private javax.swing.JButton removeSrcDirButton;
-    private javax.swing.JSeparator jSeparator2;
-    private javax.swing.JSeparator jSeparator4;
-    private javax.swing.JMenu viewMenu;
+    private javax.swing.JPanel editProjectPanel;
+    private javax.swing.JPanel emptyPanel;
+    private javax.swing.JMenuItem exitItem;
     private javax.swing.JMenu fileMenu;
+    private javax.swing.JButton findBugsButton;
+    private javax.swing.JCheckBoxMenuItem fullDescriptionsItem;
+    private javax.swing.JTabbedPane groupByTabbedPane;
+    private javax.swing.JMenu helpMenu;
+    private javax.swing.JSeparator jSeparator1;
+    private javax.swing.JSeparator jSeparator2;
+    private javax.swing.JSeparator jSeparator3;
+    private javax.swing.JSeparator jSeparator4;
     private javax.swing.JSeparator jSeparator5;
+    private javax.swing.JLabel jarFileLabel;
+    private javax.swing.JList jarFileList;
+    private javax.swing.JLabel jarFileListLabel;
+    private javax.swing.JScrollPane jarFileListScrollPane;
+    private javax.swing.JTextField jarNameTextField;
     private javax.swing.JMenuItem newProjectItem;
     private javax.swing.JMenuItem openProjectItem;
-    private javax.swing.JSplitPane consoleSplitter;
-    private javax.swing.JList jarFileList;
-    private javax.swing.JLabel jarFileLabel;
-    private javax.swing.JMenuItem aboutItem;
-    private javax.swing.JButton addSourceDirButton;
-    private javax.swing.JMenuBar theMenuBar;
-    private javax.swing.JList jList1;
-    private javax.swing.JLabel classpathEntryLabel;
-    private javax.swing.JButton removeJarButton;
-    private javax.swing.JButton addJarButton;
-    private javax.swing.JButton addClasspathEntryButton;
-    private javax.swing.JScrollPane sourceTextAreaScrollPane;
-    private javax.swing.JList sourceDirList;
-    private javax.swing.JLabel classpathEntryListLabel;
-    private javax.swing.JMenuItem saveProjectItem;
-    private javax.swing.JSplitPane bugTreeBugDetailsSplitter;
-    private javax.swing.JEditorPane bugDescriptionEditorPane;
-    private javax.swing.JTabbedPane bugDetailsTabbedPane;
-    private javax.swing.JTabbedPane groupByTabbedPane;
-    private javax.swing.JPanel emptyPanel;
-    private javax.swing.JTextArea consoleMessageArea;
-    private javax.swing.JSeparator jSeparator3;
-    private javax.swing.JScrollPane jarFileListScrollPane;
-    private javax.swing.JScrollPane byBugTypeScrollPane;
-    private javax.swing.JCheckBoxMenuItem viewConsoleItem;
-    private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTree byPackageBugTree;
-    private javax.swing.JMenuItem closeProjectItem;
-    private javax.swing.JCheckBoxMenuItem viewBugDetailsItem;
-    private javax.swing.JTextField jarNameTextField;
-    private javax.swing.JScrollPane consoleScrollPane;
-    private javax.swing.JButton browseJarButton;
-    private javax.swing.JScrollPane byClassScrollPane;
-    private javax.swing.JTextArea sourceTextArea;
-    private javax.swing.JTree byBugTypeBugTree;
     private javax.swing.JButton removeClasspathEntryButton;
-    private javax.swing.JButton browseClasspathEntryButton;
-    private javax.swing.JButton findBugsButton;
-    private javax.swing.JPanel bugTreePanel;
-    private javax.swing.JScrollPane bugDescriptionScrollPane;
-    private javax.swing.JLabel sourceDirLabel;
-    private javax.swing.JPanel viewPanel;
-    private javax.swing.JLabel jarFileListLabel;
-    private javax.swing.JSeparator jSeparator1;
-    private javax.swing.JScrollPane byPackageScrollPane;
+    private javax.swing.JButton removeJarButton;
+    private javax.swing.JButton removeSrcDirButton;
     private javax.swing.JPanel reportPanel;
-    private javax.swing.JPanel editProjectPanel;
-    private javax.swing.JMenu helpMenu;
-    private javax.swing.JCheckBoxMenuItem fullDescriptionsItem;
-    private javax.swing.JTextField srcDirTextField;
-    private javax.swing.JButton browseSrcDirButton;
+    private javax.swing.JMenuItem saveProjectItem;
+    private javax.swing.JLabel sourceDirLabel;
+    private javax.swing.JList sourceDirList;
     private javax.swing.JLabel sourceDirListLabel;
-    private javax.swing.JTextField classpathEntryTextField;
-    private javax.swing.JMenuItem exitItem;
-    private javax.swing.JTree byClassBugTree;
     private javax.swing.JScrollPane sourceDirListScrollPane;
+    private javax.swing.JTextArea sourceTextArea;
+    private javax.swing.JScrollPane sourceTextAreaScrollPane;
+    private javax.swing.JTextField srcDirTextField;
+    private javax.swing.JMenuBar theMenuBar;
+    private javax.swing.JCheckBoxMenuItem viewBugDetailsItem;
+    private javax.swing.JCheckBoxMenuItem viewConsoleItem;
+    private javax.swing.JMenu viewMenu;
+    private javax.swing.JPanel viewPanel;
     // End of variables declaration//GEN-END:variables
     
     // My variable declarations
