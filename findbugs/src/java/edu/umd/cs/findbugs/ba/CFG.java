@@ -359,7 +359,7 @@ public class CFG implements Graph<Edge, BasicBlock>, Debug {
 		return edgeIterator();
 	}
 
-	public Iterator<BasicBlock> getVertexIterator() {
+	public Iterator<BasicBlock> vertexIterator() {
 		return blockIterator();
 	}
 
