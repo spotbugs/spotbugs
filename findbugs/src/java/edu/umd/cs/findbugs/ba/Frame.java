@@ -297,6 +297,21 @@ public abstract class Frame<ValueType> {
 	 */
 	public abstract ValueType getDefaultValue();
 
+	/**
+	 * Convert to string.
+	 */
+	public String toString() {
+		if (isTop()) return "[TOP]";
+		if (isBottom()) return "[BOTTOM]";
+		StringBuffer buf = new StringBuffer();
+		buf.append('[');
+		for (int i = 0; i < getNumSlots(); ++i) {
+			buf.append(getValue(i));
+		}
+		buf.append(']');
+		return buf.toString();
+	}
+
 }
 
 // vim:ts=4
