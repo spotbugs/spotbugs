@@ -1,7 +1,7 @@
 /*
  * FindBugs - Find bugs in Java programs
- * Copyright (C) 2004 Dave Brosius <dbrosius@users.sourceforge.net>
- * Copyright (C) 2004 University of Maryland
+ * Copyright (C) 2004,2005 Dave Brosius <dbrosius@users.sourceforge.net>
+ * Copyright (C) 2004,2005 University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,10 +20,12 @@
  
 package edu.umd.cs.findbugs.detect;
 
-import edu.umd.cs.findbugs.*;
-import java.util.*;
-import org.apache.bcel.classfile.*;
-import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
+import org.apache.bcel.classfile.Method;
+
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.visitclass.Constants2;
 
 public class WrongMapIterator extends BytecodeScanningDetector implements   Constants2 {
@@ -41,7 +43,6 @@ public class WrongMapIterator extends BytecodeScanningDetector implements   Cons
     private static final int NEED_KEYSET_LOAD = 10;
 	private static final int SAW_MAP_LOAD2 = 11;    
 	private static final int SAW_KEY_LOAD = 12;
-    private static final int SAW_MAP_GET = 13;
     
     private int state;
     private int loadedRegister;

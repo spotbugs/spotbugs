@@ -1,7 +1,7 @@
 /*
  * FindBugs - Find bugs in Java programs
- * Copyright (C) 2004 Dave Brosius <dbrosius@users.sourceforge.net>
- * Copyright (C) 2004 University of Maryland
+ * Copyright (C) 2004-2005 Dave Brosius <dbrosius@users.sourceforge.net>
+ * Copyright (C) 2004-2005 University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,15 +20,14 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.*;
+import java.util.BitSet;
+
+import org.apache.bcel.classfile.Method;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.visitclass.Constants2;
-import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.classfile.Method;
-import org.apache.bcel.generic.Type; 
 
 /**
  * looks for calls to Thread.interrupted from a non static context, especially when that context is

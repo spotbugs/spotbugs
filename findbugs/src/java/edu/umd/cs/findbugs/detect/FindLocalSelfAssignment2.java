@@ -1,6 +1,6 @@
 /*
  * FindBugs - Find bugs in Java programs
- * Copyright (C) 2004, Tom Truscott <trt@unx.sas.com>
+ * Copyright (C) 2004-2005, Tom Truscott <trt@unx.sas.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,12 +19,12 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.text.NumberFormat;
-import edu.umd.cs.findbugs.BugReporter;
+import org.apache.bcel.classfile.Code;
+
 import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.visitclass.Constants2;
-import org.apache.bcel.classfile.*;
 
 public class FindLocalSelfAssignment2 extends BytecodeScanningDetector implements Constants2 {
 

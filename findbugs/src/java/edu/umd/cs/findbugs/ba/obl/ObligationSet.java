@@ -19,7 +19,6 @@
 
 package edu.umd.cs.findbugs.ba.obl;
 
-import java.util.Iterator;
 
 /**
  * A multiset of obligations that must be cleaned up by

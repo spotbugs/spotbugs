@@ -1,7 +1,7 @@
 /*
  * FindBugs - Find bugs in Java programs
- * Copyright (C) 2004 Rohan Lloyd <findbugs@rohanl.com>
- * Copyright (C) 2003,2004 University of Maryland
+ * Copyright (C) 2004,2005 Rohan Lloyd <findbugs@rohanl.com>
+ * Copyright (C) 2004,2005 University of Maryland
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -26,10 +26,11 @@
 
 package edu.umd.cs.findbugs.gui;
 
-import java.util.regex.Pattern;
-import java.awt.event.KeyEvent;
-import javax.swing.*;
 import java.awt.FlowLayout;
+import java.awt.event.KeyEvent;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
 
 /**
  * Class to handle Strings annotated with embedded mnemonics
@@ -109,7 +110,6 @@ public class AnnotatedString {
 
 		JFrame frame = new JFrame();
 		frame.getContentPane().setLayout(new FlowLayout());
-		JButton button;
 
 		addButton(frame, "&File");
 		addButton(frame, "S&ave As...");
@@ -125,7 +125,7 @@ public class AnnotatedString {
 		addButton(frame, "Cat && Dog");
 	
 		frame.pack();
-		frame.show();
+		frame.setVisible(true);
 	}
 	
 }

@@ -1,6 +1,6 @@
 /*
  * FindBugs - Find bugs in Java programs
- * Copyright (C) 2004, Tom Truscott <trt@unx.sas.com>
+ * Copyright (C) 2004,2005, Tom Truscott <trt@unx.sas.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -27,12 +27,10 @@ import org.apache.bcel.classfile.*;
 
 public class TestingGround extends BytecodeScanningDetector implements Constants2 {
 
-	private BugReporter bugReporter;
 	private static final boolean active = false;
 	private NumberFormat formatter = null;
 
 	public TestingGround(BugReporter bugReporter) {
-		this.bugReporter = bugReporter;
 		if (active) {
 			formatter = NumberFormat.getIntegerInstance();
 			formatter.setMinimumIntegerDigits(4);

@@ -1,6 +1,6 @@
 /*
  * FindBugs - Find bugs in Java programs
- * Copyright (C) 2003, Mike Fagan <mfagan@tde.com>
+ * Copyright (C) 2003-2005, Mike Fagan <mfagan@tde.com>
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -27,12 +27,10 @@ import org.apache.bcel.classfile.JavaClass;
 
 public class FindBugsSummaryStats extends PreorderVisitor
         implements Detector, BugReporterObserver {
-	private BugReporter bugReporter;
 	private ProjectStats stats;
 	//private AnalysisContext analysisContext;
 
 	public FindBugsSummaryStats(BugReporter bugReporter) {
-		this.bugReporter = bugReporter;
 		this.stats = bugReporter.getProjectStats();
 		bugReporter.addObserver(this);
 	}
