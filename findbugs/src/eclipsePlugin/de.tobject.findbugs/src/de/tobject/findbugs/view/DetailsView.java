@@ -1,6 +1,6 @@
 /* 
  * FindBugs Eclipse Plug-in.
- * Copyright (C) 2003, Peter Friese
+ * Copyright (C) 2003 - 2004, Peter Friese
  *  
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -32,8 +32,10 @@ import org.eclipse.ui.part.ViewPart;
 
 /**
  * View which shows bug details.
+ * 
  * TODO (PeterF) This info should be displayed in the help system or maybe a marker popup.
  * @author Phil Crosby
+ * @version 1.0
  * @since 19.04.2004
  */
 public class DetailsView extends ViewPart {
@@ -46,19 +48,19 @@ public class DetailsView extends ViewPart {
 	
 	private String title = "";
 	
-	//HTML presentation classes
+	// HTML presentation classes
 	private DefaultInformationControl.IInformationPresenter presenter;
 	private TextPresentation presentation = new TextPresentation();
 	
-	/*
+	/* (non-Javadoc)
 	 * @see org.eclipse.ui.IWorkbenchPart#createPartControl(org.eclipse.swt.widgets.Composite)
 	 */
 	public void createPartControl(Composite parent) {
 		control = new StyledText(parent, SWT.READ_ONLY | SWT.H_SCROLL
 				| SWT.V_SCROLL);
 		control.setEditable(false);
-		//Handle control resizing. The HTMLPresenter cares about window size
-		//when presenting HTML, so we should redraw the control.
+		// Handle control resizing. The HTMLPresenter cares about window size
+		// when presenting HTML, so we should redraw the control.
 		control.addControlListener(new ControlAdapter() {
 			public void controlResized(ControlEvent e) {
 				updateDisplay();
@@ -68,14 +70,14 @@ public class DetailsView extends ViewPart {
 		DetailsView.detailsView = this;
 	}
 	
-	/*
-	 * @see org.eclipse.ui.part.WorkbenchPart#setFocus()
+	/* (non-Javadoc)
+	 * @see org.eclipse.ui.IWorkbenchPart#setFocus()
 	 */
 	public void setFocus() {
 		control.setFocus();
 	}
 	
-	/*
+	/* (non-Javadoc)
 	 * @see org.eclipse.ui.IWorkbenchPart#dispose()
 	 */
 	public void dispose() {
@@ -100,6 +102,7 @@ public class DetailsView extends ViewPart {
 	
 	/**
 	 * Set the content to be displayed.
+	 * 
 	 * @param title the title of the bug
 	 * @param description the description of the bug
 	 */
@@ -111,6 +114,7 @@ public class DetailsView extends ViewPart {
 	
 	/**
 	 * Accessor for the details view associated with this plugin.
+	 * 
 	 * @return the details view, or null if it has not been initialized yet
 	 */
 	public static DetailsView getDetailsView() {
@@ -118,8 +122,9 @@ public class DetailsView extends ViewPart {
 	}
 	
 	/**
-	 * Set the details view for the rest of the plugin. Details view should call this
-	 * when it has been initialized.
+	 * Set the details view for the rest of the plugin. Details view should call 
+	 * this when it has been initialized.
+	 * 
 	 * @param view the details view
 	 */
 	public static void setDetailsView(DetailsView view) {

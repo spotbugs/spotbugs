@@ -1,6 +1,6 @@
 /* 
  * FindBugs Eclipse Plug-in.
- * Copyright (C) 2003, Peter Friese
+ * Copyright (C) 2003 - 2004, Peter Friese
  *  
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -40,69 +40,80 @@ import de.tobject.findbugs.builder.AbstractFilesCollector;
 import de.tobject.findbugs.builder.FilesCollectorFactory;
 import de.tobject.findbugs.builder.FindBugsWorker;
 
+/**
+ * Run FindBugs on the currently selected element(s) in the package explorer.
+ *  
+ * @author Peter Friese
+ * @version 1.0
+ * @since 25.09.2003
+ */
 public class FindBugsAction implements IObjectActionDelegate {
 
+	/** The current selection. */
 	private ISelection selection;
 
-	/**
-	 * @see IObjectActionDelegate#setActivePart(IAction, IWorkbenchPart)
+	/* (non-Javadoc)
+	 * @see org.eclipse.ui.IObjectActionDelegate#setActivePart(org.eclipse.jface.action.IAction, org.eclipse.ui.IWorkbenchPart)
 	 */
-	public void setActivePart(IAction action, IWorkbenchPart targetPart) {
+	public final void setActivePart(final IAction action, final IWorkbenchPart targetPart) {
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.eclipse.ui.IActionDelegate#selectionChanged(org.eclipse.jface.action.IAction, org.eclipse.jface.viewers.ISelection)
+	 */
+	public final void selectionChanged(final IAction action, final ISelection selection) {
+		this.selection = selection;
 	}
 
-	/**
-	 * @see IActionDelegate#run(IAction)
+	/* (non-Javadoc)
+	 * @see org.eclipse.ui.IActionDelegate#run(org.eclipse.jface.action.IAction)
 	 */
-	public void run(IAction action) {
+	public final void run(final IAction action) {
 		if (!selection.isEmpty()) {
 			if (selection instanceof IStructuredSelection) {
 				IStructuredSelection structuredSelection = (IStructuredSelection) selection;
-				for (Iterator iter = structuredSelection.iterator(); iter.hasNext();) {
+				for (Iterator iter = structuredSelection.iterator(); iter.hasNext(); ) {
 					Object element = (Object) iter.next();
-					
-					// if it is a Java project, get all contained files!
+
+					/* If the current selection is a Java project:
+					 * - get all contained files
+					 * - hand them over to a FindBugs worker for processing 
+					 */
 					if (element instanceof IJavaProject) {
 						IJavaProject javaProject = (IJavaProject) element;
 						final IProject project = javaProject.getProject();
 						AbstractFilesCollector collector = FilesCollectorFactory.getFilesCollector(project);
 						try {
 							final Collection files = collector.getFiles();
-							
+
 							IRunnableWithProgress r = new IRunnableWithProgress() {
 								public void run(IProgressMonitor pm) throws InvocationTargetException {
 									try {
 										FindBugsWorker worker = new FindBugsWorker(project, pm);
 										worker.work(files);
-									} catch (CoreException ex) {
+									}
+									catch (CoreException ex) {
 										throw new InvocationTargetException(ex);
 									}
 								}
 							};
-							
+
 							ProgressMonitorDialog progress = new ProgressMonitorDialog(FindbugsPlugin.getShell());
 							progress.run(true, true, r);
-							
 						}
 						catch (CoreException e) {
 							e.printStackTrace();
-						} 
+						}
 						catch (InvocationTargetException e) {
 							e.printStackTrace();
-						} 
+						}
 						catch (InterruptedException e) {
 							e.printStackTrace();
 						}
-					}					
+					}
 				}
-			}			
+			}
 		}
-	}
-
-	/**
-	 * @see IActionDelegate#selectionChanged(IAction, ISelection)
-	 */
-	public void selectionChanged(IAction action, ISelection selection) {
-		this.selection = selection;
 	}
 
 }
