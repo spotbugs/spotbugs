@@ -34,7 +34,7 @@ import org.apache.bcel.generic.*;
 public class CFG implements Debug {
 	private ArrayList<BasicBlock> blockList;
 	private ArrayList<Edge> edgeList;
-	private BasicBlock entry, exit;
+	private BasicBlock entry, exit, unhandledExceptionExit;
 	private int firstEdgeId, maxEdgeId;
 
 	/**
@@ -80,11 +80,17 @@ public class CFG implements Debug {
 
 	/** Get the entry node. */
 	public BasicBlock getEntry() {
+		if (entry == null) {
+			entry = allocate();
+		}
 		return entry;
 	}
 
 	/** Get the exit node. */
 	public BasicBlock getExit() {
+		if (exit == null) {
+			exit = allocate();
+		}
 		return exit;
 	}
 
@@ -106,6 +112,11 @@ public class CFG implements Debug {
 			if (!blockList.contains(dest))
 				throw new IllegalArgumentException("dest is not in the CFG");
 		}
+
+/*
+		if (lookupEdge(source, dest) != null)
+			throw new IllegalArgumentException("Duplicate edge!");
+*/
 
 		Edge edge = new Edge(source, dest, type);
 
