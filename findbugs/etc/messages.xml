@@ -1110,6 +1110,18 @@ defined in an interface references a mutable
     </Details>
   </BugPattern>
 
+  <BugPattern type="SE_BAD_FIELD">
+    <ShortDescription>Non-transient non-serializable instance field in serializable class</ShortDescription>
+    <LongDescription>Class {0} defines Non-transient non-serializable instance field {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p> This Serializable class defines a non-primitive instance field which is neither transient,
+Serializable, or <code>java.lang.Object</code>.&nbsp; Objects of this class
+will not be deserialized correctly.
+]]>
+    </Details>
+  </BugPattern>
+
   <BugPattern type="SPDC_STATIC_DOUBLECHECK">
     <ShortDescription>Possible double check of static field</ShortDescription>
     <LongDescription>Possible double check on static field {2} in {1}</LongDescription>

@@ -105,10 +105,24 @@ public class SerializableIdiom extends PreorderVisitor
 		
 	
     public void visit(Field obj) {
+	int flags = obj.getAccessFlags();
+
+	if (isSerializable && fieldSig.startsWith("L") && !obj.isTransient() && !obj.isStatic()) {
+		try {
+			String fieldClassName = fieldSig.substring(1, fieldSig.length() - 1).replace('/', '.');
+			if (!fieldClassName.equals("java.lang.Object") &&
+			    !Repository.instanceOf(fieldClassName, "java.io.Serializable"))
+				bugReporter.reportBug(new BugInstance("SE_BAD_FIELD", HIGH_PRIORITY)
+					.addClass(thisClass.getClassName())
+					.addField(fieldClassName, obj.getName(), fieldSig, false));
+		} catch (ClassNotFoundException e) {
+			bugReporter.reportMissingClass(e);
+		}
+	}
+
 	if (!fieldName.startsWith("this") 
 		&& isSynthetic(obj)) foundSynthetic = true;
 	if (!fieldName.equals("serialVersionUID")) return;
-	int flags = obj.getAccessFlags();
 	int mask = ACC_STATIC | ACC_FINAL;
 	if ( !fieldSig.equals("I")
 			 && !fieldSig.equals("J")) return;
