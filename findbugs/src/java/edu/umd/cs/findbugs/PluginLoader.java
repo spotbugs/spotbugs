@@ -138,7 +138,7 @@ public class PluginLoader extends URLClassLoader {
 				//System.out.println("Found detector: class="+className+", disabled="+disabled);
 	
 				Class detectorClass = loadClass(className);
-				DetectorFactory factory = new DetectorFactory(detectorClass, !disabled.equals("true"));
+				DetectorFactory factory = new DetectorFactory(detectorClass, !disabled.equals("true"), speed);
 				detectorFactoryList.add(factory);
 				detectorFactoryMap.put(className, factory);
 			}

@@ -25,11 +25,13 @@ import java.lang.reflect.InvocationTargetException;
 public class DetectorFactory {
 	private final Class detectorClass;
 	private boolean enabled;
+	private final String speed;
 	private String detailHTML;
 
-	public DetectorFactory(Class detectorClass, boolean enabled) {
+	public DetectorFactory(Class detectorClass, boolean enabled, String speed) {
 		this.detectorClass = detectorClass;
 		this.enabled = enabled;
+		this.speed = speed;
 	}
 
 	private static final Class[] constructorArgTypes = new Class[]{BugReporter.class};
@@ -40,6 +42,10 @@ public class DetectorFactory {
 
 	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
+	}
+
+	public String getSpeed() {
+		return speed;
 	}
 
 	public String getDetailHTML() {

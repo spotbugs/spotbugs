@@ -37,6 +37,9 @@ import edu.umd.cs.findbugs.*;
  */
 public class ConfigureDetectorsDialog extends javax.swing.JDialog {
     
+    private static final int SPEED_COLUMN = 1;
+    private static final int ENABLED_COLUMN = 2;
+    
     /** Creates new form ConfigureDetectorsDialog */
     public ConfigureDetectorsDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
@@ -76,14 +79,14 @@ public class ConfigureDetectorsDialog extends javax.swing.JDialog {
 
             },
             new String [] {
-                "Bug Detector", "Enabled"
+                "Bug Detector", "Speed", "Enabled"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.String.class, java.lang.Boolean.class
+                java.lang.String.class, java.lang.String.class, java.lang.Boolean.class
             };
             boolean[] canEdit = new boolean [] {
-                false, true
+                false, false, true
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -95,20 +98,20 @@ public class ConfigureDetectorsDialog extends javax.swing.JDialog {
             }
         });
         populateTable();
-        detectorTable.getColumnModel().getColumn(1).setMaxWidth(60);
+        detectorTable.getColumnModel().getColumn(ENABLED_COLUMN).setMaxWidth(60);
+        detectorTable.getColumnModel().getColumn(SPEED_COLUMN).setMaxWidth(60);
         detectorTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         detectorTableScrollPane.setViewportView(detectorTable);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = 3;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.insets = new java.awt.Insets(6, 6, 2, 6);
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 0.8;
+        gridBagConstraints.insets = new java.awt.Insets(6, 6, 2, 6);
         getContentPane().add(detectorTableScrollPane, gridBagConstraints);
 
         detectorDescriptionScrollPane.setBorder(new javax.swing.border.BevelBorder(javax.swing.border.BevelBorder.LOWERED));
-        detectorDescriptionScrollPane.setMinimumSize(new java.awt.Dimension(25, 25));
         detectorDescriptionScrollPane.setPreferredSize(new java.awt.Dimension(110, 120));
         detectorDescriptionScrollPane.setViewportView(detectorDescription);
 
@@ -117,8 +120,8 @@ public class ConfigureDetectorsDialog extends javax.swing.JDialog {
         gridBagConstraints.gridy = 1;
         gridBagConstraints.gridwidth = 3;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.insets = new java.awt.Insets(2, 6, 2, 6);
         gridBagConstraints.weighty = 0.3;
+        gridBagConstraints.insets = new java.awt.Insets(2, 6, 2, 6);
         getContentPane().add(detectorDescriptionScrollPane, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -176,7 +179,7 @@ public class ConfigureDetectorsDialog extends javax.swing.JDialog {
 	int num = factoryList.size();
 	for (int i = 0; i < num; ++i) {
 	    DetectorFactory factory = factoryList.get(i);
-	    Boolean enabled = (Boolean) detectorTable.getValueAt(i, 1);
+	    Boolean enabled = (Boolean) detectorTable.getValueAt(i, ENABLED_COLUMN);
 	    factory.setEnabled(enabled.booleanValue());
 	}
 	closeDialog();
@@ -221,7 +224,7 @@ public class ConfigureDetectorsDialog extends javax.swing.JDialog {
         while (i.hasNext()) {
             DetectorFactory factory = i.next();
             DefaultTableModel model = (DefaultTableModel) detectorTable.getModel();
-            model.addRow(new Object[]{factory.getFullName(), Boolean.valueOf(factory.isEnabled())});
+            model.addRow(new Object[]{factory.getFullName(), factory.getSpeed(), Boolean.valueOf(factory.isEnabled())});
 	    factoryList.add(factory);
         }
     }
