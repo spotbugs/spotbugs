@@ -5,9 +5,39 @@
 
   <!--
   **********************************************************************
+  Plugin information
+  **********************************************************************
+  -->
+  <Plugin>
+    <ShortDescription>Plugin par défaut de FindBugs</ShortDescription>
+    <Details>
+<![CDATA[
+<p>Ce plugin contient tous les détecteurs standards de FindBugs.</p>
+]]>
+    </Details>
+  </Plugin>
+  
+  <!--
+  **********************************************************************
   Detectors
   **********************************************************************
    -->
+
+  <Detector class="edu.umd.cs.findbugs.detect.NoteSuppressedWarnings">
+    <Details>
+<![CDATA[
+<p>Supprimes les alarmes marquées par l'annotation edu.umd.cs.findbugs.annotations.NoteSuppressWarnings.</p>
+]]>
+    </Details>
+  </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.NoteCheckReturnValue">
+    <Details>
+<![CDATA[
+<p>Recherche les annotations demandant la vérification de la valeur renvoyée par une méthode.</p>
+]]>
+    </Details>
+  </Detector>
 
   <Detector class="edu.umd.cs.findbugs.detect.InheritanceUnsafeGetResource">
     <Details>
@@ -384,6 +414,14 @@
     </Details>
   </Detector>
 
+ <Detector class="edu.umd.cs.findbugs.detect.FindLocalSelfAssignment2">
+    <Details>
+<![CDATA[
+<p>Ce détecteur recherche les variables locales qui s'auto-alimentent. C'est un détecteur rapide.</p>
+]]>
+    </Details>
+  </Detector>
+  
   <Detector class="edu.umd.cs.findbugs.detect.IncompatMask">
     <Details>
 <![CDATA[
@@ -472,6 +510,30 @@
     </Details>
   </Detector>
 
+  <Detector class="edu.umd.cs.findbugs.detect.UseObjectEquals">
+    <Details>
+<![CDATA[
+<p>Ce détecteur recherche les appels à equals(java.lang.Object) sur des tableaux ou des classes finales qui ne surchargent pas la méthode equals de la classe Object. Cela signifie que la sémantique de equals est la même que ==, ce qui esrt probablement une erreur.</p>
+]]>    
+    </Details>
+  </Detector>
+  
+  <Detector class="edu.umd.cs.findbugs.detect.SuspiciousThreadInterrupted">
+    <Details>
+<![CDATA[
+<p>Ce détecteur recherche les appels à Thread.interrupted() à partir d'un context non statique. Si l'appel provient de Thread.currentThread().interrupted(), l'exercice est inutile et il suffit d'utiliser Thread.interrupted(). Si l'appel provient d'un objet thread quelconque, c'est probablement une erreur puisque interrupted() est toujours appelé sur le thread en cours.</p>
+]]>    
+    </Details>
+  </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.FindDeadLocalStores">
+    <Details>
+<![CDATA[
+<p>Ce détecteur recherche les assignations de variables locales qui ne sont jamais lues. En raison de la façon dont les variables locales finales sont générées dans le bytecode, des faux positifs sont fréquemment détectés, ce qui explique pourquoi ce détecteur est souvent désactivé. C'est un détecteur moyennement rapide.</p>
+]]>
+    </Details>
+  </Detector>
+  
   <Detector class="edu.umd.cs.findbugs.detect.FindMaskedFields">
     <Details>
 <![CDATA[
@@ -480,14 +542,70 @@
     </Details>
   </Detector>
 
-  <Detector class="edu.umd.cs.findbugs.detect.FindDeadLocalStores">
+<Detector class="edu.umd.cs.findbugs.detect.WrongMapIterator">
     <Details>
 <![CDATA[
-<p>Ce détecteur recherche les affectations à des variables locales qui ne sont pas relues par la suite. C'est un détecteur modérément rapide.</p>
+<p>Ce détecteur recherche les accès à la valeur d'une entrée Map en utilisant une clé récupérée à partir d'un itérateur sur keySet. C'est un détecteur rapide.</p>
+]]>
+   </Details>
+  </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.InstantiateStaticClass">
+    <Details>
+<![CDATA[
+<p>Ce détecteur recherche le code qui créé des objets basés sur des classes qui ne définissent que des méthodes statiques. C'est un détecteur rapide.</p>
+]]>
+   </Details>
+  </Detector>
+  
+  <Detector class="edu.umd.cs.findbugs.detect.RuntimeExceptionCapture">
+	  <Details>
+<![CDATA[
+<p>Ce détecteur recherche les clauses catch qui interceptent Exception, alors qu'aucun code dans le bloc ne déclenche Exception.</p>
+]]>
+	  </Details>
+  </Detector>
+  
+  <Detector class="edu.umd.cs.findbugs.detect.FindFloatEquality">
+      <Details>
+<![CDATA[
+<p>Recherche les tests d'égalité en virgule flottante. C'est un détecteur rapide.</p>
+]]>
+      </Details>
+  </Detector>  
+  
+  <Detector class="edu.umd.cs.findbugs.detect.FindUnsatisfiedObligation">
+    <Details>
+<![CDATA[
+<p>Ce détecteur recherche les flux I/O et les resources de bases de données qui ne sont pas correctement clos dans tous les chemins d'éxécution de la méthode. C'est un détecteur lent.</p>
 ]]>
     </Details>
   </Detector>
 
+  <Detector class="edu.umd.cs.findbugs.detect.UnnecessaryMath">
+    <Details>
+<![CDATA[
+<p>Ce détecteur recherche le code qui appelle les méthodes statiques java.lang.Math sur des valeurs constantes, dont le résultat est connu et constant. Il est plus rapide et parfois plus précis d'utiliser le résultat constant à la place.</p>
+]]>
+    </Details>
+  </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.FindCircularDependencies">
+    <Details>
+<![CDATA[
+<p>Ce détecteur recherche les dépendances circulaires entre les classes. C'est un détecteur rapide.</p>
+]]>
+    </Details>
+  </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.RedundantInterfaces">
+    <Details>
+<![CDATA[
+<p>Ce détecteur les classes qui déclarent implémenter la même interface qu'une de leur super classes. C'est redondant, puisque si la super classe implémente l'interface, toutes les sous-classes l'implémente.</p>
+]]>
+    </Details>
+  </Detector>
+  
   <Detector class="edu.umd.cs.findbugs.detect.FindBugsSummaryStats">
     <Details>
 <![CDATA[
@@ -730,6 +848,56 @@ et que la classe fille <i>B</i> appelle super.clone(), alors il est probable que
 ]]>
     </Details>
   </BugPattern>
+
+  <BugPattern type="DM_BOXED_PRIMITIVE_TOSTRING">
+    <ShortDescription>Méthode allouant une primitive boxed pour appeler toString</ShortDescription>
+    <LongDescription>La méthode {1} alloue une primitive boxed juste pour appeler toString</LongDescription>
+    <Details>
+<![CDATA[
+  <p>Une primitive boxed est allouée juste pour appeler toString(). Il est plus efficace de simplement utiliser la forme statique de toString qui accepte la valeur primitive. Donc,</p>
+  <table>
+     <tr><th>Remplacer...</th><th>Avec...</th></tr>
+     <tr><td>new Integer(1).toString()</td><td>Integer.toString(1)</td></tr>
+     <tr><td>new Long(1).toString()</td><td>Long.toString(1)</td></tr>
+     <tr><td>new Float(1.0).toString()</td><td>Float.toString(1.0)</td></tr>
+     <tr><td>new Double(1.0).toString()</td><td>Double.toString(1.0)</td></tr>
+     <tr><td>new Byte(1).toString()</td><td>Byte.toString(1)</td></tr>
+     <tr><td>new Short(1).toString()</td><td>Short.toString(1)</td></tr>
+     <tr><td>new Boolean(true).toString()</td><td>Boolean.toString(true)</td></tr>
+  </table>
+]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="DM_NEW_FOR_GETCLASS">
+    <ShortDescription>Méthode allouant un objet juste pour obtenir la classe</ShortDescription>
+    <LongDescription>La méthode {1} alloue un objet juste pour obtenir la classe correspondante</LongDescription>
+    <Details>
+<![CDATA[
+  <p>Cette méthode alloue un objet juste pour appeler getClass() sur lui afin d'obtenir l'objet Class correspondant. Il est plus simple d'accèder directement à la propriété .class de la classe.</p>
+]]>
+    </Details>
+  </BugPattern>  
+
+  <BugPattern type="DM_NEXTINT_VIA_NEXTDOUBLE">
+    <ShortDescription>Utiliser la méthode nextInt de Random plutôt que nextDouble pour générer un entier aléatoire</ShortDescription>
+    <LongDescription>La méthode {1} utilise la méthode nextDouble de Random pour générer un entier aléatoire : utiliser nextInt est plus efficace</LongDescription>
+    <Details>
+<![CDATA[
+  <p>Si r est un java.util.Random, vous pouvez générer un nombre aléatoire entre 0 et n-1 en utilisant r.nextInt(n) plutôt que (int)(r.nextDouble() * n).</p>
+]]>
+    </Details>
+  </BugPattern>  
+
+  <BugPattern type="DM_USELESS_THREAD">
+    <ShortDescription>Thread créé avec la méthode run vide par défaut</ShortDescription>
+    <LongDescription>La méthode {1} créé un thread utilisant la méthode run vide par défaut</LongDescription>
+    <Details>
+<![CDATA[
+  <p>Cette méthode créé un thread sans spécifier de méthode run, soit par dérivation de la classe Thread, soit en transmettant un objet Runnable. Ce thread ne fait donc rien sauf perdre du time.</p>
+]]>
+    </Details>
+  </BugPattern>  
 
   <BugPattern type="DC_DOUBLECHECK">
     <ShortDescription>Possible double-vérification d'un champs</ShortDescription>
@@ -1173,6 +1341,36 @@ devrait être modifiée pour déclencher NoSuchElementException si elle est appelée
     <Details>
 <![CDATA[
 <p>Un champs statique modifiable peut-être modifié par accident ou par du code malveillant. Malheureusement, la façon dont ce champs est utilisé ne permet une correction aisée de ce problème.</p>
+]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="NM_CLASS_NAMING_CONVENTION">
+    <ShortDescription>Nom de classe devant commencer par une majuscule</ShortDescription>
+    <LongDescription>Le nom de la classe {0} ne commence pas par une majusucle</LongDescription>
+    <Details>
+<![CDATA[
+  <p>Les noms de classe doivent être en minuscules avec la première lettre de chaque mot en majuscules. Essayez de conserver vos noms de classes simples et explicites. Utilisez des mots entiers et évitez acronymes et abbréviations (à moins que l'abbréviation soit plus largement utilisée que la forme longue, comme "URL" ou "HTML").</p>
+]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="NM_METHOD_NAMING_CONVENTION">
+    <ShortDescription>Nom de méthode devant commencer par une minuscule</ShortDescription>
+    <LongDescription>Le nom de la méthode {1} ne commence pas par une minuscule</LongDescription>
+    <Details>
+<![CDATA[
+  <p>Les noms de méthodes devraient être des verbes en minuscules, avec la première lettre des mots, après le premier, en majuscules.</p>
+]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="NM_FIELD_NAMING_CONVENTION">
+    <ShortDescription>Nom de champ devant commencer par une minuscule</ShortDescription>
+    <LongDescription>Le nom du champ {1} ne commence pas par une minuscule</LongDescription>
+    <Details>
+<![CDATA[
+  <p>Les noms de champs qui ne sont pas finaux devraient être en minuscules avec la première lettre des mots, après le premier, en majuscule.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1933,6 +2131,76 @@ Si le tableau transmis est assez grand pour stocker tous les éléments de la coll
     </Details>
   </BugPattern>
 
+  <BugPattern type="BAC_BAD_APPLET_CONSTRUCTOR">
+    <ShortDescription>Constructeur d'Applet erroné reposant sur un AppletStub non initialisé</ShortDescription>
+    <LongDescription>Constructeur d'Applet erroné reposant sur un AppletStub non initialisé</LongDescription>
+    <Details>
+<![CDATA[
+<p>Ce constructeur appelle des méthodes de l'Applet mère qui repose sur l'AppletStub. Comme l'AppletStub n'est pas initialisé jusqu'à ce que la méthode init() de cette applet soit appelé, ces méthodes ne se comporteton pas correctement.</p>
+]]>
+    </Details>
+  </BugPattern>
+  
+  <BugPattern type="UOE_BAD_ARRAY_COMPARE">
+    <ShortDescription>Appel à equals() sur un tableau équivalent à ==</ShortDescription>
+    <LongDescription>Les appels à equals sur un tableau sont équivalents à ==</LongDescription>
+    <Details>
+<![CDATA[
+<p>Cette méthode invoque la méthode equals(Object o) d'un tableau. Comme les tableaux ne surchargent pas la méthode equals de Object, cet appel revient à comparer les adresses. Pour comparer les contenus de tableaux, utilisez java.util.Array.equals(Object[], Object[]).</p>
+]]>    
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="UOE_USE_OBJECT_EQUALS">
+    <ShortDescription>Appel de equals sur une classe finale qui ne surcharge pas la version d'Object</ShortDescription>
+    <LongDescription>Appels de equals sur une classe finale qui ne surcharge pas la version d'Object</LongDescription>
+    <Details>
+<![CDATA[
+<p>Cette méthode invoque la méthode equals(Object o) d'une classe finale qui ne surcharge pas la méthode de la classe Object, et donc qui agit comme le test d'identité ==. Il est correcte d'utiliser la méthode equals(), mais vous devriez envisager de surcharger cette méthode dans la classe.</p>
+]]>    
+    </Details>
+  </BugPattern>
+  
+  <BugPattern type="STI_INTERRUPTED_ON_CURRENTTHREAD">
+    <ShortDescription>Utilisation superflue d'un appel à currentThread() pour appeler interrupted()</ShortDescription>
+    <LongDescription>La méthode {1} invoque inutilement currentThread() juste pour appeler interrupted()</LongDescription>
+    <Details>
+<![CDATA[
+<p>Cette méthode invoque Thread.currentThread() juste pour appeler la méthode interrupted(). Comme interrupted() est une méthode statique, il est plus simple et facile d'utiliser Thread.interrupted().</p>
+]]>    
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="STI_INTERRUPTED_ON_UNKNOWNTHREAD">
+    <ShortDescription>Thread.interrupted() appelée par erreur sur un objet Thread arbitraire</ShortDescription>
+    <LongDescription>La méthode {1} utilise la méthode statique Thread.interrupted(), essayant par erreur de l'appeler sur un objet Thread arbitraire.</LongDescription>
+    <Details>
+<![CDATA[
+<p>Cette méthode invoque Thread.interrupted() sur un objet Thread qui n'est pas le thread actif. Pusique la méthode interrupted() est statique, la méthode interrupted() sera appelée sur un objet différent de celui auquel l'auteur du code pensait.</p>
+]]>    
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="IP_PARAMETER_IS_DEAD_BUT_OVERWRITTEN">
+    <ShortDescription>Un paramètre est ré-écrit avant d'être utilisé</ShortDescription>
+    <LongDescription>Un paramètre de {1} est écrasé avant d'être utilisé</LongDescription>
+    <Details>
+<![CDATA[
+<p>La valeur initiale de ce paramètre est ignorée, et le paramètre est écrasé. Ceci indique généralement une erreur provenant de la croyance infondée qu'une écriture sur ce paramètre sera transmise à l'appelant.</p>
+]]>
+    </Details>
+  </BugPattern>
+  
+  <BugPattern type="DLS_DEAD_LOCAL_STORE">
+    <ShortDescription>Alimentation à perte d'une variable locale</ShortDescription>
+    <LongDescription>Alimentation à perte d'une variable locale dans la méthode {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p>Cette instruction assigne une valeur à une variable locale mais cette variable n'est pas lue par la suite. Ceci indique souvent une erreur puisque la valeur calculée n'est jamais utilisée.</p>
+]]>
+    </Details>
+  </BugPattern>
+
   <BugPattern type="MF_METHOD_MASKS_FIELD">
     <ShortDescription>La méthode définie une variable qui masque un champs</ShortDescription>
     <LongDescription>La méthode {1} définie une variable qui masque le champs {2}</LongDescription>
@@ -1953,17 +2221,105 @@ Si le tableau transmis est assez grand pour stocker tous les éléments de la coll
     </Details>
   </BugPattern>
 
-  <BugPattern type="DLS_DEAD_LOCAL_STORE">
-    <ShortDescription>Alimentation à perte d'une variable locale</ShortDescription>
-    <LongDescription>Alimentation à perte d'une variable locale dans la méthode {1}</LongDescription>
+  <BugPattern type="WMI_WRONG_MAP_ITERATOR">
+    <ShortDescription>Utilisation inefficace d'un itérateur sur keySet au lieu de entrySet</ShortDescription>
+    <LongDescription>La méthode {1} fait une utilisation inefficace d'un itérateur sur keySet au lieu d'un itérateur sur entrySet</LongDescription>
     <Details>
 <![CDATA[
-<p>Cette instruction assigne une valeur à une variable locale mais cette variable n'est pas lue par la suite. Ceci indique souvent une erreur puisque la valeur calculée n'est jamais utilisée.</p>
+<p>Cette méthode accède à la valeur d'une entrée de Map au moyen d'une clé provenant d'un itérateur sur keySet. Il est plus efficace d'utiliser un itérateur sur l'entrySet de la Map, pour éviter la recherche par Map.get(clé).</p>
+]]>
+    </Details>
+  </BugPattern>
+  
+  <BugPattern type="ISC_INSTANTIATE_STATIC_CLASS">
+    <ShortDescription>Instantiation inutile d'une classe qui n'a que des méthodes statiques</ShortDescription>
+    <LongDescription>La méthode {1} instancie une classe qui n'a que des méthodes statiques</LongDescription>
+    <Details>
+<![CDATA[
+<p>Cette classe alloue un objet basé sur une classe qui n'a que des méthodes statiques. Cet objet n'a pas besoin d'être créé, accédez directement aux méthodes en utilisant le nom de la classe.</p>
 ]]>
     </Details>
   </BugPattern>
 
+  <BugPattern type="REC_CATCH_EXCEPTION">
+    <ShortDescription>java.lang.Exception est intercepté alors qu'Exception n'est jamais lancé</ShortDescription>
+    <LongDescription>La méthode {1} intercepte Exception, mais Exception n'est pas lancé dans le bloc try/catch et RuntimeException n'est pas appelé</LongDescription>
+    <Details>
+<![CDATA[
+  <p>Cette méthode utilise un block try-catch qui intercepte les objets Exception, mais Exception n'est jamais déclenché dans ce bloc, et RuntimeException n'est pas explicitement intercepté.  C'est une erreur commune de dire que try / catch (Exception e) est identique à plusieurs try / catch, mais cette tournure intercepte également les RuntimeException, masquant des bugs potentiels.</p>
+]]>
+    </Details>
+  </BugPattern>
 
+  <BugPattern type="FE_FLOATING_POINT_EQUALITY">
+    <ShortDescription>Test d'égalité en virgule flottante.</ShortDescription>
+    <LongDescription>Test d'égalité en virgule flottane dans {1}.</LongDescription>
+    <Details>
+<![CDATA[
+<p>Cette opération teste l'égalité de deux valeurs en virgule flottante. Les calculs en virgule flottante pouvant introduire des arrondis, les valeurs flottantes ou doubles peuvent être imprécises. Pour les valeurs qui doivent être précises, telles que les valeurs monétaires, pensez à utiliser un type à précision fixe tel qu'un BigDecimal. Pour les valeurs qui n'ont pas besoin d'être précises, pensez à tester l'égalité sur une portée quelconque, par exemple : 
+<code>if ( Math.abs(x - y) < .0000001 )</code>.
+Cf section 4.2.4 des spécifications du langage Java.</p>
+    ]]>
+  	  </Details>
+  </BugPattern>
+    
+  <BugPattern type="UM_UNNECESSARY_MATH">
+    <ShortDescription>Appel d'une méthode statique de la classe Math sur une valeur constante</ShortDescription>
+    <LongDescription>Appel d'une méthode statique de la classe Math sur une valeur constante</LongDescription>
+    <Details>
+<![CDATA[
+<p>Cette méthode utilise une méthode statique de java.lang.Math sur une valeur constante. Dans ce cas, le résultat de cet appel peut être déterminé statiquement, ce qui est plus rapide et souvent plus précis. Les méthodes détectées sont :
+<table>
+<tr><th>Méthode</th><th>Paramètre</th></tr>
+<tr>abs<td></td><td>-tous-</td></tr>
+<tr>acos<td></td><td>0.0 ou 1.0</td></tr>
+<tr>asin<td></td><td>0.0 ou 1.0</td></tr>
+<tr>atan<td></td><td>0.0 ou 1.0</td></tr>
+<tr>atan2<td></td><td>0.0</td></tr>
+<tr>cbrt<td></td><td>0.0 ou 1.0</td></tr>
+<tr>ceil<td></td><td>-tous-</td></tr>
+<tr>cos<td></td><td>0.0</td></tr>
+<tr>cosh<td></td><td>0.0</td></tr>
+<tr>exp<td></td><td>0.0 ou 1.0</td></tr>
+<tr>expm1<td></td><td>0.0</td></tr>
+<tr>floor<td></td><td>-tous-</td></tr>
+<tr>log<td></td><td>0.0 ou 1.0</td></tr>
+<tr>log10<td></td><td>0.0 ou 1.0</td></tr>
+<tr>rint<td></td><td>-tous-</td></tr>
+<tr>round<td></td><td>-tous-</td></tr>
+<tr>sin<td></td><td>0.0</td></tr>
+<tr>sinh<td></td><td>0.0</td></tr>
+<tr>sqrt<td></td><td>0.0 ou 1.0</td></tr>
+<tr>tan<td></td><td>0.0</td></tr>
+<tr>tanh<td></td><td>0.0</td></tr>
+<tr>toDegrees<td></td><td>0.0 ou 1.0</td></tr>
+<tr>toRadians<td></td><td>0.0</td></tr>
+</table>
+</p>
+]]>
+    </Details>
+  </BugPattern>
+  
+  <BugPattern type="CD_CIRCULAR_DEPENDENCY">
+    <ShortDescription>Dépendance circulaire entre des classes</ShortDescription>
+    <LongDescription>La classe {0} a une dépendance circulaire avec d'autre classe</LongDescription>
+    <Details>
+<![CDATA[
+<p>Cette classe a une dépendance circulaire avec d'autres classes. Ceci rend la compilation de ces classes difficile puisque chaque classe est dépendante de l'autre pour être correctement construite. Pensez à utiliser des interfaces pour briser la dépendance circulaire forte.</p>
+    ]]>
+    </Details>
+  </BugPattern>
+    
+  <BugPattern type="RI_REDUNDANT_INTERFACES">
+    <ShortDescription>Classe implémentant la même interface que sa super-classe</ShortDescription>
+    <LongDescription>La classe {0} implémente la même interface que sa classe mère</LongDescription>
+    <Details>
+<![CDATA[
+<p>Cette classe déclare implémenter une interface qui est aussi implémenté par une de ses classes mères. Ceci est redondant : dès qu'une super-classe implémente une interface, toutes les sous-classes le font aussi par défaut. Cela peut indiquer que la hiérarchie d'héritage a changé depuis la création de cette classe et la cible de l'implémentation de l'interface doit peut-être être reprise en considération.</p>
+]]>
+    </Details>
+  </BugPattern>
+  
    <!--
   **********************************************************************
    BugCodes
@@ -2043,6 +2399,14 @@ Si le tableau transmis est assez grand pour stocker tous les éléments de la coll
   <BugCode abbrev="BRSA">Mauvais accès à un ResultSet</BugCode>
   <BugCode abbrev="SIO">Opérateur instanceof superflu</BugCode>
   <BugCode abbrev="BAC">Constructeur d'Applet erroné</BugCode>
+  <BugCode abbrev="IP">Paramètre ignoré</BugCode>
   <BugCode abbrev="MF">Champs masqué</BugCode>
+  <BugCode abbrev="WMI">Itérateur Map erroné</BugCode>
+  <BugCode abbrev="ISC">Classe statique instanciée</BugCode>
+  <BugCode abbrev="REC">Capture de RuntimeException</BugCode>
+  <BugCode abbrev="FE">Test d'égalité en virgule flottante</BugCode>
+  <BugCode abbrev="UM">Constante Math inutile</BugCode>
+  <BugCode abbrev="CD">Dépendance circulaire</BugCode>
+  <BugCode abbrev="RI">Interfaces redondantes</BugCode>
   <BugCode abbrev="DLS">Alimentation à perte</BugCode>
 </MessageCollection>
