@@ -19,19 +19,15 @@
 
 package edu.umd.cs.findbugs.config;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.Detector;
-import edu.umd.cs.findbugs.DetectorFactory;
-import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.I18N;
 
 /**
@@ -81,7 +77,6 @@ public class ProjectFilterSettings implements Cloneable {
 
 	// Fields
 	private Set<String> activeBugCategorySet;
-	private List<DetectorFactory> detectorFactories;
 	private String minPriority;
 	private int minPriorityAsInt;
 	
@@ -91,7 +86,6 @@ public class ProjectFilterSettings implements Cloneable {
 	 */
 	private ProjectFilterSettings() {
 		this.activeBugCategorySet = new HashSet<String>();
-		this.detectorFactories = new ArrayList<DetectorFactory>();
 		setMinPriority(DEFAULT_PRIORITY);
 	}
 	
@@ -108,15 +102,6 @@ public class ProjectFilterSettings implements Cloneable {
 		// Add all bugs categories
 		for (Iterator<String> i = I18N.instance().getBugCategories().iterator(); i.hasNext(); ) {
 			result.addCategory(i.next());
-		}
-		
-		// Add enabled detector factories
-		Iterator iterator =
-			DetectorFactoryCollection.instance().factoryIterator();
-		while (iterator.hasNext()) {
-			DetectorFactory factory = (DetectorFactory) iterator.next();
-			if (factory.isEnabled())
-				result.getDetectorFactories().add(factory);
 		}
 		
 		// Set default priority threshold
@@ -152,20 +137,6 @@ public class ProjectFilterSettings implements Cloneable {
 		while (t.hasMoreTokens()) {
 			String category = t.nextToken();
 			result.addCategory(category);
-		}
-		
-		// Parse detector factories
-		if (bar>=0){
-			String factories = s.substring(bar+1,s.length());
-			t = new StringTokenizer(factories, LISTITEM_DELIMITER);
-			while (t.hasMoreTokens()) {				
-					DetectorFactory factory =
-						DetectorFactoryCollection.instance().getFactory(t.nextToken());
-					if (factory != null) {
-						result.getDetectorFactories().add(factory);
-					}				
-			}
-			
 		}
 		
 		return result;
@@ -287,14 +258,6 @@ public class ProjectFilterSettings implements Cloneable {
 			
 		}
 		
-		// Encode active bug factories
-		buf.append(FIELD_DELIMITER);
-		for (Iterator<DetectorFactory> i = this.detectorFactories.iterator(); i.hasNext(); ) {
-			buf.append(i.next().getShortName());
-			if (i.hasNext())
-				buf.append(LISTITEM_DELIMITER);
-		}		
-		
 		return buf.toString();
 	}
 
@@ -318,11 +281,6 @@ public class ProjectFilterSettings implements Cloneable {
 		if (!mine.containsAll(yours) || !yours.containsAll(mine))
 			return false;
 		
-		List<DetectorFactory> myFactories = this.getDetectorFactories();
-		List<DetectorFactory> theirFactories = other.getDetectorFactories();
-		if (!myFactories.containsAll(theirFactories) || !theirFactories.containsAll(myFactories))
-			return false;
-		
 		return true;
 	}
 	
@@ -338,8 +296,6 @@ public class ProjectFilterSettings implements Cloneable {
 			// Copy field contents
 			clone.activeBugCategorySet = new HashSet<String>();
 			clone.activeBugCategorySet.addAll(this.activeBugCategorySet);
-			clone.detectorFactories = new ArrayList<DetectorFactory>();
-			clone.detectorFactories.addAll(this.detectorFactories);
 			clone.setMinPriority(this.getMinPriority());
 			
 			return clone;
@@ -381,18 +337,6 @@ public class ProjectFilterSettings implements Cloneable {
 				break;
 		}
 		return minPriority;
-	}
-	/**
-	 * @return Returns the enabled detector factories.
-	 */
-	public List<DetectorFactory> getDetectorFactories() {
-		return detectorFactories;
-	}
-	/**
-	 * @param detectorFactories The list of detector factories to set.
-	 */
-	public void setDetectorFactories(List<DetectorFactory> detectorFactories) {
-		this.detectorFactories = detectorFactories;
 	}
 }
 

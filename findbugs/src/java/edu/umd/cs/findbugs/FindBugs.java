@@ -51,6 +51,7 @@ import edu.umd.cs.findbugs.ba.AnalysisException;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.ClassObserver;
 import edu.umd.cs.findbugs.ba.InnerClassAccessMap;
+import edu.umd.cs.findbugs.config.UserPreferences;
 import edu.umd.cs.findbugs.visitclass.Constants2;
 
 /**
@@ -439,6 +440,7 @@ public class FindBugs implements Constants2, ExitCodes {
 		private int priorityThreshold = Detector.NORMAL_PRIORITY;
 		private PrintStream outputStream = null;
 		private Set<String> bugCategorySet = null;
+		private UserPreferences userPreferences = new UserPreferences();
 
 		public FindBugsCommandLine() {
 			addOption("-home", "home directory", "specify FindBugs home directory");
@@ -577,7 +579,7 @@ public class FindBugs implements Constants2, ExitCodes {
 					// Selecting detectors explicitly, so start out by
 					// disabling all of them.  The selected ones will
 					// be re-enabled.
-					DetectorFactoryCollection.instance().disableAll();
+					userPreferences.enableAllDetectors(false);
 				}
 
 				// Explicitly enable or disable the selected detectors.
@@ -587,7 +589,7 @@ public class FindBugs implements Constants2, ExitCodes {
 					DetectorFactory factory = DetectorFactoryCollection.instance().getFactory(visitorName);
 					if (factory == null)
 						throw new IllegalArgumentException("Unknown detector: " + visitorName);
-					factory.setEnabled(!omit);
+					userPreferences.enableDetector(factory, !omit);
 				}
 			} else if (option.equals("-chooseVisitors")) {
 				// This is like -visitors and -omitVisitors, but
@@ -600,7 +602,7 @@ public class FindBugs implements Constants2, ExitCodes {
 							.getFactory(what);
 						if (factory == null)
 							throw new IllegalArgumentException("Unknown detector: " + what);
-						factory.setEnabled(enabled);
+						userPreferences.enableDetector(factory, enabled);
 					}
 				});
 			} else if (option.equals("-choosePlugins")) {
@@ -640,7 +642,7 @@ public class FindBugs implements Constants2, ExitCodes {
 					factory.setPriorityAdjustment(adjustment.equals("raise") ? -1 : +1);
 				}
 			} else if (option.equals("-bugCategories")) {
-				this.bugCategorySet = handleBugCategories(argument);
+				this.bugCategorySet = handleBugCategories(userPreferences, argument);
 			} else if (option.equals("-onlyAnalyze")) {
 				// The argument is a comma-separated list of classes and packages
 				// to select to analyze.  (If a list item ends with ".*",
@@ -746,6 +748,8 @@ public class FindBugs implements Constants2, ExitCodes {
 			}
 
 			FindBugs findBugs = new FindBugs(bugReporter, project);
+			
+			findBugs.setUserPreferences(userPreferences);
 
 			if (filterFile != null)
 				findBugs.setFilter(filterFile, include);
@@ -797,6 +801,7 @@ public class FindBugs implements Constants2, ExitCodes {
 	private ErrorCountingBugReporter bugReporter;
 	private boolean relaxedReportingMode;
 	private Project project;
+	private UserPreferences userPreferences;
 	private List<ClassObserver> classObserverList;
 	private Detector detectors [];
 	private FindBugsProgress progressCallback;
@@ -827,6 +832,7 @@ public class FindBugs implements Constants2, ExitCodes {
 		this.bugReporter = new ErrorCountingBugReporter(bugReporter);
 		this.relaxedReportingMode = false;
 		this.project = project.duplicate();
+		this.userPreferences = new UserPreferences();
 		this.classObserverList = new LinkedList<ClassObserver>();
 
 		// Create a no-op progress callback.
@@ -877,6 +883,17 @@ public class FindBugs implements Constants2, ExitCodes {
 		bugReporter.setRealBugReporter(filterBugReporter);
 	}
 
+	/**
+	 * Set the UserPreferences representing which Detectors
+	 * should be used.  If UserPreferences are not set explicitly,
+	 * the default set of Detectors will be used.
+	 * 
+	 * @param userPreferences the UserPreferences
+	 */
+	public void setUserPreferences(UserPreferences userPreferences) {
+		this.userPreferences = userPreferences;
+	}
+	
 	/**
 	 * Add a ClassObserver.
 	 *
@@ -1096,7 +1113,8 @@ public class FindBugs implements Constants2, ExitCodes {
 		Iterator<DetectorFactory> i = DetectorFactoryCollection.instance().factoryIterator();
 		while (i.hasNext()) {
 			DetectorFactory factory = i.next();
-			if (factory.getPlugin().isEnabled() && factory.isEnabled()) {
+			if (factory.getPlugin().isEnabled() &&
+					/*factory.isEnabled()*/userPreferences.isDetectorEnabled(factory)) {
 				Detector detector = factory.create(bugReporter);
 				detector.setAnalysisContext(analysisContext);
 				result.add(detector);
@@ -1457,10 +1475,12 @@ public class FindBugs implements Constants2, ExitCodes {
 
 	/**
 	 * Process -bugCategories option.
-	 * @param categories comma-separated list of bug categories
+	 * 
+	 * @param userPreferences UserPreferences representing which Detectors are enabled
+	 * @param categories      comma-separated list of bug categories
 	 * @return Set of categories to be used
 	 */
-	private static Set<String> handleBugCategories(String categories) {
+	private static Set<String> handleBugCategories(UserPreferences userPreferences, String categories) {
 		// Parse list of bug categories
 		Set<String> categorySet = new HashSet<String>();
 		StringTokenizer tok = new StringTokenizer(categories, ",");
@@ -1473,7 +1493,7 @@ public class FindBugs implements Constants2, ExitCodes {
 		// Skip disabled detectors, though.
 		for (Iterator<DetectorFactory> i = DetectorFactoryCollection.instance().factoryIterator(); i.hasNext();) {
 			DetectorFactory factory = i.next();
-			if (!factory.isEnabled())
+			if (!factory.isEnabledForCurrentJRE())
 				continue;
 			Collection<BugPattern> reported = factory.getReportedBugPatterns();
 			boolean enable = false;
@@ -1496,7 +1516,7 @@ public class FindBugs implements Constants2, ExitCodes {
 			if (DEBUG && enable) {
 				System.out.println("Enabling " + factory.getShortName());
 			}
-			factory.setEnabled(enable);
+			userPreferences.enableDetector(factory, enable);
 		}
 
 		return categorySet;

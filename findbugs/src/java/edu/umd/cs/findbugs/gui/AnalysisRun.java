@@ -33,6 +33,8 @@ import java.util.*;
 import javax.swing.tree.DefaultTreeModel;
 
 import edu.umd.cs.findbugs.*;
+import edu.umd.cs.findbugs.config.UserPreferences;
+
 import org.apache.bcel.classfile.JavaClass;
 
 /**
@@ -121,6 +123,9 @@ public class AnalysisRun {
 	 */
 	public void execute(FindBugsProgress progressCallback) throws IOException, InterruptedException {
 		findBugs.setProgressCallback(progressCallback);
+		
+		// Honor current UserPreferences
+		findBugs.setUserPreferences(UserPreferences.getUserPreferences());
 
 		// Run the analysis!
 		findBugs.execute();

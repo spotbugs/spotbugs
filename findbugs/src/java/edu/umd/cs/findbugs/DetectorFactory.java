@@ -32,7 +32,6 @@ import java.util.*;
 public class DetectorFactory {
 	private Plugin plugin;
 	private final Class detectorClass;
-	private boolean enabled;
 	private boolean defEnabled;
 	private final String speed;
 	private final String reports;
@@ -60,7 +59,6 @@ public class DetectorFactory {
 	                       String requireJRE) {
 		this.plugin = plugin;
 		this.detectorClass = detectorClass;
-		this.enabled = enabled;
 		this.defEnabled = enabled;
 		this.speed = speed;
 		this.reports = reports;
@@ -82,14 +80,13 @@ public class DetectorFactory {
 	}
 	
 	/**
-	 * Return whether the factory is enabled.
-	 * In addition to checked in the "enabled" attribute of the factory,
-	 * this method checks that we are running on the minimum JRE
-	 * version required by the detector.
+	 * Check to see if we are running on a recent-enough JRE for
+	 * this detector to be enabled.
+	 * 
+	 * @return true if the current JRE is recent enough to run the Detector,
+	 *         false if it is too old
 	 */
-	public boolean isEnabled() {
-		if (!enabled)
-			return false;
+	public boolean isEnabledForCurrentJRE() {
 		if (requireJRE.equals(""))
 			return true;
 		try {
@@ -116,13 +113,6 @@ public class DetectorFactory {
 	 */
 	public boolean isHidden() {
 		return hidden;
-	}
-
-	/**
-	 * Set the enabled status of the factory.
-	 */
-	public void setEnabled(boolean enabled) {
-		this.enabled = enabled;
 	}
 
 	/**

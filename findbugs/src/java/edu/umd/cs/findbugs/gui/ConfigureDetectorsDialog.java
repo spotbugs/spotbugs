@@ -26,17 +26,20 @@
 
 package edu.umd.cs.findbugs.gui;
 
-import java.util.*;
-import javax.swing.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+
+import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
 
 import edu.umd.cs.findbugs.BugPattern;
 import edu.umd.cs.findbugs.DetectorFactory;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
+import edu.umd.cs.findbugs.config.UserPreferences;
 
 /**
  * Configure Detectors by enabling/disabling them.
@@ -44,6 +47,7 @@ import edu.umd.cs.findbugs.DetectorFactoryCollection;
  * @author David Hovemeyer
  */
 public class ConfigureDetectorsDialog extends javax.swing.JDialog {
+	private static final long serialVersionUID = 1L;
 
 	private static final int SPEED_COLUMN = 1;
 	private static final int ENABLED_COLUMN = 2;
@@ -248,7 +252,8 @@ public class ConfigureDetectorsDialog extends javax.swing.JDialog {
 		for (int i = 0; i < num; ++i) {
 			DetectorFactory factory = factoryList.get(i);
 			Boolean enabled = (Boolean) model.getValueAt(i, ENABLED_COLUMN);
-			factory.setEnabled(enabled.booleanValue());
+			UserPreferences.getUserPreferences().enableDetector(
+					factory, enabled.booleanValue());
 		}
 		closeDialog();
 	}//GEN-LAST:event_okButtonActionPerformed
@@ -325,7 +330,11 @@ public class ConfigureDetectorsDialog extends javax.swing.JDialog {
 		while (i.hasNext()) {
 			DetectorFactory factory = i.next();
 			DefaultTableModel model = (DefaultTableModel) detectorTable.getModel();
-			model.addRow(new Object[]{factory.getShortName(), factory.getSpeed(), Boolean.valueOf(factory.isEnabled())});
+			model.addRow(new Object[]{
+					factory.getShortName(),
+					factory.getSpeed(),
+					UserPreferences.getUserPreferences().isDetectorEnabled(factory)
+					});
 			factoryList.add(factory);
 		}
 	}

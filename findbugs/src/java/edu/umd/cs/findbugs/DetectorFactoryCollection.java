@@ -120,28 +120,6 @@ public class DetectorFactoryCollection {
 	}
 
 	/**
-	 * Disable all detectors.
-	 */
-	public void disableAll() {
-		enableAll(false);
-	}
-
-	/**
-	 * Enable all detectors.
-	 */
-	public void enableAll() {
-		enableAll(true);
-	}
-
-	private void enableAll(boolean enabled) {
-		Iterator<DetectorFactory> i = DetectorFactoryCollection.instance().factoryIterator();
-		while (i.hasNext()) {
-			DetectorFactory factory = i.next();
-			factory.setEnabled(enabled);
-		}
-	}
-
-	/**
 	 * Register a DetectorFactory.
 	 */
 	private void registerDetector(DetectorFactory factory) {

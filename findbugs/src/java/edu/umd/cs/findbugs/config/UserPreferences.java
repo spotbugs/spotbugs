@@ -53,11 +53,11 @@ public class UserPreferences {
 	private static final String DETECTOR_THRESHOLD_KEY = "detector_threshold";
 	private static final String FILTER_SETTINGS_KEY = "filter_settings";
 	private LinkedList<String> recentProjectsList = new LinkedList<String>();
-	private HashMap<String, Boolean> detectorStateList = new HashMap<String, Boolean>();
+	private HashMap<String, Boolean> detectorEnablementMap = new HashMap<String, Boolean>();
 	private ProjectFilterSettings filterSettings;
 	private static UserPreferences preferencesSingleton = new UserPreferences();
 
-	private UserPreferences() {
+	public UserPreferences() {
 		this.filterSettings = ProjectFilterSettings.createDefault();
 	}
 
@@ -103,7 +103,7 @@ public class UserPreferences {
 			if (pipePos >= 0) {
 				String name = detectorState.substring(0, pipePos);
 				String enabled = detectorState.substring(pipePos + 1);
-				detectorStateList.put(name, Boolean.valueOf(enabled));
+				detectorEnablementMap.put(name, Boolean.valueOf(enabled));
 			}
 			i++;
 		}
@@ -135,7 +135,7 @@ public class UserPreferences {
 			props.put(key, projectName);
 		}
 
-		Iterator it = detectorStateList.entrySet().iterator();
+		Iterator it = detectorEnablementMap.entrySet().iterator();
 		int i = 0;
 		while (it.hasNext()) {
 			Map.Entry entry = (Map.Entry) it.next();
@@ -194,23 +194,51 @@ public class UserPreferences {
 			}
 		}
 	}
-
-	public void loadUserDetectorPreferences() {
-		Iterator<DetectorFactory> i = DetectorFactoryCollection.instance().factoryIterator();
-		while (i.hasNext()) {
-			DetectorFactory factory = i.next();
-			Boolean enabled = detectorStateList.get(factory.getShortName());
-			if (enabled != null)
-				factory.setEnabled(enabled.booleanValue());
+	
+	/**
+	 * Set the enabled/disabled status of given Detector.
+	 * 
+	 * @param factory the DetectorFactory for the Detector to be enabled/disabled
+	 * @param enable  true if the Detector should be enabled,
+	 *                false if it should be Disabled
+	 */
+	public void enableDetector(DetectorFactory factory, boolean enable) {
+		detectorEnablementMap.put(factory.getShortName(), enable ? Boolean.TRUE : Boolean.FALSE);
+	}
+	
+	/**
+	 * Get the enabled/disabled status of given Detector.
+	 * 
+	 * @param factory the DetectorFactory of the Detector
+	 * @return true if the Detector is enabled, false if not
+	 */
+	public boolean isDetectorEnabled(DetectorFactory factory) {
+		String detectorName = factory.getShortName();
+		Boolean enabled = detectorEnablementMap.get(detectorName);
+		if (enabled == null) {
+			// No explicit preference has been specified for this detector,
+			// so use the default enablement specified by the
+			// DetectorFactory.
+			enabled = factory.isDefaultEnabled() ? Boolean.TRUE : Boolean.FALSE;
+			detectorEnablementMap.put(detectorName, enabled);
 		}
+		return enabled.booleanValue();
 	}
 
-	public void storeUserDetectorPreferences() {
-		detectorStateList.clear();
-		Iterator<DetectorFactory> i = DetectorFactoryCollection.instance().factoryIterator();
-		while (i.hasNext()) {
+	/**
+	 * Enable or disable all known Detectors.
+	 * 
+	 * @param enable true if all detectors should be enabled,
+	 *               false if they should all be disabled
+	 */
+	public void enableAllDetectors(boolean enable) {
+		detectorEnablementMap.clear();
+		
+		DetectorFactoryCollection factoryCollection = DetectorFactoryCollection.instance();
+		for (Iterator<DetectorFactory> i = factoryCollection.factoryIterator(); i.hasNext();) {
 			DetectorFactory factory = i.next();
-			detectorStateList.put(factory.getShortName(), Boolean.valueOf(factory.isEnabled()));
+			detectorEnablementMap.put(
+					factory.getShortName(), enable ? Boolean.TRUE : Boolean.FALSE);
 		}
 	}
 	

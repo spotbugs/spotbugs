@@ -26,27 +26,85 @@
 
 package edu.umd.cs.findbugs.gui;
 
+import java.awt.BorderLayout;
+import java.awt.CardLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.Event;
+import java.awt.Graphics;
+import java.awt.HeadlessException;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.Shape;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.Transferable;
+import java.awt.event.KeyEvent;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.lang.reflect.Method;
-import java.awt.*;
-import java.io.*;
-import java.util.*;
+import java.text.MessageFormat;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeEvent;
-import javax.swing.*;
+import java.util.TreeSet;
+
+import javax.swing.AbstractButton;
+import javax.swing.ButtonGroup;
+import javax.swing.DefaultListModel;
+import javax.swing.ImageIcon;
+import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JComponent;
+import javax.swing.JDialog;
+import javax.swing.JFileChooser;
+import javax.swing.JList;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JRadioButton;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.JTextField;
+import javax.swing.JTree;
+import javax.swing.JViewport;
+import javax.swing.KeyStroke;
+import javax.swing.ListModel;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.filechooser.FileFilter;
-import javax.swing.text.*;
-import javax.swing.tree.*;
-import java.text.MessageFormat;
-import java.awt.event.KeyEvent;
-import java.awt.datatransfer.*;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultHighlighter;
+import javax.swing.text.Highlighter;
+import javax.swing.text.JTextComponent;
+import javax.swing.text.Position;
+import javax.swing.text.View;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeCellRenderer;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreePath;
+import javax.swing.tree.TreeSelectionModel;
 
-
-import edu.umd.cs.findbugs.*;
+import edu.umd.cs.findbugs.BugAnnotation;
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.ClassAnnotation;
+import edu.umd.cs.findbugs.Detector;
+import edu.umd.cs.findbugs.DetectorFactoryCollection;
+import edu.umd.cs.findbugs.FieldAnnotation;
+import edu.umd.cs.findbugs.I18N;
+import edu.umd.cs.findbugs.MethodAnnotation;
+import edu.umd.cs.findbugs.Project;
+import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.ba.SourceFinder;
-
 import edu.umd.cs.findbugs.config.ProjectFilterSettings;
 import edu.umd.cs.findbugs.config.UserPreferences;
 
@@ -56,11 +114,11 @@ import edu.umd.cs.findbugs.config.UserPreferences;
  * @author David Hovemeyer
  */
 public class FindBugsFrame extends javax.swing.JFrame {
+	private static final long serialVersionUID = 3689634696388491575L;
 
 	/* ----------------------------------------------------------------------
 	 * Helper classes
 	 * ---------------------------------------------------------------------- */
-
 	private static final Color HIGH_PRIORITY_COLOR = new Color(0xff0000);
 	private static final Color NORMAL_PRIORITY_COLOR = new Color(0x9f0000);
 	private static final Color LOW_PRIORITY_COLOR = Color.BLACK;
@@ -484,7 +542,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 		
 		UserPreferences prefs = UserPreferences.getUserPreferences();
 		prefs.read();
-		prefs.loadUserDetectorPreferences();
+//		prefs.loadUserDetectorPreferences();
 		
 		initComponents();
 		postInitComponents();
@@ -3395,7 +3453,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	 */
 	void exitFindBugs() {
 		// TODO: offer to save work, etc.
-		UserPreferences.getUserPreferences().storeUserDetectorPreferences();
+//		UserPreferences.getUserPreferences().storeUserDetectorPreferences();
 		UserPreferences.getUserPreferences().write();
 		System.exit(0);
 	}
