@@ -62,6 +62,7 @@ public class MergeResults {
 		SortedSet<BugInstance> newSet = createSet(newCollection);
 
 		int numPreserved = 0;
+		int numAlreadyAnnotated = 0;
 		int numLost = 0;
 		int numLostWithAnnotations = 0;
 
@@ -71,8 +72,12 @@ public class MergeResults {
 			if (newSet.contains(orig)) {
 				SortedSet<BugInstance> tailSet = newSet.tailSet(orig);
 				BugInstance matching = tailSet.first();
-				matching.setAnnotationText(orig.getAnnotationText());
-				numPreserved++;
+				if (matching.getAnnotationText().equals("")) {
+					matching.setAnnotationText(orig.getAnnotationText());
+					numPreserved++;
+				} else {
+					numAlreadyAnnotated++;
+				}
 			} else {
 				numLost++;
 				if (!orig.getAnnotationText().equals("")) {
@@ -88,6 +93,7 @@ public class MergeResults {
 		}
 
 		System.out.println(numPreserved + " preserved, " +
+			numAlreadyAnnotated + " already annotated, " +
 			numLost + " lost (" + numLostWithAnnotations + " lost with annotations)");
 
 		newCollection.writeXML(outputFile, project);
