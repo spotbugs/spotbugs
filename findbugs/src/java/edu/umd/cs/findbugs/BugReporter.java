@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs;
 
+import edu.umd.cs.daveho.ba.ClassObserver;
 import edu.umd.cs.daveho.ba.RepositoryLookupFailureCallback;
 
 /**
@@ -30,7 +31,7 @@ import edu.umd.cs.daveho.ba.RepositoryLookupFailureCallback;
  *
  * @author David Hovemeyer
  */
-public interface BugReporter extends RepositoryLookupFailureCallback {
+public interface BugReporter extends RepositoryLookupFailureCallback, ClassObserver {
 
 	/** Silent error-reporting verbosity level. */
 	public static final int SILENT = 0;
@@ -50,13 +51,6 @@ public interface BugReporter extends RepositoryLookupFailureCallback {
 	 *   this priority to be reported
 	 */
 	public void setPriorityThreshold(int threshold);
-
-	/**
-	 * Called to report that the given class was analyzed.
-	 * @param appClassName the name of the class
-	 * @param isInterface true if the class is an interface
-	 */
-	public void addApplicationClass(String appClassName, boolean isInterface);
 
 	/**
 	 * Report a bug.

@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs;
 
+import org.apache.bcel.classfile.JavaClass;
+
 /**
  * A BugReporter which delegates all method calls to another BugReporter.
  * This is useful for customizing the behavior of another bug reporter.
@@ -48,8 +50,8 @@ public class DelegatingBugReporter implements BugReporter {
 		realBugReporter.setPriorityThreshold(threshold);
 	}
 
-	public void addApplicationClass(String appClassName, boolean isInterface) {
-		realBugReporter.addApplicationClass(appClassName, isInterface);
+	public void observeClass(JavaClass javaClass) {
+		realBugReporter.observeClass(javaClass);
 	}
 
 	public void reportBug(BugInstance bugInstance) {

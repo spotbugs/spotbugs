@@ -29,6 +29,7 @@ import org.apache.bcel.Repository;
 import org.apache.bcel.util.ClassPath;
 import org.apache.bcel.util.SyntheticRepository;
 import edu.umd.cs.daveho.ba.ClassContext;
+import edu.umd.cs.daveho.ba.ClassObserver;
 
 /**
  * An instance of this class is used to apply the selected set of
@@ -280,6 +281,7 @@ public class FindBugs implements Constants2, ExitCodes
 
   private ErrorCountingBugReporter bugReporter;
   private Project project;
+  private List<ClassObserver> classObserverList;
   private Detector detectors [];
   private FindBugsProgress progressCallback;
 
@@ -302,6 +304,7 @@ public class FindBugs implements Constants2, ExitCodes
 
 	this.bugReporter = new ErrorCountingBugReporter(bugReporter);
 	this.project = project;
+	this.classObserverList = new LinkedList<ClassObserver>();
 
 	// Create a no-op progress callback.
 	this.progressCallback = new FindBugsProgress() {
@@ -311,6 +314,8 @@ public class FindBugs implements Constants2, ExitCodes
 		public void finishClass() { }
 		public void finishPerClassAnalysis() { }
 	};
+
+	addClassObserver(bugReporter);
   }
 
   /**
@@ -333,6 +338,14 @@ public class FindBugs implements Constants2, ExitCodes
 	BugReporter origBugReporter = bugReporter.getRealBugReporter();
 	BugReporter filterBugReporter = new FilterBugReporter(origBugReporter, filter, include);
 	bugReporter.setRealBugReporter(filterBugReporter);
+  }
+
+  /**
+   * Add a ClassObserver.
+   * @param classObserver the ClassObserver
+   */
+  public void addClassObserver(ClassObserver classObserver) {
+	classObserverList.add(classObserver);
   }
 
   /**
@@ -525,11 +538,13 @@ public class FindBugs implements Constants2, ExitCodes
   private void examineClass(String className) throws InterruptedException {
 	if (DEBUG) System.out.println("Examining class " + className);
 
-	JavaClass javaClass;
 	try {
-		javaClass = Repository.lookupClass(className);
+		JavaClass javaClass = Repository.lookupClass(className);
 
-		bugReporter.addApplicationClass(className, javaClass.isInterface());
+		// Notify ClassObservers
+		for (Iterator<ClassObserver> i = classObserverList.iterator(); i.hasNext(); ) {
+			i.next().observeClass(javaClass);
+		}
 
 		ClassContext classContext = new ClassContext(javaClass, bugReporter);
 

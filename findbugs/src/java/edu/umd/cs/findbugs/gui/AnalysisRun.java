@@ -36,6 +36,7 @@ import java.io.Reader;
 import java.util.*;
 import javax.swing.tree.DefaultTreeModel;
 import edu.umd.cs.findbugs.*;
+import org.apache.bcel.classfile.JavaClass;
 
 /**
  * Representation of a run of the FindBugs analysis on a Project.
@@ -51,8 +52,8 @@ public class AnalysisRun {
     private class Reporter extends AbstractBugReporter {
         private SortedBugCollection bugCollection = new SortedBugCollection();
 
-	public void addApplicationClass(String appClassName, boolean isInterface) {
-	    bugCollection.addApplicationClass(appClassName, isInterface);
+	public void observeClass(JavaClass javaClass) {
+	    bugCollection.addApplicationClass(javaClass.getClassName(), javaClass.isInterface());
 	}
 
 	public void logError(String message) {

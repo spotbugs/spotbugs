@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs;
 
 import java.util.*;
+import org.apache.bcel.classfile.JavaClass;
 
 public class XMLBugReporter extends TextUIBugReporter {
 	private SortedBugCollection bugCollection = new SortedBugCollection();
@@ -29,8 +30,8 @@ public class XMLBugReporter extends TextUIBugReporter {
 		this.project = project;
 	}
 
-	public void addApplicationClass(String appClassName, boolean isInterface) {
-		bugCollection.addApplicationClass(appClassName, isInterface);
+	public void observeClass(JavaClass javaClass) {
+		bugCollection.addApplicationClass(javaClass.getClassName(), javaClass.isInterface());
 	}
 
 	public void logError(String message) {

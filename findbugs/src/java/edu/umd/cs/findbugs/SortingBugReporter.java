@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs;
 
 import java.util.*;
+import org.apache.bcel.classfile.JavaClass;
 
 /**
  * A BugReporter which stores all of the reported bug instances,
@@ -28,7 +29,7 @@ import java.util.*;
 public class SortingBugReporter extends TextUIBugReporter {
 	private SortedBugCollection bugCollection = new SortedBugCollection();
 
-	public void addApplicationClass(String appClassName, boolean isInterface) {
+	public void observeClass(JavaClass javaClass) {
 		// Don't need to do anything special, since we won't be
 		// reporting statistics.
 	}

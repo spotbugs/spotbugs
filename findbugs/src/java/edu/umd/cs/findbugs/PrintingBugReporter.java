@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs;
 
 import java.util.*;
+import org.apache.bcel.classfile.JavaClass;
 
 /**
  * A simple BugReporter which simply prints the formatted message
@@ -28,7 +29,7 @@ import java.util.*;
 public class PrintingBugReporter extends TextUIBugReporter {
 	private HashSet<BugInstance> seenAlready = new HashSet<BugInstance>();
 
-	public void addApplicationClass(String appClassName, boolean isInterface) {
+	public void observeClass(JavaClass javaClass) {
 		// Don't need to do anything special, since we won't be
 		// reporting statistics.
 	}
