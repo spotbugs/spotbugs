@@ -21,11 +21,26 @@ package edu.umd.cs.findbugs.plan;
 
 import edu.umd.cs.findbugs.graph.AbstractEdge;
 
+/**
+ * Edge in a ConstraintGraph.
+ * Edges flow from earlier detectors to later detectors.
+ *
+ * @see ConstraintGraph
+ * @see DetectorNode
+ * @see ExecutionPlan
+ * @author David Hovemeyer
+ */
 public class ConstraintEdge
 	extends AbstractEdge<ConstraintEdge, DetectorNode>
 {
-	public ConstraintEdge(DetectorNode earlierDetector, DetectorNode laterDetector) {
-		super(earlierDetector, laterDetector);
+	/**
+	 * Constructor.
+	 *
+	 * @param source the source vertex (earlier Detector)
+	 * @param target the target vertex (later Detector)
+	 */
+	public ConstraintEdge(DetectorNode source, DetectorNode target) {
+		super(source, target);
 	}
 }
 

@@ -25,25 +25,53 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * An analysis pass in the overall ExecutionPlan.
+ * This is a list of Detectors to be applied to analyzed classes.
+ *
+ * @see ExecutionPlan
+ * @author David Hovemeyer
+ */
 public class AnalysisPass {
 	private LinkedList<DetectorFactory> factoryList;
 
+	/**
+	 * Constructor.
+	 *
+	 * Creates an empty analysis pass.
+	 */
 	public AnalysisPass() {
 		this.factoryList = new LinkedList<DetectorFactory>();
 	}
 
+	/**
+	 * Add a DetectorFactory to the end of the pass.
+	 *
+	 * @param factory the DetectorFactory
+	 */
 	public void addDetectorFactory(DetectorFactory factory) {
 		factoryList.addLast(factory);
 	}
 
+	/**
+	 * Get the List of DetectorFactory objects in the pass.
+	 */
 	public List<DetectorFactory> getDetectorFactoryList() {
 		return factoryList;
 	}
 
+	/**
+	 * Get an Iterator over the DetectorFactory objects in the pass.
+	 */
 	public Iterator<DetectorFactory> detectorFactoryIterator() {
 		return factoryList.iterator();
 	}
 
+	/**
+	 * Clear out all of the DetectorFactory objects.
+	 * This can be useful as part of re-ordering the
+	 * DetectorFactory objects within the pass.
+	 */
 	public void clear() {
 		factoryList.clear();
 	}

@@ -21,6 +21,17 @@ package edu.umd.cs.findbugs.plan;
 
 import edu.umd.cs.findbugs.graph.AbstractGraph;
 
+/**
+ * Graph of Detector ordering constraints.
+ * It may represent ordering constraints between analysis passes,
+ * or ordering constraints within a single pass.
+ * Edges flow from earlier detectors to later detectors.
+ *
+ * @see DetectorNode
+ * @see ConstraintEdge
+ * @see ExecutionPlan
+ * @author David Hovemeyer
+ */
 public class ConstraintGraph
 	extends AbstractGraph<ConstraintEdge, DetectorNode>
 {

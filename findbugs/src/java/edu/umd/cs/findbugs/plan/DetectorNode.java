@@ -23,15 +23,33 @@ import edu.umd.cs.findbugs.DetectorFactory;
 
 import edu.umd.cs.findbugs.graph.AbstractVertex;
 
+/**
+ * Node in a ConstraintGraph.
+ * It represents a single Detector which must be ordered
+ * before or after some other Detector(s).
+ *
+ * @see ConstraintGraph
+ * @see ConstraintEdge
+ * @see ExecutionPlan
+ * @author David Hovemeyer
+ */
 public class DetectorNode
 	extends AbstractVertex<ConstraintEdge, DetectorNode>
 {
 	private DetectorFactory factory;
 
+	/**
+	 * Constructor.
+	 *
+	 * @param factory the DetectorFactory for the Detector this node represents
+	 */
 	public DetectorNode(DetectorFactory factory) {
 		this.factory = factory;
 	}
 
+	/**
+	 * Get the DetectorFactory.
+	 */
 	public DetectorFactory getFactory() {
 		return factory;
 	}
