@@ -68,6 +68,10 @@ invited talk, MASPLAS 2003
 <p> Changes since version 0.7.1:
 
 <ul>
+<li> Fixed bug that prevented GUI from loading XML result files
+     when running under JDK 1.5.0 beta
+<li> Added new experimental bug detector, LazyInit, which looks for potentially buggy
+     lazy initializations of static fields
 <li> Because of long filenames, switched to distributing the source archive
      as a zip file rather than a tar file
 <li> The 0.7.1 source tarfile was botched - 0.7.2 has a valid
