@@ -11,6 +11,8 @@ class NullDeref8 {
 		if (in == null) 
 			System.out.println("Failure");
 		}
+	// can't generate a NPE; if in isn't assigned to,
+	// threw an exception and won't execute this code
 	return in.read();
 	}
   }
