@@ -33,7 +33,7 @@ as information about the FindBugs mailing lists.</para>
 <title>Requirements</title>
 <para> To use FindBugs, you need a runtime environment compatible with
 <ulink url="http://java.sun.com/j2se">Java 2 Standard Edition</ulink>, version 1.4.0 or later.
-FindBugs is platform independent, and is known to run on Linux, Windows, and
+FindBugs is platform independent, and is known to run on GNU/Linux, Windows, and
 MacOS X platforms.</para>
 
 <para>You should have at least 256 MB of memory to use FindBugs.</para>
@@ -164,17 +164,9 @@ The <command>findbugs</command> can take several options:
 
 </variablelist>
 </para>
-
 </sect1>
 
 <sect1>
-<title>Creating and Analyzing a Project</title>
-<para>
-This section explains how to create a project in FindBugs and
-analyze it for potential bugs.
-</para>
-
-<sect2>
 <title>Creating a Project</title>
 <para>
 After you have started FindBugs using the <command>findbugs</command> command,
@@ -182,7 +174,7 @@ choose the <menuchoice><guimenu>File</guimenu><guimenuitem>New Project</guimenui
 menu item.  You will see a dialog which looks like this:
 <mediaobject>
 <imageobject>
-<imagedata fileref="../project-dialog.png">
+<imagedata fileref="project-dialog.png">
 </imageobject>
 </mediaobject>
 </para>
@@ -214,9 +206,9 @@ so you will get more accurate results if the entire class hierarchy is
 available which FindBugs performs its analysis.
 </para>
 
-</sect2>
+</sect1>
 
-<sect2>
+<sect1>
 <title>Running the Analysis</title>
 <para>
 Once you have added all of the Jar files and source directories,
@@ -226,16 +218,16 @@ this may take quite a while (tens of minutes).  A recent computer with
 ample memory will typically be able to analyze a large program in only a
 few minutes.
 </para>
-</sect2>
+</sect1>
 
-<sect2>
+<sect1>
 <title>Browsing Results</title>
 
 <para>
 When the analysis completes, you will see a screen like the following:
 <mediaobject>
   <imageobject>
-    <imagedata fileref="../example-details.png">
+    <imagedata fileref="example-details.png">
   </imageobject>
 </mediaobject>
 </para>
@@ -250,21 +242,21 @@ Jar files.  The tabs allow you to browse by class, package, or bug type.
 When you select a particular bug instance in the top pane, you will
 see a description of the bug in the "Details" tab of the bottom pane.
 In addition, the "Source code" tab of the bottom pane will, for some
-kinds of bugs, show the program source code when the potential bug occurs.
+kinds of bugs, show the program source code where the potential bug occurs.
 In the above example, the bug is an access to an uninitialized field in
 a constructor.  The source code window highlights the line containing
 the problematic access.
 </para>
 
 <para>
-You may use the "File:Save project" menu option to save the current lists
+You may use the <menuchoice><guimenu>File</guimenu><guimenuitem>Save project</guimenuitem></menuchoice>
+menu option to save the current lists
 of Jar files and source directories.  A saved project may be loaded with
-the "File:Open project" menu option.  Note that the analysis results are
+the <menuchoice><guimenu>File</guimenu><guimenuitem>Open project</guimenuitem></menuchoice> menu option.
+Note that the analysis results are
 not saved, so you will have to run the analysis again.  (Saving results
 may be added to a future FindBugs release).
 </para>
-
-</sect2>
 
 </sect1>
 
