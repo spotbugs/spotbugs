@@ -29,8 +29,10 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.StructuredSelection;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.IWorkbenchWindowPulldownDelegate2;
 
@@ -61,10 +63,19 @@ public class AccuracyClassificationPulldownAction
 	public Menu getMenu(Control parent) {
 		if (menu == null) {
 			menu = new Menu(parent);
-			
-			// TODO: populate the menu
+			fillMenu();
 		}
 		return menu;
+	}
+
+	/**
+	 * Fill the classification menu.
+	 */
+	private void fillMenu() {
+		MenuItem isBugItem = new MenuItem(menu, SWT.RADIO);
+		isBugItem.setText("Bug");
+		MenuItem isNotBugItem = new MenuItem(menu, SWT.RADIO);
+		isNotBugItem.setText("Not Bug");
 	}
 
 	/* (non-Javadoc)
