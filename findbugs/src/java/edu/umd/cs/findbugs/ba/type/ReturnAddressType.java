@@ -22,8 +22,9 @@ package edu.umd.cs.findbugs.ba.type;
 import org.apache.bcel.Constants;
 
 /**
- * Special top type used in dataflow.
- * ReturnAddress is the identity element for the dataflow meet operation.
+ * Special return address type.
+ * This is the type of the value pushed onto the stack
+ * by a JSR instruction.
  * @author David Hovemeyer
  */
 public class ReturnAddressType implements Type {
