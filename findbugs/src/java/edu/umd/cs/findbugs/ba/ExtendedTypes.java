@@ -22,8 +22,8 @@ package edu.umd.cs.daveho.ba;
 /**
  * Extended type codes used by StackAndLocalTypes and StackAndLocalTypeAnalysis
  * for typing locals and stack values used in Java bytecode.
- * @see TypedFrame
- * @see FrameTypeAnalysis
+ * @see TypeFrame
+ * @see TypeAnalysis
  * @author David Hovemeyer
  */
 public interface ExtendedTypes {
@@ -64,6 +64,13 @@ public interface ExtendedTypes {
 	 * object type without loss of information.
 	 */
 	public static final byte T_NULL = 21;
+
+	/**
+	 * A Type code that is available for "user-defined" types.
+	 * Any type code equal or greated than this one is guaranteed
+	 * to be distinct from both standard and extended types.
+	 */
+	public static final byte T_AVAIL_TYPE = 22;
 }
 
 // vim:ts=4
