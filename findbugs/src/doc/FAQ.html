@@ -1,0 +1,50 @@
+<html>
+<head>
+<title>FindBugs FAQ</title>
+</head>
+
+<body>
+
+<h1>FindBugs FAQ</h1>
+
+<p> This document contains answers to frequently asked questions about
+<a href="index.html">FindBugs</a>, a bug pattern detector for Java.
+
+<h2>Q1: I'm getting java.lang.UnsupportedClassVersionError when I try to run FindBugs</h2>
+
+<p> FindBugs requires JRE 1.4.0 or later to run.&nbsp; If you use an earlier version,
+you will see an exception error message similar to the following:
+<pre>
+Exception in thread "main" java.lang.UnsupportedClassVersionError:
+edu/umd/cs/findbugs/gui/FindBugsFrame (Unsupported major.minor version 48.0)
+</pre>
+The solution is to upgrade to JRE 1.4.0 or later.
+
+<h2>Q2: When I click the "Find Bugs!" button, I get a NoSuchMethodError</h2>
+
+<p> The symptom of this bug is that when you start the FindBugs analysis,
+you see an exception similar to the following:
+<pre>
+java.lang.NoSuchMethodError: org.apache.bcel.Repository.setRepository(Lorg/apache/bcel/util/Repository;)V
+        at edu.umd.cs.findbugs.FindBugs.clearRepository(FindBugs.java:483)
+        ...
+</pre>
+The problem here is that the wrong version of the <a href="http://jakarta.apache.org/bcel/">Apache BCEL</a>
+library is being found.&nbsp; The probable cause is that you have installed libraries from
+the <a href="http://java.sun.com/webservices/downloads/webservicespack.html">Java(TM) Web Services Developer Pack 1.2</a>
+in the <code>lib/endorsed</code> directory of your Java Runtime Environment (JRE).&nbsp;
+The file <code>xsltc.jar</code> contains an old version of BCEL that is incompatible with
+FindBugs.
+
+<p> Unfortunately, there is no easy solution to this problem, because files in the
+<code>lib/endorsed</code> directory take precedence over those those in the
+application's CLASSPATH.&nbsp; Therefore, FindBugs will not worked with these
+Jar files installed in this way.&nbsp; A workaround is to move these Jar files
+into a different directory, and use the <code>java.endorsed.dirs</code> system
+property to specify the new location for programs that require these files.
+
+<p> Many thanks to Peter Meulmeester for tracking down the cause of this problem.
+
+</body>
+
+</html>
