@@ -42,7 +42,7 @@ import java.util.*;
  * @see FrameAnalysis
  * @author David Hovemeyer
  */
-public abstract class Frame<ValueType> {
+public abstract class Frame<ValueType> implements Debug {
 
 	/**
 	 * Factory object for default values.
@@ -177,6 +177,7 @@ public abstract class Frame<ValueType> {
 	 * @param value the ValueType to push
 	 */
 	public void pushValue(ValueType value) {
+		if (VERIFY_INTEGRITY && value == null) throw new IllegalArgumentException();
 		if (!isValid()) throw new IllegalStateException("accessing top or bottom frame");
 		slotList.add(value);
 	}
@@ -260,6 +261,7 @@ public abstract class Frame<ValueType> {
 	 * @param value the value to set
 	 */
 	public void setValue(int n, ValueType value) {
+		if (VERIFY_INTEGRITY && value == null) throw new IllegalArgumentException();
 		if (!isValid()) throw new IllegalStateException("accessing top or bottom frame");
 		slotList.set(n, value);
 	}
