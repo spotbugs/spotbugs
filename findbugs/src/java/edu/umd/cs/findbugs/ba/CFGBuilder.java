@@ -21,7 +21,6 @@ package edu.umd.cs.daveho.ba;
 
 public interface CFGBuilder {
 	public void build();
-	public void setMode(int mode);
 	public CFG getCFG();
 }
 

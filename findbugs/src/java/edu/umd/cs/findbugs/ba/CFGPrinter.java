@@ -101,7 +101,6 @@ public class CFGPrinter {
 		MethodGen methodGen = new MethodGen(method, cls.getClassName(), cp);
 
 		CFGBuilder builder = CFGBuilderFactory.create(methodGen);
-		builder.setMode(Integer.getInteger("cfg.mode", CFGBuilderModes.NORMAL_MODE).intValue());
 		builder.build();
 
 		System.out.println("---------------------------------------------------");

@@ -115,9 +115,6 @@ public class BetterCFGBuilder implements CFGBuilder, EdgeTypes {
 		this.exceptionHandlerMap = new ExceptionHandlerMap(methodGen);
 	}
 
-	public void setMode(int mode) {
-	}
-
 	public void build() {
 		BasicBlock startBlock = getBlock(methodGen.getInstructionList().getStart(), new LinkedList<InstructionHandle>());
 		addEdge(cfg.getEntry(), startBlock, START_EDGE);

@@ -67,12 +67,6 @@ public abstract class DataflowTestDriver<Fact> {
 		}
 	}
 
-	private int cfgBuilderMode = CFGBuilderModes.NORMAL_MODE;
-
-	public void setCFGBuilderMode(int mode) {
-		cfgBuilderMode = mode;
-	}
-
 	/**
 	 * Execute the analysis on a single class.
 	 * @param filename the name of the class file
@@ -95,7 +89,6 @@ public abstract class DataflowTestDriver<Fact> {
 			MethodGen methodGen = new MethodGen(method, jclass.getClassName(), cpg);
 
 			CFGBuilder cfgBuilder = CFGBuilderFactory.create(methodGen);
-			cfgBuilder.setMode(cfgBuilderMode);
 			cfgBuilder.build();
 
 			CFG cfg = cfgBuilder.getCFG();

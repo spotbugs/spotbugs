@@ -73,13 +73,9 @@ public class BasicCFGBuilder extends BaseCFGBuilder implements EdgeTypes, CFGBui
 		exceptionGenMap = new IdentityHashMap<InstructionHandle, CodeExceptionGen>();
 		buildExceptionHandlerMap();
 		bbHandles = new HashSet<InstructionHandle>();
-	}
 
-	/**
-	 * Set mode; see the constants in {@link CFGBuilderModes}.
-	 */
-	public void setMode(int mode) {
-		this.mode = mode;
+		// EXCEPTION_SENSITIVE_MODE is now the default
+		mode = EXCEPTION_SENSITIVE_MODE;
 	}
 
 	private static final LinkedList<InstructionHandle> emptyStack = new LinkedList<InstructionHandle>();

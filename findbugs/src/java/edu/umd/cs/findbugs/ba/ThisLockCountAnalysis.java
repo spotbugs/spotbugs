@@ -91,11 +91,6 @@ public class ThisLockCountAnalysis extends LockCountAnalysis {
 				}
 			};
 
-			// Important!
-			// We need to know which instructions are actually throwing
-			// exceptions.  Otherwise, values will not merge properly.
-			driver.setCFGBuilderMode(CFGBuilderModes.EXCEPTION_SENSITIVE_MODE);
-
 			driver.execute(argv[0]);
 		} catch (Exception e) {
 			e.printStackTrace();
