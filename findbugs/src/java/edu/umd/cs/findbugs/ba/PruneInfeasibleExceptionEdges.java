@@ -235,9 +235,15 @@ public class PruneInfeasibleExceptionEdges implements EdgeTypes {
 					exceptionTypeSet.addExplicit(Type.THROWABLE);
 				} else {
 					Type throwType = frame.getTopValue();
-					if (!(throwType instanceof ObjectType))
-						throw new DataflowAnalysisException("Non object type thrown by " + pei);
-					exceptionTypeSet.addExplicit((ObjectType) throwType);
+					if (throwType instanceof ObjectType) {
+						exceptionTypeSet.addExplicit((ObjectType) throwType);
+					} else if (throwType instanceof ExceptionObjectType) {
+						exceptionTypeSet.addAll(((ExceptionObjectType)throwType).getExceptionSet());
+					} else {
+						throw new DataflowAnalysisException("Non object type " + throwType +
+							" thrown by " + pei + " in " +
+							SignatureConverter.convertMethodSignature(methodGen));
+					}
 				}
 			}
 		}
