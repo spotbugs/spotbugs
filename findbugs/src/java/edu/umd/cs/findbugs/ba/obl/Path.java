@@ -59,16 +59,14 @@ public class Path {
 		return length;
 	}
 	
+	/**
+	 * Return an exact copy of this Path.
+	 * 
+	 * @return an exact copy of this Path
+	 */
 	public Path duplicate() {
 		Path dup = new Path();
-		dup.grow(this.length - 1);
-		
-		for (int i = 0; i < this.length; ++i) {
-			dup.blockIdList[i] = this.blockIdList[i];
-		}
-		dup.length = this.length;
-		dup.cachedHashCode = this.cachedHashCode;
-		
+		dup.copyFrom(this);
 		return dup;
 	}
 	
@@ -79,9 +77,7 @@ public class Path {
 	 */
 	public void copyFrom(Path other) {
 		grow(other.length - 1);
-		for (int i = 0; i < other.length; ++i) {
-			this.blockIdList[i] = other.blockIdList[i];
-		}
+		System.arraycopy(other.blockIdList, 0, this.blockIdList, 0, other.length);
 		this.length = other.length;
 		this.cachedHashCode = other.cachedHashCode;
 	}
@@ -92,10 +88,11 @@ public class Path {
 	
 	public int hashCode() {
 		if (cachedHashCode == INVALID_HASH_CODE) {
-			cachedHashCode = 0;
-			for (int i = 0; i < blockIdList.length; ++i) {
-				cachedHashCode += (i * 1009 * blockIdList[i]);
+			int value = 0;
+			for (int i = 0; i < this.length; ++i) {
+				value += (i * 1009 * blockIdList[i]);
 			}
+			cachedHashCode = value;
 		}
 		return cachedHashCode;
 	}
