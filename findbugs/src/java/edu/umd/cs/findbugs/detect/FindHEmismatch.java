@@ -30,6 +30,8 @@ public class FindHEmismatch extends BytecodeScanningDetector implements   Consta
    boolean hasFields = false;
    boolean hasHashCode = false;
    boolean hasEqualsObject = false;
+   boolean hashCodeIsAbstract = false;
+   boolean equalsObjectIsAbstract = false;
    boolean equalsMethodIsInstanceOfEquals = false;
    boolean hasCompareToObject = false;
    boolean hasEqualsSelf = false;
@@ -47,11 +49,15 @@ public class FindHEmismatch extends BytecodeScanningDetector implements   Consta
 	int accessFlags = obj.getAccessFlags();
 	if ((accessFlags & ACC_INTERFACE) != 0) return;
 	String whereEqual = getDottedClassName();
+	boolean classThatDefinesEqualsIsAbstract = false;
 	if (!hasEqualsObject)  {
 		JavaClass we = Lookup.findSuperImplementor(obj, "equals",
 					"(Ljava/lang/Object;)Z", bugReporter);
 		if (we == null) whereEqual = "java.lang.Object";
-		else whereEqual = we.getClassName();
+		else {
+			whereEqual = we.getClassName();
+			classThatDefinesEqualsIsAbstract = we.isAbstract();;
+			}
 		}
 	boolean usesDefaultEquals = whereEqual.equals("java.lang.Object");
 	String whereHashCode = getDottedClassName();
@@ -101,7 +107,7 @@ public class FindHEmismatch extends BytecodeScanningDetector implements   Consta
 		}
 
 	// if (!hasFields) return;
-	if (hasHashCode && !(hasEqualsObject ||  hasEqualsSelf))  { 
+	if (hasHashCode && !hashCodeIsAbstract && !(hasEqualsObject ||  hasEqualsSelf))  { 
 		/*
 		System.out.println("has hashCode, missing equals");
 		System.out.println("equals defined in " + whereEqual);
@@ -112,7 +118,7 @@ public class FindHEmismatch extends BytecodeScanningDetector implements   Consta
 		else
 		  bugReporter.reportBug(new BugInstance("HE_HASHCODE_NO_EQUALS", LOW_PRIORITY). addClass(getDottedClassName()));
 		}
-	if (!hasHashCode && (hasEqualsObject ||  hasEqualsSelf))  {
+	if (!hasHashCode && (hasEqualsObject && !equalsObjectIsAbstract ||  hasEqualsSelf))  {
 		if (usesDefaultHashCode) {
 		  int priority = HIGH_PRIORITY;
 		  if (equalsMethodIsInstanceOfEquals) priority+= 2;
@@ -132,6 +138,12 @@ public class FindHEmismatch extends BytecodeScanningDetector implements   Consta
 		    .addClass(getDottedClassName()));
 		}
 		}
+	if (!hasHashCode && !hasEqualsObject &&  !hasEqualsSelf
+		&& !usesDefaultEquals && usesDefaultHashCode
+		&& !obj.isAbstract() && classThatDefinesEqualsIsAbstract) {
+	  bugReporter.reportBug(new BugInstance("HE_INHERITS_EQUALS_USE_HASHCODE", 
+			NORMAL_PRIORITY ).addClass(getDottedClassName()));
+	  }
 	}
    public void visit(JavaClass obj) {
 	extendsObject = getDottedSuperclassName().equals("java.lang.Object");
@@ -141,6 +153,8 @@ public class FindHEmismatch extends BytecodeScanningDetector implements   Consta
 	hasCompareToSelf = false;
 	hasEqualsObject = false;
 	hasEqualsSelf = false;
+        hashCodeIsAbstract = false;
+        equalsObjectIsAbstract = false;
         equalsMethodIsInstanceOfEquals = false;
 	}
 
@@ -167,18 +181,21 @@ public class FindHEmismatch extends BytecodeScanningDetector implements   Consta
 	if (name.equals("hashCode")
 		&& sig.equals("()I")) {
 		hasHashCode = true;
+        	if (obj.isAbstract()) hashCodeIsAbstract = true;
 		// System.out.println("Found hashCode for " + betterClassName);
 		}
 	else if (name.equals("equals")) {
 		if (sigIsObject) {
 			hasEqualsObject = true; 
+        		if (obj.isAbstract())
+				equalsObjectIsAbstract = true;
+			else {
 			Code code = obj.getCode();
 			byte [] codeBytes = code.getCode();
 			if (codeBytes.length == 5 &&
-				(codeBytes[1] & 0xff) == INSTANCEOF) {
+				(codeBytes[1] & 0xff) == INSTANCEOF) 
 			equalsMethodIsInstanceOfEquals = true;
-				return;
-				}
+			}
 			}
 		else if (sig.equals("(L"+getClassName()+";)Z"))
 				hasEqualsSelf = true;
