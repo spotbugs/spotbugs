@@ -31,15 +31,25 @@ public class BCPMethodReturnCheck extends ByteCodePatternDetector {
 	private BugReporter bugReporter;
 
 	private static final ByteCodePattern pattern = new ByteCodePattern()
-		.add(new Invoke("+java.io.InputStream", "read", "/^\\((\\[B|\\[BII)\\)I$", false))
+		.add(new Invoke("+java.io.InputStream", "read", "/^\\((\\[B|\\[BII)\\)I$", false).label("call"))
 		.add(new Opcode(Constants.POP));
 
 	public BCPMethodReturnCheck(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 	}
+
 	public ByteCodePattern getPattern() { return pattern; }
+
 	public boolean prescreen(Method method, ClassContext classContext) { return true; }
-	public void reportMatch(MethodGen methodGen, ByteCodePatternMatch match) { }
+
+	public void reportMatch(MethodGen methodGen, ByteCodePatternMatch match) {
+		InstructionHandle call = match.getLabeledInstruction("call");
+
+		bugReporter.reportBug(new BugInstance("RV_RETURN_VALUE_IGNORED", NORMAL_PRIORITY)
+			.addClassAndMethod(methodGen)
+			.addCalledMethod(methodGen, (InvokeInstruction) call.getInstruction())
+			.addSourceLine(methodGen, call));
+	}
 
 }
 
