@@ -68,17 +68,18 @@ public class EclipseClasspath {
 			this.document = document;
 
 			// Get the plugin id
-			Node plugin = document.selectSingleNode("//plugin");
+			Node plugin = document.selectSingleNode("/plugin");
 			if (plugin == null)
 				throw new EclipseClasspathException("No plugin node in plugin descriptor");
 			pluginId = plugin.valueOf("@id");
 			if (pluginId.equals(""))
 				throw new EclipseClasspathException("Cannot determine plugin id");
+			System.out.println("Plugin id is " + pluginId);
 
 			// Extract required plugins
 			requiredPluginIdList = new LinkedList<String>();
-			List requiredPluginNodeList = document.selectNodes("//plugin/requires/import");
-			for (Iterator i = requiredPluginIdList.iterator(); i.hasNext(); ) {
+			List requiredPluginNodeList = document.selectNodes("/plugin/requires/import");
+			for (Iterator i = requiredPluginNodeList.iterator(); i.hasNext(); ) {
 				Node node = (Node) i.next();
 				String requiredPluginId = node.valueOf("@plugin");
 				if (requiredPluginId.equals(""))
