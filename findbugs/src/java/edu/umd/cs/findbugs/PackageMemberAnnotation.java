@@ -22,12 +22,12 @@ public abstract class PackageMemberAnnotation implements BugAnnotation {
 	/**
 	 * Get the class name.
 	 */
-	public String getClassName() { return className; }
+	public final String getClassName() { return className; }
 
 	/**
 	 * Get the package name.
 	 */
-	public String getPackageName() {
+	public final String getPackageName() {
 		int lastDot = className.lastIndexOf('.');
 		if (lastDot < 0)
 			return "";
