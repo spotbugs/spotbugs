@@ -132,7 +132,7 @@
 			<xsl:apply-templates select="SourceLine[1]"/>
 		</xsl:when>
 		<xsl:when test="Method/SourceLine">
-			at <xsl:apply-templates select="Method/SourceLine"/>
+			<xsl:apply-templates select="Method/SourceLine"/>
 		</xsl:when>
 	</xsl:choose>
 	</td>
@@ -143,7 +143,7 @@
 <xsl:template match="SourceLine">
 	<!-- Only match the first SourceLine of all matched by the template -->
 	<xsl:if test="position() = 1">
-		<xsl:value-of select="@sourcefile"/>
+		at <xsl:value-of select="@sourcefile"/>
 		<xsl:choose>
 			<xsl:when test="@start &gt; 0">
 				<xsl:if test="@end != @start">, lines <xsl:value-of select="@start"/>-<xsl:value-of select="@end"/>
