@@ -84,6 +84,12 @@ public class Dataflow<Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 			change = false;
 			++numIterations;
 
+			if (DEBUG) {
+				System.out.println("----------------------------------------------------------------------");
+				System.out.println("Dataflow iteration " + numIterations);
+				System.out.println("----------------------------------------------------------------------");
+			}
+
 			if (numIterations >= MAX_ITERS)
 				throw new DataflowAnalysisException("Too many iterations (" + numIterations + ") in dataflow!");
 	
@@ -139,6 +145,7 @@ public class Dataflow<Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 				}
 	
 				// See if the result changed.
+				if (DEBUG) debug(block, "orig result is " + origResult + "\n");
 				if (!analysis.same(result, origResult)) {
 					if (DEBUG) debug(block, "result changed!\n");
 					change = true;
