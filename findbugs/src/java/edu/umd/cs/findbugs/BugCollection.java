@@ -86,6 +86,8 @@ public abstract class BugCollection {
 	public void readXML(InputStream in, Project project)
 		throws IOException, DocumentException {
 
+		checkInputStream(in);
+
 		SAXReader reader = new SAXReader();
 		Document document = reader.read(in);
 
@@ -208,6 +210,35 @@ public abstract class BugCollection {
 
 		XMLWriter writer = new XMLWriter(out, OutputFormat.createPrettyPrint());
 		writer.write(document);
+	}
+
+	private void checkInputStream(InputStream in) throws IOException {
+		if (in.markSupported()) {
+			byte[] buf = new byte[60];
+			in.mark(buf.length);
+
+			int numRead = 0;
+			while (numRead < buf.length) {
+				int n = in.read(buf, numRead, buf.length - numRead);
+				if (n < 0)
+					throw new IOException("XML does not contain saved bug data");
+				numRead += n;
+			}
+
+			if (numRead < buf.length)
+				throw new IOException("XML does not contain saved bug data");
+
+			in.reset();
+
+			BufferedReader reader = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(buf)));
+			String line;
+			while ((line = reader.readLine()) != null) {
+				if (line.equals("<BugCollection>"))
+					return;
+			}
+
+			throw new IOException("XML does not contain saved bug data");
+		}
 	}
 
 }
