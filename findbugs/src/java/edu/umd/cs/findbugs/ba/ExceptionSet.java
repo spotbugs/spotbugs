@@ -233,6 +233,7 @@ public class ExceptionSet {
 	public void clear() {
 		exceptionSet.clear();
 		explicitSet.clear();
+		universalHandler = false;
 		commonSupertype = null;
 	}
 
