@@ -46,7 +46,7 @@ public class DumbMethods extends BytecodeScanningDetector implements   Constants
 				&& classConstant.equals("java/lang/String")
 				&& nameConstant.equals("<init>")
 				&& sigConstant.equals("(Ljava/lang/String;)V"))
-		if (alreadyReported.add(betterMethodName))
+		if (alreadyReported.add(refConstant))
 			bugReporter.reportBug(new BugInstance("DM_STRING_CTOR", NORMAL_PRIORITY)
 				.addClassAndMethod(this)
 				.addSourceLine(this));
@@ -54,7 +54,7 @@ public class DumbMethods extends BytecodeScanningDetector implements   Constants
 				&& classConstant.equals("java/lang/String")
 				&& nameConstant.equals("<init>")
 				&& sigConstant.equals("()V"))
-		if (alreadyReported.add(betterMethodName))
+		if (alreadyReported.add(refConstant))
 			bugReporter.reportBug(new BugInstance("DM_STRING_VOID_CTOR", NORMAL_PRIORITY)
 				.addClassAndMethod(this)
 				.addSourceLine(this));
@@ -65,7 +65,7 @@ public class DumbMethods extends BytecodeScanningDetector implements   Constants
 				&& nameConstant.equals("gc")
 				&& sigConstant.equals("()V")
 				&& !betterClassName.startsWith("java.lang"))
-		if (alreadyReported.add(betterMethodName))
+		if (alreadyReported.add(refConstant))
 			// Just save this report in a field; it will be flushed
 			// IFF there were no calls to System.currentTimeMillis();
 			// in the method.
@@ -77,7 +77,7 @@ public class DumbMethods extends BytecodeScanningDetector implements   Constants
 				&& nameConstant.equals("<init>")
 				&& !className.equals("java/lang/Boolean")
 				)
-		if (alreadyReported.add(betterMethodName))
+		if (alreadyReported.add(refConstant))
 			bugReporter.reportBug(new BugInstance("DM_BOOLEAN_CTOR", NORMAL_PRIORITY)
 				.addClassAndMethod(this)
 				.addSourceLine(this));
