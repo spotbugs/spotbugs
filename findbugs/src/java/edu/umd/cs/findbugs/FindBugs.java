@@ -268,7 +268,6 @@ public class FindBugs implements Constants2, ExitCodes
 	}
 
 	public void reportMissingClass(ClassNotFoundException ex) {
-		//++missingClassCount;
 		String missing = AbstractBugReporter.getMissingClassName(ex);
 		if (missingClassSet.add(missing))
 			++missingClassCount;
@@ -559,7 +558,7 @@ public class FindBugs implements Constants2, ExitCodes
 		}
 
 		// Create a ClassContext for the class
-		ClassContext classContext = new ClassContext(javaClass, bugReporter);
+		ClassContext classContext = AnalysisContext.instance().getClassContext(javaClass);
 
 		// Run the Detectors
 		for (int i = 0; i < detectors.length; ++i) {
@@ -684,7 +683,7 @@ public class FindBugs implements Constants2, ExitCodes
 				}
 			}
 
-			// Explicitly enable or disable the selector detectors.
+			// Explicitly enable or disable the selected detectors.
 			StringTokenizer tok = new StringTokenizer(argv[argCount], ",");
 			while (tok.hasMoreTokens()) {
 				String visitorName = tok.nextToken();
@@ -805,6 +804,7 @@ public class FindBugs implements Constants2, ExitCodes
 
 	// Configure the analysis context
 	AnalysisContext analysisContext = AnalysisContext.instance();
+	analysisContext.setLookupFailureCallback(bugReporter);
 	analysisContext.setSourcePath(project.getSourceDirList());
 
 	findBugs.execute();

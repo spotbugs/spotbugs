@@ -20,6 +20,9 @@
 package edu.umd.cs.daveho.ba;
 
 import java.util.List;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import org.apache.bcel.classfile.JavaClass;
 
 /**
  * A context for analysis of a complete project.
@@ -28,14 +31,31 @@ import java.util.List;
  * @author David Hovemeyer
  */
 public class AnalysisContext {
-	private final SourceFinder sourceFinder;
+	private RepositoryLookupFailureCallback lookupFailureCallback;
+	private SourceFinder sourceFinder;
+	private ClassContextCache classContextCache;
+
+	/**
+	 * The maximum number of ClassContext objects to cache.
+	 * FIXME: need to evaluate this parameter.
+	 */
+	private static final int MAX_SIZE = 30;
+
+	private static class ClassContextCache extends LinkedHashMap<JavaClass, ClassContext> {
+		public boolean removeEldestEntry(Map.Entry<JavaClass, ClassContext> entry) {
+			return size() > MAX_SIZE;
+		}
+	}
 
 	private static AnalysisContext instance;
 
+	/** Constructor. */
 	private AnalysisContext() {
 		this.sourceFinder = new SourceFinder();
+		this.classContextCache = new ClassContextCache();
 	}
 
+	/** Get the single AnalysisContext instance. */
 	public static AnalysisContext instance() {
 		if (instance == null) {
 			instance = new AnalysisContext();
@@ -43,12 +63,33 @@ public class AnalysisContext {
 		return instance;
 	}
 
+	/** Set the repository lookup failure callback for created ClassContexts. */
+	public void setLookupFailureCallback(RepositoryLookupFailureCallback lookupFailureCallback) {
+		this.lookupFailureCallback = lookupFailureCallback;
+	}
+
+	/** Set the source path. */
 	public void setSourcePath(List<String> sourcePath) {
 		sourceFinder.setSourceBaseList(sourcePath);
 	}
 
+	/** Get the SourceFinder, for finding source files. */
 	public SourceFinder getSourceFinder() {
 		return sourceFinder;
+	}
+
+	/**
+	 * Get the ClassContext for a class.
+	 * @param javaClass the class
+	 * @return the ClassContext for that class
+	 */
+	public ClassContext getClassContext(JavaClass javaClass) {
+		ClassContext classContext = classContextCache.get(javaClass);
+		if (classContext == null) {
+			classContext = new ClassContext(javaClass, lookupFailureCallback);
+			classContextCache.put(javaClass, classContext);
+		}
+		return classContext;
 	}
 }
 
