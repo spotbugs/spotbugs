@@ -151,18 +151,18 @@ public class RunAnalysisDialog extends javax.swing.JDialog {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = 2;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 3, 0);
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
         gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 3, 0);
         getContentPane().add(findBugsLabel, gridBagConstraints);
 
         archivesLabel.setFont(new java.awt.Font("Dialog", 0, 12));
-        archivesLabel.setText("Archives:");
+        archivesLabel.setText("Total archives:");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 3;
-        gridBagConstraints.insets = new java.awt.Insets(3, 3, 3, 3);
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.insets = new java.awt.Insets(3, 3, 3, 3);
         getContentPane().add(archivesLabel, gridBagConstraints);
 
         classesLabel.setFont(new java.awt.Font("Dialog", 0, 12));
@@ -170,8 +170,8 @@ public class RunAnalysisDialog extends javax.swing.JDialog {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 5;
-        gridBagConstraints.insets = new java.awt.Insets(3, 3, 3, 3);
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.insets = new java.awt.Insets(3, 3, 3, 3);
         getContentPane().add(classesLabel, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -183,7 +183,6 @@ public class RunAnalysisDialog extends javax.swing.JDialog {
 
         cancelButton.setFont(new java.awt.Font("Dialog", 0, 12));
         cancelButton.setText("Cancel");
-        cancelButton.setToolTipText("null");
         cancelButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cancelButtonActionPerformed(evt);
@@ -205,14 +204,15 @@ public class RunAnalysisDialog extends javax.swing.JDialog {
         getContentPane().add(jSeparator1, gridBagConstraints);
 
         archiveLabel.setFont(new java.awt.Font("Dialog", 0, 12));
-        archiveLabel.setText("Archive:");
+        archiveLabel.setText("Current archive:");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;
-        gridBagConstraints.insets = new java.awt.Insets(3, 3, 3, 3);
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.insets = new java.awt.Insets(3, 3, 3, 3);
         getContentPane().add(archiveLabel, gridBagConstraints);
 
+        archiveName.setFont(new java.awt.Font("Dialog", 0, 12));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 2;
@@ -236,8 +236,8 @@ public class RunAnalysisDialog extends javax.swing.JDialog {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 3;
-        gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 0);
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 0);
         getContentPane().add(archiveCountLabel, gridBagConstraints);
 
         pack();
