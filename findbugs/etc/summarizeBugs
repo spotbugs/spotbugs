@@ -5,8 +5,8 @@ use strict qw(refs vars);
 my %counts = ();
 
 while (<>) {
-	if (/^(\S+):/) {
-		$counts{$1}++;
+	if (/^(\S+\s+)?(\S+):/) {
+		$counts{$2}++;
 	}
 }
 
