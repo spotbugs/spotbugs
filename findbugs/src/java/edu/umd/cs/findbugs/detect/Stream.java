@@ -236,6 +236,11 @@ public class Stream extends ResourceCreationPoint implements Comparable<Stream> 
 
 		return 0;
 	}
+
+	public String toString() {
+		return "Stream created at " + getLocation().getHandle().getPosition() +
+			(isUninteresting() ? "[uninteresting]" : "");
+	}
 }
 
 // vim:ts=3

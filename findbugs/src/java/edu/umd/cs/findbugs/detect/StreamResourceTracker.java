@@ -128,6 +128,8 @@ public class StreamResourceTracker implements ResourceTracker<Stream> {
 	 * as well.
 	 */
 	public void markTransitiveUninterestingStreamEscapes() {
+		if (FindOpenStream.DEBUG) System.out.println("Uninteresting stream escapes: " + uninterestingStreamEscapeSet);
+
 		// Eliminate all stream escapes where the target isn't really
 		// a stream open location point.
 		for (Iterator<StreamEscape> i = streamEscapeSet.iterator(); i.hasNext(); ) {
@@ -159,27 +161,37 @@ public class StreamResourceTracker implements ResourceTracker<Stream> {
 
 			for (Iterator<StreamEscape> i = streamEscapeSet.iterator(); i.hasNext(); ) {
 				StreamEscape streamEscape = i.next();
+				Stream target = streamOpenLocationMap.get(streamEscape.target);
+
+				// Combine equivalence classes for source and target
+				StreamEquivalenceClass sourceClass = streamEquivalenceMap.get(streamEscape.source);
+				StreamEquivalenceClass targetClass = streamEquivalenceMap.get(target);
+				if (sourceClass != targetClass) {
+					sourceClass.addAll(targetClass);
+					for (Iterator<Stream> j = targetClass.memberIterator(); j.hasNext(); ) {
+						Stream stream = j.next();
+						streamEquivalenceMap.put(stream, sourceClass);
+					}
+				}
+
+				// Propagate escapes of uninteresting streams
 				if (isUninterestingStreamEscape(streamEscape.source)) {
 					if (FindOpenStream.DEBUG)
 						System.out.println("Propagating stream escape " + streamEscape);
-					Stream target = streamOpenLocationMap.get(streamEscape.target);
 					if (target == null)
 						throw new IllegalStateException();
 					uninterestingStreamEscapeSet.add(target);
-
-					// Combine equivalence classes for source and target
-					StreamEquivalenceClass sourceClass = streamEquivalenceMap.get(streamEscape.source);
-					StreamEquivalenceClass targetClass = streamEquivalenceMap.get(target);
-					if (sourceClass != targetClass) {
-						sourceClass.addAll(targetClass);
-						for (Iterator<Stream> j = targetClass.memberIterator(); j.hasNext(); ) {
-							Stream stream = j.next();
-							streamEquivalenceMap.put(stream, sourceClass);
-						}
-					}
 				}
 			}
 		} while (!orig.equals(uninterestingStreamEscapeSet));
+
+		if (FindOpenStream.DEBUG) {
+			System.out.println("Equivalence class map has " + streamEquivalenceMap.size() + " entries");
+			for (Iterator<StreamEquivalenceClass> i = streamEquivalenceMap.values().iterator(); i.hasNext(); ) {
+				StreamEquivalenceClass equivalenceClass = i.next();
+				System.out.println("Stream equivalence class: " + equivalenceClass);
+			}
+		}
 	}
 
 	/**
@@ -199,7 +211,7 @@ public class StreamResourceTracker implements ResourceTracker<Stream> {
 	 */
 	public void addStreamOpenLocation(Location streamOpenLocation, Stream stream) {
 		if (FindOpenStream.DEBUG)
-			System.out.println("Stream open location at " + streamOpenLocation);
+			System.out.println("Open stream: " + stream);
 		streamOpenLocationMap.put(streamOpenLocation, stream);
 		if (stream.isUninteresting())
 			uninterestingStreamEscapeSet.add(stream);

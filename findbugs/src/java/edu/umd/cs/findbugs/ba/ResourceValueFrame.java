@@ -20,29 +20,28 @@
 package edu.umd.cs.findbugs.ba;
 
 public class ResourceValueFrame extends Frame<ResourceValue> {
-	/** The resource escapes the method. */
-	public static final int ESCAPED = 0;
-
 	/** The resource is open (or locked, etc) on paths that include only normal control flow. */
-	public static final int OPEN = 1;
+	public static final int OPEN = 0;
 
 	/** The resource is open (or locked, etc) on paths that include exception control flow. */
-	public static final int OPEN_ON_EXCEPTION_PATH = 2;
+	public static final int OPEN_ON_EXCEPTION_PATH = 1;
 
 	/** The resource is closed (or unlocked, etc). */
-	public static final int CLOSED = 3;
+	public static final int CLOSED = 2;
 
 	/** The resource has been created, but is not open. */
-	public static final int CREATED = 4;
+	public static final int CREATED = 3;
 
 	/** The resource doesn't exist. */
-	public static final int NONEXISTENT = 5;
+	public static final int NONEXISTENT = 4;
 
 	private int status;
+	private boolean escaped;
 
 	public ResourceValueFrame(int numSlots) {
 		super(numSlots);
 		this.status = NONEXISTENT;
+		this.escaped = false;
 	}
 
 	public int getStatus() {
@@ -53,24 +52,34 @@ public class ResourceValueFrame extends Frame<ResourceValue> {
 		this.status = status;
 	}
 
+	public void setEscaped(boolean escaped) {
+		this.escaped = escaped;
+	}
+
+	public boolean isEscaped() {
+		return escaped;
+	}
+
 	public boolean sameAs(Frame<ResourceValue> other_) {
 		if (!super.sameAs(other_))
 			return false;
 
 		ResourceValueFrame other = (ResourceValueFrame) other_;
-		return this.status == other.status;
+		return this.status == other.status && this.escaped == other.escaped;
 	}
 
 	public void copyFrom(Frame<ResourceValue> other_) {
 		super.copyFrom(other_);
 		ResourceValueFrame other = (ResourceValueFrame) other_;
 		this.status = other.status;
+		this.escaped = other.escaped;
 	}
 
-	private static final String[] statusList = { "(escaped)", "(open)", "(open_exception)", "(closed)", "(created)", "(nonexistent)" };
+	private static final String[] statusList = { "open", "open_exception", "closed", "created", "nonexistent" };
 
 	public String toString() {
-		return super.toString() + statusList[status];
+		String statusString = "(" + statusList[status] + (escaped ? "|escaped" : "") + ")";
+		return super.toString() + statusString;
 	}
 
 }

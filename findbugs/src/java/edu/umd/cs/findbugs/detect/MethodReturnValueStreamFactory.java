@@ -111,7 +111,7 @@ public class MethodReturnValueStreamFactory implements StreamFactory {
 				return null;
 
 			String streamClass = type.getClassName();
-			Stream result = new Stream(location, streamClass, streamClass)
+			Stream result = new Stream(location, streamClass, baseClassType.getClassName())
 				.setIgnoreImplicitExceptions(true)
 				.setIsOpenOnCreation(true);
 			if (!isUninteresting)

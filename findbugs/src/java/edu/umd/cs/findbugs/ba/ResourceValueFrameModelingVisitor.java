@@ -48,7 +48,7 @@ public abstract class ResourceValueFrameModelingVisitor extends AbstractFrameMod
 			ResourceValueFrame frame = getFrame();
 			ResourceValue topValue = frame.getTopValue();
 			if (topValue.equals(ResourceValue.instance()))
-				frame.setStatus(ResourceValueFrame.ESCAPED);
+				frame.setEscaped(true);
 		} catch (DataflowAnalysisException e) {
 			throw new IllegalStateException(e.toString());
 		}
@@ -92,7 +92,7 @@ public abstract class ResourceValueFrameModelingVisitor extends AbstractFrameMod
 		}
 
 		if (instanceArgNum >= 0 && instanceEscapes(inv, instanceArgNum))
-			frame.setStatus(ResourceValueFrame.ESCAPED);
+			frame.setEscaped(true);
 
 		handleNormalInstruction(inv);
 	}
@@ -118,7 +118,7 @@ public abstract class ResourceValueFrameModelingVisitor extends AbstractFrameMod
 			ResourceValueFrame frame = getFrame();
 			ResourceValue topValue = frame.getTopValue();
 			if (topValue.equals(ResourceValue.instance()))
-				frame.setStatus(ResourceValueFrame.ESCAPED);
+				frame.setEscaped(true);
 		} catch (DataflowAnalysisException e) {
 			throw new IllegalStateException(e.toString());
 		}

@@ -38,6 +38,8 @@ import edu.umd.cs.findbugs.*;
  */
 public class FindOpenStream extends ResourceTrackingDetector<Stream, StreamResourceTracker>  {
 	static final boolean DEBUG = Boolean.getBoolean("fos.debug");
+	static final String DEBUG_METHOD = System.getProperty("fos.method");
+	static final boolean PRINT_CFG = Boolean.getBoolean("fos.printcfg");
 	static final boolean IGNORE_WRAPPED_UNINTERESTING_STREAMS = !Boolean.getBoolean("fos.allowWUS");
 
 	/* ----------------------------------------------------------------------
@@ -46,6 +48,9 @@ public class FindOpenStream extends ResourceTrackingDetector<Stream, StreamResou
 
 	/**
 	 * List of base classes of tracked resources.
+	 * This is needed so we can create Streams for
+	 * values passed as method parameters.
+	 * We want to ignore such streams.
 	 */
 	static final ObjectType[] streamBaseList =
 		 { new ObjectType("java.io.InputStream"),
@@ -63,6 +68,9 @@ public class FindOpenStream extends ResourceTrackingDetector<Stream, StreamResou
 	static final StreamFactory[] streamFactoryList;
 	static {
 		ArrayList<StreamFactory> streamFactoryCollection = new ArrayList<StreamFactory>();
+
+		// FIXME: we should revisit all of these stream factories
+		// at some point.  I'm sure some simplification is possible.
 
 		// Examine InputStreams, OutputStreams, Readers, and Writers,
 		// ignoring byte array, object stream, char array, and String variants.
@@ -105,6 +113,15 @@ public class FindOpenStream extends ResourceTrackingDetector<Stream, StreamResou
 		// easy to add.
 		streamFactoryCollection.add(new InstanceFieldLoadStreamFactory("java.io.OutputStream"));
 		streamFactoryCollection.add(new InstanceFieldLoadStreamFactory("java.io.Writer"));
+
+		// Ignore streams returned by any other method.
+		// However, we want to keep track of them, so that if they
+		// are closed, all other streams in the same equivalence
+		// class can be closed as well.
+		streamFactoryCollection.add(new AnyMethodReturnValueStreamFactory("java.io.InputStream"));
+		streamFactoryCollection.add(new AnyMethodReturnValueStreamFactory("java.io.Reader"));
+		streamFactoryCollection.add(new AnyMethodReturnValueStreamFactory("java.io.OutputStream"));
+		streamFactoryCollection.add(new AnyMethodReturnValueStreamFactory("java.io.Writer"));
 
 		// JDBC objects
 		streamFactoryCollection.add(new MethodReturnValueStreamFactory("java.sql.Connection",
@@ -232,6 +249,12 @@ public class FindOpenStream extends ResourceTrackingDetector<Stream, StreamResou
 
 		if (isMainMethod(method)) return;
 
+		if (DEBUG_METHOD != null && !method.getName().equals(DEBUG_METHOD))
+			return;
+
+		if (DEBUG) System.out.println("---- FindOpenStream analyzing method " +
+			SignatureConverter.convertMethodSignature(classContext.getJavaClass(), method) + " ----");
+
 		potentialOpenStreamList.clear();
 
 		JavaClass javaClass = classContext.getJavaClass();
@@ -346,11 +369,22 @@ public class FindOpenStream extends ResourceTrackingDetector<Stream, StreamResou
 	public void inspectResult(JavaClass javaClass, MethodGen methodGen, CFG cfg,
 		Dataflow<ResourceValueFrame, ResourceValueAnalysis<Stream>> dataflow, Stream stream) {
 
+		if (PRINT_CFG) {
+			System.out.println("CFG for " + SignatureConverter.convertMethodSignature(methodGen) +
+				", stream " + stream);
+			DataflowCFGPrinter<ResourceValueFrame, ResourceValueAnalysis<Stream>> cfgPrinter = 
+				new DataflowCFGPrinter<ResourceValueFrame, ResourceValueAnalysis<Stream>>(cfg,dataflow,dataflow.getAnalysis());
+				cfgPrinter.print(System.out);
+		}
+
 		ResourceValueFrame exitFrame = dataflow.getResultFact(cfg.getExit());
 
+		if (DEBUG) System.out.println("Outcome of stream " + stream + ": " + exitFrame);
+
 		int exitStatus = exitFrame.getStatus();
-		if (exitStatus == ResourceValueFrame.OPEN
-			|| exitStatus == ResourceValueFrame.OPEN_ON_EXCEPTION_PATH) {
+		if (!exitFrame.isEscaped() &&
+			(exitStatus == ResourceValueFrame.OPEN ||
+			 exitStatus == ResourceValueFrame.OPEN_ON_EXCEPTION_PATH)) {
 
 			// FIXME: Stream object should be queried for the
 			// priority.

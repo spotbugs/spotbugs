@@ -151,6 +151,10 @@ public class ResourceValueAnalysis<Resource> extends FrameDataflowAnalysis<Resou
 
 		// Merge status
 		result.setStatus(Math.min(result.getStatus(), frame.getStatus()));
+
+		// Merge escaped status
+		if (frame.isEscaped())
+			result.setEscaped(true);
 	}
 
 	protected ResourceValue mergeValues(ResourceValueFrame frame, int slot, ResourceValue a, ResourceValue b)

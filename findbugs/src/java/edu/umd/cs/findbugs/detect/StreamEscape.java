@@ -49,7 +49,7 @@ public class StreamEscape implements Comparable<StreamEscape> {
 	}
 
 	public String toString() {
-		return source + " to " + target;
+		return source.getLocation().getHandle().getPosition() + " to " + target.getHandle().getPosition();
 	}
 }
 
