@@ -19,11 +19,22 @@
 
 package edu.umd.cs.findbugs.plan;
 
+import edu.umd.cs.findbugs.DetectorFactory;
+
 import edu.umd.cs.findbugs.graph.AbstractVertex;
 
 public class DetectorNode
 	extends AbstractVertex<ConstraintEdge, DetectorNode>
 {
+	private DetectorFactory factory;
+
+	public DetectorNode(DetectorFactory factory) {
+		this.factory = factory;
+	}
+
+	public DetectorFactory getFactory() {
+		return factory;
+	}
 }
 
 // vim:ts=4
