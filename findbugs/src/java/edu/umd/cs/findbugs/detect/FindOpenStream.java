@@ -68,18 +68,29 @@ public class FindOpenStream implements Detector {
 			final ConstantPoolGen cpg = getCPG();
 			final ResourceValueFrame frame = getFrame();
 
-			// Model use of instance values in frame slots
-			ins.accept(this);
+			int status = -1;
 
-			// Is a resource created or closed by this instruction?
+			// Is a resource created, opened, or closed by this instruction?
 			Location creationPoint = stream.creationPoint;
 			if (handle == creationPoint.getHandle() && basicBlock == creationPoint.getBasicBlock()) {
 				// Resource creation
-				frame.setValue(frame.getNumSlots() - 1, ResourceValue.instance());
-				frame.setStatus(ResourceValueFrame.OPEN);
-			} else if (resourceTracker.isResourceClose(basicBlock, handle, cpg, stream)) {
+				status = ResourceValueFrame.CREATED;
+			} else if (resourceTracker.isResourceOpen(basicBlock, handle, cpg, stream, frame)) {
+				// Resource opened
+				status = ResourceValueFrame.OPEN;
+			} else if (resourceTracker.isResourceClose(basicBlock, handle, cpg, stream, frame)) {
 				// Resource closed
-				frame.setStatus(ResourceValueFrame.CLOSED);
+				status = ResourceValueFrame.CLOSED;
+			}
+
+			// Model use of instance values in frame slots
+			ins.accept(this);
+
+			// If needed, update frame status
+			if (status != -1) {
+				frame.setStatus(status);
+				if (status == ResourceValueFrame.CREATED)
+					frame.setValue(frame.getNumSlots() - 1, ResourceValue.instance());
 			}
 
 		}
@@ -134,20 +145,35 @@ public class FindOpenStream implements Detector {
 			}
 		}
 
-		public boolean isResourceClose(BasicBlock basicBlock, InstructionHandle handle, ConstantPoolGen cpg, Stream resource) {
+		public boolean isResourceOpen(BasicBlock basicBlock, InstructionHandle handle, ConstantPoolGen cpg, Stream resource,
+			ResourceValueFrame frame) {
+
+			Instruction ins = handle.getInstruction();
+
+			if (ins instanceof INVOKESPECIAL) {
+				// Does this instruction close the stream?
+				INVOKESPECIAL inv = (INVOKESPECIAL) ins;
+
+				if (getInstanceValue(frame, inv, cpg).isInstance() &&
+					matchMethod(inv, cpg, resource.streamClass, "<init>"))
+					return true;
+			}
+
+			return false;
+		}
+
+		public boolean isResourceClose(BasicBlock basicBlock, InstructionHandle handle, ConstantPoolGen cpg, Stream resource,
+			ResourceValueFrame frame) {
+
 			Instruction ins = handle.getInstruction();
 
 			if (ins instanceof INVOKEVIRTUAL) {
 				// Does this instruction close the stream?
 				INVOKEVIRTUAL inv = (INVOKEVIRTUAL) ins;
 
-				String className = inv.getClassName(cpg);
-				if (className.equals(resource.streamClass)) {
-					String methodName = inv.getName(cpg);
-					String methodSig = inv.getSignature(cpg);
-					if (methodName.equals("close") && methodSig.equals("()V"))
-						return true;
-				}
+				if (getInstanceValue(frame, inv, cpg).isInstance() &&
+					matchMethod(inv, cpg, resource.streamClass, "close", "()V"))
+					return true;
 			}
 
 			return false;
@@ -155,6 +181,24 @@ public class FindOpenStream implements Detector {
 
 		public ResourceValueFrameModelingVisitor createVisitor(Stream resource, ConstantPoolGen cpg) {
 			return new StreamFrameModelingVisitor(cpg, this, resource);
+		}
+
+		private ResourceValue getInstanceValue(ResourceValueFrame frame, InvokeInstruction inv, ConstantPoolGen cpg) {
+			int numConsumed = inv.consumeStack(cpg);
+			if (numConsumed == Constants.UNPREDICTABLE)
+				throw new IllegalStateException();
+			return frame.getValue(frame.getNumSlots() - numConsumed);
+		}
+
+		private boolean matchMethod(InvokeInstruction inv, ConstantPoolGen cpg, String className, String methodName) {
+			return inv.getClassName(cpg).equals(className)
+				&& inv.getName(cpg).equals(methodName);
+		}
+
+		private boolean matchMethod(InvokeInstruction inv, ConstantPoolGen cpg, String className, String methodName, String methodSig) {
+			if (!matchMethod(inv, cpg, className, methodName))
+				return false;
+			return inv.getSignature(cpg).equals(methodSig);
 		}
 	}
 
