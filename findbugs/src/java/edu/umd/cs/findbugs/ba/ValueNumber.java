@@ -39,16 +39,40 @@ public class ValueNumber implements Comparable<ValueNumber> {
 	/** The value number. */
 	int number;
 
+	/** Flags representing meta information about the value. */
+	int flags;
+
+	/**
+	 * Flag specifying that this value was the return value
+	 * of a called method.
+	 */
+	public static final int RETURN_VALUE = 1;
+
 	/**
 	 * Constructor.
 	 * @param number the value number
 	 */
 	ValueNumber(int number) {
 		this.number = number;
+		this.flags = 0;
 	}
 
 	public int getNumber() {
 		return number;
+	}
+
+	public int getFlags() { return flags; }
+
+	public void setFlags(int flags) {
+		this.flags = flags;
+	}
+
+	public void setFlag(int flag) {
+		flags |= flag;
+	}
+
+	public boolean hasFlag(int flag) {
+		return (flags & flag) == flag;
 	}
 
 	public String toString() {

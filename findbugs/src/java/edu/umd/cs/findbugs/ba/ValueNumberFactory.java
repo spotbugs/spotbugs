@@ -59,15 +59,14 @@ public class ValueNumberFactory {
 	 */
 	public void compact(int[] map, int numValuesAllocated) {
 		ArrayList<ValueNumber> oldList = this.allocatedValueList;
-		//ArrayList<ValueNumber> newList = new ArrayList<ValueNumber>(Collections.nCopies(numValuesAllocated, null));
-		ArrayList<ValueNumber> newList = new ArrayList<ValueNumber>(numValuesAllocated);
-		for (int i = 0; i < numValuesAllocated; ++i)
-			newList.add(null);
+		ArrayList<ValueNumber> newList = new ArrayList<ValueNumber>(Collections.nCopies(numValuesAllocated, (ValueNumber)null));
 
 		for (Iterator<ValueNumber> i = oldList.iterator(); i.hasNext(); ) {
 			ValueNumber value = i.next();
 			int newNumber = map[value.getNumber()];
 			if (newNumber >= 0) {
+				// Note: because we are simply assigning new numbers to the
+				// old ValueNumber objects, their flags remain valid.
 				value.number = newNumber;
 				newList.set(newNumber, value);
 			}

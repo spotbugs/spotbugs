@@ -90,6 +90,10 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
 		this.factAfterLocationMap = new HashMap<Location, ValueNumberFrame>();
 	}
 
+	public ValueNumberFactory getFactory() {
+		return factory;
+	}
+
 	public int getNumValuesAllocated() {
 		return factory.getNumValuesAllocated();
 	}

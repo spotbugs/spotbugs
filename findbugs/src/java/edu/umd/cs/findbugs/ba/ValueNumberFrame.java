@@ -108,15 +108,8 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 		// The "one merge" rule means that merged values are essentially like
 		// phi nodes.  They combine some number of other values.
 
-		// I believe that this strategy is correct - slots with the same
-		// value number will have identical values at runtime.
-		// The lattice has a finite height because the CFGs have a finite
-		// maximum length path, which limits the number of times a value
-		// merge can propagate through the CFG; so, the analysis terminates.
-		// Each merge results in a lowering in the lattice.
-
-		// I need to think about this a bit more before trusting the results
-		// of ValueNumberAnalysis.
+		// I believe (but haven't proved) that this technique is a dumb way
+		// of computing SSA.
 
 		if (mine != getValue(slot)) throw new IllegalStateException();
 
@@ -126,6 +119,7 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 		ValueNumber mergedValue = mergedValueList.get(slot);
 		if (mergedValue == null) {
 			mergedValue = factory.createFreshValue();
+			mergedValue.setFlags(mine.getFlags() | other.getFlags());
 			mergedValueList.set(slot, mergedValue);
 		}
 

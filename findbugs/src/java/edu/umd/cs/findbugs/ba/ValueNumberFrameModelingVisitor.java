@@ -80,13 +80,15 @@ public class ValueNumberFrameModelingVisitor
 	public void modelNormalInstruction(Instruction ins, int numWordsConsumed, int numWordsProduced) {
 		ValueNumberFrame frame = getFrame();
 
+		int flags = (ins instanceof InvokeInstruction) ? ValueNumber.RETURN_VALUE : 0;
+
 		// Get the input operands to this instruction.
 		ValueNumber[] inputValueList = popInputValues(numWordsConsumed);
 
 		// See if we have the output operands in the cache.
 		// If not, push default (fresh) values for the output,
 		// and add them to the cache.
-		ValueNumber[] outputValueList = getOutputValues(inputValueList, numWordsProduced);
+		ValueNumber[] outputValueList = getOutputValues(inputValueList, numWordsProduced, flags);
 
 		if (VERIFY_INTEGRITY) {
 			if (outputValueList.length != numWordsProduced)
@@ -297,12 +299,19 @@ public class ValueNumberFrameModelingVisitor
 	 * Get output values for current instruction from the ValueNumberCache.
 	 */
 	private ValueNumber[] getOutputValues(ValueNumber[] inputValueList, int numWordsProduced) {
+		return getOutputValues(inputValueList, numWordsProduced, 0);
+	}
+
+	private ValueNumber[] getOutputValues(ValueNumber[] inputValueList, int numWordsProduced, int flags) {
 		ValueNumberCache.Entry entry = new ValueNumberCache.Entry(handle, inputValueList);
 		ValueNumber[] outputValueList = cache.lookupOutputValues(entry);
 		if (outputValueList == null) {
 			outputValueList = new ValueNumber[numWordsProduced];
-			for (int i = 0; i < numWordsProduced; ++i)
-				outputValueList[i] = factory.createFreshValue();
+			for (int i = 0; i < numWordsProduced; ++i) {
+				ValueNumber freshValue = factory.createFreshValue();
+				freshValue.setFlags(flags);
+				outputValueList[i] = freshValue;
+			}
 			cache.addOutputValues(entry, outputValueList);
 		}
 		return outputValueList;
