@@ -116,7 +116,17 @@ public class BugInstance {
 	 * @return this object
 	 */
 	public BugInstance addMethod(String className, String methodName, String methodSig) {
-		MethodAnnotation methodAnnotation = new MethodAnnotation(className, methodName, methodSig);
+		addMethod(new MethodAnnotation(className, methodName, methodSig));
+		return this;
+	}
+
+	/**
+	 * Add a method annotation.  If this is the first method annotation added,
+	 * it becomes the primary method annotation.
+	 * @param methodAnnotation the method annotation
+	 * @return this object
+	 */
+	public BugInstance addMethod(MethodAnnotation methodAnnotation) {
 		if (primaryMethodAnnotation == null)
 			primaryMethodAnnotation = methodAnnotation;
 		add(methodAnnotation);
@@ -184,10 +194,7 @@ public class BugInstance {
 	 * @return this object
 	 */
 	public BugInstance addMethod(BetterVisitor visitor) {
-		String className = visitor.getBetterClassName();
-		String methodName = visitor.getMethodName();
-		String methodSig = visitor.getMethodSig();
-		addMethod(className, methodName, methodSig);
+		addMethod(new MethodAnnotation(visitor));
 		return this;
 	}
 
