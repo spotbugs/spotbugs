@@ -137,6 +137,30 @@ public class TimestampIntervalCollection {
 		return collection.toString();
 	}
 	
+	/**
+	 * Combine two TimestampIntervalCollections into a single collection.
+	 * Overlapping intervals are coalesced.
+	 * 
+	 * @param a a TimestampIntervalCollection
+	 * @param b another TimestampIntervalCollection
+	 * @return the combined TimestampIntervalCollection
+	 */
+	public static TimestampIntervalCollection merge(
+			TimestampIntervalCollection a, TimestampIntervalCollection b) {
+		TimestampIntervalCollection result = new TimestampIntervalCollection();
+		
+		// TimestampIntervals are immutable, so we can just copy them directly
+		// into the result object.
+		result.intervalList.addAll(a.intervalList);
+		result.intervalList.addAll(b.intervalList);
+		
+		// Take care of ordering and overlap.
+		result.sort();
+		result.simplify();
+		
+		return result;
+	}
+	
 	// @Override
 	public String toString() {
 		StringBuffer buf = new StringBuffer();
