@@ -38,6 +38,7 @@ import org.apache.bcel.generic.BasicType;
 import org.apache.bcel.generic.Type;
 import edu.umd.cs.findbugs.visitclass.Constants2;
 import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
+import edu.umd.cs.findbugs.visitclass.LVTHelper;
 
 /**
  * tracks the types and numbers of objects that are currently on the operand stack
@@ -815,7 +816,7 @@ public class OpcodeStack implements Constants2
 		Method m = dbc.getMethod();
 		LocalVariableTable lvt = m.getLocalVariableTable();
 		if (lvt != null) {
-			LocalVariable lv = lvt.getLocalVariable(register);
+			LocalVariable lv = LVTHelper.getLocalVariableAtPC(lvt, register, dbc.getPC());
 			if (lv != null) {
 				String signature = lv.getSignature();
 				pushByLocalLoad(signature, register);
