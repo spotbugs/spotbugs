@@ -1,4 +1,8 @@
 <FindbugsPlugin>
+  <Detector class="edu.umd.cs.findbugs.detect.NoteSuppressedWarnings" 
+	speed="fast"
+	   reports="TESTING"
+	/> 
   <Detector class="edu.umd.cs.findbugs.detect.InfiniteRecursiveLoop" 
 	speed="fast"
    reports="IL_INFINITE_RECURSIVE_LOOP" /> 
@@ -127,9 +131,9 @@
    	 reports="BRSA_BAD_RESULTSET_ACCESS"/>
    <Detector class="edu.umd.cs.findbugs.detect.SuperfluousInstanceOf" speed="fast"
    	 reports="SIO_SUPERFLUOUS_INSTANCEOF"/>  
-   <Detector class="edu.umd.cs.findbugs.detect.FindDeadLocalStores" speed="moderate"
+  <Detector class="edu.umd.cs.findbugs.detect.FindDeadLocalStores" speed="moderate"
     reports="DLS_DEAD_LOCAL_STORE" disabled="true"/>
-   <Detector class="edu.umd.cs.findbugs.detect.BadAppletConstructor" speed="fast"
+  <Detector class="edu.umd.cs.findbugs.detect.BadAppletConstructor" speed="fast"
     reports="BAC_BAD_APPLET_CONSTRUCTOR" disabled="true"/> 
    <Detector class="edu.umd.cs.findbugs.detect.UseObjectEquals" speed="fast"
     reports="UOE_BAD_ARRAY_COMPARE,UOE_USE_OBJECT_EQUALS"/>

@@ -7,6 +7,15 @@
    -->
 
 
+  <Detector class="edu.umd.cs.findbugs.detect.NoteSuppressedWarnings">
+    <Details>
+<![CDATA[
+<p> Suppresses warnings based on use of the edu.umd.cs.findbugs.annotations.NoteSuppressWarnings annotation.</p>
+]]>
+    </Details>
+  </Detector>
+
+
   <Detector class="edu.umd.cs.findbugs.detect.InheritanceUnsafeGetResource">
     <Details>
 <![CDATA[
