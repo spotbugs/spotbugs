@@ -1,3 +1,6 @@
 build
 doc
 plugin
+*.patch
+*.diff
+*.fb
