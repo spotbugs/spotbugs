@@ -229,6 +229,9 @@ public class BytecodeScanner implements org.apache.bcel.Constants {
 				wide = true;
 				++index;
 				break;
+
+			default:
+				throw new IllegalArgumentException("Bad opcode " + opcode + " at offset " + index);
 			}
 
 		}
