@@ -593,8 +593,7 @@ visible), they could trigger listener notification on the event dispatch thread.
 
   <BugPattern type="VO_VOLATILE_REFERENCE_TO_ARRAY">
     <ShortDescription>A volatile reference to an array doesn't treat the array elements as volatile</ShortDescription>
-    <LongDescription>{1} is a volatile reference to an array; the array elements
-are non-volatile.</LongDescription>
+    <LongDescription>{1} is a volatile reference to an array; the array elements are non-volatile.</LongDescription>
     <Details>
 <![CDATA[
 <p>This declares a volatile reference to an array, which might not be what
