@@ -42,9 +42,6 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 	private static final boolean NO_LOAD_CONSTANT_EXCEPTIONS =
 		!Boolean.getBoolean("cfgbuilder.ldcExceptions");
 
-	private static final boolean ACCURATE_EXCEPTIONS =
-		Boolean.getBoolean("cfgbuilder.accurateExceptions");
-
 	// TODO: don't forget to change BasicBlock so ATHROW is considered to have a null check
 
 	/* ----------------------------------------------------------------------
@@ -610,33 +607,6 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 	private void handleExceptions(Subroutine subroutine, InstructionHandle pei, BasicBlock etb) {
 		etb.setExceptionThrower(pei);
 
-		if (ACCURATE_EXCEPTIONS)
-			accurateHandleExceptions(subroutine, pei, etb);
-		else
-			conservativeHandleExceptions(subroutine, pei, etb);
-	}
-
-	/**
-	 * Add exception edges, aggressively eliminating edges that
-	 * appear to be impossible.  For example, we try to look up the
-	 * receiver class for method invocations, examine the
-	 * declared exceptions, and assume that undeclared checked exceptions
-	 * will not be thrown.
-	 */
-	private void accurateHandleExceptions(Subroutine subroutine, InstructionHandle pei, BasicBlock etb) {
-		// FIXME: implement this for real
-		conservativeHandleExceptions(subroutine, pei, etb);
-	}
-
-	/**
-	 * Add exception edges conservatively.  For the most part,
-	 * we assume any instruction where an exception can be thrown
-	 * can reach any handler.  We eliminate some obvious cases,
-	 * such as recognizing that if a handler for ANY or Throwable
-	 * is seen, then no lower priority handlers are reachable,
-	 * and the instruction will not be thrown out of the method.
-	 */
-	private void conservativeHandleExceptions(Subroutine subroutine, InstructionHandle pei, BasicBlock etb) {
 		// Remember whether or not an ANY exception type handler
 		// is reachable.  If so, then we know that exceptions raised
 		// at this instruction cannot propagate out of the method.
