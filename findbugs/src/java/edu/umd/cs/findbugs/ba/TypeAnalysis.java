@@ -50,7 +50,8 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 	 * Compute what kinds of exceptions can propagate
 	 * on each exception edge.
 	 */
-	private static final boolean ACCURATE_EXCEPTIONS = !Boolean.getBoolean("ta.noAccurateExceptions");
+	private static final boolean ACCURATE_EXCEPTIONS = 
+		Boolean.getBoolean("ta.accurateExceptions") || ClassContext.PRUNE_INFEASIBLE_EXCEPTION_EDGES;
 
 	private class CachedExceptionSet {
 		private TypeFrame result;
