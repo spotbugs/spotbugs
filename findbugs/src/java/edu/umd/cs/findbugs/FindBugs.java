@@ -66,11 +66,9 @@ public class FindBugs implements Constants2, ExitCodes
 	public boolean containsSourceFiles();
 
 	/**
-	 * Add any aux classpath entries in the resource
-	 * to given list.
-	 * @param list the list of aux classpath entries
+	 * Get the filename of this resource.
 	 */
-	public void addAuxClasspathEntries(List<String> list);
+	public String getFileName();
   }
 
   /**
@@ -108,8 +106,19 @@ public class FindBugs implements Constants2, ExitCodes
 		return false;
 	}
 
-	public void addAuxClasspathEntries(List<String> list) {
+	public String getFileName() {
+		return fileName;
 	}
+  }
+
+  /**
+   * A DataInputStream wrapper that cannot be closed
+   */
+  private static class DupDataStream extends DataInputStream {
+	public DupDataStream( InputStream in ) {
+		super( in );
+	}
+	public void close() { }
   }
 
   /**
@@ -117,7 +126,7 @@ public class FindBugs implements Constants2, ExitCodes
    * Nested jar and zip files are also scanned for classes;
    * this is needed for .ear and .war files associated with EJBs.
    */
-  private static class ZipClassProducer implements ClassProducer {
+  private class ZipClassProducer implements ClassProducer {
 	private String fileName;
 	private boolean isJar;
 	private String nestedFileName;
@@ -125,14 +134,6 @@ public class FindBugs implements Constants2, ExitCodes
 	private Enumeration entries;
 	private ZipInputStream zipStream;
 	private boolean containsSourceFiles;
-
-	// a DataInputStream wrapper that cannot be closed
-	private static class DupDataStream extends DataInputStream {
-		public DupDataStream( InputStream in ) {
-			super( in );
-		}
-		public void close() { };
-	}
 
 	/**
 	 * Constructor.
@@ -219,8 +220,37 @@ public class FindBugs implements Constants2, ExitCodes
 		return containsSourceFiles;
 	}
 
+	public String getFileName() {
+		return fileName;
+	}
+
 	public void addAuxClasspathEntries(List<String> list) {
-		// TODO: get them from the manifest
+	    // Examine jar file manifest for aux classpath entries
+	    if (isJar) {
+		File baseDir = new File(fileName).getParentFile();
+
+		JarFile jarFile = (JarFile) zipFile;
+		try {
+		    Manifest manifest = jarFile.getManifest();
+		    if (manifest != null) {
+			Attributes attributes = manifest.getMainAttributes();
+			String classPath = attributes.getValue(Attributes.Name.CLASS_PATH);
+			if (classPath != null) {
+			    StringTokenizer tok = new StringTokenizer(classPath, " \t\n\r");
+			    while (tok.hasMoreTokens()) {
+				String entry = tok.nextToken();
+				if (baseDir != null) {
+				    entry = baseDir.getPath() + File.separator + entry;
+				}
+				System.out.println("From manifest: " + entry);
+				list.add(entry);
+			    }
+			}
+		    }
+		} catch (IOException e) {
+		    bugReporter.logError("Error examining manifest for " + fileName + ": " + e.toString());
+		}
+	    }
 	}
   }
 
@@ -229,10 +259,12 @@ public class FindBugs implements Constants2, ExitCodes
    * The directory is scanned recursively for class files.
    */
   private static class DirectoryClassProducer implements ClassProducer {
+	private String dirName;
 	private Iterator<String> rfsIter;
 	private boolean containsSourceFiles;
 
 	public DirectoryClassProducer(String dirName) throws InterruptedException {
+		this.dirName = dirName;
 		FileFilter filter = new FileFilter() {
 			public boolean accept(File file) {
 				String fileName = file.getName();
@@ -267,7 +299,8 @@ public class FindBugs implements Constants2, ExitCodes
 		return containsSourceFiles;
 	}
 
-	public void addAuxClasspathEntries(List<String> list) {
+	public String getFileName() {
+		return dirName;
 	}
   }
 
@@ -327,6 +360,7 @@ public class FindBugs implements Constants2, ExitCodes
    * ---------------------------------------------------------------------- */
 
   private static final boolean DEBUG = Boolean.getBoolean("findbugs.debug");
+  private static final boolean REPOS_DEBUG = Boolean.getBoolean("findbugs.debug.repos");
 
   /** FindBugs home directory. */
   private static String home;
@@ -418,8 +452,43 @@ public class FindBugs implements Constants2, ExitCodes
 	if (detectors == null)
 		createDetectors();
 
+	// Create list of class producers; they are the source of
+	// all classes to be directly analyzed.
+	// As a side effect, this will examine all Jar file manifests
+	// for entries to add to the aux classpath.
+	List<String> manifestClassPathEntryList = new LinkedList<String>();
+	List<ClassProducer> classProducerList = new LinkedList<ClassProducer>();
+	String[] argv = project.getJarFileArray();
+	progressCallback.reportNumberOfArchives(argv.length);
+	for (int i = 0; i < argv.length; i++) {
+	    String fileName = argv[i];
+
+	    // Create the ClassProducer
+	    if (fileName.endsWith(".jar") ||
+		fileName.endsWith(".zip") ||
+		fileName.endsWith(".war") ||
+		fileName.endsWith(".ear")) {
+		// This might be a jar file, in which case the
+		// manifest is scanned for Class-Path entries
+		// which we will add to the aux classpath.
+		ZipClassProducer zipClassProducer = new ZipClassProducer(fileName);
+		zipClassProducer.addAuxClasspathEntries(manifestClassPathEntryList);
+		classProducerList.add(zipClassProducer);
+	    } else if (fileName.endsWith(".class"))
+		classProducerList.add(new SingleClassProducer(fileName));
+	    else {
+		File dir = new File(fileName);
+		if (!dir.isDirectory())
+		    throw new IOException("Path " + fileName + " is not an archive, class file, or directory");
+		classProducerList.add(new DirectoryClassProducer(fileName));
+	    }
+	}
+
 	// Clear repository and analysis context cache of all class files
 	clearRepository();
+
+	// Set the classpath to be used for class lookups.
+	setClasspath(manifestClassPathEntryList);
 
 	// Scan all jar files and directories,
 	// making a list of all classes encountered.
@@ -427,15 +496,11 @@ public class FindBugs implements Constants2, ExitCodes
 	// Class-Path entries in the manifests of scanned jar
 	// files, in order to add them to the auxiliary classpath
 	// when the analysis is performed.
-	String[] argv = project.getJarFileArray();
-	progressCallback.reportNumberOfArchives(argv.length);
 	List<String> repositoryClassList = new LinkedList<String>();
-	List<String> manifestClassPathEntryList = new LinkedList<String>();
-	for (int i = 0; i < argv.length; i++)
-		addFileToRepository(argv[i], repositoryClassList, manifestClassPathEntryList);
-
-	// Set the classpath to be used for class lookups.
-	setClasspath(manifestClassPathEntryList);
+	for (Iterator<ClassProducer> i = classProducerList.iterator(); i.hasNext(); ) {
+		ClassProducer classProducer = i.next();
+		addFileToRepository(classProducer, repositoryClassList);
+	}
 
 	// Examine all classes for bugs.
 	// Don't examine the same class more than once.
@@ -451,6 +516,8 @@ public class FindBugs implements Constants2, ExitCodes
 
 	progressCallback.finishPerClassAnalysis();
 
+	// Notify detectors that analysis is finished and they should
+	// generate reports about accumulated data.
 	this.reportFinal();
 
 	// Flush any queued bug reports
@@ -530,6 +597,8 @@ public class FindBugs implements Constants2, ExitCodes
    * from a previous execution.
    */
   private void clearRepository() {
+	if (REPOS_DEBUG) System.out.println("Clearing repository");
+
 	// Purge repository of previous contents
 	Repository.clearCache();
 
@@ -546,21 +615,37 @@ public class FindBugs implements Constants2, ExitCodes
    *    in the manifests of scanned jar files
    */
   private void setClasspath(List<String> manifestClassPathEntryList) {
+	Set<String> alreadyAdded = new HashSet<String>();
+	alreadyAdded.addAll(project.getJarFileList());
+
 	// Create a SyntheticRepository based on the current project,
 	// and make it current.
 
+	// Accumulate aux classpath entries and system classpath.
 	StringBuffer buf = new StringBuffer();
+
+	// Add project aux classpath entries
 	List<String> auxClasspathEntryList = project.getAuxClasspathEntryList();
-	Iterator i = auxClasspathEntryList.iterator();
-	while (i.hasNext()) {
-	    String entry = (String) i.next();
-	    buf.append(entry);
-	    buf.append(File.pathSeparatorChar);
+	for (Iterator<String> i = auxClasspathEntryList.iterator(); i.hasNext(); ) {
+	    String entry = i.next();
+	    if (alreadyAdded.add(entry)) {
+		buf.append(entry);
+		buf.append(File.pathSeparatorChar);
+	    }
+	}
+
+	// Add manifest aux classpath entries.
+	for (Iterator<String> i = manifestClassPathEntryList.iterator(); i.hasNext(); ) {
+	    String entry = i.next();
+	    if (alreadyAdded.add(entry)) {
+		buf.append(entry);
+		buf.append(File.pathSeparatorChar);
+	    }
 	}
 
 	// Add the system classpath entries
 	buf.append(ClassPath.getClassPath());
-	if (DEBUG) System.out.println("System classpath: " + buf.toString());
+	if (REPOS_DEBUG) System.out.println("Aux and system classpath: " + buf.toString());
 
 	// Set up the Repository to use the combined classpath
 	ClassPath classPath = new ClassPath(buf.toString());
@@ -570,30 +655,18 @@ public class FindBugs implements Constants2, ExitCodes
 
   /**
    * Add all classes contained in given file to the BCEL Repository.
-   * @param fileName the file, which may be a jar/zip archive, a single class file,
-   *   or a directory to be recursively searched for class files
-   * @param manifestClassPathEntryList list used to store aux classpath entries
-   *    found in the manifests of scanned jar files
+   * @param classProducer the class producer, which may be a jar/zip archive,
+   *   a single class file, or a directory to be recursively searched for class files
    */
-  private void addFileToRepository(String fileName, List<String> repositoryClassList,
-	List<String> manifestClassPathEntryList)
+  private void addFileToRepository(ClassProducer classProducer, List<String> repositoryClassList)
 	throws IOException, InterruptedException {
 
+     String fileName = classProducer.getFileName();
+
+     if (REPOS_DEBUG) System.out.println("Scanning " + fileName);
+     int numAdded = 0;
+
      try {
-	ClassProducer classProducer;
-
-	// Create the ClassProducer
-	if (fileName.endsWith(".jar") || fileName.endsWith(".zip") || fileName.endsWith(".war") || fileName.endsWith(".ear"))
-		classProducer = new ZipClassProducer(fileName);
-	else if (fileName.endsWith(".class"))
-		classProducer = new SingleClassProducer(fileName);
-	else {
-		File dir = new File(fileName);
-		if (!dir.isDirectory())
-			throw new IOException("Path " + fileName + " is not an archive, class file, or directory");
-		classProducer = new DirectoryClassProducer(fileName);
-	}
-
 	// Load all referenced classes into the Repository
 	for (;;) {
 		if (Thread.interrupted())
@@ -603,6 +676,7 @@ public class FindBugs implements Constants2, ExitCodes
 			if (jclass == null)
 				break;
 			Repository.addClass(jclass);
+			++numAdded;
 			repositoryClassList.add(jclass.getClassName());
 		} catch (ClassFormatException e) {
 			e.printStackTrace();
@@ -610,16 +684,14 @@ public class FindBugs implements Constants2, ExitCodes
 		}
 	}
 
+	if (REPOS_DEBUG) System.out.println("  Added " + numAdded + " classes to repository");
+
 	progressCallback.finishArchive();
 
 	// If the archive or directory scanned contained source files,
 	// add it to the end of the source path.
 	if (classProducer.containsSourceFiles())
 		project.addSourceDir(fileName);
-
-	// If the archive or directory scanned contained
-	// aux classpath entries, add them to the list.
-	classProducer.addAuxClasspathEntries(manifestClassPathEntryList);
 
      } catch (IOException e) {
 	// You'd think that the message for a FileNotFoundException would include
@@ -633,7 +705,7 @@ public class FindBugs implements Constants2, ExitCodes
    * @param className the fully qualified name of the class to examine
    */
   private void examineClass(String className) throws InterruptedException {
-	if (DEBUG) System.out.println("Examining class " + className);
+	if (DEBUG || REPOS_DEBUG) System.out.println("Examining class " + className);
 
 	try {
 		JavaClass javaClass = Repository.lookupClass(className);
@@ -662,6 +734,7 @@ public class FindBugs implements Constants2, ExitCodes
 		}
 	} catch (ClassNotFoundException e) {
 		// This should never happen unless there are bugs in BCEL.
+		if (REPOS_DEBUG) System.out.println("  Missing class: " + className);
 		bugReporter.reportMissingClass(e);
 		reportRecoverableException(className, e);
 	} catch (ClassFormatException e) {
