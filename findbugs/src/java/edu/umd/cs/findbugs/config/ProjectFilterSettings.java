@@ -42,15 +42,25 @@ import edu.umd.cs.findbugs.I18N;
  * @author David Hovemeyer
  */
 public class ProjectFilterSettings {
+	/** Text string for high priority. */
+	public static final String HIGH_PRIORITY = "High";
+
+	/** Text string for medium priority. */
+	public static final String MEDIUM_PRIORITY = "Medium";
+
+	/** Text string for low priority. */
+	public static final String LOW_PRIORITY = "Low";
+
+	/** Default warning threshold priority. */
+	public static final String DEFAULT_PRIORITY = MEDIUM_PRIORITY;
+
+	/** Map of priority level names to their numeric values.  */
 	private static Map<String, Integer> priorityNameToValueMap = new HashMap<String, Integer>();
 	static {
-		priorityNameToValueMap.put("High", new Integer(Detector.HIGH_PRIORITY));
-		priorityNameToValueMap.put("Medium", new Integer(Detector.NORMAL_PRIORITY));
-		priorityNameToValueMap.put("Low", new Integer(Detector.LOW_PRIORITY));
+		priorityNameToValueMap.put(HIGH_PRIORITY, new Integer(Detector.HIGH_PRIORITY));
+		priorityNameToValueMap.put(MEDIUM_PRIORITY, new Integer(Detector.NORMAL_PRIORITY));
+		priorityNameToValueMap.put(LOW_PRIORITY, new Integer(Detector.LOW_PRIORITY));
 	}
-	
-	/** Default warning threshold priority. */
-	public static final String DEFAULT_PRIORITY = "Medium";
 
 	// Fields
 	private Set<String> activeBugCategorySet;
