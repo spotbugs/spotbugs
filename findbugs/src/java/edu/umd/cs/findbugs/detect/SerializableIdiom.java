@@ -182,9 +182,13 @@ public class SerializableIdiom extends PreorderVisitor
 				// Lower the priority for fields which are of an interface
 				// or abstract type, since the user may know that all subtypes of
 				// the interface will be Serializable.
-				if (fieldClass.isInterface() || fieldClass.isAbstract())
+				if (fieldClass.isInterface() 
+					|| fieldClass.isAbstract()) {
 				    priority = Math.max(LOW_PRIORITY, priority + 1);
-
+			            if (Repository.instanceOf(fieldClass, 
+						"java.util.Collection"))
+				    return;
+				    }
 				// Report is queued until after the entire class has been seen.
 				fieldWarningList.add(new BugInstance("SE_BAD_FIELD", priority)
 					.addClass(thisClass.getClassName())

@@ -41,15 +41,18 @@ public class FindHEmismatch extends BytecodeScanningDetector implements   Consta
    }
 
    public void visitAfter(JavaClass obj) {
+	try {
+	if (!obj.isClass()) return;
 	if (betterClassName.equals("java.lang.Object")) return;
 	int accessFlags = obj.getAccessFlags();
 	// if ((accessFlags & ACC_ABSTRACT) != 0) return;
 	if ((accessFlags & ACC_INTERFACE) != 0) return;
 	String whereEqual = betterClassName;
-	if (!hasEqualsObject)
+	if (!hasEqualsObject)  {
 		whereEqual = Lookup.findSuperImplementor(obj, "equals",
 					"(Ljava/lang/Object;)Z", bugReporter)
 			  .getClassName();
+		}
 	boolean usesDefaultEquals = whereEqual.equals("java.lang.Object");
 	String whereHashCode = betterClassName;
 	if (!hasHashCode)
@@ -96,6 +99,12 @@ public class FindHEmismatch extends BytecodeScanningDetector implements   Consta
 		    new BugInstance("HE_EQUALS_NO_HASHCODE", 
 			hasFields ? NORMAL_PRIORITY : LOW_PRIORITY)
 		    .addClass(betterClassName));
+		}
+	} catch (NullPointerException e) {
+		/*
+		System.err.println("That was strange. Error in doing HE check on " + betterClassName);
+		e.printStackTrace();
+		*/
 		}
 	}
    public void visit(JavaClass obj) {
