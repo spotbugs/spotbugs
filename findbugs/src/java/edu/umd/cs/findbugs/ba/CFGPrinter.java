@@ -82,12 +82,12 @@ public class CFGPrinter {
     public static void main(String[] argv) {
 	try {
 	    if (argv.length != 1) {
-		System.out.println("Usage: edu.umd.cs.edgecov.CFGPrinter <class name>");
+		System.out.println("Usage: edu.umd.cs.edgecov.CFGPrinter <class file>");
 		System.exit(1);
 	    }
 
 	    String className = argv[0];
-	    JavaClass cls = Repository.lookupClass(className);
+	    JavaClass cls = new ClassParser(className).parse();
 	    Method[] methods = cls.getMethods();
 	    ConstantPoolGen cp = new ConstantPoolGen(cls.getConstantPool());
 	    String methodName = System.getProperty("cfg.method");
