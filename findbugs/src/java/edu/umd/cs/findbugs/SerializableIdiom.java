@@ -18,6 +18,7 @@
  */
 
 package edu.umd.cs.findbugs;
+import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.*;
 import edu.umd.cs.pugh.visitclass.BetterVisitor;
 import edu.umd.cs.pugh.visitclass.Constants2;
@@ -39,23 +40,28 @@ public class SerializableIdiom extends BetterVisitor implements Detector, Consta
 	classContext.getJavaClass().accept(this);
 	}
 
-    public void report() { }
-
-    public void visitJavaClass(JavaClass obj)     {      
-sawSerialVersionUID = false;
-       super.visitJavaClass(obj);
-        constant_pool.accept(this);
-    		isSerializable = false;
-		String [] interface_names = obj.getInterfaceNames();
-		for(int i=0; i < interface_names.length; i++) {
-			if (interface_names[i].equals("java.io.Serializable")) {
-				isSerializable = true;
-			}
+    public void report() {
 		}
+    public void visitJavaClass(JavaClass obj)     {      
+	int flags = obj.getAccessFlags();
+	boolean isAbstract = (flags & ACC_ABSTRACT) != 0 
+			   || (flags & ACC_INTERFACE) != 0;
+	super.visitJavaClass(obj);
+        sawSerialVersionUID = false;
+        constant_pool.accept(this);
+               isSerializable = false;
+               String [] interface_names = obj.getInterfaceNames();
+               for(int i=0; i < interface_names.length; i++) {
+                       if (interface_names[i].equals("java.io.Serializable")) {
+                               isSerializable = true;
+                       }
+               }
+
+	isSerializable = isSerializable
+		|| Repository.instanceOf(obj,"java.io.Serializable");
         Field[] fields = obj.getFields();
         for(int i = 0; i < fields.length; i++) fields[i].accept(this);
-	if (isSerializable && !sawSerialVersionUID)
-//		bugReporter.reportBug(BugInstance.inClass("SE_NO_SERIALVERSIONID", UNKNOWN_PRIORITY, this));
+	if (isSerializable && !isAbstract && !sawSerialVersionUID)
 		bugReporter.reportBug(new BugInstance("SE_NO_SERIALVERSIONID", NORMAL_PRIORITY).addClass(this));
 
 	synchronizedMethods = 0;
@@ -63,7 +69,6 @@ sawSerialVersionUID = false;
         Method[] methods = obj.getMethods();
         for(int i = 0; i < methods.length; i++) methods[i].accept(this);
 	if (writeObjectIsSynchronized && synchronizedMethods == 0)
-//		bugReporter.reportBug(BugInstance.inClass("WS_WRITEOBJECT_SYNC", UNKNOWN_PRIORITY, this));
 		bugReporter.reportBug(new BugInstance("WS_WRITEOBJECT_SYNC", NORMAL_PRIORITY).addClass(this));
         }
 
@@ -73,7 +78,6 @@ sawSerialVersionUID = false;
 	// System.out.println(methodName + isSynchronized);
 	if (!isSynchronized) return;
 	if (methodName.equals("readObject")) 
-//		bugReporter.reportBug(BugInstance.inClass("RS_READOBJECT_SYNC", UNKNOWN_PRIORITY, this));
 		bugReporter.reportBug(new BugInstance("RS_READOBJECT_SYNC", NORMAL_PRIORITY).addClass(this));
 	else if (methodName.equals("writeObject")) 
 		writeObjectIsSynchronized = true;
