@@ -151,12 +151,6 @@ public class SerializableIdiom extends PreorderVisitor
 	    bugReporter.reportMissingClass(e);
 	}
 
-	if (isSerializable && !isExternalizable
-		&& !superClassHasVoidConstructor 
-		&& !superClassImplementsSerializable)
-		bugReporter.reportBug(new BugInstance("SE_NO_SUITABLE_CONSTRUCTOR", implementsSerializableDirectly ?
-					HIGH_PRIORITY : NORMAL_PRIORITY)
-			.addClass(getThisClass().getClassName()));
 
 	// Is this a GUI class?
 	try {
@@ -182,6 +176,13 @@ public class SerializableIdiom extends PreorderVisitor
 	System.out.println("  isAbstract: " + isAbstract);
 	System.out.println("  superClassImplementsSerializable: " + superClassImplementsSerializable);
 	}
+	if (isSerializable && !isExternalizable
+		&& !superClassHasVoidConstructor 
+		&& !superClassImplementsSerializable)
+		bugReporter.reportBug(new BugInstance("SE_NO_SUITABLE_CONSTRUCTOR", 
+			( implementsSerializableDirectly || sawSerialVersionUID)  
+					? HIGH_PRIORITY : NORMAL_PRIORITY)
+			.addClass(getThisClass().getClassName()));
 	// Downgrade class-level warnings if it's a GUI class.
 	if (isGUIClass) return;
 	int priority = isGUIClass ? LOW_PRIORITY : NORMAL_PRIORITY;
@@ -252,6 +253,7 @@ public class SerializableIdiom extends PreorderVisitor
 			if (!fieldClassName.equals("java.lang.Object") &&
 			    !(Repository.instanceOf(fieldClass, "java.io.Serializable")
 				|| Repository.instanceOf(fieldClass, "java.io.Externalizable"))) {
+				
 
 				// Priority is LOW for GUI classes (unless explicitly marked Serializable),
 				// HIGH if the class directly implements Serializable,
@@ -259,7 +261,7 @@ public class SerializableIdiom extends PreorderVisitor
 				int priority;
 				if (isGUIClass && !implementsSerializableDirectly)
 				    priority = LOW_PRIORITY;
-				else if (implementsSerializableDirectly)
+				else if (implementsSerializableDirectly || sawSerialVersionUID)
 				    priority = HIGH_PRIORITY;
 				else
 				    priority = NORMAL_PRIORITY;
