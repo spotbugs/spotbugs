@@ -36,6 +36,8 @@ public class ResourceValue {
 			return instance;
 	}
 
+	public boolean isInstance() { return this == instance; }
+
 	public String toString() {
 		return (this == instance) ? "I" : "-";
 	}
