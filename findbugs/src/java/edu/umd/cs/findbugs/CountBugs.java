@@ -19,8 +19,11 @@ public class CountBugs {
 		int arg = 0;
 		if (argv[0].equals("-categories")) {
 			StringTokenizer tok = new StringTokenizer(argv[1], ",");
-			while (tok.hasMoreTokens())
-				categorySet.add(tok.nextToken());
+			while (tok.hasMoreTokens()) {
+				String category = tok.nextToken();
+				categorySet.add(category);
+				countMap.put(category, new Integer(0));
+			}
 			arg = 2;
 		}
 
