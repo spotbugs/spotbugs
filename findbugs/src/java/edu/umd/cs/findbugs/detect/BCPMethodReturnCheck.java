@@ -105,8 +105,12 @@ public class BCPMethodReturnCheck extends ByteCodePatternDetector {
 		if (calledMethodName.startsWith("access$"))
 			return;
 
+		// System.out.println("Found " + calledMethodName);
 		String sourceFile = javaClass.getSourceFileName();
-		bugReporter.reportBug(new BugInstance("RV_RETURN_VALUE_IGNORED", NORMAL_PRIORITY)
+		bugReporter.reportBug(new BugInstance("RV_RETURN_VALUE_IGNORED", 
+			calledMethodName.equals("createNewFile") 
+				? LOW_PRIORITY : NORMAL_PRIORITY
+			)
 			.addClassAndMethod(methodGen, sourceFile)
 			.addCalledMethod(methodGen, inv)
 			.addSourceLine(methodGen, sourceFile, call));
