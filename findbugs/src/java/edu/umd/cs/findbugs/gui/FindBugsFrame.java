@@ -1,6 +1,7 @@
 /*
  * FindBugs - Find bugs in Java programs
  * Copyright (C) 2003,2004 University of Maryland
+ * Copyright (C) 2004 Dave Brosius <dbrosius@users.sourceforge.net>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
