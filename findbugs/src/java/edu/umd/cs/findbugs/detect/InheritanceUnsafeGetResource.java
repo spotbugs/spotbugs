@@ -54,6 +54,7 @@ public class InheritanceUnsafeGetResource extends BytecodeScanningDetector imple
 		methodIsStatic = obj.isStatic();
 //		methodIsVisibleToOtherPackages = obj.isPublic() || obj.isProtected();
 		state = 0;
+		sawGetClass = -100;
 	}
 
 	public void sawOpcode(int seen) {
