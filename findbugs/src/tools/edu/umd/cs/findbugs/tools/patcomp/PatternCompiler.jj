@@ -1,0 +1,95 @@
+options {
+    STATIC = false;
+}
+
+PARSER_BEGIN(PatternCompiler)
+
+package edu.umd.cs.findbugs.tools.patcomp;
+
+public class PatternCompiler {
+	public static void main(String[] argv) throws Exception {
+		PatternCompiler pc = new PatternCompiler(System.in);
+		pc.unit();
+	}
+}
+
+PARSER_END(PatternCompiler)
+
+SKIP :
+{
+	" "
+|	"\t"
+|	"\n"
+|	"\r"
+}
+
+MORE :
+{
+	"//" : IN_SINGLE_LINE_COMMENT
+}
+
+<IN_SINGLE_LINE_COMMENT>
+SPECIAL_TOKEN :
+{
+	<SINGLE_LINE_COMMENT: "\n"|"\r"|"\r\n"> : DEFAULT
+}
+
+<IN_SINGLE_LINE_COMMENT>
+MORE :
+{
+	< ~[] >
+}
+
+TOKEN :
+{
+	<PRESCREEN: "prescreen">
+|	<MATCH: "match">
+|	<CHECK: "check">
+|	<REPORT: "report">
+|	<ID: <IDSTART>(<IDCHAR>)*>
+|	<LBRACE: "{">
+|	<RBRACE: "}">
+|	<#IDSTART: (["A"-"Z"]|["a"-"z"]|"_")>
+|	<#IDCHAR: (["A"-"Z"]|["a"-"z"]|<DIGIT>|"_")>
+|	<#DIGIT: ["0"-"9"]>
+}
+
+void unit() :
+{ }
+{
+	opt_prescreen() match() opt_check() report()
+}
+
+void opt_prescreen() :
+{ }
+{
+	<PRESCREEN> <LBRACE> <RBRACE>
+	{ }
+|	/* epsilon */
+	{ }
+}
+
+void match() :
+{ }
+{
+	<MATCH> <LBRACE> <RBRACE>
+	{ }
+}
+
+void opt_check() :
+{ }
+{
+	<CHECK> <LBRACE> <RBRACE>
+	{ }
+|	/* epsilon */
+	{ }
+}
+
+void report() :
+{ }
+{
+	<REPORT> <LBRACE> <RBRACE>
+	{ }
+}
+
+// vim:ts=4
