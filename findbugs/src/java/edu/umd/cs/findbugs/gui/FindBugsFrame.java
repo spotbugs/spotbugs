@@ -786,7 +786,6 @@ public class FindBugsFrame extends javax.swing.JFrame {
             // If this is the first time the analysis run is being shown in
             // the bug tree, it won't have a tree model yet.
             if (analysisRun.getTreeModel() == null) {
-                System.out.println("Creating new tree model for analysis run...");
                 DefaultMutableTreeNode bugRootNode = new DefaultMutableTreeNode();
                 DefaultTreeModel bugTreeModel = new DefaultTreeModel(bugRootNode);
                 analysisRun.setTreeModel(bugTreeModel);
@@ -801,7 +800,6 @@ public class FindBugsFrame extends javax.swing.JFrame {
         }
 
         if (modelChanged) {
-            System.out.println("Setting analysis run's tree model in bug tree...");
             bugTree.setModel(analysisRun.getTreeModel());
             currentAnalysisRun = analysisRun;
         }
