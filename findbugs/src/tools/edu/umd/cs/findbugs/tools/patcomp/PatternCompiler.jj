@@ -198,7 +198,7 @@ void instruction_list() :
 void instruction() :
 { }
 {
-	opt_label() <ID> arg_list() [ <WHERE> <LPAREN> expression() <RPAREN> ] <SEMICOLON>
+	opt_label() <ID> [ instruction_arg_list() ] [ <WHERE> <LPAREN> expression() <RPAREN> ] <SEMICOLON>
 }
 
 void opt_label() :
@@ -207,16 +207,16 @@ void opt_label() :
 	[ <ID> <COLON> ]
 }
 
-void arg_list() :
+void instruction_arg_list() :
 { }
 {
-	[ <ID> [ arg_list_rest() ] ]
+	<ID> [ instruction_arg_list_rest() ]
 }
 
-void arg_list_rest() :
+void instruction_arg_list_rest() :
 { }
 {
-	<COMMA> <ID> [ arg_list_rest() ]
+	<COMMA> <ID> [ instruction_arg_list_rest() ]
 }
 
 /*
@@ -325,7 +325,7 @@ void postfix_expression() :
 void postfix_expression_rest() :
 { }
 {
-	<DOT> <ID> [ <LPAREN> arg_list() <RPAREN> ]
+	<DOT> <ID> [ <LPAREN> [ arg_list() ] <RPAREN> ]
 |	<DOT> <THIS>
 |	<DOT> <SUPER> [ postfix_super_rest() ]
 |	<LBRACKET> expression() <RBRACKET>
@@ -334,8 +334,8 @@ void postfix_expression_rest() :
 void postfix_super_rest() :
 { }
 {
-	<LPAREN> arg_list() <RPAREN>
-|	<DOT> <ID> [ <LPAREN> arg_list() <RPAREN> ]
+	<LPAREN> [ arg_list() ] <RPAREN>
+|	<DOT> <ID> [ <LPAREN> [ arg_list() ] <RPAREN> ]
 }
 
 void primary_expression() :
@@ -354,7 +354,7 @@ void primary_expression() :
 void ident_primary() :
 { }
 {
-	<ID> ( <DOT> <ID> )* [ <LPAREN> arg_list() <RPAREN> ] 
+	<ID> ( <DOT> <ID> )* [ <LPAREN> [ arg_list() ] <RPAREN> ] 
 }
 
 void type_spec() :
@@ -392,6 +392,18 @@ void opt_array_spec() :
 { }
 {
 	( <LBRACKET> <RBRACKET> )*
+}
+
+void arg_list() :
+{ }
+{
+	expression() [ arg_list_rest() ]
+}
+
+void arg_list_rest() :
+{ }
+{
+	<COMMA> expression() [ arg_list_rest() ]
 }
 
 // vim:ts=4
