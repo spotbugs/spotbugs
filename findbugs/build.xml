@@ -84,7 +84,9 @@
     <!-- This is for testing the Ant task, and assumes that
          findbugs-ant.jar, findbugs.jar, and bcel.jar have been copied into
          the "lib" directory of your Ant installation. -->
+<!--
     <taskdef classname="edu.umd.cs.findbugs.anttask.FindBugsTask" name="findbugs"/>
+-->
 
     <!-- Classpath for compiling FindBugs. -->
     <path id="classpath">
@@ -366,11 +368,13 @@
     </target>
 
     <!-- This is a test for the Ant task. -->
+<!--
     <target name="runfindbugs" depends="build">
       <findbugs classdir="${test.dir}" home="${findbugs.dir}" >
         <include name="dumb.jar" />
       </findbugs>
     </target>
+-->
     
 </project>
 
