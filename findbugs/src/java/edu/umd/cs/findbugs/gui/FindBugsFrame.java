@@ -920,19 +920,19 @@ public class FindBugsFrame extends javax.swing.JFrame {
         getContentPane().add(consoleSplitter, gridBagConstraints);
 
         urlLabel.setFont(new java.awt.Font("Dialog", 0, 12));
-        urlLabel.setText("FindBugs - http://www.cs.umd.edu/~pugh/java/bugs/");
+        urlLabel.setText("FindBugs - http://findbugs.sourceforge.net/");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
-        gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 0);
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 0);
         getContentPane().add(urlLabel, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 1;
-        gridBagConstraints.insets = new java.awt.Insets(2, 0, 2, 2);
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.insets = new java.awt.Insets(2, 0, 2, 2);
         getContentPane().add(logoLabel, gridBagConstraints);
 
         theMenuBar.setFont(new java.awt.Font("Dialog", 0, 12));
