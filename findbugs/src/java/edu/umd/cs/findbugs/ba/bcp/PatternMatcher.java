@@ -114,75 +114,36 @@ public class PatternMatcher implements DFSEdgeTypes {
 	 */
 	private void attemptMatch(BasicBlock basicBlock, BasicBlock.InstructionIterator instructionIterator)
 		throws DataflowAnalysisException {
-		work(basicBlock, instructionIterator, pattern.getFirst(), 0, null, null);
+		work(basicBlock, instructionIterator, pattern.getFirst(), 0, null, null, true);
 	}
-
-	private static class State {
-		public final BasicBlock.InstructionIterator iter;
-		public final PatternElement patternElement;
-		public final int matchCount;
-		public final PatternElementMatch currentMatch;
-
-		public State(BasicBlock.InstructionIterator iter, PatternElement patternElement, int matchCount,
-			PatternElementMatch currentMatch) {
-			this.iter = iter;
-			this.patternElement = patternElement;
-			this.matchCount = matchCount;
-			this.currentMatch = currentMatch;
-		}
-
-		public boolean equals(Object o) {
-			if (!(o instanceof State))
-				return false;
-			State other = (State) o;
-			return iter.equals(other.iter)
-				&& patternElement == other.patternElement
-				&& matchCount == other.matchCount;
-		}
-
-		public int hashCode() {
-			return iter.hashCode() + patternElement.hashCode() + matchCount;
-		}
-
-		public String toString() {
-			StringBuffer buf = new StringBuffer();
-			buf.append("[iter=");
-			buf.append(iter.toString());
-			buf.append(", patternElement=");
-			buf.append(patternElement.toString());
-			buf.append(", matchCount=");
-			buf.append(matchCount);
-			buf.append(']');
-			return buf.toString();
-		}
-	}
-
-	private HashMap<State, State> visitedStateMap = new HashMap<State, State>();
 
 	/**
-	 * Match a pattern element.  The InstructionIterator should generally be positioned just
-	 * before the next instruction to be matched.  However, it may be positioned
-	 * at the end of a basic block, which which case nothing will happen except that
-	 * we will try to continue the match in the non-backedge successors of
-	 * the basic block.
+	 * Match a sequence of pattern elements, starting at the given one.
+	 * The InstructionIterator should generally be positioned just before
+	 * the next instruction to be matched.  However, it may be positioned
+	 * at the end of a basic block, in which case nothing will happen except
+	 * that we will try to continue the match in the non-backedge successors
+	 * of the basic block.
+	 *
+	 * @param basicBlock the basic block
+	 * @param instructionIterator an InstructionIterator positioned just before
+	 *   the instruction to be matched
+	 * @param patternElement the PatternElement to be applied to the next instruction;
+	 *   if canFork==true and matchCount &gt;= the element's min count, then we may
+	 *   advance to the next element in the pattern
+	 * @param matchCount number of instructions the PatternElement has matched so far
+	 * @param currentMatch the tail of the chain of PatternElementMatch objects
+	 *   representing the successful PatternElement/instruction matches so far
+	 * @param bindingSet the BindingSet representing the binding of variable names
+	 *   in the pattern to Variables (representing runtime values and fields)
+	 * @param canFork true if it is permissible to advance to the next PatternElement
+	 *   if we've reached the min count for the current PatternElement, false otherwise
 	 */
 	private void work(BasicBlock basicBlock, BasicBlock.InstructionIterator instructionIterator,
 		PatternElement patternElement, int matchCount,
-		PatternElementMatch currentMatch, BindingSet bindingSet)
+		PatternElementMatch currentMatch, BindingSet bindingSet,
+		boolean canFork)
 		throws DataflowAnalysisException {
-
-		State state = new State(instructionIterator, patternElement, matchCount, currentMatch);
-		State existingState = visitedStateMap.get(state);
-		if (existingState != null) {
-			if (DEBUG) {
-				System.out.println("Old state: " + existingState);
-				System.out.print(existingState.currentMatch);
-				System.out.println("New state: " + state);
-				System.out.print(state.currentMatch);
-			}
-			throw new IllegalStateException("Already visited this state!");
-		}
-		visitedStateMap.put(state, state);
 
 		// Have we reached the end of the pattern?
 		if (patternElement == null) {
@@ -194,9 +155,12 @@ public class PatternMatcher implements DFSEdgeTypes {
 
 		// If we've reached the minimum number of occurrences for this
 		// pattern element, we can advance to the next pattern element without trying
-		// to match this instruction again.
-		if (matchCount >= patternElement.minOccur())
-			work(basicBlock, instructionIterator.duplicate(), patternElement.getNext(), 0, currentMatch, bindingSet);
+		// to match this instruction again.  We make sure that we only advance to
+		// the next element once for this matchCount.
+		if (canFork && matchCount >= patternElement.minOccur()) {
+			work(basicBlock, instructionIterator.duplicate(), patternElement.getNext(), 0, currentMatch, bindingSet, true);
+			canFork = false;
+		}
 
 		// If we've reached the maximum number of occurrences for this
 		// pattern element, then we can't continue.
@@ -228,6 +192,7 @@ public class PatternMatcher implements DFSEdgeTypes {
 			// Successful match!
 			matchedInstruction = handle;
 			++matchCount;
+			canFork = true;
 			currentMatch = new PatternElementMatch(patternElement, handle, matchCount, currentMatch);
 		}
 
@@ -235,7 +200,7 @@ public class PatternMatcher implements DFSEdgeTypes {
 		// using the same PatternElement.
 		if (instructionIterator.hasNext()) {
 			// Easy case; continue matching in the same basic block.
-			work(basicBlock, instructionIterator, patternElement, matchCount, currentMatch, bindingSet);
+			work(basicBlock, instructionIterator, patternElement, matchCount, currentMatch, bindingSet, canFork);
 		} else {
 			// We've reached the end of the basic block.
 			// Try to advance to the successors of this basic block,
@@ -261,7 +226,7 @@ public class PatternMatcher implements DFSEdgeTypes {
 						continue;
 					visitedSuccessorSet.set(destId, true);
 
-					work(destBlock, destBlock.instructionIterator(), patternElement, matchCount, currentMatch, bindingSet);
+					work(destBlock, destBlock.instructionIterator(), patternElement, matchCount, currentMatch, bindingSet, canFork);
 				}
 			}
 		}
