@@ -201,6 +201,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
         closeProjectItem = new javax.swing.JMenuItem();
         jSeparator3 = new javax.swing.JSeparator();
         exitItem = new javax.swing.JMenuItem();
+        viewMenu = new javax.swing.JMenu();
+        viewConsoleItem = new javax.swing.JCheckBoxMenuItem();
 
         setTitle("FindBugs");
         addWindowListener(new java.awt.event.WindowAdapter() {
@@ -214,6 +216,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
         jSplitPane2.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
         jSplitPane2.setResizeWeight(1.0);
+        jSplitPane1.setEnabled(false);
         jScrollPane1.setPreferredSize(new java.awt.Dimension(200, 0));
         navigatorTree.setModel(createNavigatorTreeModel());
         jScrollPane1.setViewportView(navigatorTree);
@@ -510,6 +513,10 @@ public class FindBugsFrame extends javax.swing.JFrame {
         jSplitPane2.setTopComponent(jSplitPane1);
 
         jScrollPane5.setPreferredSize(new java.awt.Dimension(0, 100));
+        consoleMessageArea.setBackground(new java.awt.Color(204, 204, 204));
+        consoleMessageArea.setEditable(false);
+        consoleMessageArea.setFont(new java.awt.Font("Courier", 0, 12));
+        consoleMessageArea.setMinimumSize(new java.awt.Dimension(0, 0));
         consoleMessageArea.setPreferredSize(new java.awt.Dimension(0, 0));
         jScrollPane5.setViewportView(consoleMessageArea);
 
@@ -557,6 +564,17 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
         jMenuBar1.add(fileMenu);
 
+        viewMenu.setMnemonic('V');
+        viewMenu.setText("View");
+        viewMenu.setToolTipText("null");
+        viewMenu.setFont(new java.awt.Font("Dialog", 0, 12));
+        viewConsoleItem.setMnemonic('C');
+        viewConsoleItem.setSelected(true);
+        viewConsoleItem.setText("Console");
+        viewMenu.add(viewConsoleItem);
+
+        jMenuBar1.add(viewMenu);
+
         setJMenuBar(jMenuBar1);
 
         pack();
@@ -570,7 +588,9 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
     private void findBugsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_findBugsButtonActionPerformed
         Project project = getCurrentProject();
-        AnalysisRun analysisRun = new AnalysisRun(project);
+        AnalysisRun analysisRun = new AnalysisRun(project, logger);
+        
+        logger.logMessage(ConsoleLogger.INFO, "Beginning analysis of " + project);
         
         // Run the analysis!
         RunAnalysisDialog dialog = new RunAnalysisDialog(this, analysisRun);
@@ -579,6 +599,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
         dialog.show();
 
         if (dialog.isCompleted()) {
+            logger.logMessage(ConsoleLogger.INFO, "Analysis " + project + " completed");
+            
             // Create a navigator tree node for the analysis run
             DefaultTreeModel treeModel = (DefaultTreeModel) navigatorTree.getModel();
             TreePath treePath = navigatorTree.getSelectionPath();
@@ -590,6 +612,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
             TreePath path = new TreePath(new Object[]{rootNode, projectNode, analysisRunNode});
             navigatorTree.makeVisible(path);
             navigatorTree.setSelectionPath(path);
+        } else {
+            logger.logMessage(ConsoleLogger.INFO, "Analysis of " + project + " cancelled by user");
         }
     }//GEN-LAST:event_findBugsButtonActionPerformed
 
@@ -694,6 +718,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
      * of the components in the form.
      */
     private void postInitComponents() {
+        logger = new ConsoleLogger(this);
+        
         viewPanelLayout = (CardLayout) viewPanel.getLayout();
         navigatorTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 
@@ -868,7 +894,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
     /**
      * Get a BugInstance Comparator for given sort order.
      */
-    public Comparator getBugInstanceComparator(String sortOrder) {
+    private Comparator getBugInstanceComparator(String sortOrder) {
         if (sortOrder.equals(BY_CLASS))
             return bugInstanceByClassComparator;
         else if (sortOrder.equals(BY_PACKAGE))
@@ -879,7 +905,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
             throw new IllegalArgumentException("Bad sort order: " + sortOrder);
     }
     
-    public void exitFindBugs() {
+    private void exitFindBugs() {
         // TODO: offer to save work, etc.
         System.exit(0);
     }
@@ -887,7 +913,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
     /**
      * Set the view panel to display the named view.
      */
-    public void setView(String viewName) {
+    private void setView(String viewName) {
         viewPanelLayout.show(viewPanel, viewName);
     }
     
@@ -921,6 +947,11 @@ public class FindBugsFrame extends javax.swing.JFrame {
         }
     }
     
+    public void writeToConsole(String message) {
+        consoleMessageArea.append(message);
+        consoleMessageArea.append("\n");
+    }
+    
     /**
      * @param args the command line arguments
      */
@@ -935,7 +966,9 @@ public class FindBugsFrame extends javax.swing.JFrame {
     private javax.swing.JLabel editProjectLabel;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JButton removeSrcDirButton;
+    private javax.swing.JCheckBoxMenuItem viewConsoleItem;
     private javax.swing.JSeparator jSeparator4;
+    private javax.swing.JMenu viewMenu;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JMenu fileMenu;
     private javax.swing.JMenuItem closeProjectItem;
@@ -980,6 +1013,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
     // End of variables declaration//GEN-END:variables
     
     // My variable declarations
+    private ConsoleLogger logger;
     private CardLayout viewPanelLayout;
     private ProjectCollection projectCollection;
     private DefaultTreeModel navigatorTreeModel;
