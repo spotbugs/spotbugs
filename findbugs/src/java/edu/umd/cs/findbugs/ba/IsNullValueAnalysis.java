@@ -88,35 +88,6 @@ public class IsNullValueAnalysis extends ForwardDataflowAnalysis<IsNullValueFram
 
 	}
 
-	/** Set of instruction opcodes that have an implicit null check. */
-	private static final BitSet nullCheckInstructionSet = new BitSet();
-	static {
-		nullCheckInstructionSet.set(Constants.GETFIELD);
-		nullCheckInstructionSet.set(Constants.PUTFIELD);
-		nullCheckInstructionSet.set(Constants.INVOKESPECIAL);
-		nullCheckInstructionSet.set(Constants.INVOKEVIRTUAL);
-		nullCheckInstructionSet.set(Constants.INVOKEINTERFACE);
-		nullCheckInstructionSet.set(Constants.AALOAD);
-		nullCheckInstructionSet.set(Constants.AASTORE);
-		nullCheckInstructionSet.set(Constants.BALOAD);
-		nullCheckInstructionSet.set(Constants.BASTORE);
-		nullCheckInstructionSet.set(Constants.CALOAD);
-		nullCheckInstructionSet.set(Constants.CASTORE);
-		nullCheckInstructionSet.set(Constants.DALOAD);
-		nullCheckInstructionSet.set(Constants.DASTORE);
-		nullCheckInstructionSet.set(Constants.FALOAD);
-		nullCheckInstructionSet.set(Constants.FASTORE);
-		nullCheckInstructionSet.set(Constants.IALOAD);
-		nullCheckInstructionSet.set(Constants.IASTORE);
-		nullCheckInstructionSet.set(Constants.LALOAD);
-		nullCheckInstructionSet.set(Constants.LASTORE);
-		nullCheckInstructionSet.set(Constants.SALOAD);
-		nullCheckInstructionSet.set(Constants.SASTORE);
-		nullCheckInstructionSet.set(Constants.MONITORENTER);
-		nullCheckInstructionSet.set(Constants.MONITOREXIT);
-		// Any others?
-	}
-
 	public void meetInto(IsNullValueFrame fact, Edge edge, IsNullValueFrame result)
 		throws DataflowAnalysisException {
 
@@ -184,14 +155,8 @@ public class IsNullValueAnalysis extends ForwardDataflowAnalysis<IsNullValueFram
 				return edgeType == IFCMP_EDGE ? TOS_NULL : TOS_NON_NULL;
 			else if (opcode == Constants.IFNONNULL)
 				return edgeType == IFCMP_EDGE ? TOS_NON_NULL : TOS_NULL;
-		} else {
-			InstructionHandle firstInDestHandle = edge.getDest().getFirstInstruction();
-			if (firstInDestHandle != null) {
-				Instruction firstInDest = firstInDestHandle.getInstruction();
-				short opcode = firstInDest.getOpcode();
-				if (nullCheckInstructionSet.get(opcode))
-					return REF_OPERAND_NON_NULL;
-			}
+		} else if (edge.getSource().isNullCheck()) {
+			return REF_OPERAND_NON_NULL;
 		}
 
 		return NO_INFO;
