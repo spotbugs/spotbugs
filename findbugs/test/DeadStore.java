@@ -41,4 +41,11 @@ public class DeadStore {
 
 		return a;
 	}
+	
+	public int notReportedin086(Object o) {
+		if (o instanceof String) {
+			String s = (String)o; //Not reported in 0.8.6 but reported in 0.8.5 (Bug: 1105217)
+		}
+		return o.hashCode();
+	}
 }
