@@ -20,7 +20,7 @@
 package edu.umd.cs.daveho.ba;
 
 import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.Instruction;
+import org.apache.bcel.generic.InstructionHandle;
 
 /**
  * A ResourceTracker is used with ResourceValueAnalysis to determine
@@ -34,12 +34,13 @@ public interface ResourceTracker<Resource> {
 	/**
 	 * Determine if the given instruction is the site where a resource
 	 * is created.
-	 * @param ins the instruction
+	 * @param basicBlock basic block containing the instruction
+	 * @param handle the instruction
 	 * @param cpg the ConstantPoolGen for the method
 	 * @return an opaque Resource object if it is a creation site, or
 	 *   null if it is not a creation site
 	 */
-	public Resource isResourceCreation(Instruction ins, ConstantPoolGen cpg);
+	public Resource isResourceCreation(BasicBlock basicBlock, InstructionHandle handle, ConstantPoolGen cpg);
 
 	/**
 	 * Create a ResourceValueFrameModelingVisitor to model the effect
