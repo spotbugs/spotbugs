@@ -19,10 +19,22 @@
 
 package edu.umd.cs.findbugs.ba.type;
 
+/**
+ * Constants defining types of inheritance graph edges.
+ * @see InheritanceGraph
+ * @author David Hovemeyer
+ */
 public interface InheritanceGraphEdgeTypes {
+	/**
+	 * Class edge. One class directly extends another class.
+	 */
+	public static final int CLASS_EDGE = 1;
 
-	public static final int EXTENDS_EDGE = 1;
-	public static final int IMPLEMENTS_EDGE = 2;
+	/**
+	 * Interface edge. A class directly implements an interface,
+	 * or one interface directly extends another.
+	 */
+	public static final int INTERFACE_EDGE = 2;
 }
 
 // vim:ts=4
