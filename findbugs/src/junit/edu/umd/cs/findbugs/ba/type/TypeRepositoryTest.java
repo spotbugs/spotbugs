@@ -15,12 +15,10 @@ public class TypeRepositoryTest extends TestCase {
 	ClassType javaLangObjectType;
 
 	ClassType myClassType;
-	ClassType myClassType2;
-	ClassType myClassType3;
-	ClassType myClassType4;
-
 	ClassType mySuperclassType;
 	ClassType myInterfaceType;
+
+	ArrayType myClassArrayType;
 
 	void setClass(ClassType type) {
 		type.setIsInterface(false);
@@ -48,9 +46,6 @@ public class TypeRepositoryTest extends TestCase {
 
 		// Class types should have a unique representation
 		myClassType = repos.classTypeFromSlashedClassName("com/foobar/MyClass");
-		myClassType2 = repos.classTypeFromDottedClassName("com.foobar.MyClass");
-		myClassType3 = repos.classTypeFromSlashedClassName("com/foobar/MyClass");
-		myClassType4 = repos.classTypeFromDottedClassName("com.foobar.MyClass");
 		setClass(myClassType);
 
 		// Fake hierarchy classes
@@ -61,6 +56,9 @@ public class TypeRepositoryTest extends TestCase {
 		repos.addSuperclassLink(myClassType, mySuperclassType);
 		repos.addSuperclassLink(mySuperclassType, javaLangObjectType);
 		repos.addInterfaceLink(mySuperclassType, myInterfaceType);
+
+		// Array classes
+		myClassArrayType = repos.arrayTypeFromDimensionsAndElementType(1, myClassType);
 	}
 
 	public void testClassFromSlashedClassName() {
@@ -75,9 +73,11 @@ public class TypeRepositoryTest extends TestCase {
 	}
 
 	public void testClassTypeUnique() {
+		ClassType myClassType2 = repos.classTypeFromDottedClassName("com.foobar.MyClass");
+		ClassType myClassType3 = repos.classTypeFromSlashedClassName("com/foobar/MyClass");
+
 		Assert.assertTrue(myClassType == myClassType2);
 		Assert.assertTrue(myClassType == myClassType3);
-		Assert.assertTrue(myClassType == myClassType4);
 	}
 
 	public void testIsInterface() {
@@ -89,6 +89,10 @@ public class TypeRepositoryTest extends TestCase {
 	public void testIsDirectClassSubtype() throws ClassNotFoundException {
 		Assert.assertTrue(repos.isSubtype(myClassType, mySuperclassType));
 		Assert.assertTrue(repos.isSubtype(mySuperclassType, javaLangObjectType));
+	}
+
+	public void testArrayIsSubtypeOfObject() throws ClassNotFoundException {
+		Assert.assertTrue(repos.isSubtype(myClassArrayType, javaLangObjectType));
 	}
 	
 }
