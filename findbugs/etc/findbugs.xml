@@ -2,7 +2,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.DroppedException" />
   <Detector class="edu.umd.cs.findbugs.detect.DumbMethods" />
   <Detector class="edu.umd.cs.findbugs.detect.FindDoubleCheck" />
-  <Detector class="edu.umd.cs.findbugs.detect.FindExceptionGetMessage" />
+  <Detector class="edu.umd.cs.findbugs.detect.FindExceptionGetMessage" disabled="true" />
   <Detector class="edu.umd.cs.findbugs.detect.FindFinalizeInvocations" />
   <Detector class="edu.umd.cs.findbugs.detect.FindHEmismatch" />
   <Detector class="edu.umd.cs.findbugs.detect.FindInconsistentSync" />
@@ -16,13 +16,13 @@
   <Detector class="edu.umd.cs.findbugs.detect.FindUnsyncGet" />
   <Detector class="edu.umd.cs.findbugs.detect.InitializationChain" />
   <Detector class="edu.umd.cs.findbugs.detect.IteratorIdioms" />
-  <Detector class="edu.umd.cs.findbugs.detect.LockedFields" />
+  <Detector class="edu.umd.cs.findbugs.detect.LockedFields" disabled="true" />
   <Detector class="edu.umd.cs.findbugs.detect.MutableLock" />
   <Detector class="edu.umd.cs.findbugs.detect.MutableStaticFields" />
   <Detector class="edu.umd.cs.findbugs.detect.Naming" />
   <Detector class="edu.umd.cs.findbugs.detect.ReadReturnShouldBeChecked" />
   <Detector class="edu.umd.cs.findbugs.detect.SerializableIdiom" />
-  <Detector class="edu.umd.cs.findbugs.detect.SimplePathsFindDoubleCheck" />
+  <Detector class="edu.umd.cs.findbugs.detect.SimplePathsFindDoubleCheck" disabled="true" />
   <Detector class="edu.umd.cs.findbugs.detect.StartInConstructor" />
   <Detector class="edu.umd.cs.findbugs.detect.UnreadFields" />
   <Detector class="edu.umd.cs.findbugs.detect.WaitInLoop" />
@@ -61,7 +61,7 @@
   <BugPattern abbrev="UG" type="UG_SYNC_SET_UNSYNC_GET" category="MT_CORRECTNESS" />
   <BugPattern abbrev="IC" type="IC_INIT_CIRCULARITY" category="CORRECTNESS" />
   <BugPattern abbrev="It" type="IT_NO_SUCH_ELEMENT" category="CORRECTNESS" />
-  <BugPattern abbrev="IS" type="IS_INCONSISTENT_SYNC" category="MT_CORRECTNESS" disabled="true" />
+  <BugPattern abbrev="IS" type="IS_INCONSISTENT_SYNC" category="MT_CORRECTNESS" />
   <BugPattern abbrev="ML" type="ML_SYNC_ON_UPDATED_FIELD" category="MT_CORRECTNESS" />
   <BugPattern abbrev="MS" type="MS_OOI_PKGPROTECT" category="MALICIOUS_CODE" />
   <BugPattern abbrev="MS" type="MS_FINAL_PKGPROTECT" category="MALICIOUS_CODE" />
