@@ -44,6 +44,15 @@ This plugin contains all of the standard FindBugs detectors.
   </Detector>
 
 
+  <Detector class="edu.umd.cs.findbugs.detect.BadUseOfReturnValue">
+    <Details>
+<![CDATA[
+<p> Looks for cases where the return value of a function is discarded
+after being checked for non-null.  </p>
+
+]]>
+    </Details>
+  </Detector>
   <Detector class="edu.umd.cs.findbugs.detect.InheritanceUnsafeGetResource">
     <Details>
 <![CDATA[
@@ -935,6 +944,7 @@ to use Object.clone(), which always returns an object of the correct type.</p>
 ]]>
     </Details>
   </BugPattern>
+
   <BugPattern type="DM_EXIT">
     <ShortDescription>Method invokes System.exit(...)</ShortDescription>
     <LongDescription>{1} invokes System.exit(...), which shuts down the entire virtual machine</LongDescription>
@@ -947,6 +957,19 @@ to use Object.clone(), which always returns an object of the correct type.</p>
 ]]>
     </Details>
   </BugPattern>
+  <BugPattern type="DM_RUN_FINALIZERS_ON_EXIT">
+    <ShortDescription>Method invokes runFinalizersOnExit, one of the most dangerous methods in the Java libraries.  </ShortDescription>
+    <LongDescription>{1} invokes runFinalizersOnExit, one of the most
+dangerous methods in the Java libraries.  </LongDescription>
+    <Details>
+<![CDATA[
+  <p> <em>Never call System.runFinalizersOnExit
+or Runtime.runFinalizersOnExit for any reason: they are among the most
+dangerous methods in the Java libraries.</em> -- Joshua Bloch</p>
+]]>
+    </Details>
+  </BugPattern>
+
   <BugPattern type="DM_STRING_CTOR">
     <ShortDescription>Method invokes dubious new String(String) constructor; just use the argument</ShortDescription>
     <LongDescription>{1} invokes dubious new String(String) constructor; just use the argument</LongDescription>
@@ -1069,6 +1092,18 @@ to use Object.clone(), which always returns an object of the correct type.</p>
   </BugPattern>  
 
 
+  <BugPattern type="RV_01_TO_INT">
+    <ShortDescription>Random value from 0 to 1 is coerced to the integer 0</ShortDescription>
+    <LongDescription>Method {1} uses generates a random value from 0 to 1 and then coerces that value to the integer 0</LongDescription>
+    <Details>
+<![CDATA[
+  <p>A random value from 0 to 1 is being coerced to the integer value 0. You probably
+want to multiple the random value by something else before coercing it to an integer, or use use the Random.nextInt(n) method.
+</p>
+]]>
+    </Details>
+  </BugPattern>  
+
   <BugPattern type="DM_NEXTINT_VIA_NEXTDOUBLE">
     <ShortDescription>Use the nextInt method of Random rather than nextDouble to generate a random integer</ShortDescription>
     <LongDescription>Method {1} uses the nextDouble method of Random to generate a random integer; using nextInt is more efficient</LongDescription>
@@ -1080,6 +1115,8 @@ using r.nextInt(n) Rather than using (int)(r.nextDouble() * n).
 ]]>
     </Details>
   </BugPattern>  
+
+
 
   <BugPattern type="DM_SQL_STATEMENT_EXECUTE">
     <ShortDescription>Use of an execute method on an SQL statement</ShortDescription>
@@ -2130,6 +2167,32 @@ inner object.&nbsp; This reference makes the instances
     </Details>
   </BugPattern>
 
+  <BugPattern type="RV_CHECK_FOR_POSITIVE_INDEXOF">
+    <ShortDescription>Method checks to see if result of String.indexOf is positive</ShortDescription>
+    <LongDescription>{1} checks to see if result of String.indexOf is positive</LongDescription>
+    <Details>
+<![CDATA[
+   <p> The method invokes String.indexOf and checks to see if the result is positive or non-positive.
+	It is much more typical to check to see if the result is negative or non-negative. It is
+	positive only if the substring checked for occurs at some place other than at the beginning of
+	the String.
+]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="RV_DONT_JUST_NULL_CHECK_READLINE">
+    <ShortDescription>Method discards result of readLine after checking if it is nonnull</ShortDescription>
+    <LongDescription>{1} discards result of readLine after checking if it is nonnull</LongDescription>
+    <Details>
+<![CDATA[
+   <p> The value returned by readLine is discarded after checking to see if the return
+value is non-null. In almost all situations, if the result is non-null, you will want
+to use that non-null value. Calling readLine again will give you a different line.
+]]>
+    </Details>
+  </BugPattern>
+
+
   <BugPattern type="RV_RETURN_VALUE_IGNORED">
     <ShortDescription>Method ignores return value</ShortDescription>
     <LongDescription>{1} ignores return value of {2}</LongDescription>
@@ -2158,6 +2221,9 @@ dateString = dateString.trim();
 ]]>
     </Details>
   </BugPattern>
+
+
+
 
   <BugPattern type="NP_ALWAYS_NULL">
     <ShortDescription>Null pointer dereference in method</ShortDescription>

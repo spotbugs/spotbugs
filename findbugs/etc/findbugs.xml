@@ -66,7 +66,7 @@
             
   <Detector class="edu.umd.cs.findbugs.detect.DumbMethods" 
             speed="fast"
-            reports="DM_STRING_CTOR,DM_STRING_VOID_CTOR,DM_STRING_TOSTRING,DM_GC,DM_BOOLEAN_CTOR,DM_STRING_EMPTY_EQUALS,DM_EXIT,DM_CONVERT_CASE,SW_SWING_METHODS_INVOKED_IN_SWING_THREAD,DM_BOXED_PRIMITIVE_TOSTRING,DM_NEW_FOR_GETCLASS,DM_NEXTINT_VIA_NEXTDOUBLE,DM_USELESS_THREAD,DM_SQL_STATEMENT_EXECUTE" />
+            reports="RV_01_TO_INT,DM_RUN_FINALIZERS_ON_EXIT,DM_STRING_CTOR,DM_STRING_VOID_CTOR,DM_STRING_TOSTRING,DM_GC,DM_BOOLEAN_CTOR,DM_STRING_EMPTY_EQUALS,DM_EXIT,DM_CONVERT_CASE,SW_SWING_METHODS_INVOKED_IN_SWING_THREAD,DM_BOXED_PRIMITIVE_TOSTRING,DM_NEW_FOR_GETCLASS,DM_NEXTINT_VIA_NEXTDOUBLE,DM_USELESS_THREAD,DM_SQL_STATEMENT_EXECUTE" />
 
   <Detector class="edu.umd.cs.findbugs.detect.FindDoubleCheck" 
             speed="fast"
@@ -325,6 +325,10 @@
   			speed="fast"
   			reports="PS_PUBLIC_SEMAPHORES"/>
 
+  <Detector class="edu.umd.cs.findbugs.detect.BadUseOfReturnValue"
+            speed="fast"
+            reports="RV_CHECK_FOR_POSITIVE_INDEXOF,RV_DONT_JUST_NULL_CHECK_READLINE" disabled="false"/>
+
   <Detector class="edu.umd.cs.findbugs.detect.MethodReturnCheck"
             speed="fast"
             reports="RV_RETURN_VALUE_IGNORED" disabled="true"/>
@@ -358,6 +362,7 @@
   <BugPattern abbrev="DE" type="DE_MIGHT_DROP" category="CORRECTNESS" />
   <BugPattern abbrev="DE" type="DE_MIGHT_IGNORE" category="CORRECTNESS" />
   <BugPattern abbrev="Dm" type="DM_EXIT" category="CORRECTNESS" />
+  <BugPattern abbrev="Dm" type="DM_RUN_FINALIZERS_ON_EXIT" category="CORRECTNESS" />
   <BugPattern abbrev="Dm" type="DM_STRING_CTOR" category="PERFORMANCE" />
   <BugPattern abbrev="Dm" type="DM_STRING_VOID_CTOR" category="PERFORMANCE" />
   <BugPattern abbrev="Dm" type="DM_STRING_TOSTRING" category="PERFORMANCE" />
@@ -367,6 +372,7 @@
   <BugPattern abbrev="Dm" type="DM_CONVERT_CASE" category="I18N" />
   <BugPattern abbrev="Dm" type="DM_BOXED_PRIMITIVE_TOSTRING" category="PERFORMANCE" />
   <BugPattern abbrev="Dm" type="DM_NEW_FOR_GETCLASS" category="PERFORMANCE" />
+  <BugPattern abbrev="RV" type="RV_01_TO_INT" category="CORRECTNESS" />
   <BugPattern abbrev="Dm" type="DM_NEXTINT_VIA_NEXTDOUBLE" category="PERFORMANCE" />
   <BugPattern abbrev="Dm" type="DM_USELESS_THREAD" category="CORRECTNESS" />
   <BugPattern abbrev="Dm" type="DM_SQL_STATEMENT_EXECUTE" category="MALICIOUS_CODE" />
@@ -447,6 +453,8 @@
   <BugPattern abbrev="No" type="NO_NOTIFY_NOT_NOTIFYALL" category="MT_CORRECTNESS" />
   <BugPattern abbrev="BcpDC" type="BCPDC_DOUBLECHECK" category="MT_CORRECTNESS" />
   <BugPattern abbrev="RV" type="RV_RETURN_VALUE_IGNORED" category="CORRECTNESS" />
+  <BugPattern abbrev="RV" type="RV_CHECK_FOR_POSITIVE_INDEXOF" category="CORRECTNESS" />
+  <BugPattern abbrev="RV" type="RV_DONT_JUST_NULL_CHECK_READLINE" category="CORRECTNESS" />
   <BugPattern abbrev="NP" type="NP_ALWAYS_NULL" category="CORRECTNESS" />
   <BugPattern abbrev="NP" type="NP_ALWAYS_NULL_EXCEPTION" category="CORRECTNESS" />
   <BugPattern abbrev="NP" type="NP_NULL_ON_SOME_PATH" category="CORRECTNESS" />

@@ -78,11 +78,20 @@ public class DumbMethods extends BytecodeScanningDetector implements Constants2,
 		case 0:
 			if (seen == INVOKEVIRTUAL
 				&& getClassConstantOperand().equals("java/util/Random")
-				&& getNameConstantOperand().equals("nextDouble"))
+				&& getNameConstantOperand().equals("nextLong")
+			   || seen == INVOKESTATIC
+				&& getClassConstantOperand().equals("java/lang/Math")
+				&& getNameConstantOperand().equals("random"))
 			  randomNextIntState = 1;
 			break;
 		case 1:
-			randomNextIntState = 2;
+			if (seen == D2I) {
+			  bugReporter.reportBug(new BugInstance(this, "RV_01_TO_INT", HIGH_PRIORITY)
+			        .addClassAndMethod(this)
+			        .addSourceLine(this));
+			  randomNextIntState = 0;
+			  }
+			else randomNextIntState = 2;
 			break;
 		case 2:
 			if (seen == I2D) randomNextIntState = 3;
@@ -120,6 +129,15 @@ public class DumbMethods extends BytecodeScanningDetector implements Constants2,
 		        && getSigConstantOperand().equals("(Ljava/lang/String;)V"))
 			if (alreadyReported.add(getRefConstantOperand()))
 				bugReporter.reportBug(new BugInstance(this, "DM_STRING_CTOR", NORMAL_PRIORITY)
+				        .addClassAndMethod(this)
+				        .addSourceLine(this));
+		if (seen == INVOKESTATIC
+		        && getClassConstantOperand().equals("java/lang/System")
+		        && getNameConstantOperand().equals("runFinalizersOnExit")
+		    || seen == INVOKEVIRTUAL
+		        && getClassConstantOperand().equals("java/lang/Runtime")
+		        && getNameConstantOperand().equals("runFinalizersOnExit"))
+				bugReporter.reportBug(new BugInstance(this, "DM_RUN_FINALIZERS_ON_EXIT", HIGH_PRIORITY)
 				        .addClassAndMethod(this)
 				        .addSourceLine(this));
 		if ((seen == INVOKESPECIAL)
