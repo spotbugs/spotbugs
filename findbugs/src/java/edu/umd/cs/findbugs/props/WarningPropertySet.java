@@ -25,38 +25,100 @@ import java.util.Map;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.Detector;
 
+/**
+ * A Set of WarningProperty objects, each with an optional attribute Object.
+ * A WarningPropertySet is useful for collecting heuristics to use in
+ * the determination of whether or not a warning is a false positive,
+ * or what the warning's priority should be.
+ * 
+ * @author David Hovemeyer
+ */
 public class WarningPropertySet {
 	private Map<WarningProperty, Object> map;
 	
+	/**
+	 * Constructor
+	 * Creates empty object.
+	 */
 	public WarningPropertySet() {
 		this.map = new HashMap<WarningProperty, Object>();
 	}
 	
+	/**
+	 * Add a warning property to the set.
+	 * The warning implicitly has the boolean value "true"
+	 * as its attribute.
+	 * 
+	 * @param prop the WarningProperty
+	 */
 	public void addProperty(WarningProperty prop) {
 		map.put(prop, Boolean.TRUE);
 	}
 
+	/**
+	 * Add a warning property and its attribute value.
+	 * 
+	 * @param prop  the WarningProperty
+	 * @param value the attribute value
+	 */
 	public void setProperty(WarningProperty prop, String value) {
 		map.put(prop, value);
 	}
 	
+	/**
+	 * Add a warning property and its attribute value.
+	 * 
+	 * @param prop  the WarningProperty
+	 * @param value the attribute value
+	 */
 	public void setProperty(WarningProperty prop, Boolean value) {
 		map.put(prop, value);
 	}
 	
-	public boolean isPropertySet(WarningProperty prop) {
+	/**
+	 * Return whether or not the set contains the given WarningProperty.
+	 * 
+	 * @param prop the WarningProperty
+	 * @return true if the set contains the WarningProperty, false if not
+	 */
+	public boolean containsProperty(WarningProperty prop) {
 		return map.keySet().contains(prop);
 	}
 	
+	/**
+	 * Check whether or not the given WarningProperty has the given
+	 * attribute value.
+	 * 
+	 * @param prop  the WarningProperty
+	 * @param value the attribute value
+	 * @return true if the set contains the WarningProperty and has
+	 *         an attribute equal to the one given, false otherwise
+	 */
 	public boolean checkProperty(WarningProperty prop, Object value) {
 		Object attribute = getProperty(prop);
 		return (attribute != null && attribute.equals(value));
 	}
 	
+	/**
+	 * Get the value of the attribute for the given WarningProperty.
+	 * Returns null if the set does not contain the WarningProperty. 
+	 * 
+	 * @param prop the WarningProperty
+	 * @return the WarningProperty's attribute value, or null if
+	 *         the set does not contain the WarningProperty
+	 */
 	public Object getProperty(WarningProperty prop) {
 		return map.get(prop);
 	}
 	
+	/**
+	 * Use the PriorityAdjustments specified by the set's WarningProperty
+	 * elements to compute a warning priority from the given
+	 * base priority.
+	 * 
+	 * @param basePriority the base priority
+	 * @return the computed warning priority
+	 */
 	public int computePriority(int basePriority) {
 		int priority = basePriority;
 		for (Iterator<WarningProperty> i = map.keySet().iterator(); i.hasNext();) {
@@ -77,6 +139,11 @@ public class WarningPropertySet {
 		return priority;
 	}
 
+	/**
+	 * Decorate given BugInstance with properties.
+	 * 
+	 * @param bugInstance the BugInstance
+	 */
 	public void decorateBugInstance(BugInstance bugInstance) {
 		for (Iterator<Map.Entry<WarningProperty,Object>> i = map.entrySet().iterator();
 				i.hasNext();) {
