@@ -2,6 +2,7 @@ package edu.umd.cs.findbugs;
 
 import java.util.*;
 import edu.umd.cs.pugh.visitclass.BetterVisitor;
+import edu.umd.cs.pugh.visitclass.DismantleBytecode;
 
 public class BugInstance {
 	private String type;
@@ -47,8 +48,8 @@ public class BugInstance {
 		return annotationList.iterator();
 	}
 
-	public BugInstance addClass(String className, String superclassName, String sourceFile) {
-		ClassAnnotation classAnnotation = new ClassAnnotation(className, superclassName, sourceFile);
+	public BugInstance addClass(String className, String sourceFile) {
+		ClassAnnotation classAnnotation = new ClassAnnotation(className, sourceFile);
 		if (primaryClassAnnotation == null)
 			primaryClassAnnotation = classAnnotation;
 		add(classAnnotation);
@@ -68,31 +69,48 @@ public class BugInstance {
 		return this;
 	}
 
-	public BugInstance addClass(BetterVisitor betterVisitor) {
-		String className = betterVisitor.getBetterClassName();
-		String superclassName = betterVisitor.getSuperclassName();
-		String sourceFile = betterVisitor.getSourceFile();
-		addClass(className, superclassName, sourceFile);
+	public BugInstance addClass(BetterVisitor visitor) {
+		String className = visitor.getBetterClassName();
+		String sourceFile = visitor.getSourceFile();
+		addClass(className, sourceFile);
 		return this;
 	}
 
-	public BugInstance addMethod(BetterVisitor betterVisitor) {
-		String className = betterVisitor.getBetterClassName();
-		String methodName = betterVisitor.getMethodName();
-		String methodSig = betterVisitor.getMethodSig();
+	public BugInstance addSuperclass(BetterVisitor visitor) {
+		String className = visitor.getSuperclassName();
+		String sourceFile = "<unknown>";
+		addClass(className, sourceFile);
+		return this;
+	}
+
+	public BugInstance addCalledMethod(DismantleBytecode visitor) {
+		String className = visitor.getBetterClassConstant();
+		String methodName = visitor.getNameConstant();
+		String methodSig = visitor.getBetterSigConstant();
 		addMethod(className, methodName, methodSig);
 		return this;
 	}
 
-	public BugInstance addClassAndMethod(BetterVisitor betterVisitor) {
-		addClass(betterVisitor);
-		addMethod(betterVisitor);
+	public BugInstance addMethod(BetterVisitor visitor) {
+		String className = visitor.getBetterClassName();
+		String methodName = visitor.getMethodName();
+		String methodSig = visitor.getMethodSig();
+		addMethod(className, methodName, methodSig);
 		return this;
 	}
 
+	public BugInstance addClassAndMethod(BetterVisitor visitor) {
+		addClass(visitor);
+		addMethod(visitor);
+		return this;
+	}
+
+	private static final ResourceBundle resourceBundle = ResourceBundle.getBundle("edu.umd.cs.findbugs.FindBugsMessages");
+
 	public String getMessage() {
-		// TODO:
-		return "";
+		String pattern = resourceBundle.getString(type);
+		FindBugsMessageFormat format = new FindBugsMessageFormat(pattern);
+		return format.format((BugAnnotation[]) annotationList.toArray(new BugAnnotation[0]));
 	}
 
 	private void add(BugAnnotation annotation) {
