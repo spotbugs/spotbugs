@@ -29,6 +29,12 @@ import edu.umd.cs.findbugs.*;
 
 public abstract class ResourceTrackingDetector<Resource> implements Detector {
 
+	protected BugReporter bugReporter;
+
+	public ResourceTrackingDetector(BugReporter bugReporter) {
+		this.bugReporter = bugReporter;
+	}
+
 	public abstract boolean prescreen(ClassContext classContext, Method method);
 	public abstract ResourceTracker<Resource> getResourceTracker(ClassContext classContext, Method method)
 		throws DataflowAnalysisException, CFGBuilderException;
@@ -63,7 +69,7 @@ public abstract class ResourceTrackingDetector<Resource> implements Detector {
 						Resource resource = resourceTracker.isResourceCreation(basicBlock, handle, methodGen.getConstantPool());
 						if (resource != null) {
 							ResourceValueAnalysis<Resource> analysis =
-								new ResourceValueAnalysis<Resource>(methodGen, resourceTracker, resource);
+								new ResourceValueAnalysis<Resource>(methodGen, resourceTracker, resource, bugReporter);
 							Dataflow<ResourceValueFrame> dataflow = new Dataflow<ResourceValueFrame>(cfg, analysis);
 
 							try {
