@@ -82,12 +82,10 @@ public class FindBugsFrame extends javax.swing.JFrame {
         jarNameTextField = new javax.swing.JTextField();
         addJarButton = new javax.swing.JButton();
         jarFileListLabel = new javax.swing.JLabel();
-        jarFileList = new javax.swing.JList();
         sourceDirLabel = new javax.swing.JLabel();
         srcDirTextField = new javax.swing.JTextField();
         addSourceDirButton = new javax.swing.JButton();
         sourceDirListLabel = new javax.swing.JLabel();
-        sourceDirList = new javax.swing.JList();
         removeJarButton = new javax.swing.JButton();
         removeSrcDirButton = new javax.swing.JButton();
         jSeparator1 = new javax.swing.JSeparator();
@@ -97,6 +95,10 @@ public class FindBugsFrame extends javax.swing.JFrame {
         jSeparator2 = new javax.swing.JSeparator();
         findBugsButton = new javax.swing.JButton();
         jSeparator4 = new javax.swing.JSeparator();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        jarFileList = new javax.swing.JList();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        sourceDirList = new javax.swing.JList();
         jMenuBar1 = new javax.swing.JMenuBar();
         fileMenu = new javax.swing.JMenu();
         newProjectItem = new javax.swing.JMenuItem();
@@ -168,19 +170,6 @@ public class FindBugsFrame extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 3);
         editProjectPanel.add(jarFileListLabel, gridBagConstraints);
 
-        jarFileList.setBorder(new javax.swing.border.BevelBorder(javax.swing.border.BevelBorder.LOWERED));
-        jarFileList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 3;
-        gridBagConstraints.gridwidth = 2;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.ipadx = 2;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 0.5;
-        gridBagConstraints.insets = new java.awt.Insets(3, 3, 3, 3);
-        editProjectPanel.add(jarFileList, gridBagConstraints);
-
         sourceDirLabel.setText("Source Dir:");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -218,18 +207,6 @@ public class FindBugsFrame extends javax.swing.JFrame {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
         gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 3);
         editProjectPanel.add(sourceDirListLabel, gridBagConstraints);
-
-        sourceDirList.setBorder(new javax.swing.border.BevelBorder(javax.swing.border.BevelBorder.LOWERED));
-        sourceDirList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 6;
-        gridBagConstraints.gridwidth = 2;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 0.5;
-        gridBagConstraints.insets = new java.awt.Insets(3, 3, 3, 3);
-        editProjectPanel.add(sourceDirList, gridBagConstraints);
 
         removeJarButton.setText("Remove");
         removeJarButton.addActionListener(new java.awt.event.ActionListener() {
@@ -314,6 +291,34 @@ public class FindBugsFrame extends javax.swing.JFrame {
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.insets = new java.awt.Insets(3, 3, 3, 3);
         editProjectPanel.add(jSeparator4, gridBagConstraints);
+
+        jScrollPane2.setPreferredSize(new java.awt.Dimension(259, 1));
+        jarFileList.setBorder(new javax.swing.border.BevelBorder(javax.swing.border.BevelBorder.LOWERED));
+        jarFileList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        jScrollPane2.setViewportView(jarFileList);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 3);
+        gridBagConstraints.weighty = 0.5;
+        editProjectPanel.add(jScrollPane2, gridBagConstraints);
+
+        jScrollPane3.setPreferredSize(new java.awt.Dimension(259, 1));
+        sourceDirList.setBorder(new javax.swing.border.BevelBorder(javax.swing.border.BevelBorder.LOWERED));
+        sourceDirList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        jScrollPane3.setViewportView(sourceDirList);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 6;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 3);
+        gridBagConstraints.weighty = 0.5;
+        editProjectPanel.add(jScrollPane3, gridBagConstraints);
 
         viewPanel.add(editProjectPanel, "EditProjectPanel");
 
@@ -547,6 +552,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
     private javax.swing.JList jarFileList;
     private javax.swing.JLabel jarFileLabel;
     private javax.swing.JButton addSourceDirButton;
+    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JButton findBugsButton;
     private javax.swing.JLabel sourceDirLabel;
     private javax.swing.JPanel viewPanel;
@@ -561,6 +567,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
     private javax.swing.JButton browseSrcDirButton;
     private javax.swing.JTextField srcDirTextField;
     private javax.swing.JLabel sourceDirListLabel;
+    private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JMenuItem exitItem;
     private javax.swing.JPanel emptyPanel;
     private javax.swing.JSeparator jSeparator3;
