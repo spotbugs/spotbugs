@@ -33,7 +33,7 @@ public class InnerClassAccessMap {
 
 	private InnerClassAccessMap instance = new InnerClassAccessMap();
 
-	public InnerClassAccessMap instance() { return instance; }
+	public static InnerClassAccessMap instance() { return instance; }
 
 	private static class InstructionCallback implements BytecodeScanner.Callback {
 		private JavaClass javaClass;
