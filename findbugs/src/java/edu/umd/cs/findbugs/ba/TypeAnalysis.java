@@ -53,6 +53,13 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 	private static final boolean ACCURATE_EXCEPTIONS = 
 		Boolean.getBoolean("ta.accurateExceptions") || ClassContext.PRUNE_INFEASIBLE_EXCEPTION_EDGES;
 
+	/**
+	 * Repository of information about thrown exceptions computed for
+	 * a basic block and its outgoing exception edges.
+	 * It contains a result TypeFrame, which is used to detect
+	 * when the exception information needs to be recomputed
+	 * for the block.
+	 */
 	private class CachedExceptionSet {
 		private TypeFrame result;
 		private ExceptionSet exceptionSet;
@@ -246,6 +253,11 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 		if (!basicBlock.isExceptionThrower())
 			return;
 
+		// If cached results are up to date, don't recompute.
+		CachedExceptionSet cachedExceptionSet = getCachedExceptionSet(basicBlock);
+		if (cachedExceptionSet.isUpToDate((TypeFrame) result))
+			return;
+
 		// Figure out what exceptions can be thrown out
 		// of the basic block, and mark each exception edge
 		// with the set of exceptions which can be propagated
@@ -253,8 +265,7 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 
 		// Compute exceptions that can be thrown by the
 		// basic block.
-		CachedExceptionSet cachedExceptionSet =
-			computeBlockExceptionSet(basicBlock, (TypeFrame) result);
+		cachedExceptionSet = computeBlockExceptionSet(basicBlock, (TypeFrame) result);
 
 		// For each outgoing exception edge, compute exceptions
 		// that can be thrown.  This assumes that the exception
@@ -346,8 +357,11 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 	}
 
 	/**
-	 * If necessary, compute the set of exceptions that can be
+	 * Compute the set of exceptions that can be
 	 * thrown from the given basic block.
+	 * This should only be called if the existing cached
+	 * exception set is out of date.
+	 *
 	 * @param basicBlock the basic block
 	 * @param result the result fact for the block; this is used
 	 *    to determine whether or not the cached exception
@@ -357,26 +371,22 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 	private CachedExceptionSet computeBlockExceptionSet(BasicBlock basicBlock, TypeFrame result)
 		throws DataflowAnalysisException {
 
-		CachedExceptionSet cachedExceptionSet = getCachedExceptionSet(basicBlock);
-
-		if (!cachedExceptionSet.isUpToDate(result)) {
-			ExceptionSet exceptionSet = null;
-			try {
-				exceptionSet = computeThrownExceptionTypes(basicBlock);
-			} catch (ClassNotFoundException e) {
-				// Special case: be as conservative as possible
-				// if a class hierarchy lookup fails.
-				lookupFailureCallback.reportMissingClass(e);
-				exceptionSet = exceptionSetFactory.createExceptionSet();
-				exceptionSet.addExplicit(Type.THROWABLE);
-			}
-
-			TypeFrame copyOfResult = createFact();
-			copy(result, copyOfResult);
-
-			cachedExceptionSet = new CachedExceptionSet(copyOfResult, exceptionSet);
-			thrownExceptionSetMap.put(basicBlock, cachedExceptionSet);
+		ExceptionSet exceptionSet = null;
+		try {
+			exceptionSet = computeThrownExceptionTypes(basicBlock);
+		} catch (ClassNotFoundException e) {
+			// Special case: be as conservative as possible
+			// if a class hierarchy lookup fails.
+			lookupFailureCallback.reportMissingClass(e);
+			exceptionSet = exceptionSetFactory.createExceptionSet();
+			exceptionSet.addExplicit(Type.THROWABLE);
 		}
+
+		TypeFrame copyOfResult = createFact();
+		copy(result, copyOfResult);
+
+		CachedExceptionSet cachedExceptionSet = new CachedExceptionSet(copyOfResult, exceptionSet);
+		thrownExceptionSetMap.put(basicBlock, cachedExceptionSet);
 
 		return cachedExceptionSet;
 	}
