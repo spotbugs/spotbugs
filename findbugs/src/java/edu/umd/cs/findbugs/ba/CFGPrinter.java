@@ -45,6 +45,9 @@ public class CFGPrinter {
 	    BasicBlock bb = i.next();
 	    out.println();
 	    out.println("BASIC BLOCK: " + bb.getId() + (bb.isExceptionThrower() ? " [EXCEPTION THROWER]" : "") + blockStartAnnotate(bb));
+	    if (bb.isExceptionThrower()) {
+		out.println("  Exception thrower: " + bb.getExceptionThrower());
+	    }
 	    CodeExceptionGen exceptionGen = bb.getExceptionGen();
 	    if (exceptionGen != null) {
 		System.out.println("    CATCHES " + exceptionGen.getCatchType());
