@@ -43,16 +43,15 @@ package edu.umd.cs.findbugs.tools.patcomp;
 public class PatternCompiler {
 	public static void main(String[] argv) throws Exception {
 		PatternCompiler pc = new PatternCompiler(System.in);
-		pc.unit();
+		SimpleNode root = pc.unit();
+		new CodeGen().generate(root, System.out);
 	}
 
 	void jjtreeOpenNodeScope(Node node) {
-		System.out.println("Setting first token");
 		((SimpleNode)node).setFirstToken(getToken(1));
 	}
 
 	void jjtreeCloseNodeScope(Node node) {
-		System.out.println("Setting last token");
 		((SimpleNode)node).setLastToken(getToken(0));
 	}
 }
