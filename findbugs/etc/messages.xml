@@ -1196,7 +1196,7 @@ using the <code>equals(Object)</code> method instead.</p>
   </BugPattern>
   <BugPattern type="SP_SPIN_ON_FIELD">
     <ShortDescription>Method spins on field</ShortDescription>
-    <LongDescription>Spinning on {2} in {1}</LongDescription>
+    <LongDescription>Spinning on {3} in {1}</LongDescription>
     <Details>
 <![CDATA[
   <p> This method spins in a loop which reads a field.&nbsp; The compiler
