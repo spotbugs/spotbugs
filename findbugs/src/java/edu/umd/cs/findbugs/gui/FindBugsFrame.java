@@ -427,7 +427,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 			currentDirectory = new File(dirProp);
 		}
 
-//      Uncomment one of these to test I18N	    
+//      Uncomment one of these to test I18N    
 //	    Locale.setDefault( Locale.FRENCH );
 //	    Locale.setDefault( Locale.GERMAN );
 //	    Locale.setDefault( Locale.JAPANESE );
@@ -527,8 +527,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
 		newProjectItem = new javax.swing.JMenuItem();
 		openProjectItem = new javax.swing.JMenuItem();
 		recentProjectsMenu = new javax.swing.JMenu();
-		closeProjectItem = new javax.swing.JMenuItem();
 		jSeparator9 = new javax.swing.JSeparator();
+		closeProjectItem = new javax.swing.JMenuItem();
 		saveProjectItem = new javax.swing.JMenuItem();
 		saveProjectAsItem = new javax.swing.JMenuItem();
 		reloadProjectItem = new javax.swing.JMenuItem();
@@ -543,7 +543,6 @@ public class FindBugsFrame extends javax.swing.JFrame {
 		fullDescriptionsItem = new javax.swing.JCheckBoxMenuItem();
 		jSeparator7 = new javax.swing.JSeparator();
 		lowPriorityButton = new javax.swing.JRadioButtonMenuItem();
-		lowPriorityButton.setText(L10N.getLocalString("menu.lowpriority_item", "Low Priority"));
 		mediumPriorityButton = new javax.swing.JRadioButtonMenuItem();
 		highPriorityButton = new javax.swing.JRadioButtonMenuItem();
 		jSeparator8 = new javax.swing.JSeparator();
@@ -1079,30 +1078,30 @@ public class FindBugsFrame extends javax.swing.JFrame {
 		consoleSplitter.setTopComponent(viewPanel);
 
 		{
-			equalizeControls(new JComponent[]
+			equalizeControls( new JComponent[]
 			{
-				browseJarButton,
-				browseSrcDirButton,
-				browseClasspathEntryButton,
 				addJarButton,
 				addSourceDirButton,
 				addClasspathEntryButton,
 				removeJarButton,
 				removeSrcDirButton,
 				removeClasspathEntryButton,
+				browseJarButton,
+				browseSrcDirButton,
+				browseClasspathEntryButton,
 				sourceUpButton,
 				sourceDownButton,
 				classpathUpButton,
 				classpathDownButton
 			});
 
-			groupByTabbedPane.setTitleAt(0, L10N.getLocalString("dlg.byclass_tab", "By Class"));
-			groupByTabbedPane.setTitleAt(1, L10N.getLocalString("dlg.bypackage_tab", "By Package"));
-			groupByTabbedPane.setTitleAt(2, L10N.getLocalString("dlg.bybugtype_tab", "By Bug Type"));
-			groupByTabbedPane.setTitleAt(3, L10N.getLocalString("dlg.summary_tab", "Summary"));
-			bugDetailsTabbedPane.setTitleAt(0, L10N.getLocalString("dlg.details_tab", "Details"));
-			bugDetailsTabbedPane.setTitleAt(1, L10N.getLocalString("dlg.sourcecode_tab", "Source Code"));
-			bugDetailsTabbedPane.setTitleAt(2, L10N.getLocalString("dlg.annotations_tab", "Annotations"));
+			groupByTabbedPane.setTitleAt(0, L10N.getLocalString( "dlg.byclass_tab", "By Class"));
+			groupByTabbedPane.setTitleAt(1, L10N.getLocalString( "dlg.bypackage_tab", "By Package"));
+			groupByTabbedPane.setTitleAt(2, L10N.getLocalString( "dlg.bybugtype_tab", "By Bug Type"));
+			groupByTabbedPane.setTitleAt(3, L10N.getLocalString( "dlg.summary_tab", "Summary"));
+			bugDetailsTabbedPane.setTitleAt(0, L10N.getLocalString( "dlg.details_tab", "Details"));
+			bugDetailsTabbedPane.setTitleAt(1, L10N.getLocalString( "dlg.sourcecode_tab", "Source Code"));
+			bugDetailsTabbedPane.setTitleAt(2, L10N.getLocalString( "dlg.annotations_tab", "Annotations"));
 		}
 		consoleScrollPane.setMinimumSize(new java.awt.Dimension(22, 100));
 		consoleScrollPane.setPreferredSize(new java.awt.Dimension(0, 100));
@@ -1148,26 +1147,22 @@ public class FindBugsFrame extends javax.swing.JFrame {
 		getContentPane().add(jPanel1, gridBagConstraints);
 
 		theMenuBar.setFont(new java.awt.Font("Dialog", 0, 12));
-		fileMenu.setMnemonic('F');
 		fileMenu.setText("File");
 		fileMenu.setFont(new java.awt.Font("Dialog", 0, 12));
-		fileMenu.setText(L10N.getLocalString("menu.file_menu", "File"));
+		localiseButton(fileMenu, "menu.file_menu", "&File", true);
 		fileMenu.addMenuListener(new javax.swing.event.MenuListener() {
-			public void menuCanceled(javax.swing.event.MenuEvent evt) {
+                                public void menuSelected(javax.swing.event.MenuEvent evt) {
+                                        fileMenuMenuSelected(evt);
 			}
-
 			public void menuDeselected(javax.swing.event.MenuEvent evt) {
 			}
-
-			public void menuSelected(javax.swing.event.MenuEvent evt) {
-				fileMenuMenuSelected(evt);
+                                public void menuCanceled(javax.swing.event.MenuEvent evt) {
 			}
 		});
 
 		newProjectItem.setFont(new java.awt.Font("Dialog", 0, 12));
-		newProjectItem.setMnemonic('N');
 		newProjectItem.setText("New Project");
-		newProjectItem.setText(L10N.getLocalString("menu.new_item", "New Project"));
+		localiseButton(newProjectItem, "menu.new_item", "&New Project", true);
 		newProjectItem.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				newProjectItemActionPerformed(evt);
@@ -1177,9 +1172,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
 		fileMenu.add(newProjectItem);
 
 		openProjectItem.setFont(new java.awt.Font("Dialog", 0, 12));
-		openProjectItem.setMnemonic('O');
 		openProjectItem.setText("Open Project...");
-		openProjectItem.setText(L10N.getLocalString("menu.open_item", "Open Project..."));
+		localiseButton(openProjectItem, "menu.open_item", "&Open Project", true);
 		openProjectItem.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				openProjectItemActionPerformed(evt);
@@ -1188,17 +1182,17 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
 		fileMenu.add(openProjectItem);
 
-		recentProjectsMenu.setMnemonic('E');
 		recentProjectsMenu.setText("Recent Projects");
 		recentProjectsMenu.setFont(new java.awt.Font("Dialog", 0, 12));
-		recentProjectsMenu.setText(L10N.getLocalString("menu.recent_menu", "Recent Projects..."));
+		localiseButton(recentProjectsMenu, "menu.recent_menu", "R&ecent Projects", true);
 		rebuildRecentProjectsMenu();
 		fileMenu.add(recentProjectsMenu);
 
+		fileMenu.add(jSeparator9);
+
 		closeProjectItem.setFont(new java.awt.Font("Dialog", 0, 12));
-		closeProjectItem.setMnemonic('C');
 		closeProjectItem.setText("Close Project");
-		closeProjectItem.setText(L10N.getLocalString("menu.close_item", "Close"));
+		localiseButton(closeProjectItem, "menu.close_item", "&Close", true);
 		closeProjectItem.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				closeProjectItemActionPerformed(evt);
@@ -1207,12 +1201,9 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
 		fileMenu.add(closeProjectItem);
 
-		fileMenu.add(jSeparator9);
-
 		saveProjectItem.setFont(new java.awt.Font("Dialog", 0, 12));
-		saveProjectItem.setMnemonic('S');
 		saveProjectItem.setText("Save Project");
-		saveProjectItem.setText(L10N.getLocalString("menu.save_item", "Save Project"));
+		localiseButton(saveProjectItem, "menu.save_item", "&Save Project", true);
 		saveProjectItem.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				saveProjectItemActionPerformed(evt);
@@ -1222,9 +1213,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
 		fileMenu.add(saveProjectItem);
 
 		saveProjectAsItem.setFont(new java.awt.Font("Dialog", 0, 12));
-		saveProjectAsItem.setMnemonic('A');
 		saveProjectAsItem.setText("Save Project As...");
-		saveProjectAsItem.setText(L10N.getLocalString("menu.saveas_item", "Save Project As..."));
+		localiseButton(saveProjectAsItem, "menu.saveas_item", "Save Project &As...", true);
 		saveProjectAsItem.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				saveProjectAsItemActionPerformed(evt);
@@ -1234,9 +1224,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
 		fileMenu.add(saveProjectAsItem);
 
 		reloadProjectItem.setFont(new java.awt.Font("Dialog", 0, 12));
-		reloadProjectItem.setMnemonic('R');
 		reloadProjectItem.setText("Reload Project");
-		reloadProjectItem.setText(L10N.getLocalString("menu.reload_item", "Reload Project"));
+		localiseButton(reloadProjectItem, "menu.reload_item", "&Reload Project", true);
 		reloadProjectItem.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				reloadProjectItemActionPerformed(evt);
@@ -1248,9 +1237,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
 		fileMenu.add(jSeparator3);
 
 		loadBugsItem.setFont(new java.awt.Font("Dialog", 0, 12));
-		loadBugsItem.setMnemonic('L');
 		loadBugsItem.setText("Load Bugs...");
-		loadBugsItem.setText(L10N.getLocalString("menu.loadbugs_item", "Load Bugs..."));
+		localiseButton(loadBugsItem, "menu.loadbugs_item", "&Load Bugs...", true);
 		loadBugsItem.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				loadBugsItemActionPerformed(evt);
@@ -1260,9 +1248,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
 		fileMenu.add(loadBugsItem);
 
 		saveBugsItem.setFont(new java.awt.Font("Dialog", 0, 12));
-		saveBugsItem.setMnemonic('B');
 		saveBugsItem.setText("Save Bugs");
-		saveBugsItem.setText(L10N.getLocalString("menu.savebugs_item", "Save Bugs..."));
+		localiseButton(saveBugsItem, "menu.savebugs_item", "Save &Bugs...", true);
 		saveBugsItem.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				saveBugsItemActionPerformed(evt);
@@ -1274,9 +1261,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
 		fileMenu.add(jSeparator6);
 
 		exitItem.setFont(new java.awt.Font("Dialog", 0, 12));
-		exitItem.setMnemonic('X');
 		exitItem.setText("Exit");
-		exitItem.setText(L10N.getLocalString("menu.exit_item", "Exit"));
+		localiseButton(exitItem, "menu.exit_item", "E&xit", true);
 		exitItem.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				exitItemActionPerformed(evt);
@@ -1287,26 +1273,22 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
 		theMenuBar.add(fileMenu);
 
-		viewMenu.setMnemonic('V');
 		viewMenu.setText("View");
 		viewMenu.setFont(new java.awt.Font("Dialog", 0, 12));
-		viewMenu.setText(L10N.getLocalString("menu.view_menu", "View"));
+		localiseButton(viewMenu, "menu.view_menu", "&View", true);
 		viewMenu.addMenuListener(new javax.swing.event.MenuListener() {
-			public void menuCanceled(javax.swing.event.MenuEvent evt) {
+                                public void menuSelected(javax.swing.event.MenuEvent evt) {
+                                        viewMenuMenuSelected(evt);
 			}
-
 			public void menuDeselected(javax.swing.event.MenuEvent evt) {
 			}
-
-			public void menuSelected(javax.swing.event.MenuEvent evt) {
-				viewMenuMenuSelected(evt);
+                                public void menuCanceled(javax.swing.event.MenuEvent evt) {
 			}
 		});
 
 		viewConsoleItem.setFont(new java.awt.Font("Dialog", 0, 12));
-		viewConsoleItem.setMnemonic('C');
 		viewConsoleItem.setText("Console");
-		viewConsoleItem.setText(L10N.getLocalString("menu.console_item", "Console"));
+		localiseButton(viewConsoleItem, "menu.console_item", "&Console", true);
 		viewConsoleItem.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				viewConsoleItemActionPerformed(evt);
@@ -1316,10 +1298,9 @@ public class FindBugsFrame extends javax.swing.JFrame {
 		viewMenu.add(viewConsoleItem);
 
 		viewBugDetailsItem.setFont(new java.awt.Font("Dialog", 0, 12));
-		viewBugDetailsItem.setMnemonic('D');
 		viewBugDetailsItem.setSelected(true);
 		viewBugDetailsItem.setText("Bug Details");
-		viewBugDetailsItem.setText(L10N.getLocalString("menu.bugdetails_item", "Bug Details"));
+		localiseButton(viewBugDetailsItem, "menu.bugdetails_item", "Bug &Details", true);
 		viewBugDetailsItem.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				viewBugDetailsItemActionPerformed(evt);
@@ -1329,10 +1310,9 @@ public class FindBugsFrame extends javax.swing.JFrame {
 		viewMenu.add(viewBugDetailsItem);
 
 		fullDescriptionsItem.setFont(new java.awt.Font("Dialog", 0, 12));
-		fullDescriptionsItem.setMnemonic('F');
 		fullDescriptionsItem.setSelected(true);
 		fullDescriptionsItem.setText("Full Descriptions");
-		fullDescriptionsItem.setText(L10N.getLocalString("menu.fulldescriptions_item", "Full Descriptions"));
+		localiseButton(fullDescriptionsItem, "menu.fulldescriptions_item", "&Full Descriptions", true);
 		fullDescriptionsItem.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				fullDescriptionsItemActionPerformed(evt);
@@ -1344,9 +1324,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
 		viewMenu.add(jSeparator7);
 
 		lowPriorityButton.setFont(new java.awt.Font("Dialog", 0, 12));
-		lowPriorityButton.setMnemonic('L');
 		lowPriorityButton.setText("Low Priority");
-		lowPriorityButton.setText(L10N.getLocalString("menu.lowpriority_item", "Low Priority"));
+		localiseButton(lowPriorityButton, "menu.lowpriority_item", "&Low Priority", true);
 		lowPriorityButton.setSelected(priorityThreshold == Detector.LOW_PRIORITY);
 		lowPriorityButton.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1357,9 +1336,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
 		viewMenu.add(lowPriorityButton);
 
 		mediumPriorityButton.setFont(new java.awt.Font("Dialog", 0, 12));
-		mediumPriorityButton.setMnemonic('M');
 		mediumPriorityButton.setText("Medium Priority");
-		mediumPriorityButton.setText(L10N.getLocalString("menu.mediumpriority_item", "Medium Priority"));
+		localiseButton(mediumPriorityButton, "menu.mediumpriority_item", "&Medium Priority", true);
 		mediumPriorityButton.setSelected(priorityThreshold == Detector.NORMAL_PRIORITY);
 		mediumPriorityButton.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1370,9 +1348,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
 		viewMenu.add(mediumPriorityButton);
 
 		highPriorityButton.setFont(new java.awt.Font("Dialog", 0, 12));
-		highPriorityButton.setMnemonic('H');
 		highPriorityButton.setText("High Priority");
-		highPriorityButton.setText(L10N.getLocalString("menu.highpriority_item", "High Priority"));
+		localiseButton(highPriorityButton, "menu.highpriority_item", "&High Priority", true);
 		highPriorityButton.setSelected(priorityThreshold == Detector.HIGH_PRIORITY);
 		highPriorityButton.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1387,7 +1364,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 		viewProjectItem.setFont(new java.awt.Font("Dialog", 0, 12));
 		viewProjectItem.setText("View Project Details");
 		viewProjectItem.setEnabled(false);
-		viewProjectItem.setText(L10N.getLocalString("menu.viewprojectdetails_item", "View Project Details"));
+		localiseButton(viewProjectItem, "menu.viewprojectdetails_item", "View Project Details", true);
 		viewProjectItem.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				viewProjectItemActionPerformed(evt);
@@ -1399,7 +1376,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 		viewBugsItem.setFont(new java.awt.Font("Dialog", 0, 12));
 		viewBugsItem.setText("View Bugs");
 		viewBugsItem.setEnabled(false);
-		viewBugsItem.setText(L10N.getLocalString("menu.viewbugs_item", "View Bugs"));
+		localiseButton(viewBugsItem, "menu.viewbugs_item", "View Bugs", true);
 		viewBugsItem.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				viewBugsItemActionPerformed(evt);
@@ -1410,14 +1387,12 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
 		theMenuBar.add(viewMenu);
 
-		settingsMenu.setMnemonic('S');
 		settingsMenu.setText("Settings");
 		settingsMenu.setFont(new java.awt.Font("Dialog", 0, 12));
-		settingsMenu.setText(L10N.getLocalString("menu.settings_menu", "Settings"));
+		localiseButton(settingsMenu, "menu.settings_menu", "&Settings", true);
 		configureDetectorsItem.setFont(new java.awt.Font("Dialog", 0, 12));
-		configureDetectorsItem.setMnemonic('C');
 		configureDetectorsItem.setText("Configure Detectors...");
-		configureDetectorsItem.setText(L10N.getLocalString("menu.configure_item", "Configure Detectors"));
+		localiseButton(configureDetectorsItem, "menu.configure_item", "&Configure detectors", true);
 		configureDetectorsItem.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				configureDetectorsItemActionPerformed(evt);
@@ -1428,14 +1403,12 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
 		theMenuBar.add(settingsMenu);
 
-		helpMenu.setMnemonic('H');
 		helpMenu.setText("Help");
 		helpMenu.setFont(new java.awt.Font("Dialog", 0, 12));
-		helpMenu.setText(L10N.getLocalString("menu.help_menu", "Help"));
+		localiseButton(helpMenu, "menu.help_menu", "&Help", true);
 		aboutItem.setFont(new java.awt.Font("Dialog", 0, 12));
-		aboutItem.setMnemonic('A');
 		aboutItem.setText("About...");
-		aboutItem.setText(L10N.getLocalString("menu.about_item", "About..."));
+		localiseButton(aboutItem, "menu.about_item", "&About", true);
 		aboutItem.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				aboutItemActionPerformed(evt);
@@ -2014,6 +1987,29 @@ public class FindBugsFrame extends javax.swing.JFrame {
 		for (int i = 0; i < model.size(); i++)
 			project.addSourceDir((String) model.get(i));
 	}
+
+	/**
+	 * Localise the given AbstractButton, setting the text and optionally mnemonic
+	 * Note that AbstractButton includes menus and menu items.
+	 * @arg button        The button to localise
+	 * @arg key           The key to look up in resource bundle
+	 * @arg defaultString default String to use if key not found
+	 * @arg setMnemonic   whether or not to set the mnemonic. According to Sun's
+	 *                    guidelines, default/cancel buttons should not have mnemonics
+	 *                    but instead should use Return/Escape
+	 */
+	private void localiseButton(AbstractButton button, String key, String defaultString,
+	                            boolean setMnemonic) {
+		AnnotatedString as = new AnnotatedString(L10N.getLocalString(key, defaultString));
+		button.setText(as.toString());
+		int mnemonic;
+		if (setMnemonic &&
+		    (mnemonic = as.getMnemonic()) != KeyEvent.VK_UNDEFINED) {
+			button.setMnemonic(mnemonic);
+			button.setDisplayedMnemonicIndex(as.getMnemonicIndex());
+		}
+	}
+
 	/* ----------------------------------------------------------------------
 	 * Component initialization support
 	 * ---------------------------------------------------------------------- */
@@ -2115,7 +2111,6 @@ public class FindBugsFrame extends javax.swing.JFrame {
 			// class loader will try to load OSXAdapter on a non Mac system
 			try {
 				Class osxAdapter = Class.forName("edu.umd.cs.findbugs.gui.OSXAdapter");
-                	
 				Class[] defArgs = {FindBugsFrame.class};
 				Method registerMethod = osxAdapter.getDeclaredMethod("registerMacOSXApplication", defArgs);
 				if (registerMethod != null) {

@@ -11,7 +11,6 @@
       <SubComponents>
         <Menu class="javax.swing.JMenu" name="fileMenu">
           <Properties>
-            <Property name="mnemonic" type="int" value="70"/>
             <Property name="text" type="java.lang.String" value="File"/>
             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
               <Font name="Dialog" size="12" style="0"/>
@@ -21,7 +20,7 @@
             <EventHandler event="menuSelected" listener="javax.swing.event.MenuListener" parameters="javax.swing.event.MenuEvent" handler="fileMenuMenuSelected"/>
           </Events>
           <AuxValues>
-            <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="fileMenu.setText(L10N.getLocalString(&quot;menu.file_menu&quot;, &quot;File&quot;));"/>
+            <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="localiseButton(fileMenu, &quot;menu.file_menu&quot;, &quot;&amp;File&quot;, true);"/>
           </AuxValues>
           <SubComponents>
             <MenuItem class="javax.swing.JMenuItem" name="newProjectItem">
@@ -29,14 +28,13 @@
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Dialog" size="12" style="0"/>
                 </Property>
-                <Property name="mnemonic" type="int" value="78"/>
                 <Property name="text" type="java.lang.String" value="New Project"/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="newProjectItemActionPerformed"/>
               </Events>
               <AuxValues>
-                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="newProjectItem.setText(L10N.getLocalString(&quot;menu.new_item&quot;, &quot;New Project&quot;));"/>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="localiseButton(newProjectItem, &quot;menu.new_item&quot;, &quot;&amp;New Project&quot;, true);"/>
               </AuxValues>
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="openProjectItem">
@@ -44,58 +42,54 @@
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Dialog" size="12" style="0"/>
                 </Property>
-                <Property name="mnemonic" type="int" value="79"/>
                 <Property name="text" type="java.lang.String" value="Open Project..."/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="openProjectItemActionPerformed"/>
               </Events>
               <AuxValues>
-                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="openProjectItem.setText(L10N.getLocalString(&quot;menu.open_item&quot;, &quot;Open Project...&quot;));"/>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="localiseButton(openProjectItem, &quot;menu.open_item&quot;, &quot;&amp;Open Project&quot;, true);"/>
               </AuxValues>
             </MenuItem>
             <Menu class="javax.swing.JMenu" name="recentProjectsMenu">
               <Properties>
-                <Property name="mnemonic" type="int" value="69"/>
                 <Property name="text" type="java.lang.String" value="Recent Projects"/>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Dialog" size="12" style="0"/>
                 </Property>
               </Properties>
               <AuxValues>
-                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="recentProjectsMenu.setText(L10N.getLocalString(&quot;menu.recent_menu&quot;, &quot;Recent Projects...&quot;));rebuildRecentProjectsMenu();"/>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="localiseButton(recentProjectsMenu, &quot;menu.recent_menu&quot;, &quot;R&amp;ecent Projects&quot;, true);&#xa;rebuildRecentProjectsMenu();"/>
               </AuxValues>
             </Menu>
+            <MenuItem class="javax.swing.JSeparator" name="jSeparator9">
+            </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="closeProjectItem">
               <Properties>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Dialog" size="12" style="0"/>
                 </Property>
-                <Property name="mnemonic" type="int" value="67"/>
                 <Property name="text" type="java.lang.String" value="Close Project"/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="closeProjectItemActionPerformed"/>
               </Events>
               <AuxValues>
-                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="closeProjectItem.setText(L10N.getLocalString(&quot;menu.close_item&quot;, &quot;Close&quot;));"/>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="localiseButton(closeProjectItem, &quot;menu.close_item&quot;, &quot;&amp;Close&quot;, true);"/>
               </AuxValues>
-            </MenuItem>
-            <MenuItem class="javax.swing.JSeparator" name="jSeparator9">
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="saveProjectItem">
               <Properties>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Dialog" size="12" style="0"/>
                 </Property>
-                <Property name="mnemonic" type="int" value="83"/>
                 <Property name="text" type="java.lang.String" value="Save Project"/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="saveProjectItemActionPerformed"/>
               </Events>
               <AuxValues>
-                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="saveProjectItem.setText(L10N.getLocalString(&quot;menu.save_item&quot;, &quot;Save Project&quot;));"/>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="localiseButton(saveProjectItem, &quot;menu.save_item&quot;, &quot;&amp;Save Project&quot;, true);"/>
               </AuxValues>
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="saveProjectAsItem">
@@ -103,14 +97,13 @@
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Dialog" size="12" style="0"/>
                 </Property>
-                <Property name="mnemonic" type="int" value="65"/>
                 <Property name="text" type="java.lang.String" value="Save Project As..."/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="saveProjectAsItemActionPerformed"/>
               </Events>
               <AuxValues>
-                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="saveProjectAsItem.setText(L10N.getLocalString(&quot;menu.saveas_item&quot;, &quot;Save Project As...&quot;));"/>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="localiseButton(saveProjectAsItem, &quot;menu.saveas_item&quot;, &quot;Save Project &amp;As...&quot;, true);"/>
               </AuxValues>
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="reloadProjectItem">
@@ -118,14 +111,13 @@
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Dialog" size="12" style="0"/>
                 </Property>
-                <Property name="mnemonic" type="int" value="82"/>
                 <Property name="text" type="java.lang.String" value="Reload Project"/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="reloadProjectItemActionPerformed"/>
               </Events>
               <AuxValues>
-                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="reloadProjectItem.setText(L10N.getLocalString(&quot;menu.reload_item&quot;, &quot;Reload Project&quot;));"/>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="localiseButton(reloadProjectItem, &quot;menu.reload_item&quot;, &quot;&amp;Reload Project&quot;, true);"/>
               </AuxValues>
             </MenuItem>
             <MenuItem class="javax.swing.JSeparator" name="jSeparator3">
@@ -135,14 +127,13 @@
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Dialog" size="12" style="0"/>
                 </Property>
-                <Property name="mnemonic" type="int" value="76"/>
                 <Property name="text" type="java.lang.String" value="Load Bugs..."/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="loadBugsItemActionPerformed"/>
               </Events>
               <AuxValues>
-                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="loadBugsItem.setText(L10N.getLocalString(&quot;menu.loadbugs_item&quot;, &quot;Load Bugs...&quot;));"/>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="localiseButton(loadBugsItem, &quot;menu.loadbugs_item&quot;, &quot;&amp;Load Bugs...&quot;, true);"/>
               </AuxValues>
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="saveBugsItem">
@@ -150,14 +141,13 @@
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Dialog" size="12" style="0"/>
                 </Property>
-                <Property name="mnemonic" type="int" value="66"/>
                 <Property name="text" type="java.lang.String" value="Save Bugs"/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="saveBugsItemActionPerformed"/>
               </Events>
               <AuxValues>
-                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="saveBugsItem.setText(L10N.getLocalString(&quot;menu.savebugs_item&quot;, &quot;Save Bugs...&quot;));"/>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="localiseButton(saveBugsItem, &quot;menu.savebugs_item&quot;, &quot;Save &amp;Bugs...&quot;, true);"/>
               </AuxValues>
             </MenuItem>
             <MenuItem class="javax.swing.JSeparator" name="jSeparator6">
@@ -167,21 +157,19 @@
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Dialog" size="12" style="0"/>
                 </Property>
-                <Property name="mnemonic" type="int" value="88"/>
                 <Property name="text" type="java.lang.String" value="Exit"/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="exitItemActionPerformed"/>
               </Events>
               <AuxValues>
-                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="exitItem.setText(L10N.getLocalString(&quot;menu.exit_item&quot;, &quot;Exit&quot;));"/>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="localiseButton(exitItem, &quot;menu.exit_item&quot;, &quot;E&amp;xit&quot;, true);"/>
               </AuxValues>
             </MenuItem>
           </SubComponents>
         </Menu>
         <Menu class="javax.swing.JMenu" name="viewMenu">
           <Properties>
-            <Property name="mnemonic" type="int" value="86"/>
             <Property name="text" type="java.lang.String" value="View"/>
             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
               <Font name="Dialog" size="12" style="0"/>
@@ -191,7 +179,7 @@
             <EventHandler event="menuSelected" listener="javax.swing.event.MenuListener" parameters="javax.swing.event.MenuEvent" handler="viewMenuMenuSelected"/>
           </Events>
           <AuxValues>
-            <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="viewMenu.setText(L10N.getLocalString(&quot;menu.view_menu&quot;, &quot;View&quot;));"/>
+            <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="localiseButton(viewMenu, &quot;menu.view_menu&quot;, &quot;&amp;View&quot;, true);"/>
           </AuxValues>
           <SubComponents>
             <MenuItem class="javax.swing.JCheckBoxMenuItem" name="viewConsoleItem">
@@ -199,14 +187,13 @@
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Dialog" size="12" style="0"/>
                 </Property>
-                <Property name="mnemonic" type="int" value="67"/>
                 <Property name="text" type="java.lang.String" value="Console"/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="viewConsoleItemActionPerformed"/>
               </Events>
               <AuxValues>
-                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="viewConsoleItem.setText(L10N.getLocalString(&quot;menu.console_item&quot;, &quot;Console&quot;));"/>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="localiseButton(viewConsoleItem, &quot;menu.console_item&quot;, &quot;&amp;Console&quot;, true);"/>
               </AuxValues>
             </MenuItem>
             <MenuItem class="javax.swing.JCheckBoxMenuItem" name="viewBugDetailsItem">
@@ -214,7 +201,6 @@
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Dialog" size="12" style="0"/>
                 </Property>
-                <Property name="mnemonic" type="int" value="68"/>
                 <Property name="selected" type="boolean" value="true"/>
                 <Property name="text" type="java.lang.String" value="Bug Details"/>
               </Properties>
@@ -222,7 +208,7 @@
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="viewBugDetailsItemActionPerformed"/>
               </Events>
               <AuxValues>
-                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="viewBugDetailsItem.setText(L10N.getLocalString(&quot;menu.bugdetails_item&quot;, &quot;Bug Details&quot;));"/>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="localiseButton(viewBugDetailsItem, &quot;menu.bugdetails_item&quot;, &quot;Bug &amp;Details&quot;, true);"/>
               </AuxValues>
             </MenuItem>
             <MenuItem class="javax.swing.JCheckBoxMenuItem" name="fullDescriptionsItem">
@@ -230,7 +216,6 @@
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Dialog" size="12" style="0"/>
                 </Property>
-                <Property name="mnemonic" type="int" value="70"/>
                 <Property name="selected" type="boolean" value="true"/>
                 <Property name="text" type="java.lang.String" value="Full Descriptions"/>
               </Properties>
@@ -238,7 +223,7 @@
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="fullDescriptionsItemActionPerformed"/>
               </Events>
               <AuxValues>
-                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="fullDescriptionsItem.setText(L10N.getLocalString(&quot;menu.fulldescriptions_item&quot;, &quot;Full Descriptions&quot;));"/>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="localiseButton(fullDescriptionsItem, &quot;menu.fulldescriptions_item&quot;, &quot;&amp;Full Descriptions&quot;, true);"/>
               </AuxValues>
             </MenuItem>
             <MenuItem class="javax.swing.JSeparator" name="jSeparator7">
@@ -248,15 +233,13 @@
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Dialog" size="12" style="0"/>
                 </Property>
-                <Property name="mnemonic" type="int" value="76"/>
                 <Property name="text" type="java.lang.String" value="Low Priority"/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="lowPriorityButtonActionPerformed"/>
               </Events>
               <AuxValues>
-                <AuxValue name="JavaCodeGenerator_CreateCodePost" type="java.lang.String" value="lowPriorityButton.setText(L10N.getLocalString(&quot;menu.lowpriority_item&quot;, &quot;Low Priority&quot;));"/>
-                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="lowPriorityButton.setText(L10N.getLocalString(&quot;menu.lowpriority_item&quot;, &quot;Low Priority&quot;));&#xa;lowPriorityButton.setSelected(priorityThreshold == Detector.LOW_PRIORITY);"/>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="localiseButton(lowPriorityButton, &quot;menu.lowpriority_item&quot;, &quot;&amp;Low Priority&quot;, true);&#xa;lowPriorityButton.setSelected(priorityThreshold == Detector.LOW_PRIORITY);"/>
               </AuxValues>
             </MenuItem>
             <MenuItem class="javax.swing.JRadioButtonMenuItem" name="mediumPriorityButton">
@@ -264,14 +247,13 @@
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Dialog" size="12" style="0"/>
                 </Property>
-                <Property name="mnemonic" type="int" value="77"/>
                 <Property name="text" type="java.lang.String" value="Medium Priority"/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="mediumPriorityButtonActionPerformed"/>
               </Events>
               <AuxValues>
-                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="mediumPriorityButton.setText(L10N.getLocalString(&quot;menu.mediumpriority_item&quot;, &quot;Medium Priority&quot;));&#xa;mediumPriorityButton.setSelected(priorityThreshold == Detector.NORMAL_PRIORITY);"/>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="localiseButton(mediumPriorityButton, &quot;menu.mediumpriority_item&quot;, &quot;&amp;Medium Priority&quot;, true);&#xa;mediumPriorityButton.setSelected(priorityThreshold == Detector.NORMAL_PRIORITY);"/>
               </AuxValues>
             </MenuItem>
             <MenuItem class="javax.swing.JRadioButtonMenuItem" name="highPriorityButton">
@@ -279,14 +261,13 @@
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Dialog" size="12" style="0"/>
                 </Property>
-                <Property name="mnemonic" type="int" value="72"/>
                 <Property name="text" type="java.lang.String" value="High Priority"/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="highPriorityButtonActionPerformed"/>
               </Events>
               <AuxValues>
-                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="highPriorityButton.setText(L10N.getLocalString(&quot;menu.highpriority_item&quot;, &quot;High Priority&quot;));&#xa;highPriorityButton.setSelected(priorityThreshold == Detector.HIGH_PRIORITY);"/>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="localiseButton(highPriorityButton, &quot;menu.highpriority_item&quot;, &quot;&amp;High Priority&quot;, true);&#xa;highPriorityButton.setSelected(priorityThreshold == Detector.HIGH_PRIORITY);"/>
               </AuxValues>
             </MenuItem>
             <MenuItem class="javax.swing.JSeparator" name="jSeparator8">
@@ -303,7 +284,7 @@
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="viewProjectItemActionPerformed"/>
               </Events>
               <AuxValues>
-                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="viewProjectItem.setText(L10N.getLocalString(&quot;menu.viewprojectdetails_item&quot;, &quot;View Project Details&quot;));"/>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="localiseButton(viewProjectItem, &quot;menu.viewprojectdetails_item&quot;, &quot;View Project Details&quot;, true);"/>
               </AuxValues>
             </MenuItem>
             <MenuItem class="javax.swing.JRadioButtonMenuItem" name="viewBugsItem">
@@ -318,21 +299,20 @@
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="viewBugsItemActionPerformed"/>
               </Events>
               <AuxValues>
-                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="viewBugsItem.setText(L10N.getLocalString(&quot;menu.viewbugs_item&quot;, &quot;View Bugs&quot;));"/>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="localiseButton(viewBugsItem, &quot;menu.viewbugs_item&quot;, &quot;View Bugs&quot;, true);"/>
               </AuxValues>
             </MenuItem>
           </SubComponents>
         </Menu>
         <Menu class="javax.swing.JMenu" name="settingsMenu">
           <Properties>
-            <Property name="mnemonic" type="int" value="83"/>
             <Property name="text" type="java.lang.String" value="Settings"/>
             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
               <Font name="Dialog" size="12" style="0"/>
             </Property>
           </Properties>
           <AuxValues>
-            <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="settingsMenu.setText(L10N.getLocalString(&quot;menu.settings_menu&quot;, &quot;Settings&quot;));"/>
+            <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="localiseButton(settingsMenu, &quot;menu.settings_menu&quot;, &quot;&amp;Settings&quot;, true);"/>
           </AuxValues>
           <SubComponents>
             <MenuItem class="javax.swing.JMenuItem" name="configureDetectorsItem">
@@ -340,28 +320,26 @@
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Dialog" size="12" style="0"/>
                 </Property>
-                <Property name="mnemonic" type="int" value="67"/>
                 <Property name="text" type="java.lang.String" value="Configure Detectors..."/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="configureDetectorsItemActionPerformed"/>
               </Events>
               <AuxValues>
-                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="configureDetectorsItem.setText(L10N.getLocalString(&quot;menu.configure_item&quot;, &quot;Configure Detectors&quot;));"/>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="localiseButton(configureDetectorsItem, &quot;menu.configure_item&quot;, &quot;&amp;Configure detectors&quot;, true);"/>
               </AuxValues>
             </MenuItem>
           </SubComponents>
         </Menu>
         <Menu class="javax.swing.JMenu" name="helpMenu">
           <Properties>
-            <Property name="mnemonic" type="int" value="72"/>
             <Property name="text" type="java.lang.String" value="Help"/>
             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
               <Font name="Dialog" size="12" style="0"/>
             </Property>
           </Properties>
           <AuxValues>
-            <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="helpMenu.setText(L10N.getLocalString(&quot;menu.help_menu&quot;, &quot;Help&quot;));"/>
+            <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="localiseButton(helpMenu, &quot;menu.help_menu&quot;, &quot;&amp;Help&quot;, true);"/>
           </AuxValues>
           <SubComponents>
             <MenuItem class="javax.swing.JMenuItem" name="aboutItem">
@@ -369,14 +347,13 @@
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Dialog" size="12" style="0"/>
                 </Property>
-                <Property name="mnemonic" type="int" value="65"/>
                 <Property name="text" type="java.lang.String" value="About..."/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="aboutItemActionPerformed"/>
               </Events>
               <AuxValues>
-                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="aboutItem.setText(L10N.getLocalString(&quot;menu.about_item&quot;, &quot;About...&quot;));"/>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="localiseButton(aboutItem, &quot;menu.about_item&quot;, &quot;&amp;About&quot;, true);"/>
               </AuxValues>
             </MenuItem>
           </SubComponents>
