@@ -754,6 +754,9 @@ public class FindBugs implements Constants2, ExitCodes
    * Add all classes contained in given file to the BCEL Repository.
    * @param fileName the file, which may be a jar/zip archive, a single class file,
    *   or a directory to be recursively searched for class files
+   * @param repositoryClassList a List to which all classes found in
+   *   the archive or directory are added, so we later know
+   *   which files to analyze
    */
   private void addFileToRepository(String fileName, List<String> repositoryClassList)
 	throws IOException, InterruptedException {
@@ -762,7 +765,9 @@ public class FindBugs implements Constants2, ExitCodes
 	ClassProducer classProducer;
 
 	// Create the ClassProducer
-	if (fileName.endsWith(".jar") || fileName.endsWith(".zip") || fileName.endsWith(".war") || fileName.endsWith(".ear"))
+	if (fileName.endsWith(".jar") || fileName.endsWith(".zip")
+		|| fileName.endsWith(".war") || fileName.endsWith(".ear")
+		|| fileName.endsWith(".sar"))
 		classProducer = new ZipClassProducer(fileName);
 	else if (fileName.endsWith(".class"))
 		classProducer = new SingleClassProducer(fileName);
