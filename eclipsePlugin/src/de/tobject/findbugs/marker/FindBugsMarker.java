@@ -28,5 +28,15 @@ package de.tobject.findbugs.marker;
  */
 public class FindBugsMarker {
 	public static final String NAME = "de.tobject.findbugs.findbugsMarker";
+	
+	/**
+	 * Marker attribute recording the bug type.
+	 */
 	public static final String BUG_TYPE = "BUGTYPE";
+	
+	/**
+	 * Marker attribute recording the unique id of the BugInstance
+	 * in its BugCollection.
+	 */
+	public static final String UNIQUE_ID = "FINDBUGS_UNIQUE_ID";
 }
