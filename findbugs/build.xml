@@ -65,6 +65,12 @@
     <property name="script.props.file" value="${findbugs.dir}/etc/script.properties"/>
     <property name="scripts.uptodate.stamp" value="${findbugs.dir}/build/scripts-uptodate.stamp"/>
 
+    <!-- JSR14 compiler does not handle annotations -->
+    <condition property="javac.excludes" value="**/annotations/*">
+      <equals arg1="${build.compiler}"
+              arg2="com.cortexeb.Jsr14CompilerAdapter"/>
+    </condition>
+
     <!--
       *****************************************************************
       Class paths
@@ -168,6 +174,7 @@
              target="${javac.target}"
              fork="true"
              debug="true">
+        <exclude name="${javac.excludes}"/>
         <classpath refid="classpath" />
         <compilerarg compiler="javac1.5" value="-Xlint:unchecked"/>
         <compilerarg compiler="javac1.5" value="-Xlint:deprecation"/>
