@@ -87,6 +87,11 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 						throw new SAXException("BugInstance with invalid priority value \"" +
 							priority + "\"", e);
 					}
+					
+					String uniqueId = attributes.getValue("uid");
+					if (uniqueId != null) {
+						bugInstance.setUniqueId(uniqueId);
+					}
 				}
 			} else if (outerElement.equals("BugInstance")) {
 				// Parsing an attribute or property of a BugInstance
