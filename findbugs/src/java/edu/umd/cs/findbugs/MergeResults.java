@@ -81,7 +81,7 @@ public class MergeResults {
 				// This original bug is not in a category that we are updating.
 				// Therefore, it is copied into the results unconditionally.
 				numPreserved++;
-				newSet.add(orig);
+				newCollection.add(orig);
 			} else {
 				// This original bug is in an updated category.
 				// So, to be preserved, it must also be in the new set.
