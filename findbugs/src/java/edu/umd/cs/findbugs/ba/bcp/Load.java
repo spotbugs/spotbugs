@@ -29,9 +29,7 @@ import edu.umd.cs.daveho.ba.*;
  * @see PatternElement
  * @author David Hovemeyer
  */
-public class Load extends SingleInstruction {
-	private String fieldVarName;
-	private String resultVarName;
+public class Load extends FieldAccess {
 
 	/**
 	 * Constructor.
@@ -39,8 +37,7 @@ public class Load extends SingleInstruction {
 	 * @param resultVarName the name of the result variable
 	 */
 	public Load(String fieldVarName, String resultVarName) {
-		this.fieldVarName = fieldVarName;
-		this.resultVarName = resultVarName;
+		super(fieldVarName, resultVarName);
 	}
 
 	public BindingSet match(InstructionHandle handle, ConstantPoolGen cpg,
@@ -48,26 +45,22 @@ public class Load extends SingleInstruction {
 
 		Variable field;
 		Instruction ins = handle.getInstruction();
+		FieldInstruction fieldIns;
 
 		// The instruction must be GETFIELD or GETSTATIC
 		if (ins instanceof GETFIELD) {
-			GETFIELD getfield = (GETFIELD) ins;
+			fieldIns = (GETFIELD) ins;
 			ValueNumber ref = before.getTopValue();
-			field = new FieldVariable(ref, getfield.getClassName(cpg), getfield.getFieldName(cpg));
+			field = new FieldVariable(ref, fieldIns.getClassName(cpg), fieldIns.getFieldName(cpg));
 		} else if (ins instanceof GETSTATIC) {
-			GETSTATIC getstatic = (GETSTATIC) ins;
-			field = new FieldVariable(getstatic.getClassName(cpg), getstatic.getFieldName(cpg));
+			fieldIns = (GETSTATIC) ins;
+			field = new FieldVariable(fieldIns.getClassName(cpg), fieldIns.getFieldName(cpg));
 		} else
 			return null;
 
-		Variable result = new LocalVariable(after.getTopValue());
+		Variable result = snarfFieldValue(fieldIns, cpg, after);
 
-		// Ensure that the field and result variables are consistent with
-		// previous definitions (if any)
-		bindingSet = addOrCheckDefinition(fieldVarName, field, bindingSet);
-		if (bindingSet == null)
-			return null;
-		return addOrCheckDefinition(resultVarName, result, bindingSet);
+		return checkConsistent(field, result, bindingSet);
 	}
 }
 
