@@ -130,29 +130,30 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
 			if (destBlock.isExceptionHandler()) {
 				// Exception handler - clear stack and push a non-null value
 				// to represent the exception.
-				IsNullValueFrame tmpFrame = createFact();
-				tmpFrame.copyFrom(fact);
-				tmpFrame.clearStack();
+				tmpFact = modifyFrame(fact, tmpFact);
+				tmpFact.clearStack();
 
-				// Downgrade to DNR if the handler is for CloneNotSupportedException
-				CodeExceptionGen handler = destBlock.getExceptionGen();
-				ObjectType catchType = handler.getCatchType();
-				if (catchType != null) {
-					String catchClass = catchType.getClassName();
-					if (catchClass.equals("java.lang.CloneNotSupportedException") || catchClass.equals("java.lang.InterruptedException")) {
-						for (int i = 0; i < tmpFrame.getNumSlots(); ++i)
-							if (tmpFrame.getValue(i).isDefinitelyNull())
-								tmpFrame.setValue(i, IsNullValue.doNotReportValue());
+				if (!ClassContext.PRUNE_INFEASIBLE_EXCEPTION_EDGES) {
+					// Downgrade to DNR if the handler is for CloneNotSupportedException
+					CodeExceptionGen handler = destBlock.getExceptionGen();
+					ObjectType catchType = handler.getCatchType();
+					if (catchType != null) {
+						String catchClass = catchType.getClassName();
+						if (catchClass.equals("java.lang.CloneNotSupportedException") ||
+							catchClass.equals("java.lang.InterruptedException")) {
+							for (int i = 0; i < tmpFact.getNumSlots(); ++i)
+								if (tmpFact.getValue(i).isDefinitelyNull())
+									tmpFact.setValue(i, IsNullValue.doNotReportValue());
+						}
 					}
 				}
 
 				// Mark all values as having occurred on an exception path
-				for (int i = 0; i < tmpFrame.getNumSlots(); ++i)
-					tmpFrame.setValue(i, tmpFrame.getValue(i).toExceptionValue());
+				for (int i = 0; i < tmpFact.getNumSlots(); ++i)
+					tmpFact.setValue(i, tmpFact.getValue(i).toExceptionValue());
 
 				// Push the exception value
-				tmpFrame.pushValue(IsNullValue.nonNullValue());
-				fact = tmpFrame;
+				tmpFact.pushValue(IsNullValue.nonNullValue());
 			} else {
 				// Determine if the edge conveys any information about the
 				// null/non-null status of operands in the incoming frame.
