@@ -205,7 +205,7 @@ public class PatternMatcher implements DFSEdgeTypes {
 		if (instructionIterator.hasNext()) {
 			// Easy case; continue matching in the same basic block.
 			work(basicBlock, instructionIterator, patternElement, matchCount, currentMatch, bindingSet, canFork);
-		} else if (matchedPatternElement.allowTrailingEdges()) {
+		} else if (currentMatch == null || currentMatch.allowTrailingEdges()) {
 			// We've reached the end of the basic block.
 			// Try to advance to the successors of this basic block,
 			// ignoring loop backedges.

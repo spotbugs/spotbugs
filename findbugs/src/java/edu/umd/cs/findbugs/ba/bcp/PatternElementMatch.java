@@ -92,6 +92,14 @@ public class PatternElementMatch {
 		return null;
 	}
 
+	/**
+	 * Return whether or not the most recently matched instruction
+	 * allows trailing edges.
+	 */
+	public boolean allowTrailingEdges() {
+		return patternElement.allowTrailingEdges();
+	}
+
 	public String toString() {
 		StringBuffer buf = new StringBuffer();
 		PatternElementMatch cur = this;
