@@ -133,7 +133,7 @@ public class Dom4JXMLOutput implements XMLOutput {
 		}
 	}
 
-	public void endDocument() {
+	public void finish() {
 	}
 }
 

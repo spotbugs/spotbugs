@@ -148,7 +148,7 @@ public class OutputStreamXMLOutput implements XMLOutput {
 		newLine = false;
 	}
 
-	public void endDocument() throws IOException {
+	public void finish() throws IOException {
 		out.close();
 	}
 

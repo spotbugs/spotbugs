@@ -88,10 +88,14 @@ public interface XMLOutput {
 	public void writeCDATA(String cdata) throws IOException;
 
 	/**
-	 * End the XML document.
-	 * The underlying output stream will be closed.
+	 * Finish writing XML output, closing any underlying
+	 * resources (such as output streams).
+	 * A call to this method should always be made,
+	 * even if one of the XML-generation methods throws an
+	 * exception.  Therefore, a call to this method should
+	 * be performed in a finally block.
 	 */
-	public void endDocument() throws IOException;
+	public void finish() throws IOException;
 }
 
 // vim:ts=4
