@@ -45,6 +45,13 @@ public class MatchAny extends PatternElement {
 		this.childList = childList;
 	}
 
+	public PatternElement label(String label) {
+		for (int i = 0; i < childList.length; ++i) {
+			childList[i].label(label);
+		}
+		return this;
+	}
+
 	public MatchResult match(InstructionHandle handle, ConstantPoolGen cpg,
 		ValueNumberFrame before, ValueNumberFrame after, BindingSet bindingSet) throws DataflowAnalysisException {
 
