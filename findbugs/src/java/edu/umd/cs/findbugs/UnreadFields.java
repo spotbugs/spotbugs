@@ -12,8 +12,8 @@ public class UnreadFields extends BytecodeScanningDetector implements   Constant
     HashSet<FieldAnnotation> readFields = new HashSet<FieldAnnotation>();
     HashSet<FieldAnnotation> constantFields = new HashSet<FieldAnnotation>();
     // HashSet finalFields = new HashSet();
-    HashSet<FieldAnnotation> superReadFields = new HashSet<FieldAnnotation>();
-    HashSet<FieldAnnotation> superWrittenFields = new HashSet<FieldAnnotation>();
+    HashSet<String> superReadFields = new HashSet<String>();
+    HashSet<String> superWrittenFields = new HashSet<String>();
     HashSet<String> innerClassCannotBeStatic = new HashSet<String>();
     boolean hasNativeMethods;
     private BugReporter bugReporter;
@@ -55,6 +55,8 @@ public class UnreadFields extends BytecodeScanningDetector implements   Constant
 	}
 
  public void visit(ConstantValue obj) {
+	// ConstantValue is an attribute of a field, so the instance variables
+	// set during visitation of the Field are still valid here
 	FieldAnnotation f = FieldAnnotation.fromVisitedField(this);
 	constantFields.add(f);
         }
@@ -77,7 +79,7 @@ public class UnreadFields extends BytecodeScanningDetector implements   Constant
 		readFields.add(f);
 		if (classConstant.equals(className) && 
 			!myFields.contains(f)) {
-			superReadFields.add(f);
+			superReadFields.add(nameConstant);
 			}
 		}
 	else if (seen == PUTFIELD) {
@@ -86,7 +88,7 @@ public class UnreadFields extends BytecodeScanningDetector implements   Constant
 		writtenFields.add(f);
 		if (classConstant.equals(className) && 
 			!myFields.contains(f)) {
-			superWrittenFields.add(f);
+			superWrittenFields.add(nameConstant);
 			}
 		}
 	}
@@ -108,13 +110,13 @@ public void report() {
 */
 		boolean allUpperCase = 
 				fieldName.equals(fieldName.toUpperCase());
-		if (superReadFields.contains(f))  continue;
+		if (superReadFields.contains(f.getFieldName()))  continue;
 		if (!fieldName.startsWith("this$"))  {
 		  if (allUpperCase || constantFields.contains(f) )
 		    bugReporter.reportBug(new BugInstance("SS_SHOULD_BE_STATIC", NORMAL_PRIORITY)
 			.addClass(className)
 			.addField(f));
-		  else if (!writtenFields.contains(f) && !superWrittenFields.contains(f))
+		  else if (!writtenFields.contains(f) && !superWrittenFields.contains(f.getFieldName()))
 		    bugReporter.reportBug(new BugInstance("UUF_UNUSED_FIELD", NORMAL_PRIORITY)
 			.addClass(className)
 			.addField(f));
