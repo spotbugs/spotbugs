@@ -37,4 +37,14 @@ public class BadResultSetAccessTest
 	public void test4( ResultSet rs ) throws SQLException {
 		rs.updateBinaryStream( 1, null, 0 );
 	}
+	
+	public void test5( ResultSet rs ) throws SQLException {
+		//This is ok, but generated false positives at one time
+		int idx = 0;
+		int rowId = rs.getInt(++idx);
+		String name = rs.getString(++idx);
+		String value = rs.getString(++idx);
+		int groupId = rs.getInt(++idx);
+		String description = rs.getString(++idx);
+	}
 }
