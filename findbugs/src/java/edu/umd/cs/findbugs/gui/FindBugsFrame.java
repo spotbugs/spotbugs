@@ -1117,7 +1117,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
      */
     public static void main(String args[]) {
 	FindBugsFrame frame = new FindBugsFrame();
-	frame.setSize(750, 550);
+	frame.setSize(900, 700);
 	frame.show();
     }
     
