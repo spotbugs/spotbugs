@@ -7,6 +7,28 @@
 
 <h1>FindBugs Changes</h1>
 
+<p> Changes since version 0.5.4
+
+<ul>
+<li> Added an <a href="http://ant.apache.org/">Ant</a> task for FindBugs,
+     contributed by Mike Fagan.
+<li> Added a GUI dialog which allows individual bug pattern detectors
+     to be enabled or disabled.&nbsp; Disabling certain slow detectors
+     can greatly speed up analysis of large programs, at the expense of
+     reducing the number of potential bugs found.
+<li> Added a new detector for finding improperly ignored return values for
+     methods such as <code>String.trim()</code>.&nbsp; Suggested
+     by Andreas Mandel.
+<li> Japanese translations of the bug summaries, contributed by Germano Leichsenring.
+<li> Filtering of results is supported in command line interface.
+     See the <a href="manual/index.html">FindBugs manual</a> for details.
+<li> Added "byte code patterns", a general pattern matching infrastructure
+     for bytecode instructions.&nbsp; This feature significantly reduces
+     the complexity of implementing new bug pattern detectors.
+<li> Enabled a new general dataflow analysis to track values in methods.
+<li> Switched to new control-flow graph builder implementation.
+</ul>
+
 <p>Changes since version 0.5.3
 
 <ul>
