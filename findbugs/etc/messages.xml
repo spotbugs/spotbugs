@@ -1172,12 +1172,12 @@ This may lead to a <code>NullPointerException</code> when the code is executed.
   </BugPattern>
 
   <BugPattern type="SI_INSTANCE_BEFORE_FINALS_ASSIGNED">
-    <ShortDescription></ShortDescription>
-    <LongDescription></LongDescription>
+    <ShortDescription>Static initializer for class creates instance before all static final fields assigned</ShortDescription>
+    <LongDescription>Static initializer for {0} creates instance before all static final fields assigned</LongDescription>
     <Details>
 <![CDATA[
 <p> The class's static initializer creates an instance of the class
-before all of the final fields are assigned.
+before all of the static final fields are assigned.
 ]]>
     </Details>
   </BugPattern>
