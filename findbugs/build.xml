@@ -57,11 +57,6 @@
     <property name="html.xsl.stylesheet" value="${xsl.stylesheet.home}/html/chunk.xsl" />
     <property name="fo.xsl.stylesheet" value="${xsl.stylesheet.home}/fo/docbook.xsl" />
 
-    <property name="release.base" value="findbugs-${release.number}" />
-    <property name="bin.release.scripts"
-              value="${release.base}/bin/findbugs,${release.base}/bin/mergeResults,${release.base}/bin/bugHistory" />
-    <property name="src.release.scripts"
-              value="${bin.release.scripts},${release.base}/etc/createXML,${release.base}/etc/runTests,${release.base}/etc/summarizeBugs,${release.base}/etc/diffBugSummaries,${release.base}/etc/categorizeBugs,${release.base}/etc/countBugs,${release.base}/etc/findExamples" />
 
     <!-- Classpath for compiling FindBugs. -->
     <path id="classpath">
@@ -118,12 +113,15 @@
 
     <!-- Target to compile classes. -->
     <target name="classes" depends="init">
+      <!-- Compile with the JSR14 prototype compiler and compiler adapter -->
       <javac srcdir="${findbugs.src.dir}" destdir="${class.dir}"
              source="1.5"
              debug="true"
              compiler="com.cortexeb.Jsr14CompilerAdapter">
         <classpath refid="classpath" />
       </javac>
+
+      <!-- Use the following to compile using JDK 1.5 javac -->
 <!--
       <javac srcdir="${findbugs.src.dir}" destdir="${class.dir}"
              source="1.5"
@@ -294,7 +292,16 @@
          <arg value="-props"/> 
       </java>
       <loadproperties srcFile="${release.prop.file}" />
+
+      <!-- Now we can define properties that depend on version number properties. -->
+
       <property name="release.dir" value="${build.dir}/bin/findbugs-${release.number}" />
+
+      <property name="release.base" value="findbugs-${release.number}" />
+      <property name="bin.release.scripts"
+                value="${release.base}/bin/findbugs,${release.base}/bin/mergeResults,${release.base}/bin/bugHistory" />
+      <property name="src.release.scripts"
+                value="${bin.release.scripts},${release.base}/etc/createXML,${release.base}/etc/runTests,${release.base}/etc/summarizeBugs,${release.base}/etc/diffBugSummaries,${release.base}/bin/categorizeBugs,${release.base}/bin/countBugs,${release.base}/bin/findExamples" />
 
       <!-- Filter set used for generating text substitution values for
            documentation and Eclipse plugin descriptors. -->
@@ -389,9 +396,7 @@
 
     <!-- Target to build the release. This just means copying generated files
          (code and docs). -->
-    <target name="release" depends="buildAll">
-
-
+    <target name="release" depends="buildAll,version">
        <copy todir="${release.dir}/lib">
          <fileset dir="${jar.dir}" includes="**/*.jar" excludes="plastic.jar"  />
        </copy>
@@ -417,11 +422,11 @@
       <tar tarfile="${build.dir}/bin/findbugs-${release.number}.tar.gz"
            longfile="gnu"
            compression="gzip">
-         <tarfileset dir="${build.dir}/bin" includes="findbugs-${release.number}/**" excludes="${bin.release.scripts}" />
+         <tarfileset dir="${build.dir}/bin" includes="findbugs-${release.number}/**" excludes="${src.release.scripts}" />
          <tarfileset dir="${build.dir}/bin" includes="${bin.release.scripts}" mode="555" />
       </tar>
       <zip destfile="${build.dir}/bin/findbugs-${release.number}.zip">
-         <zipfileset dir="${build.dir}/bin" includes="findbugs-${release.number}/**" excludes="${bin.release.scripts}" />
+         <zipfileset dir="${build.dir}/bin" includes="findbugs-${release.number}/**" excludes="${src.release.scripts}" />
          <zipfileset dir="${build.dir}/bin" includes="${bin.release.scripts}" filemode="555" />
       </zip>
     </target>
@@ -444,7 +449,7 @@
 
        <!-- Put it in a zip file. -->
        <zip destfile="${build.dir}/src/findbugs-${release.number}-source.zip">
-         <zipfileset dir="${build.dir}/src" includes="findbugs-${release.number}/**" excludes="${src.release.scripts}" />
+         <zipfileset dir="${build.dir}/src" includes="findbugs-${release.number}/**" excludes="${src.release.scripts}"/>
          <zipfileset dir="${build.dir}/src" includes="${src.release.scripts}" filemode="555" />
        </zip>
     </target>
