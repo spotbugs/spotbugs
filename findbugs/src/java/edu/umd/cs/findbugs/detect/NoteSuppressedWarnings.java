@@ -33,7 +33,7 @@ import static edu.umd.cs.findbugs.visitclass.Constants2.*;
 public class NoteSuppressedWarnings extends AnnotationVisitor 
   implements Detector, Constants2 {
 
-	private static HashSet packages = new HashSet();
+	private static Set<String> packages = new HashSet<String>();
 
 	private SuppressionMatcher suppressionMatcher;
 
