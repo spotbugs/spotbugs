@@ -26,12 +26,169 @@ import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.*;
 import org.apache.bcel.generic.*;
 
-public class FindRefComparison implements Detector {
+public class FindRefComparison implements Detector, ExtendedTypes {
 	private static final boolean DEBUG = Boolean.getBoolean("frc.debug");
 
+	/* ----------------------------------------------------------------------
+	 * Helper classes
+	 * ---------------------------------------------------------------------- */
+
+	private static final byte T_DYNAMIC_STRING = T_AVAIL_TYPE + 0;
+	private static final byte T_STATIC_STRING  = T_AVAIL_TYPE + 1;
+
+	private static final String STRING_SIGNATURE = "Ljava/lang/String;";
+
+	/**
+	 * Type representing a dynamically created String.
+	 * This sort of String should never be compared using reference
+	 * equality.
+	 */
+	private static class DynamicStringType extends ReferenceType {
+		public DynamicStringType() {
+			super(T_DYNAMIC_STRING, STRING_SIGNATURE);
+		}
+		public int hashCode() { return System.identityHashCode(this); }
+		public boolean equals(Object o) { return o == this; }
+		public String toString() { return "<dynamic string>"; }
+	}
+
+	private static final Type dynamicStringTypeInstance = new DynamicStringType();
+
+	/**
+	 * Type representing a static String.
+	 * E.g., interned strings and constant strings.
+	 * It is generally OK to compare this sort of String
+	 * using reference equality.
+	 */
+	private static class StaticStringType extends ReferenceType {
+		public StaticStringType() {
+			super(T_STATIC_STRING, STRING_SIGNATURE);
+		}
+		public int hashCode() { return System.identityHashCode(this); }
+		public boolean equals(Object o) { return o == this; }
+		public String toString() { return "<static string>"; }
+	}
+
+	private static final Type staticStringTypeInstance = new StaticStringType();
+
+	private static class RefComparisonTypeFrameModelingVisitor extends TypeFrameModelingVisitor {
+		public RefComparisonTypeFrameModelingVisitor(ConstantPoolGen cpg) {
+			super(cpg);
+		}
+
+		// Override handlers for bytecodes that may return String objects
+		// known to be dynamic or static.
+
+		public void visitINVOKESTATIC(INVOKESTATIC obj)	{
+			consumeStack(obj);
+			if (returnsString(obj)) {
+				String className = obj.getClassName(getCPG());
+				String methodName = obj.getName(getCPG());
+				if (className.equals("java.lang.String") && methodName.equals("valueOf")) {
+					pushValue(dynamicStringTypeInstance);
+				} else {
+					pushReturnType(obj);
+				}
+			} else {
+				pushReturnType(obj);
+			}
+		}
+
+		public void visitINVOKESPECIAL(INVOKESPECIAL obj) {
+			handleInstanceMethod(obj);
+		}
+
+		public void visitINVOKEINTERFACE(INVOKEINTERFACE obj) {
+			handleInstanceMethod(obj);
+		}
+
+		public void visitINVOKEVIRTUAL(INVOKEVIRTUAL obj) {
+			handleInstanceMethod(obj);
+		}
+
+		private boolean returnsString(InvokeInstruction inv) {
+			String methodSig = inv.getSignature(getCPG());
+			return methodSig.endsWith(")Ljava/lang/String;");
+		}
+
+		private void handleInstanceMethod(InvokeInstruction obj) {
+			consumeStack(obj);
+			if (returnsString(obj)) {
+				String className = obj.getClassName(getCPG());
+				String methodName = obj.getName(getCPG());
+
+				if (methodName.equals("toString"))
+					pushValue(dynamicStringTypeInstance);
+				else if (methodName.equals("intern") && className.equals("java.lang.String"))
+					pushValue(staticStringTypeInstance);
+				else
+					pushReturnType(obj);
+			} else
+				pushReturnType(obj);
+		}
+
+		public void visitLDC(LDC obj) {
+			Type type = obj.getType(getCPG()); 
+			pushValue(isString(type) ? staticStringTypeInstance : type);
+		}
+
+		public void visitLDC2_W(LDC2_W obj) {
+			Type type = obj.getType(getCPG());
+			pushValue(isString(type) ? staticStringTypeInstance : type);
+		}
+
+		private boolean isString(Type type) {
+			return type.getSignature().equals(STRING_SIGNATURE);
+		}
+	}
+
+	/**
+	 * Type merger to use the extended String types.
+	 */
+	private static class RefComparisonTypeMerger extends StandardTypeMerger {
+		public RefComparisonTypeMerger(RepositoryLookupFailureCallback lookupFailureCallback) {
+			super(lookupFailureCallback);
+		}
+
+		protected boolean isObjectType(byte type) {
+			return super.isObjectType(type) || type == T_STATIC_STRING || type == T_DYNAMIC_STRING;
+		}
+
+		protected Type mergeReferenceTypes(ReferenceType aRef, ReferenceType bRef) throws DataflowAnalysisException {
+			byte aType = aRef.getType();
+			byte bType = bRef.getType();
+
+			if (isExtendedStringType(aType) || isExtendedStringType(bType)) {
+				// If both types are the same extended String type,
+				// then the same type is returned.  Otherwise, extended
+				// types are downgraded to plain java.lang.String,
+				// and a standard merge is applied.
+				if (aType == bType)
+					return aRef;
+
+				if (isExtendedStringType(aType))
+					aRef = Type.STRING;
+				if (isExtendedStringType(bType))
+					bRef = Type.STRING;
+			}
+
+			return super.mergeReferenceTypes(aRef, bRef);
+		}
+
+		private boolean isExtendedStringType(byte type) {
+			return type == T_DYNAMIC_STRING || type == T_STATIC_STRING;
+		}
+	}
+
+	/* ----------------------------------------------------------------------
+	 * Fields
+	 * ---------------------------------------------------------------------- */
+
 	private BugReporter bugReporter;
-	private boolean callsIntern;
-	private boolean dynamicallyCreatedString;
+
+	/* ----------------------------------------------------------------------
+	 * Implementation
+	 * ---------------------------------------------------------------------- */
 
 	public FindRefComparison(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
@@ -57,13 +214,12 @@ public class FindRefComparison implements Detector {
 				if (DEBUG) System.out.println("FindRefComparison: analyzing " +
 					SignatureConverter.convertMethodSignature(methodGen));
 
-				callsIntern = dynamicallyCreatedString = false;
-				scanMethod(methodGen);
-				if (callsIntern)
-					continue;
-
 				final CFG cfg = classContext.getCFG(method);
-				final TypeDataflow typeDataflow = classContext.getTypeDataflow(method);
+				RefComparisonTypeMerger typeMerger = new RefComparisonTypeMerger(bugReporter);
+				TypeFrameModelingVisitor visitor = new RefComparisonTypeFrameModelingVisitor(methodGen.getConstantPool());
+				TypeAnalysis typeAnalysis = new TypeAnalysis(methodGen, typeMerger, visitor);
+				final TypeDataflow typeDataflow = new TypeDataflow(cfg, typeAnalysis);
+				typeDataflow.execute();
 
 				new LocationScanner(cfg).scan(new LocationScanner.Callback() {
 					public void visitLocation(Location location) {
@@ -79,25 +235,37 @@ public class FindRefComparison implements Detector {
 								Type op1 = frame.getValue(numSlots - 1);
 								Type op2 = frame.getValue(numSlots - 2);
 	
-								if (op1 instanceof ObjectType && op2 instanceof ObjectType) {
-									ObjectType ot1 = (ObjectType) op1;
-									ObjectType ot2 = (ObjectType) op2;
+								if (op1 instanceof ReferenceType && op2 instanceof ReferenceType) {
+									ReferenceType ot1 = (ReferenceType) op1;
+									ReferenceType ot2 = (ReferenceType) op2;
 	
-									if (ot1.getClassName().equals("java.lang.String") &&
-										ot2.getClassName().equals("java.lang.String")) {
+									if (ot1.getSignature().equals(STRING_SIGNATURE) &&
+										ot2.getSignature().equals(STRING_SIGNATURE)) {
 										//System.out.println("String/String comparison!");
 
-										// Lower the priority if we didn't see a dynamically
-										// created String in the method.
-										int priority = dynamicallyCreatedString
-											? NORMAL_PRIORITY : LOW_PRIORITY;
-	
-										String sourceFile = jclass.getSourceFileName();
-										bugReporter.reportBug(new BugInstance("RC_REF_COMPARISON", priority)
-											.addClassAndMethod(methodGen, sourceFile)
-											.addSourceLine(methodGen, sourceFile, handle)
-											.addClass(ot1.getClassName()).describe("CLASS_REFTYPE")
-										);
+										// Compute the priority:
+										// - two static strings => do not report
+										// - dynamic string and anything => high
+										// - static string and unknown => medium
+										// - all other cases => low
+										int priority = LOW_PRIORITY;
+										byte type1 = ot1.getType();
+										byte type2 = ot2.getType();
+										if (type1 == T_STATIC_STRING && type2 == T_STATIC_STRING)
+											priority = LOW_PRIORITY + 1;
+										else if (type1 == T_DYNAMIC_STRING || type2 == T_DYNAMIC_STRING)
+											priority = HIGH_PRIORITY;
+										else if (type1 == T_STATIC_STRING || type2 == T_STATIC_STRING)
+											priority = NORMAL_PRIORITY;
+
+										if (priority <= LOW_PRIORITY) {
+											String sourceFile = jclass.getSourceFileName();
+											bugReporter.reportBug(new BugInstance("RC_REF_COMPARISON", NORMAL_PRIORITY)
+												.addClassAndMethod(methodGen, sourceFile)
+												.addSourceLine(methodGen, sourceFile, handle)
+												.addClass("java.lang.String").describe("CLASS_REFTYPE")
+											);
+										}
 	
 									}
 								}
@@ -116,50 +284,31 @@ public class FindRefComparison implements Detector {
 		}
 	}
 
-	private void scanMethod(MethodGen methodGen) {
-		ConstantPoolGen cpg = methodGen.getConstantPool();
-		InstructionHandle handle = methodGen.getInstructionList().getStart();
-
-		while (handle != null) {
-			Instruction ins = handle.getInstruction();
-			short opcode = ins.getOpcode();
-			if (ins instanceof InvokeInstruction) {
-				InvokeInstruction inv = (InvokeInstruction) ins;
-				if (isIntern(inv, cpg))
-					callsIntern = true;
-				else if (isStringBufferToString(inv, cpg) || isValueOf(inv, cpg))
-					dynamicallyCreatedString = true;
-			} else if (opcode == Constants.NEW) {
-				if (isNewString((NEW) ins, cpg))
-					dynamicallyCreatedString = true;
-			}
-
-			handle = handle.getNext();
-		}
-	}
-
-	private static boolean isIntern(InvokeInstruction inv, ConstantPoolGen cpg) {
-		return inv.getClassName(cpg).equals("java.lang.String")
-			&& inv.getName(cpg).equals("intern")
-			&& inv.getSignature(cpg).equals("()Ljava/lang/String;");
-	}
-
-	private static boolean isStringBufferToString(InvokeInstruction inv, ConstantPoolGen cpg) {
-		return inv.getClassName(cpg).equals("java.lang.StringBuffer")
-			&& inv.getName(cpg).equals("toString");
-	}
-
-	private static boolean isValueOf(InvokeInstruction inv, ConstantPoolGen cpg) {
-		return inv.getName(cpg).equals("valueOf")
-			&& inv.getSignature(cpg).endsWith(")Ljava/lang/String;");
-	}
-
-	private static boolean isNewString(NEW newIns, ConstantPoolGen cpg) {
-		String className = newIns.getLoadClassType(cpg).getClassName();
-		return className.equals("java.lang.String");
-	}
-
 	public void report() {
+	}
+
+	public static void main(String[] argv) throws Exception {
+		if (argv.length != 1) {
+			System.err.println("Usage: " + FindRefComparison.class.getName() + " <class file>");
+			System.exit(1);
+		}
+
+		final RepositoryLookupFailureCallback lookupFailureCallback = new RepositoryLookupFailureCallback() {
+			public void reportMissingClass(ClassNotFoundException ex) {
+				ex.printStackTrace();
+			}
+		};
+
+		DataflowTestDriver<TypeFrame, TypeAnalysis> driver = new DataflowTestDriver<TypeFrame, TypeAnalysis>() {
+			public TypeAnalysis createAnalysis(MethodGen methodGen, CFG cfg) {
+				TypeMerger typeMerger = new RefComparisonTypeMerger(lookupFailureCallback);
+				TypeFrameModelingVisitor visitor = new RefComparisonTypeFrameModelingVisitor(methodGen.getConstantPool());
+				TypeAnalysis analysis = new TypeAnalysis(methodGen, typeMerger, visitor);
+				return analysis;
+			}
+		};
+
+		driver.execute(argv[0]);
 	}
 }
 
