@@ -397,6 +397,19 @@
       </javac> 
     </target>
 
+<!-- Use the following to compile using JDK 1.5 javac -->
+
+<!--
+    <target name="tools" depends="classes">
+      <javac srcdir="${tools.src.dir}" destdir="${tools.dir}"
+             excludes="edu/umd/cs/findbugs/tools/patcomp/*"
+             source="1.5"
+             debug="true"
+        <classpath refid="tools.buildclasspath"/>
+      </javac> 
+    </target>
+-->
+
     <!-- Target to get the release version info. -->
     <target name="version" depends="classes">
       <java classname="edu.umd.cs.findbugs.Version" 
