@@ -30,7 +30,7 @@ public class Version {
 	public static final int MINOR = 5;
 
 	/** Patch level. */
-	public static final int PATCHLEVEL = 2;
+	public static final int PATCHLEVEL = 3;
 
 	/** Release version string. */
 	public static final String RELEASE = MAJOR + "." + MINOR + "." + PATCHLEVEL;
@@ -48,12 +48,16 @@ public class Version {
 			System.out.println(RELEASE);
 		else if (arg.equals("-date"))
 			System.out.println(DATE);
-		else
+		else if (arg.equals("-props")) {
+			System.out.println("release.number="+RELEASE);
+			System.out.println("release.date="+DATE);
+		} else
 			usage();
 	}
 
 	private static void usage() {
-		System.err.println("Usage: edu.umd.cs.findbugs.Version (-release|-date)");
+		System.err.println("Usage: " + Version.class.getName() + 
+                       "  (-release|-date|-props)");
 		System.exit(1);
 	}
 }
