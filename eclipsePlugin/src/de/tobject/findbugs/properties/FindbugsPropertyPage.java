@@ -17,7 +17,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
-
+ 
 package de.tobject.findbugs.properties;
 
 import java.lang.reflect.InvocationTargetException;
@@ -380,14 +380,22 @@ public class FindbugsPropertyPage extends PropertyPage {
 	 * @param categories the categories to match against
 	 * @return true if the detector factory is contained in one of the given categories, false otherwise
 	 */
-	private boolean inCategory(DetectorFactory factory, List<String> categories)
+	private boolean inCategory(DetectorFactory factory, List categories)
 	{
-		for (BugPattern pattern : factory.getReportedBugPatterns()){
+		for (Iterator it = factory.getReportedBugPatterns().iterator(); it.hasNext();){
+			BugPattern pattern = (BugPattern) it.next();
+			for (Iterator i = categories.iterator(); i.hasNext();){
+				if (pattern.getCategory().equals(i.next()))
+					return true;
+			}
+		}
+		/*for (BugPattern pattern : factory.getReportedBugPatterns()){
 			for (String category : categories){
 				if (pattern.getCategory().equals(category))
 					return true;
 			}
-		}
+		}*/
+		
 		return false;			
 	}
 
@@ -397,7 +405,7 @@ public class FindbugsPropertyPage extends PropertyPage {
 	 * @param project 
 	 * @param categories the list of bug categories to filter against.
 	 */
-	private void populateAvailableRulesTable(IProject project, List<String> categories) {
+	private void populateAvailableRulesTable(IProject project, List categories) {
 		List allAvailableList = new ArrayList();
 		factoriesToBugAbbrev = new HashMap();
 		Iterator iterator =
@@ -419,7 +427,7 @@ public class FindbugsPropertyPage extends PropertyPage {
 		availableFactoriesTableViewer.setInput(allAvailableList);
 		TableItem[] itemList =
 			availableFactoriesTableViewer.getTable().getItems();
-		List<DetectorFactory> selectedFactoryList = this.filterSettings.getDetectorFactories();
+		List selectedFactoryList = this.filterSettings.getDetectorFactories();
 		for (int i = 0; i < itemList.length; i++) {
 			Object rule = itemList[i].getData();
 			// set enabled if defined in configuration
@@ -628,7 +636,7 @@ public class FindbugsPropertyPage extends PropertyPage {
 	protected void syncProjectFilterWithTable(ProjectFilterSettings settings){
 		TableItem[] itemList =
 			availableFactoriesTableViewer.getTable().getItems();
-		List<DetectorFactory> factories = settings.getDetectorFactories();
+		List factories = settings.getDetectorFactories();
 		for (int i = 0; i < itemList.length; i++) {
 			DetectorFactory factory = (DetectorFactory) itemList[i].getData();			
 			//set enabled if defined in configuration
@@ -644,9 +652,9 @@ public class FindbugsPropertyPage extends PropertyPage {
 	 * Get the user selected categories.
 	 * @return a list of user selected categories.
 	 */
-	private List<String> getSelectedCategories()
+	private List getSelectedCategories()
 	{
-		List<String> result = new ArrayList<String>();
+		List result = new ArrayList();
 		for (int i = 0; i < chkEnableBugCategoryList.length; ++i) {
 			Button checkBox = chkEnableBugCategoryList[i];
 			String category = bugCategoryList[i];
@@ -661,9 +669,9 @@ public class FindbugsPropertyPage extends PropertyPage {
 	 */
 	private void updateProjectFilterSettings() {
 		this.filterSettings.clearAllCategories();
-		List<String> selectedCategories = getSelectedCategories();
-		for (String category : selectedCategories)
-			this.filterSettings.addCategory(category);
+		List selectedCategories = getSelectedCategories();
+		for (Iterator it = selectedCategories.iterator(); it.hasNext();)
+			this.filterSettings.addCategory((String)it.next());			
 		
 		filterSettings.setMinPriority(minPriorityCombo.getText());
 		

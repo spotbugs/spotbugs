@@ -59,7 +59,7 @@ public class FindBugsWorker {
 	public static boolean DEBUG;
 
 	private IProgressMonitor monitor;
-	private List<DetectorFactory> selectedDetectorFactories;
+	private List selectedDetectorFactories;
 	private IProject project;
 
 	/**
