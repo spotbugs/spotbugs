@@ -60,14 +60,7 @@ public class ValueNumberFrameModelingVisitor
 		// See if we have the output operands in the cache.
 		// If not, push default (fresh) values for the output,
 		// and add them to the cache.
-		ValueNumberCache.Entry entry = new ValueNumberCache.Entry(handle, inputValueList);
-		ValueNumber[] outputValueList = cache.lookupOutputValues(entry);
-		if (outputValueList == null) {
-			outputValueList = new ValueNumber[numWordsProduced];
-			for (int i = 0; i < numWordsProduced; ++i)
-				outputValueList[i] = factory.createFreshValue();
-			cache.addOutputValues(entry, outputValueList);
-		}
+		ValueNumber[] outputValueList = getOutputValues(inputValueList, numWordsProduced);
 
 		if (VERIFY_INTEGRITY) {
 			if (outputValueList.length != numWordsProduced)
@@ -101,6 +94,18 @@ public class ValueNumberFrameModelingVisitor
 			frame.pushValue(outputValueList[i]);
 	}
 
+	private ValueNumber[] getOutputValues(ValueNumber[] inputValueList, int numWordsProduced) {
+		ValueNumberCache.Entry entry = new ValueNumberCache.Entry(handle, inputValueList);
+		ValueNumber[] outputValueList = cache.lookupOutputValues(entry);
+		if (outputValueList == null) {
+			outputValueList = new ValueNumber[numWordsProduced];
+			for (int i = 0; i < numWordsProduced; ++i)
+				outputValueList[i] = factory.createFreshValue();
+			cache.addOutputValues(entry, outputValueList);
+		}
+		return outputValueList;
+	}
+
 	public void visitGETFIELD(GETFIELD obj) {
 		if (REDUNDANT_LOAD_ELIMINATION) {
 			ValueNumberFrame frame = getFrame();
@@ -108,17 +113,26 @@ public class ValueNumberFrameModelingVisitor
 			try {
 				InstanceField instanceField = Lookup.findInstanceField(obj, getCPG());
 				if (instanceField != null) {
-					ValueNumber reference = frame.getTopValue();
+					System.out.print("[getfield of " + instanceField + "]");
+					ValueNumber reference = frame.popValue();
 					AvailableLoad availableLoad = new AvailableLoad(reference, instanceField);
 					ValueNumber[] loadedValue = frame.getAvailableLoad(availableLoad);
 	
-					if (loadedValue != null) {
-						if (RLE_DEBUG) System.out.print("[Found available load " + availableLoad + "]");
+					if (loadedValue == null) {
+						// Get (or create) the cached result for this instruction
+						ValueNumber[] inputValueList = new ValueNumber[]{reference};
+						loadedValue = getOutputValues(inputValueList, getNumWordsProduced(obj));
+
+						// Make the load available
+						frame.addAvailableLoad(availableLoad, loadedValue);
+						if (RLE_DEBUG) System.out.print("[Making load available "+ loadedValue[0] + "]");
+					} else {
 						// Found an available load!
-						frame.popValue();
-						pushOutputValues(loadedValue);
-						return;
+						if (RLE_DEBUG) System.out.print("[Found available load " + availableLoad + "]");
 					}
+
+					pushOutputValues(loadedValue);
+					return;
 				}
 			} catch (ClassNotFoundException e) {
 				lookupFailureCallback.reportMissingClass(e);
