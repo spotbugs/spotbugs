@@ -24,7 +24,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.FindFinalizeInvocations" speed="fast"
     reports="FI_PUBLIC_SHOULD_BE_PROTECTED,FI_EMPTY,FI_NULLIFY_SUPER,FI_USELESS,FI_MISSING_SUPER_CALL,FI_EXPLICIT_INVOCATION"/>
   <Detector class="edu.umd.cs.findbugs.detect.FindHEmismatch" speed="fast"
-    reports="EQ_SELF_USE_OBJECT,EQ_SELF_NO_OBJECT,CO_SELF_NO_OBJECT,HE_HASHCODE_USE_OBJECT_EQUALS,HE_HASHCODE_NO_EQUALS,HE_EQUALS_USE_HASHCODE,HE_EQUALS_NO_HASHCODE"/>
+    reports="EQ_SELF_USE_OBJECT,EQ_SELF_NO_OBJECT,CO_SELF_NO_OBJECT,HE_HASHCODE_USE_OBJECT_EQUALS,HE_HASHCODE_NO_EQUALS,HE_EQUALS_USE_HASHCODE,HE_EQUALS_NO_HASHCODE,HE_INHERITS_EQUALS_USE_HASHCODE"/>
   <Detector class="edu.umd.cs.findbugs.detect.FindNakedNotify" speed="fast"
     reports="NN_NAKED_NOTIFY"/>
   <Detector class="edu.umd.cs.findbugs.detect.FindReturnRef" speed="fast"
@@ -139,6 +139,7 @@
   <BugPattern abbrev="HE" type="HE_HASHCODE_USE_OBJECT_EQUALS" category="CORRECTNESS" />
   <BugPattern abbrev="HE" type="HE_HASHCODE_NO_EQUALS" category="CORRECTNESS" />
   <BugPattern abbrev="HE" type="HE_EQUALS_USE_HASHCODE" category="CORRECTNESS" />
+  <BugPattern abbrev="HE" type="HE_INHERITS_EQUALS_USE_HASHCODE" category="CORRECTNESS" />
   <BugPattern abbrev="HE" type="HE_EQUALS_NO_HASHCODE" category="CORRECTNESS" />
   <BugPattern abbrev="Eq" type="EQ_ABSTRACT_SELF" category="CORRECTNESS" />
   <BugPattern abbrev="Co" type="CO_ABSTRACT_SELF" category="CORRECTNESS" />
@@ -177,7 +178,7 @@
   <BugPattern abbrev="RR" type="SR_NOT_CHECKED" category="CORRECTNESS" />
   <BugPattern abbrev="Se" type="SE_NO_SUITABLE_CONSTRUCTOR" category="CORRECTNESS" />
   <BugPattern abbrev="Se" type="SE_NO_SUITABLE_CONSTRUCTOR_FOR_EXTERNALIZATION" category="CORRECTNESS" />
-  <BugPattern abbrev="Se" type="SE_NO_SERIALVERSIONID" category="CORRECTNESS" />
+  <BugPattern abbrev="SnVI" type="SE_NO_SERIALVERSIONID" category="CORRECTNESS" />
   <BugPattern abbrev="WS" type="WS_WRITEOBJECT_SYNC" category="MT_CORRECTNESS" />
   <BugPattern abbrev="RS" type="RS_READOBJECT_SYNC" category="MT_CORRECTNESS" />
   <BugPattern abbrev="Se" type="SE_NONFINAL_SERIALVERSIONID" category="CORRECTNESS" />

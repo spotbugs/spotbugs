@@ -835,6 +835,7 @@ to use Object.clone(), which always returns an object of the correct type.
 ]]>
     </Details>
   </BugPattern>
+
   <BugPattern type="HE_EQUALS_USE_HASHCODE">
     <ShortDescription>Class defines equals() and uses Object.hashCode()</ShortDescription>
     <LongDescription>{0} defines equals and uses Object.hashCode()</LongDescription>
@@ -843,6 +844,24 @@ to use Object.clone(), which always returns an object of the correct type.
   <p> This class overrides <code>equals(Object)</code>, but does not
   override <code>hashCode()</code>, and inherits the implementation of
   <code>hashCode()</code> from <code>java.lang.Object</code> (which returns
+  the identity hash code, an arbitrary value assigned to the object
+  by the VM).&nbsp; Therefore, the class is very likely to violate the
+  invariant that equal objects must have equal hashcodes.
+  <p>If you don't want to define a hashCode method, and/or don't
+	believe the object will ever be put into a HashMap/Hashtable,
+	define the <code>hashCode()</code> method
+	to throw <code>UnsupportedOperationException</code>.
+]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="HE_INHERITS_EQUALS_USE_HASHCODE">
+    <ShortDescription>Class inherits equals() and uses Object.hashCode()</ShortDescription>
+    <LongDescription>{0} inherits equals and uses Object.hashCode()</LongDescription>
+    <Details>
+<![CDATA[
+  <p> This class inherits <code>equals(Object)</code> from an abstract
+  superclass, and <code>hashCode()</code> from 
+from <code>java.lang.Object</code> (which returns
   the identity hash code, an arbitrary value assigned to the object
   by the VM).&nbsp; Therefore, the class is very likely to violate the
   invariant that equal objects must have equal hashcodes.
@@ -2149,6 +2168,7 @@ directly. This avoids the need to create a second array
   <BugCode abbrev="DE" >Dropped or ignored exception</BugCode>
   <BugCode abbrev="Ru" >Method invokes run()</BugCode>
   <BugCode abbrev="It" >Incorrect definition of Iterator</BugCode>
+  <BugCode abbrev="SnVI" >Serializable class with no Version ID</BugCode>
   <BugCode abbrev="Se" >Incorrect definition of Serializable class</BugCode>
   <BugCode abbrev="WS" >Class's writeObject() method is synchronized but nothing else is</BugCode>
   <BugCode abbrev="RS" >Class's readObject() method is synchronized</BugCode>
