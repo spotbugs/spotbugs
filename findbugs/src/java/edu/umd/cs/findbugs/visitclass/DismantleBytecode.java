@@ -133,7 +133,7 @@ abstract public class DismantleBytecode extends PreorderVisitor implements Const
 
 	/** If the current opcode has a reference constant operand, get its string representation */
 	public String getRefConstantOperand() {
-		if (dottedClassConstantOperand == NOT_AVAILABLE)
+		if (refConstantOperand == NOT_AVAILABLE)
 			throw new IllegalStateException("getRefConstantOperand called but value not available");
 		return refConstantOperand;
 	}
