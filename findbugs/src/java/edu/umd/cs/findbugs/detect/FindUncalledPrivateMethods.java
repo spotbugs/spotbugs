@@ -51,6 +51,7 @@ public class FindUncalledPrivateMethods extends BytecodeScanningDetector {
 				&& !methodName.equals("readObject")
 				&& !methodName.equals("writeObject")
 				&& !methodName.equals("<init>")
+				&& !methodName.equals("<clinit>")
 				)
 			definedPrivateMethods.add(MethodAnnotation.fromVisitedMethod(this));
 	}
