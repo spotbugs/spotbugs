@@ -168,6 +168,7 @@ public class PatternMatcher implements DFSEdgeTypes {
 			return;
 
 		InstructionHandle matchedInstruction = null;
+		PatternElement matchedPatternElement = null;
 
 		// Is there another instruction in this basic block?
 		if (instructionIterator.hasNext()) {
@@ -192,9 +193,10 @@ public class PatternMatcher implements DFSEdgeTypes {
 
 			// Successful match!
 			matchedInstruction = handle;
+			matchedPatternElement = matchResult.getPatternElement();
 			++matchCount;
 			canFork = true;
-			currentMatch = new PatternElementMatch(matchResult.getPatternElement(), handle, matchCount, currentMatch);
+			currentMatch = new PatternElementMatch(matchedPatternElement, handle, matchCount, currentMatch);
 			bindingSet = matchResult.getBindingSet();
 		}
 
@@ -214,12 +216,12 @@ public class PatternMatcher implements DFSEdgeTypes {
 				if (dfs.getDFSEdgeType(edge) == BACK_EDGE)
 					continue;
 
-				// If the PatternElement has just matched an instruction,
-				// then we allow it to choose which edges are acceptable.
+				// If we have just matched an instruction, then we allow the
+				// matching PatternElement to choose which edges are acceptable.
 				// This allows PatternElements to select particular control edges;
 				// for example, only continue the pattern on the true branch
 				// of an "if" comparison.
-				if (matchedInstruction == null || patternElement.acceptBranch(edge, matchedInstruction)) {
+				if (matchedInstruction == null || matchedPatternElement.acceptBranch(edge, matchedInstruction)) {
 					BasicBlock destBlock = edge.getDest();
 					int destId = destBlock.getId();
 
