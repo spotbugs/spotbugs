@@ -21,6 +21,10 @@ set javaProps=
 set start=
 set maxheap=256
 
+:: Try finding the default FINDBUGS_HOME directory
+:: from the directory path of this script
+set default_findbugs_home=%~dp0..
+
 :: Honor JAVA_HOME environment variable if it is set
 if "%JAVA_HOME%"=="" goto nojavahome
 if not exist "%JAVA_HOME%\bin\javaw.exe" goto nojavahome
@@ -89,10 +93,14 @@ goto shift1
 :: ----------------------------------------------------------------------
 :launch
 :: Make sure FINDBUGS_HOME is set.
+:: If it isn't, try using the default value based on the
+:: directory path of the invoked script.
 :: Note that this will fail miserably if the value of FINDBUGS_HOME
 :: has quote characters in it.
-if not "%FINDBUGS_HOME%"=="" goto found_home
-set FINDBUGS_HOME=%~dp0..
+if not "%FINDBUGS_HOME%"=="" goto checkHomeValid
+set FINDBUGS_HOME=%default_findbugs_home%
+
+:checkHomeValid
 if not exist "%FINDBUGS_HOME%\lib\%appjar%" goto homeNotSet
 
 :found_home
