@@ -5,6 +5,8 @@
   </HEAD>
   <BODY>
   <h1>Explicit invocation of finalizer</h1>
-  <p> The description of this bug hasn't been written yet.
+  <p> This method contains an explicit invocation of the <code>finalize()</code>
+  method on an object.&nbsp; Because finalizer methods are supposed to be
+  executed once, and only by the VM, this is a bad idea.
   </BODY>
 </HTML>

@@ -5,6 +5,9 @@
   </HEAD>
   <BODY>
   <h1>Finalizer does not call superclass finalizer</h1>
-  <p> The description of this bug hasn't been written yet.
+  <p> This <code>finalize()</code> method does not make a call to its
+  superclass's <code>finalize()</code> method.&nbsp; So, any finalizer
+  actions defined for the superclass will not be performed.&nbsp;
+  Add a call to <code>super.finalize()</code>.
   </BODY>
 </HTML>

@@ -5,6 +5,9 @@
   </HEAD>
   <BODY>
   <h1>Finalizer nullifies superclass finalizer</h1>
-  <p> The description of this bug hasn't been written yet.
+  <p> This empty <code>finalize()</code> method explicitly negates the
+  effect of any finalizer defined by its superclass.&nbsp; Any finalizer
+  actions defined for the superclass will not be performed.&nbsp;
+  Delete this method, since it's empty.
   </BODY>
 </HTML>

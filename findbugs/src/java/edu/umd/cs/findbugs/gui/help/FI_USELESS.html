@@ -5,6 +5,8 @@
   </HEAD>
   <BODY>
   <h1>Finalizer does nothing but call superclass finalizer</h1>
-  <p> The description of this bug hasn't been written yet.
+  <p> The only thing this <code>finalize()</code> method does is call
+  the superclass's <code>finalize()</code> method, making it
+  redundant.&nbsp; Delete it.
   </BODY>
 </HTML>

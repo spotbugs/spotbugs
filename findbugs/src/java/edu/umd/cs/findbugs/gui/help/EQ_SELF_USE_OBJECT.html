@@ -5,6 +5,10 @@
   </HEAD>
   <BODY>
   <h1>Covariant equals() method defined, Object.equals(Object) invoked</h1>
-  <p> The description of this bug hasn't been written yet.
+  <p> This class defines a covariant version of the <code>equals()</code>
+  method, but calls the normal <code>equals(Object)</code> method
+  defined in the base <code>java.lang.Object</code> class.&nbsp;
+  The class should probably define a non-covariant version of <code>equals()</code>.&nbsp;
+  (I.e., a method with the signature <code>boolean equals(java.lang.Object)</code>.
   </BODY>
 </HTML>
