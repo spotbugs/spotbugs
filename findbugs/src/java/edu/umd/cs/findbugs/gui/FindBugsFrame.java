@@ -8,9 +8,11 @@ package edu.umd.cs.findbugs.gui;
 
 import java.awt.CardLayout;
 import java.awt.Component;
+import java.io.File;
 import javax.swing.*;
 import javax.swing.tree.*;
 import javax.swing.event.*;
+import javax.swing.filechooser.*;
 
 /**
  * This frame contains all of the controls used by the FindBugs GUI.
@@ -107,6 +109,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
         jSeparator3 = new javax.swing.JSeparator();
         exitItem = new javax.swing.JMenuItem();
 
+        setTitle("FindBugs");
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowOpened(java.awt.event.WindowEvent evt) {
                 formWindowOpened(evt);
@@ -245,6 +248,12 @@ public class FindBugsFrame extends javax.swing.JFrame {
         editProjectPanel.add(jSeparator1, gridBagConstraints);
 
         browseJarButton.setText("...");
+        browseJarButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                browseJarButtonActionPerformed(evt);
+            }
+        });
+
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 2;
@@ -359,6 +368,18 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
         pack();
     }//GEN-END:initComponents
+
+    private void browseJarButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_browseJarButtonActionPerformed
+        JFileChooser chooser = new JFileChooser();
+        FileFilter filter = new FileFilter() {
+            public boolean accept(File file) { return file.isDirectory() || file.getName().endsWith(".jar"); }
+            public String getDescription() { return "Add Jar file"; }
+        };
+        chooser.setFileFilter(filter);
+        int rc = chooser.showOpenDialog(this);
+        if (rc == JFileChooser.APPROVE_OPTION)
+            jarNameTextField.setText(chooser.getSelectedFile().getPath());
+    }//GEN-LAST:event_browseJarButtonActionPerformed
 
     private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
 	navigatorTree.setSelectionPath(new TreePath(rootNode));
