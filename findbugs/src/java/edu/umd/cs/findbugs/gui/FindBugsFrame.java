@@ -962,7 +962,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
         openProjectItem.setFont(new java.awt.Font("Dialog", 0, 12));
         openProjectItem.setMnemonic('O');
-        openProjectItem.setText("Open Project");
+        openProjectItem.setText("Open Project...");
         openProjectItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 openProjectItemActionPerformed(evt);
@@ -984,7 +984,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
         saveProjectAsItem.setFont(new java.awt.Font("Dialog", 0, 12));
         saveProjectAsItem.setMnemonic('A');
-        saveProjectAsItem.setText("Save Project As");
+        saveProjectAsItem.setText("Save Project As...");
         saveProjectAsItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 saveProjectAsItemActionPerformed(evt);
@@ -1019,7 +1019,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
         loadBugsItem.setFont(new java.awt.Font("Dialog", 0, 12));
         loadBugsItem.setMnemonic('L');
-        loadBugsItem.setText("Load Bugs");
+        loadBugsItem.setText("Load Bugs...");
         loadBugsItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 loadBugsItemActionPerformed(evt);
@@ -1106,7 +1106,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
         lowPriorityButton.setFont(new java.awt.Font("Dialog", 0, 12));
         lowPriorityButton.setMnemonic('L');
-        lowPriorityButton.setText("Low priority");
+        lowPriorityButton.setText("Low Priority");
         lowPriorityButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 lowPriorityButtonActionPerformed(evt);
@@ -1118,7 +1118,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
         mediumPriorityButton.setFont(new java.awt.Font("Dialog", 0, 12));
         mediumPriorityButton.setMnemonic('M');
         mediumPriorityButton.setSelected(true);
-        mediumPriorityButton.setText("Medium priority");
+        mediumPriorityButton.setText("Medium Priority");
         mediumPriorityButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 mediumPriorityButtonActionPerformed(evt);
@@ -1129,7 +1129,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
         highPriorityButton.setFont(new java.awt.Font("Dialog", 0, 12));
         highPriorityButton.setMnemonic('H');
-        highPriorityButton.setText("High priority");
+        highPriorityButton.setText("High Priority");
         highPriorityButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 highPriorityButtonActionPerformed(evt);
@@ -1161,7 +1161,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
         helpMenu.setFont(new java.awt.Font("Dialog", 0, 12));
         aboutItem.setFont(new java.awt.Font("Dialog", 0, 12));
         aboutItem.setMnemonic('A');
-        aboutItem.setText("About");
+        aboutItem.setText("About...");
         aboutItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 aboutItemActionPerformed(evt);
@@ -1207,7 +1207,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
             chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
             chooser.setFileFilter(xmlFileFilter);
             
-	    int result = chooseFile(chooser, "Save bugs");
+	    int result = chooseFile(chooser, "Save Bugs");
             
             if (result != JFileChooser.CANCEL_OPTION) {
                 // Make sure current annotation text is up to date with its
@@ -1234,7 +1234,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
             chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
             chooser.setFileFilter(xmlFileFilter);
         
-	    int result = chooseFile(chooser, "Load bugs");
+	    int result = chooseFile(chooser, "Load Bugs");
 
             if (result != JFileChooser.CANCEL_OPTION) {
                 File selectedFile = chooser.getSelectedFile();
@@ -1281,7 +1281,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_reloadProjectItemActionPerformed
 
     private void saveProjectAsItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveProjectAsItemActionPerformed
-        saveProject(getCurrentProject(), "Save project as", true);
+        saveProject(getCurrentProject(), "Save Project As", true);
     }//GEN-LAST:event_saveProjectAsItemActionPerformed
     
     private void viewMenuMenuSelected(javax.swing.event.MenuEvent evt) {//GEN-FIRST:event_viewMenuMenuSelected
@@ -1297,12 +1297,17 @@ public class FindBugsFrame extends javax.swing.JFrame {
         boolean hasProject = getCurrentProject() != null;
         saveProjectItem.setEnabled(hasProject);
         saveProjectAsItem.setEnabled(hasProject);
-	reloadProjectItem.setEnabled(hasProject);
+        reloadProjectItem.setEnabled(hasProject);
         closeProjectItem.setEnabled(hasProject);
+
+        // Save bugs is only enabled if there is a current analysis run
+        boolean hasAnalysisRun = currentAnalysisRun != null;
+        saveBugsItem.setEnabled(hasAnalysisRun);
+
     }//GEN-LAST:event_fileMenuMenuSelected
     
     private void closeProjectItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_closeProjectItemActionPerformed
-        if (closeProjectHook(getCurrentProject(), "Close project")) {
+        if (closeProjectHook(getCurrentProject(), "Close Project")) {
             setProject(null);
         }
     }//GEN-LAST:event_closeProjectItemActionPerformed
@@ -1327,7 +1332,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
         chooser.setFileFilter(auxClasspathEntryFileFilter);
         chooser.setMultiSelectionEnabled(true);
         
-	int result = chooseFile(chooser, "Add entry");
+	int result = chooseFile(chooser, "Add Entry");
 
         if (result != JFileChooser.CANCEL_OPTION) {
             File[] selectedFileList = chooser.getSelectedFiles();
@@ -1404,7 +1409,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_openProjectItemActionPerformed
     
     private void saveProjectItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveProjectItemActionPerformed
-        saveProject(getCurrentProject(), "Save project");
+        saveProject(getCurrentProject(), "Save Project");
     }//GEN-LAST:event_saveProjectItemActionPerformed
     
     private void aboutItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aboutItemActionPerformed
@@ -1473,6 +1478,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 		    err.addLine("\t" + callList[i]);
 		err.finish();
 		err.setSize(650,500);
+                err.setLocationRelativeTo(null); // center the dialog
 		err.show();
 	    } else {
 		// Cancelled by user
@@ -1517,6 +1523,10 @@ public class FindBugsFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_browseJarButtonActionPerformed
     
     private void newProjectItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newProjectItemActionPerformed
+
+        if (!closeProjectHook(getCurrentProject(), "New Project"))
+            return;
+
         Project project = new Project();
         setProject(project);
     }//GEN-LAST:event_newProjectItemActionPerformed
@@ -1853,9 +1863,9 @@ public class FindBugsFrame extends javax.swing.JFrame {
         if (option == JOptionPane.CANCEL_OPTION)
             return false;
         else if (option == JOptionPane.YES_OPTION) {
-            boolean result = saveProject(project, "Save project");
+            boolean result = saveProject(project, "Save Project");
             if (result)
-                JOptionPane.showMessageDialog(this, "Project saved");
+                JOptionPane.showMessageDialog(this, "Project was successfully saved.");
             return result;
         } else
             return true;
@@ -2505,6 +2515,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	    frame.setProject(project);
 	}
         frame.setSize(800, 600);
+        frame.setLocationRelativeTo(null); // center the frame
         frame.show();
     }
     
