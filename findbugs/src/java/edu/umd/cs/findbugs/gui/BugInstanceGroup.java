@@ -17,6 +17,7 @@ public class BugInstanceGroup {
     
     private String groupType;
     private String groupName;
+    private int memberCount;
     
     /**
      * Creates a new instance of BugInstanceGroup.
@@ -28,6 +29,7 @@ public class BugInstanceGroup {
     public BugInstanceGroup(String groupType, String groupName) {
 	this.groupType = groupType;
 	this.groupName = groupName;
+	this.memberCount = 0;
     }
     
     /**
@@ -38,10 +40,29 @@ public class BugInstanceGroup {
     }
     
     /**
-     * Get the group name.
+     * Increment the member count (number of bug instances in this group).
+     */
+    public void incrementMemberCount() {
+	++memberCount;
+    }
+    
+    /**
+     * Get the member count (number of bug instances in this group).
+     */
+    public int getMemberCount() {
+	return memberCount;
+    }
+    
+    /**
+     * Convert to string.
      */
     public String toString() {
-	return groupName;
+	StringBuffer buf = new StringBuffer();
+	buf.append(groupName);
+	buf.append(" (");
+	buf.append(memberCount);
+	buf.append(")");
+	return buf.toString();
     }
     
 }
