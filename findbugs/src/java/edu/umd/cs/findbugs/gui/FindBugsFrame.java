@@ -141,8 +141,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 3;
-        gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 3);
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 3);
         editProjectPanel.add(jarFileLabel, gridBagConstraints);
 
         jarNameTextField.addActionListener(new java.awt.event.ActionListener() {
@@ -155,8 +155,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 3;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 0);
         gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 0);
         editProjectPanel.add(jarNameTextField, gridBagConstraints);
 
         addJarButton.setFont(new java.awt.Font("Dialog", 0, 12));
@@ -170,8 +170,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 3;
         gridBagConstraints.gridy = 3;
-        gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 3);
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 3);
         editProjectPanel.add(addJarButton, gridBagConstraints);
 
         jarFileListLabel.setFont(new java.awt.Font("Dialog", 0, 12));
@@ -179,8 +179,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 4;
-        gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 3);
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 3);
         editProjectPanel.add(jarFileListLabel, gridBagConstraints);
 
         sourceDirLabel.setFont(new java.awt.Font("Dialog", 0, 12));
@@ -188,8 +188,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 6;
-        gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 3);
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 3);
         editProjectPanel.add(sourceDirLabel, gridBagConstraints);
 
         srcDirTextField.addActionListener(new java.awt.event.ActionListener() {
@@ -202,8 +202,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 6;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 0);
         gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 0);
         editProjectPanel.add(srcDirTextField, gridBagConstraints);
 
         addSourceDirButton.setFont(new java.awt.Font("Dialog", 0, 12));
@@ -217,8 +217,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 3;
         gridBagConstraints.gridy = 6;
-        gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 3);
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 3);
         editProjectPanel.add(addSourceDirButton, gridBagConstraints);
 
         sourceDirListLabel.setFont(new java.awt.Font("Dialog", 0, 12));
@@ -226,8 +226,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 7;
-        gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 3);
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 3);
         editProjectPanel.add(sourceDirListLabel, gridBagConstraints);
 
         removeJarButton.setFont(new java.awt.Font("Dialog", 0, 12));
@@ -241,8 +241,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 3;
         gridBagConstraints.gridy = 4;
-        gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 3);
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 3);
         editProjectPanel.add(removeJarButton, gridBagConstraints);
 
         removeSrcDirButton.setFont(new java.awt.Font("Dialog", 0, 12));
@@ -256,8 +256,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 3;
         gridBagConstraints.gridy = 7;
-        gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 3);
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 3);
         editProjectPanel.add(removeSrcDirButton, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -345,8 +345,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
         gridBagConstraints.gridy = 4;
         gridBagConstraints.gridwidth = 2;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 3);
         gridBagConstraints.weighty = 0.7;
+        gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 3);
         editProjectPanel.add(jScrollPane2, gridBagConstraints);
 
         jScrollPane3.setPreferredSize(new java.awt.Dimension(259, 1));
@@ -360,8 +360,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
         gridBagConstraints.gridy = 7;
         gridBagConstraints.gridwidth = 2;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 3);
         gridBagConstraints.weighty = 0.3;
+        gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 3);
         editProjectPanel.add(jScrollPane3, gridBagConstraints);
 
         viewPanel.add(editProjectPanel, "EditProjectPanel");
@@ -371,9 +371,11 @@ public class FindBugsFrame extends javax.swing.JFrame {
         getContentPane().add(jSplitPane1, java.awt.BorderLayout.CENTER);
 
         jMenuBar1.setFont(new java.awt.Font("Dialog", 0, 12));
+        fileMenu.setMnemonic('F');
         fileMenu.setText("File");
         fileMenu.setFont(new java.awt.Font("Dialog", 0, 12));
         newProjectItem.setFont(new java.awt.Font("Dialog", 0, 12));
+        newProjectItem.setMnemonic('N');
         newProjectItem.setText("New Project");
         newProjectItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -384,16 +386,19 @@ public class FindBugsFrame extends javax.swing.JFrame {
         fileMenu.add(newProjectItem);
 
         openProjectItem.setFont(new java.awt.Font("Dialog", 0, 12));
+        openProjectItem.setMnemonic('O');
         openProjectItem.setText("Open Project");
         fileMenu.add(openProjectItem);
 
         closeProjectItem.setFont(new java.awt.Font("Dialog", 0, 12));
+        closeProjectItem.setMnemonic('C');
         closeProjectItem.setText("Close Project");
         fileMenu.add(closeProjectItem);
 
         fileMenu.add(jSeparator3);
 
         exitItem.setFont(new java.awt.Font("Dialog", 0, 12));
+        exitItem.setMnemonic('X');
         exitItem.setText("Exit");
         exitItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
