@@ -1150,6 +1150,16 @@ object is stored in this field.
 ]]>
     </Details>
   </BugPattern>
+  <BugPattern type="UWF_UNWRITTEN_FIELD">
+    <ShortDescription>Unwritten field</ShortDescription>
+    <LongDescription>Unwritten field: {1}</LongDescription>
+    <Details>
+<![CDATA[
+  <p> This field is never written.&nbsp; All reads of it will return the default
+value. Check for errors (should it have been initialized?), or remove it if it is useless.
+]]>
+    </Details>
+  </BugPattern>
   <BugPattern type="SIC_INNER_SHOULD_BE_STATIC">
     <ShortDescription>Should be a static inner class?</ShortDescription>
     <LongDescription>Should {0} be a _static_ inner class?</LongDescription>
@@ -1445,6 +1455,22 @@ Such assignments are useless, and may indicate a logic error or typo.
 ]]>
     </Details>
   </BugPattern>
+  <BugPattern type="SA_FIELD_SELF_ASSIGNMENT">
+    <ShortDescription>Self assignment of field</ShortDescription>
+    <LongDescription>Self assignment of field {2} in {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p> This method contains a self assignment of a field; e.g.
+<pre>
+  int x;
+  public void foo() {
+    x = x;
+  }
+</pre>
+Such assignments are useless, and may indicate a logic error or typo.
+]]>
+    </Details>
+  </BugPattern>
 
   <!--
   **********************************************************************
@@ -1485,6 +1511,7 @@ Such assignments are useless, and may indicate a logic error or typo.
   <BugCode abbrev="SS" >Unread field should be static?</BugCode>
   <BugCode abbrev="UuF" >Unused field</BugCode>
   <BugCode abbrev="UrF" >Unread field</BugCode>
+  <BugCode abbrev="UwF" >Unwritten field</BugCode>
   <BugCode abbrev="SIC" >Should be a static inner class?</BugCode>
   <BugCode abbrev="2LW" >Wait with two locks held</BugCode>
   <BugCode abbrev="BcpDC">Possible double check of field</BugCode>
