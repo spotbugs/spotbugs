@@ -51,18 +51,29 @@ public class SourceLineAnnotation implements BugAnnotation {
 	/**
 	 * Factory method for creating a source line annotation describing the
 	 * source line number for the instruction being visited by given visitor.
+	 * @param visitor a BetterVisitor which is visiting the method
+	 * @param pc the bytecode offset of the instruction in the method
+	 * @return the SourceLineAnnotation, or null if we do not have line number information
+	 *   for the instruction
+	 */
+	public static SourceLineAnnotation fromVisitedInstruction(BetterVisitor visitor, int pc) {
+		LineNumberTable lineNumberTable = getLineNumberTable(visitor);
+		if (lineNumberTable == null)
+			return null;
+
+		int lineNumber = lineNumberTable.getSourceLine(pc);
+		return new SourceLineAnnotation(visitor.getBetterClassName(), lineNumber, lineNumber);
+	}
+
+	/**
+	 * Factory method for creating a source line annotation describing the
+	 * source line number for the instruction being visited by given visitor.
 	 * @param visitor a DismantleBytecode visitor which is visiting the method
 	 * @return the SourceLineAnnotation, or null if we do not have line number information
 	 *   for the instruction
 	 */
 	public static SourceLineAnnotation fromVisitedInstruction(DismantleBytecode visitor) {
-		LineNumberTable lineNumberTable = getLineNumberTable(visitor);
-		if (lineNumberTable == null)
-			return null;
-
-		int pc = visitor.getPC();
-		int lineNumber = lineNumberTable.getSourceLine(pc);
-		return new SourceLineAnnotation(visitor.getBetterClassName(), lineNumber, lineNumber);
+		return fromVisitedInstruction(visitor, visitor.getPC());
 	}
 
 	/**
