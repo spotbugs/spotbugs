@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.LocalVariableTable;
 import org.apache.bcel.classfile.LocalVariable;
@@ -33,7 +34,7 @@ import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
 /**
  * tracks the types and numbers of objects that are currently on the operand stack
  * throughout the execution of method. To use, a detector should instantiate one for
- * each method, and call stack.sawOpcode(this,seen); at the bottom of their sawOpcode method.
+ * each method, and call <p>stack.sawOpcode(this,seen);</p> at the bottom of their sawOpcode method.
  * at any point you can then inspect the stack and see what the types of objects are on
  * the stack, including constant values if they were pushed. The types described are of
  * course, only the static types. This class is far, far, far from being done.
@@ -90,39 +91,43 @@ public class OpcodeStack implements Constants2
  		LocalVariableTable lvt;
  		LocalVariable lv;
  		JavaClass cls;
+ 		String signature = null;
  		
- 		switch (seen) {
- 			case ALOAD_0:
- 			case ALOAD_1:
- 			case ALOAD_2:
- 			case ALOAD_3:
- 				register = seen - ALOAD_0;
- 				Method m = dbc.getMethod();
- 				lvt = m.getLocalVariableTable();
- 				cls = null;
- 				if (lvt != null) {
- 					lv = lvt.getLocalVariable(register);
- 					try {
- 						String clsName = Type.getType(lv.getSignature()).toString();
- 						cls = org.apache.bcel.Repository.lookupClass(clsName);
- 					} catch (ClassNotFoundException cnfe) {
- 						//report? probably not
- 					}
-  				}
- 				push(new Item(Item.OBJECT_TYPE, cls));
- 				break;
- 				
- 			case INVOKEVIRTUAL:
- 				String signature = dbc.getSigConstantOperand();
- 				Type[] argTypes = Type.getArgumentTypes(signature);
- 				pop(argTypes.length);
- 				Type returnType = Type.getReturnType(signature);
- 				System.out.println(returnType);
- 				if (!"V".equals(returnType.getSignature())) {
-					push(new Item(Item.UNKNOWN_TYPE));//we can do better here
- 				}
- 				break;
- 		}
+ 		try
+ 		{
+	 		switch (seen) {
+	 			case ALOAD_0:
+	 			case ALOAD_1:
+	 			case ALOAD_2:
+	 			case ALOAD_3:
+	 				register = seen - ALOAD_0;
+	 				Method m = dbc.getMethod();
+	 				lvt = m.getLocalVariableTable();
+	 				if (lvt != null) {
+	 					lv = lvt.getLocalVariable(register);
+ 						signature = lv.getSignature();
+	  				}
+	 				pushBySignature(signature);
+	 				break;
+	 				
+	 			case INVOKEVIRTUAL:
+	 			case INVOKESPECIAL:
+	 				signature = dbc.getSigConstantOperand();
+	 				Type[] argTypes = Type.getArgumentTypes(signature);
+	 				pop(argTypes.length);
+	 				pushBySignature(Type.getReturnType(signature).getSignature());
+	 				break;
+	 				
+	 			default:
+	 				throw new UnsupportedOperationException("OpCode not supported yet" );
+	 		}
+	 	}
+	 	catch (Exception e) {
+	 		//If an error occurs, we clear the stack. one of two things will occur. Either the client will expect more stack
+	 		//items than really exist, and so they're condition check will fail, or the stack will resync with the code.
+	 		//But hopefully not false positives
+	 		stack.clear();
+	 	}
  	}
  	
  	public int getStackDepth() {
@@ -147,6 +152,41 @@ public class OpcodeStack implements Constants2
  	
  	private void push(Item i) {
  		stack.add(i);
+ 	}
+ 	
+ 	private void pushBySignature(String signature) {
+ 		try {
+	 		if ("V".equals(signature))
+	 			return;
+	 		if (signature == null)
+	 			push( new Item(Item.UNKNOWN_TYPE ));
+			else if (signature.startsWith("L"))
+				push( new Item(Item.OBJECT_TYPE, Repository.lookupClass(signature.substring(1, signature.length() - 1))));
+			else if ("B".equals(signature))
+				push( new Item(Item.PRIMITIVE_TYPE, Repository.lookupClass("java.lang.Byte")));
+			else if ("C".equals(signature))
+				push( new Item(Item.PRIMITIVE_TYPE, Repository.lookupClass("java.lang.Character")));
+			else if ("D".equals(signature))
+				push( new Item(Item.PRIMITIVE_TYPE, Repository.lookupClass("java.lang.Double")));
+			else if ("F".equals(signature))
+				push( new Item(Item.PRIMITIVE_TYPE, Repository.lookupClass("java.lang.Float")));
+			else if ("I".equals(signature))
+				push( new Item(Item.PRIMITIVE_TYPE, Repository.lookupClass("java.lang.Integer")));
+			else if ("J".equals(signature))
+				push( new Item(Item.PRIMITIVE_TYPE, Repository.lookupClass("java.lang.Long")));
+			else if ("S".equals(signature))
+				push( new Item(Item.PRIMITIVE_TYPE, Repository.lookupClass("java.lang.Short")));
+			else if ("Z".equals(signature))
+				push( new Item(Item.PRIMITIVE_TYPE, Repository.lookupClass("java.lang.Boolean")));
+			else //I'm not sure how to load a JavaClass based on an array. I'll put this here to remind myself to figure that out
+				push( new Item(Item.OBJECT_TYPE, Repository.lookupClass(signature)));
+		}
+		catch (ClassNotFoundException cnfe) {
+			push( new Item(Item.UNKNOWN_TYPE ));
+		}
+		catch (Exception e) { //This is currently for the Arrays that are failing. This will be removed eventually
+			push( new Item(Item.UNKNOWN_TYPE ));
+		}			
  	}
 	
 }
