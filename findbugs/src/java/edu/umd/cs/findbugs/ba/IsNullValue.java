@@ -45,7 +45,7 @@ public class IsNullValue {
 		{  NULL                                                         }, // NULL
 		{  WEAK_NULL, WEAK_NULL,                                        }, // WEAK_NULL
 		{  NSP,       NN,        NN                                     }, // NN
-		{  NULL,      DNR,       WEAK_NN,   WEAK_NN,                    }, // WEAK_NN
+		{  NSP,       DNR,       WEAK_NN,   WEAK_NN,                    }, // WEAK_NN
 		{  NSP,       DNR,       DNR,       DNR,       DNR              }, // NSP
 		{  NSP,       DNR,       DNR,       DNR,       DNR,       DNR   }  // DNR
 	};
