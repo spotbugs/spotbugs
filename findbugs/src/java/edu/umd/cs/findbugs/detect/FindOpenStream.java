@@ -42,6 +42,18 @@ public class FindOpenStream extends ResourceTrackingDetector<Stream, StreamResou
 	static final boolean PRINT_CFG = Boolean.getBoolean("fos.printcfg");
 	static final boolean IGNORE_WRAPPED_UNINTERESTING_STREAMS = !Boolean.getBoolean("fos.allowWUS");
 
+	/**
+	 * A special bug type indicating that the stream is not uninteresting
+	 * (i.e., streams that wrap it should not be poisoned), but
+	 * that we don't actually want to report the stream itself if
+	 * it is not closed.
+	 * This is how we treat streams returned from methods.
+	 * FIXME: this is a hack.  Need to think more about
+	 * the various kinds of streams and how they should
+	 * be handled.
+	 */
+	private static final String DO_NOT_REPORT = "Do not report";
+
 	/* ----------------------------------------------------------------------
 	 * Tracked resource types
 	 * ---------------------------------------------------------------------- */
@@ -118,10 +130,14 @@ public class FindOpenStream extends ResourceTrackingDetector<Stream, StreamResou
 		// However, we want to keep track of them, so that if they
 		// are closed, all other streams in the same equivalence
 		// class can be closed as well.
-		streamFactoryCollection.add(new AnyMethodReturnValueStreamFactory("java.io.InputStream"));
-		streamFactoryCollection.add(new AnyMethodReturnValueStreamFactory("java.io.Reader"));
-		streamFactoryCollection.add(new AnyMethodReturnValueStreamFactory("java.io.OutputStream"));
-		streamFactoryCollection.add(new AnyMethodReturnValueStreamFactory("java.io.Writer"));
+		streamFactoryCollection.add(new AnyMethodReturnValueStreamFactory("java.io.InputStream")
+			.setBugType(DO_NOT_REPORT));
+		streamFactoryCollection.add(new AnyMethodReturnValueStreamFactory("java.io.Reader")
+			.setBugType(DO_NOT_REPORT));
+		streamFactoryCollection.add(new AnyMethodReturnValueStreamFactory("java.io.OutputStream")
+			.setBugType(DO_NOT_REPORT));
+		streamFactoryCollection.add(new AnyMethodReturnValueStreamFactory("java.io.Writer")
+			.setBugType(DO_NOT_REPORT));
 
 		// JDBC objects
 		streamFactoryCollection.add(new MethodReturnValueStreamFactory("java.sql.Connection",
@@ -348,6 +364,9 @@ public class FindOpenStream extends ResourceTrackingDetector<Stream, StreamResou
 				continue;
 
 			if (stream.isUninteresting())
+				continue;
+
+			if (stream.getBugType().equals(DO_NOT_REPORT))
 				continue;
 
 			Location openLocation = stream.getOpenLocation();

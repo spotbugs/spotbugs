@@ -39,9 +39,16 @@ import org.apache.bcel.generic.ObjectType;
  */
 public class AnyMethodReturnValueStreamFactory implements StreamFactory {
 	private ObjectType baseClassType;
+	private String bugType;
 
 	public AnyMethodReturnValueStreamFactory(String streamBase) {
 		this.baseClassType = new ObjectType(streamBase);
+		this.bugType = null;
+	}
+
+	public AnyMethodReturnValueStreamFactory setBugType(String bugType) {
+		this.bugType = bugType;
+		return this;
 	}
 
 	public Stream createStream(Location location, ObjectType type, ConstantPoolGen cpg,
@@ -54,9 +61,13 @@ public class AnyMethodReturnValueStreamFactory implements StreamFactory {
 				if (!Hierarchy.isSubtype(type, baseClassType))
 					return null;
 	
-				return new Stream(location, type.getClassName(), baseClassType.getClassName())
+				Stream stream = new Stream(location, type.getClassName(), baseClassType.getClassName())
 					.setIsOpenOnCreation(true)
 					.setIgnoreImplicitExceptions(true);
+				if (bugType != null)
+					stream.setInteresting(bugType);
+
+				return stream;
 			}
 		} catch (ClassNotFoundException e) {
 			lookupFailureCallback.reportMissingClass(e);
