@@ -20,8 +20,6 @@
 package edu.umd.cs.findbugs;
 
 import java.io.*;
-import java.net.URL;
-import java.lang.reflect.Constructor;
 import java.util.*;
 import java.util.zip.*;
 import edu.umd.cs.pugh.io.IO;
