@@ -62,7 +62,7 @@ public class Lookup {
 		return null;
 	}
 
-	public static InstanceField findInstanceField(FieldInstruction fins, ConstantPoolGen cpg)
+	public static XField findXField(FieldInstruction fins, ConstantPoolGen cpg)
 		throws ClassNotFoundException {
 
 		String className = fins.getClassName(cpg);
