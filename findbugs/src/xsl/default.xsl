@@ -27,7 +27,6 @@
   David Hovemeyer
 -->
 
-
 <xsl:stylesheet
 	version="1.0"
 	xmlns="http://www.w3.org/1999/xhtml"
@@ -43,7 +42,7 @@
 	encoding="UTF-8"/>
 
 <xsl:variable name="bugTableHeader">
-	<tr>
+	<tr class="tableheader">
 		<th align="left">Code</th>
 		<th align="left">Warning</th>
 		<th align="left">Location</th>
@@ -54,6 +53,19 @@
 	<html>
 	<head>
 		<title>FindBugs Report</title>
+		<style type="text/css">
+		.tablerow0 {
+			background: #EEEEEE;
+		}
+
+		.tablerow1 {
+			background: white;
+		}
+
+		.tableheader {
+			background: #b9b9fe;
+		}
+		</style>
 	</head>
 	<body>
 
@@ -118,7 +130,8 @@
 </xsl:template>
 
 <xsl:template match="BugInstance">
-	<tr>
+
+	<tr class="tablerow{position() mod 2}">
 
 	<td>
 	<xsl:value-of select="@abbrev"/>
