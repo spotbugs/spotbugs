@@ -94,9 +94,19 @@ public class StateSet {
 		return stateMap.get(obligationSet);
 	}
 	
-	public void makeEmpty() {
+	/**
+	 * Initialize this object as the entry fact for a method:
+	 * a single state with empty obligation set and path.
+	 * 
+	 * @param factory the ObligationFactory used for the analysis
+	 */
+	public void initEntryFact(ObligationFactory factory) {
 		this.isTop = this.isBottom = false;
 		this.stateMap.clear();
+		
+		// Add initial fact: empty obligations, empty path
+		State initState = new State(factory.getMaxObligationTypes());
+		this.stateMap.put(initState.getObligationSet(), initState);
 	}
 	
 	/**
@@ -184,19 +194,23 @@ public class StateSet {
 	}
 	
 	public String toString() {
-		StringBuffer buf = new StringBuffer();
-		buf.append("{");
-		boolean first = true;
-		for (Iterator<State> i = stateIterator(); i.hasNext();) {
-			State state = i.next();
-			if (first)
-				first = false;
-			else
-				buf.append(",");
-			buf.append(state.toString());
+		if (isTop)
+			return "TOP";
+		else if (isBottom)
+			return "BOTTOM";
+		else {
+			StringBuffer buf = new StringBuffer();
+			boolean first = true;
+			for (Iterator<State> i = stateIterator(); i.hasNext();) {
+				State state = i.next();
+				if (first)
+					first = false;
+				else
+					buf.append(",");
+				buf.append(state.toString());
+			}
+			return buf.toString();
 		}
-		buf.append("}");
-		return buf.toString();
 	}
 	
 	/**
