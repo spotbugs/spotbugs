@@ -563,6 +563,9 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes {
 			}
 
 			// If the block returns from the method, add a return edge
+			if (subroutine.blockReturns(subBlock)) {
+				result.addEdge(resultBlock, result.getExit(), RETURN_EDGE);
+			}
 
 		}
 
