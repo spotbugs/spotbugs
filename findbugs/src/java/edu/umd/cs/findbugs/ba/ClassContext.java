@@ -107,7 +107,6 @@ public class ClassContext {
 			CFGBuilder cfgBuilder = CFGBuilderFactory.create(methodGen);
 			cfgBuilder.build();
 			cfg = cfgBuilder.getCFG();
-			cfg.assignEdgeIds(0);
 			cfgMap.put(method, cfg);
 
 			if (PRUNE_INFEASIBLE_EXCEPTION_EDGES) {

@@ -38,7 +38,6 @@ public class DepthFirstSearch implements DFSEdgeTypes {
 	public final static boolean DEBUG = false;
 
 	private CFG cfg;
-	private int firstEdgeId;
 	private int[] colorList;
 	private int[] discoveryTimeList;
 	private int[] finishTimeList;
@@ -56,10 +55,7 @@ public class DepthFirstSearch implements DFSEdgeTypes {
 	 * @throws IllegalArgumentException if the CFG has not had edge ids assigned yet
 	 */
 	public DepthFirstSearch(CFG cfg) {
-		if (!cfg.edgeIdsAssigned()) throw new IllegalArgumentException("CFG has not had edge ids assigned");
-
 		this.cfg = cfg;
-		firstEdgeId = cfg.getFirstEdgeId();
 
 		int numBlocks = cfg.getNumBasicBlocks();
 		colorList = new int[numBlocks]; // initially all elements are WHITE
@@ -92,7 +88,7 @@ public class DepthFirstSearch implements DFSEdgeTypes {
 	 * @see DFSEdgeTypes
 	 */
 	public int getDFSEdgeType(Edge edge) {
-		return dfsEdgeTypeList[edgeIndex(edge)];
+		return dfsEdgeTypeList[edge.getId()];
 	}
 
 	/**
@@ -101,7 +97,7 @@ public class DepthFirstSearch implements DFSEdgeTypes {
 	 * @param block the basic block
 	 */
 	public int getDiscoveryTime(BasicBlock block) {
-		return discoveryTimeList[blockIndex(block)];
+		return discoveryTimeList[block.getId()];
 	}
 
 	/**
@@ -110,7 +106,7 @@ public class DepthFirstSearch implements DFSEdgeTypes {
 	 * @param block the basic block
 	 */
 	public int getFinishTime(BasicBlock block) {
-		return finishTimeList[blockIndex(block)];
+		return finishTimeList[block.getId()];
 	}
 
 	/**
@@ -119,10 +115,6 @@ public class DepthFirstSearch implements DFSEdgeTypes {
 	 */
 	public Iterator<BasicBlock> topologicalSortIterator() {
 		return topologicalSortList.iterator();
-	}
-
-	private int blockIndex(BasicBlock block) {
-		return block.getId();
 	}
 
 	private int indentLevel = 0;
@@ -230,20 +222,15 @@ public class DepthFirstSearch implements DFSEdgeTypes {
 	}
 
 	private void setDiscoveryTime(BasicBlock block, int ts) {
-		discoveryTimeList[blockIndex(block)] = ts;
+		discoveryTimeList[block.getId()] = ts;
 	}
 
 	private void setFinishTime(BasicBlock block, int ts) {
-		finishTimeList[blockIndex(block)] = ts;
-	}
-
-	private int edgeIndex(Edge edge) {
-		assert edge.getId() >= 0;
-		return edge.getId() - firstEdgeId;
+		finishTimeList[block.getId()] = ts;
 	}
 
 	private void setDFSEdgeType(Edge edge, int dfsEdgeType) {
-		dfsEdgeTypeList[edgeIndex(edge)] = dfsEdgeType;
+		dfsEdgeTypeList[edge.getId()] = dfsEdgeType;
 	}
 }
 

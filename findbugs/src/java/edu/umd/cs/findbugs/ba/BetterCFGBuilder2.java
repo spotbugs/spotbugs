@@ -806,7 +806,6 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 			cfgBuilder.build();
 
 			CFG cfg = cfgBuilder.getCFG();
-			cfg.assignEdgeIds(0);
 
 			CFGPrinter cfgPrinter = new CFGPrinter(cfg);
 			System.out.println("---------------------------------------------------------------------");

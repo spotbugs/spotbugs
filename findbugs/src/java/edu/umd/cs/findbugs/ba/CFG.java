@@ -92,7 +92,7 @@ public class CFG implements Graph<Edge, BasicBlock>, Debug {
 	private ArrayList<BasicBlock> blockList;
 	private ArrayList<Edge> edgeList;
 	private BasicBlock entry, exit, unhandledExceptionExit;
-	private int firstEdgeId, maxEdgeId;
+	private int maxEdgeId;
 
 	/* ----------------------------------------------------------------------
 	 * Public methods
@@ -105,37 +105,23 @@ public class CFG implements Graph<Edge, BasicBlock>, Debug {
 	public CFG() {
 		blockList = new ArrayList<BasicBlock>();
 		edgeList = new ArrayList<Edge>();
-		firstEdgeId = maxEdgeId = 0;
+		maxEdgeId = 0;
+	}
+
+	/** Get the value 1 greater than the maximum known edge id. */
+	public int getMaxEdgeId() {
+		return maxEdgeId;
 	}
 
 	/**
-	 * Assign unique numbers to the edges, starting from the given number.
-	 * This is done as a post-processing step by the instrumenter
-	 * so that each Edge has a unique id within the overall class.
-	 * @return the first id to assign
-	 * @return the next unique id available to be assigned
+	 * Set the value 1 greater than the maximum edge id.
+	 * This should be called if the edges are given new ids.
+	 * @param maxEdgeId the value 1 greater than the maximum assigned
+	 *   edge id
 	 */
-	public int assignEdgeIds(int start) {
-		firstEdgeId = start;
-		Iterator<Edge> i = edgeIterator();
-		while (i.hasNext()) {
-			Edge edge = i.next();
-			edge.setId(start++);
-		}
-		maxEdgeId = start;
-		return start;
+	public void setMaxEdgeId(int maxEdgeId) {
+		this.maxEdgeId = maxEdgeId;
 	}
-
-	/** Have edge ids be assigned? */
-	public boolean edgeIdsAssigned() {
-		return maxEdgeId > 0;
-	}
-
-	/** Get the first edge id. Assumes assignEdgeIds() has been called. */
-	public int getFirstEdgeId() { return firstEdgeId; }
-
-	/** Get the value 1 greater than the maximum edge id. Assumes assignEdgeIds() has been called. */
-	public int getMaxEdgeId() { return maxEdgeId; }
 
 	/** Get the entry node. */
 	public BasicBlock getEntry() {
@@ -178,6 +164,7 @@ public class CFG implements Graph<Edge, BasicBlock>, Debug {
 */
 
 		Edge edge = new Edge(source, dest, type);
+		edge.setId(maxEdgeId++);
 
 		edgeList.add(edge);
 		source.addOutgoingEdge(edge);
@@ -380,11 +367,11 @@ public class CFG implements Graph<Edge, BasicBlock>, Debug {
 	}
 
 	public int getNumLabels() {
-		return maxEdgeId;
+		return getMaxEdgeId();
 	}
 
 	public void setNumLabels(int numLabels) {
-		maxEdgeId = numLabels;
+		setMaxEdgeId(numLabels);
 	}
 
 	public void removeVertex(BasicBlock v) {
