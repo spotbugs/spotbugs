@@ -40,8 +40,8 @@ import org.apache.bcel.generic.*;
  * @see DataflowAnalysis
  * @author David Hovemeyer
  */
-public abstract class AbstractFrameModelingVisitor<Value> implements Visitor {
-	private Frame<Value> frame;
+public abstract class AbstractFrameModelingVisitor<Value, FrameType extends Frame<Value>> implements Visitor {
+	private FrameType frame;
 	private ConstantPoolGen cpg;
 
 	/**
@@ -49,7 +49,7 @@ public abstract class AbstractFrameModelingVisitor<Value> implements Visitor {
 	 * @param frame the frame to be transformed
 	 * @param cpg the ConstantPoolGen of the method to be analyzed
 	 */
-	public AbstractFrameModelingVisitor(Frame<Value> frame, ConstantPoolGen cpg) {
+	public AbstractFrameModelingVisitor(FrameType frame, ConstantPoolGen cpg) {
 		this.frame = frame;
 		this.cpg = cpg;
 	}
@@ -58,7 +58,7 @@ public abstract class AbstractFrameModelingVisitor<Value> implements Visitor {
 	 * Get the frame.
 	 * @return the Frame object
 	 */
-	public Frame<Value> getFrame() { return frame; }
+	public FrameType getFrame() { return frame; }
 
 	/**
 	 * Produce a "default" value.

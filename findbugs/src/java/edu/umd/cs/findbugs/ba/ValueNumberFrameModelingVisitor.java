@@ -22,7 +22,7 @@ package edu.umd.cs.daveho.ba;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.Instruction;
 
-public class ValueNumberFrameModelingVisitor extends AbstractFrameModelingVisitor<ValueNumber> {
+public class ValueNumberFrameModelingVisitor extends AbstractFrameModelingVisitor<ValueNumber, ValueNumberFrame> {
 	private ValueNumberFactory factory;
 	private ValueNumberCache cache;
 
@@ -38,7 +38,7 @@ public class ValueNumberFrameModelingVisitor extends AbstractFrameModelingVisito
 	}
 
 	public void modelNormalInstruction(Instruction ins, int numWordsConsumed, int numWordsProduced) {
-		Frame<ValueNumber> frame = getFrame();
+		ValueNumberFrame frame = getFrame();
 
 		// Get the input operands to this instruction.
 		ValueNumber[] inputValueList = new ValueNumber[numWordsConsumed];

@@ -21,12 +21,9 @@ package edu.umd.cs.daveho.ba;
 
 import org.apache.bcel.generic.*;
 
-public abstract class ResourceValueFrameModelingVisitor extends AbstractFrameModelingVisitor<ResourceValue> {
-	private ResourceValueFrame frame;
-
+public abstract class ResourceValueFrameModelingVisitor extends AbstractFrameModelingVisitor<ResourceValue, ResourceValueFrame> {
 	public ResourceValueFrameModelingVisitor(ResourceValueFrame frame, ConstantPoolGen cpg) {
 		super(frame, cpg);
-		this.frame = frame;
 	}
 
 	public ResourceValue getDefaultValue() {
@@ -42,6 +39,7 @@ public abstract class ResourceValueFrameModelingVisitor extends AbstractFrameMod
 	protected void handleFieldStore(FieldInstruction ins) {
 		try {
 			// If the resource instance is stored in a field, then it escapes
+			ResourceValueFrame frame = getFrame();
 			ResourceValue topValue = frame.getTopValue();
 			if (topValue.equals(ResourceValue.instance()))
 				frame.setStatus(ResourceValueFrame.ESCAPED);
@@ -63,6 +61,7 @@ public abstract class ResourceValueFrameModelingVisitor extends AbstractFrameMod
 	 * pass the resource instance to.
 	 */
 	protected void handleInvoke(InvokeInstruction inv) {
+		ResourceValueFrame frame = getFrame();
 		int numSlots = frame.getNumSlots();
 		int numConsumed = getNumWordsConsumed(inv);
 		for (int i = numSlots - numConsumed; i < numSlots; ++i) {
@@ -92,6 +91,7 @@ public abstract class ResourceValueFrameModelingVisitor extends AbstractFrameMod
 
 	public void visitARETURN(ARETURN ins) {
 		try {
+			ResourceValueFrame frame = getFrame();
 			ResourceValue topValue = frame.getTopValue();
 			if (topValue.equals(ResourceValue.instance()))
 				frame.setStatus(ResourceValueFrame.ESCAPED);

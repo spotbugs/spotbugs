@@ -21,7 +21,7 @@ package edu.umd.cs.daveho.ba;
 
 import org.apache.bcel.generic.*;
 
-public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisitor<IsNullValue> {
+public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisitor<IsNullValue, IsNullValueFrame> {
 
 	public IsNullValueFrameModelingVisitor(IsNullValueFrame frame, ConstantPoolGen cpg) {
 		super(frame, cpg);
@@ -47,12 +47,12 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
 	// to produce different values in each of the control successors.
 
 	private void produce(IsNullValue value) {
-		Frame<IsNullValue> frame = getFrame();
+		IsNullValueFrame frame = getFrame();
 		frame.pushValue(value);
 	}
 
 	private void produce2(IsNullValue value) {
-		Frame<IsNullValue> frame = getFrame();
+		IsNullValueFrame frame = getFrame();
 		frame.pushValue(value);
 		frame.pushValue(value);
 	}
