@@ -268,7 +268,7 @@ public class URLClassPath {
 		for (Iterator<Entry> i = entryList.iterator(); i.hasNext(); ) {
 			Entry entry = i.next();
 			if (buf.length() > 0)
-				buf.append(";");
+				buf.append(File.pathSeparator);
 			buf.append(entry.getURL());
 		}
 		return buf.toString();
