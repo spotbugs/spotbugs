@@ -20,6 +20,8 @@
 package edu.umd.cs.daveho.ba;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A dataflow value representing a Java stack frame with value number
@@ -30,13 +32,50 @@ import java.util.ArrayList;
  * @author David Hovemeyer
  */
 public class ValueNumberFrame extends Frame<ValueNumber> {
+	private static final boolean REDUNDANT_LOAD_ELIMINATION = Boolean.getBoolean("vna.rle");
 
 	private ValueNumberFactory factory;
 	private ArrayList<ValueNumber> mergedValueList;
+	private Map<AvailableLoad, ValueNumber> availableLoadMap;
 
 	public ValueNumberFrame(int numLocals, final ValueNumberFactory factory) {
 		super(numLocals);
 		this.factory = factory;
+		if (REDUNDANT_LOAD_ELIMINATION) {
+			this.availableLoadMap = new HashMap<AvailableLoad, ValueNumber>();
+		}
+	}
+
+	/**
+	 * Look for an available load.
+	 * @param availableLoad the AvailableLoad (reference and field)
+	 * @return the ValueNumber available, or null if the is no matching entry
+	 */
+	public ValueNumber getAvailableLoad(AvailableLoad availableLoad) {
+		return availableLoadMap.get(availableLoad);
+	}
+
+	/**
+	 * Add an available load.
+	 * @param availableLoad the AvailableLoad (reference and field)
+	 * @param value the ValueNumber loaded
+	 */
+	public void addAvailableLoad(AvailableLoad availableLoad, ValueNumber value) {
+		availableLoadMap.put(availableLoad, value);
+	}
+
+	public void mergeWith(Frame<ValueNumber> other_) throws DataflowAnalysisException {
+		ValueNumberFrame other = (ValueNumberFrame) other_;
+
+		if (REDUNDANT_LOAD_ELIMINATION) {
+			// Merge available load sets.
+			// Only loads that are available in both frames
+			// remain available. All others are discarded.
+			this.availableLoadMap.entrySet().retainAll(other.availableLoadMap.entrySet());
+		}
+
+		// Merge slot values.
+		super.mergeWith(other);
 	}
 
 	public ValueNumber mergeValues(int slot, ValueNumber mine, ValueNumber other) {
@@ -89,6 +128,12 @@ public class ValueNumberFrame extends Frame<ValueNumber> {
 			int numSlots = other.getNumSlots();
 			for (int i = 0; i < numSlots; ++i)
 				mergedValueList.add(null);
+		}
+
+		if (REDUNDANT_LOAD_ELIMINATION) {
+			// Copy available load set.
+			availableLoadMap.clear();
+			availableLoadMap.entrySet().addAll(((ValueNumberFrame)other).availableLoadMap.entrySet());
 		}
 
 		super.copyFrom(other);

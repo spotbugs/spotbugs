@@ -107,22 +107,10 @@ public class AssignedFieldMap implements Constants {
 			if (opcode == Constants.PUTFIELD) {
 				PUTFIELD putfield = (PUTFIELD) ins;
 
-				String className = putfield.getClassName(cpg);
-				String fieldName = putfield.getFieldName(cpg);
-				String fieldSig = putfield.getSignature(cpg);
-
-				// Note that the PUTFIELD instruction may not indicate the
-				// actual class which defines the field.  Instead, it might
-				// indicate a subclass of the actual defining class.
-				// So, we lookup the actual class, in order to produce a canonical
-				// definition of the field.
-				JavaClass classDefiningField = Lookup.findClassDefiningField(className, fieldName, fieldSig);
-				if (classDefiningField != null) {
-					InstanceField instanceField = new InstanceField(classDefiningField.getClassName(), fieldName, fieldSig);
-					if (assignableFieldSet.contains(instanceField)) {
-						Set<InstanceField> assignedFieldSetForMethod = getAssignedFieldSetForMethod(method);
-						assignedFieldSetForMethod.add(instanceField);
-					}
+				InstanceField instanceField = Lookup.findInstanceField(putfield, cpg);
+				if (instanceField != null && assignableFieldSet.contains(instanceField)) {
+					Set<InstanceField> assignedFieldSetForMethod = getAssignedFieldSetForMethod(method);
+					assignedFieldSetForMethod.add(instanceField);
 				}
 			}
 

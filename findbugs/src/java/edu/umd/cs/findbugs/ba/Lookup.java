@@ -21,6 +21,7 @@ package edu.umd.cs.daveho.ba;
 
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.*;
+import org.apache.bcel.generic.*;
 
 public class Lookup {
 	public static Field findField(String className, String fieldName) throws ClassNotFoundException {
@@ -59,6 +60,21 @@ public class Lookup {
 		}
 
 		return null;
+	}
+
+	public static InstanceField findInstanceField(FieldInstruction fins, ConstantPoolGen cpg)
+		throws ClassNotFoundException {
+
+		String className = fins.getClassName(cpg);
+		String fieldName = fins.getFieldName(cpg);
+		String fieldSig = fins.getSignature(cpg);
+
+		JavaClass classDefiningField = Lookup.findClassDefiningField(className, fieldName, fieldSig);
+
+		if (classDefiningField == null)
+			return null;
+		else
+			return new InstanceField(classDefiningField.getClassName(), fieldName, fieldSig);
 	}
 }
 
