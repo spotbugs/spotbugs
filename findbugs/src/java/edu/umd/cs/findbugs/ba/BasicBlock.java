@@ -362,6 +362,48 @@ public class BasicBlock implements Comparable, Debug {
 		return firstIncomingEdge;
 	}
 
+	/**
+	 * Remove an incoming edge.
+	 * @param edge the incoming edge
+	 */
+	void removeIncomingEdge(Edge edge) {
+		Edge prev = null, cur = firstIncomingEdge;
+		while (cur != null) {
+			Edge next = cur.getNextIncomingEdge();
+			if (cur.equals(edge)) {
+				if (prev != null)
+					prev.setNextIncomingEdge(next);
+				else
+					firstIncomingEdge = next;
+				return;
+			}
+			prev = cur;
+			cur = next;
+		}
+		throw new IllegalArgumentException("removing nonexistent edge!");
+	}
+
+	/**
+	 * Remove an outgoing edge.
+	 * @param edge the outgoing edge
+	 */
+	void removeOutgoingEdge(Edge edge) {
+		Edge prev = null, cur = firstOutgoingEdge;
+		while (cur != null) {
+			Edge next = cur.getNextOutgoingEdge();
+			if (cur.equals(edge)) {
+				if (prev != null)
+					prev.setNextOutgoingEdge(next);
+				else
+					firstOutgoingEdge = next;
+				return;
+			}
+			prev = cur;
+			cur = cur.getNextOutgoingEdge();
+		}
+		throw new IllegalArgumentException("removing nonexistent edge!");
+	}
+
 }
 
 // vim:ts=4
