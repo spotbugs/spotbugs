@@ -19,66 +19,13 @@
 
 package edu.umd.cs.daveho.ba;
 
-public class StaticField implements XField {
-	private String className;
-	private String fieldName;
-	private String fieldSig;
-	private int cachedHashCode = 0;
-
-	public StaticField(String className, String fieldName, String fieldSig) {
-		this.className = className;
-		this.fieldName = fieldName;
-		this.fieldSig = fieldSig;
-	}
-
-	public String getFieldName() {
-		return fieldName;
-	}
-
-	public String getClassName() {
-		return className;
-	}
-
-	public String getFieldSignature() {
-		return fieldSig;
+public class StaticField extends AbstractField {
+	public StaticField(String className, String fieldName, String fieldSig, int accessFlags) {
+		super(className, fieldName, fieldSig, accessFlags);
 	}
 
 	public boolean isStatic() {
 		return true;
-	}
-
-	public int compareTo(XField other) {
-		if (this.getClass() != other.getClass())
-			return this.getClass().getName().compareTo(other.getClass().getName());
-
-		int cmp;
-		cmp = className.compareTo(other.getClassName());
-		if (cmp != 0)
-			return cmp;
-		cmp = fieldName.compareTo(other.getFieldName());
-		if (cmp != 0)
-			return cmp;
-		return fieldSig.compareTo(other.getFieldSignature());
-	}
-
-	public int hashCode() {
-		if (cachedHashCode == 0) {
-			cachedHashCode = className.hashCode() ^ fieldName.hashCode() ^ fieldSig.hashCode();
-		}
-		return cachedHashCode;
-	}
-
-	public boolean equals(Object o) {
-		if (this.getClass() != o.getClass())
-			return false;
-		StaticField other = (StaticField) o;
-		return className.equals(other.className)
-			&& fieldName.equals(other.fieldName)
-			&& fieldSig.equals(other.fieldSig);
-	}
-
-	public String toString() {
-		return className + "." + fieldName;
 	}
 }
 
