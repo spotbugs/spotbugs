@@ -117,7 +117,7 @@ public class FindMaskedFields extends BytecodeScanningDetector implements Consta
 			if ((fa = classFieldMap.get(varName)) != null || (fa = superclassFieldMap.get(varName)) != null) {
 				if (var.getStartPC() > 0)
 					bugReporter.reportBug(
-						new BugInstance("MF_METHOD_MASKS_FIELD", NORMAL_PRIORITY)
+						new BugInstance("MF_METHOD_MASKS_FIELD", LOW_PRIORITY)
 							.addClassAndMethod(this)
 							.addField(fa)
 							.addSourceLine(this, var.getStartPC()-1));
