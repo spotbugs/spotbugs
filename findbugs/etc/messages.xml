@@ -1060,6 +1060,19 @@ using r.nextInt(n) Rather than using (int)(r.nextDouble() * n).
     </Details>
   </BugPattern>  
 
+  <BugPattern type="DM_SQL_STATEMENT_EXECUTE">
+    <ShortDescription>Use of an execute method on an SQL statement</ShortDescription>
+    <LongDescription>Method {1} invokes the execute method on an SQL statement</LongDescription>
+    <Details>
+<![CDATA[
+  <p>The method invokes the execute method on an SQL statement. Consider using 
+a prepared statement instead. It is more efficient and less vunerable to
+SQL injection attacks.
+</p>
+]]>
+    </Details>
+  </BugPattern>  
+  
   <BugPattern type="DM_USELESS_THREAD">
     <ShortDescription>A thread was created using the default empty run method</ShortDescription>
     <LongDescription>Method {1} creates a thread using the default empty run method</LongDescription>
