@@ -53,6 +53,11 @@ public class ClassContext implements AnalysisFeatures {
 	 * Helper classes
 	 * ---------------------------------------------------------------------- */
 
+	private static int depth;
+	private static void indent() {
+		for (int i = 0; i < depth; ++i) System.out.print("  ");
+	}
+
 	private abstract class AnalysisFactory<AnalysisResult> {
 		private String analysisName;
 		private IdentityHashMap<Method, AnalysisResult> map = new IdentityHashMap<Method, AnalysisResult>();
@@ -64,13 +69,36 @@ public class ClassContext implements AnalysisFeatures {
 		public AnalysisResult getAnalysis(Method method) throws CFGBuilderException, DataflowAnalysisException {
 			AnalysisResult result = map.get(method);
 			if (result == null) {
-				long begin = System.currentTimeMillis();
-				result = analyze(method);
-				long end = System.currentTimeMillis();
 				if (TIME_ANALYSES) {
-					System.out.println("ClassContext: " + analysisName + " for " +
-						SignatureConverter.convertMethodSignature(jclass, method) + " took " + (end - begin) + " millis");
+					++depth;
+					indent();
+					System.out.println("CC: Starting " + analysisName + " for " +
+						SignatureConverter.convertMethodSignature(jclass, method) + ":");
 				}
+
+				long begin = System.currentTimeMillis();
+
+				try {
+					result = analyze(method);
+				} catch (DataflowAnalysisException e) {
+					if (TIME_ANALYSES) {
+						long end = System.currentTimeMillis();
+						indent();
+						System.out.println("CC: " + analysisName + " killed by exception after " +
+							(end-begin) + " millis");
+						e.printStackTrace();
+						--depth;
+					}
+					throw e;
+				}
+
+				if (TIME_ANALYSES) {
+					long end = System.currentTimeMillis();
+					indent();
+					System.out.println("CC: finished " + analysisName + " in " + (end - begin) + " millis");
+					--depth;
+				}
+
 				map.put(method, result);
 			}
 			return result;
