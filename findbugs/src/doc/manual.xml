@@ -38,7 +38,7 @@ of "bug patterns" --- code instances that are likely to be errors.</para>
 <para> This document describes version @VERSION@ of &FindBugs;. This is an
 early release of the tool, so you may find problems with it. We
 are very interested in getting your feedback on &FindBugs;. Please visit
-the <ulink url="http://www.cs.umd.edu/~pugh/java/bugs/">&FindBugs; web page</ulink> for
+the <ulink url="@WEBSITE@">&FindBugs; web page</ulink> for
 the latest information on &FindBugs;, contact information, and support resources such
 as information about the &FindBugs; mailing lists.</para>
 
@@ -74,8 +74,8 @@ This chapter explains how to install and run &FindBugs;.
 <para>
 The easiest way to install &FindBugs; is to download a binary distribution.
 Binary distributions are available in
-<ulink url="http://www.cs.umd.edu/~pugh/java/bugs/release/findbugs-@VERSION@.tar.gz">gzipped tar format</ulink> and
-<ulink url="http://www.cs.umd.edu/~pugh/java/bugs/release/findbugs-@VERSION@.zip">zip format</ulink>.
+<ulink url="@WEBSITE@/release/findbugs-@VERSION@.tar.gz">gzipped tar format</ulink> and
+<ulink url="@WEBSITE@/release/findbugs-@VERSION@.zip">zip format</ulink>.
 Once you have downloaded a binary distribution, extract it into a directory of your choice.
 </para>
 
@@ -389,7 +389,7 @@ To compile &FindBugs; from source, you will need the following:
 <itemizedlist>
   <listitem>
     <para>
-      The <ulink url="http://www.cs.umd.edu/~pugh/java/bugs/release/findbugs-@VERSION@-source.tar.gz"
+      The <ulink url="@WEBSITE@/release/findbugs-@VERSION@-source.tar.gz"
       >&FindBugs; source distribution</ulink>
     </para>
   </listitem>
@@ -1185,9 +1185,9 @@ and has a <ulink url="http://www.tobject.de/development/findbugs.html">home page
 <para>
 Two files are required to use the plugin, each of which can be downloaded
 from the &FindBugs; home page.  The first file is the
-<ulink url="http://www.cs.umd.edu/~pugh/java/release/edu.umd.cs.findbugs_@VERSION@.zip">Core plugin</ulink>,
+<ulink url="@WEBSITE@/release/edu.umd.cs.findbugs_@VERSION@.zip">Core plugin</ulink>,
 which contains the core &FindBugs; engine.  The second file is the
-<ulink url="http://www.cs.umd.edu/~pugh/java/release/de.tobject.findbugs_@ECLIPSE_UI_VERSION@.zip">UI plugin</ulink>,
+<ulink url="@WEBSITE@/release/de.tobject.findbugs_@ECLIPSE_UI_VERSION@.zip">UI plugin</ulink>,
 which interfaces &FindBugs; to the Eclipse workbench.  Each of these files should be extracted
 inside the <filename>plugins</filename> directory of your Eclipse installation.
 </para>
@@ -1466,7 +1466,7 @@ in the &FindBugs; distribution.
 
 <para>
 You can find the latest version of FindBugs, along with its source code, from the
-<ulink url="http://www.cs.umd.edu/~pugh/java/bugs/">FindBugs web page</ulink>.
+<ulink url="@WEBSITE@">FindBugs web page</ulink>.
 </para>
 
 </chapter>
@@ -1485,7 +1485,7 @@ You can find the latest version of FindBugs, along with its source code, from th
 
 <para>&FindBugs; was originally written by Bill Pugh (<email>pugh@cs.umd.edu</email>).
 David Hovemeyer (<email>daveho@cs.umd.edu</email>) implemented some of the
-detectors, added the GUI, and is the current maintainer.</para>
+detectors, added the Swing GUI, and is the current maintainer.</para>
 
 <para>Mike Fagan (<email>mfagan@tde.com</email>) contributed the &Ant; build script,
 the &Ant; task, and several enhancements and bug fixes to the GUI.</para>
@@ -1494,6 +1494,15 @@ the &Ant; task, and several enhancements and bug fixes to the GUI.</para>
 summaries.</para>
 
 <para>David Li contributed the Emacs bug report format.</para>
+
+<para>Peter D. Stout contributed recursive detection of Class-Path
+attributes in analyzed Jar files, and other fixes.</para>
+
+<para>Peter Friese wrote the FindBugs Eclipse plugin.</para>
+
+<para>If you have contributed to &FindBugs;, but aren't mentioned above,
+please send email to <email>daveho@cs.umd.edu</email> (and also accept
+our humble apologies).</para>
 
 </sect1>
 
