@@ -417,6 +417,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
         // Run the analysis!
         RunAnalysisDialog dialog = new RunAnalysisDialog(this, analysisRun);
         dialog.setSize(400, 300);
+	dialog.setLocationRelativeTo(null); // center the dialog
         dialog.show();
 
         if (dialog.isCompleted()) {
