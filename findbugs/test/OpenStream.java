@@ -1,6 +1,8 @@
 import java.io.*;
 
 public class OpenStream {
+	public OutputStream os;
+
 	public static void main(String[] argv) throws Exception {
 		FileInputStream in = null;
 
@@ -42,6 +44,11 @@ public class OpenStream {
 	}
 
 	public void paramStreamDoNotReport(java.io.OutputStream os) throws IOException {
+		PrintStream ps = new PrintStream(os);
+		ps.println("Hello");
+	}
+
+	public void loadFromFieldDoNotReport() throws IOException {
 		PrintStream ps = new PrintStream(os);
 		ps.println("Hello");
 	}
