@@ -27,7 +27,18 @@ import org.apache.bcel.generic.*;
 import edu.umd.cs.daveho.ba.*;
 import edu.umd.cs.findbugs.*;
 
-public class FindOpenStream extends ResourceTrackingDetector<ResourceCreationPoint>  {
+class Stream extends ResourceCreationPoint {
+	private String streamBase;
+
+	public Stream(Location location, String streamClass, String streamBase) {
+		super(location, streamClass);
+		this.streamBase = streamBase;
+	}
+
+	public String getStreamBase() { return streamBase; }
+}
+
+public class FindOpenStream extends ResourceTrackingDetector<Stream>  {
 
 	/* ----------------------------------------------------------------------
 	 * Helper classes
@@ -39,9 +50,9 @@ public class FindOpenStream extends ResourceTrackingDetector<ResourceCreationPoi
 	 */
 	private static class StreamFrameModelingVisitor extends ResourceValueFrameModelingVisitor {
 		private StreamResourceTracker resourceTracker;
-		private ResourceCreationPoint stream;
+		private Stream stream;
 
-		public StreamFrameModelingVisitor(ConstantPoolGen cpg, StreamResourceTracker resourceTracker, ResourceCreationPoint stream) {
+		public StreamFrameModelingVisitor(ConstantPoolGen cpg, StreamResourceTracker resourceTracker, Stream stream) {
 			super(cpg);
 			this.resourceTracker = resourceTracker;
 			this.stream = stream;
@@ -95,14 +106,14 @@ public class FindOpenStream extends ResourceTrackingDetector<ResourceCreationPoi
 	 * Resource tracker which determines where streams are created,
 	 * and how they are used within the method.
 	 */
-	private static class StreamResourceTracker implements ResourceTracker<ResourceCreationPoint> {
+	private static class StreamResourceTracker implements ResourceTracker<Stream> {
 		private RepositoryLookupFailureCallback lookupFailureCallback;
 
 		public StreamResourceTracker(RepositoryLookupFailureCallback lookupFailureCallback) {
 			this.lookupFailureCallback = lookupFailureCallback;
 		}
 
-		public ResourceCreationPoint isResourceCreation(BasicBlock basicBlock, InstructionHandle handle, ConstantPoolGen cpg) {
+		public Stream isResourceCreation(BasicBlock basicBlock, InstructionHandle handle, ConstantPoolGen cpg) {
 			Instruction ins = handle.getInstruction();
 			if (!(ins instanceof NEW))
 				return null;
@@ -118,20 +129,27 @@ public class FindOpenStream extends ResourceTrackingDetector<ResourceCreationPoi
 			// (but not ByteArray variants)
 			String className = sig.substring(1, sig.length() - 1).replace('/', '.');
 			try {
-				boolean isStream =
-					(Repository.instanceOf(className, "java.io.InputStream") &&
-						!Repository.instanceOf(className, "java.io.ByteArrayInputStream")) ||
-					(Repository.instanceOf(className, "java.io.OutputStream") &&
-						!Repository.instanceOf(className, "java.io.ByteArrayOutputStream"));
+				if (Repository.instanceOf(className, "java.io.InputStream") &&
+					!Repository.instanceOf(className, "java.io.ByteArrayInputStream")) {
+
+					return new Stream(new Location(handle, basicBlock), className, "java.io.InputStream");
+
+				} else if (Repository.instanceOf(className, "java.io.OutputStream") &&
+					!Repository.instanceOf(className, "java.io.ByteArrayOutputStream")) {
+
+					return new Stream(new Location(handle, basicBlock), className, "java.io.OutputStream");
+
+				} else
+					return null;
 					
-				return isStream ? new ResourceCreationPoint(new Location(handle, basicBlock), className) : null;
+				//return isStream ? new Stream(new Location(handle, basicBlock), className) : null;
 			} catch (ClassNotFoundException e) {
 				lookupFailureCallback.reportMissingClass(e);
 				return null;
 			}
 		}
 
-		public boolean isResourceOpen(BasicBlock basicBlock, InstructionHandle handle, ConstantPoolGen cpg, ResourceCreationPoint resource,
+		public boolean isResourceOpen(BasicBlock basicBlock, InstructionHandle handle, ConstantPoolGen cpg, Stream resource,
 			ResourceValueFrame frame) {
 
 			Instruction ins = handle.getInstruction();
@@ -148,7 +166,7 @@ public class FindOpenStream extends ResourceTrackingDetector<ResourceCreationPoi
 			return false;
 		}
 
-		public boolean isResourceClose(BasicBlock basicBlock, InstructionHandle handle, ConstantPoolGen cpg, ResourceCreationPoint resource,
+		public boolean isResourceClose(BasicBlock basicBlock, InstructionHandle handle, ConstantPoolGen cpg, Stream resource,
 			ResourceValueFrame frame) {
 
 			Instruction ins = handle.getInstruction();
@@ -157,15 +175,28 @@ public class FindOpenStream extends ResourceTrackingDetector<ResourceCreationPoi
 				// Does this instruction close the stream?
 				INVOKEVIRTUAL inv = (INVOKEVIRTUAL) ins;
 
-				if (getInstanceValue(frame, inv, cpg).isInstance() &&
-					matchMethod(inv, cpg, resource.getResourceClass(), "close", "()V"))
-					return true;
+				if (!getInstanceValue(frame, inv, cpg).isInstance())
+					return false;
+
+				// It's a close if the invoked class is any subtype of the stream base class.
+				// (Basically, we may not see the exact original stream class,
+				// even though it's the same instance.)
+				try {
+					String streamBase = resource.getStreamBase();
+
+					return inv.getName(cpg).equals("close")
+						&& inv.getSignature(cpg).equals("()V")
+						&& Repository.instanceOf(inv.getClassName(cpg), streamBase);
+				} catch (ClassNotFoundException e) {
+					lookupFailureCallback.reportMissingClass(e);
+					return false;
+				}
 			}
 
 			return false;
 		}
 
-		public ResourceValueFrameModelingVisitor createVisitor(ResourceCreationPoint resource, ConstantPoolGen cpg) {
+		public ResourceValueFrameModelingVisitor createVisitor(Stream resource, ConstantPoolGen cpg) {
 			return new StreamFrameModelingVisitor(cpg, this, resource);
 		}
 
@@ -209,11 +240,11 @@ public class FindOpenStream extends ResourceTrackingDetector<ResourceCreationPoi
 		return bytecodeSet.get(Constants.NEW);
 	}
 
-	public ResourceTracker<ResourceCreationPoint> getResourceTracker() {
+	public ResourceTracker<Stream> getResourceTracker() {
 		return resourceTracker;
 	}
 
-	public void inspectResult(MethodGen methodGen, CFG cfg, Dataflow<ResourceValueFrame> dataflow, ResourceCreationPoint stream) {
+	public void inspectResult(MethodGen methodGen, CFG cfg, Dataflow<ResourceValueFrame> dataflow, Stream stream) {
 		ResourceValueFrame exitFrame = dataflow.getResultFact(cfg.getExit());
 
 		int exitStatus = exitFrame.getStatus();
@@ -289,7 +320,7 @@ public class FindOpenStream extends ResourceTrackingDetector<ResourceCreationPoi
 			if (creationInstruction == null) throw new IllegalArgumentException("No bytecode with offset " + offset);
 
 			final StreamResourceTracker resourceTracker = new StreamResourceTracker(lookupFailureCallback);
-			final ResourceCreationPoint stream = resourceTracker.isResourceCreation(creationBlock, creationInstruction, cpg);
+			final Stream stream = resourceTracker.isResourceCreation(creationBlock, creationInstruction, cpg);
 
 			if (stream == null)
 				throw new IllegalArgumentException("offset " + offset + " is not a resource creation");
@@ -297,7 +328,7 @@ public class FindOpenStream extends ResourceTrackingDetector<ResourceCreationPoi
 			DataflowTestDriver<ResourceValueFrame> driver = new DataflowTestDriver<ResourceValueFrame>() {
 				public AbstractDataflowAnalysis<ResourceValueFrame> createAnalysis(MethodGen methodGen, CFG cfg)
 					throws DataflowAnalysisException {
-					return new ResourceValueAnalysis<ResourceCreationPoint>(methodGen, resourceTracker, stream);
+					return new ResourceValueAnalysis<Stream>(methodGen, resourceTracker, stream);
 				}
 			};
 
