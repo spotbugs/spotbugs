@@ -154,7 +154,7 @@ public class IsNullValueAnalysis
 		// update their is-null information.
 		int numProduced = ins.produceStack(methodGen.getConstantPool());
 		if (numProduced == Constants.UNPREDICTABLE)
-			throw new AnalysisException("Unpredictable stack production", methodGen, handle);
+			throw new DataflowAnalysisException("Unpredictable stack production", methodGen, handle);
 
 		int start = fact.getNumSlots() - numProduced;
 		ValueNumberFrame vnaFrameAfter = vnaDataflow.getFactAfterLocation(new Location(handle, basicBlock));
