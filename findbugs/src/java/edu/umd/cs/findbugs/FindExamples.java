@@ -31,6 +31,7 @@ public class FindExamples extends QueryBugAnnotations {
 	private boolean first = true;
 
 	public static void main(String[] argv) throws Exception {
+		DetectorFactoryCollection.instance(); // load plugins
 		new FindExamples().execute(argv);
 	}
 
@@ -53,8 +54,6 @@ public class FindExamples extends QueryBugAnnotations {
 				" <results file>");
 			System.exit(1);
 		}
-
-		DetectorFactoryCollection.instance(); // load plugins
 
 		addKeyword("GOOD_EXAMPLE");
 		addKeyword("EXCELLENT_EXAMPLE");
