@@ -395,7 +395,7 @@
     </target>
 
     <!-- Build jar file of test cases.  -->
-    <target name="testjar" depends="init,anttask" >
+    <target name="testjar" depends="init,anttask,findbugs" >
       <javac srcdir="${test.dir}" 
              source="1.5"
              target="${javac.target}"
