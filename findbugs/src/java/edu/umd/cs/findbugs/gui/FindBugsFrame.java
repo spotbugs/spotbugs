@@ -367,6 +367,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
         bugDescriptionEditorPane = new javax.swing.JEditorPane();
         sourceTextAreaScrollPane = new javax.swing.JScrollPane();
         sourceTextArea = new javax.swing.JTextArea();
+        annotationTextAreaScrollPane = new javax.swing.JScrollPane();
+        annotationTextArea = new javax.swing.JTextArea();
         consoleScrollPane = new javax.swing.JScrollPane();
         consoleMessageArea = new javax.swing.JTextArea();
         theMenuBar = new javax.swing.JMenuBar();
@@ -776,6 +778,10 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
         bugDetailsTabbedPane.addTab("Source code", sourceTextAreaScrollPane);
 
+        annotationTextAreaScrollPane.setViewportView(annotationTextArea);
+
+        bugDetailsTabbedPane.addTab("Annotations", annotationTextAreaScrollPane);
+
         bugTreeBugDetailsSplitter.setBottomComponent(bugDetailsTabbedPane);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -900,6 +906,12 @@ public class FindBugsFrame extends javax.swing.JFrame {
         saveBugsItem.setFont(new java.awt.Font("Dialog", 0, 12));
         saveBugsItem.setMnemonic('B');
         saveBugsItem.setText("Save Bugs");
+        saveBugsItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                saveBugsItemActionPerformed(evt);
+            }
+        });
+
         fileMenu.add(saveBugsItem);
 
         fileMenu.add(jSeparator6);
@@ -1003,6 +1015,36 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
         pack();
     }//GEN-END:initComponents
+
+    private void saveBugsItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveBugsItemActionPerformed
+
+	try {
+		if (currentAnalysisRun == null) {
+			logger.logMessage(ConsoleLogger.ERROR,  "No bugs are loaded!");
+			return;
+		}
+		
+		JFileChooser chooser = new JFileChooser(currentDirectory);
+		chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+		chooser.setFileFilter(xmlFileFilter);
+		
+		int result = chooser.showDialog(this, "Save bugs");
+		
+		if (result != JFileChooser.CANCEL_OPTION) {
+			// Make sure current annotation text is up to date with its
+			// corresponding bug instance
+			if (currentBugInstance != null)
+				synchBugAnnotation(currentBugInstance);
+
+			// Save bugs to file
+			File selectedFile = chooser.getSelectedFile();
+			currentAnalysisRun.saveBugsToFile(selectedFile);
+		}
+	} catch (Exception e) {
+		e.printStackTrace();
+		logger.logMessage(ConsoleLogger.ERROR, "Could not save bugs: " + e.toString());
+	}
+    }//GEN-LAST:event_saveBugsItemActionPerformed
 
     private void loadBugsItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loadBugsItemActionPerformed
         // FIXME: offer to save current project and bugs
@@ -1902,6 +1944,9 @@ public class FindBugsFrame extends javax.swing.JFrame {
         // Show bug info.
         showBugInfo(selected);
         
+        // Synch annotation text.
+        synchBugAnnotation(selected);
+        
         // Now the bug details are up to date.
         currentBugInstance = selected;
     }
@@ -2027,6 +2072,20 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	});
     }
     
+    /**
+     * Synchronize the bug annotation text with the current bug instance,
+     * and update the annotation text with the new bug instance.
+     * @param selected the new BugInstance
+     */
+    private void synchBugAnnotation(BugInstance selected) {
+        if (currentBugInstance != null) {
+            String text = annotationTextArea.getText();
+	    currentBugInstance.setAnnotationText(text);
+        }
+	
+	annotationTextArea.setText(selected.getAnnotationText());
+    }
+    
     /* ----------------------------------------------------------------------
      * Misc. helpers
      * ---------------------------------------------------------------------- */
@@ -2111,6 +2170,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
     private javax.swing.JButton addClasspathEntryButton;
     private javax.swing.JButton addJarButton;
     private javax.swing.JButton addSourceDirButton;
+    private javax.swing.JTextArea annotationTextArea;
+    private javax.swing.JScrollPane annotationTextAreaScrollPane;
     private javax.swing.JButton browseClasspathEntryButton;
     private javax.swing.JButton browseJarButton;
     private javax.swing.JButton browseSrcDirButton;
