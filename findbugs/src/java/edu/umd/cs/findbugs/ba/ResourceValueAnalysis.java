@@ -24,6 +24,8 @@ import org.apache.bcel.generic.*;
 public class ResourceValueAnalysis<Resource> extends FrameDataflowAnalysis<ResourceValue, ResourceValueFrame>
 	implements EdgeTypes {
 
+	private static final boolean DEBUG = Boolean.getBoolean("dataflow.debug");
+
 	private MethodGen methodGen;
 	private ResourceTracker<Resource> resourceTracker;
 	private Resource resource;
@@ -60,16 +62,16 @@ public class ResourceValueAnalysis<Resource> extends FrameDataflowAnalysis<Resou
 				tmpFact = modifyFrame(fact, tmpFact);
 				tmpFact.clearStack();
 				tmpFact.pushValue(ResourceValue.notInstance());
-			}
 
-			// Special case: if the instruction that closes the resource
-			// throws an exception, we consider the resource to be successfully
-			// closed anyway.
-			InstructionHandle exceptionThrower = source.getExceptionThrower();
-			assert exceptionThrower != null; // is it possible to reach an exception handler by a non-exception edge?
-			if (resourceTracker.isResourceClose(dest, exceptionThrower, methodGen.getConstantPool(), resource)) {
-				tmpFact = modifyFrame(fact, tmpFact);
-				tmpFact.setStatus(ResourceValueFrame.CLOSED);
+				// Special case: if the instruction that closes the resource
+				// throws an exception, we consider the resource to be successfully
+				// closed anyway.
+				InstructionHandle exceptionThrower = source.getExceptionThrower();
+				assert exceptionThrower != null; // is it possible to reach an exception handler by a non-exception edge?
+				if (resourceTracker.isResourceClose(dest, exceptionThrower, methodGen.getConstantPool(), resource, fact)) {
+					tmpFact.setStatus(ResourceValueFrame.CLOSED);
+					if (DEBUG) System.out.print("(failed attempt to close)");
+				}
 			}
 		}
 
