@@ -103,7 +103,7 @@ public class Invoke extends PatternElement {
 			try {
 				return Repository.instanceOf(s, className);
 			} catch (ClassNotFoundException e) {
-				lookupFailureCallback.lookupFailure(e);
+				lookupFailureCallback.reportMissingClass(e);
 				return false;
 			}
 		}

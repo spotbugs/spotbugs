@@ -19,10 +19,12 @@
 
 package edu.umd.cs.findbugs;
 
+import edu.umd.cs.daveho.ba.RepositoryLookupFailureCallback;
+
 /**
  * Generic interface for bug reporter objects.
  */
-public interface BugReporter {
+public interface BugReporter extends RepositoryLookupFailureCallback {
 
 	/** Silent error-reporting verbosity level. */
 	public static final int SILENT = 0;
@@ -49,13 +51,6 @@ public interface BugReporter {
 	 * @param message the error message
 	 */
 	public void logError(String message);
-
-	/**
-	 * Report a class that was needed for analysis but which
-	 * could not be found.
-	 * @param ex a ClassNotFoundException describing the missing class
-	 */
-	public void reportMissingClass(ClassNotFoundException ex);
 
 	/**
 	 * Finish reporting bugs.

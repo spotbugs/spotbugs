@@ -37,7 +37,7 @@ public interface RepositoryLookupFailureCallback {
 	 * Called to report a lookup failure.
 	 * @param ex a ClassNotFoundException resulting from the failure
 	 */
-	public void lookupFailure(ClassNotFoundException ex);
+	public void reportMissingClass(ClassNotFoundException ex);
 }
 
 // vim:ts=4
