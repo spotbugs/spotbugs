@@ -176,6 +176,11 @@ public class Dataflow<Fact> {
 		return resultFactMap.get(block);
 	}
 
+	/** Get an iterator over the result facts. */
+	public Iterator<Fact> resultFactIterator() {
+		return resultFactMap.values().iterator();
+	}
+
 	/** Get the analysis object. */
 	public DataflowAnalysis<Fact> getAnalysis() { return analysis; }
 

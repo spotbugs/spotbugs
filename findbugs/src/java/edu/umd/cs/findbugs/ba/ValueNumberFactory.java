@@ -30,17 +30,47 @@ import java.util.*;
  * @author David Hovemeyer
  */
 public class ValueNumberFactory {
-	/** Next number to use. */
-	private int maxValueNumber = 0;
+	/** Store all allocated value numbers. */
+	private ArrayList<ValueNumber> allocatedValueList = new ArrayList<ValueNumber>();
 
 	/** Create a fresh (unique) value number. */
 	public ValueNumber createFreshValue() {
-		return new ValueNumber(maxValueNumber++);
+		ValueNumber result = new ValueNumber(getNumValuesAllocated());
+		allocatedValueList.add(result);
+		return result;
+	}
+
+	/** Return a previously allocated value. */
+	public ValueNumber forNumber(int number) {
+		if (number >= getNumValuesAllocated())
+			throw new IllegalArgumentException("Value " + number + " has not been allocated");
+		return allocatedValueList.get(number);
 	}
 
 	/** Get the number of values which have been created. */
-	public int getMaxValue() {
-		return maxValueNumber;
+	public int getNumValuesAllocated() {
+		return allocatedValueList.size();
+	}
+
+	/**
+	 * Compact the value numbers produced by this factory.
+	 * @param map array mapping old numbers to new numbers
+	 * @param numValuesAllocated the number of values allocated in the new numbering
+	 */
+	public void compact(int[] map, int numValuesAllocated) {
+		ArrayList<ValueNumber> oldList = this.allocatedValueList;
+		ArrayList<ValueNumber> newList = new ArrayList<ValueNumber>(Collections.nCopies(numValuesAllocated, null));
+
+		for (Iterator<ValueNumber> i = oldList.iterator(); i.hasNext(); ) {
+			ValueNumber value = i.next();
+			int newNumber = map[value.getNumber()];
+			if (newNumber >= 0) {
+				value.number = newNumber;
+				newList.set(newNumber, value);
+			}
+		}
+
+		this.allocatedValueList = newList;
 	}
 
 }

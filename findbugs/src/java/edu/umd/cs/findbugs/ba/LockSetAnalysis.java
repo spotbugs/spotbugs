@@ -44,7 +44,7 @@ public class LockSetAnalysis extends ForwardDataflowAnalysis<LockSet> {
 	}
 
 	public LockSet createFact() {
-		return new LockSet(valueNumberAnalysis.getMaxValue());
+		return new LockSet(valueNumberAnalysis.getNumValuesAllocated());
 	}
 
 	public void copy(LockSet source, LockSet dest) {

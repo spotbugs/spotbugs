@@ -37,7 +37,7 @@ import java.util.*;
  */
 public class ValueNumber {
 	/** The value number. */
-	private int number;
+	int number;
 
 	/**
 	 * Constructor.

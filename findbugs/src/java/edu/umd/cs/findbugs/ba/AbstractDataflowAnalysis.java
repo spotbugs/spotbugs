@@ -71,6 +71,14 @@ public abstract class AbstractDataflowAnalysis<Fact> implements DataflowAnalysis
 		return fact;
 	}
 
+	/**
+	 * Get an Iterator over all dataflow facts that we've recorded for
+	 * the Locations in the CFG.
+	 */
+	public Iterator<Fact> factIterator() {
+		return factAtLocationMap.values().iterator();
+	}
+
 	/* ----------------------------------------------------------------------
 	 * Implementations of interface methods
 	 * ---------------------------------------------------------------------- */

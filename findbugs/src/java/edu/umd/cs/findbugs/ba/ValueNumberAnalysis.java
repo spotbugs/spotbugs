@@ -44,8 +44,8 @@ import org.apache.bcel.generic.*;
  * Assuming foo is an instance field, there will be two GETFIELD instructions;
  * one for the MONITORENTER, and one for the call to blat().  At runtime,
  * it is more or less certain that the JIT will reuse the value of the
- * first GETFIELD, and this is almost certainly what the programmer intended to
- * happen.
+ * first GETFIELD for the call to blat(), and this is almost certainly what
+ * the programmer intended to happen.
  *
  * @see ValueNumber
  * @see DominatorsAnalysis
@@ -57,6 +57,11 @@ public class ValueNumberAnalysis extends ForwardDataflowAnalysis<ValueNumberFram
 	private ValueNumberCache cache;
 	private ValueNumber[] entryLocalValueList;
 	private IdentityHashMap<BasicBlock, ValueNumber> exceptionHandlerValueNumberMap;
+
+	// These fields are used by the compactValueNumbers() method.
+	private BitSet valuesUsed;
+	private int numValuesUsed;
+	private int[] discovered;
 
 	public ValueNumberAnalysis(MethodGen methodGen) {
 		this.methodGen = methodGen;
@@ -71,8 +76,8 @@ public class ValueNumberAnalysis extends ForwardDataflowAnalysis<ValueNumberFram
 		this.exceptionHandlerValueNumberMap = new IdentityHashMap<BasicBlock, ValueNumber>();
 	}
 
-	public int getMaxValue() {
-		return factory.getMaxValue();
+	public int getNumValuesAllocated() {
+		return factory.getNumValuesAllocated();
 	}
 
 	public ValueNumber getEntryValue(int local) {
@@ -139,6 +144,63 @@ public class ValueNumberAnalysis extends ForwardDataflowAnalysis<ValueNumberFram
 		}
 
 		result.mergeWith(fact);
+	}
+
+	/**
+	 * Compact the value numbers assigned.
+	 * This should be done only after the dataflow algorithm has executed.
+	 * This works by modifying the actual ValueNumber objects assigned.
+	 * After this method is called, the getNumValuesAllocated() method
+	 * of this object will return a value less than or equal to the value
+	 * it would have returned before the call to this method.
+	 *
+	 * <p> <em>This method should be called at most once</em>.
+	 *
+	 * @param dataflow the Dataflow object which executed this analysis
+	 *  (and has all of the block result values)
+	 */
+	public void compactValueNumbers(Dataflow<ValueNumberFrame> dataflow) {
+		valuesUsed = new BitSet();
+		numValuesUsed = 0;
+
+		// The "discovered" array tells us the mapping of old value numbers
+		// to new (which are based on order of discovery).  Negative values
+		// specify value numbers which are not actually used (and thus can
+		// be purged.)
+		discovered = new int[factory.getNumValuesAllocated()];
+		for (int i = 0; i < discovered.length; ++i) {
+			discovered[i] = -1;
+		}
+
+		// We can get all extant Frames by looking at the values in
+		// the location to value map, and also the block result values.
+		for (Iterator<ValueNumberFrame> i = factIterator(); i.hasNext(); ) {
+			ValueNumberFrame frame = i.next();
+			markFrameValues(frame);
+		}
+		for (Iterator<ValueNumberFrame> i = dataflow.resultFactIterator(); i.hasNext(); ) {
+			ValueNumberFrame frame = i.next();
+			markFrameValues(frame);
+		}
+
+		// Now the factory can modify the ValueNumbers.
+		factory.compact(discovered, numValuesUsed);
+
+	}
+
+	/**
+	 * Mark value numbers in a value number frame for compaction.
+	 */
+	private void markFrameValues(ValueNumberFrame frame) {
+		for (int j = 0; j < frame.getNumSlots(); ++j) {
+			ValueNumber value = frame.getValue(j);
+			int number = value.getNumber();
+
+			if (!valuesUsed.get(number)) {
+				discovered[number] = numValuesUsed++;
+				valuesUsed.set(number, true);
+			}
+		}
 	}
 
 	/**
