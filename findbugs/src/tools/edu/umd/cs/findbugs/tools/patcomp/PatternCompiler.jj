@@ -1,6 +1,29 @@
+/*
+ * FindBugs - Find bugs in Java programs
+ * Copyright (C) 2004 University of Maryland
+ * 
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ * 
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
+/*
+ * This file should be processed with JavaCC (https://javacc.dev.java.net/).
+ */
+
 options {
     STATIC = false;
-	LOOKAHEAD = 2;
+	LOOKAHEAD = 3;
 	FORCE_LA_CHECK = true;
 }
 
@@ -8,6 +31,13 @@ PARSER_BEGIN(PatternCompiler)
 
 package edu.umd.cs.findbugs.tools.patcomp;
 
+/**
+ * A compiler to translate FindBugs Pattern (.fbp) files
+ * into Java source files.  This provides a high level mechanism
+ * for implementing new bug pattern detectors.
+ *
+ * @author David Hovemeyer
+ */
 public class PatternCompiler {
 	public static void main(String[] argv) throws Exception {
 		PatternCompiler pc = new PatternCompiler(System.in);
@@ -53,6 +83,24 @@ TOKEN :
 	// Expression keywords
 |	<WHERE: "where">
 
+	// Java keywords - needed to understand Java expressions
+|	<VOID: "void">
+|	<BOOLEAN: "boolean">
+|	<BYTE: "byte">
+|	<CHAR: "char">
+|	<SHORT: "short">
+|	<INT: "int">
+|	<FLOAT: "float">
+|	<LONG: "long">
+|	<DOUBLE: "double">
+|	<THIS: "this">
+|	<SUPER: "super">
+|	<CLASS: "class">
+|	<INSTANCEOF: "instanceof">
+|	<TRUE: "true">
+|	<FALSE: "false">
+|	<NULL: "null">
+
 	// Identifiers
 |	<ID: <IDSTART>(<IDCHAR>)*>
 
@@ -61,9 +109,36 @@ TOKEN :
 |	<RBRACE: "}">
 |	<LPAREN: "(">
 |	<RPAREN: ")">
+|	<LBRACKET: "[">
+|	<RBRACKET: "]">
+|	<DOT: ".">
 |	<COMMA: ",">
 |	<SEMICOLON: ";">
 |	<COLON: ":">
+|	<QUES: "?">
+|	<OR: "||">
+|	<AND: "&&">
+|	<BITOR: "|">
+|	<BITXOR: "^">
+|	<BITAND: "&">
+|	<EQ: "==">
+|	<NEQ: "!=">
+|	<LE: "<=">
+|	<GE: ">=">
+|	<LSHIFT: "<<">
+|	<BRSHIFT: ">>>">
+|	<RSHIFT: ">>">
+|	<LT: "<">
+|	<GT: ">">
+|	<INC: "++">
+|	<DEC: "--">
+|	<PLUS: "+">
+|	<MINUS: "-">
+|	<TIMES: "*">
+|	<DIV: "/">
+|	<MOD: "%">
+|	<COMPL: "~">
+|	<NOT: "!">
 
 	// Character classes
 |	<#IDSTART: (["A"-"Z"]|["a"-"z"]|"_")>
@@ -71,12 +146,16 @@ TOKEN :
 |	<#DIGIT: ["0"-"9"]>
 }
 
+// Top level production.
 void unit() :
 { }
 {
 	opt_prescreen() match() opt_check() report()
 }
 
+// The optional "prescreen" section specifies simple/fast checks
+// done on the method to determine whether or not the method
+// might contain an instance of the pattern.
 void opt_prescreen() :
 { }
 {
@@ -86,10 +165,34 @@ void opt_prescreen() :
 	{ }
 }
 
+// The required "match" section specifies a bytecode pattern
+// to search for.
 void match() :
 { }
 {
 	<MATCH> <LBRACE> instruction_list() <RBRACE>
+	{ }
+}
+
+// The optional "check" section performs tests on the code matched
+// by the pattern in the "match" section to determine whether
+// it is really an instance of the pattern.  These checks may make
+// use of more extensive analysis such as computing lock sets.
+void opt_check() :
+{ }
+{
+	<CHECK> <LBRACE> <RBRACE>
+	{ }
+|	/* epsilon */
+	{ }
+}
+
+// The required "report" section emits a bug warning based on the
+// matched code.
+void report() :
+{ }
+{
+	<REPORT> <LBRACE> <RBRACE>
 	{ }
 }
 
@@ -105,7 +208,7 @@ void instruction_list() :
 void instruction() :
 { }
 {
-	opt_label() <ID> arg_list() <SEMICOLON>
+	opt_label() <ID> arg_list() [ <WHERE> <LPAREN> expression() <RPAREN> ] <SEMICOLON>
 	{ }
 }
 
@@ -135,34 +238,230 @@ void arg_list_rest() :
 }
 
 /*
-void expression1() :
+ * Expression grammar.
+ * This was adapted from the ANTLR grammar for Java 1.5
+ * at http://www.thecortex.net/clover/generics/javaG.g,
+ * which is in the public domain.
+ *
+ * I took out assignment expressions: we don't allow
+ * arbitrary assignments.  I also omitted support for generics,
+ * although I may add this at some point if not having
+ * it proves to be inconvenient.
+ */
+
+void expression() :
 { }
 {
-	expression2() [ expression1_rest() ]
+	logical_or_expression() [ <QUES> expression() <COLON> expression() ]
 	{ }
 }
 
-void expression2() :
+void logical_or_expression() :
 { }
 {
-	expression3() [ expression2_rest() ]
-	{ }
-}
-*/
-
-void opt_check() :
-{ }
-{
-	<CHECK> <LBRACE> <RBRACE>
-	{ }
-|	/* epsilon */
+	logical_and_expression() ( <OR> logical_and_expression() )*
 	{ }
 }
 
-void report() :
+void logical_and_expression() :
 { }
 {
-	<REPORT> <LBRACE> <RBRACE>
+	inclusive_or_expression() ( <AND> inclusive_or_expression() )*
+	{ }
+}
+
+void inclusive_or_expression() :
+{ }
+{
+	exclusive_or_expression() ( <BITOR> exclusive_or_expression() )*
+	{ }
+}
+
+void exclusive_or_expression() :
+{ }
+{
+	and_expression() ( <BITXOR> and_expression() )*
+	{ }
+}
+
+void and_expression() :
+{ }
+{
+	equality_expression() ( <BITAND> equality_expression() )*
+	{ }
+}
+
+void equality_expression() :
+{ }
+{
+	relational_expression() ( (<NEQ>|<EQ>) relational_expression() )*
+	{ }
+}
+
+void relational_expression() :
+{ }
+{
+	shift_expression() relational_expression_rest()
+	{ }
+}
+
+void relational_expression_rest() :
+{ }
+{
+	<INSTANCEOF> type_spec()
+	{ }
+|	( (<LT> | <GT> | <LE> | <GE>) shift_expression() )*
+	{ }
+}
+
+void shift_expression() :
+{ }
+{
+	additive_expression() ( (<LSHIFT> | <RSHIFT> | <BRSHIFT>) additive_expression() )*
+}
+
+void additive_expression() :
+{ }
+{
+	multiplicative_expression() ( (<PLUS> | <MINUS>) multiplicative_expression() )*
+	{ }
+}
+
+void multiplicative_expression() :
+{ }
+{
+	unary_expression() ( (<TIMES>|<DIV>|<MOD>) unary_expression() )*
+	{ }
+}
+
+void unary_expression() :
+{ }
+{
+	<INC> unary_expression()
+	{ }
+|	<DEC> unary_expression()
+	{ }
+|	<MINUS> unary_expression()
+	{ }
+|	<PLUS> unary_expression()
+	{ }
+|	unary_expression_not_plusminus()
+	{ }
+}
+
+void unary_expression_not_plusminus() :
+{ }
+{
+	<COMPL> unary_expression()
+	{ }
+|	<NOT> unary_expression()
+	{ }
+|	<LPAREN> type_spec() <RPAREN> unary_expression()
+	{ }
+|	postfix_expression()
+	{ }
+}
+
+void postfix_expression() :
+{ }
+{
+	primary_expression() [ postfix_expression_rest() ] ( (<INC>|<DEC>) )*
+	{ }
+}
+
+void postfix_expression_rest() :
+{ }
+{
+	<LPAREN> arg_list() <RPAREN>
+	{ }
+|	<DOT> <THIS>
+	{ }
+|	<DOT> <SUPER> [ postfix_super_rest() ]
+	{ }
+/*
+ * The ANTLR grammar has <DOT> new_expression() as a possible completion.
+ * I cannot, for the life of me, imagine what an expression like
+ * "foo. new Bar()" is supposed to mean.  So, I'm leaving it out.
+ */
+|	<LBRACKET> expression() <RBRACKET>
+	{ }
+}
+
+void postfix_super_rest() :
+{ }
+{
+	<LPAREN> arg_list() <RPAREN>
+	{ }
+|	<DOT> <ID> [ <LPAREN> arg_list() <RPAREN> ]
+	{ }
+}
+
+void primary_expression() :
+{ }
+{
+	ident_primary() [ <DOT> <CLASS> ]
+	{ }
+|	<TRUE>
+	{ }
+|	<FALSE>
+	{ }
+|	<NULL>
+	{ }
+|	<THIS>
+	{ }
+|	<SUPER>
+	{ }
+|	<LPAREN> expression() <RPAREN>
+	{ }
+|	builtin_type() opt_array_spec() <DOT> <CLASS>
+	{ }
+}
+
+void ident_primary() :
+{ }
+{
+	<ID> ( <DOT> <ID> )*
+}
+
+void type_spec() :
+{ }
+{
+	class_type_spec()
+	{ }
+|	builtin_type_spec()
+	{ }
+}
+
+void class_type_spec() :
+{ }
+{
+	class_or_interface_type_name() opt_array_spec()
+	{ }
+}
+
+void class_or_interface_type_name() :
+{ }
+{
+	<ID> ( <DOT> <ID> )*
+}
+
+void builtin_type_spec() :
+{ }
+{
+	builtin_type() opt_array_spec()
+	{ }
+}
+
+void builtin_type() :
+{ }
+{
+	<VOID> | <BOOLEAN> | <BYTE> | <CHAR> | <SHORT> | <INT> | <FLOAT> | <LONG> | <DOUBLE>
+}
+
+void opt_array_spec() :
+{ }
+{
+	( <LBRACKET> <RBRACKET> )*
 	{ }
 }
 
