@@ -23,7 +23,7 @@
 
 options {
     STATIC = false;
-	LOOKAHEAD = 3;
+	LOOKAHEAD = 2;
 	FORCE_LA_CHECK = true;
 }
 
@@ -100,6 +100,7 @@ TOKEN :
 |	<TRUE: "true">
 |	<FALSE: "false">
 |	<NULL: "null">
+|	<NEW: "new">
 
 	// Identifiers
 |	<ID: <IDSTART>(<IDCHAR>)*>
@@ -159,10 +160,7 @@ void unit() :
 void opt_prescreen() :
 { }
 {
-	<PRESCREEN> <LBRACE> <RBRACE>
-	{ }
-|	/* epsilon */
-	{ }
+	[ <PRESCREEN> <LBRACE> <RBRACE> ]
 }
 
 // The required "match" section specifies a bytecode pattern
@@ -171,7 +169,6 @@ void match() :
 { }
 {
 	<MATCH> <LBRACE> instruction_list() <RBRACE>
-	{ }
 }
 
 // The optional "check" section performs tests on the code matched
@@ -181,10 +178,7 @@ void match() :
 void opt_check() :
 { }
 {
-	<CHECK> <LBRACE> <RBRACE>
-	{ }
-|	/* epsilon */
-	{ }
+	[ <CHECK> <LBRACE> <RBRACE> ]
 }
 
 // The required "report" section emits a bug warning based on the
@@ -193,48 +187,36 @@ void report() :
 { }
 {
 	<REPORT> <LBRACE> <RBRACE>
-	{ }
 }
 
 void instruction_list() :
 { }
 {
-	instruction() instruction_list()
-	{ }
-|	/* epsilon */
-	{ }
+	[ instruction() instruction_list() ]
 }
 
 void instruction() :
 { }
 {
 	opt_label() <ID> arg_list() [ <WHERE> <LPAREN> expression() <RPAREN> ] <SEMICOLON>
-	{ }
 }
 
 void opt_label() :
 { }
 {
-	<ID> <COLON>
-	{ }
-|	/* epsilon */
-	{ }
+	[ <ID> <COLON> ]
 }
 
 void arg_list() :
 { }
 {
-	<ID> [ arg_list_rest() ]
-	{ }
-|	/* epsilon */
-	{ }
+	[ <ID> [ arg_list_rest() ] ]
 }
 
 void arg_list_rest() :
 { }
 {
 	<COMMA> <ID> [ arg_list_rest() ]
-	{ }
 }
 
 /*
@@ -243,75 +225,65 @@ void arg_list_rest() :
  * at http://www.thecortex.net/clover/generics/javaG.g,
  * which is in the public domain.
  *
- * I took out assignment expressions: we don't allow
- * arbitrary assignments.  I also omitted support for generics,
- * although I may add this at some point if not having
- * it proves to be inconvenient.
+ * Limitations:
+ * - Generics are not allowed.
+ * - Casts are not allowed.
+ * - "new" expressions are not allowed.
  */
 
 void expression() :
 { }
 {
 	logical_or_expression() [ <QUES> expression() <COLON> expression() ]
-	{ }
 }
 
 void logical_or_expression() :
 { }
 {
 	logical_and_expression() ( <OR> logical_and_expression() )*
-	{ }
 }
 
 void logical_and_expression() :
 { }
 {
 	inclusive_or_expression() ( <AND> inclusive_or_expression() )*
-	{ }
 }
 
 void inclusive_or_expression() :
 { }
 {
 	exclusive_or_expression() ( <BITOR> exclusive_or_expression() )*
-	{ }
 }
 
 void exclusive_or_expression() :
 { }
 {
 	and_expression() ( <BITXOR> and_expression() )*
-	{ }
 }
 
 void and_expression() :
 { }
 {
 	equality_expression() ( <BITAND> equality_expression() )*
-	{ }
 }
 
 void equality_expression() :
 { }
 {
 	relational_expression() ( (<NEQ>|<EQ>) relational_expression() )*
-	{ }
 }
 
 void relational_expression() :
 { }
 {
 	shift_expression() relational_expression_rest()
-	{ }
 }
 
 void relational_expression_rest() :
 { }
 {
 	<INSTANCEOF> type_spec()
-	{ }
 |	( (<LT> | <GT> | <LE> | <GE>) shift_expression() )*
-	{ }
 }
 
 void shift_expression() :
@@ -324,119 +296,78 @@ void additive_expression() :
 { }
 {
 	multiplicative_expression() ( (<PLUS> | <MINUS>) multiplicative_expression() )*
-	{ }
 }
 
 void multiplicative_expression() :
 { }
 {
 	unary_expression() ( (<TIMES>|<DIV>|<MOD>) unary_expression() )*
-	{ }
 }
 
 void unary_expression() :
 { }
 {
 	<INC> unary_expression()
-	{ }
 |	<DEC> unary_expression()
-	{ }
 |	<MINUS> unary_expression()
-	{ }
 |	<PLUS> unary_expression()
-	{ }
-|	unary_expression_not_plusminus()
-	{ }
-}
-
-void unary_expression_not_plusminus() :
-{ }
-{
-	<COMPL> unary_expression()
-	{ }
+|	<COMPL> unary_expression()
 |	<NOT> unary_expression()
-	{ }
-|	<LPAREN> type_spec() <RPAREN> unary_expression()
-	{ }
 |	postfix_expression()
-	{ }
 }
 
 void postfix_expression() :
 { }
 {
-	primary_expression() [ postfix_expression_rest() ] ( (<INC>|<DEC>) )*
-	{ }
+	primary_expression() ( postfix_expression_rest() )* ( (<INC>|<DEC>) )*
 }
 
 void postfix_expression_rest() :
 { }
 {
-	<LPAREN> arg_list() <RPAREN>
-	{ }
+	<DOT> <ID> [ <LPAREN> arg_list() <RPAREN> ]
 |	<DOT> <THIS>
-	{ }
 |	<DOT> <SUPER> [ postfix_super_rest() ]
-	{ }
-/*
- * The ANTLR grammar has <DOT> new_expression() as a possible completion.
- * I cannot, for the life of me, imagine what an expression like
- * "foo. new Bar()" is supposed to mean.  So, I'm leaving it out.
- */
 |	<LBRACKET> expression() <RBRACKET>
-	{ }
 }
 
 void postfix_super_rest() :
 { }
 {
 	<LPAREN> arg_list() <RPAREN>
-	{ }
 |	<DOT> <ID> [ <LPAREN> arg_list() <RPAREN> ]
-	{ }
 }
 
 void primary_expression() :
 { }
 {
 	ident_primary() [ <DOT> <CLASS> ]
-	{ }
 |	<TRUE>
-	{ }
 |	<FALSE>
-	{ }
 |	<NULL>
-	{ }
 |	<THIS>
-	{ }
 |	<SUPER>
-	{ }
 |	<LPAREN> expression() <RPAREN>
-	{ }
 |	builtin_type() opt_array_spec() <DOT> <CLASS>
-	{ }
 }
 
 void ident_primary() :
 { }
 {
-	<ID> ( <DOT> <ID> )*
+	<ID> ( <DOT> <ID> )* [ <LPAREN> arg_list() <RPAREN> ] 
 }
 
 void type_spec() :
 { }
 {
 	class_type_spec()
-	{ }
 |	builtin_type_spec()
-	{ }
 }
 
 void class_type_spec() :
 { }
 {
 	class_or_interface_type_name() opt_array_spec()
-	{ }
 }
 
 void class_or_interface_type_name() :
@@ -449,7 +380,6 @@ void builtin_type_spec() :
 { }
 {
 	builtin_type() opt_array_spec()
-	{ }
 }
 
 void builtin_type() :
@@ -462,7 +392,6 @@ void opt_array_spec() :
 { }
 {
 	( <LBRACKET> <RBRACKET> )*
-	{ }
 }
 
 // vim:ts=4
