@@ -29,6 +29,8 @@ public class InfiniteRecursiveLoop extends BytecodeScanningDetector implements C
 
 	private BugReporter bugReporter;
 	private boolean seenTransferOfControl;
+	private boolean thisOnTopOfStack ;
+	private boolean staticMethod ;
 
 	public InfiniteRecursiveLoop(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
@@ -40,6 +42,8 @@ public class InfiniteRecursiveLoop extends BytecodeScanningDetector implements C
 
 	public void visit(Method obj) {
 		seenTransferOfControl = false;
+		thisOnTopOfStack = false;
+		staticMethod = (obj.getAccessFlags() & (ACC_STATIC)) != 0;
 	}
 
 	public void sawOffset(int offset) {
@@ -59,15 +63,21 @@ public class InfiniteRecursiveLoop extends BytecodeScanningDetector implements C
 			}
 		if (seenTransferOfControl) return;
 		
-		if ((seen == INVOKEVIRTUAL) || (seen == INVOKESPECIAL) || (seen == INVOKEINTERFACE) || (seen == INVOKESTATIC)) {
+		if ((seen == INVOKEVIRTUAL) || (seen == INVOKESPECIAL) || (seen == INVOKEINTERFACE) || (seen == INVOKESTATIC)) 
 			if (getClassConstantOperand().equals(getClassName())
 			    && getNameConstantOperand().equals(getMethodName())
-			    && getSigConstantOperand().equals(getMethodSig()))
+			    && getSigConstantOperand().equals(getMethodSig())) 
+			if (seen == INVOKESTATIC 
+				|| getNameConstantOperand().equals("<init>")
+				|| thisOnTopOfStack 
+					&& getSigConstantOperand().startsWith("()")
+				)
+				
 
 				bugReporter.reportBug(new BugInstance("IL_INFINITE_RECURSIVE_LOOP", HIGH_PRIORITY)
 				        .addClassAndMethod(this));
-			}
 
+		thisOnTopOfStack = seen == ALOAD_0 && !staticMethod;
 	}
 
 }
