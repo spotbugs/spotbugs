@@ -377,7 +377,7 @@ public class ProjectFilterSettings implements Cloneable {
 	/**
 	 * @return Returns the enabled detector factories.
 	 */
-	public List<DetectorFactory> getDetectorFactories() {
+	public List getDetectorFactories() {
 		return detectorFactories;
 	}
 	/**
