@@ -28,11 +28,12 @@ import java.io.*;
  * but for finding source files instead of class files.
  */
 public class SourceFinder {
+	private static final boolean DEBUG = Boolean.getBoolean("srcfinder.debug");
 
 	private static final int CACHE_SIZE = 50;
 
-	private static class Cache extends LinkedHashMap<String, byte[]> {
-		protected boolean removeEldestEntry(Map.Entry<String, byte[]> eldest) {
+	private static class Cache extends LinkedHashMap<String, SourceFile> {
+		protected boolean removeEldestEntry(Map.Entry<String, SourceFile> eldest) {
 			return size() >= CACHE_SIZE;
 		}
 	}
@@ -57,12 +58,25 @@ public class SourceFinder {
 	}
 
 	/**
-	 * Open an input stream on a source file for a class in given package.
+	 * Open an input stream on a source file in given package.
 	 * @param packageName the name of the package containing the class whose source file is given
 	 * @param fileName the unqualified name of the source file
+	 * @return an InputStream on the source file
 	 * @throws IOException if a matching source file cannot be found
 	 */
 	public InputStream openSource(String packageName, String fileName) throws IOException {
+		SourceFile sourceFile = findSourceFile(packageName, fileName);
+		return new ByteArrayInputStream(sourceFile.getData());
+	}
+
+	/**
+	 * Open a source file in given package.
+	 * @param packageName the name of the package containing the class whose source file is given
+	 * @param fileName the unqualified name of the source file
+	 * @return the source file
+	 * @throws IOException if a matching source file cannot be found
+	 */
+	public SourceFile findSourceFile(String packageName, String fileName) throws IOException {
 		// Create a fully qualified source filename using the package name.
 		StringBuffer fullName = new StringBuffer();
 		if (!packageName.equals("")) {
@@ -73,10 +87,10 @@ public class SourceFinder {
 		fileName = fullName.toString();
 
 		// Is the file in the cache already?
-		byte[] data = cache.get(fileName);
-		if (data == null) {
+		SourceFile sourceFile = cache.get(fileName);
+		if (sourceFile == null) {
 			 // Find this source file, add its data to the cache
-			 //System.out.println("Trying "  + fileName + "...");
+			 if (DEBUG) System.out.println("Trying "  + fileName + "...");
 
 			// Query each element of the source path to find the requested source file
 			Iterator<String> i = sourceBaseList.iterator();		
@@ -85,7 +99,7 @@ public class SourceFinder {
 
 				// Try to read the file from current source base element
 				String fullFileName = sourceBase + File.separator + fileName;
-				//System.out.println("Trying " + fullFileName + "...");
+				if (DEBUG) System.out.println("Trying " + fullFileName + "...");
 
 				InputStream in = null;
 
@@ -100,7 +114,8 @@ public class SourceFinder {
 						out.write(buf, 0, n);
 					}
 
-					data = out.toByteArray();
+					sourceFile = new SourceFile();
+					sourceFile.setData(out.toByteArray());
 				} catch (FileNotFoundException e) {
 					// We're probably looking in the wrong directory -
 					// just ignore the failure and continue with the loop
@@ -109,20 +124,20 @@ public class SourceFinder {
 						in.close();
 				}
 
-				if (data != null) {
+				if (sourceFile != null) {
 					// Success!
 					// Put the data for the file in the cache
-					cache.put(fileName, data);
+					cache.put(fileName, sourceFile);
 					break;
 				}
 			}
 
 			// Couldn't find the source file.
-			if (data == null)
+			if (sourceFile == null)
 				throw new FileNotFoundException("Can't find source file " + fileName);
 		}
 
-		return new ByteArrayInputStream(data);
+		return sourceFile;
 	}
 
 }
