@@ -173,7 +173,7 @@ public class AnalysisRun {
 	if (errorDialog != null) {
             errorDialog.setSize(750, 520);
             errorDialog.setLocationRelativeTo(null); // center the dialog
-            errorDialog.show();
+            errorDialog.setVisible(true);
 	}
     }
     

@@ -129,7 +129,7 @@ public class AnalysisErrorDialog extends javax.swing.JDialog {
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        new AnalysisErrorDialog(new javax.swing.JFrame(), true).show();
+        new AnalysisErrorDialog(new javax.swing.JFrame(), true).setVisible(true);
     }
     
     
