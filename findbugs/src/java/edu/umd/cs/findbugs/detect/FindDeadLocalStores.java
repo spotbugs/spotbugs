@@ -208,12 +208,12 @@ public class FindDeadLocalStores implements Detector {
 			if (ins instanceof IINC) {
 				
 				 if (localIncrementCount[local] == 1) 
-					priority = HIGH_PRIORITY;
+					priority = NORMAL_PRIORITY;
 				else continue;
 
 				}
 
-			if (ins instanceof ASTORE
+			else if (ins instanceof ASTORE
 				&& prev != null) { 
 				Instruction prevIns = prev.getInstruction();
 				if ((prevIns instanceof INVOKESPECIAL &&
