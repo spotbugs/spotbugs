@@ -8,11 +8,15 @@ package edu.umd.cs.findbugs.gui;
 
 import java.awt.CardLayout;
 import java.awt.Component;
+import java.awt.Cursor;
 import java.io.File;
+import java.util.*;
 import javax.swing.*;
 import javax.swing.tree.*;
 import javax.swing.event.*;
 import javax.swing.filechooser.*;
+
+import edu.umd.cs.findbugs.BugInstance;
 
 /**
  * The main GUI frame for FindBugs.
@@ -24,16 +28,14 @@ public class FindBugsFrame extends javax.swing.JFrame {
     /**
      * Custom cell renderer for the navigator tree.
      */
-    private static class MyCellRenderer extends DefaultTreeCellRenderer {
-        private ImageIcon rootIcon;
+    private static class NavigatorCellRenderer extends DefaultTreeCellRenderer {
         private ImageIcon projectIcon;
-        private ImageIcon mgIcon;
+        private ImageIcon analysisRunIcon;
 
-        public MyCellRenderer() {
+        public NavigatorCellRenderer() {
             ClassLoader classLoader = this.getClass().getClassLoader();
-            rootIcon = new ImageIcon(classLoader.getResource("edu/umd/cs/findbugs/gui/bug2.png"));
             projectIcon = new ImageIcon(classLoader.getResource("edu/umd/cs/findbugs/gui/gear.png"));
-            mgIcon = new ImageIcon(classLoader.getResource("edu/umd/cs/findbugs/gui/mg-3.png"));
+            analysisRunIcon = new ImageIcon(classLoader.getResource("edu/umd/cs/findbugs/gui/mg-3.png"));
         }
 
         public Component getTreeCellRendererComponent(JTree tree, Object value, boolean sel,
@@ -47,9 +49,36 @@ public class FindBugsFrame extends javax.swing.JFrame {
             if (obj instanceof Project) {
                 setIcon(projectIcon);
             } else if (obj instanceof AnalysisRun) {
-                setIcon(mgIcon);
+                setIcon(analysisRunIcon);
             }
 
+            return this;
+        }
+    }
+
+    /**
+     * Custom cell renderer for the bug tree.
+     */
+    private static class BugCellRenderer extends DefaultTreeCellRenderer {
+        private ImageIcon bugIcon;
+        
+        public BugCellRenderer() {
+            ClassLoader classLoader = this.getClass().getClassLoader();
+            bugIcon = new ImageIcon(classLoader.getResource("edu/umd/cs/findbugs/gui/bug2.png"));
+        }
+        
+        public Component getTreeCellRendererComponent(JTree tree, Object value, boolean sel,
+            boolean expanded, boolean leaf, int row, boolean hasFocus) {
+                 
+            super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
+            
+            // Set the icon, depending on what kind of node it is
+            DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
+            Object obj = node.getUserObject();
+            if (obj instanceof BugInstance) {
+                setIcon(bugIcon);
+            }
+            
             return this;
         }
     }
@@ -427,6 +456,26 @@ public class FindBugsFrame extends javax.swing.JFrame {
             DefaultMutableTreeNode projectNode = (DefaultMutableTreeNode) treePath.getPath()[1];
             DefaultMutableTreeNode analysisRunNode = new DefaultMutableTreeNode(analysisRun);
             treeModel.insertNodeInto(analysisRunNode, projectNode, projectNode.getChildCount());
+
+            // Create a DefaultTreeModel to be used in the BugTree for this analysis run
+            DefaultMutableTreeNode bugRootNode = new DefaultMutableTreeNode();
+            DefaultTreeModel bugTreeModel = new DefaultTreeModel(bugRootNode);
+            analysisRun.setTreeModel(bugTreeModel);
+            
+            // FIXME: temporary hack
+            {
+                Cursor orig = this.getCursor();
+                this.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+                
+                Iterator i = analysisRun.getBugInstances().iterator();
+                while (i.hasNext()) {
+                    BugInstance bugInstance = (BugInstance) i.next();
+                    DefaultMutableTreeNode bugNode = new DefaultMutableTreeNode(bugInstance);
+                    bugTreeModel.insertNodeInto(bugNode, bugRootNode, bugRootNode.getChildCount());
+                }
+                
+                this.setCursor(orig);
+            }
             
             // Make the new node the currently selected node
             TreePath path = new TreePath(new Object[]{rootNode, projectNode, analysisRunNode});
@@ -547,11 +596,14 @@ public class FindBugsFrame extends javax.swing.JFrame {
             }
         });
 
-        DefaultTreeCellRenderer renderer = new DefaultTreeCellRenderer();
-        navigatorTree.setCellRenderer(new FindBugsFrame.MyCellRenderer());
+        navigatorTree.setCellRenderer(new FindBugsFrame.NavigatorCellRenderer());
         navigatorTree.setRootVisible(false);
         navigatorTree.setShowsRootHandles(true);
-	
+
+        bugTree.setCellRenderer(new FindBugsFrame.BugCellRenderer());
+        bugTree.setRootVisible(false);
+        bugTree.setShowsRootHandles(false);
+        
 	jarFileList.setModel(new DefaultListModel());
 	sourceDirList.setModel(new DefaultListModel());
     }
@@ -575,7 +627,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
             synchProject((Project) nodeInfo);
             setView("EditProjectPanel");
         } else if (nodeInfo instanceof AnalysisRun) {
-            // TODO: synch analysis run with bug tree
+            synchAnalysisRun((AnalysisRun) nodeInfo);
             setView("BugTree");
         }
     }
@@ -621,6 +673,18 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	for (int i = 0; i < project.getNumSourceDirs(); ++i) {
 	    srcDirListModel.addElement(project.getSourceDir(i));
 	}
+    }
+    
+    /**
+     * Synchronize the bug tree with the given analysisRun object.
+     * @param analysisRun the selected analysis run
+     */
+    private void synchAnalysisRun(AnalysisRun analysisRun) {
+        if (analysisRun != currentAnalysisRun) {
+            bugTree.setModel(analysisRun.getTreeModel());
+            // TODO: restore state of tree!
+            currentAnalysisRun = analysisRun;
+        }
     }
     
     public void exitFindBugs() {
@@ -720,4 +784,5 @@ public class FindBugsFrame extends javax.swing.JFrame {
     private DefaultTreeModel navigatorTreeModel;
     private DefaultMutableTreeNode rootNode;
     private int projectCount;
+    private AnalysisRun currentAnalysisRun; // be lazy in switching tree models in BugTree
 }
