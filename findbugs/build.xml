@@ -22,25 +22,33 @@
       *****************************************************************
     -->
 
-    <!--
-       Set this to the location where you installed the generics-enabled
-       version of javac.  Note that you also need to have the JSR-14
-       compiler adapter installed in the "lib" subdirectory of your Ant installation.
-       You can download it from
-          http://www.thecortex.net/clover/generics/jsr14adapter-1.1.jar
-     -->
+    <!-- Set this to the location where you installed the generics-enabled
+         version of javac. -->
+    <property name="jsr14.home"
+              value="/export/home/daveho/linux/java/jsr14_adding_generics-1_3-ea"/>
 <!--
-    <property name="jsr14.home" value="/export/home/daveho/linux/java/jsr14_adding_generics-1_3-ea"/>
+    <property name="jsr14.home"
+              value="/home/software/java/jsr14_adding_generics-1_3-ea" />
 -->
-    <property name="jsr14.home" value="/home/software/java/jsr14_adding_generics-1_3-ea" />
 
-    <!--
-       Set this to the full path to the HTML XSL stylesheet "chunk.xsl" from the
-       DocBook modular stylesheets, http://docbook.sourceforge.net/projects/xsl/
-       Note that in order to build the "docs" target, you will need Saxon
-       (http://saxon.sourceforge.net/) installed and in your CLASSPATH.
-    -->
-    <property name="html.xsl.stylesheet" value="/home/software/docbook/docbook-xsl-1.61.0/html/chunk.xsl" />
+    <!-- Set this to the directory containing the DocBook Modular XSL Stylesheets
+         from http://docbook.sourceforge.net/projects/xsl/ -->
+    <property name="xsl.stylesheet.home"
+              value="/export/home/daveho/linux/docbook/docbook-xsl-1.61.0" />
+<!--
+    <property name="xsl.stylesheet.home"
+              value="/home/software/docbook/docbook-xsl-1.61.0" />
+-->
+
+    <!-- Set this to the directory where Saxon (http://saxon.sourceforge.net/)
+         is installed. -->
+    <property name="saxon.home"
+              value="/export/home/daveho/linux/java/saxon-6.5.2" />
+
+    <!-- Set this to the directory where FOP (http://xml.apache.org/fop/)
+         is installed.  (Note: this is disabled for now.) -->
+    <property name="fop.home"
+              value="/export/home/daveho/linux/java/fop-0.20.5rc2" />
 
     <!--
       *****************************************************************
@@ -62,12 +70,29 @@
     <property name="class.dir" value="${build.dir}/classes" />
     <property name="release.dir" value="${build.dir}/release" />
     <property name="release.prop.file" value="${build.dir}/release.properties" />
+    <property name="html.xsl.stylesheet" value="${xsl.stylesheet.home}/html/chunk.xsl" />
+    <property name="fo.xsl.stylesheet" value="${xsl.stylesheet.home}/fo/docbook.xsl" />
 
     <!-- define our classpath as all the jar files in the lib dir -->
     <path id="classpath">
       <fileset dir="lib">
         <include name="*.jar"/>
       </fileset>
+    </path>
+
+    <!-- Classpath for running Saxon -->
+    <path id="saxon.classpath">
+      <pathelement location="${saxon.home}/saxon.jar"/>
+      <pathelement path="${java.class.path}"/>
+    </path>
+
+    <!-- Classpath for running FOP -->
+    <path id="fop.classpath">
+      <pathelement path="${fop.home}/build/fop.jar" />
+      <fileset dir="${fop.home}/lib">
+        <include name="**/*.jar"/>
+      </fileset>
+      <pathelement path="${java.class.path}"/>
     </path>
 
     <target name="clean" depends="init">
@@ -224,11 +249,27 @@
        </copy>
 
        <!-- Format the manual as HTML. -->
-       <exec dir="doc" executable="java" failonerror="true" >
-         <arg value="com.icl.saxon.StyleSheet" />
+       <java fork="true" dir="${doc.dir}" failonerror="true" classname="com.icl.saxon.StyleSheet" >
+         <classpath refid="saxon.classpath" />
          <arg value="manual.xml" />
          <arg value="manual.xsl" />
-       </exec>
+       </java>
+
+       <!-- Format the manual as PDF.  This is disabled for now. -->
+<!--
+       <java fork="true" dir="${doc.dir}" failonerror="true" classname="com.icl.saxon.StyleSheet" >
+         <classpath refid="saxon.classpath" />
+         <arg value="-o" />
+         <arg value="${doc.dir}/manual.fo" />
+         <arg value="manual.xml" />
+         <arg value="${fo.xsl.stylesheet}" />
+       </java>
+       <java fork="true" dir="${doc.dir}" failonerror="true" classname="org.apache.fop.apps.Fop">
+         <classpath refid="fop.classpath" />
+         <arg value="manual.fo" />
+         <arg value="manual.pdf" />
+       </java>
+-->
 
     </target>
 
