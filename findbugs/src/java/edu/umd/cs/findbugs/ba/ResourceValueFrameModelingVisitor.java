@@ -19,15 +19,85 @@
 
 package edu.umd.cs.daveho.ba;
 
-import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.*;
 
 public abstract class ResourceValueFrameModelingVisitor extends AbstractFrameModelingVisitor<ResourceValue> {
+	private ResourceValueFrame frame;
+
 	public ResourceValueFrameModelingVisitor(ResourceValueFrame frame, ConstantPoolGen cpg) {
 		super(frame, cpg);
+		this.frame = frame;
 	}
 
 	public ResourceValue getDefaultValue() {
 		return ResourceValue.notInstance();
+	}
+
+	// Things to do:
+	// Automatically detect when resource instances escape:
+	//   - putfield, putstatic
+	//   - parameters to invoke, but subclasses may override
+	//   - return (areturn)
+
+	protected void handleFieldStore(FieldInstruction ins) {
+		try {
+			// If the resource instance is stored in a field, then it escapes
+			ResourceValue topValue = frame.getTopValue();
+			if (topValue.equals(ResourceValue.instance()))
+				frame.setStatus(ResourceValueFrame.ESCAPED);
+		} catch (DataflowAnalysisException e) {
+			throw new IllegalStateException(e.toString());
+		}
+	}
+
+	public void visitPUTFIELD(PUTFIELD putfield) {
+		handleFieldStore(putfield);
+	}
+
+	public void visitPUTSTATIC(PUTSTATIC putstatic) {
+		handleFieldStore(putstatic);
+	}
+
+	/**
+	 * Override this to handle instructions that it is OK to
+	 * pass the resource instance to.
+	 */
+	protected void handleInvoke(InvokeInstruction inv) {
+		int numSlots = frame.getNumSlots();
+		int numConsumed = getNumWordsConsumed(inv);
+		for (int i = numSlots - numConsumed; i < numSlots; ++i) {
+			ResourceValue value = frame.getValue(i);
+			if (value.equals(ResourceValue.instance())) {
+				frame.setStatus(ResourceValueFrame.ESCAPED);
+				return;
+			}
+		}
+	}
+
+	public void visitINVOKEINSTANCE(INVOKEINTERFACE inv) {
+		handleInvoke(inv);
+	}
+
+	public void visitINVOKEINTERFACE(INVOKEINTERFACE inv) {
+		handleInvoke(inv);
+	}
+
+	public void visitINVOKESPECIAL(INVOKESPECIAL inv) {
+		handleInvoke(inv);
+	}
+
+	public void visitINVOKESTATIC(INVOKESTATIC inv) {
+		handleInvoke(inv);
+	}
+
+	public void visitARETURN(ARETURN ins) {
+		try {
+			ResourceValue topValue = frame.getTopValue();
+			if (topValue.equals(ResourceValue.instance()))
+				frame.setStatus(ResourceValueFrame.ESCAPED);
+		} catch (DataflowAnalysisException e) {
+			throw new IllegalStateException(e.toString());
+		}
 	}
 
 }
