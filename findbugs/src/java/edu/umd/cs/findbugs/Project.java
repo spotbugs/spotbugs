@@ -260,7 +260,12 @@ public class Project {
 		final LinkedList<String> implicitClasspath = new LinkedList<String>();
 
 		for (Iterator<String> i = jarList.iterator(); i.hasNext(); ) {
-			final File jarFile = new File(i.next());
+			String fileName = i.next();
+
+			if (!fileName.endsWith(".zip") && !fileName.endsWith(".jar"))
+				continue;
+
+			final File jarFile = new File(fileName);
 
 			if (jarFile.isFile() && !processedJars.contains(jarFile)) {
 				// Add the name of the jar to the list of processed jars to
