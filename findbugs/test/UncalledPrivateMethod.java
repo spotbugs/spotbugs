@@ -1,4 +1,10 @@
 public class UncalledPrivateMethod {
+	// Interesting tidbit:
+	// Sun's javac makes class initializer methods "default static",
+	// while jikes makes them "private final static", which could
+	// lead to spurious warnings.
+	private static final Object myObject = new Object();
+
 	String s;
 
 	private void foo(String s) {
