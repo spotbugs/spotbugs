@@ -88,7 +88,7 @@ public class SwitchFallthrough extends BytecodeScanningDetector implements Const
 				&&  (swOffsets[nextIndex] != defSwOffset)) {
 					if (nextIndex > 0 && reachable) {
 						if ((lastSeen != GOTO) && (lastSeen != GOTO_W)) {
-							bugReporter.reportBug(new BugInstance("SF_SWITCH_FALLTHROUGH", NORMAL_PRIORITY)
+							bugReporter.reportBug(new BugInstance("SF_SWITCH_FALLTHROUGH", LOW_PRIORITY)
 			        			.addClassAndMethod(this)
 			        			.addSourceLineRange(this, lastPC, getPC()));
 			        	}
