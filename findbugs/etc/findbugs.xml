@@ -68,12 +68,12 @@
     reports="WA_NOT_IN_LOOP,NO_NOTIFY_NOT_NOTIFYALL" />
   <Detector class="edu.umd.cs.findbugs.detect.BCPDoubleCheck" speed="moderate" disabled="true"
     reports="BCPDC_DOUBLECHECK" />
-  <Detector class="edu.umd.cs.findbugs.detect.BCPMethodReturnCheck" speed="fast"
+  <Detector class="edu.umd.cs.findbugs.detect.BCPMethodReturnCheck" speed="slow"
     reports="RV_RETURN_VALUE_IGNORED" />
   <Detector class="edu.umd.cs.findbugs.detect.FindNullDeref" speed="moderate"
     reports="NP_ALWAYS_NULL_EXCEPTION,NP_ALWAYS_NULL,NP_NULL_ON_SOME_PATH_EXCEPTION,NP_NULL_ON_SOME_PATH,RCN_REDUNDANT_COMPARISON_TO_NULL" />
   <Detector class="edu.umd.cs.findbugs.detect.FindOpenStream" speed="moderate"
-    reports="OS_OPEN_STREAM,OS_OPEN_STREAM_EXCEPTION_PATH" />
+    reports="OS_OPEN_STREAM,OS_OPEN_STREAM_EXCEPTION_PATH,ODR_OPEN_DATABASE_RESOURCE,ODR_OPEN_DATABASE_RESOURCE_EXCEPTION_PATH" />
   <Detector class="edu.umd.cs.findbugs.detect.FindUselessControlFlow" speed="fast"
     reports="UCF_USELESS_CONTROL_FLOW" />
   <Detector class="edu.umd.cs.findbugs.detect.FindUnreleasedLock" speed="moderate" disabled="true"
@@ -187,4 +187,6 @@
   <BugPattern abbrev="LI" type="LI_LAZY_INIT_STATIC" category="MT_CORRECTNESS" experimental="true"/>
   <BugPattern abbrev="JLM" type="JLM_JSR166_LOCK_MONITORENTER" category="MT_CORRECTNESS" experimental="true"/>
   <BugPattern abbrev="UPM" type="UPM_UNCALLED_PRIVATE_METHOD" category="PERFORMANCE"/>
+  <BugPattern abbrev="ODR" type="ODR_OPEN_DATABASE_RESOURCE" category="CORRECTNESS"/>
+  <BugPattern abbrev="ODR" type="ODR_OPEN_DATABASE_RESOURCE_EXCEPTION_PATH" category="CORRECTNESS"/>
 </FindbugsPlugin>

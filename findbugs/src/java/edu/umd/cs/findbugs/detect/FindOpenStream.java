@@ -36,7 +36,7 @@ public class FindOpenStream extends ResourceTrackingDetector<Stream, StreamResou
 	static final boolean DEBUG = Boolean.getBoolean("fos.debug");
 	static final boolean IGNORE_WRAPPED_UNINTERESTING_STREAMS = !Boolean.getBoolean("fos.allowWUS");
 
-	static final StreamFactory[] streamFactoryList = new StreamFactory[9];
+	static final StreamFactory[] streamFactoryList = new StreamFactory[12];
 	static {
 		int count = 0;
 		streamFactoryList[count++] = new IOStreamFactory("java.io.InputStream",
@@ -57,6 +57,12 @@ public class FindOpenStream extends ResourceTrackingDetector<Stream, StreamResou
 			"java.lang.System", "out", "Ljava/io/PrintStream;", true);
 		streamFactoryList[count++] = new StaticFieldLoadStreamFactory("java.io.OutputStream",
 			"java.lang.System", "err", "Ljava/io/PrintStream;", true);
+		streamFactoryList[count++] = new MethodReturnValueStreamFactory("java.sql.DriverManager",
+			"getConnection", "(Ljava/lang/String;)Ljava/sql/Connection;", false);
+		streamFactoryList[count++] = new MethodReturnValueStreamFactory("java.sql.DriverManager",
+			"getConnection", "(Ljava/lang/String;Ljava/util/Properties;)Ljava/sql/Connection;", false);
+		streamFactoryList[count++] = new MethodReturnValueStreamFactory("java.sql.DriverManager",
+			"getConnection", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/sql/Connection;", false);
 
 		if (count != streamFactoryList.length) throw new IllegalStateException();
 	}
@@ -94,7 +100,11 @@ public class FindOpenStream extends ResourceTrackingDetector<Stream, StreamResou
 
 	public boolean prescreen(ClassContext classContext, Method method) {
 		BitSet bytecodeSet = classContext.getBytecodeSet(method);
-		return bytecodeSet.get(Constants.NEW);
+		return bytecodeSet.get(Constants.NEW)
+			|| bytecodeSet.get(Constants.INVOKEINTERFACE)
+			|| bytecodeSet.get(Constants.INVOKESPECIAL)
+			|| bytecodeSet.get(Constants.INVOKESTATIC)
+			|| bytecodeSet.get(Constants.INVOKEVIRTUAL);
 	}
 
 	public StreamResourceTracker getResourceTracker(ClassContext classContext, Method method) {

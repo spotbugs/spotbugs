@@ -23,6 +23,8 @@ import edu.umd.cs.findbugs.ba.Hierarchy;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.RepositoryLookupFailureCallback;
 
+import java.util.BitSet;
+
 import org.apache.bcel.Constants;
 
 import org.apache.bcel.generic.ConstantPoolGen;
@@ -35,6 +37,14 @@ import org.apache.bcel.generic.ObjectType;
  * of calling a method on an object.
  */
 public class MethodReturnValueStreamFactory implements StreamFactory {
+	private static final BitSet invokeOpcodeSet = new BitSet();
+	static {
+		invokeOpcodeSet.set(Constants.INVOKEINTERFACE);
+		invokeOpcodeSet.set(Constants.INVOKESPECIAL);
+		invokeOpcodeSet.set(Constants.INVOKESTATIC);
+		invokeOpcodeSet.set(Constants.INVOKEVIRTUAL);
+	}
+
 	private ObjectType baseClassType;
 	private String methodName;
 	private String methodSig;
@@ -64,12 +74,11 @@ public class MethodReturnValueStreamFactory implements StreamFactory {
 
 			// For now, just support instance methods
 			short opcode = ins.getOpcode();
-			if (opcode != Constants.INVOKESPECIAL
-				&& opcode != Constants.INVOKEVIRTUAL
-				&& opcode != Constants.INVOKEINTERFACE)
+			if (!invokeOpcodeSet.get(opcode))
 				return null;
 
 			// Is invoked class a subtype of the base class we want
+			// FIXME: should test be different for INVOKESPECIAL and INVOKESTATIC?
 			InvokeInstruction inv = (InvokeInstruction) ins;
 			ObjectType classType = inv.getClassType(cpg);
 			if (!Hierarchy.isSubtype(classType, baseClassType))
