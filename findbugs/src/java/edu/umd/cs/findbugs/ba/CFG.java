@@ -232,6 +232,23 @@ public class CFG implements Debug {
 	}
 
 	/**
+	 * Get the first successor reachable from given edge type.
+	 * @param source the source block
+	 * @param edgeType the edge type leading to the successor
+	 * @return the successor, or null if there is no outgoing edge with
+	 *   the specified edge type
+	 */
+	public BasicBlock getSuccessorWithEdgeType(BasicBlock source, int edgeType) {
+		Iterator<Edge> i = outgoingEdgeIterator(source);
+		while (i.hasNext()) {
+			Edge edge = i.next();
+			if (edge.getType() == edgeType)
+				return edge.getDest();
+		}
+		return null;
+	}
+
+	/**
 	 * Get Iterator over predecessors of given basic block.
 	 */
 	public Iterator<BasicBlock> predecessorIterator(final BasicBlock block) {
