@@ -63,6 +63,7 @@ public class FindSpinLoop extends BytecodeScanningDetector implements   Constant
 			if (stage == 2 && branchTarget == start) {
 				bugReporter.reportBug(new BugInstance("SP_SPIN_ON_FIELD", NORMAL_PRIORITY)
 					.addClassAndMethod(this)
+					.addSourceLine(this, start)
 					.addReferencedField(this));
 				stage = 0;
 				}

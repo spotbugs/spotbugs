@@ -31,7 +31,6 @@ public class FindNonShortCircuit extends BytecodeScanningDetector implements   C
     private BugReporter bugReporter;
 
     public FindNonShortCircuit(BugReporter bugReporter) {
-	// System.out.println("Looking for non-short-circuit evaluation");
 	this.bugReporter = bugReporter;
 	}
 

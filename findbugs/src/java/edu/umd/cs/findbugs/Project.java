@@ -381,6 +381,7 @@ public class Project {
 	 */
 	public void write(OutputStream out) throws IOException {
 		PrintWriter writer = new PrintWriter(new OutputStreamWriter(out));
+		try {
 		writer.println(JAR_FILES_KEY);
 		for (Iterator<String> i = jarList.iterator(); i.hasNext(); ) {
 			String jarFile = i.next();
@@ -396,7 +397,9 @@ public class Project {
 			String auxClasspathEntry = i.next();
 			writer.println(auxClasspathEntry);
 		}
-		writer.close();
+		} finally {
+			writer.close();
+			}
 		
 		// Project successfully saved
 		isModified = false;
