@@ -71,8 +71,7 @@ public class OpcodeStack implements Constants2
  				return null;
  				
  			if (isArray()) {
- 				String[] tokens = signature.split("[");
- 				baseSig = tokens[0];
+ 				baseSig = getElementSignature();
  			} else {
  				baseSig = signature;
  			}
@@ -86,6 +85,21 @@ public class OpcodeStack implements Constants2
  		
  		public boolean isArray() {
  			return signature.startsWith("[");
+ 		}
+ 		
+ 		public String getElementSignature() {
+ 			if (!isArray())
+ 				return signature;
+ 			else {
+ 				int pos = 0;
+ 				int len = signature.length();
+ 				while (pos < len) {
+ 					if (signature.charAt(pos) != '[')
+ 						break;
+ 					pos++;
+ 				}
+ 				return signature.substring(pos);
+ 			}
  		}
  		
  		public boolean isPrimitive() {
@@ -112,6 +126,7 @@ public class OpcodeStack implements Constants2
  		LocalVariable lv;
  		JavaClass cls;
  		String signature;
+ 		String[] tokens;
  		Method m;
  		Item it, it2;
  		
@@ -164,6 +179,7 @@ public class OpcodeStack implements Constants2
 					pushBySignature("I");
 				break;
 	 			
+	 			case ARETURN:
 	 			case ASTORE:
 	 			case ASTORE_0:
 	 			case ASTORE_1:
@@ -240,8 +256,8 @@ public class OpcodeStack implements Constants2
 	 			case SWAP:
 	 				Item i1 = pop();
 	 				Item i2 = pop();
-	 				push(i2);
 	 				push(i1);
+	 				push(i2);
 	 			break;
 	 			
 	 			case ICONST_M1:
@@ -283,23 +299,40 @@ public class OpcodeStack implements Constants2
 	 				pop(3);
 	 			break;
 	 			
+	 			case BIPUSH:
 	 			case SIPUSH:
-	 				push(new Item("S", new Short((short)dbc.getIntConstant())));
+	 				push(new Item("I", new Integer((int)dbc.getIntConstant())));
 	 			break;
 	 			
 	 			case ISUB:
 	 				it = pop();
 	 				it2 = pop();
 	 				if ((it.getConstant() != null) && it2.getConstant() != null) {
-	 					push(new Item("I", ((Integer)it.getConstant()).intValue() - ((Integer)it2.getConstant()).intValue()));
+	 					push(new Item("I", ((Integer)it2.getConstant()).intValue() - ((Integer)it.getConstant()).intValue()));
 	 				} else {
 	 					push(new Item("I"));
 	 				}
 	 			break;
-	 				
-	 			case INVOKEVIRTUAL:
+	 			
+	 			case NEW:
+	 				pushBySignature(dbc.getClassConstantOperand());
+	 			break;
+/*	 			
+	 			case NEWARRAY:
+	 				pop();
+	 				pushBySignature(dbc.getClassConstantOperand());
+	 			break;
+*/	 				
+	 			case AALOAD:
+	 				pop();
+	 				it = pop();
+	 				pushBySignature(it.getElementSignature());
+	 			break;
+	 			
+				case INVOKEINTERFACE:
 	 			case INVOKESPECIAL:
 	 			case INVOKESTATIC:
+	 			case INVOKEVIRTUAL:
 	 				signature = dbc.getSigConstantOperand();
 	 				Type[] argTypes = Type.getArgumentTypes(signature);
 	 				pop(argTypes.length);
