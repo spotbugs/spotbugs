@@ -38,11 +38,24 @@ public class DetectorFactoryCollection {
 	private static DetectorFactoryCollection theInstance;
 	private static final Object lock = new Object();
 
+	private static File[] pluginList;
+
 	/**
 	 * Constructor.
 	 */
 	private DetectorFactoryCollection() {
 		loadPlugins();
+	}
+
+	/**
+	 * Set the list of plugins to load explicitly.
+	 * This must be done before the instance of DetectorFactoryCollection
+	 * is created.
+	 * @param pluginList list of plugin Jar files to load
+	 */
+	public static void setPluginList(File[] pluginList) {
+		DetectorFactoryCollection.pluginList = new File[pluginList.length];
+		System.arraycopy(pluginList, 0, DetectorFactoryCollection.pluginList, 0, pluginList.length);
 	}
 
 	/**
@@ -84,50 +97,59 @@ public class DetectorFactoryCollection {
 
 	/**
 	 * Load all plugins.
-	 * Uses the "findbugs.home" property to determine where
-	 * FindBugs is installed.
+	 * If a setPluginList() has been called, then those plugins
+	 * are loaded.  Otherwise, the "findbugs.home" property is checked
+	 * to determine where FindBugs is installed, and the plugin files
+	 * are dynamically loaded from the plugin directory.
 	 */
 	private void loadPlugins() {
 		// Load all detector plugins.
 	
-		String homeDir = FindBugs.getHome();
-	
-		File pluginDir = new File(homeDir + File.separator + "plugin");
-		File[] contentList = pluginDir.listFiles();
-		if (contentList == null) {
-			System.err.println("Error: The path " + pluginDir.getPath() + " does not seem to be a directory!");
-			System.exit(1);
+		if (pluginList == null) {
+			String homeDir = FindBugs.getHome();
+
+			File pluginDir = new File(homeDir + File.separator + "plugin");
+			File[] contentList = pluginDir.listFiles();
+			if (contentList == null) {
+				System.err.println("Error: The path " + pluginDir.getPath() + " does not seem to be a directory!");
+				System.exit(1);
+			}
+
+			ArrayList<File> arr = new ArrayList<File>();
+			for (int i = 0; i < contentList.length; ++i) {
+				if (contentList[i].getName().endsWith(".jar"))
+					arr.add(contentList[i]);
+			}
+			pluginList = (File[]) arr.toArray(new File[0]);
 		}
 	
 		int numLoaded = 0;
-		for (int i = 0; i < contentList.length; ++i) {
-			File file = contentList[i];
-			if (file.getName().endsWith(".jar")) {
-				try {
-					URL url = file.toURL();
-					PluginLoader pluginLoader = new PluginLoader(url);
+		for (int i = 0; i < pluginList.length; ++i) {
+			File file = pluginList[i];
+			try {
+				URL url = file.toURL();
+				PluginLoader pluginLoader = new PluginLoader(url);
 	
-					// Register all of the detectors that this plugin contains
-					DetectorFactory[] detectorFactoryList = pluginLoader.getDetectorFactoryList();
-					for (int j = 0; j < detectorFactoryList.length; ++j)
-						registerDetector(detectorFactoryList[j]);
+				// Register all of the detectors that this plugin contains
+				DetectorFactory[] detectorFactoryList = pluginLoader.getDetectorFactoryList();
+				for (int j = 0; j < detectorFactoryList.length; ++j)
+					registerDetector(detectorFactoryList[j]);
 	
-					I18N i18n = I18N.instance();
+				I18N i18n = I18N.instance();
 	
-					// Register the BugPatterns
-					BugPattern[] bugPatternList = pluginLoader.getBugPatternList();
-					for (int j = 0; j < bugPatternList.length; ++j)
-						i18n.registerBugPattern(bugPatternList[j]);
+				// Register the BugPatterns
+				BugPattern[] bugPatternList = pluginLoader.getBugPatternList();
+				for (int j = 0; j < bugPatternList.length; ++j)
+					i18n.registerBugPattern(bugPatternList[j]);
 	
-					// Register the BugCodes
-					BugCode[] bugCodeList = pluginLoader.getBugCodeList();
-					for (int j = 0; j < bugCodeList.length; ++j)
-						i18n.registerBugCode(bugCodeList[j]);
+				// Register the BugCodes
+				BugCode[] bugCodeList = pluginLoader.getBugCodeList();
+				for (int j = 0; j < bugCodeList.length; ++j)
+					i18n.registerBugCode(bugCodeList[j]);
 	
-					++numLoaded;
-				} catch (Exception e) {
-					System.err.println("Warning: could not load plugin " + file.getPath() + ": " + e.toString());
-				}
+				++numLoaded;
+			} catch (Exception e) {
+				System.err.println("Warning: could not load plugin " + file.getPath() + ": " + e.toString());
 			}
 		}
 	

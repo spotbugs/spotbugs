@@ -599,6 +599,18 @@ public class FindBugs implements Constants2, ExitCodes
 			if (argCount == argv.length) throw new IllegalArgumentException(option + " option requires argument");
 			String homeDir = argv[argCount];
 			FindBugs.setHome(homeDir);
+		} else if (option.equals("-pluginList")) {
+			++argCount;
+			if (argCount == argv.length) throw new IllegalArgumentException(option + " option requires argument");
+
+			String pluginListStr = argv[argCount];
+			ArrayList<File> pluginList = new ArrayList<File>();
+			StringTokenizer tok = new StringTokenizer(pluginListStr, File.pathSeparator);
+			while (tok.hasMoreTokens()) {
+				pluginList.add(new File(tok.nextToken()));
+			}
+
+			DetectorFactoryCollection.setPluginList((File[]) pluginList.toArray(new File[0]));
 		} else if (option.equals("-low"))
 			priorityThreshold = Detector.LOW_PRIORITY;
 		else if (option.equals("-medium"))
@@ -700,6 +712,8 @@ public class FindBugs implements Constants2, ExitCodes
 			System.out.println("Example: java -jar findbugs.jar rt.jar");
 			System.out.println("Options:");
 			System.out.println("   -home <home directory>        specify FindBugs home directory");
+			System.out.println("   -pluginList <jar1>" + File.pathSeparatorChar + "<jar2>...  " +
+				"specify list of plugin Jar files to load");
 			System.out.println("   -quiet                        suppress error messages");
 			System.out.println("   -low                          report all bugs");
 			System.out.println("   -medium                       report medium and high priority bugs [default]");
