@@ -427,6 +427,7 @@ public class FindBugs implements Constants2, ExitCodes {
 	 */
 	private static class FindBugsCommandLine extends CommandLine {
 		private int bugReporterType = PRINTING_REPORTER;
+		private boolean relaxedReportingMode = false;
 		private boolean xmlWithMessages = false;
 		private String stylesheet = null;
 		private Project project = new Project();
@@ -456,6 +457,7 @@ public class FindBugs implements Constants2, ExitCodes {
 			addSwitchWithOptionalExtraPart("-html", "stylesheet",
 				"Generate HTML output (default stylesheet is default.xsl)");
 			addSwitch("-emacs", "Use emacs reporting format");
+			addSwitch("-relaxed", "Relaxed reporting mode (more false positives!)");
 			addOption("-outputFile", "filename", "Save output in named file");
 			addOption("-visitors", "v1[,v2...]", "run only named visitors");
 			addOption("-omitVisitors", "v1[,v2...]", "omit named visitors");
@@ -526,9 +528,11 @@ public class FindBugs implements Constants2, ExitCodes {
 					else
 						throw new IllegalArgumentException("Unknown option: -xml:" + optionExtraPart);
 				}
-			} else if (option.equals("-emacs"))
+			} else if (option.equals("-emacs")) {
 				bugReporterType = EMACS_REPORTER;
-			else if (option.equals("-html")) {
+			} else if (option.equals("-relaxed")) {
+				relaxedReportingMode = true;
+			} else if (option.equals("-html")) {
 				bugReporterType = HTML_REPORTER;
 				if (!optionExtraPart.equals("")) {
 					stylesheet = optionExtraPart;
@@ -747,6 +751,8 @@ public class FindBugs implements Constants2, ExitCodes {
 				findBugs.setFilter(filterFile, include);
 
 			findBugs.setClassScreener(classScreener);
+			
+			findBugs.setRelaxedReportingMode(relaxedReportingMode);
 
 			return findBugs;
 		}
@@ -789,6 +795,7 @@ public class FindBugs implements Constants2, ExitCodes {
 	}
 
 	private ErrorCountingBugReporter bugReporter;
+	private boolean relaxedReportingMode;
 	private Project project;
 	private List<ClassObserver> classObserverList;
 	private Detector detectors [];
@@ -818,6 +825,7 @@ public class FindBugs implements Constants2, ExitCodes {
 			throw new IllegalArgumentException("null project");
 
 		this.bugReporter = new ErrorCountingBugReporter(bugReporter);
+		this.relaxedReportingMode = false;
 		this.project = project.duplicate();
 		this.classObserverList = new LinkedList<ClassObserver>();
 
@@ -888,6 +896,16 @@ public class FindBugs implements Constants2, ExitCodes {
 	public void setClassScreener(ClassScreener classScreener) {
 		this.classScreener = classScreener;
 	}
+	
+	/**
+	 * Set relaxed reporting mode.
+	 * 
+	 * @param relaxedReportingMode true if relaxed reporting mode should be enabled,
+	 *                             false if not
+	 */
+	public void setRelaxedReportingMode(boolean relaxedReportingMode) {
+		this.relaxedReportingMode = relaxedReportingMode;
+	}
 
 	/**
 	 * Execute FindBugs on the Project.
@@ -901,6 +919,10 @@ public class FindBugs implements Constants2, ExitCodes {
 		// Configure the analysis context
 		analysisContext = new AnalysisContext(bugReporter);
 		analysisContext.setSourcePath(project.getSourceDirList());
+		
+		if (relaxedReportingMode) {
+			analysisContext.setBoolProperty(FindBugsAnalysisProperties.RELAXED_REPORTING_MODE,true);
+		}
 
 		// Give the BugReporter a reference to this object,
 		// in case it wants to access information such
