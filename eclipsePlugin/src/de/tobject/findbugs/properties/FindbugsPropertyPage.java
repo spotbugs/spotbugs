@@ -20,6 +20,7 @@
 
 package de.tobject.findbugs.properties;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -91,7 +92,7 @@ public class FindbugsPropertyPage extends PropertyPage {
 	private Combo minPriorityCombo;
 	private Button[] chkEnableBugCategoryList;
 	private String[] bugCategoryList;
-	private ProjectFilterSettings origFilterSettings;
+	private UserPreferences origUserPreferences;
 	private IProject project;
 	protected TableViewer availableFactoriesTableViewer;
 	protected Map factoriesToBugAbbrev;
@@ -116,16 +117,15 @@ public class FindbugsPropertyPage extends PropertyPage {
 		IAdaptable resource = getElement();
 		this.project = (IProject) resource.getAdapter(IProject.class);
 		
+		// Get current user preferences for project
 		try {
-			// Get the ProjectFilterSettings for the project.
-			this.origFilterSettings = FindbugsPlugin.getProjectFilterSettings(project);
+			this.origUserPreferences = FindbugsPlugin.getUserPreferences(project);
 		} catch (CoreException e) {
-			FindbugsPlugin.getDefault().logException(e, "Could not get filter settings for project");
-			
 			// Use default settings
-			this.origFilterSettings = ProjectFilterSettings.createDefault();
+			FindbugsPlugin.getDefault().logException(e, "Could not get user preferences for project");
+			this.origUserPreferences = UserPreferences.createDefaultUserPreferences();
 		}
-
+		
 		Composite composite = new Composite(parent, SWT.NONE);
 		GridLayout layout = new GridLayout();
 		composite.setLayout(layout);
@@ -147,7 +147,7 @@ public class FindbugsPropertyPage extends PropertyPage {
 		minPriorityCombo.add(ProjectFilterSettings.HIGH_PRIORITY);
 		minPriorityCombo.add(ProjectFilterSettings.MEDIUM_PRIORITY);
 		minPriorityCombo.add(ProjectFilterSettings.LOW_PRIORITY);
-		minPriorityCombo.setText(origFilterSettings.getMinPriority());
+		minPriorityCombo.setText(origUserPreferences.getFilterSettings().getMinPriority());
 		minPriorityCombo.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
 		
 		Composite categoryGroup = new Composite(composite, SWT.NONE);
@@ -243,7 +243,7 @@ public class FindbugsPropertyPage extends PropertyPage {
 			String category = (String) i.next();
 			Button checkBox = new Button(categoryGroup, SWT.CHECK);
 			checkBox.setText(I18N.instance().getBugCategoryDescription(category));
-			checkBox.setSelection(origFilterSettings.containsCategory(category));
+			checkBox.setSelection(origUserPreferences.getFilterSettings().containsCategory(category));
 			
 			GridData layoutData = new GridData();
 			layoutData.horizontalIndent = 15;
@@ -442,19 +442,32 @@ public class FindbugsPropertyPage extends PropertyPage {
 	public boolean performOk() {
 		boolean selection = this.chkEnableFindBugs.getSelection();
 		boolean result = true;
-		storeDetectorFactories(project, getSelectedDetectorFactories());
 		
 		// Keep of track of whether we need to update
 		// which warning markers are shown.
 		boolean filterOptionsChanged = false;
-		
-		ProjectFilterSettings updatedFilterSettings = getUpdatedProjectFilterSettings();
-		if (!updatedFilterSettings.equals(origFilterSettings)) {
-			filterOptionsChanged = true;
+
+		// Get updated user preferences for the project
+		UserPreferences updatedUserPreferences = getUpdatedUserPreferences();
+
+		// Have user preferences for project changed?
+		// If so, write them to the user preferences file.
+		if (!updatedUserPreferences.equals(origUserPreferences)) {
+			System.out.println("User preferences for project changed!");
 			try {
-				FindbugsPlugin.storeProjectFilterSettings(project, updatedFilterSettings);
+				FindbugsPlugin.saveUserPreferences(project, updatedUserPreferences);
 			} catch (CoreException e) {
-				FindbugsPlugin.getDefault().logException(e, "Could not store filter settings for project");
+				FindbugsPlugin.getDefault().logException(e, "Could not store FindBugs preferences for project");
+			} catch (IOException e) {
+				FindbugsPlugin.getDefault().logException(e, "Could not store FindBugs preferences for project");
+			}
+			
+			// Have filter settings changed?
+			// If so, we need to redisplay warnings.
+			if (!updatedUserPreferences.getFilterSettings().equals(
+					origUserPreferences.getFilterSettings())) {
+				System.out.println("Filter setting for project changed!");
+				filterOptionsChanged = true;
 			}
 		}
 		
@@ -467,11 +480,27 @@ public class FindbugsPropertyPage extends PropertyPage {
 		}
 		
 		if (result && filterOptionsChanged) {
+			System.out.println("Redisplaying markers!");
 			MarkerUtil.redisplayMarkers(project, getShell());
 		}
 		
-		
 		return result;
+	}
+
+	private UserPreferences getUpdatedUserPreferences() {
+		UserPreferences updatedUserPreferences = UserPreferences.createDefaultUserPreferences();
+		
+		List selectedDetectorFactoryList = getSelectedDetectorFactories();
+		updatedUserPreferences.enableAllDetectors(false);
+		for (Iterator i = selectedDetectorFactoryList.iterator(); i.hasNext(); ) {
+			DetectorFactory factory = (DetectorFactory) i.next();
+			updatedUserPreferences.enableDetector(factory, true);
+		}
+		
+		ProjectFilterSettings filterSettings = getUpdatedProjectFilterSettings();
+		updatedUserPreferences.setProjectFilterSettings(filterSettings);
+		
+		return updatedUserPreferences;
 	}
 
 	/**

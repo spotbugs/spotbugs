@@ -54,6 +54,7 @@ import edu.umd.cs.findbugs.PackageMemberAnnotation;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.config.ProjectFilterSettings;
+import edu.umd.cs.findbugs.config.UserPreferences;
 
 /**
  * Utility methods for converting FindBugs BugInstance objects
@@ -364,10 +365,9 @@ public abstract class MarkerUtil {
 						throws InvocationTargetException, InterruptedException {
 					
 					try {
-						// Get filter settings for project,
+						// Get user preferences for project,
 						// so we know what to diplay
-						ProjectFilterSettings filterSettings =
-							FindbugsPlugin.getProjectFilterSettings(project);
+						UserPreferences userPrefs = FindbugsPlugin.getUserPreferences(project);
 						
 						// Get the saved bug collection for the project
 						SortedBugCollection bugCollection =
@@ -380,7 +380,7 @@ public abstract class MarkerUtil {
 							// Display warnings
 							for (Iterator i = bugCollection.iterator(); i.hasNext();) {
 								BugInstance bugInstance = (BugInstance) i.next();
-								if (displayWarning(bugInstance, filterSettings)) {
+								if (displayWarning(bugInstance, userPrefs.getFilterSettings())) {
 									MarkerUtil.createMarker(bugInstance, project);
 								}
 							}

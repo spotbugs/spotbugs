@@ -37,6 +37,7 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.config.ProjectFilterSettings;
+import edu.umd.cs.findbugs.config.UserPreferences;
 
 /**
  * The <code>Reporter</code> is a class that is called by the FindBugs engine
@@ -68,8 +69,8 @@ public class Reporter extends AbstractBugReporter {
 	/** Set of names of analyzed classes. */
 	private Set analyzedClassNameSet;
 	
-	/** Current filter settings for the project. */
-	private ProjectFilterSettings filterSettings;
+	/** Current user preferences for the project. */
+	private UserPreferences userPrefs;
 	
 	private boolean workStarted;
 	
@@ -89,10 +90,10 @@ public class Reporter extends AbstractBugReporter {
 		this.bugCollection = new SortedBugCollection();
 		this.analyzedClassNameSet = new HashSet();
 		try {
-			this.filterSettings = FindbugsPlugin.getProjectFilterSettings(project);
+			this.userPrefs = FindbugsPlugin.getUserPreferences(project);
 		} catch (CoreException e) {
-			FindbugsPlugin.getDefault().logException(e, "Error getting filter settings for project");
-			this.filterSettings = ProjectFilterSettings.createDefault();
+			FindbugsPlugin.getDefault().logException(e, "Error getting FindBugs preferences for project");
+			this.userPrefs = UserPreferences.createDefaultUserPreferences();
 		}
 	}
 	
@@ -101,7 +102,7 @@ public class Reporter extends AbstractBugReporter {
 	 */
 	protected void doReportBug(BugInstance bug) {
 		getBugCollection().add(bug);
-		if (MarkerUtil.displayWarning(bug, filterSettings)) {
+		if (MarkerUtil.displayWarning(bug, userPrefs.getFilterSettings())) {
 			MarkerUtil.createMarker(bug, project);
 		}
 	}

@@ -339,11 +339,13 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 	/**
 	 * Get ProjectFilterSettings for given project.
 	 * If no settings exist yet, default settings are created.
+	 * Note: this is just for backwards compatibility.
+	 * The UserPreferences for the project now stores the filter settings.
 	 * 
 	 * @param project the project
 	 * @return the ProjectFilterSettings for the project
 	 */
-	public static ProjectFilterSettings getProjectFilterSettings(IProject project) throws CoreException {
+	private static ProjectFilterSettings getProjectFilterSettings(IProject project) throws CoreException {
 		ProjectFilterSettings settings = (ProjectFilterSettings)
 			project.getSessionProperty(SESSION_PROPERTY_FILTER_SETTINGS);
 		if (settings == null) {
@@ -357,18 +359,6 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 			project.setSessionProperty(SESSION_PROPERTY_FILTER_SETTINGS, settings);
 		}
 		return settings;
-	}
-	
-	/**
-	 * Store project filter settings.
-	 * 
-	 * @param project  the project
-	 * @param settings the project filter settings
-	 * @throws CoreException
-	 */
-	public static void storeProjectFilterSettings(IProject project, ProjectFilterSettings settings) throws CoreException {
-		project.setSessionProperty(SESSION_PROPERTY_FILTER_SETTINGS, settings);
-		project.setPersistentProperty(PERSISTENT_PROPERTY_FILTER_SETTINGS, settings.toEncodedString());
 	}
 	
 	/**
@@ -538,10 +528,12 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 	 * @throws CoreException 
 	 * @throws IOException 
 	 */
-	public static void saveUserPreferences(IProject project) throws CoreException, IOException {
-		IFile userPrefsFile = getUserPreferencesFile(project);
+	public static void saveUserPreferences(IProject project, final UserPreferences userPrefs)
+			throws CoreException, IOException {
+		// Make the new user preferences current for the project
+		project.setSessionProperty(SESSION_PROPERTY_USERPREFS, userPrefs);
 		
-		final UserPreferences userPrefs = getUserPreferences(project);
+		IFile userPrefsFile = getUserPreferencesFile(project);
 		
 		FileOutput userPrefsOutput = new FileOutput() {
 			public void writeFile(OutputStream os) throws IOException {
