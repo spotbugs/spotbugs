@@ -72,7 +72,7 @@ if "%FINDBUGS_HOME%"=="" goto homeNotSet
 :: echo appjar is %appjar%
 :: echo args is %args%
 :: echo jvmargs is %jvmargs%
-"%javacmd%" "%debugArg%" "-Dfindbugs.home=%FINDBUGS_HOME%" %jvmargs% -jar "%FINDBUGS_HOME%\lib\%appjar%" %args%
+"%javacmd%" %debugArg% "-Dfindbugs.home=%FINDBUGS_HOME%" %jvmargs% -jar "%FINDBUGS_HOME%\lib\%appjar%" %args%
 goto end
 
 :: ----------------------------------------------------------------------
