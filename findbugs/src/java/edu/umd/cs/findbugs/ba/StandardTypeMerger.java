@@ -49,7 +49,7 @@ public class StandardTypeMerger implements TypeMerger, Constants, ExtendedTypes 
 		else if (bType == T_TOP)	// Top is the identity element
 			return a;
 		else if (aType == T_BOTTOM || bType == T_BOTTOM)	// Bottom meet anything is bottom
-			return TypeFrame.getBottomType();
+			return BottomType.instance();
 		else if (isReferenceType(aType) && isReferenceType(bType)) {	// Two object types!
 			// Handle the Null type, which serves as a special "top"
 			// value for object types.
@@ -62,13 +62,13 @@ public class StandardTypeMerger implements TypeMerger, Constants, ExtendedTypes 
 			ReferenceType bRef = (ReferenceType) b;
 			return mergeReferenceTypes(aRef, bRef);
 		} else if (isReferenceType(aType) || isReferenceType(bType))	// Object meet non-object is bottom
-			return TypeFrame.getBottomType();
+			return BottomType.instance();
 		else if (aType == bType)	// Same non-object type?
 			return a;
 		else if (isIntegerType(aType) && isIntegerType(bType)) // Two different integer types - use T_INT
 			return Type.INT;
 		else						// Default - types are incompatible
-			return TypeFrame.getBottomType();
+			return BottomType.instance();
 	}
 
 	/**
