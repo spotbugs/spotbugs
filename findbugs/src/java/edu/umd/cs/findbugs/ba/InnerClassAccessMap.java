@@ -25,10 +25,10 @@ import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.*;
 
 public class InnerClassAccessMap {
-	private Map<String, Map<String, XField>> classToAccessMap;
+	private Map<String, Map<String, InnerClassAccess>> classToAccessMap;
 
 	private InnerClassAccessMap() {
-		this.classToAccessMap = new HashMap<String, Map<String, XField>>();
+		this.classToAccessMap = new HashMap<String, Map<String, InnerClassAccess>>();
 	}
 
 	private static InnerClassAccessMap instance = new InnerClassAccessMap();
@@ -49,30 +49,45 @@ public class InnerClassAccessMap {
 	private static class InstructionCallback implements BytecodeScanner.Callback {
 		private JavaClass javaClass;
 		private String methodName;
+		private String methodSig;
 		private byte[] instructionList;
-		private Map<String, XField> accessMap;
+		private InnerClassAccess access;
+		private int accessCount;
 
-		public InstructionCallback(JavaClass javaClass, String methodName, byte[] instructionList, Map<String, XField> accessMap) {
+		public InstructionCallback(JavaClass javaClass, String methodName, String methodSig, byte[] instructionList) {
 			this.javaClass = javaClass;
 			this.methodName = methodName;
+			this.methodSig = methodSig;
 			this.instructionList = instructionList;
-			this.accessMap = accessMap;
+			this.access = null;
+			this.accessCount = 0;
 		}
 
 		public void handleInstruction(int opcode, int index) {
 			switch (opcode) {
 			case Constants.GETFIELD:
 			case Constants.PUTFIELD:
-				setField(getIndex(instructionList, index), false);
+				setField(getIndex(instructionList, index), false, opcode == Constants.GETFIELD);
 				break;
 			case Constants.GETSTATIC:
 			case Constants.PUTSTATIC:
-				setField(getIndex(instructionList, index), true);
+				setField(getIndex(instructionList, index), true, opcode == Constants.GETSTATIC);
 				break;
 			}
 		}
 
-		private void setField(int cpIndex, boolean isStatic) {
+		public InnerClassAccess getAccess() {
+			return access;
+		}
+
+		private void setField(int cpIndex, boolean isStatic, boolean isLoad) {
+			// We only allow one field access for an accessor method.
+			accessCount++;
+			if (accessCount != 1) {
+				access = null;
+				return;
+			}
+
 			ConstantPool cp = javaClass.getConstantPool();
 			ConstantFieldref fieldref = (ConstantFieldref) cp.getConstant(cpIndex);
 
@@ -87,11 +102,39 @@ public class InnerClassAccessMap {
 				? (XField) new StaticField(className, fieldName, fieldSig)
 				: (XField) new InstanceField(className, fieldName, fieldSig);
 
-			accessMap.put(methodName, xfield);
+			if (isValidAccessMethod(methodSig, xfield, isLoad))
+				access = new InnerClassAccess(methodName, methodSig, xfield, isLoad);
+		}
+
+		private boolean isValidAccessMethod(String methodSig, XField field, boolean isLoad) {
+			// Figure out what the expected method signature should be
+			String classSig = "L" + javaClass.getClassName().replace('.', '/') + ";";
+			StringBuffer buf = new StringBuffer();
+			buf.append('(');
+			String fieldSig = field.getFieldSignature();
+			if (!field.isStatic())
+				buf.append(classSig); // the OuterClass.this reference
+			if (!isLoad)
+				buf.append(field.getFieldSignature()); // the value being stored
+			buf.append(')');
+			buf.append(field.getFieldSignature()); // all accessors return the contents of the field
+
+			String expectedMethodSig = buf.toString();
+
+			if (!expectedMethodSig.equals(methodSig)) {
+/*
+				System.err.println("In " + javaClass.getClassName() + "." + methodName + " expected " +
+					expectedMethodSig + ", saw " + methodSig);
+				System.err.println(isLoad ? "LOAD" : "STORE");
+*/
+				return false;
+			}
+
+			return true;
 		}
 	}
 
-	private static final Map<String, XField> emptyMap = new HashMap<String, XField>();
+	private static final Map<String, InnerClassAccess> emptyMap = new HashMap<String, InnerClassAccess>();
 
 	/**
 	 * Return a map of inner-class member access method names to
@@ -99,12 +142,12 @@ public class InnerClassAccessMap {
 	 * @param className the name of the class
 	 * @return map of access method names to the fields they access
 	 */
-	public Map<String, XField> getAccessMapForClass(String className)
+	public Map<String, InnerClassAccess> getAccessMapForClass(String className)
 		throws ClassNotFoundException {
 
-		Map<String, XField> map = classToAccessMap.get(className);
+		Map<String, InnerClassAccess> map = classToAccessMap.get(className);
 		if (map == null) {
-			map = new HashMap<String, XField>();
+			map = new HashMap<String, InnerClassAccess>();
 			JavaClass javaClass = Repository.lookupClass(className);
 
 			Method[]  methodList = javaClass.getMethods();
@@ -119,8 +162,12 @@ public class InnerClassAccessMap {
 					continue;
 
 				byte[] instructionList = code.getCode();
-				InstructionCallback callback = new InstructionCallback(javaClass, methodName, instructionList, map);
+				String methodSig = method.getSignature();
+				InstructionCallback callback = new InstructionCallback(javaClass, methodName, methodSig, instructionList);
 				new BytecodeScanner().scan(instructionList, callback);
+				InnerClassAccess access = callback.getAccess();
+				if (access != null)
+					map.put(methodName, access);
 			}
 
 			if (map.size() == 0)
