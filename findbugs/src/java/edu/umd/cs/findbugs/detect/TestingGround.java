@@ -28,7 +28,7 @@ import org.apache.bcel.classfile.*;
 public class TestingGround extends BytecodeScanningDetector implements Constants2 {
 
 	private BugReporter bugReporter;
-	private final boolean active = true;
+	private final boolean active = false;
 	private NumberFormat formatter = null;
 
 	public TestingGround(BugReporter bugReporter) {
