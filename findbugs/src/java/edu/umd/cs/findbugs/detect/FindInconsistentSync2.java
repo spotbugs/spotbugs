@@ -255,7 +255,7 @@ public class FindInconsistentSync2 implements Detector {
 			if (freq < MIN_SYNC_PERCENT) continue;
 
 			// At this point, we report the field as being inconsistently synchronized
-			int priority = freq > 75 ? NORMAL_PRIORITY : LOW_PRIORITY;
+			int priority = NORMAL_PRIORITY;
 			if (stats.getNumGetterMethodAccesses() >= unlocked)
 				// Unlocked accesses are only in getter method(s).
 				priority = LOW_PRIORITY;
