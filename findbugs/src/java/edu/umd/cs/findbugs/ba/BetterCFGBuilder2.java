@@ -332,7 +332,6 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes {
 
 				// Add the instruction to the block
 				if (DEBUG) System.out.println("BB " + basicBlock.getId() + ": adding" + handle);
-				//addInstructionCheck(basicBlock);
 				basicBlock.addInstruction(handle);
 				subroutine.addInstruction(handle);
 
@@ -383,11 +382,6 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes {
 						}
 					}
 				}
-
-/*
-				if (ins instanceof JsrInstruction && !endOfBasicBlock)
-					throw new IllegalStateException("Hosed!");
-*/
 
 				if (!endOfBasicBlock) {
 					InstructionHandle next = handle.getNext();
@@ -487,7 +481,6 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes {
 			BasicBlock.InstructionIterator insIter = subBlock.instructionIterator();
 			while (insIter.hasNext()) {
 				InstructionHandle handle = insIter.next();
-				//addInstructionCheck(resultBlock);
 				resultBlock.addInstruction(handle);
 			}
 
@@ -601,21 +594,6 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes {
 */
 	}
 
-/*
-	public void addInstructionCheck(BasicBlock block) {
-		InstructionHandle lastHandle = block.getLastInstruction();
-		if (lastHandle == null) return;
-		Instruction ins = lastHandle.getInstruction();
-		if (ins instanceof JsrInstruction) {
-			BasicBlock.InstructionIterator i = block.instructionIterator();
-			while (i.hasNext()) {
-				System.out.println(i.next());
-			}
-			throw new IllegalStateException("Adding instruction to end of JSR block!");
-		}
-	}
-*/
-
 	public static void main(String[] argv) throws Exception {
 		if (argv.length != 1) {
 			System.err.println("Usage: " + BetterCFGBuilder2.class.getName() + " <class file>");
@@ -643,6 +621,7 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes {
 			cfgBuilder.build();
 
 			CFG cfg = cfgBuilder.getCFG();
+			cfg.assignEdgeIds(0);
 
 			CFGPrinter cfgPrinter = new CFGPrinter(cfg);
 			System.out.println("---------------------------------------------------------------------");
