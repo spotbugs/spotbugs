@@ -224,9 +224,9 @@ a working directory.  A typical command to do this is:
 <sect1>
 <title>Modifying <filename>build.xml</filename></title>
 <para>
-You will need to make two modifications to the <filename>build.xml</filename> file
+You will need to modify the <filename>build.xml</filename> file
 used by <ulink url="http://ant.apache.org/">&Ant;</ulink> to build &FindBugs;.
-At the top of <filename>build.xml</filename> you will see two property
+At the top of <filename>build.xml</filename> you will see several property
 definitions which look like this:
 <programlisting>
 <![CDATA[
@@ -235,11 +235,15 @@ definitions which look like this:
     <property name="jsr14.home"
               value="/home/software/java/jsr14_adding_generics-1_3-ea" />
 
-    <!-- Set this to the full path to the HTML XSL stylesheet "chunk.xsl"
-         from the DocBook modular stylesheets,
-         http://docbook.sourceforge.net/projects/xsl/ -->
-    <property name="html.xsl.stylesheet"
-              value="/home/software/docbook/docbook-xsl-1.61.0/html/chunk.xsl" />
+    <!-- Set this to the directory containing the DocBook Modular XSL Stylesheets
+         from http://docbook.sourceforge.net/projects/xsl/ -->
+    <property name="xsl.stylesheet.home"
+              value="/export/home/daveho/linux/docbook/docbook-xsl-1.61.0" />
+
+    <!-- Set this to the directory where Saxon (http://saxon.sourceforge.net/)
+         is installed. -->
+    <property name="saxon.home"
+              value="/export/home/daveho/linux/java/saxon-6.5.2" />
 ]]>
 </programlisting>
 </para>
@@ -251,10 +255,18 @@ of this property to match your system.
 </para>
 
 <para>
-The second property, <varname>html.xsl.stylesheet</varname> specifies the full
-path to the DocBook XSL stylesheet <filename>html/chunk.xsl</filename>.
-You will need to set this property only if you want to generate the HTML
-version of this manual.
+The second property, <varname>xsl.stylesheet.home</varname> specifies the full
+path to the directory where you have installed the
+<ulink url="http://docbook.sourceforge.net/projects/xsl/">DocBook Modular XSL
+Stylesheets</ulink>.  You only need to specify this property if you will be
+generating the &FindBugs; documentation.
+</para>
+
+<para>
+The third property, <varname>saxon.home</varname>, is the full path to the
+directory where you installed the <ulink url="http://saxon.sourceforge.net/">&Saxon; XSLT Processor</ulink>.
+You only need to specify this property if you will be
+generating the &FindBugs; documentation.
 </para>
 
 </sect1>
