@@ -82,6 +82,8 @@ public class I18N {
 
 	/**
 	 * Get a description for given "bug type".
+	 * FIXME: this is referred to elsewhere as the "bug code" or "bug abbrev".
+	 * Should make the terminology consistent everywhere.
 	 * In this case, the bug type refers to the short prefix code prepended to
 	 * the long and short bug messages.
 	 * @param shortBugType the short bug type code
