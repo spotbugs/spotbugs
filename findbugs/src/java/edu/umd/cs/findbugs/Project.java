@@ -632,15 +632,50 @@ public class Project {
 		if (!base.endsWith(slash))
 			base = base + slash;
 
-		// Base directory pathname must be a prefix of the file
-		if (base.length() > srcFile.length())
-			return srcFile;
-		String root = srcFile.substring(0, base.length());
-		if (!root.equals(base))
-			return srcFile;
+		if (base.length() <= srcFile.length()) {
+			String root = srcFile.substring(0, base.length());
+			if (root.equals(base)) {
+				// Strip off the base directory, make relative
+				return "." + System.getProperty("file.separator") + srcFile.substring(base.length());
+			}
+		}
+		
+		//See if we can build a relative path above the base using .. notation
+		int slashPos = srcFile.indexOf(slash);
+		int branchPoint;
+		if (slashPos >= 0) {
+			String subPath = srcFile.substring(0,slashPos);
+			if ((subPath.length() == 0) || base.startsWith(subPath)) {
+				branchPoint = slashPos+1;
+				slashPos = srcFile.indexOf(slash, branchPoint);
+				while (slashPos >= 0) {
+					subPath = srcFile.substring(0,slashPos);
+					if (base.startsWith(subPath))
+						branchPoint = slashPos + 1;
+					else
+						break;
+					slashPos = srcFile.indexOf(slash, branchPoint);
+				}
+				
+				int slashCount = 0;
+				slashPos = base.indexOf(slash,branchPoint);
+				while (slashPos >= 0) {
+					slashCount++;
+					slashPos = base.indexOf(slash,slashPos+1);
+				}
+				
+				StringBuffer path = new StringBuffer();
+				String upDir = ".." + slash;
+				for (int i = 0; i < slashCount; i++) 
+					path.append(upDir);
+				path.append(srcFile.substring(branchPoint));
+				return path.toString();
+			}
+		}
+		
+		
+		return srcFile;
 
-		// Strip off the base directory, make relative
-		return "." + System.getProperty("file.separator") + srcFile.substring(base.length());
 	}
 	
 	/**
