@@ -32,8 +32,10 @@ import edu.umd.cs.findbugs.visitclass.Constants2;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
 public class DroppedException extends PreorderVisitor implements Detector, Constants2 {
-    private static final boolean DEBUG = Boolean.getBoolean("de.debug");
-    private static final boolean IGNORE_COMMENTED_CATCH_BLOCKS = Boolean.getBoolean("de.comment");
+    private static final boolean DEBUG  
+			= Boolean.getBoolean("de.debug");
+    private static final boolean LOOK_IN_SOURCE_TO_FIND_COMMENTED_CATCH_BLOCKS  
+			 = Boolean.getBoolean("de.comment");
 
     Set<String> reported = new HashSet<String>();
     Set<String> causes = new HashSet<String>();
@@ -226,7 +228,17 @@ public class DroppedException extends PreorderVisitor implements Detector, Const
 			&& !c.equals("java.lang.CloneNotSupportedException")) {
 	int priority = NORMAL_PRIORITY;
 	if (exitInTryBlock) priority++;
-	if (multiLineHandler) priority++;
+	SourceLineAnnotation srcLine  
+		= SourceLineAnnotation.fromVisitedInstruction(this, handled);
+	if (srcLine != null && LOOK_IN_SOURCE_TO_FIND_COMMENTED_CATCH_BLOCKS) {
+	    if (catchBlockHasComment(srcLine)) 
+			return;
+	    else priority++;
+		}
+	else {
+		// can't look at source
+		if (lineNumbers == null || multiLineHandler) priority+=2;
+		}
 	if (DEBUG) {
 		System.out.println("Priority is " + priority);
 		}
@@ -242,12 +254,7 @@ public class DroppedException extends PreorderVisitor implements Detector, Const
 		   priority)
 			.addClassAndMethod(this);
 
-		// If the catch block has a comment (or other text) in it,
-		// downgrade to low priority.
-		SourceLineAnnotation srcLine = bugInstance.addSourceLine(this, handled).getPrimarySourceLineAnnotation();
-		if (srcLine != null && catchBlockHasComment(srcLine)) {
-			priority = LOW_PRIORITY;
-		}
+		bugInstance.addSourceLine(srcLine);
 
 		bugInstance.addClass(c).describe("CLASS_EXCEPTION");
 		bugReporter.reportBug(bugInstance);
@@ -285,7 +292,7 @@ public class DroppedException extends PreorderVisitor implements Detector, Const
    *   false if not (or if we can't tell)
    */
   private boolean catchBlockHasComment(SourceLineAnnotation srcLine) {
-    if (!IGNORE_COMMENTED_CATCH_BLOCKS)
+    if (!LOOK_IN_SOURCE_TO_FIND_COMMENTED_CATCH_BLOCKS)
 	return false;
 
     AnalysisContext analysisContext = AnalysisContext.instance();
