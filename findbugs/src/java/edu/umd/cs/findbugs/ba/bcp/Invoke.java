@@ -96,13 +96,14 @@ public class Invoke extends PatternElement {
 		public boolean match(String s) { return pattern.matcher(s).matches(); }
 	}
 
-	private static class SubclassMatcher implements StringMatcher {
+	private class SubclassMatcher implements StringMatcher {
 		private String className;
 		public SubclassMatcher(String className) { this.className = className; }
 		public boolean match(String s) {
 			try {
 				return Repository.instanceOf(s, className);
 			} catch (ClassNotFoundException e) {
+				lookupFailureCallback.lookupFailure(e);
 				return false;
 			}
 		}
@@ -112,6 +113,7 @@ public class Invoke extends PatternElement {
 	private final StringMatcher methodNameMatcher;
 	private final StringMatcher methodSigMatcher;
 	private final int mode;
+	private final RepositoryLookupFailureCallback lookupFailureCallback;
 
 	/**
 	 * Constructor.
@@ -121,11 +123,13 @@ public class Invoke extends PatternElement {
 	 * @param methodSig the signature of the method; may be specified exactly or as a regexp
 	 * @param mode the mode of invocation
 	 */
-	public Invoke(String className, String methodName, String methodSig, int mode) {
+	public Invoke(String className, String methodName, String methodSig, int mode,
+		RepositoryLookupFailureCallback lookupFailureCallback) {
 		this.classNameMatcher = createClassMatcher(className);
 		this.methodNameMatcher = createMatcher(methodName);
 		this.methodSigMatcher = createMatcher(methodSig);
 		this.mode = mode;
+		this.lookupFailureCallback = lookupFailureCallback;
 	}
 
 	private StringMatcher createClassMatcher(String s) {
