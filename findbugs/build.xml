@@ -107,6 +107,10 @@
       <delete file="${release.prop.file}" />
       <delete file="${jar.dir}/${findbugs.jar.name}" />
       <delete file="${jar.dir}/${findbugsgui.jar.name}" />
+      <delete>
+        <fileset dir="${test.dir}" includes="*.class" />
+        <fileset dir="${test.dir}" includes="*.jar" />
+      </delete>
     </target>
 
     <target name="init" >
