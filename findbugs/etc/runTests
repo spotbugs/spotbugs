@@ -7,6 +7,7 @@
 use strict qw(refs vars);
 
 my @jarList = (
+	'test/dumb.jar', # our test cases
 	'/export/home/daveho/linux/java/j2sdk1.4.2/jre/lib/rt.jar', # JDK 1.4.2-beta rt.jar file (build 1.4.2-beta-b19)
 	'/export/home/daveho/t/classpath.jar', # Classpath 0.05
 );
