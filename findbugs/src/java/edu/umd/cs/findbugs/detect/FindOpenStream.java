@@ -49,7 +49,7 @@ class Stream extends ResourceCreationPoint {
 
 public class FindOpenStream extends ResourceTrackingDetector<Stream, FindOpenStream.StreamResourceTracker>  {
 	private static final boolean DEBUG = Boolean.getBoolean("fos.debug");
-	private static final boolean IGNORE_WRAPPED_BYTE_ARRAY_STREAMS = Boolean.getBoolean("fos.iwbas");
+	private static final boolean IGNORE_WRAPPED_BYTE_ARRAY_STREAMS = !Boolean.getBoolean("fos.allowWBAS");
 
 	/* ----------------------------------------------------------------------
 	 * Helper classes
