@@ -9,6 +9,23 @@ character correctly if it is using UTF-8 encoding. -->
   **********************************************************************
    -->
 
+  <Detector class="edu.umd.cs.findbugs.detect.DontCatchIllegalMonitorStateException">
+    <Details>
+<![CDATA[
+<p> This detector looks for try-catch blocks that catch a IllegalMonitorStateException.
+]]>
+    </Details>
+  </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.CloneIdiom">
+    <Details>
+<![CDATA[
+<p> This detector looks for violations of the idioms for writing
+cloneable classes.
+]]>
+    </Details>
+  </Detector>
+
   <Detector class="edu.umd.cs.findbugs.detect.DroppedException">
     <Details>
 <![CDATA[
@@ -384,6 +401,28 @@ It is a fast detector.
   BugPatterns
   **********************************************************************
    -->
+
+  <BugPattern type="IMSE_DONT_CATCH_IMSE">
+    <ShortDescription>Dubious catching of IllegalMonitorStateException</ShortDescription>
+    <LongDescription>Dubious catching of IllegalMonitorStateException in {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p>Dubious catching of IllegalMonitorStateException.
+]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="CN_IDIOM">
+    <ShortDescription>Class implements Cloneable but does not define or use clone method</ShortDescription>
+    <LongDescription>Class {0} implements Cloneable but does not define or use clone method</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+	Class implements Cloneable but does not define or
+	use clone method.
+]]>
+    </Details>
+  </BugPattern>
 
   <BugPattern type="DE_MIGHT_DROP">
     <ShortDescription>メソッドで例外を落としている可能性があります。</ShortDescription>
@@ -1566,6 +1605,8 @@ removed.
   **********************************************************************
    -->
 
+  <BugCode abbrev="IMSE" >Dubious catching of IllegalMonitorStateException</BugCode>
+  <BugCode abbrev="CN" >Bad implementation of cloneable idiom</BugCode>
   <BugCode abbrev="FI" >ファイナライザの使用方法が間違っています。</BugCode>
   <BugCode abbrev="ES" >文字列の一致を == や != を使って比較しています</BugCode>
   <BugCode abbrev="ML" >更新されるフィールドで同期を取ろうとしています。(ミュータブルロック)</BugCode>
