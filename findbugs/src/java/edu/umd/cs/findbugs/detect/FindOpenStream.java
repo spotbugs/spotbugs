@@ -40,7 +40,7 @@ public class FindOpenStream extends ResourceTrackingDetector<Stream, StreamResou
 	 * Tracked resource types
 	 * ---------------------------------------------------------------------- */
 
-	static final StreamFactory[] streamFactoryList = new StreamFactory[15];
+	static final StreamFactory[] streamFactoryList = new StreamFactory[21];
 	static {
 		int count = 0;
 
@@ -92,6 +92,24 @@ public class FindOpenStream extends ResourceTrackingDetector<Stream, StreamResou
 			"ODR_OPEN_DATABASE_RESOURCE");
 		streamFactoryList[count++] = new MethodReturnValueStreamFactory("java.sql.Connection",
 			"createStatement", "(III)Ljava/sql/Statement;",
+			"ODR_OPEN_DATABASE_RESOURCE");			
+		streamFactoryList[count++] = new MethodReturnValueStreamFactory("java.sql.Connection",
+			"prepareStatement", "(Ljava/lang/String;)Ljava/sql/PreparedStatement;",
+			"ODR_OPEN_DATABASE_RESOURCE");
+		streamFactoryList[count++] = new MethodReturnValueStreamFactory("java.sql.Connection",
+			"createStatement", "(Ljava/lang/String;I)Ljava/sql/PreparedStatement;",
+			"ODR_OPEN_DATABASE_RESOURCE");
+		streamFactoryList[count++] = new MethodReturnValueStreamFactory("java.sql.Connection",
+			"createStatement", "(Ljava/lang/String;II)Ljava/sql/PreparedStatement;",
+			"ODR_OPEN_DATABASE_RESOURCE");
+		streamFactoryList[count++] = new MethodReturnValueStreamFactory("java.sql.Connection",
+			"createStatement", "(Ljava/lang/String;III)Ljava/sql/PreparedStatement;",
+			"ODR_OPEN_DATABASE_RESOURCE");
+		streamFactoryList[count++] = new MethodReturnValueStreamFactory("java.sql.Connection",
+			"createStatement", "(Ljava/lang/String;[I)Ljava/sql/PreparedStatement;",
+			"ODR_OPEN_DATABASE_RESOURCE");
+		streamFactoryList[count++] = new MethodReturnValueStreamFactory("java.sql.Connection",
+			"createStatement", "(Ljava/lang/String;[Ljava/lang/String;)Ljava/sql/PreparedStatement;",
 			"ODR_OPEN_DATABASE_RESOURCE");
 
 		if (count != streamFactoryList.length) throw new IllegalStateException();
