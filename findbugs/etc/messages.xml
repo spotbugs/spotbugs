@@ -827,6 +827,17 @@ to use Object.clone(), which always returns an object of the correct type.
 ]]>
     </Details>
   </BugPattern>
+  <BugPattern type="DM_ARRAY_COMPARE">
+    <ShortDescription>Method invokes dubious equals method on an array. Use Arrays.equals instead</ShortDescription>
+    <LongDescription>Method invokes dubious equals method on an array. Use Arrays.equals instead</LongDescription>
+    <Details>
+<![CDATA[
+  <p> An array is being compared to another object using the equals method of the array. This is the same as 
+      comparing the object using ==, meaning it compares whether the array is the same as the object passed as a parameter.
+      To compare the contents of the array, use Arrays.equals( array1, array2 );
+]]>
+    </Details>  
+  </BugPattern>
   <BugPattern type="DC_DOUBLECHECK">
     <ShortDescription>Possible double check of field</ShortDescription>
     <LongDescription>Possible doublecheck on {2} in {1}</LongDescription>
