@@ -1,6 +1,6 @@
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook V4.0//EN">
  
-<book lang="en">
+<book lang="en" id="findbugs-manual">
  
 <bookinfo>
 <title>Using FindBugs</title>
@@ -73,14 +73,14 @@ the binary distribution from the <filename class=directory>C:\Software</filename
 directory, then the FindBugs software will be extracted into the directory
 <filename class=directory>C:\Software\findbugs-@VERSION@</filename>.
 This directory is the FindBugs home directory.  We'll refer to it as
-<envar>$FINDBUGS_HOME</envar> throughout this manual.
+<replaceable>$FINDBUGS_HOME</replaceable> throughout this manual.
 </para>
 
 <para>
-Once you have extracted the binary distribution into <envar>$FINDBUGS_HOME</envar>,
+Once you have extracted the binary distribution into <replaceable>$FINDBUGS_HOME</replaceable>,
 you need to add its <filename class=directory>bin</filename> subdirectory to your
 executable search path.  In addition, on Windows platforms, you need to set an
-environment variable specifying the location of <envar>$FINDBUGS_HOME</envar>.
+environment variable specifying the location of <replaceable>$FINDBUGS_HOME</replaceable>.
 </para>
 
 <para>
@@ -124,6 +124,35 @@ command line user interface.  This chapter describes the graphical user interfac
 To start FindBugs using the GUI, simply run the <command>findbugs</command>
 command.  (This assumes you have set up your executable path as described in the
 <link linkend="installing">installation section</link>.
+</para>
+
+<para>
+The <command>findbugs</command> can take several options:
+<variablelist>
+  <varlistentry>
+    <term><command>-jvmArgs=<replaceable>args</replaceable></command></term>
+    <listitem>
+       <para>
+         Specifies arguments to pass to the JVM.  For example,
+         you can use this option to increase the maximum Java heap size
+         if you are analyzing a very large program.
+       </para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><command>-plastic</command></term>
+    <listitem>
+       <para>
+          Use the plastic look and feel from <ulink url="http://jgoodies.com/">jgoodies.com</ulink>.
+          To use this option, put the file <filename>plastic.jar</filename>
+          in the <filename class=directory><replaceable>$FINDBUGS_HOME</replaceable>/lib</filename>
+          directory.
+       </para>
+    </listitem>
+  </varlistentry>
+
+</variablelist>
 </para>
 
 </sect1>
