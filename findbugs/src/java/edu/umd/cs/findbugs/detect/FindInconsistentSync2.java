@@ -262,6 +262,7 @@ public class FindInconsistentSync2 implements Detector {
 
 		final InnerClassAccessMap icam = InnerClassAccessMap.instance();
 		final ConstantPoolGen cpg = classContext.getConstantPoolGen();
+		final MethodGen methodGen = classContext.getMethodGen(method);
 		final CFG cfg = classContext.getCFG(method);
 		final LockDataflow lockDataflow = classContext.getLockDataflow(method);
 		final ValueNumberDataflow vnaDataflow = classContext.getValueNumberDataflow(method);
@@ -318,33 +319,32 @@ public class FindInconsistentSync2 implements Detector {
 						boolean isLocked = isExplicitlyLocked
 							|| (lockedMethodSet.contains(method) && isAccessedThroughThis);
 
-						// Special case:
-						// If it's an access from an instance method where
-						//   1. the field is in a superclass, and
-						//   2. the instance is "this"
-						// then we consider the field to be "owned" by the
-						// referring class, not the class where the field is defined.
-						// This is intended to discount cases where a thread safe base
-						// class is extended by a subclass that doesn't care about 
-						// thread safety.  In that situation, we don't want the 
-						// subclass to pollute the results for the base class.
-						if (ADJUST_SUBCLASS_ACCESSES && isAccessedThroughThis) {
-							// XFields are normally "canonicalized" so that the class
-							// name is the class that the field is defined in,
-							// and not some random subclass to which the field is
-							// visible.  So, we just check whether or not the
-							// class name of the field is the same as the accessing class.
-							// If not, then this is a subclass access, and we
-							// adjust the field so that the class name is the subclass.
+						// Adjust the field so its class name is the same
+						// as the type of reference it is accessed through.
+						// This helps fix false positives produced when a
+						// threadsafe class is extended by a subclass that
+						// doesn't care about thread safety.
+						if (ADJUST_SUBCLASS_ACCESSES) {
+							// Find the type of the object instance
+							TypeDataflow typeDataflow = classContext.getTypeDataflow(method);
+							TypeFrame typeFrame = typeDataflow.getFactAtLocation(location);
+							Type instanceType = typeFrame.getInstance(handle.getInstruction(), cpg);
+							if (!(instanceType instanceof ObjectType))
+								throw new AnalysisException("Field accessed through non-object reference " + instanceType,
+									methodGen, handle);
+							ObjectType objType = (ObjectType) instanceType;
 
-							String accessingClassName = classContext.getJavaClass().getClassName();
-							if (!accessingClassName.equals(xfield.getClassName()))
+							// If instance class name is not the same as that of the field,
+							// make it so
+							String instanceClassName = objType.getClassName();
+							if (!instanceClassName.equals(xfield.getClassName())) {
 								xfield = new InstanceField(
-									accessingClassName,
+									instanceClassName,
 									xfield.getFieldName(),
 									xfield.getFieldSignature(),
 									xfield.getAccessFlags()
 								);
+							}
 						}
 				
 						int kind = 0;
