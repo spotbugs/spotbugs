@@ -37,6 +37,7 @@ public class DumbMethods extends BytecodeScanningDetector implements   Constants
 /*
    private boolean sawLDCEmptyString;
 */
+   private boolean isPublicStaticVoidMain;
 
    public DumbMethods(BugReporter bugReporter) {
 	this.bugReporter = bugReporter;
@@ -44,7 +45,12 @@ public class DumbMethods extends BytecodeScanningDetector implements   Constants
 
    public void visit(Method method) {
 	flush();
+	String cName = getDottedClassName();
 
+	isPublicStaticVoidMain = method.isPublic() && method.isStatic()
+				&& getMethodName().equals("main")
+		|| cName.toLowerCase().indexOf("benchmark") >= 0;
+	// System.out.println("method " + getMethodName() + " is main? " + isPublicStaticVoidMain);
 	Code code = method.getCode();
 	if (code != null)
 		this.exceptionTable = code.getExceptionTable();
@@ -77,6 +83,11 @@ public class DumbMethods extends BytecodeScanningDetector implements   Constants
 				&& getSigConstantOperand().equals("()V")
 				&& !getDottedClassName().startsWith("java.lang"))
 		if (alreadyReported.add(getRefConstantOperand())) {
+			// System.out.println("Saw call to GC");
+			if (isPublicStaticVoidMain)  {
+				// System.out.println("Skipping GC complaint in main method");
+				return;
+				}
 			// Just save this report in a field; it will be flushed
 			// IFF there were no calls to System.currentTimeMillis();
 			// in the method.
