@@ -38,6 +38,7 @@ public class DumbMethods extends BytecodeScanningDetector implements Constants2 
 /*
    private boolean sawLDCEmptyString;
 */
+	private String primitiveObjCtorSeen;
 	private boolean isPublicStaticVoidMain;
 
 	public DumbMethods(BugReporter bugReporter) {
@@ -57,6 +58,7 @@ public class DumbMethods extends BytecodeScanningDetector implements Constants2 
 			this.exceptionTable = code.getExceptionTable();
 		if (this.exceptionTable == null)
 			this.exceptionTable = new CodeException[0];
+		primitiveObjCtorSeen = null;
 	}
 
 	public void sawOpcode(int seen) {
@@ -150,6 +152,32 @@ public class DumbMethods extends BytecodeScanningDetector implements Constants2 
 				bugReporter.reportBug(new BugInstance(this, "DM_CONVERT_CASE", LOW_PRIORITY)
 				        .addClassAndMethod(this)
 				        .addSourceLine(this));
+				        
+		if ((seen == INVOKESPECIAL) && getNameConstantOperand().equals("<init>")) {
+			String cls = getClassConstantOperand();
+			String sig = getSigConstantOperand();
+			if ((cls.equals("java/lang/Integer") && sig.equals("(I)V"))
+			||  (cls.equals("java/lang/Float") && sig.equals("(F)V"))
+			||  (cls.equals("java/lang/Double") && sig.equals("(D)V"))
+			||  (cls.equals("java/lang/Long") && sig.equals("(J)V"))
+			||  (cls.equals("java/lang/Byte") && sig.equals("(B)V"))
+			||  (cls.equals("java/lang/Character") && sig.equals("(C)V"))
+			||  (cls.equals("java/lang/Short") && sig.equals("(S)V"))
+			||  (cls.equals("java/lang/Boolean") && sig.equals("(Z)V"))) {
+				primitiveObjCtorSeen = cls;
+				return;
+			}
+		} else if ((primitiveObjCtorSeen != null)
+		       &&  (seen == INVOKEVIRTUAL) 
+		       &&   getNameConstantOperand().equals("toString")
+		       &&   getClassConstantOperand().equals(primitiveObjCtorSeen)
+		       &&   getSigConstantOperand().equals("()Ljava/lang/String;")) {
+				bugReporter.reportBug(new BugInstance(this, "DM_BOXED_PRIMITIVE_TOSTRING", LOW_PRIORITY)
+				        .addClassAndMethod(this)
+				        .addSourceLine(this));
+		}
+		primitiveObjCtorSeen = null;
+		
 /*
 	//
 	// TODO: put this back in when we have a standard way
