@@ -35,6 +35,63 @@ import org.apache.bcel.generic.*;
 public class CFG extends AbstractGraph<Edge, BasicBlock> implements Debug {
 
 	/* ----------------------------------------------------------------------
+	 * Helper classes
+	 * ---------------------------------------------------------------------- */
+
+	/**
+	 * An Iterator over the Locations in the CFG.
+	 * Because of JSR subroutines, the same instruction may actually
+	 * be part of multiple basic blocks (with different facts
+	 * true in each, due to calling context).  Locations specify
+	 * both the instruction and the basic block.
+	 */
+	private class LocationIterator implements Iterator<Location> {
+		private Iterator<BasicBlock> blockIter;
+		private BasicBlock curBlock;
+		private Iterator<InstructionHandle> instructionIter;
+		private Location next;
+
+		private LocationIterator() {
+			this.blockIter = blockIterator();
+			findNext();
+		}
+
+		public boolean hasNext() {
+			findNext();
+			return next != null;
+		}
+
+		public Location next() {
+			findNext();
+			if (next == null) throw new NoSuchElementException();
+			Location result = next;
+			next = null;
+			return result;
+		}
+
+		public void remove() {
+			throw new UnsupportedOperationException();
+		}
+
+		private void findNext() {
+			while (next == null) {
+				// Make sure we have an instruction iterator
+				if (instructionIter == null) {
+					if (!blockIter.hasNext())
+						return; // At end
+					curBlock = blockIter.next();
+					instructionIter = curBlock.instructionIterator();
+				}
+
+				if (instructionIter.hasNext())
+					next = new Location(instructionIter.next(), curBlock);
+				else
+					instructionIter = null; // Go to next block
+			}
+		}
+	}
+
+	/* ----------------------------------------------------------------------
 	 * Fields
 	 * ---------------------------------------------------------------------- */
 
@@ -117,6 +174,13 @@ public class CFG extends AbstractGraph<Edge, BasicBlock> implements Debug {
 	 */
 	public Iterator<BasicBlock> blockIterator() {
 		return vertexIterator();
+	}
+
+	/**
+	 * Get an Iterator over the Locations in the control flow graph.
+	 */
+	public Iterator<Location> locationIterator() {
+		return new LocationIterator();
 	}
 
 	/**
