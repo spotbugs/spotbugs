@@ -250,6 +250,8 @@ These options may be used with both the GUI and Text UI.
       This option sets a system property.&nbsp; &FindBugs; uses system properties
       to configure analysis options.  See <xref linkend="analysisprops"/>.
       You can use this option multiple times in order to set multiple properties.
+      Note: In most versions of Windows, the <replaceable>name=value</replaceable>
+      string must be in quotes.
       </para>
     </listitem>
   </varlistentry>
@@ -1642,7 +1644,7 @@ or producing more false warnings.
 The analysis options are set using the <command>-property</command>
 command line option.  For example:
 <screen>
-<prompt>$ </prompt><command>findbugs -textui -property cfg.noprune=true <replaceable>myApp.jar</replaceable></command>
+<prompt>$ </prompt><command>findbugs -textui -property "cfg.noprune=true" <replaceable>myApp.jar</replaceable></command>
 </screen>
 </para>
 
