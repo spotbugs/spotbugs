@@ -97,13 +97,16 @@ public class ClassContext {
 		return methodGen;
 	}
 
+	private static final int PRUNED_INFEASIBLE_EXCEPTIONS = 1;
+	private static final int PRUNED_UNCONDITIONAL_THROWERS = 2;
+
 	/**
-	 * Get a CFG for given method.
+	 * Get a "raw" CFG for given method.
+	 * No pruning is done, although the CFG may already be pruned.
 	 * @param method the method
-	 * @return the CFG
-	 * @throws CFGBuilderException if a CFG cannot be constructed for the method
+	 * @return the raw CFG
 	 */
-	public CFG getCFG(Method method) throws CFGBuilderException {
+	public CFG getRawCFG(Method method) throws CFGBuilderException {
 		CFG cfg = cfgMap.get(method);
 		if (cfg == null) {
 			MethodGen methodGen = getMethodGen(method);
@@ -112,27 +115,45 @@ public class ClassContext {
 			cfgBuilder.build();
 			cfg = cfgBuilder.getCFG();
 			cfgMap.put(method, cfg);
-
-			if (PRUNE_INFEASIBLE_EXCEPTION_EDGES) {
-				try {
-					TypeDataflow typeDataflow = getTypeDataflow(method);
-					new PruneInfeasibleExceptionEdges(cfg, typeDataflow, getConstantPoolGen()).execute();
-				} catch (DataflowAnalysisException e) {
-					// FIXME: should report the error
-				} catch (ClassNotFoundException e) {
-					lookupFailureCallback.reportMissingClass(e);
-				}
-			}
-
-			if (PRUNE_UNCONDITIONAL_EXCEPTION_THROWER_EDGES) {
-				try {
-					new PruneUnconditionalExceptionThrowerEdges(
-						methodGen, cfg, getConstantPoolGen(), lookupFailureCallback).execute();
-				} catch (DataflowAnalysisException e) {
-					// FIXME: should report the error
-				}
-			}
 		}
+		return cfg;
+	}
+
+	/**
+	 * Get a CFG for given method.
+	 * If pruning options are in effect, pruning will be done.
+	 * @param method the method
+	 * @return the CFG
+	 * @throws CFGBuilderException if a CFG cannot be constructed for the method
+	 */
+	public CFG getCFG(Method method) throws CFGBuilderException {
+		MethodGen methodGen = getMethodGen(method);
+		CFG cfg = getRawCFG(method);
+
+		if (PRUNE_INFEASIBLE_EXCEPTION_EDGES && !cfg.isFlagSet(PRUNED_INFEASIBLE_EXCEPTIONS)) {
+			try {
+				TypeDataflow typeDataflow = getTypeDataflow(method);
+				new PruneInfeasibleExceptionEdges(cfg, typeDataflow, getConstantPoolGen()).execute();
+			} catch (DataflowAnalysisException e) {
+				// FIXME: should report the error
+			} catch (ClassNotFoundException e) {
+				lookupFailureCallback.reportMissingClass(e);
+			}
+
+			cfg.setFlags(cfg.getFlags() | PRUNED_INFEASIBLE_EXCEPTIONS);
+		}
+
+		if (PRUNE_UNCONDITIONAL_EXCEPTION_THROWER_EDGES && !cfg.isFlagSet(PRUNED_UNCONDITIONAL_THROWERS)) {
+			try {
+				new PruneUnconditionalExceptionThrowerEdges(
+					methodGen, cfg, getConstantPoolGen(), lookupFailureCallback).execute();
+			} catch (DataflowAnalysisException e) {
+				// FIXME: should report the error
+			}
+
+			cfg.setFlags(cfg.getFlags() | PRUNED_UNCONDITIONAL_THROWERS);
+		}
+
 		return cfg;
 	}
 

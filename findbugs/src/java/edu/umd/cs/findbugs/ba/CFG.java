@@ -39,6 +39,7 @@ public class CFG extends AbstractGraph<Edge, BasicBlock> implements Debug {
 	 * ---------------------------------------------------------------------- */
 
 	private BasicBlock entry, exit, unhandledExceptionExit;
+	private int flags;
 
 	/* ----------------------------------------------------------------------
 	 * Public methods
@@ -49,6 +50,18 @@ public class CFG extends AbstractGraph<Edge, BasicBlock> implements Debug {
 	 * Creates empty control flow graph (with just entry and exit nodes).
 	 */
 	public CFG() {
+	}
+
+	void setFlags(int flags) {
+		this.flags = flags;
+	}
+
+	int getFlags() {
+		return flags;
+	}
+
+	boolean isFlagSet(int flag) {
+		return (flags & flag) != 0;
 	}
 
 	/** Get the entry node. */

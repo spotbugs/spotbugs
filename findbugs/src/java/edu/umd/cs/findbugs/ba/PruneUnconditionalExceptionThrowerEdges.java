@@ -82,7 +82,7 @@ public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes {
 
 				// Analyze exception paths of called method
 				// to see if it always throws an unhandled exception.
-				CFG calledCFG = classContext.getCFG(method);
+				CFG calledCFG = classContext.getRawCFG(method);
 				ExceptionPathValueDataflow pathDataflow = classContext.getExceptionPathValueDataflow(method);
 				ExceptionPathValue pathValue = pathDataflow.getStartFact(calledCFG.getExit());
 
@@ -94,9 +94,9 @@ public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes {
 					Edge fallThrough = cfg.getOutgoingEdgeWithType(basicBlock, FALL_THROUGH_EDGE);
 					if (fallThrough != null) {
 						if (DEBUG) {
-							System.out.println("PruneUnconditionalExceptionThrowerEdges:");
-							System.out.println("\tCall to " + SignatureConverter.convertMethodSignature(calledMethodGen));
-							System.out.println("\tIn method " + SignatureConverter.convertMethodSignature(methodGen));
+							System.out.println("\tREMOVING normal return for:");
+							System.out.println("\t  Call to " + SignatureConverter.convertMethodSignature(calledMethodGen));
+							System.out.println("\t  In method " + SignatureConverter.convertMethodSignature(methodGen));
 						}
 						deletedEdgeSet.add(fallThrough);
 					}
