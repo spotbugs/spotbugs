@@ -72,6 +72,12 @@ public interface TypeVisitor {
 	 * @param type the double extra type
 	 */
 	public void visitDoubleExtraType(DoubleExtraType type);
+
+	/**
+	 * Visit the return address type.
+	 * @param type the return address type
+	 */
+	public void visitReturnAddressType(ReturnAddressType type);
 }
 
 // vim:ts=4
