@@ -73,11 +73,10 @@
     <property name="html.xsl.stylesheet" value="${xsl.stylesheet.home}/html/chunk.xsl" />
     <property name="fo.xsl.stylesheet" value="${xsl.stylesheet.home}/fo/docbook.xsl" />
 
-    <!-- define our classpath as all the jar files in the lib dir -->
+    <!-- Classpath for compiling FindBugs. -->
     <path id="classpath">
-      <fileset dir="lib">
-        <include name="*.jar"/>
-      </fileset>
+      <pathelement location="${jar.dir}/bcel.jar" />
+      <pathelement location="${jar.dir}/dom4j-full.jar" />
     </path>
 
     <!-- Classpath for running Saxon -->
@@ -113,25 +112,20 @@
       <mkdir dir="${build.dir}" />
     </target>
 
-
-    <!-- target to build the main engine -->
-    <target name="findbugs" depends="init">
+    <!-- Target to compile classes. -->
+    <target name="classes" depends="init">
       <javac srcdir="${findbugs.src.dir}" destdir="${class.dir}"
              source="1.5"
              compiler="com.cortexeb.Jsr14CompilerAdapter">
         <classpath refid="classpath" />
-        <exclude name="${findbugs.src.dir}/edu/umd/cs/findbugs/gui/**" />
-        <exclude name="${findbugs.src.dir}/edu/umd/cs/findbugs/detect/**" />
       </javac>
+    </target>
 
+    <!-- Target to build jar file for the main engine. -->
+    <target name="findbugs" depends="classes">
       <copy todir="${class.dir}">
         <fileset dir="${findbugs.src.dir}" includes="**/*.properties"/>
       </copy>
-
-      <uptodate property="findbugs.jarBuild.notRequired" 
-                targetfile="${jar.dir}/${findbugs.jar.name}" >
-         <srcfiles dir="${class.dir}" />
-      </uptodate>
 
       <!--
         FindBugs engine - all classes except those in the GUI
@@ -145,10 +139,9 @@
       </jar>
     </target>
 
-    <!--
-      The core plugin. This is all of the standard bug pattern detectors.
-    -->
-    <target name="coreplugin" depends="init,findbugs">
+    <!-- Target to build the core plugin.
+         This is all of the standard bug pattern detectors.  -->
+    <target name="coreplugin" depends="classes">
 
       <javac srcdir="${findbugs.src.dir}" destdir="${class.dir}"
              includes="edu/umd/cs/findbugs/detect/*.java"
@@ -160,11 +153,6 @@
       <copy file="etc/findbugs.xml" todir="${class.dir}" />
       <copy file="etc/messages.xml" todir="${class.dir}" />
 
-      <uptodate property="coreplugin.jarBuild.notRequired" 
-                targetfile="${plugin.dir}/${coreplugin.jar.name}" >
-         <srcfiles dir="${class.dir}" />
-      </uptodate>
-
       <jar destfile="${plugin.dir}/${coreplugin.jar.name}" basedir="${class.dir}">
          <include name="*.xml" />
          <include name="edu/umd/cs/findbugs/detect/*.class" />
@@ -172,32 +160,12 @@
 
     </target>
 
-    <!-- target to build the GUI -->
-    <target name="findbugsgui" depends="init,findbugs">
-      <!--
-         The FindBugs GUI is developed using NetBeans (http://www.netbeans.org/).
-         Because NetBeans doesn't support generics yet, the GUI is written in
-         plain Java.  So, just use a standard Java compiler to compile it,
-         to avoid seeing all of the unchecked warnings.
-
-         We don't need to set an explicit classpath here
-         because the class files from the findbugs target are available
-         in ${class.dir}.
-      -->
-      <javac srcdir="${findbugs.src.dir}" destdir="${class.dir}"
-             includes="edu/umd/cs/findbugs/gui/*.java">
-        <classpath refid="classpath" />
-      </javac>
-
+    <!-- Target to build the GUI jar file. -->
+    <target name="findbugsgui" depends="classes">
       <copy todir="${class.dir}">
         <fileset dir="${findbugs.src.dir}" includes="**/*.png"/>
         <fileset dir="${findbugs.src.dir}" includes="**/*.html"/>
       </copy>
-
-      <uptodate property="findbugsgui.jarBuild.notRequired" 
-                targetfile="${jar.dir}/${findbugsgui.jar.name}" >
-         <srcfiles dir="${class.dir}" />
-      </uptodate>
 
       <!--
         When building the Jar file for the GUI, we just need the contents
@@ -212,19 +180,19 @@
       </jar>
     </target>
 
-    <!-- target to get the release version info -->
-    <target name="version" depends="findbugs">
+    <!-- Target to get the release version info. -->
+    <target name="version" depends="classes">
       <java classname="edu.umd.cs.findbugs.Version" 
              failonerror="true" output="${release.prop.file}">
          <classpath>
-           <pathelement location="${jar.dir}/${findbugs.jar.name}"/>
+           <pathelement location="${class.dir}"/>
          </classpath>
          <arg value="-props"/> 
       </java>
       <loadproperties srcFile="${release.prop.file}" />
     </target>
 
-    <!-- target to build the docs -->
+    <!-- Target to build the docs. -->
     <target name="docs" depends="version">
        <mkdir dir="${doc.dir}/manual" />
 
@@ -273,7 +241,8 @@
 
     </target>
 
-    <!-- Default target: just compile the code. -->
+    <!-- Default target: just compile the code
+         and build the Jar files. -->
     <target name="build" depends="findbugs,coreplugin,findbugsgui" />
 
     <!-- Compile the code and format the docs. -->
