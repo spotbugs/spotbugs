@@ -71,8 +71,6 @@ import org.apache.bcel.generic.NEW;
 public class LazyInit extends ByteCodePatternDetector {
 	private BugReporter bugReporter;
 
-	private static final boolean CHECK_PROPER_OBJECT_CREATION = Boolean.getBoolean("lazyinit.checkproper");
-
 	/** The pattern to look for. */
 	private static ByteCodePattern pattern = new ByteCodePattern();
 	static {
