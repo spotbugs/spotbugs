@@ -21,6 +21,7 @@ package edu.umd.cs.daveho.graph;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 public abstract class AbstractGraph
 	<
@@ -28,13 +29,81 @@ public abstract class AbstractGraph
 	VertexType extends AbstractVertex<EdgeType, VertexType>
 	> implements Graph<EdgeType, VertexType> {
 
+	/* ----------------------------------------------------------------------
+	 * Helper classes
+	 * ---------------------------------------------------------------------- */
+
+	/**
+	 * Iterator over outgoing edges.
+	 */
+	private static class OutgoingEdgeIterator
+		<
+		EdgeType extends AbstractEdge<EdgeType, VertexType>,
+		VertexType extends AbstractVertex<EdgeType, VertexType>
+		> implements Iterator<EdgeType> {
+
+		private EdgeType edge;
+
+		public OutgoingEdgeIterator(VertexType source) {
+			this.edge = source.getFirstOutgoingEdge();
+		}
+
+		public boolean hasNext() { return edge != null; }
+
+		public EdgeType next() {
+			if (!hasNext())
+				throw new NoSuchElementException();
+			EdgeType result = edge;
+			edge = edge.getNextOutgoingEdge();
+			return result;
+		}
+
+		public void remove() { throw new UnsupportedOperationException(); }
+	}
+
+	/**
+	 * Iterator over incoming edges.
+	 */
+	private static class IncomingEdgeIterator
+		<
+		EdgeType extends AbstractEdge<EdgeType, VertexType>,
+		VertexType extends AbstractVertex<EdgeType, VertexType>
+		> implements Iterator<EdgeType> {
+
+		private EdgeType edge;
+
+		public IncomingEdgeIterator(VertexType target) {
+			this.edge = target.getFirstIncomingEdge();
+		}
+
+		public boolean hasNext() { return edge != null; }
+
+		public EdgeType next() {
+			if (!hasNext())
+				throw new NoSuchElementException();
+			EdgeType result = edge;
+			edge = edge.getNextIncomingEdge();
+			return result;
+		}
+
+		public void remove() { throw new UnsupportedOperationException(); }
+	}
+
+	/* ----------------------------------------------------------------------
+	 * Fields
+	 * ---------------------------------------------------------------------- */
+
 	private ArrayList<VertexType> vertexList;
 	private ArrayList<EdgeType> edgeList;
 	private int maxVertexLabel;
 	private int nextVertexId;
 	private int maxEdgeLabel;
 
-	protected AbstractGraph() {
+	/* ----------------------------------------------------------------------
+	 * Public methods
+	 * ---------------------------------------------------------------------- */
+
+	public AbstractGraph() {
 		this.vertexList = new ArrayList<VertexType>();
 		this.edgeList = new ArrayList<EdgeType>();
 		this.maxVertexLabel = 0;
@@ -60,10 +129,8 @@ public abstract class AbstractGraph
 
 	public VertexType addVertex() {
 		VertexType v = createVertex();
-		int id = nextVertexId++;
-		maxVertexLabel = nextVertexId;
-		v.setId(id);
-		v.setLabel(id);
+		v.setId(nextVertexId++);
+		v.setLabel(maxVertexLabel++);
 		return v;
 	}
 
@@ -73,8 +140,73 @@ public abstract class AbstractGraph
 		return edge;
 	}
 
-	public abstract VertexType createVertex();
-	public abstract EdgeType createEdge(VertexType source, VertexType target);
+	public EdgeType lookupEdge(VertexType source, VertexType target) {
+		Iterator<EdgeType> i = outgoingEdgeIterator(source);
+		while (i.hasNext()) {
+			EdgeType edge = i.next();
+			if (edge.getTarget() == target)
+				return edge;
+		}
+		return null;
+	}
+
+	public int getNumVertexLabels() {
+		return maxVertexLabel;
+	}
+
+	public void setNumVertexLabels(int numLabels) {
+		this.maxVertexLabel = numLabels;
+	}
+
+	public int getNumEdgeLabels() {
+		return maxEdgeLabel;
+	}
+
+	public void setNumEdgeLabels(int numLabels) {
+		maxEdgeLabel = numLabels;
+	}
+
+	public void removeEdge(EdgeType edge) {
+		if (!edgeList.remove(edge))
+			throw new IllegalArgumentException("removing nonexistent edge!");
+		edge.getSource().removeOutgoingEdge(edge);
+		edge.getTarget().removeIncomingEdge(edge);
+	}
+
+	public void removeVertex(VertexType v) {
+		if (!vertexList.remove(v))
+			throw new IllegalArgumentException("removing nonexistent vertex!");
+
+		for (Iterator<EdgeType> i = incomingEdgeIterator(v); i.hasNext(); )
+			removeEdge(i.next());
+
+		for (Iterator<EdgeType> i = outgoingEdgeIterator(v); i.hasNext(); )
+			removeEdge(i.next());
+	}
+
+	public Iterator<EdgeType> outgoingEdgeIterator(VertexType source) {
+		return new OutgoingEdgeIterator<EdgeType, VertexType>(source);
+	}
+
+	public Iterator<EdgeType> incomingEdgeIterator(VertexType target) {
+		return new IncomingEdgeIterator<EdgeType, VertexType>(target);
+	}
+
+	public Iterator<VertexType> adjacencyListIterator(final VertexType source) {
+		return new Iterator<VertexType>() {
+			private Iterator<EdgeType> iter = outgoingEdgeIterator(source);
+			public boolean hasNext() { return iter.hasNext(); }
+			public VertexType next() { return iter.next().getTarget(); }
+			public void remove() { iter.remove(); }
+		};
+	}
+
+	/* ----------------------------------------------------------------------
+	 * Downcall methods
+	 * ---------------------------------------------------------------------- */
+
+	protected abstract VertexType createVertex();
+	protected abstract EdgeType createEdge(VertexType source, VertexType target);
 
 }
 
