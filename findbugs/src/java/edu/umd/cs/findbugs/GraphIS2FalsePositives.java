@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs;
 
+import java.util.Arrays;
+import java.util.Iterator;
 import java.util.Set;
 
 /**
@@ -29,13 +31,19 @@ import java.util.Set;
  * is a bug.
  */
 public class GraphIS2FalsePositives extends QueryBugAnnotations {
+	private static final int SERIOUS = 0;
+	private static final int HARMLESS = 1;
+	private static final int FALSE = 2;
+	private static final int MISSED = 3;
+	private static final int NON_SERIOUS_AVOIDED = 4;
+	private static final int NUM_STATS = 5;
+
 	private int syncPercent;
-	private int numSerious;
-	private int numHarmless;
-	private int numFalse;
+	private int[] stats = new int[NUM_STATS];
 	private int total;
 
 	public static void main(String[] argv) throws Exception {
+		DetectorFactoryCollection.instance(); // load plugins
 		new GraphIS2FalsePositives().execute(argv);
 	}
 
@@ -69,23 +77,55 @@ public class GraphIS2FalsePositives extends QueryBugAnnotations {
 
 	private void setParams(int syncPercent) {
 		this.syncPercent = syncPercent;
-		numSerious = numHarmless = numFalse = total = 0;
+		Arrays.fill(stats, 0);
+		this.total = 0;
 	}
 
 	private void emitDataPoint() {
-		System.out.println(syncPercent + "\t" + numSerious + "\t" + numHarmless + "\t" + numFalse + "\t" + total);
+		System.out.print(syncPercent + "\t");
+		for (int i = 0; i < NUM_STATS; ++i)
+			System.out.print(stats[i] + "\t");
+		System.out.println(total);
 	}
 
 	protected void match(BugInstance bugInstance, String filename) throws Exception {
+		if (!bugInstance.getAbbrev().equals("IS2"))
+			return;
+
+		int bugSyncPercent = -1;
+		for (Iterator<BugAnnotation> i = bugInstance.annotationIterator(); i.hasNext(); ) {
+			BugAnnotation annotation = i.next();
+			if (!(annotation instanceof IntAnnotation))
+				continue;
+			if (annotation.getDescription().equals("INT_SYNC_PERCENT")) {
+				bugSyncPercent = ((IntAnnotation) annotation).getValue();
+				break;
+			}
+		}
+		if (bugSyncPercent < 0)
+			throw new IllegalStateException();
+			//return;
+
+		boolean wouldBeReported = bugSyncPercent >= syncPercent;
+
+		int judgment;
+
 		Set<String> words = bugInstance.getTextAnnotationWords();
 		if (words.contains("BUG")) {
-			if (words.contains("HARMLESS"))
-				++numHarmless;
-			else
-				++numSerious;
-		} else
-			++numFalse;
+			/* Bug instance is at least technically a bug */
+			if (words.contains("HARMLESS")) {
+				/* Harmless bug */
+				judgment = wouldBeReported ? HARMLESS : NON_SERIOUS_AVOIDED;
+			} else {
+				/* Serious, juicy bug */
+				judgment = wouldBeReported ? SERIOUS : MISSED;
+			}
+		} else {
+			/* False positive; bad if reported */
+			judgment = wouldBeReported ? FALSE : NON_SERIOUS_AVOIDED;
+		}
 
+		++stats[judgment];
 		++total;
 	}
 }
