@@ -1584,6 +1584,13 @@ public class FindBugsFrame extends javax.swing.JFrame {
     }
     
     /**
+     * Get the ConsoleLogger.
+     */
+    public ConsoleLogger getLogger() {
+        return logger;
+    }
+    
+    /**
      * Write a message to the console window.
      */
     public void writeToConsole(String message) {
