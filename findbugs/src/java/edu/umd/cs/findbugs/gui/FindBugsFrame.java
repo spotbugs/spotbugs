@@ -732,6 +732,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
                 if (result == JFileChooser.CANCEL_OPTION)
                     return;
                 file = chooser.getSelectedFile();
+                project.setFileName(file.getPath());
             }
             
             FileOutputStream out = new FileOutputStream(file);
