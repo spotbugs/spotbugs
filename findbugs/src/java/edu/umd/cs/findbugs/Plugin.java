@@ -41,6 +41,10 @@ public class Plugin {
 	private ArrayList<BugCode> bugCodeList;
 	private boolean enabled;
 
+	// Ordering constraints
+	private ArrayList<DetectorOrderingConstraint> interPassConstraintList;
+	private ArrayList<DetectorOrderingConstraint> intraPassConstraintList;
+
 	/**
 	 * Constructor.
 	 * Creates an empty plugin object.
@@ -52,6 +56,8 @@ public class Plugin {
 		this.detectorFactoryList = new ArrayList<DetectorFactory>();
 		this.bugPatternList = new ArrayList<BugPattern>();
 		this.bugCodeList = new ArrayList<BugCode>();
+		this.interPassConstraintList = new ArrayList<DetectorOrderingConstraint>();
+		this.intraPassConstraintList = new ArrayList<DetectorOrderingConstraint>();
 	}
 
 	/**
@@ -153,6 +159,24 @@ public class Plugin {
 	public void addBugCode(BugCode bugCode) {
 		bugCodeList.add(bugCode);
 	}
+
+	/**
+	 * Add an inter-pass Detector ordering constraint.
+	 *
+	 * @param constraint the inter-pass Detector ordering constraint
+	 */
+	public void addInterPassOrderingConstraint(DetectorOrderingConstraint constraint) {
+		interPassConstraintList.add(constraint);
+	}
+
+	/**
+	 * Add an intra-pass Detector ordering constraint.
+	 *
+	 * @param constraint the intra-pass Detector ordering constraint
+	 */
+	public void addIntraPassOrderingConstraint(DetectorOrderingConstraint constraint) {
+		intraPassConstraintList.add(constraint);
+	}
 	
 	/**
 	 * Get Iterator over DetectorFactory objects in the Plugin.
@@ -179,6 +203,20 @@ public class Plugin {
 	 */
 	public Iterator<BugCode> bugCodeIterator() {
 		return bugCodeList.iterator();
+	}
+
+	/**
+	 * Return an Iterator over the inter-pass Detector ordering constraints.
+	 */
+	public Iterator<DetectorOrderingConstraint> interPassDetectorOrderingConstraintIterator() {
+		return interPassConstraintList.iterator();
+	}
+
+	/**
+	 * Return an Iterator over the intra-pass Detector ordering constraints.
+	 */
+	public Iterator<DetectorOrderingConstraint> intraPassDetectorOrderingConstraintIterator() {
+		return intraPassConstraintList.iterator();
 	}
 	
 	/**
