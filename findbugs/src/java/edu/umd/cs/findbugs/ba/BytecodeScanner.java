@@ -238,11 +238,6 @@ public class BytecodeScanner implements org.apache.bcel.Constants {
 
 					// offset should now be posited at the default value
 
-					System.out.println("byte1="+instructionList[offset+4]+
-						", byte2="+instructionList[offset+5]+
-						", byte3="+instructionList[offset+6]+
-						", byte4="+instructionList[offset+7]);
-
 					// Extract number of value/offset pairs.
 					int numPairs = extractInt(instructionList, offset + 4);
 					if (DEBUG) System.out.println("lookupswitch: numPairs=" + numPairs);
