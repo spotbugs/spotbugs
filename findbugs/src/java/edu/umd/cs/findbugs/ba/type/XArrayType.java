@@ -88,6 +88,10 @@ public class XArrayType extends XObjectType {
 		return this.numDimensions == other.numDimensions
 			&& this.baseType.equals(other.baseType);
 	}
+
+	public int hashCode() {
+		return baseType.hashCode() + numDimensions;
+	}
 }
 
 // vim:ts=4
