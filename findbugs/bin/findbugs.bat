@@ -20,7 +20,7 @@ set maxheap=256
 :: Honor JAVA_HOME environment variable if it is set
 if "%JAVA_HOME%"=="" goto nojavahome
 if not exist "%JAVA_HOME%\bin\javaw.exe" goto nojavahome
-set javahome=%JAVA_HOME%\
+set javahome=%JAVA_HOME%\bin\
 :nojavahome
 
 goto loop
@@ -64,7 +64,7 @@ if "%firstArg%"=="-maxHeap" goto shift2
 if "%firstArg%"=="-debug" set debugArg=-Dfindbugs.debug=true
 if "%firstArg%"=="-debug" goto shift1
 
-if "%firstArg%"=="-javahome" set javahome=%secondArg%\
+if "%firstArg%"=="-javahome" set javahome=%secondArg%\bin\
 if "%firstArg%"=="-javahome" goto shift2
 
 if "%firstArg%"=="-property" set javaProps=-D%secondArg% %javaProps%
