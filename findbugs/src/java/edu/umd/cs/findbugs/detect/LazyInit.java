@@ -68,9 +68,6 @@ import org.apache.bcel.generic.NEW;
 public class LazyInit extends ByteCodePatternDetector {
 	private BugReporter bugReporter;
 
-	/** Number of wildcard instructions for creating the object. */
-	private static final int CREATE_OBJ_WILD = 80;
-
 	private static final boolean CHECK_PROPER_OBJECT_CREATION = Boolean.getBoolean("lazyinit.checkproper");
 
 	/** The pattern to look for. */
@@ -79,8 +76,8 @@ public class LazyInit extends ByteCodePatternDetector {
 		pattern
 			.add(new Load("f", "val").label("start"))
 			.add(new IfNull("val"))
-			.add(new Wild(CREATE_OBJ_WILD).label("createObject"))
-			.add(new Store("f", pattern.dummyVariable()).label("end"));
+			.add(new Wild(1, 1).label("createObject"))
+			.add(new Store("f", pattern.dummyVariable()).label("end").dominatedBy("createObject"));
 	}
 
 	public LazyInit(BugReporter bugReporter) {
