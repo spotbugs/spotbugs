@@ -43,7 +43,12 @@ public class BCPMethodReturnCheck extends ByteCodePatternDetector {
 
 	public ByteCodePattern getPattern() { return pattern; }
 
-	public boolean prescreen(Method method, ClassContext classContext) { return true; }
+	public boolean prescreen(Method method, ClassContext classContext) {
+		// Pre-screen for methods with a POP bytecode.
+		// This gives us a 4X speedup.
+		BitSet bytecodeSet = classContext.getBytecodeSet(method);
+		return bytecodeSet.get(Constants.POP);
+	}
 
 	public void reportMatch(MethodGen methodGen, ByteCodePatternMatch match) {
 		InstructionHandle call = match.getLabeledInstruction("call");
