@@ -26,7 +26,9 @@ import java.util.*;
  * We use value numbers as dataflow values in Frames.  When two frame
  * slots have the same value number, and that number is not one of the
  * special TOP, BOTTOM, and DEFAULT values, then the same value is definitely
- * in both of those slots.
+ * in both of those slots, <em>if and only if</em> the instructions
+ * where those frame slots exist are both dominated by the instruction
+ * that produced the value.
  *
  * <p> Meaning of special values:
  * <ul>
