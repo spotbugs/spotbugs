@@ -912,6 +912,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
         fullDescriptionsItem.setFont(new java.awt.Font("Dialog", 0, 12));
         fullDescriptionsItem.setMnemonic('F');
+        fullDescriptionsItem.setSelected(true);
         fullDescriptionsItem.setText("Full Descriptions");
         fullDescriptionsItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
