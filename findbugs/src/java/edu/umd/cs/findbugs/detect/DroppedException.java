@@ -207,7 +207,7 @@ public class DroppedException extends PreorderVisitor implements Detector, Const
 	}
 
 	boolean multiLineHandler = false;
-	if (afterHandler > handled) {
+	if (afterHandler > handled && lineNumbers != null) {
 	  int startHandlerLinenumber = lineNumbers.getSourceLine(handled);
 	  int endHandlerLinenumber = lineNumbers.getSourceLine(afterHandler) -1;
 	  if (DEBUG) System.out.println("Handler in lines " 
