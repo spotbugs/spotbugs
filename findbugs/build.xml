@@ -383,7 +383,7 @@
 
       <property name="release.base" value="findbugs-${release.number}" />
       <property name="bin.release.scripts"
-                value="${release.base}/bin/findbugs,${release.base}/bin/mergeResults,${release.base}/bin/bugHistory,${release.base}/bin/categorizeBugs,${release.base}/bin/countBugs,${release.base}/bin/findExamples" />
+                value="${release.base}/bin/findbugs,${release.base}/bin/mergeResults,${release.base}/bin/bugHistory,${release.base}/bin/categorizeBugs,${release.base}/bin/countBugs,${release.base}/bin/findExamples,${release.base}/bin/unionResults,${release.base}/bin/fbwrap,${release.base}/bin/graphIS2FalsePositives" />
       <property name="src.release.scripts"
                 value="${bin.release.scripts},${release.base}/etc/createXML,${release.base}/etc/runTests,${release.base}/etc/summarizeBugs,${release.base}/etc/diffBugSummaries" />
 
@@ -600,12 +600,14 @@
        </zip>
     </target>
 
-    <!-- Update the FindBugs web page. -->
-    <property name="findbugs.web.dir" value="/fs/www/users/pugh/java/bugs" />
-<!--
-    <property name="findbugs.web.dir" value="/export/home/daveho/bugs" />
--->
+    <!-- Update the FindBugs web page.
+         Since the project moved to sourceforge, we don't actually
+         update it in place any more.  Instead, just deploy it to
+         a temp directory, which we can zip up and deploy by hand.
+    -->
+    <property name="findbugs.web.dir" value="/tmp/findbugsWebsite" />
     <target name="web" depends="docs" >
+      <delete dir="findbugs.web.dir}"/>
       <copy todir="${findbugs.web.dir}" >
         <fileset dir="${doc.dir}" />
       </copy>
