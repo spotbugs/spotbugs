@@ -101,7 +101,9 @@ public class DumbMethods extends BytecodeScanningDetector implements Constants2 
 		        && getClassConstantOperand().equals("java/lang/Runtime")))
 		        && getNameConstantOperand().equals("gc")
 		        && getSigConstantOperand().equals("()V")
-		        && !getDottedClassName().startsWith("java.lang"))
+		        && !getDottedClassName().startsWith("java.lang")
+		        && !getMethodName().startsWith("gc")
+		        && !getMethodName().endsWith("gc"))
 			if (alreadyReported.add(getRefConstantOperand())) {
 				// System.out.println("Saw call to GC");
 				if (isPublicStaticVoidMain) {
@@ -128,7 +130,8 @@ public class DumbMethods extends BytecodeScanningDetector implements Constants2 
 				        .addSourceLine(this));
 		if ((seen == INVOKESTATIC)
 		        && getClassConstantOperand().equals("java/lang/System")
-		        && getNameConstantOperand().equals("currentTimeMillis"))
+		        && (getNameConstantOperand().equals("currentTimeMillis")
+		           || getNameConstantOperand().equals("nanoTime")))
 			sawCurrentTimeMillis = true;
 		if ((seen == INVOKEVIRTUAL)
 		        && getClassConstantOperand().equals("java/lang/String")
