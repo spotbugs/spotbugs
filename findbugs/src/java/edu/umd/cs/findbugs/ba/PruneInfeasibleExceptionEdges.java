@@ -76,7 +76,6 @@ public class PruneInfeasibleExceptionEdges implements EdgeTypes {
 	private CFG cfg;
 	private MethodGen methodGen;
 	private TypeDataflow typeDataflow;
-	private ConstantPoolGen cpg;
 
 	/**
 	 * Constructor.
@@ -84,13 +83,11 @@ public class PruneInfeasibleExceptionEdges implements EdgeTypes {
 	 * @param methodGen the method
 	 * @param typeDataflow initialized TypeDataflow object for the CFG,
 	 *   indicating the types of all stack locations
-	 * @param cpg the ConstantPoolGen for the method
 	 */
-	public PruneInfeasibleExceptionEdges(CFG cfg, MethodGen methodGen, TypeDataflow typeDataflow, ConstantPoolGen cpg) {
+	public PruneInfeasibleExceptionEdges(CFG cfg, MethodGen methodGen, TypeDataflow typeDataflow) {
 		this.cfg = cfg;
 		this.methodGen = methodGen;
 		this.typeDataflow = typeDataflow;
-		this.cpg = cpg;
 	}
 
 	/**

@@ -34,12 +34,10 @@ public class ResourceValueAnalysis<Resource> extends FrameDataflowAnalysis<Resou
 	private ResourceTracker<Resource> resourceTracker;
 	private Resource resource;
 	private ResourceValueFrameModelingVisitor visitor;
-	private RepositoryLookupFailureCallback lookupFailureCallback;
 	private boolean ignoreImplicitExceptions;
 
 	public ResourceValueAnalysis(MethodGen methodGen, CFG cfg, DepthFirstSearch dfs,
-		ResourceTracker<Resource> resourceTracker, Resource resource,
-		RepositoryLookupFailureCallback lookupFailureCallback) {
+		ResourceTracker<Resource> resourceTracker, Resource resource) {
 
 		super(dfs);
 		this.methodGen = methodGen;
@@ -47,7 +45,6 @@ public class ResourceValueAnalysis<Resource> extends FrameDataflowAnalysis<Resou
 		this.resourceTracker = resourceTracker;
 		this.resource = resource;
 		this.visitor = resourceTracker.createVisitor(resource, methodGen.getConstantPool());
-		this.lookupFailureCallback = lookupFailureCallback;
 
 		this.ignoreImplicitExceptions = resourceTracker.ignoreImplicitExceptions(resource);
 	}
@@ -152,9 +149,6 @@ public class ResourceValueAnalysis<Resource> extends FrameDataflowAnalysis<Resou
 		visitor.transferInstruction(handle, basicBlock);
 
 	}
-
-	private final BitSet checked = new BitSet();
-	private final BitSet finalFieldLoadSet = new BitSet();
 
 }
 

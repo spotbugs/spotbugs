@@ -48,7 +48,7 @@ public class SerializableIdiom extends PreorderVisitor
     private boolean hasPublicVoidConstructor;
     private boolean superClassHasVoidConstructor;
     private boolean directlyImplementsExternalizable;
-    private boolean isRemote;
+    //private boolean isRemote;
 
     public SerializableIdiom(BugReporter bugReporter) {
 	this.bugReporter = bugReporter;
@@ -79,7 +79,7 @@ public class SerializableIdiom extends PreorderVisitor
 	isExternalizable = false;
 	directlyImplementsExternalizable = false;
 	isGUIClass = false;
-	isRemote = false;
+	//isRemote = false;
 
         // Does this class directly implement Serializable?
         String [] interface_names = obj.getInterfaceNames();
@@ -103,9 +103,11 @@ public class SerializableIdiom extends PreorderVisitor
 		    isExternalizable = true;
 	        if (Repository.instanceOf(obj,"java.io.Serializable"))
 		    isSerializable = true;
+/*
 	        if (Repository.instanceOf(obj,"java.rmi.Remote")) {
 		    isRemote = true;
 		    }
+*/
 	    } catch (ClassNotFoundException e) {
 		bugReporter.reportMissingClass(e);
 	    }

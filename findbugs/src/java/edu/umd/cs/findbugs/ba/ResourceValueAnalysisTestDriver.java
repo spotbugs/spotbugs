@@ -91,7 +91,7 @@ public abstract class ResourceValueAnalysisTestDriver<Resource, ResourceTrackerT
 					DepthFirstSearch dfs = classContext.getDepthFirstSearch(method);
 
 					ResourceValueAnalysis<Resource> analysis =
-						new ResourceValueAnalysis<Resource>(methodGen, cfg, dfs, resourceTracker, resource, lookupFailureCallback);
+						new ResourceValueAnalysis<Resource>(methodGen, cfg, dfs, resourceTracker, resource);
 					Dataflow<ResourceValueFrame, ResourceValueAnalysis<Resource>> dataflow =
 						new Dataflow<ResourceValueFrame, ResourceValueAnalysis<Resource>>(cfg, analysis);
 					dataflow.execute();

@@ -35,6 +35,8 @@ public class InitializationChain extends BytecodeScanningDetector implements   C
     private boolean instanceCreatedWarningGiven;
 
     private static final boolean DEBUG = Boolean.getBoolean("ic.debug");
+    private static final boolean REPORT_CREATE_INSTANCE_BEFORE_FIELDS_ASSIGNED =
+	Boolean.getBoolean("ic.createInstance");
 
     public InitializationChain(BugReporter bugReporter) {
 	this.bugReporter = bugReporter;
@@ -67,7 +69,8 @@ public class InitializationChain extends BytecodeScanningDetector implements   C
 		// Don't do this check; it generates too many false
 		// positives. We need to do a more detailed check
 		// of which variables could be seen.
-		if (false && instanceCreated && !instanceCreatedWarningGiven)  {
+		if (REPORT_CREATE_INSTANCE_BEFORE_FIELDS_ASSIGNED &&
+		    instanceCreated && !instanceCreatedWarningGiven)  {
 			String okSig = "L" + getClassName() + ";";
 			if (!okSig.equals(getSigConstantOperand())) {
 			  bugReporter.reportBug(new BugInstance("SI_INSTANCE_BEFORE_FINALS_ASSIGNED", NORMAL_PRIORITY)

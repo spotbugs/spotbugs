@@ -33,11 +33,11 @@ public class FindReturnRef extends BytecodeScanningDetector implements   Constan
     String classNameOnStack;
     String sigOnStack;
     int parameterCount;
-	int r;
+	//int r;
     int timesRead [] = new int[256];
     boolean fieldIsStatic;
     private BugReporter bugReporter;
-    private LocalVariableTable variableNames; 
+    //private LocalVariableTable variableNames; 
 
     public FindReturnRef(BugReporter bugReporter) {
 	this.bugReporter = bugReporter;
@@ -53,7 +53,7 @@ public class FindReturnRef extends BytecodeScanningDetector implements   Constan
 	if (!check) return;
 	dangerousToStoreIntoField = false;
         staticMethod =  (obj.getAccessFlags() & (ACC_STATIC)) != 0;
-	variableNames = obj.getLocalVariableTable();
+	//variableNames = obj.getLocalVariableTable();
 	parameterCount = obj.getArgumentTypes().length;
 	/*
 	System.out.println(betterMethodName);
@@ -135,7 +135,7 @@ public class FindReturnRef extends BytecodeScanningDetector implements   Constan
 			case ALOAD_3: 
 			case ALOAD:  
 				if (reg < parameterCount )  {
-					r = reg;
+					//r = reg;
 					dangerousToStoreIntoField = true;
 					// System.out.println("Found dangerous value from parameter " + reg);
 					}
@@ -150,7 +150,7 @@ public class FindReturnRef extends BytecodeScanningDetector implements   Constan
 			case ALOAD_3: 
 			case ALOAD: 
 				if (reg < parameterCount ) {
-					r = reg;
+					//r = reg;
 					dangerousToStoreIntoField = true;
 					}
 			default: 

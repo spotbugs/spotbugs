@@ -29,14 +29,14 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 
 public class CloneIdiom extends DismantleBytecode implements Detector, Constants2 {
 
-  boolean isCloneable, hasCloneMethod;
+  boolean /*isCloneable,*/ hasCloneMethod;
   MethodAnnotation cloneMethodAnnotation;
   boolean referencesCloneMethod;
   boolean invokesSuperClone;
   boolean isFinal;
  
   boolean check;
-  boolean throwsExceptions;
+  //boolean throwsExceptions;
   boolean implementsCloneableDirectly;
   private BugReporter bugReporter;
 
@@ -74,7 +74,7 @@ public class CloneIdiom extends DismantleBytecode implements Detector, Constants
   public void visit(JavaClass obj)     {
 	implementsCloneableDirectly = false;
         invokesSuperClone = false;
-	isCloneable = false;
+	//isCloneable = false;
 	check = false;
 	isFinal = obj.isFinal();
 	if (obj.isInterface()) return;
@@ -84,13 +84,13 @@ public class CloneIdiom extends DismantleBytecode implements Detector, Constants
         for(int i=0; i < interface_names.length; i++) {
             if (interface_names[i].equals("java.lang.Cloneable")) {
                 implementsCloneableDirectly = true;
-                isCloneable = true;
+                //isCloneable = true;
                 break;
                 }
             }
 
 	try {
-	isCloneable = Repository.implementationOf(obj, "java.lang.Cloneable");
+	//isCloneable = Repository.implementationOf(obj, "java.lang.Cloneable");
 	JavaClass superClass = obj.getSuperClass();
 	if (superClass != null && Repository.implementationOf(superClass, "java.lang.Cloneable"))
 		implementsCloneableDirectly = false;
@@ -143,6 +143,6 @@ public class CloneIdiom extends DismantleBytecode implements Detector, Constants
 	hasCloneMethod = true;
 	cloneMethodAnnotation = MethodAnnotation.fromVisitedMethod(this);
 	ExceptionTable tbl = obj.getExceptionTable();
-	throwsExceptions = tbl != null && tbl.getNumberOfExceptions() > 0;
+	//throwsExceptions = tbl != null && tbl.getNumberOfExceptions() > 0;
 	}
 }

@@ -27,7 +27,7 @@ public class FindNonShortCircuit extends BytecodeScanningDetector implements   C
     int stage1 = 0;
     int stage2 = 0;
     int distance = 0;
-    int distance2 = 0;
+    //int distance2 = 0;
     int operator;
     private BugReporter bugReporter;
 
@@ -39,7 +39,7 @@ public class FindNonShortCircuit extends BytecodeScanningDetector implements   C
 	stage1 = 0;
 	stage2 = 0;
 	distance = 1000000;
-	distance2 = 1000000;
+	//distance2 = 1000000;
 	}
 
     public void sawOpcode(int seen) {
@@ -69,7 +69,7 @@ public class FindNonShortCircuit extends BytecodeScanningDetector implements   C
 			
 			if (distance < 4)  {
 				operator = seen;
-				distance2 = distance;
+				//distance2 = distance;
 				stage2 = 1;
 				}
 			else stage2 = 0;

@@ -130,8 +130,7 @@ public abstract class ResourceTrackingDetector<Resource, ResourceTrackerType ext
 
 			if (DEBUG) System.out.println("Resource creation at " + handle.getPosition());
 			ResourceValueAnalysis<Resource> analysis =
-				new ResourceValueAnalysis<Resource>(methodGen, cfg, dfs, resourceTracker,
-					resource, bugReporter);
+				new ResourceValueAnalysis<Resource>(methodGen, cfg, dfs, resourceTracker, resource );
 			Dataflow<ResourceValueFrame, ResourceValueAnalysis<Resource>> dataflow =
 				new Dataflow<ResourceValueFrame, ResourceValueAnalysis<Resource>>(cfg, analysis);
 
