@@ -1979,7 +1979,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
                     
                     // Scroll the window so the beginning of the
 		    // annotation text will be (approximately) centered.
-                    int viewLine = Math.max(startLine - (numRowsVisible / 2), 0);
+                    int viewLine = Math.max(startLine - (numRowsVisible > 0 ? numRowsVisible / 2 : 0), 0);
                     int viewBegin = sourceTextArea.getLineStartOffset(viewLine);
                     Rectangle viewRect = sourceTextArea.modelToView(viewBegin);
                     viewport.setViewPosition(new Point(viewRect.x, viewRect.y));
