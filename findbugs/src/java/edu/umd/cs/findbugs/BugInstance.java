@@ -974,6 +974,11 @@ public class BugInstance implements Comparable, XMLWriteable {
 		if (getUniqueId() != null) {
 			attributeList.addAttribute("uid", getUniqueId());
 		}
+		
+		// Add active interval collection.
+		if (activeIntervalCollection != null) {
+			attributeList.addAttribute("active", activeIntervalCollection);
+		}
 
 		xmlOutput.openTag(ELEMENT_NAME, attributeList);
 

@@ -108,6 +108,20 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 					if (uniqueId != null) {
 						bugInstance.setUniqueId(uniqueId);
 					}
+					
+					String activeIntervalCollection = attributes.getValue("active");
+					if (activeIntervalCollection != null) {
+						try {
+							bugInstance.setActiveIntervalCollection(TimestampIntervalCollection.decode(activeIntervalCollection));
+						} catch (InvalidTimestampIntervalException e) {
+							// Whoops, we lost the active history for this BugInstance.
+							// Add the current timestamp.
+							TimestampIntervalCollection activeCollection = new TimestampIntervalCollection();
+							activeCollection.add(
+									new TimestampInterval(bugCollection.getTimestamp(), bugCollection.getTimestamp()));
+							bugInstance.setActiveIntervalCollection(activeCollection);
+						}
+					}
 				}
 			} else if (outerElement.equals("BugInstance")) {
 				// Parsing an attribute or property of a BugInstance
