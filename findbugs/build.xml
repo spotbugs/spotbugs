@@ -42,7 +42,7 @@
               value="/export/home/daveho/linux/docbook/docbook-xsl-1.61.0" />
 <!--
     <property name="xsl.stylesheet.home"
-              value="/home/software/docbook/docbook-xsl-1.61.0" />
+              value="/home/software/docbook/docbook-xsl-1.61.3" />
 -->
 
     <!-- Set this to the directory where Saxon (http://saxon.sourceforge.net/)
@@ -185,6 +185,7 @@
         <fileset dir="${findbugs.src.dir}" includes="**/*.png"/>
         <fileset dir="${findbugs.src.dir}" includes="**/*.html"/>
       </copy>
+      <copy file="${findbugs.dir}/etc/summary.xsl" todir="${class.dir}" />
 
       <!--
         When building the Jar file for the GUI, we just need the contents
@@ -196,6 +197,7 @@
            manifest="${findbugs.dir}/etc/MANIFEST-findbugsGUI.MF">
         <fileset dir="${class.dir}" includes="edu/umd/cs/findbugs/gui/*" />
         <fileset dir="${class.dir}" includes="edu/umd/cs/findbugs/gui/help/*" />
+        <fileset dir="${class.dir}" includes="*.xsl" />
       </jar>
     </target>
 
