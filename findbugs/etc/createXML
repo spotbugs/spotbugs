@@ -150,35 +150,43 @@ foreach my $file (@detectorFiles) {
 }
 print "Scanned $totalPatterns patterns in detectors\n";
 
-# Now we can generate findbugs.xml
-my $outfh = new FileHandle(">findbugs.xml");
-(defined $outfh) || die "Couldn't open findbugs.xml for output: $!\n";
+my $outfh;
+my $detector;
 
-beginNode($outfh, "DetectorPlugin");
-foreach my $detector (@detectors) {
-	print $outfh "\n";
-	beginNode($outfh, "Detector");
-	addElement($outfh, "Class", $detector->getJavaClass());
+# Generate findbugs.xml
+$outfh = new FileHandle(">findbugs.xml");
+(defined $outfh) || die "Couldn't open findbugs.xml for output: $!\n";
+beginNode($outfh, "FindbugsPlugin");
+foreach $detector (@detectors) {
+	addEmptyElement($outfh, "Detector", {'class' => $detector->getJavaClass()});
+}
+foreach $detector (@detectors) {
 	my @patterns = $detector->getPatterns();
 	foreach my $pattern (@patterns) {
-		beginNode($outfh, "BugPattern");
-		addElement($outfh, "Type", $pattern->getType());
-		addElement($outfh, "Abbrev", $pattern->getAbbrev());
-		beginNode($outfh, "Description");
+		addEmptyElement($outfh, "BugPattern", {'type' => $pattern->getType(), 'abbrev' => $pattern->getAbbrev()});
+	}
+}
+endNode($outfh); # FindbugsPlugin
+$outfh->close();
+
+# Generate messages.xml
+$outfh = new FileHandle(">messages.xml");
+(defined $outfh) || die "Couldn't open patterns.xml for output: $!\n";
+beginNode($outfh, "MessageCollection");
+foreach $detector (@detectors) {
+	my @patterns = $detector->getPatterns();
+	foreach my $pattern (@patterns) {
+		beginNode($outfh, "BugPattern", {'type' => $pattern->getType()});
 		addElement($outfh, "ShortDescription", $pattern->getShortDesc());
 		addElement($outfh, "LongDescription", $pattern->getLongDesc());
 		beginNode($outfh, "Details");
 		print $outfh $pattern->getDetailText();
 		endNode($outfh); # Details
-		endNode($outfh); # Description
-		endNode($outfh); # BugPattern
+		endNode($outfh); # Message
 	}
-	endNode($outfh); # Detector
 }
-print $outfh "\n";
-endNode($outfh); # DetectorPlugin
-
-
+endNode($outfh); # MessageCollection
+$outfh->close();
 
 # ----------------------------------------------------------------------
 # Subroutines
@@ -219,9 +227,15 @@ sub munchHTML {
 }
 
 sub beginNode {
-	my ($outfh, $tag) = @_;
+	my ($outfh, $tag, $attributes) = @_;
 	my $indent = '  ' x scalar(@tagStack);
-	print $outfh "$indent<$tag>\n";
+	print $outfh "$indent<$tag";
+	if (defined $attributes) {
+		foreach my $attrName (sort keys %{$attributes}) {
+			print $outfh " $attrName=\"", $attributes->{$attrName}, "\"";
+		}
+	}
+	print $outfh ">\n";
 	push @tagStack, $tag;
 }
 
@@ -229,6 +243,16 @@ sub addElement {
 	my ($outfh, $tag, $value) = @_;
 	my $indent = '  ' x scalar(@tagStack);
 	print $outfh "$indent<$tag>$value</$tag>\n";
+}
+
+sub addEmptyElement {
+	my ($outfh, $tag, $attributes) = @_;
+	my $indent = '  ' x scalar(@tagStack);
+	print $outfh "$indent<$tag ";
+	foreach my $attrName (sort keys %{$attributes}) {
+		print $outfh "$attrName=\"", $attributes->{$attrName}, "\" ";
+	}
+	print $outfh "/>\n";
 }
 
 sub endNode {
