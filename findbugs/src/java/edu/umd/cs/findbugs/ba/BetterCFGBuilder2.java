@@ -114,6 +114,7 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 		private IdentityHashMap<InstructionHandle, BasicBlock> blockMap;
 		private IdentityHashMap<BasicBlock, List<EscapeTarget>> escapeTargetListMap;
 		private BitSet returnBlockSet;
+		private BitSet exitBlockSet;
 		private BitSet unhandledExceptionBlockSet;
 		private LinkedList<WorkListItem> workList;
 
@@ -128,6 +129,7 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 			this.blockMap = new IdentityHashMap<InstructionHandle, BasicBlock>();
 			this.escapeTargetListMap = new IdentityHashMap<BasicBlock, List<EscapeTarget>>();
 			this.returnBlockSet = new BitSet();
+			this.exitBlockSet = new BitSet();
 			this.unhandledExceptionBlockSet = new BitSet();
 			this.workList = new LinkedList<WorkListItem>();
 		}
@@ -219,6 +221,21 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 		 */
 		public boolean isReturnBlock(BasicBlock block) {
 			return returnBlockSet.get(block.getId());
+		}
+
+		/**
+		 * Indicate that System.exit() is called at the end of the given block.
+		 * @param block the exiting block
+		 */
+		public void setExitBlock(BasicBlock block) {
+			exitBlockSet.set(block.getId());
+		}
+
+		/**
+		 * Is System.exit() called at the end of this block?
+		 */
+		public boolean isExitBlock(BasicBlock block) {
+			return exitBlockSet.get(block.getId());
 		}
 
 		/**
@@ -509,7 +526,9 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 						// Add control edges as appropriate
 						if (visitor.instructionIsThrow()) {
 							handleExceptions(subroutine, handle, basicBlock);
-						} else if (visitor.instructionIsReturn() || visitor.instructionIsExit()) {
+						} else if (visitor.instructionIsExit()) {
+							subroutine.setExitBlock(basicBlock);
+						} else if (visitor.instructionIsReturn()) {
 							subroutine.setReturnBlock(basicBlock);
 						} else {
 							Iterator<Target> i = visitor.targetIterator();
@@ -750,6 +769,11 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 				result.addEdge(resultBlock, result.getExit(), RETURN_EDGE);
 			}
 
+			// If the block calls System.exit(), add an exit edge
+			if (subroutine.isExitBlock(subBlock)) {
+				result.addEdge(resultBlock, result.getExit(), EXIT_EDGE);
+			}
+
 			// If the block throws an unhandled exception, add an unhandled
 			// exception edge
 			if (subroutine.isUnhandledExceptionBlock(subBlock)) {
@@ -783,6 +807,10 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 
 				if (block returns) {
 					add return edge from result block to result CFG exit block
+				}
+
+				if (block calls System.exit()) {
+					add exit edge from result block to result CFG exit block
 				}
 
 				if (block throws unhandled exception) {
