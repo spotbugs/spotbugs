@@ -88,6 +88,13 @@ public class InnerClassAccessMap {
 		return null;
 	}
 
+	/**
+	 * Clear the cache.
+	 */
+	public void clearCache() {
+		classToAccessMap.clear();
+	}
+
 	/* ----------------------------------------------------------------------
 	 * Implementation
 	 * ---------------------------------------------------------------------- */
