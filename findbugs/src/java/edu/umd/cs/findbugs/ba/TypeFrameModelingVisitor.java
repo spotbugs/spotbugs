@@ -41,7 +41,6 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 
 	/**
 	 * Constructor.
-	 * @param frame the TypeFrame object to be operated on
 	 * @param cpg the ConstantPoolGen of the method whose instructions we are examining
 	 */
 	public TypeFrameModelingVisitor(ConstantPoolGen cpg) {

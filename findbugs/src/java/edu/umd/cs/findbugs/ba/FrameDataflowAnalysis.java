@@ -80,7 +80,7 @@ public abstract class FrameDataflowAnalysis<ValueType, FrameType extends Frame<V
 	 * @param orig the original frame
 	 * @param copy the modifiable copy (returned by a previous call to modifyFrame()),
 	 *   or null if this is the first time modifyFrame() is being called
-	 * @param a modifiable copy of fact
+	 * @return a modifiable copy of fact
 	 */
 	protected FrameType modifyFrame(FrameType orig, FrameType copy) {
 		if (copy == null) {

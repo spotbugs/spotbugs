@@ -30,7 +30,7 @@ import org.apache.bcel.generic.*;
  * of values in the Java stack frame (locals and operand stack).
  *
  * @see Frame
- * @see FrameTypeAnalysis
+ * @see TypeAnalysis
  * @author David Hovemeyer
  */
 public class TypeFrame extends Frame<Type> implements Constants, ExtendedTypes {

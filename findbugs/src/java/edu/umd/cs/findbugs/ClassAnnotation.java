@@ -36,7 +36,6 @@ public class ClassAnnotation extends PackageMemberAnnotation {
 	/**
 	 * Constructor.
 	 * @param className the name of the class
-	 * @param sourceFile the name of the source file where the class is defined
 	 */
 	public ClassAnnotation(String className) {
 		super(className, DEFAULT_ROLE);

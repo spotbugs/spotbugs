@@ -112,7 +112,6 @@ public class SourceFinder {
 
 	/**
 	 * Constructor.
-	 * @param path the source path, in the same format as a classpath
 	 */
 	public SourceFinder() {
 		repositoryList = new LinkedList<SourceRepository>();

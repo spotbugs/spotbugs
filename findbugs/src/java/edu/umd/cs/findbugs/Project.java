@@ -204,7 +204,7 @@ public class Project {
 	
 	/**
 	 * Add an auxiliary classpath entry
-	 * @param entry the entry
+	 * @param auxClasspathEntry the entry
 	 * @return true if the entry was added successfully, or false
 	 *   if the given entry is already in the list
 	 */

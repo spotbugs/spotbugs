@@ -76,7 +76,7 @@ public abstract class AbstractDataflowAnalysis<Fact> implements DataflowAnalysis
 	 * This method will be called just before exiting transfer().
 	 * @param basicBlock the basic block
 	 * @param end last instruction analyzed (null if entire block was analyzed)
-	 * @param fact the result fact for the block
+	 * @param result the result fact for the block
 	 */
 	public void endTransfer(BasicBlock basicBlock, InstructionHandle end, Object result) throws DataflowAnalysisException {
 	}

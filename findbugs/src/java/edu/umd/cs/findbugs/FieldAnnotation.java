@@ -113,7 +113,7 @@ public class FieldAnnotation extends PackageMemberAnnotation {
 
 	/**
 	 * Is the instruction a write of a field?
-	 * @param the Instruction to check
+	 * @param ins the Instruction to check
 	 * @param cpg ConstantPoolGen of the method containing the instruction
 	 * @return the Field if instruction is a write of a field, null otherwise
 	 */

@@ -67,7 +67,7 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 
 	/**
 	 * Kill all loads of given field.
-	 * @param instanceField the field
+	 * @param field the field
 	 */
 	public void killLoadsOfField(XField field) {
 		Iterator<AvailableLoad> i = availableLoadMap.keySet().iterator();
