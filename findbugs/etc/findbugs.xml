@@ -38,7 +38,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.TestingGround" 
             speed="fast"
             reports="TESTING"
-            disabled="true"
+            disabled="false"
             hidden="true" />
             
   <Detector class="edu.umd.cs.findbugs.detect.DontCatchIllegalMonitorStateException" 
@@ -212,6 +212,12 @@
             
   <Detector class="edu.umd.cs.findbugs.detect.FindLocalSelfAssignment" 
             speed="slow" 
+            reports="SA_LOCAL_SELF_ASSIGNMENT" 
+	    disabled="true"
+	    />
+
+  <Detector class="edu.umd.cs.findbugs.detect.FindLocalSelfAssignment2" 
+            speed="fast" 
             reports="SA_LOCAL_SELF_ASSIGNMENT" />
             
   <Detector class="edu.umd.cs.findbugs.detect.IncompatMask" 

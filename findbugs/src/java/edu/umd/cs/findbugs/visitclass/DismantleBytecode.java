@@ -53,16 +53,20 @@ abstract public class DismantleBytecode extends PreorderVisitor implements Const
 	private float floatConstant;
 	private double doubleConstant;
 	private int registerOperand;
+	private boolean isRegisterLoad;
+	private boolean isRegisterStore;
 
 	private static final int INVALID_OFFSET = Integer.MIN_VALUE;
 	private static final String NOT_AVAILABLE = "none";
 
+	/*
 	protected static final int R_INT = 0;
 	protected static final int R_LONG = 1;
 	protected static final int R_FLOAT = 2;
 	protected static final int R_DOUBLE = 3;
 	protected static final int R_REF = 4;
 	protected int registerKind;
+	*/
 
 	private static HashMap<String, String> replaceSlashesWithDotsCache = new HashMap<String, String>();
 
@@ -180,7 +184,16 @@ abstract public class DismantleBytecode extends PreorderVisitor implements Const
 		return constantRefOperand;
 	}
 
+	public boolean isRegisterLoad() {
+		return isRegisterLoad;
+		}
+	public boolean isRegisterStore() {
+		return isRegisterStore;
+		}
+
 	public int getRegisterOperand() {
+		if (registerOperand == -1)
+			throw new IllegalStateException("getRegisterOperand called but value not available");
 		return registerOperand;
 	}
 
@@ -238,6 +251,9 @@ abstract public class DismantleBytecode extends PreorderVisitor implements Const
 		dottedClassConstantOperand = classConstantOperand = nameConstantOperand = sigConstantOperand = dottedSigConstantOperand = stringConstantOperand = refConstantOperand = NOT_AVAILABLE;
 		refFieldIsStatic = false;
 		constantRefOperand = null;
+		registerOperand = -1;
+		isRegisterLoad = false;
+		isRegisterStore = false;
 		branchOffset = branchTarget = branchFallThrough = defaultSwitchOffset = INVALID_OFFSET;
 		switchOffsets = switchLabels = null;
 	}
@@ -447,22 +463,123 @@ abstract public class DismantleBytecode extends PreorderVisitor implements Const
 
 				}
 				switch (opcode) {
+				case ILOAD_0:
+				case ILOAD_1:
+				case ILOAD_2:
+				case ILOAD_3:
+					registerOperand = opcode - ILOAD_0;
+					isRegisterLoad = true;
+					break;
+
+				case ALOAD_0:
+				case ALOAD_1:
+				case ALOAD_2:
+				case ALOAD_3:
+					registerOperand = opcode - ALOAD_0;
+					isRegisterLoad = true;
+					break;
+
+				case FLOAD_0:
+				case FLOAD_1:
+				case FLOAD_2:
+				case FLOAD_3:
+					registerOperand = opcode - FLOAD_0;
+					isRegisterLoad = true;
+					break;
+
+				case DLOAD_0:
+				case DLOAD_1:
+				case DLOAD_2:
+				case DLOAD_3:
+					registerOperand = opcode - DLOAD_0;
+					isRegisterLoad = true;
+					break;
+
+				case LLOAD_0:
+				case LLOAD_1:
+				case LLOAD_2:
+				case LLOAD_3:
+					registerOperand = opcode - LLOAD_0;
+					isRegisterLoad = true;
+					break;
 				case ILOAD:
 				case FLOAD:
 				case ALOAD:
 				case LLOAD:
 				case DLOAD:
-					registerKind = opcode - ILOAD;
+					isRegisterLoad = true;
+					break;
+
+
+
+
+				case ISTORE_0:
+				case ISTORE_1:
+				case ISTORE_2:
+				case ISTORE_3:
+					registerOperand = opcode - ISTORE_0;
+					isRegisterStore = true;
+					break;
+
+				case ASTORE_0:
+				case ASTORE_1:
+				case ASTORE_2:
+				case ASTORE_3:
+					registerOperand = opcode - ASTORE_0;
+					isRegisterStore = true;
+					break;
+
+				case FSTORE_0:
+				case FSTORE_1:
+				case FSTORE_2:
+				case FSTORE_3:
+					registerOperand = opcode - FSTORE_0;
+					isRegisterStore = true;
+					break;
+
+				case DSTORE_0:
+				case DSTORE_1:
+				case DSTORE_2:
+				case DSTORE_3:
+					registerOperand = opcode - DSTORE_0;
+					isRegisterStore = true;
+					break;
+
+				case LSTORE_0:
+				case LSTORE_1:
+				case LSTORE_2:
+				case LSTORE_3:
+					registerOperand = opcode - LSTORE_0;
+					isRegisterStore = true;
 					break;
 				case ISTORE:
 				case FSTORE:
 				case ASTORE:
 				case LSTORE:
 				case DSTORE:
-					registerKind = opcode - ISTORE;
+					isRegisterStore = true;
+					break;
+
+				}
+
+
+				switch (opcode) {
+				case ILOAD:
+				case FLOAD:
+				case ALOAD:
+				case LLOAD:
+				case DLOAD:
+					// registerKind = opcode - ILOAD;
+					break;
+				case ISTORE:
+				case FSTORE:
+				case ASTORE:
+				case LSTORE:
+				case DSTORE:
+					// registerKind = opcode - ISTORE;
 					break;
 				case RET:
-					registerKind = R_REF;
+					// registerKind = R_REF;
 					break;
 				case GETSTATIC:
 				case PUTSTATIC:
