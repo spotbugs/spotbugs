@@ -1859,25 +1859,31 @@ have problems communicating with the database.
     <LongDescription>Method {1} concatenates strings using + in a loop</LongDescription>
     <Details>
 <![CDATA[
-<p> The method concatenates strings using + in a loop. Each time this occurs, a new temporary
-StringBuffer is allocated to perform this concatenation. This causes many StringBuffer
-object allocations. It is better to use StringBuffer explicitly, and only create one instance.
+<p> The method seems to be building a String using concatenation in a loop.
+In each iteration, the String is converted to a StringBuffer/StringBuilder, 
+	appended to, and converted back to a String.
+	This can lead to a cost quadractic in the number of iterations,
+	as the growing string is recopied in each iteration. 
+	
+<p>Better performance can be obtained by using 
+a StringBuffer (or StringBuilder in Java 1.5) explicitly.
 
 <p> For example:
 <pre>
   // This is bad
   String s = "";
-  for (int i = 0; i &lt; n; ++i) {
-    s = s + "foo";
+  for (int i = 0; i &lt; field.length; ++i) {
+    s = s + field[i];
   }
 
   // This is better
   StringBuffer buf = new StringBuffer();
-  for (int i = 0; i &lt; n; ++i) {
-    buf.append("foo");
+  for (int i = 0; i &lt; field.length; ++i) {
+    buf.append(field[i]);
   }
   String s = buf.toString();
 </pre>
+P
 ]]>
     </Details>
   </BugPattern>
