@@ -57,6 +57,7 @@ public class ValueNumberAnalysis extends ForwardDataflowAnalysis<ValueNumberFram
 	private ValueNumberCache cache;
 	private ValueNumber[] entryLocalValueList;
 	private IdentityHashMap<BasicBlock, ValueNumber> exceptionHandlerValueNumberMap;
+	private ValueNumber thisValue;
 
 	// These fields are used by the compactValueNumbers() method.
 	private BitSet valuesUsed;
@@ -74,10 +75,19 @@ public class ValueNumberAnalysis extends ForwardDataflowAnalysis<ValueNumberFram
 			this.entryLocalValueList[i] = factory.createFreshValue();
 
 		this.exceptionHandlerValueNumberMap = new IdentityHashMap<BasicBlock, ValueNumber>();
+
+		// For non-static methods, keep track of which value represents the
+		// "this" reference
+		if (!methodGen.isStatic())
+			this.thisValue = entryLocalValueList[0];
 	}
 
 	public int getNumValuesAllocated() {
 		return factory.getNumValuesAllocated();
+	}
+
+	public boolean isThisValue(ValueNumber value) {
+		return thisValue != null && thisValue.getNumber() == value.getNumber();
 	}
 
 	public ValueNumber getEntryValue(int local) {

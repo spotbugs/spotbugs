@@ -40,22 +40,25 @@ public abstract class LockCountAnalysis extends ForwardDataflowAnalysis<LockCoun
 
 	private static final boolean DEBUG = Boolean.getBoolean("dataflow.debug");
 
-	protected MethodGen methodGen;
-	protected Dataflow<ThisValueFrame> tvaDataflow;
-	protected ThisValueAnalysis tvaDataflowAnalysis;
+	protected final MethodGen methodGen;
+	protected final Dataflow<ValueNumberFrame> vnaDataflow;
+	protected final ValueNumberAnalysis valueNumberAnalysis;
 
 	/**
 	 * Constructor.
 	 * @param methodGen method being analyzed
-	 * @param tvaDataflow dataflow results indicating which frame slots contain the "this" reference
-	 *   (allows us to distinguish self locks from other locks, may be null if
-	 *   the method is static, or if we just don't care about the distinction)
+	 * @param vnaDataflow the Dataflow object used to execute ValueNumberAnalysis on the method
 	 */
-	public LockCountAnalysis(MethodGen methodGen, Dataflow<ThisValueFrame> tvaDataflow) {
+	public LockCountAnalysis(MethodGen methodGen, Dataflow<ValueNumberFrame> vnaDataflow) {
 		this.methodGen = methodGen;
-		this.tvaDataflow = tvaDataflow;
-		if (tvaDataflow != null)
-			this.tvaDataflowAnalysis = (ThisValueAnalysis) tvaDataflow.getAnalysis();
+		this.vnaDataflow = vnaDataflow;
+		this.valueNumberAnalysis = (vnaDataflow != null)
+			? (ValueNumberAnalysis) vnaDataflow.getAnalysis()
+			: null;
+	}
+
+	public boolean isThisValue(ValueNumber valNum) {
+		return valueNumberAnalysis.isThisValue(valNum);
 	}
 
 	public LockCount createFact() {
@@ -90,9 +93,9 @@ public abstract class LockCountAnalysis extends ForwardDataflowAnalysis<LockCoun
 		if (!(ins instanceof MONITORENTER || ins instanceof MONITOREXIT))
 			return;
 
-		// Determine where the "this" reference values are in the frame.
+		// Get the ValueNumberFrame representing values in the stack frame.
 		// (Note that null is returned if we are analyzing a static method.)
-		ThisValueFrame frame = getFrame(handle, basicBlock);
+		ValueNumberFrame frame = getFrame(handle, basicBlock);
 
 		// Get the lock count delta for the instruction
 		int delta = getDelta(ins, frame);
@@ -102,10 +105,10 @@ public abstract class LockCountAnalysis extends ForwardDataflowAnalysis<LockCoun
 		fact.setCount(count);
 	}
 
-	private ThisValueFrame getFrame(InstructionHandle handle, BasicBlock basicBlock) {
-		ThisValueFrame result = null;
-		if (tvaDataflowAnalysis != null)
-			result = tvaDataflowAnalysis.getFactAtLocation(new Location(handle, basicBlock));
+	private ValueNumberFrame getFrame(InstructionHandle handle, BasicBlock basicBlock) {
+		ValueNumberFrame result = null;
+		if (valueNumberAnalysis != null)
+			result = valueNumberAnalysis.getFactAtLocation(new Location(handle, basicBlock));
 		return result;
 	}
 
@@ -126,10 +129,10 @@ public abstract class LockCountAnalysis extends ForwardDataflowAnalysis<LockCoun
 	/**
 	 * Get the lock count delta resulting from the execution of the given instruction.
 	 * @param ins the instruction
-	 * @param frame Frame indicating which stack locations hold the value
-	 *   of the "this" reference; will be null for static methods
+	 * @param frame the ValueNumberFrame representing the values in the Java stack
+	 *  frame at the point in the control-flow graph before the instruction
 	 */
-	public abstract int getDelta(Instruction ins, ThisValueFrame frame) throws DataflowAnalysisException;
+	public abstract int getDelta(Instruction ins, ValueNumberFrame frame) throws DataflowAnalysisException;
 
 }
 

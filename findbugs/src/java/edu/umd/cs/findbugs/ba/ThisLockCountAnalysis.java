@@ -39,11 +39,10 @@ public class ThisLockCountAnalysis extends LockCountAnalysis {
 	/**
 	 * Constructor.
 	 * @param methodGen method to be analyzed
-	 * @param tvaDataflow dataflow results indicating which frame slots hold
-	 *   the "this" reference (may be null, for static methods)
+	 * @param vnaDataflow the Dataflow object used to execute ValueNumberAnalysis on the method
 	 */
-	public ThisLockCountAnalysis(MethodGen methodGen, Dataflow<ThisValueFrame> tvaDataflow) {
-		super(methodGen, tvaDataflow);
+	public ThisLockCountAnalysis(MethodGen methodGen, Dataflow<ValueNumberFrame> vnaDataflow) {
+		super(methodGen, vnaDataflow);
 	}
 
 	public void initEntryFact(LockCount result) {
@@ -53,16 +52,16 @@ public class ThisLockCountAnalysis extends LockCountAnalysis {
 			result.setCount(0);
 	}
 
-	public int getDelta(Instruction ins, ThisValueFrame frame) throws DataflowAnalysisException {
+	public int getDelta(Instruction ins, ValueNumberFrame frame) throws DataflowAnalysisException {
 		int delta = 0;
 
 		// Update when we see a MONITORENTER or MONITOREXIT on the
 		// "this" reference
 		if (ins instanceof MONITORENTER) {
-			if (frame != null && frame.getTopValue().isThis())
+			if (frame != null && isThisValue(frame.getTopValue()))
 				++delta;
 		} else if (ins instanceof MONITOREXIT) {
-			if (frame != null && frame.getTopValue().isThis())
+			if (frame != null && isThisValue(frame.getTopValue()))
 				--delta;
 		}
 
@@ -83,11 +82,11 @@ public class ThisLockCountAnalysis extends LockCountAnalysis {
 				public AbstractDataflowAnalysis<LockCount> createAnalysis(MethodGen methodGen, CFG cfg) throws DataflowAnalysisException {
 					// Perform the analysis to propagate "this" value references,
 					// since ThisLockCountAnalysis depends on it.
-					Dataflow<ThisValueFrame> tvaDataflow = new Dataflow<ThisValueFrame>(cfg, new ThisValueAnalysis(methodGen));
-					tvaDataflow.execute();
+					Dataflow<ValueNumberFrame> vnaDataflow = new Dataflow<ValueNumberFrame>(cfg, new ValueNumberAnalysis(methodGen));
+					vnaDataflow.execute();
 
 					// Now we can create ThisLockCountAnalysis.
-					return new ThisLockCountAnalysis(methodGen, tvaDataflow);
+					return new ThisLockCountAnalysis(methodGen, vnaDataflow);
 				}
 			};
 

@@ -26,8 +26,8 @@ import org.apache.bcel.generic.*;
 
 public class AnyLockCountAnalysis extends LockCountAnalysis {
 
-	public AnyLockCountAnalysis(MethodGen methodGen, Dataflow<ThisValueFrame> tvaDataflow) {
-		super(methodGen, tvaDataflow);
+	public AnyLockCountAnalysis(MethodGen methodGen, Dataflow<ValueNumberFrame> vnaDataflow) {
+		super(methodGen, vnaDataflow);
 	}
 
 	public void initEntryFact(LockCount result) {
@@ -37,7 +37,7 @@ public class AnyLockCountAnalysis extends LockCountAnalysis {
 			result.setCount(0);
 	}
 
-	public int getDelta(Instruction ins, ThisValueFrame frame) throws DataflowAnalysisException {
+	public int getDelta(Instruction ins, ValueNumberFrame frame) throws DataflowAnalysisException {
 		int delta = 0;
 		if (ins instanceof MONITORENTER)
 			++delta;

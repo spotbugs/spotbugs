@@ -31,12 +31,12 @@ import org.apache.bcel.generic.*;
  * has been locked.
  *
  * @see LockCountAnalysis
- * @see ThisValueAnalysis
+ * @see ValueNumberAnalysis
  * @author David Hovemeyer
  */
 public class OtherLockCountAnalysis extends LockCountAnalysis {
-	public OtherLockCountAnalysis(MethodGen methodGen, Dataflow<ThisValueFrame> tvaDataflow) {
-		super(methodGen, tvaDataflow);
+	public OtherLockCountAnalysis(MethodGen methodGen, Dataflow<ValueNumberFrame> vnaDataflow) {
+		super(methodGen, vnaDataflow);
 	}
 
 	public void initEntryFact(LockCount result) {
@@ -46,14 +46,14 @@ public class OtherLockCountAnalysis extends LockCountAnalysis {
 			result.setCount(0);
 	}
 
-	public int getDelta(Instruction ins, ThisValueFrame frame) throws DataflowAnalysisException  {
+	public int getDelta(Instruction ins, ValueNumberFrame frame) throws DataflowAnalysisException  {
 		int delta = 0;
 
 		if (ins instanceof MONITORENTER) {
-			if (frame == null || frame.getTopValue().isNotThis())
+			if (frame == null || !isThisValue(frame.getTopValue()))
 				++delta;
 		} else if (ins instanceof MONITOREXIT) {
-			if (frame == null || frame.getTopValue().isNotThis())
+			if (frame == null || !isThisValue(frame.getTopValue()))
 				--delta;
 		}
 
@@ -69,13 +69,10 @@ public class OtherLockCountAnalysis extends LockCountAnalysis {
 
 			DataflowTestDriver<LockCount> driver = new DataflowTestDriver<LockCount>() {
 				public AbstractDataflowAnalysis<LockCount> createAnalysis(MethodGen methodGen, CFG cfg) throws DataflowAnalysisException {
-					// Perform the analysis to propagate "this" value references,
-					// since ThisLockCountAnalysis depends on it.
-					Dataflow<ThisValueFrame> tvaDataflow = new Dataflow<ThisValueFrame>(cfg, new ThisValueAnalysis(methodGen));
-					tvaDataflow.execute();
+					Dataflow<ValueNumberFrame> vnaDataflow = new Dataflow<ValueNumberFrame>(cfg, new ValueNumberAnalysis(methodGen));
+					vnaDataflow.execute();
 
-					// Now we can create ThisLockCountAnalysis.
-					return new OtherLockCountAnalysis(methodGen, tvaDataflow);
+					return new OtherLockCountAnalysis(methodGen, vnaDataflow);
 				}
 			};
 

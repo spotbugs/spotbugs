@@ -237,11 +237,10 @@ public class FindInconsistentSync extends CFGBuildingDetector {
 					// Static method, so by definition, there are no interesting locks in this method
 					return null;
 
-				ThisValueAnalysis tva = new ThisValueAnalysis(methodGen);
-				Dataflow<ThisValueFrame> tvaDataflow = new Dataflow<ThisValueFrame>(cfg, tva);
-				tvaDataflow.execute();
-
-				analysis = new ThisLockCountAnalysis(methodGen, tvaDataflow);
+				ValueNumberAnalysis valueNumberAnalysis = new ValueNumberAnalysis(methodGen);
+				Dataflow<ValueNumberFrame> vnaDataflow = new Dataflow<ValueNumberFrame>(cfg, valueNumberAnalysis);
+				vnaDataflow.execute();
+				analysis = new ThisLockCountAnalysis(methodGen, vnaDataflow);
 			}
 
 			lcaDataflow = new Dataflow<LockCount>(cfg, analysis);
