@@ -76,7 +76,8 @@ public class SerializableIdiom extends PreorderVisitor
     public void visit(Method obj) {
 	int accessFlags = obj.getAccessFlags();
         boolean isSynchronized = (accessFlags & ACC_SYNCHRONIZED) != 0;
-	if (isSynthetic(obj)) foundSynthetic = true;
+	if (!methodName.equals("<init>") 
+		&& isSynthetic(obj)) foundSynthetic = true;
 	// System.out.println(methodName + isSynchronized);
 	if (!isSynchronized) return;
 	if (methodName.equals("readObject")) 
