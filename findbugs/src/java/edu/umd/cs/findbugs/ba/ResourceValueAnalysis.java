@@ -21,14 +21,19 @@ package edu.umd.cs.daveho.ba;
 
 import org.apache.bcel.generic.*;
 
-public class ResourceValueAnalysis extends FrameDataflowAnalysis<ResourceValue, ResourceValueFrame> {
+public class ResourceValueAnalysis<Resource> extends FrameDataflowAnalysis<ResourceValue, ResourceValueFrame> {
 
 	private MethodGen methodGen;
 	private CFG cfg;
+	private ResourceTracker<Resource> resourceTracker;
+	private Resource resource;
 
-	public ResourceValueAnalysis(MethodGen methodGen, CFG cfg) {
+	public ResourceValueAnalysis(MethodGen methodGen, CFG cfg, ResourceTracker<Resource> resourceTracker,
+		Resource resource) {
 		this.methodGen = methodGen;
 		this.cfg = cfg;
+		this.resourceTracker = resourceTracker;
+		this.resource = resource;
 	}
 
 	public ResourceValueFrame createFact() {
@@ -44,12 +49,24 @@ public class ResourceValueAnalysis extends FrameDataflowAnalysis<ResourceValue, 
 	}
 
 	public void meetInto(ResourceValueFrame fact, Edge edge, ResourceValueFrame result) throws DataflowAnalysisException {
-		// TODO: implement
+		if (fact.isValid() && edge.getDest().isExceptionHandler()) {
+			ResourceValueFrame tmpFact = createFact();
+			tmpFact.copyFrom(fact);
+			tmpFact.clearStack();
+			tmpFact.pushValue(ResourceValue.notInstance());
+			fact = tmpFact;
+		}
+
+		result.mergeWith(fact);
 	}
 
 	public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, ResourceValueFrame fact)
 		throws DataflowAnalysisException {
-		// TODO: implement
+
+		ResourceValueFrameModelingVisitor visitor =
+			resourceTracker.createVisitor(resource, fact, methodGen.getConstantPool());
+		handle.getInstruction().accept(visitor);
+
 	}
 
 }
