@@ -30,15 +30,17 @@ import java.util.*;
  * @author David Hovemeyer
  */
 public class ValueNumberFactory {
-	/** Map of numbers to the ValueNumber instances. */
-	private final HashMap<Integer, ValueNumber> instanceMap = new HashMap<Integer, ValueNumber>();
-
 	/** Next number to use. */
 	private int maxValueNumber = 0;
 
 	/** Create a fresh (unique) value number. */
 	public ValueNumber createFreshValue() {
 		return new ValueNumber(maxValueNumber++);
+	}
+
+	/** Get the number of values which have been created. */
+	public int getMaxValue() {
+		return maxValueNumber;
 	}
 
 }
