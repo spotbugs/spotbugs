@@ -25,4 +25,9 @@ public class BadResultSetAccessTest
 		s = s.substring(1);
 		rs.updateString("foo", s );
 	}
+	
+	public void test4( ResultSet rs ) throws SQLException
+	{
+		rs.updateBinaryStream( 1, null, 0 );
+	}
 }

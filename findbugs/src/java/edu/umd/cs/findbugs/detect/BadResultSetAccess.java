@@ -91,7 +91,8 @@ public class BadResultSetAccess extends BytecodeScanningDetector implements Cons
 				&&  (getClassConstantOperand().equals("java/sql/ResultSet"))) {
 					String methodName = getNameConstantOperand();
 					
-					if (((getPC() - iConst0_PC) <= 1)
+					int pcOffset = getPC() - iConst0_PC;
+					if ((pcOffset <= 1)
 					&&  (methodName.startsWith("get"))
 					&&  (dbFieldTypesSet.contains(methodName.substring(3)))) {
 						state = SEEN_NOTHING;
@@ -99,7 +100,7 @@ public class BadResultSetAccess extends BytecodeScanningDetector implements Cons
 						        .addClassAndMethod(this)
 						        .addSourceLine(this));
 					}
-					else if (((getPC() - iConst0_PC) <= 2)
+					else if (((pcOffset < 3) && (pcOffset > 1))
 					&&       (methodName.startsWith("update"))
 					&&       (dbFieldTypesSet.contains(methodName.substring(6)))) {
 						state = SEEN_NOTHING;
