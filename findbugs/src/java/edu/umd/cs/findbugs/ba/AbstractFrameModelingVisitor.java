@@ -68,6 +68,24 @@ public abstract class AbstractFrameModelingVisitor<Value> implements Visitor {
 	public abstract Value getDefaultValue();
 
 	/**
+	 * Get the number of words consumed by given instruction.
+	 */
+	public int getNumWordsConsumed(Instruction ins) {
+		int numWordsConsumed = ins.consumeStack(cpg);
+		if (numWordsConsumed == Constants.UNPREDICTABLE) throw new IllegalStateException();
+		return numWordsConsumed;
+	}
+
+	/**
+	 * Get the number of words produced by given instruction.
+	 */
+	public int getNumWordsProduced(Instruction ins) {
+		int numWordsProduced = ins.produceStack(cpg);
+		if (numWordsProduced == Constants.UNPREDICTABLE) throw new IllegalStateException();
+		return numWordsProduced;
+	}
+
+	/**
 	 * This is called for illegal bytecodes.
 	 * @throws IllegalStateException
 	 */
@@ -156,25 +174,26 @@ public abstract class AbstractFrameModelingVisitor<Value> implements Visitor {
 	}
 
 	/**
-	 * "Normal" handler.
-	 * This models the stack for all instructions which destroy
-	 * any values they consume, and produce only "default" values.
+	 * This is called to handle any instruction which does not simply
+	 * copy values between stack slots.
 	 */
 	public void handleNormalInstruction(Instruction ins) {
-		int nwords;
+		modelNormalInstruction(ins, getNumWordsConsumed(ins), getNumWordsProduced(ins));
+	}
 
-		nwords = ins.consumeStack(cpg);
-		if (nwords == Constants.UNPREDICTABLE) throw new IllegalStateException();
+	/**
+	 * Model the stack for instructions handled by handleNormalInstruction().
+	 * Subclasses may override to provide analysis-specific behavior.
+	 */
+	public void modelNormalInstruction(Instruction ins, int numWordsConsumed, int numWordsProduced) {
 		try {
-			while (nwords-- > 0)
+			while (numWordsConsumed-- > 0)
 				frame.popValue();
 		} catch (DataflowAnalysisException e) {
 			throw new IllegalStateException(e.toString());
 		}
 
-		nwords = ins.produceStack(cpg);
-		if (nwords == Constants.UNPREDICTABLE) throw new IllegalStateException();
-		while (nwords-- > 0)
+		while (numWordsProduced-- > 0)
 			frame.pushValue(getDefaultValue());
 	}
 
