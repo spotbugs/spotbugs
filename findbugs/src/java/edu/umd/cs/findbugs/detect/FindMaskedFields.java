@@ -28,11 +28,11 @@ import edu.umd.cs.findbugs.visitclass.Constants2;
 public class FindMaskedFields extends BytecodeScanningDetector implements Constants2 {
 	private BugReporter bugReporter;
 	private int numParms;
-	private Set<String> classFields;
+	private Set<Field> maskedFields = new HashSet<Field>();
+	private Map<String, Field> classFields = new HashMap<String, Field>();
 
 	public FindMaskedFields(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
-		classFields = new HashSet<String>();
 	}
 	
 	public void visit(JavaClass obj) {
@@ -44,41 +44,39 @@ public class FindMaskedFields extends BytecodeScanningDetector implements Consta
 		String fieldName;
 		for (int f = 0; f < fields.length; f++) {
 			fieldName = fields[f].getName();
-			classFields.add(fieldName);
+			classFields.put(fieldName, fields[f]);
 		}
 		
 		// Walk up the super class chain, looking for name collisions
 		try
 		{	
 			JavaClass[] superClasses = org.apache.bcel.Repository.getSuperClasses(obj);
-			if (superClasses.length > 0) {
-				Set<String> superClassFields = new HashSet<String>();
 				for (int c = 0; c < superClasses.length; c++) {
 					fields = superClasses[c].getFields();
 					for (int f = 0; f < fields.length; f++) {
 						Field fld = fields[f];
-						if (!fld.isStatic() && (fld.isPublic() || fld.isProtected())) {
+						if (!fld.isStatic() 
+							&& !maskedFields.contains(fld)
+							&& (fld.isPublic() || fld.isProtected())) {
 							fieldName = fld.getName();
 							if (fieldName.length() == 1)
 								continue;
 							if (fieldName.equals("serialVersionUID"))
 								continue;
-							if (classFields.contains( fieldName )) {
-								FieldAnnotation fa = new FieldAnnotation( getDottedClassName(), 
-													  fieldName, 
-													  fld.getSignature(), 
-													  fld.isStatic());
+							if (classFields.containsKey( fieldName )) {
+								maskedFields.add(fld);
+								Field maskingField = classFields.get( fieldName);
+								FieldAnnotation fa = new FieldAnnotation( getDottedClassName(),
+													  maskingField.getName(), 
+													  maskingField.getSignature(), 
+													  maskingField.isStatic());
 				                                bugReporter.reportBug(
 									new BugInstance("MF_CLASS_MASKS_FIELD", LOW_PRIORITY)
 				                                        	.addClass(this)
 				                                        	.addField(fa));
 							}
-							else
-								superClassFields.add(fieldName);
 						}
 					}
-				}
-				classFields.addAll(superClassFields);
 			}
 		}
 		catch (ClassNotFoundException e) { 
@@ -100,7 +98,7 @@ public class FindMaskedFields extends BytecodeScanningDetector implements Consta
 			String varName = var.getName();
 			if (varName.equals("serialVersionUID"))
 				continue;
-			if (classFields.contains(varName)) {
+			if (classFields.containsKey(varName)) {
 				FieldAnnotation fa = new FieldAnnotation( getDottedClassName(), 
 										varName, 
 										var.getSignature(), 
