@@ -39,4 +39,23 @@ public class TimestampIntervalCollectionTest extends TestCase {
 		Assert.assertFalse(c2.contains(17L));
 		Assert.assertFalse(c2.contains(31L));
 	}
+	
+	public void testSize() {
+		Assert.assertEquals(c2.size(), 2);
+	}
+	
+	public void testAddNonOverlapping() {
+		c2.add(new TimestampInterval(40L, 50L));
+		Assert.assertEquals(TimestampIntervalCollection.encode(c2), "5-15,20-30,40-50");
+	}
+	
+	public void testAddOverlapping() {
+		c2.add(new TimestampInterval(25L, 35L));
+		Assert.assertEquals(TimestampIntervalCollection.encode(c2), "5-15,20-35");
+	}
+	
+	public void testAddAtBeginning() {
+		c2.add(new TimestampInterval(1L, 3L));
+		Assert.assertEquals(TimestampIntervalCollection.encode(c2), "1-3,5-15,20-30");
+	}
 }
