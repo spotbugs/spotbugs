@@ -43,7 +43,9 @@ public class TypeRepositoryTest extends TestCase {
 	ClassType mySubinterfaceType;
 
 	ArrayType myClassArrayType;
+	ArrayType myClassArray2Type;
 	ArrayType mySuperclassArrayType;
+	ArrayType mySuperclassArray2Type;
 	ArrayType myInterfaceArrayType;
 	ArrayType mySubinterfaceArrayType;
 
@@ -69,6 +71,8 @@ public class TypeRepositoryTest extends TestCase {
 
 	void checkFirstCommonSuperclass(ObjectType a, ObjectType b, ObjectType expectedCommonSuperclass)
 		throws ClassNotFoundException {
+
+		//System.out.println("Want common superclass of " + a + " and " + b + " ==> " + expectedCommonSuperclass);
 
 		// Make sure the operation is commutative
 		Assert.assertEquals(repos.getFirstCommonSuperclass(a, b), expectedCommonSuperclass);
@@ -121,7 +125,9 @@ public class TypeRepositoryTest extends TestCase {
 
 		// Array classes
 		myClassArrayType = repos.arrayTypeFromDimensionsAndBaseType(1, myClassType);
+		myClassArray2Type = repos.arrayTypeFromDimensionsAndBaseType(2, myClassType);
 		mySuperclassArrayType = repos.arrayTypeFromDimensionsAndBaseType(1, mySuperclassType);
+		mySuperclassArray2Type = repos.arrayTypeFromDimensionsAndBaseType(2, mySuperclassType);
 		myInterfaceArrayType = repos.arrayTypeFromDimensionsAndBaseType(1, myInterfaceType);
 		mySubinterfaceArrayType = repos.arrayTypeFromDimensionsAndBaseType(1, mySubinterfaceType);
 		javaLangObjectArray1Type = repos.arrayTypeFromDimensionsAndBaseType(1, javaLangObjectType);
@@ -179,6 +185,8 @@ public class TypeRepositoryTest extends TestCase {
 		Assert.assertTrue(checkUnidirectionalSubtype(myClassArrayType, mySuperclassArrayType));
 		Assert.assertTrue(checkUnidirectionalSubtype(myClassArrayType, myInterfaceArrayType));
 		Assert.assertTrue(checkUnidirectionalSubtype(mySubinterfaceArrayType, myInterfaceArrayType));
+
+		Assert.assertTrue(checkUnidirectionalSubtype(myClassArray2Type, mySuperclassArray2Type));
 	}
 
 	public void testArrayTypeIsSerializable() throws ClassNotFoundException {
@@ -250,8 +258,13 @@ public class TypeRepositoryTest extends TestCase {
 		Assert.assertTrue(checkUnidirectionalSubtype(booleanArray1Type, javaLangCloneableType));
 	}
 
-	public void classTypeCommonSuperclassTest() throws ClassNotFoundException {
+	public void testClassTypeCommonSuperclass() throws ClassNotFoundException {
 		checkFirstCommonSuperclass(myClassType, mySuperclassType, mySuperclassType);
+		checkFirstCommonSuperclass(myClassType, unrelatedThingType, javaLangObjectType);
+	}
+
+	public void testArrayTypeCommonSuperclass() throws ClassNotFoundException {
+		checkFirstCommonSuperclass(myClassArrayType, mySuperclassArrayType, mySuperclassArrayType);
 	}
 
 }
