@@ -148,14 +148,15 @@ public class FindOpenStream extends ResourceTrackingDetector<Stream, StreamResou
 		}
 		
 	public void analyzeMethod(ClassContext classContext, Method method,
-		StreamResourceTracker resourceTracker)
+		StreamResourceTracker resourceTracker,
+		Map<Location, Stream> locationToResourceMap)
 		throws CFGBuilderException, DataflowAnalysisException {
 
 		if (isMainMethod(method)) return;
 
 		potentialOpenStreamList.clear();
 
-		super.analyzeMethod(classContext, method, resourceTracker);
+		super.analyzeMethod(classContext, method, resourceTracker, locationToResourceMap);
 
 		JavaClass javaClass = classContext.getJavaClass();
 		MethodGen methodGen = classContext.getMethodGen(method);

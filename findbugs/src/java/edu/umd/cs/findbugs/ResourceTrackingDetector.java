@@ -48,43 +48,69 @@ public abstract class ResourceTrackingDetector<Resource, ResourceTrackerType ext
 
 	public void visitClassContext(ClassContext classContext) {
 
-		try {
-			final JavaClass jclass = classContext.getJavaClass();
-			Method[] methodList = jclass.getMethods();
-			for (int i = 0; i < methodList.length; ++i) {
-				Method method = methodList[i];
-				if (method.isAbstract() || method.isNative())
-					continue;
+		final JavaClass jclass = classContext.getJavaClass();
+		Method[] methodList = jclass.getMethods();
+		for (int i = 0; i < methodList.length; ++i) {
+			Method method = methodList[i];
+			if (method.isAbstract() || method.isNative())
+				continue;
 
-				MethodGen methodGen = classContext.getMethodGen(method);
-				if (methodGen == null)
-					continue;
+			MethodGen methodGen = classContext.getMethodGen(method);
+			if (methodGen == null)
+				continue;
 
-				if (DEBUG_METHOD_NAME != null && !DEBUG_METHOD_NAME.equals(method.getName()))
-					continue;
+			if (DEBUG_METHOD_NAME != null && !DEBUG_METHOD_NAME.equals(method.getName()))
+				continue;
 
-				if (!prescreen(classContext, method))
-					continue;
+			if (!prescreen(classContext, method))
+				continue;
 
-				if (DEBUG) {
-					System.out.println("----------------------------------------------------------------------");
-					System.out.println("Analyzing " + SignatureConverter.convertMethodSignature(methodGen));
-					System.out.println("----------------------------------------------------------------------");
-				}
-
-				ResourceTrackerType resourceTracker = getResourceTracker(classContext, method);
-				analyzeMethod(classContext, method, resourceTracker);
+			if (DEBUG) {
+				System.out.println("----------------------------------------------------------------------");
+				System.out.println("Analyzing " + SignatureConverter.convertMethodSignature(methodGen));
+				System.out.println("----------------------------------------------------------------------");
 			}
-		} catch (CFGBuilderException e) {
-			throw new AnalysisException(e.toString(), e);
-		} catch (DataflowAnalysisException e) {
-			throw new AnalysisException(e.toString(), e);
+
+			try {
+				ResourceTrackerType resourceTracker = getResourceTracker(classContext, method);
+
+				Map<Location, Resource> locationToResourceMap =
+					buildLocationToResourceMap(classContext, method, resourceTracker);
+				if (locationToResourceMap.isEmpty())
+					continue;
+
+				analyzeMethod(classContext, method, resourceTracker, locationToResourceMap);
+			} catch (CFGBuilderException e) {
+				bugReporter.logError(e.toString());
+			} catch (DataflowAnalysisException e) {
+				bugReporter.logError(e.toString());
+			}
 		}
 
 	}
 
-	public void analyzeMethod(final ClassContext classContext, Method method,
-		ResourceTrackerType resourceTracker)
+	private Map<Location, Resource> buildLocationToResourceMap(ClassContext classContext,
+		Method method, ResourceTrackerType resourceTracker)
+		throws CFGBuilderException, DataflowAnalysisException {
+
+		Map<Location, Resource> locationToResourceMap = new HashMap<Location, Resource>();
+
+		CFG cfg = classContext.getCFG(method);
+		ConstantPoolGen cpg = classContext.getConstantPoolGen();
+
+		for (Iterator<Location> i = cfg.locationIterator(); i.hasNext(); ) {
+			Location location = i.next();
+			Resource resource = resourceTracker.isResourceCreation(location.getBasicBlock(),
+				location.getHandle(), cpg);
+			if (resource != null)
+				locationToResourceMap.put(location, resource);
+		}
+
+		return locationToResourceMap;
+	}
+
+	public void analyzeMethod(ClassContext classContext, Method method,
+		ResourceTrackerType resourceTracker, Map<Location, Resource> locationToResourceMap)
 		throws CFGBuilderException, DataflowAnalysisException {
 
 		MethodGen methodGen = classContext.getMethodGen(method);
@@ -93,24 +119,24 @@ public abstract class ResourceTrackingDetector<Resource, ResourceTrackerType ext
 
 		if (DEBUG) System.out.println(SignatureConverter.convertMethodSignature(methodGen));
 
-		for (Iterator<Location> i = cfg.locationIterator(); i.hasNext(); ) {
-			Location location = i.next();
-			BasicBlock basicBlock = location.getBasicBlock();
+		for (Iterator<Map.Entry<Location, Resource>> i = locationToResourceMap.entrySet().iterator();
+			i.hasNext(); ) {
+			Map.Entry<Location, Resource> entry = i.next();
+
+			Location location = entry.getKey();
+			Resource resource = entry.getValue();
+
 			InstructionHandle handle = location.getHandle();
 
-			Resource resource =
-				resourceTracker.isResourceCreation(basicBlock, handle, methodGen.getConstantPool());
-			if (resource != null) {
-				if (DEBUG) System.out.println("Resource creation at " + handle.getPosition());
-				ResourceValueAnalysis<Resource> analysis =
-					new ResourceValueAnalysis<Resource>(methodGen, cfg, dfs, resourceTracker,
-						resource, bugReporter);
-				Dataflow<ResourceValueFrame, ResourceValueAnalysis<Resource>> dataflow =
-					new Dataflow<ResourceValueFrame, ResourceValueAnalysis<Resource>>(cfg, analysis);
-	
-				dataflow.execute();
-				inspectResult(classContext.getJavaClass(), methodGen, cfg, dataflow, resource);
-			}
+			if (DEBUG) System.out.println("Resource creation at " + handle.getPosition());
+			ResourceValueAnalysis<Resource> analysis =
+				new ResourceValueAnalysis<Resource>(methodGen, cfg, dfs, resourceTracker,
+					resource, bugReporter);
+			Dataflow<ResourceValueFrame, ResourceValueAnalysis<Resource>> dataflow =
+				new Dataflow<ResourceValueFrame, ResourceValueAnalysis<Resource>>(cfg, analysis);
+
+			dataflow.execute();
+			inspectResult(classContext.getJavaClass(), methodGen, cfg, dataflow, resource);
 		}
 	}
 
