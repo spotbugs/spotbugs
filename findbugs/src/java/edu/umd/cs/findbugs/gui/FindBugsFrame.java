@@ -491,6 +491,9 @@ public class FindBugsFrame extends javax.swing.JFrame {
         lowPriorityButton = new javax.swing.JRadioButtonMenuItem();
         mediumPriorityButton = new javax.swing.JRadioButtonMenuItem();
         highPriorityButton = new javax.swing.JRadioButtonMenuItem();
+        jSeparator8 = new javax.swing.JSeparator();
+        viewProjectItem = new javax.swing.JRadioButtonMenuItem();
+        viewBugsItem = new javax.swing.JRadioButtonMenuItem();
         settingsMenu = new javax.swing.JMenu();
         configureDetectorsItem = new javax.swing.JMenuItem();
         helpMenu = new javax.swing.JMenu();
@@ -1151,6 +1154,30 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
         viewMenu.add(highPriorityButton);
 
+        viewMenu.add(jSeparator8);
+
+        viewProjectItem.setFont(new java.awt.Font("Dialog", 0, 12));
+        viewProjectItem.setText("View Project Details");
+        viewProjectItem.setEnabled(false);
+        viewProjectItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                viewProjectItemActionPerformed(evt);
+            }
+        });
+
+        viewMenu.add(viewProjectItem);
+
+        viewBugsItem.setFont(new java.awt.Font("Dialog", 0, 12));
+        viewBugsItem.setText("View Bugs");
+        viewBugsItem.setEnabled(false);
+        viewBugsItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                viewBugsItemActionPerformed(evt);
+            }
+        });
+
+        viewMenu.add(viewBugsItem);
+
         theMenuBar.add(viewMenu);
 
         settingsMenu.setMnemonic('S');
@@ -1189,6 +1216,15 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
         pack();
     }//GEN-END:initComponents
+
+    private void viewBugsItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_viewBugsItemActionPerformed
+        setView("BugTree");
+    }//GEN-LAST:event_viewBugsItemActionPerformed
+
+    private void viewProjectItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_viewProjectItemActionPerformed
+
+        setView("EditProjectPanel");
+    }//GEN-LAST:event_viewProjectItemActionPerformed
 
     private void highPriorityButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_highPriorityButtonActionPerformed
         mediumPriorityButton.setSelected(false);
@@ -1839,7 +1875,15 @@ public class FindBugsFrame extends javax.swing.JFrame {
         if (project != null) {
             synchProject(project);
             setView("EditProjectPanel");
+            viewProjectItem.setEnabled(true);
+            viewProjectItem.setSelected(true);
+            viewBugsItem.setEnabled(false);
+            viewBugsItem.setSelected(false);
         } else {
+            viewProjectItem.setEnabled(false);
+            viewProjectItem.setSelected(false);
+            viewBugsItem.setEnabled(false);
+            viewBugsItem.setSelected(false);           
             setView("EmptyPanel");
         }
         updateTitle(project);
@@ -2135,8 +2179,15 @@ public class FindBugsFrame extends javax.swing.JFrame {
     private void setView(String viewName) {
         //System.out.println("Showing view " + viewName);
         viewPanelLayout.show(viewPanel, viewName);
-        if (viewName.equals("BugTree"))
+        boolean viewingBugs = viewName.equals("BugTree");
+        if (viewingBugs)
             checkBugDetailsVisibility();
+        
+        viewProjectItem.setSelected(!viewingBugs);
+        if (viewingBugs)
+            viewBugsItem.setEnabled(true);
+        viewBugsItem.setSelected(viewingBugs);
+
         currentView = viewName;
     }
     
@@ -2645,6 +2696,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
     private javax.swing.JSeparator jSeparator5;
     private javax.swing.JSeparator jSeparator6;
     private javax.swing.JSeparator jSeparator7;
+    private javax.swing.JSeparator jSeparator8;
     private javax.swing.JLabel jarFileLabel;
     private javax.swing.JList jarFileList;
     private javax.swing.JLabel jarFileListLabel;
@@ -2676,9 +2728,11 @@ public class FindBugsFrame extends javax.swing.JFrame {
     private javax.swing.JMenuBar theMenuBar;
     private javax.swing.JLabel urlLabel;
     private javax.swing.JCheckBoxMenuItem viewBugDetailsItem;
+    private javax.swing.JRadioButtonMenuItem viewBugsItem;
     private javax.swing.JCheckBoxMenuItem viewConsoleItem;
     private javax.swing.JMenu viewMenu;
     private javax.swing.JPanel viewPanel;
+    private javax.swing.JRadioButtonMenuItem viewProjectItem;
     // End of variables declaration//GEN-END:variables
     
     // My variable declarations
