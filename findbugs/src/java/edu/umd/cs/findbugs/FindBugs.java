@@ -428,6 +428,7 @@ public class FindBugs implements Constants2, ExitCodes {
 			addOption("-pluginList", "jar1[" + File.pathSeparator + "jar2...]",
 			        "specify list of plugin Jar files to load");
 			addSwitch("-quiet", "suppress error messages");
+			addSwitch("-experimental", "report all warnings including experimental bug patterns");
 			addSwitch("-low", "report all warnings");
 			addSwitch("-medium", "report only medium and high priority warnings [default]");
 			addSwitch("-high", "report only high priority warnings");
@@ -442,6 +443,7 @@ public class FindBugs implements Constants2, ExitCodes {
 			addOption("-visitors", "v1[,v2...]", "run only named visitors");
 			addOption("-omitVisitors", "v1[,v2...]", "omit named visitors");
 			addOption("-chooseVisitors", "+v1,-v2,...", "selectively enable/disable detectors");
+			addSwitch("-adjustExperimental", "lower the priority of Bug Patterns that are experimental");
 			addOption("-adjustPriority", "v1=(raise|lower)[,...]",
 					"raise/lower priority of warnings for given visitor(s)");
 			addOption("-bugCategories", "cat1[,cat2...]", "only report bugs in given categories");
@@ -475,6 +477,8 @@ public class FindBugs implements Constants2, ExitCodes {
 				priorityThreshold = Detector.NORMAL_PRIORITY;
 			else if (option.equals("-high"))
 				priorityThreshold = Detector.HIGH_PRIORITY;
+			else if (option.equals("-adjustExperimental"))
+				BugInstance.setAdjustExperimental(true);
 			else if (option.equals("-sortByClass"))
 				bugReporterType = SORTING_REPORTER;
 			else if (option.equals("-xml")) {

@@ -81,6 +81,12 @@ public class BugInstance implements Comparable, XMLWriteable {
 	private static final int INVALID_HASH_CODE = 0;
 	
 	/**
+	 * This value is used to indicate whether BugInstances should be reprioritized very low,
+	 * when the BugPattern is marked as experimental
+	 */
+	private static boolean adjustExperimental = false;
+	
+	/**
 	 * Constructor.
 	 *
 	 * @param type     the bug type
@@ -94,7 +100,7 @@ public class BugInstance implements Comparable, XMLWriteable {
 		cachedHashCode = INVALID_HASH_CODE;
 		annotationText = "";
 		
-		if (/*-adjustExperimental && */isExperimental())
+		if (adjustExperimental && isExperimental())
 			this.priority = Detector.EXP_PRIORITY;
 	}
 
@@ -120,10 +126,14 @@ public class BugInstance implements Comparable, XMLWriteable {
 			}
 		}
 		
-		if (/* -adjustExperimental && */isExperimental())
+		if (adjustExperimental && isExperimental())
 			this.priority = Detector.EXP_PRIORITY;
 	}
 		
+	public static void setAdjustExperimental(boolean adjust) {
+		adjustExperimental = adjust;
+	}
+	
 	/* ----------------------------------------------------------------------
 	 * Accessors
 	 * ---------------------------------------------------------------------- */
