@@ -58,6 +58,8 @@ public class ClassContext implements AnalysisFeatures {
 	private IdentityHashMap<Method, LockDataflow> lockDataflowMap = new IdentityHashMap<Method, LockDataflow>();
 	private IdentityHashMap<Method, ReturnPathDataflow> returnPathDataflowMap =
 		new IdentityHashMap<Method, ReturnPathDataflow>();
+	private IdentityHashMap<Method, DominatorsAnalysis> nonExceptionDominatorsAnalysisMap =
+		new IdentityHashMap<Method, DominatorsAnalysis>();
 	private ClassGen classGen;
 	private AssignedFieldMap assignedFieldMap;
 
@@ -402,6 +404,27 @@ public class ClassContext implements AnalysisFeatures {
 			returnPathDataflowMap.put(method, dataflow);
 		}
 		return dataflow;
+	}
+
+	/**
+	 * Get DominatorsAnalysis for given method,
+	 * where exception edges are ignored.
+	 * @param method the method
+	 * @return the DominatorsAnalysis
+	 */
+	public DominatorsAnalysis getNonExceptionDominatorsAnalysis(Method method)
+		throws CFGBuilderException, DataflowAnalysisException {
+		DominatorsAnalysis analysis = nonExceptionDominatorsAnalysisMap.get(method);
+		if (analysis == null) {
+			CFG cfg = getCFG(method);
+			DepthFirstSearch dfs = getDepthFirstSearch(method);
+			analysis = new DominatorsAnalysis(cfg, dfs, true);
+			Dataflow<java.util.BitSet, DominatorsAnalysis> dataflow =
+				new Dataflow<java.util.BitSet, DominatorsAnalysis>(cfg, analysis);
+			dataflow.execute();
+			nonExceptionDominatorsAnalysisMap.put(method, analysis);
+		}
+		return analysis;
 	}
 }
 

@@ -29,6 +29,9 @@ import org.apache.bcel.generic.InstructionHandle;
  * the {@link java.util.BitSet} class, with the individual bits
  * corresponding to the IDs of basic blocks.
  *
+ * <p> Exception edges may be ignored, in which case the domination
+ * results only take non-exception control flow into account.
+ *
  * @see DataflowAnalysis
  * @see CFG
  * @see BasicBlock
@@ -37,6 +40,7 @@ import org.apache.bcel.generic.InstructionHandle;
 public class DominatorsAnalysis implements DataflowAnalysis<BitSet> {
 	private final CFG cfg;
 	private final DepthFirstSearch dfs;
+	private final boolean ignoreExceptionEdges;
 	private final IdentityHashMap<BasicBlock, BitSet> startFactMap;
 	private final IdentityHashMap<BasicBlock, BitSet> resultFactMap;
 
@@ -45,9 +49,10 @@ public class DominatorsAnalysis implements DataflowAnalysis<BitSet> {
 	 * @param cfg the CFG to compute dominator relationships for
 	 * @param dfs the DepthFirstSearch on the CFG
 	 */
-	public DominatorsAnalysis(CFG cfg, DepthFirstSearch dfs) {
+	public DominatorsAnalysis(CFG cfg, DepthFirstSearch dfs, boolean ignoreExceptionEdges) {
 		this.cfg = cfg;
 		this.dfs = dfs;
+		this.ignoreExceptionEdges = ignoreExceptionEdges;
 		this.startFactMap = new IdentityHashMap<BasicBlock, BitSet>();
 		this.resultFactMap = new IdentityHashMap<BasicBlock, BitSet>();
 	}
@@ -112,6 +117,9 @@ public class DominatorsAnalysis implements DataflowAnalysis<BitSet> {
 	}
 
 	public void meetInto(BitSet fact, Edge edge, BitSet result) throws DataflowAnalysisException {
+		if (ignoreExceptionEdges && edge.isExceptionEdge())
+			return;
+
 		// Meet is intersection
 		result.and(fact);
 	}
