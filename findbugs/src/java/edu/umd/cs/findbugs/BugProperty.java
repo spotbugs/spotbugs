@@ -51,6 +51,9 @@ public class BugProperty implements XMLWriteable {
 	
 	/** Defensive constant opcode seen. (See FindDeadLocalStores.) */
 	public static final String DEFENSIVE_CONSTANT_OPCODE = "defensiveConstant";
+	
+	/** Exception handler. (See FindDeadLocalStores.) */
+	public static final String EXCEPTION_HANDLER = "exceptionHandler";
 
 	// Fields
 	private String name;
