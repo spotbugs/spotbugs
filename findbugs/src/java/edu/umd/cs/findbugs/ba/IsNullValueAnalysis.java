@@ -93,7 +93,9 @@ public class IsNullValueAnalysis extends ForwardDataflowAnalysis<IsNullValueFram
 
 		if (fact.isValid()) {
 
-			if (edge.getDest().isExceptionHandler()) {
+			final BasicBlock destBlock = edge.getDest();
+
+			if (destBlock.isExceptionHandler()) {
 				// Exception handler - clear stack and push a non-null value
 				// to represent the exception.
 				IsNullValueFrame tmpFrame = createFact();
@@ -105,32 +107,54 @@ public class IsNullValueAnalysis extends ForwardDataflowAnalysis<IsNullValueFram
 				// Determine if the edge conveys any information about the
 				// null/non-null status of operands in the incoming frame.
 				final int numSlots = fact.getNumSlots();
-				final BasicBlock destBlock = edge.getDest();
 	
 				int nullInfo = getNullInfoFromEdge(edge);
-				switch (nullInfo) {
-				case TOS_NULL:
-					fact = replaceValues(fact, numSlots - 1, destBlock, IsNullValue.nullValue());
-					break;
-				case TOS_NON_NULL:
-					fact = replaceValues(fact, numSlots - 1, destBlock, IsNullValue.nonNullValue());
-					break;
-				case REF_OPERAND_NON_NULL:
-					{
-						// For all of the instructions which have a null-checked
-						// reference operand, it is pushed onto the stack before
-						// all of the other operands to the instruction.
-						Instruction firstInDest = edge.getDest().getFirstInstruction().getInstruction();
-						int numSlotsConsumed = firstInDest.consumeStack(methodGen.getConstantPool());
-						if (numSlotsConsumed == Constants.UNPREDICTABLE)
-							throw new DataflowAnalysisException("Unpredictable stack consumption for " + firstInDest);
-						fact = replaceValues(fact, numSlots - numSlotsConsumed, destBlock, IsNullValue.nonNullValue());
+				if (nullInfo != NO_INFO) {
+					// Value numbers in this frame
+					ValueNumberFrame vnaFrame = vnaDataflow.getStartFact(destBlock);
+					if (vnaFrame == null)
+						throw new IllegalStateException("no vna frame at block entry?");
+
+					if (vnaFrame != null) {
+						switch (nullInfo) {
+						case TOS_NULL:
+						case TOS_NON_NULL:
+							{
+								// What we know here is that the value that was
+								// just popped off the stack is either null or non-null.
+								// We can use this info to increase the precision of
+								// any stack slots containing the same value.
+
+								BasicBlock sourceBlock = edge.getSource();
+								Location atIf = new Location(sourceBlock.getLastInstruction(), sourceBlock);
+								ValueNumberFrame prevVnaFrame = vnaDataflow.getFactAtLocation(atIf);
+
+								if (prevVnaFrame != null) {
+									ValueNumber replaceMe = prevVnaFrame.getTopValue();
+									fact = replaceValues(fact, replaceMe, vnaFrame,
+										nullInfo == TOS_NULL ? IsNullValue.nullValue() : IsNullValue.nonNullValue());
+								} else
+									throw new IllegalStateException("No value number frame?");
+							}
+							break;
+						case REF_OPERAND_NON_NULL:
+							{
+								// For all of the instructions which have a null-checked
+								// reference operand, it is pushed onto the stack before
+								// all of the other operands to the instruction.
+								Instruction firstInDest = edge.getDest().getFirstInstruction().getInstruction();
+								int numSlotsConsumed = firstInDest.consumeStack(methodGen.getConstantPool());
+								if (numSlotsConsumed == Constants.UNPREDICTABLE)
+									throw new DataflowAnalysisException("Unpredictable stack consumption for " + firstInDest);
+								ValueNumber replaceMe = vnaFrame.getValue(numSlots - numSlotsConsumed);
+
+								fact = replaceValues(fact, replaceMe, vnaFrame, IsNullValue.nonNullValue());
+							}
+							break;
+						default:
+							assert false;
+						}
 					}
-					break;
-				case NO_INFO:
-					break;
-				default:
-					assert false;
 				}
 			}
 		}
@@ -162,6 +186,7 @@ public class IsNullValueAnalysis extends ForwardDataflowAnalysis<IsNullValueFram
 		if (lastInSourceHandle != null) {
 			Instruction lastInSource = lastInSourceHandle.getInstruction();
 			short opcode = lastInSource.getOpcode();
+
 			if (opcode == Constants.IFNULL)
 				return edgeType == IFCMP_EDGE ? TOS_NULL : TOS_NON_NULL;
 			else if (opcode == Constants.IFNONNULL)
@@ -173,60 +198,22 @@ public class IsNullValueAnalysis extends ForwardDataflowAnalysis<IsNullValueFram
 		return NO_INFO;
 	}
 
-	/**
-	 * Replace all values in the frame matching the value in given stack
-	 * slot with the given value.
-	 * @param frame the original frame
-	 * @param stackSlot the stack slot in the frame whose value should be replaced
-	 * @param block the basic block whose entry value is represented
-	 *   by the frame
-	 * @param value the new value
-	 * @return the new frame
-	 */
-	private IsNullValueFrame replaceValues(IsNullValueFrame frame, int stackSlot, BasicBlock block,
-		IsNullValue replacementValue) throws DataflowAnalysisException {
+	private IsNullValueFrame replaceValues(IsNullValueFrame frame, ValueNumber replaceMe, ValueNumberFrame vnaFrame,
+		IsNullValue replacementValue) {
 
-		ValueNumberFrame vnaFrame = getVnaFrameAtEntry(block);
 		final int numSlots = frame.getNumSlots();
+		assert numSlots == vnaFrame.getNumSlots();
 
-		// Create a new frame for the result,
-		// since we don't want to modify the original.
-		IsNullValueFrame result = new IsNullValueFrame(numSlots);
+		final IsNullValueFrame result = createFact();
 		result.copyFrom(frame);
 
-		if (vnaFrame != null) {
-			if (numSlots != vnaFrame.getNumSlots()) {
-				System.out.println("Slots mismatch: " + numSlots + " vs. " + vnaFrame.getNumSlots());
-			}
-			assert numSlots == vnaFrame.getNumSlots();
-
-			// Replace all values which are the same as the one in the slot.
-			ValueNumber origValue = vnaFrame.getValue(stackSlot);
-			for (int i = 0; i < numSlots; ++i) {
-				ValueNumber valueNum = vnaFrame.getValue(i);
-				if (valueNum.equals(origValue))
-					result.setValue(i, replacementValue);
-			}
-		} else {
-			// Just replace the value in the specified slot, since we don't
-			// know the value numbers.
-			result.setValue(stackSlot, replacementValue);
+		for (int i = 0; i < numSlots; ++i) {
+			if (vnaFrame.getValue(i).equals(replaceMe))
+				result.setValue(i, replacementValue);
 		}
 
 		return result;
-	}
 
-	/**
-	 * Get the ValueNumberFrame at entry to given block.
-	 * @param block the block
-	 * @return the ValueNumberFrame at entry to the block,
-	 *   or null if we have no information at that location
-	 */
-	private ValueNumberFrame getVnaFrameAtEntry(BasicBlock block) {
-		InstructionHandle first = block.getFirstInstruction();
-		if (first == null)
-			return null;
-		return vnaDataflow.getFactAtLocation(new Location(first, block));
 	}
 
 	/**
