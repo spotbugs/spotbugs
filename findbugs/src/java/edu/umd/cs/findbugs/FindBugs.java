@@ -1011,17 +1011,17 @@ public class FindBugs implements Constants2, ExitCodes {
 		
 		if (DEBUG) {
 			long total = 0;
-			Iterator it = detectorTimings.values().iterator();
-			while (it.hasNext()) {
-				total += ((Long)it.next()).longValue();
+			Iterator<Long> timingsIt = detectorTimings.values().iterator();
+			while (timingsIt.hasNext()) {
+				total += timingsIt.next().longValue();
 			}
 			System.out.println();
 			System.out.println("Detector Timings");
-			it = detectorTimings.entrySet().iterator();
+			Iterator<Map.Entry<String,Long>> it = detectorTimings.entrySet().iterator();
 			while (it.hasNext()) {
-				Map.Entry entry = (Map.Entry)it.next();
-				String detectorName = (String)entry.getKey();
-				long detectorTime = ((Long)entry.getValue()).longValue();
+				Map.Entry<String,Long> entry = it.next();
+				String detectorName = entry.getKey();
+				long detectorTime = entry.getValue().longValue();
 				System.out.println(detectorName + ": " + detectorTime + " ms  -> (" + (detectorTime * 100.0f / (float)total) + ") %");
 			}
 			System.out.println();
