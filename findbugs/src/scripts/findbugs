@@ -106,7 +106,7 @@ fb_maxheap="-Xmx${maxheap}m"
 # Extra JVM args for MacOSX.
 if [ $fb_osname = "Darwin" ]; then
 	fb_jvmargs="$fb_jvmargs \
-		-Xdock:name=FindBugs -Xdock:icon=${findbugs_home}/lib/bug-logo.icns \
+		-Xdock:name=FindBugs -Xdock:icon=${findbugs_home}/lib/buggy.icns \
 		-Dapple.laf.useScreenMenuBar=true"
 fi
 
