@@ -34,7 +34,7 @@ public class FindFloatEquality extends BytecodeScanningDetector implements Const
 	private static final int SAW_COMP = 1;
 	
 	private BugReporter bugReporter;
-	private OpcodeStack opStack;
+	private OpcodeStack opStack = new OpcodeStack();
 	private int state;
 
 	public FindFloatEquality(BugReporter bugReporter) {
@@ -46,7 +46,7 @@ public class FindFloatEquality extends BytecodeScanningDetector implements Const
 	}
 
 	public void visit(Method obj) {
-		opStack = new OpcodeStack();
+                opStack.resetForMethodEntry(this);
 		state = SAW_NOTHING;
 	}
 

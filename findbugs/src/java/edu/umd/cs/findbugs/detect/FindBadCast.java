@@ -68,10 +68,9 @@ public class FindBadCast extends BytecodeScanningDetector implements Constants2,
 
 	OpcodeStack stack = new OpcodeStack();
 	public void visit(Code obj) {
-		// unless active, don't bother dismantling bytecode
-			stack.clear();
-			castTo.clear();
-			super.visit(obj);
+		stack.resetForMethodEntry(this);
+		castTo.clear();
+		super.visit(obj);
 	}
 
 

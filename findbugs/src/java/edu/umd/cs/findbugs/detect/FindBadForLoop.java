@@ -39,7 +39,7 @@ import edu.umd.cs.findbugs.visitclass.Constants2;
 public class FindBadForLoop extends BytecodeScanningDetector implements Constants2, StatelessDetector {
 
 
-	OpcodeStack stack;
+	OpcodeStack stack = new OpcodeStack();
 	BugReporter bugReporter;
 
 	public FindBadForLoop(BugReporter bugReporter) {
@@ -60,7 +60,7 @@ public class FindBadForLoop extends BytecodeScanningDetector implements Constant
 	public void visit(Code obj) {
 			lastRegStore = -1;
 			lineNumbers = obj.getLineNumberTable();
-			stack = new OpcodeStack();
+			stack.resetForMethodEntry(this);
 			super.visit(obj);
 	}
 

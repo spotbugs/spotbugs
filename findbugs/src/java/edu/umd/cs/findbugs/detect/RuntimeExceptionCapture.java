@@ -64,7 +64,7 @@ public class RuntimeExceptionCapture extends BytecodeScanningDetector implements
 
 	private BugReporter bugReporter;
 	private Method method;
-	private OpcodeStack stack;
+	private OpcodeStack stack = new OpcodeStack();
 	private List<CaughtException> catchList;
 	private List<ThrownException> throwList;
 
@@ -112,7 +112,7 @@ public class RuntimeExceptionCapture extends BytecodeScanningDetector implements
 	public void visitCode(Code obj) {
 		catchList = new ArrayList<CaughtException>();
 		throwList = new ArrayList<ThrownException>();
-		stack = new OpcodeStack();
+                stack.resetForMethodEntry(this);
 
 		super.visitCode(obj);
 

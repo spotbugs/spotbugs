@@ -57,7 +57,7 @@ extends BytecodeScanningDetector implements Constants2, StatelessDetector {
 
     OpcodeStack stack = new OpcodeStack();
     public void visit(Code obj) {
-        stack.clear();
+	stack.resetForMethodEntry(this);
         super.visit(obj);
     }
 

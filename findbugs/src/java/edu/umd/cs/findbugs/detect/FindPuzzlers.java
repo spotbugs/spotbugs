@@ -58,11 +58,11 @@ public class FindPuzzlers extends BytecodeScanningDetector implements Constants2
 			&& ( getPrevOpcode(2) == SIPUSH
 				|| getPrevOpcode(2) == BIPUSH
 				))
-			 bugReporter.reportBug(new BugInstance(this, "TESTING", NORMAL_PRIORITY)
+			 bugReporter.reportBug(new BugInstance(this, "TESTING", LOW_PRIORITY)
                                         .addClassAndMethod(this)
                                         .addSourceLine(this));
 		if ((seen == I2S || seen == I2B) && getPrevOpcode(1) == IUSHR)
-			 bugReporter.reportBug(new BugInstance(this, "ICAST_QUESTIONABLE_UNSIGNED_RIGHT_SHIFT", NORMAL_PRIORITY)
+			 bugReporter.reportBug(new BugInstance(this, "ICAST_QUESTIONABLE_UNSIGNED_RIGHT_SHIFT", LOW_PRIORITY)
                                         .addClassAndMethod(this)
                                         .addSourceLine(this));
 

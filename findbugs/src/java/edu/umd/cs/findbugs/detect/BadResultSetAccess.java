@@ -66,7 +66,7 @@ public class BadResultSetAccess extends BytecodeScanningDetector implements Cons
 		}
 	};
 	
-	private OpcodeStack stack;
+	private OpcodeStack stack = new OpcodeStack();
 	private BugReporter bugReporter;
 	
 	public BadResultSetAccess(BugReporter bugReporter) {
@@ -78,7 +78,7 @@ public class BadResultSetAccess extends BytecodeScanningDetector implements Cons
 	}
 	
 	public void visit(Method obj) {
-		stack = new OpcodeStack();
+                stack.resetForMethodEntry(this);
 		super.visit(obj);
 	}
 

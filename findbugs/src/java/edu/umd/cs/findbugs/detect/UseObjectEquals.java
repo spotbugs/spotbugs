@@ -32,7 +32,7 @@ import edu.umd.cs.findbugs.visitclass.Constants2;
 
 public class UseObjectEquals extends BytecodeScanningDetector implements Constants2, StatelessDetector {
 	private BugReporter bugReporter;
-	private OpcodeStack stack;
+	private OpcodeStack stack = new OpcodeStack();
 
 	public UseObjectEquals(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
@@ -44,7 +44,7 @@ public class UseObjectEquals extends BytecodeScanningDetector implements Constan
 
 	public void visit(Method obj) {
 		super.visit(obj);
-		stack = new OpcodeStack();
+                stack.resetForMethodEntry(this);
 	}
 	
 	public void sawOpcode(int seen) {					

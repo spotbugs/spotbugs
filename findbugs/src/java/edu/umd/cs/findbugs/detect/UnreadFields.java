@@ -133,11 +133,11 @@ public class UnreadFields extends BytecodeScanningDetector implements Constants2
 
 	int count_aload_1;
 
-	private OpcodeStack opcodeStack;
+	private OpcodeStack opcodeStack = new OpcodeStack();
 	public void visit(Code obj) {
 		count_aload_1 = 0;
 		nullTested.clear();
-		opcodeStack = new OpcodeStack();
+                opcodeStack.resetForMethodEntry(this);
 		super.visit(obj);
 		if (getMethodName().equals("<init>") && count_aload_1 > 1
 		        && (getClassName().indexOf('$') >= 0

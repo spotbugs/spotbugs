@@ -36,6 +36,7 @@ import org.apache.bcel.classfile.LocalVariable;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.BasicType;
 import org.apache.bcel.generic.Type;
+import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 import edu.umd.cs.findbugs.visitclass.Constants2;
 import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
 import edu.umd.cs.findbugs.visitclass.LVTHelper;
@@ -876,6 +877,22 @@ public class OpcodeStack implements Constants2
  		lvValues.clear();
  	}
  	
+ 	public void resetForMethodEntry(PreorderVisitor v) {
+ 		stack.clear();
+ 		lvValues.clear();
+		String className = v.getClassName();
+		Method m = v.getMethod();
+		String signature = v.getMethodSig();
+		Type[] argTypes = Type.getArgumentTypes(signature);
+		int reg = 0;
+		if (!m.isStatic()) {
+			setLVValue( reg++, new Item("L" + className+";") );
+			}
+		for(int i = 0; i < argTypes.length; i++) {
+			setLVValue( reg++, new Item(argTypes[i].getSignature()));
+			}
+		}
+		
  	public int getStackDepth() {
  		return stack.size();
  	}
