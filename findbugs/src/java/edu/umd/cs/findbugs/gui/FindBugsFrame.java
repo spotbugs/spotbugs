@@ -35,6 +35,10 @@ import edu.umd.cs.findbugs.*;
  */
 public class FindBugsFrame extends javax.swing.JFrame {
     
+    /* ----------------------------------------------------------------------
+     * Helper classes
+     * ---------------------------------------------------------------------- */
+    
     /**
      * Custom cell renderer for the navigator tree.
      */
@@ -126,7 +130,12 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	}
     }
     
-    /** Compare BugInstance class names. */
+    /**
+     * Compare BugInstance class names.
+     * This is useful for grouping bug instances by class.
+     * Note that all instances with the same class name will compare
+     * as equal.
+     */
     private static class BugInstanceClassComparator implements Comparator {
 	public int compare(Object a, Object b) {
 	    BugInstance lhs = (BugInstance) a;
@@ -134,9 +143,16 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	    return lhs.getPrimaryClass().compareTo(rhs.getPrimaryClass());
 	}
     }
+    
+    /** The instance of BugInstanceClassComparator. */
     private static final Comparator bugInstanceClassComparator = new BugInstanceClassComparator();
     
-    /** Compare BugInstance package names. */
+    /**
+     * Compare BugInstance package names.
+     * This is useful for grouping bug instances by package.
+     * Note that all instances with the same package name will compare
+     * as equal.
+     */
     private static class BugInstancePackageComparator implements Comparator {
 	public int compare(Object a, Object b) {
 	    BugInstance lhs = (BugInstance) a;
@@ -145,9 +161,16 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	    rhs.getPrimaryClass().getPackageName());
 	}
     }
+    
+    /** The instance of BugInstancePackageComparator. */
     private static final Comparator bugInstancePackageComparator = new BugInstancePackageComparator();
     
-    /** Compare BugInstance bug types. */
+    /**
+     * Compare BugInstance bug types.
+     * This is useful for grouping bug instances by bug type.
+     * Note that all instances with the same bug type will compare
+     * as equal.
+     */
     private static class BugInstanceTypeComparator implements Comparator {
 	public int compare(Object a, Object b) {
 	    BugInstance lhs = (BugInstance) a;
@@ -158,9 +181,14 @@ public class FindBugsFrame extends javax.swing.JFrame {
 		rhsString.substring(0, rhsString.indexOf(':')));
 	}
     }
+    
+    /** The instance of BugInstanceTypeComparator. */
     private static final Comparator bugInstanceTypeComparator = new BugInstanceTypeComparator();
     
-    /** Compare BugInstances by class name. */
+    /**
+     * Two-level comparison of bug instances by class name and
+     * BugInstance natural ordering.
+     */
     private static class BugInstanceByClassComparator implements Comparator {
 	public int compare(Object a, Object b) {
 	    int cmp = bugInstanceClassComparator.compare(a, b);
@@ -169,9 +197,14 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	    return ((Comparable)a).compareTo(b);
 	}
     }
+    
+    /** The instance of BugInstanceByClassComparator. */
     private static final Comparator bugInstanceByClassComparator = new FindBugsFrame.BugInstanceByClassComparator();
     
-    /** Compare BugInstances by package name. */
+    /**
+     * Two-level comparison of bug instances by package and
+     * BugInstance natural ordering.
+     */
     private static class BugInstanceByPackageComparator implements Comparator {
 	public int compare(Object a, Object b) {
 	    int cmp = bugInstancePackageComparator.compare(a, b);
@@ -180,9 +213,15 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	    return ((Comparable)a).compareTo(b);
 	}
     }
-    private static final Comparator bugInstanceByPackageComparator = new FindBugsFrame.BugInstanceByPackageComparator();
     
-    private static class BugInstanceByCategoryComparator implements Comparator {
+    /** The instance of BugInstanceByPackageComparator. */
+    private static final Comparator bugInstanceByPackageComparator = new FindBugsFrame.BugInstanceByPackageComparator();
+
+    /**
+     * Two-level comparison of bug instances by bug type and
+     * BugInstance natural ordering.
+     */
+    private static class BugInstanceByTypeComparator implements Comparator {
 	public int compare(Object a, Object b) {
 	    int cmp = bugInstanceTypeComparator.compare(a, b);
 	    if (cmp != 0)
@@ -190,17 +229,50 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	    return ((Comparable)a).compareTo(b);
 	}
     }
-    private static final Comparator bugInstanceByCategoryComparator = new FindBugsFrame.BugInstanceByCategoryComparator();
     
+    /** The instance of BugTypeByTypeComparator. */
+    private static final Comparator bugInstanceByTypeComparator = new FindBugsFrame.BugInstanceByTypeComparator();
+
+    /**
+     * Swing FileFilter class for file selection dialogs for FindBugs project files.
+     */
+    private static class ProjectFileFilter extends FileFilter {
+        public boolean accept(File file) { return file.isDirectory() || file.getName().endsWith(".fb"); }
+        public String getDescription() { return "FindBugs projects (*.fb)"; }
+    }
+    
+    /** The instance of ProjectFileFilter. */
+    private static final FileFilter projectFileFilter = new ProjectFileFilter();
+
+    /* ----------------------------------------------------------------------
+     * Constants
+     * ---------------------------------------------------------------------- */
+
     private static final String GROUP_BY_CLASS = "By class";
     private static final String GROUP_BY_PACKAGE = "By package";
     private static final String GROUP_BY_BUG_TYPE = "By bug type";
     
-    /** Creates new form FindBugsFrame */
+    /**
+     * A fudge value required in our hack to get the REAL maximum
+     * divider location for the consoleSplitter.  Experience suggests that
+     * the value "1" would work here, but setting it a little higher
+     * makes the code a bit more robust.
+     */
+    private static final int DIVIDER_FUDGE = 3;
+    
+    /* ----------------------------------------------------------------------
+     * Constructor
+     * ---------------------------------------------------------------------- */
+    
+    /** Creates new form FindBugsFrame. */
     public FindBugsFrame() {
 	initComponents();
 	postInitComponents();
     }
+
+    /* ----------------------------------------------------------------------
+     * Component initialization and event handlers
+     * ---------------------------------------------------------------------- */
     
     /** This method is called from within the constructor to
      * initialize the form.
@@ -693,12 +765,6 @@ public class FindBugsFrame extends javax.swing.JFrame {
         pack();
     }//GEN-END:initComponents
 
-    private static class ProjectFileFilter extends FileFilter {
-        public boolean accept(File file) { return file.isDirectory() || file.getName().endsWith(".fb"); }
-        public String getDescription() { return "FindBugs projects (*.fb)"; }
-    }
-    private static final FileFilter projectFileFilter = new ProjectFileFilter();
-
     private void openProjectItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openProjectItemActionPerformed
         JFileChooser chooser = new JFileChooser();
         chooser.setFileFilter(projectFileFilter);
@@ -758,14 +824,6 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	dialog.setLocationRelativeTo(null); // center the dialog
 	dialog.show();
     }//GEN-LAST:event_aboutItemActionPerformed
-    
-    /**
-     * A fudge value required in our hack to get the REAL maximum
-     * divider location for the consoleSplitter.  Experience suggests that
-     * the value "1" would work here, but setting it a little higher
-     * makes the code a bit more robust.
-     */
-    private static final int DIVIDER_FUDGE = 3;
     
     private void consoleSplitterPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_consoleSplitterPropertyChange
 	// The idea here is to keep the View:Console checkbox up to date with
@@ -921,6 +979,10 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	exitFindBugs();
     }//GEN-LAST:event_exitForm
     
+    /* ----------------------------------------------------------------------
+     * Component initialization support
+     * ---------------------------------------------------------------------- */
+    
     /**
      * Create the tree model that will be used by the navigator tree.
      */
@@ -1000,6 +1062,10 @@ public class FindBugsFrame extends javax.swing.JFrame {
         };
         sourceTextArea.setHighlighter(sourceHighlighter);
     }
+    
+    /* ----------------------------------------------------------------------
+     *
+     * ---------------------------------------------------------------------- */
     
     /**
      * This handler is called whenever the selection in the navigator
@@ -1203,7 +1269,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	else if (sortOrder.equals(GROUP_BY_PACKAGE))
 	    return bugInstanceByPackageComparator;
 	else if (sortOrder.equals(GROUP_BY_BUG_TYPE))
-	    return bugInstanceByCategoryComparator;
+	    return bugInstanceByTypeComparator;
 	else
 	    throw new IllegalArgumentException("Bad sort order: " + sortOrder);
     }
@@ -1369,7 +1435,12 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	return null;
     }
     
+    /* ----------------------------------------------------------------------
+     * main() method
+     * ---------------------------------------------------------------------- */
+    
     /**
+     * Invoke from the command line.
      * @param args the command line arguments
      */
     public static void main(String args[]) {
@@ -1378,6 +1449,9 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	frame.show();
     }
     
+    /* ----------------------------------------------------------------------
+     * Instance variables
+     * ---------------------------------------------------------------------- */
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JEditorPane jEditorPane1;
