@@ -86,7 +86,7 @@ public class FindDoubleCheck extends BytecodeScanningDetector implements   Const
 	 case 3:
 		if (seen == PUTFIELD || seen == PUTSTATIC) {
 			FieldAnnotation f = FieldAnnotation.fromReferencedField(this);
-			if (fields.contains(f) && !getNameConstantOperand().startsWith("class$")
+			if (twice.contains(f) && !getNameConstantOperand().startsWith("class$")
 					&& !getSigConstantOperand().equals("Ljava/lang/String;")) {
 				Field declaration = findField(getClassConstantOperand(), getNameConstantOperand());
 				/*
