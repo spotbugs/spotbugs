@@ -668,10 +668,12 @@ public class FindBugs implements Constants2, ExitCodes
   private static final int SORTING_REPORTER = 1;
   private static final int XML_REPORTER = 2;
   private static final int EMACS_REPORTER = 3;
+  private static final int HTML_REPORTER = 4;
 
   public static void main(String argv[]) throws Exception
   { 
 	int bugReporterType = PRINTING_REPORTER;
+	String stylesheet = null;
 	Project project = new Project();
 	boolean quiet = false;
 	String filterFile = null;
@@ -713,7 +715,12 @@ public class FindBugs implements Constants2, ExitCodes
 			bugReporterType = SORTING_REPORTER;
 		else if (option.equals("-xml"))
 			bugReporterType = XML_REPORTER;
-		else if (option.equals("-emacs"))
+		else if (option.equals("-html")) {
+			++argCount;
+			if (argCount == argv.length) throw new IllegalArgumentException(option + " option requires argument");
+			bugReporterType = HTML_REPORTER;
+			stylesheet = argv[argCount];
+		} else if (option.equals("-emacs"))
 			bugReporterType = EMACS_REPORTER;
 		else if (option.equals("-outputFile")) {
 			++argCount;
@@ -820,6 +827,7 @@ public class FindBugs implements Constants2, ExitCodes
 			System.out.println("   -high                         report high priority bugs only");
 			System.out.println("   -sortByClass                  sort bug reports by class");
 			System.out.println("   -xml                          XML output");
+			System.out.println("   -html <stylesheet>            HTML output using given XSL stylesheet");
 			System.out.println("   -emacs                        Use emacs reporting format");
 			System.out.println("   -outputFile <filename>        Save output in named file");
 			System.out.println("   -visitors <v1>,<v2>,...       run only named visitors");
@@ -846,6 +854,8 @@ public class FindBugs implements Constants2, ExitCodes
 		bugReporter = new XMLBugReporter(project); break;
 	case EMACS_REPORTER:
                 bugReporter = new EmacsBugReporter(); break;
+	case HTML_REPORTER:
+		bugReporter = new HTMLBugReporter(project, stylesheet); break;
 	default:
 		throw new IllegalStateException();
 	}
