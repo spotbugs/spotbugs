@@ -58,6 +58,8 @@ public class SwitchFallthrough extends BytecodeScanningDetector implements   Con
 		break;
 		default:
 		}
+	if (nextIndex >= switchOffsets.length) 
+		inSwitch = false;
 	if (inSwitch) {
 	  if (PC == switchPC + switchOffsets[nextIndex]
 		&& switchOffsets[nextIndex] != defaultSwitchOffset
@@ -67,7 +69,7 @@ public class SwitchFallthrough extends BytecodeScanningDetector implements   Con
 		    int startOfNextCase = lineNumbers.getSourceLine(PC);
 		    int previousLabel = switchLabels[nextIndex-1];
 		    int nextLabel = switchLabels[nextIndex];
-		  if ( !(previousLabel == 10 && nextLabel == 13)
+		  if (!(previousLabel == 10 && nextLabel == 13)
 		       && !(previousLabel == 13 && nextLabel == 10)
 		       && startOfNextCase - endOfPreviousCase <= 2) {
 		  System.out.println("Reached the switch for " + switchLabels[nextIndex]
