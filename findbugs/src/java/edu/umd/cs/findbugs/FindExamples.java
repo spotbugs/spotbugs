@@ -21,14 +21,14 @@ package edu.umd.cs.findbugs;
 
 import java.io.BufferedReader;
 import java.io.StringReader;
-import java.util.*;
 
 /**
  * Find bug instances annotated with "GOOD_EXAMPLE" or "EXCELLENT_EXAMPLE".
  */
-public class FindExamples {
+public class FindExamples extends QueryBugAnnotations {
 	private boolean brief = false;
 	private String category = null;
+	private boolean first = true;
 
 	public static void main(String[] argv) throws Exception {
 		new FindExamples().execute(argv);
@@ -36,12 +36,6 @@ public class FindExamples {
 
 	public void execute(String[] argv) throws Exception {
 		int start = 0;
-/*
-		if (argv[0].equals("-category")) {
-			category = argv[1];
-			start = 2;
-		}
-*/
 		while (start < argv.length && argv[start].startsWith("-")) {
 			if (argv[start].equals("-category"))
 				category = argv[1];
@@ -62,38 +56,26 @@ public class FindExamples {
 
 		DetectorFactoryCollection.instance(); // load plugins
 
+		addKeyword("GOOD_EXAMPLE");
+		addKeyword("EXCELLENT_EXAMPLE");
+
 		for (int i = start; i < argv.length; ++i)
 			scan(argv[i]);
 	}
 
-	public void scan(String filename) throws Exception {
+	protected void match(BugInstance bugInstance, String filename) throws Exception {
+		if (category != null && !bugInstance.getAbbrev().equals(category))
+			return;
 
-		BugCollection bugCollection = new SortedBugCollection();
-		bugCollection.readXML(filename, new Project());
+		if (first)
+			first = false;
+		else
+			System.out.println();
 
-		boolean first = false;
-		Iterator<BugInstance> i = bugCollection.iterator();
-		while (i.hasNext()) {
-			BugInstance bugInstance = i.next();
-			String annotation = bugInstance.getAnnotationText();
-
-			if (category != null && !bugInstance.getAbbrev().equals(category))
-				continue;
-
-			Set<String> contents = bugInstance.getTextAnnotationWords();
-
-			if (contents.contains("GOOD_EXAMPLE") || contents.contains("EXCELLENT_EXAMPLE")) {
-				if (first)
-					first = false;
-				else
-					System.out.println();
-				if (brief)
-					dumpBugBrief(bugInstance);
-				else
-					dumpBug(bugInstance, filename);
-			}
-		}
-
+		if (brief)
+			dumpBugBrief(bugInstance);
+		else
+			dumpBug(bugInstance, filename);
 	}
 
 	private void dumpBugBrief(BugInstance bugInstance) throws Exception {
@@ -122,14 +104,6 @@ public class FindExamples {
 		if (srcLine != null)
 			System.out.println("\t" + srcLine.toString());
 		System.out.println(bugInstance.getAnnotationText());
-	}
-
-	private Set<String> parseAnnotation(String annotation) {
-		HashSet<String> result = new HashSet<String>();
-		StringTokenizer tok = new StringTokenizer(annotation, " \t\r\n\f");
-		while (tok.hasMoreTokens())
-			result.add(tok.nextToken());
-		return result;
 	}
 }
 
