@@ -14,7 +14,7 @@
 <h1>FindBugs FAQ</h1>
 
 <p> This document contains answers to frequently asked questions about
-<a href="index.html">FindBugs</a>, a bug pattern detector for Java.
+<a href="index.html">FindBugs</a>.
 
 <h2>Contents</h2>
 <ol>
@@ -23,6 +23,7 @@
 <li> <a href="#q3">FindBugs is running out of memory, or is taking a long time to finish</a>
 <li> <a href="#q4">What is the "auxiliary classpath"?  Why should I specify it?</a>
 <li> <a href="#q5">The Eclipse plugin doesn't load</a>
+<li> <a href="#q6">I'm getting a lot of false "OS" and "ODR" warnings</a>
 </ol>
 
 <h2><a name="q1">Q1: I'm getting java.lang.UnsupportedClassVersionError when I try to run FindBugs</a></h2>
@@ -137,6 +138,21 @@ did not work with 2.x versions of Eclipse.&nbsp; The plugin should
 work on recent 3.0 milestones (for example, 3.0 M8).&nbsp;
 In FindBugs 0.7.4, the Eclipse plugin was fixed so
 that it runs on 2.x versions of Eclipse.
+
+<h2><a name="q6">Q6: I'm getting a lot of false "OS" and "ODR" warnings</a></h2>
+
+<p> By default, FindBugs assumes that any method invocation can
+throw an unchecked runtime exception.&nbsp; As a result,
+it may assume that an unchecked exception thrown out of the
+method could bypass a call to a <code>close()</code> method
+for a stream or database resource.
+
+<p> You can use the <code>-workHard</code> command line argument
+or the <code>findbugs.workHard</code> boolean analysis property
+to make FindBugs work harder to prune unlikely exception
+edges.&nbsp; This generally reduces the number of
+false warnings, at the expense of slowing down the
+analysis.
 
 @HTML_FOOTER@
 
