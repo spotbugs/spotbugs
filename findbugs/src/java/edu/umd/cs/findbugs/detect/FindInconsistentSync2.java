@@ -20,14 +20,59 @@
 package edu.umd.cs.findbugs.detect;
 
 import edu.umd.cs.daveho.ba.*;
-import edu.umd.cs.findbugs.*;
+
+import edu.umd.cs.findbugs.AnalysisException;
+import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.CallGraph;
+import edu.umd.cs.findbugs.CallGraphNode;
+import edu.umd.cs.findbugs.CallGraphEdge;
+import edu.umd.cs.findbugs.CallSite;
+import edu.umd.cs.findbugs.Detector;
+import edu.umd.cs.findbugs.SelfCalls;
+
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.*;
 import org.apache.bcel.generic.*;
+
 import java.util.*;
 
 public class FindInconsistentSync2 implements Detector {
+
+	/* ----------------------------------------------------------------------
+	 * Helper classes
+	 * ---------------------------------------------------------------------- */
+
+	private static final int READ_UNLOCKED = 0;
+	private static final int WRITE_UNLOCKED = 1;
+	private static final int READ_LOCKED = 2;
+	private static final int WRITE_LOCKED = 3;
+
+	private static class FieldStats {
+		private int[] countList = new int[4];
+
+		public void addAccess(int kind) {
+			countList[kind]++;
+		}
+
+		public int getNumAccesses(int kind) {
+			return countList[kind];
+		}
+	}
+
+	/* ----------------------------------------------------------------------
+	 * Fields
+	 * ---------------------------------------------------------------------- */
+
 	private BugReporter bugReporter;
+	private Map<XField, FieldStats> statMap = new HashMap<XField, FieldStats>();
+	private Set<XField> publicFields = new HashSet<XField>();
+	private Set<XField> volatileAndFinalFields = new HashSet<XField>();
+	private Set<XField> writtenOutsideOfConstructor = new HashSet<XField>();
+	private Set<XField> localLocks = new HashSet<XField>();
+
+	/* ----------------------------------------------------------------------
+	 * Public methods
+	 * ---------------------------------------------------------------------- */
 
 	public FindInconsistentSync2(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
@@ -36,6 +81,16 @@ public class FindInconsistentSync2 implements Detector {
 	public void visitClassContext(ClassContext classContext) {
 		try {
 			Set<Method> lockedMethodSet = findLockedMethods(classContext);
+
+			JavaClass javaClass = classContext.getJavaClass();
+			Method[] methodList = javaClass.getMethods();
+			for (int i = 0; i < methodList.length; ++i) {
+				Method method = methodList[i];
+				if (classContext.getMethodGen(method) == null)
+					continue;
+				analyzeMethod(classContext, method, lockedMethodSet);
+			}
+
 		} catch (CFGBuilderException e) {
 			throw new AnalysisException("FindInconsistentSync2 caught exception: " + e.toString(), e);
 		} catch (DataflowAnalysisException e) {
@@ -46,6 +101,51 @@ public class FindInconsistentSync2 implements Detector {
 	public void report() {
 	}
 
+	/* ----------------------------------------------------------------------
+	 * Implementation
+	 * ---------------------------------------------------------------------- */
+
+	private void analyzeMethod(ClassContext classContext, Method method, Set<Method> lockedMethodSet)
+		throws CFGBuilderException, DataflowAnalysisException {
+
+		final InnerClassAccessMap icam = InnerClassAccessMap.instance();
+		final ConstantPoolGen cpg = classContext.getConstantPoolGen();
+		final CFG cfg = classContext.getCFG(method);
+		final LockDataflow lockDataflow = classContext.getLockDataflow(method);
+		final ValueNumberDataflow vnaDataflow = classContext.getValueNumberDataflow(method);
+
+		new LocationScanner(cfg).scan(new LocationScanner.Callback() {
+			public void visitLocation(Location location) throws CFGBuilderException, DataflowAnalysisException {
+
+				Instruction ins = location.getHandle().getInstruction();
+
+				if (ins instanceof FieldInstruction) {
+					try {
+						FieldInstruction fins = (FieldInstruction) ins;
+						XField xfield = Lookup.findXField(fins, cpg);
+
+						if (!xfield.isStatic()) {
+							// See if the field access is self-locked.
+							ValueNumberFrame frame = vnaDataflow.getFactAtLocation(location);
+							ValueNumber instance = frame.getInstance(fins, cpg);
+							LockSet lockSet = lockDataflow.getFactAtLocation(location);
+							boolean isLocked = lockSet.getLockCount(instance.getNumber()) > 0;
+						}
+						// FIXME: should we do something for static fields?
+					} catch (ClassNotFoundException e) {
+						bugReporter.reportMissingClass(e);
+					}
+				}
+
+			}
+		});
+	}
+
+	/**
+	 * Find methods that appear to always be called from a locked context.
+	 * We assume that nonpublic methods will only be called from
+	 * within the class, which is not really a valid assumption.
+	 */
 	private Set<Method> findLockedMethods(ClassContext classContext)
 		throws CFGBuilderException, DataflowAnalysisException {
 
@@ -108,6 +208,9 @@ public class FindInconsistentSync2 implements Detector {
 		return lockedMethodSet;
 	}
 
+	/**
+	 * Find all self-call sites that are obviously locked.
+	 */
 	private Set<CallSite> findObviouslyLockedCallSites(ClassContext classContext, SelfCalls selfCalls)
 		throws CFGBuilderException, DataflowAnalysisException {
 		ConstantPoolGen cpg = classContext.getConstantPoolGen();
