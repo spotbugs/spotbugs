@@ -49,8 +49,8 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
 	private static final boolean DEBUG = Boolean.getBoolean("ful.debug");
 	private static int numAcquires = 0;
 	
-	private static final int JDK15_MAJOR = 0;
-	private static final int JDK15_MINOR = 49;
+	private static final int JDK15_MAJOR = 48;
+	private static final int JDK15_MINOR = 0;
 
 	/* ----------------------------------------------------------------------
 	 * Helper classes
@@ -217,7 +217,8 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
 		// We can ignore classes that were compiled for anything
 		// less than JDK 1.5.  This should avoid lots of unnecessary work
 		// when analyzing code for older VM targets.
-		if (jclass.getMajor() > JDK15_MAJOR || jclass.getMinor() >= JDK15_MINOR) {
+		if (jclass.getMajor() > JDK15_MAJOR ||
+			(jclass.getMajor() == JDK15_MAJOR && jclass.getMinor() >= JDK15_MINOR)) {
 			super.visitClassContext(classContext);
 		}
 	}
