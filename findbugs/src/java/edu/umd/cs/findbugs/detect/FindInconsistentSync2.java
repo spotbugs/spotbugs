@@ -318,7 +318,6 @@ public class FindInconsistentSync2 implements Detector {
 
 		for (Iterator<Location> i = cfg.locationIterator(); i.hasNext(); ) {
 			Location location = i.next();
-
 			try {
 				Instruction ins = location.getHandle().getInstruction();
 				XField xfield = null;
@@ -345,17 +344,17 @@ public class FindInconsistentSync2 implements Detector {
 				}
 
 				if (xfield == null)
-					return;
+					continue;
 
 				// We only care about mutable nonvolatile nonpublic instance fields.
 				if (xfield.isStatic() || xfield.isPublic() || xfield.isVolatile() || xfield.isFinal())
-					return;
+					continue;
 
 				// The value number frame could be invalid if the basic
 				// block became unreachable due to edge pruning (dead code).
 				ValueNumberFrame frame = vnaDataflow.getFactAtLocation(location);
 				if (!frame.isValid())
-					return;
+					continue;
 
 				// Get lock set and instance value
 				ValueNumber thisValue = !method.isStatic() ? vnaDataflow.getAnalysis().getThisValue() : null;
