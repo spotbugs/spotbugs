@@ -29,6 +29,10 @@ public class XMLBugReporter extends TextUIBugReporter {
 		this.project = project;
 	}
 
+	public void addApplicationClass(String appClassName, boolean isInterface) {
+		bugCollection.addApplicationClass(appClassName, isInterface);
+	}
+
 	public void logError(String message) {
 		bugCollection.addError(message);
 		super.logError(message);

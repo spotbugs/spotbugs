@@ -48,6 +48,10 @@ public class DelegatingBugReporter implements BugReporter {
 		realBugReporter.setPriorityThreshold(threshold);
 	}
 
+	public void addApplicationClass(String appClassName, boolean isInterface) {
+		realBugReporter.addApplicationClass(appClassName, isInterface);
+	}
+
 	public void reportBug(BugInstance bugInstance) {
 		realBugReporter.reportBug(bugInstance);
 	}

@@ -52,6 +52,13 @@ public interface BugReporter extends RepositoryLookupFailureCallback {
 	public void setPriorityThreshold(int threshold);
 
 	/**
+	 * Called to report that the given class was analyzed.
+	 * @param appClassName the name of the class
+	 * @param isInterface true if the class is an interface
+	 */
+	public void addApplicationClass(String appClassName, boolean isInterface);
+
+	/**
 	 * Report a bug.
 	 * The implementation may report the bug immediately,
 	 * or queue it for later.

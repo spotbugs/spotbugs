@@ -28,6 +28,11 @@ import java.util.*;
 public class PrintingBugReporter extends TextUIBugReporter {
 	private HashSet<BugInstance> seenAlready = new HashSet<BugInstance>();
 
+	public void addApplicationClass(String appClassName, boolean isInterface) {
+		// Don't need to do anything special, since we won't be
+		// reporting statistics.
+	}
+
 	protected void doReportBug(BugInstance bugInstance) {
 		if (seenAlready.add(bugInstance)) {
 			printBug(bugInstance);

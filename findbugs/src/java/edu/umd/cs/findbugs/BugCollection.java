@@ -59,12 +59,17 @@ public abstract class BugCollection {
 	public abstract Iterator<String> errorIterator();
 	public abstract Iterator<String> missingClassIterator();
 
+	public abstract void addApplicationClass(String className, boolean isInterface);
+	public abstract Iterator<String> applicationClassIterator();
+	public abstract boolean isInterface(String appClassName);
+
 	private static final String ROOT_ELEMENT_NAME = "BugCollection";
 	private static final String SRCMAP_ELEMENT_NAME= "SrcMap";
 	private static final String PROJECT_ELEMENT_NAME = "Project";
 	private static final String ERRORS_ELEMENT_NAME = "Errors";
 	private static final String ANALYSIS_ERROR_ELEMENT_NAME = "AnalysisError";
 	private static final String MISSING_CLASS_ELEMENT_NAME = "MissingClass";
+	private static final String APP_CLASS_ELEMENT_NAME = "AppClass";
 
 	public void readXML(String fileName, Project project)
 		throws IOException, DocumentException {
@@ -97,6 +102,10 @@ public abstract class BugCollection {
 				project.readElement(element);
 			} else if (elementName.equals(ERRORS_ELEMENT_NAME)) {
 				readErrors(element);
+			} else if (elementName.equals(APP_CLASS_ELEMENT_NAME)) {
+				String isInterface = element.attributeValue("interface");
+				addApplicationClass(element.getText(),
+									isInterface != null && Boolean.valueOf(isInterface).booleanValue());
 			} else {
 				XMLTranslator translator = XMLTranslatorRegistry.instance().getTranslator(elementName);
 				if (translator == null)
@@ -173,20 +182,28 @@ public abstract class BugCollection {
 		Element projectElement = root.addElement(PROJECT_ELEMENT_NAME);
 		project.writeElement(projectElement);
 
+		// Save the application classes
+		for (Iterator<String> i = applicationClassIterator(); i.hasNext(); ) {
+			Element child = root.addElement(APP_CLASS_ELEMENT_NAME);
+			String className = i.next();
+			if (isInterface(className))
+				child.addAttribute("interface", "true");
+			child.setText(className);
+		}
+
 		// Save all of the bug instances
-		Iterator<BugInstance> i = this.iterator();
-		while (i.hasNext()) {
+		for (Iterator<BugInstance> i = this.iterator(); i.hasNext(); ) {
 			BugInstance bugInstance = i.next();
 			bugInstance.toElement(root);
 		}
 
 		// Save the error information
 		Element errorsElement = root.addElement(ERRORS_ELEMENT_NAME);
-		for (Iterator<String> j = errorIterator(); j.hasNext(); ) {
-			errorsElement.addElement(ANALYSIS_ERROR_ELEMENT_NAME).setText(j.next());
+		for (Iterator<String> i = errorIterator(); i.hasNext(); ) {
+			errorsElement.addElement(ANALYSIS_ERROR_ELEMENT_NAME).setText(i.next());
 		}
-		for (Iterator<String> j = missingClassIterator(); j.hasNext(); ) {
-			errorsElement.addElement(MISSING_CLASS_ELEMENT_NAME).setText(j.next());
+		for (Iterator<String> i = missingClassIterator(); i.hasNext(); ) {
+			errorsElement.addElement(MISSING_CLASS_ELEMENT_NAME).setText(i.next());
 		}
 
 		XMLWriter writer = new XMLWriter(out, OutputFormat.createPrettyPrint());

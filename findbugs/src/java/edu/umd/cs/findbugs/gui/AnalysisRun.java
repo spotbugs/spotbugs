@@ -54,6 +54,10 @@ public class AnalysisRun {
     private class Reporter extends AbstractBugReporter {
         private SortedBugCollection bugCollection = new SortedBugCollection();
 
+	public void addApplicationClass(String appClassName, boolean isInterface) {
+	    bugCollection.addApplicationClass(appClassName, isInterface);
+	}
+
 	public void logError(String message) {
 	    frame.getLogger().logMessage(ConsoleLogger.WARNING, message);
 	    super.logError(message);
@@ -108,22 +112,25 @@ public class AnalysisRun {
      * will be thrown by this method.
      *
      * @param progressCallback the progress callback
-     * @throws java.io.IOException if an I/O error occurs during the analysis
+     * @throws IOException if an I/O error occurs during the analysis
      * @throws InterruptedException if the analysis thread is interrupted
      */
-    public void execute(FindBugsProgress progressCallback) throws java.io.IOException, InterruptedException {
+    public void execute(FindBugsProgress progressCallback) throws IOException, InterruptedException {
         findBugs.setProgressCallback(progressCallback);
 
         // Run the analysis!
         findBugs.execute();
 
         // Get the summary!
+	createSummary(reporter.getProjectStats());
+
+    }
+
+    private void createSummary(ProjectStats stats) throws IOException {
         ByteArrayOutputStream out = new ByteArrayOutputStream( 8096 );
-	ProjectStats stats = reporter.getProjectStats();
 	stats.reportSummary( out );
         transformSummary( out.toString() );
         out.close();
-
     }
 
     private static final String MISSING_SUMMARY_MESSAGE =
@@ -132,7 +139,7 @@ public class AnalysisRun {
 	"<p> Please report this failure to <a href=\"findbugs-discuss@cs.umd.edu\">" + 
 	"findbugs-discuss@cs.umd.edu</a>.</body></html>";
 
-    private void transformSummary( String summaryXML ) throws java.io.IOException {
+    private void transformSummary( String summaryXML ) throws IOException {
         summary = summaryXML;
 
         StreamSource in = new StreamSource( new StringReader( summaryXML ) );
@@ -171,6 +178,12 @@ public class AnalysisRun {
      */
     public void loadBugsFromFile(File file) throws IOException, org.dom4j.DocumentException {
         reporter.bugCollection.readXML(file, project);
+
+	// Update summary stats
+	ProjectStats stats = reporter.getProjectStats();
+	stats.initFrom(reporter.bugCollection);
+	if (stats.getNumClasses() > 0)
+	    createSummary(stats);
     }
     
     /**

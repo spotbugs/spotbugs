@@ -51,6 +51,11 @@ public class ProjectStats implements XMLConvertible {
     this.totalClasses = 0;
   }
 
+  /** Get the number of classes analyzed. */
+  public int getNumClasses() {
+    return totalClasses;
+  }
+
   /**
    * Report that a class has been analyzed.
    * @param className the full name of the class
@@ -106,6 +111,18 @@ public class ProjectStats implements XMLConvertible {
      catch ( Exception e ) {
        e.printStackTrace();
      }
+  }
+
+  /** Initialize empty ProjectStats from a BugCollection. */
+  public void initFrom(BugCollection bugCollection) {
+    for (Iterator<String> i = bugCollection.applicationClassIterator(); i.hasNext(); ) {
+      String appClassName = i.next();
+      this.addClass(appClassName, bugCollection.isInterface(appClassName));
+    }
+
+    for (Iterator<BugInstance> i = bugCollection.iterator(); i.hasNext(); ) {
+      addBug(i.next());
+    }
   }
 
   private PackageStats getPackageStats( String packageName ) {

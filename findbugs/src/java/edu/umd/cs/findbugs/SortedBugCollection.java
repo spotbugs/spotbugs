@@ -40,11 +40,15 @@ public class SortedBugCollection extends BugCollection {
 	private TreeSet<BugInstance> bugSet;
 	private List<String> errorList;
 	private TreeSet<String> missingClassSet;
+	private TreeSet<String> applicationClassSet;
+	private HashSet<String> interfaceClassSet;
 
 	public SortedBugCollection() {
 		bugSet = new TreeSet<BugInstance>(comparator);
 		errorList = new LinkedList<String>();
 		missingClassSet = new TreeSet<String>();
+		applicationClassSet = new TreeSet<String>();
+		interfaceClassSet = new HashSet<String>();
 	}
 
 	public boolean add(BugInstance bugInstance) {
@@ -73,6 +77,20 @@ public class SortedBugCollection extends BugCollection {
 
 	public Iterator<String> missingClassIterator() {
 		return missingClassSet.iterator();
+	}
+
+	public void addApplicationClass(String className, boolean isInterface) {
+		applicationClassSet.add(className);
+		if (isInterface)
+			interfaceClassSet.add(className);
+	}
+
+	public Iterator<String> applicationClassIterator() {
+		return applicationClassSet.iterator();
+	}
+
+	public boolean isInterface(String appClassName) {
+		return interfaceClassSet.contains(appClassName);
 	}
 
 	public boolean contains(BugInstance bugInstance) {

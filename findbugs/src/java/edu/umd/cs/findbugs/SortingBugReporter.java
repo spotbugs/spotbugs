@@ -28,6 +28,11 @@ import java.util.*;
 public class SortingBugReporter extends TextUIBugReporter {
 	private SortedBugCollection bugCollection = new SortedBugCollection();
 
+	public void addApplicationClass(String appClassName, boolean isInterface) {
+		// Don't need to do anything special, since we won't be
+		// reporting statistics.
+	}
+
 	public void doReportBug(BugInstance bugInstance) {
 		if (bugCollection.add(bugInstance))
 			notifyObservers(bugInstance);
