@@ -29,35 +29,40 @@ public class EmptyZipFileEntry extends BytecodeScanningDetector implements Const
 
 	private BugReporter bugReporter;
 	private int sawPutEntry;
+	private String streamType;
 
 	public EmptyZipFileEntry(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 	}
-
 
 	public void visit(JavaClass obj) {
 	}
 
 	public void visit(Method obj) {
 		sawPutEntry = -10000;
+		streamType = "";
 	}
 
 	public void sawOpcode(int seen) {
-
-
 		if (seen == INVOKEVIRTUAL 
-			&& getNameConstantOperand().equals("putNextEntry") 
-			&& getClassConstantOperand()
-				.equals("java/util/zip/ZipOutputStream")) {
-			sawPutEntry = getPC();
+			&& getNameConstantOperand().equals("putNextEntry")) {
+			streamType = getClassConstantOperand();
+			if (streamType.equals("java/util/zip/ZipOutputStream") 
+			||  streamType.equals("java/util/jar/JarOutputStream"))
+				sawPutEntry = getPC();
+			else
+				streamType = "";
 			}
 		else {
 			if (getPC() - sawPutEntry <= 7  && seen == INVOKEVIRTUAL 
 				&& getNameConstantOperand().equals("closeEntry")
 			&& getClassConstantOperand()
-				.equals("java/util/zip/ZipOutputStream") )
+				.equals(streamType) )
                         bugReporter.reportBug(new BugInstance(
-				"AM_CREATES_EMPTY_ZIP_FILE_ENTRY", NORMAL_PRIORITY)
+                        	streamType.equals("java/util/zip/ZipOutputStream") ?
+								"AM_CREATES_EMPTY_ZIP_FILE_ENTRY" :
+								"AM_CREATES_EMPTY_JAR_FILE_ENTRY", 
+								NORMAL_PRIORITY)
                                 .addClassAndMethod(this)
                                 .addSourceLine(this));
 

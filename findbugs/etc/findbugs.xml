@@ -4,7 +4,7 @@
    reports="UI_INHERITANCE_UNSAFE_GETRESOURCE" /> 
   <Detector class="edu.umd.cs.findbugs.detect.EmptyZipFileEntry" 
 	speed="moderate"
-    reports="AM_CREATES_EMPTY_ZIP_FILE_ENTRY" />
+    reports="AM_CREATES_EMPTY_ZIP_FILE_ENTRY,AM_CREATES_EMPTY_JAR_FILE_ENTRY" />
   <Detector class="edu.umd.cs.findbugs.detect.TestingGround" 
 	speed="fast"
     reports="TESTING" />
@@ -126,6 +126,8 @@
   <BugPattern abbrev="TEST" type="TESTING" category="CORRECTNESS" 
     experimental="true"/>
   <BugPattern abbrev="AM" type="AM_CREATES_EMPTY_ZIP_FILE_ENTRY" category="CORRECTNESS" 
+    experimental="true"/>
+  <BugPattern abbrev="AM" type="AM_CREATES_EMPTY_JAR_FILE_ENTRY" category="CORRECTNESS" 
     experimental="true"/>
   <BugPattern abbrev="IMSE" type="IMSE_DONT_CATCH_IMSE" category="CORRECTNESS" />
   <BugPattern abbrev="FL" type="FL_MATH_USING_FLOAT_PRECISION" category="CORRECTNESS" />

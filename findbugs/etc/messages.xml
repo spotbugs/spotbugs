@@ -603,7 +603,20 @@ should be written to the ZipFile between the calls to
     </Details>
   </BugPattern>
 
-
+  <BugPattern type="AM_CREATES_EMPTY_JAR_FILE_ENTRY">
+    <ShortDescription>Creates an empty jar file entry</ShortDescription>
+    <LongDescription>Empty jar file entry created in {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p>The code calls <code>putNextEntry</code>, immediately
+followed by a call to <code>closeEntry</code>. This results
+in an empty JarFile entry. The contents of the entry
+should be written to the JarFile between the calls to 
+<code>putNextEntry</code> and
+<code>closeEntry</code>.
+]]>
+    </Details>
+  </BugPattern>
 
   <BugPattern type="IMSE_DONT_CATCH_IMSE">
     <ShortDescription>Dubious catching of IllegalMonitorStateException</ShortDescription>
