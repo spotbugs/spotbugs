@@ -411,14 +411,8 @@ It is a fast detector.
 
 
   <BugPattern type="CN_IDIOM">
-    <ShortDescription>
-	Class implements Cloneable but does not define or
-	use clone method.
-	</ShortDescription>
-    <LongDescription>
-	Class implements Cloneable but does not define or
-	use clone method.
-	</LongDescription>
+    <ShortDescription>Class implements Cloneable but does not define or use clone method.  </ShortDescription>
+    <LongDescription>Class {0} implements Cloneable but does not define or use clone method. </LongDescription>
     <Details>
 <![CDATA[
 <p>
