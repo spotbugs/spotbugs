@@ -336,12 +336,17 @@ public class OpcodeStack implements Constants2
 
 	 			case ATHROW:
 	 			case CHECKCAST:
-	 			case GOTO:
-	 			case GOTO_W:
 	 			case NOP:
 	 			case RET:
 	 			case RETURN:
 	 			break;
+	 			
+	 			case GOTO:
+	 			case GOTO_W:					//It is assumed that no stack items are present when
+	 				if (getStackDepth() > 1)    //when goto is executed. This is not true for trinaries
+	 					pop();					//so hack it so that if there are pop 1
+	 			break;
+	 				
 	 			
 	 			case SWAP:
 	 				Item i1 = pop();

@@ -47,4 +47,8 @@ public class BadResultSetAccessTest
 		int groupId = rs.getInt(++idx);
 		String description = rs.getString(++idx);
 	}
+	
+	public void test6(ResultSet rs, boolean get1) throws SQLException {
+		String name = rs.getString( get1 ? 1 : 0 );
+	}
 }
