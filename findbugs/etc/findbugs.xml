@@ -92,10 +92,7 @@
     reports="JLM_JSR166_LOCK_MONITORENTER"/>
   <Detector class="edu.umd.cs.findbugs.detect.FindUncalledPrivateMethods" speed="fast"
     reports="UPM_UNCALLED_PRIVATE_METHOD"/>
-  <!-- Note: StringConcatenation disabled for now - need to test
-       more thoroughly and hopefully enable -->
   <Detector class="edu.umd.cs.findbugs.detect.StringConcatenation" speed="fast"
-    disabled="true"
     reports="SBSC_USE_STRINGBUFFER_CONCATENATION"/>
   <Detector class="edu.umd.cs.findbugs.detect.FindBugsSummaryStats" speed="fast" />
 
