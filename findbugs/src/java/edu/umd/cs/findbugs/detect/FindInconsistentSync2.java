@@ -23,6 +23,7 @@ import java.util.*;
 
 import edu.umd.cs.findbugs.*;
 import edu.umd.cs.findbugs.ba.*;
+import edu.umd.cs.findbugs.props.WarningPropertySet;
 
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.JavaClass;
@@ -234,6 +235,8 @@ public class FindInconsistentSync2 implements Detector {
 		for (Iterator<XField> i = statMap.keySet().iterator(); i.hasNext(); ) {
 			XField xfield = i.next();
 			FieldStats stats = statMap.get(xfield);
+			
+			WarningPropertySet propertySet = new WarningPropertySet();
 
 			int numReadUnlocked = stats.getNumAccesses(READ_UNLOCKED);
 			int numWriteUnlocked = stats.getNumAccesses(WRITE_UNLOCKED);
@@ -246,11 +249,15 @@ public class FindInconsistentSync2 implements Detector {
 			int biasedUnlocked = numReadUnlocked + (int) (WRITE_BIAS * numWriteUnlocked);
 			int writes = numWriteLocked + numWriteUnlocked;
 
-			if (locked == 0)
-				continue;
+			if (locked == 0) {
+//				continue;
+				propertySet.addProperty(InconsistentSyncWarningProperty.NEVER_LOCKED);
+			}
 
-			if (unlocked == 0)
-				continue;
+			if (unlocked == 0) {
+//				continue;
+				propertySet.addProperty(InconsistentSyncWarningProperty.NEVER_UNLOCKED);
+			}
 
 
 			if (DEBUG) {
@@ -260,63 +267,85 @@ public class FindInconsistentSync2 implements Detector {
 				System.out.println("  RU: " + numReadUnlocked);
 				System.out.println("  WU: " + numWriteUnlocked);
 			}
-			if (!EVAL && numReadUnlocked > 0 && ((int) (UNSYNC_FACTOR * biasedUnlocked)) > biasedLocked)
-				continue;
+			if (!EVAL && numReadUnlocked > 0 && ((int) (UNSYNC_FACTOR * biasedUnlocked)) > biasedLocked) {
+//				continue;
+				propertySet.addProperty(InconsistentSyncWarningProperty.MANY_BIASED_UNLOCKED);
+			}
 
 			// NOTE: we ignore access to public, volatile, and final fields
 
 			if (numWriteUnlocked + numWriteLocked == 0) {
 				// No writes outside of constructor
 				if (DEBUG) System.out.println("  No writes outside of constructor");
-				continue;
+				propertySet.addProperty(InconsistentSyncWarningProperty.NEVER_WRITTEN);
+//				continue;
 			}
 
 			if (numReadUnlocked + numReadLocked == 0) {
 				// No reads outside of constructor
 				if (DEBUG) System.out.println("  No reads outside of constructor");
-				continue;
+//				continue;
+				propertySet.addProperty(InconsistentSyncWarningProperty.NEVER_READ);
 			}
 
 			if (stats.getNumLocalLocks() == 0) {
 				if (DEBUG) System.out.println("  No local locks");
-				continue;
+//				continue;
+				propertySet.addProperty(InconsistentSyncWarningProperty.NO_LOCAL_LOCKS);
 			}
 
-			int freq = (100 * locked) / (locked + unlocked);
+			int freq;
+			if (locked + unlocked > 0) {
+				freq = (100 * locked) / (locked + unlocked);
+			} else {
+				freq = 0;
+			}
+			if (freq < MIN_SYNC_PERCENT) {
+//				continue;
+				propertySet.addProperty(InconsistentSyncWarningProperty.BELOW_MIN_SYNC_PERCENT);
+			}
 			if (DEBUG) System.out.println("  Sync %: " + freq);
-			if (freq < MIN_SYNC_PERCENT) continue;
+
+			if (stats.getNumGetterMethodAccesses() >= unlocked) {
+				// Unlocked accesses are only in getter method(s).
+				propertySet.addProperty(InconsistentSyncWarningProperty.ONLY_UNSYNC_IN_GETTERS);
+			}
 
 			// At this point, we report the field as being inconsistently synchronized
-			int priority = NORMAL_PRIORITY;
-			if (stats.getNumGetterMethodAccesses() >= unlocked)
-			// Unlocked accesses are only in getter method(s).
-				priority = LOW_PRIORITY;
-			BugInstance bugInstance = new BugInstance("IS2_INCONSISTENT_SYNC", priority)
-			        .addClass(xfield.getClassName())
-			        .addField(xfield)
-			        .addInt(freq).describe("INT_SYNC_PERCENT");
-
-			// Add source lines for unsynchronized accesses
-			for (Iterator<SourceLineAnnotation> j = stats.unsyncAccessIterator(); j.hasNext();) {
-				SourceLineAnnotation accessSourceLine = j.next();
-				bugInstance.addSourceLine(accessSourceLine).describe("SOURCE_LINE_UNSYNC_ACCESS");
-			}
-
-			if (SYNC_ACCESS) {
-				// Add source line for synchronized accesses;
-				// useful for figuring out what the detector is doing
-				for (Iterator<SourceLineAnnotation> j = stats.syncAccessIterator(); j.hasNext();) {
-					SourceLineAnnotation accessSourceLine = j.next();
-					bugInstance.addSourceLine(accessSourceLine).describe("SOURCE_LINE_SYNC_ACCESS");
+			int priority = propertySet.computePriority(NORMAL_PRIORITY);
+			if (!propertySet.isFalsePositive(priority)) {
+				BugInstance bugInstance = new BugInstance("IS2_INCONSISTENT_SYNC", priority)
+					.addClass(xfield.getClassName())
+					.addField(xfield)
+					.addInt(freq).describe("INT_SYNC_PERCENT");
+				
+				if (AnalysisContext.currentAnalysisContext().getBoolProperty(
+						FindBugsAnalysisProperties.RELAXED_REPORTING_MODE)) {
+					propertySet.decorateBugInstance(bugInstance);
 				}
+				
+				// Add source lines for unsynchronized accesses
+				for (Iterator<SourceLineAnnotation> j = stats.unsyncAccessIterator(); j.hasNext();) {
+					SourceLineAnnotation accessSourceLine = j.next();
+					bugInstance.addSourceLine(accessSourceLine).describe("SOURCE_LINE_UNSYNC_ACCESS");
+				}
+				
+				if (SYNC_ACCESS) {
+					// Add source line for synchronized accesses;
+					// useful for figuring out what the detector is doing
+					for (Iterator<SourceLineAnnotation> j = stats.syncAccessIterator(); j.hasNext();) {
+						SourceLineAnnotation accessSourceLine = j.next();
+						bugInstance.addSourceLine(accessSourceLine).describe("SOURCE_LINE_SYNC_ACCESS");
+					}
+				}
+				
+				if (EVAL) {
+					bugInstance.addInt(biasedLocked).describe("INT_BIASED_LOCKED");
+					bugInstance.addInt(biasedUnlocked).describe("INT_BIASED_UNLOCKED");
+				}
+				
+				bugReporter.reportBug(bugInstance);
 			}
-
-			if (EVAL) {
-				bugInstance.addInt(biasedLocked).describe("INT_BIASED_LOCKED");
-				bugInstance.addInt(biasedUnlocked).describe("INT_BIASED_UNLOCKED");
-			}
-
-			bugReporter.reportBug(bugInstance);
 		}
 	}
 
