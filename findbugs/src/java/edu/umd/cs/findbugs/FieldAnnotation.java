@@ -111,6 +111,8 @@ public class FieldAnnotation extends PackageMemberAnnotation {
 			String pkgName = getPackageName();
 			SignatureConverter converter = new SignatureConverter(fieldSig);
 			StringBuffer result = new StringBuffer();
+			if (isStatic)
+				result.append("static ");
 			result.append(converter.parseNext());
 			result.append(' ');
 			result.append(className);
