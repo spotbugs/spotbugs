@@ -53,6 +53,9 @@ public class FindExamples {
 		System.out.println("In " + filename);
 		System.out.println(bugInstance.getMessage());
 		System.out.println("\t" + bugInstance.getAbbrev());
+		MethodAnnotation method = bugInstance.getPrimaryMethod();
+		if (method != null)
+			System.out.println("\t" + method.toString());
 		SourceLineAnnotation srcLine = bugInstance.getPrimarySourceLineAnnotation();
 		if (srcLine != null)
 			System.out.println("\t" + srcLine.toString());
