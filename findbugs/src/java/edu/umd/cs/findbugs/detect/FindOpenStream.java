@@ -29,18 +29,26 @@ import edu.umd.cs.findbugs.*;
 
 class Stream extends ResourceCreationPoint {
 	private String streamBase;
-	private boolean isByteArray;
+	private boolean isUninteresting;
+	private boolean isOpenOnCreation;
 	private InstructionHandle ctorHandle;
 
-	public Stream(Location location, String streamClass, String streamBase, boolean isByteArray) {
+	public Stream(Location location, String streamClass, String streamBase, boolean isUninteresting) {
+		this(location, streamClass, streamBase, isUninteresting, false);
+	}
+
+	public Stream(Location location, String streamClass, String streamBase, boolean isUninteresting, boolean isOpenOnCreation) {
 		super(location, streamClass);
 		this.streamBase = streamBase;
-		this.isByteArray = isByteArray;
+		this.isUninteresting = isUninteresting;
+		this.isOpenOnCreation = isOpenOnCreation;
 	}
 
 	public String getStreamBase() { return streamBase; }
 
-	public boolean isByteArray() { return isByteArray; }
+	public boolean isUninteresting() { return isUninteresting; }
+
+	public boolean isOpenOnCreation() { return isOpenOnCreation; }
 
 	public void setConstructorHandle(InstructionHandle handle) { this.ctorHandle = handle; }
 
@@ -49,7 +57,7 @@ class Stream extends ResourceCreationPoint {
 
 public class FindOpenStream extends ResourceTrackingDetector<Stream, FindOpenStream.StreamResourceTracker>  {
 	private static final boolean DEBUG = Boolean.getBoolean("fos.debug");
-	private static final boolean IGNORE_WRAPPED_BYTE_ARRAY_STREAMS = !Boolean.getBoolean("fos.allowWBAS");
+	private static final boolean IGNORE_WRAPPED_UNINTERESTING_STREAMS = !Boolean.getBoolean("fos.allowWUS");
 
 	/* ----------------------------------------------------------------------
 	 * Helper classes
@@ -78,17 +86,25 @@ public class FindOpenStream extends ResourceTrackingDetector<Stream, FindOpenStr
 			final ResourceValueFrame frame = getFrame();
 
 			int status = -1;
+			boolean created = false;
 
 			// Is a resource created, opened, or closed by this instruction?
 			Location creationPoint = stream.getLocation();
 			if (handle == creationPoint.getHandle() && basicBlock == creationPoint.getBasicBlock()) {
 				// Resource creation
-				status = ResourceValueFrame.CREATED;
+				if (stream.isOpenOnCreation()) {
+					status = ResourceValueFrame.OPEN;
+					stream.setConstructorHandle(handle);
+					resourceTracker.addStreamConstruction(handle, stream.isUninteresting());
+				} else {
+					status = ResourceValueFrame.CREATED;
+				}
+				created = true;
 			} else if (resourceTracker.isResourceOpen(basicBlock, handle, cpg, stream, frame)) {
 				// Resource opened
 				status = ResourceValueFrame.OPEN;
 				stream.setConstructorHandle(handle);
-				resourceTracker.addStreamConstruction(handle, stream.isByteArray());
+				resourceTracker.addStreamConstruction(handle, stream.isUninteresting());
 			} else if (resourceTracker.isResourceClose(basicBlock, handle, cpg, stream, frame)) {
 				// Resource closed
 				status = ResourceValueFrame.CLOSED;
@@ -100,7 +116,7 @@ public class FindOpenStream extends ResourceTrackingDetector<Stream, FindOpenStr
 			// If needed, update frame status
 			if (status != -1) {
 				frame.setStatus(status);
-				if (status == ResourceValueFrame.CREATED)
+				if (created)
 					frame.setValue(frame.getNumSlots() - 1, ResourceValue.instance());
 			}
 
@@ -114,6 +130,8 @@ public class FindOpenStream extends ResourceTrackingDetector<Stream, FindOpenStr
 
 			boolean escapes = (inv.getOpcode() == Constants.INVOKESTATIC || instanceArgNum != 0);
 			//if (escapes) System.out.print("[Escape at " + inv + " argNum=" + instanceArgNum + "]");
+
+			if (DEBUG && escapes) System.out.println("ESCAPE at " + handle.getPosition());
 
 			// Record the fact that this might be a stream escape
 			if (stream.getConstructorHandle() != null)
@@ -154,8 +172,8 @@ public class FindOpenStream extends ResourceTrackingDetector<Stream, FindOpenStr
 		/** Set of all stream construction points. */
 		private BitSet streamConstructionSet;
 
-		/** Set of all byte array stream construction points and escapes. */
-		private BitSet byteArrayStreamEscapeSet;
+		/** Set of all uninteresting stream construction points and escapes. */
+		private BitSet uninterestingStreamEscapeSet;
 
 		/** Set of all (potential) stream escapes. */
 		private TreeSet<StreamEscape> streamEscapeSet;
@@ -163,7 +181,7 @@ public class FindOpenStream extends ResourceTrackingDetector<Stream, FindOpenStr
 		public StreamResourceTracker(RepositoryLookupFailureCallback lookupFailureCallback) {
 			this.lookupFailureCallback = lookupFailureCallback;
 			this.streamConstructionSet = new BitSet();
-			this.byteArrayStreamEscapeSet = new BitSet();
+			this.uninterestingStreamEscapeSet = new BitSet();
 			this.streamEscapeSet = new TreeSet<StreamEscape>();
 		}
 
@@ -173,7 +191,7 @@ public class FindOpenStream extends ResourceTrackingDetector<Stream, FindOpenStr
 			if (DEBUG) System.out.println("Adding potential stream escape " + streamEscape);
 		}
 
-		public void markTransitiveByteArrayStreamEscapes() {
+		public void markTransitiveUninterestingStreamEscapes() {
 			// Eliminate all stream escapes where the target isn't really
 			// a stream construction point.
 			for (Iterator<StreamEscape> i = streamEscapeSet.iterator(); i.hasNext(); ) {
@@ -184,32 +202,33 @@ public class FindOpenStream extends ResourceTrackingDetector<Stream, FindOpenStr
 				}
 			}
 
-			// Starting with the set of byte array stream construction points,
-			// propagate all byte array stream escapes.  Iterate until there
+			// Starting with the set of uninteresting stream construction points,
+			// propagate all uninteresting stream escapes.  Iterate until there
 			// is no change.
 			BitSet orig = new BitSet();
 			do {
 				orig.clear();
-				orig.or(byteArrayStreamEscapeSet);
+				orig.or(uninterestingStreamEscapeSet);
 
 				for (Iterator<StreamEscape> i = streamEscapeSet.iterator(); i.hasNext(); ) {
 					StreamEscape streamEscape = i.next();
-					if (isByteArrayStreamEscape(streamEscape.source)) {
+					if (isUninterestingStreamEscape(streamEscape.source)) {
 						if (DEBUG) System.out.println("Propagating stream escape " + streamEscape);
-						byteArrayStreamEscapeSet.set(streamEscape.target.getPosition());
+						uninterestingStreamEscapeSet.set(streamEscape.target.getPosition());
 					}
 				}
-			} while (!orig.equals(byteArrayStreamEscapeSet));
+			} while (!orig.equals(uninterestingStreamEscapeSet));
 		}
 
-		public boolean isByteArrayStreamEscape(InstructionHandle handle) {
-			return byteArrayStreamEscapeSet.get(handle.getPosition());
+		public boolean isUninterestingStreamEscape(InstructionHandle handle) {
+			return uninterestingStreamEscapeSet.get(handle.getPosition());
 		}
 
-		public void addStreamConstruction(InstructionHandle streamConstruction, boolean isByteArray) {
+		public void addStreamConstruction(InstructionHandle streamConstruction, boolean isUninteresting) {
+			if (DEBUG) System.out.println("Stream construction at " + streamConstruction.getPosition());
 			streamConstructionSet.set(streamConstruction.getPosition());
-			if (isByteArray)
-				byteArrayStreamEscapeSet.set(streamConstruction.getPosition());
+			if (isUninteresting)
+				uninterestingStreamEscapeSet.set(streamConstruction.getPosition());
 		}
 
 		private boolean isStreamConstruction(InstructionHandle handle) {
@@ -218,40 +237,87 @@ public class FindOpenStream extends ResourceTrackingDetector<Stream, FindOpenStr
 
 		public Stream isResourceCreation(BasicBlock basicBlock, InstructionHandle handle, ConstantPoolGen cpg) {
 			Instruction ins = handle.getInstruction();
-			if (!(ins instanceof NEW))
-				return null;
+			Location location = new Location(handle, basicBlock);
 
-			NEW newIns = (NEW) ins;
-			Type type = newIns.getType(cpg);
-			String sig = type.getSignature();
-
-			if (!sig.startsWith("L") || !sig.endsWith(";"))
-				return null;
-
-			// Track any subclass of InputStream, OutputStream, Reader, and Writer
-			// (but not ByteArray/CharArray/String variants)
-			String className = sig.substring(1, sig.length() - 1).replace('/', '.');
 			try {
-				if (Repository.instanceOf(className, "java.io.InputStream")) {
-					boolean isByteArray = Repository.instanceOf(className, "java.io.ByteArrayInputStream");
-					return new Stream(new Location(handle, basicBlock), className, "java.io.InputStream", isByteArray);
+				if (ins instanceof NEW) {
 
-				} else if (Repository.instanceOf(className, "java.io.OutputStream")) {
-					boolean isByteArray = Repository.instanceOf(className, "java.io.ByteArrayOutputStream");
-					return new Stream(new Location(handle, basicBlock), className, "java.io.OutputStream", isByteArray);
+					NEW newIns = (NEW) ins;
+					Type type = newIns.getType(cpg);
+					String sig = type.getSignature();
 
-				} else if (Repository.instanceOf(className, "java.io.Reader")) {
-					boolean isByteArray = Repository.instanceOf(className, "java.io.StringReader")
-						|| Repository.instanceOf(className, "java.io.CharArrayReader");
-					return new Stream(new Location(handle, basicBlock), className, "java.io.Reader", isByteArray);
+					if (!sig.startsWith("L") || !sig.endsWith(";"))
+						return null;
 
-				} else if (Repository.instanceOf(className, "java.io.Writer")) {
-					boolean isByteArray = Repository.instanceOf(className, "java.io.StringWriter")
-						|| Repository.instanceOf(className, "java.io.CharArrayWriter");
-					return new Stream(new Location(handle, basicBlock), className, "java.io.Writer", isByteArray);
+					// Track any subclass of InputStream, OutputStream, Reader, and Writer
+					// (but not ByteArray/CharArray/String variants)
+					String className = sig.substring(1, sig.length() - 1).replace('/', '.');
+					if (Repository.instanceOf(className, "java.io.InputStream")) {
+						boolean isUninteresting = Repository.instanceOf(className, "java.io.ByteArrayInputStream")
+							|| Repository.instanceOf(className, "java.io.ObjectInputStream");
+						return new Stream(location, className, "java.io.InputStream", isUninteresting);
 
-				} else
-					return null;
+					} else if (Repository.instanceOf(className, "java.io.OutputStream")) {
+						boolean isUninteresting = Repository.instanceOf(className, "java.io.ByteArrayOutputStream")
+							|| Repository.instanceOf(className, "java.io.ObjectOutputStream");
+						return new Stream(location, className, "java.io.OutputStream", isUninteresting);
+
+					} else if (Repository.instanceOf(className, "java.io.Reader")) {
+						boolean isUninteresting = Repository.instanceOf(className, "java.io.StringReader")
+							|| Repository.instanceOf(className, "java.io.CharArrayReader");
+						return new Stream(location, className, "java.io.Reader", isUninteresting);
+
+					} else if (Repository.instanceOf(className, "java.io.Writer")) {
+						boolean isUninteresting = Repository.instanceOf(className, "java.io.StringWriter")
+							|| Repository.instanceOf(className, "java.io.CharArrayWriter");
+						return new Stream(location, className, "java.io.Writer", isUninteresting);
+
+					}
+
+				} else if (ins instanceof INVOKEVIRTUAL) {
+					// Look for socket input and output streams.
+					// We don't want to track these, because they don't
+					// need to be closed as long as the socket is closed.
+
+					INVOKEVIRTUAL inv = (INVOKEVIRTUAL) ins;
+					String className = inv.getClassName(cpg);
+
+					if (Repository.instanceOf(className, "java.net.Socket")) {
+						String methodName = inv.getName(cpg);
+						String methodSig = inv.getSignature(cpg);
+						if (DEBUG) System.out.println("Socket call: " + methodName + " : " + methodSig);
+
+						if (methodName.equals("getOutputStream") && methodSig.endsWith(")Ljava/io/OutputStream;")) {
+							return new Stream(location, "java.io.OutputStream", "java.io.OutputStream", true, true);
+							
+						} else if (methodName.equals("getInputStream") && methodSig.endsWith(")Ljava/io/InputStream;")) {
+							return new Stream(location, "java.io.InputStream", "java.io.InputStream", true, true);
+						}
+					}
+
+				} else if (ins instanceof GETSTATIC) {
+					// Look for System.in, System.out, System.err.
+					// Streams wrapping these don't need to be closed.
+
+					GETSTATIC getstatic = (GETSTATIC) ins;
+					String className = getstatic.getClassName(cpg);
+
+					if (className.equals("java.lang.System")) {
+						String fieldName = getstatic.getName(cpg);
+						String fieldSig = getstatic.getSignature(cpg);
+
+						if (fieldName.equals("in") && fieldSig.equals("Ljava/io/InputStream;")) {
+							return new Stream(location, "java.io.InputStream", "java.io.InputStream", true, true);
+
+						} else if ((fieldName.equals("out") || fieldName.equals("err")) &&
+							fieldSig.equals("Ljava/io/PrintStream;")) {
+							return new Stream(location, "java.io.PrintStream", "java.io.OutputStream", true, true);
+
+						}
+					}
+				}
+
+				return null;
 					
 			} catch (ClassNotFoundException e) {
 				lookupFailureCallback.reportMissingClass(e);
@@ -265,7 +331,7 @@ public class FindOpenStream extends ResourceTrackingDetector<Stream, FindOpenStr
 			Instruction ins = handle.getInstruction();
 
 			if (ins instanceof INVOKESPECIAL) {
-				// Does this instruction close the stream?
+				// Does this instruction open the stream?
 				INVOKESPECIAL inv = (INVOKESPECIAL) ins;
 
 				if (frame.isValid() &&
@@ -377,7 +443,7 @@ public class FindOpenStream extends ResourceTrackingDetector<Stream, FindOpenStr
 		JavaClass javaClass = classContext.getJavaClass();
 		MethodGen methodGen = classContext.getMethodGen(method);
 
-		resourceTracker.markTransitiveByteArrayStreamEscapes();
+		resourceTracker.markTransitiveUninterestingStreamEscapes();
 
 		Iterator<PotentialOpenStream> i = potentialOpenStreamList.iterator();
 		while (i.hasNext()) {
@@ -385,14 +451,14 @@ public class FindOpenStream extends ResourceTrackingDetector<Stream, FindOpenStr
 
 			Stream stream = pos.stream;
 
-			if (stream.isByteArray())
+			if (stream.isUninteresting())
 				continue;
 
 			InstructionHandle constructionHandle = stream.getConstructorHandle();
 			if (constructionHandle == null)
 				continue;
 
-			if (IGNORE_WRAPPED_BYTE_ARRAY_STREAMS && resourceTracker.isByteArrayStreamEscape(constructionHandle))
+			if (IGNORE_WRAPPED_UNINTERESTING_STREAMS && resourceTracker.isUninterestingStreamEscape(constructionHandle))
 				continue;
 
 			String sourceFile = javaClass.getSourceFileName();
