@@ -148,6 +148,7 @@ public class SerializableIdiom extends PreorderVisitor
 					) {
 						// System.out.println("  super has void constructor");
 						superClassHasVoidConstructor = true;
+						break;
 					}
 				}
 			}
