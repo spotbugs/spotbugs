@@ -126,11 +126,6 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 		return mergedValue;
 	}
 
-	public ValueNumber getDefaultValue() {
-		// Default values should never be looked at.
-		return null;
-	}
-
 	public void copyFrom(Frame<ValueNumber> other) {
 		// If merged value list hasn't been created yet, create it.
 		if (mergedValueList == null && other.isValid()) {

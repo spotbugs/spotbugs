@@ -54,13 +54,6 @@ public class TypeFrame extends Frame<Type> implements Constants, ExtendedTypes {
 	}
 
 	/**
-	 * Get default value to put in unintialized slots.
-	 */
-	public Type getDefaultValue() {
-		return getBottomType();
-	}
-
-	/**
 	 * Merge two types together.  This is somewhat complicated!
 	 * @param slot the slot number
 	 * @param a a type to be merged

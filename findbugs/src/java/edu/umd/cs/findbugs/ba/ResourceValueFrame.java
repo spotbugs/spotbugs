@@ -80,10 +80,6 @@ public class ResourceValueFrame extends Frame<ResourceValue> {
 		return ResourceValue.merge(a, b);
 	}
 
-	public ResourceValue getDefaultValue() {
-		return ResourceValue.notInstance();
-	}
-
 	private static final String[] statusList = { "(escaped)", "(open)", "(open_exception)", "(closed)", "(created)", "(nonexistent)" };
 
 	public String toString() {

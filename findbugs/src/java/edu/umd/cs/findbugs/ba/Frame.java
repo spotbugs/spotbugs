@@ -35,6 +35,10 @@ import org.apache.bcel.generic.Instruction;
  * <p> Frame is parametized by "ValueType", which is the type of value
  * to be stored in the Frame's slots.  This type must form a lattice,
  * according to the abstract mergeValues() operation.
+ * When a Frame is constructed, all of its slots will contain
+ * null.  The analysis is responsible for initializing
+ * created Frames with default values at the appropriate time.
+ * Typically, only initEntryFact() will need to do this.
  *
  * <p> A Frame may have the special "TOP" value. Such frames serve as
  * the identity element for the mergeWith() operation.
@@ -46,18 +50,6 @@ import org.apache.bcel.generic.Instruction;
  * @author David Hovemeyer
  */
 public abstract class Frame<ValueType> implements Debug {
-
-	/**
-	 * Factory object for default values.
-	 * Required to be able to create default values in the constructor,
-	 * because subclass methods may be dangerous to call.
-	 */
-	public interface DefaultValueFactory<ValueType> {
-		/**
-		 * Create a default dataflow value.
-		 */
-		public ValueType getDefaultValue();
-	}
 
 	////////////////////////////////////////////////////////////////////////////////////
 	// Instance variables
@@ -82,11 +74,6 @@ public abstract class Frame<ValueType> implements Debug {
 	private boolean isBottom;
 
 	/**
-	 * Factory for default values.
-	 */
-	private DefaultValueFactory<ValueType> defaultValueFactory;
-
-	/**
 	 * Default number of stack slots to preallocate space for.
 	 */
 	private static final int DEFAULT_STACK_CAPACITY = 10;
@@ -97,18 +84,6 @@ public abstract class Frame<ValueType> implements Debug {
 
 	/**
 	 * Constructor.
-	 * @param numLocals number of local variable slots in the method
-	 * @param defaultValueFactory factory object to create default dataflow values;
-	 *    this is for subclasses for which it is dangerous to call
-	 *    getDefaultValue() before the object is fully initialized
-	 */
-	public Frame(int numLocals, DefaultValueFactory<ValueType> defaultValueFactory) {
-		this.numLocals = numLocals;
-		init(defaultValueFactory);
-	}
-
-	/**
-	 * Constructor.
 	 * This version of the constructor is for subclasses for which it is
 	 * always safe to call getDefaultValue(), even when the object is not
 	 * fully initialized.
@@ -116,17 +91,9 @@ public abstract class Frame<ValueType> implements Debug {
 	 */
 	public Frame(int numLocals) {
 		this.numLocals = numLocals;
-		init(new DefaultValueFactory<ValueType>() {
-			public ValueType getDefaultValue() { return Frame.this.getDefaultValue(); }
-		});
-	}
-
-	private void init(DefaultValueFactory<ValueType> defaultValueFactory) {
-		slotList = new ArrayList<ValueType>(numLocals + DEFAULT_STACK_CAPACITY);
+		this.slotList = new ArrayList<ValueType>(numLocals + DEFAULT_STACK_CAPACITY);
 		for (int i = 0; i < numLocals; ++i)
-			slotList.add(defaultValueFactory.getDefaultValue());
-		isTop = false;
-		isBottom = false;
+			slotList.add(null);
 	}
 
 	/**
@@ -381,11 +348,6 @@ public abstract class Frame<ValueType> implements Debug {
 	 * @return the merged value
 	 */
 	public abstract ValueType mergeValues(int slot, ValueType a, ValueType b) throws DataflowAnalysisException;
-
-	/**
-	 * Get the default value (to be put in slots of newly created frames).
-	 */
-	public abstract ValueType getDefaultValue();
 
 	private static final boolean STACK_ONLY = Boolean.getBoolean("dataflow.stackonly");
 

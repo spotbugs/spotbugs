@@ -30,10 +30,6 @@ public class IsNullValueFrame extends Frame<IsNullValue> {
 		return IsNullValue.merge(a, b);
 	}
 
-	public IsNullValue getDefaultValue() {
-		return IsNullValue.doNotReportValue();
-	}
-
 	public void toExceptionValues() {
 		for (int i = 0; i < getNumSlots(); ++i)
 			setValue(i, getValue(i).toExceptionValue());
