@@ -88,6 +88,25 @@ public class PatternElementMatch {
 		buf.append(cur.matchCount);
 		return buf.toString();
 	}
+
+	public boolean equals(Object o) {
+		if (!(o instanceof PatternElementMatch))
+			return false;
+		PatternElementMatch lhs = this;
+		PatternElementMatch rhs = (PatternElementMatch) o;
+
+		while (lhs != null && rhs != null) {
+			if (lhs.patternElement != rhs.patternElement ||
+				lhs.matchedInstruction != rhs.matchedInstruction ||
+				lhs.matchCount != rhs.matchCount)
+				return false;
+
+			lhs = lhs.prev;
+			rhs = rhs.prev;
+		}
+
+		return lhs == rhs;
+	}
 }
 
 // vim:ts=4
