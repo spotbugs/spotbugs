@@ -27,13 +27,19 @@ import java.util.*;
 public class ByteCodePattern {
 	private PatternElement first, last;
 
-	public void addPatternElement(PatternElement element) {
+	/**
+	 * Add a PatternElement to the end of the pattern.
+	 * @param element the PatternElement
+	 * @return this object
+	 */
+	public ByteCodePattern addPatternElement(PatternElement element) {
 		if (first == null) {
 			first = last = element;
 		} else {
 			last.setNext(element);
 			last = element;
 		}
+		return this;
 	}
 
 	public PatternElement getFirst() { return first; }
