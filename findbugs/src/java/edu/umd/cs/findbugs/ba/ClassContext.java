@@ -33,7 +33,12 @@ import org.apache.bcel.generic.*;
  * @author David Hovemeyer
  */
 public class ClassContext implements AnalysisFeatures {
-	public static final boolean PRUNE_INFEASIBLE_EXCEPTION_EDGES = !Boolean.getBoolean("cfg.noprune");
+	/**
+	 * We only do pruning of infeasible exception edges
+	 * if the <code>WORK_HARD</code> analysis feature
+	 * is enabled.
+	 */
+	public static final boolean PRUNE_INFEASIBLE_EXCEPTION_EDGES = WORK_HARD;
 
 	/**
 	 * Only try to determine unconditional exception throwers
