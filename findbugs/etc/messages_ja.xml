@@ -1,11 +1,13 @@
-<?xml version="1.0" encoding="UTF-8"?> 
+<?xml version="1.0" encoding="Shift_JIS"?>
+<!-- Using Shift_JIS encoding, because Eclipse 2.x doesn't display Japanese 
+character correctly if it is using UTF-8 encoding. -->
 <MessageCollection>
 
-<!--
+  <!--
   **********************************************************************
-Detectors
+  Detectors
   **********************************************************************
--->
+   -->
 
   <Detector class="edu.umd.cs.findbugs.detect.DroppedException">
     <Details>
@@ -351,6 +353,24 @@ field is not volatile.  It is a moderately fast detector.
     </Details>
   </Detector>
 
+  <Detector class="edu.umd.cs.findbugs.detect.FindJSR166LockMonitorenter">
+    <Details>
+<![CDATA[
+<p> This detector looks for ordinary synchronization performed
+on JSR166 locks.  It is a moderately fast detector.
+]]>
+    </Details>
+  </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.FindUncalledPrivateMethods">
+    <Details>
+<![CDATA[
+<p> This detector looks for private methods that are never called.
+It is a fast detector.
+]]>
+    </Details>
+  </Detector>
+
   <Detector class="edu.umd.cs.findbugs.detect.FindBugsSummaryStats">
     <Details>
 <![CDATA[
@@ -359,15 +379,15 @@ field is not volatile.  It is a moderately fast detector.
     </Details>
   </Detector>
 
-<!--
+  <!--
   **********************************************************************
   BugPatterns
   **********************************************************************
--->
+   -->
 
   <BugPattern type="DE_MIGHT_DROP">
-    <ShortDescription>ä¾‹å¤–ã‚’è¦‹è½ã¨ã—ã¦ã„ã‚‹ç–‘ã„</ShortDescription>
-    <LongDescription>{1} ã¯ {2} ã‚’è¦‹è½ã¨ã—ã¦ã„ã‚‹ç–‘ã„</LongDescription>
+    <ShortDescription>ƒƒ\ƒbƒh‚Å—áŠO‚ğ—‚Æ‚µ‚Ä‚¢‚é‰Â”\«‚ª‚ ‚è‚Ü‚·B</ShortDescription>
+    <LongDescription>{1} ‚Í {3} ‚ğ—‚Æ‚µ‚Ä‚¢‚é‰Â”\«‚ª‚ ‚è‚Ü‚·B</LongDescription>
     <Details>
 <![CDATA[
   <p> This method might drop an exception.&nbsp; In general, exceptions
@@ -377,8 +397,8 @@ field is not volatile.  It is a moderately fast detector.
     </Details>
   </BugPattern>
   <BugPattern type="DE_MIGHT_IGNORE">
-    <ShortDescription>ä¾‹å¤–ã‚’ç„¡è¦–ã—ã¦ã„ã‚‹ç–‘ã„</ShortDescription>
-    <LongDescription>{1} ã¯ {3} ã‚’ç„¡è¦–ã—ã¦ã„ã‚‹</LongDescription>
+    <ShortDescription>ƒƒ\ƒbƒh‚Å—áŠO‚ğ–³‹‚µ‚Ä‚¢‚é‰Â”\«‚ª‚ ‚è‚Ü‚·B</ShortDescription>
+    <LongDescription>{1} ‚Í {3} ‚ğ–³‹‚µ‚Ä‚¢‚é‰Â”\«‚ª‚ ‚è‚Ü‚·B</LongDescription>
     <Details>
 <![CDATA[
   <p> This method might ignore an exception.&nbsp; In general, exceptions
@@ -388,8 +408,8 @@ field is not volatile.  It is a moderately fast detector.
     </Details>
   </BugPattern>
   <BugPattern type="DM_STRING_CTOR">
-    <ShortDescription>ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿new String() ã‚’å‘¼ã‚“ã§ã„ã‚‹ã€‚æ–‡å­—åˆ—ã‚’ãã®ã¾ã¾ä½¿ã†ã¹ã</ShortDescription>
-    <LongDescription>{1} ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿new String() ã‚’å‘¼ã‚“ã§ã„ã‚‹ã€‚æ–‡å­—åˆ—ã‚’ãã®ã¾ã¾ä½¿ã†ã¹ã</LongDescription>
+    <ShortDescription>ƒƒ\ƒbƒh‚Å ‚¢‚©‚ª‚í‚µ‚¢ new String(String) ƒRƒ“ƒXƒgƒ‰ƒNƒ^‚ğŒÄ‚Ño‚µ‚Ä‚¢‚Ü‚·B‚±‚ê‚Íˆø”‚Ì•¶š—ñ‚ğ‚»‚Ì‚Ü‚Üg‚¤‚×‚«‚Å‚·B</ShortDescription>
+    <LongDescription>{1} new String(String) ƒRƒ“ƒXƒgƒ‰ƒNƒ^‚ğŒÄ‚Ño‚µ‚Ä‚¢‚Ü‚·B‚±‚ê‚Íˆø”‚Ì•¶š—ñ‚ğ‚»‚Ì‚Ü‚Üg‚¤‚×‚«‚Å‚·B</LongDescription>
     <Details>
 <![CDATA[
   <p> Using the <code>java.lang.String(String)</code> constructor wastes memory
@@ -400,8 +420,8 @@ field is not volatile.  It is a moderately fast detector.
     </Details>
   </BugPattern>
   <BugPattern type="DM_STRING_VOID_CTOR">
-    <ShortDescription>ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿new String() ã‚’å‘¼ã‚“ã§ã„ã‚‹ã€‚ãã®ã¾ã¾ "" ã‚’ä½¿ã†ã¹ã</ShortDescription>
-    <LongDescription>{1} ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿new String() ã‚’å‘¼ã‚“ã§ã„ã‚‹ã€‚ãã®ã¾ã¾ "" ã‚’ä½¿ã†ã¹ã</LongDescription>
+    <ShortDescription>ƒƒ\ƒbƒh‚Å ‚¢‚©‚ª‚í‚µ‚¢ new String() ƒRƒ“ƒXƒgƒ‰ƒNƒ^‚ğŒÄ‚Ño‚µ‚Ä‚¢‚Ü‚·B‚±‚ê‚Í  "" ‚ğ‚»‚Ì‚Ü‚Üg‚¤‚×‚«‚Å‚·B</ShortDescription>
+    <LongDescription>{1} new String() ƒRƒ“ƒXƒgƒ‰ƒNƒ^‚ğŒÄ‚Ño‚µ‚Ä‚¢‚Ü‚·B‚±‚ê‚Í  "" ‚ğ‚»‚Ì‚Ü‚Üg‚¤‚×‚«‚Å‚·B</LongDescription>
     <Details>
 <![CDATA[
   <p> Creating a new <code>java.lang.String</code> object using the
@@ -414,8 +434,8 @@ field is not volatile.  It is a moderately fast detector.
     </Details>
   </BugPattern>
   <BugPattern type="DM_GC">
-    <ShortDescription>å¼·åˆ¶çš„ã«GCã‚’å‘¼ã‚“ã§ã„ã‚‹ã€‚ãƒ™ãƒ³ãƒãƒãƒ¼ã‚¯ä»¥å¤–ã¯åˆ©ç”¨ã®å¿…è¦æ€§ãŒãªã„</ShortDescription>
-    <LongDescription>{1} å¼·åˆ¶çš„ã«GCã‚’å‘¼ã‚“ã§ã„ã‚‹ã€‚ãƒ™ãƒ³ãƒãƒãƒ¼ã‚¯ä»¥å¤–ã¯åˆ©ç”¨ã®å¿…è¦æ€§ãŒãªã„</LongDescription>
+    <ShortDescription>‹­§“I‚ÉƒKƒx[ƒWƒRƒŒƒNƒVƒ‡ƒ“‚ğŒÄ‚Ño‚µ‚Ä‚¢‚Ü‚·Bƒxƒ“ƒ`ƒ}[ƒN‚ÌƒR[ƒhˆÈŠO‚Å‹Lq‚³‚ê‚é‚Ì‚Í‚«‚í‚ß‚Ä‹^‚í‚µ‚¢‚Å‚·B</ShortDescription>
+    <LongDescription>{1} ‹­§“I‚ÉƒKƒx[ƒWƒRƒŒƒNƒVƒ‡ƒ“‚ğŒÄ‚Ño‚µ‚Ä‚¢‚Ü‚·Bƒxƒ“ƒ`ƒ}[ƒN‚ÌƒR[ƒhˆÈŠO‚Å‹Lq‚³‚ê‚é‚Ì‚Í‚«‚í‚ß‚Ä‹^‚í‚µ‚¢‚Å‚·B</LongDescription>
     <Details>
 <![CDATA[
   <p> Code explicitly invokes garbage collection.
@@ -429,8 +449,8 @@ field is not volatile.  It is a moderately fast detector.
     </Details>
   </BugPattern>
   <BugPattern type="DM_BOOLEAN_CTOR">
-    <ShortDescription>Booleanã®ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã‚’å‘¼ã‚“ã§ã„ã‚‹ã€‚ Boolean.valueOf(...) ã‚’ä½¿ã†ã¹ã</ShortDescription>
-    <LongDescription>{1} Booleanã®ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã‚’å‘¼ã‚“ã§ã„ã‚‹ã€‚ Boolean.valueOf(...) ã‚’ä½¿ã†ã¹ã</LongDescription>
+    <ShortDescription>ƒƒ\ƒbƒh‚ÅBoolean‚ÌƒRƒ“ƒXƒgƒ‰ƒNƒ^‚ğŒÄ‚ñ‚Å‚¢‚Ü‚·B‚»‚Ì‘ã‚í‚è‚ÉBoolean.valueOf(...) ‚ğg‚¤‚×‚«‚Å‚·B</ShortDescription>
+    <LongDescription>{1} Boolean‚ÌƒRƒ“ƒXƒgƒ‰ƒNƒ^‚ğŒÄ‚ñ‚Å‚¢‚Ü‚·B‚»‚Ì‘ã‚í‚è‚ÉBoolean.valueOf(...) ‚ğg‚¤‚×‚«‚Å‚·B</LongDescription>
     <Details>
 <![CDATA[
   <p> Creating new instances of <code>java.lang.Boolean</code> wastes
@@ -441,8 +461,8 @@ field is not volatile.  It is a moderately fast detector.
     </Details>
   </BugPattern>
   <BugPattern type="DC_DOUBLECHECK">
-    <ShortDescription>ãƒ€ãƒ–ãƒ«ãƒã‚§ãƒƒã‚¯ã—ã¦ã„ã‚‹å¯èƒ½æ€§ãŒã‚ã‚‹ã€‚</ShortDescription>
-    <LongDescription>{2} ã‚’ {1} ã§ãƒ€ãƒ–ãƒ«ãƒã‚§ãƒƒã‚¯ã—ã¦ã„ã‚‹å¯èƒ½æ€§ãŒã‚ã‚‹ã€‚</LongDescription>
+    <ShortDescription>ƒtƒB[ƒ‹ƒh‚Ìƒ_ƒuƒ‹ƒ`ƒFƒbƒN‚ğ‚¨‚±‚È‚Á‚Ä‚¢‚é‰Â”\«‚ª‚ ‚è‚Ü‚·B</ShortDescription>
+    <LongDescription>{1} ‚É‚¨‚¢‚Ä {2} ‚Ìƒ_ƒuƒ‹ƒ`ƒFƒbƒN‚ğ‚¨‚±‚È‚Á‚Ä‚¢‚é‰Â”\«‚ª‚ ‚è‚Ü‚·B</LongDescription>
     <Details>
 <![CDATA[
   <p> This method may contain an instance of double-checked locking.&nbsp;
@@ -455,8 +475,8 @@ field is not volatile.  It is a moderately fast detector.
   </BugPattern>
 
   <BugPattern type="FI_PUBLIC_SHOULD_BE_PROTECTED">
-    <ShortDescription>Finalizer ã¯publicã ãŒprotectedã§ã‚ã‚‹ã¹ã</ShortDescription>
-    <LongDescription>{1} ã¯publicã ãŒprotectedã§ã‚ã‚‹ã¹ã</LongDescription>
+    <ShortDescription>finalizer‚Íprotected‚Å‚ ‚é‚×‚«‚Å‚·Bpublic‚Å‚ ‚é‚×‚«‚Å‚Í‚ ‚è‚Ü‚¹‚ñB</ShortDescription>
+    <LongDescription>{1} ‚Í public ‚Å‚·‚ªA‚±‚ê‚Í protected ‚Å‚ ‚é‚×‚«‚Å‚·B</LongDescription>
     <Details>
 <![CDATA[
   <p> A class's <code>finalize()</code> method should have protected access,
@@ -465,8 +485,8 @@ field is not volatile.  It is a moderately fast detector.
     </Details>
   </BugPattern>
   <BugPattern type="FI_EMPTY">
-    <ShortDescription>ç©ºãªFinalizerãªã®ã§å‰Šé™¤ã™ã¹ã</ShortDescription>
-    <LongDescription>{1} ã¯ç©ºãªã®ã§å‰Šé™¤ã™ã¹ã</LongDescription>
+    <ShortDescription>‹ó‚Ì finalizer ‚Ííœ‚³‚ê‚é‚×‚«‚Å‚·B</ShortDescription>
+    <LongDescription>{1} ‚Í‹ó‚Å‚·‚Ì‚ÅAíœ‚³‚ê‚é‚×‚«‚Å‚·B</LongDescription>
     <Details>
 <![CDATA[
   <p> Empty <code>finalize()</code> methods are useless, so they should
@@ -475,8 +495,8 @@ field is not volatile.  It is a moderately fast detector.
     </Details>
   </BugPattern>
   <BugPattern type="FI_NULLIFY_SUPER">
-    <ShortDescription>Finalizerã¯ã‚¹ãƒ¼ãƒ‘ãƒ¼ã‚¯ãƒ©ã‚¹ã®finalize(); ã‚’ç„¡è¦–ã—ã¦ã„ã‚‹ã€‚</ShortDescription>
-    <LongDescription>{1} ã¯ã‚¹ãƒ¼ãƒ‘ãƒ¼ã‚¯ãƒ©ã‚¹ã® {2}.finalize(); ã‚’ç„¡è¦–ã—ã¦ã„ã‚‹ã€‚ã‚ã–ã¨ï¼Ÿ</LongDescription>
+    <ShortDescription>finalizer‚ÍƒX[ƒp[ƒNƒ‰ƒX‚Ì finalizer ‚ğ–³‹‚µ‚Ä‚¢‚Ü‚·B</ShortDescription>
+    <LongDescription>{1} ‚Í {2}.finalize() ‚ğ–³‹‚µ‚Ä‚¢‚Ü‚·B‚±‚ê‚Í‚í‚´‚Æ‚Å‚·‚©H</LongDescription>
     <Details>
 <![CDATA[
   <p> This empty <code>finalize()</code> method explicitly negates the
@@ -487,8 +507,8 @@ field is not volatile.  It is a moderately fast detector.
     </Details>
   </BugPattern>
   <BugPattern type="FI_USELESS">
-    <ShortDescription>super.finalize(); ä»¥å¤–ä½•ã‚‚ã—ã¦ã„ãªã„ã€‚</ShortDescription>
-    <LongDescription>{1} super.finalize(); ä»¥å¤–ä½•ã‚‚ã—ã¦ã„ãªã„ã®ã§å‰Šé™¤ã™ã¹ã</LongDescription>
+    <ShortDescription>finalizer‚Í’P‚ÉƒX[ƒp[ƒNƒ‰ƒX‚Ìfinalizer‚ğŒÄ‚Ño‚µ‚Ä‚¢‚é‚É‰ß‚¬‚Ü‚¹‚ñB</ShortDescription>
+    <LongDescription>{1} ‚Í’P‚É super.finalize() ‚ğŒÄ‚Ño‚µ‚Ä‚¢‚é‚¾‚¯‚ÅA‚»‚êˆÈŠO‚Ì‚±‚Æ‚Í‚È‚É‚à‚µ‚Ä‚¢‚Ü‚¹‚ñB‚±‚ê‚Ííœ‚³‚ê‚é‚×‚«‚Å‚·B</LongDescription>
     <Details>
 <![CDATA[
   <p> The only thing this <code>finalize()</code> method does is call
@@ -498,8 +518,8 @@ field is not volatile.  It is a moderately fast detector.
     </Details>
   </BugPattern>
   <BugPattern type="FI_MISSING_SUPER_CALL">
-    <ShortDescription>Finalizer ã«super.finalize()ã¸ã®å‘¼ã³å‡ºã—ãŒãªã„</ShortDescription>
-    <LongDescription>{1} super.finalize()ã¸ã®å‘¼ã³å‡ºã—ãŒãªã„ã®ã§ {2}.finalize() ãŒå‘¼ã³å‡ºã•ã‚Œãªã„</LongDescription>
+    <ShortDescription>finalizer‚ÉƒX[ƒp[ƒNƒ‰ƒX‚Ìfinalizer‚ÌŒÄ‚Ño‚µ‚Ì‹Lq‚ª‚ ‚è‚Ü‚¹‚ñB</ShortDescription>
+    <LongDescription>{1} ‚Í super.finalize() ‚ÌŒÄ‚Ño‚µ‚ğ–Y‚ê‚Ä‚¢‚Ü‚·B‚»‚Ì‚½‚ß {2}.finalize() ‚ÍŒÄ‚Ño‚³‚ê‚é‚±‚Æ‚ª‚ ‚è‚Ü‚¹‚ñB</LongDescription>
     <Details>
 <![CDATA[
   <p> This <code>finalize()</code> method does not make a call to its
@@ -510,8 +530,8 @@ field is not volatile.  It is a moderately fast detector.
     </Details>
   </BugPattern>
   <BugPattern type="FI_EXPLICIT_INVOCATION">
-    <ShortDescription>Finalizerã‚’æ˜ç¤ºçš„ã«èª­ã‚“ã§ã„ã‚‹</ShortDescription>
-    <LongDescription>{1} æ˜ç¤ºçš„ã« {2}ã‚’å‘¼ã‚“ã§ã„ã‚‹</LongDescription>
+    <ShortDescription>finalizer ‚ğ‹­§“I‚ÉŒÄ‚Ño‚µ‚Ä‚¢‚Ü‚·B</ShortDescription>
+    <LongDescription>{1} ‚Í‹­§“I‚É {2} ‚ğŒÄ‚Ño‚µ‚Ä‚¢‚Ü‚·B</LongDescription>
     <Details>
 <![CDATA[
   <p> This method contains an explicit invocation of the <code>finalize()</code>
@@ -521,8 +541,8 @@ field is not volatile.  It is a moderately fast detector.
     </Details>
   </BugPattern>
   <BugPattern type="EQ_SELF_USE_OBJECT">
-    <ShortDescription>covariantãƒ¡ã‚½ãƒƒãƒ‰equals()ã‚’å®šç¾©ã—ã¦ã„ã‚‹ãŒ, Object.equals(Object) ã¯ç¶™æ‰¿ã®ã¾ã¾</ShortDescription>
-    <LongDescription>{0} ã¯equals({0})ãƒ¡ã‚½ãƒƒãƒ‰ã‚’å®šç¾©ã—ã¦ã„ã‚‹ãŒObject.equals(Object)ã‚’åˆ©ç”¨ã—ã¦ã„ã‚‹</LongDescription>
+    <ShortDescription>‹¤•Ï‚È equals() ƒƒ\ƒbƒh‚ªéŒ¾‚³‚ê‚Ä‚¢‚Ü‚·‚ªAObject.equals(Object) ‚ÍŒp³‚Ì‚Ü‚Ü‚Å‚·B</ShortDescription>
+    <LongDescription>{0} ‚Í equals({0}) ƒƒ\ƒbƒh‚ğéŒ¾‚µ‚Ä‚¢‚Ü‚·‚ªAObject.equals(Object) ‚ğ‚»‚Ì‚Ü‚Ü—˜—p‚µ‚Ä‚¢‚Ü‚·B</LongDescription>
     <Details>
 <![CDATA[
   <p> This class defines a covariant version of the <code>equals()</code>
@@ -534,8 +554,8 @@ field is not volatile.  It is a moderately fast detector.
     </Details>
   </BugPattern>
   <BugPattern type="EQ_SELF_NO_OBJECT">
-    <ShortDescription>covariantãƒ¡ã‚½ãƒƒãƒ‰equals()ã‚’å®šç¾©ã—ã¦ã„ã‚‹</ShortDescription>
-    <LongDescription>{0} ã¯equals({0})ãƒ¡ã‚½ãƒƒãƒ‰ã‚’å®šç¾©ã—ã¦ã„ã‚‹ãŒequals(Object)ã‚’å®šç¾©ã—ã¦ã„ãªã„</LongDescription>
+    <ShortDescription>‹¤•Ï‚È equals() ƒƒ\ƒbƒh‚ğéŒ¾‚µ‚Ä‚¢‚Ü‚·B</ShortDescription>
+    <LongDescription>{0} ‚Í equals({0}) ƒƒ\ƒbƒh‚ğéŒ¾‚µ‚Ä‚¢‚Ü‚·‚ªA equals(Object) ‚ÍéŒ¾‚³‚ê‚Ä‚¢‚Ü‚¹‚ñB</LongDescription>
     <Details>
 <![CDATA[
   <p> This class defines a covariant version of <code>equals()</code>.&nbsp;
@@ -546,8 +566,8 @@ field is not volatile.  It is a moderately fast detector.
     </Details>
   </BugPattern>
   <BugPattern type="CO_SELF_NO_OBJECT">
-    <ShortDescription>covariantãƒ¡ã‚½ãƒƒãƒ‰compareTo()ã‚’å®šç¾©ã—ã¦ã„ã‚‹</ShortDescription>
-    <LongDescription>{0} ã¯comparesTo({0})ãƒ¡ã‚½ãƒƒãƒ‰ã‚’å®šç¾©ã—ã¦ã„ã‚‹ãŒcomparesTo(Object)ã‚’å®šç¾©ã—ã¦ã„ãªã„</LongDescription>
+    <ShortDescription>‹¤•Ï‚È compareTo() ƒƒ\ƒbƒh‚ªéŒ¾‚³‚ê‚Ä‚¢‚Ü‚·B</ShortDescription>
+    <LongDescription>{0} ‚Í comparesTo({0}) ƒƒ\ƒbƒh‚ğéŒ¾‚µ‚Ä‚¢‚Ü‚·‚ªA comparesTo(Object) ‚ÍéŒ¾‚³‚ê‚Ä‚¢‚Ü‚¹‚ñB</LongDescription>
     <Details>
 <![CDATA[
   <p> This class defines a covariant version of <code>compareTo()</code>.&nbsp;
@@ -558,8 +578,8 @@ field is not volatile.  It is a moderately fast detector.
     </Details>
   </BugPattern>
   <BugPattern type="HE_HASHCODE_USE_OBJECT_EQUALS">
-    <ShortDescription>hashCode()ã‚’å®šç¾©ã—ã¦ã„ã‚‹ãŒObject.equals()ã‚’ä½¿ã£ã¦ã„ã‚‹</ShortDescription>
-    <LongDescription>{0} ã¯hashCodeãƒ¡ã‚½ãƒƒãƒ‰ã‚’å®šç¾©ã—ã¦ã„ã‚‹ãŒObject.equals()ã‚’åˆ©ç”¨ã—ã¦ã„ã‚‹</LongDescription>
+    <ShortDescription>ƒNƒ‰ƒX‚Å hashCode() ‚ğéŒ¾‚µ‚Ä‚¢‚Ü‚·‚ªA Object.equals() ‚Í‚»‚Ì‚Ü‚Üg‚Á‚Ä‚¢‚Ü‚·B</ShortDescription>
+    <LongDescription>{0} ‚Í hashCode ‚ğéŒ¾‚µ‚Ä‚¢‚Ü‚·‚ªA Object.equals() ‚Í‚»‚Ì‚Ü‚Üg‚Á‚Ä‚¢‚Ü‚·B</LongDescription>
     <Details>
 <![CDATA[
   <p> This class defines a <code>hashCode()</code> method but inherits its
@@ -574,8 +594,8 @@ field is not volatile.  It is a moderately fast detector.
     </Details>
   </BugPattern>
   <BugPattern type="HE_HASHCODE_NO_EQUALS">
-    <ShortDescription>hashCode()ã‚’å®šç¾©ã—ã¦ã„ã‚‹ãŒequals()ã‚’å®šç¾©ã—ã¦ã„ãªã„</ShortDescription>
-    <LongDescription>{0} ã¯hashCodeãƒ¡ã‚½ãƒƒãƒ‰ã‚’å®šç¾©ã—ã¦ã„ã‚‹ãŒequalsã‚’å®šç¾©ã—ã¦ã„ãªã„</LongDescription>
+    <ShortDescription>ƒNƒ‰ƒX‚Å hashCode() ‚ğéŒ¾‚µ‚Ä‚¢‚Ü‚·‚ªAequals() ‚ÍéŒ¾‚³‚ê‚Ä‚¢‚Ü‚¹‚ñB</ShortDescription>
+    <LongDescription>{0} ‚Í hashCode ‚ğéŒ¾‚µ‚Ä‚¢‚Ü‚·‚ªAequals ‚ÍéŒ¾‚³‚ê‚Ä‚¢‚Ü‚¹‚ñB</LongDescription>
     <Details>
 <![CDATA[
   <p> This class defines a <code>hashCode()</code> method but not an
@@ -585,8 +605,8 @@ field is not volatile.  It is a moderately fast detector.
     </Details>
   </BugPattern>
   <BugPattern type="HE_EQUALS_USE_HASHCODE">
-    <ShortDescription>equalsãƒ¡ã‚½ãƒƒãƒ‰ã‚’å®šç¾©ã—ã¦ã„ã‚‹ãŒObject.hashCode()ã‚’åˆ©ç”¨ã—ã¦ã„ã‚‹</ShortDescription>
-    <LongDescription>{0} ã¯equalsãƒ¡ã‚½ãƒƒãƒ‰ã‚’å®šç¾©ã—ã¦ã„ã‚‹ãŒObject.hashCode()ã‚’åˆ©ç”¨ã—ã¦ã„ã‚‹</LongDescription>
+    <ShortDescription>ƒNƒ‰ƒX‚Å equals() ‚ğéŒ¾‚µ‚Ä‚¢‚Ü‚·‚ªAObject.hashCode() ‚Í‚»‚Ì‚Ü‚Üg‚Á‚Ä‚¢‚Ü‚·B</ShortDescription>
+    <LongDescription>{0} ‚Å equals ‚ğéŒ¾‚µ‚Ä‚¢‚Ü‚·‚ªAObject.hashCode() ‚Í‚»‚Ì‚Ü‚Üg‚Á‚Ä‚¢‚Ü‚·B</LongDescription>
     <Details>
 <![CDATA[
   <p> This class overrides <code>equals(Object)</code>, but does not
@@ -599,8 +619,8 @@ field is not volatile.  It is a moderately fast detector.
     </Details>
   </BugPattern>
   <BugPattern type="HE_EQUALS_NO_HASHCODE">
-    <ShortDescription>equalsãƒ¡ã‚½ãƒƒãƒ‰ã‚’å®šç¾©ã—ã¦ã„ã‚‹ãŒhashCodeã‚’å®šç¾©ã—ã¦ãªã„</ShortDescription>
-    <LongDescription>{0} ã¯equalsãƒ¡ã‚½ãƒƒãƒ‰ã‚’å®šç¾©ã—ã¦ã„ã‚‹ãŒhashCodeã‚’å®šç¾©ã—ã¦ãªã„</LongDescription>
+    <ShortDescription>ƒNƒ‰ƒX‚Å equals() ‚ğéŒ¾‚µ‚Ä‚¢‚Ü‚·‚ª hashCode() ‚ÍéŒ¾‚³‚ê‚Ä‚¢‚Ü‚¹‚ñB</ShortDescription>
+    <LongDescription>{0} ‚Í equals ‚ğéŒ¾‚µ‚Ä‚¢‚Ü‚·‚ª hashCode ‚ÍéŒ¾‚³‚ê‚Ä‚¢‚Ü‚¹‚ñB</LongDescription>
     <Details>
 <![CDATA[
   <p> This class overrides <code>equals(Object)</code>, but does not
@@ -610,8 +630,8 @@ field is not volatile.  It is a moderately fast detector.
     </Details>
   </BugPattern>
   <BugPattern type="EQ_ABSTRACT_SELF">
-    <ShortDescription>æŠ½è±¡ã‚¯ãƒ©ã‚¹ ã¯covariantãƒ¡ã‚½ãƒƒãƒ‰equals()ã‚’å®šç¾©ã—ã¦ã„ã‚‹</ShortDescription>
-    <LongDescription>Abstract {0} ã¯equals({0})ãƒ¡ã‚½ãƒƒãƒ‰ã‚’å®šç¾©ã—ã¦ã„ã‚‹</LongDescription>
+    <ShortDescription>’ŠÛƒNƒ‰ƒX‚Å‹¤•Ï‚È equals() ƒƒ\ƒbƒh‚ğéŒ¾‚µ‚Ä‚¢‚Ü‚·B</ShortDescription>
+    <LongDescription>’ŠÛƒNƒ‰ƒX {0} ‚Å equals({0}) ƒƒ\ƒbƒh‚ğéŒ¾‚µ‚Ä‚¢‚Ü‚·B</LongDescription>
     <Details>
 <![CDATA[
   <p> This class defines a covariant version of <code>equals()</code>.&nbsp;
@@ -623,8 +643,8 @@ field is not volatile.  It is a moderately fast detector.
   </BugPattern>
 
   <BugPattern type="ES_COMPARING_STRINGS_WITH_EQ">
-    <ShortDescription>Comparison of String objects using == or !=</ShortDescription>
-    <LongDescription>Comparison of String objects using == or != in {1} </LongDescription>
+    <ShortDescription>•¶š—ñ‚ğ == ‚â != ‚ğ—p‚¢‚Ä”äŠr‚µ‚Ä‚¢‚Ü‚·B</ShortDescription>
+    <LongDescription>{1}‚Ì’†‚ÅA•¶š—ñƒIƒuƒWƒFƒNƒg‚ğ == ‚â != ‚ğg‚Á‚Ä”äŠr‚µ‚æ‚¤‚Æ‚µ‚Ä‚¢‚Ü‚·B</LongDescription>
     <Details>
 <![CDATA[
   <p>This code compares <code>java.lang.String</code> objects for reference
@@ -638,8 +658,8 @@ using the <code>equals</code> method instead.
   </BugPattern>
 
   <BugPattern type="CO_ABSTRACT_SELF">
-    <ShortDescription>æŠ½è±¡ã‚¯ãƒ©ã‚¹ ã¯covariantãƒ¡ã‚½ãƒƒãƒ‰compareTo()ã‚’å®šç¾©ã—ã¦ã„ã‚‹</ShortDescription>
-    <LongDescription>Abstract {0} ã¯compareTo({0})ãƒ¡ã‚½ãƒƒãƒ‰ã‚’å®šç¾©ã—ã¦ã„ã‚‹</LongDescription>
+    <ShortDescription>’ŠÛƒNƒ‰ƒX‚Å‹¤•Ï‚È compareTo() ƒƒ\ƒbƒh‚ğéŒ¾‚µ‚Ä‚¢‚Ü‚·B</ShortDescription>
+    <LongDescription>’ŠÛƒNƒ‰ƒX {0} ‚Å compareTo({0}) ƒƒ\ƒbƒh‚ğéŒ¾‚µ‚Ä‚¢‚Ü‚·B</LongDescription>
     <Details>
 <![CDATA[
   <p> This class defines a covariant version of <code>compareTo()</code>.&nbsp;
@@ -650,8 +670,8 @@ using the <code>equals</code> method instead.
     </Details>
   </BugPattern>
   <BugPattern type="IS2_INCONSISTENT_SYNC">
-    <ShortDescription>åŒæœŸã®ä»•æ–¹ãŒä¸çµ±ä¸€</ShortDescription>
-    <LongDescription>{1}ã®åŒæœŸã®ä»•æ–¹ãŒä¸çµ±ä¸€ã€‚{2}% ã®ã‚¢ã‚¯ã‚»ã‚¹ã§synchronizedã—ã¦ã„ã‚‹ã€‚</LongDescription>
+    <ShortDescription>“¯Šú‰»‚ªl—¶‚³‚ê‚Ä‚¢‚Ü‚¹‚ñB</ShortDescription>
+    <LongDescription>{1} ‚Ì“¯Šú‰»‚ªl—¶‚³‚ê‚Ä‚¢‚Ü‚¹‚ñB{2}% ‚ªƒƒbƒN‚³‚ê‚Ä‚¢‚é‚ÉB</LongDescription>
     <Details>
 <![CDATA[
   <p> The fields of this class appear to be accessed inconsistently with respect
@@ -684,8 +704,8 @@ using the <code>equals</code> method instead.
     </Details>
   </BugPattern>
   <BugPattern type="NN_NAKED_NOTIFY">
-    <ShortDescription>notifyã¯è£¸ã®ã¾ã¾ã€‚</ShortDescription>
-    <LongDescription>{1} ã®notifyã¯è£¸ã®ã¾ã¾ã€‚</LongDescription>
+    <ShortDescription>ƒƒ\ƒbƒh‚Ì’†‚É—‡‚Ì notify ‚ª‚ ‚è‚Ü‚·B</ShortDescription>
+    <LongDescription>{1} ‚Ì’†‚É—‡‚Ì notify ‚ª‚ ‚è‚Ü‚·B</LongDescription>
     <Details>
 <![CDATA[
   <p> A call to <code>notify()</code> or <code>notifyAll()</code>
@@ -702,8 +722,8 @@ using the <code>equals</code> method instead.
     </Details>
   </BugPattern>
   <BugPattern type="MS_EXPOSE_REP">
-    <ShortDescription>Public static ãƒ¡ã‚½ãƒƒãƒ‰ãŒé…åˆ—ã‚’è¿”ã™ã“ã¨ã§å†…éƒ¨è¡¨ç¾ã‚’ã•ã‚‰ã—ã¦ã„ã‚‹å¯èƒ½æ€§ãŒã‚ã‚‹</ShortDescription>
-    <LongDescription>public static {1} ãŒ {2} ã‚’è¿”ã™ã“ã¨ã§å†…éƒ¨è¡¨ç¾ã‚’ã•ã‚‰ã—ã¦ã„ã‚‹å¯èƒ½æ€§ãŒã‚ã‚‹</LongDescription>
+    <ShortDescription>public static ‚Èƒƒ\ƒbƒh‚Å”z—ñ‚ğ–ß‚è’l‚Æ‚µ‚Ä•Ô‚·‚ÆA“à•”•\Œ»‚ğ–\˜I‚µ‚Ä‚µ‚Ü‚¤‰Â”\«‚ª‚ ‚è‚Ü‚·B</ShortDescription>
+    <LongDescription>public static ‚È {1} ƒƒ\ƒbƒh‚Å {2} ‚ğ–ß‚·‚±‚Æ‚É‚æ‚èA“à•”•\Œ»‚ğ–\˜I‚µ‚Ä‚µ‚Ü‚¤‰Â”\«‚ª‚ ‚è‚Ü‚·B</LongDescription>
     <Details>
 <![CDATA[
   <p> A public static method returns a reference to
@@ -715,8 +735,8 @@ using the <code>equals</code> method instead.
     </Details>
   </BugPattern>
   <BugPattern type="EI_EXPOSE_REP">
-    <ShortDescription>ãƒ¡ã‚½ãƒƒãƒ‰ãŒé…åˆ—ã‚’è¿”ã™ã“ã¨ã§å†…éƒ¨è¡¨ç¾ã‚’ã•ã‚‰ã—ã¦ã„ã‚‹å¯èƒ½æ€§ãŒã‚ã‚‹</ShortDescription>
-    <LongDescription>{1} ãŒ {2} ã‚’è¿”ã™ã“ã¨ã§å†…éƒ¨è¡¨ç¾ã‚’ã•ã‚‰ã—ã¦ã„ã‚‹å¯èƒ½æ€§ãŒã‚ã‚‹</LongDescription>
+    <ShortDescription>ƒƒ\ƒbƒh‚Í”z—ñ‚Ì–ß‚è’l‚ğ•Ô‚·‚±‚Æ‚É‚æ‚è“à•”•\Œ»‚ğ–\˜I‚µ‚Ä‚µ‚Ü‚¤‰Â”\«‚ª‚ ‚è‚Ü‚·B</ShortDescription>
+    <LongDescription>{1} ‚Í {2} ‚ğ–ß‚·‚±‚Æ‚É‚æ‚è“à•”•\Œ»‚ğ–\˜I‚µ‚Ä‚µ‚Ü‚¤‰Â”\«‚ª‚ ‚è‚Ü‚·B</LongDescription>
     <Details>
 <![CDATA[
   <p> Returning an array value stored in one of the object's fields
@@ -727,8 +747,8 @@ using the <code>equals</code> method instead.
     </Details>
   </BugPattern>
   <BugPattern type="RU_INVOKE_RUN">
-    <ShortDescription>ã‚¹ãƒ¬ãƒƒãƒ‰ã®runã‚’ç›´æ¥å‘¼ã‚“ã§ã„ã‚‹ã€‚ï¼ˆstartã§ã¯ãªã„ã‹ï¼‰</ShortDescription>
-    <LongDescription>{1} ã‚¹ãƒ¬ãƒƒãƒ‰ã®runã‚’ç›´æ¥å‘¼ã‚“ã§ã„ã‚‹ã€‚ï¼ˆstartã§ã¯ãªã„ã‹ï¼‰</LongDescription>
+    <ShortDescription>ƒXƒŒƒbƒh‚Ì’†‚Å run ‚ğÀs‚µ‚Ä‚¢‚Ü‚·B(‚Ù‚ñ‚Æ‚¤‚Í start‚ğ‘ã‚í‚è‚ÉŒÄ‚Ño‚·‚×‚«‚Å‚Í‚È‚¢‚Ì‚Å‚·‚©H)</ShortDescription>
+    <LongDescription>{1} ‚Í–¾¦“I‚ÉƒXƒŒƒbƒh‚Ì run ‚ğŒÄ‚Ño‚µ‚Ä‚¢‚Ü‚·B(‚Ù‚ñ‚Æ‚¤‚Í start ‚ğŒÄ‚Ño‚µ‚½‚¢‚Æv‚Á‚½‚Ì‚Å‚Í‚È‚¢‚Å‚·‚©H)</LongDescription>
     <Details>
 <![CDATA[
   <p> This method explicitly invokes <code>run()</code> on an object.&nbsp;
@@ -739,8 +759,8 @@ using the <code>equals</code> method instead.
     </Details>
   </BugPattern>
   <BugPattern type="SP_SPIN_ON_FIELD">
-    <ShortDescription>ã‚¹ãƒ”ãƒ³ãƒ­ãƒƒã‚¯ã‚’ä½¿ã£ã¦ã„ã‚‹ã€‚</ShortDescription>
-    <LongDescription>{2} ã‚’ä½¿ã£ã¦ {1} ã§ã‚¹ãƒ”ãƒ³ãƒ­ãƒƒã‚¯ã‚’ä½¿ã£ã¦ã„ã‚‹ã€‚</LongDescription>
+    <ShortDescription>ƒƒ\ƒbƒh‚ÍƒtƒB[ƒ‹ƒh‚ÌƒXƒsƒ“ƒƒbƒN‚ğ—˜—p‚µ‚Ä‚¢‚Ü‚·B</ShortDescription>
+    <LongDescription>{2} ‚ğg‚Á‚Ä {1} ‚ÅƒXƒsƒ“ƒƒbƒN‚ğg‚Á‚Ä‚¢‚Ü‚·B</LongDescription>
     <Details>
 <![CDATA[
   <p> This method spins in a loop which reads a field.&nbsp; The compiler
@@ -751,8 +771,8 @@ using the <code>equals</code> method instead.
     </Details>
   </BugPattern>
   <BugPattern type="2LW_TWO_LOCK_WAIT">
-    <ShortDescription>äºŒã¤ã®ãƒ­ãƒƒã‚¯ã‚’æŒã£ãŸã¾ã¾wait()ã—ã¦ã„ã‚‹ã€‚ </ShortDescription>
-    <LongDescription>{1}ã§äºŒã¤ã®ãƒ­ãƒƒã‚¯ã‚’æŒã£ãŸã¾ã¾wait()ã—ã¦ã„ã‚‹ã€‚ </LongDescription>
+    <ShortDescription>‚Q‚Â‚ÌƒƒbƒN‚ğ‚Á‚½‚Ü‚Üwait‚µ‚Ä‚¢‚Ü‚·B</ShortDescription>
+    <LongDescription>{1} ‚Å‚Q‚Â‚ÌƒƒbƒN‚ğ‚Á‚½‚Ü‚Üwait()‚µ‚Ä‚¢‚Ü‚·B</LongDescription>
     <Details>
 <![CDATA[
   <p> Waiting on a monitor while two locks are held may cause
@@ -762,8 +782,8 @@ using the <code>equals</code> method instead.
     </Details>
   </BugPattern>
   <BugPattern type="UW_UNCOND_WAIT">
-    <ShortDescription>waitã«æ¡ä»¶æ–‡ãŒãªã„</ShortDescription>
-    <LongDescription>{1} ã®waitã«æ¡ä»¶æ–‡ãŒãªã„</LongDescription>
+    <ShortDescription>ƒƒ\ƒbƒh‚Ìwait‚ÉğŒ•¶‚ª‚ ‚è‚Ü‚¹‚ñB</ShortDescription>
+    <LongDescription>{1} ‚Ìwait‚ÉğŒ•¶‚ª‚ ‚è‚Ü‚¹‚ñB</LongDescription>
     <Details>
 <![CDATA[
   <p> This method contains a call to <code>java.lang.Object.wait()</code> which
@@ -774,8 +794,8 @@ using the <code>equals</code> method instead.
     </Details>
   </BugPattern>
   <BugPattern type="UR_UNINIT_READ">
-    <ShortDescription>ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã§åˆæœŸåŒ–å‰ã®ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰ã‚’èª­ã‚“ã§ã„ã‚‹</ShortDescription>
-    <LongDescription>{2} ã‚’ {1} ã§åˆæœŸåŒ–å‰ã«å€¤ã‚’èª­ã‚“ã§ã„ã‚‹ã€‚</LongDescription>
+    <ShortDescription>ƒRƒ“ƒXƒgƒ‰ƒNƒ^‚Å‰Šú‰»‘O‚ÌƒtƒB[ƒ‹ƒh‚ğ“Ç‚ñ‚Å‚¢‚Ü‚·B</ShortDescription>
+    <LongDescription>{2} ‚ğ {1} ‚Å‰Šú‰»‘O‚É’l‚ğ“Ç‚İ‚ñ‚Å‚¢‚Ü‚·B</LongDescription>
     <Details>
 <![CDATA[
   <p> This constructor reads a field which has not yet been assigned a value.&nbsp;
@@ -785,8 +805,8 @@ using the <code>equals</code> method instead.
     </Details>
   </BugPattern>
   <BugPattern type="UG_SYNC_SET_UNSYNC_GET">
-    <ShortDescription>getãƒ¡ã‚½ãƒƒãƒ‰ã¯åŒæœŸã—ã¦ã„ãªã„ãŒã€setãƒ¡ã‚½ãƒƒãƒ‰ã¯åŒæœŸã—ã¦ã„ã‚‹ã€‚</ShortDescription>
-    <LongDescription>{1} ã¯synchronizedãŒãªã„ãŒã€ {2} ã¯synchronizedãŒã‚ã‚‹</LongDescription>
+    <ShortDescription>getƒƒ\ƒbƒh‚Í“¯Šú‰»(synchronized)‚³‚ê‚Ä‚¢‚Ü‚¹‚ñ‚ªAsetƒƒ\ƒbƒh“¯Šú‰»‚³‚ê‚Ä‚¢‚Ü‚·B</ShortDescription>
+    <LongDescription>{1} ‚Í“¯Šú‰»(synchronized)‚³‚ê‚Ä‚¢‚Ü‚¹‚ñ‚ªA{2} ‚Í“¯Šú‰»‚³‚ê‚Ä‚¢‚Ü‚·B</LongDescription>
     <Details>
 <![CDATA[
   <p> This class contains similarly-named get and set
@@ -798,8 +818,8 @@ using the <code>equals</code> method instead.
     </Details>
   </BugPattern>
   <BugPattern type="IC_INIT_CIRCULARITY">
-    <ShortDescription>åˆæœŸåŒ–ãŒãƒ«ãƒ¼ãƒ—ã—ã¦ã„ã‚‹</ShortDescription>
-    <LongDescription>{0} ã¨ {1} ã®é–“ã§ãƒ«ãƒ¼ãƒ—ã™ã‚‹åˆæœŸåŒ–ã¨ãªã£ã¦ã„ã‚‹</LongDescription>
+    <ShortDescription>‰Šú‰»‚ªƒ‹[ƒv‚µ‚Ä‚¢‚Ü‚·B</ShortDescription>
+    <LongDescription>{0} ‚Æ {1} ‚ÌŠÔ‚Å‰Šú‰»‚ªƒ‹[ƒv‚µ‚Ä‚¢‚Ü‚·B</LongDescription>
     <Details>
 <![CDATA[
   <p> A circularity was detected in the static initializers of the two
@@ -809,8 +829,8 @@ using the <code>equals</code> method instead.
     </Details>
   </BugPattern>
   <BugPattern type="IT_NO_SUCH_ELEMENT">
-    <ShortDescription>Iterator next() ã¯ NoSuchElement ä¾‹å¤–ã‚’æŠ•ã’ã‚‹ã“ã¨ã¯ãªã„</ShortDescription>
-    <LongDescription>{1} ã¯ NoSuchElement ä¾‹å¤–ã‚’æŠ•ã’ã‚‹ã“ã¨ã¯ãªã„</LongDescription>
+    <ShortDescription>iterator ‚Ì next() ƒƒ\ƒbƒh‚ª NoSuchElement —áŠO‚ğthrow‚·‚é‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñB</ShortDescription>
+    <LongDescription>{1} ‚Í NoSuchElement —áŠO‚ğthrow‚·‚é‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñB</LongDescription>
     <Details>
 <![CDATA[
   <p> This class implements the <code>java.util.Iterator</code> interface.&nbsp;
@@ -822,8 +842,8 @@ using the <code>equals</code> method instead.
     </Details>
   </BugPattern>
   <BugPattern type="IS_INCONSISTENT_SYNC">
-    <ShortDescription>åŒæœŸã®ä»•æ–¹ãŒä¸çµ±ä¸€</ShortDescription>
-    <LongDescription>{1} ã®ã‚¢ã‚¯ã‚»ã‚¹ãŒä¸çµ±ä¸€; {2}% ã®å ´åˆåŒæœŸã‚¢ã‚¯ã‚»ã‚¹ã—ã¦ã„ã‚‹</LongDescription>
+    <ShortDescription>“¯Šú‚Ìæ‚è•û‚É“ˆêŠ´‚ª‚ ‚è‚Ü‚¹‚ñB</ShortDescription>
+    <LongDescription>{1} ‚Ì“¯Šú‚Ìæ‚è•û‚É“ˆêŠ´‚ª‚ ‚è‚Ü‚¹‚ñB{2}% ‚Ìê‡“¯ŠúƒAƒNƒZƒX‚³‚ê‚Ä‚¢‚Ü‚·B</LongDescription>
     <Details>
 <![CDATA[
   <p> The fields of this class appear to be accessed inconsistently with respect
@@ -848,20 +868,20 @@ using the <code>equals</code> method instead.
     </Details>
   </BugPattern>
   <BugPattern type="ML_SYNC_ON_UPDATED_FIELD">
-    <ShortDescription>æ›´æ–°ã•ã‚Œã‚‹ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰ã§åŒæœŸã—ã¦ã„ã‚‹</ShortDescription>
-    <LongDescription>{1} æ›´æ–°ã•ã‚Œã‚‹ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰ {2} ã§åŒæœŸã—ã¦ã„ã‚‹</LongDescription>
+    <ShortDescription>ƒƒ\ƒbƒh‚ÍXV‚³‚ê‚éƒtƒB[ƒ‹ƒh‚ğg‚Á‚Ä“¯Šú‚µ‚Ä‚¢‚Ü‚·B</ShortDescription>
+    <LongDescription>{1} ‚ÍXV‚³‚ê‚éƒtƒB[ƒ‹ƒh {2} ‚ğg‚Á‚Ä“¯Šú‚µ‚Ä‚¢‚Ü‚·B</LongDescription>
     <Details>
 <![CDATA[
   <p> This method synchronizes on an object 
 	references from a mutable field.
 	This is unlikely to have useful semantics, since different
 threads may be synchronizing on different objects.
-]]>
+]]>  
     </Details>
   </BugPattern>
   <BugPattern type="MS_OOI_PKGPROTECT">
-    <ShortDescription>Field ã¯interfaceã‹ã‚‰å–ã‚Šå‡ºã—ã¦ãƒ‘ãƒƒã‚±ãƒ¼ã‚¸ãƒ—ãƒ­ãƒ†ã‚¯ãƒˆã«ã™ã¹ãã€‚</ShortDescription>
-    <LongDescription>{1} ã¯interfaceã‹ã‚‰å–ã‚Šå‡ºã—ã¦ãƒ‘ãƒƒã‚±ãƒ¼ã‚¸ãƒ—ãƒ­ãƒ†ã‚¯ãƒˆã«ã™ã¹ãã€‚</LongDescription>
+    <ShortDescription>ƒtƒB[ƒ‹ƒh‚Íinterface‚©‚çæ‚èo‚µ‚ÄƒpƒbƒP[ƒWprotected‚É‚·‚×‚«‚Å‚·B</ShortDescription>
+    <LongDescription>{1} ‚Íinterface‚©‚çæ‚èo‚µ‚ÄƒpƒbƒP[ƒWprotected‚É‚·‚×‚«‚Å‚·B</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -879,8 +899,8 @@ defined in an interface references a mutable
     </Details>
   </BugPattern>
   <BugPattern type="MS_FINAL_PKGPROTECT">
-    <ShortDescription>Fieldã¯finalã§ãƒ‘ãƒƒã‚±ãƒ¼ã‚¸ãƒ—ãƒ­ãƒ†ã‚¯ãƒˆã«ã™ã¹ãã€‚</ShortDescription>
-    <LongDescription>{1} ã¯finalã§ãƒ‘ãƒƒã‚±ãƒ¼ã‚¸ãƒ—ãƒ­ãƒ†ã‚¯ãƒˆã«ã™ã¹ãã€‚</LongDescription>
+    <ShortDescription>ƒtƒB[ƒ‹ƒh‚Ífinal Š‚Â ƒpƒbƒP[ƒWprotected‚É‚·‚×‚«‚Å‚·B</ShortDescription>
+    <LongDescription>{1} ƒtƒB[ƒ‹ƒh‚Ífinal Š‚Â ƒpƒbƒP[ƒWprotected‚É‚·‚×‚«‚Å‚·B</LongDescription>
     <Details>
 <![CDATA[
  <p>
@@ -893,8 +913,8 @@ defined in an interface references a mutable
     </Details>
   </BugPattern>
   <BugPattern type="MS_SHOULD_BE_FINAL">
-    <ShortDescription>Fieldã¯finalã§ã¯ãªã„ãŒfinalã«ã™ã¹ãã€‚</ShortDescription>
-    <LongDescription>{1} ã¯finalã§ã¯ãªã„ãŒfinalã«ã™ã¹ãã€‚</LongDescription>
+    <ShortDescription>ƒtƒB[ƒ‹ƒh‚Í final ‚Å‚Í‚ ‚è‚Ü‚¹‚ñ‚ªAfinal‚É•ÏX‚·‚×‚«‚Å‚·B</ShortDescription>
+    <LongDescription>{1} ‚Ífinal‚Å‚Í‚ ‚è‚Ü‚¹‚ñ‚ªfinal‚É•ÏX‚·‚×‚«‚Å‚·B</LongDescription>
     <Details>
 <![CDATA[
 	<p>
@@ -906,8 +926,8 @@ defined in an interface references a mutable
     </Details>
   </BugPattern>
   <BugPattern type="MS_PKGPROTECT">
-    <ShortDescription>Fieldã¯ãƒ‘ãƒƒã‚±ãƒ¼ã‚¸ãƒ—ãƒ­ãƒ†ã‚¯ãƒˆã«ã™ã¹ã</ShortDescription>
-    <LongDescription>{1} ã¯ãƒ‘ãƒƒã‚±ãƒ¼ã‚¸ãƒ—ãƒ­ãƒ†ã‚¯ãƒˆã«ã™ã¹ã</LongDescription>
+    <ShortDescription>ƒtƒB[ƒ‹ƒh‚ÍƒpƒbƒP[ƒW protected ‚É‚·‚×‚«‚Å‚·B</ShortDescription>
+    <LongDescription>{1} ‚ÍƒpƒbƒP[ƒW protected ‚É‚·‚×‚«‚Å‚·B</LongDescription>
     <Details>
 <![CDATA[
   <p> A mutable static field could be changed by malicious code or
@@ -918,8 +938,8 @@ defined in an interface references a mutable
     </Details>
   </BugPattern>
   <BugPattern type="MS_MUTABLE_HASHTABLE">
-    <ShortDescription>Fieldã¯mutableãª Hashtable</ShortDescription>
-    <LongDescription>{1}ã¯mutableãª Hashtable</LongDescription>
+    <ShortDescription>ƒtƒB[ƒ‹ƒh‚Í mutable ‚ÈƒnƒbƒVƒ…ƒe[ƒuƒ‹‚Å‚·B</ShortDescription>
+    <LongDescription>{1} ‚Í mutable ‚È Hashtable ‚Å‚·B</LongDescription>
     <Details>
 <![CDATA[
  <p>A final static field references an Hashtable
@@ -930,8 +950,8 @@ defined in an interface references a mutable
     </Details>
   </BugPattern>
   <BugPattern type="MS_MUTABLE_ARRAY">
-    <ShortDescription>Fieldã¯mutableãª array</ShortDescription>
-    <LongDescription>{1} ã¯mutableãª array</LongDescription>
+    <ShortDescription>ƒtƒB[ƒ‹ƒh‚Í mutable ‚È”z—ñ‚Å‚·B</ShortDescription>
+    <LongDescription>{1} ‚Í mutable ‚È”z—ñ‚Å‚·B</LongDescription>
     <Details>
 <![CDATA[
  A final static field references an array
@@ -942,8 +962,8 @@ defined in an interface references a mutable
     </Details>
   </BugPattern>
   <BugPattern type="MS_CANNOT_BE_FINAL">
-    <ShortDescription>Field ã¯finalã§ãªã„ã—finalã«ãªã‚Œãªã„</ShortDescription>
-    <LongDescription>{1} ã¯finalã§ãªã„ã—finalã«ãªã‚Œãªã„</LongDescription>
+    <ShortDescription>ƒtƒB[ƒ‹ƒh‚Í final ‚Å‚Í‚È‚¢‚µAfinal‚É‚È‚é‚±‚Æ‚Í‚Å‚«‚Ü‚¹‚ñB</ShortDescription>
+    <LongDescription>{1} ‚Í final‚Å‚Í‚È‚¢‚µA‚Ü‚½ final ‚É‚È‚é‚±‚Æ‚Í‚Å‚«‚Ü‚¹‚ñB</LongDescription>
     <Details>
 <![CDATA[
   <p> 
@@ -955,8 +975,8 @@ defined in an interface references a mutable
     </Details>
   </BugPattern>
   <BugPattern type="NM_VERY_CONFUSING">
-    <ShortDescription>ãƒ¡ã‚½ãƒƒãƒ‰åãŒã¨ã¦ã‚‚ç´›ã‚‰ã‚ã—ã„</ShortDescription>
-    <LongDescription>ãƒ¡ã‚½ãƒƒãƒ‰ {1} ã¨ãƒ¡ã‚½ãƒƒãƒ‰ {3} ã‚’æŒã¤ã®ã¯ã¨ã¦ã‚‚ã‚ã‹ã‚Šã«ãã„</LongDescription>
+    <ShortDescription>ƒƒ\ƒbƒh‚Ì–½–¼‚ª‘å•Ï‚Ü‚¬‚ç‚í‚µ‚¢‚Å‚·B</ShortDescription>
+    <LongDescription>{1} ‚Æ {3} ‚Ìƒƒ\ƒbƒh‚ÍA‚Æ‚Ä‚à¬—‚µ‚ª‚¿‚Å‚·B</LongDescription>
     <Details>
 <![CDATA[
   <p> The referenced methods have names that differ only by capitalization.
@@ -964,8 +984,8 @@ defined in an interface references a mutable
     </Details>
   </BugPattern>
   <BugPattern type="NM_CONFUSING">
-    <ShortDescription>ãƒ¡ã‚½ãƒƒãƒ‰åãŒç´›ã‚‰ã‚ã—ã„</ShortDescription>
-    <LongDescription>ãƒ¡ã‚½ãƒƒãƒ‰ {1} ã¨ãƒ¡ã‚½ãƒƒãƒ‰ {3} ã‚’æŒã¤ã®ã¯ã‚ã‹ã‚Šã«ãã„</LongDescription>
+    <ShortDescription>ƒƒ\ƒbƒh–¼‚ª‚Ü‚¬‚ç‚í‚µ‚¢‚Å‚·B</ShortDescription>
+    <LongDescription>{1} ‚Æ {3} ‚Ìƒƒ\ƒbƒh‚ÍA¬—‚µ‚ª‚¿‚Å‚·B</LongDescription>
     <Details>
 <![CDATA[
   <p> The referenced methods have names that differ only by capitalization.
@@ -973,8 +993,8 @@ defined in an interface references a mutable
     </Details>
   </BugPattern>
   <BugPattern type="NM_CONFUSING_METHOD_NAME">
-    <ShortDescription>ãƒ¡ã‚½ãƒƒãƒ‰åãŒç´›ã‚‰ã‚ã—ã„</ShortDescription>
-    <LongDescription>{1} ã®ãƒ¡ã‚½ãƒƒãƒ‰åãŒç´›ã‚‰ã‚ã—ã„</LongDescription>
+    <ShortDescription>ƒƒ\ƒbƒh–¼‚ª‚Ü‚¬‚ç‚í‚µ‚¢‚Å‚·B</ShortDescription>
+    <LongDescription>{1} ‚Ìƒƒ\ƒbƒh–¼‚Í‚Ü‚¬‚ç‚í‚µ‚¢‚Å‚·B</LongDescription>
     <Details>
 <![CDATA[
   <p> This method has the same name as the superclass of the class it
@@ -983,8 +1003,8 @@ defined in an interface references a mutable
     </Details>
   </BugPattern>
   <BugPattern type="NM_LCASE_HASHCODE">
-    <ShortDescription>Class ã¯ hashcode()ã‚’å®šç¾©ã—ã¦ã„ã‚‹ã€‚ hashCode()ã®é–“é•ã„ã§ã¯ãªã„ã‹ï¼Ÿ</ShortDescription>
-    <LongDescription>ã‚¯ãƒ©ã‚¹ {0} ã¯ hashcode()ã‚’å®šç¾©ã—ã¦ã„ã‚‹ã€‚ hashCode()ã®é–“é•ã„ã§ã¯ãªã„ã‹ï¼Ÿ</LongDescription>
+    <ShortDescription>ƒNƒ‰ƒX‚Å hashcode() ‚ğéŒ¾‚µ‚Ä‚¢‚Ü‚·B‚±‚ê‚Í hashCode() ‚Å‚ ‚é‚×‚«‚Å‚Í‚ ‚è‚Ü‚¹‚ñ‚©H</ShortDescription>
+    <LongDescription>ƒNƒ‰ƒX {0} ‚Å hashcode() ‚ğéŒ¾‚µ‚Ä‚¢‚Ü‚·B‚µ‚©‚µ‚±‚ê‚ÍA hashCode() ‚Å‚ ‚é‚×‚«‚Å‚Í‚ ‚è‚Ü‚¹‚ñ‚©H</LongDescription>
     <Details>
 <![CDATA[
   <p> This class defines a method called <code>hashcode()</code>.&nbsp; This method
@@ -994,8 +1014,8 @@ defined in an interface references a mutable
     </Details>
   </BugPattern>
   <BugPattern type="NM_LCASE_TOSTRING">
-    <ShortDescription>Class  ã¯ tostring()ã‚’å®šç¾©ã—ã¦ã„ã‚‹ã€‚ toString()ã®é–“é•ã„ã§ã¯ãªã„ã‹ï¼Ÿ</ShortDescription>
-    <LongDescription>ã‚¯ãƒ©ã‚¹ {0} ã¯ tostring()ã‚’å®šç¾©ã—ã¦ã„ã‚‹ã€‚ toString()ã®é–“é•ã„ã§ã¯ãªã„ã‹ï¼Ÿ</LongDescription>
+    <ShortDescription>ƒNƒ‰ƒX‚Å tostring() ‚ğéŒ¾‚µ‚Ä‚¢‚Ü‚·B‚±‚ê‚Í toString() ‚Å‚ ‚é‚×‚«‚Å‚Í‚ ‚è‚Ü‚¹‚ñ‚©H</ShortDescription>
+    <LongDescription>ƒNƒ‰ƒX {0} ‚Å tostring() ‚ğéŒ¾‚µ‚Ä‚¢‚Ü‚·B‚±‚ê‚Í toString() ‚Å‚ ‚é‚×‚«‚Å‚Í‚ ‚è‚Ü‚¹‚ñ‚©H</LongDescription>
     <Details>
 <![CDATA[
   <p> This class defines a method called <code>tostring()</code>.&nbsp; This method
@@ -1005,8 +1025,8 @@ defined in an interface references a mutable
     </Details>
   </BugPattern>
   <BugPattern type="RR_NOT_CHECKED">
-    <ShortDescription>InputStream.read()ã®æˆ»ã‚Šå€¤ã‚’ç„¡è¦–ã—ã¦ã„ã‚‹ã€‚</ShortDescription>
-    <LongDescription>{1} ã¯ {2} ã®æˆ»ã‚Šå€¤ã‚’ç„¡è¦–ã—ã¦ã„ã‚‹ã€‚</LongDescription>
+    <ShortDescription>ƒƒ\ƒbƒh‚Í InputStream.read() ‚Ì–ß‚è’l‚ğ–³‹‚µ‚Ä‚¢‚Ü‚·B</ShortDescription>
+    <LongDescription>{1} ‚Í {2} ‚Ì–ß‚è’l‚ğ–³‹‚µ‚Ä‚¢‚Ü‚·B</LongDescription>
     <Details>
 <![CDATA[
   <p> This method ignores the return value of one of the variants of
@@ -1020,8 +1040,8 @@ defined in an interface references a mutable
     </Details>
   </BugPattern>
   <BugPattern type="SE_NO_SERIALVERSIONID">
-    <ShortDescription>Class is Serializable, but doesn't define serialVersionUID</ShortDescription>
-    <LongDescription>{0} is Serializable; consider declaring a serialVersionUID</LongDescription>
+    <ShortDescription>ƒNƒ‰ƒX‚Í ’¼—ñ‰»‰Â”\(Serializable) ‚Å‚·B‚µ‚©‚µ serialVersionUID ‚ğéŒ¾‚µ‚Ä‚¢‚Ü‚¹‚ñB</ShortDescription>
+    <LongDescription>{0} ‚Í ’¼—ñ‰»‰Â”\(Serializable)‚Å‚·BserialVersionUID ‚ğéŒ¾‚·‚é‚±‚Æ‚ğl—¶‚µ‚Ä‚­‚¾‚³‚¢B</LongDescription>
     <Details>
 <![CDATA[
   <p> This class implements the <code>Serializable</code> interface, but does
@@ -1040,8 +1060,8 @@ defined in an interface references a mutable
     </Details>
   </BugPattern>
   <BugPattern type="WS_WRITEOBJECT_SYNC">
-    <ShortDescription>Class's writeObject() method is synchronized but nothing else is</ShortDescription>
-    <LongDescription>{0}'s writeObject method is synchronized but nothing else is</LongDescription>
+    <ShortDescription>ƒNƒ‰ƒX‚Ì writeObject() ƒƒ\ƒbƒh‚Í“¯Šú‰»(synchronized)‚³‚ê‚Ä‚¢‚Ü‚·B‚µ‚©‚µ ‚»‚êˆÈŠO‚Ìƒƒ\ƒbƒh‚Í“¯Šú‰»‚³‚ê‚Ä‚¢‚Ü‚¹‚ñB</ShortDescription>
+    <LongDescription>{0} ‚Ì writeObject ƒƒ\ƒbƒh‚Í“¯Šú‰»(synchronized)‚³‚ê‚Ä‚¢‚Ü‚·B‚µ‚©‚µA‚»‚êˆÈŠO‚Ìƒƒ\ƒbƒh‚Í“¯Šú‰»‚³‚ê‚Ä‚¢‚Ü‚¹‚ñB</LongDescription>
     <Details>
 <![CDATA[
   <p> This class has a <code>writeObject()</code> method which is synchronized;
@@ -1050,8 +1070,8 @@ defined in an interface references a mutable
     </Details>
   </BugPattern>
   <BugPattern type="RS_READOBJECT_SYNC">
-    <ShortDescription>Class's readObject() method is synchronized</ShortDescription>
-    <LongDescription>{0}'s readObject method is synchronized</LongDescription>
+    <ShortDescription>ƒNƒ‰ƒX‚Ì readObject() ƒƒ\ƒbƒh‚Í“¯Šú‰»(synchronized)‚³‚ê‚Ä‚¢‚Ü‚·B</ShortDescription>
+    <LongDescription>{0} ‚Ì readObject ƒƒ\ƒbƒh‚Í“¯Šú‰»(synchronized)‚³‚ê‚Ä‚¢‚Ü‚·B</LongDescription>
     <Details>
 <![CDATA[
   <p> This serializable class defines a <code>readObject()</code> which is
@@ -1063,9 +1083,10 @@ defined in an interface references a mutable
 ]]>
     </Details>
   </BugPattern>
+
   <BugPattern type="SE_NONSTATIC_SERIALVERSIONID">
-    <ShortDescription>serialVersionUID isn't static</ShortDescription>
-    <LongDescription>{1} ã¯staticã§ã¯ãªã„</LongDescription>
+    <ShortDescription>serialVersionUID ‚ª static ‚Å‚Í‚ ‚è‚Ü‚¹‚ñB</ShortDescription>
+    <LongDescription>{1} ‚ª static ‚Å‚Í‚ ‚è‚Ü‚¹‚ñB</LongDescription>
     <Details>
 <![CDATA[
   <p> This class defines a <code>serialVersionUID</code> field that is not static.&nbsp;
@@ -1077,8 +1098,8 @@ defined in an interface references a mutable
   </BugPattern>
 
   <BugPattern type="SE_NONFINAL_SERIALVERSIONID">
-    <ShortDescription>serialVersionUID isn't final</ShortDescription>
-    <LongDescription>{1} isn't final</LongDescription>
+    <ShortDescription>serialVersionUID ‚ª final ‚Å‚Í‚ ‚è‚Ü‚¹‚ñB</ShortDescription>
+    <LongDescription>{1} ‚ª final ‚Å‚Í‚ ‚è‚Ü‚¹‚ñB</LongDescription>
     <Details>
 <![CDATA[
   <p> This class defines a <code>serialVersionUID</code> field that is not final.&nbsp;
@@ -1091,8 +1112,8 @@ defined in an interface references a mutable
 
 
   <BugPattern type="SE_NONLONG_SERIALVERSIONID">
-    <ShortDescription>serialVersionUID ãŒ long ã§ã¯ãªã„</ShortDescription>
-    <LongDescription>{1} ãŒ long ã§ã¯ãªã„</LongDescription>
+    <ShortDescription>serialVersionUID ‚ª long ‚Å‚Í‚ ‚è‚Ü‚¹‚ñB</ShortDescription>
+    <LongDescription>{1} ‚ª long ‚Å‚Í‚ ‚è‚Ü‚¹‚ñB</LongDescription>
     <Details>
 <![CDATA[
   <p> This class defines a <code>serialVersionUID</code> field that is not long.&nbsp;
@@ -1104,8 +1125,8 @@ defined in an interface references a mutable
   </BugPattern>
 
   <BugPattern type="SE_BAD_FIELD">
-    <ShortDescription>Non-transient non-serializable instance field in serializable class</ShortDescription>
-    <LongDescription>Class {0} defines non-transient non-serializable instance field {1}</LongDescription>
+    <ShortDescription>’¼—ñ‰»‰Â”\(serializable)‚ÈƒNƒ‰ƒX‚ÌƒCƒ“ƒXƒ^ƒ“ƒXƒtƒB[ƒ‹ƒh‚ªA”ñtransient‚ÅA”ñ’¼—ñ‰»‰Â”\(non-serializable)‚Å‚·B</ShortDescription>
+    <LongDescription>ƒNƒ‰ƒX {0} ‚ª ”ñtransient‚Å”ñ’¼—ñ‰»‰Â”\(non-serializable)‚ÈƒCƒ“ƒXƒ^ƒ“ƒXƒtƒB[ƒ‹ƒh {1} ‚ğéŒ¾‚µ‚Ä‚¢‚Ü‚·B</LongDescription>
     <Details>
 <![CDATA[
 <p> This Serializable class defines a non-primitive instance field which is neither transient,
@@ -1119,8 +1140,8 @@ object is stored in this field.
   </BugPattern>
 
   <BugPattern type="SC_START_IN_CTOR">
-    <ShortDescription>ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ãŒ Thread.start()ã‚’èª­ã‚“ã§ã„ã‚‹ã€‚</ShortDescription>
-    <LongDescription>{1} ã¯ {2} ã‚’å‘¼ã³å‡ºã—ã¦ã„ã‚‹</LongDescription>
+    <ShortDescription>ƒRƒ“ƒXƒgƒ‰ƒNƒ^‚ª Thread.start() ‚ğÀs‚µ‚Ä‚¢‚Ü‚·B</ShortDescription>
+    <LongDescription>{1} ‚ª {2} ‚ğÀs‚µ‚Ä‚¢‚Ü‚·B</LongDescription>
     <Details>
 <![CDATA[
   <p> The constructor starts a thread. This is likely to be wrong if
@@ -1130,8 +1151,8 @@ object is stored in this field.
     </Details>
   </BugPattern>
   <BugPattern type="SS_SHOULD_BE_STATIC">
-    <ShortDescription>ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰ ã‚’èª­ã‚“ã§ã„ãªã„ã€‚ã‚¹ã‚¿ãƒ†ã‚£ãƒƒã‚¯ã«ã™ã¹ã</ShortDescription>
-    <LongDescription>ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰ {1}; ã‚’èª­ã‚“ã§ã„ãªã„ã€‚ã‚¹ã‚¿ãƒ†ã‚£ãƒƒã‚¯ã«ã™ã¹ã</LongDescription>
+    <ShortDescription>“Ç‚Ü‚ê‚È‚¢ƒtƒB[ƒ‹ƒh‚ª‚ ‚è‚Ü‚·B‚±‚ÌƒtƒB[ƒ‹ƒh‚Í static ‚É‚È‚é‚×‚«‚Å‚Í‚È‚¢‚Ì‚Å‚·‚©H</ShortDescription>
+    <LongDescription>“Ç‚Ü‚ê‚È‚¢ƒtƒB[ƒ‹ƒh {1} ‚ª‚ ‚è‚Ü‚·B‚±‚ÌƒtƒB[ƒ‹ƒh‚Í static ‚É‚È‚é‚×‚«‚Å‚Í‚È‚¢‚Ì‚Å‚·‚©H</LongDescription>
     <Details>
 <![CDATA[
   <p> This class contains an instance final field which is never read.&nbsp;
@@ -1142,8 +1163,8 @@ object is stored in this field.
     </Details>
   </BugPattern>
   <BugPattern type="UUF_UNUSED_FIELD">
-    <ShortDescription>ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰  ã‚’ä½¿ã£ã¦ã„ãªã„</ShortDescription>
-    <LongDescription>ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰ {1} ã‚’ä½¿ã£ã¦ã„ãªã„</LongDescription>
+    <ShortDescription>—˜—p‚³‚ê‚È‚¢ƒtƒB[ƒ‹ƒh‚ª‚ ‚è‚Ü‚·B</ShortDescription>
+    <LongDescription>—˜—p‚³‚ê‚È‚¢ƒtƒB[ƒ‹ƒh {1} ‚ª‚ ‚è‚Ü‚·B</LongDescription>
     <Details>
 <![CDATA[
   <p> This field is never used.&nbsp; Consider removing it from the class.
@@ -1151,8 +1172,8 @@ object is stored in this field.
     </Details>
   </BugPattern>
   <BugPattern type="URF_UNREAD_FIELD">
-    <ShortDescription>ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰  ã‚’èª­ã‚“ã§ã„ãªã„</ShortDescription>
-    <LongDescription>ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰ {1} ã‚’èª­ã‚“ã§ã„ãªã„</LongDescription>
+    <ShortDescription>“Ç‚Ü‚ê‚È‚¢ƒtƒB[ƒ‹ƒh‚ª‚ ‚è‚Ü‚·B</ShortDescription>
+    <LongDescription>“Ç‚Ü‚ê‚È‚¢ƒtƒB[ƒ‹ƒh {1} ‚ª‚ ‚è‚Ü‚·B</LongDescription>
     <Details>
 <![CDATA[
   <p> This field is never read.&nbsp; Consider removing it from the class.
@@ -1160,8 +1181,8 @@ object is stored in this field.
     </Details>
   </BugPattern>
   <BugPattern type="UWF_UNWRITTEN_FIELD">
-    <ShortDescription>æ›¸ã‹ã‚Œã¦ã„ãªã„ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰</ShortDescription>
-    <LongDescription>æ›¸ã‹ã‚Œã¦ã„ãªã„ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰: {1}</LongDescription>
+    <ShortDescription>‘‚©‚ê‚È‚¢ƒtƒB[ƒ‹ƒh‚ª‚ ‚è‚Ü‚·B</ShortDescription>
+    <LongDescription>‘‚©‚ê‚È‚¢ƒtƒB[ƒ‹ƒh {1} ‚ª‚ ‚è‚Ü‚·B</LongDescription>
     <Details>
 <![CDATA[
   <p> This field is never written.&nbsp; All reads of it will return the default
@@ -1170,8 +1191,8 @@ value. Check for errors (should it have been initialized?), or remove it if it i
     </Details>
   </BugPattern>
   <BugPattern type="SIC_INNER_SHOULD_BE_STATIC">
-    <ShortDescription>static å†…éƒ¨ã‚¯ãƒ©ã‚¹ã«ã™ã¹ã?</ShortDescription>
-    <LongDescription>ã‚¯ãƒ©ã‚¹ {0} ã¯ _static_ å†…éƒ¨ã‚¯ãƒ©ã‚¹ã«ã™ã¹ã?</LongDescription>
+    <ShortDescription>static‚È“à•”ƒNƒ‰ƒX‚É‚È‚é‚×‚«‚Å‚Í‚È‚¢‚Ì‚Å‚·‚©H</ShortDescription>
+    <LongDescription>{0} ‚Í static‚È“à•”ƒNƒ‰ƒX‚É‚È‚é‚×‚«‚Å‚Í‚È‚¢‚Ì‚Å‚·‚©H</LongDescription>
     <Details>
 <![CDATA[
   <p> This class is an inner class, but does not use its embedded reference
@@ -1183,8 +1204,8 @@ value. Check for errors (should it have been initialized?), or remove it if it i
     </Details>
   </BugPattern>
   <BugPattern type="WA_NOT_IN_LOOP">
-    <ShortDescription>waitãŒãƒ«ãƒ¼ãƒ—ã«å…¥ã£ã¦ã„ãªã„</ShortDescription>
-    <LongDescription >{1}ã§ã®waitãŒãƒ«ãƒ¼ãƒ—ã«å…¥ã£ã¦ã„ãªã„</LongDescription>
+    <ShortDescription>ƒƒ\ƒbƒh‚ÅAwait‚ªƒ‹[ƒv‚Ì’†‚É‚ ‚è‚Ü‚¹‚ñB</ShortDescription>
+    <LongDescription>{1} ‚Ì’†‚Åwait‚ªƒ‹[ƒv‚Ì’†‚É‚ ‚è‚Ü‚¹‚ñB</LongDescription>
     <Details>
 <![CDATA[
   <p> This method contains a call to <code>java.lang.Object.wait()</code> 
@@ -1195,8 +1216,8 @@ value. Check for errors (should it have been initialized?), or remove it if it i
     </Details>
   </BugPattern>
   <BugPattern type="NO_NOTIFY_NOT_NOTIFYALL">
-    <ShortDescription>notifyAllã§ã¯ãªãnotifyã‚’ä½¿ã£ã¦ã„ã‚‹</ShortDescription>
-    <LongDescription>{1} ã§notifyAllã§ã¯ãªãnotifyã‚’ä½¿ã£ã¦ã„ã‚‹</LongDescription>
+    <ShortDescription>ƒƒ\ƒbƒh‚ÅAnotifyAll() ‚Å‚Í‚È‚­ notify() ‚ğg‚Á‚Ä‚¢‚Ü‚·B</ShortDescription>
+    <LongDescription>{1} ‚É‚¨‚¢‚ÄAnotifyAll ‚Å‚Í‚È‚­ notify ‚ğg‚Á‚Ä‚¢‚Ü‚·B</LongDescription>
     <Details>
 <![CDATA[
   <p> This method calls <code>notify()</code> rather than <code>notifyAll()</code>.&nbsp;
@@ -1208,8 +1229,8 @@ value. Check for errors (should it have been initialized?), or remove it if it i
   </BugPattern>
 
   <BugPattern type="BCPDC_DOUBLECHECK">
-    <ShortDescription>Possible double check of field</ShortDescription>
-    <LongDescription>Possible doublecheck on {2} in {1}</LongDescription>
+    <ShortDescription>ƒtƒB[ƒ‹ƒh‚Ìƒ_ƒuƒ‹ƒ`ƒFƒbƒN‚ğs‚Á‚Ä‚¢‚é‰Â”\«‚ª‚ ‚è‚Ü‚·B</ShortDescription>
+    <LongDescription>{1} ‚Ì {2} ‚É‚¨‚¢‚Ä ƒtƒB[ƒ‹ƒh‚Ìƒ_ƒuƒ‹ƒ`ƒFƒbƒN‚ğs‚Á‚Ä‚¢‚é‰Â”\«‚ª‚ ‚è‚Ü‚·B</LongDescription>
     <Details>
 <![CDATA[
   <p> This is a double check found by the ByteCodePattern-based detector.
@@ -1218,8 +1239,8 @@ value. Check for errors (should it have been initialized?), or remove it if it i
   </BugPattern>
 
   <BugPattern type="RV_RETURN_VALUE_IGNORED">
-    <ShortDescription>ãƒ¡ã‚½ãƒƒãƒ‰ãŒæˆ»ã‚Šåœ°ã‚’ç„¡è¦–ã—ã¦ã„ã‚‹</ShortDescription>
-    <LongDescription>{1} ã¯ã€æˆ»ã‚Šå€¤ {2} ã‚’ç„¡è¦–ã—ã¦ã„ã‚‹</LongDescription>
+    <ShortDescription>ƒƒ\ƒbƒh‚É‚¨‚¢‚Ä–ß‚è’l‚ğ–³‹‚µ‚Ä‚¢‚Ü‚·B</ShortDescription>
+    <LongDescription>{1} ‚Í {2} ‚Ì–ß‚è’l‚ğ–³‹‚µ‚Ä‚¢‚Ü‚·B</LongDescription>
     <Details>
 <![CDATA[
    <p> The return value of this method should be checked.
@@ -1228,8 +1249,8 @@ value. Check for errors (should it have been initialized?), or remove it if it i
   </BugPattern>
 
   <BugPattern type="NP_ALWAYS_NULL">
-    <ShortDescription>Null pointer dereference in method</ShortDescription>
-    <LongDescription>Null pointer dereference in {1}</LongDescription>
+    <ShortDescription>ƒƒ\ƒbƒh“à‚Ånullƒ|ƒCƒ“ƒ^‚ğQÆŠO‚µ‚ğ‚µ‚Ä‚¢‚Ü‚·B</ShortDescription>
+    <LongDescription>{1} ‚Ì’†‚Ånullƒ|ƒCƒ“ƒ^‚ğQÆŠO‚µ‚ğ‚µ‚Ä‚¢‚Ü‚·B</LongDescription>
     <Details>
 <![CDATA[
 <p> A null pointer is dereferenced here.&nbsp; This will lead to a 
@@ -1239,8 +1260,8 @@ value. Check for errors (should it have been initialized?), or remove it if it i
   </BugPattern>
 
   <BugPattern type="NP_ALWAYS_NULL_EXCEPTION">
-    <ShortDescription>Null pointer dereference in method on exception path</ShortDescription>
-    <LongDescription>Null pointer dereference in {1} on exception path</LongDescription>
+    <ShortDescription>ƒƒ\ƒbƒh‚Ì—áŠOŒo˜H‚É‚¨‚¢‚ÄAnullƒ|ƒCƒ“ƒ^‚ÌQÆŠO‚µ‚ğ‚µ‚Ä‚¢‚Ü‚·B</ShortDescription>
+    <LongDescription>Null pointer dereference in {1} ‚Å—áŠOŒo˜H‚ÌÛ‚Énullƒ|ƒCƒ“ƒ^‚ÌQÆŠO‚µ‚ğ‚µ‚Ä‚¢‚Ü‚·B</LongDescription>
     <Details>
 <![CDATA[
 <p> A pointer which is null on an exception path is dereferenced here.&nbsp;
@@ -1254,8 +1275,8 @@ be an exception path, since the default case is often infeasible.
   </BugPattern>
 
   <BugPattern type="NP_NULL_ON_SOME_PATH">
-    <ShortDescription>Possible null pointer dereference in method</ShortDescription>
-    <LongDescription>Possible null pointer dereference in {1}</LongDescription>
+    <ShortDescription>ƒƒ\ƒbƒh“à‚Ånullƒ|ƒCƒ“ƒ^‚ÌQÆŠO‚µ‚ğ‚µ‚Ä‚¢‚é‰Â”\«‚ª‚ ‚è‚Ü‚·B</ShortDescription>
+    <LongDescription>{1} ‚Ì’†‚Ånullƒ|ƒCƒ“ƒ^‚ÌQÆŠO‚µ‚ğ‚µ‚Ä‚¢‚é‰Â”\«‚ª‚ ‚è‚Ü‚·B</LongDescription>
     <Details>
 <![CDATA[
 <p> A reference value dereferenced here might be null at runtime.&nbsp;
@@ -1265,8 +1286,8 @@ This may lead to a <code>NullPointerException</code> when the code is executed.
   </BugPattern>
 
   <BugPattern type="NP_NULL_ON_SOME_PATH_EXCEPTION">
-    <ShortDescription>Possible null pointer dereference in method on exception path</ShortDescription>
-    <LongDescription>Possible null pointer dereference in {1} on exception path</LongDescription>
+    <ShortDescription>ƒƒ\ƒbƒh“à‚Ì—áŠOŒo˜H‚É‚¨‚¢‚Änullƒ|ƒCƒ“ƒ^‚ÌQÆŠO‚µ‚ğ‚µ‚Ä‚¢‚é‰Â”\«‚ª‚ ‚è‚Ü‚·B</ShortDescription>
+    <LongDescription>{1} ‚Ì’†‚Ånullƒ|ƒCƒ“ƒ^‚ÌQÆŠO‚µ‚ğ‚µ‚Ä‚¢‚é‰Â”\«‚ª‚ ‚è‚Ü‚·B</LongDescription>
     <Details>
 <![CDATA[
 <p> A reference value which is null on some exception control path is
@@ -1281,8 +1302,8 @@ be an exception path, since the default case is often infeasible.
   </BugPattern>
 
   <BugPattern type="SI_INSTANCE_BEFORE_FINALS_ASSIGNED">
-    <ShortDescription>Static initializer for class creates instance before all static final fields assigned</ShortDescription>
-    <LongDescription>Static initializer for {0} creates instance before all static final fields assigned</LongDescription>
+    <ShortDescription>ƒNƒ‰ƒX‚Ìstatic‰Šú‰»q‚ª‘S‚Ä‚Ìstatic finalƒtƒB[ƒ‹ƒh‚ªŠ„‚è“–‚Ä‚ç‚ê‚é‘O‚ÉƒCƒ“ƒXƒ^ƒ“ƒX¶¬‚ğ‚¨‚±‚È‚Á‚Ä‚¢‚Ü‚·B</ShortDescription>
+    <LongDescription>{0} ‚Ìstatic‰Šú‰»q‚ª‘S‚Ä‚Ìstatic field‚ªŠ„‚è“–‚Ä‚ç‚ê‚é‘O‚ÉƒCƒ“ƒXƒ^ƒ“ƒX¶¬‚ğ‚¨‚±‚È‚Á‚Ä‚¢‚Ü‚·B</LongDescription>
     <Details>
 <![CDATA[
 <p> The class's static initializer creates an instance of the class
@@ -1292,8 +1313,8 @@ before all of the static final fields are assigned.
   </BugPattern>
 
   <BugPattern type="OS_OPEN_STREAM">
-    <ShortDescription>ãƒ¡ã‚½ãƒƒãƒ‰ãŒã‚¹ãƒˆãƒªãƒ¼ãƒ ã®ã‚¯ãƒ­ãƒ¼ã‚ºã«å¤±æ•—ã™ã‚‹ç–‘ã„</ShortDescription>
-    <LongDescription>{1} may fail to close stream</LongDescription>
+    <ShortDescription>ƒƒ\ƒbƒh‚ÅƒXƒgƒŠ[ƒ€‚ÌƒNƒ[ƒY‚É¸”s‚·‚é‰Â”\«‚ª‚ ‚è‚Ü‚·B</ShortDescription>
+    <LongDescription>{1} ‚ÅƒXƒgƒŠ[ƒ€‚ÌƒNƒ[ƒY‚É¸”s‚·‚é‰Â”\«‚ª‚ ‚è‚Ü‚·B</LongDescription>
     <Details>
 <![CDATA[
 <p> The method creates an IO stream object, does not assign it to any
@@ -1307,8 +1328,8 @@ closed.
   </BugPattern>
 
   <BugPattern type="OS_OPEN_STREAM_EXCEPTION_PATH">
-    <ShortDescription>ãƒ¡ã‚½ãƒƒãƒ‰ãŒä¾‹å¤–ã«ã‚ˆã£ã¦ã‚¹ãƒˆãƒªãƒ¼ãƒ ã®ã‚¯ãƒ­ãƒ¼ã‚ºã«å¤±æ•—ã™ã‚‹ç–‘ã„</ShortDescription>
-    <LongDescription>{1} may fail to close stream on exception</LongDescription>
+    <ShortDescription>ƒƒ\ƒbƒh‚ÅA—áŠO‚ª”­¶‚µ‚½Û‚ÉƒXƒgƒŠ[ƒ€‚ÌƒNƒ[ƒY‚É¸”s‚·‚é‰Â”\«‚ª‚ ‚è‚Ü‚·B</ShortDescription>
+    <LongDescription>{1} ‚ÅA—áŠO‚ª”­¶‚µ‚½Û‚ÉƒXƒgƒŠ[ƒ€‚ÌƒNƒ[ƒY‚É¸”s‚·‚é‰Â”\«‚ª‚ ‚è‚Ü‚·B</LongDescription>
     <Details>
 <![CDATA[
 <p> The method creates an IO stream object, does not assign it to any
@@ -1322,8 +1343,8 @@ closed.
   </BugPattern>
 
   <BugPattern type="PZLA_PREFER_ZERO_LENGTH_ARRAYS">
-    <ShortDescription>Consider returning a zero length array rather than null</ShortDescription>
-    <LongDescription>Should {1} return a zero length array rather than null?</LongDescription>
+    <ShortDescription>–ß‚è’l‚Æ‚µ‚Änull‚æ‚è‚Ş‚µ‚ë’·‚³0‚Ì”z—ñ‚ğ•Ô‚·‚±‚Æ‚ğŒŸ“¢‚·‚×‚«‚Å‚·B</ShortDescription>
+    <LongDescription>{1} ‚Å‚Í–ß‚è’l‚Æ‚µ‚Änull‚æ‚è‚à‚Ş‚µ‚ë’·‚³0‚Ì”z—ñ‚ğ•Ô‚·‚±‚Æ‚ğŒŸ“¢‚·‚×‚«‚Å‚Í‚ ‚è‚Ü‚¹‚ñ‚©H</LongDescription>
     <Details>
 <![CDATA[
 <p> It is generally a better design to
@@ -1334,8 +1355,8 @@ are no results. This way, no explicit check for null is needed by clients of the
   </BugPattern>
 
   <BugPattern type="UCF_USELESS_CONTROL_FLOW">
-    <ShortDescription>Useless control flow in method</ShortDescription>
-    <LongDescription>Useless control flow in {1}</LongDescription>
+    <ShortDescription>ƒƒ\ƒbƒh‚Å—˜—p‚³‚ê‚È‚¢§Œä‚Ì—¬‚ê‚ª‚ ‚è‚Ü‚·B</ShortDescription>
+    <LongDescription>{1} ‚ÉA—˜—p‚³‚ê‚È‚¢§Œä‚Ì—¬‚ê‚ª‚ ‚è‚Ü‚·B</LongDescription>
     <Details>
 <![CDATA[
 <p> This method contains a useless control flow statement.&nbsp;
@@ -1350,8 +1371,8 @@ body of an <code>if</code> statement, e.g.:
   </BugPattern>
 
   <BugPattern type="RCN_REDUNDANT_COMPARISON_TO_NULL">
-    <ShortDescription>Redundant comparison to null</ShortDescription>
-    <LongDescription>Redundant comparison to null in {1}</LongDescription>
+    <ShortDescription>null‚É‘Î‚·‚é–³‘Ê‚È”äŠr‚ª‚ ‚è‚Ü‚·B</ShortDescription>
+    <LongDescription>{1} ‚ÉAnull‚É‘Î‚·‚é–³‘Ê‚È”äŠr‚ª‚ ‚è‚Ü‚·B</LongDescription>
     <Details>
 <![CDATA[
 <p> This method contains a redundant comparison of a reference value
@@ -1370,8 +1391,8 @@ the programmer realizing that the dereferenced value could be null.
   </BugPattern>
 
   <BugPattern type="UL_UNRELEASED_LOCK">
-    <ShortDescription>Method does not release lock on all paths</ShortDescription>
-    <LongDescription>{1} does not release lock on all paths</LongDescription>
+    <ShortDescription>ƒƒ\ƒbƒh‚Å‘S‚Ä‚ÌŒo˜H‚É‚¨‚¢‚ÄƒƒbƒN‚ª‰ğ•ú‚³‚ê‚Ü‚¹‚ñB</ShortDescription>
+    <LongDescription>{1} ‚ÅA‘S‚Ä‚ÌŒo˜H‚É‚¨‚¢‚ÄƒƒbƒN‚ª‰ğ•ú‚³‚ê‚Ü‚¹‚ñB</LongDescription>
     <Details>
 <![CDATA[
 <p> This method acquires a JSR-166 (<code>java.util.concurrent</code>) lock,
@@ -1391,8 +1412,8 @@ for using a JSR-166 lock is:
   </BugPattern>
 
   <BugPattern type="UL_UNRELEASED_LOCK_EXCEPTION_PATH">
-    <ShortDescription>Method does not release lock on all exception paths</ShortDescription>
-    <LongDescription>{1} does not release lock on all exception paths</LongDescription>
+    <ShortDescription>ƒƒ\ƒbƒh‚Å‘S‚Ä‚Ì—áŠOŒo˜H‚É‚¨‚¢‚ÄƒƒbƒN‚ª‰ğ•ú‚³‚ê‚Ü‚¹‚ñB</ShortDescription>
+    <LongDescription>{1} ‚ÅA‘S‚Ä‚Ì—áŠOŒo˜H‚É‚¨‚¢‚ÄƒƒbƒN‚ª‰ğ•ú‚³‚ê‚Ü‚¹‚ñB</LongDescription>
     <Details>
 <![CDATA[
 <p> This method acquires a JSR-166 (<code>java.util.concurrent</code>) lock,
@@ -1412,8 +1433,8 @@ for using a JSR-166 lock is:
   </BugPattern>
 
   <BugPattern type="RC_REF_COMPARISON">
-    <ShortDescription>Suspicious reference comparison</ShortDescription>
-    <LongDescription>Suspicious comparison of {3} references in {1}</LongDescription>
+    <ShortDescription>‹^‚í‚µ‚¢QÆ‚Ì”äŠr‚Å‚·B</ShortDescription>
+    <LongDescription>{1} ‚ÅQÆ‚³‚ê‚Ä‚¢‚é {3} ‚Ì”äŠr‚Í‹^‚í‚µ‚¢‚Å‚·B</LongDescription>
     <Details>
 <![CDATA[
 <p> This method compares two reference values using the == or != operator,
@@ -1425,8 +1446,8 @@ not be compared by reference are java.lang.Integer, java.lang.Float, etc.
   </BugPattern>
 
   <BugPattern type="MWN_MISMATCHED_WAIT">
-    <ShortDescription>Mismatched wait()</ShortDescription>
-    <LongDescription>Mismatched wait() in {1}</LongDescription>
+    <ShortDescription>‘g‡‚¹‚ªŠÔˆá‚Á‚½ wait() ‚ª‚ ‚è‚Ü‚·B</ShortDescription>
+    <LongDescription>{1} ‚ÅAwait()‚Ì‘g‡‚¹‚ªŠÔˆá‚Á‚Ä‚¢‚Ü‚·B</LongDescription>
     <Details>
 <![CDATA[
 <p> This method calls Object.wait() without obviously holding a lock
@@ -1437,8 +1458,8 @@ an <code>IllegalMonitorStateException</code> being thrown.
   </BugPattern>
 
   <BugPattern type="MWN_MISMATCHED_NOTIFY">
-    <ShortDescription>Mismatched notify()</ShortDescription>
-    <LongDescription>Mismatched notify() in {1}</LongDescription>
+    <ShortDescription>‘g‡‚¹‚ªŠÔˆá‚Á‚½ notify() ‚ª‚ ‚è‚Ü‚·B</ShortDescription>
+    <LongDescription>{1} ‚ÅA‘g‡‚¹‚ªŠÔˆá‚Á‚½ notify() ‚ª‚ ‚è‚Ü‚·B</LongDescription>
     <Details>
 <![CDATA[
 <p> This method calls Object.notify() or Object.notifyAll() without obviously holding a lock
@@ -1449,8 +1470,8 @@ an <code>IllegalMonitorStateException</code> being thrown.
   </BugPattern>
 
   <BugPattern type="SA_LOCAL_SELF_ASSIGNMENT">
-    <ShortDescription>Self assignment of local variable</ShortDescription>
-    <LongDescription>Self assignment of local variable in {1}</LongDescription>
+    <ShortDescription>ƒ[ƒJƒ‹•Ï”‚Ì©ŒÈ‘ã“ü‚ª‚ ‚è‚Ü‚·B</ShortDescription>
+    <LongDescription>{1} ‚ÅAƒ[ƒJƒ‹•Ï”‚Ì©ŒÈ‘ã“ü‚ª‚ ‚è‚Ü‚·B</LongDescription>
     <Details>
 <![CDATA[
 <p> This method contains a self assignment of a local variable; e.g.
@@ -1466,8 +1487,8 @@ Such assignments are useless, and may indicate a logic error or typo.
   </BugPattern>
 
   <BugPattern type="SA_FIELD_SELF_ASSIGNMENT">
-    <ShortDescription>Self assignment of field</ShortDescription>
-    <LongDescription>Self assignment of field {2} in {1}</LongDescription>
+    <ShortDescription>ƒtƒB[ƒ‹ƒh‚Ì©ŒÈ‘ã“ü‚ª‚ ‚è‚Ü‚·B</ShortDescription>
+    <LongDescription>{1} ‚ÅA{2} ‚Ì©ŒÈ‘ã“ü‚ğ‚¨‚±‚È‚Á‚Ä‚¢‚Ü‚·B</LongDescription>
     <Details>
 <![CDATA[
 <p> This method contains a self assignment of a field; e.g.
@@ -1483,8 +1504,8 @@ Such assignments are useless, and may indicate a logic error or typo.
   </BugPattern>
 
   <BugPattern type="LI_LAZY_INIT_INSTANCE">
-    <ShortDescription>Incorrect lazy initalization of instance field</ShortDescription>
-    <LongDescription>Incorrect lazy initialization of instance field {2} in {1}</LongDescription>
+    <ShortDescription>ƒCƒ“ƒXƒ^ƒ“ƒXƒtƒB[ƒ‹ƒh‚Ì•s³‚È’x‰„‰Šú‰»‚ª‚¨‚±‚È‚í‚ê‚Ä‚¢‚Ü‚·B</ShortDescription>
+    <LongDescription>{1} ‚Å {2} ƒtƒB[ƒ‹ƒh‚Ì•s³‚È’x‰„‰Šú‰»‚ª‚¨‚±‚È‚í‚ê‚Ä‚¢‚Ü‚·B</LongDescription>
     <Details>
 <![CDATA[
 <p> This method contains an unsynchronized lazy initialization of a non-volatile field.
@@ -1499,8 +1520,8 @@ For more information, see the
   </BugPattern>
 
   <BugPattern type="LI_LAZY_INIT_STATIC">
-    <ShortDescription>Incorrect lazy initalization of static field</ShortDescription>
-    <LongDescription>Incorrect lazy initialization of static field {2} in {1}</LongDescription>
+    <ShortDescription>staticƒtƒB[ƒ‹ƒh‚Ì•s³‚È’x‰„‰Šú‰»‚ª‚¨‚±‚È‚í‚ê‚Ä‚¢‚Ü‚·B</ShortDescription>
+    <LongDescription>{1} ‚Å {2} staticƒtƒB[ƒ‹ƒh‚Ì•s³‚È’x‰„‰Šú‰»‚ª‚¨‚±‚È‚í‚ê‚Ä‚¢‚Ü‚·B</LongDescription>
     <Details>
 <![CDATA[
 <p> This method contains an unsynchronized lazy initialization of a non-volatile static field.
@@ -1514,59 +1535,86 @@ For more information, see the
     </Details>
   </BugPattern>
 
-<!--
+  <BugPattern type="JLM_JSR166_LOCK_MONITORENTER">
+    <ShortDescription>Synchronization performed on JSR166 Lock in method</ShortDescription>
+    <LongDescription>Synchronization performed on JSR166 Lock in method {1}</LongDescription>
+<Details>
+<![CDATA[
+<p> This method performs synchronization on an implementation of
+<code>java.util.concurrent.locks.Lock</code>.  You should use
+the <code>lock()</code> and <code>unlock()</code> methods instead.
+]]>
+</Details>
+  </BugPattern>
+
+  <BugPattern type="UPM_UNCALLED_PRIVATE_METHOD">
+    <ShortDescription>Private method is never called</ShortDescription>
+    <LongDescription>Private method {1} is never called</LongDescription>
+<Details>
+<![CDATA[
+<p> This private method is never called. Although it is
+possible that the method will be invoked through reflection,
+it is more likely that the method is never used, and should be
+removed.
+]]>
+</Details>
+  </BugPattern>
+
+  <!--
   **********************************************************************
    BugCodes
   **********************************************************************
--->
+   -->
 
-  <BugCode abbrev="FI" >finalizerã®ä½¿ã„æ–¹ãŒé–“é•ã£ã¦ã„ã‚‹</BugCode>
-  <BugCode abbrev="ES" >Checking String equality using == or !=</BugCode>
-  <BugCode abbrev="ML" >æ›´æ–°ã•ã‚Œã‚‹ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰ã§ãƒ­ãƒƒã‚¯ã—ã¦ã„ã‚‹ï¼ˆãƒ­ãƒƒã‚¯ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆãŒä¸å¤‰ã§ãªã„ï¼‰</BugCode>
-  <BugCode abbrev="UG" >getã¯synchroã—ã¦ã„ãªã„ãŒsetã¯synchroã—ã¦ã„ã‚‹</BugCode>
-  <BugCode abbrev="IC" >åˆæœŸåŒ–ãŒãƒ«ãƒ¼ãƒ—ã—ã¦ã„ã‚‹</BugCode>
-  <BugCode abbrev="SI" >Suspicious static initializer</BugCode>
-  <BugCode abbrev="IS" >synchroã®ä»•æ–¹ãŒä¸çµ±ä¸€</BugCode>
-  <BugCode abbrev="IS2" >synchroã®ä»•æ–¹ãŒä¸çµ±ä¸€</BugCode>
-  <BugCode abbrev="Eq" >Covariant equals()</BugCode>
-  <BugCode abbrev="Co" >Covariant compareTo()</BugCode>
-  <BugCode abbrev="HE" >equalï¼ˆåŒã˜ï¼‰ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆãŒåŒã˜hashCodeã‚’æŒã¤ã¹ã</BugCode>
-  <BugCode abbrev="Dm" >ç–‘ã‚ã—ã„ãƒ¡ã‚½ãƒƒãƒ‰ã‚’ä½¿ã£ã¦ã„ã‚‹</BugCode>
-  <BugCode abbrev="UR" >ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã§åˆæœŸåŒ–å‰ã«ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰ã‚’èª­ã‚“ã§ã„ã‚‹</BugCode>
-  <BugCode abbrev="RR" >InputStream.read()ã®æˆ»ã‚Šå€¤ã‚’ç„¡è¦–ã—ã¦ã„ã‚‹</BugCode>
-  <BugCode abbrev="NN" >ãƒ¡ã‚½ãƒƒãƒ‰å†…ã®è£¸ãªnotify</BugCode>
-  <BugCode abbrev="UW" >ãƒ¡ã‚½ãƒƒãƒ‰å†…ã®ç„¡æ¡ä»¶ãªwait</BugCode>
-  <BugCode abbrev="SP" >ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰ã§ã‚¹ãƒ”ãƒ³ãƒ­ãƒƒã‚¯ã—ã¦ã„ã‚‹</BugCode>
-  <BugCode abbrev="DC" >ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰ã‚’äºŒé‡ã«ãƒã‚§ãƒƒã‚¯ã—ã¦ã„ã‚‹ç–‘ã„</BugCode>
-  <BugCode abbrev="Wa" >ãƒ¡ã‚½ãƒƒãƒ‰å†…ã®waitã¯ãƒ«ãƒ¼ãƒ—ã§å¾…ã£ã¦ã„ãªã„</BugCode>
-  <BugCode abbrev="No" >ãƒ¡ã‚½ãƒƒãƒ‰å†…ã§notifyAllã®ä»£ã‚ã‚Šã«notifyã‚’ä½¿ã£ã¦ã„ã‚‹</BugCode>
-  <BugCode abbrev="DE" >ä¾‹å¤–ã‚’ç„¡è¦–ã—ã¦ã„ã‚‹ã‹è¦‹è½ã¨ã—ã¦ã„ã‚‹ã‹</BugCode>
-  <BugCode abbrev="Ru" >ãƒ¡ã‚½ãƒƒãƒ‰å†…ã§run()ã‚’ç›´æ¥èª­ã‚“ã§ã„ã‚‹</BugCode>
-  <BugCode abbrev="It" >Iteratorã®å®šç¾©ãŒãŠã‹ã—ã„</BugCode>
-  <BugCode abbrev="Se" >Serializableã‚¯ãƒ©ã‚¹ã®å®šç¾©ãŒãŠã‹ã—ã„</BugCode>
-  <BugCode abbrev="WS" >Class's writeObject() method is synchronized but nothing else is</BugCode>
-  <BugCode abbrev="RS" >Class's readObject() method is synchronized</BugCode>
-  <BugCode abbrev="SC" >ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã§Thread.start()ã‚’èª­ã‚“ã§ã„ã‚‹</BugCode>
-  <BugCode abbrev="MS" >ã‚¹ã‚¿ãƒ†ã‚£ãƒƒã‚¯ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰ãŒmutable</BugCode>
-  <BugCode abbrev="EI" >é…åˆ—ã‚’è¿”ã™ãƒ¡ã‚½ãƒƒãƒ‰ã¯å†…éƒ¨è¡¨ç¾ã‚’ã•ã‚‰ã™å¯èƒ½æ€§ãŒã‚ã‚‹</BugCode>
-  <BugCode abbrev="Nm" >ãƒ¡ã‚½ãƒƒãƒ‰åãŒç´›ã‚‰ã‚ã—ã„</BugCode>
-  <BugCode abbrev="SS" >ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰ã‚’èª­ã‚“ã§ã„ãªã„ã€‚staticã«ã™ã¹ã</BugCode>
-  <BugCode abbrev="UuF" >ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰ã‚’ä½¿ã£ã¦ã„ãªã„</BugCode>
-  <BugCode abbrev="UrF" >ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰ã‚’ï¼ˆã‚¯ãƒ©ã‚¹å´ã§ï¼‰èª­ã‚“ã§ã„ãªã„</BugCode>
-  <BugCode abbrev="UwF" >æ›¸ãè¾¼ã¿ã•ã‚Œãªã„ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰</BugCode>
-  <BugCode abbrev="SIC" >staticãªå†…éƒ¨ã‚¯ãƒ©ã‚¹ã§ã¯ãªã„ã‹</BugCode>
-  <BugCode abbrev="2LW" >äºŒã¤ã®ãƒ­ãƒƒã‚¯ã‚’æŒã£ãŸã¾ã¾waitã—ã¦ã„ã‚‹</BugCode>
-  <BugCode abbrev="BcpDC">ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰ã‚’äºŒé‡ã«ãƒã‚§ãƒƒã‚¯ã—ã¦ã„ã‚‹ç–‘ã„</BugCode>
-  <BugCode abbrev="RV" >ãƒ¡ã‚½ãƒƒãƒ‰ã®æˆ»ã‚Šå€¤ãŒç„¡è¦–ã•ã‚Œã¦ã„ã‚‹</BugCode>
-  <BugCode abbrev="NP" >Null pointer dereference</BugCode>
-  <BugCode abbrev="OS">ã‚¹ãƒˆãƒªãƒ¼ãƒ ãŒé–‰ã˜ã‚‰ã‚Œãªã„ãƒ‘ã‚¹ãŒã‚ã‚‹</BugCode>
-  <BugCode abbrev="PZLA" >Prefer zero length arrays to null to indicate no results</BugCode>
-  <BugCode abbrev="UCF">Useless control flow</BugCode>
-  <BugCode abbrev="RCN">Redundant comparison to null</BugCode>
-  <BugCode abbrev="UL">Lock not released on all paths</BugCode>
-  <BugCode abbrev="RC">Suspicious reference comparison</BugCode>
-  <BugCode abbrev="MWN">Mismatched wait() or notify()</BugCode>
-  <BugCode abbrev="SA">Useless self-assignment</BugCode>
-  <BugCode abbrev="LI">Unsynchronized Lazy Initialization</BugCode>
+  <BugCode abbrev="FI" >ƒtƒ@ƒCƒiƒ‰ƒCƒU‚Ìg—p•û–@‚ªŠÔˆá‚Á‚Ä‚¢‚Ü‚·B</BugCode>
+  <BugCode abbrev="ES" >•¶š—ñ‚Ìˆê’v‚ğ == ‚â != ‚ğg‚Á‚Ä”äŠr‚µ‚Ä‚¢‚Ü‚·</BugCode>
+  <BugCode abbrev="ML" >XV‚³‚ê‚éƒtƒB[ƒ‹ƒh‚Å“¯Šú‚ğæ‚ë‚¤‚Æ‚µ‚Ä‚¢‚Ü‚·B(ƒ~ƒ…[ƒ^ƒuƒ‹ƒƒbƒN)</BugCode>
+  <BugCode abbrev="UG" >“¯Šú‰»(synchronized)‚³‚ê‚Ä‚¢‚È‚¢getƒƒ\ƒbƒh‚ÅA“¯Šú‰»‚³‚ê‚Ä‚¢‚ésetƒƒ\ƒbƒh‚Å‚·B</BugCode>
+  <BugCode abbrev="IC" >‰Šú‰»‚ªƒ‹[ƒv‚µ‚Ä‚¢‚Ü‚·B</BugCode>
+  <BugCode abbrev="SI" >ƒXƒ^ƒeƒBƒbƒN‰Šú‰»ˆ—‚ª‹^‚í‚µ‚¢‚Å‚·B</BugCode>
+  <BugCode abbrev="IS" >“¯Šú‚Ìd•û‚ÉˆêŠÑ«‚ª‚ ‚è‚Ü‚¹‚ñB</BugCode>
+  <BugCode abbrev="IS2" >“¯Šú‚Ìd•û‚ÉˆêŠÑ«‚ª‚ ‚è‚Ü‚¹‚ñB</BugCode>
+  <BugCode abbrev="Eq" >‹¤•Ï‚Èequals()‚Å‚·B</BugCode>
+  <BugCode abbrev="Co" >‹¤•Ï‚ÈcompareTo()‚Å‚·B</BugCode>
+  <BugCode abbrev="HE" >“¯‚¶(equal)ƒIƒuƒWƒFƒNƒg‚Í“¯‚¶ƒnƒbƒVƒ…’l‚ğ‚Â‚×‚«‚Å‚·B</BugCode>
+  <BugCode abbrev="Dm" >‹^‚í‚µ‚¢ƒƒ\ƒbƒh‚ğg‚Á‚Ä‚¢‚Ü‚·B</BugCode>
+  <BugCode abbrev="UR" >ƒRƒ“ƒXƒgƒ‰ƒNƒ^‚Å‰Šú‰»‚Ì‘O‚ÉƒtƒB[ƒ‹ƒh‚Ì’l‚ğ“Ç‚ñ‚Å‚¢‚Ü‚·B</BugCode>
+  <BugCode abbrev="RR" >ƒƒ\ƒbƒh‚ÅInputStream.read()‚Ì–ß‚è’l‚ğ–³‹‚µ‚Ä‚¢‚Ü‚·B</BugCode>
+  <BugCode abbrev="NN" >ƒƒ\ƒbƒh“à‚É—‡‚Ìnotify‚ª‚ ‚è‚Ü‚·B</BugCode>
+  <BugCode abbrev="UW" >ƒƒ\ƒbƒh“à‚É–³ğŒ‚Ìwait‚ª‚ ‚è‚Ü‚·B</BugCode>
+  <BugCode abbrev="SP" >ƒƒ\ƒbƒh‚ÅƒtƒB[ƒ‹ƒh‚ÌƒXƒsƒ“ƒƒbƒN‚ğ‚µ‚Ä‚¢‚Ü‚·B</BugCode>
+  <BugCode abbrev="DC" >ƒtƒB[ƒ‹ƒh‚ğƒ_ƒuƒ‹ƒ`ƒFƒbƒN‚µ‚Ä‚¢‚é‰Â”\«‚ª‚ ‚è‚Ü‚·B</BugCode>
+  <BugCode abbrev="Wa" >ƒƒ\ƒbƒh“à‚Ìwait‚ªƒ‹[ƒv“à‚É‚ ‚è‚Ü‚¹‚ñB</BugCode>
+  <BugCode abbrev="No" >ƒƒ\ƒbƒh“à‚Å notifyAll() ‚Å‚Í‚È‚­ notify() ‚ğg‚Á‚Ä‚¢‚Ü‚·B</BugCode>
+  <BugCode abbrev="DE" >—áŠO‚ğŒ©—‚Æ‚µ‚Ä‚¢‚éA‚Ü‚½‚Í–³‹‚µ‚Ä‚¢‚Ü‚·B</BugCode>
+  <BugCode abbrev="Ru" >ƒƒ\ƒbƒh‚Å run() ‚ğ’¼ÚÀs‚µ‚Ä‚¢‚Ü‚·B</BugCode>
+  <BugCode abbrev="It" >iterator‚ÌéŒ¾‚ª•s³‚Å‚·B</BugCode>
+  <BugCode abbrev="Se" >’¼—ñ‰»(Serializable)ƒNƒ‰ƒX‚ÌéŒ¾‚ª•s³‚Å‚·B</BugCode>
+  <BugCode abbrev="WS" >ƒNƒ‰ƒX‚ÌwriteObject()ƒƒ\ƒbƒh‚Í“¯Šú‰»(sunchronized)‚³‚ê‚Ä‚¢‚Ü‚·‚ªA‚»‚êˆÈŠO‚Ìƒƒ\ƒbƒh‚Í“KØ‚ÉéŒ¾‚³‚ê‚Ä‚¢‚Ü‚¹‚ñB</BugCode>
+  <BugCode abbrev="RS" >ƒNƒ‰ƒX‚Ì readObject()ƒƒ\ƒbƒh‚ª“¯Šú‰»(synchronized)‚³‚ê‚Ä‚¢‚Ü‚·B</BugCode>
+  <BugCode abbrev="SC" >ƒRƒ“ƒXƒgƒ‰ƒNƒ^‚ª Thread.start() ‚ğŒÄ‚ñ‚Å‚¢‚Ü‚·B</BugCode>
+  <BugCode abbrev="MS" >ƒXƒ^ƒeƒBƒbƒNƒtƒB[ƒ‹ƒh‚ªƒ~ƒ…[ƒ^ƒuƒ‹(mutable)‚Å‚·B</BugCode>
+  <BugCode abbrev="EI" >”z—ñ‚ğ•Ô‚·ƒƒ\ƒbƒh‚Í “à•”•\Œ»‚ğ–\˜I‚µ‚Ä‚µ‚Ü‚¤‰Â”\«‚ª‚ ‚è‚Ü‚·B</BugCode>
+  <BugCode abbrev="Nm" >ƒƒ\ƒbƒh–¼‚ª‚Ü‚¬‚ç‚í‚µ‚¢‚Å‚·B</BugCode>
+  <BugCode abbrev="SS" >“Ç‚Ü‚ê‚È‚¢ƒtƒB[ƒ‹ƒh‚ª‚ ‚è‚Ü‚·B‚±‚ê‚ÍƒXƒ^ƒeƒBƒbƒN‚É‚È‚é‚×‚«‚Å‚Í‚È‚¢‚Ì‚Å‚·‚©H</BugCode>
+  <BugCode abbrev="UuF" >—˜—p‚³‚ê‚Ä‚¢‚È‚¢ƒtƒB[ƒ‹ƒh‚ª‚ ‚è‚Ü‚·B</BugCode>
+  <BugCode abbrev="UrF" >“Ç‚Ü‚ê‚È‚¢ƒtƒB[ƒ‹ƒh‚ª‚ ‚è‚Ü‚·B</BugCode>
+  <BugCode abbrev="UwF" >‘‚©‚ê‚È‚¢ƒtƒB[ƒ‹ƒh‚ª‚ ‚è‚Ü‚·B</BugCode>
+  <BugCode abbrev="SIC" >ƒXƒ^ƒeƒBƒbƒN‚È“à•”ƒNƒ‰ƒX‚É‚È‚é‚×‚«‚Å‚Í–³‚¢‚Ì‚Å‚·‚©H</BugCode>
+  <BugCode abbrev="2LW" >‚Q‚Â‚ÌƒƒbƒN‚ğ‚Á‚½‚Ü‚Üwait‚µ‚Ä‚¢‚Ü‚·B</BugCode>
+  <BugCode abbrev="BcpDC">ƒtƒB[ƒ‹ƒh‚Ìƒ_ƒuƒ‹ƒ`ƒFƒbƒN‚ğ‚µ‚Ä‚¢‚é‰Â”\«‚ª‚ ‚è‚Ü‚·B</BugCode>
+  <BugCode abbrev="RV" >ƒƒ\ƒbƒh‚Ìreturn’l‚ª–³‹‚³‚ê‚Ä‚¢‚Ü‚·B</BugCode>
+  <BugCode abbrev="NP" >nullƒ|ƒCƒ“ƒ^‚ğQÆŠO‚µ‚µ‚Ä‚¢‚Ü‚·B</BugCode>
+  <BugCode abbrev="OS">‘S‚Ä‚ÌƒpƒX‚É‚¨‚¢‚ÄAƒXƒgƒŠ[ƒ€‚ªƒNƒ[ƒY‚³‚ê‚Ä‚¢‚Ü‚¹‚ñB</BugCode>
+  <BugCode abbrev="PZLA" >Œ‹‰Ê–³‚µ‚ğw‚µ¦‚·‚½‚ß‚É‚ÍAnull‚æ‚è‚à‚Ş‚µ‚ë0‚Ì’·‚³‚Ì”z—ñ‚ğ—˜—p‚µ‚½•û‚ª—Ç‚¢‚Å‚·B</BugCode>
+  <BugCode abbrev="UCF">–³‘Ê‚È§Œä‚Ì—¬‚ê‚ª‚ ‚è‚Ü‚·B</BugCode>
+  <BugCode abbrev="RCN">null‚É‘Î‚·‚éç’·‚È”äŠr‚ª‚ ‚è‚Ü‚·B</BugCode>
+  <BugCode abbrev="UL">‘S‚Ä‚ÌŒo˜H‚É‚¨‚¢‚ÄƒƒbƒN‚ª‰ğ•ú‚³‚ê‚Ä‚¢‚Ü‚¹‚ñB</BugCode>
+  <BugCode abbrev="RC">‹^‚í‚µ‚¢”äŠr‰‰Zq‚ÌQÆ‚ª‚ ‚è‚Ü‚·B</BugCode>
+  <BugCode abbrev="MWN">wait() ‚© notify()‚Ì‘g‚İ‡‚¹‚ªŠÔˆá‚Á‚Ä‚¢‚Ü‚·B</BugCode>
+  <BugCode abbrev="SA">–³‘Ê‚È©ŒÈ‘ã“ü‚Å‚·B</BugCode>
+  <BugCode abbrev="LI">“¯Šú‰»(synchronized)‚³‚ê‚Ä‚¢‚È‚¢’x‰„‰Šú‰»‚Å‚·B</BugCode>
+  <BugCode abbrev="JLM">Synchronization on JSR166 Lock</BugCode>
+  <BugCode abbrev="UPM">Private method is never called</BugCode>
 
 </MessageCollection>
