@@ -220,10 +220,18 @@ public class DroppedException extends PreorderVisitor implements Detector, Const
   private static final int OPEN_BRACE = 4;
 
   /**
+   * Maximum number of lines we look backwards to find the
+   * "catch" keyword.  Looking backwards is necessary
+   * when the indentation style puts the open brace on
+   * a different line from the catch clause.
+   */
+  private static final int NUM_CONTEXT_LINES = 3;
+
+  /**
    * The number of lines that we'll scan to look at the source
    * for a catch block.
    */
-  private static final int MAX_LINES = 2;
+  private static final int MAX_LINES = 5;
 
   /**
    * Analyze a class's source code to see if there is a comment
@@ -241,65 +249,116 @@ public class DroppedException extends PreorderVisitor implements Detector, Const
     try {
 	SourceFile sourceFile = sourceFinder.findSourceFile(srcLine.getPackageName(), srcLine.getSourceFile());
 	int startLine = srcLine.getStartLine();
-	int offset = sourceFile.getLineOffset(startLine - 1);
-	if (offset >= 0) {
-	    InputStreamReader reader = new InputStreamReader(sourceFile.getInputStreamFromOffset(offset));
-	    Tokenizer tokenizer = new Tokenizer(reader);
 
-	    boolean done = false;
-	    int numLines = 0;
-	    int state = START;
-	    int level = 0;
-	    do {
-		Token token = tokenizer.next();
-		int type = token.getKind();
-		String value = token.getLexeme();
+	int scanStartLine = startLine - NUM_CONTEXT_LINES;
+	if (scanStartLine < 1)
+	    scanStartLine = 1;
 
-		switch (type) {
-		case Token.EOL:
-		    if (DEBUG) System.out.println("Saw token: [EOL]");
-		    ++numLines;
-		    if (numLines >= MAX_LINES)
-			done = true;
-		    break;
-		case Token.EOF:
-		    if (DEBUG) System.out.println("Saw token: [EOF]");
+	int offset = sourceFile.getLineOffset(scanStartLine - 1);
+	if (offset < 0)
+	    return false; // Source file has changed?
+	Tokenizer tokenizer = new Tokenizer(new InputStreamReader(sourceFile.getInputStreamFromOffset(offset)));
+
+	// Read the tokens into an ArrayList,
+	// keeping track of where the catch block is reported
+	// to start
+	ArrayList<Token> tokenList = new ArrayList<Token>(40);
+	int eolOfCatchBlockStart = -1;
+	for (int line = scanStartLine; line < scanStartLine + MAX_LINES; ) {
+	    Token token = tokenizer.next();
+	    int kind = token.getKind();
+	    if (kind == Token.EOF)
+		break;
+
+	    if (kind == Token.EOL) {
+		if (line == startLine)
+		    eolOfCatchBlockStart = tokenList.size();
+		++line;
+	    }
+
+	    tokenList.add(token);
+	}
+
+	if (eolOfCatchBlockStart < 0)
+	    return false; // Couldn't scan line reported as start of catch block
+
+	// Starting at the end of the line reported as the start of the catch block,
+	// scan backwards for the token "catch".
+	ListIterator<Token> iter = tokenList.listIterator(eolOfCatchBlockStart);
+	boolean foundCatch = false;
+
+	while (iter.hasPrevious()) {
+	    Token token = iter.previous();
+	    if (token.getKind() == Token.WORD && token.getLexeme().equals("catch")) {
+		foundCatch = true;
+		break;
+	    }
+	}
+
+	if (!foundCatch)
+	    return false; // Couldn't find "catch" keyword
+
+	// Scan forward from the "catch" keyword to see what text
+	// is in the handler block.  If the block is non-empty,
+	// then we suppress the warning (on the theory that the
+	// programmer has indicated that there is a good reason
+	// that the exception is ignored).
+	boolean done = false;
+	int numLines = 0;
+	int state = START;
+	int level = 0;
+	do {
+	    if (!iter.hasNext())
+		break;
+
+	    Token token = iter.next();
+	    int type = token.getKind();
+	    String value = token.getLexeme();
+
+	    switch (type) {
+	    case Token.EOL:
+		if (DEBUG) System.out.println("Saw token: [EOL]");
+		++numLines;
+		if (numLines >= MAX_LINES)
 		    done = true;
+		break;
+	    case Token.EOF:
+		if (DEBUG) System.out.println("Saw token: [EOF]");
+		done = true;
+		break;
+	    default:
+		if (DEBUG) System.out.println("Got token: " + value);
+		switch (state) {
+		case START:
+		    if (value.equals("catch"))
+			state = CATCH;
 		    break;
-		default:
-		    if (DEBUG) System.out.println("Got token: " + value);
-		    switch (state) {
-		    case START:
-			if (value.equals("catch"))
-			    state = CATCH;
-			break;
-		    case CATCH:
-			if (value.equals("("))
-			    state = OPEN_PAREN;
-			break;
-		    case OPEN_PAREN:
-			if (value.equals(")")) {
-			    if (level == 0)
-				state = CLOSE_PAREN;
-			    else
-				--level;
-			} else if (value.equals("(")) {
-			    ++level;
-			}
-			break;
-		    case CLOSE_PAREN:
-			if (value.equals("{"))
-			    state = OPEN_BRACE;
-			break;
-		    case OPEN_BRACE:
-			boolean closeBrace = value.equals("}");
-			if (DEBUG && !closeBrace) System.out.println("Found a comment in catch block: " + value);
-			return !closeBrace;
+		case CATCH:
+		    if (value.equals("("))
+			state = OPEN_PAREN;
+		    break;
+		case OPEN_PAREN:
+		    if (value.equals(")")) {
+			if (level == 0)
+		    	state = CLOSE_PAREN;
+			else
+		    	--level;
+		    } else if (value.equals("(")) {
+			++level;
 		    }
 		    break;
+		case CLOSE_PAREN:
+		    if (value.equals("{"))
+			state = OPEN_BRACE;
+		    break;
+		case OPEN_BRACE:
+		    boolean closeBrace = value.equals("}");
+		    if (DEBUG && !closeBrace) System.out.println("Found a comment in catch block: " + value);
+		    return !closeBrace;
 		}
-	    } while (!done);
-	}
+		break;
+	    }
+	} while (!done);
     } catch (IOException e) {
 	// Ignored; we'll just assume there is no comment
 	if (DEBUG) e.printStackTrace();
