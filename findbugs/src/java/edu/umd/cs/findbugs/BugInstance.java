@@ -38,6 +38,7 @@ public class BugInstance implements Comparable {
 	private ArrayList<BugAnnotation> annotationList;
 	private ClassAnnotation primaryClassAnnotation;
 	private MethodAnnotation primaryMethodAnnotation;
+	private int cachedHashCode;
 
 	/**
 	 * Constructor.
@@ -50,6 +51,7 @@ public class BugInstance implements Comparable {
 		this.count = count;
 		annotationList = new ArrayList<BugAnnotation>();
 		primaryClassAnnotation = null;
+		cachedHashCode = 0;
 	}
 
 	/** Get the bug type. */
@@ -282,18 +284,35 @@ public class BugInstance implements Comparable {
 	}
 
 	public int hashCode() {
-		int hashcode = type.hashCode() + priority;
-		Iterator<BugAnnotation> i = annotationIterator();
-		while (i.hasNext())
-			hashcode += i.next().hashCode();
-		return hashcode;
+		if (cachedHashCode == 0) {
+			int hashcode = type.hashCode() + priority;
+			Iterator<BugAnnotation> i = annotationIterator();
+			while (i.hasNext())
+				hashcode += i.next().hashCode();
+
+			cachedHashCode = hashcode;
+		}
+
+		return cachedHashCode;
 	}
 
 	public boolean equals(Object o) {
 		if (!(o instanceof BugInstance))
 			return false;
 		BugInstance other = (BugInstance) o;
-		return type.equals(other.type) && priority == other.priority && annotationList.equals(other.annotationList);
+		if (!type.equals(other.type) || priority != other.priority)
+			return false;
+		if (annotationList.size() != other.annotationList.size())
+			return false;
+		int numAnnotations = annotationList.size();
+		for (int i = 0; i < numAnnotations; ++i) {
+			BugAnnotation lhs = annotationList.get(i);
+			BugAnnotation rhs = other.annotationList.get(i);
+			if (!lhs.equals(rhs))
+				return false;
+		}
+
+		return true;
 	}
 
 	public int compareTo(Object o) {
