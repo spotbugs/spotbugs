@@ -9,6 +9,7 @@ import edu.umd.cs.pugh.visitclass.DismantleBytecode;
 import edu.umd.cs.pugh.visitclass.Constants2;
 
 public class FindFinalizeInvocations extends BytecodeScanningDetector implements   Constants2 {
+    private static final boolean DEBUG = Boolean.getBoolean("ffi.debug");
 
    private BugReporter bugReporter;
 
@@ -18,6 +19,7 @@ public class FindFinalizeInvocations extends BytecodeScanningDetector implements
 
    boolean sawSuperFinalize;
    public void visit(Method obj) {
+		if (DEBUG) System.out.println("FFI: visiting " + betterMethodName);
 		if (methodName.equals("finalize") 
 			&& methodSig.equals("()V")
 			&& (obj.getAccessFlags() & (ACC_PUBLIC )) != 0
@@ -37,7 +39,7 @@ public class FindFinalizeInvocations extends BytecodeScanningDetector implements
 			else
 				bugReporter.reportBug(new BugInstance("FI_NULLIFY_SUPER", NORMAL_PRIORITY)
 					.addClassAndMethod(this)
-					.addCalledMethod(this));
+					.addClass(superclassName));
 			}
 		    else if (obj.getCode().length == 5 && sawSuperFinalize) 
 			bugReporter.reportBug(new BugInstance("FI_USELESS", NORMAL_PRIORITY).addClassAndMethod(this));
