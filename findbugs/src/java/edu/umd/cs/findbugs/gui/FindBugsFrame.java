@@ -1964,14 +1964,25 @@ public class FindBugsFrame extends javax.swing.JFrame {
                 try {
                     int startLine = srcLine.getStartLine() - 1;
                     int endLine = srcLine.getEndLine();
+
+		    // Compute number of rows visible.
+		    // What a colossal pain in the ass this is.
+		    // You'd think there would be a convenient method to
+		    // return this information, but no.
+		    JViewport viewport = sourceTextAreaScrollPane.getViewport();
+		    Rectangle viewportRect = viewport.getViewRect();
+		    int height = sourceTextArea.getHeight();
+		    int topRow = sourceTextArea.getLineOfOffset(sourceTextArea.viewToModel(viewportRect.getLocation()));
+		    int bottomRow = sourceTextArea.getLineOfOffset(
+			sourceTextArea.viewToModel(new Point(viewportRect.x, (viewportRect.y + viewportRect.height) - 1)));
+		    int numRowsVisible = bottomRow - topRow;
                     
-                    // Scroll the window so the annotation text will be SELECTION_VOFFSET
-                    // lines from the top.
-                    int viewLine = Math.max(startLine - SELECTION_VOFFSET, 0);
+                    // Scroll the window so the beginning of the
+		    // annotation text will be (approximately) centered.
+                    int viewLine = Math.max(startLine - (numRowsVisible / 2), 0);
                     int viewBegin = sourceTextArea.getLineStartOffset(viewLine);
-                    //sourceTextArea.scrollRectToVisible(sourceTextArea.modelToView(viewBegin));
                     Rectangle viewRect = sourceTextArea.modelToView(viewBegin);
-                    sourceTextAreaScrollPane.getViewport().setViewPosition(new Point(viewRect.x, viewRect.y));
+                    viewport.setViewPosition(new Point(viewRect.x, viewRect.y));
                     
                     // Select (and highlight) the annotation.
                     int selBegin = sourceTextArea.getLineStartOffset(startLine);
