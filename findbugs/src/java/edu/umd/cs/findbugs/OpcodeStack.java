@@ -778,6 +778,9 @@ public class OpcodeStack implements Constants2
 	 				throw new UnsupportedOperationException("OpCode not supported yet" );
 	 		}
 	 	}
+		catch (RuntimeException e) {
+			throw e;
+		}
 	 	catch (Exception e) {
 	 		//If an error occurs, we clear the stack and locals. one of two things will occur. 
 	 		//Either the client will expect more stack items than really exist, and so they're condition check will fail, 
