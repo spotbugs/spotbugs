@@ -19,8 +19,23 @@
 
 package edu.umd.cs.findbugs.graph;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 
+/**
+ * A simple Graph implementation where the vertex objects
+ * store a list of incoming and outgoing edges.
+ * The edge link fields are stored in the edge objects,
+ * which means a fairly low space overhead.
+ *
+ * <p> The abstract allocateEdge() method must be implemented.
+ *
+ * @see Graph
+ * @see AbstractEdge
+ * @see AbstractVertex
+ * @author David Hovemeyer
+ */
 public abstract class AbstractGraph
         <
         EdgeType extends AbstractEdge<EdgeType, VertexType>,
