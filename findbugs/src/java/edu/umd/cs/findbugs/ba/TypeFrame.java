@@ -45,6 +45,7 @@ public class TypeFrame extends Frame<Type> implements Constants, ExtendedTypes {
 		public Top() {
 			super(T_TOP, "<top>");
 		}
+		public int hashCode() { return System.identityHashCode(this); }
 		public boolean equals(Object o) { return o == this; }
 	}
 
@@ -59,6 +60,7 @@ public class TypeFrame extends Frame<Type> implements Constants, ExtendedTypes {
 		public Bottom() {
 			super(T_BOTTOM, "<bottom>");
 		}
+		public int hashCode() { return System.identityHashCode(this); }
 		public boolean equals(Object o) { return o == this; }
 	}
 
@@ -78,6 +80,7 @@ public class TypeFrame extends Frame<Type> implements Constants, ExtendedTypes {
 		public LongExtra() {
 			super(T_LONG_EXTRA, "<long extra>");
 		}
+		public int hashCode() { return System.identityHashCode(this); }
 		public boolean equals(Object o) { return o == this; }
 	}
 
@@ -97,6 +100,7 @@ public class TypeFrame extends Frame<Type> implements Constants, ExtendedTypes {
 		public DoubleExtra() {
 			super(T_DOUBLE_EXTRA, "<double extra>");
 		}
+		public int hashCode() { return System.identityHashCode(this); }
 		public boolean equals(Object o) { return o == this; }
 	}
 
@@ -117,6 +121,7 @@ public class TypeFrame extends Frame<Type> implements Constants, ExtendedTypes {
 		public Null() {
 			super(T_NULL, "<null type>");
 		}
+		public int hashCode() { return System.identityHashCode(this); }
 		public boolean equals(Object o) { return o == this; }
 	}
 
