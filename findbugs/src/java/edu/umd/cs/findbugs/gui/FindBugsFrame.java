@@ -2082,6 +2082,9 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	    }
         
         }
+
+	// Load plugins!
+	DetectorFactoryCollection.instance();
         
         FindBugsFrame frame = new FindBugsFrame();
         frame.setSize(800, 600);
