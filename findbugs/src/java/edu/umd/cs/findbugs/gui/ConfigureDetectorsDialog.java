@@ -235,9 +235,11 @@ public class ConfigureDetectorsDialog extends javax.swing.JDialog {
 	private void okButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_okButtonActionPerformed
 		// Update new enabled/disabled status for the Detectors
 		int num = factoryList.size();
+		TableSorter sorter = (TableSorter) detectorTable.getModel();
+		TableModel model = sorter.getTableModel();
 		for (int i = 0; i < num; ++i) {
 			DetectorFactory factory = factoryList.get(i);
-			Boolean enabled = (Boolean) detectorTable.getValueAt(i, ENABLED_COLUMN);
+			Boolean enabled = (Boolean) model.getValueAt(i, ENABLED_COLUMN);
 			factory.setEnabled(enabled.booleanValue());
 		}
 		closeDialog();
