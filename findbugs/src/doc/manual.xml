@@ -1657,7 +1657,8 @@ summaries.</para>
 <para>David Li contributed the Emacs bug report format.</para>
 
 <para>Peter D. Stout contributed recursive detection of Class-Path
-attributes in analyzed Jar files, and other fixes.</para>
+attributes in analyzed Jar files, German translations of
+text used in the Swing GUI, and other fixes.</para>
 
 <para>Peter Friese wrote the &FindBugs; Eclipse plugin.</para>
 
@@ -1691,6 +1692,18 @@ FindBugs Ant task.</para>
 
 <para>Garvin LeClaire contributed support for output in
 Xdocs format, for use by Maven.</para>
+
+<para>Holger Stenzhorn contributed improved German translations of items
+in the Swing GUI.</para>
+
+<para>Juha Knuutila contributed Finnish translations of items
+in the Swing GUI.</para>
+
+<para>Tanel Lebedev contributed Estonian translations of items
+in the Swing GUI.</para>
+
+<para>Hanai Shisei contributed full Japanese translations of
+bug messages, and text used in the Swing GUI.</para>
 
 <para>If you have contributed to &FindBugs;, but aren't mentioned above,
 please send email to <email>daveho@cs.umd.edu</email> (and also accept
