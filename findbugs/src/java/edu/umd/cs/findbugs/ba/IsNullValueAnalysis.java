@@ -145,10 +145,11 @@ public class IsNullValueAnalysis extends ForwardDataflowAnalysis<IsNullValueFram
 					fact = replaceValues(fact, numSlots - numSlotsConsumed, destBlock, IsNullValue.nonNullValue());
 				}
 				break;
-			default:
+			case NO_INFO:
 				break;
+			default:
+				assert false;
 			}
-
 		}
 
 		// Normal dataflow merge
@@ -246,6 +247,32 @@ public class IsNullValueAnalysis extends ForwardDataflowAnalysis<IsNullValueFram
 		if (first == null)
 			return null;
 		return vnaDataflow.getFactAtLocation(new Location(first, block));
+	}
+
+	/**
+	 * Test driver.
+	 */
+	public static void main(String[] argv) throws Exception {
+		if (argv.length != 1) {
+			System.err.println("Usage: " + IsNullValueAnalysis.class.getName() + " <class file>");
+			System.exit(1);
+		}
+
+		DataflowTestDriver<IsNullValueFrame> driver = new DataflowTestDriver<IsNullValueFrame>() {
+			public AbstractDataflowAnalysis<IsNullValueFrame> createAnalysis(MethodGen methodGen, CFG cfg)
+				throws DataflowAnalysisException {
+
+				// Create the ValueNumberAnalysis
+				ValueNumberAnalysis vna = new ValueNumberAnalysis(methodGen);
+				ValueNumberDataflow vnaDataflow = new ValueNumberDataflow(cfg, vna);
+				vnaDataflow.execute();
+
+				IsNullValueAnalysis analysis = new IsNullValueAnalysis(methodGen, cfg, vnaDataflow);
+				return analysis;
+			}
+		};
+
+		driver.execute(argv[0]);
 	}
 
 }
