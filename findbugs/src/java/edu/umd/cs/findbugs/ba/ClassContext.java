@@ -222,7 +222,7 @@ public class ClassContext {
 				// Create a callback to put the opcodes of the method's
 				// bytecode instructions into the BitSet.
 				BytecodeScanner.Callback callback = new BytecodeScanner.Callback() {
-					public void handleInstruction(int opcode) {
+					public void handleInstruction(int opcode, int index) {
 						result.set(opcode, true);
 					}
 				};

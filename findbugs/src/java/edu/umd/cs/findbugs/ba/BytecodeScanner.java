@@ -35,10 +35,10 @@ public class BytecodeScanner implements org.apache.bcel.Constants {
 	public interface Callback {
 		/**
 		 * Called to indicate that a particular bytecode has been scanned.
-		 * FIXME: maybe should pass the other bytes of the instruction.
 		 * @param opcode the opcode of the instruction
+	 	 * @param index the bytecode offset of the instruction
 		 */
-		public void handleInstruction(int opcode);
+		public void handleInstruction(int opcode, int index);
 	}
 
 	/**
@@ -82,7 +82,7 @@ public class BytecodeScanner implements org.apache.bcel.Constants {
 
 		for (int index = 0; index < instructionList.length; ) {
 			short opcode = unsignedValueOf(instructionList[index]);
-			callback.handleInstruction(opcode);
+			callback.handleInstruction(opcode, index);
 
 			if (DEBUG) System.out.println(index + ": " + OPCODE_NAMES[opcode]);
 
