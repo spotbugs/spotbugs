@@ -20,7 +20,7 @@
 package edu.umd.cs.daveho.ba;
 
 public class ValueNumberDataflow extends Dataflow<ValueNumberFrame> {
-	private ValueNumberAnalysis analysis;
+	private final ValueNumberAnalysis analysis;
 
 	public ValueNumberDataflow(CFG cfg, ValueNumberAnalysis analysis) {
 		super(cfg, analysis);
