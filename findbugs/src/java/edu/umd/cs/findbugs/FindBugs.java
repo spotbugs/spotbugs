@@ -37,7 +37,7 @@ import org.apache.bcel.util.SyntheticRepository;
  * @author Bill Pugh
  * @author David Hovemeyer
  */
-public class FindBugs implements Constants2
+public class FindBugs implements Constants2, ExitCodes
 {
   /* ----------------------------------------------------------------------
    * Helper classes
@@ -160,18 +160,28 @@ public class FindBugs implements Constants2
 	}
   }
 
+  /**
+   * A delegating bug reporter which counts reported bug instances,
+   * missing classes, and serious analysis errors.
+   */
   private static class ErrorCountingBugReporter extends DelegatingBugReporter {
 	private int bugCount;
+	private int missingClassCount;
 	private int errorCount;
 
 	public ErrorCountingBugReporter(BugReporter realBugReporter) {
 		super(realBugReporter);
 		this.bugCount = 0;
+		this.missingClassCount = 0;
 		this.errorCount = 0;
 	}
 
 	public int getBugCount() {
 		return bugCount;
+	}
+
+	public int getMissingClassCount() {
+		return missingClassCount;
 	}
 
 	public int getErrorCount() {
@@ -189,7 +199,7 @@ public class FindBugs implements Constants2
 	}
 
 	public void reportMissingClass(ClassNotFoundException ex) {
-		++errorCount;
+		++missingClassCount;
 		super.reportMissingClass(ex);
 	}
   }
@@ -323,6 +333,13 @@ public class FindBugs implements Constants2
    */
   public int getErrorCount() {
 	return bugReporter.getErrorCount();
+  }
+
+  /**
+   * Get the number of time missing classes were reported during analysis.
+   */
+  public int getMissingClassCount() {
+	return bugReporter.getMissingClassCount();
   }
 
   /**
@@ -510,6 +527,7 @@ public class FindBugs implements Constants2
 	boolean quiet = false;
 	String filterFile = null;
 	boolean include = false;
+	boolean setExitCode = false;
 
 	// Process command line options
 	int argCount = 0;
@@ -586,6 +604,8 @@ public class FindBugs implements Constants2
 
 			project = new Project(projectFile);
 			project.read(new BufferedInputStream(new FileInputStream(projectFile)));
+		} else if (option.equals("-exitcode")) {
+			setExitCode = true;
 		} else
 			throw new IllegalArgumentException("Unknown option: " + option);
 		++argCount;
@@ -611,6 +631,7 @@ public class FindBugs implements Constants2
 			System.out.println("   -include <filter file>        include only bugs matching given filter");
 			System.out.println("   -auxclasspath <classpath>     set aux classpath for analysis");
 			System.out.println("   -project <project>            analyze given project");
+			System.out.println("   -exitcode                     set exit code of process");
 			}
 		else
 			IO.copy(in,System.out);
@@ -643,10 +664,30 @@ public class FindBugs implements Constants2
 	findBugs.execute();
 
 	int bugCount = findBugs.getBugCount();
-	if (bugCount > 0)
-		System.err.println("Bugs found: " + bugCount);
+	int missingClassCount = findBugs.getMissingClassCount();
 	int errorCount = findBugs.getErrorCount();
-	if (errorCount > 0)
-		System.err.println("Analysis errors: " + errorCount);
+
+	if (!quiet) {
+		if (bugCount > 0)
+			System.err.println("Bugs found: " + bugCount);
+		if (missingClassCount > 0)
+			System.err.println("Missing classes: " + missingClassCount);
+		if (errorCount > 0)
+			System.err.println("Analysis errors: " + errorCount);
+	}
+
+	if (setExitCode) {
+		int exitCode;
+		if (errorCount > 0)
+			exitCode = ERROR_EXIT_CODE;
+		else if (missingClassCount > 0)
+			exitCode = MISSING_CLASS_EXIT_CODE;
+		else if (bugCount > 0)
+			exitCode = BUGS_FOUND_EXIT_CODE;
+		else
+			exitCode = NO_BUGS_FOUND_EXIT_CODE;
+
+		System.exit(exitCode);
+	}
   }
 }
