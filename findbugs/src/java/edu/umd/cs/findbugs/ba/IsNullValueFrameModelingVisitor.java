@@ -42,14 +42,13 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
 	// Those are handled in the analysis itself, because we need
 	// to produce different values in each of the control successors.
 
-/*
 	public void visitACONST_NULL(ACONST_NULL obj) {
+		Frame<IsNullValue> frame = getFrame();
 		frame.pushValue(IsNullValue.definitelyNull());
 	}
 
 	public void visitPUTFIELD(PUTFIELD obj) {
 	}
-*/
 
 }
 
