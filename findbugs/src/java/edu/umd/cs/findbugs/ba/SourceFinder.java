@@ -41,6 +41,65 @@ public class SourceFinder {
 	private List<String> sourceBaseList;
 	private Cache cache;
 
+	private static int intValueOf(byte b) {
+		// Why isn't there an API method to do this?
+		if ((b & 0x80) == 0)
+			return b;
+		else
+			return 0x80 | ((int)b & 0x7F);
+	}
+
+	/**
+	 * Helper object to build map of line number to byte offset
+	 * for a source file.
+	 */
+	private static class LineNumberMapBuilder {
+		private SourceFile sourceFile;
+		private int offset;
+		private int lastSeen;
+
+		public LineNumberMapBuilder(SourceFile sourceFile) {
+			this.sourceFile = sourceFile;
+			this.offset = 0;
+			this.lastSeen = -1;
+		}
+
+		public void addData(byte[] data, int len) {
+			for (int i = 0; i < len; ++i) {
+				int ch = intValueOf(data[i]);
+				//if (ch < 0) throw new IllegalStateException();
+				add(ch);
+			}
+		}
+
+		public void eof() {
+			add(-1);
+		}
+
+		private void add(int ch) {
+			switch (ch) {
+			case '\n':
+				sourceFile.addLineOffset(offset + 1);
+				break;
+			case '\r':
+				// Need to see next character to know if it's a
+				// line terminator.
+				break;
+			default:
+				if (lastSeen == '\r') {
+					// We consider a bare CR to be an end of line
+					// if it is not followed by a new line.
+					// Mac OS has historically used a bare CR as
+					// its line terminator.
+					sourceFile.addLineOffset(offset);
+				}
+			}
+
+			lastSeen = ch;
+			++offset;
+		}
+	}
+
 	/**
 	 * Constructor.
 	 * @param path the source path, in the same format as a classpath
@@ -107,14 +166,19 @@ public class SourceFinder {
 					in = new BufferedInputStream(new FileInputStream(fullFileName));
 					ByteArrayOutputStream out = new ByteArrayOutputStream();
 
+					sourceFile = new SourceFile();
+					sourceFile.addLineOffset(0); // Line 0 starts at offset 0
+					LineNumberMapBuilder mapBuilder = new LineNumberMapBuilder(sourceFile);
+
 					// Copy all of the data from the file into the byte array output stream
 					byte[] buf = new byte[1024];
 					int n;
 					while ((n = in.read(buf)) >= 0) {
+						mapBuilder.addData(buf, n);
 						out.write(buf, 0, n);
 					}
+					mapBuilder.eof();
 
-					sourceFile = new SourceFile();
 					sourceFile.setData(out.toByteArray());
 				} catch (FileNotFoundException e) {
 					// We're probably looking in the wrong directory -
