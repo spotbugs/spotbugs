@@ -40,7 +40,8 @@ import edu.umd.cs.findbugs.FindBugsProgress;
  * @author David Hovemeyer
  */
 public class RunAnalysisDialog extends javax.swing.JDialog {
-
+	private static final long serialVersionUID = 3618141130257085495L;
+	
 	private class RunAnalysisProgress implements FindBugsProgress {
 		private int goal, count;
 
