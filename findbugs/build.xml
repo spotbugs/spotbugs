@@ -54,6 +54,8 @@
     <property name="class.dir" value="${build.dir}/classes" />
     <property name="tools.dir" value="${build.dir}/tools"/>
     <property name="test.dir" value="${findbugs.dir}/test" />
+    <property name="junit.src.dir" value="${findbugs.dir}/src/junit"/>
+    <property name="junit.build.dir" value="${build.dir}/junit"/>
     <property name="release.prop.file" value="${build.dir}/release.properties" />
     <property name="html.xsl.stylesheet" value="${xsl.stylesheet.home}/html/chunk.xsl" />
     <property name="fo.xsl.stylesheet" value="${xsl.stylesheet.home}/fo/docbook.xsl" />
@@ -101,6 +103,14 @@
       <pathelement location="${tools.dir}"/>
     </path>
 
+    <!-- Classpath for compiling and running junit tests. -->
+    <path id="junit.classpath">
+      <pathelement location="${jar.dir}/findbugs.jar"/>
+      <pathelement location="${jar.dir}/bcel.jar"/>
+      <pathelement location="${jar.dir}/dom4j-full.jar" />
+      <pathelement location="${jar.dir}/junit.jar"/>
+    </path>
+
     <!--
       *****************************************************************
       FileSets
@@ -144,23 +154,14 @@
 
     <!-- Target to compile classes. -->
     <target name="classes" depends="init">
-      <!-- Compile with the JSR14 prototype compiler and compiler adapter -->
-      <javac srcdir="${findbugs.src.dir}" destdir="${class.dir}"
-             source="1.5"
-             debug="true"
-             compiler="com.cortexeb.Jsr14CompilerAdapter">
-        <classpath refid="classpath" />
-      </javac>
-
       <!-- Use the following to compile using JDK 1.5 javac -->
-<!--
       <javac srcdir="${findbugs.src.dir}" destdir="${class.dir}"
              source="1.5"
-             target="1.5"
+             target="jsr14"
+             fork="true"
              debug="true">
         <classpath refid="classpath" />
       </javac>
--->
     </target>
 
     <!-- Target to build jar file for the main engine. -->
@@ -293,7 +294,9 @@
 
     <!-- Target to build the anttask -->
     <target name="anttask" depends="findbugs">
-      <javac srcdir="${anttask.src.dir}" debug="true" destdir="${class.dir}" >
+      <javac srcdir="${anttask.src.dir}" 
+             source="1.5"
+             target="jsr14" debug="true" destdir="${class.dir}" >
         <classpath refid="classpath" />
       </javac>
  
@@ -351,7 +354,10 @@
 
     <!-- Build jar file of test cases.  -->
     <target name="testjar" depends="init,anttask" >
-       <javac srcdir="${test.dir}" excludes="IgnoredReturnValue.java,TryLock.java,JSR166.java" debug="true" />
+       <javac srcdir="${test.dir}" 
+              source="1.5"
+              target="jsr14"
+              excludes="IgnoredReturnValue.java,TryLock.java,JSR166.java" debug="true" />
        <jar destfile="${test.dir}/dumb.jar" basedir="${test.dir}" includes="*.class"
             excludes="IgnoredReturnValue*.class,TryLock*.class" />
     </target>
@@ -380,9 +386,23 @@
 
     <!-- Build test cases that require JSR166 library. -->
     <target name="jsr166test">
-       <javac srcdir="${test.dir}" includes="IgnoredReturnValue.java,TryLock.java,JSR166.java" debug="true" />
+       <javac srcdir="${test.dir}"
+              source="1.5"
+              target="jsr14"
+              includes="IgnoredReturnValue.java,TryLock.java,JSR166.java" debug="true" />
        <jar destfile="${test.dir}/jsr166test.jar" basedir="${test.dir}"
             includes="IgnoredReturnValue*.class,TryLock*.class,JSR166*.class" />
+    </target>
+
+    <!-- Build junit tests. -->
+    <target name="junit" depends="findbugs">
+      <mkdir dir="${junit.build.dir}" />
+      <javac srcdir="${junit.src.dir}" destdir="${junit.build.dir}"
+             source="1.5"
+             target="jsr14"
+             debug="true">
+        <classpath refid="junit.classpath"/>
+      </javac>
     </target>
 
     <!--
@@ -390,23 +410,14 @@
          - Eclipse plugin classpath extractor
     -->
     <target name="tools" depends="classes">
+      <!-- Use the following to compile using JDK 1.5 javac -->
       <javac srcdir="${tools.src.dir}" destdir="${tools.dir}"
              excludes="edu/umd/cs/findbugs/tools/patcomp/*"
              source="1.5"
-             debug="true"
-             compiler="com.cortexeb.Jsr14CompilerAdapter">
-        <classpath refid="tools.buildclasspath"/>
-      </javac> 
-      
-<!-- Use the following to compile using JDK 1.5 javac -->
-<!--
-      <javac srcdir="${tools.src.dir}" destdir="${tools.dir}"
-             excludes="edu/umd/cs/findbugs/tools/patcomp/*"
-             source="1.5"
+             target="jsr14"
              debug="true">
         <classpath refid="tools.buildclasspath"/>
       </javac> 
--->
     </target>
 
     <!-- Target to get the release version info. -->
@@ -593,7 +604,7 @@
          (code and docs). -->
     <target name="release" depends="buildAll,version">
        <copy todir="${release.dir}/lib">
-         <fileset dir="${jar.dir}" includes="**/*.jar" excludes="plastic.jar"  />
+         <fileset dir="${jar.dir}" includes="**/*.jar" excludes="plastic.jar,junit.jar"  />
          <fileset dir="${jar.dir}" includes="**/*.icns" />
        </copy>
        <copy todir="${release.dir}/plugin">
