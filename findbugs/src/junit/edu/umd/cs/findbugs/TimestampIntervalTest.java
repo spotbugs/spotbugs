@@ -10,6 +10,7 @@ public class TimestampIntervalTest extends TestCase {
 	TimestampInterval t2;
 	TimestampInterval t3;
 	TimestampInterval t4;
+	TimestampInterval t4SameBegin;
 	
 	@Override
 	protected void setUp() throws Exception {
@@ -18,6 +19,7 @@ public class TimestampIntervalTest extends TestCase {
 		t2 = new TimestampInterval(1L, 3L);
 		t3 = new TimestampInterval(4L, 10L);
 		t4 = new TimestampInterval(5L, 10L);
+		t4SameBegin = new TimestampInterval(5L, 11L);
 	}
 	
 	public void testAccess() {
@@ -65,6 +67,10 @@ public class TimestampIntervalTest extends TestCase {
 		Assert.assertTrue(t1.compareTo(t2) < 0);
 		Assert.assertTrue(t2.compareTo(t1) > 0);
 		Assert.assertTrue(t1.compareTo(t1) == 0);
+	}
+	
+	public void testCompareSameBegin() {
+		Assert.assertTrue(t4.compareTo(t4SameBegin) < 0);
 	}
 	
 	public void testDecodeMoment() {
