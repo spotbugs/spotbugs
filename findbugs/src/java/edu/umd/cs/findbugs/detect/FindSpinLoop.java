@@ -54,14 +54,24 @@ public class FindSpinLoop extends BytecodeScanningDetector implements Constants2
 		// System.out.println("PC: " + PC + ", stage: " + stage1);
 		switch (seen) {
 		case ALOAD_0:
-			if (DEBUG) System.out.println("   ALOAD_0 at PC " + getPC());
+		case ALOAD_1:
+		case ALOAD_2:
+		case ALOAD_3:
+		case ALOAD:
+			if (DEBUG) System.out.println("   ALOAD at PC " + getPC());
 			start = getPC();
 			stage = 1;
+			break;
+		case GETSTATIC:
+			if (DEBUG) System.out.println("   getfield in stage " + stage);
+			lastFieldSeen = FieldAnnotation.fromReferencedField(this);
+			start = getPC();
+			stage = 2;
 			break;
 		case GETFIELD:
 			if (DEBUG) System.out.println("   getfield in stage " + stage);
 			lastFieldSeen = FieldAnnotation.fromReferencedField(this);
-			if (stage == 1) {
+			if (stage == 1 || stage == 2 ) {
 				stage = 2;
 			} else
 				stage = 0;
