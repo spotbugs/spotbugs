@@ -35,6 +35,8 @@ import org.apache.bcel.generic.*;
  */
 public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes {
 
+	private static final boolean DEBUG = Boolean.getBoolean("cfgbuilder.debug");
+
 	// TODO: don't forget to change BasicBlock so ATHROW is considered to have a null check
 
 	/* ----------------------------------------------------------------------
@@ -281,6 +283,7 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes {
 		// Build top level subroutine and all JSR subroutines
 		while (!subroutineWorkList.isEmpty()) {
 			Subroutine subroutine = subroutineWorkList.removeFirst();
+			if (DEBUG) System.out.println("Starting subroutine " + subroutine.getStartInstruction());
 			build(subroutine);
 		}
 
@@ -305,11 +308,11 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes {
 			WorkListItem item = subroutine.nextItem();
 
 			InstructionHandle handle = item.getStartInstruction();
-			Instruction ins = handle.getInstruction();
 			BasicBlock basicBlock = item.getBasicBlock();
 
 			// Add exception handler block (ETB) for exception-throwing instructions
 			if (isPEI(handle)) {
+				if (DEBUG) System.out.println("ETB block " + basicBlock.getId() + " for " + handle);
 				handleExceptions(subroutine, handle, basicBlock);
 				basicBlock.setExceptionThrower(handle);
 				BasicBlock body = subroutine.allocateBasicBlock();
@@ -317,10 +320,19 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes {
 				basicBlock = body;
 			}
 
+			if (DEBUG) System.out.println("BODY block " + basicBlock.getId() + " for " + handle);
+
+			if (!basicBlock.isEmpty())
+				throw new IllegalStateException("Block isn't empty!");
+
 			// Add instructions until we get to the end of the block
 			boolean endOfBasicBlock = false;
 			do {
+				Instruction ins = handle.getInstruction();
+
 				// Add the instruction to the block
+				if (DEBUG) System.out.println("BB " + basicBlock.getId() + ": adding" + handle);
+				//addInstructionCheck(basicBlock);
 				basicBlock.addInstruction(handle);
 				subroutine.addInstruction(handle);
 
@@ -371,6 +383,11 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes {
 						}
 					}
 				}
+
+/*
+				if (ins instanceof JsrInstruction && !endOfBasicBlock)
+					throw new IllegalStateException("Hosed!");
+*/
 
 				if (!endOfBasicBlock) {
 					InstructionHandle next = handle.getNext();
@@ -470,6 +487,7 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes {
 			BasicBlock.InstructionIterator insIter = subBlock.instructionIterator();
 			while (insIter.hasNext()) {
 				InstructionHandle handle = insIter.next();
+				//addInstructionCheck(resultBlock);
 				resultBlock.addInstruction(handle);
 			}
 
@@ -498,8 +516,8 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes {
 
 					// The start block in the JSR subroutine maps to the first
 					// inlined block in the result CFG.
-					BasicBlock jsrStartBlock = jsrContext.getBlock(jsrSub.getStartBlock());
-					result.addEdge(resultBlock, jsrStartBlock, GOTO_EDGE);
+					BasicBlock resultJSRStartBlock = jsrContext.getBlock(jsrSub.getStartBlock());
+					result.addEdge(resultBlock, resultJSRStartBlock, GOTO_EDGE);
 
 					// The exit block in the JSR subroutine maps to the result block
 					// corresponding to the instruction following the JSR.
@@ -579,6 +597,21 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes {
 		}
 */
 	}
+
+/*
+	public void addInstructionCheck(BasicBlock block) {
+		InstructionHandle lastHandle = block.getLastInstruction();
+		if (lastHandle == null) return;
+		Instruction ins = lastHandle.getInstruction();
+		if (ins instanceof JsrInstruction) {
+			BasicBlock.InstructionIterator i = block.instructionIterator();
+			while (i.hasNext()) {
+				System.out.println(i.next());
+			}
+			throw new IllegalStateException("Adding instruction to end of JSR block!");
+		}
+	}
+*/
 
 	public static void main(String[] argv) throws Exception {
 		if (argv.length != 1) {
