@@ -55,6 +55,8 @@ public class SourceFinder {
 	 */
 	private interface SourceRepository {
 		public boolean contains(String fileName);
+		
+		public boolean isPlatformDependent();
 
 		public SourceFileDataSource getDataSource(String fileName);
 	}
@@ -74,6 +76,10 @@ public class SourceFinder {
 			return file.exists();
 		}
 
+		public boolean isPlatformDependent() {
+			return true;
+		}
+		
 		public SourceFileDataSource getDataSource(String fileName) {
 			return new FileSourceFileDataSource(getFullFileName(fileName));
 		}
@@ -95,6 +101,10 @@ public class SourceFinder {
 
 		public boolean contains(String fileName) {
 			return zipFile.getEntry(fileName) != null;
+		}
+
+		public boolean isPlatformDependent() {
+			return false;
 		}
 
 		public SourceFileDataSource getDataSource(String fileName) {
@@ -165,42 +175,38 @@ public class SourceFinder {
 	 * @throws IOException if a matching source file cannot be found
 	 */
 	public SourceFile findSourceFile(String packageName, String fileName) throws IOException {
-		// Create a fully qualified source filename using the package name.
-		StringBuffer fullName = new StringBuffer();
-		if (!packageName.equals("")) {
-			fullName.append(packageName.replace('.', File.separatorChar));
-			fullName.append(File.separatorChar);
-		}
-		fullName.append(fileName);
-		fileName = fullName.toString();
+		// On windows the fileName specification is different between a file in a directory tree, and a 
+		// file in a zip file. In a directory tree the separator used is '\', while in a zip it's '/'
+		// Therefore for each repository figure out what kind it is and use the appropriate separator.
+		
+		// Create a fully qualified source filename using the package name for both directories and zips
+		String platformName = packageName.replace('.', File.separatorChar) + File.separatorChar + fileName;
+		String canonicalName = packageName.replace('.', '/') + '/' + fileName;
 
-		// Is the file in the cache already?
-		SourceFile sourceFile = cache.get(fileName);
-		if (sourceFile == null) {
-			// Find this source file, add its data to the cache
-			if (DEBUG) System.out.println("Trying " + fileName + "...");
+		// Is the file in the cache already? Always cache it with the canonical name
+		SourceFile sourceFile = cache.get(canonicalName);
+		if (sourceFile != null)
+			return sourceFile;
+		
+		// Find this source file, add its data to the cache
+		if (DEBUG) System.out.println("Trying " + fileName + "...");
 
-			// Query each element of the source path to find the requested source file
-			Iterator<SourceRepository> i = repositoryList.iterator();
-			while (i.hasNext()) {
-				SourceRepository repos = i.next();
+		// Query each element of the source path to find the requested source file
+		Iterator<SourceRepository> i = repositoryList.iterator();
+		while (i.hasNext()) {
+			SourceRepository repos = i.next();
 
-				if (repos.contains(fileName)) {
-					// Found it
-					sourceFile = new SourceFile(repos.getDataSource(fileName));
-					cache.put(fileName, sourceFile);
-					break;
-				}
+			fileName = repos.isPlatformDependent() ? platformName : canonicalName;
+			if (repos.contains(fileName)) {
+				// Found it
+				sourceFile = new SourceFile(repos.getDataSource(fileName));
+				cache.put(canonicalName, sourceFile); // always cache with canonicalName
+				return sourceFile;
 			}
-
-			// Couldn't find the source file.
-			if (sourceFile == null)
-				throw new FileNotFoundException("Can't find source file " + fileName);
 		}
 
-		return sourceFile;
+		throw new FileNotFoundException("Can't find source file " + fileName);
 	}
-
 }
 
 // vim:ts=4
