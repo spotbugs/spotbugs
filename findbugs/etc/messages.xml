@@ -1065,7 +1065,8 @@ using r.nextInt(n) Rather than using (int)(r.nextDouble() * n).
     <LongDescription>Method {1} invokes the execute method on an SQL statement</LongDescription>
     <Details>
 <![CDATA[
-  <p>The method invokes the execute method on an SQL statement. Consider using 
+  <p>The method invokes the execute method on an SQL statement with a String that seems
+to be dynamically generated. Consider using 
 a prepared statement instead. It is more efficient and less vunerable to
 SQL injection attacks.
 </p>
