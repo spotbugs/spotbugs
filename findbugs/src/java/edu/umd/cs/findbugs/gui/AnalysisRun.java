@@ -53,22 +53,36 @@ public class AnalysisRun {
             bugSet.add(bugInstance);
         }
 
-	// TODO: implement these
-	public void beginReport() { }
-	public void reportLine(String msg) { }
-	public void endReport() { }
+        private AnalysisErrorDialog errorDialog;
+        
+        public void beginReport() {
+            errorDialog = new AnalysisErrorDialog(frame, true);
+        }
+        
+	public void reportLine(String msg) {
+            errorDialog.addLine(msg);
+        }
+        
+	public void endReport() {
+            errorDialog.finish();
+            errorDialog.setSize(750, 520);
+            errorDialog.setLocationRelativeTo(null); // center the dialog
+            errorDialog.show();
+        }
     }
 
     private Project project;
+    private FindBugsFrame frame;
     private ConsoleLogger logger;
     private FindBugs findBugs;
     private Reporter reporter;
     private HashMap<String, DefaultTreeModel> treeModelMap;
     
     /** Creates a new instance of AnalysisRun. */
-    public AnalysisRun(Project project, ConsoleLogger logger) {
+    public AnalysisRun(Project project, FindBugsFrame frame) {
         this.project = project;
-        this.logger = logger;
+        this.frame = frame;
+        this.logger = frame.getLogger();
         reporter = new Reporter();
         findBugs = new FindBugs(reporter);
         treeModelMap = new HashMap<String, DefaultTreeModel>();

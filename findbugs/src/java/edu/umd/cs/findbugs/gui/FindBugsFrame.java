@@ -1164,7 +1164,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
         
         bugDescriptionEditorPane.setText("");
         sourceTextArea.setText("");
-        AnalysisRun analysisRun = new AnalysisRun(project, logger);
+        AnalysisRun analysisRun = new AnalysisRun(project, this);
         
         logger.logMessage(ConsoleLogger.INFO, "Beginning analysis of " + project);
         
