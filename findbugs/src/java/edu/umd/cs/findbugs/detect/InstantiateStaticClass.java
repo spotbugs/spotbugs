@@ -78,6 +78,7 @@ public class InstantiateStaticClass extends BytecodeScanningDetector implements 
 	}
 
    private boolean isStaticOnlyClass(String clsName) throws ClassNotFoundException {
+   				clsName = clsName.replace('/', '.');
 				JavaClass cls = Repository.lookupClass(clsName);
 				if (cls.getInterfaceNames().length > 0)
 					return false;
