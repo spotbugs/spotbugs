@@ -159,14 +159,15 @@
     <!-- Target to compile classes. -->
     <target name="classes" depends="init">
       <!-- Compile with the JSR14 prototype compiler and compiler adapter -->
+<!--
       <javac srcdir="${findbugs.src.dir}" destdir="${class.dir}"
              debug="true"
              compiler="com.cortexeb.Jsr14CompilerAdapter">
         <classpath refid="classpath" />
       </javac>
+-->
 
       <!-- Use the following to compile using JDK 1.5 javac -->
-<!--
       <javac srcdir="${findbugs.src.dir}" destdir="${class.dir}"
              source="1.5"
              target="jsr14"
@@ -176,7 +177,6 @@
         <compilerarg value="-Xlint:unchecked"/>
         <compilerarg value="-Xlint:deprecation"/>
       </javac>
--->
     </target>
 
     <!-- Target to build jar file for the main engine. -->
@@ -389,21 +389,20 @@
     <!-- Build jar file of test cases.  -->
     <target name="testjar" depends="init,anttask" >
        <!-- Compile with JSR-14 compiler. -->
-
+<!--
        <javac srcdir="${test.dir}" 
               excludes="IgnoredReturnValue.java,TryLock.java,JSR166.java" debug="true" 
               compiler="com.cortexeb.Jsr14CompilerAdapter"/>
+-->
 
 
        <!-- Compile with JDK 1.5 javac. (Recommended.) -->
-<!--
        <javac srcdir="${test.dir}" 
               source="1.5"
               target="jsr14"
               excludes="IgnoredReturnValue.java,TryLock.java,JSR166.java" debug="true">
           <classpath refid="test.classpath"/>
        </javac>
--->
        <jar destfile="${test.dir}/dumb.jar" basedir="${test.dir}" includes="*.class"
             excludes="IgnoredReturnValue*.class,TryLock*.class" />
     </target>
@@ -510,16 +509,17 @@
     -->
     <target name="tools" depends="classes">
       <!-- Compile with JSR-14 compiler. -->
+<!--
       <javac srcdir="${tools.src.dir}" destdir="${tools.dir}"
              excludes="edu/umd/cs/findbugs/tools/patcomp/*"
              debug="true"
              compiler="com.cortexeb.Jsr14CompilerAdapter">
         <classpath refid="tools.buildclasspath"/>
       </javac> 
+-->
 
 
       <!-- Compile with JDK 1.5 javac. (Recommended.) -->
-<!--
       <javac srcdir="${tools.src.dir}" destdir="${tools.dir}"
              excludes="edu/umd/cs/findbugs/tools/patcomp/*"
              source="1.5"
@@ -529,7 +529,6 @@
         <compilerarg value="-Xlint:unchecked"/>
         <compilerarg value="-Xlint:deprecation"/>
       </javac> 
--->
     </target>
 
     <!-- Target to get the release version info. -->
