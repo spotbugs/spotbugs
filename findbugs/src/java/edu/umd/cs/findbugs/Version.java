@@ -30,16 +30,16 @@ public class Version {
 	public static final int MINOR = 7;
 
 	/** Patch level. */
-	public static final int PATCHLEVEL = 4;
+	public static final int PATCHLEVEL = 5;
 
 	/** Development version? */
-	public static final boolean IS_DEVELOPMENT = false;
+	public static final boolean IS_DEVELOPMENT = true;
 
 	/** Release version string. */
 	public static final String RELEASE = MAJOR + "." + MINOR + "." + PATCHLEVEL + (IS_DEVELOPMENT ? "-dev" : "");
 
 	/** Release date. */
-	public static final String DATE = "May 27, 2004";
+	public static final String DATE = "June 11, 2004";
 
 	/**
 	 * Version of Eclipse "core" plugin, which is just a repackaged
