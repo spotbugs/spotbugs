@@ -55,7 +55,9 @@ public class FindHEmismatch extends BytecodeScanningDetector implements   Consta
 	if (!hasEqualsObject)  {
 		JavaClass we = Lookup.findSuperImplementor(obj, "equals",
 					"(Ljava/lang/Object;)Z", bugReporter);
-		if (we == null) whereEqual = "java.lang.Object";
+		if (we == null) {
+			whereEqual = "java.lang.Object";
+		}
 		else {
 			whereEqual = we.getClassName();
 			classThatDefinesEqualsIsAbstract = we.isAbstract();;
@@ -66,7 +68,9 @@ public class FindHEmismatch extends BytecodeScanningDetector implements   Consta
 	if (!hasHashCode) {
 		JavaClass wh = Lookup.findSuperImplementor(obj, "hashCode",
 					"()I", bugReporter);
-		if (wh == null) whereHashCode = "java.lang.Object";
+		if (wh == null) {
+			whereHashCode = "java.lang.Object";
+			}
 		else whereHashCode = wh.getClassName();
 		}
 	boolean usesDefaultHashCode = whereHashCode.equals("java.lang.Object");
@@ -95,7 +99,7 @@ public class FindHEmismatch extends BytecodeScanningDetector implements   Consta
 		else {
 		  int priority = NORMAL_PRIORITY;
 		  if (hasFields)
-			priority++;
+			priority--;
 		  if (obj.isAbstract()) priority++;
 		  bugReporter.reportBug(new BugInstance("EQ_SELF_NO_OBJECT", priority).addClass(getDottedClassName()));
 		}
@@ -133,10 +137,10 @@ public class FindHEmismatch extends BytecodeScanningDetector implements   Consta
 				priority ).addClass(getDottedClassName()));
 		  }
 		else {
-		  int priority = NORMAL_PRIORITY;
-		  if (hasFields) priority++;
-		  if (obj.isAbstract()) priority++;
-		  if (equalsMethodIsInstanceOfEquals) priority++;
+		  int priority = LOW_PRIORITY;
+		  if (hasFields) priority--;
+		  if (equalsMethodIsInstanceOfEquals || !hasEqualsObject) priority+= 2;
+		  else if (obj.isAbstract()) priority++;
 		   bugReporter.reportBug(
 		    new BugInstance("HE_EQUALS_NO_HASHCODE", 
 			priority)
@@ -166,7 +170,8 @@ public class FindHEmismatch extends BytecodeScanningDetector implements   Consta
     public void visit(Field obj) {
 	int accessFlags = obj.getAccessFlags();
 	if ((accessFlags & ACC_STATIC) != 0) return;
-	hasFields = true;
+	if (!obj.getName().startsWith("this$"))
+		hasFields = true;
 	}
     public void visit(Method obj) {
 	int accessFlags = obj.getAccessFlags();
@@ -197,9 +202,14 @@ public class FindHEmismatch extends BytecodeScanningDetector implements   Consta
 			else {
 			Code code = obj.getCode();
 			byte [] codeBytes = code.getCode();
-			if (codeBytes.length == 5 &&
+		
+			if ((codeBytes.length == 5 &&
 				(codeBytes[1] & 0xff) == INSTANCEOF) 
+			    || (codeBytes.length == 15 &&
+				(codeBytes[1] & 0xff) == INSTANCEOF  &&
+				(codeBytes[11] & 0xff) == INVOKESPECIAL))  {
 			equalsMethodIsInstanceOfEquals = true;
+			}
 			}
 			}
 		else if (sig.equals("(L"+getClassName()+";)Z"))
