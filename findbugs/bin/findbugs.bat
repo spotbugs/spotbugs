@@ -1,6 +1,7 @@
 @echo off
 :: Launch FindBugs GUI on a Windows system.
 :: Adapted from scripts found at http://www.ericphelps.com/batch/
+:: This will only work on Windows NT or later!
 
 :: ----------------------------------------------------------------------
 :: Set up default values
@@ -22,23 +23,27 @@ shift
 
 :loop
 
-if [%1]==[-gui] set appjar=findbugsGUI.jar
-if [%1]==[-gui] goto shift1
+:: Remove surrounding quotes from %1 and %2
+set firstArg=%~1
+set secondArg=%~2
 
-if [%1]==[-textui] set appjar=findbugs.jar
-if [%1]==[-textui] goto shift1
+if "%firstArg%"=="-gui" set appjar=findbugsGUI.jar
+if "%firstArg%"=="-gui" goto shift1
 
-if [%1]==[-home] set FINDBUGS_HOME=%2
-if [%1]==[-home] goto shift2
+if "%firstArg%"=="-textui" set appjar=findbugs.jar
+if "%firstArg%"=="-textui" goto shift1
 
-if [%1]==[-jvmArgs] set jvmargs=%2
-if [%1]==[-jvmArgs] goto shift2
+if "%firstArg%"=="-home" set FINDBUGS_HOME=%secondArg%
+if "%firstArg%"=="-home" goto shift2
 
-if [%1]==[-help] goto help
+if "%firstArg%"=="-jvmArgs" set jvmargs=%secondArg%
+if "%firstArg%"=="-jvmArgs" goto shift2
 
-if [%1]==[] goto launch
+if "%firstArg%"=="-help" goto help
 
-set args=%args% %1
+if "%firstArg%"=="" goto launch
+
+set args=%args% "%firstArg%"
 goto shift1
 
 :: ----------------------------------------------------------------------
@@ -46,12 +51,9 @@ goto shift1
 :: ----------------------------------------------------------------------
 :launch
 :: Make sure FINDBUGS_HOME is set.
-if [%FINDBUGS_HOME%]==[] goto homeNotSet
-
-:: Try to remove quote characters from FINDBUGS_HOME and jvmargs.
-:: This will only work on Windows NT and later systems.
-if [%OS%]==[Windows_NT] set FINDBUGS_HOME=%FINDBUGS_HOME:"=%
-if [%OS%]==[Windows_NT] set jvmargs=%jvmargs:"=%
+:: Note that this will fail miserably if the value of FINDBUGS_HOME
+:: has quote characters in it.
+if "%FINDBUGS_HOME%"=="" goto homeNotSet
 
 :: echo FINDBUGS_HOME is %FINDBUGS_HOME%
 :: echo appjar is %appjar%
