@@ -1194,8 +1194,21 @@ using the &FindBugs; task.
     <term><literal>failOnError</literal></term>
     <listitem>
        <para>
-       Optional attribute.  Whether to abort the build process if there is an 
+       Optional boolean attribute.  Whether to abort the build process if there is an 
        error running &FindBugs;. Defaults to "false"
+       </para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><literal>workHard</literal></term>
+    <listitem>
+       <para>
+       Optional boolean attribute.  If set to "true", sets the
+       findbugs.workhard analysis property to true (as described in
+       <xref linkend="analysisprops"/>).  This property currently reduces
+       the false positive rate of open stream detector,
+       at the expense of making the analysis slower. Defaults to "false".
        </para>
     </listitem>
   </varlistentry>
