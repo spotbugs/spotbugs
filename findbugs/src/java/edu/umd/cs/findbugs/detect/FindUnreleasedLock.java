@@ -26,6 +26,7 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.ResourceCreationPoint;
 import edu.umd.cs.findbugs.ResourceTrackingDetector;
 import edu.umd.cs.findbugs.ba.*;
+
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
@@ -45,9 +46,11 @@ class Lock extends ResourceCreationPoint {
 }
 
 public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnreleasedLock.LockResourceTracker> {
-
 	private static final boolean DEBUG = Boolean.getBoolean("ful.debug");
 	private static int numAcquires = 0;
+	
+	private static final int JDK15_MINOR = 0;
+	private static final int JDK15_MAJOR = 49;
 
 	/* ----------------------------------------------------------------------
 	 * Helper classes
@@ -205,6 +208,21 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
 		super(bugReporter);
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.Detector#visitClassContext(edu.umd.cs.findbugs.ba.ClassContext)
+	 */
+	public void visitClassContext(ClassContext classContext) {
+		JavaClass jclass = classContext.getJavaClass();
+		
+		// We can ignore classes that were compiled for anything
+		// less than JDK 1.5.  This should avoid lots of unnecessary work
+		// when analyzing code for older VM targets.
+		if (jclass.getMajor() > JDK15_MAJOR || jclass.getMinor() >= JDK15_MINOR) {
+			super.visitClassContext(classContext);
+		}
+	}
+
+	
 	public boolean prescreen(ClassContext classContext, Method method) {
 		BitSet bytecodeSet = classContext.getBytecodeSet(method);
 		return bytecodeSet.get(Constants.INVOKEVIRTUAL) || bytecodeSet.get(Constants.INVOKEINTERFACE);
