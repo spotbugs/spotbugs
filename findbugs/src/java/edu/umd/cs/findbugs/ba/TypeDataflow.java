@@ -31,6 +31,10 @@ public class TypeDataflow extends Dataflow<TypeFrame, TypeAnalysis> {
 	public TypeFrame getFactAfterLocation(Location loc) throws DataflowAnalysisException {
 		return getAnalysis().getFactAfterLocation(loc);
 	}
+
+	public ExceptionSet getEdgeExceptionSet(Edge edge) {
+		return getAnalysis().getEdgeExceptionSet(edge);
+	}
 }
 
 // vim:ts=4

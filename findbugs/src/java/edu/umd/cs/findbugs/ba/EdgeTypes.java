@@ -69,26 +69,9 @@ public interface EdgeTypes {
      * Edge flags
      * ---------------------------------------------------------------------- */
 
-    /**
-     * Flag indicating that an exception edge represents
-     * at least some explicit checked exceptions.
-     */
+    /** Checked exceptions can be thrown on edge. */
     public static final int CHECKED_EXCEPTIONS_FLAG = 1;
 
-    /**
-     * Flag indicating that an exception edge represents only
-     * <em>explicit</em> unchecked exceptions.  By explicit, we
-     * mean that the unchecked exception is either thrown directly
-     * or explicitly declared to be thrown from a called method.
-     */
-    public static final int EXPLICIT_UNCHECKED_EXCEPTIONS_FLAG = 2;
-
-    /**
-     * Flag indicating that an exception edge represents only
-     * <em>implicit</em> unchecked exceptions.  Such exceptions
-     * should usually be ignored from the standpoint of finding bugs,
-     * since they represent abnormal program behavior and should
-     * never occur at runtime.
-     */
-    public static final int IMPLICIT_UNCHECKED_EXCEPTIONS_FLAG = 4;
+    /** Explicit exceptions can be thrown on the edge. */
+    public static final int EXPLICIT_EXCEPTIONS_FLAG = 2;
 }

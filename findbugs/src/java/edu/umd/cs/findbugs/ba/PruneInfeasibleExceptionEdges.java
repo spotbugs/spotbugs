@@ -29,21 +29,6 @@ import org.apache.bcel.generic.*;
  * explicit ATHROW instructions, type analysis must first be
  * performed on the unpruned CFG.
  *
- * <p> We also attempt to classify the remaining exception edges
- * into categories:
- * <ul>
- * <li> Checked exceptions
- * <li> Explicit unchecked exceptions
- * <li> Implicit unchecked exceptions
- * </ul>
- *
- * <p> The idea is that implicit unchecked exceptions
- * are not likely to be interesting in practice, and analyses
- * may want to ignore them.
- *
- * <p> FIXME: finally blocks can end in an ATHROW.
- * Need a way to mark these as implicit.
- *
  * @see CFG
  * @see TypeAnalysis
  * @author David Hovemeyer
@@ -118,66 +103,41 @@ public class PruneInfeasibleExceptionEdges implements EdgeTypes {
 	 * If a runtime exception is thrown, then the CFG may be
 	 * partially modified and should be considered invalid.
 	 */
-	public void execute() throws ClassNotFoundException, DataflowAnalysisException {
+	public void execute() throws ClassNotFoundException {
 		HashSet<Edge> deletedEdgeSet = new HashSet<Edge>();
 		List<MarkedEdge> markedEdgeList = new LinkedList<MarkedEdge>();
 
-		// Scan all basic blocks for infeasible exception edges
-		Iterator<BasicBlock> i = cfg.blockIterator();
-		while (i.hasNext()) {
-			BasicBlock basicBlock = i.next();
-			if (basicBlock.isExceptionThrower()) {
-				// Enumerate the kinds of exceptions this block can throw
-				ExceptionSet thrownExceptionSet = enumerateExceptionTypes(basicBlock);
+		// Mark edges to delete,
+		// mark edges to set properties of
+		for (Iterator<Edge> i = cfg.edgeIterator(); i.hasNext(); ) {
+			Edge edge = i.next();
+			if (!edge.isExceptionEdge())
+				continue;
 
-				// For each exception edge, determine if
-				// the handler is reachable.  If not, delete it.
-				// This ABSOLUTELY relies on the handled exception edges being
-				// enumerated in decreasing order of priority,
-				// because we eliminate thrown types as we encounter
-				// handlers where they are guaranteed to be caught.
-				for (Iterator<Edge> j = cfg.outgoingEdgeIterator(basicBlock); j.hasNext(); ) {
-					Edge edge = j.next();
-					if (edge.getType() == HANDLED_EXCEPTION_EDGE) {
-						checkReachability(edge, thrownExceptionSet, deletedEdgeSet, markedEdgeList);
-					}
-				}
+			ExceptionSet exceptionSet = typeDataflow.getEdgeExceptionSet(edge);
+			if (exceptionSet.isEmpty()) {
+				// No exceptions are actually thrown on this edge,
+				// so we can delete the edge.
+				deletedEdgeSet.add(edge);
+			} else {
+				// Some exceptions appear to be thrown on the edge.
+				// Mark to indicate if any of the exceptions are checked,
+				// and if any are explicit (checked or explicitly declared
+				// or thrown unchecked).
+				boolean someChecked = exceptionSet.containsCheckedExceptions();
+				boolean someExplicit = exceptionSet.containsExplicitExceptions();
 
-				// If all exceptions are caught, mark the unhandled exception edge
-				// for deletion
-				if (thrownExceptionSet.isEmpty()) {
-					Edge edge = cfg.getOutgoingEdgeWithType(basicBlock, UNHANDLED_EXCEPTION_EDGE);
-					if (edge != null) {
-						deletedEdgeSet.add(edge);
-					}
-				} else {
-					// Unhandled exceptions can be thrown.
-					// Check whether they are implicit or explicit.
-					int flag;
-					if (thrownExceptionSet.containsCheckedExceptions())
-						flag = CHECKED_EXCEPTIONS_FLAG;
-					else if (thrownExceptionSet.containsExplicitExceptions())
-						flag = EXPLICIT_UNCHECKED_EXCEPTIONS_FLAG;
-					else
-						flag = IMPLICIT_UNCHECKED_EXCEPTIONS_FLAG;
-					Edge edge = cfg.getOutgoingEdgeWithType(basicBlock, UNHANDLED_EXCEPTION_EDGE);
-					if (edge == null) {
-						// Raw CFGs are built conservatively,
-						// so this exception should never happen.
-						// If it does happen, it indicates a bug in the CFG builder.
-						throw new DataflowAnalysisException("In method " +
-							SignatureConverter.convertMethodSignature(methodGen) +
-							" block " + basicBlock.getId() + " has missing unhandled exception edge");
-					}
-					markedEdgeList.add(new MarkedEdge(edge, flag));
-				}
+				int flags = 0;
+				if (someChecked) flags |= CHECKED_EXCEPTIONS_FLAG;
+				if (someExplicit) flags |= EXPLICIT_EXCEPTIONS_FLAG;
+
+				markedEdgeList.add(new MarkedEdge(edge, flags));
 			}
 		}
 
 		// Remove deleted edges
 		for (Iterator<Edge> j = deletedEdgeSet.iterator(); j.hasNext(); ) {
 			Edge edge = j.next();
-			//if (edge == null) throw new IllegalStateException("null edge");
 			cfg.removeEdge(edge);
 			if (STATS) ++numEdgesPruned;
 		}
@@ -186,157 +146,6 @@ public class PruneInfeasibleExceptionEdges implements EdgeTypes {
 		for (Iterator<MarkedEdge> j = markedEdgeList.iterator(); j.hasNext(); ) {
 			j.next().apply();
 		}
-	}
-
-	private ExceptionSet enumerateExceptionTypes(BasicBlock basicBlock)
-		throws ClassNotFoundException, DataflowAnalysisException {
-
-		ExceptionSet exceptionTypeSet = new ExceptionSet();
-		InstructionHandle pei = basicBlock.getExceptionThrower();
-		Instruction ins = pei.getInstruction();
-
-		// Get the exceptions that BCEL knows about.
-		// Note that all of these are unchecked.
-		ExceptionThrower exceptionThrower = (ExceptionThrower) ins;
-		Class[] exceptionList = exceptionThrower.getExceptions();
-		for (int i = 0; i < exceptionList.length; ++i) {
-			exceptionTypeSet.addImplicit(new ObjectType(exceptionList[i].getName()));
-		}
-
-		// Assume that an Error may be thrown by any instruction.
-		exceptionTypeSet.addImplicit(Hierarchy.ERROR_TYPE);
-
-		if (ins instanceof ATHROW) {
-			// For ATHROW instructions, we generate *two* blocks
-			// for which the ATHROW is an exception thrower.
-			//
-			// - The first, empty basic block, does the null check
-			// - The second block, which actually contains the ATHROW,
-			//   throws the object on the top of the operand stack
-			//
-			// We make a special case of the block containing the ATHROW,
-			// by removing all of the implicit exceptions,
-			// and using type information to figure out what is thrown.
-
-			if (basicBlock.containsInstruction(pei)) {
-				// This is the actual ATHROW, not the null check
-				// and implicit exceptions.
-				exceptionTypeSet.clear();
-
-				TypeFrame frame = typeDataflow.getFactAtLocation(new Location(pei, basicBlock));
-	
-				// Check whether or not the frame is valid.
-				// Sun's javac sometimes emits unreachable code.
-				// For example, it will emit code that follows a JSR
-				// subroutine call that never returns.
-				// If the frame is invalid, then we can just make
-				// a conservative assumption that anything could be
-				// thrown at this ATHROW.
-				if (!frame.isValid()) {
-					exceptionTypeSet.addExplicit(Type.THROWABLE);
-				} else {
-					Type throwType = frame.getTopValue();
-					if (throwType instanceof ObjectType) {
-						exceptionTypeSet.addExplicit((ObjectType) throwType);
-					} else if (throwType instanceof ExceptionObjectType) {
-						exceptionTypeSet.addAll(((ExceptionObjectType)throwType).getExceptionSet());
-					} else {
-						throw new DataflowAnalysisException("Non object type " + throwType +
-							" thrown by " + pei + " in " +
-							SignatureConverter.convertMethodSignature(methodGen));
-					}
-				}
-			}
-		}
-
-		// If it's an InvokeInstruction, add declared exceptions and RuntimeException
-		if (ins instanceof InvokeInstruction) {
-			InvokeInstruction inv = (InvokeInstruction) ins;
-			ObjectType[] declaredExceptionList = Hierarchy.findDeclaredExceptions(inv, cpg);
-			if (declaredExceptionList == null) {
-				// Couldn't find declared exceptions,
-				// so conservatively assume it could thrown any checked exception.
-				if (DEBUG) System.out.println("Couldn't find declared exceptions for " +
-					SignatureConverter.convertMethodSignature(inv, cpg));
-				exceptionTypeSet.addExplicit(Hierarchy.EXCEPTION_TYPE);
-			} else {
-				for (int i = 0; i < declaredExceptionList.length; ++i) {
-					exceptionTypeSet.addExplicit(declaredExceptionList[i]);
-				}
-			}
-
-			exceptionTypeSet.addImplicit(Hierarchy.RUNTIME_EXCEPTION_TYPE);
-		}
-
-		if (DEBUG) System.out.println(pei + " can throw " + exceptionTypeSet);
-
-		return exceptionTypeSet;
-	}
-
-	/**
-	 * Check the reachability of an exception handler.
-	 */
-	private void checkReachability(Edge edge, ExceptionSet thrownExceptionSet, Set<Edge> deletedEdgeSet,
-		List<MarkedEdge> markedEdgeList) throws ClassNotFoundException {
-
-		if (DEBUG) System.out.println("Checking reachability of edge:\n\t" + edge);
-
-		BasicBlock handlerBlock = edge.getTarget();
-		CodeExceptionGen handler = handlerBlock.getExceptionGen();
-		ObjectType catchType = handler.getCatchType();
-
-		boolean reachable = false;
-
-		if (Hierarchy.isUniversalExceptionHandler(catchType)) {
-			// Universal handler: it catches all exceptions
-			int flag = thrownExceptionSet.containsCheckedExceptions()
-				? CHECKED_EXCEPTIONS_FLAG 
-				: EXPLICIT_UNCHECKED_EXCEPTIONS_FLAG;
-			markedEdgeList.add(new MarkedEdge(edge, flag));
-			thrownExceptionSet.sawUniversal();
-			reachable = true;
-		} else {
-			// Go through the set of thrown execeptions.
-			// Any that will DEFINITELY be caught be this handler, remove.
-			// Any that MIGHT be caught, but won't definitely be caught,
-			// remain.
-			for (Iterator<ThrownException> i = thrownExceptionSet.iterator(); i.hasNext(); ) {
-				ThrownException thrownException = i.next();
-	
-				ObjectType thrownType = thrownException.getType();
-	
-				if (DEBUG) System.out.println("\texception type " + thrownType + ", catch type " + catchType);
-	
-				if (Hierarchy.isSubtype(thrownType, catchType)) {
-					// The thrown exception is a subtype of the catch type,
-					// so this exception will DEFINITELY be caught by
-					// this handler.
-					if (DEBUG) System.out.println("\tException is subtype of catch type: will definitely catch");
-					reachable = true;
-					i.remove();
-				} else if (Hierarchy.isSubtype(catchType, thrownType)) {
-					// The thrown exception is a supertype of the catch type,
-					// so it MIGHT get caught by this handler.
-					if (DEBUG) System.out.println("\tException is supertype of catch type: might catch");
-					reachable = true;
-				}
-			}
-	
-			if (reachable) {
-				// Classify the edge.
-				// We assume that if the user bothered to write
-				// a reachable exception handler, then the
-				// exception edge is "explicit", meaning that it
-				// should be assumed to be feasible at runtime.
-				int flag = Hierarchy.isUncheckedException(catchType)
-					? EXPLICIT_UNCHECKED_EXCEPTIONS_FLAG
-					: CHECKED_EXCEPTIONS_FLAG;
-				markedEdgeList.add(new MarkedEdge(edge, flag));
-			}
-		}
-
-		if (!reachable)
-			deletedEdgeSet.add(edge);
 	}
 }
 

@@ -85,12 +85,12 @@ public class ExceptionObjectType extends ReferenceType implements Constants, Ext
 		StringBuffer buf = new StringBuffer();
 		buf.append("<exception:");
 		boolean first = true;
-		for (Iterator<ThrownException> i = exceptionSet.iterator(); i.hasNext(); ) {
+		for (ExceptionSet.ThrownExceptionIterator i = exceptionSet.iterator(); i.hasNext(); ) {
 			if (first)
 				first = false;
 			else
 				buf.append(',');
-			buf.append(i.next().getType().toString());
+			buf.append(i.next().toString());
 		}
 		buf.append(">");
 		return buf.toString();

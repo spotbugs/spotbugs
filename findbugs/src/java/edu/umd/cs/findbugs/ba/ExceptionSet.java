@@ -19,9 +19,8 @@
 
 package edu.umd.cs.findbugs.ba;
 
-import java.util.HashMap;
+import java.util.BitSet;
 import java.util.Iterator;
-import java.util.Map;
 
 import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.ReferenceType;
@@ -35,21 +34,69 @@ import org.apache.bcel.generic.Type;
  * are runtime faults (NPE, array out of bounds)
  * not explicitly handled by the user code.
  *
- * @see ThrownException
  * @see TypeAnalysis
  * @author David Hovemeyer
  */
 public class ExceptionSet {
-	private Map<ObjectType, ThrownException> map;
+	private ExceptionSetFactory factory;
+	private BitSet exceptionSet;
+	private BitSet explicitSet;
+	private int size;
 	private boolean universalHandler;
 	private Type commonSupertype;
+
+	/**
+	 * Object to iterate over the exception types in the set.
+	 */
+	public class ThrownExceptionIterator {
+		private int last = -1, next = -1;
+
+		ThrownExceptionIterator() {
+			findNext();
+		}
+
+		public boolean hasNext() {
+			if (last == next)
+				findNext();
+			return next < factory.getNumTypes();
+		}
+
+		public ObjectType next() {
+			ObjectType result = factory.getType(next);
+			last = next;
+			return result;
+		}
+
+		public boolean isExplicit() {
+			return explicitSet.get(last);
+		}
+
+		public void remove() {
+			exceptionSet.clear(last);
+			explicitSet.clear(last);
+			--size;
+			commonSupertype = null;
+		}
+
+		private void findNext() {
+			++next;
+			while (next < factory.getNumTypes()) {
+				if (exceptionSet.get(next))
+					break;
+				++next;
+			}
+		}
+	}
 
 	/**
 	 * Constructor.
 	 * Creates an empty set.
 	 */
-	public ExceptionSet() {
-		this.map = new HashMap<ObjectType, ThrownException>();
+	ExceptionSet(ExceptionSetFactory factory) {
+		this.factory = factory;
+		this.exceptionSet = new BitSet();
+		this.explicitSet = new BitSet();
+		this.size = 0;
 		this.universalHandler = false;
 	}
 
@@ -57,15 +104,20 @@ public class ExceptionSet {
 	 * Return an exact copy of this object.
 	 */
 	public ExceptionSet duplicate() {
-		ExceptionSet dup = new ExceptionSet();
-		for (Iterator<ThrownException> i = iterator(); i.hasNext(); ) {
-			dup.addAndAdopt(i.next().duplicate());
-		}
+		ExceptionSet dup = factory.createExceptionSet();
+		dup.exceptionSet.clear();
+		dup.exceptionSet.or(this.exceptionSet);
+		dup.explicitSet.clear();
+		dup.explicitSet.or(this.explicitSet);
+		dup.size = this.size;
+		dup.universalHandler = this.universalHandler;
+		dup.commonSupertype = this.commonSupertype;
+
 		return dup;
 	}
 
 	public int hashCode() {
-		return map.hashCode();
+		return exceptionSet.hashCode() + explicitSet.hashCode();
 	}
 
 	public boolean equals(Object o) {
@@ -73,7 +125,9 @@ public class ExceptionSet {
 		if (o.getClass() != this.getClass()) return false;
 
 		ExceptionSet other = (ExceptionSet) o;
-		return map.equals(other.map) && universalHandler == other.universalHandler;
+		return exceptionSet.equals(other.exceptionSet)
+			&& explicitSet.equals(other.explicitSet)
+			&& universalHandler == other.universalHandler;
 	}
 
 	/**
@@ -92,10 +146,10 @@ public class ExceptionSet {
 		}
 
 		// Compute first common superclass
-		Iterator<ThrownException> i = iterator();
-		ReferenceType result = i.next().getType();
+		ThrownExceptionIterator i = iterator();
+		ReferenceType result = i.next();
 		while (i.hasNext()) {
-			result = result.getFirstCommonSuperclass(i.next().getType());
+			result = result.getFirstCommonSuperclass(i.next());
 			if (result == null) {
 				// This should only happen if the class hierarchy
 				// is incomplete.  We'll just be conservative.
@@ -110,21 +164,21 @@ public class ExceptionSet {
 	}
 
 	/**
-	 * Return an iterator over ThrownExceptions in the set.
+	 * Return an iterator over thrown exceptions.
 	 */
-	public Iterator<ThrownException> iterator() { return map.values().iterator(); }
+	public ThrownExceptionIterator iterator() { return new ThrownExceptionIterator(); }
 
 	/**
 	 * Return whether or not the set is empty.
 	 */
-	public boolean isEmpty() { return map.isEmpty(); }
+	public boolean isEmpty() { return size == 0; }
 
 	/**
 	 * Add an explicit exception.
 	 * @param type type of the exception
 	 */
 	public void addExplicit(ObjectType type) {
-		addAndAdopt(new ThrownException(type, true));
+		add(type, true);
 	}
 
 	/**
@@ -132,7 +186,24 @@ public class ExceptionSet {
 	 * @param type type of the exception
 	 */
 	public void addImplicit(ObjectType type) {
-		addAndAdopt(new ThrownException(type, false));
+		add(type, false);
+	}
+
+	/**
+	 * Add an exception.
+	 * @param type the exception type
+	 * @param explicit true if the exception is explicitly declared
+	 *   or thrown, false if implicit
+	 */
+	public void add(ObjectType type, boolean explicit) {
+		int index = factory.getIndexOfType(type);
+		if (!exceptionSet.get(index))
+			++size;
+		exceptionSet.set(index);
+		if (explicit)
+			explicitSet.set(index);
+
+		commonSupertype = null;
 	}
 
 	/**
@@ -140,32 +211,28 @@ public class ExceptionSet {
 	 * @param other the set
 	 */
 	public void addAll(ExceptionSet other) {
-		for (Iterator<ThrownException> i = other.iterator(); i.hasNext(); ) {
-			addAndAdopt(i.next().duplicate());
-		}
+		exceptionSet.or(other.exceptionSet);
+		explicitSet.or(other.explicitSet);
+		size = countBits(exceptionSet);
+
+		commonSupertype = null;
 	}
 
-	/**
-	 * Add given ThrownException to the set.
-	 * @param thrownException the exception to add
-	 */
-	public void addAndAdopt(ThrownException thrownException) {
-		ThrownException old = map.put(thrownException.getType(), thrownException);
-
-		// Avoid replacing an explicit exception with an identical
-		// implicit exception.
-		if (old != null && old.isExplicit())
-			thrownException.setExplicit(true);
-
-		// Invalidate cached common superclass
-		commonSupertype = null;
+	private int countBits(BitSet bitSet) {
+		int count = 0;
+		for (int i = 0; i < factory.getNumTypes(); ++i) {
+			if (bitSet.get(i))
+				++count;
+		}
+		return count;
 	}
 
 	/**
 	 * Remove all exceptions from the set.
 	 */
 	public void clear() {
-		map.clear();
+		exceptionSet.clear();
+		explicitSet.clear();
 		commonSupertype = null;
 	}
 
@@ -174,9 +241,8 @@ public class ExceptionSet {
 	 * was reached by the set.
 	 */
 	public void sawUniversal() {
+		clear();
 		universalHandler = true;
-		map.clear();
-		commonSupertype = null;
 	}
 
 	/**
@@ -190,9 +256,9 @@ public class ExceptionSet {
 	 * Return whether or not the set contains any checked exceptions.
 	 */
 	public boolean containsCheckedExceptions() throws ClassNotFoundException {
-		for (Iterator<ThrownException> i = iterator(); i.hasNext(); ) {
-			ThrownException thrownException = i.next();
-			if (!Hierarchy.isUncheckedException(thrownException.getType()))
+		for (ThrownExceptionIterator i = iterator(); i.hasNext(); ) {
+			ObjectType type = i.next();
+			if (!Hierarchy.isUncheckedException(type))
 				return true;
 		}
 		return false;
@@ -202,8 +268,9 @@ public class ExceptionSet {
 	 * Return whether or not the set contains any explicit exceptions.
 	 */
 	public boolean containsExplicitExceptions() {
-		for (Iterator<ThrownException> i = iterator(); i.hasNext(); ) {
-			if (i.next().isExplicit())
+		for (ThrownExceptionIterator i = iterator(); i.hasNext(); ) {
+			i.next();
+			if (i.isExplicit())
 				return true;
 		}
 		return false;
@@ -213,15 +280,15 @@ public class ExceptionSet {
 		StringBuffer buf = new StringBuffer();
 		buf.append('{');
 		boolean first = true;
-		for (Iterator<ThrownException> i = iterator(); i.hasNext(); ) {
-			ThrownException thrownException = i.next();
+		for (ThrownExceptionIterator i = iterator(); i.hasNext(); ) {
+			ObjectType type = i.next();
 			if (first)
 				first = false;
 			else
 				buf.append(',');
-			boolean implicit = !thrownException.isExplicit();
+			boolean implicit = !i.isExplicit();
 			if (implicit) buf.append('[');
-			buf.append(thrownException.getType().toString());
+			buf.append(type.toString());
 			if (implicit) buf.append(']');
 		}
 		buf.append('}');

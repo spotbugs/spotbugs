@@ -32,13 +32,17 @@ import org.apache.bcel.generic.*;
  */
 public class StandardTypeMerger implements TypeMerger, Constants, ExtendedTypes {
 	private RepositoryLookupFailureCallback lookupFailureCallback;
+	private ExceptionSetFactory exceptionSetFactory;
 
 	/**
 	 * Constructor.
 	 * @param lookupFailureCallback object used to report Repository lookup failures
+	 * @param exceptionSetFactory factory for creating ExceptionSet objects
 	 */
-	public StandardTypeMerger(RepositoryLookupFailureCallback lookupFailureCallback) {
+	public StandardTypeMerger(RepositoryLookupFailureCallback lookupFailureCallback,
+		ExceptionSetFactory exceptionSetFactory) {
 		this.lookupFailureCallback = lookupFailureCallback;
+		this.exceptionSetFactory = exceptionSetFactory;
 	}
 
 	public Type mergeTypes(Type a, Type b) throws DataflowAnalysisException {
@@ -119,7 +123,7 @@ public class StandardTypeMerger implements TypeMerger, Constants, ExtendedTypes 
 			// We want to preserve the ExceptionSets associated,
 			// in order to track the exact set of exceptions
 			if (aRef instanceof ExceptionObjectType || bRef instanceof ExceptionObjectType) {
-				ExceptionSet union = new ExceptionSet();
+				ExceptionSet union = exceptionSetFactory.createExceptionSet();
 
 				updateExceptionSet(union, aRef);
 				updateExceptionSet(union, bRef);

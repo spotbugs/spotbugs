@@ -259,8 +259,10 @@ public class ClassContext implements AnalysisFeatures {
 			MethodGen methodGen = getMethodGen(method);
 			CFG cfg = getRawCFG(method);
 			DepthFirstSearch dfs = getDepthFirstSearch(method);
+			ExceptionSetFactory exceptionSetFactory = getExceptionSetFactory(method);
 
-			TypeAnalysis typeAnalysis = new TypeAnalysis(methodGen, cfg, dfs, lookupFailureCallback);
+			TypeAnalysis typeAnalysis =
+				new TypeAnalysis(methodGen, cfg, dfs, lookupFailureCallback, exceptionSetFactory);
 			TypeDataflow typeDataflow = new TypeDataflow(cfg, typeAnalysis);
 			typeDataflow.execute();
 
@@ -379,6 +381,13 @@ public class ClassContext implements AnalysisFeatures {
 				new Dataflow<java.util.BitSet, PostDominatorsAnalysis>(cfg, analysis);
 			dataflow.execute();
 			return analysis;
+		}
+	};
+
+	private NoExceptionAnalysisFactory<ExceptionSetFactory> exceptionSetFactoryFactory =
+	new NoExceptionAnalysisFactory<ExceptionSetFactory>("exception set factory") {
+		protected ExceptionSetFactory analyze(Method method) {
+			return new ExceptionSetFactory();
 		}
 	};
 
@@ -567,11 +576,20 @@ public class ClassContext implements AnalysisFeatures {
 	 * Get PostDominatorsAnalysis for given method,
 	 * where exception edges are ignored.
 	 * @param method the method
-	 * @param the PostDominatorsAnalysis
+	 * @return the PostDominatorsAnalysis
 	 */
 	public PostDominatorsAnalysis getNonExceptionPostDominatorsAnalysis(Method method)
 		throws CFGBuilderException, DataflowAnalysisException {
 		return nonExceptionPostDominatorsAnalysisFactory.getAnalysis(method);
+	}
+
+	/**
+	 * Get ExceptionSetFactory for given method.
+	 * @param method the method
+	 * @return the ExceptionSetFactory
+	 */
+	public ExceptionSetFactory getExceptionSetFactory(Method method) {
+		return exceptionSetFactoryFactory.getAnalysis(method);
 	}
 
 	/**

@@ -84,6 +84,15 @@ public class Edge extends AbstractEdge<Edge, BasicBlock> implements EdgeTypes, D
 	}
 
 	/**
+	 * Return if given edge flag is set.
+	 * @param flag the edge flag
+	 * @return true if the flag is set, false otherwise
+	 */
+	public boolean isFlagSet(int flag) {
+		return (this.flags & flag) != 0;
+	}
+
+	/**
 	 * Is the edge an exception edge?
 	 */
 	public boolean isExceptionEdge() {
