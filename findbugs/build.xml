@@ -101,7 +101,9 @@
     <target name="coreplugin" depends="init,findbugs">
 
       <javac srcdir="${findbugs.src.dir}" destdir="${class.dir}"
-             includes="edu/umd/cs/findbugs/detect/*.java">
+             includes="edu/umd/cs/findbugs/detect/*.java"
+             source="1.5"
+             compiler="com.cortexeb.Jsr14CompilerAdapter">
         <classpath refid="classpath" />
       </javac>
 
