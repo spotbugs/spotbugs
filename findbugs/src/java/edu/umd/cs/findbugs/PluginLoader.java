@@ -121,6 +121,7 @@ public class PluginLoader extends URLClassLoader {
 			SAXReader reader = new SAXReader();
 			messageCollection = reader.read(messageURL);
 		} catch (DocumentException e) {
+			e.printStackTrace();
 			throw new PluginException("Couldn't parse \"messages.xml\"", e);
 		}
 
