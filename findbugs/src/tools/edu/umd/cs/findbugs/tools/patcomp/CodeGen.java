@@ -29,6 +29,7 @@ import java.io.PrintStream;
  */
 public class CodeGen implements PatternCompilerTreeConstants {
 	private PrintStream out;
+	private int indent = 0;
 
 	public CodeGen() {
 	}
@@ -50,51 +51,69 @@ public class CodeGen implements PatternCompilerTreeConstants {
 	}
 
 	public void generateDefault(SimpleNode node) {
-		int numChildren = node.jjtGetNumChildren();
-		int numTokens = node.getNumTokens();
-		if (numChildren == 0 && numTokens == 0)
-			return;
+//		System.out.println("START " + node.toString() +
+//			": first=" + node.getFirstToken() + ", last=" + node.getLastToken());
 
-		// If there are no child nodes, just emit all of
-		// the tokens.
-		if (numChildren == 0) {
-			Token t = node.getFirstToken();
-			while (t != node.getLastToken()) {
-				out.println(t.image);
-				t = t.next;
-			}
-			return;
-		}
+		int numChildren = node.jjtGetNumChildren();
+
+		SimpleNode child = null;
+		Token t;
 
 		// For each child, emit tokens preceeding that
 		// child not covered by previous children,
 		// then visit the child.
-		Token t = node.getFirstToken();
 		int childNum = 0;
-		do {
-			SimpleNode child = (SimpleNode) node.jjtGetChild(childNum);
-			while (t != null && t != child.getFirstToken()) {
-				out.println(t.image);
+		while (childNum < numChildren) {
+			SimpleNode nextChild = (SimpleNode) node.jjtGetChild(childNum);
+
+			if (child == null)
+				t = node.getFirstToken();
+			else if (child.getLastToken() != nextChild.getFirstToken())
+				t = child.getLastToken().next;
+			else
+				t = nextChild.getFirstToken();
+
+			while (t != nextChild.getFirstToken()) {
+				emit(t.image);
 				t = t.next;
 			}
 
-			visit(child);
+			child = nextChild;
 
-			if (child.getNumTokens() > 0)
-				t = child.getLastToken().next;
+			++indent;
+			visit(child);
+			--indent;
 
 			++childNum;
-		} while (childNum < numChildren);
+		}
 
 		// Emit rest of tokens
-		while (t != null && t != node.getLastToken()) {
-			out.println(t.image);
+		if (child == null)
+			t = node.getFirstToken();
+		else if (child.getLastToken() != node.getLastToken())
+			t = child.getLastToken().next;
+		else
+			t = null;
+
+		while (t != null) {
+			emit(t.image);
+			if (t == node.getLastToken())
+				break;
 			t = t.next;
 		}
+
+//		System.out.println("FINISH " + node.toString() +
+//			": first=" + node.getFirstToken() + ", last=" + node.getLastToken());
 	}
 
 	public void generatePrescreen(SimpleNode node) {
 		System.out.println("Generating prescreen code");
+	}
+
+	private void emit(String t) {
+		for (int i = 0; i < indent; ++i)
+			out.print("  ");
+		out.println(t);
 	}
 }
 
