@@ -1,8 +1,7 @@
 #! /bin/sh
 
-# Merge new FindBugs saved XML results into an existing annotated
-# results file, preserving the annotations for the bugs which are
-# unchanged.
+# Find bugs which have been annotated with "GOOD_EXAMPLE"
+# or "EXCELLENT_EXAMPLE".
 
 # This script contains code taken from the "bin/ant" script from
 # Apache Ant (http://ant.apache.org).  So, this file is distributed
