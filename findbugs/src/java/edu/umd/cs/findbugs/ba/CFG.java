@@ -272,6 +272,10 @@ public class CFG implements Debug {
 	public int getNumEdges() {
 		return edgeList.size();
 	}
+
+	public void checkIntegrity() {
+		// TODO: implement something here?
+	}
 }
 
 // vim:ts=4
