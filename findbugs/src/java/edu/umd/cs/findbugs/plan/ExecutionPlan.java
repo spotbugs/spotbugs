@@ -85,10 +85,14 @@ public class ExecutionPlan {
 		DepthFirstSearch<ConstraintGraph, ConstraintEdge, DetectorNode> dfs =
 			getDepthFirstSearch(interPassConstraintGraph);
 
+/*
 		// Get a topological sort.
 		// This will determine a sequence of passes.
 		List<DetectorNode> passRepresentativeList = new LinkedList<DetectorNode>();
 		copyTo(dfs.topologicalSortIterator(), passRepresentativeList);
+*/
+		// Build list of analysis passes.
+		buildPassList(interPassConstraintGraph);
 	}
 
 	private static<T> void copyTo(Iterator<T> iter, List<T> dest) {
@@ -183,6 +187,39 @@ public class ExecutionPlan {
 		if (dfs.containsCycle())
 			throw new OrderingConstraintException("Cycle in detector ordering constraints!");
 		return dfs;
+	}
+
+	private void buildPassList(ConstraintGraph constraintGraph) {
+		while (constraintGraph.getNumVertices() > 0) {
+			List<DetectorNode> indegreeZeroList = new LinkedList<DetectorNode>();
+
+			// Get all of the detectors nodes with in-degree 0.
+			// These have no unsatisfied prerequisites, and thus can
+			// be chosen for the current pass.
+			for (Iterator<DetectorNode> i = constraintGraph.vertexIterator(); i.hasNext(); ) {
+				DetectorNode node = i.next();
+
+				if (constraintGraph.getNumIncomingEdges(node) == 0) {
+					indegreeZeroList.add(node);
+				}
+			}
+
+			// Remove all of the chosen detectors from the constraint graph.
+			for (Iterator<DetectorNode> i = indegreeZeroList.iterator(); i.hasNext(); ) {
+				DetectorNode node = i.next();
+				constraintGraph.removeVertex(node);
+			}
+
+			// Create analysis pass and add detector factories.
+			AnalysisPass pass = new AnalysisPass();
+			for (Iterator<DetectorNode> i = indegreeZeroList.iterator(); i.hasNext(); ) {
+				DetectorNode node = i.next();
+				pass.addDetectorFactory(node.getFactory());
+			}
+
+			// Add pass to list of passes in the execution plan.
+			passList.add(pass);
+		}
 	}
 }
 
