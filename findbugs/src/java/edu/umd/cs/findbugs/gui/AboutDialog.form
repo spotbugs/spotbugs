@@ -34,6 +34,9 @@
           <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
           <SubComponents>
             <Component class="javax.swing.JEditorPane" name="aboutEditorPane">
+              <Properties>
+                <Property name="editable" type="boolean" value="false"/>
+              </Properties>
               <AuxValues>
                 <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="try {&#xa;    aboutEditorPane.setPage(aboutURL);&#xa;} catch (java.io.IOException e) {&#xa;    parent.getLogger().logMessage(ConsoleLogger.ERROR, &quot;Error loading about URL: &quot; + e.getMessage());&#xa;}"/>
               </AuxValues>
@@ -52,6 +55,9 @@
           <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
           <SubComponents>
             <Component class="javax.swing.JEditorPane" name="licenseEditorPane">
+              <Properties>
+                <Property name="editable" type="boolean" value="false"/>
+              </Properties>
               <AuxValues>
                 <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="try {&#xa;    licenseEditorPane.setPage(licenseURL);&#xa;} catch (java.io.IOException e) {&#xa;    parent.getLogger().logMessage(ConsoleLogger.ERROR, &quot;Error loading license URL: &quot; + e.getMessage());&#xa;}"/>
               </AuxValues>

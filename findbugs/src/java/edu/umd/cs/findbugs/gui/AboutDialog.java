@@ -71,6 +71,7 @@ public class AboutDialog extends javax.swing.JDialog {
             }
         });
 
+        aboutEditorPane.setEditable(false);
         try {
             aboutEditorPane.setPage(aboutURL);
         } catch (java.io.IOException e) {
@@ -80,6 +81,7 @@ public class AboutDialog extends javax.swing.JDialog {
 
         aboutTabPane.addTab("About", aboutScrollPane);
 
+        licenseEditorPane.setEditable(false);
         try {
             licenseEditorPane.setPage(licenseURL);
         } catch (java.io.IOException e) {
@@ -133,13 +135,13 @@ public class AboutDialog extends javax.swing.JDialog {
     }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JEditorPane aboutEditorPane;
+    private javax.swing.JScrollPane aboutScrollPane;
+    private javax.swing.JTabbedPane aboutTabPane;
+    private javax.swing.JSeparator jSeparator1;
+    private javax.swing.JEditorPane licenseEditorPane;
     private javax.swing.JScrollPane licenseScrollPane;
     private javax.swing.JButton okButton;
-    private javax.swing.JScrollPane aboutScrollPane;
-    private javax.swing.JEditorPane licenseEditorPane;
-    private javax.swing.JSeparator jSeparator1;
-    private javax.swing.JEditorPane aboutEditorPane;
-    private javax.swing.JTabbedPane aboutTabPane;
     // End of variables declaration//GEN-END:variables
     
 }
