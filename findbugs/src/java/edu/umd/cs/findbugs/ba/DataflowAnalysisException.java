@@ -19,6 +19,9 @@
 
 package edu.umd.cs.findbugs.ba;
 
+import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.MethodGen;
+
 /**
  * Exception type to indicate a dataflow analysis failure.
  * @see Dataflow
@@ -43,6 +46,16 @@ public class DataflowAnalysisException extends Exception {
 	 */
 	public DataflowAnalysisException(String msg, Throwable cause) {
 		super(msg, cause);
+	}
+
+	/**
+	 * Constructor from method and instruction.
+	 * @param message reason for the error
+	 * @param methodGen the method
+	 * @param handle the instruction
+	 */
+	public DataflowAnalysisException(String message, MethodGen methodGen, InstructionHandle handle) {
+		super(message + " in " + SignatureConverter.convertMethodSignature(methodGen) + " at " + handle);
 	}
 }
 
