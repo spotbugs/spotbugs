@@ -56,6 +56,9 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame> {
 	}
 
 	public void initEntryFact(TypeFrame result) {
+		// Make the frame valid
+		result.setValid();
+
 		int slot = 0;
 
 		// Clear the stack slots in the frame
@@ -70,7 +73,7 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame> {
 		for (int i = 0; i < argumentTypes.length; ++i)
 			result.setValue(slot++, argumentTypes[i]);
 
-		// Set remaining parameters to BOTTOM; this will cause any
+		// Set remaining locals to BOTTOM; this will cause any
 		// uses of them to be flagged
 		while (slot < methodGen.getMaxLocals())
 			result.setValue(slot++, TypeFrame.getBottomType());
@@ -121,6 +124,27 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame> {
 			fact = tmpFact;
 		}
 		result.mergeWith(fact);
+	}
+
+	public static void main(String[] argv) throws Exception {
+		if (argv.length != 1) {
+			System.err.println("Usage: " + TypeAnalysis.class.getName() + " <class file>");
+			System.exit(1);
+		}
+
+		final RepositoryLookupFailureCallback lookupFailureCallback = new RepositoryLookupFailureCallback() {
+			public void reportMissingClass(ClassNotFoundException ex) {
+				System.err.println("Missing class: " + ex.getMessage());
+			}
+		};
+
+		DataflowTestDriver<TypeFrame> driver = new DataflowTestDriver<TypeFrame>() {
+			public AbstractDataflowAnalysis<TypeFrame> createAnalysis(MethodGen methodGen, CFG cfg) {
+				return new TypeAnalysis(methodGen, lookupFailureCallback);
+			}
+		};
+
+		driver.execute(argv[0]);
 	}
 }
 

@@ -40,9 +40,6 @@ import org.apache.bcel.generic.*;
 public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type, TypeFrame>
 	implements Constants, Debug {
 
-	private TypeFrame frame;
-	private ConstantPoolGen cpg;
-
 	/**
 	 * Constructor.
 	 * @param frame the TypeFrame object to be operated on
@@ -61,6 +58,9 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 	 * where the types of popped operands can be ignored.
 	 */
 	private void consumeStack(Instruction ins) {
+		ConstantPoolGen cpg = getCPG();
+		TypeFrame frame = getFrame();
+
 		int numWordsConsumed = ins.consumeStack(cpg);
 		if (numWordsConsumed == Constants.UNPREDICTABLE)
 			throw new IllegalStateException("Unpredictable stack consumption for " + ins);
@@ -80,6 +80,7 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 	 * each double or long value.
 	 */
 	private void pushValue(Type type) {
+		TypeFrame frame = getFrame();
 		if (type.getType() == T_LONG) {
 			frame.pushValue(Type.LONG);
 			frame.pushValue(TypeFrame.getLongExtraType());
@@ -94,6 +95,7 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 	 * Helper for pushing the return type of an invoke instruction.
 	 */
 	private void pushReturnType(InvokeInstruction ins) {
+		ConstantPoolGen cpg = getCPG();
 		Type type = ins.getType(cpg);
 		if (type.getType() != T_VOID)
 			pushValue(type);
@@ -129,21 +131,21 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 	public void visitFCONST(FCONST obj)				{ pushValue(Type.FLOAT); }
 	public void visitICONST(ICONST obj)				{ pushValue(Type.INT); }
 	public void visitLCONST(LCONST obj)				{ pushValue(Type.LONG); }
-	public void visitLDC(LDC obj)					{ pushValue(obj.getType(cpg)); }
-	public void visitLDC2_W(LDC2_W obj)				{ pushValue(obj.getType(cpg)); }
+	public void visitLDC(LDC obj)					{ pushValue(obj.getType(getCPG())); }
+	public void visitLDC2_W(LDC2_W obj)				{ pushValue(obj.getType(getCPG())); }
 
 	public void visitBIPUSH(BIPUSH obj)				{ pushValue(Type.INT); }
 	public void visitSIPUSH(SIPUSH obj)				{ pushValue(Type.INT); }
 
-	public void visitGETSTATIC(GETSTATIC obj)		{ consumeStack(obj); pushValue(obj.getType(cpg)); }
-	public void visitGETFIELD(GETFIELD obj)			{ consumeStack(obj); pushValue(obj.getType(cpg)); }
+	public void visitGETSTATIC(GETSTATIC obj)		{ consumeStack(obj); pushValue(obj.getType(getCPG())); }
+	public void visitGETFIELD(GETFIELD obj)			{ consumeStack(obj); pushValue(obj.getType(getCPG())); }
 
 	public void visitINVOKESTATIC(INVOKESTATIC obj)	{ consumeStack(obj); pushReturnType(obj); }
 	public void visitINVOKESPECIAL(INVOKESPECIAL obj) { consumeStack(obj); pushReturnType(obj); }
 	public void visitINVOKEINTERFACE(INVOKEINTERFACE obj) { consumeStack(obj); pushReturnType(obj); }
 	public void visitINVOKEVIRTUAL(INVOKEVIRTUAL obj) { consumeStack(obj); pushReturnType(obj); }
 
-	public void visitCHECKCAST(CHECKCAST obj)		{ consumeStack(obj); pushValue(obj.getType(cpg)); }
+	public void visitCHECKCAST(CHECKCAST obj)		{ consumeStack(obj); pushValue(obj.getType(getCPG())); }
 	public void visitINSTANCEOF(INSTANCEOF obj)		{ consumeStack(obj); pushValue(Type.INT); }
 
 	public void visitFCMPL(FCMPL obj)				{ consumeStack(obj); pushValue(Type.INT); }
@@ -227,6 +229,7 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 		// To determine the type pushed on the stack,
 		// we look at the type of the array reference which was
 		// popped off of the stack.
+		TypeFrame frame = getFrame();
 		try {
 			Type arrayType = frame.popValue();
 			ArrayType arr = (ArrayType) arrayType;
@@ -249,17 +252,17 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 	public void visitNEW(NEW obj) {
 		// FIXME: type is technically "uninitialized"
 		// However, we don't model that yet.
-		pushValue(obj.getType(cpg));
+		pushValue(obj.getType(getCPG()));
 	}
 
 	public void visitNEWARRAY(NEWARRAY obj)			{ consumeStack(obj); pushValue(obj.getType()); }
-	public void visitANEWARRAY(ANEWARRAY obj)		{ consumeStack(obj); pushValue(obj.getType(cpg)); }
+	public void visitANEWARRAY(ANEWARRAY obj)		{ consumeStack(obj); pushValue(obj.getType(getCPG())); }
 
 	public void visitMULTIANEWARRAY(MULTIANEWARRAY obj) {
 		consumeStack(obj);
 		// TODO: I'm a bit skeptical that the implementation of getType() used
 		// by MULTIANEWARRAY is correct.  Trust it for now.
-		pushValue(obj.getType(cpg));
+		pushValue(obj.getType(getCPG()));
 	}
 
 	public void visitJSR(JSR obj)					{ pushValue(ReturnaddressType.NO_TARGET); }
