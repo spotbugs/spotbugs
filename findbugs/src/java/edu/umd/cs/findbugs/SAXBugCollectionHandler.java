@@ -35,8 +35,6 @@ import org.xml.sax.helpers.XMLReaderFactory;
  * This is intended to replace the old DOM-based parsing
  * of XML bug result files, which was very slow.
  *
- * <p> Note: this class is not complete yet.
- *
  * @author David Hovemeyer
  */
 public class SAXBugCollectionHandler extends DefaultHandler {
@@ -78,30 +76,68 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 						project.setFileName(filename);
 				} else if (qName.equals("BugInstance")) {
 					// BugInstance element - get required type and priority attributes
-					String type = attributes.getValue("type");
-					String priority = attributes.getValue("priority");
-
-					if (type == null)
-						throw new SAXException("BugInstance missing type attribute");
-					if (priority == null)
-						throw new SAXException("BugInstance missing priority attribute");
+					String type = getRequiredAttribute(attributes, "type", qName);
+					String priority = getRequiredAttribute(attributes, "priority", qName);
 
 					try {
 						int prio = Integer.parseInt(priority);
 						bugInstance = new BugInstance(type, prio);
 					} catch (NumberFormatException e) {
 						throw new SAXException("BugInstance with invalid priority value \"" +
-							priority + "\"");
+							priority + "\"", e);
 					}
 				}
 			} else if (outerElement.equals("BugInstance")) {
 				// Parsing an attribute of a BugInstance
+				BugAnnotation bugAnnotation = null;
 				if (qName.equals("Class")) {
-				} else if (qName.equals("Method")) {
-				} else if (qName.equals("Field")) {
+					String className = getRequiredAttribute(attributes, "classname", qName);
+					bugAnnotation = new ClassAnnotation(className);
+				} else if (qName.equals("Method") || qName.equals("Field")) {
+					String classname = getRequiredAttribute(attributes, "classname", qName);
+					String fieldOrMethodName = getRequiredAttribute(attributes, "name", qName);
+					String signature = getRequiredAttribute(attributes, "signature", qName);
+					if (qName.equals("Method")) {
+						bugAnnotation = new MethodAnnotation(classname, fieldOrMethodName, signature);
+					} else {
+						String isStatic = getRequiredAttribute(attributes, "isStatic", qName);
+						bugAnnotation = new FieldAnnotation(classname, fieldOrMethodName, signature,
+							Boolean.valueOf(isStatic));
+					}
 				} else if (qName.equals("SourceLine")) {
+					String classname = getRequiredAttribute(attributes, "classname", qName);
+					String sourceFile = attributes.getValue("sourceFile");
+					if (sourceFile == null)
+						sourceFile = SourceLineAnnotation.UNKNOWN_SOURCE_FILE;
+					String startLine = getRequiredAttribute(attributes, "start", qName);
+					String endLine = getRequiredAttribute(attributes, "end", qName);
+					String startBytecode = attributes.getValue("startBytecode");
+					String endBytecode = attributes.getValue("endBytecode");
+
+					try {
+						int sl = Integer.parseInt(startLine);
+						int el = Integer.parseInt(endLine);
+						int sb = startBytecode != null ? Integer.parseInt(startBytecode) : -1;
+						int eb = endBytecode != null ? Integer.parseInt(endBytecode) : -1;
+
+						bugAnnotation = new SourceLineAnnotation(classname, sourceFile, sl, el, sb, eb);
+					} catch (NumberFormatException e) {
+						throw new SAXException("Bad integer value in SourceLine element", e);
+					}
 				} else if (qName.equals("Int")) {
+					try {
+						String value = getRequiredAttribute(attributes, "value", qName);
+						String role = attributes.getValue("role");
+						bugAnnotation = new IntAnnotation(Integer.parseInt(value));
+						if (role != null)
+							bugAnnotation.setDescription(role);
+					} catch (NumberFormatException e) {
+						throw new SAXException("Bad integer value in Int");
+					}
 				}
+
+				if (bugAnnotation != null)
+					bugInstance.add(bugAnnotation);
 			}
 		}
 
@@ -116,7 +152,12 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 		if (elementStack.size() > 1) {
 			String outerElement = elementStack.get(elementStack.size() - 2);
 
-			if (outerElement.equals("Project")) {
+			if (outerElement.equals("BugCollection")) {
+				if (qName.equals("SummaryHTML"))
+					bugCollection.setSummaryHTML(textBuffer.toString());
+				else if (qName.equals("BugInstance"))
+					bugCollection.add(bugInstance);
+			} else if (outerElement.equals("Project")) {
 				//System.out.println("Adding project element " + qName + ": " + textBuffer.toString());
 				if (qName.equals("Jar"))
 					project.addJar(textBuffer.toString());
@@ -136,6 +177,14 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 
 	public void characters(char[] ch, int start, int length) {
 		textBuffer.append(ch, start, length);
+	}
+
+	private static String getRequiredAttribute(Attributes attributes, String attrName, String elementName)
+		throws SAXException {
+		String value = attributes.getValue(attrName);
+		if (value == null)
+			throw new SAXException(elementName + " element missing " + attrName + " attribute");
+		return value;
 	}
 
 	// Just a test driver
