@@ -42,12 +42,18 @@ import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
+import org.apache.bcel.generic.INVOKESPECIAL;
+import org.apache.bcel.generic.NEWARRAY;
+import org.apache.bcel.generic.ANEWARRAY;
+import org.apache.bcel.generic.MULTIANEWARRAY;
+import org.apache.bcel.generic.ASTORE;
 import org.apache.bcel.generic.IndexedInstruction;
 import org.apache.bcel.generic.IINC;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.MethodGen;
 import org.apache.bcel.generic.StoreInstruction;
+import org.apache.bcel.generic.LoadInstruction;
 
 public class FindDeadLocalStores implements Detector {
 	private static final boolean DEBUG = Boolean.getBoolean("fdls.debug");
@@ -59,8 +65,13 @@ public class FindDeadLocalStores implements Detector {
 	 */
 	private static final BitSet defensiveConstantValueOpcodes = new BitSet();
 	static {
+		defensiveConstantValueOpcodes.set(Constants.DCONST_0);
+		defensiveConstantValueOpcodes.set(Constants.DCONST_1);
+		defensiveConstantValueOpcodes.set(Constants.FCONST_0);
+		defensiveConstantValueOpcodes.set(Constants.FCONST_1);
 		defensiveConstantValueOpcodes.set(Constants.ACONST_NULL);
 		defensiveConstantValueOpcodes.set(Constants.ICONST_0);
+		defensiveConstantValueOpcodes.set(Constants.ICONST_1);
 	}
 
 	private BugReporter bugReporter;
@@ -109,9 +120,36 @@ public class FindDeadLocalStores implements Detector {
 		Dataflow<BitSet, LiveLocalStoreAnalysis> llsaDataflow =
 			classContext.getLiveLocalStoreDataflow(method);
 
+		int numLocals = method.getCode().getMaxLocals();
+		int [] localUpdateCount = new int[numLocals];
+		int [] localLoadCount = new int[numLocals];
+		int [] localIncrementCount = new int[numLocals];
 		MethodGen methodGen = classContext.getMethodGen(method);
 		CFG cfg = classContext.getCFG(method);
 		BitSet liveStoreSetAtEntry = llsaDataflow.getAnalysis().getResultFact(cfg.getEntry());
+		BitSet complainedAbout = new BitSet();
+
+		for (Iterator<Location> i = cfg.locationIterator(); i.hasNext(); ) {
+			Location location = i.next();
+			if (location.getBasicBlock().isExceptionHandler())
+				continue;
+
+			boolean isStore = isStore(location);
+			boolean isLoad = isLoad(location);
+			if (!isStore && !isLoad) continue;
+			IndexedInstruction ins = (IndexedInstruction) location.getHandle().getInstruction();
+			int local = ins.getIndex();
+			if (ins instanceof IINC) {
+				localUpdateCount[local]++;
+				localLoadCount[local]++;
+				localIncrementCount[local]++;
+			}
+			else if (isStore) 
+				localUpdateCount[local]++;
+			else 
+				localLoadCount[local]++;
+			}
+
 
 		for (Iterator<Location> i = cfg.locationIterator(); i.hasNext(); ) {
 			Location location = i.next();
@@ -124,8 +162,18 @@ public class FindDeadLocalStores implements Detector {
 			if (location.getBasicBlock().isExceptionHandler())
 				continue;
 
-			IndexedInstruction store = (IndexedInstruction) location.getHandle().getInstruction();
-			int local = store.getIndex();
+			IndexedInstruction ins = (IndexedInstruction) location.getHandle().getInstruction();
+			int local = ins.getIndex();
+
+			boolean parameterThatIsDeadAtEntry = local < method.getArgumentTypes().length
+			    && !llsaDataflow.getAnalysis().isStoreAlive(liveStoreSetAtEntry, local);
+			if (parameterThatIsDeadAtEntry && !complainedAbout.get(local)) {
+			BugInstance bugInstance = new BugInstance(this, "IP_PARAMETER_IS_DEAD_BUT_OVERWRITTEN", NORMAL_PRIORITY)
+				.addClassAndMethod(methodGen, javaClass.getSourceFileName())
+				.addSourceLine(methodGen, javaClass.getSourceFileName(), location.getHandle());
+			bugReporter.reportBug(bugInstance);
+			complainedAbout.set(local);
+			}
 
 			// Get live stores at this instruction.
 			// Note that the analysis also computes which stores were
@@ -138,9 +186,7 @@ public class FindDeadLocalStores implements Detector {
 
 			// Store is dead
 
-			// Don't compain about IINC
-			if (location.getHandle().getInstruction().getOpcode() == Constants.IINC)
-				continue;
+			
 
 			// Ignore assignments that were killed by a subsequent assignment.
 			if (llsaDataflow.getAnalysis().killedByStore(liveStoreSet, local)) {
@@ -158,13 +204,40 @@ public class FindDeadLocalStores implements Detector {
 				continue;
 
 			int priority = LOW_PRIORITY;
-			if (local < method.getArgumentTypes().length
-			    && !llsaDataflow.getAnalysis().isStoreAlive(liveStoreSetAtEntry, local)) {
-		
-				if (DEBUG) System.out.println("Raising priority");
-				priority = NORMAL_PRIORITY;
+			// special handling of IINC
+			if (ins instanceof IINC) {
+				
+				 if (localIncrementCount[local] == 1) 
+					priority = HIGH_PRIORITY;
+				else continue;
+
 				}
 
+			if (ins instanceof ASTORE
+				&& prev != null) { 
+				Instruction prevIns = prev.getInstruction();
+				if ((prevIns instanceof INVOKESPECIAL &&
+					((INVOKESPECIAL)prevIns).getMethodName(methodGen.getConstantPool()).equals("<init>"))
+				    || prevIns instanceof ANEWARRAY
+				    || prevIns instanceof NEWARRAY
+				    || prevIns instanceof MULTIANEWARRAY)
+					priority--;
+			}
+
+
+			else if (localUpdateCount[local] == 2
+				&& localLoadCount[local] > 0) priority--; // raise priority
+			else if (localUpdateCount[local] == 1)
+				priority++;
+
+			else if (localLoadCount[local] == 0) priority++; // lower priority
+			if (parameterThatIsDeadAtEntry) {
+				if (DEBUG) System.out.println("Raising priority");
+				priority--;
+				}
+
+			if (priority < HIGH_PRIORITY)
+				priority =  HIGH_PRIORITY;
 			if (DEBUG) System.out.println(" considering reporting bug:" + priority);
 			if (priority != LOW_PRIORITY 
 				|| classesAlreadyReportedOn.add(javaClass.getClassName())) {
@@ -183,6 +256,10 @@ public class FindDeadLocalStores implements Detector {
 	private boolean isStore(Location location) {
 		Instruction ins = location.getHandle().getInstruction();
 		return (ins instanceof StoreInstruction) || (ins instanceof IINC);
+	}
+	private boolean isLoad(Location location) {
+		Instruction ins = location.getHandle().getInstruction();
+		return (ins instanceof LoadInstruction) || (ins instanceof IINC);
 	}
 
 	public void report() {
