@@ -92,6 +92,7 @@ import java.util.List;
  * <li>jvmargs          (any additional jvm arguments)
  * <li>classpath       (classpath for running FindBugs)
  * <li>pluginList      (list of plugin Jar files to load)
+ * <li>systemProperty  (a system property to set)
  * </ul>
  * Of these arguments, the <b>home</b> is required.
  * <b>projectFile</b> is required if nested &lt;class&gt; are not
@@ -101,7 +102,7 @@ import java.util.List;
  *
  * @author Mike Fagan <a href="mailto:mfagan@tde.com">mfagan@tde.com</a>
  *
- * @version $Revision: 1.21 $
+ * @version $Revision: 1.22 $
  *
  * @since Ant 1.5
  *
@@ -134,6 +135,7 @@ public class FindBugsTask extends Task {
 	private long timeout = DEFAULT_TIMEOUT;
 	private Path classpath = null;
 	private Path pluginList = null;
+	private List systemPropertyList = new ArrayList();
 
 	private Java findbugsEngine = null;
 
@@ -153,6 +155,18 @@ public class FindBugsTask extends Task {
            return classLocation!=null?classLocation.toString():"";
         }
  
+	}
+
+	// A System property to set when FindBugs is run
+	public class SystemProperty {
+		private String name;
+		private String value;
+
+		public void setName(String name) { this.name = name; }
+		public void setValue(String value) { this.value = value; }
+
+		public String getName() { return name; }
+		public String getValue() { return value; }
 	}
 
 	/**
@@ -400,6 +414,10 @@ public class FindBugsTask extends Task {
 		createPluginList().setRefid(r);
 	}
 
+	public void addConfiguredSystemProperty(SystemProperty systemProperty) {
+		systemPropertyList.add(systemProperty);
+	}
+
     /**
      * Check that all required attributes have been set
      *
@@ -459,6 +477,12 @@ public class FindBugsTask extends Task {
 				" attributes may be used in task <" + getTaskName() + "/>",
 				getLocation());
 		}
+
+		for (Iterator i = systemPropertyList.iterator(); i.hasNext(); ) {
+			SystemProperty systemProperty = (SystemProperty) i.next();
+			if (systemProperty.getName() == null || systemProperty.getValue() == null)
+				throw new BuildException("systemProperty elements must have name and value attributes");
+		}
     } 
 
 	/**
@@ -486,6 +510,13 @@ public class FindBugsTask extends Task {
 		if ( conserveSpace )
 			jvmargs = jvmargs + " -Dfindbugs.conserveSpace=true";
 		findbugsEngine.createJvmarg().setLine( jvmargs ); 
+
+		// Add JVM arguments for system properties
+		for (Iterator i = systemPropertyList.iterator(); i.hasNext(); ) {
+			SystemProperty systemProperty = (SystemProperty) i.next();
+			String jvmArg = "-D" + systemProperty.getName() + "=" + systemProperty.getValue();
+			findbugsEngine.createJvmarg().setValue(jvmArg);
+		}
 
 		if (homeDir != null) {
 			// Use findbugs.home to locate findbugs.jar and the standard
