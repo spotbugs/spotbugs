@@ -164,6 +164,8 @@ public class DetectorFactoryCollection {
 	
 		if (pluginList == null) {
 			String homeDir = FindBugs.getHome();
+			if (homeDir == null)
+				return;
 
 			File pluginDir = new File(homeDir + File.separator + "plugin");
 			File[] contentList = pluginDir.listFiles();
