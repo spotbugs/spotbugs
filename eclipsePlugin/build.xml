@@ -1,14 +1,88 @@
 <!--
-	At the moment, the only purpose of this Ant script is
-	to copy jar files from the main findbugs project
-	(which should be a sibling of this project).
+	Ant build script for the FindBugs Eclipse Plugin.
+
+	Use the fbjars target to update the FindBugs jars that this
+	plugin needs.
+
+	Use the dist target to build a distributable, which runs the
+	Eclipse-built classes through a conversion process, so that
+	the plugin may run on 1.4 vms. This target assumes the plugin has already
+	been built from within Eclipse, and the binaries reside in the "bin.dir"
 -->
 
 <project name="fbeclipse" default="fbjars">
+
+	<property file="build.properties" />
 	<property name="fbeclipse.dir" value="."/>
-	<property name="findbugs.dir" value="../findbugs"/>
-	
-	<target name="fbjars">
+
+	<property name="build.dir" value="build"/>
+	<property name="lib.dir" value="lib"/>
+	<property name="dist.dir" value="dist"/>
+	<property name="tools.dir" value="tools"/>
+
+	<!-- the binaries/classes, built by eclipse. -->
+	<property name="bin.dir" value="bin" />
+
+	<target name="init">
+		<mkdir dir="${build.dir}"/>
+		<mkdir dir="${dist.dir}"/>
+	</target>
+
+	<target name="clean" description="Clean up temporary files">
+		<delete includeEmptyDirs="true">
+			<fileset dir="${dist.dir}" />
+			<fileset dir="${build.dir}" />
+		</delete>
+	</target>
+
+	<target name="convert" depends="init" description="Convert Eclipse-built classes to 1.4 compatible bytecode">
+		<copy todir="${build.dir}">
+			<fileset dir="${bin.dir}"/>
+		</copy> 
+		
+		<!-- Use Retroweaver to weave classes into 1.4-compatible bytecode. -->
+		<java classname="com.rc.retroweaver.Weaver">
+			<arg value="-source"/>
+			<arg value="${build.dir}"/>        
+			<classpath>
+				<fileset dir="lib">
+					<include name="**/*"/>
+				</fileset>
+				<fileset dir=".">
+					<include name="${tools.dir}/retroweaver/retroweaver-ex.jar" />
+				</fileset>
+			</classpath>
+		</java>
+	</target>
+
+	<target name="dist" depends="convert" description="Build a plugin distributable, including the conversion of all classes to 1.4 compatible bytecode">
+
+		<!-- 
+			Workaround: if you include retroweaver-rt.jar in the plugin,
+			and list it in plugin.xml, its classes will not be found by
+			Eclipse at runtime. This extacts the retroweaver runtime classes and
+			includes them directly into the findbugs-plugin.jar (the classes are needed
+			to run retroweaver-converted code).
+		-->
+
+		<unjar src="${tools.dir}/retroweaver/retroweaver-rt.jar" dest="${build.dir}" />
+
+		<jar destfile="${dist.dir}/findbugs-plugin.jar">
+				<fileset dir="${build.dir}" />
+		</jar>
+		<copy todir="${dist.dir}">
+			<fileset file="bcel.jar" />
+			<fileset file="dom4j-full.jar" />
+			<fileset file="findbugs.jar" />
+			<fileset file="plugin.xml" />
+			<fileset file="plugin.properties" />
+		</copy>
+		<copy todir="${dist.dir}/plugin">
+			<fileset dir="plugin" />
+		</copy>
+	</target>
+
+	<target name="fbjars" description="Copy required jar files from the main findbugs project (which should be a sibling of this project)">
 		<ant dir="${findbugs.dir}" inheritall="false" target="build"/>
 		<copy todir="${fbeclipse.dir}">
 			<fileset dir="${findbugs.dir}/lib" includes="findbugs.jar,bcel.jar"/>
