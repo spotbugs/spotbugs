@@ -37,15 +37,25 @@ as information about the FindBugs mailing lists.
 
 <h2>1.2 Changes since last version</h2>
 
-<p> Changes since version 0.5.0:
+<p> Changes since version 0.5.1:
 <ul>
-<li> Many user interface bugs have been fixed.
-<li> Upgraded to a recent CVS version of BCEL, with some bug fixes.&nbsp;
-This should prevent FindBugs from crashing when there is a failure to find
-a class on the classpath.
-<li> Added support for Plastic look and feel from <a href="http://www.jgoodies.com/">jgoodies.com</a>.
-<li> Major overhaul of infrastructure for doing dataflow analysis.
+<li> Fixed a large number of bugs in the BCEL Repository and FindBugs's use
+     of the Repository.&nbsp; With these changes, FindBugs should <em>never</em>
+     crash or otherwise misbehave because of Repository lookup failures.&nbsp;
+     Because of these changes, you must use a modified version of <code>bcel.jar</code>
+     with FindBugs.&nbsp; This jar file is included in the FindBugs 0.5.2
+     binary release.&nbsp; A complete patch containing the 
+     <a href="http://www.cs.umd.edu/~pugh/java/bugs/bcel-30-April-2003.patch"
+     >modifications against the BCEL CVS main branch as of April 30, 2003</a>
+     is also available.
+<li> Implemented the "auxiliary classpath entry list".&nbsp; Aux classpath entries
+     can be added to a project to provide classes that are referenced by the
+     analyzed application, but should not themselves be analyzed.&nbsp; Having
+     all referenced classes available allows FindBugs to produce more
+     accurate results.
 </ul>
+
+<p> <a href="Changes.html">Older versions...</a>
 
 <h2>1.3 Planned features</h2>
 
