@@ -27,6 +27,7 @@ import java.util.HashSet;
 public class FindRunInvocations extends BytecodeScanningDetector implements   Constants2 {
 
    private BugReporter bugReporter;
+   private boolean alreadySawStart;
 
    public FindRunInvocations(BugReporter bugReporter) {
 	this.bugReporter = bugReporter;
@@ -41,14 +42,24 @@ public class FindRunInvocations extends BytecodeScanningDetector implements   Co
 		return false;
 	  }
 	}
+   public void visit(Code obj) {
+	alreadySawStart = false;
+	super.visit(obj);
+	}
+
    public void sawOpcode(int seen) {
+	if (alreadySawStart) return;
 	if ((seen == INVOKEVIRTUAL || seen == INVOKEINTERFACE) 
-				&& getNameConstantOperand().equals("run")
 				&& getSigConstantOperand().equals("()V")
 				&& isThread(getDottedClassConstantOperand())
-				)
-		bugReporter.reportBug(new BugInstance("RU_INVOKE_RUN", NORMAL_PRIORITY)
+				) {
+		if (getNameConstantOperand().equals("start"))
+			alreadySawStart = true;
+		else if (getNameConstantOperand().equals("run"))
+		    bugReporter
+		      .reportBug(new BugInstance("RU_INVOKE_RUN", NORMAL_PRIORITY)
 			.addClassAndMethod(this)
 			.addSourceLine(this));
+		}
 	}
 }
