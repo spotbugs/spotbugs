@@ -97,10 +97,13 @@ public class RuntimeExceptionCapture extends BytecodeScanningDetector implements
 						break;
 					}
 				}
-				if (!rteCaught)
-					bugReporter.reportBug(new BugInstance(this, "REC_CATCH_EXCEPTION", NORMAL_PRIORITY)
+				int range = caughtException.endOffset - caughtException.startOffset;
+				if (!rteCaught && range > 80) {
+					bugReporter.reportBug(new BugInstance(this, "REC_CATCH_EXCEPTION", 
+			range > 300 ? NORMAL_PRIORITY : LOW_PRIORITY)
 					        .addClassAndMethod(this)
 					        .addSourceLine(this, caughtException.sourcePC));
+					}
 			}
 		}
 	}
