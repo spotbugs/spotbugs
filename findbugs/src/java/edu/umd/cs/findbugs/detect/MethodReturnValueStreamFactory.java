@@ -49,21 +49,40 @@ public class MethodReturnValueStreamFactory implements StreamFactory {
 	private String methodName;
 	private String methodSig;
 	private boolean isUninteresting;
+	private String bugType;
 
 	/**
 	 * Constructor.
+	 * The Streams created will be marked as uninteresting.
 	 * @param baseClass base class through which the method will be
 	 *   called (we check instances of the base class and all subtypes)
 	 * @param methodName name of the method called
 	 * @param methodSig signature of the method called
-	 * @param isUninteresting true if the streams created are not interesting
 	 */
-	public MethodReturnValueStreamFactory(String baseClass, String methodName, String methodSig,
-		boolean isUninteresting) {
+	public MethodReturnValueStreamFactory(String baseClass, String methodName, String methodSig) {
 		this.baseClassType = new ObjectType(baseClass);
 		this.methodName = methodName;
 		this.methodSig = methodSig;
-		this.isUninteresting = isUninteresting;
+		this.isUninteresting = true;
+	}
+
+	/**
+	 * Constructor.
+	 * The Streams created will be marked as interesting.
+	 * @param baseClass base class through which the method will be
+	 *   called (we check instances of the base class and all subtypes)
+	 * @param methodName name of the method called
+	 * @param methodSig signature of the method called
+	 * @param bugType the bug type that should be reported if
+	 *   the stream is not closed on all paths out of the method
+	 */
+	public MethodReturnValueStreamFactory(String baseClass, String methodName, String methodSig,
+		String bugType) {
+		this.baseClassType = new ObjectType(baseClass);
+		this.methodName = methodName;
+		this.methodSig = methodSig;
+		this.isUninteresting = false;
+		this.bugType = bugType;
 	}
 
 	public Stream createStream(Location location, ObjectType type, ConstantPoolGen cpg,
@@ -91,10 +110,12 @@ public class MethodReturnValueStreamFactory implements StreamFactory {
 				return null;
 
 			String streamClass = type.getClassName();
-			return new Stream(location, streamClass, streamClass)
-				.setIsUninteresting(isUninteresting)
+			Stream result = new Stream(location, streamClass, streamClass)
 				.setIgnoreImplicitExceptions(true)
 				.setIsOpenOnCreation(true);
+			if (!isUninteresting)
+				result.setInteresting(bugType);
+			return result;
 		} catch (ClassNotFoundException e) {
 			lookupFailureCallback.reportMissingClass(e);
 		}

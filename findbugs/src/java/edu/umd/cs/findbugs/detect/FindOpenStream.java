@@ -36,33 +36,54 @@ public class FindOpenStream extends ResourceTrackingDetector<Stream, StreamResou
 	static final boolean DEBUG = Boolean.getBoolean("fos.debug");
 	static final boolean IGNORE_WRAPPED_UNINTERESTING_STREAMS = !Boolean.getBoolean("fos.allowWUS");
 
+	/* ----------------------------------------------------------------------
+	 * Tracked resource types
+	 * ---------------------------------------------------------------------- */
+
 	static final StreamFactory[] streamFactoryList = new StreamFactory[12];
 	static {
 		int count = 0;
+
+		// Examine InputStreams, OutputStreams, Readers, and Writers,
+		// ignoring byte array, object stream, char array, and String variants.
 		streamFactoryList[count++] = new IOStreamFactory("java.io.InputStream",
-			new String[]{"java.io.ByteArrayInputStream", "java.io.ObjectInputStream"});
+			new String[]{"java.io.ByteArrayInputStream", "java.io.ObjectInputStream"},
+			"OS_OPEN_STREAM");
 		streamFactoryList[count++] = new IOStreamFactory("java.io.OutputStream",
-			new String[]{"java.io.ByteArrayOutputStream", "java.io.ObjectOutputStream"});
+			new String[]{"java.io.ByteArrayOutputStream", "java.io.ObjectOutputStream"},
+			"OS_OPEN_STREAM");
 		streamFactoryList[count++] = new IOStreamFactory("java.io.Reader",
-			new String[]{"java.io.StringReader", "java.io.CharArrayReader"});
+			new String[]{"java.io.StringReader", "java.io.CharArrayReader"},
+			"OS_OPEN_STREAM");
 		streamFactoryList[count++] = new IOStreamFactory("java.io.Writer",
-			new String[]{"java.io.StringWriter", "java.io.CharArrayWriter"});
+			new String[]{"java.io.StringWriter", "java.io.CharArrayWriter"},
+			"OS_OPEN_STREAM");
+
+		// Ignore socket input and output streams
 		streamFactoryList[count++] = new MethodReturnValueStreamFactory("java.net.Socket",
-			"getInputStream", "()Ljava/io/InputStream;", true);
+			"getInputStream", "()Ljava/io/InputStream;");
 		streamFactoryList[count++] = new MethodReturnValueStreamFactory("java.net.Socket",
-			"getOutputStream", "()Ljava/io/OutputStream;", true);
+			"getOutputStream", "()Ljava/io/OutputStream;");
+
+		// Ignore System.{in,out,err}
 		streamFactoryList[count++] = new StaticFieldLoadStreamFactory("java.io.InputStream",
-			"java.lang.System", "in", "Ljava/io/InputStream;", true);
+			"java.lang.System", "in", "Ljava/io/InputStream;");
 		streamFactoryList[count++] = new StaticFieldLoadStreamFactory("java.io.OutputStream",
-			"java.lang.System", "out", "Ljava/io/PrintStream;", true);
+			"java.lang.System", "out", "Ljava/io/PrintStream;");
 		streamFactoryList[count++] = new StaticFieldLoadStreamFactory("java.io.OutputStream",
-			"java.lang.System", "err", "Ljava/io/PrintStream;", true);
+			"java.lang.System", "err", "Ljava/io/PrintStream;");
+
+		// JDBC objects
 		streamFactoryList[count++] = new MethodReturnValueStreamFactory("java.sql.DriverManager",
-			"getConnection", "(Ljava/lang/String;)Ljava/sql/Connection;", false);
+			"getConnection", "(Ljava/lang/String;)Ljava/sql/Connection;",
+			"ODR_OPEN_DATABASE_RESOURCE");
 		streamFactoryList[count++] = new MethodReturnValueStreamFactory("java.sql.DriverManager",
-			"getConnection", "(Ljava/lang/String;Ljava/util/Properties;)Ljava/sql/Connection;", false);
+			"getConnection", "(Ljava/lang/String;Ljava/util/Properties;)Ljava/sql/Connection;",
+			"ODR_OPEN_DATABASE_RESOURCE");
 		streamFactoryList[count++] = new MethodReturnValueStreamFactory("java.sql.DriverManager",
-			"getConnection", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/sql/Connection;", false);
+			"getConnection",
+			"(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/sql/Connection;",
+			"ODR_OPEN_DATABASE_RESOURCE");
 
 		if (count != streamFactoryList.length) throw new IllegalStateException();
 	}

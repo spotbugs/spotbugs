@@ -40,24 +40,22 @@ public class StaticFieldLoadStreamFactory implements StreamFactory {
 	public String className;
 	public String fieldName;
 	public String fieldSig;
-	public boolean isUninteresting;
 
 	/**
 	 * Constructor.
+	 * Created Stream objects will be marked as uninteresting.
 	 * @param streamBaseClass the base class of the stream objects created
 	 *   by the factory
 	 * @param className name of the class containing the static field
 	 * @param fieldName name of the static field
 	 * @param fieldSig signature of the static field
-	 * @param isUninteresting true if the streams created are not interesting
 	 */
 	public StaticFieldLoadStreamFactory(String streamBaseClass, String className,
-		String fieldName, String fieldSig, boolean isUninteresting) {
+		String fieldName, String fieldSig) {
 		this.streamBaseClass = streamBaseClass;
 		this.className = className;
 		this.fieldName = fieldName;
 		this.fieldSig = fieldSig;
-		this.isUninteresting = isUninteresting;
 	}
 
 	public Stream createStream(Location location, ObjectType type, ConstantPoolGen cpg,
@@ -74,7 +72,6 @@ public class StaticFieldLoadStreamFactory implements StreamFactory {
 			return null;
 
 		return new Stream(location, type.getClassName(), streamBaseClass)
-			.setIsUninteresting(isUninteresting)
 			.setIgnoreImplicitExceptions(true)
 			.setIsOpenOnCreation(true);
 	}

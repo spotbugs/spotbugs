@@ -57,11 +57,12 @@ public class Stream extends ResourceCreationPoint {
 	private boolean isOpenOnCreation;
 	private InstructionHandle ctorHandle;
 	private boolean ignoreImplicitExceptions;
+	private String bugType;
 
 	/**
 	 * Constructor.
 	 * By default, Stream objects are marked as uninteresting.
-	 * setIsUninteresting(false) must be called explicitly to mark
+	 * setInteresting("BUG_TYPE") must be called explicitly to mark
 	 * the Stream as interesting.
 	 * @param location where the stream is created
 	 * @param streamClass type of Stream
@@ -75,10 +76,13 @@ public class Stream extends ResourceCreationPoint {
 	}
 
 	/**
-	 * Mark whether or not Stream is uninteresting.
+	 * Mark this Stream as interesting.
+	 * @param bugType the bug type that should be reported if
+	 *   the stream is not closed on all paths out of the method
 	 */
-	public Stream setIsUninteresting(boolean enable) {
-		isUninteresting = enable;
+	public Stream setInteresting(String bugType) {
+		this.isUninteresting = false;
+		this.bugType = bugType;
 		return this;
 	}
 
@@ -113,6 +117,10 @@ public class Stream extends ResourceCreationPoint {
 	public InstructionHandle getConstructorHandle() { return ctorHandle; }
 
 	public boolean ignoreImplicitExceptions() { return ignoreImplicitExceptions; }
+
+	public String getBugType() {
+		return bugType;
+	}
 
 	public boolean isStreamOpen(BasicBlock basicBlock, InstructionHandle handle,
 		ConstantPoolGen cpg, ResourceValueFrame frame) {

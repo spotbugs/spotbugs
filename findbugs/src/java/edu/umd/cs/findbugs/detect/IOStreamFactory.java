@@ -36,13 +36,15 @@ import org.apache.bcel.generic.ObjectType;
 public class IOStreamFactory implements StreamFactory {
 	private ObjectType baseClassType;
 	private ObjectType[] uninterestingSubclassTypeList;
+	private String bugType;
 
-	public IOStreamFactory(String baseClass, String[] uninterestingSubclassList) {
+	public IOStreamFactory(String baseClass, String[] uninterestingSubclassList, String bugType) {
 		this.baseClassType = new ObjectType(baseClass);
 		this.uninterestingSubclassTypeList = new ObjectType[uninterestingSubclassList.length];
 		for (int i = 0; i < uninterestingSubclassList.length; ++i) {
 			this.uninterestingSubclassTypeList[i] = new ObjectType(uninterestingSubclassList[i]);
 		}
+		this.bugType = bugType;
 	}
 
 	public Stream createStream(Location location, ObjectType type, ConstantPoolGen cpg,
@@ -62,9 +64,11 @@ public class IOStreamFactory implements StreamFactory {
 						break;
 					}
 				}
-				return new Stream(location, type.getClassName(), baseClassType.getClassName())
-					.setIsUninteresting(isUninteresting)
+				Stream result = new Stream(location, type.getClassName(), baseClassType.getClassName())
 					.setIgnoreImplicitExceptions(true);
+				if (!isUninteresting)
+					result.setInteresting(bugType);
+				return result;
 			}
 		} catch (ClassNotFoundException e) {
 			lookupFailureCallback.reportMissingClass(e);
