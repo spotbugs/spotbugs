@@ -46,13 +46,13 @@ public class Project {
     private String fileName;
     
     /** The list of jar files. */
-    private LinkedList jarList;
+    private LinkedList<String> jarList;
     
     /** The list of source directories. */
-    private LinkedList srcDirList;
+    private LinkedList<String> srcDirList;
     
     /** The list of auxiliary classpath entries. */
-    private LinkedList auxClasspathEntryList;
+    private LinkedList<String> auxClasspathEntryList;
 
     /** Flag to indicate that this Project has been modified. */
     private boolean isModified;
@@ -60,9 +60,9 @@ public class Project {
     /** Creates a new instance of Project */
     public Project(String fileName) {
         this.fileName = fileName;
-	jarList = new LinkedList();
-	srcDirList = new LinkedList();
-        auxClasspathEntryList = new LinkedList();
+	jarList = new LinkedList<String>();
+	srcDirList = new LinkedList<String>();
+        auxClasspathEntryList = new LinkedList<String>();
         isModified = false;
     }
     
@@ -123,7 +123,7 @@ public class Project {
      * @param num the number of the jar file
      * @return the name of the jar file
      */
-    public String getJarFile(int num) { return (String) jarList.get(num); }
+    public String getJarFile(int num) { return jarList.get(num); }
     
     /**
      * Remove jar file at given index.
@@ -145,7 +145,7 @@ public class Project {
      * @param num the number of the source directory
      * @return the source directory
      */
-    public String getSourceDir(int num) { return (String) srcDirList.get(num); }
+    public String getSourceDir(int num) { return srcDirList.get(num); }
     
     /**
      * Remove source directory at given index.
@@ -173,7 +173,7 @@ public class Project {
     /**
      * Get the source dir list.
      */
-    public List getSourceDirList() {
+    public List<String> getSourceDirList() {
 	return srcDirList;
     }
     
@@ -203,7 +203,7 @@ public class Project {
      * Get the n'th auxiliary classpath entry.
      */
     public String getAuxClasspathEntry(int n) {
-        return (String) auxClasspathEntryList.get(n);
+        return auxClasspathEntryList.get(n);
     }
     
     /**
@@ -233,18 +233,18 @@ public class Project {
     public void write(OutputStream out) throws IOException {
         PrintWriter writer = new PrintWriter(new OutputStreamWriter(out));
         writer.println(JAR_FILES_KEY);
-        for (Iterator i = jarList.iterator(); i.hasNext(); ) {
-            String jarFile = (String) i.next();
+        for (Iterator<String> i = jarList.iterator(); i.hasNext(); ) {
+            String jarFile = i.next();
             writer.println(jarFile);
         }
         writer.println(SRC_DIRS_KEY);
-        for (Iterator i = srcDirList.iterator(); i.hasNext(); ) {
-            String srcDir = (String) i.next();
+        for (Iterator<String> i = srcDirList.iterator(); i.hasNext(); ) {
+            String srcDir = i.next();
             writer.println(srcDir);
         }
         writer.println(AUX_CLASSPATH_ENTRIES_KEY);
-        for (Iterator i = auxClasspathEntryList.iterator(); i.hasNext(); ) {
-            String auxClasspathEntry = (String) i.next();
+        for (Iterator<String> i = auxClasspathEntryList.iterator(); i.hasNext(); ) {
+            String auxClasspathEntry = i.next();
             writer.println(auxClasspathEntry);
         }
         writer.close();

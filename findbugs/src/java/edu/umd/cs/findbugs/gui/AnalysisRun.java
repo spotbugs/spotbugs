@@ -45,7 +45,7 @@ public class AnalysisRun {
      * Our BugReporter just puts the reported BugInstances into a HashSet.
      */
     private class Reporter implements BugReporter {
-        private HashSet bugSet = new HashSet();
+        private HashSet<BugInstance> bugSet = new HashSet<BugInstance>();
         
         public void finish() { }
         
@@ -62,7 +62,7 @@ public class AnalysisRun {
     private ConsoleLogger logger;
     private FindBugs findBugs;
     private Reporter reporter;
-    private HashMap treeModelMap;
+    private HashMap<String, DefaultTreeModel> treeModelMap;
     
     /** Creates a new instance of AnalysisRun. */
     public AnalysisRun(Project project, ConsoleLogger logger) {
@@ -70,7 +70,7 @@ public class AnalysisRun {
         this.logger = logger;
         reporter = new Reporter();
         findBugs = new FindBugs(reporter);
-        treeModelMap = new HashMap();
+        treeModelMap = new HashMap<String, DefaultTreeModel>();
     }
     
     /**
@@ -116,7 +116,7 @@ public class AnalysisRun {
     /**
      * Return the collection of BugInstances.
      */
-    public java.util.Collection getBugInstances() {
+    public java.util.Collection<BugInstance> getBugInstances() {
         return reporter.bugSet;
     }
     

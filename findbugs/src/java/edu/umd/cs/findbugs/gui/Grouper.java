@@ -34,20 +34,20 @@ import java.util.*;
  *
  * @author David Hovemeyer
  */
-public class Grouper {
+public class Grouper<ElementType> {
     
-    public interface Callback {
-	public void startGroup(Object firstMember);
-	public void addToGroup(Object member);
+    public interface Callback<ElementType> {
+	public void startGroup(ElementType firstMember);
+	public void addToGroup(ElementType member);
     }
     
-    private Callback callback;
+    private Callback<ElementType> callback;
     
     /**
      * Creates a new instance of Grouper.
      * @param callback the callback which receives the groups and elements
      */
-    public Grouper(Callback callback) {
+    public Grouper(Callback<ElementType> callback) {
 	this.callback = callback;
     }
 
@@ -59,11 +59,11 @@ public class Grouper {
      * @param collection the collection
      * @param comparator the comparator
      */
-    public void group(Collection collection, Comparator comparator) {
-	Iterator i = collection.iterator();
-	Object last = null;
+    public void group(Collection<ElementType> collection, Comparator<ElementType> comparator) {
+	Iterator<ElementType> i = collection.iterator();
+	ElementType last = null;
 	while (i.hasNext()) {
-	    Object current = i.next();
+	    ElementType current = i.next();
 	    if (last != null && comparator.compare(last, current) == 0) {
 		// Same group as before
 		callback.addToGroup(current);

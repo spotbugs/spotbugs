@@ -150,16 +150,14 @@ public class FindBugsFrame extends javax.swing.JFrame {
      * Note that all instances with the same class name will compare
      * as equal.
      */
-    private static class BugInstanceClassComparator implements Comparator {
-        public int compare(Object a, Object b) {
-            BugInstance lhs = (BugInstance) a;
-            BugInstance rhs = (BugInstance) b;
+    private static class BugInstanceClassComparator implements Comparator<BugInstance> {
+        public int compare(BugInstance lhs, BugInstance rhs) {
             return lhs.getPrimaryClass().compareTo(rhs.getPrimaryClass());
         }
     }
     
     /** The instance of BugInstanceClassComparator. */
-    private static final Comparator bugInstanceClassComparator = new BugInstanceClassComparator();
+    private static final Comparator<BugInstance> bugInstanceClassComparator = new BugInstanceClassComparator();
     
     /**
      * Compare BugInstance package names.
@@ -167,17 +165,15 @@ public class FindBugsFrame extends javax.swing.JFrame {
      * Note that all instances with the same package name will compare
      * as equal.
      */
-    private static class BugInstancePackageComparator implements Comparator {
-        public int compare(Object a, Object b) {
-            BugInstance lhs = (BugInstance) a;
-            BugInstance rhs = (BugInstance) b;
+    private static class BugInstancePackageComparator implements Comparator<BugInstance> {
+        public int compare(BugInstance lhs, BugInstance rhs) {
             return lhs.getPrimaryClass().getPackageName().compareTo(
             rhs.getPrimaryClass().getPackageName());
         }
     }
     
     /** The instance of BugInstancePackageComparator. */
-    private static final Comparator bugInstancePackageComparator = new BugInstancePackageComparator();
+    private static final Comparator<BugInstance> bugInstancePackageComparator = new BugInstancePackageComparator();
     
     /**
      * Compare BugInstance bug types.
@@ -185,10 +181,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
      * Note that all instances with the same bug type will compare
      * as equal.
      */
-    private static class BugInstanceTypeComparator implements Comparator {
-        public int compare(Object a, Object b) {
-            BugInstance lhs = (BugInstance) a;
-            BugInstance rhs = (BugInstance) b;
+    private static class BugInstanceTypeComparator implements Comparator<BugInstance> {
+        public int compare(BugInstance lhs, BugInstance rhs) {
             String lhsString = lhs.toString();
             String rhsString = rhs.toString();
             return lhsString.substring(0, lhsString.indexOf(':')).compareTo(
@@ -197,55 +191,55 @@ public class FindBugsFrame extends javax.swing.JFrame {
     }
     
     /** The instance of BugInstanceTypeComparator. */
-    private static final Comparator bugInstanceTypeComparator = new BugInstanceTypeComparator();
+    private static final Comparator<BugInstance> bugInstanceTypeComparator = new BugInstanceTypeComparator();
     
     /**
      * Two-level comparison of bug instances by class name and
      * BugInstance natural ordering.
      */
-    private static class BugInstanceByClassComparator implements Comparator {
-        public int compare(Object a, Object b) {
+    private static class BugInstanceByClassComparator implements Comparator<BugInstance> {
+        public int compare(BugInstance a, BugInstance b) {
             int cmp = bugInstanceClassComparator.compare(a, b);
             if (cmp != 0)
                 return cmp;
-            return ((Comparable)a).compareTo(b);
+            return a.compareTo(b);
         }
     }
     
     /** The instance of BugInstanceByClassComparator. */
-    private static final Comparator bugInstanceByClassComparator = new FindBugsFrame.BugInstanceByClassComparator();
+    private static final Comparator<BugInstance> bugInstanceByClassComparator = new FindBugsFrame.BugInstanceByClassComparator();
     
     /**
      * Two-level comparison of bug instances by package and
      * BugInstance natural ordering.
      */
-    private static class BugInstanceByPackageComparator implements Comparator {
-        public int compare(Object a, Object b) {
+    private static class BugInstanceByPackageComparator implements Comparator<BugInstance> {
+        public int compare(BugInstance a, BugInstance b) {
             int cmp = bugInstancePackageComparator.compare(a, b);
             if (cmp != 0)
                 return cmp;
-            return ((Comparable)a).compareTo(b);
+            return a.compareTo(b);
         }
     }
     
     /** The instance of BugInstanceByPackageComparator. */
-    private static final Comparator bugInstanceByPackageComparator = new FindBugsFrame.BugInstanceByPackageComparator();
+    private static final Comparator<BugInstance> bugInstanceByPackageComparator = new FindBugsFrame.BugInstanceByPackageComparator();
     
     /**
      * Two-level comparison of bug instances by bug type and
      * BugInstance natural ordering.
      */
-    private static class BugInstanceByTypeComparator implements Comparator {
-        public int compare(Object a, Object b) {
+    private static class BugInstanceByTypeComparator implements Comparator<BugInstance> {
+        public int compare(BugInstance a, BugInstance b) {
             int cmp = bugInstanceTypeComparator.compare(a, b);
             if (cmp != 0)
                 return cmp;
-            return ((Comparable)a).compareTo(b);
+            return a.compareTo(b);
         }
     }
     
     /** The instance of BugTypeByTypeComparator. */
-    private static final Comparator bugInstanceByTypeComparator = new FindBugsFrame.BugInstanceByTypeComparator();
+    private static final Comparator<BugInstance> bugInstanceByTypeComparator = new FindBugsFrame.BugInstanceByTypeComparator();
     
     /**
      * Swing FileFilter class for file selection dialogs for FindBugs project files.
@@ -1588,17 +1582,16 @@ public class FindBugsFrame extends javax.swing.JFrame {
         bugRootNode.removeAllChildren();
         
         // Sort the instances
-        TreeSet sortedCollection = new TreeSet(getBugInstanceComparator(groupBy));
+        TreeSet<BugInstance> sortedCollection = new TreeSet<BugInstance>(getBugInstanceComparator(groupBy));
         sortedCollection.addAll(analysisRun.getBugInstances());
         
         // The grouper callback is what actually adds the group and bug
         // nodes to the tree.
-        Grouper.Callback callback = new Grouper.Callback() {
+        Grouper.Callback<BugInstance> callback = new Grouper.Callback<BugInstance>() {
             private BugInstanceGroup currentGroup;
             private DefaultMutableTreeNode currentGroupNode;
             
-            public void startGroup(Object member_) {
-                BugInstance member = (BugInstance) member_;
+            public void startGroup(BugInstance member) {
                 String groupName;
                 if (groupBy == GROUP_BY_CLASS)
                     groupName = member.getPrimaryClass().getClassName();
@@ -1620,8 +1613,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
                 insertIntoGroup(member);
             }
             
-            public void addToGroup(Object member_) {
-                BugInstance member = (BugInstance) member_;
+            public void addToGroup(BugInstance member) {
                 insertIntoGroup(member);
             }
             
@@ -1642,8 +1634,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
         };
         
         // Create the grouper, and execute it to populate the bug tree
-        Grouper grouper = new Grouper(callback);
-        Comparator groupComparator = getGroupComparator(groupBy);
+        Grouper<BugInstance> grouper = new Grouper<BugInstance>(callback);
+        Comparator<BugInstance> groupComparator = getGroupComparator(groupBy);
         grouper.group(sortedCollection, groupComparator);
         
         // Let the tree know it needs to update itself
@@ -1656,7 +1648,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
     /**
      * Get a BugInstance Comparator for given sort order.
      */
-    private Comparator getBugInstanceComparator(String sortOrder) {
+    private Comparator<BugInstance> getBugInstanceComparator(String sortOrder) {
         if (sortOrder.equals(GROUP_BY_CLASS))
             return bugInstanceByClassComparator;
         else if (sortOrder.equals(GROUP_BY_PACKAGE))
@@ -1670,7 +1662,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
     /**
      * Get a Grouper for a given sort order.
      */
-    private Comparator getGroupComparator(String groupBy) {
+    private Comparator<BugInstance> getGroupComparator(String groupBy) {
         if (groupBy.equals(GROUP_BY_CLASS)) {
             return bugInstanceClassComparator;
         } else if (groupBy.equals(GROUP_BY_PACKAGE)) {
