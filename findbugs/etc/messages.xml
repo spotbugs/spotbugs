@@ -2781,7 +2781,7 @@ do not need to be created, just access the static methods directly using the cla
   This detector looks for try-catch blocks where there is a catch block for Exception, but Exception is not
   thrown within the try block, and RuntimeException is not explicitly caught.  It is a common bug pattern to
   say try { ... } catch (Exception e) { something } as a shorthand for catching a number of types of exception
-  each of whose catch blocks is identical, but this constract also accidentally catches RuntimeException as well,
+  each of whose catch blocks is identical, but this construct also accidentally catches RuntimeException as well,
   masking potential bugs.
   </p>
   ]]>
