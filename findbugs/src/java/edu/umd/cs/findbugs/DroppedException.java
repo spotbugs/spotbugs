@@ -177,7 +177,8 @@ public class DroppedException extends PreorderVisitor implements Detector, Const
 		bugReporter.reportBug(
 			new BugInstance(exitInTryBlock ? "DE_MIGHT_DROP" : "DE_MIGHT_IGNORE", NORMAL_PRIORITY)
 				.addClassAndMethod(this)
-				.addClass(c));
+				.addSourceLine(this, handled)
+				.addClass(c).describe("CLASS_EXCEPTION"));
 	}
 
 	}
