@@ -69,9 +69,10 @@ public abstract class ResourceValueFrameModelingVisitor extends AbstractFrameMod
 	 * pass the instance to without the instance escaping.
 	 * By default, we consider all methods to be possible escape routes.
 	 * @param inv the InvokeInstruction to which the resource instance
-	 *   is passed as a parameter
+	 *   is passed as an argument
+	 * @param instanceArgNum the first argument the instance is passed in
 	 */
-	protected boolean instanceEscapes(InvokeInstruction inv) {
+	protected boolean instanceEscapes(InvokeInstruction inv, int instanceArgNum) {
 		return true;
 	}
 
@@ -81,16 +82,16 @@ public abstract class ResourceValueFrameModelingVisitor extends AbstractFrameMod
 		int numConsumed = getNumWordsConsumed(inv);
 
 		// See if the resource instance is passed as an argument
-		boolean instanceArgument = false;
-		for (int i = numSlots - numConsumed; i < numSlots; ++i) {
+		int instanceArgNum = -1;
+		for (int i = numSlots - numConsumed, argCount = 0; i < numSlots; ++i, ++argCount) {
 			ResourceValue value = frame.getValue(i);
 			if (value.equals(ResourceValue.instance())) {
-				instanceArgument = true;
+				instanceArgNum = argCount;
 				break;
 			}
 		}
 
-		if (instanceArgument && instanceEscapes(inv))
+		if (instanceArgNum >= 0 && instanceEscapes(inv, instanceArgNum))
 			frame.setStatus(ResourceValueFrame.ESCAPED);
 
 		handleNormalInstruction(inv);
