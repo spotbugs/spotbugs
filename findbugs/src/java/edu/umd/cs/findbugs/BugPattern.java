@@ -19,6 +19,38 @@
 
 package edu.umd.cs.findbugs;
 
-public class BugPattern {
+public class BugPattern implements Comparable {
+	private String type;
+	private String abbrev;
+	private String category;
+	private String shortDescription;
+	private String longDescription;
+	private String detailText;
+
+	public BugPattern(String type, String abbrev, String category, String shortDescription,
+		String longDescription, String detailText) {
+		this.type = type;
+		this.abbrev = abbrev;
+		this.category = category;
+		this.shortDescription = shortDescription;
+		this.longDescription = longDescription;
+		this.detailText = detailText;
+	}
+
+	public String getType() { return type; }
+	public String getAbbrev() { return abbrev; }
+	public String getCategory() { return category; }
+	public String getShortDescription() { return shortDescription; }
+	public String getLongDescription() { return longDescription; }
+	public String getDetailText() { return detailText; }
+
+	public int compareTo(Object o) {
+		if (!(o instanceof BugPattern))
+			return -1;
+		BugPattern other = (BugPattern) o;
+		return type.compareTo(other.type);
+	}
 
 }
+
+// vim:ts=4
