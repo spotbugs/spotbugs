@@ -89,8 +89,10 @@
    </extension>
    <extension
          point="org.eclipse.ui.popupMenus">
-      <objectContribution
-            objectClass="org.eclipse.jdt.core.IJavaProject"
+      <!-- IOpenable objects in the JDT core are projects, folders, packages, 
+      		java source files, and jars -->
+	  <objectContribution
+            objectClass="org.eclipse.jdt.core.IOpenable"
             id="de.tobject.findbugs.actions.FindBugsAction">
          <action
                label="Find Bugs"
@@ -99,33 +101,9 @@
                class="de.tobject.findbugs.actions.FindBugsAction"
                menubarPath="additions"
                id="de.tobject.findbugs.findbugsaction">
-            <enablement>
-               <objectState
-                     name="nature"
-                     value="org.eclipse.jdt.core.javanature">
-               </objectState>
-            </enablement>
          </action>
       </objectContribution>
-      <!-- 
-      	"Show Details" context menu entry for markers in the editor margin.
-	    The existing FindBugs marker action cannot be used, as the editor margin 
-	    markers are not FindBugs markers 
-	  -->
-      <viewerContribution
-            targetID="#CompilationUnitRulerContext"
-            id="de.tobject.findbugs.actions.ShowBugDetailsAction">
-         <action
-               label="Show Bug Details"
-               icon="icons/bug.gif"
-               class="de.tobject.findbugs.actions.MarkerRulerAction"
-               menubarPath="additions"
-               id="de.tobject.findbugs.actions.markerruleraction">
-            <selection
-                  class="org.eclipse.core.resources.IMarker">
-            </selection>
-         </action>
-      </viewerContribution>
+      <!-- Special case context menu for simple projects that have java natures -->
       <objectContribution
             objectClass="org.eclipse.core.resources.IProject"
             id="de.tobject.findbugs.FindBugsAction">
@@ -162,8 +140,28 @@
                value="de.tobject.findbugs.findbugsMarker">
          </filter>
       </objectContribution>
+     
+      <!-- 
+      	"Show Details" context menu entry for markers in the editor margin.
+	    The existing FindBugs marker action cannot be used, as the editor margin 
+	    markers are not FindBugs markers 
+	  -->
+      <viewerContribution
+            targetID="#CompilationUnitRulerContext"
+            id="de.tobject.findbugs.actions.ShowBugDetailsAction">
+         <action
+               label="Show Bug Details"
+               icon="icons/bug.gif"
+               class="de.tobject.findbugs.actions.MarkerRulerAction"
+               menubarPath="additions"
+               id="de.tobject.findbugs.actions.markerruleraction">
+            <selection
+                  class="org.eclipse.core.resources.IMarker">
+            </selection>
+         </action>
+      </viewerContribution>
    </extension>
-
+   
 	<!-- Details view -->
    <extension
          id="de.tobject.findbugs.DetailsView"

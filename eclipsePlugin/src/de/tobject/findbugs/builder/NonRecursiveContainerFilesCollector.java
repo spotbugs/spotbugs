@@ -21,81 +21,69 @@ package de.tobject.findbugs.builder;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceDelta;
+import org.eclipse.core.runtime.CoreException;
 
 import de.tobject.findbugs.util.Util;
 
 /**
  * This file collector collects all files in a 
- * {@link org.eclipse.core.resources.IResourceDelta}.
+ * {@link org.eclipse.core.resources.IContainer}, e.g. a project, folder
+ * or package. This collector does not descend recursively into subfolders.
  * 
  * @author Peter Friese
- * @version 1.0
- * @since 25.09.2003
+ * @author Phil Crosby
  */
-public class ResourceDeltaFilesCollector extends AbstractFilesCollector {
-
-	private IResourceDelta resourceDelta;
-
+public class NonRecursiveContainerFilesCollector extends AbstractFilesCollector {
+	
+	/** The container we will be working on */
+	private IContainer container;
+	
 	/**
-	 * Creates a new resource delta file collector.
-	 *  
-	 * @param resourceDelta The resource delta to scan for files.
+	 * Creates a new {@link NonRecursiveContainerFilesCollector}.
+	 * 
+	 * @param container The container to process.
 	 */
-	public ResourceDeltaFilesCollector(IResourceDelta resourceDelta) {
-		this.resourceDelta = resourceDelta;
+	public NonRecursiveContainerFilesCollector(IContainer container) {
+		super();
+		this.container = container;
 	}
-
+	
 	/* (non-Javadoc)
 	 * @see de.tobject.findbugs.builder.AbstractFilesCollector#getFiles()
 	 */
-	public Collection getFiles() {
-		return collectFiles(this.resourceDelta);
+	public Collection getFiles() throws CoreException {
+		return collectFiles(this.container);
 	}
-
+	
 	/**
-	 * Returns a list of all files in a resource delta. This is of help when 
-	 * performing an incremental build.
+	 * Returns a list of all files in the top level of a container; does not descend recursively
+	 * into subfolders.
 	 * 
 	 * @see #getFiles()
-	 * @see #getFiles(IContainer)
+	 * @see #getFiles(IResourceDelta)
 	 * @return Collection A list of all files to be built.
 	 */
-	private Collection collectFiles(IResourceDelta delta) {
+	private Collection collectFiles(IContainer container) throws CoreException {
 		ArrayList files = new ArrayList(0);
-		ArrayList folders = new ArrayList(0);
-		IResourceDelta affectedChildren[] = delta.getAffectedChildren();
-		for (int i = 0; i < affectedChildren.length; i++) {
-			IResourceDelta childDelta = affectedChildren[i];
-			IResource child = childDelta.getResource();
+		IResource children[] = container.members();
+		for (int i = 0; i < children.length; i++) {
+			IResource child = children[i];
 			int childType = child.getType();
 			if (childType == IResource.FILE) {
 				if (DEBUG) {
 					System.out.println(
-						"Delta file: " + child.getFullPath().toOSString());
+						"Project file: " + child.getFullPath().toOSString());
 				}
-				int deltaKind = childDelta.getKind();
-				if ((deltaKind == IResourceDelta.ADDED
-					|| deltaKind == IResourceDelta.CHANGED)) {
-					if (Util.isJavaArtifact(child)) {
-						files.add(child);
-					}
+				if (Util.isJavaArtifact(child)) {
+					files.add(child);
 				}
 			}
-			else {
-				if (childType == IResource.FOLDER) {
-					folders.add(childDelta);
-				}
-			}
-		}
-		
-		for (Iterator iter = folders.iterator();
-			iter.hasNext();
-			files.addAll(collectFiles((IResourceDelta) iter.next())));
+			// ignore folders
+		}			
 		return files;
 	}
 	

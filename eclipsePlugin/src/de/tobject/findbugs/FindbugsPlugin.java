@@ -531,7 +531,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 		
 		try {
 			pin.connect(pout);
-			worker.start();
+			worker.start();			
 			
 			if (!bugCollectionFile.exists())
 				bugCollectionFile.create(pin, true, monitor);

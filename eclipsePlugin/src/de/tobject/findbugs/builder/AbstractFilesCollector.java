@@ -20,7 +20,7 @@
 package de.tobject.findbugs.builder;
 
 import java.util.Collection;
-import org.eclipse.core.resources.IResource;
+
 import org.eclipse.core.runtime.CoreException;
 
 /**
@@ -43,23 +43,6 @@ public abstract class AbstractFilesCollector {
 	 */
 	public abstract Collection getFiles() throws CoreException;
 	
-	/**
-	 * Checks whether the given resource is a Java artifact (i.e. either a
-	 * Java source file or a Java class file).
-	 * 
-	 * @param resource The resource to check.
-	 * @return 
-	 * 	<code>true</code> if the given resource is a Java artifact.
-	 * 	<code>false</code> otherwise.
-	 */
-	protected boolean isJavaArtifact(IResource resource) {
-		if (resource != null) {
-			if ((resource.getName().endsWith(".java"))
-				|| (resource.getName().endsWith(".class"))) {
-				return true;
-			}
-		}
-		return false;
-	}
+
 	
 }

@@ -22,9 +22,13 @@ package de.tobject.findbugs.builder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.runtime.CoreException;
+
+import de.tobject.findbugs.util.Util;
 
 /**
  * This file collector collects all files in a 
@@ -76,7 +80,7 @@ public class ContainerFilesCollector extends AbstractFilesCollector {
 					System.out.println(
 						"Project file: " + child.getFullPath().toOSString());
 				}
-				if (isJavaArtifact(child)) {
+				if (Util.isJavaArtifact(child)) {
 					files.add(child);
 				}
 			}

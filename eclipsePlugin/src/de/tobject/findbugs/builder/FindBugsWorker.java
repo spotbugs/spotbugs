@@ -36,6 +36,7 @@ import org.eclipse.jdt.launching.JavaRuntime;
 import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.marker.FindBugsMarker;
 import de.tobject.findbugs.reporter.Reporter;
+import de.tobject.findbugs.util.Util;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.ClassAnnotation;
 import edu.umd.cs.findbugs.Detector;
@@ -106,14 +107,14 @@ public class FindBugsWorker {
 			// get the resource
 			IResource res = (IResource) iter.next();
 
-			if (isJavaArtifact(res)) {
+			if (Util.isJavaArtifact(res)) {
 				res.deleteMarkers(
 					FindBugsMarker.NAME,
 					true,
 					IResource.DEPTH_INFINITE);
 			}
 
-			if (isClassFile(res)) {
+			if (Util.isClassFile(res)) {
 				// add this file to the work list:
 				String fileName = res.getLocation().toOSString();
 
@@ -141,7 +142,7 @@ public class FindBugsWorker {
 		// XXX currently detector factories are shared between different projects!!!
 		// cause detector factories list is a singleton!!!
 		// if multiple workers are working (Eclipse 3.0 allows background build),
-		// there is a big problem!!!
+		// there is a big problem!!! TODO philc fix..
 		if (selectedDetectorFactories != null) {
 			Iterator iterator = DetectorFactoryCollection.instance().factoryIterator();
 			while (iterator.hasNext()) {
@@ -214,41 +215,4 @@ public class FindBugsWorker {
 		}
 		return new String[0];
 	}
-
-	/**
-	 * Checks whether the given resource is a Java artifact (i.e. either a
-	 * Java source file or a Java class file).
-	 * 
-	 * @param resource The resource to check.
-	 * @return 
-	 * 	<code>true</code> if the given resource is a Java artifact.
-	 * 	<code>false</code> otherwise.
-	 */
-	private boolean isJavaArtifact(IResource resource) {
-		if (resource != null) {
-			if ((resource.getName().endsWith(".java")) //$NON-NLS-1$
-			|| (resource.getName().endsWith(".class"))) { //$NON-NLS-1$
-				return true;
-			}
-		}
-		return false;
-	}
-
-	/**
-	 * Checks whether the given resource is a Java class file.
-	 * 
-	 * @param resource The resource to check.
-	 * @return 
-	 * 	<code>true</code> if the given resource is a class file,
-	 * 	<code>false</code> otherwise.
-	 */
-	private boolean isClassFile(IResource resource) {
-		if (resource != null) {
-			if (resource.getName().endsWith(".class")) { //$NON-NLS-1$
-				return true;
-			}
-		}
-		return false;
-	}
-
 }
