@@ -1161,7 +1161,7 @@ defined in an interface references a mutable
 
   <BugPattern type="NP_ALWAYS_NULL">
     <ShortDescription>Null pointer dereference in method</ShortDescription>
-    <LongDescription>Null pointer dereference in {1} at {3}</LongDescription>
+    <LongDescription>Null pointer dereference in {1}</LongDescription>
     <Details>
 <![CDATA[
 <p> A null pointer is dereferenced here.&nbsp; This will lead to a 
@@ -1172,7 +1172,7 @@ defined in an interface references a mutable
 
   <BugPattern type="NP_NULL_ON_SOME_PATH">
     <ShortDescription>Possible null pointer dereference in method</ShortDescription>
-    <LongDescription>Possible null pointer dereference in {1} at {3}</LongDescription>
+    <LongDescription>Possible null pointer dereference in {1}</LongDescription>
     <Details>
 <![CDATA[
 <p> A reference value dereferenced here might be null at runtime.&nbsp;
