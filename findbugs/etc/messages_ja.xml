@@ -411,14 +411,6 @@
     </Details>
   </Detector>
 
-  <Detector class="edu.umd.cs.findbugs.detect.FindMaskedFields">
-    <Details>
-<![CDATA[
-<p> このディテクタは、クラスのフィールドが、メソッド内のローカル変数で隠されてしまっているコードを発見します。高速ディテクタです。
-]]>
-    </Details>
-  </Detector>
-
   <Detector class="edu.umd.cs.findbugs.detect.InvalidJUnitTest">
     <Details>
 <![CDATA[
@@ -449,41 +441,6 @@
   **********************************************************************
    -->
 
-  <BugPattern type="MF_METHOD_MASKS_FIELD">
-
-    <ShortDescription>フィールドと同名のローカル変数を定義しています</ShortDescription>
-
-    <LongDescription>メソッド {1} は、ローカル変数 {2} を定義しており、これがフィールドを隠しています</LongDescription>
-
-    <Details>
-
-<![CDATA[
-
-<p> このメソッドは、このクラスもしくは親クラスが持つフィールドと同名のローカル変数を定義しています。
-これにより、フィールドが初期化されなかったり、未初期化のフィールドの値を読みこんだりする恐れがあります。
-]]>
-
-    </Details>
-
-  </BugPattern>
-
-
-  <BugPattern type="MF_CLASS_MASKS_FIELD">
-
-    <ShortDescription>親クラスで定義されたフィールドと同名のフィールドを定義しています</ShortDescription>
-
-    <LongDescription>クラス {0} は、親クラスが定義しているフィールド {1} と同名のフィールドを定義しています</LongDescription>
-
-    <Details>
-
-<![CDATA[
-
-<p> このクラスは、親クラスが定義しているフィールドと同名のフィールドを定義しています。これは混乱を招きやすく、間違えて意図しないフィールドを更新したり参照したりするプログラミングミスにつながります。
-]]>
-
-    </Details>
-
-  </BugPattern>
 
 
   <BugPattern type="SW_SWING_METHODS_INVOKED_IN_SWING_THREAD">
@@ -2012,8 +1969,6 @@ P
   <BugCode abbrev="ITA">非効率なCollection.toArray(new Foo[0])呼び出し</BugCode>
 
   <BugCode abbrev="SW">Swingのコーディングルール</BugCode>
-
-  <BugCode abbrev="MF">マスクフィールド</BugCode>
 
   <BugCode abbrev="IJU">JUnit TestCaseの正しくない実装</BugCode>
 
