@@ -14,7 +14,6 @@ public class IDivResultCastToDouble extends BytecodeScanningDetector {
 	private static final int SAW_IDIV_BUG = 2;
 	
 	private BugReporter bugReporter;
-	private int state;
 	private int prevOpCode;
 	
 	public IDivResultCastToDouble(BugReporter bugReporter) {
@@ -24,7 +23,6 @@ public class IDivResultCastToDouble extends BytecodeScanningDetector {
 	//@Override
 	public void visit(Method obj) {
 		if (DEBUG) System.out.println("Visiting " + obj);
-		state = SCAN;
 	}
 
 	public void sawOpcode(int seen) {
