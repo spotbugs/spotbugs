@@ -327,7 +327,7 @@
 
   <Detector class="edu.umd.cs.findbugs.detect.MethodReturnCheck"
             speed="fast"
-            reports="RV_RETURN_VALUE_IGNORED"/>
+            reports="RV_RETURN_VALUE_IGNORED" disabled="true"/>
   			
   <Detector class="edu.umd.cs.findbugs.detect.FindBugsSummaryStats" 
             speed="fast"
