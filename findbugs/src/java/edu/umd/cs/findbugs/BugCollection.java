@@ -95,6 +95,9 @@ public abstract class BugCollection {
 				add(bugInstance);
 			}
 		}
+
+		// Presumably, project is now up-to-date
+		project.setModified(false);
 	}
 
 	public void writeXML(String fileName, Project project, Map<String, String> classToSourceFileMap) throws IOException {
