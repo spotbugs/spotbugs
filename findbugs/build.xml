@@ -133,6 +133,7 @@
       <delete dir="${build.dir}" />
       <delete dir="${plugin.dir}" />
       <delete dir="${doc.dir}" />
+      <delete file="${doc.src.dir}/bugDescriptions.html"/>
       <delete file="${release.prop.file}" />
       <delete file="${jar.dir}/${findbugs.jar.name}" />
       <delete file="${jar.dir}/${findbugsgui.jar.name}" />
@@ -623,7 +624,7 @@
 
     <!-- Generate HTML documentation (website). -->
     <target name="docfilesHTML"
-            depends="version,tools,docfilesHTMLCheck,bugDescriptions"
+            depends="version,tools,bugDescriptions,docfilesHTMLCheck"
             unless="docfiles.html.uptodate">
        <copy todir="${doc.dir}" overwrite="true">
          <fileset dir="${doc.src.dir}" includes="*.html,*.css"/>
