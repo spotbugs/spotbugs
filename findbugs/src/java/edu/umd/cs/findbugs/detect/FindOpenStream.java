@@ -30,6 +30,7 @@ import edu.umd.cs.findbugs.*;
 class Stream extends ResourceCreationPoint {
 	private String streamBase;
 	private boolean isByteArray;
+	private InstructionHandle ctorHandle;
 
 	public Stream(Location location, String streamClass, String streamBase, boolean isByteArray) {
 		super(location, streamClass);
@@ -40,9 +41,15 @@ class Stream extends ResourceCreationPoint {
 	public String getStreamBase() { return streamBase; }
 
 	public boolean isByteArray() { return isByteArray; }
+
+	public void setConstructorHandle(InstructionHandle handle) { this.ctorHandle = handle; }
+
+	public InstructionHandle getConstructorHandle() { return ctorHandle; }
 }
 
 public class FindOpenStream extends ResourceTrackingDetector<Stream>  {
+	private static final boolean DEBUG = Boolean.getBoolean("fos.debug");
+	private static final boolean IGNORE_WRAPPED_BYTE_ARRAY_STREAMS = Boolean.getBoolean("fos.iwbas");
 
 	/* ----------------------------------------------------------------------
 	 * Helper classes
@@ -55,6 +62,7 @@ public class FindOpenStream extends ResourceTrackingDetector<Stream>  {
 	private static class StreamFrameModelingVisitor extends ResourceValueFrameModelingVisitor {
 		private StreamResourceTracker resourceTracker;
 		private Stream stream;
+		private InstructionHandle handle;
 
 		public StreamFrameModelingVisitor(ConstantPoolGen cpg, StreamResourceTracker resourceTracker, Stream stream) {
 			super(cpg);
@@ -63,6 +71,8 @@ public class FindOpenStream extends ResourceTrackingDetector<Stream>  {
 		}
 
 		public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock) {
+			this.handle = handle;
+
 			final Instruction ins = handle.getInstruction();
 			final ConstantPoolGen cpg = getCPG();
 			final ResourceValueFrame frame = getFrame();
@@ -77,6 +87,8 @@ public class FindOpenStream extends ResourceTrackingDetector<Stream>  {
 			} else if (resourceTracker.isResourceOpen(basicBlock, handle, cpg, stream, frame)) {
 				// Resource opened
 				status = ResourceValueFrame.OPEN;
+				stream.setConstructorHandle(handle);
+				resourceTracker.addStreamConstruction(handle, stream.isByteArray());
 			} else if (resourceTracker.isResourceClose(basicBlock, handle, cpg, stream, frame)) {
 				// Resource closed
 				status = ResourceValueFrame.CLOSED;
@@ -102,7 +114,33 @@ public class FindOpenStream extends ResourceTrackingDetector<Stream>  {
 
 			boolean escapes = (inv.getOpcode() == Constants.INVOKESTATIC || instanceArgNum != 0);
 			//if (escapes) System.out.print("[Escape at " + inv + " argNum=" + instanceArgNum + "]");
+
+			// Record the fact that this might be a stream escape
+			if (stream.getConstructorHandle() != null)
+				resourceTracker.addStreamEscape(stream.getConstructorHandle(), handle);
+
 			return escapes;
+		}
+	}
+
+	private static class StreamEscape implements Comparable<StreamEscape> {
+		public final InstructionHandle source;
+		public final InstructionHandle target;
+
+		public StreamEscape(InstructionHandle source, InstructionHandle target) {
+			this.source = source;
+			this.target = target;
+		}
+
+		public int compareTo(StreamEscape other) {
+			int cmp = source.getPosition() - other.source.getPosition();
+			if (cmp != 0)
+				return cmp;
+			return target.getPosition() - other.target.getPosition();
+		}
+
+		public String toString() {
+			return source.getPosition() + " to " + target.getPosition();
 		}
 	}
 
@@ -113,8 +151,69 @@ public class FindOpenStream extends ResourceTrackingDetector<Stream>  {
 	private static class StreamResourceTracker implements ResourceTracker<Stream> {
 		private RepositoryLookupFailureCallback lookupFailureCallback;
 
+		/** Set of all stream construction points. */
+		private BitSet streamConstructionSet;
+
+		/** Set of all byte array stream construction points and escapes. */
+		private BitSet byteArrayStreamEscapeSet;
+
+		/** Set of all (potential) stream escapes. */
+		private TreeSet<StreamEscape> streamEscapeSet;
+
 		public StreamResourceTracker(RepositoryLookupFailureCallback lookupFailureCallback) {
 			this.lookupFailureCallback = lookupFailureCallback;
+			this.streamConstructionSet = new BitSet();
+			this.byteArrayStreamEscapeSet = new BitSet();
+			this.streamEscapeSet = new TreeSet<StreamEscape>();
+		}
+
+		public void addStreamEscape(InstructionHandle source, InstructionHandle target) {
+			StreamEscape streamEscape = new StreamEscape(source, target);
+			streamEscapeSet.add(streamEscape);
+			if (DEBUG) System.out.println("Adding potential stream escape " + streamEscape);
+		}
+
+		public void markTransitiveByteArrayStreamEscapes() {
+			// Eliminate all stream escapes where the target isn't really
+			// a stream construction point.
+			for (Iterator<StreamEscape> i = streamEscapeSet.iterator(); i.hasNext(); ) {
+				StreamEscape streamEscape = i.next();
+				if (!isStreamConstruction(streamEscape.target)) {
+					if (DEBUG) System.out.println("Eliminating false stream escape " + streamEscape);
+					i.remove();
+				}
+			}
+
+			// Starting with the set of byte array stream construction points,
+			// propagate all byte array stream escapes.  Iterate until there
+			// is no change.
+			BitSet orig = new BitSet();
+			do {
+				orig.clear();
+				orig.or(byteArrayStreamEscapeSet);
+
+				for (Iterator<StreamEscape> i = streamEscapeSet.iterator(); i.hasNext(); ) {
+					StreamEscape streamEscape = i.next();
+					if (isByteArrayStreamEscape(streamEscape.source)) {
+						if (DEBUG) System.out.println("Propagating stream escape " + streamEscape);
+						byteArrayStreamEscapeSet.set(streamEscape.target.getPosition());
+					}
+				}
+			} while (!orig.equals(byteArrayStreamEscapeSet));
+		}
+
+		public boolean isByteArrayStreamEscape(InstructionHandle handle) {
+			return byteArrayStreamEscapeSet.get(handle.getPosition());
+		}
+
+		public void addStreamConstruction(InstructionHandle streamConstruction, boolean isByteArray) {
+			streamConstructionSet.set(streamConstruction.getPosition());
+			if (isByteArray)
+				byteArrayStreamEscapeSet.set(streamConstruction.getPosition());
+		}
+
+		private boolean isStreamConstruction(InstructionHandle handle) {
+			return streamConstructionSet.get(handle.getPosition());
 		}
 
 		public Stream isResourceCreation(BasicBlock basicBlock, InstructionHandle handle, ConstantPoolGen cpg) {
@@ -236,7 +335,6 @@ public class FindOpenStream extends ResourceTrackingDetector<Stream>  {
 	 * Fields
 	 * ---------------------------------------------------------------------- */
 
-	private StreamResourceTracker resourceTracker;
 	private List<PotentialOpenStream> potentialOpenStreamList;
 
 	/* ----------------------------------------------------------------------
@@ -245,7 +343,6 @@ public class FindOpenStream extends ResourceTrackingDetector<Stream>  {
 
 	public FindOpenStream(BugReporter bugReporter) {
 		super(bugReporter);
-		this.resourceTracker = new StreamResourceTracker(bugReporter);
 		this.potentialOpenStreamList = new LinkedList<PotentialOpenStream>();
 	}
 
@@ -255,18 +352,21 @@ public class FindOpenStream extends ResourceTrackingDetector<Stream>  {
 	}
 
 	public ResourceTracker<Stream> getResourceTracker(ClassContext classContext, Method method) {
-		return resourceTracker;
+		return new StreamResourceTracker(bugReporter);
 	}
 
-	public void analyzeMethod(ClassContext classContext, Method method)
+	public void analyzeMethod(ClassContext classContext, Method method, ResourceTracker<Stream> resourceTracker_)
 		throws CFGBuilderException, DataflowAnalysisException {
 
 		potentialOpenStreamList.clear();
+		StreamResourceTracker resourceTracker = (StreamResourceTracker) resourceTracker_;
 
-		super.analyzeMethod(classContext, method);
+		super.analyzeMethod(classContext, method, resourceTracker);
 
 		JavaClass javaClass = classContext.getJavaClass();
 		MethodGen methodGen = classContext.getMethodGen(method);
+
+		resourceTracker.markTransitiveByteArrayStreamEscapes();
 
 		Iterator<PotentialOpenStream> i = potentialOpenStreamList.iterator();
 		while (i.hasNext()) {
@@ -275,6 +375,13 @@ public class FindOpenStream extends ResourceTrackingDetector<Stream>  {
 			Stream stream = pos.stream;
 
 			if (stream.isByteArray())
+				continue;
+
+			InstructionHandle constructionHandle = stream.getConstructorHandle();
+			if (constructionHandle == null)
+				continue;
+
+			if (IGNORE_WRAPPED_BYTE_ARRAY_STREAMS && resourceTracker.isByteArrayStreamEscape(constructionHandle))
 				continue;
 
 			String sourceFile = javaClass.getSourceFileName();
