@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<classpath>
-	<classpathentry kind="var" path="ECLIPSE_HOME/plugins/org.eclipse.core.boot_3.0.0/boot.jar"/>
-	<classpathentry kind="var" path="ECLIPSE_HOME/plugins/org.eclipse.core.runtime_3.1.0/runtime.jar"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="var" path="FINDBUGS_HOME/lib/bcel.jar"/>
-	<classpathentry kind="var" path="FINDBUGS_HOME/lib/dom4j-full.jar"/>
-	<classpathentry kind="output" path="bin"/>
-</classpath>
