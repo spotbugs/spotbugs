@@ -19,17 +19,29 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.BytecodeScanningDetector;
-import edu.umd.cs.findbugs.ba.ClassContext;
-import edu.umd.cs.findbugs.visitclass.Constants2;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+
 import org.apache.bcel.classfile.Code;
-import org.apache.bcel.classfile.LineNumberTable;
+
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import edu.umd.cs.findbugs.SourceLineAnnotation;
+import edu.umd.cs.findbugs.Tokenizer;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.ba.SourceFile;
+import edu.umd.cs.findbugs.ba.SourceFinder;
+import edu.umd.cs.findbugs.visitclass.Constants2;
+
 
 public class SwitchFallthrough extends BytecodeScanningDetector implements Constants2 {
 	private static final boolean DEBUG = Boolean.getBoolean("switchFallthrough.debug");
+	private static final boolean LOOK_IN_SOURCE_FOR_FALLTHRU_COMMENT = Boolean.getBoolean("sf.comment");
 
+	private AnalysisContext analysisContext;
 	int nextIndex = -1;
 	boolean reachable = false;
 	boolean inSwitch = false;
@@ -43,6 +55,10 @@ public class SwitchFallthrough extends BytecodeScanningDetector implements Const
 
 	public SwitchFallthrough(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
+	}
+
+	public void setAnalysisContext(AnalysisContext analysisContext) {
+		this.analysisContext = analysisContext;
 	}
 
 	public void visitClassContext(ClassContext classContext) {
@@ -85,24 +101,10 @@ public class SwitchFallthrough extends BytecodeScanningDetector implements Const
 				if ((getPC() == (switchPC + swOffsets[nextIndex]))
 				&&  (swOffsets[nextIndex] != defSwOffset)) {
 					if (nextIndex > 0 && reachable) {
-						bugReporter.reportBug(new BugInstance(this, "SF_SWITCH_FALLTHROUGH", LOW_PRIORITY)
-		        			.addClassAndMethod(this)
-		        			.addSourceLineRange(this, lastPC, getPC()));
-
-
-/*	Not sure why this is here, isn't lack of goto enough? 				
-						int endOfPreviousCase = lineNumbers.getSourceLine(getPC() - 1);
-						int startOfNextCase = lineNumbers.getSourceLine(getPC());
-						int previousLabel = swLabels[nextIndex - 1];
-						int nextLabel = swLabels[nextIndex];
-						if (!(previousLabel == 10 && nextLabel == 13)
-						        && !(previousLabel == 13 && nextLabel == 10)
-						        && startOfNextCase - endOfPreviousCase <= 2) {
-							System.out.println("Reached the switch for " + swLabels[nextIndex]
-							        + " at line number " + startOfNextCase
-							        + " in " + getFullyQualifiedMethodName());
-						}
-*/
+						if (!hasFallThruComment(lastPC + 1, getPC() - 1))
+							bugReporter.reportBug(new BugInstance(this, "SF_SWITCH_FALLTHROUGH", LOW_PRIORITY)
+			        			.addClassAndMethod(this)
+			        			.addSourceLineRange(this, lastPC, getPC()));
 					}
 					do {
 						nextIndex++;
@@ -134,5 +136,43 @@ public class SwitchFallthrough extends BytecodeScanningDetector implements Const
 		}
 		
 		lastPC = getPC();
+	}
+	
+	private boolean hasFallThruComment( int startPC, int endPC ) {
+		if (LOOK_IN_SOURCE_FOR_FALLTHRU_COMMENT) {
+			BufferedReader r = null;
+			try {
+				SourceLineAnnotation srcLine
+	        		= SourceLineAnnotation.fromVisitedInstructionRange(this, lastPC, getPC());
+				SourceFinder sourceFinder = analysisContext.getSourceFinder();
+				SourceFile sourceFile = sourceFinder.findSourceFile(srcLine.getPackageName(), srcLine.getSourceFile());
+				
+				int startLine = srcLine.getStartLine();
+				int numLines = srcLine.getEndLine() - startLine - 1;
+				if (numLines <= 0)
+					return false;
+				r = new BufferedReader( 
+						new InputStreamReader(sourceFile.getInputStream()));
+				for (int i = 0; i < startLine; i++)
+					r.readLine();
+				for (int i = 0; i < numLines; i++) {
+					String line = r.readLine();
+					if (line.toLowerCase().contains("fall")) {
+						return true;
+					}
+				}
+			}
+			catch (IOException ioe) {
+				//Problems with source file, mean report the bug
+			}
+			finally {
+				try {
+					if (r != null)
+						r.close();
+				} catch (IOException ioe) {		
+				}
+			}
+		}
+		return false;
 	}
 }
