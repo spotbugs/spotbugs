@@ -55,9 +55,6 @@ public class FindBugsFrame extends javax.swing.JFrame {
         }
     }
     
-    /** Filename used for new projects. */
-    private static final String UNTITLED_PROJECT = "<<untitled project>>";
-    
     /** Creates new form FindBugsFrame */
     public FindBugsFrame() {
 	initComponents();
@@ -436,11 +433,16 @@ public class FindBugsFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_formWindowOpened
 
     private void newProjectItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newProjectItemActionPerformed
-        Project project = new Project(UNTITLED_PROJECT);
+        String projectName = "<<untitled project " + (++projectCount) + ">>";
+        System.out.println("Adding " + projectName);
+        Project project = new Project(projectName);
         projectCollection.addProject(project);
         DefaultMutableTreeNode projectNode = new DefaultMutableTreeNode(project);
-        rootNode.add(projectNode);
-        navigatorTree.setSelectionPath(new TreePath(new Object[]{rootNode, projectNode}));
+        DefaultTreeModel treeModel = (DefaultTreeModel) navigatorTree.getModel();
+        treeModel.insertNodeInto(projectNode, rootNode, rootNode.getChildCount());
+        TreePath projPath = new TreePath(new Object[]{rootNode, projectNode});
+        navigatorTree.makeVisible(projPath);
+        navigatorTree.setSelectionPath(projPath);
     }//GEN-LAST:event_newProjectItemActionPerformed
     
     private void exitItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitItemActionPerformed
@@ -505,6 +507,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
         DefaultTreeCellRenderer renderer = new DefaultTreeCellRenderer();
         
         navigatorTree.setCellRenderer(new FindBugsFrame.MyCellRenderer());
+        navigatorTree.setShowsRootHandles(true);
 	
 	jarFileList.setModel(new DefaultListModel());
 	sourceDirList.setModel(new DefaultListModel());
@@ -669,4 +672,5 @@ public class FindBugsFrame extends javax.swing.JFrame {
     private ProjectCollection projectCollection;
     private DefaultTreeModel navigatorTreeModel;
     private DefaultMutableTreeNode rootNode;
+    private int projectCount;
 }
