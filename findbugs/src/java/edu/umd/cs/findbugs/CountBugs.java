@@ -107,14 +107,14 @@ public class CountBugs {
 		}
 	}
 
-	public void diffCounts(CountBugs other) {
+	public void diffCounts(CountBugs newer) {
 		TreeSet<String> allCategories = new TreeSet<String>();
 		allCategories.addAll(countMap.keySet());
-		allCategories.addAll(other.countMap.keySet());
+		allCategories.addAll(newer.countMap.keySet());
 
 		for (Iterator<String> i = allCategories.iterator(); i.hasNext(); ) {
 			String category = i.next();
-			Integer delta = new Integer(getCount(category).intValue() - other.getCount(category).intValue());
+			Integer delta = new Integer(newer.getCount(category).intValue() - getCount(category).intValue());
 			countMap.put(category, delta);
 		}
 	}
