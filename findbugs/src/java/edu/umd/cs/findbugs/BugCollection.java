@@ -94,6 +94,11 @@ public abstract class BugCollection {
 		BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(fileName));
 		writeXML(out, classToSourceFileMap);
 	}
+	
+	public void writeXML(File file, Map<String, String> classToSourceFileMap) throws IOException {
+		BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(file));
+		writeXML(out, classToSourceFileMap);
+	}
 
 	public void writeXML(OutputStream out, Map<String, String> classToSourceFileMap) throws IOException {
 		Document document = DocumentHelper.createDocument();
