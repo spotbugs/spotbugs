@@ -473,6 +473,13 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 		// Inline everything into the top level subroutine
 		cfg = inlineAll();
 
+		// Add a NOP instruction to the entry block.
+		// This allows analyses to construct a Location
+		// representing the entry to the method.
+		BasicBlock entryBlock = cfg.getEntry();
+		InstructionList il = new InstructionList();
+		entryBlock.addInstruction(il.append(new NOP()));
+
 		if (VERIFY_INTEGRITY)
 			cfg.checkIntegrity();
 	}
