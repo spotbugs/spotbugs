@@ -101,37 +101,39 @@ public class RuntimeExceptionCapture extends BytecodeScanningDetector implements
 
 		for (Iterator iterator = catchList.iterator(); iterator.hasNext();) {
 			CaughtException caughtException = (CaughtException) iterator.next();
+			Set<String> thrownSet = new HashSet<String>();
 			for (Iterator iterator1 = throwList.iterator(); iterator1.hasNext();) {
 				ThrownException thrownException = (ThrownException) iterator1.next();
-				if (thrownException.exceptionClass.equals(caughtException.exceptionClass)
-						&& thrownException.offset >= caughtException.startOffset
+				if (thrownException.offset >= caughtException.startOffset
 				        && thrownException.offset < caughtException.endOffset) {
+				    thrownSet.add(thrownException.exceptionClass);
+				    if (thrownException.exceptionClass.equals(caughtException.exceptionClass))
 					caughtException.seen = true;
-					break;
 				}
 			}
+			int catchClauses = 0;
 			if (caughtException.exceptionClass.equals("java.lang.Exception") && !caughtException.seen) {
 				// Now we have a case where Exception is caught, but not thrown
 				boolean rteCaught = false;
 				for (Iterator iterator1 = catchList.iterator(); iterator1.hasNext();) {
 					CaughtException otherException = (CaughtException) iterator1.next();
-					if (otherException.exceptionClass.equals("java.lang.RuntimeException")
-					        && otherException.startOffset == caughtException.startOffset
-							&& otherException.endOffset == caughtException.endOffset) {
+					if (otherException.startOffset == caughtException.startOffset
+						&& otherException.endOffset == caughtException.endOffset) {
+					   catchClauses++;
+					   if (otherException.exceptionClass.equals("java.lang.RuntimeException"))
 						rteCaught = true;
-						break;
 					}
 				}
 				int range = caughtException.endOffset - caughtException.startOffset;
-				if (!rteCaught && range > 80) {
-					int priority = range > 300 ? NORMAL_PRIORITY : LOW_PRIORITY;
-					if (caughtException.dead) {
-						if (DEBUG) {
-							System.out.println("*** Boosting priority because of dead exception store");
-						}
-						priority = (priority > 0) ? priority - 1 : 0;
-					}
-					bugReporter.reportBug(new BugInstance(this, "REC_CATCH_EXCEPTION", priority)
+				if (!rteCaught) {
+					int priority = LOW_PRIORITY+1;
+					if (range > 300) priority--;
+					else if (range < 30) priority++;
+					if (catchClauses > 1) priority++;
+					if (thrownSet.size() > 1) priority--;
+					if (caughtException.dead) priority--;
+					bugReporter.reportBug(new BugInstance(this, "REC_CATCH_EXCEPTION", 
+							priority)
 					        .addClassAndMethod(this)
 					        .addSourceLine(this, caughtException.sourcePC));
 					}
