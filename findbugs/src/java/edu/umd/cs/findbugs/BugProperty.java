@@ -40,6 +40,17 @@ public class BugProperty implements XMLWriteable {
 	
 	/** Integer property defining the warning severity (1=least severe, 5=most severe). */
 	public static final String SEVERITY = "severity"; 
+	
+	// Data that may be of interest to false-positive-reducing heuristics
+	
+	/** Name of local variable. (See FindDeadLocalStores.) */
+	public static final String LOCAL_NAME = "localName";
+	
+	/** Store was killed by a subsequent store. (See FindDeadLocalStores.) */
+	public static final String KILLED_BY_SUBSEQUENT_STORE = "killedBySubsequentStore";
+	
+	/** Defensive constant opcode seen. (See FindDeadLocalStores.) */
+	public static final String DEFENSIVE_CONSTANT_OPCODE = "defensiveConstant";
 
 	// Fields
 	private String name;
