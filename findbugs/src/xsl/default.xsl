@@ -108,7 +108,10 @@
 
 	<h1>Details</h1>
 
-	<xsl:apply-templates select="/BugCollection/BugPattern"/>
+	<xsl:apply-templates select="/BugCollection/BugPattern">
+		<xsl:sort select="@abbrev"/>
+		<xsl:sort select="ShortDescription"/>
+	</xsl:apply-templates>
 
 	</body>
 	</html>
