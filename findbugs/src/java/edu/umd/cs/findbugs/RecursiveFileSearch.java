@@ -55,8 +55,10 @@ public class RecursiveFileSearch {
 	/**
 	 * Perform the search.
 	 * @return this object
+	 * @throws InterruptedException if the thread is interrupted before the
+	 *   search completes
 	 */
-	public RecursiveFileSearch search() {
+	public RecursiveFileSearch search() throws InterruptedException {
 		directoryWorkList.add(new File(baseDir));
 
 		while (!directoryWorkList.isEmpty()) {
@@ -66,6 +68,9 @@ public class RecursiveFileSearch {
 
 			File[] contentList = dir.listFiles();
 			for (int i = 0; i < contentList.length; ++i) {
+				if (Thread.interrupted())
+					throw new InterruptedException();
+
 				File file = contentList[i];
 
 				if (!fileFilter.accept(file))
