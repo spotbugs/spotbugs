@@ -219,6 +219,7 @@ public class AccuracyClassificationPulldownAction
 			}
 		} else { 
 			// No bug instance, so uncheck and disable the menu items
+			//System.out.println("No bug instance found, disabling menu items");
 			isBugItem.setEnabled(false);
 			notBugItem.setEnabled(false);
 			isBugItem.setSelection(false);
