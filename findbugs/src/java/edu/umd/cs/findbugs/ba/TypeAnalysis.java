@@ -38,21 +38,32 @@ import org.apache.bcel.generic.*;
  */
 public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame> {
 	private MethodGen methodGen;
-	private RepositoryLookupFailureCallback lookupFailureCallback;
+	private TypeMerger typeMerger;
 	private TypeFrameModelingVisitor visitor;
 
 	/**
 	 * Constructor.
 	 * @param methodGen the MethodGen whose CFG we'll be analyzing
+	 * @param typeMerger object to merge types
+	 * @param lookupFailureCallback callback for Repository lookup failures
 	 */
-	public TypeAnalysis(MethodGen methodGen, RepositoryLookupFailureCallback lookupFailureCallback) {
+	public TypeAnalysis(MethodGen methodGen, TypeMerger typeMerger) {
 		this.methodGen = methodGen;
-		this.lookupFailureCallback = lookupFailureCallback;
+		this.typeMerger = typeMerger;
 		this.visitor = new TypeFrameModelingVisitor(methodGen.getConstantPool());
 	}
 
+	/**
+	 * Constructor which uses StandardTypeMerger.
+	 * @param methodGen the MethodGen whose CFG we'll be analyzing
+	 * @param lookupFailureCallback callback for Repository lookup failures
+	 */
+	public TypeAnalysis(MethodGen methodGen, RepositoryLookupFailureCallback lookupFailureCallback) {
+		this(methodGen, new StandardTypeMerger(lookupFailureCallback));
+	}
+
 	public TypeFrame createFact() {
-		return new TypeFrame(methodGen.getMaxLocals(), lookupFailureCallback);
+		return new TypeFrame(methodGen.getMaxLocals(), typeMerger);
 	}
 
 	public void initEntryFact(TypeFrame result) {

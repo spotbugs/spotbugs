@@ -52,7 +52,7 @@ public class TypeFrame extends Frame<Type> implements Constants, ExtendedTypes {
 	private static Top s_topInstance = new Top();
 
 	/** Get the single instance of the "Top" type. */
-	public static Top getTopType() { return s_topInstance; }
+	public static Type getTopType() { return s_topInstance; }
 
 	/** Special "bottom" type. */
 	private static class Bottom extends Type {
@@ -130,7 +130,7 @@ public class TypeFrame extends Frame<Type> implements Constants, ExtendedTypes {
 	// Fields
 	////////////////////////////////////////////////////////////////////////////////////
 
-	private RepositoryLookupFailureCallback lookupFailureCallback;
+	private TypeMerger typeMerger;
 
 	////////////////////////////////////////////////////////////////////////////////////
 	// Methods
@@ -139,9 +139,9 @@ public class TypeFrame extends Frame<Type> implements Constants, ExtendedTypes {
 	/**
 	 * Constructor.
 	 */
-	public TypeFrame(int numLocals, RepositoryLookupFailureCallback lookupFailureCallback) {
+	public TypeFrame(int numLocals, TypeMerger typeMerger) {
 		super(numLocals);
-		this.lookupFailureCallback = lookupFailureCallback;
+		this.typeMerger = typeMerger;
 	}
 
 	/**
@@ -159,57 +159,7 @@ public class TypeFrame extends Frame<Type> implements Constants, ExtendedTypes {
 	 * @return the merged type
 	 */
 	public Type mergeValues(int slot, Type a, Type b) throws DataflowAnalysisException {
-		byte aType = a.getType(), bType = b.getType();
-
-		if (aType == T_TOP)			// Top is the identity element
-			return b;
-		else if (bType == T_TOP)	// Top is the identity element
-			return a;
-		else if (aType == T_BOTTOM || bType == T_BOTTOM)	// Bottom meet anything is bottom
-			return getBottomType();
-		else if (isObjectType(aType) && isObjectType(bType)) {	// Two object types!
-			// Handle the Null type, which serves as a special "top"
-			// value for object types.
-			if (aType == T_NULL)
-				return b;
-			else if (bType == T_NULL)
-				return a;
-
-			// Two concrete object types.
-			// According to the JVM spec, 2nd edition, §4.9.2,
-			// the result of merging types is the "first common superclass".
-			// Interfaces are NOT considered!
-			// This will use the Repository to look up classes.
-			ReferenceType aRef = (ReferenceType) a;
-			ReferenceType bRef = (ReferenceType) b;
-			try {
-				return aRef.getFirstCommonSuperclass(bRef);
-			} catch (ClassNotFoundException e) {
-				lookupFailureCallback.reportMissingClass(e);
-				throw new DataflowAnalysisException("Repository lookup failure", e);
-			}
-		} else if (isObjectType(aType) || isObjectType(bType))	// Object meet non-object is bottom
-			return getBottomType();
-		else if (aType == bType)	// Same non-object type?
-			return a;
-		else if (isIntegerType(aType) && isIntegerType(bType)) // Two different integer types - use T_INT
-			return Type.INT;
-		else						// Default - types are incompatible
-			return getBottomType();
-	}
-
-	/**
-	 * Does given typecode refer to an Integer type (other than long)?
-	 */
-	private static boolean isIntegerType(byte type) {
-		return type == T_INT || type == T_BYTE || type == T_BOOLEAN || type == T_CHAR || type == T_SHORT;
-	}
-
-	/**
-	 * Does the given typecode refer to an Object (reference) type?
-	 */
-	private static boolean isObjectType(byte type) {
-		return type == T_OBJECT || type == T_NULL;
+		return typeMerger.mergeTypes(a, b);
 	}
 
 	protected String valueToString(Type value) {
