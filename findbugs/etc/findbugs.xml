@@ -83,6 +83,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.FindUselessControlFlow" speed="fast"
     reports="UCF_USELESS_CONTROL_FLOW" />
   <Detector class="edu.umd.cs.findbugs.detect.FindUnreleasedLock" speed="moderate"
+	disabled="true"
     requirejre="1.5"
     reports="UL_UNRELEASED_LOCK,UL_UNRELEASED_LOCK_EXCEPTION_PATH" />
   <Detector class="edu.umd.cs.findbugs.detect.FindRefComparison" speed="slow"
