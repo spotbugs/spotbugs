@@ -7,6 +7,22 @@
 
 <h1>FindBugs Changes</h1>
 
+<p> Changes since version 0.6.1:
+
+<ul>
+<li> New detector to look for useless control flow (suggested by
+     Richard P. King and Mike Fagan)
+<li> Look for places where return value of java.io.File.createNewFile()
+     is ignored (suggested by Richard P. King)
+<li> Fixed bug in resolution of source files (only the first
+     source directory was searched)
+<li> Fixed a NullPointerException in the bytecode pattern matching code
+<li> Ant task supports project files (contributed by Mike Fagan)
+<li> Unix findbugs script honors the <code>JAVA_HOME</code>
+     environment variable (contributed by Pedro Morais)
+<li> Allow .war and .ear files to be analyzed
+</ul>
+
 <p> Changes since version 0.6.0:
 
 <ul>

@@ -45,20 +45,18 @@ invited talk, MASPLAS 2003
 
 <h1>Changes since last version</h1>
 
-<p> Changes since version 0.6.1:
+<p> Changes since version 0.6.2:
 
 <ul>
-<li> New detector to look for useless control flow (suggested by
-     Richard P. King and Mike Fagan)
-<li> Look for places where return value of java.io.File.createNewFile()
-     is ignored (suggested by Richard P. King)
-<li> Fixed bug in resolution of source files (only the first
-     source directory was searched)
-<li> Fixed a NullPointerException in the bytecode pattern matching code
-<li> Ant task supports project files (contributed by Mike Fagan)
-<li> Unix findbugs script honors the <code>JAVA_HOME</code>
-     environment variable (contributed by Pedro Morais)
-<li> Allow .war and .ear files to be analyzed
+<li> GUI supports filtering bugs by priority
+<li> Ant task rewritten; supports all functionality offered by Text UI
+     (contributed by Mike Fagan)
+<li> Classes in nested archives are analyzed; this allows full support for
+     analyzing .ear and .war files (contributed by Mike Fagan)
+<li> DepthFirstSearch changed to use non-recursive implementation;
+     this should fix the StackOverflowErrors that several users
+     reported
+<li> Various minor bugfixes and improvements
 </ul>
 
 <p> <a href="Changes.html">Older versions...</a>
