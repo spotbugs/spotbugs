@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
+import java.util.TreeMap;
 
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -39,6 +40,7 @@ import de.tobject.findbugs.builder.FindBugsBuilder;
 import de.tobject.findbugs.builder.FindBugsWorker;
 import de.tobject.findbugs.nature.FindBugsNature;
 import de.tobject.findbugs.reporter.Reporter;
+import de.tobject.findbugs.view.DetailsView;
 
 /**
  * The main plugin class to be used in the desktop.
@@ -82,6 +84,9 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 	// The shared instance.
 	private static FindbugsPlugin plugin;
 	
+	// Details view instance
+	private static DetailsView viewDetails;
+	
 	// Resource bundle.
 	private ResourceBundle resourceBundle;
 	
@@ -101,7 +106,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 			resourceBundle= ResourceBundle.getBundle("de.tobject.findbugs.FindbugsPluginResources");
 		} catch (MissingResourceException x) {
 			resourceBundle = null;
-		}
+		}		
 	}
 
 	/**
@@ -230,5 +235,20 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 			System.out.println("Could not find findbugs binaries.");
 		}
 		return null;
+	}
+	/**
+	 * Accessor for the details view associated with this plugin.
+	 * @return the details view, or null if it has not been initialized yet
+	 */
+	public static DetailsView getViewDetails(){
+		return viewDetails;
+	}
+	/**
+	 * Set the details view for the rest of the plugin. Details view should call this
+	 * when it has been initialized.
+	 * @param view the details view
+	 */
+	public static void setViewDetails(DetailsView view){
+		viewDetails=view;	
 	}
 }
