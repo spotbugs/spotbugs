@@ -187,6 +187,9 @@ public class FindBugs implements Constants2, ExitCodes {
 
 		public JavaClass getNextClass() throws IOException, InterruptedException {
 			for (;;) {
+				if (Thread.interrupted())
+					throw new InterruptedException();
+
 				ZipEntry zipEntry = zipInputStream.getNextEntry();
 				if (zipEntry == null)
 					return null;
