@@ -38,15 +38,22 @@ import org.apache.bcel.generic.StoreInstruction;
  * This is just a backward analysis to see which loads
  * reach stores of the same local.
  *
+ * <p> This analysis also computes which stores that were
+ * killed by a subsequent store on any subsequent reachable path.
+ * (The FindDeadLocalStores detector uses this information
+ * to reduce false positives.)
+ *
  * @author David Hovemeyer
  */
 public class LiveLocalStoreAnalysis extends BackwardDataflowAnalysis<BitSet>
 		implements Debug {
 	private int topBit ;
+	private int killedByStoreOffset;
 
 	public LiveLocalStoreAnalysis(MethodGen methodGen, ReverseDepthFirstSearch rdfs) {
 		super(rdfs);
-		this.topBit = methodGen.getMaxLocals();
+		this.topBit = methodGen.getMaxLocals() * 2;
+		this.killedByStoreOffset = methodGen.getMaxLocals();
 	}
 
 	public BitSet createFact() {
@@ -76,6 +83,9 @@ public class LiveLocalStoreAnalysis extends BackwardDataflowAnalysis<BitSet>
 	}
 
 	public void meetInto(BitSet fact, Edge edge, BitSet result) throws DataflowAnalysisException {
+		isFactValid(fact);
+		isFactValid(result);
+
 		if (isTop(fact)) {
 			// Nothing to do, result stays the same
 		} else if (isTop(result)) {
@@ -85,10 +95,13 @@ public class LiveLocalStoreAnalysis extends BackwardDataflowAnalysis<BitSet>
 			// Meet is union
 			result.or(fact);
 		}
+
+		isFactValid(result);
 	}
 
 	public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, BitSet fact)
 		throws DataflowAnalysisException {
+		isFactValid(fact);
 
 		Instruction ins = handle.getInstruction();
 
@@ -99,6 +112,7 @@ public class LiveLocalStoreAnalysis extends BackwardDataflowAnalysis<BitSet>
 			LocalVariableInstruction store = (LocalVariableInstruction) ins;
 			int local = store.getIndex();
 			fact.clear(local);
+			fact.set(local + killedByStoreOffset);
 		}
 
 		if (ins instanceof LoadInstruction || ins instanceof IINC || ins instanceof RET) {
@@ -108,7 +122,10 @@ public class LiveLocalStoreAnalysis extends BackwardDataflowAnalysis<BitSet>
 			IndexedInstruction load = (IndexedInstruction) ins;
 			int local = load.getIndex();
 			fact.set(local);
+			fact.clear(local + killedByStoreOffset);
 		}
+
+		isFactValid(fact);
 	}
 
 	public boolean isFactValid(BitSet fact) {
@@ -131,6 +148,24 @@ public class LiveLocalStoreAnalysis extends BackwardDataflowAnalysis<BitSet>
 	 */
 	public boolean isTop(BitSet fact) {
 		return fact.get(topBit);
+	}
+
+	/**
+	 * Return whether or not a store of given local is alive.
+	 *
+	 * @param fact  a dataflow fact created by this analysis
+	 * @param local the local
+	 */
+	public boolean isStoreAlive(BitSet fact, int local) {
+		return fact.get(local);
+	}
+
+	/**
+	 * Return whether or not a store of given local was killed
+	 * by a subsequent (dominated) store.
+	 */
+	public boolean killedByStore(BitSet fact, int local) {
+		return fact.get(local + killedByStoreOffset);
 	}
 
 	public static void main(String[] argv) throws Exception {

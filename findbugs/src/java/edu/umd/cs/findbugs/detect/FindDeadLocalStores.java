@@ -123,12 +123,25 @@ public class FindDeadLocalStores implements Detector {
 			IndexedInstruction store = (IndexedInstruction) location.getHandle().getInstruction();
 			int local = store.getIndex();
 
+			// Get live stores at this instruction.
+			// Note that the analysis also computes which stores were
+			// killed by a subsequent unconditional store.
 			BitSet liveStoreSet = llsaDataflow.getAnalysis().getFactAtLocation(location);
 
-			if (liveStoreSet.get(local))
+			// Is store alive?
+			if (llsaDataflow.getAnalysis().isStoreAlive(liveStoreSet, local))
 				continue;
 
 			// Store is dead
+
+			// Ignore assignments that were killed by a subsequent assignment.
+			if (llsaDataflow.getAnalysis().killedByStore(liveStoreSet, local)) {
+				if (DEBUG) {
+					System.out.println("Store at " + location.getHandle() +
+						" killed by subsequent store");
+				}
+				continue;
+			}
 
 			// Ignore dead assignments of null and 0.
 			// These often indicate defensive programming.
@@ -136,6 +149,7 @@ public class FindDeadLocalStores implements Detector {
 			if (prev != null && defensiveConstantValueOpcodes.get(prev.getInstruction().getOpcode()))
 				continue;
 
+			// Report the bug
 			BugInstance bugInstance = new BugInstance("DLS_DEAD_LOCAL_STORE", NORMAL_PRIORITY)
 				.addClassAndMethod(methodGen, javaClass.getSourceFileName())
 				.addSourceLine(methodGen, javaClass.getSourceFileName(), location.getHandle());
