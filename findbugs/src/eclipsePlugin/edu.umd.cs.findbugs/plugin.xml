@@ -2,7 +2,7 @@
 <plugin
    id="edu.umd.cs.findbugs"
    name="%pluginName"
-   version="0.7.0"
+   version="0.7.1"
    provider-name="%providerName">
 
    <runtime>
