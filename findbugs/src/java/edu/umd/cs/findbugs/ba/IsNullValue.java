@@ -32,7 +32,7 @@ package edu.umd.cs.daveho.ba;
  * @author David Hovemeyer
  */
 public class IsNullValue {
-	private static final boolean NO_WEAK_VALUES = Boolean.getBoolean("inv.noWeak");
+	private static final boolean NO_WEAK_VALUES = !Boolean.getBoolean("inv.weak");
 
 	private static final int NULL      = 0;
 	private static final int WEAK_NULL = 1;
