@@ -122,7 +122,7 @@ public abstract class PatternElement {
 			bindingSet = new BindingSet(new Binding(varName, variable), bindingSet);
 		} else {
 			if (!existingVariable.sameAs(variable)) {
-				if (DEBUG) System.out.println("\tConflicting variable " + varName);
+				if (DEBUG) System.out.println("\tConflicting variable " + varName + ": " + variable + " != " + existingVariable);
 				return null;
 			}
 		}
