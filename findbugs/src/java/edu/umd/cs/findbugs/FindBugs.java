@@ -29,23 +29,140 @@ import edu.umd.cs.pugh.visitclass.Constants2;
 import org.apache.bcel.classfile.*;
 import org.apache.bcel.Repository;
 
+/**
+ * An instance of this class is used to apply the selected set of
+ * analyses on some collection of Java classes.  It also implements the
+ * comand line interface.
+ *
+ * @author Bill Pugh
+ * @author David Hovemeyer
+ */
 public class FindBugs implements Constants2
 {
+  /* ----------------------------------------------------------------------
+   * Helper classes
+   * ---------------------------------------------------------------------- */
+
+  /**
+   * Interface for an object representing a source of class files to analyze.
+   */
+  private interface ClassProducer {
+	/**
+	 * Get the next class to analyze.
+	 * @return the class, or null of there are no more classes for this ClassProducer
+	 * @throws IOException if an IOException occurs
+	 * @throws InterruptedException if the thread is interrupted
+	 */
+	public JavaClass getNextClass() throws IOException, InterruptedException;
+  }
+
+  /**
+   * ClassProducer for single class files.
+   */
+  private static class SingleClassProducer implements ClassProducer {
+	private String fileName;
+
+	/**
+	 * Constructor.
+	 * @param fileName the single class file to be analyzed
+	 */
+	public SingleClassProducer(String fileName) {
+		this.fileName = fileName;
+	}
+
+	public JavaClass getNextClass() throws IOException, InterruptedException {
+		if (fileName == null)
+			return null;
+		if (Thread.interrupted())
+			throw new InterruptedException();
+		fileName = null; // don't return it next time
+		return new ClassParser(fileName).parse();
+	}
+  }
+
+  /**
+   * ClassProducer for .zip and .jar files.
+   */
+  private static class ZipClassProducer implements ClassProducer {
+	private ZipFile zipFile;
+	private Enumeration entries;
+
+	/**
+	 * Constructor.
+	 * @param fileName the name of the zip or jar file
+	 */
+	public ZipClassProducer(String fileName) throws IOException {
+		this.zipFile = new ZipFile(fileName);
+		this.entries = zipFile.entries();
+	}
+
+	public JavaClass getNextClass() throws IOException, InterruptedException {
+		ZipEntry classEntry = null;
+		while (classEntry == null && entries.hasMoreElements()) {
+			if (Thread.interrupted())
+				throw new InterruptedException();
+			ZipEntry entry = (ZipEntry) entries.nextElement();
+			if (entry.getName().endsWith(".class"))
+				classEntry = entry;
+		}
+		if (classEntry == null)
+			return null;
+		return new ClassParser(zipFile.getInputStream(classEntry), classEntry.getName()).parse();
+	}
+  }
+
+  /**
+   * ClassProducer for directories.
+   * The directory is scanned recursively for class files.
+   */
+  private static class DirectoryClassProducer implements ClassProducer {
+	private Iterator<String> rfsIter;
+
+	public DirectoryClassProducer(String dirName) throws InterruptedException {
+		FileFilter filter = new FileFilter() {
+			public boolean accept(File file) {
+				return file.isDirectory() || file.getName().endsWith(".class");
+			}
+		};
+
+		// This will throw InterruptedException if the thread is
+		// interrupted.
+		RecursiveFileSearch rfs = new RecursiveFileSearch(dirName, filter).search();
+		this.rfsIter = rfs.fileNameIterator();
+	}
+
+	public JavaClass getNextClass() throws IOException, InterruptedException {
+		if (!rfsIter.hasNext())
+			return null;
+		String fileName = rfsIter.next();
+		return new ClassParser(fileName).parse();
+	}
+  }
+
+  /* ----------------------------------------------------------------------
+   * Member variables
+   * ---------------------------------------------------------------------- */
+
   private static final boolean DEBUG = Boolean.getBoolean("findbugs.debug");
 
   private BugReporter bugReporter;
   private Detector detectors [];
-  private LinkedList<String> detectorNames;
-  private boolean omit;
   private HashMap<String, String> classNameToSourceFileMap;
   private FindBugsProgress progressCallback;
 
-  public FindBugs(BugReporter bugReporter, LinkedList<String> detectorNames, boolean omit) {
+  /* ----------------------------------------------------------------------
+   * Public methods
+   * ---------------------------------------------------------------------- */
+
+  /**
+   * Constructor.
+   * @param bugReporter the BugReporter object that will be used to report
+   *   BugInstance objects, analysis errors, etc.
+   */
+  public FindBugs(BugReporter bugReporter) {
 	if (bugReporter == null)
 		throw new IllegalArgumentException("null bugReporter");
 	this.bugReporter = bugReporter;
-	this.detectorNames = detectorNames;
-	this.omit = omit;
 	this.classNameToSourceFileMap = new HashMap<String, String>();
 
 	// Create a no-op progress callback.
@@ -56,10 +173,6 @@ public class FindBugs implements Constants2
 		public void finishClass() { }
 		public void finishPerClassAnalysis() { }
 	};
-  }
-
-  public FindBugs(BugReporter bugReporter) {
-	this(bugReporter, null, false);
   }
 
   /**
@@ -73,140 +186,59 @@ public class FindBugs implements Constants2
 
   /**
    * Set filter of bug instances to include or exclude.
+   * @param filterFileName the name of the filter file
+   * @param include true if the filter specifies bug instances to include,
+   *   false if it specifies bug instances to exclude
    */
   public void setFilter(String filterFileName, boolean include) throws IOException, FilterException {
 	Filter filter = new Filter(filterFileName);
 	bugReporter = new FilterBugReporter(bugReporter, filter, include);
   }
 
-  private static ArrayList<DetectorFactory> factories = new ArrayList<DetectorFactory>();
-  private static HashMap<String, DetectorFactory> factoriesByName = new HashMap<String, DetectorFactory>();
-  private static IdentityHashMap<DetectorFactory, String> namesByFactory = new IdentityHashMap<DetectorFactory, String>();
-
-  private Detector makeDetector(DetectorFactory factory) {
-	return factory.create(bugReporter);
-  }
-
-  private static void registerDetector(DetectorFactory factory)  {
-	String detectorName = factory.getShortName();
-	factories.add(factory);
-	factoriesByName.put(detectorName, factory);
-	namesByFactory.put(factory, detectorName);
-  }
-
   /**
-   * Return an Iterator over the DetectorFactory objects for all
-   * registered Detectors.
+   * Execute FindBugs on given list of files (which may be jar files or class files).
+   * All bugs found are reported to the BugReporter object which was set
+   * when this object was constructed.
+   * @param argv list of files to analyze
+   * @throws java.io.IOException if an I/O exception occurs analyzing one of the files
+   * @throws InterruptedException if the thread is interrupted while conducting the analysis
    */
-  public static Iterator<DetectorFactory> factoryIterator() {
-	return factories.iterator();
-  }
+  public void execute(String[] argv) throws java.io.IOException, InterruptedException {
+	if (detectors == null)
+		createDetectors();
 
-  static {
-	// Load all detector plugins.
+	// Purge repository of previous contents
+	Repository.clearCache();
 
-	String homeDir = System.getProperty("findbugs.home");
-	if (homeDir == null) {
-		System.err.println("Error: The findbugs.home property is not set!");
-		System.exit(1);
-	}
+	progressCallback.reportNumberOfArchives(argv.length);
 
-	File pluginDir = new File(homeDir + File.separator + "plugin");
-	File[] contentList = pluginDir.listFiles();
-	if (contentList == null) {
-		System.err.println("Error: The path " + pluginDir.getPath() + " does not seem to be a directory!");
-		System.exit(1);
-	}
+	List<String> repositoryClassList = new LinkedList<String>();
 
-	int numLoaded = 0;
-	for (int i = 0; i < contentList.length; ++i) {
-		File file = contentList[i];
-		if (file.getName().endsWith(".jar")) {
-			try {
-				URL url = file.toURL();
-				PluginLoader pluginLoader = new PluginLoader(url);
-
-				// Register all of the detectors that this plugin contains
-				DetectorFactory[] detectorFactoryList = pluginLoader.getDetectorFactoryList();
-				for (int j = 0; j < detectorFactoryList.length; ++j)
-					registerDetector(detectorFactoryList[j]);
-
-				I18N i18n = I18N.instance();
-
-				// Register the BugPatterns
-				BugPattern[] bugPatternList = pluginLoader.getBugPatternList();
-				for (int j = 0; j < bugPatternList.length; ++j)
-					i18n.registerBugPattern(bugPatternList[j]);
-
-				// Register the BugCodes
-				BugCode[] bugCodeList = pluginLoader.getBugCodeList();
-				for (int j = 0; j < bugCodeList.length; ++j)
-					i18n.registerBugCode(bugCodeList[j]);
-
-				++numLoaded;
-			} catch (Exception e) {
-				System.err.println("Warning: could not load plugin " + file.getPath() + ": " + e.toString());
-			}
+	for (int i = 0; i < argv.length; i++) {
+		addFileToRepository(argv[i], repositoryClassList);
 		}
-	}
 
-	//System.out.println("Loaded " + numLoaded + " plugins");
-  }
+	progressCallback.startAnalysis(repositoryClassList.size());
 
-  private void createDetectors() {
-    if (detectorNames == null) {
-	// Detectors were not named explicitly on command line,
-	// so create all of them (except those that are disabled).
-
-	ArrayList<Detector> result = new ArrayList<Detector>();
-
-	Iterator<DetectorFactory> i = factories.iterator();
-	int count = 0;
-	while (i.hasNext()) {
-		DetectorFactory factory = i.next();
-		if (factory.isEnabled())
-			result.add(makeDetector(factory));
-	}
-
-	detectors = result.toArray(new Detector[0]);
-    } else {
-	// Detectors were named explicitly on command line.
-
-	if (!omit) {
-		// Create only named detectors.
-		detectors = new Detector[detectorNames.size()];
-		Iterator i = detectorNames.iterator();
-		int count = 0;
-		while (i.hasNext()) {
-			String name = (String) i.next();
-			DetectorFactory factory = (DetectorFactory) factoriesByName.get(name);
-			if (factory == null)
-				throw new IllegalArgumentException("No such detector: " + name);
-			detectors[count++] = makeDetector(factory);
+	for (Iterator<String> i = repositoryClassList.iterator(); i.hasNext(); ) {
+		String className = i.next();
+		examineClass(className);
 		}
-	} else {
-		// Create all detectors EXCEPT named detectors.
-		int numDetectors = factories.size() - detectorNames.size();
-		detectors = new Detector[numDetectors];
-		Iterator i = factories.iterator();
-		int count = 0;
-		while (i.hasNext()) {
-			DetectorFactory factory = (DetectorFactory) i.next();
-			String name = (String) namesByFactory.get(factory);
-			if (!detectorNames.contains(name)) {
-				// Add the detector.
-				if (count == detectors.length)
-					throw new IllegalArgumentException("bad omit list - nonexistent or duplicate detector specified?");
-				detectors[count++] = makeDetector(factory);
-			}
-		}
-		if (count != numDetectors) throw new IllegalStateException();
-	}
-    }
+
+	progressCallback.finishPerClassAnalysis();
+
+	this.reportFinal();
+
+	// Flush any queued bug reports
+	bugReporter.finish();
+
+	// Flush any queued error reports
+	bugReporter.reportQueuedErrors();
   }
 
   /**
    * Get the source file in which the given class is defined.
+   * Assumes that execute() has already been called.
    * @param className fully qualified class name
    * @return name of the source file in which the class is defined
    */
@@ -214,37 +246,60 @@ public class FindBugs implements Constants2
 	return classNameToSourceFileMap.get(className);
   }
 
+  /* ----------------------------------------------------------------------
+   * Private methods
+   * ---------------------------------------------------------------------- */
+
+  /**
+   * Create Detectors for each DetectorFactory which is enabled.
+   * This will populate the detectors array.
+   */
+  private void createDetectors() {
+	ArrayList<Detector> result = new ArrayList<Detector>();
+
+	Iterator<DetectorFactory> i = DetectorFactoryCollection.instance().factoryIterator();
+	int count = 0;
+	while (i.hasNext()) {
+		DetectorFactory factory = i.next();
+		if (factory.isEnabled())
+			result.add(factory.create(bugReporter));
+	}
+
+	detectors = result.toArray(new Detector[0]);
+  }
+
   /**
    * Add all classes contained in given file to the BCEL Repository.
-   * @param fileName the file, which may be a jar/zip archive or a single class file
+   * @param fileName the file, which may be a jar/zip archive, a single class file,
+   *   or a directory to be recursively searched for class files
    */
   private void addFileToRepository(String fileName, List<String> repositoryClassList)
 	throws IOException, InterruptedException {
 
      try {
+	ClassProducer classProducer;
 
-	if (fileName.endsWith(".jar") || fileName.endsWith(".zip")) {
-		ZipFile zipFile = new ZipFile(fileName);
-		Enumeration entries = zipFile.entries();
-		while (entries.hasMoreElements()) {
-			if (Thread.interrupted())
-				throw new InterruptedException();
+	// Create the ClassProducer
+	if (fileName.endsWith(".jar") || fileName.endsWith(".zip"))
+		classProducer = new ZipClassProducer(fileName);
+	else if (fileName.endsWith(".class"))
+		classProducer = new SingleClassProducer(fileName);
+	else {
+		File dir = new File(fileName);
+		if (!dir.isDirectory())
+			throw new IOException("Path " + fileName + " is not an archive, class file, or directory");
+		classProducer = new DirectoryClassProducer(fileName);
+	}
 
-			ZipEntry entry = (ZipEntry) entries.nextElement();
-			String entryName = entry.getName();
-			if (entryName.endsWith(".class")) {
-				InputStream in = zipFile.getInputStream(entry);
-				JavaClass javaClass = new ClassParser(in, entryName).parse();
-				Repository.addClass(javaClass);
-				repositoryClassList.add(javaClass.getClassName());
-			}
-		}
-	} else {
+	// Load all referenced classes into the Repository
+	for (;;) {
 		if (Thread.interrupted())
 			throw new InterruptedException();
-		JavaClass javaClass = new ClassParser(fileName).parse();
-		Repository.addClass(javaClass);
-		repositoryClassList.add(javaClass.getClassName());
+		JavaClass jclass = classProducer.getNextClass();
+		if (jclass == null)
+			break;
+		Repository.addClass(jclass);
+		repositoryClassList.add(jclass.getClassName());
 	}
 
 	progressCallback.finishArchive();
@@ -296,7 +351,7 @@ public class FindBugs implements Constants2
    * Call report() on all detectors, to give them a chance to
    * report any accumulated bug reports.
    */
-  public void reportFinal() throws InterruptedException {
+  private void reportFinal() throws InterruptedException {
 	for (int i = 0; i < detectors.length; ++i) {
 		if (Thread.interrupted())
 			throw new InterruptedException();
@@ -304,53 +359,14 @@ public class FindBugs implements Constants2
 	}
   }
 
-  /**
-   * Execute FindBugs on given list of files (which may be jar files or class files).
-   * All bugs found are reported to the BugReporter object which was set
-   * when this object was constructed.
-   * @param argv list of files to analyze
-   * @throws java.io.IOException if an I/O exception occurs analyzing one of the files
-   * @throws InterruptedException if the thread is interrupted while conducting the analysis
-   */
-  public void execute(String[] argv) throws java.io.IOException, InterruptedException {
-	if (detectors == null)
-		createDetectors();
-
-	// Purge repository of previous contents
-	Repository.clearCache();
-
-	progressCallback.reportNumberOfArchives(argv.length);
-
-	List<String> repositoryClassList = new LinkedList<String>();
-
-	for (int i = 0; i < argv.length; i++) {
-		addFileToRepository(argv[i], repositoryClassList);
-		}
-
-	progressCallback.startAnalysis(repositoryClassList.size());
-
-	for (Iterator<String> i = repositoryClassList.iterator(); i.hasNext(); ) {
-		String className = i.next();
-		examineClass(className);
-		}
-
-	progressCallback.finishPerClassAnalysis();
-
-	this.reportFinal();
-
-	// Flush any queued bug reports
-	bugReporter.finish();
-
-	// Flush any queued error reports
-	bugReporter.reportQueuedErrors();
-  }
+  /* ----------------------------------------------------------------------
+   * main() method
+   * ---------------------------------------------------------------------- */
 
   public static void main(String argv[]) throws Exception
   { 
 	boolean quiet = false;
 	boolean sortByClass = false;
-	LinkedList<String> visitorNames = null;
-	boolean omit = false;
 	String filterFile = null;
 	boolean include = false;
 
@@ -365,11 +381,29 @@ public class FindBugs implements Constants2
 		else if (option.equals("-visitors") || option.equals("-omitVisitors")) {
 			++argCount;
 			if (argCount == argv.length) throw new IllegalArgumentException(option + " option requires argument");
-			omit = option.equals("-omitVisitors");
+			boolean omit = option.equals("-omitVisitors");
+
+			if (!omit) {
+				// Selecting detectors explicitly, so start out by
+				// disabling all of them.  The selected ones will
+				// be re-enabled.
+				Iterator<DetectorFactory> factoryIter =
+					DetectorFactoryCollection.instance().factoryIterator();
+				while (factoryIter.hasNext()) {
+					DetectorFactory factory = factoryIter.next();
+					factory.setEnabled(false);
+				}
+			}
+
+			// Explicitly enable or disable the selector detectors.
 			StringTokenizer tok = new StringTokenizer(argv[argCount], ",");
-			visitorNames = new LinkedList<String>();
-			while (tok.hasMoreTokens())
-				visitorNames.add(tok.nextToken());
+			while (tok.hasMoreTokens()) {
+				String visitorName = tok.nextToken();
+				DetectorFactory factory = DetectorFactoryCollection.instance().getFactory(visitorName);
+				if (factory == null)
+					throw new IllegalArgumentException("Unknown detector: " + visitorName);
+				factory.setEnabled(!omit);
+			}
 		} else if (option.equals("-exclude") || option.equals("-include")) {
 			++argCount;
 			if (argCount == argv.length) throw new IllegalArgumentException(option + " option requires argument");
@@ -401,12 +435,14 @@ public class FindBugs implements Constants2
 		return;
 		}
 
-	BugReporter bugReporter = sortByClass ? (BugReporter)new SortingBugReporter() : (BugReporter)new PrintingBugReporter();
+	BugReporter bugReporter = sortByClass
+		? (BugReporter)new SortingBugReporter()
+		: (BugReporter)new PrintingBugReporter();
 
 	if (quiet)
 		bugReporter.setErrorVerbosity(BugReporter.SILENT);
 
-	FindBugs findBugs = new FindBugs(bugReporter, visitorNames, omit);
+	FindBugs findBugs = new FindBugs(bugReporter);
 
 	if (filterFile != null)
 		findBugs.setFilter(filterFile, include);
