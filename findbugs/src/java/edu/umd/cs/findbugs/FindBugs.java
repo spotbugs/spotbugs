@@ -677,15 +677,13 @@ public class FindBugs implements Constants2, ExitCodes
 	}
 
 	if (setExitCode) {
-		int exitCode;
+		int exitCode = 0;
 		if (errorCount > 0)
-			exitCode = ERROR_EXIT_CODE;
-		else if (missingClassCount > 0)
-			exitCode = MISSING_CLASS_EXIT_CODE;
-		else if (bugCount > 0)
-			exitCode = BUGS_FOUND_EXIT_CODE;
-		else
-			exitCode = NO_BUGS_FOUND_EXIT_CODE;
+			exitCode |= ERROR_FLAG;
+		if (missingClassCount > 0)
+			exitCode |= MISSING_CLASS_FLAG;
+		if (bugCount > 0)
+			exitCode |= BUGS_FOUND_FLAG;
 
 		System.exit(exitCode);
 	}
