@@ -388,7 +388,7 @@ public class EclipseClasspath {
 
 		EclipseClasspath ec = new EclipseClasspath(argv[0], argv[1]);
 		for (int i = 2; i < argv.length; i += 2) {
-			ec.addRequiredPlugin(argv[i], argv[i+1]);
+			ec.addRequiredPlugin(argv[i], new File(argv[i+1]).getAbsolutePath());
 		}
 
 		// Generate a build.properties file which communicates to Ant:
