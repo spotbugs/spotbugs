@@ -47,6 +47,22 @@ public class ByteCodePattern {
 	}
 
 	/**
+	 * Add a wildcard to match between 0 and given number of instructions.
+	 * If there is already a wildcard at the end of the current pattern,
+	 * resets its max value to that given.
+	 * @param numWild maximum number of instructions to be matched by
+	 *   the wildcard
+	 */
+	public ByteCodePattern addWild(int numWild) {
+		Wild wild = isLastWild();
+		if (wild != null)
+			wild.setMinAndMax(0, numWild);
+		else
+			addElement(new Wild(numWild));
+		return this;
+	}
+
+	/**
 	 * Set number of inter-element wildcards to create between
 	 * explicit PatternElements.  By default, no implicit wildcards
 	 * are created.
@@ -80,7 +96,7 @@ public class ByteCodePattern {
 	}
 
 	private void addInterElementWild() {
-		if (interElementWild > 0)
+		if (interElementWild > 0 && isLastWild() == null)
 			addElement(new Wild(interElementWild));
 	}
 
@@ -92,6 +108,13 @@ public class ByteCodePattern {
 			last.setNext(element);
 			last = element;
 		}
+	}
+
+	private Wild isLastWild() {
+		if (last != null && last instanceof Wild)
+			return (Wild) last;
+		else
+			return null;
 	}
 }
 
