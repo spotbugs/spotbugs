@@ -184,8 +184,10 @@ public class SourceFinder {
 		// alternate separator, make a distinction
 		
 		// Create a fully qualified source filename using the package name for both directories and zips
-		String platformName = packageName.replace('.', File.separatorChar) + File.separatorChar + fileName;
-		String canonicalName = packageName.replace('.', '/') + '/' + fileName;
+		String platformName = packageName.replace('.', File.separatorChar) + 
+								(packageName.length() > 0 ? File.separatorChar : "") + fileName;
+		String canonicalName = packageName.replace('.', '/') + 
+								(packageName.length() > 0 ? '/' : "") + fileName;
 
 		// Is the file in the cache already? Always cache it with the canonical name
 		SourceFile sourceFile = cache.get(canonicalName);
