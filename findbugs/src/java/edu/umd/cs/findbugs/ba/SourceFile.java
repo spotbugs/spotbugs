@@ -202,14 +202,6 @@ public class SourceFile {
 	private void setData(byte[] data) {
 		this.data = data;
 	}
-
-	/**
-	 * Get the source file data.
-	 * @param the data
-	 */
-	private byte[] getData() {
-		return data;
-	}
 }
 
 // vim:ts=4
