@@ -10,23 +10,6 @@ import java.io.*;
  */
 public class SourceFinder {
 
-    private interface SourceBase {
-	public InputStream openSource(String fileName) throws IOException;
-    }
-
-    private static class DirectorySourceBase implements SourceBase {
-	private String dirName;
-	public DirectorySourceBase(String dirName) {
-	    this.dirName = dirName;
-	}
-
-	public InputStream openSource(String fileName) throws IOException {
-	    return new FileInputStream(dirName + File.separator + fileName);
-	}
-    }
-
-    // TODO: JarSourceBase?
-
     private static final int CACHE_SIZE = 50;
 
     private static class Cache extends LinkedHashMap<String, byte[]> {
@@ -35,23 +18,23 @@ public class SourceFinder {
 	}
     }
 
-
-    private ArrayList<SourceBase> sourceBaseList;
+    private List<String> sourceBaseList;
     private Cache cache;
 
     /**
      * Constructor.
      * @param path the source path, in the same format as a classpath
      */
-    public SourceFinder(String path) {
-	sourceBaseList = new ArrayList<SourceBase>();
+    public SourceFinder() {
+	sourceBaseList = null;
 	cache = new Cache();
+    }
 
-	StringTokenizer tok = new StringTokenizer(path, File.pathSeparator);
-	while (tok.hasMoreTokens()) {
-	    String element = tok.nextToken();
-	    sourceBaseList.add(new DirectorySourceBase(element));
-	}
+    /**
+     * Set the list of source directories.
+     */
+    public void setSourceBaseList(List<String> sourceBaseList) {
+	this.sourceBaseList = sourceBaseList;
     }
 
     /**
@@ -77,12 +60,12 @@ public class SourceFinder {
 	     //if (DEBUG) System.out.println("Trying "  + fileName + "...");
 
 	    // Query each element of the source path to find the requested source file
-	    Iterator<SourceBase> i = sourceBaseList.iterator();	
+	    Iterator<String> i = sourceBaseList.iterator();	
 	    while (i.hasNext()) {
-		SourceBase sourceBase = i.next();
+		String sourceBase = i.next();
 		try {
 		    // Try to read the file from current source base element
-		    InputStream in = sourceBase.openSource(fileName);
+		    InputStream in = new FileInputStream(sourceBase + File.pathSeparator + fileName);
 		    ByteArrayOutputStream out = new ByteArrayOutputStream();
 		    byte[] buf = new byte[1024];
 		    int n;
