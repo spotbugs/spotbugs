@@ -19,16 +19,29 @@
 
 package edu.umd.cs.daveho.ba;
 
+import java.util.IdentityHashMap;
+import java.util.HashMap;
 import org.apache.bcel.generic.*;
 
 public class ValueNumberFrameModelingVisitor
 	extends AbstractFrameModelingVisitor<ValueNumber, ValueNumberFrame>
 	implements Debug, ValueNumberAnalysisFeatures {
 
+	/* ----------------------------------------------------------------------
+	 * Fields
+	 * ---------------------------------------------------------------------- */
+
 	private ValueNumberFactory factory;
 	private ValueNumberCache cache;
+	private HashMap<String, ValueNumber> classObjectValueMap;
+	private IdentityHashMap<InstructionHandle, ValueNumber> constantValueMap;
+	private HashMap<ValueNumber, String> stringConstantMap;
 	private RepositoryLookupFailureCallback lookupFailureCallback;
 	private InstructionHandle handle;
+
+	/* ----------------------------------------------------------------------
+	 * Public interface
+	 * ---------------------------------------------------------------------- */
 
 	public ValueNumberFrameModelingVisitor(ConstantPoolGen cpg, ValueNumberFactory factory,
 		ValueNumberCache cache, RepositoryLookupFailureCallback lookupFailureCallback) {
@@ -36,6 +49,9 @@ public class ValueNumberFrameModelingVisitor
 		super(cpg);
 		this.factory = factory;
 		this.cache = cache;
+		this.classObjectValueMap = new HashMap<String, ValueNumber>();
+		this.constantValueMap = new IdentityHashMap<InstructionHandle, ValueNumber>();
+		this.stringConstantMap = new HashMap<ValueNumber, String>();
 		this.lookupFailureCallback = lookupFailureCallback;
 	}
 
@@ -51,6 +67,13 @@ public class ValueNumberFrameModelingVisitor
 		this.handle = handle;
 	}
 
+	/* ----------------------------------------------------------------------
+	 * Instruction modeling
+	 * ---------------------------------------------------------------------- */
+
+	/**
+	 * This is the default instruction modeling method.
+	 */
 	public void modelNormalInstruction(Instruction ins, int numWordsConsumed, int numWordsProduced) {
 		ValueNumberFrame frame = getFrame();
 
@@ -69,41 +92,6 @@ public class ValueNumberFrameModelingVisitor
 
 		// Push output operands on stack.
 		pushOutputValues(outputValueList);
-	}
-
-	private ValueNumber[] popInputValues(int numWordsConsumed) {
-		ValueNumberFrame frame = getFrame();
-		ValueNumber[] inputValueList = new ValueNumber[numWordsConsumed];
-
-		// Pop off the input operands.
-		try {
-			frame.getTopStackWords(inputValueList);
-			while (numWordsConsumed-- > 0) {
-				frame.popValue();
-			}
-		} catch (DataflowAnalysisException e) {
-			throw new IllegalStateException("ValueNumberFrameModelingVisitor caught exception: " + e.toString());
-		}
-
-		return inputValueList;
-	}
-
-	private void pushOutputValues(ValueNumber[] outputValueList) {
-		ValueNumberFrame frame = getFrame();
-		for (int i = 0; i < outputValueList.length; ++i)
-			frame.pushValue(outputValueList[i]);
-	}
-
-	private ValueNumber[] getOutputValues(ValueNumber[] inputValueList, int numWordsProduced) {
-		ValueNumberCache.Entry entry = new ValueNumberCache.Entry(handle, inputValueList);
-		ValueNumber[] outputValueList = cache.lookupOutputValues(entry);
-		if (outputValueList == null) {
-			outputValueList = new ValueNumber[numWordsProduced];
-			for (int i = 0; i < numWordsProduced; ++i)
-				outputValueList[i] = factory.createFreshValue();
-			cache.addOutputValues(entry, outputValueList);
-		}
-		return outputValueList;
 	}
 
 	public void visitGETFIELD(GETFIELD obj) {
@@ -183,6 +171,19 @@ public class ValueNumberFrameModelingVisitor
 	public void visitGETSTATIC(GETSTATIC obj) {
 		if (REDUNDANT_LOAD_ELIMINATION) {
 			ValueNumberFrame frame = getFrame();
+			ConstantPoolGen cpg = getCPG();
+
+			String fieldName = obj.getName(cpg);
+			String fieldSig = obj.getSignature(cpg);
+
+			// Is this an access of a Class object?
+			if (fieldName.startsWith("class$") && fieldSig.equals("Ljava/lang/Class;")) {
+				String className = fieldName.substring("class$".length()).replace('$', '.');
+				if (RLE_DEBUG) System.out.print("[found load of class object " + className + "]");
+				ValueNumber value = getClassObjectValue(className);
+				frame.pushValue(value);
+				return;
+			}
 
 			try {
 				XField xfield = Lookup.findXField(obj, getCPG());
@@ -210,6 +211,7 @@ public class ValueNumberFrameModelingVisitor
 				lookupFailureCallback.reportMissingClass(e);
 			}
 		}
+
 		handleNormalInstruction(obj);
 	}
 
@@ -241,11 +243,34 @@ public class ValueNumberFrameModelingVisitor
 		handleNormalInstruction(obj);
 	}
 
-/*
 	public void visitINVOKESTATIC(INVOKESTATIC obj) {
+		if (REDUNDANT_LOAD_ELIMINATION) {
+			ConstantPoolGen cpg = getCPG();
+			String methodName = obj.getName(cpg);
+			String methodSig = obj.getSignature(cpg);
+	
+			// Is this an access of a Class object?
+			if (methodName.equals("class$") && methodSig.equals("(Ljava/lang/String;)Ljava/lang/Class;")) {
+				ValueNumberFrame frame = getFrame();
+				try {
+					ValueNumber arg = frame.getTopValue();
+					String className = stringConstantMap.get(arg);
+					if (className != null) {
+						frame.popValue();
+						if (RLE_DEBUG) System.out.print("[found access of class object " + className + "]");
+						frame.pushValue(getClassObjectValue(className));
+						return;
+					}
+				} catch (DataflowAnalysisException e) {
+					throw new IllegalStateException("stack underflow at " + handle);
+				}
+			}
+		}
+
 		handleNormalInstruction(obj);
 	}
 
+/*
 	public void visitINVOKESPECIAL(INVOKESPECIAL obj) {
 		handleNormalInstruction(obj);
 	}
@@ -258,6 +283,85 @@ public class ValueNumberFrameModelingVisitor
 		handleNormalInstruction(obj);
 	}
 */
+
+	public void visitLDC(LDC obj) {
+		ValueNumber value = constantValueMap.get(handle);
+		if (value == null) {
+			ConstantPoolGen cpg = getCPG();
+			value = factory.createFreshValue();
+			constantValueMap.put(handle, value);
+
+			// Keep track of String constants
+			Object constantValue = obj.getValue(cpg);
+			if (constantValue instanceof String) {
+				stringConstantMap.put(value, (String) constantValue);
+			}
+		}
+
+		getFrame().pushValue(value);
+	}
+
+	/* ----------------------------------------------------------------------
+	 * Implementation
+	 * ---------------------------------------------------------------------- */
+
+	/**
+	 * Pop the input values for the given instruction from the
+	 * current frame.
+	 */
+	private ValueNumber[] popInputValues(int numWordsConsumed) {
+		ValueNumberFrame frame = getFrame();
+		ValueNumber[] inputValueList = new ValueNumber[numWordsConsumed];
+
+		// Pop off the input operands.
+		try {
+			frame.getTopStackWords(inputValueList);
+			while (numWordsConsumed-- > 0) {
+				frame.popValue();
+			}
+		} catch (DataflowAnalysisException e) {
+			throw new IllegalStateException("ValueNumberFrameModelingVisitor caught exception: " + e.toString());
+		}
+
+		return inputValueList;
+	}
+
+	/**
+	 * Push given output values onto the current frame.
+	 */
+	private void pushOutputValues(ValueNumber[] outputValueList) {
+		ValueNumberFrame frame = getFrame();
+		for (int i = 0; i < outputValueList.length; ++i)
+			frame.pushValue(outputValueList[i]);
+	}
+
+	/**
+	 * Get output values for current instruction from the ValueNumberCache.
+	 */
+	private ValueNumber[] getOutputValues(ValueNumber[] inputValueList, int numWordsProduced) {
+		ValueNumberCache.Entry entry = new ValueNumberCache.Entry(handle, inputValueList);
+		ValueNumber[] outputValueList = cache.lookupOutputValues(entry);
+		if (outputValueList == null) {
+			outputValueList = new ValueNumber[numWordsProduced];
+			for (int i = 0; i < numWordsProduced; ++i)
+				outputValueList[i] = factory.createFreshValue();
+			cache.addOutputValues(entry, outputValueList);
+		}
+		return outputValueList;
+	}
+
+	/**
+	 * Get the ValueNumber for given class's Class object.
+	 * @param className the class
+	 */
+	private ValueNumber getClassObjectValue(String className) {
+		ValueNumber value = classObjectValueMap.get(className);
+		if (value == null) {
+			value = factory.createFreshValue();
+			classObjectValueMap.put(className, value);
+		}
+		return value;
+	}
 
 }
 
