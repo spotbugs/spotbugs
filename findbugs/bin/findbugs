@@ -86,6 +86,7 @@ while [ $# -gt 0 ]; do
 	esac
 done
 
+# Handle cygwin, courtesy of Peter D. Stout
 os=`uname`
 if [ `expr "$os" : CYGWIN` -ne 0 ]; then
     findbugs_home=`cygpath --mixed "$findbugs_home"`
