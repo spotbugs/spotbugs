@@ -282,7 +282,8 @@ public class BCPMethodReturnCheck extends ByteCodePatternDetector implements Sta
 		int priority = NORMAL_PRIORITY;
 		if (calledMethodName.equals("createNewFile"))
 			priority = LOW_PRIORITY;
-		else if (calledMethodClass.startsWith("java.lang")
+		else if ( calledMethodClass.startsWith("java.lang")
+			|| calledMethodClass.startsWith("java.math")
 		        || calledMethodClass.endsWith("Error")
 		        || calledMethodClass.endsWith("Exception"))
 			priority = HIGH_PRIORITY;
