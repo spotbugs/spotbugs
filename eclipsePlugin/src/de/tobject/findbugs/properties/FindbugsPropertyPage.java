@@ -361,6 +361,13 @@ public class FindbugsPropertyPage extends PropertyPage {
 			DetectorFactoryCollection.instance().factoryIterator();
 		while (iterator.hasNext()) {
 			DetectorFactory factory = (DetectorFactory) iterator.next();
+			
+			// Only configure non-hidden factories
+			if (factory.isHidden()) {
+				System.out.println("Factory " + factory.getFullName() + " is hidden");
+				continue;
+			}
+			
 			allAvailableList.add(factory);
 			addBugsAbbreviation(factory);
 			// XXX factory list from FindBugs is singleton - we share!!!
