@@ -29,6 +29,15 @@ import org.apache.bcel.Constants;
  * @author David Hovemeyer
  */
 public class StandardTypeMerger implements TypeMerger, Constants, ExtendedTypes {
+	private TypeRepository repos;
+
+	/**
+	 * Constructor.
+	 * @param repos the TypeRepository used to create types
+	 */
+	public StandardTypeMerger(TypeRepository repos) {
+		this.repos = repos;
+	}
 
 	/**
 	 * Determine if given type is the top type.
@@ -72,7 +81,7 @@ public class StandardTypeMerger implements TypeMerger, Constants, ExtendedTypes 
 		return type.getTypeCode() >= T_BYTE && type.getTypeCode() <= T_INT;
 	}
 
-	protected Type mergeBasicTypes(TypeRepository repos, BasicType a, BasicType b) {
+	protected Type mergeBasicTypes(BasicType a, BasicType b) {
 		// NOTE: this is only called if the types are not equal
 
 		// Different int types can be merged...
@@ -89,7 +98,7 @@ public class StandardTypeMerger implements TypeMerger, Constants, ExtendedTypes 
 		return repos.getBottomType();
 	}
 
-	protected Type mergeReferenceTypes(TypeRepository repos, ReferenceType a, ReferenceType b)
+	protected Type mergeReferenceTypes(ReferenceType a, ReferenceType b)
 		throws ClassNotFoundException {
 		// Null is a special top type for reference types
 		if (isNull(a))
@@ -101,7 +110,7 @@ public class StandardTypeMerger implements TypeMerger, Constants, ExtendedTypes 
 		return repos.getFirstCommonSuperclass((ObjectType) a, (ObjectType) b);
 	}
 
-	public Type mergeTypes(TypeRepository repos, Type a, Type b) throws ClassNotFoundException {
+	public Type mergeTypes(Type a, Type b) throws ClassNotFoundException {
 		if (a.equals(b))
 			return a;
 		else if (isTop(a))
@@ -114,9 +123,9 @@ public class StandardTypeMerger implements TypeMerger, Constants, ExtendedTypes 
 			if (!(isBasicType(a) && isBasicType(b)))
 				return repos.getBottomType();
 			else
-				return mergeBasicTypes(repos, (BasicType) a, (BasicType) b);
+				return mergeBasicTypes((BasicType) a, (BasicType) b);
 		} else if (isReferenceType(a) && isReferenceType(b))
-			return mergeReferenceTypes(repos, (ReferenceType) a, (ReferenceType) b);
+			return mergeReferenceTypes((ReferenceType) a, (ReferenceType) b);
 		else
 			return repos.getBottomType();
 	}

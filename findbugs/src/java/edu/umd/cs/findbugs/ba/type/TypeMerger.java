@@ -29,13 +29,11 @@ public interface TypeMerger {
 	 * The merged type is one which any value of
 	 * either of the given types can be assigned to.
 	 *
-	 * @param repos the TypeRepository used to create the two types
-	 *   and the merged type
 	 * @param a a Type
 	 * @param b another Type
 	 * @return the Type resulting from merging a and b
 	 */
-	public Type mergeTypes(TypeRepository repos, Type a, Type b) throws ClassNotFoundException;
+	public Type mergeTypes(Type a, Type b) throws ClassNotFoundException;
 }
 
 // vim:ts=4
