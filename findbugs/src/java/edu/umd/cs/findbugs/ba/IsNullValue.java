@@ -259,6 +259,17 @@ public class IsNullValue implements IsNullValueAnalysisFeatures {
 			return baseKind == NSP;
 		}
 	}
+	
+	/**
+	 * Return true if this value is either definitely null,
+	 * or might be null on a simple path. 
+	 * 
+	 * @return true if this value is either definitely null,
+	 *         or might be null on a simple path, false otherwise
+	 */
+	public boolean mightBeNull() {
+		return isDefinitelyNull() || isNullOnSomePath();
+	}
 
 	/**
 	 * Is this value definitely not null?
