@@ -25,6 +25,7 @@ public abstract class BetterVisitor implements Visitor {
    protected String fieldName = "none";
    protected String fieldSig = "none";
    protected String betterFieldSig = "none";
+   protected boolean fieldIsStatic;
    protected String superclassName = "none";
    protected String betterSuperclassName = "none";
 
@@ -45,6 +46,10 @@ public abstract class BetterVisitor implements Visitor {
   public String getSuperclassName() { return superclassName; }
   public String getBetterSuperclassName() { return betterSuperclassName; }
   public String getFieldName() { return fieldName; }
+  public String getFieldSig() { return fieldSig; }
+  public boolean getFieldIsStatic() { return fieldIsStatic; }
+  public String getMethodName() { return methodName; }
+  public String getMethodSig() { return methodSig; }
 
   ////////////////// In short form //////////////////////
    // General classes
@@ -136,6 +141,7 @@ public abstract class BetterVisitor implements Visitor {
 		betterFieldSig = fieldSig.replace('/','.');
 		betterFieldName = betterClassName + "." + fieldName
 				+ " : " + betterFieldSig;
+		fieldIsStatic = obj.isStatic();
 		visit(obj); 
 		}
   // Extra classes (i.e. leaves in this context)

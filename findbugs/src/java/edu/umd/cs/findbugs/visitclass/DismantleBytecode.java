@@ -23,6 +23,7 @@ abstract public class DismantleBytecode extends PreorderVisitor implements   Con
   protected  String betterSigConstant;
   protected  String stringConstant;
   protected  String refConstant;
+  protected  boolean refFieldIsStatic;
   protected  int intConstant;
   protected  long longConstant;
   protected  float floatConstant;
@@ -43,6 +44,10 @@ abstract public class DismantleBytecode extends PreorderVisitor implements   Con
   // Accessors
   public String getBetterClassConstant() { return betterClassConstant; }
   public String getRefConstant() { return refConstant; }
+  public boolean getRefFieldIsStatic() { return refFieldIsStatic; }
+  public String getNameConstant() { return nameConstant; }
+  public String getBetterSigConstant() { return betterSigConstant; }
+  public String getSigConstant() { return sigConstant; }
 
     public void visit(Code obj) { 
 
@@ -244,6 +249,14 @@ abstract public class DismantleBytecode extends PreorderVisitor implements   Con
 		case RET:
 		registerKind = R_REF;
 		break;
+		case GETSTATIC:
+		case PUTSTATIC:
+			refFieldIsStatic = true;
+			break;
+		case GETFIELD:
+		case PUTFIELD:
+			refFieldIsStatic = false;
+			break;
 		}
 	sawOpcode(opCode);
 
