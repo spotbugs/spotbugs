@@ -66,9 +66,8 @@ public class FindBugs implements Constants2
     registerDetector("FindDoubleCheck", edu.umd.cs.findbugs.FindDoubleCheck.class);
     registerDetector("WaitInLoop", edu.umd.cs.findbugs.WaitInLoop.class);
     registerDetector("DroppedException", edu.umd.cs.findbugs.DroppedException.class);
+    registerDetector("FindRunInvocations", edu.umd.cs.findbugs.FindRunInvocations.class);
 /*
-    registerDetector("FindRunInvocations", 
-       edu.umd.cs.pugh.visitclass.FindRunInvocations.class);
     registerDetector("IteratorIdioms", 
        edu.umd.cs.pugh.visitclass.IteratorIdioms.class);
     registerDetector("SerializableIdiom", 
