@@ -57,7 +57,8 @@ public class SimplePathEnumerator implements EdgeTypes, DFSEdgeTypes {
 	 */
 	public SimplePathEnumerator(CFG cfg, int maxPaths, int maxWork) {
 		this.cfg = cfg;
-		this.dfs = new DepthFirstSearch(cfg).search();
+		this.dfs = new DepthFirstSearch(cfg);
+		dfs.search();
 		this.maxPaths = maxPaths;
 		this.maxWork = maxWork;
 		this.work = 0;
