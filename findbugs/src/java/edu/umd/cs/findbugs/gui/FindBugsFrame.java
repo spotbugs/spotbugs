@@ -1077,17 +1077,41 @@ public class FindBugsFrame extends javax.swing.JFrame {
             }
         });
 
+        byClassBugTree.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                focusGainedHandler(evt);
+            }
+        });
+
         byClassScrollPane.setViewportView(byClassBugTree);
 
         groupByTabbedPane.addTab("By Class", byClassScrollPane);
+
+        byPackageBugTree.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                focusGainedHandler(evt);
+            }
+        });
 
         byPackageScrollPane.setViewportView(byPackageBugTree);
 
         groupByTabbedPane.addTab("By Package", byPackageScrollPane);
 
+        byBugTypeBugTree.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                focusGainedHandler(evt);
+            }
+        });
+
         byBugTypeScrollPane.setViewportView(byBugTypeBugTree);
 
         groupByTabbedPane.addTab("By Bug Type", byBugTypeScrollPane);
+
+        bugSummaryEditorPane.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                focusGainedHandler(evt);
+            }
+        });
 
         bySummary.setViewportView(bugSummaryEditorPane);
 
@@ -1096,6 +1120,12 @@ public class FindBugsFrame extends javax.swing.JFrame {
         bugTreeBugDetailsSplitter.setTopComponent(groupByTabbedPane);
 
         bugDescriptionEditorPane.setEditable(false);
+        bugDescriptionEditorPane.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                focusGainedHandler(evt);
+            }
+        });
+
         bugDescriptionScrollPane.setViewportView(bugDescriptionEditorPane);
 
         bugDetailsTabbedPane.addTab("Details", bugDescriptionScrollPane);
@@ -1105,9 +1135,21 @@ public class FindBugsFrame extends javax.swing.JFrame {
         sourceTextArea.setEditable(false);
         sourceTextArea.setFont(new java.awt.Font("Lucida Sans Typewriter", 0, 12));
         sourceTextArea.setEnabled(false);
+        sourceTextArea.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                focusGainedHandler(evt);
+            }
+        });
+
         sourceTextAreaScrollPane.setViewportView(sourceTextArea);
 
         bugDetailsTabbedPane.addTab("Source code", sourceTextAreaScrollPane);
+
+        annotationTextArea.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                focusGainedHandler(evt);
+            }
+        });
 
         annotationTextAreaScrollPane.setViewportView(annotationTextArea);
 
@@ -1161,6 +1203,12 @@ public class FindBugsFrame extends javax.swing.JFrame {
             consoleMessageArea.setFont(new java.awt.Font("Lucida Sans Typewriter", 0, 12));
             consoleMessageArea.setMinimumSize(new java.awt.Dimension(0, 0));
             consoleMessageArea.setAutoscrolls(false);
+            consoleMessageArea.addFocusListener(new java.awt.event.FocusAdapter() {
+                public void focusGained(java.awt.event.FocusEvent evt) {
+                    focusGainedHandler(evt);
+                }
+            });
+
             consoleScrollPane.setViewportView(consoleMessageArea);
 
             consoleSplitter.setBottomComponent(consoleScrollPane);
@@ -1599,7 +1647,13 @@ public class FindBugsFrame extends javax.swing.JFrame {
             return;
         
         if (selectedComponent instanceof JTextComponent)
-            ((JTextComponent)selectedComponent).cut();
+            ((JTextComponent)selectedComponent).copy();
+        else if (selectedComponent instanceof JTree) {
+            TreePath path = ((JTree)selectedComponent).getSelectionPath();
+            StringSelection data = new StringSelection(path.getLastPathComponent().toString());
+            Clipboard cb = Toolkit.getDefaultToolkit().getSystemClipboard();
+            cb.setContents(data, data);
+       }
         else if (selectedComponent instanceof JList) {
             StringSelection path = new StringSelection(buildSelectPath((JList)selectedComponent));
             Clipboard cb = Toolkit.getDefaultToolkit().getSystemClipboard();
@@ -2511,7 +2565,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
                 cutItem.setEnabled(false);
                 copyItem.setEnabled(true);
                 pasteItem.setEnabled(false);
-                selectAllItem.setEnabled(true);
+                selectAllItem.setEnabled(false);
             }            
         }
         

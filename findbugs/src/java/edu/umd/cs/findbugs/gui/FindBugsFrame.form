@@ -1219,6 +1219,9 @@
                           <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
                           <SubComponents>
                             <Component class="javax.swing.JTree" name="byClassBugTree">
+                              <Events>
+                                <EventHandler event="focusGained" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="focusGainedHandler"/>
+                              </Events>
                             </Component>
                           </SubComponents>
                         </Container>
@@ -1234,6 +1237,9 @@
                           <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
                           <SubComponents>
                             <Component class="javax.swing.JTree" name="byPackageBugTree">
+                              <Events>
+                                <EventHandler event="focusGained" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="focusGainedHandler"/>
+                              </Events>
                             </Component>
                           </SubComponents>
                         </Container>
@@ -1249,6 +1255,9 @@
                           <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
                           <SubComponents>
                             <Component class="javax.swing.JTree" name="byBugTypeBugTree">
+                              <Events>
+                                <EventHandler event="focusGained" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="focusGainedHandler"/>
+                              </Events>
                             </Component>
                           </SubComponents>
                         </Container>
@@ -1264,6 +1273,9 @@
                           <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
                           <SubComponents>
                             <Component class="javax.swing.JEditorPane" name="bugSummaryEditorPane">
+                              <Events>
+                                <EventHandler event="focusGained" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="focusGainedHandler"/>
+                              </Events>
                             </Component>
                           </SubComponents>
                         </Container>
@@ -1293,6 +1305,9 @@
                               <Properties>
                                 <Property name="editable" type="boolean" value="false"/>
                               </Properties>
+                              <Events>
+                                <EventHandler event="focusGained" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="focusGainedHandler"/>
+                              </Events>
                             </Component>
                           </SubComponents>
                         </Container>
@@ -1323,6 +1338,9 @@
                                 </Property>
                                 <Property name="enabled" type="boolean" value="false"/>
                               </Properties>
+                              <Events>
+                                <EventHandler event="focusGained" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="focusGainedHandler"/>
+                              </Events>
                             </Component>
                           </SubComponents>
                         </Container>
@@ -1338,6 +1356,9 @@
                           <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
                           <SubComponents>
                             <Component class="javax.swing.JTextArea" name="annotationTextArea">
+                              <Events>
+                                <EventHandler event="focusGained" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="focusGainedHandler"/>
+                              </Events>
                             </Component>
                           </SubComponents>
                         </Container>
@@ -1383,6 +1404,9 @@
                 </Property>
                 <Property name="autoscrolls" type="boolean" value="false"/>
               </Properties>
+              <Events>
+                <EventHandler event="focusGained" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="focusGainedHandler"/>
+              </Events>
             </Component>
           </SubComponents>
         </Container>
