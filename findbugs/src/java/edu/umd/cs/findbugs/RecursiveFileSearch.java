@@ -88,6 +88,7 @@ public class RecursiveFileSearch {
 
 	/**
 	 * Get an iterator over the files found by the search.
+	 * The full path names of the files are returned.
 	 */
 	public Iterator<String> fileNameIterator() {
 		return resultList.iterator();
