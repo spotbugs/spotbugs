@@ -13,12 +13,16 @@ public class TypeRepositoryTest extends TestCase {
 	TypeRepository repos;
 
 	ClassType javaLangObjectType;
+	ClassType javaIoSerializableType;
+	ClassType javaLangCloneableType;
 
 	ClassType myClassType;
 	ClassType mySuperclassType;
 	ClassType myInterfaceType;
 
 	ArrayType myClassArrayType;
+	ArrayType mySuperclassArrayType;
+	ArrayType myInterfaceArrayType;
 
 	void setClass(ClassType type) {
 		type.setIsInterface(false);
@@ -43,6 +47,10 @@ public class TypeRepositoryTest extends TestCase {
 
 		javaLangObjectType = repos.classTypeFromDottedClassName("java.lang.Object");
 		setClass(javaLangObjectType);
+		javaIoSerializableType = repos.classTypeFromDottedClassName("java.io.Serializable");
+		setInterface(javaIoSerializableType);
+		javaLangCloneableType = repos.classTypeFromDottedClassName("java.lang.Cloneable");
+		setClass(javaLangCloneableType);
 
 		// Class types should have a unique representation
 		myClassType = repos.classTypeFromSlashedClassName("com/foobar/MyClass");
@@ -59,6 +67,8 @@ public class TypeRepositoryTest extends TestCase {
 
 		// Array classes
 		myClassArrayType = repos.arrayTypeFromDimensionsAndElementType(1, myClassType);
+		mySuperclassArrayType = repos.arrayTypeFromDimensionsAndElementType(1, mySuperclassType);
+		myInterfaceArrayType = repos.arrayTypeFromDimensionsAndElementType(1, myInterfaceType);
 	}
 
 	public void testClassFromSlashedClassName() {
@@ -93,6 +103,23 @@ public class TypeRepositoryTest extends TestCase {
 
 	public void testArrayIsSubtypeOfObject() throws ClassNotFoundException {
 		Assert.assertTrue(repos.isSubtype(myClassArrayType, javaLangObjectType));
+	}
+
+	public void testArrayIsSubtypeOfArraysOfElementSupertypes() throws ClassNotFoundException {
+		Assert.assertTrue(repos.isSubtype(myClassArrayType, mySuperclassArrayType));
+		Assert.assertTrue(repos.isSubtype(myClassArrayType, myInterfaceArrayType));
+	}
+
+	public void testArrayTypeIsSerializable() throws ClassNotFoundException {
+		Assert.assertTrue(repos.isSubtype(myClassArrayType, javaIoSerializableType));
+		Assert.assertTrue(repos.isSubtype(mySuperclassArrayType, javaIoSerializableType));
+		Assert.assertTrue(repos.isSubtype(myInterfaceArrayType, javaIoSerializableType));
+	}
+
+	public void testArrayTypeIsCloneable() throws ClassNotFoundException {
+		Assert.assertTrue(repos.isSubtype(myClassArrayType, javaLangCloneableType));
+		Assert.assertTrue(repos.isSubtype(mySuperclassArrayType, javaLangCloneableType));
+		Assert.assertTrue(repos.isSubtype(myInterfaceArrayType, javaLangCloneableType));
 	}
 	
 }
