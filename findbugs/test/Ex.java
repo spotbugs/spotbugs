@@ -10,4 +10,8 @@ public class Ex {
 		}
 	}
 
+	public void alwaysThrow() {
+		throw new RuntimeException();
+	}
+
 }
