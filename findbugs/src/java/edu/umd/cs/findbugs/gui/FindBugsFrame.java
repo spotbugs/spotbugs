@@ -47,6 +47,8 @@ import java.awt.datatransfer.*;
 import edu.umd.cs.findbugs.*;
 import edu.umd.cs.findbugs.ba.SourceFinder;
 
+import edu.umd.cs.findbugs.config.UserPreferences;
+
 /**
  * The main GUI frame for FindBugs.
  *

@@ -23,16 +23,32 @@
  * Created on May 26, 2004, 11:55 PM
  */
 
-package edu.umd.cs.findbugs;
+package edu.umd.cs.findbugs.config;
 
-import java.io.*;
-import java.util.*;
+import edu.umd.cs.findbugs.Detector;
+import edu.umd.cs.findbugs.DetectorFactory;
+import edu.umd.cs.findbugs.DetectorFactoryCollection;
+
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 
 /**
- * User Preferences outside of any one Project
- * This consists of a class to manage the findbugs.prop file found in the user.dir
+ * User Preferences outside of any one Project.
+ * This consists of a class to manage the findbugs.prop file found in the user.dir.
+ *
+ * @author Dave Brosius
  */
-
 public class UserPreferences {
 	private static final int MAX_RECENT_FILES = 9;
 	private static final String DETECTOR_THRESHOLD_KEY = "detector_threshold";
