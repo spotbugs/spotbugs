@@ -304,16 +304,16 @@ public class RunAnalysisDialog extends javax.swing.JDialog {
     }//GEN-LAST:event_closeDialog
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel stageNameLabel;
-    private javax.swing.JLabel progressLabel;
-    private javax.swing.JLabel countValueLabel;
-    private javax.swing.JLabel stageLabel;
-    private javax.swing.JButton cancelButton;
-    private javax.swing.JSeparator jSeparator1;
-    private javax.swing.JLabel findBugsLabel;
-    private javax.swing.JLabel countLabel;
     private javax.swing.JLabel bottomVerticalFiller;
+    private javax.swing.JButton cancelButton;
+    private javax.swing.JLabel countLabel;
+    private javax.swing.JLabel countValueLabel;
+    private javax.swing.JLabel findBugsLabel;
+    private javax.swing.JSeparator jSeparator1;
     private javax.swing.JProgressBar progressBar;
+    private javax.swing.JLabel progressLabel;
+    private javax.swing.JLabel stageLabel;
+    private javax.swing.JLabel stageNameLabel;
     private javax.swing.JLabel topVerticalFiller;
     // End of variables declaration//GEN-END:variables
     
