@@ -51,6 +51,10 @@ public class SortedBugCollection extends BugCollection {
 		return bugSet.iterator();
 	}
 
+	public Collection<BugInstance> getCollection() {
+		return bugSet;
+	}
+
 }
 
 // vim:ts=4

@@ -52,13 +52,21 @@ public abstract class BugCollection {
 
 	public abstract void add(BugInstance bugInstance);
 	public abstract Iterator<BugInstance> iterator();
+	public abstract Collection<BugInstance> getCollection();
 
 	private static final String ROOT_ELEMENT_NAME = "BugCollection";
 
 	public void readXML(String fileName) throws IOException, DocumentException {
-
 		BufferedInputStream in = new BufferedInputStream(new FileInputStream(fileName));
+		readXML(in);
+	}
 
+	public void readXML(File file) throws IOException, DocumentException {
+		BufferedInputStream in = new BufferedInputStream(new FileInputStream(file));
+		readXML(in);
+	}
+
+	public void readXML(InputStream in ) throws IOException, DocumentException {
 		SAXReader reader = new SAXReader();
 		Document document = reader.read(in);
 
