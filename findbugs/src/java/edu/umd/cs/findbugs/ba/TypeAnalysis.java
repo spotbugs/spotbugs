@@ -36,9 +36,10 @@ import org.apache.bcel.generic.*;
  * @see TypeFrame
  * @author David Hovemeyer
  */
-public class TypeAnalysis extends ForwardDataflowAnalysis<TypeFrame> {
+public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame> {
 	private MethodGen methodGen;
 	private RepositoryLookupFailureCallback lookupFailureCallback;
+	private TypeFrameModelingVisitor visitor;
 
 	/**
 	 * Constructor.
@@ -47,6 +48,7 @@ public class TypeAnalysis extends ForwardDataflowAnalysis<TypeFrame> {
 	public TypeAnalysis(MethodGen methodGen, RepositoryLookupFailureCallback lookupFailureCallback) {
 		this.methodGen = methodGen;
 		this.lookupFailureCallback = lookupFailureCallback;
+		this.visitor = new TypeFrameModelingVisitor(methodGen.getConstantPool());
 	}
 
 	public TypeFrame createFact() {
@@ -98,8 +100,9 @@ public class TypeAnalysis extends ForwardDataflowAnalysis<TypeFrame> {
 		return fact1.sameAs(fact2);
 	}
 
-	public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, TypeFrame fact) throws DataflowAnalysisException {
-		TypeFrameModelingVisitor visitor = new TypeFrameModelingVisitor(fact, methodGen.getConstantPool());
+	public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, TypeFrame fact)
+		throws DataflowAnalysisException {
+		visitor.setFrame(fact);
 		handle.getInstruction().accept(visitor);
 	}
 
