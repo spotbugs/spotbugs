@@ -31,6 +31,9 @@ import org.apache.bcel.generic.*;
  * in Java stack frames.  This is a nice, simple example of a dataflow analysis
  * which determines properties of values in the Java stack frame.
  *
+ * <p> NOTE: this class is now obsolete, and has been replaced by
+ * ValueNumberAnalysis.
+ *
  * @see ThisValue
  * @see ThisValueFrame
  * @see ThisValueFrameModelingVisitor
