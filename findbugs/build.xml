@@ -57,6 +57,12 @@
     <property name="html.xsl.stylesheet" value="${xsl.stylesheet.home}/html/chunk.xsl" />
     <property name="fo.xsl.stylesheet" value="${xsl.stylesheet.home}/fo/docbook.xsl" />
 
+    <property name="release.base" value="findbugs-${release.number}" />
+    <property name="bin.release.scripts"
+              value="${release.base}/bin/findbugs,${release.base}/bin/mergeResults,${release.base}/bin/bugHistory" />
+    <property name="src.release.scripts"
+              value="${bin.release.scripts},${release.base}/etc/createXML,${release.base}/etc/runTests,${release.base}/etc/summarizeBugs,${release.base}/etc/diffBugSummaries,${release.base}/etc/categorizeBugs,${release.base}/etc/countBugs,${release.base}/etc/findExamples" />
+
     <!-- Classpath for compiling FindBugs. -->
     <path id="classpath">
       <pathelement location="${jar.dir}/bcel.jar" />
@@ -347,7 +353,9 @@
       <delete dir="${javadoc.dir}"/>
       <mkdir dir="${javadoc.dir}"/>
       <javadoc destdir="${javadoc.dir}"
-               source="1.5">
+               source="1.5"
+               windowtitle="FindBugs API Reference"
+               >
         <fileset dir="${findbugs.src.dir}"/>
       </javadoc>
     </target>
@@ -366,11 +374,6 @@
          (code and docs). -->
     <target name="release" depends="buildAll">
 
-       <property name="release.base" value="findbugs-${release.number}" />
-       <property name="bin.release.scripts"
-                 value="${release.base}/bin/findbugs,${release.base}/bin/mergeResults,${release.base}/bin/bugHistory" />
-       <property name="src.release.scripts"
-                value="${bin.release.scripts},${release.base}/etc/createXML,${release.base}/etc/runTests,${release.base}/etc/summarizeBugs,${release.base}/etc/diffBugSummaries" />
 
        <copy todir="${release.dir}/lib">
          <fileset dir="${jar.dir}" includes="**/*.jar" excludes="plastic.jar"  />
