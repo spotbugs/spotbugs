@@ -59,6 +59,18 @@ public class DumbMethods extends BytecodeScanningDetector implements   Constants
    }
 
    public void sawOpcode(int seen) {
+        if (isPublicStaticVoidMain && seen == INVOKEVIRTUAL 
+                                && getClassConstantOperand().startsWith("javax/swing/")
+                                && ( getNameConstantOperand().equals("show")
+					&& getSigConstantOperand().equals("()V")
+				     || getNameConstantOperand().equals("pack")
+					&& getSigConstantOperand().equals("()V")
+				     || getNameConstantOperand().equals("setVisible")
+					&& getSigConstantOperand().equals("(Z)V")))
+			bugReporter.reportBug(new BugInstance("SW_SWING_METHODS_INVOKED_IN_SWING_THREAD", NORMAL_PRIORITY)
+				.addClassAndMethod(this)
+				.addSourceLine(this));
+
 	if ((seen == INVOKESPECIAL)
 				&& getClassConstantOperand().equals("java/lang/String")
 				&& getNameConstantOperand().equals("<init>")
@@ -73,6 +85,13 @@ public class DumbMethods extends BytecodeScanningDetector implements   Constants
 				&& getSigConstantOperand().equals("()V"))
 		if (alreadyReported.add(getRefConstantOperand()))
 			bugReporter.reportBug(new BugInstance("DM_STRING_VOID_CTOR", NORMAL_PRIORITY)
+				.addClassAndMethod(this)
+				.addSourceLine(this));
+	if (!isPublicStaticVoidMain && seen == INVOKESTATIC
+				&& getClassConstantOperand().equals("java/lang/System")
+				&& getNameConstantOperand().equals("exit"))
+			bugReporter.reportBug(
+				new BugInstance("DM_EXIT", LOW_PRIORITY)
 				.addClassAndMethod(this)
 				.addSourceLine(this));
 	if (((seen == INVOKESTATIC

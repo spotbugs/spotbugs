@@ -481,6 +481,25 @@ It is a fast detector.
    -->
 
 
+  <BugPattern type="SW_SWING_METHODS_INVOKED_IN_SWING_THREAD">
+    <ShortDescription>Certain swing methods should only be invoked from the Swing event thread</ShortDescription>
+    <LongDescription>Call to swing method in {1} needs to be performed in Swing event thread</LongDescription>
+    <Details>
+<![CDATA[
+<p>(<a href="http://java.sun.com/developer/JDCTechTips/2003/tt1208.html#1">From JDC Tech Tip</a</a>>): The Swing methods
+show, setVisible and pack will create the associated peer for the frame. 
+With the creation of the peer, the system creates the event dispatch thread. 
+This makes things problematic because the event dispatch thread could be notifying 
+listeners while pack and validate are still processing. This situation could result in 
+two threads going through the Swing component-based GUI -- it's a serious flaw that 
+could result in deadlocks or other related threading issues. A pack call causes 
+components to be realized. As they are being realized (that is, not necessarily 
+visible), they could trigger listener notification on the event dispatch thread.
+
+]]>
+    </Details>
+  </BugPattern>
+
   <BugPattern type="UI_INHERITANCE_UNSAFE_GETRESOURCE">
     <ShortDescription>Usage of GetResource may be unsafe if class is extended</ShortDescription>
     <LongDescription>Usage of GetResource in {1} may be unsafe if class is extended</LongDescription>
@@ -2143,5 +2162,6 @@ directly. This avoids the need to create a second array
   <BugCode abbrev="ODR">Database resource not closed on all paths</BugCode>
   <BugCode abbrev="SBSC">String concatenation in loop using + operator</BugCode>
   <BugCode abbrev="ITA">Inefficient use of collection.toArray(new Foo[0])</BugCode>
+  <BugCode abbrev="SW">Swing coding rules</BugCode>
 
 </MessageCollection>

@@ -18,7 +18,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.DroppedException" speed="fast"
     reports="DE_MIGHT_DROP,DE_MIGHT_IGNORE"/>
   <Detector class="edu.umd.cs.findbugs.detect.DumbMethods" speed="fast"
-    reports="DM_STRING_CTOR,DM_STRING_VOID_CTOR,DM_STRING_TOSTRING,DM_GC,DM_BOOLEAN_CTOR,DM_STRING_EMPTY_EQUALS,DM_EXIT"/>
+    reports="DM_STRING_CTOR,DM_STRING_VOID_CTOR,DM_STRING_TOSTRING,DM_GC,DM_BOOLEAN_CTOR,DM_STRING_EMPTY_EQUALS,DM_EXIT,SW_SWING_METHODS_INVOKED_IN_SWING_THREAD"/>
   <Detector class="edu.umd.cs.findbugs.detect.FindDoubleCheck" speed="fast"
     reports="DC_DOUBLECHECK"/>
   <Detector class="edu.umd.cs.findbugs.detect.FindFinalizeInvocations" speed="fast"
@@ -106,6 +106,8 @@
     reports="ITA_INEFFICIENT_TO_ARRAY"/>
   <Detector class="edu.umd.cs.findbugs.detect.FindBugsSummaryStats" speed="fast" />
 
+  <BugPattern abbrev="SW" type="SW_SWING_METHODS_INVOKED_IN_SWING_THREAD" category="CORRECTNESS" 
+    experimental="true"/>
   <BugPattern abbrev="UI" type="UI_INHERITANCE_UNSAFE_GETRESOURCE" category="CORRECTNESS" 
     experimental="true"/>
   <BugPattern abbrev="TEST" type="TESTING" category="CORRECTNESS" 
