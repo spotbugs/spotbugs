@@ -1168,10 +1168,9 @@ object is stored in this field.
     <LongDescription>Unread field: {1}; should this field be static?</LongDescription>
     <Details>
 <![CDATA[
-  <p> This class contains an instance final field which is never read.&nbsp;
-  The fact that it is not read may indicate that the Java source to bytecode
-  compiler has propagated its constant value.&nbsp; Consider making it
-  static.
+  <p> This class contains an instance final field that
+	is initialized to a compile-time static value.
+	Consider making the field static.
 ]]>
     </Details>
   </BugPattern>
@@ -1394,6 +1393,7 @@ to null. Two types of redundant comparison are reported:
 <li> Both values compared are definitely null
 <li> One value is definitely null and the other is definitely not null
 </ul>
+<p>
 In either case, the result of the comparison will always be the same at
 runtime.  This is likely to inidicate a logic error in the method.
 Often, it means that the reference was dereferenced first, and then

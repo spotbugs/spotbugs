@@ -17,6 +17,8 @@
     reports="MS_EXPOSE_REP,EI_EXPOSE_REP"/>
   <Detector class="edu.umd.cs.findbugs.detect.FindRunInvocations" speed="fast"
     reports="RU_INVOKE_RUN"/>
+  <Detector class="edu.umd.cs.findbugs.detect.SwitchFallthrough" speed="fast"
+    reports="SF_SWITCH_FALLTHROUGH"/>
   <Detector class="edu.umd.cs.findbugs.detect.FindSpinLoop" speed="fast"
     reports="SP_SPIN_ON_FIELD"/>
   <Detector class="edu.umd.cs.findbugs.detect.FindNonShortCircuit" speed="fast"
