@@ -18,11 +18,15 @@ public class CategorizeBugs {
 	private static TreeMap<String, Stats> statsByType = new TreeMap<String, Stats>();
 	private static TreeMap<String, Stats> statsByCode = new TreeMap<String, Stats>();
 
+	private static final boolean BY_CODE_ONLY = Boolean.getBoolean("findbugs.categorize.byCodeOnly");
+
 	public static void main(String[] argv) throws Exception {
 		if (argv.length != 1) {
 			System.err.println("Usage: " + CategorizeBugs.class.getName() + " <results file>");
 			System.exit(1);
 		}
+
+		//if (BY_CODE_ONLY) System.out.println("Only dump bug codes");
 
 		DetectorFactoryCollection.instance(); // load plugins
 
@@ -46,23 +50,24 @@ public class CategorizeBugs {
 			}
 
 			int severity = -1;
-			if (annotation.indexOf("BENIGN") >= 0)
+			if (annotation.indexOf("BENIGN") >= 0 || annotation.indexOf("HARMLESS") >= 0)
 				severity = BENIGN;
 			else if (annotation.indexOf("DUBIOUS") >= 0)
 				severity = DUBIOUS;
 			else if (annotation.indexOf("SERIOUS") >= 0)
 				severity = SERIOUS;
-			else if (isBug) {
-				System.out.println("Unknown severity for bug:");
-				dumpBug(bugInstance);
-				continue;
-			}
+			//else if (isBug) {
+			//	System.out.println("Unknown severity for bug:");
+			//	dumpBug(bugInstance);
+			//	continue;
+			//}
 
 			updateStats(bugInstance.getType(), statsByType, isBug, severity);
 			updateStats(bugInstance.getAbbrev(), statsByCode, isBug, severity);
 		}
 
-		dumpStats("Statistics by bug pattern", statsByType);
+		if (!BY_CODE_ONLY)
+			dumpStats("Statistics by bug pattern", statsByType);
 		dumpStats("Statistics by bug code", statsByCode);
 	}
 
