@@ -18,13 +18,16 @@
  */
 
 package edu.umd.cs.findbugs.detect;
+import edu.umd.cs.daveho.ba.ClassContext;
+import edu.umd.cs.daveho.ba.SourceFile;
+import edu.umd.cs.daveho.ba.SourceFinder;
 import edu.umd.cs.findbugs.*;
+import java.io.*;
 import java.util.*;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.*;
 import edu.umd.cs.pugh.visitclass.Constants2;
 import edu.umd.cs.pugh.visitclass.PreorderVisitor;
-import edu.umd.cs.daveho.ba.ClassContext;
 
 public class DroppedException extends PreorderVisitor implements Detector, Constants2 {
     private static final boolean DEBUG = Boolean.getBoolean("de.debug");
@@ -195,14 +198,94 @@ public class DroppedException extends PreorderVisitor implements Detector, Const
 			&& !c.equals("java.lang.CloneNotSupportedException")) {
 	String key = (exitInTryBlock ? "mightDrop," : "mightIgnore,") + betterMethodName + "," + c;
 	if (reported.add(key)) {
-		bugReporter.reportBug(
-			new BugInstance(exitInTryBlock ? "DE_MIGHT_DROP" : "DE_MIGHT_IGNORE", NORMAL_PRIORITY)
-				.addClassAndMethod(this)
-				.addSourceLine(this, handled)
-				.addClass(c).describe("CLASS_EXCEPTION"));
+		BugInstance bugInstance = new BugInstance(exitInTryBlock ? "DE_MIGHT_DROP" : "DE_MIGHT_IGNORE", NORMAL_PRIORITY)
+			.addClassAndMethod(this);
+
+		SourceLineAnnotation srcLine = bugInstance.addSourceLine(this, handled).getPrimarySourceLineAnnotation();
+		if (srcLine == null || !catchBlockHasComment(srcLine)) {
+			bugInstance.addClass(c).describe("CLASS_EXCEPTION");
+			bugReporter.reportBug(bugInstance);
+		}
 	}
 
 	}
 		}
 }
+
+  private static final int START = 0;
+  private static final int CATCH = 1;
+  private static final int OPEN_PAREN = 2;
+  private static final int CLOSE_PAREN = 3;
+  private static final int OPEN_BRACE = 4;
+
+  private static final int MAX_LINES = 5;
+
+  private boolean catchBlockHasComment(SourceLineAnnotation srcLine) {
+    return false;
+
+/*
+    AnalysisContext analysisContext = AnalysisContext.instance();
+    SourceFinder sourceFinder = analysisContext.getSourceFinder();
+    try {
+	SourceFile sourceFile = sourceFinder.findSourceFile(srcLine.getPackageName(), srcLine.getSourceFile());
+	int startLine = srcLine.getStartLine();
+	int offset = sourceFile.getLineOffset(startLine - 1);
+	if (offset >= 0) {
+	    InputStreamReader reader = new InputStreamReader(sourceFile.getInputStreamFromOffset(offset));
+	    StreamTokenizer tok = new StreamTokenizer(reader);
+
+	    boolean done = false;
+	    int numLines = 0;
+	    int state = START;
+	    int level = 0;
+	    do {
+		int type = tok.nextToken();
+		switch (type) {
+		case StreamTokenizer.TT_EOL:
+		    ++numLines;
+		    if (numLines >= MAX_LINES)
+			done = true;
+		    break;
+		case StreamTokenizer.TT_EOF:
+		    done = true;
+		    break;
+		case StreamTokenizer.TT_WORD:
+		case StreamTokenizer.TT_NUMBER:
+		    String value = tok.sval;
+		    switch (state) {
+		    case START:
+			if (value.equals("catch"))
+			    state = CATCH;
+			break;
+		    case CATCH:
+			if (value.equals("("))
+			    state = OPEN_PAREN;
+			break;
+		    case OPEN_PAREN:
+			if (value.equals(")")) {
+			    if (level == 0)
+				state = CLOSE_PAREN;
+			    else
+				--level;
+			} else if (value.equals("(")) {
+			    ++level;
+			}
+			break;
+		    case CLOSE_PAREN:
+			if (value.equals("{"))
+			    state = OPEN_BRACE;
+			break;
+		    case OPEN_BRACE:
+			return !value.equals("}");
+		    }
+		    break;
+		}
+	    } while (!done);
+	}
+    } catch (IOException e) {
+	// Ignored; we'll just assume there is no comment
+    }
+    return false;
+*/
+  }
 }
