@@ -338,7 +338,7 @@ public class FindBugs implements Constants2, ExitCodes {
 			addOption("-sortByClass", "sort warnings by class");
 			addOption("-xml", "XML output");
 			addOption("-xdocs", "xdoc XML output to use with Apache Maven");
-			addOption("-html", "HTML output using given XSL stylesheet");
+			addOption("-html", "stylesheet", "HTML output using given XSL stylesheet");
 			addOption("-emacs", "Use emacs reporting format");
 			addOption("-outputFile", "filename", "Save output in named file");
 			addOption("-visitors", "v1[,v2...]", "run only named visitors");
