@@ -37,15 +37,28 @@ import org.apache.bcel.generic.*;
  */
 public class IsNullValueAnalysis extends ForwardDataflowAnalysis<IsNullValueFrame> implements EdgeTypes {
 	private static final boolean DEBUG = Boolean.getBoolean("inva.debug");
+	private static final boolean SPLIT_DOWNGRADE_NSP = Boolean.getBoolean("inva.splitDowngradeNSP");
 
 	private MethodGen methodGen;
 	private CFG cfg;
 	private ValueNumberDataflow vnaDataflow;
+	private int[] numNonExceptionSuccessorMap;
 
 	public IsNullValueAnalysis(MethodGen methodGen, CFG cfg, ValueNumberDataflow vnaDataflow) {
 		this.methodGen = methodGen;
 		this.cfg = cfg;
 		this.vnaDataflow = vnaDataflow;
+		this.numNonExceptionSuccessorMap = new int[cfg.getNumBasicBlocks()];
+
+		// For each basic block, calculate the number of non-exception successors.
+		Iterator<Edge> i = cfg.edgeIterator();
+		while (i.hasNext()) {
+			Edge edge = i.next();
+			if (edge.isExceptionEdge())
+				continue;
+			int srcBlockId = edge.getSource().getId();
+			numNonExceptionSuccessorMap[srcBlockId]++;
+		}
 	}
 
 	public IsNullValueFrame createFact() {
@@ -92,6 +105,21 @@ public class IsNullValueAnalysis extends ForwardDataflowAnalysis<IsNullValueFram
 		throws DataflowAnalysisException {
 
 		if (fact.isValid()) {
+			final int numSlots = fact.getNumSlots();
+
+			if (SPLIT_DOWNGRADE_NSP) {
+				// Downgrade NSP to DNR on non-exception control splits
+				if (!edge.isExceptionEdge() && numNonExceptionSuccessorMap[edge.getSource().getId()] > 0) {
+					IsNullValueFrame tmpFact = createFact();
+					tmpFact.copyFrom(fact);
+					for (int i = 0; i < numSlots; ++i) {
+						IsNullValue value = tmpFact.getValue(i);
+						if (value.equals(IsNullValue.nullOnSomePathValue()))
+							tmpFact.setValue(i, IsNullValue.doNotReportValue());
+					}
+					fact = tmpFact;
+				}
+			}
 
 			final BasicBlock destBlock = edge.getDest();
 
@@ -106,7 +134,6 @@ public class IsNullValueAnalysis extends ForwardDataflowAnalysis<IsNullValueFram
 			} else {
 				// Determine if the edge conveys any information about the
 				// null/non-null status of operands in the incoming frame.
-				final int numSlots = fact.getNumSlots();
 	
 				int nullInfo = getNullInfoFromEdge(edge);
 				if (nullInfo != NO_INFO) {
