@@ -682,6 +682,45 @@ public class FindBugs implements Constants2, ExitCodes
 	return new ClassParser(fileName).parse();
   }
 
+  /**
+   * Process -bugCategories option.
+   */
+  private static void handleBugCategories(String categories) {
+	// Parse list of bug categories
+	HashSet<String> categorySet = new HashSet<String>();
+	StringTokenizer tok = new StringTokenizer(categories,",");
+	while (tok.hasMoreTokens()) {
+		categorySet.add(tok.nextToken());
+	}
+
+	// Enable only those detectors that can emit those categories
+	// (and the ones that produce unknown bug patterns, just to be safe)
+	for (Iterator<DetectorFactory> i = DetectorFactoryCollection.instance().factoryIterator(); i.hasNext(); ) {
+		DetectorFactory factory = i.next();
+		Collection<BugPattern> reported = factory.getReportedBugPatterns();
+		boolean enable = false;
+		if (reported.isEmpty()) {
+			// Don't know what bug patterns are produced by this detector
+			if (DEBUG) System.out.println("Unknown bug patterns for " + factory.getShortName());
+			enable = true;
+		} else {
+			for (Iterator<BugPattern> j = reported.iterator(); j.hasNext(); ) {
+				BugPattern bugPattern = j.next();
+				if (categorySet.contains(bugPattern.getCategory())) {
+					if (DEBUG) System.out.println("MATCH ==> " + categorySet +
+						" -- " + bugPattern.getCategory());
+					enable = true;
+					break;
+				}
+			}
+		}
+		if (DEBUG && enable) {
+			System.out.println("Enabling " + factory.getShortName());
+		}
+		factory.setEnabled(enable);
+	}
+  }
+
   /* ----------------------------------------------------------------------
    * main() method
    * ---------------------------------------------------------------------- */
@@ -765,12 +804,7 @@ public class FindBugs implements Constants2, ExitCodes
 				// Selecting detectors explicitly, so start out by
 				// disabling all of them.  The selected ones will
 				// be re-enabled.
-				Iterator<DetectorFactory> factoryIter =
-					DetectorFactoryCollection.instance().factoryIterator();
-				while (factoryIter.hasNext()) {
-					DetectorFactory factory = factoryIter.next();
-					factory.setEnabled(false);
-				}
+				DetectorFactoryCollection.instance().disableAll();
 			}
 
 			// Explicitly enable or disable the selected detectors.
@@ -782,6 +816,11 @@ public class FindBugs implements Constants2, ExitCodes
 					throw new IllegalArgumentException("Unknown detector: " + visitorName);
 				factory.setEnabled(!omit);
 			}
+		} else if (option.equals("-bugCategories")) {
+			++argCount;
+			if (argCount == argv.length) throw new IllegalArgumentException(option + " option requires argument");
+			String categories = argv[argCount];
+			handleBugCategories(categories);
 		} else if (option.equals("-exclude") || option.equals("-include")) {
 			++argCount;
 			if (argCount == argv.length) throw new IllegalArgumentException(option + " option requires argument");
@@ -854,6 +893,7 @@ public class FindBugs implements Constants2, ExitCodes
 			System.out.println("   -outputFile <filename>        Save output in named file");
 			System.out.println("   -visitors <v1>,<v2>,...       run only named visitors");
 			System.out.println("   -omitVisitors <v1>,<v2>,...   omit named visitors");
+			System.out.println("   -bugCategories <cat1>,...     run only detectors that report given categories");
 			System.out.println("   -exclude <filter file>        exclude bugs matching given filter");
 			System.out.println("   -include <filter file>        include only bugs matching given filter");
 			System.out.println("   -auxclasspath <classpath>     set aux classpath for analysis");
