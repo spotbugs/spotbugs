@@ -15,11 +15,14 @@ foreach my $jar (@jarList) {
 	$jar =~ m,.*/([^/]+)\.jar$,;
 	my $shortName = $1;
 
-	#print "$shortName\n";
-
 	print "Executing regression test for $shortName\n";
 
+	my $rc =
 	system("java -classpath build/findbugs.jar:\$CLASSPATH edu.umd.cs.findbugs.FindBugs $jar | etc/summarizeBugs > build/$shortName.out");
+	if ($rc/256 != 0) {
+		print STDERR "Command failed!\n";
+		exit 1;
+	}
 }
 
 # vim:ts=4
