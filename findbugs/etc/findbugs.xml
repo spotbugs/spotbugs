@@ -26,7 +26,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.StartInConstructor" />
   <Detector class="edu.umd.cs.findbugs.detect.UnreadFields" />
   <Detector class="edu.umd.cs.findbugs.detect.WaitInLoop" />
-  <Detector class="edu.umd.cs.findbugs.detect.BCPDoubleCheck" disabled="true" />
+  <Detector class="edu.umd.cs.findbugs.detect.BCPDoubleCheck" />
   <BugPattern abbrev="DE" type="DE_MIGHT_DROP" category="CORRECTNESS" />
   <BugPattern abbrev="DE" type="DE_MIGHT_IGNORE" category="CORRECTNESS" />
   <BugPattern abbrev="Dm" type="DM_STRING_CTOR" category="PERFORMANCE" />
