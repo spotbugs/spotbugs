@@ -149,10 +149,11 @@ public class FindbugsPropertyPage extends PropertyPage {
 		minPriorityCombo.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
 		
 		Composite categoryGroup = new Composite(composite, SWT.NONE);
-		categoryGroup.setLayout(new GridLayout(1, false));
+		categoryGroup.setLayout(new GridLayout(2, true));
 		
 		Label activeCategoriesLabel = new Label(categoryGroup, SWT.NONE);
 		activeCategoriesLabel.setText("Enable bug categories:");
+		activeCategoriesLabel.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1));
 		buildBugCategoryList(categoryGroup, project);
 		
 		Label separator =
