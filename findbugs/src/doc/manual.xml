@@ -433,9 +433,10 @@ To compile &FindBugs; from source, you will need the following:
   </listitem>
   <listitem>
     <para>
-      <ulink url="http://java.sun.com/j2se/">JDK 1.4.0 or later</ulink>
+      <ulink url="http://java.sun.com/j2se/">JDK 1.5.0 beta or later</ulink>
     </para>
   </listitem>
+<!--
   <listitem>
     <para>
       The early-access version of the
@@ -449,11 +450,13 @@ To compile &FindBugs; from source, you will need the following:
      </note>
     </para>
   </listitem>
+-->
   <listitem>
     <para>
       <ulink url="http://ant.apache.org/">Apache &Ant;</ulink>, version 1.5 or later
     </para>
   </listitem>
+<!--
   <listitem>
     <para>
       The <ulink url="http://www.thecortex.net/clover/generics/jsr14adapter-1.1.jar"
@@ -461,6 +464,7 @@ To compile &FindBugs; from source, you will need the following:
      <filename class="directory">lib</filename> subdirectory of your &Ant; installation.
     </para>
   </listitem>
+-->
 </itemizedlist>
 </para>
 
@@ -518,15 +522,6 @@ The <filename>build.properties</filename> looks like this:
 
 local.software.home     =/export/home/daveho/linux
 
-# Set this to the location where you installed the generics-enabled
-# version of javac.  Note: you need to install the JSR-14 Compiler Adapter,
-# http://www.thecortex.net/clover/generics/jsr14adapter-1.1.jar,
-# in the lib subdirectory of your Ant installation.
-# If you are using version 2.2 of the generics-enabled javac,
-#  then you will need to rename "gjc-rt.jar" to "javac.jar".
-
-jsr14.home              =${local.software.home}/java/adding_generics-2_2-ea
-
 # Set this to the directory containing the DocBook Modular XSL Stylesheets
 #  from http://docbook.sourceforge.net/projects/xsl/
 
@@ -545,15 +540,27 @@ eclipse.home		=${local.software.home}/java/eclipse-2.1.2
 ]]>
 </programlisting>
 </para>
+<!--
+# Set this to the location where you installed the generics-enabled
+# version of javac.  Note: you need to install the JSR-14 Compiler Adapter,
+# http://www.thecortex.net/clover/generics/jsr14adapter-1.1.jar,
+# in the lib subdirectory of your Ant installation.
+# If you are using version 2.2 of the generics-enabled javac,
+#  then you will need to rename "gjc-rt.jar" to "javac.jar".
 
+jsr14.home              =${local.software.home}/java/adding_generics-2_2-ea
+-->
+
+<!--
 <para>
 The first property, <varname>jsr14.home</varname> specifies the directory containing your installation
 of the generics-enabled version of javac.  You must update the value
 of this property to match your system.
 </para>
+-->
 
 <para>
-The second property, <varname>xsl.stylesheet.home</varname> specifies the full
+The first property, <varname>xsl.stylesheet.home</varname> specifies the full
 path to the directory where you have installed the
 <ulink url="http://docbook.sourceforge.net/projects/xsl/">DocBook Modular XSL
 Stylesheets</ulink>.  You only need to specify this property if you will be
@@ -561,14 +568,14 @@ generating the &FindBugs; documentation.
 </para>
 
 <para>
-The third property, <varname>saxon.home</varname>, is the full path to the
+The second property, <varname>saxon.home</varname>, is the full path to the
 directory where you installed the <ulink url="http://saxon.sourceforge.net/">&Saxon; XSLT Processor</ulink>.
 You only need to specify this property if you will be
 generating the &FindBugs; documentation.
 </para>
 
 <para>
-The fourth property, <varname>eclipse.home</varname>, is the full path
+The third property, <varname>eclipse.home</varname>, is the full path
 to an installation of <ulink url="http://www.eclipse.org/">Eclipse</ulink>.
 You only need to specify this property if you want to rebuild the
 FindBugs Eclipse plugin.
@@ -581,8 +588,8 @@ FindBugs Eclipse plugin.
 
 <para>
 Once you have extracted the source distribution, modified <filename>build.xml</filename>
-to reflect your system, and configured the tools (such as &Saxon; and the the JSR-14 adapter
-for &Ant;), you are ready to build &FindBugs;.  Invoking &Ant; is a simple matter
+to reflect your system, and configured the tools (such as &Saxon;<!-- and the the JSR-14 adapter
+for &Ant;-->), you are ready to build &FindBugs;.  Invoking &Ant; is a simple matter
 of running the command
 <screen>
 <prompt>$ </prompt><command>ant <replaceable>target</replaceable></command>
@@ -652,7 +659,7 @@ The &Ant; build script for &FindBugs; is set up such that after
 building the <command>build</command> target, the working directory
 is set up just like a binary distribution.  So, the information about
 installing a binary distribution of &FindBugs; in <xref linkend="installing" />
-apply to source distributions, too.
+applies to source distributions, too.
 </para>
 </sect1>
 
