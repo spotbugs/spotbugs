@@ -23,6 +23,10 @@ public class IsNullValueDataflow extends Dataflow<IsNullValueFrame, IsNullValueA
 	public IsNullValueDataflow(CFG cfg, IsNullValueAnalysis analysis) {
 		super(cfg, analysis);
 	}
+
+	public IsNullValueFrame getFactAtLocation(Location loc) {
+		return getAnalysis().getFactAtLocation(loc);
+	}
 }
 
 // vim:ts=4
