@@ -64,6 +64,7 @@ public class FindInconsistentSync2 implements Detector {
 	private static class FieldStats {
 		private int[] countList = new int[4];
 		private int numLocalLocks = 0;
+		private int numGetterMethodAccesses = 0;
 		private LinkedList<SourceLineAnnotation> unsyncAccessList = new LinkedList<SourceLineAnnotation>();
 		private LinkedList<SourceLineAnnotation> syncAccessList = new LinkedList<SourceLineAnnotation>();
 
@@ -81,6 +82,14 @@ public class FindInconsistentSync2 implements Detector {
 
 		public int getNumLocalLocks() {
 			return numLocalLocks;
+		}
+
+		public void addGetterMethodAccess() {
+			numGetterMethodAccesses++;
+		}
+
+		public int getNumGetterMethodAccesses() {
+			return numGetterMethodAccesses;
 		}
 
 		public void addAccess(ClassContext classContext, Method method, InstructionHandle handle, boolean isLocked) {
@@ -186,7 +195,11 @@ public class FindInconsistentSync2 implements Detector {
 			if (freq < 50) continue;
 
 			// At this point, we report the field as being inconsistently synchronized
-			BugInstance bugInstance = new BugInstance("IS2_INCONSISTENT_SYNC", freq >= 75 ? NORMAL_PRIORITY : LOW_PRIORITY)
+			int priority = freq > 75 ? NORMAL_PRIORITY : LOW_PRIORITY;
+			if (stats.getNumGetterMethodAccesses() == unlocked)
+				// Unlocked accesses are only in getter method(s).
+				priority = LOW_PRIORITY;
+			BugInstance bugInstance = new BugInstance("IS2_INCONSISTENT_SYNC", priority)
 				.addClass(xfield.getClassName())
 				.addField(xfield)
 				.addInt(freq).describe("INT_SYNC_PERCENT");
@@ -232,6 +245,7 @@ public class FindInconsistentSync2 implements Detector {
 		final CFG cfg = classContext.getCFG(method);
 		final LockDataflow lockDataflow = classContext.getLockDataflow(method);
 		final ValueNumberDataflow vnaDataflow = classContext.getValueNumberDataflow(method);
+		final boolean isGetterMethod = isGetterMethod(classContext, method);
 
 		if (DEBUG) System.out.println("**** Analyzing method " +
 			SignatureConverter.convertMethodSignature(classContext.getMethodGen(method)));
@@ -296,6 +310,9 @@ public class FindInconsistentSync2 implements Detector {
 				
 						if (isExplicitlyLocked && isLocal)
 							stats.addLocalLock();
+
+						if (isGetterMethod)
+							stats.addGetterMethodAccess();
 				
 						stats.addAccess(classContext, method, handle, isLocked);
 					}
@@ -305,6 +322,28 @@ public class FindInconsistentSync2 implements Detector {
 				}
 			}
 		});
+	}
+
+	/**
+	 * Determine whether or not the the given method is
+	 * a getter method.  I.e., if it just returns the
+	 * value of an instance field.
+	 * @param classContext the ClassContext for the class containing the method
+	 * @param method the method
+	 */
+	public static boolean isGetterMethod(ClassContext classContext, Method method) {
+		MethodGen methodGen = classContext.getMethodGen(method);
+		InstructionList il = methodGen.getInstructionList();
+		if (il.getLength() != 3)
+			return false;
+		InstructionHandle handle = il.getStart();
+		if (handle.getInstruction().getOpcode() != Constants.ALOAD_0)
+			return false;
+		handle = handle.getNext();
+		if (handle.getInstruction().getOpcode() != Constants.GETFIELD)
+			return false;
+		handle = handle.getNext();
+		return (handle.getInstruction() instanceof ReturnInstruction);
 	}
 
 	/**
