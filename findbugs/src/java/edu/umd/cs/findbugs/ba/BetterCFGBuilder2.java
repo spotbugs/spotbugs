@@ -75,6 +75,8 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes {
 		public int					getEdgeType()			{ return edgeType; }
 	}
 
+	private static final LinkedList<EscapeTarget> emptyEscapeTargetList = new LinkedList<EscapeTarget>();
+
 	/**
 	 * JSR subroutine.  The top level subroutine is where execution starts.
 	 * Each subroutine has its own CFG.  Eventually,
@@ -107,6 +109,7 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes {
 		public WorkListItem			nextItem()				{ return workList.removeFirst(); }
 		public BasicBlock			getEntry()				{ return cfg.getEntry(); }
 		public BasicBlock			getExit()				{ return cfg.getExit(); }
+		public BasicBlock			getStartBlock()			{ return getBlock(start); }
 		public CFG					getCFG()				{ return cfg; }
 
 		public void addInstruction(InstructionHandle handle) throws CFGBuilderException {
@@ -117,11 +120,21 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes {
 			usedInstructionSet.set(position);
 		}
 
+		public boolean containsInstruction(InstructionHandle handle) {
+			return instructionSet.get(handle.getPosition());
+		}
+
 		public BasicBlock getBlock(InstructionHandle start) {
 			BasicBlock block = blockMap.get(start);
 			if (block == null) {
 				block = allocateBasicBlock();
 				blockMap.put(start, block);
+
+				// Block is an exception handler?
+				CodeExceptionGen exceptionGen = exceptionHandlerMap.getHandlerForStartInstruction(start);
+				if (exceptionGen != null)
+					block.setExceptionGen(exceptionGen);
+
 				addItem(new WorkListItem(start, block));
 			}
 			return block;
@@ -143,7 +156,7 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes {
 		}
 
 		public void addEdgeAndExplore(BasicBlock sourceBlock, InstructionHandle target, int edgeType) {
-			if (usedInstructionSet.get(target.getPosition())) {
+			if (usedInstructionSet.get(target.getPosition()) && !containsInstruction(target)) {
 				// Control escapes this subroutine
 				List<EscapeTarget> escapeTargetList = escapeTargetListMap.get(sourceBlock);
 				if (escapeTargetList == null) {
@@ -164,6 +177,13 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes {
 
 		public void addEdge(BasicBlock sourceBlock, BasicBlock destBlock, int edgeType) {
 			cfg.addEdge(sourceBlock, destBlock, edgeType);
+		}
+
+		public Iterator<EscapeTarget> escapeTargetIterator(BasicBlock sourceBlock) {
+			List<EscapeTarget> escapeTargetList = escapeTargetListMap.get(sourceBlock);
+			if (escapeTargetList == null)
+				escapeTargetList = emptyEscapeTargetList;
+			return escapeTargetList.iterator();
 		}
 	}
 
@@ -216,6 +236,15 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes {
 				workList.add(subBlock);
 			}
 			return resultBlock;
+		}
+
+		public void checkForRecursion() throws CFGBuilderException {
+			Context caller = getCaller();
+			while (caller != null) {
+				if (caller == this)
+					throw new CFGBuilderException("JSR recursion detected!");
+				caller = caller.getCaller();
+			}
 		}
 	}
 
@@ -415,17 +444,107 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes {
 		rootContext.mapBlock(topLevelSubroutine.getEntry(), result.getEntry());
 		rootContext.mapBlock(topLevelSubroutine.getExit(), result.getExit());
 
+		BasicBlock resultStartBlock = rootContext.getBlock(topLevelSubroutine.getStartBlock());
+		result.addEdge(result.getEntry(), resultStartBlock, START_EDGE);
+
 		inline(rootContext);
 
 		return result;
 	}
 
-	public void inline(Context context) {
+	public void inline(Context context) throws CFGBuilderException {
 
-		// TODO: check to ensure we're not trying to inline something that is recursive
+		CFG result = context.getResult();
+
+		// Check to ensure we're not trying to inline something that is recursive
+		context.checkForRecursion();
+
+		Subroutine subroutine = context.getSubroutine();
+		CFG subCFG = subroutine.getCFG();
 
 		while (context.hasMoreWork()) {
 			BasicBlock subBlock = context.nextItem();
+			BasicBlock resultBlock = context.getBlock(subBlock);
+
+			// Copy instructions into the result block
+			BasicBlock.InstructionIterator insIter = subBlock.instructionIterator();
+			while (insIter.hasNext()) {
+				InstructionHandle handle = insIter.next();
+				resultBlock.addInstruction(handle);
+			}
+
+			// Set exception thrower status
+			if (subBlock.isExceptionThrower())
+				resultBlock.setExceptionThrower(subBlock.getExceptionThrower());
+
+			// Set exception handler status
+			if (subBlock.isExceptionHandler())
+				resultBlock.setExceptionGen(subBlock.getExceptionGen());
+
+			// Add control edges (including inlining JSR subroutines)
+			Iterator<Edge> edgeIter = subCFG.outgoingEdgeIterator(subBlock);
+			while (edgeIter.hasNext()) {
+				Edge edge = edgeIter.next();
+				int edgeType = edge.getType();
+
+				if (edgeType == JSR_EDGE) {
+					// Inline a JSR subroutine...
+
+					// Create a new Context
+					InstructionHandle jsrHandle = subBlock.getLastInstruction();
+					JsrInstruction jsr = (JsrInstruction) jsrHandle.getInstruction();
+					Subroutine jsrSub = jsrSubroutineMap.get(jsr.getTarget());
+					Context jsrContext = new Context(context, jsrSub, context.getResult());
+
+					// The start block in the JSR subroutine maps to the first
+					// inlined block in the result CFG.
+					BasicBlock jsrStartBlock = jsrContext.getBlock(jsrSub.getStartBlock());
+					result.addEdge(resultBlock, jsrStartBlock, GOTO_EDGE);
+
+					// The exit block in the JSR subroutine maps to the result block
+					// corresponding to the instruction following the JSR.
+					// (I.e., that is where control returns after the execution of
+					// the JSR subroutine.)
+					BasicBlock subJSRSuccessorBlock = subroutine.getBlock(jsrHandle.getNext());
+					BasicBlock resultJSRSuccessorBlock = context.getBlock(subJSRSuccessorBlock);
+					jsrContext.mapBlock(jsrSub.getExit(), resultJSRSuccessorBlock);
+
+					// Inline the JSR subroutine
+					inline(jsrContext);
+				} else {
+					// Ordinary control edge
+					BasicBlock resultTarget = context.getBlock(edge.getDest());
+					result.addEdge(resultBlock, resultTarget, edge.getType());
+				}
+			}
+
+			// Add control edges for escape targets
+			Iterator<EscapeTarget> escapeTargetIter = subroutine.escapeTargetIterator(subBlock);
+			while (escapeTargetIter.hasNext()) {
+				EscapeTarget escapeTarget = escapeTargetIter.next();
+				InstructionHandle targetInstruction = escapeTarget.getTarget();
+
+				// Look for the calling context which has the target instruction
+				Context caller = context.getCaller();
+				while (caller != null) {
+					if (caller.getSubroutine().containsInstruction(targetInstruction))
+						break;
+					caller = caller.getCaller();
+				}
+
+				if (caller == null)
+					throw new CFGBuilderException("Unknown caller for escape target " + targetInstruction +
+						" referenced by " + context.getSubroutine().getStartInstruction());
+
+				// Find result block in caller
+				BasicBlock subCallerTargetBlock = caller.getSubroutine().getBlock(targetInstruction);
+				BasicBlock resultCallerTargetBlock = caller.getBlock(subCallerTargetBlock);
+
+				// Add an edge to caller context
+				result.addEdge(resultBlock, resultCallerTargetBlock, escapeTarget.getEdgeType());
+			}
+
+			// If the block returns from the method, add a return edge
 
 		}
 
@@ -439,8 +558,8 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes {
 			if (block terminated by JSR) {
 				get JSR subroutine
 				create new context
-				map context start to current block
-				map context end to JSR target block
+				create GOTO edge from current result block to start block of new inlined context
+				map subroutine exit block to result JSR successor block
 				inline (new context, result)
 			} else {
 				for each outgoing edge {
