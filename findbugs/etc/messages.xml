@@ -502,6 +502,16 @@ method with the wrong signature. It is a fast detector.
 ]]>
     </Details>
   </Detector>
+  
+  <Detector class="edu.umd.cs.findbugs.detect.BadResultSetAccess">
+    <Details>
+<![CDATA[
+<p> This detector looks for calls to getXXX or setXXX methods of a result set where the
+field index is 0. As ResultSet fields start at index 1, this is always a mistake.
+It is a fast detector.
+]]>
+    </Details>
+  </Detector>
 
   <Detector class="edu.umd.cs.findbugs.detect.FindBugsSummaryStats">
     <Details>
@@ -510,6 +520,13 @@ method with the wrong signature. It is a fast detector.
 ]]>
     </Details>
   </Detector>
+
+  <!--
+  **********************************************************************
+  BugPatterns
+  **********************************************************************
+   -->
+
 
   <BugPattern type="MF_METHOD_MASKS_FIELD">
     <ShortDescription>Method defines a variable that obscures a field</ShortDescription>
@@ -536,13 +553,6 @@ the fields when they wanted the other.
 ]]>
     </Details>
   </BugPattern>
-
-  <!--
-  **********************************************************************
-  BugPatterns
-  **********************************************************************
-   -->
-
 
   <BugPattern type="SW_SWING_METHODS_INVOKED_IN_SWING_THREAD">
     <ShortDescription>Certain swing methods should only be invoked from the Swing event thread</ShortDescription>
@@ -2301,6 +2311,17 @@ get called when the event occurs.
     </Details>
   </BugPattern>
   
+  <BugPattern type="BRSA_BAD_RESULTSET_ACCESS">
+    <ShortDescription>Method attempts to access a result set field with index 0</ShortDescription>
+    <LongDescription>Method attempts to access a result set field with index 0</LongDescription>
+    <Details>
+<![CDATA[
+<p> This detector looks for calls to getXXX or updateXXX methods of a result set where the
+field index is 0. As ResultSet fields start at index 1, this is always a mistake.
+]]>
+    </Details>
+  </BugPattern>
+  
     <!--
   **********************************************************************
    BugCodes
@@ -2376,4 +2397,5 @@ get called when the event occurs.
   <BugCode abbrev="IJU">Improperly implemented JUnit TestCase</BugCode>
   <BugCode abbrev="BOA">Badly Overridden Adapter</BugCode>
   <BugCode abbrev="SF">Switch case falls thru</BugCode>
+  <BugCode abbrev="BRSA">Bad ResultSet access</BugCode>
 </MessageCollection>

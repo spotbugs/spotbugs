@@ -116,6 +116,8 @@
      reports="IJU_SETUP_NO_SUPER, IJU_TEARDOWN_NO_SUPER, IJU_SUITE_NOT_STATIC"/>
    <Detector class="edu.umd.cs.findbugs.detect.BadlyOverriddenAdapter" speed="fast"
      reports="BOA_BADLY_OVERRIDDEN_ADAPTER"/>
+   <Detector class="edu.umd.cs.findbugs.detect.BadResultSetAccess" speed="fast"
+   	 reports="BRSA_BAD_RESULTSET_ACCESS"/>
   <Detector class="edu.umd.cs.findbugs.detect.FindBugsSummaryStats" speed="fast" />
 
   <BugPattern abbrev="SW" type="SW_SWING_METHODS_INVOKED_IN_SWING_THREAD" category="CORRECTNESS" 
@@ -256,5 +258,7 @@
   <BugPattern abbrev="IJU" type="IJU_SUITE_NOT_STATIC" category="CORRECTNESS"
     experimental="true"/>
   <BugPattern abbrev="BOA" type="BOA_BADLY_OVERRIDDEN_ADAPTER" category="CORRECTNESS"
+    experimental="true"/>
+  <BugPattern abbrev="BRSA" type="BRSA_BAD_RESULTSET_ACCESS" category="CORRECTNESS"
     experimental="true"/>
 </FindbugsPlugin>
