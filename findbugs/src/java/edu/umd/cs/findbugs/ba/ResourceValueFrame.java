@@ -20,15 +20,17 @@
 package edu.umd.cs.daveho.ba;
 
 public class ResourceValueFrame extends Frame<ResourceValue> {
+	/** The resource escapes the method. */
+	public static final int ESCAPED = 0;
+
 	/** The resource is open (or locked, etc). */
-	public static final int OPEN = 0;
+	public static final int OPEN = 1;
 
 	/** The resource is closed (or unlocked, etc). */
-	public static final int CLOSED = 1;
+	public static final int CLOSED = 2;
 
 	/** The resource doesn't exist. */
-	public static final int NONEXISTENT = 2;
-
+	public static final int NONEXISTENT = 3;
 
 	private int status;
 
