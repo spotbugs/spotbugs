@@ -1170,5 +1170,6 @@ defined in an interface references a mutable
   <BugCode abbrev="SPSDC" >Possible double check of static field</BugCode>
   <BugCode abbrev="SPDC" >Possible double check of field</BugCode>
   <BugCode abbrev="2LW" >Wait with two locks held</BugCode>
+  <BugCode abbrev="BcpDC">Possible double check of field</BugCode>
   <BugCode abbrev="RV" >Return value of method is ignored</BugCode>
 </MessageCollection>
