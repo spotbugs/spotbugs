@@ -25,7 +25,10 @@
     <property name="doc.dir" value="${findbugs.dir}/doc" />
     <property name="web.dir" value="${findbugs.dir}/web" />
     <property name="build.dir" value="${findbugs.dir}/build" />
+<!--
     <property name="jar.dir" value="${build.dir}/lib" />
+-->
+    <property name="jar.dir" value="lib" />
     <property name="plugin.dir" value="${build.dir}/plugin" />
     <property name="class.dir" value="${build.dir}/classes" />
     <property name="release.dir" value="${build.dir}/release" />
@@ -68,15 +71,6 @@
       <copy todir="${class.dir}">
         <fileset dir="${findbugs.src.dir}" includes="**/*.properties"/>
       </copy>
-
-      <!--
-        Copy Jar files from lib to ${jar.dir}.
-        We just want the library files that are essential for compiling
-        and running FindBugs.  At the moment, this is just bcel.jar
-        and dom4j-full.jar.
-      -->
-      <copy file="lib/bcel.jar" todir="${jar.dir}" />
-      <copy file="lib/dom4j-full.jar" todir="${jar.dir}" />
 
       <uptodate property="findbugs.jarBuild.notRequired" 
                 targetfile="${jar.dir}/${findbugs.jar.name}" >
