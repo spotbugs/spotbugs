@@ -338,6 +338,25 @@ public class UserPreferences {
 		String minPriority = ProjectFilterSettings.getIntPriorityAsString(threshold);
 		filterSettings.setMinPriority(minPriority);
 	}
+	
+	//@Override
+	public boolean equals(Object obj) {
+		if (obj == null || obj.getClass() != this.getClass())
+			return false;
+		
+		UserPreferences other = (UserPreferences) obj;
+		
+		return recentProjectsList.equals(other.recentProjectsList)
+			&& detectorEnablementMap.equals(other.detectorEnablementMap)
+			&& filterSettings.equals(other.filterSettings);
+	}
+	
+	//@Override
+	public int hashCode() {
+		return recentProjectsList.hashCode()
+			+ detectorEnablementMap.hashCode()
+			+ filterSettings.hashCode();
+	}
 }
 
 // vim:ts=4
