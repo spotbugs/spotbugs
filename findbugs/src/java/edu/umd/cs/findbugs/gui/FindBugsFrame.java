@@ -33,6 +33,8 @@ import java.awt.Shape;
 import java.awt.Rectangle;
 import java.awt.Point;
 import java.awt.Color;
+import java.awt.HeadlessException;
+import java.awt.BorderLayout;
 import java.io.File;
 import java.io.StringWriter;
 import java.io.IOException;
@@ -1799,6 +1801,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
      *   cancels or an error occurs
      */
     private boolean saveProject(Project project, String dialogTitle, boolean chooseFilename) {
+        JRadioButton relativePaths = null;
         try {
             if (project == null)
                 return true;
@@ -1809,9 +1812,10 @@ public class FindBugsFrame extends javax.swing.JFrame {
             if (!fileName.startsWith("<") && !chooseFilename) {
                 file = new File(fileName);
             } else {
-		JFileChooser chooser = createFileChooser();
+                relativePaths = new JRadioButton("Use Relative Paths");
+                relativePaths.setSelected(project.getOption(Project.RELATIVE_PATHS));
+  		JFileChooser chooser = createFileChooser(relativePaths);
                 chooser.setFileFilter(projectFileFilter);
-                
 		int result = chooseFile(chooser, dialogTitle);
                 if (result == JFileChooser.CANCEL_OPTION)
                     return false;
@@ -1821,7 +1825,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
             }
             
             FileOutputStream out = new FileOutputStream(file);
-            project.write(out);
+            project.write(out, (relativePaths != null) && relativePaths.isSelected(),file.getParent());
             logger.logMessage(ConsoleLogger.INFO, "Project saved");
             project.setFileName(file.getPath());
             
@@ -1913,7 +1917,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
         currentAnalysisRun = analysisRun;
 
         //set the summary output
-	setSummary( analysisRun.getSummary() ); 
+	setSummary( analysisRun.getSummary() );
         setView("BugTree");
     }
 
@@ -1932,8 +1936,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
 		bySummary.getViewport().setViewPosition(new Point(0, 0));
 	    }
 	});
-    } 
-    
+    }
+
     /**
      * Populate an analysis run's tree model for given sort order.
      */
@@ -2365,6 +2369,24 @@ public class FindBugsFrame extends javax.swing.JFrame {
      */
     private JFileChooser createFileChooser() {
 	return new JFileChooser(currentDirectory);
+    }
+
+    /**
+     * Create a file chooser dialog.
+     * Ensures that the dialog will start in the current directory.
+     * @param extraComp The extra component to append to the dialog
+     * @return the file chooser
+     */
+    private JFileChooser createFileChooser(final JComponent extraComp) {
+        return new JFileChooser(currentDirectory) {
+            protected JDialog createDialog(Component parent) throws HeadlessException {
+                JDialog dialog = super.createDialog(parent);
+                dialog.getContentPane().add( extraComp, BorderLayout.SOUTH );
+                dialog.setLocation(300, 200);
+                dialog.setResizable(false);
+                return dialog;
+            }
+        };
     }
 
     /**

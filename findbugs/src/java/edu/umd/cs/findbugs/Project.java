@@ -42,6 +42,7 @@ import org.dom4j.Element;
  *	  source code
  * <li> some number of auxiliary classpath entries, for locating classes
  *	  referenced by the program which the user doesn't want to analyze
+ * <li> some number of boolean options
  * </ul>
  *
  * @author David Hovemeyer
@@ -49,6 +50,9 @@ import org.dom4j.Element;
 public class Project {
 	/** Project filename. */
 	private String fileName;
+	
+	/**Options*/
+	private Map<String,Boolean> optionsMap;
 	
 	/** The list of jar files. */
 	private LinkedList<String> jarList;
@@ -73,6 +77,8 @@ public class Project {
 	/** Creates a new instance of Project */
 	public Project(String fileName) {
 		this.fileName = fileName;
+		optionsMap = new HashMap<String,Boolean>();
+		optionsMap.put(RELATIVE_PATHS, false);
 		jarList = new LinkedList<String>();
 		srcDirList = new LinkedList<String>();
 		auxClasspathEntryList = new LinkedList<String>();
@@ -107,6 +113,9 @@ public class Project {
 	 *   file was already present
 	 */
 	public boolean addJar(String fileName) {
+		if (!getOption(RELATIVE_PATHS))
+			fileName = convertToAbsolute(fileName);
+			
 		if (!jarList.contains(fileName)) {
 			jarList.add(fileName);
 			isModified = true;
@@ -122,6 +131,8 @@ public class Project {
 	 *   source directory was already present
 	 */
 	public boolean addSourceDir(String dirName) {
+		if (!getOption(RELATIVE_PATHS))
+			dirName = convertToAbsolute(dirName);
 		if (!srcDirList.contains(dirName)) {
 			srcDirList.add(dirName);
 			isModified = true;
@@ -129,6 +140,28 @@ public class Project {
 		} else
 			return false;
 	}
+	
+	/**
+	 * Retrieve the Options value
+	 * @param option the name of option to get
+	 */
+	 public boolean getOption(String option) {
+		Boolean value = optionsMap.get(option);
+	 	return value != null && value.booleanValue();
+	 }
+	
+	/**
+	 * Parse one line in the [Options] section
+	 * @param option one line in the [Options] section
+	 */
+	 private void parseOption(String option) throws IOException {
+	 	int equalPos = option.indexOf("=");
+	 	if (equalPos < 0)
+	 		throw new IOException("Bad format: invalid option format");
+	 	String name = option.substring(0, equalPos);
+	 	String value = option.substring(equalPos+1);
+	 	optionsMap.put(name,Boolean.valueOf(value));
+	 }
 	
 	/**
 	 * Get the number of jar files in the project.
@@ -209,6 +242,8 @@ public class Project {
 	 *   if the given entry is already in the list
 	 */
 	public boolean addAuxClasspathEntry(String auxClasspathEntry) {
+		if (!getOption(RELATIVE_PATHS))
+			auxClasspathEntry = convertToAbsolute(auxClasspathEntry);
 		if (!auxClasspathEntryList.contains(auxClasspathEntry)) {
 			auxClasspathEntryList.add(auxClasspathEntry);
 			isModified = true;
@@ -370,36 +405,53 @@ public class Project {
 		}
 	}
 
+	private static final String OPTIONS_KEY = "[Options]";
 	private static final String JAR_FILES_KEY = "[Jar files]";
 	private static final String SRC_DIRS_KEY = "[Source dirs]";
 	private static final String AUX_CLASSPATH_ENTRIES_KEY = "[Aux classpath entries]";
 	
+	//Option keys
+	public static final String RELATIVE_PATHS = "relative_paths";
+	
 	/**
 	 * Save the project to an output stream.
 	 * @param out the OutputStream to write the project to
+	 * @param useRelativePaths true if the project should be written
+	 *   using only relative paths
+	 * @param relativeBase if useRelativePaths is true,
+	 *   this file is taken as the base directory in terms of which
+	 *   all files should be made relative
 	 * @throws IOException if an error occurs while writing
 	 */
-	public void write(OutputStream out) throws IOException {
+	public void write(OutputStream out, boolean useRelativePaths, String relativeBase) throws IOException {
 		PrintWriter writer = new PrintWriter(new OutputStreamWriter(out));
 		try {
-		writer.println(JAR_FILES_KEY);
-		for (Iterator<String> i = jarList.iterator(); i.hasNext(); ) {
-			String jarFile = i.next();
-			writer.println(jarFile);
-		}
-		writer.println(SRC_DIRS_KEY);
-		for (Iterator<String> i = srcDirList.iterator(); i.hasNext(); ) {
-			String srcDir = i.next();
-			writer.println(srcDir);
-		}
-		writer.println(AUX_CLASSPATH_ENTRIES_KEY);
-		for (Iterator<String> i = auxClasspathEntryList.iterator(); i.hasNext(); ) {
-			String auxClasspathEntry = i.next();
-			writer.println(auxClasspathEntry);
-		}
+			writer.println(OPTIONS_KEY);
+			writer.println(RELATIVE_PATHS + "=" + useRelativePaths);
+			writer.println(JAR_FILES_KEY);
+			for (Iterator<String> i = jarList.iterator(); i.hasNext(); ) {
+				String jarFile = i.next();
+				if (useRelativePaths)
+					jarFile = convertToRelative(jarFile,relativeBase);
+				writer.println(jarFile);
+			}
+			writer.println(SRC_DIRS_KEY);
+			for (Iterator<String> i = srcDirList.iterator(); i.hasNext(); ) {
+				String srcDir = i.next();
+				if (useRelativePaths)
+					srcDir = convertToRelative(srcDir,relativeBase);
+				writer.println(srcDir);
+			}
+			writer.println(AUX_CLASSPATH_ENTRIES_KEY);
+			for (Iterator<String> i = auxClasspathEntryList.iterator(); i.hasNext(); ) {
+				String auxClasspathEntry = i.next();
+				if (useRelativePaths)
+					auxClasspathEntry = convertToRelative(auxClasspathEntry,relativeBase);
+				writer.println(auxClasspathEntry);
+			}
 		} finally {
 			writer.close();
-			}
+		}
 		
 		// Project successfully saved
 		isModified = false;
@@ -414,28 +466,40 @@ public class Project {
 		if (isModified)
 			throw new IllegalStateException("Reading into a modified Project!");
 		
-		BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-		String line;
-		line = getLine(reader);
-		if (line == null || !line.equals(JAR_FILES_KEY)) throw new IOException("Bad format: missing jar files key");
-		while ((line = getLine(reader)) != null && !line.equals(SRC_DIRS_KEY)) {
-			addJar(line);
-		}
-		if (line == null) throw new IOException("Bad format: missing source dirs key");
-		while ((line = getLine(reader)) != null && !line.equals(AUX_CLASSPATH_ENTRIES_KEY)) {
-			addSourceDir(line);
-		}
-		if (line != null) {
-			// The list of aux classpath entries is optional
-			while ((line = getLine(reader)) != null) {
-				addAuxClasspathEntry(line);
-			}
-		}
-
-		// Clear the modification flag set by the various "add" methods.
-		isModified = false;
+		BufferedReader reader = null;
 		
-		reader.close();
+		try
+		{
+			reader = new BufferedReader(new InputStreamReader(in));
+			String line;
+			line = getLine(reader);
+			//The Options section is optional to support older files
+			if (line != null && line.equals(OPTIONS_KEY)) {
+				while ((line = getLine(reader)) != null && !line.equals(JAR_FILES_KEY))
+					parseOption(line);
+			}
+			if (line == null || !line.equals(JAR_FILES_KEY)) throw new IOException("Bad format: missing jar files key");
+			while ((line = getLine(reader)) != null && !line.equals(SRC_DIRS_KEY)) {
+				addJar(line);
+			}
+			if (line == null) throw new IOException("Bad format: missing source dirs key");
+			while ((line = getLine(reader)) != null && !line.equals(AUX_CLASSPATH_ENTRIES_KEY)) {
+				addSourceDir(line);
+			}
+			if (line != null) {
+				// The list of aux classpath entries is optional
+				while ((line = getLine(reader)) != null) {
+					addAuxClasspathEntry(line);
+				}
+			}
+	
+			// Clear the modification flag set by the various "add" methods.
+			isModified = false;
+		}
+		finally {
+			if (reader != null)
+				reader.close();
+		}
 	}
 
 	/**
@@ -464,6 +528,73 @@ public class Project {
 		if (dot >= 0)
 			name = name.substring(0, dot);
 		return name;
+	}
+
+	/**
+	 * Hack for whether files are case insensitive.
+	 * For now, we'll assume that Windows is the only
+	 * case insensitive OS.  (OpenVMS users,
+	 * feel free to submit a patch :-)
+	 */
+	private static final boolean FILE_IGNORE_CASE =
+		System.getProperty("os.name", "unknown").startsWith("Windows");
+
+	/**
+	 * Converts a full path to a relative path if possible
+	 * @param srcFile path to convert
+	 * @return the converted filename
+	 */
+	private String convertToRelative(String srcFile, String base) {
+		// At present relative paths are only calculated if the fileName is
+		// below the project file. This need not be the case, and we could use ..
+		// syntax to move up the tree. (To Be Added)
+	  
+		String slash = System.getProperty("file.separator");
+
+		if (FILE_IGNORE_CASE) {
+			srcFile = srcFile.toLowerCase();
+			base = base.toLowerCase();
+		}
+
+		if (!base.endsWith(slash))
+			base = base + slash;
+
+		// Base directory pathname must be a prefix of the file
+		if (base.length() > srcFile.length())
+			return srcFile;
+		String root = srcFile.substring(0, base.length());
+		if (!root.equals(base))
+			return srcFile;
+
+		// Strip off the base directory, make relative
+		if (root.length() == srcFile.length())
+			return ".";
+		return "." + System.getProperty("file.separator") + srcFile.substring(base.length());
+	}
+	
+	/**
+	 * Converts a relative path to an absolute path if possible
+	 * @param fileName path to convert
+	 * @return the converted filename
+	 */
+	private String convertToAbsolute(String srcFile) {
+/*
+		// At present relative paths are only calculated if the fileName is
+		// below the project file. This need not be the case, and we could use ..
+		// syntax to move up the tree. (To Be Added)
+
+		if (srcFile.startsWith(".")) {
+			if (srcFile.length() == 1)
+				return fileName;
+			String slash = System.getProperty("file.separator");
+			String base = new File(fileName).getParent();
+			if (base.endsWith(slash))
+				base = base.substring(0,base.length()-1);
+			return base + srcFile.substring(1);
+		}
+		return srcFile;
+*/
+		return new File(srcFile).getAbsolutePath();
 	}
 
 	/**
