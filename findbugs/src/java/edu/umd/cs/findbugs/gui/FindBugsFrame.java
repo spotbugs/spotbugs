@@ -129,6 +129,28 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	    return this;
 	}
     }
+ 
+    /**
+     * Tree node type for BugInstances.
+     * We use this instead of plain DefaultMutableTreeNodes in order to
+     * get more control over the exact text that is shown in the tree.
+     */
+    private class BugTreeNode extends DefaultMutableTreeNode {
+        public BugTreeNode(BugInstance bugInstance) {
+            super(bugInstance);
+        }
+        
+        public String toString() {
+            BugInstance bugInstance = (BugInstance) getUserObject();
+            String result;
+            if (fullDescriptionsItem.isSelected()) {
+                result = bugInstance.getMessage();
+            } else {
+                result = bugInstance.toString();
+            }
+            return result;
+        }
+    }
     
     /**
      * Compare BugInstance class names.
@@ -335,6 +357,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
         viewMenu = new javax.swing.JMenu();
         viewConsoleItem = new javax.swing.JCheckBoxMenuItem();
         viewBugDetailsItem = new javax.swing.JCheckBoxMenuItem();
+        fullDescriptionsItem = new javax.swing.JCheckBoxMenuItem();
         helpMenu = new javax.swing.JMenu();
         aboutItem = new javax.swing.JMenuItem();
 
@@ -764,6 +787,17 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
         viewMenu.add(viewBugDetailsItem);
 
+        fullDescriptionsItem.setFont(new java.awt.Font("Dialog", 0, 12));
+        fullDescriptionsItem.setMnemonic('F');
+        fullDescriptionsItem.setText("Full Descriptions");
+        fullDescriptionsItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                fullDescriptionsItemActionPerformed(evt);
+            }
+        });
+
+        viewMenu.add(fullDescriptionsItem);
+
         theMenuBar.add(viewMenu);
 
         helpMenu.setMnemonic('H');
@@ -786,6 +820,23 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
         pack();
     }//GEN-END:initComponents
+
+    private void fullDescriptionsItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fullDescriptionsItemActionPerformed
+        // Redisplay the visible bug instance nodes
+        DefaultTreeModel bugTreeModel = (DefaultTreeModel) bugTree.getModel();
+        
+        int firstVisibleRow = bugTree.getRowForLocation(0, 0);
+        int numVisibleRows = bugTree.getVisibleRowCount();
+        for (int i = firstVisibleRow; i < (firstVisibleRow + numVisibleRows); ++i) {
+            //System.out.println("Getting path for row " + i);
+            TreePath path = bugTree.getPathForRow(i);
+            if (path == null)
+                continue;
+            DefaultMutableTreeNode node = (DefaultMutableTreeNode) path.getLastPathComponent();
+            if (node instanceof BugTreeNode)
+                bugTreeModel.valueForPathChanged(path, node.getUserObject());
+        }
+    }//GEN-LAST:event_fullDescriptionsItemActionPerformed
 
     private void viewBugDetailsItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_viewBugDetailsItemActionPerformed
         String view = getView();
@@ -1343,7 +1394,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	    
 	    private void insertIntoGroup(BugInstance member) {
 		currentGroup.incrementMemberCount();
-		DefaultMutableTreeNode bugNode = new DefaultMutableTreeNode(member);
+		DefaultMutableTreeNode bugNode = new BugTreeNode(member);
 		bugTreeModel.insertNodeInto(bugNode, currentGroupNode, currentGroupNode.getChildCount());
 
 		// Insert annotations
@@ -1670,6 +1721,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
     private javax.swing.JPanel reportPanel;
     private javax.swing.JPanel editProjectPanel;
     private javax.swing.JMenu helpMenu;
+    private javax.swing.JCheckBoxMenuItem fullDescriptionsItem;
     private javax.swing.JTextField srcDirTextField;
     private javax.swing.JButton browseSrcDirButton;
     private javax.swing.JLabel sourceDirListLabel;
