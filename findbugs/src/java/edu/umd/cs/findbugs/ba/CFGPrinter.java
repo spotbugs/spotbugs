@@ -26,7 +26,6 @@ import org.apache.bcel.classfile.ClassParser;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.CodeExceptionGen;
-import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.MethodGen;
 
@@ -43,6 +42,7 @@ public class CFGPrinter {
 
 	public CFGPrinter(CFG cfg) {
 		this.cfg = cfg;
+		this.isForwards = true;
 	}
 
 	public void setIsForwards(boolean isForwards) {
