@@ -38,33 +38,6 @@ import org.apache.bcel.generic.*;
  */
 public abstract class DataflowTestDriver<Fact, AnalysisType extends AbstractDataflowAnalysis<Fact>> {
 
-	private static class DataflowCFGPrinter<Fact, AnalysisType extends AbstractDataflowAnalysis<Fact>> extends CFGPrinter {
-		private Dataflow<Fact, AnalysisType> dataflow;
-		private AnalysisType analysis;
-
-		public DataflowCFGPrinter(CFG cfg, Dataflow<Fact, AnalysisType> dataflow, AnalysisType analysis) {
-			super(cfg);
-			this.dataflow = dataflow;
-			this.analysis = analysis;
-		}
-
-		public String blockStartAnnotate(BasicBlock bb) {
-			return " " + analysis.factToString(dataflow.getStartFact(bb));
-		}
-
-		public String blockAnnotate(BasicBlock bb) {
-			return " " + analysis.factToString(dataflow.getResultFact(bb));
-		}
-
-		public String instructionAnnotate(InstructionHandle handle, BasicBlock bb) {
-			try {
-				Fact result = analysis.getFactAtLocation(new Location(handle, bb));
-				return " " + analysis.factToString(result);
-			} catch (DataflowAnalysisException e) {
-				throw new IllegalStateException("Caught exception: " + e.toString());
-			}
-		}
-	}
 
 	/**
 	 * Execute the analysis on a single class.
