@@ -4,7 +4,7 @@
 # standard FindBugs bug pattern detectors as part of converting
 # FindBugs to a plugin architecture.
 
-# See doc/AddingDetectors for info on the format of "findbugs.xml".
+# See doc/AddingDetectors.txt for info on the format of "findbugs.xml".
 
 package Pattern;
 
