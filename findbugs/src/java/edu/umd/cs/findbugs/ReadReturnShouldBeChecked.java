@@ -13,8 +13,6 @@ public class ReadReturnShouldBeChecked extends BytecodeScanningDetector implemen
    int sawAvailable = 0;
    private BugReporter bugReporter;
 
-   private static final int UNKNOWN_PRIORITY = -1;
-
    public ReadReturnShouldBeChecked(BugReporter bugReporter) {
 	this.bugReporter = bugReporter;
    }
