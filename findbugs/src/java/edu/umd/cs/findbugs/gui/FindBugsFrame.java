@@ -2534,7 +2534,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
         private void ableEditMenu() {
             String view = getView();
-            if (view.equals("EditProjectPanel")) {
+            if ((view != null) && view.equals("EditProjectPanel")) {
                 if (selectedComponent != null) {
                     boolean hasSelection = false;
                     if (selectedComponent instanceof JList) {
