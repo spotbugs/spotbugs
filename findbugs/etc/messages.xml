@@ -1395,6 +1395,20 @@ for using a JSR-166 lock is:
     </Details>
   </BugPattern>
 
+  <BugPattern type="RC_REF_COMPARISON">
+    <ShortDescription>Suspicious reference comparison</ShortDescription>
+    <LongDescription>Suspicious comparison of {3} references in {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p> This method compares two reference values using the == or != operator,
+where the correct way to compare instances of this type is generally
+with the equals() method.  For example, it is generally not correct to
+compare strings using the == or != operators because String objects are
+generally not guaranteed to have unique values.
+]]>
+    </Details>
+  </BugPattern>
+
   <!--
   **********************************************************************
    BugCodes
@@ -1445,4 +1459,5 @@ for using a JSR-166 lock is:
   <BugCode abbrev="PZLA" >Prefer zero length arrays to null to indicate no results</BugCode>
   <BugCode abbrev="UCF">Useless control flow</BugCode>
   <BugCode abbrev="UL">Lock not released on all paths</BugCode>
+  <BugCode abbrev="RC">Suspicious reference comparison</BugCode>
 </MessageCollection>
