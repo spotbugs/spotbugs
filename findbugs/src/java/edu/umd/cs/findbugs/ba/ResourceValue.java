@@ -35,6 +35,10 @@ public class ResourceValue {
 		else
 			return instance;
 	}
+
+	public String toString() {
+		return (this == instance) ? "I" : "-";
+	}
 }
 
 // vim:ts=4
