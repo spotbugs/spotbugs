@@ -36,10 +36,10 @@ public class Version {
 	public static final String RELEASE = MAJOR + "." + MINOR + "." + PATCHLEVEL;
 
 	/** Release date. */
-	public static final String DATE = "February 20, 2004";
+	public static final String DATE = "February 18, 2004";
 
 	/** Version of Eclipse UI plugin. */
-	public static final String ECLIPSE_UI_VERSION = "0.0.3";
+	public static final String ECLIPSE_UI_VERSION = "0.0.4";
 
 	/** FindBugs website. */
 	public static final String WEBSITE = "http://findbugs.sourceforge.net";
