@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs.ba.type;
 
+import edu.umd.cs.findbugs.graph.AbstractVertex;
+
 /**
  * Lightweight data structure representing an
  * <i>object type</i>: a node in the
@@ -28,12 +30,15 @@ package edu.umd.cs.findbugs.ba.type;
  *
  * <p> Instances of XType participate in the flyweight pattern,
  * meaning there is at most one instance per type.
- * Instances should be created and accessed using the XTypeFactory
+ * Instances should be created and accessed using the XTypeRepository
  * class.
  *
  * @author David Hovemeyer
  */
-public abstract class XObjectType extends XReferenceType {
+public abstract class XObjectType
+	extends AbstractVertex<InheritanceGraphEdge, XObjectType>
+	implements XReferenceType {
+
 	private String typeSignature;
 	private XType superclass;
 	private XType[] implementedInterfaceList;
@@ -42,16 +47,16 @@ public abstract class XObjectType extends XReferenceType {
 		this.typeSignature = typeSignature;
 	}
 
-	void setSuperclass(XType superclass) {
-		this.superclass = superclass;
-	}
-
-	void setImplementedInterfaceList(XType[] implementedInterfaceList) {
-		this.implementedInterfaceList = implementedInterfaceList;
-	}
-
 	public String getSignature() {
 		return typeSignature;
+	}
+
+	public boolean isBasicType() {
+		return false;
+	}
+
+	public boolean isReferenceType() {
+		return true;
 	}
 
 	// All object types are valid as array element types.

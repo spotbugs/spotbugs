@@ -19,7 +19,21 @@
 
 package edu.umd.cs.findbugs.ba.type;
 
-public interface XReferenceType extends XType {
+import edu.umd.cs.findbugs.graph.AbstractEdge;
+
+/**
+ * An edge in the graph of direct inheritance (supertype/subtype)
+ * relationships.  XObjectType objects are the vertices
+ * in the inheritance graph.
+ *
+ * @author David Hovemeyer
+ */
+public class InheritanceGraphEdge
+	extends AbstractEdge<InheritanceGraphEdge, XObjectType> {
+
+	InheritanceGraphEdge(XObjectType subtype, XObjectType supertype) {
+		super(subtype, supertype);
+	}
 }
 
 // vim:ts=4

@@ -25,7 +25,7 @@ import edu.umd.cs.findbugs.ba.ExtendedTypes;
  * The type of a null value.
  * @author David Hovemeyer
  */
-public class XNullType extends XReferenceType {
+public class XNullType implements XReferenceType {
 	XNullType() { }
 
 	public String getSignature() {
@@ -34,6 +34,14 @@ public class XNullType extends XReferenceType {
 
 	public int getTypeCode() {
 		return ExtendedTypes.T_NULL;
+	}
+
+	public boolean isBasicType() {
+		return false;
+	}
+
+	public boolean isReferenceType() {
+		return true;
 	}
 
 	// The null type can't be used as an array element type.
