@@ -252,18 +252,25 @@ public class FindInconsistentSync2 implements Detector {
 
 			// NOTE: we ignore access to public, volatile, and final fields
 
-			if (numWriteUnlocked + numWriteLocked == 0)
-			// No writes outside of constructor
+			if (numWriteUnlocked + numWriteLocked == 0) {
+				// No writes outside of constructor
+				if (DEBUG) System.out.println("  No writes outside of constructor");
 				continue;
+			}
 
-			if (numReadUnlocked + numReadLocked == 0)
-			// No reads outside of constructor
+			if (numReadUnlocked + numReadLocked == 0) {
+				// No reads outside of constructor
+				if (DEBUG) System.out.println("  No reads outside of constructor");
 				continue;
+			}
 
-			if (stats.getNumLocalLocks() == 0)
+			if (stats.getNumLocalLocks() == 0) {
+				if (DEBUG) System.out.println("  No local locks");
 				continue;
+			}
 
 			int freq = (100 * locked) / (locked + unlocked);
+			if (DEBUG) System.out.println("  Sync %: " + freq);
 			if (freq < MIN_SYNC_PERCENT) continue;
 
 			// At this point, we report the field as being inconsistently synchronized
