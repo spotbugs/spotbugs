@@ -41,24 +41,20 @@ public abstract class LockCountAnalysis extends ForwardDataflowAnalysis<LockCoun
 	private static final boolean DEBUG = Boolean.getBoolean("dataflow.debug");
 
 	protected final MethodGen methodGen;
-	protected final Dataflow<ValueNumberFrame> vnaDataflow;
-	protected final ValueNumberAnalysis valueNumberAnalysis;
+	protected final ValueNumberDataflow vnaDataflow;
 
 	/**
 	 * Constructor.
 	 * @param methodGen method being analyzed
 	 * @param vnaDataflow the Dataflow object used to execute ValueNumberAnalysis on the method
 	 */
-	public LockCountAnalysis(MethodGen methodGen, Dataflow<ValueNumberFrame> vnaDataflow) {
+	public LockCountAnalysis(MethodGen methodGen, ValueNumberDataflow vnaDataflow) {
 		this.methodGen = methodGen;
 		this.vnaDataflow = vnaDataflow;
-		this.valueNumberAnalysis = (vnaDataflow != null)
-			? (ValueNumberAnalysis) vnaDataflow.getAnalysis()
-			: null;
 	}
 
 	public boolean isThisValue(ValueNumber valNum) {
-		return valueNumberAnalysis.isThisValue(valNum);
+		return vnaDataflow.getAnalysis().isThisValue(valNum);
 	}
 
 	public LockCount createFact() {
@@ -107,8 +103,8 @@ public abstract class LockCountAnalysis extends ForwardDataflowAnalysis<LockCoun
 
 	private ValueNumberFrame getFrame(InstructionHandle handle, BasicBlock basicBlock) {
 		ValueNumberFrame result = null;
-		if (valueNumberAnalysis != null)
-			result = valueNumberAnalysis.getFactAtLocation(new Location(handle, basicBlock));
+		if (vnaDataflow != null)
+			result = vnaDataflow.getFactAtLocation(new Location(handle, basicBlock));
 		return result;
 	}
 

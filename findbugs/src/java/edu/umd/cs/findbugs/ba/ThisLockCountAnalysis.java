@@ -41,7 +41,7 @@ public class ThisLockCountAnalysis extends LockCountAnalysis {
 	 * @param methodGen method to be analyzed
 	 * @param vnaDataflow the Dataflow object used to execute ValueNumberAnalysis on the method
 	 */
-	public ThisLockCountAnalysis(MethodGen methodGen, Dataflow<ValueNumberFrame> vnaDataflow) {
+	public ThisLockCountAnalysis(MethodGen methodGen, ValueNumberDataflow vnaDataflow) {
 		super(methodGen, vnaDataflow);
 	}
 
@@ -82,7 +82,7 @@ public class ThisLockCountAnalysis extends LockCountAnalysis {
 				public AbstractDataflowAnalysis<LockCount> createAnalysis(MethodGen methodGen, CFG cfg) throws DataflowAnalysisException {
 					// Perform the analysis to propagate "this" value references,
 					// since ThisLockCountAnalysis depends on it.
-					Dataflow<ValueNumberFrame> vnaDataflow = new Dataflow<ValueNumberFrame>(cfg, new ValueNumberAnalysis(methodGen));
+					ValueNumberDataflow vnaDataflow = new ValueNumberDataflow(cfg, new ValueNumberAnalysis(methodGen));
 					vnaDataflow.execute();
 
 					// Now we can create ThisLockCountAnalysis.

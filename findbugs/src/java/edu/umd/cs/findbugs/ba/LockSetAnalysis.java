@@ -34,17 +34,15 @@ import org.apache.bcel.generic.*;
  */
 public class LockSetAnalysis extends ForwardDataflowAnalysis<LockSet> {
 	private MethodGen methodGen;
-	private Dataflow<ValueNumber> valueNumberDataflow;
-	private ValueNumberAnalysis valueNumberAnalysis;
+	private ValueNumberDataflow valueNumberDataflow;
 
-	public LockSetAnalysis(MethodGen methodGen, Dataflow<ValueNumber> valueNumberDataflow) {
+	public LockSetAnalysis(MethodGen methodGen, ValueNumberDataflow valueNumberDataflow) {
 		this.methodGen = methodGen;
 		this.valueNumberDataflow = valueNumberDataflow;
-		this.valueNumberAnalysis = (ValueNumberAnalysis) valueNumberDataflow.getAnalysis();
 	}
 
 	public LockSet createFact() {
-		return new LockSet(valueNumberAnalysis.getNumValuesAllocated());
+		return new LockSet(valueNumberDataflow.getAnalysis().getNumValuesAllocated());
 	}
 
 	public void copy(LockSet source, LockSet dest) {
@@ -57,7 +55,7 @@ public class LockSetAnalysis extends ForwardDataflowAnalysis<LockSet> {
 		// Set lock count of "this value" to 1 for synchronized
 		// instance methods.
 		if (methodGen.isSynchronized() && !methodGen.isStatic()) {
-			ValueNumber thisValue = valueNumberAnalysis.getEntryValue(0);
+			ValueNumber thisValue = valueNumberDataflow.getAnalysis().getEntryValue(0);
 			result.setCount(thisValue.getNumber(), 1);
 		}
 	}
@@ -92,7 +90,7 @@ public class LockSetAnalysis extends ForwardDataflowAnalysis<LockSet> {
 		throws DataflowAnalysisException {
 		// See what's on the top of the stack
 		Location location = new Location(handle, basicBlock);
-		ValueNumberFrame frame = valueNumberAnalysis.getFactAtLocation(location);
+		ValueNumberFrame frame = valueNumberDataflow.getFactAtLocation(location);
 		ValueNumber topOfStack = frame.getTopValue();
 		int valNum = topOfStack.getNumber();
 		int lockCount = fact.getCount(valNum);

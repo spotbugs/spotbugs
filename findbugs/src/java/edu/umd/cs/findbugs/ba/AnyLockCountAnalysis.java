@@ -26,7 +26,7 @@ import org.apache.bcel.generic.*;
 
 public class AnyLockCountAnalysis extends LockCountAnalysis {
 
-	public AnyLockCountAnalysis(MethodGen methodGen, Dataflow<ValueNumberFrame> vnaDataflow) {
+	public AnyLockCountAnalysis(MethodGen methodGen, ValueNumberDataflow vnaDataflow) {
 		super(methodGen, vnaDataflow);
 	}
 
