@@ -35,7 +35,7 @@ import edu.umd.cs.findbugs.visitclass.Constants2;
 
 public class TestingGround extends BytecodeScanningDetector implements Constants2, StatelessDetector {
 
-	private static final boolean active = false;
+	private static final boolean active = Boolean.getBoolean("findbugs.tg.active");;
 	private NumberFormat formatter = null;
 
 	public TestingGround(BugReporter bugReporter) {
