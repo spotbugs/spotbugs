@@ -89,7 +89,7 @@ public class LockChecker {
 			if (lockSet == null) {
 				lockSet = new LockSet();
 				lockSet.setDefaultLockCount(0);
-				if (method.isSynchronized()) {
+				if (method.isSynchronized() && !method.isStatic()) {
 					// LockSet contains just the "this" reference
 					ValueNumber instance = vnaDataflow.getAnalysis().getThisValue();
 					lockSet.setLockCount(instance.getNumber(), 1);
