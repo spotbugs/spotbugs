@@ -36,23 +36,8 @@ import edu.umd.cs.daveho.ba.bcp.*;
  * @author Bill Pugh
  */
 public class BCPMethodReturnCheck extends ByteCodePatternDetector {
-	private BugReporter bugReporter;
-
-	/**
-	 * The ByteCodePattern which specifies the kind of code pattern
-	 * we're looking for.  We want to match the invocation of certain methods
-	 * followed by a POP or POP2 instruction.
-	 */
-	private static final ByteCodePattern pattern = new ByteCodePattern()
-		.add(new MatchAny(new PatternElement[] {
-			new Invoke("/^java\\.lang\\.(String|Byte|Boolean|Character|Short|Integer|Long|Float|Double)$", "/.*", "/.*",
-				Invoke.INSTANCE),
-			new Invoke("+java.security.MessageDigest", "digest", "([B)[B", Invoke.INSTANCE),
-			new Invoke("+java.net.InetAddress", "/.*", "/.*", Invoke.INSTANCE),
-			new Invoke("/^java\\.math\\.BigDecimal$", "/.*", "/.*", Invoke.INSTANCE),
-			new Invoke("/^java\\.math\\.BigInteger$", "/.*", "/.*", Invoke.INSTANCE),
-		}).label("call"))
-		.add(new MatchAny(new PatternElement[] {new Opcode(Constants.POP), new Opcode(Constants.POP2)}));
+	private final BugReporter bugReporter;
+	private final ByteCodePattern pattern;
 
 	/**
 	 * Constructor.
@@ -60,6 +45,27 @@ public class BCPMethodReturnCheck extends ByteCodePatternDetector {
 	 */
 	public BCPMethodReturnCheck(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
+
+		// Create a callback for reporting Repository lookup failures.
+		RepositoryLookupFailureCallback lookupFailureCallback = new RepositoryLookupFailureCallback() {
+			public void lookupFailure(ClassNotFoundException ex) {
+				BCPMethodReturnCheck.this.bugReporter.reportMissingClass(ex.getMessage());
+			}
+		};
+
+		// The ByteCodePattern which specifies the kind of code pattern
+		// we're looking for.  We want to match the invocation of certain methods
+		// followed by a POP or POP2 instruction.
+		this.pattern = new ByteCodePattern()
+			.add(new MatchAny(new PatternElement[] {
+				new Invoke("/^java\\.lang\\.(String|Byte|Boolean|Character|Short|Integer|Long|Float|Double)$", "/.*", "/.*",
+					Invoke.INSTANCE, lookupFailureCallback),
+				new Invoke("+java.security.MessageDigest", "digest", "([B)[B", Invoke.INSTANCE, lookupFailureCallback),
+				new Invoke("+java.net.InetAddress", "/.*", "/.*", Invoke.INSTANCE, lookupFailureCallback),
+				new Invoke("/^java\\.math\\.BigDecimal$", "/.*", "/.*", Invoke.INSTANCE, lookupFailureCallback),
+				new Invoke("/^java\\.math\\.BigInteger$", "/.*", "/.*", Invoke.INSTANCE, lookupFailureCallback),
+			}).label("call"))
+			.add(new MatchAny(new PatternElement[] {new Opcode(Constants.POP), new Opcode(Constants.POP2)}));
 	}
 
 	public ByteCodePattern getPattern() { return pattern; }
