@@ -19,7 +19,12 @@
 
 package edu.umd.cs.findbugs.ba.type;
 
+import edu.umd.cs.findbugs.ba.Debug;
+
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
 
 import org.apache.bcel.Constants;
 
@@ -93,6 +98,7 @@ public class XTypeRepository {
 	 */
 	public XTypeRepository() {
 		signatureToTypeMap = new HashMap<String, XType>();
+		inheritanceGraph = new InheritanceGraph();
 		inheritanceGraph = new InheritanceGraph();
 	}
 
@@ -198,7 +204,7 @@ public class XTypeRepository {
 	 * @param subclass the subclass
 	 * @param superclass the superclass
 	 */
-	public void addSuperclassLink(XClassType subclass, XClassType superclass) {
+	public void addSuperclassLink(XClassType subclass, XClassType superclass) throws UnknownTypeException {
 		inheritanceGraph.createEdge(subclass, superclass, InheritanceGraphEdgeTypes.CLASS_EDGE);
 	}
 
@@ -207,15 +213,101 @@ public class XTypeRepository {
 	 * @param implementor the class or interface directly implementing the interface (i.e., the subtype)
 	 * @param iface the implemented interface (i.e., the supertype)
 	 */
-	public void addInterfaceLink(XClassType implementor, XClassType iface) {
+	public void addInterfaceLink(XClassType implementor, XClassType iface) throws UnknownTypeException {
 		inheritanceGraph.createEdge(implementor, iface, InheritanceGraphEdgeTypes.INTERFACE_EDGE);
 	}
 
-//	/**
-//	 * Determine if one object type is a subtype of another.
-//	 */
-//	public boolean isSubtype(XObjectType subtype, XObjectType supertype) throws ClassNotFoundException {
-//	}
+	/**
+	 * Determine if one object type is a subtype of another.
+	 * @param subtype the potential subtype
+	 * @param supertype the potential supertype
+	 * @return true if subtype is really a subtype of supertype, false otherwise
+	 */
+	public boolean isSubtype(XObjectType subtype, XObjectType supertype) throws ClassNotFoundException {
+		if (Debug.VERIFY_INTEGRITY) {
+			if (!inheritanceGraph.containsVertex(subtype))
+				throw new IllegalStateException("Inheritance graph does not contain node " + subtype.getSignature());
+			if (!inheritanceGraph.containsVertex(supertype))
+				throw new IllegalStateException("Inheritance graph does not contain node " + supertype.getSignature());
+		}
+
+		// TODO: precompute subtypes and store in a table of bit vectors
+		// based on type ids.  That would be really fast.
+		// For now, we do a slow traversal of the inheritance graph.
+
+		if (!supertype.isInterface()) {
+			// Check superclasses: this works for both class instance
+			// and array types.
+			while (true) {
+				if (subtype.equals(supertype))
+					return true;
+
+				if (!subtype.supertypesKnown())
+					throw new ClassNotFoundException("Unknown superclass for class " + subtype.getSignature());
+
+				XObjectType directSuperclass = getSuperclass(subtype);
+				if (directSuperclass == null) {
+					// No superclass: we must have reached java.lang.Object,
+					// which terminates the search.
+					if (Debug.CHECK_ASSERTIONS && !subtype.getSignature().equals("Ljava/lang/Object;"))
+						throw new IllegalStateException("Class " + subtype.getSignature() +
+							" has no supertypes, but is not java.lang.Object");
+					return false;
+				}
+
+				subtype = directSuperclass;
+			}
+		} else {
+			// Breadth first search through superinterfaces
+			// and interfaces implemented by superclasses
+
+			// FIXME: This is a lot of work: should definitely come up with a way to
+			// cache the result
+
+			LinkedList<XObjectType> work = new LinkedList<XObjectType>();
+			work.add(subtype);
+
+			HashSet<XObjectType> visited = new HashSet<XObjectType>();
+
+			LinkedList<XObjectType> missingClassList = new LinkedList<XObjectType>();
+
+			while (!work.isEmpty()) {
+				XObjectType type = work.removeFirst();
+				if (visited.add(type))
+					continue;
+
+				if (type.equals(supertype))
+					return true;
+
+				if (type.supertypesKnown()) {
+					for (Iterator<XObjectType> i = inheritanceGraph.successorIterator(type); i.hasNext(); )
+						work.add(i.next());
+				} else {
+					missingClassList.add(type);
+				}
+			}
+
+			// Search terminated without finding the superinterface.
+			// If no part of the class hierarchy was unknown,
+			// then we have a definitive answer.  Otherwise,
+			// throw an exception.
+			if (missingClassList.isEmpty())
+				return false;
+			else
+				throw new ClassNotFoundException("Class not found: " + missingClassList);
+		}
+	}
+
+	public XObjectType getSuperclass(XObjectType type) throws ClassNotFoundException {
+		if (!type.supertypesKnown())
+			throw new UnknownSupertypesException(type);
+		for (Iterator<InheritanceGraphEdge> i = inheritanceGraph.outgoingEdgeIterator(type); i.hasNext(); ) {
+			InheritanceGraphEdge edge = i.next();
+			if (edge.getType() == InheritanceGraphEdgeTypes.CLASS_EDGE)
+				return edge.getTarget();
+		}
+		throw new UnknownSupertypesException(type);
+	}
 
 	/* ----------------------------------------------------------------------
 	 * Implementation

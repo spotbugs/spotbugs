@@ -40,15 +40,23 @@ public abstract class XObjectType
 	implements XReferenceType {
 
 	private String typeSignature;
-	private XType superclass;
-	private XType[] implementedInterfaceList;
+	private boolean supertypesKnown;
 
 	protected XObjectType(String typeSignature) {
 		this.typeSignature = typeSignature;
+		this.supertypesKnown = false;
 	}
 
 	public String getSignature() {
 		return typeSignature;
+	}
+
+	public void setSupertypesKnown() {
+		supertypesKnown = true;
+	}
+
+	public boolean supertypesKnown() {
+		return supertypesKnown;
 	}
 
 	public boolean isBasicType() {
@@ -68,6 +76,11 @@ public abstract class XObjectType
 	 * Is this type an interface type (as opposed to a class or array type)?
 	 */
 	public abstract boolean isInterface() throws UnknownTypeException;
+
+	/**
+	 * Is this type an array type?
+	 */
+	public abstract boolean isArray();
 }
 
 // vim:ts=4

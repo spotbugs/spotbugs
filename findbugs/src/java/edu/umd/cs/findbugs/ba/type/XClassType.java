@@ -40,12 +40,16 @@ public class XClassType extends XObjectType {
 			throw new InvalidSignatureException("Bad type signature for class/interface: " + typeSignature);
 	}
 
-	public void setIsInterface() {
+	public void setIsInterface() throws UnknownTypeException {
+		if ((flags & CLASS_OR_INTERFACE_KNOWN) != 0 && !isInterface())
+			throw new UnknownTypeException("Class " + getClassName() + " registered as both class and interface");
 		flags |= CLASS_OR_INTERFACE_KNOWN;
 		flags |= IS_INTERFACE;
 	}
 
-	public void setIsClass() {
+	public void setIsClass() throws UnknownTypeException {
+		if ((flags & CLASS_OR_INTERFACE_KNOWN) != 0 && isInterface())
+			throw new UnknownTypeException("Class " + getClassName() + " registered as both class and interface");
 		flags |= CLASS_OR_INTERFACE_KNOWN;
 		flags &= ~(IS_INTERFACE);
 	}
@@ -89,6 +93,10 @@ public class XClassType extends XObjectType {
 				" is a class or interface");
 
 		return (flags & IS_INTERFACE) != 0;
+	}
+
+	public boolean isArray() {
+		return false;
 	}
 }
 

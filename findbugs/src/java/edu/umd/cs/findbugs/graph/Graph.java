@@ -17,7 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-// $Revision: 1.9 $
+// $Revision: 1.10 $
 
 package edu.umd.cs.findbugs.graph;
 
@@ -56,6 +56,13 @@ public interface Graph
 	 * @param v the vertex to add
 	 */
 	public void addVertex(VertexType v);
+
+	/**
+	 * Determine if the graph contains the given vertex.
+	 * @param v the vertex
+	 * @return true if the vertex is part of the graph, false if not
+	 */
+	public boolean containsVertex(VertexType v);
 
 	/**
 	 * Add a new edge to the graph.

@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs.ba.type;
 
+import edu.umd.cs.findbugs.ba.Debug;
+
 import edu.umd.cs.findbugs.graph.AbstractGraph;
 
 public class InheritanceGraph

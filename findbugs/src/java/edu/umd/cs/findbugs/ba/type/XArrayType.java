@@ -83,6 +83,10 @@ public class XArrayType extends XObjectType {
 		return false;
 	}
 
+	public boolean isArray() {
+		return true;
+	}
+
 	public boolean equals(Object o) {
 		if (o == null)
 			return false;

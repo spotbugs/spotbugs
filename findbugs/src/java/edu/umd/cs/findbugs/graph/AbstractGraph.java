@@ -133,6 +133,16 @@ public abstract class AbstractGraph
 		v.setLabel(maxVertexLabel++);
 	}
 
+	public boolean containsVertex(VertexType v) {
+		Iterator<VertexType> i = vertexList.iterator();
+		while (i.hasNext()) {
+			VertexType existingVertex = i.next();
+			if (v == existingVertex)
+				return true;
+		}
+		return false;
+	}
+
 	public EdgeType createEdge(VertexType source, VertexType target) {
 		EdgeType edge = allocateEdge(source, target);
 		edgeList.add(edge);
