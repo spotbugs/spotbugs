@@ -527,19 +527,36 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 		ObjectType rhsType = (ObjectType) rhsType_;
 
 		int priority = LOW_PRIORITY + 1;
+		String bugType = "EC_UNRELATED_TYPES";
 
-		// If neither object is a subtype of the other,
-		// make it medium priority
+		// See if the types are related by inheritance.
 		try {
-			if (!Hierarchy.isSubtype(lhsType, rhsType) && !Hierarchy.isSubtype(rhsType, lhsType))
-				priority = HIGH_PRIORITY;
+			if (!Hierarchy.isSubtype(lhsType, rhsType) && !Hierarchy.isSubtype(rhsType, lhsType)) {
+				// We have unrelated types.
+				// If both types are interfaces, then it is conceivable that
+				// there are class types that implement both interfaces,
+				// so the comparision might be meaningful.  Classify such
+				// cases as medium.  Other cases are high priority.
+				if (lhsType.referencesInterfaceExact() && rhsType.referencesInterfaceExact()) {
+					// TODO: This would be a good place to assume a closed
+					// universe and look at subclasses.
+					priority = NORMAL_PRIORITY;
+					bugType = "EC_UNRELATED_INTERFACES";
+				} else {
+					// TODO: it is possible that an unknown subclass of
+					// the class type implements the interface.
+					// Again, a subclass search could answer this
+					// question if we had a closed universe.
+					priority = HIGH_PRIORITY;
+				}
+			}
 		} catch (ClassNotFoundException e) {
 			bugReporter.reportMissingClass(e);
 			return;
 		}
 
 		if (priority <= LOW_PRIORITY) {
-			bugReporter.reportBug(new BugInstance("EC_UNRELATED_TYPES", priority)
+			bugReporter.reportBug(new BugInstance(bugType, priority)
 				.addClassAndMethod(methodGen, sourceFile)
 				.addSourceLine(methodGen, sourceFile, location.getHandle())
 				.addClass(lhsType.getClassName()).describe("CLASS_REFTYPE")

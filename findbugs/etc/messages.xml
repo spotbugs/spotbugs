@@ -1871,14 +1871,30 @@ not be compared by reference are java.lang.Integer, java.lang.Float, etc.
   </BugPattern>
 
   <BugPattern type="EC_UNRELATED_TYPES">
-    <ShortDescription>Call to equals() comparing objects of different types</ShortDescription>
-    <LongDescription>Call to equals() comparing objects of different types in {1}</LongDescription>
+    <ShortDescription>Call to equals() comparing different types</ShortDescription>
+    <LongDescription>Call to equals() comparing different types in {1}</LongDescription>
     <Details>
 <![CDATA[
 <p> This method calls equals(Object) on two references of different
 types.  According to the contract of equals(), objects of different
 classes should always compare as unequal; therefore, it is likely
 that the result of this comparision will always be false at runtime.
+]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="EC_UNRELATED_INTERFACES">
+    <ShortDescription>Call to equals() comparing different interface types</ShortDescription>
+    <LongDescription>Call to equals() comparing different interface types in {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p> This method calls equals(Object) on two references of unrelated
+interface types (neither is a subtype of the other).  According to
+the contract of equals(), objects of different classes should always
+compare as unequal. Note that it is possible that
+the program contains classes that implement both interfaces,
+so the comparison may be valid.  However, it is worth
+inspecting closely.
 ]]>
     </Details>
   </BugPattern>

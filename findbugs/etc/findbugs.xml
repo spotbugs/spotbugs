@@ -85,7 +85,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.FindUnreleasedLock" speed="moderate" disabled="true"
     reports="UL_UNRELEASED_LOCK,UL_UNRELEASED_LOCK_EXCEPTION_PATH" />
   <Detector class="edu.umd.cs.findbugs.detect.FindRefComparison" speed="moderate"
-    reports="ES_COMPARING_STRINGS_WITH_EQ,RC_REF_COMPARISON,EC_UNRELATED_TYPES" />
+    reports="ES_COMPARING_STRINGS_WITH_EQ,RC_REF_COMPARISON,EC_UNRELATED_TYPES,EC_NULL_ARG,EC_UNRELATED_INTERFACES" />
   <Detector class="edu.umd.cs.findbugs.detect.FindMismatchedWaitOrNotify" speed="moderate"
     reports="MWN_MISMATCHED_WAIT,MWN_MISMATCHED_NOTIFY" />
   <Detector class="edu.umd.cs.findbugs.detect.FindInconsistentSync2" speed="slow"
@@ -212,6 +212,7 @@
   <BugPattern abbrev="RC" type="RC_REF_COMPARISON" category="CORRECTNESS" />
   <BugPattern abbrev="EC" type="EC_UNRELATED_TYPES" category="CORRECTNESS"/>
   <BugPattern abbrev="EC" type="EC_NULL_ARG" category="CORRECTNESS"/>
+  <BugPattern abbrev="EC" type="EC_UNRELATED_INTERFACES" category="CORRECTNESS"/>
   <BugPattern abbrev="MWN" type="MWN_MISMATCHED_WAIT" category="CORRECTNESS" />
   <BugPattern abbrev="MWN" type="MWN_MISMATCHED_NOTIFY" category="CORRECTNESS" />
   <BugPattern abbrev="SA" type="SA_LOCAL_SELF_ASSIGNMENT" category="CORRECTNESS" />
