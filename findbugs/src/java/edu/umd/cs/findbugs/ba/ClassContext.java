@@ -321,6 +321,7 @@ public class ClassContext implements AnalysisFeatures {
 		}
 	};
 
+/*
 	private AnalysisFactory<LockCountDataflow> anyLockCountDataflowFactory =
 	new AnalysisFactory<LockCountDataflow>("lock count analysis (any lock)") {
 		protected LockCountDataflow analyze(Method method) throws DataflowAnalysisException, CFGBuilderException {
@@ -335,6 +336,7 @@ public class ClassContext implements AnalysisFeatures {
 			return dataflow;
 		}
 	};
+*/
 
 	private AnalysisFactory<LockDataflow> lockDataflowFactory =
 	new AnalysisFactory<LockDataflow>("lock set analysis") {
@@ -536,15 +538,15 @@ public class ClassContext implements AnalysisFeatures {
 		return bytecodeSetFactory.getAnalysis(method);
 	}
 
-	/**
-	 * Get dataflow for AnyLockCountAnalysis for given method.
-	 * @param method the method
-	 * @return the Dataflow
-	 */
-	public LockCountDataflow getAnyLockCountDataflow(Method method)
-		throws CFGBuilderException, DataflowAnalysisException {
-		return anyLockCountDataflowFactory.getAnalysis(method);
-	}
+//	/**
+//	 * Get dataflow for AnyLockCountAnalysis for given method.
+//	 * @param method the method
+//	 * @return the Dataflow
+//	 */
+//	public LockCountDataflow getAnyLockCountDataflow(Method method)
+//		throws CFGBuilderException, DataflowAnalysisException {
+//		return anyLockCountDataflowFactory.getAnalysis(method);
+//	}
 
 	/**
 	 * Get dataflow for LockAnalysis for given method.
