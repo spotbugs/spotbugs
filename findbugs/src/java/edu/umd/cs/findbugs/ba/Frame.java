@@ -23,7 +23,9 @@ import java.util.*;
 
 import org.apache.bcel.Constants;
 import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.INVOKESTATIC;
 import org.apache.bcel.generic.Instruction;
+import org.apache.bcel.generic.InvokeInstruction;
 
 /**
  * Generic class for representing a Java stack frame as a dataflow value.
@@ -234,6 +236,39 @@ public abstract class Frame <ValueType> implements Debug {
 		if (numConsumed == Constants.UNPREDICTABLE)
 			throw new DataflowAnalysisException("Unpredictable stack consumption in " + ins);
 		return getStackValue(numConsumed - 1);
+	}
+	
+	/**
+	 * Get the number of arguments passed to given method invocation.
+	 * 
+	 * @param ins the method invocation instruction
+	 * @param cpg the ConstantPoolGen for the class containing the method
+	 * @return number of arguments; note that this excludes the
+	 *         object instance for instance methods
+	 * @throws DataflowAnalysisException
+	 */
+	public int getNumArguments(InvokeInstruction ins, ConstantPoolGen cpg) throws DataflowAnalysisException {
+		int numConsumed = ins.consumeStack(cpg);
+		if (numConsumed == Constants.UNPREDICTABLE)
+			throw new DataflowAnalysisException("Unpredictable stack consumption in " + ins);
+		return (ins instanceof INVOKESTATIC) ? numConsumed : numConsumed - 1;
+	}
+	
+	/**
+	 * Get the <i>i</i>th argument passed to given method invocation.
+	 * 
+	 * @param ins the method invocation instruction
+	 * @param cpg the ConstantPoolGen for the class containing the method
+	 * @param i   index of the argument; 0 for the first argument, etc.
+	 * @return the <i>i</i>th argument
+	 * @throws DataflowAnalysisException
+	 */
+	public ValueType getArgument(InvokeInstruction ins, ConstantPoolGen cpg, int i)
+			throws DataflowAnalysisException {
+		int numArguments = getNumArguments(ins, cpg);
+		if (i >= numArguments)
+			throw new IllegalArgumentException();
+		return getStackValue((numArguments - 1) - i);
 	}
 
 	/**
