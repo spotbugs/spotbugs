@@ -103,6 +103,11 @@ public class TypeRepository {
 
 	private static final String JAVA_LANG_OBJECT_SIGNATURE = "Ljava/lang/Object;";
 
+	// We only keep one representation of special top, bottom, and null types.
+	private static final TopType topInstance = new TopType();
+	private static final BottomType bottomInstance = new BottomType();
+	private static final NullType nullInstance = new NullType();
+
 	/* ----------------------------------------------------------------------
 	 * Fields
 	 * ---------------------------------------------------------------------- */
@@ -284,6 +289,30 @@ public class TypeRepository {
 			return createArrayType(signature);
 		else
 			return basicTypeFromSignature(signature);
+	}
+
+	/**
+	 * Get the instance of the special TOP type.
+	 * @return the TOP instance
+	 */
+	public TopType getTopType() {
+		return topInstance;
+	}
+
+	/**
+	 * Get the instance of the special BOTTOM type.
+	 * @return the BOTTOM instance
+	 */
+	public BottomType getBottomType() {
+		return bottomInstance;
+	}
+
+	/**
+	 * Get the instance of the special NULL type.
+	 * @return the NULL type
+	 */
+	public NullType getNullType() {
+		return nullInstance;
 	}
 
 	/**
