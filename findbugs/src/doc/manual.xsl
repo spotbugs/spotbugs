@@ -20,4 +20,10 @@
 <!-- Name the HTML files based on the id of the document elements. -->
 <xsl:variable name="use.id.as.filename">1</xsl:variable>
 
+<!-- Use graphics in admonitions -->
+<xsl:variable name="admon.graphics">1</xsl:variable>
+
+<!-- Admonition graphics are in the same place as the generated HTML. -->
+<xsl:variable name="admon.graphics.path"></xsl:variable>
+
 </xsl:stylesheet>
