@@ -71,6 +71,8 @@ import org.apache.bcel.generic.NEW;
 public class LazyInit extends ByteCodePatternDetector {
 	private BugReporter bugReporter;
 
+	private static final boolean DEBUG = Boolean.getBoolean("lazyinit.debug");
+
 	/** The pattern to look for. */
 	private static ByteCodePattern pattern = new ByteCodePattern();
 	static {
@@ -131,6 +133,13 @@ public class LazyInit extends ByteCodePatternDetector {
 			// Definitely ignore synthetic class$ fields
 			if (xfield.getFieldName().startsWith("class$"))
 				return;
+
+			// Ignore non-reference fields
+			if (!xfield.getFieldSignature().startsWith("L") && !xfield.getFieldSignature().startsWith("["))
+				return;
+
+			// TODO:
+			// - Strings are safe to pass by data race in 1.5
 
 			// Get locations matching the beginning of the object creation,
 			// and the final field store.
