@@ -10,6 +10,8 @@ import edu.umd.cs.pugh.visitclass.DismantleBytecode;
  * @author David Hovemeyer
  */
 public class MethodAnnotation extends PackageMemberAnnotation {
+	private static final boolean UGLY_METHODS = Boolean.getBoolean("ma.ugly");
+
 	private String methodName;
 	private String methodSig;
 	private String fullMethod;
@@ -51,7 +53,7 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 
 	protected String formatPackageMember(String key) {
 		if (key.equals(""))
-			return getFullMethod();
+			return UGLY_METHODS ? getUglyMethod() : getFullMethod();
 		else if (key.equals("shortMethod"))
 			return className + "." + methodName + "()";
 		else
@@ -101,6 +103,10 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 		}
 
 		return fullMethod;
+	}
+
+	private String getUglyMethod() {
+		return className + "." + methodName + " : " + methodSig.replace('/', '.');
 	}
 
 	public int hashCode() {
