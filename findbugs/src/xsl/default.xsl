@@ -45,7 +45,6 @@
 	<tr class="tableheader">
 		<th align="left">Code</th>
 		<th align="left">Warning</th>
-		<th align="left">Location</th>
 	</tr>
 </xsl:variable>
 
@@ -54,10 +53,6 @@
 	<head>
 		<title>FindBugs Report</title>
 		<style type="text/css">
-		table.warningtable {
-			border-collapse: collapse;
-		}
-
 		.tablerow0 {
 			background: #EEEEEE;
 		}
@@ -66,8 +61,17 @@
 			background: white;
 		}
 
+		.detailrow0 {
+			background: #EEEEEE;
+		}
+
+		.detailrow1 {
+			background: white;
+		}
+
 		.tableheader {
 			background: #b9b9fe;
+			font-size: larger;
 		}
 
 		.tablerow0:hover, .tablerow1:hover {
@@ -156,38 +160,26 @@
 </xsl:template>
 
 <xsl:template match="BugInstance">
-	<xsl:variable name="warningClass">tablerow<xsl:value-of select="position() mod 2"/></xsl:variable>
 	<xsl:variable name="warningId"><xsl:value-of select="generate-id()"/></xsl:variable>
 
-	<tr class="{$warningClass}" onclick="toggleRow('{$warningId}');">
+	<tr class="tablerow{position() mod 2}" onclick="toggleRow('{$warningId}');">
 
 	<td>
 	<xsl:value-of select="@abbrev"/>
 	</td>
 
 	<td>
-	<a href="#{@type}"><xsl:value-of select="ShortMessage"/></a>
-	</td>
-
-	<td>
-	<xsl:value-of select="Class/@classname"/>
-	<xsl:choose>
-		<xsl:when test="SourceLine">
-			<br/><xsl:apply-templates select="SourceLine[1]"/>
-		</xsl:when>
-		<xsl:when test="Method/SourceLine">
-			<br/><xsl:apply-templates select="Method/SourceLine"/>
-		</xsl:when>
-	</xsl:choose>
+	<xsl:value-of select="substring-after(LongMessage,':')"/>
 	</td>
 
 	</tr>
 
 	<!-- Add bug annotation elements: Class, Method, Field, SourceLine, Field -->
-	<tr class="{$warningClass}" id="{$warningId}" style="display: none;">
+	<tr class="detailrow{position() mod 2}" id="{$warningId}" style="display: none;">
 		<td/>
 		<td colspan="2">
 			<table>
+				<tr><td><a href="#{@type}">Bug type <xsl:value-of select="@type"/> (click for details)</a></td></tr>
 				<xsl:for-each select="./*/Message">
 					<tr>
 						<td><xsl:value-of select="text()"/></td>
@@ -196,21 +188,6 @@
 			</table>
 		</td>
 	</tr>
-</xsl:template>
-
-<xsl:template match="SourceLine">
-	<!-- Only match the first SourceLine of all matched by the template -->
-	<xsl:if test="position() = 1">
-		at <xsl:value-of select="@sourcefile"/>
-		<xsl:choose>
-			<xsl:when test="@start &gt; 0">
-				<xsl:if test="@end != @start">, lines <xsl:value-of select="@start"/>-<xsl:value-of select="@end"/>
-				</xsl:if>
-				<xsl:if test="@start = @end">, line <xsl:value-of select="@start"/>
-				</xsl:if>
-			</xsl:when>
-		</xsl:choose>
-	</xsl:if>
 </xsl:template>
 
 <xsl:template match="BugPattern">
