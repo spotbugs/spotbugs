@@ -117,7 +117,7 @@ public class ValueNumberFrameModelingVisitor
 			try {
 				XField xfield = Lookup.findXField(obj, getCPG());
 				if (xfield != null) {
-					storeInstanceField((InstanceField) xfield, obj);
+					storeInstanceField((InstanceField) xfield, obj, false);
 					return;
 				}
 			} catch (ClassNotFoundException e) {
@@ -165,7 +165,7 @@ public class ValueNumberFrameModelingVisitor
 			try {
 				XField xfield = Lookup.findXField(obj, getCPG());
 				if (xfield != null) {
-					storeStaticField((StaticField) xfield, obj);
+					storeStaticField((StaticField) xfield, obj, false);
 					return;
 				}
 			} catch (ClassNotFoundException e) {
@@ -199,42 +199,24 @@ public class ValueNumberFrameModelingVisitor
 			} else if (methodName.startsWith("access$")) {
 				String className = obj.getClassName(cpg);
 				try {
-					Map<String, XField> accessMap = InnerClassAccessMap.instance().getAccessMapForClass(className);
-					XField accessField = accessMap.get(methodName);
-					if (accessField != null) {
-						// Field access from inner class to outer
-						Type[] argumentTypeList = Type.getArgumentTypes(methodSig);
-						Type returnType = Type.getReturnType(methodSig);
+					Map<String, InnerClassAccess> accessMap = InnerClassAccessMap.instance().getAccessMapForClass(className);
+					InnerClassAccess access = accessMap.get(methodName);
+					if (access != null && access.getMethodSignature().equals(methodSig)) {
+						// Inner class field access method found.
 
-						String classSig = "L" + className.replace('.', '/') + ";";
-		
-						if (returnType.equals(Type.VOID)) {
-							// Store
-							if (argumentTypeList.length == 1 && accessField.isStatic()) {
-								// Static store
-								storeStaticField((StaticField) accessField, obj);
-								return;
-							} else if (argumentTypeList.length == 2
-									&& classSig.equals(argumentTypeList[0].getSignature())
-									&& !accessField.isStatic()) {
-								// Instance store
-								storeInstanceField((InstanceField) accessField, obj);
-								return;
-							}
+						if (access.isLoad()) {
+							if (access.isStatic())
+								loadStaticField((StaticField) access.getField(), obj); // Static load
+							else
+								loadInstanceField((InstanceField) access.getField(), obj); // Instance load
 						} else {
-							// Load
-							if (argumentTypeList.length == 0 && accessField.isStatic()) {
-								// Static load
-								loadStaticField((StaticField) accessField, obj);
-								return;
-							} else if (argumentTypeList.length == 1
-									&& classSig.equals(argumentTypeList[0].getSignature())
-									&& !accessField.isStatic()) {
-								// Instance load
-								loadInstanceField((InstanceField) accessField, obj);
-								return;
-							}
+							if (access.isStatic())
+								storeStaticField((StaticField) access.getField(), obj, true); // Static store
+							else
+								storeInstanceField((InstanceField) access.getField(), obj, true); // Instance store
 						}
+
+						return;
 					}
 				} catch (ClassNotFoundException e) {
 					lookupFailureCallback.reportMissingClass(e);
@@ -390,36 +372,46 @@ public class ValueNumberFrameModelingVisitor
 	 * Store an instance field.
 	 * @param instanceField the field
 	 * @param obj the instruction which stores the field
+	 * @param pushStoredValue push the stored value onto the stack
+	 *   (because we are modeling an inner-class field access method)
 	 */
-	private void storeInstanceField(InstanceField instanceField, Instruction obj) {
+	private void storeInstanceField(InstanceField instanceField, Instruction obj, boolean pushStoredValue) {
 		ValueNumberFrame frame = getFrame();
 
 		int numWordsConsumed = getNumWordsConsumed(obj);
 		ValueNumber[] inputValueList = popInputValues(numWordsConsumed);
 		ValueNumber reference = inputValueList[0];
-		ValueNumber[] loadedValue = new ValueNumber[inputValueList.length - 1];
-		System.arraycopy(inputValueList, 1, loadedValue, 0, inputValueList.length - 1);
+		ValueNumber[] storedValue = new ValueNumber[inputValueList.length - 1];
+		System.arraycopy(inputValueList, 1, storedValue, 0, inputValueList.length - 1);
+
+		if (pushStoredValue)
+			pushOutputValues(storedValue);
 
 		// Kill all previous loads of the same field,
 		// in case there is aliasing we don't know about
 		frame.killLoadsOfField(instanceField);
 
 		// Forward substitution
-		frame.addAvailableLoad(new AvailableLoad(reference, instanceField), loadedValue);
+		frame.addAvailableLoad(new AvailableLoad(reference, instanceField), storedValue);
 	}
 
 	/**
 	 * Store a static field.
 	 * @param staticField the static field
 	 * @param obj the instruction which stores the field
+	 * @param pushStoredValue push the stored value onto the stack
+	 *   (because we are modeling an inner-class field access method)
 	 */
-	private void storeStaticField(StaticField staticField, Instruction obj) {
+	private void storeStaticField(StaticField staticField, Instruction obj, boolean pushStoredValue) {
 		ValueNumberFrame frame = getFrame();
 
 		AvailableLoad availableLoad = new AvailableLoad(staticField);
 
 		int numWordsConsumed = getNumWordsConsumed(obj);
 		ValueNumber[] inputValueList = popInputValues(numWordsConsumed);
+
+		if (pushStoredValue)
+			pushOutputValues(inputValueList);
 
 		// Kill loads of this field
 		frame.killLoadsOfField(staticField);
