@@ -193,7 +193,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
         leftFiller = new javax.swing.JLabel();
         rightFiller = new javax.swing.JLabel();
         jScrollPane5 = new javax.swing.JScrollPane();
-        consoleMessageField = new javax.swing.JTextArea();
+        consoleMessageArea = new javax.swing.JTextArea();
         jMenuBar1 = new javax.swing.JMenuBar();
         fileMenu = new javax.swing.JMenu();
         newProjectItem = new javax.swing.JMenuItem();
@@ -213,7 +213,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
         });
 
         jSplitPane2.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
-        jSplitPane1.setResizeWeight(0.4);
+        jSplitPane2.setResizeWeight(1.0);
+        jScrollPane1.setPreferredSize(new java.awt.Dimension(200, 0));
         navigatorTree.setModel(createNavigatorTreeModel());
         jScrollPane1.setViewportView(navigatorTree);
 
@@ -508,7 +509,9 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
         jSplitPane2.setTopComponent(jSplitPane1);
 
-        jScrollPane5.setViewportView(consoleMessageField);
+        jScrollPane5.setPreferredSize(new java.awt.Dimension(0, 100));
+        consoleMessageArea.setPreferredSize(new java.awt.Dimension(0, 0));
+        jScrollPane5.setViewportView(consoleMessageArea);
 
         jSplitPane2.setBottomComponent(jScrollPane5);
 
@@ -947,7 +950,6 @@ public class FindBugsFrame extends javax.swing.JFrame {
     private javax.swing.JLabel sortOrderLabel;
     private javax.swing.JList jarFileList;
     private javax.swing.JLabel jarFileLabel;
-    private javax.swing.JTextArea consoleMessageField;
     private javax.swing.JButton addSourceDirButton;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JButton findBugsButton;
@@ -971,6 +973,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JMenuItem exitItem;
     private javax.swing.JPanel emptyPanel;
+    private javax.swing.JTextArea consoleMessageArea;
     private javax.swing.JSeparator jSeparator3;
     private javax.swing.JTree bugTree;
     private javax.swing.JMenuBar jMenuBar1;
