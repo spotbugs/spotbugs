@@ -40,7 +40,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.TestingGround" 
             speed="fast"
             reports="TESTING"
-            disabled="false"
+            disabled="true"
             hidden="true" />
             
   <Detector class="edu.umd.cs.findbugs.detect.DontCatchIllegalMonitorStateException" 
@@ -290,8 +290,7 @@
             
   <Detector class="edu.umd.cs.findbugs.detect.InstantiateStaticClass"
   			speed="fast"
-  			reports="ISC_INSTANTIATE_STATIC_CLASS"
-  			disabled="true" />
+  			reports="ISC_INSTANTIATE_STATIC_CLASS" />
 
   <Detector class="edu.umd.cs.findbugs.detect.RuntimeExceptionCapture"
             reports="REC_CATCH_EXCEPTION"
@@ -483,8 +482,7 @@
     experimental="true"/>
   <BugPattern abbrev="UOE" type="UOE_USE_OBJECT_EQUALS" category="STYLE"
     experimental="true"/>  
-  <BugPattern abbrev="UOE" type="UOE_BAD_ARRAY_COMPARE" category="CORRECTNESS"
-    experimental="true"/>
+  <BugPattern abbrev="UOE" type="UOE_BAD_ARRAY_COMPARE" category="CORRECTNESS"/>
   <BugPattern abbrev="STI" type="STI_INTERRUPTED_ON_CURRENTTHREAD" category="CORRECTNESS"
     experimental="true"/>
   <BugPattern abbrev="STI" type="STI_INTERRUPTED_ON_UNKNOWNTHREAD" category="CORRECTNESS"
@@ -493,10 +491,8 @@
   <BugPattern abbrev="IP" type="IP_PARAMETER_IS_DEAD_BUT_OVERWRITTEN" category="CORRECTNESS"/>
   <BugPattern abbrev="MF" type="MF_METHOD_MASKS_FIELD" category="CORRECTNESS"/>
   <BugPattern abbrev="MF" type="MF_CLASS_MASKS_FIELD" category="CORRECTNESS"/>
-  <BugPattern abbrev="WMI" type="WMI_WRONG_MAP_ITERATOR" category="PERFORMANCE"
-              experimental="true"/>
-  <BugPattern abbrev="ISC" type="ISC_INSTANTIATE_STATIC_CLASS" category="CORRECTNESS"
-    experimental="true"/>
+  <BugPattern abbrev="WMI" type="WMI_WRONG_MAP_ITERATOR" category="PERFORMANCE"/>
+  <BugPattern abbrev="ISC" type="ISC_INSTANTIATE_STATIC_CLASS" category="CORRECTNESS"/>
   <BugPattern abbrev="REC" type="REC_CATCH_EXCEPTION" category="STYLE" experimental="true" />
   <BugPattern abbrev="FE" type="FE_FLOATING_POINT_EQUALITY" category="CORRECTNESS" experimental="true" />
   <BugPattern abbrev="UM" type="UM_UNNECESSARY_MATH" category="STYLE" experimental="true"/>
