@@ -128,7 +128,9 @@ public class PluginLoader extends URLClassLoader {
 		// Note that if there is no "defaultenabled" attribute,
 		// then we assume that the plugin IS enabled by default.
 		String defaultEnabled = pluginDescriptor.valueOf("/FindbugsPlugin/@defaultenabled");
-		boolean pluginEnabled = defaultEnabled.equals("") ? true : Boolean.valueOf(defaultEnabled);
+		boolean pluginEnabled = defaultEnabled.equals("")
+				? true
+				: Boolean.valueOf(defaultEnabled).booleanValue();
 
 		// Load the message collections
 		try {
