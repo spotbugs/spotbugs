@@ -10,11 +10,16 @@ import java.awt.CardLayout;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.util.*;
 import javax.swing.*;
 import javax.swing.tree.*;
 import javax.swing.event.*;
 import javax.swing.filechooser.*;
+import edu.umd.cs.daveho.ba.SourceFinder;
 import edu.umd.cs.findbugs.*;
 
 /**
@@ -662,7 +667,15 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
     private void bugTreeMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_bugTreeMousePressed
 	if (evt.getClickCount() == 2) {
-	    System.out.println("Double click in bug tree!");
+	    TreePath selection = bugTree.getSelectionPath();
+	    DefaultMutableTreeNode selNode = (DefaultMutableTreeNode) selection.getLastPathComponent();
+	    Object obj = selNode.getUserObject();
+	    if (obj instanceof SourceLineAnnotation) {
+		SourceLineAnnotation srcLine = (SourceLineAnnotation) obj;
+		Project project = getCurrentProject();
+		AnalysisRun analysisRun = getCurrentAnalysisRun();
+		viewSource(project, analysisRun, srcLine);
+	    }
 	}
     }//GEN-LAST:event_bugTreeMousePressed
 
@@ -917,14 +930,27 @@ public class FindBugsFrame extends javax.swing.JFrame {
      *   (which should only be possible if the root node is selected)
      */
     private Project getCurrentProject() {
+	return (Project) getNavigatorSelectionOf(Project.class);
+    }
+    
+    /**
+     * Get the currently selected analysis run.
+     */
+    private AnalysisRun getCurrentAnalysisRun() {
+	return (AnalysisRun) getNavigatorSelectionOf(AnalysisRun.class);
+    }
+    
+    private Object getNavigatorSelectionOf(Class c) {
 	TreePath selPath = navigatorTree.getSelectionPath();
-	// Work backwards from end until we get to a project.
+	
+	// Work backwards from end until we get to the kind of
+	// object we're looking for.
 	Object[] nodeList = selPath.getPath();
 	for (int i = nodeList.length - 1; i >= 0; --i) {
 	    DefaultMutableTreeNode node = (DefaultMutableTreeNode) nodeList[i];
 	    Object nodeInfo = node.getUserObject();
-	    if (nodeInfo instanceof Project)
-		return (Project) nodeInfo;
+	    if (nodeInfo.getClass() == c)
+		return nodeInfo;
 	}
 	return null;
     }
@@ -1136,6 +1162,40 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	}
     }
     
+    private void viewSource(Project project, AnalysisRun analysisRun, SourceLineAnnotation srcLine) {
+	sourceFinder.setSourceBaseList(project.getSourceDirList());
+	String sourceFile = analysisRun.getSourceFile(srcLine.getClassName());
+	if (sourceFile == null) {
+	    System.out.println("No source file for class " + srcLine.getClassName());
+	    return;
+	}
+	
+	sourceTextArea.setText("");
+	bugTreeSourceViewSplitter.resetToPreferredSizes();
+
+	// Try to open the source file and display its contents
+	// in the source text area.
+	try {
+	    InputStream in = sourceFinder.openSource(srcLine.getPackageName(), sourceFile);
+	    BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+	    
+	    String line;
+	    while ((line = reader.readLine()) != null) {
+		sourceTextArea.append(line + "\n");
+	    }
+	    
+	    reader.close();
+	} catch (IOException e) {
+	    logger.logMessage(ConsoleLogger.ERROR, e.getMessage());
+	    return;
+	}
+	
+	// TODO: highlight the selected source line(s)
+    }
+    
+    /**
+     * Write a message to the console window.
+     */
     public void writeToConsole(String message) {
 	consoleMessageArea.append(message);
 	consoleMessageArea.append("\n");
@@ -1212,4 +1272,5 @@ public class FindBugsFrame extends javax.swing.JFrame {
     private DefaultMutableTreeNode rootNode;
     private int projectCount;
     private AnalysisRun currentAnalysisRun; // be lazy in switching tree models in BugTree
+    private SourceFinder sourceFinder = new SourceFinder();
 }
