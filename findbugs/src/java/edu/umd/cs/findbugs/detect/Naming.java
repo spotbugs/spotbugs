@@ -31,9 +31,11 @@ import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
+import org.apache.bcel.classfile.Field;
 
 public class Naming extends PreorderVisitor implements Detector, Constants2 {
 	String baseClassName;
+	boolean classIsPublicOrProtected;
 
 	static class MyMethod {
 		final JavaClass clazz;
@@ -178,12 +180,56 @@ public class Naming extends PreorderVisitor implements Detector, Constants2 {
 		String name = obj.getClassName();
 		String[] parts = name.split("[$+.]");
 		baseClassName = parts[parts.length - 1];
+		classIsPublicOrProtected = obj.isPublic() || obj.isProtected();
+		if (baseClassName.length() == 1) return;
+		if(Character.isLetter(baseClassName.charAt(0))
+		   && !Character.isUpperCase(baseClassName.charAt(0))
+		   && baseClassName.indexOf("_") ==-1 
+			)
+			bugReporter.reportBug(new BugInstance(this, 
+				"NM_CLASS_NAMING_CONVENTION", 
+				classIsPublicOrProtected 
+				? NORMAL_PRIORITY
+				: LOW_PRIORITY
+					)
+			        .addClass(this));
 		super.visit(obj);
 	}
 
+	public void visit(Field obj) {
+		if (getFieldName().length() == 1) return;
+
+		if (!obj.isFinal() 
+			&& Character.isLetter(getFieldName().charAt(0))
+			&& !Character.isLowerCase(getFieldName().charAt(0))
+			&& getFieldName().indexOf("_") == -1
+			&& Character.isLetter(getFieldName().charAt(1))
+			&& Character.isLowerCase(getFieldName().charAt(1)))
+			bugReporter.reportBug(new BugInstance(this, 
+				"NM_FIELD_NAMING_CONVENTION", 
+				classIsPublicOrProtected 
+				 && (obj.isPublic() || obj.isProtected())  
+				? NORMAL_PRIORITY
+				: LOW_PRIORITY)
+			        .addClass(this)
+			        .addVisitedField(this)
+				);
+		}
 	public void visit(Method obj) {
 		if (getMethodName().length() == 1) return;
 
+		if (Character.isLetter(getMethodName().charAt(0))
+			&& !Character.isLowerCase(getMethodName().charAt(0))
+			&& Character.isLetter(getMethodName().charAt(1))
+			&& Character.isLowerCase(getMethodName().charAt(1))
+			&& getMethodName().indexOf("_") == -1 )
+			bugReporter.reportBug(new BugInstance(this, 
+				"NM_METHOD_NAMING_CONVENTION", 
+				classIsPublicOrProtected 
+				 && (obj.isPublic() || obj.isProtected())  
+				? NORMAL_PRIORITY
+				: LOW_PRIORITY)
+			        .addClassAndMethod(this));
 		if (getMethodName().equals(baseClassName)) {
 			bugReporter.reportBug(new BugInstance(this, "NM_CONFUSING_METHOD_NAME",
 			        (getMethodSig().equals("()V") 
