@@ -47,10 +47,10 @@ public class FindFinalizeInvocations extends BytecodeScanningDetector implements
 			bugReporter.reportBug(new BugInstance("FI_PUBLIC_SHOULD_BE_PROTECTED", NORMAL_PRIORITY).addClassAndMethod(this));
 		}
    public void visit(Code obj) {
+		sawSuperFinalize = false;
 		super.visit(obj);
 		if (!methodName.equals("finalize") 
 			|| !methodSig.equals("()V")) return;
-		sawSuperFinalize = false;
 		String overridesFinalizeIn 
 			= Lookup.findSuperImplementor(betterClassName, 
 						"finalize",
