@@ -22,16 +22,32 @@ package edu.umd.cs.daveho.ba;
 /**
  * A class to abstractly represent values in stack slots,
  * indicating whether thoses values can be null, non-null,
- * or either.
+ * null on some incoming path, or unknown.
  *
  * @see IsNullValueFrame
  * @see IsNullValueAnalysis
  * @author David Hovemeyer
  */
 public class IsNullValue {
-	private static final int DEFINITELY_NULL = 2;
-	private static final int DEFINITELY_NULL_ON_SOME_PATH = 1;
-	private static final int NOT_DEFINITELY_NULL = 0;
+	private static final int NULL = 0;
+	private static final int NN   = 1;
+	private static final int NSP  = 2;
+	private static final int DNR  = 3;
+
+	private static final int[][] mergeMatrix = {
+		// NULL  NN    NSP   DNR
+		{  NULL, NSP,  NSP,  NSP  }, // NULL
+		{  -1,   NN,   DNR,  DNR  }, // NN
+		{  -1,   -1,   DNR,  DNR  }, // NSP
+		{  -1,   -1,   -1,   DNR  }, // DNR
+	};
+
+	private static IsNullValue[] instanceList = {
+		new IsNullValue(NULL),
+		new IsNullValue(NN),
+		new IsNullValue(NSP),
+		new IsNullValue(DNR)
+	};
 
 	private int kind;
 
@@ -39,44 +55,44 @@ public class IsNullValue {
 		this.kind = kind;
 	}
 
-	private static final IsNullValue[] instanceList = {
-		new IsNullValue(DEFINITELY_NULL),
-		new IsNullValue(DEFINITELY_NULL_ON_SOME_PATH),
-		new IsNullValue(NOT_DEFINITELY_NULL)
-	};
+	/** Get the instance representing values that are definitely null. */
+	public static IsNullValue nullValue() {
+		return instanceList[NULL];
+	}
 
-	/**
-	 * Return the single instance representing a value that
-	 * is definitely null.
-	 */
-	public static IsNullValue definitelyNull() {
-		return instanceList[DEFINITELY_NULL];
+	/** Get the instance representing values that are definitely not null. */
+	public static IsNullValue notNullValue() {
+		return instanceList[NN];
 	}
 
 	/**
-	 * Return the single instance representing a value that
-	 * is definitely null on some incoming path.
+	 * Get the instance representing values that are definitely null
+	 * on some incoming path.
 	 */
-	public static IsNullValue definitelyNullOnSomePath() {
-		return instanceList[DEFINITELY_NULL_ON_SOME_PATH];
+	public static IsNullValue nullOnSomePathValue() {
+		return instanceList[NSP];
 	}
 
 	/**
-	 * Return the single instance representing a value that
-	 * is not definitely null on any incoming path.
+	 * Get the instance representing values which we aren't sure 
+	 * can be null or not.
 	 */
-	public static IsNullValue notDefinitelyNull() {
-		return instanceList[NOT_DEFINITELY_NULL];
+	public static IsNullValue doNotReportValue() {
+		return instanceList[DNR];
 	}
 
-	/**
-	 * Merge two values.
-	 * @param a a value
-	 * @param b a value
-	 * @return the value which conservatively approximates both values
-	 */
+	/** Merge two values. */
 	public static IsNullValue merge(IsNullValue a, IsNullValue b) {
-		return instanceList[Math.min(a.kind, b.kind)];
+		// Left hand value should be smaller.
+		if (a.kind > b.kind) {
+			IsNullValue tmp = a;
+			a = b;
+			b = tmp;
+		}
+
+		int result = mergeMatrix[a.kind][b.kind];
+		assert result >= 0;
+		return instanceList[result];
 	}
 }
 

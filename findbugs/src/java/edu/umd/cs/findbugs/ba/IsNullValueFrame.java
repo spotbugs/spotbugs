@@ -30,7 +30,7 @@ public class IsNullValueFrame extends Frame<IsNullValue> {
 	}
 
 	public IsNullValue getDefaultValue() {
-		return IsNullValue.notDefinitelyNull();
+		return IsNullValue.doNotReportValue();
 	}
 }
 

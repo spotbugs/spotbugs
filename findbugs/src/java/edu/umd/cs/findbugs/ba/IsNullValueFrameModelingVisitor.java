@@ -28,7 +28,7 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
 	}
 
 	public IsNullValue getDefaultValue() {
-		return IsNullValue.notDefinitelyNull();
+		return IsNullValue.doNotReportValue();
 	}
 
 	// Overrides of specific instruction visitor methods.
@@ -44,10 +44,7 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
 
 	public void visitACONST_NULL(ACONST_NULL obj) {
 		Frame<IsNullValue> frame = getFrame();
-		frame.pushValue(IsNullValue.definitelyNull());
-	}
-
-	public void visitPUTFIELD(PUTFIELD obj) {
+		frame.pushValue(IsNullValue.nullValue());
 	}
 
 }

@@ -40,13 +40,17 @@ public class IsNullValueAnalysis extends ForwardDataflowAnalysis<IsNullValueFram
 	private MethodGen methodGen;
 	private CFG cfg;
 	private ValueNumberDataflow vnaDataflow;
+/*
 	private IdentityHashMap<BasicBlock, Integer> nonExceptionSuccCountMap;
+*/
 
 	public IsNullValueAnalysis(MethodGen methodGen, CFG cfg, ValueNumberDataflow vnaDataflow) {
 		this.methodGen = methodGen;
 		this.cfg = cfg;
 		this.vnaDataflow = vnaDataflow;
+/*
 		this.nonExceptionSuccCountMap = new IdentityHashMap<BasicBlock, Integer>();
+*/
 	}
 
 	public IsNullValueFrame createFact() {
@@ -61,7 +65,7 @@ public class IsNullValueAnalysis extends ForwardDataflowAnalysis<IsNullValueFram
 		result.setValid();
 		int numLocals = methodGen.getMaxLocals();
 		for (int i = 0; i < numLocals; ++i)
-			result.setValue(i, IsNullValue.notDefinitelyNull());
+			result.setValue(i, IsNullValue.doNotReportValue());
 	}
 
 	public void initResultFact(IsNullValueFrame result) {
@@ -80,6 +84,7 @@ public class IsNullValueAnalysis extends ForwardDataflowAnalysis<IsNullValueFram
 		return fact1.sameAs(fact2);
 	}
 
+/*
 	public void transfer(BasicBlock basicBlock, InstructionHandle end, IsNullValueFrame start, IsNullValueFrame result)
 		throws DataflowAnalysisException {
 
@@ -98,7 +103,7 @@ public class IsNullValueAnalysis extends ForwardDataflowAnalysis<IsNullValueFram
 			int numSlots = result.getNumSlots();
 			for (int i = 0; i < numSlots; ++i) {
 				IsNullValue value = result.getValue(i);
-				if (value == IsNullValue.definitelyNullOnSomePath())
+				if (value == IsNullValue.nullOnSomePathValue())
 					result.setValue(i, IsNullValue.notDefinitelyNull());
 			}
 		}
@@ -120,6 +125,7 @@ public class IsNullValueAnalysis extends ForwardDataflowAnalysis<IsNullValueFram
 		}
 		return count.intValue();
 	}
+*/
 
 	public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, IsNullValueFrame fact)
 		throws DataflowAnalysisException {
@@ -195,9 +201,9 @@ public class IsNullValueAnalysis extends ForwardDataflowAnalysis<IsNullValueFram
 				// on the top of the stack.
 				IsNullValue newTOS = null;
 				if (opcode == Constants.IFNULL) {
-					newTOS = (edgeType == IFCMP_EDGE) ? IsNullValue.definitelyNull() : IsNullValue.notDefinitelyNull();
+					newTOS = (edgeType == IFCMP_EDGE) ? IsNullValue.nullValue() : IsNullValue.notNullValue();
 				} else if (opcode == Constants.IFNONNULL) {
-					newTOS = (edgeType == IFCMP_EDGE) ? IsNullValue.notDefinitelyNull() : IsNullValue.definitelyNull();
+					newTOS = (edgeType == IFCMP_EDGE) ? IsNullValue.notNullValue() : IsNullValue.nullValue();
 				}
 
 				if (newTOS != null) {
@@ -253,7 +259,7 @@ public class IsNullValueAnalysis extends ForwardDataflowAnalysis<IsNullValueFram
 				// are not null.
 				for (int i = 0; i < numSlots; ++i) {
 					if (vnaFrame.getValue(i).equals(checkedValue))
-						result.setValue(i, IsNullValue.notDefinitelyNull());
+						result.setValue(i, IsNullValue.notNullValue());
 				}
 			}
 		}
