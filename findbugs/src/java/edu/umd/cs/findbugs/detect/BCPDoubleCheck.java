@@ -106,6 +106,10 @@ public class BCPDoubleCheck extends ByteCodePatternDetector {
 		Binding binding = bindingSet.lookup("h");
 		FieldVariable field = (FieldVariable) binding.getVariable();
 
+		// FIXME: currently, only report instance fields, not static
+		if (field.isStatic())
+			return;
+
 		bugReporter.reportBug(new BugInstance("BCPDC_DOUBLECHECK", NORMAL_PRIORITY)
 			.addClass(methodGen.getClassName())
 			.addMethod(methodGen)
