@@ -345,6 +345,7 @@ public class FindBugs implements Constants2, ExitCodes
 		addOption("-exclude", "filter file", "exclude bugs matching given filter");
 		addOption("-include", "filter file", "include only bugs matching given filter");
 		addOption("-auxclasspath", "classpath", "set aux classpath for analysis");
+		addOption("-sourcepath", "source path", "set source path for analyzed classes");
 		addOption("-project", "project", "analyze given project");
 		addOption("-exitcode", "set exit code of process");
 	}
