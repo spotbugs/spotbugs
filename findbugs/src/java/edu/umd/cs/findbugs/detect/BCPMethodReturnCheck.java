@@ -196,6 +196,20 @@ public class BCPMethodReturnCheck extends ByteCodePatternDetector {
 			        Invoke.INSTANCE,
 			        null));
 		}
+
+
+		String externalCheckReturnValues = System.getProperty("checkReturnValues");
+		if (externalCheckReturnValues != null) {
+			String [] checks = externalCheckReturnValues.split("[|]");
+			for(int i = 0; i < checks.length; i++) {
+				String [] parts = checks[i].split(":");
+				if (parts.length != 3) continue;
+				Invoke in = 
+				  new Invoke(parts[0], parts[1], parts[2], Invoke.INSTANCE, null);
+				list.add(in);
+				}
+			}
+			
 		
 		localPatternElementList.set(list);
 		return list;
@@ -233,14 +247,18 @@ public class BCPMethodReturnCheck extends ByteCodePatternDetector {
 		        || calledMethodName.startsWith("access+"))
 			return;
 
+		if (inv.getSignature(cp).endsWith("V"))
+			return;
 		/*
 		System.out.println("Found " + calledMethodName);
 		System.out.println(inv.getSignature(cp));
 		System.out.println(inv.getClassName(cp));
 		*/
 		String calledMethodClass = inv.getClassName(cp);
+		/*
 		if (calledMethodClass.equals(javaClass.getClassName()))
 			return;
+		*/
 		String sourceFile = javaClass.getSourceFileName();
 		/*
 		System.out.println("CalledMethodClass: " + calledMethodClass);
@@ -255,11 +273,13 @@ public class BCPMethodReturnCheck extends ByteCodePatternDetector {
 			priority = HIGH_PRIORITY;
 		String calledPackage = extractPackageName(calledMethodClass);
 		String callingPackage = extractPackageName(javaClass.getClassName());
+		/*
 		if (calledPackage.length() > 0
 		        && callingPackage.length() > 0
 		        && (calledPackage.startsWith(callingPackage)
 		        || callingPackage.startsWith(calledPackage)))
 			priority++;
+		*/
 		// System.out.println("priority: " + priority);
 				
 		bugReporter.reportBug(new BugInstance(this, "RV_RETURN_VALUE_IGNORED",
