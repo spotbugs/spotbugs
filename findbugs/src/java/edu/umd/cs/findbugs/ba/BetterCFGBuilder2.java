@@ -524,7 +524,7 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 	 * Add exception edges for given instruction.
 	 * @param subroutine the subroutine containing the instruction
 	 * @param pei the instruction which throws an exception
-	 * @parem etb the exception thrower block (ETB) for the instruction
+	 * @param etb the exception thrower block (ETB) for the instruction
 	 */
 	private void handleExceptions(Subroutine subroutine, InstructionHandle pei, BasicBlock etb) {
 		etb.setExceptionThrower(pei);
