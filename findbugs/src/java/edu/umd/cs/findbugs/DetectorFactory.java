@@ -30,6 +30,7 @@ import java.util.*;
  * @see Detector
  */
 public class DetectorFactory {
+	private Plugin plugin;
 	private final Class detectorClass;
 	private boolean enabled;
 	private boolean defEnabled;
@@ -42,6 +43,7 @@ public class DetectorFactory {
 	/**
 	 * Constructor.
 	 *
+	 * @param plugin        the Plugin the Detector is part of
 	 * @param detectorClass the Class object of the Detector
 	 * @param enabled       true if the Detector is enabled by default, false if disabled
 	 * @param speed         a string describing roughly how expensive the analysis performed
@@ -51,8 +53,10 @@ public class DetectorFactory {
 	 * @param requireJRE    string describing JRE version required to run the
 	 *                      the detector: e.g., "1.5"
 	 */
-	public DetectorFactory(Class detectorClass, boolean enabled, String speed, String reports,
+	public DetectorFactory(Plugin plugin,
+                           Class detectorClass, boolean enabled, String speed, String reports,
 	                       String requireJRE) {
+		this.plugin = plugin;
 		this.detectorClass = detectorClass;
 		this.enabled = enabled;
 		this.defEnabled = enabled;
@@ -64,6 +68,15 @@ public class DetectorFactory {
 
 	private static final Class[] constructorArgTypes = new Class[]{BugReporter.class};
 
+	/**
+	 * Get the Plugin that this Detector is part of.
+	 * 
+	 * @return the Plugin this Detector is part of
+	 */
+	public Plugin getPlugin() {
+		return plugin;
+	}
+	
 	/**
 	 * Return whether the factory is enabled.
 	 * In addition to checked in the "enabled" attribute of the factory,

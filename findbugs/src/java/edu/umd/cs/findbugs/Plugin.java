@@ -103,6 +103,13 @@ public class Plugin {
 	public Iterator<BugCode> bugCodeIterator() {
 		return bugCodeList.iterator();
 	}
+	
+	/**
+	 * @return Returns the pluginId.
+	 */
+	public String getPluginId() {
+		return pluginId;
+	}
 }
 
 // vim:ts=4

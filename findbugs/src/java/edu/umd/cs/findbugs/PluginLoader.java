@@ -21,7 +21,12 @@ package edu.umd.cs.findbugs;
 
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
 
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
@@ -34,26 +39,27 @@ import org.dom4j.io.SAXReader;
  * A plugin is a jar file containing two metadata files,
  * "findbugs.xml" and "messages.xml".  Those files specify
  * <ul>
- * <li> the bug pattern detector classes,
+ * <li> the bug pattern Detector classes,
  * <li> the bug patterns detected (including all text for displaying
  * detected instances of those patterns), and
  * <li> the "bug codes" which group together related bug instances
  * </ul>
- * <p/>
- * <p> The PluginLoader creates instances of DetectorFactory, BugPattern, and BugCode,
- * and provides methods for accessing those instances.
+ *
+ * <p> The PluginLoader creates a Plugin object to store
+ * the Detector factories and metadata.</p>
  *
  * @author David Hovemeyer
- * @see DetectorFactory
- * @see BugPattern
- * @see BugCode
+ * @see Plugin
  * @see PluginException
  */
 public class PluginLoader extends URLClassLoader {
 
-	private ArrayList<DetectorFactory> detectorFactoryList;
-	private ArrayList<BugPattern> bugPatternList;
-	private ArrayList<BugCode> bugCodeList;
+	// Keep a count of how many plugins we've seen without a
+	// "pluginid" attribute, so we can assign them all unique ids.
+	private static int nextUnknownId;
+
+	// The loaded Plugin
+	private Plugin plugin;
 
 	/**
 	 * Constructor.
@@ -63,7 +69,6 @@ public class PluginLoader extends URLClassLoader {
 	 */
 	public PluginLoader(URL url) throws PluginException {
 		super(new URL[]{url});
-		init();
 	}
 
 	/**
@@ -71,7 +76,6 @@ public class PluginLoader extends URLClassLoader {
 	 *
 	 * @param url    the URL of the plugin Jar file
 	 * @param parent the parent classloader
-	 * @throws PluginException if the plugin cannot be fully loaded
 	 */
 	public PluginLoader(URL url, ClassLoader parent) throws PluginException {
 		super(new URL[]{url}, parent);
@@ -79,36 +83,27 @@ public class PluginLoader extends URLClassLoader {
 	}
 
 	/**
-	 * Get the DetectorFactory array containing factories for creating all
-	 * of the detectors in the plugin.
+	 * Get the Plugin.
+	 * @throws PluginException if the plugin cannot be fully loaded
 	 */
-	public DetectorFactory[] getDetectorFactoryList() {
-		return detectorFactoryList.toArray(new DetectorFactory[detectorFactoryList.size()]);
+	public Plugin getPlugin() throws PluginException {
+		if (plugin == null)
+			init();
+		return plugin;
 	}
-
-	/**
-	 * Get array of BugPattern objects for bug patterns reported by
-	 * the plugin.
-	 */
-	public BugPattern[] getBugPatternList() {
-		return bugPatternList.toArray(new BugPattern[bugPatternList.size()]);
-	}
-
-	/**
-	 * Get array of BugCode objects for bug codes reported by this plugin.
-	 */
-	public BugCode[] getBugCodeList() {
-		return bugCodeList.toArray(new BugCode[bugCodeList.size()]);
-	}
-
+	
 	private void init() throws PluginException {
 		// Plugin descriptor (a.k.a, "findbugs.xml").  Defines
 		// the bug detectors and bug patterns that the plugin provides.
 		Document pluginDescriptor;
+		
+		// Unique plugin id
+		String pluginId;
 
 		// List of message translation files in decreasing order of precedence
 		ArrayList<Document> messageCollectionList = new ArrayList<Document>();
 
+		// Read the plugin descriptor
 		try {
 			URL descriptorURL = findResource("findbugs.xml");
 			if (descriptorURL == null)
@@ -119,7 +114,16 @@ public class PluginLoader extends URLClassLoader {
 		} catch (DocumentException e) {
 			throw new PluginException("Couldn't parse \"findbugs.xml\"", e);
 		}
+		
+		// Get the unique plugin id (or generate one, if none is present)
+		pluginId = pluginDescriptor.valueOf("/FindbugsPlugin/@pluginid");
+		if (pluginId.equals("")) {
+			synchronized (PluginLoader.class) {
+				pluginId = "plugin" + nextUnknownId++;
+			}
+		}
 
+		// Load the message collections
 		try {
 			Locale locale = Locale.getDefault();
 			String language = locale.getLanguage();
@@ -133,11 +137,14 @@ public class PluginLoader extends URLClassLoader {
 			e.printStackTrace();
 			throw new PluginException("Couldn't parse \"messages.xml\"", e);
 		}
+		
+		// Create the Plugin object (but don't assign to the plugin field yet,
+		// since we're still not sure if everything will load correctly)
+		Plugin plugin = new Plugin(pluginId);
 
 		// Create a DetectorFactory for all Detector nodes
 		HashMap<String, DetectorFactory> detectorFactoryMap = new HashMap<String, DetectorFactory>();
 		try {
-			detectorFactoryList = new ArrayList<DetectorFactory>();
 			List detectorNodeList = pluginDescriptor.selectNodes("/FindbugsPlugin/Detector");
 			for (Iterator i = detectorNodeList.iterator(); i.hasNext();) {
 				Node detectorNode = (Node) i.next();
@@ -150,9 +157,11 @@ public class PluginLoader extends URLClassLoader {
 				//System.out.println("Found detector: class="+className+", disabled="+disabled);
 	
 				Class detectorClass = loadClass(className);
-				DetectorFactory factory = new DetectorFactory(detectorClass, !disabled.equals("true"),
+				DetectorFactory factory = new DetectorFactory(
+						plugin,
+						detectorClass, !disabled.equals("true"),
 				        speed, reports, requireJRE);
-				detectorFactoryList.add(factory);
+				plugin.addDetectorFactory(factory);
 				detectorFactoryMap.put(className, factory);
 
 				// Find Detector node in one of the messages files,
@@ -175,7 +184,6 @@ public class PluginLoader extends URLClassLoader {
 		}
 
 		// Create BugPatterns
-		bugPatternList = new ArrayList<BugPattern>();
 		List bugPatternNodeList = pluginDescriptor.selectNodes("/FindbugsPlugin/BugPattern");
 		for (Iterator i = bugPatternNodeList.iterator(); i.hasNext();) {
 			Node bugPatternNode = (Node) i.next();
@@ -196,12 +204,11 @@ public class PluginLoader extends URLClassLoader {
 			BugPattern bugPattern = new BugPattern(type, abbrev, category,
 			        Boolean.valueOf(experimental).booleanValue(),
 			        shortDesc, longDesc, detailText);
-			bugPatternList.add(bugPattern);
+			plugin.addBugPattern(bugPattern);
 		}
 
 		// Create BugCodes
 		HashSet<String> definedBugCodes = new HashSet<String>();
-		bugCodeList = new ArrayList<BugCode>();
 		for (Iterator<Document> i = messageCollectionList.iterator(); i.hasNext();) {
 			Document messageCollection = i.next();
 
@@ -215,11 +222,16 @@ public class PluginLoader extends URLClassLoader {
 					continue;
 				String description = bugCodeNode.getText();
 				BugCode bugCode = new BugCode(abbrev, description);
-				bugCodeList.add(bugCode);
+				plugin.addBugCode(bugCode);
 				definedBugCodes.add(abbrev);
 			}
 
 		}
+		
+		// Success!
+		// Assign to the plugin field, so getPlugin() can return the
+		// new Plugin object.
+		this.plugin = plugin;
 
 	}
 

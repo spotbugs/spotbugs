@@ -32,6 +32,7 @@ import java.util.*;
  * @see DetectorFactory
  */
 public class DetectorFactoryCollection {
+	private HashMap<String, Plugin> pluginByIdMap = new HashMap<String, Plugin>();
 	private ArrayList<DetectorFactory> factoryList = new ArrayList<DetectorFactory>();
 	private HashMap<String, DetectorFactory> factoriesByName = new HashMap<String, DetectorFactory>();
 	private HashMap<String, DetectorFactory> factoriesByDetectorClassName =
@@ -173,23 +174,30 @@ public class DetectorFactoryCollection {
 				if (FindBugs.DEBUG) System.out.println("Loading plugin: " + file.toString());
 				URL url = file.toURL();
 				PluginLoader pluginLoader = new PluginLoader(url, this.getClass().getClassLoader());
-	
+
+				Plugin plugin = pluginLoader.getPlugin();
+				pluginByIdMap.put(plugin.getPluginId(), plugin);
+				
 				// Register all of the detectors that this plugin contains
-				DetectorFactory[] detectorFactoryList = pluginLoader.getDetectorFactoryList();
-				for (int j = 0; j < detectorFactoryList.length; ++j)
-					registerDetector(detectorFactoryList[j]);
+				for (Iterator<DetectorFactory> j = plugin.detectorFactoryIterator();
+						j.hasNext(); ) {
+					DetectorFactory factory = j.next();
+					registerDetector(factory);
+				}
 
 				I18N i18n = I18N.instance();
-	
+
 				// Register the BugPatterns
-				BugPattern[] bugPatternList = pluginLoader.getBugPatternList();
-				for (int j = 0; j < bugPatternList.length; ++j)
-					i18n.registerBugPattern(bugPatternList[j]);
-	
+				for (Iterator<BugPattern> j = plugin.bugPatternIterator(); j.hasNext();){ 
+					BugPattern bugPattern = j.next();
+					i18n.registerBugPattern(bugPattern);
+				}
+				
 				// Register the BugCodes
-				BugCode[] bugCodeList = pluginLoader.getBugCodeList();
-				for (int j = 0; j < bugCodeList.length; ++j)
-					i18n.registerBugCode(bugCodeList[j]);
+				for (Iterator<BugCode> j = plugin.bugCodeIterator(); j.hasNext(); ) {
+					BugCode bugCode = j.next();
+					i18n.registerBugCode(bugCode);
+				}
 
 				++numLoaded;
 			} catch (Exception e) {
