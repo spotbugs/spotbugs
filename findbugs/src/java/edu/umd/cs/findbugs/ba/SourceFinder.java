@@ -57,7 +57,7 @@ public class SourceFinder {
 	byte[] data = cache.get(fileName);
 	if (data == null) {
 	     // Find this source file, add its data to the cache
-	     //if (DEBUG) System.out.println("Trying "  + fileName + "...");
+	     //System.out.println("Trying "  + fileName + "...");
 
 	    // Query each element of the source path to find the requested source file
 	    Iterator<String> i = sourceBaseList.iterator();	
@@ -65,7 +65,9 @@ public class SourceFinder {
 		String sourceBase = i.next();
 		try {
 		    // Try to read the file from current source base element
-		    InputStream in = new FileInputStream(sourceBase + File.pathSeparator + fileName);
+		    String fullFileName = sourceBase + File.separator + fileName;
+		    //System.out.println("Trying " + fullFileName + "...");
+		    InputStream in = new FileInputStream(fullFileName);
 		    ByteArrayOutputStream out = new ByteArrayOutputStream();
 		    byte[] buf = new byte[1024];
 		    int n;
