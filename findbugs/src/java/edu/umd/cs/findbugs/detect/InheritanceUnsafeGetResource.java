@@ -29,11 +29,10 @@ import org.apache.bcel.classfile.Method;
 public class InheritanceUnsafeGetResource extends BytecodeScanningDetector implements Constants2 {
 
 	private BugReporter bugReporter;
-	private final boolean active = true;
 	private boolean classIsFinal;
-	private boolean methodIsVisibleToOtherPackages;
+//	private boolean methodIsVisibleToOtherPackages;
 	private boolean classIsVisibleToOtherPackages;
-	private boolean methodIsFinal;
+//	private boolean methodIsFinal;
 	private boolean methodIsStatic;
 	int state = 0;
 	int sawGetClass;
@@ -51,9 +50,9 @@ public class InheritanceUnsafeGetResource extends BytecodeScanningDetector imple
 	}
 
 	public void visit(Method obj) {
-		methodIsFinal = obj.isFinal();
+//		methodIsFinal = obj.isFinal();
 		methodIsStatic = obj.isStatic();
-		methodIsVisibleToOtherPackages = obj.isPublic() || obj.isProtected();
+//		methodIsVisibleToOtherPackages = obj.isPublic() || obj.isProtected();
 		state = 0;
 	}
 

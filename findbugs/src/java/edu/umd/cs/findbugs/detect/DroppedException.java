@@ -38,7 +38,6 @@ public class DroppedException extends PreorderVisitor implements Detector, Const
 	Set<String> reported = new HashSet<String>();
 	Set<String> causes = new HashSet<String>();
 	Set<String> checkedCauses = new HashSet<String>();
-	private ClassContext classContext;
 	private BugReporter bugReporter;
 	private AnalysisContext analysisContext;
 
@@ -52,7 +51,6 @@ public class DroppedException extends PreorderVisitor implements Detector, Const
 	}
 
 	public void visitClassContext(ClassContext classContext) {
-		this.classContext = classContext;
 		classContext.getJavaClass().accept(this);
 	}
 

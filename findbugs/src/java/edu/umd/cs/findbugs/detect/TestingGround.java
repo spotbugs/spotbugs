@@ -28,7 +28,6 @@ public class TestingGround extends BytecodeScanningDetector implements Constants
 
 	private BugReporter bugReporter;
 	private final boolean active = false;
-	private int state = 0;
 
 	public TestingGround(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;

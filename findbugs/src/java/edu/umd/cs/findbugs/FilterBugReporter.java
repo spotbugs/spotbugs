@@ -22,7 +22,6 @@ package edu.umd.cs.findbugs;
 public class FilterBugReporter extends DelegatingBugReporter {
 	private static final boolean DEBUG = Boolean.getBoolean("filter.debug");
 
-	private BugReporter realBugReporter;
 	private Filter filter;
 	private boolean include;
 

@@ -33,7 +33,7 @@ public class BetterTypeAnalysis extends FrameDataflowAnalysis<Type, BetterTypeFr
 
 	private MethodGen methodGen;
 	private String[] parameterSignatureList;
-	private CFG cfg;
+//	private CFG cfg;
 	private TypeRepository typeRepository;
 	private TypeMerger typeMerger;
 	private RepositoryLookupFailureCallback lookupFailureCallback;
@@ -45,7 +45,7 @@ public class BetterTypeAnalysis extends FrameDataflowAnalysis<Type, BetterTypeFr
 		super(dfs);
 		this.methodGen = methodGen;
 		this.parameterSignatureList = parameterSignatureList;
-		this.cfg = cfg;
+//		this.cfg = cfg;
 		this.typeRepository = typeRepository;
 		this.typeMerger = typeMerger;
 		this.lookupFailureCallback = lookupFailureCallback;

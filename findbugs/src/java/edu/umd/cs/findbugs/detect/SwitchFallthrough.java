@@ -32,7 +32,6 @@ public class SwitchFallthrough extends BytecodeScanningDetector implements Const
 	int nextIndex = -1;
 	boolean reachable = false;
 	boolean inSwitch = false;
-	int start;
 	int switchPC;
 	private BugReporter bugReporter;
 	LineNumberTable lineNumbers;

@@ -152,8 +152,6 @@ public abstract class AbstractDepthFirstSearch implements DFSEdgeTypes {
 		return topologicalSortList.iterator();
 	}
 
-	private int indentLevel = 0;
-
 	private class Visit {
 		private BasicBlock block;
 		private Iterator<Edge> outgoingEdgeIterator;

@@ -31,13 +31,13 @@ import java.util.*;
  */
 public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberAnalysisFeatures {
 
-	private ValueNumberFactory factory;
+//	private ValueNumberFactory factory;
 	private ArrayList<ValueNumber> mergedValueList;
 	private Map<AvailableLoad, ValueNumber[]> availableLoadMap;
 
 	public ValueNumberFrame(int numLocals, final ValueNumberFactory factory) {
 		super(numLocals);
-		this.factory = factory;
+//		this.factory = factory;
 		if (REDUNDANT_LOAD_ELIMINATION) {
 			this.availableLoadMap = new HashMap<AvailableLoad, ValueNumber[]>();
 		}
