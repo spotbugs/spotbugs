@@ -121,8 +121,10 @@ public class CFG implements Debug {
 	 * @param edge the edge
 	 */
 	public void removeEdge(Edge edge) {
-		// FIXME: implement this
-		throw new UnsupportedOperationException();
+		if (!edgeList.remove(edge))
+			throw new IllegalArgumentException("removing nonexistent edge!");
+		edge.getSource().removeOutgoingEdge(edge);
+		edge.getDest().removeIncomingEdge(edge);
 	}
 
 	/**
