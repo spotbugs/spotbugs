@@ -17,9 +17,10 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
- 
+
 package de.tobject.findbugs;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -113,8 +114,8 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 		new QualifiedName(FindbugsPlugin.PLUGIN_ID + ".sessionprops", "bugcollection");
 	public static final QualifiedName SESSION_PROPERTY_FB_PROJECT =
 		new QualifiedName(FindbugsPlugin.PLUGIN_ID + ".sessionprops", "fbproject");
-	public static final QualifiedName SESSION_PROPERTY_BUG_COLLECTION_UPTODATE =
-		new QualifiedName(FindbugsPlugin.PLUGIN_ID + ".sessionprops", "bugcollection_uptodate");
+	public static final QualifiedName SESSION_PROPERTY_BUG_COLLECTION_DIRTY =
+		new QualifiedName(FindbugsPlugin.PLUGIN_ID + ".sessionprops", "bugcollection.dirty");
 	public static final QualifiedName SESSION_PROPERTY_USERPREFS =
 		new QualifiedName(FindbugsPlugin.PLUGIN_ID + ".sessionprops", "userprefs");
 	public static final String LIST_DELIMITER = ";"; //$NON-NLS-1$
@@ -159,6 +160,10 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 			System.out.println("Looking for detecors in: " + findBugsHome);
 		}
 		System.setProperty("findbugs.home", findBugsHome);
+		
+		// Register our save participant
+		FindbugsSaveParticipant saveParticipant = new FindbugsSaveParticipant();
+		ResourcesPlugin.getWorkspace().addSaveParticipant(this, saveParticipant);
 	}
 	
 	/**
@@ -367,13 +372,27 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 	 * @param project the project
 	 * @return the IFile (which may not actually exist in the filesystem yet)
 	 */
-	public static IFile getBugCollectionFile(IProject project) {
+	private static IFile getBugCollectionFile(IProject project) {
 		IFile file = project.getFile(".fbwarnings");
 		return file;
 	}
-
+	
+	public static boolean isBugCollectionDirty(IProject project) throws CoreException {
+		Object dirty = project.getSessionProperty(SESSION_PROPERTY_BUG_COLLECTION_DIRTY);
+		
+		if (dirty == null)
+			return false;
+		else
+			return ((Boolean) dirty).booleanValue();
+	}
+	
+	public static void markBugCollectionDirty(IProject project, boolean isDirty) throws CoreException {
+		project.setSessionProperty(
+				SESSION_PROPERTY_BUG_COLLECTION_DIRTY, isDirty ? Boolean.TRUE : Boolean.FALSE);
+	}
+	
 	/**
-	 * Read stored BugCollection for project.
+	 * Get the stored BugCollection for project.
 	 * If there is no stored bug collection for the project,
 	 * or if an error occurs reading the stored bug collection,
 	 * a default empty collection is created and returned.
@@ -383,7 +402,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 	 * @return the stored BugCollection
 	 * @throws CoreException 
 	 */
-	public static SortedBugCollection readBugCollection(
+	public static SortedBugCollection getBugCollection(
 			IProject project, IProgressMonitor monitor) throws CoreException {
 		SortedBugCollection bugCollection = (SortedBugCollection) project.getSessionProperty(
 				SESSION_PROPERTY_BUG_COLLECTION);
@@ -402,51 +421,57 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 		}
 		return bugCollection;
 	}
+
+	private static void cacheBugCollectionAndProject(IProject project, SortedBugCollection bugCollection, Project fbProject) throws CoreException {
+		project.setSessionProperty(SESSION_PROPERTY_BUG_COLLECTION, bugCollection);
+		project.setSessionProperty(SESSION_PROPERTY_FB_PROJECT, fbProject);
+		markBugCollectionDirty(project, false);
+	}
 	
 	private static SortedBugCollection createDefaultEmptyBugCollection(IProject project)
 			throws CoreException {
 		SortedBugCollection bugCollection = new SortedBugCollection();
 		Project fbProject = new Project();
 		
-		project.setSessionProperty(SESSION_PROPERTY_BUG_COLLECTION, bugCollection);
-		project.setSessionProperty(SESSION_PROPERTY_FB_PROJECT, fbProject);
+		cacheBugCollectionAndProject(project, bugCollection, fbProject);
 		
 		return bugCollection;
 	}
-
-	/**
-	 * Read stored findbugs Project for a project.
-	 * Returns null if there is no stored project.
-	 * 
-	 * @param project the eclipse project
-	 * @param monitor a progress monitor
-	 * @return the saved findbugs Project, or null if there is no saved project
-	 * @throws CoreException
-	 * @throws DocumentException
-	 * @throws DocumentException
-	 * @throws IOException
-	 */
-	public static Project readProject(IProject project, IProgressMonitor monitor)
-			throws CoreException, DocumentException, DocumentException, IOException {
-		Project findbugsProject = (Project) project.getSessionProperty(
-				SESSION_PROPERTY_FB_PROJECT);
-		if (findbugsProject == null) {
-			readBugCollectionAndProject(project, monitor);
-			findbugsProject =  (Project) project.getSessionProperty(
-					SESSION_PROPERTY_FB_PROJECT);
-		}
-		return findbugsProject;
-	}
+//
+//	/**
+//	 * Read stored findbugs Project for a project.
+//	 * Returns an empty default project if no project is stored.
+//	 * 
+//	 * @param project the eclipse project
+//	 * @param monitor a progress monitor
+//	 * @return the saved findbugs Project, or null if there is no saved project
+//	 * @throws CoreException
+//	 * @throws DocumentException
+//	 * @throws DocumentException
+//	 * @throws IOException
+//	 */
+//	public static Project readProject(IProject project, IProgressMonitor monitor)
+//			throws CoreException, DocumentException, DocumentException, IOException {
+//		Project findbugsProject = (Project) project.getSessionProperty(
+//				SESSION_PROPERTY_FB_PROJECT);
+//		if (findbugsProject == null) {
+//			readBugCollectionAndProject(project, monitor);
+//			findbugsProject =  (Project) project.getSessionProperty(
+//					SESSION_PROPERTY_FB_PROJECT);
+//		}
+//		return findbugsProject;
+//	}
 
 	/**
 	 * Read saved bug collection and findbugs project from file.
 	 * Will populate the bug collection and findbugs project session
-	 * properties.  If there is no saved bug collection and project
-	 * for the eclipse project, then the session properties will
-	 * be set to null.
+	 * properties if successful.  If there is no saved bug collection and project
+	 * for the eclipse project, then FileNotFoundException will
+	 * be thrown.
 	 * 
 	 * @param project the eclipse project
 	 * @param monitor a progress monitor
+	 * @throws java.io.FileNotFoundException the saved bug collection doesn't exist
 	 * @throws IOException
 	 * @throws DocumentException
 	 * @throws CoreException
@@ -456,19 +481,17 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 		Project findbugsProject;
 		
 		IFile bugCollectionFile = getBugCollectionFile(project);
-		if (bugCollectionFile.exists()) {
-			bugCollection = new SortedBugCollection();
-			findbugsProject = new Project();
-
-			// FIXME: use progress monitor
-			bugCollection.readXML(bugCollectionFile.getContents(), findbugsProject);
-		} else {
-			bugCollection = null;
-			findbugsProject = null;
+		if (!bugCollectionFile.exists()) {
+			throw new FileNotFoundException(bugCollectionFile.getLocation().toOSString());
 		}
 
-		project.setSessionProperty(SESSION_PROPERTY_BUG_COLLECTION, bugCollection);
-		project.setSessionProperty(SESSION_PROPERTY_FB_PROJECT, findbugsProject);
+		bugCollection = new SortedBugCollection();
+		findbugsProject = new Project();
+
+		// FIXME: use progress monitor
+		bugCollection.readXML(bugCollectionFile.getContents(), findbugsProject);
+
+		cacheBugCollectionAndProject(project, bugCollection, findbugsProject);
 	}
 	
 	/**
@@ -493,9 +516,36 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 		project.setSessionProperty(SESSION_PROPERTY_BUG_COLLECTION, bugCollection);
 		project.setSessionProperty(SESSION_PROPERTY_FB_PROJECT, findbugsProject);
 
+		writeBugCollection(project, bugCollection, findbugsProject, monitor);
+	}
+	
+	/**
+	 * If necessary, save current bug collection for project to disk.
+	 * 
+	 * @param project the project
+	 * @param monitor a progress monitor
+	 * @throws CoreException 
+	 * @throws IOException 
+	 */
+	public static void saveCurrentBugCollection(
+			IProject project, IProgressMonitor monitor)
+			throws CoreException, IOException {
+		if (isBugCollectionDirty(project)) {
+			SortedBugCollection bugCollection = (SortedBugCollection)
+			(SortedBugCollection) project.getSessionProperty(SESSION_PROPERTY_BUG_COLLECTION);
+			Project fbProject = (Project) project.getSessionProperty(SESSION_PROPERTY_FB_PROJECT);
+			
+			if (bugCollection != null && fbProject != null) {
+				writeBugCollection(project, bugCollection, fbProject, monitor);
+			}
+		}
+	}
+
+	private static void writeBugCollection(
+			IProject project, final SortedBugCollection bugCollection, final Project findbugsProject, IProgressMonitor monitor)
+			throws IOException, CoreException {
 		// Save to file
 		IFile bugCollectionFile = FindbugsPlugin.getBugCollectionFile(project);
-		
 		FileOutput fileOutput = new FileOutput() {
 			public void writeFile(OutputStream os) throws IOException {
 				bugCollection.writeXML(os, findbugsProject);
@@ -505,8 +555,8 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 				return "creating XML FindBugs data file";
 			}
 		};
-
 		IO.writeFile(bugCollectionFile, fileOutput, monitor);
+		markBugCollectionDirty(project, false);
 	}
 
 	/**
@@ -624,6 +674,5 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 		
 		return userPrefs;
 	}
-	
 }
 
