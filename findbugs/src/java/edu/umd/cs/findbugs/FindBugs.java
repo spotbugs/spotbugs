@@ -942,7 +942,7 @@ public class FindBugs implements Constants2, ExitCodes {
 			}
 
 			// Create the ClassProducer
-			if (fileExtension != null && archiveExtensionSet.contains(fileExtension))
+			if (fileExtension != null && isArchiveExtension(fileExtension))
 				classProducer = new ZipClassProducer(url, archiveWorkList);
 			else if (fileExtension != null && fileExtension.equals(".class"))
 				classProducer = new SingleClassProducer(url);
@@ -1084,6 +1084,17 @@ public class FindBugs implements Constants2, ExitCodes {
 				protocol = specifiedProtocol;
 		}
 		return protocol;
+	}
+
+	/**
+	 * Determine if given file extension indicates an archive file.
+	 * 
+	 * @param fileExtension the file extension (e.g., ".jar")
+	 * @return true if the file extension indicates an archive,
+	 *   false otherwise
+	 */
+	static boolean isArchiveExtension(String fileExtension) {
+		return archiveExtensionSet.contains(fileExtension);
 	}
 
 	/**
