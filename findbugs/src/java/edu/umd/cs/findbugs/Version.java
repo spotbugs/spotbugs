@@ -39,14 +39,24 @@ public class Version {
 	public static final int PATCHLEVEL = 6;
 
 	/**
-	 * Development version?
+	 * Development version or release candidate?
 	 */
 	public static final boolean IS_DEVELOPMENT = true;
 
 	/**
+	 * Release candidate number.
+	 * "0" indicates that the version is not a release candidate.
+	 */
+	public static final int RELEASE_CANDIDATE = 1;
+
+	private static final String RELEASE_SUFFIX_WORD =
+		(RELEASE_CANDIDATE > 0 ? "rc" + RELEASE_CANDIDATE : "dev");
+
+	/**
 	 * Release version string.
 	 */
-	public static final String RELEASE = MAJOR + "." + MINOR + "." + PATCHLEVEL + (IS_DEVELOPMENT ? "-dev" : "");
+	public static final String RELEASE =
+		MAJOR + "." + MINOR + "." + PATCHLEVEL + (IS_DEVELOPMENT ? "-" + RELEASE_SUFFIX_WORD : "");
 
 	/**
 	 * Release date.
@@ -60,7 +70,7 @@ public class Version {
 	 * like the "-" character in plugin versions.
 	 */
 	public static final String ECLIPSE_CORE_VERSION = MAJOR + "." + MINOR + "." +
-	        PATCHLEVEL + (IS_DEVELOPMENT ? ".dev" : "");
+	        PATCHLEVEL + (IS_DEVELOPMENT ? "." + RELEASE_SUFFIX_WORD : "");
 
 	/**
 	 * Version of Eclipse UI plugin.
