@@ -69,11 +69,11 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 	 * Kill all loads of given field.
 	 * @param instanceField the field
 	 */
-	public void killLoadsOfField(InstanceField instanceField) {
+	public void killLoadsOfField(XField field) {
 		Iterator<AvailableLoad> i = availableLoadMap.keySet().iterator();
 		while (i.hasNext()) {
 			AvailableLoad availableLoad = i.next();
-			if (availableLoad.getField().equals(instanceField)) {
+			if (availableLoad.getField().equals(field)) {
 				i.remove();
 			}
 		}
