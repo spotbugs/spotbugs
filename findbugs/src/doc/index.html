@@ -45,14 +45,15 @@ invited talk, MASPLAS 2003
 
 <h1>Changes since last version</h1>
 
-<p> Changes since 0.6.4:
+<p> Changes since 0.6.5:
 
 <ul>
-<li> For redundant comparison of reference values, fixed false positives 
-     resulting from duplication of code in finally blocks
-<li> Fixed false positives resulting from wrapped byte array streams left open
-<li> Fixed bug in Ant task preventing output file from working properly
-     if a relative path was used
+<li> Fixed bug where output stream was not closed using non-XML output
+     (reported by Sigiswald Madou)
+<li> Fixed corrupted HTML bug detail message (reported by Trevor Harmon)
+<li> New detector to find calls to wait(), notify(), and notifyAll()
+     on an object which is not obviously locked
+<li> 
 </ul>
 
 <p> <a href="Changes.html">Older versions...</a>
