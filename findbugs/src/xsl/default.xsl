@@ -126,13 +126,13 @@
 	</td>
 
 	<td>
-	<xsl:value-of select="Class/@classname"/><br/>
+	<xsl:value-of select="Class/@classname"/>
 	<xsl:choose>
 		<xsl:when test="SourceLine">
-			<xsl:apply-templates select="SourceLine[1]"/>
+			<br/><xsl:apply-templates select="SourceLine[1]"/>
 		</xsl:when>
 		<xsl:when test="Method/SourceLine">
-			<xsl:apply-templates select="Method/SourceLine"/>
+			<br/><xsl:apply-templates select="Method/SourceLine"/>
 		</xsl:when>
 	</xsl:choose>
 	</td>
