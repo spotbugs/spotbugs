@@ -22,7 +22,7 @@ public class AnalysisRun {
      * Our BugReporter just puts the reported BugInstances into a HashSet.
      */
     private class Reporter implements BugReporter {
-        HashSet bugSet = new HashSet();
+        private HashSet bugSet = new HashSet();
         
         public void finish() { }
         
@@ -40,8 +40,7 @@ public class AnalysisRun {
     private FindBugs findBugs;
     private Reporter reporter;
     private int runNumber;
-    private DefaultTreeModel treeModel;
-    private String sortOrder;
+    private HashMap treeModelMap;
     
     /** Creates a new instance of AnalysisRun. */
     public AnalysisRun(Project project, ConsoleLogger logger) {
@@ -50,7 +49,7 @@ public class AnalysisRun {
         reporter = new Reporter();
         findBugs = new FindBugs(reporter);
 	runNumber = project.getNextAnalysisRun();
-        sortOrder = "invalid";
+        treeModelMap = new HashMap();
     }
     
     /**
@@ -81,30 +80,20 @@ public class AnalysisRun {
     
     /**
      * Set the tree model to be used in the BugTree.
+     * @param groupByOrder the grouping order that the tree model will conform to
+     * @param treeModel the tree model
      */
-    public void setTreeModel(DefaultTreeModel treeModel) {
-        this.treeModel = treeModel;
+    public void setTreeModel(String groupByOrder, DefaultTreeModel treeModel) {
+        treeModelMap.put(groupByOrder, treeModel);
     }
     
     /**
      * Get the tree model to be used in the BugTree.
+     * @param groupByOrder the grouping order that the tree model conforms to
+     * @return the tree model
      */
-    public DefaultTreeModel getTreeModel() {
-        return treeModel;
-    }
-    
-    /**
-     * Set current sort order of the run's tree model.
-     */
-    public void setSortOrder(String sortOrder) {
-        this.sortOrder = sortOrder;
-    }
-    
-    /**
-     * Get current sort order of the run's tree model.
-     */
-    public String getSortOrder() {
-        return sortOrder;
+    public DefaultTreeModel getTreeModel(String groupByOrder) {
+        return (DefaultTreeModel) treeModelMap.get(groupByOrder);
     }
     
     /**
