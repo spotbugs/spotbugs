@@ -363,6 +363,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
         newProjectItem = new javax.swing.JMenuItem();
         openProjectItem = new javax.swing.JMenuItem();
         saveProjectItem = new javax.swing.JMenuItem();
+        saveProjectAsItem = new javax.swing.JMenuItem();
         closeProjectItem = new javax.swing.JMenuItem();
         jSeparator3 = new javax.swing.JSeparator();
         exitItem = new javax.swing.JMenuItem();
@@ -790,6 +791,16 @@ public class FindBugsFrame extends javax.swing.JFrame {
         fileMenu.setMnemonic('F');
         fileMenu.setText("File");
         fileMenu.setFont(new java.awt.Font("Dialog", 0, 12));
+        fileMenu.addMenuListener(new javax.swing.event.MenuListener() {
+            public void menuCanceled(javax.swing.event.MenuEvent evt) {
+            }
+            public void menuDeselected(javax.swing.event.MenuEvent evt) {
+            }
+            public void menuSelected(javax.swing.event.MenuEvent evt) {
+                fileMenuMenuSelected(evt);
+            }
+        });
+
         newProjectItem.setFont(new java.awt.Font("Dialog", 0, 12));
         newProjectItem.setMnemonic('N');
         newProjectItem.setText("New Project");
@@ -814,7 +825,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
         saveProjectItem.setFont(new java.awt.Font("Dialog", 0, 12));
         saveProjectItem.setMnemonic('S');
-        saveProjectItem.setText("Save project");
+        saveProjectItem.setText("Save Project");
         saveProjectItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 saveProjectItemActionPerformed(evt);
@@ -822,6 +833,11 @@ public class FindBugsFrame extends javax.swing.JFrame {
         });
 
         fileMenu.add(saveProjectItem);
+
+        saveProjectAsItem.setFont(new java.awt.Font("Dialog", 0, 12));
+        saveProjectAsItem.setMnemonic('A');
+        saveProjectAsItem.setText("Save Project As");
+        fileMenu.add(saveProjectAsItem);
 
         closeProjectItem.setFont(new java.awt.Font("Dialog", 0, 12));
         closeProjectItem.setMnemonic('C');
@@ -852,6 +868,16 @@ public class FindBugsFrame extends javax.swing.JFrame {
         viewMenu.setMnemonic('V');
         viewMenu.setText("View");
         viewMenu.setFont(new java.awt.Font("Dialog", 0, 12));
+        viewMenu.addMenuListener(new javax.swing.event.MenuListener() {
+            public void menuCanceled(javax.swing.event.MenuEvent evt) {
+            }
+            public void menuDeselected(javax.swing.event.MenuEvent evt) {
+            }
+            public void menuSelected(javax.swing.event.MenuEvent evt) {
+                viewMenuMenuSelected(evt);
+            }
+        });
+
         viewConsoleItem.setFont(new java.awt.Font("Dialog", 0, 12));
         viewConsoleItem.setMnemonic('C');
         viewConsoleItem.setText("Console");
@@ -908,6 +934,22 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
         pack();
     }//GEN-END:initComponents
+
+    private void viewMenuMenuSelected(javax.swing.event.MenuEvent evt) {//GEN-FIRST:event_viewMenuMenuSelected
+        // View bug details and full descriptions items
+        // are only enabled if there is a project open.
+        boolean hasProject = getCurrentProject() != null;
+        viewBugDetailsItem.setEnabled(hasProject);
+        fullDescriptionsItem.setEnabled(hasProject);
+    }//GEN-LAST:event_viewMenuMenuSelected
+
+    private void fileMenuMenuSelected(javax.swing.event.MenuEvent evt) {//GEN-FIRST:event_fileMenuMenuSelected
+        // Save and close project items are only enabled if there is a project open.
+        boolean hasProject = getCurrentProject() != null;
+        saveProjectItem.setEnabled(hasProject);
+        saveProjectAsItem.setEnabled(hasProject);
+        closeProjectItem.setEnabled(hasProject);
+    }//GEN-LAST:event_fileMenuMenuSelected
 
     private void closeProjectItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_closeProjectItemActionPerformed
         if (closeProjectHook(getCurrentProject(), "Close project")) {
@@ -1853,6 +1895,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
     private javax.swing.JButton removeJarButton;
     private javax.swing.JButton removeSrcDirButton;
     private javax.swing.JPanel reportPanel;
+    private javax.swing.JMenuItem saveProjectAsItem;
     private javax.swing.JMenuItem saveProjectItem;
     private javax.swing.JLabel sourceDirLabel;
     private javax.swing.JList sourceDirList;
