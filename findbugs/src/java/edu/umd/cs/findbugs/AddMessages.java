@@ -82,6 +82,7 @@ public class AddMessages {
 			Element details = root.addElement("BugPattern");
 			details
 				.addAttribute("type", bugType)
+				.addAttribute("abbrev", bugPattern.getAbbrev())
 				.addAttribute("category", bugPattern.getCategory());
 			details
 				.addElement("ShortDescription")
