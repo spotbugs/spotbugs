@@ -34,20 +34,19 @@ Send your comments to <a href="mailto:daveho@cs.umd.edu">daveho@cs.umd.edu</a>.
 
 <h1>News</h1>
 
-<p> Chris Grindstaff has written a two-part article about FindBugs
-(<a href="http://www-106.ibm.com/developerworks/java/library/j-findbug1/">Part 1</a>,
-<a href="http://www-106.ibm.com/developerworks/java/library/j-findbug2/">Part 2</a>)
-for IBM developerWorks.&nbsp; Thanks, Chris!
-
-<p> We will be giving a presentation about using static analysis
-to find bugs at <a href="http://java.sun.com/javaone/">JavaOne 2004</a>.&nbsp;
-We will also be participating in a FindBugs BOF (Birds of a Feather)
-session.&nbsp; Hope to see you there!
-
 <p> Changes since version 0.8.2:
 <ul>
-<li> The source distribution now requires JDK 1.5 to compile;
-     however, FindBugs will still run on 1.4 VMs
+<li> New detector to find calls to Collection.toArray() with zero-length
+     array argument; it is more efficient to pass an array the size
+     of the collection, which can be populated and returned as the result
+<li> In Swing GUI, analysis error dialog supports "Select All"
+     and "Copy" operations for easy generation of error reports
+     (Dave Brosius)
+<li> Enhancement to DumbMethods detector (Dave Brosius)
+<li> Fixed bug in DroppedException detector (Dave Brosius)
+<li> The source distribution defaults to using JDK 1.5 javac
+     to compile, but support for compiling with JSR-14 prototype
+     is still supported
 </ul>
 
 <p> <a href="Changes.html">Older versions...</a>
