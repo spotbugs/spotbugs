@@ -102,7 +102,7 @@ import java.util.List;
  *
  * @author Mike Fagan <a href="mailto:mfagan@tde.com">mfagan@tde.com</a>
  *
- * @version $Revision: 1.22 $
+ * @version $Revision: 1.23 $
  *
  * @since Ant 1.5
  *
@@ -161,6 +161,9 @@ public class FindBugsTask extends Task {
 	public class SystemProperty {
 		private String name;
 		private String value;
+
+		public SystemProperty() {
+		}
 
 		public void setName(String name) { this.name = name; }
 		public void setValue(String value) { this.value = value; }
@@ -414,8 +417,13 @@ public class FindBugsTask extends Task {
 		createPluginList().setRefid(r);
 	}
 
-	public void addConfiguredSystemProperty(SystemProperty systemProperty) {
+	/**
+	 * Create a SystemProperty (to handle &lt;systemProperty&gt; elements).
+	 */
+	public SystemProperty createSystemProperty() {
+		SystemProperty systemProperty = new SystemProperty();
 		systemPropertyList.add(systemProperty);
+		return systemProperty;
 	}
 
     /**
