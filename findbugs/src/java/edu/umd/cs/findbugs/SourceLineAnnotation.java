@@ -1,6 +1,6 @@
 /*
  * FindBugs - Find bugs in Java programs
- * Copyright (C) 2003,2004 University of Maryland
+ * Copyright (C) 2003-2005, University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -407,20 +407,25 @@ public class SourceLineAnnotation implements BugAnnotation {
 	private static final String ELEMENT_NAME = "SourceLine";
 
 	public void writeXML(XMLOutput xmlOutput) throws IOException {
+		writeXML(xmlOutput, false);
+	}
+
+	public void writeXML(XMLOutput xmlOutput, boolean addMessages) throws IOException {
 		XMLAttributeList attributeList = new XMLAttributeList()
 			.addAttribute("classname", getClassName())
 			.addAttribute("start", String.valueOf(getStartLine()))
 			.addAttribute("end", String.valueOf(getEndLine()))
 			.addAttribute("startBytecode", String.valueOf(getStartBytecode()))
 			.addAttribute("endBytecode", String.valueOf(getEndBytecode()));
-
+		
 		if (isSourceFileKnown())
 			attributeList.addAttribute("sourcefile", sourceFile);
-
+		
 		String role = getDescription();
 		if (!role.equals(DEFAULT_ROLE))
 			attributeList.addAttribute("role", getDescription());
-
+		
+		// Note: no Message element added to SourceLine annotations
 		xmlOutput.openCloseTag(ELEMENT_NAME, attributeList);
 	}
 }

@@ -1,6 +1,6 @@
 /*
  * FindBugs - Find bugs in Java programs
- * Copyright (C) 2003,2004 University of Maryland
+ * Copyright (C) 2003-2005, University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -208,20 +208,30 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 	private static final String ELEMENT_NAME = "Method";
 
 	public void writeXML(XMLOutput xmlOutput) throws IOException {
+	}
+
+	public void writeXML(XMLOutput xmlOutput, boolean addMessages) throws IOException {
 		XMLAttributeList attributeList = new XMLAttributeList()
 			.addAttribute("classname", getClassName())
 			.addAttribute("name", getMethodName())
 			.addAttribute("signature", getMethodSignature());
-
+		
 		String role = getDescription();
 		if (!role.equals(DEFAULT_ROLE))
 			attributeList.addAttribute("role", role);
-
-		if (sourceLines == null) {
+		
+		if (sourceLines == null && !addMessages) {
 			xmlOutput.openCloseTag(ELEMENT_NAME, attributeList);
 		} else {
 			xmlOutput.openTag(ELEMENT_NAME, attributeList);
-			sourceLines.writeXML(xmlOutput);
+			if (sourceLines != null) {
+				sourceLines.writeXML(xmlOutput);
+			}
+			if (addMessages) {
+				xmlOutput.openTag(MESSAGE_TAG);
+				xmlOutput.writeText(this.toString());
+				xmlOutput.closeTag(MESSAGE_TAG);
+			}
 			xmlOutput.closeTag(ELEMENT_NAME);
 		}
 	}

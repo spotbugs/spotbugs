@@ -1,6 +1,6 @@
 /*
  * FindBugs - Find bugs in Java programs
- * Copyright (C) 2003,2004 University of Maryland
+ * Copyright (C) 2003-2005, University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,51 +19,109 @@
 
 package edu.umd.cs.findbugs;
 
-import org.dom4j.Document;
-import org.dom4j.io.OutputFormat;
-import org.dom4j.io.XMLWriter;
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+
+import edu.umd.cs.findbugs.xml.OutputStreamXMLOutput;
+import edu.umd.cs.findbugs.xml.XMLAttributeList;
+import edu.umd.cs.findbugs.xml.XMLOutput;
 
 /**
  * Report warnings as an XML document.
+ * To the extent possible, warnings are written incrementally.
+ * So, if the analysis is terminated unexpectedly, the output
+ * may still be salvaged.
+ * 
+ * @author David Hovemeyer
  */
 public class XMLBugReporter extends BugCollectionBugReporter {
 	private boolean addMessages;
+	private boolean started;
+	private XMLOutput xmlOutput;
 
 	public XMLBugReporter(Project project) {
 		super(project);
 		this.addMessages = false;
+		this.started = false;
+		this.xmlOutput = new OutputStreamXMLOutput(outputStream);
 	}
 
 	public void setAddMessages(boolean enable) {
 		this.addMessages = enable;
 	}
 
+	//@Override
+	public void doReportBug(BugInstance bugInstance) {
+		try {
+			if (!started) {
+				started = true;
+				getBugCollection().writePrologue(xmlOutput, getProject());
+			}
+			
+			bugInstance.writeXML(xmlOutput, addMessages);
+		} catch (IOException e) {
+			throw new FatalException("Error writing XML output", e);
+		}
+		
+		super.doReportBug(bugInstance);
+	}
+	
+	
 	public void finish() {
 		generateSummary();
+		
 		try {
-			if (!addMessages) {
-				// Plain XML output.
-				// Write XML directly to the output stream.
-				getBugCollection().writeXML(outputStream, getProject());
-			} else {
-				// XML output with messages.
-				// This requires us to build a dom4j tree,
-				// add the messages to it, and then
-				// write the tree to the output stream.
-
-				// Build tree
-				Document document = getBugCollection().toDocument(getProject());
-
-				// Add messages
-				AddMessages addMessages = new AddMessages(getBugCollection(), document);
-				addMessages.execute();
-
-				// Write to output stream
-				XMLWriter writer = new XMLWriter(outputStream, OutputFormat.createPrettyPrint());
-				writer.write(document);
+			if (addMessages) {
+				writeBugPatterns();
 			}
-		} catch (Exception e) {
-			logError("Couldn't write XML output", e);
+			
+			getBugCollection().writeEpilogue(xmlOutput);
+		} catch (IOException e) {
+			throw new FatalException("Error writing XML output", e);
+		} finally {
+			try {
+				xmlOutput.finish();
+			} catch (IOException e) {
+				// Ignore
+			}
+		}
+	}
+
+	private void writeBugPatterns() throws IOException {
+		// Find bug types reported
+		Set<String> bugTypeSet = new HashSet<String>();
+		for (Iterator<BugInstance> i = getBugCollection().iterator(); i.hasNext();) {
+			BugInstance bugInstance = i.next();
+			BugPattern bugPattern = bugInstance.getBugPattern();
+			if (bugPattern != null) {
+				bugTypeSet.add(bugPattern.getType());
+			}
+		}
+		// Emit element describing each reported bug pattern
+		for (Iterator<String> i = bugTypeSet.iterator(); i.hasNext();) {
+			String bugType = i.next();
+			BugPattern bugPattern = I18N.instance().lookupBugPattern(bugType);
+			if (bugPattern == null)
+				continue;
+			
+			XMLAttributeList attributeList = new XMLAttributeList();
+			attributeList.addAttribute("type", bugType);
+			attributeList.addAttribute("abbrev", bugPattern.getAbbrev());
+			attributeList.addAttribute("category", bugPattern.getCategory());
+			
+			xmlOutput.openTag("BugPattern", attributeList);
+			
+			xmlOutput.openTag("ShortDescription");
+			xmlOutput.writeText(bugPattern.getShortDescription());
+			xmlOutput.closeTag("ShortDescription");
+			
+			xmlOutput.openTag("Details");
+			xmlOutput.writeCDATA(bugPattern.getDetailText());
+			xmlOutput.closeTag("Details");
+			
+			xmlOutput.closeTag("BugPattern");
 		}
 	}
 }

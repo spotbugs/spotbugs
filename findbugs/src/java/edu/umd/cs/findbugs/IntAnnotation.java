@@ -1,6 +1,6 @@
 /*
  * FindBugs - Find bugs in Java programs
- * Copyright (C) 2003,2004 University of Maryland
+ * Copyright (C) 2003-2005, University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -102,14 +102,18 @@ public class IntAnnotation implements BugAnnotation {
 	private static final String ELEMENT_NAME = "Int";
 
 	public void writeXML(XMLOutput xmlOutput) throws IOException {
+		writeXML(xmlOutput, false);
+	}
+
+	public void writeXML(XMLOutput xmlOutput, boolean addMessages) throws IOException {
 		XMLAttributeList attributeList = new XMLAttributeList()
 			.addAttribute("value", String.valueOf(value));
-
+		
 		String role = getDescription();
 		if (!role.equals(DEFAULT_ROLE))
 			attributeList.addAttribute("role", role);
-
-		xmlOutput.openCloseTag(ELEMENT_NAME, attributeList);
+		
+		BugAnnotationUtil.writeXML(xmlOutput, ELEMENT_NAME, this, attributeList, addMessages);
 	}
 }
 

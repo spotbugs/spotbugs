@@ -1,6 +1,6 @@
 /*
  * FindBugs - Find bugs in Java programs
- * Copyright (C) 2003,2004 University of Maryland
+ * Copyright (C) 2003-2005, University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -21,15 +21,18 @@ package edu.umd.cs.findbugs;
 
 import java.io.Serializable;
 
-import edu.umd.cs.findbugs.xml.XMLWriteable;
-
 /**
  * An object providing context information about a particular BugInstance.
  *
  * @author David Hovemeyer
  * @see BugInstance
  */
-public interface BugAnnotation extends Comparable<BugAnnotation>, XMLWriteable, Serializable {
+public interface BugAnnotation extends Comparable<BugAnnotation>, XMLWriteableWithMessages, Serializable {
+	/**
+	 * XML tag for a formatted text message describing the annotation. 
+	 */
+	public static final String MESSAGE_TAG = "Message";
+
 	/**
 	 * Accept a BugAnnotationVisitor.
 	 *

@@ -19,27 +19,27 @@
 
 package edu.umd.cs.findbugs;
 
-import java.util.*;
-
 import java.io.IOException;
 import java.io.Serializable;
-
-import edu.umd.cs.findbugs.ba.XField;
-import edu.umd.cs.findbugs.ba.bcp.FieldVariable;
-
-import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
-import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
-
-import edu.umd.cs.findbugs.xml.XMLAttributeList;
-import edu.umd.cs.findbugs.xml.XMLOutput;
-import edu.umd.cs.findbugs.xml.XMLOutputUtil;
-import edu.umd.cs.findbugs.xml.XMLWriteable;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+import java.util.Set;
+import java.util.StringTokenizer;
 
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.MethodGen;
+
+import edu.umd.cs.findbugs.ba.XField;
+import edu.umd.cs.findbugs.ba.bcp.FieldVariable;
+import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
+import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
+import edu.umd.cs.findbugs.xml.XMLAttributeList;
+import edu.umd.cs.findbugs.xml.XMLOutput;
 
 /**
  * An instance of a bug pattern.
@@ -66,7 +66,7 @@ import org.apache.bcel.generic.MethodGen;
  * @author David Hovemeyer
  * @see BugAnnotation
  */
-public class BugInstance implements Comparable, XMLWriteable, Serializable {
+public class BugInstance implements Comparable, XMLWriteableWithMessages, Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	private String type;
@@ -972,6 +972,10 @@ public class BugInstance implements Comparable, XMLWriteable, Serializable {
 	 * ---------------------------------------------------------------------- */
 
 	public void writeXML(XMLOutput xmlOutput) throws IOException {
+		writeXML(xmlOutput, false);
+	}
+	
+	public void writeXML(XMLOutput xmlOutput, boolean addMessages) throws IOException {
 		XMLAttributeList attributeList = new XMLAttributeList()
 			.addAttribute("type", type)
 			.addAttribute("priority", String.valueOf(priority));
@@ -1005,7 +1009,22 @@ public class BugInstance implements Comparable, XMLWriteable, Serializable {
 			xmlOutput.closeTag("UserAnnotation");
 		}
 
-		XMLOutputUtil.writeCollection(xmlOutput, annotationList);
+		if (addMessages) {
+			BugPattern bugPattern = getBugPattern();
+			
+			xmlOutput.openTag("ShortMessage");
+			xmlOutput.writeText(bugPattern != null ? bugPattern.getShortDescription() : this.toString());
+			xmlOutput.closeTag("ShortMessage");
+			
+			xmlOutput.openTag("LongMessage");
+			xmlOutput.writeText(this.toString());
+			xmlOutput.closeTag("LongMessage");
+		}
+
+		for (Iterator<BugAnnotation> i = annotationList.iterator(); i.hasNext();) {
+			BugAnnotation annotation = i.next();
+			annotation.writeXML(xmlOutput, addMessages);
+		}
 		
 		if (propertyListHead != null) {
 			BugProperty prop = propertyListHead;
