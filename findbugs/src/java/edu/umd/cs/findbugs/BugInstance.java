@@ -87,6 +87,28 @@ public class BugInstance implements Comparable {
 	}
 
 	/**
+	 * Get the primary source line annotation.
+	 * @return the source line annotation, or null if there is
+	 *   no source line annotation
+	 */
+	public SourceLineAnnotation getPrimarySourceLineAnnotation() {
+		// Highest priority: return the first top level source line annotation
+		Iterator<BugAnnotation> i = annotationList.iterator();
+		while (i.hasNext()) {
+			BugAnnotation annotation = i.next();
+			if (annotation instanceof SourceLineAnnotation)
+				return (SourceLineAnnotation) annotation;
+		}
+
+		// Second priority: return the source line annotation describing the
+		// primary method
+		if (primaryMethodAnnotation != null)
+			return primaryMethodAnnotation.getSourceLines();
+		else
+			return null;
+	}
+
+	/**
 	 * Get an Iterator over all bug annotations.
 	 */
 	public Iterator<BugAnnotation> annotationIterator() {
