@@ -131,12 +131,16 @@ public class LazyInit extends ByteCodePatternDetector {
 				return;
 
 			// Definitely ignore synthetic class$ fields
-			if (xfield.getFieldName().startsWith("class$"))
+			if (xfield.getFieldName().startsWith("class$") || xfield.getFieldName().startsWith("array$")) {
+				if (DEBUG) System.out.println("Ignoring field " + xfield.getFieldName());
 				return;
+			}
 
 			// Ignore non-reference fields
-			if (!xfield.getFieldSignature().startsWith("L") && !xfield.getFieldSignature().startsWith("["))
+			if (!xfield.getFieldSignature().startsWith("L") && !xfield.getFieldSignature().startsWith("[")) {
+				if (DEBUG) System.out.println("Ignoring non-reference field " + xfield.getFieldName());
 				return;
+			}
 
 			// TODO:
 			// - Strings are safe to pass by data race in 1.5
@@ -162,6 +166,7 @@ public class LazyInit extends ByteCodePatternDetector {
 			BitSet extent = domAnalysis.getAllDominatedBy(createBegin.getBasicBlock());
 			extent.and(postDomAnalysis.getAllDominatedBy(store.getBasicBlock()));
 			//System.out.println("Extent: " + extent);
+			if (DEBUG) System.out.println("Object creation extent: " + extent);
 
 			// Check all instructions in the object creation extent
 			//
