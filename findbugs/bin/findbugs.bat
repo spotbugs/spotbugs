@@ -7,8 +7,10 @@
 :: Set up default values
 :: ----------------------------------------------------------------------
 set appjar=findbugsGUI.jar
+set javahome=
+set launcher=javaw.exe
+set start=start "FindBugs"
 set jvmargs=
-set javacmd=java
 set debugArg=
 set args=
 set javaProps=
@@ -17,10 +19,8 @@ set maxheap=256
 
 :: Honor JAVA_HOME environment variable if it is set
 if "%JAVA_HOME%"=="" goto nojavahome
-if not exist %JAVA_HOME%\bin\javaw.exe goto nojavahome
-set javacmd=%JAVA_HOME%\bin\javaw
-set start=start "FindBugs"
-set javacmd=%JAVA_HOME%\bin\java
+if not exist "%JAVA_HOME%\bin\javaw.exe" goto nojavahome
+set javahome=%JAVA_HOME%\
 :nojavahome
 
 goto loop
@@ -40,11 +40,17 @@ shift
 set firstArg=%~1
 set secondArg=%~2
 
-if "%firstArg%"=="-gui" set appjar=findbugsGUI.jar
-if "%firstArg%"=="-gui" goto shift1
+if not "%firstArg%"=="-gui" goto notGui
+set appjar=findbugsGUI.jar
+set launcher=javaw.exe
+goto shift1
+:notGui
 
-if "%firstArg%"=="-textui" set appjar=findbugs.jar
-if "%firstArg%"=="-textui" goto shift1
+if not "%firstArg%"=="-textui" goto notTextui
+set appjar=findbugs.jar
+set launcher=java.exe
+goto shift1
+:notTextui
 
 if "%firstArg%"=="-home" set FINDBUGS_HOME=%secondArg%
 if "%firstArg%"=="-home" goto shift2
@@ -58,7 +64,7 @@ if "%firstArg%"=="-maxHeap" goto shift2
 if "%firstArg%"=="-debug" set debugArg=-Dfindbugs.debug=true
 if "%firstArg%"=="-debug" goto shift1
 
-if "%firstArg%"=="-javahome" set javacmd=%secondArg%\bin\java
+if "%firstArg%"=="-javahome" set javahome=%secondArg%\
 if "%firstArg%"=="-javahome" goto shift2
 
 if "%firstArg%"=="-property" set javaProps=-D%secondArg% %javaProps%
@@ -80,14 +86,11 @@ goto shift1
 :: has quote characters in it.
 if not "%FINDBUGS_HOME%"=="" goto found_home
 set FINDBUGS_HOME=%~dp0..
-if not exist %FINDBUGS_HOME%\lib\%appjar% goto homeNotSet
+if not exist "%FINDBUGS_HOME%\lib\%appjar%" goto homeNotSet
 
 :found_home
-:: echo FINDBUGS_HOME is %FINDBUGS_HOME%
-:: echo appjar is %appjar%
-:: echo args is %args%
-:: echo jvmargs is %jvmargs%
-%start% "%javacmd%" %debugArg% %javaProps% "-Dfindbugs.home=%FINDBUGS_HOME%" -Xmx%maxheap%m %jvmargs% -jar "%FINDBUGS_HOME%\lib\%appjar%" %args%
+:: Launch FindBugs!
+%start% "%javahome%%launcher%" %debugArg% %javaProps% "-Dfindbugs.home=%FINDBUGS_HOME%" -Xmx%maxheap%m %jvmargs% -jar "%FINDBUGS_HOME%\lib\%appjar%" %args%
 goto end
 
 :: ----------------------------------------------------------------------
