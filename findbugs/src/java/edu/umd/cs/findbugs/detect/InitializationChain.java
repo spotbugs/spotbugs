@@ -64,7 +64,10 @@ public class InitializationChain extends BytecodeScanningDetector implements   C
 
 
         if (seen == PUTSTATIC && classConstant.equals(className))  {
-		if (instanceCreated && !instanceCreatedWarningGiven)  {
+		// Don't do this check; it generates too many false
+		// positives. We need to do a more detailed check
+		// of which variables could be seen.
+		if (false && instanceCreated && !instanceCreatedWarningGiven)  {
 			String okSig = "L" + className + ";";
 			if (!okSig.equals(sigConstant)) {
 			  bugReporter.reportBug(new BugInstance("SI_INSTANCE_BEFORE_FINALS_ASSIGNED", NORMAL_PRIORITY)
