@@ -93,6 +93,7 @@ public class AboutDialog extends javax.swing.JDialog {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;
+        gridBagConstraints.insets = new java.awt.Insets(3, 0, 3, 0);
         getContentPane().add(okButton, gridBagConstraints);
 
         pack();
