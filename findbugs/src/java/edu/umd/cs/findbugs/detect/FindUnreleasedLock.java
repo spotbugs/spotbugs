@@ -74,8 +74,6 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock> {
 			if (status != -1) {
 				frame.setStatus(status);
 				if (status == ResourceValueFrame.OPEN) {
-//					frame.setValue(frame.getNumSlots() - 1, ResourceValue.instance());
-
 					// Look in the value number frame to see which slots have
 					// the same value as the Lock object.  Mark those slots
 					// in the resource value frame as containing the resource instance.
@@ -183,8 +181,7 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock> {
 
 	public boolean prescreen(ClassContext classContext, Method method) {
 		BitSet bytecodeSet = classContext.getBytecodeSet(method);
-		return bytecodeSet.get(Constants.NEW)
-			&& (bytecodeSet.get(Constants.INVOKEVIRTUAL) || bytecodeSet.get(Constants.INVOKEINTERFACE));
+		return bytecodeSet.get(Constants.INVOKEVIRTUAL) || bytecodeSet.get(Constants.INVOKEINTERFACE);
 	}
 
 	public ResourceTracker<Lock> getResourceTracker(ClassContext classContext, Method method)
