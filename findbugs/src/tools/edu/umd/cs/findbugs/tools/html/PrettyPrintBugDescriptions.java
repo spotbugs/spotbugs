@@ -148,14 +148,14 @@ public class PrettyPrintBugDescriptions extends PlainPrintBugDescriptions {
 		if (args.length > 0)
 			docTitle = args[0];
 		PrettyPrintBugDescriptions pp = new PrettyPrintBugDescriptions(docTitle, System.out);
-		if (args.length >= 1)
-			pp.setHeaderText(args[0]);
 		if (args.length >= 2)
-			pp.setBeginBodyText(args[1]);
+			pp.setHeaderText(args[1]);
 		if (args.length >= 3)
-			pp.setPrologueText(args[2]);
+			pp.setBeginBodyText(args[2]);
 		if (args.length >= 4)
-			pp.setEndBodyText(args[3]);
+			pp.setPrologueText(args[3]);
+		if (args.length >= 5)
+			pp.setEndBodyText(args[4]);
 		pp.print();
 	}
 }
