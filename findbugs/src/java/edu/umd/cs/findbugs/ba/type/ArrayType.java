@@ -78,7 +78,7 @@ public class ArrayType extends ObjectType {
 		if (numDimensions == 1)
 			return baseType;
 		else
-			return repos.arrayTypeFromDimensionsAndElementType(numDimensions - 1, baseType);
+			return repos.arrayTypeFromDimensionsAndBaseType(numDimensions - 1, baseType);
 	}
 
 	public int getTypeCode() {

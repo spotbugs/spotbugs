@@ -185,7 +185,7 @@ public class TypeRepository {
 	 * @param elementType the element type: must be created from this type repository
 	 * @return the array type
 	 */
-	public ArrayType arrayTypeFromDimensionsAndElementType(int numDimensions, Type elementType) {
+	public ArrayType arrayTypeFromDimensionsAndBaseType(int numDimensions, Type elementType) {
 		return createArrayType(numDimensions, elementType);
 	}
 
@@ -349,7 +349,7 @@ public class TypeRepository {
 			ObjectType baseTypeCommonSuperclass =
 				getFirstCommonSuperclass((ObjectType) aBaseType, (ObjectType) bBaseType);
 
-			return arrayTypeFromDimensionsAndElementType(aArrayType.getNumDimensions(), baseTypeCommonSuperclass);
+			return arrayTypeFromDimensionsAndBaseType(aArrayType.getNumDimensions(), baseTypeCommonSuperclass);
 		}
 
 		// FIXME:
@@ -496,7 +496,7 @@ public class TypeRepository {
 				directBaseType = (ObjectType) baseType;
 			} else {
 				directBaseType =
-					arrayTypeFromDimensionsAndElementType(type.getNumDimensions() - 1, baseType);
+					arrayTypeFromDimensionsAndBaseType(type.getNumDimensions() - 1, baseType);
 			}
 
 			addSuperclassLink(type, directBaseType);
@@ -515,7 +515,7 @@ public class TypeRepository {
 				for (Iterator<ObjectType> i = inheritanceGraph.successorIterator(elementObjectType); i.hasNext(); ) {
 					ObjectType elementSupertype = i.next();
 					ObjectType arraySupertype =
-						arrayTypeFromDimensionsAndElementType(type.getNumDimensions(), elementSupertype);
+						arrayTypeFromDimensionsAndBaseType(type.getNumDimensions(), elementSupertype);
 					addSuperclassLink(type, arraySupertype);
 				}
 			}

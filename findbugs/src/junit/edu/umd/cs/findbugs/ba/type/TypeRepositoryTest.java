@@ -107,14 +107,14 @@ public class TypeRepositoryTest extends TestCase {
 		repos.addInterfaceLink(mySubinterfaceType, myInterfaceType);
 
 		// Array classes
-		myClassArrayType = repos.arrayTypeFromDimensionsAndElementType(1, myClassType);
-		mySuperclassArrayType = repos.arrayTypeFromDimensionsAndElementType(1, mySuperclassType);
-		myInterfaceArrayType = repos.arrayTypeFromDimensionsAndElementType(1, myInterfaceType);
-		mySubinterfaceArrayType = repos.arrayTypeFromDimensionsAndElementType(1, mySubinterfaceType);
-		javaLangObjectArray1Type = repos.arrayTypeFromDimensionsAndElementType(1, javaLangObjectType);
-		javaLangObjectArray2Type = repos.arrayTypeFromDimensionsAndElementType(2, javaLangObjectType);
-		booleanArray1Type = repos.arrayTypeFromDimensionsAndElementType(1, booleanType);
-		booleanArray2Type = repos.arrayTypeFromDimensionsAndElementType(2, booleanType);
+		myClassArrayType = repos.arrayTypeFromDimensionsAndBaseType(1, myClassType);
+		mySuperclassArrayType = repos.arrayTypeFromDimensionsAndBaseType(1, mySuperclassType);
+		myInterfaceArrayType = repos.arrayTypeFromDimensionsAndBaseType(1, myInterfaceType);
+		mySubinterfaceArrayType = repos.arrayTypeFromDimensionsAndBaseType(1, mySubinterfaceType);
+		javaLangObjectArray1Type = repos.arrayTypeFromDimensionsAndBaseType(1, javaLangObjectType);
+		javaLangObjectArray2Type = repos.arrayTypeFromDimensionsAndBaseType(2, javaLangObjectType);
+		booleanArray1Type = repos.arrayTypeFromDimensionsAndBaseType(1, booleanType);
+		booleanArray2Type = repos.arrayTypeFromDimensionsAndBaseType(2, booleanType);
 	}
 
 	public void testClassFromSlashedClassName() {
