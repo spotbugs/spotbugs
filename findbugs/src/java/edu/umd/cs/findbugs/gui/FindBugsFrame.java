@@ -254,7 +254,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
     
     /**
      * A fudge value required in our hack to get the REAL maximum
-     * divider location for the consoleSplitter.  Experience suggests that
+     * divider location for a JSplitPane.  Experience suggests that
      * the value "1" would work here, but setting it a little higher
      * makes the code a bit more robust.
      */
@@ -637,6 +637,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
         bugTreeBugDetailsSplitter.setLeftComponent(bugTreeScrollPane);
 
+        bugDescriptionEditorPane.setEditable(false);
         bugDescriptionScrollPane.setViewportView(bugDescriptionEditorPane);
 
         bugDetailsTabbedPane.addTab("Details", bugDescriptionScrollPane);
@@ -1194,12 +1195,11 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	Integer location = (Integer) evt.getNewValue();
 
         java.awt.Container parent = splitter.getParent();
-        //int parentHeight = parent.getHeight();
         int height = splitter.getHeight();
 	int hopefullyMaxDivider = height - (splitter.getDividerSize() + DIVIDER_FUDGE);
-        System.out.println("Splitter: "+(splitter==consoleSplitter?"consoleSplitter":"bugTreeBugDetailsSplitter")+
-            ": height="+height+",location="+location+
-            ",hopefullyMax="+hopefullyMaxDivider);
+        //System.out.println("Splitter: "+(splitter==consoleSplitter?"consoleSplitter":"bugTreeBugDetailsSplitter")+
+        //    ": height="+height+",location="+location+
+        //    ",hopefullyMax="+hopefullyMaxDivider);
 	boolean isMaximized = location.intValue() >= hopefullyMaxDivider;
         return isMaximized;
     }
@@ -1429,9 +1429,12 @@ public class FindBugsFrame extends javax.swing.JFrame {
      * window (source view, details window, etc.)
      */
     private void synchBugInstance(BugInstance selected) {
+         // If the bug is already the current one, then there's nothing to do
          if (selected == currentBugInstance)
             return;
          
+         // If the details window is minimized, then the user can't see
+         // it and there is no point in updating it.
          if (!viewBugDetailsItem.isSelected())
              return;
         
@@ -1444,6 +1447,12 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	    if (analysisRun == null) throw new IllegalStateException("null analysis run!");
 	    viewSource(project, analysisRun, primarySrcLine);
 	}
+        
+        // Show bug info.
+        showBugInfo(selected);
+        
+        // Now the bug details are up to date.
+        currentBugInstance = selected;
     }
 
     /**
@@ -1460,9 +1469,9 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	    System.out.println("No source file for class " + srcLine.getClassName());
 	    return;
 	}
-	
+
+        // Get rid of old source code text
 	sourceTextArea.setText("");
-	//bugTreeBugDetailsSplitter.resetToPreferredSizes();
 
 	// Try to open the source file and display its contents
 	// in the source text area.
@@ -1491,6 +1500,30 @@ public class FindBugsFrame extends javax.swing.JFrame {
             sourceTextArea.getCaret().setSelectionVisible(true);
 
         } catch (javax.swing.text.BadLocationException e) {
+            logger.logMessage(ConsoleLogger.ERROR, e.getMessage());
+        }
+    }
+    
+    /**
+     * Show descriptive text about the type of bug
+     * @param bugInstance the bug instance
+     */
+    private void showBugInfo(BugInstance bugInstance) {
+        // Clear out previous contents
+        bugDescriptionEditorPane.setText("");
+        
+        // Look for the HTML file describing this kind of bug
+        String fileName = "edu/umd/cs/findbugs/gui/help/" + bugInstance.getType() + ".html";
+        java.net.URL infoURL = getClass().getClassLoader().getResource(fileName);
+        if (infoURL == null) {
+            logger.logMessage(ConsoleLogger.ERROR, "Can't find help file " + fileName);
+            return;
+        }
+        
+        // Load the document
+        try {
+            bugDescriptionEditorPane.setPage(infoURL);
+        } catch (IOException e) {
             logger.logMessage(ConsoleLogger.ERROR, e.getMessage());
         }
     }
