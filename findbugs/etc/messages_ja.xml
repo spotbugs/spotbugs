@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="shift_JIS"?> 
 <MessageCollection>
+<!--
+************************************************************************
+Detectors
+************************************************************************
+-->
 
   <Detector class="edu.umd.cs.findbugs.detect.DroppedException">
     <Details>
@@ -281,6 +286,21 @@ It is a fast detector.
 ]]>
     </Details>
   </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.FindUselessControlFlow">
+    <Details>
+<![CDATA[
+<p> This detector looks for control flow statements which have no effect.
+It is a fast detector.
+]]>
+    </Details>
+  </Detector>
+
+<!--
+************************************************************************
+Bug patterns
+************************************************************************
+-->
 
   <BugPattern type="DE_MIGHT_DROP">
     <ShortDescription >例外を見落としている疑い</ShortDescription>
@@ -1338,6 +1358,28 @@ are no results. This way, no explicit check for null is needed by clients of the
     </Details>
   </BugPattern>
 
+  <BugPattern type="UCF_USELESS_CONTROL_FLOW">
+    <ShortDescription>Useless control flow in method</ShortDescription>
+    <LongDescription>Useless control flow in {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p> This method contains a useless control flow statement.&nbsp;
+Often, this is caused by inadvertently using an empty statement as the
+body of an <code>if</code> statement, e.g.:
+<pre>
+    if (argv.length == 1);
+        System.out.println("Hello, " + argv[0]);
+</pre>
+]]>
+    </Details>
+  </BugPattern>
+
+<!--
+************************************************************************
+Bug codes
+************************************************************************
+-->
+
   <BugCode abbrev="FI" >finalizerの使い方が間違っている</BugCode>
   <BugCode abbrev="ES" >Checking String equality using == or !=</BugCode>
   <BugCode abbrev="ML" >更新されるフィールドでロックしている（ロックオブジェクトが不変でない）</BugCode>
@@ -1379,4 +1421,5 @@ are no results. This way, no explicit check for null is needed by clients of the
   <BugCode abbrev="NP" >Null pointer dereference</BugCode>
   <BugCode abbrev="OS">Stream not closed on all paths</BugCode>
   <BugCode abbrev="PZLA" >Prefer zero length arrays to null to indicate no results</BugCode>
+  <BugCode abbrev="UCF">Useless control flow</BugCode>
 </MessageCollection>
