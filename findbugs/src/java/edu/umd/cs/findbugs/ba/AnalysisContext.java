@@ -26,7 +26,6 @@ import edu.umd.cs.findbugs.ba.type.TypeRepository;
 */
 
 import java.util.*;
-import java.util.concurrent.*;
 import edu.umd.cs.findbugs.AnalysisLocal;
 
 import org.apache.bcel.classfile.JavaClass;
