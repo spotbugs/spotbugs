@@ -56,8 +56,14 @@
     <property name="release.prop.file" value="${build.dir}/release.properties" />
     <property name="html.xsl.stylesheet" value="${xsl.stylesheet.home}/html/chunk.xsl" />
     <property name="fo.xsl.stylesheet" value="${xsl.stylesheet.home}/fo/docbook.xsl" />
-    <property name="doc.prop.file" value="${doc.src.dir}/doc.properties"/>
+    <property name="doc.props.file" value="${findbugs.dir}/etc/doc.properties"/>
+    <property name="html.uptodate.stamp" value="${build.dir}/html-uptodate.stamp"/>
 
+    <!--
+      *****************************************************************
+      Class paths
+      *****************************************************************
+    -->
 
     <!-- Classpath for compiling FindBugs. -->
     <path id="classpath">
@@ -91,6 +97,22 @@
       <path refid="tools.buildclasspath"/>
       <pathelement location="${tools.dir}"/>
     </path>
+
+    <!--
+      *****************************************************************
+      FileSets
+      *****************************************************************
+    -->
+
+    <!-- All Java source files used to generated HTML. -->
+    <fileset id="tools.html.src" dir="${tools.src.dir}"
+             includes="edu/umd/cs/findbugs/tools/html/*.java"/>
+
+    <!--
+      *****************************************************************
+      Targets
+      *****************************************************************
+    -->
 
     <target name="clean">
       <delete dir="${build.dir}" />
@@ -324,7 +346,7 @@
                 value="${bin.release.scripts},${release.base}/etc/createXML,${release.base}/etc/runTests,${release.base}/etc/summarizeBugs,${release.base}/etc/diffBugSummaries" />
 
       <!-- Get HTML doc properties -->
-      <loadproperties srcFile="${doc.prop.file}"/>
+      <loadproperties srcFile="${doc.props.file}"/>
 
       <!-- Filter set used for generating text substitution values for
            documentation and Eclipse plugin descriptors. -->
@@ -338,15 +360,24 @@
         <filter token="HTML_SIDEBAR" value="${doc.html.sidebar}"/>
         <filter token="HTML_FOOTER" value="${doc.html.footer}"/>
       </filterset>  
-
-<!--
-      <echo>doc.html.sidebar is ${doc.html.sidebar}</echo>
--->
     </target>
 
-    <!-- Target to generate documentation files from their sources. -->
-    <target name="docfiles" depends="version,tools">
+    <!-- Check if the bug descriptions HTML file needs to be generated. -->
+    <target name="bugDescriptionsCheck" depends="tools,version">
+      <condition property="bugDescriptions.html.uptodate">
+        <and>
+          <uptodate targetfile="${doc.src.dir}/bugDescriptions.html">
+            <srcfiles refid="tools.html.src"/>
+            <srcfiles file="${doc.props.file}"/>
+            <srcfiles file="${plugin.dir}/coreplugin.jar"/>
+          </uptodate>
+        </and>
+      </condition>
+    </target>
 
+    <!-- Generate HTML of bug descriptions. -->
+    <target name="bugDescriptions" depends="bugDescriptionsCheck"
+            unless="bugDescriptions.html.uptodate">
       <java classname="edu.umd.cs.findbugs.tools.html.PrettyPrintBugDescriptions"
             output="${doc.src.dir}/bugDescriptions.html"
             failonerror="true"
@@ -359,23 +390,46 @@
          <arg value="${doc.html.gen.bugDescriptions.prologue}"/>
          <arg value="${doc.html.gen.endBody}"/>
       </java>
+    </target>
 
+    <!-- Check whether the HTML docfiles are up to date. -->
+    <target name="docfilesHTMLCheck">
+      <condition property="docfiles.html.uptodate">
+        <and>
+          <!-- Generated html files must be newer than src html files -->
+          <uptodate>
+            <srcfiles dir="${findbugs.dir}" includes="src/doc/*.html"/>
+            <mapper type="glob"
+                    from="src/doc/*.html"
+                    to="${doc.dir}/*.html"/>
+          </uptodate>
+          <!-- And, generated html files must be newer than etc/doc.properties -->
+          <uptodate targetfile="${html.uptodate.stamp}">
+            <srcfiles file="${doc.props.file}"/>
+          </uptodate>
+        </and>
+      </condition>
+    </target>
+
+    <!-- Generate HTML documentation (website). -->
+    <target name="docfilesHTML"
+            depends="version,tools,docfilesHTMLCheck,bugDescriptions"
+            unless="docfiles.html.uptodate">
+       <copy todir="${doc.dir}" overwrite="true">
+         <fileset dir="${doc.src.dir}" includes="*.html"/>
+         <filterset refid="findbugsFilters"/>
+      </copy>
+      <touch file="${html.uptodate.stamp}"/>
+    </target>
+
+    <!-- Target to generate documentation files from their sources. -->
+    <target name="docfiles" depends="version,tools,docfilesHTML">
+       <!-- Image files -->
        <copy todir="${doc.dir}">
          <fileset dir="${doc.src.dir}" includes="**/*.png"/>
        </copy>
 
-       <copy todir="${doc.dir}" overwrite="true">
-         <fileset dir="${doc.src.dir}" excludes="**/*.png,manual.xml,manual.xsl"/>
-         <!--
-           Perform substitutions on the documentation files.
-           This is how we ensure that things like version number,
-           release date, etc. are correct in the generated docs.
-           It also tells the doc formatting tools where to find
-           stylesheets and the like.
-         -->
-        <filterset refid="findbugsFilters"/>
-      </copy>
-
+      <!-- XML/XSL source for the manual -->
       <copy todir="${doc.dir}">
         <fileset dir="${doc.src.dir}" includes="manual.xml,manual.xsl"/>
         <filterset refid="findbugsFilters"/>
