@@ -1,6 +1,6 @@
 /*
  * FindBugs - Find bugs in Java programs
- * Copyright (C) 2003, University of Maryland
+ * Copyright (C) 2003, Mike Fagan <mfagan@tde.com>
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -88,7 +88,7 @@ public class FindBugsSummaryStats extends PreorderVisitor
   public void visit(JavaClass obj)     {
 	super.visit(obj);
     PackageStats stat = getPackageStats( packageName );
-    stat.addClass( betterClassName );
+    stat.addClass( betterClassName, obj.isInterface() );
     totalClasses++;
   }
 
@@ -106,130 +106,5 @@ public class FindBugsSummaryStats extends PreorderVisitor
     }
     return stat;
   }
-
-}
-  // class to store package structures
-class PackageStats implements XMLConvertible {
-    public static final String ELEMENT_NAME = "PackageStats";
-    public static final int ALL_ERRORS = 0;
-    private final String packageName;
-    // list of errors for this package
-    private LinkedList<BugInstance> packageErrors = new LinkedList<BugInstance>();
-    // map of classnames and there type
-    private LinkedList<String> packageClasses = new LinkedList<String>();
-
-    public PackageStats( String packageName ) {
-      this.packageName = packageName;
-    }
-
-    public int getTotalPackageTypes() { return packageClasses.size(); }
-
-    public int getTotalPackageErrors() { return packageErrors.size(); }
-
-    public int getNumClasses() throws ClassNotFoundException { 
-      return countClasses( false ); 
-    }
-
-    public int getNumInnerClasses() { 
-      int count = 0;
-      Iterator<String> itr = packageClasses.iterator();
-      while ( itr.hasNext() ) {
-        String name = itr.next();
-        if ( name.indexOf("$") >=0 ) {
-          count++;
-        }
-      }
-      return count;
-    }
-
-    public int getNumInterfaces() throws ClassNotFoundException { 
-      return countClasses( true ); 
-    }
-
-    public void addError( BugInstance bug ) { packageErrors.add( bug ); } 
-
-    public void addClass( String name ) { packageClasses.add(name); } 
-
-    public String getPackageName() { return packageName; }
-
-    private int countClasses( boolean isInterface ) throws ClassNotFoundException {
-      int count = 0;
-      Iterator<String> itr = packageClasses.iterator();
-      while ( itr.hasNext() ) {
-        JavaClass clss = Repository.lookupClass( itr.next() ); 
-        if ( clss.isInterface() == isInterface ) {
-          count++;
-        }
-      }
-      return count;
-    }
-
-    private List<BugInstance> getErrors( boolean isInterface, int priority ) throws ClassNotFoundException { 
-      ArrayList<BugInstance> items = new ArrayList<BugInstance>();
-      Iterator<BugInstance> itr = packageErrors.iterator();
-      while ( itr.hasNext() ) {
-        BugInstance bug = itr.next(); 
-        JavaClass clss = Repository.lookupClass( bug.getPrimaryClass().getClassName() );
-        if ( clss != null && clss.isInterface() == isInterface 
-             && ( priority == bug.getPriority() || priority == ALL_ERRORS )) {
-          items.add( bug );
-        }
-      }
-      return items; 
-    }
- 
-
-    public Element toElement( Branch parent ) {
-      List<BugInstance> classErrorList= null;
-      List<BugInstance> interfaceErrorList = null;
-      int classCount = 0;
-      int interfaceCount = 0;
-      Element element = parent.addElement(ELEMENT_NAME);
-
-      try {
-        classErrorList= getErrors( false, ALL_ERRORS ); 
-        interfaceErrorList = getErrors( true, ALL_ERRORS ); 
-        classCount = getNumClasses();
-        interfaceCount = getNumInterfaces();
-      }
-      catch ( ClassNotFoundException e ) {
-        e.printStackTrace();
-        return element;
-      }
-      element.addAttribute("package", packageName);
-      element.addAttribute("total_bugs", 
-             String.valueOf(classErrorList.size() + interfaceErrorList.size()));
-      element.addAttribute("total_types", 
-                            String.valueOf(getTotalPackageTypes()));
-
-      Element classes = element.addElement("Classes");
-      classes.addAttribute("outer", String.valueOf(classCount - getNumInnerClasses()));
-      classes.addAttribute("inner", String.valueOf(getNumInnerClasses()));
-      classes.addAttribute("total_bugs", 
-                            String.valueOf(classErrorList.size()));
-     
-      if ( classErrorList.size() > 0 ) { 
-		  Element classErrors = classes.addElement( "ClassErrors" );
-          Iterator<BugInstance> itr = classErrorList.iterator();
-          while( itr.hasNext() ) {
-            BugInstance bug = itr.next();
-            bug.toElement( classErrors );
-          }
-      }
-      
-      Element interfaces = element.addElement("Interfaces");
-      interfaces.addAttribute("count", String.valueOf(interfaceCount));
-      interfaces.addAttribute("total_bugs", 
-                               String.valueOf(interfaceErrorList.size()));
-      if ( interfaceErrorList.size() > 0 ) { 
-		  Element interfaceErrors = classes.addElement( "InterfaceErrors" );
-          Iterator<BugInstance> itr = interfaceErrorList.iterator();
-          while( itr.hasNext() ) {
-            BugInstance bug = itr.next();
-            bug.toElement( interfaceErrors );
-          }
-      }
-      return element;
-    }
 
 }
