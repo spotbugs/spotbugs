@@ -88,8 +88,27 @@ public abstract class BugCollection {
 		readXML(in, project);
 	}
 
+	/**
+	 * Read XML data from given input stream into this
+	 * object, populating the Project as a side effect.
+	 * An attempt will be made to close the input stream
+	 * (even if an exception is thrown).
+	 * @param in the InputStream
+	 * @param project the Project
+	 */
 	public void readXML(InputStream in, Project project)
 		throws IOException, DocumentException {
+		if (in == null) throw new IllegalArgumentException();
+		if (project == null) throw new IllegalArgumentException();
+
+		try {
+			doReadXML(in, project);
+		} finally {
+			in.close();
+		}
+	}
+
+	private void doReadXML(InputStream in, Project project) throws IOException, DocumentException {
 
 		checkInputStream(in);
 
