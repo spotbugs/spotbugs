@@ -875,15 +875,6 @@ See <xref linkend="commandLineOptions" /> in <xref linkend="installing" /> for a
 Command Line Interface.
 </para>
 
-<note>
-<title>Planned Features</title>
-<para>
-  In future releases of &FindBugs;, we plan to support generating reports in formats
-  such as HTML and XML, as well as providing more flexibility over which
-  bug detectors are run, how results can be sorted and filtered, etc.
-</para>
-</note>
-
 </chapter>
 
 
@@ -1286,31 +1277,41 @@ using the &FindBugs; task.
 <para>
 The FindBugs Eclipse plugin allows &FindBugs; to be used within
 the <ulink url="http://www.eclipse.org/">Eclipse</ulink> IDE.
-The FindBugs Eclipse plugin was generously contributed by Peter Friese,
-and has a <ulink url="http://www.tobject.de/development/findbugs.html">home page</ulink>.
+The FindBugs Eclipse plugin was generously contributed by Peter Friese.
+Phil Crosby and Andrei Loskutov contributed major improvements
+to the plugin.
 </para>
+
+<sect1>
+<title>Requirements</title>
+
+<para>
+To use the &FindBugs; Plugin for Eclipse, you need Eclipse 3.0.1 or later,
+and JRE/JDK 1.4.0 or later.
+</para>
+
+</sect1>
 
 <sect1>
 <title>Installation</title>
 
 <para>
-Two files are required to use the plugin, each of which can be downloaded
-from the &FindBugs; home page.  The first file is the
-<ulink url="@DOWNLOADS_WEBSITE@/edu.umd.cs.findbugs_@VERSION@.zip?download">Core plugin</ulink>,
-which contains the core &FindBugs; engine.  The second file is the
-<ulink url="@DOWNLOADS_WEBSITE@/de.tobject.findbugs_@ECLIPSE_UI_VERSION@.zip?download">UI plugin</ulink>,
-which interfaces &FindBugs; to the Eclipse workbench.  Each of these files should be extracted
-inside the <filename>plugins</filename> directory of your Eclipse installation.
+Download the plugin from the following link:
+<ulink url="@DOWNLOADS_WEBSITE@/de.tobject.findbugs_@ECLIPSE_UI_VERSION@.zip?download"
+>@DOWNLOADS_WEBSITE@/de.tobject.findbugs_@ECLIPSE_UI_VERSION@.zip?download</ulink>.
+Extract it in the directory in which you installed Eclipse.  This should be
+the parent directory of the "plugins" directory within the Eclipse installation.
+
 </para>
 
 <para>
-Once the plugin files are extracted, start Eclipse and choose
+Once the plugin is extracted, start Eclipse and choose
 <menuchoice>
   <guimenu>Help</guimenu>
   <guimenuitem>About Eclipse Platform</guimenuitem>
   <guimenuitem>Plug-in Details</guimenuitem>
 </menuchoice>.
-You should "FindBugs Plug-in" and "FindBugs Binaries" plugins listed.
+You should find a plugin called "FindBugs Plug-in" provided by "FindBugs Project".
 </para>
 </sect1>
 
@@ -1318,13 +1319,46 @@ You should "FindBugs Plug-in" and "FindBugs Binaries" plugins listed.
 <title>Using the Plugin</title>
 
 <para>
-In the properties dialog for a Java project, select "Findbugs".
-Check the box labeled "Enable FindBugs".  Then, in the right
-click menu for the project, select the option labeled
-"Find Bugs".  &FindBugs; will run, and problem markers will point to
-locations in your code which have been identified as instances
+To get started, right click on a Java project,
+and select the option labeled "Find Bugs".
+&FindBugs; will run, and problem markers will point to
+locations in your code which have been identified as potential instances
 of bug patterns.
 </para>
+
+<para>
+You may customize how &FindBugs; runs by opening the Properties
+dialog for a Java project, and choosing the "Findbugs" property page.
+Options you may choose include:
+</para>
+
+<itemizedlist>
+  <listitem>
+    <para>
+    Enable or disable the "Run FindBugs Automatically" checkbox.
+    When enabled, FindBugs will run every time you modify a Java class
+    within the project.
+    </para>
+  </listitem>
+
+  <listitem>
+    <para>
+    Choose minimum warning priority and enabled bug categories.
+    These options will choose which warnings are shown.
+    For example, if you select the "Medium" warning priority,
+    only Medium and High priority warnings will be shown.
+    Similarly, if you uncheck the "Style" checkbox, no warnings
+    in the Style category will be displayed.
+    </para>
+  </listitem>
+
+  <listitem>
+    <para>
+    Select detectors.  The table allows you to select which detectors
+    you want to enable for your project.
+    </para>
+  </listitem>
+</itemizedlist>
 
 </sect1>
 
