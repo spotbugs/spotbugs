@@ -34,6 +34,7 @@ import java.util.StringTokenizer;
 import org.dom4j.DocumentException;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
@@ -538,7 +539,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 				bugCollectionFile.setContents(pin, true, false, monitor);
 			
 			// Need to refresh here?
-			bugCollectionFile.refreshLocal(1, monitor);
+			bugCollectionFile.refreshLocal(IResource.DEPTH_INFINITE, monitor);
 		} finally {
 			try {
 				pin.close();
