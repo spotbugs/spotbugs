@@ -161,24 +161,33 @@ public class FindBugsFrame extends javax.swing.JFrame {
      * get more control over the exact text that is shown in the tree.
      */
     private class BugTreeNode extends DefaultMutableTreeNode {
+	private int count;
+
         public BugTreeNode(BugInstance bugInstance) {
             super(bugInstance);
+	    count = -1;
         }
+
+	public void setCount(int count) {
+	    this.count = count;
+	}
         
         public String toString() {
 	    try {
                 BugInstance bugInstance = (BugInstance) getUserObject();
-                String result;
-                if (fullDescriptionsItem.isSelected()) {
-                    result = bugInstance.getMessage();
-                } else {
-                    result = bugInstance.toString();
-                }
-		boolean experimental = bugInstance.isExperimental();
-		if (experimental)
-		    return "EXP: " + result;
-		else
-       		    return result;
+                StringBuffer result = new StringBuffer();
+
+		if (count >= 0) {
+		    result.append(count);
+		    result.append(": ");
+		}
+
+		if (bugInstance.isExperimental())
+		    result.append("EXP: ");
+
+		result.append(fullDescriptionsItem.isSelected() ? bugInstance.getMessage() : bugInstance.toString());
+
+		return result.toString();
 	    } catch (Exception e) {
 		return "Error formatting message for bug: " + e.toString();
 	    }
@@ -336,6 +345,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
      * makes the code a bit more robust.
      */
     private static final int DIVIDER_FUDGE = 3;
+
+    private static final boolean BUG_COUNT = Boolean.getBoolean("findbugs.gui.bugCount");
     
     /* ----------------------------------------------------------------------
      * Constructor
@@ -1921,7 +1932,9 @@ public class FindBugsFrame extends javax.swing.JFrame {
             
             private void insertIntoGroup(BugInstance member) {
                 currentGroup.incrementMemberCount();
-                DefaultMutableTreeNode bugNode = new BugTreeNode(member);
+                BugTreeNode bugNode = new BugTreeNode(member);
+		if (BUG_COUNT)
+		    bugNode.setCount(currentGroup.getMemberCount());
                 bugTreeModel.insertNodeInto(bugNode, currentGroupNode, currentGroupNode.getChildCount());
                 
                 // Insert annotations
