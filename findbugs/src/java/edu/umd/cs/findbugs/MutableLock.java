@@ -68,7 +68,8 @@ public class MutableLock extends BytecodeScanningDetector implements   Constants
 			) 
 		  bugReporter.reportBug(new BugInstance("ML_SYNC_ON_UPDATED_FIELD", NORMAL_PRIORITY)
 			.addClassAndMethod(this)
-			.addReferencedField(this));
+			.addReferencedField(this)
+			.addSourceLine(this, PC + 5));
 		break;
 	default: 
 	}
