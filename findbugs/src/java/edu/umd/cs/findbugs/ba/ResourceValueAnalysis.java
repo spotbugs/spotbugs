@@ -24,10 +24,14 @@ import org.apache.bcel.generic.*;
 public class ResourceValueAnalysis<Resource> extends FrameDataflowAnalysis<ResourceValue, ResourceValueFrame> {
 
 	private MethodGen methodGen;
+	private ResourceTracker<Resource> resourceTracker;
+	private Resource resource;
 	private ResourceValueFrameModelingVisitor visitor;
 
 	public ResourceValueAnalysis(MethodGen methodGen, ResourceTracker<Resource> resourceTracker, Resource resource) {
 		this.methodGen = methodGen;
+		this.resourceTracker = resourceTracker;
+		this.resource = resource;
 		this.visitor = resourceTracker.createVisitor(resource, methodGen.getConstantPool());
 	}
 
@@ -44,12 +48,35 @@ public class ResourceValueAnalysis<Resource> extends FrameDataflowAnalysis<Resou
 	}
 
 	public void meetInto(ResourceValueFrame fact, Edge edge, ResourceValueFrame result) throws DataflowAnalysisException {
-		if (fact.isValid() && edge.getDest().isExceptionHandler()) {
-			ResourceValueFrame tmpFact = createFact();
-			tmpFact.copyFrom(fact);
-			tmpFact.clearStack();
-			tmpFact.pushValue(ResourceValue.notInstance());
-			fact = tmpFact;
+		BasicBlock source = edge.getSource();
+		BasicBlock dest = edge.getDest();
+
+		if (dest.isExceptionHandler()) {
+			ResourceValueFrame tmpFact = null;
+
+			// Clear stack, push value for exception
+			if (fact.isValid()) {
+				tmpFact = createFact();
+				tmpFact.copyFrom(fact);
+				tmpFact.clearStack();
+				tmpFact.pushValue(ResourceValue.notInstance());
+			}
+
+			// Special case: if the instruction that closes the resource
+			// throws an exception, we consider the resource to be successfully
+			// closed anyway.
+			InstructionHandle exceptionThrower = source.getExceptionThrower();
+			assert exceptionThrower != null; // is it possible to reach an exception handler by a non-exception edge?
+			if (resourceTracker.isResourceClose(dest, exceptionThrower, methodGen.getConstantPool(), resource)) {
+				if (tmpFact == null) {
+					tmpFact = createFact();
+					tmpFact.copyFrom(fact);
+				}
+				tmpFact.setStatus(ResourceValueFrame.CLOSED);
+			}
+
+			if (tmpFact != null)
+				fact = tmpFact;
 		}
 
 		result.mergeWith(fact);
