@@ -36,7 +36,7 @@ public abstract class ResourceValueFrameModelingVisitor extends AbstractFrameMod
 	//   - parameters to invoke, but subclasses may override
 	//   - return (areturn)
 
-	protected void handleFieldStore(FieldInstruction ins) {
+	private void handleFieldStore(FieldInstruction ins) {
 		try {
 			// If the resource instance is stored in a field, then it escapes
 			ResourceValueFrame frame = getFrame();
@@ -46,6 +46,8 @@ public abstract class ResourceValueFrameModelingVisitor extends AbstractFrameMod
 		} catch (DataflowAnalysisException e) {
 			throw new IllegalStateException(e.toString());
 		}
+
+		handleNormalInstruction(ins);
 	}
 
 	public void visitPUTFIELD(PUTFIELD putfield) {
@@ -56,21 +58,37 @@ public abstract class ResourceValueFrameModelingVisitor extends AbstractFrameMod
 		handleFieldStore(putstatic);
 	}
 
+
 	/**
-	 * Override this to handle instructions that it is OK to
-	 * pass the resource instance to.
+	 * Override this to check for methods that it is legal to
+	 * pass the instance to without the instance escaping.
+	 * By default, we consider all methods to be possible escape routes.
+	 * @param inv the InvokeInstruction to which the resource instance
+	 *   is passed as a parameter
 	 */
-	protected void handleInvoke(InvokeInstruction inv) {
+	protected boolean instanceEscapes(InvokeInstruction inv) {
+		return true;
+	}
+
+	private void handleInvoke(InvokeInstruction inv) {
 		ResourceValueFrame frame = getFrame();
 		int numSlots = frame.getNumSlots();
 		int numConsumed = getNumWordsConsumed(inv);
+
+		// See if the resource instance is passed as an argument
+		boolean instanceArgument = false;
 		for (int i = numSlots - numConsumed; i < numSlots; ++i) {
 			ResourceValue value = frame.getValue(i);
 			if (value.equals(ResourceValue.instance())) {
-				frame.setStatus(ResourceValueFrame.ESCAPED);
-				return;
+				instanceArgument = true;
+				break;
 			}
 		}
+
+		if (instanceArgument && instanceEscapes(inv))
+			frame.setStatus(ResourceValueFrame.ESCAPED);
+
+		handleNormalInstruction(inv);
 	}
 
 	public void visitINVOKEINSTANCE(INVOKEINTERFACE inv) {
@@ -98,6 +116,8 @@ public abstract class ResourceValueFrameModelingVisitor extends AbstractFrameMod
 		} catch (DataflowAnalysisException e) {
 			throw new IllegalStateException(e.toString());
 		}
+
+		handleNormalInstruction(ins);
 	}
 
 }
