@@ -67,6 +67,26 @@ public class BugProperty implements XMLWriteable {
 	}
 	
 	/**
+	 * Get value of property as boolean.
+	 * 
+	 * @return value of property as a boolean
+	 */
+	public boolean getValueAsBoolean() {
+		return Boolean.valueOf(getValue()).booleanValue();
+	}
+	
+	/**
+	 * Get value of property as an integer.
+	 * 
+	 * @return value of property as integer
+	 * @throws NumberFormatException if the value cannot be parsed as
+	 *         an integer
+	 */
+	public int getValueAsInt() {
+		return Integer.parseInt(getValue());
+	}
+	
+	/**
 	 * Set value of property.
 	 * 
 	 * @param value
