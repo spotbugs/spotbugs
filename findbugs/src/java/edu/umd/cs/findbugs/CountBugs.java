@@ -31,10 +31,63 @@ import org.dom4j.DocumentException;
  * Count bugs in a result file by category.
  */
 public class CountBugs {
+	private interface Key extends Comparable<Key> {
+	}
+
+	private interface KeyFactory {
+		public Key createKey(BugInstance bugInstance);
+		public Set<Key> createKeySet(String s);
+	}
+
+	private static class CategoryKey implements Key {
+		private String category;
+
+		public CategoryKey(String category) {
+			this.category = category;
+		}
+
+		public int compareTo(Key o) {
+			int cmp;
+
+			cmp = this.getClass().getName().compareTo(o.getClass().getName());
+			if (cmp != 0) return cmp;
+			CategoryKey other = (CategoryKey) o;
+			return category.compareTo(other.category);
+		}
+
+		public int hashCode() { return category.hashCode(); }
+
+		public boolean equals(Object o) {
+			if (this.getClass() != o.getClass()) return false;
+			return category.equals(((CategoryKey)o).category);
+		}
+
+		public String toString() {
+			return category;
+		}
+	}
+
+	private static class CategoryKeyFactory implements KeyFactory {
+		public Key createKey(BugInstance bugInstance) {
+			return new CategoryKey(bugInstance.getAbbrev());
+		}
+
+		public Set<Key> createKeySet(String keyList) {
+			Set<Key> keySet = new HashSet<Key>();
+			StringTokenizer tok = new StringTokenizer(keyList, ",");
+			while (tok.hasMoreTokens()) {
+				String category = tok.nextToken();
+				keySet.add(new CategoryKey(category));
+			}
+			return keySet;
+		}
+	}
+
 	private SortedBugCollection bugCollection;
 	private Project project;
-	private HashSet<String> categorySet;
-	private TreeMap<String, Integer> countMap;
+	private KeyFactory keyFactory;
+	private Set<Key> keySet;
+	private TreeMap<Key, Integer> countMap;
 
 	public CountBugs(String resultsFileName) throws IOException, DocumentException {
 		this(new SortedBugCollection(), new Project());
@@ -45,8 +98,9 @@ public class CountBugs {
 	public CountBugs(SortedBugCollection bugCollection, Project project) {
 		this.bugCollection = bugCollection;
 		this.project = project;
-		this.categorySet = new HashSet<String>();
-		this.countMap = new TreeMap<String, Integer>();
+		this.keyFactory = new CategoryKeyFactory();
+		this.keySet = new HashSet<Key>();
+		this.countMap = new TreeMap<Key, Integer>();
 	}
 
 	public SortedBugCollection getBugCollection() {
@@ -57,21 +111,27 @@ public class CountBugs {
 		return project;
 	}
 
-	public void addCategory(String category) {
-		categorySet.add(category);
+	public void addKey(Key key) {
+		keySet.add(key);
 	}
 
-	public void setCategories(String categoryList) {
-		StringTokenizer tok = new StringTokenizer(categoryList, ",");
-		while (tok.hasMoreTokens()) {
-			String category = tok.nextToken();
-			categorySet.add(category);
-			countMap.put(category, new Integer(0));
-		}
+	public void setKeyFactory(String keyMode) {
+		if (keyMode.equals("-categories"))
+			keyFactory = new CategoryKeyFactory();
+/*
+		else if (keyMode.equals("-kingdomAndPriority"))
+			keyFactory = new KingdomAndPriorityKeyFactory();
+*/
+		else
+			throw new IllegalArgumentException("Unknown key mode: " + keyMode);
 	}
 
-	public Integer getCount(String category) {
-		Integer count = countMap.get(category);
+	public void setKeys(String keyList) {
+		keySet = keyFactory.createKeySet(keyList);
+	}
+
+	public Integer getCount(Key key) {
+		Integer count = countMap.get(key);
 		if (count == null)
 			count = new Integer(0);
 		return count;
@@ -85,7 +145,7 @@ public class CountBugs {
 		return total;
 	}
 
-	public Iterator<Map.Entry<String, Integer>> entryIterator() {
+	public Iterator<Map.Entry<Key, Integer>> entryIterator() {
 		return countMap.entrySet().iterator();
 	}
 
@@ -95,36 +155,36 @@ public class CountBugs {
 		Iterator<BugInstance> i = bugCollection.iterator();
 		while (i.hasNext()) {
 			BugInstance bugInstance = i.next();
-			String category = bugInstance.getAbbrev();
+			Key key = keyFactory.createKey(bugInstance);//bugInstance.getAbbrev();
 
-			if (categorySet.size() > 0 && !categorySet.contains(category))
+			if (keySet.size() > 0 && !keySet.contains(key))
 				continue;
 
-			Integer count = countMap.get(category);
+			Integer count = countMap.get(key);
 			if (count == null)
 				count = new Integer(0);
-			countMap.put(category, new Integer(count.intValue() + 1));
+			countMap.put(key, new Integer(count.intValue() + 1));
 		}
 	}
 
 	public void diffCounts(CountBugs newer) {
-		TreeSet<String> allCategories = new TreeSet<String>();
+		TreeSet<Key> allCategories = new TreeSet<Key>();
 		allCategories.addAll(countMap.keySet());
 		allCategories.addAll(newer.countMap.keySet());
 
-		for (Iterator<String> i = allCategories.iterator(); i.hasNext(); ) {
-			String category = i.next();
-			Integer delta = new Integer(newer.getCount(category).intValue() - getCount(category).intValue());
-			countMap.put(category, delta);
+		for (Iterator<Key> i = allCategories.iterator(); i.hasNext(); ) {
+			Key key = i.next();
+			Integer delta = new Integer(newer.getCount(key).intValue() - getCount(key).intValue());
+			countMap.put(key, delta);
 		}
 	}
 
 	public void printCounts(OutputStream out, boolean deltas) {
 		PrintStream pout = new PrintStream(out);
 
-		Iterator<Map.Entry<String, Integer>> j = entryIterator();
+		Iterator<Map.Entry<Key, Integer>> j = entryIterator();
 		while(j.hasNext()) {
-			Map.Entry<String,Integer> entry = j.next();
+			Map.Entry<Key,Integer> entry = j.next();
 			int count = entry.getValue().intValue();
 			if (count != 0) {
 				pout.print(entry.getKey() + ":\t");
@@ -149,17 +209,19 @@ public class CountBugs {
 		}
 
 		int arg = 0;
-		String categoryList = "";
+		String keyList = "";
+		String keyMode = "-categories";
 		boolean diffMode = false;
 
 		while (arg < argv.length - 1) {
 			String option = argv[arg];
 
-			if (option.equals("-categories")) {
+			if (option.equals("-categories") || option.equals("-hmcm")) {
+				keyMode = argv[arg];
 				++arg;
 				if (arg >= argv.length)
 					throw new IllegalArgumentException("-categories option requires argument");
-				categoryList = argv[arg];
+				keyList = argv[arg];
 			} else if (option.equals("-diff")) {
 				diffMode = true;
 			} else
@@ -173,14 +235,15 @@ public class CountBugs {
 
 		String filename = argv[arg++];
 		CountBugs countBugs = new CountBugs(filename);
-		countBugs.setCategories(categoryList);
+		countBugs.setKeyFactory(keyMode);
+		countBugs.setKeys(keyList);
 		countBugs.execute();
 
 		if (diffMode) {
 			if (arg >= argv.length)
 				usage();
 			CountBugs countBugs2 = new CountBugs(argv[arg++]);
-			countBugs2.setCategories(categoryList);
+			countBugs2.setKeys(keyList);
 			countBugs2.execute();
 
 			countBugs.diffCounts(countBugs2);
