@@ -70,19 +70,29 @@ public class Project {
     /**
      * Add a Jar file to the project.
      * @param fileName the jar file to add
+     * @return true if the jar file was added, or false if the jar
+     *   file was already present
      */
-    public void addJar(String fileName) {
-	if (!jarList.contains(fileName))
+    public boolean addJar(String fileName) {
+	if (!jarList.contains(fileName)) {
 	    jarList.add(fileName);
+            return true;
+        } else
+            return false;
     }
     
     /*
      * Add a source directory to the project.
      * @param dirName the directory to add
+     * @return true if the source directory was added, or false if the
+     *   source directory was already present
      */
-    public void addSourceDir(String dirName) {
-	if (!srcDirList.contains(dirName))
+    public boolean addSourceDir(String dirName) {
+	if (!srcDirList.contains(dirName)) {
 	    srcDirList.add(dirName);
+            return true;
+        } else
+            return false;
     }
     
     /**
