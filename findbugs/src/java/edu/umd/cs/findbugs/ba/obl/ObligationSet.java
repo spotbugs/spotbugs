@@ -82,7 +82,7 @@ public class ObligationSet {
 				return false;
 		}
 
-		return false;
+		return true;
 	}
 	
 	public String toString() {
@@ -118,8 +118,7 @@ public class ObligationSet {
 		if (cachedHashCode == INVALID_HASH_CODE) {
 			int value = 0;
 			for (int i = 0; i < countList.length; ++i) {
-				value *= 13;
-				value += countList[i];
+				value += (13 * i * countList[i]);
 			}
 			cachedHashCode = value;
 		}
