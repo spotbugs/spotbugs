@@ -28,6 +28,7 @@ import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
+import org.dom4j.io.OutputFormat;
 
 /**
  * Abstract base class for collections of BugInstance objects.
@@ -76,7 +77,11 @@ public abstract class BugCollection {
 	}
 
 	public void writeXML(String fileName) throws IOException {
+		BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(fileName));
+		writeXML(out);
+	}
 
+	public void writeXML(OutputStream out) throws IOException {
 		Document document = DocumentHelper.createDocument();
 		Element root = document.addElement(ROOT_ELEMENT_NAME);
 
@@ -87,9 +92,8 @@ public abstract class BugCollection {
 			bugInstance.toElement(root);
 		}
 
-		BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(fileName));
 
-		XMLWriter writer = new XMLWriter(out);
+		XMLWriter writer = new XMLWriter(out, OutputFormat.createPrettyPrint());
 		writer.write(document);
 	}
 
