@@ -1372,7 +1372,6 @@ public class FindBugsFrame extends javax.swing.JFrame {
             editMenu.setFont(new java.awt.Font("Dialog", 0, 12));
             editMenu.setEnabled(false);
             localiseButton(editMenu, "menu.edit_menu", "&Edit", true);
-            cutItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_X, java.awt.event.InputEvent.CTRL_MASK));
             cutItem.setFont(new java.awt.Font("Dialog", 0, 12));
             cutItem.setText("Cut");
             localiseButton(cutItem, "menu.cut_item", "Cut", true);
@@ -1384,7 +1383,6 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
             editMenu.add(cutItem);
 
-            copyItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_C, java.awt.event.InputEvent.CTRL_MASK));
             copyItem.setFont(new java.awt.Font("Dialog", 0, 12));
             copyItem.setText("Copy");
             localiseButton(copyItem, "menu.copy_item", "Copy", true);
@@ -1396,7 +1394,6 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
             editMenu.add(copyItem);
 
-            pasteItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_V, java.awt.event.InputEvent.CTRL_MASK));
             pasteItem.setFont(new java.awt.Font("Dialog", 0, 12));
             pasteItem.setText("Paste");
             localiseButton(pasteItem, "menu.paste_item", "Paste", true);
@@ -1410,7 +1407,6 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
             editMenu.add(jSeparator10);
 
-            selectAllItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_A, java.awt.event.InputEvent.CTRL_MASK));
             selectAllItem.setFont(new java.awt.Font("Dialog", 0, 12));
             selectAllItem.setText("Select All");
             localiseButton(selectAllItem, "menu.selectall_item", "Select &All", true);
@@ -2365,6 +2361,11 @@ public class FindBugsFrame extends javax.swing.JFrame {
 		saveProjectItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, MENU_MASK));
 		closeProjectItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_W, MENU_MASK));
 		reloadProjectItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, MENU_MASK));
+
+		cutItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, MENU_MASK));
+		copyItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, MENU_MASK));
+		pasteItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V, MENU_MASK));
+		selectAllItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, MENU_MASK));
 		
 		if (MAC_OS_X) {
 			// Some more accelerators that use modifiers. Other platforms
