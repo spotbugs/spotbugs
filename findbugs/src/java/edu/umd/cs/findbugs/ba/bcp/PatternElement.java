@@ -31,8 +31,10 @@ public interface PatternElement {
 	 * instruction with the given Bindings in effect.
 	 * @param handle the instruction
 	 * @param bindingSet the set of Bindings
+	 * @return if the match is successful, returns an updated BindingSet;
+	 *   if the match is not successful, returns null
 	 */
-	public boolean match(InstructionHandle handle, BindingSet bindingSet);
+	public BindingSet match(InstructionHandle handle, BindingSet bindingSet);
 
 	/**
 	 * Return the minimum number of instructions this PatternElement
