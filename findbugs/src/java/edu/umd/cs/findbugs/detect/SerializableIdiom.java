@@ -247,12 +247,12 @@ public class SerializableIdiom extends PreorderVisitor
 		&& !isExternalizable
 		&& getFieldSig().indexOf("L")  >= 0 && !obj.isTransient() && !obj.isStatic()) {
 		try {
-			String fieldClassName = getFieldSig().substring(getFieldSig().indexOf("L")+1, getFieldSig().length() - 1).replace('/', '.');
-			JavaClass fieldClass = Repository.lookupClass(fieldClassName);
+			String fieldTypeClassName = getFieldSig().substring(getFieldSig().indexOf("L")+1, getFieldSig().length() - 1).replace('/', '.');
+			JavaClass fieldTypeClass = Repository.lookupClass(fieldTypeClassName);
 
-			if (!fieldClassName.equals("java.lang.Object") &&
-			    !(Repository.instanceOf(fieldClass, "java.io.Serializable")
-				|| Repository.instanceOf(fieldClass, "java.io.Externalizable"))) {
+			if (!fieldTypeClassName.equals("java.lang.Object") &&
+			    !(Repository.instanceOf(fieldTypeClass, "java.io.Serializable")
+				|| Repository.instanceOf(fieldTypeClass, "java.io.Externalizable"))) {
 				
 
 				// Priority is LOW for GUI classes (unless explicitly marked Serializable),
@@ -267,17 +267,17 @@ public class SerializableIdiom extends PreorderVisitor
 				// Lower the priority for fields which are of an interface
 				// or abstract type, since the user may know that all subtypes of
 				// the interface will be Serializable.
-				if (fieldClass.isInterface() 
-					|| fieldClass.isAbstract()) {
+				if (fieldTypeClass.isInterface() 
+					|| fieldTypeClass.isAbstract()) {
 				    priority = Math.max(LOW_PRIORITY, priority + 1);
-			            if (Repository.instanceOf(fieldClass, 
+			            if (Repository.instanceOf(fieldTypeClass, 
 						"java.util.Collection"))
 					    return;
 				    }
 				// Report is queued until after the entire class has been seen.
 				fieldWarningList.add(new BugInstance("SE_BAD_FIELD", priority)
 					.addClass(getThisClass().getClassName())
-					.addField(fieldClassName, obj.getName(), getFieldSig(), false));
+					.addField(getDottedClassName(), obj.getName(), getFieldSig(), false));
 			}
 		} catch (ClassNotFoundException e) {
 			bugReporter.reportMissingClass(e);
