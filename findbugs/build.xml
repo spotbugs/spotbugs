@@ -64,9 +64,11 @@
 
     <property name="findbugs.dir" value="." />
     <property name="findbugs.src.dir" value="${findbugs.dir}/src/java" />
+    <property name="anttask.src.dir" value="${findbugs.dir}/src/antTask" />
     <property name="findbugs.jar.name" value="findbugs.jar" />
     <property name="findbugsgui.jar.name" value="findbugsGUI.jar" />
     <property name="coreplugin.jar.name" value="coreplugin.jar" />
+    <property name="anttask.jar.name" value="findbugs-ant.jar" />
     <property name="doc.src.dir" value="${findbugs.dir}/src/doc" />
     <property name="doc.dir" value="${findbugs.dir}/doc" />
     <property name="build.dir" value="${findbugs.dir}/build" />
@@ -107,6 +109,7 @@
       <delete file="${release.prop.file}" />
       <delete file="${jar.dir}/${findbugs.jar.name}" />
       <delete file="${jar.dir}/${findbugsgui.jar.name}" />
+      <delete file="${jar.dir}/${anttask.jar.name}" />
       <delete>
         <fileset dir="${test.dir}" includes="*.class" />
         <fileset dir="${test.dir}" includes="*.jar" />
@@ -138,14 +141,16 @@
       </copy>
 
       <!--
-        FindBugs engine - all classes except those in the GUI
-        and the Detector implementations (which are part of the core plugin).
+        FindBugs engine - all classes except those in the GUI,
+        the Detector implementations (which are part of the core plugin),
+        and the Ant task (which is put in its own Jar file).
       -->
       <jar destfile="${jar.dir}/${findbugs.jar.name}"
            basedir="${class.dir}" manifest="${findbugs.dir}/etc/MANIFEST-findbugs.MF">
         <exclude name="edu/umd/cs/findbugs/gui/**" />
         <exclude name="edu/umd/cs/findbugs/detect/*" />
         <exclude name="*.xml" />
+        <exclude name="edu/umd/cs/findbugs/anttask/**" />
       </jar>
     </target>
 
@@ -181,6 +186,16 @@
         <fileset dir="${class.dir}" includes="edu/umd/cs/findbugs/gui/*" />
         <fileset dir="${class.dir}" includes="edu/umd/cs/findbugs/gui/help/*" />
       </jar>
+    </target>
+
+    <!-- Target to build the anttask -->
+    <target name="anttask" depends="findbugs">
+      <javac srcdir="${anttask.src.dir}" debug="true" destdir="${class.dir}" >
+        <classpath refid="classpath" />
+      </javac>
+ 
+      <jar destfile="${jar.dir}/${anttask.jar.name}"
+          basedir="${class.dir}" includes="edu/umd/cs/findbugs/anttask/**" />
     </target>
 
     <!-- Build jar file of test cases.  -->
@@ -266,7 +281,7 @@
 
     <!-- Default target: just compile the code
          and build the Jar files. -->
-    <target name="build" depends="findbugs,coreplugin,findbugsgui,testjar" />
+    <target name="build" depends="findbugs,coreplugin,findbugsgui,anttask,testjar" />
 
     <!-- Compile the code and format the docs. -->
     <target name="buildAll" depends="build,docs" />
