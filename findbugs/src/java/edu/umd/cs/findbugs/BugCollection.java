@@ -111,16 +111,18 @@ public abstract class BugCollection {
 		Document document = DocumentHelper.createDocument();
 		Element root = document.addElement(ROOT_ELEMENT_NAME);
 
-		Iterator<BugInstance> i = this.iterator();
+		// Save the project information
+		Element projectElement = root.addElement(PROJECT_ELEMENT_NAME);
+		project.writeElement(projectElement);
 
+		// Save all of the bug instances
+		Iterator<BugInstance> i = this.iterator();
 		while (i.hasNext()) {
 			BugInstance bugInstance = i.next();
 			bugInstance.toElement(root);
 		}
 
-		Element projectElement = root.addElement(PROJECT_ELEMENT_NAME);
-		project.writeElement(projectElement);
-
+		// Save the class to source map information
 		Iterator<Map.Entry<String, String>> j = classToSourceFileMap.entrySet().iterator();
 		while (j.hasNext()) {
 			Map.Entry<String, String> entry = j.next();
