@@ -15,7 +15,7 @@ public class FindInconsistentSync extends CFGBuildingDetector {
 	private static final boolean ANY_LOCKS = Boolean.getBoolean("fis.anylocks");
 
 	/**
-	 * This flag turns off analysis of call sites of private methods,
+	 * This flag turns off analysis of call sites of private methods
 	 * to see if the caller is always locked.
 	 */
 	private static final boolean IGNORE_CALL_SITES = Boolean.getBoolean("fis.ignorecallsites");
