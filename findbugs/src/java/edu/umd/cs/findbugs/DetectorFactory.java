@@ -22,12 +22,26 @@ package edu.umd.cs.findbugs;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
+/**
+ * A DetectorFactory is responsible for creating instances of Detector objects
+ * and for maintaining meta-information about the detector class.
+ *
+ * @see Detector
+ * @author David Hovemeyer
+ */
 public class DetectorFactory {
 	private final Class detectorClass;
 	private boolean enabled;
 	private final String speed;
 	private String detailHTML;
 
+	/**
+	 * Constructor.
+	 * @param detectorClass the Class object of the Detector
+	 * @param enabled true if the Detector is enabled by default, false if disabled
+	 * @param speed a string describing roughly how expensive the analysis performed
+	 *   by the detector is; suggested values are "fast", "moderate", and "slow"
+	 */
 	public DetectorFactory(Class detectorClass, boolean enabled, String speed) {
 		this.detectorClass = detectorClass;
 		this.enabled = enabled;
@@ -36,26 +50,36 @@ public class DetectorFactory {
 
 	private static final Class[] constructorArgTypes = new Class[]{BugReporter.class};
 
+	/** Is this factory enabled? */
 	public boolean isEnabled() {
 		return enabled;
 	}
 
+	/** Set the enabled status of the factory. */
 	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
 	}
 
+	/** Get the speed of the Detector produced by this factory. */
 	public String getSpeed() {
 		return speed;
 	}
 
+	/** Get an HTML document describing the Detector. */
 	public String getDetailHTML() {
 		return detailHTML;
 	}
 
+	/** Set the HTML document describing the Detector. */
 	public void setDetailHTML(String detailHTML) {
 		this.detailHTML = detailHTML;
 	}
 
+	/**
+	 * Create a Detector instance.
+	 * @param bugReporter the BugReported to be used to report bugs
+	 * @return the Detector
+	 */
 	public Detector create(BugReporter bugReporter) {
 		try {
 			Constructor constructor = detectorClass.getConstructor(constructorArgTypes);
@@ -65,6 +89,10 @@ public class DetectorFactory {
 		}
 	}
 
+	/**
+	 * Get the short name of the Detector.
+	 * This is the name of the detector class without the package qualification.
+	 */
 	public String getShortName() {
 		String className = detectorClass.getName();
 		int endOfPkg = className.lastIndexOf('.');
@@ -73,6 +101,10 @@ public class DetectorFactory {
 		return className;
 	}
 
+	/**
+	 * Get the full name of the detector.
+	 * This is the name of the detector class, with package qualification.
+	 */
 	public String getFullName() {
 		return detectorClass.getName();
 	}
