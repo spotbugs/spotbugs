@@ -61,6 +61,7 @@ public class BugInstance implements Comparable, XMLConvertible {
 	private ClassAnnotation primaryClassAnnotation;
 	private MethodAnnotation primaryMethodAnnotation;
 	private int cachedHashCode;
+	private String annotationText;
 
 	/**
 	 * This value is used to indicate that the cached hashcode
@@ -79,6 +80,7 @@ public class BugInstance implements Comparable, XMLConvertible {
 		annotationList = new ArrayList<BugAnnotation>();
 		primaryClassAnnotation = null;
 		cachedHashCode = INVALID_HASH_CODE;
+		annotationText = "";
 	}
 
 	/* ----------------------------------------------------------------------
@@ -148,6 +150,22 @@ public class BugInstance implements Comparable, XMLConvertible {
 		return pattern != null ? pattern.getAbbrev() : "<unknown bug pattern>";
 	}
 
+	/**
+	 * Set the user annotation text.
+	 * @param annotationText the user annotation text
+	 */
+	public void setAnnotationText(String annotationText) {
+		this.annotationText = annotationText;
+	}
+	
+	/**
+	 * Get the user annotation text.
+	 * @return the user annotation text
+	 */
+	public String getAnnotationText() {
+		return annotationText;
+	}
+	
 	/* ----------------------------------------------------------------------
 	 * Combined annotation adders
 	 * ---------------------------------------------------------------------- */
@@ -532,6 +550,7 @@ public class BugInstance implements Comparable, XMLConvertible {
 	 * ---------------------------------------------------------------------- */
 
 	private static final String ELEMENT_NAME = "BugInstance";
+	private static final String USER_ANNOTATION_ELEMENT_NAME = "UserAnnotation";
 
 	private static class BugInstanceXMLTranslator implements XMLTranslator {
 		public String getElementName() {
@@ -545,18 +564,22 @@ public class BugInstance implements Comparable, XMLConvertible {
 
 				BugInstance bugInstance = new BugInstance(type, priority);
 
-				// Child elements are BugAnnotations
+				// Child elements are BugAnnotations or the UserAnnotation text
 				Iterator i = element.elements().iterator();
 				while (i.hasNext()) {
 					Element child = (Element) i.next();
 					String childName = child.getName();
+					
+					if (childName.equals(USER_ANNOTATION_ELEMENT_NAME)) {
+						bugInstance.setAnnotationText(child.getText());
+					} else {
+						XMLTranslator translator = XMLTranslatorRegistry.instance().getTranslator(childName);
+						if (translator == null)
+							throw new DocumentException("Bad element type: " + childName);
 
-					XMLTranslator translator = XMLTranslatorRegistry.instance().getTranslator(childName);
-					if (translator == null)
-						throw new DocumentException("Bad element type: " + childName);
-
-					BugAnnotation annotation = (BugAnnotation) translator.fromElement(child);
-					bugInstance.add(annotation);
+						BugAnnotation annotation = (BugAnnotation) translator.fromElement(child);
+						bugInstance.add(annotation);
+					}
 				}
 
 				return bugInstance;
@@ -575,6 +598,11 @@ public class BugInstance implements Comparable, XMLConvertible {
 		Element element = parent.addElement(ELEMENT_NAME)
 			.addAttribute("type", type)
 			.addAttribute("priority", String.valueOf(priority));
+		
+		if (!annotationText.equals("")) {
+			Element annotationElement = element.addElement("UserAnnotation");
+			annotationElement.setText(annotationText);
+		}
 
 		Iterator<BugAnnotation> i = annotationList.iterator();
 		while (i.hasNext()) {
