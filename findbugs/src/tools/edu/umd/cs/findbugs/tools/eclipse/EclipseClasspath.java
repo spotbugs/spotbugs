@@ -140,9 +140,44 @@ public class EclipseClasspath {
 			Node plugin = document.selectSingleNode("/plugin");
 			if (plugin == null)
 				throw new EclipseClasspathException("No plugin node in plugin descriptor");
+
+			if (!plugin.valueOf("@id").equals("")) {
+				parseOldPluginDescriptor(directory, plugin, isDependent);
+			} else {
+				parseNewPluginDescriptor(directory, plugin, isDependent);
+			}
+		}
+
+		public String getDirectory() {
+			return directory;
+		}
+
+		public boolean isDependent() {
+			return isDependent;
+		}
+
+		public String getId() {
+			return pluginId;
+		}
+
+		public String getVersion() {
+			return pluginVersion;
+		}
+
+		public Iterator<String> requiredPluginIdIterator() {
+			return requiredPluginIdList.iterator();
+		}
+
+		public Iterator<String> exportedLibraryIterator() {
+			return exportedLibraryList.iterator();
+		}
+
+		private void parseOldPluginDescriptor(String directory, Node plugin, boolean isDependent)
+			throws DocumentException, EclipseClasspathException {
+			// In Eclipse 2.1.x, all of the information we need
+			// is in plugin.xml.
+
 			pluginId = plugin.valueOf("@id");
-			if (pluginId.equals(""))
-				throw new EclipseClasspathException("Cannot determine plugin id in directory " + directory);
 			//System.out.println("Plugin id is " + pluginId);
 			pluginVersion = plugin.valueOf("@version");
 			if (pluginVersion.equals(""))
@@ -179,28 +214,12 @@ public class EclipseClasspath {
 			}
 		}
 
-		public String getDirectory() {
-			return directory;
-		}
+		private void parseNewPluginDescriptor(String directory, Node plugin, boolean isDependent)
+			throws DocumentException, EclipseClasspathException {
+			// In Eclipse 3.x, we need to parse the plugin's MANIFEST.MF
 
-		public boolean isDependent() {
-			return isDependent;
-		}
-
-		public String getId() {
-			return pluginId;
-		}
-
-		public String getVersion() {
-			return pluginVersion;
-		}
-
-		public Iterator<String> requiredPluginIdIterator() {
-			return requiredPluginIdList.iterator();
-		}
-
-		public Iterator<String> exportedLibraryIterator() {
-			return exportedLibraryList.iterator();
+			throw new EclipseClasspathException(
+				"FIXME: support parsing Eclipse 3.0 plugin manifest for " + directory);
 		}
 	}
 
