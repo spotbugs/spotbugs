@@ -44,7 +44,6 @@ public class FindHEmismatch extends BytecodeScanningDetector implements   Consta
 	if (!obj.isClass()) return;
 	if (getDottedClassName().equals("java.lang.Object")) return;
 	int accessFlags = obj.getAccessFlags();
-	// if ((accessFlags & ACC_ABSTRACT) != 0) return;
 	if ((accessFlags & ACC_INTERFACE) != 0) return;
 	String whereEqual = getDottedClassName();
 	if (!hasEqualsObject)  {
@@ -92,12 +91,17 @@ public class FindHEmismatch extends BytecodeScanningDetector implements   Consta
 		}
 	if (!hasHashCode && (hasEqualsObject ||  hasEqualsSelf))  {
 		if (usesDefaultHashCode) 
-		  bugReporter.reportBug(new BugInstance("HE_EQUALS_USE_HASHCODE", HIGH_PRIORITY).addClass(getDottedClassName()));
-		else
-		  bugReporter.reportBug(
+		  bugReporter.reportBug(new BugInstance("HE_EQUALS_USE_HASHCODE", 
+				obj.isAbstract() ? LOW_PRIORITY : HIGH_PRIORITY).addClass(getDottedClassName()));
+		else {
+		  int priority = hasFields ? NORMAL_PRIORITY : LOW_PRIORITY;
+		  if (obj.isAbstract()) priority++;
+		  if (priority <= LOW_PRIORITY)
+		   bugReporter.reportBug(
 		    new BugInstance("HE_EQUALS_NO_HASHCODE", 
-			hasFields ? NORMAL_PRIORITY : LOW_PRIORITY)
+			priority)
 		    .addClass(getDottedClassName()));
+		}
 		}
 	} catch (NullPointerException e) {
 		/*
