@@ -199,6 +199,9 @@
        <copy todir="${release.dir}/findbugs-${release.number}/lib">
          <fileset dir="${jar.dir}" includes="**/*.jar"/>
        </copy>
+       <copy todir="${release.dir}/findbugs-${release.number}/plugin">
+         <fileset dir="${plugin.dir}" includes="**/*.jar"/>
+       </copy>
        <copy todir="${release.dir}/findbugs-${release.number}/doc">
          <fileset dir="${doc.dir}" />
        </copy>
