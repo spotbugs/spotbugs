@@ -37,16 +37,16 @@ public class PluginLoader extends URLClassLoader {
 	}
 
 	public DetectorFactory[] getDetectorFactoryList() {
-		return null;
+		return detectorFactoryList.toArray(new DetectorFactory[0]);
 	}
 
 	public BugPattern[] getBugPatternList() {
-		return null;
+		return bugPatternList.toArray(new BugPattern[0]);
 	}
 
 	private void init() throws PluginException {
 		Document pluginDescriptor; // a.k.a, "findbugs.xml"
-		Document messageCollection; // a.k.a., "messages.xml"
+		Document messageCollection; // a.k.a., "messages.xml" or localization thereof
 
 		try {
 			URL descriptorURL = findResource("findbugs.xml");
