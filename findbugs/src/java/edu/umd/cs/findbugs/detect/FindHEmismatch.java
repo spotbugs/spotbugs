@@ -87,7 +87,7 @@ public class FindHEmismatch extends BytecodeScanningDetector implements   Consta
 		System.out.println("extendsObject: " + extendsObject);
 		*/
 		if (usesDefaultEquals) 
-		  bugReporter.reportBug(new BugInstance("HE_HASHCODE_USE_OBJECT_EQUALS", NORMAL_PRIORITY).addClass(betterClassName));
+		  bugReporter.reportBug(new BugInstance("HE_HASHCODE_USE_OBJECT_EQUALS", LOW_PRIORITY).addClass(betterClassName));
 		else
 		  bugReporter.reportBug(new BugInstance("HE_HASHCODE_NO_EQUALS", LOW_PRIORITY). addClass(betterClassName));
 		}

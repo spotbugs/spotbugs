@@ -36,7 +36,7 @@ M UuF: Unused field: F.blat
 L SIC: Should F$1 be a _static_ inner class?
 L IS2: Inconsistent synchronization of Getter.x; locked 75% of time  Unsynchronized access at Getter.java:[line 4]
 M UG: Getter.getX() is unsynchronized, Getter.setX(int) is synchronized
-M HE: Hashcode defines hashCode and uses Object.equals()
+L HE: Hashcode defines hashCode and uses Object.equals()
 M DE: IgnoredException.foo(java.io.OutputStream) might ignore java.lang.Throwable  At IgnoredException.java:[line 20]
 L DE: IgnoredException.foo(java.io.OutputStream) might ignore java.io.IOException  At IgnoredException.java:[line 9]
 M RV: IgnoredReturnValue.main(String[]) ignores return value of java.util.concurrent.BlockingQueue.offer(Object)  At IgnoredReturnValue.java:[line 12]
