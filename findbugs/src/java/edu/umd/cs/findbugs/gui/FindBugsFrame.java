@@ -392,8 +392,10 @@ public class FindBugsFrame extends javax.swing.JFrame {
 			currentDirectory = new File(dirProp);
 		}
 
-//      Uncomment to test I18N	    
+//      Uncomment one of these to test I18N	    
 //	    Locale.setDefault( Locale.FRANCE );
+//	    Locale.setDefault( Locale.GERMAN );
+//	    Locale.setDefault( new Locale( "et" ));
 	    
 		UserPreferences prefs = UserPreferences.getUserPreferences();
 		prefs.read();
@@ -1033,6 +1035,15 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
         consoleSplitter.setTopComponent(viewPanel);
 
+        {
+            groupByTabbedPane.setTitleAt(0, L10N.getLocalString( "dlg.byclass_tab", "By Class"));
+            groupByTabbedPane.setTitleAt(1, L10N.getLocalString( "dlg.bypackage_tab", "By Package"));
+            groupByTabbedPane.setTitleAt(2, L10N.getLocalString( "dlg.bybugtype_tab", "By Bug Type"));
+            groupByTabbedPane.setTitleAt(2, L10N.getLocalString( "dlg.summary_tab", "Summary"));
+            bugDetailsTabbedPane.setTitleAt(0, L10N.getLocalString( "dlg.details_tab", "Details"));
+            bugDetailsTabbedPane.setTitleAt(1, L10N.getLocalString( "dlg.sourcecode_tab", "Source Code"));
+            bugDetailsTabbedPane.setTitleAt(2, L10N.getLocalString( "dlg.annotations_tab", "Annotations"));
+        }
         consoleScrollPane.setMinimumSize(new java.awt.Dimension(22, 100));
         consoleScrollPane.setPreferredSize(new java.awt.Dimension(0, 100));
         consoleMessageArea.setBackground(new java.awt.Color(204, 204, 204));
