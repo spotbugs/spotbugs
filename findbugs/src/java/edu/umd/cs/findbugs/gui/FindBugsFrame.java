@@ -2134,7 +2134,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
     
     private void updateTitle(Project project) {
         if (project == null)
-            this.setTitle("FindBugs - no project");
+            this.setTitle(L10N.getLocalString("dlg.noproject_lbl", "FindBugs - no project"));
         else
             this.setTitle("FindBugs - " + project.toString());
     }
