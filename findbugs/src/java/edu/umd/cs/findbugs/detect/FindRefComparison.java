@@ -38,12 +38,12 @@ public class FindRefComparison implements Detector {
 	public void visitClassContext(ClassContext classContext) {
 		try {
 
-			JavaClass jclass = classContext.getJavaClass();
+			final JavaClass jclass = classContext.getJavaClass();
 			Method[] methodList = jclass.getMethods();
 
 			for (int i = 0; i < methodList.length; ++i) {
 				Method method = methodList[i];
-				MethodGen methodGen = classContext.getMethodGen(method);
+				final MethodGen methodGen = classContext.getMethodGen(method);
 				if (methodGen == null)
 					continue;
 
@@ -77,8 +77,15 @@ public class FindRefComparison implements Detector {
 
 								if (ot1.getClassName().equals("java.lang.String") &&
 									ot2.getClassName().equals("java.lang.String")) {
-									System.out.println("String/String comparison!");
-									// TODO: report the bug
+									//System.out.println("String/String comparison!");
+
+									String sourceFile = jclass.getSourceFileName();
+									bugReporter.reportBug(new BugInstance("RC_REF_COMPARISON", NORMAL_PRIORITY)
+										.addClassAndMethod(methodGen, sourceFile)
+										.addSourceLine(methodGen, sourceFile, handle)
+										.addClass(ot1.getClassName()).describe("CLASS_REFTYPE")
+									);
+
 								}
 							}
 						}
