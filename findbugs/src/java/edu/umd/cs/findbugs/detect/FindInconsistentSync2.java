@@ -333,21 +333,26 @@ public class FindInconsistentSync2 implements Detector {
 							TypeDataflow typeDataflow = classContext.getTypeDataflow(method);
 							TypeFrame typeFrame = typeDataflow.getFactAtLocation(location);
 							Type instanceType = typeFrame.getInstance(handle.getInstruction(), cpg);
-							if (!(instanceType instanceof ObjectType))
-								throw new AnalysisException("Field accessed through non-object reference " + instanceType,
-									methodGen, handle);
-							ObjectType objType = (ObjectType) instanceType;
 
-							// If instance class name is not the same as that of the field,
-							// make it so
-							String instanceClassName = objType.getClassName();
-							if (!instanceClassName.equals(xfield.getClassName())) {
-								xfield = new InstanceField(
-									instanceClassName,
-									xfield.getFieldName(),
-									xfield.getFieldSignature(),
-									xfield.getAccessFlags()
-								);
+							// Note: instance type can be Null,
+							// in which case we won't adjust the field type.
+							if (instanceType != TypeFrame.getNullType()) {
+								if (!(instanceType instanceof ObjectType))
+									throw new AnalysisException("Field accessed through non-object reference " + instanceType,
+										methodGen, handle);
+								ObjectType objType = (ObjectType) instanceType;
+	
+								// If instance class name is not the same as that of the field,
+								// make it so
+								String instanceClassName = objType.getClassName();
+								if (!instanceClassName.equals(xfield.getClassName())) {
+									xfield = new InstanceField(
+										instanceClassName,
+										xfield.getFieldName(),
+										xfield.getFieldSignature(),
+										xfield.getAccessFlags()
+									);
+								}
 							}
 						}
 				
