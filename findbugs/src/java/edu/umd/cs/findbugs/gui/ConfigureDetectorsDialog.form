@@ -31,7 +31,7 @@
       <SubComponents>
         <Component class="javax.swing.JTable" name="detectorTable">
           <Properties>
-            <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor" postCode="populateTable();&#xa;detectorTable.getColumnModel().getColumn(1).setMaxWidth(60);&#xa;">
+            <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor" postCode="populateTable();&#xa;detectorTable.getColumnModel().getColumn(1).setMaxWidth(60);&#xa;detectorTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);&#xa;">
               <Table columnCount="2" rowCount="0">
                 <Column editable="false" title="Bug Detector" type="java.lang.String"/>
                 <Column editable="true" title="Enabled" type="java.lang.Boolean"/>
@@ -48,10 +48,16 @@
             <BevelBorder bevelType="1"/>
           </Border>
         </Property>
+        <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+          <Dimension value="[25, 25]"/>
+        </Property>
+        <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+          <Dimension value="[110, 120]"/>
+        </Property>
       </Properties>
       <Constraints>
         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
-          <GridBagConstraints gridX="0" gridY="1" gridWidth="3" gridHeight="1" fill="1" ipadX="0" ipadY="0" insetsTop="2" insetsLeft="6" insetsBottom="2" insetsRight="6" anchor="10" weightX="0.0" weightY="0.2"/>
+          <GridBagConstraints gridX="0" gridY="1" gridWidth="3" gridHeight="1" fill="1" ipadX="0" ipadY="0" insetsTop="2" insetsLeft="6" insetsBottom="2" insetsRight="6" anchor="10" weightX="0.0" weightY="0.3"/>
         </Constraint>
       </Constraints>
 

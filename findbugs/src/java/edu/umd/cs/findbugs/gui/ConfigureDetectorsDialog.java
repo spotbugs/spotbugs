@@ -27,6 +27,7 @@ package edu.umd.cs.findbugs.gui;
 
 import java.util.*;
 import javax.swing.*;
+import javax.swing.event.*;
 import javax.swing.table.*;
 import edu.umd.cs.findbugs.*;
 
@@ -40,6 +41,7 @@ public class ConfigureDetectorsDialog extends javax.swing.JDialog {
     public ConfigureDetectorsDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
+	postInitComponents();
     }
     
     /** This method is called from within the constructor to
@@ -94,6 +96,7 @@ public class ConfigureDetectorsDialog extends javax.swing.JDialog {
         });
         populateTable();
         detectorTable.getColumnModel().getColumn(1).setMaxWidth(60);
+        detectorTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         detectorTableScrollPane.setViewportView(detectorTable);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -105,6 +108,8 @@ public class ConfigureDetectorsDialog extends javax.swing.JDialog {
         getContentPane().add(detectorTableScrollPane, gridBagConstraints);
 
         detectorDescriptionScrollPane.setBorder(new javax.swing.border.BevelBorder(javax.swing.border.BevelBorder.LOWERED));
+        detectorDescriptionScrollPane.setMinimumSize(new java.awt.Dimension(25, 25));
+        detectorDescriptionScrollPane.setPreferredSize(new java.awt.Dimension(110, 120));
         detectorDescriptionScrollPane.setViewportView(detectorDescription);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -113,7 +118,7 @@ public class ConfigureDetectorsDialog extends javax.swing.JDialog {
         gridBagConstraints.gridwidth = 3;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.insets = new java.awt.Insets(2, 6, 2, 6);
-        gridBagConstraints.weighty = 0.2;
+        gridBagConstraints.weighty = 0.3;
         getContentPane().add(detectorDescriptionScrollPane, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -183,6 +188,34 @@ public class ConfigureDetectorsDialog extends javax.swing.JDialog {
         dispose();
     }//GEN-LAST:event_closeDialog
 
+    private void postInitComponents() {
+	// Listen to detector table selections so we can (hopefully)
+	// display the description of the detector
+	
+	ListSelectionModel rowSM = detectorTable.getSelectionModel();
+	rowSM.addListSelectionListener(new ListSelectionListener() {
+	    public void valueChanged(ListSelectionEvent e) {
+		if (e.getValueIsAdjusting()) return;
+        
+		ListSelectionModel lsm =(ListSelectionModel)e.getSource();
+		if (!lsm.isSelectionEmpty()) {
+		    int selectedRow = lsm.getMinSelectionIndex();
+		    viewDetectorDetails(factoryList.get(selectedRow));
+		}
+	    }
+	});
+    }
+    
+    private void viewDetectorDetails(DetectorFactory factory) {
+	String detailHTML = factory.getDetailHTML();
+	if (detailHTML == null) {
+	    detectorDescription.setText("");
+	} else {
+	    detectorDescription.setContentType("text/html");
+	    detectorDescription.setText(detailHTML);
+	}
+    }
+    
     private void populateTable() {
         Iterator<DetectorFactory> i = FindBugs.factoryIterator();
         while (i.hasNext()) {
