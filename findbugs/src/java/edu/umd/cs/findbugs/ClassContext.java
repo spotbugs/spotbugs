@@ -41,6 +41,7 @@ public class ClassContext {
 	private IdentityHashMap<Method, CFG> cfgMap = new IdentityHashMap<Method, CFG>();
 	private IdentityHashMap<Method, ValueNumberDataflow> vnaDataflowMap = new IdentityHashMap<Method, ValueNumberDataflow>();
 	private IdentityHashMap<Method, DepthFirstSearch> dfsMap = new IdentityHashMap<Method, DepthFirstSearch>();
+	private IdentityHashMap<Method, BitSet> bytecodeMap = new IdentityHashMap<Method, BitSet>();
 	private ClassGen classGen;
 
 	/**
@@ -124,6 +125,41 @@ public class ClassContext {
 			dfsMap.put(method, dfs);
 		}
 		return dfs;
+	}
+
+	/**
+	 * Get a BitSet representing the bytecodes that are used in the given method.
+	 * This is useful for prescreening a method for the existence of particular instructions.
+	 * Because this step doesn't require building a MethodGen, it is very
+	 * fast and memory-efficient.  It may allow a Detector to avoid some
+	 * very expensive analysis, which is a Big Win for the user.
+	 *
+	 * @param method the method
+	 * @return the BitSet containing the opcodes which appear in the method
+	 */
+	public BitSet getBytecodeSet(Method method) {
+		BitSet bytecodeSet = bytecodeMap.get(method);
+		if (bytecodeSet == null) {
+			final BitSet result = new BitSet();
+			byte[] instructionList = method.getCode().getCode();
+
+			// Create a callback to put the opcodes of the method's
+			// bytecode instructions into the BitSet.
+			BytecodeScanner.Callback callback = new BytecodeScanner.Callback() {
+				public void handleInstruction(int opcode) {
+					result.set(opcode, true);
+				}
+			};
+
+			// Scan the method.
+			BytecodeScanner scanner = new BytecodeScanner();
+			scanner.scan(instructionList, callback);
+
+			// Save the result in the map.
+			bytecodeSet = result;
+			bytecodeMap.put(method, bytecodeSet);
+		}
+		return bytecodeSet;
 	}
 }
 
