@@ -13,11 +13,13 @@ public class I18N {
 	private final ResourceBundle messageBundle;
 	private final ResourceBundle shortMessageBundle;
 	private final ResourceBundle annotationDescriptionBundle;
+	private final ResourceBundle bugTypeDescriptionBundle;
 
 	private I18N() {
 		messageBundle = ResourceBundle.getBundle("edu.umd.cs.findbugs.FindBugsMessages");
 		shortMessageBundle = ResourceBundle.getBundle("edu.umd.cs.findbugs.FindBugsShortMessages");
 		annotationDescriptionBundle = ResourceBundle.getBundle("edu.umd.cs.findbugs.FindBugsAnnotationDescriptions");
+		bugTypeDescriptionBundle = ResourceBundle.getBundle("edu.umd.cs.findbugs.FindBugsTypeDescriptions");
 	}
 
 	private static I18N theInstance = new I18N();
@@ -57,6 +59,17 @@ public class I18N {
 	 */
 	public String getAnnotationDescription(String key) {
 		return annotationDescriptionBundle.getString(key);
+	}
+
+	/**
+	 * Get a description for given "bug type".
+	 * In this case, the bug type refers to the short prefix code prepended to
+	 * the long and short bug messages.
+	 * @param shortBugType the short bug type code
+	 * @return the description of that short bug type code means
+	 */
+	public String getBugTypeDescription(String shortBugType) {
+		return bugTypeDescriptionBundle.getString(shortBugType);
 	}
 
 }
