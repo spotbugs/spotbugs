@@ -35,6 +35,8 @@ import org.apache.bcel.generic.*;
  * @author David Hovemeyer
  */
 public class PruneInfeasibleExceptionEdges implements EdgeTypes {
+	private static final boolean DEBUG = Boolean.getBoolean("cfg.prune.debug");
+
 	private CFG cfg;
 	private TypeDataflow typeDataflow;
 	private ConstantPoolGen cpg;
@@ -105,6 +107,9 @@ public class PruneInfeasibleExceptionEdges implements EdgeTypes {
 		}
 	}
 
+	private static final ObjectType ERROR_TYPE = new ObjectType("java.lang.Error");
+	private static final ObjectType RUNTIME_EXCEPTION_TYPE = new ObjectType("java.lang.RuntimeException");
+
 	private Set<ObjectType> enumerateExceptionTypes(BasicBlock basicBlock)
 		throws ClassNotFoundException, DataflowAnalysisException {
 
@@ -119,6 +124,9 @@ public class PruneInfeasibleExceptionEdges implements EdgeTypes {
 			exceptionTypeSet.add(new ObjectType(exceptionList[i].getName()));
 		}
 
+		// Assume that an Error may be thrown by any instruction.
+		exceptionTypeSet.add(ERROR_TYPE);
+
 		// If it's an ATHROW, get the type from the TypeDataflow
 		if (ins instanceof ATHROW) {
 			TypeFrame frame = typeDataflow.getFactAtLocation(new Location(pei, basicBlock));
@@ -131,7 +139,7 @@ public class PruneInfeasibleExceptionEdges implements EdgeTypes {
 			// a conservative assumption that anything could be
 			// thrown at this ATHROW.
 			if (!frame.isValid()) {
-				exceptionTypeSet.add(new ObjectType("java.lang.Throwable"));
+				exceptionTypeSet.add(Type.THROWABLE);
 			} else {
 				Type throwType = frame.getTopValue();
 				if (!(throwType instanceof ObjectType))
@@ -140,7 +148,7 @@ public class PruneInfeasibleExceptionEdges implements EdgeTypes {
 			}
 		}
 
-		// If it's an InvokeInstruction, add declared exceptions
+		// If it's an InvokeInstruction, add declared exceptions and RuntimeException
 		if (ins instanceof InvokeInstruction) {
 			InvokeInstruction inv = (InvokeInstruction) ins;
 			Method method = Lookup.findExactMethod(inv, cpg);
@@ -151,9 +159,17 @@ public class PruneInfeasibleExceptionEdges implements EdgeTypes {
 					for (int i = 0; i < exceptionNameList.length; ++i ) {
 						exceptionTypeSet.add(new ObjectType(exceptionNameList[i]));
 					}
+				} else if (DEBUG) {
+					System.out.println("No exception table for method: " + method.getName());
 				}
+			} else if (DEBUG) {
+				System.out.println("Could not find method for " + ins);
 			}
+
+			exceptionTypeSet.add(RUNTIME_EXCEPTION_TYPE);
 		}
+
+		if (DEBUG) System.out.println(pei + " can throw " + exceptionTypeSet);
 
 		return exceptionTypeSet;
 	}
@@ -172,11 +188,6 @@ public class PruneInfeasibleExceptionEdges implements EdgeTypes {
 
 		String catchClassName = SignatureConverter.convert(catchType.getSignature());
 		boolean reachable = false;
-
-		// Special case: any instruction can throw a VirtualMachineError.
-		if (Repository.instanceOf(catchClassName, "java.lang.VirtualMachineError")) {
-			reachable = true;
-		}
 
 		// Go through the set of thrown execeptions.
 		// Any that will DEFINITELY be caught be this handler, remove.
