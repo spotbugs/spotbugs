@@ -67,6 +67,8 @@ public class TypeRepository {
 	 * Static data
 	 * ---------------------------------------------------------------------- */
 
+	private static final boolean DEBUG = Boolean.getBoolean("tr.debug");
+
 	/**
 	 * Basic type signatures to type codes.
 	 */
@@ -224,7 +226,7 @@ public class TypeRepository {
 			}
 		}
 
-		return arrayTypeFromDimensionsAndBaseType(numDimensions, elementType);
+		return arrayTypeFromDimensionsAndBaseType(numDimensions, baseType);
 	}
 
 	/**
@@ -290,7 +292,8 @@ public class TypeRepository {
 	 * @param superclass the superclass
 	 */
 	public void addSuperclassLink(ObjectType subclass, ObjectType superclass) {
-		//System.out.println("Superclass link: " + subclass.getSignature() + " --> " + superclass.getSignature());
+		if (DEBUG)
+			System.out.println("Superclass link: " + subclass.getSignature() + " --> " + superclass.getSignature());
 		inheritanceGraph.createEdge(subclass, superclass, InheritanceGraphEdgeTypes.CLASS_EDGE);
 	}
 
@@ -300,7 +303,8 @@ public class TypeRepository {
 	 * @param iface the implemented interface (i.e., the supertype)
 	 */
 	public void addInterfaceLink(ObjectType implementor, ClassType iface) {
-		//System.out.println("Interface link: " + implementor.getSignature() + " --> " + iface.getSignature());
+		if (DEBUG)
+			System.out.println("Interface link: " + implementor.getSignature() + " --> " + iface.getSignature());
 		inheritanceGraph.createEdge(implementor, iface, InheritanceGraphEdgeTypes.INTERFACE_EDGE);
 	}
 
@@ -363,8 +367,16 @@ public class TypeRepository {
 	 * @return the first common superclass of a and b
 	 */
 	public ObjectType getFirstCommonSuperclass(ObjectType a, ObjectType b) throws ClassNotFoundException {
+		if (DEBUG) System.out.println("Get first common superclass for " + a + " and " + b);
+
 		// Easy case
 		if (a.equals(b))
+			return a;
+
+		// Other easy cases
+		if (isSubtype(a, b))
+			return b;
+		else if (isSubtype(b, a))
 			return a;
 
 		if (a.isArray() && b.isArray()) {
@@ -407,11 +419,17 @@ public class TypeRepository {
 
 		for (Iterator<ObjectType> i = cachedResultForB.properSupertypeInBFSOrderIterator(); i.hasNext(); ) {
 			ObjectType bSuper = i.next();
-			if (bSuper.isInterface())
+			if (DEBUG) System.out.print("  ....considering " + bSuper);
+			if (bSuper.isInterface()) {
 				// FIXME: stupid loss of information
+				if (DEBUG) System.out.println(": INTERFACE, no");
 				continue;
-			if (cachedResultForA.isSupertype(bSuper))
+			}
+			boolean isSuper = cachedResultForA.isSupertype(bSuper);
+			if (DEBUG) System.out.println(": " + isSuper);
+			if (isSuper) {
 				return bSuper;
+			}
 		}
 
 		// This should not be possible
@@ -455,6 +473,8 @@ public class TypeRepository {
 	}
 
 	private SubtypeQueryResult findSupertypes(ObjectType subtype) throws ClassNotFoundException {
+		if (DEBUG) System.out.println("Computing supertypes for " + subtype);
+
 		// See if there is a cached query result.
 		SubtypeQueryResult cachedResult = subtype.getSubtypeQueryResult();
 
@@ -481,6 +501,7 @@ public class TypeRepository {
 					continue;
 	
 				cachedResult.addSupertype(subtype, type);
+				if (DEBUG) System.out.println("  ...added " + type);
 	
 				try {
 					// Resolve the type so we know its supertypes.
@@ -546,16 +567,6 @@ public class TypeRepository {
 			resolveObjectType(elementObjectType);
 			for (Iterator<ObjectType> i = inheritanceGraph.successorIterator(elementObjectType); i.hasNext(); ) {
 				ObjectType elementSupertype = i.next();
-/*
-				ObjectType supertype;
-				if (elementSupertype.isArray()) {
-					ArrayType elementSuperArrayType = (ArrayType) elementSupertype;
-					supertype = arrayTypeFromDimensionsAndBaseType(1 + elementSuperArrayType.getNumDimensions(),
-						elementSuperArrayType.getBaseType());
-				} else {
-					supertype = arrayTypeFromDimensionsAndBaseType(type.getNumDimensions(), elementSupertype);
-				}
-*/
 				ObjectType supertype = arrayTypeFromElementType(elementSupertype);
 				addSuperclassLink(type, supertype);
 			}
