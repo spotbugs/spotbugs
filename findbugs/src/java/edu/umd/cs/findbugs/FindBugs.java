@@ -990,17 +990,23 @@ public class FindBugs implements Constants2, ExitCodes {
 
 	/**
 	 * Add all classpath entries in given Collection to the given
-	 * URLClassPathRepository. 
+	 * URLClassPathRepository.  Missing entries are not fatal:
+	 * we'll log them as analysis errors, but the analysis can
+	 * continue.
 	 * 
 	 * @param collection classpath entries to add
 	 * @param repository URLClassPathRepository to add the entries to
-	 * @throws IOException
 	 */
-	private static void addCollectionToClasspath(Collection<String> collection, URLClassPathRepository repository) throws IOException {
-		// Add aux classpath entries
+	private void addCollectionToClasspath(Collection<String> collection,
+			URLClassPathRepository repository) {
 		for (Iterator<String> i = collection.iterator(); i.hasNext(); ) {
 			String entry = i.next();
-			repository.addURL(entry);
+			try {
+				repository.addURL(entry);
+			} catch (IOException e) {
+				bugReporter.logError("Warning: could not add URL "  +
+					entry + " to classpath: " + e.toString());
+			}
 		}
 	}
 
