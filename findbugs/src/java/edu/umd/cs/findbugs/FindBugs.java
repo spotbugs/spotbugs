@@ -1264,6 +1264,20 @@ public class FindBugs implements Constants2, ExitCodes {
 		} catch (ClassFormatException e) {
 			reportRecoverableException(className, e);
 		}
+		catch (RuntimeException re) {
+			RuntimeException annotatedEx;
+			try {
+				String sep = System.getProperty("line.separator");
+				java.lang.reflect.Constructor c = re.getClass().getConstructor(new Class[] { String.class });
+				String msg = re.getMessage();
+				msg = sep + "While finding bugs in class: " + className + ((msg == null) ? "" : (sep + msg));
+				annotatedEx = (RuntimeException)c.newInstance(new Object[] {msg});
+				annotatedEx.setStackTrace(re.getStackTrace());
+			} catch (Exception e) {
+				throw re;
+			}
+			throw annotatedEx;
+		}
 
 		progressCallback.finishClass();
 	}
