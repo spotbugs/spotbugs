@@ -5,8 +5,8 @@ May 6, 2003
 1. Introduction
 ===============
 
-FindBugs will move to a plugin-based approach to adding detectors.
-This will make it easy for users to add their own detectors alongside
+FindBugs uses a plugin-based approach to adding detectors.
+This makes it easy for users to add their own detectors alongside
 the ones that come built in.
 
 Basic idea: FindBugs has some Jar files in a "plugins" directory.
@@ -29,6 +29,10 @@ locale is "pt_BR", then the files
   messages.xml
 
 are tried, in that order.
+
+The "findbugs.xml" and "messages.xml" files used by the standard FindBugs
+bug pattern detectors (coreplugin.jar) can be found in the "etc" directory
+of the findbugs source distribution.
 
 
 ============================
@@ -71,7 +75,7 @@ are tried, in that order.
 
     2. "abbrev" is a short alphanumeric code for the bug.
        Note that multiple BugPatterns can use the same abbreviation
-       if they are related.
+       if they are related.  (See the BugCode element in messages.xml).
 
     3. "category" is one of the following:
 
@@ -100,7 +104,11 @@ are tried, in that order.
     </Details>
   </BugPattern>
 
-    <!-- More BugPattern nodes would go here... -->
+  <!-- More BugPattern nodes would go here... -->
+
+  <BugCode abbrev="UL">Unreleased locks</BugCode>
+
+  <!-- More BugCode nodes would go here... -->
 
 </MessageCollection>
 
@@ -129,3 +137,9 @@ are tried, in that order.
   window.  Note that HTML metacharacters '&', '<', and '>'
   should be escaped as '&amp;', '&lt;', and '&gt;' respectively,
   because we don't want XML to interpret the HTML tags.
+
+  <BugCode> is the text which describes the common characteristic of all
+  of the BugPatterns which share an abbreviation.  In the example above,
+  the abbreviation "UL" is for bugs in which a lock is not released.
+  The text of a BugCode element is shown for tree nodes in the GUI
+  which group bug instances by "bug type".
