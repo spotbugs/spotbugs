@@ -97,6 +97,15 @@ public class TestingGround extends BytecodeScanningDetector implements Constants
 			System.out.print("   " + getBranchTarget());
 		else if ((seen == NEW) || (seen == INSTANCEOF))
 			System.out.print("   " + getClassConstantOperand());
+		else if ((seen == TABLESWITCH) || (seen == LOOKUPSWITCH)) {
+			System.out.print("    [");
+			int switchPC = getPC();
+			int[] offsets = getSwitchOffsets();
+			for (int i = 0; i < offsets.length; i++) {
+				System.out.print((switchPC + offsets[i]) + ",");
+			}
+			System.out.print((switchPC + getDefaultSwitchOffset()) + "]");
+		}
 
 		System.out.println();
 	}
