@@ -22,13 +22,19 @@
  */
 package de.tobject.findbugs.classify;
 
-import org.eclipse.jface.action.Action;
+import java.util.Iterator;
+
+import org.eclipse.core.internal.resources.Marker;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.IWorkbenchWindowPulldownDelegate2;
+
+import de.tobject.findbugs.FindbugsPlugin;
 
 /**
  * Pulldown toolbar action for classifying a FindBugs warning
@@ -37,7 +43,7 @@ import org.eclipse.ui.IWorkbenchWindowPulldownDelegate2;
  * @author David Hovemeyer
  */
 public class AccuracyClassificationPulldownAction
-		extends Action
+		//extends Action
 		implements IWorkbenchWindowPulldownDelegate2 {
 	
 	private Menu menu;
@@ -75,8 +81,9 @@ public class AccuracyClassificationPulldownAction
 	 * @see org.eclipse.ui.IWorkbenchWindowActionDelegate#init(org.eclipse.ui.IWorkbenchWindow)
 	 */
 	public void init(IWorkbenchWindow window) {
-		// TODO Auto-generated method stub
-
+		// This just runs once when the action is created
+		
+//		System.out.println("Init called");
 	}
 
 	/* (non-Javadoc)
@@ -85,14 +92,50 @@ public class AccuracyClassificationPulldownAction
 	public void run(IAction action) {
 		// TODO Auto-generated method stub
 		System.out.println("Classifying a warning!");
+		
+		//action.
 	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.ui.IActionDelegate#selectionChanged(org.eclipse.jface.action.IAction, org.eclipse.jface.viewers.ISelection)
 	 */
 	public void selectionChanged(IAction action, ISelection selection) {
-		// TODO Auto-generated method stub
+		System.out.println("Selection is " + selection.getClass().getName());
+		
+		Marker marker = getMarkerFromSelection(selection);
+		
+		if (marker == null)
+			// FIXME: should really ensure that action can only
+			// be run when a single findbugs problem marker is
+			// selected.
+			return;
+		
 
+		try {
+			String markerType = marker.getType();
+			System.out.println("Marker type is " + markerType);
+		} catch (CoreException e) {
+			FindbugsPlugin.getDefault().logException(e, "Could not get marker type");
+		}
+	}
+
+	/**
+	 * @param selection
+	 */
+	private Marker getMarkerFromSelection(ISelection selection) {
+		if (selection instanceof StructuredSelection) {
+			StructuredSelection structuredSelection = (StructuredSelection) selection;
+			
+			for (Iterator i = structuredSelection.iterator(); i.hasNext(); ) {
+				Object o = i.next();
+				System.out.println("\tSelection element: " + o.getClass().getName());
+				if (o instanceof Marker) {
+					return (Marker) o;
+				}
+			}
+		}
+		
+		return null;
 	}
 
 }
