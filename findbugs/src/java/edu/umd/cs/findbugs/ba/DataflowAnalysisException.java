@@ -29,6 +29,8 @@ import org.apache.bcel.generic.MethodGen;
  * @see DataflowAnalysis
  */
 public class DataflowAnalysisException extends Exception {
+	private static final long serialVersionUID = 3690480212240446258L;
+
 	/**
 	 * Constructor.
 	 */
