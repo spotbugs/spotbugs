@@ -680,7 +680,8 @@ are not cleaned up on all paths out of a method.  This is a slow detector.</p>
 ]]>
     </Details>
   </Detector>
-  
+
+<!--  
   <Detector class="edu.umd.cs.findbugs.detect.SimplifyBooleanReturn">
     <Details>
 <![CDATA[
@@ -689,6 +690,7 @@ branch. it is simpler to just return the boolean expression. This is a fast dete
 ]]>
     </Details>
   </Detector>
+-->
 
   <!--
   **********************************************************************
@@ -2839,7 +2841,7 @@ does not need to be created, just access the static methods directly using the c
     ]]>
   	  </Details>
     </BugPattern>
-
+<!--
     <BugPattern type="SBR_SIMPLIFY_BOOLEAN_RETURN">
 	  <ShortDescription>Method uses an if else statement instead of simple return statement.</ShortDescription>
 	  <LongDescription>Method {1} uses an if else statement instead of simple return statement.</LongDescription>
@@ -2862,6 +2864,7 @@ does not need to be created, just access the static methods directly using the c
     ]]>
   	  </Details>
     </BugPattern>
+-->
 
   <!--
   **********************************************************************
@@ -2951,5 +2954,7 @@ does not need to be created, just access the static methods directly using the c
   <BugCode abbrev="ISC">Instantiated Static Class</BugCode>
   <BugCode abbrev="REC">RuntimeException capture</BugCode>
   <BugCode abbrev="FE">Test for floating point equality</BugCode>
+<!--
   <BugCode abbrev="SBR">Simplify Boolean Return</BugCode>
+-->
 </MessageCollection>
