@@ -32,7 +32,7 @@ import edu.umd.cs.daveho.ba.Edge;
  * @author David Hovemeyer
  */
 public abstract class SingleInstruction extends PatternElement {
-	public boolean acceptBranch(Edge edge) { return true; }
+	public boolean acceptBranch(Edge edge, InstructionHandle source) { return true; }
 	public int minOccur() { return 1; }
 	public int maxOccur() { return 1; }
 
