@@ -671,7 +671,6 @@ public class FindBugs implements Constants2, ExitCodes
 		home = System.getProperty("findbugs.home");
 		if (home == null) {
 			System.err.println("Error: The findbugs.home property is not set!");
-			System.exit(1);
 		}
 	}
 	return home;

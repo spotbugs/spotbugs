@@ -40,8 +40,10 @@ public class JavaVersion {
 		try {
 			runtimeVersion = new JavaVersion(System.getProperty("java.version"));
 		} catch (JavaVersionException e) {
+			System.err.println("Warning: Unknown version of Java");
+			// Assume Java 1.0.
+			runtimeVersion = new JavaVersion(1, 0);
 			e.printStackTrace();
-			System.exit(1);
 		}
 	}
 
