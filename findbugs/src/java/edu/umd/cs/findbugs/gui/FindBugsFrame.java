@@ -1324,7 +1324,9 @@ public class FindBugsFrame extends javax.swing.JFrame {
                         groupName = "Unnamed package";
                 } else if (groupBy == GROUP_BY_BUG_TYPE) {
 		    String desc = member.toString();
-		    groupName = desc.substring(0, desc.indexOf(':'));
+		    String shortBugType = desc.substring(0, desc.indexOf(':'));
+                    String bugTypeDescription = I18N.instance().getBugTypeDescription(shortBugType);
+                    groupName = shortBugType + ": " + bugTypeDescription;
 		} else
 		    throw new IllegalStateException("Unknown sort order: " + groupBy);
 		currentGroup = new BugInstanceGroup(groupBy, groupName);
