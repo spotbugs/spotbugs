@@ -67,11 +67,11 @@ public class FindTwoLockWait implements Detector {
 
 		MethodGen methodGen = classContext.getMethodGen(method);
 		CFG cfg = classContext.getCFG(method);
-		LockCountDataflow dataflow = classContext.getAnyLockCountDataflow(method);
+		LockDataflow dataflow = classContext.getLockDataflow(method);
 
 		for (Iterator<Location> j = cfg.locationIterator(); j.hasNext(); ) {
 			Location location = j.next();
-			visitInstruction(location.getHandle(), location.getBasicBlock(), methodGen, dataflow);
+			visitInstruction(location, methodGen, dataflow);
 		}
 	}
 
@@ -98,19 +98,19 @@ public class FindTwoLockWait implements Detector {
 		return lockCount >= 2 && sawWait;
 	}
 
-	public void visitInstruction(InstructionHandle handle, BasicBlock bb, MethodGen methodGen, LockCountDataflow dataflow) {
+	public void visitInstruction(Location location, MethodGen methodGen, LockDataflow dataflow) {
 		try {
 			ConstantPoolGen cpg = methodGen.getConstantPool();
 	
-			if (isWait(handle, cpg)) {
-				LockCount count = dataflow.getFactAtLocation(new Location(handle, bb));
-				if (count.getCount() > 1) {
+			if (isWait(location.getHandle(), cpg)) {
+				int count = dataflow.getFactAtLocation(location).getNumLockedObjects();
+				if (count > 1) {
 					// A wait with multiple locks held?
 					String sourceFile = javaClass.getSourceFileName();
 					bugReporter.reportBug(new BugInstance("2LW_TWO_LOCK_WAIT", NORMAL_PRIORITY)
 						.addClass(javaClass)
 						.addMethod(methodGen, sourceFile)
-						.addSourceLine(methodGen, sourceFile, handle));
+						.addSourceLine(methodGen, sourceFile, location.getHandle()));
 				}
 			}
 		} catch (DataflowAnalysisException e) {
