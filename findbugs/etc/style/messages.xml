@@ -75,6 +75,7 @@ the fields when they wanted the other.</p>
 	<!-- BugCodes -->
 
 	<BugCode abbrev="DLS">Dead local store</BugCode>
+	<BugCode abbrev="MF">Masked Field</BugCode>
 
 </MessageCollection>
 

@@ -2603,7 +2603,6 @@ object than the one the author intended.
   <BugCode abbrev="SBSC">String concatenation in loop using + operator</BugCode>
   <BugCode abbrev="ITA">Inefficient use of collection.toArray(new Foo[0])</BugCode>
   <BugCode abbrev="SW">Swing coding rules</BugCode>
-  <BugCode abbrev="MF">Masked Field</BugCode>
   <BugCode abbrev="IJU">Improperly implemented JUnit TestCase</BugCode>
   <BugCode abbrev="BOA">Badly Overridden Adapter</BugCode>
   <BugCode abbrev="SF">Switch case falls thru</BugCode>
