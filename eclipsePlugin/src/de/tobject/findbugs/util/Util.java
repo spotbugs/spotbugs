@@ -39,7 +39,8 @@ public class Util{
 	public static boolean isClassFile(IResource resource) {
 		if (resource == null)
 			return false;
-		return (resource.getFileExtension().equalsIgnoreCase("class")); //$NON-NLS-1$
+		String ex = resource.getFileExtension();
+		return ex.equalsIgnoreCase("class"); //$NON-NLS-1$
 
 	}
 	/**
@@ -54,8 +55,11 @@ public class Util{
 	public static boolean isJavaArtifact(IResource resource) {
 		if (resource == null)
 			return false;		
-		return ((resource.getFileExtension().equalsIgnoreCase("java"))
-				|| (resource.getFileExtension().equalsIgnoreCase("class")));
+		String ex = resource.getFileExtension();
+		if (ex == null)
+			return false;
+		return (ex.equalsIgnoreCase("java")
+				|| ex.equalsIgnoreCase("class"));
 	}
 	
 	/**
