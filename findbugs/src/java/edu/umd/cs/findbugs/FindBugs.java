@@ -62,9 +62,8 @@ public class FindBugs implements Constants2
     registerDetector("ReadReturnShouldBeChecked", edu.umd.cs.findbugs.ReadReturnShouldBeChecked.class);
     registerDetector("FindNakedNotify", edu.umd.cs.findbugs.FindNakedNotify.class);
     registerDetector("FindUnconditionalWait", edu.umd.cs.findbugs.FindUnconditionalWait.class);
+    registerDetector("FindSpinLoop", edu.umd.cs.findbugs.FindSpinLoop.class);
 /*
-    registerDetector("FindSpinLoop", 
-       edu.umd.cs.pugh.visitclass.FindSpinLoop.class);
     registerDetector("FindDoubleCheck", 
        edu.umd.cs.pugh.visitclass.FindDoubleCheck.class);
     registerDetector("WaitInLoop", 
