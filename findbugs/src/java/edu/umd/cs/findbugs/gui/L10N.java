@@ -29,17 +29,28 @@ import java.util.ResourceBundle;
 import java.util.MissingResourceException;
 
 public class L10N {
+	private static ResourceBundle bundle;
+	
+	static {
+		try {
+			bundle = ResourceBundle.getBundle( "edu.umd.cs.findbugs.gui.findbugs" );
+		}
+		catch (MissingResourceException mre) {
+			bundle = null;
+		}
+	}
+	
 	private L10N() {
 	}
 	
 	public static String getLocalString( String key, String defaultString ) {
 		try {
-System.out.println( "getLocalString(" + key + "," + defaultString + ")");
-			ResourceBundle bundle = ResourceBundle.getBundle( "edu.umd.cs.findbugs.gui.findbugs" );
-			return bundle.getString(key);
+			if (bundle != null)
+				return bundle.getString(key);
+			else
+				return defaultString;
 		}
 		catch (MissingResourceException mre) {
-System.out.println( "mre = " + mre.getMessage());
 			return defaultString;
 		}
 	}
