@@ -85,11 +85,10 @@ public class BugInstance {
 	 * Add a class annotation.  If this is the first class annotation added,
 	 * it becomes the primary class annotation.
 	 * @param className the name of the class
-	 * @param sourceFile the source file of the class
 	 * @return this object
 	 */
-	public BugInstance addClass(String className, String sourceFile) {
-		ClassAnnotation classAnnotation = new ClassAnnotation(className, sourceFile);
+	public BugInstance addClass(String className) {
+		ClassAnnotation classAnnotation = new ClassAnnotation(className);
 		if (primaryClassAnnotation == null)
 			primaryClassAnnotation = classAnnotation;
 		add(classAnnotation);
@@ -131,8 +130,7 @@ public class BugInstance {
 	 */
 	public BugInstance addClass(BetterVisitor visitor) {
 		String className = visitor.getBetterClassName();
-		String sourceFile = visitor.getSourceFile();
-		addClass(className, sourceFile);
+		addClass(className);
 		return this;
 	}
 
@@ -144,8 +142,7 @@ public class BugInstance {
 	 */
 	public BugInstance addSuperclass(BetterVisitor visitor) {
 		String className = visitor.getSuperclassName();
-		String sourceFile = "<unknown>";
-		addClass(className, sourceFile);
+		addClass(className);
 		return this;
 	}
 

@@ -8,23 +8,13 @@ package edu.umd.cs.findbugs;
  * @author David Hovemeyer
  */
 public class ClassAnnotation extends PackageMemberAnnotation {
-	private String sourceFile;
-
 	/**
 	 * Constructor.
 	 * @param className the name of the class
 	 * @param sourceFile the name of the source file where the class is defined
 	 */
-	public ClassAnnotation(String className, String sourceFile) {
+	public ClassAnnotation(String className) {
 		super(className);
-		this.sourceFile = sourceFile;
-	}
-
-	/**
-	 * Get the source file.
-	 */
-	public String getSourceFile() {
-		return sourceFile;
 	}
 
 	public void accept(BugAnnotationVisitor visitor) {
