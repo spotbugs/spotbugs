@@ -34,7 +34,6 @@ import edu.umd.cs.findbugs.BugInstance;
  * Creates a FindBugs marker in a runnable window.
  */
 public class MarkerReporter implements IWorkspaceRunnable {
-	ArrayList<BugInstance> bugs;
 	BugInstance bug;
 	IResource resource;
 	int startLine;
