@@ -87,9 +87,8 @@
 
     <!-- Classpath for running tools. -->
     <path id="tools.classpath">
+      <path refid="tools.buildclasspath"/>
       <pathelement location="${tools.dir}"/>
-      <pathelement location="${jar.dir}/bcel.jar" />
-      <pathelement location="${jar.dir}/dom4j-full.jar" />
     </path>
 
     <target name="clean">
@@ -274,7 +273,9 @@
 <!--
         <systemProperty name="cfg.prune" value="true"/>
         <systemProperty name="cfg.prune.stats" value="true"/>
+        <systemProperty name="classContext.timeAnalyses" value="true"/>
         <systemProperty name="ta.accurateExceptions" value="true"/>
+        <systemProperty name="dataflow.maxiters" value="500"/>
 -->
       </findbugs>
     </target>
@@ -290,7 +291,7 @@
        Build tools. This includes:
          - Eclipse plugin classpath extractor
     -->
-    <target name="tools" depends="findbugs">
+    <target name="tools" depends="findbugs,coreplugin">
       <javac srcdir="${tools.src.dir}" destdir="${tools.dir}"
              excludes="edu/umd/cs/findbugs/tools/patcomp/*"
              source="1.5"
@@ -334,7 +335,7 @@
     </target>
 
     <!-- Target to generate documentation files from their sources. -->
-    <target name="docfiles" depends="version">
+    <target name="docfiles" depends="version,tools">
        <copy todir="${doc.dir}">
          <fileset dir="${doc.src.dir}" includes="**/*.png"/>
        </copy>
@@ -350,6 +351,14 @@
          -->
         <filterset refid="findbugsFilters"/>
       </copy>
+
+      <java classname="edu.umd.cs.findbugs.tools.html.PrettyPrintBugDescriptions"
+            output="${doc.dir}/bugDescriptions.html"
+            failonerror="true"
+            fork="true">
+         <jvmarg value="-Dfindbugs.home=${findbugs.dir}"/>
+         <classpath refid="tools.classpath"/>
+      </java>
 
       <!-- The manual is up to date as long as the generated HTML
            file are newer than manual.xml and manual.xsl. -->
