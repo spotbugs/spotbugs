@@ -44,6 +44,10 @@ public class PluginLoader extends URLClassLoader {
 		return bugPatternList.toArray(new BugPattern[0]);
 	}
 
+	public BugCode[] getBugCodeList() {
+		return bugCodeList.toArray(new BugCode[0]);
+	}
+
 	private void init() throws PluginException {
 		Document pluginDescriptor; // a.k.a, "findbugs.xml"
 		Document messageCollection; // a.k.a., "messages.xml" or localization thereof
