@@ -35,7 +35,7 @@ import org.apache.bcel.generic.*;
 public class ClassContext {
 	public static final boolean PRUNE_INFEASIBLE_EXCEPTION_EDGES = Boolean.getBoolean("cfg.prune");
 	public static final boolean PRUNE_UNCONDITIONAL_EXCEPTION_THROWER_EDGES =
-		Boolean.getBoolean("cfg.prune.throwers");
+		!Boolean.getBoolean("cfg.prune.noPruneThrowers");
 	public static final boolean DEBUG = Boolean.getBoolean("classContext.debug");
 
 	private JavaClass jclass;
@@ -54,6 +54,8 @@ public class ClassContext {
 	private IdentityHashMap<Method, LockDataflow> lockDataflowMap = new IdentityHashMap<Method, LockDataflow>();
 	private IdentityHashMap<Method, ExceptionPathValueDataflow> exceptionPathDataflowMap =
 		new IdentityHashMap<Method, ExceptionPathValueDataflow>();
+	private IdentityHashMap<Method, ReturnPathDataflow> returnPathDataflowMap =
+		new IdentityHashMap<Method, ReturnPathDataflow>();
 	private ClassGen classGen;
 	private AssignedFieldMap assignedFieldMap;
 
@@ -398,6 +400,26 @@ public class ClassContext {
 			exceptionPathDataflowMap.put(method, dataflow);
 		}
 
+		return dataflow;
+	}
+
+	/**
+	 * Get ReturnPathDataflow for method.
+	 * @param method the method
+	 * @return the ReturnPathDataflow
+	 */
+	public ReturnPathDataflow getReturnPathDataflow(Method method)
+		throws CFGBuilderException, DataflowAnalysisException {
+
+		ReturnPathDataflow dataflow = returnPathDataflowMap.get(method);
+		if (dataflow == null) {
+			CFG cfg = getCFG(method);
+			DepthFirstSearch dfs = getDepthFirstSearch(method);
+			ReturnPathAnalysis analysis = new ReturnPathAnalysis(dfs);
+			dataflow = new ReturnPathDataflow(cfg, analysis);
+			dataflow.execute();
+			returnPathDataflowMap.put(method, dataflow);
+		}
 		return dataflow;
 	}
 }
