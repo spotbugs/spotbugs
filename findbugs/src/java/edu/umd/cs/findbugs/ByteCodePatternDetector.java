@@ -65,12 +65,7 @@ public abstract class ByteCodePatternDetector implements Detector {
 				if (methodGen == null)
 					continue;
 
-				ConstantPoolGen cpg = methodGen.getConstantPool();
-				CFG cfg = classContext.getCFG(method);
-				DepthFirstSearch dfs = classContext.getDepthFirstSearch(method);
-				ValueNumberDataflow vnaDataflow = classContext.getValueNumberDataflow(method);
-
-				PatternMatcher matcher = new PatternMatcher(pattern, cfg, cpg, dfs, vnaDataflow);
+				PatternMatcher matcher = new PatternMatcher(pattern, classContext, method);
 				matcher.execute();
 	
 				Iterator<ByteCodePatternMatch> j = matcher.byteCodePatternMatchIterator();
