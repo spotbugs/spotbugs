@@ -2635,6 +2635,21 @@ object than the one the author intended.
     </Details>
   </BugPattern>
 
+  <BugPattern type="IP_PARAMETER_IS_DEAD_BUT_OVERWRITTEN">
+    <ShortDescription>A parameter is dead upon entry to a method but 
+	overwritten</ShortDescription>
+    <LongDescription>A parameter to {1} is dead upon entry but overwritten</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+The initial value of this parameter is ignored, and the parameter
+is overwritten here. This often indicates a mistaken belief that
+the write to the parameter will be conveyed back to
+the caller.
+</p>
+]]>
+    </Details>
+  </BugPattern>
   <BugPattern type="DLS_DEAD_LOCAL_STORE">
     <ShortDescription>Dead store to local variable</ShortDescription>
     <LongDescription>Dead store to local variable in method {1}</LongDescription>
@@ -2770,6 +2785,7 @@ Map.get(key) lookup.
   <BugCode abbrev="UOE">Use Object Equals</BugCode>
   <BugCode abbrev="STI">Suspicious Thread Interrupted</BugCode>
   <BugCode abbrev="DLS">Dead local store</BugCode>
+  <BugCode abbrev="IP">Ignored parameter</BugCode>
   <BugCode abbrev="MF">Masked Field</BugCode>
   <BugCode abbrev="WMI">Wrong Map Iterator</BugCode>
 

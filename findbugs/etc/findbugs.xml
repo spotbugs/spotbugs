@@ -156,7 +156,7 @@
 
   <Detector class="edu.umd.cs.findbugs.detect.FindDeadLocalStores"
             speed="moderate"
-            reports="DLS_DEAD_LOCAL_STORE"/>
+            reports="DLS_DEAD_LOCAL_STORE,IP_PARAMETER_IS_DEAD_BUT_OVERWRITTEN"/>
   <Detector class="edu.umd.cs.findbugs.detect.FindMaskedFields"
             speed="fast"
             reports="MF_METHOD_MASKS_FIELD,MF_CLASS_MASKS_FIELD"/>
@@ -325,6 +325,7 @@
   <BugPattern abbrev="STI" type="STI_INTERRUPTED_ON_UNKNOWNTHREAD" category="CORRECTNESS"
     experimental="true"/>
   <BugPattern abbrev="DLS" type="DLS_DEAD_LOCAL_STORE" category="CORRECTNESS"/>
+  <BugPattern abbrev="IP" type="IP_PARAMETER_IS_DEAD_BUT_OVERWRITTEN" category="CORRECTNESS"/>
   <BugPattern abbrev="MF" type="MF_METHOD_MASKS_FIELD" category="CORRECTNESS"/>
   <BugPattern abbrev="MF" type="MF_CLASS_MASKS_FIELD" category="CORRECTNESS"/>
   <BugPattern abbrev="WMI" type="WMI_WRONG_MAP_ITERATOR" category="PERFORMANCE"
