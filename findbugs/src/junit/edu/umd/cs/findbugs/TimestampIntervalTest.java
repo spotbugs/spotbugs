@@ -78,4 +78,15 @@ public class TimestampIntervalTest extends TestCase {
 		Assert.assertEquals(m.getBegin(), 1L);
 		Assert.assertEquals(m.getEnd(), 4L);
 	}
+	
+	public void testContains() {
+		Assert.assertTrue(t1.contains(0L));
+		Assert.assertTrue(t1.contains(1L));
+		Assert.assertTrue(t1.contains(4L));
+	}
+	
+	public void testNotContains() {
+		Assert.assertFalse(t1.contains(5L));
+		Assert.assertFalse(t3.contains(1L));
+	}
 }
