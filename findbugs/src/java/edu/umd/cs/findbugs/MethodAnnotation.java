@@ -23,7 +23,7 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 	 * @param methodSig the Java type signature of the method
 	 */
 	public MethodAnnotation(String className, String methodName, String methodSig) {
-		super(className);
+		super(className, "METHOD_DEFAULT");
 		this.methodName = methodName;
 		this.methodSig = methodSig;
 		fullMethod = null;
@@ -36,7 +36,7 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 	 * @param visitor the BetterVisitor
 	 */
 	public MethodAnnotation(BetterVisitor visitor) {
-		super(visitor.getBetterClassName());
+		super(visitor.getBetterClassName(), "METHOD_DEFAULT");
 		this.methodName = visitor.getMethodName();
 		this.methodSig = visitor.getMethodSig();
 	}

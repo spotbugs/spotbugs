@@ -14,7 +14,7 @@ public class ClassAnnotation extends PackageMemberAnnotation {
 	 * @param sourceFile the name of the source file where the class is defined
 	 */
 	public ClassAnnotation(String className) {
-		super(className);
+		super(className, "CLASS_DEFAULT");
 	}
 
 	public void accept(BugAnnotationVisitor visitor) {

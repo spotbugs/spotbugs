@@ -22,7 +22,7 @@ public class FieldAnnotation extends PackageMemberAnnotation {
 	 * @param fieldSig the type signature of the field
 	 */
 	public FieldAnnotation(String className, String fieldName, String fieldSig, boolean isStatic) {
-		super(className);
+		super(className, "FIELD_DEFAULT");
 		this.fieldName = fieldName;
 		this.fieldSig = fieldSig;
 		this.isStatic = isStatic;
@@ -121,10 +121,6 @@ public class FieldAnnotation extends PackageMemberAnnotation {
 			return result.toString();
 		} else
 			throw new IllegalArgumentException("unknown key " + key);
-	}
-
-	public String toString() {
-		return format("");
 	}
 
 	public int hashCode() {

@@ -10,13 +10,15 @@ package edu.umd.cs.findbugs;
  */
 public abstract class PackageMemberAnnotation implements BugAnnotation {
 	protected String className;
+	protected String description;
 
 	/**
 	 * Constructor.
 	 * @param className name of the class
 	 */
-	public PackageMemberAnnotation(String className) {
+	public PackageMemberAnnotation(String className, String description) {
 		this.className = className;
+		this.description = description;
 	}
 
 	/**
@@ -52,6 +54,14 @@ public abstract class PackageMemberAnnotation implements BugAnnotation {
 			return formatPackageMember(key);
 	}
 
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
 	/**
 	 * Shorten a type name of remove extraneous components.
 	 * Candidates for shortening are classes in same package as this annotation and
@@ -72,6 +82,17 @@ public abstract class PackageMemberAnnotation implements BugAnnotation {
 	 * @param key the key specifying how to do the formatting
 	 */
 	protected abstract String formatPackageMember(String key);
+
+	/**
+	 * All PackageMemberAnnotation object share a common toString() implementation.
+	 * It uses the annotation description as a pattern for FindBugsMessageFormat,
+	 * passing a reference to this object as the single message parameter.
+	 */
+	public String toString() {
+		String pattern = I18N.instance().getAnnotationDescription(description);
+		FindBugsMessageFormat format = new FindBugsMessageFormat(pattern);
+		return format.format(new BugAnnotation[]{this});
+	}
 }
 
 // vim:ts=4

@@ -19,6 +19,18 @@ public interface BugAnnotation extends Comparable<BugAnnotation> {
 	 * @param key how the annotation should be formatted
 	 */
 	public String format(String key);
+
+	/**
+	 * Get a description of this bug annotation.
+	 * The description is a key for the FindBugsAnnotationDescriptions resource bundle.
+	 */
+	public String getDescription();
+
+	/**
+	 * Set a description of this bug annotation.
+	 * The description is a key for the FindBugsAnnotationDescriptions resource bundle.
+	 */
+	public void setDescription(String description);
 }
 
 // vim:ts=4

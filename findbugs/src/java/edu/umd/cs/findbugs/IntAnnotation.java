@@ -8,6 +8,7 @@ package edu.umd.cs.findbugs;
  */
 public class IntAnnotation implements BugAnnotation {
 	private int value;
+	private String description;
 
 	/**
 	 * Constructor.
@@ -15,6 +16,7 @@ public class IntAnnotation implements BugAnnotation {
 	 */
 	public IntAnnotation(int value) {
 		this.value = value;
+		this.description = "INT_DEFAULT";
 	}
 
 	public void accept(BugAnnotationVisitor visitor) {
@@ -23,6 +25,14 @@ public class IntAnnotation implements BugAnnotation {
 
 	public String format(String key) {
 		return String.valueOf(value);
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public String getDescription() {
+		return description;
 	}
 
 	public int hashCode() { return value; }
@@ -37,6 +47,11 @@ public class IntAnnotation implements BugAnnotation {
 		if (!(o instanceof IntAnnotation)) // BugAnnotations must be Comparable with any type of BugAnnotation
 			return this.getClass().getName().compareTo(o.getClass().getName());
 		return value - ((IntAnnotation) o).value;
+	}
+	public String toString() {
+		String pattern = I18N.instance().getAnnotationDescription(description);
+		FindBugsMessageFormat format = new FindBugsMessageFormat(pattern);
+		return format.format(new BugAnnotation[]{this});
 	}
 }
 

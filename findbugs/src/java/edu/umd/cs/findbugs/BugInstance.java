@@ -273,16 +273,36 @@ public class BugInstance implements Comparable {
 		return this;
 	}
 
-	private static final ResourceBundle resourceBundle = ResourceBundle.getBundle("edu.umd.cs.findbugs.FindBugsMessages");
-
 	/**
 	 * Format a string describing this bug instance.
 	 * @return the description
 	 */
 	public String getMessage() {
-		String pattern = resourceBundle.getString(type);
+		String pattern = I18N.instance().getMessage(type);
 		FindBugsMessageFormat format = new FindBugsMessageFormat(pattern);
 		return format.format((BugAnnotation[]) annotationList.toArray(new BugAnnotation[0]));
+	}
+
+	/**
+	 * Add a description to the most recently added bug annotation.
+	 * @param description the description to add
+	 * @return this object
+	 */
+	public BugInstance describe(String description) {
+		annotationList.get(annotationList.size() - 1).setDescription(description);
+		return this;
+	}
+
+	/**
+	 * Convert to String.
+	 * This method returns the "short" message describing the bug,
+	 * as opposed to the longer format returned by getMessage().
+	 * The short format is appropriate for the tree view in a GUI,
+	 * where the annotations are listed separately as part of the overall
+	 * bug instance.
+	 */
+	public String toString() {
+		return I18N.instance().getShortMessage(type);
 	}
 
 	private void add(BugAnnotation annotation) {
