@@ -134,7 +134,7 @@ public class FindBugs implements Constants2
 		}
 	}
 
-	System.out.println("Loaded " + numLoaded + " plugins");
+	//System.out.println("Loaded " + numLoaded + " plugins");
   }
 
   private void createDetectors() {
