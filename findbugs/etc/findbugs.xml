@@ -304,6 +304,10 @@
             speed="slow"
             reports="OS_OPEN_STREAM"
             disabled="true"/>
+            
+  <Detector class="edu.umd.cs.findbugs.detect.SimplifyBooleanReturn"
+            speed="fast"
+            reports="SBR_SIMPLIFY_BOOLEAN_RETURN" />
 
   <Detector class="edu.umd.cs.findbugs.detect.FindBugsSummaryStats" 
             speed="fast"
@@ -481,5 +485,5 @@
     experimental="true"/>
   <BugPattern abbrev="REC" type="REC_CATCH_EXCEPTION" category="STYLE" experimental="true" />
   <BugPattern abbrev="FE" type="FE_FLOATING_POINT_EQUALITY" category="CORRECTNESS" experimental="true" />
-
+  <BugPattern abbrev="SBR" type="SBR_SIMPLIFY_BOOLEAN_RETURN" category="STYLE" experimental="true" />
 </FindbugsPlugin>
