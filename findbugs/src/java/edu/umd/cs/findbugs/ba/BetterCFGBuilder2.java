@@ -344,11 +344,12 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 
 		/** Check to ensure that this context is not the result of recursion. */
 		public void checkForRecursion() throws CFGBuilderException {
-			Context caller = getCaller();
-			while (caller != null) {
-				if (caller == this)
+			Context callerContext = caller;
+
+			while (callerContext != null) {
+				if (callerContext.subroutine == this.subroutine)
 					throw new CFGBuilderException("JSR recursion detected!");
-				caller = caller.getCaller();
+				callerContext = callerContext.caller;
 			}
 		}
 	}
