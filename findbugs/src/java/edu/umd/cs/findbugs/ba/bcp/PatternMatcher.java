@@ -79,7 +79,7 @@ public class PatternMatcher implements DFSEdgeTypes {
 			// Scan instructions of basic block for possible matches
 			BasicBlock.InstructionIterator i = basicBlock.instructionIterator();
 			while (i.hasNext()) {
-				attemptMatch(basicBlock, i);
+				attemptMatch(basicBlock, i.duplicate());
 				i.next();
 			}
 
