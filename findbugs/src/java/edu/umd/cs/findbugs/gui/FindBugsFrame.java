@@ -7,9 +7,8 @@
 package edu.umd.cs.findbugs.gui;
 
 import java.awt.CardLayout;
-import javax.swing.tree.TreeModel;
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.*;
+import javax.swing.event.*;
 
 /**
  * This frame contains all of the controls used by the FindBugs GUI.
@@ -75,7 +74,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
             }
         });
 
-        navigatorTree.setModel(createTreeModel());
+        navigatorTree.setModel(createNavigatorTreeModel());
         jScrollPane1.setViewportView(navigatorTree);
 
         jSplitPane1.setLeftComponent(jScrollPane1);
@@ -277,20 +276,30 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
         pack();
     }//GEN-END:initComponents
+    
+    /**
+     * Create the tree model that will be used by the navigator tree.
+     */
+    private TreeModel createNavigatorTreeModel() {
+        projectCollection = new ProjectCollection();
+        rootNode = new DefaultMutableTreeNode(projectCollection);
+        navigatorTreeModel = new DefaultTreeModel(rootNode);
+        return navigatorTreeModel;
+    }
 
     /**
      * This is called from the constructor to perform post-initialization
      * of the components in the form.
      */
     private void postInitComponents() {
-        this.viewPanelLayout = (CardLayout) viewPanel.getLayout();
-    }
-    
-    private TreeModel createTreeModel() {
-        this.projectCollection = new ProjectCollection();
-        this.rootNode = new DefaultMutableTreeNode(projectCollection);
-        this.navigatorTreeModel = new DefaultTreeModel(rootNode);
-        return this.navigatorTreeModel;
+        viewPanelLayout = (CardLayout) viewPanel.getLayout();
+        navigatorTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+
+        navigatorTree.addTreeSelectionListener(new TreeSelectionListener() {
+            public void valueChanged(TreeSelectionEvent e) {
+                navigatorTreeSelectionChanged(e);
+            }
+        });
     }
     
     private void exitItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitItemActionPerformed
@@ -338,6 +347,24 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	exitFindBugs();
     }//GEN-LAST:event_exitForm
     
+    /**
+     * This handler is called whenever the selection in the navigator
+     * tree changes.
+     * @param e the TreeSelectionEvent
+     */
+    private void navigatorTreeSelectionChanged(TreeSelectionEvent e) {
+         DefaultMutableTreeNode node = (DefaultMutableTreeNode) navigatorTree.getLastSelectedPathComponent();
+
+        if (node == null)
+            return;
+
+        Object nodeInfo = node.getUserObject();
+        if (nodeInfo instanceof ProjectCollection) {
+            // Project collection node - there is no view associated with this node
+            setView("EmptyPanel");
+        }
+    }
+    
     public void exitFindBugs() {
         // TODO: offer to save work, etc.
         System.exit(0);
@@ -356,7 +383,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
     public static void main(String args[]) {
 	FindBugsFrame frame = new FindBugsFrame();
         frame.setView("EditProjectPanel");
-        frame.setSize(640, 480);
+        frame.setSize(750, 550);
         frame.show();
     }
     

@@ -71,7 +71,7 @@
             <Component class="javax.swing.JTree" name="navigatorTree">
               <Properties>
                 <Property name="model" type="javax.swing.tree.TreeModel" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-                  <Connection code="createTreeModel()" type="code"/>
+                  <Connection code="createNavigatorTreeModel()" type="code"/>
                 </Property>
               </Properties>
             </Component>
