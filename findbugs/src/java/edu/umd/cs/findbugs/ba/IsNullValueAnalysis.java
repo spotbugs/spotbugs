@@ -80,23 +80,46 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
 
 	}
 
+	private static final BitSet nullComparisonInstructionSet = new BitSet();
+	static {
+		nullComparisonInstructionSet.set(Constants.IFNULL);
+		nullComparisonInstructionSet.set(Constants.IFNONNULL);
+		nullComparisonInstructionSet.set(Constants.IF_ACMPEQ);
+		nullComparisonInstructionSet.set(Constants.IF_ACMPNE);
+	}
+
+	private static final IsNullValue ifNullComparison(short opcode, int edgeType, IsNullValue conditionValue) {
+		if (opcode == Constants.IFNULL || opcode == Constants.IF_ACMPEQ) {
+			// Null on IFCMP_EDGE, non-null on FALL_THROUGH_EDGE
+			return edgeType == IFCMP_EDGE
+				? IsNullValue.flowSensitiveNullValue(conditionValue)
+				: IsNullValue.flowSensitiveNonNullValue(conditionValue);
+		} else /*if (opcode == Constants.IFNONNULL || opcode == Constants.IF_ACMPNE)*/  {
+			// Non-null on IFCMP_EDGE, null on FALL_THROUGH_EDGE
+			return edgeType == IFCMP_EDGE
+				? IsNullValue.flowSensitiveNonNullValue(conditionValue)
+				: IsNullValue.flowSensitiveNullValue(conditionValue);
+		}
+	}
+
 	public void meetInto(IsNullValueFrame fact, Edge edge, IsNullValueFrame result)
 		throws DataflowAnalysisException {
 
 		if (fact.isValid()) {
+			IsNullValueFrame tmpFact = null;
+
 			final int numSlots = fact.getNumSlots();
 
 			if (!NO_SPLIT_DOWNGRADE_NSP) {
 				// Downgrade NSP to DNR on non-exception control splits
 				if (!edge.isExceptionEdge() && numNonExceptionSuccessorMap[edge.getSource().getId()] > 1) {
-					IsNullValueFrame tmpFact = createFact();
-					tmpFact.copyFrom(fact);
+					tmpFact = modifyFrame(fact, tmpFact);
+
 					for (int i = 0; i < numSlots; ++i) {
 						IsNullValue value = tmpFact.getValue(i);
 						if (value.equals(IsNullValue.nullOnSomePathValue()))
 							tmpFact.setValue(i, IsNullValue.doNotReportValue());
 					}
-					fact = tmpFact;
 				}
 			}
 
@@ -119,148 +142,89 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
 			} else {
 				// Determine if the edge conveys any information about the
 				// null/non-null status of operands in the incoming frame.
-	
-				int nullInfo = getNullInfoFromEdge(edge);
 
-				switch (nullInfo) {
-				case TOS_NULL:
-				case TOS_NON_NULL:
-				case NEXT_TO_TOS_NULL:
-				case NEXT_TO_TOS_NON_NULL:
-					{
-						// What we know here is that the value that was
-						// just popped off the stack is either null or non-null.
-						// We can use this info to increase the precision of
-						// any stack slots containing the same value.
+				final BasicBlock sourceBlock = edge.getSource();
+				final InstructionHandle lastInSourceHandle = sourceBlock.getLastInstruction();
+				final int edgeType = edge.getType();
 
+				// Handle IFNULL, IFNONNULL, IF_ACMPEQ, and IF_ACMPNE to
+				// produce flow-sensitive information about whether or not the
+				// compared value or values were null.
+				if (lastInSourceHandle != null) {
+					short lastInSourceOpcode = lastInSourceHandle.getInstruction().getOpcode();
+					if (nullComparisonInstructionSet.get(lastInSourceOpcode)) {
 						// Get ValueNumberFrame and IsNullValueFrame at location
 						// just before the IF instruction in the source block.
-						BasicBlock sourceBlock = edge.getSource();
-						Location atIf = new Location(sourceBlock.getLastInstruction(), sourceBlock);
-						IsNullValueFrame prevIsNullValueFrame = getFactAtLocation(atIf);
-						ValueNumberFrame prevVnaFrame = vnaDataflow.getFactAtLocation(atIf);
+						final Location atIf = new Location(lastInSourceHandle, sourceBlock);
+						final IsNullValueFrame prevIsNullValueFrame = getFactAtLocation(atIf);
+						final ValueNumberFrame prevVnaFrame = vnaDataflow.getFactAtLocation(atIf);
+						final int prevNumSlots = prevIsNullValueFrame.getNumSlots();
+						final IsNullValue conditionValue = prevIsNullValueFrame.getTopValue();
 
-						int prevNumSlots = prevIsNullValueFrame.getNumSlots();
-						assert prevNumSlots == prevVnaFrame.getNumSlots();
+						switch (lastInSourceOpcode) {
+						case Constants.IFNULL:
+						case Constants.IFNONNULL:
+							{
+								tmpFact = replaceValues(fact, tmpFact, prevVnaFrame.getTopValue(), prevVnaFrame,
+									ifNullComparison(lastInSourceOpcode, edgeType, conditionValue));
+							}
+							break;
+						case Constants.IF_ACMPEQ:
+						case Constants.IF_ACMPNE:
+							{
+								IsNullValue tos = prevIsNullValueFrame.getValue(prevNumSlots - 1);
+								IsNullValue nextToTOS = prevIsNullValueFrame.getValue(prevNumSlots - 2);
 
-						// Figure out which slot contains the value we have information about
-						int slotToReplace = (nullInfo == TOS_NULL || nullInfo == TOS_NON_NULL)
-							? prevNumSlots - 1
-							: prevNumSlots - 2;
+								if (tos.isDefinitelyNull()) {
+									// TOS is null, so next-to-TOS is flow-sensitively null
+									tmpFact = replaceValues(fact, tmpFact, prevVnaFrame.getValue(prevNumSlots-2), prevVnaFrame,
+										ifNullComparison(lastInSourceOpcode, edgeType, conditionValue));
+								}
 
-						// Get the value we have information about, as well as the
-						// condition the IF statement is controlled by.
-						ValueNumber replaceMe = prevVnaFrame.getValue(slotToReplace);
-						IsNullValue origIsNullValue = prevIsNullValueFrame.getValue(slotToReplace);
-
-						// Update all slots containing the value which was used
-						// in the IF statement.
-						fact = replaceValues(fact, replaceMe, prevVnaFrame,
-							(nullInfo == TOS_NULL || nullInfo == NEXT_TO_TOS_NULL)
-								? IsNullValue.flowSensitiveNullValue(origIsNullValue)
-								: IsNullValue.flowSensitiveNonNullValue(origIsNullValue));
+								if (nextToTOS.isDefinitelyNull()) {
+									// Next-to-TOS is null, so TOS is flow-sensitively null
+									tmpFact = replaceValues(fact, tmpFact, prevVnaFrame.getTopValue(), prevVnaFrame,
+										ifNullComparison(lastInSourceOpcode, edgeType, conditionValue));
+								}
+							}
+							break;
+						}
 					}
-					break;
-				case REF_OPERAND_NON_NULL:
-					{
-						ValueNumberFrame vnaFrame = vnaDataflow.getStartFact(destBlock);
-						if (vnaFrame == null)
-							throw new IllegalStateException("no vna frame at block entry?");
+				}
 
-						// For all of the instructions which have a null-checked
-						// reference operand, it is pushed onto the stack before
-						// all of the other operands to the instruction.
-						Instruction firstInDest = edge.getDest().getFirstInstruction().getInstruction();
-						int numSlotsConsumed = firstInDest.consumeStack(methodGen.getConstantPool());
-						if (numSlotsConsumed == Constants.UNPREDICTABLE)
-							throw new DataflowAnalysisException("Unpredictable stack consumption for " + firstInDest);
-						ValueNumber replaceMe = vnaFrame.getValue(numSlots - numSlotsConsumed);
+				// If this is a fall-through edge from a null check,
+				// then we know the value checked is not null.
+				if (sourceBlock.isNullCheck() && edgeType == FALL_THROUGH_EDGE) {
+					ValueNumberFrame vnaFrame = vnaDataflow.getStartFact(destBlock);
+					if (vnaFrame == null)
+						throw new IllegalStateException("no vna frame at block entry?");
 
-						fact = replaceValues(fact, replaceMe, vnaFrame, IsNullValue.nonNullValue());
-					}
-					break;
-				case NO_INFO:
-					break;
-				default:
-					assert false;
+					// For all of the instructions which have a null-checked
+					// reference operand, it is pushed onto the stack before
+					// all of the other operands to the instruction.
+					Instruction firstInDest = edge.getDest().getFirstInstruction().getInstruction();
+					int numSlotsConsumed = firstInDest.consumeStack(methodGen.getConstantPool());
+					if (numSlotsConsumed == Constants.UNPREDICTABLE)
+						throw new DataflowAnalysisException("Unpredictable stack consumption for " + firstInDest);
+					ValueNumber replaceMe = vnaFrame.getValue(numSlots - numSlotsConsumed);
+
+					tmpFact = replaceValues(fact, tmpFact, replaceMe, vnaFrame, IsNullValue.nonNullValue());
 				}
 			}
+
+			if (tmpFact != null)
+				fact = tmpFact;
 		}
 
 		// Normal dataflow merge
 		result.mergeWith(fact);
 	}
 
-	private static final int TOS_NULL = 0;
-	private static final int TOS_NON_NULL = 1;
-	private static final int NEXT_TO_TOS_NULL = 2;
-	private static final int NEXT_TO_TOS_NON_NULL = 3;
-	private static final int REF_OPERAND_NON_NULL = 4;
-	private static final int NO_INFO = -1;
+	private IsNullValueFrame replaceValues(IsNullValueFrame origFrame, IsNullValueFrame frame,
+		ValueNumber replaceMe, ValueNumberFrame vnaFrame, IsNullValue replacementValue) {
 
-	/**
-	 * Return a value indicating what information about the null/non-null
-	 * status of values in the stack frame is conveyed by the
-	 * given edge.  Note that when we talk about top of stack here,
-	 * we really mean top of stack at the time of the last IF comparison
-	 * (which is the source of the edge).
-	 *
-	 * @param edge the edge
-	 * @return TOS_NULL if the value on top of the stack is null,
-	 *   TOS_NON_NULL if the value on top of the stack is non-null,
-	 *   NEXT_TO_TOS_NULL if the value next to TOS is null,
-	 *   NEXT_TO_TOS_NON_NULL if the value next to TOS is non-null,
-	 *   REF_OPERAND_NON_NULL if the reference operand to the
-	 *   first instruction in the destination block is non-null,
-	 *   or NO_INFO if the edge conveys no extra information
-	 */
-	private int getNullInfoFromEdge(Edge edge) {
-		final InstructionHandle lastInSourceHandle = edge.getSource().getLastInstruction();
-		final int edgeType = edge.getType();
-
-		if (lastInSourceHandle != null) {
-			Instruction lastInSource = lastInSourceHandle.getInstruction();
-			short opcode = lastInSource.getOpcode();
-
-			if (opcode == Constants.IFNULL)
-				return edgeType == IFCMP_EDGE ? TOS_NULL : TOS_NON_NULL;
-			else if (opcode == Constants.IFNONNULL)
-				return edgeType == IFCMP_EDGE ? TOS_NON_NULL : TOS_NULL;
-			else if (opcode == Constants.IF_ACMPEQ || opcode == Constants.IF_ACMPNE) {
-				Location atIf = new Location(lastInSourceHandle, edge.getSource());
-				IsNullValueFrame frame = getFactAtLocation(atIf);
-
-				int numSlots = frame.getNumSlots();
-				IsNullValue tos = frame.getValue(numSlots - 1); // top of stack
-				IsNullValue nextToTos = frame.getValue(numSlots - 2); // next to top of stack
-
-				// If one of the values being compared is null, then
-				// we learn something about the other one.
-
-				boolean tosNull = tos.isDefinitelyNull();
-				boolean nextToTosNull = nextToTos.isDefinitelyNull();
-
-				if (tosNull || nextToTosNull) {
-					int[] info = new int[]{
-						tosNull ? NEXT_TO_TOS_NULL : TOS_NULL,
-						tosNull ? NEXT_TO_TOS_NON_NULL : TOS_NON_NULL
-					};
-
-					if (edgeType == IFCMP_EDGE)
-						return info[opcode == Constants.IF_ACMPEQ ? 0 : 1];
-					else
-						return info[opcode == Constants.IF_ACMPEQ ? 1 : 0];
-				}
-			}
-		} else if (edge.getSource().isNullCheck() && edge.getType() == FALL_THROUGH_EDGE) {
-			return REF_OPERAND_NON_NULL;
-		}
-
-		return NO_INFO;
-	}
-
-	private IsNullValueFrame replaceValues(IsNullValueFrame frame, ValueNumber replaceMe, ValueNumberFrame vnaFrame,
-		IsNullValue replacementValue) {
+		// If required, make a copy of the frame
+		frame = modifyFrame(origFrame, frame);
 
 		// The VNA frame may have more slots than the IsNullValueFrame
 		// if it was produced by an IF comparison (whose operand or operands
@@ -268,15 +232,12 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
 
 		final int numSlots = Math.min(frame.getNumSlots(), vnaFrame.getNumSlots());
 
-		final IsNullValueFrame result = createFact();
-		result.copyFrom(frame);
-
 		for (int i = 0; i < numSlots; ++i) {
 			if (vnaFrame.getValue(i).equals(replaceMe))
-				result.setValue(i, replacementValue);
+				frame.setValue(i, replacementValue);
 		}
 
-		return result;
+		return frame;
 
 	}
 
