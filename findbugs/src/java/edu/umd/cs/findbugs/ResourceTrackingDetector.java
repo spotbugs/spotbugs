@@ -61,6 +61,12 @@ public abstract class ResourceTrackingDetector<Resource, ResourceTrackerType ext
 				if (!prescreen(classContext, method))
 					continue;
 
+				if (DEBUG) {
+					System.out.println("----------------------------------------------------------------------");
+					System.out.println("Analyzing " + SignatureConverter.convertMethodSignature(methodGen));
+					System.out.println("----------------------------------------------------------------------");
+				}
+
 				ResourceTrackerType resourceTracker = getResourceTracker(classContext, method);
 				analyzeMethod(classContext, method, resourceTracker);
 			}
