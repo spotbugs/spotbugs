@@ -51,6 +51,7 @@ public class OpcodeStack implements Constants2
 {
 	private static final boolean DEBUG = Boolean.getBoolean("ocstack.debug");
 	private List<Item> stack;
+	private List<Item> lvValues;
 	
 	public static class Item
 	{ 		
@@ -132,6 +133,7 @@ public class OpcodeStack implements Constants2
 	public OpcodeStack()
 	{
 		stack = new ArrayList<Item>();
+		lvValues = new ArrayList<Item>();
 	}
 	
  	public void sawOpcode(DismantleBytecode dbc, int seen) {
@@ -225,11 +227,6 @@ public class OpcodeStack implements Constants2
 	 			case IFNONNULL:
 	 			case IFNULL:
 	 			case IRETURN:
-	 			case ISTORE:
-	 			case ISTORE_0:
-	 			case ISTORE_1:
-	 			case ISTORE_2:
-	 			case ISTORE_3:
 	 			case LOOKUPSWITCH:
 	 			case LRETURN:
 	 			case LSTORE:
@@ -374,7 +371,30 @@ public class OpcodeStack implements Constants2
 	 			case ILOAD_1:
 	 			case ILOAD_2:
 	 			case ILOAD_3:
-	 				push(new Item("I"));
+	 				if (seen == ILOAD)
+	 					register = dbc.getRegisterOperand();
+	 				else
+	 					register = seen - ILOAD_0;
+	 				
+	 				it = getLVValue(register);
+	 				if (it == null)
+	 					push(new Item("I"));
+	 				else
+	 					push(it);
+	 			break;
+	 			
+	 			case ISTORE:
+	 			case ISTORE_0:
+	 			case ISTORE_1:
+	 			case ISTORE_2:
+	 			case ISTORE_3:
+	 				it = pop();
+	 				if (seen == ILOAD)
+	 					register = dbc.getRegisterOperand();
+	 				else
+	 					register = seen - ISTORE_0;
+	 					
+	 				setLVValue( register, it );
 	 			break;
 	 			
 	 			case GETFIELD:
@@ -897,5 +917,19 @@ public class OpcodeStack implements Constants2
  		if ("V".equals(s))
  			return;
  	 	push(new Item(s, null));
+ 	}
+ 	
+ 	private void setLVValue(int index, Item value ) {
+ 		int addCount = index - lvValues.size() + 1;
+ 		while ((addCount--) > 0)
+ 			lvValues.add(null);
+ 		lvValues.set(index, value );
+ 	}
+ 	
+ 	private Item getLVValue(int index) {
+ 		if (index >= lvValues.size())
+ 			return null;
+ 			
+ 		return lvValues.get(index);
  	}
 }
