@@ -36,6 +36,9 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 
 	private static final boolean DEBUG = Boolean.getBoolean("cfgbuilder.debug");
 
+	private static final boolean NO_STATIC_FIELD_EXCEPTIONS =
+		!Boolean.getBoolean("cfgbuilder.staticFieldExceptions");
+
 	// TODO: don't forget to change BasicBlock so ATHROW is considered to have a null check
 
 	/* ----------------------------------------------------------------------
@@ -580,12 +583,19 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 	 */
 	private boolean isPEI(InstructionHandle handle) {
 		Instruction ins = handle.getInstruction();
+		short opcode = ins.getOpcode();
 
 		if (!(ins instanceof ExceptionThrower))
 			return false;
 
 		// Return instructions can throw exceptions only if the method is synchronized
 		if (ins instanceof ReturnInstruction && !methodGen.isSynchronized())
+			return false;
+
+		// We're really not interested in exceptions that could hypothetically be
+		// thrown by static field accesses.
+		if (NO_STATIC_FIELD_EXCEPTIONS &&
+			(opcode == Constants.GETSTATIC || opcode == Constants.PUTSTATIC))
 			return false;
 
 		return true;
