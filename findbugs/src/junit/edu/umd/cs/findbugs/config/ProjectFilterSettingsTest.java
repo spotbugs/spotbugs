@@ -47,6 +47,18 @@ public class ProjectFilterSettingsTest extends TestCase {
 		}
 		Assert.assertTrue(plain.getActiveCategorySet().size() == count);
 	}
+
+	public void testAddCategory() {
+		Assert.assertFalse(plain.containsCategory("FAKE_CATEGORY"));
+		plain.addCategory("FAKE_CATEGORY");
+		Assert.assertTrue(plain.containsCategory("FAKE_CATEGORY"));
+	}
+
+	public void testRemoveCategory() {
+		Assert.assertTrue(plain.containsCategory("MALICIOUS_CODE"));
+		plain.removeCategory("MALICIOUS_CODE");
+		Assert.assertFalse(plain.containsCategory("MALICIOUS_CODE"));
+	}
 }
 
 // vim:ts=4
