@@ -366,8 +366,8 @@ public class FindBugs implements Constants2
 
   public static void main(String argv[]) throws Exception
   { 
+	BugReporter bugReporter = null;
 	boolean quiet = false;
-	boolean sortByClass = false;
 	String filterFile = null;
 	boolean include = false;
 
@@ -378,7 +378,9 @@ public class FindBugs implements Constants2
 		if (!option.startsWith("-"))
 			break;
 		if (option.equals("-sortByClass"))
-			sortByClass = true;
+			bugReporter = new SortingBugReporter();
+		else if (option.equals("-xml"))
+			bugReporter = new XMLBugReporter();
 		else if (option.equals("-visitors") || option.equals("-omitVisitors")) {
 			++argCount;
 			if (argCount == argv.length) throw new IllegalArgumentException(option + " option requires argument");
@@ -426,6 +428,7 @@ public class FindBugs implements Constants2
 			System.out.println("Options:");
 			System.out.println("   -quiet                                 suppress error messages");
 			System.out.println("   -sortByClass                           sort bug reports by class");
+			System.out.println("   -xml                                   XML output");
 			System.out.println("   -visitors <visitor 1>,<visitor 2>,...  run only named visitors");
 			System.out.println("   -omitVisitors <v1>,<v2>,...            omit named visitors");
 			System.out.println("   -exclude <filter file>                 exclude bugs matching given filter");
@@ -436,9 +439,8 @@ public class FindBugs implements Constants2
 		return;
 		}
 
-	BugReporter bugReporter = sortByClass
-		? (BugReporter)new SortingBugReporter()
-		: (BugReporter)new PrintingBugReporter();
+	if (bugReporter == null)
+		bugReporter = new PrintingBugReporter();
 
 	if (quiet)
 		bugReporter.setErrorVerbosity(BugReporter.SILENT);
