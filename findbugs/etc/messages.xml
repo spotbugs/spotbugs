@@ -17,6 +17,13 @@ another package.</p>
 ]]>
     </Details>
   </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.InfiniteRecursiveLoop">
+    <Details>
+<![CDATA[
+<p> Looks for an infinite recursive loop. </p>
+]]>
+    </Details>
+  </Detector>
   <Detector class="edu.umd.cs.findbugs.detect.VolatileUsage">
     <Details>
 <![CDATA[
@@ -602,6 +609,16 @@ visible), they could trigger listener notification on the event dispatch thread.
   </BugPattern>
 
 
+  <BugPattern type="IL_INFINITE_RECURSIVE_LOOP">
+    <ShortDescription>An apparent infinite recursive loop.</ShortDescription>
+    <LongDescription>There is an apparent infinite recursive loop in {1}.</LongDescription>
+    <Details>
+<![CDATA[
+<p>This method unconditionally invokes itself. This would seem to indicate
+an infinite recursive loop that will result in a stack overflow.</p>
+]]>
+    </Details>
+  </BugPattern>
   <BugPattern type="VO_VOLATILE_REFERENCE_TO_ARRAY">
     <ShortDescription>A volatile reference to an array doesn't treat the array elements as volatile</ShortDescription>
     <LongDescription>{1} is a volatile reference to an array; the array elements are non-volatile.</LongDescription>
@@ -2428,6 +2445,7 @@ is never used.
   **********************************************************************
    -->
 
+  <BugCode abbrev="IL" >Infinite Loop</BugCode>
   <BugCode abbrev="VO" >Use of volatile</BugCode>
   <BugCode abbrev="UI" >Unsafe inheritance</BugCode>
   <BugCode abbrev="FL" >Use of floating point precision</BugCode>
