@@ -167,6 +167,17 @@ public class WarningPropertySet {
 	}
 
 	/**
+	 * Determine whether or not a warning with given priority
+	 * is expected to be a false positive.
+	 * 
+	 * @param priority the priority
+	 * @return true if the warning is expected to be a false positive, false if not
+	 */
+	public boolean isFalsePositive(int priority) {
+		return priority > Detector.EXP_PRIORITY;
+	}
+
+	/**
 	 * Decorate given BugInstance with properties.
 	 * 
 	 * @param bugInstance the BugInstance
