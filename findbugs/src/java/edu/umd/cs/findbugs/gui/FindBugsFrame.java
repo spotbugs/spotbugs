@@ -40,37 +40,6 @@ public class FindBugsFrame extends javax.swing.JFrame {
      * ---------------------------------------------------------------------- */
     
     /**
-     * Custom cell renderer for the navigator tree.
-     */
-    private static class NavigatorCellRenderer extends DefaultTreeCellRenderer {
-	private ImageIcon projectIcon;
-	private ImageIcon analysisRunIcon;
-	
-	public NavigatorCellRenderer() {
-	    ClassLoader classLoader = this.getClass().getClassLoader();
-	    projectIcon = new ImageIcon(classLoader.getResource("edu/umd/cs/findbugs/gui/project.png"));
-	    analysisRunIcon = new ImageIcon(classLoader.getResource("edu/umd/cs/findbugs/gui/execute.png"));
-	}
-	
-	public Component getTreeCellRendererComponent(JTree tree, Object value, boolean sel,
-	boolean expanded, boolean leaf, int row, boolean hasFocus) {
-	    
-	    super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
-	    
-	    // Set the icon, depending on what kind of node it is
-	    DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
-	    Object obj = node.getUserObject();
-	    if (obj instanceof Project) {
-		setIcon(projectIcon);
-	    } else if (obj instanceof AnalysisRun) {
-		setIcon(analysisRunIcon);
-	    }
-	    
-	    return this;
-	}
-    }
-    
-    /**
      * Custom cell renderer for the bug tree.
      */
     private static class BugCellRenderer extends DefaultTreeCellRenderer {
@@ -305,9 +274,6 @@ public class FindBugsFrame extends javax.swing.JFrame {
         java.awt.GridBagConstraints gridBagConstraints;
 
         consoleSplitter = new javax.swing.JSplitPane();
-        navigatorViewSplitter = new javax.swing.JSplitPane();
-        navigatorScrollPane = new javax.swing.JScrollPane();
-        navigatorTree = new javax.swing.JTree();
         viewPanel = new javax.swing.JPanel();
         emptyPanel = new javax.swing.JPanel();
         reportPanel = new javax.swing.JPanel();
@@ -366,9 +332,6 @@ public class FindBugsFrame extends javax.swing.JFrame {
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 exitForm(evt);
             }
-            public void windowOpened(java.awt.event.WindowEvent evt) {
-                formWindowOpened(evt);
-            }
         });
 
         consoleSplitter.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
@@ -379,12 +342,6 @@ public class FindBugsFrame extends javax.swing.JFrame {
                 consoleSplitterPropertyChange(evt);
             }
         });
-
-        navigatorScrollPane.setPreferredSize(new java.awt.Dimension(140, 0));
-        navigatorTree.setModel(createNavigatorTreeModel());
-        navigatorScrollPane.setViewportView(navigatorTree);
-
-        navigatorViewSplitter.setLeftComponent(navigatorScrollPane);
 
         viewPanel.setLayout(new java.awt.CardLayout());
 
@@ -689,9 +646,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
         viewPanel.add(bugTreePanel, "BugTree");
 
-        navigatorViewSplitter.setRightComponent(viewPanel);
-
-        consoleSplitter.setTopComponent(navigatorViewSplitter);
+        consoleSplitter.setTopComponent(viewPanel);
 
         consoleScrollPane.setMinimumSize(new java.awt.Dimension(22, 100));
         consoleScrollPane.setPreferredSize(new java.awt.Dimension(0, 100));
@@ -871,11 +826,13 @@ public class FindBugsFrame extends javax.swing.JFrame {
         if (result == JFileChooser.CANCEL_OPTION)
             return;
         try {
+            // TODO: offer to save current project if modified
+            
             File file = chooser.getSelectedFile();
             Project project = new Project(file.getPath());
             FileInputStream in = new FileInputStream(file);
             project.read(in);
-            addProject(project);
+            setProject(project);
         } catch (IOException e) {
             logger.logMessage(ConsoleLogger.ERROR, "Could not open project: " + e.getMessage());
         }
@@ -906,13 +863,6 @@ public class FindBugsFrame extends javax.swing.JFrame {
             FileOutputStream out = new FileOutputStream(file);
             project.write(out);
             logger.logMessage(ConsoleLogger.INFO, "Project saved");
-            
-            // Project filename may have changed, so update the node in
-            // the navigator tree
-            DefaultMutableTreeNode projectNode = (DefaultMutableTreeNode)
-                navigatorTree.getSelectionPath().getPath()[1];
-            navigatorTreeModel.nodeChanged(projectNode);
-
         } catch (IOException e) {
             logger.logMessage(ConsoleLogger.ERROR, "Could not save project: " + e.getMessage());
         }
@@ -965,18 +915,11 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	
 	if (dialog.isCompleted()) {
 	    logger.logMessage(ConsoleLogger.INFO, "Analysis " + project + " completed");
-	    
-	    // Create a navigator tree node for the analysis run
-	    DefaultTreeModel treeModel = (DefaultTreeModel) navigatorTree.getModel();
-	    TreePath treePath = navigatorTree.getSelectionPath();
-	    DefaultMutableTreeNode projectNode = (DefaultMutableTreeNode) treePath.getPath()[1];
-	    DefaultMutableTreeNode analysisRunNode = new DefaultMutableTreeNode(analysisRun);
-	    treeModel.insertNodeInto(analysisRunNode, projectNode, projectNode.getChildCount());
-	    
-	    // Make the new node the currently selected node
-	    TreePath path = new TreePath(new Object[]{rootNode, projectNode, analysisRunNode});
-	    navigatorTree.makeVisible(path);
-	    navigatorTree.setSelectionPath(path);
+            
+            // Now we have an analysis run to look at
+            synchAnalysisRun(analysisRun);
+            currentAnalysisRun = analysisRun;
+            setView("BugTree");
 	} else {
 	    logger.logMessage(ConsoleLogger.INFO, "Analysis of " + project + " cancelled by user");
 	}
@@ -1013,15 +956,11 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	    addJarToList();
 	}
     }//GEN-LAST:event_browseJarButtonActionPerformed
-    
-    private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
-	navigatorTree.setSelectionPath(new TreePath(rootNode));
-    }//GEN-LAST:event_formWindowOpened
-    
+        
     private void newProjectItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newProjectItemActionPerformed
-	String projectName = "<<project " + (++projectCount) + ">>";
+	String projectName = "<<unnamed project>>";
 	Project project = new Project(projectName);
-        addProject(project);
+        setProject(project);
     }//GEN-LAST:event_newProjectItemActionPerformed
     
     private void exitItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitItemActionPerformed
@@ -1062,30 +1001,6 @@ public class FindBugsFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_exitForm
     
     /**
-     * This handler is called whenever the selection in the navigator
-     * tree changes.
-     * @param e the TreeSelectionEvent
-     */
-    private void navigatorTreeSelectionChanged(TreeSelectionEvent e) {
-	DefaultMutableTreeNode node = (DefaultMutableTreeNode) navigatorTree.getLastSelectedPathComponent();
-	
-	if (node == null)
-	    return;
-	
-	Object nodeInfo = node.getUserObject();
-	if (nodeInfo instanceof ProjectCollection) {
-	    // Project collection node - there is no view associated with this node
-	    setView("EmptyPanel");
-	} else if (nodeInfo instanceof Project) {
-	    synchProject((Project) nodeInfo);
-	    setView("EditProjectPanel");
-	} else if (nodeInfo instanceof AnalysisRun) {
-	    synchAnalysisRun((AnalysisRun) nodeInfo);
-	    setView("BugTree");
-	}
-    }
-    
-    /**
      * This is called whenever the selection is changed in the bug tree.
      * @param e the TreeSelectionEvent
      */
@@ -1102,16 +1017,6 @@ public class FindBugsFrame extends javax.swing.JFrame {
      * ---------------------------------------------------------------------- */
     
     /**
-     * Create the tree model that will be used by the navigator tree.
-     */
-    private TreeModel createNavigatorTreeModel() {
-	projectCollection = new ProjectCollection();
-	rootNode = new DefaultMutableTreeNode(projectCollection);
-	navigatorTreeModel = new DefaultTreeModel(rootNode);
-	return navigatorTreeModel;
-    }
-    
-    /**
      * This is called from the constructor to perform post-initialization
      * of the components in the form.
      */
@@ -1119,19 +1024,6 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	logger = new ConsoleLogger(this);
 	
 	viewPanelLayout = (CardLayout) viewPanel.getLayout();
-	navigatorTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
-	
-	// Add a tree selection listener to the navigator tree, so we can
-	// ensure that the view is always consistent with the current selection.
-	navigatorTree.addTreeSelectionListener(new TreeSelectionListener() {
-	    public void valueChanged(TreeSelectionEvent e) {
-		navigatorTreeSelectionChanged(e);
-	    }
-	});
-	
-	navigatorTree.setCellRenderer(new FindBugsFrame.NavigatorCellRenderer());
-	navigatorTree.setRootVisible(false);
-	navigatorTree.setShowsRootHandles(false);
 
         // Console starts out disabled
         consoleSplitter.setDividerLocation(1.0);
@@ -1214,25 +1106,21 @@ public class FindBugsFrame extends javax.swing.JFrame {
     }
     
     /**
-     * Get the currently selected project.
-     * @return the current project, or null if no project is selected
-     *   (which should only be possible if the root node is selected)
+     * Get the current project.
      */
     private Project getCurrentProject() {
-	return (Project) getTreeSelectionOf(navigatorTree, Project.class);
+        return currentProject;
     }
     
     /**
-     * Get the currently selected analysis run.
-     * @return the current analysis run, or null if no analysis run
-     *   is selected
+     * Get the current analysis run.
      */
     private AnalysisRun getCurrentAnalysisRun() {
-	return (AnalysisRun) getTreeSelectionOf(navigatorTree, AnalysisRun.class);
+        return currentAnalysisRun;
     }
 
     /**
-     * Get the bug instances currently selected in the bug tree.
+     * Get the bug instance currently selected in the bug tree.
      */
     private BugInstance getCurrentBugInstance() {
 	return (BugInstance) getTreeSelectionOf(bugTree, BugInstance.class);
@@ -1271,19 +1159,11 @@ public class FindBugsFrame extends javax.swing.JFrame {
     /* ----------------------------------------------------------------------
      * Synchronization of data model and UI
      * ---------------------------------------------------------------------- */
-
-    /**
-     * Add a new project to the UI.
-     * @param project the new project
-     */
-    private void addProject(Project project) {
-	projectCollection.addProject(project);
-	DefaultMutableTreeNode projectNode = new DefaultMutableTreeNode(project);
-	DefaultTreeModel treeModel = (DefaultTreeModel) navigatorTree.getModel();
-	treeModel.insertNodeInto(projectNode, rootNode, rootNode.getChildCount());
-	TreePath projPath = new TreePath(new Object[]{rootNode, projectNode});
-	navigatorTree.makeVisible(projPath);
-	navigatorTree.setSelectionPath(projPath);
+    
+    private void setProject(Project project) {
+        currentProject = project;
+        synchProject(project);
+        setView("EditProjectPanel");
     }
     
     /**
@@ -1695,11 +1575,9 @@ public class FindBugsFrame extends javax.swing.JFrame {
     private javax.swing.JButton addSourceDirButton;
     private javax.swing.JMenuBar theMenuBar;
     private javax.swing.JComboBox groupByChooser;
-    private javax.swing.JScrollPane navigatorScrollPane;
     private javax.swing.JButton removeJarButton;
     private javax.swing.JButton addJarButton;
     private javax.swing.JScrollPane sourceTextAreaScrollPane;
-    private javax.swing.JTree navigatorTree;
     private javax.swing.JList sourceDirList;
     private javax.swing.JMenuItem saveProjectItem;
     private javax.swing.JSplitPane bugTreeBugDetailsSplitter;
@@ -1710,7 +1588,6 @@ public class FindBugsFrame extends javax.swing.JFrame {
     private javax.swing.JSeparator jSeparator3;
     private javax.swing.JTree bugTree;
     private javax.swing.JScrollPane jarFileListScrollPane;
-    private javax.swing.JSplitPane navigatorViewSplitter;
     private javax.swing.JLabel groupByLabel;
     private javax.swing.JCheckBoxMenuItem viewConsoleItem;
     private javax.swing.JMenuItem closeProjectItem;
@@ -1742,11 +1619,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
     private ConsoleLogger logger;
     private CardLayout viewPanelLayout;
     private String currentView;
-    private ProjectCollection projectCollection;
-    private DefaultTreeModel navigatorTreeModel;
-    private DefaultMutableTreeNode rootNode;
-    private int projectCount;
-    private AnalysisRun currentAnalysisRun; // be lazy in switching tree models in BugTree
+    private Project currentProject;
+    private AnalysisRun currentAnalysisRun;
     private SourceFinder sourceFinder = new SourceFinder();
     private BugInstance currentBugInstance; // be lazy in switching bug instance details
     private SourceLineAnnotation currentSourceLineAnnotation; // as above
