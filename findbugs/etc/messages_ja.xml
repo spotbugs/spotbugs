@@ -164,6 +164,16 @@ with respect to locking.  It is a fast detector.
     </Details>
   </Detector>
 
+  <Detector class="edu.umd.cs.findbugs.detect.EqStringTest" >
+    <Details>
+<![CDATA[
+<p> This detector looks for comparisons of String objects using the == or !=
+operators.
+ It is a fast detector.
+]]>
+    </Details>
+  </Detector>
+
   <Detector class="edu.umd.cs.findbugs.detect.MutableLock" >
     <Details>
 <![CDATA[
@@ -261,7 +271,16 @@ is suspiciously ignored.  It is a fairly fast detector.
 ]]>
     </Details>
   </Detector>
-HERE
+
+  <Detector class="edu.umd.cs.findbugs.detect.PreferZeroLengthArrays">
+    <Details>
+<![CDATA[
+<p> This detector looks for methods that return either arrays or an explicit null reference.
+Returning a zero length array is generally preferred in this context to returning a null reference.
+It is a fast detector.
+]]>
+    </Details>
+  </Detector>
 
   <BugPattern type="DE_MIGHT_DROP">
     <ShortDescription >例外を見落としている疑い</ShortDescription>
@@ -552,6 +571,22 @@ HERE
 ]]>
     </Details>
   </BugPattern>
+
+  <BugPattern type="COMPARING_STRINGS_WITH_EQ">
+    <ShortDescription>Comparison of String objects using == or !=</ShortDescription>
+    <LongDescription>Comparison of String objects using == or != in {1} </LongDescription>
+    <Details>
+<![CDATA[
+  <p>This code compares <code>java.lang.String</code> objects for reference
+equality using the == or != operators.
+Unless both strings are either constants in a source file, or have been
+interned using the <code>String.intern()</code> method, the same string
+value may be represented by two different String objects. Considering
+using the <code>equals</code> method instead.
+]]>
+    </Details>
+  </BugPattern>
+
   <BugPattern type="CO_ABSTRACT_SELF">
     <ShortDescription >抽象クラス はcovariantメソッドcompareTo()を定義している</ShortDescription>
     <LongDescription >Abstract {0} はcompareTo({0})メソッドを定義している</LongDescription>
@@ -1186,8 +1221,125 @@ defined in an interface references a mutable
   </BugPattern>
 
 
+  <BugPattern type="NP_ALWAYS_NULL">
+    <ShortDescription>Null pointer dereference in method</ShortDescription>
+    <LongDescription>Null pointer dereference in {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p> A null pointer is dereferenced here.&nbsp; This will lead to a 
+<code>NullPointerException</code> when the code is executed.
+]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="NP_ALWAYS_NULL_EXCEPTION">
+    <ShortDescription>Null pointer dereference in method on exception path</ShortDescription>
+    <LongDescription>Null pointer dereference in {1} on exception path</LongDescription>
+    <Details>
+<![CDATA[
+<p> A pointer which is null on an exception path is dereferenced here.&nbsp;
+This will lead to a <code>NullPointerException</code> when the code is executed.&nbsp;
+Note that because FindBugs currently does not prune infeasible exception paths,
+this may be a false warning.
+]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="NP_NULL_ON_SOME_PATH">
+    <ShortDescription>Possible null pointer dereference in method</ShortDescription>
+    <LongDescription>Possible null pointer dereference in {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p> A reference value dereferenced here might be null at runtime.&nbsp;
+This may lead to a <code>NullPointerException</code> when the code is executed.
+]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="NP_NULL_ON_SOME_PATH_EXCEPTION">
+    <ShortDescription>Possible null pointer dereference in method on exception path</ShortDescription>
+    <LongDescription>Possible null pointer dereference in {1} on exception path</LongDescription>
+    <Details>
+<![CDATA[
+<p> A reference value which is null on some exception control path is
+dereferenced here.&nbsp; This may lead to a <code>NullPointerException</code>
+when the code is executed.&nbsp;
+Note that because FindBugs currently does not prune infeasible exception paths,
+this may be a false warning.
+]]>
+    </Details>
+  </BugPattern>
+
+
+  <BugPattern type="SI_INSTANCE_BEFORE_FINALS_ASSIGNED">
+    <ShortDescription>Static initializer for class creates instance before all static final fields assigned</ShortDescription>
+    <LongDescription>Static initializer for {0} creates instance before all static final fields assigned</LongDescription>
+    <Details>
+<![CDATA[
+<p> The class's static initializer creates an instance of the class
+before all of the static final fields are assigned.
+]]>
+    </Details>
+  </BugPattern>
+
+
+  <BugPattern type="OS_OPEN_STREAM">
+    <ShortDescription>Method may fail to close stream</ShortDescription>
+    <LongDescription>{1} may fail to close stream</LongDescription>
+    <Details>
+<![CDATA[
+<p> The method creates an IO stream object, does not assign it to any
+fields, pass it to other methods, or return it, and does not appear to close
+the stream on all paths out of the method.&nbsp; This may result in
+a file descriptor leak.&nbsp; It is generally a good
+idea to use a <code>finally</code> block to ensure that streams are
+closed.
+]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="OS_OPEN_STREAM_EXCEPTION_PATH">
+    <ShortDescription>Method may fail to close stream on exception</ShortDescription>
+    <LongDescription>{1} may fail to close stream on exception</LongDescription>
+    <Details>
+<![CDATA[
+<p> The method creates an IO stream object, does not assign it to any
+fields, pass it to other methods, or return it, and does not appear to close
+it on all possible exception paths out of the method.&nbsp;
+This may result in a file descriptor leak.&nbsp; It is generally a good
+idea to use a <code>finally</code> block to ensure that streams are
+closed.
+]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="PZLA_PREFER_ZERO_LENGTH_ARRAYS">
+    <ShortDescription>Consider returning a zero length array rather than null</ShortDescription>
+    <LongDescription>Should {1} return a zero length array rather than null?</LongDescription>
+    <Details>
+<![CDATA[
+<p> It is generally a better design to
+return a length zero array rather than a null reference to indicate that there
+are no results. This way, no explicit check for null is needed by clients of the method.
+]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="SE_NONLONG_SERIALVERSIONID">
+    <ShortDescription>serialVersionUID isn't long</ShortDescription>
+    <LongDescription>{1} isn't long</LongDescription>
+    <Details>
+<![CDATA[
+  <p> This class defines a <code>serialVersionUID</code> field that is not long.&nbsp;
+  The field should be made long
+	if it is intended to specify
+	the version UID for purposes of serialization.
+]]>
+    </Details>
+  </BugPattern>
 
   <BugCode abbrev="FI" >finalizerの使い方が間違っている</BugCode>
+  <BugCode abbrev="ES" >Checking String equality using == or !=</BugCode>
   <BugCode abbrev="ML" >更新されるフィールドでロックしている（ロックオブジェクトが不変でない）</BugCode>
   <BugCode abbrev="UG" >getはsynchroしていないがsetはsynchroしている</BugCode>
   <BugCode abbrev="IC" >初期化がループしている</BugCode>
@@ -1224,4 +1376,7 @@ defined in an interface references a mutable
   <BugCode abbrev="2LW" >二つのロックを持ったままwaitしている</BugCode>
   <BugCode abbrev="BcpDC">Possible double check of field</BugCode>
   <BugCode abbrev="RV" >Return value of method is ignored</BugCode>
+  <BugCode abbrev="NP" >Null pointer dereference</BugCode>
+  <BugCode abbrev="OS">Stream not closed on all paths</BugCode>
+  <BugCode abbrev="PZLA" >Prefer zero length arrays to null to indicate no results</BugCode>
 </MessageCollection>
