@@ -33,6 +33,7 @@ public abstract class PatternElement {
 	private static final boolean DEBUG = Boolean.getBoolean("bcp.debug");
 
 	private PatternElement next;
+	private String label;
 	private int index;
 
 	/**
@@ -48,6 +49,22 @@ public abstract class PatternElement {
 	public void setNext(PatternElement patternElement) {
 		this.next = patternElement;
 	}
+
+	/**
+	 * Set a label for this PatternElement.
+	 * @param label the label
+	 * @return this object
+	 */
+	public PatternElement label(String label) {
+		this.label = label;
+		return this;
+	}
+
+	/**
+	 * Get the label of this PatternElement.
+	 * @return the label, or null if the PatternElement is not labeled
+	 */
+	public String getLabel() { return label; }
 
 	/**
 	 * Set the index.  This is just for debugging.

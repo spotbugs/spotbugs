@@ -20,13 +20,16 @@
 package edu.umd.cs.daveho.ba.bcp;
 
 import java.util.*;
+import org.apache.bcel.generic.InstructionHandle;
 
 public class ByteCodePatternMatch {
 	private BindingSet bindingSet;
+	private PatternElementMatch lastElementMatch;
 	private LinkedList<PatternElementMatch> patternElementMatchList;
 
 	public ByteCodePatternMatch(BindingSet bindingSet, PatternElementMatch lastElementMatch) {
 		this.bindingSet = bindingSet;
+		this.lastElementMatch = lastElementMatch;
 		this.patternElementMatchList = new LinkedList<PatternElementMatch>();
 
 		// The PatternElementMatch objects are stored in reverse order.
@@ -43,6 +46,12 @@ public class ByteCodePatternMatch {
 
 	public Iterator<PatternElementMatch> patternElementMatchIterator() {
 		return patternElementMatchList.iterator();
+	}
+
+	public InstructionHandle getLabeledInstruction(String label) {
+		return lastElementMatch != null
+			? lastElementMatch.getLabeledInstruction(label)
+			: null;
 	}
 }
 

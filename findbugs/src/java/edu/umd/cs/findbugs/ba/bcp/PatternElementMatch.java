@@ -78,6 +78,20 @@ public class PatternElementMatch {
 		return prev;
 	}
 
+	/**
+	 * Get the instruction matched by the PatternElement with given label.
+	 */
+	public InstructionHandle getLabeledInstruction(String label) {
+		PatternElementMatch cur = this;
+		while (cur != null) {
+			String elementLabel = cur.patternElement.getLabel();
+			if (elementLabel != null && elementLabel.equals(label))
+				return cur.matchedInstruction;
+			cur = cur.prev;
+		}
+		return null;
+	}
+
 	public String toString() {
 		StringBuffer buf = new StringBuffer();
 		PatternElementMatch cur = this;
