@@ -540,7 +540,7 @@ the fields when they wanted the other.
     <LongDescription>Call to swing method in {1} needs to be performed in Swing event thread</LongDescription>
     <Details>
 <![CDATA[
-<p>(<a href="http://java.sun.com/developer/JDCTechTips/2003/tt1208.html#1">From JDC Tech Tip</a</a>>): The Swing methods
+<p>(<a href="http://java.sun.com/developer/JDCTechTips/2003/tt1208.html#1">From JDC Tech Tip</a>): The Swing methods
 show, setVisible and pack will create the associated peer for the frame. 
 With the creation of the peer, the system creates the event dispatch thread. 
 This makes things problematic because the event dispatch thread could be notifying 
