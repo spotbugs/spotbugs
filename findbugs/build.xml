@@ -288,7 +288,7 @@
 
        <property name="release.base" value="findbugs-${release.number}" />
        <property name="bin.release.scripts"
-                 value="${release.base}/bin/findbugs,${release.base}/bin/mergeResults" />
+                 value="${release.base}/bin/findbugs,${release.base}/bin/mergeResults,${release.base}/bin/bugHistory" />
        <property name="src.release.scripts"
                 value="${bin.release.scripts},${release.base}/etc/createXML,${release.base}/etc/runTests,${release.base}/etc/summarizeBugs,${release.base}/etc/diffBugSummaries" />
 
