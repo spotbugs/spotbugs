@@ -413,11 +413,20 @@ public class FindBugsFrame extends javax.swing.JFrame {
     private void findBugsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_findBugsButtonActionPerformed
         Project project = getCurrentProject();
         AnalysisRun analysisRun = new AnalysisRun(project);
-        DefaultTreeModel treeModel = (DefaultTreeModel) navigatorTree.getModel();
-        TreePath treePath = navigatorTree.getSelectionPath();
-        DefaultMutableTreeNode projectNode = (DefaultMutableTreeNode) treePath.getPath()[1];
-        treeModel.insertNodeInto(
-            new DefaultMutableTreeNode(analysisRun), projectNode, projectNode.getChildCount());
+        
+        // Run the analysis!
+        RunAnalysisDialog dialog = new RunAnalysisDialog(this, analysisRun);
+        dialog.setSize(400, 300);
+        dialog.show();
+
+        if (dialog.isCompleted()) {
+            // Create a navigator tree node for the analysis run
+            DefaultTreeModel treeModel = (DefaultTreeModel) navigatorTree.getModel();
+            TreePath treePath = navigatorTree.getSelectionPath();
+            DefaultMutableTreeNode projectNode = (DefaultMutableTreeNode) treePath.getPath()[1];
+            treeModel.insertNodeInto(
+                new DefaultMutableTreeNode(analysisRun), projectNode, projectNode.getChildCount());
+        }
     }//GEN-LAST:event_findBugsButtonActionPerformed
 
     private void browseSrcDirButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_browseSrcDirButtonActionPerformed
@@ -649,7 +658,6 @@ public class FindBugsFrame extends javax.swing.JFrame {
      */
     public static void main(String args[]) {
 	FindBugsFrame frame = new FindBugsFrame();
-        frame.setView("EditProjectPanel");
         frame.setSize(750, 550);
         frame.show();
     }
