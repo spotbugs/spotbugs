@@ -18,6 +18,9 @@
  */
 package edu.umd.cs.findbugs.ba;
 
+import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.MethodGen;
+
 /**
  * An exception that may be thrown by frame modeling visitor
  * classes to indicate that the method being analyzed contains
@@ -48,5 +51,33 @@ public class InvalidBytecodeException extends RuntimeException {
 	 */
 	public InvalidBytecodeException(String msg, Throwable cause) {
 		super(msg, cause);
+	}
+
+	/**
+	 * Constructor from method and instruction.
+	 *
+	 * @param message   reason for the error
+	 * @param methodGen the method
+	 * @param handle    the instruction
+	 */
+	public InvalidBytecodeException(String message, MethodGen methodGen, InstructionHandle handle) {
+		super(message + " in " + SignatureConverter.convertMethodSignature(methodGen) + " at " + handle);
+	}
+
+	/**
+	 * Constructor from method and instruction.
+	 *
+	 * @param message   reason for the error
+	 * @param methodGen the method
+	 * @param handle    the instruction
+	 * @param cause     another exception that is the cause of this exception
+	 */
+	public InvalidBytecodeException(
+			String message,
+			MethodGen methodGen,
+			InstructionHandle handle,
+			Throwable cause) {
+		super(message + " in " + SignatureConverter.convertMethodSignature(methodGen) + " at " + handle,
+				cause);
 	}
 }
