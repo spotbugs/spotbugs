@@ -28,6 +28,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
+import org.dom4j.Attribute;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
@@ -172,7 +173,6 @@ public class PluginLoader extends URLClassLoader {
 		}
 
 		// Create a DetectorFactory for all Detector nodes
-		HashMap<String, DetectorFactory> detectorFactoryMap = new HashMap<String, DetectorFactory>();
 		try {
 			List detectorNodeList = pluginDescriptor.selectNodes("/FindbugsPlugin/Detector");
 			for (Iterator i = detectorNodeList.iterator(); i.hasNext();) {
@@ -192,19 +192,6 @@ public class PluginLoader extends URLClassLoader {
 						detectorClass, !disabled.equals("true"),
 				        speed, reports, requireJRE);
 				plugin.addDetectorFactory(factory);
-				detectorFactoryMap.put(className, factory);
-
-				// Add Detector ordering constraints (if any)
-				String detectorInEarlierPass = detectorNode.valueOf("@afterpass");
-				if (!detectorInEarlierPass.equals(""))
-					plugin.addInterPassOrderingConstraint(
-						new DetectorOrderingConstraint(detectorInEarlierPass, className)
-						);
-				String detectorEarlierInSamePass = detectorNode.valueOf("@after");
-				if (!detectorEarlierInSamePass.equals(""))
-					plugin.addIntraPassOrderingConstraint(
-						new DetectorOrderingConstraint(detectorEarlierInSamePass, className)
-						);
 
 				// Find Detector node in one of the messages files,
 				// to get the detail HTML.
@@ -223,6 +210,57 @@ public class PluginLoader extends URLClassLoader {
 			}
 		} catch (ClassNotFoundException e) {
 			throw new PluginException("Could not instantiate detector class: " + e, e);
+		}
+
+		// Create ordering constraints
+		Node orderingConstraintsNode =
+			pluginDescriptor.selectSingleNode("/FindbugsPlugin/OrderingConstraints");
+		if (orderingConstraintsNode != null) {
+			// Get inter-pass and intra-pass constraints
+			for (Iterator i = orderingConstraintsNode.selectNodes("./SplitPass|./WithinPass").iterator();
+				i.hasNext();) {
+				Element constraintElement = (Element) i.next();
+
+				// Make sure the constraint element is fully specified
+				Attribute earlierAttr = constraintElement.attribute("earlier");
+				Attribute laterAttr = constraintElement.attribute("later");
+				if (earlierAttr == null || laterAttr == null) {
+					throw new PluginException("Missing 'earlier' or 'later' attribute in '" +
+						constraintElement.getName() + "' element");
+				}
+
+				// Find the actual detector classes in the constraint
+				String earlierClass = lookupDetectorClass(plugin, earlierAttr.getValue());
+				String laterClass = lookupDetectorClass(plugin, laterAttr.getValue());
+
+				// Create the constraint
+				DetectorOrderingConstraint constraint = new DetectorOrderingConstraint(
+					earlierClass, laterClass);
+
+				// Add the constraint to the plugin
+				if (constraintElement.getName().equals("SplitPass"))
+					plugin.addInterPassOrderingConstraint(constraint);
+				else
+					plugin.addIntraPassOrderingConstraint(constraint);
+			}
+
+			// Handle FirstInPass elements
+			for (Iterator i = orderingConstraintsNode.selectNodes("./FirstInPass").iterator();
+				i.hasNext();) {
+				Element firstInPassElement = (Element) i.next();
+				Attribute detectorAttr = firstInPassElement.attribute("detector");
+				if (detectorAttr == null) {
+					throw new PluginException("Missing 'detector' attribute in FirstInPass element");
+				}
+				String detectorClass = lookupDetectorClass(plugin, detectorAttr.getValue());
+				DetectorFactory factory = plugin.getFactoryByFullName(detectorClass);
+				if (factory == null) {
+					throw new PluginException("Unknown detector class '" +
+						detectorClass +
+						"' in FirstInPass element");
+				}
+				factory.setFirstInPass(true);
+			}
 		}
 
 		// Create BugPatterns
@@ -275,6 +313,20 @@ public class PluginLoader extends URLClassLoader {
 		// new Plugin object.
 		this.plugin = plugin;
 
+	}
+
+	private String lookupDetectorClass(Plugin plugin, String name) throws PluginException {
+		// If the detector name contains '.' characters, assume it is
+		// fully qualified already.  Otherwise, assume it is a short
+		// name that resolves to another detector in the same plugin.
+
+		if (name.indexOf('.') < 0) {
+			DetectorFactory factory = plugin.getFactoryByShortName(name);
+			if (factory == null)
+				throw new PluginException("No detector found for short name '" + name + "'");
+			name = factory.getFullName();
+		}
+		return name;
 	}
 
 	private void addCollection(List<Document> messageCollectionList, String filename)
