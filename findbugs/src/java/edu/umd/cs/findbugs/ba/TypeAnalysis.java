@@ -42,9 +42,31 @@ import org.apache.bcel.generic.*;
  * @author David Hovemeyer
  */
 public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame> {
+	private static final boolean DEBUG  = Boolean.getBoolean("ta.debug");
+
+	private static class CachedExceptionSet {
+		private TypeFrame result;
+		private ExceptionSet exceptionSet;
+
+		public CachedExceptionSet(TypeFrame result, ExceptionSet exceptionSet) {
+			this.result = result;
+			this.exceptionSet = exceptionSet;
+		}
+
+		public boolean isUpToDate(TypeFrame result) {
+			return this.result.equals(result);
+		}
+
+		public ExceptionSet getExceptionSet() {
+			return exceptionSet;
+		}
+	}
+
 	private MethodGen methodGen;
 	private TypeMerger typeMerger;
 	private TypeFrameModelingVisitor visitor;
+	private Map<BasicBlock, CachedExceptionSet> exceptionSetMap;
+	private RepositoryLookupFailureCallback lookupFailureCallback;
 
 	/**
 	 * Constructor.
@@ -53,12 +75,16 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame> {
 	 * @param typeMerger object to merge types
 	 * @param visitor a TypeFrameModelingVisitor to use to model the effect
 	 *   of instructions
+	 * @param lookupFailureCallback lookup failure callback
 	 */
-	public TypeAnalysis(MethodGen methodGen, DepthFirstSearch dfs, TypeMerger typeMerger, TypeFrameModelingVisitor visitor) {
+	public TypeAnalysis(MethodGen methodGen, DepthFirstSearch dfs, TypeMerger typeMerger, TypeFrameModelingVisitor visitor,
+		RepositoryLookupFailureCallback lookupFailureCallback) {
 		super(dfs);
 		this.methodGen = methodGen;
 		this.typeMerger = typeMerger;
 		this.visitor = visitor;
+		this.lookupFailureCallback = lookupFailureCallback;
+		this.exceptionSetMap = new HashMap<BasicBlock, CachedExceptionSet>();
 	}
 
 	/**
@@ -66,9 +92,11 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame> {
 	 * @param methodGen the MethodGen whose CFG we'll be analyzing
 	 * @param dfs DepthFirstSearch of the method
 	 * @param typeMerger object to merge types
+	 * @param lookupFailureCallback lookup failure callback
 	 */
-	public TypeAnalysis(MethodGen methodGen, DepthFirstSearch dfs, TypeMerger typeMerger) {
-		this(methodGen, dfs, typeMerger, new TypeFrameModelingVisitor(methodGen.getConstantPool()));
+	public TypeAnalysis(MethodGen methodGen, DepthFirstSearch dfs, TypeMerger typeMerger,
+		RepositoryLookupFailureCallback lookupFailureCallback) {
+		this(methodGen, dfs, typeMerger, new TypeFrameModelingVisitor(methodGen.getConstantPool()), lookupFailureCallback);
 	}
 
 	/**
@@ -78,7 +106,7 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame> {
 	 * @param lookupFailureCallback callback for Repository lookup failures
 	 */
 	public TypeAnalysis(MethodGen methodGen, DepthFirstSearch dfs, RepositoryLookupFailureCallback lookupFailureCallback) {
-		this(methodGen, dfs, new StandardTypeMerger(lookupFailureCallback));
+		this(methodGen, dfs, new StandardTypeMerger(lookupFailureCallback), lookupFailureCallback);
 	}
 
 	public TypeFrame createFact() {
@@ -153,18 +181,21 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame> {
 		handle.getInstruction().accept(visitor);
 	}
 
-/*
-	public void endTransfer(BasicBlock basicBlock, InstructionHandle end, Object result_) throws DataflowAnalysisException {
+	public void endTransfer(BasicBlock basicBlock, InstructionHandle end, Object result) throws DataflowAnalysisException {
 		// Figure out what exceptions can be thrown out
 		// of the basic block.  That way, we'll remember
 		// exactly what kinds of exceptions can
 		// be caught later on.
 
 		if (basicBlock.isExceptionThrower()) {
-			TypeFrame result = (TypeFrame) result_;
+			try {
+				computeExceptionTypes(basicBlock, (TypeFrame) result);
+			} catch (ClassNotFoundException e) {
+				lookupFailureCallback.reportMissingClass(e);
+				throw new DataflowAnalysisException("Could not enumerate exception types for block", e);
+			}
 		}
 	}
-*/
 
 	public void meetInto(TypeFrame fact, Edge edge, TypeFrame result) throws DataflowAnalysisException {
 		BasicBlock basicBlock = edge.getTarget();
@@ -200,6 +231,125 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame> {
 		};
 
 		driver.execute(argv[0]);
+	}
+
+	private CachedExceptionSet getCachedExceptionSet(BasicBlock basicBlock) {
+		CachedExceptionSet cachedExceptionSet = exceptionSetMap.get(basicBlock);
+		if (cachedExceptionSet == null) {
+			// When creating the cached exception type set for the first time:
+			// - the block result is set to TOP, so it won't match
+			//   any block result that has actually been computed
+			//   using the analysis transfer function
+			// - the exception set is created as empty (which makes it
+			//   return TOP as its common superclass)
+
+			TypeFrame top = createFact();
+			makeFactTop(top);
+			cachedExceptionSet = new CachedExceptionSet(top, new ExceptionSet());
+
+			exceptionSetMap.put(basicBlock, cachedExceptionSet);
+		}
+
+		return cachedExceptionSet;
+	}
+
+	private void computeExceptionTypes(BasicBlock basicBlock, TypeFrame result)
+		throws ClassNotFoundException, DataflowAnalysisException {
+
+		CachedExceptionSet cachedExceptionSet = getCachedExceptionSet(basicBlock);
+		if (cachedExceptionSet.isUpToDate(result))
+			return;
+
+		ExceptionSet exceptionSet = enumerateExceptionTypes(basicBlock);
+		TypeFrame copyOfResult = createFact();
+		copy(result, copyOfResult);
+
+		cachedExceptionSet = new CachedExceptionSet(copyOfResult, exceptionSet);
+		exceptionSetMap.put(basicBlock, cachedExceptionSet);
+	}
+
+	private ExceptionSet enumerateExceptionTypes(BasicBlock basicBlock)
+		throws ClassNotFoundException, DataflowAnalysisException {
+
+		ExceptionSet exceptionTypeSet = new ExceptionSet();
+		InstructionHandle pei = basicBlock.getExceptionThrower();
+		Instruction ins = pei.getInstruction();
+
+		// Get the exceptions that BCEL knows about.
+		// Note that all of these are unchecked.
+		ExceptionThrower exceptionThrower = (ExceptionThrower) ins;
+		Class[] exceptionList = exceptionThrower.getExceptions();
+		for (int i = 0; i < exceptionList.length; ++i) {
+			exceptionTypeSet.addImplicit(new ObjectType(exceptionList[i].getName()));
+		}
+
+		// Assume that an Error may be thrown by any instruction.
+		exceptionTypeSet.addImplicit(Hierarchy.ERROR_TYPE);
+
+		if (ins instanceof ATHROW) {
+			// For ATHROW instructions, we generate *two* blocks
+			// for which the ATHROW is an exception thrower.
+			//
+			// - The first, empty basic block, does the null check
+			// - The second block, which actually contains the ATHROW,
+			//   throws the object on the top of the operand stack
+			//
+			// We make a special case of the block containing the ATHROW,
+			// by removing all of the implicit exceptions,
+			// and using type information to figure out what is thrown.
+
+			if (basicBlock.containsInstruction(pei)) {
+				// This is the actual ATHROW, not the null check
+				// and implicit exceptions.
+				exceptionTypeSet.clear();
+
+				// The frame containing the thrown value is the start fact
+				// for the block, because ATHROW is guaranteed to be
+				// the only instruction in the block.
+				TypeFrame frame = getStartFact(basicBlock);
+	
+				// Check whether or not the frame is valid.
+				// Sun's javac sometimes emits unreachable code.
+				// For example, it will emit code that follows a JSR
+				// subroutine call that never returns.
+				// If the frame is invalid, then we can just make
+				// a conservative assumption that anything could be
+				// thrown at this ATHROW.
+				if (!frame.isValid()) {
+					exceptionTypeSet.addExplicit(Type.THROWABLE);
+				} else {
+					Type throwType = frame.getTopValue();
+					if (!(throwType instanceof ObjectType))
+						throw new DataflowAnalysisException("Non object type thrown by " + pei);
+					exceptionTypeSet.addExplicit((ObjectType) throwType);
+				}
+			}
+		}
+
+		// If it's an InvokeInstruction, add declared exceptions and RuntimeException
+		if (ins instanceof InvokeInstruction) {
+			ConstantPoolGen cpg = methodGen.getConstantPool();
+
+			InvokeInstruction inv = (InvokeInstruction) ins;
+			ObjectType[] declaredExceptionList = Hierarchy.findDeclaredExceptions(inv, cpg);
+			if (declaredExceptionList == null) {
+				// Couldn't find declared exceptions,
+				// so conservatively assume it could thrown any checked exception.
+				if (DEBUG) System.out.println("Couldn't find declared exceptions for " +
+					SignatureConverter.convertMethodSignature(inv, cpg));
+				exceptionTypeSet.addExplicit(Hierarchy.EXCEPTION_TYPE);
+			} else {
+				for (int i = 0; i < declaredExceptionList.length; ++i) {
+					exceptionTypeSet.addExplicit(declaredExceptionList[i]);
+				}
+			}
+
+			exceptionTypeSet.addImplicit(Hierarchy.RUNTIME_EXCEPTION_TYPE);
+		}
+
+		if (DEBUG) System.out.println(pei + " can throw " + exceptionTypeSet);
+
+		return exceptionTypeSet;
 	}
 }
 
