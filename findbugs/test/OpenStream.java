@@ -30,4 +30,14 @@ public class OpenStream {
 
 		out.println("Hello, world!");
 	}
+
+	public void systemIn() throws IOException {
+		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+		System.out.println(reader.readLine());
+	}
+
+	public void socket(java.net.Socket socket) throws IOException {
+		BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+		System.out.println(reader.readLine());
+	}
 }
