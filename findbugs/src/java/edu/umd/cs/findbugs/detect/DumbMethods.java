@@ -34,7 +34,9 @@ public class DumbMethods extends BytecodeScanningDetector implements   Constants
    private BugInstance gcInvocationBugReport;
    private int gcInvocationPC;
    private CodeException[] exceptionTable;
+/*
    private boolean sawLDCEmptyString;
+*/
 
    public DumbMethods(BugReporter bugReporter) {
 	this.bugReporter = bugReporter;
@@ -97,7 +99,13 @@ public class DumbMethods extends BytecodeScanningDetector implements   Constants
 				&& getClassConstantOperand().equals("java/lang/System")
 				&& getNameConstantOperand().equals("currentTimeMillis"))
 			sawCurrentTimeMillis = true;
-	if (false && (seen == INVOKEVIRTUAL)
+/*
+	//
+	// TODO: put this back in when we have a standard way
+	// of enabling and disabling warnings on a per-bug-pattern
+	// basis.
+	//
+	if ((seen == INVOKEVIRTUAL)
 				&& sawLDCEmptyString
 				&& getNameConstantOperand().equals("equals"))
 		bugReporter.reportBug(new BugInstance("DM_STRING_EMPTY_EQUALS", LOW_PRIORITY)
@@ -109,6 +117,7 @@ public class DumbMethods extends BytecodeScanningDetector implements   Constants
 		sawLDCEmptyString = true;
 	else
 		sawLDCEmptyString = false;
+*/
    }
 
    public void report() {
