@@ -55,6 +55,18 @@ public class SortedBugCollection extends BugCollection {
 		return bugSet;
 	}
 
+	public boolean contains(BugInstance bugInstance) {
+		return bugSet.contains(bugInstance);
+	}
+
+	public BugInstance getMatching(BugInstance bugInstance) {
+		SortedSet<BugInstance> tailSet = bugSet.tailSet(bugInstance);
+		if (tailSet.isEmpty())
+			return null;
+		BugInstance first = tailSet.first();
+		return bugInstance.equals(first) ? first : null;
+	}
+
 }
 
 // vim:ts=4
