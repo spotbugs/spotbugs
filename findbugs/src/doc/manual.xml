@@ -572,12 +572,6 @@ xsl.stylesheet.home     =${local.software.home}/docbook/docbook-xsl-1.61.0
 # is installed. 
 
 saxon.home              =${local.software.home}/java/saxon-6.5.2
-
-# Set this to the directory where Eclipse (http://www.eclipse.org/)
-# is installed.  This only required if you want to build the FindBugs
-# Eclipse plugin.
-
-eclipse.home		=${local.software.home}/java/eclipse-2.1.2
 ]]>
 </programlisting>
 </para>
@@ -601,7 +595,7 @@ of this property to match your system.
 -->
 
 <para>
-The first property, <varname>xsl.stylesheet.home</varname> specifies the full
+The <varname>xsl.stylesheet.home</varname> property specifies the full
 path to the directory where you have installed the
 <ulink url="http://docbook.sourceforge.net/projects/xsl/">DocBook Modular XSL
 Stylesheets</ulink>.  You only need to specify this property if you will be
@@ -609,17 +603,10 @@ generating the &FindBugs; documentation.
 </para>
 
 <para>
-The second property, <varname>saxon.home</varname>, is the full path to the
+The <varname>saxon.home</varname> property is the full path to the
 directory where you installed the <ulink url="http://saxon.sourceforge.net/">&Saxon; XSLT Processor</ulink>.
 You only need to specify this property if you will be
 generating the &FindBugs; documentation.
-</para>
-
-<para>
-The third property, <varname>eclipse.home</varname>, is the full path
-to an installation of <ulink url="http://www.eclipse.org/">Eclipse</ulink>.
-You only need to specify this property if you want to rebuild the
-FindBugs Eclipse plugin.
 </para>
 
 </sect1>
@@ -1321,7 +1308,8 @@ You should find a plugin called "FindBugs Plug-in" provided by "FindBugs Project
 <para>
 To get started, right click on a Java project,
 and select the option labeled "Find Bugs".
-&FindBugs; will run, and problem markers will point to
+&FindBugs; will run, and problem markers (displayed in source
+windows, and also in the Eclipse Problems view) will point to
 locations in your code which have been identified as potential instances
 of bug patterns.
 </para>
@@ -1358,6 +1346,28 @@ Options you may choose include:
     you want to enable for your project.
     </para>
   </listitem>
+</itemizedlist>
+
+</sect1>
+
+<sect1>
+<title>Troubleshooting</title>
+
+<para>
+The &FindBugs; Eclipse plugin is still experimental.&nbsp; This section
+lists common problems with the plugin and (if known) how to resolve them.
+</para>
+
+<itemizedlist>
+  <listitem>
+    <para>
+    If you do not see any &FindBugs; problem markers (in your source
+    windows or in the Problems View), you may need to change your
+    Problems View filter settings.  See
+    <ulink url="http://findbugs.sourceforge.net/FAQ.html#q7">http://findbugs.sourceforge.net/FAQ.html#q7</ulink> for more information.
+    </para>
+  </listitem>
+
 </itemizedlist>
 
 </sect1>
