@@ -49,7 +49,8 @@ public class OpenStream {
 	}
 
 	public void loadFromFieldDoNotReport() throws IOException {
-		PrintStream ps = new PrintStream(os);
+		OutputStream outputStream = os;
+		PrintStream ps = new PrintStream(outputStream);
 		ps.println("Hello");
 	}
 }
