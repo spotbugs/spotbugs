@@ -57,7 +57,8 @@ public class EqStringTest extends BytecodeScanningDetector implements   Constant
 		stringOnTop = stringConstant;
 		return;
  	case INVOKEVIRTUAL:
-		if (refConstant.equals("java.lang.String.intern : ()Ljava.lang.String;"))
+		if (refConstant.equals("java.lang.String.intern : ()Ljava.lang.String;")
+		 || refConstant.equals("java.lang.String.equals : (Ljava.lang.Object;)Z"))
 			callToInternSeen = true;
 		break;
  	case IF_ACMPEQ:

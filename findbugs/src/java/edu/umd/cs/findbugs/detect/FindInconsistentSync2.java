@@ -183,9 +183,11 @@ public class FindInconsistentSync2 implements Detector {
 			if (stats.getNumLocalLocks() == 0)
 				continue;
 
-			// At this point, we report the field as being inconsistently synchronized
 			int freq = (100 * locked) / (locked + unlocked);
-			BugInstance bugInstance = new BugInstance("IS2_INCONSISTENT_SYNC", NORMAL_PRIORITY)
+			if (freq < 50) continue;
+
+			// At this point, we report the field as being inconsistently synchronized
+			BugInstance bugInstance = new BugInstance("IS2_INCONSISTENT_SYNC", freq > 65 ? NORMAL_PRIORITY : LOW_PRIORITY)
 				.addClass(xfield.getClassName())
 				.addField(xfield)
 				.addInt(freq).describe("INT_SYNC_PERCENT");
