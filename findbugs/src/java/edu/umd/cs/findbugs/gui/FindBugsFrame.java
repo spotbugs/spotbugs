@@ -425,6 +425,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
         annotationTextArea = new javax.swing.JTextArea();
         consoleScrollPane = new javax.swing.JScrollPane();
         consoleMessageArea = new javax.swing.JTextArea();
+        urlLabel = new javax.swing.JLabel();
+        logoLabel = new javax.swing.JLabel();
         theMenuBar = new javax.swing.JMenuBar();
         fileMenu = new javax.swing.JMenu();
         newProjectItem = new javax.swing.JMenuItem();
@@ -450,6 +452,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
         configureDetectorsItem = new javax.swing.JMenuItem();
         helpMenu = new javax.swing.JMenu();
         aboutItem = new javax.swing.JMenuItem();
+
+        getContentPane().setLayout(new java.awt.GridBagLayout());
 
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
@@ -870,7 +874,30 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
         consoleSplitter.setBottomComponent(consoleScrollPane);
 
-        getContentPane().add(consoleSplitter, java.awt.BorderLayout.CENTER);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        getContentPane().add(consoleSplitter, gridBagConstraints);
+
+        urlLabel.setFont(new java.awt.Font("Dialog", 0, 12));
+        urlLabel.setText("FindBugs - http://www.cs.umd.edu/~pugh/java/bugs/");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 0);
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        getContentPane().add(urlLabel, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.insets = new java.awt.Insets(2, 0, 2, 2);
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        getContentPane().add(logoLabel, gridBagConstraints);
 
         theMenuBar.setFont(new java.awt.Font("Dialog", 0, 12));
         fileMenu.setMnemonic('F');
@@ -1600,6 +1627,11 @@ public class FindBugsFrame extends javax.swing.JFrame {
         updateTitle(getCurrentProject());
         
         priorityThreshold = Detector.NORMAL_PRIORITY;
+        
+        // Load the icon for the UMD logo
+        ClassLoader classLoader = this.getClass().getClassLoader();
+        ImageIcon logoIcon = new ImageIcon(classLoader.getResource("edu/umd/cs/findbugs/gui/logo_umd.png"));
+        logoLabel.setIcon(logoIcon);
     }
     
     /* ----------------------------------------------------------------------
@@ -2470,6 +2502,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
     private javax.swing.JScrollPane jarFileListScrollPane;
     private javax.swing.JTextField jarNameTextField;
     private javax.swing.JMenuItem loadBugsItem;
+    private javax.swing.JLabel logoLabel;
     private javax.swing.JRadioButtonMenuItem lowPriorityButton;
     private javax.swing.JRadioButtonMenuItem mediumPriorityButton;
     private javax.swing.JMenuItem newProjectItem;
@@ -2491,6 +2524,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
     private javax.swing.JScrollPane sourceTextAreaScrollPane;
     private javax.swing.JTextField srcDirTextField;
     private javax.swing.JMenuBar theMenuBar;
+    private javax.swing.JLabel urlLabel;
     private javax.swing.JCheckBoxMenuItem viewBugDetailsItem;
     private javax.swing.JCheckBoxMenuItem viewConsoleItem;
     private javax.swing.JMenu viewMenu;
