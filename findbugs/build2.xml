@@ -15,6 +15,7 @@
 	<property name="src.dir" value="src/java"/>
 	<property name="toolsrc.dir" value="src/tools"/>
 	<property name="scriptsrc.dir" value="src/scripts"/>
+	<property name="etc.dir" value="etc"/>
 	<property name="pkg.base" value="edu/umd/cs/findbugs"/>
 	<property name="engine.jar" value="${jar.dir}/findbugs.jar"/>
 	<property name="coreplugin.jar" value="${plugin.dir}/coreplugin.jar"/>
@@ -71,6 +72,9 @@
 				<exclude name="${pkg.base}/detect/**"/>
 				<include name="**/*.class"/>
 				<include name="**/*.properties"/>
+			</fileset>
+			<fileset dir="${etc.dir}">
+				<include name="summary.xsl"/>
 			</fileset>
 		</jar>
 		
