@@ -335,6 +335,21 @@ public class BugInstance implements Comparable {
 	}
 
 	/**
+	 * Add a source line annotation for the given instruction in the given method.
+	 * Note that if the method does not have line number information, then
+	 * no source line annotation will be added.
+	 * @param methodGen the method being visited
+	 * @param handle the InstructionHandle containing the visited instruction
+	 * @return this object
+	 */
+	public BugInstance addSourceLine(MethodGen methodGen, InstructionHandle handle) {
+		SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation.fromVisitedInstruction(methodGen, handle);
+		if (sourceLineAnnotation != null)
+			add(sourceLineAnnotation);
+		return this;
+	}
+
+	/**
 	 * Add a source line annotation describing the
 	 * source line numbers for a range of instructions in the method being
 	 * visited by the given visitor.
