@@ -110,14 +110,6 @@ public class ResourceValueAnalysis<Resource> extends FrameDataflowAnalysis<Resou
 		result.mergeWith(fact);
 	}
 
-	private ResourceValueFrame modifyFrame(ResourceValueFrame orig, ResourceValueFrame copy) {
-		if (copy == null) {
-			copy = createFact();
-			copy.copyFrom(orig);
-		}
-		return copy;
-	}
-
 	public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, ResourceValueFrame fact)
 		throws DataflowAnalysisException {
 

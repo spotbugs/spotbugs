@@ -46,6 +46,45 @@ public abstract class FrameDataflowAnalysis<ValueType, FrameType extends Frame<V
 	public boolean isFactValid(FrameType fact) {
 		return fact.isValid();
 	}
+
+	/**
+	 * Create a modifiable copy of a frame.
+	 * This is useful for meetInto(), if the frame needs to be
+	 * modified in a path-sensitive fashion.
+	 * A typical usage pattern is:
+	 *
+	 * <pre>
+	 * FrameType copy = null;
+	 * if (someCondition()) {
+	 *     copy = modifyFrame(fact, copy);
+	 *     // modify copy
+	 * }
+     * if (someOtherCondition()) {
+	 *     copy = modifyFrame(fact, copy);
+	 *     // modify copy
+	 * }
+	 * if (copy != null)
+	 *     fact = copy;
+	 *
+	 * result.mergeWith(fact);
+	 * </pre>
+	 *
+	 * The advantage of using modifyFrame() is that new code can be added
+	 * before or after other places where the frame is modified, and the
+	 * code will remain correct.
+	 *
+	 * @param orig the original frame
+	 * @param copy the modifiable copy (returned by a previous call to modifyFrame()),
+	 *   or null if this is the first time modifyFrame() is being called
+	 * @param a modifiable copy of fact
+	 */
+	protected FrameType modifyFrame(FrameType orig, FrameType copy) {
+		if (copy == null) {
+			copy = createFact();
+			copy.copyFrom(orig);
+		}
+		return copy;
+	}
 }
 
 // vim:ts=4
