@@ -44,6 +44,18 @@ import java.util.*;
  */
 public abstract class Frame<ValueType> {
 
+	/**
+	 * Factory object for default values.
+	 * Required to be able to create default values in the constructor,
+	 * because subclass methods may be dangerous to call.
+	 */
+	public interface DefaultValueFactory<ValueType> {
+		/**
+		 * Create a default dataflow value.
+		 */
+		public ValueType getDefaultValue();
+	}
+
 	////////////////////////////////////////////////////////////////////////////////////
 	// Instance variables
 	////////////////////////////////////////////////////////////////////////////////////
@@ -67,6 +79,11 @@ public abstract class Frame<ValueType> {
 	private boolean isBottom;
 
 	/**
+	 * Factory for default values.
+	 */
+	private DefaultValueFactory<ValueType> defaultValueFactory;
+
+	/**
 	 * Default number of stack slots to preallocate space for.
 	 */
 	private static final int DEFAULT_STACK_CAPACITY = 10;
@@ -78,12 +95,33 @@ public abstract class Frame<ValueType> {
 	/**
 	 * Constructor.
 	 * @param numLocals number of local variable slots in the method
+	 * @param defaultValueFactory factory object to create default dataflow values;
+	 *    this is for subclasses for which it is dangerous to call
+	 *    getDefaultValue() before the object is fully initialized
+	 */
+	public Frame(int numLocals, DefaultValueFactory<ValueType> defaultValueFactory) {
+		this.numLocals = numLocals;
+		init(defaultValueFactory);
+	}
+
+	/**
+	 * Constructor.
+	 * This version of the constructor is for subclasses for which it is
+	 * always safe to call getDefaultValue(), even when the object is not
+	 * fully initialized.
+	 * @param numLocals number of local variable slots in the method
 	 */
 	public Frame(int numLocals) {
 		this.numLocals = numLocals;
+		init(new DefaultValueFactory<ValueType>() {
+			public ValueType getDefaultValue() { return Frame.this.getDefaultValue(); }
+		});
+	}
+
+	private void init(DefaultValueFactory<ValueType> defaultValueFactory) {
 		slotList = new ArrayList<ValueType>(numLocals + DEFAULT_STACK_CAPACITY);
 		for (int i = 0; i < numLocals; ++i)
-			slotList.add(getDefaultValue());
+			slotList.add(defaultValueFactory.getDefaultValue());
 		isTop = false;
 		isBottom = false;
 	}

@@ -31,9 +31,10 @@ public class ValueNumberFrame extends Frame<ValueNumber> {
 
 	private ValueNumberFactory factory;
 
-	public ValueNumberFrame(int numLocals, ValueNumberFactory factory) {
-		super(numLocals);
-		this.factory = factory;
+	public ValueNumberFrame(int numLocals, final ValueNumberFactory factory) {
+		super(numLocals, new Frame.DefaultValueFactory<ValueNumber>() {
+			public ValueNumber getDefaultValue() { return factory.topValue(); }
+		});
 	}
 
 	public ValueNumber mergeValues(ValueNumber a, ValueNumber b) {

@@ -41,10 +41,12 @@ public abstract class DataflowTestDriver<Fact> {
 
 	private static class DataflowCFGPrinter<Fact> extends CFGPrinter {
 		private Dataflow<Fact> dataflow;
+		private AbstractDataflowAnalysis<Fact> analysis;
 
-		public DataflowCFGPrinter(CFG cfg, Dataflow<Fact> dataflow) {
+		public DataflowCFGPrinter(CFG cfg, Dataflow<Fact> dataflow, AbstractDataflowAnalysis<Fact> analysis) {
 			super(cfg);
 			this.dataflow = dataflow;
+			this.analysis = analysis;
 		}
 
 		public String blockStartAnnotate(BasicBlock bb) {
@@ -56,6 +58,7 @@ public abstract class DataflowTestDriver<Fact> {
 		}
 
 		public String instructionAnnotate(InstructionHandle handle, BasicBlock bb) {
+/*
 			DataflowAnalysis<Fact> analysis = dataflow.getAnalysis();
 			Fact result = analysis.createFact();
 			try {
@@ -64,6 +67,9 @@ public abstract class DataflowTestDriver<Fact> {
 			} catch (DataflowAnalysisException e) {
 				return " EXCEPTION" + e;
 			}
+*/
+			Fact result = analysis.getFactAtInstruction(handle);
+			return " " + result;
 		}
 	}
 
@@ -94,7 +100,7 @@ public abstract class DataflowTestDriver<Fact> {
 			CFG cfg = cfgBuilder.getCFG();
 			cfg.assignEdgeIds(0);
 
-			DataflowAnalysis<Fact> analysis = createAnalysis(methodGen, cfg);
+			AbstractDataflowAnalysis<Fact> analysis = createAnalysis(methodGen, cfg);
 			Dataflow<Fact> dataflow = new Dataflow<Fact>(cfg, analysis);
 
 			dataflow.execute();
@@ -104,7 +110,7 @@ public abstract class DataflowTestDriver<Fact> {
 			examineResults(cfg, dataflow);
 
 			if (Boolean.getBoolean("dataflow.printcfg")) {
-				CFGPrinter p = new DataflowCFGPrinter<Fact>(cfg, dataflow);
+				CFGPrinter p = new DataflowCFGPrinter<Fact>(cfg, dataflow, analysis);
 				p.print(System.out);
 			}
 		}
@@ -115,7 +121,7 @@ public abstract class DataflowTestDriver<Fact> {
 	 * @param methodGen the method to be analyzed
 	 * @param cfg control flow graph of the method to be analyzed
 	 */
-	public abstract DataflowAnalysis<Fact> createAnalysis(MethodGen methodGen, CFG cfg) throws DataflowAnalysisException;
+	public abstract AbstractDataflowAnalysis<Fact> createAnalysis(MethodGen methodGen, CFG cfg) throws DataflowAnalysisException;
 
 	/**
 	 * Downcall method to inspect the analysis results.

@@ -86,6 +86,29 @@ public class ValueNumberAnalysis extends ForwardDataflowAnalysis<ValueNumberFram
 		}
 		result.mergeWith(fact);
 	}
+
+	/**
+	 * Test driver.
+	 */
+	public static void main(String[] argv) {
+		try {
+			if (argv.length != 1) {
+				System.out.println("Usage: edu.umd.cs.daveho.ba.ValueNumberAnalysis <filename>");
+				System.exit(1);
+			}
+
+			DataflowTestDriver<ValueNumberFrame> driver = new DataflowTestDriver<ValueNumberFrame>() {
+				public AbstractDataflowAnalysis<ValueNumberFrame> createAnalysis(MethodGen methodGen, CFG cfg) {
+					return new ValueNumberAnalysis(methodGen);
+				}
+			};
+
+			driver.execute(argv[0]);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 }
 
 // vim:ts=4

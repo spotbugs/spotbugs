@@ -68,7 +68,7 @@ public class OtherLockCountAnalysis extends LockCountAnalysis {
 			}
 
 			DataflowTestDriver<LockCount> driver = new DataflowTestDriver<LockCount>() {
-				public DataflowAnalysis<LockCount> createAnalysis(MethodGen methodGen, CFG cfg) throws DataflowAnalysisException {
+				public AbstractDataflowAnalysis<LockCount> createAnalysis(MethodGen methodGen, CFG cfg) throws DataflowAnalysisException {
 					// Perform the analysis to propagate "this" value references,
 					// since ThisLockCountAnalysis depends on it.
 					Dataflow<ThisValueFrame> tvaDataflow = new Dataflow<ThisValueFrame>(cfg, new ThisValueAnalysis(methodGen));

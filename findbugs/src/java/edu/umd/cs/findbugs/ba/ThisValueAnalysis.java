@@ -111,7 +111,7 @@ public class ThisValueAnalysis extends ForwardDataflowAnalysis<ThisValueFrame> {
 			}
 
 			DataflowTestDriver<ThisValueFrame> driver = new DataflowTestDriver<ThisValueFrame>() {
-				public DataflowAnalysis<ThisValueFrame> createAnalysis(MethodGen methodGen, CFG cfg) {
+				public AbstractDataflowAnalysis<ThisValueFrame> createAnalysis(MethodGen methodGen, CFG cfg) {
 					return new ThisValueAnalysis(methodGen);
 				}
 
