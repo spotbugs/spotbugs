@@ -68,7 +68,12 @@ public class AddMessages {
 			String bugType = bugInstance.getType();
 			bugTypeSet.add(bugType);
 
-			element.addElement("ShortMessage").addText(bugInstance.toString());
+			BugPattern bugPattern = bugInstance.getBugPattern();
+
+			element.addElement("ShortMessage").addText(
+				bugPattern != null
+					? bugPattern.getShortDescription()
+					: bugInstance.toString());
 			element.addElement("LongMessage").addText(bugInstance.getMessage());
 		}
 
