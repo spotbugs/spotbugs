@@ -1,6 +1,6 @@
 /*
  * Bytecode Analysis Framework
- * Copyright (C) 2003,2004 University of Maryland
+ * Copyright (C) 2003-2005 University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -35,6 +35,14 @@ import org.apache.bcel.generic.*;
  * <p/>
  * <p> Subclasses should override the visit methods for any bytecode instructions
  * which require special handling.
+ * </p>
+ * <p>
+ * Users of AbstractFrameModelingVisitors should call the
+ * analyzeInstruction() method instead of directly using the accept()
+ * method of the instruction.  This allows a checked DataflowAnalysisException
+ * to be thrown when invalid bytecode is detected.  E.g.,
+ * stack underflows.
+ * </p>
  *
  * @author David Hovemeyer
  * @see Frame
@@ -52,6 +60,22 @@ public abstract class AbstractFrameModelingVisitor <Value, FrameType extends Fra
 	public AbstractFrameModelingVisitor(ConstantPoolGen cpg) {
 		this.frame = null;
 		this.cpg = cpg;
+	}
+	
+	/**
+	 * Analyze the given Instruction.
+	 * 
+	 * @param ins the Instruction
+	 * @throws DataflowAnalysisException if an error occurs analyzing the instruction;
+	 *                                   in most cases, this indicates that the bytecode
+	 *                                   for the method being analyzed is invalid
+	 */
+	public void analyzeInstruction(Instruction ins) throws DataflowAnalysisException {
+		try {
+			ins.accept(this);
+		} catch (InvalidBytecodeException e) {
+			throw new DataflowAnalysisException("Invalid bytecode", e);
+		}
 	}
 
 	/**
@@ -91,7 +115,8 @@ public abstract class AbstractFrameModelingVisitor <Value, FrameType extends Fra
 	 */
 	public int getNumWordsConsumed(Instruction ins) {
 		int numWordsConsumed = ins.consumeStack(cpg);
-		if (numWordsConsumed == Constants.UNPREDICTABLE) throw new IllegalStateException();
+		if (numWordsConsumed == Constants.UNPREDICTABLE)
+			throw new InvalidBytecodeException("Unpredictable stack consumption");
 		return numWordsConsumed;
 	}
 
@@ -100,17 +125,18 @@ public abstract class AbstractFrameModelingVisitor <Value, FrameType extends Fra
 	 */
 	public int getNumWordsProduced(Instruction ins) {
 		int numWordsProduced = ins.produceStack(cpg);
-		if (numWordsProduced == Constants.UNPREDICTABLE) throw new IllegalStateException();
+		if (numWordsProduced == Constants.UNPREDICTABLE)
+			throw new InvalidBytecodeException("Unpredictable stack productions");
 		return numWordsProduced;
 	}
 
 	/**
 	 * This is called for illegal bytecodes.
 	 *
-	 * @throws IllegalStateException
+	 * @throws InvalidBytecodeException
 	 */
 	private void illegalBytecode(Instruction ins) {
-		throw new IllegalStateException("Illegal bytecode: " + ins);
+		throw new InvalidBytecodeException("Illegal bytecode: " + ins);
 	}
 
 	/* ---------------------------------------------------------------------- 
@@ -213,7 +239,8 @@ public abstract class AbstractFrameModelingVisitor <Value, FrameType extends Fra
 	public void handleStoreInstruction(StoreInstruction obj) {
 		try {
 			int numConsumed = obj.consumeStack(cpg);
-			if (numConsumed == Constants.UNPREDICTABLE) throw new IllegalStateException();
+			if (numConsumed == Constants.UNPREDICTABLE)
+				throw new InvalidBytecodeException("Unpredictable stack consumption");
 
 			int index = obj.getIndex();
 
@@ -224,7 +251,7 @@ public abstract class AbstractFrameModelingVisitor <Value, FrameType extends Fra
 				frame.setValue(index++, value);
 			}
 		} catch (DataflowAnalysisException e) {
-			throw new IllegalStateException(e.toString());
+			throw new InvalidBytecodeException(e.toString());
 		}
 	}
 
@@ -235,7 +262,8 @@ public abstract class AbstractFrameModelingVisitor <Value, FrameType extends Fra
 	 */
 	public void handleLoadInstruction(LoadInstruction obj) {
 		int numProduced = obj.produceStack(cpg);
-		if (numProduced == Constants.UNPREDICTABLE) throw new IllegalStateException();
+		if (numProduced == Constants.UNPREDICTABLE)
+			throw new InvalidBytecodeException("Unpredictable stack production");
 
 		int index = obj.getIndex() + numProduced;
 
@@ -265,7 +293,7 @@ public abstract class AbstractFrameModelingVisitor <Value, FrameType extends Fra
 			while (numWordsConsumed-- > 0)
 				frame.popValue();
 		} catch (DataflowAnalysisException e) {
-			throw new IllegalStateException(e.toString());
+			throw new InvalidBytecodeException(e.toString());
 		}
 
 		while (numWordsProduced-- > 0)
@@ -338,7 +366,7 @@ public abstract class AbstractFrameModelingVisitor <Value, FrameType extends Fra
 			frame.pushValue(value);
 			frame.pushValue(value);
 		} catch (DataflowAnalysisException e) {
-			throw new IllegalStateException(e.toString());
+			throw new InvalidBytecodeException(e.toString());
 		}
 	}
 
@@ -350,7 +378,7 @@ public abstract class AbstractFrameModelingVisitor <Value, FrameType extends Fra
 			frame.pushValue(value2);
 			frame.pushValue(value1);
 		} catch (DataflowAnalysisException e) {
-			throw new IllegalStateException(e.toString());
+			throw new InvalidBytecodeException(e.toString());
 		}
 	}
 
@@ -364,7 +392,7 @@ public abstract class AbstractFrameModelingVisitor <Value, FrameType extends Fra
 			frame.pushValue(value2);
 			frame.pushValue(value1);
 		} catch (DataflowAnalysisException e) {
-			throw new IllegalStateException(e.toString());
+			throw new InvalidBytecodeException(e.toString());
 		}
 	}
 
@@ -377,7 +405,7 @@ public abstract class AbstractFrameModelingVisitor <Value, FrameType extends Fra
 			frame.pushValue(value2);
 			frame.pushValue(value1);
 		} catch (DataflowAnalysisException e) {
-			throw new IllegalStateException(e.toString());
+			throw new InvalidBytecodeException(e.toString());
 		}
 	}
 
@@ -392,7 +420,7 @@ public abstract class AbstractFrameModelingVisitor <Value, FrameType extends Fra
 			frame.pushValue(value2);
 			frame.pushValue(value1);
 		} catch (DataflowAnalysisException e) {
-			throw new IllegalStateException(e.toString());
+			throw new InvalidBytecodeException(e.toString());
 		}
 	}
 
@@ -409,7 +437,7 @@ public abstract class AbstractFrameModelingVisitor <Value, FrameType extends Fra
 			frame.pushValue(value2);
 			frame.pushValue(value1);
 		} catch (DataflowAnalysisException e) {
-			throw new IllegalStateException(e.toString());
+			throw new InvalidBytecodeException(e.toString());
 		}
 	}
 
@@ -420,7 +448,7 @@ public abstract class AbstractFrameModelingVisitor <Value, FrameType extends Fra
 			frame.pushValue(value1);
 			frame.pushValue(value2);
 		} catch (DataflowAnalysisException e) {
-			throw new IllegalStateException(e.toString());
+			throw new InvalidBytecodeException(e.toString());
 		}
 	}
 
