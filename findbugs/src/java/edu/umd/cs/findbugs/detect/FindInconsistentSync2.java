@@ -312,12 +312,16 @@ public class FindInconsistentSync2 implements Detector {
 						// We consider the access to be locked if either
 						//   - the object is explicitly locked, or
 						//   - the field is accessed through the "this" reference,
-						//     and the method is in the locked method set
+						//     and the method is in the locked method set, or
+						//   - any value returned by a called method is locked;
+						//     the (conservative) assumption is that the return lock object
+						//     is correct for synchronizing the access
 						ValueNumber instance = frame.getInstance(handle.getInstruction(), cpg);
 						boolean isExplicitlyLocked = lockSet.getLockCount(instance.getNumber()) > 0;
 						boolean isAccessedThroughThis = thisValue != null && thisValue.equals(instance);
 						boolean isLocked = isExplicitlyLocked
-							|| (lockedMethodSet.contains(method) && isAccessedThroughThis);
+							|| (lockedMethodSet.contains(method) && isAccessedThroughThis)
+							|| lockSet.containsReturnValue(vnaDataflow.getAnalysis().getFactory());
 
 						// Adjust the field so its class name is the same
 						// as the type of reference it is accessed through.
