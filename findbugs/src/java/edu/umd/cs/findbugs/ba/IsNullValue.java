@@ -46,7 +46,7 @@ public class IsNullValue {
 		{  WEAK_NULL, WEAK_NULL,                                        }, // WEAK_NULL
 		{  NSP,       NN,        NN                                     }, // NN
 		{  NSP,       DNR,       WEAK_NN,   WEAK_NN,                    }, // WEAK_NN
-		{  NSP,       DNR,       DNR,       DNR,       DNR              }, // NSP
+		{  NSP,       NSP,       NSP,       NSP,       NSP              }, // NSP
 		{  NSP,       DNR,       DNR,       DNR,       DNR,       DNR   }  // DNR
 	};
 
@@ -98,11 +98,11 @@ public class IsNullValue {
 	}
 
 	public static IsNullValue flowSensitiveNullValue(IsNullValue conditionValue) {
-		return conditionValue.kind == NULL ? instanceList[NULL] : instanceList[WEAK_NULL];
+		return instanceList[WEAK_NULL];
 	}
 
 	public static IsNullValue flowSensitiveNonNullValue(IsNullValue conditionValue) {
-		return conditionValue.kind == NN ? instanceList[NN] : instanceList[WEAK_NN];
+		return instanceList[WEAK_NN];
 	}
 
 	/** Merge two values. */
