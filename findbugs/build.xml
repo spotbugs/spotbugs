@@ -16,15 +16,35 @@
 <project name="find-bugs" default="build">
 
     <!--
+      *****************************************************************
+      User Configuration:
+      This section must be modified to reflect your system.
+      *****************************************************************
+    -->
+
+    <!--
        Set this to the location where you installed the generics-enabled
-       version of javac.
+       version of javac.  Note that you also need to have the JSR-14
+       compiler adapter installed in the "lib" subdirectory of your Ant installation.
+       You can download it from
+          http://www.thecortex.net/clover/generics/jsr14adapter-1.1.jar
      -->
     <property name="jsr14.home" value="/export/home/daveho/linux/java/jsr14_adding_generics-1_3-ea"/>
-<!--
-    <property name="jsr14.home" value="/home/software/java/jsr14_adding_generics-1_3-ea"/>
--->
 
-    <!-- You should not need to change anything beyond this point. -->
+    <!--
+      Set this to the full path to the HTML DSSSL stylesheet from the
+      Docbook modular stylesheets, http://docbook.sourceforge.net/projects/dsssl/.
+      This is needed for the "docs" target.
+      (Note also that you need to have openjade and the DocBook 4.2 DTD
+      installed on your system.)
+    -->
+    <property name="html.dsssl.stylesheet" value="/export/home/daveho/linux/docbook/docbook-dsssl-1.78/html/docbook.dsl" />
+
+    <!--
+      *****************************************************************
+      You should not need to change anything beyond this point.
+      *****************************************************************
+    -->
 
     <property name="findbugs.dir" value="." />
     <property name="findbugs.src.dir" value="${findbugs.dir}/src/java" />
@@ -187,8 +207,20 @@
          <filterset>
             <filter token="VERSION" value="${release.number}" />
             <filter token="RELEASE_DATE" value="${release.date}" />
+            <filter token="HTML_DSSSL_STYLESHEET" value="${html.dsssl.stylesheet}" />
         </filterset>  
        </copy>
+
+       <!-- Format the manual as HTML. -->
+       <mkdir dir="${doc.dir}/manual" />
+       <exec dir="doc" executable="jade" >
+          <arg value="-t" />
+          <arg value="sgml" />
+          <arg value="-d" />
+          <arg value="manual-html.dsl" />
+          <arg value="manual.sgml" />
+       </exec>
+
     </target>
 
     <!-- Default target: just compile the code and format the docs. -->
