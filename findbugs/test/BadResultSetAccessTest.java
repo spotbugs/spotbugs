@@ -1,12 +1,18 @@
 
+import java.sql.ResultSetMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class BadResultSetAccessTest
 {
 	public void test0( ResultSet rs ) throws SQLException {
-		for (int i = 0; i < 5; i++) {
-			System.out.println(rs.getString(i));
+		ResultSetMetaData rsmd = rs.getMetaData();
+		int numCols = rsmd.getColumnCount();
+		
+		for (int i = 0; i < numCols; i++) {
+			System.out.print( "i = [" + i + "]  " );
+			String s = rs.getString(i);
+			System.out.println(s);
 		}	
 	}
 
