@@ -20,10 +20,11 @@
 package edu.umd.cs.findbugs.ba;
 
 import java.util.*;
+import java.io.Serializable;
 
 import org.apache.bcel.generic.ObjectType;
 
-public class ExceptionSetFactory {
+public class ExceptionSetFactory implements Serializable {
 	private HashMap<ObjectType, Integer> typeIndexMap;
 	private ArrayList<ObjectType> typeList;
 

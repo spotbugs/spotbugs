@@ -24,6 +24,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.URL;
 
 import java.util.Iterator;
@@ -44,7 +45,7 @@ import org.apache.bcel.classfile.JavaClass;
  * 
  * @author David Hovemeyer
  */
-public class URLClassPath {
+public class URLClassPath implements Serializable {
 	/**
 	 * Interface describing a single classpath entry.
 	 */

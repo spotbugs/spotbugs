@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.ba;
 
 import java.util.*;
+import java.io.Serializable;
 
 import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.ReferenceType;
@@ -36,7 +37,7 @@ import org.apache.bcel.generic.Type;
  * @author David Hovemeyer
  * @see TypeAnalysis
  */
-public class ExceptionSet {
+public class ExceptionSet implements Serializable {
 	private ExceptionSetFactory factory;
 	private BitSet exceptionSet;
 	private BitSet explicitSet;
