@@ -172,6 +172,23 @@ public abstract class AbstractDepthFirstSearch
 	}
 
 	/**
+	 * Return whether or not the graph contains a cycle:
+	 * i.e., whether it contains any back edges.
+	 * This should only be called after search() has been called
+	 * (since that method actually executes the search).
+	 *
+	 * @return true if the graph contains a cycle, false otherwise
+	 */
+	public boolean containsCycle() {
+		for (Iterator<EdgeType> i = graph.edgeIterator(); i.hasNext(); ) {
+			EdgeType edge = i.next();
+			if (getDFSEdgeType(edge) == BACK_EDGE)
+				return true;
+		}
+		return false;
+	}
+
+	/**
 	 * Get the type of edge in the depth first search.
 	 *
 	 * @param edge the edge
