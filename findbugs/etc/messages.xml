@@ -701,6 +701,15 @@ the subclass.</p>
     </Details>
   </Detector>
   
+  <Detector class="edu.umd.cs.findbugs.detect.SuspectStruts">
+    <Details>
+<![CDATA[
+<p>This detector looks for potential problems in implementing the Struts framework.
+It is a fast detector.</p>
+]]>
+    </Details>
+  </Detector>
+  
   <Detector class="edu.umd.cs.findbugs.detect.FindBugsSummaryStats">
     <Details>
 <![CDATA[
@@ -2927,6 +2936,21 @@ just use the constant. Methods detected are:
     ]]>
   	  </Details>
     </BugPattern>
+    
+    <BugPattern type="SS_SUSPECT_STRUTS_INSTANCE_FIELD">
+	  <ShortDescription>Class extends Struts Action class and uses instance variables.</ShortDescription>
+	  <LongDescription>Class {0} extends Struts Action class and uses instance variables.</LongDescription>
+	  <Details>
+	<![CDATA[
+    <p>
+    This class extends from a Struts Action class, and uses a instance member variable. Since only
+    one instance of a struts Action class is created by the Struts framework, and used in a 
+    multithreaded way, this paradigm is highly discouraged and most likely problematic. Consider
+    only using method local variables.
+    </p>
+    ]]>
+      </Details>
+    </BugPattern>
 
   <!--
   **********************************************************************
@@ -3019,4 +3043,5 @@ just use the constant. Methods detected are:
   <BugCode abbrev="UM">Unnecessary Math on constants</BugCode>
   <BugCode abbrev="CD">Circular Dependencies</BugCode>
   <BugCode abbrev="RI">Redundant Interfaces</BugCode>
+  <BugCode abbrev="SS">Suspect Struts</BugCode>
   </MessageCollection>
