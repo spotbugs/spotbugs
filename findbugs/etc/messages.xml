@@ -259,7 +259,7 @@ malicious code.  It is a fast detector.
   <Detector class="edu.umd.cs.findbugs.detect.ReadReturnShouldBeChecked" >
     <Details>
 <![CDATA[
-<p> This detector looks for calls to InputStream.read() where the
+<p> This detector looks for calls to InputStream.read() or InputStream.skip() where the
 return value is ignored.  It is a fast detector.
 ]]>
     </Details>
@@ -1333,6 +1333,23 @@ which is probably what was intended.
   This is a particularly insidious kind of bug, because in many programs,
   reads from input streams usually do read the full amount of data requested,
   causing the program to fail only sporadically.
+]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="SR_NOT_CHECKED">
+    <ShortDescription>Method ignores results of InputStream.skip()</ShortDescription>
+    <LongDescription>{1} ignores result of {2}</LongDescription>
+    <Details>
+<![CDATA[
+  <p> This method ignores the return value of
+  <code>java.io.InputStream.skip()</code> which can skip multiple bytes.&nbsp;
+  If the return value is not checked, the caller will not be able to correctly
+  handle the case where fewer bytes were skipped than the caller requested.&nbsp;
+  This is a particularly insidious kind of bug, because in many programs,
+  skips from input streams usually do skip the full amount of data requested,
+  causing the program to fail only sporadically. With Buffered streams, however,
+  skip() will only skip data in the buffer, and will routinely fail to skip the
+  requested number of bytes.
 ]]>
     </Details>
   </BugPattern>

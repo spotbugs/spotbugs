@@ -63,7 +63,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.Naming" speed="fast"
     reports="NM_VERY_CONFUSING,NM_CONFUSING,NM_CONFUSING_METHOD_NAME,NM_LCASE_HASHCODE,NM_LCASE_TOSTRING,NM_BAD_EQUAL" />
   <Detector class="edu.umd.cs.findbugs.detect.ReadReturnShouldBeChecked" speed="fast"
-    reports="RR_NOT_CHECKED" />
+    reports="RR_NOT_CHECKED,SR_NOT_CHECKED" />
   <Detector class="edu.umd.cs.findbugs.detect.SerializableIdiom" speed="fast"
     reports="SE_NO_SERIALVERSIONID,WS_WRITEOBJECT_SYNC,RS_READOBJECT_SYNC,SE_BAD_FIELD,SE_NONLONG_SERIALVERSIONID,SE_NONSTATIC_SERIALVERSIONID,SE_NONFINAL_SERIALVERSIONID,SE_NO_SUITABLE_CONSTRUCTOR,SE_NO_SUITABLE_CONSTRUCTOR_FOR_EXTERNALIZATION" />
   <Detector class="edu.umd.cs.findbugs.detect.StartInConstructor" speed="fast"
@@ -174,6 +174,7 @@
   <BugPattern abbrev="Nm" type="NM_LCASE_TOSTRING" category="CORRECTNESS" />
   <BugPattern abbrev="Nm" type="NM_BAD_EQUAL" category="CORRECTNESS"/>
   <BugPattern abbrev="RR" type="RR_NOT_CHECKED" category="CORRECTNESS" />
+  <BugPattern abbrev="RR" type="SR_NOT_CHECKED" category="CORRECTNESS" />
   <BugPattern abbrev="Se" type="SE_NO_SUITABLE_CONSTRUCTOR" category="CORRECTNESS" />
   <BugPattern abbrev="Se" type="SE_NO_SUITABLE_CONSTRUCTOR_FOR_EXTERNALIZATION" category="CORRECTNESS" />
   <BugPattern abbrev="Se" type="SE_NO_SERIALVERSIONID" category="CORRECTNESS" />

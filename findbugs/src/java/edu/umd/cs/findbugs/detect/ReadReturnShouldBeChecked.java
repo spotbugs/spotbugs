@@ -28,11 +28,11 @@ import edu.umd.cs.findbugs.visitclass.Constants2;
 
 public class ReadReturnShouldBeChecked extends BytecodeScanningDetector implements   Constants2 {
 
-
    boolean sawRead = false;
+   boolean sawSkip = false;
    int sawAvailable = 0;
    private BugReporter bugReporter;
-   private int readPC;
+   private int readPC, skipPC;
    private String lastCallClass = null, lastCallMethod = null, lastCallSig = null;
 
    public ReadReturnShouldBeChecked(BugReporter bugReporter) {
@@ -84,16 +84,28 @@ public class ReadReturnShouldBeChecked extends BytecodeScanningDetector implemen
 		sawRead = true;
 		readPC = getPC();
 		return;
-		}
-	if (seen == POP && sawRead)  {
-		bugReporter.reportBug(new BugInstance("RR_NOT_CHECKED", NORMAL_PRIORITY)
-			.addClassAndMethod(this)
-			.addCalledMethod(lastCallClass, lastCallMethod, lastCallSig)
-			.addSourceLine(this, readPC));
-		}
-	sawRead = false;
+	} else if ((seen == INVOKEVIRTUAL || seen == INVOKEINTERFACE)
+		&& !getClassConstantOperand().equals("ByteArrayInputStream")
+		&& getNameConstantOperand().equals("skip")) {
+		sawSkip = true;
+		skipPC = getPC();
+		return;	
 	}
-
 	
-
-	}	
+	if ((seen == POP) || (seen == POP2)) {
+		if (sawRead) {
+			bugReporter.reportBug(new BugInstance("RR_NOT_CHECKED", NORMAL_PRIORITY)
+				.addClassAndMethod(this)
+				.addCalledMethod(lastCallClass, lastCallMethod, lastCallSig)
+				.addSourceLine(this, readPC));
+			sawRead = false;
+		} else if (sawSkip) {
+			bugReporter.reportBug(new BugInstance("SR_NOT_CHECKED", (lastCallClass.contains("Buffer") ? HIGH_PRIORITY : NORMAL_PRIORITY))
+				.addClassAndMethod(this)
+				.addCalledMethod(lastCallClass, lastCallMethod, lastCallSig)
+				.addSourceLine(this, skipPC));
+			sawSkip = false;
+		}
+	}
+	}
+}	
