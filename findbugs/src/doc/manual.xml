@@ -644,6 +644,11 @@ report:
 <para>
 <literal>Match</literal> elements have <literal>class</literal> and <literal>classregex</literal>
 attributes specifying what class or classes the predicate applies to.
+The <literal>class</literal> attribute specifies the name of a class.
+The <literal>classregex</literal> attribute specifies a regular expression
+applied to class names of bug instances.  The regular expression is
+used to create a <literal>java.util.regex.Pattern</literal> object,
+which does the matching.
 <literal>Match</literal> elements contain children, which are conjuncts of the predicate.
 In other words, each of the children must be true for the predicate to be true.
 </para>
