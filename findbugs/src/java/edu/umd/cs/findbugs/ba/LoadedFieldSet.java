@@ -21,11 +21,11 @@ package edu.umd.cs.findbugs.ba;
 
 import java.util.BitSet;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.MethodGen;
 
 /**
  * Object which stores which fields are loaded and stored
@@ -38,18 +38,55 @@ import org.apache.bcel.generic.InstructionHandle;
  * @author David Hovemeyer
  */
 public class LoadedFieldSet {
-	private Set<XField> loadedFieldSet;
+	/**
+	 * Count number of times a field is loaded and/or stored in the method.
+	 */
+	public static class LoadStoreCount {
+		int loadCount, storeCount;
+
+		/** Get the number of times the field is loaded. */
+		public int getLoadCount() {
+			return loadCount;
+		}
+
+		/** Get the number of times the field is stored. */
+		public int getStoreCount() {
+			return storeCount;
+		}
+	}
+
+	// Fields
+	private MethodGen methodGen;
+	private Map<XField, LoadStoreCount> loadStoreCountMap;
 	private Map<InstructionHandle, XField> handleToFieldMap;
 	private BitSet loadHandleSet;
 
 	/**
 	 * Constructor.
 	 * Constructs an empty object.
+	 *
+	 * @param methodGen the method being analyzed for loads/stores
 	 */
-	public LoadedFieldSet() {
-		this.loadedFieldSet = new HashSet<XField>();
+	public LoadedFieldSet(MethodGen methodGen) {
+		this.methodGen = methodGen;
+		this.loadStoreCountMap = new HashMap<XField, LoadStoreCount>();
 		this.handleToFieldMap = new HashMap<InstructionHandle, XField>();
 		this.loadHandleSet = new BitSet();
+	}
+
+	/**
+	 * Get the number of times given field is loaded and stored
+	 * within the method.
+	 * @param field the field
+	 * @return the load/store count object
+	 */
+	public LoadStoreCount getLoadStoreCount(XField field) {
+		LoadStoreCount loadStoreCount = loadStoreCountMap.get(field);
+		if (loadStoreCount == null) {
+			loadStoreCount = new LoadStoreCount();
+			loadStoreCountMap.put(field, loadStoreCount);
+		}
+		return loadStoreCount;
 	}
 
 	/**
@@ -59,7 +96,7 @@ public class LoadedFieldSet {
 	 * @param field  the field
 	 */
 	public void addLoad(InstructionHandle handle, XField field) {
-		loadedFieldSet.add(field);
+		getLoadStoreCount(field).loadCount++;
 		handleToFieldMap.put(handle, field);
 		loadHandleSet.set(handle.getPosition());
 	}
@@ -71,6 +108,7 @@ public class LoadedFieldSet {
 	 * @param field  the field
 	 */
 	public void addStore(InstructionHandle handle, XField field) {
+		getLoadStoreCount(field).storeCount++;
 		handleToFieldMap.put(handle, field);
 	}
 
@@ -94,7 +132,7 @@ public class LoadedFieldSet {
 	 *         false if it is never loaded
 	 */
 	public boolean isLoaded(XField field) {
-		return loadedFieldSet.contains(field);
+		return getLoadStoreCount(field).loadCount > 0;
 	}
 
 	/**
