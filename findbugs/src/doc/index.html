@@ -34,36 +34,13 @@ Send your comments to <a href="mailto:daveho@cs.umd.edu">daveho@cs.umd.edu</a>.
 
 <h1>News</h1>
 
-<p> Changes since version 0.8.5:
+<p> Changes since version 0.8.6:
 
 <ul>
 <!-- new detectors -->
-<li> New detector to find catch blocks that may inadvertently catch
-     runtime exceptions (Brian Goetz)
-<li> New detector to find objects that are instantiated based on classes that only have
-     static methods and fields, using the synthesized constructor (Dave Brosius)
-<li> New detector to find calls to Thread.interrupted() in a non static context, and especially
-     with non currentThread() threads (Dave Brosius)
-<li> New detector to find calls to equals() methods that use Object's version. (Dave Brosius)
-<li> New detector to find Applets that call methods in the constructor 
-     refering to the AppletStub (Dave Brosius)
-<li> New detector to find some cases of infinite recursion (Bill Pugh)
-<li> New detector to find dead stores to local variables (David Hovemeyer, Bill Pugh)
-<li> Extend Dumb Method detector for toUpperCase(), toLowerCase() without a locale, 
-     new Integer(1).toString(), new XXX().getClass(), and new Thread()
-     without a run implementation (Dave Brosius)
 <!-- feature enhancements -->
-<li> Ant task supports "errorProperty" attribute, which sets an
-     Ant property to "true" if an error occurs running FindBugs (Michael Tamm)
-<li> Eclipse plugin allows filtering of warnings by bug category, priority
-     (David Hovemeyer)
-<li> Swing GUI allows filtering of warnings by bug category (David Hovemeyer)
-<li> Ability to annotate methods using Java 1.5 annotations that suppress FindBugs warnings (Bill Pugh)
-<li> New -adjustExperimental for lowering priority of BugPatterns that are experimental (Dave Brosius)
-<li> Allow for command line options 'files' using the @ symbol (David Hovemeyer)
-<li> New -adjustPriority command line option to for adjusting bug priorites (David Hovemeyer)
-<li> Added an Edit menu (cut/copy/paste) to Swing GUI (Dave Brosius)
-<li> French translation supplied (David Cotton)
+<li> Sortable columns in detector dialog (Dave Brosius)
+<li> New tab in gui for showing bugs grouped by category (Dave Brosius)
 <!-- Bug fixes -->
 </ul>
 
