@@ -202,9 +202,7 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
 									// TOS is null, so next-to-TOS is flow-sensitively null
 									tmpFact = replaceValues(fact, tmpFact, prevVnaFrame.getValue(prevNumSlots-2), prevVnaFrame,
 										ifNullComparison(lastInSourceOpcode, edgeType, conditionValue));
-								}
-
-								if (nextToTOS.isDefinitelyNull()) {
+								} else if (nextToTOS.isDefinitelyNull()) {
 									// Next-to-TOS is null, so TOS is flow-sensitively null
 									tmpFact = replaceValues(fact, tmpFact, prevVnaFrame.getTopValue(), prevVnaFrame,
 										ifNullComparison(lastInSourceOpcode, edgeType, conditionValue));
