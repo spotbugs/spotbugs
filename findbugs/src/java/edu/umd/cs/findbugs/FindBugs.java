@@ -361,6 +361,13 @@ public class FindBugs implements Constants2, ExitCodes
    * @throws InterruptedException if the thread is interrupted while conducting the analysis
    */
   public void execute() throws java.io.IOException, InterruptedException {
+
+	// Configure the analysis context
+	AnalysisContext analysisContext = AnalysisContext.instance();
+	analysisContext.setLookupFailureCallback(bugReporter);
+	analysisContext.setSourcePath(project.getSourceDirList());
+
+	// Create detectors, if required
 	if (detectors == null)
 		createDetectors();
 
@@ -807,11 +814,6 @@ public class FindBugs implements Constants2, ExitCodes
 
 	if (filterFile != null)
 		findBugs.setFilter(filterFile, include);
-
-	// Configure the analysis context
-	AnalysisContext analysisContext = AnalysisContext.instance();
-	analysisContext.setLookupFailureCallback(bugReporter);
-	analysisContext.setSourcePath(project.getSourceDirList());
 
 	findBugs.execute();
 
