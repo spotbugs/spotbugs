@@ -92,31 +92,126 @@ public class OpcodeStack implements Constants2
  		LocalVariable lv;
  		JavaClass cls;
  		String signature = null;
+ 		Method m = null;
  		
  		try
  		{
+ 			//Currently some of this ops should check the tos to look for literals, and do better logic
+ 			//But that's not done now.
 	 		switch (seen) {
-	 			case ALOAD_0:
-	 			case ALOAD_1:
-	 			case ALOAD_2:
-	 			case ALOAD_3:
-	 				register = seen - ALOAD_0;
-	 				Method m = dbc.getMethod();
+	 			case ALOAD:
+	 				register = dbc.getRegisterOperand();
+	 				m = dbc.getMethod();
 	 				lvt = m.getLocalVariableTable();
 	 				if (lvt != null) {
 	 					lv = lvt.getLocalVariable(register);
  						signature = lv.getSignature();
 	  				}
 	 				pushBySignature(signature);
-	 				break;
+	 			break;
+	 			
+	 			case ALOAD_0:
+	 			case ALOAD_1:
+	 			case ALOAD_2:
+	 			case ALOAD_3:
+	 				register = seen - ALOAD_0;
+	 				m = dbc.getMethod();
+	 				lvt = m.getLocalVariableTable();
+	 				if (lvt != null) {
+	 					lv = lvt.getLocalVariable(register);
+ 						signature = lv.getSignature();
+	  				}
+	 				pushBySignature(signature);
+	 			break;
+	 			
+	 			case ASTORE:
+	 			case ASTORE_0:
+	 			case ASTORE_1:
+	 			case ASTORE_2:
+	 			case ASTORE_3:
+	 			case DRETURN:
+	 			case DSTORE:
+	 			case DSTORE_0:
+	 			case DSTORE_1:
+	 			case DSTORE_2:
+	 			case DSTORE_3:
+	 			case FRETURN:
+	 			case FSTORE:
+	 			case FSTORE_0:
+	 			case FSTORE_1:
+	 			case FSTORE_2:
+	 			case FSTORE_3:
+	 			case IFEQ:
+	 			case IFNE:
+	 			case IFLT:
+	 			case IFLE:
+	 			case IFGT:
+	 			case IFGE:
+	 			case IFNONNULL:
+	 			case IFNULL:
+	 			case IRETURN:
+	 			case ISTORE:
+	 			case ISTORE_0:
+	 			case ISTORE_1:
+	 			case ISTORE_2:
+	 			case ISTORE_3:
+	 			case LRETURN:
+	 			case LSTORE:
+	 			case LSTORE_0:
+	 			case LSTORE_1:
+	 			case LSTORE_2:
+	 			case LSTORE_3:
+	 			case MONITORENTER:
+	 			case MONITOREXIT:
+	 			case POP:
+	 			case PUTSTATIC:
+	 				pop();
+	 			break;
+	 			
+	 			case IF_ACMPEQ:
+	 			case IF_ACMPNE:
+	 			case IF_ICMPEQ:
+	 			case IF_ICMPNE:
+	 			case IF_ICMPLT:
+	 			case IF_ICMPLE:
+	 			case IF_ICMPGT:
+	 			case IF_ICMPGE:
+	 			case POP2:
+	 			case PUTFIELD:
+	 				pop();
+	 				pop();
+	 			break;
+	 			
+	 			case DUP:
+	 				Item i = pop();
+	 				push(i);
+	 				push(i);
+	 			break;
+	 			
+	 			case ATHROW:
+	 			case CHECKCAST:
+	 			case GOTO:
+	 			case GOTO_W:
+	 			case NOP:
+	 			case RET:
+	 			case RETURN:
+	 			break;
+	 			
+	 			case SWAP:
+	 				Item i1 = pop();
+	 				Item i2 = pop();
+	 				push(i2);
+	 				push(i1);
+	 			break;
 	 				
 	 			case INVOKEVIRTUAL:
 	 			case INVOKESPECIAL:
+	 			case INVOKESTATIC:
 	 				signature = dbc.getSigConstantOperand();
 	 				Type[] argTypes = Type.getArgumentTypes(signature);
 	 				pop(argTypes.length);
 	 				pushBySignature(Type.getReturnType(signature).getSignature());
-	 				break;
+	 			break;
 	 				
 	 			default:
 	 				throw new UnsupportedOperationException("OpCode not supported yet" );
