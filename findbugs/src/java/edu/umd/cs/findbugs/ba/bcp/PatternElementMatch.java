@@ -103,6 +103,11 @@ public class PatternElementMatch {
 		return buf.toString();
 	}
 
+	public int hashCode() {
+		// Do the simplest thing possible that works
+		throw new UnsupportedOperationException();
+		}
+
 	public boolean equals(Object o) {
 		if (!(o instanceof PatternElementMatch))
 			return false;
