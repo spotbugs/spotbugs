@@ -204,10 +204,9 @@
 				icon="icons/buggy-tiny.png"
 				enablesFor="1"
 				>
-				<!--
-				<selection class="de.tobject.findbugs.marker.FindBugsMarker">
-				</selection>
-				-->
+				<enablement>
+					<objectState name="type" value="de.tobject.findbugs.findbugsMarker"/>
+				</enablement>
 			</action>
    		</actionSet>
    </extension>
