@@ -243,6 +243,18 @@ public abstract class PreorderVisitor extends BetterVisitor implements Constants
 		return fullyQualifiedMethodName;
 	}
 
+	/**
+	* is the visitor currently visiting a method? 
+	*/
+	public boolean visitingMethod() {
+		return visitingMethod;
+		}
+	/**
+	* is the visitor currently visiting a field? 
+	*/
+	public boolean visitingField() {
+		return visitingField;
+		}
 	/** If currently visiting a method, get the method's Method object */
 	public Method getMethod() {
 		if (!visitingMethod)
