@@ -55,6 +55,18 @@ public class AnalysisException extends RuntimeException {
 	public AnalysisException(String message, MethodGen methodGen, InstructionHandle handle) {
 		super(message + " in " + SignatureConverter.convertMethodSignature(methodGen) + " at " + handle);
 	}
+
+	/**
+	 * Constructor from method, instruction, and causing Throwable object.
+	 * @param message reason for the error
+	 * @param methodGen the method
+	 * @param handle the instruction
+	 * @param throwable the cause of the error
+	 */
+	public AnalysisException(String message, MethodGen methodGen, InstructionHandle handle,
+		Throwable throwable) {
+		super(message + " in " + SignatureConverter.convertMethodSignature(methodGen) + " at " + handle, throwable);
+	}
 }
 
 // vim:ts=4
