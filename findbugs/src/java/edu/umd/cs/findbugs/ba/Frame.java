@@ -66,6 +66,11 @@ public abstract class Frame<ValueType> {
 	 */
 	private boolean isBottom;
 
+	/**
+	 * Default number of stack slots to preallocate space for.
+	 */
+	private static final int DEFAULT_STACK_CAPACITY = 10;
+
 	////////////////////////////////////////////////////////////////////////////////////
 	// Methods
 	////////////////////////////////////////////////////////////////////////////////////
@@ -76,7 +81,7 @@ public abstract class Frame<ValueType> {
 	 */
 	public Frame(int numLocals) {
 		this.numLocals = numLocals;
-		slotList = new ArrayList<ValueType>();
+		slotList = new ArrayList<ValueType>(numLocals + DEFAULT_STACK_CAPACITY);
 		for (int i = 0; i < numLocals; ++i)
 			slotList.add(getDefaultValue());
 		isTop = false;
