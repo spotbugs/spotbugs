@@ -201,9 +201,12 @@
 
     <!-- target to build the docs -->
     <target name="docs" depends="version">
+       <mkdir dir="${doc.dir}/manual" />
+
        <copy todir="${doc.dir}">
          <fileset dir="${doc.src.dir}" includes="**/*.png"/>
        </copy>
+
        <copy todir="${doc.dir}" overwrite="true">
          <fileset dir="${doc.src.dir}" excludes="**/*.png"/>
          <!--
@@ -221,7 +224,6 @@
        </copy>
 
        <!-- Format the manual as HTML. -->
-       <mkdir dir="${doc.dir}/manual" />
        <exec dir="doc" executable="java" failonerror="true" >
          <arg value="com.icl.saxon.StyleSheet" />
          <arg value="manual.xml" />
