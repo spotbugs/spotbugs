@@ -122,12 +122,16 @@ public class EclipseClasspath {
 	}
 
 	private static class Plugin {
+		private String directory;
 		private Document document;
 		private boolean isDependent;
 		private String pluginId;
 		private List<String> requiredPluginIdList;
+		private List<String> exportedLibraryList;
 
-		public Plugin(Document document, boolean isDependent) throws DocumentException, EclipseClasspathException {
+		public Plugin(String directory, Document document, boolean isDependent)
+				throws DocumentException, EclipseClasspathException {
+			this.directory = directory;
 			this.document = document;
 			this.isDependent = isDependent;
 
@@ -151,6 +155,21 @@ public class EclipseClasspath {
 				System.out.println(" Required plugin ==> " + requiredPluginId);
 				requiredPluginIdList.add(requiredPluginId);
 			}
+
+			// Extract exported libraries
+			exportedLibraryList = new LinkedList<String>();
+			List exportedLibraryNodeList = document.selectNodes("/plugin/runtime/library");
+			for (Iterator i = exportedLibraryNodeList.iterator(); i.hasNext(); ) {
+				Node node = (Node) i.next();
+				String jarName = node.valueOf("@name");
+				if (jarName.equals(""))
+					throw new EclipseClasspathException("Could not get name of exported library");
+				exportedLibraryList.add(new File(directory, jarName).getPath());
+			}
+		}
+
+		public String getDirectory() {
+			return directory;
 		}
 
 		public boolean isDependent() {
@@ -163,6 +182,10 @@ public class EclipseClasspath {
 
 		public Iterator<String> requiredPluginIdIterator() {
 			return requiredPluginIdList.iterator();
+		}
+
+		public Iterator<String> exportedLibraryIterator() {
+			return exportedLibraryList.iterator();
 		}
 	}
 
@@ -232,7 +255,7 @@ public class EclipseClasspath {
 			Document doc = reader.read(new EclipseXMLReader(new FileReader(item.getDescriptorFileName())));
 
 			// Add to the map
-			Plugin plugin = new Plugin(doc, item.isDependent());
+			Plugin plugin = new Plugin(item.getDirectory(), doc, item.isDependent());
 			requiredPluginMap.put(plugin.getId(), plugin);
 
 			// Add unresolved required plugins to the worklist
@@ -249,6 +272,15 @@ public class EclipseClasspath {
 		}
 
 		System.out.println("Found " + requiredPluginMap.size() + " required plugins");
+
+		for (Iterator<Plugin> i = requiredPluginMap.values().iterator(); i.hasNext(); ) {
+			Plugin plugin = i.next();
+			if (plugin.isDependent()) {
+				for (Iterator<String> j = plugin.exportedLibraryIterator(); j.hasNext(); ) {
+					System.out.println("Import: " + j.next());
+				}
+			}
+		}
 
 		return this;
 	}
