@@ -73,7 +73,7 @@ public class RedundantInterfaces extends PreorderVisitor implements Detector, Co
 							.addClass(obj);
 				Iterator<String> it = redundantInfNames.iterator();
 				while (it.hasNext())
-					bug.addClass(it.next());
+					bug.addClass(it.next()).describe("INTERFACE_TYPE");
 					
 				bugReporter.reportBug(bug);
 			}
