@@ -136,7 +136,7 @@ public abstract class AbstractDataflowAnalysis<Fact> implements DataflowAnalysis
 				if (handle == end)
 					break;
 
-				if (DEBUG) System.out.print("Transfer " + result.toString() + " for " + handle);
+				if (DEBUG) System.out.print("Transfer " + handle);
 	
 				// Transfer the dataflow value
 				transferInstruction(handle, basicBlock, result);
