@@ -30,61 +30,56 @@ conservespace_arg=''
 user_props=''
 
 # Handle command line arguments.
-out='no'
-while [ $# -gt 0 ] && [ "$out" = "no" ]; do
+while [ $# -gt 0 ]; do
 	case $1 in
 	-gui)
-		shift
 		fb_appjar="$findbugs_home/lib/findbugsGUI.jar"
 		;;
 
 	-textui)
-		shift
 		fb_appjar="$findbugs_home/lib/findbugs.jar"
 		;;
 
 	-jvmArgs)
 		shift
 		user_jvmargs="$1"
-		shift
 		;;
 
 	-maxHeap)
 		shift
 		maxheap="$1"
-		shift
 		;;
 
 	-javahome)
 		shift
 		fb_javacmd="$1/bin/java"
-		shift
 		;;
 
 	-debug)
-		shift
 		debug_arg="-Dfindbugs.debug=true"
 		;;
 
 	-conserveSpace)
-		shift
 		conservespace_arg="-Dfindbugs.conserveSpace=true"
 		;;
 
 	-property)
 		shift
 		user_props="-D$1 $user_props"
-		shift
 		;;
 
 	-help)
 		Usage
 		;;
 
+	# All unrecognized arguments will be accumulated and
+	# passed to the application.
 	*)
-		out='yes'
+		fb_appargs="$fb_appargs $1"
 		;;
 	esac
+
+	shift
 done
 
 fb_jvmargs="$user_jvmargs $debug_arg $conservespace_arg $user_props"
