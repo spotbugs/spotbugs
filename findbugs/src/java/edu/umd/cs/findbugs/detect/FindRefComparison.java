@@ -360,18 +360,23 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 			System.exit(1);
 		}
 
-		final RepositoryLookupFailureCallback lookupFailureCallback = new RepositoryLookupFailureCallback() {
-			public void reportMissingClass(ClassNotFoundException ex) {
-				ex.printStackTrace();
-			}
-		};
-
 		DataflowTestDriver<TypeFrame, TypeAnalysis> driver = new DataflowTestDriver<TypeFrame, TypeAnalysis>() {
-			public TypeAnalysis createAnalysis(MethodGen methodGen, CFG cfg) {
+			public Dataflow<TypeFrame, TypeAnalysis> createDataflow(ClassContext classContext, Method method)
+				throws CFGBuilderException, DataflowAnalysisException {
+
+				RepositoryLookupFailureCallback lookupFailureCallback = classContext.getLookupFailureCallback();
+				MethodGen methodGen = classContext.getMethodGen(method);
+				DepthFirstSearch dfs = classContext.getDepthFirstSearch(method);
+				CFG cfg = classContext.getCFG(method);
+
 				TypeMerger typeMerger = new RefComparisonTypeMerger(lookupFailureCallback);
-				TypeFrameModelingVisitor visitor = new RefComparisonTypeFrameModelingVisitor(methodGen.getConstantPool(), lookupFailureCallback);
-				TypeAnalysis analysis = new TypeAnalysis(methodGen, new DepthFirstSearch(cfg).search(), typeMerger, visitor);
-				return analysis;
+				TypeFrameModelingVisitor visitor =
+					new RefComparisonTypeFrameModelingVisitor(methodGen.getConstantPool(), lookupFailureCallback);
+				TypeAnalysis analysis = new TypeAnalysis(methodGen, dfs, typeMerger, visitor);
+				Dataflow<TypeFrame, TypeAnalysis> dataflow = new Dataflow<TypeFrame, TypeAnalysis>(cfg, analysis);
+				dataflow.execute();
+
+				return dataflow;
 			}
 		};
 

@@ -28,8 +28,8 @@ import org.apache.bcel.generic.*;
 
 public abstract class ResourceValueAnalysisTestDriver<Resource> {
 
-	public abstract ResourceTracker<Resource> createResourceTracker(RepositoryLookupFailureCallback lookupFailureCallback,
-		MethodGen methodGen, CFG cfg)  throws CFGBuilderException, DataflowAnalysisException;
+	public abstract ResourceTracker<Resource> createResourceTracker(ClassContext classContext, Method method)
+		throws CFGBuilderException, DataflowAnalysisException;
 
 	public void execute(String classFile, String methodName, int offset)
 		throws IOException, CFGBuilderException, DataflowAnalysisException {
@@ -42,8 +42,7 @@ public abstract class ResourceValueAnalysisTestDriver<Resource> {
 		};
 
 		JavaClass jclass = new ClassParser(classFile).parse();
-		ClassGen classGen = new ClassGen(jclass);
-		ConstantPoolGen cpg = classGen.getConstantPool();
+		ClassContext classContext = new ClassContext(jclass, lookupFailureCallback);
 
 		Method[] methodList = jclass.getMethods();
 		for (int i = 0; i < methodList.length; ++i) {
@@ -52,12 +51,8 @@ public abstract class ResourceValueAnalysisTestDriver<Resource> {
 			if (!method.getName().equals(methodName))
 				continue;
 
-			MethodGen methodGen = new MethodGen(method, jclass.getClassName(), cpg);
-
-			CFGBuilder cfgBuilder = CFGBuilderFactory.create(methodGen);
-			cfgBuilder.build();
-			CFG cfg = cfgBuilder.getCFG();
-			cfg.assignEdgeIds(0);
+			MethodGen methodGen = classContext.getMethodGen(method);
+			CFG cfg = classContext.getCFG(method);
 
 			BasicBlock creationBlock = null;
 			InstructionHandle creationInstruction = null;
@@ -77,23 +72,32 @@ public abstract class ResourceValueAnalysisTestDriver<Resource> {
 
 			if (creationInstruction == null) throw new IllegalArgumentException("No bytecode with offset " + offset);
 
-			final ResourceTracker<Resource> resourceTracker = createResourceTracker(lookupFailureCallback, methodGen, cfg);
-			final Resource resource = resourceTracker.isResourceCreation(creationBlock, creationInstruction, cpg);
+			final ResourceTracker<Resource> resourceTracker = createResourceTracker(classContext, method);
+			final Resource resource =
+				resourceTracker.isResourceCreation(creationBlock, creationInstruction, classContext.getConstantPoolGen());
 
 			if (resource == null)
 				throw new IllegalArgumentException("offset " + offset + " is not a resource creation");
 
 			DataflowTestDriver<ResourceValueFrame, ResourceValueAnalysis<Resource>> driver =
 				new DataflowTestDriver<ResourceValueFrame, ResourceValueAnalysis<Resource>>() {
-				public ResourceValueAnalysis<Resource> createAnalysis(MethodGen methodGen, CFG cfg)
-					throws DataflowAnalysisException {
-					DepthFirstSearch dfs = new DepthFirstSearch(cfg).search();
-					return new ResourceValueAnalysis<Resource>(methodGen, cfg, dfs, resourceTracker, resource,
-						lookupFailureCallback);
+				public Dataflow<ResourceValueFrame, ResourceValueAnalysis<Resource>> createDataflow(ClassContext classContext, Method method)
+					throws CFGBuilderException, DataflowAnalysisException {
+					MethodGen methodGen = classContext.getMethodGen(method);
+					CFG cfg = classContext.getCFG(method);
+					DepthFirstSearch dfs = classContext.getDepthFirstSearch(method);
+
+					ResourceValueAnalysis<Resource> analysis =
+						new ResourceValueAnalysis<Resource>(methodGen, cfg, dfs, resourceTracker, resource, lookupFailureCallback);
+					Dataflow<ResourceValueFrame, ResourceValueAnalysis<Resource>> dataflow =
+						new Dataflow<ResourceValueFrame, ResourceValueAnalysis<Resource>>(cfg, analysis);
+					dataflow.execute();
+
+					return dataflow;
 				}
 			};
 
-			driver.execute(methodGen, cfg);
+			driver.execute(classContext, method);
 			break;
 		}
 	}

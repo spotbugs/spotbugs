@@ -116,8 +116,17 @@ public class StackDepthAnalysis extends ForwardDataflowAnalysis<StackDepth> {
 		}
 
 		DataflowTestDriver<StackDepth, StackDepthAnalysis> driver = new DataflowTestDriver<StackDepth, StackDepthAnalysis>() {
-			public StackDepthAnalysis createAnalysis(MethodGen methodGen, CFG cfg) {
-				return new StackDepthAnalysis(methodGen.getConstantPool(), new DepthFirstSearch(cfg).search());
+			public Dataflow<StackDepth, StackDepthAnalysis> createDataflow(ClassContext classContext, Method method)
+				throws CFGBuilderException, DataflowAnalysisException {
+
+				DepthFirstSearch dfs = classContext.getDepthFirstSearch(method);
+				CFG cfg = classContext.getCFG(method);
+
+				StackDepthAnalysis analysis = new StackDepthAnalysis(classContext.getConstantPoolGen(), dfs);
+				Dataflow<StackDepth, StackDepthAnalysis> dataflow = new Dataflow<StackDepth, StackDepthAnalysis>(cfg, analysis);
+				dataflow.execute();
+
+				return dataflow;
 			}
 		};
 

@@ -68,12 +68,18 @@ public class OtherLockCountAnalysis extends LockCountAnalysis {
 			}
 
 			DataflowTestDriver<LockCount, LockCountAnalysis> driver = new DataflowTestDriver<LockCount, LockCountAnalysis>() {
-				public LockCountAnalysis createAnalysis(MethodGen methodGen, CFG cfg) throws DataflowAnalysisException {
-					DepthFirstSearch dfs = new DepthFirstSearch(cfg).search();
-					ValueNumberDataflow vnaDataflow = new ValueNumberDataflow(cfg, new ValueNumberAnalysis(methodGen, dfs));
-					vnaDataflow.execute();
+				public Dataflow<LockCount, LockCountAnalysis> createDataflow(ClassContext classContext, Method method)
+					throws CFGBuilderException, DataflowAnalysisException {
 
-					return new OtherLockCountAnalysis(methodGen, vnaDataflow, dfs);
+					MethodGen methodGen = classContext.getMethodGen(method);
+					CFG cfg = classContext.getCFG(method);
+					DepthFirstSearch dfs = classContext.getDepthFirstSearch(method);
+					ValueNumberDataflow vnaDataflow = classContext.getValueNumberDataflow(method);
+
+					LockCountAnalysis analysis = new OtherLockCountAnalysis(methodGen, vnaDataflow, dfs);
+					Dataflow<LockCount, LockCountAnalysis> dataflow = new Dataflow<LockCount, LockCountAnalysis>(cfg, analysis);
+					dataflow.execute();
+					return dataflow;
 				}
 			};
 

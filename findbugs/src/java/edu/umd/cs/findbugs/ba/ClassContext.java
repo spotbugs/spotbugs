@@ -68,6 +68,14 @@ public class ClassContext {
 	public JavaClass getJavaClass() { return jclass; }
 
 	/**
+	 * Get the RepositoryLookupFailureCallback.
+	 * @return the RepositoryLookupFailureCallback
+	 */
+	public RepositoryLookupFailureCallback getLookupFailureCallback() {
+		return lookupFailureCallback;
+	}
+
+	/**
 	 * Get a MethodGen object for given method.
 	 * @param method the method
 	 * @return the MethodGen object for the method, or null
@@ -124,7 +132,7 @@ public class ClassContext {
 		if (vnaDataflow == null) {
 			MethodGen methodGen = getMethodGen(method);
 			DepthFirstSearch dfs = getDepthFirstSearch(method);
-			ValueNumberAnalysis analysis = new ValueNumberAnalysis(methodGen, dfs);
+			ValueNumberAnalysis analysis = new ValueNumberAnalysis(methodGen, dfs, lookupFailureCallback);
 			CFG cfg = getCFG(method);
 			vnaDataflow = new ValueNumberDataflow(cfg, analysis);
 			vnaDataflow.execute();

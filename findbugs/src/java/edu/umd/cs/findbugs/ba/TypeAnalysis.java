@@ -162,15 +162,10 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame> {
 			System.exit(1);
 		}
 
-		final RepositoryLookupFailureCallback lookupFailureCallback = new RepositoryLookupFailureCallback() {
-			public void reportMissingClass(ClassNotFoundException ex) {
-				System.err.println("Missing class: " + ex.getMessage());
-			}
-		};
-
 		DataflowTestDriver<TypeFrame, TypeAnalysis> driver = new DataflowTestDriver<TypeFrame, TypeAnalysis>() {
-			public TypeAnalysis createAnalysis(MethodGen methodGen, CFG cfg) {
-				return new TypeAnalysis(methodGen, new DepthFirstSearch(cfg).search(), lookupFailureCallback);
+			public Dataflow<TypeFrame, TypeAnalysis> createDataflow(ClassContext classContext, Method method)
+				throws CFGBuilderException, DataflowAnalysisException {
+				return classContext.getTypeDataflow(method);
 			}
 		};
 

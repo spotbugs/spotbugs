@@ -65,12 +65,15 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
 	private HashMap<Location, ValueNumberFrame> factAtLocationMap;
 	private HashMap<Location, ValueNumberFrame> factAfterLocationMap;
 
-	public ValueNumberAnalysis(MethodGen methodGen, DepthFirstSearch dfs) {
+	public ValueNumberAnalysis(MethodGen methodGen, DepthFirstSearch dfs,
+		RepositoryLookupFailureCallback lookupFailureCallback) {
+
 		super(dfs);
 		this.methodGen = methodGen;
 		this.factory = new ValueNumberFactory();
 		this.cache = new ValueNumberCache();
-		this.visitor = new ValueNumberFrameModelingVisitor(methodGen.getConstantPool(), factory, cache);
+		this.visitor = new ValueNumberFrameModelingVisitor(methodGen.getConstantPool(), factory, cache,
+			lookupFailureCallback);
 
 		int numLocals = methodGen.getMaxLocals();
 		this.entryLocalValueList = new ValueNumber[numLocals];
@@ -279,8 +282,9 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
 
 			DataflowTestDriver<ValueNumberFrame, ValueNumberAnalysis> driver =
 				new DataflowTestDriver<ValueNumberFrame, ValueNumberAnalysis>() {
-				public ValueNumberAnalysis createAnalysis(MethodGen methodGen, CFG cfg) {
-					return new ValueNumberAnalysis(methodGen, new DepthFirstSearch(cfg).search());
+				public Dataflow<ValueNumberFrame, ValueNumberAnalysis> createDataflow(ClassContext classContext, Method method)
+					throws CFGBuilderException, DataflowAnalysisException {
+					return classContext.getValueNumberDataflow(method);
 				}
 			};
 

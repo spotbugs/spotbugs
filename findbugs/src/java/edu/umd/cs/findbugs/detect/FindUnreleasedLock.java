@@ -237,11 +237,12 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock> {
 		int offset = Integer.parseInt(argv[2]);
 
 		ResourceValueAnalysisTestDriver<Lock> driver = new ResourceValueAnalysisTestDriver<Lock>() {
-			public ResourceTracker<Lock> createResourceTracker(RepositoryLookupFailureCallback lookupFailureCallback,
-				MethodGen methodGen, CFG cfg) throws CFGBuilderException, DataflowAnalysisException {
-				ValueNumberAnalysis vna = new ValueNumberAnalysis(methodGen, new DepthFirstSearch(cfg).search());
-				ValueNumberDataflow vnaDataflow = new ValueNumberDataflow(cfg, vna);
-				vnaDataflow.execute();
+			public ResourceTracker<Lock> createResourceTracker(ClassContext classContext, Method method)
+				throws CFGBuilderException, DataflowAnalysisException {
+
+				ValueNumberDataflow vnaDataflow = classContext.getValueNumberDataflow(method);
+				RepositoryLookupFailureCallback lookupFailureCallback = classContext.getLookupFailureCallback();
+
 				return new LockResourceTracker(lookupFailureCallback, vnaDataflow);
 			}
 		};

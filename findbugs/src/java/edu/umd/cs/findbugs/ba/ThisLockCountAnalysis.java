@@ -80,16 +80,10 @@ public class ThisLockCountAnalysis extends LockCountAnalysis {
 			}
 
 			DataflowTestDriver<LockCount, LockCountAnalysis> driver = new DataflowTestDriver<LockCount, LockCountAnalysis>() {
-				public LockCountAnalysis createAnalysis(MethodGen methodGen, CFG cfg) throws DataflowAnalysisException {
-					DepthFirstSearch dfs = new DepthFirstSearch(cfg).search();
+				public Dataflow<LockCount, LockCountAnalysis> createDataflow(ClassContext classContext, Method method)
+					throws CFGBuilderException, DataflowAnalysisException {
 
-					// Perform the analysis to propagate "this" value references,
-					// since ThisLockCountAnalysis depends on it.
-					ValueNumberDataflow vnaDataflow = new ValueNumberDataflow(cfg, new ValueNumberAnalysis(methodGen, dfs));
-					vnaDataflow.execute();
-
-					// Now we can create ThisLockCountAnalysis.
-					return new ThisLockCountAnalysis(methodGen, vnaDataflow, dfs);
+					return classContext.getThisLockCountDataflow(method);
 				}
 			};
 

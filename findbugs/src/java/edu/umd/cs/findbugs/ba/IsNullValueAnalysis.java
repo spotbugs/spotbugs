@@ -21,6 +21,7 @@ package edu.umd.cs.daveho.ba;
 
 import java.util.*;
 import org.apache.bcel.Constants;
+import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.*;
 
 /**
@@ -264,18 +265,10 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
 		}
 
 		DataflowTestDriver<IsNullValueFrame, IsNullValueAnalysis> driver = new DataflowTestDriver<IsNullValueFrame, IsNullValueAnalysis>() {
-			public IsNullValueAnalysis createAnalysis(MethodGen methodGen, CFG cfg)
-				throws DataflowAnalysisException {
+			public Dataflow<IsNullValueFrame, IsNullValueAnalysis> createDataflow(ClassContext classContext, Method method)
+				throws CFGBuilderException, DataflowAnalysisException {
 
-				DepthFirstSearch dfs = new DepthFirstSearch(cfg).search();
-
-				// Create the ValueNumberAnalysis
-				ValueNumberAnalysis vna = new ValueNumberAnalysis(methodGen, dfs);
-				ValueNumberDataflow vnaDataflow = new ValueNumberDataflow(cfg, vna);
-				vnaDataflow.execute();
-
-				IsNullValueAnalysis analysis = new IsNullValueAnalysis(methodGen, cfg, vnaDataflow, dfs);
-				return analysis;
+				return classContext.getIsNullValueDataflow(method);
 			}
 		};
 

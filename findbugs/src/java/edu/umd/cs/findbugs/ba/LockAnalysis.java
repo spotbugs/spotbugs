@@ -126,14 +126,9 @@ public class LockAnalysis extends ForwardDataflowAnalysis<LockSet> {
 		}
 
 		DataflowTestDriver<LockSet, LockAnalysis> driver = new DataflowTestDriver<LockSet, LockAnalysis>() {
-			public LockAnalysis createAnalysis(MethodGen methodGen, CFG cfg) throws DataflowAnalysisException {
-				DepthFirstSearch dfs = new DepthFirstSearch(cfg).search();
-
-				ValueNumberAnalysis vna = new ValueNumberAnalysis(methodGen, dfs);
-				ValueNumberDataflow vnaDataflow = new ValueNumberDataflow(cfg, vna);
-				vnaDataflow.execute();
-
-				return new LockAnalysis(methodGen, vnaDataflow, dfs);
+			public Dataflow<LockSet, LockAnalysis> createDataflow(ClassContext classContext, Method method)
+				throws CFGBuilderException, DataflowAnalysisException {
+				return classContext.getLockDataflow(method);
 			}
 		};
 

@@ -73,59 +73,61 @@ public abstract class DataflowTestDriver<Fact, AnalysisType extends AbstractData
 	 */
 	public void execute(String filename) throws DataflowAnalysisException, CFGBuilderException, IOException {
 		JavaClass jclass = new RepositoryClassParser(filename).parse();
-		ClassGen cg = new ClassGen(jclass);
-		ConstantPoolGen cpg = cg.getConstantPool();
+
+		final RepositoryLookupFailureCallback lookupFailureCallback = new RepositoryLookupFailureCallback() {
+			public void reportMissingClass(ClassNotFoundException e) {
+				e.printStackTrace();
+				System.exit(1);
+			}
+		};
+
+		ClassContext classContext = new ClassContext(jclass, lookupFailureCallback);
 		String methodName = System.getProperty("dataflow.method");
 
-		Method[] methods = cg.getMethods();
+		Method[] methods = jclass.getMethods();
 		for (int i = 0; i < methods.length; ++i) {
 			Method method = methods[i];
-			if (method.isAbstract() || method.isNative())
-				continue;
 			if (methodName != null && !method.getName().equals(methodName))
 				continue;
 
-			MethodGen methodGen = new MethodGen(method, jclass.getClassName(), cpg);
+			MethodGen methodGen = classContext.getMethodGen(method);
+			if (methodGen == null)
+				continue;
 
 			System.out.println("-----------------------------------------------------------------");
 			System.out.println("Method: " + SignatureConverter.convertMethodSignature(methodGen));
 			System.out.println("-----------------------------------------------------------------");
 
-			CFGBuilder cfgBuilder = CFGBuilderFactory.create(methodGen);
-			cfgBuilder.build();
-			CFG cfg = cfgBuilder.getCFG();
-			cfg.assignEdgeIds(0);
-
-			execute(methodGen, cfg);
+			execute(classContext, method);
 		}
 	}
 
 	/**
 	 * Execute the analysis on a single method of a class.
 	 */
-	public void execute(MethodGen methodGen, CFG cfg) throws DataflowAnalysisException, CFGBuilderException {
+	public void execute(ClassContext classContext, Method method) throws DataflowAnalysisException, CFGBuilderException {
 
-		AnalysisType analysis = createAnalysis(methodGen, cfg);
-		Dataflow<Fact, AnalysisType> dataflow = new Dataflow<Fact, AnalysisType>(cfg, analysis);
-
-		dataflow.execute();
-
+		Dataflow<Fact, AnalysisType> dataflow = createDataflow(classContext, method);
 		System.out.println("Finished in " + dataflow.getNumIterations() + " iterations");
 
+		CFG cfg = classContext.getCFG(method);
 		examineResults(cfg, dataflow);
 
 		if (Boolean.getBoolean("dataflow.printcfg")) {
-			CFGPrinter p = new DataflowCFGPrinter<Fact, AnalysisType>(cfg, dataflow, analysis);
+			CFGPrinter p = new DataflowCFGPrinter<Fact, AnalysisType>(cfg, dataflow, dataflow.getAnalysis());
 			p.print(System.out);
 		}
 	}
 
 	/**
-	 * Downcall method to create the dataflow analysis.
-	 * @param methodGen the method to be analyzed
-	 * @param cfg control flow graph of the method to be analyzed
+	 * Downcall method to create the dataflow driver object
+	 * and execute the analysis.
+	 * @param classContext ClassContext for the class
+	 * @param method the Method
+	 * @return the Dataflow driver
 	 */
-	public abstract AnalysisType createAnalysis(MethodGen methodGen, CFG cfg) throws DataflowAnalysisException;
+	public abstract Dataflow<Fact, AnalysisType> createDataflow(ClassContext classContext, Method method)
+		throws CFGBuilderException, DataflowAnalysisException;
 
 	/**
 	 * Downcall method to inspect the analysis results.
