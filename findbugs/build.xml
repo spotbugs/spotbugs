@@ -181,14 +181,21 @@
                 <pathelement location="${jar.dir}/${anttask.jar.name}"/>
             </classpath>
         </taskdef>
-       <javac srcdir="${test.dir}" debug="true" />
-       <jar destfile="${test.dir}/dumb.jar" basedir="${test.dir}" includes="*.class" />
+       <javac srcdir="${test.dir}" excludes="IgnoredReturnValue.java,TryLock.java" debug="true" />
+       <jar destfile="${test.dir}/dumb.jar" basedir="${test.dir}" includes="*.class"
+            excludes="IgnoredReturnValue*.class,TryLock*.class" />
         <findbugs home="." reportLevel="low"
                 output="text" outputFile="${test.dir}/dumb.bugs">
           <class location="${test.dir}/dumb.jar"/>
           </findbugs>
     </target>
 
+    <!-- Build test cases that require JSR166 library. -->
+    <target name="jsr166test">
+       <javac srcdir="${test.dir}" includes="IgnoredReturnValue.java,TryLock.java" debug="true" />
+       <jar destfile="${test.dir}/jsr166test.jar" basedir="${test.dir}"
+            includes="IgnoredReturnValue*.class,TryLock*.class" />
+    </target>
 
     <!-- Target to get the release version info. -->
     <target name="version" depends="classes">
