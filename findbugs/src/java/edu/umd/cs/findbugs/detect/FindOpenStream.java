@@ -62,36 +62,33 @@ public class FindOpenStream implements Detector {
 		}
 
 		public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock) {
-			Instruction ins = handle.getInstruction();
-			ins.accept(this);
-
+			final Instruction ins = handle.getInstruction();
 			final ConstantPoolGen cpg = getCPG();
 			final ResourceValueFrame frame = getFrame();
-			final int numSlots = frame.getNumSlots();
 
+			// Model use of instance values in frame slots
+			ins.accept(this);
+
+			// Is a resource created or closed by this instruction?
 			Location creationPoint = stream.creationPoint;
 			if (handle == creationPoint.getHandle() && basicBlock == creationPoint.getBasicBlock()) {
 				// Resource creation
-				frame.setValue(numSlots - 1, ResourceValue.instance());
+				frame.setValue(frame.getNumSlots() - 1, ResourceValue.instance());
 				frame.setStatus(ResourceValueFrame.OPEN);
 			} else if (resourceTracker.isResourceClose(basicBlock, handle, cpg, stream)) {
 				// Resource closed
-				frame.setStatus(ResourceValueFrame.OPEN);
+				frame.setStatus(ResourceValueFrame.CLOSED);
 			}
 
 		}
 
-		protected boolean instanceEscapes(InvokeInstruction inv) {
+		protected boolean instanceEscapes(InvokeInstruction inv, int instanceArgNum) {
 			ConstantPoolGen cpg = getCPG();
 			String className = inv.getClassName(cpg);
 
-			try {
-				// FIXME: is this right?
-				return !Repository.instanceOf(className, "java.io.InputStream");
-			} catch (ClassNotFoundException e) {
-				bugReporter.reportMissingClass(e);
-				return true;
-			}
+			boolean escapes = (inv.getOpcode() == Constants.INVOKESTATIC || instanceArgNum != 0);
+			//if (escapes) System.out.println("Escape at " + inv + " argNum=" + instanceArgNum);
+			return escapes;
 		}
 	}
 
@@ -109,11 +106,22 @@ public class FindOpenStream implements Detector {
 			Type type = newIns.getType(cpg);
 			String sig = type.getSignature();
 
-			// TODO: make this more general, to handle all input and output streams
-			if (sig.equals("Ljava/io/FileInputStream;"))
-				return new Stream(new Location(handle, basicBlock), "java.io.FileInputStream");
-			else
+			if (!sig.startsWith("L") || !sig.endsWith(";"))
 				return null;
+
+			// Track any subclass of InputStream or OutputStream
+			// (but not ByteArray variants)
+			String className = sig.substring(1, sig.length() - 1).replace('/', '.');
+			if (className.startsWith("ByteArray"))
+				return null;
+			try {
+				boolean isStream = Repository.instanceOf(className, "java.io.InputStream")
+					|| Repository.instanceOf(className, "java.io.OutputStream");
+				return isStream ? new Stream(new Location(handle, basicBlock), className) : null;
+			} catch (ClassNotFoundException e) {
+				bugReporter.reportMissingClass(e);
+				return null;
+			}
 		}
 
 		public boolean isResourceClose(BasicBlock basicBlock, InstructionHandle handle, ConstantPoolGen cpg, Stream resource) {
@@ -169,7 +177,7 @@ public class FindOpenStream implements Detector {
 
 				BitSet bytecodeSet = classContext.getBytecodeSet(method);
 				if (!bytecodeSet.get(Constants.NEW))
-					continue;
+					continue; // no streams created in this method
 
 				MethodGen methodGen = classContext.getMethodGen(method);
 				CFG cfg = classContext.getCFG(method);
