@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs;
 
+import edu.umd.cs.findbugs.xml.Dom4JXMLOutput;
+
 import java.io.IOException;
 import java.io.InputStream;
 import javax.xml.transform.Transformer;
@@ -27,6 +29,7 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 import org.dom4j.Document;
+import org.dom4j.DocumentFactory;
 import org.dom4j.io.DocumentSource;
 
 public class HTMLBugReporter extends BugCollectionBugReporter {
@@ -42,7 +45,11 @@ public class HTMLBugReporter extends BugCollectionBugReporter {
 			// Get the XML Document with the saved bugs
 			generateSummary();
 			BugCollection bugCollection = getBugCollection();
-			Document document = bugCollection.toDocument(getProject());
+
+			DocumentFactory docFactory = new DocumentFactory();
+			Document document = docFactory.createDocument();
+			Dom4JXMLOutput treeBuilder = new Dom4JXMLOutput(document);
+			bugCollection.writeXML(treeBuilder, getProject());
 
 			// Get the stylesheet as a StreamSource
 			InputStream xslInputStream =

@@ -102,7 +102,7 @@ public class IntAnnotation implements BugAnnotation {
 	 * ---------------------------------------------------------------------- */
 
 	private static final String ELEMENT_NAME = "Int";
-
+/*
 	private static class IntAnnotationXMLTranslator implements XMLTranslator {
 		public String getElementName() {
 			return ELEMENT_NAME;
@@ -140,6 +140,7 @@ public class IntAnnotation implements BugAnnotation {
 
 		return element;
 	}
+*/
 
 	public void writeXML(XMLOutput xmlOutput) throws IOException {
 		XMLAttributeList attributeList = new XMLAttributeList()

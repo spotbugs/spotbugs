@@ -19,30 +19,29 @@
 
 package edu.umd.cs.findbugs;
 
-// notyet
-/*
 import edu.umd.cs.findbugs.xml.OutputStreamXMLOutput;
 import edu.umd.cs.findbugs.xml.XMLAttributeList;
 import edu.umd.cs.findbugs.xml.XMLOutput;
-*/
+import edu.umd.cs.findbugs.xml.XMLOutputUtil;
 
 import java.io.*;
 import java.util.*;
 
+/*
 import org.dom4j.Document;
+*/
 import org.dom4j.DocumentException;
+/*
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
+*/
 
-/*
-// notyet
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
-*/
 
 /**
  * Abstract base class for collections of BugInstance objects
@@ -53,7 +52,7 @@ import org.xml.sax.XMLReader;
  * @see BugInstance
  */
 public abstract class BugCollection {
-
+/*
 	static int x;
 
 	static {
@@ -64,6 +63,7 @@ public abstract class BugCollection {
 		        FieldAnnotation.dummy + MethodAnnotation.dummy +
 		        SourceLineAnnotation.dummy + IntAnnotation.dummy;
 	}
+*/
 
 	public void addAll(Collection<BugInstance> collection) {
 		Iterator<BugInstance> i = collection.iterator();
@@ -137,7 +137,7 @@ public abstract class BugCollection {
 	private void doReadXML(InputStream in, Project project) throws IOException, DocumentException {
 
 		checkInputStream(in);
-
+/*
 		SAXReader reader = new SAXReader();
 		Document document = reader.read(in);
 
@@ -187,12 +187,12 @@ public abstract class BugCollection {
 				}
 			}
 		}
-
-/*
-		// notyet
+*/
 		try {
 			SAXBugCollectionHandler handler = new SAXBugCollectionHandler(this, project);
-			XMLReader xr = new org.apache.xerces.parsers.SAXParser();
+
+			// FIXME: for now, use dom4j's XML parser
+			XMLReader xr = new org.dom4j.io.aelfred.SAXDriver();
 
 			xr.setContentHandler(handler);
 			xr.setErrorHandler(handler);
@@ -201,14 +201,15 @@ public abstract class BugCollection {
 
 			xr.parse(new InputSource(reader));
 		} catch (SAXException e) {
+			// FIXME: throw SAXException from method?
 			throw new DocumentException("Parse error", e);
 		}
-*/
 
 		// Presumably, project is now up-to-date
 		project.setModified(false);
 	}
 
+/*
 	private static void updateSourceFile(SourceLineAnnotation annotation, Map<String, String> classToSourceFileMap) {
 		if (!annotation.isSourceFileKnown()) {
 			String className = annotation.getClassName();
@@ -217,7 +218,9 @@ public abstract class BugCollection {
 				annotation.setSourceFile(sourceFile);
 		}
 	}
+*/
 
+/*
 	private void readErrors(Element element) throws DocumentException {
 		Iterator i = element.elements().iterator();
 		while (i.hasNext()) {
@@ -232,6 +235,7 @@ public abstract class BugCollection {
 				throw new DocumentException("Unknown element type: " + elementName);
 		}
 	}
+*/
 
 	public void writeXML(String fileName, Project project) throws IOException {
 		BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(fileName));
@@ -243,6 +247,7 @@ public abstract class BugCollection {
 		writeXML(out, project);
 	}
 
+/*
 	public Document toDocument(Project project) {
 		Document document = DocumentHelper.createDocument();
 		Element root = document.addElement(ROOT_ELEMENT_NAME);
@@ -277,17 +282,22 @@ public abstract class BugCollection {
 
 		return document;
 	}
+*/
 
 	public void writeXML(OutputStream out, Project project) throws IOException {
+/*
 		Document document = toDocument(project);
 
 		XMLWriter writer = new XMLWriter(out, OutputFormat.createPrettyPrint());
 		writer.write(document);
+*/
 
-/*
-		// notyet
 		XMLOutput xmlOutput = new OutputStreamXMLOutput(out);
 
+		writeXML(xmlOutput, project);
+	}
+
+	public void writeXML(XMLOutput xmlOutput, Project project) throws IOException {
 		xmlOutput.beginDocument();
 		xmlOutput.openTag(ROOT_ELEMENT_NAME,
 			new XMLAttributeList().addAttribute("version",Version.RELEASE));
@@ -296,11 +306,24 @@ public abstract class BugCollection {
 
 		xmlOutput.writeCollection(getCollection());
 
-		// TODO: summary HTML
+		// Errors, missing classes
+		xmlOutput.openTag(ERRORS_ELEMENT_NAME);
+		XMLOutputUtil.writeElementList(xmlOutput, ANALYSIS_ERROR_ELEMENT_NAME,
+			errorIterator());
+		XMLOutputUtil.writeElementList(xmlOutput, MISSING_CLASS_ELEMENT_NAME,
+			missingClassIterator());
+		xmlOutput.closeTag(ERRORS_ELEMENT_NAME);
+
+		// Summary HTML
+		String html = getSummaryHTML();
+		if (!html.equals("")) {
+			xmlOutput.openTag(SUMMARY_HTML_ELEMENT_NAME);
+			xmlOutput.writeCDATA(html);
+			xmlOutput.closeTag(SUMMARY_HTML_ELEMENT_NAME);
+		}
 
 		xmlOutput.closeTag(ROOT_ELEMENT_NAME);
 		xmlOutput.endDocument();
-*/
 	}
 
 	private void checkInputStream(InputStream in) throws IOException {

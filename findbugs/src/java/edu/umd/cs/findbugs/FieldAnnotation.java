@@ -202,7 +202,7 @@ public class FieldAnnotation extends PackageMemberAnnotation {
 	 * ---------------------------------------------------------------------- */
 
 	private static final String ELEMENT_NAME = "Field";
-
+/*
 	private static class FieldAnnotationXMLTranslator implements XMLTranslator {
 		public String getElementName() {
 			return ELEMENT_NAME;
@@ -242,6 +242,7 @@ public class FieldAnnotation extends PackageMemberAnnotation {
 
 		return element;
 	}
+*/
 
 	public void writeXML(XMLOutput xmlOutput) throws IOException {
 		XMLAttributeList attributeList = new XMLAttributeList()

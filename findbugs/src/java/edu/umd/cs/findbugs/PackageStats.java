@@ -19,6 +19,9 @@
 
 package edu.umd.cs.findbugs;
 
+import edu.umd.cs.findbugs.xml.Dom4JXMLOutput;
+import edu.umd.cs.findbugs.xml.XMLWriteable;
+
 import java.util.*;
 
 import org.dom4j.Branch;
@@ -110,6 +113,10 @@ public class PackageStats implements XMLConvertible {
 		return items;
 	}
 
+	private void toElement(XMLWriteable obj, Branch parent) {
+		Dom4JXMLOutput treeBuilder = new Dom4JXMLOutput(parent);
+		treeBuilder.write(obj);
+	}
 
 	public Element toElement(Branch parent) {
 		List<BugInstance> classErrorList = null;
@@ -144,7 +151,8 @@ public class PackageStats implements XMLConvertible {
 			Iterator<BugInstance> itr = classErrorList.iterator();
 			while (itr.hasNext()) {
 				BugInstance bug = itr.next();
-				bug.toElement(classErrors);
+				//bug.toElement(classErrors);
+				toElement(bug, classErrors);
 			}
 		}
 
@@ -157,7 +165,8 @@ public class PackageStats implements XMLConvertible {
 			Iterator<BugInstance> itr = interfaceErrorList.iterator();
 			while (itr.hasNext()) {
 				BugInstance bug = itr.next();
-				bug.toElement(interfaceErrors);
+				//bug.toElement(interfaceErrors);
+				toElement(bug, interfaceErrors);
 			}
 		}
 		return element;
@@ -165,3 +174,4 @@ public class PackageStats implements XMLConvertible {
 
 }
 
+// vim:ts=4

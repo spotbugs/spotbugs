@@ -406,7 +406,7 @@ public class SourceLineAnnotation implements BugAnnotation {
 	 * ---------------------------------------------------------------------- */
 
 	private static final String ELEMENT_NAME = "SourceLine";
-
+/*
 	private static class SourceLineAnnotationXMLTranslator implements XMLTranslator {
 		public String getElementName() {
 			return ELEMENT_NAME;
@@ -462,6 +462,7 @@ public class SourceLineAnnotation implements BugAnnotation {
 
 		return element;
 	}
+*/
 
 	public void writeXML(XMLOutput xmlOutput) throws IOException {
 		XMLAttributeList attributeList = new XMLAttributeList()

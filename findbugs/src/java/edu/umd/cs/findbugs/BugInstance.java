@@ -68,7 +68,7 @@ import org.dom4j.Element;
  * @author David Hovemeyer
  * @see BugAnnotation
  */
-public class BugInstance implements Comparable, XMLConvertible, XMLWriteable {
+public class BugInstance implements Comparable/*, XMLConvertible*/, XMLWriteable {
 	private String type;
 	private int priority;
 	private ArrayList<BugAnnotation> annotationList;
@@ -723,6 +723,7 @@ public class BugInstance implements Comparable, XMLConvertible, XMLWriteable {
 	private static final String ELEMENT_NAME = "BugInstance";
 	private static final String USER_ANNOTATION_ELEMENT_NAME = "UserAnnotation";
 
+/*
 	private static class BugInstanceXMLTranslator implements XMLTranslator {
 		public String getElementName() {
 			return ELEMENT_NAME;
@@ -796,6 +797,7 @@ public class BugInstance implements Comparable, XMLConvertible, XMLWriteable {
 
 		return element;
 	}
+*/
 
 	/* ----------------------------------------------------------------------
 	 * Implementation

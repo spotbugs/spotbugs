@@ -27,7 +27,7 @@ import edu.umd.cs.findbugs.xml.XMLWriteable;
  * @author David Hovemeyer
  * @see BugInstance
  */
-public interface BugAnnotation extends Comparable<BugAnnotation>, XMLConvertible, XMLWriteable {
+public interface BugAnnotation extends Comparable<BugAnnotation>/*, XMLConvertible*/, XMLWriteable {
 	/**
 	 * Accept a BugAnnotationVisitor.
 	 *

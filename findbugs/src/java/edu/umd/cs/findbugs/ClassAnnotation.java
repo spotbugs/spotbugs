@@ -81,7 +81,7 @@ public class ClassAnnotation extends PackageMemberAnnotation {
 	 * ---------------------------------------------------------------------- */
 
 	private static final String ELEMENT_NAME = "Class";
-
+/*
 	private static class ClassAnnotationXMLTranslator implements XMLTranslator {
 		public String getElementName() {
 			return ELEMENT_NAME;
@@ -112,6 +112,7 @@ public class ClassAnnotation extends PackageMemberAnnotation {
 			element.addAttribute("role", role);
 		return element;
 	}
+*/
 
 	public void writeXML(XMLOutput xmlOutput) throws IOException {
 		XMLAttributeList attributeList = new XMLAttributeList()
