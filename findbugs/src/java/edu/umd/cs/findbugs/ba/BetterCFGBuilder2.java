@@ -621,7 +621,8 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 				InstructionHandle handlerStart = exceptionHandler.getHandlerPC();
 				subroutine.addEdgeAndExplore(etb, handlerStart, HANDLED_EXCEPTION_EDGE);
 	
-				if (exceptionHandler.getCatchType() == null)
+				if (exceptionHandler.getCatchType() == null ||
+					exceptionHandler.getCatchType().equals(ObjectType.THROWABLE))
 					sawAnyExceptionHandler = true;
 			}
 		}
