@@ -735,6 +735,8 @@
        <!-- excluded in release because it is only needed in source dist -->
        <copy file="${jar.dir}/AppleJavaExtensions.jar"
              todir="${release.dir}/lib" />
+       <copy file="${jar.dir}/LICENSE_AppleJavaExtensions.txt"
+             todir="${release.dir}/lib" />
 
        <mkdir dir="${build.dir}/src" />
        <delete dir="${build.dir}/src/findbugs-${release.number}" />
