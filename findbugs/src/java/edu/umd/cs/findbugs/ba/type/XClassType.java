@@ -28,41 +28,23 @@ import org.apache.bcel.Constants;
  * but excludes array types.
  */
 public class XClassType extends XObjectType {
-	/**
-	 * Whether the type is a class or interface has not been
-	 * checked.
-	 */
-	public static final int UNCHECKED = 0;
-
-	/**
-	 * The type is definitely known to be a class or an interface.
-	 */
-	public static final int KNOWN = 1;
-
-	/**
-	 * The check to see if the type is a class or an interface
-	 * was unsuccessful.
-	 */
-	public static final int UNKNOWN = 2;
 
 	private String className;
 	private int state;
 	private boolean isInterface;
 
-	XClassType(String typeSignature) throws InvalidSignatureException {
+	XClassType(String typeSignature) {
 		super(typeSignature);
-		if (!(typeSignature.startsWith("L") && typeSignature.endsWith(";")))
-			throw new InvalidSignatureException("Bad type signature for class/interface: " + typeSignature);
 	}
 
 	/**
 	 * Mark the type as an interface.
 	 */
 	public void setIsInterface() throws UnknownTypeException {
-		if (state == KNOWN && !isInterface())
+		if (getState() == KNOWN && !isInterface())
 			throw new UnknownTypeException("Type " + getSignature() +
 				" marked as both class and interface");
-		state = KNOWN;
+		setState(KNOWN);
 		isInterface = true;
 	}
 
@@ -70,10 +52,10 @@ public class XClassType extends XObjectType {
 	 * Mark the type as a class.
 	 */
 	public void setIsClass() throws UnknownTypeException {
-		if (state == KNOWN && isInterface())
+		if (getState() == KNOWN && isInterface())
 			throw new UnknownTypeException("Type " + getSignature() +
 				" marked as both class and interface");
-		state = KNOWN;
+		setState(KNOWN);
 		isInterface = false;
 	}
 
@@ -82,22 +64,7 @@ public class XClassType extends XObjectType {
 	 * whether it was a class or interface failed.
 	 */
 	public void setUnknown() {
-		state = UNKNOWN;
-	}
-
-	/**
-	 * Get the state of the type, which will indicate whether
-	 * <ol>
-	 * <li> we haven't checked whether the type is a class
-	 *      or interface (UNCHECKED),
-	 * <li> we know whether the type is a class or an interface
-	 *      (KNOWN),
-	 * <li> we checked by but couldn't find out whether
-	 *      the type is a class or interface (UNKNOWN)
-	 * </ol>
-	 */
-	public int getState() {
-		return state;
+		setState(UNKNOWN);
 	}
 
 	public int getTypeCode() {

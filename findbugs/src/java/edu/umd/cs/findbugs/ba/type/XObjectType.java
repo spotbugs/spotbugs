@@ -39,24 +39,54 @@ public abstract class XObjectType
 	extends AbstractVertex<InheritanceGraphEdge, XObjectType>
 	implements XReferenceType {
 
+	public static final int UNCHECKED = 0;
+	public static final int KNOWN = 1;
+	public static final int UNKNOWN = 2;
+
 	private String typeSignature;
-	private boolean supertypesKnown;
+	private int state;
+	//private boolean supertypesKnown;
 
 	protected XObjectType(String typeSignature) {
 		this.typeSignature = typeSignature;
-		this.supertypesKnown = false;
+		this.state = UNCHECKED;
+	}
+
+	/**
+	 * Get the state of this type: UNCHECKED, KNOWN, or UNKNOWN.
+	 * This information is used by XTypeRepository to determine
+	 * when it needs to perform lazy hierarchy graph construction,
+	 * or to dynamically resolve a class type.
+	 * <ul>
+	 * <li> UNCHECKED means that the type has been created,
+	 *      but we may not have seen the representation of the
+	 *      type (e.g., class file), and the supertypes of
+	 *      the type have not been created
+	 * <li> KNOWN means that the representation of the type has
+	 *      been seen, and the supertype vertices and links
+	 *      have been added (although the supertypes may not
+	 *      have been checked yet)
+	 * <li> UNKNOWN means that an attempt to check the type
+	 *      for information (e.g., class lookup) failed,
+	 *      and that any query involving this type should
+	 *      throw an exception to indicate missing information 
+	 * </ul>
+	 */
+	public int getState() {
+		return state;
+	}
+
+	/**
+	 * Set the state: UNCHECKED, KNOWN, or UNKNOWN.
+	 * @param state the state
+	 * @see {@link #getState()}
+	 */
+	void setState(int state) {
+		this.state = state;
 	}
 
 	public String getSignature() {
 		return typeSignature;
-	}
-
-	public void setSupertypesKnown() {
-		supertypesKnown = true;
-	}
-
-	public boolean supertypesKnown() {
-		return supertypesKnown;
 	}
 
 	public boolean isBasicType() {

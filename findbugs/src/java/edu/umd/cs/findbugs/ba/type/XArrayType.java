@@ -28,7 +28,7 @@ public class XArrayType extends XObjectType {
 	private int numDimensions;
 	private XType baseType;
 
-	private static String makeArraySignature(int numDimensions, XType baseType) {
+	public static String makeArraySignature(int numDimensions, XType baseType) {
 		StringBuffer buf = new StringBuffer();
 		if (numDimensions <= brackets.length()) {
 			buf.append(brackets.substring(0, numDimensions));
@@ -47,7 +47,13 @@ public class XArrayType extends XObjectType {
 		this.baseType = baseType;
 	}
 
-	static XArrayType createFromSignature(XTypeRepository repos, String signature) throws InvalidSignatureException {
+	XArrayType(String signature, int numDimensions, XType baseType) {
+		super(signature);
+		this.numDimensions = numDimensions;
+		this.baseType = baseType;
+	}
+
+	static XArrayType typeFromSignature(XTypeRepository repos, String signature) throws InvalidSignatureException {
 		int numDimensions = 0;
 		while (numDimensions < signature.length()) {
 			if (signature.charAt(numDimensions) != '[')
@@ -56,7 +62,7 @@ public class XArrayType extends XObjectType {
 		}
 		if (numDimensions == 0 || numDimensions == signature.length())
 			throw new InvalidSignatureException("Bad array signature: " + signature);
-		XType baseType = repos.createFromSignature(signature.substring(numDimensions));
+		XType baseType = repos.typeFromSignature(signature.substring(numDimensions));
 		return new XArrayType(numDimensions, baseType);
 	}
 
@@ -68,8 +74,12 @@ public class XArrayType extends XObjectType {
 		return baseType;
 	}
 
-	// TODO: getElementType()?
-	// Would require a lookup in the type repository.
+	public XType getElementType(XTypeRepository repos) {
+		if (numDimensions == 1)
+			return baseType;
+		else
+			return repos.arrayTypeFromDimensionsAndElementType(numDimensions - 1, baseType);
+	}
 
 	public int getTypeCode() {
 		return Constants.T_ARRAY;

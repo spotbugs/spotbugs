@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.ba.type;
 
+import edu.umd.cs.findbugs.ba.ClassNotFoundExceptionParser;
 import edu.umd.cs.findbugs.ba.Debug;
 
 import java.util.HashMap;
@@ -34,12 +35,10 @@ import org.apache.bcel.Constants;
  * Queries on the type hierarchy can be performed
  * on the types instantiated by the repository.
  *
- * <p> Note that this class does not attempt, on its own,
- * to figure out what the class hierarchy relationships are.
- * In other words, it does not attempt to perform classpath
- * or class repository lookups on its own.  Instead,
- * hierarchy relationships must be specified explicitly
- * using the addSuperclassLink() and addInterfaceLink() methods.
+ * <p> The caller is responsible for explicitly adding edges
+ * to the inheritance graph for class types.  Inheritance edges
+ * for array types are added automatically, based on known
+ * class hierarchy information for class types.
  *
  * <p> TODO: Perhaps this should be an interface.
  * We might want to have both eager and lazy implementations
@@ -49,6 +48,10 @@ import org.apache.bcel.Constants;
  * @author David Hovemeyer
  */
 public class XTypeRepository {
+	// FIXME:
+	// - interfaces need to be made a direct subtype of java.lang.Object
+
+
 	/**
 	 * Basic type signatures to type codes.
 	 */
@@ -112,7 +115,7 @@ public class XTypeRepository {
 	 * @param slashedClassName class name in slashed format
 	 * @return the XClassType representing the class
 	 */
-	public XClassType createFromSlashedClassName(String slashedClassName) throws InvalidSignatureException {
+	public XClassType classTypeFromSlashedClassName(String slashedClassName) {
 		String signature = "L" + slashedClassName + ";";
 		return createXClassType(signature);
 	}
@@ -124,7 +127,7 @@ public class XTypeRepository {
 	 * @param param dottedClassName the class name in dotted format
 	 * @return the XClassType representing the class
 	 */
-	public XClassType createFromDottedClassName(String dottedClassName) throws InvalidSignatureException {
+	public XClassType classTypeFromDottedClassName(String dottedClassName) {
 		StringBuffer buf = new StringBuffer();
 		buf.append('L');
 		buf.append(dottedClassName.replace('.', '/'));
@@ -138,8 +141,18 @@ public class XTypeRepository {
 	 * @param signature the array signature
 	 * @return the XArrayType representing the array type
 	 */
-	public XArrayType createFromArraySignature(String signature) throws InvalidSignatureException {
+	public XArrayType arrayTypeFromSignature(String signature) throws InvalidSignatureException {
 		return createXArrayType(signature);
+	}
+
+	/**
+	 * Get an XArrayType from number of dimensions and element type. 
+	 * @param numDimensions the number of dimensions
+	 * @param elementType the element type: must be created from this type repository
+	 * @return the array type
+	 */
+	public XArrayType arrayTypeFromDimensionsAndElementType(int numDimensions, XType elementType) {
+		return createXArrayType(numDimensions, elementType);
 	}
 
 	/**
@@ -147,7 +160,7 @@ public class XTypeRepository {
 	 * @param typeCode the basic type code (T_BOOLEAN, etc.)
 	 * @return the XBasicType representing the basic type
 	 */
-	public XBasicType createFromBasicTypeCode(byte typeCode) throws InvalidSignatureException {
+	public XBasicType basicTypeFromTypeCode(byte typeCode) throws InvalidSignatureException {
 		String signature = basicTypeCodeToSignatureMap.get(new Byte(typeCode));
 		if (signature == null)
 			throw new InvalidSignatureException("Invalid basic type code: " + typeCode);
@@ -164,7 +177,7 @@ public class XTypeRepository {
 	 * @param signature the signature
 	 * @return the XBasicType representing the basic type
 	 */
-	public XBasicType createFromBasicTypeSignature(String signature) throws InvalidSignatureException {
+	public XBasicType basicTypeFromSignature(String signature) throws InvalidSignatureException {
 		Byte typeCode = signatureToBasicTypeCodeMap.get(signature);
 		if (typeCode == null)
 			throw new InvalidSignatureException("Bad type signature: " + signature);
@@ -187,7 +200,7 @@ public class XTypeRepository {
 	 * java.lang.Object references).
 	 * @return the XType object representing the type
 	 */
-	public XType createFromSignature(String signature) throws InvalidSignatureException {
+	public XType typeFromSignature(String signature) throws InvalidSignatureException {
 		XType type = signatureToTypeMap.get(signature);
 		if (type != null)
 			return type;
@@ -196,7 +209,7 @@ public class XTypeRepository {
 		else if (signature.startsWith("["))
 			return createXArrayType(signature);
 		else
-			return createFromBasicTypeSignature(signature);
+			return basicTypeFromSignature(signature);
 	}
 
 	/**
@@ -204,7 +217,7 @@ public class XTypeRepository {
 	 * @param subclass the subclass
 	 * @param superclass the superclass
 	 */
-	public void addSuperclassLink(XClassType subclass, XClassType superclass) throws UnknownTypeException {
+	public void addSuperclassLink(XObjectType subclass, XObjectType superclass) throws UnknownTypeException {
 		inheritanceGraph.createEdge(subclass, superclass, InheritanceGraphEdgeTypes.CLASS_EDGE);
 	}
 
@@ -213,7 +226,7 @@ public class XTypeRepository {
 	 * @param implementor the class or interface directly implementing the interface (i.e., the subtype)
 	 * @param iface the implemented interface (i.e., the supertype)
 	 */
-	public void addInterfaceLink(XClassType implementor, XClassType iface) throws UnknownTypeException {
+	public void addInterfaceLink(XObjectType implementor, XClassType iface) throws UnknownTypeException {
 		inheritanceGraph.createEdge(implementor, iface, InheritanceGraphEdgeTypes.INTERFACE_EDGE);
 	}
 
@@ -242,8 +255,13 @@ public class XTypeRepository {
 				if (subtype.equals(supertype))
 					return true;
 
-				if (!subtype.supertypesKnown())
+/*
+				if (subtype.getState() == )
+					// FIXME: dynamic lookup to find the supertypes
 					throw new ClassNotFoundException("Unknown superclass for class " + subtype.getSignature());
+*/
+				// Ensure supertypes for the class are known
+				resolveObjectType(subtype);
 
 				XObjectType directSuperclass = getSuperclass(subtype);
 				if (directSuperclass == null) {
@@ -261,29 +279,39 @@ public class XTypeRepository {
 			// Breadth first search through superinterfaces
 			// and interfaces implemented by superclasses
 
-			// FIXME: This is a lot of work: should definitely come up with a way to
-			// cache the result
+			// TODO: cache the result as a bit vector of type ids.
 
 			LinkedList<XObjectType> work = new LinkedList<XObjectType>();
 			work.add(subtype);
 
 			HashSet<XObjectType> visited = new HashSet<XObjectType>();
 
-			LinkedList<XObjectType> missingClassList = new LinkedList<XObjectType>();
+			LinkedList<String> missingClassList = new LinkedList<String>();
+
+			boolean answer = false;
 
 			while (!work.isEmpty()) {
 				XObjectType type = work.removeFirst();
 				if (visited.add(type))
 					continue;
 
-				if (type.equals(supertype))
-					return true;
+				if (type.equals(supertype)) {
+					answer = true;
+					break;
+				}
 
-				if (type.supertypesKnown()) {
+				try {
+					// Resolve the type so we know its supertypes.
+					resolveObjectType(type);
+
+					// Add all supertypes to work queue.
 					for (Iterator<XObjectType> i = inheritanceGraph.successorIterator(type); i.hasNext(); )
 						work.add(i.next());
-				} else {
-					missingClassList.add(type);
+				} catch (ClassNotFoundException e) {
+					String missingClassName = ClassNotFoundExceptionParser.getMissingClassName(e);
+					if (missingClassName == null)
+						missingClassName = "<unknown class>";
+					missingClassList.add(missingClassName);
 				}
 			}
 
@@ -291,16 +319,17 @@ public class XTypeRepository {
 			// If no part of the class hierarchy was unknown,
 			// then we have a definitive answer.  Otherwise,
 			// throw an exception.
-			if (missingClassList.isEmpty())
-				return false;
-			else
+			if (missingClassList.isEmpty()) {
+				// TODO: cache bit vector of known supertypes
+				return answer;
+			} else
 				throw new ClassNotFoundException("Class not found: " + missingClassList);
 		}
 	}
 
 	public XObjectType getSuperclass(XObjectType type) throws ClassNotFoundException {
-		if (!type.supertypesKnown())
-			throw new UnknownSupertypesException(type);
+		resolveObjectType(type);
+
 		for (Iterator<InheritanceGraphEdge> i = inheritanceGraph.outgoingEdgeIterator(type); i.hasNext(); ) {
 			InheritanceGraphEdge edge = i.next();
 			if (edge.getType() == InheritanceGraphEdgeTypes.CLASS_EDGE)
@@ -313,7 +342,7 @@ public class XTypeRepository {
 	 * Implementation
 	 * ---------------------------------------------------------------------- */
 
-	private XClassType createXClassType(String signature) throws InvalidSignatureException {
+	private XClassType createXClassType(String signature) {
 		XClassType type = (XClassType) signatureToTypeMap.get(signature);
 		if (type == null) {
 			type = new XClassType(signature);
@@ -326,11 +355,87 @@ public class XTypeRepository {
 	private XArrayType createXArrayType(String signature) throws InvalidSignatureException {
 		XArrayType type = (XArrayType) signatureToTypeMap.get(signature);
 		if (type == null) {
-			type = XArrayType.createFromSignature(this, signature);
+			type = XArrayType.typeFromSignature(this, signature);
 			signatureToTypeMap.put(signature, type);
 			inheritanceGraph.addVertex(type);
 		}
 		return type;
+	}
+
+	private XArrayType createXArrayType(int numDimensions, XType elementType) {
+		String signature = XArrayType.makeArraySignature(numDimensions, elementType);
+		XArrayType type = (XArrayType) signatureToTypeMap.get(signature);
+		if (type == null) {
+			type = new XArrayType(signature, numDimensions, elementType);
+			signatureToTypeMap.put(signature, type);
+			inheritanceGraph.addVertex(type);
+		}
+		return type;
+	}
+
+	/**
+	 * Fill in supertype information for an object type.
+	 * If it's a class type, also check whether it is
+	 * a class or interface.
+	 */
+	private void resolveObjectType(XObjectType type) throws ClassNotFoundException {
+		if (type.getState() == XObjectType.UNCHECKED) {
+			if (type instanceof XArrayType) {
+				resolveArrayClass((XArrayType) type);
+			} else {
+				resolveClass((XClassType) type);
+			}
+		}
+	}
+
+	private void resolveArrayClass(XArrayType type) throws ClassNotFoundException {
+		XType baseType = type.getBaseType();
+
+		if (baseType.getSignature().equals("Ljava/lang/Object;")) {
+			// Special case: an array whose base type is java.lang.Object
+			// is a direct subtype of an array of Object with one less dimension.
+			// Except, a single dimensional array of Object is a
+			// a direct subtype of java.lang.Object.
+			XObjectType directBaseType;
+			if (type.getNumDimensions() == 1) {
+				directBaseType = (XObjectType) baseType;
+			} else {
+				directBaseType =
+					arrayTypeFromDimensionsAndElementType(type.getNumDimensions() - 1, baseType);
+			}
+
+			addSuperclassLink(type, directBaseType);
+
+		} else {
+			XType elementType = type.getElementType(this);
+			if (elementType.isBasicType()) {
+				// All arrays of basic types are subtypes of java.lang.Object
+				XClassType javaLangObjectType = classTypeFromSlashedClassName("Ljava/lang/Object;");
+				addSuperclassLink(type, javaLangObjectType);
+			} else {
+				// Array is a direct subtype of all arrays (same dimensionality)
+				// of supertypes of the element type.
+				XObjectType elementObjectType = (XObjectType) elementType;
+				resolveObjectType(elementObjectType);
+				for (Iterator<XObjectType> i = inheritanceGraph.successorIterator(elementObjectType); i.hasNext(); ) {
+					XObjectType elementSupertype = i.next();
+					//XObjectType arraySupertype = arrayTypeFromSignature("[" + elementSupertype.getSignature());
+					XObjectType arraySupertype =
+						arrayTypeFromDimensionsAndElementType(type.getNumDimensions(), elementSupertype);
+					addSuperclassLink(type, arraySupertype);
+				}
+			}
+
+		}
+
+		// All arrays implement Serializable and Cloneable
+		addInterfaceLink(type, classTypeFromSlashedClassName("Ljava/io/Serializable;"));
+		addInterfaceLink(type, classTypeFromSlashedClassName("Ljava/lang/Cloneable;"));
+
+		type.setState(XObjectType.KNOWN);
+	}
+
+	private void resolveClass(XClassType type) throws ClassNotFoundException {
 	}
 }
 
