@@ -37,7 +37,7 @@ public class LockedFields extends BytecodeScanningDetector implements   Constant
     boolean synchronizedMethod;
     boolean publicMethod;
     boolean protectedMethod;
-    boolean privateMethod;
+    // boolean privateMethod;
     boolean inConstructor;
     Map<FieldAnnotation, int[]> stats = new TreeMap<FieldAnnotation, int[]>();
     int state;
@@ -127,8 +127,10 @@ public class LockedFields extends BytecodeScanningDetector implements   Constant
         		||  methodName.equals("clone")
         		||  methodName.equals("close")
         		||  methodName.equals("finalize");
+	/*
         privateMethod = (flags & ACC_PRIVATE) != 0
         		|| methodName.startsWith("access$");
+	*/
 
 	}
 
