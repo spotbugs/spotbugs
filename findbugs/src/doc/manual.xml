@@ -1647,6 +1647,7 @@ attributes in analyzed Jar files, and other fixes.</para>
 <para>Peter Friese wrote the &FindBugs; Eclipse plugin.</para>
 
 <para>Rohan Lloyd contributed several Mac OS X enhancements,
+bug detector improvements,
 and maintains the Fink package for &FindBugs;.</para>
 
 <para>Hiroshi Okugawa translated the &FindBugs; manual and
@@ -1654,6 +1655,19 @@ more of the bug summaries into Japanese.</para>
 
 <para>Phil Crosby enhanced the Eclipse plugin to add a view
 to display the bug details.</para>
+
+<para>Dave Brosius fixed a number of bugs, added user preferences
+to the Swing GUI, improved several bug detectors, and
+contributed the string concatenation detector.</para>
+
+<para>Thomas Klaeger contributed a number of bug fixes and
+bug detector improvements.</para>
+
+<para>Andrei Loskutov made a number of improvements to the
+Eclipse plugin.</para>
+
+<para>Brian Goetz contributed a major refactoring of the
+visitor classes to improve readability and understandability.</para>
 
 <para>If you have contributed to &FindBugs;, but aren't mentioned above,
 please send email to <email>daveho@cs.umd.edu</email> (and also accept
