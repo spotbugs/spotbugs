@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.detect;
 
 import java.util.*;
+import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.*;
 import org.apache.bcel.generic.*;
 import edu.umd.cs.findbugs.*;
@@ -36,9 +37,6 @@ import edu.umd.cs.daveho.ba.bcp.*;
  * @author David Hovemeyer
  */
 public class BCPDoubleCheck extends ByteCodePatternDetector {
-	// FIXME: prescreen for the existence of
-	// MONITORENTER, GETFIELD/GETSTATIC, and PUTFIELD/PUTSTATIC
-	// to avoid scanning a lot of methods
 
 	private BugReporter bugReporter;
 
@@ -83,6 +81,21 @@ public class BCPDoubleCheck extends ByteCodePatternDetector {
 
 	public ByteCodePattern getPattern() {
 		return pattern;
+	}
+
+	public boolean prescreen(Method method, ClassContext classContext) {
+		BitSet bytecodeSet = classContext.getBytecodeSet(method);
+
+		// Method must contain a MONITORENTER
+		if (!bytecodeSet.get(Constants.MONITORENTER))
+			return false;
+
+		// Method must contain either GETFIELD/PUTFIELD or GETSTATIC/PUTSTATIC
+		if (!(bytecodeSet.get(Constants.GETFIELD) && bytecodeSet.get(Constants.PUTFIELD)) &&
+			!(bytecodeSet.get(Constants.GETSTATIC) && bytecodeSet.get(Constants.PUTSTATIC)))
+			return false;
+
+		return true;
 	}
 
 	public void reportMatch(MethodGen methodGen, ByteCodePatternMatch match) {
