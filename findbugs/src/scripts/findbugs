@@ -75,6 +75,10 @@ while [ $# -gt 0 ]; do
 		shift
 		user_props="-D$1 $user_props"
 		;;
+	
+	-D*=*)
+		user_props="$1 $user_props"
+		;;
 
 	-version)
 		fb_mainclass=edu.umd.cs.findbugs.Version
