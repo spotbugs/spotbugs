@@ -57,6 +57,15 @@ public class I18N {
 	}
 
 	/**
+	 * Look up bug pattern.
+	 * @param bugType the bug type for the bug pattern
+	 * @return the BugPattern, or null if it can't be found
+	 */
+	public BugPattern lookupBugPattern(String bugType) {
+		return bugPatternMap.get(bugType);
+	}
+
+	/**
 	 * Register a BugCode.
 	 * @param bugCode the BugCode
 	 */
