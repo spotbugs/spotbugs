@@ -320,7 +320,9 @@ It is a fast detector.
 <![CDATA[
 <p> This detector looks for JSR-166 (<code>java.util.concurrent</code>)
 locks which are acquired, but not released on all paths out of the method.&nbsp;
-It is a moderately fast detector.
+It is a moderately fast detector.&nbsp; Note that in order to use this
+detector, you need to have the <code>java.util.concurrent</code> package
+in the auxiliary classpath (or be analyzing the package itself).
 ]]>
     </Details>
   </Detector>
