@@ -111,85 +111,48 @@ public class DefaultSortedTableModel extends AbstractTableModel
 		
 	}
 	
-	// Listener handling
-	
-	public void addTableModelListener( TableModelListener tml ) {
-		if (baseModel != null)
-			return;
-			
-		baseModel.addTableModelListener(tml);
-	}
-	
-	public void removeTableModelListener( TableModelListener tml ) {
-		if (baseModel != null)
-			return;
-			
-		baseModel.removeTableModelListener(tml);
-	}
-	
-	public TableModelListener[] getTableModelListeners() {
-		if (baseModel == null)
-			return new TableModelListener[0];
-			
-		return baseModel.getTableModelListeners();
-	}
-	
 	// Event handling
 	
 	public void fireTableCellUpdated( int row, int col ) {
-		if (baseModel == null)
-			return;
-			
-		baseModel.fireTableCellUpdated(row, col);
-		setupMapping();
+		if (baseModel != null)
+			setupMapping();
+		super.fireTableCellUpdated(row, col);
 	}
 
 	public void fireTableChanged( TableModelEvent e ) {
-		if (baseModel == null)
-			return;
-			
-		baseModel.fireTableChanged(e);
-		setupMapping();
+		if (baseModel != null)
+			setupMapping();
+		super.fireTableChanged(e);
 	}
 
 	public void fireTableDataChanged() {
-		if (baseModel == null)
-			return;
-			
-		baseModel.fireTableDataChanged();
-		setupMapping();
+		if (baseModel != null)
+			setupMapping();
+		super.fireTableDataChanged();
 	}
 	
 	public void fireTableRowsDeleted( int first, int last ) {
-		if (baseModel == null)
-			return;
-			
-		baseModel.fireTableRowsDeleted(first, last);
-		setupMapping();
+		if (baseModel != null)
+			setupMapping();
+		super.fireTableRowsDeleted(first,last);
 	}
 
 	public void fireTableRowsInserted( int first, int last ) {
-		if (baseModel == null)
-			return;
-			
-		baseModel.fireTableRowsInserted(first, last);
-		setupMapping();
+		if (baseModel != null)
+			setupMapping();
+		super.fireTableRowsInserted(first, last);
 	}
 
 	public void fireTableRowsUpdated( int first, int last ) {
-		if (baseModel == null)
-			return;
-			
-		baseModel.fireTableRowsUpdated(first, last);
-		setupMapping();
+		if (baseModel != null)
+			setupMapping();
+		super.fireTableRowsUpdated(first, last);
 	}
 
 	public void fireTableStructureChanged() {
-		if (baseModel == null)
-			return;
-			
-		baseModel.fireTableStructureChanged();
-		setupMapping();
+		if (baseModel != null)
+			setupMapping();
+		super.fireTableStructureChanged();
 	}
 	
 	// accessors
@@ -248,6 +211,7 @@ public class DefaultSortedTableModel extends AbstractTableModel
 			return;
 			
 		baseModel.setValueAt( value, viewToModelMapping.get(row).intValue(), col );
+		fireTableDataChanged();
 	}
 	
 	private void setupMapping() {
