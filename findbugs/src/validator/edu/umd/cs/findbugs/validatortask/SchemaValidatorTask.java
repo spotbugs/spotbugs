@@ -60,20 +60,17 @@ public class SchemaValidatorTask extends Task
 			reader.setContentHandler(new DefaultHandler());
 			reader.setErrorHandler( new ErrorHandler() {							
 				public void error(SAXParseException exception) {
-					exception.printStackTrace();
-					if (ex != null)
+					if (ex == null)
 						ex = exception;
 				}
 				
 				public void fatalError(SAXParseException exception) {
-					exception.printStackTrace();
-					if (ex != null)
+					if (ex == null)
 						ex = exception;
 				}
 				
 				public void warning(SAXParseException exception) {
-					exception.printStackTrace();
-					if (ex != null)
+					if (ex == null)
 						ex = exception;
 				}
 			});
@@ -85,10 +82,11 @@ public class SchemaValidatorTask extends Task
 			if (failOnError) {
 				BuildException be = new BuildException(e.getMessage());
 				be.setStackTrace( e.getStackTrace());
+
 				throw be;
 			}
 			else {
-				System.out.println(e.getMessage());
+				e.printStackTrace();
 			}
 		}
 		
