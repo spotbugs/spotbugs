@@ -30,6 +30,8 @@ import org.apache.bcel.Repository;
 
 public class FindBugs implements Constants2
 {
+  private static final boolean DEBUG = Boolean.getBoolean("findbugs.debug");
+
   private final BugReporter bugReporter;
   private Detector detectors [];
   private LinkedList<String> detectorNames;
@@ -217,6 +219,8 @@ public class FindBugs implements Constants2
    * @param className the fully qualified name of the class to examine
    */
   private void examineClass(String className) throws InterruptedException {
+	if (DEBUG) System.out.println("Examining class " + className);
+
 	JavaClass javaClass = Repository.lookupClass(className);
 	if (javaClass == null)
 		throw new AnalysisException("Could not find class " + className + " in Repository");
