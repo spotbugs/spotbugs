@@ -235,6 +235,9 @@
       </jar>
     </target>
 
+  <!-- Target to build all standard plugins. -->
+  <target name="allplugins" depends="coreplugin,styleplugin"/>
+
    <!-- Target to build the core plugin. -->
    <target name="coreplugin">
      <antcall target="plugin">
@@ -243,6 +246,15 @@
        <param name="plugin.jar.name" value="${coreplugin.jar.name}"/>
      </antcall>
    </target>
+
+  <!-- Target to build the style plugin. -->
+  <target name="styleplugin">
+    <antcall target="plugin">
+       <param name="plugin.xml.dir" value="${findbugs.dir}/etc/style"/>
+       <param name="plugin.subpkg.name" value="style"/>
+       <param name="plugin.jar.name" value="${styleplugin.jar.name}"/>
+    </antcall>
+  </target>
 
     <!-- Target to build the GUI jar file. -->
     <target name="findbugsgui" depends="classes">
@@ -327,7 +339,7 @@
     </target>
 
     <!-- Target to build the Eclipse plugin. -->
-    <target name="eclipsePlugin" depends="findbugs,coreplugin,tools,version">
+    <target name="eclipsePlugin" depends="findbugs,allplugins,tools,version">
        <!-- Create the plugin descriptor files.
             We use a filter set to ensure that the plugin version numbers
             are up-to-date with the global version properties from
@@ -547,7 +559,7 @@
     <!-- Generate unabridged HTML bug descriptions.
          This isn't something we do for any release
     -->
-   <target name="allBugDescriptions" depends="tools,findbugs,coreplugin,version">
+   <target name="allBugDescriptions" depends="tools,findbugs,allplugins,version">
      <java classname="edu.umd.cs.findbugs.tools.html.PrettyPrintBugDescriptions"
            output="${doc.src.dir}/allBugDescriptions.html"
            failonerror="true"
@@ -684,7 +696,7 @@
 
     <!-- Default target: just compile the code
          and build the Jar files. -->
-    <target name="build" depends="findbugs,coreplugin,findbugsgui,scripts,anttask,testjar" />
+    <target name="build" depends="findbugs,allplugins,findbugsgui,scripts,anttask,testjar" />
 
     <!-- Rebuild. -->
     <target name="rebuild" depends="clean,build" />
