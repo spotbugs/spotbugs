@@ -60,7 +60,7 @@ public class Lookup
 	for(int i = 0;i < clazz.length;i++) {
 		Method m = findImplementation(clazz[i], name, signature);
 		if (m != null) {
-		      if ((m.getAccessFlags() & ACC_ABSTRACT) == 1)
+		      if ((m.getAccessFlags() & ACC_ABSTRACT) != 0)
 			return null;
 		      else return clazz[i];
 		      }
