@@ -205,6 +205,22 @@ public abstract class Frame<ValueType> {
 	}
 
 	/**
+	 * Get the values on the top of the Java operand stack.
+	 * The top stack item is placed at the end of the array,
+	 * so that to restore the values to the stack, you would push
+	 * them in the order they appear in the array.
+	 */
+	public void getTopStackWords(ValueType[] valueList) throws DataflowAnalysisException {
+		int stackDepth = getStackDepth();
+		if (valueList.length > stackDepth)
+			throw new DataflowAnalysisException("not enough values on stack");
+		int numSlots = slotList.size();
+		for (int i = numSlots - valueList.length, j = 0; i < numSlots; ++i, ++j) {
+			valueList[j] = slotList.get(i);
+		}
+	}
+
+	/**
 	 * Clear the Java operand stack.
 	 * Only local variable slots will remain in the frame.
 	 */
