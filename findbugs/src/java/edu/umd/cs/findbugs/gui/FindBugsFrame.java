@@ -826,6 +826,12 @@ public class FindBugsFrame extends javax.swing.JFrame {
         closeProjectItem.setFont(new java.awt.Font("Dialog", 0, 12));
         closeProjectItem.setMnemonic('C');
         closeProjectItem.setText("Close Project");
+        closeProjectItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                closeProjectItemActionPerformed(evt);
+            }
+        });
+
         fileMenu.add(closeProjectItem);
 
         fileMenu.add(jSeparator3);
@@ -902,6 +908,12 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
         pack();
     }//GEN-END:initComponents
+
+    private void closeProjectItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_closeProjectItemActionPerformed
+        if (closeProjectHook(getCurrentProject(), "Close project")) {
+            setProject(null);
+        }
+    }//GEN-LAST:event_closeProjectItemActionPerformed
 
     private void removeClasspathEntryButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeClasspathEntryButtonActionPerformed
         int selIndex = classpathEntryList.getSelectedIndex();
