@@ -27,7 +27,7 @@ import org.apache.bcel.classfile.*;
 import org.apache.bcel.generic.*;
 
 /**
- * This class provides a convenient way of determine the exception handlers
+ * This class provides a convenient way of determining the exception handlers
  * for instructions in a method.  Essentially, it's a
  * a map of InstructionHandles to lists of CodeExceptionGen objects.
  * 
