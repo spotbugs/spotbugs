@@ -160,7 +160,46 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
 			fact = tmpFact;
 		}
 
-		result.mergeWith(fact);
+		mergeInto(fact, result);
+	}
+
+	protected void mergeInto(ValueNumberFrame frame, ValueNumberFrame result) throws DataflowAnalysisException {
+		result.mergeAvailableLoadSets(frame);
+		super.mergeInto(frame, result);
+	}
+
+	protected ValueNumber mergeValues(ValueNumberFrame frame, int slot, ValueNumber mine, ValueNumber other)
+		throws DataflowAnalysisException {
+
+		// Merging slot values:
+		//   - Merging identical values results in no change
+		//   - If the values are different, and the value in the result
+		//     frame is not the result of a previous result, a fresh value
+		//     is allocated.
+		//   - If the value in the result frame is the result of a
+		//     previous merge, IT STAYS THE SAME.
+		//
+		// The "one merge" rule means that merged values are essentially like
+		// phi nodes.  They combine some number of other values.
+
+		// I believe (but haven't proved) that this technique is a dumb way
+		// of computing SSA.
+
+		if (mine != frame.getValue(slot)) throw new IllegalStateException();
+
+		if (mine.equals(other))
+			return mine;
+
+		ValueNumber mergedValue = frame.getMergedValue(slot);//mergedValueList.get(slot);
+		if (mergedValue == null) {
+			mergedValue = factory.createFreshValue();
+			mergedValue.setFlags(mine.getFlags() | other.getFlags());
+			//mergedValueList.set(slot, mergedValue);
+			frame.setMergedValue(slot, mergedValue);
+		}
+
+		return mergedValue;
+		
 	}
 
 	public ValueNumberFrame getFactAtLocation(Location location) {

@@ -325,7 +325,13 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 			tmpFact.pushValue(catchType);
 			fact = tmpFact;
 		}
-		result.mergeWith(fact);
+
+		mergeInto(fact, result);
+	}
+
+	protected Type mergeValues(TypeFrame frame, int slot, Type a, Type b)
+		throws DataflowAnalysisException {
+		return typeMerger.mergeTypes(a, b);
 	}
 
 	/**

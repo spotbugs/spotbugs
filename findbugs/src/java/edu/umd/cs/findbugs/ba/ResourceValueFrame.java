@@ -61,23 +61,10 @@ public class ResourceValueFrame extends Frame<ResourceValue> {
 		return this.status == other.status;
 	}
 
-	public void mergeWith(Frame<ResourceValue> other_) throws DataflowAnalysisException {
-		// Merge slots
-		super.mergeWith(other_);
-
-		// Merge status
-		ResourceValueFrame other = (ResourceValueFrame) other_;
-		this.status = Math.min(this.status, other.status);
-	}
-
 	public void copyFrom(Frame<ResourceValue> other_) {
 		super.copyFrom(other_);
 		ResourceValueFrame other = (ResourceValueFrame) other_;
 		this.status = other.status;
-	}
-
-	public ResourceValue mergeValues(int slot, ResourceValue a, ResourceValue b) throws DataflowAnalysisException {
-		return ResourceValue.merge(a, b);
 	}
 
 	private static final String[] statusList = { "(escaped)", "(open)", "(open_exception)", "(closed)", "(created)", "(nonexistent)" };

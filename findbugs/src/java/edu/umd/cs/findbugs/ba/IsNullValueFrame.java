@@ -26,10 +26,6 @@ public class IsNullValueFrame extends Frame<IsNullValue> {
 		super(numLocals);
 	}
 
-	public IsNullValue mergeValues(int slot, IsNullValue a, IsNullValue b) throws DataflowAnalysisException {
-		return IsNullValue.merge(a, b);
-	}
-
 	public void toExceptionValues() {
 		for (int i = 0; i < getNumSlots(); ++i)
 			setValue(i, getValue(i).toExceptionValue());

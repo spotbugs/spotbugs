@@ -282,7 +282,12 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
 		}
 
 		// Normal dataflow merge
-		result.mergeWith(fact);
+		mergeInto(fact, result);
+	}
+
+	protected IsNullValue mergeValues(IsNullValueFrame frame, int slot, IsNullValue a, IsNullValue b)
+		throws DataflowAnalysisException {
+		return IsNullValue.merge(a, b);
 	}
 
 	/**

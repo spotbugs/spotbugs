@@ -79,9 +79,7 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 		}
 	}
 
-	public void mergeWith(Frame<ValueNumber> other_) throws DataflowAnalysisException {
-		ValueNumberFrame other = (ValueNumberFrame) other_;
-
+	void mergeAvailableLoadSets(ValueNumberFrame other) {
 		if (REDUNDANT_LOAD_ELIMINATION) {
 			// Merge available load sets.
 			// Only loads that are available in both frames
@@ -91,39 +89,14 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 			else if (!other.isTop())
 				this.availableLoadMap.entrySet().retainAll(other.availableLoadMap.entrySet());
 		}
-
-		// Merge slot values.
-		super.mergeWith(other);
 	}
 
-	public ValueNumber mergeValues(int slot, ValueNumber mine, ValueNumber other) {
-		// Merging slot values:
-		//   - Merging identical values results in no change
-		//   - If the values are different, and the value in the result
-		//     frame is not the result of a previous result, a fresh value
-		//     is allocated.
-		//   - If the value in the result frame is the result of a
-		//     previous merge, IT STAYS THE SAME.
-		//
-		// The "one merge" rule means that merged values are essentially like
-		// phi nodes.  They combine some number of other values.
+	ValueNumber getMergedValue(int slot) {
+		return mergedValueList.get(slot);
+	}
 
-		// I believe (but haven't proved) that this technique is a dumb way
-		// of computing SSA.
-
-		if (mine != getValue(slot)) throw new IllegalStateException();
-
-		if (mine.equals(other))
-			return mine;
-
-		ValueNumber mergedValue = mergedValueList.get(slot);
-		if (mergedValue == null) {
-			mergedValue = factory.createFreshValue();
-			mergedValue.setFlags(mine.getFlags() | other.getFlags());
-			mergedValueList.set(slot, mergedValue);
-		}
-
-		return mergedValue;
+	void setMergedValue(int slot, ValueNumber value) {
+		mergedValueList.set(slot, value);
 	}
 
 	public void copyFrom(Frame<ValueNumber> other) {

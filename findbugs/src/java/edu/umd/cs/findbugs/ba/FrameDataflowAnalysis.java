@@ -70,7 +70,7 @@ public abstract class FrameDataflowAnalysis<ValueType, FrameType extends Frame<V
 	 * if (copy != null)
 	 *     fact = copy;
 	 *
-	 * result.mergeWith(fact);
+	 * mergeInto(fact, result);
 	 * </pre>
 	 *
 	 * The advantage of using modifyFrame() is that new code can be added
@@ -89,6 +89,57 @@ public abstract class FrameDataflowAnalysis<ValueType, FrameType extends Frame<V
 		}
 		return copy;
 	}
+
+	/**
+	 * Merge one frame into another.
+	 * @param other the frame to merge with the result
+	 * @param result the result frame, which is modified to be the
+	 *   merge of the two frames
+	 */
+	protected void mergeInto(FrameType other, FrameType result) throws DataflowAnalysisException {
+		// Handle if result Frame or the other Frame is the special "TOP" value.
+		if (result.isTop()) {
+			// Result is the identity element, so copy the other Frame
+			result.copyFrom(other);
+			return;
+		} else if (other.isTop()) {
+			// Other Frame is the identity element, so result stays the same
+			return;
+		}
+
+		// Handle if result Frame or the other Frame is the special "BOTTOM" value.
+		if (result.isBottom()) {
+			// Result is the bottom element, so it stays that way
+			return;
+		} else if (other.isBottom()) {
+			// Other Frame is the bottom element, so result becomes the bottom element too
+			result.setBottom();
+			return;
+		}
+
+		// If the number of slots in the Frames differs,
+		// then the result is the special "BOTTOM" value.
+		if (result.getNumSlots() != other.getNumSlots()) {
+			result.setBottom();
+			return;
+		}
+
+		// Usual case: ordinary Frames consisting of the same number of values.
+		// Merge each value in the two slot lists element-wise.
+		for (int i = 0; i < result.getNumSlots(); ++i)
+			result.setValue(i, mergeValues(result, i, result.getValue(i), other.getValue(i)));
+	}
+
+	/**
+	 * Merge two values in a particular slot of a Frame.
+	 * @param frame the Frame
+	 * @param slot the slot of the Frame
+	 * @param a a value
+	 * @param b another value
+	 * @return the merged value
+	 */
+	protected abstract ValueType mergeValues(FrameType frame, int slot, ValueType a, ValueType b)
+		throws DataflowAnalysisException;
 }
 
 // vim:ts=4

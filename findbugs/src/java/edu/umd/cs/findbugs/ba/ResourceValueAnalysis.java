@@ -139,7 +139,21 @@ public class ResourceValueAnalysis<Resource> extends FrameDataflowAnalysis<Resou
 		if (tmpFact != null)
 			fact = tmpFact;
 
-		result.mergeWith(fact);
+		mergeInto(fact, result);
+	}
+
+	protected void mergeInto(ResourceValueFrame frame, ResourceValueFrame result)
+		throws DataflowAnalysisException {
+		// Merge slots
+		super.mergeInto(frame, result);
+
+		// Merge status
+		result.setStatus(Math.min(result.getStatus(), frame.getStatus()));
+	}
+
+	protected ResourceValue mergeValues(ResourceValueFrame frame, int slot, ResourceValue a, ResourceValue b)
+		throws DataflowAnalysisException {
+		return ResourceValue.merge(a, b);
 	}
 
 	public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, ResourceValueFrame fact)

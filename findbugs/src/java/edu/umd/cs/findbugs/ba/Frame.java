@@ -34,14 +34,16 @@ import org.apache.bcel.generic.Instruction;
  *
  * <p> Frame is parametized by "ValueType", which is the type of value
  * to be stored in the Frame's slots.  This type must form a lattice,
- * according to the abstract mergeValues() operation.
+ * according to the abstract mergeValues() operation
+ * in the corresponding analysis class (which should be
+ * derived from FrameDataflowAnalysis).
  * When a Frame is constructed, all of its slots will contain
  * null.  The analysis is responsible for initializing
  * created Frames with default values at the appropriate time.
  * Typically, only initEntryFact() will need to do this.
  *
  * <p> A Frame may have the special "TOP" value. Such frames serve as
- * the identity element for the mergeWith() operation.
+ * the identity element for the meet operation operation.
  *
  * <p> A Frame may have the special "BOTTOM" value. The result of merging
  * any frame with BOTTOM is BOTTOM.
@@ -98,7 +100,7 @@ public abstract class Frame<ValueType> implements Debug {
 
 	/**
 	 * Return whether or not this object the special "TOP" value for Frames.
-	 * Such Frames are the identity element of the mergeWith() operation.
+	 * Such Frames are the identity element of the meet operation.
 	 */
 	public boolean isTop() {
 		return isTop;
@@ -106,7 +108,7 @@ public abstract class Frame<ValueType> implements Debug {
 
 	/**
 	 * Make this frame the special "TOP" value.
-	 * Such Frames are the identity element of the mergeWith() operation.
+	 * Such Frames are the identity element of the meet operation.
 	 */
 	public void setTop() {
 		isTop = true;
@@ -305,49 +307,6 @@ public abstract class Frame<ValueType> implements Debug {
 		isTop = other.isTop;
 		isBottom = other.isBottom;
 	}
-
-	/**
-	 * Merge this object with the one given as a parameter.
-	 * @param other the other Frame object
-	 * @throws IllegalStateException if the two objects cannot be merged
-	 */
-	public void mergeWith(Frame<ValueType> other) throws DataflowAnalysisException {
-		// Handle if this Frame or the other Frame is the special "TOP" value.
-		if (isTop) {
-			copyFrom(other); // I'm the identity element, so copy the other Frame
-			return;
-		} else if (other.isTop)
-			return;			// Other Frame is the identity element, so I stay the same
-
-		// Handle if this Frame or the other Frame is the special "BOTTOM" value.
-		if (isBottom)
-			return;			// I'm the bottom element, so I stay that way
-		else if (other.isBottom) {
-			setBottom();	// Other Frame is the bottom element, so I become the bottom element too
-			return;
-		}
-
-		// If the number of slots in the Frames differs,
-		// then the result is the special "BOTTOM" value.
-		if (getNumSlots() != other.getNumSlots()) {
-			setBottom();
-			return;
-		}
-
-		// Usual case: ordinary Frames consisting of the same number of values.
-		// Merge each value in the two slot lists element-wise.
-		for (int i = 0; i < slotList.size(); ++i)
-			slotList.set(i, mergeValues(i, slotList.get(i), other.slotList.get(i)));
-	}
-
-	/**
-	 * Merge two values.
-	 * @param slot the slot number
-	 * @param a first value to merge
-	 * @param b second value to merge
-	 * @return the merged value
-	 */
-	public abstract ValueType mergeValues(int slot, ValueType a, ValueType b) throws DataflowAnalysisException;
 
 	private static final boolean STACK_ONLY = Boolean.getBoolean("dataflow.stackonly");
 

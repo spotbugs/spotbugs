@@ -53,17 +53,6 @@ public class TypeFrame extends Frame<Type> implements Constants, ExtendedTypes {
 		this.typeMerger = typeMerger;
 	}
 
-	/**
-	 * Merge two types together.  This is somewhat complicated!
-	 * @param slot the slot number
-	 * @param a a type to be merged
-	 * @param b a type to be merged
-	 * @return the merged type
-	 */
-	public Type mergeValues(int slot, Type a, Type b) throws DataflowAnalysisException {
-		return typeMerger.mergeTypes(a, b);
-	}
-
 	protected String valueToString(Type value) {
 		return value.toString() + ",";
 	}
