@@ -70,11 +70,11 @@ public class BCPDoubleCheck extends ByteCodePatternDetector {
 	static {
 		pattern
 			.setInterElementWild(MAX_WILD)
-			.add(new Load("h", "x"))
+			.add(new Load("h", "x").label("startDC"))
 			.add(new IfNull("x"))
 			.add(new Monitorenter(pattern.dummyVariable()))
 			.add(new Load("h", "y"))
-			.add(new IfNull("y"))
+			.add(new IfNull("y").label("endDC"))
 			.addWild(CREATE_OBJ_WILD)
 			.add(new Store("h", pattern.dummyVariable()));
 	}
@@ -110,10 +110,15 @@ public class BCPDoubleCheck extends ByteCodePatternDetector {
 		if (field.getFieldName().startsWith("class$"))
 			return;
 
+		// Find start and end instructions (for reporting source lines)
+		InstructionHandle start = match.getLabeledInstruction("startDC");
+		InstructionHandle end   = match.getLabeledInstruction("endDC");
+
 		bugReporter.reportBug(new BugInstance("BCPDC_DOUBLECHECK", NORMAL_PRIORITY)
 			.addClass(methodGen.getClassName())
 			.addMethod(methodGen)
-			.addField(field).describe("FIELD_ON"));
+			.addField(field).describe("FIELD_ON")
+			.addSourceLine(methodGen, start, end));
 	}
 }
 
