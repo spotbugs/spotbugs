@@ -42,6 +42,8 @@ class Lock extends ResourceCreationPoint {
 
 public class FindUnreleasedLock extends ResourceTrackingDetector<Lock> {
 
+	private static final boolean DEBUG = Boolean.getBoolean("ful.debug");
+
 	/* ----------------------------------------------------------------------
 	 * Helper classes
 	 * ---------------------------------------------------------------------- */
@@ -71,10 +73,10 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock> {
 			// was in a final field.  (We reuse the same value for loads of final
 			// fields - see ValueNumberAnalysis.  FIXME: Actually, at the moment we reuse
 			// the same value number for loads of non-final fields, but that's just a bug :-)
-			System.out.println("Incoming vna frame: " + vnaFrame.toString());
+			if (DEBUG) System.out.println("Incoming vna frame: " + vnaFrame.toString());
 			for (int i = 0; i < origNumSlots; ++i) {
 				if (vnaFrame.getValue(i).equals(lock.getLockValue())) {
-					System.out.println("Saw lock value!");
+					if (DEBUG) System.out.println("Saw lock value!");
 					frame.setValue(i, ResourceValue.instance());
 				}
 			}
@@ -148,7 +150,7 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock> {
 					Location location = new Location(handle, basicBlock);
 					ValueNumberFrame frame = vnaDataflow.getFactAtLocation(location);
 					ValueNumber lockValue = frame.getTopValue();
-					System.out.println("Lock value is " + lockValue.getNumber() + ", frame=" + frame.toString());
+					if (DEBUG) System.out.println("Lock value is " + lockValue.getNumber() + ", frame=" + frame.toString());
 					return new Lock(location, className, lockValue);
 				}
 			} catch (ClassNotFoundException e) {
