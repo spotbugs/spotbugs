@@ -348,6 +348,22 @@ public class FindBugs implements Constants2, ExitCodes {
 		}
 	}
 
+	private static class CategoryFilteringBugReporter extends DelegatingBugReporter {
+		private Set<String> categorySet;
+
+		public CategoryFilteringBugReporter(BugReporter realBugReporter, Set<String> categorySet) {
+			super(realBugReporter);
+			this.categorySet = categorySet;
+		}
+
+		public void reportBug(BugInstance bugInstance) {
+			BugPattern bugPattern = bugInstance.getBugPattern();
+			String category = bugPattern.getCategory();
+			if (categorySet.contains(category))
+				getRealBugReporter().reportBug(bugInstance);
+		}
+	}
+
 	private static final int PRINTING_REPORTER = 0;
 	private static final int SORTING_REPORTER = 1;
 	private static final int XML_REPORTER = 2;
@@ -370,6 +386,7 @@ public class FindBugs implements Constants2, ExitCodes {
 		private boolean setExitCode = false;
 		private int priorityThreshold = Detector.NORMAL_PRIORITY;
 		private PrintStream outputStream = null;
+		private Set<String> bugCategorySet = null;
 
 		public FindBugsCommandLine() {
 			addOption("-home", "home directory", "specify FindBugs home directory");
@@ -387,7 +404,7 @@ public class FindBugs implements Constants2, ExitCodes {
 			addOption("-outputFile", "filename", "Save output in named file");
 			addOption("-visitors", "v1[,v2...]", "run only named visitors");
 			addOption("-omitVisitors", "v1[,v2...]", "omit named visitors");
-			addOption("-bugCategories", "cat1[,cat2...]", "run only detectors that report given categories");
+			addOption("-bugCategories", "cat1[,cat2...]", "only report bugs in given categories");
 			addOption("-onlyAnalyze", "classes/packages", "only analyze given classes and packages");
 			addOption("-exclude", "filter file", "exclude bugs matching given filter");
 			addOption("-include", "filter file", "include only bugs matching given filter");
@@ -476,7 +493,7 @@ public class FindBugs implements Constants2, ExitCodes {
 					factory.setEnabled(!omit);
 				}
 			} else if (option.equals("-bugCategories")) {
-				handleBugCategories(argument);
+				this.bugCategorySet = handleBugCategories(argument);
 			} else if (option.equals("-onlyAnalyze")) {
 				// The argument is a comma-separated list of classes and packages
 				// to select to analyze.  (If a list item ends with ".*",
@@ -518,37 +535,43 @@ public class FindBugs implements Constants2, ExitCodes {
 		}
 
 		public FindBugs createEngine() throws IOException, FilterException {
-			TextUIBugReporter bugReporter = null;
+			TextUIBugReporter textuiBugReporter = null;
 			switch (bugReporterType) {
 			case PRINTING_REPORTER:
-				bugReporter = new PrintingBugReporter();
+				textuiBugReporter = new PrintingBugReporter();
 				break;
 			case SORTING_REPORTER:
-				bugReporter = new SortingBugReporter();
+				textuiBugReporter = new SortingBugReporter();
 				break;
 			case XML_REPORTER:
-				bugReporter = new XMLBugReporter(project);
+				textuiBugReporter = new XMLBugReporter(project);
 				break;
 			case EMACS_REPORTER:
-				bugReporter = new EmacsBugReporter();
+				textuiBugReporter = new EmacsBugReporter();
 				break;
 			case HTML_REPORTER:
-				bugReporter = new HTMLBugReporter(project, stylesheet);
+				textuiBugReporter = new HTMLBugReporter(project, stylesheet);
 				break;
 			case XDOCS_REPORTER:
-				bugReporter = new XDocsBugReporter(project);
+				textuiBugReporter = new XDocsBugReporter(project);
 				break;
 			default:
 				throw new IllegalStateException();
 			}
 
 			if (quiet)
-				bugReporter.setErrorVerbosity(BugReporter.SILENT);
+				textuiBugReporter.setErrorVerbosity(BugReporter.SILENT);
 
-			bugReporter.setPriorityThreshold(priorityThreshold);
+			textuiBugReporter.setPriorityThreshold(priorityThreshold);
 
 			if (outputStream != null)
-				bugReporter.setOutputStream(outputStream);
+				textuiBugReporter.setOutputStream(outputStream);
+
+			BugReporter bugReporter = textuiBugReporter;
+
+			if (bugCategorySet != null) {
+				bugReporter = new CategoryFilteringBugReporter(bugReporter, bugCategorySet);
+			}
 
 			FindBugs findBugs = new FindBugs(bugReporter, project);
 
@@ -1151,8 +1174,10 @@ public class FindBugs implements Constants2, ExitCodes {
 
 	/**
 	 * Process -bugCategories option.
+	 * @param categories comma-separated list of bug categories
+	 * @return Set of categories to be used
 	 */
-	private static void handleBugCategories(String categories) {
+	private static Set<String> handleBugCategories(String categories) {
 		// Parse list of bug categories
 		HashSet<String> categorySet = new HashSet<String>();
 		StringTokenizer tok = new StringTokenizer(categories, ",");
@@ -1190,6 +1215,8 @@ public class FindBugs implements Constants2, ExitCodes {
 			}
 			factory.setEnabled(enable);
 		}
+
+		return categorySet;
 	}
 
 	/* ----------------------------------------------------------------------
