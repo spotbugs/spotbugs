@@ -30,10 +30,10 @@ import java.util.LinkedList;
  * <ul>
  * <li> assigns DFS edge types (see {@link DFSEdgeTypes})
  * <li> assigns discovery and finish times for each vertex
- * <li> produces a topological sort of the vertex,
+ * <li> produces a topological sort of the vertices,
  * <em>if and only if the graph is acyclic</em>
  * </ul>
- * <p/>
+ *
  * <p> Concrete subclasses implement forward and reverse versions
  * of depth first search.
  *
