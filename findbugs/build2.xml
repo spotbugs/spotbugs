@@ -1,0 +1,154 @@
+<!--
+	FindBugs Ant build script.
+	Based on original FindBugs Ant Script by Mike Fagan.
+	Rewritten 1/5/2004 by David Hovemeyer.
+-->
+
+<project name="findbugs" default="build">
+	
+	<property file="build.properties"/>
+	
+	<property name="jar.dir" value="lib"/>
+	<property name="plugin.dir" value="plugin"/>
+	<property name="classes.dir" value="build/classes"/>
+	<property name="scripts.dir" value="bin"/>
+	<property name="src.dir" value="src/java"/>
+	<property name="toolsrc.dir" value="src/tools"/>
+	<property name="scriptsrc.dir" value="src/scripts"/>
+	<property name="pkg.base" value="edu/umd/cs/findbugs"/>
+	<property name="engine.jar" value="${jar.dir}/findbugs.jar"/>
+	<property name="coreplugin.jar" value="${plugin.dir}/coreplugin.jar"/>
+	<property name="gui.jar" value="${jar.dir}/findbugsGUI.jar"/>
+	<property name="scripts.props" value="etc/script.properties"/>
+	<property name="scripts.stamp" value="build/scripts.stamp"/>
+	
+	<path id="findbugs.classpath">
+	    <pathelement location="${jar.dir}/bcel.jar"/>
+	    <pathelement location="${jar.dir}/dom4j-full.jar"/>
+	    <pathelement location="${jar.dir}/AppleJavaExtensions.jar"/>
+	    <pathelement location="${jar.dir}/junit.jar"/>
+	</path>
+	
+	<path id="tools.classpath">
+		<pathelement path="findbugs.classpath"/>
+		<pathelement location="${classes.dir}"/>
+	</path>
+
+	<!-- Default target builds scripts and jars, allowing execution using
+		the working directory as FINDBUGS_HOME. -->
+	<target name="build" depends="jars,scripts"/>
+
+	<!-- Compile Java source files, and copy other auxiliary files
+		needed to execute the classes. -->
+	<target name="classes">
+		<javac srcdir="src/java"
+				destdir="${classes.dir}"
+				source="1.5"
+				target="jsr14"
+				debug="on">
+			<classpath refid="findbugs.classpath"/>
+		</javac>
+		<copy todir="${classes.dir}">
+			<fileset dir="${src.dir}">
+				<include name="**/*.properties"/>
+				<include name="**/*.png"/>
+				<include name="**/*.html"/>
+			</fileset>
+		</copy>
+	</target>
+
+	<!-- Build jar files. -->
+	<target name="jars" depends="classes">
+		<!-- Main engine and command line jar file. -->
+		<jar destfile="${engine.jar}"
+				manifest="etc/MANIFEST-findbugs.MF">
+			<fileset dir="${classes.dir}">
+				<exclude name="${pkg.base}/tools/**"/>
+				<exclude name="${pkg.base}/gui/**"/>
+				<exclude name="${pkg.base}/detect/**"/>
+				<include name="**/*.class"/>
+				<include name="**/*.properties"/>
+			</fileset>
+		</jar>
+		
+		<!-- Core detector plugin. -->
+		<jar destfile="${plugin.dir}/coreplugin.jar">
+			<fileset dir="etc">
+				<include name="findbugs.xml"/>
+				<include name="messages*.xml"/>
+			</fileset>
+			<fileset dir="${classes.dir}">
+				<include name="${pkg.base}/detect/*"/>
+			</fileset>
+		</jar>
+		
+		<!-- Swing GUI jar file. -->
+		<jar destfile="${gui.jar}"
+				manifest="etc/MANIFEST-findbugsGUI.MF">
+			<fileset dir="${classes.dir}">
+				<include name="${pkg.base}/gui/**/*.class"/>
+				<include name="${pkg.base}/gui/**/*.properties"/>
+				<include name="${pkg.base}/gui/**/*.png"/>
+				<include name="${pkg.base}/gui/**/*.html"/>
+			</fileset>
+		</jar>
+	</target>
+	
+	<!-- See if front-end scripts need to be regenerated. -->
+	<target name="checkscripts">
+		<condition property="scripts.uptodate">
+			<and>
+				<!-- Generated scripts must be newer than src scripts -->
+				<uptodate>
+					<srcfiles dir="." includes="${scriptsrc.dir}/*"/>
+					<mapper type="regexp"
+						from="^src(/|\\)scripts(/|\\)(.*)$$"
+						to="${scripts.dir}/\3"/>
+				</uptodate>
+				<!-- And, generated scripts must be newer than etc/script.properties -->
+				<uptodate targetfile="${scripts.stamp}">
+					<srcfiles file="${scripts.props}"/>
+				</uptodate>
+			</and>
+		</condition>
+	</target>
+	
+	<!-- Generate front-end scripts. -->
+	<target name="scripts" depends="checkscripts" unless="scripts.uptodate">
+		<loadproperties srcFile="${scripts.props}"/>
+
+		<filterset id="script.filters">
+			<filter token="GET_FBHOME" value="${script.get.fbhome}" />
+			<filter token="SET_DEFAULT_JAVA" value="${script.set.default.java}"/>
+			<filter token="WRAP_JAVA" value="${script.wrap.java}"/>
+			<filter token="WRAP_JAR" value="${script.wrap.jar}"/>
+			<filter token="DEFINE_ESCAPE_ARG" value="${script.define.escape_arg}"/>
+		</filterset>
+
+		<copy todir="${scripts.dir}" overwrite="true">
+			<fileset dir="${scriptsrc.dir}"/>
+			<filterset refid="script.filters"/>
+		</copy>
+
+		<!-- Make the Unix scripts executable. -->
+		<chmod dir="${scripts.dir}" perm="a+x" includes="*" excludes="*.bat"/>
+
+		<touch file="${scripts.stamp}"/>
+	</target>
+
+	<!-- Delete generated files. -->
+	<target name="clean">
+		<delete>
+			<fileset dir="${classes.dir}">
+				<include name="**"/>
+			</fileset>
+			<filename name="build/*.stamp"/>
+			<filename name="${engine.jar}"/>
+			<filename name="${coreplugin.jar}"/>
+			<filename name="${gui.jar}"/>
+		</delete>
+	</target>
+	
+</project>
+
+<!-- vim:set ts=4: -->
