@@ -512,10 +512,47 @@ may be added to a future &FindBugs; release).
 <chapter id="textui">
 <title>Using the &FindBugs; Command Line Interface</title>
 
-<para>Yep.</para>
+<para>
+
+To use the command line interface, execute the command
+
+<cmdsynopsis>
+  <command>findbugs</command>
+  <arg choice="req">-textui</arg>
+  <arg>-sortByClass</arg>
+  <arg rep="repeat" choice="req"><replaceable>file.jar</replaceable></arg>
+</cmdsynopsis>
+
+You can list any number of Jar files (or plain class files).
+The <arg>-sortByClass</arg> option may be used to sort
+the reported bug instances by class name.  The results will be sent to
+the standard output file descriptor.
+</para>
+
+<note>
+<title>Planned Features</title>
+<para>
+  In future releases of &FindBugs;, we plan to support generating reports in formats
+  such as HTML and XML, as well as providing more flexibility over which
+  bug detectors are run, how results can be sorted and filtered, etc.
+</para>
+</note>
 
 </chapter>
 
+
+<!--
+   **************************************************************************
+   License
+   **************************************************************************
+-->
+
+
+<!--
+   **************************************************************************
+   Acknowledgments
+   **************************************************************************
+-->
 
 
 </book>
