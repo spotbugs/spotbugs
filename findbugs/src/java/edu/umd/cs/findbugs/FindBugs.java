@@ -698,6 +698,7 @@ public class FindBugs implements Constants2, ExitCodes
 			System.out.println("   -high                         report high priority bugs only");
 			System.out.println("   -sortByClass                  sort bug reports by class");
 			System.out.println("   -xml                          XML output");
+			System.out.println("   -outputFile <filename>        Save output in named file");
 			System.out.println("   -visitors <v1>,<v2>,...       run only named visitors");
 			System.out.println("   -omitVisitors <v1>,<v2>,...   omit named visitors");
 			System.out.println("   -exclude <filter file>        exclude bugs matching given filter");
