@@ -154,7 +154,7 @@ public class RuntimeExceptionCapture extends BytecodeScanningDetector implements
 						}
 					}
 				} catch (ClassNotFoundException e) {
-					System.out.println("Class not found: " + className);
+					bugReporter.reportMissingClass(e);
 				}
 				break;
 			default:
