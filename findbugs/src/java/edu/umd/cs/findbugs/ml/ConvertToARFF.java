@@ -37,6 +37,7 @@ import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.TreeSet;
 
+import org.dom4j.Attribute;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.Node;
@@ -271,6 +272,47 @@ public class ConvertToARFF {
 
 			return "\"" + appName + "-" + nextId + "\"";
 		}
+	}
+	
+	public static class IdStringAttribute implements Attribute {
+
+		/* (non-Javadoc)
+		 * @see edu.umd.cs.findbugs.ml.ConvertToARFF.Attribute#getName()
+		 */
+		public String getName() {
+			return "ids";
+		}
+
+		/* (non-Javadoc)
+		 * @see edu.umd.cs.findbugs.ml.ConvertToARFF.Attribute#scan(org.dom4j.Element, java.lang.String)
+		 */
+		public void scan(Element element, String appName) throws MissingNodeException {
+		}
+
+		/* (non-Javadoc)
+		 * @see edu.umd.cs.findbugs.ml.ConvertToARFF.Attribute#getRange()
+		 */
+		public String getRange() {
+			return "string";
+		}
+		
+		int count = 0;
+
+		/* (non-Javadoc)
+		 * @see edu.umd.cs.findbugs.ml.ConvertToARFF.Attribute#getInstanceValue(org.dom4j.Element, java.lang.String)
+		 */
+		public String getInstanceValue(Element element, String appName) throws MissingNodeException {
+			String value;
+			org.dom4j.Attribute uidAttr = element.attribute("uid");
+			if (uidAttr == null) {
+				value = String.valueOf(count++);
+			} else {
+				value = uidAttr.getStringValue();
+			}
+			
+			return "\"" + appName + "-" + value + "\"";
+		}
+		
 	}
 
 	public static class AppNameAttribute implements Attribute {
@@ -531,7 +573,8 @@ public class ConvertToARFF {
 
 		public C2ACommandLine() {
 			addSwitch("-train", "drop unclassified warnings");
-			addSwitch("-id", "add unique id attribute");
+			addSwitch("-id", "add unique id attribute (as nominal)");
+			addSwitch("-ids", "add unique id attribute (as string)");
 			addSwitch("-app", "add application name attribute");
 			addSwitch("-default", "add default attributes");
 			addOption("-nominal", "attrName,xpath", "add a nominal attribute");
@@ -550,6 +593,8 @@ public class ConvertToARFF {
 				converter.dropUnclassifiedWarnings();
 			} else if (option.equals("-id")) {
 				converter.addIdAttribute();
+			} else if (option.equals("-ids")) {
+				converter.addAttribute(new IdStringAttribute());
 			} else if (option.equals("-app")) {
 				converter.addAppNameAttribute();
 			} else if (option.equals("-default")) {
