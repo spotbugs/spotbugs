@@ -126,8 +126,8 @@ public class InvalidJUnitTest extends BytecodeScanningDetector implements Consta
 			break;
 
 		case SEEN_ALOAD_0:
-			if (seen == INVOKESPECIAL)
-				System.out.println(getNameConstantOperand());
+//			if (seen == INVOKESPECIAL)
+//				System.out.println(getNameConstantOperand());
 			if ((seen == INVOKESPECIAL)
 			        && (getNameConstantOperand().equals(methodName))
 			        && (getMethodSig().equals("()V"))) {
