@@ -199,8 +199,7 @@ public class ValueNumberFrameModelingVisitor
 			} else if (methodName.startsWith("access$")) {
 				String className = obj.getClassName(cpg);
 				try {
-					Map<String, InnerClassAccess> accessMap = InnerClassAccessMap.instance().getAccessMapForClass(className);
-					InnerClassAccess access = accessMap.get(methodName);
+					InnerClassAccess access = InnerClassAccessMap.instance().getInnerClassAccess(className, methodName);
 					if (access != null && access.getMethodSignature().equals(methodSig)) {
 						// Inner class field access method found.
 
