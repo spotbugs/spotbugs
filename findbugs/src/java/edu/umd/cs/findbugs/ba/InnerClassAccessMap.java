@@ -255,34 +255,39 @@ public class InnerClassAccessMap {
 		Map<String, InnerClassAccess> map = classToAccessMap.get(className);
 		if (map == null) {
 			map = new HashMap<String, InnerClassAccess>();
-			JavaClass javaClass = Repository.lookupClass(className);
 
-			Method[]  methodList = javaClass.getMethods();
-			for (int i = 0; i < methodList.length; ++i) {
-				Method method = methodList[i];
-				String methodName = method.getName();
-				if (!methodName.startsWith("access$"))
-					continue;
-
-				Code code = method.getCode();
-				if (code == null)
-					continue;
-
-				byte[] instructionList = code.getCode();
-				String methodSig = method.getSignature();
-				InstructionCallback callback = new InstructionCallback(javaClass, methodName, methodSig, instructionList);
-				try {
-					new BytecodeScanner().scan(instructionList, callback);
-				} catch (LookupFailure lf) {
-					throw lf.getException();
+			if (!className.startsWith("[")) {
+				JavaClass javaClass = Repository.lookupClass(className);
+	
+				Method[]  methodList = javaClass.getMethods();
+				for (int i = 0; i < methodList.length; ++i) {
+					Method method = methodList[i];
+					String methodName = method.getName();
+					if (!methodName.startsWith("access$"))
+						continue;
+	
+					Code code = method.getCode();
+					if (code == null)
+						continue;
+	
+					byte[] instructionList = code.getCode();
+					String methodSig = method.getSignature();
+					InstructionCallback callback = new InstructionCallback(javaClass, methodName, methodSig, instructionList);
+					try {
+						new BytecodeScanner().scan(instructionList, callback);
+					} catch (LookupFailure lf) {
+						throw lf.getException();
+					}
+					InnerClassAccess access = callback.getAccess();
+					if (access != null)
+						map.put(methodName, access);
 				}
-				InnerClassAccess access = callback.getAccess();
-				if (access != null)
-					map.put(methodName, access);
 			}
 
 			if (map.size() == 0)
 				map = emptyMap;
+
+			classToAccessMap.put(className, map);
 		}
 
 		return map;
