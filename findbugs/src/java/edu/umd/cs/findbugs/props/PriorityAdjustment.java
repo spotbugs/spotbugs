@@ -32,29 +32,16 @@ public class PriorityAdjustment {
 		this.value = value;
 	}
 	
+	/** No adjustment to the priority. */
 	public static final PriorityAdjustment NO_ADJUSTMENT =
 		new PriorityAdjustment("NO_ADJUSTMENT");
+	/** Raise the priority. */
 	public static final PriorityAdjustment RAISE_PRIORITY =
 		new PriorityAdjustment("RAISE_PRIORITY");
+	/** Lower the priority. */
 	public static final PriorityAdjustment LOWER_PRIORITY =
 		new PriorityAdjustment("LOWER_PRIORITY");
+	/** Warning is likely to be a false positive. */
 	public static final PriorityAdjustment FALSE_POSITIVE =
 		new PriorityAdjustment("FALSE_POSITIVE");
-	
-	public String toString() {
-		return value;
-	}
-	
-	public static PriorityAdjustment fromString(String s) {
-		if (s.equals(NO_ADJUSTMENT.value))
-			return NO_ADJUSTMENT;
-		else if (s.equals(RAISE_PRIORITY.value))
-			return RAISE_PRIORITY;
-		else if (s.equals(LOWER_PRIORITY.value))
-			return LOWER_PRIORITY;
-		else if (s.equals(FALSE_POSITIVE.value))
-			return FALSE_POSITIVE;
-		else
-			return null;
-	}
 }
