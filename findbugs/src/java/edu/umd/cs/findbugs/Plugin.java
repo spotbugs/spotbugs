@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 /**
  * A FindBugs plugin.
@@ -47,6 +48,60 @@ public class Plugin {
 		this.detectorFactoryList = new ArrayList<DetectorFactory>();
 		this.bugPatternList = new ArrayList<BugPattern>();
 		this.bugCodeList = new ArrayList<BugCode>();
+	}
+
+	/**
+	 * Add a DetectorFactory for a Detector implemented by the Plugin.
+	 * 
+	 * @param factory the DetectorFactory
+	 */
+	public void addDetectorFactory(DetectorFactory factory) {
+		detectorFactoryList.add(factory);
+	}
+	
+	/**
+	 * Add a BugPattern reported by the Plugin.
+	 * 
+	 * @param bugPattern
+	 */
+	public void addBugPattern(BugPattern bugPattern) {
+		bugPatternList.add(bugPattern);
+	}
+	
+	/**
+	 * Add a BugCode reported by the Plugin.
+	 * 
+	 * @param bugCode
+	 */
+	public void addBugCode(BugCode bugCode) {
+		bugCodeList.add(bugCode);
+	}
+	
+	/**
+	 * Get Iterator over DetectorFactory objects in the Plugin.
+	 * 
+	 * @return Iterator over DetectorFactory objects
+	 */
+	public Iterator<DetectorFactory> detectorFactoryIterator() {
+		return detectorFactoryList.iterator();
+	}
+	
+	/**
+	 * Get Iterator over BugPattern objects in the Plugin.
+	 * 
+	 * @return Iterator over BugPattern objects
+	 */
+	public Iterator<BugPattern> bugPatternIterator() {
+		return bugPatternList.iterator();
+	}
+	
+	/**
+	 * Get Iterator over BugCode objects in the Plugin.
+	 * 
+	 * @return Iterator over BugCode objects
+	 */
+	public Iterator<BugCode> bugCodeIterator() {
+		return bugCodeList.iterator();
 	}
 }
 
