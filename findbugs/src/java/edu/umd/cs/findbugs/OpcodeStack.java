@@ -343,7 +343,7 @@ public class OpcodeStack implements Constants2
 	 			
 	 			case GOTO:
 	 			case GOTO_W:					//It is assumed that no stack items are present when
-	 				if (getStackDepth() > 1)    //when goto is executed. This is not true for trinaries
+	 				if (getStackDepth() > 0)    //when goto is executed. This is not true for trinaries
 	 					pop();					//so hack it so that if there are pop 1
 	 			break;
 	 				
