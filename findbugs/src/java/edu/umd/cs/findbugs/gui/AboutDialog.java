@@ -29,6 +29,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.text.MessageFormat;
 import java.util.regex.*;
 
 import edu.umd.cs.findbugs.Version;
@@ -59,7 +60,7 @@ public class AboutDialog extends javax.swing.JDialog {
 			parent.getLogger().logMessage(ConsoleLogger.ERROR, e.toString());
 		}
 
-		setTitle("About FindBugs " + Version.RELEASE);
+		setTitle(MessageFormat.format(L10N.getLocalString("dlg.aboutfindbugs_ttl", "About FindBugs {0}"), Version.RELEASE));
 	}
 
 	/**
@@ -75,7 +76,7 @@ public class AboutDialog extends javax.swing.JDialog {
 			// Open the file as a stream
 			in = getClass().getClassLoader().getResourceAsStream(fileName);
 			if (in == null)
-				throw new IOException("Couldn't load " + fileName);
+				throw new IOException(MessageFormat.format(L10N.getLocalString("msg.couldntload_txt", "Couldn't load {0}"), fileName));
 			BufferedReader reader = new BufferedReader(new InputStreamReader(in));
 
 			// Replace instances of @VERSION@ with actual version number

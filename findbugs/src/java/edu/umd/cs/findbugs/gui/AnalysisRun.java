@@ -28,6 +28,7 @@ package edu.umd.cs.findbugs.gui;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.text.MessageFormat;
 import java.util.*;
 import javax.swing.tree.DefaultTreeModel;
 
@@ -141,7 +142,7 @@ public class AnalysisRun {
 			stats.transformSummaryToHTML(html);
 			summary = html.toString();
 		} catch (Exception e) {
-			logger.logMessage(ConsoleLogger.WARNING, "Failed to transform summary: " + e.toString());
+			logger.logMessage(ConsoleLogger.WARNING, MessageFormat.format(L10N.getLocalString("failedtotransform_txt", "Failed to transform summary: "), e.toString()));
 			summary = MISSING_SUMMARY_MESSAGE;
 		}
 	}

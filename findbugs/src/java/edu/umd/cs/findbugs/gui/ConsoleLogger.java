@@ -57,9 +57,9 @@ public class ConsoleLogger {
 		buf.append(date.toString());
 		buf.append("] ");
 		if (severity == ERROR)
-			buf.append("ERROR: ");
+			buf.append(L10N.getLocalString("msg.error_txt", "ERROR: "));
 		else if (severity == WARNING)
-			buf.append("WARNING: ");
+			buf.append(L10N.getLocalString("msg.warning_txt", "WARNING: "));
 		buf.append(message);
 		frame.writeToConsole(buf.toString());
 	}

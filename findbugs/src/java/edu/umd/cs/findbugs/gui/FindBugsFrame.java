@@ -36,6 +36,7 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.text.*;
 import javax.swing.tree.*;
+import java.text.MessageFormat;
 
 import edu.umd.cs.findbugs.*;
 import edu.umd.cs.findbugs.ba.SourceFinder;
@@ -177,13 +178,13 @@ public class FindBugsFrame extends javax.swing.JFrame {
 				}
 
 				if (bugInstance.isExperimental())
-					result.append("EXP: ");
+					result.append(L10N.getLocalString("msg.exp_txt", "EXP: "));
 
 				result.append(fullDescriptionsItem.isSelected() ? bugInstance.getMessage() : bugInstance.toString());
 
 				return result.toString();
 			} catch (Exception e) {
-				return "Error formatting message for bug: " + e.toString();
+				return MessageFormat.format(L10N.getLocalString("msg.errorformatting_txt", "Error formatting message for bug: "), e.toString());
 			}
 		}
 	}

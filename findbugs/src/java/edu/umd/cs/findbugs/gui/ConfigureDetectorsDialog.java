@@ -74,7 +74,7 @@ public class ConfigureDetectorsDialog extends javax.swing.JDialog {
 
 		getContentPane().setLayout(new java.awt.GridBagLayout());
 
-		setTitle("Configure Detectors");
+		setTitle(L10N.getLocalString("dlg.configuredetectors_ttl", "Configure Detectors"));
 		addWindowListener(new java.awt.event.WindowAdapter() {
 			public void windowClosing(java.awt.event.WindowEvent evt) {
 				closeDialog(evt);
