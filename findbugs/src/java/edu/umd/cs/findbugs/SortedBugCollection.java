@@ -78,6 +78,16 @@ public class SortedBugCollection extends BugCollection {
 
 	public boolean add(BugInstance bugInstance) {
 		registerUniqueId(bugInstance);
+
+		// Mark the BugInstance as being active at the BugCollection's current timestamp.
+		TimestampIntervalCollection activeIntervalCollection;
+		try {
+			activeIntervalCollection = bugInstance.getActiveIntervalCollection();
+		} catch (InvalidTimestampIntervalException e) {
+			activeIntervalCollection = new TimestampIntervalCollection();
+		}
+		activeIntervalCollection.add(new TimestampInterval(timestamp, timestamp));
+		bugInstance.setActiveIntervalCollection(activeIntervalCollection);
 		
 		return bugSet.add(bugInstance);
 	}
@@ -116,7 +126,11 @@ public class SortedBugCollection extends BugCollection {
 	}
 
 	public boolean remove(BugInstance bugInstance) {
-		return bugSet.remove(bugInstance);
+		boolean present = bugSet.remove(bugInstance);
+		if (present) {
+			uniqueIdToBugInstanceMap.remove(bugInstance.getUniqueId());
+		}
+		return present;
 	}
 
 	public Iterator<BugInstance> iterator() {
