@@ -22,7 +22,8 @@ package edu.umd.cs.daveho.ba;
 /**
  * Abstract representation of a field.
  * Note that this is called "XField" to distinguish it from
- * BCEL's Field class.
+ * BCEL's Field class.  Also, you can think of the "X" as expanding
+ * to "Instance" or "Static".
  */
 public interface XField extends Comparable<XField> {
 	/**
