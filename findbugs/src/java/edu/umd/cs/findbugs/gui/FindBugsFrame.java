@@ -675,13 +675,21 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	    TreePath selection = bugTree.getSelectionPath();
 	    DefaultMutableTreeNode selNode = (DefaultMutableTreeNode) selection.getLastPathComponent();
 	    Object obj = selNode.getUserObject();
+            SourceLineAnnotation srcLine = null;
+            
 	    if (obj instanceof SourceLineAnnotation) {
-		SourceLineAnnotation srcLine = (SourceLineAnnotation) obj;
+		srcLine = (SourceLineAnnotation) obj;
+	    } else if (obj instanceof MethodAnnotation) {
+                MethodAnnotation methodAnnotation = (MethodAnnotation) obj;
+                srcLine = methodAnnotation.getSourceLines();
+            }
+
+            if (srcLine != null) {
 		Project project = getCurrentProject();
 		AnalysisRun analysisRun = getCurrentAnalysisRun();
 		viewSource(project, analysisRun, srcLine);
-	    }
-	}
+            }
+        }
     }//GEN-LAST:event_bugTreeMousePressed
 
     private void aboutItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aboutItemActionPerformed
@@ -811,7 +819,6 @@ public class FindBugsFrame extends javax.swing.JFrame {
     
     private void newProjectItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newProjectItemActionPerformed
 	String projectName = "<<project " + (++projectCount) + ">>";
-	System.out.println("Adding " + projectName);
 	Project project = new Project(projectName);
 	projectCollection.addProject(project);
 	DefaultMutableTreeNode projectNode = new DefaultMutableTreeNode(project);
@@ -993,8 +1000,6 @@ public class FindBugsFrame extends javax.swing.JFrame {
      * @param project the selected project
      */
     private void synchProject(Project project) {
-	System.out.println("Synch with project " + project.toString());
-	
 	// Clear text fields
 	jarNameTextField.setText("");
 	srcDirTextField.setText("");
@@ -1225,11 +1230,12 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	    return;
 	}
 
-        // Highlight the lines from the source annotation
+        // Highlight the lines from the source annotation.
+        // Note that the source lines start at 1, while the line numbers
+        // in the text area start at 0.
         try {
-            int selBegin = sourceTextArea.getLineStartOffset(srcLine.getStartLine());
-            int selEnd = sourceTextArea.getLineStartOffset(srcLine.getEndLine()+1);
-            writeToConsole("Select " + selBegin + " to " + selEnd);
+            int selBegin = sourceTextArea.getLineStartOffset(srcLine.getStartLine() - 1);
+            int selEnd = sourceTextArea.getLineStartOffset(srcLine.getEndLine());
             sourceTextArea.select(selBegin, selEnd);
             sourceTextArea.getCaret().setSelectionVisible(true);
 
