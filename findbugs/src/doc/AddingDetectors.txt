@@ -79,7 +79,7 @@ detector and display its results in the UI at runtime.
   <Detector> general node bundling all info for a particular bug pattern
     detector in the plugin
 
-  <Disabled> this is an empty tag which, if present in a Detector node,
+  <Disabled> this is an optional tag which, if present in a Detector node,
   disables the detector.  This is useful for supressing detectors which
   either aren't ready for prime time, or are being phased out.
 
