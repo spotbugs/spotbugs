@@ -349,7 +349,7 @@
     <target name="rebuild" depends="clean,build" />
 
     <!-- Compile the code and format the docs. -->
-    <target name="buildAll" depends="build,docs" />
+    <target name="buildAll" depends="build,eclipsePlugin,docs" />
 
     <!-- Target to build the release. This just means copying generated files
          (code and docs). -->
