@@ -106,7 +106,7 @@ public class ClassContext {
 	 * @param method the method
 	 * @return the raw CFG
 	 */
-	public CFG getRawCFG(Method method) throws CFGBuilderException {
+	private CFG getRawCFG(Method method) throws CFGBuilderException {
 		CFG cfg = cfgMap.get(method);
 		if (cfg == null) {
 			MethodGen methodGen = getMethodGen(method);
@@ -120,15 +120,46 @@ public class ClassContext {
 	}
 
 	/**
+	 * Set to keep track of which CFGs are being pruned.
+	 * Because pruning is potentially interprocedural, we have
+	 * to guard against recursive (and thus infinite) invocations.
+	 * This has to be static because in the interest of conserving
+	 * memory, we do <em>not</em> depend on having unique
+	 * a ClassContext object for a given class.  The reason is that
+	 * only a fixed number of ClassContext objects are cached
+	 * at any given time, and the least recently used one will be
+	 * discarded when the cache becomes full.  Therefore,
+	 * recursive CFG construction requests for the same class/method
+	 * may be made to different ClassContext objects.
+	 * <p> At some point, we will probably want to put more thought into
+	 * how interprocedural analyses are integrated into FindBugs.
+	 */
+	private static Set<String> busyCFGSet = new HashSet<String>();
+
+	/**
 	 * Get a CFG for given method.
 	 * If pruning options are in effect, pruning will be done.
+	 * Because the CFG pruning can involve interprocedural analysis,
+	 * it is done on a best-effort basis, so the CFG returned might
+	 * not actually be pruned.
+	 *
 	 * @param method the method
 	 * @return the CFG
 	 * @throws CFGBuilderException if a CFG cannot be constructed for the method
 	 */
 	public CFG getCFG(Method method) throws CFGBuilderException {
 		MethodGen methodGen = getMethodGen(method);
+
 		CFG cfg = getRawCFG(method);
+
+		// HACK:
+		// Due to recursive method invocations, we may get a recursive
+		// request for the pruned CFG of a method.  In this case,
+		// we just return the raw CFG.
+		String methodId = methodGen.getClassName()+"."+methodGen.getName()+":"+methodGen.getSignature();
+		if (DEBUG) System.out.println("ClassContext: request to prune " + methodId);
+		if (!busyCFGSet.add(methodId))
+			return cfg;
 
 		if (PRUNE_INFEASIBLE_EXCEPTION_EDGES && !cfg.isFlagSet(PRUNED_INFEASIBLE_EXCEPTIONS)) {
 			try {
@@ -139,9 +170,8 @@ public class ClassContext {
 			} catch (ClassNotFoundException e) {
 				lookupFailureCallback.reportMissingClass(e);
 			}
-
-			cfg.setFlags(cfg.getFlags() | PRUNED_INFEASIBLE_EXCEPTIONS);
 		}
+		cfg.setFlags(cfg.getFlags() | PRUNED_INFEASIBLE_EXCEPTIONS);
 
 		if (PRUNE_UNCONDITIONAL_EXCEPTION_THROWER_EDGES && !cfg.isFlagSet(PRUNED_UNCONDITIONAL_THROWERS)) {
 			try {
@@ -150,9 +180,10 @@ public class ClassContext {
 			} catch (DataflowAnalysisException e) {
 				// FIXME: should report the error
 			}
-
-			cfg.setFlags(cfg.getFlags() | PRUNED_UNCONDITIONAL_THROWERS);
 		}
+		cfg.setFlags(cfg.getFlags() | PRUNED_UNCONDITIONAL_THROWERS);
+
+		busyCFGSet.remove(methodId);
 
 		return cfg;
 	}
@@ -218,7 +249,7 @@ public class ClassContext {
 		TypeDataflow typeDataflow = typeDataflowMap.get(method);
 		if (typeDataflow == null ) {
 			MethodGen methodGen = getMethodGen(method);
-			CFG cfg = getCFG(method);
+			CFG cfg = getRawCFG(method);
 			DepthFirstSearch dfs = getDepthFirstSearch(method);
 
 			TypeAnalysis typeAnalysis = new TypeAnalysis(methodGen, dfs, lookupFailureCallback);
@@ -238,7 +269,7 @@ public class ClassContext {
 	public DepthFirstSearch getDepthFirstSearch(Method method) throws CFGBuilderException {
 		DepthFirstSearch dfs = dfsMap.get(method);
 		if (dfs == null) {
-			CFG cfg = getCFG(method);
+			CFG cfg = getRawCFG(method);
 			dfs = new DepthFirstSearch(cfg);
 			dfs.search();
 			dfsMap.put(method, dfs);
@@ -305,31 +336,6 @@ public class ClassContext {
 			dataflow.execute();
 
 			anyLockCountDataflowMap.put(method, dataflow);
-		}
-
-		return dataflow;
-	}
-
-	/**
-	 * Get dataflow for ThisLockCountAnalysis for given method.
-	 * @param method the method
-	 * @return the Dataflow
-	 */
-	public LockCountDataflow getThisLockCountDataflow(Method method)
-		throws CFGBuilderException, DataflowAnalysisException {
-
-		LockCountDataflow dataflow = thisLockCountDataflowMap.get(method);
-		if (dataflow == null) {
-			MethodGen methodGen = getMethodGen(method);
-			ValueNumberDataflow vnaDataflow = getValueNumberDataflow(method);
-			DepthFirstSearch dfs = getDepthFirstSearch(method);
-			CFG cfg = getCFG(method);
-
-			ThisLockCountAnalysis analysis = new ThisLockCountAnalysis(methodGen, vnaDataflow, dfs);
-			dataflow = new LockCountDataflow(cfg, analysis);
-			dataflow.execute();
-
-			thisLockCountDataflowMap.put(method, dataflow);
 		}
 
 		return dataflow;
