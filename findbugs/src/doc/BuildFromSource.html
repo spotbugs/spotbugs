@@ -17,8 +17,8 @@ You will need the following:
 <ul>
 <li> The FindBugs source distribution (if you are reading this document,
   you probably already have it)
-<li> The latest CVS version of <a href="http://jakarta.apache.org/bcel/">BCEL</a>;
-   see below
+<li> The latest CVS version of <a href="http://jakarta.apache.org/bcel/">BCEL</a>
+   with the latest FindBugs patch applied; see below
 <li> <a href="http://www.gnu.org/software/make/">GNU Make</a>
 <li> <a href="http://java.sun.com/j2se">JDK 1.4.0 or later</a>
 <li> <a href="http://developer.java.sun.com/developer/earlyAccess/index.html">The GJ Compiler</a>;
@@ -27,9 +27,12 @@ You will need the following:
 
 <h1>BCEL</h1>
 
-<p> You will have the best results if you use the version of bcel.jar that is included
-with the binary distribution of FindBugs.&nbsp; That version contains some bug fixes
-that might not be available in the official BCEL sources.
+<p> You <em>must</em> use the version of bcel.jar that is included
+with the binary distribution of FindBugs.&nbsp; That version contains numerous bug fixes
+and design improvements that are not available in the official BCEL sources.&nbsp;
+If you really want to compile BCEL yourself, then you need to download
+<a href="http://www.cs.umd.edu/~pugh/java/bugs/bcel-30-April-2003.patch">this patch</a>
+and apply it before building FindBugs.
 
 <h1>Steps</h1>
 
