@@ -114,6 +114,7 @@ argList=''
 jvmArgs="-Xmx256m -Xss2m"
 debugArg=""
 appJar="findbugsGUI.jar"
+javaProps=""
 
 # choose java binary
 jvmCmd=java
@@ -153,6 +154,11 @@ while [ $# -gt 0 ]; do
 		debugArg="-Dfindbugs.debug=true"
 		;;
 
+	-property)
+		javaProps="-D$1 $javaProps"
+		shift
+		;;
+
 	-help)
 		Usage
 		;;
@@ -175,6 +181,6 @@ if [ $os = "Darwin" ]; then
 fi
 
 # Launch FindBugs!
-exec $jvmCmd $jvmArgs $debugArg "-Dfindbugs.home=$findbugs_home" -jar "$findbugs_home/lib/$appJar" $argList
+exec $jvmCmd $jvmArgs $javaProps $debugArg "-Dfindbugs.home=$findbugs_home" -jar "$findbugs_home/lib/$appJar" $argList
 
 # vim:ts=4
