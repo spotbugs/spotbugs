@@ -30,4 +30,11 @@ public class MismatchedWait {
 				slock.wait();
 		}
 	}
+
+	public static void doNotReportClassRef() throws InterruptedException {
+		synchronized (MismatchedWait.class) {
+			while (slock.toString().equals("foobar"))
+				MismatchedWait.class.wait();
+		}
+	}
 }
