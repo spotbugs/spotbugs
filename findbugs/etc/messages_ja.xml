@@ -321,6 +321,15 @@ with respect to locking.  It is a slow detector.
     </Details>
   </Detector>
 
+  <Detector class="edu.umd.cs.findbugs.detect.FindLocalSelfAssignment">
+    <Details>
+<![CDATA[
+<p> This detector looks for self assignments of local variables.
+It is a fast detector.
+]]>
+    </Details>
+  </Detector>
+
   <Detector class="edu.umd.cs.findbugs.detect.FindBugsSummaryStats">
     <Details>
 <![CDATA[
@@ -1462,6 +1471,23 @@ an <code>IllegalMonitorStateException</code> being thrown.
     </Details>
   </BugPattern>
 
+  <BugPattern type="SA_LOCAL_SELF_ASSIGNMENT">
+    <ShortDescription>Self assignment of local variable</ShortDescription>
+    <LongDescription>Self assignment of local variable in {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p> This method contains a self assignment of a local variable; e.g.
+<pre>
+  public void foo() {
+    int x = 3;
+    x = x;
+  }
+</pre>
+Such assignments are useless, and may indicate a logic error or typo.
+]]>
+    </Details>
+  </BugPattern>
+
 <!--
 ************************************************************************
 Bug codes
@@ -1513,4 +1539,5 @@ Bug codes
   <BugCode abbrev="UL">Lock not released on all paths</BugCode>
   <BugCode abbrev="RC">Suspicious reference comparison</BugCode>
   <BugCode abbrev="MWN">Mismatched wait() or notify()</BugCode>
+  <BugCode abbrev="SA">Useless self-assignment</BugCode>
 </MessageCollection>
