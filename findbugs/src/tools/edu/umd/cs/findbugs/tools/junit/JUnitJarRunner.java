@@ -19,10 +19,14 @@
 
 package edu.umd.cs.findbugs.tools.junit;
 
+import java.io.File;
+
 import java.net.URL;
 import java.net.URLClassLoader;
 
+import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.StringTokenizer;
 
 import java.util.jar.JarFile;
 import java.util.jar.JarEntry;
@@ -40,6 +44,7 @@ import junit.framework.TestSuite;
  */
 public class JUnitJarRunner {
 	private String jarFileName;
+	private String classpath;
 
 	/**
 	 * Constructor.
@@ -50,6 +55,15 @@ public class JUnitJarRunner {
 	}
 
 	/**
+	 * Set the classpath containing the code to be tested
+	 * (if it is not already on the system classpath).
+	 * @param classpath the classpath
+	 */
+	public void setClassPath(String classpath) {
+		this.classpath = classpath;
+	}
+
+	/**
 	 * Build a TestSuite of all the tests contained in the
 	 * jar file.
 	 * @return TestSuite for running all of the tests in the jar file
@@ -57,8 +71,16 @@ public class JUnitJarRunner {
 	public TestSuite buildTestSuite() throws Exception {
 		TestSuite suite = new TestSuite();
 
-		URL jarFileURL = new URL("file:" + jarFileName);
-		URLClassLoader cl = new URLClassLoader(new URL[]{jarFileURL});
+		ArrayList<URL> urlList = new ArrayList<URL>();
+		urlList.add(new URL("file:" + jarFileName));
+		if (classpath != null) {
+			StringTokenizer tok = new StringTokenizer(classpath, File.pathSeparator);
+			while (tok.hasMoreTokens()) {
+				urlList.add(new URL("file:" + tok.nextToken()));
+			}
+		}
+
+		ClassLoader cl = new URLClassLoader(urlList.toArray(new URL[0]));
 
 		Class testCaseClass = cl.loadClass("junit.framework.TestCase");
 
@@ -70,6 +92,8 @@ public class JUnitJarRunner {
 			if (entryName.endsWith(".class")) {
 				String className =
 					entryName.substring(0, entryName.length() - ".class".length()).replace('/', '.');
+				System.out.println("Loading test class: " + className);
+				System.out.flush();
 				Class jarClass = cl.loadClass(className);
 				if (testCaseClass.isAssignableFrom(jarClass))
 					suite.addTestSuite(jarClass);
@@ -93,16 +117,18 @@ public class JUnitJarRunner {
 		if (argv.length < 1) {
 			System.err.println("Usage: " + JUnitJarRunner.class.getName() +
 				" [-textui|-swingui]" +
-				" <jar file>");
+				" <test suite jar file> [<classpath with code to test>]");
 			System.exit(1);
 		}
 		String how = "-textui";
 		int arg = 0;
-		if (argv.length > 1) {
+		if (argv[arg].startsWith("-")) {
 			how = argv[arg++];
 		}
-		String jarFileName = argv[arg];
+		String jarFileName = argv[arg++];
 		JUnitJarRunner runner = new JUnitJarRunner(jarFileName);
+		if (arg < argv.length)
+			runner.setClassPath(argv[arg++]);
 		TestSuite suite = runner.buildTestSuite();
 		runner.run(suite, how);
 	}
