@@ -46,7 +46,7 @@ public class ConstantFrameModelingVisitor
 		return Constant.NOT_CONSTANT;
 	}
 	
-	@Override
+	//@Override
 	public void visitLDC(LDC obj) {
 		Object value = obj.getValue(getCPG());
 		if (value instanceof String) {
