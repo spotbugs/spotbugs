@@ -43,19 +43,6 @@ public interface ResourceTracker<Resource> {
 	public Resource isResourceCreation(BasicBlock basicBlock, InstructionHandle handle, ConstantPoolGen cpg);
 
 	/**
-	 * Determine if the given instruction is a site where a resource is opened.
-	 * @param basicBlock basic block containing the instruction
-	 * @param handle the instruction
-	 * @param cpg the ConstantPoolGen for the method
-	 * @param resource the resource, as returned by isResourceCreation()
-	 * @param frame the ResourceValueFrame representing the stack prior to executing
-	 *   the instruction
-	 * @return true if the resource is opened here, false otherwise
-	 */
-	public boolean isResourceOpen(BasicBlock basicBlock, InstructionHandle handle, ConstantPoolGen cpg, Resource resource,
-		ResourceValueFrame frame);
-
-	/**
 	 * Determine if the given instruction is the site where a resource
 	 * is closed.
 	 * @param basicBlock basic block containing the instruction
@@ -67,7 +54,7 @@ public interface ResourceTracker<Resource> {
 	 * @return true if the resource is closed here, false otherwise
 	 */
 	public boolean isResourceClose(BasicBlock basicBlock, InstructionHandle handle, ConstantPoolGen cpg, Resource resource,
-		ResourceValueFrame frame);
+		ResourceValueFrame frame) throws DataflowAnalysisException;
 
 	/**
 	 * Create a ResourceValueFrameModelingVisitor to model the effect
