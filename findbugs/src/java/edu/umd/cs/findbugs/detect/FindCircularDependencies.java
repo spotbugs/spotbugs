@@ -125,8 +125,11 @@ public class FindCircularDependencies extends BytecodeScanningDetector implement
 			alreadyReported.add(clsName);
 			Set<String> dependencies = (Set<String>)entry.getValue();
 			
-			BugInstance bug = new BugInstance(this, "CD_CIRCULAR_DEPENDENCY", clsName.contains("$") ? LOW_PRIORITY : NORMAL_PRIORITY)
-											.addClass(clsName);
+			BugInstance bug = new BugInstance(
+					this,
+					"CD_CIRCULAR_DEPENDENCY",
+					clsName.indexOf("$") >= 0 ? LOW_PRIORITY : NORMAL_PRIORITY)
+					.addClass(clsName);
 			
 		    Iterator dit = dependencies.iterator();
 		    while (dit.hasNext()) {
