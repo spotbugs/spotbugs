@@ -59,7 +59,8 @@ public abstract class ResourceTrackingDetector<Resource> implements Detector {
 				if (!prescreen(classContext, method))
 					continue;
 
-				analyzeMethod(classContext, method);
+				ResourceTracker<Resource> resourceTracker = getResourceTracker(classContext, method);
+				analyzeMethod(classContext, method, resourceTracker);
 			}
 		} catch (CFGBuilderException e) {
 			throw new AnalysisException(e.toString(), e);
@@ -69,10 +70,8 @@ public abstract class ResourceTrackingDetector<Resource> implements Detector {
 
 	}
 
-	public void analyzeMethod(final ClassContext classContext, Method method)
+	public void analyzeMethod(final ClassContext classContext, Method method, final ResourceTracker<Resource> resourceTracker)
 		throws CFGBuilderException, DataflowAnalysisException {
-
-		final ResourceTracker<Resource> resourceTracker = getResourceTracker(classContext, method);
 
 		final MethodGen methodGen = classContext.getMethodGen(method);
 		final CFG cfg = classContext.getCFG(method);
