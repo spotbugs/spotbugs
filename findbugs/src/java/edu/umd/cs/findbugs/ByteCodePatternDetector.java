@@ -58,6 +58,8 @@ public abstract class ByteCodePatternDetector implements Detector {
 					continue;
 	
 				MethodGen methodGen = classContext.getMethodGen(method);
+				if (methodGen == null)
+					continue;
 				ConstantPoolGen cpg = methodGen.getConstantPool();
 				CFG cfg = classContext.getCFG(method);
 				DepthFirstSearch dfs = classContext.getDepthFirstSearch(method);

@@ -64,6 +64,8 @@ public abstract class CFGBuildingDetector implements Detector {
 
 			// Get the MethodGen for the method from the ClassContext
 			MethodGen mg = classContext.getMethodGen(method);
+			if (mg == null)
+				continue;
 			if (DEBUG) System.out.println("**** Visiting method " + jclass.getClassName() +  "." + mg.getName() + " ****");
 
 			// Pre-screening hook for method.

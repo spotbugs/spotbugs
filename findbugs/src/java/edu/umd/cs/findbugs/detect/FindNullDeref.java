@@ -43,7 +43,7 @@ public class FindNullDeref implements Detector {
 			Method[] methodList = jclass.getMethods();
 			for (int i = 0; i < methodList.length; ++i) {
 				Method method = methodList[i];
-				if (method.isAbstract() || method.isNative())
+				if (method.isAbstract() || method.isNative() || method.getCode() == null)
 					continue;
 
 				if (DEBUG) System.out.println(SignatureConverter.convertMethodSignature(jclass.getClassName(), method.getName(), method.getSignature()));

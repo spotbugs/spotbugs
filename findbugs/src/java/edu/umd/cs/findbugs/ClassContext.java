@@ -62,11 +62,12 @@ public class ClassContext {
 	/**
 	 * Get a MethodGen object for given method.
 	 * @param method the method
-	 * @return the MethodGen object for the method
+	 * @return the MethodGen object for the method, or null
+	 *   if the method has no Code attribute (and thus cannot be analyzed)
 	 */
 	public MethodGen getMethodGen(Method method) {
 		MethodGen methodGen = methodGenMap.get(method);
-		if (methodGen == null) {
+		if (methodGen == null && method.getCode() != null) {
 			ConstantPoolGen cpg = getConstantPoolGen();
 			methodGen = new MethodGen(method, jclass.getClassName(), cpg);
 			methodGenMap.put(method, methodGen);
@@ -174,19 +175,23 @@ public class ClassContext {
 		BitSet bytecodeSet = bytecodeMap.get(method);
 		if (bytecodeSet == null) {
 			final BitSet result = new BitSet();
-			byte[] instructionList = method.getCode().getCode();
 
-			// Create a callback to put the opcodes of the method's
-			// bytecode instructions into the BitSet.
-			BytecodeScanner.Callback callback = new BytecodeScanner.Callback() {
-				public void handleInstruction(int opcode) {
-					result.set(opcode, true);
-				}
-			};
-
-			// Scan the method.
-			BytecodeScanner scanner = new BytecodeScanner();
-			scanner.scan(instructionList, callback);
+			Code code = method.getCode();
+			if (code != null) {
+				byte[] instructionList = code.getCode();
+	
+				// Create a callback to put the opcodes of the method's
+				// bytecode instructions into the BitSet.
+				BytecodeScanner.Callback callback = new BytecodeScanner.Callback() {
+					public void handleInstruction(int opcode) {
+						result.set(opcode, true);
+					}
+				};
+	
+				// Scan the method.
+				BytecodeScanner scanner = new BytecodeScanner();
+				scanner.scan(instructionList, callback);
+			}
 
 			// Save the result in the map.
 			bytecodeSet = result;

@@ -48,6 +48,8 @@ public abstract class ResourceTrackingDetector<Resource> implements Detector {
 					continue;
 
 				final MethodGen methodGen = classContext.getMethodGen(method);
+				if (methodGen == null)
+					continue;
 				final CFG cfg = classContext.getCFG(method);
 
 				new LocationScanner(cfg).scan(new LocationScanner.Callback() {

@@ -50,6 +50,8 @@ public class SelfCalls {
 				continue;
 
 			MethodGen mg = classContext.getMethodGen(method);
+			if (mg == null)
+				continue;
 			CFG cfg = classContext.getCFG(method);
 
 			scan(method, mg, cfg);
