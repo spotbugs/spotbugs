@@ -60,13 +60,13 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 
 		int numWordsConsumed = ins.consumeStack(cpg);
 		if (numWordsConsumed == Constants.UNPREDICTABLE)
-			throw new IllegalStateException("Unpredictable stack consumption for " + ins);
+			throw new InvalidBytecodeException("Unpredictable stack consumption for " + ins);
 		try {
 			while (numWordsConsumed-- > 0) {
 				frame.popValue();
 			}
 		} catch (DataflowAnalysisException e) {
-			throw new IllegalStateException("Stack underflow for " + ins + ": " + e.getMessage());
+			throw new InvalidBytecodeException("Stack underflow for " + ins + ": " + e.getMessage());
 		}
 	}
 
@@ -105,7 +105,7 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 	public void modelNormalInstruction(Instruction ins, int numWordsConsumed, int numWordsProduced) {
 		if (VERIFY_INTEGRITY) {
 			if (numWordsProduced > 0)
-				throw new IllegalStateException("missing visitor method for " + ins);
+				throw new InvalidBytecodeException("missing visitor method for " + ins);
 		}
 		super.modelNormalInstruction(ins, numWordsConsumed, numWordsProduced);
 	}
@@ -494,7 +494,7 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 				pushValue(TypeFrame.getBottomType());
 			}
 		} catch (DataflowAnalysisException e) {
-			throw new IllegalStateException("Stack underflow: " + e.getMessage());
+			throw new InvalidBytecodeException("Stack underflow: " + e.getMessage());
 		}
 	}
 

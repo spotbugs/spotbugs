@@ -243,7 +243,7 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 	public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, TypeFrame fact)
 	        throws DataflowAnalysisException {
 		visitor.setFrame(fact);
-		handle.getInstruction().accept(visitor);
+		visitor.analyzeInstruction(handle.getInstruction());
 	}
 
 	public void endTransfer(BasicBlock basicBlock, InstructionHandle end, Object result)
