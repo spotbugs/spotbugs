@@ -26,9 +26,6 @@ import org.apache.bcel.generic.*;
  * Model the effects of Java bytecode instructions in order to
  * analyze which stack slots definitely contain the "this" reference.
  *
- * <p> <b>Important note</b>: there is a bug in BCEL 5.0 that prevents
- * this class from working.  Use a later version.
- *
  * @see ThisValueFrame
  * @see ThisValueAnalysis
  * @author David Hovemeyer
@@ -94,7 +91,7 @@ public class ThisValueFrameModelingVisitor implements Visitor {
 			while (nwords-- > 0)
 				frame.popValue();
 		} catch (DataflowAnalysisException e) {
-			throw new IllegalStateException(e.getMessage());
+			throw new IllegalStateException(e.toString());
 		}
 
 		nwords = ins.produceStack(cpg);
@@ -137,7 +134,7 @@ public class ThisValueFrameModelingVisitor implements Visitor {
 			frame.pushValue(value);
 			frame.pushValue(value);
 		} catch (DataflowAnalysisException e) {
-			throw new IllegalStateException(e.getMessage());
+			throw new IllegalStateException(e.toString());
 		}
 	}
 	public void visitINVOKESTATIC(INVOKESTATIC obj) { normal(obj); }
@@ -212,7 +209,7 @@ public class ThisValueFrameModelingVisitor implements Visitor {
 			frame.pushValue(value2);
 			frame.pushValue(value1);
 		} catch (DataflowAnalysisException e) {
-			throw new IllegalStateException(e.getMessage());
+			throw new IllegalStateException(e.toString());
 		}
 	}
 	public void visitRETURN(RETURN obj) { normal(obj); }
@@ -234,7 +231,7 @@ public class ThisValueFrameModelingVisitor implements Visitor {
 			frame.pushValue(value1);
 			frame.pushValue(value2);
 		} catch (DataflowAnalysisException e) {
-			throw new IllegalStateException(e.getMessage());
+			throw new IllegalStateException(e.toString());
 		}
 	}
 	public void visitIOR(IOR obj) { normal(obj); }
@@ -256,7 +253,7 @@ public class ThisValueFrameModelingVisitor implements Visitor {
 			frame.pushValue(value2);
 			frame.pushValue(value1);
 		} catch (DataflowAnalysisException e) {
-			throw new IllegalStateException(e.getMessage());
+			throw new IllegalStateException(e.toString());
 		}
 	}
 	public void visitSALOAD(SALOAD obj) { normal(obj); }
@@ -285,7 +282,7 @@ public class ThisValueFrameModelingVisitor implements Visitor {
 			frame.pushValue(value2);
 			frame.pushValue(value1);
 		} catch (DataflowAnalysisException e) {
-			throw new IllegalStateException(e.getMessage());
+			throw new IllegalStateException(e.toString());
 		}
 	}
 	public void visitIF_ACMPEQ(IF_ACMPEQ obj) { normal(obj); }
@@ -322,7 +319,7 @@ public class ThisValueFrameModelingVisitor implements Visitor {
 			frame.pushValue(value2);
 			frame.pushValue(value1);
 		} catch (DataflowAnalysisException e) {
-			throw new IllegalStateException(e.getMessage());
+			throw new IllegalStateException(e.toString());
 		}
 	}
 	public void visitFNEG(FNEG obj) { normal(obj); }
@@ -349,7 +346,7 @@ public class ThisValueFrameModelingVisitor implements Visitor {
 			frame.pushValue(value2);
 			frame.pushValue(value1);
 		} catch (DataflowAnalysisException e) {
-			throw new IllegalStateException(e.getMessage());
+			throw new IllegalStateException(e.toString());
 		}
 	}
 	public void visitFCMPL(FCMPL obj) { normal(obj); }
@@ -364,7 +361,7 @@ public class ThisValueFrameModelingVisitor implements Visitor {
 			int local = obj.getIndex();
 			frame.setValue(local, value);
 		} catch (DataflowAnalysisException e) {
-			throw new IllegalStateException(e.getMessage());
+			throw new IllegalStateException(e.toString());
 		}
 	}
 	public void visitANEWARRAY(ANEWARRAY obj) { normal(obj); }
