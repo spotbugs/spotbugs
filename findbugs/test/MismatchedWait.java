@@ -12,4 +12,13 @@ public class MismatchedWait {
 			b.notifyAll();
 		}
 	}
+
+	private Object lock = new Object();
+
+	public void doNotReport() throws InterruptedException {
+		synchronized (lock) {
+			while (lock.toString().equals("duh"))
+				lock.wait();
+		}
+	}
 }
