@@ -778,6 +778,15 @@ to double and then perform the division.  It is a fast detector.
 ]]>
     </Details>
   </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.FindBadCast">
+    <Details>
+<![CDATA[
+<p>
+This detector looks for bad casts of object references.
+</p>
+]]>
+    </Details>
+  </Detector>
   
   <Detector class="edu.umd.cs.findbugs.detect.FindBugsSummaryStats">
     <Details>
@@ -3252,6 +3261,22 @@ double value1 =  x / y;
 double value2 =  x / (double) y;
 </pre>
 </blockquote>
+</p>
+]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="BC_BAD_CAST_TO_CONCRETE_COLLECTION">
+    <ShortDescription>Questionable cast to concrete collection</ShortDescription>
+    <LongDescription>Questionable cast from {3} to concrete class {4} in {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+This code casts an abstract collection (such as a Collection, List, or Set)
+to a specific concrete implementation (such as an ArrayList or HashSet).
+This might not be correct, and it may make your code fragile, since
+it makes it harder to switch to other concrete implementations at a future 
+point. Unless you have a particular reason to do so, just use the abstract
+collection class.
 </p>
 ]]>
     </Details>

@@ -351,6 +351,11 @@
             speed="fast"
             reports="ICAST_IDIV_CAST_TO_DOUBLE,ICAST_INT_CAST_TO_DOUBLE_PASSED_TO_CEIL" disabled="false"/>
   			
+  <Detector class="edu.umd.cs.findbugs.detect.FindBadCast"
+            speed="fast"
+            reports="BC_BAD_CAST_TO_CONCRETE_COLLECTION"
+	    />
+  			
   <Detector class="edu.umd.cs.findbugs.detect.FindBugsSummaryStats" 
             speed="fast"
             hidden="true" />
@@ -536,4 +541,5 @@
   <BugPattern abbrev="PS" type="PS_PUBLIC_SEMAPHORES" category="STYLE" experimental="true"/>
   <BugPattern abbrev="ICAST" type="ICAST_IDIV_CAST_TO_DOUBLE" category="CORRECTNESS"/>
   <BugPattern abbrev="ICAST" type="ICAST_INT_CAST_TO_DOUBLE_PASSED_TO_CEIL" category="CORRECTNESS"/>
+  <BugPattern abbrev="BC" type="BC_BAD_CAST_TO_CONCRETE_COLLECTION" category="STYLE"/>
 </FindbugsPlugin>
