@@ -321,11 +321,13 @@ public class BugInstance implements Comparable, XMLWriteable {
 	 * object returned will <em>not</em> affect the BugInstance.
 	 * 
 	 * @return the TimestampIntervalCollection
-	 * @throws InvalidTimestampIntervalException if the interval collection is invalid
 	 */
-	public TimestampIntervalCollection getActiveIntervalCollection()
-			throws InvalidTimestampIntervalException {
-		return TimestampIntervalCollection.decode(activeIntervalCollection);
+	public TimestampIntervalCollection getActiveIntervalCollection() {
+		try {
+			return TimestampIntervalCollection.decode(activeIntervalCollection);
+		} catch (InvalidTimestampIntervalException e) {
+			return new TimestampIntervalCollection();
+		}
 	}
 	
 	/**
