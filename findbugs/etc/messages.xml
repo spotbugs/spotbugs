@@ -73,7 +73,7 @@ boolean operators (<code>|</code> and <code>&amp;</code> instead of
   <Detector class="edu.umd.cs.findbugs.detect.DontCatchIllegalMonitorStateException">
     <Details>
 <![CDATA[
-<p> This detector looks for try-catch blocks that catch a IllegalMonitorStateException.</p>
+<p> This detector looks for try-catch blocks that catch an IllegalMonitorStateException.</p>
 ]]>
     </Details>
   </Detector>
@@ -81,7 +81,7 @@ boolean operators (<code>|</code> and <code>&amp;</code> instead of
   <Detector class="edu.umd.cs.findbugs.detect.FindFloatMath">
     <Details>
 <![CDATA[
-<p> This detector looks for uses of floating path math.</p>
+<p> This detector looks for uses of floating point math.</p>
 ]]>
     </Details>
   </Detector>
@@ -695,7 +695,7 @@ should be written to the JarFile between the calls to
 <![CDATA[
 <p>
 	Class implements Cloneable but does not define or
-	use clone method.</p>
+	use the clone method.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -823,7 +823,7 @@ to use Object.clone(), which always returns an object of the correct type.</p>
     <Details>
 <![CDATA[
   <p> An object is compared to the empty String object using the equals() method here.
-      Checking that the String object's length is zero may be faster.</p>
+      Checking that the String object's length is zero may be faster, and removes String constants from the class file.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1349,7 +1349,7 @@ defined in an interface references a mutable
 	This mutable object could 
 	be changed by malicious code or
         by accident from another package.
-	So solve this, the field needs to be moved to a class
+	To solve this, the field needs to be moved to a class
 	and made package protected 
 	to avoid
         this vulnerability.</p>
@@ -1421,7 +1421,7 @@ defined in an interface references a mutable
   </BugPattern>
   <BugPattern type="MS_CANNOT_BE_FINAL">
     <ShortDescription>Field isn't final and can't be protected from malicious code</ShortDescription>
-    <LongDescription>{1} isn't final and can't be protected malicious code </LongDescription>
+    <LongDescription>{1} isn't final and can't be protected from malicious code </LongDescription>
     <Details>
 <![CDATA[
   <p> 
