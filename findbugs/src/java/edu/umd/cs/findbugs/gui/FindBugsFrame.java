@@ -264,9 +264,22 @@ public class FindBugsFrame extends javax.swing.JFrame {
     /** The instance of AuxClasspathEntryFileFilter. */
     private static final FileFilter auxClasspathEntryFileFilter = new AuxClasspathEntryFileFilter();
     
+    /**
+     * Swing FileFilter for choosing XML saved bug files.
+     */
+    private static class XMLFileFilter extends FileFilter {
+        public boolean accept(File file) { return file.isDirectory() || file.getName().endsWith(".xml"); }
+        public String getDescription() { return "XML saved bug files"; }
+    }
+ 
+    /** The instance of XMLFileFilter. */
+    private static final FileFilter xmlFileFilter = new XMLFileFilter();
+    
     /* ----------------------------------------------------------------------
      * Constants
      * ---------------------------------------------------------------------- */
+    
+    private static final String DEFAULT_PROJECT_NAME = "<<unnamed project>>";
     
     private static final String GROUP_BY_CLASS = "By class";
     private static final String GROUP_BY_PACKAGE = "By package";
@@ -365,6 +378,9 @@ public class FindBugsFrame extends javax.swing.JFrame {
         reloadProjectItem = new javax.swing.JMenuItem();
         closeProjectItem = new javax.swing.JMenuItem();
         jSeparator3 = new javax.swing.JSeparator();
+        loadBugsItem = new javax.swing.JMenuItem();
+        saveBugsItem = new javax.swing.JMenuItem();
+        jSeparator6 = new javax.swing.JSeparator();
         exitItem = new javax.swing.JMenuItem();
         viewMenu = new javax.swing.JMenu();
         viewConsoleItem = new javax.swing.JCheckBoxMenuItem();
@@ -870,6 +886,24 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
         fileMenu.add(jSeparator3);
 
+        loadBugsItem.setFont(new java.awt.Font("Dialog", 0, 12));
+        loadBugsItem.setMnemonic('L');
+        loadBugsItem.setText("Load Bugs");
+        loadBugsItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                loadBugsItemActionPerformed(evt);
+            }
+        });
+
+        fileMenu.add(loadBugsItem);
+
+        saveBugsItem.setFont(new java.awt.Font("Dialog", 0, 12));
+        saveBugsItem.setMnemonic('B');
+        saveBugsItem.setText("Save Bugs");
+        fileMenu.add(saveBugsItem);
+
+        fileMenu.add(jSeparator6);
+
         exitItem.setFont(new java.awt.Font("Dialog", 0, 12));
         exitItem.setMnemonic('X');
         exitItem.setText("Exit");
@@ -970,6 +1004,35 @@ public class FindBugsFrame extends javax.swing.JFrame {
         pack();
     }//GEN-END:initComponents
 
+    private void loadBugsItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loadBugsItemActionPerformed
+        // FIXME: offer to save current project and bugs
+        
+        try {
+            
+            JFileChooser chooser = new JFileChooser(currentDirectory);
+            chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+            chooser.setFileFilter(xmlFileFilter);
+        
+            int result = chooser.showDialog(this, "Load bugs");
+
+            if (result != JFileChooser.CANCEL_OPTION) {
+                File selectedFile = chooser.getSelectedFile();
+                
+                Project emptyProject = new Project(DEFAULT_PROJECT_NAME);
+                AnalysisRun analysisRun = new AnalysisRun(emptyProject, this);
+                
+                analysisRun.loadBugsFromFile(selectedFile);
+                
+                setProject(emptyProject);
+                synchAnalysisRun(analysisRun);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.logMessage(ConsoleLogger.ERROR, "Could not load bugs: " + e.toString());
+        }
+        
+    }//GEN-LAST:event_loadBugsItemActionPerformed
+
     private void configureDetectorsItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_configureDetectorsItemActionPerformed
         ConfigureDetectorsDialog dialog = new ConfigureDetectorsDialog(this, true);
         dialog.setSize(700, 520);
@@ -990,7 +1053,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
             FileInputStream in = new FileInputStream(file);
             project.read(in);
             setProject( null );
-            currentProject = project;
+            setProject(project);
             findBugsButtonActionPerformed( evt );
         } catch (IOException e) {
             logger.logMessage(ConsoleLogger.ERROR, "Could not reload project: " + e.getMessage());
@@ -1182,8 +1245,6 @@ public class FindBugsFrame extends javax.swing.JFrame {
             
             // Now we have an analysis run to look at
             synchAnalysisRun(analysisRun);
-            currentAnalysisRun = analysisRun;
-            setView("BugTree");
         } else {
             logger.logMessage(ConsoleLogger.INFO, "Analysis of " + project + " cancelled by user");
         }
@@ -1230,8 +1291,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_browseJarButtonActionPerformed
     
     private void newProjectItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newProjectItemActionPerformed
-        String projectName = "<<unnamed project>>";
-        Project project = new Project(projectName);
+        Project project = new Project(DEFAULT_PROJECT_NAME);
         setProject(project);
     }//GEN-LAST:event_newProjectItemActionPerformed
     
@@ -1595,6 +1655,9 @@ public class FindBugsFrame extends javax.swing.JFrame {
             if (i < bugTreeList.length)
                 bugTreeList[i].setModel(bugTreeModel);
         }
+        
+        currentAnalysisRun = analysisRun;
+        setView("BugTree");
     }
     
     /**
@@ -2072,11 +2135,13 @@ public class FindBugsFrame extends javax.swing.JFrame {
     private javax.swing.JSeparator jSeparator3;
     private javax.swing.JSeparator jSeparator4;
     private javax.swing.JSeparator jSeparator5;
+    private javax.swing.JSeparator jSeparator6;
     private javax.swing.JLabel jarFileLabel;
     private javax.swing.JList jarFileList;
     private javax.swing.JLabel jarFileListLabel;
     private javax.swing.JScrollPane jarFileListScrollPane;
     private javax.swing.JTextField jarNameTextField;
+    private javax.swing.JMenuItem loadBugsItem;
     private javax.swing.JMenuItem newProjectItem;
     private javax.swing.JMenuItem openProjectItem;
     private javax.swing.JMenuItem reloadProjectItem;
@@ -2084,6 +2149,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
     private javax.swing.JButton removeJarButton;
     private javax.swing.JButton removeSrcDirButton;
     private javax.swing.JPanel reportPanel;
+    private javax.swing.JMenuItem saveBugsItem;
     private javax.swing.JMenuItem saveProjectAsItem;
     private javax.swing.JMenuItem saveProjectItem;
     private javax.swing.JMenu settingsMenu;
