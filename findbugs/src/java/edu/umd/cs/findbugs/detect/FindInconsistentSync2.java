@@ -38,8 +38,9 @@ import org.apache.bcel.generic.*;
 import java.util.*;
 
 public class FindInconsistentSync2 implements Detector {
-	private static final boolean DEBUG = Boolean.getBoolean("fis.debug");
-	private static final boolean SYNC_ACCESS = Boolean.getBoolean("fis.syncAccess");
+	private static final boolean DEBUG  = Boolean.getBoolean("fis.debug");
+	private static final boolean SYNC_ACCESS = true;
+		// Boolean.getBoolean("fis.syncAccess");
 	private static final boolean ADJUST_SUBCLASS_ACCESSES = !Boolean.getBoolean("fis.noAdjustSubclass");
 	private static final boolean EVAL = Boolean.getBoolean("fis.eval");
 
@@ -204,8 +205,10 @@ public class FindInconsistentSync2 implements Detector {
 				Method method = i.next();
 				if (classContext.getMethodGen(method) == null)
 					continue;
+				/*
 				if (isConstructor(method.getName()))
 					continue;
+				*/
 				if (method.getName().startsWith("access$"))
 					// Ignore inner class access methods;
 					// we will treat calls to them as field accesses
@@ -244,6 +247,15 @@ public class FindInconsistentSync2 implements Detector {
 			if (unlocked == 0) 
 				continue;
 
+			
+
+			if (DEBUG) {
+			System.out.println("IS2: " + xfield);
+			System.out.println("  RL: " + numReadLocked);
+			System.out.println("  WL: " + numWriteLocked);
+			System.out.println("  RU: " + numReadUnlocked);
+			System.out.println("  WU: " + numWriteUnlocked);
+			}
 			if (!EVAL && numReadUnlocked > 0 && ((int)(UNSYNC_FACTOR * biasedUnlocked)) > biasedLocked)
 				continue;
 
@@ -251,6 +263,10 @@ public class FindInconsistentSync2 implements Detector {
 
 			if (numWriteUnlocked + numWriteLocked == 0)
 				// No writes outside of constructor
+				continue;
+
+			if (numReadUnlocked + numReadLocked == 0)
+				// No reads outside of constructor
 				continue;
 
 			if (stats.getNumLocalLocks() == 0)
@@ -303,6 +319,10 @@ public class FindInconsistentSync2 implements Detector {
         		||  methodName.equals("readObject")
         		||  methodName.equals("clone")
         		||  methodName.equals("close")
+        		||  methodName.equals("writeObject")
+        		||  methodName.equals("init")
+        		||  methodName.equals("initialize")
+        		||  methodName.equals("dispose")
         		||  methodName.equals("finalize")
 				||  methodName.equals("this");
 	}
@@ -419,6 +439,7 @@ public class FindInconsistentSync2 implements Detector {
 				kind |= isLocked ? LOCKED : UNLOCKED;
 				kind |= isWrite ? WRITE : READ;
 			
+				if (isLocked ||  !isConstructor(method.getName())) {
 				if (DEBUG) System.out.println("IS2:\t" +
 					SignatureConverter.convertMethodSignature(classContext.getMethodGen(method)) +
 					"\t" + xfield + "\t" + ((isWrite ? "W" : "R") + "/" + (isLocked ? "L" : "U")));
@@ -433,6 +454,7 @@ public class FindInconsistentSync2 implements Detector {
 					stats.addGetterMethodAccess();
 			
 				stats.addAccess(classContext, method, handle, isLocked);
+				}
 			} catch (ClassNotFoundException e) {
 				bugReporter.reportMissingClass(e);
 			}
