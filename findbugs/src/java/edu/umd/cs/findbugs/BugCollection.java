@@ -76,12 +76,12 @@ public abstract class BugCollection {
 		SAXReader reader = new SAXReader();
 		Document document = reader.read(in);
 
-		Iterator i = document.getRootElement().elements().iterator();
-		while (i.hasNext()) {
+		for (Iterator i = document.getRootElement().elements().iterator(); i.hasNext(); ) {
 			Element element = (Element) i.next();
 			String elementName = element.getName();
 
 			if (elementName.equals(SRCMAP_ELEMENT_NAME)) {
+				// Note: this is just for backwards compatibility.
 				classToSourceFileMap.put(element.attributeValue("classname"), element.attributeValue("srcfile"));
 			} else if (elementName.equals(PROJECT_ELEMENT_NAME)) {
 				project.readElement(element);
@@ -96,8 +96,36 @@ public abstract class BugCollection {
 			}
 		}
 
+		// For any bug instances lacking source information,
+		// use the source map to add the information (if possible).
+		// This is just for backwards compatibility with the old
+		// SrcMap elements.
+		for (Iterator<BugInstance> i = this.iterator(); i.hasNext(); ) {
+			BugInstance bugInstance = i.next();
+
+			for (Iterator<BugAnnotation> j = bugInstance.annotationIterator(); j.hasNext(); ) {
+				BugAnnotation annotation = j.next();
+				if (annotation instanceof SourceLineAnnotation) {
+					updateSourceFile((SourceLineAnnotation) annotation, classToSourceFileMap);
+				} else if (annotation instanceof MethodAnnotation) {
+					SourceLineAnnotation srcLines = ((MethodAnnotation) annotation).getSourceLines();
+					if (srcLines != null)
+						updateSourceFile(srcLines, classToSourceFileMap);
+				}
+			}
+		}
+
 		// Presumably, project is now up-to-date
 		project.setModified(false);
+	}
+
+	private static void updateSourceFile(SourceLineAnnotation annotation, Map<String,String> classToSourceFileMap) {
+		if (!annotation.isSourceFileKnown()) {
+			String className = annotation.getClassName();
+			String sourceFile = classToSourceFileMap.get(className);
+			if (sourceFile != null)
+				annotation.setSourceFile(sourceFile);
+		}
 	}
 
 	public void writeXML(String fileName, Project project, Map<String, String> classToSourceFileMap) throws IOException {
@@ -123,15 +151,6 @@ public abstract class BugCollection {
 		while (i.hasNext()) {
 			BugInstance bugInstance = i.next();
 			bugInstance.toElement(root);
-		}
-
-		// Save the class to source map information
-		Iterator<Map.Entry<String, String>> j = classToSourceFileMap.entrySet().iterator();
-		while (j.hasNext()) {
-			Map.Entry<String, String> entry = j.next();
-			root.addElement(SRCMAP_ELEMENT_NAME)
-				.addAttribute("classname", entry.getKey())
-				.addAttribute("srcfile", entry.getValue());
 		}
 
 		XMLWriter writer = new XMLWriter(out, OutputFormat.createPrettyPrint());

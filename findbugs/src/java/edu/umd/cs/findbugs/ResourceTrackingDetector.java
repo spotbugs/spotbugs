@@ -31,13 +31,14 @@ public abstract class ResourceTrackingDetector<Resource> implements Detector {
 
 	public abstract boolean prescreen(ClassContext classContext, Method method);
 	public abstract ResourceTracker<Resource> getResourceTracker();
-	public abstract void inspectResult(MethodGen methodGen, CFG cfg, Dataflow<ResourceValueFrame> dataflow, Resource resource);
+	public abstract void inspectResult(JavaClass javaClass, MethodGen methodGen, CFG cfg,
+		Dataflow<ResourceValueFrame> dataflow, Resource resource);
 
 	public void visitClassContext(ClassContext classContext) {
 		final ResourceTracker<Resource> resourceTracker = getResourceTracker();
 
 		try {
-			JavaClass jclass = classContext.getJavaClass();
+			final JavaClass jclass = classContext.getJavaClass();
 			Method[] methodList = jclass.getMethods();
 			for (int i = 0; i < methodList.length; ++i) {
 				Method method = methodList[i];
@@ -65,7 +66,7 @@ public abstract class ResourceTrackingDetector<Resource> implements Detector {
 
 							try {
 								dataflow.execute();
-								inspectResult(methodGen, cfg, dataflow, resource);
+								inspectResult(jclass, methodGen, cfg, dataflow, resource);
 							} catch (DataflowAnalysisException e) {
 								throw new AnalysisException("FindOpenResource caught exception: " + e.toString(), e);
 							}

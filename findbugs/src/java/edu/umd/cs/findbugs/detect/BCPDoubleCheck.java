@@ -98,7 +98,7 @@ public class BCPDoubleCheck extends ByteCodePatternDetector {
 		return true;
 	}
 
-	public void reportMatch(MethodGen methodGen, ByteCodePatternMatch match) {
+	public void reportMatch(JavaClass javaClass, MethodGen methodGen, ByteCodePatternMatch match) {
 		BindingSet bindingSet = match.getBindingSet();
 
 		// Note that the lookup of "h" cannot fail, and
@@ -114,10 +114,11 @@ public class BCPDoubleCheck extends ByteCodePatternDetector {
 		InstructionHandle start = match.getLabeledInstruction("startDC");
 		InstructionHandle end   = match.getLabeledInstruction("endDC");
 
+		String sourceFile = javaClass.getSourceFileName();
 		bugReporter.reportBug(new BugInstance("BCPDC_DOUBLECHECK", NORMAL_PRIORITY)
-			.addClassAndMethod(methodGen)
+			.addClassAndMethod(methodGen, sourceFile)
 			.addField(field).describe("FIELD_ON")
-			.addSourceLine(methodGen, start, end));
+			.addSourceLine(methodGen, sourceFile, start, end));
 	}
 }
 

@@ -1990,7 +1990,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
         
         // Look up the source file for this class.
         sourceFinder.setSourceBaseList(project.getSourceDirList());
-        String sourceFile = analysisRun.getSourceFile(srcLine.getClassName());
+	String sourceFile = srcLine.getSourceFile();
         if (sourceFile == null || sourceFile.equals("<Unknown>")) {
             logger.logMessage(ConsoleLogger.WARNING, "No source file for class " + srcLine.getClassName());
             return false;

@@ -312,7 +312,8 @@ public class FindInconsistentSync extends CFGBuildingDetector {
 	}
 
 	private void addUnsyncAccess(FieldStats stats, MethodGen methodGen, InstructionHandle handle) {
-		SourceLineAnnotation accessSourceLine = SourceLineAnnotation.fromVisitedInstruction(methodGen, handle);
+		String sourceFile = getJavaClass().getSourceFileName();
+		SourceLineAnnotation accessSourceLine = SourceLineAnnotation.fromVisitedInstruction(methodGen, sourceFile, handle);
 		if (accessSourceLine != null)
 			stats.unsyncAccessList.add(accessSourceLine);
 	}

@@ -244,7 +244,9 @@ public class FindOpenStream extends ResourceTrackingDetector<Stream>  {
 		return resourceTracker;
 	}
 
-	public void inspectResult(MethodGen methodGen, CFG cfg, Dataflow<ResourceValueFrame> dataflow, Stream stream) {
+	public void inspectResult(JavaClass javaClass, MethodGen methodGen, CFG cfg,
+		Dataflow<ResourceValueFrame> dataflow, Stream stream) {
+
 		ResourceValueFrame exitFrame = dataflow.getResultFact(cfg.getExit());
 
 		int exitStatus = exitFrame.getStatus();
@@ -259,9 +261,10 @@ public class FindOpenStream extends ResourceTrackingDetector<Stream>  {
 				priority = LOW_PRIORITY;
 			}
 
+			String sourceFile = javaClass.getSourceFileName();
 			bugReporter.reportBug(new BugInstance(bugType, priority)
-				.addClassAndMethod(methodGen)
-				.addSourceLine(methodGen, stream.getLocation().getHandle())
+				.addClassAndMethod(methodGen, sourceFile)
+				.addSourceLine(methodGen, sourceFile, stream.getLocation().getHandle())
 			);
 		}
 	}

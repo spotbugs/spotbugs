@@ -185,11 +185,12 @@ public class BugInstance implements Comparable, XMLConvertible {
 	/**
 	 * Add class and method annotations for given method.
 	 * @param methodGen the method
+	 * @param sourceFile source file the method is defined in
 	 * @return this object
 	 */
-	public BugInstance addClassAndMethod(MethodGen methodGen) {
+	public BugInstance addClassAndMethod(MethodGen methodGen, String sourceFile) {
 		addClass(methodGen.getClassName());
-		addMethod(methodGen);
+		addMethod(methodGen, sourceFile);
 		return this;
 	}
 
@@ -328,13 +329,14 @@ public class BugInstance implements Comparable, XMLConvertible {
 	 * If the method has source line information, then a SourceLineAnnotation
 	 * is added to the method.
 	 * @param methodGen the MethodGen object for the method
+	 * @param sourceFile source file method is defined in
 	 * @return this object
 	 */
-	public BugInstance addMethod(MethodGen methodGen) {
+	public BugInstance addMethod(MethodGen methodGen, String sourceFile) {
 		MethodAnnotation methodAnnotation =
 			new MethodAnnotation(methodGen.getClassName(), methodGen.getName(), methodGen.getSignature());
 		addMethod(methodAnnotation);
-		addSourceLinesForMethod(methodAnnotation, SourceLineAnnotation.fromVisitedMethod(methodGen));
+		addSourceLinesForMethod(methodAnnotation, SourceLineAnnotation.fromVisitedMethod(methodGen, sourceFile));
 		return this;
 	}
 
@@ -446,11 +448,12 @@ public class BugInstance implements Comparable, XMLConvertible {
 	 * Note that if the method does not have line number information, then
 	 * no source line annotation will be added.
 	 * @param methodGen the method being visited
+	 * @param sourceFile source file the method is defined in
 	 * @param handle the InstructionHandle containing the visited instruction
 	 * @return this object
 	 */
-	public BugInstance addSourceLine(MethodGen methodGen, InstructionHandle handle) {
-		SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation.fromVisitedInstruction(methodGen, handle);
+	public BugInstance addSourceLine(MethodGen methodGen, String sourceFile, InstructionHandle handle) {
+		SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation.fromVisitedInstruction(methodGen, sourceFile, handle);
 		if (sourceLineAnnotation != null)
 			add(sourceLineAnnotation);
 		return this;
@@ -459,18 +462,19 @@ public class BugInstance implements Comparable, XMLConvertible {
 	/**
 	 * Add a source line annotation describing a range of instructions.
 	 * @param methodGen the method
+	 * @param sourceFile source file the method is defined in
 	 * @param start the start instruction in the range
 	 * @param end the end instruction in the range (inclusive)
 	 * @return this object
 	 */
-	public BugInstance addSourceLine(MethodGen methodGen, InstructionHandle start, InstructionHandle end) {
+	public BugInstance addSourceLine(MethodGen methodGen, String sourceFile, InstructionHandle start, InstructionHandle end) {
 		// Make sure start and end are really in the right order.
 		if (start.getPosition() > end.getPosition()) {
 			InstructionHandle tmp = start;
 			start = end;
 			end = tmp;
 		}
-		SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation.fromVisitedInstructionRange(methodGen, start, end);
+		SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation.fromVisitedInstructionRange(methodGen, sourceFile, start, end);
 		if (sourceLineAnnotation != null)
 			add(sourceLineAnnotation);
 		return this;

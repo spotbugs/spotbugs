@@ -175,11 +175,12 @@ public class SimplePathsFindDoubleCheck extends SimplePathEnumeratingDetector im
 					// That's it!
 					state = FINAL_STATE;
 					String bugType = field.isStatic() ? "SPDC_STATIC_DOUBLECHECK" : "SPDC_DOUBLECHECK";
+					String sourceFile = getJavaClass().getSourceFileName();
 					bugReporter.reportBug(new BugInstance(bugType, NORMAL_PRIORITY)
 						.addClass(getJavaClass())
-						.addMethod(methodGen)
+						.addMethod(methodGen, sourceFile)
 						.addField(field)
-						.addSourceLine(methodGen, start, end)
+						.addSourceLine(methodGen, sourceFile, start, end)
 					);
 					break;
 				}

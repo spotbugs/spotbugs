@@ -96,11 +96,12 @@ public class FindNullDeref implements Detector {
 	private void reportNullDeref(ClassContext classContext, Method method, InstructionHandle exceptionThrowerHandle,
 		String type, int priority) {
 		MethodGen methodGen = classContext.getMethodGen(method);
+		String sourceFile = classContext.getJavaClass().getSourceFileName();
 
 		bugReporter.reportBug(new BugInstance(type, priority)
-			.addClassAndMethod(methodGen)
-			.addSourceLine(methodGen, exceptionThrowerHandle)
-			.addInt(exceptionThrowerHandle.getPosition()).describe("INT_BYTECODE_OFFSET")
+			.addClassAndMethod(methodGen, sourceFile)
+			.addSourceLine(methodGen, sourceFile, exceptionThrowerHandle)
+			//.addInt(exceptionThrowerHandle.getPosition()).describe("INT_BYTECODE_OFFSET")
 		);
 	}
 
