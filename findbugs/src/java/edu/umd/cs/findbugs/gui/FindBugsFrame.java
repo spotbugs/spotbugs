@@ -580,7 +580,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(3, 3, 3, 3);
         editProjectPanel.add(jSeparator2, gridBagConstraints);
 
-        findBugsButton.setMnemonic('F');
+        findBugsButton.setMnemonic('B');
         findBugsButton.setText("Find Bugs!");
         findBugsButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
