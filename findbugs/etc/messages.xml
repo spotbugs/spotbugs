@@ -1940,12 +1940,11 @@ is not a directory.</p>
 <![CDATA[
 <p> This method contains a useless control flow statement.&nbsp;
 Often, this is caused by inadvertently using an empty statement as the
-body of an <code>if</code> statement, e.g.:
+body of an <code>if</code> statement, e.g.:</p>
 <pre>
     if (argv.length == 1);
         System.out.println("Hello, " + argv[0]);
 </pre>
-</p>
 ]]>
     </Details>
   </BugPattern>
@@ -2305,7 +2304,7 @@ In each iteration, the String is converted to a StringBuffer/StringBuilder,
 <p>Better performance can be obtained by using 
 a StringBuffer (or StringBuilder in Java 1.5) explicitly.</p>
 
-<p> For example:
+<p> For example:</p>
 <pre>
   // This is bad
   String s = "";
@@ -2320,7 +2319,6 @@ a StringBuffer (or StringBuilder in Java 1.5) explicitly.</p>
   }
   String s = buf.toString();
 </pre>
-</p>
 ]]>
     </Details>
   </BugPattern>
