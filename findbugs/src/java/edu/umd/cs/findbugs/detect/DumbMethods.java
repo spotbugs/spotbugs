@@ -43,6 +43,7 @@ public class DumbMethods extends BytecodeScanningDetector implements Constants2,
 	private boolean ctorSeen;
 	private boolean isPublicStaticVoidMain;
         private int randomNextIntState;
+	private boolean constantOnTopOfStack;
 
 	public DumbMethods(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
@@ -68,6 +69,7 @@ public class DumbMethods extends BytecodeScanningDetector implements Constants2,
 		primitiveObjCtorSeen = null;
 		ctorSeen = false;
 		randomNextIntState = 0;
+		constantOnTopOfStack = false;
 	}
 
 	public void sawOpcode(int seen) {
@@ -131,8 +133,17 @@ public class DumbMethods extends BytecodeScanningDetector implements Constants2,
 		if (!isPublicStaticVoidMain && seen == INVOKESTATIC
 		        && getClassConstantOperand().equals("java/lang/System")
 		        && getNameConstantOperand().equals("exit")
-		        && !getMethodName().startsWith("windowClos"))
-			bugReporter.reportBug(new BugInstance(this, "DM_EXIT", LOW_PRIORITY)
+		        && !getMethodName().equals("processWindowEvent")
+		        && !getMethodName().startsWith("windowClos")
+		        && getMethodName().indexOf("exit") == -1
+		        && getMethodName().indexOf("Exit") == -1
+		        && getMethodName().indexOf("crash") == -1
+		        && getMethodName().indexOf("Crash") == -1
+		        && getMethodName().indexOf("die") == -1
+		        && getMethodName().indexOf("Die") == -1
+		        && getMethodName().indexOf("main") == -1)
+			bugReporter.reportBug(new BugInstance(this, "DM_EXIT", 
+				getMethod().isStatic() ? LOW_PRIORITY : NORMAL_PRIORITY)
 			        .addClassAndMethod(this)
 			        .addSourceLine(this));
 		if (((seen == INVOKESTATIC
@@ -233,7 +244,18 @@ public class DumbMethods extends BytecodeScanningDetector implements Constants2,
 		} else {
 			ctorSeen = false;
 		}
-		
+
+		if (!constantOnTopOfStack && (seen == INVOKEINTERFACE) 
+		&&  (getNameConstantOperand().equals("execute")
+		    || getNameConstantOperand().equals("executeUpdate"))
+		&&  getClassConstantOperand().equals("java/sql/Statement")) {
+			bugReporter.reportBug(new BugInstance(this, "DM_SQL_STATEMENT_EXECUTE", NORMAL_PRIORITY)
+				.addClassAndMethod(this)
+				.addSourceLine(this));
+		}
+		constantOnTopOfStack = (seen == LDC);
+
+
 		if ((seen == INVOKESPECIAL) 
 		&&  getNameConstantOperand().equals("<init>")
 		&&  getClassConstantOperand().equals("java/lang/Thread")) {
