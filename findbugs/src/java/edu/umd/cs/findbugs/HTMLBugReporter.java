@@ -63,6 +63,7 @@ public class HTMLBugReporter extends BugCollectionBugReporter {
 					throw new IOException("Could not load HTML generation stylesheet " + stylesheet);
 			}
 			StreamSource xsl = new StreamSource(xslInputStream);
+			xsl.setSystemId(stylesheet);
 
 			// Create a transformer using the stylesheet
 			TransformerFactory factory = TransformerFactory.newInstance();
