@@ -324,6 +324,36 @@ public class FindBugsFrame extends javax.swing.JFrame {
  
     /** The instance of XMLFileFilter. */
     private static final FileFilter xmlFileFilter = new XMLFileFilter();
+
+    /** Set of archive file extensions. */
+    private static final HashSet<String> archiveExtensionSet = new HashSet<String>();
+    static {
+        archiveExtensionSet.add(".jar");
+        archiveExtensionSet.add(".zip");
+        archiveExtensionSet.add(".ear");
+        archiveExtensionSet.add(".war");
+    }
+
+    /**
+     * File filter for choosing archives and directories.
+     */
+    private static class ArchiveAndDirectoryFilter extends FileFilter {
+        public boolean accept(File file) {
+           if (file.isDirectory())
+               return true;
+                   
+           String fileName = file.getName();
+           int dot = fileName.lastIndexOf('.');
+           if (dot < 0)
+               return false;
+           String extension = fileName.substring(dot);
+           return archiveExtensionSet.contains(extension);
+        }
+        public String getDescription() { return "Java archives (*.jar,*.zip,*.ear,*.war)"; }
+    };
+
+    /** The instance of ArchiveAndDirectoryFilter. */
+    private static final FileFilter archiveAndDirectoryFilter = new ArchiveAndDirectoryFilter();
     
     /* ----------------------------------------------------------------------
      * Constants
@@ -1450,8 +1480,9 @@ public class FindBugsFrame extends javax.swing.JFrame {
     
     private void browseSrcDirButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_browseSrcDirButtonActionPerformed
 	JFileChooser chooser = createFileChooser();
-        chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-	int rc = chooseFile(chooser, "Add source directory");
+	chooser.setFileFilter(archiveAndDirectoryFilter);
+        chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+	int rc = chooseFile(chooser, "Add source directory or archive");
         if (rc == JFileChooser.APPROVE_OPTION) {
             srcDirTextField.setText(chooser.getSelectedFile().getPath());
             addSourceDirToList();
@@ -1466,31 +1497,9 @@ public class FindBugsFrame extends javax.swing.JFrame {
         addJarToList();
     }//GEN-LAST:event_jarNameTextFieldActionPerformed
     
-    private static final HashSet<String> archiveExtensionSet = new HashSet<String>();
-    static {
-        archiveExtensionSet.add(".jar");
-        archiveExtensionSet.add(".zip");
-        archiveExtensionSet.add(".ear");
-        archiveExtensionSet.add(".war");
-    }
-    
     private void browseJarButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_browseJarButtonActionPerformed
 	JFileChooser chooser = createFileChooser();
-        FileFilter filter = new FileFilter() {
-            public boolean accept(File file) {
-                   if (file.isDirectory())
-                       return true;
-                   
-                   String fileName = file.getName();
-                   int dot = fileName.lastIndexOf('.');
-                   if (dot < 0)
-                       return false;
-                   String extension = fileName.substring(dot);
-                   return archiveExtensionSet.contains(extension);
-            }
-            public String getDescription() { return "Java archives (*.jar,*.zip,*.ear,*.war)"; }
-        };
-        chooser.setFileFilter(filter);
+        chooser.setFileFilter(archiveAndDirectoryFilter);
         chooser.setMultiSelectionEnabled(true);
         chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
         
