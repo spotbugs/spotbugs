@@ -151,7 +151,6 @@ public class SignatureConverter {
 		result.append(className);
 		result.append('.');
 		result.append(methodName);
-		result.append(' ');
 		result.append(args.toString());
 
 		return result.toString();
