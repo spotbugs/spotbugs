@@ -17,7 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-// $Revision: 1.9 $
+// $Revision: 1.10 $
 
 package edu.umd.cs.findbugs.graph;
 
@@ -121,9 +121,14 @@ public class StronglyConnectedComponents
 		SearchTree<VertexType> copy = new SearchTree<VertexType>(t.getOriginalGraphVertex(tree.getVertex()));
 
 		// Copy children
-		Iterator<SearchTree<VertexType>> i = tree.childIterator();
+		// FIXME: Eclipse/Cheetah lossage.
+		// It complains "Type mismatch: cannot convert from Iterator<SearchTree<VertexType>>
+		// to Iterator<SearchTree<VertexType>>".
+		// Changed to use raw types.
+//		Iterator<SearchTree<VertexType>> i = tree.childIterator();
+		Iterator i = tree.childIterator();
 		while (i.hasNext()) {
-			SearchTree<VertexType> child = i.next();
+			SearchTree<VertexType> child = (SearchTree<VertexType>) i.next();
 			copy.addChild(copySearchTree(child, t));
 		}
 

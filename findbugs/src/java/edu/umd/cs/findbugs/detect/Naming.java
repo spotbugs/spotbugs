@@ -142,13 +142,12 @@ public class Naming extends PreorderVisitor implements Detector, Constants2 {
 
 	public void report() {
 
-		canonicalNameIterator: for (Iterator<Map.Entry<String, HashSet<String>>> i
-		        = canonicalToTrueMapping.entrySet().iterator();
-		                            i.hasNext();) {
-			Map.Entry<String, HashSet<String>> e = i.next();
-			HashSet<String> s = e.getValue();
-			if (s.size() <= 1) continue;
-			String allSmall = e.getKey();
+	canonicalNameIterator:
+		for (Iterator<String> i = canonicalToTrueMapping.keySet().iterator(); i.hasNext(); ) {
+			String allSmall = i.next();
+			HashSet<String> s = canonicalToTrueMapping.get(allSmall);
+			if (s.size() <= 1)
+				continue;
 			HashSet<MyMethod> conflictingMethods = canonicalToMyMethod.get(allSmall);
 			for (Iterator<MyMethod> j = conflictingMethods.iterator(); j.hasNext();) {
 				if (checkSuper(j.next(), conflictingMethods))
