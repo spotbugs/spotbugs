@@ -469,12 +469,18 @@
     <target name="docfilesHTMLCheck">
       <condition property="docfiles.html.uptodate">
         <and>
-          <!-- Generated html files must be newer than src html files -->
+          <!-- Generated html and css files must be newer than src html and css files -->
           <uptodate>
             <srcfiles dir="${findbugs.dir}" includes="src/doc/*.html"/>
             <mapper type="glob"
                     from="src/doc/*.html"
                     to="${doc.dir}/*.html"/>
+          </uptodate>
+          <uptodate>
+            <srcfiles dir="${findbugs.dir}" includes="src/doc/*.css"/>
+            <mapper type="glob"
+                    from="src/doc/*.css"
+                    to="${doc.dir}/*.css"/>
           </uptodate>
           <!-- And, generated html files must be newer than etc/doc.properties -->
           <uptodate targetfile="${html.uptodate.stamp}">
@@ -489,7 +495,7 @@
             depends="version,tools,docfilesHTMLCheck,bugDescriptions"
             unless="docfiles.html.uptodate">
        <copy todir="${doc.dir}" overwrite="true">
-         <fileset dir="${doc.src.dir}" includes="*.html"/>
+         <fileset dir="${doc.src.dir}" includes="*.html,*.css"/>
          <filterset refid="docFilters"/>
       </copy>
       <touch file="${html.uptodate.stamp}"/>
