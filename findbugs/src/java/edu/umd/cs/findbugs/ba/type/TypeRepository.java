@@ -99,10 +99,13 @@ public class TypeRepository {
 	/**
 	 * Constructor.
 	 * Creates an empty type repository.
+	 * @param resolver the ClassResolver that will be used to
+	 *   find inheritance hierarchy information for classes
 	 */
-	public TypeRepository() {
-		signatureToTypeMap = new HashMap<String, Type>();
-		inheritanceGraph = new InheritanceGraph();
+	public TypeRepository(ClassResolver resolver) {
+		this.signatureToTypeMap = new HashMap<String, Type>();
+		this.inheritanceGraph = new InheritanceGraph();
+		this.resolver = resolver;
 	}
 
 	/**
@@ -217,7 +220,7 @@ public class TypeRepository {
 	 * @param subclass the subclass
 	 * @param superclass the superclass
 	 */
-	public void addSuperclassLink(ObjectType subclass, ObjectType superclass) throws UnknownTypeException {
+	public void addSuperclassLink(ObjectType subclass, ObjectType superclass) {
 		inheritanceGraph.createEdge(subclass, superclass, InheritanceGraphEdgeTypes.CLASS_EDGE);
 	}
 
@@ -226,7 +229,7 @@ public class TypeRepository {
 	 * @param implementor the class or interface directly implementing the interface (i.e., the subtype)
 	 * @param iface the implemented interface (i.e., the supertype)
 	 */
-	public void addInterfaceLink(ObjectType implementor, ClassType iface) throws UnknownTypeException {
+	public void addInterfaceLink(ObjectType implementor, ClassType iface) {
 		inheritanceGraph.createEdge(implementor, iface, InheritanceGraphEdgeTypes.INTERFACE_EDGE);
 	}
 
@@ -239,103 +242,100 @@ public class TypeRepository {
 	public boolean isSubtype(ObjectType subtype, ObjectType supertype) throws ClassNotFoundException {
 		if (Debug.VERIFY_INTEGRITY) {
 			if (!inheritanceGraph.containsVertex(subtype))
-				throw new IllegalStateException("Inheritance graph does not contain node " + subtype.getSignature());
+				throw new IllegalStateException("Inheritance graph does not contain node " +
+					subtype.getSignature());
 			if (!inheritanceGraph.containsVertex(supertype))
-				throw new IllegalStateException("Inheritance graph does not contain node " + supertype.getSignature());
+				throw new IllegalStateException("Inheritance graph does not contain node " +
+					supertype.getSignature());
 		}
 
 		// TODO: precompute subtypes and store in a table of bit vectors
 		// based on type ids.  That would be really fast.
 		// For now, we do a slow traversal of the inheritance graph.
 
-		if (!supertype.isInterface()) {
-			// Check superclasses: this works for both class instance
-			// and array types.
-			while (true) {
-				if (subtype.equals(supertype))
-					return true;
+		// Breadth first search through superinterfaces
+		// and interfaces implemented by superclasses
 
-/*
-				if (subtype.getState() == )
-					// FIME: dynamic lookup to find the supertypes
-					throw new ClassNotFoundException("Unknown superclass for class " + subtype.getSignature());
-*/
-				// Ensure supertypes for the class are known
-				resolveObjectType(subtype);
+		// TODO: cache the result as a bit vector of type ids.
 
-				ObjectType directSuperclass = getSuperclass(subtype);
-				if (directSuperclass == null) {
-					// No superclass: we must have reached java.lang.Object,
-					// which terminates the search.
-					if (Debug.CHECK_ASSERTIONS && !subtype.getSignature().equals("Ljava/lang/Object;"))
-						throw new IllegalStateException("Class " + subtype.getSignature() +
-							" has no supertypes, but is not java.lang.Object");
-					return false;
-				}
+		// Work queue
+		LinkedList<ObjectType> work = new LinkedList<ObjectType>();
+		work.add(subtype);
 
-				subtype = directSuperclass;
+		// Keep track of where we've been
+		HashSet<ObjectType> visited = new HashSet<ObjectType>();
+
+		// Keep track of missing classes
+		LinkedList<String> missingClassList = new LinkedList<String>();
+
+		boolean answer = false;
+
+		// Until we have examined all supertypes...
+		while (!work.isEmpty()) {
+			ObjectType type = work.removeFirst();
+			if (!visited.add(type))
+				continue;
+
+			if (type.equals(supertype)) {
+				answer = true;
+				// NOTE: we keep going finding all supertypes,
+				// in order that when we finished we have enumerated
+				// the complete set of supertypes, which could
+				// then be cached.
 			}
+
+			try {
+				// Resolve the type so we know its supertypes.
+				resolveObjectType(type);
+
+				// Add all supertypes to work queue.
+				for (Iterator<ObjectType> i = inheritanceGraph.successorIterator(type); i.hasNext(); )
+					work.add(i.next());
+			} catch (ClassNotFoundException e) {
+				String missingClassName = ClassNotFoundExceptionParser.getMissingClassName(e);
+				if (missingClassName == null)
+					missingClassName = "<unknown class>";
+				missingClassList.add(missingClassName);
+			}
+		}
+
+		// Search terminated without finding the superinterface.
+		// If no part of the class hierarchy was unknown,
+		// then we have a definitive answer.  Otherwise,
+		// throw an exception.
+		if (missingClassList.isEmpty()) {
+			// TODO: cache bit vector of known supertypes
+			return answer;
 		} else {
-			// Breadth first search through superinterfaces
-			// and interfaces implemented by superclasses
-
-			// TODO: cache the result as a bit vector of type ids.
-
-			LinkedList<ObjectType> work = new LinkedList<ObjectType>();
-			work.add(subtype);
-
-			HashSet<ObjectType> visited = new HashSet<ObjectType>();
-
-			LinkedList<String> missingClassList = new LinkedList<String>();
-
-			boolean answer = false;
-
-			while (!work.isEmpty()) {
-				ObjectType type = work.removeFirst();
-				if (visited.add(type))
-					continue;
-
-				if (type.equals(supertype)) {
-					answer = true;
-					break;
-				}
-
-				try {
-					// Resolve the type so we know its supertypes.
-					resolveObjectType(type);
-
-					// Add all supertypes to work queue.
-					for (Iterator<ObjectType> i = inheritanceGraph.successorIterator(type); i.hasNext(); )
-						work.add(i.next());
-				} catch (ClassNotFoundException e) {
-					String missingClassName = ClassNotFoundExceptionParser.getMissingClassName(e);
-					if (missingClassName == null)
-						missingClassName = "<unknown class>";
-					missingClassList.add(missingClassName);
-				}
-			}
-
-			// Search terminated without finding the superinterface.
-			// If no part of the class hierarchy was unknown,
-			// then we have a definitive answer.  Otherwise,
-			// throw an exception.
-			if (missingClassList.isEmpty()) {
-				// TODO: cache bit vector of known supertypes
-				return answer;
-			} else
-				throw new ClassNotFoundException("Class not found: " + missingClassList);
+			// FIXME: the answer could conceivably be "true"
+			// at this point, even though there were missing classes.
+			// Perhaps we should just answer the query in that case,
+			// since the answer is definite.
+			throw new ClassNotFoundException("Class not found: " + missingClassList);
 		}
 	}
 
-	public ObjectType getSuperclass(ObjectType type) throws ClassNotFoundException {
+	/**
+	 * Get the superclass of a class type.
+	 * @param type the class type
+	 * @return the ClassType representing the class's superclass,
+	 *    or null if the type has no superclass (i.e., is java.lang.Object)
+	 */
+	public ClassType getSuperclass(ClassType type) throws ClassNotFoundException {
 		resolveObjectType(type);
 
 		for (Iterator<InheritanceGraphEdge> i = inheritanceGraph.outgoingEdgeIterator(type); i.hasNext(); ) {
 			InheritanceGraphEdge edge = i.next();
-			if (edge.getType() == InheritanceGraphEdgeTypes.CLASS_EDGE)
-				return edge.getTarget();
+			if (edge.getType() == InheritanceGraphEdgeTypes.CLASS_EDGE) {
+				ObjectType supertype = edge.getTarget();
+				if (!(supertype instanceof ClassType))
+					throw new IllegalStateException("Class type " + type.getClassName() +
+						" has non-class type " + supertype.getSignature() + " as its superclass");
+				// TODO: cache result
+				return (ClassType) supertype;
+			}
 		}
-		throw new UnknownSupertypesException(type);
+		return null;
 	}
 
 	/* ----------------------------------------------------------------------
