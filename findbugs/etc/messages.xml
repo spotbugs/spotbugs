@@ -466,6 +466,27 @@ It is a fast detector.
     </Details>
   </Detector>
 
+  <Detector class="edu.umd.cs.findbugs.detect.FindMaskedFields">
+    <Details>
+<![CDATA[
+<p> This detector looks for class level fields that are masked by
+local fields defined in methods.
+It is a fast detector.
+]]>
+    </Details>
+  </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.FindMaskedFields">
+    <Details>
+<![CDATA[
+<p> This detector looks for class level fields that are masked by
+local fields defined in methods.
+It is a fast detector.
+]]>
+    </Details>
+  </Detector>
+
+
   <Detector class="edu.umd.cs.findbugs.detect.FindBugsSummaryStats">
     <Details>
 <![CDATA[
@@ -473,6 +494,30 @@ It is a fast detector.
 ]]>
     </Details>
   </Detector>
+
+  <BugPattern type="MF_METHOD_MASKS_FIELD">
+    <ShortDescription>Method might define a field that masks a class level field</ShortDescription>
+    <LongDescription>Method might define a field that masks a class level field</LongDescription>
+    <Details>
+<![CDATA[
+<p> The method creates a field, and the field name is the same as a field defined at the
+class level. The method might initialize the local field instead of the class level field, and 
+a separate method may access the class field thinking it is initialized.
+]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="MF_CLASS_MASKS_FIELD">
+    <ShortDescription>Class might define a field that masks a superclass level field</ShortDescription>
+    <LongDescription>Class might define a field that masks a superclass level field</LongDescription>
+    <Details>
+<![CDATA[
+<p> The class defines a field, and the field name is the same as a non private field defined at the
+superclass level. The superclass might initialize the derived class field instead of the superclass level field, and 
+a method may access the superclass field thinking it is initialized.
+]]>
+    </Details>
+  </BugPattern>
 
   <!--
   **********************************************************************
@@ -2220,5 +2265,5 @@ directly. This avoids the need to create a second array
   <BugCode abbrev="SBSC">String concatenation in loop using + operator</BugCode>
   <BugCode abbrev="ITA">Inefficient use of collection.toArray(new Foo[0])</BugCode>
   <BugCode abbrev="SW">Swing coding rules</BugCode>
-
+  <BugCode abbrev="MF">Masked Field</BugCode>
 </MessageCollection>

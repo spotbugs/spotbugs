@@ -104,6 +104,8 @@
     reports="SBSC_USE_STRINGBUFFER_CONCATENATION"/>
   <Detector class="edu.umd.cs.findbugs.detect.InefficientToArray" speed="fast"
     reports="ITA_INEFFICIENT_TO_ARRAY"/>
+   <Detector class="edu.umd.cs.findbugs.detect.FindMaskedFields" speed="fast"
+     reports="MF_METHOD_MASKS_FIELD, MF_CLASS_MASKS_FIELD"/>
   <Detector class="edu.umd.cs.findbugs.detect.FindBugsSummaryStats" speed="fast" />
 
   <BugPattern abbrev="SW" type="SW_SWING_METHODS_INVOKED_IN_SWING_THREAD" category="CORRECTNESS" 
@@ -231,5 +233,9 @@
   <BugPattern abbrev="SBSC" type="SBSC_USE_STRINGBUFFER_CONCATENATION" category="PERFORMANCE"
     experimental="true"/>
   <BugPattern abbrev="ITA" type="ITA_INEFFICIENT_TO_ARRAY" category="PERFORMANCE"
+    experimental="true"/>
+  <BugPattern abbrev="MF" type="MF_METHOD_MASKS_FIELD" category="CORRECTNESS"
+    experimental="true"/>
+  <BugPattern abbrev="MF" type="MF_CLASS_MASKS_FIELD" category="CORRECTNESS"
     experimental="true"/>
 </FindbugsPlugin>
