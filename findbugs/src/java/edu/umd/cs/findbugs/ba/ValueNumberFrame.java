@@ -61,6 +61,7 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 	 * @param value the value(s) loaded
 	 */
 	public void addAvailableLoad(AvailableLoad availableLoad, ValueNumber[] value) {
+		if (value == null) throw new IllegalStateException();
 		availableLoadMap.put(availableLoad, value);
 	}
 
@@ -85,7 +86,10 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 			// Merge available load sets.
 			// Only loads that are available in both frames
 			// remain available. All others are discarded.
-			this.availableLoadMap.entrySet().retainAll(other.availableLoadMap.entrySet());
+			if (other.isBottom())
+				this.availableLoadMap.clear();
+			else if (!other.isTop())
+				this.availableLoadMap.entrySet().retainAll(other.availableLoadMap.entrySet());
 		}
 
 		// Merge slot values.
@@ -151,6 +155,21 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 		}
 
 		super.copyFrom(other);
+	}
+
+	public String toString() {
+		String frameValues = super.toString();
+		if (RLE_DEBUG) {
+			StringBuffer buf = new StringBuffer();
+			buf.append(frameValues);
+			Iterator<AvailableLoad> i = availableLoadMap.keySet().iterator();
+			while (i.hasNext()) {
+				buf.append(i.next() + ",");
+			}
+			return buf.toString();
+		} else {
+			return frameValues;
+		}
 	}
 }
 
