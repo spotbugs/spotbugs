@@ -52,8 +52,6 @@ public class AnalysisRun {
         public void reportBug(edu.umd.cs.findbugs.BugInstance bugInstance) {
             bugSet.add(bugInstance);
         }
-
-        private AnalysisErrorDialog errorDialog;
         
         public void beginReport() {
             errorDialog = new AnalysisErrorDialog(frame, true);
@@ -65,9 +63,6 @@ public class AnalysisRun {
         
 	public void endReport() {
             errorDialog.finish();
-            errorDialog.setSize(750, 520);
-            errorDialog.setLocationRelativeTo(null); // center the dialog
-            errorDialog.show();
         }
     }
 
@@ -77,6 +72,7 @@ public class AnalysisRun {
     private FindBugs findBugs;
     private Reporter reporter;
     private HashMap<String, DefaultTreeModel> treeModelMap;
+    private AnalysisErrorDialog errorDialog;
     
     /** Creates a new instance of AnalysisRun. */
     public AnalysisRun(Project project, FindBugsFrame frame) {
@@ -126,6 +122,17 @@ public class AnalysisRun {
         
         // Run the analysis!
         findBugs.execute(project.getJarFileArray());
+    }
+
+    /**
+     * Report any errors that may have occurred during analysis.
+     */
+    public void reportAnalysisErrors() {
+	if (errorDialog != null) {
+            errorDialog.setSize(750, 520);
+            errorDialog.setLocationRelativeTo(null); // center the dialog
+            errorDialog.show();
+	}
     }
     
     /**

@@ -1176,6 +1176,9 @@ public class FindBugsFrame extends javax.swing.JFrame {
         
         if (dialog.isCompleted()) {
             logger.logMessage(ConsoleLogger.INFO, "Analysis " + project + " completed");
+
+	    // Report any errors that might have occurred during analysis
+	    analysisRun.reportAnalysisErrors();
             
             // Now we have an analysis run to look at
             synchAnalysisRun(analysisRun);
