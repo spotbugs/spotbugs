@@ -129,7 +129,7 @@ public class FindBugs implements Constants2, ExitCodes {
 	/**
 	 * ClassProducer for single class files.
 	 */
-	private static class SingleClassProducer implements ClassProducer {
+	private class SingleClassProducer implements ClassProducer {
 		private URL url;
 
 		/**
@@ -149,6 +149,10 @@ public class FindBugs implements Constants2, ExitCodes {
 
 			URL urlToParse = url;
 			url = null; // don't return it next time
+
+			// ClassScreener may veto this class.
+			if (!classScreener.matches(urlToParse.toString()))
+				return null;
 
 			try {
 				return parseClass(urlToParse);
@@ -170,7 +174,7 @@ public class FindBugs implements Constants2, ExitCodes {
 	/**
 	 * ClassProducer for zip/jar archives.
 	 */
-	private static class ZipClassProducer implements ClassProducer {
+	private class ZipClassProducer implements ClassProducer {
 		private URL url;
 		private LinkedList<ArchiveWorkListItem> archiveWorkList;
 		private ZipInputStream zipInputStream;
@@ -196,6 +200,13 @@ public class FindBugs implements Constants2, ExitCodes {
 
 				try {
 					String entryName = zipEntry.getName();
+
+					// ClassScreener may veto this class.
+					if (!classScreener.matches(entryName)) {
+						// FIXME: Add archive URL to aux classpath
+						continue;
+					}
+
 					String fileExtension = getFileExtension(entryName);
 					if (fileExtension != null) {
 						if (fileExtension.equals(".class")) {
@@ -234,7 +245,7 @@ public class FindBugs implements Constants2, ExitCodes {
 	 * ClassProducer for directories.
 	 * The directory is scanned recursively for class files.
 	 */
-	private static class DirectoryClassProducer implements ClassProducer {
+	private class DirectoryClassProducer implements ClassProducer {
 		private Iterator<String> rfsIter;
 		private boolean containsSourceFiles;
 
@@ -258,9 +269,17 @@ public class FindBugs implements Constants2, ExitCodes {
 		}
 
 		public JavaClass getNextClass() throws IOException, InterruptedException {
-			if (!rfsIter.hasNext())
-				return null;
-			String fileName = rfsIter.next();
+			String fileName;
+			for (;;) {
+				if (!rfsIter.hasNext())
+					return null;
+				fileName = rfsIter.next();
+				if (classScreener.matches(fileName)) {
+					break;
+				} else {
+					// FIXME: add directory URL to aux classpath
+				}
+			}
 			try {
 				return parseClass(new URL("file:" + fileName));
 			} catch (ClassFormatException e) {
@@ -345,6 +364,7 @@ public class FindBugs implements Constants2, ExitCodes {
 		private String stylesheet = null;
 		private Project project = new Project();
 		private boolean quiet = false;
+		private ClassScreener classScreener = new ClassScreener();
 		private String filterFile = null;
 		private boolean include = false;
 		private boolean setExitCode = false;
@@ -457,6 +477,18 @@ public class FindBugs implements Constants2, ExitCodes {
 				}
 			} else if (option.equals("-bugCategories")) {
 				handleBugCategories(argument);
+			} else if (option.equals("-onlyAnalyze")) {
+				// The argument is a comma-separated list of classes and packages
+				// to select to analyze.  (If a list item ends with ".*",
+				// it specifies a package, otherwise it's a class.)
+				StringTokenizer tok = new StringTokenizer(argument, ",");
+				while (tok.hasMoreTokens()) {
+					String item = tok.nextToken();
+					if (item.endsWith(".*"))
+						classScreener.addAllowedPackage(item.substring(0, item.length() - ".*".length()));
+					else
+						classScreener.addAllowedClass(item);
+				}
 			} else if (option.equals("-exclude") || option.equals("-include")) {
 				filterFile = argument;
 				include = option.equals("-include");
@@ -523,6 +555,8 @@ public class FindBugs implements Constants2, ExitCodes {
 			if (filterFile != null)
 				findBugs.setFilter(filterFile, include);
 
+			findBugs.setClassScreener(classScreener);
+
 			return findBugs;
 		}
 	}
@@ -568,6 +602,7 @@ public class FindBugs implements Constants2, ExitCodes {
 	private List<ClassObserver> classObserverList;
 	private Detector detectors [];
 	private FindBugsProgress progressCallback;
+	private ClassScreener classScreener;
 	private AnalysisContext analysisContext;
 	private String currentClass;
 
@@ -611,6 +646,9 @@ public class FindBugs implements Constants2, ExitCodes {
 			}
 		};
 
+		// Class screener
+		this.classScreener = new ClassScreener();
+
 		addClassObserver(bugReporter);
 	}
 
@@ -645,6 +683,17 @@ public class FindBugs implements Constants2, ExitCodes {
 	 */
 	public void addClassObserver(ClassObserver classObserver) {
 		classObserverList.add(classObserver);
+	}
+
+	/**
+	 * Set the ClassScreener.
+	 * This object chooses which individual classes to analyze.
+	 * By default, all classes are analyzed.
+	 *
+	 * @param classScreener the ClassScreener to use
+	 */
+	public void setClassScreener(ClassScreener classScreener) {
+		this.classScreener = classScreener;
 	}
 
 	/**
