@@ -14,17 +14,21 @@
 
 <h1>FindBugs Change Log</h1>
 
-<p> Changes since version 0.8.4:
-
+<p> Changes since version 0.8.3:
 <ul>
-<li> new detector to find instanceof usage where inheritance can be determined statically (Dave Brosius)
-<li> Allow URLs to be specified to analyze zip/jar files and single classfiles. (Dave Hovemeyer)
-<li> new detector to find ResultSet.getXXX updateXXX calls using index 0 (Dave Brosius)
-<li> Fix the Switch Fall Thru detector (Dave Brosius, Dave Hovemeyer, Bill Pugh)
-<li> MacOS GUI fixes (Rohan Lloyd)
-<li> New detector to find empty zip or jar entries (Bill Pugh)
-<li> Allow win32 to show source code in jar files (Dave Brosius)
-<li> Fix false positive in BOA in case where method is correctly and 'incorrectly' overridden (Dave Brosius)
+<li> Initial and preliminary localization of the Swing GUI.&nbsp; Translations by:
+	<ul>
+		<li>German - Peter D. Stout, Holger Stenzhorn</li>
+		<li>Finnish - Juha Knuutila</li>
+		<li>Estonian - Tanel Lebedev</li>
+		<li>Japanese - Hanai Shisei</li>
+	</ul>
+</li>
+<li> Eliminated debug print statements inadvertently left enabled
+<li> Reverted some changes in the open stream detector:
+     this should fix some false positives that were introduced in
+     the previous release
+<li> Fixed a couple missing class reports
 </ul>
 
 <p> Changes since version 0.8.2:
