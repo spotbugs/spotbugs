@@ -2,7 +2,6 @@
 <classpath>
 	<classpathentry excluding="**/CVS/*" kind="src" path="src/java"/>
 	<classpathentry excluding="**/CVS/*" kind="src" path="src/junit"/>
-	<classpathentry kind="src" path="test"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/AppleJavaExtensions.jar"/>
 	<classpathentry kind="lib" path="lib/bcel.jar"/>
