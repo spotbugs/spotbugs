@@ -4,7 +4,6 @@
   <Detector class="edu.umd.cs.findbugs.detect.FindDoubleCheck" speed="fast" />
   <Detector class="edu.umd.cs.findbugs.detect.FindFinalizeInvocations" speed="fast" />
   <Detector class="edu.umd.cs.findbugs.detect.FindHEmismatch" speed="fast" />
-  <Detector class="edu.umd.cs.findbugs.detect.FindInconsistentSync" speed="slow" disabled="true" />
   <Detector class="edu.umd.cs.findbugs.detect.FindNakedNotify" speed="fast" />
   <Detector class="edu.umd.cs.findbugs.detect.FindReturnRef" speed="fast" />
   <Detector class="edu.umd.cs.findbugs.detect.FindRunInvocations" speed="fast" />
