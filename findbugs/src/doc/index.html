@@ -68,26 +68,8 @@ invited talk, MASPLAS 2003
 <p> Changes since version 0.7.0:
 
 <ul>
-<li> Eclipse plugin (contributed by Peter Friese)
-<li> Source package structure rearranged: all source
-     (other than Eclipse plugin UI) is in
-     the edu.umd.cs.findbugs package, or a subpackage
-<li> Class-Path attributes of manifests of analyzed jar files are
-     used to set the aux classpath automatically (Peter D. Stout)
-<li> GUI starts in directory specified by user.home property (Peter D. Stout)
-<li> Added -project option to GUI (Mikko T.)
-<li> Added -look:{plastic,gtk,native} option to GUI, for setting
-     look and feel (Mikko T.)
-<li> Fixed DataflowAnalysisException in inconsistent synchronization detector
-<li> Ant task supports failOnError parameter (Rohan Lloyd)
-<li> Serializable class warnings are downgraded to low priority for
-     GUI classes
-<li> MWN detector will only report calls to wait(), notify(),
-     and notifyAll() methods that have the correct signature
-<li> FindBugs works with latest CVS version of BCEL
-<li> Zip and Jar files may be added to the source path
-<li> The GUI will automatically find source files residing in
-     analyzed Zip or Jar files
+<li> Fixed NullPointerException when checking Class-Path attribute for
+     Jar files without manifests
 </ul>
 
 <p> <a href="Changes.html">Older versions...</a>
