@@ -66,9 +66,9 @@ public class Project implements XMLWriteable {
 	private Map<String, Boolean> optionsMap;
 
 	/**
-	 * The list of jar files.
+	 * The list of project files.
 	 */
-	private LinkedList<String> jarList;
+	private LinkedList<String> fileList;
 
 	/**
 	 * The list of source directories.
@@ -97,7 +97,7 @@ public class Project implements XMLWriteable {
 		this.projectFileName = UNNAMED_PROJECT;
 		optionsMap = new HashMap<String, Boolean>();
 		optionsMap.put(RELATIVE_PATHS, Boolean.FALSE);
-		jarList = new LinkedList<String>();
+		fileList = new LinkedList<String>();
 		srcDirList = new LinkedList<String>();
 		auxClasspathEntryList = new LinkedList<String>();
 		isModified = false;
@@ -110,7 +110,7 @@ public class Project implements XMLWriteable {
 		Project dup = new Project();
 		dup.projectFileName = this.projectFileName;
 		dup.optionsMap.putAll(this.optionsMap);
-		dup.jarList.addAll(this.jarList);
+		dup.fileList.addAll(this.fileList);
 		dup.srcDirList.addAll(this.srcDirList);
 		dup.auxClasspathEntryList.addAll(this.auxClasspathEntryList);
 
@@ -134,7 +134,7 @@ public class Project implements XMLWriteable {
 	/**
 	 * Get the project filename.
 	 */
-	public String getFileName() {
+	public String getProjectFileName() {
 		return projectFileName;
 	}
 
@@ -143,22 +143,22 @@ public class Project implements XMLWriteable {
 	 *
 	 * @param projectFileName the new filename
 	 */
-	public void setFileName(String projectFileName) {
+	public void setProjectFileName(String projectFileName) {
 		this.projectFileName = projectFileName;
 	}
 
 	/**
-	 * Add a Jar file to the project.
+	 * Add a file to the project.
 	 *
-	 * @param fileName the jar file to add
-	 * @return true if the jar file was added, or false if the jar
+	 * @param fileName the file to add
+	 * @return true if the file was added, or false if the
 	 *         file was already present
 	 */
-	public boolean addJar(String fileName) {
-		return addToListInternal(jarList, makeAbsoluteCWD(fileName));
+	public boolean addFile(String fileName) {
+		return addToListInternal(fileList, makeAbsoluteCWD(fileName));
 	}
 
-	/*
+	/**
 	 * Add a source directory to the project.
 	 * @param dirName the directory to add
 	 * @return true if the source directory was added, or false if the
@@ -180,39 +180,39 @@ public class Project implements XMLWriteable {
 	}
 
 	/**
-	 * Get the number of jar files in the project.
+	 * Get the number of files in the project.
 	 *
-	 * @return the number of jar files in the project
+	 * @return the number of files in the project
 	 */
-	public int getNumJarFiles() {
-		return jarList.size();
+	public int getFileCount() {
+		return fileList.size();
 	}
 
 	/**
-	 * Get the given Jar file.
+	 * Get the given file in the list of project files.
 	 *
-	 * @param num the number of the jar file
-	 * @return the name of the jar file
+	 * @param num the number of the file in the list of project files
+	 * @return the name of the file
 	 */
-	public String getJarFile(int num) {
-		return jarList.get(num);
+	public String getFile(int num) {
+		return fileList.get(num);
 	}
 
 	/**
-	 * Remove jar file at given index.
+	 * Remove file at the given index in the list of project files
 	 *
-	 * @param num index of the jar file to remove
+	 * @param num index of the file to remove in the list of project files
 	 */
-	public void removeJarFile(int num) {
-		jarList.remove(num);
+	public void removeFile(int num) {
+		fileList.remove(num);
 		isModified = true;
 	}
 
 	/**
-	 * Get the list of jar files, directories, and zip file.
+	 * Get the list of files, directories, and zip files in the project.
 	 */
-	public List<String> getJarFileList() {
-		return jarList;
+	public List<String> getFileList() {
+		return fileList;
 	}
 
 	/**
@@ -245,10 +245,10 @@ public class Project implements XMLWriteable {
 	}
 
 	/**
-	 * Get Jar files as an array of Strings.
+	 * Get project files as an array of Strings.
 	 */
-	public String[] getJarFileArray() {
-		return (String[]) jarList.toArray(new String[jarList.size()]);
+	public String[] getFileArray() {
+		return (String[]) fileList.toArray(new String[fileList.size()]);
 	}
 
 	/**
@@ -410,7 +410,7 @@ public class Project implements XMLWriteable {
 
 		// Prime the worklist by adding the zip/jar files
 		// in the project.
-		for (Iterator<String> i = jarList.iterator(); i.hasNext();) {
+		for (Iterator<String> i = fileList.iterator(); i.hasNext();) {
 			String fileName = i.next();
 
 			try {
@@ -458,10 +458,10 @@ public class Project implements XMLWriteable {
 				Attributes mainAttrs = manifest.getMainAttributes();
 				String classPath = mainAttrs.getValue("Class-Path");
 				if (classPath != null) {
-					String[] jarList = classPath.split("\\s+");
+					String[] fileList = classPath.split("\\s+");
 
-					for (int i = 0; i < jarList.length; ++i) {
-						String jarFile = jarList[i];
+					for (int i = 0; i < fileList.length; ++i) {
+						String jarFile = fileList[i];
 						URL referencedURL = workList.createRelativeURL(jarFileURL, jarFile);
 						if (workList.add(new WorkListItem(referencedURL))) {
 							implicitClasspath.add(referencedURL.toString());
@@ -503,7 +503,7 @@ public class Project implements XMLWriteable {
 		PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(outputFile)));
 		try {
 			writer.println(JAR_FILES_KEY);
-			for (Iterator<String> i = jarList.iterator(); i.hasNext();) {
+			for (Iterator<String> i = fileList.iterator(); i.hasNext();) {
 				String jarFile = i.next();
 				if (useRelativePaths)
 					jarFile = convertToRelative(jarFile, relativeBase);
@@ -556,7 +556,7 @@ public class Project implements XMLWriteable {
 			inputFile = file.getAbsolutePath();
 
 		// Store the project filename
-		setFileName(inputFile);
+		setProjectFileName(inputFile);
 
 		BufferedReader reader = null;
 
@@ -568,7 +568,7 @@ public class Project implements XMLWriteable {
 			if (line == null || !line.equals(JAR_FILES_KEY))
 				throw new IOException("Bad format: missing jar files key");
 			while ((line = getLine(reader)) != null && !line.equals(SRC_DIRS_KEY)) {
-				addToListInternal(jarList, line);
+				addToListInternal(fileList, line);
 			}
 
 			if (line == null)
@@ -597,7 +597,7 @@ public class Project implements XMLWriteable {
 			// paths, using the absolute path of the project
 			// file as a base directory.
 			if (getOption(RELATIVE_PATHS)) {
-				makeListAbsoluteProject(jarList);
+				makeListAbsoluteProject(fileList);
 				makeListAbsoluteProject(srcDirList);
 				makeListAbsoluteProject(auxClasspathEntryList);
 			}
@@ -656,7 +656,7 @@ public class Project implements XMLWriteable {
 	public void writeXML(XMLOutput xmlOutput) throws IOException {
 		xmlOutput.openTag(BugCollection.PROJECT_ELEMENT_NAME);
 
-		XMLOutputUtil.writeElementList(xmlOutput, JAR_ELEMENT_NAME, jarList);
+		XMLOutputUtil.writeElementList(xmlOutput, JAR_ELEMENT_NAME, fileList);
 		XMLOutputUtil.writeElementList(xmlOutput, AUX_CLASSPATH_ENTRY_ELEMENT_NAME, auxClasspathEntryList);
 		XMLOutputUtil.writeElementList(xmlOutput, SRC_DIR_ELEMENT_NAME, srcDirList);
 

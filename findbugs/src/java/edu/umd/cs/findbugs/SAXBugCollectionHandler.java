@@ -74,7 +74,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 					// Project element
 					String filename = attributes.getValue("filename");
 					if (filename != null)
-						project.setFileName(filename);
+						project.setProjectFileName(filename);
 				} else if (qName.equals("BugInstance")) {
 					// BugInstance element - get required type and priority attributes
 					String type = getRequiredAttribute(attributes, "type", qName);
@@ -179,7 +179,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 			} else if (outerElement.equals("Project")) {
 				//System.out.println("Adding project element " + qName + ": " + textBuffer.toString());
 				if (qName.equals("Jar"))
-					project.addJar(textBuffer.toString());
+					project.addFile(textBuffer.toString());
 				else if (qName.equals("SrcDir"))
 					project.addSourceDir(textBuffer.toString());
 				else if (qName.equals("AuxClasspathEntry"))

@@ -121,7 +121,7 @@ public class FindBugsWorker {
 						"Resource: " + fileName //$NON-NLS-1$
 						+ ": in sync: " + res.isSynchronized(IResource.DEPTH_INFINITE)); //$NON-NLS-1$
 				}
-				findBugsProject.addJar(fileName);
+				findBugsProject.addFile(fileName);
 			}
 		}
 

@@ -417,7 +417,7 @@ public class Reporter extends AbstractBugReporter {
 		}
 		if (!workStarted) {
 			workStarted = true;
-			int filesNumber = findBugsProject.getNumJarFiles();
+			int filesNumber = findBugsProject.getFileCount();
 			if (!(monitor instanceof SubProgressMonitor)) {
 				monitor.beginTask("Performing bug checking...", filesNumber);
 			}

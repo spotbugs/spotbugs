@@ -822,7 +822,7 @@ public class FindBugs implements Constants2, ExitCodes {
 		// they can also be zip files, directories,
 		// and single class files.
 		LinkedList<ArchiveWorkListItem> archiveWorkList = new LinkedList<ArchiveWorkListItem>();
-		for (Iterator<String> i = project.getJarFileList().iterator(); i.hasNext(); ) {
+		for (Iterator<String> i = project.getFileList().iterator(); i.hasNext(); ) {
 			String fileName = i.next();
 			archiveWorkList.add(new ArchiveWorkListItem(fileName, true));
 		}
@@ -1353,9 +1353,9 @@ public class FindBugs implements Constants2, ExitCodes {
 
 		Project project = commandLine.getProject();
 		for (int i = argCount; i < argv.length; ++i)
-			project.addJar(argv[i]);
+			project.addFile(argv[i]);
 
-		if (project.getNumJarFiles() == 0) {
+		if (project.getFileCount() == 0) {
 			System.out.println("FindBugs version " + Version.RELEASE + ", " + Version.WEBSITE);
 			System.out.println("Usage: findbugs -textui [options...] [jar/zip/class files, directories...]");
 			System.out.println("Options:");

@@ -1799,7 +1799,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 			return;
 
 		try {
-			String filename = current.getFileName();
+			String filename = current.getProjectFileName();
 			Project project = new Project();
 			project.read(filename);
 			setProject(null);
@@ -1828,7 +1828,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 		boolean hasProject = getCurrentProject() != null;
 		saveProjectItem.setEnabled(hasProject);
 		saveProjectAsItem.setEnabled(hasProject);
-		reloadProjectItem.setEnabled(hasProject && !getCurrentProject().getFileName().equals(Project.UNNAMED_PROJECT));
+		reloadProjectItem.setEnabled(hasProject && !getCurrentProject().getProjectFileName().equals(Project.UNNAMED_PROJECT));
 		closeProjectItem.setEnabled(hasProject);
 
 		// Save bugs is only enabled if there is a current analysis run
@@ -1976,7 +1976,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	private void findBugsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_findBugsButtonActionPerformed
 		Project project = getCurrentProject();
 
-		if (project.getNumJarFiles() == 0) {
+		if (project.getFileCount() == 0) {
 			logger.logMessage(ConsoleLogger.ERROR, MessageFormat.format(L10N.getLocalString("msg.projectnojars_txt", "Project {0} has no Jar files selected"), new Object[]{project}));
 			return;
 		}
@@ -2095,7 +2095,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 		int[] selIndices = jarFileList.getSelectedIndices();
 		for (int i = selIndices.length - 1; i >= 0; i--) {
 			int sel = selIndices[i];
-			project.removeJarFile(sel);
+			project.removeFile(sel);
 			listModel.remove(sel);
 		}
 	}//GEN-LAST:event_removeJarButtonActionPerformed
@@ -2618,7 +2618,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 				return true;
 
 			File file;
-			String fileName = project.getFileName();
+			String fileName = project.getProjectFileName();
 
 			if (!fileName.startsWith("<") && !chooseFilename) {
 				file = new File(fileName);
@@ -2639,7 +2639,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
 			project.write(file.getPath(), useRelativePaths, file.getParent());
 			logger.logMessage(ConsoleLogger.INFO, "Project saved");
-			project.setFileName(file.getPath());
+			project.setProjectFileName(file.getPath());
 
 			UserPreferences prefs = UserPreferences.getUserPreferences();
 			prefs.useProject(file.getPath());
@@ -2699,8 +2699,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
 		DefaultListModel jarListModel = (DefaultListModel) jarFileList.getModel();
 		jarListModel.clear();
-		for (int i = 0; i < project.getNumJarFiles(); ++i) {
-			jarListModel.addElement(project.getJarFile(i));
+		for (int i = 0; i < project.getFileCount(); ++i) {
+			jarListModel.addElement(project.getFile(i));
 		}
 
 		DefaultListModel srcDirListModel = (DefaultListModel) sourceDirList.getModel();
@@ -2936,7 +2936,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	 */
 	private void addJarToProject(String jarFile) {
 		Project project = getCurrentProject();
-		if (project.addJar(jarFile)) {
+		if (project.addFile(jarFile)) {
 			DefaultListModel listModel = (DefaultListModel) jarFileList.getModel();
 			listModel.addElement(jarFile);
 		}
