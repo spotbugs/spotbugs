@@ -55,6 +55,11 @@ public class StackDepthAnalysis extends ForwardDataflowAnalysis<StackDepth> {
 		fact.setDepth(TOP);
 	}
 
+	public boolean isFactValid(StackDepth fact) {
+		int depth = fact.getDepth();
+		return depth != TOP && depth != BOTTOM;
+	}
+
 	public void copy(StackDepth source, StackDepth dest) {
 		dest.setDepth(source.getDepth());
 	}
@@ -71,39 +76,15 @@ public class StackDepthAnalysis extends ForwardDataflowAnalysis<StackDepth> {
 		return fact1.getDepth() == fact2.getDepth();
 	}
 
-	public void transfer(BasicBlock basicBlock, InstructionHandle end, StackDepth start, StackDepth result) {
-		int depth = start.getDepth();
-
-		if (basicBlock.isExceptionHandler())
-			depth = 1;
-
-		if (depth != TOP && depth != BOTTOM) {
-			Iterator<InstructionHandle> i = basicBlock.instructionIterator();
-			while (i.hasNext()) {
-				InstructionHandle handle = i.next();
-				if (handle == end)
-					break;
-
-				Instruction ins = handle.getInstruction();
-				int produced = ins.produceStack(cpg);
-				if (produced == Constants.UNPREDICTABLE) {
-					System.out.println("*** unpredictable stack production: " + handle);
-					depth = BOTTOM;
-					break;
-				}
-				depth += produced;
-
-				int consumed = ins.consumeStack(cpg);
-				if (consumed == Constants.UNPREDICTABLE) {
-					System.out.println("*** unpredictable stack consumption: " + handle);
-					depth = BOTTOM;
-					break;
-				}
-				depth -= consumed;
-			}
-		}
-
-		result.setDepth(depth);
+	public void transferInstruction(InstructionHandle handle, StackDepth fact) throws DataflowAnalysisException {
+		Instruction ins = handle.getInstruction();
+		int produced = ins.produceStack(cpg);
+		int consumed = ins.consumeStack(cpg);
+		if (produced == Constants.UNPREDICTABLE || consumed == Constants.UNPREDICTABLE)
+			throw new IllegalStateException("Unpredictable stack delta for instruction: " + handle);
+		int depth = fact.getDepth();
+		depth += (produced - consumed);
+		fact.setDepth(depth);
 	}
 
 	public void meetInto(StackDepth fact, Edge edge, StackDepth result) {

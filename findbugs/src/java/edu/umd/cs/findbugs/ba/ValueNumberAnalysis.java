@@ -65,7 +65,7 @@ public class ValueNumberAnalysis extends ForwardDataflowAnalysis<ValueNumberFram
 		fact.setTop();
 	}
 
-	public void isFactValid() {
+	public boolean isFactValid(ValueNumberFrame fact) {
 		return fact.isValid();
 	}
 
@@ -73,7 +73,7 @@ public class ValueNumberAnalysis extends ForwardDataflowAnalysis<ValueNumberFram
 		return fact1.sameAs(fact2);
 	}
 
-	public void transfer(BasicBlock basicBlock, InstructionHandle end, ValueNumberFrame start, ValueNumberFrame result) throws DataflowAnalysisException {
+	public void transferInstruction(InstructionHandle handle, ValueNumberFrame fact) throws DataflowAnalysisException {
 		// TODO: implement
 	}
 
