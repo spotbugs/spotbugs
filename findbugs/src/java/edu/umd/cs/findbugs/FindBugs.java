@@ -376,14 +376,6 @@ public class FindBugs implements Constants2, ExitCodes
 	bugReporter.reportQueuedErrors();
   }
 
-  public void summary( OutputStream out ) {
-     for ( int i = 0; i < detectors.length; i++ ) {
-       if ( detectors[i] instanceof SummaryReport ) {
-         ((SummaryReport)detectors[i]).reportSummary( out );
-       }
-     }
-  }
-
   /**
    * Get the number of bug instances that were reported during analysis.
    */

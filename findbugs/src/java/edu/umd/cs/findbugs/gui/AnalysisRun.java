@@ -119,7 +119,8 @@ public class AnalysisRun {
 
         // Get the summary!
         ByteArrayOutputStream out = new ByteArrayOutputStream( 8096 );
-        findBugs.summary( out );
+	ProjectStats stats = reporter.getProjectStats();
+	stats.reportSummary( out );
         transformSummary( out.toString() );
         out.close();
 

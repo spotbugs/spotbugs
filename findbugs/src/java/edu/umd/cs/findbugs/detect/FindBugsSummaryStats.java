@@ -28,14 +28,8 @@ import java.io.*;
 
 import org.apache.bcel.classfile.*;
 
-import org.dom4j.Document;
-import org.dom4j.DocumentHelper;
-import org.dom4j.io.XMLWriter;
-import org.dom4j.io.OutputFormat;
-
-
 public class FindBugsSummaryStats extends PreorderVisitor 
-                                  implements Detector, BugReporterObserver, SummaryReport {
+                                  implements Detector, BugReporterObserver {
   private BugReporter bugReporter;
   private ProjectStats stats;
 
@@ -50,21 +44,6 @@ public class FindBugsSummaryStats extends PreorderVisitor
   }
 
   public void report() { }
-
-  public void reportSummary( OutputStream out ) {
-     Document document = DocumentHelper.createDocument();
-
-     stats.setDate(new Date());
-     stats.toElement(document);
-
-     try {
-       XMLWriter writer = new XMLWriter(out, OutputFormat.createPrettyPrint());
-       writer.write(document);
-     }
-     catch ( Exception e ) {
-       e.printStackTrace();
-     }
-  }
 
   public void visit(JavaClass obj)     {
     super.visit(obj);
