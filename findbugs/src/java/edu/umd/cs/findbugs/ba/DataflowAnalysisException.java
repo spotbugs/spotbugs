@@ -35,6 +35,15 @@ public class DataflowAnalysisException extends Exception {
 	 * @param msg message describing the reason for the exception
 	 */
 	public DataflowAnalysisException(String msg) { super(msg); }
+
+	/**
+	 * Constructor from message and another Throwable object.
+	 * @param msg message describing the reason for the exception
+	 * @param cause a Throwable which is the cause of the exception
+	 */
+	public DataflowAnalysisException(String msg, Throwable cause) {
+		super(msg, cause);
+	}
 }
 
 // vim:ts=4
