@@ -70,7 +70,7 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock> {
 			// If needed, update frame status
 			if (status != -1) {
 				frame.setStatus(status);
-				if (status == ResourceValueFrame.CREATED)
+				if (status == ResourceValueFrame.OPEN)
 					frame.setValue(frame.getNumSlots() - 1, ResourceValue.instance());
 			}
 		}
@@ -88,10 +88,10 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock> {
 		}
 
 		public Lock isResourceCreation(BasicBlock basicBlock, InstructionHandle handle, ConstantPoolGen cpg) {
-			Instruction ins = handle.getInstruction();
-			if (!(ins instanceof INVOKEVIRTUAL))
+
+			InvokeInstruction inv = toInvokeInstruction(handle.getInstruction());
+			if (inv == null)
 				return null;
-			INVOKEVIRTUAL inv = (INVOKEVIRTUAL) ins;
 
 			String className = inv.getClassName(cpg);
 			String methodName = inv.getName(cpg);
@@ -111,10 +111,10 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock> {
 
 		public boolean isResourceClose(BasicBlock basicBlock, InstructionHandle handle, ConstantPoolGen cpg, Lock resource,
 			ResourceValueFrame frame) throws DataflowAnalysisException {
-			Instruction ins = handle.getInstruction();
-			if (!(ins instanceof INVOKEVIRTUAL))
+
+			InvokeInstruction inv = toInvokeInstruction(handle.getInstruction());
+			if (inv == null)
 				return false;
-			INVOKEVIRTUAL inv = (INVOKEVIRTUAL) ins;
 
 			String className = inv.getClassName(cpg);
 			String methodName = inv.getName(cpg);
@@ -140,6 +140,13 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock> {
 		public ResourceValueFrameModelingVisitor createVisitor(Lock resource, ConstantPoolGen cpg) {
 			return new LockFrameModelingVisitor(cpg, this, resource);
 		}
+
+		private static final InvokeInstruction toInvokeInstruction(Instruction ins) {
+			short opcode = ins.getOpcode();
+			if (opcode != Constants.INVOKEVIRTUAL && opcode != Constants.INVOKEINTERFACE)
+				return null;
+			return (InvokeInstruction) ins;
+		}
 	}
 
 	/* ----------------------------------------------------------------------
@@ -158,7 +165,8 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock> {
 
 	public boolean prescreen(ClassContext classContext, Method method) {
 		BitSet bytecodeSet = classContext.getBytecodeSet(method);
-		return bytecodeSet.get(Constants.NEW) && bytecodeSet.get(Constants.INVOKEVIRTUAL);
+		return bytecodeSet.get(Constants.NEW)
+			&& (bytecodeSet.get(Constants.INVOKEVIRTUAL) || bytecodeSet.get(Constants.INVOKEINTERFACE));
 	}
 
 	public ResourceTracker<Lock> getResourceTracker() {
@@ -188,6 +196,29 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock> {
 				.addSourceLine(methodGen, sourceFile, resource.getLocation().getHandle())
 			);
 		}
+	}
+
+	/* ----------------------------------------------------------------------
+	 * Test main() driver
+	 * ---------------------------------------------------------------------- */
+
+	public static void main(String[] argv) throws Exception {
+		if (argv.length != 3) {
+			System.err.println("Usage: " + FindUnreleasedLock.class.getName() + " <class file> <method name> <bytecode offset>");
+			System.exit(1);
+		}
+
+		String classFile = argv[0];
+		String methodName = argv[1];
+		int offset = Integer.parseInt(argv[2]);
+
+		ResourceValueAnalysisTestDriver<Lock> driver = new ResourceValueAnalysisTestDriver<Lock>() {
+			public ResourceTracker<Lock> createResourceTracker(RepositoryLookupFailureCallback lookupFailureCallback) {
+				return new LockResourceTracker(lookupFailureCallback);
+			}
+		};
+
+		driver.execute(classFile, methodName, offset);
 	}
 }
 
