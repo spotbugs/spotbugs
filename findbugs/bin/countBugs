@@ -1,8 +1,6 @@
 #! /bin/sh
 
-# Merge new FindBugs saved XML results into an existing annotated
-# results file, preserving the annotations for the bugs which are
-# unchanged.
+# Count bug warnings in a saved FindBugs XML result file.
 
 # This script contains code taken from the "bin/ant" script from
 # Apache Ant (http://ant.apache.org).  So, this file is distributed
