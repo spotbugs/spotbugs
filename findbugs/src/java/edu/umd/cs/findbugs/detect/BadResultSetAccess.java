@@ -25,14 +25,14 @@ import java.util.*;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.visitclass.Constants2;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.Type; 
+
 
 public class BadResultSetAccess extends BytecodeScanningDetector implements Constants2 {
-	static final int SEEN_NOTHING = 0;
-	static final int SEEN_ICONST_0 = 1;
-	static final int SEEN_ANEWARRAY = 2;
 
 	static private Set<String> dbFieldTypesSet = new HashSet<String>() 
 	{
@@ -63,55 +63,42 @@ public class BadResultSetAccess extends BytecodeScanningDetector implements Cons
 		add("URL");
 		}
 	};
-
+	
+	private OpcodeStack stack;
 	private BugReporter bugReporter;
-	private int state = SEEN_NOTHING;
-	private int iConst0_PC = 0;
 	
 	public BadResultSetAccess(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 	}
 	
 	public void visit(Method obj) {
-		state = SEEN_NOTHING;
+		stack = new OpcodeStack();
 		super.visit(obj);
 	}
 
 	public void sawOpcode(int seen) {
-		switch (state) {
-			case SEEN_NOTHING:
-				if (seen == ICONST_0) {
-					state = SEEN_ICONST_0;
-					iConst0_PC = getPC();
-				}
-				break;
-			
-			case SEEN_ICONST_0:
-				if ((seen == INVOKEINTERFACE)
-				&&  (getClassConstantOperand().equals("java/sql/ResultSet"))) {
-					String methodName = getNameConstantOperand();
-					
-					int pcOffset = getPC() - iConst0_PC;
-					if ((pcOffset <= 1)
-					&&  (methodName.startsWith("get"))
-					&&  (dbFieldTypesSet.contains(methodName.substring(3)))) {
-						state = SEEN_NOTHING;
-						bugReporter.reportBug(new BugInstance("BRSA_BAD_RESULTSET_ACCESS", NORMAL_PRIORITY)
-						        .addClassAndMethod(this)
-						        .addSourceLine(this));
+		try {
+			if ((seen == INVOKEINTERFACE)
+			&&  (getClassConstantOperand().equals("java/sql/ResultSet"))) {
+				String methodName = getNameConstantOperand();
+				if ((methodName.startsWith("get") && dbFieldTypesSet.contains(methodName.substring(3)))
+				||  (methodName.startsWith("update") && dbFieldTypesSet.contains(methodName.substring(6)))) {
+					String signature = getSigConstantOperand();
+					Type[] argTypes = Type.getArgumentTypes(signature);
+					int numParms = argTypes.length;
+					if (stack.getStackDepth() >= numParms) {
+						OpcodeStack.Item item = stack.getStackItem(numParms-1);
+						Object cons = item.getConstant();
+						if ((cons != null) && ("I".equals(item.getSignature())) && (((Integer) cons).intValue() == 0)) {
+							bugReporter.reportBug(new BugInstance("BRSA_BAD_RESULTSET_ACCESS", NORMAL_PRIORITY)
+							        .addClassAndMethod(this)
+							        .addSourceLine(this));
+						}
 					}
-					else if (((pcOffset < 3) && (pcOffset > 1))
-					&&       (methodName.startsWith("update"))
-					&&       (dbFieldTypesSet.contains(methodName.substring(6)))) {
-						state = SEEN_NOTHING;
-						bugReporter.reportBug(new BugInstance("BRSA_BAD_RESULTSET_ACCESS", NORMAL_PRIORITY)
-						        .addClassAndMethod(this)
-						        .addSourceLine(this));
-					} 
-				}
-				if ((getPC() - iConst0_PC) > 2)     
-					state = SEEN_NOTHING;
-				break;
+				} 
+			}
+		} finally {
+			stack.sawOpcode(this, seen);
 		}
 	}
 }
