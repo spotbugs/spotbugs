@@ -10,22 +10,20 @@
        Set this to the location where you installed the generics-enabled
        version of javac.
      -->
-    <property name="jsr14.home" value="/export/home/daveho/linux/java/jsr14_adding_generics-1_3-ea"/>
 <!--
-    <property name="jsr14.home" value="/home/software/java/jsr14_adding_generics-1_3-ea"/>
+    <property name="jsr14.home" value="/export/home/daveho/linux/java/jsr14_adding_generics-1_3-ea"/>
 -->
+    <property name="jsr14.home" value="/home/software/java/jsr14_adding_generics-1_3-ea"/>
 
     <!-- You should not need to change anything beyond this point. -->
 
-    <property name="findbugs.dir" value="../findbugs" />
+    <property name="findbugs.dir" value="." />
     <property name="findbugs.src.dir" value="${findbugs.dir}/src" />
     <property name="findbugs.jar.name" value="findbugs.jar" />
-    <property name="findbugsgui.dir" value="." />
-    <property name="findbugsgui.src.dir" value="${findbugsgui.dir}/src" />
     <property name="findbugsgui.jar.name" value="findbugsGUI.jar" />
-    <property name="doc.dir" value="${findbugsgui.dir}/doc" />
-    <property name="web.dir" value="${findbugsgui.dir}/web" />
-    <property name="build.dir" value="${findbugsgui.dir}/build" />
+    <property name="doc.dir" value="${findbugs.dir}/doc" />
+    <property name="web.dir" value="${findbugs.dir}/web" />
+    <property name="build.dir" value="${findbugs.dir}/build" />
     <property name="jar.dir" value="${build.dir}/lib" />
     <property name="class.dir" value="${build.dir}/classes" />
     <property name="release.dir" value="${build.dir}/release" />
@@ -57,6 +55,7 @@
     <!-- target to build the main engine -->
     <target name="findbugs" depends="init">
       <javac srcdir="${findbugs.src.dir}" destdir="${class.dir}"
+             excludes="${findbugs.src.dir}/edu/umd/cs/findbugs/gui/*"
              source="1.5"
              compiler="com.cortexeb.Jsr14CompilerAdapter">
         <classpath refid="classpath" />
@@ -79,7 +78,7 @@
       </uptodate>
 
       <jar destfile="${jar.dir}/${findbugs.jar.name}"
-           basedir="${class.dir}" manifest="${findbugs.dir}/etc/MANIFEST.MF" />
+           basedir="${class.dir}" manifest="${findbugs.dir}/etc/MANIFEST-findbugs.MF" />
     </target>
 
 
@@ -95,13 +94,14 @@
          because the class files from the findbugs target are available
          in ${class.dir}.
       -->
-      <javac srcdir="${findbugsgui.src.dir}" destdir="${class.dir}">
+      <javac srcdir="${findbugs.src.dir}" destdir="${class.dir}"
+             includes="edu/umd/cs/findbugs/gui/*.java">
         <classpath refid="classpath" />
       </javac>
 
       <copy todir="${class.dir}">
-        <fileset dir="${findbugsgui.src.dir}" includes="**/*.png"/>
-        <fileset dir="${findbugsgui.src.dir}" includes="**/*.html"/>
+        <fileset dir="${findbugs.src.dir}" includes="**/*.png"/>
+        <fileset dir="${findbugs.src.dir}" includes="**/*.html"/>
       </copy>
 
       <uptodate property="findbugsgui.jarBuild.notRequired" 
@@ -109,9 +109,17 @@
          <srcfiles dir="${class.dir}" />
       </uptodate>
 
+      <!--
+        When building the Jar file for the GUI, we just need the contents
+        of the edu/umd/cs/findbugs/gui directory (and subdirectories).
+        The main engine is picked up by having findbugs.jar in the
+        Class-Path attribute of the manifest for findbugsGUI.jar.
+      -->
       <jar destfile="${jar.dir}/${findbugsgui.jar.name}"
-           basedir="${class.dir}" 
-           manifest="${findbugsgui.dir}/etc/MANIFEST.MF" />
+           manifest="${findbugs.dir}/etc/MANIFEST-findbugsGUI.MF">
+        <fileset dir="${class.dir}" includes="edu/umd/cs/findbugs/gui/*" />
+        <fileset dir="${class.dir}" includes="edu/umd/cs/findbugs/gui/help/*" />
+      </jar>
     </target>
 
     <!-- target to get the release version info -->
