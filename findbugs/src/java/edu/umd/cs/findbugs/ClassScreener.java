@@ -54,7 +54,7 @@ public class ClassScreener {
 	 * @param className name of a class that should be matched
 	 */
 	public void addAllowedClass(String className) {
-		String classRegex = "^.*\\Q" + className.replace('.', '/') + "\\E\\.class$";
+		String classRegex = "\\Q" + className.replace('.', '/') + "\\E\\.class$";
 		if (DEBUG) System.out.println("Class regex: " + classRegex);
 		patternList.add(Pattern.compile(classRegex));
 	}
@@ -67,8 +67,22 @@ public class ClassScreener {
 	 */
 	public void addAllowedPackage(String packageName) {
 		// Note: \u0024 is the dollar sign ("$")
-		String packageRegex = "^.*\\Q" + packageName.replace('.', '/') + "\\E" +
+		String packageRegex = "\\Q" + packageName.replace('.', '/') + "\\E" +
 			"\\/[A-Za-z_\\u0024][A-Za-z_\\u0024\\d]*\\.class$";
+		if (DEBUG) System.out.println("Package regex: " + packageRegex);
+		patternList.add(Pattern.compile(packageRegex));
+	}
+
+	/**
+	 * Add the name of a package that should be matched by the screener.
+	 * All class files that appear to be in the package should be matched.
+	 *
+	 * @param packageName name of the package that should be matched
+	 */
+	public void addAllowedPrefix(String prefix) {
+		if (DEBUG) System.out.println("Allowed prefix: " + prefix);
+		// Note: \u0024 is the dollar sign ("$")
+		String packageRegex = "\\Q" + prefix.replace('.', '/') + "\\E";
 		if (DEBUG) System.out.println("Package regex: " + packageRegex);
 		patternList.add(Pattern.compile(packageRegex));
 	}
@@ -89,7 +103,7 @@ public class ClassScreener {
 			Pattern pattern = i.next();
 			if (DEBUG) System.out.print("\tTrying [" + pattern.toString());
 			Matcher matcher = pattern.matcher(fileName);
-			if (matcher.matches()) {
+			if (matcher.find()) {
 				if (DEBUG) System.out.println("]: yes!");
 				return true;
 			}

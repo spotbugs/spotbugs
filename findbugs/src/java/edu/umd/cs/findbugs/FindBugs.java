@@ -642,8 +642,11 @@ public class FindBugs implements Constants2, ExitCodes {
 				StringTokenizer tok = new StringTokenizer(argument, ",");
 				while (tok.hasMoreTokens()) {
 					String item = tok.nextToken();
-					if (item.endsWith(".*"))
-						classScreener.addAllowedPackage(item.substring(0, item.length() - ".*".length()));
+					System.out.println(item);
+					if (item.endsWith(".-"))
+						classScreener.addAllowedPrefix(item.substring(0, item.length() - 1));
+					else if (item.endsWith(".*"))
+						classScreener.addAllowedPackage(item.substring(0, item.length() - 1));
 					else
 						classScreener.addAllowedClass(item);
 				}
