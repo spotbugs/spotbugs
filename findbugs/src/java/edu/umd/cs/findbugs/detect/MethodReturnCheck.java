@@ -70,12 +70,15 @@ public class MethodReturnCheck extends BytecodeScanningDetector {
 	private BitSet branchTargetSet;
 	private List<QueuedWarning> queuedWarningList;
 	private List<Integer> popList;
+	private List<Integer> retValPopList;
 	private ClassContext classContext;
 	private Method method;
 	private int state;
 	private int callPC;
 	private String className, methodName, signature;
 	private int popIsBranchTarget;
+	private int retValPopIsBranchTarget;
+	private boolean lastIsInvoke;
 	
 	public MethodReturnCheck(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
@@ -83,6 +86,7 @@ public class MethodReturnCheck extends BytecodeScanningDetector {
 		this.queuedWarningList = new LinkedList<QueuedWarning>();
 		if (COUNT_POP_BRANCH_TARGETS) {
 			this.popList = new LinkedList<Integer>();
+			this.retValPopList = new LinkedList<Integer>();
 		}
 	}
 	
@@ -137,6 +141,11 @@ public class MethodReturnCheck extends BytecodeScanningDetector {
 		if (DEBUG) System.out.println("resetting state");
 		branchTargetSet.clear();
 		queuedWarningList.clear();
+		if (COUNT_POP_BRANCH_TARGETS) {
+			popList.clear();
+			retValPopList.clear();
+			lastIsInvoke = false;
+		}
 		method = null;
 	}
 	
@@ -155,8 +164,12 @@ public class MethodReturnCheck extends BytecodeScanningDetector {
 			}
 		}
 		
-		if (COUNT_POP_BRANCH_TARGETS && isPop(seen)) {
-			popList.add(new Integer(getPC()));
+		if (COUNT_POP_BRANCH_TARGETS) {
+			if (isPop(seen)) {
+				popList.add(new Integer(getPC()));
+				if (lastIsInvoke)
+					retValPopList.add(new Integer(getPC()));
+			}
 		}
 		
 		boolean redo;
@@ -200,6 +213,11 @@ public class MethodReturnCheck extends BytecodeScanningDetector {
 			default:
 			}
 		} while (redo);
+
+		if (COUNT_POP_BRANCH_TARGETS) {
+			lastIsInvoke = INVOKE_OPCODE_SET.get(seen);
+		}
+
 	}
 
 	private boolean isPop(int seen) {
@@ -226,9 +244,10 @@ public class MethodReturnCheck extends BytecodeScanningDetector {
 	public void report() {
 		if (COUNT_POP_BRANCH_TARGETS) {
 			System.out.println(
-					"Observed " +
-					popIsBranchTarget +
-					" pop instructions which were branch targets");
+					"Observed:\n" +
+					"\t" + popIsBranchTarget + " pops which were branch targets\n" +
+					"\t" + retValPopIsBranchTarget + " return value pops which were branch targets"
+					);
 		}
 	}
 }
