@@ -122,7 +122,6 @@ public class CFGPrinter {
 			ClassContext classContext = analysisContext.getClassContext(cls);
 
 			Method[] methods = cls.getMethods();
-			ConstantPoolGen cp = new ConstantPoolGen(cls.getConstantPool());
 			String methodName = System.getProperty("cfg.method");
 
 			for (int i = 0; i < methods.length; ++i) {
