@@ -51,6 +51,20 @@ public class BindingSet {
 			return binding;
 		return parent != null ? parent.lookup(varName) : null;
 	}
+
+	public String toString() {
+		StringBuffer buf = new StringBuffer();
+		BindingSet cur = this;
+		buf.append('[');
+		while (cur != null) {
+			if (cur != this)
+				buf.append(", ");
+			buf.append(cur.binding.toString());
+			cur = cur.parent;
+		}
+		buf.append(']');
+		return buf.toString();
+	}
 }
 
 // vim:ts=4

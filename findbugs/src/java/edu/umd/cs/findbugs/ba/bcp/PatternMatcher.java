@@ -182,7 +182,8 @@ public class PatternMatcher implements DFSEdgeTypes {
 
 			// Try to match the instruction against the pattern element.
 			boolean isWild = patternElement instanceof Wild;
-			if (DEBUG && (!isWild || SHOW_WILD)) System.out.println("Match " + patternElement + " against " + handle + "...");
+			if (DEBUG && (!isWild || SHOW_WILD)) System.out.println("Match " + patternElement + " against " + handle + " " +
+				(bindingSet != null ? bindingSet.toString() : "[]") + "...");
 			bindingSet = patternElement.match(handle, cpg, before, after, bindingSet);
 			if (DEBUG && (!isWild || SHOW_WILD)) System.out.println("\t" + ((bindingSet != null) ? " ==> MATCH" : " ==> NOT A MATCH"));
 			if (bindingSet == null)

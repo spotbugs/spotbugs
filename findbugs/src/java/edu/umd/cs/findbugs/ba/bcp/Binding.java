@@ -45,6 +45,14 @@ public class Binding {
 
 	/** Get the variable of the variable. */
 	public Variable getVariable() { return variable; }
+
+	public String toString() {
+		StringBuffer buf = new StringBuffer();
+		buf.append(varName);
+		buf.append('=');
+		buf.append(variable.toString());
+		return buf.toString();
+	}
 }
 
 // vim:ts=4
