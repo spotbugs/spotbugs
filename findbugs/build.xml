@@ -114,6 +114,7 @@
     <target name="classes" depends="init">
       <javac srcdir="${findbugs.src.dir}" destdir="${class.dir}"
              source="1.5"
+             debug="true"
              compiler="com.cortexeb.Jsr14CompilerAdapter">
         <classpath refid="classpath" />
       </javac>
@@ -140,13 +141,6 @@
     <!-- Target to build the core plugin.
          This is all of the standard bug pattern detectors.  -->
     <target name="coreplugin" depends="classes">
-
-      <javac srcdir="${findbugs.src.dir}" destdir="${class.dir}"
-             includes="edu/umd/cs/findbugs/detect/*.java"
-             source="1.5"
-             compiler="com.cortexeb.Jsr14CompilerAdapter">
-        <classpath refid="classpath" />
-      </javac>
 
       <copy file="etc/findbugs.xml" todir="${class.dir}" />
       <copy file="etc/messages.xml" todir="${class.dir}" />
