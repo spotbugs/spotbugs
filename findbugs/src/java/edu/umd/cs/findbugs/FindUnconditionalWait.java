@@ -52,9 +52,9 @@ public class FindUnconditionalWait extends BytecodeScanningDetector implements  
 			break;
 		case 1:
 			if (seen == INVOKEVIRTUAL && nameConstant.equals("wait")) {
-//				bugReporter.reportBug(BugInstance.inMethod("UW_UNCOND_WAIT", UNKNOWN_PRIORITY, this));
 				bugReporter.reportBug(new BugInstance("UW_UNCOND_WAIT", NORMAL_PRIORITY)
-					.addClassAndMethod(this));
+					.addClassAndMethod(this)
+					.addSourceLine(this));
 				stage = 2;
 				}
 			break; 
