@@ -61,6 +61,8 @@ public class UseObjectEquals extends BytecodeScanningDetector implements Constan
 					        		.addSourceLine(this));
 					}
 					else if ((cls != null) && cls.isFinal()) {
+						if (item.getSignature().equals("Ljava/lang/Class;"))
+							return;
 						String methodClassName = getClassConstantOperand();
 						if (methodClassName.equals("java/lang/Object")) {
 							bugReporter.reportBug(new BugInstance("UOE_USE_OBJECT_EQUALS", LOW_PRIORITY)
