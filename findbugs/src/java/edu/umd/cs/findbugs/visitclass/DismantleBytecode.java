@@ -59,7 +59,16 @@ abstract public class DismantleBytecode extends PreorderVisitor implements   Con
   protected static final int R_REF = 4;
   protected int registerKind;
 
+  static HashMap<String,String>  replaceDashsWithDotsCache = new HashMap<String,String>();
+ 
 
+  synchronized static String replaceDashsWithDots(String c) {
+	String result = replaceDashsWithDotsCache.get(c);
+	if (result != null) return result;
+	result = c.replace('/','.');
+	replaceDashsWithDotsCache.put(c, result);
+	return result;
+	}
 
   /**
    * Meaning of bytecode operands
@@ -280,9 +289,11 @@ abstract public class DismantleBytecode extends PreorderVisitor implements   Con
 			    constantRef = constant_pool.getConstant(v);
 			    if (constantRef instanceof ConstantClass)  {
 				ConstantClass clazz = (ConstantClass)constantRef;
-				classConstant = getStringFromIndex(clazz.getNameIndex());
+				classConstant 
+					= getStringFromIndex(clazz.getNameIndex())
+					  .intern();
 				betterClassConstant 
-					= classConstant.replace('/','.');
+					= replaceDashsWithDots(classConstant);
 				}
 			    if (constantRef instanceof ConstantInteger) 
 				intConstant = ((ConstantInteger)constantRef).getBytes();
@@ -301,15 +312,19 @@ abstract public class DismantleBytecode extends PreorderVisitor implements   Con
 				ConstantCP cp = (ConstantCP) constantRef;
 				ConstantClass  clazz
 				  = (ConstantClass) constant_pool.getConstant(cp.getClassIndex());
-				classConstant = getStringFromIndex(clazz.getNameIndex());
+				classConstant  
+					= getStringFromIndex(clazz.getNameIndex())
+					  .intern();
 				betterClassConstant 
-					= classConstant.replace('/','.');
+					= replaceDashsWithDots(classConstant);
 				ConstantNameAndType sig 
 				  = (ConstantNameAndType) constant_pool.getConstant(cp.getNameAndTypeIndex());
 				nameConstant = getStringFromIndex(sig.getNameIndex());
-				sigConstant = getStringFromIndex(sig.getSignatureIndex());
+				sigConstant 
+				  = getStringFromIndex(sig.getSignatureIndex())
+				    .intern();
 				betterSigConstant 
-					= sigConstant.replace('/','.');
+					= replaceDashsWithDots(sigConstant);
 				StringBuffer ref = new StringBuffer(
 						5+betterClassConstant.length()
 						+nameConstant.length()
