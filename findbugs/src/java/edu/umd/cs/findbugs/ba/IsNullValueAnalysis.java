@@ -133,17 +133,18 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
 				tmpFact = modifyFrame(fact, tmpFact);
 				tmpFact.clearStack();
 
-				if (!ClassContext.PRUNE_INFEASIBLE_EXCEPTION_EDGES) {
-					// Downgrade to DNR if the handler is for CloneNotSupportedException
-					CodeExceptionGen handler = destBlock.getExceptionGen();
-					ObjectType catchType = handler.getCatchType();
-					if (catchType != null) {
-						String catchClass = catchType.getClassName();
-						if (catchClass.equals("java.lang.CloneNotSupportedException") ||
-							catchClass.equals("java.lang.InterruptedException")) {
-							for (int i = 0; i < tmpFact.getNumSlots(); ++i)
-								if (tmpFact.getValue(i).isDefinitelyNull())
-									tmpFact.setValue(i, IsNullValue.doNotReportValue());
+				// Downgrade NULL and NSP to DNR if the handler is for
+				// CloneNotSupportedException or InterruptedException
+				CodeExceptionGen handler = destBlock.getExceptionGen();
+				ObjectType catchType = handler.getCatchType();
+				if (catchType != null) {
+					String catchClass = catchType.getClassName();
+					if (catchClass.equals("java.lang.CloneNotSupportedException") ||
+						catchClass.equals("java.lang.InterruptedException")) {
+						for (int i = 0; i < tmpFact.getNumSlots(); ++i) {
+							IsNullValue value = tmpFact.getValue(i);
+							if (value.isDefinitelyNull() || value.isNullOnSomePath())
+								tmpFact.setValue(i, IsNullValue.doNotReportValue());
 						}
 					}
 				}
