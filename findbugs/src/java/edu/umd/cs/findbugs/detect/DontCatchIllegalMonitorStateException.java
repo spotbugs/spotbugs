@@ -31,17 +31,31 @@ public class DontCatchIllegalMonitorStateException
 
 
   BugReporter bugReporter;
+  HashSet<String> msgs = new HashSet<String>();
 
   public DontCatchIllegalMonitorStateException(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
         }
 
+   public void visit(ExceptionTable obj) {
+	if (false) {
+	String names[] = obj.getExceptionNames();
+	for(int i = 0; i < names.length; i++) 
+		if (names[i].equals("java.lang.Exception")
+			|| names[i].equals("java.lang.Throwable"))
+		System.out.println(names[i] + " thrown by " + betterMethodName);
+	}
+	}
    public void visit(CodeException obj) {
 	int type = obj.getCatchType();
 	if (type == 0) return;
 	String name = constant_pool.constantToString(
 		constant_pool.getConstant(type)); 
-	// System.out.println("Catching " + name);
+	if (false) {
+	  String msg = "Catching " + name + " in " + betterMethodName;
+	  if (msgs.add(msg))
+		System.out.println(msg);
+	}
 	if (name.equals("java.lang.IllegalMonitorStateException"))
 	  bugReporter.reportBug(new BugInstance("IMSE_DONT_CATCH_IMSE",HIGH_PRIORITY)
                                 .addClassAndMethod(this)
