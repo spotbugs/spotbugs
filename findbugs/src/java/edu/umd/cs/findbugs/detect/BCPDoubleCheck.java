@@ -8,7 +8,7 @@ import edu.umd.cs.daveho.ba.*;
 import edu.umd.cs.daveho.ba.bcp.*;
 
 public class BCPDoubleCheck implements Detector {
-	private static final boolean DEBUG = Boolean.getBoolean("bcp.debug");
+	private static final boolean DEBUG = Boolean.getBoolean("bcpdc.debug");
 
 	private BugReporter bugReporter;
 
@@ -71,6 +71,15 @@ public class BCPDoubleCheck implements Detector {
 					}
 					FieldVariable field = (FieldVariable) binding.getVariable();
 					if (field == null) throw new IllegalStateException("Hosed!");
+
+					if (DEBUG) {
+						System.out.println("Pattern match:");
+						Iterator<PatternElementMatch> pemIter = match.patternElementMatchIterator();
+						while (pemIter.hasNext()) {
+							PatternElementMatch pem = pemIter.next();
+							System.out.println("\t" + pem.toString());
+						}
+					}
 	
 					bugReporter.reportBug(new BugInstance("BCPDC_DOUBLECHECK", NORMAL_PRIORITY)
 						.addClass(methodGen.getClassName())
