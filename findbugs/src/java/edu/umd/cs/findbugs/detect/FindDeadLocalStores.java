@@ -51,7 +51,6 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.FindBugsAnalysisProperties;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
-import edu.umd.cs.findbugs.ba.AnalysisException;
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.ClassContext;
@@ -60,6 +59,7 @@ import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.LiveLocalStoreAnalysis;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.props.WarningPropertySet;
+import edu.umd.cs.findbugs.props.WarningPropertyUtil;
 
 /**
  * Find dead stores to local variables.
@@ -305,6 +305,14 @@ public class FindDeadLocalStores implements Detector {
 				// If in relaxed reporting mode, encode heuristic information.
 				if (AnalysisContext.currentAnalysisContext().getBoolProperty(
 						FindBugsAnalysisProperties.RELAXED_REPORTING_MODE)) {
+					// Add general-purpose warning properties
+					WarningPropertyUtil.addPropertiesForLocation(
+							propertySet,
+							classContext,
+							method,
+							location);
+					
+					// Turn all warning properties into BugProperties
 					propertySet.decorateBugInstance(bugInstance);
 				}
 				
