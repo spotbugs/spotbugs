@@ -54,46 +54,19 @@ public class DefaultSortedTableModel extends AbstractTableModel
 	public static final int NUM_SORT_DIREECTIONS = 3;
 	
 	private AbstractTableModel baseModel;
-	private JTableHeader baseHeader = null;
-	private MouseListener headerListener = new HeaderListener();
-	private TableCellRenderer baseRenderer = null;
-	private TableModelListener baseModelListener = null;
 	private List<Integer> viewToModelMapping;
 	private int sortDirection = SORT_ASCENDING_ORDER;
 	private int sortColumn = 0;
 	private ImageIcon upIcon, downIcon;
 	
 	
-	public DefaultSortedTableModel( AbstractTableModel model ) {
+	public DefaultSortedTableModel( AbstractTableModel model, JTableHeader header ) {
 		baseModel = model;
-		baseModelListener = new BaseTableModelListener();
-		model.addTableModelListener(baseModelListener);
-		setupMapping();
-		ClassLoader classLoader = this.getClass().getClassLoader();
-		upIcon = new ImageIcon(classLoader.getResource("edu/umd/cs/findbugs/gui/up.png"));
-		downIcon = new ImageIcon(classLoader.getResource("edu/umd/cs/findbugs/gui/down.png"));
-	}
-	
-	// Base Model handling
-	
-	public TableModel getBaseTableModel() {
-		return baseModel;
-	}
-	
-	public int getBaseModelIndex( int viewIndex ) {
-		return viewToModelMapping.get(viewIndex).intValue();
-	}
-	
-	public void setBaseTableHeader( JTableHeader header ) {
-		if (baseHeader != null) {
-			baseHeader.removeMouseListener(headerListener);
-			baseHeader.setDefaultRenderer(baseRenderer);
-		}
-		
-			
-		baseHeader = header;
-		baseHeader.addMouseListener(headerListener);
-		baseRenderer = baseHeader.getDefaultRenderer();
+		model.addTableModelListener(new BaseTableModelListener());
+
+		final JTableHeader baseHeader = header;
+		baseHeader.addMouseListener(new HeaderListener());
+		final TableCellRenderer baseRenderer = baseHeader.getDefaultRenderer();
 		baseHeader.setDefaultRenderer( new DefaultTableCellRenderer() {
 			public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
 				JLabel label = (JLabel)baseRenderer.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
@@ -109,11 +82,24 @@ public class DefaultSortedTableModel extends AbstractTableModel
 				}
 				return label;
 			}
- 
 		});
-		
+			
+		setupMapping();
+		ClassLoader classLoader = this.getClass().getClassLoader();
+		upIcon = new ImageIcon(classLoader.getResource("edu/umd/cs/findbugs/gui/up.png"));
+		downIcon = new ImageIcon(classLoader.getResource("edu/umd/cs/findbugs/gui/down.png"));
 	}
 	
+	// Base Model handling
+	
+	public TableModel getBaseTableModel() {
+		return baseModel;
+	}
+	
+	public int getBaseModelIndex( int viewIndex ) {
+		return viewToModelMapping.get(viewIndex).intValue();
+	}
+		
 	// Event handling
 	
 	public void fireTableCellUpdated( int row, int col ) {

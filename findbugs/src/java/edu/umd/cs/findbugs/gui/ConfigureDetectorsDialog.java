@@ -125,9 +125,8 @@ public class ConfigureDetectorsDialog extends javax.swing.JDialog {
                     L10N.getLocalString("dlg.enabled_lbl", "Enabled"),
                 });
 
-                DefaultSortedTableModel sortedModel = new DefaultSortedTableModel(m);
+                DefaultSortedTableModel sortedModel = new DefaultSortedTableModel(m, detectorTable.getTableHeader());
                 detectorTable.setModel(sortedModel);
-                sortedModel.setBaseTableHeader(detectorTable.getTableHeader());
             }
 
             detectorTableScrollPane.setViewportView(detectorTable);
