@@ -23,7 +23,9 @@
     -->
 
     <!-- Set this to the location where you installed the generics-enabled
-         version of javac. -->
+         version of javac.  Note: you need to install the JSR-14 Compiler Adapter,
+         http://www.thecortex.net/clover/generics/jsr14adapter-1.1.jar,
+         in the lib subdirectory of your Ant installation. -->
     <property name="jsr14.home"
               value="/export/home/daveho/linux/java/jsr14_adding_generics-1_3-ea"/>
 <!--
