@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs;
 import java.io.IOException;
 
 import java.util.Iterator;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -39,7 +40,7 @@ public class UnionResults {
 	public UnionResults(String origFilename, String newFilename) throws IOException, DocumentException {
 		this(new SortedBugCollection(), new SortedBugCollection(), new Project());
 		origCollection.readXML(origFilename, new Project());
-		origCollection.readXML(newFilename, this.project);
+		newCollection.readXML(newFilename, this.project);
 	}
 
 	public UnionResults(SortedBugCollection origCollection, SortedBugCollection newCollection, Project project) {
@@ -65,6 +66,14 @@ public class UnionResults {
 			if (matching == null)
 				result.add(bugInstance);
 			else {
+				// If all of the words in the new annotation are already
+				// in the old annotation, don't combine the annotations.
+				Set<String> oldWords = matching.getTextAnnotationWords();
+				Set<String> newWords = bugInstance.getTextAnnotationWords();
+				newWords.removeAll(oldWords);
+				if (newWords.isEmpty())
+					continue;
+
 				// Combine the annotations
 				StringBuffer buf = new StringBuffer();
 				buf.append(matching.getAnnotationText());
