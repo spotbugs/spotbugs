@@ -505,7 +505,7 @@ visible), they could trigger listener notification on the event dispatch thread.
     <LongDescription>Usage of GetResource in {1} may be unsafe if class is extended</LongDescription>
     <Details>
 <![CDATA[
-<p>Calling <tt>this.getClass().getResource(...)</tt> could give
+<p>Calling <code>this.getClass().getResource(...)</code> could give
 results other than expected if this class is extended by a class in 
 another package.
 ]]>
@@ -846,6 +846,10 @@ to use Object.clone(), which always returns an object of the correct type.
   the identity hash code, an arbitrary value assigned to the object
   by the VM).&nbsp; Therefore, the class is very likely to violate the
   invariant that equal objects must have equal hashcodes.
+  <p>If you don't want to define a hashCode method, and/or don't
+	believe the object will ever be put into a HashMap/Hashtable,
+	define the <code>hashCode()</code> method
+	to throw <code>UnsupportedOperationException</code>.
 ]]>
     </Details>
   </BugPattern>
