@@ -119,23 +119,6 @@ public abstract class AbstractGraph
 		return vertexList.size();
 	}
 
-	/**
-	 * Get the vertex whose label is given.
-	 * Very important: this method should only be used if
-	 * <ol>
-	 * <li> the vertex labels have not been modified, and 
-	 * <li> no vertices have been removed from the graph
-	 * </ol>
-	 */
-	public VertexType getVertexByLabel(int label) {
-		if (label < 0 || label >= vertexList.size())
-			throw new IllegalArgumentException("Vertex label " + label + " is out of bounds");
-		VertexType vertex = vertexList.get(label);
-		if (vertex.getLabel() != label)
-			throw new IllegalArgumentException("Graph vertices have been relabeled");
-		return vertex;
-	}
-
 	public Iterator<EdgeType> edgeIterator() {
 		return edgeList.iterator();
 	}
