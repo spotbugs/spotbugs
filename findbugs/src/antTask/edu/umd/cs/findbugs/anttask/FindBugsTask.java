@@ -413,9 +413,10 @@ public class FindBugsTask extends Task {
  
 		if ( outputFormat != null  && 
 			!( outputFormat.trim().equalsIgnoreCase("xml" ) || 
-			   outputFormat.trim().equalsIgnoreCase("text" ) ) ) { 
+			   outputFormat.trim().equalsIgnoreCase("text" ) ||
+			   outputFormat.trim().equalsIgnoreCase("emacs") ) ) { 
 			throw new BuildException( "output attribute must be either " +
-  									  "'text' or 'xml' for task <"
+  									  "'text', 'xml', or 'emacs' for task <"
 										+ getTaskName() + "/>",
 									  getLocation() );
 		}
@@ -483,9 +484,8 @@ public class FindBugsTask extends Task {
 		}
 
 		if ( sorted ) addArg("-sortByClass");
-		if ( outputFormat != null && 
-			 outputFormat.trim().equalsIgnoreCase("xml") ) {
-			addArg("-xml");
+		if ( outputFormat != null && !outputFormat.trim().equalsIgnoreCase("text") ) {
+			addArg("-" + outputFormat.trim().toLowerCase());
 		}
 		if ( quietErrors ) addArg("-quiet");
 		if ( reportLevel != null ) addArg("-" + reportLevel.trim().toLowerCase());
