@@ -20,7 +20,13 @@
 
 package edu.umd.cs.findbugs;
 
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.io.IOException;
 import java.io.OutputStream;
+import java.io.Reader;
+import java.io.StringReader;
+import java.io.Writer;
 
 import java.text.SimpleDateFormat;
 import java.text.DateFormat;
@@ -28,6 +34,13 @@ import java.text.DateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.transform.stream.StreamResult;
 
 import org.dom4j.Branch;
 import org.dom4j.Document;
@@ -80,6 +93,7 @@ public class ProjectStats implements XMLConvertible {
     totalErrors++;
   }
 
+  /** Convert to an XML element. */
   public Element toElement(Branch parent) {
      Element root = parent.addElement("FindBugsSummary");
      DateFormat df = new SimpleDateFormat( "EEE, d MMM yyyy HH:mm:ss Z" );
@@ -123,6 +137,38 @@ public class ProjectStats implements XMLConvertible {
     for (Iterator<BugInstance> i = bugCollection.iterator(); i.hasNext(); ) {
       addBug(i.next());
     }
+  }
+
+  /**
+   * Transform summary information to HTML.
+   * @param htmlWriter the Writer to write the HTML output to
+   */
+  public void transformSummaryToHTML(Writer htmlWriter)
+    throws IOException, TransformerException {
+
+    ByteArrayOutputStream summaryOut = new ByteArrayOutputStream( 8096 );
+    reportSummary( summaryOut );
+    String summaryXML = summaryOut.toString();
+
+
+    StreamSource in = new StreamSource( new StringReader( summaryXML ) );
+    StreamResult out = new StreamResult( htmlWriter );
+    InputStream xslInputStream = this.getClass().getClassLoader().getResourceAsStream("summary.xsl");
+    if ( xslInputStream == null )
+      throw new IOException("Could not load summary stylesheet");
+    StreamSource xsl = new StreamSource( xslInputStream );
+  
+    TransformerFactory tf = TransformerFactory.newInstance();
+    Transformer transformer = tf.newTransformer( xsl );
+    transformer.transform( in, out );
+
+    Reader rdr = in.getReader();
+    if (rdr != null)
+      rdr.close();
+    htmlWriter.close();
+    InputStream is = xsl.getInputStream(); 
+    if (is != null)
+      is.close();
   }
 
   private PackageStats getPackageStats( String packageName ) {

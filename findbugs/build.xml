@@ -149,6 +149,7 @@
       <copy todir="${class.dir}">
         <fileset dir="${findbugs.src.dir}" includes="**/*.properties"/>
       </copy>
+      <copy file="${findbugs.dir}/etc/summary.xsl" todir="${class.dir}" />
 
       <!--
         FindBugs engine - all classes except those in the GUI,
@@ -185,7 +186,6 @@
         <fileset dir="${findbugs.src.dir}" includes="**/*.png"/>
         <fileset dir="${findbugs.src.dir}" includes="**/*.html"/>
       </copy>
-      <copy file="${findbugs.dir}/etc/summary.xsl" todir="${class.dir}" />
 
       <!--
         When building the Jar file for the GUI, we just need the contents
@@ -197,7 +197,6 @@
            manifest="${findbugs.dir}/etc/MANIFEST-findbugsGUI.MF">
         <fileset dir="${class.dir}" includes="edu/umd/cs/findbugs/gui/*" />
         <fileset dir="${class.dir}" includes="edu/umd/cs/findbugs/gui/help/*" />
-        <fileset dir="${class.dir}" includes="*.xsl" />
       </jar>
     </target>
 

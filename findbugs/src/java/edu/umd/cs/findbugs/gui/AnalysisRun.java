@@ -35,9 +35,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.Reader;
 import java.util.*;
 import javax.swing.tree.DefaultTreeModel;
-import javax.xml.parsers.*;
-import javax.xml.transform.*;
-import javax.xml.transform.stream.*;
 import edu.umd.cs.findbugs.*;
 
 /**
@@ -126,51 +123,21 @@ public class AnalysisRun {
 
     }
 
-    private void createSummary(ProjectStats stats) throws IOException {
-        ByteArrayOutputStream out = new ByteArrayOutputStream( 8096 );
-	stats.reportSummary( out );
-        transformSummary( out.toString() );
-        out.close();
-    }
-
     private static final String MISSING_SUMMARY_MESSAGE =
 	"<html><head><title>Could not format summary</title></head>" +
 	"<body><h1>Could not format summary</h1>" +
 	"<p> Please report this failure to <a href=\"findbugs-discuss@cs.umd.edu\">" + 
 	"findbugs-discuss@cs.umd.edu</a>.</body></html>";
 
-    private void transformSummary( String summaryXML ) throws IOException {
-        summary = summaryXML;
-
-        StreamSource in = new StreamSource( new StringReader( summaryXML ) );
-        StringWriter html = new StringWriter();
-        StreamResult out = new StreamResult( html );
-	InputStream xslInputStream = this.getClass().getClassLoader().getResourceAsStream( "summary.xsl");
-	if ( xslInputStream == null ) {
-	    logger.logMessage(ConsoleLogger.WARNING, "Could not load summary stylesheet");
+    private void createSummary(ProjectStats stats) throws IOException {
+	StringWriter html = new StringWriter();
+	try {
+	    stats.transformSummaryToHTML(html);
+	    summary = html.toString();
+	} catch (Exception e) {
+	    logger.logMessage(ConsoleLogger.WARNING,  "Failed to transform summary: " + e.toString());
 	    summary = MISSING_SUMMARY_MESSAGE;
-	    return;
 	}
-        StreamSource xsl = new StreamSource( xslInputStream );
-  
-        try { 
-	    TransformerFactory tf = TransformerFactory.newInstance();
-	    Transformer transformer = tf.newTransformer( xsl );
-            transformer.transform( in, out );
-            summary = html.toString();
-        }
-        catch( Exception e ) {
-            logger.logMessage(ConsoleLogger.WARNING,  "Failed to transform summary: " + e.toString());
-	    summary = MISSING_SUMMARY_MESSAGE;
-        }
-
-        Reader rdr = in.getReader();
-	if (rdr != null)
-	    rdr.close();
-        html.close();
-        InputStream is = xsl.getInputStream(); 
-	if (is != null)
-	    is.close();
     }
 
     /**
