@@ -242,9 +242,10 @@ public class FindBugsFrame extends javax.swing.JFrame {
         bugTreePanel = new javax.swing.JPanel();
         groupByChooser = new javax.swing.JComboBox();
         groupByLabel = new javax.swing.JLabel();
-        bugTreeSourceViewSplitter = new javax.swing.JSplitPane();
+        bugTreeBugDetailsSplitter = new javax.swing.JSplitPane();
         bugTreeScrollPane = new javax.swing.JScrollPane();
         bugTree = new javax.swing.JTree();
+        bugDetailsTabbedPane = new javax.swing.JTabbedPane();
         sourceTextAreaScrollPane = new javax.swing.JScrollPane();
         sourceTextArea = new javax.swing.JTextArea();
         consoleScrollPane = new javax.swing.JScrollPane();
@@ -547,9 +548,9 @@ public class FindBugsFrame extends javax.swing.JFrame {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
         bugTreePanel.add(groupByLabel, gridBagConstraints);
 
-        bugTreeSourceViewSplitter.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
-        bugTreeSourceViewSplitter.setResizeWeight(1.0);
-        bugTreeSourceViewSplitter.setOneTouchExpandable(true);
+        bugTreeBugDetailsSplitter.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
+        bugTreeBugDetailsSplitter.setResizeWeight(1.0);
+        bugTreeBugDetailsSplitter.setOneTouchExpandable(true);
         bugTree.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mousePressed(java.awt.event.MouseEvent evt) {
                 bugTreeMousePressed(evt);
@@ -558,7 +559,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
         bugTreeScrollPane.setViewportView(bugTree);
 
-        bugTreeSourceViewSplitter.setLeftComponent(bugTreeScrollPane);
+        bugTreeBugDetailsSplitter.setLeftComponent(bugTreeScrollPane);
 
         sourceTextAreaScrollPane.setMinimumSize(new java.awt.Dimension(22, 180));
         sourceTextAreaScrollPane.setPreferredSize(new java.awt.Dimension(0, 100));
@@ -566,7 +567,9 @@ public class FindBugsFrame extends javax.swing.JFrame {
         sourceTextArea.setFont(new java.awt.Font("Lucida Sans Typewriter", 0, 12));
         sourceTextAreaScrollPane.setViewportView(sourceTextArea);
 
-        bugTreeSourceViewSplitter.setRightComponent(sourceTextAreaScrollPane);
+        bugDetailsTabbedPane.addTab("Source code", sourceTextAreaScrollPane);
+
+        bugTreeBugDetailsSplitter.setRightComponent(bugDetailsTabbedPane);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -575,7 +578,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
-        bugTreePanel.add(bugTreeSourceViewSplitter, gridBagConstraints);
+        bugTreePanel.add(bugTreeBugDetailsSplitter, gridBagConstraints);
 
         viewPanel.add(bugTreePanel, "BugTree");
 
@@ -983,7 +986,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	groupByChooser.addItem(GROUP_BY_PACKAGE);
 	groupByChooser.addItem(GROUP_BY_BUG_TYPE);
 	
-	bugTreeSourceViewSplitter.setDividerLocation(1.0);
+	bugTreeBugDetailsSplitter.setDividerLocation(1.0);
 
         // We use a special highlight painter to ensure that the highlights cover
         // complete source lines, even though the source text doesn't
@@ -1299,7 +1302,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	}
 	
 	sourceTextArea.setText("");
-	bugTreeSourceViewSplitter.resetToPreferredSizes();
+	bugTreeBugDetailsSplitter.resetToPreferredSizes();
 
 	// Try to open the source file and display its contents
 	// in the source text area.
@@ -1373,6 +1376,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
     private javax.swing.JTree navigatorTree;
     private javax.swing.JList sourceDirList;
     private javax.swing.JMenuItem saveProjectItem;
+    private javax.swing.JSplitPane bugTreeBugDetailsSplitter;
+    private javax.swing.JTabbedPane bugDetailsTabbedPane;
     private javax.swing.JPanel emptyPanel;
     private javax.swing.JTextArea consoleMessageArea;
     private javax.swing.JSeparator jSeparator3;
@@ -1388,7 +1393,6 @@ public class FindBugsFrame extends javax.swing.JFrame {
     private javax.swing.JTextArea sourceTextArea;
     private javax.swing.JButton findBugsButton;
     private javax.swing.JPanel bugTreePanel;
-    private javax.swing.JSplitPane bugTreeSourceViewSplitter;
     private javax.swing.JLabel sourceDirLabel;
     private javax.swing.JPanel viewPanel;
     private javax.swing.JLabel jarFileListLabel;
