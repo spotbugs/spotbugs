@@ -74,8 +74,8 @@ This chapter explains how to install and run &FindBugs;.
 <para>
 The easiest way to install &FindBugs; is to download a binary distribution.
 Binary distributions are available in
-<ulink url="@WEBSITE@/release/findbugs-@VERSION@.tar.gz">gzipped tar format</ulink> and
-<ulink url="@WEBSITE@/release/findbugs-@VERSION@.zip">zip format</ulink>.
+<ulink url="@DOWNLOADS_WEBSITE@/findbugs-@VERSION@.tar.gz?download">gzipped tar format</ulink> and
+<ulink url="@DOWNLOADS_WEBSITE@/findbugs-@VERSION@.zip?download">zip format</ulink>.
 Once you have downloaded a binary distribution, extract it into a directory of your choice.
 </para>
 
@@ -389,7 +389,7 @@ To compile &FindBugs; from source, you will need the following:
 <itemizedlist>
   <listitem>
     <para>
-      The <ulink url="@WEBSITE@/release/findbugs-@VERSION@-source.zip"
+      The <ulink url="@DOWNLOADS_WEBSITE@/findbugs-@VERSION@-source.zip?download"
       >&FindBugs; source distribution</ulink>
     </para>
   </listitem>
@@ -1185,9 +1185,9 @@ and has a <ulink url="http://www.tobject.de/development/findbugs.html">home page
 <para>
 Two files are required to use the plugin, each of which can be downloaded
 from the &FindBugs; home page.  The first file is the
-<ulink url="@WEBSITE@/release/edu.umd.cs.findbugs_@VERSION@.zip">Core plugin</ulink>,
+<ulink url="@DOWNLOADS_WEBSITE@/edu.umd.cs.findbugs_@VERSION@.zip?download">Core plugin</ulink>,
 which contains the core &FindBugs; engine.  The second file is the
-<ulink url="@WEBSITE@/release/de.tobject.findbugs_@ECLIPSE_UI_VERSION@.zip">UI plugin</ulink>,
+<ulink url="@DOWNLOADS_WEBSITE@/de.tobject.findbugs_@ECLIPSE_UI_VERSION@.zip?download">UI plugin</ulink>,
 which interfaces &FindBugs; to the Eclipse workbench.  Each of these files should be extracted
 inside the <filename>plugins</filename> directory of your Eclipse installation.
 </para>
