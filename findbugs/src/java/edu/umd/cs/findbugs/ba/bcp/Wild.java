@@ -30,7 +30,7 @@ import edu.umd.cs.daveho.ba.*;
  * @author David Hovemeyer
  */
 public class Wild extends PatternElement {
-	private int min, max;
+	private final int min, max;
 
 	/**
 	 * Default constructor.
