@@ -50,6 +50,7 @@ import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.marker.FindBugsMarker;
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.PackageMemberAnnotation;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
@@ -326,6 +327,12 @@ public abstract class MarkerUtil {
 		return -1;
 	}
 
+	/**
+	 * Remove all FindBugs problem markers for given project.
+	 * 
+	 * @param project the project
+	 * @throws CoreException
+	 */
 	public static void removeMarkers(IProject project) throws CoreException {
 		// remove any markers added by our builder
 		project.deleteMarkers(
@@ -335,15 +342,18 @@ public abstract class MarkerUtil {
 	}
 	
 	/**
-	 * Given current active bug category set and minimum warning priority,
-	 * return whether or not a warning (bug instance) should be displayed
-	 * using a marked.
+	 * Given current active bug category set, minimum warning priority,
+	 * and previous user classification, return whether or not a warning
+	 * (bug instance) should be displayed using a marker.
 	 * 
 	 * @param bugInstance    the warning
 	 * @param filterSettings project filter settings
 	 * @return true if the warning should be displayed, false if not
 	 */
 	public static boolean displayWarning(BugInstance bugInstance, ProjectFilterSettings filterSettings) {
+		// Detector plugins need to be loaded for category filtering to work!
+		DetectorFactoryCollection.instance();
+		
 		return filterSettings.displayWarning(bugInstance);
 	}
 	
@@ -451,6 +461,41 @@ public abstract class MarkerUtil {
 		} catch (Exception e) {
 			// Multiple exception types caught here
 			FindbugsPlugin.getDefault().logException(e, "Could not get BugInstance for FindBugs marker");
+			return null;
+		}
+	}
+	
+	/**
+	 * Return the marker for given warning.
+	 * 
+	 * @param project the project in which the warning was reported
+	 * @param warning the warning
+	 * @return the marker, or null if no marker is displayed for this warning
+	 *         (or we can't find the marker for some reason)
+	 */
+	public IMarker findMarkerForWarning(IProject project, BugInstance warning) {
+		String warningUID = warning.getUniqueId(); 
+		if (warningUID == null) {
+			FindbugsPlugin.getDefault().logError("Bug instance has no unique id");
+			return null;
+		}
+		try {
+			IResource resource = getUnderlyingResource(warning, project);
+			IMarker[] markerList =
+				resource.findMarkers(FindBugsMarker.NAME, false, IResource.DEPTH_INFINITE);
+			for (int i = 0; i < markerList.length; ++i) {
+				IMarker marker = markerList[i];
+				String markerUID = marker.getAttribute(FindBugsMarker.UNIQUE_ID, "");
+				
+				if (warningUID.equals(markerUID))
+					return marker;
+			}
+			return null;
+		} catch (JavaModelException e) {
+			FindbugsPlugin.getDefault().logException(e, "Could not get marker for BugInstance");
+			return null;
+		} catch (CoreException e) {
+			FindbugsPlugin.getDefault().logException(e, "Could not get marker for BugInstance");
 			return null;
 		}
 	}
