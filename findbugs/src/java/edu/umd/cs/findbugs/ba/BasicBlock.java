@@ -352,6 +352,23 @@ public class BasicBlock extends AbstractVertex<Edge, BasicBlock> implements Debu
 		}
 		return false;
 	}
+
+	/**
+	 * Return whether or not the basic block contains the instruction
+	 * with the given bytecode offset.
+	 *
+	 * @param offset the bytecode offset
+	 * @return true if the block contains an instruction with the given offset,
+	 *         false if it does not
+	 */
+	public boolean containsInstructionWithOffset(int offset) {
+		Iterator<InstructionHandle> i = instructionIterator();
+		while (i.hasNext()) {
+			if (i.next().getPosition() == offset)
+				return true;
+		}
+		return false;
+	}
 }
 
 // vim:ts=4
