@@ -75,8 +75,9 @@ public class FindBugs implements Constants2
 			return null;
 		if (Thread.interrupted())
 			throw new InterruptedException();
+		JavaClass jv = new ClassParser(fileName).parse();
 		fileName = null; // don't return it next time
-		return new ClassParser(fileName).parse();
+		return jv;
 	}
   }
 
