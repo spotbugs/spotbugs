@@ -1,0 +1,136 @@
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook V4.0//EN">
+ 
+<book lang="en">
+ 
+<bookinfo>
+<title>Using FindBugs</title>
+
+<author>
+  <firstname>David</firstname>
+  <surname>Hovemeyer</surname>
+</author>
+
+<edition>@VERSION@</edition>
+
+<pubdate>@RELEASE_DATE@</pubdate>
+
+</bookinfo>
+ 
+<chapter id="introduction">
+<title>Introduction</title>
+
+<para> FindBugs is a program to find bugs in Java programs.  It looks for instances
+of "bug patterns" --- code instances that are likely to be errors.</para>
+
+<para> This document describes version @VERSION@ of FindBugs. This is an
+early release of the tool, so you may find problems with it. We
+are very interested in getting your feedback on FindBugs. Please visit
+the <ulink url="http://www.cs.umd.edu/~pugh/java/bugs/">FindBugs web page</ulink> for
+the latest information on FindBugs, contact information, and support resources such
+as information about the FindBugs mailing lists.</para>
+
+<sect1>
+<title>Requirements</title>
+<para> To use FindBugs, you need a runtime environment compatible with
+<ulink url="http://java.sun.com/j2se">Java 2 Standard Edition</ulink>, version 1.4.0 or later.
+FindBugs is platform independent, and is known to run on Linux, Windows, and
+MacOS X platforms.</para>
+
+<para>You should have at least 256 MB of memory to use FindBugs.</para>
+</sect1>
+ 
+</chapter>
+
+<chapter id="installing">
+<title>Installing FindBugs</title>
+
+<para>
+The easiest way to install FindBugs is to download a binary distribution.
+Binary distributions are available in
+<ulink url="http://www.cs.umd.edu/~pugh/java/bugs/release/findbugs-@VERSION@.tar.gz">gzipped tar format</ulink> and
+<ulink url="http://www.cs.umd.edu/~pugh/java/bugs/release/findbugs-@VERSION@.zip">zip format</ulink>.
+Once you have downloaded a binary distribution, extract it into a directory of your choice.
+</para>
+
+<para>
+Extracting a gzipped tar format distribution:
+<screen>
+<prompt>$ </prompt><command>gunzip -c findbugs-@VERSION@.tar.gz | tar xvf -</command>
+</screen>
+</para>
+
+<para>
+Extracting a zip format distribution:
+<screen>
+<prompt>C:\Software> </prompt><command>unzip findbugs-@VERSION@.zip</command>
+</screen>
+</para>
+
+<para>
+Usually, extracting a binary distribution will create a directory ending in
+<filename class=directory>findbugs-@VERSION@</filename>. For example, if you extracted
+the binary distribution from the <filename class=directory>C:\Software</filename>
+directory, then the FindBugs software will be extracted into the directory
+<filename class=directory>C:\Software\findbugs-@VERSION@</filename>.
+This directory is the FindBugs home directory.  We'll refer to it as
+<envar>$FINDBUGS_HOME</envar> throughout this manual.
+</para>
+
+<para>
+Once you have extracted the binary distribution into <envar>$FINDBUGS_HOME</envar>,
+you need to add its <filename class=directory>bin</filename> subdirectory to your
+executable search path.  In addition, on Windows platforms, you need to set an
+environment variable specifying the location of <envar>$FINDBUGS_HOME</envar>.
+</para>
+
+<para>
+Here are the required commands on Unix-like systems using the sh or bash shells:
+<screen>
+<prompt>$ </prompt><command>PATH=<replaceable>$FINDBUGS_HOME</replaceable>/bin:$PATH</command>
+<prompt>$ </prompt><command>export PATH</command>
+</screen>
+</para>
+
+<para>
+Here is the required command on Unix-like systems using the csh or tcsh shells:
+<screen>
+<prompt>% </prompt><command>setenv PATH <replaceable>$FINDBUGS_HOME</replaceable>/bin:$PATH</command>
+</screen>
+</para>
+
+<para>
+Here are the required commands on Windows systems:
+<screen>
+<prompt>C:\My Directory> </prompt><command>set FINDBUGS_HOME=<replaceable>$FINDBUGS_HOME</replaceable></command>
+<prompt>C:\My Directory> </prompt><command>set PATH=%FINDBUGS_HOME%\bin;%PATH%</command>
+</screen>
+</para>
+
+</chapter>
+
+
+<chapter id="gui">
+<title>Using the Findbugs Graphical User Interface</title>
+
+<para>
+FindBugs has two user interfaces: a graphical user interface (GUI) and a
+command line user interface.  This chapter describes the graphical user interface.
+</para>
+
+<sect1>
+<title>Executing the FindBugs GUI</title>
+
+<para>
+To start FindBugs using the GUI, simply run the <command>findbugs</command>
+command.  (This assumes you have set up your executable path as described in the
+<link linkend="installing">installation section</link>.
+</para>
+
+</sect1>
+
+
+</chapter>
+
+
+
+</book>
