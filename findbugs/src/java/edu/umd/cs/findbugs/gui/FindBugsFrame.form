@@ -168,6 +168,59 @@
             </MenuItem>
           </SubComponents>
         </Menu>
+        <Menu class="javax.swing.JMenu" name="editMenu">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Edit"/>
+            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+              <Font name="Dialog" size="12" style="0"/>
+            </Property>
+            <Property name="enabled" type="boolean" value="false"/>
+          </Properties>
+          <SubComponents>
+            <MenuItem class="javax.swing.JMenuItem" name="cutItem">
+              <Properties>
+                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                  <Font name="Dialog" size="12" style="0"/>
+                </Property>
+                <Property name="text" type="java.lang.String" value="Cut"/>
+              </Properties>
+            </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="copyItem">
+              <Properties>
+                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                  <Font name="Dialog" size="12" style="0"/>
+                </Property>
+                <Property name="text" type="java.lang.String" value="Copy"/>
+              </Properties>
+            </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="pasteItem">
+              <Properties>
+                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                  <Font name="Dialog" size="12" style="0"/>
+                </Property>
+                <Property name="text" type="java.lang.String" value="Paste"/>
+              </Properties>
+            </MenuItem>
+            <MenuItem class="javax.swing.JSeparator" name="jSeparator10">
+            </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="clearItem">
+              <Properties>
+                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                  <Font name="Dialog" size="12" style="0"/>
+                </Property>
+                <Property name="text" type="java.lang.String" value="Clear"/>
+              </Properties>
+            </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="selectAllItem">
+              <Properties>
+                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                  <Font name="Dialog" size="12" style="0"/>
+                </Property>
+                <Property name="text" type="java.lang.String" value="Select All"/>
+              </Properties>
+            </MenuItem>
+          </SubComponents>
+        </Menu>
         <Menu class="javax.swing.JMenu" name="viewMenu">
           <Properties>
             <Property name="text" type="java.lang.String" value="View"/>
@@ -446,6 +499,7 @@
                 <Component class="javax.swing.JTextField" name="jarNameTextField">
                   <Events>
                     <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jarNameTextFieldActionPerformed"/>
+                    <EventHandler event="focusGained" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="focusGainedHandler"/>
                   </Events>
                   <Constraints>
                     <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
@@ -516,6 +570,7 @@
                 <Component class="javax.swing.JTextField" name="srcDirTextField">
                   <Events>
                     <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="srcDirTextFieldActionPerformed"/>
+                    <EventHandler event="focusGained" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="focusGainedHandler"/>
                   </Events>
                   <Constraints>
                     <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
@@ -762,6 +817,9 @@
                           <Font name="Dialog" size="12" style="0"/>
                         </Property>
                       </Properties>
+                      <Events>
+                        <EventHandler event="focusGained" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="focusGainedHandler"/>
+                      </Events>
                     </Component>
                   </SubComponents>
                 </Container>
@@ -790,6 +848,9 @@
                           <Font name="Dialog" size="12" style="0"/>
                         </Property>
                       </Properties>
+                      <Events>
+                        <EventHandler event="focusGained" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="focusGainedHandler"/>
+                      </Events>
                     </Component>
                   </SubComponents>
                 </Container>
@@ -826,6 +887,9 @@
                   </Constraints>
                 </Component>
                 <Component class="javax.swing.JTextField" name="classpathEntryTextField">
+                  <Events>
+                    <EventHandler event="focusGained" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="focusGainedHandler"/>
+                  </Events>
                   <Constraints>
                     <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
                       <GridBagConstraints gridX="1" gridY="15" gridWidth="1" gridHeight="1" fill="2" ipadX="0" ipadY="0" insetsTop="0" insetsLeft="3" insetsBottom="0" insetsRight="0" anchor="10" weightX="0.0" weightY="0.0"/>
@@ -941,6 +1005,9 @@
                           <Font name="Dialog" size="12" style="0"/>
                         </Property>
                       </Properties>
+                      <Events>
+                        <EventHandler event="focusGained" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="focusGainedHandler"/>
+                      </Events>
                     </Component>
                   </SubComponents>
                 </Container>
