@@ -339,6 +339,14 @@ fast detector.
     </Details>
   </Detector>
 
+  <Detector class="edu.umd.cs.findbugs.detect.FindBugsSummaryStats">
+    <Details>
+<![CDATA[
+<p> This dectector just collects summary statistics information about the analysis process. 
+]]>
+    </Details>
+  </Detector>
+
   <!--
   **********************************************************************
   BugPatterns

@@ -34,12 +34,14 @@ import java.awt.Rectangle;
 import java.awt.Point;
 import java.awt.Color;
 import java.io.File;
+import java.io.StringWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.FileOutputStream;
 import java.io.FileInputStream;
+import java.io.StringReader;
 import java.util.*;
 import javax.swing.*;
 import javax.swing.tree.*;
@@ -397,6 +399,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
         byPackageBugTree = new javax.swing.JTree();
         byBugTypeScrollPane = new javax.swing.JScrollPane();
         byBugTypeBugTree = new javax.swing.JTree();
+        bySummary = new javax.swing.JScrollPane();
+        bugSummaryEditorPane = new javax.swing.JEditorPane();
         bugDetailsTabbedPane = new javax.swing.JTabbedPane();
         bugDescriptionScrollPane = new javax.swing.JScrollPane();
         bugDescriptionEditorPane = new javax.swing.JEditorPane();
@@ -800,6 +804,10 @@ public class FindBugsFrame extends javax.swing.JFrame {
         byBugTypeScrollPane.setViewportView(byBugTypeBugTree);
 
         groupByTabbedPane.addTab("By Bug Type", byBugTypeScrollPane);
+
+        bySummary.setViewportView(bugSummaryEditorPane);
+
+        groupByTabbedPane.addTab("Summary", bySummary);
 
         bugTreeBugDetailsSplitter.setTopComponent(groupByTabbedPane);
 
@@ -1615,7 +1623,10 @@ public class FindBugsFrame extends javax.swing.JFrame {
      */
     private BugInstance getCurrentBugInstance() {
         JTree bugTree = getCurrentBugTree();
-        return (BugInstance) getTreeSelectionOf(bugTree, BugInstance.class);
+        if ( bugTree != null ) {
+			return (BugInstance) getTreeSelectionOf(bugTree, BugInstance.class);
+        }
+        return null;
     }
     
     /**
@@ -1650,8 +1661,11 @@ public class FindBugsFrame extends javax.swing.JFrame {
     
     private JTree getCurrentBugTree() {
         JScrollPane selected = (JScrollPane) groupByTabbedPane.getSelectedComponent();
-        JTree selectedTree = (JTree) selected.getViewport().getView();
-        return selectedTree;
+        Object view = selected.getViewport().getView();
+        if ( view instanceof JTree ) {
+          return (JTree)view;
+        }
+        return null;
     }
     
     /* ----------------------------------------------------------------------
@@ -1821,8 +1835,28 @@ public class FindBugsFrame extends javax.swing.JFrame {
         }
         
         currentAnalysisRun = analysisRun;
+
+        //set the summary output
+	setSummary( analysisRun.getSummary() ); 
         setView("BugTree");
     }
+
+    private void setSummary( String summaryXML ) {
+	bugSummaryEditorPane.setContentType("text/html");
+	bugSummaryEditorPane.setText(summaryXML);
+
+	// FIXME: unfortunately, using setText() on the editor pane
+	// results in the contents being scrolled to the bottom of the pane.
+	// An immediate inline call to set the scroll position does nothing.
+	// So, use invokeLater(), even though this results in flashing.
+	// [What we really need is a way to set the text WITHOUT changing
+	// the caret position.  Need to investigate.]
+  	SwingUtilities.invokeLater(new Runnable() {
+	    public void run() {
+		bySummary.getViewport().setViewPosition(new Point(0, 0));
+	    }
+	});
+    } 
     
     /**
      * Populate an analysis run's tree model for given sort order.
@@ -2039,6 +2073,11 @@ public class FindBugsFrame extends javax.swing.JFrame {
         // use the default source line annotation from the current bug instance
         // (if any).
         JTree bugTree = getCurrentBugTree();
+
+        // if the summary window is shown then skip it
+        if ( bugTree == null ) {
+          return;
+        }
         SourceLineAnnotation srcLine = null;
         TreePath selPath = bugTree.getSelectionPath();
         if (selPath != null) {
@@ -2356,6 +2395,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
     private javax.swing.JEditorPane bugDescriptionEditorPane;
     private javax.swing.JScrollPane bugDescriptionScrollPane;
     private javax.swing.JTabbedPane bugDetailsTabbedPane;
+    private javax.swing.JEditorPane bugSummaryEditorPane;
     private javax.swing.JSplitPane bugTreeBugDetailsSplitter;
     private javax.swing.JPanel bugTreePanel;
     private javax.swing.JTree byBugTypeBugTree;
@@ -2364,6 +2404,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
     private javax.swing.JScrollPane byClassScrollPane;
     private javax.swing.JTree byPackageBugTree;
     private javax.swing.JScrollPane byPackageScrollPane;
+    private javax.swing.JScrollPane bySummary;
     private javax.swing.JLabel classpathEntryLabel;
     private javax.swing.JList classpathEntryList;
     private javax.swing.JLabel classpathEntryListLabel;
