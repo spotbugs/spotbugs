@@ -42,6 +42,17 @@ public class AvailableLoad implements Comparable<AvailableLoad> {
 			return cmp;
 		return field.compareTo(other.field);
 	}
+
+	public int hashCode() {
+		return reference.hashCode() + field.hashCode();
+	}
+
+	public boolean equals(Object o) {
+		if (this.getClass() != o.getClass())
+			return false;
+		AvailableLoad other = (AvailableLoad) o;
+		return reference.equals(other.reference) && field.equals(other.field);
+	}
 }
 
 // vim:ts=4
