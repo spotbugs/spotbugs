@@ -44,7 +44,7 @@ public class PatternCompiler {
 	public static void main(String[] argv) throws Exception {
 		PatternCompiler pc = new PatternCompiler(System.in);
 		SimpleNode root = pc.unit();
-		new CodeGen().generate(root, System.out);
+		new CodeGen().generate(root, new PrettyCodeEmitter(System.out));
 	}
 
 	void jjtreeOpenNodeScope(Node node) {
