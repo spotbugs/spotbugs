@@ -370,7 +370,27 @@ These options are only accepted by the Text User Interface.
   <listitem>
     <para>
     Produce the bug reports as XML.  The XML data produced may be
-    viewed in the GUI at a later time.
+    viewed in the GUI at a later time.  You may also specify this
+    option as <command>-xml:withMessages</command>; when this variant
+    of the option is used, the XML output will contain human-readable
+    messages describing the warnings contained in the file.
+    XML files generated this way are easy to transform into reports.
+    </para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term><command>-html</command></term>
+  <listitem>
+    <para>
+    Generate HTML output.  By default, &FindBugs; will use the <filename>default.xsl</filename>
+    <ulink url="http://www.w3.org/TR/xslt">XSLT</ulink>
+    stylesheet to generate the HTML: you can find this file in <filename>findbugs.jar</filename>,
+    or in the &FindBugs; source distribution.  If you want to specify your own
+    XSLT stylesheet to perform the transformation, specify the option as
+    <command>-html:<replaceable>myStylesheet.xsl</replaceable></command>,
+    where <replaceable>myStylesheet.xsl</replaceable> is the filename of the
+    stylesheet you want to use.
     </para>
   </listitem>
   </varlistentry>
