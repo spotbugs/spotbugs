@@ -77,6 +77,7 @@ public class RunAnalysisDialog extends javax.swing.JDialog {
         // Create a progress callback to give the user feedback
         // about how far along we are.
         final FindBugsProgress progress = new RunAnalysisProgress();
+        final ConsoleLogger logger = ((FindBugsFrame)parent).getLogger();
         
         // This is the thread that will actually run the analysis.
         this.analysisThread = new Thread() {
@@ -85,10 +86,11 @@ public class RunAnalysisDialog extends javax.swing.JDialog {
                     analysisRun.execute(progress);
                     setCompleted(true);
                 } catch (java.io.IOException e) {
-                    // TODO: log the exception
+                    logger.logMessage(ConsoleLogger.ERROR, e.getMessage());
                 } catch (InterruptedException e) {
-                    // TODO: log the fact that the user cancelled the analysis
-                    System.out.println("User cancelled the analysis!");
+                    // We don't need to do anything here.
+                    // The completed flag is not set, so the frame
+                    // will know that the analysis did not complete.
                 }
 
                 // Send a message to the dialog that it should close
