@@ -30,13 +30,13 @@ public class Version {
 	public static final int MINOR = 6;
 
 	/** Patch level. */
-	public static final int PATCHLEVEL = 2;
+	public static final int PATCHLEVEL = 3;
 
 	/** Release version string. */
 	public static final String RELEASE = MAJOR + "." + MINOR + "." + PATCHLEVEL;
 
 	/** Release date. */
-	public static final String DATE = "July 25, 2003";
+	public static final String DATE = "August 4, 2003";
 
 	public static void main(String[] argv) {
 		if (argv.length != 1)
