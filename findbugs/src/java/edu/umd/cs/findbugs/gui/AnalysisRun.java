@@ -44,7 +44,7 @@ public class AnalysisRun {
     /**
      * Our BugReporter just puts the reported BugInstances into a HashSet.
      */
-    private class Reporter implements BugReporter {
+    private class Reporter extends AbstractBugReporter {
         private HashSet<BugInstance> bugSet = new HashSet<BugInstance>();
         
         public void finish() { }
@@ -52,10 +52,11 @@ public class AnalysisRun {
         public void reportBug(edu.umd.cs.findbugs.BugInstance bugInstance) {
             bugSet.add(bugInstance);
         }
-        
-        public void logError(String message) {
-            logger.logMessage(ConsoleLogger.ERROR, message);
-        }
+
+	// TODO: implement these
+	public void beginReport() { }
+	public void reportLine(String msg) { }
+	public void endReport() { }
     }
 
     private Project project;
