@@ -56,6 +56,7 @@ public abstract class PatternElement {
 	/**
 	 * Return whether or not it is acceptable to take the given branch.
 	 * @param edge the Edge representing the branch
+	 * @return true if the Edge is acceptable, false if not
 	 */
 	public abstract boolean acceptBranch(Edge edge);
 
