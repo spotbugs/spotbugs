@@ -190,6 +190,16 @@ These options may be used with both the GUI and Text UI.
        </para>
     </listitem>
   </varlistentry>
+
+  <varlistentry>
+    <term><command>-javahome <replaceable>directory</replaceable></command></term>
+    <listitem>
+      <para>
+        Specifies the directory containing the JRE (Java Runtime Environment) to
+        use to execute &FindBugs;.
+      </para>
+    </listitem>
+  </varlistentry>
 </variablelist>
 </para>
 
