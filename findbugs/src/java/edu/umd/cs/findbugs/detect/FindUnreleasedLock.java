@@ -65,21 +65,6 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock> {
 			final Instruction ins = handle.getInstruction();
 			final ConstantPoolGen cpg = getCPG();
 			final ResourceValueFrame frame = getFrame();
-			final ValueNumberFrame vnaFrame = vnaDataflow.getFactAtLocation(new Location(handle, basicBlock));
-			final int origNumSlots = frame.getNumSlots();
-
-			// Mark any appearances of the lock value in the ResourceValueFrame.
-			// A lock value could appear "spontaneously" if, for example, the lock
-			// was in a final field.  (We reuse the same value for loads of final
-			// fields - see ValueNumberAnalysis.  FIXME: Actually, at the moment we reuse
-			// the same value number for loads of non-final fields, but that's just a bug :-)
-			if (DEBUG) System.out.println("Incoming vna frame: " + vnaFrame.toString());
-			for (int i = 0; i < origNumSlots; ++i) {
-				if (vnaFrame.getValue(i).equals(lock.getLockValue())) {
-					if (DEBUG) System.out.println("Saw lock value!");
-					frame.setValue(i, ResourceValue.instance());
-				}
-			}
 
 			int status = -1;
 
@@ -94,26 +79,21 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock> {
 			// Model use of instance values in frame slots
 			ins.accept(this);
 
+			final int updatedNumSlots = frame.getNumSlots();
+
+			// Mark any appearances of the lock value in the ResourceValueFrame.
+			ValueNumberFrame vnaFrame = vnaDataflow.getFactAfterLocation(new Location(handle, basicBlock));
+			if (DEBUG) System.out.println("vna frame after instruction: " + vnaFrame.toString());
+			for (int i = 0; i < updatedNumSlots; ++i) {
+				if (vnaFrame.getValue(i).equals(lock.getLockValue())) {
+					if (DEBUG) System.out.println("Saw lock value!");
+					frame.setValue(i, ResourceValue.instance());
+				}
+			}
+
 			// If needed, update frame status
 			if (status != -1) {
 				frame.setStatus(status);
-				if (status == ResourceValueFrame.OPEN) {
-					// Look in the value number frame to see which slots have
-					// the same value as the Lock object.  Mark those slots
-					// in the resource value frame as containing the resource instance.
-
-					// Note: this only works if the resource
-					//   - was in a local and was ALOAD'ed, or
-					//   - was on the stack and was DUP'ed
-
-					ValueNumber instanceValueNumber = vnaFrame.getTopValue();
-					final int updatedNumSlots = frame.getNumSlots();
-
-					for (int i = 0; i < updatedNumSlots; ++i) {
-						if (vnaFrame.getValue(i).equals(instanceValueNumber))
-							frame.setValue(i, ResourceValue.instance());
-					}
-				}
 			}
 		}
 
