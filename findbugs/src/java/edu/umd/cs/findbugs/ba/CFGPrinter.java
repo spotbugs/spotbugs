@@ -97,6 +97,7 @@ public class CFGPrinter {
 		    System.exit(1);
 		}
 	    };
+	    AnalysisContext.instance().setLookupFailureCallback(lookupFailureCallback);
 	    ClassContext classContext = new ClassContext(cls, lookupFailureCallback);
 
 	    Method[] methods = cls.getMethods();
