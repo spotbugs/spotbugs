@@ -34,6 +34,8 @@ import java.util.*;
  * @author David Hovemeyer
  */
 public abstract class AbstractDataflowAnalysis<Fact> implements DataflowAnalysis<Fact> {
+	private static final boolean DEBUG = Boolean.getBoolean("dataflow.transfer");
+
 	private HashMap<Location, Fact> factAtLocationMap = new HashMap<Location, Fact>();
 	private HashMap<Location, Fact> factAfterLocationMap = new HashMap<Location, Fact>();
 
@@ -121,9 +123,13 @@ public abstract class AbstractDataflowAnalysis<Fact> implements DataflowAnalysis
 				if (end == null && prevLocation != null)
 					factAfterLocationMap.put(prevLocation, factAtLocation);
 				prevLocation = location;
+
+				if (DEBUG) System.out.print("Transfer " + result.toString() + " for " + handle);
 	
 				// Transfer the dataflow value
 				transferInstruction(handle, basicBlock, result);
+
+				if (DEBUG) System.out.println(" ==> " + result.toString());
 			}
 
 			if (end == null && prevLocation != null) {
