@@ -85,7 +85,7 @@ abstract public class DismantleBytecode extends PreorderVisitor implements Const
 	 * Meaning of bytecode operands
 	 */
 
-
+	// REVIEW brian@quiotix.com -- Either this array should be byte[][], or the constants above should be short
 	static final short[][] MEANING_OF_OPERANDS = {
 		// 0   1   2   3   4   5   6   7   8   9
 		{}, {}, {}, {}, {}, {}, {}, {}, {}, {},
@@ -123,30 +123,36 @@ abstract public class DismantleBytecode extends PreorderVisitor implements Const
 	protected LineNumberTable lineNumberTable;
 
 	// Accessors
+
+	/** If the current opcode has a class operand, get the associated class constant, dot-formatted */
 	public String getDottedClassConstantOperand() {
 		if (dottedClassConstantOperand == NOT_AVAILABLE)
 			throw new IllegalStateException("getDottedClassConstantOperand called but value not available");
 		return dottedClassConstantOperand;
 	}
 
+	/** If the current opcode has a reference constant operand, get its string representation */
 	public String getRefConstantOperand() {
 		if (dottedClassConstantOperand == NOT_AVAILABLE)
 			throw new IllegalStateException("getRefConstantOperand called but value not available");
 		return refConstantOperand;
 	}
 
+	/** If the current opcode has a reference constant operand, get its name */
 	public String getNameConstantOperand() {
 		if (nameConstantOperand == NOT_AVAILABLE)
 			throw new IllegalStateException("getNameConstantOperand called but value not available");
 		return nameConstantOperand;
 	}
 
+	/** If the current opcode has a reference constant operand, get its signature, dot-formatted */
 	public String getDottedSigConstantOperand() {
 		if (dottedSigConstantOperand == NOT_AVAILABLE)
 			throw new IllegalStateException("getDottedSigConstantOperand called but value not available");
 		return dottedSigConstantOperand;
 	}
 
+	/** If the current opcode has a reference constant operand, get its signature, slash-formatted */
 	public String getSigConstantOperand() {
 		if (sigConstantOperand == NOT_AVAILABLE)
 			throw new IllegalStateException("getSigConstantOperand called but value not available");
@@ -159,6 +165,7 @@ abstract public class DismantleBytecode extends PreorderVisitor implements Const
 		return classConstantOperand;
 	}
 
+	/** If the current opcode has a string constant operand, get its name */
 	public String getStringConstantOperand() {
 		if (stringConstantOperand == NOT_AVAILABLE)
 			throw new IllegalStateException("getStringConstantOperand called but value not available");

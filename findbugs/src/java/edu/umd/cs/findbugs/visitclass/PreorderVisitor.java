@@ -171,9 +171,12 @@ public abstract class PreorderVisitor extends BetterVisitor implements Constants
 		Field[] fields = obj.getFields();
 		Method[] methods = obj.getMethods();
 		Attribute[] attributes = obj.getAttributes();
-		for (int i = 0; i < fields.length; i++) doVisitField(fields[i]);
-		for (int i = 0; i < methods.length; i++) doVisitMethod(methods[i]);
-		for (int i = 0; i < attributes.length; i++) attributes[i].accept(this);
+		for (int i = 0; i < fields.length; i++)
+			doVisitField(fields[i]);
+		for (int i = 0; i < methods.length; i++)
+			doVisitMethod(methods[i]);
+		for (int i = 0; i < attributes.length; i++)
+			attributes[i].accept(this);
 		visitAfter(obj);
 	}
 
@@ -192,92 +195,111 @@ public abstract class PreorderVisitor extends BetterVisitor implements Constants
 	}
 
 	// Accessors
+
+	/** Get the constant pool for the current or most recently visited class */
 	public ConstantPool getConstantPool() {
 		return constantPool;
 	}
 
+	/** Get the slash-formatted class name for the current or most recently visited class */
 	public String getClassName() {
 		return className;
 	}
 
+	/** Get the dotted class name for the current or most recently visited class */
 	public String getDottedClassName() {
 		return dottedClassName;
 	}
 
+	/** Get the (slash-formatted?) package name for the current or most recently visited class */
 	public String getPackageName() {
 		return packageName;
 	}
 
+	/** Get the source file name for the current or most recently visited class */
 	public String getSourceFile() {
 		return sourceFile;
 	}
 
+	/** Get the slash-formatted superclass name for the current or most recently visited class */
 	public String getSuperclassName() {
 		return superclassName;
 	}
 
+	/** Get the dotted superclass name for the current or most recently visited class */
 	public String getDottedSuperclassName() {
 		return dottedSuperclassName;
 	}
 
+	/** Get the JavaClass object for the current or most recently visited class */
 	public JavaClass getThisClass() {
 		return thisClass;
 	}
 
+	/** If currently visiting a method, get the method's fully qualified name */
 	public String getFullyQualifiedMethodName() {
 		if (!visitingMethod)
 			throw new IllegalStateException("getFullyQualifiedMethodName called while not visiting method");
 		return fullyQualifiedMethodName;
 	}
 
+	/** If currently visiting a method, get the method's Method object */
 	public Method getMethod() {
 		if (!visitingMethod)
 			throw new IllegalStateException("getMethod called while not visiting method");
 		return method;
 	}
 
+	/** If currently visiting a method, get the method's name */
 	public String getMethodName() {
 		if (!visitingMethod)
 			throw new IllegalStateException("getMethodName called while not visiting method");
 		return methodName;
 	}
 
+	/** If currently visiting a method, get the method's slash-formatted signature */
 	public String getMethodSig() {
 		if (!visitingMethod)
 			throw new IllegalStateException("getMethodSig called while not visiting method");
 		return methodSig;
 	}
 
+	/** If currently visiting a method, get the method's dotted method signature */
 	public String getDottedMethodSig() {
 		if (!visitingMethod)
 			throw new IllegalStateException("getDottedMethodSig called while not visiting method");
 		return dottedMethodSig;
 	}
 
+	/** If currently visiting a field, get the field's name */
 	public String getFieldName() {
 		if (!visitingField)
 			throw new IllegalStateException("getFieldName called while not visiting field");
 		return fieldName;
 	}
 
+	/** If currently visiting a field, get the field's slash-formatted signature */
 	public String getFieldSig() {
 		if (!visitingField)
 			throw new IllegalStateException("getFieldSig called while not visiting field");
 		return fieldSig;
 	}
 
+	/** If currently visiting a field, return whether or not the field is static */
 	public boolean getFieldIsStatic() {
 		if (!visitingField)
 			throw new IllegalStateException("getFieldIsStatic called while not visiting field");
 		return fieldIsStatic;
 	}
 
+	/** If currently visiting a field, get the field's fully qualified name */
 	public String getFullyQualifiedFieldName() {
 		if (!visitingField)
 			throw new IllegalStateException("getFullyQualifiedFieldName called while not visiting field");
 		return fullyQualifiedFieldName;
 	}
 
+	/** If currently visiting a field, get the field's dot-formatted signature */
 	public String getDottedFieldSig() {
 		if (!visitingField)
 			throw new IllegalStateException("getDottedFieldSig called while not visiting field");
