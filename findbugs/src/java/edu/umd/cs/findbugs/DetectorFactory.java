@@ -26,6 +26,10 @@ public class DetectorFactory {
 	private Class detectorClass;
 	// Other meta-information about the detector?
 
+	public DetectorFactory(Class detectorClass) {
+		this.detectorClass = detectorClass;
+	}
+
 	private static final Class[] constructorArgTypes = new Class[]{BugReporter.class};
 
 	public Detector create(BugReporter bugReporter)
