@@ -1,7 +1,7 @@
 <!--
 	FindBugs Ant build script.
 	Based on original FindBugs Ant Script by Mike Fagan.
-	Rewritten 1/5/2004 by David Hovemeyer.
+	Rewritten 1/5/2005 by David Hovemeyer.
 -->
 
 <project name="findbugs" default="build">
