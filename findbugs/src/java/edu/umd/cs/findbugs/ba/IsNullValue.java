@@ -140,7 +140,7 @@ public class IsNullValue {
 		case WEAK_NN:
 			return "W";
 		case NSP:
-			return "S";
+			return "s";
 		case DNR:
 			return "-";
 		default:
