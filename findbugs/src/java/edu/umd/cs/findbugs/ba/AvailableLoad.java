@@ -103,7 +103,7 @@ public class AvailableLoad implements Comparable<AvailableLoad> {
 	}
 
 	public String toString() {
-		return reference.getNumber() + "." + field;
+		return (reference == null ? "" : reference.getNumber() + ".") + field;
 	}
 }
 
