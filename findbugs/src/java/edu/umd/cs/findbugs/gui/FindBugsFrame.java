@@ -526,7 +526,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(3, 3, 3, 3);
         editProjectPanel.add(jSeparator1, gridBagConstraints);
 
-        browseJarButton.setText("...");
+        browseJarButton.setFont(new java.awt.Font("Dialog", 0, 12));
+        browseJarButton.setText("Browse");
         browseJarButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 browseJarButtonActionPerformed(evt);
@@ -539,7 +540,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 3);
         editProjectPanel.add(browseJarButton, gridBagConstraints);
 
-        browseSrcDirButton.setText("...");
+        browseSrcDirButton.setFont(new java.awt.Font("Dialog", 0, 12));
+        browseSrcDirButton.setText("Browse");
         browseSrcDirButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 browseSrcDirButtonActionPerformed(evt);
