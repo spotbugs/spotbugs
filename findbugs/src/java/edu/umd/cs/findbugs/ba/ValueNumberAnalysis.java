@@ -30,11 +30,17 @@ public class ValueNumberAnalysis extends ForwardDataflowAnalysis<ValueNumberFram
 	private MethodGen methodGen;
 	private ValueNumberFactory factory;
 	private ValueNumberCache cache;
+	private ValueNumber[] entryLocalValueList;
 
 	public ValueNumberAnalysis(MethodGen methodGen) {
 		this.methodGen = methodGen;
 		this.factory = new ValueNumberFactory();
 		this.cache = new ValueNumberCache();
+
+		int numLocals = methodGen.getMaxLocals();
+		this.entryLocalValueList = new ValueNumber[numLocals];
+		for (int i = 0; i < numLocals; ++i)
+			this.entryLocalValueList[i] = factory.createFreshValue();
 	}
 
 	public ValueNumberFrame createFact() {
@@ -52,7 +58,7 @@ public class ValueNumberAnalysis extends ForwardDataflowAnalysis<ValueNumberFram
 		// At entry to the method, each local has (as far as we know) a unique value.
 		int numSlots = result.getNumSlots();
 		for (int i = 0; i < numSlots; ++i)
-			result.setValue(i, factory.createFreshValue());
+			result.setValue(i, entryLocalValueList[i]);
 	}
 
 	public void initResultFact(ValueNumberFrame result) {
