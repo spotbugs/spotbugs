@@ -82,6 +82,7 @@ public class URLClassPathRepository implements Repository {
 	 */
 	public void storeClass(JavaClass javaClass) {
 		nameToClassMap.put(javaClass.getClassName(), javaClass);
+		javaClass.setRepository(this);
 	}
 
 	/* (non-Javadoc)
@@ -102,6 +103,7 @@ public class URLClassPathRepository implements Repository {
 	 * @see org.apache.bcel.util.Repository#loadClass(java.lang.String)
 	 */
 	public JavaClass loadClass(String className) throws ClassNotFoundException {
+		//if (className.indexOf('/') >= 0) throw new IllegalStateException();
 		JavaClass javaClass = findClass(className);
 		if (javaClass == null) {
 			javaClass = urlClassPath.lookupClass(className);
@@ -131,3 +133,5 @@ public class URLClassPathRepository implements Repository {
 		return new ClassPath(urlClassPath.getClassPath());
 	}
 }
+
+// vim:ts=4
