@@ -312,6 +312,15 @@ public class UserPreferences {
 	}
 	
 	/**
+	 * Set the ProjectFilterSettings.
+	 * 
+	 * @param filterSettings the ProjectFilterSettings
+	 */
+	public void setProjectFilterSettings(ProjectFilterSettings filterSettings) {
+		this.filterSettings = filterSettings;
+	}
+	
+	/**
 	 * Get ProjectFilterSettings.
 	 * 
 	 * @return the ProjectFilterSettings
