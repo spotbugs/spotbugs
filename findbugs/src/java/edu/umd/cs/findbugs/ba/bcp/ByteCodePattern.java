@@ -30,6 +30,7 @@ import java.util.*;
  */
 public class ByteCodePattern {
 	private PatternElement first, last;
+	private int interElementWild;
 	private int dummyVariableCount;
 
 	/**
@@ -37,13 +38,23 @@ public class ByteCodePattern {
 	 * @param element the PatternElement
 	 * @return this object
 	 */
-	public ByteCodePattern addPatternElement(PatternElement element) {
-		if (first == null) {
-			first = last = element;
-		} else {
-			last.setNext(element);
-			last = element;
-		}
+	public ByteCodePattern add(PatternElement element) {
+		if (first != null)
+			addInterElementWild();
+		addElement(element);
+		return this;
+	}
+
+	/**
+	 * Set number of inter-element wildcards to create between
+	 * explicit PatternElements.  By default, no implicit wildcards
+	 * are created.
+	 * @param numWild the number of wildcard instructions which
+	 *   may be matched between explicit PatternElements
+	 * @return this object
+	 */
+	public ByteCodePattern setInterElementWild(int numWild) {
+		this.interElementWild = numWild;
 		return this;
 	}
 
@@ -65,6 +76,20 @@ public class ByteCodePattern {
 		buf.append("$_");
 		buf.append(dummyVariableCount++);
 		return buf.toString();
+	}
+
+	private void addInterElementWild() {
+		if (interElementWild > 0)
+			addElement(new Wild(interElementWild));
+	}
+
+	private void addElement(PatternElement element) {
+		if (first == null) {
+			first = last = element;
+		} else {
+			last.setNext(element);
+			last = element;
+		}
 	}
 }
 
