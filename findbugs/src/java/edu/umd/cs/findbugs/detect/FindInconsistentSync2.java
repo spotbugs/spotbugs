@@ -110,7 +110,6 @@ public class FindInconsistentSync2 implements Detector {
 
 	private BugReporter bugReporter;
 	private Map<XField, FieldStats> statMap = new HashMap<XField, FieldStats>();
-	private Set<XField> writtenOutsideOfConstructor = new HashSet<XField>();
 
 	/* ----------------------------------------------------------------------
 	 * Public methods
