@@ -33,7 +33,7 @@ import org.apache.bcel.classfile.*;
 public class DroppedException extends PreorderVisitor implements Detector, Constants2 {
 	private static final boolean DEBUG = Boolean.getBoolean("de.debug");
 	private static final boolean LOOK_IN_SOURCE_TO_FIND_COMMENTED_CATCH_BLOCKS
-	        = Boolean.getBoolean("de.comment");
+	        = Boolean.getBoolean("findbugs.de.comment");
 
 	Set<String> reported = new HashSet<String>();
 	Set<String> causes = new HashSet<String>();
@@ -450,3 +450,5 @@ public class DroppedException extends PreorderVisitor implements Detector, Const
 		return false;
 	}
 }
+
+// vim:ts=4
