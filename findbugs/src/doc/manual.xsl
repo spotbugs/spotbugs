@@ -14,4 +14,10 @@
 <!-- Put the HTML in the "manual" directory. -->
 <xsl:variable name="base.dir">manual/</xsl:variable>
 
+<!-- Enumerate sections. -->
+<xsl:variable name="section.autolabel">1</xsl:variable>
+
+<!-- Name the HTML files based on the id of the document elements. -->
+<xsl:variable name="use.id.as.filename">1</xsl:variable>
+
 </xsl:stylesheet>
