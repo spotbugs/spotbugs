@@ -37,6 +37,8 @@ import org.apache.bcel.generic.INVOKESTATIC;
  * @see InnerClassAccess
  */
 public class InnerClassAccessMap {
+	private static final boolean DEBUG = Boolean.getBoolean("icam.debug");
+
 	/* ----------------------------------------------------------------------
 	 * Fields
 	 * ---------------------------------------------------------------------- */
@@ -231,14 +233,24 @@ public class InnerClassAccessMap {
 
 		/**
 		 * Determine if the method appears to be an accessor of the expected form.
-		 * This has only been tested with the Sun JDK 1.4 javac.
+		 * This has only been tested with the Sun JDK 1.4 javac (definitely)
+		 * and jikes 1.18 (I think).
 		 *
 		 * @param methodSig the method's signature
 		 * @param field     the field accessed by the method
 		 * @param isLoad    true if the access is a load
 		 */
 		private boolean isValidAccessMethod(String methodSig, XField field, boolean isLoad) {
-			// Figure out what the expected method signature should be
+
+			// Get the method parameters and return type
+			// (as they appear in the method signature).
+			int paramsEnd = methodSig.indexOf(')');
+			if (paramsEnd < 0)
+				return false;
+			String methodParams = methodSig.substring(0, paramsEnd + 1);
+			String methodReturnType = methodSig.substring(paramsEnd + 1);
+
+			// Figure out what the expected method parameters should be
 			String classSig = "L" + javaClass.getClassName().replace('.', '/') + ";";
 			StringBuffer buf = new StringBuffer();
 			buf.append('(');
@@ -248,16 +260,27 @@ public class InnerClassAccessMap {
 			if (!isLoad)
 				buf.append(field.getFieldSignature()); // the value being stored
 			buf.append(')');
-			buf.append(field.getFieldSignature()); // all accessors return the contents of the field
+			String expectedMethodParams = buf.toString();
 
-			String expectedMethodSig = buf.toString();
+			// See if params match
+			if (!methodParams.equals(expectedMethodParams)) {
+				if (DEBUG) {
+					System.out.println("In " + javaClass.getClassName() + "." + methodName +
+						" expected params " +
+						expectedMethodParams + ", saw " + methodParams);
+					System.out.println(isLoad ? "LOAD" : "STORE");
+				}
+				return false;
+			}
 
-			if (!expectedMethodSig.equals(methodSig)) {
-/*
-				System.err.println("In " + javaClass.getClassName() + "." + methodName + " expected " +
-					expectedMethodSig + ", saw " + methodSig);
-				System.err.println(isLoad ? "LOAD" : "STORE");
-*/
+			// Return type can be either the type of the field, or void.
+			if (!methodReturnType.equals("V") && !methodReturnType.equals(field.getFieldSignature())) {
+				if (DEBUG) {
+					System.out.println("In " + javaClass.getClassName() + "." + methodName +
+						" expected return type V or " + field.getFieldSignature() +
+						", saw " + methodReturnType);
+					System.out.println(isLoad ? "LOAD" : "STORE");
+				}
 				return false;
 			}
 
@@ -295,6 +318,9 @@ public class InnerClassAccessMap {
 					if (code == null)
 						continue;
 
+					if (DEBUG) System.out.println("Analyzing " + className + "." +
+						method.getName() + " as an inner-class access method...");
+
 					byte[] instructionList = code.getCode();
 					String methodSig = method.getSignature();
 					InstructionCallback callback = new InstructionCallback(javaClass, methodName, methodSig, instructionList);
@@ -304,6 +330,7 @@ public class InnerClassAccessMap {
 						throw lf.getException();
 					}
 					InnerClassAccess access = callback.getAccess();
+					if (DEBUG) System.out.println((access != null ? "IS" : "IS NOT") + " an inner-class access method");
 					if (access != null)
 						map.put(methodName, access);
 				}
