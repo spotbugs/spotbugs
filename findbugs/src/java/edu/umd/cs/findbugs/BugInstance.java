@@ -69,9 +69,6 @@ public class BugInstance implements Comparable, XMLWriteable {
 	private String type;
 	private int priority;
 	private ArrayList<BugAnnotation> annotationList;
-	private ClassAnnotation primaryClassAnnotation;
-	private MethodAnnotation primaryMethodAnnotation;
-	private FieldAnnotation primaryFieldAnnotation;
 	private int cachedHashCode;
 	private String annotationText;
 	private BugProperty propertyListHead, propertyListTail;
@@ -99,7 +96,6 @@ public class BugInstance implements Comparable, XMLWriteable {
 		this.priority = priority < Detector.HIGH_PRIORITY 
 			? Detector.HIGH_PRIORITY : priority;
 		annotationList = new ArrayList<BugAnnotation>(4);
-		primaryClassAnnotation = null;
 		cachedHashCode = INVALID_HASH_CODE;
 		annotationText = "";
 		
@@ -182,22 +178,39 @@ public class BugInstance implements Comparable, XMLWriteable {
 	 * Get the primary class annotation, which indicates where the bug occurs.
 	 */
 	public ClassAnnotation getPrimaryClass() {
-		return primaryClassAnnotation;
+		return (ClassAnnotation) findAnnotationOfType(ClassAnnotation.class);
 	}
 
 	/**
 	 * Get the primary method annotation, which indicates where the bug occurs.
 	 */
 	public MethodAnnotation getPrimaryMethod() {
-		return primaryMethodAnnotation;
+		return (MethodAnnotation) findAnnotationOfType(MethodAnnotation.class);
 	}
 	/**
 	 * Get the primary method annotation, which indicates where the bug occurs.
 	 */
 	public FieldAnnotation getPrimaryField() {
-		return primaryFieldAnnotation;
+		return (FieldAnnotation) findAnnotationOfType(FieldAnnotation.class);
 	}
 
+	/**
+	 * Find the first BugAnnotation in the list of annotations
+	 * that is the same type or a subtype as the given Class parameter.
+	 * 
+	 * @param cls the Class parameter
+	 * @return the first matching BugAnnotation of the given type,
+	 *         or null if there is no such BugAnnotation
+	 */
+	private BugAnnotation findAnnotationOfType(Class cls) {
+		for (Iterator<BugAnnotation> i = annotationIterator(); i.hasNext();) {
+			BugAnnotation annotation = i.next();
+			if (cls.isAssignableFrom(annotation.getClass()))
+				return annotation;
+		}
+		return null;
+	}
+	
 	/**
 	 * Get the primary source line annotation.
 	 *
@@ -215,6 +228,7 @@ public class BugInstance implements Comparable, XMLWriteable {
 
 		// Second priority: return the source line annotation describing the
 		// primary method
+		MethodAnnotation primaryMethodAnnotation = getPrimaryMethod();
 		if (primaryMethodAnnotation != null)
 			return primaryMethodAnnotation.getSourceLines();
 		else
@@ -929,14 +943,6 @@ public class BugInstance implements Comparable, XMLWriteable {
 		// This object is being modified, so the cached hashcode
 		// must be invalidated
 		cachedHashCode = INVALID_HASH_CODE;
-
-		if ((annotation instanceof ClassAnnotation) && primaryClassAnnotation == null)
-			primaryClassAnnotation = (ClassAnnotation) annotation;
-
-		if ((annotation instanceof MethodAnnotation) && primaryMethodAnnotation == null)
-			primaryMethodAnnotation = (MethodAnnotation) annotation;
-		if ((annotation instanceof FieldAnnotation) && primaryFieldAnnotation == null)
-			primaryFieldAnnotation = (FieldAnnotation) annotation;
 	}
 
 	private void addSourceLinesForMethod(MethodAnnotation methodAnnotation, SourceLineAnnotation sourceLineAnnotation) {
