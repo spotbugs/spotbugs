@@ -224,8 +224,9 @@ public class InnerClassAccessMap {
 
 			try {
 				XField xfield = Hierarchy.findXField(className, fieldName, fieldSig);
-				if (xfield != null && xfield.isStatic() == isStatic && isValidAccessMethod(methodSig, xfield, isLoad))
+				if (xfield != null && xfield.isStatic() == isStatic && isValidAccessMethod(methodSig, xfield, isLoad)) {
 					access = new InnerClassAccess(methodName, methodSig, xfield, isLoad);
+				}
 			} catch (ClassNotFoundException e) {
 				throw new LookupFailure(e);
 			}
@@ -274,7 +275,7 @@ public class InnerClassAccessMap {
 			}
 
 			// Return type can be either the type of the field, or void.
-			if (/*!methodReturnType.equals("V") &&*/ !methodReturnType.equals(field.getFieldSignature())) {
+			if (!methodReturnType.equals("V") && !methodReturnType.equals(field.getFieldSignature())) {
 				if (DEBUG) {
 					System.out.println("In " + javaClass.getClassName() + "." + methodName +
 						" expected return type V or " + field.getFieldSignature() +
