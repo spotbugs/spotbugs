@@ -34,6 +34,12 @@ public class PatternElementMatch {
 	public void addMatchedInstruction(InstructionHandle handle) {
 		matchedInstructionList.add(handle);
 	}
+
+	public int getNumMatchedInstructions() {
+		return matchedInstructionList.size();
+	}
+
+	// TODO: add a duplicate() method
 }
 
 // vim:ts=4
