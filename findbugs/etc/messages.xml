@@ -476,17 +476,6 @@ It is a fast detector.
     </Details>
   </Detector>
 
-  <Detector class="edu.umd.cs.findbugs.detect.FindMaskedFields">
-    <Details>
-<![CDATA[
-<p> This detector looks for class level fields that are masked by
-local fields defined in methods.
-It is a fast detector.
-]]>
-    </Details>
-  </Detector>
-
-
   <Detector class="edu.umd.cs.findbugs.detect.InvalidJUnitTest">
     <Details>
 <![CDATA[
