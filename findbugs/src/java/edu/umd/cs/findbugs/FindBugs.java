@@ -65,19 +65,38 @@ public class FindBugs implements Constants2, ExitCodes {
 		}
 	}
 
+	/**
+	 * Work list item specifying a file/directory/URL containing
+	 * class files to analyze.
+	 */
 	private static class ArchiveWorkListItem {
 		private String fileName;
 		private boolean explicit;
 
+		/**
+		 * Constructor.
+		 *
+		 * @param fileName file/directory/URL
+		 * @param explicit true if this source of classes appeared explicitly
+		 *                 in the project file, false if was found indirectly
+		 *                 (e.g., a nested jar file in a .war file)
+		 */
 		public ArchiveWorkListItem(String fileName, boolean explicit) {
 			this.fileName = fileName;
 			this.explicit = explicit;
 		}
 
+		/**
+		 * Get the file/directory/URL.
+		 */
 		public String getFileName() {
 			return fileName;
 		}
 
+		/**
+		 * Return whether this class source appeared explicitly in
+		 * the project file.
+		 */
 		public boolean isExplicit() {
 			return explicit;
 		}
