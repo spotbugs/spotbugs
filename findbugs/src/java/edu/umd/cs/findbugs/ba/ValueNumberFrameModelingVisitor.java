@@ -98,16 +98,26 @@ public class ValueNumberFrameModelingVisitor
 	/**
 	 * Determine whether redundant load elimination and forward substitution
 	 * should be performed for the heap location referenced by
-	 * given instruction.  We don't want to bother doing RLE/FS for
+	 * the current instruction.  We don't want to bother doing RLE/FS for
 	 * non-reference types.
-	 * @param ins an instruction accessing a field
-	 * @return true if we should do RLE/FS for this instruction, false if not
+	 * @return true if we should do RLE/FS for the current instruction, false if not
 	 */
-	private boolean doRedundantLoadElimination(FieldOrMethod ins) {
+	private boolean doRedundantLoadElimination() {
 		if (!REDUNDANT_LOAD_ELIMINATION)
 			return false;
-		Type fieldType = ins.getType(getCPG());
-		return (fieldType instanceof ReferenceType);
+		XField xfield = loadedFieldSet.getField(handle);
+		if (xfield == null)
+			return false;
+		if (!xfield.isReferenceType())
+			return false;
+
+/*
+		// NOTYET
+		// Don't do FS for fields that are never read
+		if (!loadedFieldSet.isLoaded(xfield))
+			return false;
+*/
+		return true;
 	}
 
 	/**
@@ -136,7 +146,7 @@ public class ValueNumberFrameModelingVisitor
 	}
 
 	public void visitGETFIELD(GETFIELD obj) {
-		if (doRedundantLoadElimination(obj)) {
+		if (doRedundantLoadElimination()) {
 			ValueNumberFrame frame = getFrame();
 
 			try {
@@ -153,7 +163,7 @@ public class ValueNumberFrameModelingVisitor
 	}
 
 	public void visitPUTFIELD(PUTFIELD obj) {
-		if (doRedundantLoadElimination(obj)) {
+		if (doRedundantLoadElimination()) {
 			try {
 				XField xfield = Hierarchy.findXField(obj, getCPG());
 				if (xfield != null) {
@@ -170,7 +180,7 @@ public class ValueNumberFrameModelingVisitor
 	private static final ValueNumber[] EMPTY_INPUT_VALUE_LIST = new ValueNumber[0];
 
 	public void visitGETSTATIC(GETSTATIC obj) {
-		if (doRedundantLoadElimination(obj)) {
+		if (doRedundantLoadElimination()) {
 			ValueNumberFrame frame = getFrame();
 			ConstantPoolGen cpg = getCPG();
 
@@ -201,7 +211,7 @@ public class ValueNumberFrameModelingVisitor
 	}
 
 	public void visitPUTSTATIC(PUTSTATIC obj) {
-		if (doRedundantLoadElimination(obj)) {
+		if (doRedundantLoadElimination()) {
 			try {
 				XField xfield = Hierarchy.findXField(obj, getCPG());
 				if (xfield != null) {
@@ -216,7 +226,7 @@ public class ValueNumberFrameModelingVisitor
 	}
 
 	public void visitINVOKESTATIC(INVOKESTATIC obj) {
-		if (REDUNDANT_LOAD_ELIMINATION/*doRedundantLoadElimination(obj)*/) {
+		if (REDUNDANT_LOAD_ELIMINATION) {
 			ConstantPoolGen cpg = getCPG();
 			String methodName = obj.getName(cpg);
 			String methodSig = obj.getSignature(cpg);
