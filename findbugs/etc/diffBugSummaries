@@ -16,11 +16,19 @@ my $newfile = shift @ARGV;
 my %allKeys = ();
 my %oldResults = parseResults($oldfile);
 my %newResults = parseResults($newfile);
+my $oldTotal = 0;
+my $newTotal = 0;
 
 foreach my $key (sort keys %allKeys) {
-	my $delta = $newResults{$key} - $oldResults{$key};
-	print "$key:\t$delta\n" if ($delta != 0);
+	my $oldBugs = $oldResults{$key};
+	my $newBugs = $newResults{$key};
+	my $delta = $newBugs - $oldBugs;
+	print "\t$key:\t$delta\n" if ($delta != 0);
+
+	$oldTotal += $oldBugs;
+	$newTotal += $newBugs;
 }
+print "\tTotal: old=$oldTotal, new=$newTotal\n";
 
 sub parseResults {
 	my ($file) = @_;
