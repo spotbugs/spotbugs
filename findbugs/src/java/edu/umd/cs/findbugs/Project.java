@@ -323,9 +323,10 @@ public class Project {
 			try {
 				final JarFile jar = new JarFile(jarFile);
 				final Manifest manifest = jar.getManifest();
-				final Attributes mainAttrs = manifest.getMainAttributes();
-
-				result = mainAttrs.getValue("Class-Path");
+				if (manifest != null) {
+					final Attributes mainAttrs = manifest.getMainAttributes();
+					result = mainAttrs.getValue("Class-Path");
+				}
 			} catch (IOException ioExc) {
 				System.err.println("Unable to access Jar file: " + jarFile +
 								   ", exc = " + ioExc);
