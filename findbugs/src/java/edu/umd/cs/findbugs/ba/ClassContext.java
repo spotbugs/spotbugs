@@ -34,6 +34,9 @@ import org.apache.bcel.generic.*;
  */
 public class ClassContext {
 	public static final boolean PRUNE_INFEASIBLE_EXCEPTION_EDGES = Boolean.getBoolean("cfg.prune");
+	public static final boolean PRUNE_UNCONDITIONAL_EXCEPTION_THROWER_EDGES =
+		Boolean.getBoolean("cfg.prune.throwers");
+	public static final boolean DEBUG = Boolean.getBoolean("classContext.debug");
 
 	private JavaClass jclass;
 	private RepositoryLookupFailureCallback lookupFailureCallback;
@@ -49,6 +52,8 @@ public class ClassContext {
 	private IdentityHashMap<Method, LockCountDataflow> thisLockCountDataflowMap =
 		new IdentityHashMap<Method, LockCountDataflow>();
 	private IdentityHashMap<Method, LockDataflow> lockDataflowMap = new IdentityHashMap<Method, LockDataflow>();
+	private IdentityHashMap<Method, ExceptionPathValueDataflow> exceptionPathDataflowMap =
+		new IdentityHashMap<Method, ExceptionPathValueDataflow>();
 	private ClassGen classGen;
 	private AssignedFieldMap assignedFieldMap;
 
@@ -102,7 +107,7 @@ public class ClassContext {
 		CFG cfg = cfgMap.get(method);
 		if (cfg == null) {
 			MethodGen methodGen = getMethodGen(method);
-			//System.out.println("Building CFG for " + methodGen.getClassName() + "." + methodGen.getName() + ":" + methodGen.getSignature());
+			if (DEBUG) System.out.println("Building CFG for " + methodGen.getClassName() + "." + methodGen.getName() + ":" + methodGen.getSignature());
 			CFGBuilder cfgBuilder = CFGBuilderFactory.create(methodGen);
 			cfgBuilder.build();
 			cfg = cfgBuilder.getCFG();
@@ -116,6 +121,15 @@ public class ClassContext {
 					// FIXME: should report the error
 				} catch (ClassNotFoundException e) {
 					lookupFailureCallback.reportMissingClass(e);
+				}
+			}
+
+			if (PRUNE_UNCONDITIONAL_EXCEPTION_THROWER_EDGES) {
+				try {
+					new PruneUnconditionalExceptionThrowerEdges(
+						methodGen, cfg, getConstantPoolGen(), lookupFailureCallback).execute();
+				} catch (DataflowAnalysisException e) {
+					// FIXME: should report the error
 				}
 			}
 		}
@@ -336,6 +350,28 @@ public class ClassContext {
 			assignedFieldMap = new AssignedFieldMap(this);
 		}
 		return assignedFieldMap;
+	}
+
+	/**
+	 * Get ExceptionPathValue dataflow for method.
+	 * @param method the method
+	 * @return the ExceptionPathValue dataflow
+	 */
+	public ExceptionPathValueDataflow
+		getExceptionPathValueDataflow(Method method) throws CFGBuilderException, DataflowAnalysisException {
+
+		ExceptionPathValueDataflow dataflow = exceptionPathDataflowMap.get(method);
+		if (dataflow == null) {
+			DepthFirstSearch dfs = getDepthFirstSearch(method);
+			CFG cfg = getCFG(method);
+			ExceptionPathValueAnalysis analysis = new ExceptionPathValueAnalysis(dfs);
+			dataflow = new ExceptionPathValueDataflow(cfg, analysis);
+			dataflow.execute();
+
+			exceptionPathDataflowMap.put(method, dataflow);
+		}
+
+		return dataflow;
 	}
 }
 

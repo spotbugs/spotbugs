@@ -77,12 +77,14 @@ public class ExceptionPathValueAnalysis extends ForwardDataflowAnalysis<Exceptio
 		}
 
 		DataflowTestDriver<ExceptionPathValue, ExceptionPathValueAnalysis> driver = new DataflowTestDriver<ExceptionPathValue, ExceptionPathValueAnalysis>() {
-			public Dataflow<ExceptionPathValue, ExceptionPathValueAnalysis> createDataflow(ClassContext classContext, Method method)
+			public Dataflow<ExceptionPathValue, ExceptionPathValueAnalysis>
+				createDataflow(ClassContext classContext, Method method)
 				throws CFGBuilderException, DataflowAnalysisException {
+
 				ExceptionPathValueAnalysis analysis =
 					new ExceptionPathValueAnalysis(classContext.getDepthFirstSearch(method));
-				Dataflow<ExceptionPathValue, ExceptionPathValueAnalysis> dataflow =
-					new Dataflow<ExceptionPathValue,ExceptionPathValueAnalysis>(classContext.getCFG(method), analysis);
+				ExceptionPathValueDataflow dataflow =
+					new ExceptionPathValueDataflow(classContext.getCFG(method), analysis);
 				dataflow.execute();
 				return dataflow;
 			}
