@@ -92,7 +92,7 @@
     <!-- Classpath for building tools. -->
     <path id="tools.buildclasspath">
       <path refid="classpath"/>
-      <pathelement path="${jar.dir}/${findbugs.jar.name}"/>
+      <pathelement path="${class.dir}"/>
     </path>
 
     <!-- Classpath for running tools. -->
@@ -184,19 +184,48 @@
       </jar>
     </target>
 
-    <!-- Target to build the core plugin.
-         This is all of the standard bug pattern detectors.  -->
-    <target name="coreplugin" depends="classes">
+    <!-- Check if core plugin XML files need to be copied. -->
+    <target name="corepluginXMLCheck" depends="tools">
+      <condition property="coreplugin.xml.uptodate">
+        <and>
+          <uptodate>
+            <srcfiles dir="${findbugs.dir}"
+                      includes="etc/findbugs.xml,etc/messages.xml,etc/messages_ja.xml"/>
+            <mapper type="glob"
+                    from="etc/*.xml"
+                    to="${class.dir}/*.xml"/>
+          </uptodate>
+        </and>
+      </condition>
+    </target>
+
+    <!-- Copy XML files (plugin descriptor and messages files)
+         for the core plugin.  We run a Java program to check
+         that the messages files actually define all of the messages
+         required by the plugin (as defined in the plugin descriptor). -->
+    <target name="corepluginXML" depends="classes,corepluginXMLCheck" unless="coreplugin.xml.uptodate">
+      <java dir="${findbugs.dir}"
+            fork="true"
+            classname="edu.umd.cs.findbugs.tools.xml.CheckMessages"
+            failonerror="true">
+         <classpath refid="tools.classpath"/>
+         <arg value="etc/findbugs.xml"/>
+         <arg value="etc/messages.xml"/>
+         <arg value="etc/messages_ja.xml"/>
+      </java>
 
       <copy file="etc/findbugs.xml" todir="${class.dir}" />
       <copy file="etc/messages.xml" todir="${class.dir}" />
       <copy file="etc/messages_ja.xml" todir="${class.dir}" />
+    </target>
 
+    <!-- Target to build the core plugin.
+         This is all of the standard bug pattern detectors.  -->
+    <target name="coreplugin" depends="classes,corepluginXML">
       <jar destfile="${plugin.dir}/${coreplugin.jar.name}" basedir="${class.dir}">
          <include name="*.xml" />
          <include name="edu/umd/cs/findbugs/detect/*.class" />
       </jar>
-
     </target>
 
     <!-- Target to build the GUI jar file. -->
@@ -356,7 +385,7 @@
        Build tools. This includes:
          - Eclipse plugin classpath extractor
     -->
-    <target name="tools" depends="findbugs,coreplugin">
+    <target name="tools" depends="classes">
       <javac srcdir="${tools.src.dir}" destdir="${tools.dir}"
              excludes="edu/umd/cs/findbugs/tools/patcomp/*"
              source="1.5"
