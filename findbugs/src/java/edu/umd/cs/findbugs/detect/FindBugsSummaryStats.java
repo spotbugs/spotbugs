@@ -29,7 +29,7 @@ public class FindBugsSummaryStats extends PreorderVisitor
         implements Detector, BugReporterObserver {
 	private BugReporter bugReporter;
 	private ProjectStats stats;
-	private AnalysisContext analysisContext;
+	//private AnalysisContext analysisContext;
 
 	public FindBugsSummaryStats(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
@@ -38,7 +38,7 @@ public class FindBugsSummaryStats extends PreorderVisitor
 	}
 
 	public void setAnalysisContext(AnalysisContext analysisContext) {
-		this.analysisContext = analysisContext;
+		//this.analysisContext = analysisContext;
 	}
 
 	public void visitClassContext(ClassContext classContext) {

@@ -32,14 +32,14 @@ import org.apache.bcel.generic.*;
 
 public class FindMismatchedWaitOrNotify implements Detector {
 	private BugReporter bugReporter;
-	private AnalysisContext analysisContext;
+	//private AnalysisContext analysisContext;
 
 	public FindMismatchedWaitOrNotify(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 	}
 
 	public void setAnalysisContext(AnalysisContext analysisContext) {
-		this.analysisContext = analysisContext;
+		//this.analysisContext = analysisContext;
 	}
 
 	public void visitClassContext(ClassContext classContext) {

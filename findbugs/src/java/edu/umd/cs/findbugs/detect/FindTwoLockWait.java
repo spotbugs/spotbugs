@@ -32,7 +32,7 @@ import org.apache.bcel.generic.*;
 public class FindTwoLockWait implements Detector {
 
 	private BugReporter bugReporter;
-	private AnalysisContext analysisContext;
+	//private AnalysisContext analysisContext;
 	private JavaClass javaClass;
 
 	public FindTwoLockWait(BugReporter bugReporter) {
@@ -40,7 +40,7 @@ public class FindTwoLockWait implements Detector {
 	}
 
 	public void setAnalysisContext(AnalysisContext analysisContext) {
-		this.analysisContext = analysisContext;
+		//this.analysisContext = analysisContext;
 	}
 
 	public void visitClassContext(ClassContext classContext) {

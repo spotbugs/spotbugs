@@ -88,14 +88,14 @@ public class Naming extends PreorderVisitor implements Detector, Constants2 {
 	HashSet<String> visited = new HashSet<String>();
 
 	private BugReporter bugReporter;
-	private AnalysisContext analysisContext;
+	//private AnalysisContext analysisContext;
 
 	public Naming(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 	}
 
 	public void setAnalysisContext(AnalysisContext analysisContext) {
-		this.analysisContext = analysisContext;
+		//this.analysisContext = analysisContext;
 	}
 
 	public void visitClassContext(ClassContext classContext) {

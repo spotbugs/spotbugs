@@ -42,14 +42,14 @@ public class CloneIdiom extends DismantleBytecode implements Detector, Constants
 	//boolean throwsExceptions;
 	boolean implementsCloneableDirectly;
 	private BugReporter bugReporter;
-	private AnalysisContext analysisContext;
+	//private AnalysisContext analysisContext;
 
 	public CloneIdiom(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 	}
 
 	public void setAnalysisContext(AnalysisContext analysisContext) {
-		this.analysisContext = analysisContext;
+		//this.analysisContext = analysisContext;
 	}
 
 	public void visitClassContext(ClassContext classContext) {

@@ -37,7 +37,7 @@ public class DontCatchIllegalMonitorStateException
 	private static final boolean DEBUG = Boolean.getBoolean("dcimse.debug");
 
 	BugReporter bugReporter;
-	AnalysisContext analysisContext;
+	//AnalysisContext analysisContext;
 	HashSet<String> msgs = null;
 
 	public DontCatchIllegalMonitorStateException(BugReporter bugReporter) {
@@ -47,7 +47,7 @@ public class DontCatchIllegalMonitorStateException
 	}
 
 	public void setAnalysisContext(AnalysisContext analysisContext) {
-		this.analysisContext = analysisContext;
+		//this.analysisContext = analysisContext;
 	}
 
 	public void visit(ExceptionTable obj) {

@@ -298,7 +298,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 	 * ---------------------------------------------------------------------- */
 
 	private BugReporter bugReporter;
-	private AnalysisContext analysisContext;
+	//private AnalysisContext analysisContext;
 	private BugInstance stringComparison;
 	private BugInstance refComparison;
 
@@ -311,7 +311,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 	}
 
 	public void setAnalysisContext(AnalysisContext analysisContext) {
-		this.analysisContext = analysisContext;
+		//this.analysisContext = analysisContext;
 	}
 
 	// XXX BAD EVIL NOT THREAD SAFE YUCK FIXME

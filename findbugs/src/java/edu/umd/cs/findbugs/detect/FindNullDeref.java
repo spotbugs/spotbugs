@@ -68,7 +68,7 @@ public class FindNullDeref implements Detector {
 	private static final boolean DEBUG = Boolean.getBoolean("fnd.debug");
 
 	private BugReporter bugReporter;
-	private AnalysisContext analysisContext;
+	//private AnalysisContext analysisContext;
 	private List<RedundantBranch> redundantBranchList;
 	private BitSet definitelySameBranchSet;
 	private BitSet definitelyDifferentBranchSet;
@@ -83,7 +83,7 @@ public class FindNullDeref implements Detector {
 	}
 
 	public void setAnalysisContext(AnalysisContext analysisContext) {
-		this.analysisContext = analysisContext;
+		//this.analysisContext = analysisContext;
 	}
 
 	public void visitClassContext(ClassContext classContext) {

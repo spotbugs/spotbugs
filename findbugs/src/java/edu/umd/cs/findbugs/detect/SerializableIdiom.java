@@ -43,7 +43,7 @@ public class SerializableIdiom extends PreorderVisitor
 	boolean foundSynchronizedMethods;
 	boolean writeObjectIsSynchronized;
 	private BugReporter bugReporter;
-	private AnalysisContext analysisContext;
+	//private AnalysisContext analysisContext;
 	boolean isAbstract;
 	private List<BugInstance> fieldWarningList = new LinkedList<BugInstance>();
 	private boolean sawReadExternal;
@@ -61,7 +61,7 @@ public class SerializableIdiom extends PreorderVisitor
 	}
 
 	public void setAnalysisContext(AnalysisContext analysisContext) {
-		this.analysisContext = analysisContext;
+		//this.analysisContext = analysisContext;
 	}
 
 	public void visitClassContext(ClassContext classContext) {

@@ -36,7 +36,7 @@ import org.apache.bcel.classfile.*;
 public class VolatileUsage extends BytecodeScanningDetector implements 
 		Constants2 {
 	  private BugReporter bugReporter;
-	private AnalysisContext analysisContext;
+	//private AnalysisContext analysisContext;
 
         public VolatileUsage(BugReporter bugReporter) {
                 this.bugReporter = bugReporter;
@@ -46,7 +46,7 @@ public class VolatileUsage extends BytecodeScanningDetector implements
         }
 
         public void setAnalysisContext(AnalysisContext analysisContext) {
-                this.analysisContext = analysisContext;
+                //this.analysisContext = analysisContext;
         }
 
 static class FieldRecord {

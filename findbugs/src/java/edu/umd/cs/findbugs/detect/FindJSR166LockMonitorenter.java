@@ -38,7 +38,7 @@ import org.apache.bcel.generic.*;
  */
 public class FindJSR166LockMonitorenter implements Detector {
 	private BugReporter bugReporter;
-	private AnalysisContext analysisContext;
+	//private AnalysisContext analysisContext;
 
 	private static final ObjectType LOCK_TYPE = new ObjectType("java.util.concurrent.locks.Lock");
 
@@ -47,7 +47,7 @@ public class FindJSR166LockMonitorenter implements Detector {
 	}
 
 	public void setAnalysisContext(AnalysisContext analysisContext) {
-		this.analysisContext = analysisContext;
+		//this.analysisContext = analysisContext;
 	}
 
 	public void visitClassContext(ClassContext classContext) {
