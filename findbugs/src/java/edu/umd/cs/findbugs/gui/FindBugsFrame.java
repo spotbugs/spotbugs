@@ -450,21 +450,23 @@ public class FindBugsFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_exitItemActionPerformed
 
     private void removeSrcDirButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeSrcDirButtonActionPerformed
-	// if (sourceDirList.hasCurrentSelect()) {
-	//   Project project = getCurrentProject();
-	//   String currSelection = sourceDirList.getCurrentSelection();
-	//   project.removeSourceDirectory(currSelection);
-	//   sourceDirList.removeCurrentSelection();
-	// }
+        int selIndex = sourceDirList.getSelectedIndex();
+        if (selIndex >= 0) {
+            Project project = getCurrentProject();
+            project.removeSourceDir(selIndex);
+            DefaultListModel listModel = (DefaultListModel) sourceDirList.getModel();
+            listModel.removeElementAt(selIndex);
+        }
     }//GEN-LAST:event_removeSrcDirButtonActionPerformed
 
     private void removeJarButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeJarButtonActionPerformed
-	// if (jarList.hasCurrentSelection()) {
-	//   Project project = getCurrentProject();
-	//   String currSelection = jarList.getCurrentSelection();
-	//   project.removeJarFile(currSelection);
-	//   jarList.removeCurrentSelection();
-	// }
+        int selIndex = jarFileList.getSelectedIndex();
+        if (selIndex >= 0) {
+            Project project = getCurrentProject();
+            project.removeJarFile(selIndex);
+            DefaultListModel listModel = (DefaultListModel) jarFileList.getModel();
+            listModel.removeElementAt(selIndex);
+        }
     }//GEN-LAST:event_removeJarButtonActionPerformed
 
     private void addSourceDirButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addSourceDirButtonActionPerformed
@@ -507,7 +509,6 @@ public class FindBugsFrame extends javax.swing.JFrame {
         DefaultTreeCellRenderer renderer = new DefaultTreeCellRenderer();
         
         navigatorTree.setCellRenderer(new FindBugsFrame.MyCellRenderer());
-        navigatorTree.setShowsRootHandles(true);
 	
 	jarFileList.setModel(new DefaultListModel());
 	sourceDirList.setModel(new DefaultListModel());
@@ -557,6 +558,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
      * @param project the selected project
      */
     private void synchProject(Project project) {
+        System.out.println("Synch with project " + project.toString());
+        
 	// Clear text fields
 	jarNameTextField.setText("");
 	srcDirTextField.setText("");
