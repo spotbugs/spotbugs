@@ -6,6 +6,34 @@
   **********************************************************************
    -->
 
+  <Detector class="edu.umd.cs.findbugs.detect.SwitchFallthrough">
+    <Details>
+<![CDATA[
+<p> This detector looks for switch statements containing fall through.
+It is a fast detector.
+]]>
+    </Details>
+  </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.FindFieldSelfAssignment">
+    <Details>
+<![CDATA[
+<p> This detector looks for places where a field is assigned
+by reading the value of the same field.  It is a fast detector.
+]]>
+    </Details>
+  </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.FindNonShortCircuit">
+    <Details>
+<![CDATA[
+<p> This detector looks for suspicious uses of non-short-circuiting
+boolean operators (<code>|</code> and <code>&amp;</code> instead of
+<code>||</code> and <code>&amp;&amp;</code>).
+]]>
+    </Details>
+  </Detector>
+
   <Detector class="edu.umd.cs.findbugs.detect.DontCatchIllegalMonitorStateException">
     <Details>
 <![CDATA[
@@ -1693,5 +1721,7 @@ removed.
   <BugCode abbrev="LI">Unsynchronized Lazy Initialization</BugCode>
   <BugCode abbrev="JLM">Synchronization on JSR166 Lock</BugCode>
   <BugCode abbrev="UPM">Private method is never called</BugCode>
+  <BugCode abbrev="EI2">Storing reference to mutable object</BugCode>
+  <BugCode abbrev="NS">Suspicious use of non-short-circuit boolean operator</BugCode>
 
 </MessageCollection>
