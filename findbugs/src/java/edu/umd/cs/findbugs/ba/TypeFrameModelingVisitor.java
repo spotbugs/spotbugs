@@ -69,7 +69,7 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 				frame.popValue();
 			}
 		} catch (DataflowAnalysisException e) {
-			throw new IllegalStateException("Stack underflow" + e.getMessage());
+			throw new IllegalStateException("Stack underflow for " + ins + ": " + e.getMessage());
 		}
 	}
 
