@@ -338,7 +338,9 @@
         <filter token="HTML_SIDEBAR" value="${doc.html.sidebar}"/>
       </filterset>  
 
+<!--
       <echo>doc.html.sidebar is ${doc.html.sidebar}</echo>
+-->
     </target>
 
     <!-- Target to generate documentation files from their sources. -->
