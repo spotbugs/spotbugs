@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs.plan;
 
 import edu.umd.cs.findbugs.DetectorFactory;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -33,6 +34,10 @@ public class AnalysisPass {
 
 	public void addDetectorFactory(DetectorFactory factory) {
 		factoryList.add(factory);
+	}
+
+	public Iterator<DetectorFactory> detectorFactoryIterator() {
+		return factoryList.iterator();
 	}
 }
 
