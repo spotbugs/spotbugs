@@ -73,7 +73,7 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
 		result.setValid();
 		int numLocals = methodGen.getMaxLocals();
 		for (int i = 0; i < numLocals; ++i)
-			result.setValue(i, IsNullValue.doNotReportValue());
+			result.setValue(i, IsNullValue.nonReportingNotNullValue());
 	}
 
 /*
@@ -187,7 +187,7 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
 					for (int i = 0; i < numSlots; ++i) {
 						IsNullValue value = tmpFact.getValue(i);
 						if (value.equals(IsNullValue.nullOnSomePathValue()))
-							tmpFact.setValue(i, IsNullValue.doNotReportValue());
+							tmpFact.setValue(i, IsNullValue.nonReportingNullOnSomePathValue());
 					}
 				}
 			}
@@ -218,7 +218,7 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
 						for (int i = 0; i < tmpFact.getNumSlots(); ++i) {
 							IsNullValue value = tmpFact.getValue(i);
 							if (value.isDefinitelyNull() || value.isNullOnSomePath())
-								tmpFact.setValue(i, IsNullValue.doNotReportValue());
+								tmpFact.setValue(i, IsNullValue.nonReportingNullOnSomePathValue());
 						}
 					}
 				}

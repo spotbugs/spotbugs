@@ -29,7 +29,6 @@ package edu.umd.cs.findbugs.ba;
  * @author David Hovemeyer
  */
 public class IsNullValue {
-	private static final boolean NO_CHECKED_VALUES = Boolean.getBoolean("inv.noChecked");
 	private static final boolean DEBUG_EXCEPTION = Boolean.getBoolean("inv.debugException");
 
 	private static final int NULL         = 0;
@@ -37,33 +36,23 @@ public class IsNullValue {
 	private static final int NN           = 2;
 	private static final int CHECKED_NN   = 3;
 	private static final int NSP          = 4;
-	private static final int DNR          = 5;
+	private static final int NN_DNR       = 5;
+	private static final int NSP_DNR      = 6;
 
 	// This can be bitwise-OR'ed to indicate the value was propagated
 	// along an exception path.
 	private static final int EXCEPTION = 0x100;
 
-	private static final int[][] checkedValueMergeMatrix = {
-		// NULL,    CHECKED_NULL, NN,      CHECKED_NN, NSP,     DNR
-		{  NULL                                                       }, // NULL
-		{  NULL,    CHECKED_NULL,                                     }, // CHECKED_NULL
-		{  NSP,     NSP,          NN                                  }, // NN
-		{  NSP,     NSP,          NN,      CHECKED_NN,                }, // CHECKED_NN
-		{  NSP,     NSP,          NSP,     NSP,        NSP            }, // NSP
-		{  NSP,     NSP,          DNR,     DNR,        DNR,       DNR }  // DNR
+	private static final int[][] mergeMatrix = {
+		// NULL,    CHECKED_NULL, NN,      CHECKED_NN, NSP,     NN_DNR,   NSP_DNR
+		{  NULL                                                                    }, // NULL
+		{  NULL,    CHECKED_NULL,                                                  }, // CHECKED_NULL
+		{  NSP,     NSP,          NN                                               }, // NN
+		{  NSP,     NSP,          NN,      CHECKED_NN,                             }, // CHECKED_NN
+		{  NSP,     NSP,          NSP,     NSP,        NSP                         }, // NSP
+		{  NSP,     NSP,          NN_DNR,  NN_DNR,     NSP,     NN_DNR,            }, // NN_DNR
+		{  NSP_DNR, NSP_DNR,      NSP_DNR, NSP_DNR,    NSP_DNR, NSP_DNR,  NSP_DNR, }  // NSP_DNR
 	};
-
-	private static final int[][] noCheckedValueMergeMatrix = {
-		{  NULL                                                         }, // NULL
-		{  -1,        -1,                                               }, // CHECKED_NULL
-		{  NSP,       -1,       NN                                      }, // NN
-		{  -1,        -1,       -1,        -1,    	                    }, // CHECKED_NN
-		{  NSP,       -1,       NSP,       -1,         NSP              }, // NSP
-		{  NSP,       -1,       DNR,       -1,         DNR,       DNR   }  // DNR
-	};
-
-	private static final int[][] mergeMatrix =
-		NO_CHECKED_VALUES ? noCheckedValueMergeMatrix : checkedValueMergeMatrix;
 
 	private static IsNullValue[] instanceList = {
 		new IsNullValue(NULL),
@@ -71,7 +60,8 @@ public class IsNullValue {
 		new IsNullValue(NN),
 		new IsNullValue(CHECKED_NN),
 		new IsNullValue(NSP),
-		new IsNullValue(DNR)
+		new IsNullValue(NN_DNR),
+		new IsNullValue(NSP_DNR)
 	};
 
 	private int kind;
@@ -154,19 +144,26 @@ public class IsNullValue {
 	}
 
 	/**
-	 * Get the instance representing values which we aren't sure 
-	 * can be null or not.
+	 * Get non-reporting non-null value.
+	 * This is what we use for unknown values.
 	 */
-	public static IsNullValue doNotReportValue() {
-		return instanceList[DNR];
+	public static IsNullValue nonReportingNotNullValue() {
+		return instanceList[NN_DNR];
+	}
+
+	/**
+	 * Get non-reporting null on some path value.
+	 */
+	public static IsNullValue nonReportingNullOnSomePathValue() {
+		return instanceList[NSP_DNR];
 	}
 
 	public static IsNullValue flowSensitiveNullValue() {
-		return instanceList[NO_CHECKED_VALUES ? NULL : CHECKED_NULL];
+		return instanceList[CHECKED_NULL];
 	}
 
 	public static IsNullValue flowSensitiveNonNullValue() {
-		return instanceList[NO_CHECKED_VALUES ? NN : CHECKED_NN];
+		return instanceList[CHECKED_NN];
 	}
 
 	/** Merge two values. */
@@ -224,8 +221,10 @@ public class IsNullValue {
 			return pfx + "W";
 		case NSP:
 			return pfx + "s";
-		case DNR:
+		case NN_DNR:
 			return pfx + "-";
+		case NSP_DNR:
+			return pfx + "/";
 		default:
 			throw new IllegalStateException("unknown kind of IsNullValue: " + kind);
 		}
