@@ -190,6 +190,9 @@
                 </Property>
                 <Property name="text" type="java.lang.String" value="Cut"/>
               </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="cutActionPerformed"/>
+              </Events>
               <AuxValues>
                 <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="localiseButton(cutItem, &quot;menu.cut_item&quot;, &quot;Cut&quot;, true);"/>
               </AuxValues>
@@ -204,6 +207,9 @@
                 </Property>
                 <Property name="text" type="java.lang.String" value="Copy"/>
               </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="copyActionPerformed"/>
+              </Events>
               <AuxValues>
                 <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="localiseButton(copyItem, &quot;menu.copy_item&quot;, &quot;Copy&quot;, true);"/>
               </AuxValues>
@@ -218,6 +224,9 @@
                 </Property>
                 <Property name="text" type="java.lang.String" value="Paste"/>
               </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="pasteActionPerformed"/>
+              </Events>
               <AuxValues>
                 <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="localiseButton(pasteItem, &quot;menu.paste_item&quot;, &quot;Paste&quot;, true);"/>
               </AuxValues>

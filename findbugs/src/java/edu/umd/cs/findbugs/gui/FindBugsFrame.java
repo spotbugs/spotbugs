@@ -41,6 +41,7 @@ import javax.swing.text.*;
 import javax.swing.tree.*;
 import java.text.MessageFormat;
 import java.awt.event.KeyEvent;
+import java.awt.datatransfer.*;
 
 
 import edu.umd.cs.findbugs.*;
@@ -1328,18 +1329,36 @@ public class FindBugsFrame extends javax.swing.JFrame {
             cutItem.setFont(new java.awt.Font("Dialog", 0, 12));
             cutItem.setText("Cut");
             localiseButton(cutItem, "menu.cut_item", "Cut", true);
+            cutItem.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    cutActionPerformed(evt);
+                }
+            });
+
             editMenu.add(cutItem);
 
             copyItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_C, java.awt.event.InputEvent.CTRL_MASK));
             copyItem.setFont(new java.awt.Font("Dialog", 0, 12));
             copyItem.setText("Copy");
             localiseButton(copyItem, "menu.copy_item", "Copy", true);
+            copyItem.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    copyActionPerformed(evt);
+                }
+            });
+
             editMenu.add(copyItem);
 
             pasteItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_V, java.awt.event.InputEvent.CTRL_MASK));
             pasteItem.setFont(new java.awt.Font("Dialog", 0, 12));
             pasteItem.setText("Paste");
             localiseButton(pasteItem, "menu.paste_item", "Paste", true);
+            pasteItem.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    pasteActionPerformed(evt);
+                }
+            });
+
             editMenu.add(pasteItem);
 
             editMenu.add(jSeparator10);
@@ -1507,6 +1526,56 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
             pack();
         }//GEN-END:initComponents
+
+    private String buildSelectPath(JList list) {
+        StringBuffer path = new StringBuffer();
+        int[] indices = list.getSelectedIndices();
+        String separatorStr = System.getProperty("path.separator");
+        String sep = "";
+        ListModel m = list.getModel();
+        for (int i = 0; i < indices.length; i++) {
+            path.append(sep);
+            sep = separatorStr;
+            path.append(m.getElementAt(indices[i]));
+        }
+        return path.toString();
+    }
+    
+    private void pasteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pasteActionPerformed
+        if (selectedComponent == null)
+            return;
+        
+        if (selectedComponent instanceof JTextField)
+            ((JTextField)selectedComponent).paste();
+        else if (selectedComponent instanceof JList) {
+        }
+    }//GEN-LAST:event_pasteActionPerformed
+
+    private void copyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_copyActionPerformed
+        if (selectedComponent == null)
+            return;
+        
+        if (selectedComponent instanceof JTextField)
+            ((JTextField)selectedComponent).cut();
+        else if (selectedComponent instanceof JList) {
+            StringSelection path = new StringSelection(buildSelectPath((JList)selectedComponent));
+            Clipboard cb = Toolkit.getDefaultToolkit().getSystemClipboard();
+            cb.setContents(path, path);
+        }        
+    }//GEN-LAST:event_copyActionPerformed
+
+    private void cutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cutActionPerformed
+        if (selectedComponent == null)
+            return;
+        
+        if (selectedComponent instanceof JTextField)
+            ((JTextField)selectedComponent).cut();
+        else if (selectedComponent instanceof JList) {
+            StringSelection path = new StringSelection(buildSelectPath((JList)selectedComponent));
+            Clipboard cb = Toolkit.getDefaultToolkit().getSystemClipboard();
+            cb.setContents(path, path);            
+        }
+    }//GEN-LAST:event_cutActionPerformed
 
     private void focusGainedHandler(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_focusGainedHandler
         Component old = evt.getOppositeComponent();
