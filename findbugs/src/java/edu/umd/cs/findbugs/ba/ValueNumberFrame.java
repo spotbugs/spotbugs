@@ -19,6 +19,14 @@
 
 package edu.umd.cs.daveho.ba;
 
+/**
+ * A dataflow value representing a Java stack frame with value number
+ * information.
+ *
+ * @see ValueNumber
+ * @see ValueNumberAnalysis
+ * @author David Hovemeyer
+ */
 public class ValueNumberFrame extends Frame<ValueNumber> {
 
 	private ValueNumberFactory factory;
@@ -52,6 +60,10 @@ public class ValueNumberFrame extends Frame<ValueNumber> {
 		ValueNumberFrame other = (ValueNumberFrame) other_;
 		nextValueNumber = Math.max(nextValueNumber, other.nextValueNumber);
 		super.mergeWith(other);
+	}
+
+	public ValueNumber createFreshValue() {
+		return factory.getValueNumber(nextValueNumber++);
 	}
 
 }
