@@ -53,6 +53,18 @@ public class ByteCodePatternMatch {
 			? lastElementMatch.getLabeledInstruction(label)
 			: null;
 	}
+
+	public PatternElementMatch getFirstLabeledMatch(String label) {
+		return lastElementMatch != null
+			? lastElementMatch.getFirstLabeledMatch(label)
+			: null;
+	}
+
+	public PatternElementMatch getLastLabeledMatch(String label) {
+		return lastElementMatch != null
+			? lastElementMatch.getLastLabeledMatch(label)
+			: null;
+	}
 }
 
 // vim:ts=4

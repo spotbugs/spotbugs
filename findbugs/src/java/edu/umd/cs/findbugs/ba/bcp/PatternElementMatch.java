@@ -89,14 +89,38 @@ public class PatternElementMatch {
 	}
 
 	/**
-	 * Get the instruction matched by the PatternElement with given label.
+	 * Get the <em>first</em> instruction matched by the PatternElement with given label.
 	 */
 	public InstructionHandle getLabeledInstruction(String label) {
+		PatternElementMatch first = getFirstLabeledMatch(label);
+		return first != null ? first.getMatchedInstructionInstructionHandle() : null;
+	}
+
+	/**
+	 * Get <em>first</em> match element with given label,
+	 * if any.
+	 */
+	public PatternElementMatch getFirstLabeledMatch(String label) {
+		PatternElementMatch cur = this, result = null;
+		while (cur != null) {
+			String elementLabel = cur.patternElement.getLabel();
+			if (elementLabel != null && elementLabel.equals(label))
+				result = cur;
+			cur = cur.prev;
+		}
+		return result;
+	}
+
+	/**
+	 * Get <em>last</em> match element with given label,
+	 * if any.
+	 */
+	public PatternElementMatch getLastLabeledMatch(String label) {
 		PatternElementMatch cur = this;
 		while (cur != null) {
 			String elementLabel = cur.patternElement.getLabel();
 			if (elementLabel != null && elementLabel.equals(label))
-				return cur.matchedInstruction;
+				return cur;
 			cur = cur.prev;
 		}
 		return null;
