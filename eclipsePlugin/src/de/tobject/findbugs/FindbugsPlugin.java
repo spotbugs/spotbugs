@@ -531,18 +531,61 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 		return prefs;
 	}
 
+	/**
+	 * Save current UserPreferences for given project.
+	 * 
+	 * @param project the project
+	 * @throws CoreException 
+	 * @throws IOException 
+	 */
+	public static void saveUserPreferences(IProject project) throws CoreException, IOException {
+		IFile userPrefsFile = getUserPreferencesFile(project);
+		
+		final UserPreferences userPrefs = getUserPreferences(project);
+		
+		FileOutput userPrefsOutput = new FileOutput() {
+			public void writeFile(OutputStream os) throws IOException {
+				userPrefs.write(os);
+			}
+
+			public String getTaskDescription() {
+				return "writing user preferences for project";
+			}
+		};
+		
+		IO.writeFile(userPrefsFile, userPrefsOutput, null);
+	}
+
+	/**
+	 * Read UserPreferences for project from the file in the project directory.
+	 * Returns null if the preferences have not been saved to a file,
+	 * or if there is an error reading the preferences file.
+	 * 
+	 * @param project the project to get the UserPreferences for
+	 * @return the UserPreferences, or null if the UserPreferences file could not be read
+	 * @throws CoreException
+	 */
 	private static UserPreferences readUserPreferences(IProject project) throws CoreException {
-//		IFile userPrefsFile = getUserPreferencesFile(project);
-//		
-//		InputStream in = userPrefsFile.getContents();
-		return null;
+		IFile userPrefsFile = getUserPreferencesFile(project);
+		if (!userPrefsFile.exists())
+			return null;
+
+		try {
+			InputStream in = userPrefsFile.getContents();
+			UserPreferences userPrefs = UserPreferences.createDefaultUserPreferences();
+			userPrefs.read(in);
+			return userPrefs;
+		} catch (IOException e) {
+			FindbugsPlugin.getDefault().logException(
+					e, "Could not read user preferences for project");
+			return null;
+		}
 	}
 
 	private static UserPreferences createDefaultUserPreferences(IProject project) {
-		UserPreferences prefs = UserPreferences.createDefaultUserPreferences();
+		UserPreferences userPrefs = UserPreferences.createDefaultUserPreferences();
 		
 		try {
-			
 			// For backwards-compatibility, try to use the old project filter settings
 			// and active detector set. 
 			
@@ -553,7 +596,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 			String activeDetectorList =
 				(String) project.getSessionProperty(SESSION_PROPERTY_ACTIVE_DETECTORS);
 			if (activeDetectorList != null) {
-				prefs.enableAllDetectors(false);
+				userPrefs.enableAllDetectors(false);
 				DetectorFactoryCollection factoryCollection = DetectorFactoryCollection.instance();
 				
 				StringTokenizer st = new StringTokenizer(activeDetectorList, LIST_DELIMITER);
@@ -561,7 +604,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 					String factoryName = st.nextToken();
 					DetectorFactory factory = factoryCollection.getFactory(factoryName);
 					if (factory != null) {
-						prefs.enableDetector(factory, true);
+						userPrefs.enableDetector(factory, true);
 					}
 				}
 			}
@@ -569,7 +612,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 			FindbugsPlugin.getDefault().logException(e, "Could not get FindBugs settings");
 		}
 		
-		return prefs;
+		return userPrefs;
 	}
 	
 }
