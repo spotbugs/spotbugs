@@ -71,6 +71,7 @@ public class BugInstance implements Comparable, XMLWriteable {
 	private ArrayList<BugAnnotation> annotationList;
 	private ClassAnnotation primaryClassAnnotation;
 	private MethodAnnotation primaryMethodAnnotation;
+	private FieldAnnotation primaryFieldAnnotation;
 	private int cachedHashCode;
 	private String annotationText;
 
@@ -186,6 +187,12 @@ public class BugInstance implements Comparable, XMLWriteable {
 	 */
 	public MethodAnnotation getPrimaryMethod() {
 		return primaryMethodAnnotation;
+	}
+	/**
+	 * Get the primary method annotation, which indicates where the bug occurs.
+	 */
+	public FieldAnnotation getPrimaryField() {
+		return primaryFieldAnnotation;
 	}
 
 	/**
@@ -779,6 +786,8 @@ public class BugInstance implements Comparable, XMLWriteable {
 
 		if ((annotation instanceof MethodAnnotation) && primaryMethodAnnotation == null)
 			primaryMethodAnnotation = (MethodAnnotation) annotation;
+		if ((annotation instanceof FieldAnnotation) && primaryFieldAnnotation == null)
+			primaryFieldAnnotation = (FieldAnnotation) annotation;
 	}
 
 	private void addSourceLinesForMethod(MethodAnnotation methodAnnotation, SourceLineAnnotation sourceLineAnnotation) {
