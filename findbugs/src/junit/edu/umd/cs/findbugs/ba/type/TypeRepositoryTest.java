@@ -38,6 +38,7 @@ public class TypeRepositoryTest extends TestCase {
 
 	ClassType myClassType;
 	ClassType mySuperclassType;
+	ClassType unrelatedThingType;
 	ClassType myInterfaceType;
 	ClassType mySubinterfaceType;
 
@@ -64,6 +65,14 @@ public class TypeRepositoryTest extends TestCase {
 	boolean checkUnidirectionalSubtype(ObjectType subtype, ObjectType supertype) throws ClassNotFoundException {
 		return repos.isSubtype(subtype, supertype)
 			&& !repos.isSubtype(supertype, subtype);
+	}
+
+	void checkFirstCommonSuperclass(ObjectType a, ObjectType b, ObjectType expectedCommonSuperclass)
+		throws ClassNotFoundException {
+
+		// Make sure the operation is commutative
+		Assert.assertEquals(repos.getFirstCommonSuperclass(a, b), expectedCommonSuperclass);
+		Assert.assertEquals(repos.getFirstCommonSuperclass(b, a), expectedCommonSuperclass);
 	}
 
 	protected void setUp() {
@@ -105,6 +114,10 @@ public class TypeRepositoryTest extends TestCase {
 		repos.addSuperclassLink(mySuperclassType, javaLangObjectType);
 		repos.addInterfaceLink(mySuperclassType, myInterfaceType);
 		repos.addInterfaceLink(mySubinterfaceType, myInterfaceType);
+
+		unrelatedThingType = repos.classTypeFromDottedClassName("com.foobar.UnrelatedThing");
+		setClass(unrelatedThingType);
+		repos.addSuperclassLink(unrelatedThingType, javaLangObjectType);
 
 		// Array classes
 		myClassArrayType = repos.arrayTypeFromDimensionsAndBaseType(1, myClassType);
@@ -235,6 +248,10 @@ public class TypeRepositoryTest extends TestCase {
 		Assert.assertTrue(checkUnidirectionalSubtype(booleanArray2Type, javaLangObjectType));
 		Assert.assertTrue(checkUnidirectionalSubtype(booleanArray1Type, javaIoSerializableType));
 		Assert.assertTrue(checkUnidirectionalSubtype(booleanArray1Type, javaLangCloneableType));
+	}
+
+	public void classTypeCommonSuperclassTest() throws ClassNotFoundException {
+		checkFirstCommonSuperclass(myClassType, mySuperclassType, mySuperclassType);
 	}
 
 }
