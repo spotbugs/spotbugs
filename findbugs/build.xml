@@ -707,13 +707,27 @@
     <!-- Compile the code and format the docs. -->
     <target name="buildAll" depends="build,eclipsePlugin,docs" />
 
+    <!-- Create a signed jar version of the findbugs.jar -->
+    <target name="sign" depends="findbugs">
+	<input
+    		message="Please enter keystore password:"
+    		addproperty="keypass" />
+    	<signjar keystore="${findbugs.dir}/findbugs.keystore"
+    		 alias="findbugs"
+    		 storepass="${keypass}"
+    		 keypass="${keypass}"
+    		 jar="${jar.dir}/findbugs.jar"
+    		 signedjar="${jar.dir}/signed_findbugs.jar"/>
+    </target>
+    
     <!-- Target to build the release. This just means copying generated files
          (code and docs). -->
-    <target name="release" depends="buildAll,version">
+    <target name="release" depends="buildAll,version,sign">
        <copy todir="${release.dir}/lib">
          <fileset dir="${jar.dir}" includes="**/*.jar" excludes="plastic.jar,junit.jar"  />
          <fileset dir="${jar.dir}" includes="**/*.icns" />
        </copy>
+       <copy tofile="${release.dir}/findbugs.jar" file="${jar.dir}/signed_findbugs.jar"/>
        <copy todir="${release.dir}/plugin">
          <fileset dir="${plugin.dir}" includes="**/*.jar"/>
        </copy>
