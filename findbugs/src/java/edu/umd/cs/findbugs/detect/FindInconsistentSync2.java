@@ -667,10 +667,17 @@ public class FindInconsistentSync2 implements Detector {
 			ValueNumberDataflow vnaDataflow = classContext.getValueNumberDataflow(method);
 			ValueNumberFrame frame = vnaDataflow.getFactAtLocation(location);
 
+			// NOTE: if the CFG on which the value number analysis was performed
+			// was pruned, there may be unreachable instructions.  Therefore,
+			// we can't assume the frame is valid.
+			if (!frame.isValid())
+				continue;
+
 			// Find the ValueNumber of the receiver object
 			int numConsumed = ins.consumeStack(cpg);
 			if (numConsumed == Constants.UNPREDICTABLE)
 				throw new AnalysisException("Unpredictable stack consumption: " + handle);
+			//if (DEBUG) System.out.println("Getting receiver for frame: " + frame);
 			ValueNumber instance = frame.getStackValue(numConsumed - 1);
 
 			// Is the instance locked?
