@@ -1,0 +1,25 @@
+#! /usr/bin/perl
+
+# Run FindBugs on some standard test files.
+# We compare summaries of the output against known good results
+# to ensure that we're not producing drastically different results.
+
+use strict qw(refs vars);
+
+my @jarList = (
+	#'/export/home/daveho/linux/java/j2sdk1.4.2/jre/lib/rt.jar', # JDK 1.4.2-beta rt.jar file (build 1.4.2-beta-b19)
+	'/export/home/daveho/t/classpath.jar', # Classpath 0.05
+);
+
+foreach my $jar (@jarList) {
+	$jar =~ m,.*/([^/]+)\.jar$,;
+	my $shortName = $1;
+
+	#print "$shortName\n";
+
+	print "Executing regression test for $shortName\n";
+
+	system("java -classpath build/findbugs.jar:\$CLASSPATH edu.umd.cs.findbugs.FindBugs $jar | etc/summarizeBugs > build/$shortName.out");
+}
+
+# vim:ts=4
