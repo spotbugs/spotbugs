@@ -24,6 +24,7 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.visitclass.Constants2;
+import edu.umd.cs.findbugs.ba.ClassContext;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
@@ -59,6 +60,11 @@ public class InefficientToArray extends BytecodeScanningDetector implements Cons
 		this.bugReporter = bugReporter;
 	}
 
+	public void visitClassContext(ClassContext classContext) {
+		if (collectionClass != null)
+			classContext.getJavaClass().accept(this);
+	}
+	
 	public void visit(Method obj) {
 		if (DEBUG)
 			System.out.println("------------------- Analyzing " + obj.getName() + " ----------------");
@@ -67,10 +73,6 @@ public class InefficientToArray extends BytecodeScanningDetector implements Cons
 	}
 
 	public void sawOpcode(int seen) {
-
-		if (collectionClass == null)
-			return;
-
 		if (DEBUG) System.out.println("State: " + state + "  Opcode: " + OPCODE_NAMES[seen]);
 
 		switch (state) {
