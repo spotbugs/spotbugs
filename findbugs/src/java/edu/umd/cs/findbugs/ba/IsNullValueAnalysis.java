@@ -92,35 +92,46 @@ public class IsNullValueAnalysis extends ForwardDataflowAnalysis<IsNullValueFram
 		throws DataflowAnalysisException {
 
 		if (fact.isValid()) {
-			// Determine if the edge conveys any information about the
-			// null/non-null status of operands in the incoming frame.
-			final int numSlots = fact.getNumSlots();
-			final BasicBlock destBlock = edge.getDest();
 
-			int nullInfo = getNullInfoFromEdge(edge);
-			switch (nullInfo) {
-			case TOS_NULL:
-				fact = replaceValues(fact, numSlots - 1, destBlock, IsNullValue.nullValue());
-				break;
-			case TOS_NON_NULL:
-				fact = replaceValues(fact, numSlots - 1, destBlock, IsNullValue.nonNullValue());
-				break;
-			case REF_OPERAND_NON_NULL:
-				{
-					// For all of the instructions which have a null-checked
-					// reference operand, it is pushed onto the stack before
-					// all of the other operands to the instruction.
-					Instruction firstInDest = edge.getDest().getFirstInstruction().getInstruction();
-					int numSlotsConsumed = firstInDest.consumeStack(methodGen.getConstantPool());
-					if (numSlotsConsumed == Constants.UNPREDICTABLE)
-						throw new DataflowAnalysisException("Unpredictable stack consumption for " + firstInDest);
-					fact = replaceValues(fact, numSlots - numSlotsConsumed, destBlock, IsNullValue.nonNullValue());
+			if (edge.getDest().isExceptionHandler()) {
+				// Exception handler - clear stack and push a non-null value
+				// to represent the exception.
+				IsNullValueFrame tmpFrame = createFact();
+				tmpFrame.copyFrom(fact);
+				tmpFrame.clearStack();
+				tmpFrame.pushValue(IsNullValue.nonNullValue());
+				fact = tmpFrame;
+			} else {
+				// Determine if the edge conveys any information about the
+				// null/non-null status of operands in the incoming frame.
+				final int numSlots = fact.getNumSlots();
+				final BasicBlock destBlock = edge.getDest();
+	
+				int nullInfo = getNullInfoFromEdge(edge);
+				switch (nullInfo) {
+				case TOS_NULL:
+					fact = replaceValues(fact, numSlots - 1, destBlock, IsNullValue.nullValue());
+					break;
+				case TOS_NON_NULL:
+					fact = replaceValues(fact, numSlots - 1, destBlock, IsNullValue.nonNullValue());
+					break;
+				case REF_OPERAND_NON_NULL:
+					{
+						// For all of the instructions which have a null-checked
+						// reference operand, it is pushed onto the stack before
+						// all of the other operands to the instruction.
+						Instruction firstInDest = edge.getDest().getFirstInstruction().getInstruction();
+						int numSlotsConsumed = firstInDest.consumeStack(methodGen.getConstantPool());
+						if (numSlotsConsumed == Constants.UNPREDICTABLE)
+							throw new DataflowAnalysisException("Unpredictable stack consumption for " + firstInDest);
+						fact = replaceValues(fact, numSlots - numSlotsConsumed, destBlock, IsNullValue.nonNullValue());
+					}
+					break;
+				case NO_INFO:
+					break;
+				default:
+					assert false;
 				}
-				break;
-			case NO_INFO:
-				break;
-			default:
-				assert false;
 			}
 		}
 
@@ -155,7 +166,7 @@ public class IsNullValueAnalysis extends ForwardDataflowAnalysis<IsNullValueFram
 				return edgeType == IFCMP_EDGE ? TOS_NULL : TOS_NON_NULL;
 			else if (opcode == Constants.IFNONNULL)
 				return edgeType == IFCMP_EDGE ? TOS_NON_NULL : TOS_NULL;
-		} else if (edge.getSource().isNullCheck()) {
+		} else if (edge.getSource().isNullCheck() && edge.getType() == FALL_THROUGH_EDGE) {
 			return REF_OPERAND_NON_NULL;
 		}
 
@@ -184,6 +195,9 @@ public class IsNullValueAnalysis extends ForwardDataflowAnalysis<IsNullValueFram
 		result.copyFrom(frame);
 
 		if (vnaFrame != null) {
+			if (numSlots != vnaFrame.getNumSlots()) {
+				System.out.println("Slots mismatch: " + numSlots + " vs. " + vnaFrame.getNumSlots());
+			}
 			assert numSlots == vnaFrame.getNumSlots();
 
 			// Replace all values which are the same as the one in the slot.
