@@ -22,12 +22,14 @@ package edu.umd.cs.daveho.graph;
 public class AbstractEdge
 	<
 	ActualEdgeType extends AbstractEdge<ActualEdgeType, VertexType>,
-	VertexType extends GraphVertex<VertexType>
+	VertexType extends AbstractVertex<ActualEdgeType, VertexType>
 	> implements GraphEdge<ActualEdgeType, VertexType> {
 
 	private VertexType source;
 	private VertexType target;
 	private int label;
+	private ActualEdgeType nextOutgoingEdge;
+	private ActualEdgeType nextIncomingEdge;
 
 	public AbstractEdge(VertexType source, VertexType target) {
 		this.source = source;
@@ -55,6 +57,22 @@ public class AbstractEdge
 		if (cmp != 0)
 			return cmp;
 		return target.compareTo(other.target);
+	}
+
+	void setNextOutgoingEdge(ActualEdgeType edge) {
+		nextOutgoingEdge = edge;
+	}
+
+	ActualEdgeType getNextOutgoingEdge() {
+		return nextOutgoingEdge;
+	}
+
+	void setNextIncomingEdge(ActualEdgeType edge) {
+		nextIncomingEdge = edge;
+	}
+
+	ActualEdgeType getNextIncomingEdge() {
+		return nextIncomingEdge;
 	}
 
 }
