@@ -52,7 +52,7 @@ public class FindHEmismatch extends BytecodeScanningDetector implements   Consta
 		}
 	}
    public void visit(JavaClass obj) {
-	if (!isInterface && !firstTime) report(System.out);
+	if (!isInterface && !firstTime) report();
 	extendsObject = betterSuperclassName.equals("java.lang.Object");
 	firstTime = false;
 	prevClassName = betterClassName;
