@@ -100,6 +100,7 @@ public class UserPreferences {
 	
 	/**
 	 * Read user preferences from given input stream.
+	 * The InputStream is guaranteed to be closed by this method.
 	 * 
 	 * @param in the InputStream
 	 * @throws IOException
@@ -177,6 +178,7 @@ public class UserPreferences {
 
 	/**
 	 * Write UserPreferences to given OutputStream.
+	 * The OutputStream is guaranteed to be closed by this method.
 	 * 
 	 * @param out the OutputStream
 	 * @throws IOException
