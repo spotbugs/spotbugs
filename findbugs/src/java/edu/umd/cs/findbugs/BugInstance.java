@@ -68,15 +68,25 @@ public class BugInstance {
 		return this;
 	}
 
-	public BugInstance addClassAndMethod(BetterVisitor betterVisitor) {
+	public BugInstance addClass(BetterVisitor betterVisitor) {
 		String className = betterVisitor.getBetterClassName();
 		String superclassName = betterVisitor.getSuperclassName();
 		String sourceFile = betterVisitor.getSourceFile();
+		addClass(className, superclassName, sourceFile);
+		return this;
+	}
+
+	public BugInstance addMethod(BetterVisitor betterVisitor) {
+		String className = betterVisitor.getBetterClassName();
 		String methodName = betterVisitor.getMethodName();
 		String methodSig = betterVisitor.getMethodSig();
-
-		addClass(className, superclassName, sourceFile);
 		addMethod(className, methodName, methodSig);
+		return this;
+	}
+
+	public BugInstance addClassAndMethod(BetterVisitor betterVisitor) {
+		addClass(betterVisitor);
+		addMethod(betterVisitor);
 		return this;
 	}
 
