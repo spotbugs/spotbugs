@@ -53,7 +53,7 @@ public abstract class AbstractBugReporter implements BugReporter {
 			doReportBug(bugInstance);
 	}
 
-	protected String getMissingClassName(ClassNotFoundException ex) {
+	public static String getMissingClassName(ClassNotFoundException ex) {
 		String message = ex.getMessage();
 
 		// Try to decode the error message by extracting the class name.
