@@ -40,6 +40,7 @@ abstract public class DismantleBytecode extends PreorderVisitor implements   Con
   protected int registerKind;
 
   protected byte[] codeBytes;
+  protected LineNumberTable lineNumberTable;
 
   // Accessors
   public String getBetterClassConstant() { return betterClassConstant; }
@@ -48,11 +49,15 @@ abstract public class DismantleBytecode extends PreorderVisitor implements   Con
   public String getNameConstant() { return nameConstant; }
   public String getBetterSigConstant() { return betterSigConstant; }
   public String getSigConstant() { return sigConstant; }
+  public int getPC() { return PC; }
 
     public void visit(Code obj) { 
 
         codeBytes = obj.getCode();
         DataInputStream byteStream = new DataInputStream (new ByteArrayInputStream(codeBytes));
+
+	lineNumberTable = obj.getLineNumberTable();
+
         try {
             for(int i = 0; i < codeBytes.length; ) {
 		PC = i;
