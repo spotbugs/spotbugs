@@ -191,8 +191,10 @@ public class Edge extends AbstractEdge<Edge, BasicBlock> implements EdgeTypes, D
 			return "BACKEDGE_TARGET_EDGE";
 		case BACKEDGE_SOURCE_EDGE:
 			return "BACKEDGE_SOURCE_EDGE";
+		case EXIT_EDGE:
+			return "EXIT_EDGE";
 		}
-		throw new IllegalStateException();
+		throw new IllegalStateException("unknown edge type: " + edgeType);
 	}
 
 	/** Get numeric edge type from string representation. */
@@ -225,6 +227,8 @@ public class Edge extends AbstractEdge<Edge, BasicBlock> implements EdgeTypes, D
 			return BACKEDGE_TARGET_EDGE;
 		else if (s.equals("BACKEDGE_SOURCE_EDGE"))
 			return BACKEDGE_SOURCE_EDGE;
+		else if (s.equals("EXIT_EDGE"))
+			return EXIT_EDGE;
 		else
 			throw new IllegalArgumentException("Unknown edge type: " + s);
 	}
