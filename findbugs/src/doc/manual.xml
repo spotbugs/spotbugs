@@ -4,6 +4,7 @@
 <!ENTITY FindBugs "<application>FindBugs</application>">
 <!ENTITY Ant "<application>Ant</application>">
 <!ENTITY Saxon "<application>Saxon</application>">
+<!ENTITY FBHome "<replaceable>$FINDBUGS_HOME</replaceable>">
 ]>
  
 <book lang="en" id="findbugs-manual">
@@ -63,6 +64,13 @@ MacOS X platforms.</para>
 <title>Installing &FindBugs;</title>
 
 <para>
+This chapter explains how to install &FindBugs;.
+</para>
+
+<sect1>
+<title>Extracting the Distribution</title>
+
+<para>
 The easiest way to install &FindBugs; is to download a binary distribution.
 Binary distributions are available in
 <ulink url="http://www.cs.umd.edu/~pugh/java/bugs/release/findbugs-@VERSION@.tar.gz">gzipped tar format</ulink> and
@@ -91,38 +99,43 @@ the binary distribution from the <filename class="directory">C:\Software</filena
 directory, then the &FindBugs; software will be extracted into the directory
 <filename class="directory">C:\Software\findbugs-@VERSION@</filename>.
 This directory is the &FindBugs; home directory.  We'll refer to it as
-<replaceable>$FINDBUGS_HOME</replaceable> throughout this manual.
+&FBHome; throughout this manual.
+</para>
+</sect1>
+
+<sect1>
+<title>Configuration</title>
+
+<para>
+Once you have extracted the binary distribution, all you need to do in order
+to run &FindBugs; is to invoke the wrapper script.
 </para>
 
 <para>
-Once you have extracted the binary distribution into <replaceable>$FINDBUGS_HOME</replaceable>,
-you need to add its <filename class="directory">bin</filename> subdirectory to your
-executable search path.  In addition, on Windows platforms, you need to set an
-environment variable specifying the location of <replaceable>$FINDBUGS_HOME</replaceable>.
-</para>
-
-<para>
-Here are the required commands on Unix-like systems using the sh or bash shells:
+On Unix-like systems, use the following command to invoke the wrapper script:
 <screen>
-<prompt>$ </prompt><command>PATH=<replaceable>$FINDBUGS_HOME</replaceable>/bin:$PATH</command>
-<prompt>$ </prompt><command>export PATH</command>
+<prompt>$ </prompt><command>&FBHome;/bin/findbugs <replaceable>options...</replaceable></command>
 </screen>
 </para>
 
 <para>
-Here is the required command on Unix-like systems using the csh or tcsh shells:
+On Windows systems, the command to invoke the wrapper script is 
 <screen>
-<prompt>% </prompt><command>setenv PATH <replaceable>$FINDBUGS_HOME</replaceable>/bin:$PATH</command>
+<prompt>C:\My Directory> </prompt><command>&FBHome;\bin\findbugs.bat -home &FBHome; <replaceable>options...</replaceable></command>
 </screen>
 </para>
 
 <para>
-Here are the required commands on Windows systems:
-<screen>
-<prompt>C:\My Directory> </prompt><command>set FINDBUGS_HOME=<replaceable>$FINDBUGS_HOME</replaceable></command>
-<prompt>C:\My Directory> </prompt><command>set PATH=%FINDBUGS_HOME%\bin;%PATH%</command>
-</screen>
+To make invoking the wrapper script more convenient, you may want to create a GUI shortcut.
+Another possibility is to add the <filename class="directory">&FBHome;/bin</filename>
+directory to your <envar>PATH</envar> environment variable, which allows you
+to simply run the command <command>findbugs</command> from the command prompt.
+(On Windows, you can set the
+<envar>FINDBUGS_HOME</envar> environment variable to avoid having to use the
+<arg>-home</arg> option to the wrapper script.)
 </para>
+
+</sect1>
 
 </chapter>
 
@@ -407,7 +420,7 @@ The <command>findbugs</command> can take several options:
        <para>
           Use the plastic look and feel from <ulink url="http://jgoodies.com/">jgoodies.com</ulink>.
           To use this option, put the file <filename>plastic.jar</filename>
-          in the <filename class="directory"><replaceable>$FINDBUGS_HOME</replaceable>/lib</filename>
+          in the <filename class="directory">&FBHome;/lib</filename>
           directory.
        </para>
     </listitem>
