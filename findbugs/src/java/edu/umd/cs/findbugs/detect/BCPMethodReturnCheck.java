@@ -74,9 +74,15 @@ public class BCPMethodReturnCheck extends ByteCodePatternDetector {
 	public void reportMatch(MethodGen methodGen, ByteCodePatternMatch match) {
 		InstructionHandle call = match.getLabeledInstruction("call");
 
+		// Ignore inner-class access methods
+		InvokeInstruction inv = (InvokeInstruction) call.getInstruction();
+		String calledMethodName = inv.getMethodName(methodGen.getConstantPool());
+		if (calledMethodName.startsWith("access$"))
+			return;
+
 		bugReporter.reportBug(new BugInstance("RV_RETURN_VALUE_IGNORED", NORMAL_PRIORITY)
 			.addClassAndMethod(methodGen)
-			.addCalledMethod(methodGen, (InvokeInstruction) call.getInstruction())
+			.addCalledMethod(methodGen, inv)
 			.addSourceLine(methodGen, call));
 	}
 
