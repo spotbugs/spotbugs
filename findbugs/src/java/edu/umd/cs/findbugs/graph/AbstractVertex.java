@@ -19,11 +19,15 @@
 
 package edu.umd.cs.daveho.graph;
 
-public class AbstractVertex<ActualVertexType extends AbstractVertex<ActualVertexType>>
-	implements GraphVertex<ActualVertexType> {
+public class AbstractVertex<
+	EdgeType extends AbstractEdge<EdgeType, ActualVertexType>,
+	ActualVertexType extends AbstractVertex<EdgeType, ActualVertexType>
+	> implements GraphVertex<ActualVertexType> {
 
 	private int id;
 	private int label;
+	EdgeType firstIncomingEdge, lastIncomingEdge;
+	EdgeType firstOutgoingEdge, lastOutgoingEdge;
 
 	void setId(int id) {
 		this.id = id;
@@ -44,6 +48,67 @@ public class AbstractVertex<ActualVertexType extends AbstractVertex<ActualVertex
 	public int compareTo(ActualVertexType other) {
 		return id - other.id;
 	}
+
+	void addOutgoingEdge(EdgeType edge) {
+		if (firstOutgoingEdge == null) {
+			firstOutgoingEdge = lastOutgoingEdge = edge;
+		} else {
+			lastOutgoingEdge.setNextOutgoingEdge(edge);
+			lastOutgoingEdge = edge;
+		}
+	}
+
+	EdgeType getFirstOutgoingEdge() {
+		return firstOutgoingEdge;
+	}
+
+	void addIncomingEdge(EdgeType edge) {
+		if (firstIncomingEdge == null) {
+			firstIncomingEdge = lastIncomingEdge = edge;
+		} else {
+			lastIncomingEdge.setNextIncomingEdge(edge);
+			lastIncomingEdge = edge;
+		}
+	}
+
+	EdgeType getFirstIncomingEdge() {
+		return firstIncomingEdge;
+	}
+
+	void removeIncomingEdge(EdgeType edge) {
+		EdgeType prev = null, cur = firstIncomingEdge;
+		while (cur != null) {
+			EdgeType next = cur.getNextIncomingEdge();
+			if (cur.equals(edge)) {
+				if (prev != null)
+					prev.setNextIncomingEdge(next);
+				else
+					firstIncomingEdge = next;
+				return;
+			}
+			prev = cur;
+			cur = next;
+		}
+		throw new IllegalArgumentException("removing nonexistent edge!");
+	}
+
+	void removeOutgoingEdge(EdgeType edge) {
+		EdgeType prev = null, cur = firstOutgoingEdge;
+		while (cur != null) {
+			EdgeType next = cur.getNextOutgoingEdge();
+			if (cur.equals(edge)) {
+				if (prev != null)
+					prev.setNextOutgoingEdge(next);
+				else
+					firstOutgoingEdge = next;
+				return;
+			}
+			prev = cur;
+			cur = cur.getNextOutgoingEdge();
+		}
+		throw new IllegalArgumentException("removing nonexistent edge!");
+	}
+
 
 }
 
