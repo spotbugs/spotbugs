@@ -78,7 +78,7 @@ public class StandardTypeMerger implements TypeMerger, Constants, ExtendedTypes 
 	 * object types with different type codes.
 	 */
 	protected boolean isReferenceType(byte type) {
-		return type == T_OBJECT || type == T_NULL;
+		return type == T_OBJECT || type == T_NULL || type == T_EXCEPTION;
 	}
 
 	/**
