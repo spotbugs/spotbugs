@@ -398,6 +398,16 @@ public abstract class Frame<ValueType> implements Debug {
 		int numSlots = getNumSlots();
 		int start = STACK_ONLY ? getNumLocals() : 0;
 		for (int i = start; i < numSlots; ++i) {
+			if (!STACK_ONLY && i == getNumLocals()) {
+				// Use a "|" character to visually separate locals from
+				// the operand stack.
+				int last = buf.length()  - 1;
+				if (last >= 0) {
+					if (buf.charAt(last) == ',')
+						buf.deleteCharAt(last);
+				}
+				buf.append('|');
+			}
 			String value = valueToString(getValue(i));
 			if (i == numSlots - 1 && value.endsWith(","))
 				value = value.substring(0, value.length() - 1);
