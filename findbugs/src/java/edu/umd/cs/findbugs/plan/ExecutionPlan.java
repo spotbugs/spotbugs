@@ -250,11 +250,23 @@ public class ExecutionPlan {
 		List<DetectorFactory> origDetectorList = new LinkedList<DetectorFactory>();
 		origDetectorList.addAll(pass.getDetectorFactoryList());
 
-		// Build set of all detectors in pass
+		// Build set of all detectors in pass.
+		// Also, check to see if any detectors want to be
+		// first in the pass.
 		Set<String> detectorSet = new HashSet<String>();
+		DetectorFactory firstDetector = null;
 		for (Iterator<DetectorFactory> i = pass.detectorFactoryIterator();
 			i.hasNext(); ) {
 			DetectorFactory factory = i.next();
+
+			if (factory.isFirstInPass()) {
+				if (firstDetector != null) {
+					throw new OrderingConstraintException("Two detectors specified as first in analysis pass: " +
+						firstDetector.getFullName() + " and " + factory.getFullName());
+				} else
+					firstDetector = factory;
+			}
+
 			detectorSet.add(factory.getFullName());
 		}
 
@@ -274,6 +286,16 @@ public class ExecutionPlan {
 						constraint.getEarlierDetector() + " earlier than " +
 						constraint.getLaterDetector() + " involves detectors in " +
 						"different passes");
+				}
+
+				// Make sure this constraint doesn't conflict with
+				// a FirstInPass directive (if any).
+				if (firstDetector != null) {
+					if (firstDetector.getFullName().equals(constraint.getEarlierDetector()) ||
+						firstDetector.getFullName().equals(constraint.getLaterDetector())) {
+						throw new OrderingConstraintException("Detector specified as FirstInPass (" +
+							firstDetector.getShortName() +") also appears in an ordering constraint");
+					}
 				}
 
 				passConstraintList.add(constraint);
@@ -309,7 +331,10 @@ public class ExecutionPlan {
 		for (Iterator<DetectorFactory> i = origDetectorList.iterator(); i.hasNext(); ) {
 			DetectorFactory factory = i.next();
 			if (nodeMap.get(factory.getFullName()) == null) {
-				pass.addDetectorFactory(factory);
+				if (factory.isFirstInPass())
+					pass.prependDetectorFactory(factory);
+				else
+					pass.addDetectorFactory(factory);
 			}
 		}
 	}
