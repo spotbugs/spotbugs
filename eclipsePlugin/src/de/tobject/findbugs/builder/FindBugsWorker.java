@@ -25,6 +25,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.dom4j.DocumentException;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
@@ -157,38 +158,7 @@ public class FindBugsWorker {
 			findBugs.execute();
 			
 			// Merge new results into existing results.
-			// FIXME we do this destructively for now: should do incrementally
-			SortedBugCollection oldBugCollection = FindbugsPlugin.readBugCollection(project, monitor);
-			SortedBugCollection newBugCollection = bugReporter.getBugCollection();
-
-			// Algorithm:
-			// Remove all old warnings for classes which were just analyzed.
-			// Then add all new warnings.
-			if (oldBugCollection != null) {
-				Set analyzedClassNameSet = bugReporter.getAnalyzedClassNames();
-				for (Iterator i = oldBugCollection.iterator(); i.hasNext(); ) {
-					BugInstance oldWarning = (BugInstance) i.next();
-					ClassAnnotation warningClass = oldWarning.getPrimaryClass();
-					if (warningClass != null && analyzedClassNameSet.contains(warningClass.getClassName())) {
-						i.remove();
-					}
-				}
-			} else {
-				oldBugCollection = new SortedBugCollection();
-			}
-			for (Iterator i = newBugCollection.iterator(); i.hasNext(); ) {
-				BugInstance newWarning = (BugInstance) i.next();
-				oldBugCollection.add(newWarning);
-			}
-
-			// Store updated BugCollection
-			try {
-				FindbugsPlugin.storeBugCollection(project, oldBugCollection, findBugsProject, monitor);
-			} catch (IOException e) {
-				FindbugsPlugin.getDefault().logException(e, "Could not save FindBugs warnings for project");
-			} catch (CoreException e) {
-				FindbugsPlugin.getDefault().logException(e, "Could not save FindBugs warnings for project");
-			}
+			updateBugCollection(findBugsProject, bugReporter);
 
 		}
 		catch (InterruptedException e) {
@@ -201,6 +171,41 @@ public class FindBugsWorker {
 			throw e;
 		} catch (Exception e) {
 			FindbugsPlugin.getDefault().logException(e, "Error performing FindBugs analysis");
+		}
+	}
+
+	private void updateBugCollection(Project findBugsProject, Reporter bugReporter) throws CoreException, IOException, DocumentException {
+		// FIXME we do this destructively for now: should do incrementally
+		SortedBugCollection oldBugCollection = FindbugsPlugin.readBugCollection(project, monitor);
+		SortedBugCollection newBugCollection = bugReporter.getBugCollection();
+
+		// Algorithm:
+		// Remove all old warnings for classes which were just analyzed.
+		// Then add all new warnings.
+		if (oldBugCollection != null) {
+			Set analyzedClassNameSet = bugReporter.getAnalyzedClassNames();
+			for (Iterator i = oldBugCollection.iterator(); i.hasNext(); ) {
+				BugInstance oldWarning = (BugInstance) i.next();
+				ClassAnnotation warningClass = oldWarning.getPrimaryClass();
+				if (warningClass != null && analyzedClassNameSet.contains(warningClass.getClassName())) {
+					i.remove();
+				}
+			}
+		} else {
+			oldBugCollection = new SortedBugCollection();
+		}
+		for (Iterator i = newBugCollection.iterator(); i.hasNext(); ) {
+			BugInstance newWarning = (BugInstance) i.next();
+			oldBugCollection.add(newWarning);
+		}
+
+		// Store updated BugCollection
+		try {
+			FindbugsPlugin.storeBugCollection(project, oldBugCollection, findBugsProject, monitor);
+		} catch (IOException e) {
+			FindbugsPlugin.getDefault().logException(e, "Could not save FindBugs warnings for project");
+		} catch (CoreException e) {
+			FindbugsPlugin.getDefault().logException(e, "Could not save FindBugs warnings for project");
 		}
 	}
 
