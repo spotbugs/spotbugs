@@ -20,6 +20,11 @@ public class SimpleNode implements Node {
     parser = p;
   }
 
+  /** Get the id of this node. */
+  public int getId() {
+    return id;
+  }
+
   /** Set first token. */
   public void setFirstToken(Token t) {
     if (t == null) throw new IllegalStateException();
