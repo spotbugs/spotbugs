@@ -24,7 +24,10 @@ import java.util.*;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
+import edu.umd.cs.findbugs.FindBugsAnalysisProperties;
 import edu.umd.cs.findbugs.ba.*;
+import edu.umd.cs.findbugs.props.WarningPropertySet;
+
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
@@ -310,8 +313,6 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 	 * ---------------------------------------------------------------------- */
 
 	private BugReporter bugReporter;
-	//private AnalysisContext analysisContext;
-	private BugInstance stringComparison;
 	private BugInstance refComparison;
 
 	/* ----------------------------------------------------------------------
@@ -326,12 +327,9 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 		//this.analysisContext = analysisContext;
 	}
 
-//	boolean sawStringIntern;
-
 	public void visitClassContext(ClassContext classContext) {
 		JavaClass jclass = classContext.getJavaClass();
 		Method[] methodList = jclass.getMethods();
-//		sawStringIntern = false;
 
 		for (int i = 0; i < methodList.length; ++i) {
 			Method method = methodList[i];
@@ -358,6 +356,16 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 			}
 		}
 	}
+	
+	private static class WarningWithProperties {
+		BugInstance instance;
+		WarningPropertySet propertySet;
+		
+		WarningWithProperties(BugInstance warning, WarningPropertySet propertySet) {
+			this.instance = warning;
+			this.propertySet = propertySet;
+		}
+	}
 
 	private void analyzeMethod(ClassContext classContext, Method method)
 	        throws CFGBuilderException, DataflowAnalysisException {
@@ -369,8 +377,9 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 
 		// Report at most one String comparison per method.
 		// We report the first highest priority warning.
-		stringComparison = null;
 		refComparison = null;
+		LinkedList<WarningWithProperties> stringComparisonList =
+			new LinkedList<WarningWithProperties>();
 
 		CFG cfg = classContext.getCFG(method);
 		DepthFirstSearch dfs = classContext.getDepthFirstSearch(method);
@@ -395,7 +404,13 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 			Instruction ins = location.getHandle().getInstruction();
 			short opcode = ins.getOpcode();
 			if (opcode == Constants.IF_ACMPEQ || opcode == Constants.IF_ACMPNE) {
-				checkRefComparison(location, jclass, methodGen, visitor, typeDataflow);
+				checkRefComparison(
+						location,
+						jclass,
+						methodGen,
+						visitor,
+						typeDataflow,
+						stringComparisonList);
 			} else if (invokeInstanceSet.get(opcode)) {
 				InvokeInstruction inv = (InvokeInstruction) ins;
 				String methodName = inv.getMethodName(cpg);
@@ -407,25 +422,43 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 				}
 			}
 		}
+		
+		boolean relaxed = AnalysisContext.currentAnalysisContext().getBoolProperty(
+				FindBugsAnalysisProperties.RELAXED_REPORTING_MODE);
 
+		// Add method-wide properties to BugInstances
+		for (Iterator<WarningWithProperties> i = stringComparisonList.iterator(); i.hasNext();) {
+			WarningWithProperties warn = i.next();
+
+			if (sawCallToEquals) {
+				warn.propertySet.addProperty(RefComparisonWarningProperty.SAW_CALL_TO_EQUALS);
+			}
+			
+			if (!(method.isPublic() || method.isProtected())) {
+				warn.propertySet.addProperty(RefComparisonWarningProperty.PRIVATE_METHOD);
+			}
+			
+			warn.instance.setPriority(warn.propertySet.computePriority(NORMAL_PRIORITY));
+		}
+		
 		// If a String reference comparison was found in the method,
 		// report it
-		if (stringComparison != null) {
-			if (sawCallToEquals &&
-			        stringComparison.getPriority() >= NORMAL_PRIORITY) {
-				// System.out.println("Reducing priority of " + stringComparison);
-				stringComparison.setPriority(1 + stringComparison.getPriority());
+		WarningWithProperties best = null;
+		for (Iterator<WarningWithProperties> i = stringComparisonList.iterator(); i.hasNext();) {
+			WarningWithProperties warn = i.next();
+			if (best == null || warn.instance.getPriority() < best.instance.getPriority()) {
+				best = warn;
 			}
-			if (stringComparison.getPriority() >= NORMAL_PRIORITY
-			        && !(method.isPublic() ||
-			        method.isProtected())) {
-				// System.out.print("private/packed");
-				stringComparison.setPriority(1 + stringComparison.getPriority());
-			}
-			if (stringComparison.getPriority() <= LOW_PRIORITY) {
-				bugReporter.reportBug(stringComparison);
+			
+			if (relaxed) {
+				warn.propertySet.decorateBugInstance(warn.instance);
+				bugReporter.reportBug(warn.instance);
 			}
 		}
+		if (best != null && !relaxed) {
+			bugReporter.reportBug(best.instance);
+		}
+		
 		if (refComparison != null) {
 			if (false && sawCallToEquals) {
 				// System.out.println("Reducing priority of " + refComparison);
@@ -441,7 +474,8 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 			JavaClass jclass,
 			MethodGen methodGen,
 			RefComparisonTypeFrameModelingVisitor visitor,
-			TypeDataflow typeDataflow) throws DataflowAnalysisException {
+			TypeDataflow typeDataflow,
+			List<WarningWithProperties> stringComparisonList) throws DataflowAnalysisException {
 
 		InstructionHandle handle = location.getHandle();
 
@@ -470,7 +504,6 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 				// - dynamic string and anything => high
 				// - static string and unknown => medium
 				// - all other cases => low
-				int priority = NORMAL_PRIORITY;
 				// System.out.println("Compare " + lhsType + " == " + rhsType);
 				byte type1 = lhsType.getType();
 				byte type2 = rhsType.getType();
@@ -480,28 +513,35 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 				// ?  D  high
 				// S  ?  normal
 				// ?  S  normal
-				if (type1 == T_STATIC_STRING && type2 == T_STATIC_STRING)
-					priority = LOW_PRIORITY + 1;
-				else if (type1 == T_DYNAMIC_STRING || type2 == T_DYNAMIC_STRING)
-					priority = HIGH_PRIORITY;
-				else if (type1 == T_STATIC_STRING || type2 == T_STATIC_STRING)
-					priority = LOW_PRIORITY;
-				else if (visitor.sawStringIntern())
-					priority = LOW_PRIORITY;
-
-				if (priority <= LOW_PRIORITY) {
-					String sourceFile = jclass.getSourceFileName();
-					BugInstance instance =
-					        new BugInstance(this, "ES_COMPARING_STRINGS_WITH_EQ", priority)
-					        .addClassAndMethod(methodGen, sourceFile)
-					        .addSourceLine(methodGen, sourceFile, handle)
-					        .addClass("java.lang.String").describe("CLASS_REFTYPE");
-
-					if (REPORT_ALL_REF_COMPARISONS)
-						bugReporter.reportBug(instance);
-					else if (stringComparison == null || priority < stringComparison.getPriority())
-						stringComparison = instance;
+				
+				WarningPropertySet propertySet = new WarningPropertySet();
+				
+				if (type1 == T_STATIC_STRING && type2 == T_STATIC_STRING) {
+					//priority = LOW_PRIORITY + 1;
+					propertySet.addProperty(RefComparisonWarningProperty.COMPARE_STATIC_STRINGS);
+				} else if (type1 == T_DYNAMIC_STRING || type2 == T_DYNAMIC_STRING) {
+					//priority = HIGH_PRIORITY;
+					propertySet.addProperty(RefComparisonWarningProperty.DYNAMIC_AND_UNKNOWN);
+				} else if (type1 == T_STATIC_STRING || type2 == T_STATIC_STRING) {
+					//priority = LOW_PRIORITY;
+					propertySet.addProperty(RefComparisonWarningProperty.STATIC_AND_UNKNOWN);
+				} else if (visitor.sawStringIntern()) {
+					//priority = LOW_PRIORITY;
+					propertySet.addProperty(RefComparisonWarningProperty.SAW_INTERN);
 				}
+
+				String sourceFile = jclass.getSourceFileName();
+				BugInstance instance =
+					new BugInstance(this, "ES_COMPARING_STRINGS_WITH_EQ", NORMAL_PRIORITY)
+					.addClassAndMethod(methodGen, sourceFile)
+					.addSourceLine(methodGen, sourceFile, handle)
+					.addClass("java.lang.String").describe("CLASS_REFTYPE");
+				WarningWithProperties warn = new WarningWithProperties(instance, propertySet);
+				
+				stringComparisonList.add(warn);
+				
+				stringComparisonList.add(new WarningWithProperties(
+						instance, propertySet));
 
 			} else if (suspiciousSet.contains(lhs) && suspiciousSet.contains(rhs)) {
 				String sourceFile = jclass.getSourceFileName();
@@ -517,8 +557,11 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 		}
 	}
 
-	private void checkEqualsComparison(Location location, JavaClass jclass, MethodGen methodGen,
-	                                   TypeDataflow typeDataflow) throws DataflowAnalysisException {
+	private void checkEqualsComparison(
+			Location location,
+			JavaClass jclass,
+			MethodGen methodGen,
+			TypeDataflow typeDataflow) throws DataflowAnalysisException {
 
 		InstructionHandle handle = location.getHandle();
 		String sourceFile = jclass.getSourceFileName();
