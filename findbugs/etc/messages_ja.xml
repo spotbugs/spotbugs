@@ -1,5 +1,268 @@
 <?xml version="1.0" encoding="shift_JIS"?> 
 <MessageCollection>
+
+  <Detector class="edu.umd.cs.findbugs.detect.DroppedException">
+    <Details>
+<![CDATA[
+<p> This detector looks for code where an exception is caught,
+but nothing is done to handle the exception.  It is a fast detector.
+]]>
+    </Details>
+  </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.DumbMethods">
+    <Details>
+<![CDATA[
+<p> This detector looks for calls to pointless methods,
+such as the no-argument String constructor.
+It is a fast detector.
+]]>
+    </Details>
+  </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.FindDoubleCheck" >
+    <Details>
+<![CDATA[
+<p> This detector looks for instances of double checked locking.
+It is a fast detector.
+]]>
+    </Details>
+  </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.FindExceptionGetMessage" disabled="true" >
+    <Details>
+<![CDATA[
+<p> This detector looks for calls to Exception.getMessage(). You probably don't
+want to use this.  It is a fast detector.
+]]>
+    </Details>
+  </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.FindFinalizeInvocations" >
+    <Details>
+<![CDATA[
+<p> This detector looks for calls to finalize() and other finalizer-related
+issues.  It is a fast detector.
+]]>
+    </Details>
+  </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.FindHEmismatch" >
+    <Details>
+<![CDATA[
+<p> This detector looks for problems in the definition of the hashCode() and equals()
+methods.  It is a fast detector.
+]]>
+    </Details>
+  </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.FindInconsistentSync" >
+    <Details>
+<![CDATA[
+<p> This detector looks for fields that are accessed in an inconsistent manner
+with respect to locking.  It is a slow detector.
+]]>
+    </Details>
+  </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.FindNakedNotify" >
+    <Details>
+<![CDATA[
+<p> This detector looks for calls to notify() that don't seem
+to modify mutable object state.  It is a fast detector.
+]]>
+    </Details>
+  </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.FindReturnRef" >
+    <Details>
+<![CDATA[
+<p> This detector looks for methods that return mutable static data.
+It is a fast detector.
+]]>
+    </Details>
+  </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.FindRunInvocations" >
+    <Details>
+<![CDATA[
+<p> This detector looks for calls to Thread.run().  It is a fast
+detector.
+]]>
+    </Details>
+  </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.FindSpinLoop" >
+    <Details>
+<![CDATA[
+<p> This detector looks for loops that spin reading from a field.
+It is a fast detector.
+]]>
+    </Details>
+  </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.FindTwoLockWait" >
+    <Details>
+<![CDATA[
+<p> This detector looks for calls to wait() with two (or more) locks held.
+It is a slow detector.
+]]>
+    </Details>
+  </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.FindUnconditionalWait" >
+    <Details>
+<![CDATA[
+<p> This detector looks for calls to wait() not in a conditional or loop.
+It is a fast detector.
+]]>
+    </Details>
+  </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.FindUninitializedGet" >
+    <Details>
+<![CDATA[
+<p> This detector looks for reads of uninitialized fields in constructors.
+It is a fast detector.
+]]>
+    </Details>
+  </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.FindUnsyncGet" >
+    <Details>
+<![CDATA[
+<p> This detector looks for get and set methods where the get is unsynchronized
+while the set is synchronized.  It is a fast detector.
+]]>
+    </Details>
+  </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.InitializationChain" >
+    <Details>
+<![CDATA[
+<p> This detector looks for potentially circular class initialization
+dependencies.  It is a fast detector.
+]]>
+    </Details>
+  </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.IteratorIdioms" >
+    <Details>
+<![CDATA[
+<p> This iterator looks for problems in how Iterator classes are defined.
+It is a fast detector.
+]]>
+    </Details>
+  </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.LockedFields" disabled="true" >
+    <Details>
+<![CDATA[
+<p> This detector looks for fields that are accessed in an inconsistent manner
+with respect to locking.  It is a fast detector.
+]]>
+    </Details>
+  </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.MutableLock" >
+    <Details>
+<![CDATA[
+<p> This detector looks for synchronization on objects read from
+modified fields.  It is a fast detector.
+]]>
+    </Details>
+  </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.MutableStaticFields" >
+    <Details>
+<![CDATA[
+<p> This detector looks for static fields that may be modified by
+malicious code.  It is a fast detector.
+]]>
+    </Details>
+  </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.Naming" >
+    <Details>
+<![CDATA[
+<p> This detector looks for suspiciously-named methods.  It is a fast detector.
+]]>
+    </Details>
+  </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.ReadReturnShouldBeChecked" >
+    <Details>
+<![CDATA[
+<p> This detector looks for calls to InputStream.read() where the
+return value is ignored.  It is a fast detector.
+]]>
+    </Details>
+  </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.SerializableIdiom" >
+    <Details>
+<![CDATA[
+<p> This detector looks for potential problems in the implementation
+of Serializable classes.  It is a fast detector.
+]]>
+    </Details>
+  </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.SimplePathsFindDoubleCheck" disabled="true" >
+    <Details>
+<![CDATA[
+<p> This detector looks for instances of double checked locking.
+It is a slow detector.  (It will probably be removed from FindBugs at some point.)
+]]>
+    </Details>
+  </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.StartInConstructor" >
+    <Details>
+<![CDATA[
+<p> This detector looks for constructors that start threads.  It is a fast detector.
+]]>
+    </Details>
+  </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.UnreadFields" >
+    <Details>
+<![CDATA[
+<p> This detector looks for fields whose value is never read.  It is a fast detector.
+]]>
+    </Details>
+  </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.WaitInLoop" >
+    <Details>
+<![CDATA[
+<p> This detector looks for calls to wait() that are not in a loop.
+It is a fast detector.
+]]>
+    </Details>
+  </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.BCPDoubleCheck" disabled="true" >
+    <Details>
+<![CDATA[
+<p> This detector looks for instances of double checked locking.
+It is implemented using the ByteCodePattern class.  You might want to
+take a look at its source code as an example of an easy way to implement a bug
+pattern detector.  It is a fairly fast detector.
+]]>
+    </Details>
+  </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.BCPMethodReturnCheck" >
+    <Details>
+<![CDATA[
+<p> This detector looks for calls to methods where the return value
+is suspiciously ignored.  It is a fairly fast detector.
+]]>
+    </Details>
+  </Detector>
+HERE
+
   <BugPattern type="DE_MIGHT_DROP">
     <ShortDescription >例外を見落としている疑い</ShortDescription>
     <LongDescription >{1} は {2} を見落としている疑い</LongDescription>
@@ -886,6 +1149,29 @@ defined in an interface references a mutable
 ]]>
     </Details>
   </BugPattern>
+
+  <BugPattern type="BCPDC_DOUBLECHECK">
+    <ShortDescription>Possible double check of field</ShortDescription>
+    <LongDescription>Possible doublecheck on {2} in {1}</LongDescription>
+    <Details>
+<![CDATA[
+  <p> This is a double check found by the ByteCodePattern-based detector.
+]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="RV_RETURN_VALUE_IGNORED">
+    <ShortDescription>Method ignores return value</ShortDescription>
+    <LongDescription>{1} ignores return value of {2}</LongDescription>
+    <Details>
+<![CDATA[
+   <p> The return value of this method should be checked.
+]]>
+    </Details>
+  </BugPattern>
+
+
+
   <BugCode abbrev="FI" >finalizerの使い方が間違っている</BugCode>
   <BugCode abbrev="ML" >更新されるフィールドでロックしている（ロックオブジェクトが不変でない）</BugCode>
   <BugCode abbrev="UG" >getはsynchroしていないがsetはsynchroしている</BugCode>
@@ -921,4 +1207,6 @@ defined in an interface references a mutable
   <BugCode abbrev="SPSDC" >スタティックフィールドを二重にチェックしている疑い</BugCode>
   <BugCode abbrev="SPDC" >フィールドを二重にチェックしている疑い</BugCode>
   <BugCode abbrev="2LW" >二つのロックを持ったままwaitしている</BugCode>
+  <BugCode abbrev="BcpDC">Possible double check of field</BugCode>
+  <BugCode abbrev="RV" >Return value of method is ignored</BugCode>
 </MessageCollection>
