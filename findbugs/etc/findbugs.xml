@@ -94,7 +94,7 @@
   <BugPattern abbrev="Se" type="SE_NONFINAL_SERIALVERSIONID" category="CORRECTNESS" />
   <BugPattern abbrev="Se" type="SE_NONSTATIC_SERIALVERSIONID" category="CORRECTNESS" />
   <BugPattern abbrev="Se" type="SE_NONLONG_SERIALVERSIONID" category="CORRECTNESS" />
-  <BugPattern abbrev="Se" type="SE_BAD_FIELD" category="CORRECTNESS" />
+  <BugPattern abbrev="Se" type="SE_BAD_FIELD" category="CORRECTNESS" experimental="true" />
   <BugPattern abbrev="SPSDC" type="SPDC_STATIC_DOUBLECHECK" category="MT_CORRECTNESS" />
   <BugPattern abbrev="SPDC" type="SPDC_DOUBLECHECK" category="MT_CORRECTNESS" />
   <BugPattern abbrev="SC" type="SC_START_IN_CTOR" category="MT_CORRECTNESS" />
@@ -114,6 +114,7 @@
   <BugPattern abbrev="OS" type="OS_OPEN_STREAM_EXCEPTION_PATH" category="CORRECTNESS" />
   <BugPattern abbrev="PZLA" type="PZLA_PREFER_ZERO_LENGTH_ARRAYS" category="CORRECTNESS" />
   <BugPattern abbrev="UCF" type="UCF_USELESS_CONTROL_FLOW" category="CORRECTNESS" />
+  <BugPattern abbrev="UCF" type="UCF_USELESS_NULL_REF_COMPARISON" category="CORRECTNESS" experimental="true" />
   <BugPattern abbrev="UL" type="UL_UNRELEASED_LOCK" category="MT_CORRECTNESS" />
   <BugPattern abbrev="UL" type="UL_UNRELEASED_LOCK_EXCEPTION_PATH" category="MT_CORRECTNESS" />
   <BugPattern abbrev="RC" type="RC_REF_COMPARISON" category="CORRECTNESS" experimental="true" />

@@ -1365,6 +1365,18 @@ body of an <code>if</code> statement, e.g.:
     </Details>
   </BugPattern>
 
+  <BugPattern type="UCF_USELESS_NULL_REF_COMPARISON">
+    <ShortDescription>Useless comparison of null values</ShortDescription>
+    <LongDescription>Useless comparison of null values in {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p> This method compares reference values which both appear to be null,
+meaning that the outcome of the comparison is fixed.&nbsp; This likely indicates
+a logic error in the method.
+]]>
+    </Details>
+  </BugPattern>
+
   <BugPattern type="UL_UNRELEASED_LOCK">
     <ShortDescription>Method does not release lock on all paths</ShortDescription>
     <LongDescription>{1} does not release lock on all paths</LongDescription>

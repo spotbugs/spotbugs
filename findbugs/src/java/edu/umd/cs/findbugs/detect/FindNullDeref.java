@@ -58,6 +58,9 @@ public class FindNullDeref implements Detector {
 					BasicBlock basicBlock = bbIter.next();
 
 					if (basicBlock.isNullCheck()) {
+						// Look for null checks where the value checked is definitely
+						// null or null on some path.
+
 						InstructionHandle exceptionThrowerHandle = basicBlock.getExceptionThrower();
 						Instruction exceptionThrower = exceptionThrowerHandle.getInstruction();
 
@@ -81,6 +84,29 @@ public class FindNullDeref implements Detector {
 							String type = onExceptionPath ? "NP_NULL_ON_SOME_PATH_EXCEPTION" : "NP_NULL_ON_SOME_PATH";
 							int priority = onExceptionPath ? LOW_PRIORITY : NORMAL_PRIORITY;
 							reportNullDeref(classContext, method, exceptionThrowerHandle, type, priority);
+						}
+					} else if (!basicBlock.isEmpty()) {
+						// Look for IF_ACMP instructions where the values compared
+						// are both definitely null.  This is not a null dereference,
+						// but is quite likely to indicate an error, so while we've got
+						// information about null values, we may as well use it.
+						InstructionHandle lastHandle = basicBlock.getLastInstruction();
+						Instruction last = lastHandle.getInstruction();
+						short opcode = last.getOpcode();
+						if (opcode == Constants.IF_ACMPEQ || opcode == Constants.IF_ACMPNE) {
+							IsNullValueFrame frame = invDataflow.getFactAtLocation(new Location(lastHandle, basicBlock));
+							if (frame.getStackDepth() < 2)
+								throw new AnalysisException("Stack underflow at " + lastHandle);
+							int numSlots = frame.getNumSlots();
+							IsNullValue top = frame.getValue(numSlots - 1);
+							IsNullValue topNext = frame.getValue(numSlots - 2);
+							if (top.isDefinitelyNull() && topNext.isDefinitelyNull()) {
+								String sourceFile = jclass.getSourceFileName();
+								MethodGen methodGen = classContext.getMethodGen(method);
+								bugReporter.reportBug(new BugInstance("UCF_USELESS_NULL_REF_COMPARISON", NORMAL_PRIORITY)
+									.addClassAndMethod(methodGen, sourceFile)
+									.addSourceLine(methodGen, sourceFile, lastHandle));
+							}
 						}
 					}
 				}
