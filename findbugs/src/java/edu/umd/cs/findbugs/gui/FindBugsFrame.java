@@ -1,17 +1,17 @@
 /*
  * FindBugs - Find bugs in Java programs
  * Copyright (C) 2003, University of Maryland
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -31,6 +31,7 @@ import java.awt.Cursor;
 import java.awt.Graphics;
 import java.awt.Shape;
 import java.awt.Rectangle;
+import java.awt.Point;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -62,65 +63,65 @@ public class FindBugsFrame extends javax.swing.JFrame {
      * Custom cell renderer for the bug tree.
      */
     private static class BugCellRenderer extends DefaultTreeCellRenderer {
-	private ImageIcon bugGroupIcon;
-	private ImageIcon packageIcon;
-	private ImageIcon bugIcon;
-	private ImageIcon classIcon;
-	private ImageIcon methodIcon;
-	private ImageIcon fieldIcon;
+        private ImageIcon bugGroupIcon;
+        private ImageIcon packageIcon;
+        private ImageIcon bugIcon;
+        private ImageIcon classIcon;
+        private ImageIcon methodIcon;
+        private ImageIcon fieldIcon;
         private ImageIcon sourceFileIcon;
-	
-	public BugCellRenderer() {
-	    ClassLoader classLoader = this.getClass().getClassLoader();
-	    bugGroupIcon = new ImageIcon(classLoader.getResource("edu/umd/cs/findbugs/gui/bug.png"));
-	    packageIcon = new ImageIcon(classLoader.getResource("edu/umd/cs/findbugs/gui/package.png"));
-	    bugIcon = new ImageIcon(classLoader.getResource("edu/umd/cs/findbugs/gui/bug2.png"));
-	    classIcon = new ImageIcon(classLoader.getResource("edu/umd/cs/findbugs/gui/class.png"));
-	    methodIcon = new ImageIcon(classLoader.getResource("edu/umd/cs/findbugs/gui/method.png"));
-	    fieldIcon = new ImageIcon(classLoader.getResource("edu/umd/cs/findbugs/gui/field.png"));
+        
+        public BugCellRenderer() {
+            ClassLoader classLoader = this.getClass().getClassLoader();
+            bugGroupIcon = new ImageIcon(classLoader.getResource("edu/umd/cs/findbugs/gui/bug.png"));
+            packageIcon = new ImageIcon(classLoader.getResource("edu/umd/cs/findbugs/gui/package.png"));
+            bugIcon = new ImageIcon(classLoader.getResource("edu/umd/cs/findbugs/gui/bug2.png"));
+            classIcon = new ImageIcon(classLoader.getResource("edu/umd/cs/findbugs/gui/class.png"));
+            methodIcon = new ImageIcon(classLoader.getResource("edu/umd/cs/findbugs/gui/method.png"));
+            fieldIcon = new ImageIcon(classLoader.getResource("edu/umd/cs/findbugs/gui/field.png"));
             sourceFileIcon = new ImageIcon(classLoader.getResource("edu/umd/cs/findbugs/gui/sourcefile.png"));
-	}
-	
-	public Component getTreeCellRendererComponent(JTree tree, Object value, boolean sel,
-	boolean expanded, boolean leaf, int row, boolean hasFocus) {
-	    
-	    super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
-	    
-	    // Set the icon, depending on what kind of node it is
-	    DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
-	    Object obj = node.getUserObject();
-	    if (obj instanceof BugInstance) {
-		setIcon(bugIcon);
-	    } else if (obj instanceof ClassAnnotation) {
-		setIcon(classIcon);
-	    } else if (obj instanceof MethodAnnotation) {
-		setIcon(methodIcon);
-	    } else if (obj instanceof FieldAnnotation) {
-		setIcon(fieldIcon);
+        }
+        
+        public Component getTreeCellRendererComponent(JTree tree, Object value, boolean sel,
+        boolean expanded, boolean leaf, int row, boolean hasFocus) {
+            
+            super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
+            
+            // Set the icon, depending on what kind of node it is
+            DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
+            Object obj = node.getUserObject();
+            if (obj instanceof BugInstance) {
+                setIcon(bugIcon);
+            } else if (obj instanceof ClassAnnotation) {
+                setIcon(classIcon);
+            } else if (obj instanceof MethodAnnotation) {
+                setIcon(methodIcon);
+            } else if (obj instanceof FieldAnnotation) {
+                setIcon(fieldIcon);
             } else if (obj instanceof SourceLineAnnotation) {
                 setIcon(sourceFileIcon);
-	    } else if (obj instanceof BugInstanceGroup) {
-		// This is a "group" node
-		BugInstanceGroup groupNode = (BugInstanceGroup) obj;
-		String groupType = groupNode.getGroupType();
-		if (groupType == GROUP_BY_CLASS) {
-		    setIcon(classIcon);
-		} else if (groupType == GROUP_BY_PACKAGE) {
-		    setIcon(packageIcon);
-		} else if (groupType == GROUP_BY_BUG_TYPE) {
-		    setIcon(bugGroupIcon);
-		}
-	    } else {
-		setIcon(null);
-	    }
-	    
-	    return this;
-	}
+            } else if (obj instanceof BugInstanceGroup) {
+                // This is a "group" node
+                BugInstanceGroup groupNode = (BugInstanceGroup) obj;
+                String groupType = groupNode.getGroupType();
+                if (groupType == GROUP_BY_CLASS) {
+                    setIcon(classIcon);
+                } else if (groupType == GROUP_BY_PACKAGE) {
+                    setIcon(packageIcon);
+                } else if (groupType == GROUP_BY_BUG_TYPE) {
+                    setIcon(bugGroupIcon);
+                }
+            } else {
+                setIcon(null);
+            }
+            
+            return this;
+        }
     }
     
     /** The instance of BugCellRenderer. */
     private static final FindBugsFrame.BugCellRenderer bugCellRenderer = new FindBugsFrame.BugCellRenderer();
- 
+    
     /**
      * Tree node type for BugInstances.
      * We use this instead of plain DefaultMutableTreeNodes in order to
@@ -150,11 +151,11 @@ public class FindBugsFrame extends javax.swing.JFrame {
      * as equal.
      */
     private static class BugInstanceClassComparator implements Comparator {
-	public int compare(Object a, Object b) {
-	    BugInstance lhs = (BugInstance) a;
-	    BugInstance rhs = (BugInstance) b;
-	    return lhs.getPrimaryClass().compareTo(rhs.getPrimaryClass());
-	}
+        public int compare(Object a, Object b) {
+            BugInstance lhs = (BugInstance) a;
+            BugInstance rhs = (BugInstance) b;
+            return lhs.getPrimaryClass().compareTo(rhs.getPrimaryClass());
+        }
     }
     
     /** The instance of BugInstanceClassComparator. */
@@ -167,12 +168,12 @@ public class FindBugsFrame extends javax.swing.JFrame {
      * as equal.
      */
     private static class BugInstancePackageComparator implements Comparator {
-	public int compare(Object a, Object b) {
-	    BugInstance lhs = (BugInstance) a;
-	    BugInstance rhs = (BugInstance) b;
-	    return lhs.getPrimaryClass().getPackageName().compareTo(
-	    rhs.getPrimaryClass().getPackageName());
-	}
+        public int compare(Object a, Object b) {
+            BugInstance lhs = (BugInstance) a;
+            BugInstance rhs = (BugInstance) b;
+            return lhs.getPrimaryClass().getPackageName().compareTo(
+            rhs.getPrimaryClass().getPackageName());
+        }
     }
     
     /** The instance of BugInstancePackageComparator. */
@@ -185,14 +186,14 @@ public class FindBugsFrame extends javax.swing.JFrame {
      * as equal.
      */
     private static class BugInstanceTypeComparator implements Comparator {
-	public int compare(Object a, Object b) {
-	    BugInstance lhs = (BugInstance) a;
-	    BugInstance rhs = (BugInstance) b;
-	    String lhsString = lhs.toString();
-	    String rhsString = rhs.toString();
-	    return lhsString.substring(0, lhsString.indexOf(':')).compareTo(
-		rhsString.substring(0, rhsString.indexOf(':')));
-	}
+        public int compare(Object a, Object b) {
+            BugInstance lhs = (BugInstance) a;
+            BugInstance rhs = (BugInstance) b;
+            String lhsString = lhs.toString();
+            String rhsString = rhs.toString();
+            return lhsString.substring(0, lhsString.indexOf(':')).compareTo(
+            rhsString.substring(0, rhsString.indexOf(':')));
+        }
     }
     
     /** The instance of BugInstanceTypeComparator. */
@@ -203,12 +204,12 @@ public class FindBugsFrame extends javax.swing.JFrame {
      * BugInstance natural ordering.
      */
     private static class BugInstanceByClassComparator implements Comparator {
-	public int compare(Object a, Object b) {
-	    int cmp = bugInstanceClassComparator.compare(a, b);
-	    if (cmp != 0)
-		return cmp;
-	    return ((Comparable)a).compareTo(b);
-	}
+        public int compare(Object a, Object b) {
+            int cmp = bugInstanceClassComparator.compare(a, b);
+            if (cmp != 0)
+                return cmp;
+            return ((Comparable)a).compareTo(b);
+        }
     }
     
     /** The instance of BugInstanceByClassComparator. */
@@ -219,33 +220,33 @@ public class FindBugsFrame extends javax.swing.JFrame {
      * BugInstance natural ordering.
      */
     private static class BugInstanceByPackageComparator implements Comparator {
-	public int compare(Object a, Object b) {
-	    int cmp = bugInstancePackageComparator.compare(a, b);
-	    if (cmp != 0)
-		return cmp;
-	    return ((Comparable)a).compareTo(b);
-	}
+        public int compare(Object a, Object b) {
+            int cmp = bugInstancePackageComparator.compare(a, b);
+            if (cmp != 0)
+                return cmp;
+            return ((Comparable)a).compareTo(b);
+        }
     }
     
     /** The instance of BugInstanceByPackageComparator. */
     private static final Comparator bugInstanceByPackageComparator = new FindBugsFrame.BugInstanceByPackageComparator();
-
+    
     /**
      * Two-level comparison of bug instances by bug type and
      * BugInstance natural ordering.
      */
     private static class BugInstanceByTypeComparator implements Comparator {
-	public int compare(Object a, Object b) {
-	    int cmp = bugInstanceTypeComparator.compare(a, b);
-	    if (cmp != 0)
-		return cmp;
-	    return ((Comparable)a).compareTo(b);
-	}
+        public int compare(Object a, Object b) {
+            int cmp = bugInstanceTypeComparator.compare(a, b);
+            if (cmp != 0)
+                return cmp;
+            return ((Comparable)a).compareTo(b);
+        }
     }
     
     /** The instance of BugTypeByTypeComparator. */
     private static final Comparator bugInstanceByTypeComparator = new FindBugsFrame.BugInstanceByTypeComparator();
-
+    
     /**
      * Swing FileFilter class for file selection dialogs for FindBugs project files.
      */
@@ -268,11 +269,11 @@ public class FindBugsFrame extends javax.swing.JFrame {
     
     /** The instance of AuxClasspathEntry. */
     private static final FileFilter auxClasspathEntryFileFilter = new AuxClasspathEntryFileFilter();
-
+    
     /* ----------------------------------------------------------------------
      * Constants
      * ---------------------------------------------------------------------- */
-
+    
     private static final String GROUP_BY_CLASS = "By class";
     private static final String GROUP_BY_PACKAGE = "By package";
     private static final String GROUP_BY_BUG_TYPE = "By bug type";
@@ -294,10 +295,10 @@ public class FindBugsFrame extends javax.swing.JFrame {
     
     /** Creates new form FindBugsFrame. */
     public FindBugsFrame() {
-	initComponents();
-	postInitComponents();
+        initComponents();
+        postInitComponents();
     }
-
+    
     /* ----------------------------------------------------------------------
      * Component initialization and event handlers
      * ---------------------------------------------------------------------- */
@@ -937,7 +938,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
         pack();
     }//GEN-END:initComponents
-
+    
     private void viewMenuMenuSelected(javax.swing.event.MenuEvent evt) {//GEN-FIRST:event_viewMenuMenuSelected
         // View bug details and full descriptions items
         // are only enabled if there is a project open.
@@ -945,7 +946,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
         viewBugDetailsItem.setEnabled(hasProject);
         fullDescriptionsItem.setEnabled(hasProject);
     }//GEN-LAST:event_viewMenuMenuSelected
-
+    
     private void fileMenuMenuSelected(javax.swing.event.MenuEvent evt) {//GEN-FIRST:event_fileMenuMenuSelected
         // Save and close project items are only enabled if there is a project open.
         boolean hasProject = getCurrentProject() != null;
@@ -953,27 +954,27 @@ public class FindBugsFrame extends javax.swing.JFrame {
         saveProjectAsItem.setEnabled(hasProject);
         closeProjectItem.setEnabled(hasProject);
     }//GEN-LAST:event_fileMenuMenuSelected
-
+    
     private void closeProjectItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_closeProjectItemActionPerformed
         if (closeProjectHook(getCurrentProject(), "Close project")) {
             setProject(null);
         }
     }//GEN-LAST:event_closeProjectItemActionPerformed
-
+    
     private void removeClasspathEntryButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeClasspathEntryButtonActionPerformed
         int selIndex = classpathEntryList.getSelectedIndex();
-	if (selIndex >= 0) {
-	    Project project = getCurrentProject();
-	    project.removeAuxClasspathEntry(selIndex);
-	    DefaultListModel listModel = (DefaultListModel) classpathEntryList.getModel();
-	    listModel.removeElementAt(selIndex);
-	}
+        if (selIndex >= 0) {
+            Project project = getCurrentProject();
+            project.removeAuxClasspathEntry(selIndex);
+            DefaultListModel listModel = (DefaultListModel) classpathEntryList.getModel();
+            listModel.removeElementAt(selIndex);
+        }
     }//GEN-LAST:event_removeClasspathEntryButtonActionPerformed
-
+    
     private void addClasspathEntryButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addClasspathEntryButtonActionPerformed
         addClasspathEntryToList();
     }//GEN-LAST:event_addClasspathEntryButtonActionPerformed
-
+    
     private void browseClasspathEntryButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_browseClasspathEntryButtonActionPerformed
         // Add your handling code here:
         JFileChooser chooser = new JFileChooser();
@@ -993,7 +994,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
             addClasspathEntryToList();
         }
     }//GEN-LAST:event_browseClasspathEntryButtonActionPerformed
-
+    
     private void fullDescriptionsItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fullDescriptionsItemActionPerformed
         JTree bugTree = getCurrentBugTree();
         
@@ -1012,21 +1013,21 @@ public class FindBugsFrame extends javax.swing.JFrame {
                 bugTreeModel.valueForPathChanged(path, node.getUserObject());
         }
     }//GEN-LAST:event_fullDescriptionsItemActionPerformed
-
+    
     private void viewBugDetailsItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_viewBugDetailsItemActionPerformed
         String view = getView();
         if (view.equals("BugTree")) {
             checkBugDetailsVisibility();
         }
-
+        
     }//GEN-LAST:event_viewBugDetailsItemActionPerformed
-
+    
     private void bugTreeBugDetailsSplitterPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_bugTreeBugDetailsSplitterPropertyChange
         // Here we want to
         //   (1) Keep the View:Bug details checkbox item up to date, and
         //   (2) keep the details window synchronized with the current bug instance
         String propertyName = evt.getPropertyName();
-	if (propertyName.equals(JSplitPane.DIVIDER_LOCATION_PROPERTY)) {
+        if (propertyName.equals(JSplitPane.DIVIDER_LOCATION_PROPERTY)) {
             boolean isMaximized = isSplitterMaximized(bugTreeBugDetailsSplitter, evt);
             viewBugDetailsItem.setSelected(!isMaximized);
             if (!isMaximized) {
@@ -1036,9 +1037,9 @@ public class FindBugsFrame extends javax.swing.JFrame {
             }
         }
     }//GEN-LAST:event_bugTreeBugDetailsSplitterPropertyChange
-
+    
     private void openProjectItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openProjectItemActionPerformed
-
+        
         if (!closeProjectHook(getCurrentProject(), "Open Project"))
             return;
         
@@ -1061,137 +1062,137 @@ public class FindBugsFrame extends javax.swing.JFrame {
     private void saveProjectItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveProjectItemActionPerformed
         saveProject(getCurrentProject());
     }//GEN-LAST:event_saveProjectItemActionPerformed
-
+    
     private void aboutItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aboutItemActionPerformed
-	AboutDialog dialog = new AboutDialog(this, true);
+        AboutDialog dialog = new AboutDialog(this, true);
         dialog.setSize(500, 354);
-	dialog.setLocationRelativeTo(null); // center the dialog
-	dialog.show();
+        dialog.setLocationRelativeTo(null); // center the dialog
+        dialog.show();
     }//GEN-LAST:event_aboutItemActionPerformed
     
     private void consoleSplitterPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_consoleSplitterPropertyChange
-	// The idea here is to keep the View:Console checkbox up to date with
-	// the real location of the divider of the consoleSplitter.
-	// What we want is if any part of the console window is visible,
-	// then the checkbox should be checked.
-	String propertyName = evt.getPropertyName();
-	if (propertyName.equals(JSplitPane.DIVIDER_LOCATION_PROPERTY)) {
+        // The idea here is to keep the View:Console checkbox up to date with
+        // the real location of the divider of the consoleSplitter.
+        // What we want is if any part of the console window is visible,
+        // then the checkbox should be checked.
+        String propertyName = evt.getPropertyName();
+        if (propertyName.equals(JSplitPane.DIVIDER_LOCATION_PROPERTY)) {
             boolean isMaximized = isSplitterMaximized(consoleSplitter, evt);
-	    viewConsoleItem.setSelected(!isMaximized);
-	}
+            viewConsoleItem.setSelected(!isMaximized);
+        }
     }//GEN-LAST:event_consoleSplitterPropertyChange
     
     private void viewConsoleItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_viewConsoleItemActionPerformed
-	if (viewConsoleItem.isSelected()) {
-	    consoleSplitter.resetToPreferredSizes();
-	} else {
-	    consoleSplitter.setDividerLocation(1.0);
-	}
+        if (viewConsoleItem.isSelected()) {
+            consoleSplitter.resetToPreferredSizes();
+        } else {
+            consoleSplitter.setDividerLocation(1.0);
+        }
     }//GEN-LAST:event_viewConsoleItemActionPerformed
-        
+    
     private void findBugsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_findBugsButtonActionPerformed
-	Project project = getCurrentProject();
+        Project project = getCurrentProject();
         
         if (project.getNumJarFiles() == 0) {
             logger.logMessage(ConsoleLogger.ERROR, "Project " + project + " has no Jar files selected");
             return;
         }
         
-	AnalysisRun analysisRun = new AnalysisRun(project, logger);
-	
-	logger.logMessage(ConsoleLogger.INFO, "Beginning analysis of " + project);
-	
-	// Run the analysis!
-	RunAnalysisDialog dialog = new RunAnalysisDialog(this, analysisRun);
-	dialog.setSize(400, 300);
-	dialog.setLocationRelativeTo(null); // center the dialog
-	dialog.show();
-	
-	if (dialog.isCompleted()) {
-	    logger.logMessage(ConsoleLogger.INFO, "Analysis " + project + " completed");
+        AnalysisRun analysisRun = new AnalysisRun(project, logger);
+        
+        logger.logMessage(ConsoleLogger.INFO, "Beginning analysis of " + project);
+        
+        // Run the analysis!
+        RunAnalysisDialog dialog = new RunAnalysisDialog(this, analysisRun);
+        dialog.setSize(400, 300);
+        dialog.setLocationRelativeTo(null); // center the dialog
+        dialog.show();
+        
+        if (dialog.isCompleted()) {
+            logger.logMessage(ConsoleLogger.INFO, "Analysis " + project + " completed");
             
             // Now we have an analysis run to look at
             synchAnalysisRun(analysisRun);
             currentAnalysisRun = analysisRun;
             setView("BugTree");
-	} else {
-	    logger.logMessage(ConsoleLogger.INFO, "Analysis of " + project + " cancelled by user");
-	}
+        } else {
+            logger.logMessage(ConsoleLogger.INFO, "Analysis of " + project + " cancelled by user");
+        }
     }//GEN-LAST:event_findBugsButtonActionPerformed
     
     private void browseSrcDirButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_browseSrcDirButtonActionPerformed
-	JFileChooser chooser = new JFileChooser();
-	chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-	int rc = chooser.showDialog(this, "Add source directory");
-	if (rc == JFileChooser.APPROVE_OPTION) {
-	    srcDirTextField.setText(chooser.getSelectedFile().getPath());
-	    addSourceDirToList();
-	}
+        JFileChooser chooser = new JFileChooser();
+        chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        int rc = chooser.showDialog(this, "Add source directory");
+        if (rc == JFileChooser.APPROVE_OPTION) {
+            srcDirTextField.setText(chooser.getSelectedFile().getPath());
+            addSourceDirToList();
+        }
     }//GEN-LAST:event_browseSrcDirButtonActionPerformed
     
     private void srcDirTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_srcDirTextFieldActionPerformed
-	addSourceDirToList();
+        addSourceDirToList();
     }//GEN-LAST:event_srcDirTextFieldActionPerformed
     
     private void jarNameTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jarNameTextFieldActionPerformed
-	addJarToList();
+        addJarToList();
     }//GEN-LAST:event_jarNameTextFieldActionPerformed
     
     private void browseJarButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_browseJarButtonActionPerformed
-	JFileChooser chooser = new JFileChooser();
-	FileFilter filter = new FileFilter() {
-	    public boolean accept(File file) { return file.isDirectory() || file.getName().endsWith(".jar"); }
-	    public String getDescription() { return "Jar files (*.jar)"; }
-	};
-	chooser.setFileFilter(filter);
-	int rc = chooser.showDialog(this, "Add Jar file");
-	if (rc == JFileChooser.APPROVE_OPTION) {
-	    jarNameTextField.setText(chooser.getSelectedFile().getPath());
-	    addJarToList();
-	}
+        JFileChooser chooser = new JFileChooser();
+        FileFilter filter = new FileFilter() {
+            public boolean accept(File file) { return file.isDirectory() || file.getName().endsWith(".jar"); }
+            public String getDescription() { return "Jar files (*.jar)"; }
+        };
+        chooser.setFileFilter(filter);
+        int rc = chooser.showDialog(this, "Add Jar file");
+        if (rc == JFileChooser.APPROVE_OPTION) {
+            jarNameTextField.setText(chooser.getSelectedFile().getPath());
+            addJarToList();
+        }
     }//GEN-LAST:event_browseJarButtonActionPerformed
-        
+    
     private void newProjectItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newProjectItemActionPerformed
-	String projectName = "<<unnamed project>>";
-	Project project = new Project(projectName);
+        String projectName = "<<unnamed project>>";
+        Project project = new Project(projectName);
         setProject(project);
     }//GEN-LAST:event_newProjectItemActionPerformed
     
     private void exitItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitItemActionPerformed
-	exitFindBugs();
+        exitFindBugs();
     }//GEN-LAST:event_exitItemActionPerformed
     
     private void removeSrcDirButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeSrcDirButtonActionPerformed
-	int selIndex = sourceDirList.getSelectedIndex();
-	if (selIndex >= 0) {
-	    Project project = getCurrentProject();
-	    project.removeSourceDir(selIndex);
-	    DefaultListModel listModel = (DefaultListModel) sourceDirList.getModel();
-	    listModel.removeElementAt(selIndex);
-	}
+        int selIndex = sourceDirList.getSelectedIndex();
+        if (selIndex >= 0) {
+            Project project = getCurrentProject();
+            project.removeSourceDir(selIndex);
+            DefaultListModel listModel = (DefaultListModel) sourceDirList.getModel();
+            listModel.removeElementAt(selIndex);
+        }
     }//GEN-LAST:event_removeSrcDirButtonActionPerformed
     
     private void removeJarButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeJarButtonActionPerformed
-	int selIndex = jarFileList.getSelectedIndex();
-	if (selIndex >= 0) {
-	    Project project = getCurrentProject();
-	    project.removeJarFile(selIndex);
-	    DefaultListModel listModel = (DefaultListModel) jarFileList.getModel();
-	    listModel.removeElementAt(selIndex);
-	}
+        int selIndex = jarFileList.getSelectedIndex();
+        if (selIndex >= 0) {
+            Project project = getCurrentProject();
+            project.removeJarFile(selIndex);
+            DefaultListModel listModel = (DefaultListModel) jarFileList.getModel();
+            listModel.removeElementAt(selIndex);
+        }
     }//GEN-LAST:event_removeJarButtonActionPerformed
     
     private void addSourceDirButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addSourceDirButtonActionPerformed
-	addSourceDirToList();
+        addSourceDirToList();
     }//GEN-LAST:event_addSourceDirButtonActionPerformed
     
     private void addJarButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addJarButtonActionPerformed
-	addJarToList();
+        addJarToList();
     }//GEN-LAST:event_addJarButtonActionPerformed
     
     /** Exit the Application */
     private void exitForm(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_exitForm
-	exitFindBugs();
+        exitFindBugs();
     }//GEN-LAST:event_exitForm
     
     /**
@@ -1200,10 +1201,10 @@ public class FindBugsFrame extends javax.swing.JFrame {
      */
     private void bugTreeSelectionChanged(TreeSelectionEvent e) {
         
-	BugInstance selected = getCurrentBugInstance();
-	if (selected != null) {
-	    synchBugInstance();
-	}
+        BugInstance selected = getCurrentBugInstance();
+        if (selected != null) {
+            synchBugInstance();
+        }
     }
     
     /* ----------------------------------------------------------------------
@@ -1215,17 +1216,17 @@ public class FindBugsFrame extends javax.swing.JFrame {
      * of the components in the form.
      */
     private void postInitComponents() {
-	logger = new ConsoleLogger(this);
-	
-	viewPanelLayout = (CardLayout) viewPanel.getLayout();
-
+        logger = new ConsoleLogger(this);
+        
+        viewPanelLayout = (CardLayout) viewPanel.getLayout();
+        
         // Console starts out disabled
         consoleSplitter.setDividerLocation(1.0);
-
+        
         // List of bug group tabs.
         // This must be in the same order as GROUP_BY_ORDER_LIST!
         bugTreeList = new JTree[]{byClassBugTree, byPackageBugTree, byBugTypeBugTree};
-
+        
         // Configure bug trees
         for (int i = 0; i < bugTreeList.length; ++i) {
             JTree bugTree = bugTreeList[i];
@@ -1239,44 +1240,53 @@ public class FindBugsFrame extends javax.swing.JFrame {
                 }
             });
         }
-	
-	jarFileList.setModel(new DefaultListModel());
-	sourceDirList.setModel(new DefaultListModel());
+        
+        jarFileList.setModel(new DefaultListModel());
+        sourceDirList.setModel(new DefaultListModel());
         classpathEntryList.setModel(new DefaultListModel());
-	
+        
         // We use a special highlight painter to ensure that the highlights cover
         // complete source lines, even though the source text doesn't
         // fill the lines completely.
         final Highlighter.HighlightPainter painter =
-            new DefaultHighlighter.DefaultHighlightPainter(sourceTextArea.getSelectionColor()) {
-                public Shape paintLayer(Graphics g, int offs0, int offs1,
-		    Shape bounds, JTextComponent c, View view) {
-                    try {
-                        Shape extent = view.modelToView(offs0, Position.Bias.Forward, offs1, Position.Bias.Backward, bounds);
-                        Rectangle rect = extent.getBounds();
-                        rect.x = 0;
-                        rect.width = bounds.getBounds().width;
-                        g.setColor(getColor());
-                        g.fillRect(rect.x, rect.y, rect.width, rect.height);
-                        return rect;
-                    } catch (BadLocationException e) {
-                        return null;
-                    }
+        new DefaultHighlighter.DefaultHighlightPainter(sourceTextArea.getSelectionColor()) {
+            public Shape paintLayer(Graphics g, int offs0, int offs1,
+            Shape bounds, JTextComponent c, View view) {
+                try {
+                    Shape extent = view.modelToView(offs0, Position.Bias.Forward, offs1, Position.Bias.Backward, bounds);
+                    Rectangle rect = extent.getBounds();
+                    rect.x = 0;
+                    rect.width = bounds.getBounds().width;
+                    g.setColor(getColor());
+                    g.fillRect(rect.x, rect.y, rect.width, rect.height);
+                    return rect;
+                } catch (BadLocationException e) {
+                    return null;
                 }
-            };
+            }
+        };
         Highlighter sourceHighlighter = new DefaultHighlighter() {
             public Object addHighlight(int p0, int p1, Highlighter.HighlightPainter p)
-                throws BadLocationException {
+            throws BadLocationException {
                 return super.addHighlight(p0, p1, painter);
             }
         };
         sourceTextArea.setHighlighter(sourceHighlighter);
+        /*
+        javax.swing.text.Caret caret = new javax.swing.text.DefaultCaret() {
+            private int count = 0;
+            protected void adjustVisibility(int nloc) {
+                System.out.println("Adjusting visibility " + count++);
+            }
+        };
+        sourceTextArea.setCaret(caret);
+         */
     }
     
     /* ----------------------------------------------------------------------
      * Helpers for accessing and modifying UI components
      * ---------------------------------------------------------------------- */
-
+    
     /**
      * Based on the current tree selection path, get a user object
      * whose class is the same as the given class.
@@ -1286,22 +1296,22 @@ public class FindBugsFrame extends javax.swing.JFrame {
      *   current selection, or null if there is no matching object
      */
     private static Object getTreeSelectionOf(JTree tree, Class c) {
-	TreePath selPath = tree.getSelectionPath();
+        TreePath selPath = tree.getSelectionPath();
         
         // There may not be anything selected at the moment
         if (selPath == null)
             return null;
-	
-	// Work backwards from end until we get to the kind of
-	// object we're looking for.
-	Object[] nodeList = selPath.getPath();
-	for (int i = nodeList.length - 1; i >= 0; --i) {
-	    DefaultMutableTreeNode node = (DefaultMutableTreeNode) nodeList[i];
-	    Object nodeInfo = node.getUserObject();
-	    if (nodeInfo != null && nodeInfo.getClass() == c)
-		return nodeInfo;
-	}
-	return null;
+        
+        // Work backwards from end until we get to the kind of
+        // object we're looking for.
+        Object[] nodeList = selPath.getPath();
+        for (int i = nodeList.length - 1; i >= 0; --i) {
+            DefaultMutableTreeNode node = (DefaultMutableTreeNode) nodeList[i];
+            Object nodeInfo = node.getUserObject();
+            if (nodeInfo != null && nodeInfo.getClass() == c)
+                return nodeInfo;
+        }
+        return null;
     }
     
     /**
@@ -1317,13 +1327,13 @@ public class FindBugsFrame extends javax.swing.JFrame {
     private AnalysisRun getCurrentAnalysisRun() {
         return currentAnalysisRun;
     }
-
+    
     /**
      * Get the bug instance currently selected in the bug tree.
      */
     private BugInstance getCurrentBugInstance() {
         JTree bugTree = getCurrentBugTree();
-	return (BugInstance) getTreeSelectionOf(bugTree, BugInstance.class);
+        return (BugInstance) getTreeSelectionOf(bugTree, BugInstance.class);
     }
     
     /**
@@ -1335,25 +1345,25 @@ public class FindBugsFrame extends javax.swing.JFrame {
      * @param evt the event that is changing the splitter value
      */
     private boolean isSplitterMaximized(JSplitPane splitter, java.beans.PropertyChangeEvent evt) {
-	Integer location = (Integer) evt.getNewValue();
-
+        Integer location = (Integer) evt.getNewValue();
+        
         java.awt.Container parent = splitter.getParent();
         int height = splitter.getHeight();
-	int hopefullyMaxDivider = height - (splitter.getDividerSize() + DIVIDER_FUDGE);
+        int hopefullyMaxDivider = height - (splitter.getDividerSize() + DIVIDER_FUDGE);
         //System.out.println("Splitter: "+(splitter==consoleSplitter?"consoleSplitter":"bugTreeBugDetailsSplitter")+
         //    ": height="+height+",location="+location+
         //    ",hopefullyMax="+hopefullyMaxDivider);
-	boolean isMaximized = location.intValue() >= hopefullyMaxDivider;
+        boolean isMaximized = location.intValue() >= hopefullyMaxDivider;
         return isMaximized;
     }
-
+    
     private void checkBugDetailsVisibility() {
         if (viewBugDetailsItem.isSelected()) {
             bugTreeBugDetailsSplitter.resetToPreferredSizes();
         } else {
             bugTreeBugDetailsSplitter.setDividerLocation(1.0);
         }
-        //System.out.("New bug detail splitter location " + bugTreeBugDetailsSplitter.getDividerLocation());   
+        //System.out.("New bug detail splitter location " + bugTreeBugDetailsSplitter.getDividerLocation());
     }
     
     private JTree getCurrentBugTree() {
@@ -1374,7 +1384,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
         } else
             setView("EmptyPanel");
     }
-
+    
     /**
      * Offer to save the current Project to a file.
      * @param project the Project to save
@@ -1388,13 +1398,13 @@ public class FindBugsFrame extends javax.swing.JFrame {
             
             File file;
             String fileName = project.getFileName();
-
+            
             if (!fileName.startsWith("<")) {
                 file = new File(fileName);
             } else {
                 JFileChooser chooser = new JFileChooser();
                 chooser.setFileFilter(projectFileFilter);
-
+                
                 int result = chooser.showSaveDialog(this);
                 if (result == JFileChooser.CANCEL_OPTION)
                     return false;
@@ -1410,7 +1420,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
         } catch (IOException e) {
             logger.logMessage(ConsoleLogger.ERROR, "Could not save project: " + e.toString());
             JOptionPane.showMessageDialog(this, "Error saving project: " + e.toString(),
-                "Error", JOptionPane.ERROR_MESSAGE);
+            "Error", JOptionPane.ERROR_MESSAGE);
             return false;
         }
     }
@@ -1425,11 +1435,11 @@ public class FindBugsFrame extends javax.swing.JFrame {
     private boolean closeProjectHook(Project project, String savePromptTitle) {
         if (project == null || !project.isModified())
             return true;
-
+        
         // Confirm that the project should be closed.
         int option = JOptionPane.showConfirmDialog(this, "Save project?", savePromptTitle,
-            JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
-
+        JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+        
         if (option == JOptionPane.CANCEL_OPTION)
             return false;
         else if (option == JOptionPane.YES_OPTION) {
@@ -1446,24 +1456,24 @@ public class FindBugsFrame extends javax.swing.JFrame {
      * @param project the selected project
      */
     private void synchProject(Project project) {
-	// Clear text fields
-	jarNameTextField.setText("");
-	srcDirTextField.setText("");
+        // Clear text fields
+        jarNameTextField.setText("");
+        srcDirTextField.setText("");
         classpathEntryTextField.setText("");
-	
-	// Populate jar file, source directory, and aux classpath entry lists
         
-	DefaultListModel jarListModel = (DefaultListModel) jarFileList.getModel();
-	jarListModel.clear();
-	for (int i = 0; i < project.getNumJarFiles(); ++i) {
-	    jarListModel.addElement(project.getJarFile(i));
-	}
-	
-	DefaultListModel srcDirListModel = (DefaultListModel) sourceDirList.getModel();
-	srcDirListModel.clear();
-	for (int i = 0; i < project.getNumSourceDirs(); ++i) {
-	    srcDirListModel.addElement(project.getSourceDir(i));
-	}
+        // Populate jar file, source directory, and aux classpath entry lists
+        
+        DefaultListModel jarListModel = (DefaultListModel) jarFileList.getModel();
+        jarListModel.clear();
+        for (int i = 0; i < project.getNumJarFiles(); ++i) {
+            jarListModel.addElement(project.getJarFile(i));
+        }
+        
+        DefaultListModel srcDirListModel = (DefaultListModel) sourceDirList.getModel();
+        srcDirListModel.clear();
+        for (int i = 0; i < project.getNumSourceDirs(); ++i) {
+            srcDirListModel.addElement(project.getSourceDir(i));
+        }
         
         DefaultListModel classpathEntryListModel = (DefaultListModel) classpathEntryList.getModel();
         classpathEntryListModel.clear();
@@ -1496,115 +1506,115 @@ public class FindBugsFrame extends javax.swing.JFrame {
     private void populateAnalysisRunTreeModel(AnalysisRun analysisRun, final String groupBy) {
         //System.out.println("Populating bug tree for order " + groupBy);
         
-	// Set busy cursor - this is potentially a time-consuming operation
-	Cursor orig = this.getCursor();
-	this.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-	
-	final DefaultTreeModel bugTreeModel = analysisRun.getTreeModel(groupBy);
-	final DefaultMutableTreeNode bugRootNode = (DefaultMutableTreeNode) bugTreeModel.getRoot();
-	
-	// Delete all children from root node
-	bugRootNode.removeAllChildren();
-	
-	// Sort the instances
-	TreeSet sortedCollection = new TreeSet(getBugInstanceComparator(groupBy));
-	sortedCollection.addAll(analysisRun.getBugInstances());
-	
-	// The grouper callback is what actually adds the group and bug
-	// nodes to the tree.
-	Grouper.Callback callback = new Grouper.Callback() {
-	    private BugInstanceGroup currentGroup;
-	    private DefaultMutableTreeNode currentGroupNode;
-	    
-	    public void startGroup(Object member_) {
-		BugInstance member = (BugInstance) member_;
-		String groupName;
-		if (groupBy == GROUP_BY_CLASS)
-		    groupName = member.getPrimaryClass().getClassName();
-		else if (groupBy == GROUP_BY_PACKAGE) {
-		    groupName = member.getPrimaryClass().getPackageName();
+        // Set busy cursor - this is potentially a time-consuming operation
+        Cursor orig = this.getCursor();
+        this.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+        
+        final DefaultTreeModel bugTreeModel = analysisRun.getTreeModel(groupBy);
+        final DefaultMutableTreeNode bugRootNode = (DefaultMutableTreeNode) bugTreeModel.getRoot();
+        
+        // Delete all children from root node
+        bugRootNode.removeAllChildren();
+        
+        // Sort the instances
+        TreeSet sortedCollection = new TreeSet(getBugInstanceComparator(groupBy));
+        sortedCollection.addAll(analysisRun.getBugInstances());
+        
+        // The grouper callback is what actually adds the group and bug
+        // nodes to the tree.
+        Grouper.Callback callback = new Grouper.Callback() {
+            private BugInstanceGroup currentGroup;
+            private DefaultMutableTreeNode currentGroupNode;
+            
+            public void startGroup(Object member_) {
+                BugInstance member = (BugInstance) member_;
+                String groupName;
+                if (groupBy == GROUP_BY_CLASS)
+                    groupName = member.getPrimaryClass().getClassName();
+                else if (groupBy == GROUP_BY_PACKAGE) {
+                    groupName = member.getPrimaryClass().getPackageName();
                     if (groupName.equals(""))
                         groupName = "Unnamed package";
                 } else if (groupBy == GROUP_BY_BUG_TYPE) {
-		    String desc = member.toString();
-		    String shortBugType = desc.substring(0, desc.indexOf(':'));
+                    String desc = member.toString();
+                    String shortBugType = desc.substring(0, desc.indexOf(':'));
                     String bugTypeDescription = I18N.instance().getBugTypeDescription(shortBugType);
                     groupName = shortBugType + ": " + bugTypeDescription;
-		} else
-		    throw new IllegalStateException("Unknown sort order: " + groupBy);
-		currentGroup = new BugInstanceGroup(groupBy, groupName);
-		currentGroupNode = new DefaultMutableTreeNode(currentGroup);
-		bugTreeModel.insertNodeInto(currentGroupNode, bugRootNode, bugRootNode.getChildCount());
-		
-		insertIntoGroup(member);
-	    }
-	    
-	    public void addToGroup(Object member_) {
-		BugInstance member = (BugInstance) member_;
-		insertIntoGroup(member);
-	    }
-	    
-	    private void insertIntoGroup(BugInstance member) {
-		currentGroup.incrementMemberCount();
-		DefaultMutableTreeNode bugNode = new BugTreeNode(member);
-		bugTreeModel.insertNodeInto(bugNode, currentGroupNode, currentGroupNode.getChildCount());
-
-		// Insert annotations
-		Iterator j = member.annotationIterator();
-		while (j.hasNext()) {
-		    BugAnnotation annotation = (BugAnnotation) j.next();
-		    DefaultMutableTreeNode annotationNode = new DefaultMutableTreeNode(annotation);
-		    bugTreeModel.insertNodeInto(annotationNode, bugNode,  bugNode.getChildCount());
-		}
-		
-	    }
-	};
-	
-	// Create the grouper, and execute it to populate the bug tree
-	Grouper grouper = new Grouper(callback);
-	Comparator groupComparator = getGroupComparator(groupBy);
-	grouper.group(sortedCollection, groupComparator);
-	
-	// Let the tree know it needs to update itself
-	bugTreeModel.nodeStructureChanged(bugRootNode);
-	
-	// Now we're done
-	this.setCursor(orig);
+                } else
+                    throw new IllegalStateException("Unknown sort order: " + groupBy);
+                currentGroup = new BugInstanceGroup(groupBy, groupName);
+                currentGroupNode = new DefaultMutableTreeNode(currentGroup);
+                bugTreeModel.insertNodeInto(currentGroupNode, bugRootNode, bugRootNode.getChildCount());
+                
+                insertIntoGroup(member);
+            }
+            
+            public void addToGroup(Object member_) {
+                BugInstance member = (BugInstance) member_;
+                insertIntoGroup(member);
+            }
+            
+            private void insertIntoGroup(BugInstance member) {
+                currentGroup.incrementMemberCount();
+                DefaultMutableTreeNode bugNode = new BugTreeNode(member);
+                bugTreeModel.insertNodeInto(bugNode, currentGroupNode, currentGroupNode.getChildCount());
+                
+                // Insert annotations
+                Iterator j = member.annotationIterator();
+                while (j.hasNext()) {
+                    BugAnnotation annotation = (BugAnnotation) j.next();
+                    DefaultMutableTreeNode annotationNode = new DefaultMutableTreeNode(annotation);
+                    bugTreeModel.insertNodeInto(annotationNode, bugNode,  bugNode.getChildCount());
+                }
+                
+            }
+        };
+        
+        // Create the grouper, and execute it to populate the bug tree
+        Grouper grouper = new Grouper(callback);
+        Comparator groupComparator = getGroupComparator(groupBy);
+        grouper.group(sortedCollection, groupComparator);
+        
+        // Let the tree know it needs to update itself
+        bugTreeModel.nodeStructureChanged(bugRootNode);
+        
+        // Now we're done
+        this.setCursor(orig);
     }
     
     /**
      * Get a BugInstance Comparator for given sort order.
      */
     private Comparator getBugInstanceComparator(String sortOrder) {
-	if (sortOrder.equals(GROUP_BY_CLASS))
-	    return bugInstanceByClassComparator;
-	else if (sortOrder.equals(GROUP_BY_PACKAGE))
-	    return bugInstanceByPackageComparator;
-	else if (sortOrder.equals(GROUP_BY_BUG_TYPE))
-	    return bugInstanceByTypeComparator;
-	else
-	    throw new IllegalArgumentException("Bad sort order: " + sortOrder);
+        if (sortOrder.equals(GROUP_BY_CLASS))
+            return bugInstanceByClassComparator;
+        else if (sortOrder.equals(GROUP_BY_PACKAGE))
+            return bugInstanceByPackageComparator;
+        else if (sortOrder.equals(GROUP_BY_BUG_TYPE))
+            return bugInstanceByTypeComparator;
+        else
+            throw new IllegalArgumentException("Bad sort order: " + sortOrder);
     }
     
     /**
      * Get a Grouper for a given sort order.
      */
     private Comparator getGroupComparator(String groupBy) {
-	if (groupBy.equals(GROUP_BY_CLASS)) {
-	    return bugInstanceClassComparator;
-	} else if (groupBy.equals(GROUP_BY_PACKAGE)) {
-	    return bugInstancePackageComparator;
-	} else if (groupBy.equals(GROUP_BY_BUG_TYPE)) {
-	    return bugInstanceTypeComparator;
-	} else
-	    throw new IllegalArgumentException("Bad sort order: " + groupBy);
+        if (groupBy.equals(GROUP_BY_CLASS)) {
+            return bugInstanceClassComparator;
+        } else if (groupBy.equals(GROUP_BY_PACKAGE)) {
+            return bugInstancePackageComparator;
+        } else if (groupBy.equals(GROUP_BY_BUG_TYPE)) {
+            return bugInstanceTypeComparator;
+        } else
+            throw new IllegalArgumentException("Bad sort order: " + groupBy);
     }
     
     /**
      * Set the view panel to display the named view.
      */
     private void setView(String viewName) {
-	viewPanelLayout.show(viewPanel, viewName);
+        viewPanelLayout.show(viewPanel, viewName);
         if (viewName.equals("BugTree"))
             checkBugDetailsVisibility();
         currentView = viewName;
@@ -1622,15 +1632,15 @@ public class FindBugsFrame extends javax.swing.JFrame {
      * Jar file list (and the project it represents).
      */
     private void addJarToList() {
-	String jarFile = jarNameTextField.getText();
-	if (!jarFile.equals("")) {
-	    Project project = getCurrentProject();
-	    if (project.addJar(jarFile)) {
+        String jarFile = jarNameTextField.getText();
+        if (!jarFile.equals("")) {
+            Project project = getCurrentProject();
+            if (project.addJar(jarFile)) {
                 DefaultListModel listModel = (DefaultListModel)  jarFileList.getModel();
                 listModel.addElement(jarFile);
             }
             jarNameTextField.setText("");
-	}
+        }
     }
     
     /**
@@ -1638,15 +1648,15 @@ public class FindBugsFrame extends javax.swing.JFrame {
      * to the source directory list (and the project it represents).
      */
     private void addSourceDirToList() {
-	String sourceDir = srcDirTextField.getText();
-	if (!sourceDir.equals("")) {
-	    Project project = getCurrentProject();
-	    if (project.addSourceDir(sourceDir)) {
+        String sourceDir = srcDirTextField.getText();
+        if (!sourceDir.equals("")) {
+            Project project = getCurrentProject();
+            if (project.addSourceDir(sourceDir)) {
                 DefaultListModel listModel = (DefaultListModel) sourceDirList.getModel();
                 listModel.addElement(sourceDir);
             }
             srcDirTextField.setText("");
-	}
+        }
     }
     
     /**
@@ -1664,7 +1674,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
             classpathEntryTextField.setText("");
         }
     }
-
+    
     /**
      * Synchronize current bug instance with the bug detail
      * window (source view, details window, etc.)
@@ -1674,12 +1684,12 @@ public class FindBugsFrame extends javax.swing.JFrame {
         BugInstance selected = getCurrentBugInstance();
         if (selected == null)
             return;
-         
+        
         // If the details window is minimized, then the user can't see
         // it and there is no point in updating it.
         if (!viewBugDetailsItem.isSelected())
-             return;
-
+            return;
+        
         // Get the current source line annotation.
         // If the current leaf selected is not a source line annotation,
         // use the default source line annotation from the current bug instance
@@ -1712,7 +1722,9 @@ public class FindBugsFrame extends javax.swing.JFrame {
         // Now the bug details are up to date.
         currentBugInstance = selected;
     }
-
+    
+    private static final int SELECTION_VOFFSET = 2;
+    
     /**
      * Update the source view window.
      * @param project the project (containing the source directories to search)
@@ -1720,10 +1732,10 @@ public class FindBugsFrame extends javax.swing.JFrame {
      * @param srcLine the source line annotation (specifying source file to load and
      *    which lines to highlight)
      */
-    private void viewSource(Project project, AnalysisRun analysisRun, SourceLineAnnotation srcLine) {
+    private void viewSource(Project project, AnalysisRun analysisRun, final SourceLineAnnotation srcLine) {
         // Get rid of old source code text
-	sourceTextArea.setText("");
-
+        sourceTextArea.setText("");
+        
         // There is nothing to do without a source annotation
         // TODO: actually, might want to put a message in the source window
         // explaining that we don't have the source file, and that
@@ -1734,56 +1746,64 @@ public class FindBugsFrame extends javax.swing.JFrame {
         // Look up the source file for this class.
         sourceFinder.setSourceBaseList(project.getSourceDirList());
         String sourceFile = analysisRun.getSourceFile(srcLine.getClassName());
-	if (sourceFile == null) {
-	    logger.logMessage(ConsoleLogger.INFO, "No source file for class " + srcLine.getClassName());
-	    return;
-	}
-
-	// Try to open the source file and display its contents
-	// in the source text area.
-	try {
-	    InputStream in = sourceFinder.openSource(srcLine.getPackageName(), sourceFile);
-	    BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-	    
-	    String line;
-	    while ((line = reader.readLine()) != null) {
-		sourceTextArea.append(line + "\n");
-	    }
-	    
-	    reader.close();
-	} catch (IOException e) {
-	    logger.logMessage(ConsoleLogger.ERROR, e.getMessage());
-	    return;
-	}
-
-        // Highlight the lines from the source annotation.
-        // Note that the source lines start at 1, while the line numbers
-        // in the text area start at 0.
-        int selBegin;
+        if (sourceFile == null) {
+            logger.logMessage(ConsoleLogger.INFO, "No source file for class " + srcLine.getClassName());
+            return;
+        }
+        
+        // Try to open the source file and display its contents
+        // in the source text area.
         try {
-            selBegin = sourceTextArea.getLineStartOffset(srcLine.getStartLine() - 1);
-            int selEnd = sourceTextArea.getLineStartOffset(srcLine.getEndLine());
-            sourceTextArea.select(selBegin, selEnd);
-            sourceTextArea.getCaret().setSelectionVisible(true);
-        } catch (javax.swing.text.BadLocationException e) {
-            logger.logMessage(ConsoleLogger.ERROR, e.toString());
+            InputStream in = sourceFinder.openSource(srcLine.getPackageName(), sourceFile);
+            BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+            
+            String line;
+            while ((line = reader.readLine()) != null) {
+                sourceTextArea.append(line + "\n");
+            }
+            
+            reader.close();
+        } catch (IOException e) {
+            logger.logMessage(ConsoleLogger.ERROR, e.getMessage());
             return;
         }
 
-        // This hack is required because Swing doesn't really manage
-        // to get the selection into the visible part of the source text
-        // area on the first attempt.
-        final int show = selBegin;
+        // Highlight the annotation.
+        // There seems to be some bug in Swing that sometimes prevents this code
+        // from working when executed immediately after populating the
+        // text in the text area.  My guess is that when a large amount of text
+        // is added, Swing defers some UI update work until "later" that is needed
+        // to compute the visibility of text in the text area.
+        // So, post some code to do the update to the Swing event queue.
+        // Not really an ideal solution, but it seems to work.
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
+                // Highlight the lines from the source annotation.
+                // Note that the source lines start at 1, while the line numbers
+                // in the text area start at 0.
                 try {
-                    sourceTextArea.scrollRectToVisible(sourceTextArea.modelToView(show));
+                    int startLine = srcLine.getStartLine() - 1;
+                    int endLine = srcLine.getEndLine();
+                    
+                    // Scroll the window so the annotation text will be SELECTION_VOFFSET
+                    // lines from the top.
+                    int viewLine = Math.max(startLine - SELECTION_VOFFSET, 0);
+                    int viewBegin = sourceTextArea.getLineStartOffset(viewLine);
+                    //sourceTextArea.scrollRectToVisible(sourceTextArea.modelToView(viewBegin));
+                    Rectangle viewRect = sourceTextArea.modelToView(viewBegin);
+                    sourceTextAreaScrollPane.getViewport().setViewPosition(new Point(viewRect.x, viewRect.y));
+                    
+                    // Select (and highlight) the annotation.
+                    int selBegin = sourceTextArea.getLineStartOffset(startLine);
+                    int selEnd = sourceTextArea.getLineStartOffset(endLine);
+                    sourceTextArea.select(selBegin, selEnd);
+                    sourceTextArea.getCaret().setSelectionVisible(true);
                 } catch (javax.swing.text.BadLocationException e) {
-                    logger.logMessage(ConsoleLogger.ERROR,  e.toString());
+                    logger.logMessage(ConsoleLogger.ERROR, e.toString());
                 }
             }
         });
-    
+        
     }
     
     /**
@@ -1796,7 +1816,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
         String fileName = "edu/umd/cs/findbugs/gui/help/" + bugInstance.getType() + ".html";
         if (currentBugDetailsFile != null && currentBugDetailsFile.equals(fileName))
             return;
-
+        
         // Clear out previous contents
         bugDescriptionEditorPane.setText("");
         
@@ -1815,7 +1835,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
             logger.logMessage(ConsoleLogger.ERROR, e.getMessage());
         }
     }
-
+    
     /* ----------------------------------------------------------------------
      * Misc. helpers
      * ---------------------------------------------------------------------- */
@@ -1824,8 +1844,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
      * Exit the application.
      */
     private void exitFindBugs() {
-	// TODO: offer to save work, etc.
-	System.exit(0);
+        // TODO: offer to save work, etc.
+        System.exit(0);
     }
     
     /**
@@ -1839,8 +1859,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
      * Write a message to the console window.
      */
     public void writeToConsole(String message) {
-	consoleMessageArea.append(message);
-	consoleMessageArea.append("\n");
+        consoleMessageArea.append(message);
+        consoleMessageArea.append("\n");
     }
     
     /* ----------------------------------------------------------------------
@@ -1852,9 +1872,9 @@ public class FindBugsFrame extends javax.swing.JFrame {
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-	FindBugsFrame frame = new FindBugsFrame();
-	frame.setSize(800, 600);
-	frame.show();
+        FindBugsFrame frame = new FindBugsFrame();
+        frame.setSize(800, 600);
+        frame.show();
     }
     
     /* ----------------------------------------------------------------------
