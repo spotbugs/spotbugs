@@ -11,6 +11,17 @@ public class CompareArrays
 	{
 		return a.equals(b);
 	}
+	
+	public static boolean cmpArraysOK( String[] a, String[] b )
+	{
+		if (a.length != b.length)
+			return false;
+			
+		for (int i = 0; i < a.length; i++)
+			if (!a[i].equals(b[i]))
+				return false;
+		return true;
+	}
 
 	public static void main( String[] args )
 	{
@@ -24,5 +35,8 @@ public class CompareArrays
 			
 		if (cmpArrays( c, d ))
 			System.out.println( "String arrays are equal... Not!" );
+
+		if (cmpArraysOK( c, d ))
+			System.out.println( "String arrays are equal...!" );
 	}
 }
