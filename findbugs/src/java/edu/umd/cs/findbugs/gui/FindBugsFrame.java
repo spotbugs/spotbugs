@@ -1578,7 +1578,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
             ((JTextComponent)selectedComponent).selectAll();
         else if (selectedComponent instanceof JList) {
             JList list = (JList)selectedComponent;
-            list.setSelectionInterval(0, list.getModel().getSize());
+            list.setSelectionInterval(0, list.getModel().getSize()-1);
         }
     }//GEN-LAST:event_selectAllActionPerformed
 
