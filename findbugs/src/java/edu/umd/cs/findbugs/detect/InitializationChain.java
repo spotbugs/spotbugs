@@ -62,8 +62,6 @@ public class InitializationChain extends BytecodeScanningDetector implements   C
     public void sawOpcode(int seen) {
 
 
-	if (seen == PUTSTATIC)
-		System.out.println("Saw putstatic " + nameConstant);
         if (seen == PUTSTATIC && classConstant.equals(className))  {
 		if (instanceCreated && !instanceCreatedWarningGiven)  {
 			String okSig = "L" + className + ";";
