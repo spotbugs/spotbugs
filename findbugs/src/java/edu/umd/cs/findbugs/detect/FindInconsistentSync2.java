@@ -29,6 +29,7 @@ import edu.umd.cs.findbugs.CallGraphEdge;
 import edu.umd.cs.findbugs.CallSite;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.SelfCalls;
+import edu.umd.cs.findbugs.SourceLineAnnotation;
 
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.*;
@@ -37,6 +38,7 @@ import org.apache.bcel.generic.*;
 import java.util.*;
 
 public class FindInconsistentSync2 implements Detector {
+	private static final boolean DEBUG = Boolean.getBoolean("fis.debug");
 
 	/* ----------------------------------------------------------------------
 	 * Helper classes
@@ -52,8 +54,15 @@ public class FindInconsistentSync2 implements Detector {
 	private static final int READ_LOCKED = READ | LOCKED;
 	private static final int WRITE_LOCKED = WRITE | LOCKED;
 
+	/**
+	 * The access statistics for a field.
+	 * Stores the number of locked and unlocked reads and writes,
+	 * as well as the number of accesses made with a lock held.
+	 */
 	private static class FieldStats {
 		private int[] countList = new int[4];
+		private int numLocalLocks = 0;
+		public Set<SourceLineAnnotation> unsyncAccessList = new HashSet<SourceLineAnnotation>();
 
 		public void addAccess(int kind) {
 			countList[kind]++;
@@ -61,6 +70,23 @@ public class FindInconsistentSync2 implements Detector {
 
 		public int getNumAccesses(int kind) {
 			return countList[kind];
+		}
+
+		public void addLocalLock() {
+			numLocalLocks++;
+		}
+
+		public int getNumLocalLocks() {
+			return numLocalLocks;
+		}
+
+		public void addUnsyncAccess(ClassContext classContext, Method method, InstructionHandle handle) {
+			JavaClass javaClass = classContext.getJavaClass();
+			String sourceFile = javaClass.getSourceFileName();
+			MethodGen methodGen = classContext.getMethodGen(method);
+			SourceLineAnnotation accessSourceLine = SourceLineAnnotation.fromVisitedInstruction(methodGen, sourceFile, handle);
+			if (accessSourceLine != null)
+				unsyncAccessList.add(accessSourceLine);
 		}
 	}
 
@@ -108,7 +134,7 @@ public class FindInconsistentSync2 implements Detector {
 	 * Implementation
 	 * ---------------------------------------------------------------------- */
 
-	private void analyzeMethod(ClassContext classContext, Method method, Set<Method> lockedMethodSet)
+	private void analyzeMethod(final ClassContext classContext, final Method method, final Set<Method> lockedMethodSet)
 		throws CFGBuilderException, DataflowAnalysisException {
 
 		final InnerClassAccessMap icam = InnerClassAccessMap.instance();
@@ -124,24 +150,30 @@ public class FindInconsistentSync2 implements Detector {
 					Instruction ins = location.getHandle().getInstruction();
 					XField xfield = null;
 					boolean isWrite = false;
+					boolean isLocal = false;
 
 					if (ins instanceof FieldInstruction) {
 						FieldInstruction fins = (FieldInstruction) ins;
 						xfield = Lookup.findXField(fins, cpg);
 						isWrite = ins.getOpcode() == Constants.PUTFIELD;
+						isLocal = fins.getClassName(cpg).equals(classContext.getJavaClass().getClassName());
 					} else if (ins instanceof INVOKESTATIC) {
 						INVOKESTATIC inv = (INVOKESTATIC) ins;
 						InnerClassAccess access = icam.getInnerClassAccess(inv, cpg);
 						if (access != null && access.getMethodSignature().equals(inv.getSignature(cpg))) {
 							xfield = access.getField();
 							isWrite = !access.isLoad();
+							isLocal = false;
 						}
 					}
 
-					if (xfield != null && !xfield.isStatic()) {
-						instanceAccess(vnaDataflow.getFactAtLocation(location),
-									lockDataflow.getFactAtLocation(location),
-									xfield, ins, isWrite, cpg);
+					if (xfield != null) {
+						handleAccess(classContext, method,
+							vnaDataflow.getFactAtLocation(location),
+							!method.isStatic() ? vnaDataflow.getAnalysis().getThisValue() : null,
+							lockDataflow.getFactAtLocation(location),
+							xfield, location.getHandle(), isWrite, isLocal, cpg,
+							lockedMethodSet);
 					}
 					// FIXME: should we do something for static fields?
 				} catch (ClassNotFoundException e) {
@@ -151,24 +183,61 @@ public class FindInconsistentSync2 implements Detector {
 		});
 	}
 
-	private void instanceAccess(ValueNumberFrame frame, LockSet lockSet, XField xfield,
-								Instruction ins, boolean isWrite, ConstantPoolGen cpg)
+	/**
+	 * Examine a field access to determine whether it is locked or unlocked.
+	 * @param classContext the ClassContext for the class
+	 * @param method the method making the field access
+	 * @param frame the value numbers in the Java stack frame
+	 * @param thisValue the ValueNumber of the "this" reference
+	 * @param lockSet the set of locked objects
+	 * @param xfield the field being accessed
+	 * @param handle the instruction performing the access
+	 * @param isWrite true if the access is a store
+	 * @param isLocal true if the access is to an object of the same class
+	 *   as the method
+	 * @param cpg the ConstantPoolGen for the method
+	 * @param lockedMethodSet set of methods which appear to always be called
+	 *   from a locked context
+	 */
+	private void handleAccess(ClassContext classContext, Method method,
+								ValueNumberFrame frame, ValueNumber thisValue,
+								LockSet lockSet, XField xfield,
+								InstructionHandle handle, boolean isWrite, boolean isLocal, ConstantPoolGen cpg,
+								Set<Method> lockedMethodSet)
 		throws DataflowAnalysisException {
 
-		if (xfield.isPublic() || xfield.isVolatile() || xfield.isFinal())
+		// We only care about ordinary mutable nonpublic instance fields.
+		if (xfield.isStatic() || xfield.isPublic() || xfield.isVolatile() || xfield.isFinal())
 			return;
 
-		ValueNumber instance = frame.getInstance(ins, cpg);
-		boolean isLocked = lockSet.getLockCount(instance.getNumber()) > 0;
+		// Is the instance locked?
+		// We consider the access to be locked if either
+		//   - the object is explicitly locked, or
+		//   - the field is accessed through the "this" reference,
+		//     and the method is in the locked method set
+		ValueNumber instance = frame.getInstance(handle.getInstruction(), cpg);
+		boolean isLocked = lockSet.getLockCount(instance.getNumber()) > 0
+			|| (lockedMethodSet.contains(method) && thisValue != null && thisValue.equals(instance));
 
 		int kind = 0;
 		kind |= isLocked ? LOCKED : UNLOCKED;
 		kind |= isWrite ? WRITE : READ;
 
+		if (DEBUG) System.out.println();
+
 		FieldStats stats = getStats(xfield);
 		stats.addAccess(kind);
+
+		if (isLocked && isLocal)
+			stats.addLocalLock();
+
+		if (!isLocked)
+			stats.addUnsyncAccess(classContext, method, handle);
 	}
 
+	/**
+	 * Get the access statistics for given field.
+	 */
 	private FieldStats getStats(XField field) {
 		FieldStats stats = statMap.get(field);
 		if (stats == null) {
