@@ -93,6 +93,11 @@ public class BugInstance implements Comparable, XMLConvertible {
 		return type;
 	}
 
+	/** Get the BugPattern. */
+	public BugPattern getBugPattern() {
+		return I18N.instance().lookupBugPattern(getType());
+	}
+
 	/** Get the bug priority. */
 	public int getPriority() {
 		return priority;
