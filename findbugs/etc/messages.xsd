@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+
+	<xsd:complexType name="PluginType">
+		<xsd:sequence>
+			<xsd:element name="ShortDescription" type="xsd:string"/>
+			<xsd:element name="Details" type="xsd:string"/>
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:complexType name="DetectorType">
+		<xsd:sequence>
+			<xsd:element name="Details" type="xsd:string"/>
+		</xsd:sequence>
+		<xsd:attribute name="class" type="xsd:string"/>
+		<xsd:attribute name="disabled" type="xsd:boolean" use="optional"/>
+	</xsd:complexType>
+
+	<xsd:complexType name="BugPatternType">
+		<xsd:sequence>
+			<xsd:element name="ShortDescription" type="xsd:string"/>
+			<xsd:element name="LongDescription" type="xsd:string"/>
+			<xsd:element name="Details" type="xsd:string"/>
+		</xsd:sequence>
+		<xsd:attribute name="type" type="xsd:string"/>
+	</xsd:complexType>
+	
+	<xsd:complexType name="BugCodeType" mixed="true">
+		<xsd:attribute name="abbrev" type="xsd:string"/>
+	</xsd:complexType>
+
+	<xsd:complexType name="MessageCollectionType" mixed="true">
+		<xsd:sequence>
+			<xsd:element name="Plugin" type="PluginType"/>
+			<xsd:element name="Detector" type="DetectorType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="BugPattern" type="BugPatternType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="BugCode" type="BugCodeType" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:element name="MessageCollection" type="MessageCollectionType"/>
+
+</xsd:schema>
