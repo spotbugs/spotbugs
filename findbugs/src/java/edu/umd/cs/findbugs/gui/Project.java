@@ -33,6 +33,7 @@ public class Project {
         this.fileName = fileName;
 	jarList = new ArrayList();
 	srcDirList = new ArrayList();
+	numAnalysisRuns = 0;
     }
     
     /** Get the project filename. */
@@ -114,9 +115,10 @@ public class Project {
     
     /**
      * Get the number of the next analysis run.
+     * The runs are numbered starting at 1.
      */
     public int getNextAnalysisRun() {
-	return numAnalysisRuns++;
+	return ++numAnalysisRuns;
     }
     
     public String toString() { return fileName; }
