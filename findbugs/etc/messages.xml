@@ -795,6 +795,16 @@ This detector looks for bad casts of object references.
 ]]>
     </Details>
   </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.FindPuzzlers">
+    <Details>
+<![CDATA[
+<p> This detector problems looks for miscellaneous small errors
+mentioned by Joshua Bloch and Neal Gafter in
+their work on Programming Puzzlers.
+  </p>
+]]>
+    </Details>
+  </Detector>
 
   <Detector class="edu.umd.cs.findbugs.detect.FindBugsSummaryStats">
     <Details>
@@ -2001,8 +2011,8 @@ be confusing to users of this class.</p>
   </BugPattern>
 
   <BugPattern type="SF_SWITCH_FALLTHROUGH">
-  	<ShortDescription>A switch statement found where one case falls thru to the next case</ShortDescription>
-  	<LongDescription>A switch statement found in {1} where one case falls thru to the next case</LongDescription>
+  	<ShortDescription>Switch statement found where one case falls thru to the next case</ShortDescription>
+  	<LongDescription>Switch statement found in {1} where one case falls thru to the next case</LongDescription>
     <Details>
 <![CDATA[
   <p> This method contains a switch statement where one case branch will fall thru to the next case.
@@ -3300,6 +3310,33 @@ collection class.
 The code here uses a regular expression that is invalid according to the syntax
 for regular expressions. This statement throw a PatternSyntaxException when
 executed.
+</p>
+]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="DLS_OVERWRITTEN_INCREMENT">
+    <ShortDescription>Overwritten increment</ShortDescription>
+    <LongDescription>Overwritten increment in {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+The code performs an increment operation (e.g., <code>i++</code>) and then
+immediately overwrites it. For example, <code>i = i++</code> immediately
+overwrites the incremented value with the original value.
+</p>
+]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="ICAST_QUESTIONABLE_UNSIGNED_RIGHT_SHIFT">
+    <ShortDescription>Unsigned right shift cast to short/byte</ShortDescription>
+    <LongDescription>Unsigned right shift cast to short/byte in {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+The code performs an unsigned right shift, whose result is then 
+cast to a short or byte, which discards the upper bits of the result.
+Since the upper bits are discarded, there may be no difference between
+a signed and unsigned right shift (depending upon the size of the shift).
 </p>
 ]]>
     </Details>

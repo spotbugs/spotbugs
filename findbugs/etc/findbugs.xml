@@ -359,6 +359,10 @@
             speed="fast"
             reports="RE_BAD_SYNTAX_FOR_REGULAR_EXPRESSION"
 	    />
+  <Detector class="edu.umd.cs.findbugs.detect.FindPuzzlers"
+            speed="fast"
+            reports="DLS_OVERWRITTEN_INCREMENT,ICAST_QUESTIONABLE_UNSIGNED_RIGHT_SHIFT"
+	    />
   			
   <Detector class="edu.umd.cs.findbugs.detect.FindBugsSummaryStats" 
             speed="fast"
@@ -373,7 +377,7 @@
     experimental="true"/>
   <BugPattern abbrev="UI" type="UI_INHERITANCE_UNSAFE_GETRESOURCE" category="CORRECTNESS" 
     experimental="true"/>
-  <BugPattern abbrev="TEST" type="TESTING" category="CORRECTNESS" />
+  <BugPattern abbrev="TEST" type="TESTING" category="STYLE" />
   <BugPattern abbrev="AM" type="AM_CREATES_EMPTY_ZIP_FILE_ENTRY" category="CORRECTNESS" 
     experimental="true"/>
   <BugPattern abbrev="AM" type="AM_CREATES_EMPTY_JAR_FILE_ENTRY" category="CORRECTNESS" 
@@ -546,5 +550,7 @@
   <BugPattern abbrev="ICAST" type="ICAST_IDIV_CAST_TO_DOUBLE" category="CORRECTNESS"/>
   <BugPattern abbrev="ICAST" type="ICAST_INT_CAST_TO_DOUBLE_PASSED_TO_CEIL" category="CORRECTNESS"/>
   <BugPattern abbrev="BC" type="BC_BAD_CAST_TO_CONCRETE_COLLECTION" category="STYLE"/>
-  <BugPattern abbrev="RE" type="RE_BAD_SYNTAX_FOR_REGULAR_EXPRESSION" category="RE"/>
+  <BugPattern abbrev="RE" type="RE_BAD_SYNTAX_FOR_REGULAR_EXPRESSION" category="CORRECTNESS"/>
+  <BugPattern abbrev="DLS" type="DLS_OVERWRITTEN_INCREMENT" category="CORRECTNESS"/>
+  <BugPattern abbrev="ICAST" type="ICAST_QUESTIONABLE_UNSIGNED_RIGHT_SHIFT" category="STYLE"/>
 </FindbugsPlugin>
