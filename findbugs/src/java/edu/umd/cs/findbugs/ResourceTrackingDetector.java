@@ -66,18 +66,18 @@ public abstract class ResourceTrackingDetector<Resource> implements Detector {
 						BasicBlock basicBlock = location.getBasicBlock();
 						InstructionHandle handle = location.getHandle();
 
-						Resource resource = resourceTracker.isResourceCreation(basicBlock, handle, methodGen.getConstantPool());
-						if (resource != null) {
-							ResourceValueAnalysis<Resource> analysis =
-								new ResourceValueAnalysis<Resource>(methodGen, resourceTracker, resource, bugReporter);
-							Dataflow<ResourceValueFrame> dataflow = new Dataflow<ResourceValueFrame>(cfg, analysis);
-
-							try {
+						try {
+							Resource resource = resourceTracker.isResourceCreation(basicBlock, handle, methodGen.getConstantPool());
+							if (resource != null) {
+								ResourceValueAnalysis<Resource> analysis =
+									new ResourceValueAnalysis<Resource>(methodGen, resourceTracker, resource, bugReporter);
+								Dataflow<ResourceValueFrame> dataflow = new Dataflow<ResourceValueFrame>(cfg, analysis);
+	
 								dataflow.execute();
 								inspectResult(jclass, methodGen, cfg, dataflow, resource);
-							} catch (DataflowAnalysisException e) {
-								throw new AnalysisException("FindOpenResource caught exception: " + e.toString(), e);
 							}
+						} catch (DataflowAnalysisException e) {
+							throw new AnalysisException("FindOpenResource caught exception: " + e.toString(), e);
 						}
 					}
 				});
