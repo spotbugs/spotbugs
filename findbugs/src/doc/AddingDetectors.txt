@@ -1,5 +1,6 @@
 Adding Detectors to FindBugs
 May 12, 2003
+Updated June 6, 2003 (detector meta-information, cleanups)
 
 ===============
 1. Introduction
@@ -41,8 +42,8 @@ of the findbugs source distribution.
 
 <DetectorPlugin>
 
-  <Detector class="org.foobar.findbugs.FindUnreleasedLocks" />
-  <Detector class="org.foobar.findbugs.ExperimentalDetector" disabled="true" />
+  <Detector class="org.foobar.findbugs.FindUnreleasedLocks" speed="slow" />
+  <Detector class="org.foobar.findbugs.ExperimentalDetector" speed="fast" disabled="true" />
 
   <!-- More Detector elements would go here... -->
 
@@ -63,9 +64,18 @@ of the findbugs source distribution.
 
   <Detector> specifies a class which implements the edu.umd.cs.findbugs.Detector
   interface and has a constructor that takes a single parameter of type
-  edu.umd.cs.findbugs.BugReporter.  The optional "disabled" attribute, if
-  set to "true", means that the detector will not be used at runtime.
-  This is useful for detectors that aren't quite ready for prime time.
+  edu.umd.cs.findbugs.BugReporter.  This element has three possible attributes:
+
+    1. The required "class" attribute specifies the Detector class.
+
+    2. The optional "disabled" attribute, if set to "true", means
+       that by default, the detector will be disabled at runtime.
+       This is useful for detectors that aren't quite ready for prime time.
+
+    3. The required "speed" attribute supplies a value to be shown in the
+       "Settings->Configure Detectors" dialog.  It gives the user an idea of
+       how expensive the analysis will be to perform.  The value of this
+       attribute should be one of "fast", "moderate", or "slow".
 
   <BugPattern> specifies a kind of bug that will be reported.
   It has three required attributes:
@@ -91,16 +101,29 @@ of the findbugs source distribution.
 
 <MessageCollection>
 
+  <Detector class="org.foobar.findbugs.FindUnreleasedLocks" >
+    <Details>
+      <![CDATA[
+        <p> This detector looks for JSR-166 locks that are not released on all paths
+        out of a method.  Because it performs dataflow analysis, it is fairly slow.
+      ]]>
+    </Details>
+  </Detector>
+
+  <!-- More Detector nodes would go here... -->
+
   <BugPattern type="UBL_UNRELEASED_LOCK">
     <ShortDescription>Lock not released on all paths out of method</ShortDescription>
 
     <LongDescription>{1} does not release lock on all paths out of method</LongDescription>
 
     <Details>
-    A JSR-166 lock acquired in this method is not released on all paths
-    out of the method. This could result in a deadlock if another thread
-    tries to acquire the lock.  Generally, you should use a finally
-    block to ensure that acquired locks are always released.
+      <![CDATA[
+        <p> A JSR-166 lock acquired in this method is not released on all paths
+        out of the method. This could result in a deadlock if another thread
+        tries to acquire the lock.  Generally, you should use a finally
+        block to ensure that acquired locks are always released.
+      ]]>
     </Details>
   </BugPattern>
 
@@ -119,27 +142,37 @@ of the findbugs source distribution.
 
   <MessageCollection> is the top level element
 
+  <Detector> holds meta-information about a Detector in the plugin.
+  The required "class" attribute specifies the Detector class.
+  Detector elements much have the following child elements:
+
+    The <Details> child element has a brief HTML description of the Detector.
+    It should have HTML markup that would be valid in a BODY element.
+    It should be specified in a CDATA section so that the HTML
+    tags are not misinterpreted as XML.
+
   <BugPattern> holds all of the human-readable messages for the bug pattern
   identified by the "type" attribute.  The type corresponds to the
   type attribute of the BugPattern elements described in findbugs.xml.
+  BugPattern elements must have the following child elements:
 
-  <ShortDescription> this is used for when "View:Full Descriptions"
-  is turned off in the GUI, and it's also used as the title for 
-  descriptions in the Details window.
-
-  <LongDescription> this is used for when "View:Full Descriptions"
-  is turned on in the GUI, and for output using the command line UI.
-  The placeholders in the long description ({0}, {1}, etc.)
-  refer to BugAnnotations attached to the BugInstances reported by
-  the detector for this bug pattern.
-
-  <Details> this is the descriptive text to be used in the Details
-  window.  Note that HTML metacharacters '&', '<', and '>'
-  should be escaped as '&amp;', '&lt;', and '&gt;' respectively,
-  because we don't want XML to interpret the HTML tags.
-
-  <BugCode> is the text which describes the common characteristic of all
-  of the BugPatterns which share an abbreviation.  In the example above,
-  the abbreviation "UL" is for bugs in which a lock is not released.
-  The text of a BugCode element is shown for tree nodes in the GUI
-  which group bug instances by "bug type".
+    <ShortDescription> this is used for when "View->Full Descriptions"
+    is turned off in the GUI, and it's also used as the title for 
+    descriptions in the Details window.
+  
+    <LongDescription> this is used for when "View->Full Descriptions"
+    is turned on in the GUI, and for output using the command line UI.
+    The placeholders in the long description ({0}, {1}, etc.)
+    refer to BugAnnotations attached to the BugInstances reported by
+    the detector for this bug pattern.
+  
+    <Details> this is the descriptive text to be used in the Details
+    window.  It consists of HTML markup to appear in the BODY element of an HTML
+    document.  It should be specified in a CDATA section so that the HTML
+    tags are not misinterpreted as XML.
+  
+    <BugCode> is the text which describes the common characteristic of all
+    of the BugPatterns which share an abbreviation.  In the example above,
+    the abbreviation "UL" is for bugs in which a lock is not released.
+    The text of a BugCode element is shown for tree nodes in the GUI
+    which group bug instances by "bug type".
