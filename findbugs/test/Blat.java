@@ -17,6 +17,11 @@ public class Blat implements Runnable, java.util.Iterator, Serializable {
 		new Y().start();
 	}
 
+	public void xxx() {
+		Y y = new Y();
+		y.run();
+	}
+
 	public int greeb() { return yarg; }
 
 	public class Bleem{
