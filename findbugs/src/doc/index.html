@@ -51,13 +51,15 @@ compares several Java bug checkers, including FindBugs.
 
 <ul>
 <!-- new detectors -->
-<li> Extend Dm to look for .equals on arrays (Dave Brosius)
+<li> Extend dumb methods detector to look for calls to equals() on arrays (Dave Brosius)
 <li> New detector for violatile references to arrays (Bill Pugh)
 <li> New detector to find instanceof usage where inheritance can be determined statically (Dave Brosius)
 <li> New detector to find ResultSet.getXXX updateXXX calls using index 0 (Dave Brosius)
 <li> New detector to find empty zip or jar entries (Bill Pugh)
 
 <!-- feature enhancements -->
+<li> HTML output generation using built-in XSLT stylesheet or
+     user-defined stylesheet (David Hovemeyer)
 <li> Detector dialog columns are now sortable (Dave Brosius)
 <li> Allow URLs to be specified to analyze zip/jar files,
   local directories, and single classfiles (David Hovemeyer)
