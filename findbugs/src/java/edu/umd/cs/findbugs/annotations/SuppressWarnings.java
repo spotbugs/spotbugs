@@ -21,7 +21,9 @@ package edu.umd.cs.findbugs.annotations;
 import java.lang.annotation.*;
 import static java.lang.annotation.ElementType.*;
 
-@Target({TYPE, FIELD, METHOD, PARAMETER, CONSTRUCTOR, LOCAL_VARIABLE, PACKAGE})
+@Target({ElementType.TYPE, ElementType.FIELD, ElementType.METHOD,
+         ElementType.PARAMETER, ElementType.CONSTRUCTOR,
+         ElementType.LOCAL_VARIABLE, ElementType.PACKAGE})
 @Retention(RetentionPolicy.CLASS)
 public @interface SuppressWarnings {
     /**

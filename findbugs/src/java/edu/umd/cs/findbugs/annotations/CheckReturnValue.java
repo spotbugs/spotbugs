@@ -22,7 +22,7 @@ import java.lang.annotation.*;
 import static java.lang.annotation.ElementType.*;
 
 @Documented
-@Target({METHOD, CONSTRUCTOR})
+@Target({ElementType.METHOD, ElementType.CONSTRUCTOR})
 @Retention(RetentionPolicy.CLASS)
 /**
  * This annotation is used to denote a method whose return value
