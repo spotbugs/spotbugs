@@ -232,6 +232,27 @@ abstract public class DismantleBytecode extends PreorderVisitor implements Const
 	public int getPC() {
 		return PC;
 	}
+	
+	/**
+	 * Return whether or not given opcode is a branch instruction.
+	 * 
+	 * @param opcode the opcode
+	 * @return true if instruction is a branch, false if not
+	 */
+	public static boolean isBranch(int opcode) {
+		short[] operands = MEANING_OF_OPERANDS[opcode];
+		return operands.length > 0 && operands[0] == M_BR;
+	}
+	
+	/**
+	 * Return whether or not given opcode is a switch instruction.
+	 * 
+	 * @param opcode the opcode
+	 * @return true if instruction is a switch, false if not
+	 */
+	public static boolean isSwitch(int opcode) {
+		return opcode == LOOKUPSWITCH || opcode == TABLESWITCH;
+	}
 
 	@SuppressWarnings("EI")
 	public int[] getSwitchOffsets() {
