@@ -44,17 +44,10 @@ public class ValueNumberAnalysis extends ForwardDataflowAnalysis<ValueNumberFram
 	}
 
 	public void initEntryFact(ValueNumberFrame result) {
-		int maxNumber = 0;
-
 		// At entry to the method, each local has (as far as we know) a unique value.
 		int numSlots = result.getNumSlots();
 		for (int i = 0; i < numSlots; ++i)
-			result.setValue(i, factory.getValueNumber(maxNumber++));
-
-		// Set the max number in the frame.
-		// From there it will propagate to every reachable part
-		// of the CFG.
-		result.setNextValueNumber(maxNumber);
+			result.setValue(i, factory.createFreshValue());
 	}
 
 	public void initResultFact(ValueNumberFrame result) {
@@ -86,7 +79,7 @@ public class ValueNumberAnalysis extends ForwardDataflowAnalysis<ValueNumberFram
 			ValueNumberFrame tmpFact = createFact();
 			tmpFact.copyFrom(fact);
 			tmpFact.clearStack();
-			tmpFact.pushValue(tmpFact.createFreshValue());
+			tmpFact.pushValue(factory.createFreshValue());
 			fact = tmpFact;
 		}
 		result.mergeWith(fact);

@@ -33,23 +33,12 @@ public class ValueNumberFactory {
 	/** Map of numbers to the ValueNumber instances. */
 	private final HashMap<Integer, ValueNumber> instanceMap = new HashMap<Integer, ValueNumber>();
 
-	/**
-	 * Get the ValueNumber instance for given number.
-	 * The number must be non-negative.
-	 * @param number the number
-	 * @return the ValueNumber instance
-	 */
-	public ValueNumber getValueNumber(int number) {
-		if (number < 0)
-			throw new IllegalArgumentException("Bad value number: " + number);
+	/** Next number to use. */
+	private int maxValueNumber = 0;
 
-		Integer key = new Integer(number);
-		ValueNumber valueNumber = instanceMap.get(key);
-		if (valueNumber == null) {
-			valueNumber = new ValueNumber(number);
-			instanceMap.put(key, valueNumber);
-		}
-		return valueNumber;
+	/** Create a fresh (unique) value number. */
+	public ValueNumber createFreshValue() {
+		return new ValueNumber(maxValueNumber++);
 	}
 
 	/** Return the instance of the special TOP value. */

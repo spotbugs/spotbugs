@@ -30,16 +30,10 @@ package edu.umd.cs.daveho.ba;
 public class ValueNumberFrame extends Frame<ValueNumber> {
 
 	private ValueNumberFactory factory;
-	private int nextValueNumber;
 
 	public ValueNumberFrame(int numLocals, ValueNumberFactory factory) {
 		super(numLocals);
 		this.factory = factory;
-		nextValueNumber = 0;
-	}
-
-	public void setNextValueNumber(int nextValueNumber) {
-		this.nextValueNumber = nextValueNumber;
 	}
 
 	public ValueNumber mergeValues(ValueNumber a, ValueNumber b) {
@@ -49,23 +43,4 @@ public class ValueNumberFrame extends Frame<ValueNumber> {
 	public ValueNumber getDefaultValue() {
 		return factory.topValue();
 	}
-
-	public void copyFrom(Frame<ValueNumber> other_) {
-		ValueNumberFrame other = (ValueNumberFrame) other_;
-		nextValueNumber = other.nextValueNumber;
-		super.copyFrom(other);
-	}
-
-	public void mergeWith(Frame<ValueNumber> other_) throws DataflowAnalysisException {
-		ValueNumberFrame other = (ValueNumberFrame) other_;
-		nextValueNumber = Math.max(nextValueNumber, other.nextValueNumber);
-		super.mergeWith(other);
-	}
-
-	public ValueNumber createFreshValue() {
-		return factory.getValueNumber(nextValueNumber++);
-	}
-
 }
-
-// vim:ts=4
