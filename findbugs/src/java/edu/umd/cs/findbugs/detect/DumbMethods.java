@@ -97,7 +97,7 @@ public class DumbMethods extends BytecodeScanningDetector implements   Constants
 				&& getClassConstantOperand().equals("java/lang/System")
 				&& getNameConstantOperand().equals("currentTimeMillis"))
 			sawCurrentTimeMillis = true;
-	if ((seen == INVOKEVIRTUAL)
+	if (false && (seen == INVOKEVIRTUAL)
 				&& sawLDCEmptyString
 				&& getNameConstantOperand().equals("equals"))
 		bugReporter.reportBug(new BugInstance("DM_STRING_EMPTY_EQUALS", LOW_PRIORITY)
