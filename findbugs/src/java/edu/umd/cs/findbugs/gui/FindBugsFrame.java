@@ -240,6 +240,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
         exitItem = new javax.swing.JMenuItem();
         viewMenu = new javax.swing.JMenu();
         viewConsoleItem = new javax.swing.JCheckBoxMenuItem();
+        helpMenu = new javax.swing.JMenu();
+        aboutItem = new javax.swing.JMenuItem();
 
         setTitle("FindBugs");
         addWindowListener(new java.awt.event.WindowAdapter() {
@@ -612,10 +614,32 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
         jMenuBar1.add(viewMenu);
 
+        helpMenu.setMnemonic('H');
+        helpMenu.setText("Help");
+        helpMenu.setFont(new java.awt.Font("Dialog", 0, 12));
+        aboutItem.setFont(new java.awt.Font("Dialog", 0, 12));
+        aboutItem.setMnemonic('A');
+        aboutItem.setText("About");
+        aboutItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                aboutItemActionPerformed(evt);
+            }
+        });
+
+        helpMenu.add(aboutItem);
+
+        jMenuBar1.add(helpMenu);
+
         setJMenuBar(jMenuBar1);
 
         pack();
     }//GEN-END:initComponents
+
+    private void aboutItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aboutItemActionPerformed
+	AboutDialog dialog = new AboutDialog(this, true);
+	dialog.setLocationRelativeTo(null); // center the dialog
+	dialog.show();
+    }//GEN-LAST:event_aboutItemActionPerformed
     
     /**
      * A fudge value required in our hack to get the REAL maximum
@@ -1114,6 +1138,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
     private javax.swing.JMenuItem openProjectItem;
     private javax.swing.JList jarFileList;
     private javax.swing.JLabel jarFileLabel;
+    private javax.swing.JMenuItem aboutItem;
     private javax.swing.JButton addSourceDirButton;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JButton findBugsButton;
@@ -1130,6 +1155,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JPanel reportPanel;
     private javax.swing.JPanel editProjectPanel;
+    private javax.swing.JMenu helpMenu;
     private javax.swing.JButton browseSrcDirButton;
     private javax.swing.JTextField srcDirTextField;
     private javax.swing.JLabel sourceDirListLabel;
