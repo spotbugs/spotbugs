@@ -1041,7 +1041,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
             groupByTabbedPane.setTitleAt(0, L10N.getLocalString( "dlg.byclass_tab", "By Class"));
             groupByTabbedPane.setTitleAt(1, L10N.getLocalString( "dlg.bypackage_tab", "By Package"));
             groupByTabbedPane.setTitleAt(2, L10N.getLocalString( "dlg.bybugtype_tab", "By Bug Type"));
-            groupByTabbedPane.setTitleAt(2, L10N.getLocalString( "dlg.summary_tab", "Summary"));
+            groupByTabbedPane.setTitleAt(3, L10N.getLocalString( "dlg.summary_tab", "Summary"));
             bugDetailsTabbedPane.setTitleAt(0, L10N.getLocalString( "dlg.details_tab", "Details"));
             bugDetailsTabbedPane.setTitleAt(1, L10N.getLocalString( "dlg.sourcecode_tab", "Source Code"));
             bugDetailsTabbedPane.setTitleAt(2, L10N.getLocalString( "dlg.annotations_tab", "Annotations"));
