@@ -64,7 +64,17 @@ public class IsNullValue {
 		new IsNullValue(NSP_DNR)
 	};
 
-	private int kind;
+	private static IsNullValue[] exceptionInstanceList = {
+		new IsNullValue(NULL | EXCEPTION),
+		new IsNullValue(CHECKED_NULL | EXCEPTION),
+		new IsNullValue(NN | EXCEPTION),
+		new IsNullValue(CHECKED_NN | EXCEPTION),
+		new IsNullValue(NSP | EXCEPTION),
+		new IsNullValue(NN_DNR | EXCEPTION),
+		new IsNullValue(NSP_DNR | EXCEPTION)
+	};
+
+	private final int kind;
 
 	private IsNullValue(int kind) {
 		this.kind = kind;
@@ -100,20 +110,14 @@ public class IsNullValue {
 	}
 
 	private IsNullValue toBaseValue() {
-		if (!isException())
-			return this;
-		else
-			return instanceList[getBaseKind()];
+		return instanceList[getBaseKind()];
 	}
 
 	/**
 	 * Convert to an exception path value.
 	 */
 	public IsNullValue toExceptionValue() {
-		if (isException())
-			return this;
-		else
-			return new IsNullValue(kind | EXCEPTION);
+		return exceptionInstanceList[getBaseKind()];
 	}
 
 	/** Get the instance representing values that are definitely null. */
