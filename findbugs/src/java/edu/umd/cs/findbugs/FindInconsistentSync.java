@@ -192,7 +192,7 @@ public class FindInconsistentSync extends CFGBuildingDetector {
 			}
 
 		} catch (DataflowAnalysisException e) {
-			throw new AnalysisException(e.getMessage());
+			throw new AnalysisException(e.toString());
 		}
 	}
 
@@ -225,7 +225,7 @@ public class FindInconsistentSync extends CFGBuildingDetector {
 			dataflow = getLockCountDataflow(cfg, methodGen);
 			visitCFGInstructions(cfg, methodGen);
 		} catch (DataflowAnalysisException e) {
-			throw new AnalysisException(e.getMessage());
+			throw new AnalysisException(e.toString());
 		}
 	}
 
@@ -304,7 +304,7 @@ public class FindInconsistentSync extends CFGBuildingDetector {
 				}
 			}
 		} catch (DataflowAnalysisException e) {
-			throw new AnalysisException(e.getMessage());
+			throw new AnalysisException(e.toString());
 		}
 	}
 

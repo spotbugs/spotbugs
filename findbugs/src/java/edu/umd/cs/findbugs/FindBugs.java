@@ -83,7 +83,7 @@ public class FindBugs implements Constants2
 				new Object[] {bugReporter});
 	} catch (Exception e) {
 		e.printStackTrace();
-		throw new RuntimeException(e.getMessage());
+		throw new RuntimeException(e.toString());
 		}
 	}
   public static void registerDetector(String detectorName, Class detector)  {
@@ -230,7 +230,7 @@ public class FindBugs implements Constants2
 		try {
 			detectors[i].visitClassContext(classContext);
 		} catch (AnalysisException e) {
-			bugReporter.logError("Analysis exception: " + e.getMessage());
+			bugReporter.logError("Analysis exception: " + e.toString());
 		}
 	}
 
