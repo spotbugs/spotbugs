@@ -42,6 +42,7 @@ public class StartInConstructor extends BytecodeScanningDetector implements   Co
 				&& sigConstant.equals("()V"))
 		bugReporter.reportBug(new BugInstance("SC_START_IN_CTOR", NORMAL_PRIORITY)
 			.addClassAndMethod(this)
-			.addCalledMethod(this));
+			.addCalledMethod(this)
+			.addSourceLine(this));
 	}
 }
