@@ -79,20 +79,20 @@
 		}
 		</style>
 		<script type="text/javascript">
-			// <![CDATA[
 			function toggleRow(elid) {
 				if (document.getElementById) {
 					element = document.getElementById(elid);
-					if (element.style.display == 'none') {
-						element.style.display = 'table-row';
-						//window.status = 'Toggle on!';
-					} else {
-						element.style.display = 'none';
-						//window.status = 'Toggle off!';
+					if (element) {
+						if (element.style.display == 'none') {
+							element.style.display = 'block';
+							//window.status = 'Toggle on!';
+						} else {
+							element.style.display = 'none';
+							//window.status = 'Toggle off!';
+						}
 					}
 				}
 			}
-			// ]]>
 		</script>
 	</head>
 	<body>
@@ -163,17 +163,21 @@
 	</tr>
 
 	<!-- Add bug annotation elements: Class, Method, Field, SourceLine, Field -->
-	<tr class="detailrow{position() mod 2}" id="{$warningId}" style="display: none;">
+	<tr class="detailrow{position() mod 2}">
 		<td/>
 		<td colspan="2">
-			<table>
-				<tr><td><a href="#{@type}">Bug type <xsl:value-of select="@type"/> (click for details)</a></td></tr>
-				<xsl:for-each select="./*/Message">
+			<p id="{$warningId}" style="display: none;">
+				<table>
 					<tr>
-						<td><xsl:value-of select="text()"/></td>
+						<td><a href="#{@type}">Bug type <xsl:value-of select="@type"/> (click for details)</a></td>
 					</tr>
-				</xsl:for-each>
-			</table>
+					<xsl:for-each select="./*/Message">
+						<tr>
+							<td><xsl:value-of select="text()"/></td>
+						</tr>
+					</xsl:for-each>
+				</table>
+			</p>
 		</td>
 	</tr>
 </xsl:template>
@@ -190,7 +194,7 @@
 
 	<h2><a name="{$sectionId}"><xsl:value-of select="$sectionTitle"/></a></h2>
 	<p>
-		<table class="warningtable" width="100%">
+		<table class="warningtable" width="100%" cellspacing="0">
 			<xsl:copy-of select="$bugTableHeader"/>
 			<xsl:apply-templates select="$warningSet">
 				<xsl:sort select="@abbrev"/>
