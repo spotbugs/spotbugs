@@ -1,6 +1,7 @@
 public class RV extends Thread {
 	public static void main(String[] argv) {
 		String s = new String("Hello");
+		s = s.trim();
 		s.trim();
 		new RV();
 	}
