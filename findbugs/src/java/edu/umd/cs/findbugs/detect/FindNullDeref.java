@@ -302,7 +302,7 @@ public class FindNullDeref implements Detector {
 		String sourceFile = classContext.getJavaClass().getSourceFileName();
 		MethodGen methodGen = classContext.getMethodGen(method);
 
-		bugReporter.reportBug(new BugInstance("UCF_USELESS_NULL_REF_COMPARISON", NORMAL_PRIORITY)
+		bugReporter.reportBug(new BugInstance("RCN_REDUNDANT_COMPARISON_TO_NULL", NORMAL_PRIORITY)
 			.addClassAndMethod(methodGen, sourceFile)
 			.addSourceLine(methodGen, sourceFile, handle));
 	}

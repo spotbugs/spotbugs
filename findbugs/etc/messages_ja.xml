@@ -1238,6 +1238,8 @@ defined in an interface references a mutable
 This will lead to a <code>NullPointerException</code> when the code is executed.&nbsp;
 Note that because FindBugs currently does not prune infeasible exception paths,
 this may be a false warning.
+<p> Also note that FindBugs considers the default case of a switch statement to
+be an exception path, since the default case is often infeasible.
 ]]>
     </Details>
   </BugPattern>
@@ -1263,6 +1265,8 @@ dereferenced here.&nbsp; This may lead to a <code>NullPointerException</code>
 when the code is executed.&nbsp;
 Note that because FindBugs currently does not prune infeasible exception paths,
 this may be a false warning.
+<p> Also note that FindBugs considers the default case of a switch statement to
+be an exception path, since the default case is often infeasible.
 ]]>
     </Details>
   </BugPattern>
@@ -1366,19 +1370,22 @@ body of an <code>if</code> statement, e.g.:
     </Details>
   </BugPattern>
 
-  <BugPattern type="UCF_USELESS_NULL_REF_COMPARISON">
-    <ShortDescription>Redundant comparison of reference values</ShortDescription>
-    <LongDescription>Redundant comparison of reference values in {1}</LongDescription>
+  <BugPattern type="RCN_REDUNDANT_COMPARISON_TO_NULL">
+    <ShortDescription>Redundant comparison to null</ShortDescription>
+    <LongDescription>Redundant comparison to null in {1}</LongDescription>
     <Details>
 <![CDATA[
-<p> This method contains a redundant comparison of reference values. Two
-types of redundant comparison are reported:
+<p> This method contains a redundant comparison of a reference value
+to null. Two types of redundant comparison are reported:
 <ul>
 <li> Both values compared are definitely null
 <li> One value is definitely null and the other is definitely not null
 </ul>
 In either case, the result of the comparison will always be the same at
 runtime.  This is likely to inidicate a logic error in the method.
+Often, it means that the reference was dereferenced first, and then
+tested for null; this can happen because a method was changed without
+the programmer realizing that the dereferenced value could be null.
 ]]>
     </Details>
   </BugPattern>
@@ -1527,6 +1534,7 @@ Bug codes
   <BugCode abbrev="OS">Stream not closed on all paths</BugCode>
   <BugCode abbrev="PZLA" >Prefer zero length arrays to null to indicate no results</BugCode>
   <BugCode abbrev="UCF">Useless control flow</BugCode>
+  <BugCode abbrev="RCN">Redundant comparison to null</BugCode>
   <BugCode abbrev="UL">Lock not released on all paths</BugCode>
   <BugCode abbrev="RC">Suspicious reference comparison</BugCode>
   <BugCode abbrev="MWN">Mismatched wait() or notify()</BugCode>
