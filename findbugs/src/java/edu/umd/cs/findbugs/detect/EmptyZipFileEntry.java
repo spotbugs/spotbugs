@@ -59,12 +59,13 @@ public class EmptyZipFileEntry extends BytecodeScanningDetector implements Const
 			&& getClassConstantOperand()
 				.equals(streamType) )
                         bugReporter.reportBug(new BugInstance(
+                        	this,
                         	streamType.equals("java/util/zip/ZipOutputStream") ?
 								"AM_CREATES_EMPTY_ZIP_FILE_ENTRY" :
 								"AM_CREATES_EMPTY_JAR_FILE_ENTRY", 
-								NORMAL_PRIORITY)
-                                .addClassAndMethod(this)
-                                .addSourceLine(this));
+							NORMAL_PRIORITY)
+                            .addClassAndMethod(this)
+                            .addSourceLine(this));
 
 			}
 	

@@ -233,7 +233,7 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
 			}
 
 			String sourceFile = javaClass.getSourceFileName();
-			bugReporter.reportBug(new BugInstance(bugType, priority)
+			bugReporter.reportBug(new BugInstance(this, bugType, priority)
 			        .addClassAndMethod(methodGen, sourceFile)
 			        .addSourceLine(methodGen, sourceFile, resource.getLocation().getHandle()));
 		}

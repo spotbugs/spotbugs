@@ -442,6 +442,8 @@ public class FindBugs implements Constants2, ExitCodes {
 			addOption("-visitors", "v1[,v2...]", "run only named visitors");
 			addOption("-omitVisitors", "v1[,v2...]", "omit named visitors");
 			addOption("-chooseVisitors", "+v1,-v2,...", "selectively enable/disable detectors");
+			addOption("-adjustPriority", "v1=(raise|lower)[,...]",
+					"raise/lower priority of warnings for given visitor(s)");
 			addOption("-bugCategories", "cat1[,cat2...]", "only report bugs in given categories");
 			addOption("-onlyAnalyze", "classes/packages", "only analyze given classes and packages");
 			addOption("-exclude", "filter file", "exclude bugs matching given filter");
@@ -560,6 +562,32 @@ public class FindBugs implements Constants2, ExitCodes {
 						factory.setEnabled(true);
 					else
 						factory.setEnabled(false);
+				}
+			} else if (option.equals("-adjustPriority")) {
+				// Selectively raise or lower the priority of warnings
+				// produced by specified detectors.
+				
+				StringTokenizer tok = new StringTokenizer(argument, ",");
+				while (tok.hasMoreTokens()) {
+					String token = tok.nextToken();
+					int eq = token.indexOf('=');
+					if (eq < 0)
+						throw new IllegalArgumentException("Illegal priority adjustment: " + token);
+
+					String visitorName = token.substring(0, eq);
+
+					DetectorFactory factory = DetectorFactoryCollection.instance()
+						.getFactory(visitorName);
+					if (factory == null)
+						throw new IllegalArgumentException("Unknown detector: " + visitorName);
+					
+					String adjustment = token.substring(eq + 1);
+					if (!(adjustment.equals("raise") || adjustment.equals("lower")))
+						throw new IllegalArgumentException("Illegal priority adjustment value: " +
+								adjustment);
+					
+					// Recall that lower values are higher priorities
+					factory.setPriorityAdjustment(adjustment.equals("raise") ? -1 : +1);
 				}
 			} else if (option.equals("-bugCategories")) {
 				this.bugCategorySet = handleBugCategories(argument);

@@ -161,7 +161,7 @@ public class StringConcatenation extends BytecodeScanningDetector implements Con
 			if (seen == GOTO
 			        && (getPC() - getBranchTarget()) < 300
 			        && getBranchTarget() < createPC) {
-				bugReporter.reportBug(new BugInstance("SBSC_USE_STRINGBUFFER_CONCATENATION", NORMAL_PRIORITY)
+				bugReporter.reportBug(new BugInstance(this, "SBSC_USE_STRINGBUFFER_CONCATENATION", NORMAL_PRIORITY)
 				        .addClassAndMethod(this)
 				        .addSourceLine(this, createPC));
 				// System.out.println("SBSC spread: " + (getPC() - getBranchTarget()));

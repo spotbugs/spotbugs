@@ -46,11 +46,11 @@ public class WaitInLoop extends BytecodeScanningDetector implements Constants2 {
 		earliestJump = 9999999;
 		super.visit(obj);
 		if (sawWait && waitAt < earliestJump)
-			bugReporter.reportBug(new BugInstance("WA_NOT_IN_LOOP", waitHasTimeout ? LOW_PRIORITY : NORMAL_PRIORITY)
+			bugReporter.reportBug(new BugInstance(this, "WA_NOT_IN_LOOP", waitHasTimeout ? LOW_PRIORITY : NORMAL_PRIORITY)
 			        .addClassAndMethod(this)
 			        .addSourceLine(this, waitAt));
 		if (sawNotify)
-			bugReporter.reportBug(new BugInstance("NO_NOTIFY_NOT_NOTIFYALL", LOW_PRIORITY)
+			bugReporter.reportBug(new BugInstance(this, "NO_NOTIFY_NOT_NOTIFYALL", LOW_PRIORITY)
 			        .addClassAndMethod(this)
 			        .addSourceLine(this, notifyPC));
 	}

@@ -477,7 +477,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 				if (priority <= LOW_PRIORITY) {
 					String sourceFile = jclass.getSourceFileName();
 					BugInstance instance =
-					        new BugInstance("ES_COMPARING_STRINGS_WITH_EQ", priority)
+					        new BugInstance(this, "ES_COMPARING_STRINGS_WITH_EQ", priority)
 					        .addClassAndMethod(methodGen, sourceFile)
 					        .addSourceLine(methodGen, sourceFile, handle)
 					        .addClass("java.lang.String").describe("CLASS_REFTYPE");
@@ -490,7 +490,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 
 			} else if (suspiciousSet.contains(lhs) && suspiciousSet.contains(rhs)) {
 				String sourceFile = jclass.getSourceFileName();
-				BugInstance instance = new BugInstance("RC_REF_COMPARISON", NORMAL_PRIORITY)
+				BugInstance instance = new BugInstance(this, "RC_REF_COMPARISON", NORMAL_PRIORITY)
 				        .addClassAndMethod(methodGen, sourceFile)
 				        .addSourceLine(methodGen, sourceFile, handle)
 				        .addClass(lhs).describe("CLASS_REFTYPE");
@@ -527,7 +527,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 		if (!(lhsType_ instanceof ReferenceType) || !(rhsType_ instanceof ReferenceType)) {
 			if (rhsType_.getType() == T_NULL) {
 				// A literal null value was passed directly to equals().
-				bugReporter.reportBug(new BugInstance("EC_NULL_ARG", NORMAL_PRIORITY)
+				bugReporter.reportBug(new BugInstance(this, "EC_NULL_ARG", NORMAL_PRIORITY)
 				        .addClassAndMethod(methodGen, sourceFile)
 				        .addSourceLine(methodGen, sourceFile, location.getHandle()));
 			} else if (lhsType_.getType() == T_NULL) {
@@ -582,7 +582,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 		}
 
 		if (priority <= LOW_PRIORITY) {
-			bugReporter.reportBug(new BugInstance(bugType, priority)
+			bugReporter.reportBug(new BugInstance(this, bugType, priority)
 			        .addClassAndMethod(methodGen, sourceFile)
 			        .addSourceLine(methodGen, sourceFile, location.getHandle())
 			        .addClass(lhsType.getClassName()).describe("CLASS_REFTYPE")

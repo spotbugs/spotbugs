@@ -55,7 +55,7 @@ public class FindUnsyncGet extends BytecodeScanningDetector implements Constants
 			MethodAnnotation getMethod = getMethods.get(propName);
 			MethodAnnotation setMethod = setMethods.get(propName);
 
-			bugReporter.reportBug(new BugInstance("UG_SYNC_SET_UNSYNC_GET", NORMAL_PRIORITY)
+			bugReporter.reportBug(new BugInstance(this, "UG_SYNC_SET_UNSYNC_GET", NORMAL_PRIORITY)
 			        .addClass(prevClassName)
 			        .addMethod(getMethod)
 			        .addMethod(setMethod));

@@ -89,7 +89,7 @@ public class FindLocalSelfAssignment implements Detector {
 				MethodGen methodGen = classContext.getMethodGen(method);
 				String sourceFile = javaClass.getSourceFileName();
 
-				bugReporter.reportBug(new BugInstance("SA_LOCAL_SELF_ASSIGNMENT", NORMAL_PRIORITY)
+				bugReporter.reportBug(new BugInstance(this, "SA_LOCAL_SELF_ASSIGNMENT", NORMAL_PRIORITY)
 				        .addClass(javaClass)
 				        .addMethod(methodGen, sourceFile)
 				        .addSourceLine(methodGen, sourceFile, handle));

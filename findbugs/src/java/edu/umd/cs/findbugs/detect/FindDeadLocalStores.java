@@ -154,7 +154,7 @@ public class FindDeadLocalStores implements Detector {
 				continue;
 
 			// Report the bug
-			BugInstance bugInstance = new BugInstance("DLS_DEAD_LOCAL_STORE", NORMAL_PRIORITY)
+			BugInstance bugInstance = new BugInstance(this, "DLS_DEAD_LOCAL_STORE", NORMAL_PRIORITY)
 				.addClassAndMethod(methodGen, javaClass.getSourceFileName())
 				.addSourceLine(methodGen, javaClass.getSourceFileName(), location.getHandle());
 

@@ -264,7 +264,7 @@ public class DroppedException extends PreorderVisitor implements Detector, Const
 
 				String key = (exitInTryBlock ? "mightDrop," : "mightIgnore,") + getFullyQualifiedMethodName() + "," + c;
 				if (reported.add(key)) {
-					BugInstance bugInstance = new BugInstance(exitInTryBlock ? "DE_MIGHT_DROP" : "DE_MIGHT_IGNORE",
+					BugInstance bugInstance = new BugInstance(this, exitInTryBlock ? "DE_MIGHT_DROP" : "DE_MIGHT_IGNORE",
 					        priority)
 					        .addClassAndMethod(this);
 

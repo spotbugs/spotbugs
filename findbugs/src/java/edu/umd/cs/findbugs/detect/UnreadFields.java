@@ -180,7 +180,7 @@ public class UnreadFields extends BytecodeScanningDetector implements Constants2
 			String fieldName = f.getFieldName();
 			String className = f.getClassName();
 			if (!superWrittenFields.contains(fieldName))
-				bugReporter.reportBug(new BugInstance("UWF_UNWRITTEN_FIELD", NORMAL_PRIORITY)
+				bugReporter.reportBug(new BugInstance(this, "UWF_UNWRITTEN_FIELD", NORMAL_PRIORITY)
 				        .addClass(className)
 				        .addField(f));
 		}
@@ -204,17 +204,17 @@ public class UnreadFields extends BytecodeScanningDetector implements Constants2
 			        && !fieldName.startsWith("this+")
 			) {
 				if (constantFields.contains(f))
-					bugReporter.reportBug(new BugInstance("SS_SHOULD_BE_STATIC", NORMAL_PRIORITY)
+					bugReporter.reportBug(new BugInstance(this, "SS_SHOULD_BE_STATIC", NORMAL_PRIORITY)
 					        .addClass(className)
 					        .addField(f));
 				else if (fieldsOfSerializableOrNativeClassed.contains(f)) {
 					// ignore it
 				} else if (!writtenFields.contains(f) && !superWrittenFields.contains(f.getFieldName()))
-					bugReporter.reportBug(new BugInstance("UUF_UNUSED_FIELD", NORMAL_PRIORITY)
+					bugReporter.reportBug(new BugInstance(this, "UUF_UNUSED_FIELD", NORMAL_PRIORITY)
 					        .addClass(className)
 					        .addField(f));
 				else
-					bugReporter.reportBug(new BugInstance("URF_UNREAD_FIELD", NORMAL_PRIORITY)
+					bugReporter.reportBug(new BugInstance(this, "URF_UNREAD_FIELD", NORMAL_PRIORITY)
 					        .addClass(className)
 					        .addField(f));
 			} else if (!innerClassCannotBeStatic.contains(className)) {
@@ -236,7 +236,7 @@ public class UnreadFields extends BytecodeScanningDetector implements Constants2
 					else if (!easyChange)
 						bug = "SIC_INNER_SHOULD_BE_STATIC_NEEDS_THIS";
 
-					bugReporter.reportBug(new BugInstance(bug, priority)
+					bugReporter.reportBug(new BugInstance(this, bug, priority)
 					        .addClass(className));
 				}
 			}

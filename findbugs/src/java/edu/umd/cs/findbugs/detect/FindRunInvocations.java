@@ -60,7 +60,7 @@ public class FindRunInvocations extends BytecodeScanningDetector implements Cons
 				alreadySawStart = true;
 			else if (getNameConstantOperand().equals("run"))
 				bugReporter
-				        .reportBug(new BugInstance("RU_INVOKE_RUN", NORMAL_PRIORITY)
+				        .reportBug(new BugInstance(this, "RU_INVOKE_RUN", NORMAL_PRIORITY)
 				        .addClassAndMethod(this)
 				        .addSourceLine(this));
 		}

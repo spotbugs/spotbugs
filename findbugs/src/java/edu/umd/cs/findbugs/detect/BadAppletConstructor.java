@@ -76,7 +76,7 @@ public class BadAppletConstructor extends BytecodeScanningDetector implements Co
 			if (((method.equals("getDocumentBase") || method.equals("getCodeBase")) && signature.equals("()Ljava/net/URL;"))
 			||  (method.equals("getAppletContext") &&  signature.equals("()Ljava/applet/AppletContext;"))
 			||  (method.equals("getParameter") && signature.equals("(Ljava/lang/String;)Ljava/lang/String;")))
-				bugReporter.reportBug(new BugInstance("BAC_BAD_APPLET_CONSTRUCTOR", NORMAL_PRIORITY)
+				bugReporter.reportBug(new BugInstance(this, "BAC_BAD_APPLET_CONSTRUCTOR", NORMAL_PRIORITY)
 				    .addClassAndMethod(this)
 				    .addSourceLine(this));
 		}

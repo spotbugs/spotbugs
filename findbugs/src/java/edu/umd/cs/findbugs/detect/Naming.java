@@ -111,7 +111,7 @@ public class Naming extends PreorderVisitor implements Detector, Constants2 {
 					MyMethod m3 = new MyMethod(m.clazz, m2.methodName, m.methodSig);
 					boolean r = others.contains(m3);
 					if (r) continue;
-					bugReporter.reportBug(new BugInstance("NM_VERY_CONFUSING", HIGH_PRIORITY)
+					bugReporter.reportBug(new BugInstance(this, "NM_VERY_CONFUSING", HIGH_PRIORITY)
 					        .addClass(m.getClassName())
 					        .addMethod(m.getClassName(), m.methodName, m.methodSig)
 					        .addClass(m2.getClassName())
@@ -128,7 +128,7 @@ public class Naming extends PreorderVisitor implements Detector, Constants2 {
 		for (Iterator<MyMethod> i = others.iterator(); i.hasNext();) {
 			MyMethod m2 = i.next();
 			if (m.confusingMethodNames(m2)) {
-				bugReporter.reportBug(new BugInstance("NM_CONFUSING", LOW_PRIORITY)
+				bugReporter.reportBug(new BugInstance(this, "NM_CONFUSING", LOW_PRIORITY)
 				        .addClass(m.getClassName())
 				        .addMethod(m.getClassName(), m.methodName, m.methodSig)
 				        .addClass(m2.getClassName())
@@ -186,7 +186,7 @@ public class Naming extends PreorderVisitor implements Detector, Constants2 {
 		if (getMethodName().length() == 1) return;
 
 		if (getMethodName().equals(baseClassName)) {
-			bugReporter.reportBug(new BugInstance("NM_CONFUSING_METHOD_NAME",
+			bugReporter.reportBug(new BugInstance(this, "NM_CONFUSING_METHOD_NAME",
 			        (getMethodSig().endsWith("V") && !obj.isNative())
 			        ? HIGH_PRIORITY : NORMAL_PRIORITY)
 			        .addClassAndMethod(this));
@@ -197,17 +197,17 @@ public class Naming extends PreorderVisitor implements Detector, Constants2 {
 		if (obj.isPrivate()) return;
 
 		if (getMethodName().equals("equal") && getMethodSig().equals("(Ljava/lang/Object;)Z")) {
-			bugReporter.reportBug(new BugInstance("NM_BAD_EQUAL", HIGH_PRIORITY)
+			bugReporter.reportBug(new BugInstance(this, "NM_BAD_EQUAL", HIGH_PRIORITY)
 			        .addClassAndMethod(this));
 			return;
 		}
 		if (getMethodName().equals("hashcode") && getMethodSig().equals("()I")) {
-			bugReporter.reportBug(new BugInstance("NM_LCASE_HASHCODE", HIGH_PRIORITY)
+			bugReporter.reportBug(new BugInstance(this, "NM_LCASE_HASHCODE", HIGH_PRIORITY)
 			        .addClassAndMethod(this));
 			return;
 		}
 		if (getMethodName().equals("tostring") && getMethodSig().equals("()Ljava/lang/String;")) {
-			bugReporter.reportBug(new BugInstance("NM_LCASE_TOSTRING", HIGH_PRIORITY)
+			bugReporter.reportBug(new BugInstance(this, "NM_LCASE_TOSTRING", HIGH_PRIORITY)
 			        .addClassAndMethod(this));
 			return;
 		}

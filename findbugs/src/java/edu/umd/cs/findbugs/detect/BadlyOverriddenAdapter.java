@@ -77,7 +77,7 @@ public class BadlyOverriddenAdapter extends BytecodeScanningDetector implements 
 			if (!methodName.equals("<init>") && signature != null) {
 				if (!signature.equals(obj.getSignature())) {
 					if (!badOverrideMap.keySet().contains(methodName)) {
-						badOverrideMap.put(methodName, new BugInstance("BOA_BADLY_OVERRIDDEN_ADAPTER", NORMAL_PRIORITY)
+						badOverrideMap.put(methodName, new BugInstance(this, "BOA_BADLY_OVERRIDDEN_ADAPTER", NORMAL_PRIORITY)
 								.addClassAndMethod(this)
 								.addSourceLine(this));
 					}

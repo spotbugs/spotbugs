@@ -44,7 +44,7 @@ public class FindFinalizeInvocations extends BytecodeScanningDetector implements
 		        && getMethodSig().equals("()V")
 		        && (obj.getAccessFlags() & (ACC_PUBLIC)) != 0
 		)
-			bugReporter.reportBug(new BugInstance("FI_PUBLIC_SHOULD_BE_PROTECTED", NORMAL_PRIORITY).addClassAndMethod(this));
+			bugReporter.reportBug(new BugInstance(this, "FI_PUBLIC_SHOULD_BE_PROTECTED", NORMAL_PRIORITY).addClassAndMethod(this));
 	}
 
 	public void visit(Code obj) {
@@ -62,21 +62,21 @@ public class FindFinalizeInvocations extends BytecodeScanningDetector implements
 		// System.out.println("superclass: " + superclassName);
 		if (obj.getCode().length == 1) {
 			if (superHasNoFinalizer)
-				bugReporter.reportBug(new BugInstance("FI_EMPTY", NORMAL_PRIORITY).addClassAndMethod(this));
+				bugReporter.reportBug(new BugInstance(this, "FI_EMPTY", NORMAL_PRIORITY).addClassAndMethod(this));
 			else
-				bugReporter.reportBug(new BugInstance("FI_NULLIFY_SUPER", NORMAL_PRIORITY)
+				bugReporter.reportBug(new BugInstance(this, "FI_NULLIFY_SUPER", NORMAL_PRIORITY)
 				        .addClassAndMethod(this)
 				        .addClass(overridesFinalizeIn));
 		} else if (obj.getCode().length == 5 && sawSuperFinalize)
-			bugReporter.reportBug(new BugInstance("FI_USELESS", NORMAL_PRIORITY).addClassAndMethod(this));
+			bugReporter.reportBug(new BugInstance(this, "FI_USELESS", NORMAL_PRIORITY).addClassAndMethod(this));
 		else if (!sawSuperFinalize && !superHasNoFinalizer)
-			bugReporter.reportBug(new BugInstance("FI_MISSING_SUPER_CALL", NORMAL_PRIORITY).addClassAndMethod(this)
+			bugReporter.reportBug(new BugInstance(this, "FI_MISSING_SUPER_CALL", NORMAL_PRIORITY).addClassAndMethod(this)
 			        .addClass(overridesFinalizeIn));
 	}
 
 	public void sawOpcode(int seen) {
 		if (seen == INVOKEVIRTUAL && getNameConstantOperand().equals("finalize"))
-			bugReporter.reportBug(new BugInstance("FI_EXPLICIT_INVOCATION", NORMAL_PRIORITY)
+			bugReporter.reportBug(new BugInstance(this, "FI_EXPLICIT_INVOCATION", NORMAL_PRIORITY)
 			        .addClassAndMethod(this)
 			        .addCalledMethod(this).describe("METHOD_CALLED")
 			        .addSourceLine(this, getPC()));

@@ -69,7 +69,7 @@ public class InheritanceUnsafeGetResource extends BytecodeScanningDetector imple
 			        && (getNameConstantOperand().equals("getResource")
 			        || getNameConstantOperand().equals("getResourceAsStream"))
 			        && sawGetClass + 10 >= getPC()) {
-				bugReporter.reportBug(new BugInstance("UI_INHERITANCE_UNSAFE_GETRESOURCE", NORMAL_PRIORITY)
+				bugReporter.reportBug(new BugInstance(this, "UI_INHERITANCE_UNSAFE_GETRESOURCE", NORMAL_PRIORITY)
 				        .addClassAndMethod(this)
 				        .addSourceLine(this));
 				reportedForThisClass = true;

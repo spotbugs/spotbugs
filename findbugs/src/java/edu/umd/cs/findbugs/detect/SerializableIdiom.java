@@ -184,7 +184,7 @@ public class SerializableIdiom extends PreorderVisitor
 		if (isSerializable && !isExternalizable
 		        && !superClassHasVoidConstructor
 		        && !superClassImplementsSerializable)
-			bugReporter.reportBug(new BugInstance("SE_NO_SUITABLE_CONSTRUCTOR",
+			bugReporter.reportBug(new BugInstance(this, "SE_NO_SUITABLE_CONSTRUCTOR",
 			        (implementsSerializableDirectly || sawSerialVersionUID)
 			        ? HIGH_PRIORITY : NORMAL_PRIORITY)
 			        .addClass(getThisClass().getClassName()));
@@ -193,16 +193,16 @@ public class SerializableIdiom extends PreorderVisitor
 		if (obj.getClassName().endsWith("_Stub")) priority++;
 
 		if (isExternalizable && !hasPublicVoidConstructor && !isAbstract)
-			bugReporter.reportBug(new BugInstance("SE_NO_SUITABLE_CONSTRUCTOR_FOR_EXTERNALIZATION",
+			bugReporter.reportBug(new BugInstance(this, "SE_NO_SUITABLE_CONSTRUCTOR_FOR_EXTERNALIZATION",
 			        directlyImplementsExternalizable ?
 			        HIGH_PRIORITY : NORMAL_PRIORITY)
 			        .addClass(getThisClass().getClassName()));
 		if (foundSynthetic && !isExternalizable && !isGUIClass
 		        && isSerializable && !isAbstract && !sawSerialVersionUID)
-			bugReporter.reportBug(new BugInstance("SE_NO_SERIALVERSIONID", priority).addClass(this));
+			bugReporter.reportBug(new BugInstance(this, "SE_NO_SERIALVERSIONID", priority).addClass(this));
 
 		if (writeObjectIsSynchronized && !foundSynchronizedMethods)
-			bugReporter.reportBug(new BugInstance("WS_WRITEOBJECT_SYNC", LOW_PRIORITY).addClass(this));
+			bugReporter.reportBug(new BugInstance(this, "WS_WRITEOBJECT_SYNC", LOW_PRIORITY).addClass(this));
 	}
 
 	public void visit(Method obj) {
@@ -245,7 +245,7 @@ public class SerializableIdiom extends PreorderVisitor
 		if (getMethodName().equals("readObject") &&
 		        getMethodSig().equals("(Ljava/io/ObjectInputStream;)V") &&
 		        isSerializable)
-			bugReporter.reportBug(new BugInstance("RS_READOBJECT_SYNC", NORMAL_PRIORITY).addClass(this));
+			bugReporter.reportBug(new BugInstance(this, "RS_READOBJECT_SYNC", NORMAL_PRIORITY).addClass(this));
 		else if (getMethodName().equals("writeObject")
 		        && getMethodSig().equals("(Ljava/io/ObjectOutputStream;)V")
 		        && isSerializable)
@@ -299,7 +299,7 @@ public class SerializableIdiom extends PreorderVisitor
 							return;
 					}
 					// Report is queued until after the entire class has been seen.
-					fieldWarningList.add(new BugInstance("SE_BAD_FIELD", priority)
+					fieldWarningList.add(new BugInstance(this, "SE_BAD_FIELD", priority)
 					        .addClass(getThisClass().getClassName())
 					        .addField(getDottedClassName(), obj.getName(), getFieldSig(), false));
 				}
@@ -318,18 +318,18 @@ public class SerializableIdiom extends PreorderVisitor
 			return;
 		if ((flags & mask) == mask
 		        && getFieldSig().equals("I")) {
-			bugReporter.reportBug(new BugInstance("SE_NONLONG_SERIALVERSIONID", LOW_PRIORITY)
+			bugReporter.reportBug(new BugInstance(this, "SE_NONLONG_SERIALVERSIONID", LOW_PRIORITY)
 			        .addClass(this)
 			        .addVisitedField(this));
 			sawSerialVersionUID = true;
 			return;
 		} else if ((flags & ACC_STATIC) == 0) {
-			bugReporter.reportBug(new BugInstance("SE_NONSTATIC_SERIALVERSIONID", NORMAL_PRIORITY)
+			bugReporter.reportBug(new BugInstance(this, "SE_NONSTATIC_SERIALVERSIONID", NORMAL_PRIORITY)
 			        .addClass(this)
 			        .addVisitedField(this));
 			return;
 		} else if ((flags & ACC_FINAL) == 0) {
-			bugReporter.reportBug(new BugInstance("SE_NONFINAL_SERIALVERSIONID", NORMAL_PRIORITY)
+			bugReporter.reportBug(new BugInstance(this, "SE_NONFINAL_SERIALVERSIONID", NORMAL_PRIORITY)
 			        .addClass(this)
 			        .addVisitedField(this));
 			return;

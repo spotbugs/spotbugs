@@ -53,7 +53,7 @@ public class FindNakedNotify extends BytecodeScanningDetector implements Constan
 		stage = synchronizedMethod ? 1 : 0;
 		super.visit(obj);
 		if (synchronizedMethod && stage == 4)
-			bugReporter.reportBug(new BugInstance("NN_NAKED_NOTIFY", NORMAL_PRIORITY)
+			bugReporter.reportBug(new BugInstance(this, "NN_NAKED_NOTIFY", NORMAL_PRIORITY)
 			        .addClassAndMethod(this)
 			        .addSourceLine(this, notifyPC));
 	}
@@ -82,7 +82,7 @@ public class FindNakedNotify extends BytecodeScanningDetector implements Constan
 			break;
 		case 4:
 			if (seen == MONITOREXIT) {
-				bugReporter.reportBug(new BugInstance("NN_NAKED_NOTIFY", NORMAL_PRIORITY)
+				bugReporter.reportBug(new BugInstance(this, "NN_NAKED_NOTIFY", NORMAL_PRIORITY)
 				        .addClassAndMethod(this)
 				        .addSourceLine(this, notifyPC));
 				stage = 5;

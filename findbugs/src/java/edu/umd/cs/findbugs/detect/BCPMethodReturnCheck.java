@@ -238,7 +238,7 @@ public class BCPMethodReturnCheck extends ByteCodePatternDetector {
 			priority++;
 		// System.out.println("priority: " + priority);
 				
-		bugReporter.reportBug(new BugInstance("RV_RETURN_VALUE_IGNORED",
+		bugReporter.reportBug(new BugInstance(this, "RV_RETURN_VALUE_IGNORED",
 		        priority)
 		        .addClassAndMethod(methodGen, sourceFile)
 		        .addCalledMethod(methodGen, inv)

@@ -223,7 +223,7 @@ public class MutableStaticFields extends BytecodeScanningDetector implements Con
 				throw new RuntimeException("impossible");
 
 
-			bugReporter.reportBug(new BugInstance(bugType, priority)
+			bugReporter.reportBug(new BugInstance(this, bugType, priority)
 			        .addClass(className)
 			        .addField(className, fieldName, fieldSig, true));
 

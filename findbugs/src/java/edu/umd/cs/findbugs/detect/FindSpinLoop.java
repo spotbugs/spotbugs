@@ -67,7 +67,7 @@ public class FindSpinLoop extends BytecodeScanningDetector implements Constants2
 		case IFNONNULL:
 			if (DEBUG) System.out.println("   conditional branch in stage " + stage + " to " + getBranchTarget());
 			if (stage == 2 && getBranchTarget() == start) {
-				bugReporter.reportBug(new BugInstance("SP_SPIN_ON_FIELD", NORMAL_PRIORITY)
+				bugReporter.reportBug(new BugInstance(this, "SP_SPIN_ON_FIELD", NORMAL_PRIORITY)
 				        .addClassAndMethod(this)
 				        .addSourceLine(this, start)
 				        .addReferencedField(lastFieldSeen));

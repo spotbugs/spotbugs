@@ -291,7 +291,7 @@ public class LockedFields extends BytecodeScanningDetector implements Constants2
 				continue;
 			}
 			int freq = (100 * locked) / (locked + unlocked);
-			bugReporter.reportBug(new BugInstance("IS_INCONSISTENT_SYNC", NORMAL_PRIORITY)
+			bugReporter.reportBug(new BugInstance(this, "IS_INCONSISTENT_SYNC", NORMAL_PRIORITY)
 			        .addClass(f.getClassName())
 			        .addField(f)
 			        .addInt(freq).describe("INT_SYNC_PERCENT"));

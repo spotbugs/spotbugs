@@ -50,7 +50,7 @@ public class StartInConstructor extends BytecodeScanningDetector implements Cons
 		        && getSigConstantOperand().equals("()V")) {
 			try {
 				if (Hierarchy.isSubtype(getDottedClassConstantOperand(), "java.lang.Thread")) {
-					bugReporter.reportBug(new BugInstance("SC_START_IN_CTOR", NORMAL_PRIORITY)
+					bugReporter.reportBug(new BugInstance(this, "SC_START_IN_CTOR", NORMAL_PRIORITY)
 					        .addClassAndMethod(this)
 					        .addCalledMethod(this)
 					        .addSourceLine(this));

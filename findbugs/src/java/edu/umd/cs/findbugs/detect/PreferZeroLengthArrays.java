@@ -50,7 +50,7 @@ public class PreferZeroLengthArrays extends BytecodeScanningDetector implements 
 			return;
 		case ARETURN:
 			if (nullOnTOS)
-				bugReporter.reportBug(new BugInstance("PZLA_PREFER_ZERO_LENGTH_ARRAYS", LOW_PRIORITY)
+				bugReporter.reportBug(new BugInstance(this, "PZLA_PREFER_ZERO_LENGTH_ARRAYS", LOW_PRIORITY)
 				        .addClassAndMethod(this)
 				        .addSourceLine(this, getPC()));
 			break;

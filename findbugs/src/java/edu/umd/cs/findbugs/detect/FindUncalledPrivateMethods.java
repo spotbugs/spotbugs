@@ -96,7 +96,7 @@ public class FindUncalledPrivateMethods extends BytecodeScanningDetector {
 			        && calledMethodNames.contains(methodName.toLowerCase()))
 				priority = NORMAL_PRIORITY;
 			BugInstance bugInstance
-			        = new BugInstance("UPM_UNCALLED_PRIVATE_METHOD",
+			        = new BugInstance(this, "UPM_UNCALLED_PRIVATE_METHOD",
 			                priority)
 			        .addClass(this)
 			        .addMethod(m);

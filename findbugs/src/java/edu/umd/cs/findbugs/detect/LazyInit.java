@@ -199,7 +199,7 @@ public class LazyInit extends ByteCodePatternDetector {
 			InstructionHandle start = match.getLabeledInstruction("start");
 			InstructionHandle end = match.getLabeledInstruction("end");
 			String sourceFile = javaClass.getSourceFileName();
-			bugReporter.reportBug(new BugInstance("LI_LAZY_INIT_STATIC", priority)
+			bugReporter.reportBug(new BugInstance(this, "LI_LAZY_INIT_STATIC", priority)
 			        .addClassAndMethod(methodGen, sourceFile)
 			        .addField(xfield).describe("FIELD_ON")
 			        .addSourceLine(methodGen, sourceFile, start, end));

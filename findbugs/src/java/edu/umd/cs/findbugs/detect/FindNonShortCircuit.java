@@ -83,7 +83,7 @@ public class FindNonShortCircuit extends BytecodeScanningDetector implements Con
 		case IFNE:
 			if (stage2 == 1) {
 				// System.out.println("Found nsc");
-				bugReporter.reportBug(new BugInstance("NS_NON_SHORT_CIRCUIT",
+				bugReporter.reportBug(new BugInstance(this, "NS_NON_SHORT_CIRCUIT",
 				        NORMAL_PRIORITY)
 				        .addClassAndMethod(this)
 				        .addSourceLine(this, getPC()));
@@ -95,7 +95,7 @@ public class FindNonShortCircuit extends BytecodeScanningDetector implements Con
 		case IRETURN:
 			if (operator == IAND && stage2 == 1) {
 				// System.out.println("Found nsc");
-				bugReporter.reportBug(new BugInstance("NS_NON_SHORT_CIRCUIT",
+				bugReporter.reportBug(new BugInstance(this, "NS_NON_SHORT_CIRCUIT",
 				        LOW_PRIORITY)
 				        .addClassAndMethod(this)
 				        .addSourceLine(this, getPC()));

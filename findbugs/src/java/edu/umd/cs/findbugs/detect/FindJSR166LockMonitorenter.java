@@ -104,7 +104,7 @@ public class FindJSR166LockMonitorenter implements Detector {
 						MethodGen mg = classContext.getMethodGen(method);
 						String sourceFile = classContext.getJavaClass().getSourceFileName();
 
-						bugReporter.reportBug(new BugInstance("JLM_JSR166_LOCK_MONITORENTER", NORMAL_PRIORITY)
+						bugReporter.reportBug(new BugInstance(this, "JLM_JSR166_LOCK_MONITORENTER", NORMAL_PRIORITY)
 						        .addClassAndMethod(mg, sourceFile)
 						        .addSourceLine(mg, sourceFile, handle));
 					}

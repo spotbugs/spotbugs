@@ -94,7 +94,7 @@ public class FindReturnRef extends BytecodeScanningDetector implements Constants
 
 		if (staticMethod && dangerousToStoreIntoField && seen == PUTSTATIC
 		        && MutableStaticFields.mutableSignature(getSigConstantOperand())) {
-			bugReporter.reportBug(new BugInstance("EI_EXPOSE_STATIC_REP2", NORMAL_PRIORITY)
+			bugReporter.reportBug(new BugInstance(this, "EI_EXPOSE_STATIC_REP2", NORMAL_PRIORITY)
 			        .addClassAndMethod(this)
 			        .addField(getDottedClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand(),
 			                true)
@@ -102,7 +102,7 @@ public class FindReturnRef extends BytecodeScanningDetector implements Constants
 		}
 		if (!staticMethod && dangerousToStoreIntoField && seen == PUTFIELD
 		        && MutableStaticFields.mutableSignature(getSigConstantOperand())) {
-			bugReporter.reportBug(new BugInstance("EI_EXPOSE_REP2", NORMAL_PRIORITY)
+			bugReporter.reportBug(new BugInstance(this, "EI_EXPOSE_REP2", NORMAL_PRIORITY)
 			        .addClassAndMethod(this)
 			        .addField(getDottedClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand(),
 			                true)
@@ -208,7 +208,7 @@ public class FindReturnRef extends BytecodeScanningDetector implements Constants
 		        && nameOnStack.indexOf("EMPTY") == -1
 		        && MutableStaticFields.mutableSignature(sigOnStack)
 		) {
-			bugReporter.reportBug(new BugInstance(staticMethod ? "MS_EXPOSE_REP" : "EI_EXPOSE_REP", NORMAL_PRIORITY)
+			bugReporter.reportBug(new BugInstance(this, staticMethod ? "MS_EXPOSE_REP" : "EI_EXPOSE_REP", NORMAL_PRIORITY)
 			        .addClassAndMethod(this)
 			        .addField(classNameOnStack, nameOnStack, sigOnStack, fieldIsStatic)
 			        .addSourceLine(this));

@@ -96,7 +96,7 @@ public class InefficientToArray extends BytecodeScanningDetector implements Cons
 					String clsName = getClassConstantOperand();
 					JavaClass cls = Repository.lookupClass(clsName);
 					if (cls.implementationOf(collectionClass))
-						bugReporter.reportBug(new BugInstance("ITA_INEFFICIENT_TO_ARRAY", LOW_PRIORITY)
+						bugReporter.reportBug(new BugInstance(this, "ITA_INEFFICIENT_TO_ARRAY", LOW_PRIORITY)
 						        .addClassAndMethod(this)
 						        .addSourceLine(this));
 

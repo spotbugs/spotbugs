@@ -34,6 +34,8 @@ import java.util.*;
 public class DetectorFactoryCollection {
 	private ArrayList<DetectorFactory> factoryList = new ArrayList<DetectorFactory>();
 	private HashMap<String, DetectorFactory> factoriesByName = new HashMap<String, DetectorFactory>();
+	private HashMap<String, DetectorFactory> factoriesByClassName =
+		new HashMap<String, DetectorFactory>();
 
 	private static DetectorFactoryCollection theInstance;
 	private static final Object lock = new Object();
@@ -87,6 +89,17 @@ public class DetectorFactoryCollection {
 	public DetectorFactory getFactory(String name) {
 		return factoriesByName.get(name);
 	}
+	
+	/**
+	 * Look up a DetectorFactory by its class name.
+	 * 
+	 * @param className the class name
+	 * @return the DetectoryFactory, or null if there is no factory with
+	 *         that class name
+	 */
+	public DetectorFactory getFactoryByClassName(String className) {
+		return factoriesByClassName.get(className);
+	}
 
 	/**
 	 * Disable all detectors.
@@ -117,6 +130,7 @@ public class DetectorFactoryCollection {
 		String detectorName = factory.getShortName();
 		factoryList.add(factory);
 		factoriesByName.put(detectorName, factory);
+		factoriesByClassName.put(factory.getClass().getName(), factory);
 	}
 
 	/**

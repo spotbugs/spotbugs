@@ -95,6 +95,29 @@ public class BugInstance implements Comparable, XMLWriteable {
 		annotationText = "";
 	}
 
+	/**
+	 * Create a new BugInstance.
+	 * This is the constructor that should be used by Detectors.
+	 * 
+	 * @param detector the Detector that is reporting the BugInstance
+	 * @param type     the bug type
+	 * @param priority the bug priority
+	 */
+	public BugInstance(Detector detector, String type, int priority) {
+		this(type, priority);
+		
+		if (detector != null) {
+			// Adjust priority if required
+			DetectorFactory factory =
+				DetectorFactoryCollection.instance().getFactoryByClassName(detector.getClass().getName());
+			if (factory != null) {
+				this.priority += factory.getPriorityAdjustment();
+				if (this.priority < 0)
+					this.priority = 0;
+			}
+		}
+	}
+	
 	/* ----------------------------------------------------------------------
 	 * Accessors
 	 * ---------------------------------------------------------------------- */

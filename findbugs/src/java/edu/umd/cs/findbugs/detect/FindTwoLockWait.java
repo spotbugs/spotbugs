@@ -112,7 +112,7 @@ public class FindTwoLockWait implements Detector {
 				if (count > 1) {
 					// A wait with multiple locks held?
 					String sourceFile = javaClass.getSourceFileName();
-					bugReporter.reportBug(new BugInstance("2LW_TWO_LOCK_WAIT", NORMAL_PRIORITY)
+					bugReporter.reportBug(new BugInstance(this, "2LW_TWO_LOCK_WAIT", NORMAL_PRIORITY)
 					        .addClass(javaClass)
 					        .addMethod(methodGen, sourceFile)
 					        .addSourceLine(methodGen, sourceFile, location.getHandle()));

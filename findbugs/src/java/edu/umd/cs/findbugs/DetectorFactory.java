@@ -37,6 +37,7 @@ public class DetectorFactory {
 	private final String reports;
 	private final String requireJRE;
 	private String detailHTML;
+	private int priorityAdjustment;
 
 	/**
 	 * Constructor.
@@ -58,6 +59,7 @@ public class DetectorFactory {
 		this.speed = speed;
 		this.reports = reports;
 		this.requireJRE = requireJRE;
+		this.priorityAdjustment = 0;
 	}
 
 	private static final Class[] constructorArgTypes = new Class[]{BugReporter.class};
@@ -93,6 +95,24 @@ public class DetectorFactory {
 	 */
 	public boolean isDefaultEnabled() {
 		return defEnabled;
+	}
+	
+	/**
+	 * Set the priority adjustment for the detector produced by this factory.
+	 * 
+	 * @param priorityAdjustment the priority adjustment
+	 */
+	public void setPriorityAdjustment(int priorityAdjustment) {
+		this.priorityAdjustment = priorityAdjustment;
+	}
+	
+	/**
+	 * Get the priority adjustment for the detector produced by this factory.
+	 * 
+	 * @return the priority adjustment
+	 */
+	public int getPriorityAdjustment() {
+		return priorityAdjustment;
 	}
 
 	/**

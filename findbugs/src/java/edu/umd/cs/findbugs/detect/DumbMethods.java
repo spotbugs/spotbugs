@@ -68,7 +68,7 @@ public class DumbMethods extends BytecodeScanningDetector implements Constants2 
 		        && getSigConstantOperand().equals("()V")
 		        || getNameConstantOperand().equals("setVisible")
 		        && getSigConstantOperand().equals("(Z)V")))
-			bugReporter.reportBug(new BugInstance("SW_SWING_METHODS_INVOKED_IN_SWING_THREAD", LOW_PRIORITY)
+			bugReporter.reportBug(new BugInstance(this, "SW_SWING_METHODS_INVOKED_IN_SWING_THREAD", LOW_PRIORITY)
 			        .addClassAndMethod(this)
 			        .addSourceLine(this));
 
@@ -77,7 +77,7 @@ public class DumbMethods extends BytecodeScanningDetector implements Constants2 
 		        && getNameConstantOperand().equals("<init>")
 		        && getSigConstantOperand().equals("(Ljava/lang/String;)V"))
 			if (alreadyReported.add(getRefConstantOperand()))
-				bugReporter.reportBug(new BugInstance("DM_STRING_CTOR", NORMAL_PRIORITY)
+				bugReporter.reportBug(new BugInstance(this, "DM_STRING_CTOR", NORMAL_PRIORITY)
 				        .addClassAndMethod(this)
 				        .addSourceLine(this));
 		if ((seen == INVOKESPECIAL)
@@ -85,14 +85,14 @@ public class DumbMethods extends BytecodeScanningDetector implements Constants2 
 		        && getNameConstantOperand().equals("<init>")
 		        && getSigConstantOperand().equals("()V"))
 			if (alreadyReported.add(getRefConstantOperand()))
-				bugReporter.reportBug(new BugInstance("DM_STRING_VOID_CTOR", NORMAL_PRIORITY)
+				bugReporter.reportBug(new BugInstance(this, "DM_STRING_VOID_CTOR", NORMAL_PRIORITY)
 				        .addClassAndMethod(this)
 				        .addSourceLine(this));
 		if (!isPublicStaticVoidMain && seen == INVOKESTATIC
 		        && getClassConstantOperand().equals("java/lang/System")
 		        && getNameConstantOperand().equals("exit")
 		        && !getMethodName().startsWith("windowClos"))
-			bugReporter.reportBug(new BugInstance("DM_EXIT", LOW_PRIORITY)
+			bugReporter.reportBug(new BugInstance(this, "DM_EXIT", LOW_PRIORITY)
 			        .addClassAndMethod(this)
 			        .addSourceLine(this));
 		if (((seen == INVOKESTATIC
@@ -113,7 +113,7 @@ public class DumbMethods extends BytecodeScanningDetector implements Constants2 
 				// Just save this report in a field; it will be flushed
 				// IFF there were no calls to System.currentTimeMillis();
 				// in the method.
-				gcInvocationBugReport = new BugInstance("DM_GC", HIGH_PRIORITY)
+				gcInvocationBugReport = new BugInstance(this, "DM_GC", HIGH_PRIORITY)
 				        .addClassAndMethod(this)
 				        .addSourceLine(this);
 				gcInvocationPC = getPC();
@@ -125,7 +125,7 @@ public class DumbMethods extends BytecodeScanningDetector implements Constants2 
 		        && !getClassName().equals("java/lang/Boolean")
 		)
 			if (alreadyReported.add(getRefConstantOperand()))
-				bugReporter.reportBug(new BugInstance("DM_BOOLEAN_CTOR", NORMAL_PRIORITY)
+				bugReporter.reportBug(new BugInstance(this, "DM_BOOLEAN_CTOR", NORMAL_PRIORITY)
 				        .addClassAndMethod(this)
 				        .addSourceLine(this));
 		if ((seen == INVOKESTATIC)
@@ -138,7 +138,7 @@ public class DumbMethods extends BytecodeScanningDetector implements Constants2 
 		        && getNameConstantOperand().equals("toString")
 		        && getSigConstantOperand().equals("()Ljava/lang/String;"))
 			if (alreadyReported.add(getRefConstantOperand()))
-				bugReporter.reportBug(new BugInstance("DM_STRING_TOSTRING", NORMAL_PRIORITY)
+				bugReporter.reportBug(new BugInstance(this, "DM_STRING_TOSTRING", NORMAL_PRIORITY)
 				        .addClassAndMethod(this)
 				        .addSourceLine(this));
 		if ((seen == INVOKEVIRTUAL)
@@ -147,7 +147,7 @@ public class DumbMethods extends BytecodeScanningDetector implements Constants2 
 		        ||  getNameConstantOperand().equals("toLowerCase"))
 		        && getSigConstantOperand().equals("()Ljava/lang/String;"))
 			if (alreadyReported.add(getRefConstantOperand()))
-				bugReporter.reportBug(new BugInstance("DM_CONVERT_CASE", LOW_PRIORITY)
+				bugReporter.reportBug(new BugInstance(this, "DM_CONVERT_CASE", LOW_PRIORITY)
 				        .addClassAndMethod(this)
 				        .addSourceLine(this));
 /*

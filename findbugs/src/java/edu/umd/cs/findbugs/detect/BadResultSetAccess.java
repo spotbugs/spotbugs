@@ -90,7 +90,7 @@ public class BadResultSetAccess extends BytecodeScanningDetector implements Cons
 						OpcodeStack.Item item = stack.getStackItem(numParms-1);
 						Object cons = item.getConstant();
 						if ((cons != null) && ("I".equals(item.getSignature())) && (((Integer) cons).intValue() == 0)) {
-							bugReporter.reportBug(new BugInstance("BRSA_BAD_RESULTSET_ACCESS", NORMAL_PRIORITY)
+							bugReporter.reportBug(new BugInstance(this, "BRSA_BAD_RESULTSET_ACCESS", NORMAL_PRIORITY)
 							        .addClassAndMethod(this)
 							        .addSourceLine(this));
 						}

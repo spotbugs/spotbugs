@@ -39,7 +39,7 @@ public class FindFloatMath extends BytecodeScanningDetector implements Constants
 			if (getFullyQualifiedMethodName().indexOf("float") == -1
 			        && getFullyQualifiedMethodName().indexOf("Float") == -1
 			        && getFullyQualifiedMethodName().indexOf("FLOAT") == -1)
-				bugReporter.reportBug(new BugInstance("FL_MATH_USING_FLOAT_PRECISION",
+				bugReporter.reportBug(new BugInstance(this, "FL_MATH_USING_FLOAT_PRECISION",
 				        LOW_PRIORITY)
 				        .addClassAndMethod(this)
 				        .addSourceLine(this));
@@ -54,7 +54,7 @@ public class FindFloatMath extends BytecodeScanningDetector implements Constants
 			        && getFullyQualifiedMethodName().indexOf("Float") == -1
 			        && getFullyQualifiedMethodName().indexOf("FLOAT") == -1)
 
-				bugReporter.reportBug(new BugInstance("FL_MATH_USING_FLOAT_PRECISION",
+				bugReporter.reportBug(new BugInstance(this, "FL_MATH_USING_FLOAT_PRECISION",
 				        NORMAL_PRIORITY)
 				        .addClassAndMethod(this)
 				        .addSourceLine(this));

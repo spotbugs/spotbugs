@@ -75,13 +75,13 @@ public class InvalidJUnitTest extends BytecodeScanningDetector implements Consta
 
 	public void visitAfter(JavaClass obj) {
 		if ((setUpAnnotation != null) && !sawSetUp) {
-			bugReporter.reportBug(new BugInstance("IJU_SETUP_NO_SUPER", NORMAL_PRIORITY)
+			bugReporter.reportBug(new BugInstance(this, "IJU_SETUP_NO_SUPER", NORMAL_PRIORITY)
 			        .addClass(this)
 			        .addMethod(setUpAnnotation));
 
 		}
 		if ((tearDownAnnotation != null) && !sawTearDown) {
-			bugReporter.reportBug(new BugInstance("IJU_TEARDOWN_NO_SUPER", NORMAL_PRIORITY)
+			bugReporter.reportBug(new BugInstance(this, "IJU_TEARDOWN_NO_SUPER", NORMAL_PRIORITY)
 			        .addClass(this)
 			        .addMethod(tearDownAnnotation));
 
@@ -102,7 +102,7 @@ public class InvalidJUnitTest extends BytecodeScanningDetector implements Consta
 			state = SEEN_NOTHING;
 			super.visit(obj);
 		} else if (methodName.equals("suite") && !obj.isStatic())
-			bugReporter.reportBug(new BugInstance("IJU_SUITE_NOT_STATIC", NORMAL_PRIORITY)
+			bugReporter.reportBug(new BugInstance(this, "IJU_SUITE_NOT_STATIC", NORMAL_PRIORITY)
 			        .addClass(this)
 			        .addMethod(MethodAnnotation.fromVisitedMethod(this)));
 	}

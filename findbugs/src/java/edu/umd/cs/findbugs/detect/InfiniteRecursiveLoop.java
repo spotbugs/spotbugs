@@ -74,7 +74,7 @@ public class InfiniteRecursiveLoop extends BytecodeScanningDetector implements C
 				)
 				
 
-				bugReporter.reportBug(new BugInstance("IL_INFINITE_RECURSIVE_LOOP", HIGH_PRIORITY)
+				bugReporter.reportBug(new BugInstance(this, "IL_INFINITE_RECURSIVE_LOOP", HIGH_PRIORITY)
 				        .addClassAndMethod(this));
 
 		thisOnTopOfStack = seen == ALOAD_0 && !staticMethod;

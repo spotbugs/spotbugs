@@ -113,7 +113,7 @@ static class FieldRecord {
 			&& !otherWrites.contains(name))
 		     priority = NORMAL_PRIORITY;
 		   bugReporter.reportBug(
-			new BugInstance("VO_VOLATILE_REFERENCE_TO_ARRAY", priority)
+			new BugInstance(this, "VO_VOLATILE_REFERENCE_TO_ARRAY", priority)
 			 .addClass(f.className)
 			 .addField(f.className, f.name, f.signature, f.isStatic));
 		}

@@ -86,7 +86,7 @@ public class SuperfluousInstanceOf extends BytecodeScanningDetector implements C
 							
 							if (clsSignature.charAt(0) != '[') {
 								if (org.apache.bcel.Repository.instanceOf( objSignature, clsSignature )) {
-									bugReporter.reportBug(new BugInstance("SIO_SUPERFLUOUS_INSTANCEOF", LOW_PRIORITY)
+									bugReporter.reportBug(new BugInstance(this, "SIO_SUPERFLUOUS_INSTANCEOF", LOW_PRIORITY)
 							        	.addClassAndMethod(this)
 							        	.addSourceLine(this));
 								}

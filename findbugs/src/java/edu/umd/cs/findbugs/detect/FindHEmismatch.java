@@ -109,13 +109,13 @@ public class FindHEmismatch extends BytecodeScanningDetector implements Constant
 					priority++;
 				if (!visibleOutsidePackage)
 					priority++;
-				bugReporter.reportBug(new BugInstance("EQ_SELF_USE_OBJECT", priority).addClass(getDottedClassName()));
+				bugReporter.reportBug(new BugInstance(this, "EQ_SELF_USE_OBJECT", priority).addClass(getDottedClassName()));
 			} else {
 				int priority = NORMAL_PRIORITY;
 				if (hasFields)
 					priority--;
 				if (obj.isAbstract()) priority++;
-				bugReporter.reportBug(new BugInstance("EQ_SELF_NO_OBJECT", priority).addClass(getDottedClassName()));
+				bugReporter.reportBug(new BugInstance(this, "EQ_SELF_NO_OBJECT", priority).addClass(getDottedClassName()));
 			}
 		}
 		/*
@@ -128,16 +128,16 @@ public class FindHEmismatch extends BytecodeScanningDetector implements Constant
 
 		if (!hasCompareToObject && hasCompareToSelf) {
 			if (!extendsObject)
-				bugReporter.reportBug(new BugInstance("CO_SELF_NO_OBJECT", NORMAL_PRIORITY).addClass(getDottedClassName()));
+				bugReporter.reportBug(new BugInstance(this, "CO_SELF_NO_OBJECT", NORMAL_PRIORITY).addClass(getDottedClassName()));
 		}
 
 		// if (!hasFields) return;
 		if (hasHashCode && !hashCodeIsAbstract && !(hasEqualsObject || hasEqualsSelf)) {
 			int priority = LOW_PRIORITY;
 			if (usesDefaultEquals)
-				bugReporter.reportBug(new BugInstance("HE_HASHCODE_USE_OBJECT_EQUALS", priority).addClass(getDottedClassName()));
+				bugReporter.reportBug(new BugInstance(this, "HE_HASHCODE_USE_OBJECT_EQUALS", priority).addClass(getDottedClassName()));
 			else if (!inheritedEqualsIsFinal)
-				bugReporter.reportBug(new BugInstance("HE_HASHCODE_NO_EQUALS", priority).addClass(getDottedClassName()));
+				bugReporter.reportBug(new BugInstance(this, "HE_HASHCODE_NO_EQUALS", priority).addClass(getDottedClassName()));
 		}
 		if (!hasHashCode
 		        && (hasEqualsObject && !equalsObjectIsAbstract || hasEqualsSelf)) {
@@ -149,7 +149,7 @@ public class FindHEmismatch extends BytecodeScanningDetector implements Constant
 				if (!visibleOutsidePackage) {
 					priority++;
 				}
-				bugReporter.reportBug(new BugInstance("HE_EQUALS_USE_HASHCODE",
+				bugReporter.reportBug(new BugInstance(this, "HE_EQUALS_USE_HASHCODE",
 				        priority).addClass(getDottedClassName()));
 			} else if (!inheritedHashCodeIsFinal) {
 				int priority = LOW_PRIORITY;
@@ -159,7 +159,7 @@ public class FindHEmismatch extends BytecodeScanningDetector implements Constant
 				if (equalsMethodIsInstanceOfEquals || !hasEqualsObject)
 					priority += 2;
 				else if (obj.isAbstract()) priority++;
-				bugReporter.reportBug(new BugInstance("HE_EQUALS_NO_HASHCODE",
+				bugReporter.reportBug(new BugInstance(this, "HE_EQUALS_NO_HASHCODE",
 				        priority)
 				        .addClass(getDottedClassName()));
 			}
@@ -167,7 +167,7 @@ public class FindHEmismatch extends BytecodeScanningDetector implements Constant
 		if (!hasHashCode && !hasEqualsObject && !hasEqualsSelf
 		        && !usesDefaultEquals && usesDefaultHashCode
 		        && !obj.isAbstract() && classThatDefinesEqualsIsAbstract) {
-			bugReporter.reportBug(new BugInstance("HE_INHERITS_EQUALS_USE_HASHCODE",
+			bugReporter.reportBug(new BugInstance(this, "HE_INHERITS_EQUALS_USE_HASHCODE",
 			        NORMAL_PRIORITY).addClass(getDottedClassName()));
 		}
 	}
@@ -200,11 +200,11 @@ public class FindHEmismatch extends BytecodeScanningDetector implements Constant
 		if ((accessFlags & ACC_ABSTRACT) != 0) {
 			if (name.equals("equals")
 			        && sig.equals("(L" + getClassName() + ";)Z")) {
-				bugReporter.reportBug(new BugInstance("EQ_ABSTRACT_SELF", LOW_PRIORITY).addClass(getDottedClassName()));
+				bugReporter.reportBug(new BugInstance(this, "EQ_ABSTRACT_SELF", LOW_PRIORITY).addClass(getDottedClassName()));
 				return;
 			} else if (name.equals("compareTo")
 			        && sig.equals("(L" + getClassName() + ";)I")) {
-				bugReporter.reportBug(new BugInstance("CO_ABSTRACT_SELF", LOW_PRIORITY).addClass(getDottedClassName()));
+				bugReporter.reportBug(new BugInstance(this, "CO_ABSTRACT_SELF", LOW_PRIORITY).addClass(getDottedClassName()));
 				return;
 			}
 		}

@@ -315,7 +315,7 @@ public class FindNullDeref implements Detector {
 		MethodGen methodGen = classContext.getMethodGen(method);
 		String sourceFile = classContext.getJavaClass().getSourceFileName();
 
-		BugInstance bugInstance = new BugInstance(type, priority)
+		BugInstance bugInstance = new BugInstance(this, type, priority)
 		        .addClassAndMethod(methodGen, sourceFile)
 		        .addSourceLine(methodGen, sourceFile, exceptionThrowerHandle);
 
@@ -336,7 +336,7 @@ public class FindNullDeref implements Detector {
 		        : "RCN_REDUNDANT_COMPARISON_TO_NULL";
 		int priority = redundantNullCheck ? LOW_PRIORITY : NORMAL_PRIORITY;
 
-		bugReporter.reportBug(new BugInstance(type, priority)
+		bugReporter.reportBug(new BugInstance(this, type, priority)
 		        .addClassAndMethod(methodGen, sourceFile)
 		        .addSourceLine(methodGen, sourceFile, handle));
 	}

@@ -95,7 +95,7 @@ public class FindMaskedFields extends BytecodeScanningDetector implements Consta
 
 							FieldAnnotation maskedFieldAnnotation
 							        = FieldAnnotation.fromBCELField(superClasses[c].getClassName(), fld);
-							bugReporter.reportBug(new BugInstance("MF_CLASS_MASKS_FIELD",
+							bugReporter.reportBug(new BugInstance(this, "MF_CLASS_MASKS_FIELD",
 							        priority)
 							        .addClass(this)
 							        .addField(maskedFieldAnnotation)
@@ -152,7 +152,7 @@ public class FindMaskedFields extends BytecodeScanningDetector implements Consta
 					FieldAnnotation fa
 					        = FieldAnnotation.fromBCELField(getClassName(), f);
 					if (true || var.getStartPC() > 0)
-						bugReporter.reportBug(new BugInstance("MF_METHOD_MASKS_FIELD", LOW_PRIORITY)
+						bugReporter.reportBug(new BugInstance(this, "MF_METHOD_MASKS_FIELD", LOW_PRIORITY)
 						        .addClassAndMethod(this)
 						        .addField(fa)
 						        .addSourceLine(this, var.getStartPC() - 1));

@@ -67,7 +67,7 @@ public class MutableLock extends BytecodeScanningDetector implements Constants2 
 			        && asUnsignedByte(codeBytes[getPC() + 3]) == DUP
 			        && asUnsignedByte(codeBytes[getPC() + 5]) == MONITORENTER
 			)
-				bugReporter.reportBug(new BugInstance("ML_SYNC_ON_UPDATED_FIELD", NORMAL_PRIORITY)
+				bugReporter.reportBug(new BugInstance(this, "ML_SYNC_ON_UPDATED_FIELD", NORMAL_PRIORITY)
 				        .addClassAndMethod(this)
 				        .addReferencedField(this)
 				        .addSourceLine(this, getPC() + 5));

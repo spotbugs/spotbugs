@@ -74,7 +74,7 @@ public class InitializationChain extends BytecodeScanningDetector implements Con
 			        instanceCreated && !instanceCreatedWarningGiven) {
 				String okSig = "L" + getClassName() + ";";
 				if (!okSig.equals(getSigConstantOperand())) {
-					bugReporter.reportBug(new BugInstance("SI_INSTANCE_BEFORE_FINALS_ASSIGNED", NORMAL_PRIORITY)
+					bugReporter.reportBug(new BugInstance(this, "SI_INSTANCE_BEFORE_FINALS_ASSIGNED", NORMAL_PRIORITY)
 					        .addClassAndMethod(this)
 					        .addSourceLine(this, instanceCreatedPC));
 					instanceCreatedWarningGiven = true;
@@ -132,7 +132,7 @@ public class InitializationChain extends BytecodeScanningDetector implements Con
 				if (DEBUG) System.out.println("  " + needs);
 				Set<String> s = classRequires.get(needs);
 				if (s != null && s.contains(c) && c.compareTo(needs) < 0)
-					bugReporter.reportBug(new BugInstance("IC_INIT_CIRCULARITY", NORMAL_PRIORITY)
+					bugReporter.reportBug(new BugInstance(this, "IC_INIT_CIRCULARITY", NORMAL_PRIORITY)
 					        .addClass(c)
 					        .addClass(needs));
 			}

@@ -113,7 +113,7 @@ public class FindMismatchedWaitOrNotify implements Detector {
 					String type = methodName.equals("wait")
 					        ? "MWN_MISMATCHED_WAIT"
 					        : "MWN_MISMATCHED_NOTIFY";
-					bugReporter.reportBug(new BugInstance(type, NORMAL_PRIORITY)
+					bugReporter.reportBug(new BugInstance(this, type, NORMAL_PRIORITY)
 					        .addClassAndMethod(methodGen, sourceFile)
 					        .addSourceLine(methodGen, sourceFile, handle));
 				}

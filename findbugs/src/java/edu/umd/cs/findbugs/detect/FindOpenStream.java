@@ -343,7 +343,7 @@ public class FindOpenStream extends ResourceTrackingDetector<Stream, StreamResou
 				continue;
 
 			String sourceFile = javaClass.getSourceFileName();
-			bugReporter.reportBug(new BugInstance(pos.bugType, pos.priority)
+			bugReporter.reportBug(new BugInstance(this, pos.bugType, pos.priority)
 			        .addClassAndMethod(methodGen, sourceFile)
 			        .addSourceLine(methodGen, sourceFile, stream.getLocation().getHandle()));
 		}

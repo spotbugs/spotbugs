@@ -117,7 +117,7 @@ public class ReadReturnShouldBeChecked extends BytecodeScanningDetector implemen
 
 		if ((seen == POP) || (seen == POP2)) {
 			if (sawRead) {
-				bugReporter.reportBug(new BugInstance("RR_NOT_CHECKED", NORMAL_PRIORITY)
+				bugReporter.reportBug(new BugInstance(this, "RR_NOT_CHECKED", NORMAL_PRIORITY)
 				        .addClassAndMethod(this)
 				        .addCalledMethod(lastCallClass, lastCallMethod, lastCallSig)
 				        .addSourceLine(this, readPC));
@@ -128,7 +128,7 @@ public class ReadReturnShouldBeChecked extends BytecodeScanningDetector implemen
 				} catch (ClassNotFoundException e) {
 				}
 
-				bugReporter.reportBug(new BugInstance("SR_NOT_CHECKED",
+				bugReporter.reportBug(new BugInstance(this, "SR_NOT_CHECKED",
 				        (isBufferedInputStream ? HIGH_PRIORITY : NORMAL_PRIORITY))
 				        .addClassAndMethod(this)
 				        .addCalledMethod(lastCallClass, lastCallMethod, lastCallSig)

@@ -70,7 +70,7 @@ public class DontCatchIllegalMonitorStateException
 				System.out.println(msg);
 		}
 		if (name.equals("java.lang.IllegalMonitorStateException"))
-			bugReporter.reportBug(new BugInstance("IMSE_DONT_CATCH_IMSE", HIGH_PRIORITY)
+			bugReporter.reportBug(new BugInstance(this, "IMSE_DONT_CATCH_IMSE", HIGH_PRIORITY)
 			        .addClassAndMethod(this)
 			        .addSourceLine(this, obj.getHandlerPC()));
 

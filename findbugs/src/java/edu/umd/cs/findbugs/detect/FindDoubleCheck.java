@@ -143,7 +143,7 @@ public class FindDoubleCheck extends BytecodeScanningDetector implements Constan
 					System.out.println(getSigConstantOperand());
 					*/
 					if (declaration == null || !declaration.isVolatile())
-						bugReporter.reportBug(new BugInstance("DC_DOUBLECHECK", NORMAL_PRIORITY)
+						bugReporter.reportBug(new BugInstance(this, "DC_DOUBLECHECK", NORMAL_PRIORITY)
 						        .addClassAndMethod(this)
 						        .addField(f).describe("FIELD_ON")
 						        .addSourceLineRange(this, startPC, endPC));

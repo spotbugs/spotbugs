@@ -42,7 +42,7 @@ public class IteratorIdioms extends BytecodeScanningDetector implements Constant
 			super.visit(obj);
 			if (!sawNoSuchElement)
 //			bugReporter.reportBug(BugInstance.inMethod("IT_NO_SUCH_ELEMENT", UNKNOWN_PRIORITY, this));
-				bugReporter.reportBug(new BugInstance("IT_NO_SUCH_ELEMENT", NORMAL_PRIORITY).addClassAndMethod(this));
+				bugReporter.reportBug(new BugInstance(this, "IT_NO_SUCH_ELEMENT", NORMAL_PRIORITY).addClassAndMethod(this));
 		}
 	}
 
