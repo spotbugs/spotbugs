@@ -106,7 +106,7 @@ fi
 # All options that aren't consumed by this script are sent
 # to the FindBugs main() method.
 argList=''
-jvmArgs="-Xmx128m"
+jvmArgs="-Xmx128m -Xss1m"
 appJar="findbugsGUI.jar"
 while [ $# -gt 0 ]; do
 	arg=$1
