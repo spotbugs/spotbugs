@@ -35,9 +35,8 @@ package edu.umd.cs.findbugs.ba.type;
  *      stack slots
  * </ul>
  *
- * <p> The "" in Type and related classes exists to distinguish
- * them from BCEL's Type class and subclasses. The BCEL Type
- * class and descendents suffer from several shortcomings:
+ * <p> This class and its descendents were designed to
+ * address some shortcomings of the BCEL Type class and descendents:
  * <ol>
  * <li> They are not interned, meaning that many objects
  *      may exist representing a single type.
