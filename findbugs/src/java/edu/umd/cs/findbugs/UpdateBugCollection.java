@@ -46,9 +46,11 @@ public class UpdateBugCollection {
 	 * 
 	 * @param collectionToUpdate the BugCollection containing all previous
 	 *                           BugInstances over the lifetime of the project;
-	 *                           will be modified
+	 *                           will be modified to include the BugInstances from
+	 *                           the most recent analysis
 	 * @param newCollection      a BugCollection containing new BugInstances from the
-	 *                           most recent analysis
+	 *                           most recent analysis; will also be modified
+	 *                           (and should not be used again)
 	 */
  	public UpdateBugCollection(BugCollection collectionToUpdate, BugCollection newCollection) {
 		this.collectionToUpdate = collectionToUpdate;
@@ -244,6 +246,8 @@ public class UpdateBugCollection {
 		
 		UpdateBugCollection updater = new UpdateBugCollection(origCollection, newCollection);
 		updater.execute();
+		
+		// FIXME: should transfer analysis errors and missing classes
 		
 		origCollection.writeXML(outputFileName, currentProject);
 	}
