@@ -30,9 +30,11 @@ import java.io.Writer;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.TreeSet;
@@ -354,6 +356,62 @@ public class ConvertToARFF {
 		
 	}
 
+	private static final String RANDOM_CHARS =
+		"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+	
+	public static class RandomIdAttribute implements Attribute {
+		
+		private Random rng = new Random();
+		private IdentityHashMap<Element, String> idMap = new IdentityHashMap<Element, String>();
+
+		/* (non-Javadoc)
+		 * @see edu.umd.cs.findbugs.ml.ConvertToARFF.Attribute#getName()
+		 */
+		public String getName() {
+			return "idr";
+		}
+
+		/* (non-Javadoc)
+		 * @see edu.umd.cs.findbugs.ml.ConvertToARFF.Attribute#scan(org.dom4j.Element, java.lang.String)
+		 */
+		public void scan(Element element, String appName) throws MissingNodeException {
+			idMap.put(element, generateId());
+		}
+
+		private String generateId() {
+			StringBuffer buf = new StringBuffer();
+			
+			for (int i = 0; i < 20; ++i) {
+				char c = RANDOM_CHARS.charAt(rng.nextInt(RANDOM_CHARS.length()));
+				buf.append(c);
+			}
+			
+			return buf.toString();
+		}
+
+		/* (non-Javadoc)
+		 * @see edu.umd.cs.findbugs.ml.ConvertToARFF.Attribute#getRange()
+		 */
+		public String getRange() {
+			TreeSet<String> range = new TreeSet<String>();
+			range.addAll(idMap.values());
+			if (range.size() != idMap.size())
+				throw new IllegalStateException("id collision!");
+			return collectionToRange(range);
+		}
+
+		/* (non-Javadoc)
+		 * @see edu.umd.cs.findbugs.ml.ConvertToARFF.Attribute#getInstanceValue(org.dom4j.Element, java.lang.String)
+		 */
+		public String getInstanceValue(Element element, String appName) throws MissingNodeException {
+			String id = idMap.get(element);
+			if (id == null)
+				throw new IllegalStateException("Element not scanned?");
+			return "\"" + id + "\"";
+		}
+		
+	}
+	
 	public static class AppNameAttribute implements Attribute {
 		private Set<String> appNameSet = new TreeSet<String>();
 
@@ -614,6 +672,7 @@ public class ConvertToARFF {
 			addSwitch("-train", "drop unclassified warnings");
 			addSwitch("-id", "add unique id attribute (as nominal)");
 			addSwitch("-ids", "add unique id attribute (as string)");
+			addSwitch("-idr", "add random unique id attribtue (as nominal)");
 			addSwitch("-app", "add application name attribute");
 			addSwitch("-default", "add default attributes");
 			addOption("-nominal", "attrName,xpath", "add a nominal attribute");
@@ -635,6 +694,8 @@ public class ConvertToARFF {
 				converter.addIdAttribute();
 			} else if (option.equals("-ids")) {
 				converter.addAttribute(new IdStringAttribute());
+			} else if (option.equals("-idr")) {
+				converter.addAttribute(new RandomIdAttribute());
 			} else if (option.equals("-app")) {
 				converter.addAppNameAttribute();
 			} else if (option.equals("-default")) {
