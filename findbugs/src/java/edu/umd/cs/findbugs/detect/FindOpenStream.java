@@ -36,6 +36,31 @@ public class FindOpenStream extends ResourceTrackingDetector<Stream, StreamResou
 	static final boolean DEBUG = Boolean.getBoolean("fos.debug");
 	static final boolean IGNORE_WRAPPED_UNINTERESTING_STREAMS = !Boolean.getBoolean("fos.allowWUS");
 
+	static final StreamFactory[] streamFactoryList = new StreamFactory[9];
+	static {
+		int count = 0;
+		streamFactoryList[count++] = new IOStreamFactory("java.io.InputStream",
+			new String[]{"java.io.ByteArrayInputStream", "java.io.ObjectInputStream"});
+		streamFactoryList[count++] = new IOStreamFactory("java.io.OutputStream",
+			new String[]{"java.io.ByteArrayOutputStream", "java.io.ObjectOutputStream"});
+		streamFactoryList[count++] = new IOStreamFactory("java.io.Reader",
+			new String[]{"java.io.StringReader", "java.io.CharArrayReader"});
+		streamFactoryList[count++] = new IOStreamFactory("java.io.Writer",
+			new String[]{"java.io.StringWriter", "java.io.CharArrayWriter"});
+		streamFactoryList[count++] = new MethodReturnValueStreamFactory("java.net.Socket",
+			"getInputStream", "()Ljava/io/InputStream;", true);
+		streamFactoryList[count++] = new MethodReturnValueStreamFactory("java.net.Socket",
+			"getOutputStream", "()Ljava/io/OutputStream;", true);
+		streamFactoryList[count++] = new StaticFieldLoadStreamFactory("java.io.InputStream",
+			"java.lang.System", "in", "Ljava/io/InputStream;", true);
+		streamFactoryList[count++] = new StaticFieldLoadStreamFactory("java.io.OutputStream",
+			"java.lang.System", "out", "Ljava/io/PrintStream;", true);
+		streamFactoryList[count++] = new StaticFieldLoadStreamFactory("java.io.OutputStream",
+			"java.lang.System", "err", "Ljava/io/PrintStream;", true);
+
+		if (count != streamFactoryList.length) throw new IllegalStateException();
+	}
+
 	/* ----------------------------------------------------------------------
 	 * Helper classes
 	 * ---------------------------------------------------------------------- */
@@ -73,7 +98,7 @@ public class FindOpenStream extends ResourceTrackingDetector<Stream, StreamResou
 	}
 
 	public StreamResourceTracker getResourceTracker(ClassContext classContext, Method method) {
-		return new StreamResourceTracker(bugReporter);
+		return new StreamResourceTracker(streamFactoryList, bugReporter);
 	}
 
 	public static boolean isMainMethod(Method method) {
@@ -157,7 +182,7 @@ public class FindOpenStream extends ResourceTrackingDetector<Stream, StreamResou
 		ResourceValueAnalysisTestDriver<Stream, StreamResourceTracker> driver =
 			new ResourceValueAnalysisTestDriver<Stream, StreamResourceTracker>() {
 			public StreamResourceTracker createResourceTracker(ClassContext classContext, Method method) {
-				return new StreamResourceTracker(classContext.getLookupFailureCallback());
+				return new StreamResourceTracker(streamFactoryList, classContext.getLookupFailureCallback());
 			}
 		};
 

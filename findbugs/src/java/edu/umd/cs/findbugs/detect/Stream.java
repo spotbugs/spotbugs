@@ -28,6 +28,8 @@ import org.apache.bcel.generic.InstructionHandle;
 /**
  * A Stream object marks the location in the code where a
  * stream is created.
+ *
+ * TODO: change streamClass and streamBase to ObjectType
  */
 public class Stream extends ResourceCreationPoint {
 	private String streamBase;

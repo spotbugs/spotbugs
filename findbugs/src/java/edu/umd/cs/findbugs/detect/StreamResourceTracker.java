@@ -43,13 +43,16 @@ import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.NEW;
+import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.Type;
+import org.apache.bcel.generic.TypedInstruction;
 
 /**
  * Resource tracker which determines where streams are created,
  * and how they are used within the method.
  */
 public class StreamResourceTracker implements ResourceTracker<Stream> {
+	private StreamFactory[] streamFactoryList;
 	private RepositoryLookupFailureCallback lookupFailureCallback;
 
 	/** Set of all stream construction points. */
@@ -61,13 +64,28 @@ public class StreamResourceTracker implements ResourceTracker<Stream> {
 	/** Set of all (potential) stream escapes. */
 	private TreeSet<StreamEscape> streamEscapeSet;
 
-	public StreamResourceTracker(RepositoryLookupFailureCallback lookupFailureCallback) {
+	/**
+	 * Constructor.
+	 * @param streamFactoryList array of StreamFactory objects which determine
+	 *   where streams are created
+	 * @param lookupFailureCallback used when class hierarchy lookups fail
+	 */
+	public StreamResourceTracker(StreamFactory[] streamFactoryList,
+		RepositoryLookupFailureCallback lookupFailureCallback) {
+
+		this.streamFactoryList = streamFactoryList;
 		this.lookupFailureCallback = lookupFailureCallback;
 		this.streamConstructionSet = new BitSet();
 		this.uninterestingStreamEscapeSet = new BitSet();
 		this.streamEscapeSet = new TreeSet<StreamEscape>();
 	}
 
+	/**
+	 * Indicate that a stream created at given source instruction
+	 * escapes at the given target instruction.
+	 * @param source the source instruction (creation point of the escaping stream)
+	 * @param target the target instruction (point where the stream escapes)
+	 */
 	public void addStreamEscape(InstructionHandle source, InstructionHandle target) {
 		StreamEscape streamEscape = new StreamEscape(source, target);
 		streamEscapeSet.add(streamEscape);
@@ -75,6 +93,12 @@ public class StreamResourceTracker implements ResourceTracker<Stream> {
 			System.out.println("Adding potential stream escape " + streamEscape);
 	}
 
+	/**
+	 * Transitively mark all streams into which uninteresting streams
+	 * (such as System.out) escape.  This handles the rule that
+	 * wrapping an uninteresting stream makes the wrapper uninteresting
+	 * as well.
+	 */
 	public void markTransitiveUninterestingStreamEscapes() {
 		// Eliminate all stream escapes where the target isn't really
 		// a stream construction point.
@@ -106,10 +130,23 @@ public class StreamResourceTracker implements ResourceTracker<Stream> {
 		} while (!orig.equals(uninterestingStreamEscapeSet));
 	}
 
+	/**
+	 * Determine if an uninteresting stream escapes at given instruction.
+	 * markTransitiveUninterestingStreamEscapes() should be called first.
+	 * @param handle the instruction
+	 * @return true if an uninteresting stream escapes at the instruction
+	 */
 	public boolean isUninterestingStreamEscape(InstructionHandle handle) {
 		return uninterestingStreamEscapeSet.get(handle.getPosition());
 	}
 
+	/**
+	 * Indicate that a stream is constructed at this instruction.
+	 * @param streamConstruction the instruction
+	 * @param isUninteresting true if the stream is "uninteresting", like System.out;
+	 *   this defines the root set of uninteresting streams that
+	 *   markTransitiveUninterestingStreamEscapes() will build upon
+	 */
 	public void addStreamConstruction(InstructionHandle streamConstruction,
 		boolean isUninteresting) {
 		if (FindOpenStream.DEBUG)
@@ -119,6 +156,10 @@ public class StreamResourceTracker implements ResourceTracker<Stream> {
 			uninterestingStreamEscapeSet.set(streamConstruction.getPosition());
 	}
 
+	/**
+	 * Determine if given instruction is a stream construction point.
+	 * @param handle the instruction
+	 */
 	private boolean isStreamConstruction(InstructionHandle handle) {
 		return streamConstructionSet.get(handle.getPosition());
 	}
@@ -126,103 +167,25 @@ public class StreamResourceTracker implements ResourceTracker<Stream> {
 	public Stream isResourceCreation(BasicBlock basicBlock, InstructionHandle handle,
 		ConstantPoolGen cpg) {
 		Instruction ins = handle.getInstruction();
+		if (!(ins instanceof TypedInstruction))
+			return null;
+
+		Type type = ((TypedInstruction)ins).getType(cpg);
+		if (!(type instanceof ObjectType))
+			return null;
+
 		Location location = new Location(handle, basicBlock);
 
-		try {
-			if (ins instanceof NEW) {
-
-				NEW newIns = (NEW) ins;
-				Type type = newIns.getType(cpg);
-				String sig = type.getSignature();
-
-				if (!sig.startsWith("L") || !sig.endsWith(";"))
-					return null;
-
-				// Track any subclass of InputStream, OutputStream, Reader, and Writer
-				// (but not ByteArray/CharArray/String variants)
-				String className = sig.substring(1, sig.length() - 1).replace('/', '.');
-				if (Hierarchy.isSubtype(className, "java.io.InputStream")) {
-					boolean isUninteresting =
-						Hierarchy.isSubtype(className, "java.io.ByteArrayInputStream")
-						|| Hierarchy.isSubtype(className, "java.io.ObjectInputStream");
-					return new Stream(location, className, "java.io.InputStream", isUninteresting, true);
-
-				} else if (Hierarchy.isSubtype(className, "java.io.OutputStream")) {
-					boolean isUninteresting =
-						Hierarchy.isSubtype(className, "java.io.ByteArrayOutputStream")
-						|| Hierarchy.isSubtype(className, "java.io.ObjectOutputStream");
-					return new Stream(location, className, "java.io.OutputStream", isUninteresting, true);
-
-				} else if (Hierarchy.isSubtype(className, "java.io.Reader")) {
-					boolean isUninteresting =
-						Hierarchy.isSubtype(className, "java.io.StringReader")
-						|| Hierarchy.isSubtype(className, "java.io.CharArrayReader");
-					return new Stream(location, className, "java.io.Reader", isUninteresting, true);
-
-				} else if (Hierarchy.isSubtype(className, "java.io.Writer")) {
-					boolean isUninteresting =
-						Hierarchy.isSubtype(className, "java.io.StringWriter")
-						|| Hierarchy.isSubtype(className, "java.io.CharArrayWriter");
-					return new Stream(location, className, "java.io.Writer", isUninteresting, true);
-
-				}
-
-			} else if (ins instanceof INVOKEVIRTUAL) {
-				// Look for socket input and output streams.
-				// We don't want to track these, because they don't
-				// need to be closed as long as the socket is closed.
-
-				INVOKEVIRTUAL inv = (INVOKEVIRTUAL) ins;
-				String className = inv.getClassName(cpg);
-
-				if (Hierarchy.isSubtype(className, "java.net.Socket")) {
-					String methodName = inv.getName(cpg);
-					String methodSig = inv.getSignature(cpg);
-					if (FindOpenStream.DEBUG)
-						System.out.println("Socket call: " + methodName + " : " + methodSig);
-
-					if (methodName.equals("getOutputStream")
-						&& methodSig.endsWith(")Ljava/io/OutputStream;")) {
-						return new Stream(location, "java.io.OutputStream", "java.io.OutputStream",
-							true, true, true);
-						
-					} else if (methodName.equals("getInputStream")
-						&& methodSig.endsWith(")Ljava/io/InputStream;")) {
-						return new Stream(location, "java.io.InputStream", "java.io.InputStream",
-							true, true, true);
-					}
-				}
-
-			} else if (ins instanceof GETSTATIC) {
-				// Look for System.in, System.out, System.err.
-				// Streams wrapping these don't need to be closed.
-
-				GETSTATIC getstatic = (GETSTATIC) ins;
-				String className = getstatic.getClassName(cpg);
-
-				if (className.equals("java.lang.System")) {
-					String fieldName = getstatic.getName(cpg);
-					String fieldSig = getstatic.getSignature(cpg);
-
-					if (fieldName.equals("in") && fieldSig.equals("Ljava/io/InputStream;")) {
-						return new Stream(location, "java.io.InputStream", "java.io.InputStream",
-							true, true, true);
-
-					} else if ((fieldName.equals("out") || fieldName.equals("err")) &&
-						fieldSig.equals("Ljava/io/PrintStream;")) {
-						return new Stream(location, "java.io.PrintStream", "java.io.OutputStream",
-							true, true, true);
-
-					}
-				}
-			}
-
-			return null;
-				
-		} catch (ClassNotFoundException e) {
-			lookupFailureCallback.reportMissingClass(e);
-			return null;
+		// All StreamFactories are given an opportunity to
+		// look at the location and possibly identify a created stream.
+		for (int i = 0; i < streamFactoryList.length; ++i) {
+			Stream stream = streamFactoryList[i].createStream(location, (ObjectType) type,
+				cpg, lookupFailureCallback);
+			if (stream != null)
+				return stream;
 		}
+
+		return null;
 	}
 
 	public boolean isResourceOpen(BasicBlock basicBlock, InstructionHandle handle,
