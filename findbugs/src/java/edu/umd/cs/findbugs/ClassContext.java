@@ -78,11 +78,13 @@ public class ClassContext {
 	 * Get a CFG for given method.
 	 * @param method the method
 	 * @return the CFG
+	 * @throws CFGBuilderException if a CFG cannot be constructed for the method
 	 */
-	public CFG getCFG(Method method) {
+	public CFG getCFG(Method method) throws CFGBuilderException {
 		CFG cfg = cfgMap.get(method);
 		if (cfg == null) {
 			MethodGen methodGen = getMethodGen(method);
+			//System.out.println("Building CFG for " + methodGen.getClassName() + "." + methodGen.getName() + ":" + methodGen.getSignature());
 			CFGBuilder cfgBuilder = CFGBuilderFactory.create(methodGen);
 			cfgBuilder.build();
 			cfg = cfgBuilder.getCFG();
@@ -108,7 +110,7 @@ public class ClassContext {
 	 * @param method the method
 	 * @return the ValueNumberDataflow
 	 */
-	public ValueNumberDataflow getValueNumberDataflow(Method method) throws DataflowAnalysisException {
+	public ValueNumberDataflow getValueNumberDataflow(Method method) throws DataflowAnalysisException, CFGBuilderException {
 		ValueNumberDataflow vnaDataflow = vnaDataflowMap.get(method);
 		if (vnaDataflow == null) {
 			MethodGen methodGen = getMethodGen(method);
@@ -126,7 +128,7 @@ public class ClassContext {
 	 * @param method the method
 	 * @return the IsNullValueDataflow
 	 */
-	public IsNullValueDataflow getIsNullValueDataflow(Method method) throws DataflowAnalysisException {
+	public IsNullValueDataflow getIsNullValueDataflow(Method method) throws DataflowAnalysisException, CFGBuilderException {
 		IsNullValueDataflow invDataflow = invDataflowMap.get(method);
 		if (invDataflow == null) {
 			MethodGen methodGen = getMethodGen(method);
@@ -147,7 +149,7 @@ public class ClassContext {
 	 * @param method the method
 	 * @return the DepthFirstSearch
 	 */
-	public DepthFirstSearch getDepthFirstSearch(Method method) {
+	public DepthFirstSearch getDepthFirstSearch(Method method) throws CFGBuilderException {
 		DepthFirstSearch dfs = dfsMap.get(method);
 		if (dfs == null) {
 			CFG cfg = getCFG(method);

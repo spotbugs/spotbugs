@@ -82,6 +82,8 @@ public class FindNullDeref implements Detector {
 
 		} catch (DataflowAnalysisException e) {
 			throw new AnalysisException("FindNullDeref caught exception", e);
+		} catch (CFGBuilderException e) {
+			throw new AnalysisException(e.getMessage());
 		}
 	}
 

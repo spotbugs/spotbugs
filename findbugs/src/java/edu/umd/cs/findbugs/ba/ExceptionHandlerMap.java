@@ -38,6 +38,7 @@ import org.apache.bcel.generic.*;
 public class ExceptionHandlerMap {
 	private IdentityHashMap<InstructionHandle, List<CodeExceptionGen>> codeToHandlerMap;
 	private IdentityHashMap<InstructionHandle, CodeExceptionGen> startInstructionToHandlerMap;
+	private HashSet<InstructionHandle> coveredByUniversalHandler;
 
 	/**
 	 * Constructor.
@@ -46,6 +47,7 @@ public class ExceptionHandlerMap {
 	public ExceptionHandlerMap(MethodGen methodGen) {
 		codeToHandlerMap = new IdentityHashMap<InstructionHandle, List<CodeExceptionGen>>();
 		startInstructionToHandlerMap = new IdentityHashMap<InstructionHandle, CodeExceptionGen>();
+		coveredByUniversalHandler = new HashSet<InstructionHandle>();
 		build(methodGen);
 	}
 
@@ -74,8 +76,11 @@ public class ExceptionHandlerMap {
 
 	private void build(MethodGen methodGen) {
 		CodeExceptionGen[] handlerList = methodGen.getExceptionHandlers();
+
+		// Process exception handlers in decreasing order of priority.
 		for (int i = 0; i < handlerList.length; ++i) {
 			CodeExceptionGen exceptionHandler = handlerList[i];
+			boolean isUniversalHandler = (exceptionHandler.getCatchType() == null);
 
 			startInstructionToHandlerMap.put(exceptionHandler.getHandlerPC(), exceptionHandler);
 
@@ -85,7 +90,18 @@ public class ExceptionHandlerMap {
 
 			do {
 				handle = next;
-				addHandler(handle, exceptionHandler);
+
+				// We can only add an exception edge if the instruction isn't already handled
+				// by a universal handler.
+				if (!coveredByUniversalHandler.contains(handle)) {
+					addHandler(handle, exceptionHandler);
+
+					// If this is a universal handler, then no other (lower-priority)
+					// exception handlers are reachable.
+					if (isUniversalHandler)
+						coveredByUniversalHandler.add(handle);
+				}
+
 				next = handle.getNext();
 			} while (handle != end);
 		}

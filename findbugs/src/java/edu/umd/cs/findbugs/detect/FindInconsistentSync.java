@@ -132,7 +132,11 @@ public class FindInconsistentSync extends CFGBuildingDetector {
 				return !method.isPublic();
 			}
 		};
-		selfCalls.execute();
+		try {
+			selfCalls.execute();
+		} catch (CFGBuilderException e) {
+			throw new AnalysisException(e.getMessage());
+		}
 
 		// If the class contains ABSOLUTELY NO EXPLICIT SYNCHRONIZATION,
 		// then don't bother examining call sites.  That would only confuse matters.
@@ -163,7 +167,12 @@ public class FindInconsistentSync extends CFGBuildingDetector {
 						continue siteLoop;
 
 					// Get lock counts for call site method
-					CFG cfg = classContext.getCFG(method);
+					CFG cfg;
+					try {
+						cfg = classContext.getCFG(method);
+					} catch (CFGBuilderException e) {
+						throw new AnalysisException(e.getMessage());
+					}
 					MethodGen methodGen = classContext.getMethodGen(method);
 					Dataflow<LockCount> dataflow = getLockCountDataflow(cfg, methodGen);
 

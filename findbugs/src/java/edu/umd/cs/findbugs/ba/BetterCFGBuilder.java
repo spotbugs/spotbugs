@@ -217,7 +217,7 @@ public class BetterCFGBuilder implements CFGBuilder, EdgeTypes {
 	/**
 	 * Build the CFG.
 	 */
-	public void build() {
+	public void build() throws CFGBuilderException {
 		BasicBlock startBlock = getBlock(methodGen.getInstructionList().getStart(), new LinkedList<InstructionHandle>());
 		addEdge(cfg.getEntry(), startBlock, START_EDGE);
 
@@ -301,6 +301,16 @@ public class BetterCFGBuilder implements CFGBuilder, EdgeTypes {
 
 				// Handle JSR, RET, and explicit branches.
 				if (ins instanceof JsrInstruction) {
+
+					// FIXME: the way we currently model JSRs (stack of call sites)
+					// is, unfortunately, too simplistic.  Control can legally leave a
+					// JSR subroutine by means other than RET, but in our simplisitic model,
+					// this looks like recursion!  In this case, we give up and throw
+					// CFGBuilderException.
+					if (jsrStack.contains(handle))
+						throw new CFGBuilderException("Cannot construct CFG for " + methodGen.getClassName() + "." + methodGen.getName() +
+							": confusing JSR control flow");
+
 					// Remember where we came from
 					jsrStack.addLast(handle);
 
@@ -437,7 +447,7 @@ public class BetterCFGBuilder implements CFGBuilder, EdgeTypes {
 		return true;
 	}
 
-	private static final int MAX_BLOCKS = Integer.getInteger("cfgbuilder.maxBlocks", 5000).intValue();
+	private static final int MAX_BLOCKS = Integer.getInteger("cfgbuilder.maxBlocks", 10000).intValue();
 
 	/**
 	 * Get the basic block for given start instruction.

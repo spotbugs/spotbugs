@@ -67,7 +67,7 @@ public abstract class DataflowTestDriver<Fact> {
 	 * Execute the analysis on a single class.
 	 * @param filename the name of the class file
 	 */
-	public void execute(String filename) throws DataflowAnalysisException, IOException {
+	public void execute(String filename) throws DataflowAnalysisException, CFGBuilderException, IOException {
 		JavaClass jclass = new RepositoryClassParser(filename).parse();
 		ClassGen cg = new ClassGen(jclass);
 		ConstantPoolGen cpg = cg.getConstantPool();

@@ -84,6 +84,8 @@ public abstract class ByteCodePatternDetector implements Detector {
 			}
 		} catch (DataflowAnalysisException e) {
 			throw new AnalysisException("BCPDoubleCheck caught exception", e);
+		} catch (CFGBuilderException e) {
+			throw new AnalysisException(e.getMessage());
 		}
 	}
 

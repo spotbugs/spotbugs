@@ -30,7 +30,7 @@ public interface CFGBuilder {
 	/**
 	 * Build the CFG.
 	 */
-	public void build();
+	public void build() throws CFGBuilderException;
 
 	/**
 	 * Get the CFG built by this object.

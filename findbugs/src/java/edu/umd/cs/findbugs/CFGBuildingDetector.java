@@ -73,7 +73,12 @@ public abstract class CFGBuildingDetector implements Detector {
 				continue;
 
 			// Get the CFG for the method from the ClassContext
-			CFG cfg = classContext.getCFG(method);
+			CFG cfg;
+			try {
+				cfg = classContext.getCFG(method);
+			} catch (CFGBuilderException e) {
+				throw new AnalysisException(e.getMessage());
+			}
 
 			if (PRINTCFG) {
 				CFGPrinter printer = new CFGPrinter(cfg);

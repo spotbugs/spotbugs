@@ -41,7 +41,7 @@ public class SelfCalls {
 		hasSynchronization = false;
 	}
 
-	public void execute() {
+	public void execute() throws CFGBuilderException {
 		JavaClass jclass = classContext.getJavaClass();
 		Method[] methods = jclass.getMethods();
 		for (int i = 0; i < methods.length; ++i) {

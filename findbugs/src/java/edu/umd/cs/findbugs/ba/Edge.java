@@ -20,6 +20,7 @@
 package edu.umd.cs.daveho.ba;
 
 import java.util.*;
+import org.apache.bcel.generic.InstructionHandle;
 
 /**
  * An edge of the control flow graph.
@@ -147,7 +148,48 @@ public class Edge implements EdgeTypes, Comparable {
 
     /** Return a string representation of the edge. */
     public String toString() {
-	return "EDGE(" + id + ") type " + edgeTypeToString(type) +" from block " + source.getId()+ " to block " + dest.getId();
+	StringBuffer buf = new StringBuffer();
+	buf.append("EDGE(");
+	buf.append(id);
+	buf.append(") type ");
+	buf.append(edgeTypeToString(type));
+	buf.append(" from block ");
+	buf.append(source.getId());
+	buf.append(" to block ");
+	buf.append(dest.getId());
+	InstructionHandle src = source.getLastInstruction();
+	InstructionHandle dst = dest.getFirstInstruction();
+	String exInfo = " -> ";
+	if (dst == null && dest.isExceptionThrower()) {
+	    dst = dest.getExceptionThrower();
+	    exInfo = " => ";
+	}
+	if (src != null && dst != null) {
+	    buf.append(" [bytecode ");
+	    buf.append(src.getPosition());
+	    buf.append(exInfo);
+	    buf.append(dst.getPosition());
+	    buf.append(']');
+	} else if (source.isExceptionThrower()) {
+	    if (type == FALL_THROUGH_EDGE)
+	    	buf.append(" [successful check]");
+	    else {
+		buf.append(" [failed check for ");
+		buf.append(source.getExceptionThrower().getPosition());
+		if (dst != null) {
+		    buf.append(" to ");
+		    buf.append(dst.getPosition());
+		}
+		buf.append(']');
+	    }
+	}
+/* else if (source.isExceptionThrower()) {
+	    buf.append(" [src is thrower for ");
+	    buf.append(source.getExceptionThrower().getPosition());
+	    buf.append(']');
+	}
+*/
+	return buf.toString();
     }
 
     /** Get string representing given edge type. */
