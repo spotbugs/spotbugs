@@ -397,6 +397,9 @@ public class ConvertToARFF {
 	}
 
 	public static void main(String[] argv) throws Exception {
+		// Expand any option files
+		argv = CommandLine.expandOptionFiles(argv);
+
 		// Parse command line arguments
 		C2ACommandLine commandLine = new C2ACommandLine();
 		int argCount = commandLine.parse(argv);
