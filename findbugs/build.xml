@@ -297,6 +297,8 @@
         <classpath refid="classpath" />
       </javac>
  
+      <copy file="${anttask.src.dir}/edu/umd/cs/findbugs/anttask/tasks.properties" 
+            todir="${class.dir}/edu/umd/cs/findbugs/anttask"/>
       <jar destfile="${jar.dir}/${anttask.jar.name}"
           basedir="${class.dir}" includes="edu/umd/cs/findbugs/anttask/**" />
     </target>
