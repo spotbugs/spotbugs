@@ -233,7 +233,7 @@ public abstract class Frame<ValueType> implements Debug {
 		int stackDepth = getStackDepth();
 		if (loc >= stackDepth)
 			throw new DataflowAnalysisException("not enough values on stack");
-		return slotList.get(slotList.size() - loc);
+		return slotList.get(slotList.size() - (loc+1));
 	}
 
 	/**
@@ -249,7 +249,7 @@ public abstract class Frame<ValueType> implements Debug {
 		int numConsumed = ins.consumeStack(cpg);
 		if (numConsumed == Constants.UNPREDICTABLE)
 			throw new DataflowAnalysisException("Unpredictable stack consumption in " + ins);
-		return getStackValue(numConsumed);
+		return getStackValue(numConsumed - 1);
 	}
 
 	/**
