@@ -44,30 +44,6 @@ to find bugs at <a href="http://java.sun.com/javaone/">JavaOne 2004</a>.&nbsp;
 We will also be participating in a FindBugs BOF (Birds of a Feather)
 session.&nbsp; Hope to see you there!
 
-<p> Changes since version 0.7.3:
-
-<ul>
-<li> Experimental modification of open stream detector
-     to look for non-escaping JDBC resources
-     (connections and statements) that aren't
-     closed on all paths out of method
-<li> Eclipse plugin fixed so it compiles and runs on Eclipse 2.1.x
-     (Peter Friese)
-<li> Option to Swing GUI and command line to generate project file
-     using relative paths for archives, source directories,
-     and aux classpath entries (Dave Brosius)
-<li> Improvements to findbugs.bat script for launching FindBugs
-     on Windows (Dave Brosius)
-<li> Updated Japanese message translations (Hiroshi Okugawa)
-<li> Uncalled private methods are now reported as low priority,
-     unless they have the same name as another method in the class
-     (which is more likely to indicate an actual bug)
-<li> Added some missing data in the bug messages XML files
-<li> Fixed some problems building from source on Windows systems
-<li> Various minor bug fixes
-</ul>
-
-<!--
 <p> Changes since version 0.7.4:
 
 <ul>
@@ -76,6 +52,8 @@ session.&nbsp; Hope to see you there!
 <li> Reference comparision detector looks for places where the
      argument passed to the equals(Object) method isn't the
      same type as the receiver object
+<li> Many improvements to Eclipse plugin (Andrei Loskutov,
+     Peter Friese)
 <li> Fixed problem with building Eclipse plugin on Windows
      (Thomas Klaeger)
 <li> Open stream detector looks for unclosed PreparedStatement
@@ -85,7 +63,6 @@ session.&nbsp; Hope to see you there!
 <li> Refactoring of visitor classes to enforce
      use of accessors for visited class features (Brian Goetz)
 </ul>
--->
 
 <p> <a href="Changes.html">Older versions...</a>
 
