@@ -1239,6 +1239,16 @@ using the &FindBugs; task.
     </listitem>
   </varlistentry>
 
+  <varlistentry>
+    <term><literal>errorProperty</literal></term>
+    <listitem>
+       <para>
+       Optional attribute which specifies the name of a property that
+       will be set to "true" if an error occurs while running &FindBugs;.
+       </para>
+    </listitem>
+  </varlistentry>
+
 </variablelist>
 
 
@@ -1821,6 +1831,12 @@ in the Swing GUI.</para>
 
 <para>Hanai Shisei contributed full Japanese translations of
 bug messages, and text used in the Swing GUI.</para>
+
+<para>David Cotton contributed Fresh translations for bug
+messages and for the Swing GUI.</para>
+
+<para>Michael Tamm contributed support for the "errorProperty" attribute
+in the Ant task.</para>
 
 <para>If you have contributed to &FindBugs;, but aren't mentioned above,
 please send email to <email>daveho@cs.umd.edu</email> (and also accept
