@@ -1113,7 +1113,6 @@ using the &FindBugs; task.
     </listitem>
   </varlistentry>
 
-
   <varlistentry>
     <term><literal>timeout</literal></term>
     <listitem>
@@ -1124,6 +1123,16 @@ using the &FindBugs; task.
        milliseconds, which is ten minutes.  Note that for very large
        programs, &FindBugs; may require more than ten minutes to complete its 
        analysis.
+       </para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><literal>failOnError</literal></term>
+    <listitem>
+       <para>
+       Optional attribute.  Whether to abort the build process if there is an 
+       error running &FindBugs;. Defaults to "false"
        </para>
     </listitem>
   </varlistentry>
@@ -1212,16 +1221,16 @@ In other words, each of the children must be true for the predicate to be true.
 <variablelist>
  <varlistentry>
    <term><literal>&lt;BugCode&gt;</literal></term>
-   <listitem>
+   <listitem><para>
     This element specifies abbreviations of bugs.
    The <literal>name</literal> attribute is a comma-seperated list of abbreviations.
-   </listitem>
+   </para></listitem>
  </varlistentry>
 
  <varlistentry>
    <term><literal>&lt;Method&gt;</literal></term>
 
-   <listitem> This element specifies a method.  The <literal>name</literal> attribute is the name
+   <listitem><para>This element specifies a method.  The <literal>name</literal> attribute is the name
    of the method.  The <literal>params</literal> attribute is a comma separated list
    of the types of the method's parameters.  The <literal>returns</literal> attribute is
    the method's return type.  In <literal>params</literal> and <literal>returns</literal>, class names
@@ -1230,15 +1239,15 @@ In other words, each of the children must be true for the predicate to be true.
    just specify <literal>name</literal>, and the clause will match all methods with
    that name.  However, if you specify either <literal>params</literal> or <literal>returns</literal>,
    you must specify both of them.
-  </listitem>
+   </para></listitem>
  </varlistentry>
 
  <varlistentry>
    <term><literal>&lt;Or&gt;</literal></term>
-    <listitem>
+    <listitem><para>
    This element combines <literal>Match</literal> clauses as disjuncts.  I.e., you can put two
    <literal>Method</literal> elements in an <literal>Or</literal> clause in order match either method.
-    </listitem>
+   </para></listitem>
  </varlistentry>
 </variablelist>
 
@@ -1421,8 +1430,8 @@ summaries.</para>
 <sect1>
 <title>Software Used</title>
 
-&FindBugs; uses several open-source software packages, without which its
-development would have been much more difficult.
+<para>&FindBugs; uses several open-source software packages, without which its
+development would have been much more difficult.</para>
 
 <sect2>
 <title>BCEL</title>

@@ -78,6 +78,7 @@ import java.util.List;
  * <li>auxClasspath    (classpath or classpathRef)
  * <li>home            (findbugs install dir)
  * <li>quietErrors     (boolean - default false)
+ * <li>failOnError     (boolean - default false)
  * <li>reportLevel     (enum low|medium|high)
  * <li>sort            (boolean default true)
  * <li>debug           (boolean default false) 
@@ -100,7 +101,7 @@ import java.util.List;
  *
  * @author Mike Fagan <a href="mailto:mfagan@tde.com">mfagan@tde.com</a>
  *
- * @version $Revision: 2.0
+ * @version $Revision: 1.21 $
  *
  * @since Ant 1.5
  *
@@ -116,6 +117,7 @@ public class FindBugsTask extends Task {
 	private boolean conserveSpace = false;
 	private boolean sorted = true;
 	private boolean quietErrors = false;
+	private boolean failOnError = false;
 	private File homeDir = null;
 	private File projectFile = null;
 	private File excludeFile = null;
@@ -203,10 +205,17 @@ public class FindBugsTask extends Task {
 	}
 
 	/**
-	 * Set the quietError flag
+	 * Set the quietErrors flag
 	 */
 	public void setQuietErrors(boolean flag) {
 		this.quietErrors = flag;
+	}
+
+	/**
+	 * Set the failOnError flag
+	 */
+	public void setFailOnError(boolean flag) {
+		this.failOnError = flag;
 	}
 
 	/**
@@ -326,7 +335,13 @@ public class FindBugsTask extends Task {
 
 	public void execute() throws BuildException {
 		checkParameters();
-		execFindbugs();
+		try {
+			execFindbugs();
+		} catch (BuildException e) {
+			if (failOnError) {
+				throw e;
+			}
+		}
 	}
 
 	/**
