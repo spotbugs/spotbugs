@@ -32,6 +32,8 @@ import java.util.*;
  * @author David Hovemeyer
  */
 public class MergeResults {
+	private static final boolean VERSION_INSENSITIVE = Boolean.getBoolean("mergeResults.vi");
+
 	public static void main(String[] argv) throws Exception {
 		if (argv.length != 3) {
 			System.err.println("Usage: " + MergeResults.class.getName() + " <orig results> <new results> <output file>");
@@ -52,15 +54,19 @@ public class MergeResults {
 		origCollection.readXML(origResultsFile, new Project());
 		newCollection.readXML(newResultsFile, project);
 
+		SortedSet<BugInstance> origSet = createSet(origCollection);
+		SortedSet<BugInstance> newSet = createSet(newCollection);
+
 		int numPreserved = 0;
 		int numLost = 0;
 		int numLostWithAnnotations = 0;
 
-		Iterator<BugInstance> i = origCollection.iterator();
+		Iterator<BugInstance> i = origSet.iterator();
 		while (i.hasNext()) {
 			BugInstance orig = i.next();
-			if (newCollection.contains(orig)) {
-				BugInstance matching = newCollection.getMatching(orig);
+			if (newSet.contains(orig)) {
+				SortedSet<BugInstance> tailSet = newSet.tailSet(orig);
+				BugInstance matching = tailSet.first();
 				matching.setAnnotationText(orig.getAnnotationText());
 				numPreserved++;
 			} else {
@@ -81,6 +87,14 @@ public class MergeResults {
 			numLost + " lost (" + numLostWithAnnotations + " lost with annotations)");
 
 		newCollection.writeXML(outputFile, project);
+	}
+
+	private static SortedSet<BugInstance> createSet(BugCollection bugCollection) {
+		TreeSet<BugInstance> set = VERSION_INSENSITIVE
+			? new TreeSet<BugInstance>(VersionInsensitiveBugComparator.instance())
+			: new TreeSet<BugInstance>();
+		set.addAll(bugCollection.getCollection());
+		return set;
 	}
 }
 
