@@ -190,51 +190,12 @@ public class StreamResourceTracker implements ResourceTracker<Stream> {
 
 	public boolean isResourceOpen(BasicBlock basicBlock, InstructionHandle handle,
 		ConstantPoolGen cpg, Stream resource, ResourceValueFrame frame) {
-
-		Instruction ins = handle.getInstruction();
-
-		if (ins instanceof INVOKESPECIAL) {
-			// Does this instruction open the stream?
-			INVOKESPECIAL inv = (INVOKESPECIAL) ins;
-
-			if (frame.isValid() &&
-				getInstanceValue(frame, inv, cpg).isInstance() &&
-				matchMethod(inv, cpg, resource.getResourceClass(), "<init>"))
-				return true;
-		}
-
-		return false;
+		return resource.isStreamOpen(basicBlock, handle, cpg, frame);
 	}
 
 	public boolean isResourceClose(BasicBlock basicBlock, InstructionHandle handle,
 		ConstantPoolGen cpg, Stream resource, ResourceValueFrame frame) {
-
-		Instruction ins = handle.getInstruction();
-
-		if (ins instanceof INVOKEVIRTUAL) {
-			// Does this instruction close the stream?
-			INVOKEVIRTUAL inv = (INVOKEVIRTUAL) ins;
-
-			if (!frame.isValid() ||
-				!getInstanceValue(frame, inv, cpg).isInstance())
-				return false;
-
-			// It's a close if the invoked class is any subtype of the stream base class.
-			// (Basically, we may not see the exact original stream class,
-			// even though it's the same instance.)
-			try {
-				String streamBase = resource.getStreamBase();
-
-				return inv.getName(cpg).equals("close")
-					&& inv.getSignature(cpg).equals("()V")
-					&& Hierarchy.isSubtype(inv.getClassName(cpg), streamBase);
-			} catch (ClassNotFoundException e) {
-				lookupFailureCallback.reportMissingClass(e);
-				return false;
-			}
-		}
-
-		return false;
+		return resource.isStreamClose(basicBlock, handle, cpg, frame, lookupFailureCallback);
 	}
 
 	public ResourceValueFrameModelingVisitor createVisitor(Stream resource, ConstantPoolGen cpg) {
@@ -243,20 +204,6 @@ public class StreamResourceTracker implements ResourceTracker<Stream> {
 
 	public boolean ignoreImplicitExceptions(Stream resource) {
 		return resource.ignoreImplicitExceptions();
-	}
-
-	private ResourceValue getInstanceValue(ResourceValueFrame frame, InvokeInstruction inv,
-		ConstantPoolGen cpg) {
-		int numConsumed = inv.consumeStack(cpg);
-		if (numConsumed == Constants.UNPREDICTABLE)
-			throw new IllegalStateException();
-		return frame.getValue(frame.getNumSlots() - numConsumed);
-	}
-
-	private boolean matchMethod(InvokeInstruction inv, ConstantPoolGen cpg, String className,
-		String methodName) {
-		return inv.getClassName(cpg).equals(className)
-			&& inv.getName(cpg).equals(methodName);
 	}
 }
 
