@@ -1171,12 +1171,24 @@ This may lead to a <code>NullPointerException</code> when the code is executed.
     </Details>
   </BugPattern>
 
+  <BugPattern type="SI_INSTANCE_BEFORE_FINALS_ASSIGNED">
+    <ShortDescription></ShortDescription>
+    <LongDescription></LongDescription>
+    <Details>
+<![CDATA[
+<p> The class's static initializer creates an instance of the class
+before all of the final fields are assigned.
+]]>
+    </Details>
+  </BugPattern>
+
   <!-- BugCodes -->
 
   <BugCode abbrev="FI" >Incorrect use of finalizers</BugCode>
   <BugCode abbrev="ML" >Synchronization on updated field (Mutable Lock)</BugCode>
   <BugCode abbrev="UG" >Unsynchronized get method, synchronized set method</BugCode>
   <BugCode abbrev="IC" >Initialization circularity</BugCode>
+  <BugCode abbrev="SI" >Suspicious static initializer</BugCode>
   <BugCode abbrev="IS" >Inconsistent synchronization</BugCode>
   <BugCode abbrev="IS2" >Inconsistent synchronization</BugCode>
   <BugCode abbrev="Eq" >Covariant equals()</BugCode>
