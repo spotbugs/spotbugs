@@ -208,6 +208,25 @@ public class ExceptionSet {
 		}
 		return false;
 	}
+
+	public String toString() {
+		StringBuffer buf = new StringBuffer();
+		buf.append('{');
+		boolean first = true;
+		for (Iterator<ThrownException> i = iterator(); i.hasNext(); ) {
+			ThrownException thrownException = i.next();
+			if (first)
+				first = false;
+			else
+				buf.append(',');
+			boolean implicit = !thrownException.isExplicit();
+			if (implicit) buf.append('[');
+			buf.append(thrownException.getType().toString());
+			if (implicit) buf.append(']');
+		}
+		buf.append('}');
+		return buf.toString();
+	}
 }
 
 // vim:ts=4
