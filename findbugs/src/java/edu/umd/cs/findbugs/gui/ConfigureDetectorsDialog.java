@@ -82,6 +82,9 @@ public class ConfigureDetectorsDialog extends javax.swing.JDialog {
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 closeDialog(evt);
             }
+            public void windowOpened(java.awt.event.WindowEvent evt) {
+                formWindowOpened(evt);
+            }
         });
 
         detectorTableScrollPane.setBorder(new javax.swing.border.BevelBorder(javax.swing.border.BevelBorder.LOWERED));
@@ -212,6 +215,10 @@ public class ConfigureDetectorsDialog extends javax.swing.JDialog {
 
             pack();
         }//GEN-END:initComponents
+
+    private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
+        setTitle(L10N.getLocalString("dlg.configuredetectors_ttl", "Configure Detectors"));
+    }//GEN-LAST:event_formWindowOpened
 
 	/**
 	 * reverts the selected state of all the detectors to their defaults as specified in the findbugs.xml file
