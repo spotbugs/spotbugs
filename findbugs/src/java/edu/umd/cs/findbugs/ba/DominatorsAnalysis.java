@@ -64,9 +64,10 @@ public class DominatorsAnalysis extends AbstractDominatorsAnalysis {
 				System.exit(1);
 			}
 		};
+		AnalysisContext.instance().setLookupFailureCallback(lookupFailureCallback);
 
 		JavaClass jclass = new ClassParser(argv[0]).parse();
-		ClassContext classContext = new ClassContext(jclass, lookupFailureCallback);
+		ClassContext classContext = AnalysisContext.instance().getClassContext(jclass);
 
 		String methodName = System.getProperty("dominators.method");
 		boolean ignoreExceptionEdges = Boolean.getBoolean("dominators.ignoreExceptionEdges");
@@ -90,6 +91,12 @@ public class DominatorsAnalysis extends AbstractDominatorsAnalysis {
 			Dataflow<BitSet, DominatorsAnalysis> dataflow =
 				new Dataflow<BitSet, DominatorsAnalysis>(cfg, analysis);
 			dataflow.execute();
+
+			for (Iterator<BasicBlock> j = cfg.blockIterator(); j.hasNext(); ) {
+				BasicBlock block = j.next();
+				BitSet dominators  = analysis.getResultFact(block);
+				System.out.println("Block " + block.getId() + ": " + dominators);
+			}
 		}
 	}
 }
