@@ -381,7 +381,7 @@ public abstract class MarkerUtil {
 						
 						// Get the saved bug collection for the project
 						SortedBugCollection bugCollection =
-							FindbugsPlugin.readBugCollection(project, monitor);
+							FindbugsPlugin.getBugCollection(project, monitor);
 						
 						if (bugCollection != null) {
 							// Remove old markers
@@ -453,7 +453,7 @@ public abstract class MarkerUtil {
 				return null;
 			}
 				
-			BugCollection bugCollection = FindbugsPlugin.readBugCollection(project, null);
+			BugCollection bugCollection = FindbugsPlugin.getBugCollection(project, null);
 			
 			return bugCollection.lookupFromUniqueId(uniqueId);
 		} catch (RuntimeException e) {

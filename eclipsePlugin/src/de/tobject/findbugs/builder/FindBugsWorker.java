@@ -175,7 +175,7 @@ public class FindBugsWorker {
 	 */
 	private void updateBugCollection(Project findBugsProject, Reporter bugReporter)
 			throws CoreException, IOException, DocumentException {
-		SortedBugCollection oldBugCollection = FindbugsPlugin.readBugCollection(project, monitor);
+		SortedBugCollection oldBugCollection = FindbugsPlugin.getBugCollection(project, monitor);
 		SortedBugCollection newBugCollection = bugReporter.getBugCollection();
 
 		if (INCREMENTAL_UPDATE) {
