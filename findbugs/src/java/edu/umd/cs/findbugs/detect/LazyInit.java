@@ -50,8 +50,11 @@ import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
+import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.MethodGen;
+import org.apache.bcel.generic.NEW;
 
 /*
  * Look for lazy initialization of fields which
@@ -64,7 +67,7 @@ public class LazyInit extends ByteCodePatternDetector {
 	private BugReporter bugReporter;
 
 	/** Number of wildcard instructions for creating the object. */
-	private static final int CREATE_OBJ_WILD = 20;
+	private static final int CREATE_OBJ_WILD = 10;
 
 	/** The pattern to look for. */
 	private static ByteCodePattern pattern = new ByteCodePattern();
@@ -110,15 +113,38 @@ public class LazyInit extends ByteCodePatternDetector {
 			BindingSet bindingSet = match.getBindingSet();
 			Binding binding = bindingSet.lookup("f");
 
+			// Look up the field as an XField.
+			// If it is volatile, then the instance is not a bug.
+			FieldVariable field = (FieldVariable) binding.getVariable();
+			XField xfield =
+				Hierarchy.findXField(field.getClassName(), field.getFieldName(), field.getFieldSig());
+			if (xfield == null || (xfield.getAccessFlags() & Constants.ACC_VOLATILE) != 0)
+				return;
+
+			// XXX: for now, ignore lazy initialization of instance fields
+			if (!xfield.isStatic())
+				return;
+
 			// Examine the lock sets for all matched instructions.
 			// If the intersection is nonempty, then there was at
 			// least one lock held for the entire sequence.
 			LockDataflow lockDataflow = classContext.getLockDataflow(method);
 			LockSet lockSet = null;
+			boolean sawNEW = false, sawINVOKE = false;
 			for (Iterator<PatternElementMatch> i = match.patternElementMatchIterator(); i.hasNext(); ) {
 				PatternElementMatch element = i.next();
-				Location location = new Location(element.getMatchedInstructionInstructionHandle(), element.getBasicBlock());
+				InstructionHandle handle = element.getMatchedInstructionInstructionHandle();
+				Location location = new Location(handle, element.getBasicBlock());
 
+				// Keep track of whether we saw any instructions
+				// that might actually have created a new object.
+				Instruction ins = handle.getInstruction();
+				if (ins instanceof NEW)
+					sawNEW = true;
+				else if (ins instanceof InvokeInstruction)
+					sawINVOKE = true;
+
+				// Compute lock set intersection for all matched instructions.
 				LockSet insLockSet = lockDataflow.getFactAtLocation(location);
 				if (lockSet == null) {
 					lockSet = new LockSet();
@@ -126,28 +152,35 @@ public class LazyInit extends ByteCodePatternDetector {
 				} else
 					lockSet.intersectWith(insLockSet);
 			}
-
 			if (!lockSet.isEmpty())
 				return;
 
-			// Look up the field as an XField.
-			// If it is volatile, then the instance is not a bug.
-			FieldVariable field = (FieldVariable) binding.getVariable();
-			XField xfield =
-				Hierarchy.findXField(field.getClassName(), field.getFieldName(), field.getFieldSig());
-			if (xfield == null)
+			// If the instruction sequence did not contain a NEW instruction
+			// or any Invoke instructions, then a new object was not created.
+			if (!(sawNEW || sawINVOKE))
 				return;
 
-			if (xfield != null && (xfield.getAccessFlags() & Constants.ACC_VOLATILE) == 0) {
-				InstructionHandle start = match.getLabeledInstruction("start");
-				InstructionHandle end   = match.getLabeledInstruction("end");
+			// Compute the priority:
+			//  - ignore lazy initialization of instance fields
+			//  - when it's done in a public method, emit a high priority warning
+			//  - protected or default access method, emit a medium priority warning
+			//  - otherwise, low priority
+			int priority = LOW_PRIORITY;
+			boolean isDefaultAccess =
+				(method.getAccessFlags() & (Constants.ACC_PUBLIC|Constants.ACC_PRIVATE|Constants.ACC_PROTECTED)) == 0;
+			if (method.isPublic())
+				priority = HIGH_PRIORITY;
+			else if (method.isProtected() || isDefaultAccess)
+				priority = NORMAL_PRIORITY;
 
-				String sourceFile = javaClass.getSourceFileName();
-				bugReporter.reportBug(new BugInstance("LI_LAZY_INIT", NORMAL_PRIORITY)
-					.addClassAndMethod(methodGen, sourceFile)
-					.addField(xfield).describe("FIELD_ON")
-					.addSourceLine(methodGen, sourceFile, start, end));
-			}
+			// Report the bug.
+			InstructionHandle start = match.getLabeledInstruction("start");
+			InstructionHandle end   = match.getLabeledInstruction("end");
+			String sourceFile = javaClass.getSourceFileName();
+			bugReporter.reportBug(new BugInstance("LI_LAZY_INIT_STATIC", priority)
+				.addClassAndMethod(methodGen, sourceFile)
+				.addField(xfield).describe("FIELD_ON")
+				.addSourceLine(methodGen, sourceFile, start, end));
 		} catch (ClassNotFoundException e) {
 			bugReporter.reportMissingClass(e);
 			return;

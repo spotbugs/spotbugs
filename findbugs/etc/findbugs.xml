@@ -123,5 +123,6 @@
   <BugPattern abbrev="MWN" type="MWN_MISMATCHED_NOTIFY" category="CORRECTNESS" />
   <BugPattern abbrev="SA" type="SA_LOCAL_SELF_ASSIGNMENT" category="CORRECTNESS" />
   <BugPattern abbrev="SA" type="SA_FIELD_SELF_ASSIGNMENT" category="CORRECTNESS" />
-  <BugPattern abbrev="LI" type="LI_LAZY_INIT" category="MT_CORRECTNESS" experimental="true"/>
+  <BugPattern abbrev="LI" type="LI_LAZY_INIT_INSTANCE" category="MT_CORRECTNESS" experimental="true"/>
+  <BugPattern abbrev="LI" type="LI_LAZY_INIT_STATIC" category="MT_CORRECTNESS" experimental="true"/>
 </FindbugsPlugin>

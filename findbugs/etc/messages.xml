@@ -1482,15 +1482,32 @@ Such assignments are useless, and may indicate a logic error or typo.
     </Details>
   </BugPattern>
 
-  <BugPattern type="LI_LAZY_INIT">
-    <ShortDescription>Incorrect lazy initalization of field</ShortDescription>
-    <LongDescription>Incorrect lazy initialization of field {2} in {1}</LongDescription>
+  <BugPattern type="LI_LAZY_INIT_INSTANCE">
+    <ShortDescription>Incorrect lazy initalization of instance field</ShortDescription>
+    <LongDescription>Incorrect lazy initialization of instance field {2} in {1}</LongDescription>
     <Details>
 <![CDATA[
-<p> This method contains a lazy initialization of a non-volatile field.
+<p> This method contains an unsynchronized lazy initialization of a non-volatile field.
 Because the compiler or processor may reorder instructions,
-threads are not guaranteed to see a completely initialized object.
-You should make the field volatile to correct the problem.
+threads are not guaranteed to see a completely initialized object,
+<em>if the method can be called by multiple threads</em>.
+You can make the field volatile to correct the problem.
+For more information, see the
+<a href="http://www.cs.umd.edu/~pugh/java/memoryModel/">Java Memory Model web site</a>.
+]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="LI_LAZY_INIT_STATIC">
+    <ShortDescription>Incorrect lazy initalization of static field</ShortDescription>
+    <LongDescription>Incorrect lazy initialization of static field {2} in {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p> This method contains an unsynchronized lazy initialization of a non-volatile static field.
+Because the compiler or processor may reorder instructions,
+threads are not guaranteed to see a completely initialized object,
+<em>if the method can be called by multiple threads</em>.
+You can make the field volatile to correct the problem.
 For more information, see the
 <a href="http://www.cs.umd.edu/~pugh/java/memoryModel/">Java Memory Model web site</a>.
 ]]>
@@ -1550,6 +1567,6 @@ For more information, see the
   <BugCode abbrev="RC">Suspicious reference comparison</BugCode>
   <BugCode abbrev="MWN">Mismatched wait() or notify()</BugCode>
   <BugCode abbrev="SA">Useless self-assignment</BugCode>
-  <BugCode abbrev="LI">Incorrect Lazy Initialzation</BugCode>
+  <BugCode abbrev="LI">Unsynchronized Lazy Initialization</BugCode>
 
 </MessageCollection>
