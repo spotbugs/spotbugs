@@ -51,10 +51,10 @@ public class Load extends FieldAccess {
 		if (ins instanceof GETFIELD) {
 			fieldIns = (GETFIELD) ins;
 			ValueNumber ref = before.getTopValue();
-			field = new FieldVariable(ref, fieldIns.getClassName(cpg), fieldIns.getFieldName(cpg));
+			field = new FieldVariable(ref, fieldIns.getClassName(cpg), fieldIns.getFieldName(cpg), fieldIns.getSignature(cpg));
 		} else if (ins instanceof GETSTATIC) {
 			fieldIns = (GETSTATIC) ins;
-			field = new FieldVariable(fieldIns.getClassName(cpg), fieldIns.getFieldName(cpg));
+			field = new FieldVariable(fieldIns.getClassName(cpg), fieldIns.getFieldName(cpg), fieldIns.getSignature(cpg));
 		} else
 			return null;
 

@@ -53,10 +53,10 @@ public class Store extends FieldAccess {
 			ValueNumber ref = before.getValue(isLongOrDouble(fieldIns, cpg)
 				? numSlots - 3
 				: numSlots - 2);
-			field = new FieldVariable(ref, fieldIns.getClassName(cpg), fieldIns.getFieldName(cpg));
+			field = new FieldVariable(ref, fieldIns.getClassName(cpg), fieldIns.getFieldName(cpg), fieldIns.getSignature(cpg));
 		} else if (ins instanceof PUTSTATIC) {
 			fieldIns = (PUTSTATIC) ins;
-			field = new FieldVariable(fieldIns.getClassName(cpg), fieldIns.getFieldName(cpg));
+			field = new FieldVariable(fieldIns.getClassName(cpg), fieldIns.getFieldName(cpg), fieldIns.getSignature(cpg));
 		} else
 			return null;
 
