@@ -78,7 +78,7 @@ public class SplitCamelCaseIdentifier {
 					++i;
 				}
 				
-				if (!camelWord) {
+				if (!camelWord && i < s.length()) {
 					buf.deleteCharAt(buf.length() - 1);
 					--i;
 				}
