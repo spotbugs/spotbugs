@@ -35,11 +35,11 @@ public class IsNullValue {
 	private static final int DNR  = 3;
 
 	private static final int[][] mergeMatrix = {
-		// NULL  NN    NSP   DNR
-		{  NULL, NSP,  NSP,  NSP  }, // NULL
-		{  -1,   NN,   DNR,  DNR  }, // NN
-		{  -1,   -1,   DNR,  DNR  }, // NSP
-		{  -1,   -1,   -1,   DNR  }, // DNR
+		// NULL, NN,   NSP,  DNR
+		{ NULL },                    // NULL
+		{ NSP,   NN },               // NN
+		{ NSP,   DNR,  DNR },        // NSP
+		{ NSP,   DNR,  DNR,  DNR  }  // DNR
 	};
 
 	private static IsNullValue[] instanceList = {
@@ -83,8 +83,9 @@ public class IsNullValue {
 
 	/** Merge two values. */
 	public static IsNullValue merge(IsNullValue a, IsNullValue b) {
-		// Left hand value should be smaller.
-		if (a.kind > b.kind) {
+		// Left hand value should be >=, since it is used
+		// as the first dimension of the matrix to index.
+		if (a.kind < b.kind) {
 			IsNullValue tmp = a;
 			a = b;
 			b = tmp;
@@ -93,6 +94,21 @@ public class IsNullValue {
 		int result = mergeMatrix[a.kind][b.kind];
 		assert result >= 0;
 		return instanceList[result];
+	}
+
+	public String toString() {
+		switch (kind) {
+		case NULL:
+			return "n";
+		case NN:
+			return "N";
+		case NSP:
+			return "S";
+		case DNR:
+			return "-";
+		default:
+			throw new IllegalStateException("unknown kind of IsNullValue: " + kind);
+		}
 	}
 }
 
