@@ -19,17 +19,17 @@
 
 package edu.umd.cs.findbugs;
 
+import java.util.*;
 import java.net.*;
 import java.io.*;
 import org.dom4j.*;
 import org.dom4j.io.*;
 
 public class PluginLoader extends URLClassLoader {
-	private Document pluginDescriptor; // a.k.a, "findbugs.xml"
 
 	public PluginLoader(URL url) throws PluginException {
 		super(new URL[]{url});
-		createFactories();
+		init();
 	}
 
 	public DetectorFactory[] getDetectorFactoryList() {
@@ -40,7 +40,9 @@ public class PluginLoader extends URLClassLoader {
 		return null;
 	}
 
-	private void createFactories() throws PluginException {
+	private void init() throws PluginException {
+		Document pluginDescriptor; // a.k.a, "findbugs.xml"
+		Document messageCollection; // a.k.a., "messages.xml"
 
 		try {
 			URL descriptorURL = findResource("findbugs.xml");
@@ -51,6 +53,40 @@ public class PluginLoader extends URLClassLoader {
 			pluginDescriptor = reader.read(descriptorURL);
 		} catch (DocumentException e) {
 			throw new PluginException("Couldn't parse \"findbugs.xml\"", e);
+		}
+
+		try {
+			URL messageURL = null;
+
+			Locale locale = Locale.getDefault();
+			String language = locale.getLanguage();
+			String country = locale.getCountry();
+
+			if (!country.equals(""))
+				messageURL = findResource("messages_" + language + "_" + country + ".xml");
+
+			if (messageURL == null)
+				messageURL = findResource("messages_" + language + ".xml");
+
+			if (messageURL == null)
+				messageURL = findResource("messages.xml");
+
+			if (messageURL == null)
+				throw new PluginException("Couldn't find messages.xml");
+
+			SAXReader reader = new SAXReader();
+			messageCollection = reader.read(messageURL);
+		} catch (DocumentException e) {
+			throw new PluginException("Couldn't parse \"messages.xml\"", e);
+		}
+
+		// Create a DetectorFactory for all Detector nodes
+		List detectorNodeList = pluginDescriptor.selectNodes("/FindbugsPlugin/Detector");
+		for (Iterator i = detectorNodeList.iterator(); i.hasNext(); ) {
+			Element detectorElement = (Element) i.next();
+			String className = detectorElement.valueOf("@class");
+
+			System.out.println("Found detector: class="+className);
 		}
 
 	}
