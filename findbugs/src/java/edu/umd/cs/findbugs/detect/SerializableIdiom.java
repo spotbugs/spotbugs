@@ -145,13 +145,26 @@ public class SerializableIdiom extends PreorderVisitor
 	if (isSerializable && fieldSig.startsWith("L") && !obj.isTransient() && !obj.isStatic()) {
 		try {
 			String fieldClassName = fieldSig.substring(1, fieldSig.length() - 1).replace('/', '.');
+			JavaClass fieldClass = Repository.lookupClass(fieldClassName);
+
 			if (!fieldClassName.equals("java.lang.Object") &&
-			    !Repository.instanceOf(fieldClassName, "java.io.Serializable"))
-				fieldWarningList.add(new BugInstance("SE_BAD_FIELD",
-					implementsSerializableDirectly ? HIGH_PRIORITY : NORMAL_PRIORITY)
+			    !Repository.instanceOf(fieldClass, "java.io.Serializable")) {
+				// Priority is higher if the class directly
+				// implements Serializable.
+				int priority = implementsSerializableDirectly ? HIGH_PRIORITY : NORMAL_PRIORITY;
+
+				// Lower the priority for fields which are of an interface
+				// type, since the user may know that all subtypes of
+				// the interface will be Serializable.
+				if (fieldClass.isInterface())
+				    priority = Math.max(LOW_PRIORITY, priority + 1);
+
+				// Report is queued until after the entire class has been seen.
+				fieldWarningList.add(new BugInstance("SE_BAD_FIELD", priority)
 					.addClass(thisClass.getClassName())
 					.addField(fieldClassName, obj.getName(), fieldSig, false)
 					.addUnknownSourceLine(thisClass.getClassName(), thisClass.getSourceFileName()));
+			}
 		} catch (ClassNotFoundException e) {
 			bugReporter.reportMissingClass(e);
 		}
