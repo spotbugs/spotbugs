@@ -38,7 +38,7 @@
                 <Property name="editable" type="boolean" value="false"/>
               </Properties>
               <AuxValues>
-                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="try {&#xa;    aboutEditorPane.setPage(aboutURL);&#xa;} catch (java.io.IOException e) {&#xa;    parent.getLogger().logMessage(ConsoleLogger.ERROR, &quot;Error loading about URL: &quot; + e.getMessage());&#xa;}"/>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="try {&#xa;    aboutEditorPane.setPage(aboutURL);&#xa;} catch (java.io.IOException e) {&#xa;    parent.getLogger().logMessage(ConsoleLogger.ERROR, &quot;Error loading about URL: &quot; + e.toString());&#xa;}"/>
               </AuxValues>
             </Component>
           </SubComponents>
@@ -59,7 +59,28 @@
                 <Property name="editable" type="boolean" value="false"/>
               </Properties>
               <AuxValues>
-                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="try {&#xa;    licenseEditorPane.setPage(licenseURL);&#xa;} catch (java.io.IOException e) {&#xa;    parent.getLogger().logMessage(ConsoleLogger.ERROR, &quot;Error loading license URL: &quot; + e.getMessage());&#xa;}"/>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="try {&#xa;    licenseEditorPane.setPage(licenseURL);&#xa;} catch (java.io.IOException e) {&#xa;    parent.getLogger().logMessage(ConsoleLogger.ERROR, &quot;Error loading license URL: &quot; + e.toString());&#xa;}"/>
+              </AuxValues>
+            </Component>
+          </SubComponents>
+        </Container>
+        <Container class="javax.swing.JScrollPane" name="acknolwedgementsScrollPane">
+          <Constraints>
+            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+              <JTabbedPaneConstraints tabName="Acknowledgements">
+                <Property name="tabTitle" type="java.lang.String" value="Acknowledgements"/>
+              </JTabbedPaneConstraints>
+            </Constraint>
+          </Constraints>
+
+          <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
+          <SubComponents>
+            <Component class="javax.swing.JEditorPane" name="acknowledgementsEditorPane">
+              <Properties>
+                <Property name="editable" type="boolean" value="false"/>
+              </Properties>
+              <AuxValues>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="try {&#xa;    acknowledgementsEditorPane.setPage(acknowledgementsURL);&#xa;} catch (java.io.IOException e) {&#xa;    parent.getLogger().logMessage(ConsoleLogger.ERROR, &quot;Error loading acknowledgements URL: &quot; + e.toString());&#xa;}"/>
               </AuxValues>
             </Component>
           </SubComponents>

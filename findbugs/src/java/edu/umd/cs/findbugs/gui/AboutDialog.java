@@ -36,6 +36,7 @@ public class AboutDialog extends javax.swing.JDialog {
     private FindBugsFrame parent;
     private java.net.URL aboutURL;
     private java.net.URL licenseURL;
+    private java.net.URL acknowledgementsURL;
     
     /** Creates new form AboutDialog */
     public AboutDialog(FindBugsFrame parent, boolean modal) {
@@ -43,6 +44,7 @@ public class AboutDialog extends javax.swing.JDialog {
         this.parent = parent;
         aboutURL = getClass().getClassLoader().getResource("edu/umd/cs/findbugs/gui/help/About.html");
         licenseURL = getClass().getClassLoader().getResource("edu/umd/cs/findbugs/gui/help/License.html");
+        acknowledgementsURL = getClass().getClassLoader().getResource("edu/umd/cs/findbugs/gui/help/Acknowledgements.html");
 	initComponents();
     }
     
@@ -59,6 +61,8 @@ public class AboutDialog extends javax.swing.JDialog {
         aboutEditorPane = new javax.swing.JEditorPane();
         licenseScrollPane = new javax.swing.JScrollPane();
         licenseEditorPane = new javax.swing.JEditorPane();
+        acknolwedgementsScrollPane = new javax.swing.JScrollPane();
+        acknowledgementsEditorPane = new javax.swing.JEditorPane();
         jSeparator1 = new javax.swing.JSeparator();
         okButton = new javax.swing.JButton();
 
@@ -75,7 +79,7 @@ public class AboutDialog extends javax.swing.JDialog {
         try {
             aboutEditorPane.setPage(aboutURL);
         } catch (java.io.IOException e) {
-            parent.getLogger().logMessage(ConsoleLogger.ERROR, "Error loading about URL: " + e.getMessage());
+            parent.getLogger().logMessage(ConsoleLogger.ERROR, "Error loading about URL: " + e.toString());
         }
         aboutScrollPane.setViewportView(aboutEditorPane);
 
@@ -85,11 +89,21 @@ public class AboutDialog extends javax.swing.JDialog {
         try {
             licenseEditorPane.setPage(licenseURL);
         } catch (java.io.IOException e) {
-            parent.getLogger().logMessage(ConsoleLogger.ERROR, "Error loading license URL: " + e.getMessage());
+            parent.getLogger().logMessage(ConsoleLogger.ERROR, "Error loading license URL: " + e.toString());
         }
         licenseScrollPane.setViewportView(licenseEditorPane);
 
         aboutTabPane.addTab("License", licenseScrollPane);
+
+        acknowledgementsEditorPane.setEditable(false);
+        try {
+            acknowledgementsEditorPane.setPage(acknowledgementsURL);
+        } catch (java.io.IOException e) {
+            parent.getLogger().logMessage(ConsoleLogger.ERROR, "Error loading acknowledgements URL: " + e.toString());
+        }
+        acknolwedgementsScrollPane.setViewportView(acknowledgementsEditorPane);
+
+        aboutTabPane.addTab("Acknowledgements", acknolwedgementsScrollPane);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
@@ -138,6 +152,8 @@ public class AboutDialog extends javax.swing.JDialog {
     private javax.swing.JEditorPane aboutEditorPane;
     private javax.swing.JScrollPane aboutScrollPane;
     private javax.swing.JTabbedPane aboutTabPane;
+    private javax.swing.JScrollPane acknolwedgementsScrollPane;
+    private javax.swing.JEditorPane acknowledgementsEditorPane;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JEditorPane licenseEditorPane;
     private javax.swing.JScrollPane licenseScrollPane;
