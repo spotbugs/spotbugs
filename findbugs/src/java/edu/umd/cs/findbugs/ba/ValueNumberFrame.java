@@ -19,18 +19,15 @@
 
 package edu.umd.cs.findbugs.ba;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 
 /**
  * A dataflow value representing a Java stack frame with value number
  * information.
  *
+ * @author David Hovemeyer
  * @see ValueNumber
  * @see ValueNumberAnalysis
- * @author David Hovemeyer
  */
 public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberAnalysisFeatures {
 
@@ -48,6 +45,7 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 
 	/**
 	 * Look for an available load.
+	 *
 	 * @param availableLoad the AvailableLoad (reference and field)
 	 * @return the value(s) available, or null if no matching entry is found
 	 */
@@ -57,8 +55,9 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 
 	/**
 	 * Add an available load.
+	 *
 	 * @param availableLoad the AvailableLoad (reference and field)
-	 * @param value the value(s) loaded
+	 * @param value         the value(s) loaded
 	 */
 	public void addAvailableLoad(AvailableLoad availableLoad, ValueNumber[] value) {
 		if (value == null) throw new IllegalStateException();
@@ -67,6 +66,7 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 
 	/**
 	 * Kill all loads of given field.
+	 *
 	 * @param field the field
 	 */
 	public void killLoadsOfField(XField field) {
@@ -113,7 +113,7 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 		if (REDUNDANT_LOAD_ELIMINATION) {
 			// Copy available load set.
 			availableLoadMap.clear();
-			availableLoadMap.putAll(((ValueNumberFrame)other).availableLoadMap);
+			availableLoadMap.putAll(((ValueNumberFrame) other).availableLoadMap);
 		}
 
 		super.copyFrom(other);
@@ -124,10 +124,10 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 		if (RLE_DEBUG) {
 			StringBuffer buf = new StringBuffer();
 			buf.append(frameValues);
-			Iterator<Map.Entry<AvailableLoad,ValueNumber[]>> i = availableLoadMap.entrySet().iterator();
+			Iterator<Map.Entry<AvailableLoad, ValueNumber[]>> i = availableLoadMap.entrySet().iterator();
 			boolean first = true;
 			while (i.hasNext()) {
-				Map.Entry<AvailableLoad,ValueNumber[]> entry = i.next();
+				Map.Entry<AvailableLoad, ValueNumber[]> entry = i.next();
 				if (first)
 					first = false;
 				else

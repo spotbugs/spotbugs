@@ -20,41 +20,44 @@
 package edu.umd.cs.findbugs;
 
 import java.util.*;
-import edu.umd.cs.findbugs.visitclass.BetterVisitor;
+
+import edu.umd.cs.findbugs.ba.XField;
+import edu.umd.cs.findbugs.ba.bcp.FieldVariable;
 import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
-import edu.umd.cs.findbugs.ba.bcp.FieldVariable;
-import edu.umd.cs.findbugs.ba.XField;
-import org.apache.bcel.classfile.*;
-import org.apache.bcel.generic.*;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.InvokeInstruction;
+import org.apache.bcel.generic.MethodGen;
+import org.dom4j.Branch;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
-import org.dom4j.Branch;
 
 /**
  * An instance of a bug pattern.
  * A BugInstance consists of several parts:
- *
+ * <p/>
  * <ul>
  * <li> the type, which is a string indicating what kind of bug it is;
- *      used as a key for the FindBugsMessages resource bundle
+ * used as a key for the FindBugsMessages resource bundle
  * <li> the priority; how likely this instance is to actually be a bug
  * <li> a list of <em>annotations</em>
  * </ul>
- *
+ * <p/>
  * The annotations describe classes, methods, fields, source locations,
  * and other relevant context information about the bug instance.
  * Every BugInstance must have at least one ClassAnnotation, which
  * describes the class in which the instance was found.  This is the
  * "primary class annotation".
- *
+ * <p/>
  * <p> BugInstance objects are built up by calling a string of <code>add</code>
  * methods.  (These methods all "return this", so they can be chained).
- *  Some of the add methods are specialized to get information automatically from
+ * Some of the add methods are specialized to get information automatically from
  * a BetterVisitor or DismantleBytecode object.
  *
- * @see BugAnnotation
  * @author David Hovemeyer
+ * @see BugAnnotation
  */
 public class BugInstance implements Comparable, XMLConvertible {
 	private String type;
@@ -73,7 +76,8 @@ public class BugInstance implements Comparable, XMLConvertible {
 
 	/**
 	 * Constructor.
-	 * @param type the bug type
+	 *
+	 * @param type     the bug type
 	 * @param priority the bug priority
 	 */
 	public BugInstance(String type, int priority) {
@@ -89,27 +93,37 @@ public class BugInstance implements Comparable, XMLConvertible {
 	 * Accessors
 	 * ---------------------------------------------------------------------- */
 
-	/** Get the bug type. */
+	/**
+	 * Get the bug type.
+	 */
 	public String getType() {
 		return type;
 	}
 
-	/** Get the BugPattern. */
+	/**
+	 * Get the BugPattern.
+	 */
 	public BugPattern getBugPattern() {
 		return I18N.instance().lookupBugPattern(getType());
 	}
 
-	/** Get the bug priority. */
+	/**
+	 * Get the bug priority.
+	 */
 	public int getPriority() {
 		return priority;
 	}
-	
-	/** Set the bug priority. */
+
+	/**
+	 * Set the bug priority.
+	 */
 	public void setPriority(int p) {
-		 priority = p;
+		priority = p;
 	}
 
-	/** Is this bug instance the result of an experimental detector? */
+	/**
+	 * Is this bug instance the result of an experimental detector?
+	 */
 	public boolean isExperimental() {
 		BugPattern pattern = I18N.instance().lookupBugPattern(type);
 		return (pattern != null) ? pattern.isExperimental() : false;
@@ -131,8 +145,9 @@ public class BugInstance implements Comparable, XMLConvertible {
 
 	/**
 	 * Get the primary source line annotation.
+	 *
 	 * @return the source line annotation, or null if there is
-	 *   no source line annotation
+	 *         no source line annotation
 	 */
 	public SourceLineAnnotation getPrimarySourceLineAnnotation() {
 		// Highest priority: return the first top level source line annotation
@@ -170,14 +185,16 @@ public class BugInstance implements Comparable, XMLConvertible {
 
 	/**
 	 * Set the user annotation text.
+	 *
 	 * @param annotationText the user annotation text
 	 */
 	public void setAnnotationText(String annotationText) {
 		this.annotationText = annotationText;
 	}
-	
+
 	/**
 	 * Get the user annotation text.
+	 *
 	 * @return the user annotation text
 	 */
 	public String getAnnotationText() {
@@ -187,6 +204,7 @@ public class BugInstance implements Comparable, XMLConvertible {
 	/**
 	 * Determine whether or not the annotation text contains
 	 * the given word.
+	 *
 	 * @param word the word
 	 * @return true if the annotation text contains the word, false otherwise
 	 */
@@ -214,6 +232,7 @@ public class BugInstance implements Comparable, XMLConvertible {
 	/**
 	 * Add a class annotation and a method annotation for the class and method
 	 * which the given visitor is currently visiting.
+	 *
 	 * @param visitor the BetterVisitor
 	 * @return this object
 	 */
@@ -225,7 +244,8 @@ public class BugInstance implements Comparable, XMLConvertible {
 
 	/**
 	 * Add class and method annotations for given method.
-	 * @param methodGen the method
+	 *
+	 * @param methodGen  the method
 	 * @param sourceFile source file the method is defined in
 	 * @return this object
 	 */
@@ -242,6 +262,7 @@ public class BugInstance implements Comparable, XMLConvertible {
 	/**
 	 * Add a class annotation.  If this is the first class annotation added,
 	 * it becomes the primary class annotation.
+	 *
 	 * @param className the name of the class
 	 * @return this object
 	 */
@@ -254,6 +275,7 @@ public class BugInstance implements Comparable, XMLConvertible {
 	/**
 	 * Add a class annotation.  If this is the first class annotation added,
 	 * it becomes the primary class annotation.
+	 *
 	 * @param jclass the JavaClass object for the class
 	 * @return this object
 	 */
@@ -264,6 +286,7 @@ public class BugInstance implements Comparable, XMLConvertible {
 
 	/**
 	 * Add a class annotation for the class that the visitor is currently visiting.
+	 *
 	 * @param visitor the BetterVisitor
 	 * @return this object
 	 */
@@ -276,6 +299,7 @@ public class BugInstance implements Comparable, XMLConvertible {
 	/**
 	 * Add a class annotation for the superclass of the class the visitor
 	 * is currently visiting.
+	 *
 	 * @param visitor the BetterVisitor
 	 * @return this object
 	 */
@@ -291,10 +315,11 @@ public class BugInstance implements Comparable, XMLConvertible {
 
 	/**
 	 * Add a field annotation.
+	 *
 	 * @param className name of the class containing the field
 	 * @param fieldName the name of the field
-	 * @param fieldSig type signature of the field
-	 * @param isStatic whether or not the field is static
+	 * @param fieldSig  type signature of the field
+	 * @param isStatic  whether or not the field is static
 	 * @return this object
 	 */
 	public BugInstance addField(String className, String fieldName, String fieldSig, boolean isStatic) {
@@ -304,6 +329,7 @@ public class BugInstance implements Comparable, XMLConvertible {
 
 	/**
 	 * Add a field annotation
+	 *
 	 * @param fieldAnnotation the field annotation
 	 * @return this object
 	 */
@@ -314,6 +340,7 @@ public class BugInstance implements Comparable, XMLConvertible {
 
 	/**
 	 * Add a field annotation for a FieldVariable matched in a ByteCodePattern.
+	 *
 	 * @param field the FieldVariable
 	 * @return this object
 	 */
@@ -323,6 +350,7 @@ public class BugInstance implements Comparable, XMLConvertible {
 
 	/**
 	 * Add a field annotation for an XField.
+	 *
 	 * @param xfield the XField
 	 * @return this object
 	 */
@@ -335,6 +363,7 @@ public class BugInstance implements Comparable, XMLConvertible {
 	 * by the method currently being visited by given visitor.
 	 * Assumes that a getfield/putfield or getstatic/putstatic
 	 * has just been seen.
+	 *
 	 * @param visitor the DismantleBytecode object
 	 * @return this object
 	 */
@@ -355,6 +384,7 @@ public class BugInstance implements Comparable, XMLConvertible {
 	/**
 	 * Add a field annotation for the field which is being visited by
 	 * given visitor.
+	 *
 	 * @param visitor the visitor
 	 * @return this object
 	 */
@@ -371,9 +401,10 @@ public class BugInstance implements Comparable, XMLConvertible {
 	/**
 	 * Add a method annotation.  If this is the first method annotation added,
 	 * it becomes the primary method annotation.
-	 * @param className name of the class containing the method
+	 *
+	 * @param className  name of the class containing the method
 	 * @param methodName name of the method
-	 * @param methodSig type signature of the method
+	 * @param methodSig  type signature of the method
 	 * @return this object
 	 */
 	public BugInstance addMethod(String className, String methodName, String methodSig) {
@@ -386,13 +417,14 @@ public class BugInstance implements Comparable, XMLConvertible {
 	 * it becomes the primary method annotation.
 	 * If the method has source line information, then a SourceLineAnnotation
 	 * is added to the method.
-	 * @param methodGen the MethodGen object for the method
+	 *
+	 * @param methodGen  the MethodGen object for the method
 	 * @param sourceFile source file method is defined in
 	 * @return this object
 	 */
 	public BugInstance addMethod(MethodGen methodGen, String sourceFile) {
 		MethodAnnotation methodAnnotation =
-			new MethodAnnotation(methodGen.getClassName(), methodGen.getName(), methodGen.getSignature());
+		        new MethodAnnotation(methodGen.getClassName(), methodGen.getName(), methodGen.getSignature());
 		addMethod(methodAnnotation);
 		addSourceLinesForMethod(methodAnnotation, SourceLineAnnotation.fromVisitedMethod(methodGen, sourceFile));
 		return this;
@@ -402,6 +434,7 @@ public class BugInstance implements Comparable, XMLConvertible {
 	 * Add a method annotation for the method which the given visitor is currently visiting.
 	 * If the method has source line information, then a SourceLineAnnotation
 	 * is added to the method.
+	 *
 	 * @param visitor the BetterVisitor
 	 * @return this object
 	 */
@@ -417,6 +450,7 @@ public class BugInstance implements Comparable, XMLConvertible {
 	 * by the method currently being visited by given visitor.
 	 * Assumes that the visitor has just looked at an invoke instruction
 	 * of some kind.
+	 *
 	 * @param visitor the DismantleBytecode object
 	 * @return this object
 	 */
@@ -431,6 +465,7 @@ public class BugInstance implements Comparable, XMLConvertible {
 
 	/**
 	 * Add a method annotation.
+	 *
 	 * @return this object
 	 */
 	public BugInstance addCalledMethod(String className, String methodName, String methodSig) {
@@ -442,8 +477,9 @@ public class BugInstance implements Comparable, XMLConvertible {
 	/**
 	 * Add a method annotation for the method which is called by given
 	 * instruction.
+	 *
 	 * @param methodGen the method containing the call
-	 * @param inv the InvokeInstruction
+	 * @param inv       the InvokeInstruction
 	 * @return this object
 	 */
 	public BugInstance addCalledMethod(MethodGen methodGen, InvokeInstruction inv) {
@@ -459,6 +495,7 @@ public class BugInstance implements Comparable, XMLConvertible {
 	/**
 	 * Add a method annotation.  If this is the first method annotation added,
 	 * it becomes the primary method annotation.
+	 *
 	 * @param methodAnnotation the method annotation
 	 * @return this object
 	 */
@@ -473,6 +510,7 @@ public class BugInstance implements Comparable, XMLConvertible {
 
 	/**
 	 * Add an integer annotation.
+	 *
 	 * @param value the integer value
 	 * @return this object
 	 */
@@ -487,6 +525,7 @@ public class BugInstance implements Comparable, XMLConvertible {
 
 	/**
 	 * Add a source line annotation.
+	 *
 	 * @param sourceLine the source line annotation
 	 * @return this object
 	 */
@@ -500,8 +539,9 @@ public class BugInstance implements Comparable, XMLConvertible {
 	 * in the method that the given visitor is currently visiting.
 	 * Note that if the method does not have line number information, then
 	 * no source line annotation will be added.
+	 *
 	 * @param visitor a BetterVisitor that is currently visiting the method
-	 * @param pc bytecode offset of the instruction
+	 * @param pc      bytecode offset of the instruction
 	 * @return this object
 	 */
 	public BugInstance addSourceLine(PreorderVisitor visitor, int pc) {
@@ -515,9 +555,10 @@ public class BugInstance implements Comparable, XMLConvertible {
 	 * Add a source line annotation for the given instruction in the given method.
 	 * Note that if the method does not have line number information, then
 	 * no source line annotation will be added.
-	 * @param methodGen the method being visited
+	 *
+	 * @param methodGen  the method being visited
 	 * @param sourceFile source file the method is defined in
-	 * @param handle the InstructionHandle containing the visited instruction
+	 * @param handle     the InstructionHandle containing the visited instruction
 	 * @return this object
 	 */
 	public BugInstance addSourceLine(MethodGen methodGen, String sourceFile, InstructionHandle handle) {
@@ -529,10 +570,11 @@ public class BugInstance implements Comparable, XMLConvertible {
 
 	/**
 	 * Add a source line annotation describing a range of instructions.
-	 * @param methodGen the method
+	 *
+	 * @param methodGen  the method
 	 * @param sourceFile source file the method is defined in
-	 * @param start the start instruction in the range
-	 * @param end the end instruction in the range (inclusive)
+	 * @param start      the start instruction in the range
+	 * @param end        the end instruction in the range (inclusive)
 	 * @return this object
 	 */
 	public BugInstance addSourceLine(MethodGen methodGen, String sourceFile, InstructionHandle start, InstructionHandle end) {
@@ -554,9 +596,10 @@ public class BugInstance implements Comparable, XMLConvertible {
 	 * visited by the given visitor.
 	 * Note that if the method does not have line number information, then
 	 * no source line annotation will be added.
+	 *
 	 * @param visitor a BetterVisitor which is visiting the method
 	 * @param startPC the bytecode offset of the start instruction in the range
-	 * @param endPC the bytecode offset of the end instruction in the range
+	 * @param endPC   the bytecode offset of the end instruction in the range
 	 * @return this object
 	 */
 	public BugInstance addSourceLineRange(PreorderVisitor visitor, int startPC, int endPC) {
@@ -571,6 +614,7 @@ public class BugInstance implements Comparable, XMLConvertible {
 	 * by given visitor.
 	 * Note that if the method does not have line number information, then
 	 * no source line annotation will be added.
+	 *
 	 * @param visitor a DismantleBytecode visitor that is currently visiting the instruction
 	 * @return this object
 	 */
@@ -584,7 +628,8 @@ public class BugInstance implements Comparable, XMLConvertible {
 	/**
 	 * Add a non-specific source line annotation.
 	 * This will result in the entire source file being displayed.
-	 * @param className the class name
+	 *
+	 * @param className  the class name
 	 * @param sourceFile the source file name
 	 * @return this object
 	 */
@@ -601,6 +646,7 @@ public class BugInstance implements Comparable, XMLConvertible {
 
 	/**
 	 * Format a string describing this bug instance.
+	 *
 	 * @return the description
 	 */
 	public String getMessage() {
@@ -611,6 +657,7 @@ public class BugInstance implements Comparable, XMLConvertible {
 
 	/**
 	 * Add a description to the most recently added bug annotation.
+	 *
 	 * @param description the description to add
 	 * @return this object
 	 */
@@ -655,7 +702,7 @@ public class BugInstance implements Comparable, XMLConvertible {
 				while (i.hasNext()) {
 					Element child = (Element) i.next();
 					String childName = child.getName();
-					
+
 					if (childName.equals(USER_ANNOTATION_ELEMENT_NAME)) {
 						bugInstance.setAnnotationText(child.getText());
 					} else {
@@ -684,8 +731,8 @@ public class BugInstance implements Comparable, XMLConvertible {
 
 	public Element toElement(Branch parent) {
 		Element element = parent.addElement(ELEMENT_NAME)
-			.addAttribute("type", type)
-			.addAttribute("priority", String.valueOf(priority));
+		        .addAttribute("type", type)
+		        .addAttribute("priority", String.valueOf(priority));
 
 		BugPattern pattern = getBugPattern();
 		if (pattern != null) {
@@ -697,7 +744,7 @@ public class BugInstance implements Comparable, XMLConvertible {
 			element.addAttribute("abbrev", pattern.getAbbrev());
 			element.addAttribute("category", pattern.getCategory());
 		}
-		
+
 		if (!annotationText.equals("")) {
 			Element annotationElement = element.addElement("UserAnnotation");
 			annotationElement.addCDATA(annotationText);

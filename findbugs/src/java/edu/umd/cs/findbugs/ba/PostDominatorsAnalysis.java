@@ -21,21 +21,23 @@ package edu.umd.cs.findbugs.ba;
 
 /**
  * Dataflow analysis to compute postdominator sets for a CFG.
+ *
+ * @author David Hovemeyer
  * @see CFG
  * @see AbstractDominatorsAnalysis
- * @author David Hovemeyer
  */
 public class PostDominatorsAnalysis extends AbstractDominatorsAnalysis {
 	private ReverseDepthFirstSearch rdfs;
 
 	/**
 	 * Constructor.
-	 * @param cfg the CFG to compute dominator relationships for
-	 * @param rdfs the ReverseDepthFirstSearch on the CFG
+	 *
+	 * @param cfg                  the CFG to compute dominator relationships for
+	 * @param rdfs                 the ReverseDepthFirstSearch on the CFG
 	 * @param ignoreExceptionEdges true if exception edges should be ignored
 	 */
 	public PostDominatorsAnalysis(CFG cfg, ReverseDepthFirstSearch rdfs,
-		boolean ignoreExceptionEdges) {
+	                              boolean ignoreExceptionEdges) {
 		super(cfg, ignoreExceptionEdges);
 		this.rdfs = rdfs;
 	}

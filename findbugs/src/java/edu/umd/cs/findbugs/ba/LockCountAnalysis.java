@@ -19,10 +19,6 @@
 
 package edu.umd.cs.findbugs.ba;
 
-import java.util.*;
-
-import org.apache.bcel.*;
-import org.apache.bcel.classfile.*;
 import org.apache.bcel.generic.*;
 
 /**
@@ -30,10 +26,10 @@ import org.apache.bcel.generic.*;
  * at points in a method.  Subclasses just need to override
  * the initEntryFact() and getDelta() methods.
  *
+ * @author David Hovemeyer
  * @see Dataflow
  * @see DataflowAnalysis
  * @see LockCount
- * @author David Hovemeyer
  */
 public abstract class LockCountAnalysis extends ForwardDataflowAnalysis<LockCount> {
 
@@ -44,9 +40,10 @@ public abstract class LockCountAnalysis extends ForwardDataflowAnalysis<LockCoun
 
 	/**
 	 * Constructor.
-	 * @param methodGen method being analyzed
+	 *
+	 * @param methodGen   method being analyzed
 	 * @param vnaDataflow the Dataflow object used to execute ValueNumberAnalysis on the method
-	 * @param dfs DepthFirstSearch on the method
+	 * @param dfs         DepthFirstSearch on the method
 	 */
 	public LockCountAnalysis(MethodGen methodGen, ValueNumberDataflow vnaDataflow, DepthFirstSearch dfs) {
 		super(dfs);
@@ -125,9 +122,10 @@ public abstract class LockCountAnalysis extends ForwardDataflowAnalysis<LockCoun
 
 	/**
 	 * Get the lock count delta resulting from the execution of the given instruction.
-	 * @param ins the instruction
+	 *
+	 * @param ins   the instruction
 	 * @param frame the ValueNumberFrame representing the values in the Java stack
-	 *  frame at the point in the control-flow graph before the instruction
+	 *              frame at the point in the control-flow graph before the instruction
 	 */
 	public abstract int getDelta(Instruction ins, ValueNumberFrame frame) throws DataflowAnalysisException;
 

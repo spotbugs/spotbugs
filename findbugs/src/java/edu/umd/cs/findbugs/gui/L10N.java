@@ -26,32 +26,29 @@
 
 package edu.umd.cs.findbugs.gui;
 
-import java.util.ResourceBundle;
-import java.util.MissingResourceException;
+import java.util.*;
 
 public class L10N {
 	private static ResourceBundle bundle;
-	
+
 	static {
 		try {
-			bundle = ResourceBundle.getBundle( "edu.umd.cs.findbugs.gui.bundle.findbugs" );
-		}
-		catch (MissingResourceException mre) {
+			bundle = ResourceBundle.getBundle("edu.umd.cs.findbugs.gui.bundle.findbugs");
+		} catch (MissingResourceException mre) {
 			bundle = null;
 		}
 	}
-	
+
 	private L10N() {
 	}
-	
-	public static String getLocalString( String key, String defaultString ) {
+
+	public static String getLocalString(String key, String defaultString) {
 		try {
 			if (bundle != null)
 				return bundle.getString(key);
 			else
 				return defaultString;
-		}
-		catch (MissingResourceException mre) {
+		} catch (MissingResourceException mre) {
 			return defaultString;
 		}
 	}

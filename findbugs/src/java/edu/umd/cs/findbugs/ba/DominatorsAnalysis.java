@@ -20,23 +20,26 @@
 package edu.umd.cs.findbugs.ba;
 
 import java.util.*;
+
 import org.apache.bcel.classfile.ClassParser;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
 /**
  * Dataflow analysis to compute dominator sets for a CFG.
+ *
+ * @author David Hovemeyer
  * @see CFG
  * @see AbstractDominatorsAnalysis
- * @author David Hovemeyer
  */
 public class DominatorsAnalysis extends AbstractDominatorsAnalysis {
 	private DepthFirstSearch dfs;
 
 	/**
 	 * Constructor.
-	 * @param cfg the CFG to compute dominator relationships for
-	 * @param dfs the DepthFirstSearch on the CFG
+	 *
+	 * @param cfg                  the CFG to compute dominator relationships for
+	 * @param dfs                  the DepthFirstSearch on the CFG
 	 * @param ignoreExceptionEdges true if exception edges should be ignored
 	 */
 	public DominatorsAnalysis(CFG cfg, DepthFirstSearch dfs, boolean ignoreExceptionEdges) {
@@ -90,12 +93,12 @@ public class DominatorsAnalysis extends AbstractDominatorsAnalysis {
 
 			DominatorsAnalysis analysis = new DominatorsAnalysis(cfg, dfs, ignoreExceptionEdges);
 			Dataflow<BitSet, DominatorsAnalysis> dataflow =
-				new Dataflow<BitSet, DominatorsAnalysis>(cfg, analysis);
+			        new Dataflow<BitSet, DominatorsAnalysis>(cfg, analysis);
 			dataflow.execute();
 
-			for (Iterator<BasicBlock> j = cfg.blockIterator(); j.hasNext(); ) {
+			for (Iterator<BasicBlock> j = cfg.blockIterator(); j.hasNext();) {
 				BasicBlock block = j.next();
-				BitSet dominators  = analysis.getResultFact(block);
+				BitSet dominators = analysis.getResultFact(block);
 				System.out.println("Block " + block.getId() + ": " + dominators);
 			}
 		}

@@ -27,32 +27,32 @@ package edu.umd.cs.findbugs.ba.type;
  * <ul>
  * <li> basic types (BasicType): int, char, short, double, etc.
  * <li> reference types (ReferenceType): includes the type of the null
- *      value (NullType), class and interface types
- *      (ClassType), and array types (ArrayType)
+ * value (NullType), class and interface types
+ * (ClassType), and array types (ArrayType)
  * <li> special dataflow types: top (TopType) and bottom (BottomType)
  * <li> "extra" types: LongExtraType and DoubleExtraType, which
- *      arise because BCEL thinks that longs and doubles take two
- *      stack slots
+ * arise because BCEL thinks that longs and doubles take two
+ * stack slots
  * </ul>
- *
+ * <p/>
  * <p> This class and its descendents were designed to
  * address some shortcomings of the BCEL Type class and descendents:
  * <ol>
  * <li> They are not interned, meaning that many objects
- *      may exist representing a single type.
+ * may exist representing a single type.
  * <li> BCEL reference types are inconsistent about whether a signature
- *      or class name is used to create them.
+ * or class name is used to create them.
  * <li> BCEL's ArrayType class is not a subtype of ObjectType:
- *      this is just wrong, IMO.
+ * this is just wrong, IMO.
  * <li> BCEL has no data structure to represent a class hierarchy:
- *      subtype relationships are discovered by a series of
- *      repository lookups. (This also makes questions like
- *      "what are all of the direct subclasses of this class"
- *      difficult to answer efficiently.)
+ * subtype relationships are discovered by a series of
+ * repository lookups. (This also makes questions like
+ * "what are all of the direct subclasses of this class"
+ * difficult to answer efficiently.)
  * <li> BCEL has no built-in representation for dataflow top and bottom
- *      types.
+ * types.
  * </ol>
- *
+ * <p/>
  * <p> The goals of Type and related classes
  * are to be efficient in dataflow analysis, and to make
  * class hierarchy queries flexible and easy.
@@ -99,6 +99,7 @@ public interface Type {
 
 	/**
 	 * Accept an TypeVisitor.
+	 *
 	 * @param visitor the visitor
 	 */
 	public void accept(TypeVisitor visitor);

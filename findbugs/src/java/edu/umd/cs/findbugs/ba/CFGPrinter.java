@@ -19,16 +19,21 @@
 
 package edu.umd.cs.findbugs.ba;
 
+import java.io.PrintStream;
 import java.util.*;
-import java.io.*;
 
-import org.apache.bcel.*;
-import org.apache.bcel.classfile.*;
-import org.apache.bcel.generic.*;
+import org.apache.bcel.classfile.ClassParser;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.CodeExceptionGen;
+import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.MethodGen;
 
 /**
  * Print out a representation of a control-flow graph.
  * For debugging.
+ *
  * @see CFG
  * @see CFGBuilder
  */

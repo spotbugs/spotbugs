@@ -23,10 +23,11 @@ import org.apache.bcel.generic.InstructionHandle;
 
 /**
  * A dataflow analysis to be used with the {@link Dataflow} class.
- * @see Dataflow
+ *
  * @author David Hovemeyer
+ * @see Dataflow
  */
-public interface DataflowAnalysis<Fact> {
+public interface DataflowAnalysis <Fact> {
 	/**
 	 * Create empty (uninitialized) dataflow facts for one program point.
 	 * A valid value will be copied into it before it is used.
@@ -35,12 +36,14 @@ public interface DataflowAnalysis<Fact> {
 
 	/**
 	 * Get the start fact for given basic block.
+	 *
 	 * @param block the basic block
 	 */
 	public Fact getStartFact(BasicBlock block);
 
 	/**
 	 * Get the result fact for given basic block.
+	 *
 	 * @param block the basic block
 	 */
 	public Fact getResultFact(BasicBlock block);
@@ -76,6 +79,7 @@ public interface DataflowAnalysis<Fact> {
 	/**
 	 * Return the BlockOrder specifying the order in which BasicBlocks
 	 * should be visited in the main dataflow loop.
+	 *
 	 * @param cfg the CFG upon which we're performing dataflow analysis
 	 */
 	public BlockOrder getBlockOrder(CFG cfg);
@@ -91,20 +95,22 @@ public interface DataflowAnalysis<Fact> {
 	 * exit of the block, depending on whether the analysis is forwards
 	 * or backwards), modify result to be the facts at the other end
 	 * of the block.
+	 *
 	 * @param basicBlock the basic block
-	 * @param end if nonnull, stop before considering this instruction;
-	 *    otherwise, consider all of the instructions in the basic block
-	 * @param start dataflow facts at beginning of block (if forward analysis)
-	 *   or end of block (if backwards analysis)
-	 * @param result resulting dataflow facts at other end of block
+	 * @param end        if nonnull, stop before considering this instruction;
+	 *                   otherwise, consider all of the instructions in the basic block
+	 * @param start      dataflow facts at beginning of block (if forward analysis)
+	 *                   or end of block (if backwards analysis)
+	 * @param result     resulting dataflow facts at other end of block
 	 */
 	public void transfer(BasicBlock basicBlock, InstructionHandle end, Fact start, Fact result) throws DataflowAnalysisException;
 
 	/**
 	 * Meet a dataflow fact associated with an incoming edge into another fact.
 	 * This is used to determine the start fact for a basic block.
-	 * @param fact the predecessor fact (incoming edge)
-	 * @param edge the edge from the predecessor
+	 *
+	 * @param fact   the predecessor fact (incoming edge)
+	 * @param edge   the edge from the predecessor
 	 * @param result the result fact
 	 */
 	public void meetInto(Fact fact, Edge edge, Fact result) throws DataflowAnalysisException;

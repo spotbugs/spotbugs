@@ -17,7 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-// $Revision: 1.8 $
+// $Revision: 1.9 $
 
 package edu.umd.cs.findbugs.graph;
 
@@ -29,16 +29,18 @@ import java.util.*;
  * p. 489.
  */
 public class StronglyConnectedComponents
-	<
-	GraphType extends Graph<EdgeType, VertexType>,
-	EdgeType extends GraphEdge<EdgeType, VertexType>,
-	VertexType extends GraphVertex<VertexType>
-	> {
+        <
+        GraphType extends Graph<EdgeType, VertexType>,
+        EdgeType extends GraphEdge<EdgeType, VertexType>,
+        VertexType extends GraphVertex<VertexType>
+        > {
 
 	private ArrayList<SearchTree<VertexType>> m_stronglyConnectedSearchTreeList;
 	private VertexChooser<VertexType> m_vertexChooser;
 
-	/** Constructor. */
+	/**
+	 * Constructor.
+	 */
 	public StronglyConnectedComponents() {
 		m_stronglyConnectedSearchTreeList = new ArrayList<SearchTree<VertexType>>();
 		m_vertexChooser = null;
@@ -55,31 +57,32 @@ public class StronglyConnectedComponents
 
 	/**
 	 * Find the strongly connected components in given graph.
-	 * @param g the graph
+	 *
+	 * @param g       the graph
 	 * @param toolkit a GraphToolkit, used to create temporary graphs
-	 *   used by the algorithm
+	 *                used by the algorithm
 	 */
 	public void findStronglyConnectedComponents(GraphType g,
-		GraphToolkit<GraphType, EdgeType, VertexType> toolkit) {
+	                                            GraphToolkit<GraphType, EdgeType, VertexType> toolkit) {
 
 		// Perform the initial depth first search
 		DepthFirstSearch<GraphType, EdgeType, VertexType> initialDFS =
-			new DepthFirstSearch<GraphType, EdgeType, VertexType>();
+		        new DepthFirstSearch<GraphType, EdgeType, VertexType>();
 		if (m_vertexChooser != null)
 			initialDFS.setVertexChooser(m_vertexChooser);
 		initialDFS.search(g);
 
 		// Create a transposed graph
 		Transpose<GraphType, EdgeType, VertexType> t =
-			new Transpose<GraphType, EdgeType, VertexType>();
+		        new Transpose<GraphType, EdgeType, VertexType>();
 		GraphType transpose = t.transpose(g, toolkit);
 
 		// Create a set of vertices in the transposed graph,
 		// in descending order of finish time in the initial
 		// depth first search.
 		VisitationTimeComparator<VertexType> comparator =
-			new VisitationTimeComparator<VertexType>(initialDFS.getFinishTimeList(),
-										  VisitationTimeComparator.DESCENDING);
+		        new VisitationTimeComparator<VertexType>(initialDFS.getFinishTimeList(),
+		                VisitationTimeComparator.DESCENDING);
 		Set<VertexType> descendingByFinishTimeSet = new TreeSet<VertexType>(comparator);
 		Iterator<VertexType> i = transpose.vertexIterator();
 		while (i.hasNext()) {
@@ -89,7 +92,7 @@ public class StronglyConnectedComponents
 		// Now perform a DFS on the transpose, choosing the vertices
 		// to visit in the main loop by descending finish time
 		DepthFirstSearch<GraphType, EdgeType, VertexType> transposeDFS =
-			new DepthFirstSearch<GraphType, EdgeType, VertexType>();
+		        new DepthFirstSearch<GraphType, EdgeType, VertexType>();
 		if (m_vertexChooser != null)
 			transposeDFS.setVertexChooser(m_vertexChooser);
 		transposeDFS.search(transpose, descendingByFinishTimeSet.iterator());
@@ -107,12 +110,13 @@ public class StronglyConnectedComponents
 	/**
 	 * Make a copy of given search tree (in the transposed graph)
 	 * using vertices of the original graph.
+	 *
 	 * @param tree a search tree in the transposed graph
-	 * @param t the Transpose object which performed the transposition of
-	 *   the original graph
+	 * @param t    the Transpose object which performed the transposition of
+	 *             the original graph
 	 */
 	private SearchTree<VertexType> copySearchTree(SearchTree<VertexType> tree,
-												Transpose<GraphType, EdgeType, VertexType> t) {
+	                                              Transpose<GraphType, EdgeType, VertexType> t) {
 		// Copy this node
 		SearchTree<VertexType> copy = new SearchTree<VertexType>(t.getOriginalGraphVertex(tree.getVertex()));
 
@@ -129,6 +133,7 @@ public class StronglyConnectedComponents
 	/**
 	 * Returns an iterator over the search trees containing the
 	 * vertices of each strongly connected component.
+	 *
 	 * @return an Iterator over a sequence of SearchTree objects
 	 */
 	public Iterator<SearchTree<VertexType>> searchTreeIterator() {
@@ -136,7 +141,7 @@ public class StronglyConnectedComponents
 	}
 
 	/**
-	 * Iterator for iterating over sets of vertices in 
+	 * Iterator for iterating over sets of vertices in
 	 * strongly connected components.
 	 */
 	private class SCCSetIterator implements Iterator<Set<VertexType>> {
@@ -165,6 +170,7 @@ public class StronglyConnectedComponents
 	/**
 	 * Returns an iterator over the sets of vertices
 	 * of each strongly connected component.
+	 *
 	 * @return an Iterator over a sequence of Set objects
 	 */
 	public Iterator<Set<VertexType>> setIterator() {

@@ -17,7 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-// $Revision: 1.9 $
+// $Revision: 1.10 $
 
 package edu.umd.cs.findbugs.graph;
 
@@ -28,24 +28,28 @@ import java.util.*;
  * Note that the graph is modified as part of this process.
  */
 public class MergeVertices
-	<
-	GraphType extends Graph<EdgeType, VertexType>,
-	EdgeType extends GraphEdge<EdgeType, VertexType>,
-	VertexType extends GraphVertex<VertexType>
-	> {
+        <
+        GraphType extends Graph<EdgeType, VertexType>,
+        EdgeType extends GraphEdge<EdgeType, VertexType>,
+        VertexType extends GraphVertex<VertexType>
+        > {
 
-	/** Constructor. */
-	public MergeVertices() { }
+	/**
+	 * Constructor.
+	 */
+	public MergeVertices() {
+	}
 
 	/**
 	 * Merge the specified set of vertices into a single vertex.
-	 * @param vertexSet the set of vertices to be merged
-	 * @param g the graph to be modified
+	 *
+	 * @param vertexSet  the set of vertices to be merged
+	 * @param g          the graph to be modified
 	 * @param combinator object used to combine vertices
-	 * @param toolkit GraphToolkit used to copy auxiliary information for edges
+	 * @param toolkit    GraphToolkit used to copy auxiliary information for edges
 	 */
 	public void mergeVertices(Set<VertexType> vertexSet, GraphType g, VertexCombinator<VertexType> combinator,
-		GraphToolkit<GraphType, EdgeType, VertexType> toolkit) {
+	                          GraphToolkit<GraphType, EdgeType, VertexType> toolkit) {
 
 		// Special case: if the vertex set contains a single vertex
 		// or is empty, there is nothing to do
@@ -56,7 +60,7 @@ public class MergeVertices
 		// or from which we have incoming edges, since they'll need
 		// to be fixed
 		TreeSet<EdgeType> edgeSet = new TreeSet<EdgeType>();
-		for (Iterator<EdgeType> i = g.edgeIterator(); i.hasNext(); ) {
+		for (Iterator<EdgeType> i = g.edgeIterator(); i.hasNext();) {
 			EdgeType e = i.next();
 			if (vertexSet.contains(e.getSource()) || vertexSet.contains(e.getTarget()))
 				edgeSet.add(e);
@@ -68,7 +72,7 @@ public class MergeVertices
 		// For each original edge into or out of the vertex set,
 		// create an equivalent edge referencing the composite
 		// vertex
-		for (Iterator<EdgeType> i = edgeSet.iterator(); i.hasNext(); ) {
+		for (Iterator<EdgeType> i = edgeSet.iterator(); i.hasNext();) {
 			EdgeType e = i.next();
 			VertexType source = vertexSet.contains(e.getSource()) ? compositeVertex : e.getSource();
 			VertexType target = vertexSet.contains(e.getTarget()) ? compositeVertex : e.getTarget();
@@ -80,7 +84,7 @@ public class MergeVertices
 			// unless one of the vertices in the vertex set
 			// had a self edge
 			if (source == compositeVertex && target == compositeVertex &&
-				 e.getSource() != e.getTarget())
+			        e.getSource() != e.getTarget())
 				continue;
 
 			// Don't create duplicate edges.
@@ -95,7 +99,7 @@ public class MergeVertices
 		// Remove all of the vertices in the vertex set; this will
 		// automatically remove the edges into and out of those
 		// vertices
-		for (Iterator<VertexType> i = vertexSet.iterator(); i.hasNext(); ) {
+		for (Iterator<VertexType> i = vertexSet.iterator(); i.hasNext();) {
 			g.removeVertex(i.next());
 		}
 

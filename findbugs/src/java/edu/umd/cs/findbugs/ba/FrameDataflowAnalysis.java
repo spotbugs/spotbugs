@@ -22,11 +22,12 @@ package edu.umd.cs.findbugs.ba;
 /**
  * A convenient base class for dataflow analysis classes which
  * use Frames as values.
+ *
+ * @author David Hovemeyer
  * @see Frame
  * @see DataflowAnalysis
- * @author David Hovemeyer
  */
-public abstract class FrameDataflowAnalysis<ValueType, FrameType extends Frame<ValueType>> extends ForwardDataflowAnalysis<FrameType> {
+public abstract class FrameDataflowAnalysis <ValueType, FrameType extends Frame<ValueType>> extends ForwardDataflowAnalysis<FrameType> {
 	public FrameDataflowAnalysis(DepthFirstSearch dfs) {
 		super(dfs);
 	}
@@ -56,30 +57,30 @@ public abstract class FrameDataflowAnalysis<ValueType, FrameType extends Frame<V
 	 * This is useful for meetInto(), if the frame needs to be
 	 * modified in a path-sensitive fashion.
 	 * A typical usage pattern is:
-	 *
+	 * <p/>
 	 * <pre>
 	 * FrameType copy = null;
 	 * if (someCondition()) {
 	 *     copy = modifyFrame(fact, copy);
 	 *     // modify copy
 	 * }
-     * if (someOtherCondition()) {
+	 * if (someOtherCondition()) {
 	 *     copy = modifyFrame(fact, copy);
 	 *     // modify copy
 	 * }
 	 * if (copy != null)
 	 *     fact = copy;
-	 *
+	 * <p/>
 	 * mergeInto(fact, result);
 	 * </pre>
-	 *
+	 * <p/>
 	 * The advantage of using modifyFrame() is that new code can be added
 	 * before or after other places where the frame is modified, and the
 	 * code will remain correct.
 	 *
 	 * @param orig the original frame
 	 * @param copy the modifiable copy (returned by a previous call to modifyFrame()),
-	 *   or null if this is the first time modifyFrame() is being called
+	 *             or null if this is the first time modifyFrame() is being called
 	 * @return a modifiable copy of fact
 	 */
 	protected FrameType modifyFrame(FrameType orig, FrameType copy) {
@@ -92,9 +93,10 @@ public abstract class FrameDataflowAnalysis<ValueType, FrameType extends Frame<V
 
 	/**
 	 * Merge one frame into another.
-	 * @param other the frame to merge with the result
+	 *
+	 * @param other  the frame to merge with the result
 	 * @param result the result frame, which is modified to be the
-	 *   merge of the two frames
+	 *               merge of the two frames
 	 */
 	protected void mergeInto(FrameType other, FrameType result) throws DataflowAnalysisException {
 		// Handle if result Frame or the other Frame is the special "TOP" value.
@@ -132,14 +134,15 @@ public abstract class FrameDataflowAnalysis<ValueType, FrameType extends Frame<V
 
 	/**
 	 * Merge two values in a particular slot of a Frame.
+	 *
 	 * @param frame the Frame
-	 * @param slot the slot of the Frame
-	 * @param a a value
-	 * @param b another value
+	 * @param slot  the slot of the Frame
+	 * @param a     a value
+	 * @param b     another value
 	 * @return the merged value
 	 */
 	protected abstract ValueType mergeValues(FrameType frame, int slot, ValueType a, ValueType b)
-		throws DataflowAnalysisException;
+	        throws DataflowAnalysisException;
 }
 
 // vim:ts=4

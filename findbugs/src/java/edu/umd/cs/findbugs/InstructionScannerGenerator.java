@@ -31,6 +31,7 @@ public interface InstructionScannerGenerator {
 	 * false otherwise.
 	 */
 	public boolean start(org.apache.bcel.generic.InstructionHandle handle);
+
 	/**
 	 * Create a new scanner.
 	 */

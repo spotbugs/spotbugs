@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.ba;
 
 import java.util.*;
+
 import org.apache.bcel.generic.InstructionHandle;
 
 /**
@@ -27,8 +28,8 @@ import org.apache.bcel.generic.InstructionHandle;
  * produce.  We must always produce the same output given identical
  * input, or else value number analysis will not terminate.
  *
- * @see ValueNumberAnalysis
  * @author David Hovemeyer
+ * @see ValueNumberAnalysis
  */
 public class ValueNumberCache {
 	private static final boolean DEBUG = Boolean.getBoolean("vn.debug");
@@ -88,14 +89,17 @@ public class ValueNumberCache {
 		}
 	}
 
-	/** Map of entries to output values. */
+	/**
+	 * Map of entries to output values.
+	 */
 	private HashMap<Entry, ValueNumber[]> entryToOutputMap = new HashMap<Entry, ValueNumber[]>();
 
 	/**
 	 * Look up cached output values for given entry.
+	 *
 	 * @param entry the entry
 	 * @return the list of output values, or null if there is no matching entry
-	 *   in the cache
+	 *         in the cache
 	 */
 	public ValueNumber[] lookupOutputValues(Entry entry) {
 		if (DEBUG) System.out.println("VN cache lookup: " + entry);
@@ -108,9 +112,10 @@ public class ValueNumberCache {
 	 * Add output values for given entry.
 	 * Assumes that lookupOutputValues() has determined that the entry
 	 * is not in the cache.
-	 * @param entry the entry
+	 *
+	 * @param entry           the entry
 	 * @param outputValueList the list of output values produced
-	 *  by the entry's instruction and input values
+	 *                        by the entry's instruction and input values
 	 */
 	public void addOutputValues(Entry entry, ValueNumber[] outputValueList) {
 		ValueNumber[] old = entryToOutputMap.put(entry, outputValueList);

@@ -17,7 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-// $Revision: 1.3 $
+// $Revision: 1.4 $
 
 package edu.umd.cs.findbugs.graph;
 
@@ -28,12 +28,16 @@ import java.util.*;
  * search; for example, it could compare the finishing times produced
  * by DepthFirstSearch.
  */
-public class VisitationTimeComparator<VertexType extends GraphVertex> implements Comparator<VertexType> {
+public class VisitationTimeComparator <VertexType extends GraphVertex> implements Comparator<VertexType> {
 
-	/** Compare in ascending order. */
-	public static final int ASCENDING  = 0;
+	/**
+	 * Compare in ascending order.
+	 */
+	public static final int ASCENDING = 0;
 
-	/** Compare in descending order. */
+	/**
+	 * Compare in descending order.
+	 */
 	public static final int DESCENDING = 1;
 
 	private int[] m_visitationTimeList;
@@ -41,8 +45,9 @@ public class VisitationTimeComparator<VertexType extends GraphVertex> implements
 
 	/**
 	 * Constructor.
+	 *
 	 * @param visitationTimeList array of visitation times indexed by vertex label
-	 * @param direction either ASCENDING or DESCENDING
+	 * @param direction          either ASCENDING or DESCENDING
 	 */
 	public VisitationTimeComparator(int[] visitationTimeList, int direction) {
 		m_visitationTimeList = visitationTimeList;
@@ -53,8 +58,8 @@ public class VisitationTimeComparator<VertexType extends GraphVertex> implements
 	}
 
 	public int compare(VertexType v1, VertexType v2) {
-		int f1 = m_visitationTimeList[ v1.getLabel() ];
-		int f2 = m_visitationTimeList[ v2.getLabel() ];
+		int f1 = m_visitationTimeList[v1.getLabel()];
+		int f2 = m_visitationTimeList[v2.getLabel()];
 
 		if (m_direction == ASCENDING)
 			return f1 - f2;

@@ -32,24 +32,24 @@ import java.util.*;
  * User Preferences outside of any one Project
  * This consists of a class to manage the findbugs.prop file found in the user.dir
  */
- 
+
 public class UserPreferences {
 	private static final int MAX_RECENT_FILES = 9;
 	private static final String DETECTOR_THRESHOLD_KEY = "detector_threshold";
 	private LinkedList<String> recentProjectsList = new LinkedList<String>();
-	private HashMap<String,Boolean> detectorStateList = new HashMap<String,Boolean>();
+	private HashMap<String, Boolean> detectorStateList = new HashMap<String, Boolean>();
 	private int detectorThreshold = Detector.NORMAL_PRIORITY;
 	private static UserPreferences preferencesSingleton = new UserPreferences();
-	
+
 	private UserPreferences() {
 	}
-	
+
 	public static UserPreferences getUserPreferences() {
 		return preferencesSingleton;
 	}
-	
+
 	public void read() {
-		File prefFile = new File( System.getProperty( "user.home" ), "Findbugs.prefs" );
+		File prefFile = new File(System.getProperty("user.home"), "Findbugs.prefs");
 		if (!prefFile.exists() || !prefFile.isFile())
 			return;
 		BufferedInputStream prefStream = null;
@@ -59,71 +59,69 @@ public class UserPreferences {
 			props.load(prefStream);
 		} catch (Exception e) {
 			//Report? - probably not
-		}
-		finally {
+		} finally {
 			try {
 				if (prefStream != null)
 					prefStream.close();
+			} catch (IOException ioe) {
 			}
-			catch (IOException ioe) {}
 		}
-		
+
 		if (props.size() == 0)
 			return;
 		for (int i = 0; i < MAX_RECENT_FILES; i++) {
 			String key = "recent" + i;
-			String projectName = (String)props.get(key);
+			String projectName = (String) props.get(key);
 			if (projectName != null)
 				recentProjectsList.add(projectName);
 		}
-		
-		int i = 0; 
+
+		int i = 0;
 		while (true) {
-		    String key = "detector" + i;
-		    String detectorState = (String)props.get(key);
-		    if (detectorState == null)
-			break;
-		    int pipePos = detectorState.indexOf("|");
-		    if (pipePos >= 0) {
+			String key = "detector" + i;
+			String detectorState = (String) props.get(key);
+			if (detectorState == null)
+				break;
+			int pipePos = detectorState.indexOf("|");
+			if (pipePos >= 0) {
 				String name = detectorState.substring(0, pipePos);
-				String enabled = detectorState.substring(pipePos+1);
+				String enabled = detectorState.substring(pipePos + 1);
 				detectorStateList.put(name, Boolean.valueOf(enabled));
-		    }
-		    i++;
+			}
+			i++;
 		}
-		
-		String threshold = (String)props.get(DETECTOR_THRESHOLD_KEY);
+
+		String threshold = (String) props.get(DETECTOR_THRESHOLD_KEY);
 		if (threshold != null) {
 			try {
 				detectorThreshold = Integer.parseInt(threshold);
-			}
-			catch (NumberFormatException nfe) {
+			} catch (NumberFormatException nfe) {
 				//Ok to ignore
 			}
 		}
-		
-		    
+
+
 	}
-	
+
 	public void write() {
 		Properties props = new Properties();
 		for (int i = 0; i < recentProjectsList.size(); i++) {
 			String projectName = recentProjectsList.get(i);
 			String key = "recent" + i;
-			props.put(key,projectName);
+			props.put(key, projectName);
 		}
-		
+
 		Iterator it = detectorStateList.entrySet().iterator();
 		int i = 0;
 		while (it.hasNext()) {
-		    Map.Entry entry = (Map.Entry) it.next();
-		    props.put( "detector" + i, entry.getKey() + "|" + String.valueOf(((Boolean)entry.getValue()).booleanValue()));
-		    i++;
+			Map.Entry entry = (Map.Entry) it.next();
+			props.put("detector" + i, entry.getKey() + "|" + String.valueOf(((Boolean) entry.getValue()).booleanValue()));
+			i++;
 		}
-		
-		props.put( DETECTOR_THRESHOLD_KEY, String.valueOf(detectorThreshold));
-		
-		File prefFile = new File( System.getProperty( "user.home" ), "Findbugs.prefs" );
+
+		props.put(DETECTOR_THRESHOLD_KEY, String.valueOf(detectorThreshold));
+
+		File prefFile = new File(System.getProperty("user.home"), "Findbugs.prefs");
 		BufferedOutputStream prefStream = null;
 		try {
 			prefStream = new BufferedOutputStream(new FileOutputStream(prefFile));
@@ -135,15 +133,15 @@ public class UserPreferences {
 			try {
 				if (prefStream != null)
 					prefStream.close();
+			} catch (IOException ioe) {
 			}
-			catch (IOException ioe) {}
 		}
 	}
-	
-	public List<String> getRecentProjects(){
+
+	public List<String> getRecentProjects() {
 		return recentProjectsList;
 	}
-	
+
 	public void useProject(String projectName) {
 		for (int i = 0; i < recentProjectsList.size(); i++) {
 			if (projectName.equals(recentProjectsList.get(i))) {
@@ -156,7 +154,7 @@ public class UserPreferences {
 		if (recentProjectsList.size() > MAX_RECENT_FILES)
 			recentProjectsList.removeLast();
 	}
-	
+
 	public void removeProject(String projectName) {
 		//It really should always be in slot 0, but...
 		for (int i = 0; i < recentProjectsList.size(); i++) {
@@ -164,32 +162,32 @@ public class UserPreferences {
 				recentProjectsList.remove(i);
 				break;
 			}
-		}	
+		}
 	}
-	
+
 	public void loadUserDetectorPreferences() {
-	    Iterator<DetectorFactory> i = DetectorFactoryCollection.instance().factoryIterator();
-	    while (i.hasNext()) {
-		DetectorFactory factory = i.next();
-		Boolean enabled = detectorStateList.get( factory.getShortName());
-		if (enabled != null)
-		    factory.setEnabled(enabled.booleanValue());
-	    }
-	}
-	
-	public void storeUserDetectorPreferences() {
-	    detectorStateList.clear();
-	    Iterator<DetectorFactory> i = DetectorFactoryCollection.instance().factoryIterator();
-	    while (i.hasNext()) {
+		Iterator<DetectorFactory> i = DetectorFactoryCollection.instance().factoryIterator();
+		while (i.hasNext()) {
 			DetectorFactory factory = i.next();
-			detectorStateList.put( factory.getShortName(), Boolean.valueOf(factory.isEnabled()));
-	    }
+			Boolean enabled = detectorStateList.get(factory.getShortName());
+			if (enabled != null)
+				factory.setEnabled(enabled.booleanValue());
+		}
 	}
-	
+
+	public void storeUserDetectorPreferences() {
+		detectorStateList.clear();
+		Iterator<DetectorFactory> i = DetectorFactoryCollection.instance().factoryIterator();
+		while (i.hasNext()) {
+			DetectorFactory factory = i.next();
+			detectorStateList.put(factory.getShortName(), Boolean.valueOf(factory.isEnabled()));
+		}
+	}
+
 	public int getUserDetectorThreshold() {
 		return detectorThreshold;
 	}
-	
+
 	public void setUserDetectorThreshold(int threshold) {
 		detectorThreshold = threshold;
 	}

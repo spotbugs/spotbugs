@@ -18,10 +18,13 @@
  */
 
 package edu.umd.cs.findbugs.detect;
-import edu.umd.cs.findbugs.*;
+
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import edu.umd.cs.findbugs.visitclass.Constants2;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Method;
-import edu.umd.cs.findbugs.visitclass.Constants2;
 
 //   2:   astore_1
 //   3:   monitorenter
@@ -31,49 +34,48 @@ import edu.umd.cs.findbugs.visitclass.Constants2;
 //   9:   monitorexit
 
 
-public class FindNakedNotify extends BytecodeScanningDetector implements   Constants2 {
-    int stage = 0;
-    private BugReporter bugReporter;
-    boolean synchronizedMethod;
-    private int notifyPC;
+public class FindNakedNotify extends BytecodeScanningDetector implements Constants2 {
+	int stage = 0;
+	private BugReporter bugReporter;
+	boolean synchronizedMethod;
+	private int notifyPC;
 
-    public FindNakedNotify(BugReporter bugReporter) {
-	this.bugReporter = bugReporter;
+	public FindNakedNotify(BugReporter bugReporter) {
+		this.bugReporter = bugReporter;
 	}
 
-    public void visit(Method obj) {
-	int flags = obj.getAccessFlags();
-	synchronizedMethod = (flags & ACC_SYNCHRONIZED) != 0;
+	public void visit(Method obj) {
+		int flags = obj.getAccessFlags();
+		synchronizedMethod = (flags & ACC_SYNCHRONIZED) != 0;
 	}
 
-    public void visit(Code obj) {
-	stage = synchronizedMethod ? 1 : 0;
-	super.visit(obj);
-	if (synchronizedMethod && stage == 4) 
-		bugReporter.reportBug(
-			new BugInstance("NN_NAKED_NOTIFY", NORMAL_PRIORITY)
-			.addClassAndMethod(this)
-			.addSourceLine(this, notifyPC));
+	public void visit(Code obj) {
+		stage = synchronizedMethod ? 1 : 0;
+		super.visit(obj);
+		if (synchronizedMethod && stage == 4)
+			bugReporter.reportBug(new BugInstance("NN_NAKED_NOTIFY", NORMAL_PRIORITY)
+			        .addClassAndMethod(this)
+			        .addSourceLine(this, notifyPC));
 	}
 
-    public void sawOpcode(int seen) {
-	switch (stage) {
+	public void sawOpcode(int seen) {
+		switch (stage) {
 		case 0:
-			if (seen == MONITORENTER) 
-				stage = 1;		
+			if (seen == MONITORENTER)
+				stage = 1;
 			break;
 		case 1:
 			stage = 2;
 			break;
 		case 2:
-			if (seen == INVOKEVIRTUAL 
-				&& (getNameConstantOperand().equals("notify")
-				   || getNameConstantOperand().equals("notifyAll"))
-				&& getSigConstantOperand().equals("()V")) {
-			  stage = 3;
-			  notifyPC = getPC();
-			  }
-			else stage = 0;
+			if (seen == INVOKEVIRTUAL
+			        && (getNameConstantOperand().equals("notify")
+			        || getNameConstantOperand().equals("notifyAll"))
+			        && getSigConstantOperand().equals("()V")) {
+				stage = 3;
+				notifyPC = getPC();
+			} else
+				stage = 0;
 			break;
 		case 3:
 			stage = 4;
@@ -81,18 +83,17 @@ public class FindNakedNotify extends BytecodeScanningDetector implements   Const
 		case 4:
 			if (seen == MONITOREXIT) {
 				bugReporter.reportBug(new BugInstance("NN_NAKED_NOTIFY", NORMAL_PRIORITY)
-					.addClassAndMethod(this)
-					.addSourceLine(this, notifyPC));
+				        .addClassAndMethod(this)
+				        .addSourceLine(this, notifyPC));
 				stage = 5;
-				}
-			else
+			} else
 				stage = 0;
-			break; 
+			break;
 		case 5:
 			break;
 		default:
 			assert false;
-			}
-		
+		}
+
 	}
 }

@@ -19,8 +19,9 @@
 
 package edu.umd.cs.findbugs.ba;
 
-import org.apache.bcel.generic.InstructionHandle;
 import java.util.*;
+
+import org.apache.bcel.generic.InstructionHandle;
 
 /**
  * Abstract base class providing functionality that will be useful
@@ -29,11 +30,11 @@ import java.util.*;
  * It also maintains a map of the dataflow fact for every location in the CFG,
  * which is useful when using the results of the analysis.
  *
+ * @author David Hovemeyer
  * @see Dataflow
  * @see DataflowAnalysis
- * @author David Hovemeyer
  */
-public abstract class AbstractDataflowAnalysis<Fact> implements DataflowAnalysis<Fact> {
+public abstract class AbstractDataflowAnalysis <Fact> implements DataflowAnalysis<Fact> {
 	private static final boolean DEBUG = Boolean.getBoolean("dataflow.transfer");
 
 	private IdentityHashMap<BasicBlock, Fact> startFactMap = new IdentityHashMap<BasicBlock, Fact>();
@@ -45,10 +46,11 @@ public abstract class AbstractDataflowAnalysis<Fact> implements DataflowAnalysis
 
 	/**
 	 * Transfer function for a single instruction.
-	 * @param handle the instruction
+	 *
+	 * @param handle     the instruction
 	 * @param basicBlock the BasicBlock containing the instruction; needed to disambiguate
-	 *  instructions in inlined JSR subroutines
-	 * @param fact which should be modified based on the instruction
+	 *                   instructions in inlined JSR subroutines
+	 * @param fact       which should be modified based on the instruction
 	 */
 	public abstract void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, Fact fact) throws DataflowAnalysisException;
 
@@ -63,8 +65,9 @@ public abstract class AbstractDataflowAnalysis<Fact> implements DataflowAnalysis
 	 * Due to a bug in the 2.2 version of the generics-enabled javac,
 	 * it is not possible to directly override the transfer() method.
 	 * This method will be called immediately upon entry to transfer().
+	 *
 	 * @param basicBlock the basic block
-	 * @param fact the start fact for the block
+	 * @param fact       the start fact for the block
 	 */
 	public void startTransfer(BasicBlock basicBlock, Object fact) throws DataflowAnalysisException {
 	}
@@ -74,9 +77,10 @@ public abstract class AbstractDataflowAnalysis<Fact> implements DataflowAnalysis
 	 * Due to a bug in the 2.2 version of the generics-enabled javac,
 	 * it is not possible to directly override the transfer() method.
 	 * This method will be called just before exiting transfer().
+	 *
 	 * @param basicBlock the basic block
-	 * @param end last instruction analyzed (null if entire block was analyzed)
-	 * @param result the result fact for the block
+	 * @param end        last instruction analyzed (null if entire block was analyzed)
+	 * @param result     the result fact for the block
 	 */
 	public void endTransfer(BasicBlock basicBlock, InstructionHandle end, Object result) throws DataflowAnalysisException {
 	}
@@ -85,6 +89,7 @@ public abstract class AbstractDataflowAnalysis<Fact> implements DataflowAnalysis
 	 * Get the dataflow fact representing the point just before given Location.
 	 * Note "before" is meant in the logical sense, so for backward analyses,
 	 * before means after the location in the control flow sense.
+	 *
 	 * @param location the location
 	 * @return the fact at the point just before the location
 	 */

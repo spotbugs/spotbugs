@@ -34,46 +34,48 @@ import java.util.*;
  *
  * @author David Hovemeyer
  */
-public class Grouper<ElementType> {
-    
-    public interface Callback<ElementType> {
-	public void startGroup(ElementType firstMember);
-	public void addToGroup(ElementType member);
-    }
-    
-    private Callback<ElementType> callback;
-    
-    /**
-     * Creates a new instance of Grouper.
-     * @param callback the callback which receives the groups and elements
-     */
-    public Grouper(Callback<ElementType> callback) {
-	this.callback = callback;
-    }
+public class Grouper <ElementType> {
 
-    /**
-     * Group elements of given collection according to given
-     * compartor's test for equality.  The groups are specified by
-     * calls to the Grouper's callback object.
-     *
-     * @param collection the collection
-     * @param comparator the comparator
-     */
-    public void group(Collection<ElementType> collection, Comparator<ElementType> comparator) {
-	Iterator<ElementType> i = collection.iterator();
-	ElementType last = null;
-	while (i.hasNext()) {
-	    ElementType current = i.next();
-	    if (last != null && comparator.compare(last, current) == 0) {
-		// Same group as before
-		callback.addToGroup(current);
-	    } else {
-		// Start of a new group
-		callback.startGroup(current);
-	    }
-	    
-	    last = current;
+	public interface Callback <ElementType> {
+		public void startGroup(ElementType firstMember);
+
+		public void addToGroup(ElementType member);
 	}
-    }
-    
+
+	private Callback<ElementType> callback;
+
+	/**
+	 * Creates a new instance of Grouper.
+	 *
+	 * @param callback the callback which receives the groups and elements
+	 */
+	public Grouper(Callback<ElementType> callback) {
+		this.callback = callback;
+	}
+
+	/**
+	 * Group elements of given collection according to given
+	 * compartor's test for equality.  The groups are specified by
+	 * calls to the Grouper's callback object.
+	 *
+	 * @param collection the collection
+	 * @param comparator the comparator
+	 */
+	public void group(Collection<ElementType> collection, Comparator<ElementType> comparator) {
+		Iterator<ElementType> i = collection.iterator();
+		ElementType last = null;
+		while (i.hasNext()) {
+			ElementType current = i.next();
+			if (last != null && comparator.compare(last, current) == 0) {
+				// Same group as before
+				callback.addToGroup(current);
+			} else {
+				// Start of a new group
+				callback.startGroup(current);
+			}
+
+			last = current;
+		}
+	}
+
 }

@@ -19,12 +19,11 @@
 
 package edu.umd.cs.findbugs.ba;
 
-import java.util.*;
-import java.io.*;
+import java.io.IOException;
 
-import org.apache.bcel.*;
-import org.apache.bcel.classfile.*;
-import org.apache.bcel.generic.*;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.MethodGen;
 
 /**
  * A test driver for dataflow analysis classes.
@@ -32,15 +31,16 @@ import org.apache.bcel.generic.*;
  * and has options (properties) to restrict the analysis to a single
  * method, and to print out a CFG annotated with dataflow values.
  *
+ * @author David Hovemeyer
  * @see Dataflow
  * @see DataflowAnalysis
- * @author David Hovemeyer
  */
-public abstract class DataflowTestDriver<Fact, AnalysisType extends AbstractDataflowAnalysis<Fact>> {
+public abstract class DataflowTestDriver <Fact, AnalysisType extends AbstractDataflowAnalysis<Fact>> {
 
 
 	/**
 	 * Execute the analysis on a single class.
+	 *
 	 * @param filename the name of the class file
 	 */
 	public void execute(String filename) throws DataflowAnalysisException, CFGBuilderException, IOException {
@@ -96,17 +96,19 @@ public abstract class DataflowTestDriver<Fact, AnalysisType extends AbstractData
 	/**
 	 * Downcall method to create the dataflow driver object
 	 * and execute the analysis.
+	 *
 	 * @param classContext ClassContext for the class
-	 * @param method the Method
+	 * @param method       the Method
 	 * @return the Dataflow driver
 	 */
 	public abstract Dataflow<Fact, AnalysisType> createDataflow(ClassContext classContext, Method method)
-		throws CFGBuilderException, DataflowAnalysisException;
+	        throws CFGBuilderException, DataflowAnalysisException;
 
 	/**
 	 * Downcall method to inspect the analysis results.
 	 * Need not be implemented by subclasses.
-	 * @param cfg the control flow graph
+	 *
+	 * @param cfg      the control flow graph
 	 * @param dataflow the analysis results
 	 */
 	public void examineResults(CFG cfg, Dataflow<Fact, AnalysisType> dataflow) {

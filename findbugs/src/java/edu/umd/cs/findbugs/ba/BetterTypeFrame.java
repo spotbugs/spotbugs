@@ -20,19 +20,19 @@
 package edu.umd.cs.findbugs.ba;
 
 import edu.umd.cs.findbugs.ba.type.Type;
-import edu.umd.cs.findbugs.ba.type.TypeMerger;
-import edu.umd.cs.findbugs.ba.type.TypeRepository;
 
 /**
  * A Frame containing Type objects representing the type
  * of each item in a Java stack frame.
+ *
+ * @author David Hovemeyer
  * @see Frame
  * @see BetterTypeAnalysis
- * @author David Hovemeyer
  */
 public class BetterTypeFrame extends Frame<Type> {
 	/**
 	 * Constructor.
+	 *
 	 * @param numLocals the number of local variables in the frame
 	 */
 	public BetterTypeFrame(int numLocals) {

@@ -19,34 +19,16 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import java.util.*;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
-
-import edu.umd.cs.findbugs.ba.AnalysisContext;
-import edu.umd.cs.findbugs.ba.AnalysisException;
-import edu.umd.cs.findbugs.ba.BasicBlock;
-import edu.umd.cs.findbugs.ba.CFG;
-import edu.umd.cs.findbugs.ba.CFGBuilderException;
-import edu.umd.cs.findbugs.ba.ClassContext;
-import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
-import edu.umd.cs.findbugs.ba.Hierarchy;
-import edu.umd.cs.findbugs.ba.Location;
-import edu.umd.cs.findbugs.ba.TypeDataflow;
-
+import edu.umd.cs.findbugs.ba.*;
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.Instruction;
-import org.apache.bcel.generic.InstructionHandle;
-import org.apache.bcel.generic.MethodGen;
-import org.apache.bcel.generic.ObjectType;
-import org.apache.bcel.generic.ReferenceType;
-import org.apache.bcel.generic.Type;
-
-import java.util.BitSet;
-import java.util.Iterator;
+import org.apache.bcel.generic.*;
 
 /**
  * Find places where ordinary (balanced) synchronization is performed
@@ -91,16 +73,16 @@ public class FindJSR166LockMonitorenter implements Detector {
 			CFG cfg = classContext.getCFG(method);
 			TypeDataflow typeDataflow = classContext.getTypeDataflow(method);
 
-			for (Iterator<BasicBlock> i = cfg.blockIterator(); i.hasNext(); ) {
+			for (Iterator<BasicBlock> i = cfg.blockIterator(); i.hasNext();) {
 				BasicBlock basicBlock = i.next();
-				for (Iterator<InstructionHandle> j = basicBlock.instructionIterator(); j.hasNext(); ) {
+				for (Iterator<InstructionHandle> j = basicBlock.instructionIterator(); j.hasNext();) {
 					InstructionHandle handle = j.next();
 					Instruction ins = handle.getInstruction();
 
 					if (ins.getOpcode() != Constants.MONITORENTER)
 						continue;
 
-					Type type = typeDataflow.getFactAtLocation(new Location(handle,basicBlock)).getInstance(ins, cpg);
+					Type type = typeDataflow.getFactAtLocation(new Location(handle, basicBlock)).getInstance(ins, cpg);
 
 					if (!(type instanceof ReferenceType)) {
 						// FIXME:
@@ -123,8 +105,8 @@ public class FindJSR166LockMonitorenter implements Detector {
 						String sourceFile = classContext.getJavaClass().getSourceFileName();
 
 						bugReporter.reportBug(new BugInstance("JLM_JSR166_LOCK_MONITORENTER", NORMAL_PRIORITY)
-							.addClassAndMethod(mg, sourceFile)
-							.addSourceLine(mg, sourceFile, handle));
+						        .addClassAndMethod(mg, sourceFile)
+						        .addSourceLine(mg, sourceFile, handle));
 					}
 				}
 			}

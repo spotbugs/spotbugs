@@ -22,16 +22,15 @@ package edu.umd.cs.findbugs.ba;
 import java.util.*;
 
 import edu.umd.cs.findbugs.graph.AbstractVertex;
-
 import org.apache.bcel.Constants;
-import org.apache.bcel.classfile.*;
-import org.apache.bcel.generic.*;
+import org.apache.bcel.generic.CodeExceptionGen;
+import org.apache.bcel.generic.InstructionHandle;
 
 /**
  * Simple basic block abstraction for BCEL.
  *
- * @see CFG
  * @author David Hovemeyer
+ * @see CFG
  */
 public class BasicBlock extends AbstractVertex<Edge, BasicBlock> implements Debug {
 
@@ -39,8 +38,11 @@ public class BasicBlock extends AbstractVertex<Edge, BasicBlock> implements Debu
 	 * Static data
 	 * ---------------------------------------------------------------------- */
 
-	/** Set of instruction opcodes that have an implicit null check. */
+	/**
+	 * Set of instruction opcodes that have an implicit null check.
+	 */
 	private static final BitSet nullCheckInstructionSet = new BitSet();
+
 	static {
 		nullCheckInstructionSet.set(Constants.GETFIELD);
 		nullCheckInstructionSet.set(Constants.PUTFIELD);
@@ -99,6 +101,7 @@ public class BasicBlock extends AbstractVertex<Edge, BasicBlock> implements Debu
 
 	/**
 	 * Set the instruction for which this block is the ETB.
+	 *
 	 * @param exceptionThrower the instruction
 	 */
 	public void setExceptionThrower(InstructionHandle exceptionThrower) {
@@ -114,6 +117,7 @@ public class BasicBlock extends AbstractVertex<Edge, BasicBlock> implements Debu
 
 	/**
 	 * Get the instruction for which this block is an exception thrower.
+	 *
 	 * @return the instruction, or null if this block is not an exception thrower
 	 */
 	public InstructionHandle getExceptionThrower() {
@@ -133,18 +137,23 @@ public class BasicBlock extends AbstractVertex<Edge, BasicBlock> implements Debu
 		return nullCheckInstructionSet.get(opcode);
 	}
 
-	/** Get the first instruction in the basic block. */
+	/**
+	 * Get the first instruction in the basic block.
+	 */
 	public InstructionHandle getFirstInstruction() {
 		return firstInstruction;
 	}
 
-	/** Get the last instruction in the basic block. */
+	/**
+	 * Get the last instruction in the basic block.
+	 */
 	public InstructionHandle getLastInstruction() {
 		return lastInstruction;
 	}
 
 	/**
 	 * Add an InstructionHandle to the basic block.
+	 *
 	 * @param handle the InstructionHandle
 	 */
 	public void addInstruction(InstructionHandle handle) {
@@ -270,12 +279,17 @@ public class BasicBlock extends AbstractVertex<Edge, BasicBlock> implements Debu
 		return firstInstruction == null;
 	}
 
-	/** Is this block an exception handler? */
-	public boolean isExceptionHandler() { return exceptionGen != null; }
+	/**
+	 * Is this block an exception handler?
+	 */
+	public boolean isExceptionHandler() {
+		return exceptionGen != null;
+	}
 
 	/**
 	 * Get CodeExceptionGen object; returns null if this basic block is
 	 * not the entry point of an exception handler.
+	 *
 	 * @return the CodeExceptionGen object, or null
 	 */
 	public CodeExceptionGen getExceptionGen() {
@@ -285,6 +299,7 @@ public class BasicBlock extends AbstractVertex<Edge, BasicBlock> implements Debu
 	/**
 	 * Set the CodeExceptionGen object.  Marks this basic block as
 	 * the entry point of an exception handler.
+	 *
 	 * @param exceptionGen the CodeExceptionGen object for the block
 	 */
 	public void setExceptionGen(CodeExceptionGen exceptionGen) {
@@ -293,6 +308,7 @@ public class BasicBlock extends AbstractVertex<Edge, BasicBlock> implements Debu
 
 	/**
 	 * Return whether or not the basic block contains the given instruction.
+	 *
 	 * @param handle the instruction
 	 * @return true if the block contains the instruction, false otherwise
 	 */

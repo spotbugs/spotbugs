@@ -18,113 +18,116 @@
  */
 
 package edu.umd.cs.findbugs.detect;
-import edu.umd.cs.findbugs.*;
+
+import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.ba.ClassContext;
-import org.apache.bcel.classfile.*;
 import edu.umd.cs.findbugs.visitclass.Constants2;
+import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.LineNumberTable;
 
-public class SwitchFallthrough extends BytecodeScanningDetector implements   Constants2 {
-    private static final boolean DEBUG = Boolean.getBoolean("switchFallthrough.debug");
+public class SwitchFallthrough extends BytecodeScanningDetector implements Constants2 {
+	private static final boolean DEBUG = Boolean.getBoolean("switchFallthrough.debug");
 
-    int nextIndex = -1;
-    boolean reachable = false;
-    boolean inSwitch = false;
-    int start;
-    int switchPC;
-    private BugReporter bugReporter;
-        LineNumberTable  lineNumbers;
+	int nextIndex = -1;
+	boolean reachable = false;
+	boolean inSwitch = false;
+	int start;
+	int switchPC;
+	private BugReporter bugReporter;
+	LineNumberTable lineNumbers;
 
-    public SwitchFallthrough(BugReporter bugReporter) {
-	this.bugReporter = bugReporter;
+	public SwitchFallthrough(BugReporter bugReporter) {
+		this.bugReporter = bugReporter;
 	}
 
-   public void visitClassContext(ClassContext classContext) {
-	// DHH - 6/25/04
-	// People have been reporting NPEs from this
-	// detector.  For now, I am hacking it so it doesn't
-	// actually do anything.
+	public void visitClassContext(ClassContext classContext) {
+		// DHH - 6/25/04
+		// People have been reporting NPEs from this
+		// detector.  For now, I am hacking it so it doesn't
+		// actually do anything.
 
-	/* DO NOTHING - no visitation methods will be called */
-   }
+		/* DO NOTHING - no visitation methods will be called */
+	}
 
-   public void visit(Code obj) {
+	public void visit(Code obj) {
 		inSwitch = false;
 		reachable = true;
-	        lineNumbers = obj.getLineNumberTable();
-                if (lineNumbers != null) 
+		lineNumbers = obj.getLineNumberTable();
+		if (lineNumbers != null)
 			super.visit(obj);
-                }
-
-    public void sawOpcode(int seen) {
-	int[] switchOffsets = null;
-	int[] switchLabels = null;
-
-	switch (seen) {
-		case TABLESWITCH:
-		case LOOKUPSWITCH:
-		switchPC = getPC();
-		switchOffsets = getSwitchOffsets();
-		switchLabels = getSwitchLabels();
-		inSwitch = true;
-		reachable = false;
-		nextIndex = 0;
-		break;
-		default:
-		}
-	if (inSwitch && nextIndex >= switchOffsets.length) 
-		inSwitch = false;
-	if (inSwitch) {
-	  if (getPC() == switchPC + switchOffsets[nextIndex]
-		&& switchOffsets[nextIndex] != getDefaultSwitchOffset()
-		) {
-		if ( nextIndex>0 && reachable) {
-		    int endOfPreviousCase = lineNumbers.getSourceLine(getPC()-1);
-		    int startOfNextCase = lineNumbers.getSourceLine(getPC());
-		    int previousLabel = switchLabels[nextIndex-1];
-		    int nextLabel = switchLabels[nextIndex];
-		  if (!(previousLabel == 10 && nextLabel == 13)
-		       && !(previousLabel == 13 && nextLabel == 10)
-		       && startOfNextCase - endOfPreviousCase <= 2) {
-		  System.out.println("Reached the switch for " + switchLabels[nextIndex]
-				+ " at line number " +  startOfNextCase 
-				+ " in " + getFullyQualifiedMethodName());
-		    }
-		 /*
-		  System.out.println("switchPC: " + switchPC);
-		  System.out.println("nextIndex: " + nextIndex);
-		  System.out.println("switchOffset[nextIndex]: " + switchOffsets[nextIndex]);
-		  for(int i = 0; i < switchOffsets.length; i++) 
-			System.out.println("	" + switchLabels[i] + "	" + 
-				(switchPC + switchOffsets[i]));
-		  */
-		  }
-		do {
-			nextIndex++;
-			if (nextIndex >= switchOffsets.length) {
-				inSwitch = false;
-				break;
-				}
-		} while (getPC() == switchPC + switchOffsets[nextIndex]);
-		}
 	}
 
-	switch (seen) {
+	public void sawOpcode(int seen) {
+		int[] switchOffsets = null;
+		int[] switchLabels = null;
+
+		switch (seen) {
 		case TABLESWITCH:
 		case LOOKUPSWITCH:
-		case ATHROW: 
-		case RETURN: 
-		case ARETURN: 
-		case IRETURN: 
-		case LRETURN: 
-		case DRETURN: 
-		case FRETURN: 
+			switchPC = getPC();
+			switchOffsets = getSwitchOffsets();
+			switchLabels = getSwitchLabels();
+			inSwitch = true;
+			reachable = false;
+			nextIndex = 0;
+			break;
+		default:
+		}
+		if (inSwitch && nextIndex >= switchOffsets.length)
+			inSwitch = false;
+		if (inSwitch) {
+			if (getPC() == switchPC + switchOffsets[nextIndex]
+			        && switchOffsets[nextIndex] != getDefaultSwitchOffset()
+			) {
+				if (nextIndex > 0 && reachable) {
+					int endOfPreviousCase = lineNumbers.getSourceLine(getPC() - 1);
+					int startOfNextCase = lineNumbers.getSourceLine(getPC());
+					int previousLabel = switchLabels[nextIndex - 1];
+					int nextLabel = switchLabels[nextIndex];
+					if (!(previousLabel == 10 && nextLabel == 13)
+					        && !(previousLabel == 13 && nextLabel == 10)
+					        && startOfNextCase - endOfPreviousCase <= 2) {
+						System.out.println("Reached the switch for " + switchLabels[nextIndex]
+						        + " at line number " + startOfNextCase
+						        + " in " + getFullyQualifiedMethodName());
+					}
+					/*
+					System.out.println("switchPC: " + switchPC);
+					System.out.println("nextIndex: " + nextIndex);
+					System.out.println("switchOffset[nextIndex]: " + switchOffsets[nextIndex]);
+					for(int i = 0; i < switchOffsets.length; i++)
+						System.out.println("	" + switchLabels[i] + "	" +
+							(switchPC + switchOffsets[i]));
+					*/
+				}
+				do {
+					nextIndex++;
+					if (nextIndex >= switchOffsets.length) {
+						inSwitch = false;
+						break;
+					}
+				} while (getPC() == switchPC + switchOffsets[nextIndex]);
+			}
+		}
+
+		switch (seen) {
+		case TABLESWITCH:
+		case LOOKUPSWITCH:
+		case ATHROW:
+		case RETURN:
+		case ARETURN:
+		case IRETURN:
+		case LRETURN:
+		case DRETURN:
+		case FRETURN:
 		case GOTO_W:
 		case GOTO:
 			reachable = false;
 			break;
-		default: 
+		default:
 			reachable = true;
-			}
 		}
+	}
 
 }

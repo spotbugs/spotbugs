@@ -24,10 +24,12 @@ import edu.umd.cs.findbugs.ba.ExtendedTypes;
 /**
  * Special top type used in dataflow.
  * Top is the identity element for the dataflow meet operation.
+ *
  * @author David Hovemeyer
  */
 public class TopType implements Type {
-	TopType() { }
+	TopType() {
+	}
 
 	public String getSignature() {
 		return SpecialTypeSignatures.TOP_TYPE_SIGNATURE;

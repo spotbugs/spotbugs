@@ -18,17 +18,18 @@
  */
 
 package edu.umd.cs.findbugs.detect;
-import edu.umd.cs.findbugs.*;
-import org.apache.bcel.classfile.*;
-import java.util.zip.*;
-import java.io.*;
 
-import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.visitclass.Constants2;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
 
 /**
  * Find comparisons involving values computed with bitwise
  * operations whose outcomes are fixed at compile time.
+ *
  * @author Tom Truscott
  */
 public class IncompatMask extends BytecodeScanningDetector implements Constants2 {
@@ -45,19 +46,19 @@ public class IncompatMask extends BytecodeScanningDetector implements Constants2
 
 	public void visit(JavaClass obj) {
 		super.visit(obj);
-		}
+	}
 
 	public void visit(Method obj) {
 		super.visit(obj);
 		this.state = 0;
-		}
+	}
 
 	private void checkState(int expectedState) {
 		if (state == expectedState)
 			state++;
 		else
 			state = 0;
-		}
+	}
 
 	private void noteVal(long val) {
 		if (state == 0)
@@ -71,42 +72,74 @@ public class IncompatMask extends BytecodeScanningDetector implements Constants2
 
 	public void sawInt(int val) {
 		noteVal(val);
-		}
+	}
 
 	public void sawLong(long val) {
 		noteVal(val);
-		}
+	}
 
 	public void sawOpcode(int seen) {
 		// System.out.println("BIT: " + state + ": " + OPCODE_NAMES[seen]);
 
 		switch (seen) {
-		case ICONST_M1: noteVal(-1); return;
-		case ICONST_0:  noteVal(0); return;
-		case ICONST_1:  noteVal(1); return;
-		case ICONST_2:  noteVal(2); return;
-		case ICONST_3:  noteVal(3); return;
-		case ICONST_4:  noteVal(4); return;
-		case ICONST_5:  noteVal(5); return;
-		case LCONST_0:  noteVal(0); return;
-		case LCONST_1:  noteVal(1); return;
+		case ICONST_M1:
+			noteVal(-1);
+			return;
+		case ICONST_0:
+			noteVal(0);
+			return;
+		case ICONST_1:
+			noteVal(1);
+			return;
+		case ICONST_2:
+			noteVal(2);
+			return;
+		case ICONST_3:
+			noteVal(3);
+			return;
+		case ICONST_4:
+			noteVal(4);
+			return;
+		case ICONST_5:
+			noteVal(5);
+			return;
+		case LCONST_0:
+			noteVal(0);
+			return;
+		case LCONST_1:
+			noteVal(1);
+			return;
 
-		case BIPUSH: return;  /* will pick up value via sawInt */
-		case LDC2_W: return;  /* will pick up value via sawLong */
+		case BIPUSH:
+			return;  /* will pick up value via sawInt */
+		case LDC2_W:
+			return;  /* will pick up value via sawLong */
 
-		case IAND: case LAND: bitop = IAND; checkState(1); return;
-		case IOR:  case LOR:  bitop = IOR;  checkState(1); return;
+		case IAND:
+		case LAND:
+			bitop = IAND;
+			checkState(1);
+			return;
+		case IOR:
+		case LOR:
+			bitop = IOR;
+			checkState(1);
+			return;
 
-		case LCMP: return; /* Ignore. An 'if' opcode will follow */
+		case LCMP:
+			return; /* Ignore. An 'if' opcode will follow */
 
-		case IFEQ: case IFNE:
+		case IFEQ:
+		case IFNE:
 			/* special case: if arg1 is 0 it will not be pushed */
 			if (state == 2) {
-				arg1 = 0; state = 3;
+				arg1 = 0;
+				state = 3;
 			}
 			/* fallthrough */
 
-		case IF_ICMPEQ: case IF_ICMPNE:
+		case IF_ICMPEQ:
+		case IF_ICMPNE:
 			checkState(3);
 			if (state != 4)
 				return;
@@ -123,23 +156,28 @@ public class IncompatMask extends BytecodeScanningDetector implements Constants2
 
 
 		/* We have matched the instruction pattern, so check the args */
-		long dif; String t;
+		long dif;
+		String t;
 
-		if (bitop == IOR)
-			{ dif = arg0 & ~arg1; t = "BIT_IOR"; }
-		else if (arg0 != 0 || arg1 != 0)
-			{ dif = arg1 & ~arg0; t = "BIT_AND"; }
-		else
-			{ dif = 1; t = "BIT_AND_ZZ"; }
+		if (bitop == IOR) {
+			dif = arg0 & ~arg1;
+			t = "BIT_IOR";
+		} else if (arg0 != 0 || arg1 != 0) {
+			dif = arg1 & ~arg0;
+			t = "BIT_AND";
+		} else {
+			dif = 1;
+			t = "BIT_AND_ZZ";
+		}
 
 		if (dif != 0) {
 			// System.out.println("Match at offset " + getPC());
 			bugReporter.reportBug(new BugInstance(t, NORMAL_PRIORITY)
-						.addClassAndMethod(this)
-						.addSourceLine(this));
-			}
-		state = 0;
+			        .addClassAndMethod(this)
+			        .addSourceLine(this));
 		}
+		state = 0;
+	}
 }
 
 // vim:ts=4

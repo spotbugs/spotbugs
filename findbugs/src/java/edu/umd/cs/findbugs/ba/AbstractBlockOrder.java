@@ -26,6 +26,7 @@ import java.util.*;
  * It allows the subclass to specify just a Comparator for
  * BasicBlocks, and handles the work of doing the sorting
  * and providing Iterators.
+ *
  * @see BlockOrder
  */
 public abstract class AbstractBlockOrder implements BlockOrder {
@@ -35,7 +36,7 @@ public abstract class AbstractBlockOrder implements BlockOrder {
 		// Put the blocks in an array
 		int numBlocks = cfg.getNumBasicBlocks(), count = 0;
 		BasicBlock[] blocks = new BasicBlock[numBlocks];
-		for (Iterator<BasicBlock> i = cfg.blockIterator(); i.hasNext(); ) {
+		for (Iterator<BasicBlock> i = cfg.blockIterator(); i.hasNext();) {
 			blocks[count++] = i.next();
 		}
 		assert count == numBlocks;

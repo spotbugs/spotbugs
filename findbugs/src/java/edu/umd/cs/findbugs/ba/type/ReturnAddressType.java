@@ -25,10 +25,12 @@ import org.apache.bcel.Constants;
  * Special return address type.
  * This is the type of the value pushed onto the stack
  * by a JSR instruction.
+ *
  * @author David Hovemeyer
  */
 public class ReturnAddressType implements Type {
-	ReturnAddressType() { }
+	ReturnAddressType() {
+	}
 
 	public String getSignature() {
 		return SpecialTypeSignatures.RETURN_ADDRESS_TYPE_SIGNATURE;

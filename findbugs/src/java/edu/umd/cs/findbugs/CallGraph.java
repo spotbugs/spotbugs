@@ -19,9 +19,10 @@
 
 package edu.umd.cs.findbugs;
 
+import java.util.*;
+
 import edu.umd.cs.findbugs.graph.AbstractGraph;
 import org.apache.bcel.classfile.Method;
-import java.util.IdentityHashMap;
 
 public class CallGraph extends AbstractGraph<CallGraphEdge, CallGraphNode> {
 	private IdentityHashMap<Method, CallGraphNode> methodToNodeMap;

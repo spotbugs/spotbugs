@@ -20,9 +20,14 @@
 package edu.umd.cs.findbugs.ba;
 
 import java.util.*;
+
 import org.apache.bcel.Repository;
-import org.apache.bcel.classfile.*;
-import org.apache.bcel.generic.*;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.Instruction;
+import org.apache.bcel.generic.InvokeInstruction;
+import org.apache.bcel.generic.MethodGen;
 
 public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes, AnalysisFeatures {
 	private static final boolean DEBUG = Boolean.getBoolean("cfg.prune.throwers.debug");
@@ -33,7 +38,7 @@ public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes, Analy
 	private AnalysisContext analysisContext;
 
 	public PruneUnconditionalExceptionThrowerEdges(MethodGen methodGen, CFG cfg, ConstantPoolGen cpg,
-		AnalysisContext analysisContext) {
+	                                               AnalysisContext analysisContext) {
 		this.methodGen = methodGen;
 		this.cfg = cfg;
 		this.cpg = cpg;
@@ -45,8 +50,9 @@ public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes, Analy
 
 		HashSet<Edge> deletedEdgeSet = new HashSet<Edge>();
 
-		if (DEBUG) System.out.println("PruneUnconditionalExceptionThrowerEdges: examining " +
-			SignatureConverter.convertMethodSignature(methodGen));
+		if (DEBUG)
+			System.out.println("PruneUnconditionalExceptionThrowerEdges: examining " +
+			        SignatureConverter.convertMethodSignature(methodGen));
 
 		for (Iterator<BasicBlock> i = cfg.blockIterator(); i.hasNext();) {
 			BasicBlock basicBlock = i.next();
@@ -56,7 +62,7 @@ public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes, Analy
 			Instruction exceptionThrower = basicBlock.getExceptionThrower().getInstruction();
 			if (!(exceptionThrower instanceof InvokeInstruction))
 				continue;
-	
+
 			InvokeInstruction inv = (InvokeInstruction) exceptionThrower;
 			try {
 				String className = inv.getClassName(cpg);
@@ -65,7 +71,7 @@ public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes, Analy
 				JavaClass javaClass = Repository.lookupClass(className);
 				ClassContext classContext = analysisContext.getClassContext(javaClass);
 
-				if (DEBUG) System.out.println("\tlooking up method for "+ basicBlock.getExceptionThrower());
+				if (DEBUG) System.out.println("\tlooking up method for " + basicBlock.getExceptionThrower());
 				Method method = Hierarchy.findExactMethod(inv, cpg);
 				if (method == null) {
 					if (DEBUG) System.out.println("\tNOT FOUND");

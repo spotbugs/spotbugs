@@ -27,14 +27,10 @@ package edu.umd.cs.findbugs.gui;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.StringReader;
 import java.io.StringWriter;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.Reader;
 import java.util.*;
 import javax.swing.tree.DefaultTreeModel;
+
 import edu.umd.cs.findbugs.*;
 import org.apache.bcel.classfile.JavaClass;
 
@@ -46,163 +42,168 @@ import org.apache.bcel.classfile.JavaClass;
  * @author David Hovemeyer
  */
 public class AnalysisRun {
-    /**
-     * Our BugReporter just puts the reported BugInstances into a SortedBugCollection.
-     */
-    private class Reporter extends AbstractBugReporter {
-        private SortedBugCollection bugCollection = new SortedBugCollection();
+	/**
+	 * Our BugReporter just puts the reported BugInstances into a SortedBugCollection.
+	 */
+	private class Reporter extends AbstractBugReporter {
+		private SortedBugCollection bugCollection = new SortedBugCollection();
 
-	public void observeClass(JavaClass javaClass) {
+		public void observeClass(JavaClass javaClass) {
+		}
+
+		public void reportMissingClass(ClassNotFoundException ex) {
+			super.reportMissingClass(ex);
+			String message = getMissingClassName(ex);
+			bugCollection.addMissingClass(message);
+		}
+
+		public void logError(String message) {
+			frame.getLogger().logMessage(ConsoleLogger.WARNING, message);
+			super.logError(message);
+			bugCollection.addError(message);
+		}
+
+		public void finish() {
+		}
+
+		public void doReportBug(edu.umd.cs.findbugs.BugInstance bugInstance) {
+			if (bugCollection.add(bugInstance))
+				notifyObservers(bugInstance);
+		}
+
+		public void beginReport() {
+			errorDialog = new AnalysisErrorDialog(frame, true);
+		}
+
+		public void reportLine(String msg) {
+			errorDialog.addLine(msg);
+		}
+
+		public void endReport() {
+			errorDialog.finish();
+		}
 	}
 
-	public void reportMissingClass(ClassNotFoundException ex) {
-	    super.reportMissingClass(ex);
-	    String message = getMissingClassName(ex);
-	    bugCollection.addMissingClass(message);
+	private Project project;
+	private FindBugsFrame frame;
+	private String summary;
+	private ConsoleLogger logger;
+	private FindBugs findBugs;
+	private Reporter reporter;
+	private HashMap<String, DefaultTreeModel> treeModelMap;
+	private AnalysisErrorDialog errorDialog;
+
+	/**
+	 * Creates a new instance of AnalysisRun.
+	 */
+	public AnalysisRun(Project project, FindBugsFrame frame) {
+		this.project = project;
+		this.frame = frame;
+		this.logger = frame.getLogger();
+		this.reporter = new Reporter();
+		this.reporter.setPriorityThreshold(Detector.LOW_PRIORITY);
+		this.findBugs = new FindBugs(reporter, project);
+		this.treeModelMap = new HashMap<String, DefaultTreeModel>();
 	}
 
-	public void logError(String message) {
-	    frame.getLogger().logMessage(ConsoleLogger.WARNING, message);
-	    super.logError(message);
-	    bugCollection.addError(message);
+	/**
+	 * Run the analysis.
+	 * This should be done in a separate thread (not the GUI event thread).
+	 * The progress callback can be used to update the user interface to
+	 * reflect the progress of the analysis.  The GUI may cancel the analysis
+	 * by interrupting the analysis thread, in which case InterruptedException
+	 * will be thrown by this method.
+	 *
+	 * @param progressCallback the progress callback
+	 * @throws IOException          if an I/O error occurs during the analysis
+	 * @throws InterruptedException if the analysis thread is interrupted
+	 */
+	public void execute(FindBugsProgress progressCallback) throws IOException, InterruptedException {
+		findBugs.setProgressCallback(progressCallback);
+
+		// Run the analysis!
+		findBugs.execute();
+
+		// Get the summary!
+		createSummary(reporter.getProjectStats());
+
 	}
-        
-        public void finish() { }
-        
-        public void doReportBug(edu.umd.cs.findbugs.BugInstance bugInstance) {
-            if (bugCollection.add(bugInstance))
-		notifyObservers(bugInstance);
-        }
-        
-        public void beginReport() {
-            errorDialog = new AnalysisErrorDialog(frame, true);
-        }
-        
-	public void reportLine(String msg) {
-            errorDialog.addLine(msg);
-        }
-        
-	public void endReport() {
-            errorDialog.finish();
-        }
-    }
 
-    private Project project;
-    private FindBugsFrame frame;
-    private String summary;
-    private ConsoleLogger logger;
-    private FindBugs findBugs;
-    private Reporter reporter;
-    private HashMap<String, DefaultTreeModel> treeModelMap;
-    private AnalysisErrorDialog errorDialog;
-    
-    /** Creates a new instance of AnalysisRun. */
-    public AnalysisRun(Project project, FindBugsFrame frame) {
-        this.project = project;
-        this.frame = frame;
-        this.logger = frame.getLogger();
-        this.reporter = new Reporter();
-	this.reporter.setPriorityThreshold(Detector.LOW_PRIORITY);
-        this.findBugs = new FindBugs(reporter, project);
-        this.treeModelMap = new HashMap<String, DefaultTreeModel>();
-    }
-    
-    /**
-     * Run the analysis.
-     * This should be done in a separate thread (not the GUI event thread).
-     * The progress callback can be used to update the user interface to
-     * reflect the progress of the analysis.  The GUI may cancel the analysis
-     * by interrupting the analysis thread, in which case InterruptedException
-     * will be thrown by this method.
-     *
-     * @param progressCallback the progress callback
-     * @throws IOException if an I/O error occurs during the analysis
-     * @throws InterruptedException if the analysis thread is interrupted
-     */
-    public void execute(FindBugsProgress progressCallback) throws IOException, InterruptedException {
-        findBugs.setProgressCallback(progressCallback);
+	private static final String MISSING_SUMMARY_MESSAGE =
+	        "<html><head><title>Could not format summary</title></head>" +
+	        "<body><h1>Could not format summary</h1>" +
+	        "<p> Please report this failure to <a href=\"findbugs-discuss@cs.umd.edu\">" +
+	        "findbugs-discuss@cs.umd.edu</a>.</body></html>";
 
-        // Run the analysis!
-        findBugs.execute();
-
-        // Get the summary!
-	createSummary(reporter.getProjectStats());
-
-    }
-
-    private static final String MISSING_SUMMARY_MESSAGE =
-	"<html><head><title>Could not format summary</title></head>" +
-	"<body><h1>Could not format summary</h1>" +
-	"<p> Please report this failure to <a href=\"findbugs-discuss@cs.umd.edu\">" + 
-	"findbugs-discuss@cs.umd.edu</a>.</body></html>";
-
-    private void createSummary(ProjectStats stats) throws IOException {
-	StringWriter html = new StringWriter();
-	try {
-	    stats.transformSummaryToHTML(html);
-	    summary = html.toString();
-	} catch (Exception e) {
-	    logger.logMessage(ConsoleLogger.WARNING,  "Failed to transform summary: " + e.toString());
-	    summary = MISSING_SUMMARY_MESSAGE;
+	private void createSummary(ProjectStats stats) throws IOException {
+		StringWriter html = new StringWriter();
+		try {
+			stats.transformSummaryToHTML(html);
+			summary = html.toString();
+		} catch (Exception e) {
+			logger.logMessage(ConsoleLogger.WARNING, "Failed to transform summary: " + e.toString());
+			summary = MISSING_SUMMARY_MESSAGE;
+		}
 	}
-    }
 
-    private static final boolean CREATE_SUMMARY = !Boolean.getBoolean("findbugs.gui.noSummary");
+	private static final boolean CREATE_SUMMARY = !Boolean.getBoolean("findbugs.gui.noSummary");
 
-    /**
-     * Load bugs from a file.
-     */
-    public void loadBugsFromFile(File file) throws IOException, org.dom4j.DocumentException {
-        reporter.bugCollection.readXML(file, project);
+	/**
+	 * Load bugs from a file.
+	 */
+	public void loadBugsFromFile(File file) throws IOException, org.dom4j.DocumentException {
+		reporter.bugCollection.readXML(file, project);
 
-	// Update summary stats
-	summary = reporter.bugCollection.getSummaryHTML();
-    }
-    
-    /**
-     * Save bugs to a file.
-     */
-    public void saveBugsToFile(File file) throws IOException {
-	reporter.bugCollection.writeXML(file, project);
-    }
-    
-    /**
-     * Report any errors that may have occurred during analysis.
-     */
-    public void reportAnalysisErrors() {
-	if (errorDialog != null) {
-            errorDialog.setSize(750, 520);
-            errorDialog.setLocationRelativeTo(null); // center the dialog
-            errorDialog.setVisible(true);
+		// Update summary stats
+		summary = reporter.bugCollection.getSummaryHTML();
 	}
-    }
-    
-    /**
-     * Return the collection of BugInstances.
-     */
-    public java.util.Collection<BugInstance> getBugInstances() {
-        return reporter.bugCollection.getCollection();
-    }
-    
-    /**
-     * Set the tree model to be used in the BugTree.
-     * @param groupByOrder the grouping order that the tree model will conform to
-     * @param treeModel the tree model
-     */
-    public void setTreeModel(String groupByOrder, DefaultTreeModel treeModel) {
-        treeModelMap.put(groupByOrder, treeModel);
-    }
-    
-    /**
-     * Get the tree model to be used in the BugTree.
-     * @param groupByOrder the grouping order that the tree model conforms to
-     * @return the tree model
-     */
-    public DefaultTreeModel getTreeModel(String groupByOrder) {
-        return (DefaultTreeModel) treeModelMap.get(groupByOrder);
-    }
 
-    public String getSummary( ) {
-       return summary;
-    } 
+	/**
+	 * Save bugs to a file.
+	 */
+	public void saveBugsToFile(File file) throws IOException {
+		reporter.bugCollection.writeXML(file, project);
+	}
+
+	/**
+	 * Report any errors that may have occurred during analysis.
+	 */
+	public void reportAnalysisErrors() {
+		if (errorDialog != null) {
+			errorDialog.setSize(750, 520);
+			errorDialog.setLocationRelativeTo(null); // center the dialog
+			errorDialog.setVisible(true);
+		}
+	}
+
+	/**
+	 * Return the collection of BugInstances.
+	 */
+	public java.util.Collection<BugInstance> getBugInstances() {
+		return reporter.bugCollection.getCollection();
+	}
+
+	/**
+	 * Set the tree model to be used in the BugTree.
+	 *
+	 * @param groupByOrder the grouping order that the tree model will conform to
+	 * @param treeModel    the tree model
+	 */
+	public void setTreeModel(String groupByOrder, DefaultTreeModel treeModel) {
+		treeModelMap.put(groupByOrder, treeModel);
+	}
+
+	/**
+	 * Get the tree model to be used in the BugTree.
+	 *
+	 * @param groupByOrder the grouping order that the tree model conforms to
+	 * @return the tree model
+	 */
+	public DefaultTreeModel getTreeModel(String groupByOrder) {
+		return (DefaultTreeModel) treeModelMap.get(groupByOrder);
+	}
+
+	public String getSummary() {
+		return summary;
+	}
 }

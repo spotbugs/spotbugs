@@ -22,9 +22,9 @@ package edu.umd.cs.findbugs.ba;
 /**
  * Abstract interface for CFG builder classes.
  *
+ * @author David Hovemeyer
  * @see CFG
  * @see CFGBuilderFactory
- * @author David Hovemeyer
  */
 public interface CFGBuilder {
 	/**
@@ -35,6 +35,7 @@ public interface CFGBuilder {
 	/**
 	 * Get the CFG built by this object.
 	 * Assumes that the build() method has already been called.
+	 *
 	 * @return the CFG
 	 */
 	public CFG getCFG();

@@ -33,9 +33,10 @@ public class StreamEscape implements Comparable<StreamEscape> {
 
 	/**
 	 * Constructor.
+	 *
 	 * @param source Location where stream is opened
 	 * @param target Location where stream escapes by being
-	 *   passed to a method
+	 *               passed to a method
 	 */
 	public StreamEscape(Stream source, Location target) {
 		this.source = source;

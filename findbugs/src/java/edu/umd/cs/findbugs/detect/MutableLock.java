@@ -18,62 +18,62 @@
  */
 
 package edu.umd.cs.findbugs.detect;
-import edu.umd.cs.findbugs.*;
+
 import java.util.*;
-import java.io.PrintStream;
-import org.apache.bcel.classfile.*;
-import java.util.zip.*;
-import java.io.*;
 
-import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.visitclass.Constants2;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
 
-public class MutableLock extends BytecodeScanningDetector implements   Constants2 {
-    HashSet<String> setFields = new HashSet<String>();
-    boolean thisOnTOS = false;
-    private BugReporter bugReporter;
+public class MutableLock extends BytecodeScanningDetector implements Constants2 {
+	HashSet<String> setFields = new HashSet<String>();
+	boolean thisOnTOS = false;
+	private BugReporter bugReporter;
 
-  public MutableLock(BugReporter bugReporter) {
-	this.bugReporter = bugReporter;
-  }
-
-  public void visit(JavaClass obj)     {
-	super.visit(obj);
+	public MutableLock(BugReporter bugReporter) {
+		this.bugReporter = bugReporter;
 	}
 
-    public void visit(Method obj) {
-        super.visit(obj);
-	setFields.clear();
-        thisOnTOS = false;
+	public void visit(JavaClass obj) {
+		super.visit(obj);
 	}
 
-
-    public void sawOpcode(int seen) {
-
-	switch (seen) {
-	case ALOAD_0:
-		thisOnTOS = true;
-		return;
-	case MONITOREXIT:
+	public void visit(Method obj) {
+		super.visit(obj);
 		setFields.clear();
-		break;
-	case PUTFIELD:
-		if (getClassConstantOperand().equals(getClassName()))
-			setFields.add(getNameConstantOperand());
-		break;
-	case GETFIELD: 
-		if (thisOnTOS && getClassConstantOperand().equals(getClassName())
-			&& setFields.contains(getNameConstantOperand())
-			&& asUnsignedByte(codeBytes[getPC()+3]) == DUP
-			&& asUnsignedByte(codeBytes[getPC()+5]) == MONITORENTER
-			) 
-		  bugReporter.reportBug(new BugInstance("ML_SYNC_ON_UPDATED_FIELD", NORMAL_PRIORITY)
-			.addClassAndMethod(this)
-			.addReferencedField(this)
-			.addSourceLine(this, getPC() + 5));
-		break;
-	default: 
+		thisOnTOS = false;
 	}
-        thisOnTOS = false;
-	}	
+
+
+	public void sawOpcode(int seen) {
+
+		switch (seen) {
+		case ALOAD_0:
+			thisOnTOS = true;
+			return;
+		case MONITOREXIT:
+			setFields.clear();
+			break;
+		case PUTFIELD:
+			if (getClassConstantOperand().equals(getClassName()))
+				setFields.add(getNameConstantOperand());
+			break;
+		case GETFIELD:
+			if (thisOnTOS && getClassConstantOperand().equals(getClassName())
+			        && setFields.contains(getNameConstantOperand())
+			        && asUnsignedByte(codeBytes[getPC() + 3]) == DUP
+			        && asUnsignedByte(codeBytes[getPC() + 5]) == MONITORENTER
+			)
+				bugReporter.reportBug(new BugInstance("ML_SYNC_ON_UPDATED_FIELD", NORMAL_PRIORITY)
+				        .addClassAndMethod(this)
+				        .addReferencedField(this)
+				        .addSourceLine(this, getPC() + 5));
+			break;
+		default:
+		}
+		thisOnTOS = false;
+	}
 }

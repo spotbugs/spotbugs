@@ -20,9 +20,10 @@
 package edu.umd.cs.findbugs.ba;
 
 import java.util.*;
+
 import org.apache.bcel.Constants;
-import org.apache.bcel.generic.*;
 import org.apache.bcel.classfile.*;
+import org.apache.bcel.generic.InvokeInstruction;
 
 /**
  * Mark methodref constant pool entries of methods
@@ -32,7 +33,9 @@ import org.apache.bcel.classfile.*;
  * @author David Hovemeyer
  */
 public class AssertionMethods implements Constants {
-	/** Bitset of methodref constant pool indexes referring to likely assertion methods. */
+	/**
+	 * Bitset of methodref constant pool indexes referring to likely assertion methods.
+	 */
 	private BitSet assertionMethodRefSet;
 
 	private static class UserAssertionMethod {
@@ -44,11 +47,17 @@ public class AssertionMethods implements Constants {
 			this.methodName = methodName;
 		}
 
-		public String getClassName() { return className; }
-		public String getMethodName() { return methodName; }
+		public String getClassName() {
+			return className;
+		}
+
+		public String getMethodName() {
+			return methodName;
+		}
 	}
 
 	private static final List<UserAssertionMethod> userAssertionMethodList = new ArrayList<UserAssertionMethod>();
+
 	static {
 		String userProperty = System.getProperty("findbugs.assertionmethods");
 		if (userProperty != null) {
@@ -67,6 +76,7 @@ public class AssertionMethods implements Constants {
 
 	/**
 	 * Constructor.
+	 *
 	 * @param jclass the JavaClass containing the methodrefs
 	 */
 	public AssertionMethods(JavaClass jclass) {
@@ -82,7 +92,7 @@ public class AssertionMethods implements Constants {
 				Constant c = cp.getConstant(i);
 				if (c instanceof ConstantMethodref) {
 					ConstantMethodref cmr = (ConstantMethodref) c;
-					ConstantNameAndType cnat = (ConstantNameAndType)cp.getConstant(cmr.getNameAndTypeIndex(), CONSTANT_NameAndType);
+					ConstantNameAndType cnat = (ConstantNameAndType) cp.getConstant(cmr.getNameAndTypeIndex(), CONSTANT_NameAndType);
 					String methodName = ((ConstantUtf8) cp.getConstant(cnat.getNameIndex(), CONSTANT_Utf8)).getBytes();
 					String className = cp.getConstantString(cmr.getClassIndex(), CONSTANT_Class).replace('/', '.');
 
@@ -90,10 +100,10 @@ public class AssertionMethods implements Constants {
 					String methodNameLC = methodName.toLowerCase();
 
 					if (isUserAssertionMethod(className, methodName) ||
-						classNameLC.indexOf("assert") >= 0 ||
-						methodNameLC.indexOf("assert") >= 0 || methodNameLC.indexOf("error") >= 0 ||
-						methodNameLC.indexOf("abort") >= 0 || methodNameLC.indexOf("check") >= 0 ||
-						methodNameLC.indexOf("failed") >= 0)
+					        classNameLC.indexOf("assert") >= 0 ||
+					        methodNameLC.indexOf("assert") >= 0 || methodNameLC.indexOf("error") >= 0 ||
+					        methodNameLC.indexOf("abort") >= 0 || methodNameLC.indexOf("check") >= 0 ||
+					        methodNameLC.indexOf("failed") >= 0)
 						assertionMethodRefSet.set(i);
 				}
 			} catch (ClassFormatException e) {
@@ -103,7 +113,7 @@ public class AssertionMethods implements Constants {
 	}
 
 	private static boolean isUserAssertionMethod(String className, String methodName) {
-		for (Iterator<UserAssertionMethod> i = userAssertionMethodList.iterator(); i.hasNext(); ) {
+		for (Iterator<UserAssertionMethod> i = userAssertionMethodList.iterator(); i.hasNext();) {
 			UserAssertionMethod uam = i.next();
 			if (className.equals(uam.getClassName()) && methodName.equals(uam.getMethodName()))
 				return true;
@@ -113,6 +123,7 @@ public class AssertionMethods implements Constants {
 
 	/**
 	 * Does the given InvokeInstruction refer to a likely assertion method?
+	 *
 	 * @param inv the InvokeInstruction
 	 * @return true if the instruction likely refers to an assertion, false if not
 	 */

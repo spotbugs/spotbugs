@@ -20,7 +20,6 @@
 package edu.umd.cs.findbugs.ba.bcp;
 
 import edu.umd.cs.findbugs.ba.BasicBlock;
-import java.util.*;
 import org.apache.bcel.generic.InstructionHandle;
 
 /**
@@ -39,17 +38,18 @@ public class PatternElementMatch {
 
 	/**
 	 * Constructor.
-	 * @param patternElement the PatternElement being matched
+	 *
+	 * @param patternElement     the PatternElement being matched
 	 * @param matchedInstruction the instruction which matched the PatternElement
-	 * @param basicBlock the basic block containing the matched instruction
-	 * @param matchCount the index (starting at zero) of the instructions
-	 *   matching the PatternElement; multiple instructions can match the
-	 *   same PatternElement
-	 * @param prev the previous PatternElementMatch
+	 * @param basicBlock         the basic block containing the matched instruction
+	 * @param matchCount         the index (starting at zero) of the instructions
+	 *                           matching the PatternElement; multiple instructions can match the
+	 *                           same PatternElement
+	 * @param prev               the previous PatternElementMatch
 	 */
 	public PatternElementMatch(PatternElement patternElement, InstructionHandle matchedInstruction,
-		BasicBlock basicBlock,
-		int matchCount, PatternElementMatch prev) {
+	                           BasicBlock basicBlock,
+	                           int matchCount, PatternElementMatch prev) {
 		this.patternElement = patternElement;
 		this.matchedInstruction = matchedInstruction;
 		this.basicBlock = basicBlock;
@@ -57,17 +57,23 @@ public class PatternElementMatch {
 		this.prev = prev;
 	}
 
-	/** Get the PatternElement. */
+	/**
+	 * Get the PatternElement.
+	 */
 	public PatternElement getPatternElement() {
 		return patternElement;
 	}
 
-	/** Get the matched instruction. */
+	/**
+	 * Get the matched instruction.
+	 */
 	public InstructionHandle getMatchedInstructionInstructionHandle() {
 		return matchedInstruction;
 	}
 
-	/** Get the basic block containing the matched instruction. */
+	/**
+	 * Get the basic block containing the matched instruction.
+	 */
 	public BasicBlock getBasicBlock() {
 		return basicBlock;
 	}
@@ -148,7 +154,7 @@ public class PatternElementMatch {
 	public int hashCode() {
 		// Do the simplest thing possible that works
 		throw new UnsupportedOperationException();
-		}
+	}
 
 	public boolean equals(Object o) {
 		if (!(o instanceof PatternElementMatch))
@@ -158,8 +164,8 @@ public class PatternElementMatch {
 
 		while (lhs != null && rhs != null) {
 			if (lhs.patternElement != rhs.patternElement ||
-				lhs.matchedInstruction != rhs.matchedInstruction ||
-				lhs.matchCount != rhs.matchCount)
+			        lhs.matchedInstruction != rhs.matchedInstruction ||
+			        lhs.matchCount != rhs.matchCount)
 				return false;
 
 			lhs = lhs.prev;

@@ -18,65 +18,62 @@
  */
 
 package edu.umd.cs.findbugs.detect;
-import edu.umd.cs.findbugs.*;
-import java.util.*;
-import org.apache.bcel.classfile.*;
-import java.util.zip.*;
-import java.io.*;
 
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.visitclass.Constants2;
+import org.apache.bcel.classfile.Code;
 
-public class FindFieldSelfAssignment extends BytecodeScanningDetector implements   Constants2 {
-    private BugReporter bugReporter;
-    int state;
+public class FindFieldSelfAssignment extends BytecodeScanningDetector implements Constants2 {
+	private BugReporter bugReporter;
+	int state;
 
 
-  public FindFieldSelfAssignment(BugReporter bugReporter) {
-	this.bugReporter = bugReporter;
-  }
+	public FindFieldSelfAssignment(BugReporter bugReporter) {
+		this.bugReporter = bugReporter;
+	}
 
-   public void visit(Code obj) {
-	state = 0;
-	super.visit(obj);
+	public void visit(Code obj) {
+		state = 0;
+		super.visit(obj);
 	}
 
 
-    String f;
-    public void sawOpcode(int seen) {
+	String f;
 
-	switch (state) {
-	case 0:
-		if (seen == ALOAD_0)
-			state = 1;
-		break;
-	case 1:
-		if (seen == ALOAD_0)
-			state = 2;
-		else
-			state = 0;
-		break;
-	case 2:
-		if (seen == GETFIELD) {
-			state = 3;
-			f = getRefConstantOperand();
+	public void sawOpcode(int seen) {
+
+		switch (state) {
+		case 0:
+			if (seen == ALOAD_0)
+				state = 1;
+			break;
+		case 1:
+			if (seen == ALOAD_0)
+				state = 2;
+			else
+				state = 0;
+			break;
+		case 2:
+			if (seen == GETFIELD) {
+				state = 3;
+				f = getRefConstantOperand();
+			} else
+				state = 0;
+			break;
+		case 3:
+			if (seen == PUTFIELD && getRefConstantOperand().equals(f)) {
+
+				bugReporter.reportBug(new BugInstance("SA_FIELD_SELF_ASSIGNMENT", NORMAL_PRIORITY)
+				        .addClass(getClassName())
+				        .addMethod(getClassName(), getMethodName(), getMethodSig())
+				        .addField(getDottedClassConstantOperand(), getNameConstantOperand(),
+				                getDottedSigConstantOperand(), false)
+				        .addSourceLine(this));
 			}
-		else
 			state = 0;
-		break;
-	case 3:
-		if (seen == PUTFIELD && getRefConstantOperand().equals(f)) {
-
-                                bugReporter.reportBug(new BugInstance("SA_FIELD_SELF_ASSIGNMENT", NORMAL_PRIORITY)
-                                        .addClass(getClassName())
-                                        .addMethod(getClassName(), getMethodName(), getMethodSig())
-                                        .addField(getDottedClassConstantOperand(), getNameConstantOperand(),
-						getDottedSigConstantOperand(), false)
-                                        .addSourceLine(this)
-
-					);
-			}
-		state = 0;
 		}
 	}
-		
+
 }

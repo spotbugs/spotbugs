@@ -18,189 +18,204 @@
  */
 
 package edu.umd.cs.findbugs.detect;
-import edu.umd.cs.findbugs.*;
-import org.apache.bcel.classfile.*;
+
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.visitclass.Constants2;
+import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
 
-public class FindReturnRef extends BytecodeScanningDetector implements   Constants2 {
-    boolean check = false;
-    boolean thisOnTOS = false;
-    boolean fieldOnTOS = false;
-    boolean publicClass = false;
-    boolean staticMethod = false;
-    boolean dangerousToStoreIntoField = false;
-    String nameOnStack;
-    String classNameOnStack;
-    String sigOnStack;
-    int parameterCount;
+public class FindReturnRef extends BytecodeScanningDetector implements Constants2 {
+	boolean check = false;
+	boolean thisOnTOS = false;
+	boolean fieldOnTOS = false;
+	boolean publicClass = false;
+	boolean staticMethod = false;
+	boolean dangerousToStoreIntoField = false;
+	String nameOnStack;
+	String classNameOnStack;
+	String sigOnStack;
+	int parameterCount;
 	//int r;
-    int timesRead [] = new int[256];
-    boolean fieldIsStatic;
-    private BugReporter bugReporter;
-    //private LocalVariableTable variableNames; 
+	int timesRead [] = new int[256];
+	boolean fieldIsStatic;
+	private BugReporter bugReporter;
+	//private LocalVariableTable variableNames;
 
-    public FindReturnRef(BugReporter bugReporter) {
-	this.bugReporter = bugReporter;
+	public FindReturnRef(BugReporter bugReporter) {
+		this.bugReporter = bugReporter;
 	}
 
-  public void visit(JavaClass obj)     {
-        publicClass = obj.isPublic();
-	super.visit(obj);
+	public void visit(JavaClass obj) {
+		publicClass = obj.isPublic();
+		super.visit(obj);
 	}
 
-    public void visit(Method obj) {
-        check =  publicClass && (obj.getAccessFlags() & (ACC_PUBLIC )) != 0;
-	if (!check) return;
-	dangerousToStoreIntoField = false;
-        staticMethod =  (obj.getAccessFlags() & (ACC_STATIC)) != 0;
-	//variableNames = obj.getLocalVariableTable();
-	parameterCount = obj.getArgumentTypes().length;
-	/*
-	System.out.println(betterMethodName);
-	for(int i = 0; i < parameterCount; i++) 
-		System.out.println("parameter " + i + ": " + obj.getArgumentTypes()[i]);	
-	*/
-
-	if (!staticMethod) parameterCount++;
-		
-	for(int i = 0; i < parameterCount; i++)
-		timesRead[i] = 0;
-        thisOnTOS = false;
-        fieldOnTOS = false;
-	super.visit(obj);
-        thisOnTOS = false;
-        fieldOnTOS = false;
-	}
-
-
-    public void visit(Code obj) {
-	if (check) super.visit(obj);
-	}
-
-    public void sawOpcode(int seen) {
-	assert check;
-	/*
-	System.out.println("Saw " + PC + ": " + OPCODE_NAMES[seen] + "	" 
-			+ thisOnTOS
-			+ "	"
-			+ fieldOnTOS
-			);
-	*/
-
-	if (staticMethod && dangerousToStoreIntoField && seen == PUTSTATIC 
-			&& MutableStaticFields.mutableSignature(getSigConstantOperand()) ) {
-			bugReporter.reportBug(new BugInstance("EI_EXPOSE_STATIC_REP2", NORMAL_PRIORITY)
-				.addClassAndMethod(this)
-				.addField(getClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand(),
-						true)
-				.addSourceLine(this));
-		}
-	if (!staticMethod && dangerousToStoreIntoField && seen == PUTFIELD 
-			&& MutableStaticFields.mutableSignature(getSigConstantOperand()) ) {
-		bugReporter.reportBug(new BugInstance("EI_EXPOSE_REP2", NORMAL_PRIORITY)
-			.addClassAndMethod(this)
-			.addField(getClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand(),
-					true)
-			.addSourceLine(this));
+	public void visit(Method obj) {
+		check = publicClass && (obj.getAccessFlags() & (ACC_PUBLIC)) != 0;
+		if (!check) return;
+		dangerousToStoreIntoField = false;
+		staticMethod = (obj.getAccessFlags() & (ACC_STATIC)) != 0;
+		//variableNames = obj.getLocalVariableTable();
+		parameterCount = obj.getArgumentTypes().length;
 		/*
-		System.out.println("Store of parameter " 
-				+ r +"/" + parameterCount 
-				+ " into field of type " + sigConstant
-				+ " in " + betterMethodName);
+		System.out.println(betterMethodName);
+		for(int i = 0; i < parameterCount; i++)
+			System.out.println("parameter " + i + ": " + obj.getArgumentTypes()[i]);
+		*/
+
+		if (!staticMethod) parameterCount++;
+
+		for (int i = 0; i < parameterCount; i++)
+			timesRead[i] = 0;
+		thisOnTOS = false;
+		fieldOnTOS = false;
+		super.visit(obj);
+		thisOnTOS = false;
+		fieldOnTOS = false;
+	}
+
+
+	public void visit(Code obj) {
+		if (check) super.visit(obj);
+	}
+
+	public void sawOpcode(int seen) {
+		assert check;
+		/*
+		System.out.println("Saw " + PC + ": " + OPCODE_NAMES[seen] + "	"
+				+ thisOnTOS
+				+ "	"
+				+ fieldOnTOS
+				);
+		*/
+
+		if (staticMethod && dangerousToStoreIntoField && seen == PUTSTATIC
+		        && MutableStaticFields.mutableSignature(getSigConstantOperand())) {
+			bugReporter.reportBug(new BugInstance("EI_EXPOSE_STATIC_REP2", NORMAL_PRIORITY)
+			        .addClassAndMethod(this)
+			        .addField(getClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand(),
+			                true)
+			        .addSourceLine(this));
+		}
+		if (!staticMethod && dangerousToStoreIntoField && seen == PUTFIELD
+		        && MutableStaticFields.mutableSignature(getSigConstantOperand())) {
 			bugReporter.reportBug(new BugInstance("EI_EXPOSE_REP2", NORMAL_PRIORITY)
-				.addClassAndMethod(this)
-				.addField(betterClassConstant, nameConstant, betterSigConstant, 
-						false)
-				.addSourceLine(this));
-	`	*/
+			        .addClassAndMethod(this)
+			        .addField(getClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand(),
+			                true)
+			        .addSourceLine(this));
+			/*
+			System.out.println("Store of parameter "
+					+ r +"/" + parameterCount
+					+ " into field of type " + sigConstant
+					+ " in " + betterMethodName);
+				bugReporter.reportBug(new BugInstance("EI_EXPOSE_REP2", NORMAL_PRIORITY)
+					.addClassAndMethod(this)
+					.addField(betterClassConstant, nameConstant, betterSigConstant,
+							false)
+					.addSourceLine(this));
+		`	*/
 		}
-	dangerousToStoreIntoField = false;
-	int reg = -1; // this value should never be seen
-	checkStore: {
-		switch(seen) {
-			case ALOAD_0: reg = 0; break;
-			case ALOAD_1: reg = 1; break;
-			case ALOAD_2: reg = 2; break;
-			case ALOAD_3: reg = 3; break;
-			case ALOAD: reg = getRegisterOperand(); break;
-			default: break checkStore;
+		dangerousToStoreIntoField = false;
+		int reg = -1; // this value should never be seen
+		checkStore: {
+			switch (seen) {
+			case ALOAD_0:
+				reg = 0;
+				break;
+			case ALOAD_1:
+				reg = 1;
+				break;
+			case ALOAD_2:
+				reg = 2;
+				break;
+			case ALOAD_3:
+				reg = 3;
+				break;
+			case ALOAD:
+				reg = getRegisterOperand();
+				break;
+			default:
+				break checkStore;
 			}
-		if (reg < parameterCount)
-			timesRead[reg]++;
+			if (reg < parameterCount)
+				timesRead[reg]++;
 		}
-	if (thisOnTOS && !staticMethod)  {
-		switch(seen) {
-			case ALOAD_1: 
-			case ALOAD_2: 
-			case ALOAD_3: 
-			case ALOAD:  
-				if (reg < parameterCount )  {
+		if (thisOnTOS && !staticMethod) {
+			switch (seen) {
+			case ALOAD_1:
+			case ALOAD_2:
+			case ALOAD_3:
+			case ALOAD:
+				if (reg < parameterCount) {
 					//r = reg;
 					dangerousToStoreIntoField = true;
 					// System.out.println("Found dangerous value from parameter " + reg);
-					}
-			default: 
+				}
+			default:
 			}
-		}
-	else if (staticMethod)  {
-		switch(seen) {
-			case ALOAD_0: 
-			case ALOAD_1: 
-			case ALOAD_2: 
-			case ALOAD_3: 
-			case ALOAD: 
-				if (reg < parameterCount ) {
+		} else if (staticMethod) {
+			switch (seen) {
+			case ALOAD_0:
+			case ALOAD_1:
+			case ALOAD_2:
+			case ALOAD_3:
+			case ALOAD:
+				if (reg < parameterCount) {
 					//r = reg;
 					dangerousToStoreIntoField = true;
-					}
-			default: 
+				}
+			default:
 			}
 		}
 
-	if (seen == ALOAD_0 && !staticMethod)  {
-		thisOnTOS = true;
-		fieldOnTOS = false;
-		return;
+		if (seen == ALOAD_0 && !staticMethod) {
+			thisOnTOS = true;
+			fieldOnTOS = false;
+			return;
 		}
-			
 
-	if (thisOnTOS && seen == GETFIELD && getClassConstantOperand().equals(getClassName()))  {
-		fieldOnTOS = true;
-		thisOnTOS = false;
-		nameOnStack = getNameConstantOperand();
-		classNameOnStack = getDottedClassConstantOperand();
-		sigOnStack = getSigConstantOperand();
-		fieldIsStatic = false;
-		 // System.out.println("Saw getfield");
-		return;
+
+		if (thisOnTOS && seen == GETFIELD && getClassConstantOperand().equals(getClassName())) {
+			fieldOnTOS = true;
+			thisOnTOS = false;
+			nameOnStack = getNameConstantOperand();
+			classNameOnStack = getDottedClassConstantOperand();
+			sigOnStack = getSigConstantOperand();
+			fieldIsStatic = false;
+			// System.out.println("Saw getfield");
+			return;
 		}
-	if (seen == GETSTATIC && getClassConstantOperand().equals(getClassName()))  {
-		fieldOnTOS = true;
-		thisOnTOS = false;
-		nameOnStack = getNameConstantOperand();
-		classNameOnStack = getDottedClassConstantOperand();
-		sigOnStack = getSigConstantOperand();
-		fieldIsStatic = true;
-		return;
+		if (seen == GETSTATIC && getClassConstantOperand().equals(getClassName())) {
+			fieldOnTOS = true;
+			thisOnTOS = false;
+			nameOnStack = getNameConstantOperand();
+			classNameOnStack = getDottedClassConstantOperand();
+			sigOnStack = getSigConstantOperand();
+			fieldIsStatic = true;
+			return;
 		}
-	thisOnTOS = false;
-	if (check && fieldOnTOS && seen == ARETURN 
-		/*
-		&& !sigOnStack.equals("Ljava/lang/String;")
-		&& sigOnStack.indexOf("Exception") == -1
-		&& sigOnStack.indexOf("[") >= 0
-		*/
-		&& nameOnStack.indexOf("EMPTY") == -1
-		&& MutableStaticFields.mutableSignature(sigOnStack) 
+		thisOnTOS = false;
+		if (check && fieldOnTOS && seen == ARETURN
+		        /*
+		        && !sigOnStack.equals("Ljava/lang/String;")
+		        && sigOnStack.indexOf("Exception") == -1
+		        && sigOnStack.indexOf("[") >= 0
+		        */
+		        && nameOnStack.indexOf("EMPTY") == -1
+		        && MutableStaticFields.mutableSignature(sigOnStack)
 		) {
 			bugReporter.reportBug(new BugInstance(staticMethod ? "MS_EXPOSE_REP" : "EI_EXPOSE_REP", NORMAL_PRIORITY)
-				.addClassAndMethod(this)
-				.addField(classNameOnStack, nameOnStack, sigOnStack, fieldIsStatic)
-				.addSourceLine(this));
+			        .addClassAndMethod(this)
+			        .addField(classNameOnStack, nameOnStack, sigOnStack, fieldIsStatic)
+			        .addSourceLine(this));
 		}
 
-	fieldOnTOS = false;
-	thisOnTOS = false;
+		fieldOnTOS = false;
+		thisOnTOS = false;
 	}
 
 

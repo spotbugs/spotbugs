@@ -22,14 +22,7 @@ package edu.umd.cs.findbugs;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
-
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Helper class for parsing command line arguments.
@@ -51,7 +44,8 @@ public abstract class CommandLine {
 
 	/**
 	 * Add an option.
-	 * @param option the option, must start with "-"
+	 *
+	 * @param option      the option, must start with "-"
 	 * @param description single line description of the option
 	 */
 	public void addOption(String option, String description) {
@@ -64,9 +58,10 @@ public abstract class CommandLine {
 
 	/**
 	 * Add an option requiring an argument.
-	 * @param option the option, must start with "-"
+	 *
+	 * @param option       the option, must start with "-"
 	 * @param argumentDesc brief (one or two word) description of the argument
-	 * @param description single line description of the option
+	 * @param description  single line description of the option
 	 */
 	public void addOption(String option, String argumentDesc, String description) {
 		optionList.add(option);
@@ -87,7 +82,7 @@ public abstract class CommandLine {
 	 *
 	 * @param argv the arguments
 	 * @return the number of arguments parsed; if equal to
-	 *   argv.length, then the entire command line was parsed
+	 *         argv.length, then the entire command line was parsed
 	 */
 	public int parse(String argv[]) throws IOException {
 		int arg = 0;
@@ -118,24 +113,27 @@ public abstract class CommandLine {
 
 	/**
 	 * Callback method for handling an option.
+	 *
 	 * @param option the option
 	 */
 	protected abstract void handleOption(String option) throws IOException;
 
 	/**
 	 * Callback method for handling an option with an argument.
-	 * @param option the option
+	 *
+	 * @param option   the option
 	 * @param argument the argument
 	 */
 	protected abstract void handleOptionWithArgument(String option, String argument) throws IOException;
 
 	/**
 	 * Print command line usage information to given stream.
+	 *
 	 * @param os the output stream
 	 */
 	public void printUsage(OutputStream os) {
 		PrintStream out = new PrintStream(os);
-		for (Iterator<String> i = optionList.iterator(); i.hasNext(); ) {
+		for (Iterator<String> i = optionList.iterator(); i.hasNext();) {
 			String option = i.next();
 			out.print("  ");
 
@@ -146,7 +144,7 @@ public abstract class CommandLine {
 				buf.append(argumentDescriptionMap.get(option));
 				buf.append(">");
 			}
-			printField(out, buf.toString(), maxWidth+1);
+			printField(out, buf.toString(), maxWidth + 1);
 
 			out.println(optionDescriptionMap.get(option));
 		}

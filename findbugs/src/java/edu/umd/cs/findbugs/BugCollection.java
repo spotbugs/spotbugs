@@ -22,20 +22,21 @@ package edu.umd.cs.findbugs;
 import java.io.*;
 import java.util.*;
 
-import org.dom4j.Element;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
+import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
-import org.dom4j.io.OutputFormat;
 
 /**
  * Abstract base class for collections of BugInstance objects
  * and error messages associated with analysis.
  * Supports reading and writing XML files.
- * @see BugInstance
+ *
  * @author David Hovemeyer
+ * @see BugInstance
  */
 public abstract class BugCollection {
 
@@ -46,8 +47,8 @@ public abstract class BugCollection {
 		// are loaded, and that their static initializers run,
 		// to ensure that their XMLTranslators are registered.
 		x = BugInstance.dummy + ClassAnnotation.dummy +
-			FieldAnnotation.dummy + MethodAnnotation.dummy +
-			SourceLineAnnotation.dummy + IntAnnotation.dummy;
+		        FieldAnnotation.dummy + MethodAnnotation.dummy +
+		        SourceLineAnnotation.dummy + IntAnnotation.dummy;
 	}
 
 	public void addAll(Collection<BugInstance> collection) {
@@ -58,18 +59,27 @@ public abstract class BugCollection {
 	}
 
 	public abstract boolean add(BugInstance bugInstance);
+
 	public abstract boolean remove(BugInstance bugInstance);
+
 	public abstract Iterator<BugInstance> iterator();
+
 	public abstract Collection<BugInstance> getCollection();
+
 	public abstract void addError(String message);
+
 	public abstract void addMissingClass(String message);
+
 	public abstract Iterator<String> errorIterator();
+
 	public abstract Iterator<String> missingClassIterator();
+
 	public abstract void setSummaryHTML(String html);
+
 	public abstract String getSummaryHTML();
 
 	private static final String ROOT_ELEMENT_NAME = "BugCollection";
-	private static final String SRCMAP_ELEMENT_NAME= "SrcMap";
+	private static final String SRCMAP_ELEMENT_NAME = "SrcMap";
 	private static final String PROJECT_ELEMENT_NAME = "Project";
 	private static final String ERRORS_ELEMENT_NAME = "Errors";
 	private static final String ANALYSIS_ERROR_ELEMENT_NAME = "AnalysisError";
@@ -78,13 +88,13 @@ public abstract class BugCollection {
 	private static final String APP_CLASS_ELEMENT_NAME = "AppClass";
 
 	public void readXML(String fileName, Project project)
-		throws IOException, DocumentException {
+	        throws IOException, DocumentException {
 		BufferedInputStream in = new BufferedInputStream(new FileInputStream(fileName));
 		readXML(in, project);
 	}
 
 	public void readXML(File file, Project project)
-		throws IOException, DocumentException {
+	        throws IOException, DocumentException {
 		BufferedInputStream in = new BufferedInputStream(new FileInputStream(file));
 		readXML(in, project);
 	}
@@ -94,11 +104,12 @@ public abstract class BugCollection {
 	 * object, populating the Project as a side effect.
 	 * An attempt will be made to close the input stream
 	 * (even if an exception is thrown).
-	 * @param in the InputStream
+	 *
+	 * @param in      the InputStream
 	 * @param project the Project
 	 */
 	public void readXML(InputStream in, Project project)
-		throws IOException, DocumentException {
+	        throws IOException, DocumentException {
 		if (in == null) throw new IllegalArgumentException();
 		if (project == null) throw new IllegalArgumentException();
 
@@ -118,7 +129,7 @@ public abstract class BugCollection {
 
 		Map<String, String> classToSourceFileMap = new HashMap<String, String>();
 
-		for (Iterator i = document.getRootElement().elements().iterator(); i.hasNext(); ) {
+		for (Iterator i = document.getRootElement().elements().iterator(); i.hasNext();) {
 			Element element = (Element) i.next();
 			String elementName = element.getName();
 
@@ -148,10 +159,10 @@ public abstract class BugCollection {
 		// use the source map to add the information (if possible).
 		// This is just for backwards compatibility with the old
 		// SrcMap elements.
-		for (Iterator<BugInstance> i = this.iterator(); i.hasNext(); ) {
+		for (Iterator<BugInstance> i = this.iterator(); i.hasNext();) {
 			BugInstance bugInstance = i.next();
 
-			for (Iterator<BugAnnotation> j = bugInstance.annotationIterator(); j.hasNext(); ) {
+			for (Iterator<BugAnnotation> j = bugInstance.annotationIterator(); j.hasNext();) {
 				BugAnnotation annotation = j.next();
 				if (annotation instanceof SourceLineAnnotation) {
 					updateSourceFile((SourceLineAnnotation) annotation, classToSourceFileMap);
@@ -167,7 +178,7 @@ public abstract class BugCollection {
 		project.setModified(false);
 	}
 
-	private static void updateSourceFile(SourceLineAnnotation annotation, Map<String,String> classToSourceFileMap) {
+	private static void updateSourceFile(SourceLineAnnotation annotation, Map<String, String> classToSourceFileMap) {
 		if (!annotation.isSourceFileKnown()) {
 			String className = annotation.getClassName();
 			String sourceFile = classToSourceFileMap.get(className);
@@ -195,7 +206,7 @@ public abstract class BugCollection {
 		BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(fileName));
 		writeXML(out, project);
 	}
-	
+
 	public void writeXML(File file, Project project) throws IOException {
 		BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(file));
 		writeXML(out, project);
@@ -213,17 +224,17 @@ public abstract class BugCollection {
 		project.writeElement(projectElement);
 
 		// Save all of the bug instances
-		for (Iterator<BugInstance> i = this.iterator(); i.hasNext(); ) {
+		for (Iterator<BugInstance> i = this.iterator(); i.hasNext();) {
 			BugInstance bugInstance = i.next();
 			bugInstance.toElement(root);
 		}
 
 		// Save the error information
 		Element errorsElement = root.addElement(ERRORS_ELEMENT_NAME);
-		for (Iterator<String> i = errorIterator(); i.hasNext(); ) {
+		for (Iterator<String> i = errorIterator(); i.hasNext();) {
 			errorsElement.addElement(ANALYSIS_ERROR_ELEMENT_NAME).setText(i.next());
 		}
-		for (Iterator<String> i = missingClassIterator(); i.hasNext(); ) {
+		for (Iterator<String> i = missingClassIterator(); i.hasNext();) {
 			errorsElement.addElement(MISSING_CLASS_ELEMENT_NAME).setText(i.next());
 		}
 

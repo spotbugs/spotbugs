@@ -26,6 +26,7 @@ import java.util.*;
  * the reverse of the order in which they are finished in
  * a depth first search.  This is the most efficient visitation
  * order for forward dataflow analyses.
+ *
  * @see BlockOrder
  * @see DepthFirstSearch
  * @see CFG
@@ -50,6 +51,7 @@ public class ReversePostfixOrder extends AbstractBlockOrder {
 
 	/**
 	 * Constructor.
+	 *
 	 * @param cfg the CFG for the method
 	 * @param dfs the DepthFirstSearch on the method
 	 */

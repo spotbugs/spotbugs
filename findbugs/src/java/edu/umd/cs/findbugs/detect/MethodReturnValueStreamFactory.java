@@ -19,19 +19,13 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import java.util.*;
+
 import edu.umd.cs.findbugs.ba.Hierarchy;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.RepositoryLookupFailureCallback;
-
-import java.util.BitSet;
-
 import org.apache.bcel.Constants;
-
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.Instruction;
-import org.apache.bcel.generic.InvokeInstruction;
-import org.apache.bcel.generic.ObjectType;
-import org.apache.bcel.generic.ReferenceType;
+import org.apache.bcel.generic.*;
 
 /**
  * StreamFactory for streams that are created as the result
@@ -39,6 +33,7 @@ import org.apache.bcel.generic.ReferenceType;
  */
 public class MethodReturnValueStreamFactory implements StreamFactory {
 	private static final BitSet invokeOpcodeSet = new BitSet();
+
 	static {
 		invokeOpcodeSet.set(Constants.INVOKEINTERFACE);
 		invokeOpcodeSet.set(Constants.INVOKESPECIAL);
@@ -55,10 +50,11 @@ public class MethodReturnValueStreamFactory implements StreamFactory {
 	/**
 	 * Constructor.
 	 * The Streams created will be marked as uninteresting.
-	 * @param baseClass base class through which the method will be
-	 *   called (we check instances of the base class and all subtypes)
+	 *
+	 * @param baseClass  base class through which the method will be
+	 *                   called (we check instances of the base class and all subtypes)
 	 * @param methodName name of the method called
-	 * @param methodSig signature of the method called
+	 * @param methodSig  signature of the method called
 	 */
 	public MethodReturnValueStreamFactory(String baseClass, String methodName, String methodSig) {
 		this.baseClassType = new ObjectType(baseClass);
@@ -70,15 +66,16 @@ public class MethodReturnValueStreamFactory implements StreamFactory {
 	/**
 	 * Constructor.
 	 * The Streams created will be marked as interesting.
-	 * @param baseClass base class through which the method will be
-	 *   called (we check instances of the base class and all subtypes)
+	 *
+	 * @param baseClass  base class through which the method will be
+	 *                   called (we check instances of the base class and all subtypes)
 	 * @param methodName name of the method called
-	 * @param methodSig signature of the method called
-	 * @param bugType the bug type that should be reported if
-	 *   the stream is not closed on all paths out of the method
+	 * @param methodSig  signature of the method called
+	 * @param bugType    the bug type that should be reported if
+	 *                   the stream is not closed on all paths out of the method
 	 */
 	public MethodReturnValueStreamFactory(String baseClass, String methodName, String methodSig,
-		String bugType) {
+	                                      String bugType) {
 		this.baseClassType = new ObjectType(baseClass);
 		this.methodName = methodName;
 		this.methodSig = methodSig;
@@ -87,7 +84,7 @@ public class MethodReturnValueStreamFactory implements StreamFactory {
 	}
 
 	public Stream createStream(Location location, ObjectType type, ConstantPoolGen cpg,
-		RepositoryLookupFailureCallback lookupFailureCallback) {
+	                           RepositoryLookupFailureCallback lookupFailureCallback) {
 
 		try {
 			Instruction ins = location.getHandle().getInstruction();
@@ -112,8 +109,8 @@ public class MethodReturnValueStreamFactory implements StreamFactory {
 
 			String streamClass = type.getClassName();
 			Stream result = new Stream(location, streamClass, streamClass)
-				.setIgnoreImplicitExceptions(true)
-				.setIsOpenOnCreation(true);
+			        .setIgnoreImplicitExceptions(true)
+			        .setIsOpenOnCreation(true);
 			if (!isUninteresting)
 				result.setInteresting(bugType);
 			return result;

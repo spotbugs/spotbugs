@@ -24,20 +24,20 @@ package edu.umd.cs.findbugs.ba;
  * indicating whether thoses values can be null, non-null,
  * null on some incoming path, or unknown.
  *
+ * @author David Hovemeyer
  * @see IsNullValueFrame
  * @see IsNullValueAnalysis
- * @author David Hovemeyer
  */
 public class IsNullValue {
 	private static final boolean DEBUG_EXCEPTION = Boolean.getBoolean("inv.debugException");
 
-	private static final int NULL         = 0;
+	private static final int NULL = 0;
 	private static final int CHECKED_NULL = 1;
-	private static final int NN           = 2;
-	private static final int CHECKED_NN   = 3;
-	private static final int NSP          = 4;
-	private static final int NN_DNR       = 5;
-	private static final int NSP_DNR      = 6;
+	private static final int NN = 2;
+	private static final int CHECKED_NN = 3;
+	private static final int NSP = 4;
+	private static final int NN_DNR = 5;
+	private static final int NSP_DNR = 6;
 
 	// This can be bitwise-OR'ed to indicate the value was propagated
 	// along an exception path.
@@ -45,13 +45,13 @@ public class IsNullValue {
 
 	private static final int[][] mergeMatrix = {
 		// NULL,    CHECKED_NULL, NN,      CHECKED_NN, NSP,     NN_DNR,   NSP_DNR
-		{  NULL                                                                    }, // NULL
-		{  NULL,    CHECKED_NULL,                                                  }, // CHECKED_NULL
-		{  NSP,     NSP,          NN                                               }, // NN
-		{  NSP,     NSP,          NN,      CHECKED_NN,                             }, // CHECKED_NN
-		{  NSP,     NSP,          NSP,     NSP,        NSP                         }, // NSP
-		{  NSP,     NSP,          NN_DNR,  NN_DNR,     NSP,     NN_DNR,            }, // NN_DNR
-		{  NSP_DNR, NSP_DNR,      NSP_DNR, NSP_DNR,    NSP_DNR, NSP_DNR,  NSP_DNR, }  // NSP_DNR
+		{NULL}, // NULL
+		{NULL, CHECKED_NULL, }, // CHECKED_NULL
+		{NSP, NSP, NN}, // NN
+		{NSP, NSP, NN, CHECKED_NN, }, // CHECKED_NN
+		{NSP, NSP, NSP, NSP, NSP}, // NSP
+		{NSP, NSP, NN_DNR, NN_DNR, NSP, NN_DNR, }, // NN_DNR
+		{NSP_DNR, NSP_DNR, NSP_DNR, NSP_DNR, NSP_DNR, NSP_DNR, NSP_DNR, }  // NSP_DNR
 	};
 
 	private static IsNullValue[] instanceList = {
@@ -120,12 +120,16 @@ public class IsNullValue {
 		return exceptionInstanceList[getBaseKind()];
 	}
 
-	/** Get the instance representing values that are definitely null. */
+	/**
+	 * Get the instance representing values that are definitely null.
+	 */
 	public static IsNullValue nullValue() {
 		return instanceList[NULL];
 	}
 
-	/** Get the instance representing values that are definitely not null. */
+	/**
+	 * Get the instance representing values that are definitely not null.
+	 */
 	public static IsNullValue nonNullValue() {
 		return instanceList[NN];
 	}
@@ -170,7 +174,9 @@ public class IsNullValue {
 		return instanceList[CHECKED_NN];
 	}
 
-	/** Merge two values. */
+	/**
+	 * Merge two values.
+	 */
 	public static IsNullValue merge(IsNullValue a, IsNullValue b) {
 		boolean isException = a.isException() || b.isException();
 		a = a.toBaseValue();
@@ -191,19 +197,25 @@ public class IsNullValue {
 		return resultValue;
 	}
 
-	/** Is this value definitely null? */
+	/**
+	 * Is this value definitely null?
+	 */
 	public boolean isDefinitelyNull() {
 		int baseKind = getBaseKind();
 		return baseKind == NULL || baseKind == CHECKED_NULL;
 	}
 
-	/** Is this value null on some path? */
+	/**
+	 * Is this value null on some path?
+	 */
 	public boolean isNullOnSomePath() {
 		int baseKind = getBaseKind();
 		return baseKind == NSP;
 	}
 
-	/** Is this value definitely not null? */
+	/**
+	 * Is this value definitely not null?
+	 */
 	public boolean isDefinitelyNotNull() {
 		int baseKind = getBaseKind();
 		return baseKind == NN || baseKind == CHECKED_NN;

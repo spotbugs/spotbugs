@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.ba.bcp;
 
 import java.util.*;
+
 import org.apache.bcel.generic.InstructionHandle;
 
 public class ByteCodePatternMatch {
@@ -50,20 +51,20 @@ public class ByteCodePatternMatch {
 
 	public InstructionHandle getLabeledInstruction(String label) {
 		return lastElementMatch != null
-			? lastElementMatch.getLabeledInstruction(label)
-			: null;
+		        ? lastElementMatch.getLabeledInstruction(label)
+		        : null;
 	}
 
 	public PatternElementMatch getFirstLabeledMatch(String label) {
 		return lastElementMatch != null
-			? lastElementMatch.getFirstLabeledMatch(label)
-			: null;
+		        ? lastElementMatch.getFirstLabeledMatch(label)
+		        : null;
 	}
 
 	public PatternElementMatch getLastLabeledMatch(String label) {
 		return lastElementMatch != null
-			? lastElementMatch.getLastLabeledMatch(label)
-			: null;
+		        ? lastElementMatch.getLastLabeledMatch(label)
+		        : null;
 	}
 }
 

@@ -19,14 +19,14 @@
 
 package edu.umd.cs.findbugs.ba;
 
-import java.util.Iterator;
+import java.util.*;
 
 /**
  * Perform a forward depth first search of a control flow graph.
  *
+ * @author David Hovemeyer
  * @see CFG
  * @see AbstractDepthFirstSearch
- * @author David Hovemeyer
  */
 public class DepthFirstSearch extends AbstractDepthFirstSearch {
 	public DepthFirstSearch(CFG cfg) {

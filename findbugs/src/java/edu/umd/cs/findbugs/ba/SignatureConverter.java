@@ -21,7 +21,6 @@ package edu.umd.cs.findbugs.ba;
 
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
-
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.MethodGen;
@@ -42,6 +41,7 @@ public class SignatureConverter {
 
 	/**
 	 * Constructor.
+	 *
 	 * @param signature the field or method signature to convert
 	 */
 	public SignatureConverter(String signature) {
@@ -68,6 +68,7 @@ public class SignatureConverter {
 	 * character of the remaining part is "I", then this method will return
 	 * "int", and the "I" will be consumed.  Arrays, reference types,
 	 * and basic types are all handled.
+	 *
 	 * @return the parsed type string
 	 */
 	public String parseNext() {
@@ -92,15 +93,32 @@ public class SignatureConverter {
 			signature = signature.substring(semi + 1);
 		} else {
 			switch (signature.charAt(0)) {
-			case 'B': result.append("byte"); break;
-			case 'C': result.append("char"); break;
-			case 'D': result.append("double"); break;
-			case 'F': result.append("float"); break;
-			case 'I': result.append("int"); break;
-			case 'J': result.append("long"); break;
-			case 'S': result.append("short"); break;
-			case 'Z': result.append("boolean"); break;
-			default: throw new IllegalStateException("bad signature " + signature);
+			case 'B':
+				result.append("byte");
+				break;
+			case 'C':
+				result.append("char");
+				break;
+			case 'D':
+				result.append("double");
+				break;
+			case 'F':
+				result.append("float");
+				break;
+			case 'I':
+				result.append("int");
+				break;
+			case 'J':
+				result.append("long");
+				break;
+			case 'S':
+				result.append("short");
+				break;
+			case 'Z':
+				result.append("boolean");
+				break;
+			default:
+				throw new IllegalStateException("bad signature " + signature);
 			}
 			skip();
 		}
@@ -111,8 +129,9 @@ public class SignatureConverter {
 	/**
 	 * Convenience method for generating a method signature in
 	 * human readable form.
+	 *
 	 * @param javaClass the class
-	 * @param method the method
+	 * @param method    the method
 	 */
 	public static String convertMethodSignature(JavaClass javaClass, Method method) {
 		return convertMethodSignature(javaClass.getClassName(), method.getName(), method.getSignature());
@@ -121,6 +140,7 @@ public class SignatureConverter {
 	/**
 	 * Convenience method for generating a method signature in
 	 * human readable form.
+	 *
 	 * @param methodGen the method to produce a method signature for
 	 */
 	public static String convertMethodSignature(MethodGen methodGen) {
@@ -130,19 +150,21 @@ public class SignatureConverter {
 	/**
 	 * Convenience method for generating a method signature in
 	 * human readable form.
+	 *
 	 * @param inv an InvokeInstruction
 	 * @param cpg the ConstantPoolGen for the class the instruction belongs to
 	 */
 	public static String convertMethodSignature(InvokeInstruction inv, ConstantPoolGen cpg) {
 		return convertMethodSignature(inv.getClassName(cpg), inv.getName(cpg), inv.getSignature(cpg));
 	}
- 
+
 	/**
 	 * Convenience method for generating a method signature in
 	 * human readable form.
-	 * @param className name of the class containing the method
+	 *
+	 * @param className  name of the class containing the method
 	 * @param methodName the name of the method
-	 * @param methodSig the signature of the method
+	 * @param methodSig  the signature of the method
 	 */
 	public static String convertMethodSignature(String className, String methodName, String methodSig) {
 		return convertMethodSignature(className, methodName, methodSig, "");
@@ -151,11 +173,12 @@ public class SignatureConverter {
 	/**
 	 * Convenience method for generating a method signature in
 	 * human readable form.
-	 * @param className name of the class containing the method
+	 *
+	 * @param className  name of the class containing the method
 	 * @param methodName the name of the method
-	 * @param methodSig the signature of the method
-	 * @param pkgName the name of the package the method is in (used to shorten
-	 *   class names)
+	 * @param methodSig  the signature of the method
+	 * @param pkgName    the name of the package the method is in (used to shorten
+	 *                   class names)
 	 */
 	public static String convertMethodSignature(String className, String methodName, String methodSig, String pkgName) {
 		StringBuffer args = new StringBuffer();
@@ -186,6 +209,7 @@ public class SignatureConverter {
 	/**
 	 * Convenience method for converting a single signature component to
 	 * human-readable form.
+	 *
 	 * @param signature the signature
 	 */
 	public static String convert(String signature) {
@@ -194,7 +218,7 @@ public class SignatureConverter {
 
 	public static String shorten(String pkgName, String typeName) {
 		int index = typeName.lastIndexOf('.');
-		if (index >= 0 ) {
+		if (index >= 0) {
 			String otherPkg = typeName.substring(0, index);
 			if (otherPkg.equals(pkgName) || otherPkg.equals("java.lang"))
 				typeName = typeName.substring(index + 1);

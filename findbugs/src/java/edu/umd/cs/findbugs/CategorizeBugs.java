@@ -76,7 +76,7 @@ public class CategorizeBugs {
 		System.out.println(bugInstance.getAnnotationText());
 	}
 
-	private static void updateStats(String key, Map<String,Stats> map, boolean isBug, int severity) {
+	private static void updateStats(String key, Map<String, Stats> map, boolean isBug, int severity) {
 		Stats stats = map.get(key);
 		if (stats == null) {
 			stats = new Stats();
@@ -92,7 +92,7 @@ public class CategorizeBugs {
 	private static void dumpStats(String banner, Map<String, Stats> map) {
 		System.out.println("\n" + banner + ":");
 		Iterator<Map.Entry<String, Stats>> i = map.entrySet().iterator();
-		while(i.hasNext()) {
+		while (i.hasNext()) {
 			Map.Entry<String, Stats> entry = i.next();
 			String key = entry.getKey();
 			Stats stats = entry.getValue();
@@ -103,7 +103,7 @@ public class CategorizeBugs {
 				System.out.print(stats.notBug[j] + "\t");
 
 			int total = stats.bug[ALL] + stats.notBug[ALL];
-			if (total > 0){
+			if (total > 0) {
 				double accuracy = ((double) stats.bug[ALL] / (double) total) * 100.0;
 				System.out.print(accuracy);
 			}

@@ -19,16 +19,13 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import java.util.*;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.MethodAnnotation;
-
 import edu.umd.cs.findbugs.ba.ClassContext;
-
-import java.util.HashSet;
-import java.util.Iterator;
-
 import org.apache.bcel.classfile.Method;
 
 /**
@@ -46,19 +43,19 @@ public class FindUncalledPrivateMethods extends BytecodeScanningDetector {
 
 	public void visitMethod(Method obj) {
 		super.visitMethod(obj);
-		if (obj.isPrivate() 
-				&& !getMethodName().equals("writeReplace")
-				&& !getMethodName().equals("readResolve")
-				&& !getMethodName().equals("readObject")
-				&& !getMethodName().equals("readObjectNoData")
-				&& !getMethodName().equals("writeObject")
-				&& getMethodName().indexOf("debug") == -1
-				&& getMethodName().indexOf("Debug") == -1
-				&& getMethodName().indexOf("trace") == -1
-				&& getMethodName().indexOf("Trace") == -1
-				&& !getMethodName().equals("<init>")
-				&& !getMethodName().equals("<clinit>")
-				)
+		if (obj.isPrivate()
+		        && !getMethodName().equals("writeReplace")
+		        && !getMethodName().equals("readResolve")
+		        && !getMethodName().equals("readObject")
+		        && !getMethodName().equals("readObjectNoData")
+		        && !getMethodName().equals("writeObject")
+		        && getMethodName().indexOf("debug") == -1
+		        && getMethodName().indexOf("Debug") == -1
+		        && getMethodName().indexOf("trace") == -1
+		        && getMethodName().indexOf("Trace") == -1
+		        && !getMethodName().equals("<init>")
+		        && !getMethodName().equals("<clinit>")
+		)
 			definedPrivateMethods.add(MethodAnnotation.fromVisitedMethod(this));
 	}
 
@@ -72,7 +69,7 @@ public class FindUncalledPrivateMethods extends BytecodeScanningDetector {
 				calledMethods.add(called);
 				calledMethodNames.add(getNameConstantOperand().toLowerCase());
 				// System.out.println("Saw call to " + called);
-				
+
 			}
 			break;
 		default:
@@ -90,19 +87,19 @@ public class FindUncalledPrivateMethods extends BytecodeScanningDetector {
 
 		definedPrivateMethods.removeAll(calledMethods);
 
-		for (Iterator<MethodAnnotation> i = definedPrivateMethods.iterator(); i.hasNext(); ) {
+		for (Iterator<MethodAnnotation> i = definedPrivateMethods.iterator(); i.hasNext();) {
 			MethodAnnotation m = i.next();
 			// System.out.println("Checking " + m);
 			int priority = LOW_PRIORITY;
 			String methodName = m.getMethodName();
-			if (methodName.length() > 1 
-			  && calledMethodNames.contains(methodName.toLowerCase()))
+			if (methodName.length() > 1
+			        && calledMethodNames.contains(methodName.toLowerCase()))
 				priority = NORMAL_PRIORITY;
-			BugInstance bugInstance 
-			  = new BugInstance("UPM_UNCALLED_PRIVATE_METHOD", 
-					priority)
-				.addClass(this)
-				.addMethod(m);
+			BugInstance bugInstance
+			        = new BugInstance("UPM_UNCALLED_PRIVATE_METHOD",
+			                priority)
+			        .addClass(this)
+			        .addMethod(m);
 			bugReporter.reportBug(bugInstance);
 		}
 

@@ -19,14 +19,14 @@
 
 package edu.umd.cs.findbugs.ba.bcp;
 
-import java.util.*;
+
 
 /**
  * A ByteCodePattern is a pattern matching a sequence of bytecode instructions.
  *
+ * @author David Hovemeyer
  * @see PatternElement
  * @see PatternMatcher
- * @author David Hovemeyer
  */
 public class ByteCodePattern {
 	private PatternElement first, last;
@@ -36,6 +36,7 @@ public class ByteCodePattern {
 
 	/**
 	 * Add a PatternElement to the end of the pattern.
+	 *
 	 * @param element the PatternElement
 	 * @return this object
 	 */
@@ -50,8 +51,9 @@ public class ByteCodePattern {
 	 * Add a wildcard to match between 0 and given number of instructions.
 	 * If there is already a wildcard at the end of the current pattern,
 	 * resets its max value to that given.
+	 *
 	 * @param numWild maximum number of instructions to be matched by
-	 *   the wildcard
+	 *                the wildcard
 	 */
 	public ByteCodePattern addWild(int numWild) {
 		Wild wild = isLastWild();
@@ -66,8 +68,9 @@ public class ByteCodePattern {
 	 * Set number of inter-element wildcards to create between
 	 * explicit PatternElements.  By default, no implicit wildcards
 	 * are created.
+	 *
 	 * @param numWild the number of wildcard instructions which
-	 *   may be matched between explicit PatternElements
+	 *                may be matched between explicit PatternElements
 	 * @return this object
 	 */
 	public ByteCodePattern setInterElementWild(int numWild) {
@@ -78,7 +81,9 @@ public class ByteCodePattern {
 	/**
 	 * Get the first PatternElement in the pattern.
 	 */
-	public PatternElement getFirst() { return first; }
+	public PatternElement getFirst() {
+		return first;
+	}
 
 	/**
 	 * Get a dummy variable name.

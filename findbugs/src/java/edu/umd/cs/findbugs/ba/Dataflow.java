@@ -26,19 +26,19 @@ import java.util.*;
  * Both forward and backward analyses can be performed.
  * <ul>
  * <li> The "start" point of each block is the entry (forward analyses)
- *	  or the exit (backward analyses).
+ * or the exit (backward analyses).
  * <li> The "result" point of each block is the exit (forward analyses)
- *	  or the entry (backward analyses).
+ * or the entry (backward analyses).
  * </ul>
  * The analysis's transfer function is applied to transform
  * the meet of the results of the block's logical predecessors
  * (the block's start facts) into the block's result facts.
  *
+ * @author David Hovemeyer
  * @see CFG
  * @see DataflowAnalysis
- * @author David Hovemeyer
  */
-public class Dataflow<Fact, AnalysisType extends DataflowAnalysis<Fact>> {
+public class Dataflow <Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 	private CFG cfg;
 	private AnalysisType analysis;
 	private BlockOrder blockOrder;
@@ -49,7 +49,8 @@ public class Dataflow<Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 
 	/**
 	 * Constructor.
-	 * @param cfg the control flow graph
+	 *
+	 * @param cfg      the control flow graph
 	 * @param analysis the DataflowAnalysis to be run
 	 */
 	public Dataflow(CFG cfg, AnalysisType analysis) {
@@ -75,7 +76,7 @@ public class Dataflow<Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 
 	/**
 	 * Run the algorithm.
-	 * Afterwards, caller can use the getStartFact() and getResultFact() methods to 
+	 * Afterwards, caller can use the getStartFact() and getResultFact() methods to
 	 * to get dataflow facts at start and result points of each block.
 	 */
 	public void execute() throws DataflowAnalysisException {
@@ -181,21 +182,33 @@ public class Dataflow<Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 		return numIterations;
 	}
 
-	/** Get dataflow facts for start of given block. */
+	/**
+	 * Get dataflow facts for start of given block.
+	 */
 	public Fact getStartFact(BasicBlock block) {
 		return analysis.getStartFact(block);
 	}
 
-	/** Get dataflow facts for end of given block. */
+	/**
+	 * Get dataflow facts for end of given block.
+	 */
 	public Fact getResultFact(BasicBlock block) {
 		return analysis.getResultFact(block);
 	}
 
-	/** Get the analysis object. */
-	public AnalysisType getAnalysis() { return analysis; }
+	/**
+	 * Get the analysis object.
+	 */
+	public AnalysisType getAnalysis() {
+		return analysis;
+	}
 
-	/** Get the CFG object. */
-	public CFG getCFG() { return cfg; }
+	/**
+	 * Get the CFG object.
+	 */
+	public CFG getCFG() {
+		return cfg;
+	}
 
 	/**
 	 * Return an Iterator over edges that connect given block to its

@@ -19,14 +19,8 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import edu.umd.cs.findbugs.ba.BasicBlock;
-import edu.umd.cs.findbugs.ba.Location;
-import edu.umd.cs.findbugs.ba.ResourceValue;
-import edu.umd.cs.findbugs.ba.ResourceValueFrame;
-import edu.umd.cs.findbugs.ba.ResourceValueFrameModelingVisitor;
-
+import edu.umd.cs.findbugs.ba.*;
 import org.apache.bcel.Constants;
-
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
@@ -42,7 +36,7 @@ public class StreamFrameModelingVisitor extends ResourceValueFrameModelingVisito
 	private Location location;
 
 	public StreamFrameModelingVisitor(ConstantPoolGen cpg, StreamResourceTracker resourceTracker,
-		Stream stream) {
+	                                  Stream stream) {
 		super(cpg);
 		this.resourceTracker = resourceTracker;
 		this.stream = stream;

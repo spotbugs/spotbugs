@@ -17,7 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-// $Revision: 1.9 $
+// $Revision: 1.10 $
 
 package edu.umd.cs.findbugs.graph;
 
@@ -28,46 +28,65 @@ import java.util.*;
  * Based on Cormen, et. al, <cite>Introduction to Algorithms</cite>, p. 478.
  */
 public class DepthFirstSearch
-	<
-	GraphType extends Graph<EdgeType, VertexType>,
-	EdgeType extends GraphEdge<EdgeType, VertexType>,
-	VertexType extends GraphVertex<VertexType>
-	> {
+        <
+        GraphType extends Graph<EdgeType, VertexType>,
+        EdgeType extends GraphEdge<EdgeType, VertexType>,
+        VertexType extends GraphVertex<VertexType>
+        > {
 
-	private static final int WHITE  = 0;
-	private static final int GRAY   = 1;
-	private static final int BLACK  = 2;
+	private static final int WHITE = 0;
+	private static final int GRAY = 1;
+	private static final int BLACK = 2;
 
-	/** Colors of the vertices. */
+	/**
+	 * Colors of the vertices.
+	 */
 	private int[] m_colorList;
 
-	/** Start times for the vertices. */
+	/**
+	 * Start times for the vertices.
+	 */
 	private int[] m_startTimeList;
 
-	/** Finish times for the vertices. */
+	/**
+	 * Finish times for the vertices.
+	 */
 	private int[] m_finishTimeList;
 
-	/** Predecessors for the vertices. */
+	/**
+	 * Predecessors for the vertices.
+	 */
 	private ArrayList<VertexType> m_predecessorList;
 
-	/** Depth first search tree forest. */
+	/**
+	 * Depth first search tree forest.
+	 */
 	private ArrayList<SearchTree<VertexType>> m_searchTreeList;
 
-	/** Time counter. */
+	/**
+	 * Time counter.
+	 */
 	private int m_time;
 
-	/** VertexType chooser object; determines which vertices will
+	/**
+	 * VertexType chooser object; determines which vertices will
 	 * be considered by the search.
 	 */
 	private VertexChooser<VertexType> m_vertexChooser;
 
-	private static class UnconditionalVertexChooser<VertexType extends GraphVertex<VertexType>>
-		implements VertexChooser<VertexType> {
-		public UnconditionalVertexChooser() { }
-		public boolean isChosen(VertexType v) { return true; }
+	private static class UnconditionalVertexChooser <VertexType extends GraphVertex<VertexType>>
+	        implements VertexChooser<VertexType> {
+		public UnconditionalVertexChooser() {
+		}
+
+		public boolean isChosen(VertexType v) {
+			return true;
+		}
 	}
 
-	/** Constructor. */
+	/**
+	 * Constructor.
+	 */
 	public DepthFirstSearch() {
 		m_vertexChooser = new UnconditionalVertexChooser<VertexType>();
 	}
@@ -82,7 +101,9 @@ public class DepthFirstSearch
 		m_vertexChooser = vertexChooser;
 	}
 
-	/** Perform the depth first search. */
+	/**
+	 * Perform the depth first search.
+	 */
 	public void search(GraphType g) {
 		search(g, g.vertexIterator());
 	}
@@ -95,59 +116,65 @@ public class DepthFirstSearch
 
 		final int numVertexLabels = g.getNumVertexLabels();
 
-		m_colorList	   = new int[ numVertexLabels ]; // colors initially WHITE
-		m_startTimeList   = new int[ numVertexLabels ];
-		m_finishTimeList  = new int[ numVertexLabels ];
+		m_colorList = new int[numVertexLabels]; // colors initially WHITE
+		m_startTimeList = new int[numVertexLabels];
+		m_finishTimeList = new int[numVertexLabels];
 		m_predecessorList = new ArrayList<VertexType>(numVertexLabels);
 		for (int i = 0; i < numVertexLabels; ++i) {
 			m_predecessorList.add(null);
 		}
-		m_searchTreeList  = new ArrayList<SearchTree<VertexType>>();
+		m_searchTreeList = new ArrayList<SearchTree<VertexType>>();
 
 		m_time = 0;
 
 		while (vertexIter.hasNext()) {
 			VertexType v = (VertexType) vertexIter.next();
-			if (m_vertexChooser.isChosen(v) && m_colorList[ v.getLabel() ] == WHITE) {
+			if (m_vertexChooser.isChosen(v) && m_colorList[v.getLabel()] == WHITE) {
 				m_searchTreeList.add(visit(g, v));
 			}
 		}
 
 	}
 
-	/** Helper function to visit an unvisited vertex. */
+	/**
+	 * Helper function to visit an unvisited vertex.
+	 */
 	private SearchTree<VertexType> visit(GraphType g, VertexType v) {
 		final int vertexNum = v.getLabel();
 
 		SearchTree<VertexType> tree = new SearchTree<VertexType>(v);
 
 		// Record start of visit for this vertex
-		m_colorList[ vertexNum ] = GRAY;
-		m_startTimeList[ vertexNum ] = ++m_time;
+		m_colorList[vertexNum] = GRAY;
+		m_startTimeList[vertexNum] = ++m_time;
 
 		// Visit unvisited adjacent vertices
 		Iterator<VertexType> i = g.successorIterator(v);
 		while (i.hasNext()) {
 			VertexType next = i.next();
-			if (m_vertexChooser.isChosen(next) && m_colorList[ next.getLabel() ] == WHITE) {
+			if (m_vertexChooser.isChosen(next) && m_colorList[next.getLabel()] == WHITE) {
 				m_predecessorList.set(next.getLabel(), v);
 				tree.addChild(visit(g, next));
 			}
 		}
 
 		// Finish visit for this vertex
-		m_colorList[ vertexNum ] = BLACK;
-		m_finishTimeList[ vertexNum ] = ++m_time;
+		m_colorList[vertexNum] = BLACK;
+		m_finishTimeList[vertexNum] = ++m_time;
 
 		return tree;
 	}
 
-	/** Get array of start times for each vertex (indexed by vertex label). */
+	/**
+	 * Get array of start times for each vertex (indexed by vertex label).
+	 */
 	public int[] getStartTimeList() {
 		return m_startTimeList;
 	}
 
-	/** Get array of finish times for each vertex (indexed by vertex label). */
+	/**
+	 * Get array of finish times for each vertex (indexed by vertex label).
+	 */
 	public int[] getFinishTimeList() {
 		return m_finishTimeList;
 	}

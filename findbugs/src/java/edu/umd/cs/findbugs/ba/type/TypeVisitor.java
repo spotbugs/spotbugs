@@ -27,54 +27,63 @@ package edu.umd.cs.findbugs.ba.type;
 public interface TypeVisitor {
 	/**
 	 * Visit an array type.
+	 *
 	 * @param type the array type
 	 */
 	public void visitArrayType(ArrayType type);
 
 	/**
 	 * Visit a basic type.
+	 *
 	 * @param type the basic type
 	 */
 	public void visitBasicType(BasicType type);
 
 	/**
 	 * Visit a class type.
+	 *
 	 * @param type the class type
 	 */
 	public void visitClassType(ClassType type);
 
 	/**
 	 * Visit the null type.
+	 *
 	 * @param type the null typs
 	 */
 	public void visitNullType(NullType type);
 
 	/**
 	 * Visit the top type.
+	 *
 	 * @param type the top type
 	 */
 	public void visitTopType(TopType type);
 
 	/**
 	 * Visit the bottom type.
+	 *
 	 * @param type the bottom type
 	 */
 	public void visitBottomType(BottomType type);
 
 	/**
 	 * Visit the long extra type.
+	 *
 	 * @param type the long extra type
 	 */
 	public void visitLongExtraType(LongExtraType type);
 
 	/**
 	 * Visit the double extra type.
+	 *
 	 * @param type the double extra type
 	 */
 	public void visitDoubleExtraType(DoubleExtraType type);
 
 	/**
 	 * Visit the return address type.
+	 *
 	 * @param type the return address type
 	 */
 	public void visitReturnAddressType(ReturnAddressType type);

@@ -20,44 +20,41 @@
 package edu.umd.cs.findbugs.detect;
 
 import edu.umd.cs.findbugs.*;
-import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
+import org.apache.bcel.classfile.JavaClass;
 
-import java.util.*;
-import java.io.*;
+public class FindBugsSummaryStats extends PreorderVisitor
+        implements Detector, BugReporterObserver {
+	private BugReporter bugReporter;
+	private ProjectStats stats;
+	private AnalysisContext analysisContext;
 
-import org.apache.bcel.classfile.*;
+	public FindBugsSummaryStats(BugReporter bugReporter) {
+		this.bugReporter = bugReporter;
+		this.stats = bugReporter.getProjectStats();
+		bugReporter.addObserver(this);
+	}
 
-public class FindBugsSummaryStats extends PreorderVisitor 
-                                  implements Detector, BugReporterObserver {
-  private BugReporter bugReporter;
-  private ProjectStats stats;
-  private AnalysisContext analysisContext;
+	public void setAnalysisContext(AnalysisContext analysisContext) {
+		this.analysisContext = analysisContext;
+	}
 
-  public FindBugsSummaryStats(BugReporter bugReporter) {
-    this.bugReporter = bugReporter;
-    this.stats = bugReporter.getProjectStats();
-    bugReporter.addObserver( this );
-  }
+	public void visitClassContext(ClassContext classContext) {
+		classContext.getJavaClass().accept(this);
+	}
 
-  public void setAnalysisContext(AnalysisContext analysisContext) {
-    this.analysisContext = analysisContext;
-  }
+	public void report() {
+	}
 
-  public void visitClassContext(ClassContext classContext) {
-    classContext.getJavaClass().accept(this);
-  }
+	public void visit(JavaClass obj) {
+		super.visit(obj);
+		stats.addClass(getDottedClassName(), obj.isInterface());
+	}
 
-  public void report() { }
-
-  public void visit(JavaClass obj)     {
-    super.visit(obj);
-    stats.addClass( getDottedClassName(), obj.isInterface() );
-  }
-
-  public void reportBug( BugInstance bug ) {
-    stats.addBug(bug);
-  }
+	public void reportBug(BugInstance bug) {
+		stats.addBug(bug);
+	}
 
 }

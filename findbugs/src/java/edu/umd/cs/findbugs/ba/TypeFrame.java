@@ -25,9 +25,9 @@ import org.apache.bcel.generic.Type;
  * A specialization of {@link Frame} for determining the types
  * of values in the Java stack frame (locals and operand stack).
  *
+ * @author David Hovemeyer
  * @see Frame
  * @see TypeAnalysis
- * @author David Hovemeyer
  */
 public class TypeFrame extends Frame<Type> {
 	/**
@@ -41,20 +41,40 @@ public class TypeFrame extends Frame<Type> {
 		return value.toString() + ",";
 	}
 
-	/** Get the single instance of the "Top" type. */
-	public static Type getTopType() { return TopType.instance(); }
+	/**
+	 * Get the single instance of the "Top" type.
+	 */
+	public static Type getTopType() {
+		return TopType.instance();
+	}
 
-	/** Get the single instance of the "Bottom" type. */
-	public static Type getBottomType() { return BottomType.instance(); }
+	/**
+	 * Get the single instance of the "Bottom" type.
+	 */
+	public static Type getBottomType() {
+		return BottomType.instance();
+	}
 
-	/** Get the single instance of the "LongExtra" type. */
-	public static Type getLongExtraType() { return LongExtraType.instance(); }
+	/**
+	 * Get the single instance of the "LongExtra" type.
+	 */
+	public static Type getLongExtraType() {
+		return LongExtraType.instance();
+	}
 
-	/** Get the single instance of the "DoubleExtra" type. */
-	public static Type getDoubleExtraType() { return DoubleExtraType.instance(); }
+	/**
+	 * Get the single instance of the "DoubleExtra" type.
+	 */
+	public static Type getDoubleExtraType() {
+		return DoubleExtraType.instance();
+	}
 
-	/** Get the single instance of the "Null" type. */
-	public static Type getNullType() { return NullType.instance(); }
+	/**
+	 * Get the single instance of the "Null" type.
+	 */
+	public static Type getNullType() {
+		return NullType.instance();
+	}
 
 }
 

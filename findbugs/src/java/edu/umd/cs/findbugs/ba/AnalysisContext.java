@@ -25,15 +25,15 @@ import edu.umd.cs.findbugs.ba.type.BCELRepositoryClassResolver;
 import edu.umd.cs.findbugs.ba.type.TypeRepository;
 */
 
-import java.util.List;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
+
 import org.apache.bcel.classfile.JavaClass;
 
 /**
  * A context for analysis of a complete project.
  * This serves as the repository for whole-program information
  * and data structures.
+ *
  * @author David Hovemeyer
  */
 public class AnalysisContext implements AnalysisFeatures {
@@ -58,7 +58,9 @@ public class AnalysisContext implements AnalysisFeatures {
 		}
 	}
 
-	/** Constructor. */
+	/**
+	 * Constructor.
+	 */
 	public AnalysisContext(RepositoryLookupFailureCallback lookupFailureCallback) {
 		this.lookupFailureCallback = lookupFailureCallback;
 		this.sourceFinder = new SourceFinder();
@@ -77,18 +79,23 @@ public class AnalysisContext implements AnalysisFeatures {
 		return lookupFailureCallback;
 	}
 
-	/** Set the source path. */
+	/**
+	 * Set the source path.
+	 */
 	public void setSourcePath(List<String> sourcePath) {
 		sourceFinder.setSourceBaseList(sourcePath);
 	}
 
-	/** Get the SourceFinder, for finding source files. */
+	/**
+	 * Get the SourceFinder, for finding source files.
+	 */
 	public SourceFinder getSourceFinder() {
 		return sourceFinder;
 	}
 
 	/**
 	 * Get the ClassContext for a class.
+	 *
 	 * @param javaClass the class
 	 * @return the ClassContext for that class
 	 */

@@ -24,8 +24,8 @@ package edu.umd.cs.findbugs;
  * which are contained in a Java package.  Specifically,
  * this includes classes, methods, and fields.
  *
- * @see BugAnnotation
  * @author David Hovemeyer
+ * @see BugAnnotation
  */
 public abstract class PackageMemberAnnotation implements BugAnnotation {
 	protected String className;
@@ -33,6 +33,7 @@ public abstract class PackageMemberAnnotation implements BugAnnotation {
 
 	/**
 	 * Constructor.
+	 *
 	 * @param className name of the class
 	 */
 	public PackageMemberAnnotation(String className, String description) {
@@ -43,7 +44,9 @@ public abstract class PackageMemberAnnotation implements BugAnnotation {
 	/**
 	 * Get the class name.
 	 */
-	public final String getClassName() { return className; }
+	public final String getClassName() {
+		return className;
+	}
 
 	/**
 	 * Get the package name.
@@ -61,6 +64,7 @@ public abstract class PackageMemberAnnotation implements BugAnnotation {
 	 * Note that this version (defined by PackageMemberAnnotation)
 	 * only handles the "class" and "package" keys, and calls
 	 * formatPackageMember() for all other keys.
+	 *
 	 * @param key the key
 	 * @return the formatted annotation
 	 */
@@ -88,7 +92,7 @@ public abstract class PackageMemberAnnotation implements BugAnnotation {
 	 */
 	protected static String shorten(String pkgName, String typeName) {
 		int index = typeName.lastIndexOf('.');
-		if (index >= 0 ) {
+		if (index >= 0) {
 			String otherPkg = typeName.substring(0, index);
 			if (otherPkg.equals(pkgName) || otherPkg.equals("java.lang"))
 				typeName = typeName.substring(index + 1);
@@ -98,6 +102,7 @@ public abstract class PackageMemberAnnotation implements BugAnnotation {
 
 	/**
 	 * Do default and subclass-specific formatting.
+	 *
 	 * @param key the key specifying how to do the formatting
 	 */
 	protected abstract String formatPackageMember(String key);

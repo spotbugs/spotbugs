@@ -19,9 +19,10 @@
 
 package edu.umd.cs.findbugs;
 
-import edu.umd.cs.findbugs.ba.*;
-import java.io.*;
+import java.io.IOException;
 import java.util.*;
+
+import edu.umd.cs.findbugs.ba.SourceFinder;
 import org.apache.bcel.classfile.JavaClass;
 
 /**
@@ -40,11 +41,11 @@ public class EmacsBugReporter extends TextUIBugReporter {
 	}
 
 	protected void printBug(BugInstance bugInstance) {
-                SourceLineAnnotation line = 
-                        bugInstance.getPrimarySourceLineAnnotation();
-                if (line == null) {
-                        outputStream.print(bugInstance.getMessage());
-                } else {
+		SourceLineAnnotation line =
+		        bugInstance.getPrimarySourceLineAnnotation();
+		if (line == null) {
+			outputStream.print(bugInstance.getMessage());
+		} else {
 			SourceFinder sourceFinder = getEngine().getAnalysisContext().getSourceFinder();
 			String fullPath;
 			String pkgName = line.getPackageName();
@@ -57,13 +58,13 @@ public class EmacsBugReporter extends TextUIBugReporter {
 					fullPath = pkgName.replace('.', '/') + "/" + line.getSourceFile();
 			}
 
-                        outputStream.print(fullPath + ":" 
-                                           + line.getStartLine() + ":" 
-                                           + line.getEndLine() + " "
-                                           + bugInstance.getMessage());
-                }
-            
-                switch(bugInstance.getPriority()) {
+			outputStream.print(fullPath + ":"
+			        + line.getStartLine() + ":"
+			        + line.getEndLine() + " "
+			        + bugInstance.getMessage());
+		}
+
+		switch (bugInstance.getPriority()) {
 		case Detector.LOW_PRIORITY:
 			outputStream.print(" (L) ");
 			break;
@@ -75,7 +76,7 @@ public class EmacsBugReporter extends TextUIBugReporter {
 			break;
 		}
 
-                outputStream.println();
+		outputStream.println();
 	}
 
 	protected void doReportBug(BugInstance bugInstance) {

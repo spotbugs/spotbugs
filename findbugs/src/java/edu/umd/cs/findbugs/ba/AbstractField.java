@@ -21,7 +21,7 @@ package edu.umd.cs.findbugs.ba;
 
 import org.apache.bcel.Constants;
 
-public abstract  class AbstractField implements XField {
+public abstract class AbstractField implements XField {
 	private final String className;
 	private final String fieldName;
 	private final String fieldSig;
@@ -92,8 +92,8 @@ public abstract  class AbstractField implements XField {
 			return false;
 		AbstractField other = (AbstractField) o;
 		return className.equals(other.className)
-			&& fieldName.equals(other.fieldName)
-			&& fieldSig.equals(other.fieldSig);
+		        && fieldName.equals(other.fieldName)
+		        && fieldSig.equals(other.fieldSig);
 	}
 
 	public String toString() {

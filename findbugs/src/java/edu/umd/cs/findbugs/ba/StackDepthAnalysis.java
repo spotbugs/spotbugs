@@ -19,16 +19,17 @@
 
 package edu.umd.cs.findbugs.ba;
 
-import java.util.*;
-
-import org.apache.bcel.*;
-import org.apache.bcel.classfile.*;
-import org.apache.bcel.generic.*;
+import org.apache.bcel.Constants;
+import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.Instruction;
+import org.apache.bcel.generic.InstructionHandle;
 
 /**
  * A really simple forward dataflow analysis to find the depth of
  * the Java operand stack.  This is more of a proof of concept for
  * the dataflow analysis framework than anything useful.
+ *
  * @see Dataflow
  * @see DataflowAnalysis
  */
@@ -40,6 +41,7 @@ public class StackDepthAnalysis extends ForwardDataflowAnalysis<StackDepth> {
 
 	/**
 	 * Constructor.
+	 *
 	 * @param cpg the ConstantPoolGen of the method whose CFG we're performing the analysis on
 	 * @param dfs DepthFirstSearch of the method's CFG
 	 */
@@ -119,7 +121,7 @@ public class StackDepthAnalysis extends ForwardDataflowAnalysis<StackDepth> {
 
 		DataflowTestDriver<StackDepth, StackDepthAnalysis> driver = new DataflowTestDriver<StackDepth, StackDepthAnalysis>() {
 			public Dataflow<StackDepth, StackDepthAnalysis> createDataflow(ClassContext classContext, Method method)
-				throws CFGBuilderException, DataflowAnalysisException {
+			        throws CFGBuilderException, DataflowAnalysisException {
 
 				DepthFirstSearch dfs = classContext.getDepthFirstSearch(method);
 				CFG cfg = classContext.getCFG(method);

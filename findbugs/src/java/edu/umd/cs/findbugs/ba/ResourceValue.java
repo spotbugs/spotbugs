@@ -26,8 +26,13 @@ public class ResourceValue {
 	private static final ResourceValue instance = new ResourceValue();
 	private static final ResourceValue notInstance = new ResourceValue();
 
-	public static final ResourceValue instance() { return instance; }
-	public static final ResourceValue notInstance() { return notInstance; }
+	public static final ResourceValue instance() {
+		return instance;
+	}
+
+	public static final ResourceValue notInstance() {
+		return notInstance;
+	}
 
 	public static ResourceValue merge(ResourceValue a, ResourceValue b) {
 		if (a == notInstance && b == notInstance)
@@ -36,7 +41,9 @@ public class ResourceValue {
 			return instance;
 	}
 
-	public boolean isInstance() { return this == instance; }
+	public boolean isInstance() {
+		return this == instance;
+	}
 
 	public String toString() {
 		return (this == instance) ? "I" : "-";

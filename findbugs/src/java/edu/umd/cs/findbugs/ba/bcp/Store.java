@@ -19,19 +19,22 @@
 
 package edu.umd.cs.findbugs.ba.bcp;
 
+import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
+import edu.umd.cs.findbugs.ba.ValueNumber;
+import edu.umd.cs.findbugs.ba.ValueNumberFrame;
 import org.apache.bcel.generic.*;
-import edu.umd.cs.findbugs.ba.*;
 
 /**
  * A PatternElement representing a store to a field.
  * Variables represent the field and the value stored.
  *
- * @see PatternElement
  * @author David Hovemeyer
+ * @see PatternElement
  */
 public class Store extends FieldAccess {
 	/**
 	 * Constructor.
+	 *
 	 * @param fieldVarName the name of the field variable
 	 * @param valueVarName the name of the variable representing the value stored
 	 */
@@ -40,7 +43,7 @@ public class Store extends FieldAccess {
 	}
 
 	public MatchResult match(InstructionHandle handle, ConstantPoolGen cpg,
-		ValueNumberFrame before, ValueNumberFrame after, BindingSet bindingSet) throws DataflowAnalysisException {
+	                         ValueNumberFrame before, ValueNumberFrame after, BindingSet bindingSet) throws DataflowAnalysisException {
 
 		Instruction ins = handle.getInstruction();
 		FieldInstruction fieldIns;
@@ -51,8 +54,8 @@ public class Store extends FieldAccess {
 			fieldIns = (PUTFIELD) ins;
 			int numSlots = before.getNumSlots();
 			ValueNumber ref = before.getValue(isLongOrDouble(fieldIns, cpg)
-				? numSlots - 3
-				: numSlots - 2);
+			        ? numSlots - 3
+			        : numSlots - 2);
 			field = new FieldVariable(ref, fieldIns.getClassName(cpg), fieldIns.getFieldName(cpg), fieldIns.getSignature(cpg));
 		} else if (ins instanceof PUTSTATIC) {
 			fieldIns = (PUTSTATIC) ins;

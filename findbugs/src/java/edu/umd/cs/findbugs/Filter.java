@@ -19,10 +19,16 @@
 
 package edu.umd.cs.findbugs;
 
+import java.io.BufferedInputStream;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.*;
-import java.io.*;
-import org.dom4j.*;
-import org.dom4j.io.*;
+
+import org.dom4j.Attribute;
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.Element;
+import org.dom4j.io.SAXReader;
 
 public class Filter extends OrMatcher {
 	private static final boolean DEBUG = Boolean.getBoolean("filter.debug");

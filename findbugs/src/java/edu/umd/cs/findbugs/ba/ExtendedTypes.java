@@ -22,9 +22,10 @@ package edu.umd.cs.findbugs.ba;
 /**
  * Extended type codes used by StackAndLocalTypes and StackAndLocalTypeAnalysis
  * for typing locals and stack values used in Java bytecode.
+ *
+ * @author David Hovemeyer
  * @see TypeFrame
  * @see TypeAnalysis
- * @author David Hovemeyer
  */
 public interface ExtendedTypes {
 	// FIXME: these values depend on those in org.apache.bcel.Constants.

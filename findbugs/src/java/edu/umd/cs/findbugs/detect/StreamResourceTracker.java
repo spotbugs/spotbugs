@@ -19,42 +19,16 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import java.util.*;
+
 import edu.umd.cs.findbugs.ResourceCollection;
-
-import edu.umd.cs.findbugs.ba.BasicBlock;
-import edu.umd.cs.findbugs.ba.Hierarchy;
-import edu.umd.cs.findbugs.ba.Location;
-import edu.umd.cs.findbugs.ba.RepositoryLookupFailureCallback;
-import edu.umd.cs.findbugs.ba.ResourceTracker;
-import edu.umd.cs.findbugs.ba.ResourceValue;
-import edu.umd.cs.findbugs.ba.ResourceValueFrame;
-import edu.umd.cs.findbugs.ba.ResourceValueFrameModelingVisitor;
-
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
-
-import org.apache.bcel.Constants;
-
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.GETSTATIC;
-import org.apache.bcel.generic.INVOKESPECIAL;
-import org.apache.bcel.generic.INVOKESTATIC;
-import org.apache.bcel.generic.INVOKEVIRTUAL;
-import org.apache.bcel.generic.Instruction;
-import org.apache.bcel.generic.InstructionHandle;
-import org.apache.bcel.generic.InvokeInstruction;
-import org.apache.bcel.generic.NEW;
-import org.apache.bcel.generic.ObjectType;
-import org.apache.bcel.generic.Type;
-import org.apache.bcel.generic.TypedInstruction;
+import edu.umd.cs.findbugs.ba.*;
+import org.apache.bcel.generic.*;
 
 /**
  * Resource tracker which determines where streams are created,
  * and how they are used within the method.
+ *
  * @author David Hovemeyer
  */
 public class StreamResourceTracker implements ResourceTracker<Stream> {
@@ -68,11 +42,15 @@ public class StreamResourceTracker implements ResourceTracker<Stream> {
 	 */
 	private Map<Location, Stream> streamOpenLocationMap;
 
-	/** Set of all open locations and escapes of uninteresting streams. */
+	/**
+	 * Set of all open locations and escapes of uninteresting streams.
+	 */
 	//private HashSet<Location> uninterestingStreamEscapeSet;
 	private HashSet<Stream> uninterestingStreamEscapeSet;
 
-	/** Set of all (potential) stream escapes. */
+	/**
+	 * Set of all (potential) stream escapes.
+	 */
 	private TreeSet<StreamEscape> streamEscapeSet;
 
 	/**
@@ -87,12 +65,13 @@ public class StreamResourceTracker implements ResourceTracker<Stream> {
 
 	/**
 	 * Constructor.
-	 * @param streamFactoryList array of StreamFactory objects which determine
-	 *   where streams are created
+	 *
+	 * @param streamFactoryList     array of StreamFactory objects which determine
+	 *                              where streams are created
 	 * @param lookupFailureCallback used when class hierarchy lookups fail
 	 */
 	public StreamResourceTracker(StreamFactory[] streamFactoryList,
-		RepositoryLookupFailureCallback lookupFailureCallback) {
+	                             RepositoryLookupFailureCallback lookupFailureCallback) {
 
 		this.streamFactoryList = streamFactoryList;
 		this.lookupFailureCallback = lookupFailureCallback;
@@ -111,6 +90,7 @@ public class StreamResourceTracker implements ResourceTracker<Stream> {
 
 	/**
 	 * Indicate that a stream escapes at the given target Location.
+	 *
 	 * @param source the Stream that is escaping
 	 * @param target the target Location (where the stream escapes)
 	 */
@@ -130,7 +110,7 @@ public class StreamResourceTracker implements ResourceTracker<Stream> {
 	public void markTransitiveUninterestingStreamEscapes() {
 		// Eliminate all stream escapes where the target isn't really
 		// a stream open location point.
-		for (Iterator<StreamEscape> i = streamEscapeSet.iterator(); i.hasNext(); ) {
+		for (Iterator<StreamEscape> i = streamEscapeSet.iterator(); i.hasNext();) {
 			StreamEscape streamEscape = i.next();
 			if (!isStreamOpenLocation(streamEscape.target)) {
 				if (FindOpenStream.DEBUG)
@@ -142,7 +122,7 @@ public class StreamResourceTracker implements ResourceTracker<Stream> {
 		// Build initial stream equivalence classes.
 		// Each stream starts out in its own separate
 		// equivalence class.
-		for (Iterator<Stream> i = resourceCollection.resourceIterator(); i.hasNext(); ) {
+		for (Iterator<Stream> i = resourceCollection.resourceIterator(); i.hasNext();) {
 			Stream stream = i.next();
 			StreamEquivalenceClass equivalenceClass = new StreamEquivalenceClass();
 			equivalenceClass.addMember(stream);
@@ -157,7 +137,7 @@ public class StreamResourceTracker implements ResourceTracker<Stream> {
 			orig.clear();
 			orig.addAll(uninterestingStreamEscapeSet);
 
-			for (Iterator<StreamEscape> i = streamEscapeSet.iterator(); i.hasNext(); ) {
+			for (Iterator<StreamEscape> i = streamEscapeSet.iterator(); i.hasNext();) {
 				StreamEscape streamEscape = i.next();
 				if (isUninterestingStreamEscape(streamEscape.source)) {
 					if (FindOpenStream.DEBUG)
@@ -172,7 +152,7 @@ public class StreamResourceTracker implements ResourceTracker<Stream> {
 					StreamEquivalenceClass targetClass = streamEquivalenceMap.get(target);
 					if (sourceClass != targetClass) {
 						sourceClass.addAll(targetClass);
-						for (Iterator<Stream> j = targetClass.memberIterator(); j.hasNext(); ) {
+						for (Iterator<Stream> j = targetClass.memberIterator(); j.hasNext();) {
 							Stream stream = j.next();
 							streamEquivalenceMap.put(stream, sourceClass);
 						}
@@ -185,6 +165,7 @@ public class StreamResourceTracker implements ResourceTracker<Stream> {
 	/**
 	 * Determine if an uninteresting stream escapes at given location.
 	 * markTransitiveUninterestingStreamEscapes() should be called first.
+	 *
 	 * @param location the Location
 	 * @return true if an uninteresting stream escapes at the location
 	 */
@@ -194,8 +175,9 @@ public class StreamResourceTracker implements ResourceTracker<Stream> {
 
 	/**
 	 * Indicate that a stream is constructed at this Location.
+	 *
 	 * @param streamOpenLocation the Location
-	 * @param stream the Stream opened at this Location
+	 * @param stream             the Stream opened at this Location
 	 */
 	public void addStreamOpenLocation(Location streamOpenLocation, Stream stream) {
 		if (FindOpenStream.DEBUG)
@@ -209,6 +191,7 @@ public class StreamResourceTracker implements ResourceTracker<Stream> {
 	 * Get the equivalence class for given stream.
 	 * May only be called if markTransitiveUninterestingStreamEscapes()
 	 * has been called.
+	 *
 	 * @param stream the stream
 	 * @return the set containing the equivalence class for the given stream
 	 */
@@ -218,6 +201,7 @@ public class StreamResourceTracker implements ResourceTracker<Stream> {
 
 	/**
 	 * Determine if given Location is a stream open location point.
+	 *
 	 * @param location the Location
 	 */
 	private boolean isStreamOpenLocation(Location location) {
@@ -225,7 +209,7 @@ public class StreamResourceTracker implements ResourceTracker<Stream> {
 	}
 
 	public Stream isResourceCreation(BasicBlock basicBlock, InstructionHandle handle,
-		ConstantPoolGen cpg) {
+	                                 ConstantPoolGen cpg) {
 
 		// Use precomputed map of Locations to Stream creations,
 		// if present.  Note that we don't care about preexisting
@@ -237,7 +221,7 @@ public class StreamResourceTracker implements ResourceTracker<Stream> {
 		if (!(ins instanceof TypedInstruction))
 			return null;
 
-		Type type = ((TypedInstruction)ins).getType(cpg);
+		Type type = ((TypedInstruction) ins).getType(cpg);
 		if (!(type instanceof ObjectType))
 			return null;
 
@@ -247,7 +231,7 @@ public class StreamResourceTracker implements ResourceTracker<Stream> {
 		// look at the location and possibly identify a created stream.
 		for (int i = 0; i < streamFactoryList.length; ++i) {
 			Stream stream = streamFactoryList[i].createStream(location, (ObjectType) type,
-				cpg, lookupFailureCallback);
+			        cpg, lookupFailureCallback);
 			if (stream != null)
 				return stream;
 		}
@@ -256,12 +240,12 @@ public class StreamResourceTracker implements ResourceTracker<Stream> {
 	}
 
 	public boolean isResourceOpen(BasicBlock basicBlock, InstructionHandle handle,
-		ConstantPoolGen cpg, Stream resource, ResourceValueFrame frame) {
+	                              ConstantPoolGen cpg, Stream resource, ResourceValueFrame frame) {
 		return resource.isStreamOpen(basicBlock, handle, cpg, frame);
 	}
 
 	public boolean isResourceClose(BasicBlock basicBlock, InstructionHandle handle,
-		ConstantPoolGen cpg, Stream resource, ResourceValueFrame frame) {
+	                               ConstantPoolGen cpg, Stream resource, ResourceValueFrame frame) {
 		return resource.isStreamClose(basicBlock, handle, cpg, frame, lookupFailureCallback);
 	}
 

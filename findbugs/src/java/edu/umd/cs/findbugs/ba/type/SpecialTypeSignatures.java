@@ -29,8 +29,8 @@ package edu.umd.cs.findbugs.ba.type;
  * constants, except that they are distinct from
  * any valid JVM type signature.
  *
- * @see TypeRepository
  * @author David Hovemeyer
+ * @see TypeRepository
  */
 public interface SpecialTypeSignatures {
 	/**

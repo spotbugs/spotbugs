@@ -25,8 +25,8 @@ package edu.umd.cs.findbugs;
  * all of the BugPatterns that represent hashcode/equals
  * violations.
  *
- * @see BugPattern
  * @author David Hovemeyer
+ * @see BugPattern
  */
 public class BugCode {
 	private String abbrev;
@@ -34,20 +34,29 @@ public class BugCode {
 
 	/**
 	 * Constructor.
-	 * @param abbrev the abbreviation for the bug code
+	 *
+	 * @param abbrev      the abbreviation for the bug code
 	 * @param description a short textual description of the class of bug pattern
-	 *   represented by this bug code
+	 *                    represented by this bug code
 	 */
 	public BugCode(String abbrev, String description) {
 		this.abbrev = abbrev;
 		this.description = description;
 	}
 
-	/** Get the abbreviation for this bug code. */
-	public String getAbbrev() { return abbrev; }
+	/**
+	 * Get the abbreviation for this bug code.
+	 */
+	public String getAbbrev() {
+		return abbrev;
+	}
 
-	/** Get the short textual description of the bug code. */
-	public String getDescription() { return description; }
+	/**
+	 * Get the short textual description of the bug code.
+	 */
+	public String getDescription() {
+		return description;
+	}
 }
 
 // vim:ts=4

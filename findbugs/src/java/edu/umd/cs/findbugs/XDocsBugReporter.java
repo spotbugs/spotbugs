@@ -22,19 +22,14 @@ package edu.umd.cs.findbugs;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.StringWriter;
 import java.util.*;
-import org.apache.bcel.classfile.JavaClass;
 
-import org.dom4j.Branch;
+import org.apache.bcel.classfile.JavaClass;
 import org.dom4j.Document;
-import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
-import org.dom4j.io.SAXReader;
-import org.dom4j.io.XMLWriter;
 import org.dom4j.io.OutputFormat;
-import org.dom4j.Node;
+import org.dom4j.io.XMLWriter;
 
 /**
  * BugReporter to output warnings in xdocs format for Maven.
@@ -46,7 +41,7 @@ public class XDocsBugReporter extends TextUIBugReporter {
 	private Project project;
 	private Document document;
 	private Element root;
-	
+
 	private static final String ROOT_ELEMENT_NAME = "BugCollection";
 	private static final String PROJECT_ELEMENT_NAME = "Project";
 	private static final String ERRORS_ELEMENT_NAME = "Errors";
@@ -81,7 +76,7 @@ public class XDocsBugReporter extends TextUIBugReporter {
 	}
 
 	public void doReportBug(BugInstance bugInstance) {
-		if (bugCollection.add(bugInstance)){
+		if (bugCollection.add(bugInstance)) {
 			printBug(bugInstance);
 			notifyObservers(bugInstance);
 		}
@@ -107,7 +102,7 @@ public class XDocsBugReporter extends TextUIBugReporter {
 		}
 		outputStream.close();
 	}
-	
+
 	private void writeXML(OutputStream out, Project project) throws IOException {
 		Document document = endDocument(project);
 
@@ -119,10 +114,10 @@ public class XDocsBugReporter extends TextUIBugReporter {
 
 		// Save the error information
 		Element errorsElement = root.addElement(ERRORS_ELEMENT_NAME);
-		for (Iterator<String> i = bugCollection.errorIterator(); i.hasNext(); ) {
+		for (Iterator<String> i = bugCollection.errorIterator(); i.hasNext();) {
 			errorsElement.addElement(ANALYSIS_ERROR_ELEMENT_NAME).setText(i.next());
 		}
-		for (Iterator<String> i = bugCollection.missingClassIterator(); i.hasNext(); ) {
+		for (Iterator<String> i = bugCollection.missingClassIterator(); i.hasNext();) {
 			errorsElement.addElement(MISSING_CLASS_ELEMENT_NAME).setText(i.next());
 		}
 
@@ -132,20 +127,19 @@ public class XDocsBugReporter extends TextUIBugReporter {
 	public void toElement(BugInstance bugInstance) {
 
 		String className = bugInstance.getPrimaryClass().getClassName();
-		Element element = (Element)root.selectSingleNode( FILE_ELEMENT_NAME + "[@classname='" + className + "']" );
+		Element element = (Element) root.selectSingleNode(FILE_ELEMENT_NAME + "[@classname='" + className + "']");
 
 		if (element == null) {
 			element = root.addElement(FILE_ELEMENT_NAME);
 			element.addAttribute("classname", className);
 		}
-		
+
 		element = element.addElement(ELEMENT_NAME);
-			
-		
-			
+
+
 		element.addAttribute("type", bugInstance.getType());
 
-		switch(bugInstance.getPriority()) {
+		switch (bugInstance.getPriority()) {
 		case Detector.LOW_PRIORITY:
 			element.addAttribute("priority", "Low");
 			break;
@@ -156,11 +150,11 @@ public class XDocsBugReporter extends TextUIBugReporter {
 			element.addAttribute("priority", "High");
 			break;
 		}
-			
+
 		element.addAttribute("message", bugInstance.getMessage());
 
-		SourceLineAnnotation line = 
-			bugInstance.getPrimarySourceLineAnnotation();
+		SourceLineAnnotation line =
+		        bugInstance.getPrimarySourceLineAnnotation();
 		if (line == null) {
 			element.addAttribute("line", "0");
 		} else {

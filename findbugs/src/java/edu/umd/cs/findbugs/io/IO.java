@@ -39,74 +39,78 @@ import java.io.*;
 public class IO {
 	static ThreadLocal myByteBuf = new ThreadLocal() {
 		protected Object initialValue() {
-             		return new byte[4096];
-			}
-		};
+			return new byte[4096];
+		}
+	};
 	static ThreadLocal myCharBuf = new ThreadLocal() {
 		protected Object initialValue() {
-             		return new char[4096];
-			}
-		};
+			return new char[4096];
+		}
+	};
 
 	public static String readAll(InputStream in) throws IOException {
-			return readAll(new InputStreamReader(in));
-			}
+		return readAll(new InputStreamReader(in));
+	}
+
 	public static String readAll(Reader reader) throws IOException {
 		BufferedReader r = new BufferedReader(reader);
 		StringWriter w = new StringWriter();
-		copy(r,w);
+		copy(r, w);
 		return w.toString();
-		}
-	public static long copy(InputStream in, OutputStream out)  
-			throws IOException {
-			return copy(in, out, Long.MAX_VALUE);
-			}
+	}
+
+	public static long copy(InputStream in, OutputStream out)
+	        throws IOException {
+		return copy(in, out, Long.MAX_VALUE);
+	}
+
 	public static long copy(Reader in, Writer out)
-			throws IOException {
-			return copy(in, out, Long.MAX_VALUE);
-			}
+	        throws IOException {
+		return copy(in, out, Long.MAX_VALUE);
+	}
 
 
-	public static long copy(InputStream in, OutputStream out, 
-					long maxBytes)  
+	public static long copy(InputStream in, OutputStream out,
+	                        long maxBytes)
 
-			throws IOException {
+	        throws IOException {
 		long total = 0;
 
 		int sz;
 
 		byte buf [] = (byte[]) myByteBuf.get();
 
-		while(maxBytes > 0 &&
-			(sz = in.read(buf, 0, 
-				(int) Math.min(maxBytes, (long) buf.length)))
-				> 0) {
+		while (maxBytes > 0 &&
+		        (sz = in.read(buf, 0,
+		                (int) Math.min(maxBytes, (long) buf.length)))
+		        > 0) {
 			total += sz;
 			maxBytes -= sz;
 			out.write(buf, 0, sz);
-			}
-		return total;
 		}
-	public static long copy(Reader in, Writer out, 
-					long maxChars)  
+		return total;
+	}
 
-			throws IOException {
+	public static long copy(Reader in, Writer out,
+	                        long maxChars)
+
+	        throws IOException {
 		long total = 0;
 
 		int sz;
 
 		char buf [] = (char[]) myCharBuf.get();
 
-		while(maxChars > 0 &&
-			(sz = in.read(buf, 0, 
-				(int) Math.min(maxChars, (long) buf.length)))
-				> 0) {
+		while (maxChars > 0 &&
+		        (sz = in.read(buf, 0,
+		                (int) Math.min(maxChars, (long) buf.length)))
+		        > 0) {
 			total += sz;
 			maxChars -= sz;
 			out.write(buf, 0, sz);
-			}
-		return total;
 		}
+		return total;
+	}
 }
 
 

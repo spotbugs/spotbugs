@@ -22,15 +22,14 @@ package edu.umd.cs.findbugs.detect;
 import edu.umd.cs.findbugs.ba.Hierarchy;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.RepositoryLookupFailureCallback;
-
 import org.apache.bcel.Constants;
-
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.ObjectType;
 
 /**
  * StreamFactory for stream objects loaded from instance fields.
+ *
  * @author David Hovemeyer
  */
 public class InstanceFieldLoadStreamFactory implements StreamFactory {
@@ -43,8 +42,9 @@ public class InstanceFieldLoadStreamFactory implements StreamFactory {
 	 * will not be marked as interesting.
 	 * The setBugPatternType() method should be called to
 	 * make the factory produce interesting streams.
+	 *
 	 * @param streamBaseClass the base class of the streams
-	 *   produced by the factory
+	 *                        produced by the factory
 	 */
 	public InstanceFieldLoadStreamFactory(String streamBaseClass) {
 		this.streamBaseClass = streamBaseClass;
@@ -54,6 +54,7 @@ public class InstanceFieldLoadStreamFactory implements StreamFactory {
 	 * Set the bug pattern type reported for unclosed streams
 	 * loaded from this field.  This makes the created
 	 * streams "interesting".
+	 *
 	 * @param bugPatternType the bug pattern type
 	 */
 	public InstanceFieldLoadStreamFactory setBugPatternType(String bugPatternType) {
@@ -62,7 +63,7 @@ public class InstanceFieldLoadStreamFactory implements StreamFactory {
 	}
 
 	public Stream createStream(Location location, ObjectType type, ConstantPoolGen cpg,
-		RepositoryLookupFailureCallback lookupFailureCallback) {
+	                           RepositoryLookupFailureCallback lookupFailureCallback) {
 
 		Instruction ins = location.getHandle().getInstruction();
 		if (ins.getOpcode() != Constants.GETFIELD)

@@ -31,6 +31,7 @@ import org.apache.bcel.generic.MethodGen;
 public class AnalysisException extends RuntimeException {
 	/**
 	 * Constructor.
+	 *
 	 * @param message reason for the error
 	 */
 	public AnalysisException(String message) {
@@ -40,7 +41,8 @@ public class AnalysisException extends RuntimeException {
 	/**
 	 * Constructor from another Throwable object.
 	 * This is useful for chaining exceptions.
-	 * @param message reason for the error
+	 *
+	 * @param message   reason for the error
 	 * @param throwable cause of the error
 	 */
 	public AnalysisException(String message, Throwable throwable) {
@@ -49,9 +51,10 @@ public class AnalysisException extends RuntimeException {
 
 	/**
 	 * Constructor from method and instruction.
-	 * @param message reason for the error
+	 *
+	 * @param message   reason for the error
 	 * @param methodGen the method
-	 * @param handle the instruction
+	 * @param handle    the instruction
 	 */
 	public AnalysisException(String message, MethodGen methodGen, InstructionHandle handle) {
 		super(message + " in " + SignatureConverter.convertMethodSignature(methodGen) + " at " + handle);
@@ -59,9 +62,10 @@ public class AnalysisException extends RuntimeException {
 
 	/**
 	 * Constructor from method and instruction.
-	 * @param message reason for the error
+	 *
+	 * @param message   reason for the error
 	 * @param methodGen the method
-	 * @param ins the instruction
+	 * @param ins       the instruction
 	 */
 	public AnalysisException(String message, MethodGen methodGen, Instruction ins) {
 		super(message + " in " + SignatureConverter.convertMethodSignature(methodGen) + " at " + ins);
@@ -69,25 +73,27 @@ public class AnalysisException extends RuntimeException {
 
 	/**
 	 * Constructor from method, instruction, and causing Throwable object.
-	 * @param message reason for the error
+	 *
+	 * @param message   reason for the error
 	 * @param methodGen the method
-	 * @param handle the instruction
+	 * @param handle    the instruction
 	 * @param throwable the cause of the error
 	 */
 	public AnalysisException(String message, MethodGen methodGen, InstructionHandle handle,
-		Throwable throwable) {
+	                         Throwable throwable) {
 		super(message + " in " + SignatureConverter.convertMethodSignature(methodGen) + " at " + handle, throwable);
 	}
 
 	/**
 	 * Constructor from method, instruction, and causing Throwable object.
-	 * @param message reason for the error
+	 *
+	 * @param message   reason for the error
 	 * @param methodGen the method
-	 * @param ins the instruction
+	 * @param ins       the instruction
 	 * @param throwable the cause of the error
 	 */
 	public AnalysisException(String message, MethodGen methodGen, Instruction ins,
-		Throwable throwable) {
+	                         Throwable throwable) {
 		super(message + " in " + SignatureConverter.convertMethodSignature(methodGen) + " at " + ins, throwable);
 	}
 }

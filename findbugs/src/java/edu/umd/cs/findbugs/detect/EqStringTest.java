@@ -18,57 +18,57 @@
  */
 
 package edu.umd.cs.findbugs.detect;
-import edu.umd.cs.findbugs.*;
-import java.util.*;
-import org.apache.bcel.classfile.*;
-import java.util.zip.*;
-import java.io.*;
 
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.visitclass.Constants2;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
 
-public class EqStringTest extends BytecodeScanningDetector implements   Constants2 {
-    boolean constantOnTOS = false;
-    boolean callToInternSeen = false;
-    private BugReporter bugReporter;
-    // String stringOnTop;
+public class EqStringTest extends BytecodeScanningDetector implements Constants2 {
+	boolean constantOnTOS = false;
+	boolean callToInternSeen = false;
+	private BugReporter bugReporter;
+	// String stringOnTop;
 
-  public EqStringTest(BugReporter bugReporter) {
-	this.bugReporter = bugReporter;
-  }
-
-  public void visit(JavaClass obj)     {
-	super.visit(obj);
+	public EqStringTest(BugReporter bugReporter) {
+		this.bugReporter = bugReporter;
 	}
 
-    public void visit(Method obj) {
-        super.visit(obj);
-        constantOnTOS = false;
-        callToInternSeen = false;
+	public void visit(JavaClass obj) {
+		super.visit(obj);
+	}
+
+	public void visit(Method obj) {
+		super.visit(obj);
+		constantOnTOS = false;
+		callToInternSeen = false;
 	}
 
 
-    public void sawOpcode(int seen) {
+	public void sawOpcode(int seen) {
 
-	switch (seen) {
-	case LDC:
-		constantOnTOS = true;
-		// stringOnTop = stringConstant;
-		return;
- 	case INVOKEVIRTUAL:
-		if (getRefConstantOperand().equals("java.lang.String.intern : ()Ljava.lang.String;")
-		 || getRefConstantOperand().equals("java.lang.String.equals : (Ljava.lang.Object;)Z"))
-			callToInternSeen = true;
-		break;
- 	case IF_ACMPEQ:
-	case IF_ACMPNE:
-		if (constantOnTOS && !callToInternSeen) 
-                  bugReporter.reportBug(new BugInstance("ES_COMPARING_STRINGS_WITH_EQ", NORMAL_PRIORITY)
-                        .addClassAndMethod(this)
-                        .addSourceLine(this, getPC()));
-		break;
-	default: 
-		break;
+		switch (seen) {
+		case LDC:
+			constantOnTOS = true;
+			// stringOnTop = stringConstant;
+			return;
+		case INVOKEVIRTUAL:
+			if (getRefConstantOperand().equals("java.lang.String.intern : ()Ljava.lang.String;")
+			        || getRefConstantOperand().equals("java.lang.String.equals : (Ljava.lang.Object;)Z"))
+				callToInternSeen = true;
+			break;
+		case IF_ACMPEQ:
+		case IF_ACMPNE:
+			if (constantOnTOS && !callToInternSeen)
+				bugReporter.reportBug(new BugInstance("ES_COMPARING_STRINGS_WITH_EQ", NORMAL_PRIORITY)
+				        .addClassAndMethod(this)
+				        .addSourceLine(this, getPC()));
+			break;
+		default:
+			break;
+		}
+		constantOnTOS = false;
 	}
-	constantOnTOS = false;
-	}	
 }

@@ -22,7 +22,6 @@ package edu.umd.cs.findbugs;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
-
 import java.util.*;
 
 import org.dom4j.DocumentException;
@@ -36,6 +35,7 @@ public class CountBugs {
 
 	private interface KeyFactory {
 		public Key createKey(BugInstance bugInstance);
+
 		public Set<Key> createKeySet(String s);
 	}
 
@@ -55,11 +55,13 @@ public class CountBugs {
 			return category.compareTo(other.category);
 		}
 
-		public int hashCode() { return category.hashCode(); }
+		public int hashCode() {
+			return category.hashCode();
+		}
 
 		public boolean equals(Object o) {
 			if (this.getClass() != o.getClass()) return false;
-			return category.equals(((CategoryKey)o).category);
+			return category.equals(((CategoryKey) o).category);
 		}
 
 		public String toString() {
@@ -83,8 +85,9 @@ public class CountBugs {
 		}
 	}
 
-	private static final HashMap<String, String> kingdomToAbbrevMap = new HashMap<String,String>();
-	private static final HashMap<Integer, String> priorityToAbbrevMap = new HashMap<Integer,String>();
+	private static final HashMap<String, String> kingdomToAbbrevMap = new HashMap<String, String>();
+	private static final HashMap<Integer, String> priorityToAbbrevMap = new HashMap<Integer, String>();
+
 	static {
 		kingdomToAbbrevMap.put("CORRECTNESS", "C");
 		kingdomToAbbrevMap.put("MT_CORRECTNESS", "M");
@@ -110,11 +113,13 @@ public class CountBugs {
 			int cmp;
 			cmp = this.getClass().getName().compareTo(o.getClass().getName());
 			if (cmp != 0) return cmp;
-			KingdomAndPriorityKey other =(KingdomAndPriorityKey) o;
+			KingdomAndPriorityKey other = (KingdomAndPriorityKey) o;
 			return legend.compareTo(other.legend);
 		}
 
-		public int hashCode() { return legend.hashCode(); }
+		public int hashCode() {
+			return legend.hashCode();
+		}
 
 		public boolean equals(Object o) {
 			if (this.getClass() != o.getClass()) return false;
@@ -202,7 +207,7 @@ public class CountBugs {
 
 	public int getTotal() {
 		int total = 0;
-		for (Iterator<Integer> i = countMap.values().iterator(); i.hasNext(); ) {
+		for (Iterator<Integer> i = countMap.values().iterator(); i.hasNext();) {
 			total += i.next().intValue();
 		}
 		return total;
@@ -238,7 +243,7 @@ public class CountBugs {
 		allCategories.addAll(countMap.keySet());
 		allCategories.addAll(newer.countMap.keySet());
 
-		for (Iterator<Key> i = allCategories.iterator(); i.hasNext(); ) {
+		for (Iterator<Key> i = allCategories.iterator(); i.hasNext();) {
 			Key key = i.next();
 			Integer delta = new Integer(newer.getCount(key).intValue() - getCount(key).intValue());
 			countMap.put(key, delta);
@@ -249,13 +254,13 @@ public class CountBugs {
 		PrintStream pout = new PrintStream(out);
 
 		Iterator<Map.Entry<Key, Integer>> j = entryIterator();
-		while(j.hasNext()) {
-			Map.Entry<Key,Integer> entry = j.next();
+		while (j.hasNext()) {
+			Map.Entry<Key, Integer> entry = j.next();
 			int count = entry.getValue().intValue();
 			if (count != 0) {
 				pout.print(entry.getKey() + ":\t");
 				if (deltas && count > 0)
-						pout.print("+");
+					pout.print("+");
 				pout.println(count);
 			}
 		}

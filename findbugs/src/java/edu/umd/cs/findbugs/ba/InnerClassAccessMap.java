@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.ba;
 
 import java.util.*;
+
 import org.apache.bcel.Constants;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.*;
@@ -31,9 +32,9 @@ import org.apache.bcel.generic.INVOKESTATIC;
  * by inner classes to access fields in their enclosing classes.
  * This has been tested with javac from the Sun JDK 1.4.x,
  * but will probably not work with other source to bytecode compilers.
- * 
- * @see InnerClassAccess
+ *
  * @author David Hovemeyer
+ * @see InnerClassAccess
  */
 public class InnerClassAccessMap {
 	/* ----------------------------------------------------------------------
@@ -46,7 +47,9 @@ public class InnerClassAccessMap {
 	 */
 	private Map<String, Map<String, InnerClassAccess>> classToAccessMap;
 
-	/** The single instance. */
+	/**
+	 * The single instance.
+	 */
 	private static InnerClassAccessMap instance = new InnerClassAccessMap();
 
 	/* ----------------------------------------------------------------------
@@ -56,14 +59,17 @@ public class InnerClassAccessMap {
 	/**
 	 * Get the single instance.
 	 */
-	public static InnerClassAccessMap instance() { return instance; }
+	public static InnerClassAccessMap instance() {
+		return instance;
+	}
 
 	/**
 	 * Get the InnerClassAccess in given class with the given method name.
-	 * @param className the name of the class
+	 *
+	 * @param className  the name of the class
 	 * @param methodName the name of the access method
 	 * @return the InnerClassAccess object for the method, or null if
-	 *   the method doesn't seem to be an inner class access
+	 *         the method doesn't seem to be an inner class access
 	 */
 	public InnerClassAccess getInnerClassAccess(String className, String methodName) throws ClassNotFoundException {
 		Map<String, InnerClassAccess> map = getAccessMapForClass(className);
@@ -73,6 +79,7 @@ public class InnerClassAccessMap {
 	/**
 	 * Get the inner class access object for given invokestatic instruction.
 	 * Returns null if the called method is not an inner class access.
+	 *
 	 * @param inv the invokestatic instruction
 	 * @param cpg the ConstantPoolGen for the method
 	 * @return the InnerClassAccess, or null if the call is not an inner class access
@@ -99,12 +106,16 @@ public class InnerClassAccessMap {
 	 * Implementation
 	 * ---------------------------------------------------------------------- */
 
-	/** Constructor. */
+	/**
+	 * Constructor.
+	 */
 	private InnerClassAccessMap() {
 		this.classToAccessMap = new HashMap<String, Map<String, InnerClassAccess>>();
 	}
 
-	/** Convert byte to unsigned int. */
+	/**
+	 * Convert byte to unsigned int.
+	 */
 	private static int toInt(byte b) {
 		int value = b & 0x7F;
 		if ((b & 0x80) != 0)
@@ -112,9 +123,11 @@ public class InnerClassAccessMap {
 		return value;
 	}
 
-	/** Get an unsigned 16 bit constant pool index from a byte array. */
+	/**
+	 * Get an unsigned 16 bit constant pool index from a byte array.
+	 */
 	private static int getIndex(byte[] instructionList, int index) {
-		return (toInt(instructionList[index+1]) << 8) | toInt(instructionList[index+2]);
+		return (toInt(instructionList[index + 1]) << 8) | toInt(instructionList[index + 2]);
 	}
 
 	private static class LookupFailure extends RuntimeException {
@@ -143,9 +156,10 @@ public class InnerClassAccessMap {
 
 		/**
 		 * Constructor.
-		 * @param javaClass the class containing the access method
-	 	 * @param methodName the name of the access method
-	 	 * @param methodSig the signature of the access method
+		 *
+		 * @param javaClass       the class containing the access method
+		 * @param methodName      the name of the access method
+		 * @param methodSig       the signature of the access method
 		 * @param instructionList the bytecode of the method
 		 */
 		public InstructionCallback(JavaClass javaClass, String methodName, String methodSig, byte[] instructionList) {
@@ -172,9 +186,10 @@ public class InnerClassAccessMap {
 
 		/**
 		 * Get the InnerClassAccess object representing the method.
+		 *
 		 * @return the InnerClassAccess, or null if the method
-		 *  was not found to be a simple load or store in the
-		 *  expected form
+		 *         was not found to be a simple load or store in the
+		 *         expected form
 		 */
 		public InnerClassAccess getAccess() {
 			return access;
@@ -182,9 +197,10 @@ public class InnerClassAccessMap {
 
 		/**
 		 * Called to indicate that a field load or store was encountered.
-		 * @param cpIndex the constant pool index of the fieldref
+		 *
+		 * @param cpIndex  the constant pool index of the fieldref
 		 * @param isStatic true if it is a static field access
-		 * @param isLoad true if the access is a load
+		 * @param isLoad   true if the access is a load
 		 */
 		private void setField(int cpIndex, boolean isStatic, boolean isLoad) {
 			// We only allow one field access for an accessor method.
@@ -216,9 +232,10 @@ public class InnerClassAccessMap {
 		/**
 		 * Determine if the method appears to be an accessor of the expected form.
 		 * This has only been tested with the Sun JDK 1.4 javac.
+		 *
 		 * @param methodSig the method's signature
-		 * @param field the field accessed by the method
-		 * @param isLoad true if the access is a load
+		 * @param field     the field accessed by the method
+		 * @param isLoad    true if the access is a load
 		 */
 		private boolean isValidAccessMethod(String methodSig, XField field, boolean isLoad) {
 			// Figure out what the expected method signature should be
@@ -253,11 +270,12 @@ public class InnerClassAccessMap {
 	/**
 	 * Return a map of inner-class member access method names to
 	 * the fields that they access for given class name.
+	 *
 	 * @param className the name of the class
 	 * @return map of access method names to the fields they access
 	 */
 	private Map<String, InnerClassAccess> getAccessMapForClass(String className)
-		throws ClassNotFoundException {
+	        throws ClassNotFoundException {
 
 		Map<String, InnerClassAccess> map = classToAccessMap.get(className);
 		if (map == null) {
@@ -265,18 +283,18 @@ public class InnerClassAccessMap {
 
 			if (!className.startsWith("[")) {
 				JavaClass javaClass = Repository.lookupClass(className);
-	
-				Method[]  methodList = javaClass.getMethods();
+
+				Method[] methodList = javaClass.getMethods();
 				for (int i = 0; i < methodList.length; ++i) {
 					Method method = methodList[i];
 					String methodName = method.getName();
 					if (!methodName.startsWith("access$"))
 						continue;
-	
+
 					Code code = method.getCode();
 					if (code == null)
 						continue;
-	
+
 					byte[] instructionList = code.getCode();
 					String methodSig = method.getSignature();
 					InstructionCallback callback = new InstructionCallback(javaClass, methodName, methodSig, instructionList);

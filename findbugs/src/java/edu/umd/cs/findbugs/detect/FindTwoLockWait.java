@@ -18,16 +18,16 @@
  */
 
 package edu.umd.cs.findbugs.detect;
-import edu.umd.cs.findbugs.*;
 
 import java.util.*;
-import java.io.*;
 
-import org.apache.bcel.*;
-import org.apache.bcel.classfile.*;
-import org.apache.bcel.generic.*;
-
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.ba.*;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.*;
 
 public class FindTwoLockWait implements Detector {
 
@@ -68,13 +68,13 @@ public class FindTwoLockWait implements Detector {
 	}
 
 	private void analyzeMethod(ClassContext classContext, Method method)
-		throws CFGBuilderException, DataflowAnalysisException {
+	        throws CFGBuilderException, DataflowAnalysisException {
 
 		MethodGen methodGen = classContext.getMethodGen(method);
 		CFG cfg = classContext.getCFG(method);
 		LockDataflow dataflow = classContext.getLockDataflow(method);
 
-		for (Iterator<Location> j = cfg.locationIterator(); j.hasNext(); ) {
+		for (Iterator<Location> j = cfg.locationIterator(); j.hasNext();) {
 			Location location = j.next();
 			visitInstruction(location, methodGen, dataflow);
 		}
@@ -106,16 +106,16 @@ public class FindTwoLockWait implements Detector {
 	public void visitInstruction(Location location, MethodGen methodGen, LockDataflow dataflow) {
 		try {
 			ConstantPoolGen cpg = methodGen.getConstantPool();
-	
+
 			if (isWait(location.getHandle(), cpg)) {
 				int count = dataflow.getFactAtLocation(location).getNumLockedObjects();
 				if (count > 1) {
 					// A wait with multiple locks held?
 					String sourceFile = javaClass.getSourceFileName();
 					bugReporter.reportBug(new BugInstance("2LW_TWO_LOCK_WAIT", NORMAL_PRIORITY)
-						.addClass(javaClass)
-						.addMethod(methodGen, sourceFile)
-						.addSourceLine(methodGen, sourceFile, location.getHandle()));
+					        .addClass(javaClass)
+					        .addMethod(methodGen, sourceFile)
+					        .addSourceLine(methodGen, sourceFile, location.getHandle()));
 				}
 			}
 		} catch (DataflowAnalysisException e) {
@@ -133,7 +133,7 @@ public class FindTwoLockWait implements Detector {
 		String methodSig = inv.getSignature(cpg);
 
 		return methodName.equals("wait") &&
-			(methodSig.equals("()V") || methodSig.equals("(J)V") || methodSig.equals("(JI)V"));
+		        (methodSig.equals("()V") || methodSig.equals("(J)V") || methodSig.equals("(JI)V"));
 	}
 
 	public void report() {

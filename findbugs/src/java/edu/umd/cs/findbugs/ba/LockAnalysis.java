@@ -19,18 +19,20 @@
 
 package edu.umd.cs.findbugs.ba;
 
-import java.util.Arrays;
 import org.apache.bcel.Constants;
-import org.apache.bcel.classfile.*;
-import org.apache.bcel.generic.*;
+import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.Instruction;
+import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.MethodGen;
+import org.apache.bcel.generic.ReturnInstruction;
 
 /**
  * Analysis to determine where particular values are locked in a method.
  * The dataflow values are maps of value numbers to the number of times
  * those values are locked.
  *
- * @see ValueNumberAnalysis
  * @author David Hovemeyer
+ * @see ValueNumberAnalysis
  */
 public class LockAnalysis extends ForwardDataflowAnalysis<LockSet> {
 	private static final boolean DEBUG = Boolean.getBoolean("la.debug");
@@ -65,7 +67,7 @@ public class LockAnalysis extends ForwardDataflowAnalysis<LockSet> {
  
 		result.clear();
 		result.setDefaultLockCount(0);
- 
+
 		if (isSynchronized && !isStatic) {
 			ValueNumber thisValue = vna.getThisValue();
 			result.setLockCount(thisValue.getNumber(), 1);
@@ -91,7 +93,7 @@ public class LockAnalysis extends ForwardDataflowAnalysis<LockSet> {
 	}
 
 	public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, LockSet fact)
-		throws DataflowAnalysisException {
+	        throws DataflowAnalysisException {
 
 		Instruction ins = handle.getInstruction();
 		short opcode = ins.getOpcode();
@@ -132,7 +134,7 @@ public class LockAnalysis extends ForwardDataflowAnalysis<LockSet> {
 
 		DataflowTestDriver<LockSet, LockAnalysis> driver = new DataflowTestDriver<LockSet, LockAnalysis>() {
 			public Dataflow<LockSet, LockAnalysis> createDataflow(ClassContext classContext, Method method)
-				throws CFGBuilderException, DataflowAnalysisException {
+			        throws CFGBuilderException, DataflowAnalysisException {
 				return classContext.getLockDataflow(method);
 			}
 		};

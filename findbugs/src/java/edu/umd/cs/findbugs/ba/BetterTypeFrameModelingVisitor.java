@@ -23,173 +23,18 @@ import edu.umd.cs.findbugs.ba.type.ArrayType;
 import edu.umd.cs.findbugs.ba.type.InvalidSignatureException;
 import edu.umd.cs.findbugs.ba.type.Type;
 import edu.umd.cs.findbugs.ba.type.TypeRepository;
-
 import org.apache.bcel.Constants;
-
-import org.apache.bcel.generic.AALOAD;
-import org.apache.bcel.generic.AASTORE;
-import org.apache.bcel.generic.ACONST_NULL;
-import org.apache.bcel.generic.ALOAD;
-import org.apache.bcel.generic.ANEWARRAY;
-import org.apache.bcel.generic.ARETURN;
-import org.apache.bcel.generic.ARRAYLENGTH;
-import org.apache.bcel.generic.ASTORE;
-import org.apache.bcel.generic.ATHROW;
-import org.apache.bcel.generic.BALOAD;
-import org.apache.bcel.generic.BASTORE;
-import org.apache.bcel.generic.BIPUSH;
-import org.apache.bcel.generic.BREAKPOINT;
-import org.apache.bcel.generic.CALOAD;
-import org.apache.bcel.generic.CASTORE;
-import org.apache.bcel.generic.CHECKCAST;
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.D2F;
-import org.apache.bcel.generic.D2I;
-import org.apache.bcel.generic.D2L;
-import org.apache.bcel.generic.DADD;
-import org.apache.bcel.generic.DALOAD;
-import org.apache.bcel.generic.DASTORE;
-import org.apache.bcel.generic.DCMPG;
-import org.apache.bcel.generic.DCMPL;
-import org.apache.bcel.generic.DCONST;
-import org.apache.bcel.generic.DDIV;
-import org.apache.bcel.generic.DLOAD;
-import org.apache.bcel.generic.DMUL;
-import org.apache.bcel.generic.DNEG;
-import org.apache.bcel.generic.DREM;
-import org.apache.bcel.generic.DRETURN;
-import org.apache.bcel.generic.DSTORE;
-import org.apache.bcel.generic.DSUB;
-import org.apache.bcel.generic.DUP2;
-import org.apache.bcel.generic.DUP2_X1;
-import org.apache.bcel.generic.DUP2_X2;
-import org.apache.bcel.generic.DUP;
-import org.apache.bcel.generic.DUP_X1;
-import org.apache.bcel.generic.DUP_X2;
-import org.apache.bcel.generic.F2D;
-import org.apache.bcel.generic.F2I;
-import org.apache.bcel.generic.F2L;
-import org.apache.bcel.generic.FADD;
-import org.apache.bcel.generic.FALOAD;
-import org.apache.bcel.generic.FASTORE;
-import org.apache.bcel.generic.FCMPG;
-import org.apache.bcel.generic.FCMPL;
-import org.apache.bcel.generic.FCONST;
-import org.apache.bcel.generic.FDIV;
-import org.apache.bcel.generic.FLOAD;
-import org.apache.bcel.generic.FMUL;
-import org.apache.bcel.generic.FNEG;
-import org.apache.bcel.generic.FREM;
-import org.apache.bcel.generic.FRETURN;
-import org.apache.bcel.generic.FSTORE;
-import org.apache.bcel.generic.FSUB;
-import org.apache.bcel.generic.GETFIELD;
-import org.apache.bcel.generic.GETSTATIC;
-import org.apache.bcel.generic.GOTO;
-import org.apache.bcel.generic.GOTO_W;
-import org.apache.bcel.generic.I2B;
-import org.apache.bcel.generic.I2C;
-import org.apache.bcel.generic.I2D;
-import org.apache.bcel.generic.I2F;
-import org.apache.bcel.generic.I2L;
-import org.apache.bcel.generic.I2S;
-import org.apache.bcel.generic.IADD;
-import org.apache.bcel.generic.IALOAD;
-import org.apache.bcel.generic.IAND;
-import org.apache.bcel.generic.IASTORE;
-import org.apache.bcel.generic.ICONST;
-import org.apache.bcel.generic.IDIV;
-import org.apache.bcel.generic.IF_ACMPEQ;
-import org.apache.bcel.generic.IF_ACMPNE;
-import org.apache.bcel.generic.IFEQ;
-import org.apache.bcel.generic.IFGE;
-import org.apache.bcel.generic.IFGT;
-import org.apache.bcel.generic.IF_ICMPEQ;
-import org.apache.bcel.generic.IF_ICMPGE;
-import org.apache.bcel.generic.IF_ICMPGT;
-import org.apache.bcel.generic.IF_ICMPLE;
-import org.apache.bcel.generic.IF_ICMPLT;
-import org.apache.bcel.generic.IF_ICMPNE;
-import org.apache.bcel.generic.IFLE;
-import org.apache.bcel.generic.IFLT;
-import org.apache.bcel.generic.IFNE;
-import org.apache.bcel.generic.IFNONNULL;
-import org.apache.bcel.generic.IFNULL;
-import org.apache.bcel.generic.IINC;
-import org.apache.bcel.generic.ILOAD;
-import org.apache.bcel.generic.IMPDEP1;
-import org.apache.bcel.generic.IMPDEP2;
-import org.apache.bcel.generic.IMUL;
-import org.apache.bcel.generic.INEG;
-import org.apache.bcel.generic.INSTANCEOF;
-import org.apache.bcel.generic.Instruction;
-import org.apache.bcel.generic.InvokeInstruction;
-import org.apache.bcel.generic.INVOKEINTERFACE;
-import org.apache.bcel.generic.INVOKESPECIAL;
-import org.apache.bcel.generic.INVOKESTATIC;
-import org.apache.bcel.generic.INVOKEVIRTUAL;
-import org.apache.bcel.generic.IOR;
-import org.apache.bcel.generic.IREM;
-import org.apache.bcel.generic.IRETURN;
-import org.apache.bcel.generic.ISHL;
-import org.apache.bcel.generic.ISHR;
-import org.apache.bcel.generic.ISTORE;
-import org.apache.bcel.generic.ISUB;
-import org.apache.bcel.generic.IUSHR;
-import org.apache.bcel.generic.IXOR;
-import org.apache.bcel.generic.JSR;
-import org.apache.bcel.generic.JSR_W;
-import org.apache.bcel.generic.L2D;
-import org.apache.bcel.generic.L2F;
-import org.apache.bcel.generic.L2I;
-import org.apache.bcel.generic.LADD;
-import org.apache.bcel.generic.LALOAD;
-import org.apache.bcel.generic.LAND;
-import org.apache.bcel.generic.LASTORE;
-import org.apache.bcel.generic.LCMP;
-import org.apache.bcel.generic.LCONST;
-import org.apache.bcel.generic.LDC2_W;
-import org.apache.bcel.generic.LDC;
-import org.apache.bcel.generic.LDIV;
-import org.apache.bcel.generic.LLOAD;
-import org.apache.bcel.generic.LMUL;
-import org.apache.bcel.generic.LNEG;
-import org.apache.bcel.generic.LOR;
-import org.apache.bcel.generic.LREM;
-import org.apache.bcel.generic.LRETURN;
-import org.apache.bcel.generic.LSHL;
-import org.apache.bcel.generic.LSHR;
-import org.apache.bcel.generic.LSTORE;
-import org.apache.bcel.generic.LSUB;
-import org.apache.bcel.generic.LUSHR;
-import org.apache.bcel.generic.LXOR;
-import org.apache.bcel.generic.MethodGen;
-import org.apache.bcel.generic.MONITORENTER;
-import org.apache.bcel.generic.MONITOREXIT;
-import org.apache.bcel.generic.MULTIANEWARRAY;
-import org.apache.bcel.generic.NEWARRAY;
-import org.apache.bcel.generic.NEW;
-import org.apache.bcel.generic.NOP;
-import org.apache.bcel.generic.POP2;
-import org.apache.bcel.generic.POP;
-import org.apache.bcel.generic.PUTSTATIC;
-import org.apache.bcel.generic.RET;
-import org.apache.bcel.generic.RETURN;
-import org.apache.bcel.generic.SALOAD;
-import org.apache.bcel.generic.SASTORE;
-import org.apache.bcel.generic.SIPUSH;
-import org.apache.bcel.generic.SWAP;
-import org.apache.bcel.generic.TypedInstruction;
+import org.apache.bcel.generic.*;
 
 /**
  * Dataflow analysis to determine types for slots in
  * Java stack frames, using a TypeRepository to create the
  * type objects (rather than BCEL's Type classes).
- *
+ * <p/>
  * <p> This is still experimental.
  *
- * @see TypeRepository
  * @author David Hovemeyer
+ * @see TypeRepository
  */
 public class BetterTypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type, BetterTypeFrame> {
 
@@ -295,104 +140,361 @@ public class BetterTypeFrameModelingVisitor extends AbstractFrameModelingVisitor
 	// - Instructions that consume and produce should call
 	//   consumeStack(Instruction) and then explicitly push produced operands.
 
-	public void visitACONST_NULL(ACONST_NULL obj)	{ pushValue(typeRepository.getNullType()); }
-	public void visitDCONST(DCONST obj)				{ pushValue(typeRepository.getDoubleType()); }
-	public void visitFCONST(FCONST obj)				{ pushValue(typeRepository.getFloatType()); }
-	public void visitICONST(ICONST obj)				{ pushValue(typeRepository.getIntType()); }
-	public void visitLCONST(LCONST obj)				{ pushValue(typeRepository.getLongType()); }
-	public void visitLDC(LDC obj)					{ pushValue(obj); }
-	public void visitLDC2_W(LDC2_W obj)				{ pushValue(obj); }
+	public void visitACONST_NULL(ACONST_NULL obj) {
+		pushValue(typeRepository.getNullType());
+	}
 
-	public void visitBIPUSH(BIPUSH obj)				{ pushValue(typeRepository.getIntType()); }
-	public void visitSIPUSH(SIPUSH obj)				{ pushValue(typeRepository.getIntType()); }
+	public void visitDCONST(DCONST obj) {
+		pushValue(typeRepository.getDoubleType());
+	}
 
-	public void visitGETSTATIC(GETSTATIC obj)		{ consumeStack(obj); pushValue(obj); }
-	public void visitGETFIELD(GETFIELD obj)			{ consumeStack(obj); pushValue(obj); }
+	public void visitFCONST(FCONST obj) {
+		pushValue(typeRepository.getFloatType());
+	}
 
-	public void visitINVOKESTATIC(INVOKESTATIC obj)	{ consumeStack(obj); pushReturnType(obj); }
-	public void visitINVOKESPECIAL(INVOKESPECIAL obj) { consumeStack(obj); pushReturnType(obj); }
-	public void visitINVOKEINTERFACE(INVOKEINTERFACE obj) { consumeStack(obj); pushReturnType(obj); }
-	public void visitINVOKEVIRTUAL(INVOKEVIRTUAL obj) { consumeStack(obj); pushReturnType(obj); }
+	public void visitICONST(ICONST obj) {
+		pushValue(typeRepository.getIntType());
+	}
 
-	public void visitCHECKCAST(CHECKCAST obj)		{ consumeStack(obj); pushValue(obj); }
-	public void visitINSTANCEOF(INSTANCEOF obj)		{ consumeStack(obj); pushValue(typeRepository.getIntType()); }
+	public void visitLCONST(LCONST obj) {
+		pushValue(typeRepository.getLongType());
+	}
 
-	public void visitFCMPL(FCMPL obj)				{ consumeStack(obj); pushValue(typeRepository.getIntType()); }
-	public void visitFCMPG(FCMPG obj)				{ consumeStack(obj); pushValue(typeRepository.getIntType()); }
-	public void visitDCMPL(DCMPL obj)				{ consumeStack(obj); pushValue(typeRepository.getIntType()); }
-	public void visitDCMPG(DCMPG obj)				{ consumeStack(obj); pushValue(typeRepository.getIntType()); }
+	public void visitLDC(LDC obj) {
+		pushValue(obj);
+	}
 
-	public void visitLCMP(LCMP obj)					{ consumeStack(obj); pushValue(typeRepository.getIntType()); }
+	public void visitLDC2_W(LDC2_W obj) {
+		pushValue(obj);
+	}
 
-	public void visitD2F(D2F obj)					{ consumeStack(obj); pushValue(typeRepository.getFloatType()); }
-	public void visitD2I(D2I obj)					{ consumeStack(obj); pushValue(typeRepository.getIntType()); }
-	public void visitD2L(D2L obj)					{ consumeStack(obj); pushValue(typeRepository.getLongType()); }
+	public void visitBIPUSH(BIPUSH obj) {
+		pushValue(typeRepository.getIntType());
+	}
 
-	public void visitF2D(F2D obj)					{ consumeStack(obj); pushValue(typeRepository.getDoubleType()); }
-	public void visitF2I(F2I obj)					{ consumeStack(obj); pushValue(typeRepository.getIntType()); }
-	public void visitF2L(F2L obj)					{ consumeStack(obj); pushValue(typeRepository.getLongType()); }
+	public void visitSIPUSH(SIPUSH obj) {
+		pushValue(typeRepository.getIntType());
+	}
 
-	public void visitI2B(I2B obj)					{ consumeStack(obj); pushValue(typeRepository.getByteType()); }
-	public void visitI2C(I2C obj)					{ consumeStack(obj); pushValue(typeRepository.getCharType()); }
-	public void visitI2D(I2D obj)					{ consumeStack(obj); pushValue(typeRepository.getDoubleType()); }
-	public void visitI2F(I2F obj)					{ consumeStack(obj); pushValue(typeRepository.getFloatType()); }
-	public void visitI2L(I2L obj)					{ consumeStack(obj); pushValue(typeRepository.getLongType()); }
-	public void visitI2S(I2S obj)					{ } // no change
+	public void visitGETSTATIC(GETSTATIC obj) {
+		consumeStack(obj);
+		pushValue(obj);
+	}
 
-	public void visitL2D(L2D obj)					{ consumeStack(obj); pushValue(typeRepository.getDoubleType()); }
-	public void visitL2F(L2F obj)					{ consumeStack(obj); pushValue(typeRepository.getFloatType()); }
-	public void visitL2I(L2I obj)					{ consumeStack(obj); pushValue(typeRepository.getIntType()); }
+	public void visitGETFIELD(GETFIELD obj) {
+		consumeStack(obj);
+		pushValue(obj);
+	}
 
-	public void visitIAND(IAND obj)					{ consumeStack(obj); pushValue(typeRepository.getIntType()); }
-	public void visitLAND(LAND obj)					{ consumeStack(obj); pushValue(typeRepository.getLongType()); }
+	public void visitINVOKESTATIC(INVOKESTATIC obj) {
+		consumeStack(obj);
+		pushReturnType(obj);
+	}
 
-	public void visitIOR(IOR obj)					{ consumeStack(obj); pushValue(typeRepository.getIntType()); }
-	public void visitLOR(LOR obj)					{ consumeStack(obj); pushValue(typeRepository.getLongType()); }
+	public void visitINVOKESPECIAL(INVOKESPECIAL obj) {
+		consumeStack(obj);
+		pushReturnType(obj);
+	}
 
-	public void visitIXOR(IXOR obj)					{ consumeStack(obj); pushValue(typeRepository.getIntType()); }
-	public void visitLXOR(LXOR obj)					{ consumeStack(obj); pushValue(typeRepository.getLongType()); }
+	public void visitINVOKEINTERFACE(INVOKEINTERFACE obj) {
+		consumeStack(obj);
+		pushReturnType(obj);
+	}
 
-	public void visitISHR(ISHR obj)					{ consumeStack(obj); pushValue(typeRepository.getIntType()); }
-	public void visitIUSHR(IUSHR obj)				{ consumeStack(obj); pushValue(typeRepository.getIntType()); }
-	public void visitLSHR(LSHR obj)					{ consumeStack(obj); pushValue(typeRepository.getLongType()); }
-	public void visitLUSHR(LUSHR obj)				{ consumeStack(obj); pushValue(typeRepository.getLongType()); }
+	public void visitINVOKEVIRTUAL(INVOKEVIRTUAL obj) {
+		consumeStack(obj);
+		pushReturnType(obj);
+	}
 
-	public void visitISHL(ISHL obj)					{ consumeStack(obj); pushValue(typeRepository.getIntType()); }
-	public void visitLSHL(LSHL obj)					{ consumeStack(obj); pushValue(typeRepository.getLongType()); }
+	public void visitCHECKCAST(CHECKCAST obj) {
+		consumeStack(obj);
+		pushValue(obj);
+	}
 
-	public void visitDADD(DADD obj)					{ consumeStack(obj); pushValue(typeRepository.getDoubleType()); }
-	public void visitFADD(FADD obj)					{ consumeStack(obj); pushValue(typeRepository.getFloatType()); }
-	public void visitIADD(IADD obj)					{ consumeStack(obj); pushValue(typeRepository.getIntType()); }
-	public void visitLADD(LADD obj)					{ consumeStack(obj); pushValue(typeRepository.getLongType()); }
+	public void visitINSTANCEOF(INSTANCEOF obj) {
+		consumeStack(obj);
+		pushValue(typeRepository.getIntType());
+	}
 
-	public void visitDSUB(DSUB obj)					{ consumeStack(obj); pushValue(typeRepository.getDoubleType()); }
-	public void visitFSUB(FSUB obj)					{ consumeStack(obj); pushValue(typeRepository.getFloatType()); }
-	public void visitISUB(ISUB obj)					{ consumeStack(obj); pushValue(typeRepository.getIntType()); }
-	public void visitLSUB(LSUB obj)					{ consumeStack(obj); pushValue(typeRepository.getLongType()); }
+	public void visitFCMPL(FCMPL obj) {
+		consumeStack(obj);
+		pushValue(typeRepository.getIntType());
+	}
 
-	public void visitDMUL(DMUL obj)					{ consumeStack(obj); pushValue(typeRepository.getDoubleType()); }
-	public void visitFMUL(FMUL obj)					{ consumeStack(obj); pushValue(typeRepository.getFloatType()); }
-	public void visitIMUL(IMUL obj)					{ consumeStack(obj); pushValue(typeRepository.getIntType()); }
-	public void visitLMUL(LMUL obj)					{ consumeStack(obj); pushValue(typeRepository.getLongType()); }
+	public void visitFCMPG(FCMPG obj) {
+		consumeStack(obj);
+		pushValue(typeRepository.getIntType());
+	}
 
-	public void visitDDIV(DDIV obj)					{ consumeStack(obj); pushValue(typeRepository.getDoubleType()); }
-	public void visitFDIV(FDIV obj)					{ consumeStack(obj); pushValue(typeRepository.getFloatType()); }
-	public void visitIDIV(IDIV obj)					{ consumeStack(obj); pushValue(typeRepository.getIntType()); }
-	public void visitLDIV(LDIV obj)					{ consumeStack(obj); pushValue(typeRepository.getLongType()); }
+	public void visitDCMPL(DCMPL obj) {
+		consumeStack(obj);
+		pushValue(typeRepository.getIntType());
+	}
 
-	public void visitDREM(DREM obj)					{ consumeStack(obj); pushValue(typeRepository.getDoubleType()); }
-	public void visitFREM(FREM obj)					{ consumeStack(obj); pushValue(typeRepository.getFloatType()); }
-	public void visitIREM(IREM obj)					{ consumeStack(obj); pushValue(typeRepository.getIntType()); }
-	public void visitLREM(LREM obj)					{ consumeStack(obj); pushValue(typeRepository.getLongType()); }
+	public void visitDCMPG(DCMPG obj) {
+		consumeStack(obj);
+		pushValue(typeRepository.getIntType());
+	}
 
-	public void visitIINC(IINC obj)					{ } // no change to types of stack or locals
+	public void visitLCMP(LCMP obj) {
+		consumeStack(obj);
+		pushValue(typeRepository.getIntType());
+	}
 
-	public void visitDNEG(DNEG obj)					{ } // no change
-	public void visitFNEG(FNEG obj)					{ } // no change
-	public void visitINEG(INEG obj)					{ consumeStack(obj); pushValue(typeRepository.getIntType()); }
-	public void visitLNEG(LNEG obj)					{ } // no change
+	public void visitD2F(D2F obj) {
+		consumeStack(obj);
+		pushValue(typeRepository.getFloatType());
+	}
 
-	public void visitARRAYLENGTH(ARRAYLENGTH obj)	{ consumeStack(obj); pushValue(typeRepository.getIntType()); }
+	public void visitD2I(D2I obj) {
+		consumeStack(obj);
+		pushValue(typeRepository.getIntType());
+	}
+
+	public void visitD2L(D2L obj) {
+		consumeStack(obj);
+		pushValue(typeRepository.getLongType());
+	}
+
+	public void visitF2D(F2D obj) {
+		consumeStack(obj);
+		pushValue(typeRepository.getDoubleType());
+	}
+
+	public void visitF2I(F2I obj) {
+		consumeStack(obj);
+		pushValue(typeRepository.getIntType());
+	}
+
+	public void visitF2L(F2L obj) {
+		consumeStack(obj);
+		pushValue(typeRepository.getLongType());
+	}
+
+	public void visitI2B(I2B obj) {
+		consumeStack(obj);
+		pushValue(typeRepository.getByteType());
+	}
+
+	public void visitI2C(I2C obj) {
+		consumeStack(obj);
+		pushValue(typeRepository.getCharType());
+	}
+
+	public void visitI2D(I2D obj) {
+		consumeStack(obj);
+		pushValue(typeRepository.getDoubleType());
+	}
+
+	public void visitI2F(I2F obj) {
+		consumeStack(obj);
+		pushValue(typeRepository.getFloatType());
+	}
+
+	public void visitI2L(I2L obj) {
+		consumeStack(obj);
+		pushValue(typeRepository.getLongType());
+	}
+
+	public void visitI2S(I2S obj) {
+	} // no change
+
+	public void visitL2D(L2D obj) {
+		consumeStack(obj);
+		pushValue(typeRepository.getDoubleType());
+	}
+
+	public void visitL2F(L2F obj) {
+		consumeStack(obj);
+		pushValue(typeRepository.getFloatType());
+	}
+
+	public void visitL2I(L2I obj) {
+		consumeStack(obj);
+		pushValue(typeRepository.getIntType());
+	}
+
+	public void visitIAND(IAND obj) {
+		consumeStack(obj);
+		pushValue(typeRepository.getIntType());
+	}
+
+	public void visitLAND(LAND obj) {
+		consumeStack(obj);
+		pushValue(typeRepository.getLongType());
+	}
+
+	public void visitIOR(IOR obj) {
+		consumeStack(obj);
+		pushValue(typeRepository.getIntType());
+	}
+
+	public void visitLOR(LOR obj) {
+		consumeStack(obj);
+		pushValue(typeRepository.getLongType());
+	}
+
+	public void visitIXOR(IXOR obj) {
+		consumeStack(obj);
+		pushValue(typeRepository.getIntType());
+	}
+
+	public void visitLXOR(LXOR obj) {
+		consumeStack(obj);
+		pushValue(typeRepository.getLongType());
+	}
+
+	public void visitISHR(ISHR obj) {
+		consumeStack(obj);
+		pushValue(typeRepository.getIntType());
+	}
+
+	public void visitIUSHR(IUSHR obj) {
+		consumeStack(obj);
+		pushValue(typeRepository.getIntType());
+	}
+
+	public void visitLSHR(LSHR obj) {
+		consumeStack(obj);
+		pushValue(typeRepository.getLongType());
+	}
+
+	public void visitLUSHR(LUSHR obj) {
+		consumeStack(obj);
+		pushValue(typeRepository.getLongType());
+	}
+
+	public void visitISHL(ISHL obj) {
+		consumeStack(obj);
+		pushValue(typeRepository.getIntType());
+	}
+
+	public void visitLSHL(LSHL obj) {
+		consumeStack(obj);
+		pushValue(typeRepository.getLongType());
+	}
+
+	public void visitDADD(DADD obj) {
+		consumeStack(obj);
+		pushValue(typeRepository.getDoubleType());
+	}
+
+	public void visitFADD(FADD obj) {
+		consumeStack(obj);
+		pushValue(typeRepository.getFloatType());
+	}
+
+	public void visitIADD(IADD obj) {
+		consumeStack(obj);
+		pushValue(typeRepository.getIntType());
+	}
+
+	public void visitLADD(LADD obj) {
+		consumeStack(obj);
+		pushValue(typeRepository.getLongType());
+	}
+
+	public void visitDSUB(DSUB obj) {
+		consumeStack(obj);
+		pushValue(typeRepository.getDoubleType());
+	}
+
+	public void visitFSUB(FSUB obj) {
+		consumeStack(obj);
+		pushValue(typeRepository.getFloatType());
+	}
+
+	public void visitISUB(ISUB obj) {
+		consumeStack(obj);
+		pushValue(typeRepository.getIntType());
+	}
+
+	public void visitLSUB(LSUB obj) {
+		consumeStack(obj);
+		pushValue(typeRepository.getLongType());
+	}
+
+	public void visitDMUL(DMUL obj) {
+		consumeStack(obj);
+		pushValue(typeRepository.getDoubleType());
+	}
+
+	public void visitFMUL(FMUL obj) {
+		consumeStack(obj);
+		pushValue(typeRepository.getFloatType());
+	}
+
+	public void visitIMUL(IMUL obj) {
+		consumeStack(obj);
+		pushValue(typeRepository.getIntType());
+	}
+
+	public void visitLMUL(LMUL obj) {
+		consumeStack(obj);
+		pushValue(typeRepository.getLongType());
+	}
+
+	public void visitDDIV(DDIV obj) {
+		consumeStack(obj);
+		pushValue(typeRepository.getDoubleType());
+	}
+
+	public void visitFDIV(FDIV obj) {
+		consumeStack(obj);
+		pushValue(typeRepository.getFloatType());
+	}
+
+	public void visitIDIV(IDIV obj) {
+		consumeStack(obj);
+		pushValue(typeRepository.getIntType());
+	}
+
+	public void visitLDIV(LDIV obj) {
+		consumeStack(obj);
+		pushValue(typeRepository.getLongType());
+	}
+
+	public void visitDREM(DREM obj) {
+		consumeStack(obj);
+		pushValue(typeRepository.getDoubleType());
+	}
+
+	public void visitFREM(FREM obj) {
+		consumeStack(obj);
+		pushValue(typeRepository.getFloatType());
+	}
+
+	public void visitIREM(IREM obj) {
+		consumeStack(obj);
+		pushValue(typeRepository.getIntType());
+	}
+
+	public void visitLREM(LREM obj) {
+		consumeStack(obj);
+		pushValue(typeRepository.getLongType());
+	}
+
+	public void visitIINC(IINC obj) {
+	} // no change to types of stack or locals
+
+	public void visitDNEG(DNEG obj) {
+	} // no change
+
+	public void visitFNEG(FNEG obj) {
+	} // no change
+
+	public void visitINEG(INEG obj) {
+		consumeStack(obj);
+		pushValue(typeRepository.getIntType());
+	}
+
+	public void visitLNEG(LNEG obj) {
+	} // no change
+
+	public void visitARRAYLENGTH(ARRAYLENGTH obj) {
+		consumeStack(obj);
+		pushValue(typeRepository.getIntType());
+	}
 
 	public void visitAALOAD(AALOAD obj) {
 		// To determine the type pushed on the stack,
@@ -413,13 +515,40 @@ public class BetterTypeFrameModelingVisitor extends AbstractFrameModelingVisitor
 		}
 	}
 
-	public void visitBALOAD(BALOAD obj)				{ consumeStack(obj); pushValue(typeRepository.getByteType()); }
-	public void visitCALOAD(CALOAD obj)				{ consumeStack(obj); pushValue(typeRepository.getCharType()); }
-	public void visitDALOAD(DALOAD obj)				{ consumeStack(obj); pushValue(typeRepository.getDoubleType()); }
-	public void visitFALOAD(FALOAD obj)				{ consumeStack(obj); pushValue(typeRepository.getFloatType()); }
-	public void visitIALOAD(IALOAD obj)				{ consumeStack(obj); pushValue(typeRepository.getIntType()); }
-	public void visitLALOAD(LALOAD obj)				{ consumeStack(obj); pushValue(typeRepository.getLongType()); }
-	public void visitSALOAD(SALOAD obj)				{ consumeStack(obj); pushValue(typeRepository.getShortType()); }
+	public void visitBALOAD(BALOAD obj) {
+		consumeStack(obj);
+		pushValue(typeRepository.getByteType());
+	}
+
+	public void visitCALOAD(CALOAD obj) {
+		consumeStack(obj);
+		pushValue(typeRepository.getCharType());
+	}
+
+	public void visitDALOAD(DALOAD obj) {
+		consumeStack(obj);
+		pushValue(typeRepository.getDoubleType());
+	}
+
+	public void visitFALOAD(FALOAD obj) {
+		consumeStack(obj);
+		pushValue(typeRepository.getFloatType());
+	}
+
+	public void visitIALOAD(IALOAD obj) {
+		consumeStack(obj);
+		pushValue(typeRepository.getIntType());
+	}
+
+	public void visitLALOAD(LALOAD obj) {
+		consumeStack(obj);
+		pushValue(typeRepository.getLongType());
+	}
+
+	public void visitSALOAD(SALOAD obj) {
+		consumeStack(obj);
+		pushValue(typeRepository.getShortType());
+	}
 
 	// The various xASTORE instructions only consume stack.
 
@@ -459,9 +588,16 @@ public class BetterTypeFrameModelingVisitor extends AbstractFrameModelingVisitor
 		}
 	}
 
-	public void visitJSR(JSR obj)					{ pushValue(typeRepository.getReturnAddressType()); }
-	public void visitJSR_W(JSR_W obj)				{ pushValue(typeRepository.getReturnAddressType()); }
-	public void visitRET(RET obj)					{ } // no change
+	public void visitJSR(JSR obj) {
+		pushValue(typeRepository.getReturnAddressType());
+	}
+
+	public void visitJSR_W(JSR_W obj) {
+		pushValue(typeRepository.getReturnAddressType());
+	}
+
+	public void visitRET(RET obj) {
+	} // no change
 
 }
 

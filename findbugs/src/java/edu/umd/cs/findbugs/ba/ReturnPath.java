@@ -20,15 +20,25 @@
 package edu.umd.cs.findbugs.ba;
 
 public class ReturnPath {
-	/** Top value. */
+	/**
+	 * Top value.
+	 */
 	public static final int TOP = 0;
-	/** Method "returns" by exiting the process. */
+	/**
+	 * Method "returns" by exiting the process.
+	 */
 	public static final int EXIT = 1;
-	/** Method returns by throwing an unhandled exception. */
+	/**
+	 * Method returns by throwing an unhandled exception.
+	 */
 	public static final int UE = 2;
-	/** Method returns either by exiting or throwing an unhandled exception. */
+	/**
+	 * Method returns either by exiting or throwing an unhandled exception.
+	 */
 	public static final int EXIT_UE = 3;
-	/** Method may return normally. */
+	/**
+	 * Method may return normally.
+	 */
 	public static final int RETURNS = 4;
 
 	private int kind;
@@ -55,11 +65,11 @@ public class ReturnPath {
 
 	private static final int[][] mergeMatrix = {
 		// TOP      EXIT      UE       EXIT_UE   RETURNS
-		{  TOP,                                          }, // TOP
-		{  EXIT,    EXIT,                                }, // EXIT
-		{  UE,      EXIT_UE,  UE,                        }, // UE
-		{  EXIT_UE, EXIT_UE,  EXIT_UE, EXIT_UE,          }, // EXIT_UE
-		{  RETURNS, RETURNS,  RETURNS, RETURNS, RETURNS  }, // RETURNS
+		{TOP, }, // TOP
+		{EXIT, EXIT, }, // EXIT
+		{UE, EXIT_UE, UE, }, // UE
+		{EXIT_UE, EXIT_UE, EXIT_UE, EXIT_UE, }, // EXIT_UE
+		{RETURNS, RETURNS, RETURNS, RETURNS, RETURNS}, // RETURNS
 	};
 
 	public void mergeWith(ReturnPath other) {
@@ -70,12 +80,18 @@ public class ReturnPath {
 
 	public String toString() {
 		switch (kind) {
-		case TOP: return "[TOP]";
-		case EXIT: return "[EXIT]";
-		case UE: return "[UE]";
-		case EXIT_UE: return "[EXIT_UE]";
-		case RETURNS: return "[RETURNS]";
-		default: throw new IllegalStateException();
+		case TOP:
+			return "[TOP]";
+		case EXIT:
+			return "[EXIT]";
+		case UE:
+			return "[UE]";
+		case EXIT_UE:
+			return "[EXIT_UE]";
+		case RETURNS:
+			return "[RETURNS]";
+		default:
+			throw new IllegalStateException();
 		}
 	}
 }

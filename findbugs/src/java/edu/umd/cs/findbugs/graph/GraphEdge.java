@@ -17,30 +17,36 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-// $Revision: 1.7 $
+// $Revision: 1.8 $
 
 package edu.umd.cs.findbugs.graph;
 
-import java.util.Set;
 
-import edu.umd.cs.findbugs.graph.GraphVertex;
 
 /**
  * GraphEdge interface; represents an edge in a graph.
  */
-public interface GraphEdge<ActualEdgeType, VertexType extends GraphVertex<VertexType>>
-	extends Comparable<ActualEdgeType> {
+public interface GraphEdge <ActualEdgeType, VertexType extends GraphVertex<VertexType>>
+        extends Comparable<ActualEdgeType> {
 
-	/** Get the source vertex. */
+	/**
+	 * Get the source vertex.
+	 */
 	public VertexType getSource();
 
-	/** Get the target vertex. */
+	/**
+	 * Get the target vertex.
+	 */
 	public VertexType getTarget();
 
-	/** Get the integer label. */
+	/**
+	 * Get the integer label.
+	 */
 	public int getLabel();
 
-	/** Set the integer label. */
+	/**
+	 * Set the integer label.
+	 */
 	public void setLabel(int label);
 
 }

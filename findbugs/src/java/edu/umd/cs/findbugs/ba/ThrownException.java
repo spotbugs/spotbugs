@@ -29,12 +29,12 @@ import org.apache.bcel.generic.ObjectType;
  * <ul>
  * <li> what exceptions can be thrown along exception edges, and
  * <li> which exceptions are explicit (declared or explicitly thrown)
- *      and which are implicit (result of failed runtime checks)
+ * and which are implicit (result of failed runtime checks)
  * </ul>
  *
+ * @author David Hovemeyer
  * @see ExceptionSet
  * @see TypeAnalysis
- * @author David Hovemeyer
  */
 public class ThrownException {
 	private ObjectType type;
@@ -42,7 +42,8 @@ public class ThrownException {
 
 	/**
 	 * Constructor.
-	 * @param type type of exception
+	 *
+	 * @param type     type of exception
 	 * @param explicit true if explicit, false if implicit
 	 */
 	public ThrownException(ObjectType type, boolean explicit) {
@@ -57,17 +58,23 @@ public class ThrownException {
 		return new ThrownException(type, explicit);
 	}
 
-	/** Get the exception type. */
+	/**
+	 * Get the exception type.
+	 */
 	public ObjectType getType() {
 		return type;
 	}
 
-	/** Return whether or not the exception is explicit. */
+	/**
+	 * Return whether or not the exception is explicit.
+	 */
 	public boolean isExplicit() {
 		return explicit;
 	}
 
-	/** Set whether or not the exception is explicit. */
+	/**
+	 * Set whether or not the exception is explicit.
+	 */
 	public void setExplicit(boolean explicit) {
 		this.explicit = explicit;
 	}

@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs;
 
 import java.util.*;
+
 import org.apache.bcel.classfile.JavaClass;
 
 /**

@@ -19,14 +19,10 @@
 
 package edu.umd.cs.findbugs.ba.type;
 
+import java.util.*;
+
 import edu.umd.cs.findbugs.ba.ClassNotFoundExceptionParser;
 import edu.umd.cs.findbugs.ba.Debug;
-
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-
 import org.apache.bcel.Constants;
 
 /**
@@ -34,7 +30,7 @@ import org.apache.bcel.Constants;
  * are represented by a unique Type object.
  * Queries on the type hierarchy can be performed
  * on the types instantiated by the repository.
- *
+ * <p/>
  * <p> Typically, this class is used by specifying a
  * {@link ClassResolver ClassResolver} that does the work of
  * finding class representations, which will determine
@@ -43,7 +39,7 @@ import org.apache.bcel.Constants;
  * class and interface types are.  The {@link #isSubtype}
  * method will automatically construct the class hierarchy
  * using the ClassResolver to determine the hierarchy.
- *
+ * <p/>
  * <p> Another way to use TypeRepository is to explicitly mark
  * ClassType objects as interfaces or classes, and add the
  * subtype relationships using {@link #addSuperclassLink}
@@ -54,9 +50,9 @@ import org.apache.bcel.Constants;
  * <code>java.io.Serializable</code>, and <code>java.lang.Cloneable</code>
  * to the repository.
  *
+ * @author David Hovemeyer
  * @see Type
  * @see ClassResolver
- * @author David Hovemeyer
  */
 public class TypeRepository {
 	// FIXME:
@@ -73,7 +69,8 @@ public class TypeRepository {
 	 * Basic type codes to signatures.
 	 * FIXME: change to array?
 	 */
-	private static final HashMap<Byte, String> basicTypeCodeToSignatureMap = new HashMap<Byte,String>();
+	private static final HashMap<Byte, String> basicTypeCodeToSignatureMap = new HashMap<Byte, String>();
+
 	static {
 		basicTypeCodeToSignatureMap.put(new Byte(Constants.T_BOOLEAN), "Z");
 		basicTypeCodeToSignatureMap.put(new Byte(Constants.T_CHAR), "C");
@@ -127,7 +124,7 @@ public class TypeRepository {
 	 * types, but no class or array types.
 	 *
 	 * @param resolver the ClassResolver that will be used to
-	 *   find inheritance hierarchy information for classes
+	 *                 find inheritance hierarchy information for classes
 	 */
 	public TypeRepository(ClassResolver resolver) {
 		this.signatureToTypeMap = new HashMap<String, Type>();
@@ -140,6 +137,7 @@ public class TypeRepository {
 	/**
 	 * Get a ClassType from a signature, e.g.,
 	 * JAVA_LANG_OBJECT_SIGNATURE.
+	 *
 	 * @param signature the class signature
 	 * @return the ClassType representing the class
 	 */
@@ -156,6 +154,7 @@ public class TypeRepository {
 	 * (A name with components separated by slashes
 	 * is the native format for bare class names
 	 * in class files.)
+	 *
 	 * @param slashedClassName class name in slashed format
 	 * @return the ClassType representing the class
 	 */
@@ -170,6 +169,7 @@ public class TypeRepository {
 	 * Get a ClassType from a class or interface name
 	 * using dots to separate package components,
 	 * creating it if it doesn't exist.
+	 *
 	 * @param param dottedClassName the class name in dotted format
 	 * @return the ClassType representing the class
 	 */
@@ -184,6 +184,7 @@ public class TypeRepository {
 	/**
 	 * Get an ArrayType from an array signature,
 	 * creating it if it doesn't exist.
+	 *
 	 * @param signature the array signature
 	 * @return the ArrayType representing the array type
 	 */
@@ -192,17 +193,18 @@ public class TypeRepository {
 	}
 
 	/**
-	 * Get an ArrayType from number of dimensions and base type. 
+	 * Get an ArrayType from number of dimensions and base type.
 	 * The base type must not be an array type.
+	 *
 	 * @param numDimensions the number of dimensions
-	 * @param baseType the base type (e.g, "Object" in the array type
-	 *    "Object[][]"): must be created from this type repository
+	 * @param baseType      the base type (e.g, "Object" in the array type
+	 *                      "Object[][]"): must be created from this type repository
 	 * @return the array type
 	 */
 	public ArrayType arrayTypeFromDimensionsAndBaseType(int numDimensions, Type baseType) {
 		if (!baseType.isValidArrayBaseType())
 			throw new IllegalArgumentException("Type " + baseType.getSignature() +
-				" is not a valid array base type");
+			        " is not a valid array base type");
 		return createArrayType(numDimensions, baseType);
 	}
 
@@ -210,13 +212,14 @@ public class TypeRepository {
 	 * Create a one-dimensional array type with given element type,
 	 * which can be an array type.  Sometimes it is easier to
 	 * think of all arrays as being one dimensional.
+	 *
 	 * @param elementType the element type
 	 * @return an array type with the given element type
 	 */
 	public ArrayType arrayTypeFromElementType(Type elementType) {
 		if (!elementType.isValidArrayElementType())
 			throw new IllegalArgumentException("Type " + elementType.getSignature() +
-				" is not a valid array element type");
+			        " is not a valid array element type");
 
 		int numDimensions;
 		Type baseType;
@@ -241,6 +244,7 @@ public class TypeRepository {
 
 	/**
 	 * Create an BasicType from a type code.
+	 *
 	 * @param typeCode the basic type code (T_BOOLEAN, etc.)
 	 * @return the BasicType representing the basic type
 	 */
@@ -258,6 +262,7 @@ public class TypeRepository {
 
 	/**
 	 * Create an BasicType from a basic type signature.
+	 *
 	 * @param signature the signature
 	 * @return the BasicType representing the basic type
 	 */
@@ -271,6 +276,7 @@ public class TypeRepository {
 	 * Create a special type from a signature.
 	 * The signature must be one of the constants defined in
 	 * {@link SpecialTypeSignatures}.
+	 *
 	 * @param signature special type signature
 	 * @return the special Type
 	 */
@@ -285,10 +291,10 @@ public class TypeRepository {
 	 * is given, creating it if it doesn't exist.
 	 *
 	 * @param signature the JVM signature of the type: something
-	 * like "B" (the byte basic type), "Ljava/lang/String;"
-	 * (the type of a reference to java.lang.String), or
-	 * "[Ljava/lang/Object;" (the type of a reference to an array of
-	 * java.lang.Object references).
+	 *                  like "B" (the byte basic type), "Ljava/lang/String;"
+	 *                  (the type of a reference to java.lang.String), or
+	 *                  "[Ljava/lang/Object;" (the type of a reference to an array of
+	 *                  java.lang.Object references).
 	 * @return the Type object representing the type
 	 */
 	public Type typeFromSignature(String signature) throws InvalidSignatureException {
@@ -307,6 +313,7 @@ public class TypeRepository {
 
 	/**
 	 * Get the void type.
+	 *
 	 * @return the void type
 	 */
 	public BasicType getVoidType() {
@@ -315,6 +322,7 @@ public class TypeRepository {
 
 	/**
 	 * Get the boolean type.
+	 *
 	 * @return the boolean type
 	 */
 	public BasicType getBooleanType() {
@@ -323,6 +331,7 @@ public class TypeRepository {
 
 	/**
 	 * Get the byte type.
+	 *
 	 * @return the byte type
 	 */
 	public BasicType getByteType() {
@@ -331,6 +340,7 @@ public class TypeRepository {
 
 	/**
 	 * Get the char type.
+	 *
 	 * @return the char type
 	 */
 	public BasicType getCharType() {
@@ -339,6 +349,7 @@ public class TypeRepository {
 
 	/**
 	 * Get the short type.
+	 *
 	 * @return the short type
 	 */
 	public BasicType getShortType() {
@@ -347,6 +358,7 @@ public class TypeRepository {
 
 	/**
 	 * Get the int type.
+	 *
 	 * @return the int type
 	 */
 	public BasicType getIntType() {
@@ -355,6 +367,7 @@ public class TypeRepository {
 
 	/**
 	 * Get the long type.
+	 *
 	 * @return the long type
 	 */
 	public BasicType getLongType() {
@@ -363,6 +376,7 @@ public class TypeRepository {
 
 	/**
 	 * Get the float type.
+	 *
 	 * @return the float type
 	 */
 	public BasicType getFloatType() {
@@ -371,6 +385,7 @@ public class TypeRepository {
 
 	/**
 	 * Get the double type.
+	 *
 	 * @return the double type
 	 */
 	public BasicType getDoubleType() {
@@ -379,6 +394,7 @@ public class TypeRepository {
 
 	/**
 	 * Get the instance of the special TOP type.
+	 *
 	 * @return the TOP instance
 	 */
 	public Type getTopType() {
@@ -387,6 +403,7 @@ public class TypeRepository {
 
 	/**
 	 * Get the instance of the special BOTTOM type.
+	 *
 	 * @return the BOTTOM instance
 	 */
 	public Type getBottomType() {
@@ -395,6 +412,7 @@ public class TypeRepository {
 
 	/**
 	 * Get the instance of the special NULL type.
+	 *
 	 * @return the NULL type
 	 */
 	public Type getNullType() {
@@ -403,6 +421,7 @@ public class TypeRepository {
 
 	/**
 	 * Get the instance of the special long extra type.
+	 *
 	 * @return the long extra type
 	 */
 	public Type getLongExtraType() {
@@ -411,6 +430,7 @@ public class TypeRepository {
 
 	/**
 	 * Get the instance of the special double extra type.
+	 *
 	 * @return the double extra type
 	 */
 	public Type getDoubleExtraType() {
@@ -419,6 +439,7 @@ public class TypeRepository {
 
 	/**
 	 * Get the instance of the return address type.
+	 *
 	 * @return the return address type
 	 */
 	public Type getReturnAddressType() {
@@ -427,7 +448,8 @@ public class TypeRepository {
 
 	/**
 	 * Add a direct superclass relationship to types in the repository.
-	 * @param subclass the subclass
+	 *
+	 * @param subclass   the subclass
 	 * @param superclass the superclass
 	 */
 	public void addSuperclassLink(ObjectType subclass, ObjectType superclass) {
@@ -438,8 +460,9 @@ public class TypeRepository {
 
 	/**
 	 * Add a direct implemented interface relationship to types in the repository.
+	 *
 	 * @param implementor the class or interface directly implementing the interface (i.e., the subtype)
-	 * @param iface the implemented interface (i.e., the supertype)
+	 * @param iface       the implemented interface (i.e., the supertype)
 	 */
 	public void addInterfaceLink(ObjectType implementor, ClassType iface) {
 		if (DEBUG)
@@ -449,7 +472,8 @@ public class TypeRepository {
 
 	/**
 	 * Determine if one object type is a subtype of another.
-	 * @param subtype the potential subtype
+	 *
+	 * @param subtype   the potential subtype
 	 * @param supertype the potential supertype
 	 * @return true if subtype is really a subtype of supertype, false otherwise
 	 */
@@ -457,10 +481,10 @@ public class TypeRepository {
 		if (Debug.VERIFY_INTEGRITY) {
 			if (!inheritanceGraph.containsVertex(subtype))
 				throw new IllegalStateException("Inheritance graph does not contain node " +
-					subtype.getSignature());
+				        subtype.getSignature());
 			if (!inheritanceGraph.containsVertex(supertype))
 				throw new IllegalStateException("Inheritance graph does not contain node " +
-					supertype.getSignature());
+				        supertype.getSignature());
 		}
 
 		SubtypeQueryResult cachedResult = findSupertypes(subtype);
@@ -469,20 +493,21 @@ public class TypeRepository {
 
 	/**
 	 * Get the superclass of a class type.
+	 *
 	 * @param type the class type
 	 * @return the ClassType representing the class's superclass,
-	 *    or null if the type has no superclass (i.e., is java.lang.Object)
+	 *         or null if the type has no superclass (i.e., is java.lang.Object)
 	 */
 	public ClassType getSuperclass(ClassType type) throws ClassNotFoundException {
 		resolveObjectType(type);
 
-		for (Iterator<InheritanceGraphEdge> i = inheritanceGraph.outgoingEdgeIterator(type); i.hasNext(); ) {
+		for (Iterator<InheritanceGraphEdge> i = inheritanceGraph.outgoingEdgeIterator(type); i.hasNext();) {
 			InheritanceGraphEdge edge = i.next();
 			if (edge.getType() == InheritanceGraphEdgeTypes.CLASS_EDGE) {
 				ObjectType supertype = edge.getTarget();
 				if (!(supertype instanceof ClassType))
 					throw new IllegalStateException("Class type " + type.getClassName() +
-						" has non-class type " + supertype.getSignature() + " as its superclass");
+					        " has non-class type " + supertype.getSignature() + " as its superclass");
 				// TODO: cache result
 				return (ClassType) supertype;
 			}
@@ -498,7 +523,7 @@ public class TypeRepository {
 	 * type could be used.  Similarly, arrays of interface types
 	 * of same dimensionality are considered to have an
 	 * array of java.lang.Object as their common superclass.
-	 *
+	 * <p/>
 	 * <p> This operation is commutative.
 	 *
 	 * @param a an ObjectType
@@ -525,7 +550,7 @@ public class TypeRepository {
 		SubtypeQueryResult cachedResultForA = findSupertypes(a);
 		SubtypeQueryResult cachedResultForB = findSupertypes(b);
 
-		for (Iterator<ObjectType> i = cachedResultForB.supertypeInBFSOrderIterator(); i.hasNext(); ) {
+		for (Iterator<ObjectType> i = cachedResultForB.supertypeInBFSOrderIterator(); i.hasNext();) {
 			ObjectType bSuper = i.next();
 			if (DEBUG) System.out.print("  ....considering " + bSuper);
 			if (bSuper.isInterface()) {
@@ -542,7 +567,7 @@ public class TypeRepository {
 
 		// This should not be possible
 		throw new IllegalStateException("Failed to find a common supertype: " +
-			" for object types " + a.getSignature() + " and " + b.getSignature() + ": impossible");
+		        " for object types " + a.getSignature() + " and " + b.getSignature() + ": impossible");
 	}
 
 	/* ----------------------------------------------------------------------
@@ -568,7 +593,7 @@ public class TypeRepository {
 		signatureToTypeMap.put(SpecialTypeSignatures.LONG_EXTRA_TYPE_SIGNATURE, longExtraType = new LongExtraType());
 		signatureToTypeMap.put(SpecialTypeSignatures.DOUBLE_EXTRA_TYPE_SIGNATURE, doubleExtraType = new DoubleExtraType());
 		signatureToTypeMap.put(SpecialTypeSignatures.RETURN_ADDRESS_TYPE_SIGNATURE,
-			returnAddressType = new ReturnAddressType());
+		        returnAddressType = new ReturnAddressType());
 	}
 
 	private ClassType createClassType(String signature) {
@@ -629,16 +654,16 @@ public class TypeRepository {
 				ObjectType type = work.removeFirst();
 				if (!visited.add(type))
 					continue;
-	
+
 				cachedResult.addSupertype(type);
 				if (DEBUG) System.out.println("  ...added " + type);
-	
+
 				try {
 					// Resolve the type so we know its supertypes.
 					resolveObjectType(type);
 	
 					// Add all supertypes to work queue.
-					for (Iterator<ObjectType> i = inheritanceGraph.successorIterator(type); i.hasNext(); )
+					for (Iterator<ObjectType> i = inheritanceGraph.successorIterator(type); i.hasNext();)
 						work.add(i.next());
 				} catch (ClassNotFoundException e) {
 					String missingClassName = ClassNotFoundExceptionParser.getMissingClassName(e);
@@ -647,7 +672,7 @@ public class TypeRepository {
 					missingClassList.add(missingClassName);
 				}
 			}
-	
+
 			cachedResult.finish(missingClassList.toArray(new String[missingClassList.size()]));
 	
 			// Cache result for future queries
@@ -695,7 +720,7 @@ public class TypeRepository {
 		} else {
 			ObjectType elementObjectType = (ObjectType) elementType;
 			resolveObjectType(elementObjectType);
-			for (Iterator<ObjectType> i = inheritanceGraph.successorIterator(elementObjectType); i.hasNext(); ) {
+			for (Iterator<ObjectType> i = inheritanceGraph.successorIterator(elementObjectType); i.hasNext();) {
 				ObjectType elementSupertype = i.next();
 				ObjectType supertype = arrayTypeFromElementType(elementSupertype);
 				addSuperclassLink(type, supertype);
@@ -714,7 +739,7 @@ public class TypeRepository {
 		// just throw an exception
 		if (type.getState() == ObjectType.UNKNOWN)
 			throw new ClassNotFoundException("Class " + type.getClassName() +
-				" cannot be resolved", type.getResolverFailure());
+			        " cannot be resolved", type.getResolverFailure());
 
 		// Delegate to the ClassResolver
 		try {
@@ -730,7 +755,7 @@ public class TypeRepository {
 			type.setState(ObjectType.UNKNOWN);
 			type.setResolverFailure(e);
 			throw new ClassNotFoundException("Class " + type.getClassName() +
-				" cannot be resolved", e);
+			        " cannot be resolved", e);
 		}
 	}
 }

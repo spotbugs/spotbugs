@@ -18,29 +18,31 @@
  */
 
 package edu.umd.cs.findbugs.detect;
-import edu.umd.cs.findbugs.*;
-import org.apache.bcel.classfile.*;
+
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.visitclass.Constants2;
 
-public class FindFloatMath extends BytecodeScanningDetector implements   Constants2 {
-    private BugReporter bugReporter;
+public class FindFloatMath extends BytecodeScanningDetector implements Constants2 {
+	private BugReporter bugReporter;
 
-    public FindFloatMath(BugReporter bugReporter) {
-	this.bugReporter = bugReporter;
+	public FindFloatMath(BugReporter bugReporter) {
+		this.bugReporter = bugReporter;
 	}
 
 
-    public void sawOpcode(int seen) {
-	switch(seen) {
+	public void sawOpcode(int seen) {
+		switch (seen) {
 		case FMUL:
 		case FDIV:
 			if (getFullyQualifiedMethodName().indexOf("float") == -1
-			    && getFullyQualifiedMethodName().indexOf("Float") == -1
-			    && getFullyQualifiedMethodName().indexOf("FLOAT") == -1)
-                        bugReporter.reportBug(new BugInstance("FL_MATH_USING_FLOAT_PRECISION", 
-					LOW_PRIORITY)
-                                .addClassAndMethod(this)
-                                .addSourceLine(this));
+			        && getFullyQualifiedMethodName().indexOf("Float") == -1
+			        && getFullyQualifiedMethodName().indexOf("FLOAT") == -1)
+				bugReporter.reportBug(new BugInstance("FL_MATH_USING_FLOAT_PRECISION",
+				        LOW_PRIORITY)
+				        .addClassAndMethod(this)
+				        .addSourceLine(this));
 			break;
 		case FCMPG:
 		case FCMPL:
@@ -49,16 +51,16 @@ public class FindFloatMath extends BytecodeScanningDetector implements   Constan
 		case FSUB:
 		case FREM:
 			if (getFullyQualifiedMethodName().indexOf("float") == -1
-			    && getFullyQualifiedMethodName().indexOf("Float") == -1
-			    && getFullyQualifiedMethodName().indexOf("FLOAT") == -1)
-		 
-                        bugReporter.reportBug(new BugInstance("FL_MATH_USING_FLOAT_PRECISION", 
-					NORMAL_PRIORITY)
-                                .addClassAndMethod(this)
-                                .addSourceLine(this));
-		break;
+			        && getFullyQualifiedMethodName().indexOf("Float") == -1
+			        && getFullyQualifiedMethodName().indexOf("FLOAT") == -1)
+
+				bugReporter.reportBug(new BugInstance("FL_MATH_USING_FLOAT_PRECISION",
+				        NORMAL_PRIORITY)
+				        .addClassAndMethod(this)
+				        .addSourceLine(this));
+			break;
 		default:
-		break;
+			break;
 		}
 	}
 }

@@ -24,6 +24,7 @@ import org.apache.bcel.generic.MethodGen;
 
 /**
  * Exception type to indicate a dataflow analysis failure.
+ *
  * @see Dataflow
  * @see DataflowAnalysis
  */
@@ -31,17 +32,22 @@ public class DataflowAnalysisException extends Exception {
 	/**
 	 * Constructor.
 	 */
-	public DataflowAnalysisException() { }
+	public DataflowAnalysisException() {
+	}
 
 	/**
 	 * Constructor.
+	 *
 	 * @param msg message describing the reason for the exception
 	 */
-	public DataflowAnalysisException(String msg) { super(msg); }
+	public DataflowAnalysisException(String msg) {
+		super(msg);
+	}
 
 	/**
 	 * Constructor from message and another Throwable object.
-	 * @param msg message describing the reason for the exception
+	 *
+	 * @param msg   message describing the reason for the exception
 	 * @param cause a Throwable which is the cause of the exception
 	 */
 	public DataflowAnalysisException(String msg, Throwable cause) {
@@ -50,9 +56,10 @@ public class DataflowAnalysisException extends Exception {
 
 	/**
 	 * Constructor from method and instruction.
-	 * @param message reason for the error
+	 *
+	 * @param message   reason for the error
 	 * @param methodGen the method
-	 * @param handle the instruction
+	 * @param handle    the instruction
 	 */
 	public DataflowAnalysisException(String message, MethodGen methodGen, InstructionHandle handle) {
 		super(message + " in " + SignatureConverter.convertMethodSignature(methodGen) + " at " + handle);

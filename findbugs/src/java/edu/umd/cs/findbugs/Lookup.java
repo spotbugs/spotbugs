@@ -19,64 +19,64 @@
 
 package edu.umd.cs.findbugs;
 
-import java.io.*;
-import java.util.*;
 import edu.umd.cs.findbugs.visitclass.Constants2;
-import org.apache.bcel.classfile.*;
 import org.apache.bcel.Repository;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
 
-public class Lookup 
-	implements Constants2
-{
-  public static JavaClass 
-	findSuperImplementor(JavaClass clazz, String name, String signature, BugReporter bugReporter) {
+public class Lookup
+        implements Constants2 {
+	public static JavaClass
+	        findSuperImplementor(JavaClass clazz, String name, String signature, BugReporter bugReporter) {
 		try {
-			JavaClass c = 
-				findImplementor(Repository.getSuperClasses(clazz),
-					name, signature);
+			JavaClass c =
+			        findImplementor(Repository.getSuperClasses(clazz),
+			                name, signature);
 			return c;
-			}
-		catch (ClassNotFoundException e) {
+		} catch (ClassNotFoundException e) {
 			bugReporter.reportMissingClass(e);
 			return clazz;
-			}
 		}
-  public static String 
-	findSuperImplementor(String clazz, String name, String signature, BugReporter bugReporter) {
-		try {
-			JavaClass c = 
-				findImplementor(Repository.getSuperClasses(clazz),
-					name, signature);
-			return (c != null) ? c.getClassName() : clazz;
-			}
-		catch (ClassNotFoundException e) {
-			bugReporter.reportMissingClass(e);
-			return clazz;
-			}
-		}
-  public static JavaClass 
-	findImplementor(JavaClass[] clazz, String name, String signature) {
-	
-	for(int i = 0;i < clazz.length;i++) {
-		Method m = findImplementation(clazz[i], name, signature);
-		if (m != null) {
-		      if ((m.getAccessFlags() & ACC_ABSTRACT) != 0)
-			return null;
-		      else return clazz[i];
-		      }
-		}
-	return null;
 	}
-  public static Method 
-	findImplementation(JavaClass clazz, String name, String signature) {
-		Method[] m = clazz.getMethods();
-		for(int i = 0; i < m.length; i++) 
-			if (m[i].getName().equals(name)
-			    && m[i].getSignature().equals(signature)
-		            && ((m[i].getAccessFlags() & ACC_PRIVATE) == 0)
-		            && ((m[i].getAccessFlags() & ACC_STATIC) == 0)
-			    )
-			  return m[i];
-		return null;
+
+	public static String
+	        findSuperImplementor(String clazz, String name, String signature, BugReporter bugReporter) {
+		try {
+			JavaClass c =
+			        findImplementor(Repository.getSuperClasses(clazz),
+			                name, signature);
+			return (c != null) ? c.getClassName() : clazz;
+		} catch (ClassNotFoundException e) {
+			bugReporter.reportMissingClass(e);
+			return clazz;
 		}
+	}
+
+	public static JavaClass
+	        findImplementor(JavaClass[] clazz, String name, String signature) {
+
+		for (int i = 0; i < clazz.length; i++) {
+			Method m = findImplementation(clazz[i], name, signature);
+			if (m != null) {
+				if ((m.getAccessFlags() & ACC_ABSTRACT) != 0)
+					return null;
+				else
+					return clazz[i];
+			}
+		}
+		return null;
+	}
+
+	public static Method
+	        findImplementation(JavaClass clazz, String name, String signature) {
+		Method[] m = clazz.getMethods();
+		for (int i = 0; i < m.length; i++)
+			if (m[i].getName().equals(name)
+			        && m[i].getSignature().equals(signature)
+			        && ((m[i].getAccessFlags() & ACC_PRIVATE) == 0)
+			        && ((m[i].getAccessFlags() & ACC_STATIC) == 0)
+			)
+				return m[i];
+		return null;
+	}
 }

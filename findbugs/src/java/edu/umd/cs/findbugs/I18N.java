@@ -52,6 +52,7 @@ public class I18N {
 
 	/**
 	 * Register a BugPattern.
+	 *
 	 * @param bugPattern the BugPattern
 	 */
 	public void registerBugPattern(BugPattern bugPattern) {
@@ -60,6 +61,7 @@ public class I18N {
 
 	/**
 	 * Look up bug pattern.
+	 *
 	 * @param bugType the bug type for the bug pattern
 	 * @return the BugPattern, or null if it can't be found
 	 */
@@ -76,6 +78,7 @@ public class I18N {
 
 	/**
 	 * Register a BugCode.
+	 *
 	 * @param bugCode the BugCode
 	 */
 	public void registerBugCode(BugCode bugCode) {
@@ -85,6 +88,7 @@ public class I18N {
 	/**
 	 * Get a message string.
 	 * This is a format pattern for describing an entire bug instance in a single line.
+	 *
 	 * @param key which message to retrieve
 	 */
 	public String getMessage(String key) {
@@ -98,6 +102,7 @@ public class I18N {
 	 * Get a short message string.
 	 * This is a concrete string (not a format pattern) which briefly describes
 	 * the type of bug, without mentioning particular a particular class/method/field.
+	 *
 	 * @param key which short message to retrieve
 	 */
 	public String getShortMessage(String key) {
@@ -109,6 +114,7 @@ public class I18N {
 
 	/**
 	 * Get an HTML document describing the bug pattern for given key in detail.
+	 *
 	 * @param key which HTML details for retrieve
 	 */
 	public String getDetailHTML(String key) {
@@ -123,6 +129,7 @@ public class I18N {
 	 * This is a format pattern which will describe a BugAnnotation in the
 	 * context of a particular bug instance.  Its single format argument
 	 * is the BugAnnotation.
+	 *
 	 * @param key the annotation description to retrieve
 	 */
 	public String getAnnotationDescription(String key) {
@@ -135,6 +142,7 @@ public class I18N {
 	 * Should make the terminology consistent everywhere.
 	 * In this case, the bug type refers to the short prefix code prepended to
 	 * the long and short bug messages.
+	 *
 	 * @param shortBugType the short bug type code
 	 * @return the description of that short bug type code means
 	 */
@@ -148,6 +156,7 @@ public class I18N {
 	/**
 	 * Get the description of a bug category.
 	 * Returns the category if no description can be found.
+	 *
 	 * @param category the category
 	 * @return the description of the category
 	 */

@@ -19,9 +19,7 @@
 
 package edu.umd.cs.findbugs;
 
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Search for bug instances whose text annotations contain
@@ -36,6 +34,7 @@ public abstract class QueryBugAnnotations {
 	 * Add a keyword to the query.
 	 * A BugInstance's text annotation must contain at least
 	 * one keyword in order to match the query.
+	 *
 	 * @param keyword the keyword
 	 */
 	public void addKeyword(String keyword) {
@@ -46,6 +45,7 @@ public abstract class QueryBugAnnotations {
 	 * Scan bug instances contained in given file,
 	 * reporting those whose text annotations contain at least
 	 * one of the keywords in the query.
+	 *
 	 * @param filename an XML file containing bug instances
 	 */
 	public void scan(String filename) throws Exception {
@@ -58,8 +58,9 @@ public abstract class QueryBugAnnotations {
 	 * Scan bug instances contained in given bug collection,
 	 * reporting those whose text annotations contain at least
 	 * one of the keywords in the query.
+	 *
 	 * @param bugCollection the bug collection
-	 * @param filename the XML file from which the bug collection was read
+	 * @param filename      the XML file from which the bug collection was read
 	 */
 	public void scan(BugCollection bugCollection, String filename) throws Exception {
 		boolean first = false;
@@ -69,7 +70,7 @@ public abstract class QueryBugAnnotations {
 			String annotation = bugInstance.getAnnotationText();
 
 			Set<String> contents = bugInstance.getTextAnnotationWords();
-			for (Iterator<String> j = keywordSet.iterator(); j.hasNext(); ) {
+			for (Iterator<String> j = keywordSet.iterator(); j.hasNext();) {
 				if (contents.contains(j.next())) {
 					match(bugInstance, filename);
 					break;
@@ -80,8 +81,9 @@ public abstract class QueryBugAnnotations {
 
 	/**
 	 * Called when a bug instance contains a query keyword.
+	 *
 	 * @param bugInstance the bug instance containing the keyword
-	 * @param filename name of the file containing the bug instance
+	 * @param filename    name of the file containing the bug instance
 	 */
 	protected abstract void match(BugInstance bugInstance, String filename) throws Exception;
 }

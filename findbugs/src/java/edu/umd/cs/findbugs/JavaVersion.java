@@ -20,7 +20,7 @@
 package edu.umd.cs.findbugs;
 
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.regex.*;
 
 /**
  * Support for finding out what version of Java we're running on.
@@ -36,6 +36,7 @@ public class JavaVersion {
 	 * Constant for the Java version we're currently running on.
 	 */
 	private static JavaVersion runtimeVersion;
+
 	static {
 		try {
 			runtimeVersion = new JavaVersion(System.getProperty("java.version"));
@@ -54,9 +55,10 @@ public class JavaVersion {
 
 	/**
 	 * Constructor.
+	 *
 	 * @param versionString a version string, as returned from the
-	 *    <code>java.version</code> system property:
-	 *    e.g., "1.4.2_04"
+	 *                      <code>java.version</code> system property:
+	 *                      e.g., "1.4.2_04"
 	 */
 	public JavaVersion(String versionString) throws JavaVersionException {
 		Matcher matcher = PATTERN.matcher(versionString);
@@ -73,6 +75,7 @@ public class JavaVersion {
 
 	/**
 	 * Constructor.
+	 *
 	 * @param major major version
 	 * @param minor minor version
 	 */
@@ -82,14 +85,26 @@ public class JavaVersion {
 		this.rest = "";
 	}
 
-	/** Get the major version number. */
-	public int getMajor() { return major; }
+	/**
+	 * Get the major version number.
+	 */
+	public int getMajor() {
+		return major;
+	}
 
-	/** Get the minor version number. */
-	public int getMinor() { return minor; }
+	/**
+	 * Get the minor version number.
+	 */
+	public int getMinor() {
+		return minor;
+	}
 
-	/** Get the rest of the version string after the major and minor numbers. */
-	public String getRest() { return rest; }
+	/**
+	 * Get the rest of the version string after the major and minor numbers.
+	 */
+	public String getRest() {
+		return rest;
+	}
 
 	/**
 	 * Get the version of Java that we are currently
@@ -102,13 +117,14 @@ public class JavaVersion {
 	/**
 	 * Return whether the Java version represented by this
 	 * object is at least as recent as the one given.
+	 *
 	 * @param other another JavaVersion
 	 * @return true if this Java version is at least as recent as
-	 *   the one given
+	 *         the one given
 	 */
 	public boolean isSameOrNewerThan(JavaVersion other) {
 		return this.major >= other.major ||
-			(this.major == other.major && this.minor >= other.minor);
+		        (this.major == other.major && this.minor >= other.minor);
 	}
 }
 

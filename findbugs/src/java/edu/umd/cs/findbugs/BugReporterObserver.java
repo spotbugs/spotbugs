@@ -26,12 +26,13 @@ package edu.umd.cs.findbugs;
  * filtering, priorities, etc., not all bugs sent to a BugReporter
  * will actually be processed.
  *
- * @see BugReporter
  * @author David Hovemeyer
+ * @see BugReporter
  */
 public interface BugReporterObserver {
 	/**
 	 * Called when a BugReporter reports a bug.
+	 *
 	 * @param bugInstance the BugInstance
 	 */
 	public void reportBug(BugInstance bugInstance);

@@ -19,9 +19,7 @@
 
 package edu.umd.cs.findbugs;
 
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.NoSuchElementException;
+import java.util.*;
 
 /**
  * Compare bug instances by only those criteria which we would expect to
@@ -61,7 +59,7 @@ public class VersionInsensitiveBugComparator implements Comparator<BugInstance> 
 		public void remove() {
 			throw new UnsupportedOperationException();
 		}
-		
+
 		private void findNext() {
 			while (next == null) {
 				if (!iter.hasNext())
@@ -124,8 +122,8 @@ public class VersionInsensitiveBugComparator implements Comparator<BugInstance> 
 				return lhsAnnotation.getClass().getName().compareTo(rhsAnnotation.getClass().getName());
 
 			if (lhsAnnotation.getClass() == ClassAnnotation.class ||
-				lhsAnnotation.getClass() == MethodAnnotation.class ||
-				lhsAnnotation.getClass() == FieldAnnotation.class) {
+			        lhsAnnotation.getClass() == MethodAnnotation.class ||
+			        lhsAnnotation.getClass() == FieldAnnotation.class) {
 				// ClassAnnotations, MethodAnnotations, and FieldAnnotations
 				// may all be compared directly.
 				cmp = lhsAnnotation.compareTo(rhsAnnotation);
@@ -155,11 +153,15 @@ public class VersionInsensitiveBugComparator implements Comparator<BugInstance> 
 			return 0;
 	}
 
-	/** The instance of the version-insensitive comparator. */
+	/**
+	 * The instance of the version-insensitive comparator.
+	 */
 	private static final VersionInsensitiveBugComparator versionInsensitiveBugComparator =
-		new VersionInsensitiveBugComparator();
+	        new VersionInsensitiveBugComparator();
 
-	public static VersionInsensitiveBugComparator instance() { return versionInsensitiveBugComparator; }
+	public static VersionInsensitiveBugComparator instance() {
+		return versionInsensitiveBugComparator;
+	}
 }
 
 // vim:ts=4

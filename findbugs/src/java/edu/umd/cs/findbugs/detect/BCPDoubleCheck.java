@@ -20,12 +20,17 @@
 package edu.umd.cs.findbugs.detect;
 
 import java.util.*;
-import org.apache.bcel.Constants;
-import org.apache.bcel.classfile.*;
-import org.apache.bcel.generic.*;
-import edu.umd.cs.findbugs.*;
-import edu.umd.cs.findbugs.ba.*;
+
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.ByteCodePatternDetector;
+import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.bcp.*;
+import org.apache.bcel.Constants;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.MethodGen;
 
 /**
  * A bug detector that uses a ByteCodePattern to find instances of
@@ -33,8 +38,8 @@ import edu.umd.cs.findbugs.ba.bcp.*;
  * how ByteCodePatterns can be used to simplify the task of implementing
  * Detectors.
  *
- * @see ByteCodePattern
  * @author David Hovemeyer
+ * @see ByteCodePattern
  */
 public class BCPDoubleCheck extends ByteCodePatternDetector {
 
@@ -54,6 +59,7 @@ public class BCPDoubleCheck extends ByteCodePatternDetector {
 
 	/**
 	 * Constructor.
+	 *
 	 * @param bugReporter
 	 */
 	public BCPDoubleCheck(BugReporter bugReporter) {
@@ -67,16 +73,17 @@ public class BCPDoubleCheck extends ByteCodePatternDetector {
 	 * the field.
 	 */
 	private static final ByteCodePattern pattern = new ByteCodePattern();
+
 	static {
 		pattern
-			.setInterElementWild(MAX_WILD)
-			.add(new Load("h", "x").label("startDC"))
-			.add(new IfNull("x"))
-			.add(new Monitorenter(pattern.dummyVariable()))
-			.add(new Load("h", "y"))
-			.add(new IfNull("y").label("endDC"))
-			.addWild(CREATE_OBJ_WILD)
-			.add(new Store("h", pattern.dummyVariable()));
+		        .setInterElementWild(MAX_WILD)
+		        .add(new Load("h", "x").label("startDC"))
+		        .add(new IfNull("x"))
+		        .add(new Monitorenter(pattern.dummyVariable()))
+		        .add(new Load("h", "y"))
+		        .add(new IfNull("y").label("endDC"))
+		        .addWild(CREATE_OBJ_WILD)
+		        .add(new Store("h", pattern.dummyVariable()));
 	}
 
 	public ByteCodePattern getPattern() {
@@ -92,7 +99,7 @@ public class BCPDoubleCheck extends ByteCodePatternDetector {
 
 		// Method must contain either GETFIELD/PUTFIELD or GETSTATIC/PUTSTATIC
 		if (!(bytecodeSet.get(Constants.GETFIELD) && bytecodeSet.get(Constants.PUTFIELD)) &&
-			!(bytecodeSet.get(Constants.GETSTATIC) && bytecodeSet.get(Constants.PUTSTATIC)))
+		        !(bytecodeSet.get(Constants.GETSTATIC) && bytecodeSet.get(Constants.PUTSTATIC)))
 			return false;
 
 		return true;
@@ -115,13 +122,13 @@ public class BCPDoubleCheck extends ByteCodePatternDetector {
 
 		// Find start and end instructions (for reporting source lines)
 		InstructionHandle start = match.getLabeledInstruction("startDC");
-		InstructionHandle end   = match.getLabeledInstruction("endDC");
+		InstructionHandle end = match.getLabeledInstruction("endDC");
 
 		String sourceFile = javaClass.getSourceFileName();
 		bugReporter.reportBug(new BugInstance("BCPDC_DOUBLECHECK", NORMAL_PRIORITY)
-			.addClassAndMethod(methodGen, sourceFile)
-			.addField(field).describe("FIELD_ON")
-			.addSourceLine(methodGen, sourceFile, start, end));
+		        .addClassAndMethod(methodGen, sourceFile)
+		        .addField(field).describe("FIELD_ON")
+		        .addSourceLine(methodGen, sourceFile, start, end));
 	}
 }
 

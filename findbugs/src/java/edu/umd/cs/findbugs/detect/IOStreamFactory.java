@@ -22,9 +22,7 @@ package edu.umd.cs.findbugs.detect;
 import edu.umd.cs.findbugs.ba.Hierarchy;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.RepositoryLookupFailureCallback;
-
 import org.apache.bcel.Constants;
-
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.ObjectType;
@@ -48,7 +46,7 @@ public class IOStreamFactory implements StreamFactory {
 	}
 
 	public Stream createStream(Location location, ObjectType type, ConstantPoolGen cpg,
-		RepositoryLookupFailureCallback lookupFailureCallback) {
+	                           RepositoryLookupFailureCallback lookupFailureCallback) {
 
 		try {
 			Instruction ins = location.getHandle().getInstruction();
@@ -65,7 +63,7 @@ public class IOStreamFactory implements StreamFactory {
 					}
 				}
 				Stream result = new Stream(location, type.getClassName(), baseClassType.getClassName())
-					.setIgnoreImplicitExceptions(true);
+				        .setIgnoreImplicitExceptions(true);
 				if (!isUninteresting)
 					result.setInteresting(bugType);
 				return result;

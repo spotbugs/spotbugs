@@ -19,11 +19,11 @@
 
 package edu.umd.cs.findbugs.ba;
 
-import java.util.Iterator;
-import java.util.NoSuchElementException;
+import java.util.*;
 
 /**
  * A simple class to parse method signatures.
+ *
  * @author David Hovemeyer
  */
 public class SignatureParser {
@@ -32,7 +32,7 @@ public class SignatureParser {
 
 		public boolean hasNext() {
 			return index < signature.length()
-				&& signature.charAt(index) != ')';
+			        && signature.charAt(index) != ')';
 		}
 
 		public String next() {
@@ -40,8 +40,14 @@ public class SignatureParser {
 			int ch = signature.charAt(index);
 			String result;
 			switch (ch) {
-			case 'B': case 'C': case 'D': case 'F':
-			case 'I': case 'J': case 'S': case 'Z':
+			case 'B':
+			case 'C':
+			case 'D':
+			case 'F':
+			case 'I':
+			case 'J':
+			case 'S':
+			case 'Z':
 				result = signature.substring(index, index + 1);
 				++index;
 				break;
@@ -50,7 +56,7 @@ public class SignatureParser {
 				int semi = signature.indexOf(';', index + 1);
 				if (semi < 0)
 					throw new IllegalStateException("Invalid method signature: " + signature);
-				result = signature.substring(index, semi+1);
+				result = signature.substring(index, semi + 1);
 				index = semi + 1;
 				break;
 
@@ -71,6 +77,7 @@ public class SignatureParser {
 
 	/**
 	 * Constructor.
+	 *
 	 * @param signature the method signature to be parsed
 	 */
 	public SignatureParser(String signature) {
@@ -81,6 +88,7 @@ public class SignatureParser {
 
 	/**
 	 * Get an Iterator over signatures of the method parameters.
+	 *
 	 * @return Iterator which returns the parameter type signatures in order
 	 */
 	public Iterator<String> parameterSignatureIterator() {

@@ -22,7 +22,8 @@ package edu.umd.cs.findbugs.ba.type;
 import edu.umd.cs.findbugs.ba.ExtendedTypes;
 
 public class LongExtraType implements Type, ExtendedTypes {
-	LongExtraType() { }
+	LongExtraType() {
+	}
 
 	public String getSignature() {
 		return SpecialTypeSignatures.LONG_EXTRA_TYPE_SIGNATURE;

@@ -20,8 +20,8 @@
 package edu.umd.cs.findbugs.ba;
 
 import java.util.*;
-import org.apache.bcel.classfile.*;
-import org.apache.bcel.generic.*;
+
+import org.apache.bcel.generic.MethodGen;
 
 /**
  * Prune a CFG to remove infeasible exception edges.
@@ -29,9 +29,9 @@ import org.apache.bcel.generic.*;
  * explicit ATHROW instructions, type analysis must first be
  * performed on the unpruned CFG.
  *
+ * @author David Hovemeyer
  * @see CFG
  * @see TypeAnalysis
- * @author David Hovemeyer
  */
 public class PruneInfeasibleExceptionEdges implements EdgeTypes {
 	private static final boolean DEBUG = Boolean.getBoolean("cfg.prune.debug");
@@ -79,10 +79,11 @@ public class PruneInfeasibleExceptionEdges implements EdgeTypes {
 
 	/**
 	 * Constructor.
-	 * @param cfg the CFG to prune
-	 * @param methodGen the method
+	 *
+	 * @param cfg          the CFG to prune
+	 * @param methodGen    the method
 	 * @param typeDataflow initialized TypeDataflow object for the CFG,
-	 *   indicating the types of all stack locations
+	 *                     indicating the types of all stack locations
 	 */
 	public PruneInfeasibleExceptionEdges(CFG cfg, MethodGen methodGen, TypeDataflow typeDataflow) {
 		this.cfg = cfg;
@@ -106,7 +107,7 @@ public class PruneInfeasibleExceptionEdges implements EdgeTypes {
 
 		// Mark edges to delete,
 		// mark edges to set properties of
-		for (Iterator<Edge> i = cfg.edgeIterator(); i.hasNext(); ) {
+		for (Iterator<Edge> i = cfg.edgeIterator(); i.hasNext();) {
 			Edge edge = i.next();
 			if (!edge.isExceptionEdge())
 				continue;
@@ -133,14 +134,14 @@ public class PruneInfeasibleExceptionEdges implements EdgeTypes {
 		}
 
 		// Remove deleted edges
-		for (Iterator<Edge> j = deletedEdgeSet.iterator(); j.hasNext(); ) {
+		for (Iterator<Edge> j = deletedEdgeSet.iterator(); j.hasNext();) {
 			Edge edge = j.next();
 			cfg.removeEdge(edge);
 			if (STATS) ++numEdgesPruned;
 		}
 
 		// Mark edges
-		for (Iterator<MarkedEdge> j = markedEdgeList.iterator(); j.hasNext(); ) {
+		for (Iterator<MarkedEdge> j = markedEdgeList.iterator(); j.hasNext();) {
 			j.next().apply();
 		}
 	}

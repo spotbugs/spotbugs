@@ -17,46 +17,53 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-// $Revision: 1.11 $
+// $Revision: 1.12 $
 
 package edu.umd.cs.findbugs.graph;
 
-import java.util.Iterator;
-
-import edu.umd.cs.findbugs.graph.GraphVertex;
-import edu.umd.cs.findbugs.graph.GraphEdge;
+import java.util.*;
 
 /**
  * Graph interface; defines the operations used to access and manipulate
  * a graph.
  */
 public interface Graph
-	<
-	EdgeType extends GraphEdge<EdgeType, VertexType>,
-	VertexType extends GraphVertex<VertexType>
-	> {
+        <
+        EdgeType extends GraphEdge<EdgeType, VertexType>,
+        VertexType extends GraphVertex<VertexType>
+        > {
 
-	/** Get number of edges in the graph. */
+	/**
+	 * Get number of edges in the graph.
+	 */
 	public int getNumEdges();
 
-	/** Get number of vertices in the graph. */
+	/**
+	 * Get number of vertices in the graph.
+	 */
 	public int getNumVertices();
 
-	/** Get Iterator over all edges in the graph. */
+	/**
+	 * Get Iterator over all edges in the graph.
+	 */
 	public Iterator<EdgeType> edgeIterator();
 
-	/** Get Iterator over all vertices in the graph. */
+	/**
+	 * Get Iterator over all vertices in the graph.
+	 */
 	public Iterator<VertexType> vertexIterator();
 
 	/**
 	 * Add given vertex to the graph.
 	 * The vertex should not be part of any other graph.
+	 *
 	 * @param v the vertex to add
 	 */
 	public void addVertex(VertexType v);
 
 	/**
 	 * Determine if the graph contains the given vertex.
+	 *
 	 * @param v the vertex
 	 * @return true if the vertex is part of the graph, false if not
 	 */
@@ -65,6 +72,7 @@ public interface Graph
 	/**
 	 * Add a new edge to the graph.
 	 * Duplicate edges (with same source and target vertices) are allowed.
+	 *
 	 * @param source the source vertex
 	 * @param target the target vertex
 	 * @return the new edge
@@ -75,6 +83,7 @@ public interface Graph
 	 * Look up an edge by source and target vertex.
 	 * If multiple edges with same source and target vertex exist,
 	 * one is selected arbitrarily.
+	 *
 	 * @param source the source vertex
 	 * @param target the target vertex
 	 * @return a matching edge, or null if there is no matching edge
@@ -118,6 +127,7 @@ public interface Graph
 
 	/**
 	 * Get an Iterator over outgoing edges from given vertex.
+	 *
 	 * @param source the source vertex
 	 * @return an Iterator over outgoing edges
 	 */
@@ -125,6 +135,7 @@ public interface Graph
 
 	/**
 	 * Get an Iterator over incoming edges to a given vertex.
+	 *
 	 * @param target the target vertex
 	 * @return an Iterator over incoming edges
 	 */
@@ -133,6 +144,7 @@ public interface Graph
 	/**
 	 * Get an iterator over the successors of this vertex;
 	 * i.e., the targets of the vertex's outgoing edges.
+	 *
 	 * @param source the source vertex
 	 * @return an Iterator over the successors of the vertex
 	 */
@@ -141,6 +153,7 @@ public interface Graph
 	/**
 	 * Get an iterator over the predecessors of this vertex;
 	 * i.e., the sources of the vertex's incoming edges.
+	 *
 	 * @param target the target vertex
 	 * @return an Iterator over the predecessors of the vertex
 	 */

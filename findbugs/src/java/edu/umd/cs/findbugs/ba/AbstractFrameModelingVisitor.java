@@ -19,7 +19,7 @@
 
 package edu.umd.cs.findbugs.ba;
 
-import org.apache.bcel.*;
+import org.apache.bcel.Constants;
 import org.apache.bcel.generic.*;
 
 /**
@@ -32,20 +32,21 @@ import org.apache.bcel.generic.*;
  * values as appropriate, and pushing the "default" value onto the stack
  * for each stack slot produced, where the default value is the one
  * returned by the getDefaultValue() method.
- *
+ * <p/>
  * <p> Subclasses should override the visit methods for any bytecode instructions
  * which require special handling.
  *
+ * @author David Hovemeyer
  * @see Frame
  * @see DataflowAnalysis
- * @author David Hovemeyer
  */
-public abstract class AbstractFrameModelingVisitor<Value, FrameType extends Frame<Value>> implements Visitor {
+public abstract class AbstractFrameModelingVisitor <Value, FrameType extends Frame<Value>> implements Visitor {
 	private FrameType frame;
 	private ConstantPoolGen cpg;
 
 	/**
 	 * Constructor.
+	 *
 	 * @param cpg the ConstantPoolGen of the method to be analyzed
 	 */
 	public AbstractFrameModelingVisitor(ConstantPoolGen cpg) {
@@ -56,19 +57,27 @@ public abstract class AbstractFrameModelingVisitor<Value, FrameType extends Fram
 	/**
 	 * Get the ConstantPoolGen for the method.
 	 */
-	public ConstantPoolGen getCPG() { return cpg; }
+	public ConstantPoolGen getCPG() {
+		return cpg;
+	}
 
 	/**
 	 * Set the frame.
+	 *
 	 * @param frame the Frame object
 	 */
-	public void setFrame(FrameType frame) { this.frame = frame; }
+	public void setFrame(FrameType frame) {
+		this.frame = frame;
+	}
 
 	/**
 	 * Get the frame.
+	 *
 	 * @return the Frame object
 	 */
-	public FrameType getFrame() { return frame; }
+	public FrameType getFrame() {
+		return frame;
+	}
 
 	/**
 	 * Produce a "default" value.
@@ -97,6 +106,7 @@ public abstract class AbstractFrameModelingVisitor<Value, FrameType extends Fram
 
 	/**
 	 * This is called for illegal bytecodes.
+	 *
 	 * @throws IllegalStateException
 	 */
 	private void illegalBytecode(Instruction ins) {
@@ -107,34 +117,89 @@ public abstract class AbstractFrameModelingVisitor<Value, FrameType extends Fram
 	 * Empty visit methods
 	 * ---------------------------------------------------------------------- */
 
-	public void visitStackInstruction(StackInstruction obj) { }
-	public void visitLocalVariableInstruction(LocalVariableInstruction obj) { }
-	public void visitBranchInstruction(BranchInstruction obj) { }
-	public void visitLoadClass(LoadClass obj) { }
-	public void visitFieldInstruction(FieldInstruction obj) { }
-	public void visitIfInstruction(IfInstruction obj) { }
-	public void visitConversionInstruction(ConversionInstruction obj) { }
-	public void visitPopInstruction(PopInstruction obj) { }
-	public void visitJsrInstruction(JsrInstruction obj) { }
-	public void visitGotoInstruction(GotoInstruction obj) { }
-	public void visitStoreInstruction(StoreInstruction obj) { }
-	public void visitTypedInstruction(TypedInstruction obj) { }
-	public void visitSelect(Select obj) { }
-	public void visitUnconditionalBranch(UnconditionalBranch obj) { }
-	public void visitPushInstruction(PushInstruction obj) { }
-	public void visitArithmeticInstruction(ArithmeticInstruction obj) { }
-	public void visitCPInstruction(CPInstruction obj) { }
-	public void visitInvokeInstruction(InvokeInstruction obj) { }
-	public void visitArrayInstruction(ArrayInstruction obj) { }
-	public void visitAllocationInstruction(AllocationInstruction obj) { }
-	public void visitReturnInstruction(ReturnInstruction obj) { }
-	public void visitFieldOrMethod(FieldOrMethod obj) { }
-	public void visitConstantPushInstruction(ConstantPushInstruction obj) { }
-	public void visitExceptionThrower(ExceptionThrower obj) { }
-	public void visitLoadInstruction(LoadInstruction obj) { }
-	public void visitVariableLengthInstruction(VariableLengthInstruction obj) { }
-	public void visitStackProducer(StackProducer obj) { }
-	public void visitStackConsumer(StackConsumer obj) { }
+	public void visitStackInstruction(StackInstruction obj) {
+	}
+
+	public void visitLocalVariableInstruction(LocalVariableInstruction obj) {
+	}
+
+	public void visitBranchInstruction(BranchInstruction obj) {
+	}
+
+	public void visitLoadClass(LoadClass obj) {
+	}
+
+	public void visitFieldInstruction(FieldInstruction obj) {
+	}
+
+	public void visitIfInstruction(IfInstruction obj) {
+	}
+
+	public void visitConversionInstruction(ConversionInstruction obj) {
+	}
+
+	public void visitPopInstruction(PopInstruction obj) {
+	}
+
+	public void visitJsrInstruction(JsrInstruction obj) {
+	}
+
+	public void visitGotoInstruction(GotoInstruction obj) {
+	}
+
+	public void visitStoreInstruction(StoreInstruction obj) {
+	}
+
+	public void visitTypedInstruction(TypedInstruction obj) {
+	}
+
+	public void visitSelect(Select obj) {
+	}
+
+	public void visitUnconditionalBranch(UnconditionalBranch obj) {
+	}
+
+	public void visitPushInstruction(PushInstruction obj) {
+	}
+
+	public void visitArithmeticInstruction(ArithmeticInstruction obj) {
+	}
+
+	public void visitCPInstruction(CPInstruction obj) {
+	}
+
+	public void visitInvokeInstruction(InvokeInstruction obj) {
+	}
+
+	public void visitArrayInstruction(ArrayInstruction obj) {
+	}
+
+	public void visitAllocationInstruction(AllocationInstruction obj) {
+	}
+
+	public void visitReturnInstruction(ReturnInstruction obj) {
+	}
+
+	public void visitFieldOrMethod(FieldOrMethod obj) {
+	}
+
+	public void visitConstantPushInstruction(ConstantPushInstruction obj) {
+	}
+
+	public void visitExceptionThrower(ExceptionThrower obj) {
+	}
+
+	public void visitLoadInstruction(LoadInstruction obj) {
+	}
+
+	public void visitVariableLengthInstruction(VariableLengthInstruction obj) {
+	}
+
+	public void visitStackProducer(StackProducer obj) {
+	}
+
+	public void visitStackConsumer(StackConsumer obj) {
+	}
 
 	/* ---------------------------------------------------------------------- 
 	 * General instruction handlers
@@ -211,28 +276,61 @@ public abstract class AbstractFrameModelingVisitor<Value, FrameType extends Fram
 	 * Visit methods for scalar STORE instructions
 	 * ---------------------------------------------------------------------- */
 
-	public void visitASTORE(ASTORE obj) { handleStoreInstruction(obj); }
-	public void visitDSTORE(DSTORE obj) { handleStoreInstruction(obj); }
-	public void visitFSTORE(FSTORE obj) { handleStoreInstruction(obj); }
-	public void visitISTORE(ISTORE obj) { handleStoreInstruction(obj); }
-	public void visitLSTORE(LSTORE obj) { handleStoreInstruction(obj); }
+	public void visitASTORE(ASTORE obj) {
+		handleStoreInstruction(obj);
+	}
+
+	public void visitDSTORE(DSTORE obj) {
+		handleStoreInstruction(obj);
+	}
+
+	public void visitFSTORE(FSTORE obj) {
+		handleStoreInstruction(obj);
+	}
+
+	public void visitISTORE(ISTORE obj) {
+		handleStoreInstruction(obj);
+	}
+
+	public void visitLSTORE(LSTORE obj) {
+		handleStoreInstruction(obj);
+	}
 
 	/* ---------------------------------------------------------------------- 
 	 * Visit methods for scalar LOAD instructions
 	 * ---------------------------------------------------------------------- */
 
-	public void visitALOAD(ALOAD obj) { handleLoadInstruction(obj); }
-	public void visitDLOAD(DLOAD obj) { handleLoadInstruction(obj); }
-	public void visitFLOAD(FLOAD obj) { handleLoadInstruction(obj); }
-	public void visitILOAD(ILOAD obj) { handleLoadInstruction(obj); }
-	public void visitLLOAD(LLOAD obj) { handleLoadInstruction(obj); }
+	public void visitALOAD(ALOAD obj) {
+		handleLoadInstruction(obj);
+	}
+
+	public void visitDLOAD(DLOAD obj) {
+		handleLoadInstruction(obj);
+	}
+
+	public void visitFLOAD(FLOAD obj) {
+		handleLoadInstruction(obj);
+	}
+
+	public void visitILOAD(ILOAD obj) {
+		handleLoadInstruction(obj);
+	}
+
+	public void visitLLOAD(LLOAD obj) {
+		handleLoadInstruction(obj);
+	}
 
 	/* ---------------------------------------------------------------------- 
 	 * Visit methods for POP, DUP, and SWAP instructions
 	 * ---------------------------------------------------------------------- */
 
-	public void visitPOP(POP obj) { handleNormalInstruction(obj); }
-	public void visitPOP2(POP2 obj) { handleNormalInstruction(obj); }
+	public void visitPOP(POP obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitPOP2(POP2 obj) {
+		handleNormalInstruction(obj);
+	}
 
 	public void visitDUP(DUP obj) {
 		try {
@@ -330,144 +428,541 @@ public abstract class AbstractFrameModelingVisitor<Value, FrameType extends Fram
 	 * Illegal bytecodes
 	 * ---------------------------------------------------------------------- */
 
-	public void visitIMPDEP1(IMPDEP1 obj) { illegalBytecode(obj); }
-	public void visitIMPDEP2(IMPDEP2 obj) { illegalBytecode(obj); }
-	public void visitBREAKPOINT(BREAKPOINT obj) { illegalBytecode(obj); }
+	public void visitIMPDEP1(IMPDEP1 obj) {
+		illegalBytecode(obj);
+	}
+
+	public void visitIMPDEP2(IMPDEP2 obj) {
+		illegalBytecode(obj);
+	}
+
+	public void visitBREAKPOINT(BREAKPOINT obj) {
+		illegalBytecode(obj);
+	}
 
 	/* ----------------------------------------------------------------------
 	 * Bytecodes that have "default" semantics
 	 * ---------------------------------------------------------------------- */
 
-	public void visitACONST_NULL(ACONST_NULL obj) { handleNormalInstruction(obj); }
-	public void visitGETSTATIC(GETSTATIC obj) { handleNormalInstruction(obj); }
-	public void visitIF_ICMPLT(IF_ICMPLT obj) { handleNormalInstruction(obj); }
-	public void visitMONITOREXIT(MONITOREXIT obj) { handleNormalInstruction(obj); }
-	public void visitIFLT(IFLT obj) { handleNormalInstruction(obj); }
-	public void visitBASTORE(BASTORE obj) { handleNormalInstruction(obj); }
-	public void visitCHECKCAST(CHECKCAST obj) { handleNormalInstruction(obj); }
-	public void visitFCMPG(FCMPG obj) { handleNormalInstruction(obj); }
-	public void visitI2F(I2F obj) { handleNormalInstruction(obj); }
-	public void visitATHROW(ATHROW obj) { handleNormalInstruction(obj); }
-	public void visitDCMPL(DCMPL obj) { handleNormalInstruction(obj); }
-	public void visitARRAYLENGTH(ARRAYLENGTH obj) { handleNormalInstruction(obj); }
-	public void visitINVOKESTATIC(INVOKESTATIC obj) { handleNormalInstruction(obj); }
-	public void visitLCONST(LCONST obj) { handleNormalInstruction(obj); }
-	public void visitDREM(DREM obj) { handleNormalInstruction(obj); }
-	public void visitIFGE(IFGE obj) { handleNormalInstruction(obj); }
-	public void visitCALOAD(CALOAD obj) { handleNormalInstruction(obj); }
-	public void visitLASTORE(LASTORE obj) { handleNormalInstruction(obj); }
-	public void visitI2D(I2D obj) { handleNormalInstruction(obj); }
-	public void visitDADD(DADD obj) { handleNormalInstruction(obj); }
-	public void visitINVOKESPECIAL(INVOKESPECIAL obj) { handleNormalInstruction(obj); }
-	public void visitIAND(IAND obj) { handleNormalInstruction(obj); }
-	public void visitPUTFIELD(PUTFIELD obj) { handleNormalInstruction(obj); }
-	public void visitDCONST(DCONST obj) { handleNormalInstruction(obj); }
-	public void visitNEW(NEW obj) { handleNormalInstruction(obj); }
-	public void visitIFNULL(IFNULL obj) { handleNormalInstruction(obj); }
-	public void visitLSUB(LSUB obj) { handleNormalInstruction(obj); }
-	public void visitL2I(L2I obj) { handleNormalInstruction(obj); }
-	public void visitISHR(ISHR obj) { handleNormalInstruction(obj); }
-	public void visitTABLESWITCH(TABLESWITCH obj) { handleNormalInstruction(obj); }
-	public void visitIINC(IINC obj) { handleNormalInstruction(obj); }
-	public void visitDRETURN(DRETURN obj) { handleNormalInstruction(obj); }
-	public void visitDASTORE(DASTORE obj) { handleNormalInstruction(obj); }
-	public void visitIALOAD(IALOAD obj) { handleNormalInstruction(obj); }
-	public void visitDDIV(DDIV obj) { handleNormalInstruction(obj); }
-	public void visitIF_ICMPGE(IF_ICMPGE obj) { handleNormalInstruction(obj); }
-	public void visitLAND(LAND obj) { handleNormalInstruction(obj); }
-	public void visitIDIV(IDIV obj) { handleNormalInstruction(obj); }
-	public void visitLOR(LOR obj) { handleNormalInstruction(obj); }
-	public void visitCASTORE(CASTORE obj) { handleNormalInstruction(obj); }
-	public void visitFREM(FREM obj) { handleNormalInstruction(obj); }
-	public void visitLDC(LDC obj) { handleNormalInstruction(obj); }
-	public void visitBIPUSH(BIPUSH obj) { handleNormalInstruction(obj); }
-	public void visitF2L(F2L obj) { handleNormalInstruction(obj); }
-	public void visitFMUL(FMUL obj) { handleNormalInstruction(obj); }
-	public void visitJSR(JSR obj) { handleNormalInstruction(obj); }
-	public void visitFSUB(FSUB obj) { handleNormalInstruction(obj); }
-	public void visitSASTORE(SASTORE obj) { handleNormalInstruction(obj); }
-	public void visitRETURN(RETURN obj) { handleNormalInstruction(obj); }
-	public void visitDALOAD(DALOAD obj) { handleNormalInstruction(obj); }
-	public void visitSIPUSH(SIPUSH obj) { handleNormalInstruction(obj); }
-	public void visitDSUB(DSUB obj) { handleNormalInstruction(obj); }
-	public void visitL2F(L2F obj) { handleNormalInstruction(obj); }
-	public void visitIF_ICMPGT(IF_ICMPGT obj) { handleNormalInstruction(obj); }
-	public void visitF2D(F2D obj) { handleNormalInstruction(obj); }
-	public void visitI2L(I2L obj) { handleNormalInstruction(obj); }
-	public void visitIF_ACMPNE(IF_ACMPNE obj) { handleNormalInstruction(obj); }
-	public void visitI2S(I2S obj) { handleNormalInstruction(obj); }
-	public void visitIFEQ(IFEQ obj) { handleNormalInstruction(obj); }
-	public void visitIOR(IOR obj) { handleNormalInstruction(obj); }
-	public void visitIREM(IREM obj) { handleNormalInstruction(obj); }
-	public void visitIASTORE(IASTORE obj) { handleNormalInstruction(obj); }
-	public void visitNEWARRAY(NEWARRAY obj) { handleNormalInstruction(obj); }
-	public void visitINVOKEINTERFACE(INVOKEINTERFACE obj) { handleNormalInstruction(obj); }
-	public void visitINEG(INEG obj) { handleNormalInstruction(obj); }
-	public void visitLCMP(LCMP obj) { handleNormalInstruction(obj); }
-	public void visitJSR_W(JSR_W obj) { handleNormalInstruction(obj); }
-	public void visitMULTIANEWARRAY(MULTIANEWARRAY obj) { handleNormalInstruction(obj); }
-	public void visitSALOAD(SALOAD obj) { handleNormalInstruction(obj); }
-	public void visitIFNONNULL(IFNONNULL obj) { handleNormalInstruction(obj); }
-	public void visitDMUL(DMUL obj) { handleNormalInstruction(obj); }
-	public void visitIFNE(IFNE obj) { handleNormalInstruction(obj); }
-	public void visitIF_ICMPLE(IF_ICMPLE obj) { handleNormalInstruction(obj); }
-	public void visitLDC2_W(LDC2_W obj) { handleNormalInstruction(obj); }
-	public void visitGETFIELD(GETFIELD obj) { handleNormalInstruction(obj); }
-	public void visitLADD(LADD obj) { handleNormalInstruction(obj); }
-	public void visitNOP(NOP obj) { handleNormalInstruction(obj); }
-	public void visitFALOAD(FALOAD obj) { handleNormalInstruction(obj); }
-	public void visitINSTANCEOF(INSTANCEOF obj) { handleNormalInstruction(obj); }
-	public void visitIFLE(IFLE obj) { handleNormalInstruction(obj); }
-	public void visitLXOR(LXOR obj) { handleNormalInstruction(obj); }
-	public void visitLRETURN(LRETURN obj) { handleNormalInstruction(obj); }
-	public void visitFCONST(FCONST obj) { handleNormalInstruction(obj); }
-	public void visitIUSHR(IUSHR obj) { handleNormalInstruction(obj); }
-	public void visitBALOAD(BALOAD obj) { handleNormalInstruction(obj); }
-	public void visitIF_ACMPEQ(IF_ACMPEQ obj) { handleNormalInstruction(obj); }
-	public void visitMONITORENTER(MONITORENTER obj) { handleNormalInstruction(obj); }
-	public void visitLSHL(LSHL obj) { handleNormalInstruction(obj); }
-	public void visitDCMPG(DCMPG obj) { handleNormalInstruction(obj); }
-	public void visitD2L(D2L obj) { handleNormalInstruction(obj); }
-	public void visitL2D(L2D obj) { handleNormalInstruction(obj); }
-	public void visitRET(RET obj) { handleNormalInstruction(obj); }
-	public void visitIFGT(IFGT obj) { handleNormalInstruction(obj); }
-	public void visitIXOR(IXOR obj) { handleNormalInstruction(obj); }
-	public void visitINVOKEVIRTUAL(INVOKEVIRTUAL obj) { handleNormalInstruction(obj); }
-	public void visitFASTORE(FASTORE obj) { handleNormalInstruction(obj); }
-	public void visitIRETURN(IRETURN obj) { handleNormalInstruction(obj); }
-	public void visitIF_ICMPNE(IF_ICMPNE obj) { handleNormalInstruction(obj); }
-	public void visitLDIV(LDIV obj) { handleNormalInstruction(obj); }
-	public void visitPUTSTATIC(PUTSTATIC obj) { handleNormalInstruction(obj); }
-	public void visitAALOAD(AALOAD obj) { handleNormalInstruction(obj); }
-	public void visitD2I(D2I obj) { handleNormalInstruction(obj); }
-	public void visitIF_ICMPEQ(IF_ICMPEQ obj) { handleNormalInstruction(obj); }
-	public void visitAASTORE(AASTORE obj) { handleNormalInstruction(obj); }
-	public void visitARETURN(ARETURN obj) { handleNormalInstruction(obj); }
-	public void visitFNEG(FNEG obj) { handleNormalInstruction(obj); }
-	public void visitGOTO_W(GOTO_W obj) { handleNormalInstruction(obj); }
-	public void visitD2F(D2F obj) { handleNormalInstruction(obj); }
-	public void visitGOTO(GOTO obj) { handleNormalInstruction(obj); }
-	public void visitISUB(ISUB obj) { handleNormalInstruction(obj); }
-	public void visitF2I(F2I obj) { handleNormalInstruction(obj); }
-	public void visitDNEG(DNEG obj) { handleNormalInstruction(obj); }
-	public void visitICONST(ICONST obj) { handleNormalInstruction(obj); }
-	public void visitFDIV(FDIV obj) { handleNormalInstruction(obj); }
-	public void visitI2B(I2B obj) { handleNormalInstruction(obj); }
-	public void visitLNEG(LNEG obj) { handleNormalInstruction(obj); }
-	public void visitLREM(LREM obj) { handleNormalInstruction(obj); }
-	public void visitIMUL(IMUL obj) { handleNormalInstruction(obj); }
-	public void visitIADD(IADD obj) { handleNormalInstruction(obj); }
-	public void visitLSHR(LSHR obj) { handleNormalInstruction(obj); }
-	public void visitLOOKUPSWITCH(LOOKUPSWITCH obj) { handleNormalInstruction(obj); }
-	public void visitFCMPL(FCMPL obj) { handleNormalInstruction(obj); }
-	public void visitI2C(I2C obj) { handleNormalInstruction(obj); }
-	public void visitLMUL(LMUL obj) { handleNormalInstruction(obj); }
-	public void visitLUSHR(LUSHR obj) { handleNormalInstruction(obj); }
-	public void visitISHL(ISHL obj) { handleNormalInstruction(obj); }
-	public void visitLALOAD(LALOAD obj) { handleNormalInstruction(obj); }
-	public void visitANEWARRAY(ANEWARRAY obj) { handleNormalInstruction(obj); }
-	public void visitFRETURN(FRETURN obj) { handleNormalInstruction(obj); }
-	public void visitFADD(FADD obj) { handleNormalInstruction(obj); }
+	public void visitACONST_NULL(ACONST_NULL obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitGETSTATIC(GETSTATIC obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitIF_ICMPLT(IF_ICMPLT obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitMONITOREXIT(MONITOREXIT obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitIFLT(IFLT obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitBASTORE(BASTORE obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitCHECKCAST(CHECKCAST obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitFCMPG(FCMPG obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitI2F(I2F obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitATHROW(ATHROW obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitDCMPL(DCMPL obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitARRAYLENGTH(ARRAYLENGTH obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitINVOKESTATIC(INVOKESTATIC obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitLCONST(LCONST obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitDREM(DREM obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitIFGE(IFGE obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitCALOAD(CALOAD obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitLASTORE(LASTORE obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitI2D(I2D obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitDADD(DADD obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitINVOKESPECIAL(INVOKESPECIAL obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitIAND(IAND obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitPUTFIELD(PUTFIELD obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitDCONST(DCONST obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitNEW(NEW obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitIFNULL(IFNULL obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitLSUB(LSUB obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitL2I(L2I obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitISHR(ISHR obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitTABLESWITCH(TABLESWITCH obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitIINC(IINC obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitDRETURN(DRETURN obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitDASTORE(DASTORE obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitIALOAD(IALOAD obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitDDIV(DDIV obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitIF_ICMPGE(IF_ICMPGE obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitLAND(LAND obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitIDIV(IDIV obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitLOR(LOR obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitCASTORE(CASTORE obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitFREM(FREM obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitLDC(LDC obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitBIPUSH(BIPUSH obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitF2L(F2L obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitFMUL(FMUL obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitJSR(JSR obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitFSUB(FSUB obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitSASTORE(SASTORE obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitRETURN(RETURN obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitDALOAD(DALOAD obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitSIPUSH(SIPUSH obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitDSUB(DSUB obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitL2F(L2F obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitIF_ICMPGT(IF_ICMPGT obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitF2D(F2D obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitI2L(I2L obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitIF_ACMPNE(IF_ACMPNE obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitI2S(I2S obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitIFEQ(IFEQ obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitIOR(IOR obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitIREM(IREM obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitIASTORE(IASTORE obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitNEWARRAY(NEWARRAY obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitINVOKEINTERFACE(INVOKEINTERFACE obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitINEG(INEG obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitLCMP(LCMP obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitJSR_W(JSR_W obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitMULTIANEWARRAY(MULTIANEWARRAY obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitSALOAD(SALOAD obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitIFNONNULL(IFNONNULL obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitDMUL(DMUL obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitIFNE(IFNE obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitIF_ICMPLE(IF_ICMPLE obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitLDC2_W(LDC2_W obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitGETFIELD(GETFIELD obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitLADD(LADD obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitNOP(NOP obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitFALOAD(FALOAD obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitINSTANCEOF(INSTANCEOF obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitIFLE(IFLE obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitLXOR(LXOR obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitLRETURN(LRETURN obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitFCONST(FCONST obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitIUSHR(IUSHR obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitBALOAD(BALOAD obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitIF_ACMPEQ(IF_ACMPEQ obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitMONITORENTER(MONITORENTER obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitLSHL(LSHL obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitDCMPG(DCMPG obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitD2L(D2L obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitL2D(L2D obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitRET(RET obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitIFGT(IFGT obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitIXOR(IXOR obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitINVOKEVIRTUAL(INVOKEVIRTUAL obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitFASTORE(FASTORE obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitIRETURN(IRETURN obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitIF_ICMPNE(IF_ICMPNE obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitLDIV(LDIV obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitPUTSTATIC(PUTSTATIC obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitAALOAD(AALOAD obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitD2I(D2I obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitIF_ICMPEQ(IF_ICMPEQ obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitAASTORE(AASTORE obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitARETURN(ARETURN obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitFNEG(FNEG obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitGOTO_W(GOTO_W obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitD2F(D2F obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitGOTO(GOTO obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitISUB(ISUB obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitF2I(F2I obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitDNEG(DNEG obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitICONST(ICONST obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitFDIV(FDIV obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitI2B(I2B obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitLNEG(LNEG obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitLREM(LREM obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitIMUL(IMUL obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitIADD(IADD obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitLSHR(LSHR obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitLOOKUPSWITCH(LOOKUPSWITCH obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitFCMPL(FCMPL obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitI2C(I2C obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitLMUL(LMUL obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitLUSHR(LUSHR obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitISHL(ISHL obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitLALOAD(LALOAD obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitANEWARRAY(ANEWARRAY obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitFRETURN(FRETURN obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitFADD(FADD obj) {
+		handleNormalInstruction(obj);
+	}
 }
 
 // vim:ts=4

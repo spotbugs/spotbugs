@@ -18,76 +18,75 @@
  */
 
 package edu.umd.cs.findbugs.detect;
-import edu.umd.cs.findbugs.*;
-import java.util.*;
-import org.apache.bcel.classfile.*;
-import java.util.zip.*;
-import java.io.*;
+
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.visitclass.Constants2;
+import org.apache.bcel.classfile.Code;
 
-public class WaitInLoop extends BytecodeScanningDetector implements   Constants2 {
+public class WaitInLoop extends BytecodeScanningDetector implements Constants2 {
 
-   boolean sawWait = false;
-   boolean waitHasTimeout = false;
-   boolean sawNotify = false;
-   int notifyPC;
-   int earliestJump = 0;
-   int waitAt= 0;
-   private BugReporter bugReporter;
+	boolean sawWait = false;
+	boolean waitHasTimeout = false;
+	boolean sawNotify = false;
+	int notifyPC;
+	int earliestJump = 0;
+	int waitAt = 0;
+	private BugReporter bugReporter;
 
-   public WaitInLoop(BugReporter bugReporter) {
-	this.bugReporter = bugReporter;
+	public WaitInLoop(BugReporter bugReporter) {
+		this.bugReporter = bugReporter;
 	}
 
-    public void visit(Code obj) {
-	sawWait = false;
-	waitHasTimeout = false;
-	sawNotify = false;
-	earliestJump = 9999999;
-	super.visit(obj);
-	if (sawWait && waitAt < earliestJump) 
-		bugReporter.reportBug(new BugInstance("WA_NOT_IN_LOOP", waitHasTimeout ? LOW_PRIORITY : NORMAL_PRIORITY)
-			.addClassAndMethod(this)
-			.addSourceLine(this, waitAt));
-	if (sawNotify)
-		bugReporter.reportBug(new BugInstance("NO_NOTIFY_NOT_NOTIFYALL", LOW_PRIORITY)
-			.addClassAndMethod(this)
-			.addSourceLine(this, notifyPC));
+	public void visit(Code obj) {
+		sawWait = false;
+		waitHasTimeout = false;
+		sawNotify = false;
+		earliestJump = 9999999;
+		super.visit(obj);
+		if (sawWait && waitAt < earliestJump)
+			bugReporter.reportBug(new BugInstance("WA_NOT_IN_LOOP", waitHasTimeout ? LOW_PRIORITY : NORMAL_PRIORITY)
+			        .addClassAndMethod(this)
+			        .addSourceLine(this, waitAt));
+		if (sawNotify)
+			bugReporter.reportBug(new BugInstance("NO_NOTIFY_NOT_NOTIFYALL", LOW_PRIORITY)
+			        .addClassAndMethod(this)
+			        .addSourceLine(this, notifyPC));
 	}
 
-    public void sawOpcode(int seen) {
+	public void sawOpcode(int seen) {
 
-	if ((seen == INVOKEVIRTUAL || seen == INVOKEINTERFACE)
-		&& getNameConstantOperand().equals("notify")
-		&& getSigConstantOperand().equals("()V")){
-		sawNotify = true;
-		notifyPC = getPC();
+		if ((seen == INVOKEVIRTUAL || seen == INVOKEINTERFACE)
+		        && getNameConstantOperand().equals("notify")
+		        && getSigConstantOperand().equals("()V")) {
+			sawNotify = true;
+			notifyPC = getPC();
 		}
-	if (!sawWait && (seen == INVOKEVIRTUAL || seen == INVOKEINTERFACE)
-		&& getNameConstantOperand().equals("wait")
-		&& (getSigConstantOperand().equals("()V")
-		    || getSigConstantOperand().equals("(J)V")
-		    || getSigConstantOperand().equals("(JI)V"))
-		){
-		/*
-		System.out.println("Saw invocation of "
-			+ nameConstant + "("
-			+sigConstant
-			+")");
-		*/
+		if (!sawWait && (seen == INVOKEVIRTUAL || seen == INVOKEINTERFACE)
+		        && getNameConstantOperand().equals("wait")
+		        && (getSigConstantOperand().equals("()V")
+		        || getSigConstantOperand().equals("(J)V")
+		        || getSigConstantOperand().equals("(JI)V"))
+		) {
+			/*
+			System.out.println("Saw invocation of "
+				+ nameConstant + "("
+				+sigConstant
+				+")");
+			*/
 
-		sawWait = true;
-		waitHasTimeout = !getSigConstantOperand().equals("()V");
-		waitAt = getPC();
-		earliestJump = getPC()+1;
-		return;
+			sawWait = true;
+			waitHasTimeout = !getSigConstantOperand().equals("()V");
+			waitAt = getPC();
+			earliestJump = getPC() + 1;
+			return;
 		}
-	if (seen >= IFEQ && seen <= GOTO
-		|| seen >= IFNULL && seen <= GOTO_W)  
-		earliestJump = Math.min(earliestJump, getBranchTarget());
+		if (seen >= IFEQ && seen <= GOTO
+		        || seen >= IFNULL && seen <= GOTO_W)
+			earliestJump = Math.min(earliestJump, getBranchTarget());
 
 	}
 
-	
 
-	}	
+}

@@ -19,10 +19,12 @@
 
 package edu.umd.cs.findbugs.ba.bcp;
 
-import org.apache.bcel.generic.*;
-import edu.umd.cs.findbugs.ba.ValueNumberFrame;
-import edu.umd.cs.findbugs.ba.ValueNumber;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
+import edu.umd.cs.findbugs.ba.ValueNumberFrame;
+import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.Instruction;
+import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.MONITORENTER;
 
 /**
  * A PatternElement for matching a MONITORENTER instruction.
@@ -32,15 +34,16 @@ import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 public class Monitorenter extends OneVariableInstruction {
 	/**
 	 * Constructor.
+	 *
 	 * @param varName name of the variable representing the reference
-	 *   to the object being locked
+	 *                to the object being locked
 	 */
 	public Monitorenter(String varName) {
 		super(varName);
 	}
 
 	public MatchResult match(InstructionHandle handle, ConstantPoolGen cpg,
-		ValueNumberFrame before, ValueNumberFrame after, BindingSet bindingSet) throws DataflowAnalysisException {
+	                         ValueNumberFrame before, ValueNumberFrame after, BindingSet bindingSet) throws DataflowAnalysisException {
 
 		// Instruction must be MONITORENTER.
 		Instruction ins = handle.getInstruction();

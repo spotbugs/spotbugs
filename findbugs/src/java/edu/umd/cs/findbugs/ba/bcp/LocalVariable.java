@@ -35,7 +35,9 @@ public class LocalVariable implements Variable {
 		return valueNumber.equals(otherLocal.valueNumber);
 	}
 
-	public String toString() { return valueNumber.toString(); }
+	public String toString() {
+		return valueNumber.toString();
+	}
 }
 
 // vim:ts=4

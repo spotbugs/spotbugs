@@ -31,6 +31,7 @@ import org.apache.bcel.classfile.JavaClass;
 public interface ClassObserver {
 	/**
 	 * Observe a class.
+	 *
 	 * @param javaClass the class
 	 */
 	public void observeClass(JavaClass javaClass);

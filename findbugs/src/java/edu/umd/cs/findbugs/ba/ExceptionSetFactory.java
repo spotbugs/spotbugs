@@ -19,8 +19,7 @@
 
 package edu.umd.cs.findbugs.ba;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 
 import org.apache.bcel.generic.ObjectType;
 

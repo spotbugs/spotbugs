@@ -19,10 +19,10 @@
 
 package edu.umd.cs.findbugs.ba;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * Data source for source files which are stored in

@@ -19,11 +19,8 @@
 
 package edu.umd.cs.findbugs;
 
-import org.apache.bcel.*;
-import org.apache.bcel.classfile.*;
-import org.apache.bcel.generic.*;
-
-import edu.umd.cs.findbugs.ba.*;
+import edu.umd.cs.findbugs.ba.Edge;
+import org.apache.bcel.generic.InstructionHandle;
 
 /**
  * A scanner for implementing a state machine over a sequence
@@ -34,10 +31,12 @@ public interface InstructionScanner {
 	 * Traverse an edge.
 	 */
 	public void traverseEdge(Edge edge);
+
 	/**
 	 * Traverse an instruction.
 	 */
 	public void scanInstruction(InstructionHandle handle);
+
 	/**
 	 * Return true if this scanner has completed, false otherwise.
 	 */

@@ -31,20 +31,21 @@ import org.apache.bcel.generic.ObjectType;
 public interface StreamFactory {
 	/**
 	 * Determine if a Stream is created at given location.
-	 * @param location the Location
-	 * @param type the ObjectType associated with the instruction at the location;
-	 *   the StreamResourceTracker prescreens for TypedInstructions
-	 *   that are associated with ObjectTypes, since they are
-	 *   the only instructions that could conceivably create a
-	 *   stream object
-	 * @param cpg the ConstantPoolGen for the method
+	 *
+	 * @param location              the Location
+	 * @param type                  the ObjectType associated with the instruction at the location;
+	 *                              the StreamResourceTracker prescreens for TypedInstructions
+	 *                              that are associated with ObjectTypes, since they are
+	 *                              the only instructions that could conceivably create a
+	 *                              stream object
+	 * @param cpg                   the ConstantPoolGen for the method
 	 * @param lookupFailureCallback used to report missing
-	 *   classes in the class hierarchy
+	 *                              classes in the class hierarchy
 	 * @return a Stream created at the Location,
-	 *   or null if no stream is created there
+	 *         or null if no stream is created there
 	 */
 	public Stream createStream(Location location, ObjectType type, ConstantPoolGen cpg,
-		RepositoryLookupFailureCallback lookupFailureCallback);
+	                           RepositoryLookupFailureCallback lookupFailureCallback);
 }
 
 // vim:ts=3

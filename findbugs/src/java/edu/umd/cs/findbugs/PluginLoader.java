@@ -19,11 +19,15 @@
 
 package edu.umd.cs.findbugs;
 
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.*;
-import java.net.*;
-import java.io.*;
-import org.dom4j.*;
-import org.dom4j.io.*;
+
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.Element;
+import org.dom4j.Node;
+import org.dom4j.io.SAXReader;
 
 /**
  * Loader for a FindBugs plugin.
@@ -32,18 +36,18 @@ import org.dom4j.io.*;
  * <ul>
  * <li> the bug pattern detector classes,
  * <li> the bug patterns detected (including all text for displaying
- *    detected instances of those patterns), and
+ * detected instances of those patterns), and
  * <li> the "bug codes" which group together related bug instances
  * </ul>
- *
+ * <p/>
  * <p> The PluginLoader creates instances of DetectorFactory, BugPattern, and BugCode,
  * and provides methods for accessing those instances.
  *
+ * @author David Hovemeyer
  * @see DetectorFactory
  * @see BugPattern
  * @see BugCode
  * @see PluginException
- * @author David Hovemeyer
  */
 public class PluginLoader extends URLClassLoader {
 
@@ -53,6 +57,7 @@ public class PluginLoader extends URLClassLoader {
 
 	/**
 	 * Constructor.
+	 *
 	 * @param url the URL of the plugin Jar file
 	 * @throws PluginException if the plugin cannot be fully loaded
 	 */
@@ -60,10 +65,11 @@ public class PluginLoader extends URLClassLoader {
 		super(new URL[]{url});
 		init();
 	}
-	
+
 	/**
 	 * Constructor.
-	 * @param url the URL of the plugin Jar file
+	 *
+	 * @param url    the URL of the plugin Jar file
 	 * @param parent the parent classloader
 	 * @throws PluginException if the plugin cannot be fully loaded
 	 */
@@ -133,7 +139,7 @@ public class PluginLoader extends URLClassLoader {
 		try {
 			detectorFactoryList = new ArrayList<DetectorFactory>();
 			List detectorNodeList = pluginDescriptor.selectNodes("/FindbugsPlugin/Detector");
-			for (Iterator i = detectorNodeList.iterator(); i.hasNext(); ) {
+			for (Iterator i = detectorNodeList.iterator(); i.hasNext();) {
 				Node detectorNode = (Node) i.next();
 				String className = detectorNode.valueOf("@class");
 				String speed = detectorNode.valueOf("@speed");
@@ -145,15 +151,15 @@ public class PluginLoader extends URLClassLoader {
 	
 				Class detectorClass = loadClass(className);
 				DetectorFactory factory = new DetectorFactory(detectorClass, !disabled.equals("true"),
-					speed, reports, requireJRE);
+				        speed, reports, requireJRE);
 				detectorFactoryList.add(factory);
 				detectorFactoryMap.put(className, factory);
 
 				// Find Detector node in one of the messages files,
 				// to get the detail HTML.
 				Node node = findMessageNode(messageCollectionList,
-					"/MessageCollection/Detector[@class='" + className + "']/Details",
-					"Missing Detector description for detector " + className);
+				        "/MessageCollection/Detector[@class='" + className + "']/Details",
+				        "Missing Detector description for detector " + className);
 
 				Element details = (Element) node;
 				String detailHTML = details.getText();
@@ -171,7 +177,7 @@ public class PluginLoader extends URLClassLoader {
 		// Create BugPatterns
 		bugPatternList = new ArrayList<BugPattern>();
 		List bugPatternNodeList = pluginDescriptor.selectNodes("/FindbugsPlugin/BugPattern");
-		for (Iterator i = bugPatternNodeList.iterator(); i.hasNext(); ) {
+		for (Iterator i = bugPatternNodeList.iterator(); i.hasNext();) {
 			Node bugPatternNode = (Node) i.next();
 			String type = bugPatternNode.valueOf("@type");
 			String abbrev = bugPatternNode.valueOf("@abbrev");
@@ -181,26 +187,26 @@ public class PluginLoader extends URLClassLoader {
 			// Find the matching element in messages.xml (or translations)
 			String query = "/MessageCollection/BugPattern[@type='" + type + "']";
 			Node messageNode = findMessageNode(messageCollectionList, query,
-				"messages.xml missing BugPattern element for type " + type);
+			        "messages.xml missing BugPattern element for type " + type);
 
 			String shortDesc = getChildText(messageNode, "ShortDescription");
 			String longDesc = getChildText(messageNode, "LongDescription");
 			String detailText = getChildText(messageNode, "Details");
 
 			BugPattern bugPattern = new BugPattern(type, abbrev, category,
-				Boolean.valueOf(experimental).booleanValue(),
-				shortDesc, longDesc, detailText);
+			        Boolean.valueOf(experimental).booleanValue(),
+			        shortDesc, longDesc, detailText);
 			bugPatternList.add(bugPattern);
 		}
 
 		// Create BugCodes
 		HashSet<String> definedBugCodes = new HashSet<String>();
 		bugCodeList = new ArrayList<BugCode>();
-		for (Iterator<Document> i = messageCollectionList.iterator(); i.hasNext(); ) {
+		for (Iterator<Document> i = messageCollectionList.iterator(); i.hasNext();) {
 			Document messageCollection = i.next();
 
 			List bugCodeNodeList = messageCollection.selectNodes("/MessageCollection/BugCode");
-			for (Iterator j = bugCodeNodeList.iterator(); j.hasNext(); ) {
+			for (Iterator j = bugCodeNodeList.iterator(); j.hasNext();) {
 				Node bugCodeNode = (Node) j.next();
 				String abbrev = bugCodeNode.valueOf("@abbrev");
 				if (abbrev.equals(""))
@@ -218,7 +224,7 @@ public class PluginLoader extends URLClassLoader {
 	}
 
 	private void addCollection(List<Document> messageCollectionList, String filename)
-		throws DocumentException {
+	        throws DocumentException {
 		URL messageURL = findResource(filename);
 		if (messageURL != null) {
 			SAXReader reader = new SAXReader();
@@ -228,9 +234,9 @@ public class PluginLoader extends URLClassLoader {
 	}
 
 	private static Node findMessageNode(List<Document> messageCollectionList, String xpath,
-		String missingMsg) throws PluginException {
+	                                    String missingMsg) throws PluginException {
 
-		for (Iterator<Document> i = messageCollectionList.iterator(); i.hasNext(); ) {
+		for (Iterator<Document> i = messageCollectionList.iterator(); i.hasNext();) {
 			Document document = i.next();
 			Node node = document.selectSingleNode(xpath);
 			if (node != null)

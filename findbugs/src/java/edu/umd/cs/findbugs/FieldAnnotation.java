@@ -19,20 +19,20 @@
 
 package edu.umd.cs.findbugs;
 
+import edu.umd.cs.findbugs.ba.SignatureConverter;
 import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
-import edu.umd.cs.findbugs.ba.SignatureConverter;
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.generic.*;
-import org.dom4j.Element;
 import org.dom4j.Branch;
 import org.dom4j.DocumentException;
+import org.dom4j.Element;
 
 /**
  * A BugAnnotation specifying a particular field in particular class.
  *
- * @see BugAnnotation
  * @author David Hovemeyer
+ * @see BugAnnotation
  */
 public class FieldAnnotation extends PackageMemberAnnotation {
 	private static final String DEFAULT_ROLE = "FIELD_DEFAULT";
@@ -43,9 +43,10 @@ public class FieldAnnotation extends PackageMemberAnnotation {
 
 	/**
 	 * Constructor.
+	 *
 	 * @param className the name of the class containing the field
 	 * @param fieldName the name of the field
-	 * @param fieldSig the type signature of the field
+	 * @param fieldSig  the type signature of the field
 	 */
 	public FieldAnnotation(String className, String fieldName, String fieldSig, boolean isStatic) {
 		super(className, DEFAULT_ROLE);
@@ -57,30 +58,33 @@ public class FieldAnnotation extends PackageMemberAnnotation {
 	/**
 	 * Factory method. Class name, field name, and field signatures are taken from
 	 * the given visitor, which is visiting the field.
+	 *
 	 * @param visitor the visitor which is visiting the field
 	 * @return the FieldAnnotation object
 	 */
 	public static FieldAnnotation fromVisitedField(PreorderVisitor visitor) {
 		return new FieldAnnotation(visitor.getDottedClassName(), visitor.getFieldName(), visitor.getFieldSig(),
-			visitor.getFieldIsStatic());
+		        visitor.getFieldIsStatic());
 	}
 
 	/**
 	 * Factory method. Class name, field name, and field signatures are taken from
 	 * the given visitor, which is visiting a reference to the field
 	 * (i.e., a getfield or getstatic instruction).
+	 *
 	 * @param visitor the visitor which is visiting the field reference
 	 * @return the FieldAnnotation object
 	 */
 	public static FieldAnnotation fromReferencedField(DismantleBytecode visitor) {
 		return new FieldAnnotation(visitor.getDottedClassConstantOperand(), visitor.getNameConstantOperand(), visitor.getSigConstantOperand(),
-			visitor.getRefFieldIsStatic());
+		        visitor.getRefFieldIsStatic());
 	}
 
 	/**
 	 * Factory method. Construct from class name and BCEL Field object.
+	 *
 	 * @param className the name of the class which defines the field
-	 * @param field the BCEL Field object
+	 * @param field     the BCEL Field object
 	 */
 	public static FieldAnnotation fromBCELField(String className, Field field) {
 		return new FieldAnnotation(className, field.getName(), field.getSignature(), field.isStatic());
@@ -109,6 +113,7 @@ public class FieldAnnotation extends PackageMemberAnnotation {
 
 	/**
 	 * Is the given instruction a read of a field?
+	 *
 	 * @param ins the Instruction to check
 	 * @param cpg ConstantPoolGen of the method containing the instruction
 	 * @return the Field if the instruction is a read of a field, null otherwise
@@ -123,6 +128,7 @@ public class FieldAnnotation extends PackageMemberAnnotation {
 
 	/**
 	 * Is the instruction a write of a field?
+	 *
 	 * @param ins the Instruction to check
 	 * @param cpg ConstantPoolGen of the method containing the instruction
 	 * @return the Field if instruction is a write of a field, null otherwise
@@ -166,9 +172,9 @@ public class FieldAnnotation extends PackageMemberAnnotation {
 			return false;
 		FieldAnnotation other = (FieldAnnotation) o;
 		return className.equals(other.className)
-			&& fieldName.equals(other.fieldName)
-			&& fieldSig.equals(other.fieldSig)
-			&& isStatic == other.isStatic;
+		        && fieldName.equals(other.fieldName)
+		        && fieldSig.equals(other.fieldSig)
+		        && isStatic == other.isStatic;
 	}
 
 	public int compareTo(BugAnnotation o) {
@@ -199,7 +205,7 @@ public class FieldAnnotation extends PackageMemberAnnotation {
 		public XMLConvertible fromElement(Element element) throws DocumentException {
 			String className = element.attributeValue("classname");
 			String fieldName = element.attributeValue("name");
-			String fieldSig  = element.attributeValue("signature");
+			String fieldSig = element.attributeValue("signature");
 			boolean isStatic = Boolean.valueOf(element.attributeValue("isStatic")).booleanValue();
 			FieldAnnotation annotation = new FieldAnnotation(className, fieldName, fieldSig, isStatic);
 
@@ -219,10 +225,10 @@ public class FieldAnnotation extends PackageMemberAnnotation {
 
 	public Element toElement(Branch parent) {
 		Element element = parent.addElement(ELEMENT_NAME)
-			.addAttribute("classname", getClassName())
-			.addAttribute("name", getFieldName())
-			.addAttribute("signature", getFieldSignature())
-			.addAttribute("isStatic", String.valueOf(isStatic()));
+		        .addAttribute("classname", getClassName())
+		        .addAttribute("name", getFieldName())
+		        .addAttribute("signature", getFieldSignature())
+		        .addAttribute("isStatic", String.valueOf(isStatic()));
 
 		String role = getDescription();
 		if (!role.equals(DEFAULT_ROLE))

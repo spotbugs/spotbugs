@@ -20,12 +20,12 @@
 package edu.umd.cs.findbugs.ba.type;
 
 import edu.umd.cs.findbugs.ba.ExtendedTypes;
-
 import org.apache.bcel.Constants;
 
 /**
  * The standard implementation of TypeMerger for modeling
  * the usual Java type rules.
+ *
  * @author David Hovemeyer
  */
 public class StandardTypeMerger implements TypeMerger, Constants, ExtendedTypes {
@@ -33,6 +33,7 @@ public class StandardTypeMerger implements TypeMerger, Constants, ExtendedTypes 
 
 	/**
 	 * Constructor.
+	 *
 	 * @param repos the TypeRepository used to create types
 	 */
 	public StandardTypeMerger(TypeRepository repos) {
@@ -42,6 +43,7 @@ public class StandardTypeMerger implements TypeMerger, Constants, ExtendedTypes 
 	/**
 	 * Determine if given type is the top type.
 	 * Subclasses may override to distinguish custom types.
+	 *
 	 * @param type the Type
 	 * @return true if type is TOP, false otherwise
 	 */
@@ -52,6 +54,7 @@ public class StandardTypeMerger implements TypeMerger, Constants, ExtendedTypes 
 	/**
 	 * Determine if given type is the bottom type.
 	 * Subclasses may override to distinguish custom types.
+	 *
 	 * @param type the Type
 	 * @return true if type is BOTTOM, false otherwise
 	 */
@@ -62,6 +65,7 @@ public class StandardTypeMerger implements TypeMerger, Constants, ExtendedTypes 
 	/**
 	 * Determine if given type is the null type.
 	 * Subclasses may override to distinguish custom types.
+	 *
 	 * @param type the Type
 	 * @return true if type is NULL, false otherwise
 	 */
@@ -99,7 +103,7 @@ public class StandardTypeMerger implements TypeMerger, Constants, ExtendedTypes 
 	}
 
 	protected Type mergeReferenceTypes(ReferenceType a, ReferenceType b)
-		throws ClassNotFoundException {
+	        throws ClassNotFoundException {
 		// Null is a special top type for reference types
 		if (isNull(a))
 			return b;

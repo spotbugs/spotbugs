@@ -18,9 +18,12 @@
  */
 
 package edu.umd.cs.findbugs.detect;
-import edu.umd.cs.findbugs.*;
-import org.apache.bcel.classfile.Method;
+
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.visitclass.Constants2;
+import org.apache.bcel.classfile.Method;
 
 //   2:   astore_1
 //   3:   monitorenter
@@ -30,36 +33,37 @@ import edu.umd.cs.findbugs.visitclass.Constants2;
 //   9:   monitorexit
 
 
-public class FindUnconditionalWait extends BytecodeScanningDetector implements   Constants2 {
-    int stage = 0;
-    private BugReporter bugReporter;
+public class FindUnconditionalWait extends BytecodeScanningDetector implements Constants2 {
+	int stage = 0;
+	private BugReporter bugReporter;
 
-    public FindUnconditionalWait(BugReporter bugReporter) {
-	this.bugReporter = bugReporter;
+	public FindUnconditionalWait(BugReporter bugReporter) {
+		this.bugReporter = bugReporter;
 	}
 
-    public void visit(Method obj) {
-	stage = 0;
+	public void visit(Method obj) {
+		stage = 0;
 	}
 
-    public void sawOffset(int offset) {
+	public void sawOffset(int offset) {
 		if (stage == 1) stage = 0;
-		}
-    public void sawOpcode(int seen) {
-	switch (stage) {
+	}
+
+	public void sawOpcode(int seen) {
+		switch (stage) {
 		case 0:
-			if (seen == MONITORENTER) 
-				stage = 1;		
+			if (seen == MONITORENTER)
+				stage = 1;
 			break;
 		case 1:
 			if (seen == INVOKEVIRTUAL && getNameConstantOperand().equals("wait")) {
 				bugReporter.reportBug(new BugInstance("UW_UNCOND_WAIT",
-					getSigConstantOperand().equals("()V") ? NORMAL_PRIORITY : LOW_PRIORITY)
-					.addClassAndMethod(this)
-					.addSourceLine(this));
+				        getSigConstantOperand().equals("()V") ? NORMAL_PRIORITY : LOW_PRIORITY)
+				        .addClassAndMethod(this)
+				        .addSourceLine(this));
 				stage = 2;
-				}
-			break; 
 			}
+			break;
+		}
 	}
 }

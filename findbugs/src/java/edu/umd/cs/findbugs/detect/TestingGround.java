@@ -18,13 +18,11 @@
  */
 
 package edu.umd.cs.findbugs.detect;
-import edu.umd.cs.findbugs.*;
-import org.apache.bcel.classfile.*;
-import java.util.zip.*;
-import java.io.*;
 
-import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
+import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.visitclass.Constants2;
+import org.apache.bcel.classfile.*;
 
 public class TestingGround extends BytecodeScanningDetector implements Constants2 {
 
@@ -38,18 +36,18 @@ public class TestingGround extends BytecodeScanningDetector implements Constants
 
 
 	public void visit(JavaClass obj) {
-		}
+	}
 
 	public void visit(Method obj) {
-		}
+	}
 
 	public void visit(Code obj) {
 		// unless active, don't bother dismantling bytecode
 		if (active) {
-		        System.out.println("TestingGround: " + getFullyQualifiedMethodName());
+			System.out.println("TestingGround: " + getFullyQualifiedMethodName());
 			super.visit(obj);
-			}
 		}
+	}
 
 
 	public void sawOpcode(int seen) {
@@ -57,23 +55,22 @@ public class TestingGround extends BytecodeScanningDetector implements Constants
 		printOpCode(seen);
 
 	}
-	
+
 	private void printOpCode(int seen) {
-		System.out.print("  TestingGround: " +  OPCODE_NAMES[seen]);
+		System.out.print("  TestingGround: " + OPCODE_NAMES[seen]);
 		if ((seen == INVOKEVIRTUAL) || (seen == INVOKESPECIAL) || (seen == INVOKEINTERFACE))
 			System.out.print("   " + getClassConstantOperand() + "." + getNameConstantOperand() + " " + getSigConstantOperand());
 		else if (seen == LDC || seen == LDC_W || seen == LDC2_W) {
 			Constant c = getConstantRefOperand();
-			if (c instanceof ConstantString) 
+			if (c instanceof ConstantString)
 				System.out.print("   \"" + getStringConstantOperand() + "\"");
-			else if (c instanceof ConstantClass) 
+			else if (c instanceof ConstantClass)
 				System.out.print("   " + getClassConstantOperand());
 			else
 				System.out.print("   " + c);
-			}
-		else if ((seen == ALOAD) || (seen == ASTORE))
+		} else if ((seen == ALOAD) || (seen == ASTORE))
 			System.out.print("   " + getRegisterOperand());
-		
+
 		System.out.println();
 	}
 }

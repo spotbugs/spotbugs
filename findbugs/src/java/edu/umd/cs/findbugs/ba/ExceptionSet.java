@@ -19,9 +19,7 @@
 
 package edu.umd.cs.findbugs.ba;
 
-import java.util.BitSet;
-import java.util.Iterator;
-import java.util.NoSuchElementException;
+import java.util.*;
 
 import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.ReferenceType;
@@ -35,8 +33,8 @@ import org.apache.bcel.generic.Type;
  * are runtime faults (NPE, array out of bounds)
  * not explicitly handled by the user code.
  *
- * @see TypeAnalysis
  * @author David Hovemeyer
+ * @see TypeAnalysis
  */
 public class ExceptionSet {
 	private ExceptionSetFactory factory;
@@ -129,8 +127,8 @@ public class ExceptionSet {
 
 		ExceptionSet other = (ExceptionSet) o;
 		return exceptionSet.equals(other.exceptionSet)
-			&& explicitSet.equals(other.explicitSet)
-			&& universalHandler == other.universalHandler;
+		        && explicitSet.equals(other.explicitSet)
+		        && universalHandler == other.universalHandler;
 	}
 
 	/**
@@ -169,15 +167,20 @@ public class ExceptionSet {
 	/**
 	 * Return an iterator over thrown exceptions.
 	 */
-	public ThrownExceptionIterator iterator() { return new ThrownExceptionIterator(); }
+	public ThrownExceptionIterator iterator() {
+		return new ThrownExceptionIterator();
+	}
 
 	/**
 	 * Return whether or not the set is empty.
 	 */
-	public boolean isEmpty() { return size == 0; }
+	public boolean isEmpty() {
+		return size == 0;
+	}
 
 	/**
 	 * Add an explicit exception.
+	 *
 	 * @param type type of the exception
 	 */
 	public void addExplicit(ObjectType type) {
@@ -186,6 +189,7 @@ public class ExceptionSet {
 
 	/**
 	 * Add an implicit exception.
+	 *
 	 * @param type type of the exception
 	 */
 	public void addImplicit(ObjectType type) {
@@ -194,9 +198,10 @@ public class ExceptionSet {
 
 	/**
 	 * Add an exception.
-	 * @param type the exception type
+	 *
+	 * @param type     the exception type
 	 * @param explicit true if the exception is explicitly declared
-	 *   or thrown, false if implicit
+	 *                 or thrown, false if implicit
 	 */
 	public void add(ObjectType type, boolean explicit) {
 		int index = factory.getIndexOfType(type);
@@ -211,6 +216,7 @@ public class ExceptionSet {
 
 	/**
 	 * Add all exceptions in the given set.
+	 *
 	 * @param other the set
 	 */
 	public void addAll(ExceptionSet other) {
@@ -260,7 +266,7 @@ public class ExceptionSet {
 	 * Return whether or not the set contains any checked exceptions.
 	 */
 	public boolean containsCheckedExceptions() throws ClassNotFoundException {
-		for (ThrownExceptionIterator i = iterator(); i.hasNext(); ) {
+		for (ThrownExceptionIterator i = iterator(); i.hasNext();) {
 			ObjectType type = i.next();
 			if (!Hierarchy.isUncheckedException(type))
 				return true;
@@ -272,7 +278,7 @@ public class ExceptionSet {
 	 * Return whether or not the set contains any explicit exceptions.
 	 */
 	public boolean containsExplicitExceptions() {
-		for (ThrownExceptionIterator i = iterator(); i.hasNext(); ) {
+		for (ThrownExceptionIterator i = iterator(); i.hasNext();) {
 			i.next();
 			if (i.isExplicit())
 				return true;
@@ -284,7 +290,7 @@ public class ExceptionSet {
 		StringBuffer buf = new StringBuffer();
 		buf.append('{');
 		boolean first = true;
-		for (ThrownExceptionIterator i = iterator(); i.hasNext(); ) {
+		for (ThrownExceptionIterator i = iterator(); i.hasNext();) {
 			ObjectType type = i.next();
 			if (first)
 				first = false;

@@ -25,6 +25,7 @@ import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
 
 /**
  * Base class for Detectors which want to extend DismantleBytecode.
+ *
  * @see DismantleBytecode
  */
 public class BytecodeScanningDetector extends DismantleBytecode implements Detector {
@@ -36,6 +37,7 @@ public class BytecodeScanningDetector extends DismantleBytecode implements Detec
 
 	/**
 	 * Get the AnalysisContext.
+	 *
 	 * @return the AnalysisContext
 	 */
 	protected AnalysisContext getAnalysisContext() {

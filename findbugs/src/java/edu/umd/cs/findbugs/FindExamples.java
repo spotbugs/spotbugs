@@ -49,9 +49,9 @@ public class FindExamples extends QueryBugAnnotations {
 
 		if (start == argv.length) {
 			System.err.println("Usage: " + FindExamples.class.getName() +
-				" [-category <category>]" +
-				" [-brief]" +
-				" <results file>");
+			        " [-category <category>]" +
+			        " [-brief]" +
+			        " <results file>");
 			System.exit(1);
 		}
 

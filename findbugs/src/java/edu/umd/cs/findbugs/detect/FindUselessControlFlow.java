@@ -19,9 +19,12 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.BitSet;
+import java.util.*;
+
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import org.apache.bcel.Constants;
-import edu.umd.cs.findbugs.*;
 
 /**
  * A Detector to look for useless control flow.  For example,
@@ -31,7 +34,7 @@ import edu.umd.cs.findbugs.*;
  * </pre>
  * In this kind of bug, we'll see an ifcmp instruction where the IF
  * target is the same as the fall-through target.
- *
+ * <p/>
  * <p> The idea for this detector came from Richard P. King,
  * and the idea of looking for if instructions with identical
  * branch and fall-through targets is from Mike Fagan.
@@ -40,6 +43,7 @@ import edu.umd.cs.findbugs.*;
  */
 public class FindUselessControlFlow extends BytecodeScanningDetector {
 	private static final BitSet ifInstructionSet = new BitSet();
+
 	static {
 		ifInstructionSet.set(Constants.IF_ACMPEQ);
 		ifInstructionSet.set(Constants.IF_ACMPNE);
@@ -65,13 +69,13 @@ public class FindUselessControlFlow extends BytecodeScanningDetector {
 		this.bugReporter = bugReporter;
 	}
 
-    public void sawOpcode(int seen) {
+	public void sawOpcode(int seen) {
 		if (ifInstructionSet.get(seen)) {
 			if (getBranchTarget() == getBranchFallThrough()) {
 				bugReporter.reportBug(new BugInstance("UCF_USELESS_CONTROL_FLOW", NORMAL_PRIORITY)
-					.addClassAndMethod(this)
-					.addSourceLine(this));
-				}
+				        .addClassAndMethod(this)
+				        .addSourceLine(this));
+			}
 		}
 	}
 }

@@ -24,11 +24,13 @@ package edu.umd.cs.findbugs.ba;
  * A LockSet tells us the lock counts for all values in a method,
  * insofar as we can accurately determine them.
  *
- * @see ValueNumberAnalysis
  * @author David Hovemeyer
+ * @see ValueNumberAnalysis
  */
 public class LockSet {
-	/** An uninitialized lock value. */
+	/**
+	 * An uninitialized lock value.
+	 */
 	public static final int TOP = -1;
 
 	/**
@@ -66,6 +68,7 @@ public class LockSet {
 
 	/**
 	 * Get the lock count for given lock object.
+	 *
 	 * @param valueNumber value number of the lock object
 	 * @return the lock count for the lock object
 	 */
@@ -79,8 +82,9 @@ public class LockSet {
 
 	/**
 	 * Set the lock count for a lock object.
+	 *
 	 * @param valueNumber value number of the lock object
-	 * @param lockCount the lock count for the lock
+	 * @param lockCount   the lock count for the lock
 	 */
 	public void setLockCount(int valueNumber, int lockCount) {
 		int index = findIndex(valueNumber);
@@ -93,6 +97,7 @@ public class LockSet {
 
 	/**
 	 * Set the default lock count to return for nonexistent lock entries.
+	 *
 	 * @param defaultLockCount the default lock count value
 	 */
 	public void setDefaultLockCount(int defaultLockCount) {
@@ -107,7 +112,7 @@ public class LockSet {
 		for (int i = 0; i < array.length; i += 2) {
 			if (array[i] == INVALID)
 				break;
-			if (array[i+1] > 0)
+			if (array[i + 1] > 0)
 				++result;
 		}
 		return result;
@@ -115,6 +120,7 @@ public class LockSet {
 
 	/**
 	 * Make this LockSet the same as the given one.
+	 *
 	 * @param other the LockSet to copy
 	 */
 	public void copyFrom(LockSet other) {
@@ -137,6 +143,7 @@ public class LockSet {
 	/**
 	 * Meet this LockSet with another LockSet,
 	 * storing the result in this object.
+	 *
 	 * @param other the other LockSet
 	 */
 	public void meetWith(LockSet other) {
@@ -165,6 +172,7 @@ public class LockSet {
 
 	/**
 	 * Return whether or not this LockSet is the same as the one given.
+	 *
 	 * @param other the other LockSet
 	 */
 	public boolean sameAs(LockSet other) {
@@ -174,6 +182,7 @@ public class LockSet {
 	/**
 	 * Determine whether or not this lock set contains any
 	 * locked values which are method return values.
+	 *
 	 * @param factory the ValueNumberFactory that produced the lock values
 	 */
 	public boolean containsReturnValue(ValueNumberFactory factory) {
@@ -193,6 +202,7 @@ public class LockSet {
 	 * Note that this is <em>not</em> a dataflow merge:
 	 * we are interested in finding out which locks are held
 	 * in both sets, not in the exact lock counts.
+	 *
 	 * @param other the other LockSet
 	 */
 	public void intersectWith(LockSet other) {
@@ -200,13 +210,13 @@ public class LockSet {
 			int valueNumber = array[i];
 			if (valueNumber < 0)
 				break;
-			int myLockCount = array[i+1];
+			int myLockCount = array[i + 1];
 			if (myLockCount <= 0)
 				continue;
 			int otherLockCount = other.getLockCount(valueNumber);
 			if (otherLockCount <= 0) {
 				/* This set holds the lock, but the other one doesn't. */
-				array[i+1] = 0;
+				array[i + 1] = 0;
 			}
 		}
 	}
@@ -214,16 +224,17 @@ public class LockSet {
 	/**
 	 * Return whether or not this lock set is empty,
 	 * meaning that no locks have a positive lock count.
+	 *
 	 * @return true if no locks are held, false if at least
-	 *   one lock is held
+	 *         one lock is held
 	 */
 	public boolean isEmpty() {
 		for (int i = 0; i < array.length; i += 2) {
 			int valueNumber = array[i];
 			if (valueNumber < 0)
 				return true;
-			int myLockCount = array[i+1];
-			if (myLockCount >  0)
+			int myLockCount = array[i + 1];
+			if (myLockCount > 0)
 				return false;
 		}
 		return true;
@@ -306,7 +317,7 @@ public class LockSet {
 			int valueNumber = array[i];
 			if (valueNumber < 0)
 				continue;
-			int lockCount = array[i+1];
+			int lockCount = array[i + 1];
 			if (lockCount == 0)
 				continue;
 			if (first)

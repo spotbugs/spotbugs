@@ -19,12 +19,11 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Set of streams that are in an equivalence class.
+ *
  * @author David Hovemeyer
  */
 public class StreamEquivalenceClass {
@@ -42,6 +41,7 @@ public class StreamEquivalenceClass {
 
 	/**
 	 * Add a single member to the equivalence class.
+	 *
 	 * @param member the member Stream
 	 */
 	public void addMember(Stream member) {
@@ -57,6 +57,7 @@ public class StreamEquivalenceClass {
 
 	/**
 	 * Add all members of other StreamEquivalenceClass to this one.
+	 *
 	 * @param other the other StreamEquivalenceClass
 	 */
 	public void addAll(StreamEquivalenceClass other) {
@@ -69,7 +70,7 @@ public class StreamEquivalenceClass {
 	public void setClosed() {
 		if (!isClosed) {
 			isClosed = true;
-			for (Iterator<Stream> i = memberSet.iterator(); i.hasNext(); ) {
+			for (Iterator<Stream> i = memberSet.iterator(); i.hasNext();) {
 				Stream member = i.next();
 				member.setClosed();
 			}

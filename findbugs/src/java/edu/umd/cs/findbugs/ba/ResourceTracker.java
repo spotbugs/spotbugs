@@ -27,41 +27,44 @@ import org.apache.bcel.generic.InstructionHandle;
  * where in a method a certain kind of resource is created, and
  * to model the effect of instructions on the state of that resource.
  *
- * @see ResourceValueAnalysis
  * @author David Hovemeyer
+ * @see ResourceValueAnalysis
  */
-public interface ResourceTracker<Resource> {
+public interface ResourceTracker <Resource> {
 	/**
 	 * Determine if the given instruction is the site where a resource
 	 * is created.
+	 *
 	 * @param basicBlock basic block containing the instruction
-	 * @param handle the instruction
-	 * @param cpg the ConstantPoolGen for the method
+	 * @param handle     the instruction
+	 * @param cpg        the ConstantPoolGen for the method
 	 * @return an opaque Resource object if it is a creation site, or
-	 *   null if it is not a creation site
+	 *         null if it is not a creation site
 	 */
 	public Resource isResourceCreation(BasicBlock basicBlock, InstructionHandle handle, ConstantPoolGen cpg)
-		throws DataflowAnalysisException;
+	        throws DataflowAnalysisException;
 
 	/**
 	 * Determine if the given instruction is the site where a resource
 	 * is closed.
+	 *
 	 * @param basicBlock basic block containing the instruction
-	 * @param handle the instruction
-	 * @param cpg the ConstantPoolGen for the method
-	 * @param resource the resource, as returned by isResourceCreation()
-	 * @param frame the ResourceValueFrame representing the stack prior to executing
-	 *   the instruction
+	 * @param handle     the instruction
+	 * @param cpg        the ConstantPoolGen for the method
+	 * @param resource   the resource, as returned by isResourceCreation()
+	 * @param frame      the ResourceValueFrame representing the stack prior to executing
+	 *                   the instruction
 	 * @return true if the resource is closed here, false otherwise
 	 */
 	public boolean isResourceClose(BasicBlock basicBlock, InstructionHandle handle, ConstantPoolGen cpg, Resource resource,
-		ResourceValueFrame frame) throws DataflowAnalysisException;
+	                               ResourceValueFrame frame) throws DataflowAnalysisException;
 
 	/**
 	 * Create a ResourceValueFrameModelingVisitor to model the effect
 	 * of instructions on the state of the resource.
+	 *
 	 * @param resource the resource we are tracking
-	 * @param cpg the ConstantPoolGen of the method
+	 * @param cpg      the ConstantPoolGen of the method
 	 * @return a ResourceValueFrameModelingVisitor
 	 */
 	public ResourceValueFrameModelingVisitor createVisitor(Resource resource, ConstantPoolGen cpg);
@@ -76,7 +79,7 @@ public interface ResourceTracker<Resource> {
 	 *
 	 * @param resource the resource being tracked
 	 * @return true if implicit exceptions are significant,
-	 *   false if they should be ignore
+	 *         false if they should be ignore
 	 */
 	public boolean ignoreImplicitExceptions(Resource resource);
 
@@ -84,10 +87,11 @@ public interface ResourceTracker<Resource> {
 	 * Return if the given parameter slot contains the
 	 * resource instance upon entry to the method.
 	 * This is for resources passed as parameters.
+	 *
 	 * @param resource the resource
-	 * @param slot the local variable slot
+	 * @param slot     the local variable slot
 	 * @return true if the slot contains the resource instance,
-	 *   false otherwise
+	 *         false otherwise
 	 */
 	public boolean isParamInstance(Resource resource, int slot);
 }

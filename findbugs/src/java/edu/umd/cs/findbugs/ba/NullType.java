@@ -28,10 +28,10 @@ import org.apache.bcel.generic.Type;
  * of the null value, which may logically be merged with any
  * object type without loss of information.
  *
+ * @author David Hovemeyer
  * @see TypeAnalysis
  * @see TypeFrame
  * @see TypeMerger
- * @author David Hovemeyer
  */
 public class NullType extends Type implements ExtendedTypes {
 	private static final Type theInstance = new NullType();
@@ -48,7 +48,9 @@ public class NullType extends Type implements ExtendedTypes {
 		return o == this;
 	}
 
-	public static Type instance() { return theInstance; }
+	public static Type instance() {
+		return theInstance;
+	}
 }
 
 // vim:ts=4

@@ -23,10 +23,12 @@ import edu.umd.cs.findbugs.ba.ExtendedTypes;
 
 /**
  * The type of a null value.
+ *
  * @author David Hovemeyer
  */
 public class NullType implements ReferenceType {
-	NullType() { }
+	NullType() {
+	}
 
 	public String getSignature() {
 		return SpecialTypeSignatures.NULL_TYPE_SIGNATURE;

@@ -26,42 +26,51 @@ import java.util.*;
  * A single Factory must be used to create all of the ValueNumbers
  * for a method.
  *
- * @see ValueNumber
  * @author David Hovemeyer
+ * @see ValueNumber
  */
 public class ValueNumberFactory {
-	/** Store all allocated value numbers. */
+	/**
+	 * Store all allocated value numbers.
+	 */
 	private ArrayList<ValueNumber> allocatedValueList = new ArrayList<ValueNumber>();
 
-	/** Create a fresh (unique) value number. */
+	/**
+	 * Create a fresh (unique) value number.
+	 */
 	public ValueNumber createFreshValue() {
 		ValueNumber result = new ValueNumber(getNumValuesAllocated());
 		allocatedValueList.add(result);
 		return result;
 	}
 
-	/** Return a previously allocated value. */
+	/**
+	 * Return a previously allocated value.
+	 */
 	public ValueNumber forNumber(int number) {
 		if (number >= getNumValuesAllocated())
 			throw new IllegalArgumentException("Value " + number + " has not been allocated");
 		return allocatedValueList.get(number);
 	}
 
-	/** Get the number of values which have been created. */
+	/**
+	 * Get the number of values which have been created.
+	 */
 	public int getNumValuesAllocated() {
 		return allocatedValueList.size();
 	}
 
 	/**
 	 * Compact the value numbers produced by this factory.
-	 * @param map array mapping old numbers to new numbers
+	 *
+	 * @param map                array mapping old numbers to new numbers
 	 * @param numValuesAllocated the number of values allocated in the new numbering
 	 */
 	public void compact(int[] map, int numValuesAllocated) {
 		ArrayList<ValueNumber> oldList = this.allocatedValueList;
-		ArrayList<ValueNumber> newList = new ArrayList<ValueNumber>(Collections.nCopies(numValuesAllocated, (ValueNumber)null));
+		ArrayList<ValueNumber> newList = new ArrayList<ValueNumber>(Collections.nCopies(numValuesAllocated, (ValueNumber) null));
 
-		for (Iterator<ValueNumber> i = oldList.iterator(); i.hasNext(); ) {
+		for (Iterator<ValueNumber> i = oldList.iterator(); i.hasNext();) {
 			ValueNumber value = i.next();
 			int newNumber = map[value.getNumber()];
 			if (newNumber >= 0) {

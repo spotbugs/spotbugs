@@ -19,8 +19,6 @@
 
 package edu.umd.cs.findbugs.ba;
 
-import java.util.*;
-
 import org.apache.bcel.Constants;
 import org.apache.bcel.generic.*;
 
@@ -32,15 +30,16 @@ import org.apache.bcel.generic.*;
  * verifier, although it wouldn't be too hard to turn it into
  * something vaguely verifier-like.
  *
+ * @author David Hovemeyer
  * @see TypeFrame
  * @see TypeAnalysis
- * @author David Hovemeyer
  */
 public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type, TypeFrame>
-	implements Constants, Debug {
+        implements Constants, Debug {
 
 	/**
 	 * Constructor.
+	 *
 	 * @param cpg the ConstantPoolGen of the method whose instructions we are examining
 	 */
 	public TypeFrameModelingVisitor(ConstantPoolGen cpg) {
@@ -124,104 +123,361 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 	// - Instructions that consume and produce should call
 	//   consumeStack(Instruction) and then explicitly push produced operands.
 
-	public void visitACONST_NULL(ACONST_NULL obj)	{ pushValue(TypeFrame.getNullType()); }
-	public void visitDCONST(DCONST obj)				{ pushValue(Type.DOUBLE); }
-	public void visitFCONST(FCONST obj)				{ pushValue(Type.FLOAT); }
-	public void visitICONST(ICONST obj)				{ pushValue(Type.INT); }
-	public void visitLCONST(LCONST obj)				{ pushValue(Type.LONG); }
-	public void visitLDC(LDC obj)					{ pushValue(obj.getType(getCPG())); }
-	public void visitLDC2_W(LDC2_W obj)				{ pushValue(obj.getType(getCPG())); }
+	public void visitACONST_NULL(ACONST_NULL obj) {
+		pushValue(TypeFrame.getNullType());
+	}
 
-	public void visitBIPUSH(BIPUSH obj)				{ pushValue(Type.INT); }
-	public void visitSIPUSH(SIPUSH obj)				{ pushValue(Type.INT); }
+	public void visitDCONST(DCONST obj) {
+		pushValue(Type.DOUBLE);
+	}
 
-	public void visitGETSTATIC(GETSTATIC obj)		{ consumeStack(obj); pushValue(obj.getType(getCPG())); }
-	public void visitGETFIELD(GETFIELD obj)			{ consumeStack(obj); pushValue(obj.getType(getCPG())); }
+	public void visitFCONST(FCONST obj) {
+		pushValue(Type.FLOAT);
+	}
 
-	public void visitINVOKESTATIC(INVOKESTATIC obj)	{ consumeStack(obj); pushReturnType(obj); }
-	public void visitINVOKESPECIAL(INVOKESPECIAL obj) { consumeStack(obj); pushReturnType(obj); }
-	public void visitINVOKEINTERFACE(INVOKEINTERFACE obj) { consumeStack(obj); pushReturnType(obj); }
-	public void visitINVOKEVIRTUAL(INVOKEVIRTUAL obj) { consumeStack(obj); pushReturnType(obj); }
+	public void visitICONST(ICONST obj) {
+		pushValue(Type.INT);
+	}
 
-	public void visitCHECKCAST(CHECKCAST obj)		{ consumeStack(obj); pushValue(obj.getType(getCPG())); }
-	public void visitINSTANCEOF(INSTANCEOF obj)		{ consumeStack(obj); pushValue(Type.INT); }
+	public void visitLCONST(LCONST obj) {
+		pushValue(Type.LONG);
+	}
 
-	public void visitFCMPL(FCMPL obj)				{ consumeStack(obj); pushValue(Type.INT); }
-	public void visitFCMPG(FCMPG obj)				{ consumeStack(obj); pushValue(Type.INT); }
-	public void visitDCMPL(DCMPL obj)				{ consumeStack(obj); pushValue(Type.INT); }
-	public void visitDCMPG(DCMPG obj)				{ consumeStack(obj); pushValue(Type.INT); }
+	public void visitLDC(LDC obj) {
+		pushValue(obj.getType(getCPG()));
+	}
 
-	public void visitLCMP(LCMP obj)					{ consumeStack(obj); pushValue(Type.INT); }
+	public void visitLDC2_W(LDC2_W obj) {
+		pushValue(obj.getType(getCPG()));
+	}
 
-	public void visitD2F(D2F obj)					{ consumeStack(obj); pushValue(Type.FLOAT); }
-	public void visitD2I(D2I obj)					{ consumeStack(obj); pushValue(Type.INT); }
-	public void visitD2L(D2L obj)					{ consumeStack(obj); pushValue(Type.LONG); }
+	public void visitBIPUSH(BIPUSH obj) {
+		pushValue(Type.INT);
+	}
 
-	public void visitF2D(F2D obj)					{ consumeStack(obj); pushValue(Type.DOUBLE); }
-	public void visitF2I(F2I obj)					{ consumeStack(obj); pushValue(Type.INT); }
-	public void visitF2L(F2L obj)					{ consumeStack(obj); pushValue(Type.LONG); }
+	public void visitSIPUSH(SIPUSH obj) {
+		pushValue(Type.INT);
+	}
 
-	public void visitI2B(I2B obj)					{ consumeStack(obj); pushValue(Type.BYTE); }
-	public void visitI2C(I2C obj)					{ consumeStack(obj); pushValue(Type.CHAR); }
-	public void visitI2D(I2D obj)					{ consumeStack(obj); pushValue(Type.DOUBLE); }
-	public void visitI2F(I2F obj)					{ consumeStack(obj); pushValue(Type.FLOAT); }
-	public void visitI2L(I2L obj)					{ consumeStack(obj); pushValue(Type.LONG); }
-	public void visitI2S(I2S obj)					{ } // no change
+	public void visitGETSTATIC(GETSTATIC obj) {
+		consumeStack(obj);
+		pushValue(obj.getType(getCPG()));
+	}
 
-	public void visitL2D(L2D obj)					{ consumeStack(obj); pushValue(Type.DOUBLE); }
-	public void visitL2F(L2F obj)					{ consumeStack(obj); pushValue(Type.FLOAT); }
-	public void visitL2I(L2I obj)					{ consumeStack(obj); pushValue(Type.INT); }
+	public void visitGETFIELD(GETFIELD obj) {
+		consumeStack(obj);
+		pushValue(obj.getType(getCPG()));
+	}
 
-	public void visitIAND(IAND obj)					{ consumeStack(obj); pushValue(Type.INT); }
-	public void visitLAND(LAND obj)					{ consumeStack(obj); pushValue(Type.LONG); }
+	public void visitINVOKESTATIC(INVOKESTATIC obj) {
+		consumeStack(obj);
+		pushReturnType(obj);
+	}
 
-	public void visitIOR(IOR obj)					{ consumeStack(obj); pushValue(Type.INT); }
-	public void visitLOR(LOR obj)					{ consumeStack(obj); pushValue(Type.LONG); }
+	public void visitINVOKESPECIAL(INVOKESPECIAL obj) {
+		consumeStack(obj);
+		pushReturnType(obj);
+	}
 
-	public void visitIXOR(IXOR obj)					{ consumeStack(obj); pushValue(Type.INT); }
-	public void visitLXOR(LXOR obj)					{ consumeStack(obj); pushValue(Type.LONG); }
+	public void visitINVOKEINTERFACE(INVOKEINTERFACE obj) {
+		consumeStack(obj);
+		pushReturnType(obj);
+	}
 
-	public void visitISHR(ISHR obj)					{ consumeStack(obj); pushValue(Type.INT); }
-	public void visitIUSHR(IUSHR obj)				{ consumeStack(obj); pushValue(Type.INT); }
-	public void visitLSHR(LSHR obj)					{ consumeStack(obj); pushValue(Type.LONG); }
-	public void visitLUSHR(LUSHR obj)				{ consumeStack(obj); pushValue(Type.LONG); }
+	public void visitINVOKEVIRTUAL(INVOKEVIRTUAL obj) {
+		consumeStack(obj);
+		pushReturnType(obj);
+	}
 
-	public void visitISHL(ISHL obj)					{ consumeStack(obj); pushValue(Type.INT); }
-	public void visitLSHL(LSHL obj)					{ consumeStack(obj); pushValue(Type.LONG); }
+	public void visitCHECKCAST(CHECKCAST obj) {
+		consumeStack(obj);
+		pushValue(obj.getType(getCPG()));
+	}
 
-	public void visitDADD(DADD obj)					{ consumeStack(obj); pushValue(Type.DOUBLE); }
-	public void visitFADD(FADD obj)					{ consumeStack(obj); pushValue(Type.FLOAT); }
-	public void visitIADD(IADD obj)					{ consumeStack(obj); pushValue(Type.INT); }
-	public void visitLADD(LADD obj)					{ consumeStack(obj); pushValue(Type.LONG); }
+	public void visitINSTANCEOF(INSTANCEOF obj) {
+		consumeStack(obj);
+		pushValue(Type.INT);
+	}
 
-	public void visitDSUB(DSUB obj)					{ consumeStack(obj); pushValue(Type.DOUBLE); }
-	public void visitFSUB(FSUB obj)					{ consumeStack(obj); pushValue(Type.FLOAT); }
-	public void visitISUB(ISUB obj)					{ consumeStack(obj); pushValue(Type.INT); }
-	public void visitLSUB(LSUB obj)					{ consumeStack(obj); pushValue(Type.LONG); }
+	public void visitFCMPL(FCMPL obj) {
+		consumeStack(obj);
+		pushValue(Type.INT);
+	}
 
-	public void visitDMUL(DMUL obj)					{ consumeStack(obj); pushValue(Type.DOUBLE); }
-	public void visitFMUL(FMUL obj)					{ consumeStack(obj); pushValue(Type.FLOAT); }
-	public void visitIMUL(IMUL obj)					{ consumeStack(obj); pushValue(Type.INT); }
-	public void visitLMUL(LMUL obj)					{ consumeStack(obj); pushValue(Type.LONG); }
+	public void visitFCMPG(FCMPG obj) {
+		consumeStack(obj);
+		pushValue(Type.INT);
+	}
 
-	public void visitDDIV(DDIV obj)					{ consumeStack(obj); pushValue(Type.DOUBLE); }
-	public void visitFDIV(FDIV obj)					{ consumeStack(obj); pushValue(Type.FLOAT); }
-	public void visitIDIV(IDIV obj)					{ consumeStack(obj); pushValue(Type.INT); }
-	public void visitLDIV(LDIV obj)					{ consumeStack(obj); pushValue(Type.LONG); }
+	public void visitDCMPL(DCMPL obj) {
+		consumeStack(obj);
+		pushValue(Type.INT);
+	}
 
-	public void visitDREM(DREM obj)					{ consumeStack(obj); pushValue(Type.DOUBLE); }
-	public void visitFREM(FREM obj)					{ consumeStack(obj); pushValue(Type.FLOAT); }
-	public void visitIREM(IREM obj)					{ consumeStack(obj); pushValue(Type.INT); }
-	public void visitLREM(LREM obj)					{ consumeStack(obj); pushValue(Type.LONG); }
+	public void visitDCMPG(DCMPG obj) {
+		consumeStack(obj);
+		pushValue(Type.INT);
+	}
 
-	public void visitIINC(IINC obj)					{ } // no change to types of stack or locals
+	public void visitLCMP(LCMP obj) {
+		consumeStack(obj);
+		pushValue(Type.INT);
+	}
 
-	public void visitDNEG(DNEG obj)					{ } // no change
-	public void visitFNEG(FNEG obj)					{ } // no change
-	public void visitINEG(INEG obj)					{ consumeStack(obj); pushValue(Type.INT); }
-	public void visitLNEG(LNEG obj)					{ } // no change
+	public void visitD2F(D2F obj) {
+		consumeStack(obj);
+		pushValue(Type.FLOAT);
+	}
 
-	public void visitARRAYLENGTH(ARRAYLENGTH obj)	{ consumeStack(obj); pushValue(Type.INT); }
+	public void visitD2I(D2I obj) {
+		consumeStack(obj);
+		pushValue(Type.INT);
+	}
+
+	public void visitD2L(D2L obj) {
+		consumeStack(obj);
+		pushValue(Type.LONG);
+	}
+
+	public void visitF2D(F2D obj) {
+		consumeStack(obj);
+		pushValue(Type.DOUBLE);
+	}
+
+	public void visitF2I(F2I obj) {
+		consumeStack(obj);
+		pushValue(Type.INT);
+	}
+
+	public void visitF2L(F2L obj) {
+		consumeStack(obj);
+		pushValue(Type.LONG);
+	}
+
+	public void visitI2B(I2B obj) {
+		consumeStack(obj);
+		pushValue(Type.BYTE);
+	}
+
+	public void visitI2C(I2C obj) {
+		consumeStack(obj);
+		pushValue(Type.CHAR);
+	}
+
+	public void visitI2D(I2D obj) {
+		consumeStack(obj);
+		pushValue(Type.DOUBLE);
+	}
+
+	public void visitI2F(I2F obj) {
+		consumeStack(obj);
+		pushValue(Type.FLOAT);
+	}
+
+	public void visitI2L(I2L obj) {
+		consumeStack(obj);
+		pushValue(Type.LONG);
+	}
+
+	public void visitI2S(I2S obj) {
+	} // no change
+
+	public void visitL2D(L2D obj) {
+		consumeStack(obj);
+		pushValue(Type.DOUBLE);
+	}
+
+	public void visitL2F(L2F obj) {
+		consumeStack(obj);
+		pushValue(Type.FLOAT);
+	}
+
+	public void visitL2I(L2I obj) {
+		consumeStack(obj);
+		pushValue(Type.INT);
+	}
+
+	public void visitIAND(IAND obj) {
+		consumeStack(obj);
+		pushValue(Type.INT);
+	}
+
+	public void visitLAND(LAND obj) {
+		consumeStack(obj);
+		pushValue(Type.LONG);
+	}
+
+	public void visitIOR(IOR obj) {
+		consumeStack(obj);
+		pushValue(Type.INT);
+	}
+
+	public void visitLOR(LOR obj) {
+		consumeStack(obj);
+		pushValue(Type.LONG);
+	}
+
+	public void visitIXOR(IXOR obj) {
+		consumeStack(obj);
+		pushValue(Type.INT);
+	}
+
+	public void visitLXOR(LXOR obj) {
+		consumeStack(obj);
+		pushValue(Type.LONG);
+	}
+
+	public void visitISHR(ISHR obj) {
+		consumeStack(obj);
+		pushValue(Type.INT);
+	}
+
+	public void visitIUSHR(IUSHR obj) {
+		consumeStack(obj);
+		pushValue(Type.INT);
+	}
+
+	public void visitLSHR(LSHR obj) {
+		consumeStack(obj);
+		pushValue(Type.LONG);
+	}
+
+	public void visitLUSHR(LUSHR obj) {
+		consumeStack(obj);
+		pushValue(Type.LONG);
+	}
+
+	public void visitISHL(ISHL obj) {
+		consumeStack(obj);
+		pushValue(Type.INT);
+	}
+
+	public void visitLSHL(LSHL obj) {
+		consumeStack(obj);
+		pushValue(Type.LONG);
+	}
+
+	public void visitDADD(DADD obj) {
+		consumeStack(obj);
+		pushValue(Type.DOUBLE);
+	}
+
+	public void visitFADD(FADD obj) {
+		consumeStack(obj);
+		pushValue(Type.FLOAT);
+	}
+
+	public void visitIADD(IADD obj) {
+		consumeStack(obj);
+		pushValue(Type.INT);
+	}
+
+	public void visitLADD(LADD obj) {
+		consumeStack(obj);
+		pushValue(Type.LONG);
+	}
+
+	public void visitDSUB(DSUB obj) {
+		consumeStack(obj);
+		pushValue(Type.DOUBLE);
+	}
+
+	public void visitFSUB(FSUB obj) {
+		consumeStack(obj);
+		pushValue(Type.FLOAT);
+	}
+
+	public void visitISUB(ISUB obj) {
+		consumeStack(obj);
+		pushValue(Type.INT);
+	}
+
+	public void visitLSUB(LSUB obj) {
+		consumeStack(obj);
+		pushValue(Type.LONG);
+	}
+
+	public void visitDMUL(DMUL obj) {
+		consumeStack(obj);
+		pushValue(Type.DOUBLE);
+	}
+
+	public void visitFMUL(FMUL obj) {
+		consumeStack(obj);
+		pushValue(Type.FLOAT);
+	}
+
+	public void visitIMUL(IMUL obj) {
+		consumeStack(obj);
+		pushValue(Type.INT);
+	}
+
+	public void visitLMUL(LMUL obj) {
+		consumeStack(obj);
+		pushValue(Type.LONG);
+	}
+
+	public void visitDDIV(DDIV obj) {
+		consumeStack(obj);
+		pushValue(Type.DOUBLE);
+	}
+
+	public void visitFDIV(FDIV obj) {
+		consumeStack(obj);
+		pushValue(Type.FLOAT);
+	}
+
+	public void visitIDIV(IDIV obj) {
+		consumeStack(obj);
+		pushValue(Type.INT);
+	}
+
+	public void visitLDIV(LDIV obj) {
+		consumeStack(obj);
+		pushValue(Type.LONG);
+	}
+
+	public void visitDREM(DREM obj) {
+		consumeStack(obj);
+		pushValue(Type.DOUBLE);
+	}
+
+	public void visitFREM(FREM obj) {
+		consumeStack(obj);
+		pushValue(Type.FLOAT);
+	}
+
+	public void visitIREM(IREM obj) {
+		consumeStack(obj);
+		pushValue(Type.INT);
+	}
+
+	public void visitLREM(LREM obj) {
+		consumeStack(obj);
+		pushValue(Type.LONG);
+	}
+
+	public void visitIINC(IINC obj) {
+	} // no change to types of stack or locals
+
+	public void visitDNEG(DNEG obj) {
+	} // no change
+
+	public void visitFNEG(FNEG obj) {
+	} // no change
+
+	public void visitINEG(INEG obj) {
+		consumeStack(obj);
+		pushValue(Type.INT);
+	}
+
+	public void visitLNEG(LNEG obj) {
+	} // no change
+
+	public void visitARRAYLENGTH(ARRAYLENGTH obj) {
+		consumeStack(obj);
+		pushValue(Type.INT);
+	}
 
 	public void visitAALOAD(AALOAD obj) {
 		// To determine the type pushed on the stack,
@@ -242,13 +498,40 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 		}
 	}
 
-	public void visitBALOAD(BALOAD obj)				{ consumeStack(obj); pushValue(Type.BYTE); }
-	public void visitCALOAD(CALOAD obj)				{ consumeStack(obj); pushValue(Type.CHAR); }
-	public void visitDALOAD(DALOAD obj)				{ consumeStack(obj); pushValue(Type.DOUBLE); }
-	public void visitFALOAD(FALOAD obj)				{ consumeStack(obj); pushValue(Type.FLOAT); }
-	public void visitIALOAD(IALOAD obj)				{ consumeStack(obj); pushValue(Type.INT); }
-	public void visitLALOAD(LALOAD obj)				{ consumeStack(obj); pushValue(Type.LONG); }
-	public void visitSALOAD(SALOAD obj)				{ consumeStack(obj); pushValue(Type.SHORT); }
+	public void visitBALOAD(BALOAD obj) {
+		consumeStack(obj);
+		pushValue(Type.BYTE);
+	}
+
+	public void visitCALOAD(CALOAD obj) {
+		consumeStack(obj);
+		pushValue(Type.CHAR);
+	}
+
+	public void visitDALOAD(DALOAD obj) {
+		consumeStack(obj);
+		pushValue(Type.DOUBLE);
+	}
+
+	public void visitFALOAD(FALOAD obj) {
+		consumeStack(obj);
+		pushValue(Type.FLOAT);
+	}
+
+	public void visitIALOAD(IALOAD obj) {
+		consumeStack(obj);
+		pushValue(Type.INT);
+	}
+
+	public void visitLALOAD(LALOAD obj) {
+		consumeStack(obj);
+		pushValue(Type.LONG);
+	}
+
+	public void visitSALOAD(SALOAD obj) {
+		consumeStack(obj);
+		pushValue(Type.SHORT);
+	}
 
 	// The various xASTORE instructions only consume stack.
 
@@ -276,9 +559,16 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 		pushValue(new ArrayType(elementType, obj.getDimensions()));
 	}
 
-	public void visitJSR(JSR obj)					{ pushValue(ReturnaddressType.NO_TARGET); }
-	public void visitJSR_W(JSR_W obj)				{ pushValue(ReturnaddressType.NO_TARGET); }
-	public void visitRET(RET obj)					{ } // no change
+	public void visitJSR(JSR obj) {
+		pushValue(ReturnaddressType.NO_TARGET);
+	}
+
+	public void visitJSR_W(JSR_W obj) {
+		pushValue(ReturnaddressType.NO_TARGET);
+	}
+
+	public void visitRET(RET obj) {
+	} // no change
 
 }
 

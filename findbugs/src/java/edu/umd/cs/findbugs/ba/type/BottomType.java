@@ -24,10 +24,12 @@ import edu.umd.cs.findbugs.ba.ExtendedTypes;
 /**
  * Special bottom type used in dataflow.
  * Bottom is the zero element for the dataflow meet operation.
+ *
  * @author David Hovemeyer
  */
 public class BottomType implements Type {
-	BottomType() { }
+	BottomType() {
+	}
 
 	public String getSignature() {
 		return SpecialTypeSignatures.BOTTOM_TYPE_SIGNATURE;

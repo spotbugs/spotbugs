@@ -19,15 +19,18 @@
 
 package edu.umd.cs.findbugs.ba.bcp;
 
-import org.apache.bcel.generic.*;
-import edu.umd.cs.findbugs.ba.*;
+import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
+import edu.umd.cs.findbugs.ba.Edge;
+import edu.umd.cs.findbugs.ba.ValueNumberFrame;
+import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.InstructionHandle;
 
 /**
  * A wildcard PatternElement, which matches any kind of instruction
  * indiscriminately.
  *
- * @see PatternElement
  * @author David Hovemeyer
+ * @see PatternElement
  */
 public class Wild extends PatternElement {
 	private int min, max;
@@ -43,6 +46,7 @@ public class Wild extends PatternElement {
 
 	/**
 	 * Constructor.  Matches any number of instructions from 0 to the maximum specified.
+	 *
 	 * @param max the maximum number of instructions the wildcard may match
 	 */
 	public Wild(int max) {
@@ -52,6 +56,7 @@ public class Wild extends PatternElement {
 
 	/**
 	 * Constructor.
+	 *
 	 * @param min minimum number of times the wildcard must match
 	 * @param max maximum number of times the wildcard may match
 	 */
@@ -62,6 +67,7 @@ public class Wild extends PatternElement {
 
 	/**
 	 * Set min and max values.
+	 *
 	 * @param min minimum number of times the wildcard must match
 	 * @param max maximum number of times the wildcard may match
 	 */
@@ -70,12 +76,20 @@ public class Wild extends PatternElement {
 		this.max = max;
 	}
 
-	public int minOccur() { return min; }
-	public int maxOccur() { return max; }
-	public boolean acceptBranch(Edge edge, InstructionHandle source) { return true; }
+	public int minOccur() {
+		return min;
+	}
+
+	public int maxOccur() {
+		return max;
+	}
+
+	public boolean acceptBranch(Edge edge, InstructionHandle source) {
+		return true;
+	}
 
 	public MatchResult match(InstructionHandle handle, ConstantPoolGen cpg,
-		ValueNumberFrame before, ValueNumberFrame after, BindingSet bindingSet) throws DataflowAnalysisException {
+	                         ValueNumberFrame before, ValueNumberFrame after, BindingSet bindingSet) throws DataflowAnalysisException {
 		return new MatchResult(this, bindingSet);
 	}
 }

@@ -20,22 +20,34 @@
 package edu.umd.cs.findbugs.ba;
 
 public class ResourceValueFrame extends Frame<ResourceValue> {
-	/** The resource escapes the method. */
+	/**
+	 * The resource escapes the method.
+	 */
 	public static final int ESCAPED = 0;
 
-	/** The resource is open (or locked, etc) on paths that include only normal control flow. */
+	/**
+	 * The resource is open (or locked, etc) on paths that include only normal control flow.
+	 */
 	public static final int OPEN = 1;
 
-	/** The resource is open (or locked, etc) on paths that include exception control flow. */
+	/**
+	 * The resource is open (or locked, etc) on paths that include exception control flow.
+	 */
 	public static final int OPEN_ON_EXCEPTION_PATH = 2;
 
-	/** The resource is closed (or unlocked, etc). */
+	/**
+	 * The resource is closed (or unlocked, etc).
+	 */
 	public static final int CLOSED = 3;
 
-	/** The resource has been created, but is not open. */
+	/**
+	 * The resource has been created, but is not open.
+	 */
 	public static final int CREATED = 4;
 
-	/** The resource doesn't exist. */
+	/**
+	 * The resource doesn't exist.
+	 */
 	public static final int NONEXISTENT = 5;
 
 	private int status;
@@ -67,7 +79,7 @@ public class ResourceValueFrame extends Frame<ResourceValue> {
 		this.status = other.status;
 	}
 
-	private static final String[] statusList = { "(escaped)", "(open)", "(open_exception)", "(closed)", "(created)", "(nonexistent)" };
+	private static final String[] statusList = {"(escaped)", "(open)", "(open_exception)", "(closed)", "(created)", "(nonexistent)"};
 
 	public String toString() {
 		return super.toString() + statusList[status];

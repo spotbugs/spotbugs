@@ -68,8 +68,9 @@ public abstract class ResourceValueFrameModelingVisitor extends AbstractFrameMod
 	 * Override this to check for methods that it is legal to
 	 * pass the instance to without the instance escaping.
 	 * By default, we consider all methods to be possible escape routes.
-	 * @param inv the InvokeInstruction to which the resource instance
-	 *   is passed as an argument
+	 *
+	 * @param inv            the InvokeInstruction to which the resource instance
+	 *                       is passed as an argument
 	 * @param instanceArgNum the first argument the instance is passed in
 	 */
 	protected boolean instanceEscapes(InvokeInstruction inv, int instanceArgNum) {

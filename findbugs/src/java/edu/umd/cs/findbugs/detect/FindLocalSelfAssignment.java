@@ -19,10 +19,14 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import java.util.*;
+
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.ba.*;
-import edu.umd.cs.findbugs.*;
-import java.util.Iterator;
-import org.apache.bcel.classfile.*;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.*;
 
 /**
@@ -52,7 +56,7 @@ public class FindLocalSelfAssignment implements Detector {
 					continue;
 
 				CFG cfg = classContext.getCFG(method);
-				for (Iterator<BasicBlock> j = cfg.blockIterator(); j.hasNext(); ) {
+				for (Iterator<BasicBlock> j = cfg.blockIterator(); j.hasNext();) {
 					BasicBlock basicBlock = j.next();
 					analyzeBasicBlock(classContext, method, basicBlock);
 				}
@@ -66,7 +70,7 @@ public class FindLocalSelfAssignment implements Detector {
 	private void analyzeBasicBlock(ClassContext classContext, Method method, BasicBlock basicBlock) {
 		int lastLoaded = -1;
 
-		for (Iterator<InstructionHandle> i = basicBlock.instructionIterator(); i.hasNext(); ) {
+		for (Iterator<InstructionHandle> i = basicBlock.instructionIterator(); i.hasNext();) {
 			InstructionHandle handle = i.next();
 			Instruction ins = handle.getInstruction();
 
@@ -86,9 +90,9 @@ public class FindLocalSelfAssignment implements Detector {
 				String sourceFile = javaClass.getSourceFileName();
 
 				bugReporter.reportBug(new BugInstance("SA_LOCAL_SELF_ASSIGNMENT", NORMAL_PRIORITY)
-					.addClass(javaClass)
-					.addMethod(methodGen, sourceFile)
-					.addSourceLine(methodGen, sourceFile, handle));
+				        .addClass(javaClass)
+				        .addMethod(methodGen, sourceFile)
+				        .addSourceLine(methodGen, sourceFile, handle));
 			}
 
 			lastLoaded = (loaded >= 0) ? loaded : -1;

@@ -24,7 +24,7 @@ package edu.umd.cs.findbugs;
  * This class works in much the same way as <code>java.text.MessageFormat</code>;
  * however, each placeholder may have an optional "key" which specifies
  * how the object at that position should be formatted.
- *
+ * <p/>
  * <p> Example:
  * <pre>
  *     new FindBugsMessageFormat("BUG: {1} does something bad to field {2.fullField}")
@@ -34,14 +34,15 @@ package edu.umd.cs.findbugs;
  * using the "fullField" key, which uses the long format for the field rather
  * than the usual "class.fieldname" format.
  *
- * @see BugInstance
  * @author David Hovemeyer
+ * @see BugInstance
  */
 public class FindBugsMessageFormat {
 	private String pattern;
 
 	/**
 	 * Constructor.
+	 *
 	 * @param pattern the pattern for the message
 	 */
 	public FindBugsMessageFormat(String pattern) {
@@ -51,6 +52,7 @@ public class FindBugsMessageFormat {
 	/**
 	 * Format the message using the given array of BugAnnotations as arguments
 	 * to bind to the placeholders in the pattern string.
+	 *
 	 * @param args the BugAnnotations used as arguments
 	 * @return the formatted message
 	 */

@@ -19,9 +19,9 @@
 
 package edu.umd.cs.findbugs;
 
-import edu.umd.cs.findbugs.ba.ClassNotFoundExceptionParser;
-
 import java.util.*;
+
+import edu.umd.cs.findbugs.ba.ClassNotFoundExceptionParser;
 
 /**
  * An abstract class which provides much of the functionality
@@ -109,12 +109,12 @@ public abstract class AbstractBugReporter implements BugReporter {
 		beginReport();
 		if (!errorMessageList.isEmpty()) {
 			reportLine("The following errors occured during analysis:");
-			for (Iterator<String> i = errorMessageList.iterator(); i.hasNext(); )
+			for (Iterator<String> i = errorMessageList.iterator(); i.hasNext();)
 				reportLine("\t" + i.next());
 		}
 		if (!missingClassMessageList.isEmpty()) {
 			reportLine("The following classes needed for analysis were missing:");
-			for (Iterator<String> i = missingClassMessageList.iterator(); i.hasNext(); )
+			for (Iterator<String> i = missingClassMessageList.iterator(); i.hasNext();)
 				reportLine("\t" + i.next());
 		}
 		endReport();
@@ -144,7 +144,9 @@ public abstract class AbstractBugReporter implements BugReporter {
 	protected abstract void doReportBug(BugInstance bugInstance);
 
 	public abstract void beginReport();
+
 	public abstract void reportLine(String msg);
+
 	public abstract void endReport();
 }
 

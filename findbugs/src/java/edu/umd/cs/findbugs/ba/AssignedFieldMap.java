@@ -20,8 +20,11 @@
 package edu.umd.cs.findbugs.ba;
 
 import java.util.*;
+
 import org.apache.bcel.Constants;
-import org.apache.bcel.classfile.*;
+import org.apache.bcel.classfile.Field;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.*;
 
 public class AssignedFieldMap implements Constants {
@@ -90,7 +93,7 @@ public class AssignedFieldMap implements Constants {
 
 			if (assignable) {
 				assignableFieldSet.add(new InstanceField(superClassName, field.getName(), field.getSignature(),
-					field.getAccessFlags()));
+				        field.getAccessFlags()));
 			}
 		}
 	}

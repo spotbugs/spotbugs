@@ -22,7 +22,6 @@ package edu.umd.cs.findbugs.detect;
 import edu.umd.cs.findbugs.ba.Hierarchy;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.RepositoryLookupFailureCallback;
-
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InvokeInstruction;
@@ -52,7 +51,7 @@ public class AnyMethodReturnValueStreamFactory implements StreamFactory {
 	}
 
 	public Stream createStream(Location location, ObjectType type, ConstantPoolGen cpg,
-		RepositoryLookupFailureCallback lookupFailureCallback) {
+	                           RepositoryLookupFailureCallback lookupFailureCallback) {
 
 		Instruction ins = location.getHandle().getInstruction();
 
@@ -60,10 +59,10 @@ public class AnyMethodReturnValueStreamFactory implements StreamFactory {
 			if (ins instanceof InvokeInstruction) {
 				if (!Hierarchy.isSubtype(type, baseClassType))
 					return null;
-	
+
 				Stream stream = new Stream(location, type.getClassName(), baseClassType.getClassName())
-					.setIsOpenOnCreation(true)
-					.setIgnoreImplicitExceptions(true);
+				        .setIsOpenOnCreation(true)
+				        .setIgnoreImplicitExceptions(true);
 				if (bugType != null)
 					stream.setInteresting(bugType);
 

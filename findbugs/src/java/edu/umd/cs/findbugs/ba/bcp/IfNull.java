@@ -19,8 +19,11 @@
 
 package edu.umd.cs.findbugs.ba.bcp;
 
+import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
+import edu.umd.cs.findbugs.ba.Edge;
+import edu.umd.cs.findbugs.ba.EdgeTypes;
+import edu.umd.cs.findbugs.ba.ValueNumberFrame;
 import org.apache.bcel.generic.*;
-import edu.umd.cs.findbugs.ba.*;
 
 public class IfNull extends OneVariableInstruction implements EdgeTypes {
 
@@ -29,7 +32,7 @@ public class IfNull extends OneVariableInstruction implements EdgeTypes {
 	}
 
 	public MatchResult match(InstructionHandle handle, ConstantPoolGen cpg,
-		ValueNumberFrame before, ValueNumberFrame after, BindingSet bindingSet) throws DataflowAnalysisException {
+	                         ValueNumberFrame before, ValueNumberFrame after, BindingSet bindingSet) throws DataflowAnalysisException {
 
 		// Instruction must be IFNULL or IFNONNULL.
 		Instruction ins = handle.getInstruction();

@@ -33,29 +33,36 @@ import edu.umd.cs.findbugs.ba.RepositoryLookupFailureCallback;
  */
 public interface BugReporter extends RepositoryLookupFailureCallback, ClassObserver {
 
-	/** Silent error-reporting verbosity level. */
+	/**
+	 * Silent error-reporting verbosity level.
+	 */
 	public static final int SILENT = 0;
 
-	/** Normal error-reporting verbosity level. */
+	/**
+	 * Normal error-reporting verbosity level.
+	 */
 	public static final int NORMAL = 1;
 
 	/**
 	 * Called to give the BugReporter a reference to
 	 * the FindBugs engine object.
+	 *
 	 * @param engine the FindBugs engine object
 	 */
 	public void setEngine(FindBugs engine);
 
 	/**
 	 * Set the error-reporting verbosity level.
+	 *
 	 * @param level the verbosity level
 	 */
 	public void setErrorVerbosity(int level);
 
 	/**
 	 * Set the priority threshold.
+	 *
 	 * @param threshold bug instances must be at least as important as
-	 *   this priority to be reported
+	 *                  this priority to be reported
 	 */
 	public void setPriorityThreshold(int threshold);
 
@@ -63,12 +70,14 @@ public interface BugReporter extends RepositoryLookupFailureCallback, ClassObser
 	 * Report a bug.
 	 * The implementation may report the bug immediately,
 	 * or queue it for later.
+	 *
 	 * @param bugInstance object describing the bug instance
 	 */
 	public void reportBug(BugInstance bugInstance);
 
 	/**
 	 * Log an error that occurs while looking for bugs.
+	 *
 	 * @param message the error message
 	 */
 	public void logError(String message);
@@ -87,6 +96,7 @@ public interface BugReporter extends RepositoryLookupFailureCallback, ClassObser
 
 	/**
 	 * Add an observer.
+	 *
 	 * @param observer the observer
 	 */
 	public void addObserver(BugReporterObserver observer);

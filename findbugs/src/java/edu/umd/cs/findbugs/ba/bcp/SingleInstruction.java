@@ -19,8 +19,8 @@
 
 package edu.umd.cs.findbugs.ba.bcp;
 
-import org.apache.bcel.generic.InstructionHandle;
 import edu.umd.cs.findbugs.ba.Edge;
+import org.apache.bcel.generic.InstructionHandle;
 
 /**
  * An abstract PatternElement subclass for pattern elements which
@@ -28,13 +28,21 @@ import edu.umd.cs.findbugs.ba.Edge;
  * (Subclasses may override acceptBranch() to implement more selective
  * handling of branches.)
  *
- * @see PatternElement
  * @author David Hovemeyer
+ * @see PatternElement
  */
 public abstract class SingleInstruction extends PatternElement {
-	public boolean acceptBranch(Edge edge, InstructionHandle source) { return true; }
-	public int minOccur() { return 1; }
-	public int maxOccur() { return 1; }
+	public boolean acceptBranch(Edge edge, InstructionHandle source) {
+		return true;
+	}
+
+	public int minOccur() {
+		return 1;
+	}
+
+	public int maxOccur() {
+		return 1;
+	}
 
 }
 

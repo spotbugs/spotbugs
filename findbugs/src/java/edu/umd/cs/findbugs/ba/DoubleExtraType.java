@@ -27,10 +27,10 @@ import org.apache.bcel.generic.Type;
  * have type double, and local <i>n+1</i> will have this
  * type.
  *
+ * @author David Hovemeyer
  * @see TypeAnalysis
  * @see TypeFrame
  * @see TypeMerger
- * @author David Hovemeyer
  */
 public class DoubleExtraType extends Type implements ExtendedTypes {
 	private static final Type theInstance = new DoubleExtraType();
@@ -47,7 +47,9 @@ public class DoubleExtraType extends Type implements ExtendedTypes {
 		return o == this;
 	}
 
-	public static final Type instance() { return theInstance; }
+	public static final Type instance() {
+		return theInstance;
+	}
 }
 
 // vim:ts=4

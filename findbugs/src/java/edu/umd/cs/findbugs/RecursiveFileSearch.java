@@ -21,10 +21,7 @@ package edu.umd.cs.findbugs;
 
 import java.io.File;
 import java.io.FileFilter;
-import java.io.IOException;
-import java.util.LinkedList;
-import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.*;
 
 /**
  * Recursively search a directory, its subdirectories, etc.
@@ -41,9 +38,10 @@ public class RecursiveFileSearch {
 
 	/**
 	 * Constructor.
-	 * @param baseDir the base directory for the search
+	 *
+	 * @param baseDir    the base directory for the search
 	 * @param fileFilter chooses files to add to the results, and subdirectories
-	 *   to continue the search in
+	 *                   to continue the search in
 	 */
 	public RecursiveFileSearch(String baseDir, FileFilter fileFilter) {
 		this.baseDir = baseDir;
@@ -54,9 +52,10 @@ public class RecursiveFileSearch {
 
 	/**
 	 * Perform the search.
+	 *
 	 * @return this object
 	 * @throws InterruptedException if the thread is interrupted before the
-	 *   search completes
+	 *                              search completes
 	 */
 	public RecursiveFileSearch search() throws InterruptedException {
 		directoryWorkList.add(new File(baseDir));

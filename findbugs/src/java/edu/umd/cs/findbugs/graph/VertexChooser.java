@@ -17,7 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-// $Revision: 1.4 $
+// $Revision: 1.5 $
 
 package edu.umd.cs.findbugs.graph;
 
@@ -28,9 +28,11 @@ package edu.umd.cs.findbugs.graph;
  * may be specified to select which vertices should be considered
  * by the search.
  */
-public interface VertexChooser<VertexType extends GraphVertex<VertexType>> {
+public interface VertexChooser <VertexType extends GraphVertex<VertexType>> {
 
-	/** Determine whether the given GraphVertex should be chosen. */
+	/**
+	 * Determine whether the given GraphVertex should be chosen.
+	 */
 	public boolean isChosen(VertexType v);
 
 }

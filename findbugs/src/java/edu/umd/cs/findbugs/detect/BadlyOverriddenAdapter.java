@@ -20,30 +20,34 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import edu.umd.cs.findbugs.*;
 import java.util.*;
-import org.apache.bcel.classfile.*;
+
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.visitclass.Constants2;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
 
-public class BadlyOverriddenAdapter extends BytecodeScanningDetector implements   Constants2 {
-    private BugReporter bugReporter;
-    private boolean isAdapter;
-    private boolean classReported;
-    private Map<String,String> methodMap;
-    
-    public BadlyOverriddenAdapter(BugReporter bugReporter) {
-        this.bugReporter = bugReporter;
-        methodMap = new HashMap<String,String>();
-    }
+public class BadlyOverriddenAdapter extends BytecodeScanningDetector implements Constants2 {
+	private BugReporter bugReporter;
+	private boolean isAdapter;
+	private boolean classReported;
+	private Map<String, String> methodMap;
 
-    public void visit(JavaClass obj) {
-    	try {
-	    	methodMap.clear();
+	public BadlyOverriddenAdapter(BugReporter bugReporter) {
+		this.bugReporter = bugReporter;
+		methodMap = new HashMap<String, String>();
+	}
+
+	public void visit(JavaClass obj) {
+		try {
+			methodMap.clear();
 			JavaClass superClass = obj.getSuperClass();
 			if (superClass == null) return;
 			String packageName = superClass.getPackageName();
 			String className = superClass.getClassName();
-			isAdapter = ((className.endsWith("Adapter")) && (packageName.equals( "java.awt.event") || packageName.equals( "javax.swing.event" )));
+			isAdapter = ((className.endsWith("Adapter")) && (packageName.equals("java.awt.event") || packageName.equals("javax.swing.event")));
 			if (isAdapter) {
 				Method[] methods = superClass.getMethods();
 				for (int i = 0; i < methods.length; i++) {
@@ -51,26 +55,25 @@ public class BadlyOverriddenAdapter extends BytecodeScanningDetector implements 
 				}
 				classReported = false;
 			}
+		} catch (ClassNotFoundException cnfe) {
+			bugReporter.reportMissingClass(cnfe);
 		}
-		catch (ClassNotFoundException cnfe) {
-            bugReporter.reportMissingClass(cnfe);
-		}
-    }
-    
-    public void visit(Method obj) {
-    	if (isAdapter && !classReported) {
-	    	String methodName = obj.getName();
-	    	String signature = methodMap.get(methodName);
-	    	if (!methodName.equals("<init>") && signature != null) {
-	    		if (!signature.equals(obj.getSignature())) {
+	}
+
+	public void visit(Method obj) {
+		if (isAdapter && !classReported) {
+			String methodName = obj.getName();
+			String signature = methodMap.get(methodName);
+			if (!methodName.equals("<init>") && signature != null) {
+				if (!signature.equals(obj.getSignature())) {
 					bugReporter.reportBug(new BugInstance("BOA_BADLY_OVERRIDDEN_ADAPTER", NORMAL_PRIORITY)
-										.addClassAndMethod(this)
-										.addSourceLine(this));
+					        .addClassAndMethod(this)
+					        .addSourceLine(this));
 					classReported = true;
-	    		}
-	    	}
-	    }
-    }
+				}
+			}
+		}
+	}
 }
 
 // vim:ts=4

@@ -31,7 +31,7 @@ public interface ValueNumberAnalysisFeatures {
 	 * to try to handle situations where a field is read multiple times,
 	 * where the intent of the programmer is clearly that the loaded values
 	 * will be the same in each case.
-	 *
+	 * <p/>
 	 * <p> Eventually, we might do interprocedural analysis that would allow
 	 * accurate modeling of which fields a called method could modify,
 	 * which would allow a more correct implementation.

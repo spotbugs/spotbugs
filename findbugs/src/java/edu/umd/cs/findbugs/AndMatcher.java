@@ -19,7 +19,7 @@
 
 package edu.umd.cs.findbugs;
 
-import java.util.Iterator;
+import java.util.*;
 
 public class AndMatcher extends CompoundMatcher {
 

@@ -21,9 +21,9 @@ package edu.umd.cs.findbugs.ba;
 
 import java.util.*;
 
-import org.apache.bcel.*;
-import org.apache.bcel.classfile.*;
-import org.apache.bcel.generic.*;
+import org.apache.bcel.generic.CodeExceptionGen;
+import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.MethodGen;
 
 /**
  * This class provides a convenient way of determining the exception handlers
@@ -31,7 +31,7 @@ import org.apache.bcel.generic.*;
  * a map of InstructionHandles to lists of CodeExceptionGen objects.
  * This class also maps instructions which are the start of exception handlers
  * to the CodeExceptionGen object representing the handler.
- * 
+ *
  * @author David Hovemeyer
  */
 public class ExceptionHandlerMap {
@@ -40,6 +40,7 @@ public class ExceptionHandlerMap {
 
 	/**
 	 * Constructor.
+	 *
 	 * @param methodGen the method to build the map for
 	 */
 	public ExceptionHandlerMap(MethodGen methodGen) {
@@ -57,7 +58,7 @@ public class ExceptionHandlerMap {
 	 *
 	 * @param handle the handle of the instruction we want the exception handlers for
 	 * @return the list of exception handlers, or null if there are no handlers
-	 *   registered for the instruction
+	 *         registered for the instruction
 	 */
 	public List<CodeExceptionGen> getHandlerList(InstructionHandle handle) {
 		return codeToHandlerMap.get(handle);
@@ -66,9 +67,10 @@ public class ExceptionHandlerMap {
 	/**
 	 * If the given instruction is the start of an exception  handler,
 	 * get the CodeExceptionGen object representing the handler.
+	 *
 	 * @param start the instruction
 	 * @return the CodeExceptionGen object, or null if the instruction is not the
-	 *   start of an exception handler
+	 *         start of an exception handler
 	 */
 	public CodeExceptionGen getHandlerForStartInstruction(InstructionHandle start) {
 		return startInstructionToHandlerMap.get(start);
@@ -88,24 +90,24 @@ public class ExceptionHandlerMap {
 		while (handle != null) {
 			int offset = handle.getPosition();
 
-		handlerLoop:
-			for (int i = 0; i < handlerList.length; ++i) {
-				CodeExceptionGen exceptionHandler = handlerList[i];
-				int startOfRange = exceptionHandler.getStartPC().getPosition();
-				int endOfRange = exceptionHandler.getEndPC().getPosition();
+			handlerLoop:
+				for (int i = 0; i < handlerList.length; ++i) {
+					CodeExceptionGen exceptionHandler = handlerList[i];
+					int startOfRange = exceptionHandler.getStartPC().getPosition();
+					int endOfRange = exceptionHandler.getEndPC().getPosition();
 
-				if (offset >= startOfRange && offset <= endOfRange) {
-					// This handler is reachable from the instruction
-					addHandler(handle, exceptionHandler);
+					if (offset >= startOfRange && offset <= endOfRange) {
+						// This handler is reachable from the instruction
+						addHandler(handle, exceptionHandler);
 
-					// If this handler handles all exception types
-					// i.e., an ANY handler, or catch(Throwable...),
-					// then no further (lower-priority)
-					// handlers are reachable from the instruction.
-					if (Hierarchy.isUniversalExceptionHandler(exceptionHandler.getCatchType()))
-						break handlerLoop;
+						// If this handler handles all exception types
+						// i.e., an ANY handler, or catch(Throwable...),
+						// then no further (lower-priority)
+						// handlers are reachable from the instruction.
+						if (Hierarchy.isUniversalExceptionHandler(exceptionHandler.getCatchType()))
+							break handlerLoop;
+					}
 				}
-			}
 
 			handle = handle.getNext();
 		}

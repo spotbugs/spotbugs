@@ -19,15 +19,16 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import java.util.*;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.ba.*;
 import org.apache.bcel.Constants;
-import org.apache.bcel.classfile.*;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.*;
-import java.util.BitSet;
-import java.util.Iterator;
 
 public class FindMismatchedWaitOrNotify implements Detector {
 	private BugReporter bugReporter;
@@ -68,7 +69,7 @@ public class FindMismatchedWaitOrNotify implements Detector {
 	}
 
 	private void analyzeMethod(ClassContext classContext, Method method)
-		throws CFGBuilderException, DataflowAnalysisException {
+	        throws CFGBuilderException, DataflowAnalysisException {
 
 		MethodGen methodGen = classContext.getMethodGen(method);
 		ConstantPoolGen cpg = methodGen.getConstantPool();
@@ -76,7 +77,7 @@ public class FindMismatchedWaitOrNotify implements Detector {
 		ValueNumberDataflow vnaDataflow = classContext.getValueNumberDataflow(method);
 		LockDataflow dataflow = classContext.getLockDataflow(method);
 
-		for (Iterator<Location> i = cfg.locationIterator(); i.hasNext(); ) {
+		for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
 			Location location = i.next();
 
 			BasicBlock basicBlock = location.getBasicBlock();
@@ -91,14 +92,14 @@ public class FindMismatchedWaitOrNotify implements Detector {
 			String methodSig = inv.getSignature(cpg);
 
 			if (Hierarchy.isMonitorWait(methodName, methodSig)
-				|| Hierarchy.isMonitorNotify(methodName, methodSig)) {
+			        || Hierarchy.isMonitorNotify(methodName, methodSig)) {
 				int numConsumed = inv.consumeStack(cpg);
 				if (numConsumed == Constants.UNPREDICTABLE)
 					throw new AnalysisException("Unpredictable stack consumption", methodGen, handle);
 
 				ValueNumberFrame frame = vnaDataflow.getFactAtLocation(location);
 				if (!frame.isValid())
-					// Probably dead code
+				// Probably dead code
 					continue;
 				if (frame.getStackDepth() - numConsumed < 0)
 					throw new AnalysisException("Stack underflow", methodGen, handle);
@@ -110,12 +111,11 @@ public class FindMismatchedWaitOrNotify implements Detector {
 				if (lockCount == 0) {
 					String sourceFile = classContext.getJavaClass().getSourceFileName();
 					String type = methodName.equals("wait")
-						? "MWN_MISMATCHED_WAIT"
-						: "MWN_MISMATCHED_NOTIFY";
+					        ? "MWN_MISMATCHED_WAIT"
+					        : "MWN_MISMATCHED_NOTIFY";
 					bugReporter.reportBug(new BugInstance(type, NORMAL_PRIORITY)
-						.addClassAndMethod(methodGen, sourceFile)
-						.addSourceLine(methodGen, sourceFile, handle)
-					);
+					        .addClassAndMethod(methodGen, sourceFile)
+					        .addSourceLine(methodGen, sourceFile, handle));
 				}
 			}
 		}

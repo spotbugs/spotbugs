@@ -20,10 +20,15 @@
 package edu.umd.cs.findbugs;
 
 import java.util.*;
-import org.apache.bcel.classfile.*;
-import org.apache.bcel.generic.*;
+
 import edu.umd.cs.findbugs.ba.*;
-import edu.umd.cs.findbugs.ba.bcp.*;
+import edu.umd.cs.findbugs.ba.bcp.ByteCodePattern;
+import edu.umd.cs.findbugs.ba.bcp.ByteCodePatternMatch;
+import edu.umd.cs.findbugs.ba.bcp.PatternElementMatch;
+import edu.umd.cs.findbugs.ba.bcp.PatternMatcher;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.MethodGen;
 
 /**
  * A base class for bug detectors that are based on a ByteCodePattern.
@@ -45,6 +50,7 @@ public abstract class ByteCodePatternDetector implements Detector {
 
 	/**
 	 * Get the AnalysisContext.
+	 *
 	 * @return the AnalysisContext
 	 */
 	protected AnalysisContext getAnalysisContext() {
@@ -66,22 +72,21 @@ public abstract class ByteCodePatternDetector implements Detector {
 					continue;
 
 				if (DEBUG) {
-					System.out.print(
-						"=====================================================================\n"+
-						"Method " + jclass.getClassName() + "." + method.getName() + "\n" +
-						"=====================================================================\n");
+					System.out.print("=====================================================================\n" +
+					        "Method " + jclass.getClassName() + "." + method.getName() + "\n" +
+					        "=====================================================================\n");
 				}
 
 				if (!prescreen(method, classContext))
 					continue;
-	
+
 				MethodGen methodGen = classContext.getMethodGen(method);
 				if (methodGen == null)
 					continue;
 
 				PatternMatcher matcher = new PatternMatcher(pattern, classContext, method);
 				matcher.execute();
-	
+
 				Iterator<ByteCodePatternMatch> j = matcher.byteCodePatternMatchIterator();
 				while (j.hasNext()) {
 					ByteCodePatternMatch match = j.next();
@@ -122,27 +127,28 @@ public abstract class ByteCodePatternDetector implements Detector {
 	 * set is very fast, while building the MethodGen, CFG, ValueNumberAnalysis,
 	 * etc. objects required to match ByteCodePatterns is slow, and the bytecode
 	 * pattern matching algorithm is also not particularly fast.
-	 *
+	 * <p/>
 	 * <p> As a datapoint, prescreening speeds up the BCPDoubleCheck detector
 	 * <b>by a factor of 5</b> with no loss of generality and only a dozen
 	 * or so extra lines of code.
 	 *
-	 * @param method the method
+	 * @param method       the method
 	 * @param classContext the ClassContext for the method
-	 * @return true if the method should be analyzed for instances of the 
-	 *   ByteCodePattern
+	 * @return true if the method should be analyzed for instances of the
+	 *         ByteCodePattern
 	 */
 	public abstract boolean prescreen(Method method, ClassContext classContext);
 
 	/**
 	 * Called to report an instance of the ByteCodePattern.
+	 *
 	 * @param classContext the ClassContext for the analyzed class
-	 * @param method the method to instance appears in
-	 * @param match the ByteCodePatternMatch object representing the match
-	 *   of the ByteCodePattern against actual instructions in the method
+	 * @param method       the method to instance appears in
+	 * @param match        the ByteCodePatternMatch object representing the match
+	 *                     of the ByteCodePattern against actual instructions in the method
 	 */
 	public abstract void reportMatch(ClassContext classContext, Method method, ByteCodePatternMatch match)
-		throws CFGBuilderException, DataflowAnalysisException;
+	        throws CFGBuilderException, DataflowAnalysisException;
 }
 
 // vim:ts=4

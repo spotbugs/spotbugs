@@ -17,20 +17,21 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-// $Revision: 1.3 $
+// $Revision: 1.4 $
 
 package edu.umd.cs.findbugs.graph;
 
-import java.util.Set;
+import java.util.*;
 
 /**
  * Interface for an object which combines a set of vertices into
  * a single composite vertex; for example,
  * after finding strongly connected components.
  */
-public interface VertexCombinator<VertexType extends GraphVertex<VertexType>> {
+public interface VertexCombinator <VertexType extends GraphVertex<VertexType>> {
 	/**
 	 * Combine given vertices into a single vertex.
+	 *
 	 * @param vertexSet set of vertices to be combined
 	 * @return the result of combining the vertices in the set
 	 */

@@ -20,13 +20,10 @@
 package edu.umd.cs.findbugs;
 
 import java.util.*;
-import java.io.*;
 
-import org.apache.bcel.*;
-import org.apache.bcel.classfile.*;
-import org.apache.bcel.generic.*;
-
-import edu.umd.cs.findbugs.ba.*;
+import edu.umd.cs.findbugs.ba.BasicBlock;
+import edu.umd.cs.findbugs.ba.Edge;
+import org.apache.bcel.generic.InstructionHandle;
 
 /**
  * Drive an InstructionScannerGenerator over the instructions of
@@ -41,6 +38,7 @@ public class InstructionScannerDriver {
 
 	/**
 	 * Constructor.
+	 *
 	 * @param edgeIter iterator over Edges specifying path to be scanned
 	 */
 	public InstructionScannerDriver(Iterator<Edge> edgeIter) {
@@ -52,6 +50,7 @@ public class InstructionScannerDriver {
 	 * Execute by driving the InstructionScannerGenerator over all instructions.
 	 * Each generated InstructionScanner is driven over all instructions and
 	 * edges.
+	 *
 	 * @param generator the InstructionScannerGenerator
 	 */
 	public void execute(InstructionScannerGenerator generator) {
@@ -72,7 +71,7 @@ public class InstructionScannerDriver {
 					scannerList.add(generator.createScanner());
 
 				// Pump the instruction into all scanners
-				for (Iterator<InstructionScanner> j = scannerList.iterator(); j.hasNext(); ) {
+				for (Iterator<InstructionScanner> j = scannerList.iterator(); j.hasNext();) {
 					InstructionScanner scanner = j.next();
 					scanner.scanInstruction(handle);
 				}
@@ -84,7 +83,7 @@ public class InstructionScannerDriver {
 
 			// Now that we've finished the source block, pump the edge
 			// into all scanners
-			for (Iterator<InstructionScanner> j = scannerList.iterator(); j.hasNext(); ) {
+			for (Iterator<InstructionScanner> j = scannerList.iterator(); j.hasNext();) {
 				InstructionScanner scanner = j.next();
 				scanner.traverseEdge(edge);
 			}

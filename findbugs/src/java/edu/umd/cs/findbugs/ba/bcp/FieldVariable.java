@@ -29,9 +29,10 @@ public class FieldVariable implements Variable {
 
 	/**
 	 * Constructor for static fields.
+	 *
 	 * @param className the class name
 	 * @param fieldName the field name
-	 * @param fieldSig the field signature
+	 * @param fieldSig  the field signature
 	 */
 	public FieldVariable(String className, String fieldName, String fieldSig) {
 		this(null, className, fieldName, fieldSig);
@@ -39,10 +40,11 @@ public class FieldVariable implements Variable {
 
 	/**
 	 * Constructor for instance fields.
-	 * @param ref ValueNumber of the object reference
+	 *
+	 * @param ref       ValueNumber of the object reference
 	 * @param className the class name
 	 * @param fieldName the field name
-	 * @param fieldSig the field signature
+	 * @param fieldSig  the field signature
 	 */
 	public FieldVariable(ValueNumber ref, String className, String fieldName, String fieldSig) {
 		this.ref = ref;
@@ -54,16 +56,30 @@ public class FieldVariable implements Variable {
 	/**
 	 * Return whether or not this is a static field.
 	 */
-	public boolean isStatic() { return ref == null; }
+	public boolean isStatic() {
+		return ref == null;
+	}
 
-	/** Get the class name. */
-	public String getClassName() { return className; }
+	/**
+	 * Get the class name.
+	 */
+	public String getClassName() {
+		return className;
+	}
 
-	/** Get the field name. */
-	public String getFieldName() { return fieldName; }
+	/**
+	 * Get the field name.
+	 */
+	public String getFieldName() {
+		return fieldName;
+	}
 
-	/** Get the field signature. */
-	public String getFieldSig() { return fieldSig; }
+	/**
+	 * Get the field signature.
+	 */
+	public String getFieldSig() {
+		return fieldSig;
+	}
 
 	public boolean sameAs(Variable other) {
 		if (!(other instanceof FieldVariable))
@@ -72,9 +88,9 @@ public class FieldVariable implements Variable {
 		if (isStatic() != otherField.isStatic())
 			return false;
 		return (ref == null || ref.equals(otherField.ref))
-			&& className.equals(otherField.className)
-			&& fieldName.equals(otherField.fieldName)
-			&& fieldSig.equals(otherField.fieldSig);
+		        && className.equals(otherField.className)
+		        && fieldName.equals(otherField.fieldName)
+		        && fieldSig.equals(otherField.fieldSig);
 	}
 
 	public String toString() {

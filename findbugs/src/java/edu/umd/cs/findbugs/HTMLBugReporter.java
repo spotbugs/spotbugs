@@ -21,11 +21,10 @@ package edu.umd.cs.findbugs;
 
 import java.io.IOException;
 import java.io.InputStream;
-
-import javax.xml.transform.stream.StreamSource;
-import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 
 import org.dom4j.Document;
 import org.dom4j.io.DocumentSource;
@@ -47,7 +46,7 @@ public class HTMLBugReporter extends BugCollectionBugReporter {
 
 			// Get the stylesheet as a StreamSource
 			InputStream xslInputStream =
-				this.getClass().getClassLoader().getResourceAsStream(stylesheet);
+			        this.getClass().getClassLoader().getResourceAsStream(stylesheet);
 			if (xslInputStream == null)
 				throw new IOException("Could not load HTML generation stylesheet " + stylesheet);
 			StreamSource xsl = new StreamSource(xslInputStream);

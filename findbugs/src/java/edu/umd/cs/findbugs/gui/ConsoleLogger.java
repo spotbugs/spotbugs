@@ -25,42 +25,43 @@
 
 package edu.umd.cs.findbugs.gui;
 
-import java.util.Date;
+import java.util.*;
 
 /**
- *
  * @author David Hovemeyer
  */
 public class ConsoleLogger {
 
-    public static final int INFO = 0;
-    public static final int WARNING = 1;
-    public static final int ERROR = 2;
-    
-    private FindBugsFrame frame;
-    
-    /** Creates a new instance of ConsoleLogger */
-    public ConsoleLogger(FindBugsFrame frame) {
-        this.frame = frame;
-    }
+	public static final int INFO = 0;
+	public static final int WARNING = 1;
+	public static final int ERROR = 2;
 
-    public void logMessage(int severity, String message) {
-        // If this is an error, pass it to the GUI
-        if (severity == ERROR)
-            frame.error(message);
-        
-        // Format a message for the console window
-        Date date = new Date();
-        StringBuffer buf = new StringBuffer();
-        buf.append('[');
-        buf.append(date.toString());
-        buf.append("] ");
-        if (severity == ERROR)
-            buf.append("ERROR: ");
-        else if (severity == WARNING)
-            buf.append("WARNING: ");
-        buf.append(message);
-        frame.writeToConsole(buf.toString());
-    }
-    
+	private FindBugsFrame frame;
+
+	/**
+	 * Creates a new instance of ConsoleLogger
+	 */
+	public ConsoleLogger(FindBugsFrame frame) {
+		this.frame = frame;
+	}
+
+	public void logMessage(int severity, String message) {
+		// If this is an error, pass it to the GUI
+		if (severity == ERROR)
+			frame.error(message);
+
+		// Format a message for the console window
+		Date date = new Date();
+		StringBuffer buf = new StringBuffer();
+		buf.append('[');
+		buf.append(date.toString());
+		buf.append("] ");
+		if (severity == ERROR)
+			buf.append("ERROR: ");
+		else if (severity == WARNING)
+			buf.append("WARNING: ");
+		buf.append(message);
+		frame.writeToConsole(buf.toString());
+	}
+
 }

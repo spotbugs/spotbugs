@@ -19,26 +19,30 @@
 
 package edu.umd.cs.findbugs.ba.bcp;
 
-import org.apache.bcel.generic.*;
-import edu.umd.cs.findbugs.ba.*;
+import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
+import edu.umd.cs.findbugs.ba.Edge;
+import edu.umd.cs.findbugs.ba.ValueNumberFrame;
+import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.InstructionHandle;
 
 /**
  * A "meta" PatternElement that matches any of a list of other child PatternElements.
  * An example of how this is useful is that you might want to match invocations of any
  * of a number of different methods.  To do this, you can create a MatchAny
  * with some number of Invoke elements as children.
- *
+ * <p/>
  * <p> Note that the minOccur() and maxOccur() counts of the child PatternElements
  * are ignored.  A MatchAny element always matches exactly one instruction.
  *
- * @see PatternElement
  * @author David Hovemeyer
+ * @see PatternElement
  */
 public class MatchAny extends PatternElement {
 	private PatternElement[] childList;
 
 	/**
 	 * Constructor.
+	 *
 	 * @param childList list of child PatternElements
 	 */
 	public MatchAny(PatternElement[] childList) {
@@ -63,7 +67,7 @@ public class MatchAny extends PatternElement {
 	}
 
 	public MatchResult match(InstructionHandle handle, ConstantPoolGen cpg,
-		ValueNumberFrame before, ValueNumberFrame after, BindingSet bindingSet) throws DataflowAnalysisException {
+	                         ValueNumberFrame before, ValueNumberFrame after, BindingSet bindingSet) throws DataflowAnalysisException {
 
 		for (int i = 0; i < childList.length; ++i) {
 			PatternElement child = childList[i];
@@ -82,9 +86,13 @@ public class MatchAny extends PatternElement {
 		throw new IllegalStateException("shouldn't happen");
 	}
 
-	public int minOccur() { return 1; }
+	public int minOccur() {
+		return 1;
+	}
 
-	public int maxOccur() { return 1; }
+	public int maxOccur() {
+		return 1;
+	}
 }
 
 // vim:ts=4

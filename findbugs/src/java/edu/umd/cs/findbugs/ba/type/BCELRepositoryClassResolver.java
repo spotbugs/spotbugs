@@ -25,9 +25,10 @@ import org.apache.bcel.classfile.JavaClass;
 
 /**
  * ClassResolver that uses the BCEL global Repository class.
+ *
+ * @author David Hovemeyer
  * @see ClassResolver
  * @see TypeRepository
- * @author David Hovemeyer
  */
 public class BCELRepositoryClassResolver implements ClassResolver {
 	public void resolveClass(ClassType type, TypeRepository repos) throws ClassNotFoundException {
@@ -56,7 +57,7 @@ public class BCELRepositoryClassResolver implements ClassResolver {
 
 	private static String getClassString(JavaClass javaClass, int index) {
 		return javaClass.getConstantPool()
-			.getConstantString(index, Constants.CONSTANT_Class);
+		        .getConstantString(index, Constants.CONSTANT_Class);
 	}
 }
 

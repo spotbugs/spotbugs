@@ -26,12 +26,13 @@ import org.apache.bcel.generic.Type;
  * By allowing multiple implementations, we allow creation of
  * specialized type systems.
  *
- * @see TypeAnalysis
  * @author David Hovemeyer
+ * @see TypeAnalysis
  */
 public interface TypeMerger {
 	/**
 	 * Merge type Types.
+	 *
 	 * @param a a Type
 	 * @param b a Type
 	 * @return the result of merging the two Types

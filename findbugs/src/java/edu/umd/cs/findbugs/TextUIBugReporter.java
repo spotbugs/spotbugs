@@ -20,12 +20,13 @@
 package edu.umd.cs.findbugs;
 
 import java.io.PrintStream;
-import java.util.HashMap;
+import java.util.*;
 
 public abstract class TextUIBugReporter extends AbstractBugReporter {
 
 	// Map of category codes to abbreviations used in printBug()
 	private static final HashMap<String, String> categoryMap = new HashMap<String, String>();
+
 	static {
 		categoryMap.put("CORRECTNESS", "C "); // "C"orrectness
 		categoryMap.put("MT_CORRECTNESS", "M "); // "M"ultithreaded correctness
@@ -40,7 +41,7 @@ public abstract class TextUIBugReporter extends AbstractBugReporter {
 	}
 
 	protected void printBug(BugInstance bugInstance) {
-		switch(bugInstance.getPriority()) {
+		switch (bugInstance.getPriority()) {
 		case Detector.LOW_PRIORITY:
 			outputStream.print("L ");
 			break;
@@ -59,18 +60,24 @@ public abstract class TextUIBugReporter extends AbstractBugReporter {
 				outputStream.print(categoryAbbrev);
 		}
 
-		SourceLineAnnotation line = 
-			bugInstance.getPrimarySourceLineAnnotation();
-		if (line == null) 
+		SourceLineAnnotation line =
+		        bugInstance.getPrimarySourceLineAnnotation();
+		if (line == null)
 			outputStream.println(bugInstance.getMessage());
-		else 
+		else
 			outputStream.println(bugInstance.getMessage()
-				+ "  " + line.toString());
+			        + "  " + line.toString());
 	}
 
-	public void beginReport() { }
-	public void reportLine(String msg) { System.err.println(msg); }
-	public void endReport() { }
+	public void beginReport() {
+	}
+
+	public void reportLine(String msg) {
+		System.err.println(msg);
+	}
+
+	public void endReport() {
+	}
 }
 
 // vim:ts=4

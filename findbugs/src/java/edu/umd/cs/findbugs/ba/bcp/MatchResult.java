@@ -26,9 +26,9 @@ package edu.umd.cs.findbugs.ba.bcp;
  * such as MatchAny, may use it to indicate that a child PatternElement was
  * the one that actually matched the instruction.
  *
+ * @author David Hovemeyer
  * @see PatternElement
  * @see BindingSet
- * @author David Hovemeyer
  */
 public class MatchResult {
 	private PatternElement patternElement;
@@ -36,19 +36,28 @@ public class MatchResult {
 
 	/**
 	 * Constructor.
+	 *
 	 * @param patternElement the PatternElement that matched the instruction
-	 * @param bindingSet the possibly updated BindingSet
+	 * @param bindingSet     the possibly updated BindingSet
 	 */
 	public MatchResult(PatternElement patternElement, BindingSet bindingSet) {
 		this.patternElement = patternElement;
 		this.bindingSet = bindingSet;
 	}
 
-	/** Get the PatternElement. */
-	public PatternElement getPatternElement() { return patternElement; }
+	/**
+	 * Get the PatternElement.
+	 */
+	public PatternElement getPatternElement() {
+		return patternElement;
+	}
 
-	/** Get the BindingSet. */
-	public BindingSet getBindingSet() { return bindingSet; }
+	/**
+	 * Get the BindingSet.
+	 */
+	public BindingSet getBindingSet() {
+		return bindingSet;
+	}
 
 }
 

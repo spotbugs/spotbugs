@@ -19,19 +19,19 @@
 
 package edu.umd.cs.findbugs.ba;
 
-import java.util.*;
-
-import org.apache.bcel.*;
-import org.apache.bcel.classfile.*;
-import org.apache.bcel.generic.*;
+import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.Instruction;
+import org.apache.bcel.generic.MONITORENTER;
+import org.apache.bcel.generic.MONITOREXIT;
+import org.apache.bcel.generic.MethodGen;
 
 /**
  * A dataflow analysis to count the number of times an object other than "this"
  * has been locked.
  *
+ * @author David Hovemeyer
  * @see LockCountAnalysis
  * @see ValueNumberAnalysis
- * @author David Hovemeyer
  */
 public class OtherLockCountAnalysis extends LockCountAnalysis {
 	public OtherLockCountAnalysis(MethodGen methodGen, ValueNumberDataflow vnaDataflow, DepthFirstSearch dfs) {
@@ -45,7 +45,7 @@ public class OtherLockCountAnalysis extends LockCountAnalysis {
 			result.setCount(0);
 	}
 
-	public int getDelta(Instruction ins, ValueNumberFrame frame) throws DataflowAnalysisException  {
+	public int getDelta(Instruction ins, ValueNumberFrame frame) throws DataflowAnalysisException {
 		int delta = 0;
 
 		if (ins instanceof MONITORENTER) {
@@ -68,7 +68,7 @@ public class OtherLockCountAnalysis extends LockCountAnalysis {
 
 			DataflowTestDriver<LockCount, LockCountAnalysis> driver = new DataflowTestDriver<LockCount, LockCountAnalysis>() {
 				public Dataflow<LockCount, LockCountAnalysis> createDataflow(ClassContext classContext, Method method)
-					throws CFGBuilderException, DataflowAnalysisException {
+				        throws CFGBuilderException, DataflowAnalysisException {
 
 					MethodGen methodGen = classContext.getMethodGen(method);
 					CFG cfg = classContext.getCFG(method);

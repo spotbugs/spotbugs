@@ -20,8 +20,7 @@
 package edu.umd.cs.findbugs;
 
 import java.io.IOException;
-
-import java.util.Iterator;
+import java.util.*;
 
 import org.dom4j.DocumentException;
 
@@ -40,7 +39,7 @@ public class AddAnnotation {
 	}
 
 	public AddAnnotation(String resultsFile, String annotation)
-		throws IOException, DocumentException {
+	        throws IOException, DocumentException {
 		this(new SortedBugCollection(), new Project(), annotation);
 		bugCollection.readXML(resultsFile, project);
 	}
@@ -54,7 +53,7 @@ public class AddAnnotation {
 	}
 
 	public void execute() {
-		for (Iterator<BugInstance> i = bugCollection.iterator(); i.hasNext(); ) {
+		for (Iterator<BugInstance> i = bugCollection.iterator(); i.hasNext();) {
 			BugInstance bugInstance = i.next();
 
 			// Don't add the annotation if it is already present

@@ -26,15 +26,17 @@ package edu.umd.cs.findbugs.ba.type;
  * <ul>
  * <li> Check whether it is a class or interface
  * <li> Add links for its superclass and implemented interfaces
- *      to the class hierarchy
+ * to the class hierarchy
  * </ul>
- * @see TypeRepository
+ *
  * @author David Hovemeyer
+ * @see TypeRepository
  */
 public interface ClassResolver {
 	/**
 	 * Resolve a class.
-	 * @param type the ClassType object representing the class
+	 *
+	 * @param type  the ClassType object representing the class
 	 * @param repos the TypeRepository containing the type
 	 * @throws ClassNotFoundException if the class cannot be resolved
 	 */

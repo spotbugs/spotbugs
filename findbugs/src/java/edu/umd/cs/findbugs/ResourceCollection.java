@@ -19,13 +19,9 @@
 
 package edu.umd.cs.findbugs;
 
-import edu.umd.cs.findbugs.ba.Location;
+import java.util.*;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import edu.umd.cs.findbugs.ba.Location;
 
 /**
  * A ResourceCollection defines all of the resources created
@@ -41,7 +37,7 @@ import java.util.Map;
  *
  * @author David Hovemeyer
  */
-public class ResourceCollection<Resource> {
+public class ResourceCollection <Resource> {
 	private List<Resource> resourceList;
 	private Map<Location, Resource> locationToResourceMap;
 
@@ -59,6 +55,7 @@ public class ResourceCollection<Resource> {
 	 * That is, one that is not created within the analyzed method.
 	 * Resources passed to the method as parameters fall into
 	 * this category.
+	 *
 	 * @param resource the preexisting resource
 	 */
 	public void addPreexistingResource(Resource resource) {
@@ -67,6 +64,7 @@ public class ResourceCollection<Resource> {
 
 	/**
 	 * Add a resource created within the analyzed method.
+	 *
 	 * @param location the location
 	 * @param resource the resource created at that location
 	 */
@@ -92,9 +90,10 @@ public class ResourceCollection<Resource> {
 
 	/**
 	 * Get the resource that is created at given location.
+	 *
 	 * @param location the Location
 	 * @return the Resource created at that location,
-	 *   or null if no resource is created at the location
+	 *         or null if no resource is created at the location
 	 */
 	public Resource getCreatedResource(Location location) {
 		return locationToResourceMap.get(location);

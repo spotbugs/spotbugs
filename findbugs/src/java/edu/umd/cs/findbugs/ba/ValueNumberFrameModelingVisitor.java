@@ -19,14 +19,13 @@
 
 package edu.umd.cs.findbugs.ba;
 
-import java.util.IdentityHashMap;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+
 import org.apache.bcel.generic.*;
 
 public class ValueNumberFrameModelingVisitor
-	extends AbstractFrameModelingVisitor<ValueNumber, ValueNumberFrame>
-	implements Debug, ValueNumberAnalysisFeatures {
+        extends AbstractFrameModelingVisitor<ValueNumber, ValueNumberFrame>
+        implements Debug, ValueNumberAnalysisFeatures {
 
 	/* ----------------------------------------------------------------------
 	 * Fields
@@ -46,7 +45,7 @@ public class ValueNumberFrameModelingVisitor
 	 * ---------------------------------------------------------------------- */
 
 	public ValueNumberFrameModelingVisitor(MethodGen methodGen, ValueNumberFactory factory,
-		ValueNumberCache cache, RepositoryLookupFailureCallback lookupFailureCallback) {
+	                                       ValueNumberCache cache, RepositoryLookupFailureCallback lookupFailureCallback) {
 
 		super(methodGen.getConstantPool());
 		this.methodGen = methodGen;
@@ -102,7 +101,7 @@ public class ValueNumberFrameModelingVisitor
 	public void visitGETFIELD(GETFIELD obj) {
 		if (REDUNDANT_LOAD_ELIMINATION) {
 			ValueNumberFrame frame = getFrame();
-	
+
 			try {
 				XField xfield = Hierarchy.findXField(obj, getCPG());
 				if (xfield != null) {
@@ -184,7 +183,7 @@ public class ValueNumberFrameModelingVisitor
 			ConstantPoolGen cpg = getCPG();
 			String methodName = obj.getName(cpg);
 			String methodSig = obj.getSignature(cpg);
-	
+
 			if (methodName.equals("class$") && methodSig.equals("(Ljava/lang/String;)Ljava/lang/Class;")) {
 				// Access of a Class object
 				ValueNumberFrame frame = getFrame();
@@ -319,20 +318,21 @@ public class ValueNumberFrameModelingVisitor
 
 	/**
 	 * Load an instance field.
+	 *
 	 * @param instanceField the field
-	 * @param reference the ValueNumber of the object reference
-	 * @param obj the Instruction loading the field
+	 * @param reference     the ValueNumber of the object reference
+	 * @param obj           the Instruction loading the field
 	 */
 	private void loadInstanceField(InstanceField instanceField, Instruction obj) {
 		ValueNumberFrame frame = getFrame();
 
 		try {
 			ValueNumber reference = frame.popValue();
-	
+
 			AvailableLoad availableLoad = new AvailableLoad(reference, instanceField);
 			if (RLE_DEBUG) System.out.print("[getfield of " + availableLoad + "]");
 			ValueNumber[] loadedValue = frame.getAvailableLoad(availableLoad);
-		
+
 			if (loadedValue == null) {
 				// Get (or create) the cached result for this instruction
 				ValueNumber[] inputValueList = new ValueNumber[]{reference};
@@ -340,12 +340,12 @@ public class ValueNumberFrameModelingVisitor
 	
 				// Make the load available
 				frame.addAvailableLoad(availableLoad, loadedValue);
-				if (RLE_DEBUG) System.out.print("[Making load available "+ loadedValue[0] + "]");
+				if (RLE_DEBUG) System.out.print("[Making load available " + loadedValue[0] + "]");
 			} else {
 				// Found an available load!
 				if (RLE_DEBUG) System.out.print("[Found available load " + availableLoad + "]");
 			}
-	
+
 			pushOutputValues(loadedValue);
 		} catch (DataflowAnalysisException e) {
 			throw new AnalysisException("ValueNumberFrameModelingVisitor caught exception: " + e.toString(), e);
@@ -354,8 +354,9 @@ public class ValueNumberFrameModelingVisitor
 
 	/**
 	 * Load a static field.
+	 *
 	 * @param staticField the field
-	 * @param obj the Instruction loading the field
+	 * @param obj         the Instruction loading the field
 	 */
 	private void loadStaticField(StaticField staticField, Instruction obj) {
 		ValueNumberFrame frame = getFrame();
@@ -380,10 +381,11 @@ public class ValueNumberFrameModelingVisitor
 
 	/**
 	 * Store an instance field.
-	 * @param instanceField the field
-	 * @param obj the instruction which stores the field
+	 *
+	 * @param instanceField   the field
+	 * @param obj             the instruction which stores the field
 	 * @param pushStoredValue push the stored value onto the stack
-	 *   (because we are modeling an inner-class field access method)
+	 *                        (because we are modeling an inner-class field access method)
 	 */
 	private void storeInstanceField(InstanceField instanceField, Instruction obj, boolean pushStoredValue) {
 		ValueNumberFrame frame = getFrame();
@@ -407,10 +409,11 @@ public class ValueNumberFrameModelingVisitor
 
 	/**
 	 * Store a static field.
-	 * @param staticField the static field
-	 * @param obj the instruction which stores the field
+	 *
+	 * @param staticField     the static field
+	 * @param obj             the instruction which stores the field
 	 * @param pushStoredValue push the stored value onto the stack
-	 *   (because we are modeling an inner-class field access method)
+	 *                        (because we are modeling an inner-class field access method)
 	 */
 	private void storeStaticField(StaticField staticField, Instruction obj, boolean pushStoredValue) {
 		ValueNumberFrame frame = getFrame();
@@ -432,6 +435,7 @@ public class ValueNumberFrameModelingVisitor
 
 	/**
 	 * Get the ValueNumber for given class's Class object.
+	 *
 	 * @param className the class
 	 */
 	private ValueNumber getClassObjectValue(String className) {

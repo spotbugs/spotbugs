@@ -21,17 +21,18 @@ package edu.umd.cs.findbugs.ba;
 
 import java.util.*;
 
-import org.apache.bcel.*;
-import org.apache.bcel.classfile.*;
-import org.apache.bcel.generic.*;
+import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.Instruction;
+import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.MethodGen;
 
 /**
  * A dataflow analysis to track the production and flow of values in the Java
  * stack frame.  See the {@link ValueNumber ValueNumber} class for an explanation
  * of what the value numbers mean, and when they can be compared.
- *
+ * <p/>
  * <p> This class is still experimental.
- *
+ * <p/>
  * <p> TODO: we will need redundant load elimination in order to
  * successfully capture the programmer's intent in a lot of cases.
  * For example:
@@ -46,9 +47,9 @@ import org.apache.bcel.generic.*;
  * first GETFIELD for the call to blat(), and this is almost certainly what
  * the programmer intended to happen.
  *
+ * @author David Hovemeyer
  * @see ValueNumber
  * @see DominatorsAnalysis
- * @author David Hovemeyer
  */
 public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, ValueNumberFrame> {
 
@@ -65,14 +66,14 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
 	private HashMap<Location, ValueNumberFrame> factAfterLocationMap;
 
 	public ValueNumberAnalysis(MethodGen methodGen, DepthFirstSearch dfs,
-		RepositoryLookupFailureCallback lookupFailureCallback) {
+	                           RepositoryLookupFailureCallback lookupFailureCallback) {
 
 		super(dfs);
 		this.methodGen = methodGen;
 		this.factory = new ValueNumberFactory();
 		this.cache = new ValueNumberCache();
 		this.visitor = new ValueNumberFrameModelingVisitor(methodGen, factory, cache,
-			lookupFailureCallback);
+		        lookupFailureCallback);
 
 		int numLocals = methodGen.getMaxLocals();
 		this.entryLocalValueList = new ValueNumber[numLocals];
@@ -125,7 +126,7 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
 	}
 
 	public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, ValueNumberFrame fact)
-		throws DataflowAnalysisException {
+	        throws DataflowAnalysisException {
 
 		Location location = new Location(handle, basicBlock);
 
@@ -169,7 +170,7 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
 	}
 
 	protected ValueNumber mergeValues(ValueNumberFrame frame, int slot, ValueNumber mine, ValueNumber other)
-		throws DataflowAnalysisException {
+	        throws DataflowAnalysisException {
 
 		// Merging slot values:
 		//   - Merging identical values results in no change
@@ -199,7 +200,7 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
 		}
 
 		return mergedValue;
-		
+
 	}
 
 	public ValueNumberFrame getFactAtLocation(Location location) {
@@ -251,9 +252,17 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
 				discovered[i] = -1;
 		}
 
-		public boolean isUsed(int number) { return valuesUsed.get(number); }
-		public void setUsed(int number) { valuesUsed.set(number, true); }
-		public int allocateValue() { return numValuesUsed++; }
+		public boolean isUsed(int number) {
+			return valuesUsed.get(number);
+		}
+
+		public void setUsed(int number) {
+			valuesUsed.set(number, true);
+		}
+
+		public int allocateValue() {
+			return numValuesUsed++;
+		}
 	}
 
 	/**
@@ -263,22 +272,22 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
 	 * After this method is called, the getNumValuesAllocated() method
 	 * of this object will return a value less than or equal to the value
 	 * it would have returned before the call to this method.
-	 *
+	 * <p/>
 	 * <p> <em>This method should be called at most once</em>.
 	 *
 	 * @param dataflow the Dataflow object which executed this analysis
-	 *  (and has all of the block result values)
+	 *                 (and has all of the block result values)
 	 */
 	public void compactValueNumbers(Dataflow<ValueNumberFrame, ValueNumberAnalysis> dataflow) {
 		ValueCompacter compacter = new ValueCompacter(factory.getNumValuesAllocated());
 
 		// We can get all extant Frames by looking at the values in
 		// the location to value map, and also the block result values.
-		for (Iterator<ValueNumberFrame> i = factIterator(); i.hasNext(); ) {
+		for (Iterator<ValueNumberFrame> i = factIterator(); i.hasNext();) {
 			ValueNumberFrame frame = i.next();
 			markFrameValues(frame, compacter);
 		}
-		for (Iterator<ValueNumberFrame> i = resultFactIterator(); i.hasNext(); ) {
+		for (Iterator<ValueNumberFrame> i = resultFactIterator(); i.hasNext();) {
 			ValueNumberFrame frame = i.next();
 			markFrameValues(frame, compacter);
 		}
@@ -290,8 +299,9 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
 
 		int after = factory.getNumValuesAllocated();
 
-		if (DEBUG && after < before && before > 0) System.out.println("Value compaction: " + after + "/" + before + " (" +
-			((after * 100) / before) + "%)");
+		if (DEBUG && after < before && before > 0)
+			System.out.println("Value compaction: " + after + "/" + before + " (" +
+			        ((after * 100) / before) + "%)");
 
 	}
 
@@ -325,12 +335,12 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
 			}
 
 			DataflowTestDriver<ValueNumberFrame, ValueNumberAnalysis> driver =
-				new DataflowTestDriver<ValueNumberFrame, ValueNumberAnalysis>() {
-				public Dataflow<ValueNumberFrame, ValueNumberAnalysis> createDataflow(ClassContext classContext, Method method)
-					throws CFGBuilderException, DataflowAnalysisException {
-					return classContext.getValueNumberDataflow(method);
-				}
-			};
+			        new DataflowTestDriver<ValueNumberFrame, ValueNumberAnalysis>() {
+				        public Dataflow<ValueNumberFrame, ValueNumberAnalysis> createDataflow(ClassContext classContext, Method method)
+				                throws CFGBuilderException, DataflowAnalysisException {
+					        return classContext.getValueNumberDataflow(method);
+				        }
+			        };
 
 			driver.execute(argv[0]);
 

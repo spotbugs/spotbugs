@@ -22,17 +22,19 @@ package edu.umd.cs.findbugs;
 import java.io.IOException;
 import java.io.PushbackReader;
 import java.io.Reader;
-import java.util.BitSet;
+import java.util.*;
 
 /**
  * A simple tokenizer for Java source text.
  * This is not intended to be a compliant lexer;
  * instead, it is for quick and dirty scanning.
- * @see Token
+ *
  * @author David Hovemeyer
+ * @see Token
  */
 public class Tokenizer {
 	private static final BitSet whiteSpace = new BitSet();
+
 	static {
 		whiteSpace.set(' ');
 		whiteSpace.set('\t');
@@ -41,6 +43,7 @@ public class Tokenizer {
 	}
 
 	private static final BitSet single = new BitSet();
+
 	static {
 		single.set('!');
 		single.set('%');
@@ -71,6 +74,7 @@ public class Tokenizer {
 
 	/**
 	 * Constructor.
+	 *
 	 * @param reader the Reader for the Java source text
 	 */
 	public Tokenizer(Reader reader) {
@@ -79,6 +83,7 @@ public class Tokenizer {
 
 	/**
 	 * Get the next Token in the stream.
+	 *
 	 * @return the Token
 	 */
 	public Token next() throws IOException {
@@ -93,7 +98,7 @@ public class Tokenizer {
 		else if (c == '/')
 			return maybeComment();
 		else if (single.get(c))
-			return new Token(Token.SINGLE, String.valueOf((char)c));
+			return new Token(Token.SINGLE, String.valueOf((char) c));
 		else {
 			reader.unread(c);
 			return parseWord();
@@ -101,7 +106,7 @@ public class Tokenizer {
 	}
 
 	private void skipWhitespace() throws IOException {
-		for (;;) {
+		for (; ;) {
 			int c = reader.read();
 			if (c < 0) break;
 			if (!whiteSpace.get(c)) {
@@ -119,24 +124,24 @@ public class Tokenizer {
 		StringBuffer result = new StringBuffer();
 		result.append((char) delimiter);
 		int state = SCAN;
-	loop:
-		while (state != DONE) {
-			int c = reader.read();
-			if (c < 0)
-				break;
-			result.append((char) c);
-			switch (state) {
-			case SCAN:
-				if (c == delimiter)
-					state = DONE;
-				else if (c == '\\')
-					state = ESCAPE;
-				break;
-			case ESCAPE:
-				state = SCAN;
-				break;
+		loop:
+			while (state != DONE) {
+				int c = reader.read();
+				if (c < 0)
+					break;
+				result.append((char) c);
+				switch (state) {
+				case SCAN:
+					if (c == delimiter)
+						state = DONE;
+					else if (c == '\\')
+						state = ESCAPE;
+					break;
+				case ESCAPE:
+					state = SCAN;
+					break;
+				}
 			}
-		}
 		return new Token(Token.STRING, result.toString());
 	}
 
@@ -146,7 +151,7 @@ public class Tokenizer {
 			// Single line comment
 			StringBuffer result = new StringBuffer();
 			result.append("//");
-			for (;;) {
+			for (; ;) {
 				c = reader.read();
 				if (c < 0)
 					break;
@@ -196,7 +201,7 @@ public class Tokenizer {
 
 	private Token parseWord() throws IOException {
 		StringBuffer result = new StringBuffer();
-		for (;;) {
+		for (; ;) {
 			int c = reader.read();
 			if (c < 0)
 				break;

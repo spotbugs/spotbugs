@@ -19,18 +19,15 @@
 
 package edu.umd.cs.findbugs.ba.type;
 
-import java.util.ArrayList;
-import java.util.BitSet;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Class to cache the result of an isSubtype() query
  * so future lookups are fast.  Also caches a complete
  * list of  supertypes in BFS order.
- * @see TypeRepository
+ *
  * @author David Hovemeyer
+ * @see TypeRepository
  */
 public class SubtypeQueryResult {
 	private BitSet supertypeSet;
@@ -54,6 +51,7 @@ public class SubtypeQueryResult {
 	 * breadth-first order.  This allows first-common-superclass
 	 * searches to be performed using a linear search
 	 * of the  supertypes in BFS order.
+	 *
 	 * @param supertype the supertype
 	 */
 	public void addSupertype(ObjectType supertype) {
@@ -63,6 +61,7 @@ public class SubtypeQueryResult {
 
 	/**
 	 * Mark the object as complete.
+	 *
 	 * @param missingClassList the list of names of missing classes
 	 */
 	public void finish(String[] missingClassList) {
@@ -73,6 +72,7 @@ public class SubtypeQueryResult {
 
 	/**
 	 * Check to see if given ObjectType is a supertype.
+	 *
 	 * @param type potential supertype
 	 * @return true if type is a supertype, false otherwise
 	 */
@@ -91,12 +91,13 @@ public class SubtypeQueryResult {
 	/**
 	 * Get set of supertypes.
 	 * This is all supertypes including the object type itself.
+	 *
 	 * @param subtype the subtype (for which this object stores the set of supertypes)
-	 * @param repos the TypeRepository
+	 * @param repos   the TypeRepository
 	 * @return the set of supertypes (a new object, can be modified)
 	 */
 	public Set<ObjectType> getSupertypeSet(ObjectType subtype, TypeRepository repos)
-		throws ClassNotFoundException {
+	        throws ClassNotFoundException {
 
 		// Throw ClassNotFoundException if we can't answer the
 		// query authoritatively

@@ -25,10 +25,10 @@ import org.apache.bcel.generic.Type;
  * Special "top" type.
  * It is the identity element for the type merge operation.
  *
+ * @author David Hovemeyer
  * @see TypeAnalysis
  * @see TypeFrame
  * @see TypeMerger
- * @author David Hovemeyer
  */
 public class TopType extends Type implements ExtendedTypes {
 	private static final Type theInstance = new TopType();

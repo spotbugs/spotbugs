@@ -25,54 +25,69 @@
 
 package edu.umd.cs.findbugs;
 
-import java.util.*;
 import java.io.*;
-import java.util.jar.Attributes;
-import java.util.jar.JarFile;
-import java.util.jar.Manifest;
+import java.util.*;
+import java.util.jar.*;
+
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 
 /**
  * A project in the GUI.
  * This consists of some number of Jar files to analyze for bugs, and optionally
- *
+ * <p/>
  * <ul>
  * <li> some number of source directories, for locating the program's
- *	  source code
+ * source code
  * <li> some number of auxiliary classpath entries, for locating classes
- *	  referenced by the program which the user doesn't want to analyze
+ * referenced by the program which the user doesn't want to analyze
  * <li> some number of boolean options
  * </ul>
  *
  * @author David Hovemeyer
  */
 public class Project {
-	/** Project filename. */
+	/**
+	 * Project filename.
+	 */
 	private String projectFileName;
-	
-	/** Options. */
-	private Map<String,Boolean> optionsMap;
-	
-	/** The list of jar files. */
+
+	/**
+	 * Options.
+	 */
+	private Map<String, Boolean> optionsMap;
+
+	/**
+	 * The list of jar files.
+	 */
 	private LinkedList<String> jarList;
-	
-	/** The list of source directories. */
+
+	/**
+	 * The list of source directories.
+	 */
 	private LinkedList<String> srcDirList;
-	
-	/** The list of auxiliary classpath entries. */
+
+	/**
+	 * The list of auxiliary classpath entries.
+	 */
 	private LinkedList<String> auxClasspathEntryList;
 
-	/** Flag to indicate that this Project has been modified. */
+	/**
+	 * Flag to indicate that this Project has been modified.
+	 */
 	private boolean isModified;
 
-	/** Constant used to name anonymous projects. */
+	/**
+	 * Constant used to name anonymous projects.
+	 */
 	public static final String UNNAMED_PROJECT = "<<unnamed project>>";
 
-	/** Create an anonymous project.  */
+	/**
+	 * Create an anonymous project.
+	 */
 	public Project() {
 		this.projectFileName = UNNAMED_PROJECT;
-		optionsMap = new HashMap<String,Boolean>();
+		optionsMap = new HashMap<String, Boolean>();
 		optionsMap.put(RELATIVE_PATHS, Boolean.FALSE);
 		jarList = new LinkedList<String>();
 		srcDirList = new LinkedList<String>();
@@ -80,37 +95,47 @@ public class Project {
 		isModified = false;
 	}
 
-	/** Return whether or not this Project has unsaved modifications. */
+	/**
+	 * Return whether or not this Project has unsaved modifications.
+	 */
 	public boolean isModified() {
 		return isModified;
 	}
 
-	/** Set whether or not this Project has unsaved modifications. */
+	/**
+	 * Set whether or not this Project has unsaved modifications.
+	 */
 	public void setModified(boolean isModified) {
 		this.isModified = isModified;
 	}
-	
-	/** Get the project filename. */
-	public String getFileName() { return projectFileName; }
-	
+
+	/**
+	 * Get the project filename.
+	 */
+	public String getFileName() {
+		return projectFileName;
+	}
+
 	/**
 	 * Set the project filename.
+	 *
 	 * @param projectFileName the new filename
 	 */
 	public void setFileName(String projectFileName) {
 		this.projectFileName = projectFileName;
 	}
-	
+
 	/**
 	 * Add a Jar file to the project.
+	 *
 	 * @param fileName the jar file to add
 	 * @return true if the jar file was added, or false if the jar
-	 *   file was already present
+	 *         file was already present
 	 */
 	public boolean addJar(String fileName) {
 		return addToListInternal(jarList, makeAbsoluteCWD(fileName));
 	}
-	
+
 	/*
 	 * Add a source directory to the project.
 	 * @param dirName the directory to add
@@ -120,32 +145,40 @@ public class Project {
 	public boolean addSourceDir(String dirName) {
 		return addToListInternal(srcDirList, makeAbsoluteCWD(dirName));
 	}
-	
+
 	/**
 	 * Retrieve the Options value.
+	 *
 	 * @param option the name of option to get
 	 * @return the value of the option
 	 */
-	 public boolean getOption(String option) {
+	public boolean getOption(String option) {
 		Boolean value = optionsMap.get(option);
-	 	return value != null && value.booleanValue();
-	 }
-	
+		return value != null && value.booleanValue();
+	}
+
 	/**
 	 * Get the number of jar files in the project.
+	 *
 	 * @return the number of jar files in the project
 	 */
-	public int getNumJarFiles() { return jarList.size(); }
-	
+	public int getNumJarFiles() {
+		return jarList.size();
+	}
+
 	/**
 	 * Get the given Jar file.
+	 *
 	 * @param num the number of the jar file
 	 * @return the name of the jar file
 	 */
-	public String getJarFile(int num) { return jarList.get(num); }
-	
+	public String getJarFile(int num) {
+		return jarList.get(num);
+	}
+
 	/**
 	 * Remove jar file at given index.
+	 *
 	 * @param num index of the jar file to remove
 	 */
 	public void removeJarFile(int num) {
@@ -159,74 +192,82 @@ public class Project {
 	public List<String> getJarFileList() {
 		return jarList;
 	}
-	
+
 	/**
 	 * Get the number of source directories in the project.
+	 *
 	 * @return the number of source directories in the project
 	 */
-	public int getNumSourceDirs() { return srcDirList.size(); }
-	
+	public int getNumSourceDirs() {
+		return srcDirList.size();
+	}
+
 	/**
 	 * Get the given source directory.
+	 *
 	 * @param num the number of the source directory
 	 * @return the source directory
 	 */
-	public String getSourceDir(int num) { return srcDirList.get(num); }
-	
+	public String getSourceDir(int num) {
+		return srcDirList.get(num);
+	}
+
 	/**
 	 * Remove source directory at given index.
+	 *
 	 * @param num index of the source directory to remove
 	 */
 	public void removeSourceDir(int num) {
 		srcDirList.remove(num);
 		isModified = true;
 	}
-	
+
 	/**
 	 * Get Jar files as an array of Strings.
 	 */
 	public String[] getJarFileArray() {
 		return (String[]) jarList.toArray(new String[jarList.size()]);
 	}
-	
+
 	/**
 	 * Get source dirs as an array of Strings.
 	 */
 	public String[] getSourceDirArray() {
 		return (String[]) srcDirList.toArray(new String[srcDirList.size()]);
 	}
-	
+
 	/**
 	 * Get the source dir list.
 	 */
 	public List<String> getSourceDirList() {
 		return srcDirList;
 	}
-	
+
 	/**
 	 * Add an auxiliary classpath entry
+	 *
 	 * @param auxClasspathEntry the entry
 	 * @return true if the entry was added successfully, or false
-	 *   if the given entry is already in the list
+	 *         if the given entry is already in the list
 	 */
 	public boolean addAuxClasspathEntry(String auxClasspathEntry) {
 		return addToListInternal(auxClasspathEntryList, makeAbsoluteCWD(auxClasspathEntry));
 	}
-	
+
 	/**
 	 * Get the number of auxiliary classpath entries.
 	 */
 	public int getNumAuxClasspathEntries() {
 		return auxClasspathEntryList.size();
 	}
-	
+
 	/**
 	 * Get the n'th auxiliary classpath entry.
 	 */
 	public String getAuxClasspathEntry(int n) {
 		return auxClasspathEntryList.get(n);
 	}
-	
+
 	/**
 	 * Remove the n'th auxiliary classpath entry.
 	 */
@@ -255,7 +296,7 @@ public class Project {
 		final HashSet<File> processedJars = new HashSet<File>();
 		final LinkedList<String> implicitClasspath = new LinkedList<String>();
 
-		for (Iterator<String> i = jarList.iterator(); i.hasNext(); ) {
+		for (Iterator<String> i = jarList.iterator(); i.hasNext();) {
 			String fileName = i.next();
 
 			if (!fileName.endsWith(".zip") && !fileName.endsWith(".jar"))
@@ -285,9 +326,8 @@ public class Project {
 	 * <code>"user.dir"</code>, is used.
 	 *
 	 * @param file the file whose parent directory is to be determined
-	 *
 	 * @return the file for the parent directory
-	 */ 
+	 */
 	private static File getParentFile(File file) {
 		try {
 			file = file.getCanonicalFile();
@@ -308,10 +348,9 @@ public class Project {
 	 * Get the <code>Class-Path</code> attribute for the specified jar file.
 	 *
 	 * @param jarFile the file to process
-	 *
 	 * @return the classpath for the specified jar file, may be
-	 * <code>null</code>
-	 */ 
+	 *         <code>null</code>
+	 */
 	private static String getClassPath(final File jarFile) {
 		String result = null;
 
@@ -325,7 +364,7 @@ public class Project {
 				}
 			} catch (IOException ioExc) {
 				System.err.println("Unable to access Jar file: " + jarFile +
-								   ", exc = " + ioExc);
+				        ", exc = " + ioExc);
 			}
 		} else {
 			System.err.println("Missing Jar file: " + jarFile);
@@ -339,7 +378,7 @@ public class Project {
 	 * depends to the list of implicit classpath entries.
 	 */
 	private void processComponentJar(final File jar, final HashSet<File> processedJars,
-		final LinkedList<String> implicitClasspath) {
+	                                 final LinkedList<String> implicitClasspath) {
 		String jarClassPath = getClassPath(jar);
 
 		if (jarClassPath != null) {
@@ -371,45 +410,46 @@ public class Project {
 	private static final String JAR_FILES_KEY = "[Jar files]";
 	private static final String SRC_DIRS_KEY = "[Source dirs]";
 	private static final String AUX_CLASSPATH_ENTRIES_KEY = "[Aux classpath entries]";
-	
+
 	// Option keys
 	public static final String RELATIVE_PATHS = "relative_paths";
-	
+
 	/**
 	 * Save the project to an output file.
-	 * @param outputFile name of output file
+	 *
+	 * @param outputFile       name of output file
 	 * @param useRelativePaths true if the project should be written
-	 *   using only relative paths
-	 * @param relativeBase if useRelativePaths is true,
-	 *   this file is taken as the base directory in terms of which
-	 *   all files should be made relative
+	 *                         using only relative paths
+	 * @param relativeBase     if useRelativePaths is true,
+	 *                         this file is taken as the base directory in terms of which
+	 *                         all files should be made relative
 	 * @throws IOException if an error occurs while writing
 	 */
 	public void write(String outputFile, boolean useRelativePaths, String relativeBase)
-		throws IOException {
+	        throws IOException {
 		PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(outputFile)));
 		try {
 			writer.println(JAR_FILES_KEY);
-			for (Iterator<String> i = jarList.iterator(); i.hasNext(); ) {
+			for (Iterator<String> i = jarList.iterator(); i.hasNext();) {
 				String jarFile = i.next();
 				if (useRelativePaths)
-					jarFile = convertToRelative(jarFile,relativeBase);
+					jarFile = convertToRelative(jarFile, relativeBase);
 				writer.println(jarFile);
 			}
 
 			writer.println(SRC_DIRS_KEY);
-			for (Iterator<String> i = srcDirList.iterator(); i.hasNext(); ) {
+			for (Iterator<String> i = srcDirList.iterator(); i.hasNext();) {
 				String srcDir = i.next();
 				if (useRelativePaths)
-					srcDir = convertToRelative(srcDir,relativeBase);
+					srcDir = convertToRelative(srcDir, relativeBase);
 				writer.println(srcDir);
 			}
 
 			writer.println(AUX_CLASSPATH_ENTRIES_KEY);
-			for (Iterator<String> i = auxClasspathEntryList.iterator(); i.hasNext(); ) {
+			for (Iterator<String> i = auxClasspathEntryList.iterator(); i.hasNext();) {
 				String auxClasspathEntry = i.next();
 				if (useRelativePaths)
-					auxClasspathEntry = convertToRelative(auxClasspathEntry,relativeBase);
+					auxClasspathEntry = convertToRelative(auxClasspathEntry, relativeBase);
 				writer.println(auxClasspathEntry);
 			}
 
@@ -424,7 +464,7 @@ public class Project {
 		// Project successfully saved
 		isModified = false;
 	}
-	
+
 	/**
 	 * Read the project from an input file.
 	 * This method should only be used on an empty Project
@@ -444,9 +484,9 @@ public class Project {
 
 		// Store the project filename
 		setFileName(inputFile);
-		
+
 		BufferedReader reader = null;
-		
+
 		try {
 			reader = new BufferedReader(new FileReader(inputFile));
 			String line;
@@ -510,7 +550,7 @@ public class Project {
 		}
 		return line;
 	}
-	
+
 	/**
 	 * Convert to a string in a nice (displayable) format.
 	 */
@@ -574,31 +614,32 @@ public class Project {
 	public void writeElement(Element element) {
 		element.addAttribute(FILENAME_ATTRIBUTE_NAME, projectFileName);
 
-		for (Iterator<String> i = jarList.iterator(); i.hasNext(); ) {
+		for (Iterator<String> i = jarList.iterator(); i.hasNext();) {
 			element.addElement(JAR_ELEMENT_NAME).setText(i.next());
 		}
 
-		for (Iterator<String> i = auxClasspathEntryList.iterator(); i.hasNext(); ) {
+		for (Iterator<String> i = auxClasspathEntryList.iterator(); i.hasNext();) {
 			element.addElement(AUX_CLASSPATH_ENTRY_ELEMENT_NAME).setText(i.next());
 		}
 
-		for (Iterator<String> i = srcDirList.iterator(); i.hasNext(); ) {
+		for (Iterator<String> i = srcDirList.iterator(); i.hasNext();) {
 			element.addElement(SRC_DIR_ELEMENT_NAME).setText(i.next());
 		}
 	}
-	
+
 	/**
 	 * Parse one line in the [Options] section.
+	 *
 	 * @param option one line in the [Options] section
 	 */
-	 private void parseOption(String option) throws IOException {
-	 	int equalPos = option.indexOf("=");
-	 	if (equalPos < 0)
-	 		throw new IOException("Bad format: invalid option format");
-	 	String name = option.substring(0, equalPos);
-	 	String value = option.substring(equalPos+1);
-	 	optionsMap.put(name,Boolean.valueOf(value));
-	 }
+	private void parseOption(String option) throws IOException {
+		int equalPos = option.indexOf("=");
+		if (equalPos < 0)
+			throw new IOException("Bad format: invalid option format");
+		String name = option.substring(0, equalPos);
+		String value = option.substring(equalPos + 1);
+		optionsMap.put(name, Boolean.valueOf(value));
+	}
 
 	/**
 	 * Hack for whether files are case insensitive.
@@ -607,10 +648,11 @@ public class Project {
 	 * feel free to submit a patch :-)
 	 */
 	private static final boolean FILE_IGNORE_CASE =
-		System.getProperty("os.name", "unknown").startsWith("Windows");
+	        System.getProperty("os.name", "unknown").startsWith("Windows");
 
 	/**
 	 * Converts a full path to a relative path if possible
+	 *
 	 * @param srcFile path to convert
 	 * @return the converted filename
 	 */
@@ -624,7 +666,7 @@ public class Project {
 
 		if (base.equals(srcFile))
 			return ".";
-			
+
 		if (!base.endsWith(slash))
 			base = base + slash;
 
@@ -640,42 +682,43 @@ public class Project {
 		int slashPos = srcFile.indexOf(slash);
 		int branchPoint;
 		if (slashPos >= 0) {
-			String subPath = srcFile.substring(0,slashPos);
+			String subPath = srcFile.substring(0, slashPos);
 			if ((subPath.length() == 0) || base.startsWith(subPath)) {
-				branchPoint = slashPos+1;
+				branchPoint = slashPos + 1;
 				slashPos = srcFile.indexOf(slash, branchPoint);
 				while (slashPos >= 0) {
-					subPath = srcFile.substring(0,slashPos);
+					subPath = srcFile.substring(0, slashPos);
 					if (base.startsWith(subPath))
 						branchPoint = slashPos + 1;
 					else
 						break;
 					slashPos = srcFile.indexOf(slash, branchPoint);
 				}
-				
+
 				int slashCount = 0;
-				slashPos = base.indexOf(slash,branchPoint);
+				slashPos = base.indexOf(slash, branchPoint);
 				while (slashPos >= 0) {
 					slashCount++;
-					slashPos = base.indexOf(slash,slashPos+1);
+					slashPos = base.indexOf(slash, slashPos + 1);
 				}
-				
+
 				StringBuffer path = new StringBuffer();
 				String upDir = ".." + slash;
-				for (int i = 0; i < slashCount; i++) 
+				for (int i = 0; i < slashCount; i++)
 					path.append(upDir);
 				path.append(srcFile.substring(branchPoint));
 				return path.toString();
 			}
 		}
-		
-		
+
+
 		return srcFile;
 
 	}
-	
+
 	/**
 	 * Converts a relative path to an absolute path if possible.
+	 *
 	 * @param fileName path to convert
 	 * @return the converted filename
 	 */
@@ -715,10 +758,11 @@ public class Project {
 	/**
 	 * Add a value to given list, making the Project modified
 	 * if the value is not already present in the list.
-	 * @param list the list
+	 *
+	 * @param list  the list
 	 * @param value the value to be added
 	 * @return true if the value was not already present in the list,
-	 *    false otherwise
+	 *         false otherwise
 	 */
 	private boolean addToListInternal(List<String> list, String value) {
 		if (!list.contains(value)) {
@@ -735,7 +779,7 @@ public class Project {
 	 */
 	private void makeListAbsoluteProject(List<String> list) throws IOException {
 		List<String> replace = new LinkedList<String>();
-		for (Iterator<String> i = list.iterator(); i.hasNext(); ) {
+		for (Iterator<String> i = list.iterator(); i.hasNext();) {
 			String fileName = i.next();
 			fileName = convertToAbsolute(fileName);
 			replace.add(fileName);

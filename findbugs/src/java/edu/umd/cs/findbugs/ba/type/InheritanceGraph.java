@@ -19,12 +19,10 @@
 
 package edu.umd.cs.findbugs.ba.type;
 
-import edu.umd.cs.findbugs.ba.Debug;
-
 import edu.umd.cs.findbugs.graph.AbstractGraph;
 
 public class InheritanceGraph
-	extends AbstractGraph<InheritanceGraphEdge, ObjectType> {
+        extends AbstractGraph<InheritanceGraphEdge, ObjectType> {
 
 	public InheritanceGraphEdge createEdge(ObjectType subtype, ObjectType supertype, int edgeType) {
 		InheritanceGraphEdge edge = createEdge(subtype, supertype);

@@ -24,8 +24,8 @@ package edu.umd.cs.findbugs.ba.bcp;
  * in a ByteCodePattern.  BindingSets are immutable; to add a binding,
  * a new cell is allocated.  (Are we CONSING yet?)
  *
- * @see Binding
  * @author David Hovemeyer
+ * @see Binding
  */
 public class BindingSet {
 	private final Binding binding;
@@ -33,8 +33,9 @@ public class BindingSet {
 
 	/**
 	 * Constructor; creates a new BindingSet as an extension of an existing one.
+	 *
 	 * @param binding a variable binding
-	 * @param parent the parent BindingSet, containing other bindings
+	 * @param parent  the parent BindingSet, containing other bindings
 	 */
 	public BindingSet(Binding binding, BindingSet parent) {
 		this.binding = binding;
@@ -43,6 +44,7 @@ public class BindingSet {
 
 	/**
 	 * Look for a Binding for given variable.
+	 *
 	 * @param varName name of the variable
 	 * @return the Binding, or null if no such Binding is present in the set
 	 */

@@ -31,8 +31,8 @@ import org.dom4j.Element;
  * embedded inside it to indicate the range of source lines where the
  * method is defined.
  *
- * @see BugAnnotation
  * @author David Hovemeyer
+ * @see BugAnnotation
  */
 public class MethodAnnotation extends PackageMemberAnnotation {
 	private static final boolean UGLY_METHODS = Boolean.getBoolean("ma.ugly");
@@ -46,9 +46,10 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 
 	/**
 	 * Constructor.
-	 * @param className the name of the class containing the method
+	 *
+	 * @param className  the name of the class containing the method
 	 * @param methodName the name of the method
-	 * @param methodSig the Java type signature of the method
+	 * @param methodSig  the Java type signature of the method
 	 */
 	public MethodAnnotation(String className, String methodName, String methodSig) {
 		super(className, DEFAULT_ROLE);
@@ -61,6 +62,7 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 	/**
 	 * Factory method to create a MethodAnnotation from the method the
 	 * given visitor is currently visiting.
+	 *
 	 * @param visitor the BetterVisitor currently visiting the method
 	 */
 	public static MethodAnnotation fromVisitedMethod(PreorderVisitor visitor) {
@@ -73,11 +75,19 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 		return result;
 	}
 
-	/** Get the method name. */
-	public String getMethodName() { return methodName; }
+	/**
+	 * Get the method name.
+	 */
+	public String getMethodName() {
+		return methodName;
+	}
 
-	/** Get the method type signature. */
-	public String getMethodSignature() { return methodSig; }
+	/**
+	 * Get the method type signature.
+	 */
+	public String getMethodSignature() {
+		return methodSig;
+	}
 
 	/**
 	 * Set a SourceLineAnnotation describing the source lines
@@ -90,8 +100,9 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 	/**
 	 * Get the SourceLineAnnotation describing the source lines
 	 * where the method is defined.
+	 *
 	 * @return the SourceLineAnnotation, or null if there is no source information
-	 *   for this method
+	 *         for this method
 	 */
 	public SourceLineAnnotation getSourceLines() {
 		return sourceLines;
@@ -168,8 +179,8 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 			return false;
 		MethodAnnotation other = (MethodAnnotation) o;
 		return className.equals(other.className)
-			&& methodName.equals(other.methodName)
-			&& methodSig.equals(other.methodSig);
+		        && methodName.equals(other.methodName)
+		        && methodSig.equals(other.methodSig);
 	}
 
 	public int compareTo(BugAnnotation o) {
@@ -232,9 +243,9 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 
 	public Element toElement(Branch parent) {
 		Element element = parent.addElement(ELEMENT_NAME)
-			.addAttribute("classname", getClassName())
-			.addAttribute("name", getMethodName())
-			.addAttribute("signature", getMethodSignature());
+		        .addAttribute("classname", getClassName())
+		        .addAttribute("name", getMethodName())
+		        .addAttribute("signature", getMethodSignature());
 
 		String role = getDescription();
 		if (!role.equals(DEFAULT_ROLE))

@@ -23,22 +23,34 @@ package edu.umd.cs.findbugs;
  * Version number and release date information.
  */
 public class Version {
-	/** Major version number. */
+	/**
+	 * Major version number.
+	 */
 	public static final int MAJOR = 0;
 
-	/** Minor version number. */
+	/**
+	 * Minor version number.
+	 */
 	public static final int MINOR = 8;
 
-	/** Patch level. */
+	/**
+	 * Patch level.
+	 */
 	public static final int PATCHLEVEL = 4;
 
-	/** Development version? */
+	/**
+	 * Development version?
+	 */
 	public static final boolean IS_DEVELOPMENT = false;
 
-	/** Release version string. */
+	/**
+	 * Release version string.
+	 */
 	public static final String RELEASE = MAJOR + "." + MINOR + "." + PATCHLEVEL + (IS_DEVELOPMENT ? "-dev" : "");
 
-	/** Release date. */
+	/**
+	 * Release date.
+	 */
 	public static final String DATE = "August 11, 2004";
 
 	/**
@@ -48,18 +60,26 @@ public class Version {
 	 * like the "-" character in plugin versions.
 	 */
 	public static final String ECLIPSE_CORE_VERSION = MAJOR + "." + MINOR + "." +
-		PATCHLEVEL + (IS_DEVELOPMENT ? ".dev" : "");
+	        PATCHLEVEL + (IS_DEVELOPMENT ? ".dev" : "");
 
-	/** Version of Eclipse UI plugin. */
+	/**
+	 * Version of Eclipse UI plugin.
+	 */
 	public static final String ECLIPSE_UI_VERSION = "0.0.11" + (IS_DEVELOPMENT ? ".dev" : "");
 
-	/** FindBugs website. */
+	/**
+	 * FindBugs website.
+	 */
 	public static final String WEBSITE = "http://findbugs.sourceforge.net";
 
-	/** Downloads website. */
+	/**
+	 * Downloads website.
+	 */
 	public static final String DOWNLOADS_WEBSITE = "http://prdownloads.sourceforge.net/findbugs";
 
-	/** Support email. */
+	/**
+	 * Support email.
+	 */
 	public static final String SUPPORT_EMAIL = "daveho@cs.umd.edu";
 
 	public static void main(String[] argv) {
@@ -73,19 +93,19 @@ public class Version {
 		else if (arg.equals("-date"))
 			System.out.println(DATE);
 		else if (arg.equals("-props")) {
-			System.out.println("release.number="+RELEASE);
-			System.out.println("release.date="+DATE);
-			System.out.println("eclipse.core.version="+ECLIPSE_CORE_VERSION);
-			System.out.println("eclipse.ui.version="+ECLIPSE_UI_VERSION);
-			System.out.println("findbugs.website="+WEBSITE);
-			System.out.println("findbugs.downloads.website="+DOWNLOADS_WEBSITE);
+			System.out.println("release.number=" + RELEASE);
+			System.out.println("release.date=" + DATE);
+			System.out.println("eclipse.core.version=" + ECLIPSE_CORE_VERSION);
+			System.out.println("eclipse.ui.version=" + ECLIPSE_UI_VERSION);
+			System.out.println("findbugs.website=" + WEBSITE);
+			System.out.println("findbugs.downloads.website=" + DOWNLOADS_WEBSITE);
 		} else
 			usage();
 	}
 
 	private static void usage() {
-		System.err.println("Usage: " + Version.class.getName() + 
-                       "  (-release|-date|-props)");
+		System.err.println("Usage: " + Version.class.getName() +
+		        "  (-release|-date|-props)");
 		System.exit(1);
 	}
 }

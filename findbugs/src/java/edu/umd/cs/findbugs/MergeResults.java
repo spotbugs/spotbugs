@@ -58,14 +58,33 @@ public class MergeResults {
 		this.project = project;
 	}
 
-	public SortedBugCollection getOrigCollection() { return origCollection; }
-	public SortedBugCollection getNewCollection() { return newCollection; }
-	public Project getProject() { return project; }
+	public SortedBugCollection getOrigCollection() {
+		return origCollection;
+	}
 
-	public int getNumPreserved() { return numPreserved; }
-	public int getNumAlreadyAnnotated() { return numAlreadyAnnotated; }
-	public int getNumLost() { return numLost; }
-	public int getNumLostWithAnnotations() { return numLostWithAnnotations; }
+	public SortedBugCollection getNewCollection() {
+		return newCollection;
+	}
+
+	public Project getProject() {
+		return project;
+	}
+
+	public int getNumPreserved() {
+		return numPreserved;
+	}
+
+	public int getNumAlreadyAnnotated() {
+		return numAlreadyAnnotated;
+	}
+
+	public int getNumLost() {
+		return numLost;
+	}
+
+	public int getNumLostWithAnnotations() {
+		return numLostWithAnnotations;
+	}
 
 	protected boolean preserveUnconditionally(BugInstance bugInstance) {
 		return false;
@@ -107,7 +126,7 @@ public class MergeResults {
 			public void execute() {
 				if (UPDATE_CATEGORIES) {
 					DetectorFactoryCollection.instance(); // as a side effect, loads detector plugins
-					for (Iterator<BugInstance> i = getNewCollection().iterator(); i.hasNext(); ) {
+					for (Iterator<BugInstance> i = getNewCollection().iterator(); i.hasNext();) {
 						// All bugs not in categories contained in the
 						// original set will be preserved unconditionally.
 						updateCategorySet.add(i.next().getAbbrev());
@@ -121,9 +140,9 @@ public class MergeResults {
 		mergeResults.execute();
 
 		System.out.println(mergeResults.getNumPreserved() + " preserved, " +
-			mergeResults.getNumAlreadyAnnotated() + " already annotated, " +
-			mergeResults.getNumLost() + " lost (" +
-			mergeResults.getNumLostWithAnnotations() + " lost with annotations)");
+		        mergeResults.getNumAlreadyAnnotated() + " already annotated, " +
+		        mergeResults.getNumLost() + " lost (" +
+		        mergeResults.getNumLostWithAnnotations() + " lost with annotations)");
 
 		SortedBugCollection result = mergeResults.getNewCollection();
 		result.writeXML(outputFile, mergeResults.getProject());
@@ -171,8 +190,8 @@ public class MergeResults {
 
 	private static SortedSet<BugInstance> createSet(BugCollection bugCollection) {
 		TreeSet<BugInstance> set = VERSION_INSENSITIVE
-			? new TreeSet<BugInstance>(VersionInsensitiveBugComparator.instance())
-			: new TreeSet<BugInstance>();
+		        ? new TreeSet<BugInstance>(VersionInsensitiveBugComparator.instance())
+		        : new TreeSet<BugInstance>();
 		set.addAll(bugCollection.getCollection());
 		return set;
 	}

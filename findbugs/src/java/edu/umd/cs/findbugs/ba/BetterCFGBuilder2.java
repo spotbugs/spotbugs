@@ -20,8 +20,11 @@
 package edu.umd.cs.findbugs.ba;
 
 import java.util.*;
+
 import org.apache.bcel.Constants;
-import org.apache.bcel.classfile.*;
+import org.apache.bcel.classfile.ClassParser;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.*;
 
 /**
@@ -29,18 +32,18 @@ import org.apache.bcel.generic.*;
  * The CFGs it creates have accurate exception edges, and have accurately
  * inlined JSR subroutines.
  *
- * @see CFG
  * @author David Hovemeyer
+ * @see CFG
  */
 public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 
 	private static final boolean DEBUG = Boolean.getBoolean("cfgbuilder.debug");
 
 	private static final boolean NO_STATIC_FIELD_EXCEPTIONS =
-		!Boolean.getBoolean("cfgbuilder.staticFieldExceptions");
+	        !Boolean.getBoolean("cfgbuilder.staticFieldExceptions");
 
 	private static final boolean NO_LOAD_CONSTANT_EXCEPTIONS =
-		!Boolean.getBoolean("cfgbuilder.ldcExceptions");
+	        !Boolean.getBoolean("cfgbuilder.ldcExceptions");
 
 	// TODO: don't forget to change BasicBlock so ATHROW is considered to have a null check
 
@@ -57,7 +60,8 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 
 		/**
 		 * Constructor.
-		 * @param start first instruction in the basic block
+		 *
+		 * @param start      first instruction in the basic block
 		 * @param basicBlock the basic block to build
 		 */
 		public WorkListItem(InstructionHandle start, BasicBlock basicBlock) {
@@ -65,12 +69,16 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 			this.basicBlock = basicBlock;
 		}
 
-		/** Get the start instruction. */
+		/**
+		 * Get the start instruction.
+		 */
 		public InstructionHandle getStartInstruction() {
 			return start;
 		}
 
-		/** Get the basic block. */
+		/**
+		 * Get the basic block.
+		 */
 		public BasicBlock getBasicBlock() {
 			return basicBlock;
 		}
@@ -87,21 +95,26 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 
 		/**
 		 * Constructor.
-		 * @param target the target instruction in a calling subroutine
+		 *
+		 * @param target   the target instruction in a calling subroutine
 		 * @param edgeType the type of edge that should be created when the
-		 *   subroutine is inlined into its calling context
+		 *                 subroutine is inlined into its calling context
 		 */
 		public EscapeTarget(InstructionHandle target, int edgeType) {
 			this.target = target;
 			this.edgeType = edgeType;
 		}
 
-		/** Get the target instruction. */
+		/**
+		 * Get the target instruction.
+		 */
 		public InstructionHandle getTarget() {
 			return target;
 		}
 
-		/** Get the edge type. */
+		/**
+		 * Get the edge type.
+		 */
 		public int getEdgeType() {
 			return edgeType;
 		}
@@ -128,6 +141,7 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 
 		/**
 		 * Constructor.
+		 *
 		 * @param start the start instruction for the subroutine
 		 */
 		public Subroutine(InstructionHandle start) {
@@ -142,48 +156,66 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 			this.workList = new LinkedList<WorkListItem>();
 		}
 
-		/** Get the start instruction. */
+		/**
+		 * Get the start instruction.
+		 */
 		public InstructionHandle getStartInstruction() {
 			return start;
 		}
 
-		/** Allocate a new basic block in the subroutine. */
+		/**
+		 * Allocate a new basic block in the subroutine.
+		 */
 		public BasicBlock allocateBasicBlock() {
 			return cfg.allocate();
 		}
 
-		/** Add a work list item for a basic block to be constructed. */
+		/**
+		 * Add a work list item for a basic block to be constructed.
+		 */
 		public void addItem(WorkListItem item) {
 			workList.add(item);
 		}
 
-		/** Are there more work list items? */
+		/**
+		 * Are there more work list items?
+		 */
 		public boolean hasMoreWork() {
 			return !workList.isEmpty();
 		}
 
-		/** Get the next work list item. */
+		/**
+		 * Get the next work list item.
+		 */
 		public WorkListItem nextItem() {
 			return workList.removeFirst();
 		}
 
-		/** Get the entry block for the subroutine's CFG. */
+		/**
+		 * Get the entry block for the subroutine's CFG.
+		 */
 		public BasicBlock getEntry() {
 			return cfg.getEntry();
 		}
 
-		/** Get the exit block for the subroutine's CFG. */
+		/**
+		 * Get the exit block for the subroutine's CFG.
+		 */
 		public BasicBlock getExit() {
 			return cfg.getExit();
 		}
 
-		/** Get the start block for the subroutine's CFG.
-		    (I.e., the block containing the start instruction.) */
+		/**
+		 * Get the start block for the subroutine's CFG.
+		 * (I.e., the block containing the start instruction.)
+		 */
 		public BasicBlock getStartBlock() {
 			return getBlock(start);
 		}
 
-		/** Get the subroutine's CFG. */
+		/**
+		 * Get the subroutine's CFG.
+		 */
 		public CFG getCFG() {
 			return cfg;
 		}
@@ -192,6 +224,7 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 		 * Add an instruction to the subroutine.
 		 * We keep track of which instructions are part of which subroutines.
 		 * No instruction may be part of more than one subroutine.
+		 *
 		 * @param handle the instruction to be added to the subroutine
 		 */
 		public void addInstruction(InstructionHandle handle) throws CFGBuilderException {
@@ -236,6 +269,7 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 
 		/**
 		 * Indicate that the method returns at the end of the given block.
+		 *
 		 * @param block the returning block
 		 */
 		public void setReturnBlock(BasicBlock block) {
@@ -251,6 +285,7 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 
 		/**
 		 * Indicate that System.exit() is called at the end of the given block.
+		 *
 		 * @param block the exiting block
 		 */
 		public void setExitBlock(BasicBlock block) {
@@ -267,6 +302,7 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 		/**
 		 * Indicate that an unhandled exception may be thrown by
 		 * the given block.
+		 *
 		 * @param block the block throwing an unhandled exception
 		 */
 		public void setUnhandledExceptionBlock(BasicBlock block) {
@@ -285,9 +321,10 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 		 * If the control target has not yet been added to the subroutine,
 		 * a new work list item is added.  If the control target is in
 		 * another subroutine, an EscapeTarget is added.
+		 *
 		 * @param sourceBlock the source basic block
-		 * @param target the control target
-		 * @param edgeType the type of control edge
+		 * @param target      the control target
+		 * @param edgeType    the type of control edge
 		 */
 		public void addEdgeAndExplore(BasicBlock sourceBlock, InstructionHandle target, int edgeType) {
 			if (usedInstructionSet.get(target.getPosition()) && !containsInstruction(target)) {
@@ -307,22 +344,24 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 
 		/**
 		 * Add an edge to the subroutine's CFG.
+		 *
 		 * @param sourceBlock the source basic block
-		 * @param destBlock the destination basic block
-		 * @param edgeType the type of edge
+		 * @param destBlock   the destination basic block
+		 * @param edgeType    the type of edge
 		 */
 		public void addEdge(BasicBlock sourceBlock, BasicBlock destBlock, int edgeType) {
 			if (VERIFY_INTEGRITY) {
 				if (destBlock.isExceptionHandler() && edgeType != HANDLED_EXCEPTION_EDGE)
 					throw new IllegalStateException("In method " + SignatureConverter.convertMethodSignature(methodGen) +
-						": exception handler " + destBlock.getFirstInstruction() + " reachable by non exception edge type " +
-						edgeType);
+					        ": exception handler " + destBlock.getFirstInstruction() + " reachable by non exception edge type " +
+					        edgeType);
 			}
 			cfg.createEdge(sourceBlock, destBlock, edgeType);
 		}
 
 		/**
 		 * Get an Iterator over the EscapeTargets of given basic block.
+		 *
 		 * @param sourceBlock the basic block
 		 * @return an Iterator over the EscapeTargets
 		 */
@@ -349,9 +388,10 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 
 		/**
 		 * Constructor.
-		 * @param caller the calling context
+		 *
+		 * @param caller     the calling context
 		 * @param subroutine the subroutine being inlined
-		 * @param result the result CFG
+		 * @param result     the result CFG
 		 */
 		public Context(Context caller, Subroutine subroutine, CFG result) {
 			this.caller = caller;
@@ -361,32 +401,44 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 			this.workList = new LinkedList<BasicBlock>();
 		}
 
-		/** Get the calling context. */
+		/**
+		 * Get the calling context.
+		 */
 		public Context getCaller() {
 			return caller;
 		}
 
-		/** Get the subroutine being inlined. */
+		/**
+		 * Get the subroutine being inlined.
+		 */
 		public Subroutine getSubroutine() {
 			return subroutine;
 		}
 
-		/** Get the result CFG. */
+		/**
+		 * Get the result CFG.
+		 */
 		public CFG getResult() {
 			return result;
 		}
 
-		/** Add a basic block to the inlining work list. */
+		/**
+		 * Add a basic block to the inlining work list.
+		 */
 		public void addItem(BasicBlock item) {
 			workList.add(item);
 		}
 
-		/** Are there more work list items? */
+		/**
+		 * Are there more work list items?
+		 */
 		public boolean hasMoreWork() {
 			return !workList.isEmpty();
 		}
 
-		/** Get the next work list item (basic block to be inlined). */
+		/**
+		 * Get the next work list item (basic block to be inlined).
+		 */
 		public BasicBlock nextItem() {
 			return workList.removeFirst();
 		}
@@ -394,7 +446,8 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 		/**
 		 * Map a basic block in a subroutine to the corresponding block
 		 * in the resulting CFG.
-		 * @param subBlock the subroutine block
+		 *
+		 * @param subBlock    the subroutine block
 		 * @param resultBlock the result CFG block
 		 */
 		public void mapBlock(BasicBlock subBlock, BasicBlock resultBlock) {
@@ -404,6 +457,7 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 		/**
 		 * Get the block in the result CFG corresponding to the given
 		 * subroutine block.
+		 *
 		 * @param subBlock the subroutine block
 		 * @return the result CFG block
 		 */
@@ -417,7 +471,9 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 			return resultBlock;
 		}
 
-		/** Check to ensure that this context is not the result of recursion. */
+		/**
+		 * Check to ensure that this context is not the result of recursion.
+		 */
 		public void checkForRecursion() throws CFGBuilderException {
 			Context callerContext = caller;
 
@@ -448,6 +504,7 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 
 	/**
 	 * Constructor.
+	 *
 	 * @param methodGen the method to build a CFG for
 	 */
 	public BetterCFGBuilder2(MethodGen methodGen) {
@@ -580,7 +637,7 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 							while (i.hasNext()) {
 								Target target = i.next();
 								subroutine.addEdgeAndExplore(basicBlock, target.getTargetInstruction(),
-									target.getEdgeType());
+								        target.getEdgeType());
 							}
 						}
 					}
@@ -600,16 +657,17 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 						handle = next;
 					}
 				}
-				
+
 			} while (!endOfBasicBlock);
 		}
 	}
 
 	/**
 	 * Add exception edges for given instruction.
+	 *
 	 * @param subroutine the subroutine containing the instruction
-	 * @param pei the instruction which throws an exception
-	 * @param etb the exception thrower block (ETB) for the instruction
+	 * @param pei        the instruction which throws an exception
+	 * @param etb        the exception thrower block (ETB) for the instruction
 	 */
 	private void handleExceptions(Subroutine subroutine, InstructionHandle pei, BasicBlock etb) {
 		etb.setExceptionThrower(pei);
@@ -626,7 +684,7 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 				CodeExceptionGen exceptionHandler = i.next();
 				InstructionHandle handlerStart = exceptionHandler.getHandlerPC();
 				subroutine.addEdgeAndExplore(etb, handlerStart, HANDLED_EXCEPTION_EDGE);
-	
+
 				if (Hierarchy.isUniversalExceptionHandler(exceptionHandler.getCatchType()))
 					sawUniversalExceptionHandler = true;
 			}
@@ -643,6 +701,7 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 
 	/**
 	 * Return whether or not the given instruction can throw exceptions.
+	 *
 	 * @param handle the instruction
 	 * @return true if the instruction can throw an exception, false otherwise
 	 */
@@ -660,12 +719,12 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 		// We're really not interested in exceptions that could hypothetically be
 		// thrown by static field accesses.
 		if (NO_STATIC_FIELD_EXCEPTIONS &&
-			(opcode == Constants.GETSTATIC || opcode == Constants.PUTSTATIC))
+		        (opcode == Constants.GETSTATIC || opcode == Constants.PUTSTATIC))
 			return false;
 
 		// Exceptions from LDC instructions seem a bit far fetched as well.
 		if (NO_LOAD_CONSTANT_EXCEPTIONS &&
-			(opcode == Constants.LDC || opcode == Constants.LDC_W || opcode == Constants.LDC2_W))
+		        (opcode == Constants.LDC || opcode == Constants.LDC_W || opcode == Constants.LDC2_W))
 			return false;
 
 		return true;
@@ -673,6 +732,7 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 
 	/**
 	 * Determine whether or not the given instruction is a control flow merge.
+	 *
 	 * @param handle the instruction
 	 * @return true if the instruction is a control merge, false otherwise
 	 */
@@ -694,6 +754,7 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 	 * Inline all JSR subroutines into the top-level subroutine.
 	 * This produces a complete CFG for the entire method, in which
 	 * all JSR subroutines are inlined.
+	 *
 	 * @return the CFG for the method
 	 */
 	private CFG inlineAll() throws CFGBuilderException {
@@ -713,6 +774,7 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 
 	/**
 	 * Inline a subroutine into a calling context.
+	 *
 	 * @param context the Context
 	 */
 	public void inline(Context context) throws CFGBuilderException {
@@ -797,7 +859,7 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 
 				if (caller == null)
 					throw new CFGBuilderException("Unknown caller for escape target " + targetInstruction +
-						" referenced by " + context.getSubroutine().getStartInstruction());
+					        " referenced by " + context.getSubroutine().getStartInstruction());
 
 				// Find result block in caller
 				BasicBlock subCallerTargetBlock = caller.getSubroutine().getBlock(targetInstruction);

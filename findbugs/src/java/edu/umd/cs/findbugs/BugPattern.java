@@ -26,8 +26,8 @@ package edu.umd.cs.findbugs;
  * BugPattern elements in the "findbugs.xml" and "messages.xml"
  * found in a FindBugs plugin.
  *
- * @see BugInstance
  * @author David Hovemeyer
+ * @see BugInstance
  */
 public class BugPattern implements Comparable {
 	private String type;
@@ -41,17 +41,18 @@ public class BugPattern implements Comparable {
 
 	/**
 	 * Constructor.
-	 * @param type the type (species) of BugInstance
-	 * @param abbrev the abbreviation or "bug code"; see {@link BugCode}
-	 * @param category the category
-	 * @param experimental true if the bug pattern is experimental
+	 *
+	 * @param type             the type (species) of BugInstance
+	 * @param abbrev           the abbreviation or "bug code"; see {@link BugCode}
+	 * @param category         the category
+	 * @param experimental     true if the bug pattern is experimental
 	 * @param shortDescription short one-line description of the bug species
-	 * @param longDescription longer one-line description; may contain placeholders
-	 *   for use by {@link FindBugsMessageFormat} to format BugAnnotations
-	 * @param detailText HTML text containing a full description of the bug species
+	 * @param longDescription  longer one-line description; may contain placeholders
+	 *                         for use by {@link FindBugsMessageFormat} to format BugAnnotations
+	 * @param detailText       HTML text containing a full description of the bug species
 	 */
 	public BugPattern(String type, String abbrev, String category, boolean experimental,
-		String shortDescription, String longDescription, String detailText) {
+	                  String shortDescription, String longDescription, String detailText) {
 		this.type = type;
 		this.abbrev = abbrev;
 		this.category = category;
@@ -61,28 +62,58 @@ public class BugPattern implements Comparable {
 		this.detailText = detailText;
 	}
 
-	/** Get the type (species). */
-	public String getType() { return type; }
+	/**
+	 * Get the type (species).
+	 */
+	public String getType() {
+		return type;
+	}
 
-	/** Get the abbreviation or "bug code". */
-	public String getAbbrev() { return abbrev; }
+	/**
+	 * Get the abbreviation or "bug code".
+	 */
+	public String getAbbrev() {
+		return abbrev;
+	}
 
-	/** Get the category. */
-	public String getCategory() { return category; }
+	/**
+	 * Get the category.
+	 */
+	public String getCategory() {
+		return category;
+	}
 
-	/** Is the bug pattern experimental? */
-	public boolean isExperimental() { return experimental; }
+	/**
+	 * Is the bug pattern experimental?
+	 */
+	public boolean isExperimental() {
+		return experimental;
+	}
 
-	/** Get the short description. */
-	public String getShortDescription() { return shortDescription; }
+	/**
+	 * Get the short description.
+	 */
+	public String getShortDescription() {
+		return shortDescription;
+	}
 
-	/** Get the long description. */
-	public String getLongDescription() { return longDescription; }
+	/**
+	 * Get the long description.
+	 */
+	public String getLongDescription() {
+		return longDescription;
+	}
 
-	/** Get the HTML detail text describing the bug. */
-	public String getDetailText() { return detailText; }
+	/**
+	 * Get the HTML detail text describing the bug.
+	 */
+	public String getDetailText() {
+		return detailText;
+	}
 
-	/** Get the detail text as a complete HTML document. */
+	/**
+	 * Get the detail text as a complete HTML document.
+	 */
 	public String getDetailHTML() {
 		if (detailHTML == null) {
 			StringBuffer buf = new StringBuffer();

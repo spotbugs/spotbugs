@@ -19,16 +19,14 @@
 
 package edu.umd.cs.findbugs.ba;
 
-import edu.umd.cs.findbugs.graph.AbstractGraph;
-
 import java.util.*;
 
-import org.apache.bcel.*;
-import org.apache.bcel.classfile.*;
-import org.apache.bcel.generic.*;
+import edu.umd.cs.findbugs.graph.AbstractGraph;
+import org.apache.bcel.generic.InstructionHandle;
 
 /**
  * Simple control flow graph abstraction for BCEL.
+ *
  * @see BasicBlock
  * @see Edge
  */
@@ -121,7 +119,9 @@ public class CFG extends AbstractGraph<Edge, BasicBlock> implements Debug {
 		return (flags & flag) != 0;
 	}
 
-	/** Get the entry node. */
+	/**
+	 * Get the entry node.
+	 */
 	public BasicBlock getEntry() {
 		if (entry == null) {
 			entry = allocate();
@@ -129,7 +129,9 @@ public class CFG extends AbstractGraph<Edge, BasicBlock> implements Debug {
 		return entry;
 	}
 
-	/** Get the exit node. */
+	/**
+	 * Get the exit node.
+	 */
 	public BasicBlock getExit() {
 		if (exit == null) {
 			exit = allocate();
@@ -141,12 +143,13 @@ public class CFG extends AbstractGraph<Edge, BasicBlock> implements Debug {
 	 * Add a unique edge to the graph.
 	 * There must be no other edge already in the CFG with
 	 * the same source and destination blocks.
+	 *
 	 * @param source the source basic block
-	 * @param dest the destination basic block
-	 * @param type  the type of edge; see constants in EdgeTypes interface
+	 * @param dest   the destination basic block
+	 * @param type   the type of edge; see constants in EdgeTypes interface
 	 * @return the newly created Edge
 	 * @throws IllegalStateException if there is already an edge in the CFG
-	 *   with the same source and destination block
+	 *                               with the same source and destination block
 	 */
 	public Edge createEdge(BasicBlock source, BasicBlock dest, int type) {
 		Edge edge = createEdge(source, dest);
@@ -156,6 +159,7 @@ public class CFG extends AbstractGraph<Edge, BasicBlock> implements Debug {
 
 	/**
 	 * Look up an Edge by its id.
+	 *
 	 * @param id the id of the edge to look up
 	 * @return the Edge, or null if no matching Edge was found
 	 */
@@ -186,12 +190,13 @@ public class CFG extends AbstractGraph<Edge, BasicBlock> implements Debug {
 	/**
 	 * Get Collection of basic blocks whose IDs are specified by
 	 * given BitSet.
+	 *
 	 * @param idSet BitSet of block IDs
 	 * @return a Collection containing the blocks whose IDs are given
 	 */
 	public Collection<BasicBlock> getBlocks(BitSet idSet) {
 		LinkedList<BasicBlock> result = new LinkedList<BasicBlock>();
-		for (Iterator<BasicBlock> i = blockIterator(); i.hasNext(); ) {
+		for (Iterator<BasicBlock> i = blockIterator(); i.hasNext();) {
 			BasicBlock block = i.next();
 			if (idSet.get(block.getId()))
 				result.add(block);
@@ -201,10 +206,11 @@ public class CFG extends AbstractGraph<Edge, BasicBlock> implements Debug {
 
 	/**
 	 * Get the first successor reachable from given edge type.
-	 * @param source the source block
+	 *
+	 * @param source   the source block
 	 * @param edgeType the edge type leading to the successor
 	 * @return the successor, or null if there is no outgoing edge with
-	 *   the specified edge type
+	 *         the specified edge type
 	 */
 	public BasicBlock getSuccessorWithEdgeType(BasicBlock source, int edgeType) {
 		Edge edge = getOutgoingEdgeWithType(source, edgeType);
@@ -213,8 +219,9 @@ public class CFG extends AbstractGraph<Edge, BasicBlock> implements Debug {
 
 	/**
 	 * Get the first outgoing edge in basic block with given type.
+	 *
 	 * @param basicBlock the basic block
-	 * @param edgeType the edge type
+	 * @param edgeType   the edge type
 	 * @return the Edge, or null if there is no edge with that edge type
 	 */
 	public Edge getOutgoingEdgeWithType(BasicBlock basicBlock, int edgeType) {
@@ -257,14 +264,14 @@ public class CFG extends AbstractGraph<Edge, BasicBlock> implements Debug {
 
 	public void checkIntegrity() {
 		// Ensure that basic blocks have only consecutive instructions
-		for (Iterator<BasicBlock> i = blockIterator(); i.hasNext(); ) {
+		for (Iterator<BasicBlock> i = blockIterator(); i.hasNext();) {
 			BasicBlock basicBlock = i.next();
 			InstructionHandle prev = null;
-			for (Iterator<InstructionHandle> j = basicBlock.instructionIterator(); j.hasNext(); ) {
+			for (Iterator<InstructionHandle> j = basicBlock.instructionIterator(); j.hasNext();) {
 				InstructionHandle handle = j.next();
 				if (prev != null && prev.getNext() != handle)
 					throw new IllegalStateException("Non-consecutive instructions in block " + basicBlock.getId() +
-						": prev=" + prev + ", handle=" + handle);
+					        ": prev=" + prev + ", handle=" + handle);
 				prev = handle;
 			}
 		}

@@ -19,22 +19,23 @@
 
 package edu.umd.cs.findbugs;
 
-import org.dom4j.Element;
 import org.dom4j.Branch;
 import org.dom4j.DocumentException;
+import org.dom4j.Element;
 
 /**
  * A BugAnnotation object specifying a Java class involved in the bug.
  *
+ * @author David Hovemeyer
  * @see BugAnnotation
  * @see BugInstance
- * @author David Hovemeyer
  */
 public class ClassAnnotation extends PackageMemberAnnotation {
 	private static final String DEFAULT_ROLE = "CLASS_DEFAULT";
 
 	/**
 	 * Constructor.
+	 *
 	 * @param className the name of the class
 	 */
 	public ClassAnnotation(String className) {
@@ -100,7 +101,7 @@ public class ClassAnnotation extends PackageMemberAnnotation {
 
 	public Element toElement(Branch parent) {
 		Element element = parent.addElement(ELEMENT_NAME)
-			.addAttribute("classname", getClassName());
+		        .addAttribute("classname", getClassName());
 		String role = getDescription();
 		if (!role.equals(DEFAULT_ROLE))
 			element.addAttribute("role", role);

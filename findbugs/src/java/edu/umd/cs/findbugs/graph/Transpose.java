@@ -17,7 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-// $Revision: 1.11 $
+// $Revision: 1.12 $
 
 package edu.umd.cs.findbugs.graph;
 
@@ -27,16 +27,18 @@ import java.util.*;
  * Algorithm to transpose a graph.
  */
 public class Transpose
-	<
-	GraphType extends Graph<EdgeType, VertexType>,
-	EdgeType extends GraphEdge<EdgeType, VertexType>,
-	VertexType extends GraphVertex<VertexType>
-	> {
+        <
+        GraphType extends Graph<EdgeType, VertexType>,
+        EdgeType extends GraphEdge<EdgeType, VertexType>,
+        VertexType extends GraphVertex<VertexType>
+        > {
 
 	private IdentityHashMap<VertexType, VertexType> m_origToTransposeMap;
 	private IdentityHashMap<VertexType, VertexType> m_transposeToOrigMap;
 
-	/** Constructor. */
+	/**
+	 * Constructor.
+	 */
 	public Transpose() {
 		m_origToTransposeMap = new IdentityHashMap<VertexType, VertexType>();
 		m_transposeToOrigMap = new IdentityHashMap<VertexType, VertexType>();
@@ -45,7 +47,8 @@ public class Transpose
 	/**
 	 * Transpose a graph.  Note that the original graph is not modified;
 	 * the new graph and its vertices and edges are new objects.
-	 * @param orig the graph to transpose
+	 *
+	 * @param orig    the graph to transpose
 	 * @param toolkit a GraphToolkit to be used to create the transposed Graph
 	 * @return the transposed Graph
 	 */
@@ -57,7 +60,7 @@ public class Transpose
 		// vertex in the transposed graph,
 		// ensuring that vertex labels in the transposed graph
 		// match vertex labels in the original graph
-		for (Iterator<VertexType> i = orig.vertexIterator(); i.hasNext(); ) {
+		for (Iterator<VertexType> i = orig.vertexIterator(); i.hasNext();) {
 			VertexType v = (VertexType) i.next();
 
 			// Make a duplicate of original vertex
@@ -74,7 +77,7 @@ public class Transpose
 
 		// For each edge in the original graph, create a reversed edge
 		// in the transposed graph
-		for (Iterator<EdgeType> i = orig.edgeIterator(); i.hasNext(); ) {
+		for (Iterator<EdgeType> i = orig.edgeIterator(); i.hasNext();) {
 			EdgeType e = i.next();
 
 			VertexType transSource = m_origToTransposeMap.get(e.getTarget());
@@ -95,6 +98,7 @@ public class Transpose
 	/**
 	 * Get the vertex in the transposed graph which corresponds to the
 	 * given vertex in the original graph.
+	 *
 	 * @param v the vertex in the original graph
 	 * @return the equivalent vertex in the transposed graph
 	 */
@@ -105,6 +109,7 @@ public class Transpose
 	/**
 	 * Get the vertex in the original graph which corresponds to the
 	 * given vertex in the transposed graph.
+	 *
 	 * @param v the vertex in the transposed graph
 	 * @return the equivalent vertex in the original graph
 	 */

@@ -19,9 +19,10 @@
 
 package edu.umd.cs.findbugs.ba;
 
-import org.apache.bcel.*;
-import org.apache.bcel.classfile.*;
-import org.apache.bcel.generic.*;
+import org.apache.bcel.generic.Instruction;
+import org.apache.bcel.generic.MONITORENTER;
+import org.apache.bcel.generic.MONITOREXIT;
+import org.apache.bcel.generic.MethodGen;
 
 public class AnyLockCountAnalysis extends LockCountAnalysis {
 

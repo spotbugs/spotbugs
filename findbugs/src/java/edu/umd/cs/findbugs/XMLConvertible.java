@@ -19,8 +19,8 @@
 
 package edu.umd.cs.findbugs;
 
-import org.dom4j.Element;
 import org.dom4j.Branch;
+import org.dom4j.Element;
 
 public interface XMLConvertible {
 	public Element toElement(Branch parent);

@@ -19,7 +19,7 @@
 
 package edu.umd.cs.findbugs;
 
-import java.util.*;
+
 
 public class XMLBugReporter extends BugCollectionBugReporter {
 	public XMLBugReporter(Project project) {

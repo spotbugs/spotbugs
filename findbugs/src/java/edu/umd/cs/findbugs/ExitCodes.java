@@ -25,13 +25,19 @@ package edu.umd.cs.findbugs;
  * command line argument.  These are combined in a bit set.
  */
 public interface ExitCodes {
-	/** Serious analysis errors occurred.  */
+	/**
+	 * Serious analysis errors occurred.
+	 */
 	public static final int ERROR_FLAG = 4;
 
-	/** Classes needed for analysis were missing.  */
+	/**
+	 * Classes needed for analysis were missing.
+	 */
 	public static final int MISSING_CLASS_FLAG = 2;
 
-	/** Bugs were reported.  */
+	/**
+	 * Bugs were reported.
+	 */
 	public static final int BUGS_FOUND_FLAG = 1;
 }
 

@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.ba;
 
 import java.util.*;
+
 import org.apache.bcel.Constants;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.Instruction;
@@ -31,7 +32,7 @@ import org.apache.bcel.generic.Instruction;
  * Slots 0 .. <code>getNumLocals() - 1</code> represent the local variables.
  * Slots <code>getNumLocals()</code> .. <code>getNumSlots() - 1</code>
  * represent the Java operand stack.
- *
+ * <p/>
  * <p> Frame is parametized by "ValueType", which is the type of value
  * to be stored in the Frame's slots.  This type must form a lattice,
  * according to the abstract mergeValues() operation
@@ -41,26 +42,30 @@ import org.apache.bcel.generic.Instruction;
  * null.  The analysis is responsible for initializing
  * created Frames with default values at the appropriate time.
  * Typically, only initEntryFact() will need to do this.
- *
+ * <p/>
  * <p> A Frame may have the special "TOP" value. Such frames serve as
  * the identity element for the meet operation operation.
- *
+ * <p/>
  * <p> A Frame may have the special "BOTTOM" value. The result of merging
  * any frame with BOTTOM is BOTTOM.
  *
- * @see FrameDataflowAnalysis
  * @author David Hovemeyer
+ * @see FrameDataflowAnalysis
  */
-public abstract class Frame<ValueType> implements Debug {
+public abstract class Frame <ValueType> implements Debug {
 
 	////////////////////////////////////////////////////////////////////////////////////
 	// Instance variables
 	////////////////////////////////////////////////////////////////////////////////////
 
-	/** Number of local variables in the method. */
+	/**
+	 * Number of local variables in the method.
+	 */
 	private int numLocals;
 
-	/** Array storing the values of local variables and operand stack slots.  */
+	/**
+	 * Array storing the values of local variables and operand stack slots.
+	 */
 	private ArrayList<ValueType> slotList;
 
 	/**
@@ -89,6 +94,7 @@ public abstract class Frame<ValueType> implements Debug {
 	 * This version of the constructor is for subclasses for which it is
 	 * always safe to call getDefaultValue(), even when the object is not
 	 * fully initialized.
+	 *
 	 * @param numLocals number of local variable slots in the method
 	 */
 	public Frame(int numLocals) {
@@ -142,10 +148,13 @@ public abstract class Frame<ValueType> implements Debug {
 	/**
 	 * Is the frame valid (meaning it is not TOP or BOTTOM)?
 	 */
-	public boolean isValid() { return !isTop() && !isBottom(); }
+	public boolean isValid() {
+		return !isTop() && !isBottom();
+	}
 
 	/**
 	 * Push a value onto the Java operand stack.
+	 *
 	 * @param value the ValueType to push
 	 */
 	public void pushValue(ValueType value) {
@@ -156,6 +165,7 @@ public abstract class Frame<ValueType> implements Debug {
 
 	/**
 	 * Pop a value off of the Java operand stack.
+	 *
 	 * @return the value that was popped
 	 * @throws DataflowAnalysisException if the Java operand stack is empty
 	 */
@@ -167,6 +177,7 @@ public abstract class Frame<ValueType> implements Debug {
 
 	/**
 	 * Get the value on the top of the Java operand stack.
+	 *
 	 * @throws DataflowAnalysisException if the Java operand stack is empty
 	 */
 	public ValueType getTopValue() throws DataflowAnalysisException {
@@ -195,16 +206,17 @@ public abstract class Frame<ValueType> implements Debug {
 
 	/**
 	 * Get a value on the operand stack.
+	 *
 	 * @param loc the stack location, counting downwards from the
-	 *    top (location 0)
+	 *            top (location 0)
 	 */
 	public ValueType getStackValue(int loc) throws DataflowAnalysisException {
 		if (!isValid())
 			throw new DataflowAnalysisException("Accessing TOP or BOTTOM frame!");
 		int stackDepth = getStackDepth();
 		if (loc >= stackDepth)
-			throw new DataflowAnalysisException("not enough values on stack: access="+loc+", avail="+stackDepth);
-		return slotList.get(slotList.size() - (loc+1));
+			throw new DataflowAnalysisException("not enough values on stack: access=" + loc + ", avail=" + stackDepth);
+		return slotList.get(slotList.size() - (loc + 1));
 	}
 
 	/**
@@ -213,6 +225,7 @@ public abstract class Frame<ValueType> implements Debug {
 	 * instructions which use an object instance (such as getfield,
 	 * invokevirtual, etc.), the object instance is the first
 	 * operand used by the instruction.
+	 *
 	 * @param ins the instruction
 	 * @param cpg the ConstantPoolGen for the method
 	 */
@@ -241,14 +254,23 @@ public abstract class Frame<ValueType> implements Debug {
 		return slotList.size() - numLocals;
 	}
 
-	/** Get the number of locals. */
-	public int getNumLocals() { return numLocals; }
+	/**
+	 * Get the number of locals.
+	 */
+	public int getNumLocals() {
+		return numLocals;
+	}
 
-	/** Get the number of slots (locals plus stack values). */
-	public int getNumSlots() { return slotList.size(); }
+	/**
+	 * Get the number of slots (locals plus stack values).
+	 */
+	public int getNumSlots() {
+		return slotList.size();
+	}
 
 	/**
 	 * Get the value at the <i>n</i>th slot.
+	 *
 	 * @param n the slot to get the value of
 	 * @return the value in the slot
 	 */
@@ -259,7 +281,8 @@ public abstract class Frame<ValueType> implements Debug {
 
 	/**
 	 * Set the value at the <i>n</i>th slot.
-	 * @param n the slot in which to set a new value
+	 *
+	 * @param n     the slot in which to set a new value
 	 * @param value the value to set
 	 */
 	public void setValue(int n, ValueType value) {
@@ -271,6 +294,7 @@ public abstract class Frame<ValueType> implements Debug {
 	/**
 	 * Return true if this stack frame is the same as the one given
 	 * as a parameter.
+	 *
 	 * @param other the other Frame
 	 * @return true if the frames are the same, false otherwise
 	 */
@@ -299,6 +323,7 @@ public abstract class Frame<ValueType> implements Debug {
 
 	/**
 	 * Make this Frame exactly the same as the one given as a parameter.
+	 *
 	 * @param other the Frame to make this object the same as
 	 */
 	public void copyFrom(Frame<ValueType> other) {
@@ -324,7 +349,7 @@ public abstract class Frame<ValueType> implements Debug {
 			if (!STACK_ONLY && i == getNumLocals()) {
 				// Use a "|" character to visually separate locals from
 				// the operand stack.
-				int last = buf.length()  - 1;
+				int last = buf.length() - 1;
 				if (last >= 0) {
 					if (buf.charAt(last) == ',')
 						buf.deleteCharAt(last);

@@ -20,27 +20,15 @@
 
 package edu.umd.cs.findbugs;
 
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.Reader;
-import java.io.StringReader;
-import java.io.Writer;
-
-import java.text.SimpleDateFormat;
+import java.io.*;
 import java.text.DateFormat;
-
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-
+import java.text.SimpleDateFormat;
+import java.util.*;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.stream.StreamSource;
 import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 
 import org.dom4j.Branch;
 import org.dom4j.Document;
@@ -53,118 +41,129 @@ import org.dom4j.io.XMLWriter;
  * Statistics resulting from analyzing a project.
  */
 public class ProjectStats implements XMLConvertible {
-  private HashMap<String, PackageStats> packageStatsMap;
-  private int totalErrors;
-  private int totalClasses;
+	private HashMap<String, PackageStats> packageStatsMap;
+	private int totalErrors;
+	private int totalClasses;
 
-  /** Constructor. Creates an empty object. */
-  public ProjectStats() {
-    this.packageStatsMap = new HashMap<String, PackageStats>();
-    this.totalErrors = 0;
-    this.totalClasses = 0;
-  }
+	/**
+	 * Constructor. Creates an empty object.
+	 */
+	public ProjectStats() {
+		this.packageStatsMap = new HashMap<String, PackageStats>();
+		this.totalErrors = 0;
+		this.totalClasses = 0;
+	}
 
-  /** Get the number of classes analyzed. */
-  public int getNumClasses() {
-    return totalClasses;
-  }
+	/**
+	 * Get the number of classes analyzed.
+	 */
+	public int getNumClasses() {
+		return totalClasses;
+	}
 
-  /**
-   * Report that a class has been analyzed.
-   * @param className the full name of the class
-   * @param isInterface true if the class is an interface
-   */
-  public void addClass(String className, boolean isInterface) {
-    String packageName;
-    int lastDot = className.lastIndexOf('.');
-    if (lastDot < 0)
-      packageName = "";
-    else
-      packageName = className.substring(0, lastDot);
-    PackageStats stat = getPackageStats( packageName );
-    stat.addClass( className, isInterface );
-    totalClasses++;
-  }
+	/**
+	 * Report that a class has been analyzed.
+	 *
+	 * @param className   the full name of the class
+	 * @param isInterface true if the class is an interface
+	 */
+	public void addClass(String className, boolean isInterface) {
+		String packageName;
+		int lastDot = className.lastIndexOf('.');
+		if (lastDot < 0)
+			packageName = "";
+		else
+			packageName = className.substring(0, lastDot);
+		PackageStats stat = getPackageStats(packageName);
+		stat.addClass(className, isInterface);
+		totalClasses++;
+	}
 
-  /** Called when a bug is reported. */
-  public void addBug(BugInstance bug) {
-    PackageStats stat = getPackageStats( bug.getPrimaryClass().getPackageName() );
-    stat.addError( bug );
-    totalErrors++;
-  }
+	/**
+	 * Called when a bug is reported.
+	 */
+	public void addBug(BugInstance bug) {
+		PackageStats stat = getPackageStats(bug.getPrimaryClass().getPackageName());
+		stat.addError(bug);
+		totalErrors++;
+	}
 
-  /** Convert to an XML element. */
-  public Element toElement(Branch parent) {
-     Element root = parent.addElement("FindBugsSummary");
-     DateFormat df = new SimpleDateFormat( "EEE, d MMM yyyy HH:mm:ss Z" );
-     Date date = new Date();
-     root.addAttribute("timestamp", df.format(date ));
-     root.addAttribute( "total_classes", String.valueOf( totalClasses ) );
-     root.addAttribute( "total_bugs", String.valueOf( totalErrors ) );
-     root.addAttribute( "num_packages", String.valueOf( packageStatsMap.size() ) );
+	/**
+	 * Convert to an XML element.
+	 */
+	public Element toElement(Branch parent) {
+		Element root = parent.addElement("FindBugsSummary");
+		DateFormat df = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z");
+		Date date = new Date();
+		root.addAttribute("timestamp", df.format(date));
+		root.addAttribute("total_classes", String.valueOf(totalClasses));
+		root.addAttribute("total_bugs", String.valueOf(totalErrors));
+		root.addAttribute("num_packages", String.valueOf(packageStatsMap.size()));
 
-     Iterator<PackageStats> i = packageStatsMap.values().iterator();
-     while( i.hasNext() ) {
-       PackageStats stats = i.next();
-       stats.toElement( root );
-     } 
+		Iterator<PackageStats> i = packageStatsMap.values().iterator();
+		while (i.hasNext()) {
+			PackageStats stats = i.next();
+			stats.toElement(root);
+		}
 
-     return root;
-  }
+		return root;
+	}
 
-  /** Report statistics as an XML document to given output stream. */
-  public void reportSummary( OutputStream out ) {
-     Document document = DocumentHelper.createDocument();
+	/**
+	 * Report statistics as an XML document to given output stream.
+	 */
+	public void reportSummary(OutputStream out) {
+		Document document = DocumentHelper.createDocument();
 
-     toElement(document);
+		toElement(document);
 
-     try {
-       XMLWriter writer = new XMLWriter(out, OutputFormat.createPrettyPrint());
-       writer.write(document);
-     }
-     catch ( Exception e ) {
-       e.printStackTrace();
-     }
-  }
+		try {
+			XMLWriter writer = new XMLWriter(out, OutputFormat.createPrettyPrint());
+			writer.write(document);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 
-  /**
-   * Transform summary information to HTML.
-   * @param htmlWriter the Writer to write the HTML output to
-   */
-  public void transformSummaryToHTML(Writer htmlWriter)
-    throws IOException, TransformerException {
+	/**
+	 * Transform summary information to HTML.
+	 *
+	 * @param htmlWriter the Writer to write the HTML output to
+	 */
+	public void transformSummaryToHTML(Writer htmlWriter)
+	        throws IOException, TransformerException {
 
-    ByteArrayOutputStream summaryOut = new ByteArrayOutputStream( 8096 );
-    reportSummary( summaryOut );
-    String summaryXML = summaryOut.toString();
+		ByteArrayOutputStream summaryOut = new ByteArrayOutputStream(8096);
+		reportSummary(summaryOut);
+		String summaryXML = summaryOut.toString();
 
 
-    StreamSource in = new StreamSource( new StringReader( summaryXML ) );
-    StreamResult out = new StreamResult( htmlWriter );
-    InputStream xslInputStream = this.getClass().getClassLoader().getResourceAsStream("summary.xsl");
-    if ( xslInputStream == null )
-      throw new IOException("Could not load summary stylesheet");
-    StreamSource xsl = new StreamSource( xslInputStream );
-  
-    TransformerFactory tf = TransformerFactory.newInstance();
-    Transformer transformer = tf.newTransformer( xsl );
-    transformer.transform( in, out );
+		StreamSource in = new StreamSource(new StringReader(summaryXML));
+		StreamResult out = new StreamResult(htmlWriter);
+		InputStream xslInputStream = this.getClass().getClassLoader().getResourceAsStream("summary.xsl");
+		if (xslInputStream == null)
+			throw new IOException("Could not load summary stylesheet");
+		StreamSource xsl = new StreamSource(xslInputStream);
 
-    Reader rdr = in.getReader();
-    if (rdr != null)
-      rdr.close();
-    htmlWriter.close();
-    InputStream is = xsl.getInputStream(); 
-    if (is != null)
-      is.close();
-  }
+		TransformerFactory tf = TransformerFactory.newInstance();
+		Transformer transformer = tf.newTransformer(xsl);
+		transformer.transform(in, out);
 
-  private PackageStats getPackageStats( String packageName ) {
-    PackageStats stat = packageStatsMap.get( packageName );
-    if ( stat == null ) {
-      stat = new PackageStats( packageName );
-      packageStatsMap.put( packageName, stat );
-    }
-    return stat;
-  }
+		Reader rdr = in.getReader();
+		if (rdr != null)
+			rdr.close();
+		htmlWriter.close();
+		InputStream is = xsl.getInputStream();
+		if (is != null)
+			is.close();
+	}
+
+	private PackageStats getPackageStats(String packageName) {
+		PackageStats stat = packageStatsMap.get(packageName);
+		if (stat == null) {
+			stat = new PackageStats(packageName);
+			packageStatsMap.put(packageName, stat);
+		}
+		return stat;
+	}
 }

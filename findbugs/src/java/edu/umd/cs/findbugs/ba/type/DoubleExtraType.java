@@ -22,7 +22,8 @@ package edu.umd.cs.findbugs.ba.type;
 import edu.umd.cs.findbugs.ba.ExtendedTypes;
 
 public class DoubleExtraType implements Type, ExtendedTypes {
-	DoubleExtraType() { }
+	DoubleExtraType() {
+	}
 
 	public String getSignature() {
 		return SpecialTypeSignatures.DOUBLE_EXTRA_TYPE_SIGNATURE;

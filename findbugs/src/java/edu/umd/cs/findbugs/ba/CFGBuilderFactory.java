@@ -28,13 +28,14 @@ import org.apache.bcel.generic.MethodGen;
  * new CFGBuilder implementations.  (CFGs for Java are a little tricky
  * to get right.)
  *
+ * @author David Hovemeyer
  * @see CFG
  * @see CFGBuilder
- * @author David Hovemeyer
  */
 public class CFGBuilderFactory {
 	/**
 	 * Create a CFGBuilder to build a CFG for given method.
+	 *
 	 * @param methodGen the method
 	 * @return a CFGBuilder for the method
 	 */

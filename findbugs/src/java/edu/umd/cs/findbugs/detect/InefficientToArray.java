@@ -20,12 +20,13 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import edu.umd.cs.findbugs.*;
-import java.util.*;
-import org.apache.bcel.classfile.*;
-import org.apache.bcel.Repository;
-import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.visitclass.Constants2;
+import org.apache.bcel.Repository;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
 
 /**
  * Find occurrences of collection.toArray( new Foo[0] );
@@ -34,7 +35,7 @@ import edu.umd.cs.findbugs.visitclass.Constants2;
  *
  * @author Dave Brosius
  */
-public class InefficientToArray extends BytecodeScanningDetector implements   Constants2 {
+public class InefficientToArray extends BytecodeScanningDetector implements Constants2 {
 	private static final boolean DEBUG = Boolean.getBoolean("ita.debug");
 
 	static final int SEEN_NOTHING = 0;
@@ -49,11 +50,11 @@ public class InefficientToArray extends BytecodeScanningDetector implements   Co
 	static {
 		try {
 			collectionClass = Repository.lookupClass("java.util.Collection");
-		}
-		catch (ClassNotFoundException cnfe) {
+		} catch (ClassNotFoundException cnfe) {
 			collectionClass = null;
 		}
 	}
+
 	public InefficientToArray(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 	}
@@ -73,40 +74,39 @@ public class InefficientToArray extends BytecodeScanningDetector implements   Co
 		if (DEBUG) System.out.println("State: " + state + "  Opcode: " + OPCODE_NAMES[seen]);
 
 		switch (state) {
-			case SEEN_NOTHING:
-				if (seen == ICONST_0)
-					state = SEEN_ICONST_0;
+		case SEEN_NOTHING:
+			if (seen == ICONST_0)
+				state = SEEN_ICONST_0;
 			break;
 
-			case SEEN_ICONST_0:
-				if (seen == ANEWARRAY) {
-					state = SEEN_ANEWARRAY;
-				} else
-					state = SEEN_NOTHING;
+		case SEEN_ICONST_0:
+			if (seen == ANEWARRAY) {
+				state = SEEN_ANEWARRAY;
+			} else
+				state = SEEN_NOTHING;
 			break;
 
-			case SEEN_ANEWARRAY:
-				if ((seen == INVOKEVIRTUAL)
-				&&  (getNameConstantOperand().equals("toArray"))
-				&&  (getSigConstantOperand().equals("([Ljava/lang/Object;)[Ljava/lang/Object;"))) {
-					try {
-						String clsName = getClassConstantOperand();
-						JavaClass cls = Repository.lookupClass(clsName);
-						if (cls.implementationOf(collectionClass))
-							bugReporter.reportBug(new BugInstance("ITA_INEFFICIENT_TO_ARRAY", LOW_PRIORITY)
-												.addClassAndMethod(this)
-												.addSourceLine(this));
+		case SEEN_ANEWARRAY:
+			if ((seen == INVOKEVIRTUAL)
+			        && (getNameConstantOperand().equals("toArray"))
+			        && (getSigConstantOperand().equals("([Ljava/lang/Object;)[Ljava/lang/Object;"))) {
+				try {
+					String clsName = getClassConstantOperand();
+					JavaClass cls = Repository.lookupClass(clsName);
+					if (cls.implementationOf(collectionClass))
+						bugReporter.reportBug(new BugInstance("ITA_INEFFICIENT_TO_ARRAY", LOW_PRIORITY)
+						        .addClassAndMethod(this)
+						        .addSourceLine(this));
 
-					}
-					catch (ClassNotFoundException cnfe) {
-						bugReporter.reportMissingClass(cnfe);
-					}
+				} catch (ClassNotFoundException cnfe) {
+					bugReporter.reportMissingClass(cnfe);
 				}
-				state = SEEN_NOTHING;
+			}
+			state = SEEN_NOTHING;
 			break;
 
-			default:
-				state = SEEN_NOTHING;
+		default:
+			state = SEEN_NOTHING;
 			break;
 		}
 	}

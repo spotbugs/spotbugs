@@ -18,72 +18,77 @@
  */
 
 package edu.umd.cs.findbugs.detect;
-import edu.umd.cs.findbugs.*;
+
 import java.util.*;
-import java.io.PrintStream;
-import org.apache.bcel.classfile.*;
-import java.util.zip.*;
-import java.io.*;
+
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import edu.umd.cs.findbugs.FieldAnnotation;
 import edu.umd.cs.findbugs.visitclass.Constants2;
+import org.apache.bcel.classfile.Field;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
 
-public class FindUninitializedGet extends BytecodeScanningDetector implements   Constants2 {
-    HashSet<FieldAnnotation> initializedFields = new HashSet<FieldAnnotation>();
-    HashSet<FieldAnnotation> declaredFields = new HashSet<FieldAnnotation>();
-    boolean inConstructor;
-    boolean thisOnTOS = false;
-    private BugReporter bugReporter;
+public class FindUninitializedGet extends BytecodeScanningDetector implements Constants2 {
+	HashSet<FieldAnnotation> initializedFields = new HashSet<FieldAnnotation>();
+	HashSet<FieldAnnotation> declaredFields = new HashSet<FieldAnnotation>();
+	boolean inConstructor;
+	boolean thisOnTOS = false;
+	private BugReporter bugReporter;
 
-    private static final int UNKNOWN_PRIORITY = -1;
+	private static final int UNKNOWN_PRIORITY = -1;
 
-  public FindUninitializedGet(BugReporter bugReporter) {
-	this.bugReporter = bugReporter;
-  }
-
-
-  public void visit(JavaClass obj)     {
-	declaredFields.clear();
-	super.visit(obj);
-	}
-
-    public void visit(Field obj) {
-        super.visit(obj);
-	//declaredFields.add(fieldName);
-	FieldAnnotation f = FieldAnnotation.fromVisitedField(this);
-	declaredFields.add(f);
-	/*
-	System.out.println("Visiting " + fieldName);
-	*/
-	}
-    public void visit(Method obj) {
-        super.visit(obj);
-	initializedFields.clear();
-	/*
-	System.out.println("Visiting " + methodName);
-	*/
-        thisOnTOS = false;
-	inConstructor = getMethodName().equals("<init>")
-			&& getMethodSig().indexOf(getClassName()) == -1;
-	/*
-	System.out.println("methodName: " + methodName);
-	System.out.println("methodSig: " + methodSig);
-	System.out.println("inConstructor: " + inConstructor);
-	*/
+	public FindUninitializedGet(BugReporter bugReporter) {
+		this.bugReporter = bugReporter;
 	}
 
 
-    public void sawOpcode(int seen) {
-	if (!inConstructor) return;
+	public void visit(JavaClass obj) {
+		declaredFields.clear();
+		super.visit(obj);
+	}
 
-	/*
-	System.out.println("thisOnTOS:" + thisOnTOS);
-	System.out.println("seen:" + seen);
-	*/
-	if (seen == ALOAD_0)  {
-		thisOnTOS = true;
+	public void visit(Field obj) {
+		super.visit(obj);
+		//declaredFields.add(fieldName);
+		FieldAnnotation f = FieldAnnotation.fromVisitedField(this);
+		declaredFields.add(f);
 		/*
-		System.out.println("set thisOnTOS");
+		System.out.println("Visiting " + fieldName);
 		*/
-		return;
+	}
+
+	public void visit(Method obj) {
+		super.visit(obj);
+		initializedFields.clear();
+		/*
+		System.out.println("Visiting " + methodName);
+		*/
+		thisOnTOS = false;
+		inConstructor = getMethodName().equals("<init>")
+		        && getMethodSig().indexOf(getClassName()) == -1;
+		/*
+		System.out.println("methodName: " + methodName);
+		System.out.println("methodSig: " + methodSig);
+		System.out.println("inConstructor: " + inConstructor);
+		*/
+	}
+
+
+	public void sawOpcode(int seen) {
+		if (!inConstructor) return;
+
+		/*
+		System.out.println("thisOnTOS:" + thisOnTOS);
+		System.out.println("seen:" + seen);
+		*/
+		if (seen == ALOAD_0) {
+			thisOnTOS = true;
+			/*
+			System.out.println("set thisOnTOS");
+			*/
+			return;
 		}
 
 /*
@@ -96,44 +101,42 @@ public class FindUninitializedGet extends BytecodeScanningDetector implements   
 		    System.out.println("   declared");
 		}
 */
-			
-	if (seen == PUTFIELD && getClassConstantOperand().equals(getClassName()))
-		initializedFields.add(FieldAnnotation.fromReferencedField(this));
 
-	else if (thisOnTOS && seen == GETFIELD && getClassConstantOperand().equals(getClassName())) {
-		FieldAnnotation f = FieldAnnotation.fromReferencedField(this);
-		int nextOpcode = codeBytes[getPC()+3];
-		// System.out.println("Next opcode: " + OPCODE_NAMES[nextOpcode]);
-		if (nextOpcode != POP && !initializedFields.contains(f) && declaredFields.contains(f))  {
-	  		bugReporter.reportBug(new BugInstance("UR_UNINIT_READ", NORMAL_PRIORITY)
-				.addClassAndMethod(this)
-				.addField(f)
-				.addSourceLine(this));
-			  initializedFields.add(FieldAnnotation.fromReferencedField(this));
+		if (seen == PUTFIELD && getClassConstantOperand().equals(getClassName()))
+			initializedFields.add(FieldAnnotation.fromReferencedField(this));
+
+		else if (thisOnTOS && seen == GETFIELD && getClassConstantOperand().equals(getClassName())) {
+			FieldAnnotation f = FieldAnnotation.fromReferencedField(this);
+			int nextOpcode = codeBytes[getPC() + 3];
+			// System.out.println("Next opcode: " + OPCODE_NAMES[nextOpcode]);
+			if (nextOpcode != POP && !initializedFields.contains(f) && declaredFields.contains(f)) {
+				bugReporter.reportBug(new BugInstance("UR_UNINIT_READ", NORMAL_PRIORITY)
+				        .addClassAndMethod(this)
+				        .addField(f)
+				        .addSourceLine(this));
+				initializedFields.add(FieldAnnotation.fromReferencedField(this));
 			}
-		}
-
-	else if (
-		(seen == INVOKESPECIAL  
-			&& !(getNameConstantOperand().equals("<init>")
-					&& !getClassConstantOperand().equals(getClassName()))
-				)
-		 || (seen == INVOKESTATIC  
-			&& getNameConstantOperand().equals("doPrivileged")
-			&& getClassConstantOperand().equals("java/security/AccessController")
-				)
-		 || (seen == INVOKEVIRTUAL
-				&& getClassConstantOperand().equals(getClassName()))
-		 || (seen == INVOKEVIRTUAL
-				&& getNameConstantOperand().equals("start"))) {
+		} else if (
+		        (seen == INVOKESPECIAL
+		        && !(getNameConstantOperand().equals("<init>")
+		        && !getClassConstantOperand().equals(getClassName()))
+		        )
+		        || (seen == INVOKESTATIC
+		        && getNameConstantOperand().equals("doPrivileged")
+		        && getClassConstantOperand().equals("java/security/AccessController")
+		        )
+		        || (seen == INVOKEVIRTUAL
+		        && getClassConstantOperand().equals(getClassName()))
+		        || (seen == INVOKEVIRTUAL
+		        && getNameConstantOperand().equals("start"))) {
 			/*
-			System.out.println("Saw invocation of " 
+			System.out.println("Saw invocation of "
 				+ classConstant + "." + nameConstant
 				+ " in " + className + "." + methodName);
 			*/
 			inConstructor = false;
-			}
+		}
 
-        thisOnTOS = false;
+		thisOnTOS = false;
 	}
-	}	
+}

@@ -21,8 +21,9 @@ package edu.umd.cs.findbugs.ba.type;
 
 /**
  * Constants defining types of inheritance graph edges.
- * @see InheritanceGraph
+ *
  * @author David Hovemeyer
+ * @see InheritanceGraph
  */
 public interface InheritanceGraphEdgeTypes {
 	/**

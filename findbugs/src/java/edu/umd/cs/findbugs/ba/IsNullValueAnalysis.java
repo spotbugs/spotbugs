@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.ba;
 
 import java.util.*;
+
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.*;
@@ -27,16 +28,18 @@ import org.apache.bcel.generic.*;
 /**
  * A dataflow analysis to detect potential null pointer dereferences.
  *
+ * @author David Hovemeyer
  * @see IsNullValue
  * @see IsNullValueFrame
  * @see IsNullValueFrameModelingVisitor
- * @author David Hovemeyer
  */
 public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNullValueFrame> implements EdgeTypes {
 	private static final boolean DEBUG = Boolean.getBoolean("inva.debug");
+
 	static {
 		if (DEBUG) System.out.println("Debug enabled");
 	}
+
 	private static final boolean NO_SPLIT_DOWNGRADE_NSP = Boolean.getBoolean("inva.noSplitDowngradeNSP");
 	private static final boolean NO_SWITCH_DEFAULT_AS_EXCEPTION = Boolean.getBoolean("inva.noSwitchDefaultAsException");
 
@@ -47,7 +50,7 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
 	private IsNullValueFrame lastFrame;
 
 	public IsNullValueAnalysis(MethodGen methodGen, CFG cfg, ValueNumberDataflow vnaDataflow, DepthFirstSearch dfs,
-		AssertionMethods assertionMethods) {
+	                           AssertionMethods assertionMethods) {
 		super(dfs);
 		this.methodGen = methodGen;
 		this.visitor = new IsNullValueFrameModelingVisitor(methodGen.getConstantPool(), assertionMethods);
@@ -120,7 +123,7 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
 	}
 
 	public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, IsNullValueFrame fact)
-		throws DataflowAnalysisException {
+	        throws DataflowAnalysisException {
 
 		// If this is the last instruction in the block,
 		// save the result immediately before the instruction.
@@ -164,6 +167,7 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
 	}
 
 	private static final BitSet nullComparisonInstructionSet = new BitSet();
+
 	static {
 		nullComparisonInstructionSet.set(Constants.IFNULL);
 		nullComparisonInstructionSet.set(Constants.IFNONNULL);
@@ -172,7 +176,7 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
 	}
 
 	public void meetInto(IsNullValueFrame fact, Edge edge, IsNullValueFrame result)
-		throws DataflowAnalysisException {
+	        throws DataflowAnalysisException {
 
 		if (fact.isValid()) {
 			IsNullValueFrame tmpFact = null;
@@ -214,7 +218,7 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
 				if (catchType != null) {
 					String catchClass = catchType.getClassName();
 					if (catchClass.equals("java.lang.CloneNotSupportedException") ||
-						catchClass.equals("java.lang.InterruptedException")) {
+					        catchClass.equals("java.lang.InterruptedException")) {
 						for (int i = 0; i < tmpFact.getNumSlots(); ++i) {
 							IsNullValue value = tmpFact.getValue(i);
 							if (value.isDefinitelyNull() || value.isNullOnSomePath())
@@ -254,7 +258,7 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
 							final ValueNumberFrame prevVnaFrame = vnaDataflow.getFactAtLocation(atIf);
 
 							tmpFact = replaceValues(fact, tmpFact, decision.getValue(), prevVnaFrame,
-								targetVnaFrame, decision.getDecision(edgeType));
+							        targetVnaFrame, decision.getDecision(edgeType));
 						}
 					}
 				}
@@ -286,22 +290,23 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
 	}
 
 	protected IsNullValue mergeValues(IsNullValueFrame frame, int slot, IsNullValue a, IsNullValue b)
-		throws DataflowAnalysisException {
+	        throws DataflowAnalysisException {
 		return IsNullValue.merge(a, b);
 	}
 
 	/**
 	 * Determine if the given basic block ends in a redundant
 	 * null comparison.
+	 *
 	 * @param basicBlock the basic block
-	 * @param lastFrame the IsNullValueFrame representing values at the final instruction
-	 *   of the block
-	 * @return an IsNullConditionDecision object representing the 
-	 *   is-null information gained about the compared value,
-	 *   or null if no information is gained
+	 * @param lastFrame  the IsNullValueFrame representing values at the final instruction
+	 *                   of the block
+	 * @return an IsNullConditionDecision object representing the
+	 *         is-null information gained about the compared value,
+	 *         or null if no information is gained
 	 */
 	private IsNullConditionDecision getDecision(BasicBlock basicBlock, IsNullValueFrame lastFrame)
-		throws DataflowAnalysisException {
+	        throws DataflowAnalysisException {
 
 		assert lastFrame != null;
 
@@ -392,19 +397,20 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
 	/**
 	 * Update is-null information at a branch target based on information gained at a
 	 * null comparison branch.
-	 * @param origFrame the original is-null frame at entry to basic block
-	 * @param frame the modified version of the is-null entry frame;
-	 *   null if the entry frame has not been modified yet
-	 * @param replaceMe the ValueNumber in the value number frame at the if comparison
-	 *   whose is-null information will be updated
-	 * @param prevVnaFrame the ValueNumberFrame at the if comparison
-	 * @param targetVnaFrame the ValueNumberFrame at entry to the basic block
+	 *
+	 * @param origFrame        the original is-null frame at entry to basic block
+	 * @param frame            the modified version of the is-null entry frame;
+	 *                         null if the entry frame has not been modified yet
+	 * @param replaceMe        the ValueNumber in the value number frame at the if comparison
+	 *                         whose is-null information will be updated
+	 * @param prevVnaFrame     the ValueNumberFrame at the if comparison
+	 * @param targetVnaFrame   the ValueNumberFrame at entry to the basic block
 	 * @param replacementValue the IsNullValue representing the updated
-	 *   is-null information
+	 *                         is-null information
 	 * @return a modified IsNullValueFrame with updated is-null information
 	 */
 	private IsNullValueFrame replaceValues(IsNullValueFrame origFrame, IsNullValueFrame frame,
-		ValueNumber replaceMe, ValueNumberFrame prevVnaFrame, ValueNumberFrame targetVnaFrame, IsNullValue replacementValue) {
+	                                       ValueNumber replaceMe, ValueNumberFrame prevVnaFrame, ValueNumberFrame targetVnaFrame, IsNullValue replacementValue) {
 
 		// If required, make a copy of the frame
 		frame = modifyFrame(origFrame, frame);
@@ -453,7 +459,7 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
 
 		DataflowTestDriver<IsNullValueFrame, IsNullValueAnalysis> driver = new DataflowTestDriver<IsNullValueFrame, IsNullValueAnalysis>() {
 			public Dataflow<IsNullValueFrame, IsNullValueAnalysis> createDataflow(ClassContext classContext, Method method)
-				throws CFGBuilderException, DataflowAnalysisException {
+			        throws CFGBuilderException, DataflowAnalysisException {
 
 				return classContext.getIsNullValueDataflow(method);
 			}

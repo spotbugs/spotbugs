@@ -20,7 +20,7 @@
 package edu.umd.cs.findbugs.ba;
 
 public class CFGBuilderException extends Exception {
-    public CFGBuilderException(String message) {
-	super(message);
-    }
+	public CFGBuilderException(String message) {
+		super(message);
+	}
 }

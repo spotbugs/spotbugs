@@ -19,15 +19,15 @@
 
 package edu.umd.cs.findbugs.ba;
 
-import java.util.Iterator;
+import java.util.*;
 
 /**
  * Perform a reverse depth first search of a control flow graph.
  * (I.e., depth first search of reversed CFG.)
  *
+ * @author David Hovemeyer
  * @see CFG
  * @see AbstractDepthFirstSearch
- * @author David Hovemeyer
  */
 public class ReverseDepthFirstSearch extends AbstractDepthFirstSearch {
 	public ReverseDepthFirstSearch(CFG cfg) {

@@ -19,8 +19,8 @@
 
 package edu.umd.cs.findbugs;
 
-import java.io.*;
-import java.net.*;
+import java.io.File;
+import java.net.URL;
 import java.util.*;
 
 /**
@@ -28,8 +28,8 @@ import java.util.*;
  * used to create the Detectors which implement the various analyses.
  * It is a singleton class.
  *
- * @see DetectorFactory
  * @author David Hovemeyer
+ * @see DetectorFactory
  */
 public class DetectorFactoryCollection {
 	private ArrayList<DetectorFactory> factoryList = new ArrayList<DetectorFactory>();
@@ -51,6 +51,7 @@ public class DetectorFactoryCollection {
 	 * Set the list of plugins to load explicitly.
 	 * This must be done before the instance of DetectorFactoryCollection
 	 * is created.
+	 *
 	 * @param pluginList list of plugin Jar files to load
 	 */
 	public static void setPluginList(File[] pluginList) {
@@ -79,6 +80,7 @@ public class DetectorFactoryCollection {
 
 	/**
 	 * Look up a DetectorFactory by its short name.
+	 *
 	 * @param name the short name
 	 * @return the DetectorFactory, or null if there is no factory with that short name
 	 */
@@ -100,7 +102,7 @@ public class DetectorFactoryCollection {
 	/**
 	 * Register a DetectorFactory.
 	 */
-	private void registerDetector(DetectorFactory factory)  {
+	private void registerDetector(DetectorFactory factory) {
 		String detectorName = factory.getShortName();
 		factoryList.add(factory);
 		factoriesByName.put(detectorName, factory);
@@ -135,7 +137,7 @@ public class DetectorFactoryCollection {
 			}
 			pluginList = (File[]) arr.toArray(new File[arr.size()]);
 		}
-	
+
 		int numLoaded = 0;
 		for (int i = 0; i < pluginList.length; ++i) {
 			File file = pluginList[i];
@@ -147,7 +149,7 @@ public class DetectorFactoryCollection {
 				DetectorFactory[] detectorFactoryList = pluginLoader.getDetectorFactoryList();
 				for (int j = 0; j < detectorFactoryList.length; ++j)
 					registerDetector(detectorFactoryList[j]);
-	
+
 				I18N i18n = I18N.instance();
 	
 				// Register the BugPatterns
@@ -159,7 +161,7 @@ public class DetectorFactoryCollection {
 				BugCode[] bugCodeList = pluginLoader.getBugCodeList();
 				for (int j = 0; j < bugCodeList.length; ++j)
 					i18n.registerBugCode(bugCodeList[j]);
-	
+
 				++numLoaded;
 			} catch (Exception e) {
 				System.err.println("Warning: could not load plugin " + file.getPath() + ": " + e.toString());

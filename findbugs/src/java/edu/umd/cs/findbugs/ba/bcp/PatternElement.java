@@ -19,11 +19,11 @@
 
 package edu.umd.cs.findbugs.ba.bcp;
 
-import org.apache.bcel.generic.InstructionHandle;
-import org.apache.bcel.generic.ConstantPoolGen;
+import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.Edge;
 import edu.umd.cs.findbugs.ba.ValueNumberFrame;
-import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
+import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.InstructionHandle;
 
 /**
  * A PatternElement is an element of a ByteCodePattern.
@@ -54,6 +54,7 @@ public abstract class PatternElement {
 
 	/**
 	 * Set a label for this PatternElement.
+	 *
 	 * @param label the label
 	 * @return this object
 	 */
@@ -64,9 +65,12 @@ public abstract class PatternElement {
 
 	/**
 	 * Get the label of this PatternElement.
+	 *
 	 * @return the label, or null if the PatternElement is not labeled
 	 */
-	public String getLabel() { return label; }
+	public String getLabel() {
+		return label;
+	}
 
 	/**
 	 * Set the label of another pattern element whose first
@@ -99,8 +103,9 @@ public abstract class PatternElement {
 	 * By default, trailing edges may be matched.  When this value is set
 	 * to false, it ensures that the successor instruction must be in the
 	 * same basic block.
+	 *
 	 * @param allowTrailingEdges true if trailing edges may be matched,
-	 *  false if trailing edges will never be matched
+	 *                           false if trailing edges will never be matched
 	 */
 	public PatternElement setAllowTrailingEdges(boolean allowTrailingEdges) {
 		this.allowTrailingEdges = allowTrailingEdges;
@@ -110,11 +115,14 @@ public abstract class PatternElement {
 	/**
 	 * Return whether or not this PatternElement may match trailing edges.
 	 */
-	public boolean allowTrailingEdges() { return allowTrailingEdges; }
+	public boolean allowTrailingEdges() {
+		return allowTrailingEdges;
+	}
 
 	/**
 	 * Look up a variable definition in given BindingSet.
-	 * @param varName the name of the variable
+	 *
+	 * @param varName    the name of the variable
 	 * @param bindingSet the BindingSet to look in
 	 * @return the Variable, or null if no Variable is bound to the name
 	 */
@@ -128,22 +136,24 @@ public abstract class PatternElement {
 	/**
 	 * Return whether or not this element matches the given
 	 * instruction with the given Bindings in effect.
-	 * @param handle the instruction
-	 * @param cpg the ConstantPoolGen from the method
-	 * @param before the ValueNumberFrame representing values in the Java stack frame
-	 *   just before the execution of the instruction
-	 * @param after the ValueNumberFrame representing values in the Java stack frame
-	 *   just after the execution of the instruction
+	 *
+	 * @param handle     the instruction
+	 * @param cpg        the ConstantPoolGen from the method
+	 * @param before     the ValueNumberFrame representing values in the Java stack frame
+	 *                   just before the execution of the instruction
+	 * @param after      the ValueNumberFrame representing values in the Java stack frame
+	 *                   just after the execution of the instruction
 	 * @param bindingSet the set of Bindings
 	 * @return if the match is successful, returns a MatchResult with the PatternElement
-	 *   and BindingSet; if the match is not successful, returns null
+	 *         and BindingSet; if the match is not successful, returns null
 	 */
 	public abstract MatchResult match(InstructionHandle handle, ConstantPoolGen cpg,
-		ValueNumberFrame before, ValueNumberFrame after, BindingSet bindingSet) throws DataflowAnalysisException;
+	                                  ValueNumberFrame before, ValueNumberFrame after, BindingSet bindingSet) throws DataflowAnalysisException;
 
 	/**
 	 * Return whether or not it is acceptable to take the given branch.
-	 * @param edge the Edge representing the branch
+	 *
+	 * @param edge   the Edge representing the branch
 	 * @param source the source instruction of the branch
 	 * @return true if the Edge is acceptable, false if not
 	 */
@@ -165,12 +175,13 @@ public abstract class PatternElement {
 	 * Add a variable definition to the given BindingSet, or if
 	 * there is an existing definition, make sure it is consistent with
 	 * the new definition.
-	 * @param varName the name of the variable
-	 * @param variable the Variable which should be added or checked for consistency
+	 *
+	 * @param varName    the name of the variable
+	 * @param variable   the Variable which should be added or checked for consistency
 	 * @param bindingSet the existing set of bindings
 	 * @return the updated BindingSet (if the variable is consistent with the
-	 *   previous bindings), or null if the new variable is inconsistent with
-	 *   the previous bindings
+	 *         previous bindings), or null if the new variable is inconsistent with
+	 *         the previous bindings
 	 */
 	protected static BindingSet addOrCheckDefinition(String varName, Variable variable, BindingSet bindingSet) {
 		Variable existingVariable = lookup(varName, bindingSet);

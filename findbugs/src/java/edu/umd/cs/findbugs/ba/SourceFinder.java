@@ -19,10 +19,12 @@
 
 package edu.umd.cs.findbugs.ba;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.*;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
+import java.util.zip.*;
 
 /**
  * Class to open input streams on source files.
@@ -53,6 +55,7 @@ public class SourceFinder {
 	 */
 	private interface SourceRepository {
 		public boolean contains(String fileName);
+
 		public SourceFileDataSource getDataSource(String fileName);
 	}
 
@@ -142,8 +145,9 @@ public class SourceFinder {
 
 	/**
 	 * Open an input stream on a source file in given package.
+	 *
 	 * @param packageName the name of the package containing the class whose source file is given
-	 * @param fileName the unqualified name of the source file
+	 * @param fileName    the unqualified name of the source file
 	 * @return an InputStream on the source file
 	 * @throws IOException if a matching source file cannot be found
 	 */
@@ -154,8 +158,9 @@ public class SourceFinder {
 
 	/**
 	 * Open a source file in given package.
+	 *
 	 * @param packageName the name of the package containing the class whose source file is given
-	 * @param fileName the unqualified name of the source file
+	 * @param fileName    the unqualified name of the source file
 	 * @return the source file
 	 * @throws IOException if a matching source file cannot be found
 	 */
@@ -172,8 +177,8 @@ public class SourceFinder {
 		// Is the file in the cache already?
 		SourceFile sourceFile = cache.get(fileName);
 		if (sourceFile == null) {
-			 // Find this source file, add its data to the cache
-			 if (DEBUG) System.out.println("Trying "  + fileName + "...");
+			// Find this source file, add its data to the cache
+			if (DEBUG) System.out.println("Trying " + fileName + "...");
 
 			// Query each element of the source path to find the requested source file
 			Iterator<SourceRepository> i = repositoryList.iterator();

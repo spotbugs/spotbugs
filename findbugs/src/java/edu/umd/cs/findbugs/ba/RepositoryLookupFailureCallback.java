@@ -35,6 +35,7 @@ package edu.umd.cs.findbugs.ba;
 public interface RepositoryLookupFailureCallback {
 	/**
 	 * Called to report a lookup failure.
+	 *
 	 * @param ex a ClassNotFoundException resulting from the failure
 	 */
 	public void reportMissingClass(ClassNotFoundException ex);

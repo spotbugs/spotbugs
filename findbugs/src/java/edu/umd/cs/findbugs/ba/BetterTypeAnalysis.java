@@ -23,9 +23,7 @@ import edu.umd.cs.findbugs.ba.type.InvalidSignatureException;
 import edu.umd.cs.findbugs.ba.type.Type;
 import edu.umd.cs.findbugs.ba.type.TypeMerger;
 import edu.umd.cs.findbugs.ba.type.TypeRepository;
-
 import org.apache.bcel.Constants;
-
 import org.apache.bcel.generic.CodeExceptionGen;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.MethodGen;
@@ -41,9 +39,9 @@ public class BetterTypeAnalysis extends FrameDataflowAnalysis<Type, BetterTypeFr
 	private RepositoryLookupFailureCallback lookupFailureCallback;
 
 	public BetterTypeAnalysis(MethodGen methodGen, String[] parameterSignatureList,
-			CFG cfg, DepthFirstSearch dfs,
-			TypeRepository typeRepository, TypeMerger typeMerger,
-			RepositoryLookupFailureCallback lookupFailureCallback) {
+	                          CFG cfg, DepthFirstSearch dfs,
+	                          TypeRepository typeRepository, TypeMerger typeMerger,
+	                          RepositoryLookupFailureCallback lookupFailureCallback) {
 		super(dfs);
 		this.methodGen = methodGen;
 		this.parameterSignatureList = parameterSignatureList;
@@ -94,12 +92,12 @@ public class BetterTypeAnalysis extends FrameDataflowAnalysis<Type, BetterTypeFr
 	}
 
 	public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, BetterTypeFrame fact)
-		throws DataflowAnalysisException {
+	        throws DataflowAnalysisException {
 		// TODO: implement
 	}
 
 	public void meetInto(BetterTypeFrame fact, Edge edge, BetterTypeFrame result)
-		throws DataflowAnalysisException {
+	        throws DataflowAnalysisException {
 
 		// TODO: implement ACCURATE_EXCEPTIONS
 
@@ -128,7 +126,7 @@ public class BetterTypeAnalysis extends FrameDataflowAnalysis<Type, BetterTypeFr
 	}
 
 	protected Type mergeValues(BetterTypeFrame frame, int slot, Type a, Type b)
-		throws DataflowAnalysisException {
+	        throws DataflowAnalysisException {
 		try {
 			return typeMerger.mergeTypes(a, b);
 		} catch (ClassNotFoundException e) {

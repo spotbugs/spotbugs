@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs;
 
 import java.io.StringWriter;
+
 import org.apache.bcel.classfile.JavaClass;
 
 public abstract class BugCollectionBugReporter extends TextUIBugReporter {

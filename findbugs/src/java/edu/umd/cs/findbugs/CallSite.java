@@ -19,13 +19,10 @@
 
 package edu.umd.cs.findbugs;
 
-import java.util.*;
-
-import org.apache.bcel.*;
-import org.apache.bcel.classfile.*;
-import org.apache.bcel.generic.*;
-
-import edu.umd.cs.findbugs.ba.*;
+import edu.umd.cs.findbugs.ba.BasicBlock;
+import edu.umd.cs.findbugs.ba.Location;
+import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.InstructionHandle;
 
 /**
  * The site of a method call.
@@ -36,31 +33,48 @@ public class CallSite {
 
 	/**
 	 * Constructor.
-	 * @param method the method containing the call site
+	 *
+	 * @param method     the method containing the call site
 	 * @param basicBlock the basic block where the call site is located
-	 * @param handle the instruction which performs the call
+	 * @param handle     the instruction which performs the call
 	 */
 	public CallSite(Method method, BasicBlock basicBlock, InstructionHandle handle) {
 		this.method = method;
 		this.location = new Location(handle, basicBlock);
 	}
 
-	/** Get the method containing the call site. */
-	public Method getMethod() { return method; }
+	/**
+	 * Get the method containing the call site.
+	 */
+	public Method getMethod() {
+		return method;
+	}
 
-	/** Get the Location (basic block and instruction) where the call site is located. */
-	public Location getLocation() { return location; }
+	/**
+	 * Get the Location (basic block and instruction) where the call site is located.
+	 */
+	public Location getLocation() {
+		return location;
+	}
 
-	/** Get the basic block where the call site is located. */
-	public BasicBlock getBasicBlock() { return location.getBasicBlock(); }
+	/**
+	 * Get the basic block where the call site is located.
+	 */
+	public BasicBlock getBasicBlock() {
+		return location.getBasicBlock();
+	}
 
-	/** Get the instruction which performs the call. */
-	public InstructionHandle getHandle() { return location.getHandle(); }
+	/**
+	 * Get the instruction which performs the call.
+	 */
+	public InstructionHandle getHandle() {
+		return location.getHandle();
+	}
 
 	public int hashCode() {
 		return System.identityHashCode(method)
-			^ getBasicBlock().getId()
-			^ System.identityHashCode(location.getHandle());
+		        ^ getBasicBlock().getId()
+		        ^ System.identityHashCode(location.getHandle());
 	}
 
 	public boolean equals(Object o) {
@@ -68,8 +82,8 @@ public class CallSite {
 			return false;
 		CallSite other = (CallSite) o;
 		return method == other.method
-			&& getBasicBlock() == other.getBasicBlock()
-			&& getHandle() == other.getHandle();
+		        && getBasicBlock() == other.getBasicBlock()
+		        && getHandle() == other.getHandle();
 	}
 }
 

@@ -19,7 +19,7 @@
 
 package edu.umd.cs.findbugs.ba;
 
-import java.util.Comparator;
+import java.util.*;
 
 /**
  * A BlockOrder for visiting the blocks of a CFG in
@@ -47,7 +47,8 @@ public class ReverseDFSOrder extends AbstractBlockOrder {
 
 	/**
 	 * Constructor.
-	 * @param cfg the CFG
+	 *
+	 * @param cfg  the CFG
 	 * @param rdfs the ReverseDepthFirstSearch of the CFG
 	 */
 	public ReverseDFSOrder(CFG cfg, ReverseDepthFirstSearch rdfs) {

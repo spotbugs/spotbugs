@@ -19,19 +19,24 @@
 
 package edu.umd.cs.findbugs.ba.bcp;
 
-import org.apache.bcel.generic.*;
-import edu.umd.cs.findbugs.ba.*;
+import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
+import edu.umd.cs.findbugs.ba.ValueNumberFrame;
+import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.Instruction;
+import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.NEW;
 
 /**
  * A PatternElement which matches NEW instructions and binds the
  * result to a variable.
- * 
- * @see PatternElement
+ *
  * @author David Hovemeyer
+ * @see PatternElement
  */
 public class New extends OneVariableInstruction {
 	/**
 	 * Constructor.
+	 *
 	 * @param resultVarName name of the result of the NEW instruction
 	 */
 	public New(String resultVarName) {
@@ -39,7 +44,7 @@ public class New extends OneVariableInstruction {
 	}
 
 	public MatchResult match(InstructionHandle handle, ConstantPoolGen cpg,
-		ValueNumberFrame before, ValueNumberFrame after, BindingSet bindingSet) throws DataflowAnalysisException {
+	                         ValueNumberFrame before, ValueNumberFrame after, BindingSet bindingSet) throws DataflowAnalysisException {
 
 		Instruction ins = handle.getInstruction();
 		if (!(ins instanceof NEW))

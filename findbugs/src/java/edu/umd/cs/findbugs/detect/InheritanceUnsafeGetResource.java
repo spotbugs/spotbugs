@@ -18,13 +18,13 @@
  */
 
 package edu.umd.cs.findbugs.detect;
-import edu.umd.cs.findbugs.*;
-import org.apache.bcel.classfile.*;
-import java.util.zip.*;
-import java.io.*;
 
-import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.visitclass.Constants2;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
 
 public class InheritanceUnsafeGetResource extends BytecodeScanningDetector implements Constants2 {
 
@@ -48,50 +48,49 @@ public class InheritanceUnsafeGetResource extends BytecodeScanningDetector imple
 		classIsFinal = obj.isFinal();
 		reportedForThisClass = false;
 		classIsVisibleToOtherPackages = obj.isPublic() || obj.isProtected();
-		}
+	}
 
 	public void visit(Method obj) {
 		methodIsFinal = obj.isFinal();
 		methodIsStatic = obj.isStatic();
 		methodIsVisibleToOtherPackages = obj.isPublic() || obj.isProtected();
 		state = 0;
-		}
+	}
 
 	public void sawOpcode(int seen) {
 		if (reportedForThisClass) return;
 
-		switch(seen) {
-		    case ALOAD_0:
+		switch (seen) {
+		case ALOAD_0:
 			state = 1;
 			break;
-		    case INVOKEVIRTUAL:
+		case INVOKEVIRTUAL:
 			if (getClassConstantOperand().equals("java/lang/Class")
-			    && (getNameConstantOperand().equals("getResource")
-			      || getNameConstantOperand().equals("getResourceAsStream"))
-			    && sawGetClass + 10 >= getPC()) {
-                bugReporter.reportBug(new BugInstance("UI_INHERITANCE_UNSAFE_GETRESOURCE", NORMAL_PRIORITY)
-                        .addClassAndMethod(this)
-                        .addSourceLine(this));
-		reportedForThisClass = true;
+			        && (getNameConstantOperand().equals("getResource")
+			        || getNameConstantOperand().equals("getResourceAsStream"))
+			        && sawGetClass + 10 >= getPC()) {
+				bugReporter.reportBug(new BugInstance("UI_INHERITANCE_UNSAFE_GETRESOURCE", NORMAL_PRIORITY)
+				        .addClassAndMethod(this)
+				        .addSourceLine(this));
+				reportedForThisClass = true;
 
-				}
-			else if (state == 1
-				&& !methodIsStatic
-				// && !methodIsFinal 
-				&& !classIsFinal
-				&& classIsVisibleToOtherPackages
-				// && methodIsVisibleToOtherPackages
-				&& getNameConstantOperand().equals("getClass")
-				&& getSigConstantOperand().equals("()Ljava/lang/Class;")) {
+			} else if (state == 1
+			        && !methodIsStatic
+			        // && !methodIsFinal
+			        && !classIsFinal
+			        && classIsVisibleToOtherPackages
+			        // && methodIsVisibleToOtherPackages
+			        && getNameConstantOperand().equals("getClass")
+			        && getSigConstantOperand().equals("()Ljava/lang/Class;")) {
 				sawGetClass = getPC();
-				}
+			}
 			state = 0;
 			break;
-		    default:
+		default:
 			state = 0;
 			break;
 		}
-			
-	}				
+
+	}
 
 }

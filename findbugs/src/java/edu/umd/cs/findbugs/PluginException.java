@@ -21,12 +21,14 @@ package edu.umd.cs.findbugs;
 
 /**
  * An exception to indicate that a plugin could not be loaded.
- * @see PluginLoader
+ *
  * @author David Hovemeyer
+ * @see PluginLoader
  */
 public class PluginException extends Exception {
 	/**
 	 * Constructor.
+	 *
 	 * @param msg message describing the exception
 	 */
 	public PluginException(String msg) {
@@ -35,7 +37,8 @@ public class PluginException extends Exception {
 
 	/**
 	 * Constructor.
-	 * @param msg message describing the exception
+	 *
+	 * @param msg   message describing the exception
 	 * @param cause another Throwable object which is the cause of the exception
 	 */
 	public PluginException(String msg, Throwable cause) {

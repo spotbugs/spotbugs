@@ -28,13 +28,13 @@ import org.apache.bcel.generic.InstructionHandle;
  * in a CFG may represent several static locations.  To this end, a Location
  * is comprised of both an InstructionHandle and the BasicBlock that
  * contains it.
- *
+ * <p/>
  * <p> Location objects may be compared with each other using the equals() method,
  * and may be used as keys in tree and hash maps and sets.
  * Note that <em>it is only valid to compare Locations produced from the same CFG</em>.
  *
- * @see CFG
  * @author David Hovemeyer
+ * @see CFG
  */
 public class Location implements Comparable<Location> {
 	private final InstructionHandle handle;
@@ -42,7 +42,8 @@ public class Location implements Comparable<Location> {
 
 	/**
 	 * Constructor.
-	 * @param handle the instruction
+	 *
+	 * @param handle     the instruction
 	 * @param basicBlock the basic block containing the instruction
 	 */
 	public Location(InstructionHandle handle, BasicBlock basicBlock) {
@@ -50,11 +51,19 @@ public class Location implements Comparable<Location> {
 		this.basicBlock = basicBlock;
 	}
 
-	/** Get the instruction handle. */
-	public InstructionHandle getHandle() { return handle; }
+	/**
+	 * Get the instruction handle.
+	 */
+	public InstructionHandle getHandle() {
+		return handle;
+	}
 
-	/** Get the basic block. */
-	public BasicBlock getBasicBlock() { return basicBlock; }
+	/**
+	 * Get the basic block.
+	 */
+	public BasicBlock getBasicBlock() {
+		return basicBlock;
+	}
 
 	public int compareTo(Location other) {
 		int cmp = basicBlock.getId() - other.basicBlock.getId();

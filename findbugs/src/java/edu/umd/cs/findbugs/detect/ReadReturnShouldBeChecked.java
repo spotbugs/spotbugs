@@ -18,125 +18,124 @@
  */
 
 package edu.umd.cs.findbugs.detect;
-import edu.umd.cs.findbugs.*;
-import java.util.*;
-import java.io.PrintStream;
-import org.apache.bcel.Repository;
-import org.apache.bcel.classfile.*;
-import java.util.zip.*;
-import java.io.*;
+
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.visitclass.Constants2;
+import org.apache.bcel.Repository;
+import org.apache.bcel.classfile.Method;
 
-public class ReadReturnShouldBeChecked extends BytecodeScanningDetector implements   Constants2 {
+public class ReadReturnShouldBeChecked extends BytecodeScanningDetector implements Constants2 {
 
-   boolean sawRead = false;
-   boolean sawSkip = false;
-   int sawAvailable = 0;
-   boolean isBufferedInputStream = false;
-   private BugReporter bugReporter;
-   private int readPC, skipPC;
-   private String lastCallClass = null, lastCallMethod = null, lastCallSig = null;
+	boolean sawRead = false;
+	boolean sawSkip = false;
+	int sawAvailable = 0;
+	boolean isBufferedInputStream = false;
+	private BugReporter bugReporter;
+	private int readPC, skipPC;
+	private String lastCallClass = null, lastCallMethod = null, lastCallSig = null;
 
-   public ReadReturnShouldBeChecked(BugReporter bugReporter) {
-	this.bugReporter = bugReporter;
-   }
+	public ReadReturnShouldBeChecked(BugReporter bugReporter) {
+		this.bugReporter = bugReporter;
+	}
 
-    public void visit(Method obj) {
-	sawAvailable = 0;
-	sawRead = false;
-	sawSkip = false;
-	//check =  (obj.getAccessFlags() & (ACC_PUBLIC | ACC_PROTECTED)) != 0;
+	public void visit(Method obj) {
+		sawAvailable = 0;
+		sawRead = false;
+		sawSkip = false;
+		//check =  (obj.getAccessFlags() & (ACC_PUBLIC | ACC_PROTECTED)) != 0;
 	}
 
 
-    public void sawOpcode(int seen) {
+	public void sawOpcode(int seen) {
 
-	if (seen == INVOKEVIRTUAL || seen == INVOKEINTERFACE) {
-	    lastCallClass = getDottedClassConstantOperand();
-	    lastCallMethod = getNameConstantOperand();
-	    lastCallSig = getDottedSigConstantOperand();
-	}
-
-	if ((seen == INVOKEVIRTUAL || seen == INVOKEINTERFACE)
-		&& getNameConstantOperand().equals("available")
-		&& getSigConstantOperand().equals("()I")
-	    || (seen == INVOKEVIRTUAL || seen == INVOKEINTERFACE)
-		&& getNameConstantOperand().startsWith("get")
-		&& getNameConstantOperand().endsWith("Length")
-		&& getSigConstantOperand().equals("()I")
-	    || (seen == INVOKEVIRTUAL || seen == INVOKEINTERFACE)
-		&& getClassConstantOperand().equals("java/io/File")
-		&& getNameConstantOperand().equals("length")
-		&& getSigConstantOperand().equals("()J"))   {
-		sawAvailable = 70;
-		return;
+		if (seen == INVOKEVIRTUAL || seen == INVOKEINTERFACE) {
+			lastCallClass = getDottedClassConstantOperand();
+			lastCallMethod = getNameConstantOperand();
+			lastCallSig = getDottedSigConstantOperand();
 		}
-	sawAvailable--;
-	if ((seen == INVOKEVIRTUAL || seen == INVOKEINTERFACE)
-		&& !getClassConstantOperand().equals("java/io/ByteArrayInputStream")
-		&& getNameConstantOperand().equals("read")
-		&& (getSigConstantOperand().startsWith("([B")
-		   || getSigConstantOperand().startsWith("([C"))
-		&& sawAvailable <= 0)   {
-		/*
-		System.out.println("Saw invocation of "
-			+ getNameConstantOperand() + "("
-			+ getSigConstantOperand()
-			+"), available = " + sawAvailable);
-		*/
 
-		boolean b = false;
-		try {
-		b = Repository.instanceOf(getClassConstantOperand(), "java/io/ByteArrayInputStream");
-		} catch (ClassNotFoundException e) {
+		if ((seen == INVOKEVIRTUAL || seen == INVOKEINTERFACE)
+		        && getNameConstantOperand().equals("available")
+		        && getSigConstantOperand().equals("()I")
+		        || (seen == INVOKEVIRTUAL || seen == INVOKEINTERFACE)
+		        && getNameConstantOperand().startsWith("get")
+		        && getNameConstantOperand().endsWith("Length")
+		        && getSigConstantOperand().equals("()I")
+		        || (seen == INVOKEVIRTUAL || seen == INVOKEINTERFACE)
+		        && getClassConstantOperand().equals("java/io/File")
+		        && getNameConstantOperand().equals("length")
+		        && getSigConstantOperand().equals("()J")) {
+			sawAvailable = 70;
+			return;
 		}
-		if (!b) {
-			sawRead = true;
-			readPC = getPC();
-			return;	
+		sawAvailable--;
+		if ((seen == INVOKEVIRTUAL || seen == INVOKEINTERFACE)
+		        && !getClassConstantOperand().equals("java/io/ByteArrayInputStream")
+		        && getNameConstantOperand().equals("read")
+		        && (getSigConstantOperand().startsWith("([B")
+		        || getSigConstantOperand().startsWith("([C"))
+		        && sawAvailable <= 0) {
+			/*
+			System.out.println("Saw invocation of "
+				+ getNameConstantOperand() + "("
+				+ getSigConstantOperand()
+				+"), available = " + sawAvailable);
+			*/
+
+			boolean b = false;
+			try {
+				b = Repository.instanceOf(getClassConstantOperand(), "java/io/ByteArrayInputStream");
+			} catch (ClassNotFoundException e) {
 			}
-	} else if ((seen == INVOKEVIRTUAL || seen == INVOKEINTERFACE)
-		&& !getClassConstantOperand().equals("java/io/ByteArrayInputStream")
-		&& getNameConstantOperand().equals("skip")) {
-		boolean bais = false;
-		boolean bis = false;
-		try {
-		bais = Repository.instanceOf(getClassConstantOperand(), "java/io/ByteArrayInputStream");
-		bis = Repository.instanceOf(getClassConstantOperand(), "java/io/BufferedInputStream");
-		} catch (ClassNotFoundException e) {
-		}
-		// if not ByteArrayInput Stream 
-		//  and either no recent calls to length
-		//        or it is a BufferedInputStream
-		if (!bais && (sawAvailable <= 0 || bis)) {
-			isBufferedInputStream = bis;
-			sawSkip = true;
-			skipPC = getPC();
-			return;	
+			if (!b) {
+				sawRead = true;
+				readPC = getPC();
+				return;
 			}
-	}
-	
-	if ((seen == POP) || (seen == POP2)) {
-		if (sawRead) {
-			bugReporter.reportBug(new BugInstance("RR_NOT_CHECKED", NORMAL_PRIORITY)
-				.addClassAndMethod(this)
-				.addCalledMethod(lastCallClass, lastCallMethod, lastCallSig)
-				.addSourceLine(this, readPC));
-		} else if (sawSkip) {
+		} else if ((seen == INVOKEVIRTUAL || seen == INVOKEINTERFACE)
+		        && !getClassConstantOperand().equals("java/io/ByteArrayInputStream")
+		        && getNameConstantOperand().equals("skip")) {
+			boolean bais = false;
+			boolean bis = false;
+			try {
+				bais = Repository.instanceOf(getClassConstantOperand(), "java/io/ByteArrayInputStream");
+				bis = Repository.instanceOf(getClassConstantOperand(), "java/io/BufferedInputStream");
+			} catch (ClassNotFoundException e) {
+			}
+			// if not ByteArrayInput Stream
+			//  and either no recent calls to length
+			//        or it is a BufferedInputStream
+			if (!bais && (sawAvailable <= 0 || bis)) {
+				isBufferedInputStream = bis;
+				sawSkip = true;
+				skipPC = getPC();
+				return;
+			}
+		}
+
+		if ((seen == POP) || (seen == POP2)) {
+			if (sawRead) {
+				bugReporter.reportBug(new BugInstance("RR_NOT_CHECKED", NORMAL_PRIORITY)
+				        .addClassAndMethod(this)
+				        .addCalledMethod(lastCallClass, lastCallMethod, lastCallSig)
+				        .addSourceLine(this, readPC));
+			} else if (sawSkip) {
 				boolean isBufferedInputStream = false;
 				try {
-				isBufferedInputStream = Repository.instanceOf(lastCallClass, "java/io/BufferedInputStream");
+					isBufferedInputStream = Repository.instanceOf(lastCallClass, "java/io/BufferedInputStream");
 				} catch (ClassNotFoundException e) {
 				}
 
-			bugReporter.reportBug(new BugInstance("SR_NOT_CHECKED", 
-				(isBufferedInputStream ? HIGH_PRIORITY : NORMAL_PRIORITY))
-				.addClassAndMethod(this)
-				.addCalledMethod(lastCallClass, lastCallMethod, lastCallSig)
-				.addSourceLine(this, skipPC));
+				bugReporter.reportBug(new BugInstance("SR_NOT_CHECKED",
+				        (isBufferedInputStream ? HIGH_PRIORITY : NORMAL_PRIORITY))
+				        .addClassAndMethod(this)
+				        .addCalledMethod(lastCallClass, lastCallMethod, lastCallSig)
+				        .addSourceLine(this, skipPC));
+			}
 		}
-	}
-	sawRead = false;
-	sawSkip = false;
+		sawRead = false;
+		sawSkip = false;
 	}
 }	

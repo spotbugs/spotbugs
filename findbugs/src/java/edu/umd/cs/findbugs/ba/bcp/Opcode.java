@@ -19,25 +19,32 @@
 
 package edu.umd.cs.findbugs.ba.bcp;
 
-import org.apache.bcel.generic.*;
-import edu.umd.cs.findbugs.ba.*;
+import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
+import edu.umd.cs.findbugs.ba.Edge;
+import edu.umd.cs.findbugs.ba.ValueNumberFrame;
+import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.InstructionHandle;
 
 /**
  * PatternElement to match instructions with a particular opcode.
- * @see PatternElement
+ *
  * @author David Hovemeyer
+ * @see PatternElement
  */
 public class Opcode extends PatternElement {
 	private int opcode;
 
 	/**
 	 * Constructor.
+	 *
 	 * @param opcode the opcode to match
 	 */
-	public Opcode(int opcode) { this.opcode = opcode; }
+	public Opcode(int opcode) {
+		this.opcode = opcode;
+	}
 
 	public MatchResult match(InstructionHandle handle, ConstantPoolGen cpg,
-		ValueNumberFrame before, ValueNumberFrame after, BindingSet bindingSet) throws DataflowAnalysisException {
+	                         ValueNumberFrame before, ValueNumberFrame after, BindingSet bindingSet) throws DataflowAnalysisException {
 
 		if (handle.getInstruction().getOpcode() == opcode)
 			return new MatchResult(this, bindingSet);
@@ -46,9 +53,17 @@ public class Opcode extends PatternElement {
 
 	}
 
-	public boolean acceptBranch(Edge edge, InstructionHandle source) { return true; }
-	public int minOccur() { return 1; }
-	public int maxOccur() { return 1; }
+	public boolean acceptBranch(Edge edge, InstructionHandle source) {
+		return true;
+	}
+
+	public int minOccur() {
+		return 1;
+	}
+
+	public int maxOccur() {
+		return 1;
+	}
 }
 
 // vim:ts=4

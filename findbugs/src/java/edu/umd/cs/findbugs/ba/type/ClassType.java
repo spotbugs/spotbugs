@@ -19,7 +19,6 @@
 
 package edu.umd.cs.findbugs.ba.type;
 
-import edu.umd.cs.findbugs.ba.Debug;
 import org.apache.bcel.Constants;
 
 /**
@@ -55,7 +54,7 @@ public class ClassType extends ObjectType {
 	public void setIsInterface(boolean isInterface) {
 		if (getState() == KNOWN && isInterface() != isInterface)
 			throw new IllegalStateException("Type " + getClassName() +
-				" marked as both class and interface");
+			        " marked as both class and interface");
 		setState(KNOWN);
 		this.isInterface = isInterface;
 	}
@@ -108,7 +107,7 @@ public class ClassType extends ObjectType {
 	public boolean isInterface() {
 		if (getState() != KNOWN)
 			throw new IllegalStateException("Don't know whether type " + getClassName() +
-				" is a class or interface");
+			        " is a class or interface");
 
 		return isInterface;
 	}

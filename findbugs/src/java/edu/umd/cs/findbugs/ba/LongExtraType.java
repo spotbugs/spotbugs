@@ -27,10 +27,10 @@ import org.apache.bcel.generic.Type;
  * have type long, and local <i>n+1</i> will have this
  * type.
  *
+ * @author David Hovemeyer
  * @see TypeAnalysis
  * @see TypeFrame
  * @see TypeMerger
- * @author David Hovemeyer
  */
 public class LongExtraType extends Type implements ExtendedTypes {
 	private static final LongExtraType theInstance = new LongExtraType();

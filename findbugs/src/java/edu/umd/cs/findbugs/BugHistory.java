@@ -34,11 +34,11 @@ public class BugHistory {
 	public static void main(String[] argv) throws Exception {
 		if (argv.length != 3) {
 			System.err.println("Usage: " + BugHistory.class.getName() +
-				" <operation> <old results> <new results>\n" +
-				"Operations:\n" +
-				"   -new        Output new bugs (in new results but not in old results)\n" +
-				"   -fixed      Output fixed bugs (in old results but not in new results)\n" +
-				"   -retained   Output retained bugs (in both old and new results)");
+			        " <operation> <old results> <new results>\n" +
+			        "Operations:\n" +
+			        "   -new        Output new bugs (in new results but not in old results)\n" +
+			        "   -fixed      Output fixed bugs (in old results but not in new results)\n" +
+			        "   -retained   Output retained bugs (in both old and new results)");
 			System.exit(1);
 		}
 

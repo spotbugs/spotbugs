@@ -34,7 +34,8 @@ public class ExceptionObjectType extends ObjectType implements Constants, Extend
 
 	/**
 	 * Constructor.
-	 * @param className the class name
+	 *
+	 * @param className    the class name
 	 * @param exceptionSet the set of exceptions
 	 */
 	private ExceptionObjectType(String className, ExceptionSet exceptionSet) {
@@ -44,9 +45,10 @@ public class ExceptionObjectType extends ObjectType implements Constants, Extend
 
 	/**
 	 * Initialize object from an exception set.
+	 *
 	 * @param exceptionSet the exception set
 	 * @return a Type that is a supertype of all of the exceptions in
-	 *   the exception set
+	 *         the exception set
 	 */
 	public static Type fromExceptionSet(ExceptionSet exceptionSet) throws ClassNotFoundException {
 		Type commonSupertype = exceptionSet.getCommonSupertype();
@@ -71,11 +73,12 @@ public class ExceptionObjectType extends ObjectType implements Constants, Extend
 
 		ExceptionObjectType other = (ExceptionObjectType) o;
 		return getSignature().equals(other.getSignature())
-			&& exceptionSet.equals(other.exceptionSet);
+		        && exceptionSet.equals(other.exceptionSet);
 	}
 
 	/**
 	 * Return the exception set.
+	 *
 	 * @return the ExceptionSet
 	 */
 	public ExceptionSet getExceptionSet() {
@@ -86,7 +89,7 @@ public class ExceptionObjectType extends ObjectType implements Constants, Extend
 		StringBuffer buf = new StringBuffer();
 		buf.append("<exception:");
 		boolean first = true;
-		for (ExceptionSet.ThrownExceptionIterator i = exceptionSet.iterator(); i.hasNext(); ) {
+		for (ExceptionSet.ThrownExceptionIterator i = exceptionSet.iterator(); i.hasNext();) {
 			if (first)
 				first = false;
 			else

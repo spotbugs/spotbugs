@@ -19,10 +19,8 @@
 
 package edu.umd.cs.findbugs.ba;
 
-import java.util.ArrayList;
-
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.*;
+import java.util.regex.*;
 
 /**
  * Parse the detail message in a ClassNotFoundException
@@ -31,18 +29,20 @@ import java.util.regex.Pattern;
  * from the exception object.  So, this class parses the
  * detail message in several common formats (such as the
  * format used by BCEL).
+ *
  * @author David Hovemeyer
  */
 public class ClassNotFoundExceptionParser {
 	// BCEL reports missing classes in this format
 	private static final Pattern BCEL_MISSING_CLASS_PATTERN =
-		Pattern.compile("^.*while looking for class ([^:]*):.*$");
+	        Pattern.compile("^.*while looking for class ([^:]*):.*$");
 
 	// edu.umd.cs.findbugs.ba.type.TypeRepository uses this format
 	private static final Pattern TYPE_REPOSITORY_MISSING_CLASS_PATTERN =
-		Pattern.compile("^Class ([^ ]*) cannot be resolved.*$");
+	        Pattern.compile("^Class ([^ ]*) cannot be resolved.*$");
 
 	private static final Pattern[] patternList;
+
 	static {
 		ArrayList<Pattern> list = new ArrayList<Pattern>();
 		list.add(BCEL_MISSING_CLASS_PATTERN);
@@ -53,9 +53,10 @@ public class ClassNotFoundExceptionParser {
 
 	/**
 	 * Get the name of the missing class from a ClassNotFoundException.
+	 *
 	 * @param ex the ClassNotFoundException
 	 * @return the name of the missing class, or null if we
-	 *   couldn't figure out the class name
+	 *         couldn't figure out the class name
 	 */
 	public static String getMissingClassName(ClassNotFoundException ex) {
 		for (int i = 0; i < patternList.length; ++i) {

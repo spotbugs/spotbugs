@@ -20,19 +20,26 @@
 package edu.umd.cs.findbugs.detect;
 
 import java.util.*;
-import org.apache.bcel.Constants;
-import org.apache.bcel.classfile.*;
-import org.apache.bcel.generic.*;
+
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.ba.*;
-import edu.umd.cs.findbugs.*;
+import org.apache.bcel.Constants;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.LineNumberTable;
+import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.Instruction;
+import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.MethodGen;
 
 /**
  * A Detector to find instructions where a NullPointerException
  * might be raised.  We also look for useless reference comparisons
  * involving null and non-null values.
  *
- * @see IsNullValueAnalysis
  * @author David Hovemeyer
+ * @see IsNullValueAnalysis
  */
 public class FindNullDeref implements Detector {
 
@@ -100,7 +107,7 @@ public class FindNullDeref implements Detector {
 	}
 
 	private void analyzeMethod(ClassContext classContext, Method method)
-		throws CFGBuilderException, DataflowAnalysisException {
+	        throws CFGBuilderException, DataflowAnalysisException {
 
 		JavaClass jclass = classContext.getJavaClass();
 
@@ -158,15 +165,15 @@ public class FindNullDeref implements Detector {
 			// we check to ensure that the branch is REALLY determined each
 			// place it is duplicated, and that it is determined in the same way.
 			if (!undeterminedBranchSet.get(lineNumber) &&
-				!(definitelySameBranchSet.get(lineNumber) && definitelyDifferentBranchSet.get(lineNumber))) {
+			        !(definitelySameBranchSet.get(lineNumber) && definitelyDifferentBranchSet.get(lineNumber))) {
 				reportRedundantNullCheck(classContext, method, handle, redundantBranch);
 			}
 		}
 	}
 
 	private void analyzeNullCheck(ClassContext classContext, Method method, IsNullValueDataflow invDataflow,
-		BasicBlock basicBlock)
-		throws DataflowAnalysisException {
+	                              BasicBlock basicBlock)
+	        throws DataflowAnalysisException {
 
 		// Look for null checks where the value checked is definitely
 		// null or null on some path.
@@ -185,7 +192,7 @@ public class FindNullDeref implements Detector {
 		if (frame.isValid()) {
 			// Could the reference be null?
 			IsNullValue refValue = frame.getValue(frame.getNumSlots() - consumed);
-	
+
 			boolean onExceptionPath = refValue.isException();
 			if (refValue.isDefinitelyNull()) {
 				String type = onExceptionPath ? "NP_ALWAYS_NULL_EXCEPTION" : "NP_ALWAYS_NULL";
@@ -201,7 +208,7 @@ public class FindNullDeref implements Detector {
 	}
 
 	private void analyzeRefComparisonBranch(Method method, IsNullValueDataflow invDataflow, BasicBlock basicBlock,
-		InstructionHandle lastHandle) throws DataflowAnalysisException {
+	                                        InstructionHandle lastHandle) throws DataflowAnalysisException {
 
 		IsNullValueFrame frame = invDataflow.getFactAtLocation(new Location(lastHandle, basicBlock));
 		if (!frame.isValid()) {
@@ -222,8 +229,8 @@ public class FindNullDeref implements Detector {
 
 		boolean definitelySame = top.isDefinitelyNull() && topNext.isDefinitelyNull();
 		boolean definitelyDifferent =
-			(top.isDefinitelyNull() && topNext.isDefinitelyNotNull()) || 
-			(top.isDefinitelyNotNull() && topNext.isDefinitelyNull());
+		        (top.isDefinitelyNull() && topNext.isDefinitelyNotNull()) ||
+		        (top.isDefinitelyNotNull() && topNext.isDefinitelyNull());
 
 		if (definitelySame || definitelyDifferent) {
 			if (definitelySame) {
@@ -253,7 +260,7 @@ public class FindNullDeref implements Detector {
 
 	// This is called for both IFNULL and IFNONNULL instructions.
 	private void analyzeIfNullBranch(Method method, IsNullValueDataflow invDataflow, BasicBlock basicBlock,
-		InstructionHandle lastHandle) throws DataflowAnalysisException {
+	                                 InstructionHandle lastHandle) throws DataflowAnalysisException {
 
 		IsNullValueFrame frame = invDataflow.getFactAtLocation(new Location(lastHandle, basicBlock));
 		if (!frame.isValid()) {
@@ -306,13 +313,13 @@ public class FindNullDeref implements Detector {
 	}
 
 	private void reportNullDeref(ClassContext classContext, Method method, InstructionHandle exceptionThrowerHandle,
-		String type, int priority) {
+	                             String type, int priority) {
 		MethodGen methodGen = classContext.getMethodGen(method);
 		String sourceFile = classContext.getJavaClass().getSourceFileName();
 
 		BugInstance bugInstance = new BugInstance(type, priority)
-			.addClassAndMethod(methodGen, sourceFile)
-			.addSourceLine(methodGen, sourceFile, exceptionThrowerHandle);
+		        .addClassAndMethod(methodGen, sourceFile)
+		        .addSourceLine(methodGen, sourceFile, exceptionThrowerHandle);
 
 		if (DEBUG)
 			bugInstance.addInt(exceptionThrowerHandle.getPosition()).describe("INT_BYTECODE_OFFSET");
@@ -321,19 +328,19 @@ public class FindNullDeref implements Detector {
 	}
 
 	private void reportRedundantNullCheck(ClassContext classContext, Method method, InstructionHandle handle,
-		RedundantBranch redundantBranch) {
+	                                      RedundantBranch redundantBranch) {
 		String sourceFile = classContext.getJavaClass().getSourceFileName();
 		MethodGen methodGen = classContext.getMethodGen(method);
 
 		boolean redundantNullCheck = redundantBranch.redundantNullCheck;
 		String type = redundantNullCheck
-			? "RCN_REDUNDANT_CHECKED_NULL_COMPARISION"
-			: "RCN_REDUNDANT_COMPARISON_TO_NULL";
+		        ? "RCN_REDUNDANT_CHECKED_NULL_COMPARISION"
+		        : "RCN_REDUNDANT_COMPARISON_TO_NULL";
 		int priority = redundantNullCheck ? LOW_PRIORITY : NORMAL_PRIORITY;
 
 		bugReporter.reportBug(new BugInstance(type, priority)
-			.addClassAndMethod(methodGen, sourceFile)
-			.addSourceLine(methodGen, sourceFile, handle));
+		        .addClassAndMethod(methodGen, sourceFile)
+		        .addSourceLine(methodGen, sourceFile, handle));
 	}
 
 	public void report() {

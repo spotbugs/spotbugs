@@ -20,10 +20,10 @@
 package edu.umd.cs.findbugs.graph;
 
 public class AbstractEdge
-	<
-	ActualEdgeType extends AbstractEdge<ActualEdgeType, VertexType>,
-	VertexType extends AbstractVertex<ActualEdgeType, VertexType>
-	> implements GraphEdge<ActualEdgeType, VertexType> {
+        <
+        ActualEdgeType extends AbstractEdge<ActualEdgeType, VertexType>,
+        VertexType extends AbstractVertex<ActualEdgeType, VertexType>
+        > implements GraphEdge<ActualEdgeType, VertexType> {
 
 	private VertexType source;
 	private VertexType target;

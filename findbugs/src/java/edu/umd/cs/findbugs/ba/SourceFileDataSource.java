@@ -26,9 +26,14 @@ import java.io.InputStream;
  * A data source which can produce a stream for a source file.
  */
 public interface SourceFileDataSource {
-	/** Open an InputStream on the source file. */
+	/**
+	 * Open an InputStream on the source file.
+	 */
 	public InputStream open() throws IOException;
-	/** Get the full filename of the source file. */
+
+	/**
+	 * Get the full filename of the source file.
+	 */
 	public String getFullFileName();
 }
 

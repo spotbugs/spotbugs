@@ -19,27 +19,31 @@
 
 package edu.umd.cs.findbugs.ba;
 
-import java.util.*;
+
 
 /**
  * A "value number" is a value produced somewhere in a methods.
  * We use value numbers as dataflow values in Frames.  When two frame
  * slots have the same value number, then the same value is in both
  * of those slots.
- *
+ * <p/>
  * <p> Instances of ValueNumbers produced by the same
  * {@link ValueNumberFactory ValueNumberFactory} are unique, so reference equality may
  * be used to determine whether or not two value numbers are the same.
  * In general, ValueNumbers from different factories cannot be compared.
  *
- * @see ValueNumberAnalysis
  * @author David Hovemeyer
+ * @see ValueNumberAnalysis
  */
 public class ValueNumber implements Comparable<ValueNumber> {
-	/** The value number. */
+	/**
+	 * The value number.
+	 */
 	int number;
 
-	/** Flags representing meta information about the value. */
+	/**
+	 * Flags representing meta information about the value.
+	 */
 	int flags;
 
 	/**
@@ -50,6 +54,7 @@ public class ValueNumber implements Comparable<ValueNumber> {
 
 	/**
 	 * Constructor.
+	 *
 	 * @param number the value number
 	 */
 	ValueNumber(int number) {
@@ -61,7 +66,9 @@ public class ValueNumber implements Comparable<ValueNumber> {
 		return number;
 	}
 
-	public int getFlags() { return flags; }
+	public int getFlags() {
+		return flags;
+	}
 
 	public void setFlags(int flags) {
 		this.flags = flags;
@@ -82,7 +89,6 @@ public class ValueNumber implements Comparable<ValueNumber> {
 	public int compareTo(ValueNumber other) {
 		return number - other.number;
 	}
-
 
 
 }

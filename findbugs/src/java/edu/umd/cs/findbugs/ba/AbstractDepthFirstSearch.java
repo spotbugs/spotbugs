@@ -29,16 +29,16 @@ import java.util.*;
  * <li> assigns DFS edge types (see {@link DFSEdgeTypes})
  * <li> assigns discovery and finish times for each block
  * <li> produces a topological sort of the blocks,
- *      <em>if and only if the CFG is acyclic</em>
+ * <em>if and only if the CFG is acyclic</em>
  * </ul>
- *
+ * <p/>
  * <p> Concrete subclasses implement forward and reverse versions
  * of depth first search.
  *
+ * @author David Hovemeyer
  * @see CFG
  * @see DepthFirstSearch
  * @see ReverseDepthFirstSearch
- * @author David Hovemeyer
  */
 public abstract class AbstractDepthFirstSearch implements DFSEdgeTypes {
 	public final static boolean DEBUG = false;
@@ -57,6 +57,7 @@ public abstract class AbstractDepthFirstSearch implements DFSEdgeTypes {
 
 	/**
 	 * Constructor.
+	 *
 	 * @param cfg the CFG to be searched
 	 * @throws IllegalArgumentException if the CFG has not had edge ids assigned yet
 	 */
@@ -80,20 +81,29 @@ public abstract class AbstractDepthFirstSearch implements DFSEdgeTypes {
 	// the "polarity" of the depth first search.  That way,
 	// this code can do normal DFS, or DFS of reversed CFG.
 
-	/** Get the "logical" entry block of the CFG. */
+	/**
+	 * Get the "logical" entry block of the CFG.
+	 */
 	protected abstract BasicBlock getEntry(CFG cfg);
 
-	/** Get Iterator over "logical" outgoing edges. */
+	/**
+	 * Get Iterator over "logical" outgoing edges.
+	 */
 	protected abstract Iterator<Edge> outgoingEdgeIterator(CFG cfg, BasicBlock basicBlock);
 
-	/** Get "logical" target of edge. */
+	/**
+	 * Get "logical" target of edge.
+	 */
 	protected abstract BasicBlock getTarget(Edge edge);
 
-	/** Get "logical" source of edge. */
+	/**
+	 * Get "logical" source of edge.
+	 */
 	protected abstract BasicBlock getSource(Edge edge);
 
 	/**
 	 * Perform the depth first search.
+	 *
 	 * @return this object
 	 */
 	public AbstractDepthFirstSearch search() {
@@ -105,6 +115,7 @@ public abstract class AbstractDepthFirstSearch implements DFSEdgeTypes {
 
 	/**
 	 * Get the type of edge in the depth first search.
+	 *
 	 * @param edge the edge
 	 * @return the DFS type of edge: TREE_EDGE, FORWARD_EDGE, CROSS_EDGE, or BACK_EDGE
 	 * @see DFSEdgeTypes
@@ -116,6 +127,7 @@ public abstract class AbstractDepthFirstSearch implements DFSEdgeTypes {
 	/**
 	 * Return the timestamp indicating when the given basic block
 	 * was discovered.
+	 *
 	 * @param block the basic block
 	 */
 	public int getDiscoveryTime(BasicBlock block) {
@@ -125,6 +137,7 @@ public abstract class AbstractDepthFirstSearch implements DFSEdgeTypes {
 	/**
 	 * Return the timestamp indicating when the given basic block
 	 * was finished (meaning that all of its descendents were visited recursively).
+	 *
 	 * @param block the basic block
 	 */
 	public int getFinishTime(BasicBlock block) {
@@ -154,9 +167,17 @@ public abstract class AbstractDepthFirstSearch implements DFSEdgeTypes {
 			setDiscoveryTime(block, timestamp++);
 		}
 
-		public BasicBlock getBlock() { return block; }
-		public boolean hasNextEdge() { return outgoingEdgeIterator.hasNext(); }
-		public Edge getNextEdge() { return outgoingEdgeIterator.next(); }
+		public BasicBlock getBlock() {
+			return block;
+		}
+
+		public boolean hasNextEdge() {
+			return outgoingEdgeIterator.hasNext();
+		}
+
+		public Edge getNextEdge() {
+			return outgoingEdgeIterator.next();
+		}
 	}
 
 	private void visitAll() {

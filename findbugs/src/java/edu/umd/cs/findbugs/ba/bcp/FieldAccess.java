@@ -19,17 +19,21 @@
 
 package edu.umd.cs.findbugs.ba.bcp;
 
-import org.apache.bcel.generic.*;
-import edu.umd.cs.findbugs.ba.*;
+import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
+import edu.umd.cs.findbugs.ba.ValueNumber;
+import edu.umd.cs.findbugs.ba.ValueNumberFrame;
+import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.FieldInstruction;
+import org.apache.bcel.generic.Type;
 
 /**
  * Base class for Load and Store PatternElements.
  * Handles some of the grunt work of representing fields and
  * extracting field values from the stack frame.
- * 
+ *
+ * @author David Hovemeyer
  * @see Load
  * @see Store
- * @author David Hovemeyer
  */
 public abstract class FieldAccess extends SingleInstruction implements org.apache.bcel.Constants {
 	private String fieldVarName;
@@ -37,6 +41,7 @@ public abstract class FieldAccess extends SingleInstruction implements org.apach
 
 	/**
 	 * Constructor.
+	 *
 	 * @param fieldVarName name of the variable to bind to the field
 	 * @param valueVarName name of the variable to bind to the value store in or loaded from the field
 	 */
@@ -48,11 +53,12 @@ public abstract class FieldAccess extends SingleInstruction implements org.apach
 	/**
 	 * Check that the Variables determined for the field and the value loaded/stored
 	 * are consistent with previous variable definitions.
-	 * @param field Variable representing the field
-	 * @param value Variable representing the value loaded/stored
+	 *
+	 * @param field      Variable representing the field
+	 * @param value      Variable representing the value loaded/stored
 	 * @param bindingSet previous definitions
 	 * @return a MatchResult containing an updated BindingSet if successful,
-	 *   or null if unsucessful
+	 *         or null if unsucessful
 	 */
 	protected MatchResult checkConsistent(Variable field, Variable value, BindingSet bindingSet) {
 		// Ensure that the field and value variables are consistent with
@@ -68,8 +74,9 @@ public abstract class FieldAccess extends SingleInstruction implements org.apach
 
 	/**
 	 * Return whether the given FieldInstruction accesses a long or double field.
+	 *
 	 * @param fieldIns the FieldInstruction
-	 * @param cpg the ConstantPoolGen for the method
+	 * @param cpg      the ConstantPoolGen for the method
 	 */
 	protected static boolean isLongOrDouble(FieldInstruction fieldIns, ConstantPoolGen cpg) {
 		Type type = fieldIns.getFieldType(cpg);
@@ -80,13 +87,14 @@ public abstract class FieldAccess extends SingleInstruction implements org.apach
 	/**
 	 * Get a Variable representing the stack value which will either be stored
 	 * into or loaded from a field.
+	 *
 	 * @param fieldIns the FieldInstruction accessing the field
-	 * @param cpg the ConstantPoolGen for the method
-	 * @param frame the ValueNumberFrame containing the value to be stored
-	 *   or the value loaded
+	 * @param cpg      the ConstantPoolGen for the method
+	 * @param frame    the ValueNumberFrame containing the value to be stored
+	 *                 or the value loaded
 	 */
 	protected static Variable snarfFieldValue(FieldInstruction fieldIns, ConstantPoolGen cpg, ValueNumberFrame frame)
-		throws DataflowAnalysisException {
+	        throws DataflowAnalysisException {
 
 		if (isLongOrDouble(fieldIns, cpg)) {
 			int numSlots = frame.getNumSlots();

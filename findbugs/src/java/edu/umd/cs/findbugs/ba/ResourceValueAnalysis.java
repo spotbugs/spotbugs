@@ -19,13 +19,10 @@
 
 package edu.umd.cs.findbugs.ba;
 
-import java.util.BitSet;
-import org.apache.bcel.Repository;
-import org.apache.bcel.classfile.*;
 import org.apache.bcel.generic.*;
 
-public class ResourceValueAnalysis<Resource> extends FrameDataflowAnalysis<ResourceValue, ResourceValueFrame>
-	implements EdgeTypes {
+public class ResourceValueAnalysis <Resource> extends FrameDataflowAnalysis<ResourceValue, ResourceValueFrame>
+        implements EdgeTypes {
 
 	private static final boolean DEBUG = Boolean.getBoolean("dataflow.debug");
 
@@ -37,7 +34,7 @@ public class ResourceValueAnalysis<Resource> extends FrameDataflowAnalysis<Resou
 	private boolean ignoreImplicitExceptions;
 
 	public ResourceValueAnalysis(MethodGen methodGen, CFG cfg, DepthFirstSearch dfs,
-		ResourceTracker<Resource> resourceTracker, Resource resource) {
+	                             ResourceTracker<Resource> resourceTracker, Resource resource) {
 
 		super(dfs);
 		this.methodGen = methodGen;
@@ -77,8 +74,8 @@ public class ResourceValueAnalysis<Resource> extends FrameDataflowAnalysis<Resou
 			// and the resource tracker says to ignore implicit exceptions
 			// for this resource, ignore it.
 			if (ClassContext.PRUNE_INFEASIBLE_EXCEPTION_EDGES &&
-				ignoreImplicitExceptions &&
-				!edge.isFlagSet(EXPLICIT_EXCEPTIONS_FLAG))
+			        ignoreImplicitExceptions &&
+			        !edge.isFlagSet(EXPLICIT_EXCEPTIONS_FLAG))
 				return;
 
 			if (fact.getStatus() == ResourceValueFrame.OPEN) {
@@ -94,7 +91,7 @@ public class ResourceValueAnalysis<Resource> extends FrameDataflowAnalysis<Resou
 			BasicBlock fallThroughSuccessor = cfg.getSuccessorWithEdgeType(source, FALL_THROUGH_EDGE);
 			if (DEBUG && fallThroughSuccessor == null) System.out.println("Null fall through successor!");
 			if (fallThroughSuccessor != null &&
-				resourceTracker.isResourceClose(fallThroughSuccessor, exceptionThrower, methodGen.getConstantPool(), resource, fact)) {
+			        resourceTracker.isResourceClose(fallThroughSuccessor, exceptionThrower, methodGen.getConstantPool(), resource, fact)) {
 				tmpFact = modifyFrame(fact, tmpFact);
 				tmpFact.setStatus(ResourceValueFrame.CLOSED);
 				if (DEBUG) System.out.print("(failed attempt to close)");
@@ -127,7 +124,7 @@ public class ResourceValueAnalysis<Resource> extends FrameDataflowAnalysis<Resou
 
 						if (topValue.isInstance()) {
 							if ((lastInSource instanceof IFNULL && edgeType == IFCMP_EDGE) ||
-								(lastInSource instanceof IFNONNULL && edgeType == FALL_THROUGH_EDGE)) {
+							        (lastInSource instanceof IFNONNULL && edgeType == FALL_THROUGH_EDGE)) {
 								//System.out.println("**** making resource nonexistent on edge "+edge.getId());
 								tmpFact = modifyFrame(fact, tmpFact);
 								tmpFact.setStatus(ResourceValueFrame.NONEXISTENT);
@@ -145,7 +142,7 @@ public class ResourceValueAnalysis<Resource> extends FrameDataflowAnalysis<Resou
 	}
 
 	protected void mergeInto(ResourceValueFrame frame, ResourceValueFrame result)
-		throws DataflowAnalysisException {
+	        throws DataflowAnalysisException {
 		// Merge slots
 		super.mergeInto(frame, result);
 
@@ -154,12 +151,12 @@ public class ResourceValueAnalysis<Resource> extends FrameDataflowAnalysis<Resou
 	}
 
 	protected ResourceValue mergeValues(ResourceValueFrame frame, int slot, ResourceValue a, ResourceValue b)
-		throws DataflowAnalysisException {
+	        throws DataflowAnalysisException {
 		return ResourceValue.merge(a, b);
 	}
 
 	public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, ResourceValueFrame fact)
-		throws DataflowAnalysisException {
+	        throws DataflowAnalysisException {
 
 		visitor.setFrame(fact);
 		visitor.transferInstruction(handle, basicBlock);

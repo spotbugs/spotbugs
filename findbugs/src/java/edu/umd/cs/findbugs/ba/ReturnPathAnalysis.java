@@ -52,11 +52,13 @@ public class ReturnPathAnalysis extends ForwardDataflowAnalysis<ReturnPath> impl
 	}
 
 	public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, ReturnPath fact)
-		throws DataflowAnalysisException {
+	        throws DataflowAnalysisException {
 		// Nothing to do
 	}
 
-	public boolean isFactValid(ReturnPath fact) { return true; }
+	public boolean isFactValid(ReturnPath fact) {
+		return true;
+	}
 
 	public void meetInto(ReturnPath fact, Edge edge, ReturnPath result) throws DataflowAnalysisException {
 		switch (edge.getType()) {
@@ -79,8 +81,8 @@ public class ReturnPathAnalysis extends ForwardDataflowAnalysis<ReturnPath> impl
 
 		DataflowTestDriver<ReturnPath, ReturnPathAnalysis> driver = new DataflowTestDriver<ReturnPath, ReturnPathAnalysis>() {
 			public Dataflow<ReturnPath, ReturnPathAnalysis>
-				createDataflow(ClassContext classContext, Method method)
-				throws CFGBuilderException, DataflowAnalysisException {
+			        createDataflow(ClassContext classContext, Method method)
+			        throws CFGBuilderException, DataflowAnalysisException {
 				return classContext.getReturnPathDataflow(method);
 			}
 		};

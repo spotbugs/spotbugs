@@ -19,15 +19,13 @@
 
 package edu.umd.cs.findbugs.graph;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.NoSuchElementException;
+import java.util.*;
 
 public abstract class AbstractGraph
-	<
-	EdgeType extends AbstractEdge<EdgeType, VertexType>,
-	VertexType extends AbstractVertex<EdgeType, VertexType>
-	> implements Graph<EdgeType, VertexType> {
+        <
+        EdgeType extends AbstractEdge<EdgeType, VertexType>,
+        VertexType extends AbstractVertex<EdgeType, VertexType>
+        > implements Graph<EdgeType, VertexType> {
 
 	/* ----------------------------------------------------------------------
 	 * Helper classes
@@ -37,10 +35,10 @@ public abstract class AbstractGraph
 	 * Iterator over outgoing edges.
 	 */
 	private static class OutgoingEdgeIterator
-		<
-		EdgeType extends AbstractEdge<EdgeType, VertexType>,
-		VertexType extends AbstractVertex<EdgeType, VertexType>
-		> implements Iterator<EdgeType> {
+	        <
+	        EdgeType extends AbstractEdge<EdgeType, VertexType>,
+	        VertexType extends AbstractVertex<EdgeType, VertexType>
+	        > implements Iterator<EdgeType> {
 
 		private EdgeType edge;
 
@@ -48,7 +46,9 @@ public abstract class AbstractGraph
 			this.edge = source.getFirstOutgoingEdge();
 		}
 
-		public boolean hasNext() { return edge != null; }
+		public boolean hasNext() {
+			return edge != null;
+		}
 
 		public EdgeType next() {
 			if (!hasNext())
@@ -58,17 +58,19 @@ public abstract class AbstractGraph
 			return result;
 		}
 
-		public void remove() { throw new UnsupportedOperationException(); }
+		public void remove() {
+			throw new UnsupportedOperationException();
+		}
 	}
 
 	/**
 	 * Iterator over incoming edges.
 	 */
 	private static class IncomingEdgeIterator
-		<
-		EdgeType extends AbstractEdge<EdgeType, VertexType>,
-		VertexType extends AbstractVertex<EdgeType, VertexType>
-		> implements Iterator<EdgeType> {
+	        <
+	        EdgeType extends AbstractEdge<EdgeType, VertexType>,
+	        VertexType extends AbstractVertex<EdgeType, VertexType>
+	        > implements Iterator<EdgeType> {
 
 		private EdgeType edge;
 
@@ -76,7 +78,9 @@ public abstract class AbstractGraph
 			this.edge = target.getFirstIncomingEdge();
 		}
 
-		public boolean hasNext() { return edge != null; }
+		public boolean hasNext() {
+			return edge != null;
+		}
 
 		public EdgeType next() {
 			if (!hasNext())
@@ -86,7 +90,9 @@ public abstract class AbstractGraph
 			return result;
 		}
 
-		public void remove() { throw new UnsupportedOperationException(); }
+		public void remove() {
+			throw new UnsupportedOperationException();
+		}
 	}
 
 	/* ----------------------------------------------------------------------
@@ -189,10 +195,10 @@ public abstract class AbstractGraph
 		if (!vertexList.remove(v))
 			throw new IllegalArgumentException("removing nonexistent vertex!");
 
-		for (Iterator<EdgeType> i = incomingEdgeIterator(v); i.hasNext(); )
+		for (Iterator<EdgeType> i = incomingEdgeIterator(v); i.hasNext();)
 			removeEdge(i.next());
 
-		for (Iterator<EdgeType> i = outgoingEdgeIterator(v); i.hasNext(); )
+		for (Iterator<EdgeType> i = outgoingEdgeIterator(v); i.hasNext();)
 			removeEdge(i.next());
 	}
 
@@ -207,18 +213,36 @@ public abstract class AbstractGraph
 	public Iterator<VertexType> successorIterator(final VertexType source) {
 		return new Iterator<VertexType>() {
 			private Iterator<EdgeType> iter = outgoingEdgeIterator(source);
-			public boolean hasNext() { return iter.hasNext(); }
-			public VertexType next() { return iter.next().getTarget(); }
-			public void remove() { iter.remove(); }
+
+			public boolean hasNext() {
+				return iter.hasNext();
+			}
+
+			public VertexType next() {
+				return iter.next().getTarget();
+			}
+
+			public void remove() {
+				iter.remove();
+			}
 		};
 	}
 
 	public Iterator<VertexType> predecessorIterator(final VertexType target) {
 		return new Iterator<VertexType>() {
 			private Iterator<EdgeType> iter = incomingEdgeIterator(target);
-			public boolean hasNext() { return iter.hasNext(); }
-			public VertexType next() { return iter.next().getSource(); }
-			public void remove() { iter.remove(); }
+
+			public boolean hasNext() {
+				return iter.hasNext();
+			}
+
+			public VertexType next() {
+				return iter.next().getSource();
+			}
+
+			public void remove() {
+				iter.remove();
+			}
 		};
 	}
 

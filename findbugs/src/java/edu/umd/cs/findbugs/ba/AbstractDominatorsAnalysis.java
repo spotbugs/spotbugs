@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.ba;
 
 import java.util.*;
+
 import org.apache.bcel.generic.InstructionHandle;
 
 /**
@@ -28,17 +29,17 @@ import org.apache.bcel.generic.InstructionHandle;
  * set for a given basic block.  The dominator sets are represented using
  * the {@link java.util.BitSet} class, with the individual bits
  * corresponding to the IDs of basic blocks.
- *
+ * <p/>
  * <p> Subclasses extend this class to compute either dominators
  * or postdominators.
- *
+ * <p/>
  * <p> Exception edges may be ignored, in which case the domination
  * results only take non-exception control flow into account.
  *
+ * @author David Hovemeyer
  * @see DataflowAnalysis
  * @see CFG
  * @see BasicBlock
- * @author David Hovemeyer
  */
 public abstract class AbstractDominatorsAnalysis implements DataflowAnalysis<BitSet> {
 	private final CFG cfg;
@@ -48,7 +49,8 @@ public abstract class AbstractDominatorsAnalysis implements DataflowAnalysis<Bit
 
 	/**
 	 * Constructor.
-	 * @param cfg the CFG to compute dominator relationships for
+	 *
+	 * @param cfg                  the CFG to compute dominator relationships for
 	 * @param ignoreExceptionEdges true if exception edges should be ignored
 	 */
 	public AbstractDominatorsAnalysis(CFG cfg, boolean ignoreExceptionEdges) {
@@ -126,20 +128,21 @@ public abstract class AbstractDominatorsAnalysis implements DataflowAnalysis<Bit
 		else if (isTop(result))
 			copy(fact, result);
 		else
-			// Meet is intersection
+		// Meet is intersection
 			result.and(fact);
 	}
 
 	/**
 	 * Get all blocks in CFG dominated (or postdominated, depending
 	 * on how the analysis was done) by given block.
+	 *
 	 * @param dominator we want to get all blocks dominated (or postdominated)
-	 *    by this block
+	 *                  by this block
 	 * @return BitSet of the ids of all blocks dominated by the given block
 	 */
 	public BitSet getAllDominatedBy(BasicBlock dominator) {
 		BitSet allDominated = new BitSet();
-		for (Iterator<BasicBlock> i = cfg.blockIterator(); i.hasNext(); ) {
+		for (Iterator<BasicBlock> i = cfg.blockIterator(); i.hasNext();) {
 			BasicBlock block = i.next();
 			BitSet dominators = getResultFact(block);
 			if (dominators.get(dominator.getId()))
@@ -147,7 +150,7 @@ public abstract class AbstractDominatorsAnalysis implements DataflowAnalysis<Bit
 		}
 		return allDominated;
 	}
-	
+
 }
 
 // vim:ts=4

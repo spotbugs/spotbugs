@@ -21,11 +21,13 @@ package edu.umd.cs.findbugs;
 
 import java.util.*;
 
-import org.apache.bcel.*;
-import org.apache.bcel.classfile.*;
+import edu.umd.cs.findbugs.ba.BasicBlock;
+import edu.umd.cs.findbugs.ba.CFG;
+import edu.umd.cs.findbugs.ba.CFGBuilderException;
+import edu.umd.cs.findbugs.ba.ClassContext;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.*;
-
-import edu.umd.cs.findbugs.ba.*;
 
 /**
  * Build a call graph of the self calls in a class.
@@ -40,6 +42,7 @@ public class SelfCalls {
 
 	/**
 	 * Constructor.
+	 *
 	 * @param classContext the ClassContext for the class
 	 */
 	public SelfCalls(ClassContext classContext) {
@@ -111,17 +114,31 @@ public class SelfCalls {
 	public Iterator<CallSite> callSiteIterator() {
 		return new Iterator<CallSite>() {
 			private Iterator<CallGraphEdge> iter = callGraph.edgeIterator();
-			public boolean hasNext() { return iter.hasNext(); }
-			public CallSite next() { return iter.next().getCallSite(); }
-			public void remove() { iter.remove(); }
+
+			public boolean hasNext() {
+				return iter.hasNext();
+			}
+
+			public CallSite next() {
+				return iter.next().getCallSite();
+			}
+
+			public void remove() {
+				iter.remove();
+			}
 		};
 	}
 
-	/** Does this class contain any explicit synchronization? */
-	public boolean hasSynchronization() { return hasSynchronization; }
+	/**
+	 * Does this class contain any explicit synchronization?
+	 */
+	public boolean hasSynchronization() {
+		return hasSynchronization;
+	}
 
 	/**
 	 * Scan a method for self call sites.
+	 *
 	 * @param node the CallGraphNode for the method to be scanned
 	 */
 	private void scan(CallGraphNode node) throws CFGBuilderException {
@@ -158,7 +175,7 @@ public class SelfCalls {
 	}
 
 	/**
- 	 * Is the given instruction a self-call?
+	 * Is the given instruction a self-call?
 	 */
 	private Method isSelfCall(InvokeInstruction inv) {
 		ConstantPoolGen cpg = classContext.getConstantPoolGen();
@@ -186,9 +203,9 @@ public class SelfCalls {
 			String signature = method.getSignature();
 			boolean isStatic = method.isStatic();
 
-			if (methodName.equals(calledMethodName) && 
-				signature.equals(calledMethodSignature) &&
-				isStatic == isStaticCall) {
+			if (methodName.equals(calledMethodName) &&
+			        signature.equals(calledMethodSignature) &&
+			        isStatic == isStaticCall) {
 				// This method looks like a match.
 				return wantCallsFor(method) ? method : null;
 			}

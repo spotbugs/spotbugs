@@ -29,13 +29,14 @@ import edu.umd.cs.findbugs.graph.AbstractEdge;
  * @author David Hovemeyer
  */
 public class InheritanceGraphEdge
-	extends AbstractEdge<InheritanceGraphEdge, ObjectType> {
+        extends AbstractEdge<InheritanceGraphEdge, ObjectType> {
 
 	private int type;
 
 	/**
 	 * Constructor.
-	 * @param subtype the subtype
+	 *
+	 * @param subtype   the subtype
 	 * @param supertype the supertype
 	 */
 	InheritanceGraphEdge(ObjectType subtype, ObjectType supertype) {
@@ -44,6 +45,7 @@ public class InheritanceGraphEdge
 
 	/**
 	 * Set the type of inheritance edge.
+	 *
 	 * @param type the type of inheritance edge
 	 * @see {@link InheritanceGraphEdgeTypes}
 	 */
@@ -53,10 +55,13 @@ public class InheritanceGraphEdge
 
 	/**
 	 * Get the type of inheritance edge.
+	 *
 	 * @returns type the type of inheritance edge
 	 * @see {@link InheritanceGraphEdgeTypes}
 	 */
-	public int getType() { return type; }
+	public int getType() {
+		return type;
+	}
 }
 
 // vim:ts=4

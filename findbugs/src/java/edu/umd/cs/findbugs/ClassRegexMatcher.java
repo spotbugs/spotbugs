@@ -19,7 +19,7 @@
 
 package edu.umd.cs.findbugs;
 
-import java.util.regex.Pattern;
+import java.util.regex.*;
 
 public class ClassRegexMatcher implements Matcher {
 	private Pattern pattern;

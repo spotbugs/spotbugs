@@ -19,47 +19,17 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import java.util.*;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.ByteCodePatternDetector;
-
-import edu.umd.cs.findbugs.ba.BasicBlock;
-import edu.umd.cs.findbugs.ba.CFG;
-import edu.umd.cs.findbugs.ba.CFGBuilderException;
-import edu.umd.cs.findbugs.ba.ClassContext;
-import edu.umd.cs.findbugs.ba.DominatorsAnalysis;
-import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
-import edu.umd.cs.findbugs.ba.Hierarchy;
-import edu.umd.cs.findbugs.ba.Location;
-import edu.umd.cs.findbugs.ba.LockDataflow;
-import edu.umd.cs.findbugs.ba.LockSet;
-import edu.umd.cs.findbugs.ba.PostDominatorsAnalysis;
-import edu.umd.cs.findbugs.ba.XField;
-
-import edu.umd.cs.findbugs.ba.bcp.Binding;
-import edu.umd.cs.findbugs.ba.bcp.BindingSet;
-import edu.umd.cs.findbugs.ba.bcp.ByteCodePattern;
-import edu.umd.cs.findbugs.ba.bcp.ByteCodePatternMatch;
-import edu.umd.cs.findbugs.ba.bcp.FieldVariable;
-import edu.umd.cs.findbugs.ba.bcp.IfNull;
-import edu.umd.cs.findbugs.ba.bcp.Load;
-import edu.umd.cs.findbugs.ba.bcp.PatternElementMatch;
-import edu.umd.cs.findbugs.ba.bcp.Store;
-import edu.umd.cs.findbugs.ba.bcp.Wild;
-
-import java.util.BitSet;
-import java.util.Iterator;
-
+import edu.umd.cs.findbugs.ba.*;
+import edu.umd.cs.findbugs.ba.bcp.*;
 import org.apache.bcel.Constants;
-
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
-
-import org.apache.bcel.generic.Instruction;
-import org.apache.bcel.generic.InstructionHandle;
-import org.apache.bcel.generic.InvokeInstruction;
-import org.apache.bcel.generic.MethodGen;
-import org.apache.bcel.generic.NEW;
+import org.apache.bcel.generic.*;
 
 /*
  * Look for lazy initialization of fields which
@@ -68,19 +38,23 @@ import org.apache.bcel.generic.NEW;
  *
  * @author David Hovemeyer
  */
+
 public class LazyInit extends ByteCodePatternDetector {
 	private BugReporter bugReporter;
 
 	private static final boolean DEBUG = Boolean.getBoolean("lazyinit.debug");
 
-	/** The pattern to look for. */
+	/**
+	 * The pattern to look for.
+	 */
 	private static ByteCodePattern pattern = new ByteCodePattern();
+
 	static {
 		pattern
-			.add(new Load("f", "val").label("start"))
-			.add(new IfNull("val"))
-			.add(new Wild(1, 1).label("createObject"))
-			.add(new Store("f", pattern.dummyVariable()).label("end").dominatedBy("createObject"));
+		        .add(new Load("f", "val").label("start"))
+		        .add(new IfNull("val"))
+		        .add(new Wild(1, 1).label("createObject"))
+		        .add(new Store("f", pattern.dummyVariable()).label("end").dominatedBy("createObject"));
 	}
 
 	public LazyInit(BugReporter bugReporter) {
@@ -96,7 +70,7 @@ public class LazyInit extends ByteCodePatternDetector {
 
 		// The pattern requires a get/put pair accessing the same field.
 		if (!(bytecodeSet.get(Constants.GETSTATIC) && bytecodeSet.get(Constants.PUTSTATIC)) &&
-			!(bytecodeSet.get(Constants.GETFIELD) && bytecodeSet.get(Constants.PUTFIELD)))
+		        !(bytecodeSet.get(Constants.GETFIELD) && bytecodeSet.get(Constants.PUTFIELD)))
 			return false;
 
 		// If the method is synchronized, then we'll assume that
@@ -108,7 +82,7 @@ public class LazyInit extends ByteCodePatternDetector {
 	}
 
 	public void reportMatch(ClassContext classContext, Method method, ByteCodePatternMatch match)
-		throws CFGBuilderException, DataflowAnalysisException {
+	        throws CFGBuilderException, DataflowAnalysisException {
 		JavaClass javaClass = classContext.getJavaClass();
 		MethodGen methodGen = classContext.getMethodGen(method);
 		CFG cfg = classContext.getCFG(method);
@@ -122,7 +96,7 @@ public class LazyInit extends ByteCodePatternDetector {
 			// If it is volatile, then the instance is not a bug.
 			FieldVariable field = (FieldVariable) binding.getVariable();
 			XField xfield =
-				Hierarchy.findXField(field.getClassName(), field.getFieldName(), field.getFieldSig());
+			        Hierarchy.findXField(field.getClassName(), field.getFieldName(), field.getFieldSig());
 			if (xfield == null || (xfield.getAccessFlags() & Constants.ACC_VOLATILE) != 0)
 				return;
 
@@ -160,9 +134,9 @@ public class LazyInit extends ByteCodePatternDetector {
 			// We will consider this to be all of the code that creates
 			// the object.
 			DominatorsAnalysis domAnalysis =
-				classContext.getNonExceptionDominatorsAnalysis(method);
+			        classContext.getNonExceptionDominatorsAnalysis(method);
 			PostDominatorsAnalysis postDomAnalysis =
-				classContext.getNonExceptionPostDominatorsAnalysis(method);
+			        classContext.getNonExceptionPostDominatorsAnalysis(method);
 			BitSet extent = domAnalysis.getAllDominatedBy(createBegin.getBasicBlock());
 			extent.and(postDomAnalysis.getAllDominatedBy(store.getBasicBlock()));
 			//System.out.println("Extent: " + extent);
@@ -178,9 +152,9 @@ public class LazyInit extends ByteCodePatternDetector {
 			LockDataflow lockDataflow = classContext.getLockDataflow(method);
 			LockSet lockSet = null;
 			boolean sawNEW = false, sawINVOKE = false;
-			for (Iterator<BasicBlock> i = cfg.getBlocks(extent).iterator(); i.hasNext(); ) {
+			for (Iterator<BasicBlock> i = cfg.getBlocks(extent).iterator(); i.hasNext();) {
 				BasicBlock block = i.next();
-				for (Iterator<InstructionHandle> j = block.instructionIterator(); j.hasNext(); ) {
+				for (Iterator<InstructionHandle> j = block.instructionIterator(); j.hasNext();) {
 					InstructionHandle handle = j.next();
 
 					Location location = new Location(handle, block);
@@ -215,7 +189,7 @@ public class LazyInit extends ByteCodePatternDetector {
 			//  - otherwise, low priority
 			int priority = LOW_PRIORITY;
 			boolean isDefaultAccess =
-				(method.getAccessFlags() & (Constants.ACC_PUBLIC|Constants.ACC_PRIVATE|Constants.ACC_PROTECTED)) == 0;
+			        (method.getAccessFlags() & (Constants.ACC_PUBLIC | Constants.ACC_PRIVATE | Constants.ACC_PROTECTED)) == 0;
 			if (method.isPublic())
 				priority = NORMAL_PRIORITY;
 			else if (method.isProtected() || isDefaultAccess)
@@ -223,12 +197,12 @@ public class LazyInit extends ByteCodePatternDetector {
 
 			// Report the bug.
 			InstructionHandle start = match.getLabeledInstruction("start");
-			InstructionHandle end   = match.getLabeledInstruction("end");
+			InstructionHandle end = match.getLabeledInstruction("end");
 			String sourceFile = javaClass.getSourceFileName();
 			bugReporter.reportBug(new BugInstance("LI_LAZY_INIT_STATIC", priority)
-				.addClassAndMethod(methodGen, sourceFile)
-				.addField(xfield).describe("FIELD_ON")
-				.addSourceLine(methodGen, sourceFile, start, end));
+			        .addClassAndMethod(methodGen, sourceFile)
+			        .addField(xfield).describe("FIELD_ON")
+			        .addSourceLine(methodGen, sourceFile, start, end));
 		} catch (ClassNotFoundException e) {
 			bugReporter.reportMissingClass(e);
 			return;

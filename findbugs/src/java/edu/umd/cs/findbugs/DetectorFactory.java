@@ -20,18 +20,14 @@
 package edu.umd.cs.findbugs;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.StringTokenizer;
+import java.util.*;
 
 /**
  * A DetectorFactory is responsible for creating instances of Detector objects
  * and for maintaining meta-information about the detector class.
  *
- * @see Detector
  * @author David Hovemeyer
+ * @see Detector
  */
 public class DetectorFactory {
 	private final Class detectorClass;
@@ -44,17 +40,18 @@ public class DetectorFactory {
 
 	/**
 	 * Constructor.
+	 *
 	 * @param detectorClass the Class object of the Detector
-	 * @param enabled true if the Detector is enabled by default, false if disabled
-	 * @param speed a string describing roughly how expensive the analysis performed
-	 *   by the detector is; suggested values are "fast", "moderate", and "slow"
-	 * @param reports comma separated list of bug pattern codes reported
-	 *   by the detector; empty if unknown
-	 * @param requireJRE string describing JRE version required to run the
-	 *   the detector: e.g., "1.5"
+	 * @param enabled       true if the Detector is enabled by default, false if disabled
+	 * @param speed         a string describing roughly how expensive the analysis performed
+	 *                      by the detector is; suggested values are "fast", "moderate", and "slow"
+	 * @param reports       comma separated list of bug pattern codes reported
+	 *                      by the detector; empty if unknown
+	 * @param requireJRE    string describing JRE version required to run the
+	 *                      the detector: e.g., "1.5"
 	 */
 	public DetectorFactory(Class detectorClass, boolean enabled, String speed, String reports,
-		String requireJRE) {
+	                       String requireJRE) {
 		this.detectorClass = detectorClass;
 		this.enabled = enabled;
 		this.defEnabled = enabled;
@@ -84,22 +81,30 @@ public class DetectorFactory {
 		}
 	}
 
-	/** Set the enabled status of the factory. */
+	/**
+	 * Set the enabled status of the factory.
+	 */
 	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
 	}
- 
-	/** Is this factory enabled by default */
+
+	/**
+	 * Is this factory enabled by default
+	 */
 	public boolean isDefaultEnabled() {
 		return defEnabled;
 	}
 
-	/** Get the speed of the Detector produced by this factory. */
+	/**
+	 * Get the speed of the Detector produced by this factory.
+	 */
 	public String getSpeed() {
 		return speed;
 	}
 
-	/** Get list of bug pattern codes reported by the detector: blank if unknown. */
+	/**
+	 * Get list of bug pattern codes reported by the detector: blank if unknown.
+	 */
 	public String getReportedBugPatternCodes() {
 		return reports;
 	}
@@ -121,25 +126,30 @@ public class DetectorFactory {
 		return result;
 	}
 
-	/** Get an HTML document describing the Detector. */
+	/**
+	 * Get an HTML document describing the Detector.
+	 */
 	public String getDetailHTML() {
 		return detailHTML;
 	}
 
-	/** Set the HTML document describing the Detector. */
+	/**
+	 * Set the HTML document describing the Detector.
+	 */
 	public void setDetailHTML(String detailHTML) {
 		this.detailHTML = detailHTML;
 	}
 
 	/**
 	 * Create a Detector instance.
+	 *
 	 * @param bugReporter the BugReported to be used to report bugs
 	 * @return the Detector
 	 */
 	public Detector create(BugReporter bugReporter) {
 		try {
 			Constructor constructor = detectorClass.getConstructor(constructorArgTypes);
-			return (Detector) constructor.newInstance(new Object[] {bugReporter});
+			return (Detector) constructor.newInstance(new Object[]{bugReporter});
 		} catch (Exception e) {
 			throw new RuntimeException("Could not instantiate Detector", e);
 		}

@@ -20,11 +20,7 @@
 package edu.umd.cs.findbugs;
 
 import java.io.IOException;
-
-import java.util.Iterator;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
 
 import org.dom4j.DocumentException;
 
@@ -49,18 +45,20 @@ public class UnionResults {
 		this.project = project;
 	}
 
-	public Project getProject() { return project; }
+	public Project getProject() {
+		return project;
+	}
 
 	public SortedBugCollection execute() {
 		DetectorFactoryCollection.instance(); // as a side effect, loads detector plugins
 
 		SortedBugCollection result = new SortedBugCollection();
 
-		for (Iterator<BugInstance> i = origCollection.iterator(); i.hasNext(); ) {
+		for (Iterator<BugInstance> i = origCollection.iterator(); i.hasNext();) {
 			result.add(i.next());
 		}
 
-		for (Iterator<BugInstance> i = newCollection.iterator(); i.hasNext(); ) {
+		for (Iterator<BugInstance> i = newCollection.iterator(); i.hasNext();) {
 			BugInstance bugInstance = i.next();
 			BugInstance matching = origCollection.getMatching(bugInstance);
 			if (matching == null)

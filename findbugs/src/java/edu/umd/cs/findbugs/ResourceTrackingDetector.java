@@ -20,12 +20,12 @@
 package edu.umd.cs.findbugs;
 
 import java.util.*;
-import org.apache.bcel.Constants;
-import org.apache.bcel.Repository;
-import org.apache.bcel.classfile.*;
-import org.apache.bcel.generic.*;
+
 import edu.umd.cs.findbugs.ba.*;
-import edu.umd.cs.findbugs.*;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.MethodGen;
 
 /**
  * Abstract implementation of a Detector to find methods where a
@@ -36,8 +36,8 @@ import edu.umd.cs.findbugs.*;
  *
  * @author David Hovemeyer
  */
-public abstract class ResourceTrackingDetector<Resource, ResourceTrackerType extends ResourceTracker<Resource>>
-	implements Detector {
+public abstract class ResourceTrackingDetector <Resource, ResourceTrackerType extends ResourceTracker<Resource>>
+        implements Detector {
 
 	private static final boolean DEBUG = Boolean.getBoolean("rtd.debug");
 
@@ -51,10 +51,12 @@ public abstract class ResourceTrackingDetector<Resource, ResourceTrackerType ext
 	}
 
 	public abstract boolean prescreen(ClassContext classContext, Method method);
+
 	public abstract ResourceTrackerType getResourceTracker(ClassContext classContext, Method method)
-		throws DataflowAnalysisException, CFGBuilderException;
+	        throws DataflowAnalysisException, CFGBuilderException;
+
 	public abstract void inspectResult(JavaClass javaClass, MethodGen methodGen, CFG cfg,
-		Dataflow<ResourceValueFrame, ResourceValueAnalysis<Resource>> dataflow, Resource resource);
+	                                   Dataflow<ResourceValueFrame, ResourceValueAnalysis<Resource>> dataflow, Resource resource);
 
 	public void setAnalysisContext(AnalysisContext analysisContext) {
 		this.analysisContext = analysisContext;
@@ -62,6 +64,7 @@ public abstract class ResourceTrackingDetector<Resource, ResourceTrackerType ext
 
 	/**
 	 * Get the AnalysisContext.
+	 *
 	 * @return the AnalysisContext
 	 */
 	protected AnalysisContext getAnalysisContext() {
@@ -97,7 +100,7 @@ public abstract class ResourceTrackingDetector<Resource, ResourceTrackerType ext
 				ResourceTrackerType resourceTracker = getResourceTracker(classContext, method);
 
 				ResourceCollection<Resource> resourceCollection =
-					buildResourceCollection(classContext, method, resourceTracker);
+				        buildResourceCollection(classContext, method, resourceTracker);
 				if (resourceCollection.isEmpty())
 					continue;
 
@@ -112,18 +115,18 @@ public abstract class ResourceTrackingDetector<Resource, ResourceTrackerType ext
 	}
 
 	private ResourceCollection<Resource> buildResourceCollection(ClassContext classContext,
-		Method method, ResourceTrackerType resourceTracker)
-		throws CFGBuilderException, DataflowAnalysisException {
+	                                                             Method method, ResourceTrackerType resourceTracker)
+	        throws CFGBuilderException, DataflowAnalysisException {
 
 		ResourceCollection<Resource> resourceCollection = new ResourceCollection<Resource>();
 
 		CFG cfg = classContext.getCFG(method);
 		ConstantPoolGen cpg = classContext.getConstantPoolGen();
 
-		for (Iterator<Location> i = cfg.locationIterator(); i.hasNext(); ) {
+		for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
 			Location location = i.next();
 			Resource resource = resourceTracker.isResourceCreation(location.getBasicBlock(),
-				location.getHandle(), cpg);
+			        location.getHandle(), cpg);
 			if (resource != null)
 				resourceCollection.addCreatedResource(location, resource);
 		}
@@ -132,8 +135,8 @@ public abstract class ResourceTrackingDetector<Resource, ResourceTrackerType ext
 	}
 
 	public void analyzeMethod(ClassContext classContext, Method method,
-		ResourceTrackerType resourceTracker, ResourceCollection<Resource> resourceCollection)
-		throws CFGBuilderException, DataflowAnalysisException {
+	                          ResourceTrackerType resourceTracker, ResourceCollection<Resource> resourceCollection)
+	        throws CFGBuilderException, DataflowAnalysisException {
 
 		MethodGen methodGen = classContext.getMethodGen(method);
 		CFG cfg = classContext.getCFG(method);
@@ -141,13 +144,13 @@ public abstract class ResourceTrackingDetector<Resource, ResourceTrackerType ext
 
 		if (DEBUG) System.out.println(SignatureConverter.convertMethodSignature(methodGen));
 
-		for (Iterator<Resource> i = resourceCollection.resourceIterator(); i.hasNext(); ) {
+		for (Iterator<Resource> i = resourceCollection.resourceIterator(); i.hasNext();) {
 			Resource resource = i.next();
 
 			ResourceValueAnalysis<Resource> analysis =
-				new ResourceValueAnalysis<Resource>(methodGen, cfg, dfs, resourceTracker, resource );
+			        new ResourceValueAnalysis<Resource>(methodGen, cfg, dfs, resourceTracker, resource);
 			Dataflow<ResourceValueFrame, ResourceValueAnalysis<Resource>> dataflow =
-				new Dataflow<ResourceValueFrame, ResourceValueAnalysis<Resource>>(cfg, analysis);
+			        new Dataflow<ResourceValueFrame, ResourceValueAnalysis<Resource>>(cfg, analysis);
 
 			dataflow.execute();
 			inspectResult(classContext.getJavaClass(), methodGen, cfg, dataflow, resource);

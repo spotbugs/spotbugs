@@ -19,9 +19,7 @@
 
 package edu.umd.cs.findbugs;
 
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Graph IS2 (inconsistent synchronization) false positive rate
@@ -50,7 +48,7 @@ public class GraphIS2FalsePositives extends QueryBugAnnotations {
 	public void execute(String[] argv) throws Exception {
 		if (argv.length != 3) {
 			System.err.println("Usage: " + GraphIS2FalsePositives.class.getName() +
-				" <min sync pct> <max sync pct> <filename>");
+			        " <min sync pct> <max sync pct> <filename>");
 			System.exit(1);
 		}
 
@@ -93,7 +91,7 @@ public class GraphIS2FalsePositives extends QueryBugAnnotations {
 			return;
 
 		int bugSyncPercent = -1;
-		for (Iterator<BugAnnotation> i = bugInstance.annotationIterator(); i.hasNext(); ) {
+		for (Iterator<BugAnnotation> i = bugInstance.annotationIterator(); i.hasNext();) {
 			BugAnnotation annotation = i.next();
 			if (!(annotation instanceof IntAnnotation))
 				continue;
@@ -104,7 +102,7 @@ public class GraphIS2FalsePositives extends QueryBugAnnotations {
 		}
 		if (bugSyncPercent < 0)
 			throw new IllegalStateException();
-			//return;
+		//return;
 
 		boolean wouldBeReported = bugSyncPercent >= syncPercent;
 

@@ -25,20 +25,25 @@ import edu.umd.cs.findbugs.ba.Location;
  * A resource creation point.
  * This serves as an embodiment of the resource for use with ResourceValueAnalysis.
  *
+ * @author David Hovemeyer
  * @see edu.umd.cs.findbugs.ba.ResourceValueAnalysis
  * @see ResourceTrackingDetector
- * @author David Hovemeyer
  */
 public class ResourceCreationPoint {
-	/** Location in the method where the resource is created. */
+	/**
+	 * Location in the method where the resource is created.
+	 */
 	private final Location location;
 
-	/** The type of the resource. */
+	/**
+	 * The type of the resource.
+	 */
 	private final String resourceClass;
 
 	/**
 	 * Constructor.
-	 * @param location location where resource is created
+	 *
+	 * @param location      location where resource is created
 	 * @param resourceClass the name of the resource's class
 	 */
 	public ResourceCreationPoint(Location location, String resourceClass) {
@@ -46,11 +51,19 @@ public class ResourceCreationPoint {
 		this.resourceClass = resourceClass;
 	}
 
-	/** Get the location where the resource is created. */
-	public Location getLocation() { return location; }
+	/**
+	 * Get the location where the resource is created.
+	 */
+	public Location getLocation() {
+		return location;
+	}
 
-	/** Get the name of the resource's class. */
-	public String getResourceClass() { return resourceClass; }
+	/**
+	 * Get the name of the resource's class.
+	 */
+	public String getResourceClass() {
+		return resourceClass;
+	}
 }
 
 // vim:ts=4

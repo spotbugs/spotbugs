@@ -20,14 +20,14 @@
 package edu.umd.cs.findbugs.ba;
 
 import edu.umd.cs.findbugs.graph.AbstractEdge;
-import java.util.*;
 import org.apache.bcel.generic.InstructionHandle;
 
 /**
  * An edge of a control flow graph.
+ *
+ * @author David Hovemeyer
  * @see BasicBlock
  * @see CFG
- * @author David Hovemeyer
  */
 public class Edge extends AbstractEdge<Edge, BasicBlock> implements EdgeTypes, Debug {
 
@@ -44,8 +44,9 @@ public class Edge extends AbstractEdge<Edge, BasicBlock> implements EdgeTypes, D
 
 	/**
 	 * Constructor.
+	 *
 	 * @param source source basic block
-	 * @param dest destination basic block
+	 * @param dest   destination basic block
 	 */
 	public Edge(BasicBlock source, BasicBlock dest) {
 		super(source, dest);
@@ -85,6 +86,7 @@ public class Edge extends AbstractEdge<Edge, BasicBlock> implements EdgeTypes, D
 
 	/**
 	 * Return if given edge flag is set.
+	 *
 	 * @param flag the edge flag
 	 * @return true if the flag is set, false otherwise
 	 */
@@ -104,14 +106,16 @@ public class Edge extends AbstractEdge<Edge, BasicBlock> implements EdgeTypes, D
 			return false;
 		Edge other = (Edge) o;
 		return this.getSource() == other.getSource() && this.getTarget() == other.getTarget()
-			&& this.getType() == other.getType();
+		        && this.getType() == other.getType();
 	}
 
 	public int hashCode() {
 		return 2003 * getSource().getLabel() + getTarget().getLabel();
 	}
 
-	/** Compare with other edge. */
+	/**
+	 * Compare with other edge.
+	 */
 	public int compareTo(Edge other) {
 		int cmp = super.compareTo(other);
 		if (cmp != 0)
@@ -119,7 +123,9 @@ public class Edge extends AbstractEdge<Edge, BasicBlock> implements EdgeTypes, D
 		return type - other.type;
 	}
 
-	/** Return a string representation of the edge. */
+	/**
+	 * Return a string representation of the edge.
+	 */
 	public String toString() {
 		BasicBlock source = getSource();
 		BasicBlock target = getTarget();
@@ -162,7 +168,9 @@ public class Edge extends AbstractEdge<Edge, BasicBlock> implements EdgeTypes, D
 		return buf.toString();
 	}
 
-	/** Get string representing given edge type. */
+	/**
+	 * Get string representing given edge type.
+	 */
 	public static String edgeTypeToString(int edgeType) {
 		switch (edgeType) {
 		case FALL_THROUGH_EDGE:
@@ -197,7 +205,9 @@ public class Edge extends AbstractEdge<Edge, BasicBlock> implements EdgeTypes, D
 		throw new IllegalStateException("unknown edge type: " + edgeType);
 	}
 
-	/** Get numeric edge type from string representation. */
+	/**
+	 * Get numeric edge type from string representation.
+	 */
 	public static int stringToEdgeType(String s) {
 		s = s.toUpperCase();
 

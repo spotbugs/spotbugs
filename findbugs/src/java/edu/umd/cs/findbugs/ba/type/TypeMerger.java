@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs.ba.type;
 
 /**
  * Interface for an object that merges types for dataflow analysis.
+ *
  * @author David Hovemeyer
  */
 public interface TypeMerger {

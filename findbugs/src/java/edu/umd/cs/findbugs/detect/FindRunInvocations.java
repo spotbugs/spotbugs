@@ -18,47 +18,51 @@
  */
 
 package edu.umd.cs.findbugs.detect;
+
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.ba.Hierarchy;
-import edu.umd.cs.findbugs.*;
-import org.apache.bcel.classfile.*;
 import edu.umd.cs.findbugs.visitclass.Constants2;
+import org.apache.bcel.classfile.Code;
 
-public class FindRunInvocations extends BytecodeScanningDetector implements   Constants2 {
+public class FindRunInvocations extends BytecodeScanningDetector implements Constants2 {
 
-   private BugReporter bugReporter;
-   private boolean alreadySawStart;
+	private BugReporter bugReporter;
+	private boolean alreadySawStart;
 
-   public FindRunInvocations(BugReporter bugReporter) {
-	this.bugReporter = bugReporter;
+	public FindRunInvocations(BugReporter bugReporter) {
+		this.bugReporter = bugReporter;
 	}
 
 
-   private boolean isThread(String clazz) {
-	  try {
-		return Hierarchy.isSubtype(clazz,"java.lang.Thread");
-	  } catch (ClassNotFoundException e) {
-		bugReporter.reportMissingClass(e);
-		return false;
-	  }
-	}
-   public void visit(Code obj) {
-	alreadySawStart = false;
-	super.visit(obj);
+	private boolean isThread(String clazz) {
+		try {
+			return Hierarchy.isSubtype(clazz, "java.lang.Thread");
+		} catch (ClassNotFoundException e) {
+			bugReporter.reportMissingClass(e);
+			return false;
+		}
 	}
 
-   public void sawOpcode(int seen) {
-	if (alreadySawStart) return;
-	if ((seen == INVOKEVIRTUAL || seen == INVOKEINTERFACE) 
-				&& getSigConstantOperand().equals("()V")
-				&& isThread(getDottedClassConstantOperand())
-				) {
-		if (getNameConstantOperand().equals("start"))
-			alreadySawStart = true;
-		else if (getNameConstantOperand().equals("run"))
-		    bugReporter
-		      .reportBug(new BugInstance("RU_INVOKE_RUN", NORMAL_PRIORITY)
-			.addClassAndMethod(this)
-			.addSourceLine(this));
+	public void visit(Code obj) {
+		alreadySawStart = false;
+		super.visit(obj);
+	}
+
+	public void sawOpcode(int seen) {
+		if (alreadySawStart) return;
+		if ((seen == INVOKEVIRTUAL || seen == INVOKEINTERFACE)
+		        && getSigConstantOperand().equals("()V")
+		        && isThread(getDottedClassConstantOperand())
+		) {
+			if (getNameConstantOperand().equals("start"))
+				alreadySawStart = true;
+			else if (getNameConstantOperand().equals("run"))
+				bugReporter
+				        .reportBug(new BugInstance("RU_INVOKE_RUN", NORMAL_PRIORITY)
+				        .addClassAndMethod(this)
+				        .addSourceLine(this));
 		}
 	}
 }

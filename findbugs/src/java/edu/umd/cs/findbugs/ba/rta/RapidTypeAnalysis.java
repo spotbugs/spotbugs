@@ -19,8 +19,9 @@
 
 package edu.umd.cs.findbugs.ba.rta;
 
-import edu.umd.cs.findbugs.ba.*;
 import java.util.*;
+
+import edu.umd.cs.findbugs.ba.ClassObserver;
 import org.apache.bcel.classfile.JavaClass;
 
 /**

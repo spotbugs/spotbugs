@@ -20,15 +20,17 @@
 package edu.umd.cs.findbugs.ba;
 
 import org.apache.bcel.Constants;
-import org.apache.bcel.generic.*;
+import org.apache.bcel.generic.ObjectType;
+import org.apache.bcel.generic.ReferenceType;
+import org.apache.bcel.generic.Type;
 
 /**
  * A TypeMerger which applies standard Java semantics
  * when merging Types.  Subclasses may override mergeReferenceTypes()
  * in order to implement special typing rules for reference types.
  *
- * @see TypeMerger
  * @author David Hovemeyer
+ * @see TypeMerger
  */
 public class StandardTypeMerger implements TypeMerger, Constants, ExtendedTypes {
 	private RepositoryLookupFailureCallback lookupFailureCallback;
@@ -36,11 +38,12 @@ public class StandardTypeMerger implements TypeMerger, Constants, ExtendedTypes 
 
 	/**
 	 * Constructor.
+	 *
 	 * @param lookupFailureCallback object used to report Repository lookup failures
-	 * @param exceptionSetFactory factory for creating ExceptionSet objects
+	 * @param exceptionSetFactory   factory for creating ExceptionSet objects
 	 */
 	public StandardTypeMerger(RepositoryLookupFailureCallback lookupFailureCallback,
-		ExceptionSetFactory exceptionSetFactory) {
+	                          ExceptionSetFactory exceptionSetFactory) {
 		this.lookupFailureCallback = lookupFailureCallback;
 		this.exceptionSetFactory = exceptionSetFactory;
 	}
@@ -131,7 +134,7 @@ public class StandardTypeMerger implements TypeMerger, Constants, ExtendedTypes 
 			// We want to preserve the ExceptionSets associated,
 			// in order to track the exact set of exceptions
 			if (isObjectType(aRef.getType()) && isObjectType(bRef.getType()) &&
-				(aRef.getType() == T_EXCEPTION || bRef.getType() == T_EXCEPTION)) {
+			        (aRef.getType() == T_EXCEPTION || bRef.getType() == T_EXCEPTION)) {
 				ExceptionSet union = exceptionSetFactory.createExceptionSet();
 
 				updateExceptionSet(union, (ObjectType) aRef);

@@ -19,12 +19,12 @@
 
 package edu.umd.cs.findbugs.ba;
 
-import java.util.*;
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
 
-import org.apache.bcel.*;
-import org.apache.bcel.classfile.*;
-import org.apache.bcel.generic.*;
+import org.apache.bcel.Repository;
+import org.apache.bcel.classfile.ClassParser;
+import org.apache.bcel.classfile.JavaClass;
 
 /**
  * A special version of ClassParser that automatically enters
@@ -37,8 +37,9 @@ public class RepositoryClassParser {
 
 	/**
 	 * Constructor.
+	 *
 	 * @param inputStream the input stream from which to read the class file
-	 * @param fileName filename of the class file
+	 * @param fileName    filename of the class file
 	 */
 	public RepositoryClassParser(InputStream inputStream, String fileName) {
 		classParser = new ClassParser(inputStream, fileName);
@@ -46,6 +47,7 @@ public class RepositoryClassParser {
 
 	/**
 	 * Constructor.
+	 *
 	 * @param fileName name of the class file
 	 * @throws IOException if the file cannot be read
 	 */
@@ -55,7 +57,8 @@ public class RepositoryClassParser {
 
 	/**
 	 * Constructor.
-	 * @param zipFile name of a zip file containing the class
+	 *
+	 * @param zipFile  name of a zip file containing the class
 	 * @param fileName name of the zip entry within the class
 	 * @throws IOException if the zip entry cannot be read
 	 */
@@ -66,6 +69,7 @@ public class RepositoryClassParser {
 	/**
 	 * Parse the class file into a JavaClass object.
 	 * If succesful, the new JavaClass is entered into the Repository.
+	 *
 	 * @return the parsed JavaClass
 	 * @throws IOException if the class cannot be parsed
 	 */

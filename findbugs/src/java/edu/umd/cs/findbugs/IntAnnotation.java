@@ -19,15 +19,15 @@
 
 package edu.umd.cs.findbugs;
 
+import org.dom4j.Branch;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
-import org.dom4j.Branch;
 
 /**
  * Bug annotation class for integer values.
  *
- * @see BugAnnotation
  * @author David Hovemeyer
+ * @see BugAnnotation
  */
 public class IntAnnotation implements BugAnnotation {
 	private static final String DEFAULT_ROLE = "INT_DEFAULT";
@@ -37,6 +37,7 @@ public class IntAnnotation implements BugAnnotation {
 
 	/**
 	 * Constructor.
+	 *
 	 * @param value the integer value
 	 */
 	public IntAnnotation(int value) {
@@ -46,6 +47,7 @@ public class IntAnnotation implements BugAnnotation {
 
 	/**
 	 * Get the integer value.
+	 *
 	 * @return the integer value
 	 */
 	public int getValue() {
@@ -68,7 +70,9 @@ public class IntAnnotation implements BugAnnotation {
 		return description;
 	}
 
-	public int hashCode() { return value; }
+	public int hashCode() {
+		return value;
+	}
 
 	public boolean equals(Object o) {
 		if (!(o instanceof IntAnnotation))
@@ -123,7 +127,7 @@ public class IntAnnotation implements BugAnnotation {
 
 	public Element toElement(Branch parent) {
 		Element element = parent.addElement(ELEMENT_NAME)
-			.addAttribute("value", String.valueOf(value));
+		        .addAttribute("value", String.valueOf(value));
 
 		String role = getDescription();
 		if (!role.equals(DEFAULT_ROLE))

@@ -19,11 +19,12 @@
 
 package edu.umd.cs.findbugs;
 
-import org.dom4j.Element;
 import org.dom4j.DocumentException;
+import org.dom4j.Element;
 
 public interface XMLTranslator {
 	public String getElementName();
+
 	public XMLConvertible fromElement(Element element) throws DocumentException;
 }
 

@@ -20,12 +20,20 @@
 package edu.umd.cs.findbugs.detect;
 
 import java.util.*;
-import org.apache.bcel.Constants;
-import org.apache.bcel.classfile.*;
-import org.apache.bcel.generic.*;
-import edu.umd.cs.findbugs.*;
-import edu.umd.cs.findbugs.ba.*;
+
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.ByteCodePatternDetector;
+import edu.umd.cs.findbugs.JavaVersion;
+import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.bcp.*;
+import org.apache.bcel.Constants;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.InvokeInstruction;
+import org.apache.bcel.generic.MethodGen;
 
 /**
  * This detector looks for places where the return value of a method
@@ -49,30 +57,30 @@ public class BCPMethodReturnCheck extends ByteCodePatternDetector {
 		ArrayList<PatternElement> list = new ArrayList<PatternElement>();
 
 		// Standard return check methods
-		list.add(new Invoke("java.lang.String", "/.*", 
-					"/\\(.*\\)Ljava/lang/String;", 
-					Invoke.INSTANCE, bugReporter));
-		list.add(new Invoke("java.lang.StringBuffer", "toString", 
-					"()Ljava/lang/String;", 
-					Invoke.INSTANCE, 
-					bugReporter));
-		list.add(new Invoke("+java.lang.Thread", "<init>", 
-					"/.*", 
-					Invoke.CONSTRUCTOR, 
-					bugReporter));
-		list.add(new Invoke("+java.lang.Throwable", "<init>", 
-					"/.*", 
-					Invoke.CONSTRUCTOR, 
-					bugReporter));
-		list.add(new Invoke("java.security.MessageDigest", 
-					"digest", "([B)[B", 
-					Invoke.INSTANCE, bugReporter));
-		list.add(new Invoke("+java.net.InetAddress", "/.*", "/.*", 
-					Invoke.INSTANCE, bugReporter));
-		list.add(new Invoke("java.math.BigDecimal", "/.*", "/.*", 
-					Invoke.INSTANCE, bugReporter));
-		list.add(new Invoke("java.math.BigInteger", "/.*", "/.*", 
-					Invoke.INSTANCE, bugReporter));
+		list.add(new Invoke("java.lang.String", "/.*",
+		        "/\\(.*\\)Ljava/lang/String;",
+		        Invoke.INSTANCE, bugReporter));
+		list.add(new Invoke("java.lang.StringBuffer", "toString",
+		        "()Ljava/lang/String;",
+		        Invoke.INSTANCE,
+		        bugReporter));
+		list.add(new Invoke("+java.lang.Thread", "<init>",
+		        "/.*",
+		        Invoke.CONSTRUCTOR,
+		        bugReporter));
+		list.add(new Invoke("+java.lang.Throwable", "<init>",
+		        "/.*",
+		        Invoke.CONSTRUCTOR,
+		        bugReporter));
+		list.add(new Invoke("java.security.MessageDigest",
+		        "digest", "([B)[B",
+		        Invoke.INSTANCE, bugReporter));
+		list.add(new Invoke("+java.net.InetAddress", "/.*", "/.*",
+		        Invoke.INSTANCE, bugReporter));
+		list.add(new Invoke("java.math.BigDecimal", "/.*", "/.*",
+		        Invoke.INSTANCE, bugReporter));
+		list.add(new Invoke("java.math.BigInteger", "/.*", "/.*",
+		        Invoke.INSTANCE, bugReporter));
 		list.add(new Invoke("+java.util.Enumeration", "hasMoreElements", "()Z", Invoke.INSTANCE, bugReporter));
 		list.add(new Invoke("+java.util.Iterator", "hasNext", "()Z", Invoke.INSTANCE, bugReporter));
 		list.add(new Invoke("java.io.File", "createNewFile", "()Z", Invoke.INSTANCE, bugReporter));
@@ -84,84 +92,85 @@ public class BCPMethodReturnCheck extends ByteCodePatternDetector {
 		*/
 
 		if (CHECK_ALL ||
-			JavaVersion.getRuntimeVersion().isSameOrNewerThan(JavaVersion.JAVA_1_5)) {
+		        JavaVersion.getRuntimeVersion().isSameOrNewerThan(JavaVersion.JAVA_1_5)) {
 			// Add JDK 1.5 and later return check functions
-			list.add(new Invoke("+java.util.concurrent.locks.ReadWriteLock", 
-					"readLock", 
-					"()Ljava/util/concurrent/locks/Lock;", 
-					Invoke.INSTANCE, 
-					bugReporter));
-			list.add(new Invoke("+java.util.concurrent.locks.ReadWriteLock", 
-					"writeLock", 
-					"()Ljava/util/concurrent/locks/Lock;", 
-					Invoke.INSTANCE, 
-					bugReporter));
-			list.add(new Invoke("+java.util.concurrent.locks.Condition", 
-					"await", 
-					"(JLjava/util/concurrent/TimeUnit;)Z", 
-					Invoke.INSTANCE, 
-					bugReporter));
-			list.add(new Invoke("+java.util.concurrent.locks.Condition", 
-					"awaitUtil", 
-					"(Ljava/util/Date;)Z", 
-					Invoke.INSTANCE, 
-					bugReporter));
-			list.add(new Invoke("+java.util.concurrent.locks.Condition", 
-					"awaitNanos", 
-					"(J)Z", 
-					Invoke.INSTANCE, 
-					bugReporter));
-			list.add(new Invoke("+java.util.concurrent.Semaphore", 
-					"tryAcquire", 
-					"(JLjava/util/concurrent/TimeUnit;)Z", 
-					Invoke.INSTANCE, 
-					bugReporter));
-			list.add(new Invoke("+java.util.concurrent.Semaphore", 
-					"tryAcquire", 
-					"()Z", 
-					Invoke.INSTANCE, 
-					bugReporter));
-			list.add(new Invoke("+java.util.concurrent.locks.Lock", 
-					"tryLock", 
-					"(JLjava/util/concurrent/TimeUnit;)Z", 
-					Invoke.INSTANCE, 
-					bugReporter));
-			list.add(new Invoke("+java.util.concurrent.locks.Lock", 
-					"newCondition", 
-					"()Ljava/util/concurrent/locks/Condition;", 
-					Invoke.INSTANCE, 
-					bugReporter));
-			list.add(new Invoke("+java.util.concurrent.locks.Lock", 
-					"tryLock", 
-					"()Z", 
-					Invoke.INSTANCE, 
-					bugReporter));
-			list.add(new Invoke("+java.util.Queue", 
-					"offer", 
-					"(Ljava/lang/Object;)Z", 
-					Invoke.INSTANCE, 
-					bugReporter));
-			list.add(new Invoke("+java.util.concurrent.BlockingQueue", 
-					"offer", 
-					"(Ljava/lang/Object;JLjava/util/concurrent/TimeUnit;)Z",
-					Invoke.INSTANCE, 
-					bugReporter));
-			list.add(new Invoke("+java.util.concurrent.BlockingQueue", 
-					"poll", 
-					"(JLjava/util/concurrent/TimeUnit;)Ljava/lang/Object;", 
-					Invoke.INSTANCE, 
-					bugReporter));
-			list.add(new Invoke("+java.util.Queue", 
-					"poll", 
-					"()Ljava/lang/Object;", 
-					Invoke.INSTANCE, 
-					bugReporter));
+			list.add(new Invoke("+java.util.concurrent.locks.ReadWriteLock",
+			        "readLock",
+			        "()Ljava/util/concurrent/locks/Lock;",
+			        Invoke.INSTANCE,
+			        bugReporter));
+			list.add(new Invoke("+java.util.concurrent.locks.ReadWriteLock",
+			        "writeLock",
+			        "()Ljava/util/concurrent/locks/Lock;",
+			        Invoke.INSTANCE,
+			        bugReporter));
+			list.add(new Invoke("+java.util.concurrent.locks.Condition",
+			        "await",
+			        "(JLjava/util/concurrent/TimeUnit;)Z",
+			        Invoke.INSTANCE,
+			        bugReporter));
+			list.add(new Invoke("+java.util.concurrent.locks.Condition",
+			        "awaitUtil",
+			        "(Ljava/util/Date;)Z",
+			        Invoke.INSTANCE,
+			        bugReporter));
+			list.add(new Invoke("+java.util.concurrent.locks.Condition",
+			        "awaitNanos",
+			        "(J)Z",
+			        Invoke.INSTANCE,
+			        bugReporter));
+			list.add(new Invoke("+java.util.concurrent.Semaphore",
+			        "tryAcquire",
+			        "(JLjava/util/concurrent/TimeUnit;)Z",
+			        Invoke.INSTANCE,
+			        bugReporter));
+			list.add(new Invoke("+java.util.concurrent.Semaphore",
+			        "tryAcquire",
+			        "()Z",
+			        Invoke.INSTANCE,
+			        bugReporter));
+			list.add(new Invoke("+java.util.concurrent.locks.Lock",
+			        "tryLock",
+			        "(JLjava/util/concurrent/TimeUnit;)Z",
+			        Invoke.INSTANCE,
+			        bugReporter));
+			list.add(new Invoke("+java.util.concurrent.locks.Lock",
+			        "newCondition",
+			        "()Ljava/util/concurrent/locks/Condition;",
+			        Invoke.INSTANCE,
+			        bugReporter));
+			list.add(new Invoke("+java.util.concurrent.locks.Lock",
+			        "tryLock",
+			        "()Z",
+			        Invoke.INSTANCE,
+			        bugReporter));
+			list.add(new Invoke("+java.util.Queue",
+			        "offer",
+			        "(Ljava/lang/Object;)Z",
+			        Invoke.INSTANCE,
+			        bugReporter));
+			list.add(new Invoke("+java.util.concurrent.BlockingQueue",
+			        "offer",
+			        "(Ljava/lang/Object;JLjava/util/concurrent/TimeUnit;)Z",
+			        Invoke.INSTANCE,
+			        bugReporter));
+			list.add(new Invoke("+java.util.concurrent.BlockingQueue",
+			        "poll",
+			        "(JLjava/util/concurrent/TimeUnit;)Ljava/lang/Object;",
+			        Invoke.INSTANCE,
+			        bugReporter));
+			list.add(new Invoke("+java.util.Queue",
+			        "poll",
+			        "()Ljava/lang/Object;",
+			        Invoke.INSTANCE,
+			        bugReporter));
 		}
 		return list.toArray(new PatternElement[list.size()]);
 	}
 
 	/**
 	 * Constructor.
+	 *
 	 * @param bugReporter the BugReporter to report bug instances with
 	 */
 	public BCPMethodReturnCheck(BugReporter bugReporter) {
@@ -171,11 +180,13 @@ public class BCPMethodReturnCheck extends ByteCodePatternDetector {
 		// we're looking for.  We want to match the invocation of certain methods
 		// followed by a POP or POP2 instruction.
 		this.pattern = new ByteCodePattern()
-			.add(new MatchAny(createPatternElementList(bugReporter)).label("call").setAllowTrailingEdges(false))
-			.add(new MatchAny(new PatternElement[] {new Opcode(Constants.POP), new Opcode(Constants.POP2)}));
+		        .add(new MatchAny(createPatternElementList(bugReporter)).label("call").setAllowTrailingEdges(false))
+		        .add(new MatchAny(new PatternElement[]{new Opcode(Constants.POP), new Opcode(Constants.POP2)}));
 	}
 
-	public ByteCodePattern getPattern() { return pattern; }
+	public ByteCodePattern getPattern() {
+		return pattern;
+	}
 
 	public boolean prescreen(Method method, ClassContext classContext) {
 		// Pre-screen for methods with POP or POP2 bytecodes.
@@ -195,7 +206,7 @@ public class BCPMethodReturnCheck extends ByteCodePatternDetector {
 		ConstantPoolGen cp = methodGen.getConstantPool();
 		String calledMethodName = inv.getMethodName(cp);
 		if (calledMethodName.startsWith("access$")
-		    || calledMethodName.startsWith("access+"))
+		        || calledMethodName.startsWith("access+"))
 			return;
 
 		/*
@@ -215,30 +226,30 @@ public class BCPMethodReturnCheck extends ByteCodePatternDetector {
 		if (calledMethodName.equals("createNewFile"))
 			priority = LOW_PRIORITY;
 		else if (calledMethodClass.startsWith("java.lang")
-			|| calledMethodClass.endsWith("Error")
-			|| calledMethodClass.endsWith("Exception"))
+		        || calledMethodClass.endsWith("Error")
+		        || calledMethodClass.endsWith("Exception"))
 			priority = HIGH_PRIORITY;
 		String calledPackage = extractPackageName(calledMethodClass);
 		String callingPackage = extractPackageName(javaClass.getClassName());
 		if (calledPackage.length() > 0
-			&& callingPackage.length() > 0
-			&& (calledPackage.startsWith(callingPackage)
-			    || callingPackage.startsWith(calledPackage)))
+		        && callingPackage.length() > 0
+		        && (calledPackage.startsWith(callingPackage)
+		        || callingPackage.startsWith(calledPackage)))
 			priority++;
 		// System.out.println("priority: " + priority);
 				
-		bugReporter.reportBug(new BugInstance("RV_RETURN_VALUE_IGNORED", 
-			priority
-			)
-			.addClassAndMethod(methodGen, sourceFile)
-			.addCalledMethod(methodGen, inv)
-			.addSourceLine(methodGen, sourceFile, call));
+		bugReporter.reportBug(new BugInstance("RV_RETURN_VALUE_IGNORED",
+		        priority)
+		        .addClassAndMethod(methodGen, sourceFile)
+		        .addCalledMethod(methodGen, inv)
+		        .addSourceLine(methodGen, sourceFile, call));
 	}
+
 	public static String extractPackageName(String className) {
 		int i = className.lastIndexOf('.');
 		if (i == -1) return "";
-		return className.substring(0,i);
-		}
+		return className.substring(0, i);
+	}
 
 }
 

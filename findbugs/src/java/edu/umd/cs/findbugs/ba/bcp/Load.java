@@ -19,21 +19,24 @@
 
 package edu.umd.cs.findbugs.ba.bcp;
 
+import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
+import edu.umd.cs.findbugs.ba.ValueNumber;
+import edu.umd.cs.findbugs.ba.ValueNumberFrame;
 import org.apache.bcel.generic.*;
-import edu.umd.cs.findbugs.ba.*;
 
 /**
  * A PatternElement representing a load from a field.
  * Variables represent the field and the result of the load.
  *
- * @see PatternElement
  * @author David Hovemeyer
+ * @see PatternElement
  */
 public class Load extends FieldAccess {
 
 	/**
 	 * Constructor.
-	 * @param fieldVarName the name of the field variable
+	 *
+	 * @param fieldVarName  the name of the field variable
 	 * @param resultVarName the name of the result variable
 	 */
 	public Load(String fieldVarName, String resultVarName) {
@@ -41,7 +44,7 @@ public class Load extends FieldAccess {
 	}
 
 	public MatchResult match(InstructionHandle handle, ConstantPoolGen cpg,
-		ValueNumberFrame before, ValueNumberFrame after, BindingSet bindingSet) throws DataflowAnalysisException {
+	                         ValueNumberFrame before, ValueNumberFrame after, BindingSet bindingSet) throws DataflowAnalysisException {
 
 		Variable field;
 		Instruction ins = handle.getInstruction();
