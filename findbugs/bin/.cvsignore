@@ -7,3 +7,5 @@ findbugs
 graphIS2FalsePositives
 mergeResults
 unionResults
+convertToARFF
+xpathFind
