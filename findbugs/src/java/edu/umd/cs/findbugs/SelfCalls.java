@@ -27,40 +27,70 @@ import org.apache.bcel.generic.*;
 
 import edu.umd.cs.daveho.ba.*;
 
+/**
+ * Build a call graph of the self calls in a class.
+ */
 public class SelfCalls {
 	private static final boolean DEBUG = Boolean.getBoolean("selfcalls.debug");
 
 	private ClassContext classContext;
-	private HashMap<CallSite, Method> selfCallToMethodMap = new HashMap<CallSite, Method>();
-	private IdentityHashMap<Method, Set<CallSite>> methodToSelfCallMap = new IdentityHashMap<Method, Set<CallSite>>();
+	private CallGraph callGraph;
+	private IdentityHashMap<Method, CallGraphNode> methodToNodeMap;
+	private HashSet<Method> calledMethodSet;
 	private boolean hasSynchronization;
 
+	/**
+	 * Constructor.
+	 * @param classContext the ClassContext for the class
+	 */
 	public SelfCalls(ClassContext classContext) {
 		this.classContext = classContext;
-		hasSynchronization = false;
+		this.callGraph = new CallGraph();
+		this.methodToNodeMap = new IdentityHashMap<Method, CallGraphNode>();
+		this.calledMethodSet = new HashSet<Method>();
+		this.hasSynchronization = false;
 	}
 
+	/**
+	 * Find the self calls.
+	 */
 	public void execute() throws CFGBuilderException {
 		JavaClass jclass = classContext.getJavaClass();
 		Method[] methods = jclass.getMethods();
+
+		// Add call graph nodes for all methods
 		for (int i = 0; i < methods.length; ++i) {
 			Method method = methods[i];
-			if (method.isAbstract() || method.isNative())
-				continue;
 
+			CallGraphNode node = callGraph.addNode(method);
+			methodToNodeMap.put(method, node);
+		}
+
+		// Scan methods for self calls
+		for (int i = 0; i < methods.length; ++i) {
+			Method method = methods[i];
 			MethodGen mg = classContext.getMethodGen(method);
 			if (mg == null)
 				continue;
-			CFG cfg = classContext.getCFG(method);
 
-			scan(method, mg, cfg);
+			scan(methodToNodeMap.get(method));
 		}
 
-		if (DEBUG) System.out.println("Found " + selfCallToMethodMap.size() + " self calls");
+		if (DEBUG) System.out.println("Found " + callGraph.getNumEdges() + " self calls");
 	}
 
+	/**
+	 * Get the self call graph for the class.
+	 */
+	public CallGraph getCallGraph() {
+		return callGraph;
+	}
+
+	/**
+	 * Get an Iterator over self-called methods.
+	 */
 	public Iterator<Method> calledMethodIterator() {
-		return methodToSelfCallMap.keySet().iterator();
+		return calledMethodSet.iterator();
 	}
 
 	/**
@@ -75,19 +105,28 @@ public class SelfCalls {
 		return true;
 	}
 
-	public Set<CallSite> getCallSites(Method called) {
-		Set<CallSite> callSiteSet = methodToSelfCallMap.get(called);
-		if (callSiteSet == null) {
-			callSiteSet = new HashSet<CallSite>();
-			methodToSelfCallMap.put(called, callSiteSet);
-		}
-		return callSiteSet;
+	/**
+	 * Get an Iterator over all self call sites.
+	 */
+	public Iterator<CallSite> callSiteIterator() {
+		return new Iterator<CallSite>() {
+			private Iterator<CallGraphEdge> iter = callGraph.edgeIterator();
+			public boolean hasNext() { return iter.hasNext(); }
+			public CallSite next() { return iter.next().getCallSite(); }
+			public void remove() { iter.remove(); }
+		};
 	}
 
-	/** Does this class contain any explicitl synchronization? */
+	/** Does this class contain any explicit synchronization? */
 	public boolean hasSynchronization() { return hasSynchronization; }
 
-	private void scan(Method method, MethodGen mg, CFG cfg) {
+	/**
+	 * Scan a method for self call sites.
+	 * @param node the CallGraphNode for the method to be scanned
+	 */
+	private void scan(CallGraphNode node) throws CFGBuilderException {
+		Method method = node.getMethod();
+		CFG cfg = classContext.getCFG(method);
 
 		if (method.isSynchronized())
 			hasSynchronization = true;
@@ -102,16 +141,14 @@ public class SelfCalls {
 				Instruction ins = handle.getInstruction();
 				if (ins instanceof InvokeInstruction) {
 					InvokeInstruction inv = (InvokeInstruction) ins;
-					Method called = isSelfCall(inv, mg);
+					Method called = isSelfCall(inv);
 					if (called != null) {
+						// Add edge to call graph
 						CallSite callSite = new CallSite(method, block, handle);
+						callGraph.addEdge(node, methodToNodeMap.get(called), callSite);
 
-						// Map call site to self-called method
-						selfCallToMethodMap.put(callSite, called);
-
-						// Map method to call site
-						Set<CallSite> callSiteSet = getCallSites(called);
-						callSiteSet.add(callSite);
+						// Add to called method set
+						calledMethodSet.add(called);
 					}
 				} else if (ins instanceof MONITORENTER || ins instanceof MONITOREXIT) {
 					hasSynchronization = true;
@@ -120,8 +157,11 @@ public class SelfCalls {
 		}
 	}
 
-	private Method isSelfCall(InvokeInstruction inv, MethodGen mg) {
-		ConstantPoolGen cpg = mg.getConstantPool();
+	/**
+ 	 * Is the given instruction a self-call?
+	 */
+	private Method isSelfCall(InvokeInstruction inv) {
+		ConstantPoolGen cpg = classContext.getConstantPoolGen();
 		JavaClass jclass = classContext.getJavaClass();
 
 		String calledClassName = inv.getClassName(cpg);
@@ -150,7 +190,6 @@ public class SelfCalls {
 				signature.equals(calledMethodSignature) &&
 				isStatic == isStaticCall) {
 				// This method looks like a match.
-				//MethodGen called = classContext.getMethodGen(method);
 				return wantCallsFor(method) ? method : null;
 			}
 		}

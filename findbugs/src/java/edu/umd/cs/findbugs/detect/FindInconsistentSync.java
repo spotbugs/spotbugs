@@ -164,11 +164,10 @@ public class FindInconsistentSync implements Detector {
 			// than unlocked.
 			for (Iterator<Method> i = selfCalls.calledMethodIterator(); i.hasNext(); ) {
 				Method called = i.next();
-				Set<CallSite> callSiteSet = selfCalls.getCallSites(called);
 				boolean allSitesLocked = true;
 
 			siteLoop:
-				for (Iterator<CallSite> j = callSiteSet.iterator(); j.hasNext(); ) {
+				for (Iterator<CallSite> j = selfCalls.callSiteIterator(); j.hasNext(); ) {
 					CallSite callSite = j.next();
 					Method method = callSite.getMethod();
 					BasicBlock basicBlock = callSite.getBasicBlock();
