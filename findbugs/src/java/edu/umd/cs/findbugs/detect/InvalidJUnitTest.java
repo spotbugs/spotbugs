@@ -25,6 +25,8 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.visitclass.Constants2;
+import edu.umd.cs.findbugs.ba.ClassContext;
+import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
@@ -48,7 +50,7 @@ public class InvalidJUnitTest extends BytecodeScanningDetector implements Consta
 		this.bugReporter = bugReporter;
 	}
 
-	public void visit(JavaClass obj) {
+	public void visitClassContext(ClassContext classContext) {
 		try {
 			setUpAnnotation = null;
 			tearDownAnnotation = null;
@@ -56,18 +58,19 @@ public class InvalidJUnitTest extends BytecodeScanningDetector implements Consta
 			validMethod = false;
 			sawSetUp = false;
 			sawTearDown = false;
-			JavaClass[] superClasses = obj.getSuperClasses();
+			JavaClass[] superClasses = classContext.getJavaClass().getSuperClasses();
 			for (int i = 0; i < superClasses.length; i++) {
 				JavaClass sc = superClasses[i];
 				if (sc.getClassName().equals("junit.framework.TestCase")) {
 					validClass = true;
-					super.visit(obj);
+					classContext.getJavaClass().accept(this);
 					break;
 				}
 			}
 		} catch (ClassNotFoundException cnfe) {
 			bugReporter.reportMissingClass(cnfe);
 		}
+			
 	}
 
 	public void visitAfter(JavaClass obj) {
@@ -103,13 +106,13 @@ public class InvalidJUnitTest extends BytecodeScanningDetector implements Consta
 			        .addClass(this)
 			        .addMethod(MethodAnnotation.fromVisitedMethod(this)));
 	}
+	
+	public void visit(Code obj) {
+		if (validClass && validMethod)
+			super.visit(obj);
+	}
 
 	public void sawOpcode(int seen) {
-		if (!validClass || !validMethod)
-			return;
-
-		// System.out.println( OPCODE_NAMES[seen] );
-
 		switch (state) {
 		case SEEN_NOTHING:
 			if (seen == ALOAD_0)
