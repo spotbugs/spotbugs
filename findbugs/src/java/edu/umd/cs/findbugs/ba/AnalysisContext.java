@@ -64,6 +64,11 @@ public class AnalysisContext implements AnalysisFeatures {
 		return instance;
 	}
 
+	/** Clear old ClassContexts out of the cache. */
+	public void clearCache() {
+		classContextCache.clear();
+	}
+
 	/** Set the repository lookup failure callback for created ClassContexts. */
 	public void setLookupFailureCallback(RepositoryLookupFailureCallback lookupFailureCallback) {
 		this.lookupFailureCallback = lookupFailureCallback;
