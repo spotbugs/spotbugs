@@ -40,6 +40,7 @@ import java.util.*;
 
 public class FindInconsistentSync2 implements Detector {
 	private static final boolean DEBUG = Boolean.getBoolean("fis.debug");
+	private static final boolean SYNC_ACCESS = Boolean.getBoolean("fis.syncAccess");
 
 	/* ----------------------------------------------------------------------
 	 * Helper classes
@@ -63,7 +64,8 @@ public class FindInconsistentSync2 implements Detector {
 	private static class FieldStats {
 		private int[] countList = new int[4];
 		private int numLocalLocks = 0;
-		public Set<SourceLineAnnotation> unsyncAccessList = new HashSet<SourceLineAnnotation>();
+		private LinkedList<SourceLineAnnotation> unsyncAccessList = new LinkedList<SourceLineAnnotation>();
+		private LinkedList<SourceLineAnnotation> syncAccessList = new LinkedList<SourceLineAnnotation>();
 
 		public void addAccess(int kind) {
 			countList[kind]++;
@@ -81,17 +83,24 @@ public class FindInconsistentSync2 implements Detector {
 			return numLocalLocks;
 		}
 
-		public void addUnsyncAccess(ClassContext classContext, Method method, InstructionHandle handle) {
+		public void addAccess(ClassContext classContext, Method method, InstructionHandle handle, boolean isLocked) {
+			if (!SYNC_ACCESS && isLocked)
+				return;
+
 			JavaClass javaClass = classContext.getJavaClass();
 			String sourceFile = javaClass.getSourceFileName();
 			MethodGen methodGen = classContext.getMethodGen(method);
 			SourceLineAnnotation accessSourceLine = SourceLineAnnotation.fromVisitedInstruction(methodGen, sourceFile, handle);
 			if (accessSourceLine != null)
-				unsyncAccessList.add(accessSourceLine);
+				(isLocked ? syncAccessList : unsyncAccessList).add(accessSourceLine);
 		}
 
 		public Iterator<SourceLineAnnotation> unsyncAccessIterator() {
 			return unsyncAccessList.iterator();
+		}
+
+		public Iterator<SourceLineAnnotation> syncAccessIterator() {
+			return syncAccessList.iterator();
 		}
 	}
 
@@ -187,6 +196,15 @@ public class FindInconsistentSync2 implements Detector {
 				bugInstance.addSourceLine(accessSourceLine).describe("SOURCE_LINE_UNSYNC_ACCESS");
 			}
 
+			if (SYNC_ACCESS) {
+				// Add source line for synchronized accesses;
+				// useful for figuring out what the detector is doing
+				for (Iterator<SourceLineAnnotation> j = stats.syncAccessIterator(); j.hasNext(); ) {
+					SourceLineAnnotation accessSourceLine = j.next();
+					bugInstance.addSourceLine(accessSourceLine).describe("SOURCE_LINE_SYNC_ACCESS");
+				}
+			}
+
 			bugReporter.reportBug(bugInstance);
 		}
 	}
@@ -244,10 +262,9 @@ public class FindInconsistentSync2 implements Detector {
 						}
 					}
 
-					if (xfield != null) {
-						// We only care about ordinary mutable nonpublic instance fields.
-						if (xfield.isStatic() || xfield.isPublic() || xfield.isVolatile() || xfield.isFinal())
-							return;
+					// We only care about mutable nonvolatile nonpublic instance fields.
+					if (xfield != null &&
+						!(xfield.isStatic() || xfield.isPublic() || xfield.isVolatile() || xfield.isFinal())) {
 
 						ValueNumberFrame frame = vnaDataflow.getFactAtLocation(location);
 						ValueNumber thisValue = !method.isStatic() ? vnaDataflow.getAnalysis().getThisValue() : null;
@@ -277,8 +294,7 @@ public class FindInconsistentSync2 implements Detector {
 						if (isLocked && isLocal)
 							stats.addLocalLock();
 				
-						if (!isLocked)
-							stats.addUnsyncAccess(classContext, method, handle);
+						stats.addAccess(classContext, method, handle, isLocked);
 					}
 					// FIXME: should we do something for static fields?
 				} catch (ClassNotFoundException e) {
