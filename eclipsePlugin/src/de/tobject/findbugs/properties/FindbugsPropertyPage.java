@@ -205,7 +205,13 @@ public class FindbugsPropertyPage extends PropertyPage {
 		}
 		
 		// Enable only those detectors that are enabled by default
-		// TODO: implement this
+		TableItem[] itemList =
+			availableFactoriesTableViewer.getTable().getItems();
+		for (int i = 0; i < itemList.length; i++) {
+			TableItem item = itemList[i];
+			DetectorFactory factory = (DetectorFactory) item.getData();
+			item.setChecked(factory.isDefaultEnabled());
+		}
 	}
 
 	/**
