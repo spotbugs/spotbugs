@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs;
 
 import java.io.*;
 import java.util.*;
+import java.util.jar.*;
 import java.util.zip.*;
 import edu.umd.cs.pugh.io.IO;
 import edu.umd.cs.pugh.visitclass.Constants2;
@@ -63,6 +64,13 @@ public class FindBugs implements Constants2, ExitCodes
 	 * Did this class producer scan any Java source files?
 	 */
 	public boolean containsSourceFiles();
+
+	/**
+	 * Add any aux classpath entries in the resource
+	 * to given list.
+	 * @param list the list of aux classpath entries
+	 */
+	public void addAuxClasspathEntries(List<String> list);
   }
 
   /**
@@ -99,6 +107,9 @@ public class FindBugs implements Constants2, ExitCodes
 	public boolean containsSourceFiles() {
 		return false;
 	}
+
+	public void addAuxClasspathEntries(List<String> list) {
+	}
   }
 
   /**
@@ -108,6 +119,7 @@ public class FindBugs implements Constants2, ExitCodes
    */
   private static class ZipClassProducer implements ClassProducer {
 	private String fileName;
+	private boolean isJar;
 	private String nestedFileName;
 	private ZipFile zipFile;
 	private Enumeration entries;
@@ -128,7 +140,8 @@ public class FindBugs implements Constants2, ExitCodes
 	 */
 	public ZipClassProducer(String fileName) throws IOException {
 		this.fileName = fileName;
-		this.zipFile = new ZipFile(fileName);
+		this.isJar = fileName.endsWith(".jar");
+		this.zipFile = isJar ? (ZipFile)new JarFile(fileName) : new ZipFile(fileName);
 		this.entries = zipFile.entries();
 		this.zipStream = null;
 		this.nestedFileName = null;
@@ -205,6 +218,10 @@ public class FindBugs implements Constants2, ExitCodes
 	public boolean containsSourceFiles() {
 		return containsSourceFiles;
 	}
+
+	public void addAuxClasspathEntries(List<String> list) {
+		// TODO: get them from the manifest
+	}
   }
 
   /**
@@ -248,6 +265,9 @@ public class FindBugs implements Constants2, ExitCodes
 
 	public boolean containsSourceFiles() {
 		return containsSourceFiles;
+	}
+
+	public void addAuxClasspathEntries(List<String> list) {
 	}
   }
 
@@ -398,24 +418,30 @@ public class FindBugs implements Constants2, ExitCodes
 	if (detectors == null)
 		createDetectors();
 
+	// Clear repository and analysis context cache of all class files
 	clearRepository();
 
+	// Scan all jar files and directories,
+	// making a list of all classes encountered.
+	// We also keep track of all resources referenced by
+	// Class-Path entries in the manifests of scanned jar
+	// files, in order to add them to the auxiliary classpath
+	// when the analysis is performed.
 	String[] argv = project.getJarFileArray();
-
 	progressCallback.reportNumberOfArchives(argv.length);
-
 	List<String> repositoryClassList = new LinkedList<String>();
+	List<String> manifestClassPathEntryList = new LinkedList<String>();
+	for (int i = 0; i < argv.length; i++)
+		addFileToRepository(argv[i], repositoryClassList, manifestClassPathEntryList);
 
-	for (int i = 0; i < argv.length; i++) {
-		addFileToRepository(argv[i], repositoryClassList);
-		}
-
-	progressCallback.startAnalysis(repositoryClassList.size());
+	// Set the classpath to be used for class lookups.
+	setClasspath(manifestClassPathEntryList);
 
 	// Examine all classes for bugs.
 	// Don't examine the same class more than once.
 	// (The user might specify two jar files that contain
 	// the same class.)
+	progressCallback.startAnalysis(repositoryClassList.size());
 	Set<String> examinedClassSet = new HashSet<String>();
 	for (Iterator<String> i = repositoryClassList.iterator(); i.hasNext(); ) {
 		String className = i.next();
@@ -481,7 +507,7 @@ public class FindBugs implements Constants2, ExitCodes
    * ---------------------------------------------------------------------- */
 
   /**
-   * Create Detectors for each DetectorFactory which is enabled.
+   * Create Detectors for each enabled DetectorFactory.
    * This will populate the detectors array.
    */
   private void createDetectors() {
@@ -499,8 +525,9 @@ public class FindBugs implements Constants2, ExitCodes
   }
 
   /**
-   * Clear the Repository and update it to reflect the classpath
-   * specified by the current project.
+   * Clear the Repository and AnalysisContext cache.
+   * This will ensure that no stale classfiles are left over
+   * from a previous execution.
    */
   private void clearRepository() {
 	// Purge repository of previous contents
@@ -508,13 +535,22 @@ public class FindBugs implements Constants2, ExitCodes
 
 	// Clear the cache in the AnalysisContext.
 	AnalysisContext.instance().clearCache();
+  }
 
+  /**
+   * Set up the classpath to be used to perform class lookups
+   * during the analysis.  This is based on the project,
+   * and also on the Class-Path entries in the manifests of
+   * scanned jar files.
+   * @param manifestClassPathEntryList list of aux classpath entries found
+   *    in the manifests of scanned jar files
+   */
+  private void setClasspath(List<String> manifestClassPathEntryList) {
 	// Create a SyntheticRepository based on the current project,
 	// and make it current.
 
-	// Add aux class path entries specified in project
 	StringBuffer buf = new StringBuffer();
-	List auxClasspathEntryList = project.getAuxClasspathEntryList();
+	List<String> auxClasspathEntryList = project.getAuxClasspathEntryList();
 	Iterator i = auxClasspathEntryList.iterator();
 	while (i.hasNext()) {
 	    String entry = (String) i.next();
@@ -536,8 +572,11 @@ public class FindBugs implements Constants2, ExitCodes
    * Add all classes contained in given file to the BCEL Repository.
    * @param fileName the file, which may be a jar/zip archive, a single class file,
    *   or a directory to be recursively searched for class files
+   * @param manifestClassPathEntryList list used to store aux classpath entries
+   *    found in the manifests of scanned jar files
    */
-  private void addFileToRepository(String fileName, List<String> repositoryClassList)
+  private void addFileToRepository(String fileName, List<String> repositoryClassList,
+	List<String> manifestClassPathEntryList)
 	throws IOException, InterruptedException {
 
      try {
@@ -577,6 +616,10 @@ public class FindBugs implements Constants2, ExitCodes
 	// add it to the end of the source path.
 	if (classProducer.containsSourceFiles())
 		project.addSourceDir(fileName);
+
+	// If the archive or directory scanned contained
+	// aux classpath entries, add them to the list.
+	classProducer.addAuxClasspathEntries(manifestClassPathEntryList);
 
      } catch (IOException e) {
 	// You'd think that the message for a FileNotFoundException would include
