@@ -12,30 +12,44 @@ Usage() {
 	exit 0;
 }
 
-# Find absolute path of this script
-command=$0
-if [ `expr $command : '\/'` -ne 1 ]; then
-	# We were invoked using a relative path.
-	# Prepend pwd to command to make it absolute.
-	# NOTE: I can't think of any reason why this could fail,
-	# but I'm not 100% sure.
-	currDirectory=`pwd`
-	if [ "$currDirectory" = "/" ]; then
-		command="/$command"
-	else
-		command=`pwd`"/$command"
-	fi
-fi
+# Find findbugs_home.
+# This code shamelessly stolen from Ant's "bin/ant" script.
 
-# Extract findbugs_home
-# Thanks to Peter D. Stout for making this more robust.
-findbugs_home=`echo $command | sed -e 's/\(.*\)\/bin\(\/.\)\{0,1\}\/findbugs$/\1/'`
+## resolve links - $0 may be a link to ant's home
+PRG="$0"
+progname=`basename "$0"`
+saveddir=`pwd`
+
+# need this for relative symlinks
+dirname_prg=`dirname "$PRG"`
+cd "$dirname_prg"
+  
+while [ -h "$PRG" ] ; do
+	ls=`ls -ld "$PRG"`
+	link=`expr "$ls" : '.*-> \(.*\)$'`
+	if expr "$link" : '/.*' > /dev/null; then
+		PRG="$link"
+	else
+		PRG=`dirname "$PRG"`"/$link"
+	fi
+done
+  
+findbugs_home=`dirname "$PRG"`/..
+
+cd "$saveddir"
+
+# make it fully qualified
+findbugs_home=`cd "$findbugs_home" && pwd`
+
+# End of code shamelessly stolen from Ant.
+
 if [ ! -d "$findbugs_home" ]; then
 	echo "The path $findbugs_home,"
 	echo "which is where I think FindBugs is located,"
 	echo "does not seem to be a directory."
 	exit 1
 fi
+#echo "findbugs_home=$findbugs_home"
 
 # Process command line arguments.
 # All options that aren't consumed by this script are sent
