@@ -28,7 +28,8 @@ import org.apache.bcel.generic.*;
 
 public abstract class ResourceValueAnalysisTestDriver<Resource> {
 
-	public abstract ResourceTracker<Resource> createResourceTracker(RepositoryLookupFailureCallback lookupFailureCallback);
+	public abstract ResourceTracker<Resource> createResourceTracker(RepositoryLookupFailureCallback lookupFailureCallback,
+		MethodGen methodGen, CFG cfg)  throws CFGBuilderException, DataflowAnalysisException;
 
 	public void execute(String classFile, String methodName, int offset)
 		throws IOException, CFGBuilderException, DataflowAnalysisException {
@@ -76,7 +77,7 @@ public abstract class ResourceValueAnalysisTestDriver<Resource> {
 
 			if (creationInstruction == null) throw new IllegalArgumentException("No bytecode with offset " + offset);
 
-			final ResourceTracker<Resource> resourceTracker = createResourceTracker(lookupFailureCallback);
+			final ResourceTracker<Resource> resourceTracker = createResourceTracker(lookupFailureCallback, methodGen, cfg);
 			final Resource resource = resourceTracker.isResourceCreation(creationBlock, creationInstruction, cpg);
 
 			if (resource == null)
