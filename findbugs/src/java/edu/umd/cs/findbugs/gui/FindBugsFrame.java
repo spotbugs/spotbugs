@@ -248,6 +248,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
         bugDetailsTabbedPane = new javax.swing.JTabbedPane();
         sourceTextAreaScrollPane = new javax.swing.JScrollPane();
         sourceTextArea = new javax.swing.JTextArea();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jEditorPane1 = new javax.swing.JEditorPane();
         consoleScrollPane = new javax.swing.JScrollPane();
         consoleMessageArea = new javax.swing.JTextArea();
         theMenuBar = new javax.swing.JMenuBar();
@@ -551,12 +553,6 @@ public class FindBugsFrame extends javax.swing.JFrame {
         bugTreeBugDetailsSplitter.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
         bugTreeBugDetailsSplitter.setResizeWeight(1.0);
         bugTreeBugDetailsSplitter.setOneTouchExpandable(true);
-        bugTree.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mousePressed(java.awt.event.MouseEvent evt) {
-                bugTreeMousePressed(evt);
-            }
-        });
-
         bugTreeScrollPane.setViewportView(bugTree);
 
         bugTreeBugDetailsSplitter.setLeftComponent(bugTreeScrollPane);
@@ -568,6 +564,10 @@ public class FindBugsFrame extends javax.swing.JFrame {
         sourceTextAreaScrollPane.setViewportView(sourceTextArea);
 
         bugDetailsTabbedPane.addTab("Source code", sourceTextAreaScrollPane);
+
+        jScrollPane1.setViewportView(jEditorPane1);
+
+        bugDetailsTabbedPane.addTab("Details", jScrollPane1);
 
         bugTreeBugDetailsSplitter.setRightComponent(bugDetailsTabbedPane);
 
@@ -752,28 +752,6 @@ public class FindBugsFrame extends javax.swing.JFrame {
             logger.logMessage(ConsoleLogger.ERROR, "Could not save project: " + e.getMessage());
         }
     }//GEN-LAST:event_saveProjectItemActionPerformed
-
-    private void bugTreeMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_bugTreeMousePressed
-	if (evt.getClickCount() == 2) {
-	    TreePath selection = bugTree.getSelectionPath();
-	    DefaultMutableTreeNode selNode = (DefaultMutableTreeNode) selection.getLastPathComponent();
-	    Object obj = selNode.getUserObject();
-            SourceLineAnnotation srcLine = null;
-            
-	    if (obj instanceof SourceLineAnnotation) {
-		srcLine = (SourceLineAnnotation) obj;
-	    } else if (obj instanceof MethodAnnotation) {
-                MethodAnnotation methodAnnotation = (MethodAnnotation) obj;
-                srcLine = methodAnnotation.getSourceLines();
-            }
-
-            if (srcLine != null) {
-		Project project = getCurrentProject();
-		AnalysisRun analysisRun = getCurrentAnalysisRun();
-		viewSource(project, analysisRun, srcLine);
-            }
-        }
-    }//GEN-LAST:event_bugTreeMousePressed
 
     private void aboutItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aboutItemActionPerformed
 	AboutDialog dialog = new AboutDialog(this, true);
@@ -975,9 +953,15 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	navigatorTree.setRootVisible(false);
 	navigatorTree.setShowsRootHandles(false);
 	
+	bugTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 	bugTree.setCellRenderer(new FindBugsFrame.BugCellRenderer());
 	bugTree.setRootVisible(false);
 	bugTree.setShowsRootHandles(true);
+	bugTree.addTreeSelectionListener(new TreeSelectionListener() {
+	    public void valueChanged(TreeSelectionEvent e) {
+		bugTreeSelectionChanged(e);
+	    }
+	});
 	
 	jarFileList.setModel(new DefaultListModel());
 	sourceDirList.setModel(new DefaultListModel());
@@ -1061,29 +1045,16 @@ public class FindBugsFrame extends javax.swing.JFrame {
      *   (which should only be possible if the root node is selected)
      */
     private Project getCurrentProject() {
-	return (Project) getNavigatorSelectionOf(Project.class);
+	return (Project) getTreeSelectionOf(navigatorTree, Project.class);
     }
     
     /**
      * Get the currently selected analysis run.
+     * @return the current analysis run, or null if no analysis run
+     *   is selected
      */
     private AnalysisRun getCurrentAnalysisRun() {
-	return (AnalysisRun) getNavigatorSelectionOf(AnalysisRun.class);
-    }
-    
-    private Object getNavigatorSelectionOf(Class c) {
-	TreePath selPath = navigatorTree.getSelectionPath();
-	
-	// Work backwards from end until we get to the kind of
-	// object we're looking for.
-	Object[] nodeList = selPath.getPath();
-	for (int i = nodeList.length - 1; i >= 0; --i) {
-	    DefaultMutableTreeNode node = (DefaultMutableTreeNode) nodeList[i];
-	    Object nodeInfo = node.getUserObject();
-	    if (nodeInfo.getClass() == c)
-		return nodeInfo;
-	}
-	return null;
+	return (AnalysisRun) getTreeSelectionOf(navigatorTree, AnalysisRun.class);
     }
     
     /**
@@ -1293,6 +1264,34 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	}
     }
     
+    private BugInstance getCurrentBugInstance() {
+	return (BugInstance) getTreeSelectionOf(bugTree, BugInstance.class);
+    }
+    
+    /**
+     * This is called whenever the selection is changed in the bug tree.
+     */
+    private void bugTreeSelectionChanged(TreeSelectionEvent e) {
+	BugInstance selected = getCurrentBugInstance();
+	if (selected != null && selected != currentBugInstance) {
+	    synchBugInstance(selected);
+	}
+    }
+    
+    private void synchBugInstance(BugInstance selected) {
+	// Update source view
+	// TODO: only do this when the detail window is displayed AND
+	// the source code tab is chosen.
+	SourceLineAnnotation primarySrcLine = selected.getPrimarySourceLineAnnotation();
+	if (primarySrcLine != null) {
+	    Project project = getCurrentProject();
+	    AnalysisRun analysisRun = getCurrentAnalysisRun();
+	    if (project == null) throw new IllegalStateException("null project!");
+	    if (analysisRun == null) throw new IllegalStateException("null analysis run!");
+	    viewSource(project, analysisRun, primarySrcLine);
+	}
+    }
+    
     private void viewSource(Project project, AnalysisRun analysisRun, SourceLineAnnotation srcLine) {
 	sourceFinder.setSourceBaseList(project.getSourceDirList());
 	String sourceFile = analysisRun.getSourceFile(srcLine.getClassName());
@@ -1342,6 +1341,29 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	consoleMessageArea.append(message);
 	consoleMessageArea.append("\n");
     }
+
+    /**
+     * Based on the current tree selection path, get a user object
+     * whose class is the same as the given class.
+     * @param tree the tree
+     * @param c the class
+     * @return an instance of the given kind of object which is in the
+     *   current selection, or null if there is no matching object
+     */
+    private static Object getTreeSelectionOf(JTree tree, Class c) {
+	TreePath selPath = tree.getSelectionPath();
+	
+	// Work backwards from end until we get to the kind of
+	// object we're looking for.
+	Object[] nodeList = selPath.getPath();
+	for (int i = nodeList.length - 1; i >= 0; --i) {
+	    DefaultMutableTreeNode node = (DefaultMutableTreeNode) nodeList[i];
+	    Object nodeInfo = node.getUserObject();
+	    if (nodeInfo != null && nodeInfo.getClass() == c)
+		return nodeInfo;
+	}
+	return null;
+    }
     
     /**
      * @param args the command line arguments
@@ -1354,6 +1376,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
     
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JEditorPane jEditorPane1;
     private javax.swing.JLabel editProjectLabel;
     private javax.swing.JButton removeSrcDirButton;
     private javax.swing.JSeparator jSeparator2;
@@ -1386,6 +1409,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
     private javax.swing.JSplitPane navigatorViewSplitter;
     private javax.swing.JLabel groupByLabel;
     private javax.swing.JCheckBoxMenuItem viewConsoleItem;
+    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JMenuItem closeProjectItem;
     private javax.swing.JTextField jarNameTextField;
     private javax.swing.JScrollPane consoleScrollPane;
@@ -1417,4 +1441,5 @@ public class FindBugsFrame extends javax.swing.JFrame {
     private int projectCount;
     private AnalysisRun currentAnalysisRun; // be lazy in switching tree models in BugTree
     private SourceFinder sourceFinder = new SourceFinder();
+    private BugInstance currentBugInstance; // be lazy in switching bug instance details
 }
