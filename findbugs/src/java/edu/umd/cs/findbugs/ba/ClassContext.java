@@ -454,10 +454,12 @@ public class ClassContext implements AnalysisFeatures {
 								INVOKESTATIC inv = (INVOKESTATIC) ins;
 								if (Hierarchy.isInnerClassAccess(inv, getConstantPoolGen())) {
 									InnerClassAccess access = Hierarchy.getInnerClassAccess(inv, getConstantPoolGen());
-									if (access.isLoad())
-										loadedFieldSet.addLoad(handle, access.getField());
-									else
-										loadedFieldSet.addStore(handle, access.getField());
+									if (access != null) {
+										if (access.isLoad())
+											loadedFieldSet.addLoad(handle, access.getField());
+										else
+											loadedFieldSet.addStore(handle, access.getField());
+									}
 								}
 							} else if (fieldInstructionOpcodeSet.get(opcode)) {
 								boolean isLoad = (opcode == Constants.GETFIELD || opcode == Constants.GETSTATIC);
