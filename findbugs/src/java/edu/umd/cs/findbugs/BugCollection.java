@@ -58,6 +58,7 @@ public abstract class BugCollection {
 	}
 
 	public abstract boolean add(BugInstance bugInstance);
+	public abstract boolean remove(BugInstance bugInstance);
 	public abstract Iterator<BugInstance> iterator();
 	public abstract Collection<BugInstance> getCollection();
 	public abstract void addError(String message);

@@ -53,6 +53,10 @@ public class SortedBugCollection extends BugCollection {
 		return bugSet.add(bugInstance);
 	}
 
+	public boolean remove(BugInstance bugInstance) {
+		return bugSet.remove(bugInstance);
+	}
+
 	public Iterator<BugInstance> iterator() {
 		return bugSet.iterator();
 	}
