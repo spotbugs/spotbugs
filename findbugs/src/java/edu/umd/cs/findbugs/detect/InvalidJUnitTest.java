@@ -109,7 +109,7 @@ public class InvalidJUnitTest extends BytecodeScanningDetector implements   Cons
     	if (!validClass || !validMethod)
     		return;
     		
-    	System.out.println( OPCODE_NAMES[seen] );
+    	// System.out.println( OPCODE_NAMES[seen] );
     	
        	switch (state)
     	{
