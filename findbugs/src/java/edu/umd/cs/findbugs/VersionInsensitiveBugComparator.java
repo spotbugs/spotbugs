@@ -64,10 +64,15 @@ public class VersionInsensitiveBugComparator implements Comparator<BugInstance> 
 				cmp = lhsAnnotation.compareTo(rhsAnnotation);
 				if (cmp != 0) return cmp;
 			} else if (lhsAnnotation.getClass() == SourceLineAnnotation.class) {
-				// We assume that source lines may change, but source files will not.
+				// We assume that source lines may change, but source files
+				// and bytecode offsets will not.
 				SourceLineAnnotation lhsSource = (SourceLineAnnotation) lhsAnnotation;
 				SourceLineAnnotation rhsSource = (SourceLineAnnotation) rhsAnnotation;
 				cmp = lhsSource.getSourceFile().compareTo(rhsSource.getSourceFile());
+				if (cmp != 0) return cmp;
+				cmp = lhsSource.getStartBytecode() - rhsSource.getStartBytecode();
+				if (cmp != 0) return cmp;
+				cmp = lhsSource.getEndBytecode() - rhsSource.getEndBytecode();
 				if (cmp != 0) return cmp;
 			} else if (lhsAnnotation.getClass() == IntAnnotation.class) {
 				// Just ignore IntAnnotations.
