@@ -68,6 +68,16 @@ while [ $# -gt 0 ]; do
 		user_props="-D$1 $user_props"
 		;;
 
+	-version)
+		fb_mainclass=edu.umd.cs.findbugs.Version
+		fb_appargs="-release"
+		while [ $# -gt 0 ]; do
+			shift
+		done
+		@WRAP_JAVA@
+		exit 0
+		;;
+
 	-help)
 		Usage
 		;;
