@@ -45,7 +45,12 @@ invited talk, MASPLAS 2003
 <p> Changes since version 0.6.0:
 
 <ul>
-<li> ...put stuff here...
+<li> New bug pattern detector which looks for places where a
+     null pointer might be dereferenced
+<li> New bug pattern detector which looks for IO streams which are opened,
+     do not escape the method, and are not closed on all paths out of the method
+<li> Command line interface can save bugs as XML
+<li> GUI can save bugs to and load bugs from XML
 </ul>
 
 <p> <a href="Changes.html">Older versions...</a>
