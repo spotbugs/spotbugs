@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs;
 
+import edu.umd.cs.daveho.ba.*;
+import java.io.*;
 import java.util.*;
 import org.apache.bcel.classfile.JavaClass;
 
@@ -32,13 +34,6 @@ public class EmacsBugReporter extends TextUIBugReporter {
 
 	private HashSet<BugInstance> seenAlready = new HashSet<BugInstance>();
 
-        private Project project;
-
-        EmacsBugReporter (Project project) {
-                super();
-                this.project = project;
-        }
-
 	public void observeClass(JavaClass javaClass) {
 		// Don't need to do anything special, since we won't be
 		// reporting statistics.
@@ -50,17 +45,18 @@ public class EmacsBugReporter extends TextUIBugReporter {
                 if (line == null) {
                         outputStream.print(bugInstance.getMessage());
                 } else {
-			String fullPath = project.getSourceFilePath(line.getSourceFile());
-			if (fullPath == null) {
-				// Source path lookup failed; just print out
-				// our guess at the relative path.
-				String pkgName = line.getPackageName();
-				if (pkgName.equals("")) {
+			SourceFinder sourceFinder = AnalysisContext.instance().getSourceFinder();
+			String fullPath;
+			String pkgName = line.getPackageName();
+			try {
+				fullPath = sourceFinder.findSourceFile(pkgName, line.getSourceFile()).getFullFileName();
+			} catch (IOException e) {
+				if (pkgName.equals(""))
 					fullPath = line.getSourceFile();
-				} else {
+				else
 					fullPath = pkgName.replace('.', '/') + "/" + line.getSourceFile();
-				}
 			}
+
                         outputStream.print(fullPath + ":" 
                                            + line.getStartLine() + ":" 
                                            + line.getEndLine() + " "
