@@ -32,6 +32,11 @@ public class IsNullValueFrame extends Frame<IsNullValue> {
 	public IsNullValue getDefaultValue() {
 		return IsNullValue.doNotReportValue();
 	}
+
+	public void toExceptionValues() {
+		for (int i = 0; i < getNumSlots(); ++i)
+			setValue(i, getValue(i).toExceptionValue());
+	}
 }
 
 // vim:ts=4

@@ -39,6 +39,7 @@ import org.apache.bcel.generic.*;
 public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNullValueFrame> implements EdgeTypes {
 	private static final boolean DEBUG = Boolean.getBoolean("inva.debug");
 	private static final boolean NO_SPLIT_DOWNGRADE_NSP = Boolean.getBoolean("inva.noSplitDowngradeNSP");
+	private static final boolean NO_SWITCH_DEFAULT_AS_EXCEPTION = Boolean.getBoolean("inva.noSwitchDefaultAsException");
 
 	private MethodGen methodGen;
 	private IsNullValueFrameModelingVisitor visitor;
@@ -125,6 +126,13 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
 				}
 			}
 
+			if (!NO_SWITCH_DEFAULT_AS_EXCEPTION) {
+				if (edge.getType() == SWITCH_DEFAULT_EDGE) {
+					tmpFact = modifyFrame(fact, tmpFact);
+					tmpFact.toExceptionValues();
+				}
+			}
+
 			final BasicBlock destBlock = edge.getTarget();
 
 			if (destBlock.isExceptionHandler()) {
@@ -150,8 +158,7 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
 				}
 
 				// Mark all values as having occurred on an exception path
-				for (int i = 0; i < tmpFact.getNumSlots(); ++i)
-					tmpFact.setValue(i, tmpFact.getValue(i).toExceptionValue());
+				tmpFact.toExceptionValues();
 
 				// Push the exception value
 				tmpFact.pushValue(IsNullValue.nonNullValue());
