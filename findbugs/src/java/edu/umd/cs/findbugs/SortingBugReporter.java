@@ -13,18 +13,12 @@ public class SortingBugReporter implements BugReporter {
 			ClassAnnotation rca = rhs.getPrimaryClass();
 			if (lca == null || rca == null)
 				throw new IllegalStateException("null class annotation: " + lca + "," + rca);
-			int cmp = lca.getClassName().compareTo(rca.getClassName());
-			if (cmp != 0)
-				return cmp;
-			return lhs.getCount() - rhs.getCount();
+			return lca.getClassName().compareTo(rca.getClassName());
 		}
 	});
 
-	int count = 0;
-
 	public void reportBug(BugInstance bugInstance) {
 		if (!bugInstanceSet.contains(bugInstance)) {
-			bugInstance.setCount(count++);
 			bugInstanceSet.add(bugInstance);
 		}
 	}
