@@ -1,6 +1,6 @@
 /*
  * FindBugs - Find bugs in Java programs
- * Copyright (C) 2003,2004 University of Maryland
+ * Copyright (C) 2003-2005 University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -22,15 +22,19 @@ package edu.umd.cs.findbugs.detect;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.visitclass.Constants2;
 
-public class FindFloatMath extends BytecodeScanningDetector implements Constants2 {
+public class FindFloatMath extends BytecodeScanningDetector implements Constants2, StatelessDetector {
 	private BugReporter bugReporter;
 
 	public FindFloatMath(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 	}
 
+	public Object clone() throws CloneNotSupportedException {
+		return super.clone();
+	}
 
 	public void sawOpcode(int seen) {
 		switch (seen) {

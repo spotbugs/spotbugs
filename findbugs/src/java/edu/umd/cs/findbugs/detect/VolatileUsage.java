@@ -38,16 +38,17 @@ public class VolatileUsage extends BytecodeScanningDetector implements
 	  private BugReporter bugReporter;
 	//private AnalysisContext analysisContext;
 
-        public VolatileUsage(BugReporter bugReporter) {
-                this.bugReporter = bugReporter;
-        }
-      public void visitClassContext(ClassContext classContext) {
-                classContext.getJavaClass().accept(this);
-        }
+    public VolatileUsage(BugReporter bugReporter) {
+            this.bugReporter = bugReporter;
+    }
+    	
+	public void visitClassContext(ClassContext classContext) {
+	            classContext.getJavaClass().accept(this);
+	}
 
-        public void setAnalysisContext(AnalysisContext analysisContext) {
-                //this.analysisContext = analysisContext;
-        }
+	public void setAnalysisContext(AnalysisContext analysisContext) {
+	        //this.analysisContext = analysisContext;
+	}
 
 static class FieldRecord {
                 String className;

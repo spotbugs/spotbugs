@@ -20,10 +20,29 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.BitSet;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
-import edu.umd.cs.findbugs.*;
+import org.apache.bcel.Repository;
+import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.CodeException;
+import org.apache.bcel.classfile.ExceptionTable;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.ASTORE;
+import org.apache.bcel.generic.InstructionHandle;
 
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import edu.umd.cs.findbugs.Detector;
+import edu.umd.cs.findbugs.OpcodeStack;
+import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.ba.BasicBlock;
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
@@ -31,13 +50,7 @@ import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.LiveLocalStoreDataflow;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.SignatureConverter;
-
-import org.apache.bcel.Repository;
-
-import org.apache.bcel.classfile.*;
-
-import org.apache.bcel.generic.ASTORE;
-import org.apache.bcel.generic.InstructionHandle;;
+;
 
 /**
  * RuntimeExceptionCapture
@@ -46,7 +59,7 @@ import org.apache.bcel.generic.InstructionHandle;;
  * @author Bill Pugh
  * @author David Hovemeyer
  */
-public class RuntimeExceptionCapture extends BytecodeScanningDetector implements Detector {
+public class RuntimeExceptionCapture extends BytecodeScanningDetector implements Detector, StatelessDetector {
 	private static final boolean DEBUG = Boolean.getBoolean("rec.debug");
 
 	private BugReporter bugReporter;
@@ -82,6 +95,10 @@ public class RuntimeExceptionCapture extends BytecodeScanningDetector implements
 
 	public RuntimeExceptionCapture(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
+	}
+
+	public Object clone() throws CloneNotSupportedException {
+		return super.clone();
 	}
 
 	public void visitMethod(Method method) {

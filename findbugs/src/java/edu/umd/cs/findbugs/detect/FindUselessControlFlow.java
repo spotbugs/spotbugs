@@ -1,6 +1,6 @@
 /*
  * FindBugs - Find bugs in Java programs
- * Copyright (C) 2003,2004 University of Maryland
+ * Copyright (C) 2003-2005 University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,12 +19,14 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.*;
+import java.util.BitSet;
+
+import org.apache.bcel.Constants;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
-import org.apache.bcel.Constants;
+import edu.umd.cs.findbugs.StatelessDetector;
 
 /**
  * A Detector to look for useless control flow.  For example,
@@ -41,7 +43,7 @@ import org.apache.bcel.Constants;
  *
  * @author David Hovemeyer
  */
-public class FindUselessControlFlow extends BytecodeScanningDetector {
+public class FindUselessControlFlow extends BytecodeScanningDetector implements StatelessDetector {
 	private static final BitSet ifInstructionSet = new BitSet();
 
 	static {
@@ -69,6 +71,10 @@ public class FindUselessControlFlow extends BytecodeScanningDetector {
 		this.bugReporter = bugReporter;
 	}
 
+	public Object clone() throws CloneNotSupportedException {
+		return super.clone();
+	}
+	
 	public void sawOpcode(int seen) {
 		if (ifInstructionSet.get(seen)) {
 			if (getBranchTarget() == getBranchFallThrough()) {

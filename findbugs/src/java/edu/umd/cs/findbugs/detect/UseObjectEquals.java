@@ -26,14 +26,19 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
+import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.visitclass.Constants2;
 
-public class UseObjectEquals extends BytecodeScanningDetector implements Constants2 {
+public class UseObjectEquals extends BytecodeScanningDetector implements Constants2, StatelessDetector {
 	private BugReporter bugReporter;
 	private OpcodeStack stack;
 
 	public UseObjectEquals(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
+	}
+
+	public Object clone() throws CloneNotSupportedException {
+		return super.clone();
 	}
 
 	public void visit(Method obj) {

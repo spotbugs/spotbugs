@@ -23,6 +23,7 @@ import java.util.Map;
 
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
+import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.bcp.Invoke;
@@ -30,15 +31,19 @@ import edu.umd.cs.findbugs.visitclass.AnnotationVisitor;
 import edu.umd.cs.findbugs.visitclass.Constants2;
 
 public class NoteCheckReturnValue extends AnnotationVisitor 
-  implements Detector, Constants2 {
+  implements Detector, Constants2, StatelessDetector {
 
 	private BugReporter bugReporter;
-        private AnalysisContext analysisContext;
+    private AnalysisContext analysisContext;
 
 
 	public NoteCheckReturnValue(BugReporter bugReporter) {
 
 		this.bugReporter = bugReporter;
+	}
+
+	public Object clone() throws CloneNotSupportedException {
+		return super.clone();
 	}
 
 	public void setAnalysisContext(AnalysisContext analysisContext) {

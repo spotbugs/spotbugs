@@ -1,6 +1,6 @@
 /*
  * FindBugs - Find bugs in Java programs
- * Copyright (C) 2004 University of Maryland
+ * Copyright (C) 2004,2005 University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,17 +19,44 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.*;
+import java.util.BitSet;
+import java.util.Iterator;
+
+import org.apache.bcel.Constants;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.Instruction;
+import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.InvokeInstruction;
+import org.apache.bcel.generic.MethodGen;
+import org.apache.bcel.generic.NEW;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.ByteCodePatternDetector;
-import edu.umd.cs.findbugs.ba.*;
-import edu.umd.cs.findbugs.ba.bcp.*;
-import org.apache.bcel.Constants;
-import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.classfile.Method;
-import org.apache.bcel.generic.*;
+import edu.umd.cs.findbugs.StatelessDetector;
+import edu.umd.cs.findbugs.ba.BasicBlock;
+import edu.umd.cs.findbugs.ba.CFG;
+import edu.umd.cs.findbugs.ba.CFGBuilderException;
+import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
+import edu.umd.cs.findbugs.ba.DominatorsAnalysis;
+import edu.umd.cs.findbugs.ba.Hierarchy;
+import edu.umd.cs.findbugs.ba.Location;
+import edu.umd.cs.findbugs.ba.LockDataflow;
+import edu.umd.cs.findbugs.ba.LockSet;
+import edu.umd.cs.findbugs.ba.PostDominatorsAnalysis;
+import edu.umd.cs.findbugs.ba.XField;
+import edu.umd.cs.findbugs.ba.bcp.Binding;
+import edu.umd.cs.findbugs.ba.bcp.BindingSet;
+import edu.umd.cs.findbugs.ba.bcp.ByteCodePattern;
+import edu.umd.cs.findbugs.ba.bcp.ByteCodePatternMatch;
+import edu.umd.cs.findbugs.ba.bcp.FieldVariable;
+import edu.umd.cs.findbugs.ba.bcp.IfNull;
+import edu.umd.cs.findbugs.ba.bcp.Load;
+import edu.umd.cs.findbugs.ba.bcp.PatternElementMatch;
+import edu.umd.cs.findbugs.ba.bcp.Store;
+import edu.umd.cs.findbugs.ba.bcp.Wild;
 
 /*
  * Look for lazy initialization of fields which
@@ -39,7 +66,7 @@ import org.apache.bcel.generic.*;
  * @author David Hovemeyer
  */
 
-public class LazyInit extends ByteCodePatternDetector {
+public class LazyInit extends ByteCodePatternDetector implements StatelessDetector {
 	private BugReporter bugReporter;
 
 	private static final boolean DEBUG = Boolean.getBoolean("lazyinit.debug");
@@ -59,6 +86,10 @@ public class LazyInit extends ByteCodePatternDetector {
 
 	public LazyInit(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
+	}
+
+	public Object clone() throws CloneNotSupportedException {
+		return super.clone();
 	}
 
 	public ByteCodePattern getPattern() {

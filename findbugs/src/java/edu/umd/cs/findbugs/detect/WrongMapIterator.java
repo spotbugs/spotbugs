@@ -26,9 +26,10 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.MethodAnnotation;
+import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.visitclass.Constants2;
 
-public class WrongMapIterator extends BytecodeScanningDetector implements   Constants2 {
+public class WrongMapIterator extends BytecodeScanningDetector implements   Constants2, StatelessDetector {
     private BugReporter bugReporter;
     private static final int SAW_NOTHING = 0;
     private static final int SAW_MAP_LOAD1 = 1;
@@ -56,7 +57,11 @@ public class WrongMapIterator extends BytecodeScanningDetector implements   Cons
         this.bugReporter = bugReporter;
     }
     
-    public void visit(Method obj) {
+	public Object clone() throws CloneNotSupportedException {
+		return super.clone();
+	}
+
+	public void visit(Method obj) {
     	state = SAW_NOTHING;
     	loadedRegister = -1;
     	mapRegister = -1;

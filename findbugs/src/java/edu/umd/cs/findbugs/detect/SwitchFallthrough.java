@@ -29,6 +29,7 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
+import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.SourceFile;
@@ -36,7 +37,7 @@ import edu.umd.cs.findbugs.ba.SourceFinder;
 import edu.umd.cs.findbugs.visitclass.Constants2;
 
 
-public class SwitchFallthrough extends BytecodeScanningDetector implements Constants2 {
+public class SwitchFallthrough extends BytecodeScanningDetector implements Constants2, StatelessDetector {
 	private static final boolean DEBUG = Boolean.getBoolean("switchFallthrough.debug");
 	private static final boolean LOOK_IN_SOURCE_FOR_FALLTHRU_COMMENT =
 		Boolean.getBoolean("findbugs.sf.comment");
@@ -55,6 +56,10 @@ public class SwitchFallthrough extends BytecodeScanningDetector implements Const
 
 	public SwitchFallthrough(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
+	}
+
+	public Object clone() throws CloneNotSupportedException {
+		return super.clone();
 	}
 
 	public void setAnalysisContext(AnalysisContext analysisContext) {

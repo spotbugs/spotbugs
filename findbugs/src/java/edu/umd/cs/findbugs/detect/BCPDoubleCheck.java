@@ -1,6 +1,6 @@
 /*
  * FindBugs - Find bugs in Java programs
- * Copyright (C) 2003,2004 University of Maryland
+ * Copyright (C) 2003-2005 University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,18 +19,28 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.*;
+import java.util.BitSet;
 
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.ByteCodePatternDetector;
-import edu.umd.cs.findbugs.ba.ClassContext;
-import edu.umd.cs.findbugs.ba.bcp.*;
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.MethodGen;
+
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.ByteCodePatternDetector;
+import edu.umd.cs.findbugs.StatelessDetector;
+import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.ba.bcp.Binding;
+import edu.umd.cs.findbugs.ba.bcp.BindingSet;
+import edu.umd.cs.findbugs.ba.bcp.ByteCodePattern;
+import edu.umd.cs.findbugs.ba.bcp.ByteCodePatternMatch;
+import edu.umd.cs.findbugs.ba.bcp.FieldVariable;
+import edu.umd.cs.findbugs.ba.bcp.IfNull;
+import edu.umd.cs.findbugs.ba.bcp.Load;
+import edu.umd.cs.findbugs.ba.bcp.Monitorenter;
+import edu.umd.cs.findbugs.ba.bcp.Store;
 
 /**
  * A bug detector that uses a ByteCodePattern to find instances of
@@ -41,7 +51,7 @@ import org.apache.bcel.generic.MethodGen;
  * @author David Hovemeyer
  * @see ByteCodePattern
  */
-public class BCPDoubleCheck extends ByteCodePatternDetector {
+public class BCPDoubleCheck extends ByteCodePatternDetector implements StatelessDetector {
 
 	private BugReporter bugReporter;
 
@@ -64,6 +74,15 @@ public class BCPDoubleCheck extends ByteCodePatternDetector {
 	 */
 	public BCPDoubleCheck(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
+	}
+	
+	/**
+	 * clone this object
+	 * 
+	 * @return a clone of this object
+	 */
+	public Object clone() throws CloneNotSupportedException {
+		return super.clone();
 	}
 
 	/**

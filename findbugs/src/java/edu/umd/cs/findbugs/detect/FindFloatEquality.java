@@ -19,11 +19,16 @@
  */
 
 package edu.umd.cs.findbugs.detect;
-import edu.umd.cs.findbugs.*;
-import edu.umd.cs.findbugs.visitclass.Constants2;
 import org.apache.bcel.classfile.Method;
 
-public class FindFloatEquality extends BytecodeScanningDetector implements Constants2 
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import edu.umd.cs.findbugs.OpcodeStack;
+import edu.umd.cs.findbugs.StatelessDetector;
+import edu.umd.cs.findbugs.visitclass.Constants2;
+
+public class FindFloatEquality extends BytecodeScanningDetector implements Constants2, StatelessDetector 
 {
 	private static final int SAW_NOTHING = 0;
 	private static final int SAW_COMP = 1;
@@ -36,6 +41,10 @@ public class FindFloatEquality extends BytecodeScanningDetector implements Const
 		this.bugReporter = bugReporter;
 	}
 	
+	public Object clone() throws CloneNotSupportedException {
+		return super.clone();
+	}
+
 	public void visit(Method obj) {
 		opStack = new OpcodeStack();
 		state = SAW_NOTHING;

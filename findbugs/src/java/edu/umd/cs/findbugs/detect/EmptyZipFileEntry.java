@@ -1,6 +1,6 @@
 /*
  * FindBugs - Find bugs in Java programs
- * Copyright (C) 2004, Tom Truscott <trt@unx.sas.com>
+ * Copyright (C) 2004,2005 Tom Truscott <trt@unx.sas.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,13 +19,16 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.visitclass.Constants2;
-import org.apache.bcel.classfile.*;
 
-public class EmptyZipFileEntry extends BytecodeScanningDetector implements Constants2 {
+public class EmptyZipFileEntry extends BytecodeScanningDetector implements Constants2, StatelessDetector {
 
 	private BugReporter bugReporter;
 	private int sawPutEntry;
@@ -33,6 +36,10 @@ public class EmptyZipFileEntry extends BytecodeScanningDetector implements Const
 
 	public EmptyZipFileEntry(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
+	}
+	
+	public Object clone() throws CloneNotSupportedException {
+		return super.clone();
 	}
 
 	public void visit(JavaClass obj) {

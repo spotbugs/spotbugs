@@ -20,14 +20,16 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.BytecodeScanningDetector;
-import edu.umd.cs.findbugs.visitclass.Constants2;
-import edu.umd.cs.findbugs.ba.ClassContext;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
+
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import edu.umd.cs.findbugs.StatelessDetector;
+import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.visitclass.Constants2;
 
 /**
  * Find occurrences of collection.toArray( new Foo[0] );
@@ -36,7 +38,7 @@ import org.apache.bcel.classfile.Method;
  *
  * @author Dave Brosius
  */
-public class InefficientToArray extends BytecodeScanningDetector implements Constants2 {
+public class InefficientToArray extends BytecodeScanningDetector implements Constants2, StatelessDetector {
 	private static final boolean DEBUG = Boolean.getBoolean("ita.debug");
 
 	static final int SEEN_NOTHING = 0;
@@ -58,6 +60,10 @@ public class InefficientToArray extends BytecodeScanningDetector implements Cons
 
 	public InefficientToArray(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
+	}
+
+	public Object clone() throws CloneNotSupportedException {
+		return super.clone();
 	}
 
 	public void visitClassContext(ClassContext classContext) {

@@ -19,11 +19,13 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import org.apache.bcel.classfile.Method;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.visitclass.Constants2;
-import org.apache.bcel.classfile.Method;
 
 //   2:   astore_1
 //   3:   monitorenter
@@ -33,7 +35,7 @@ import org.apache.bcel.classfile.Method;
 //   9:   monitorexit
 
 
-public class FindUnconditionalWait extends BytecodeScanningDetector implements Constants2 {
+public class FindUnconditionalWait extends BytecodeScanningDetector implements Constants2, StatelessDetector {
 	int stage = 0;
 	private BugReporter bugReporter;
 
@@ -41,6 +43,10 @@ public class FindUnconditionalWait extends BytecodeScanningDetector implements C
 		this.bugReporter = bugReporter;
 	}
 
+	public Object clone() throws CloneNotSupportedException {
+		return super.clone();
+	}
+	
 	public void visit(Method obj) {
 		stage = 0;
 	}

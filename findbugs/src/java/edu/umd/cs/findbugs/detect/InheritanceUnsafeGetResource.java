@@ -19,14 +19,16 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.BytecodeScanningDetector;
-import edu.umd.cs.findbugs.visitclass.Constants2;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
-public class InheritanceUnsafeGetResource extends BytecodeScanningDetector implements Constants2 {
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import edu.umd.cs.findbugs.StatelessDetector;
+import edu.umd.cs.findbugs.visitclass.Constants2;
+
+public class InheritanceUnsafeGetResource extends BytecodeScanningDetector implements Constants2, StatelessDetector {
 
 	private BugReporter bugReporter;
 	private boolean classIsFinal;
@@ -42,6 +44,9 @@ public class InheritanceUnsafeGetResource extends BytecodeScanningDetector imple
 		this.bugReporter = bugReporter;
 	}
 
+	public Object clone() throws CloneNotSupportedException {
+		return super.clone();
+	}
 
 	public void visit(JavaClass obj) {
 		classIsFinal = obj.isFinal();

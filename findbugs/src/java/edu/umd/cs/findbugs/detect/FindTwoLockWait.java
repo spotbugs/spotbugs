@@ -1,6 +1,6 @@
 /*
  * FindBugs - Find bugs in Java programs
- * Copyright (C) 2003,2004 University of Maryland
+ * Copyright (C) 2003-2005 University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,17 +19,31 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.*;
+import java.util.Iterator;
+
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.INVOKEVIRTUAL;
+import org.apache.bcel.generic.Instruction;
+import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.MONITORENTER;
+import org.apache.bcel.generic.MethodGen;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
-import edu.umd.cs.findbugs.ba.*;
-import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.classfile.Method;
-import org.apache.bcel.generic.*;
+import edu.umd.cs.findbugs.StatelessDetector;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.ba.AnalysisException;
+import edu.umd.cs.findbugs.ba.CFG;
+import edu.umd.cs.findbugs.ba.CFGBuilderException;
+import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
+import edu.umd.cs.findbugs.ba.Location;
+import edu.umd.cs.findbugs.ba.LockDataflow;
 
-public class FindTwoLockWait implements Detector {
+public class FindTwoLockWait implements Detector, StatelessDetector {
 
 	private BugReporter bugReporter;
 	//private AnalysisContext analysisContext;
@@ -37,6 +51,10 @@ public class FindTwoLockWait implements Detector {
 
 	public FindTwoLockWait(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
+	}
+
+	public Object clone() throws CloneNotSupportedException {
+		return super.clone();
 	}
 
 	public void setAnalysisContext(AnalysisContext analysisContext) {

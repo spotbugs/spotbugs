@@ -19,21 +19,27 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.Method;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.Lookup;
+import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.visitclass.Constants2;
-import org.apache.bcel.classfile.Code;
-import org.apache.bcel.classfile.Method;
 
-public class FindFinalizeInvocations extends BytecodeScanningDetector implements Constants2 {
+public class FindFinalizeInvocations extends BytecodeScanningDetector implements Constants2, StatelessDetector {
 	private static final boolean DEBUG = Boolean.getBoolean("ffi.debug");
 
 	private BugReporter bugReporter;
 
 	public FindFinalizeInvocations(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
+	}
+	
+	public Object clone() throws CloneNotSupportedException {
+		return super.clone();
 	}
 
 	boolean sawSuperFinalize;

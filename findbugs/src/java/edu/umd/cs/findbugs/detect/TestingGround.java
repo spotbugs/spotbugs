@@ -20,12 +20,20 @@
 package edu.umd.cs.findbugs.detect;
 
 import java.text.NumberFormat;
+
+import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.Constant;
+import org.apache.bcel.classfile.ConstantClass;
+import org.apache.bcel.classfile.ConstantString;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
+
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.visitclass.Constants2;
-import org.apache.bcel.classfile.*;
 
-public class TestingGround extends BytecodeScanningDetector implements Constants2 {
+public class TestingGround extends BytecodeScanningDetector implements Constants2, StatelessDetector {
 
 	private static final boolean active = false;
 	private NumberFormat formatter = null;
@@ -38,6 +46,9 @@ public class TestingGround extends BytecodeScanningDetector implements Constants
 		}
 	}
 
+	public Object clone() throws CloneNotSupportedException {
+		return super.clone();
+	}
 
 	public void visit(JavaClass obj) {
 	}

@@ -1,7 +1,7 @@
 /*
  * FindBugs - Find bugs in Java programs
- * Copyright (C) 2004 Dave Brosius <dbrosius@users.sourceforge.net>
- * Copyright (C) 2004 University of Maryland
+ * Copyright (C) 2004,2005 Dave Brosius <dbrosius@users.sourceforge.net>
+ * Copyright (C) 2004,2005 University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,17 +20,19 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.BytecodeScanningDetector;
-import edu.umd.cs.findbugs.MethodAnnotation;
-import edu.umd.cs.findbugs.visitclass.Constants2;
-import edu.umd.cs.findbugs.ba.ClassContext;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
-public class InvalidJUnitTest extends BytecodeScanningDetector implements Constants2 {
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import edu.umd.cs.findbugs.MethodAnnotation;
+import edu.umd.cs.findbugs.StatelessDetector;
+import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.visitclass.Constants2;
+
+public class InvalidJUnitTest extends BytecodeScanningDetector implements Constants2, StatelessDetector {
 
 	private static final int SEEN_NOTHING = 0;
 	private static final int SEEN_ALOAD_0 = 1;
@@ -48,6 +50,10 @@ public class InvalidJUnitTest extends BytecodeScanningDetector implements Consta
 
 	public InvalidJUnitTest(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
+	}
+	
+	public Object clone() throws CloneNotSupportedException {
+		return super.clone();
 	}
 
 	public void visitClassContext(ClassContext classContext) {

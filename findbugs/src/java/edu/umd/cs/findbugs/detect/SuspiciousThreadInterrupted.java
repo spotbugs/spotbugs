@@ -27,13 +27,14 @@ import org.apache.bcel.classfile.Method;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.visitclass.Constants2;
 
 /**
  * looks for calls to Thread.interrupted from a non static context, especially when that context is
  * not 'currentThread()'.
  */
-public class SuspiciousThreadInterrupted extends BytecodeScanningDetector implements Constants2 {
+public class SuspiciousThreadInterrupted extends BytecodeScanningDetector implements Constants2, StatelessDetector {
 	public static final int SEEN_NOTHING = 0;
 	public static final int SEEN_CURRENTTHREAD = 1;
 	public static final int SEEN_POP_AFTER_CURRENTTHREAD = 2;
@@ -47,6 +48,10 @@ public class SuspiciousThreadInterrupted extends BytecodeScanningDetector implem
 		this.bugReporter = bugReporter;
 	}
 	
+	public Object clone() throws CloneNotSupportedException {
+		return super.clone();
+	}
+
 	public void visit(Method obj) {
 		localsWithCurrentThreadValue = new BitSet();
 		state = SEEN_NOTHING;

@@ -24,9 +24,10 @@ import org.apache.bcel.classfile.Code;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.visitclass.Constants2;
 
-public class FindLocalSelfAssignment2 extends BytecodeScanningDetector implements Constants2 {
+public class FindLocalSelfAssignment2 extends BytecodeScanningDetector implements Constants2, StatelessDetector {
 
 	private BugReporter bugReporter;
 	private int previousLoadOf = -1;
@@ -35,7 +36,9 @@ public class FindLocalSelfAssignment2 extends BytecodeScanningDetector implement
 		this.bugReporter = bugReporter;
 	}
 
-
+	public Object clone() throws CloneNotSupportedException {
+		return super.clone();
+	}
 
 	public void visit(Code obj) {
 		previousLoadOf = -1;

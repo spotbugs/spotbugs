@@ -19,18 +19,23 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import org.apache.bcel.Repository;
+import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.ConstantNameAndType;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.MethodAnnotation;
+import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.visitclass.Constants2;
 import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
-import org.apache.bcel.Repository;
-import org.apache.bcel.classfile.*;
 
-public class CloneIdiom extends DismantleBytecode implements Detector, Constants2 {
+public class CloneIdiom extends DismantleBytecode implements Detector, Constants2, StatelessDetector {
 
 	boolean /*isCloneable,*/ hasCloneMethod;
 	MethodAnnotation cloneMethodAnnotation;
@@ -46,6 +51,10 @@ public class CloneIdiom extends DismantleBytecode implements Detector, Constants
 
 	public CloneIdiom(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
+	}
+	
+	public Object clone() throws CloneNotSupportedException {
+		return super.clone();
 	}
 
 	public void setAnalysisContext(AnalysisContext analysisContext) {

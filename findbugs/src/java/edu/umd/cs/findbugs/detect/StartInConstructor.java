@@ -19,19 +19,25 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.BytecodeScanningDetector;
-import edu.umd.cs.findbugs.ba.Hierarchy;
-import edu.umd.cs.findbugs.visitclass.Constants2;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
 
-public class StartInConstructor extends BytecodeScanningDetector implements Constants2 {
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import edu.umd.cs.findbugs.StatelessDetector;
+import edu.umd.cs.findbugs.ba.Hierarchy;
+import edu.umd.cs.findbugs.visitclass.Constants2;
+
+public class StartInConstructor extends BytecodeScanningDetector implements Constants2, StatelessDetector {
 	private BugReporter bugReporter;
 
 	public StartInConstructor(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
+	}
+
+	public Object clone() throws CloneNotSupportedException {
+		return super.clone();
 	}
 
 	boolean isFinal;

@@ -1,6 +1,6 @@
 /*
  * FindBugs - Find bugs in Java programs
- * Copyright (C) 2003,2004 University of Maryland
+ * Copyright (C) 2003-2005 University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,19 +19,22 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Iterator;
+
+import org.apache.bcel.classfile.Method;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.MethodAnnotation;
+import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.ba.ClassContext;
-import org.apache.bcel.classfile.Method;
 
 /**
  * Detector to find private methods that are never called.
  */
-public class FindUncalledPrivateMethods extends BytecodeScanningDetector {
+public class FindUncalledPrivateMethods extends BytecodeScanningDetector implements StatelessDetector {
 	private BugReporter bugReporter;
 	private String className;
 	private HashSet<MethodAnnotation> definedPrivateMethods, calledMethods;
@@ -41,6 +44,10 @@ public class FindUncalledPrivateMethods extends BytecodeScanningDetector {
 		this.bugReporter = bugReporter;
 	}
 
+	public Object clone() throws CloneNotSupportedException {
+		return super.clone();
+	}
+	
 	public void visitMethod(Method obj) {
 		super.visitMethod(obj);
 		if (obj.isPrivate()

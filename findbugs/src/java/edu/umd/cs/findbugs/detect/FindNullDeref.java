@@ -1,6 +1,6 @@
 /*
  * FindBugs - Find bugs in Java programs
- * Copyright (C) 2003,2004 University of Maryland
+ * Copyright (C) 2003-2005 University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,12 +19,11 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.*;
+import java.util.BitSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.Detector;
-import edu.umd.cs.findbugs.ba.*;
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.LineNumberTable;
@@ -32,6 +31,23 @@ import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.MethodGen;
+
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.Detector;
+import edu.umd.cs.findbugs.StatelessDetector;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.ba.AnalysisException;
+import edu.umd.cs.findbugs.ba.BasicBlock;
+import edu.umd.cs.findbugs.ba.CFGBuilderException;
+import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
+import edu.umd.cs.findbugs.ba.IsNullValue;
+import edu.umd.cs.findbugs.ba.IsNullValueAnalysis;
+import edu.umd.cs.findbugs.ba.IsNullValueDataflow;
+import edu.umd.cs.findbugs.ba.IsNullValueFrame;
+import edu.umd.cs.findbugs.ba.Location;
+import edu.umd.cs.findbugs.ba.SignatureConverter;
 
 /**
  * A Detector to find instructions where a NullPointerException
@@ -41,7 +57,7 @@ import org.apache.bcel.generic.MethodGen;
  * @author David Hovemeyer
  * @see IsNullValueAnalysis
  */
-public class FindNullDeref implements Detector {
+public class FindNullDeref implements Detector, StatelessDetector {
 
 	/**
 	 * An instruction recorded as a redundant reference comparison.
@@ -68,7 +84,6 @@ public class FindNullDeref implements Detector {
 	private static final boolean DEBUG = Boolean.getBoolean("fnd.debug");
 
 	private BugReporter bugReporter;
-	//private AnalysisContext analysisContext;
 	private List<RedundantBranch> redundantBranchList;
 	private BitSet definitelySameBranchSet;
 	private BitSet definitelyDifferentBranchSet;
@@ -81,9 +96,12 @@ public class FindNullDeref implements Detector {
 		this.definitelyDifferentBranchSet = new BitSet();
 		this.undeterminedBranchSet = new BitSet();
 	}
+	
+	public Object clone() throws CloneNotSupportedException {
+		return super.clone();
+	}
 
 	public void setAnalysisContext(AnalysisContext analysisContext) {
-		//this.analysisContext = analysisContext;
 	}
 
 	public void visitClassContext(ClassContext classContext) {

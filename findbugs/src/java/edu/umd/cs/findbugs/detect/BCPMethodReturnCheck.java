@@ -1,6 +1,6 @@
 /*
  * FindBugs - Find bugs in Java programs
- * Copyright (C) 2003,2004 University of Maryland
+ * Copyright (C) 2003-2005 University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,15 +19,9 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.BitSet;
 
-import edu.umd.cs.findbugs.AnalysisLocal;
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.ByteCodePatternDetector;
-import edu.umd.cs.findbugs.JavaVersion;
-import edu.umd.cs.findbugs.ba.ClassContext;
-import edu.umd.cs.findbugs.ba.bcp.*;
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
@@ -35,6 +29,20 @@ import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.MethodGen;
+
+import edu.umd.cs.findbugs.AnalysisLocal;
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.ByteCodePatternDetector;
+import edu.umd.cs.findbugs.JavaVersion;
+import edu.umd.cs.findbugs.StatelessDetector;
+import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.ba.bcp.ByteCodePattern;
+import edu.umd.cs.findbugs.ba.bcp.ByteCodePatternMatch;
+import edu.umd.cs.findbugs.ba.bcp.Invoke;
+import edu.umd.cs.findbugs.ba.bcp.MatchAny;
+import edu.umd.cs.findbugs.ba.bcp.Opcode;
+import edu.umd.cs.findbugs.ba.bcp.PatternElement;
 
 /**
  * This detector looks for places where the return value of a method
@@ -44,7 +52,7 @@ import org.apache.bcel.generic.MethodGen;
  * @author David Hovemeyer
  * @author Bill Pugh
  */
-public class BCPMethodReturnCheck extends ByteCodePatternDetector {
+public class BCPMethodReturnCheck extends ByteCodePatternDetector implements StatelessDetector {
 	private final BugReporter bugReporter;
 
 	private static final boolean CHECK_ALL = Boolean.getBoolean("mrc.checkall");
@@ -55,6 +63,11 @@ public class BCPMethodReturnCheck extends ByteCodePatternDetector {
         private static AnalysisLocal<ArrayList<PatternElement>> localPatternElementList
 			= new AnalysisLocal<ArrayList<PatternElement>>();
 
+    
+    public Object clone() throws CloneNotSupportedException {
+    	return super.clone();
+    }
+    
 	public ByteCodePattern  getPattern() {
 		ByteCodePattern  result = localByteCodePattern.get();
 		if (result == null) {

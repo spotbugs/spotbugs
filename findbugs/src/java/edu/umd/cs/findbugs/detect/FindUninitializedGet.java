@@ -1,6 +1,6 @@
 /*
  * FindBugs - Find bugs in Java programs
- * Copyright (C) 2003,2004 University of Maryland
+ * Copyright (C) 2003-2005 University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,18 +19,20 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.*;
+import java.util.HashSet;
+
+import org.apache.bcel.classfile.Field;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.FieldAnnotation;
+import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.visitclass.Constants2;
-import org.apache.bcel.classfile.Field;
-import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.classfile.Method;
 
-public class FindUninitializedGet extends BytecodeScanningDetector implements Constants2 {
+public class FindUninitializedGet extends BytecodeScanningDetector implements Constants2, StatelessDetector {
 	HashSet<FieldAnnotation> initializedFields = new HashSet<FieldAnnotation>();
 	HashSet<FieldAnnotation> declaredFields = new HashSet<FieldAnnotation>();
 	boolean inConstructor;
@@ -43,7 +45,10 @@ public class FindUninitializedGet extends BytecodeScanningDetector implements Co
 		this.bugReporter = bugReporter;
 	}
 
-
+	public Object clone() throws CloneNotSupportedException {
+		return super.clone();
+	}
+	
 	public void visit(JavaClass obj) {
 		declaredFields.clear();
 		super.visit(obj);

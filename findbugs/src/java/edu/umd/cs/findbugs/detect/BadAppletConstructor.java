@@ -28,10 +28,11 @@ import org.apache.bcel.classfile.Method;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.visitclass.Constants2;
 
-public class BadAppletConstructor extends BytecodeScanningDetector implements Constants2 {
+public class BadAppletConstructor extends BytecodeScanningDetector implements Constants2, StatelessDetector {
 	private BugReporter bugReporter;
 	private JavaClass appletClass;
 	private boolean inConstructor;
@@ -44,6 +45,10 @@ public class BadAppletConstructor extends BytecodeScanningDetector implements Co
 			bugReporter.reportMissingClass(cnfe);
 			appletClass = null;
 		}
+	}
+	
+	public Object clone() throws CloneNotSupportedException {
+		return super.clone();
 	}
 
 	public void visitClassContext(ClassContext classContext) {

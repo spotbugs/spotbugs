@@ -19,13 +19,11 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.*;
-
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.ResourceCollection;
-import edu.umd.cs.findbugs.ResourceTrackingDetector;
-import edu.umd.cs.findbugs.ba.*;
+import java.util.ArrayList;
+import java.util.BitSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Constant;
@@ -36,6 +34,22 @@ import org.apache.bcel.generic.MethodGen;
 import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.Type;
 
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.ResourceCollection;
+import edu.umd.cs.findbugs.ResourceTrackingDetector;
+import edu.umd.cs.findbugs.StatelessDetector;
+import edu.umd.cs.findbugs.ba.CFG;
+import edu.umd.cs.findbugs.ba.CFGBuilderException;
+import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.ba.Dataflow;
+import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
+import edu.umd.cs.findbugs.ba.Hierarchy;
+import edu.umd.cs.findbugs.ba.Location;
+import edu.umd.cs.findbugs.ba.ResourceValueAnalysis;
+import edu.umd.cs.findbugs.ba.ResourceValueAnalysisTestDriver;
+import edu.umd.cs.findbugs.ba.ResourceValueFrame;
+
 /**
  * A Detector to look for streams that are opened in a method,
  * do not escape the method, and are not closed on all paths
@@ -45,7 +59,7 @@ import org.apache.bcel.generic.Type;
  *
  * @author David Hovemeyer
  */
-public class FindOpenStream extends ResourceTrackingDetector<Stream, StreamResourceTracker> {
+public class FindOpenStream extends ResourceTrackingDetector<Stream, StreamResourceTracker> implements StatelessDetector {
 	static final boolean DEBUG = Boolean.getBoolean("fos.debug");
 	static final boolean IGNORE_WRAPPED_UNINTERESTING_STREAMS = !Boolean.getBoolean("fos.allowWUS");
 
@@ -214,6 +228,10 @@ public class FindOpenStream extends ResourceTrackingDetector<Stream, StreamResou
 	public FindOpenStream(BugReporter bugReporter) {
 		super(bugReporter);
 		this.potentialOpenStreamList = new LinkedList<PotentialOpenStream>();
+	}
+	
+	public Object clone() throws CloneNotSupportedException {
+		return super.clone();
 	}
 	
 	// List of words that must appear in names of classes which

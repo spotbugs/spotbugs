@@ -20,11 +20,13 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import org.apache.bcel.classfile.Method;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.visitclass.Constants2;
-import org.apache.bcel.classfile.Method;
 
 /**
  * Find occurrences of using the String "+" or "+=" operators
@@ -35,7 +37,7 @@ import org.apache.bcel.classfile.Method;
  * @author Dave Brosius
  * @author William Pugh
  */
-public class StringConcatenation extends BytecodeScanningDetector implements Constants2 {
+public class StringConcatenation extends BytecodeScanningDetector implements Constants2, StatelessDetector {
 	private static final boolean DEBUG
 	        = Boolean.getBoolean("sbsc.debug");
 
@@ -56,6 +58,10 @@ public class StringConcatenation extends BytecodeScanningDetector implements Con
 
 	public StringConcatenation(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
+	}
+
+	public Object clone() throws CloneNotSupportedException {
+		return super.clone();
 	}
 
 	public void visit(Method obj) {

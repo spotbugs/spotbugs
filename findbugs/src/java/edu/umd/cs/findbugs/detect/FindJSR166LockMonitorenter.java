@@ -1,6 +1,6 @@
 /*
  * FindBugs - Find bugs in Java programs
- * Copyright (C) 2004 University of Maryland
+ * Copyright (C) 2004,2005 University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,16 +19,34 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.*;
+import java.util.BitSet;
+import java.util.Iterator;
+
+import org.apache.bcel.Constants;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.Instruction;
+import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.MethodGen;
+import org.apache.bcel.generic.ObjectType;
+import org.apache.bcel.generic.ReferenceType;
+import org.apache.bcel.generic.Type;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
-import edu.umd.cs.findbugs.ba.*;
-import org.apache.bcel.Constants;
-import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.classfile.Method;
-import org.apache.bcel.generic.*;
+import edu.umd.cs.findbugs.StatelessDetector;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.ba.AnalysisException;
+import edu.umd.cs.findbugs.ba.BasicBlock;
+import edu.umd.cs.findbugs.ba.CFG;
+import edu.umd.cs.findbugs.ba.CFGBuilderException;
+import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
+import edu.umd.cs.findbugs.ba.Hierarchy;
+import edu.umd.cs.findbugs.ba.Location;
+import edu.umd.cs.findbugs.ba.TypeDataflow;
 
 /**
  * Find places where ordinary (balanced) synchronization is performed
@@ -36,9 +54,8 @@ import org.apache.bcel.generic.*;
  *
  * @author David Hovemeyer
  */
-public class FindJSR166LockMonitorenter implements Detector {
+public class FindJSR166LockMonitorenter implements Detector, StatelessDetector {
 	private BugReporter bugReporter;
-	//private AnalysisContext analysisContext;
 
 	private static final ObjectType LOCK_TYPE = new ObjectType("java.util.concurrent.locks.Lock");
 
@@ -46,8 +63,11 @@ public class FindJSR166LockMonitorenter implements Detector {
 		this.bugReporter = bugReporter;
 	}
 
+	public Object clone() throws CloneNotSupportedException {
+		return super.clone();
+	}
+	
 	public void setAnalysisContext(AnalysisContext analysisContext) {
-		//this.analysisContext = analysisContext;
 	}
 
 	public void visitClassContext(ClassContext classContext) {

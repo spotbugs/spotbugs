@@ -28,6 +28,7 @@ import org.apache.bcel.classfile.Method;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.visitclass.Constants2;
 import edu.umd.cs.findbugs.visitclass.LVTHelper;
 
@@ -38,7 +39,7 @@ import edu.umd.cs.findbugs.visitclass.LVTHelper;
  *
  * @author Dave Brosius
  */
-public class SuperfluousInstanceOf extends BytecodeScanningDetector implements Constants2 {
+public class SuperfluousInstanceOf extends BytecodeScanningDetector implements Constants2, StatelessDetector {
 
 	private static final int SEEN_NOTHING = 0;
 	private static final int SEEN_ALOAD = 1;
@@ -52,6 +53,10 @@ public class SuperfluousInstanceOf extends BytecodeScanningDetector implements C
 		this.bugReporter = bugReporter;
 	}
 	
+	public Object clone() throws CloneNotSupportedException {
+		return super.clone();
+	}
+
 	public void visit(Method obj) {
 		state = SEEN_NOTHING;
 		varTable = obj.getLocalVariableTable();
