@@ -49,6 +49,13 @@ public class MarkerReporter implements IWorkspaceRunnable {
 		marker.setAttribute(FindBugsMarker.BUG_TYPE, bug.getType());
 		marker.setAttribute(IMarker.MESSAGE, bug.getMessage());
 		marker.setAttribute(IMarker.SEVERITY, IMarker.SEVERITY_WARNING);
+		
+		// Set unique id of warning, so we can easily refer back
+		// to it later: for example, when the user classifies the warning.
+		String uniqueId = bug.getUniqueId();
+		if (uniqueId != null) {
+			marker.setAttribute(FindBugsMarker.UNIQUE_ID, uniqueId);
+		}
 
 	}
 }
