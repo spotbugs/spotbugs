@@ -115,6 +115,7 @@ public class TypeRepository {
 	private Type nullType;
 	private Type longExtraType;
 	private Type doubleExtraType;
+	private Type returnAddressType;
 
 	/* ----------------------------------------------------------------------
 	 * Public methods
@@ -417,6 +418,14 @@ public class TypeRepository {
 	}
 
 	/**
+	 * Get the instance of the return address type.
+	 * @return the return address type
+	 */
+	public Type getReturnAddressType() {
+		return returnAddressType;
+	}
+
+	/**
 	 * Add a direct superclass relationship to types in the repository.
 	 * @param subclass the subclass
 	 * @param superclass the superclass
@@ -558,6 +567,8 @@ public class TypeRepository {
 		signatureToTypeMap.put(SpecialTypeSignatures.BOTTOM_TYPE_SIGNATURE, bottomType = new BottomType());
 		signatureToTypeMap.put(SpecialTypeSignatures.LONG_EXTRA_TYPE_SIGNATURE, longExtraType = new LongExtraType());
 		signatureToTypeMap.put(SpecialTypeSignatures.DOUBLE_EXTRA_TYPE_SIGNATURE, doubleExtraType = new DoubleExtraType());
+		signatureToTypeMap.put(SpecialTypeSignatures.RETURN_ADDRESS_TYPE_SIGNATURE,
+			returnAddressType = new ReturnAddressType());
 	}
 
 	private ClassType createClassType(String signature) {
