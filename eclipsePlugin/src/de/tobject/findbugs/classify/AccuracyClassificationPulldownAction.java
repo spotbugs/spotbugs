@@ -22,14 +22,9 @@
  */
 package de.tobject.findbugs.classify;
 
-import java.util.Iterator;
-
 import org.eclipse.core.resources.IMarker;
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MenuAdapter;
 import org.eclipse.swt.events.MenuEvent;
@@ -41,9 +36,7 @@ import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.IWorkbenchWindowPulldownDelegate2;
 
-import de.tobject.findbugs.FindbugsPlugin;
-import de.tobject.findbugs.marker.FindBugsMarker;
-import edu.umd.cs.findbugs.BugCollection;
+import de.tobject.findbugs.reporter.MarkerUtil;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugProperty;
 
@@ -152,7 +145,7 @@ public class AccuracyClassificationPulldownAction
 		
 		bugInstance = null;
 		
-		IMarker marker = getMarkerFromSelection(selection);
+		IMarker marker = MarkerUtil.getMarkerFromSelection(selection);
 		
 		if (marker == null) {
 			// No marker selected. 
@@ -161,7 +154,7 @@ public class AccuracyClassificationPulldownAction
 		
 		System.out.println("Found a marker!");
 
-		bugInstance = findBugInstanceForMarker(marker);
+		bugInstance = MarkerUtil.findBugInstanceForMarker(marker);
 		if (bugInstance != null) {
 			System.out.println("Found BugInstance for FindBugs warning marker!");
 		}
@@ -192,76 +185,6 @@ public class AccuracyClassificationPulldownAction
 			isBugItem.setSelection(false);
 			notBugItem.setSelection(false);
 		}
-	}
-
-	/**
-	 * Find the BugInstance associated with given FindBugs marker.
-	 * 
-	 * @param marker a FindBugs marker
-	 * @return the BugInstance associated with the marker,
-	 *         or null if we can't find the BugInstance
-	 */
-	private BugInstance findBugInstanceForMarker(IMarker marker) {
-		IResource resource = marker.getResource();
-		if (resource == null) {
-			// Also shouldn't happen.
-			FindbugsPlugin.getDefault().logError("No resource for warning marker");
-			return null;
-		}
-		IProject project = resource.getProject();
-		if (project == null) {
-			// Also shouldn't happen.
-			FindbugsPlugin.getDefault().logError("No project for warning marker");
-			return null;
-		}
-		try {
-			String markerType = marker.getType();
-			//System.out.println("Marker type is " + markerType);
-			
-			if (!markerType.equals(FindBugsMarker.NAME)) {
-				FindbugsPlugin.getDefault().logError("Selected marker is not a FindBugs marker");
-				return null;
-			}
-				
-			// We have a FindBugs marker.  Get the corresponding BugInstance.
-			String uniqueId = marker.getAttribute(FindBugsMarker.UNIQUE_ID, null);
-			if (uniqueId == null) {
-				FindbugsPlugin.getDefault().logError("Marker does not contain unique id for warning");
-				return null;
-			}
-				
-			BugCollection bugCollection = FindbugsPlugin.readBugCollection(project, null);
-			
-			return bugCollection.lookupFromUniqueId(uniqueId);
-		} catch (RuntimeException e) {
-			throw e;
-		} catch (Exception e) {
-			// Multiple exception types caught here
-			FindbugsPlugin.getDefault().logException(e, "Could not get BugInstance for FindBugs marker");
-			return null;
-		}
-	}
-
-	/**
-	 * Fish an IMarker out of given selection.
-	 * 
-	 * @param selection
-	 */
-	private IMarker getMarkerFromSelection(ISelection selection) {
-		if (selection instanceof StructuredSelection) {
-			StructuredSelection structuredSelection = (StructuredSelection) selection;
-			
-			for (Iterator i = structuredSelection.iterator(); i.hasNext(); ) {
-				Object selectedObj = i.next();
-				//System.out.println("\tSelection element: " + selectedObj.getClass().getName());
-				if (selectedObj instanceof IMarker) {
-					System.out.println("Selection element is an IMarker!");
-					return (IMarker) selectedObj;
-				}
-			}
-		}
-		
-		return null;
 	}
 
 }

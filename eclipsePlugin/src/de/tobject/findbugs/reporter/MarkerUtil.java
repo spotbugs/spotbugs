@@ -23,6 +23,7 @@ package de.tobject.findbugs.reporter;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Iterator;
 
+import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
@@ -41,10 +42,13 @@ import org.eclipse.jdt.internal.core.CompilationUnit;
 import org.eclipse.jdt.internal.core.SourceType;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.widgets.Shell;
 
 import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.marker.FindBugsMarker;
+import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.PackageMemberAnnotation;
 import edu.umd.cs.findbugs.SortedBugCollection;
@@ -400,5 +404,78 @@ public abstract class MarkerUtil {
 					e, "Error redisplaying FindBugs warning markers");
 		}
 
+	}
+
+
+	/**
+	 * Find the BugInstance associated with given FindBugs marker.
+	 * 
+	 * @param marker a FindBugs marker
+	 * @return the BugInstance associated with the marker,
+	 *         or null if we can't find the BugInstance
+	 */
+	public static BugInstance findBugInstanceForMarker(IMarker marker) {
+		IResource resource = marker.getResource();
+		if (resource == null) {
+			// Also shouldn't happen.
+			FindbugsPlugin.getDefault().logError("No resource for warning marker");
+			return null;
+		}
+		IProject project = resource.getProject();
+		if (project == null) {
+			// Also shouldn't happen.
+			FindbugsPlugin.getDefault().logError("No project for warning marker");
+			return null;
+		}
+		try {
+			String markerType = marker.getType();
+			//System.out.println("Marker type is " + markerType);
+			
+			if (!markerType.equals(FindBugsMarker.NAME)) {
+				FindbugsPlugin.getDefault().logError("Selected marker is not a FindBugs marker");
+				return null;
+			}
+				
+			// We have a FindBugs marker.  Get the corresponding BugInstance.
+			String uniqueId = marker.getAttribute(FindBugsMarker.UNIQUE_ID, null);
+			if (uniqueId == null) {
+				FindbugsPlugin.getDefault().logError("Marker does not contain unique id for warning");
+				return null;
+			}
+				
+			BugCollection bugCollection = FindbugsPlugin.readBugCollection(project, null);
+			
+			return bugCollection.lookupFromUniqueId(uniqueId);
+		} catch (RuntimeException e) {
+			throw e;
+		} catch (Exception e) {
+			// Multiple exception types caught here
+			FindbugsPlugin.getDefault().logException(e, "Could not get BugInstance for FindBugs marker");
+			return null;
+		}
+	}
+
+	/**
+	 * Fish an IMarker out of given selection.
+	 * 
+	 * @param selection the selection
+	 * @return the selected IMarker, or null if we can't find an IMarker
+	 *         in the selection
+	 */
+	public static IMarker getMarkerFromSelection(ISelection selection) {
+		if (selection instanceof StructuredSelection) {
+			StructuredSelection structuredSelection = (StructuredSelection) selection;
+			
+			for (Iterator i = structuredSelection.iterator(); i.hasNext(); ) {
+				Object selectedObj = i.next();
+				//System.out.println("\tSelection element: " + selectedObj.getClass().getName());
+				if (selectedObj instanceof IMarker) {
+					System.out.println("Selection element is an IMarker!");
+					return (IMarker) selectedObj;
+				}
+			}
+		}
+		
+		return null;
 	}
 }
