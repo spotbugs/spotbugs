@@ -194,6 +194,21 @@ abstract public class DismantleBytecode extends PreorderVisitor implements   Con
                             switchOffsets[o] = byteStream.readInt();
                             i += 4;
                         };
+			// Sort by offset
+                        for(int j = 0; j < npairs; j++) {
+			  int min = j;
+                          for(int k = j+1; k < npairs; k++) 
+				if (switchOffsets[min] > switchOffsets[k])
+					min = k;
+			  if (min > j) {
+				int tmp = switchOffsets[min];
+				switchOffsets[min] = switchOffsets[j];
+				switchOffsets[j] = tmp;
+				tmp = switchLabels[min];
+				switchLabels[min] = switchLabels[j];
+				switchLabels[j] = tmp;
+				}
+			}
                     }
                     else if (opCode == WIDE) {
 			wide = true;
