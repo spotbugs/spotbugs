@@ -65,7 +65,23 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 		// URI should always be empty.
 		// So, qName is the name of the element.
 
-		if (!elementStack.isEmpty()) {
+		if (elementStack.isEmpty()) {
+			// We should be parsing the outer BugCollection element.
+			if (!qName.equals("BugCollection"))
+				throw new SAXException(
+						"Invalid top-level element (expected BugCollection, saw " + qName + ")");
+			String timestamp = attributes.getValue("timestamp");
+			long tsval = -1L;
+			try {
+				tsval = Long.parseLong(timestamp);
+			} catch (NumberFormatException e) {
+				// Ignore
+			}
+			if (tsval < 0L) {
+				tsval = System.currentTimeMillis();
+			}
+			bugCollection.setTimestamp(tsval);
+		} else {
 			String outerElement = elementStack.get(elementStack.size() - 1);
 
 			if (outerElement.equals("BugCollection")) {

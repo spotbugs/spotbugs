@@ -129,6 +129,24 @@ public abstract class BugCollection {
 	 *         or null if there is no such BugInstance
 	 */
 	public abstract BugInstance lookupFromUniqueId(String uniqueId);
+	
+	/**
+	 * Set the timestamp of the BugCollection.
+	 * This is the wall clock time of the most recent update
+	 * of the collection.
+	 *  
+	 * @return the timestamp
+	 */
+	public abstract long getTimestamp();
+
+	/**
+	 * Get the timestamp of the BugCollection.
+	 * This is the wall clock time of the most recent update
+	 * of the collection.
+	 * 
+	 * @param timestamp the timestamp
+	 */
+	public abstract void setTimestamp(long timestamp);
 
 	static final String ROOT_ELEMENT_NAME = "BugCollection";
 	static final String SRCMAP_ELEMENT_NAME = "SrcMap";
@@ -278,7 +296,10 @@ public abstract class BugCollection {
 		try {
 			xmlOutput.beginDocument();
 			xmlOutput.openTag(ROOT_ELEMENT_NAME,
-				new XMLAttributeList().addAttribute("version",Version.RELEASE));
+				new XMLAttributeList()
+					.addAttribute("version",Version.RELEASE)
+					.addAttribute("timestamp",String.valueOf(getTimestamp()))
+			);
 
 			project.writeXML(xmlOutput);
 

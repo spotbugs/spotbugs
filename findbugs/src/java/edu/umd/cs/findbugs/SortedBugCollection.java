@@ -60,6 +60,7 @@ public class SortedBugCollection extends BugCollection {
 
 	private Map<String, BugInstance> uniqueIdToBugInstanceMap;
 	private int generatedUniqueIdCount;
+	private long timestamp;
 
 	/**
 	 * Constructor.
@@ -72,6 +73,7 @@ public class SortedBugCollection extends BugCollection {
 		summaryHTML = "";
 		uniqueIdToBugInstanceMap = new HashMap<String, BugInstance>();
 		generatedUniqueIdCount = 0;
+		timestamp = System.currentTimeMillis();
 	}
 
 	public boolean add(BugInstance bugInstance) {
@@ -166,6 +168,16 @@ public class SortedBugCollection extends BugCollection {
 	 */
 	public BugInstance lookupFromUniqueId(String uniqueId) {
 		return uniqueIdToBugInstanceMap.get(uniqueId);
+	}
+
+	@Override
+	public long getTimestamp() {
+		return timestamp;
+	}
+
+	@Override
+	public void setTimestamp(long timestamp) {
+		this.timestamp = timestamp;
 	}
 }
 
