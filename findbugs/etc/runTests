@@ -24,7 +24,7 @@ foreach my $jar (@jarList) {
 	my $outFile = "build/$shortName.out";
 
 	my $rc =
-	system("java $JVM_ARGS -classpath build/findbugs.jar:\$CLASSPATH edu.umd.cs.findbugs.FindBugs $jar | etc/summarizeBugs > $outFile");
+	system("java $JVM_ARGS -jar build/lib/findbugs.jar $jar | etc/summarizeBugs > $outFile");
 	if ($rc/256 != 0) {
 		print STDERR "Command failed!\n";
 		exit 1;
