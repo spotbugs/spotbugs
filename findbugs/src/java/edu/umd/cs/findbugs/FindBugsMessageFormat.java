@@ -8,12 +8,12 @@ package edu.umd.cs.findbugs;
  *
  * <p> Example:
  * <pre>
- *     new FindBugsMessageFormat("BUG: {1.shortMethod} does something bad to field {2}")
+ *     new FindBugsMessageFormat("BUG: {1} does something bad to field {2.fullField}")
  * </pre>
  * In this example, the method annotation at position 1 is formatted using
- * the string "shortMethod" as the key.  Hypothetically, this would indicate
- * that we want the short form of the method.  The field annotation at position 2
- * is formatted with the empty (default) key.
+ * the empty (default) key.  The field annotation at position 2 is formatted
+ * using the "fullField" key, which uses the long format for the field rather
+ * than the usual "class.fieldname" format.
  *
  * @see BugInstance
  * @author David Hovemeyer
