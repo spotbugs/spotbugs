@@ -151,9 +151,12 @@ public class FindInconsistentSync2 implements Detector {
 			Set<Method> lockedMethodSet = findNotUnlockedMethods(classContext, selfCalls, obviouslyLockedSites);
 			lockedMethodSet.retainAll(findLockedMethods(classContext, selfCalls, obviouslyLockedSites));
 
-			Method[] methodList = javaClass.getMethods();
-			for (int i = 0; i < methodList.length; ++i) {
-				Method method = methodList[i];
+			Set<Method> publicReachableMethods 
+				= findPublicReachableMethods(classContext, selfCalls);
+
+			Iterator<Method> i = publicReachableMethods.iterator();
+			while (i.hasNext()) {
+				Method method = i.next();
 				if (classContext.getMethodGen(method) == null)
 					continue;
 				if (isConstructor(method.getName()))
@@ -452,14 +455,17 @@ public class FindInconsistentSync2 implements Detector {
 
 		CallGraph callGraph = selfCalls.getCallGraph();
 
-		// Initially, assume all methods are locked
+		// Initially, assume no methods are called from an
+		// unlocked context
 		Set<Method> lockedMethodSet = new HashSet<Method>();
 		lockedMethodSet.addAll(Arrays.asList(methodList));
 
-		// Assume all public methods are unlocked
+		// Assume all public methods are called from
+		// unlocked context
 		for (int i = 0; i < methodList.length; ++i) {
 			Method method = methodList[i];
-			if (method.isPublic()) {
+			if (method.isPublic()
+				&& !isConstructor(method.getName())) {
 				lockedMethodSet.remove(method);
 			}
 		}
@@ -502,6 +508,7 @@ public class FindInconsistentSync2 implements Detector {
 		// are called only from a locked context.
 		return lockedMethodSet;
 	}
+
 
 
 
@@ -578,6 +585,92 @@ public class FindInconsistentSync2 implements Detector {
 		// We assume that any methods left in the locked set
 		// are called only from a locked context.
 		return lockedMethodSet;
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	/**
+	 * Find methods that do not appear to be reachable from public methods.
+	 * Such methods will not be analyzed.
+	 */
+	private Set<Method> findPublicReachableMethods(ClassContext classContext, SelfCalls selfCalls)
+		throws CFGBuilderException, DataflowAnalysisException {
+
+		JavaClass javaClass = classContext.getJavaClass();
+		Method[] methodList = javaClass.getMethods();
+
+		CallGraph callGraph = selfCalls.getCallGraph();
+
+		// Initially, assume all methods are locked
+		Set<Method> publicReachableMethodSet = new HashSet<Method>();
+
+		// Assume all public methods are unlocked
+		for (int i = 0; i < methodList.length; ++i) {
+			Method method = methodList[i];
+			if (method.isPublic()
+				&& !isConstructor(method.getName())) {
+				publicReachableMethodSet.add(method);
+			}
+		}
+
+		// Explore the self-call graph to find nonpublic methods
+		// that can be called from an unlocked context.
+		boolean change;
+		do {
+			change = false;
+
+			for (Iterator<CallGraphEdge> i = callGraph.edgeIterator(); i.hasNext(); ) {
+				CallGraphEdge edge = i.next();
+				CallSite callSite = edge.getCallSite();
+
+				// Ignore obviously locked edges
+				// If the calling method is locked, ignore the edge
+				if (publicReachableMethodSet.contains(callSite.getMethod()))
+				   {
+				   // Calling method is reachable, so the called method
+				   // is also reachable.
+				   CallGraphNode target = edge.getTarget();
+				   if (publicReachableMethodSet.add(target.getMethod()))
+					change = true;
+				   }
+			}
+		} while (change);
+
+		if (DEBUG) {
+			System.out.println("Methods apparently reachable from public non-constructor methods:");
+			for (Iterator<Method> i = publicReachableMethodSet.iterator(); i.hasNext(); ) {
+				Method method = i.next();
+				System.out.println("\t" + method.getName());
+			}
+		}
+
+		return publicReachableMethodSet;
 	}
 
 
