@@ -97,8 +97,13 @@ public class LockAnalysis extends ForwardDataflowAnalysis<LockSet> {
 		short opcode = ins.getOpcode();
 		if (opcode == Constants.MONITORENTER || opcode == Constants.MONITOREXIT) {
 			ValueNumberFrame frame = vnaDataflow.getFactAtLocation(new Location(handle, basicBlock));
-			int lockNumber = frame.getTopValue().getNumber();
-			lockOp(fact, lockNumber, opcode == Constants.MONITORENTER ? 1 : -1);
+
+			// NOTE: if the CFG is pruned, there may be unreachable instructions,
+			// so make sure frame is valid.
+			if (frame.isValid()) {
+				int lockNumber = frame.getTopValue().getNumber();
+				lockOp(fact, lockNumber, opcode == Constants.MONITORENTER ? 1 : -1);
+			}
 		} else if ((ins instanceof ReturnInstruction) && isSynchronized && !isStatic) {
 			lockOp(fact, vna.getThisValue().getNumber(), -1);
 		}
