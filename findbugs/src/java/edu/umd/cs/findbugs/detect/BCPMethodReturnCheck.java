@@ -20,8 +20,6 @@
 package edu.umd.cs.findbugs.detect;
 
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.*;
 import org.apache.bcel.generic.*;
@@ -85,101 +83,86 @@ public class BCPMethodReturnCheck extends ByteCodePatternDetector {
 			bugReporter),
 		*/
 
-		// Determine which Java version we're using
-		String version = System.getProperty("java.version");
-		Pattern pattern = Pattern.compile("^(\\d+)\\.(\\d+)\\..*$");
-		Matcher matcher = pattern.matcher(version);
-
-		if (matcher.matches()) {
-			try {
-				int major = Integer.parseInt(matcher.group(1));
-				int minor = Integer.parseInt(matcher.group(2));
-
-				//System.out.println("major = " + major + ", minor = " + minor);
-	
-				if (CHECK_ALL || major > 1 || minor >= 5) {
-					// Add JDK 1.5 and later return check functions
-					list.add(new Invoke("+java.util.concurrent.locks.ReadWriteLock", 
-							"readLock", 
-							"()Ljava/util/concurrent/locks/Lock;", 
-							Invoke.INSTANCE, 
-							bugReporter));
-					list.add(new Invoke("+java.util.concurrent.locks.ReadWriteLock", 
-							"writeLock", 
-							"()Ljava/util/concurrent/locks/Lock;", 
-							Invoke.INSTANCE, 
-							bugReporter));
-					list.add(new Invoke("+java.util.concurrent.locks.Condition", 
-							"await", 
-							"(JLjava/util/concurrent/TimeUnit;)Z", 
-							Invoke.INSTANCE, 
-							bugReporter));
-					list.add(new Invoke("+java.util.concurrent.locks.Condition", 
-							"awaitUtil", 
-							"(Ljava/util/Date;)Z", 
-							Invoke.INSTANCE, 
-							bugReporter));
-					list.add(new Invoke("+java.util.concurrent.locks.Condition", 
-							"awaitNanos", 
-							"(J)Z", 
-							Invoke.INSTANCE, 
-							bugReporter));
-					list.add(new Invoke("+java.util.concurrent.Semaphore", 
-							"tryAcquire", 
-							"(JLjava/util/concurrent/TimeUnit;)Z", 
-							Invoke.INSTANCE, 
-							bugReporter));
-					list.add(new Invoke("+java.util.concurrent.Semaphore", 
-							"tryAcquire", 
-							"()Z", 
-							Invoke.INSTANCE, 
-							bugReporter));
-					list.add(new Invoke("+java.util.concurrent.locks.Lock", 
-							"tryLock", 
-							"(JLjava/util/concurrent/TimeUnit;)Z", 
-							Invoke.INSTANCE, 
-							bugReporter));
-					list.add(new Invoke("+java.util.concurrent.locks.Lock", 
-							"newCondition", 
-							"()Ljava/util/concurrent/locks/Condition;", 
-							Invoke.INSTANCE, 
-							bugReporter));
-					list.add(new Invoke("+java.util.concurrent.locks.Lock", 
-							"tryLock", 
-							"()Z", 
-							Invoke.INSTANCE, 
-							bugReporter));
-					list.add(new Invoke("+java.util.Queue", 
-							"offer", 
-							"(Ljava/lang/Object;)Z", 
-							Invoke.INSTANCE, 
-							bugReporter));
-					list.add(new Invoke("+java.util.concurrent.BlockingQueue", 
-							"offer", 
-							"(Ljava/lang/Object;JLjava/util/concurrent/TimeUnit;)Z",
-							Invoke.INSTANCE, 
-							bugReporter));
-					list.add(new Invoke("+java.util.concurrent.BlockingQueue", 
-							"poll", 
-							"(JLjava/util/concurrent/TimeUnit;)Ljava/lang/Object;", 
-							Invoke.INSTANCE, 
-							bugReporter));
-					list.add(new Invoke("+java.util.Queue", 
-							"poll", 
-							"()Ljava/lang/Object;", 
-							Invoke.INSTANCE, 
-							bugReporter));
-						/*
-						new Invoke("java.util.concurrent.locks.ReentrantLock",
-							"tryLock", 
-							"()Z", 
-							Invoke.INSTANCE, 
-							bugReporter),
-						*/
-				}
-			} catch (NumberFormatException e) {
-				bugReporter.logError("Bad java version: "  + version);
-			}
+		if (CHECK_ALL ||
+			JavaVersion.getRuntimeVersion().isSameOrNewerThan(JavaVersion.JAVA_1_5)) {
+			// Add JDK 1.5 and later return check functions
+			list.add(new Invoke("+java.util.concurrent.locks.ReadWriteLock", 
+					"readLock", 
+					"()Ljava/util/concurrent/locks/Lock;", 
+					Invoke.INSTANCE, 
+					bugReporter));
+			list.add(new Invoke("+java.util.concurrent.locks.ReadWriteLock", 
+					"writeLock", 
+					"()Ljava/util/concurrent/locks/Lock;", 
+					Invoke.INSTANCE, 
+					bugReporter));
+			list.add(new Invoke("+java.util.concurrent.locks.Condition", 
+					"await", 
+					"(JLjava/util/concurrent/TimeUnit;)Z", 
+					Invoke.INSTANCE, 
+					bugReporter));
+			list.add(new Invoke("+java.util.concurrent.locks.Condition", 
+					"awaitUtil", 
+					"(Ljava/util/Date;)Z", 
+					Invoke.INSTANCE, 
+					bugReporter));
+			list.add(new Invoke("+java.util.concurrent.locks.Condition", 
+					"awaitNanos", 
+					"(J)Z", 
+					Invoke.INSTANCE, 
+					bugReporter));
+			list.add(new Invoke("+java.util.concurrent.Semaphore", 
+					"tryAcquire", 
+					"(JLjava/util/concurrent/TimeUnit;)Z", 
+					Invoke.INSTANCE, 
+					bugReporter));
+			list.add(new Invoke("+java.util.concurrent.Semaphore", 
+					"tryAcquire", 
+					"()Z", 
+					Invoke.INSTANCE, 
+					bugReporter));
+			list.add(new Invoke("+java.util.concurrent.locks.Lock", 
+					"tryLock", 
+					"(JLjava/util/concurrent/TimeUnit;)Z", 
+					Invoke.INSTANCE, 
+					bugReporter));
+			list.add(new Invoke("+java.util.concurrent.locks.Lock", 
+					"newCondition", 
+					"()Ljava/util/concurrent/locks/Condition;", 
+					Invoke.INSTANCE, 
+					bugReporter));
+			list.add(new Invoke("+java.util.concurrent.locks.Lock", 
+					"tryLock", 
+					"()Z", 
+					Invoke.INSTANCE, 
+					bugReporter));
+			list.add(new Invoke("+java.util.Queue", 
+					"offer", 
+					"(Ljava/lang/Object;)Z", 
+					Invoke.INSTANCE, 
+					bugReporter));
+			list.add(new Invoke("+java.util.concurrent.BlockingQueue", 
+					"offer", 
+					"(Ljava/lang/Object;JLjava/util/concurrent/TimeUnit;)Z",
+					Invoke.INSTANCE, 
+					bugReporter));
+			list.add(new Invoke("+java.util.concurrent.BlockingQueue", 
+					"poll", 
+					"(JLjava/util/concurrent/TimeUnit;)Ljava/lang/Object;", 
+					Invoke.INSTANCE, 
+					bugReporter));
+			list.add(new Invoke("+java.util.Queue", 
+					"poll", 
+					"()Ljava/lang/Object;", 
+					Invoke.INSTANCE, 
+					bugReporter));
+				/*
+				new Invoke("java.util.concurrent.locks.ReentrantLock",
+					"tryLock", 
+					"()Z", 
+					Invoke.INSTANCE, 
+					bugReporter),
+				*/
 		}
 
 		return list.toArray(new PatternElement[0]);
