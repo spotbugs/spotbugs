@@ -32,10 +32,21 @@ public class DetectorFactory {
 
 	private static final Class[] constructorArgTypes = new Class[]{BugReporter.class};
 
-	public Detector create(BugReporter bugReporter)
-		throws NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
-		Constructor constructor = detectorClass.getConstructor(constructorArgTypes);
-		return (Detector) constructor.newInstance(new Object[] {bugReporter});
+	public Detector create(BugReporter bugReporter) {
+		try {
+			Constructor constructor = detectorClass.getConstructor(constructorArgTypes);
+			return (Detector) constructor.newInstance(new Object[] {bugReporter});
+		} catch (Exception e) {
+			throw new RuntimeException("Could not instantiate Detector", e);
+		}
+	}
+
+	public String getShortName() {
+		String className = detectorClass.getName();
+		int endOfPkg = className.lastIndexOf('.');
+		if (endOfPkg >= 0)
+			className = className.substring(endOfPkg + 1);
+		return className;
 	}
 }
 
