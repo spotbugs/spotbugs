@@ -308,7 +308,8 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 										return;
 	
 									if (lhs.equals("java.lang.String") && rhs.equals("java.lang.String")) {
-										//System.out.println("String/String comparison!");
+										if (DEBUG) System.out.println("String/String comparison at " +
+											handle);
 
 										// Compute the priority:
 										// - two static strings => do not report
