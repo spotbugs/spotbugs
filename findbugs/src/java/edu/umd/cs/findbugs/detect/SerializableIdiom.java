@@ -142,13 +142,15 @@ public class SerializableIdiom extends PreorderVisitor
     public void visit(Field obj) {
 	int flags = obj.getAccessFlags();
 
-	if (isSerializable && fieldSig.indexOf("L")  >= 0 && !obj.isTransient() && !obj.isStatic()) {
+	if (className.indexOf("ObjectStreamClass") == -1
+	    && isSerializable && fieldSig.indexOf("L")  >= 0 && !obj.isTransient() && !obj.isStatic()) {
 		try {
 			String fieldClassName = fieldSig.substring(fieldSig.indexOf("L")+1, fieldSig.length() - 1).replace('/', '.');
 			JavaClass fieldClass = Repository.lookupClass(fieldClassName);
 
 			if (!fieldClassName.equals("java.lang.Object") &&
-			    !Repository.instanceOf(fieldClass, "java.io.Serializable")) {
+			    !(Repository.instanceOf(fieldClass, "java.io.Serializable")
+				|| Repository.instanceOf(fieldClass, "java.io.Externalizable"))) {
 				// Priority is higher if the class directly
 				// implements Serializable.
 				int priority = implementsSerializableDirectly ? HIGH_PRIORITY : NORMAL_PRIORITY;
