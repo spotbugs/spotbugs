@@ -517,7 +517,7 @@ or both.
 
   <BugPattern type="MF_CLASS_MASKS_FIELD">
     <ShortDescription>Class defines field that obscures a superclass field</ShortDescription>
-    <LongDescription>Class {0} defines field that obscures a superclass field {1}</LongDescription>
+    <LongDescription>Class {0} defines field that obscures superclass field {1}</LongDescription>
     <Details>
 <![CDATA[
 <p> This class defines a field with the same name as a visible
