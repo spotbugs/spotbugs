@@ -49,6 +49,7 @@ public class ClassContext {
 		new IdentityHashMap<Method, LockCountDataflow>();
 	private IdentityHashMap<Method, LockDataflow> lockDataflowMap = new IdentityHashMap<Method, LockDataflow>();
 	private ClassGen classGen;
+	private AssignedFieldMap assignedFieldMap;
 
 	/**
 	 * Constructor.
@@ -58,6 +59,7 @@ public class ClassContext {
 		this.jclass = jclass;
 		this.lookupFailureCallback = lookupFailureCallback;
 		this.classGen = null;
+		this.assignedFieldMap = null;
 	}
 
 	/**
@@ -301,6 +303,20 @@ public class ClassContext {
 			lockDataflowMap.put(method, dataflow);
 		}
 		return dataflow;
+	}
+
+	/**
+	 * Get the assigned field map for the class.
+	 * @return the AssignedFieldMap
+	 * @throws ClassNotFoundException if a class lookup prevents
+	 *   the class's superclasses from being searched for
+	 *   assignable fields
+	 */
+	public AssignedFieldMap getAssignedFieldMap() throws ClassNotFoundException {
+		if (assignedFieldMap == null) {
+			assignedFieldMap = new AssignedFieldMap(this);
+		}
+		return assignedFieldMap;
 	}
 }
 
