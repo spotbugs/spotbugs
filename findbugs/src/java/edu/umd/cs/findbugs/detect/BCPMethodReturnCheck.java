@@ -39,7 +39,7 @@ public class BCPMethodReturnCheck extends ByteCodePatternDetector {
 			new Invoke("/^java\\.math\\.BigDecimal$", "/.*", "/.*", Invoke.ORDINARY_METHOD),
 			new Invoke("/^java\\.math\\.BigInteger$", "/.*", "/.*", Invoke.ORDINARY_METHOD),
 		}).label("call"))
-		.add(new Opcode(Constants.POP));
+		.add(new MatchAny(new PatternElement[] {new Opcode(Constants.POP), new Opcode(Constants.POP2)}));
 
 	public BCPMethodReturnCheck(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
@@ -48,10 +48,10 @@ public class BCPMethodReturnCheck extends ByteCodePatternDetector {
 	public ByteCodePattern getPattern() { return pattern; }
 
 	public boolean prescreen(Method method, ClassContext classContext) {
-		// Pre-screen for methods with a POP bytecode.
-		// This gives us a 4X speedup.
+		// Pre-screen for methods with POP or POP2 bytecodes.
+		// This gives us a speedup close to 5X.
 		BitSet bytecodeSet = classContext.getBytecodeSet(method);
-		return bytecodeSet.get(Constants.POP);
+		return bytecodeSet.get(Constants.POP) || bytecodeSet.get(Constants.POP2);
 	}
 
 	public void reportMatch(MethodGen methodGen, ByteCodePatternMatch match) {
