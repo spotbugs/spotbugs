@@ -66,6 +66,13 @@ public class I18N {
 	}
 
 	/**
+	 * Get an Iterator over all registered bug patterns.
+	 */
+	public Iterator<BugPattern> bugPatternIterator() {
+		return bugPatternMap.values().iterator();
+	}
+
+	/**
 	 * Register a BugCode.
 	 * @param bugCode the BugCode
 	 */
