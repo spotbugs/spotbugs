@@ -286,12 +286,6 @@ class StreamResourceTracker implements ResourceTracker<Stream> {
 		return inv.getClassName(cpg).equals(className)
 			&& inv.getName(cpg).equals(methodName);
 	}
-
-	private boolean matchMethod(InvokeInstruction inv, ConstantPoolGen cpg, String className, String methodName, String methodSig) {
-		if (!matchMethod(inv, cpg, className, methodName))
-			return false;
-		return inv.getSignature(cpg).equals(methodSig);
-	}
 }
 
 /**
