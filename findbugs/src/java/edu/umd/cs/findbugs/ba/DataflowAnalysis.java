@@ -20,10 +20,12 @@
 package edu.umd.cs.daveho.ba;
 
 import org.apache.bcel.generic.InstructionHandle;
+import java.util.List;
 
 /**
  * A dataflow analysis to be used with the {@link Dataflow} class.
  * @see Dataflow
+ * @author David Hovemeyer
  */
 public interface DataflowAnalysis<Fact> {
 	/**
@@ -54,6 +56,12 @@ public interface DataflowAnalysis<Fact> {
 	 * Make given fact the top value.
 	 */
 	public void makeFactTop(Fact fact);
+
+	/**
+	 * Determine whether the given fact is <em>valid</em>
+	 * (neither top nor bottom).
+	 */
+	public boolean isFactValid(Fact fact);
 
 	/**
 	 * Returns true if the analysis is forwards, false if backwards.
@@ -88,19 +96,15 @@ public interface DataflowAnalysis<Fact> {
 	public void transfer(BasicBlock basicBlock, InstructionHandle end, Fact start, Fact result) throws DataflowAnalysisException;
 
 	/**
-	 * Meet function for dataflow facts.
-	 * <em>Be advised</em>: in Java, the meet function will often need
-	 * to perform special handling when meeting values for exception handler
-	 * blocks.  For example, if an exception is thrown from a particular instruction,
-	 * this generally indicates that the instruction did not execute,
-	 * meaning that the flow values resulting from the originating basic block
-	 * cannot be completely trusted.
-	 *
-	 * @param fact a dataflow fact set to be meeted into result
-	 * @param edge the edge conveying the set of facts
-	 * @param result dataflow fact set whose contents should be met with fact
+	 * Meet all of the logical predecessors of an edge into the start
+	 * fact for the block.
+	 * @param basicBlock the basic block whose start fact we are initializing
+	 * @param predEdgeList list of logical predecessors of the block
+	 * @param predFactList list of result facts for the logical predecessors
+	 * @param start the start fact we are initializing (which is initially TOP)
 	 */
-	public void meetInto(Fact fact, Edge edge, Fact result) throws DataflowAnalysisException;
+	public void meetPredecessorFacts(BasicBlock basicBlock, List<Edge> predEdgeList, List<Fact> predFactList, Fact start)
+		throws DataflowAnalysisException;
 }
 
 // vim:ts=4

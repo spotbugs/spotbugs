@@ -25,8 +25,9 @@ package edu.umd.cs.daveho.ba;
  * methods.
  * @see Dataflow
  * @see DataflowAnalysis
+ * @author David Hovemeyer
  */
-public abstract class ForwardDataflowAnalysis<Fact> implements DataflowAnalysis<Fact> {
+public abstract class ForwardDataflowAnalysis<Fact> extends AbstractDataflowAnalysis<Fact> {
 	public boolean isForwards() {
 		return true;
 	}

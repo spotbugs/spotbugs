@@ -65,6 +65,10 @@ public class ValueNumberAnalysis extends ForwardDataflowAnalysis<ValueNumberFram
 		fact.setTop();
 	}
 
+	public void isFactValid() {
+		return fact.isValid();
+	}
+
 	public boolean same(ValueNumberFrame fact1, ValueNumberFrame fact2) {
 		return fact1.sameAs(fact2);
 	}

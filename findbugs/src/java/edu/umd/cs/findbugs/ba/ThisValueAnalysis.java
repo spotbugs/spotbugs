@@ -73,46 +73,16 @@ public class ThisValueAnalysis extends ForwardDataflowAnalysis<ThisValueFrame> {
 		fact.setTop();
 	}
 
+	public boolean isFactValid(ThisValueFrame fact) {
+		return fact.isValid();
+	}
+
 	public boolean same(ThisValueFrame fact1, ThisValueFrame fact2) {
 		return fact1.sameAs(fact2);
 	}
 
-	public void transfer(BasicBlock basicBlock, InstructionHandle end, ThisValueFrame start, ThisValueFrame result) throws DataflowAnalysisException {
-		result.copyFrom(start);
-
-		if (!start.isTop() && !start.isBottom()) {
-			ThisValueFrameModelingVisitor visitor = new ThisValueFrameModelingVisitor(result, methodGen.getConstantPool());
-			Iterator<InstructionHandle> i = basicBlock.instructionIterator();
-			while (i.hasNext()) {
-				InstructionHandle handle = i.next();
-				if (handle == end)
-					break;
-				Instruction ins = handle.getInstruction();
-
-				// Make sure that stack change was what we expected!!!
-				// There is a bug in BCEL 5.0 which prevents the visitor from
-				// correctly modeling the stack.  (Specifically, the PUTFIELD
-				// instruction in that version does not implement the
-				// StackConsumer interface).
-				int oldStack = result.getStackDepth();
-				ins.accept(visitor);
-				int newStack = result.getStackDepth();
-				int delta = (newStack - oldStack);
-				int predictedDelta = predictStackDelta(ins);
-				if (delta != predictedDelta)
-					throw new IllegalStateException("Failure modeling stack for instruction " + ins +
-						" (predicted=" + predictedDelta + ", actual="+delta + ")");
-			}
-		}
-	}
-
-	private int predictStackDelta(Instruction ins) {
-		ConstantPoolGen cpg = methodGen.getConstantPool();
-		int consumed = ins.consumeStack(cpg);
-		int produced = ins.produceStack(cpg);
-		if (consumed == Constants.UNPREDICTABLE || produced == Constants.UNPREDICTABLE)
-			throw new IllegalStateException("unpredictable stack delta for instruction " + ins);
-		return produced - consumed;
+	public void transferInstruction(InstructionHandle handle, ThisValueFrame fact) throws DataflowAnalysisException {
+		handle.getInstruction().accept(new ThisValueFrameModelingVisitor(fact, methodGen.getConstantPool()));
 	}
 
 	public void meetInto(ThisValueFrame fact, Edge edge, ThisValueFrame result) throws DataflowAnalysisException {

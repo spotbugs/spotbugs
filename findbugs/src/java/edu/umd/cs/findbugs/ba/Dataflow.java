@@ -36,6 +36,7 @@ import java.util.*;
  *
  * @see CFG
  * @see DataflowAnalysis
+ * @author David Hovemeyer
  */
 public class Dataflow<Fact> {
 	private CFG cfg;
@@ -106,17 +107,16 @@ public class Dataflow<Fact> {
 					analysis.initEntryFact(start);
 					if (DEBUG) debug(block, "Init entry fact ==> " + start + "\n");
 				} else {
-					Iterator<BasicBlock> j = logicalPredecessors(block);
-
-					while (j.hasNext()) {
-						BasicBlock logicalPred = j.next();
-						Edge edge = isForwards ? cfg.lookupEdge(logicalPred, block) : cfg.lookupEdge(block, logicalPred);
-						Fact predFact = resultFactMap.get(logicalPred);
-
-						if (DEBUG) debug(block, logicalPred, "Meet " + start + " with " + predFact);
-						analysis.meetInto(predFact, edge, start);
-						if (DEBUG) System.out.println(" ==> " + start);
+					Iterator<Edge> predEdgeIter = logicalPredecessorEdgeIterator(block);
+					ArrayList<Edge> predEdgeList = new ArrayList<Edge>();
+					ArrayList<Fact> predFactList = new ArrayList<Fact>();
+					while (predEdgeIter.hasNext()) {
+						Edge edge = predEdgeIter.next();
+						predEdgeList.add(edge);
+						BasicBlock logicalPred = isForwards ? edge.getSource() : edge.getDest();
+						predFactList.add(resultFactMap.get(logicalPred));
 					}
+					analysis.meetPredecessorFacts(block, predEdgeList, predFactList, start);
 				}
 				if (DEBUG) debug(block, "start fact is " + start + "\n");
 	
@@ -180,15 +180,12 @@ public class Dataflow<Fact> {
 	public DataflowAnalysis<Fact> getAnalysis() { return analysis; }
 
 	/**
-	 * Get the "logical" predecessors of given block.
-	 * For forward analyses this is just the normal CFG predecessors.
-	 * For backward analyses, this is the CFG successors.
+	 * Return an Iterator over edges that connect given block to its
+	 * logical predecessors.  For forward analyses, this is the incoming edges.
+	 * For backward analyses, this is the outgoing edges.
 	 */
-	private Iterator<BasicBlock> logicalPredecessors(BasicBlock block) {
-		if (isForwards)
-			return cfg.predecessorIterator(block); // forward analysis
-		else
-			return cfg.successorIterator(block); // backward analysis
+	private Iterator<Edge> logicalPredecessorEdgeIterator(BasicBlock block) {
+		return isForwards ? cfg.incomingEdgeIterator(block) : cfg.outgoingEdgeIterator(block);
 	}
 
 	/**

@@ -43,6 +43,7 @@ public abstract class LockCountAnalysis extends ForwardDataflowAnalysis<LockCoun
 
 	protected MethodGen methodGen;
 	protected Dataflow<ThisValueFrame> tvaDataflow;
+	protected ThisValueAnalysis tvaDataflowAnalysis;
 
 	/**
 	 * Constructor.
@@ -54,6 +55,8 @@ public abstract class LockCountAnalysis extends ForwardDataflowAnalysis<LockCoun
 	public LockCountAnalysis(MethodGen methodGen, Dataflow<ThisValueFrame> tvaDataflow) {
 		this.methodGen = methodGen;
 		this.tvaDataflow = tvaDataflow;
+		if (tvaDataflow != null)
+			this.tvaDataflowAnalysis = (ThisValueAnalysis) tvaDataflow.getAnalysis();
 	}
 
 	public LockCount createFact() {
@@ -72,61 +75,42 @@ public abstract class LockCountAnalysis extends ForwardDataflowAnalysis<LockCoun
 		fact.setCount(LockCount.TOP);
 	}
 
+	public boolean isFactValid(LockCount fact) {
+		return !fact.isTop() && !fact.isBottom();
+	}
+
 	public boolean same(LockCount fact1, LockCount fact2) {
 		return fact1.getCount() == fact2.getCount();
 	}
 
-	public void transfer(BasicBlock basicBlock, InstructionHandle end, LockCount start, LockCount result) throws DataflowAnalysisException {
-		result.setCount(start.getCount());
+	public void transferInstruction(InstructionHandle handle, LockCount fact) throws DataflowAnalysisException {
+		Instruction ins = handle.getInstruction();
 
-		if (!start.isTop() && !start.isBottom()) {
-			Iterator<InstructionHandle> i = basicBlock.instructionIterator();
-			while (i.hasNext()) {
-				InstructionHandle handle = i.next();
-				if (handle == end)
-					break;
+		// Optimization: don't even bother with instructions
+		// other than MONITORENTER and MONITOREXIT
+		if (!(ins instanceof MONITORENTER || ins instanceof MONITOREXIT))
+			return;
 
-				Instruction ins = handle.getInstruction();
+		// Determine where the "this" reference values are in the frame.
+		// (Note that null is returned if we are analyzing a static method.)
+		ThisValueFrame frame = getFrame(handle);
 
-				// Optimization: don't even bother with instructions
-				// other than MONITORENTER and MONITOREXIT
-				if (!(ins instanceof MONITORENTER || ins instanceof MONITOREXIT))
-					continue;
-
-				// Determine where the "this" reference values are in the frame.
-				// (Note that null is returned if we are analyzing a static method.)
-				ThisValueFrame frame = getFrame(basicBlock, handle);
-
-				// Get the lock count delta for the instruction
-				int delta = getDelta(ins, frame);
-				int count = result.getCount() + delta;
-				if (count < 0)
-					throw new DataflowAnalysisException("lock count going negative! " + ins);
-				result.setCount(count);
-			}
-		}
+		// Get the lock count delta for the instruction
+		int delta = getDelta(ins, frame);
+		int count = fact.getCount() + delta;
+		if (count < 0)
+			throw new DataflowAnalysisException("lock count going negative! " + ins);
+		fact.setCount(count);
 	}
 
-	/**
-	 * Get the frame value indicating where the "this" references are
-	 * for given instruction in given basic block.
-	 * @param basicBlock the basic block
-	 * @param handle the instruction
-	 * @return the ThisValueFrame containing the "this" references, or null if
-	 *    this is a static method
-	 */
-	private ThisValueFrame getFrame(BasicBlock basicBlock, InstructionHandle handle) throws DataflowAnalysisException {
-		ThisValueFrame frame = null;
-		if (tvaDataflow != null) {
-			DataflowAnalysis<ThisValueFrame> tva = tvaDataflow.getAnalysis();
-			frame = tva.createFact();
-			tva.transfer(basicBlock, handle, tvaDataflow.getStartFact(basicBlock), frame);
-		}
-		return frame;
+	private ThisValueFrame getFrame(InstructionHandle handle) {
+		ThisValueFrame result = null;
+		if (tvaDataflowAnalysis != null)
+			result = tvaDataflowAnalysis.getFactAtInstruction(handle);
+		return result;
 	}
 
 	public void meetInto(LockCount fact, Edge edge, LockCount result) throws DataflowAnalysisException {
-
 		if (!BETTER && edge.getDest().isExceptionHandler()) {
 			// WARNING!
 
@@ -141,7 +125,8 @@ public abstract class LockCountAnalysis extends ForwardDataflowAnalysis<LockCoun
 
 			BasicBlock source = edge.getSource();
 			InstructionHandle last = source.getLastInstruction();
-			ThisValueFrame frame = getFrame(edge.getSource(), last);
+			//ThisValueFrame frame = getFrame(edge.getSource(), last);
+			ThisValueFrame frame = tvaDataflowAnalysis.getFactAtInstruction(last);
 			int delta = getDelta(last.getInstruction(), frame);
 			if (delta != 0) {
 				if (DEBUG) System.out.print("[[Undo lock count delta for source block " + source.getId() + "]]");
