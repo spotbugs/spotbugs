@@ -219,36 +219,33 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 		if (!ACCURATE_EXCEPTIONS)
 			return;
 
+		// Also, nothing to do if the block is not an exception thrower
+		if (!basicBlock.isExceptionThrower())
+			return;
+
 		// Figure out what exceptions can be thrown out
 		// of the basic block, and mark each exception edge
 		// with the set of exceptions which can be propagated
 		// along the edge.
 
-		if (basicBlock.isExceptionThrower()) {
-			try {
-				// Compute exceptions that can be thrown by the
-				// basic block.
-				CachedExceptionSet cachedExceptionSet =
-					computeBlockExceptionSet(basicBlock, (TypeFrame) result);
+		// Compute exceptions that can be thrown by the
+		// basic block.
+		CachedExceptionSet cachedExceptionSet =
+			computeBlockExceptionSet(basicBlock, (TypeFrame) result);
 
-				// For each outgoing exception edge, compute exceptions
-				// that can be thrown.  This assumes that the exception
-				// edges are enumerated in decreasing order of priority.
-				// In the process, this will remove exceptions from
-				// the thrown exception set.
-				ExceptionSet thrownExceptionSet = cachedExceptionSet.getExceptionSet().duplicate();
-				for (Iterator<Edge> i = cfg.outgoingEdgeIterator(basicBlock); i.hasNext(); ) {
-					Edge edge = i.next();
-					if (!edge.isExceptionEdge())
-						continue;
+		// For each outgoing exception edge, compute exceptions
+		// that can be thrown.  This assumes that the exception
+		// edges are enumerated in decreasing order of priority.
+		// In the process, this will remove exceptions from
+		// the thrown exception set.
+		ExceptionSet thrownExceptionSet = cachedExceptionSet.getExceptionSet().duplicate();
+		for (Iterator<Edge> i = cfg.outgoingEdgeIterator(basicBlock); i.hasNext(); ) {
+			Edge edge = i.next();
+			if (!edge.isExceptionEdge())
+				continue;
 
-					cachedExceptionSet.setEdgeExceptionSet(
-						edge, computeEdgeExceptionSet(edge, thrownExceptionSet));
-				}
-			} catch (ClassNotFoundException e) {
-				lookupFailureCallback.reportMissingClass(e);
-				throw new DataflowAnalysisException("Could not enumerate exception types for block", e);
-			}
+			cachedExceptionSet.setEdgeExceptionSet(
+				edge, computeEdgeExceptionSet(edge, thrownExceptionSet));
 		}
 	}
 
@@ -334,12 +331,22 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 	 * @return the cached exception set for the block
 	 */
 	private CachedExceptionSet computeBlockExceptionSet(BasicBlock basicBlock, TypeFrame result)
-		throws ClassNotFoundException, DataflowAnalysisException {
+		throws DataflowAnalysisException {
 
 		CachedExceptionSet cachedExceptionSet = getCachedExceptionSet(basicBlock);
 
 		if (!cachedExceptionSet.isUpToDate(result)) {
-			ExceptionSet exceptionSet = computeThrownExceptionTypes(basicBlock);
+			ExceptionSet exceptionSet = null;
+			try {
+				exceptionSet = computeThrownExceptionTypes(basicBlock);
+			} catch (ClassNotFoundException e) {
+				// Special case: be as conservative as possible
+				// if a class hierarchy lookup fails.
+				lookupFailureCallback.reportMissingClass(e);
+				exceptionSet = new ExceptionSet();
+				exceptionSet.addExplicit(Type.THROWABLE);
+			}
+
 			TypeFrame copyOfResult = createFact();
 			copy(result, copyOfResult);
 
@@ -365,8 +372,7 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 	 * @return the set of exceptions that can propagate
 	 *   along this edge
 	 */
-	private ExceptionSet computeEdgeExceptionSet(Edge edge, ExceptionSet thrownExceptionSet)
-		throws ClassNotFoundException {
+	private ExceptionSet computeEdgeExceptionSet(Edge edge, ExceptionSet thrownExceptionSet) {
 
 		ExceptionSet result = new ExceptionSet();
 
@@ -398,21 +404,29 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 				if (DEBUG) System.out.println("\texception type " + thrownType +
 					", catch type " + catchType);
 
-				if (Hierarchy.isSubtype(thrownType, catchType)) {
-					// Exception can be thrown along this edge
+				try {
+					if (Hierarchy.isSubtype(thrownType, catchType)) {
+						// Exception can be thrown along this edge
+						result.addAndAdopt(thrownException.duplicate());
+	
+						// And it will definitely be caught
+						i.remove();
+	
+						if (DEBUG) System.out.println("\tException is subtype of catch type: " +
+							"will definitely catch");
+					} else if (Hierarchy.isSubtype(catchType, thrownType)) {
+						// Exception possibly thrown along this edge
+						result.addAndAdopt(thrownException.duplicate());
+	
+						if (DEBUG) System.out.println("\tException is supertype of catch type: " +
+							"might catch");
+					}
+				} catch (ClassNotFoundException e) {
+					// As a special case, if a class hierarchy lookup
+					// fails, then we will conservatively assume that the
+					// exception in question CAN, but WON'T NECESSARILY
+					// be caught by the handler.
 					result.addAndAdopt(thrownException.duplicate());
-
-					// And it will definitely be caught
-					i.remove();
-
-					if (DEBUG) System.out.println("\tException is subtype of catch type: " +
-						"will definitely catch");
-				} else if (Hierarchy.isSubtype(catchType, thrownType)) {
-					// Exception possibly thrown along this edge
-					result.addAndAdopt(thrownException.duplicate());
-
-					if (DEBUG) System.out.println("\tException is supertype of catch type: " +
-						"might catch");
 				}
 			}
 		}
