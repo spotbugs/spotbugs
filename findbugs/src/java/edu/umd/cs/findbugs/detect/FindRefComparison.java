@@ -524,7 +524,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 		// make it medium priority
 		try {
 			if (!Hierarchy.isSubtype(lhsType, rhsType) && !Hierarchy.isSubtype(rhsType, lhsType))
-				priority = NORMAL_PRIORITY;
+				priority = HIGH_PRIORITY;
 		} catch (ClassNotFoundException e) {
 			bugReporter.reportMissingClass(e);
 			return;
