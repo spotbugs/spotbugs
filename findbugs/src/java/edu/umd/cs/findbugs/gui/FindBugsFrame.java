@@ -1211,11 +1211,13 @@ public class FindBugsFrame extends javax.swing.JFrame {
     private void browseJarButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_browseJarButtonActionPerformed
         JFileChooser chooser = new JFileChooser(currentDirectory);
         FileFilter filter = new FileFilter() {
-            public boolean accept(File file) { return file.isDirectory() || file.getName().endsWith(".jar"); }
+            public boolean accept(File file) { return file.isDirectory() || file.getName().endsWith(".jar")
+							|| file.getName().endsWith(".class"); }
             public String getDescription() { return "Jar files (*.jar)"; }
         };
         chooser.setFileFilter(filter);
         chooser.setMultiSelectionEnabled(true);
+        chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
         
         int rc = chooser.showDialog(this, "Add Jar file");
         if (rc == JFileChooser.APPROVE_OPTION) {
