@@ -98,7 +98,8 @@ public class SourceLineAnnotation implements BugAnnotation {
 		LineNumberTable lineNumberTable = getLineNumberTable(visitor);
 		String className = visitor.getBetterClassName();
 		String sourceFile = visitor.getSourceFile();
-		int codeSize = visitor.getMethod().getCode().getCode().length;
+		Code code = visitor.getMethod().getCode();
+		int codeSize = (code != null) ? code.getCode().length : 0;
 		if (lineNumberTable == null)
 			return createUnknown(className, sourceFile, 0, codeSize - 1);
 		return forEntireMethod(className, sourceFile, lineNumberTable, codeSize);
