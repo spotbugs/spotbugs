@@ -191,7 +191,7 @@ public abstract class Frame<ValueType> implements Debug {
 	 * @throws DataflowAnalysisException if the Java operand stack is empty
 	 */
 	public ValueType popValue() throws DataflowAnalysisException {
-		if (!isValid()) throw new IllegalStateException("accessing top or bottom frame");
+		if (!isValid()) throw new DataflowAnalysisException("accessing top or bottom frame");
 		if (slotList.size() == numLocals) throw new DataflowAnalysisException("operand stack empty");
 		return slotList.remove(slotList.size() - 1);
 	}
@@ -201,7 +201,7 @@ public abstract class Frame<ValueType> implements Debug {
 	 * @throws DataflowAnalysisException if the Java operand stack is empty
 	 */
 	public ValueType getTopValue() throws DataflowAnalysisException {
-		if (!isValid()) throw new IllegalStateException("accessing top or bottom frame");
+		if (!isValid()) throw new DataflowAnalysisException("accessing top or bottom frame");
 		assert slotList.size() >= numLocals;
 		if (slotList.size() == numLocals)
 			throw new DataflowAnalysisException("operand stack is empty");
