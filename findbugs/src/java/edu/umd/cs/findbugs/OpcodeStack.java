@@ -45,7 +45,7 @@ import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
  * each method, and call <p>stack.sawOpcode(this,seen);</p> at the bottom of their sawOpcode method.
  * at any point you can then inspect the stack and see what the types of objects are on
  * the stack, including constant values if they were pushed. The types described are of
- * course, only the static types. This class is far, far, far from being done.
+ * course, only the static types. This class is far, far from being done.
  */
 public class OpcodeStack implements Constants2
 {
@@ -141,11 +141,13 @@ public class OpcodeStack implements Constants2
  		String signature;
  		Method m;
  		Item it, it2;
+ 		Constant cons;
  		
  		try
  		{
- 			//Currently some of this ops should check the tos to look for literals, and do better logic
- 			//But that's not done now.
+ 			//It would be nice to also track field values, but this currently isn't done.
+ 			//It would also be nice to track array values, but this currently isn't done.
+ 			
 	 		switch (seen) {
 	 			case ALOAD:
 	 				register = dbc.getRegisterOperand();
@@ -174,21 +176,28 @@ public class OpcodeStack implements Constants2
 	  				} else {
 	  					pushBySignature("");
 	  				}
-	 				
 	 			break;
+	 			
+	 			case LLOAD:
+	 			case LLOAD_0:
+	 			case LLOAD_1:
+	 			case LLOAD_2:
+	 			case LLOAD_3:
+	 				push(new Item("L"));
 	 			
 	 			case GETSTATIC:
 	 				pushBySignature(dbc.getSigConstantOperand());
 	 			break;
 	 			
 	 			case LDC:
-	 				Constant c = dbc.getConstantRefOperand();
-	 				pushByConstant(dbc, c);
+				case LDC2_W:
+	 				cons = dbc.getConstantRefOperand();
+	 				pushByConstant(dbc, cons);
 				break;
 				
 				case INSTANCEOF:
 					pop();
-					pushBySignature("I");
+					push(new Item("I"));
 				break;
 	 			
 	 			case ARETURN:
@@ -223,6 +232,7 @@ public class OpcodeStack implements Constants2
 	 			case ISTORE_1:
 	 			case ISTORE_2:
 	 			case ISTORE_3:
+	 			case LOOKUPSWITCH:
 	 			case LRETURN:
 	 			case LSTORE:
 	 			case LSTORE_0:
@@ -233,6 +243,7 @@ public class OpcodeStack implements Constants2
 	 			case MONITOREXIT:
 	 			case POP:
 	 			case PUTSTATIC:
+	 			case TABLESWITCH:
 	 				pop();
 	 			break;
 	 			
@@ -249,12 +260,35 @@ public class OpcodeStack implements Constants2
 	 				pop(2);
 	 			break;
 	 			
+	 			case IALOAD:
+	 			case SALOAD:
+	 				pop(2);
+	 				push(new Item("I"));
+	 			break;
+	 			
 	 			case DUP:
 	 				it = pop();
 	 				push(it);
 	 				push(it);
 	 			break;
 	 			
+	 			case DUP2:
+	 				it = pop();
+	 				it2 = pop();
+	 				push(it2);
+	 				push(it);
+	 				push(it2);
+	 				push(it);
+	 			break;
+	 			
+	 			case DUP_X1:
+	 				it = pop();
+	 				it2 = pop();
+	 				push(it);
+	 				push(it2);
+	 				push(it);
+	 			break;
+	 				 			
 	 			case ATHROW:
 	 			case CHECKCAST:
 	 			case GOTO:
@@ -280,6 +314,11 @@ public class OpcodeStack implements Constants2
 	 			case ICONST_4:
 	 			case ICONST_5:
 	 				push(new Item("I", new Integer(seen-ICONST_0)));
+	 			break;
+	 			
+	 			case LCONST_0:
+	 			case LCONST_1:
+	 				push(new Item("J", new Integer(seen-LCONST_0)));
 	 			break;
 	 			
 	 			case ACONST_NULL:
@@ -311,7 +350,9 @@ public class OpcodeStack implements Constants2
 	 				push(new Item(signature));
 	 			break;
 	 			
+	 			case AASTORE:
 	 			case BASTORE:
+	 			case IASTORE:
 	 				pop(3);
 	 			break;
 	 			
@@ -320,21 +361,175 @@ public class OpcodeStack implements Constants2
 	 				push(new Item("I", new Integer((int)dbc.getIntConstant())));
 	 			break;
 	 			
-	 			case ISUB:
 	 			case IADD:
+	 			case ISUB:
 	 			case IMUL:
 	 			case IDIV:
+	 			case IAND:
+	 			case IOR:
+	 			case IXOR:
+	 			case ISHL:
+	 			case ISHR:
 	 				it = pop();
 	 				it2 = pop();
 	 				if ((it.getConstant() != null) && it2.getConstant() != null) {
 						if (seen == IADD)
-	 						push(new Item("I", ((Integer)it2.getConstant()).intValue() + ((Integer)it.getConstant()).intValue()));
+	 						push(new Item("I", new Integer(((Integer)it2.getConstant()).intValue() + ((Integer)it.getConstant()).intValue())));
 	 					else if (seen == ISUB)
-	 						push(new Item("I", ((Integer)it2.getConstant()).intValue() - ((Integer)it.getConstant()).intValue()));
+	 						push(new Item("I", new Integer(((Integer)it2.getConstant()).intValue() - ((Integer)it.getConstant()).intValue())));
 						else if (seen == IMUL)
-	 						push(new Item("I", ((Integer)it2.getConstant()).intValue() * ((Integer)it.getConstant()).intValue()));
+	 						push(new Item("I", new Integer(((Integer)it2.getConstant()).intValue() * ((Integer)it.getConstant()).intValue())));
 						else if (seen == IDIV)
-	 						push(new Item("I", ((Integer)it2.getConstant()).intValue() / ((Integer)it.getConstant()).intValue()));
+	 						push(new Item("I", new Integer(((Integer)it2.getConstant()).intValue() / ((Integer)it.getConstant()).intValue())));
+						else if (seen == IAND)
+	 						push(new Item("I", new Integer(((Integer)it2.getConstant()).intValue() & ((Integer)it.getConstant()).intValue())));
+						else if (seen == IOR)
+	 						push(new Item("I", new Integer(((Integer)it2.getConstant()).intValue() | ((Integer)it.getConstant()).intValue())));
+						else if (seen == IXOR)
+	 						push(new Item("I", new Integer(((Integer)it2.getConstant()).intValue() ^ ((Integer)it.getConstant()).intValue())));
+						else if (seen == ISHL)
+	 						push(new Item("I", new Integer(((Integer)it2.getConstant()).intValue() << ((Integer)it.getConstant()).intValue())));
+						else if (seen == ISHR)
+	 						push(new Item("I", new Integer(((Integer)it2.getConstant()).intValue() >> ((Integer)it.getConstant()).intValue())));
+	 				} else {
+	 					push(new Item("I"));
+	 				}
+	 			break;
+	 			
+	 			case INEG:
+	 				it = pop();
+	 				if (it.getConstant() != null) {
+	 					push(new Item("I", new Integer(-((Integer)it.getConstant()).intValue())));
+	 				} else {
+	 					push(new Item("I"));
+	 				}
+	 			break;
+	 			
+	 			case LADD:
+	 			case LSUB:
+	 			case LMUL:
+	 			case LDIV:
+	 			case LAND:
+	 			case LOR:
+	 			case LXOR:
+	 				it = pop();
+	 				it2 = pop();
+	 				if ((it.getConstant() != null) && it2.getConstant() != null) {
+						if (seen == LADD)
+	 						push(new Item("J", new Long(((Long)it2.getConstant()).longValue() + ((Long)it.getConstant()).longValue())));
+	 					else if (seen == LSUB)
+	 						push(new Item("J", new Long(((Long)it2.getConstant()).longValue() - ((Long)it.getConstant()).longValue())));
+						else if (seen == LMUL)
+	 						push(new Item("J", new Long(((Long)it2.getConstant()).longValue() * ((Long)it.getConstant()).longValue())));
+						else if (seen == LDIV)
+	 						push(new Item("J", new Long(((Long)it2.getConstant()).longValue() / ((Long)it.getConstant()).longValue())));
+						else if (seen == LAND)
+	 						push(new Item("J", new Long(((Long)it2.getConstant()).longValue() & ((Long)it.getConstant()).longValue())));
+						else if (seen == LOR)
+	 						push(new Item("J", new Long(((Long)it2.getConstant()).longValue() | ((Long)it.getConstant()).longValue())));
+						else if (seen == LXOR)
+	 						push(new Item("J", new Long(((Long)it2.getConstant()).longValue() ^ ((Long)it.getConstant()).longValue())));
+	 				} else {
+	 					push(new Item("J"));
+	 				}
+	 			break;
+/*	 			
+	 			case LCMP:
+	 				it = pop();
+	 				it2 = pop();
+	 				if ((it.getConstant() != null) && it2.getConstant() != null) {
+	 					long l = ((Long)it.getConstant()).longValue();
+	 					long l2 = ((Long)it.getConstant()).longValue();
+	 					if (l2 < l)
+	 						push(new Item("I", new Integer(-1)));
+	 					else if (l2 > l)
+	 						push(new Item("I", new Integer(1)));
+	 					else
+	 						push(new Item("I", new Integer(0)));
+	 				} else {
+	 					push(new Item("I"));
+	 				}
+	 			break;
+*/
+	 				
+	 			case DADD:
+	 			case DSUB:
+	 			case DMUL:
+	 			case DDIV:
+	 				it = pop();
+	 				it2 = pop();
+	 				if ((it.getConstant() != null) && it2.getConstant() != null) {
+	 					if (seen == DADD)
+	 						push(new Item("D", new Double(((Double)it2.getConstant()).doubleValue() + ((Double)it.getConstant()).doubleValue())));
+	 					else if (seen == DSUB)
+	 						push(new Item("D", new Double(((Double)it2.getConstant()).doubleValue() - ((Double)it.getConstant()).doubleValue())));
+	 					else if (seen == DMUL)
+	 						push(new Item("D", new Double(((Double)it2.getConstant()).doubleValue() * ((Double)it.getConstant()).doubleValue())));
+	 					else if (seen == DDIV)
+	 						push(new Item("D", new Double(((Double)it2.getConstant()).doubleValue() / ((Double)it.getConstant()).doubleValue())));
+	 				} else {
+	 					push(new Item("D"));
+	 				}
+	 			break;
+	 			
+	 			case I2B:
+	 				it = pop();
+	 				if (it.getConstant() != null) {
+	 					push(new Item("I", new Integer((int)((byte)((Integer)it.getConstant()).intValue()))));
+	 				} else {
+	 					push(new Item("I"));
+	 				}
+	 			break;
+
+	 			case I2C:
+	 				it = pop();
+	 				if (it.getConstant() != null) {
+	 					push(new Item("I", new Integer((int)((char)((Integer)it.getConstant()).intValue()))));
+	 				} else {
+	 					push(new Item("I"));
+	 				}
+	 			break;
+
+	 			case I2D:
+	 				it = pop();
+	 				if (it.getConstant() != null) {
+	 					push(new Item("D", new Double((double)((Integer)it.getConstant()).intValue())));
+	 				} else {
+	 					push(new Item("D"));
+	 				}
+	 			break;
+	 			
+	 			case I2F:
+	 				it = pop();
+	 				if (it.getConstant() != null) {
+	 					push(new Item("F", new Float((float)((Integer)it.getConstant()).intValue())));
+	 				} else {
+	 					push(new Item("F"));
+	 				}
+	 			break;
+	 			
+	 			case I2L:
+	 				it = pop();
+	 				if (it.getConstant() != null) {
+	 					push(new Item("J", new Long((long)((Integer)it.getConstant()).intValue())));
+	 				} else {
+	 					push(new Item("J"));
+	 				}
+	 			break;
+
+	 			case I2S:
+	 				it = pop();
+	 				if (it.getConstant() != null) {
+	 					push(new Item("I", new Integer((int)((short)((Integer)it.getConstant()).intValue()))));
+	 				} else {
+	 					push(new Item("I"));
+	 				}
+	 			break;
+	 			
+	 			case D2I:
+	 				it = pop();
+	 				if (it.getConstant() != null) {
+	 					push(new Item("I", new Integer((int)((Integer)it.getConstant()).intValue())));
 	 				} else {
 	 					push(new Item("I"));
 	 				}
@@ -349,17 +544,20 @@ public class OpcodeStack implements Constants2
 	 				signature = BasicType.getType((byte)dbc.getIntConstant()).getSignature();
 	 				pushBySignature(signature);
 	 			break;
-/*	 			
+	 			
 	 			case ANEWARRAY:
 	 				pop();
-	 				signature = ?
-	 				pushBySignature(signature);
+	 				pushBySignature("L"+dbc.getClassConstantOperand()+";");
 	 			break;
-*/	 				
+	 				
 	 			case AALOAD:
 	 				pop();
 	 				it = pop();
 	 				pushBySignature(it.getElementSignature());
+	 			break;
+	 			
+	 			case DLOAD:
+	 				push(new Item("D"));
 	 			break;
 	 			
 				case INVOKEINTERFACE:
@@ -421,7 +619,7 @@ public class OpcodeStack implements Constants2
 		else if (c instanceof ConstantDouble)
 			push(new Item("D", new Double(((ConstantDouble) c).getBytes())));
 		else if (c instanceof ConstantLong)
-			push(new Item("D", new Long(((ConstantLong) c).getBytes())));
+			push(new Item("J", new Long(((ConstantLong) c).getBytes())));
 		else
 			throw new UnsupportedOperationException("Constant type not expected" );
  	}
