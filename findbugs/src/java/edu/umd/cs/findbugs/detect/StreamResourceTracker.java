@@ -28,7 +28,7 @@ import edu.umd.cs.findbugs.ba.ResourceValue;
 import edu.umd.cs.findbugs.ba.ResourceValueFrame;
 import edu.umd.cs.findbugs.ba.ResourceValueFrameModelingVisitor;
 
-import java.util.BitSet;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeSet;
@@ -57,11 +57,14 @@ public class StreamResourceTracker implements ResourceTracker<Stream> {
 	private RepositoryLookupFailureCallback lookupFailureCallback;
 	private Map<Location, Stream> locationToResourceMap;
 
-	/** Set of all stream construction points. */
-	private BitSet streamConstructionSet;
+	/**
+	 * Set of all locations where any stream is opened in the
+	 * analyzed method.
+	 */
+	private HashSet<Location> streamOpenLocationSet;
 
-	/** Set of all uninteresting stream construction points and escapes. */
-	private BitSet uninterestingStreamEscapeSet;
+	/** Set of all open locations and escapes of uninteresting streams. */
+	private HashSet<Location> uninterestingStreamEscapeSet;
 
 	/** Set of all (potential) stream escapes. */
 	private TreeSet<StreamEscape> streamEscapeSet;
@@ -77,8 +80,8 @@ public class StreamResourceTracker implements ResourceTracker<Stream> {
 
 		this.streamFactoryList = streamFactoryList;
 		this.lookupFailureCallback = lookupFailureCallback;
-		this.streamConstructionSet = new BitSet();
-		this.uninterestingStreamEscapeSet = new BitSet();
+		this.streamOpenLocationSet = new HashSet<Location>();
+		this.uninterestingStreamEscapeSet = new HashSet<Location>();
 		this.streamEscapeSet = new TreeSet<StreamEscape>();
 	}
 
@@ -90,12 +93,12 @@ public class StreamResourceTracker implements ResourceTracker<Stream> {
 	}
 
 	/**
-	 * Indicate that a stream created at given source instruction
-	 * escapes at the given target instruction.
-	 * @param source the source instruction (creation point of the escaping stream)
-	 * @param target the target instruction (point where the stream escapes)
+	 * Indicate that a stream created at given source Location
+	 * escapes at the given target Location.
+	 * @param source the source Location (where the escaping stream is opened)
+	 * @param target the target Location (where the stream escapes)
 	 */
-	public void addStreamEscape(InstructionHandle source, InstructionHandle target) {
+	public void addStreamEscape(Location source, Location target) {
 		StreamEscape streamEscape = new StreamEscape(source, target);
 		streamEscapeSet.add(streamEscape);
 		if (FindOpenStream.DEBUG)
@@ -110,67 +113,66 @@ public class StreamResourceTracker implements ResourceTracker<Stream> {
 	 */
 	public void markTransitiveUninterestingStreamEscapes() {
 		// Eliminate all stream escapes where the target isn't really
-		// a stream construction point.
+		// a stream open location point.
 		for (Iterator<StreamEscape> i = streamEscapeSet.iterator(); i.hasNext(); ) {
 			StreamEscape streamEscape = i.next();
-			if (!isStreamConstruction(streamEscape.target)) {
+			if (!isStreamOpenLocation(streamEscape.target)) {
 				if (FindOpenStream.DEBUG)
 					System.out.println("Eliminating false stream escape " + streamEscape);
 				i.remove();
 			}
 		}
 
-		// Starting with the set of uninteresting stream construction points,
+		// Starting with the set of uninteresting stream open location points,
 		// propagate all uninteresting stream escapes.  Iterate until there
 		// is no change.
-		BitSet orig = new BitSet();
+		HashSet<Location> orig = new HashSet<Location>();
 		do {
 			orig.clear();
-			orig.or(uninterestingStreamEscapeSet);
+			orig.addAll(uninterestingStreamEscapeSet);
 
 			for (Iterator<StreamEscape> i = streamEscapeSet.iterator(); i.hasNext(); ) {
 				StreamEscape streamEscape = i.next();
 				if (isUninterestingStreamEscape(streamEscape.source)) {
 					if (FindOpenStream.DEBUG)
 						System.out.println("Propagating stream escape " + streamEscape);
-					uninterestingStreamEscapeSet.set(streamEscape.target.getPosition());
+					uninterestingStreamEscapeSet.add(streamEscape.target);
 				}
 			}
 		} while (!orig.equals(uninterestingStreamEscapeSet));
 	}
 
 	/**
-	 * Determine if an uninteresting stream escapes at given instruction.
+	 * Determine if an uninteresting stream escapes at given location.
 	 * markTransitiveUninterestingStreamEscapes() should be called first.
-	 * @param handle the instruction
-	 * @return true if an uninteresting stream escapes at the instruction
+	 * @param location the Location
+	 * @return true if an uninteresting stream escapes at the location
 	 */
-	public boolean isUninterestingStreamEscape(InstructionHandle handle) {
-		return uninterestingStreamEscapeSet.get(handle.getPosition());
+	public boolean isUninterestingStreamEscape(Location location) {
+		return uninterestingStreamEscapeSet.contains(location);
 	}
 
 	/**
-	 * Indicate that a stream is constructed at this instruction.
-	 * @param streamConstruction the instruction
+	 * Indicate that a stream is constructed at this Location.
+	 * @param streamOpenLocation the Location
 	 * @param isUninteresting true if the stream is "uninteresting", like System.out;
 	 *   this defines the root set of uninteresting streams that
 	 *   markTransitiveUninterestingStreamEscapes() will build upon
 	 */
-	public void addStreamConstruction(InstructionHandle streamConstruction,
-		boolean isUninteresting) {
+	public void addStreamOpenLocation(Location streamOpenLocation, boolean isUninteresting) {
 		if (FindOpenStream.DEBUG)
-			System.out.println("Stream construction at " + streamConstruction.getPosition());
-		streamConstructionSet.set(streamConstruction.getPosition());
+			System.out.println("Stream open location at " + streamOpenLocation);
+		streamOpenLocationSet.add(streamOpenLocation);
 		if (isUninteresting)
-			uninterestingStreamEscapeSet.set(streamConstruction.getPosition());
+			uninterestingStreamEscapeSet.add(streamOpenLocation);
 	}
 
 	/**
-	 * Determine if given instruction is a stream construction point.
-	 * @param handle the instruction
+	 * Determine if given Location is a stream open location point.
+	 * @param location the Location
 	 */
-	private boolean isStreamConstruction(InstructionHandle handle) {
-		return streamConstructionSet.get(handle.getPosition());
+	private boolean isStreamOpenLocation(Location location) {
+		return streamOpenLocationSet.contains(location);
 	}
 
 	public Stream isResourceCreation(BasicBlock basicBlock, InstructionHandle handle,

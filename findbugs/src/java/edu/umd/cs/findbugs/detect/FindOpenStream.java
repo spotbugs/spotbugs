@@ -222,12 +222,12 @@ public class FindOpenStream extends ResourceTrackingDetector<Stream, StreamResou
 			if (stream.isUninteresting())
 				continue;
 
-			InstructionHandle constructionHandle = stream.getConstructorHandle();
-			if (constructionHandle == null)
+			Location openLocation = stream.getOpenLocation();
+			if (openLocation == null)
 				continue;
 
 			if (IGNORE_WRAPPED_UNINTERESTING_STREAMS
-				&& resourceTracker.isUninterestingStreamEscape(constructionHandle))
+				&& resourceTracker.isUninterestingStreamEscape(openLocation))
 				continue;
 
 			String sourceFile = javaClass.getSourceFileName();

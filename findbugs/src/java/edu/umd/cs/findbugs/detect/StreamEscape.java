@@ -19,31 +19,36 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import org.apache.bcel.generic.InstructionHandle;
+import edu.umd.cs.findbugs.ba.Location;
 
 /**
- * A StreamEscape is an object representing the escape of a Stream.
- * The "source" is the creation point of the stream.  The "target" is
- * the instruction where the stream instance escapes.
+ * A StreamEscape is an object representing the escape of a Stream
+ * to a called method.
+ * The "source" is the Location where the stream is opened.
+ * The "target" is the Location where the stream instance escapes.
  */
 public class StreamEscape implements Comparable<StreamEscape> {
-	public final InstructionHandle source;
-	public final InstructionHandle target;
+	public final Location source;
+	public final Location target;
 
-	public StreamEscape(InstructionHandle source, InstructionHandle target) {
+	/**
+	 * Constructor.
+	 * @param source Location where stream is opened
+	 * @param target Location where stream escapes
+	 */
+	public StreamEscape(Location source, Location target) {
 		this.source = source;
 		this.target = target;
 	}
 
 	public int compareTo(StreamEscape other) {
-		int cmp = source.getPosition() - other.source.getPosition();
-		if (cmp != 0)
-			return cmp;
-		return target.getPosition() - other.target.getPosition();
+		int cmp = source.compareTo(other.source);
+		if (cmp != 0) return cmp;
+		return target.compareTo(other.target);
 	}
 
 	public String toString() {
-		return source.getPosition() + " to " + target.getPosition();
+		return source + " to " + target;
 	}
 }
 

@@ -56,7 +56,7 @@ public class Stream extends ResourceCreationPoint {
 	private String streamBase;
 	private boolean isUninteresting;
 	private boolean isOpenOnCreation;
-	private InstructionHandle ctorHandle;
+	private Location openLocation;
 	private boolean ignoreImplicitExceptions;
 	private String bugType;
 
@@ -113,9 +113,9 @@ public class Stream extends ResourceCreationPoint {
 
 	public boolean isOpenOnCreation() { return isOpenOnCreation; }
 
-	public void setConstructorHandle(InstructionHandle handle) { this.ctorHandle = handle; }
+	public void setOpenLocation(Location openLocation) { this.openLocation = openLocation; }
 
-	public InstructionHandle getConstructorHandle() { return ctorHandle; }
+	public Location getOpenLocation() { return openLocation; }
 
 	public boolean ignoreImplicitExceptions() { return ignoreImplicitExceptions; }
 

@@ -39,7 +39,7 @@ import org.apache.bcel.generic.InvokeInstruction;
 public class StreamFrameModelingVisitor extends ResourceValueFrameModelingVisitor {
 	private StreamResourceTracker resourceTracker;
 	private Stream stream;
-	private InstructionHandle handle;
+	private Location location;
 
 	public StreamFrameModelingVisitor(ConstantPoolGen cpg, StreamResourceTracker resourceTracker,
 		Stream stream) {
@@ -49,7 +49,8 @@ public class StreamFrameModelingVisitor extends ResourceValueFrameModelingVisito
 	}
 
 	public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock) {
-		this.handle = handle;
+		// Record what Location we are analyzing
+		this.location = new Location(handle, basicBlock);
 
 		final Instruction ins = handle.getInstruction();
 		final ConstantPoolGen cpg = getCPG();
@@ -64,8 +65,8 @@ public class StreamFrameModelingVisitor extends ResourceValueFrameModelingVisito
 			// Resource creation
 			if (stream.isOpenOnCreation()) {
 				status = ResourceValueFrame.OPEN;
-				stream.setConstructorHandle(handle);
-				resourceTracker.addStreamConstruction(handle, stream.isUninteresting());
+				stream.setOpenLocation(location);
+				resourceTracker.addStreamOpenLocation(location, stream.isUninteresting());
 			} else {
 				status = ResourceValueFrame.CREATED;
 			}
@@ -73,8 +74,8 @@ public class StreamFrameModelingVisitor extends ResourceValueFrameModelingVisito
 		} else if (resourceTracker.isResourceOpen(basicBlock, handle, cpg, stream, frame)) {
 			// Resource opened
 			status = ResourceValueFrame.OPEN;
-			stream.setConstructorHandle(handle);
-			resourceTracker.addStreamConstruction(handle, stream.isUninteresting());
+			stream.setOpenLocation(location);
+			resourceTracker.addStreamOpenLocation(location, stream.isUninteresting());
 		} else if (resourceTracker.isResourceClose(basicBlock, handle, cpg, stream, frame)) {
 			// Resource closed
 			status = ResourceValueFrame.CLOSED;
@@ -101,11 +102,11 @@ public class StreamFrameModelingVisitor extends ResourceValueFrameModelingVisito
 		boolean escapes = (inv.getOpcode() == Constants.INVOKESTATIC || instanceArgNum != 0);
 		//if (escapes) System.out.print("[Escape at " + inv + " argNum=" + instanceArgNum + "]");
 
-		if (FindOpenStream.DEBUG && escapes) System.out.println("ESCAPE at " + handle.getPosition());
+		if (FindOpenStream.DEBUG && escapes) System.out.println("ESCAPE at " + location);
 
 		// Record the fact that this might be a stream escape
-		if (stream.getConstructorHandle() != null)
-			resourceTracker.addStreamEscape(stream.getConstructorHandle(), handle);
+		if (stream.getOpenLocation() != null)
+			resourceTracker.addStreamEscape(stream.getOpenLocation(), location);
 
 		return escapes;
 	}
