@@ -2325,7 +2325,7 @@ get called when the event occurs.
     <LongDescription>Method attempts to access a result set field with index 0</LongDescription>
     <Details>
 <![CDATA[
-<p> This detector looks for calls to getXXX or updateXXX methods of a result set where the
+<p> A call to getXXX or updateXXX methods of a result set was made where the
 field index is 0. As ResultSet fields start at index 1, this is always a mistake.
 ]]>
     </Details>
