@@ -19,11 +19,12 @@
 
 package edu.umd.cs.findbugs;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileFilter;
-
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.Reader;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -56,6 +57,63 @@ public class EclipseClasspath {
 	public static class EclipseClasspathException extends Exception {
 		public EclipseClasspathException(String msg) {
 			super(msg);
+		}
+	}
+
+	/**
+	 * A customized Reader for Eclipse plugin descriptor files.
+	 * The problem is that Eclipse uses invalid XML in the form of
+	 * directives like
+	 * <pre>
+	 * &lt;?eclipse version="3.0"?&gt;
+	 * </pre>
+	 * outside of the root element.  This Reader class
+	 * filters out this crap.
+	 */
+	private static class EclipseXMLReader extends Reader {
+		private BufferedReader reader;
+		private LinkedList<String> lineList;
+
+		public EclipseXMLReader(Reader reader) {
+			this.reader = new BufferedReader(reader);
+			this.lineList = new LinkedList<String>();
+		}
+
+		public int read(char[] cbuf, int off, int len) throws IOException {
+			if (!fill())
+				return -1;
+			String line = lineList.getFirst();
+			if (len > line.length())
+				len = line.length();
+			for (int i = 0; i < len; ++i)
+				cbuf[i+off] = line.charAt(i);
+			if (len == line.length())
+				lineList.removeFirst();
+			else
+				lineList.set(0, line.substring(len));
+			return len;
+		}
+
+		public void close() throws IOException {
+			reader.close();
+		}
+
+		private boolean fill() throws IOException {
+			if (!lineList.isEmpty())
+				return true;
+
+			String line;
+			do {
+				line = reader.readLine();
+				if (line == null)
+					return false;
+			} while (isIllegal(line));
+			lineList.add(line+"\n");
+			return true;
+		}
+
+		private boolean isIllegal(String line) {
+			return line.startsWith("<?eclipse");
 		}
 	}
 
@@ -115,7 +173,7 @@ public class EclipseClasspath {
 		pluginDirectoryMap.put(pluginId, new File(pluginDir));
 	}
 
-	public EclipseClasspath execute() throws EclipseClasspathException, DocumentException, MalformedURLException {
+	public EclipseClasspath execute() throws EclipseClasspathException, DocumentException, IOException {
 
 		// Build plugin directory map
 		File pluginDir = new File(eclipseDir, "plugins");
@@ -144,7 +202,7 @@ public class EclipseClasspath {
 
 			// Read the plugin file
 			SAXReader reader = new SAXReader();
-			Document doc = reader.read(new URL("file:" + descriptor));
+			Document doc = reader.read(new EclipseXMLReader(new FileReader(descriptor)));
 
 			// Add to the map
 			Plugin plugin = new Plugin(doc);
@@ -158,7 +216,7 @@ public class EclipseClasspath {
 					File requiredPluginDir = pluginDirectoryMap.get(requiredPluginId);
 					if (requiredPluginDir == null)
 						throw new EclipseClasspathException("Unable to find plugin " + requiredPluginId);
-					workList.add(requiredPluginDir.getPath());
+					workList.add(new File(requiredPluginDir, "plugin.xml").getPath());
 				}
 			}
 		}
