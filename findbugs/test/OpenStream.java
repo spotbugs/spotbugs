@@ -23,4 +23,11 @@ public class OpenStream {
 
 		// oops!  exiting the method without closing the stream
 	}
+
+	public void doNotReport() {
+		ByteArrayOutputStream b = new ByteArrayOutputStream();
+		PrintStream out = new PrintStream(b);
+
+		out.println("Hello, world!");
+	}
 }
