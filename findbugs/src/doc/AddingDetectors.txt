@@ -1,0 +1,99 @@
+Adding Detectors to FindBugs
+May 4, 2003
+
+We should move to a plugin-based approach to adding detectors to FindBugs.
+This will make it easy for users to add their own detectors alongside
+the ones that come built in.
+
+Basic idea: FindBugs has some Jar files in a "plugins" directory.
+At startup, each of those jar files is checked for a "findbugs.xml"
+file.  That XML file registers instances of Detectors, as well
+as particular "bug patterns" that the detector reports.
+
+Example:
+
+<DetectorPlugin>
+
+  <Detector>
+    <Class>org.foobar.findbugs.FindUnreleasedLocks</Class>
+
+    <BugPattern>
+      <Type>UBL_UNRELEASED_LOCK</Type>
+      <Category>MT_CORRECTNESS</Category>
+      <Abbrev>UL</Abbrev>
+
+      <Description>
+        <ShortDescription>Lock not released on all paths out of method</ShortDescription>
+        <LongDescription>{1} does not release lock on all paths out of method</LongDescription>
+        <Details>
+        A JSR-166 lock acquired in this method is not released on all paths
+        out of the method. This could result in a deadlock if another thread
+        tries to acquire the lock.  Generally, you should use a finally
+        block to ensure that acquired locks are always released.
+        </Details>
+      </Description>
+
+      <Description lang="de">
+         ... a German description would go here ...
+      </Description>
+
+      <!-- Other description nodes would go here ... -->
+
+    </BugPattern>
+
+    <!-- More BugPattern nodes would go here... -->
+
+  </Detector>
+
+  <!-- More Detector nodes would go here... -->
+
+</DetectorPlugin>
+
+This XML file gives FindBugs all of the information it needs to run the
+detector and display its results in the UI at runtime.
+
+Meaning of elements:
+
+  <DetectorPlugin> a collection of <Detector> elements.  Each plugin Jar file
+  can (and usually will) provide multiple detectors.
+
+  <Detector> general node bundling all info for a particular bug pattern
+    detector in the plugin
+
+  <Class> is the full Java class name of a bug pattern detector.
+  It must implement the edu.umd.cs.findbugs.Detector interface,
+  and have a constructor which takes a single parameter of type
+  edu.umd.cs.findbugs.BugReporter.  It will be instantiated using
+  reflection.
+
+  <Type> is a unique key describing the bug pattern
+
+  <Category> is the bug pattern category; one of the following
+     CORRECTNESS - general correctness issues
+     MT_CORRECTNESS - multithreaded correctness issues
+     MALICIOUS_CODE - a potential vulnerability if exposed to malicious code
+     PERFORMANCE - a performance issue
+
+  <Abbrev> abbreviation for reported instances.
+  Note that many bug patterns may share the same abbreviation if
+  they are related.
+
+  <Description> general node bundling all text descriptions of a bug pattern.
+  May optionally have a "lang" attribute, which indicates the language
+  of the description.  Multiple descriptions may be present with different languages.
+  There must always be one Description node without a "lang" attribute,
+  which will be used as the default if a more specific translation can't
+  be found.
+
+  <ShortDescription> this is used for when "View:Full Descriptions"
+  is turned off in the GUI, and it's also used as the title for 
+  descriptions in the Details window.
+
+  <LongDescription> this is used for when "View:Full Descriptions"
+  is turned on in the GUI, and for output using the command line UI.
+  The placeholders in the long description ({0}, {1}, etc.)
+  refer to BugAnnotations attached to the BugInstances reported by
+  the detector for this bug pattern.
+
+  <Details> this is the descriptive text to be used in the Details
+  window.
