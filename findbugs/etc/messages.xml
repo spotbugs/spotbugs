@@ -8,14 +8,11 @@
   **********************************************************************
   -->
   <Plugin>
-    <ShortDescription>Plugin to find serious correctness and performance bugs</ShortDescription>
+    <ShortDescription>Default FindBugs plugin</ShortDescription>
     <Details>
 <![CDATA[
 <p>
-This plugin contains detectors to find serious correctness and
-performance bugs.  The accuracy target is that at least 50%
-of the high and medium priority warnings reported by the detectors
-in this plugin should be real bugs.
+This plugin contains all of the standard FindBugs detectors.
 </p>
 ]]>
     </Details>
@@ -601,6 +598,39 @@ is always called on the current thread.
 ]]>    
     </Details>
   </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.FindDeadLocalStores">
+    <Details>
+<![CDATA[
+<p>
+This detector looks for assignments to local variables that
+are never subsequently read.  Due to the way byte code is generated for final local variables,
+false positives for these cases are often seen, which is why the detector is currently disabled.
+ It is a moderately fast detector.
+</p>
+]]>
+    </Details>
+  </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.FindMaskedFields">
+    <Details>
+<![CDATA[
+<p> This detector looks for class level fields that are masked by
+local fields defined in methods.
+It is a fast detector.</p>
+]]>
+    </Details>
+  </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.WrongMapIterator">
+    <Details>
+<![CDATA[
+<p> This detector looks for accessing the value of a Map entry, using a key that was retrieved from
+a keySet iterator. It is a fast detector.
+]]>
+   </Details>
+  </Detector>
+
   <Detector class="edu.umd.cs.findbugs.detect.FindBugsSummaryStats">
     <Details>
 <![CDATA[
@@ -2559,6 +2589,59 @@ object than the one the author intended.
 ]]>    
     </Details>
   </BugPattern>
+
+  <BugPattern type="DLS_DEAD_LOCAL_STORE">
+    <ShortDescription>Dead store to local variable</ShortDescription>
+    <LongDescription>Dead store to local variable in method {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+This instruction assigns a value to a local variable,
+but the value is not read by any subsequent instruction.
+Often, this indicates an error, because the value computed 
+is never used.
+</p>
+]]>
+    </Details>
+  </BugPattern>
+
+	<BugPattern type="MF_METHOD_MASKS_FIELD">
+    <ShortDescription>Method defines a variable that obscures a field</ShortDescription>
+    <LongDescription>Method {1} defines a variable that obscures field {2}</LongDescription>
+    <Details>
+<![CDATA[
+<p> This method defines a local variable with the same name as a field
+in this class or a superclass.  This may cause the method to
+read an uninitialized value from the field, leave the field uninitialized,
+or both.</p>
+]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="MF_CLASS_MASKS_FIELD">
+    <ShortDescription>Class defines field that obscures a superclass field</ShortDescription>
+    <LongDescription>Class {0} defines field that obscures superclass field {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p> This class defines a field with the same name as a visible
+instance field in a superclass.  This is confusing, and
+may indicate an error if methods update or access one of
+the fields when they wanted the other.</p>
+]]>
+    </Details>
+  </BugPattern>
+
+    <BugPattern type="WMI_WRONG_MAP_ITERATOR">
+        <ShortDescription>Inefficient use of keySet iterator instead of entrySet iterator</ShortDescription>
+        <LongDescription>Method {1} makes inefficient use of keySet iterator instead of entrySet iterator</LongDescription>
+        <Details>
+<![CDATA[
+<p> This detector looks for accessing the value of a Map entry, using a key that was retrieved from
+a keySet iterator. It is more efficient to use an iterator on the entrySet of the map, to avoid the 
+Map.get(key) lookup.
+]]>
+        </Details>
+    </BugPattern>
   
   <!--
   **********************************************************************
@@ -2641,5 +2724,8 @@ object than the one the author intended.
   <BugCode abbrev="BAC">Bad Applet Constructor</BugCode>
   <BugCode abbrev="UOE">Use Object Equals</BugCode>
   <BugCode abbrev="STI">Suspicious Thread Interrupted</BugCode>
+  <BugCode abbrev="DLS">Dead local store</BugCode>
+  <BugCode abbrev="MF">Masked Field</BugCode>
+  <BugCode abbrev="WMI">Wrong Map Iterator</BugCode>
 
   </MessageCollection>
