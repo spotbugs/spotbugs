@@ -166,8 +166,8 @@
   <BugPattern abbrev="Se" type="SE_BAD_FIELD" category="CORRECTNESS" experimental="true" />
   <BugPattern abbrev="SC" type="SC_START_IN_CTOR" category="MT_CORRECTNESS" />
   <BugPattern abbrev="SS" type="SS_SHOULD_BE_STATIC" category="CORRECTNESS" />
-  <BugPattern abbrev="UuF" type="UUF_UNUSED_FIELD" category="CORRECTNESS" />
-  <BugPattern abbrev="UrF" type="URF_UNREAD_FIELD" category="CORRECTNESS" />
+  <BugPattern abbrev="UuF" type="UUF_UNUSED_FIELD" category="PERFORMANCE" />
+  <BugPattern abbrev="UrF" type="URF_UNREAD_FIELD" category="PERFORMANCE" />
   <BugPattern abbrev="UwF" type="UWF_UNWRITTEN_FIELD" category="CORRECTNESS" />
   <BugPattern abbrev="SIC" type="SIC_INNER_SHOULD_BE_STATIC" category="PERFORMANCE" />
   <BugPattern abbrev="SIC" type="SIC_INNER_SHOULD_BE_STATIC_NEEDS_THIS" category="PERFORMANCE" />
