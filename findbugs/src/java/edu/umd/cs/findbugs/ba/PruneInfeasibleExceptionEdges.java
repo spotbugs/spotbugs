@@ -158,7 +158,13 @@ public class PruneInfeasibleExceptionEdges implements EdgeTypes {
 			return true;
 		}
 
+		String catchClassName = SignatureConverter.convert(catchType.getSignature());
 		boolean reachable = false;
+
+		// Special case: any instruction can throw a VirtualMachineError.
+		if (Repository.instanceOf(catchClassName, "java.lang.VirtualMachineError")) {
+			reachable = true;
+		}
 
 		// Go through the set of thrown execeptions.
 		// Any that will DEFINITELY be caught be this handler, remove.
@@ -168,7 +174,6 @@ public class PruneInfeasibleExceptionEdges implements EdgeTypes {
 			ObjectType thrownException = i.next();
 
 			String thrownClassName = SignatureConverter.convert(thrownException.getSignature());
-			String catchClassName = SignatureConverter.convert(catchType.getSignature());
 
 			if (Repository.instanceOf(thrownClassName, catchClassName)) {
 				// The thrown exception is a subtype of the catch type,
