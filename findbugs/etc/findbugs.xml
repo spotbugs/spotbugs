@@ -33,6 +33,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.FindNullDeref" speed="moderate" />
   <Detector class="edu.umd.cs.findbugs.detect.FindOpenStream" speed="moderate" />
   <Detector class="edu.umd.cs.findbugs.detect.FindUselessControlFlow" speed="fast" />
+  <Detector class="edu.umd.cs.findbugs.detect.FindUnreleasedLock" speed="moderate" />
 
   <BugPattern abbrev="DE" type="DE_MIGHT_DROP" category="CORRECTNESS" />
   <BugPattern abbrev="DE" type="DE_MIGHT_IGNORE" category="CORRECTNESS" />
@@ -111,4 +112,6 @@
   <BugPattern abbrev="OS" type="OS_OPEN_STREAM_EXCEPTION_PATH" category="CORRECTNESS" />
   <BugPattern abbrev="PZLA" type="PZLA_PREFER_ZERO_LENGTH_ARRAYS" category="CORRECTNESS" />
   <BugPattern abbrev="UCF" type="UCF_USELESS_CONTROL_FLOW" category="CORRECTNESS" />
+  <BugPattern abbrev="UL" type="UL_UNRELEASED_LOCK" category="MT_CORRECTNESS" />
+  <BugPattern abbrev="UL" type="UL_UNRELEASED_LOCK_EXCEPTION_PATH" category="MT_CORRECTNESS" />
 </FindbugsPlugin>

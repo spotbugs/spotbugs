@@ -1,6 +1,10 @@
 <MessageCollection>
 
-  <!-- Detectors -->
+  <!--
+  **********************************************************************
+  Detectors
+  **********************************************************************
+   -->
 
   <Detector class="edu.umd.cs.findbugs.detect.DroppedException">
     <Details>
@@ -311,7 +315,21 @@ It is a fast detector.
     </Details>
   </Detector>
 
-  <!-- BugPatterns -->
+  <Detector class="edu.umd.cs.findbugs.detect.FindUnreleasedLock">
+    <Details>
+<![CDATA[
+<p> This detector looks for JSR-166 (<code>java.util.concurrent</code>)
+locks which are acquired, but not released on all paths out of the method.&nbsp;
+It is a moderately fast detector.
+]]>
+    </Details>
+  </Detector>
+
+  <!--
+  **********************************************************************
+  BugPatterns
+  **********************************************************************
+   -->
 
   <BugPattern type="DE_MIGHT_DROP">
     <ShortDescription>Method might drop exception</ShortDescription>
@@ -1322,7 +1340,53 @@ body of an <code>if</code> statement, e.g.:
     </Details>
   </BugPattern>
 
-  <!-- BugCodes -->
+  <BugPattern type="UL_UNRELEASED_LOCK">
+    <ShortDescription>Method does not release lock on all paths</ShortDescription>
+    <LongDescription>{1} does not release lock on all paths</LongDescription>
+    <Details>
+<![CDATA[
+<p> This method acquires a JSR-166 (<code>java.util.concurrent</code>) lock,
+but does not release it on all paths out of the method.  In general, the correct idiom
+for using a JSR-166 lock is:
+<pre>
+    Lock l = ...;
+    l.lock();
+    try {
+        // do something
+    } finally {
+        l.unlock();
+    }
+</pre>
+]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="UL_UNRELEASED_LOCK_EXCEPTION_PATH">
+    <ShortDescription>Method does not release lock on all exception paths</ShortDescription>
+    <LongDescription>{1} does not release lock on all exception paths</LongDescription>
+    <Details>
+<![CDATA[
+<p> This method acquires a JSR-166 (<code>java.util.concurrent</code>) lock,
+but does not release it on all exception paths out of the method.  In general, the correct idiom
+for using a JSR-166 lock is:
+<pre>
+    Lock l = ...;
+    l.lock();
+    try {
+        // do something
+    } finally {
+        l.unlock();
+    }
+</pre>
+]]>
+    </Details>
+  </BugPattern>
+
+  <!--
+  **********************************************************************
+   BugCodes
+  **********************************************************************
+   -->
 
   <BugCode abbrev="FI" >Incorrect use of finalizers</BugCode>
   <BugCode abbrev="ES" >Checking String equality using == or !=</BugCode>
