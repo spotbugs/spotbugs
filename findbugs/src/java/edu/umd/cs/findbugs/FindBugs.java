@@ -12,10 +12,10 @@ public class FindBugs implements Constants2
 {
   private final BugReporter bugReporter;
   private Detector detectors [];
-  private LinkedList detectorNames;
+  private LinkedList<String> detectorNames;
   private boolean omit;
 
-  public FindBugs(BugReporter bugReporter, LinkedList detectorNames, boolean omit) {
+  public FindBugs(BugReporter bugReporter, LinkedList<String> detectorNames, boolean omit) {
 	if (bugReporter == null)
 		throw new IllegalArgumentException("null bugReporter");
 	this.bugReporter = bugReporter;
@@ -24,9 +24,9 @@ public class FindBugs implements Constants2
   }
 
 
-  private static ArrayList<Class> factories = new ArrayList();
-  private static HashMap factoriesByName = new HashMap();
-  private static IdentityHashMap namesByFactory = new IdentityHashMap();
+  private static ArrayList<Class> factories = new ArrayList<Class>();
+  private static HashMap<String, Class> factoriesByName = new HashMap<String, Class>();
+  private static IdentityHashMap<Class, String> namesByFactory = new IdentityHashMap<Class, String>();
 
   private static Class [] constructorArgTypes = {BugReporter.class};
 
@@ -165,16 +165,14 @@ public class FindBugs implements Constants2
 	if (fileName.endsWith(".zip") || fileName.endsWith(".jar")) {
 		//if (argv.length > 1) System.out.println(fileName);
 		ZipFile z = new ZipFile(fileName);
-		TreeSet zipEntries = new TreeSet(new Comparator() {
-			public int compare(Object o1, Object o2) {
-					ZipEntry e1 = (ZipEntry)o1;
+		TreeSet<ZipEntry> zipEntries = new TreeSet<ZipEntry>(new Comparator<ZipEntry>() {
+			public int compare(ZipEntry e1, ZipEntry e2) {
 					String s1 = e1.getName();
 					int pos1 = s1.lastIndexOf('/');
 					String p1 = "null";
 					if(pos1 >= 0)
 						p1 = s1.substring(0,pos1);
 
-					ZipEntry e2 = (ZipEntry)o2;
 					String s2 = e2.getName();
 					int pos2 = s2.lastIndexOf('/');
 					String p2 = "null";
@@ -185,7 +183,7 @@ public class FindBugs implements Constants2
 					return s1.compareTo(s2);
 					}
 			});
-		for( Enumeration e = z.entries(); e.hasMoreElements(); ) 
+		for( Enumeration<ZipEntry> e = z.entries(); e.hasMoreElements(); ) 
 			zipEntries.add(e.nextElement());
 			
 		for( Iterator j = zipEntries.iterator(); j.hasNext(); ) {
@@ -210,7 +208,7 @@ public class FindBugs implements Constants2
   public static void main(String argv[]) throws Exception
   { 
 	boolean sortByClass = false;
-	LinkedList visitorNames = null;
+	LinkedList<String> visitorNames = null;
 	boolean omit = false;
 
 	// Process command line options
@@ -226,7 +224,7 @@ public class FindBugs implements Constants2
 			if (argCount == argv.length) throw new IllegalArgumentException(option + " option requires argument");
 			omit = option.equals("-omitVisitors");
 			StringTokenizer tok = new StringTokenizer(argv[argCount], ",");
-			visitorNames = new LinkedList();
+			visitorNames = new LinkedList<String>();
 			while (tok.hasMoreTokens())
 				visitorNames.add(tok.nextToken());
 		} else
