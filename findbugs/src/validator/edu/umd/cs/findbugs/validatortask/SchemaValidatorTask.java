@@ -56,6 +56,8 @@ public class SchemaValidatorTask extends Task
 
 	public void execute() throws BuildException
 	{
+		int exLineNo = 0;
+		
 		try {
 			System.out.println("Validating: " + xmlPath);
 			SAXParserFactory spf = SAXParserFactory.newInstance();
@@ -88,12 +90,16 @@ public class SchemaValidatorTask extends Task
 				}
 			});
 			reader.parse(new InputSource( xmlPath ));
-			if (ex != null)
+			if (ex != null) {
+				exLineNo = ex.getLineNumber();
 				throw ex;
+			}
 		}
 		catch (Exception e) {
 			if (failOnError) {
-				BuildException be = new BuildException(e.getMessage());
+				String sep = System.getProperty("line.separator");
+				String msg = sep + e.getMessage() + sep + "on line " + exLineNo;
+				BuildException be = new BuildException(msg);
 				be.setStackTrace( e.getStackTrace());
 
 				throw be;
