@@ -31,6 +31,10 @@ public class PriorityAdjustment {
 	private PriorityAdjustment(String value) {
 		this.value = value;
 	}
+
+        public String toString() {
+		return value;
+		}
 	
 	/** No adjustment to the priority. */
 	public static final PriorityAdjustment NO_ADJUSTMENT =

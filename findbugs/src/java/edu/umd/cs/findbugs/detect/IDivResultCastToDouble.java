@@ -12,9 +12,11 @@ public class IDivResultCastToDouble extends BytecodeScanningDetector {
 	
 	private static final int SCAN = 0;
 	private static final int SAW_IDIV = 1;
+	private static final int SAW_IDIV_BUG = 2;
 	
 	private BugReporter bugReporter;
 	private int state;
+	private int prevOpCode;
 	
 	public IDivResultCastToDouble(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
@@ -27,37 +29,25 @@ public class IDivResultCastToDouble extends BytecodeScanningDetector {
 	}
 
 	public void sawOpcode(int seen) {
-		boolean redo;
 		
 		if (DEBUG) System.out.println("Saw opcode " + seen);
-		
-		do {
-			redo = false;
-			
-			switch (state) {
-			case SCAN:
-				if (seen == Constants.IDIV) {
-					if (DEBUG) System.out.println("Saw IDIV @" + getPC());
-					state = SAW_IDIV;
-				}
-				break;
-				
-			case SAW_IDIV:
-				if (seen == Constants.I2D) {
-					if (DEBUG) System.out.println("Saw I2D @" + getPC());
-					bugReporter.reportBug(new BugInstance(this, "IDCD_IDIV_CAST_TO_DOUBLE", NORMAL_PRIORITY)
-							.addClassAndMethod(this)
-							.addSourceLine(this));
-				} else {
-					// This instruction might also be an IDIV: process again in SCAN state
-					redo = true;
-				}
-				state = SCAN;
-				break;
-			
-			default:
-				break;
-			}
-		} while (redo);
-	}
+	
+		if ((prevOpCode  == I2D || prevOpCode == L2D)
+                        && seen == INVOKESTATIC
+                                && getClassConstantOperand().equals("java/lang/Math")
+                                && getNameConstantOperand().equals("ceil"))
+			bugReporter.reportBug(new BugInstance(this, 
+				"ICAST_INT_CAST_TO_DOUBLE_PASSED_TO_CEIL", 
+				HIGH_PRIORITY)
+					.addClassAndMethod(this)
+					.addSourceLine(this));
+
+		if (prevOpCode  == IDIV && (seen == I2D|| seen == I2F)
+			|| prevOpCode  == LDIV && (seen == L2D || seen==L2F))
+			bugReporter.reportBug(new BugInstance(this, "ICAST_IDIV_CAST_TO_DOUBLE", NORMAL_PRIORITY)
+					.addClassAndMethod(this)
+					.addSourceLine(this));
+
+		prevOpCode = seen;
+		}
 }

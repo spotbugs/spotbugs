@@ -31,6 +31,8 @@ import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.LocalVariable;
 import org.apache.bcel.classfile.LocalVariableTable;
 import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.ALOAD;
+import org.apache.bcel.generic.GETFIELD;
 import org.apache.bcel.generic.ANEWARRAY;
 import org.apache.bcel.generic.ASTORE;
 import org.apache.bcel.generic.IINC;
@@ -106,11 +108,9 @@ public class FindDeadLocalStores implements Detector {
 	}
 	
 	private BugReporter bugReporter;
-	private WarningPropertySet propertySet;
 	
 	public FindDeadLocalStores(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
-		this.propertySet = new WarningPropertySet();
 		if (DEBUG) System.out.println("Debugging FindDeadLocalStores detector");
 	}
 	
@@ -177,6 +177,7 @@ public class FindDeadLocalStores implements Detector {
 		for (Iterator<Location> i = cfg.locationIterator(); i.hasNext(); ) {
 			Location location = i.next();
 			
+			WarningPropertySet propertySet = new WarningPropertySet();
 			// Skip any instruction which is not a store
 			if (!isStore(location))
 				continue;
@@ -193,7 +194,8 @@ public class FindDeadLocalStores implements Detector {
 			checkLocalVariableName(
 					method.getLocalVariableTable(),
 					local,
-					location.getHandle().getPosition());
+					location.getHandle().getPosition(),
+					propertySet);
 			
 			// Is this a store to a parameter which was dead on entry to the method?
 			boolean parameterThatIsDeadAtEntry = local < localsThatAreParameters
@@ -218,15 +220,29 @@ public class FindDeadLocalStores implements Detector {
 			// Store is dead
 			
 			// Ignore assignments that were killed by a subsequent assignment.
-			if (llsaDataflow.getAnalysis().killedByStore(liveStoreSet, local))
+			boolean killedBySubsequentStore = llsaDataflow.getAnalysis().killedByStore(liveStoreSet, local);
+			if (killedBySubsequentStore)
 				propertySet.addProperty(DeadLocalStoreProperty.KILLED_BY_SUBSEQUENT_STORE);
 			
 			// Ignore dead assignments of null and 0.
 			// These often indicate defensive programming.
 			InstructionHandle prev = location.getBasicBlock().getPredecessorOf(location.getHandle());
+			int prevOpCode = -1;
+
 			if (prev != null
-					&& defensiveConstantValueOpcodes.get(prev.getInstruction().getOpcode()))
+					&& defensiveConstantValueOpcodes.get(prev.getInstruction().getOpcode())) {
 				propertySet.addProperty(DeadLocalStoreProperty.DEFENSIVE_CONSTANT_OPCODE);
+				prevOpCode = prev.getInstruction().getOpcode();
+				}
+
+                        InstructionHandle prev2 = prev == null ? null : prev.getPrev();
+
+			if (prev2 != null
+                                && prev2.getInstruction() instanceof ALOAD
+                                && prev.getInstruction() instanceof GETFIELD)
+				propertySet.addProperty(DeadLocalStoreProperty.CACHING_VALUE);
+
+
 			
 			if (ins instanceof IINC) {
 				// special handling of IINC
@@ -248,17 +264,18 @@ public class FindDeadLocalStores implements Detector {
 					propertySet.addProperty(DeadLocalStoreProperty.DEAD_OBJECT_STORE);
 				}
 				
-			} else if (localStoreCount[local] == 2 && localLoadCount[local] > 0) {
+			} else if (!killedBySubsequentStore
+				    && localStoreCount[local] == 2 && localLoadCount[local] > 0) {
 				// TODO: why is this significant?
 				
 				propertySet.addProperty(DeadLocalStoreProperty.TWO_STORES_MULTIPLE_LOADS);
 				
-			} else if (localStoreCount[local] == 1) {
+			} else if (!parameterThatIsDeadAtEntry && localStoreCount[local] == 1) {
 				// TODO: why is this significant?
 				
 				propertySet.addProperty(DeadLocalStoreProperty.SINGLE_STORE);
 				
-			} else if (localLoadCount[local] == 0) {
+			} else if (!parameterThatIsDeadAtEntry && localLoadCount[local] == 0) {
 				// TODO: why is this significant?
 				
 				propertySet.addProperty(DeadLocalStoreProperty.NO_LOADS);
@@ -266,7 +283,6 @@ public class FindDeadLocalStores implements Detector {
 			}
 			
 			if (parameterThatIsDeadAtEntry) {
-				if (DEBUG) System.out.println("Raising priority");
 				propertySet.addProperty(DeadLocalStoreProperty.PARAM_DEAD_ON_ENTRY);
 			}
 
@@ -276,7 +292,15 @@ public class FindDeadLocalStores implements Detector {
 				BugInstance bugInstance = new BugInstance(this, "DLS_DEAD_LOCAL_STORE", priority)
 					.addClassAndMethod(methodGen, javaClass.getSourceFileName())
 					.addSourceLine(methodGen, javaClass.getSourceFileName(), location.getHandle());
-				if (DEBUG) System.out.println("Reporting " + bugInstance);
+
+				if (DEBUG) {
+				System.out.println(
+					javaClass.getSourceFileName() + " : " +
+						methodGen.getName());
+				System.out.println("priority: " + priority);
+				System.out.println("Reporting " + bugInstance);
+				System.out.println(propertySet);
+				}
 				
 				// If in relaxed reporting mode, encode heuristic information.
 				if (AnalysisContext.currentAnalysisContext().getBoolProperty(
@@ -331,7 +355,8 @@ public class FindDeadLocalStores implements Detector {
 	 * @param local index of the local
 	 * @param pc    program counter value of the instruction
 	 */
-	private void checkLocalVariableName(LocalVariableTable lvt, int local, int pc) {
+	private void checkLocalVariableName(LocalVariableTable lvt, int local, int pc,
+			WarningPropertySet propertySet) {
 		if (lvt != null) {
 			LocalVariable lv = lvt.getLocalVariable(local, pc);
 			if (lv != null) {

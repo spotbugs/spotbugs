@@ -959,8 +959,7 @@ to use Object.clone(), which always returns an object of the correct type.</p>
   </BugPattern>
   <BugPattern type="DM_RUN_FINALIZERS_ON_EXIT">
     <ShortDescription>Method invokes runFinalizersOnExit, one of the most dangerous methods in the Java libraries.  </ShortDescription>
-    <LongDescription>{1} invokes runFinalizersOnExit, one of the most
-dangerous methods in the Java libraries.  </LongDescription>
+    <LongDescription>{1} invokes runFinalizersOnExit, one of the most dangerous methods in the Java libraries.  </LongDescription>
     <Details>
 <![CDATA[
   <p> <em>Never call System.runFinalizersOnExit
@@ -1125,7 +1124,7 @@ using r.nextInt(n) Rather than using (int)(r.nextDouble() * n).
 <![CDATA[
   <p>The method invokes the execute method on an SQL statement with a String that seems
 to be dynamically generated. Consider using 
-a prepared statement instead. It is more efficient and less vunerable to
+a prepared statement instead. It is more efficient and less vulnerable to
 SQL injection attacks.
 </p>
 ]]>
@@ -2331,7 +2330,7 @@ return a length zero array rather than a null reference to indicate that there
 are no results (i.e., an empty list of results).
 This way, no explicit check for null is needed by clients of the method.</p>
 
-<p>On the otherhand, using null to indicate 
+<p>On the other hand, using null to indicate 
 "there is no answer to this question", then it is probably appropriate. 
 For example, <code>File.listFiles()</code> returns an empty list
 if given a directory containing no files, and returns null if the file
@@ -2370,7 +2369,7 @@ to null. Two types of redundant comparison are reported:
 </p>
 
 <p> This particular warning represents two specific kinds of
-redundant comparisions:
+redundant comparisons:
 <ol>
 <li> A value was dereferenced, and later explicitly compared to null:
      this often indicates an error in the method</li>
@@ -2383,9 +2382,9 @@ redundant comparisions:
     </Details>
   </BugPattern>
 
-  <BugPattern type="RCN_REDUNDANT_CHECKED_NULL_COMPARISION">
-    <ShortDescription>Redundant comparision to null of previously checked value</ShortDescription>
-    <LongDescription>Redundant comparision to null of previously checked value in {1}</LongDescription>
+  <BugPattern type="RCN_REDUNDANT_CHECKED_NULL_COMPARISON">
+    <ShortDescription>Redundant comparison to null of previously checked value</ShortDescription>
+    <LongDescription>Redundant comparison to null of previously checked value in {1}</LongDescription>
     <Details>
 <![CDATA[
 <p> This method contains a redundant comparison of a reference value
@@ -2469,7 +2468,7 @@ not be compared by reference are java.lang.Integer, java.lang.Float, etc.</p>
 <p> This method calls equals(Object) on two references of different
 types.  According to the contract of equals(), objects of different
 classes should always compare as unequal; therefore, it is likely
-that the result of this comparision will always be false at runtime.</p>
+that the result of this comparison will always be false at runtime.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -2705,7 +2704,7 @@ have problems communicating with the database.</p>
 <p> The method seems to be building a String using concatenation in a loop.
 In each iteration, the String is converted to a StringBuffer/StringBuilder, 
 	appended to, and converted back to a String.
-	This can lead to a cost quadractic in the number of iterations,
+	This can lead to a cost quadratic in the number of iterations,
 	as the growing string is recopied in each iteration. </p>
 	
 <p>Better performance can be obtained by using 
@@ -2814,8 +2813,8 @@ is of the type requested. </p>
   </BugPattern>
   
   <BugPattern type="BAC_BAD_APPLET_CONSTRUCTOR">
-    <ShortDescription>Bad Applet Constructor relies on unitialized AppletStub</ShortDescription>
-    <LongDescription>Bad Applet Constructor relies on unitialized AppletStub</LongDescription>
+    <ShortDescription>Bad Applet Constructor relies on uninitialized AppletStub</ShortDescription>
+    <LongDescription>Bad Applet Constructor relies on uninitialized AppletStub</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -2828,8 +2827,8 @@ correctly.
   </BugPattern>
   
   <BugPattern type="UOE_BAD_ARRAY_COMPARE">
-    <ShortDescription>Calls to equals on an Array equates to ==</ShortDescription>
-    <LongDescription>Calls to equals on an Array equates to ==</LongDescription>
+    <ShortDescription>Invocation of equals() on an array, which is equivalent to ==</ShortDescription>
+    <LongDescription>{1} invokes equals() on an array, which is equivalent to ==</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -3112,7 +3111,27 @@ just use the constant. Methods detected are:
       </Details>
     </BugPattern>
     
-  <BugPattern type="IDCD_IDIV_CAST_TO_DOUBLE">
+  <BugPattern type="ICAST_INT_CAST_TO_DOUBLE_PASSED_TO_CEIL">
+    <ShortDescription>Integer value cast to double and then passed to Math.ceil</ShortDescription>
+    <LongDescription>Integer value cast to double and then passed to Math.ceil in {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+This code converts an integer value to a double precision
+floating point number and then 
+passing the result to the Math.ceil() function, which rounds a double to
+the next higher integer value. This operation should always be a no-op,
+since the converting an integer to a double should give a number with no fractional part.
+It is likely that the operation that generated the value to be passed
+to Math.ceil was intended to be performed using double precision
+floating point arithmetic.
+</p>
+
+]]>
+    </Details>
+  </BugPattern>
+   
+  <BugPattern type="ICAST_IDIV_CAST_TO_DOUBLE">
     <ShortDescription>Integer division result cast to double</ShortDescription>
     <LongDescription>Integer division result cast to double in {1}</LongDescription>
     <Details>
@@ -3125,18 +3144,21 @@ What was probably meant was to cast one or both of the operands to
 double <em>before</em> performing the division.  Here is an example:
 <blockquote>
 <pre>
+int x = 2;
+int y = 5;
 // Wrong: yields result 0.0
-double value1 = (double) (2 / 5);
+double value1 =  x / y;
 
 // Right: yields result 0.4
-double value2 = (double) 2 / (double) 5;
+double value2 =  x / (double) y;
 </pre>
 </blockquote>
 </p>
 ]]>
     </Details>
   </BugPattern>
-    
+   
+ 
     <!--
   **********************************************************************
    BugCodes

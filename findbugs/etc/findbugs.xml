@@ -184,7 +184,7 @@
             
   <Detector class="edu.umd.cs.findbugs.detect.FindNullDeref" 
             speed="slow"
-            reports="NP_ALWAYS_NULL_EXCEPTION,NP_ALWAYS_NULL,NP_NULL_ON_SOME_PATH_EXCEPTION,NP_NULL_ON_SOME_PATH,RCN_REDUNDANT_COMPARISON_TO_NULL,RCN_REDUNDANT_CHECKED_NULL_COMPARISION" />
+            reports="NP_ALWAYS_NULL_EXCEPTION,NP_ALWAYS_NULL,NP_NULL_ON_SOME_PATH_EXCEPTION,NP_NULL_ON_SOME_PATH,RCN_REDUNDANT_COMPARISON_TO_NULL,RCN_REDUNDANT_CHECKED_NULL_COMPARISON" />
 
   <Detector class="edu.umd.cs.findbugs.detect.FindOpenStream" 
             speed="slow"
@@ -335,7 +335,7 @@
   
   <Detector class="edu.umd.cs.findbugs.detect.IDivResultCastToDouble"
             speed="fast"
-            reports="IDCD_IDIV_CAST_TO_DOUBLE" disabled="true"/>
+            reports="ICAST_IDIV_CAST_TO_DOUBLE,ICAST_INT_CAST_TO_DOUBLE_PASSED_TO_CEIL" disabled="false"/>
   			
   <Detector class="edu.umd.cs.findbugs.detect.FindBugsSummaryStats" 
             speed="fast"
@@ -461,10 +461,10 @@
   <BugPattern abbrev="NP" type="NP_NULL_ON_SOME_PATH_EXCEPTION" category="CORRECTNESS" />
   <BugPattern abbrev="OS" type="OS_OPEN_STREAM" category="CORRECTNESS" />
   <BugPattern abbrev="OS" type="OS_OPEN_STREAM_EXCEPTION_PATH" category="CORRECTNESS" />
-  <BugPattern abbrev="PZLA" type="PZLA_PREFER_ZERO_LENGTH_ARRAYS" category="CORRECTNESS" />
+  <BugPattern abbrev="PZLA" type="PZLA_PREFER_ZERO_LENGTH_ARRAYS" category="STYLE" />
   <BugPattern abbrev="UCF" type="UCF_USELESS_CONTROL_FLOW" category="CORRECTNESS" />
   <BugPattern abbrev="RCN" type="RCN_REDUNDANT_COMPARISON_TO_NULL" category="CORRECTNESS" />
-  <BugPattern abbrev="RCN" type="RCN_REDUNDANT_CHECKED_NULL_COMPARISION" category="CORRECTNESS"/>
+  <BugPattern abbrev="RCN" type="RCN_REDUNDANT_CHECKED_NULL_COMPARISON" category="CORRECTNESS"/>
   <BugPattern abbrev="UL" type="UL_UNRELEASED_LOCK" category="MT_CORRECTNESS" />
   <BugPattern abbrev="UL" type="UL_UNRELEASED_LOCK_EXCEPTION_PATH" category="MT_CORRECTNESS" />
   <BugPattern abbrev="RC" type="RC_REF_COMPARISON" category="CORRECTNESS" />
@@ -503,7 +503,7 @@
     experimental="true"/>
   <BugPattern abbrev="STI" type="STI_INTERRUPTED_ON_UNKNOWNTHREAD" category="CORRECTNESS"
     experimental="true"/>
-  <BugPattern abbrev="DLS" type="DLS_DEAD_LOCAL_STORE" category="CORRECTNESS"/>
+  <BugPattern abbrev="DLS" type="DLS_DEAD_LOCAL_STORE" category="STYLE"/>
   <BugPattern abbrev="IP" type="IP_PARAMETER_IS_DEAD_BUT_OVERWRITTEN" category="CORRECTNESS"/>
   <BugPattern abbrev="MF" type="MF_METHOD_MASKS_FIELD" category="CORRECTNESS"/>
   <BugPattern abbrev="MF" type="MF_CLASS_MASKS_FIELD" category="CORRECTNESS"/>
@@ -517,5 +517,6 @@
   <BugPattern abbrev="MTIA" type="MTIA_SUSPECT_STRUTS_INSTANCE_FIELD" category="STYLE" experimental="true"/>
   <BugPattern abbrev="MTIA" type="MTIA_SUSPECT_SERVLET_INSTANCE_FIELD" category="STYLE" experimental="true"/>
   <BugPattern abbrev="PS" type="PS_PUBLIC_SEMAPHORES" category="STYLE" experimental="true"/>
-  <BugPattern abbrev="IDCD" type="IDCD_IDIV_CAST_TO_DOUBLE" category="CORRECTNESS"/>
+  <BugPattern abbrev="ICAST" type="ICAST_IDIV_CAST_TO_DOUBLE" category="CORRECTNESS"/>
+  <BugPattern abbrev="ICAST" type="ICAST_INT_CAST_TO_DOUBLE_PASSED_TO_CEIL" category="CORRECTNESS"/>
 </FindbugsPlugin>

@@ -37,7 +37,7 @@ public class DeadLocalStoreProperty implements WarningProperty {
 		new DeadLocalStoreProperty("DEAD_OBJECT_STORE",PriorityAdjustment.RAISE_PRIORITY);
 	/** Method contains two stores and multiple loads of this local. */
 	public static final DeadLocalStoreProperty TWO_STORES_MULTIPLE_LOADS =
-		new DeadLocalStoreProperty("TWO_STORES_MULTIPLE_LOADS",PriorityAdjustment.RAISE_PRIORITY);
+		new DeadLocalStoreProperty("TWO_STORES_MULTIPLE_LOADS",PriorityAdjustment.NO_ADJUSTMENT);
 	/** There is only one store of this local. (Maybe it's final?) */
 	public static final DeadLocalStoreProperty SINGLE_STORE =
 		new DeadLocalStoreProperty("SINGLE_STORE",PriorityAdjustment.LOWER_PRIORITY);
@@ -50,6 +50,10 @@ public class DeadLocalStoreProperty implements WarningProperty {
 	/** Name of the local variable. */
 	public static final DeadLocalStoreProperty LOCAL_NAME =
 		new DeadLocalStoreProperty("LOCAL_NAME",PriorityAdjustment.NO_ADJUSTMENT);
+
+	/** Caching value */
+	public static final DeadLocalStoreProperty CACHING_VALUE =
+		new DeadLocalStoreProperty("CACHING_VALUE", PriorityAdjustment.LOWER_PRIORITY);
 
 	//@Override
 	public PriorityAdjustment getPriorityAdjustment() {

@@ -1864,7 +1864,7 @@ dateString = dateString.trim();
     </Details>
   </BugPattern>
 
-  <BugPattern type="RCN_REDUNDANT_CHECKED_NULL_COMPARISION">
+  <BugPattern type="RCN_REDUNDANT_CHECKED_NULL_COMPARISON">
     <ShortDescription>既にチェック済みの値を無駄にnullと比較しています</ShortDescription>
     <LongDescription>既にチェック済みの値{1}を無駄にnullと比較しています</LongDescription>
     <Details>

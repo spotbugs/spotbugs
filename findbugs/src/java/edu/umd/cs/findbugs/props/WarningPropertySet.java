@@ -37,6 +37,26 @@ import edu.umd.cs.findbugs.ba.AnalysisContext;
  */
 public class WarningPropertySet {
 	private Map<WarningProperty, Object> map;
+
+
+	public String toString() {
+		StringBuffer buf = new StringBuffer("{ ");
+		for (Iterator<Map.Entry<WarningProperty,Object>> i = map.entrySet().iterator();
+				i.hasNext();) {
+			Map.Entry<WarningProperty,Object> entry = i.next();
+			WarningProperty prop = entry.getKey();
+			Object attribute = entry.getValue();
+			buf.append("  ");
+			buf.append(prop.getPriorityAdjustment());
+			buf.append("\t");
+			buf.append(prop.getName());
+			buf.append("\t");
+			buf.append(attribute);
+			buf.append("\n");
+			}
+		buf.append("}\n");
+		return buf.toString();
+		}
 	
 	/**
 	 * Constructor

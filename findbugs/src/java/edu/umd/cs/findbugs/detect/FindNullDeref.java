@@ -350,7 +350,7 @@ public class FindNullDeref implements Detector, StatelessDetector {
 
 		boolean redundantNullCheck = redundantBranch.redundantNullCheck;
 		String type = redundantNullCheck
-		        ? "RCN_REDUNDANT_CHECKED_NULL_COMPARISION"
+		        ? "RCN_REDUNDANT_CHECKED_NULL_COMPARISON"
 		        : "RCN_REDUNDANT_COMPARISON_TO_NULL";
 		int priority = redundantNullCheck ? LOW_PRIORITY : NORMAL_PRIORITY;
 

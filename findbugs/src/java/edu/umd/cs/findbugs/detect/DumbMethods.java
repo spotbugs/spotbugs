@@ -264,8 +264,7 @@ public class DumbMethods extends BytecodeScanningDetector implements Constants2,
 		}
 
 		if (!constantOnTopOfStack && (seen == INVOKEINTERFACE) 
-		&&  (getNameConstantOperand().equals("execute")
-		    || getNameConstantOperand().equals("executeUpdate"))
+		&&  getNameConstantOperand().startsWith("execute")
 		&&  getClassConstantOperand().equals("java/sql/Statement")) {
 			bugReporter.reportBug(new BugInstance(this, "DM_SQL_STATEMENT_EXECUTE", NORMAL_PRIORITY)
 				.addClassAndMethod(this)

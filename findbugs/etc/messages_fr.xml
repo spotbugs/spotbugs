@@ -1793,7 +1793,7 @@ devrait être modifiée pour déclencher NoSuchElementException si elle est appelée
     </Details>
   </BugPattern>
 
-  <BugPattern type="RCN_REDUNDANT_CHECKED_NULL_COMPARISION">
+  <BugPattern type="RCN_REDUNDANT_CHECKED_NULL_COMPARISON">
     <ShortDescription>Comparaison redondante à null d'une valeur préalablement vérifiée</ShortDescription>
     <LongDescription>Comparaison redondante à null d'une valeur préalablement vérifiée dans {1}</LongDescription>
     <Details>
