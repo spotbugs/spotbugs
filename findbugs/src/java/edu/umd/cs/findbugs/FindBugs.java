@@ -119,13 +119,17 @@ public class FindBugs implements Constants2, ExitCodes {
 		 * Did this class producer scan any Java source files?
 		 */
 		public boolean containsSourceFiles();
+
+//		/**
+//		 * Close any internal files or streams.
+//		 */
+//		public void close();
 	}
 
 	/**
 	 * ClassProducer for single class files.
 	 */
 	private static class SingleClassProducer implements ClassProducer {
-		//private String fileName;
 		private URL url;
 
 		/**
@@ -1015,7 +1019,7 @@ public class FindBugs implements Constants2, ExitCodes {
 	private static JavaClass parseClass(String archiveName, InputStream in, String fileName)
 	        throws IOException {
 		if (DEBUG) System.out.println("About to parse " + fileName + " in " + archiveName);
-		return new ClassParser(in, fileName).parse();
+		return parseFromStream(in, fileName);
 	}
 
 	/**
@@ -1023,7 +1027,32 @@ public class FindBugs implements Constants2, ExitCodes {
 	 */
 	private static JavaClass parseClass(URL url) throws IOException {
 		if (DEBUG) System.out.println("About to parse " + url.toString());
-		return new ClassParser(url.openStream(), url.toString()).parse();
+		InputStream in = url.openStream();
+		return parseFromStream(in, url.toString());
+	}
+
+	/**
+	 * Parse an input stream to produce a JavaClass object.
+	 * Makes sure that the input stream is closed no
+	 * matter what.
+	 */
+	private static JavaClass parseFromStream(InputStream in, String fileName) throws IOException {
+		boolean parsed = false;
+		try {
+			JavaClass jclass = new ClassParser(in, fileName).parse();
+			parsed = true;
+			return jclass;
+		} finally {
+			if (!parsed) {
+				// BCEL does not close the input stream unless
+				// parsing was successful.
+				try {
+					in.close();
+				} catch (IOException ignore) {
+					// Ignore
+				}
+			}
+		}
 	}
 
 	/**
