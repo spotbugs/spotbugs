@@ -30,6 +30,8 @@ public class FindRefComparison implements Detector {
 	private static final boolean DEBUG = Boolean.getBoolean("frc.debug");
 
 	private BugReporter bugReporter;
+	private boolean callsIntern;
+	private boolean dynamicallyCreatedString;
 
 	public FindRefComparison(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
@@ -55,10 +57,9 @@ public class FindRefComparison implements Detector {
 				if (DEBUG) System.out.println("FindRefComparison: analyzing " +
 					SignatureConverter.convertMethodSignature(methodGen));
 
-				// Scan for calls to String.intern().
-				// If we find any, assume the programmer knew what he/she
-				// was doing.
-				if (callsIntern(methodGen))
+				callsIntern = dynamicallyCreatedString = false;
+				scanMethod(methodGen);
+				if (callsIntern)
 					continue;
 
 				final CFG cfg = classContext.getCFG(method);
@@ -85,9 +86,14 @@ public class FindRefComparison implements Detector {
 									if (ot1.getClassName().equals("java.lang.String") &&
 										ot2.getClassName().equals("java.lang.String")) {
 										//System.out.println("String/String comparison!");
+
+										// Lower the priority if we didn't see a dynamically
+										// created String in the method.
+										int priority = dynamicallyCreatedString
+											? NORMAL_PRIORITY : LOW_PRIORITY;
 	
 										String sourceFile = jclass.getSourceFileName();
-										bugReporter.reportBug(new BugInstance("RC_REF_COMPARISON", NORMAL_PRIORITY)
+										bugReporter.reportBug(new BugInstance("RC_REF_COMPARISON", priority)
 											.addClassAndMethod(methodGen, sourceFile)
 											.addSourceLine(methodGen, sourceFile, handle)
 											.addClass(ot1.getClassName()).describe("CLASS_REFTYPE")
@@ -110,23 +116,47 @@ public class FindRefComparison implements Detector {
 		}
 	}
 
-	private static boolean callsIntern(MethodGen methodGen) {
+	private void scanMethod(MethodGen methodGen) {
+		ConstantPoolGen cpg = methodGen.getConstantPool();
 		InstructionHandle handle = methodGen.getInstructionList().getStart();
+
 		while (handle != null) {
 			Instruction ins = handle.getInstruction();
 			short opcode = ins.getOpcode();
-			if (opcode == Constants.INVOKEVIRTUAL) {
-				INVOKEVIRTUAL inv = (INVOKEVIRTUAL) ins;
-				ConstantPoolGen cpg = methodGen.getConstantPool();
-				if (inv.getClassName(cpg).equals("java.lang.String") &&
-					inv.getName(cpg).equals("intern") &&
-					inv.getSignature(cpg).equals("()Ljava/lang/String;"))
-					return true;
+			if (ins instanceof InvokeInstruction) {
+				InvokeInstruction inv = (InvokeInstruction) ins;
+				if (isIntern(inv, cpg))
+					callsIntern = true;
+				else if (isStringBufferToString(inv, cpg) || isValueOf(inv, cpg))
+					dynamicallyCreatedString = true;
+			} else if (opcode == Constants.NEW) {
+				if (isNewString((NEW) ins, cpg))
+					dynamicallyCreatedString = true;
 			}
 
 			handle = handle.getNext();
 		}
-		return false;
+	}
+
+	private static boolean isIntern(InvokeInstruction inv, ConstantPoolGen cpg) {
+		return inv.getClassName(cpg).equals("java.lang.String")
+			&& inv.getName(cpg).equals("intern")
+			&& inv.getSignature(cpg).equals("()Ljava/lang/String;");
+	}
+
+	private static boolean isStringBufferToString(InvokeInstruction inv, ConstantPoolGen cpg) {
+		return inv.getClassName(cpg).equals("java.lang.StringBuffer")
+			&& inv.getName(cpg).equals("toString");
+	}
+
+	private static boolean isValueOf(InvokeInstruction inv, ConstantPoolGen cpg) {
+		return inv.getName(cpg).equals("valueOf")
+			&& inv.getSignature(cpg).endsWith(")Ljava/lang/String;");
+	}
+
+	private static boolean isNewString(NEW newIns, ConstantPoolGen cpg) {
+		String className = newIns.getLoadClassType(cpg).getClassName();
+		return className.equals("java.lang.String");
 	}
 
 	public void report() {
