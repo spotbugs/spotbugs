@@ -223,7 +223,17 @@ abstract public class DismantleBytecode extends PreorderVisitor implements   Con
 				sigConstant = getStringFromIndex(sig.getSignatureIndex());
 				betterSigConstant 
 					= sigConstant.replace('/','.');
-				refConstant = betterClassConstant + "." + nameConstant + " : " + betterSigConstant;
+				StringBuffer ref = new StringBuffer(
+						5+betterClassConstant.length()
+						+nameConstant.length()
+						+betterSigConstant.length());
+			
+				ref.append( betterClassConstant )
+				.append( "." )
+				.append( nameConstant )
+				.append( " : " )
+				.append( betterSigConstant );
+				refConstant = ref.toString();
 				}
 			    break;
                         case M_R : 

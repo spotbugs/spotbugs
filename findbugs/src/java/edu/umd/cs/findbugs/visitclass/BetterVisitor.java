@@ -32,7 +32,7 @@ public abstract class BetterVisitor implements Visitor {
 
    protected String getStringFromIndex(int i) {
         ConstantUtf8 name = (ConstantUtf8)constant_pool.getConstant(i);
-        return name.getBytes().intern();
+        return name.getBytes();
         }
 
     protected int asUnsignedByte(byte b) {
@@ -177,8 +177,18 @@ public abstract class BetterVisitor implements Visitor {
 	        methodName = getStringFromIndex(obj.getNameIndex());
 	        methodSig = getStringFromIndex(obj.getSignatureIndex());
 		betterMethodSig = methodSig.replace('/','.');
-		betterMethodName = betterClassName + "." + methodName
-				+ " : " + betterMethodSig;
+		StringBuffer ref = new StringBuffer(
+				5+betterClassName.length()
+				+methodName.length()
+				+betterMethodSig.length());
+
+		ref.append( betterClassName )
+		.append( "." )
+		.append( methodName )
+		.append( " : " )
+		.append( betterMethodSig );
+		betterMethodName = ref.toString();
+
 		visit(obj); 
 		}
   public void visitSourceFile(SourceFile obj)    
