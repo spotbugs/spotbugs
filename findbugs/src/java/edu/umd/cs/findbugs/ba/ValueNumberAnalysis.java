@@ -123,8 +123,7 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
 
 		visitor.setFrame(fact);
 		visitor.setHandle(handle);
-		Instruction ins = handle.getInstruction();
-		ins.accept(visitor);
+		visitor.analyzeInstruction(handle.getInstruction());
 
 		ValueNumberFrame afterLocation = getFactAfterLocation(location);
 		copy(fact, afterLocation);

@@ -157,9 +157,9 @@ public class ValueNumberFrameModelingVisitor
 		int numProduced = ins.produceStack(getCPG());
 
 		if (numConsumed == Constants.UNPREDICTABLE)
-			throw new IllegalStateException("Unpredictable stack consumption for " + ins);
+			throw new InvalidBytecodeException("Unpredictable stack consumption for " + ins);
 		if (numProduced == Constants.UNPREDICTABLE)
-			throw new IllegalStateException("Unpredictable stack production for " + ins);
+			throw new InvalidBytecodeException("Unpredictable stack production for " + ins);
 
 		if (consumedValueList.length != numConsumed) {
 			throw new IllegalStateException("Wrong number of values consumed for " + ins +
@@ -293,7 +293,7 @@ public class ValueNumberFrameModelingVisitor
 						return;
 					}
 				} catch (DataflowAnalysisException e) {
-					throw new AnalysisException("stack underflow", methodGen, handle, e);
+					throw new InvalidBytecodeException("stack underflow", methodGen, handle, e);
 				}
 			} else if (Hierarchy.isInnerClassAccess(obj, cpg)) {
 				// Possible access of field via an inner-class access method
@@ -380,7 +380,7 @@ public class ValueNumberFrameModelingVisitor
 				frame.popValue();
 			}
 		} catch (DataflowAnalysisException e) {
-			throw new AnalysisException("ValueNumberFrameModelingVisitor caught exception: " + e.toString(), e);
+			throw new InvalidBytecodeException("Error getting input operands", e);
 		}
 
 		return inputValueList;
@@ -479,7 +479,7 @@ public class ValueNumberFrameModelingVisitor
 				checkConsumedAndProducedValues(obj, new ValueNumber[]{reference}, loadedValue);
 			}
 		} catch (DataflowAnalysisException e) {
-			throw new AnalysisException("ValueNumberFrameModelingVisitor caught exception: " + e.toString(), e);
+			throw new InvalidBytecodeException("Error loading from instance field", e);
 		}
 	}
 
