@@ -18,6 +18,7 @@
  */
 
 package edu.umd.cs.findbugs.detect;
+import edu.umd.cs.daveho.ba.AnalysisContext;
 import edu.umd.cs.daveho.ba.ClassContext;
 import edu.umd.cs.daveho.ba.SourceFile;
 import edu.umd.cs.daveho.ba.SourceFinder;

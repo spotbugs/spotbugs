@@ -1,5 +1,5 @@
 /*
- * FindBugs - Find bugs in Java programs
+ * Bytecode Analysis Framework
  * Copyright (C) 2003, University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
@@ -17,9 +17,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package edu.umd.cs.findbugs;
+package edu.umd.cs.daveho.ba;
 
-import edu.umd.cs.daveho.ba.*;
 import java.util.List;
 
 /**
