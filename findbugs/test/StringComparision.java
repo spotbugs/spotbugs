@@ -14,6 +14,11 @@ class StringComparision {
 
 	public boolean compareBool(Boolean a, Boolean b) { return a == b; }
 
+	public void compareTwo(String a, String b) {
+		if(a == "This") System.out.println("a");
+		if(b == "That") System.out.println("b");
+	}
+
 
         public Field searchFields(Field[] fields, String name) {
           String internedName = name.intern();
