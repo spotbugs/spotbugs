@@ -122,6 +122,7 @@
     
     <path id="test.classpath">
       <pathelement location="${jar.dir}/junit.jar"/>
+      <pathelement location="${jar.dir}/findbugs.jar"/>
     </path>
 
     <!--
