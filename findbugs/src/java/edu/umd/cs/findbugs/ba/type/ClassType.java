@@ -32,9 +32,18 @@ public class ClassType extends ObjectType {
 	private String className;
 	private int state;
 	private boolean isInterface;
+	private ClassNotFoundException resolverFailure;
 
 	ClassType(String typeSignature) {
 		super(typeSignature);
+	}
+
+	void setResolverFailure(ClassNotFoundException e) {
+		this.resolverFailure = e;
+	}
+
+	ClassNotFoundException getResolverFailure() {
+		return resolverFailure;
 	}
 
 	/**

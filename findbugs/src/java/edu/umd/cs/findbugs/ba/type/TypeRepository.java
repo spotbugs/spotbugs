@@ -49,8 +49,8 @@ import org.apache.bcel.Constants;
  */
 public class TypeRepository {
 	// FIME:
-	// - interfaces need to be made a direct subtype of java.lang.Object
-
+	// - signatures should probably be interned
+	//   (do experiment, see if it makes any difference in memory use)
 
 	/**
 	 * Basic type signatures to type codes.
@@ -90,6 +90,7 @@ public class TypeRepository {
 
 	private HashMap<String, Type> signatureToTypeMap;
 	private InheritanceGraph inheritanceGraph;
+	private ClassResolver resolver;
 
 	/* ----------------------------------------------------------------------
 	 * Public methods
@@ -101,7 +102,6 @@ public class TypeRepository {
 	 */
 	public TypeRepository() {
 		signatureToTypeMap = new HashMap<String, Type>();
-		inheritanceGraph = new InheritanceGraph();
 		inheritanceGraph = new InheritanceGraph();
 	}
 
@@ -379,7 +379,7 @@ public class TypeRepository {
 	 * a class or interface.
 	 */
 	private void resolveObjectType(ObjectType type) throws ClassNotFoundException {
-		if (type.getState() == ObjectType.UNCHECKED) {
+		if (type.getState() != ObjectType.KNOWN) {
 			if (type instanceof ArrayType) {
 				resolveArrayClass((ArrayType) type);
 			} else {
@@ -389,6 +389,8 @@ public class TypeRepository {
 	}
 
 	private void resolveArrayClass(ArrayType type) throws ClassNotFoundException {
+		// FIXME: avoid repeated failed attempts to resolve
+
 		Type baseType = type.getBaseType();
 
 		if (baseType.getSignature().equals("Ljava/lang/Object;")) {
@@ -419,7 +421,6 @@ public class TypeRepository {
 				resolveObjectType(elementObjectType);
 				for (Iterator<ObjectType> i = inheritanceGraph.successorIterator(elementObjectType); i.hasNext(); ) {
 					ObjectType elementSupertype = i.next();
-					//ObjectType arraySupertype = arrayTypeFromSignature("[" + elementSupertype.getSignature());
 					ObjectType arraySupertype =
 						arrayTypeFromDimensionsAndElementType(type.getNumDimensions(), elementSupertype);
 					addSuperclassLink(type, arraySupertype);
@@ -436,6 +437,28 @@ public class TypeRepository {
 	}
 
 	private void resolveClass(ClassType type) throws ClassNotFoundException {
+		// If previous attempt at resolution failed,
+		// just throw an exception
+		if (type.getState() == ObjectType.UNKNOWN)
+			throw new ClassNotFoundException("Class " + type.getClassName() +
+				" cannot be resolved", type.getResolverFailure());
+
+		// Delegate to the ClassResolver
+		try {
+			resolver.resolveClass(type, this);
+			type.setState(ObjectType.KNOWN);
+
+			// If the class is an interface, make it a direct
+			// subclass of java.lang.Object.  This is a convenient
+			// fiction that makes things a bit simpler.
+			if (type.isInterface())
+				addInterfaceLink(type, classTypeFromSlashedClassName("Ljava/lang/Object;"));
+		} catch (ClassNotFoundException e) {
+			type.setState(ObjectType.UNKNOWN);
+			type.setResolverFailure(e);
+			throw new ClassNotFoundException("Class " + type.getClassName() +
+				" cannot be resolved", e);
+		}
 	}
 }
 
