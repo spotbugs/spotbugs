@@ -19,6 +19,8 @@
 
 package edu.umd.cs.daveho.ba;
 
+import java.io.*;
+
 /**
  * Cached data for a source file.
  * Contains a map of line numbers to byte offsets, for quick
@@ -56,6 +58,25 @@ public class SourceFile {
 	 */
 	public byte[] getData() {
 		return data;
+	}
+
+	/**
+	 * Get an InputStream on data.
+	 * @return an InputStream on the data in the source file,
+	 *   starting from given offset
+	 */
+	public InputStream getInputStream() {
+		return new ByteArrayInputStream(data);
+	}
+
+	/**
+	 * Get an InputStream on data starting at given offset.
+	 * @param offset the start offset
+	 * @return an InputStream on the data in the source file,
+	 *   starting at the given offset
+	 */
+	public InputStream getInputStreamFromOffset(int offset) {
+		return new ByteArrayInputStream(data, offset, data.length - offset);
 	}
 
 	/**
