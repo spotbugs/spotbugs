@@ -84,7 +84,7 @@ public class FindMismatchedWaitOrNotify implements Detector {
 					String methodName = inv.getName(cpg);
 					String methodSig = inv.getSignature(cpg);
 
-					if (Lookup.isMonitorWait(methodName, methodSig) || Lookup.isMonitorNotify(methodName, methodSig)) {
+					if (Hierarchy.isMonitorWait(methodName, methodSig) || Hierarchy.isMonitorNotify(methodName, methodSig)) {
 						int numConsumed = inv.consumeStack(cpg);
 						if (numConsumed == Constants.UNPREDICTABLE)
 							throw new AnalysisException("Unpredictable stack consumption", methodGen, handle);

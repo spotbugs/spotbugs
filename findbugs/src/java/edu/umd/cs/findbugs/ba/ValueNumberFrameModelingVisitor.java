@@ -104,7 +104,7 @@ public class ValueNumberFrameModelingVisitor
 			ValueNumberFrame frame = getFrame();
 	
 			try {
-				XField xfield = Lookup.findXField(obj, getCPG());
+				XField xfield = Hierarchy.findXField(obj, getCPG());
 				if (xfield != null) {
 					loadInstanceField((InstanceField) xfield, obj);
 					return;
@@ -119,7 +119,7 @@ public class ValueNumberFrameModelingVisitor
 	public void visitPUTFIELD(PUTFIELD obj) {
 		if (REDUNDANT_LOAD_ELIMINATION) {
 			try {
-				XField xfield = Lookup.findXField(obj, getCPG());
+				XField xfield = Hierarchy.findXField(obj, getCPG());
 				if (xfield != null) {
 					storeInstanceField((InstanceField) xfield, obj, false);
 					return;
@@ -151,7 +151,7 @@ public class ValueNumberFrameModelingVisitor
 			}
 
 			try {
-				XField xfield = Lookup.findXField(obj, getCPG());
+				XField xfield = Hierarchy.findXField(obj, getCPG());
 				if (xfield != null) {
 					loadStaticField((StaticField) xfield, obj);
 					return;
@@ -167,7 +167,7 @@ public class ValueNumberFrameModelingVisitor
 	public void visitPUTSTATIC(PUTSTATIC obj) {
 		if (REDUNDANT_LOAD_ELIMINATION) {
 			try {
-				XField xfield = Lookup.findXField(obj, getCPG());
+				XField xfield = Hierarchy.findXField(obj, getCPG());
 				if (xfield != null) {
 					storeStaticField((StaticField) xfield, obj, false);
 					return;

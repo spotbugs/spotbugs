@@ -282,7 +282,7 @@ public class FindInconsistentSync2 implements Detector {
 
 					if (ins instanceof FieldInstruction) {
 						FieldInstruction fins = (FieldInstruction) ins;
-						xfield = Lookup.findXField(fins, cpg);
+						xfield = Hierarchy.findXField(fins, cpg);
 						isWrite = ins.getOpcode() == Constants.PUTFIELD;
 						isLocal = fins.getClassName(cpg).equals(classContext.getJavaClass().getClassName());
 						if (DEBUG) System.out.println("Handling field access: " + location.getHandle() +

@@ -165,7 +165,7 @@ public class PruneInfeasibleExceptionEdges implements EdgeTypes {
 		// If it's an InvokeInstruction, add declared exceptions and RuntimeException
 		if (ins instanceof InvokeInstruction) {
 			InvokeInstruction inv = (InvokeInstruction) ins;
-			Method method = Lookup.findExactMethod(inv, cpg);
+			Method method = Hierarchy.findExactMethod(inv, cpg);
 			if (method != null) {
 				ExceptionTable exceptionTable = method.getExceptionTable();
 				if (exceptionTable != null) {
@@ -217,14 +217,14 @@ public class PruneInfeasibleExceptionEdges implements EdgeTypes {
 
 			if (DEBUG) System.out.println("\texception type " + thrownClassName + ", catch type " + catchClassName);
 
-			if (Repository.instanceOf(thrownClassName, catchClassName)) {
+			if (Hierarchy.isSubtype(thrownClassName, catchClassName)) {
 				// The thrown exception is a subtype of the catch type,
 				// so this exception will DEFINITELY be caught by
 				// this handler.
 				if (DEBUG) System.out.println("\tException is subtype of catch type: will definitely catch");
 				reachable = true;
 				i.remove();
-			} else if (Repository.instanceOf(catchClassName, thrownClassName)) {
+			} else if (Hierarchy.isSubtype(catchClassName, thrownClassName)) {
 				// The thrown exception is a supertype of the catch type,
 				// so it MIGHT get caught by this handler.
 				if (DEBUG) System.out.println("\tException is supertype of catch type: might catch");

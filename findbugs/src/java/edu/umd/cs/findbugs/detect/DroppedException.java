@@ -22,6 +22,7 @@ import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.SourceFile;
 import edu.umd.cs.findbugs.ba.SourceFinder;
+import edu.umd.cs.findbugs.ba.Hierarchy;
 import edu.umd.cs.findbugs.*;
 import java.io.*;
 import java.util.*;
@@ -53,8 +54,8 @@ public class DroppedException extends PreorderVisitor implements Detector, Const
     boolean isChecked(String c) {
 	if (!causes.add(c)) return checkedCauses.contains(c);
 	try {
-		if (Repository.instanceOf(c, "java.lang.Exception")
-			&& !Repository.instanceOf(c, "java.lang.RuntimeException"))
+		if (Hierarchy.isSubtype(c, "java.lang.Exception")
+			&& !Hierarchy.isSubtype(c, "java.lang.RuntimeException"))
 		   checkedCauses.add(c);
 		return true;
 	    }

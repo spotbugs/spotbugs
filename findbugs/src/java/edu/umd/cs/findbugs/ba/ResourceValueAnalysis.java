@@ -169,7 +169,7 @@ public class ResourceValueAnalysis<Resource> extends FrameDataflowAnalysis<Resou
 				if (DEBUG) System.out.print("field=" + className + "." + fieldName);
 
 				try {
-					Field field = Lookup.findField(className, fieldName);
+					Field field = Hierarchy.findField(className, fieldName);
 					if (field != null)
 						finalFieldLoadSet.set(offset, field.isFinal());
 				} catch (ClassNotFoundException e) {

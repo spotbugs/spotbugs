@@ -252,24 +252,24 @@ public class FindOpenStream extends ResourceTrackingDetector<Stream, FindOpenStr
 					// Track any subclass of InputStream, OutputStream, Reader, and Writer
 					// (but not ByteArray/CharArray/String variants)
 					String className = sig.substring(1, sig.length() - 1).replace('/', '.');
-					if (Repository.instanceOf(className, "java.io.InputStream")) {
-						boolean isUninteresting = Repository.instanceOf(className, "java.io.ByteArrayInputStream")
-							|| Repository.instanceOf(className, "java.io.ObjectInputStream");
+					if (Hierarchy.isSubtype(className, "java.io.InputStream")) {
+						boolean isUninteresting = Hierarchy.isSubtype(className, "java.io.ByteArrayInputStream")
+							|| Hierarchy.isSubtype(className, "java.io.ObjectInputStream");
 						return new Stream(location, className, "java.io.InputStream", isUninteresting);
 
-					} else if (Repository.instanceOf(className, "java.io.OutputStream")) {
-						boolean isUninteresting = Repository.instanceOf(className, "java.io.ByteArrayOutputStream")
-							|| Repository.instanceOf(className, "java.io.ObjectOutputStream");
+					} else if (Hierarchy.isSubtype(className, "java.io.OutputStream")) {
+						boolean isUninteresting = Hierarchy.isSubtype(className, "java.io.ByteArrayOutputStream")
+							|| Hierarchy.isSubtype(className, "java.io.ObjectOutputStream");
 						return new Stream(location, className, "java.io.OutputStream", isUninteresting);
 
-					} else if (Repository.instanceOf(className, "java.io.Reader")) {
-						boolean isUninteresting = Repository.instanceOf(className, "java.io.StringReader")
-							|| Repository.instanceOf(className, "java.io.CharArrayReader");
+					} else if (Hierarchy.isSubtype(className, "java.io.Reader")) {
+						boolean isUninteresting = Hierarchy.isSubtype(className, "java.io.StringReader")
+							|| Hierarchy.isSubtype(className, "java.io.CharArrayReader");
 						return new Stream(location, className, "java.io.Reader", isUninteresting);
 
-					} else if (Repository.instanceOf(className, "java.io.Writer")) {
-						boolean isUninteresting = Repository.instanceOf(className, "java.io.StringWriter")
-							|| Repository.instanceOf(className, "java.io.CharArrayWriter");
+					} else if (Hierarchy.isSubtype(className, "java.io.Writer")) {
+						boolean isUninteresting = Hierarchy.isSubtype(className, "java.io.StringWriter")
+							|| Hierarchy.isSubtype(className, "java.io.CharArrayWriter");
 						return new Stream(location, className, "java.io.Writer", isUninteresting);
 
 					}
@@ -282,7 +282,7 @@ public class FindOpenStream extends ResourceTrackingDetector<Stream, FindOpenStr
 					INVOKEVIRTUAL inv = (INVOKEVIRTUAL) ins;
 					String className = inv.getClassName(cpg);
 
-					if (Repository.instanceOf(className, "java.net.Socket")) {
+					if (Hierarchy.isSubtype(className, "java.net.Socket")) {
 						String methodName = inv.getName(cpg);
 						String methodSig = inv.getSignature(cpg);
 						if (DEBUG) System.out.println("Socket call: " + methodName + " : " + methodSig);
@@ -364,7 +364,7 @@ public class FindOpenStream extends ResourceTrackingDetector<Stream, FindOpenStr
 
 					return inv.getName(cpg).equals("close")
 						&& inv.getSignature(cpg).equals("()V")
-						&& Repository.instanceOf(inv.getClassName(cpg), streamBase);
+						&& Hierarchy.isSubtype(inv.getClassName(cpg), streamBase);
 				} catch (ClassNotFoundException e) {
 					lookupFailureCallback.reportMissingClass(e);
 					return false;

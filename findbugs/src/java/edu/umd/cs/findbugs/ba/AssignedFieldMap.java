@@ -108,7 +108,7 @@ public class AssignedFieldMap implements Constants {
 			if (opcode == Constants.PUTFIELD) {
 				PUTFIELD putfield = (PUTFIELD) ins;
 
-				XField instanceField = Lookup.findXField(putfield, cpg);
+				XField instanceField = Hierarchy.findXField(putfield, cpg);
 				if (instanceField != null && assignableFieldSet.contains(instanceField)) {
 					Set<XField> assignedFieldSetForMethod = getAssignedFieldSetForMethod(method);
 					assignedFieldSetForMethod.add(instanceField);

@@ -176,7 +176,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 				try {
 					String className = obj.getClassName(getCPG());
 					String fieldName = obj.getName(getCPG());
-					Field field = edu.umd.cs.findbugs.ba.Lookup.findField(className, fieldName);
+					Field field = Hierarchy.findField(className, fieldName);
 
 					if (field != null) {
 						// If the field is final, we'll assume that the String value

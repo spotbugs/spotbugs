@@ -18,6 +18,7 @@
  */
 
 package edu.umd.cs.findbugs.detect;
+import edu.umd.cs.findbugs.ba.Hierarchy;
 import edu.umd.cs.findbugs.*;
 import org.apache.bcel.classfile.*;
 import edu.umd.cs.findbugs.visitclass.Constants2;
@@ -34,7 +35,7 @@ public class FindRunInvocations extends BytecodeScanningDetector implements   Co
 
    private boolean isThread(String clazz) {
 	  try {
-		return org.apache.bcel.Repository.instanceOf(clazz,"java.lang.Thread");
+		return Hierarchy.isSubtype(clazz,"java.lang.Thread");
 	  } catch (ClassNotFoundException e) {
 		bugReporter.reportMissingClass(e);
 		return false;

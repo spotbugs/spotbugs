@@ -101,7 +101,7 @@ public class Invoke extends PatternElement {
 		public SubclassMatcher(String className) { this.className = className; }
 		public boolean match(String s) {
 			try {
-				return Repository.instanceOf(s, className);
+				return Hierarchy.isSubtype(s, className);
 			} catch (ClassNotFoundException e) {
 				lookupFailureCallback.reportMissingClass(e);
 				return false;
