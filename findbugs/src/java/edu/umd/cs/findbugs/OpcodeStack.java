@@ -49,6 +49,7 @@ import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
  */
 public class OpcodeStack implements Constants2
 {
+	private static final boolean DEBUG = Boolean.getBoolean("ocstack.debug");
 	private List<Item> stack;
 	
 	public static class Item
@@ -302,6 +303,24 @@ public class OpcodeStack implements Constants2
 	 					push(it);
 	 				}
 	 			break;
+	 			
+	 			case DUP2_X1:
+	 				it = pop();
+	 				it2 = pop();
+	 				signature = it.getSignature();
+	 				if (signature.equals("J") || signature.equals("D")) {
+	 					push(it);
+	 					push(it2);
+	 					push(it);	 				
+	 				} else {
+	 					it3 = pop();
+	 					push(it2);
+	 					push(it);
+	 					push(it3);
+	 					push(it2);
+	 					push(it);
+	 				}
+	 			break;
 	 				 			
 	 			case ATHROW:
 	 			case CHECKCAST:
@@ -374,12 +393,29 @@ public class OpcodeStack implements Constants2
 	 				push(new Item("I"));
 	 			break;
 	 			
+	 			case DALOAD:
+	 				pop(2);
+	 				push(new Item("D"));
+	 			break;
+	 			
+	 			case FALOAD:
+	 				pop(2);
+	 				push(new Item("F"));
+	 			break;
+	 			
+	 			case LALOAD:
+	 				pop(2);
+	 				push(new Item("J"));
+	 			break;
+	 			
 	 			case AASTORE:
 	 			case BASTORE:
 	 			case CASTORE:
+	 			case DASTORE:
 	 			case FASTORE:
 	 			case IASTORE:
 	 			case LASTORE:
+	 			case SASTORE:
 	 				pop(3);
 	 			break;
 	 			
@@ -413,6 +449,15 @@ public class OpcodeStack implements Constants2
 	 				}
 	 			break;
 	 			
+	 			case LNEG:
+	 				it = pop();
+	 				if (it.getConstant() != null) {
+	 					push(new Item("J", new Long(-((Long)it.getConstant()).longValue())));
+	 				} else {
+	 					push(new Item("J"));
+	 				}
+	 			break;
+
 	 			case DNEG:
 	 				it = pop();
 	 				if (it.getConstant() != null) {
@@ -432,6 +477,7 @@ public class OpcodeStack implements Constants2
 	 			case LSHL:
 	 			case LSHR:
 	 			case LREM:
+	 			case LUSHR:
 	 				it = pop();
 	 				it2 = pop();
 	 				pushByLongMath(seen, it, it2);
@@ -672,7 +718,7 @@ public class OpcodeStack implements Constants2
 	 			case INVOKESPECIAL:
 	 			case INVOKESTATIC:
 	 			case INVOKEVIRTUAL:
-	 				pushByInvoke(dbc);
+	 				pushByInvoke(dbc, seen != INVOKESTATIC);
 	 			break;
 	 				
 	 			default:
@@ -684,6 +730,10 @@ public class OpcodeStack implements Constants2
 	 		//items than really exist, and so they're condition check will fail, or the stack will resync with the code.
 	 		//But hopefully not false positives
 	 		stack.clear();
+	 	}
+	 	finally {
+	 		if (DEBUG)
+	 			System.out.println(OPCODE_NAMES[seen] + "  stack depth: " + getStackDepth());
 	 	}
  	}
  	
@@ -792,6 +842,8 @@ public class OpcodeStack implements Constants2
 				push(new Item("J", new Long(((Long)it2.getConstant()).longValue() >> ((Long)it.getConstant()).longValue())));
 			else if (seen == LREM)
 				push(new Item("J", new Long(((Long)it2.getConstant()).longValue() % ((Long)it.getConstant()).longValue())));
+			else if (seen == LUSHR)
+				push(new Item("J", new Long(((Long)it2.getConstant()).longValue() >>> ((Long)it.getConstant()).longValue())));
 		} else {
 			push(new Item("J"));
 		}
@@ -829,10 +881,10 @@ public class OpcodeStack implements Constants2
 		}
 	}
 	
-	private void pushByInvoke(DismantleBytecode dbc) {
+	private void pushByInvoke(DismantleBytecode dbc, boolean popThis) {
 		String signature = dbc.getSigConstantOperand();
 		Type[] argTypes = Type.getArgumentTypes(signature);
-		pop(argTypes.length);
+		pop(argTypes.length+(popThis ? 1 : 0));
 		pushBySignature(Type.getReturnType(signature).getSignature());
 	}
  	
