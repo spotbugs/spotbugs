@@ -40,106 +40,106 @@ public class FindOpenStream extends ResourceTrackingDetector<Stream, StreamResou
 	 * Tracked resource types
 	 * ---------------------------------------------------------------------- */
 
-	static final StreamFactory[] streamFactoryList = new StreamFactory[29];
+	static final StreamFactory[] streamFactoryList;
 	static {
-		int count = 0;
+		ArrayList<StreamFactory> streamFactoryCollection = new ArrayList<StreamFactory>();
 
 		// Examine InputStreams, OutputStreams, Readers, and Writers,
 		// ignoring byte array, object stream, char array, and String variants.
-		streamFactoryList[count++] = new IOStreamFactory("java.io.InputStream",
+		streamFactoryCollection.add(new IOStreamFactory("java.io.InputStream",
 			new String[]{"java.io.ByteArrayInputStream", "java.io.ObjectInputStream"},
-			"OS_OPEN_STREAM");
-		streamFactoryList[count++] = new IOStreamFactory("java.io.OutputStream",
+			"OS_OPEN_STREAM"));
+		streamFactoryCollection.add(new IOStreamFactory("java.io.OutputStream",
 			new String[]{"java.io.ByteArrayOutputStream", "java.io.ObjectOutputStream"},
-			"OS_OPEN_STREAM");
-		streamFactoryList[count++] = new IOStreamFactory("java.io.Reader",
+			"OS_OPEN_STREAM"));
+		streamFactoryCollection.add(new IOStreamFactory("java.io.Reader",
 			new String[]{"java.io.StringReader", "java.io.CharArrayReader"},
-			"OS_OPEN_STREAM");
-		streamFactoryList[count++] = new IOStreamFactory("java.io.Writer",
+			"OS_OPEN_STREAM"));
+		streamFactoryCollection.add(new IOStreamFactory("java.io.Writer",
 			new String[]{"java.io.StringWriter", "java.io.CharArrayWriter"},
-			"OS_OPEN_STREAM");
+			"OS_OPEN_STREAM"));
 
 		// Ignore socket input and output streams
-		streamFactoryList[count++] = new MethodReturnValueStreamFactory("java.net.Socket",
-			"getInputStream", "()Ljava/io/InputStream;");
-		streamFactoryList[count++] = new MethodReturnValueStreamFactory("java.net.Socket",
-			"getOutputStream", "()Ljava/io/OutputStream;");
+		streamFactoryCollection.add(new MethodReturnValueStreamFactory("java.net.Socket",
+			"getInputStream", "()Ljava/io/InputStream;"));
+		streamFactoryCollection.add(new MethodReturnValueStreamFactory("java.net.Socket",
+			"getOutputStream", "()Ljava/io/OutputStream;"));
 
 		// Ignore System.{in,out,err}
-		streamFactoryList[count++] = new StaticFieldLoadStreamFactory("java.io.InputStream",
-			"java.lang.System", "in", "Ljava/io/InputStream;");
-		streamFactoryList[count++] = new StaticFieldLoadStreamFactory("java.io.OutputStream",
-			"java.lang.System", "out", "Ljava/io/PrintStream;");
-		streamFactoryList[count++] = new StaticFieldLoadStreamFactory("java.io.OutputStream",
-			"java.lang.System", "err", "Ljava/io/PrintStream;");
+		streamFactoryCollection.add(new StaticFieldLoadStreamFactory("java.io.InputStream",
+			"java.lang.System", "in", "Ljava/io/InputStream;"));
+		streamFactoryCollection.add(new StaticFieldLoadStreamFactory("java.io.OutputStream",
+			"java.lang.System", "out", "Ljava/io/PrintStream;"));
+		streamFactoryCollection.add(new StaticFieldLoadStreamFactory("java.io.OutputStream",
+			"java.lang.System", "err", "Ljava/io/PrintStream;"));
 
 		// JDBC objects
-		streamFactoryList[count++] = new MethodReturnValueStreamFactory("java.sql.Connection",
+		streamFactoryCollection.add(new MethodReturnValueStreamFactory("java.sql.Connection",
 			"prepareStatement", "(Ljava/lang/String;)Ljava/sql/PreparedStatement;",
-			"ODR_OPEN_DATABASE_RESOURCE");
-		streamFactoryList[count++] = new MethodReturnValueStreamFactory("java.sql.Connection",
+			"ODR_OPEN_DATABASE_RESOURCE"));
+		streamFactoryCollection.add(new MethodReturnValueStreamFactory("java.sql.Connection",
 			"prepareStatement", "(Ljava/lang/String;I)Ljava/sql/PreparedStatement;",
-			"ODR_OPEN_DATABASE_RESOURCE");
-		streamFactoryList[count++] = new MethodReturnValueStreamFactory("java.sql.Connection",
+			"ODR_OPEN_DATABASE_RESOURCE"));
+		streamFactoryCollection.add(new MethodReturnValueStreamFactory("java.sql.Connection",
 			"prepareStatement", "(Ljava/lang/String;[I)Ljava/sql/PreparedStatement;",
-			"ODR_OPEN_DATABASE_RESOURCE");
-		streamFactoryList[count++] = new MethodReturnValueStreamFactory("java.sql.Connection",
+			"ODR_OPEN_DATABASE_RESOURCE"));
+		streamFactoryCollection.add(new MethodReturnValueStreamFactory("java.sql.Connection",
 			"prepareStatement", "(Ljava/lang/String;II)Ljava/sql/PreparedStatement;",
-			"ODR_OPEN_DATABASE_RESOURCE");
-		streamFactoryList[count++] = new MethodReturnValueStreamFactory("java.sql.Connection",
+			"ODR_OPEN_DATABASE_RESOURCE"));
+		streamFactoryCollection.add(new MethodReturnValueStreamFactory("java.sql.Connection",
 			"prepareStatement", "(Ljava/lang/String;III)Ljava/sql/PreparedStatement;",
-			"ODR_OPEN_DATABASE_RESOURCE");
-		streamFactoryList[count++] = new MethodReturnValueStreamFactory("java.sql.Connection",
+			"ODR_OPEN_DATABASE_RESOURCE"));
+		streamFactoryCollection.add(new MethodReturnValueStreamFactory("java.sql.Connection",
 			"prepareStatement", "(Ljava/lang/String;[Ljava/lang/String;)Ljava/sql/PreparedStatement;",
-			"ODR_OPEN_DATABASE_RESOURCE");
+			"ODR_OPEN_DATABASE_RESOURCE"));
 
-		streamFactoryList[count++] = new MethodReturnValueStreamFactory("java.sql.Connection",
+		streamFactoryCollection.add(new MethodReturnValueStreamFactory("java.sql.Connection",
 			"prepareCall", "(Ljava/lang/String;)Ljava/sql/CallableStatement;",
-			"ODR_OPEN_DATABASE_RESOURCE");
-		streamFactoryList[count++] = new MethodReturnValueStreamFactory("java.sql.Connection",
+			"ODR_OPEN_DATABASE_RESOURCE"));
+		streamFactoryCollection.add(new MethodReturnValueStreamFactory("java.sql.Connection",
 			"prepareCall", "(Ljava/lang/String;II)Ljava/sql/CallableStatement;",
-			"ODR_OPEN_DATABASE_RESOURCE");
-		streamFactoryList[count++] = new MethodReturnValueStreamFactory("java.sql.Connection",
+			"ODR_OPEN_DATABASE_RESOURCE"));
+		streamFactoryCollection.add(new MethodReturnValueStreamFactory("java.sql.Connection",
 			"prepareCall", "(Ljava/lang/String;III)Ljava/sql/CallableStatement;",
-			"ODR_OPEN_DATABASE_RESOURCE");
+			"ODR_OPEN_DATABASE_RESOURCE"));
 
-		streamFactoryList[count++] = new MethodReturnValueStreamFactory("java.sql.DriverManager",
+		streamFactoryCollection.add(new MethodReturnValueStreamFactory("java.sql.DriverManager",
 			"getConnection", "(Ljava/lang/String;)Ljava/sql/Connection;",
-			"ODR_OPEN_DATABASE_RESOURCE");
-		streamFactoryList[count++] = new MethodReturnValueStreamFactory("java.sql.DriverManager",
+			"ODR_OPEN_DATABASE_RESOURCE"));
+		streamFactoryCollection.add(new MethodReturnValueStreamFactory("java.sql.DriverManager",
 			"getConnection", "(Ljava/lang/String;Ljava/util/Properties;)Ljava/sql/Connection;",
-			"ODR_OPEN_DATABASE_RESOURCE");
-		streamFactoryList[count++] = new MethodReturnValueStreamFactory("java.sql.DriverManager",
+			"ODR_OPEN_DATABASE_RESOURCE"));
+		streamFactoryCollection.add(new MethodReturnValueStreamFactory("java.sql.DriverManager",
 			"getConnection",
 			"(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/sql/Connection;",
-			"ODR_OPEN_DATABASE_RESOURCE");
+			"ODR_OPEN_DATABASE_RESOURCE"));
 
-		streamFactoryList[count++] = new MethodReturnValueStreamFactory("java.sql.Connection",
+		streamFactoryCollection.add(new MethodReturnValueStreamFactory("java.sql.Connection",
 			"createStatement", "()Ljava/sql/Statement;",
-			"ODR_OPEN_DATABASE_RESOURCE");
-		streamFactoryList[count++] = new MethodReturnValueStreamFactory("java.sql.Connection",
+			"ODR_OPEN_DATABASE_RESOURCE"));
+		streamFactoryCollection.add(new MethodReturnValueStreamFactory("java.sql.Connection",
 			"createStatement", "(II)Ljava/sql/Statement;",
-			"ODR_OPEN_DATABASE_RESOURCE");
-		streamFactoryList[count++] = new MethodReturnValueStreamFactory("java.sql.Connection",
+			"ODR_OPEN_DATABASE_RESOURCE"));
+		streamFactoryCollection.add(new MethodReturnValueStreamFactory("java.sql.Connection",
 			"createStatement", "(III)Ljava/sql/Statement;",
-			"ODR_OPEN_DATABASE_RESOURCE");			
-		streamFactoryList[count++] = new MethodReturnValueStreamFactory("java.sql.Connection",
+			"ODR_OPEN_DATABASE_RESOURCE"));			
+		streamFactoryCollection.add(new MethodReturnValueStreamFactory("java.sql.Connection",
 			"createStatement", "(Ljava/lang/String;I)Ljava/sql/PreparedStatement;",
-			"ODR_OPEN_DATABASE_RESOURCE");
-		streamFactoryList[count++] = new MethodReturnValueStreamFactory("java.sql.Connection",
+			"ODR_OPEN_DATABASE_RESOURCE"));
+		streamFactoryCollection.add(new MethodReturnValueStreamFactory("java.sql.Connection",
 			"createStatement", "(Ljava/lang/String;II)Ljava/sql/PreparedStatement;",
-			"ODR_OPEN_DATABASE_RESOURCE");
-		streamFactoryList[count++] = new MethodReturnValueStreamFactory("java.sql.Connection",
+			"ODR_OPEN_DATABASE_RESOURCE"));
+		streamFactoryCollection.add(new MethodReturnValueStreamFactory("java.sql.Connection",
 			"createStatement", "(Ljava/lang/String;III)Ljava/sql/PreparedStatement;",
-			"ODR_OPEN_DATABASE_RESOURCE");
-		streamFactoryList[count++] = new MethodReturnValueStreamFactory("java.sql.Connection",
+			"ODR_OPEN_DATABASE_RESOURCE"));
+		streamFactoryCollection.add(new MethodReturnValueStreamFactory("java.sql.Connection",
 			"createStatement", "(Ljava/lang/String;[I)Ljava/sql/PreparedStatement;",
-			"ODR_OPEN_DATABASE_RESOURCE");
-		streamFactoryList[count++] = new MethodReturnValueStreamFactory("java.sql.Connection",
+			"ODR_OPEN_DATABASE_RESOURCE"));
+		streamFactoryCollection.add(new MethodReturnValueStreamFactory("java.sql.Connection",
 			"createStatement", "(Ljava/lang/String;[Ljava/lang/String;)Ljava/sql/PreparedStatement;",
-			"ODR_OPEN_DATABASE_RESOURCE");
+			"ODR_OPEN_DATABASE_RESOURCE"));
 
-		if (count != streamFactoryList.length) throw new IllegalStateException();
+		streamFactoryList = streamFactoryCollection.toArray(new StreamFactory[streamFactoryCollection.size()]);
 	}
 
 	/* ----------------------------------------------------------------------
