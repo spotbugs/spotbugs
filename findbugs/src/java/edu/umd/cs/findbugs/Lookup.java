@@ -43,7 +43,10 @@ public class Lookup
 		Method[] m = clazz.getMethods();
 		for(int i = 0; i < m.length; i++) 
 			if (m[i].getName().equals(name)
-			    && m[i].getSignature().equals(signature))
+			    && m[i].getSignature().equals(signature)
+		            && ((m[i].getAccessFlags() & ACC_PRIVATE) == 0)
+		            && ((m[i].getAccessFlags() & ACC_STATIC) == 0)
+			    )
 			  return m[i];
 		return null;
 		}

@@ -27,14 +27,18 @@ public class FindFinalizeInvocations extends BytecodeScanningDetector implements
 			bugReporter.reportBug(new BugInstance("FI_PUBLIC_SHOULD_BE_PROTECTED", NORMAL_PRIORITY).addClassAndMethod(this));
 		}
    public void visit(Code obj) {
-		sawSuperFinalize = false;
 		super.visit(obj);
-		boolean extendsObject = superclassName.equals("java.lang.Object");
+		if (!methodName.equals("finalize") 
+			|| !methodSig.equals("()V")) return;
+		sawSuperFinalize = false;
+		String overridesFinalizeIn 
+			= Lookup.findSuperImplementor(betterClassName, 
+						"finalize",
+						"()V");
+		boolean superHasNoFinalizer = overridesFinalizeIn.equals("java.lang.Object");
 		// System.out.println("superclass: " + superclassName);
-		if (methodName.equals("finalize") 
-			&& methodSig.equals("()V")) {
 		    if (obj.getCode().length == 1)	 {
-			if (extendsObject)
+			if (superHasNoFinalizer)
 				bugReporter.reportBug(new BugInstance("FI_EMPTY", NORMAL_PRIORITY).addClassAndMethod(this));
 			else
 				bugReporter.reportBug(new BugInstance("FI_NULLIFY_SUPER", NORMAL_PRIORITY)
@@ -43,9 +47,8 @@ public class FindFinalizeInvocations extends BytecodeScanningDetector implements
 			}
 		    else if (obj.getCode().length == 5 && sawSuperFinalize) 
 			bugReporter.reportBug(new BugInstance("FI_USELESS", NORMAL_PRIORITY).addClassAndMethod(this));
-		    else if (!sawSuperFinalize && !extendsObject)
+		    else if (!sawSuperFinalize && !superHasNoFinalizer)
 			bugReporter.reportBug(new BugInstance("FI_MISSING_SUPER_CALL", NORMAL_PRIORITY).addClassAndMethod(this));
-		    }
 		}
    public void sawOpcode(int seen) {
 	if (seen == INVOKEVIRTUAL && nameConstant.equals("finalize"))
