@@ -106,6 +106,13 @@ public class TimestampInterval implements Comparable<TimestampInterval> {
 
 	public int compareTo(TimestampInterval other) {
 		long diff = this.begin - other.begin;
+		if (diff != 0L)
+			return signOf(diff);
+		diff = this.end - other.end;
+		return signOf(diff);
+	}
+
+	private static int signOf(long diff) {
 		if (diff > 0L)
 			return 1;
 		else if (diff < 0L)
