@@ -35,6 +35,7 @@ import edu.umd.cs.findbugs.ba.bcp.*;
  */
 public abstract class ByteCodePatternDetector implements Detector {
 	private static final boolean DEBUG = Boolean.getBoolean("bcpd.debug");
+	private static final String METHOD = System.getProperty("bcpd.method");
 
 	public void visitClassContext(ClassContext classContext) {
 		try {
@@ -45,6 +46,9 @@ public abstract class ByteCodePatternDetector implements Detector {
 			for (int i = 0; i < methodList.length; ++i) {
 				Method method = methodList[i];
 				if (method.isAbstract() || method.isNative())
+					continue;
+
+				if (METHOD != null && !method.getName().equals(METHOD))
 					continue;
 
 				if (DEBUG) {
@@ -60,6 +64,7 @@ public abstract class ByteCodePatternDetector implements Detector {
 				MethodGen methodGen = classContext.getMethodGen(method);
 				if (methodGen == null)
 					continue;
+
 				ConstantPoolGen cpg = methodGen.getConstantPool();
 				CFG cfg = classContext.getCFG(method);
 				DepthFirstSearch dfs = classContext.getDepthFirstSearch(method);
