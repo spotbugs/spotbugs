@@ -19,9 +19,13 @@
 
 package edu.umd.cs.findbugs.ml;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Iterator;
 import java.util.List;
 
@@ -60,7 +64,14 @@ public class GenerateUIDs {
 	}
 	
 	public void execute() throws IOException, DocumentException {
-		bugCollection.readXML(inputFilename, project);
+		InputStream in;
+		if (inputFilename.equals("-")) {
+			in = System.in;
+		} else {
+			in = new BufferedInputStream(new FileInputStream(inputFilename));
+		}
+		
+		bugCollection.readXML(in, project);
 
 		Document document = DocumentFactory.getInstance().createDocument();
 		Dom4JXMLOutput xmlOutput = new Dom4JXMLOutput(document);
@@ -77,7 +88,12 @@ public class GenerateUIDs {
 			}
 		}
 		
-		BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(outputFilename));
+		OutputStream out;
+		if (outputFilename.equals("-")) {
+			out = System.out;
+		} else {
+			out = new BufferedOutputStream(new FileOutputStream(outputFilename));
+		}
 		XMLWriter xmlWriter = new XMLWriter(out, OutputFormat.createPrettyPrint());
 		xmlWriter.write(document);
 	}
@@ -94,6 +110,5 @@ public class GenerateUIDs {
 		
 		GenerateUIDs generateUIDs = new GenerateUIDs(inputFilename, outputFilename);
 		generateUIDs.execute();
-		System.out.println("Done!");
 	}
 }
