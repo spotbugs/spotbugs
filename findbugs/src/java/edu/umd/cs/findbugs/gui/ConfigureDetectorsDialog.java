@@ -213,7 +213,8 @@ public class ConfigureDetectorsDialog extends javax.swing.JDialog {
 
 	private void restoreDefaultsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_restoreDefaultsButtonActionPerformed
 		Iterator<DetectorFactory> i = DetectorFactoryCollection.instance().factoryIterator();
-		DefaultTableModel model = (DefaultTableModel) detectorTable.getModel();
+		TableSorter sorter = (TableSorter) detectorTable.getModel();
+		TableModel model = sorter.getTableModel();
 		int row = 0;
 		while (i.hasNext()) {
 			DetectorFactory factory = i.next();
