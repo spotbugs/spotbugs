@@ -95,6 +95,28 @@ public class BasicBlock implements Comparable {
 	return instructionList.iterator();
     }
 
+    /**
+     * Get an Iterator over the instructions in the basic block in reverse order.
+     * This is useful for backwards dataflow analyses.
+     */
+    public Iterator<InstructionHandle> instructionReverseIterator() {
+	return new Iterator<InstructionHandle>() {
+	    private ListIterator<InstructionHandle> realIter = instructionList.listIterator(instructionList.size());
+
+	    public boolean hasNext() {
+		return realIter.hasPrevious();
+	    }
+
+	    public InstructionHandle next() throws NoSuchElementException {
+		return realIter.previous();
+	    }
+
+	    public void remove() {
+		throw new UnsupportedOperationException();
+	    }
+	};
+    }
+
     private static final PCRange[] EMPTY_RANGE_LIST = new PCRange[0];
 
     /**
