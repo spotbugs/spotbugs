@@ -236,7 +236,7 @@ public class DumbMethods extends BytecodeScanningDetector implements Constants2 
 			if (sig.equals("()V")
 			||  sig.equals("(Ljava/lang/String;)V")
 			||  sig.equals("(Ljava/lang/ThreadGroup;Ljava/lang/String;)V"))
-				if (!getMethodName().equals("<init>") || (getPC() > 10)) {
+				if (!getMethodName().equals("<init>") || (getPC() > 20)) {
 					bugReporter.reportBug(new BugInstance(this, "DM_USELESS_THREAD", LOW_PRIORITY)
 					        .addClassAndMethod(this)
 					        .addSourceLine(this));
