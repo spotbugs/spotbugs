@@ -46,12 +46,12 @@ public class BCPMethodReturnCheck extends ByteCodePatternDetector {
 	public BCPMethodReturnCheck(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 
-		// Create a callback for reporting Repository lookup failures.
-		RepositoryLookupFailureCallback lookupFailureCallback = new RepositoryLookupFailureCallback() {
-			public void lookupFailure(ClassNotFoundException ex) {
-				BCPMethodReturnCheck.this.bugReporter.reportMissingClass(ex);
-			}
-		};
+//		// Create a callback for reporting Repository lookup failures.
+//		RepositoryLookupFailureCallback lookupFailureCallback = new RepositoryLookupFailureCallback() {
+//			public void lookupFailure(ClassNotFoundException ex) {
+//				BCPMethodReturnCheck.this.bugReporter.reportMissingClass(ex);
+//			}
+//		};
 
 		// The ByteCodePattern which specifies the kind of code pattern
 		// we're looking for.  We want to match the invocation of certain methods
@@ -61,32 +61,32 @@ public class BCPMethodReturnCheck extends ByteCodePatternDetector {
 				/*
 				new Invoke("java.lang.String", "/.*", 
 					"/\\(.*\\)Ljava\\.lang\\.String;", 
-					Invoke.INSTANCE, lookupFailureCallback),
+					Invoke.INSTANCE, bugReporter),
 				*/
 				new Invoke("java.lang.String", "/.*", 
 					"/\\(.*\\)Ljava/lang/String;", 
-					Invoke.INSTANCE, lookupFailureCallback),
+					Invoke.INSTANCE, bugReporter),
 				new Invoke("java.lang.StringBuffer", "toString", 
 					"()Ljava/lang/String;", 
 					Invoke.INSTANCE, 
-					lookupFailureCallback),
+					bugReporter),
 				new Invoke("+java.lang.Thread", "<init>", 
 					"/.*", 
 					Invoke.CONSTRUCTOR, 
-					lookupFailureCallback),
+					bugReporter),
 				new Invoke("java.lang.Thread", "currentThread", 
 					"()Ljava/lang/Thread;", 
 					Invoke.STATIC, 
-					lookupFailureCallback),
+					bugReporter),
 				new Invoke("java.security.MessageDigest", 
 					"digest", "([B)[B", 
-					Invoke.INSTANCE, lookupFailureCallback),
+					Invoke.INSTANCE, bugReporter),
 				new Invoke("+java.net.InetAddress", "/.*", "/.*", 
-					Invoke.INSTANCE, lookupFailureCallback),
+					Invoke.INSTANCE, bugReporter),
 				new Invoke("java.math.BigDecimal", "/.*", "/.*", 
-					Invoke.INSTANCE, lookupFailureCallback),
+					Invoke.INSTANCE, bugReporter),
 				new Invoke("java.math.BigInteger", "/.*", "/.*", 
-					Invoke.INSTANCE, lookupFailureCallback),
+					Invoke.INSTANCE, bugReporter),
 			}).label("call").setAllowTrailingEdges(false))
 			.add(new MatchAny(new PatternElement[] {new Opcode(Constants.POP), new Opcode(Constants.POP2)}));
 	}
