@@ -51,6 +51,7 @@ public class Naming extends PreorderVisitor implements Detector, Constants2 {
 	}
 
     public void visit(Method obj) {
+	if (methodName.length() == 1) return;
 	String allSmall = methodName.toLowerCase() + methodSig;
 	classes.put(methodName, betterClassName);
 	String old = canonicalNames.put(allSmall, methodName);
