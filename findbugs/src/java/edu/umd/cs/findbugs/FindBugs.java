@@ -75,9 +75,16 @@ public class FindBugs implements Constants2
 			return null;
 		if (Thread.interrupted())
 			throw new InterruptedException();
-		JavaClass jv = new ClassParser(fileName).parse();
+
+		String fileNameToParse = fileName;
 		fileName = null; // don't return it next time
-		return jv;
+
+		try {
+			return new ClassParser(fileNameToParse).parse();
+		} catch (ClassFormatException e) {
+			throw new ClassFormatException("Invalid class file format for " +
+				fileNameToParse + ": " + e.getMessage());
+		}
 	}
   }
 
@@ -85,6 +92,7 @@ public class FindBugs implements Constants2
    * ClassProducer for .zip and .jar files.
    */
   private static class ZipClassProducer implements ClassProducer {
+	private String fileName;
 	private ZipFile zipFile;
 	private Enumeration entries;
 
@@ -93,6 +101,7 @@ public class FindBugs implements Constants2
 	 * @param fileName the name of the zip or jar file
 	 */
 	public ZipClassProducer(String fileName) throws IOException {
+		this.fileName = fileName;
 		this.zipFile = new ZipFile(fileName);
 		this.entries = zipFile.entries();
 	}
@@ -108,7 +117,13 @@ public class FindBugs implements Constants2
 		}
 		if (classEntry == null)
 			return null;
-		return new ClassParser(zipFile.getInputStream(classEntry), classEntry.getName()).parse();
+		String fullEntryName = fileName + ":" + classEntry.getName();
+		try {
+			return new ClassParser(zipFile.getInputStream(classEntry), classEntry.getName()).parse();
+		} catch (ClassFormatException e) {
+			throw new ClassFormatException("Invalid class file format for " +
+				fullEntryName + ": " + e.getMessage());
+		}
 	}
   }
 
@@ -136,7 +151,12 @@ public class FindBugs implements Constants2
 		if (!rfsIter.hasNext())
 			return null;
 		String fileName = rfsIter.next();
-		return new ClassParser(fileName).parse();
+		try {
+			return new ClassParser(fileName).parse();
+		} catch (ClassFormatException e) {
+			throw new ClassFormatException("Invalid class file format for " +
+				fileName + ": " + e.getMessage());
+		}
 	}
   }
 
@@ -331,11 +351,16 @@ public class FindBugs implements Constants2
 	for (;;) {
 		if (Thread.interrupted())
 			throw new InterruptedException();
-		JavaClass jclass = classProducer.getNextClass();
-		if (jclass == null)
-			break;
-		Repository.addClass(jclass);
-		repositoryClassList.add(jclass.getClassName());
+		try {
+			JavaClass jclass = classProducer.getNextClass();
+			if (jclass == null)
+				break;
+			Repository.addClass(jclass);
+			repositoryClassList.add(jclass.getClassName());
+		} catch (ClassFormatException e) {
+			e.printStackTrace();
+			bugReporter.logError(e.getMessage());
+		}
 	}
 
 	progressCallback.finishArchive();
