@@ -374,6 +374,8 @@ public class TypeRepository {
 			return a;
 
 		if (a.isArray() && b.isArray()) {
+			// FIXME: this is wrong
+
 			ArrayType aArrayType = (ArrayType) a;
 			ArrayType bArrayType = (ArrayType) b;
 

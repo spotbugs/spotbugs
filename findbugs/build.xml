@@ -427,6 +427,7 @@
             fork="true"
             failonerror="true"
             classname="edu.umd.cs.findbugs.tools.junit.JUnitJarRunner">
+        <jvmarg value="-Dtr.debug=true"/>
         <classpath path="${tools.dir}"/>
         <classpath path="${jar.dir}/junit.jar"/>
         <classpath refid="classpath"/>

@@ -48,6 +48,8 @@ public class TypeRepositoryTest extends TestCase {
 	ArrayType mySuperclassArray2Type;
 	ArrayType myInterfaceArrayType;
 	ArrayType mySubinterfaceArrayType;
+	ArrayType unrelatedThingArrayType;
+	ArrayType unrelatedThingArray2Type;
 
 	ArrayType javaLangObjectArray1Type;
 	ArrayType javaLangObjectArray2Type;
@@ -80,6 +82,8 @@ public class TypeRepositoryTest extends TestCase {
 	}
 
 	protected void setUp() {
+		if (Boolean.getBoolean("tr.debug")) System.out.println("----- Set up -----");
+
 		// In this test, all class types are explicitly marked as
 		// class vs. interface, and supertypes explicitly identified.
 		// So, dynamic class resolution should never be required.
@@ -134,6 +138,8 @@ public class TypeRepositoryTest extends TestCase {
 		javaLangObjectArray2Type = repos.arrayTypeFromDimensionsAndBaseType(2, javaLangObjectType);
 		booleanArray1Type = repos.arrayTypeFromDimensionsAndBaseType(1, booleanType);
 		booleanArray2Type = repos.arrayTypeFromDimensionsAndBaseType(2, booleanType);
+		unrelatedThingArrayType = repos.arrayTypeFromDimensionsAndBaseType(1, unrelatedThingType);
+		unrelatedThingArray2Type = repos.arrayTypeFromDimensionsAndBaseType(2, unrelatedThingType);
 	}
 
 	public void testClassFromSlashedClassName() {
@@ -265,6 +271,9 @@ public class TypeRepositoryTest extends TestCase {
 
 	public void testArrayTypeCommonSuperclass() throws ClassNotFoundException {
 		checkFirstCommonSuperclass(myClassArrayType, mySuperclassArrayType, mySuperclassArrayType);
+		checkFirstCommonSuperclass(myClassArray2Type, mySuperclassArray2Type, mySuperclassArray2Type);
+
+		checkFirstCommonSuperclass(myClassArrayType, myClassArray2Type, javaLangObjectArray1Type);
 	}
 
 }
