@@ -29,6 +29,7 @@ public class PatternMatcher {
 	private DepthFirstSearch dfs;
 	private LinkedList<BasicBlock> workList;
 	private IdentityHashMap<BasicBlock, BasicBlock> visitedBlockMap;
+	private LinkedList<ByteCodePatternMatch> resultList;
 
 	public PatternMatcher(ByteCodePattern pattern, CFG cfg, DepthFirstSearch dfs) {
 		this.pattern = pattern;
@@ -36,6 +37,7 @@ public class PatternMatcher {
 		this.dfs = dfs;
 		this.workList = new LinkedList<BasicBlock>();
 		this.visitedBlockMap = new IdentityHashMap<BasicBlock, BasicBlock>();
+		this.resultList = new LinkedList<ByteCodePatternMatch>();
 	}
 
 	public void execute() {
@@ -63,6 +65,30 @@ public class PatternMatcher {
 	}
 
 	private void attemptMatch(BasicBlock basicBlock, InstructionHandle handle) {
+		work(basicBlock, handle, pattern.getFirst(), 0, null, null);
+	}
+
+	private void work(BasicBlock basicBlock, InstructionHandle handle, PatternElement patternElement, int matchCount,
+		PatternElementMatch prevMatch, BindingSet bindingSet) {
+
+		// Have we reached the end of the pattern?
+		if (patternElement == null) {
+			// This is a complete match.
+			resultList.add(new ByteCodePatternMatch(bindingSet, prevMatch));
+			return;
+		}
+
+		// If we've reached the minimum number of occurrences for this
+		// pattern element, we can advance to the next pattern element without trying
+		// to match again this instruction.
+		if (matchCount >= patternElement.minOccur())
+			work(basicBlock, handle, patternElement.getNext(), 0, prevMatch, bindingSet);
+
+		// Try to match this instruction against the pattern element.
+
+		// If we haven't reached the maximum number of occurrences,
+		// we can continue using the same pattern element.
+
 	}
 }
 
