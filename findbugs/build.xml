@@ -347,6 +347,18 @@
     <!-- Target to generate documentation files from their sources. -->
     <target name="docfiles" depends="version,tools">
 
+      <java classname="edu.umd.cs.findbugs.tools.html.PrettyPrintBugDescriptions"
+            output="${doc.src.dir}/bugDescriptions.html"
+            failonerror="true"
+            fork="true">
+         <jvmarg value="-Dfindbugs.home=${findbugs.dir}"/>
+         <classpath refid="tools.classpath"/>
+         <arg value="${doc.html.gen.header}"/>
+         <arg value="${doc.html.gen.beginBody}"/>
+         <arg value="${doc.html.gen.bugDescriptions.prologue}"/>
+         <arg value="${doc.html.gen.endBody}"/>
+      </java>
+
        <copy todir="${doc.dir}">
          <fileset dir="${doc.src.dir}" includes="**/*.png"/>
        </copy>
@@ -367,14 +379,6 @@
         <fileset dir="${doc.src.dir}" includes="manual.xml,manual.xsl"/>
         <filterset refid="findbugsFilters"/>
       </copy>
-
-      <java classname="edu.umd.cs.findbugs.tools.html.PrettyPrintBugDescriptions"
-            output="${doc.dir}/bugDescriptions.html"
-            failonerror="true"
-            fork="true">
-         <jvmarg value="-Dfindbugs.home=${findbugs.dir}"/>
-         <classpath refid="tools.classpath"/>
-      </java>
 
       <!-- The manual is up to date as long as the generated HTML
            file are newer than manual.xml and manual.xsl. -->
