@@ -31,7 +31,7 @@ import org.apache.bcel.generic.*;
  * @see BasicBlock
  * @see Edge
  */
-public class CFG {
+public class CFG implements Debug {
     private int nextId = 0;
     private int getNextId() {
 	return nextId++;
@@ -206,10 +206,12 @@ public class CFG {
      *   with the same source and destination block
      */
     public Edge addEdge(BasicBlock source, BasicBlock dest, int type) {
-	if (!nodeSet.contains(source))
-	    throw new IllegalArgumentException("source is not in the CFG");
-	if (!nodeSet.contains(dest))
-	    throw new IllegalArgumentException("dest is not in the CFG");
+	if (VERIFY_INTEGRITY) {
+	    if (!nodeSet.contains(source))
+		throw new IllegalArgumentException("source is not in the CFG");
+	    if (!nodeSet.contains(dest))
+		throw new IllegalArgumentException("dest is not in the CFG");
+	}
 
 	Edge edge = new Edge(source, dest, type);
 	if (outgoingEdgeMap.get(edge) != null) {
