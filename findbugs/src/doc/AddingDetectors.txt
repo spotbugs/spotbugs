@@ -1,5 +1,5 @@
 Adding Detectors to FindBugs
-May 6, 2003
+May 12, 2003
 
 ===============
 1. Introduction
