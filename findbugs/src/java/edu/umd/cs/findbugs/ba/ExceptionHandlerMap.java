@@ -52,7 +52,10 @@ public class ExceptionHandlerMap {
 	/**
 	 * Get the list of exception handlers (CodeExceptionGen objects)
 	 * which are specified to handle exceptions for the instruction whose
-	 * handle is given.
+	 * handle is given.  Note that the handlers in the returned list
+	 * are <b>in order of priority</b>, as defined in the method's exception handler
+	 * table.
+	 *
 	 * @param handle the handle of the instruction we want the exception handlers for
 	 * @return the list of exception handlers, or null if there are no handlers
 	 *   registered for the instruction
