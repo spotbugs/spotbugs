@@ -119,6 +119,9 @@ public class Reporter extends AbstractBugReporter {
 			if (bug.getPrimarySourceLineAnnotation() != null) {
 				startLine = bug.getPrimarySourceLineAnnotation().getStartLine();
 			}
+			// TODO: DHH - Eclipse can help us find the line number for fields.
+			// Need a way to distinguish bugs where the field is the
+			// primary item of interest.
 			if (DEBUG) {
 				System.out.println("Creating marker for " //$NON-NLS-1$
 				+ resource.getLocation() + ": line " //$NON-NLS-1$
