@@ -212,7 +212,7 @@ public class ProjectFilterSettings {
 	 * 
 	 * @return an encoded string
 	 */
-	private String toEncodedString() {
+	public String toEncodedString() {
 		StringBuffer buf = new StringBuffer();
 		buf.append(getMinPriority());
 		buf.append("|");
