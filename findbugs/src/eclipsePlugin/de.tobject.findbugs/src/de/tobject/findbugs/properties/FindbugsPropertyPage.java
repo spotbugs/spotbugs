@@ -102,12 +102,7 @@ public class FindbugsPropertyPage extends PropertyPage {
 		// getElement returns the element this page has been opened for,
 		// in our case this is a Java Project (IJavaProject).
 		IAdaptable resource = getElement();
-		IJavaProject javaProject =
-			(IJavaProject) resource.getAdapter(IJavaProject.class);
-		if (javaProject != null) {
-			// get the IProject underlying the IJavaProject
-			this.project = javaProject.getProject();
-		}
+		this.project = (IProject) resource.getAdapter(IProject.class);
 
 		Composite composite = new Composite(parent, SWT.NONE);
 		GridLayout layout = new GridLayout();

@@ -1,3 +1,13 @@
+Release 0.1.0 - some enhancements by Peter Friese
+Notes:
+- The resource navigator will now display the FindBugs context menu and the 
+  FindBugs properties page. However, both will only be active on Java projects.
+- FindBugs problem markers will be displayed as a little bug icon in the icon
+  bar of the editor. Please note that it is NOT possible to use custom icons in 
+  the task list - Find Bugs problem markers will be displayed with WARNING severity.
+  TODO: make this configurable on the property page (and maybe also on a a preference
+  page)
+
 Release 0.0.7 - some enhancements by Andrei Loskutov
 Notes:
 - Added bug codes column and sorting on bug codes column in properties page

@@ -43,7 +43,6 @@ import org.eclipse.jdt.core.compiler.ITerminalSymbols;
 import org.eclipse.jdt.core.compiler.InvalidInputException;
 import org.eclipse.jdt.internal.core.CompilationUnit;
 import org.eclipse.jdt.internal.core.SourceType;
-
 import de.tobject.findbugs.marker.FindBugsMarker;
 import edu.umd.cs.findbugs.AbstractBugReporter;
 import edu.umd.cs.findbugs.BugInstance;
@@ -133,7 +132,6 @@ public class Reporter extends AbstractBugReporter {
 				marker.setAttribute(IMarker.SEVERITY, IMarker.SEVERITY_WARNING);
 			}
 			catch (CoreException e) {
-				//            TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}

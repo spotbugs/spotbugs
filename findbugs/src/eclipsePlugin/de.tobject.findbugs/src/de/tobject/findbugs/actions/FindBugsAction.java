@@ -32,6 +32,7 @@ import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.ui.IActionFilter;
 import org.eclipse.ui.IObjectActionDelegate;
 import org.eclipse.ui.IWorkbenchPart;
 
@@ -79,40 +80,54 @@ public class FindBugsAction implements IObjectActionDelegate {
 					 * - get all contained files
 					 * - hand them over to a FindBugs worker for processing 
 					 */
-					if (element instanceof IJavaProject) {
-						IJavaProject javaProject = (IJavaProject) element;
-						final IProject project = javaProject.getProject();
-						AbstractFilesCollector collector = FilesCollectorFactory.getFilesCollector(project);
-						try {
-							final Collection files = collector.getFiles();
-
-							IRunnableWithProgress r = new IRunnableWithProgress() {
-								public void run(IProgressMonitor pm) throws InvocationTargetException {
-									try {
-										FindBugsWorker worker = new FindBugsWorker(project, pm);
-										worker.work(files);
-									}
-									catch (CoreException ex) {
-										throw new InvocationTargetException(ex);
-									}
-								}
-							};
-
-							ProgressMonitorDialog progress = new ProgressMonitorDialog(FindbugsPlugin.getShell());
-							progress.run(true, true, r);
-						}
-						catch (CoreException e) {
-							e.printStackTrace();
-						}
-						catch (InvocationTargetException e) {
-							e.printStackTrace();
-						}
-						catch (InterruptedException e) {
-							e.printStackTrace();
-						}
+					IProject project = getProject(element);
+					if (project != null) {
+						work(project);
 					}
 				}
 			}
+		}
+	}
+	
+	private IProject getProject(Object element) {
+		if (element instanceof IJavaProject) {
+			IJavaProject javaProject = (IJavaProject) element;
+			return javaProject.getProject();
+		}
+		else if (element instanceof IProject) {
+			return (IProject) element;
+		}
+		return null;
+	}
+	
+	private void work(final IProject project) {
+		AbstractFilesCollector collector = FilesCollectorFactory.getFilesCollector(project);
+		try {
+			final Collection files = collector.getFiles();
+		
+			IRunnableWithProgress r = new IRunnableWithProgress() {
+				public void run(IProgressMonitor pm) throws InvocationTargetException {
+					try {
+						FindBugsWorker worker = new FindBugsWorker(project, pm);
+						worker.work(files);
+					}
+					catch (CoreException ex) {
+						throw new InvocationTargetException(ex);
+					}
+				}
+			};
+		
+			ProgressMonitorDialog progress = new ProgressMonitorDialog(FindbugsPlugin.getShell());
+			progress.run(true, true, r);
+		}
+		catch (CoreException e) {
+			e.printStackTrace();
+		}
+		catch (InvocationTargetException e) {
+			e.printStackTrace();
+		}
+		catch (InterruptedException e) {
+			e.printStackTrace();
 		}
 	}
 
