@@ -57,6 +57,10 @@ public class DetectorFactory {
 			className = className.substring(endOfPkg + 1);
 		return className;
 	}
+
+	public String getFullName() {
+		return detectorClass.getName();
+	}
 }
 
 // vim:ts=4
