@@ -105,11 +105,6 @@ public abstract class AbstractDepthFirstSearch
 	// the "polarity" of the depth first search.  That way,
 	// this code can do normal DFS, or DFS of reversed GraphType.
 
-//	/**
-//	 * Get the "logical" entry vertex of the GraphType.
-//	 */
-//	protected abstract VertexType getEntry(GraphType graph);
-
 	/**
 	 * Get Iterator over "logical" outgoing edges.
 	 */
@@ -360,9 +355,13 @@ public abstract class AbstractDepthFirstSearch
 
 	/**
 	 * Predicate to determine which vertices should be visited
-	 * as the search progresses.
+	 * as the search progresses.  Takes both vertex color
+	 * and the vertex chooser (if any) into account.
+	 *
+	 * @param vertex the vertex to possibly be visited
+	 * @return true if the vertex should be visited, false if not
 	 */
-	private boolean visitMe(VertexType vertex) {
+	protected boolean visitMe(VertexType vertex) {
 		return (getColor(vertex) == WHITE)
 			&& (vertexChooser == null || vertexChooser.isChosen(vertex));
 	}

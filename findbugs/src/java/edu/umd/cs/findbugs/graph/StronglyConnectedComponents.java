@@ -17,7 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-// $Revision: 1.11 $
+// $Revision: 1.12 $
 
 package edu.umd.cs.findbugs.graph;
 
@@ -100,7 +100,7 @@ public class StronglyConnectedComponents
 			protected VertexType getNextSearchTreeRoot() {
 				while(vertexIter.hasNext()) {
 					VertexType vertex = vertexIter.next();
-					if (getColor(vertex) == WHITE)
+					if (visitMe(vertex))
 						return vertex;
 				}
 				return null;
