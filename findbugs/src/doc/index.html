@@ -34,50 +34,35 @@ Send your comments to <a href="mailto:daveho@cs.umd.edu">daveho@cs.umd.edu</a>.
 
 <h1>News</h1>
 
+<p> Chris Grindstaff has written a two-part article about FindBugs
+(<a href="http://www-106.ibm.com/developerworks/java/library/j-findbug1/">Part 1</a>,
+<a href="http://www-106.ibm.com/developerworks/java/library/j-findbug2/">Part 2</a>)
+for IBM developerWorks.&nbsp; Thanks, Chris!
+
 <p> We will be giving a presentation about using static analysis
 to find bugs at <a href="http://java.sun.com/javaone/">JavaOne 2004</a>.&nbsp;
 We will also be participating in a FindBugs BOF (Birds of a Feather)
 session.&nbsp; Hope to see you there!
 
-<p> Changes since version 0.7.2:
+<p> Changes since version 0.7.3:
 
 <ul>
-<li> Enhanced Eclipse plugin, which displays the detailed bug
-     description in a view (Phil Crosby)
-<li> Various tweaks to existing detectors to reduce false warnings
-<li> New command line option <code>-workHard</code> enables pruning
-     of infeasible or unlikely exception edges, which results in
-     better accuracy in the open stream detector, at the expense
-     of a 30%-100% slowdown
-<li> New website and HTML documentation design
-<li> Documentation includes an HTML document with descriptions of
-     all bug patterns reported by FindBugs
-<li> Web page has a link to a
-     <a href="http://www.simeji.com/findbugs/doc/manual_ja/index.html">Japanese translation</a>
-     of the FindBugs manual, contributed by Hiroshi Okugawa
-<li> Changed the Inconsistent Synchronization detector so that fields
-     synchronized 50% of the time (or more) are reported as
-     medium priority bugs (previously they were reported as low)
-<li> New detector to find code that catches IllegalMonitorStateException
-<li> New detector to find private methods that are never called
-<li> New detector to find suspicious uses of non-short-circuiting boolean
-     operators (<code>&amp;</code> and <code>|</code>, rather than
-     <code>&amp;&amp;</code> and <code>||</code>)
-</ul>
-
-<!--
 <li> Experimental modification of open stream detector
      to look for non-escaping JDBC resources
      (connections and statements) that aren't
      closed on all paths out of method
 <li> Eclipse plugin fixed so it compiles and runs on Eclipse 2.1.x
      (Peter Friese)
+<li> Option to Swing GUI and command line to generate project file
+     using relative paths for archives, source directories,
+     and aux classpath entries (Dave Brosius)
 <li> Improvements to findbugs.bat script for launching FindBugs
      on Windows (Dave Brosius)
 <li> Updated Japanese message translations (Hiroshi Okugawa)
 <li> Added some missing data in the bug messages XML files
 <li> Fixed some problems building from source on Windows systems
--->
+<li> Various minor bug fixes
+</ul>
 
 <!--
 <li> Changed CFG construction to distinguish "implicit" unchecked

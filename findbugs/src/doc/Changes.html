@@ -14,6 +14,32 @@
 
 <h1>FindBugs Change Log</h1>
 
+<p> Changes since version 0.7.2:
+
+<ul>
+<li> Enhanced Eclipse plugin, which displays the detailed bug
+     description in a view (Phil Crosby)
+<li> Various tweaks to existing detectors to reduce false warnings
+<li> New command line option <code>-workHard</code> enables pruning
+     of infeasible or unlikely exception edges, which results in
+     better accuracy in the open stream detector, at the expense
+     of a 30%-100% slowdown
+<li> New website and HTML documentation design
+<li> Documentation includes an HTML document with descriptions of
+     all bug patterns reported by FindBugs
+<li> Web page has a link to a
+     <a href="http://www.simeji.com/findbugs/doc/manual_ja/index.html">Japanese translation</a>
+     of the FindBugs manual, contributed by Hiroshi Okugawa
+<li> Changed the Inconsistent Synchronization detector so that fields
+     synchronized 50% of the time (or more) are reported as
+     medium priority bugs (previously they were reported as low)
+<li> New detector to find code that catches IllegalMonitorStateException
+<li> New detector to find private methods that are never called
+<li> New detector to find suspicious uses of non-short-circuiting boolean
+     operators (<code>&amp;</code> and <code>|</code>, rather than
+     <code>&amp;&amp;</code> and <code>||</code>)
+</ul>
+
 <p> Changes since version 0.7.1:
 
 <ul>
