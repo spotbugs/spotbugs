@@ -27,11 +27,13 @@ public class IDivResultCastToDouble extends BytecodeScanningDetector {
 	}
 
 	public void sawOpcode(int seen) {
-		boolean redo = false;
+		boolean redo;
 		
 		if (DEBUG) System.out.println("Saw opcode " + seen);
 		
 		do {
+			redo = false;
+			
 			switch (state) {
 			case SCAN:
 				if (seen == Constants.IDIV) {
