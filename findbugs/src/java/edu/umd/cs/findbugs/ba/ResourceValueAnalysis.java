@@ -64,12 +64,12 @@ public class ResourceValueAnalysis<Resource> extends FrameDataflowAnalysis<Resou
 
 		ResourceValueFrame tmpFact = null;
 
-		if (source.isExceptionThrower()) {
-			// Ignore exceptions thrown by load of final instance fields.
-			// We'll just assume (in the name of reducing false positives)
-			// that they got initialized to something.
+		if (edge.isExceptionEdge()) {
 			InstructionHandle handle = source.getExceptionThrower();
 			if (isFinalFieldLoad(handle)) {
+				// Ignore exceptions thrown by load of final instance fields.
+				// We'll just assume (in the name of reducing false positives)
+				// that they got initialized to something.
 				if (DEBUG) System.out.println("Making resource nonexistent on load of final field from block " + source.getId());
 				tmpFact = modifyFrame(fact, tmpFact);
 				tmpFact.setStatus(ResourceValueFrame.NONEXISTENT);
@@ -84,20 +84,21 @@ public class ResourceValueAnalysis<Resource> extends FrameDataflowAnalysis<Resou
 			// closed anyway.
 			InstructionHandle exceptionThrower = source.getExceptionThrower();
 			BasicBlock fallThroughSuccessor = cfg.getSuccessorWithEdgeType(source, FALL_THROUGH_EDGE);
+			if (DEBUG && fallThroughSuccessor == null) System.out.println("Null fall through successor!");
 			if (fallThroughSuccessor != null &&
 				resourceTracker.isResourceClose(fallThroughSuccessor, exceptionThrower, methodGen.getConstantPool(), resource, fact)) {
 				tmpFact = modifyFrame(fact, tmpFact);
 				tmpFact.setStatus(ResourceValueFrame.CLOSED);
 				if (DEBUG) System.out.print("(failed attempt to close)");
 			}
-		}
 
-		if (dest.isExceptionHandler()) {
-			// Clear stack, push value for exception
-			if (fact.isValid()) {
-				tmpFact = modifyFrame(fact, tmpFact);
-				tmpFact.clearStack();
-				tmpFact.pushValue(ResourceValue.notInstance());
+			if (dest.isExceptionHandler()) {
+				// Clear stack, push value for exception
+				if (fact.isValid()) {
+					tmpFact = modifyFrame(fact, tmpFact);
+					tmpFact.clearStack();
+					tmpFact.pushValue(ResourceValue.notInstance());
+				}
 			}
 		}
 
