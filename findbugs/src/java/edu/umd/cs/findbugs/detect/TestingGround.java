@@ -29,16 +29,19 @@ import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
 import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.visitclass.Constants2;
 
 public class TestingGround extends BytecodeScanningDetector implements Constants2, StatelessDetector {
 
-	private static final boolean active = Boolean.getBoolean("findbugs.tg.active");;
+	private static final boolean active = Boolean.getBoolean("findbugs.tg.active");
 	private NumberFormat formatter = null;
 
+	BugReporter bugReporter;
 	public TestingGround(BugReporter bugReporter) {
+		this.bugReporter = bugReporter;
 		if (active) {
 			formatter = NumberFormat.getIntegerInstance();
 			formatter.setMinimumIntegerDigits(4);
