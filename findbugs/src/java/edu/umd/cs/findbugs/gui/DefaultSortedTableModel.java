@@ -56,7 +56,8 @@ public class DefaultSortedTableModel extends AbstractTableModel
 	private AbstractTableModel baseModel;
 	private JTableHeader baseHeader = null;
 	private MouseListener headerListener = new HeaderListener();
-	private TableCellRenderer baseRenderer = null;;
+	private TableCellRenderer baseRenderer = null;
+	private TableModelListener baseModelListener = null;
 	private List<Integer> viewToModelMapping;
 	private int sortDirection = SORT_ASCENDING_ORDER;
 	private int sortColumn = 0;
@@ -65,6 +66,8 @@ public class DefaultSortedTableModel extends AbstractTableModel
 	
 	public DefaultSortedTableModel( AbstractTableModel model ) {
 		baseModel = model;
+		baseModelListener = new BaseTableModelListener();
+		model.addTableModelListener(baseModelListener);
 		setupMapping();
 		ClassLoader classLoader = this.getClass().getClassLoader();
 		upIcon = new ImageIcon(classLoader.getResource("edu/umd/cs/findbugs/gui/up.png"));
@@ -235,6 +238,13 @@ public class DefaultSortedTableModel extends AbstractTableModel
 			}
 		});
 		
+	}
+	
+	private class BaseTableModelListener implements TableModelListener
+	{
+		public void tableChanged( TableModelEvent e ) {
+			DefaultSortedTableModel.this.fireTableChanged(e);
+		}
 	}
 	
 	private class HeaderListener extends MouseAdapter
