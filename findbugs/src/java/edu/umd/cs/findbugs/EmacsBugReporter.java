@@ -25,8 +25,7 @@ import java.util.*;
 import org.apache.bcel.classfile.JavaClass;
 
 /**
- * A simple BugReporter which simply prints the formatted message
- * to the output stream.
+ * BugReporter to output warnings in Emacs format.
  *
  * @author David Li
  */
