@@ -1,0 +1,16 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+  <HEAD>
+    <TITLE>Field should be both final and moved out of an interface and made package protected</TITLE>
+  </HEAD>
+  <BODY>
+  <h1>Field should be both final and moved out of an interface and made package protected</h1>
+ <p>
+	A mutable static field in an interface could be changed by malicious code or
+        by accident from another package.
+        The field could be made package protected and/or made final 
+	to avoid this vulnerability.
+        Having mutable state in an interface is confusing, so the field should
+        be moved out of the interface.
+  </BODY>
+</HTML>
