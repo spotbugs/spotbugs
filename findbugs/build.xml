@@ -324,10 +324,10 @@
     </target>
 
     <!-- Update the FindBugs web page. -->
-<!--
     <property name="findbugs.web.dir" value="/fs/www/users/pugh/java/bugs" />
--->
+<!--
     <property name="findbugs.web.dir" value="/tmp/bugs" />
+-->
     <target name="web" depends="docs" >
       <copy todir="${findbugs.web.dir}" >
         <fileset dir="${doc.dir}" />
