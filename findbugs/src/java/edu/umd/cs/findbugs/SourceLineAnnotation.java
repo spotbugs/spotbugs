@@ -43,9 +43,26 @@ public class SourceLineAnnotation implements BugAnnotation {
 		LineNumberTable lineNumberTable = getLineNumberTable(visitor);
 		if (lineNumberTable == null)
 			return null;
+		return forEntireMethod(visitor.getBetterClassName(), lineNumberTable);
+	}
 
+	/**
+	 * Factory method for creating a source line annotation describing
+	 * an entire method.
+	 * @param methodGen the method being visited
+	 * @return the SourceLineAnnotation, or null if we do not have line number information
+	 *   for the method
+	 */
+	public static SourceLineAnnotation fromVisitedMethod(MethodGen methodGen) {
+		LineNumberTable lineNumberTable = methodGen.getLineNumberTable(methodGen.getConstantPool());
+		if (lineNumberTable == null)
+			return null;
+		return forEntireMethod(methodGen.getClassName(), lineNumberTable);
+	}
+
+	private static SourceLineAnnotation forEntireMethod(String className, LineNumberTable lineNumberTable) {
 		LineNumber[] table = lineNumberTable.getLineNumberTable();
-		return new SourceLineAnnotation(visitor.getBetterClassName(), table[0].getLineNumber(), table[table.length-1].getLineNumber());
+		return new SourceLineAnnotation(className, table[0].getLineNumber(), table[table.length-1].getLineNumber());
 	}
 
 	/**
