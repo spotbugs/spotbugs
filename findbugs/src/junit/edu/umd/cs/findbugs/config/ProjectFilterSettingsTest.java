@@ -122,8 +122,12 @@ public class ProjectFilterSettingsTest extends TestCase {
 	}
 	
 	public void testDisplayFalseWarnings() {
+		Assert.assertEquals(plain, otherPlain);
+
 		Assert.assertFalse(plain.displayFalseWarnings());
 		plain.setDisplayFalseWarnings(true);
+		
+		Assert.assertFalse(plain.equals(otherPlain));
 		
 		ProjectFilterSettings copyOfPlain =
 			ProjectFilterSettings.fromEncodedString(plain.toEncodedString());

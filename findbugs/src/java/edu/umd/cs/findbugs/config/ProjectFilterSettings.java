@@ -27,6 +27,7 @@ import java.util.Set;
 import java.util.StringTokenizer;
 
 import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugProperty;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.I18N;
 
@@ -182,7 +183,8 @@ public class ProjectFilterSettings implements Cloneable {
 	 */
 	public boolean displayWarning(BugInstance bugInstance) {
 		return bugInstance.getPriority() <= getMinPriorityAsInt()
-			&& containsCategory(bugInstance.getBugPattern().getCategory());
+			&& containsCategory(bugInstance.getBugPattern().getCategory())
+			&& (displayFalseWarnings || !Boolean.valueOf(bugInstance.getProperty(BugProperty.IS_BUG, "false")).booleanValue());
 	}
 	
 	/**
@@ -328,10 +330,11 @@ public class ProjectFilterSettings implements Cloneable {
 		
 		if (!this.getMinPriority().equals(other.getMinPriority()))
 			return false;
+
+		if (!this.activeBugCategorySet.equals(other.activeBugCategorySet))
+			return false;
 		
-		Set<String> mine = this.activeBugCategorySet;
-		Set<String> yours = other.activeBugCategorySet;
-		if (!mine.containsAll(yours) || !yours.containsAll(mine))
+		if (this.displayFalseWarnings != other.displayFalseWarnings)
 			return false;
 		
 		return true;
@@ -350,6 +353,7 @@ public class ProjectFilterSettings implements Cloneable {
 			clone.activeBugCategorySet = new HashSet<String>();
 			clone.activeBugCategorySet.addAll(this.activeBugCategorySet);
 			clone.setMinPriority(this.getMinPriority());
+			clone.displayFalseWarnings = this.displayFalseWarnings;
 			
 			return clone;
 		} catch (CloneNotSupportedException e) {
@@ -363,7 +367,9 @@ public class ProjectFilterSettings implements Cloneable {
 	 * @see java.lang.Object#hashCode()
 	 */
 	public int hashCode() {
-		return minPriority.hashCode() + 1009 * activeBugCategorySet.hashCode();
+		return minPriority.hashCode()
+			+ 1009 * activeBugCategorySet.hashCode()
+			+ (displayFalseWarnings ? 7919 : 0);
 	}
 	
 	/**
