@@ -81,10 +81,11 @@ public abstract class DataflowTestDriver<Fact> {
 			if (methodName != null && !method.getName().equals(methodName))
 				continue;
 
-
-			System.out.println("Method: " + method.getName());
-
 			MethodGen methodGen = new MethodGen(method, jclass.getClassName(), cpg);
+
+			System.out.println("-----------------------------------------------------------------");
+			System.out.println("Method: " + SignatureConverter.convertMethodSignature(methodGen));
+			System.out.println("-----------------------------------------------------------------");
 
 			CFGBuilder cfgBuilder = CFGBuilderFactory.create(methodGen);
 			cfgBuilder.build();
