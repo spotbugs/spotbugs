@@ -261,7 +261,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
         public String getDescription() { return "Jar files and directories"; }
     }
     
-    /** The instance of AuxClasspathEntry. */
+    /** The instance of AuxClasspathEntryFileFilter. */
     private static final FileFilter auxClasspathEntryFileFilter = new AuxClasspathEntryFileFilter();
     
     /* ----------------------------------------------------------------------
@@ -1875,29 +1875,16 @@ public class FindBugsFrame extends javax.swing.JFrame {
      * @param bugInstance the bug instance
      */
     private void showBugInfo(BugInstance bugInstance) {
+	// Are we already showing details for this kind of bug?
+	String bugDetailsKey = bugInstance.getType();
+	if (bugDetailsKey.equals(currentBugDetailsKey))
+	    return;
         
-        // Look for the HTML file describing this kind of bug
-        String fileName = "edu/umd/cs/findbugs/gui/help/" + bugInstance.getType() + ".html";
-        if (currentBugDetailsFile != null && currentBugDetailsFile.equals(fileName))
-            return;
-        
-        // Clear out previous contents
-        bugDescriptionEditorPane.setText("");
-        
-        // Try to get the URL for the help file resource
-        java.net.URL infoURL = getClass().getClassLoader().getResource(fileName);
-        if (infoURL == null) {
-            logger.logMessage(ConsoleLogger.ERROR, "Can't find help file " + fileName);
-            return;
-        }
-        
-        // Load the help file
-        try {
-            bugDescriptionEditorPane.setPage(infoURL);
-            currentBugDetailsFile = fileName;
-        } catch (IOException e) {
-            logger.logMessage(ConsoleLogger.ERROR, e.getMessage());
-        }
+	// Display the details
+	String html = I18N.instance().getDetailHTML(bugDetailsKey);
+	bugDescriptionEditorPane.setContentType("text/html");
+	bugDescriptionEditorPane.setText(html);
+	currentBugDetailsKey = bugDetailsKey;
     }
     
     /* ----------------------------------------------------------------------
@@ -2050,5 +2037,5 @@ public class FindBugsFrame extends javax.swing.JFrame {
     private SourceFinder sourceFinder = new SourceFinder();
     private BugInstance currentBugInstance; // be lazy in switching bug instance details
     private SourceLineAnnotation currentSourceLineAnnotation; // as above
-    private String currentBugDetailsFile;
+    private String currentBugDetailsKey;
 }
