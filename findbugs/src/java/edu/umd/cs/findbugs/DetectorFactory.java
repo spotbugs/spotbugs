@@ -39,6 +39,7 @@ public class DetectorFactory {
 	private boolean defEnabled;
 	private final String speed;
 	private final String reports;
+	private final String requireJRE;
 	private String detailHTML;
 
 	/**
@@ -49,20 +50,38 @@ public class DetectorFactory {
 	 *   by the detector is; suggested values are "fast", "moderate", and "slow"
 	 * @param reports comma separated list of bug pattern codes reported
 	 *   by the detector; empty if unknown
+	 * @param requireJRE string describing JRE version required to run the
+	 *   the detector: e.g., "1.5"
 	 */
-	public DetectorFactory(Class detectorClass, boolean enabled, String speed, String reports) {
+	public DetectorFactory(Class detectorClass, boolean enabled, String speed, String reports,
+		String requireJRE) {
 		this.detectorClass = detectorClass;
 		this.enabled = enabled;
 		this.defEnabled = enabled;
 		this.speed = speed;
 		this.reports = reports;
+		this.requireJRE = requireJRE;
 	}
 
 	private static final Class[] constructorArgTypes = new Class[]{BugReporter.class};
 
-	/** Is this factory enabled? */
+	/**
+	 * Return whether the factory is enabled.
+	 * In addition to checked in the "enabled" attribute of the factory,
+	 * this method checks that we are running on the minimum JRE
+	 * version required by the detector.
+	 */
 	public boolean isEnabled() {
-		return enabled;
+		if (!enabled)
+			return false;
+		if (requireJRE.equals(""))
+			return true;
+		try {
+			JavaVersion requiredVersion = new JavaVersion(requireJRE);
+			return JavaVersion.getRuntimeVersion().isSameOrNewerThan(requiredVersion);
+		} catch (JavaVersionException e) {
+			return false;
+		}
 	}
 
 	/** Set the enabled status of the factory. */

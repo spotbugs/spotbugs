@@ -126,7 +126,7 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
 			try {
 				if (methodName.equals("lock") &&
 					methodSig.equals("()V") &&
-					Hierarchy.isSubtype(className, "java.util.concurrent.Lock")) {
+					Hierarchy.isSubtype(className, "java.util.concurrent.locks.Lock")) {
 
 					Location location = new Location(handle, basicBlock);
 					ValueNumberFrame frame = vnaDataflow.getFactAtLocation(location);
@@ -159,7 +159,7 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
 			try {
 				if (methodName.equals("unlock") &&
 					methodSig.equals("()V") &&
-					Hierarchy.isSubtype(className, "java.util.concurrent.Lock")) {
+					Hierarchy.isSubtype(className, "java.util.concurrent.locks.Lock")) {
 					return true;
 				}
 			} catch (ClassNotFoundException e) {
