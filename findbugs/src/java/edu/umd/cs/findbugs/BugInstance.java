@@ -234,24 +234,30 @@ public class BugInstance implements Comparable {
 	/**
 	 * Add a method annotation.  If this is the first method annotation added,
 	 * it becomes the primary method annotation.
+	 * If the method has source line information, then a SourceLineAnnotation
+	 * is added to the method.
 	 * @param methodGen the MethodGen object for the method
 	 * @return this object
 	 */
 	public BugInstance addMethod(MethodGen methodGen) {
-		addMethod(methodGen.getClassName(), methodGen.getName(), methodGen.getSignature());
+		MethodAnnotation methodAnnotation =
+			new MethodAnnotation(methodGen.getClassName(), methodGen.getName(), methodGen.getSignature());
+		addMethod(methodAnnotation);
+		addSourceLinesForMethod(methodAnnotation, SourceLineAnnotation.fromVisitedMethod(methodGen));
 		return this;
 	}
 
 	/**
-	 * Add a method annotation.  If this is the first method annotation added,
-	 * it becomes the primary method annotation.
-	 * @param methodAnnotation the method annotation
+	 * Add a method annotation for the method which the given visitor is currently visiting.
+	 * If the method has source line information, then a SourceLineAnnotation
+	 * is added to the method.
+	 * @param visitor the BetterVisitor
 	 * @return this object
 	 */
-	public BugInstance addMethod(MethodAnnotation methodAnnotation) {
-		if (primaryMethodAnnotation == null)
-			primaryMethodAnnotation = methodAnnotation;
-		add(methodAnnotation);
+	public BugInstance addMethod(BetterVisitor visitor) {
+		MethodAnnotation methodAnnotation = MethodAnnotation.fromVisitedMethod(visitor);
+		addMethod(methodAnnotation);
+		addSourceLinesForMethod(methodAnnotation, SourceLineAnnotation.fromVisitedMethod(visitor));
 		return this;
 	}
 
@@ -272,12 +278,15 @@ public class BugInstance implements Comparable {
 	}
 
 	/**
-	 * Add a method annotation for the method which the given visitor is currently visiting.
-	 * @param visitor the BetterVisitor
+	 * Add a method annotation.  If this is the first method annotation added,
+	 * it becomes the primary method annotation.
+	 * @param methodAnnotation the method annotation
 	 * @return this object
 	 */
-	public BugInstance addMethod(BetterVisitor visitor) {
-		addMethod(MethodAnnotation.fromVisitedMethod(visitor));
+	public BugInstance addMethod(MethodAnnotation methodAnnotation) {
+		if (primaryMethodAnnotation == null)
+			primaryMethodAnnotation = methodAnnotation;
+		add(methodAnnotation);
 		return this;
 	}
 
@@ -387,6 +396,18 @@ public class BugInstance implements Comparable {
 		// must be invalidated
 		cachedHashCode = INVALID_HASH_CODE;
 		annotationList.add(annotation);
+	}
+
+	private void addSourceLinesForMethod(MethodAnnotation methodAnnotation, SourceLineAnnotation sourceLineAnnotation) {
+		if (sourceLineAnnotation != null) {
+			// Note: we don't add the source line annotation directly to
+			// the bug instance.  Instead, we stash it in the MethodAnnotation.
+			// It is much more useful there, and it would just be distracting
+			// if it were displayed in the UI, since it would compete for attention
+			// with the actual bug location source line annotation (which is much
+			// more important and interesting).
+			methodAnnotation.setSourceLines(sourceLineAnnotation);
+		}
 	}
 
 	public int hashCode() {
