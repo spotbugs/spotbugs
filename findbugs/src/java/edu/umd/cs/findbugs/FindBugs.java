@@ -912,7 +912,6 @@ public class FindBugs implements Constants2, ExitCodes {
 		ArrayList<Detector> result = new ArrayList<Detector>();
 
 		Iterator<DetectorFactory> i = DetectorFactoryCollection.instance().factoryIterator();
-		int count = 0;
 		while (i.hasNext()) {
 			DetectorFactory factory = i.next();
 			if (factory.isEnabled()) {
