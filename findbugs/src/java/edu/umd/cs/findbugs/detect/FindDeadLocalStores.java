@@ -305,8 +305,11 @@ public class FindDeadLocalStores implements Detector {
 					.addSourceLine(methodGen, javaClass.getSourceFileName(), location.getHandle());
 				if (DEBUG) System.out.println("Reporting " + bugInstance);
 				
-				// Encode heuristic information.
-				propertySet.decorateBugInstance(bugInstance, schema);
+				// If in relaxed reporting mode, encode heuristic information.
+				if (AnalysisContext.currentAnalysisContext().getBoolProperty(
+						FindBugsAnalysisProperties.RELAXED_REPORTING_MODE)) {
+					propertySet.decorateBugInstance(bugInstance, schema);
+				}
 				
 				bugReporter.reportBug(bugInstance);
 			}
