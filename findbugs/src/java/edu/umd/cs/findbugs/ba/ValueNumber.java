@@ -35,7 +35,7 @@ import java.util.*;
  * @see ValueNumberAnalysis
  * @author David Hovemeyer
  */
-public class ValueNumber {
+public class ValueNumber implements Comparable<ValueNumber> {
 	/** The value number. */
 	int number;
 
@@ -53,6 +53,10 @@ public class ValueNumber {
 
 	public String toString() {
 		return number + ",";
+	}
+
+	public int compareTo(ValueNumber other) {
+		return number - other.number;
 	}
 
 	public int hashCode() {
