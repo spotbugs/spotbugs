@@ -26,6 +26,14 @@ import org.apache.bcel.generic.*;
 import edu.umd.cs.daveho.ba.*;
 import edu.umd.cs.findbugs.*;
 
+/**
+ * A Detector to find instructions where a NullPointerException
+ * might be raised.  We also look for useless reference comparisons
+ * involving null and non-null values.
+ *
+ * @see IsNullValueAnalysis
+ * @author David Hovemeyer
+ */
 public class FindNullDeref implements Detector {
 
 	private static final boolean DEBUG = Boolean.getBoolean("fnd.debug");
@@ -86,10 +94,12 @@ public class FindNullDeref implements Detector {
 							reportNullDeref(classContext, method, exceptionThrowerHandle, type, priority);
 						}
 					} else if (!basicBlock.isEmpty()) {
-						// Look for IF_ACMP instructions where the values compared
-						// are both definitely null.  This is not a null dereference,
-						// but is quite likely to indicate an error, so while we've got
-						// information about null values, we may as well use it.
+						// Look for all reference comparisons where
+						//    - both values compared are definitely null, or
+						//    - one value is definitely null and one is definitely not null
+						// These cases are not null dereferences,
+						// but they are quite likely to indicate an error, so while we've got
+						// information about null values, we may as well report them.
 						InstructionHandle lastHandle = basicBlock.getLastInstruction();
 						Instruction last = lastHandle.getInstruction();
 						short opcode = last.getOpcode();
@@ -100,12 +110,16 @@ public class FindNullDeref implements Detector {
 							int numSlots = frame.getNumSlots();
 							IsNullValue top = frame.getValue(numSlots - 1);
 							IsNullValue topNext = frame.getValue(numSlots - 2);
-							if (top.isDefinitelyNull() && topNext.isDefinitelyNull()) {
-								String sourceFile = jclass.getSourceFileName();
-								MethodGen methodGen = classContext.getMethodGen(method);
-								bugReporter.reportBug(new BugInstance("UCF_USELESS_NULL_REF_COMPARISON", NORMAL_PRIORITY)
-									.addClassAndMethod(methodGen, sourceFile)
-									.addSourceLine(methodGen, sourceFile, lastHandle));
+							if ((top.isDefinitelyNull() && topNext.isDefinitelyNull()) ||
+								(top.isDefinitelyNull() && topNext.isDefinitelyNotNull()) ||
+								(top.isDefinitelyNotNull() && topNext.isDefinitelyNull())) {
+								reportUselessControlFlow(classContext, method, lastHandle);
+							}
+						} else if (opcode == Constants.IFNULL || opcode == Constants.IFNONNULL) {
+							IsNullValueFrame frame = invDataflow.getFactAtLocation(new Location(lastHandle, basicBlock));
+							IsNullValue top = frame.getTopValue();
+							if (top.isDefinitelyNull() || top.isDefinitelyNotNull()) {
+								reportUselessControlFlow(classContext, method, lastHandle);
 							}
 						}
 					}
@@ -129,6 +143,15 @@ public class FindNullDeref implements Detector {
 			.addSourceLine(methodGen, sourceFile, exceptionThrowerHandle)
 			//.addInt(exceptionThrowerHandle.getPosition()).describe("INT_BYTECODE_OFFSET")
 		);
+	}
+
+	private void reportUselessControlFlow(ClassContext classContext, Method method, InstructionHandle handle) {
+		String sourceFile = classContext.getJavaClass().getSourceFileName();
+		MethodGen methodGen = classContext.getMethodGen(method);
+
+		bugReporter.reportBug(new BugInstance("UCF_USELESS_NULL_REF_COMPARISON", NORMAL_PRIORITY)
+			.addClassAndMethod(methodGen, sourceFile)
+			.addSourceLine(methodGen, sourceFile, handle));
 	}
 
 	public void report() {

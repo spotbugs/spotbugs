@@ -281,7 +281,8 @@ is suspiciously ignored.  It is a fairly fast detector.
     <Details>
 <![CDATA[
 <p> This detector looks for places where a null pointer exception might
-occur.  It is a moderately fast detector.
+occur.  It also looks for redundant comparisons of reference values against
+null.  It is a moderately fast detector.
 ]]>
     </Details>
   </Detector>
@@ -1368,13 +1369,18 @@ body of an <code>if</code> statement, e.g.:
   </BugPattern>
 
   <BugPattern type="UCF_USELESS_NULL_REF_COMPARISON">
-    <ShortDescription>Useless comparison of null values</ShortDescription>
-    <LongDescription>Useless comparison of null values in {1}</LongDescription>
+    <ShortDescription>Redundant comparison of reference values</ShortDescription>
+    <LongDescription>Redundant comparison of reference values in {1}</LongDescription>
     <Details>
 <![CDATA[
-<p> This method compares reference values which both appear to be null,
-meaning that the outcome of the comparison is fixed.&nbsp; This likely indicates
-a logic error in the method.
+<p> This method contains a redundant comparison of reference values. Two
+types of redundant comparison are reported:
+<ul>
+<li> Both values compared are definitely null
+<li> One value is definitely null and the other is definitely not null
+</ul>
+In either case, the result of the comparison will always be the same at
+runtime.  This is likely to inidicate a logic error in the method.
 ]]>
     </Details>
   </BugPattern>
