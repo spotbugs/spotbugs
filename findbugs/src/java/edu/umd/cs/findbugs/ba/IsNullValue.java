@@ -41,13 +41,13 @@ public class IsNullValue {
 
 	// TODO: think about this some more
 	private static final int[][] mergeMatrix = {
-		// NULL, WEAK_NULL, NN,   WEAK_NN, NSP,  DNR
-		{ NULL                                         }, // NULL
-		{ NULL,  WEAK_NULL                             }, // WEAK_NULL
-		{ NSP,   NN,        NN                         }, // NN
-		{ NSP,   DNR,       NN,   WEAK_NN,             }, // WEAK_NN
-		{ NSP,   DNR,       DNR,  DNR,     DNR         }, // NSP
-		{ NSP,   DNR,       DNR,  DNR,     DNR,  DNR   }  // DNR
+		// NULL,      WEAK_NULL, NN,        WEAK_NN,   NSP,       DNR
+		{  NULL                                                         }, // NULL
+		{  WEAK_NULL, WEAK_NULL,                                        }, // WEAK_NULL
+		{  NSP,       NN,        NN                                     }, // NN
+		{  NULL,      DNR,       WEAK_NN,   WEAK_NN,                    }, // WEAK_NN
+		{  NSP,       DNR,       DNR,       DNR,       DNR              }, // NSP
+		{  NSP,       DNR,       DNR,       DNR,       DNR,       DNR   }  // DNR
 	};
 
 	private static IsNullValue[] instanceList = {
@@ -116,7 +116,6 @@ public class IsNullValue {
 		}
 
 		int result = mergeMatrix[a.kind][b.kind];
-		assert result >= 0;
 		return instanceList[result];
 	}
 
