@@ -230,9 +230,11 @@ public abstract class Frame<ValueType> implements Debug {
 	 *    top (location 0)
 	 */
 	public ValueType getStackValue(int loc) throws DataflowAnalysisException {
+		if (!isValid())
+			throw new DataflowAnalysisException("Accessing TOP or BOTTOM frame!");
 		int stackDepth = getStackDepth();
 		if (loc >= stackDepth)
-			throw new DataflowAnalysisException("not enough values on stack");
+			throw new DataflowAnalysisException("not enough values on stack: access="+loc+", avail="+stackDepth);
 		return slotList.get(slotList.size() - (loc+1));
 	}
 
