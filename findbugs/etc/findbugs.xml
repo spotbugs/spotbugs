@@ -330,8 +330,7 @@
     experimental="true"/>
   <BugPattern abbrev="UI" type="UI_INHERITANCE_UNSAFE_GETRESOURCE" category="CORRECTNESS" 
     experimental="true"/>
-  <BugPattern abbrev="TEST" type="TESTING" category="CORRECTNESS" 
-    experimental="true"/>
+  <BugPattern abbrev="TEST" type="TESTING" category="CORRECTNESS" />
   <BugPattern abbrev="AM" type="AM_CREATES_EMPTY_ZIP_FILE_ENTRY" category="CORRECTNESS" 
     experimental="true"/>
   <BugPattern abbrev="AM" type="AM_CREATES_EMPTY_JAR_FILE_ENTRY" category="CORRECTNESS" 
@@ -461,14 +460,10 @@
   <BugPattern abbrev="ODR" type="ODR_OPEN_DATABASE_RESOURCE_EXCEPTION_PATH" category="CORRECTNESS" />
   <BugPattern abbrev="SBSC" type="SBSC_USE_STRINGBUFFER_CONCATENATION" category="PERFORMANCE" />
   <BugPattern abbrev="ITA" type="ITA_INEFFICIENT_TO_ARRAY" category="PERFORMANCE" />
-  <BugPattern abbrev="IJU" type="IJU_SETUP_NO_SUPER" category="CORRECTNESS"
-    experimental="true"/>
-  <BugPattern abbrev="IJU" type="IJU_TEARDOWN_NO_SUPER" category="CORRECTNESS"
-    experimental="true"/>
-  <BugPattern abbrev="IJU" type="IJU_SUITE_NOT_STATIC" category="CORRECTNESS"
-    experimental="true"/>
-  <BugPattern abbrev="BOA" type="BOA_BADLY_OVERRIDDEN_ADAPTER" category="CORRECTNESS"
-    experimental="true"/>
+  <BugPattern abbrev="IJU" type="IJU_SETUP_NO_SUPER" category="CORRECTNESS" />
+  <BugPattern abbrev="IJU" type="IJU_TEARDOWN_NO_SUPER" category="CORRECTNESS" />
+  <BugPattern abbrev="IJU" type="IJU_SUITE_NOT_STATIC" category="CORRECTNESS" />
+  <BugPattern abbrev="BOA" type="BOA_BADLY_OVERRIDDEN_ADAPTER" category="CORRECTNESS" />
   <BugPattern abbrev="BRSA" type="BRSA_BAD_RESULTSET_ACCESS" category="CORRECTNESS"
     experimental="true"/>
   <BugPattern abbrev="SIO" type="SIO_SUPERFLUOUS_INSTANCEOF" category="CORRECTNESS"
