@@ -33,6 +33,7 @@ import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.LiveLocalStoreAnalysis;
 import edu.umd.cs.findbugs.ba.Location;
 
+import java.util.HashSet;
 import java.util.BitSet;
 import java.util.Iterator;
 
@@ -51,6 +52,7 @@ import org.apache.bcel.generic.StoreInstruction;
 public class FindDeadLocalStores implements Detector {
 	private static final boolean DEBUG = Boolean.getBoolean("fdls.debug");
 
+	private static final HashSet classesAlreadyReportedOn = new HashSet();
 	/**
 	 * Opcodes of instructions that load constant values that
 	 * often indicate defensive programming.
@@ -65,6 +67,7 @@ public class FindDeadLocalStores implements Detector {
 
 	public FindDeadLocalStores(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
+		if (DEBUG) System.out.println("Debugging FindDeadLocalStores detector");
 	}
 
 	public void setAnalysisContext(AnalysisContext analysisContext) {
@@ -108,6 +111,7 @@ public class FindDeadLocalStores implements Detector {
 
 		MethodGen methodGen = classContext.getMethodGen(method);
 		CFG cfg = classContext.getCFG(method);
+		BitSet liveStoreSetAtEntry = llsaDataflow.getAnalysis().getResultFact(cfg.getEntry());
 
 		for (Iterator<Location> i = cfg.locationIterator(); i.hasNext(); ) {
 			Location location = i.next();
@@ -153,12 +157,26 @@ public class FindDeadLocalStores implements Detector {
 			if (prev != null && defensiveConstantValueOpcodes.get(prev.getInstruction().getOpcode()))
 				continue;
 
+			int priority = LOW_PRIORITY;
+			if (local < method.getArgumentTypes().length
+			    && !llsaDataflow.getAnalysis().isStoreAlive(liveStoreSetAtEntry, local)) {
+		
+				if (DEBUG) System.out.println("Raising priority");
+				priority = NORMAL_PRIORITY;
+				}
+
+			if (DEBUG) System.out.println(" considering reporting bug:" + priority);
+			if (priority != LOW_PRIORITY 
+				|| classesAlreadyReportedOn.add(javaClass.getClassName())) {
+
 			// Report the bug
-			BugInstance bugInstance = new BugInstance(this, "DLS_DEAD_LOCAL_STORE", NORMAL_PRIORITY)
+			BugInstance bugInstance = new BugInstance(this, "DLS_DEAD_LOCAL_STORE", priority)
 				.addClassAndMethod(methodGen, javaClass.getSourceFileName())
 				.addSourceLine(methodGen, javaClass.getSourceFileName(), location.getHandle());
+			if (DEBUG) System.out.println("Reporting " + bugInstance);
 
 			bugReporter.reportBug(bugInstance);
+			}
 		}
 	}
 
