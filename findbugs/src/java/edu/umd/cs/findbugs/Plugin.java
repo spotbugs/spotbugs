@@ -208,14 +208,14 @@ public class Plugin {
 	/**
 	 * Return an Iterator over the inter-pass Detector ordering constraints.
 	 */
-	public Iterator<DetectorOrderingConstraint> interPassDetectorOrderingConstraintIterator() {
+	public Iterator<DetectorOrderingConstraint> interPassConstraintIterator() {
 		return interPassConstraintList.iterator();
 	}
 
 	/**
 	 * Return an Iterator over the intra-pass Detector ordering constraints.
 	 */
-	public Iterator<DetectorOrderingConstraint> intraPassDetectorOrderingConstraintIterator() {
+	public Iterator<DetectorOrderingConstraint> intraPassConstraintIterator() {
 		return intraPassConstraintList.iterator();
 	}
 	
