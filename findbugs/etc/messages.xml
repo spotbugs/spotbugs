@@ -326,7 +326,8 @@ fast detector.
 <![CDATA[
 <p> This detector looks for calls to wait(), notify(), or notifyAll()
 which do not appear to be made on an object which is currently locked.&nbsp;
-It is a moderately fast detector.
+It is a moderately fast detector.&nbsp; <b>This detector is disabled because
+it is still under development, and produces too many false positives.</b>
 ]]>
     </Details>
   </Detector>
