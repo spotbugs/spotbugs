@@ -498,6 +498,12 @@ xsl.stylesheet.home     =${local.software.home}/docbook/docbook-xsl-1.61.0
 # is installed. 
 
 saxon.home              =${local.software.home}/java/saxon-6.5.2
+
+# Set this to the directory where Eclipse (http://www.eclipse.org/)
+# is installed.  This only required if you want to build the FindBugs
+# Eclipse plugin.
+
+eclipse.home		=${local.software.home}/java/eclipse-2.1.2
 ]]>
 </programlisting>
 </para>
@@ -521,6 +527,13 @@ The third property, <varname>saxon.home</varname>, is the full path to the
 directory where you installed the <ulink url="http://saxon.sourceforge.net/">&Saxon; XSLT Processor</ulink>.
 You only need to specify this property if you will be
 generating the &FindBugs; documentation.
+</para>
+
+<para>
+The fourth property, <varname>eclipse.home</varname>, is the full path
+to an installation of <ulink url="http://www.eclipse.org/">Eclipse</ulink>.
+You only need to specify this property if you want to rebuild the
+FindBugs Eclipse plugin.
 </para>
 
 </sect1>
@@ -1147,6 +1160,63 @@ using the &FindBugs; task.
 -->
 
 </sect1>
+
+</chapter>
+
+<!--
+   **************************************************************************
+   Using the FindBugs Eclipse plugin
+   **************************************************************************
+-->
+
+<chapter id="eclipse">
+<title>Using the &FindBugs; Eclipse plugin</title>
+
+<para>
+The FindBugs Eclipse plugin allows &FindBugs; to be used within
+the <ulink url="http://www.eclipse.org/">Eclipse</ulink> IDE.
+The FindBugs Eclipse plugin was generously contributed by Peter Friese,
+and has a <ulink url="http://www.tobject.de/development/findbugs.html">home page</ulink>.
+</para>
+
+<sect1>
+<title>Installation</title>
+
+<para>
+Two files are required to use the plugin, each of which can be downloaded
+from the &FindBugs; home page.  The first file is the
+<ulink url="http://www.cs.umd.edu/~pugh/java/release/edu.umd.cs.findbugs_@VERSION@.zip">Core plugin</ulink>,
+which contains the core &FindBugs; engine.  The second file is the
+<ulink url="http://www.cs.umd.edu/~pugh/java/release/de.tobject.findbugs_@ECLIPSE_UI_VERSION@.zip">UI plugin</ulink>,
+which interfaces &FindBugs; to the Eclipse workbench.  Each of these files should be extracted
+inside the <filename>plugins</filename> directory of your Eclipse installation.
+</para>
+
+<para>
+Once the plugin files are extracted, start Eclipse and choose
+<menuchoice>
+  <guimenu>Help</guimenu>
+  <guimenuitem>About Eclipse Platform</guimenuitem>
+  <guimenuitem>Plug-in Details</guimenuitem>
+</menuchoice>.
+You should "FindBugs Plug-in" and "FindBugs Binaries" plugins listed.
+</para>
+</sect1>
+
+<sect1>
+<title>Using the Plugin</title>
+
+<para>
+In the properties dialog for a Java project, select "Findbugs".
+Check the box labeled "Enable FindBugs".  Then, in the right
+click menu for the project, select the option labeled
+"Find Bugs".  &FindBugs; will run, and problem markers will point to
+locations in your code which have been identified as instances
+of bug patterns.
+</para>
+
+</sect1>
+
 
 </chapter>
 
