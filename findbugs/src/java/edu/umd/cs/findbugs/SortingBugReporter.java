@@ -26,29 +26,16 @@ import java.util.*;
  * and sorts them by class name before printing them.
  */
 public class SortingBugReporter extends TextUIBugReporter {
-	private TreeSet<BugInstance> bugInstanceSet = new TreeSet<BugInstance>(new Comparator<BugInstance>() {
-		public int compare(BugInstance lhs, BugInstance rhs) {
-			ClassAnnotation lca = lhs.getPrimaryClass();
-			ClassAnnotation rca = rhs.getPrimaryClass();
-			if (lca == null || rca == null)
-				throw new IllegalStateException("null class annotation: " + lca + "," + rca);
-			int cmp = lca.getClassName().compareTo(rca.getClassName());
-			if (cmp != 0)
-				return cmp;
-			return lhs.compareTo(rhs);
-		}
-	});
+	private SortedBugCollection bugCollection = new SortedBugCollection();
 
 	public void reportBug(BugInstance bugInstance) {
-		if (!bugInstanceSet.contains(bugInstance)) {
-			bugInstanceSet.add(bugInstance);
-		}
+		bugCollection.add(bugInstance);
 	}
 
 	public void finish() {
-		Iterator i = bugInstanceSet.iterator();
+		Iterator<BugInstance> i = bugCollection.iterator();
 		while (i.hasNext()) {
-			BugInstance bugInstance = (BugInstance) i.next();
+			BugInstance bugInstance = i.next();
 			System.out.println(bugInstance.getMessage());
 		}
 	}
