@@ -118,14 +118,17 @@ public class PatternMatcher implements DFSEdgeTypes {
 	}
 
 	private static class State {
-		private final BasicBlock.InstructionIterator iter;
-		private final PatternElement patternElement;
-		private final int matchCount;
+		public final BasicBlock.InstructionIterator iter;
+		public final PatternElement patternElement;
+		public final int matchCount;
+		public final PatternElementMatch currentMatch;
 
-		public State(BasicBlock.InstructionIterator iter, PatternElement patternElement, int matchCount) {
+		public State(BasicBlock.InstructionIterator iter, PatternElement patternElement, int matchCount,
+			PatternElementMatch currentMatch) {
 			this.iter = iter;
 			this.patternElement = patternElement;
 			this.matchCount = matchCount;
+			this.currentMatch = currentMatch;
 		}
 
 		public boolean equals(Object o) {
@@ -143,17 +146,18 @@ public class PatternMatcher implements DFSEdgeTypes {
 
 		public String toString() {
 			StringBuffer buf = new StringBuffer();
-			buf.append("iter=");
+			buf.append("[iter=");
 			buf.append(iter.toString());
 			buf.append(", patternElement=");
 			buf.append(patternElement.toString());
 			buf.append(", matchCount=");
 			buf.append(matchCount);
+			buf.append(']');
 			return buf.toString();
 		}
 	}
 
-	private HashSet<State> visitedStateSet = new HashSet<State>();
+	private HashMap<State, State> visitedStateMap = new HashMap<State, State>();
 
 	/**
 	 * Match a pattern element.  The InstructionIterator should generally be positioned just
@@ -167,10 +171,18 @@ public class PatternMatcher implements DFSEdgeTypes {
 		PatternElementMatch currentMatch, BindingSet bindingSet)
 		throws DataflowAnalysisException {
 
-		State state = new State(instructionIterator, patternElement, matchCount);
-		if (visitedStateSet.contains(state))
-			throw new IllegalStateException("Already visited this state: " + state);
-		visitedStateSet.add(state);
+		State state = new State(instructionIterator, patternElement, matchCount, currentMatch);
+		State existingState = visitedStateMap.get(state);
+		if (existingState != null) {
+			if (DEBUG) {
+				System.out.println("Old state: " + existingState);
+				System.out.print(existingState.currentMatch);
+				System.out.println("New state: " + state);
+				System.out.print(state.currentMatch);
+			}
+			throw new IllegalStateException("Already visited this state!");
+		}
+		visitedStateMap.put(state, state);
 
 		// Have we reached the end of the pattern?
 		if (patternElement == null) {
