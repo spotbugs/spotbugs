@@ -70,6 +70,8 @@ public class ConvertToARFF {
 	}
 
 	private static class MissingNodeException extends Exception {
+		private static final long serialVersionUID = -5042140832791541208L;
+
 		public MissingNodeException(String msg) {
 			super(msg);
 		}
@@ -167,6 +169,7 @@ public class ConvertToARFF {
 
 		public String getInstanceValue(Element element, String appName) throws MissingNodeException {
 			String annotationText = element.valueOf("./UserAnnotation[text()]");
+			//System.out.println("annotationText=" + annotationText);
 
 			int state = getBugClassification(annotationText);
 
@@ -174,6 +177,8 @@ public class ConvertToARFF {
 				return "not_bug";
 			else if (state == BUG)
 				return "bug";
+			else if (state == HARMLESS_BUG)
+				return "harmless_bug";
 			else
 				throw new MissingNodeException("Unclassified warning");
 		}
