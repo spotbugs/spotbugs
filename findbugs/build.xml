@@ -56,6 +56,7 @@
     <property name="release.prop.file" value="${build.dir}/release.properties" />
     <property name="html.xsl.stylesheet" value="${xsl.stylesheet.home}/html/chunk.xsl" />
     <property name="fo.xsl.stylesheet" value="${xsl.stylesheet.home}/fo/docbook.xsl" />
+    <property name="eclipse.xsl.stylesheet" value="${xsl.stylesheet.home}/eclipse/eclipse.xsl" />
     <property name="doc.props.file" value="${findbugs.dir}/etc/doc.properties"/>
     <property name="html.uptodate.stamp" value="${build.dir}/html-uptodate.stamp"/>
     <property name="script.props.file" value="${findbugs.dir}/etc/script.properties"/>
@@ -158,16 +159,14 @@
     <!-- Target to compile classes. -->
     <target name="classes" depends="init">
       <!-- Compile with the JSR14 prototype compiler and compiler adapter -->
-<!--
       <javac srcdir="${findbugs.src.dir}" destdir="${class.dir}"
-             source="1.5"
              debug="true"
              compiler="com.cortexeb.Jsr14CompilerAdapter">
         <classpath refid="classpath" />
       </javac>
--->
 
       <!-- Use the following to compile using JDK 1.5 javac -->
+<!--
       <javac srcdir="${findbugs.src.dir}" destdir="${class.dir}"
              source="1.5"
              target="jsr14"
@@ -177,6 +176,7 @@
         <compilerarg value="-Xlint:unchecked"/>
         <compilerarg value="-Xlint:deprecation"/>
       </javac>
+-->
     </target>
 
     <!-- Target to build jar file for the main engine. -->
@@ -389,21 +389,21 @@
     <!-- Build jar file of test cases.  -->
     <target name="testjar" depends="init,anttask" >
        <!-- Compile with JSR-14 compiler. -->
-<!--
+
        <javac srcdir="${test.dir}" 
-              source="1.5"
-              target="jsr14"
               excludes="IgnoredReturnValue.java,TryLock.java,JSR166.java" debug="true" 
               compiler="com.cortexeb.Jsr14CompilerAdapter"/>
--->
+
 
        <!-- Compile with JDK 1.5 javac. (Recommended.) -->
+<!--
        <javac srcdir="${test.dir}" 
               source="1.5"
               target="jsr14"
               excludes="IgnoredReturnValue.java,TryLock.java,JSR166.java" debug="true">
           <classpath refid="test.classpath"/>
        </javac>
+-->
        <jar destfile="${test.dir}/dumb.jar" basedir="${test.dir}" includes="*.class"
             excludes="IgnoredReturnValue*.class,TryLock*.class" />
     </target>
@@ -510,18 +510,16 @@
     -->
     <target name="tools" depends="classes">
       <!-- Compile with JSR-14 compiler. -->
-<!--
       <javac srcdir="${tools.src.dir}" destdir="${tools.dir}"
              excludes="edu/umd/cs/findbugs/tools/patcomp/*"
-             source="1.5"
-             target="jsr14"
              debug="true"
              compiler="com.cortexeb.Jsr14CompilerAdapter">
         <classpath refid="tools.buildclasspath"/>
       </javac> 
--->
+
 
       <!-- Compile with JDK 1.5 javac. (Recommended.) -->
+<!--
       <javac srcdir="${tools.src.dir}" destdir="${tools.dir}"
              excludes="edu/umd/cs/findbugs/tools/patcomp/*"
              source="1.5"
@@ -531,6 +529,7 @@
         <compilerarg value="-Xlint:unchecked"/>
         <compilerarg value="-Xlint:deprecation"/>
       </javac> 
+-->
     </target>
 
     <!-- Target to get the release version info. -->
@@ -567,6 +566,7 @@
         <filter token="WEBSITE" value="${findbugs.website}"/>
         <filter token="DOWNLOADS_WEBSITE" value="${findbugs.downloads.website}"/>
         <filter token="HTML_XSL_STYLESHEET" value="${html.xsl.stylesheet}" />
+        <filter token="ECLIPSE_XSL_STYLESHEET" value="${eclipse.xsl.stylesheet}" />
         <filter token="HTML_SIDEBAR" value="${doc.html.sidebar}"/>
         <filter token="HTML_FOOTER" value="${doc.html.footer}"/>
       </filterset>  
@@ -647,7 +647,7 @@
 
       <!-- XML/XSL source for the manual -->
       <copy todir="${doc.dir}">
-        <fileset dir="${doc.src.dir}" includes="manual.xml,manual.xsl"/>
+        <fileset dir="${doc.src.dir}" includes="manual.xml,manual.xsl,eclipse.xsl"/>
         <filterset refid="docFilters"/>
       </copy>
 
@@ -685,6 +685,17 @@
          <arg value="manual.pdf" />
        </java>
 -->
+    </target>
+    
+    <target name="eclipseHelp" depends="docfiles" >
+    	<!-- unless="manual.build.notRequired" -->
+       
+       <!-- Format the manual as Eclipse Help. -->
+       <java fork="true" dir="${doc.dir}" failonerror="true" classname="com.icl.saxon.StyleSheet" >
+         <classpath refid="saxon.classpath" />
+         <arg value="manual.xml" />
+         <arg value="eclipse.xsl" />
+       </java>    
     </target>
 
     <!-- Target to build the docs. -->
