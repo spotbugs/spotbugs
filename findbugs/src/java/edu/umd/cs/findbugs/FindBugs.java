@@ -157,7 +157,12 @@ public class FindBugs implements Constants2
 		if (Thread.interrupted())
 			throw new InterruptedException();
 		Detector detector = detectors[i];
-		detector.visitClassContext(classContext);
+		try {
+			detector.visitClassContext(classContext);
+			}
+		catch (AnalysisException e) {
+			bugReporter.logError("Analysis exception: " + e.getMessage());
+			}
 		}
 
 	progressCallback.finishClass();

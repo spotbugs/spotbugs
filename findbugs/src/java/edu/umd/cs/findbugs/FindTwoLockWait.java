@@ -52,7 +52,7 @@ public class FindTwoLockWait extends CFGBuildingDetector implements Detector {
 
 			visitCFGInstructions(cfg, methodGen);
 		} catch (DataflowAnalysisException e) {
-			throw new IllegalStateException(e.getMessage());
+			throw new AnalysisException(e.getMessage());
 		}
 	}
 
@@ -65,17 +65,13 @@ public class FindTwoLockWait extends CFGBuildingDetector implements Detector {
 				analysis.transfer(bb, handle, dataflow.getStartFact(bb), count);
 				if (count.getCount() > 1) {
 					// A wait with multiple locks held?
-/*
-					bugReporter.reportBug(BugInstance.inMethod("2LW_TWO_LOCK_WAIT", UNKNOWN_PRIORITY,
-						getJavaClass(), methodGen.getName() + " : " + methodGen.getSignature()));
-*/
 					bugReporter.reportBug(new BugInstance("2LW_TWO_LOCK_WAIT", NORMAL_PRIORITY)
 						.addClass(getJavaClass())
 						.addMethod(methodGen));
 				}
 			}
 		} catch (DataflowAnalysisException e) {
-			throw new IllegalStateException(e.getMessage());
+			throw new AnalysisException(e.getMessage());
 		}
 	}
 
