@@ -39,9 +39,14 @@ import org.apache.bcel.generic.MethodGen;
  */
 public class CFGPrinter {
 	private CFG cfg;
+	private boolean isForwards;
 
 	public CFGPrinter(CFG cfg) {
 		this.cfg = cfg;
+	}
+
+	public void setIsForwards(boolean isForwards) {
+		this.isForwards = isForwards;
 	}
 
 	public void print(PrintStream out) {
@@ -85,6 +90,13 @@ public class CFGPrinter {
 
 	public String instructionAnnotate(InstructionHandle handle, BasicBlock bb) {
 		return "";
+	}
+
+	protected Iterator<InstructionHandle> instructionIterator(BasicBlock bb) {
+		if (isForwards)
+			return bb.instructionIterator();
+		else
+			return bb.instructionReverseIterator();
 	}
 
 	public static void main(String[] argv) {
