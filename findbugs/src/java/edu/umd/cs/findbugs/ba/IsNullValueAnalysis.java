@@ -135,10 +135,13 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
 				// Downgrade to DNR if the handler is for CloneNotSupportedException
 				CodeExceptionGen handler = destBlock.getExceptionGen();
 				ObjectType catchType = handler.getCatchType();
-				if (catchType != null && catchType.getClassName().equals("java.lang.CloneNotSupportedException")) {
-					for (int i = 0; i < tmpFrame.getNumSlots(); ++i)
-						if (tmpFrame.getValue(i).isDefinitelyNull())
-							tmpFrame.setValue(i, IsNullValue.doNotReportValue());
+				if (catchType != null) {
+					String catchClass = catchType.getClassName();
+					if (catchClass.equals("java.lang.CloneNotSupportedException") || catchClass.equals("java.lang.InterruptedException")) {
+						for (int i = 0; i < tmpFrame.getNumSlots(); ++i)
+							if (tmpFrame.getValue(i).isDefinitelyNull())
+								tmpFrame.setValue(i, IsNullValue.doNotReportValue());
+					}
 				}
 
 				// Mark all values as having occurred on an exception path
