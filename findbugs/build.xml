@@ -44,6 +44,7 @@
 
 	<!-- Compile Java source files. -->
 	<target name="classes">
+		<mkdir dir="${classes.dir}"/>
 		<javac srcdir="src/java"
 				destdir="${classes.dir}"
 				source="1.5"
@@ -147,14 +148,12 @@
 	<!-- Delete generated files. -->
 	<target name="clean">
 		<delete>
-			<fileset dir="${classes.dir}">
-				<include name="**"/>
-			</fileset>
-			<filename name="build/*.stamp"/>
-			<filename name="${engine.jar}"/>
-			<filename name="${coreplugin.jar}"/>
-			<filename name="${gui.jar}"/>
+			<fileset dir="${scripts.dir}" includes="*"/>
 		</delete>
+		<delete dir="build"/>
+		<delete file="${engine.jar}"/>
+		<delete file="${coreplugin.jar}"/>
+		<delete file="${gui.jar}"/>
 	</target>
 	
 </project>
