@@ -40,6 +40,26 @@ public class Lookup {
 
 		return null;
 	}
+
+	public static JavaClass findClassDefiningField(String className, String fieldName, String fieldSig)
+		throws ClassNotFoundException {
+
+		JavaClass jclass = Repository.lookupClass(className);
+
+		while (jclass != null) {
+			Field[] fieldList = jclass.getFields();
+			for (int i = 0; i < fieldList.length; ++i) {
+				Field field = fieldList[i];
+				if (field.getName().equals(fieldName) && field.getSignature().equals(fieldSig)) {
+					return jclass;
+				}
+			}
+	
+			jclass = jclass.getSuperClass();
+		}
+
+		return null;
+	}
 }
 
 // vim:ts=4
