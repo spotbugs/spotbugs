@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <!-- French translation provided by David Cotton :) -->
-<MessageCollection>
+<MessageCollection xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   				   xsi:noNamespaceSchemaLocation="messagecollection.xsd">
 
   <!--
   **********************************************************************
@@ -2040,7 +2041,7 @@ Si le tableau transmis est assez grand pour stocker tous les éléments de la coll
   <BugCode abbrev="BOA">Erreur dans la surcharge d'un Adapter</BugCode>
   <BugCode abbrev="SF">"switch" dont un cas déborde</BugCode>
   <BugCode abbrev="BRSA">Mauvais accès à un ResultSet</BugCode>
-  <BugCode abbrev="SIO">Opérateur instanceof superflu</BugCode>*
+  <BugCode abbrev="SIO">Opérateur instanceof superflu</BugCode>
   <BugCode abbrev="BAC">Constructeur d'Applet erroné</BugCode>
   <BugCode abbrev="MF">Champs masqué</BugCode>
   <BugCode abbrev="DLS">Alimentation à perte</BugCode>
