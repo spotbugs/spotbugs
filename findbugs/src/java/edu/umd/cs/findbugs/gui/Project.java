@@ -276,11 +276,27 @@ public class Project {
         reader.close();
     }
     
+    /**
+     * Convert to a string in a nice (displayable) format.
+     */
     public String toString() {
         String name = fileName;
         int lastSep = name.lastIndexOf(File.separatorChar);
         if (lastSep >= 0)
             name = name.substring(lastSep + 1);
+        int dot = name.lastIndexOf('.');
+        if (dot >= 0)
+            name = name.substring(0, dot);
         return name;
+    }
+
+    /**
+     * Transform a user-entered filename into a proper filename,
+     * by adding the ".fb" file extension if it isn't already present.
+     */
+    public static String transformFilename(String fileName) {
+        if (!fileName.endsWith(".fb"))
+            fileName = fileName + ".fb";
+        return fileName;
     }
 }
