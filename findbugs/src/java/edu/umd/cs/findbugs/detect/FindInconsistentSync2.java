@@ -509,22 +509,6 @@ public class FindInconsistentSync2 implements Detector {
 		return lockedMethodSet;
 	}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 	/**
 	 * Find methods that appear to always be called from a locked context.
 	 * We assume that nonpublic methods will only be called from
@@ -587,34 +571,6 @@ public class FindInconsistentSync2 implements Detector {
 		return lockedMethodSet;
 	}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 	/**
 	 * Find methods that do not appear to be reachable from public methods.
 	 * Such methods will not be analyzed.
@@ -672,40 +628,6 @@ public class FindInconsistentSync2 implements Detector {
 
 		return publicReachableMethodSet;
 	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 	/**
 	 * Find all self-call sites that are obviously locked.
