@@ -118,6 +118,8 @@ public class FindCircularDependencies extends BytecodeScanningDetector implement
 					if (!dependencyGraph.containsKey(dit.next()))
 						dit.remove();
 				}
+				if (dependencies.size() == 0)
+					it.remove();
 			}
 		}
 		
