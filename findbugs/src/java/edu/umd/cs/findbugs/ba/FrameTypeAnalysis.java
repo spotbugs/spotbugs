@@ -93,11 +93,11 @@ public class FrameTypeAnalysis extends ForwardDataflowAnalysis<TypedFrame> {
 	}
 
 	public void transfer(BasicBlock basicBlock, InstructionHandle end, TypedFrame start, TypedFrame result) throws DataflowAnalysisException {
-		CodeExceptionGen exceptionGen = basicBlock.getExceptionGen(); 
-		if (exceptionGen != null) {
-			// The block is an exception handler, change the stack so that only
+		if (basicBlock.isExceptionHandler()) {
+			// The block is an exception handler, so change the stack so that only
 			// the exception type is on it.  This means we ignore the start
 			// value given to us, because it is almost certainly the BOTTOM frame.
+			CodeExceptionGen exceptionGen = basicBlock.getExceptionGen(); 
 			result.clearStack();
 			result.pushValue(exceptionGen.getCatchType());
 		} else {
