@@ -21,11 +21,15 @@ package edu.umd.cs.findbugs.ba;
 
 import java.util.BitSet;
 
+import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.LoadInstruction;
 import org.apache.bcel.generic.MethodGen;
 
 /**
  * Dataflow analysis to find dead stores of locals.
+ * This is just a backward analysis to see which loads
+ * reach stores of the same local.
  *
  * @author David Hovemeyer
  */
@@ -77,6 +81,12 @@ public class DeadLocalStoreAnalysis extends BackwardDataflowAnalysis<BitSet> {
 
 	public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, BitSet fact)
 		throws DataflowAnalysisException {
+		Instruction ins = handle.getInstruction();
+		if (ins instanceof LoadInstruction) {
+			LoadInstruction load = (LoadInstruction) ins;
+			int local = load.getIndex();
+			fact.set(local);
+		}
 	}
 
 	public boolean isFactValid(BitSet fact) {
