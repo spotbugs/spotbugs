@@ -109,7 +109,7 @@
       <pathelement path="${java.class.path}"/>
     </path>
 
-    <target name="clean" depends="init">
+    <target name="clean">
       <delete dir="${build.dir}" />
       <delete dir="${plugin.dir}" />
       <delete dir="${doc.dir}" />
@@ -290,6 +290,9 @@
     <!-- Default target: just compile the code
          and build the Jar files. -->
     <target name="build" depends="findbugs,coreplugin,findbugsgui,anttask,testjar" />
+
+    <!-- Rebuild. -->
+    <target name="rebuild" depends="clean,build" />
 
     <!-- Compile the code and format the docs. -->
     <target name="buildAll" depends="build,docs" />
