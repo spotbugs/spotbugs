@@ -19,12 +19,12 @@
 
 package edu.umd.cs.daveho.ba;
 
-public class LockDataflow extends Dataflow<int[], LockAnalysis> {
+public class LockDataflow extends Dataflow<LockSet, LockAnalysis> {
 	public LockDataflow(CFG cfg, LockAnalysis lockAnalysis) {
 		super(cfg, lockAnalysis);
 	}
 
-	public int[] getFactAtLocation(Location location) throws DataflowAnalysisException {
+	public LockSet getFactAtLocation(Location location) throws DataflowAnalysisException {
 		return getAnalysis().getFactAtLocation(location);
 	}
 }

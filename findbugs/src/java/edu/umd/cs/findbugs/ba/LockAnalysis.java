@@ -32,18 +32,14 @@ import org.apache.bcel.generic.*;
  * @see ValueNumberAnalysis
  * @author David Hovemeyer
  */
-public class LockAnalysis extends ForwardDataflowAnalysis<int[]> {
+public class LockAnalysis extends ForwardDataflowAnalysis<LockSet> {
+	private static final boolean DEBUG = Boolean.getBoolean("la.debug");
+
 	private MethodGen methodGen;
 	private ValueNumberDataflow vnaDataflow;
 	private ValueNumberAnalysis vna;
 	private boolean isSynchronized;
 	private boolean isStatic;
-
-	/** An uninitialized lock count. */
-	public static final int TOP = -1;
-
-	/** A lock count resulting from a flow merge of conflicting lock counts. */
-	public static final int BOTTOM = -2;
 
 	public LockAnalysis(MethodGen methodGen, ValueNumberDataflow vnaDataflow, DepthFirstSearch dfs) {
 		super(dfs);
@@ -54,59 +50,47 @@ public class LockAnalysis extends ForwardDataflowAnalysis<int[]> {
 		this.isStatic = methodGen.isStatic();
 	}
 
-	public int[] createFact() {
-		int numValues = vna.getNumValuesAllocated();
-		return new int[numValues];
+	public LockSet createFact() {
+		return new LockSet();
 	}
 
-	public void copy(int[] source, int[] dest) {
-		System.arraycopy(source, 0, dest, 0, source.length);
+	public void copy(LockSet source, LockSet dest) {
+		dest.copyFrom(source);
 	}
 
-	public void initEntryFact(int[] result) {
+	public void initEntryFact(LockSet result) {
 		// FIXME: we don't try to do anything for static methods at the moment,
 		// because we don't yet have a way of figuring out when a Class object
 		// is loaded as a value.
-
-		Arrays.fill(result, 0);
-
+ 
+		result.clear();
+		result.setDefaultLockCount(0);
+ 
 		if (isSynchronized && !isStatic) {
 			ValueNumber thisValue = vna.getThisValue();
-			result[thisValue.getNumber()] = 1;
+			result.setLockCount(thisValue.getNumber(), 1);
 		}
 	}
 
-	public void initResultFact(int[] result) {
-		Arrays.fill(result, TOP);
+	public void initResultFact(LockSet result) {
+		result.clear();
+		result.setDefaultLockCount(LockSet.TOP);
 	}
 
-	public void makeFactTop(int[] fact) {
-		Arrays.fill(fact, TOP);
+	public void makeFactTop(LockSet fact) {
+		fact.clear();
+		fact.setDefaultLockCount(LockSet.TOP);
 	}
 
-	public boolean same(int[] fact1, int[] fact2) {
-		return Arrays.equals(fact1, fact2);
+	public boolean same(LockSet fact1, LockSet fact2) {
+		return fact1.sameAs(fact2);
 	}
 
-	public void meetInto(int[] fact, Edge edge, int[] result) throws DataflowAnalysisException {
-		for (int i = 0; i < fact.length; ++i)
-			result[i] = mergeValues(result[i], fact[i]);
+	public void meetInto(LockSet fact, Edge edge, LockSet result) throws DataflowAnalysisException {
+		result.meetWith(fact);
 	}
 
-	private static int mergeValues(int a, int b) {
-		if (a == TOP)
-			return b;
-		else if (b == TOP)
-			return a;
-		else if (a == BOTTOM || b == BOTTOM)
-			return BOTTOM;
-		else if (a == b)
-			return a;
-		else
-			return BOTTOM;
-	}
-
-	public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, int[] fact)
+	public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, LockSet fact)
 		throws DataflowAnalysisException {
 
 		Instruction ins = handle.getInstruction();
@@ -120,43 +104,19 @@ public class LockAnalysis extends ForwardDataflowAnalysis<int[]> {
 		}
 	}
 
-	private static void lockOp(int[] fact, int lockNumber, int delta) {
-		int value = fact[lockNumber];
+	private static void lockOp(LockSet fact, int lockNumber, int delta) {
+		int value = fact.getLockCount(lockNumber);
 		if (value < 0) // can't modify TOP or BOTTOM value
 			return;
 		value += delta;
 		if (value < 0)
-			value = BOTTOM;
-		fact[lockNumber] = value;
+			value = LockSet.BOTTOM;
+		if (DEBUG) System.out.println("Setting " + lockNumber + " to " + value);
+		fact.setLockCount(lockNumber, value);
 	}
 
-	public boolean isFactValid(int[] fact) {
+	public boolean isFactValid(LockSet fact) {
 		return true;
-	}
-
-	public String factToString(int[] fact) {
-		StringBuffer buf = new StringBuffer();
-		buf.append('[');
-		boolean first = true;
-		for (int i = 0; i < fact.length; ++i) {
-			int value = fact[i]; 
-			if (value == 0)
-				continue;
-			if (first)
-				first = false;
-			else
-				buf.append(',');
-			buf.append(i);
-			buf.append('=');
-			if (value == TOP)
-				buf.append("TOP");
-			else if (value == BOTTOM)
-				buf.append("BOTTOM");
-			else
-				buf.append(value);
-		}
-		buf.append(']');
-		return buf.toString();
 	}
 
 	public static void main(String[] argv) throws Exception {
@@ -165,7 +125,7 @@ public class LockAnalysis extends ForwardDataflowAnalysis<int[]> {
 			System.exit(1);
 		}
 
-		DataflowTestDriver<int[], LockAnalysis> driver = new DataflowTestDriver<int[], LockAnalysis>() {
+		DataflowTestDriver<LockSet, LockAnalysis> driver = new DataflowTestDriver<LockSet, LockAnalysis>() {
 			public LockAnalysis createAnalysis(MethodGen methodGen, CFG cfg) throws DataflowAnalysisException {
 				DepthFirstSearch dfs = new DepthFirstSearch(cfg).search();
 

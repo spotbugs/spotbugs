@@ -24,6 +24,7 @@ import edu.umd.cs.daveho.ba.*;
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.*;
 import org.apache.bcel.generic.*;
+import java.util.BitSet;
 
 public class FindMismatchedWaitOrNotify implements Detector {
 	private BugReporter bugReporter;
@@ -40,6 +41,12 @@ public class FindMismatchedWaitOrNotify implements Detector {
 			Method method = methodList[i];
 			MethodGen methodGen = classContext.getMethodGen(method);
 			if (methodGen == null)
+				continue;
+
+			// Don't bother analyzing the method unless there is both locking
+			// and a method call.
+			BitSet bytecodeSet = classContext.getBytecodeSet(method);
+			if (!(bytecodeSet.get(Constants.MONITORENTER) && bytecodeSet.get(Constants.INVOKEVIRTUAL)))
 				continue;
 
 			try {
@@ -85,8 +92,10 @@ public class FindMismatchedWaitOrNotify implements Detector {
 							throw new AnalysisException("Stack underflow", methodGen, handle);
 						ValueNumber ref = frame.getValue(frame.getNumSlots() - numConsumed);
 
-						int[] lockCountList = dataflow.getFactAtLocation(location);
-						int lockCount = lockCountList[ref.getNumber()];
+						//int[] lockCountList = dataflow.getFactAtLocation(location);
+						//int lockCount = lockCountList[ref.getNumber()];
+						LockSet lockSet = dataflow.getFactAtLocation(location);
+						int lockCount = lockSet.getLockCount(ref.getNumber());
 
 						if (lockCount == 0) {
 							String sourceFile = classContext.getJavaClass().getSourceFileName();
