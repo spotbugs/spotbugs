@@ -56,7 +56,7 @@ public class ValueNumberFrameModelingVisitor extends AbstractFrameModelingVisito
 		ValueNumberFrame frame = getFrame();
 
 		// Get the input operands to this instruction.
-		ValueNumber[] inputValueList = popInputValues(frame, numWordsConsumed);
+		ValueNumber[] inputValueList = popInputValues(numWordsConsumed);
 
 		// See if we have the output operands in the cache.
 		// If not, push default (fresh) values for the output,
@@ -76,11 +76,11 @@ public class ValueNumberFrameModelingVisitor extends AbstractFrameModelingVisito
 		}
 
 		// Push output operands on stack.
-		for (int i = 0; i < outputValueList.length; ++i)
-			frame.pushValue(outputValueList[i]);
+		pushOutputValues(outputValueList);
 	}
 
-	private ValueNumber[] popInputValues(ValueNumberFrame frame, int numWordsConsumed) {
+	private ValueNumber[] popInputValues(int numWordsConsumed) {
+		ValueNumberFrame frame = getFrame();
 		ValueNumber[] inputValueList = new ValueNumber[numWordsConsumed];
 
 		// Pop off the input operands.
@@ -96,6 +96,12 @@ public class ValueNumberFrameModelingVisitor extends AbstractFrameModelingVisito
 		return inputValueList;
 	}
 
+	private void pushOutputValues(ValueNumber[] outputValueList) {
+		ValueNumberFrame frame = getFrame();
+		for (int i = 0; i < outputValueList.length; ++i)
+			frame.pushValue(outputValueList[i]);
+	}
+
 	public void visitGETFIELD(GETFIELD obj) {
 		if (REDUNDANT_LOAD_ELIMINATION) {
 			ValueNumberFrame frame = getFrame();
@@ -105,12 +111,12 @@ public class ValueNumberFrameModelingVisitor extends AbstractFrameModelingVisito
 				if (instanceField != null) {
 					ValueNumber reference = frame.getTopValue();
 					AvailableLoad availableLoad = new AvailableLoad(reference, instanceField);
-					ValueNumber loadedValue = frame.getAvailableLoad(availableLoad);
+					ValueNumber[] loadedValue = frame.getAvailableLoad(availableLoad);
 	
 					if (loadedValue != null) {
 						// Found an available load!
 						frame.popValue();
-						frame.pushValue(loadedValue);
+						pushOutputValues(loadedValue);
 						return;
 					}
 				}
@@ -125,6 +131,32 @@ public class ValueNumberFrameModelingVisitor extends AbstractFrameModelingVisito
 
 	public void visitPUTFIELD(PUTFIELD obj) {
 		if (REDUNDANT_LOAD_ELIMINATION) {
+			ValueNumberFrame frame = getFrame();
+	
+			try {
+				InstanceField instanceField = Lookup.findInstanceField(obj, getCPG());
+
+				if (instanceField != null) {
+					int numWordsConsumed = getNumWordsConsumed(obj);
+					ValueNumber[] inputValueList = popInputValues(numWordsConsumed);
+					ValueNumber reference = inputValueList[0];
+					ValueNumber[] loadedValue = new ValueNumber[inputValueList.length - 1];
+					System.arraycopy(inputValueList, 1, loadedValue, 0, inputValueList.length - 1);
+
+					// Kill all previous loads of the same field,
+					// in case there is aliasing we don't know about
+					frame.killLoadsOfField(instanceField);
+
+					// Forward substitution
+					frame.addAvailableLoad(new AvailableLoad(reference, instanceField), loadedValue);
+
+					return;
+				}
+
+			} catch (ClassNotFoundException e) {
+				lookupFailureCallback.reportMissingClass(e);
+			}
+			
 		}
 		handleNormalInstruction(obj);
 	}

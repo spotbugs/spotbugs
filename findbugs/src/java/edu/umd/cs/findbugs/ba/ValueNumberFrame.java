@@ -21,6 +21,7 @@ package edu.umd.cs.daveho.ba;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -36,32 +37,46 @@ public class ValueNumberFrame extends Frame<ValueNumber> {
 
 	private ValueNumberFactory factory;
 	private ArrayList<ValueNumber> mergedValueList;
-	private Map<AvailableLoad, ValueNumber> availableLoadMap;
+	private Map<AvailableLoad, ValueNumber[]> availableLoadMap;
 
 	public ValueNumberFrame(int numLocals, final ValueNumberFactory factory) {
 		super(numLocals);
 		this.factory = factory;
 		if (REDUNDANT_LOAD_ELIMINATION) {
-			this.availableLoadMap = new HashMap<AvailableLoad, ValueNumber>();
+			this.availableLoadMap = new HashMap<AvailableLoad, ValueNumber[]>();
 		}
 	}
 
 	/**
 	 * Look for an available load.
 	 * @param availableLoad the AvailableLoad (reference and field)
-	 * @return the ValueNumber available, or null if the is no matching entry
+	 * @return the value(s) available, or null if no matching entry is found
 	 */
-	public ValueNumber getAvailableLoad(AvailableLoad availableLoad) {
+	public ValueNumber[] getAvailableLoad(AvailableLoad availableLoad) {
 		return availableLoadMap.get(availableLoad);
 	}
 
 	/**
 	 * Add an available load.
 	 * @param availableLoad the AvailableLoad (reference and field)
-	 * @param value the ValueNumber loaded
+	 * @param value the value(s) loaded
 	 */
-	public void addAvailableLoad(AvailableLoad availableLoad, ValueNumber value) {
+	public void addAvailableLoad(AvailableLoad availableLoad, ValueNumber[] value) {
 		availableLoadMap.put(availableLoad, value);
+	}
+
+	/**
+	 * Kill all loads of given field.
+	 * @param instanceField the field
+	 */
+	public void killLoadsOfField(InstanceField instanceField) {
+		Iterator<AvailableLoad> i = availableLoadMap.keySet().iterator();
+		while (i.hasNext()) {
+			AvailableLoad availableLoad = i.next();
+			if (availableLoad.getField().equals(instanceField)) {
+				i.remove();
+			}
+		}
 	}
 
 	public void mergeWith(Frame<ValueNumber> other_) throws DataflowAnalysisException {
@@ -133,7 +148,7 @@ public class ValueNumberFrame extends Frame<ValueNumber> {
 		if (REDUNDANT_LOAD_ELIMINATION) {
 			// Copy available load set.
 			availableLoadMap.clear();
-			availableLoadMap.entrySet().addAll(((ValueNumberFrame)other).availableLoadMap.entrySet());
+			availableLoadMap.putAll(((ValueNumberFrame)other).availableLoadMap);
 		}
 
 		super.copyFrom(other);
