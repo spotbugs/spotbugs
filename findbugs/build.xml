@@ -426,6 +426,7 @@
       <filterset id="docFilters">
         <filter token="VERSION" value="${release.number}" />
         <filter token="RELEASE_DATE" value="${release.date}" />
+        <filter token="ECLIPSE_CORE_VERSION" value="${eclipse.core.version}"/>
         <filter token="ECLIPSE_UI_VERSION" value="${eclipse.ui.version}" />
         <filter token="WEBSITE" value="${findbugs.website}"/>
         <filter token="DOWNLOADS_WEBSITE" value="${findbugs.downloads.website}"/>
