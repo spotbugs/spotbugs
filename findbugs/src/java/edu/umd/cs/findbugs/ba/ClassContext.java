@@ -47,6 +47,7 @@ public class ClassContext {
 		new IdentityHashMap<Method, LockCountDataflow>();
 	private IdentityHashMap<Method, LockCountDataflow> thisLockCountDataflowMap =
 		new IdentityHashMap<Method, LockCountDataflow>();
+	private IdentityHashMap<Method, LockDataflow> lockDataflowMap = new IdentityHashMap<Method, LockDataflow>();
 	private ClassGen classGen;
 
 	/**
@@ -275,6 +276,30 @@ public class ClassContext {
 			thisLockCountDataflowMap.put(method, dataflow);
 		}
 
+		return dataflow;
+	}
+
+	/**
+	 * Get dataflow for LockAnalysis for given method.
+	 * @param method the method
+	 * @return the LockDataflow
+	 */
+	public LockDataflow getLockDataflow(Method method)
+		throws CFGBuilderException, DataflowAnalysisException {
+
+		LockDataflow dataflow = lockDataflowMap.get(method);
+		if (dataflow == null) {
+			MethodGen methodGen = getMethodGen(method);
+			ValueNumberDataflow vnaDataflow = getValueNumberDataflow(method);
+			DepthFirstSearch dfs = getDepthFirstSearch(method);
+			CFG cfg = getCFG(method);
+
+			LockAnalysis analysis = new LockAnalysis(methodGen, vnaDataflow, dfs);
+			dataflow = new LockDataflow(cfg, analysis);
+			dataflow.execute();
+
+			lockDataflowMap.put(method, dataflow);
+		}
 		return dataflow;
 	}
 }
