@@ -43,6 +43,11 @@ public class TypeRepositoryTest extends TestCase {
 		repos.addInterfaceLink(type, javaLangObjectType);
 	}
 
+	boolean checkUnidirectionalSubtype(ObjectType subtype, ObjectType supertype) throws ClassNotFoundException {
+		return repos.isSubtype(subtype, supertype)
+			&& !repos.isSubtype(supertype, subtype);
+	}
+
 	protected void setUp() {
 		// In this test, all class types are explicitly marked as
 		// class vs. interface, and supertypes explicitly identified.
@@ -116,52 +121,52 @@ public class TypeRepositoryTest extends TestCase {
 	}
 
 	public void testIsDirectClassSubtype() throws ClassNotFoundException {
-		Assert.assertTrue(repos.isSubtype(myClassType, mySuperclassType));
-		Assert.assertTrue(repos.isSubtype(mySuperclassType, javaLangObjectType));
+		Assert.assertTrue(checkUnidirectionalSubtype(myClassType, mySuperclassType));
+		Assert.assertTrue(checkUnidirectionalSubtype(mySuperclassType, javaLangObjectType));
 	}
 
 	public void testIndirectClassSubtype() throws ClassNotFoundException {
-		Assert.assertTrue(repos.isSubtype(myClassType, javaLangObjectType));
+		Assert.assertTrue(checkUnidirectionalSubtype(myClassType, javaLangObjectType));
 	}
 
 	public void testArrayIsSubtypeOfObject() throws ClassNotFoundException {
-		Assert.assertTrue(repos.isSubtype(myClassArrayType, javaLangObjectType));
+		Assert.assertTrue(checkUnidirectionalSubtype(myClassArrayType, javaLangObjectType));
 	}
 
 	public void testArrayIsSubtypeOfArraysOfElementSupertypes() throws ClassNotFoundException {
-		Assert.assertTrue(repos.isSubtype(myClassArrayType, mySuperclassArrayType));
-		Assert.assertTrue(repos.isSubtype(myClassArrayType, myInterfaceArrayType));
-		Assert.assertTrue(repos.isSubtype(mySubinterfaceArrayType, myInterfaceArrayType));
+		Assert.assertTrue(checkUnidirectionalSubtype(myClassArrayType, mySuperclassArrayType));
+		Assert.assertTrue(checkUnidirectionalSubtype(myClassArrayType, myInterfaceArrayType));
+		Assert.assertTrue(checkUnidirectionalSubtype(mySubinterfaceArrayType, myInterfaceArrayType));
 	}
 
 	public void testArrayTypeIsSerializable() throws ClassNotFoundException {
-		Assert.assertTrue(repos.isSubtype(myClassArrayType, javaIoSerializableType));
-		Assert.assertTrue(repos.isSubtype(mySuperclassArrayType, javaIoSerializableType));
-		Assert.assertTrue(repos.isSubtype(myInterfaceArrayType, javaIoSerializableType));
+		Assert.assertTrue(checkUnidirectionalSubtype(myClassArrayType, javaIoSerializableType));
+		Assert.assertTrue(checkUnidirectionalSubtype(mySuperclassArrayType, javaIoSerializableType));
+		Assert.assertTrue(checkUnidirectionalSubtype(myInterfaceArrayType, javaIoSerializableType));
 	}
 
 	public void testArrayTypeIsCloneable() throws ClassNotFoundException {
-		Assert.assertTrue(repos.isSubtype(myClassArrayType, javaLangCloneableType));
-		Assert.assertTrue(repos.isSubtype(mySuperclassArrayType, javaLangCloneableType));
-		Assert.assertTrue(repos.isSubtype(myInterfaceArrayType, javaLangCloneableType));
+		Assert.assertTrue(checkUnidirectionalSubtype(myClassArrayType, javaLangCloneableType));
+		Assert.assertTrue(checkUnidirectionalSubtype(mySuperclassArrayType, javaLangCloneableType));
+		Assert.assertTrue(checkUnidirectionalSubtype(myInterfaceArrayType, javaLangCloneableType));
 	}
 
 	public void testNoInvalidSubtypes() throws ClassNotFoundException {
-		Assert.assertFalse(repos.isSubtype(mySuperclassType, myClassType));
-		Assert.assertFalse(repos.isSubtype(mySuperclassArrayType, myClassArrayType));
-		Assert.assertFalse(repos.isSubtype(myInterfaceType, mySuperclassType));
-		Assert.assertFalse(repos.isSubtype(javaLangObjectType, mySuperclassType));
+		Assert.assertFalse(checkUnidirectionalSubtype(mySuperclassType, myClassType));
+		Assert.assertFalse(checkUnidirectionalSubtype(mySuperclassArrayType, myClassArrayType));
+		Assert.assertFalse(checkUnidirectionalSubtype(myInterfaceType, mySuperclassType));
+		Assert.assertFalse(checkUnidirectionalSubtype(javaLangObjectType, mySuperclassType));
 	}
 
 	public void testInterfaceIsSubtypeOfObject() throws ClassNotFoundException {
-		Assert.assertTrue(repos.isSubtype(myInterfaceType, javaLangObjectType));
-		Assert.assertTrue(repos.isSubtype(javaIoSerializableType, javaLangObjectType));
-		Assert.assertTrue(repos.isSubtype(javaLangCloneableType, javaLangObjectType));
+		Assert.assertTrue(checkUnidirectionalSubtype(myInterfaceType, javaLangObjectType));
+		Assert.assertTrue(checkUnidirectionalSubtype(javaIoSerializableType, javaLangObjectType));
+		Assert.assertTrue(checkUnidirectionalSubtype(javaLangCloneableType, javaLangObjectType));
 	}
 
 	public void testArrayOfObjectSupertypes() throws ClassNotFoundException {
-		Assert.assertTrue(repos.isSubtype(javaLangObjectArray2Type, javaLangObjectArray1Type));
-		Assert.assertTrue(repos.isSubtype(javaLangObjectArray1Type, javaLangObjectType));
+		Assert.assertTrue(checkUnidirectionalSubtype(javaLangObjectArray2Type, javaLangObjectArray1Type));
+		Assert.assertTrue(checkUnidirectionalSubtype(javaLangObjectArray1Type, javaLangObjectType));
 	}
 
 }
