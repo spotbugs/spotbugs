@@ -44,7 +44,7 @@ public class ExecutionPlan {
 	private static final boolean DEBUG = Boolean.getBoolean("findbugs.execplan.debug");
 
 	private List<Plugin> pluginList;
-	private List<AnalysisPass> passList;
+	private LinkedList<AnalysisPass> passList;
 
 	/**
 	 * Constructor.
@@ -85,10 +85,12 @@ public class ExecutionPlan {
 		if (DEBUG) System.out.println(interPassConstraintGraph.getNumVertices() +
 			" nodes in inter-pass constraint graph");
 
+/*
 		// Depth first search of constraint graph.  Will throw exception
 		// if the graph contains a cycle.
 		DepthFirstSearch<ConstraintGraph, ConstraintEdge, DetectorNode> dfs =
 			getDepthFirstSearch(interPassConstraintGraph);
+*/
 
 		// Build list of analysis passes.
 		buildPassList(interPassConstraintGraph);
@@ -186,20 +188,26 @@ public class ExecutionPlan {
 		return dfs;
 	}
 
-	private void buildPassList(ConstraintGraph constraintGraph) {
+	private void buildPassList(ConstraintGraph constraintGraph)
+			throws OrderingConstraintException {
 		while (constraintGraph.getNumVertices() > 0) {
 			List<DetectorNode> indegreeZeroList = new LinkedList<DetectorNode>();
 
 			// Get all of the detectors nodes with in-degree 0.
 			// These have no unsatisfied prerequisites, and thus can
 			// be chosen for the current pass.
+			int indegreeZeroCount = 0;
 			for (Iterator<DetectorNode> i = constraintGraph.vertexIterator(); i.hasNext(); ) {
 				DetectorNode node = i.next();
 
 				if (constraintGraph.getNumIncomingEdges(node) == 0) {
+					++indegreeZeroCount;
 					indegreeZeroList.add(node);
 				}
 			}
+
+			if (indegreeZeroCount == 0)
+				throw new OrderingConstraintException("Cycle in inter-pass ordering constraints");
 
 			// Remove all of the chosen detectors from the constraint graph.
 			for (Iterator<DetectorNode> i = indegreeZeroList.iterator(); i.hasNext(); ) {
