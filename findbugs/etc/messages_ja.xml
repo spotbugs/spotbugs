@@ -951,7 +951,7 @@
   <BugPattern type="EI_EXPOSE_STATIC_REP2">
 
     <ShortDescription>このメソッドは、ミュータブルなオブジェクトをstaticフィールドに格納する事で、内部の状態を外部に晒す危険があります</ShortDescription>
-    <LongDescription>{1} は、ミュータブルオブジェクトをstaticフィールド {2} に格納する事で、内部の状態を、外部に晒す危険があります<LongDescription>
+    <LongDescription>{1} は、ミュータブルオブジェクトをstaticフィールド {2} に格納する事で、内部の状態を、外部に晒す危険があります</LongDescription>
 
     <Details>
 
