@@ -1529,6 +1529,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
         if (result != JFileChooser.CANCEL_OPTION) {
             File[] selectedFileList = chooser.getSelectedFiles();
             for (int i = 0; i < selectedFileList.length; ++i) {
+            	selectedFileList[i] = verifyFileSelection(selectedFileList[i]);
                 String entry = selectedFileList[i].getPath();
                 addClasspathEntryToProject(entry);
             }
@@ -1688,7 +1689,9 @@ public class FindBugsFrame extends javax.swing.JFrame {
         chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
 	int rc = chooseFile(chooser, "Add source directory or archive");
         if (rc == JFileChooser.APPROVE_OPTION) {
-            srcDirTextField.setText(chooser.getSelectedFile().getPath());
+        	File selectedFile = chooser.getSelectedFile();
+        	selectedFile = verifyFileSelection(selectedFile);
+            srcDirTextField.setText(selectedFile.getPath());
             addSourceDirToList();
         }
     }//GEN-LAST:event_browseSrcDirButtonActionPerformed
@@ -1711,6 +1714,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
         if (rc == JFileChooser.APPROVE_OPTION) {
             File[] selectedFileList = chooser.getSelectedFiles();
             for (int i = 0; i < selectedFileList.length; ++i) {
+            	selectedFileList[i] = verifyFileSelection(selectedFileList[i]);
                 String entry = selectedFileList[i].getPath();
                 addJarToProject(entry);
             }
@@ -2712,6 +2716,23 @@ public class FindBugsFrame extends javax.swing.JFrame {
     public void writeToConsole(String message) {
         consoleMessageArea.append(message);
         consoleMessageArea.append("\n");
+    }
+    
+    /**
+     * Fix up the path that is received from JFileChooser, if necessary
+     * Double clicking a directory causes a repeated name, for some reason
+     * such as a:\b\c\c when a:\b\c was chosen
+     */
+    public File verifyFileSelection(File pickedFile) {
+    	if (pickedFile.exists())
+    		return pickedFile;
+    		
+    	File parent = pickedFile.getParentFile();
+    	if ((parent != null) && parent.getName().equals(pickedFile.getName()))
+    		return parent;
+    	
+    	//Something bad has happened	
+    	return pickedFile;
     }
     
     /* ----------------------------------------------------------------------
