@@ -52,12 +52,14 @@ import java.util.Properties;
 public class UserPreferences {
 	private static final int MAX_RECENT_FILES = 9;
 	private static final String DETECTOR_THRESHOLD_KEY = "detector_threshold";
+	private static final String FILTER_SETTINGS_KEY = "filter_settings";
 	private LinkedList<String> recentProjectsList = new LinkedList<String>();
 	private HashMap<String, Boolean> detectorStateList = new HashMap<String, Boolean>();
-	private int detectorThreshold = Detector.NORMAL_PRIORITY;
+	private ProjectFilterSettings filterSettings;
 	private static UserPreferences preferencesSingleton = new UserPreferences();
 
 	private UserPreferences() {
+		this.filterSettings = ProjectFilterSettings.createDefault();
 	}
 
 	public static UserPreferences getUserPreferences() {
@@ -107,15 +109,22 @@ public class UserPreferences {
 			i++;
 		}
 
-		String threshold = (String) props.get(DETECTOR_THRESHOLD_KEY);
-		if (threshold != null) {
-			try {
-				detectorThreshold = Integer.parseInt(threshold);
-			} catch (NumberFormatException nfe) {
-				//Ok to ignore
+		if (props.get(FILTER_SETTINGS_KEY) != null) {
+			// Properties contain encoded project filter settings.
+			filterSettings = ProjectFilterSettings.fromEncodedString(props.getProperty(FILTER_SETTINGS_KEY));
+		} else {
+			// Properties contain only minimum warning priority threshold (probably).
+			// We will honor this threshold, and enable all bug categories.
+			String threshold = (String) props.get(DETECTOR_THRESHOLD_KEY);
+			if (threshold != null) {
+				try {
+					int detectorThreshold = Integer.parseInt(threshold);
+					setUserDetectorThreshold(detectorThreshold);
+				} catch (NumberFormatException nfe) {
+					//Ok to ignore
+				}
 			}
 		}
-
 
 	}
 
@@ -135,7 +144,13 @@ public class UserPreferences {
 			i++;
 		}
 
-		props.put(DETECTOR_THRESHOLD_KEY, String.valueOf(detectorThreshold));
+		// Save ProjectFilterSettings
+		props.put(FILTER_SETTINGS_KEY, filterSettings.toEncodedString());
+		
+		// Backwards-compatibility: save minimum warning priority as integer.
+		// This will allow the properties file to work with older versions
+		// of FindBugs.
+		props.put(DETECTOR_THRESHOLD_KEY, String.valueOf(filterSettings.getMinPriorityAsInt()));
 
 		File prefFile = new File(System.getProperty("user.home"), "Findbugs.prefs");
 		BufferedOutputStream prefStream = null;
@@ -201,11 +216,12 @@ public class UserPreferences {
 	}
 
 	public int getUserDetectorThreshold() {
-		return detectorThreshold;
+		return filterSettings.getMinPriorityAsInt();
 	}
 
 	public void setUserDetectorThreshold(int threshold) {
-		detectorThreshold = threshold;
+		String minPriority = ProjectFilterSettings.getIntPriorityAsString(threshold);
+		filterSettings.setMinPriority(minPriority);
 	}
 }
 

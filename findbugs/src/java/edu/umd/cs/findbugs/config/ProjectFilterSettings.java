@@ -50,6 +50,9 @@ public class ProjectFilterSettings {
 
 	/** Text string for low priority. */
 	public static final String LOW_PRIORITY = "Low";
+	
+	/** Text string for experimental priority. */
+	public static final String EXPERIMENTAL_PRIORITY = "Experimental";
 
 	/** Default warning threshold priority. */
 	public static final String DEFAULT_PRIORITY = MEDIUM_PRIORITY;
@@ -60,6 +63,7 @@ public class ProjectFilterSettings {
 		priorityNameToValueMap.put(HIGH_PRIORITY, new Integer(Detector.HIGH_PRIORITY));
 		priorityNameToValueMap.put(MEDIUM_PRIORITY, new Integer(Detector.NORMAL_PRIORITY));
 		priorityNameToValueMap.put(LOW_PRIORITY, new Integer(Detector.LOW_PRIORITY));
+		priorityNameToValueMap.put(EXPERIMENTAL_PRIORITY, new Integer(Detector.EXP_PRIORITY));
 	}
 
 	// Fields
@@ -273,6 +277,32 @@ public class ProjectFilterSettings {
 	 */
 	public int hashCode() {
 		return minPriority.hashCode() + 1009 * activeBugCategorySet.hashCode();
+	}
+	
+	/**
+	 * Convert an integer warning priority threshold value to
+	 * a String.
+	 */
+	public static String getIntPriorityAsString(int prio) {
+		String minPriority;
+		switch (prio) {
+			case Detector.EXP_PRIORITY:
+				minPriority = ProjectFilterSettings.EXPERIMENTAL_PRIORITY;
+				break;
+			case Detector.LOW_PRIORITY:
+				minPriority = ProjectFilterSettings.LOW_PRIORITY;
+				break;
+			case Detector.NORMAL_PRIORITY:
+				minPriority = ProjectFilterSettings.MEDIUM_PRIORITY;
+				break;
+			case Detector.HIGH_PRIORITY:
+				minPriority = ProjectFilterSettings.HIGH_PRIORITY;
+				break;
+			default:
+				minPriority = ProjectFilterSettings.DEFAULT_PRIORITY;
+				break;
+		}
+		return minPriority;
 	}
 }
 
