@@ -302,6 +302,15 @@ It is a fast detector.
     </Details>
   </Detector>
 
+  <Detector class="edu.umd.cs.findbugs.detect.FindUselessControlFlow">
+    <Details>
+<![CDATA[
+<p> This detector looks for control flow statements which have no effect.
+It is a fast detector.
+]]>
+    </Details>
+  </Detector>
+
   <!-- BugPatterns -->
 
   <BugPattern type="DE_MIGHT_DROP">
@@ -1297,6 +1306,22 @@ are no results. This way, no explicit check for null is needed by clients of the
     </Details>
   </BugPattern>
 
+  <BugPattern type="UCF_USELESS_CONTROL_FLOW">
+    <ShortDescription>Useless control flow in method</ShortDescription>
+    <LongDescription>Useless control flow in {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p> This method contains a useless control flow statement.&nbsp;
+Often, this is caused by inadvertently using an empty statement as the
+body of an <code>if</code> statement, e.g.:
+<pre>
+    if (argv.length == 1);
+        System.out.println("Hello, " + argv[0]);
+</pre>
+]]>
+    </Details>
+  </BugPattern>
+
   <!-- BugCodes -->
 
   <BugCode abbrev="FI" >Incorrect use of finalizers</BugCode>
@@ -1341,4 +1366,5 @@ are no results. This way, no explicit check for null is needed by clients of the
   <BugCode abbrev="NP" >Null pointer dereference</BugCode>
   <BugCode abbrev="OS">Stream not closed on all paths</BugCode>
   <BugCode abbrev="PZLA" >Prefer zero length arrays to null to indicate no results</BugCode>
+  <BugCode abbrev="UCF">Useless control flow</BugCode>
 </MessageCollection>
