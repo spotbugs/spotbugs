@@ -20,35 +20,35 @@
 package edu.umd.cs.findbugs;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.*;
-import edu.umd.cs.pugh.visitclass.BetterVisitor;
+import edu.umd.cs.pugh.visitclass.PreorderVisitor;
 import edu.umd.cs.pugh.visitclass.Constants2;
 
-public class SerializableIdiom extends BetterVisitor implements Detector, Constants2 {
+public class SerializableIdiom extends PreorderVisitor 
+	implements Detector, Constants2 {
 
 
     boolean sawSerialVersionUID;
     boolean isSerializable;
-    int synchronizedMethods;
+    boolean foundSynthetic;
+    boolean foundSynchronizedMethods;
     boolean writeObjectIsSynchronized;
     private BugReporter bugReporter;
+    boolean isAbstract;
 
     public SerializableIdiom(BugReporter bugReporter) {
 	this.bugReporter = bugReporter;
 	}
-
-    public void visitClassContext(ClassContext classContext) {
-	classContext.getJavaClass().accept(this);
-	}
-
+     public void visitClassContext(ClassContext classContext) {
+       classContext.getJavaClass().accept(this);
+       }
+ 
     public void report() {
 		}
-    public void visitJavaClass(JavaClass obj)     {      
+    public void visit(JavaClass obj)     {      
 	int flags = obj.getAccessFlags();
-	boolean isAbstract = (flags & ACC_ABSTRACT) != 0 
+	isAbstract = (flags & ACC_ABSTRACT) != 0 
 			   || (flags & ACC_INTERFACE) != 0;
-	super.visitJavaClass(obj);
         sawSerialVersionUID = false;
-        constant_pool.accept(this);
                isSerializable = false;
                String [] interface_names = obj.getInterfaceNames();
                for(int i=0; i < interface_names.length; i++) {
@@ -59,39 +59,46 @@ public class SerializableIdiom extends BetterVisitor implements Detector, Consta
 
 	isSerializable = isSerializable
 		|| Repository.instanceOf(obj,"java.io.Serializable");
-        Field[] fields = obj.getFields();
-        for(int i = 0; i < fields.length; i++) fields[i].accept(this);
-	if (isSerializable && !isAbstract && !sawSerialVersionUID)
+	foundSynthetic = false;
+	foundSynchronizedMethods = false;
+	writeObjectIsSynchronized = false;
+	}
+
+	public void visitAfter(JavaClass obj) {
+	if (foundSynthetic 
+		&& isSerializable && !isAbstract && !sawSerialVersionUID)
 		bugReporter.reportBug(new BugInstance("SE_NO_SERIALVERSIONID", NORMAL_PRIORITY).addClass(this));
 
-	synchronizedMethods = 0;
-	writeObjectIsSynchronized = false;
-        Method[] methods = obj.getMethods();
-        for(int i = 0; i < methods.length; i++) methods[i].accept(this);
-	if (writeObjectIsSynchronized && synchronizedMethods == 0)
+	if (writeObjectIsSynchronized && !foundSynchronizedMethods)
 		bugReporter.reportBug(new BugInstance("WS_WRITEOBJECT_SYNC", NORMAL_PRIORITY).addClass(this));
         }
 
     public void visit(Method obj) {
 	int accessFlags = obj.getAccessFlags();
         boolean isSynchronized = (accessFlags & ACC_SYNCHRONIZED) != 0;
+	if (isSynthetic(obj)) foundSynthetic = true;
 	// System.out.println(methodName + isSynchronized);
 	if (!isSynchronized) return;
 	if (methodName.equals("readObject")) 
 		bugReporter.reportBug(new BugInstance("RS_READOBJECT_SYNC", NORMAL_PRIORITY).addClass(this));
 	else if (methodName.equals("writeObject")) 
 		writeObjectIsSynchronized = true;
-	else synchronizedMethods++;
+	else foundSynchronizedMethods = true;
 
 	}
+     boolean isSynthetic(FieldOrMethod obj) {
+	Attribute [] a = obj.getAttributes();
+	for(int i = 0; i < a.length; i++)
+		if (a[i] instanceof Synthetic) return true;
+	return false;
+	}
+
 		
 	
     public void visit(Field obj) {
-	// System.out.println("Saw " + betterClassName + "." + fieldName);
-        super.visit(obj);
-
 	if (!fieldName.equals("serialVersionUID")) return;
-	// System.out.println("Saw " + betterClassName + "." + fieldName);
+	if (!fieldName.startsWith("this") 
+		&& isSynthetic(obj)) foundSynthetic = true;
 	int flags = obj.getAccessFlags();
 	if ((flags & ACC_STATIC) == 0) {
 		bugReporter.reportBug(new BugInstance("SE_NONSTATIC_SERIALVERSIONID", NORMAL_PRIORITY)
