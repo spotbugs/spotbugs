@@ -979,6 +979,41 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	exitFindBugs();
     }//GEN-LAST:event_exitForm
     
+    /**
+     * This handler is called whenever the selection in the navigator
+     * tree changes.
+     * @param e the TreeSelectionEvent
+     */
+    private void navigatorTreeSelectionChanged(TreeSelectionEvent e) {
+	DefaultMutableTreeNode node = (DefaultMutableTreeNode) navigatorTree.getLastSelectedPathComponent();
+	
+	if (node == null)
+	    return;
+	
+	Object nodeInfo = node.getUserObject();
+	if (nodeInfo instanceof ProjectCollection) {
+	    // Project collection node - there is no view associated with this node
+	    setView("EmptyPanel");
+	} else if (nodeInfo instanceof Project) {
+	    synchProject((Project) nodeInfo);
+	    setView("EditProjectPanel");
+	} else if (nodeInfo instanceof AnalysisRun) {
+	    synchAnalysisRun((AnalysisRun) nodeInfo);
+	    setView("BugTree");
+	}
+    }
+    
+    /**
+     * This is called whenever the selection is changed in the bug tree.
+     * @param e the TreeSelectionEvent
+     */
+    private void bugTreeSelectionChanged(TreeSelectionEvent e) {
+	BugInstance selected = getCurrentBugInstance();
+	if (selected != null && selected != currentBugInstance) {
+	    synchBugInstance(selected);
+	}
+    }
+    
     /* ----------------------------------------------------------------------
      * Component initialization support
      * ---------------------------------------------------------------------- */
@@ -1064,45 +1099,34 @@ public class FindBugsFrame extends javax.swing.JFrame {
     }
     
     /* ----------------------------------------------------------------------
-     *
+     * Helpers for accessing and modifying UI components
      * ---------------------------------------------------------------------- */
-    
+
     /**
-     * This handler is called whenever the selection in the navigator
-     * tree changes.
-     * @param e the TreeSelectionEvent
+     * Based on the current tree selection path, get a user object
+     * whose class is the same as the given class.
+     * @param tree the tree
+     * @param c the class
+     * @return an instance of the given kind of object which is in the
+     *   current selection, or null if there is no matching object
      */
-    private void navigatorTreeSelectionChanged(TreeSelectionEvent e) {
-	DefaultMutableTreeNode node = (DefaultMutableTreeNode) navigatorTree.getLastSelectedPathComponent();
+    private static Object getTreeSelectionOf(JTree tree, Class c) {
+	TreePath selPath = tree.getSelectionPath();
+        
+        // There may not be anything selected at the moment
+        if (selPath == null)
+            return null;
 	
-	if (node == null)
-	    return;
-	
-	Object nodeInfo = node.getUserObject();
-	if (nodeInfo instanceof ProjectCollection) {
-	    // Project collection node - there is no view associated with this node
-	    setView("EmptyPanel");
-	} else if (nodeInfo instanceof Project) {
-	    synchProject((Project) nodeInfo);
-	    setView("EditProjectPanel");
-	} else if (nodeInfo instanceof AnalysisRun) {
-	    synchAnalysisRun((AnalysisRun) nodeInfo);
-	    setView("BugTree");
+	// Work backwards from end until we get to the kind of
+	// object we're looking for.
+	Object[] nodeList = selPath.getPath();
+	for (int i = nodeList.length - 1; i >= 0; --i) {
+	    DefaultMutableTreeNode node = (DefaultMutableTreeNode) nodeList[i];
+	    Object nodeInfo = node.getUserObject();
+	    if (nodeInfo != null && nodeInfo.getClass() == c)
+		return nodeInfo;
 	}
-    }
-    
-    /**
-     * Add a new project to the UI.
-     * @param project the new project
-     */
-    private void addProject(Project project) {
-	projectCollection.addProject(project);
-	DefaultMutableTreeNode projectNode = new DefaultMutableTreeNode(project);
-	DefaultTreeModel treeModel = (DefaultTreeModel) navigatorTree.getModel();
-	treeModel.insertNodeInto(projectNode, rootNode, rootNode.getChildCount());
-	TreePath projPath = new TreePath(new Object[]{rootNode, projectNode});
-	navigatorTree.makeVisible(projPath);
-	navigatorTree.setSelectionPath(projPath);
+	return null;
     }
     
     /**
@@ -1121,6 +1145,31 @@ public class FindBugsFrame extends javax.swing.JFrame {
      */
     private AnalysisRun getCurrentAnalysisRun() {
 	return (AnalysisRun) getTreeSelectionOf(navigatorTree, AnalysisRun.class);
+    }
+
+    /**
+     * Get the bug instances currently selected in the bug tree.
+     */
+    private BugInstance getCurrentBugInstance() {
+	return (BugInstance) getTreeSelectionOf(bugTree, BugInstance.class);
+    }
+    
+    /* ----------------------------------------------------------------------
+     * Synchronization of data model and UI
+     * ---------------------------------------------------------------------- */
+
+    /**
+     * Add a new project to the UI.
+     * @param project the new project
+     */
+    private void addProject(Project project) {
+	projectCollection.addProject(project);
+	DefaultMutableTreeNode projectNode = new DefaultMutableTreeNode(project);
+	DefaultTreeModel treeModel = (DefaultTreeModel) navigatorTree.getModel();
+	treeModel.insertNodeInto(projectNode, rootNode, rootNode.getChildCount());
+	TreePath projPath = new TreePath(new Object[]{rootNode, projectNode});
+	navigatorTree.makeVisible(projPath);
+	navigatorTree.setSelectionPath(projPath);
     }
     
     /**
@@ -1288,11 +1337,6 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	    throw new IllegalArgumentException("Bad sort order: " + groupBy);
     }
     
-    private void exitFindBugs() {
-	// TODO: offer to save work, etc.
-	System.exit(0);
-    }
-    
     /**
      * Set the view panel to display the named view.
      */
@@ -1329,21 +1373,11 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	    srcDirTextField.setText("");
 	}
     }
-    
-    private BugInstance getCurrentBugInstance() {
-	return (BugInstance) getTreeSelectionOf(bugTree, BugInstance.class);
-    }
-    
+
     /**
-     * This is called whenever the selection is changed in the bug tree.
+     * Synchronize given bug instance with the bug detail
+     * window (source view, details window, etc.)
      */
-    private void bugTreeSelectionChanged(TreeSelectionEvent e) {
-	BugInstance selected = getCurrentBugInstance();
-	if (selected != null && selected != currentBugInstance) {
-	    synchBugInstance(selected);
-	}
-    }
-    
     private void synchBugInstance(BugInstance selected) {
 	// Update source view
 	// TODO: only do this when the detail window is displayed AND
@@ -1357,7 +1391,14 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	    viewSource(project, analysisRun, primarySrcLine);
 	}
     }
-    
+
+    /**
+     * Update the source view window.
+     * @param project the project (containing the source directories to search)
+     * @param analysisRun the analysis run (containing the mapping of classes to source files)
+     * @param srcLine the source line annotation (specifying source file to load and
+     *    which lines to highlight)
+     */
     private void viewSource(Project project, AnalysisRun analysisRun, SourceLineAnnotation srcLine) {
 	sourceFinder.setSourceBaseList(project.getSourceDirList());
 	String sourceFile = analysisRun.getSourceFile(srcLine.getClassName());
@@ -1399,6 +1440,18 @@ public class FindBugsFrame extends javax.swing.JFrame {
             logger.logMessage(ConsoleLogger.ERROR, e.getMessage());
         }
     }
+
+    /* ----------------------------------------------------------------------
+     * Misc. helpers
+     * ---------------------------------------------------------------------- */
+    
+    /**
+     * Exit the application.
+     */
+    private void exitFindBugs() {
+	// TODO: offer to save work, etc.
+	System.exit(0);
+    }
     
     /**
      * Write a message to the console window.
@@ -1406,33 +1459,6 @@ public class FindBugsFrame extends javax.swing.JFrame {
     public void writeToConsole(String message) {
 	consoleMessageArea.append(message);
 	consoleMessageArea.append("\n");
-    }
-
-    /**
-     * Based on the current tree selection path, get a user object
-     * whose class is the same as the given class.
-     * @param tree the tree
-     * @param c the class
-     * @return an instance of the given kind of object which is in the
-     *   current selection, or null if there is no matching object
-     */
-    private static Object getTreeSelectionOf(JTree tree, Class c) {
-	TreePath selPath = tree.getSelectionPath();
-        
-        // There may not be anything selected at the moment
-        if (selPath == null)
-            return null;
-	
-	// Work backwards from end until we get to the kind of
-	// object we're looking for.
-	Object[] nodeList = selPath.getPath();
-	for (int i = nodeList.length - 1; i >= 0; --i) {
-	    DefaultMutableTreeNode node = (DefaultMutableTreeNode) nodeList[i];
-	    Object nodeInfo = node.getUserObject();
-	    if (nodeInfo != null && nodeInfo.getClass() == c)
-		return nodeInfo;
-	}
-	return null;
     }
     
     /* ----------------------------------------------------------------------
