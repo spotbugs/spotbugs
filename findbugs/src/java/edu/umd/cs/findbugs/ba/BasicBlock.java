@@ -21,7 +21,7 @@ package edu.umd.cs.daveho.ba;
 
 import java.util.*;
 
-import edu.umd.cs.daveho.graph.GraphVertex;
+import edu.umd.cs.daveho.graph.AbstractVertex;
 
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.*;
@@ -33,7 +33,7 @@ import org.apache.bcel.generic.*;
  * @see CFG
  * @author David Hovemeyer
  */
-public class BasicBlock implements GraphVertex<BasicBlock>, Debug {
+public class BasicBlock extends AbstractVertex<Edge, BasicBlock> implements Debug {
 
 	/* ----------------------------------------------------------------------
 	 * Static data
@@ -73,14 +73,10 @@ public class BasicBlock implements GraphVertex<BasicBlock>, Debug {
 	 * Fields
 	 * ---------------------------------------------------------------------- */
 
-	private int id;
 	private InstructionHandle firstInstruction;
 	private InstructionHandle lastInstruction;
 	private InstructionHandle exceptionThrower; // instruction for which this block is the ETB
 	private CodeExceptionGen exceptionGen; // set if this block is the entry point of an exception handler
-	private Edge firstIncomingEdge, lastIncomingEdge;
-	private Edge firstOutgoingEdge, lastOutgoingEdge;
-	private int label;
 
 	/* ----------------------------------------------------------------------
 	 * Public methods
@@ -89,29 +85,15 @@ public class BasicBlock implements GraphVertex<BasicBlock>, Debug {
 	/**
 	 * Constructor.
 	 */
-	public BasicBlock(int id) {
-		this.id = id;
+	public BasicBlock() {
 		this.firstInstruction = null;
 		this.lastInstruction = null;
 		this.exceptionThrower = null;
 		this.exceptionGen = null;
-
-		// Each block maintains a list of incoming and outgoing edges.
-		// These are used by the CFG class.
-		this.firstIncomingEdge = null;
-		this.lastIncomingEdge = null;
-		this.firstOutgoingEdge = null;
-		this.lastOutgoingEdge = null;
-
-		// Label is initially the same as the unique ID.
-		this.label = id;
 	}
 
-	/**
-	 * Get this BasicBlock's unique identifier.
-	 */
 	public int getId() {
-		return id;
+		return getLabel();
 	}
 
 	/**
@@ -287,14 +269,6 @@ public class BasicBlock implements GraphVertex<BasicBlock>, Debug {
 		return firstInstruction == null;
 	}
 
-	/**
-	 * For implementation of Comparable interface.
-	 * Basic blocks are ordered by their unique id.
-	 */
-	public int compareTo(BasicBlock other) {
-		return this.id - other.id;
-	}
-
 	/** Is this block an exception handler? */
 	public boolean isExceptionHandler() { return exceptionGen != null; }
 
@@ -315,116 +289,6 @@ public class BasicBlock implements GraphVertex<BasicBlock>, Debug {
 	public void setExceptionGen(CodeExceptionGen exceptionGen) {
 		this.exceptionGen = exceptionGen;
 	}
-
-
-	/* ----------------------------------------------------------------------
-	 * GraphVertex methods
-	 * ---------------------------------------------------------------------- */
-
-	public int getLabel() {
-		return label;
-	}
-
-	public void setLabel(int label) {
-		this.label = label;
-	}
-
-	/* ----------------------------------------------------------------------
-	 * Implementation
-	 * ---------------------------------------------------------------------- */
-
-	/**
-	 * Add an outgoing edge to the basic block.
-	 * This should only be used by the CFG class.
-	 * @param edge the outgoing Edge
-	 */
-	void addOutgoingEdge(Edge edge) {
-		if (VERIFY_INTEGRITY && edge.getSource() != this)
-			throw new IllegalArgumentException();
-
-		if (firstOutgoingEdge == null) {
-			firstOutgoingEdge = lastOutgoingEdge = edge;
-		} else {
-			lastOutgoingEdge.setNextOutgoingEdge(edge);
-			lastOutgoingEdge = edge;
-		}
-	}
-
-	/**
-	 * Get the first outgoing edge from the basic block.
-	 * This should only be used by the CFG class.
-	 */
-	Edge getFirstOutgoingEdge() {
-		return firstOutgoingEdge;
-	}
-
-	/**
-	 * Add an incoming edge to the basic block.
-	 * This should only be used by the CFG class.
-	 * @param edge the incoming Edge
-	 */
-	void addIncomingEdge(Edge edge) {
-		if (VERIFY_INTEGRITY && edge.getTarget() != this)
-			throw new IllegalArgumentException();
-
-		if (firstIncomingEdge == null) {
-			firstIncomingEdge = lastIncomingEdge = edge;
-		} else {
-			lastIncomingEdge.setNextIncomingEdge(edge);
-			lastIncomingEdge = edge;
-		}
-	}
-
-	/**
-	 * Get the first incoming edge to the basic block.
-	 * This should only be used by the CFG class.
-	 */
-	Edge getFirstIncomingEdge() {
-		return firstIncomingEdge;
-	}
-
-	/**
-	 * Remove an incoming edge.
-	 * @param edge the incoming edge
-	 */
-	void removeIncomingEdge(Edge edge) {
-		Edge prev = null, cur = firstIncomingEdge;
-		while (cur != null) {
-			Edge next = cur.getNextIncomingEdge();
-			if (cur.equals(edge)) {
-				if (prev != null)
-					prev.setNextIncomingEdge(next);
-				else
-					firstIncomingEdge = next;
-				return;
-			}
-			prev = cur;
-			cur = next;
-		}
-		throw new IllegalArgumentException("removing nonexistent edge!");
-	}
-
-	/**
-	 * Remove an outgoing edge.
-	 * @param edge the outgoing edge
-	 */
-	void removeOutgoingEdge(Edge edge) {
-		Edge prev = null, cur = firstOutgoingEdge;
-		while (cur != null) {
-			Edge next = cur.getNextOutgoingEdge();
-			if (cur.equals(edge)) {
-				if (prev != null)
-					prev.setNextOutgoingEdge(next);
-				else
-					firstOutgoingEdge = next;
-				return;
-			}
-			prev = cur;
-			cur = cur.getNextOutgoingEdge();
-		}
-		throw new IllegalArgumentException("removing nonexistent edge!");
-	}
-
 }
 
 // vim:ts=4

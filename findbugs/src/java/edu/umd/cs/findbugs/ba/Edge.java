@@ -19,7 +19,7 @@
 
 package edu.umd.cs.daveho.ba;
 
-import edu.umd.cs.daveho.graph.GraphEdge;
+import edu.umd.cs.daveho.graph.AbstractEdge;
 import java.util.*;
 import org.apache.bcel.generic.InstructionHandle;
 
@@ -29,17 +29,13 @@ import org.apache.bcel.generic.InstructionHandle;
  * @see CFG
  * @author David Hovemeyer
  */
-public class Edge implements GraphEdge<Edge, BasicBlock>, EdgeTypes, Debug {
+public class Edge extends AbstractEdge<Edge, BasicBlock> implements EdgeTypes, Debug {
 
 	/* ----------------------------------------------------------------------
 	 * Fields
 	 * ---------------------------------------------------------------------- */
 
-	private BasicBlock source, dest;
 	private int type;
-	private int id;
-	private Edge nextOutgoingEdge;
-	private Edge nextIncomingEdge;
 
 	/* ----------------------------------------------------------------------
 	 * Public methods
@@ -49,19 +45,13 @@ public class Edge implements GraphEdge<Edge, BasicBlock>, EdgeTypes, Debug {
 	 * Constructor.
 	 * @param source source basic block
 	 * @param dest destination basic block
-	 * @param type type of edge
 	 */
-	public Edge(BasicBlock source, BasicBlock dest, int type) {
-		if (VERIFY_INTEGRITY) {
-			if (source == null) throw new IllegalArgumentException();
-			if (dest == null) throw new IllegalArgumentException();
-		}
-		this.source = source;
-		this.dest = dest;
-		this.type = type;
-		this.id = -1;
-		this.nextOutgoingEdge = null;
-		this.nextIncomingEdge = null;
+	public Edge(BasicBlock source, BasicBlock dest) {
+		super(source, dest);
+	}
+
+	public int getId() {
+		return getLabel();
 	}
 
 	/**
@@ -72,53 +62,34 @@ public class Edge implements GraphEdge<Edge, BasicBlock>, EdgeTypes, Debug {
 	}
 
 	/**
+	 * Set the type of edge.
+	 */
+	public void setType(int type) {
+		this.type = type;
+	}
+
+	/**
 	 * Is the edge an exception edge?
 	 */
 	public boolean isExceptionEdge() {
 		return type == HANDLED_EXCEPTION_EDGE || type == UNHANDLED_EXCEPTION_EDGE;
 	}
 
-	/**
-	 * Set the edge's unique id.
-	 * @param id the unique id
-	 */
-	public void setId(int id) {
-		this.id = id;
-	}
-
-	/** Get the edge's unique id. */
-	public int getId() {
-		return id;
-	}
-
-	/** Get the source of the edge. */
-	public BasicBlock getSource() {
-		return source;
-	}
-
-	/** Get the destination of the edge. */
-	public BasicBlock getTarget() {
-		return dest;
-	}
-
 	public boolean equals(Object o) {
-		if (!(o instanceof Edge))
+		if (this.getClass() != o.getClass())
 			return false;
 		Edge other = (Edge) o;
-		return this.source == other.source && this.dest == other.dest;
+		return this.getSource() == other.getSource() && this.getTarget() == other.getTarget()
+			&& this.getType() == other.getType();
 	}
 
 	public int hashCode() {
-		return 2003 * source.getId() + dest.getId();
+		return 2003 * getSource().getLabel() + getTarget().getLabel();
 	}
 
 	/** Compare with other edge. */
 	public int compareTo(Edge other) {
-		// Lexicographically compare (source,dest) pair.
-		int cmp = source.compareTo(other.source);
-		if (cmp != 0)
-			return cmp;
-		cmp = dest.compareTo(other.dest);
+		int cmp = super.compareTo(other);
 		if (cmp != 0)
 			return cmp;
 		return type - other.type;
@@ -126,20 +97,23 @@ public class Edge implements GraphEdge<Edge, BasicBlock>, EdgeTypes, Debug {
 
 	/** Return a string representation of the edge. */
 	public String toString() {
+		BasicBlock source = getSource();
+		BasicBlock target = getTarget();
+
 		StringBuffer buf = new StringBuffer();
 		buf.append("EDGE(");
-		buf.append(id);
+		buf.append(getLabel());
 		buf.append(") type ");
 		buf.append(edgeTypeToString(type));
 		buf.append(" from block ");
 		buf.append(source.getId());
 		buf.append(" to block ");
-		buf.append(dest.getId());
+		buf.append(target.getId());
 		InstructionHandle sourceInstruction = source.getLastInstruction();
-		InstructionHandle targetInstruction = dest.getFirstInstruction();
+		InstructionHandle targetInstruction = target.getFirstInstruction();
 		String exInfo = " -> ";
-		if (targetInstruction == null && dest.isExceptionThrower()) {
-			targetInstruction = dest.getExceptionThrower();
+		if (targetInstruction == null && target.isExceptionThrower()) {
+			targetInstruction = target.getExceptionThrower();
 			exInfo = " => ";
 		}
 		if (sourceInstruction != null && targetInstruction != null) {
@@ -150,7 +124,7 @@ public class Edge implements GraphEdge<Edge, BasicBlock>, EdgeTypes, Debug {
 			buf.append(']');
 		} else if (source.isExceptionThrower()) {
 			if (type == FALL_THROUGH_EDGE)
-					buf.append(" [successful check]");
+				buf.append(" [successful check]");
 			else {
 				buf.append(" [failed check for ");
 				buf.append(source.getExceptionThrower().getPosition());
@@ -229,54 +203,6 @@ public class Edge implements GraphEdge<Edge, BasicBlock>, EdgeTypes, Debug {
 			return BACKEDGE_SOURCE_EDGE;
 		else
 			throw new IllegalArgumentException("Unknown edge type: " + s);
-	}
-
-	/* ----------------------------------------------------------------------
-	 * Implementation
-	 * ---------------------------------------------------------------------- */
-
-	/**
-	 * Set the next edge in the BasicBlock's list of outgoing edges.
-	 * This should only be used by the BasicBlock and CFG classes.
-	 */
-	void setNextOutgoingEdge(Edge edge) {
-		nextOutgoingEdge = edge;
-	}
-
-	/**
-	 * Get the next edge in the BasicBlock's list of outgoing edges.
-	 * This should only be used by the BasicBlock and CFG classes.
-	 */
-	Edge getNextOutgoingEdge() {
-		return nextOutgoingEdge;
-	}
-
-	/**
-	 * Set the next edge in the BasicBlock's list of incoming edges.
-	 * This should only be used by the BasicBlock and CFG classes.
-	 */
-	void setNextIncomingEdge(Edge edge) {
-		nextIncomingEdge = edge;
-	}
-
-	/**
-	 * Get the next edge in the BasicBlock's list of incoming edges.
-	 * This should only be used by the BasicBlock and CFG classes.
-	 */
-	Edge getNextIncomingEdge() {
-		return nextIncomingEdge;
-	}
-
-	/* ----------------------------------------------------------------------
-	 * GraphEdge methods
-	 * ---------------------------------------------------------------------- */
-
-	public int getLabel() {
-		return getId();
-	}
-
-	public void setLabel(int label) {
-		setId(label);
 	}
 }
 

@@ -19,7 +19,7 @@
 
 package edu.umd.cs.daveho.ba;
 
-import edu.umd.cs.daveho.graph.Graph;
+import edu.umd.cs.daveho.graph.AbstractGraph;
 
 import java.util.*;
 
@@ -33,75 +33,13 @@ import org.apache.bcel.generic.*;
  * @see BasicBlock
  * @see Edge
  */
-public class CFG implements Graph<Edge, BasicBlock>, Debug {
-
-	// Implementation notes:
-	// - Edge ids and edge labels are the same thing.
-	// - Basic block ids and basic block labels are *not* the same thing;
-	//   ids are assigned once (to allow blocks to implement Comparable),
-	//   and then never changed.  Block labels may be reassigned
-	//   by graph algorithms.
-
-	/* ----------------------------------------------------------------------
-	 * Helper classes
-	 * ---------------------------------------------------------------------- */
-
-	/**
-	 * Iterator over outgoing edges.
-	 */
-	private static class OutgoingEdgeIterator implements Iterator<Edge> {
-		private Edge edge;
-
-		public OutgoingEdgeIterator(BasicBlock source) {
-			this.edge = source.getFirstOutgoingEdge();
-		}
-
-		public boolean hasNext() { return edge != null; }
-
-		public Edge next() {
-			if (!hasNext())
-				throw new NoSuchElementException();
-			Edge result = edge;
-			edge = edge.getNextOutgoingEdge();
-			return result;
-		}
-
-		public void remove() { throw new UnsupportedOperationException(); }
-	}
-
-	/**
-	 * Iterator over incoming edges.
-	 */
-	private static class IncomingEdgeIterator implements Iterator<Edge> {
-		private Edge edge;
-
-		public IncomingEdgeIterator(BasicBlock dest) {
-			this.edge = dest.getFirstIncomingEdge();
-		}
-
-		public boolean hasNext() { return edge != null; }
-
-		public Edge next() {
-			if (!hasNext())
-				throw new NoSuchElementException();
-			Edge result = edge;
-			edge = edge.getNextIncomingEdge();
-			return result;
-		}
-
-		public void remove() { throw new UnsupportedOperationException(); }
-	}
+public class CFG extends AbstractGraph<Edge, BasicBlock> implements Debug {
 
 	/* ----------------------------------------------------------------------
 	 * Fields
 	 * ---------------------------------------------------------------------- */
 
-	private ArrayList<BasicBlock> blockList;
-	private ArrayList<Edge> edgeList;
 	private BasicBlock entry, exit, unhandledExceptionExit;
-	private int maxEdgeId;
-	private int nextBlockId; // next block id to be assigned
-	private int maxBlockLabel; // maximum block label
 
 	/* ----------------------------------------------------------------------
 	 * Public methods
@@ -112,26 +50,6 @@ public class CFG implements Graph<Edge, BasicBlock>, Debug {
 	 * Creates empty control flow graph (with just entry and exit nodes).
 	 */
 	public CFG() {
-		blockList = new ArrayList<BasicBlock>();
-		edgeList = new ArrayList<Edge>();
-		maxEdgeId = 0;
-		nextBlockId = 0;
-		maxBlockLabel = 0;
-	}
-
-	/** Get the value 1 greater than the maximum known edge id. */
-	public int getMaxEdgeId() {
-		return maxEdgeId;
-	}
-
-	/**
-	 * Set the value 1 greater than the maximum edge id.
-	 * This should be called if the edges are given new ids.
-	 * @param maxEdgeId the value 1 greater than the maximum assigned
-	 *   edge id
-	 */
-	public void setMaxEdgeId(int maxEdgeId) {
-		this.maxEdgeId = maxEdgeId;
 	}
 
 	/** Get the entry node. */
@@ -162,55 +80,9 @@ public class CFG implements Graph<Edge, BasicBlock>, Debug {
 	 *   with the same source and destination block
 	 */
 	public Edge addEdge(BasicBlock source, BasicBlock dest, int type) {
-		if (VERIFY_INTEGRITY) {
-			if (!blockList.contains(source))
-				throw new IllegalArgumentException("source is not in the CFG");
-			if (!blockList.contains(dest))
-				throw new IllegalArgumentException("dest is not in the CFG");
-		}
-
-/*
-		if (lookupEdge(source, dest) != null)
-			throw new IllegalArgumentException("Duplicate edge!");
-*/
-
-		Edge edge = new Edge(source, dest, type);
-		edge.setId(maxEdgeId++);
-
-		edgeList.add(edge);
-		source.addOutgoingEdge(edge);
-		dest.addIncomingEdge(edge);
-
+		Edge edge = addEdge(source, dest);
+		edge.setType(type);
 		return edge;
-	}
-
-	/**
-	 * Remove given Edge from the graph.
-	 * @param edge the edge
-	 */
-	public void removeEdge(Edge edge) {
-		if (!edgeList.remove(edge))
-			throw new IllegalArgumentException("removing nonexistent edge!");
-		edge.getSource().removeOutgoingEdge(edge);
-		edge.getTarget().removeIncomingEdge(edge);
-	}
-
-	/**
-	 * Look up the Edge object connecting given BasicBlocks.
-	 * If there are multiple edges matching the given source and destination
-	 * blocks, the first one is returned.
-	 * @param source the source BasicBlock
-	 * @param dest the destination BasicBlock
-	 * @return the Edge, or null if there is no such edge in the graph
-	 */
-	public Edge lookupEdge(BasicBlock source, BasicBlock dest) {
-		Iterator<Edge> i = outgoingEdgeIterator(source);
-		while (i.hasNext()) {
-			Edge edge = i.next();
-			if (edge.getTarget() == dest)
-				return edge;
-		}
-		return null;
 	}
 
 	/**
@@ -232,42 +104,7 @@ public class CFG implements Graph<Edge, BasicBlock>, Debug {
 	 * Get an Iterator over the nodes (BasicBlocks) of the control flow graph.
 	 */
 	public Iterator<BasicBlock> blockIterator() {
-		return blockList.iterator();
-	}
-
-	/**
-	 * Get an Iterator over the edges in the control flow graph.
-	 */
-	public Iterator<Edge> edgeIterator() {
-		return edgeList.iterator();
-	}
-
-	/**
-	 * Get an Iterator over the outgoing edges from given basic block.
-	 * @param source the source basic block
-	 */
-	public Iterator<Edge> outgoingEdgeIterator(BasicBlock source) {
-		return new OutgoingEdgeIterator(source);
-	}
-
-	/**
-	 * Get an Iterator over the incoming edges to given destination block.
-	 * @param dest the destination basic block
-	 */
-	public Iterator<Edge> incomingEdgeIterator(BasicBlock dest) {
-		return new IncomingEdgeIterator(dest);
-	}
-
-	/**
-	 * Get Iterator over successors of given basic block.
-	 */
-	public Iterator<BasicBlock> successorIterator(final BasicBlock block) {
-		return new Iterator<BasicBlock>() {
-			private Iterator<Edge> iter = outgoingEdgeIterator(block);
-			public boolean hasNext() { return iter.hasNext(); }
-			public BasicBlock next() { return iter.next().getTarget(); }
-			public void remove() { throw new UnsupportedOperationException(); }
-		};
+		return vertexIterator();
 	}
 
 	/**
@@ -299,37 +136,29 @@ public class CFG implements Graph<Edge, BasicBlock>, Debug {
 	}
 
 	/**
-	 * Get Iterator over predecessors of given basic block.
-	 */
-	public Iterator<BasicBlock> predecessorIterator(final BasicBlock block) {
-		return new Iterator<BasicBlock>() {
-			private Iterator<Edge> iter = incomingEdgeIterator(block);
-			public boolean hasNext() { return iter.hasNext(); }
-			public BasicBlock next() { return iter.next().getSource(); }
-			public void remove() { throw new UnsupportedOperationException(); }
-		};
-	}
-
-	/**
 	 * Allocate a new BasicBlock.  The block won't be connected to
 	 * any node in the graph.
 	 */
 	public BasicBlock allocate() {
-		int nextId = nextBlockId++;
-		maxBlockLabel = nextBlockId;
-		BasicBlock bb = new BasicBlock(nextId);
-		blockList.add(bb);
-		return bb;
+		return addVertex();
 	}
 
-	/** Get number of basic blocks. */
+	/**
+	 * Get number of basic blocks.
+	 * This is just here for compatibility with the old CFG
+	 * method names.
+	 */
 	public int getNumBasicBlocks() {
-		return blockList.size();
+		return getNumVertices();
 	}
 
-	/** Get number of edges. */
-	public int getNumEdges() {
-		return edgeList.size();
+	/**
+	 * Get the number of edge labels allocated.
+	 * This is just here for compatibility with the old CFG
+	 * method names.
+	 */
+	public int getMaxEdgeId() {
+		return getNumEdgeLabels();
 	}
 
 	public void checkIntegrity() {
@@ -347,53 +176,12 @@ public class CFG implements Graph<Edge, BasicBlock>, Debug {
 		}
 	}
 
-	/* ----------------------------------------------------------------------
-	 * Graph methods
-	 * ---------------------------------------------------------------------- */
-
-	public int getNumVertices() {
-		return getNumBasicBlocks();
+	protected BasicBlock createVertex() {
+		return new BasicBlock();
 	}
 
-	public Iterator<Edge> getEdgeIterator() {
-		return edgeIterator();
-	}
-
-	public Iterator<BasicBlock> vertexIterator() {
-		return blockIterator();
-	}
-
-	public BasicBlock addVertex() {
-		return allocate();
-	}
-
-	public Edge addEdge(BasicBlock source, BasicBlock target) {
-		return addEdge(source, target, EdgeTypes.UNKNOWN_EDGE);
-	}
-
-	public int getNumEdgeLabels() {
-		return getMaxEdgeId();
-	}
-
-	public void setNumEdgeLabels(int numLabels) {
-		setMaxEdgeId(numLabels);
-	}
-
-	public int getNumVertexLabels() {
-		return maxBlockLabel;
-	}
-
-	public void setNumVertexLabels(int numLabels) {
-		maxBlockLabel = numLabels;
-	}
-
-	public void removeVertex(BasicBlock v) {
-		// FIXME:
-		throw new UnsupportedOperationException();
-	}
-
-	public Iterator<BasicBlock> adjacencyListIterator(BasicBlock source) {
-		return successorIterator(source);
+	protected Edge createEdge(BasicBlock source, BasicBlock target) {
+		return new Edge(source, target);
 	}
 }
 
