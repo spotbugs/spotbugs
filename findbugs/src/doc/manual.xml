@@ -12,10 +12,26 @@
 <bookinfo>
 <title>Using &FindBugs;</title>
 
-<author>
-  <firstname>David</firstname>
-  <surname>Hovemeyer</surname>
-</author>
+<authorgroup>
+  <author>
+    <firstname>David</firstname>
+    <othername>H.</othername>
+    <surname>Hovemeyer</surname>
+  </author>
+</authorgroup>
+
+<copyright>
+  <year>2003</year>
+  <year>2004</year>
+  <holder>University of Maryland</holder>
+</copyright>
+
+<legalnotice>
+This work is licensed under the Creative Commons Attribution-NonCommercial-ShareAlike License.
+To view a copy of this license, visit
+<ulink url="http://creativecommons.org/licenses/by-nc-sa/1.0/">http://creativecommons.org/licenses/by-nc-sa/1.0/</ulink>
+or send a letter to Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA.
+</legalnotice>
 
 <edition>@VERSION@</edition>
 
@@ -984,7 +1000,7 @@ using the &FindBugs; task.
        <para>
        An optional boolean attribute.
        If true, reports of serious analysis errors and missing classes will
-       be supressed in the &FindBugs; output.  Default is false.
+       be suppressed in the &FindBugs; output.  Default is false.
        </para>
     </listitem>
   </varlistentry>
@@ -1526,7 +1542,7 @@ development would have been much more difficult.</para>
 
 <sect2>
 <title>BCEL</title>
-<para>&FindBugs; includes includes software developed by the Apache Software Foundation
+<para>&FindBugs; includes software developed by the Apache Software Foundation
 (<ulink url="http://www.apache.org/">http://www.apache.org/</ulink>).
 Specifically, it uses the <ulink url="http://jakarta.apache.org/bcel/">Byte Code
 Engineering Library</ulink>.</para>
