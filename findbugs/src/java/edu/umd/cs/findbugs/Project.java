@@ -49,7 +49,7 @@ import org.dom4j.Element;
  */
 public class Project {
 	/** Project filename. */
-	private String fileName;
+	private String projectFileName;
 	
 	/**Options*/
 	private Map<String,Boolean> optionsMap;
@@ -75,8 +75,8 @@ public class Project {
 	}
 	
 	/** Creates a new instance of Project */
-	public Project(String fileName) {
-		this.fileName = fileName;
+	public Project(String projectFileName) {
+		this.projectFileName = projectFileName;
 		optionsMap = new HashMap<String,Boolean>();
 		optionsMap.put(RELATIVE_PATHS, false);
 		jarList = new LinkedList<String>();
@@ -96,14 +96,14 @@ public class Project {
 	}
 	
 	/** Get the project filename. */
-	public String getFileName() { return fileName; }
+	public String getFileName() { return projectFileName; }
 	
 	/**
 	 * Set the project filename.
-	 * @param fileName the new filename
+	 * @param projectFileName the new filename
 	 */
-	public void setFileName(String fileName) {
-		this.fileName = fileName;
+	public void setFileName(String projectFileName) {
+		this.projectFileName = projectFileName;
 	}
 	
 	/**
@@ -520,7 +520,7 @@ public class Project {
 	 * Convert to a string in a nice (displayable) format.
 	 */
 	public String toString() {
-		String name = fileName;
+		String name = projectFileName;
 		int lastSep = name.lastIndexOf(File.separatorChar);
 		if (lastSep >= 0)
 			name = name.substring(lastSep + 1);
@@ -585,9 +585,9 @@ public class Project {
 
 		if (srcFile.startsWith(".")) {
 			if (srcFile.length() == 1)
-				return fileName;
+				return projectFileName;
 			String slash = System.getProperty("file.separator");
-			String base = new File(fileName).getParent();
+			String base = new File(projectFileName).getParent();
 			if (base.endsWith(slash))
 				base = base.substring(0,base.length()-1);
 			return base + srcFile.substring(1);
@@ -617,9 +617,9 @@ public class Project {
 
 		String projectName = element.attributeValue(FILENAME_ATTRIBUTE_NAME);
 		if (projectName != null)
-			fileName = projectName;
+			projectFileName = projectName;
 		else
-			fileName = UNNAMED_PROJECT;
+			projectFileName = UNNAMED_PROJECT;
 
 		while (i.hasNext()) {
 			Element child = (Element) i.next();
@@ -637,7 +637,7 @@ public class Project {
 	}
 
 	public void writeElement(Element element) {
-		element.addAttribute(FILENAME_ATTRIBUTE_NAME, fileName);
+		element.addAttribute(FILENAME_ATTRIBUTE_NAME, projectFileName);
 
 		for (Iterator<String> i = jarList.iterator(); i.hasNext(); ) {
 			element.addElement(JAR_ELEMENT_NAME).setText(i.next());
