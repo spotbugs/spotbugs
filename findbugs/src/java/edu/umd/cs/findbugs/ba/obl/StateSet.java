@@ -27,6 +27,9 @@ import java.util.Map;
  * A dataflow fact used in ObligationAnalysis.
  * It is a set of State objects, plus the additional capability
  * to represent top and bottom elements.
+ * 
+ * <p>Invariant: no StateSet may contain more than one
+ * State with the same ObligationSet.</p>
  *
  * <p>See Weimer and Necula,
  * <a href="http://doi.acm.org/10.1145/1028976.1029011"
@@ -72,6 +75,15 @@ public class StateSet {
 	}
 	
 	/**
+	 * Return an Iterator over the States in the StateSet.
+	 * 
+	 * @return an Iterator over the States in the StateSet
+	 */
+	public Iterator<State> stateIterator() {
+		return stateMap.values().iterator();
+	}
+	
+	/**
 	 * Get the State which has the given ObligationSet.
 	 * Returns null if there is no such state.
 	 * 
@@ -87,8 +99,12 @@ public class StateSet {
 		this.stateMap.clear();
 	}
 	
+	/**
+	 *  Make this StateSet an exact copy of the given StateSet.
+	 *  
+	 *  @param other a StateSet; this StateSet will be made identical to it
+	 */
 	public void copyFrom(StateSet other) {
-		// Make this StateSet an exact copy of the given StateSet
 		this.isTop = other.isTop;
 		this.isBottom = other.isBottom;
 		this.stateMap.clear();
@@ -97,6 +113,17 @@ public class StateSet {
 			State dup = state.duplicate();
 			this.stateMap.put(dup.getObligationSet(), dup);
 		}
+	}
+	
+	/**
+	 * Return an exact deep copy of this StateSet.
+	 * 
+	 * @return an exact deep copy of this StateSet
+	 */
+	public StateSet duplicate() {
+		StateSet dup = new StateSet();
+		dup.copyFrom(this);
+		return dup;
 	}
 	
 	/**
@@ -154,6 +181,30 @@ public class StateSet {
 	
 	public int hashCode() {
 		throw new UnsupportedOperationException();
+	}
+	
+	public String toString() {
+		StringBuffer buf = new StringBuffer();
+		buf.append("{");
+		boolean first = true;
+		for (Iterator<State> i = stateIterator(); i.hasNext();) {
+			State state = i.next();
+			if (first)
+				first = false;
+			else
+				buf.append(",");
+			buf.append(state.toString());
+		}
+		buf.append("}");
+		return buf.toString();
+	}
+	
+	/**
+	 * Return a newly allocated Map of ObligationSet to State
+	 * that may be passed to applyToAllStatesAndUpdateMap().
+	 */
+	public Map<ObligationSet, State> createEmptyMap() {
+		return new HashMap<ObligationSet, State>();
 	}
 	
 	/**

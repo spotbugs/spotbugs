@@ -76,6 +76,16 @@ public class State {
 	public int hashCode() {
 		return obligationSet.hashCode() + (1009 * path.hashCode());
 	}
+	
+	public String toString() {
+		StringBuffer buf = new StringBuffer();
+		buf.append("[");
+		buf.append(obligationSet.toString());
+		buf.append(",");
+		buf.append(path.toString());
+		buf.append("]");
+		return buf.toString();
+	}
 }
 
 // vim:ts=4

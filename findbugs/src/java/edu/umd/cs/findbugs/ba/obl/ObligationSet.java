@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs.ba.obl;
 
+import java.util.Iterator;
+
 /**
  * A multiset of obligations that must be cleaned up by
  * error-handling code.
@@ -33,12 +35,16 @@ package edu.umd.cs.findbugs.ba.obl;
 public class ObligationSet {
 	private static final int INVALID_HASH_CODE = -1;
 
-	private int[] countList;
+	private short[] countList;
 	private int cachedHashCode;
 
 	public ObligationSet(int maxObligationTypes) {
-		this.countList = new int[maxObligationTypes];
+		this.countList = new short[maxObligationTypes];
 		invalidate();
+	}
+	
+	public int getMaxObligationTypes() {
+		return countList.length;
 	}
 
 	public void add(Obligation obligation) {
@@ -47,16 +53,20 @@ public class ObligationSet {
 	}
 
 	public void remove(Obligation obligation) throws NonexistentObligationException {
-		int count = countList[obligation.getId()];
+		short count = countList[obligation.getId()];
 		if (count <= 0)
 			throw new NonexistentObligationException(obligation);
 		invalidate();
-		countList[obligation.getId()] = count - 1;
+		countList[obligation.getId()] = (short)(count - 1);
+	}
+	
+	public int getCount(int id) {
+		return countList[id];
 	}
 
-	public int getCount(Obligation obligation) {
-		return countList[obligation.getId()];
-	}
+//	public int getCount(Obligation obligation) {
+//		return getCount(obligation.getId());
+//	}
 
 	public boolean equals(Object o) {
 		if (o == null || o.getClass() != this.getClass())
@@ -73,6 +83,29 @@ public class ObligationSet {
 		}
 
 		return false;
+	}
+	
+	public String toString() {
+		StringBuffer buf = new StringBuffer();
+		buf.append("{");
+		int count = 0;
+		for (int i = 0; i < countList.length; ++i) {
+			if (countList[i] == 0)
+				continue;
+			if (count > 0)
+				buf.append(",");
+			if (ObligationFactory.instance != null) {
+				buf.append(ObligationFactory.instance.getObligationById(i).toString());
+			} else {
+				buf.append("id=");
+				buf.append(i);
+			}
+			buf.append("x");
+			buf.append(countList[i]);
+			++count;
+		}
+		buf.append("}");
+		return buf.toString();
 	}
 	
 	public ObligationSet duplicate() {

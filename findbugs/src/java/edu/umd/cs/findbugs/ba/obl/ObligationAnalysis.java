@@ -26,7 +26,8 @@ import edu.umd.cs.findbugs.ba.Edge;
 import edu.umd.cs.findbugs.ba.ForwardDataflowAnalysis;
 import edu.umd.cs.findbugs.ba.RepositoryLookupFailureCallback;
 
-import java.util.HashMap;
+import java.util.Map;
+import java.util.Iterator;
 
 import org.apache.bcel.Constants;
 
@@ -34,6 +35,7 @@ import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InvokeInstruction;
+import org.apache.bcel.generic.MethodGen;
 
 /**
  * Dataflow analysis to track obligations (i/o streams and other
@@ -50,27 +52,27 @@ public class ObligationAnalysis
 	extends ForwardDataflowAnalysis<StateSet> {
 
 	private PolicyDatabase database;
-	private ConstantPoolGen cpg;
+	private MethodGen methodGen;
 	private RepositoryLookupFailureCallback lookupFailureCallback;
 
 	/**
 	 * Constructor.
 	 * 
-	 * @param dfs      a DepthFirstSearch on the method to be analyzed
-	 * @param cpg      a ConstantPoolGen for the method to be analyzed
-	 * @param database the PolicyDatabase defining the methods which
-	 *                 add and delete obligations
+	 * @param dfs       a DepthFirstSearch on the method to be analyzed
+	 * @param methodGen the MethodGen of the method being analyzed
+	 * @param database  the PolicyDatabase defining the methods which
+	 *                  add and delete obligations
 	 * @param lookupFailureCallback callback to use when reporting
 	 *                              missing classes
 	 */
 	public ObligationAnalysis(
 			DepthFirstSearch dfs,
-			ConstantPoolGen cpg,
+			MethodGen methodGen,
 			PolicyDatabase database,
 			RepositoryLookupFailureCallback lookupFailureCallback) {
 		super(dfs);
 		this.database = database;
-		this.cpg = cpg;
+		this.methodGen = methodGen;
 		this.lookupFailureCallback = lookupFailureCallback;
 	}
 
@@ -91,14 +93,19 @@ public class ObligationAnalysis
 			// Add obligation to all states
 			fact.addObligation(obligation);
 		} else if ((obligation = deletesObligation(handle)) != null) {
-			// Remove obligation from all states
-			try {
-				fact.deleteObligation(obligation);
-			} catch (NonexistentObligationException e) {
-				throw new DataflowAnalysisException("Deleting nonexistent obligation", e);
-			}
+			deleteObligation(fact, obligation, handle);
 		}
 
+	}
+	
+	public void endTransfer(BasicBlock basicBlock, InstructionHandle end, Object result_) throws DataflowAnalysisException {
+		StateSet result = (StateSet) result_;
+		
+		// Append this block id to the Paths of all States
+		for (Iterator<State> i = result.stateIterator(); i.hasNext(); ) {
+			State state = i.next();
+			state.getPath().append(basicBlock.getId());
+		}
 	}
 
 	private Obligation addsObligation(InstructionHandle handle) {
@@ -117,6 +124,8 @@ public class ObligationAnalysis
 		
 		InvokeInstruction inv = (InvokeInstruction) ins;
 		
+		ConstantPoolGen cpg = methodGen.getConstantPool();
+		
 		String className = inv.getClassName(cpg);
 		// FIXME: could prescreen class here...?
 		
@@ -132,6 +141,26 @@ public class ObligationAnalysis
 			return null;
 		}
 		
+	}
+	
+	/**
+	 * Delete Obligation from all states, throwing a DataflowAnalysisException
+	 * if any of the states doesn't contain that Obligation.
+	 * 
+	 * @param fact       the StateSet to remove the Obligation from
+	 * @param obligation the Obligation
+	 * @param handle     the instruction which deletes the obligation
+	 * @throw DataflowAnalysisException if any State doesn't contain the obligation
+	 */
+	private void deleteObligation(StateSet fact, Obligation obligation, InstructionHandle handle)
+			throws DataflowAnalysisException {
+		try {
+			fact.deleteObligation(obligation);
+		} catch (NonexistentObligationException e) {
+			throw new DataflowAnalysisException(
+					"Removing nonexistent obligation of type " + obligation.toString(),
+					methodGen, handle, e);
+		}
 	}
 
 	/* (non-Javadoc)
@@ -172,7 +201,7 @@ public class ObligationAnalysis
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.ba.DataflowAnalysis#meetInto(edu.umd.cs.findbugs.ba.obl.StateSet, edu.umd.cs.findbugs.ba.Edge, edu.umd.cs.findbugs.ba.obl.StateSet)
 	 */
-	public void meetInto(final StateSet fact, Edge edge, StateSet result)
+	public void meetInto(StateSet fact, Edge edge, StateSet result)
 			throws DataflowAnalysisException {
 		// TODO: implement
 		
@@ -182,6 +211,21 @@ public class ObligationAnalysis
 		} else if (fact.isBottom() || result.isTop()) {
 			copy(fact, result);
 		} else {
+			// If the edge is an exception thrown from a method that
+			// tries to discharge an obligation, then that obligation needs to
+			// be removed from all states.
+			if (edge.isExceptionEdge()) {
+				BasicBlock sourceBlock = edge.getSource();
+				InstructionHandle handle = sourceBlock.getExceptionThrower();
+				Obligation obligation;
+				if ((obligation = deletesObligation(handle)) != null) {
+					fact = fact.duplicate();
+					deleteObligation(fact, obligation, handle);
+				}
+			}
+			
+			final StateSet inputFact = fact;
+			
 			// Various things need to happen here
 			// - Match up states with equal ObligationSets
 			// - Paths with multiple occurences of a program point,
@@ -191,12 +235,20 @@ public class ObligationAnalysis
 
 			// We will destructively replace the state map of the result fact
 			// we're building.
-			HashMap<ObligationSet, State> updatedStateMap = new HashMap<ObligationSet, State>();
+			final Map<ObligationSet, State> updatedStateMap = result.createEmptyMap();
 			
 			// Get all of the States from the input fact that don't
 			// have matching states.  These will be copied verbatim
 			// into the result fact.
-			// FIXME: actually do this
+			for (Iterator<State> i = fact.stateIterator(); i.hasNext(); ) {
+				State otherState = i.next();
+				if (result.getStateWithObligationSet(otherState.getObligationSet()) == null) {
+					// Input fact has a State with an ObligationSet not in
+					// the result fact.  Add a duplicate of it.
+					State dup = otherState.duplicate();
+					updatedStateMap.put(dup.getObligationSet(), dup);
+				}
+			}
 
 			// Find states from the input fact that have obligation sets
 			// which match a State in the result fact, and combine them
@@ -204,12 +256,13 @@ public class ObligationAnalysis
 			StateSet.StateCallback callback = new StateSet.StateCallback() {
 				public void apply(State state) throws NonexistentObligationException {
 					// Find state in other fact with same obligation set (if any).
-					State matchingState = fact.getStateWithObligationSet(state.getObligationSet());
+					State matchingState = inputFact.getStateWithObligationSet(state.getObligationSet());
 					if (matchingState != null) {
 						// Combine the states by using the shorter of the two paths.
 						if (state.getPath().getLength() > matchingState.getPath().getLength()) {
 							state.getPath().copyFrom(matchingState.getPath());
 						}
+						updatedStateMap.put(state.getObligationSet(), state);
 					}
 				}
 			};

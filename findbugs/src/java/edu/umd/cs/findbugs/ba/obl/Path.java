@@ -32,19 +32,23 @@ package edu.umd.cs.findbugs.ba.obl;
  */
 public class Path {
 	private static final int DEFAULT_CAPACITY = 8;
+	private static final int INVALID_HASH_CODE = -1;
 
 	private int[] blockIdList;
 	private int length;
+	private int cachedHashCode;
 
 	public Path() {
 		this.blockIdList = new int[DEFAULT_CAPACITY];
 		this.length = 0;
+		invalidate();
 	}
 
 	public void append(int id) {
 		grow(length);
 		blockIdList[length] = id;
 		++length;
+		invalidate();
 	}
 
 	public int getBlockIdAt(int index) {
@@ -59,10 +63,11 @@ public class Path {
 		Path dup = new Path();
 		dup.grow(this.length - 1);
 		
-		dup.length = this.length;
 		for (int i = 0; i < this.length; ++i) {
 			dup.blockIdList[i] = this.blockIdList[i];
 		}
+		dup.length = this.length;
+		dup.cachedHashCode = this.cachedHashCode;
 		
 		return dup;
 	}
@@ -78,6 +83,44 @@ public class Path {
 			this.blockIdList[i] = other.blockIdList[i];
 		}
 		this.length = other.length;
+		this.cachedHashCode = other.cachedHashCode;
+	}
+
+	private void invalidate() {
+		this.cachedHashCode = INVALID_HASH_CODE;
+	}
+	
+	public int hashCode() {
+		if (cachedHashCode == INVALID_HASH_CODE) {
+			cachedHashCode = 0;
+			for (int i = 0; i < blockIdList.length; ++i) {
+				cachedHashCode += (i * 1009 * blockIdList[i]);
+			}
+		}
+		return cachedHashCode;
+	}
+	
+	public boolean equals(Object o) {
+		if (o == null || o.getClass() != this.getClass())
+			return false;
+		Path other = (Path) o;
+		if (this.length != other.length)
+			return false;
+		for (int i = 0; i < this.length; ++i) {
+			if (this.blockIdList[i] != other.blockIdList[i])
+				return false;
+		}
+		return true;
+	}
+	
+	public String toString() {
+		StringBuffer buf = new StringBuffer();
+		for (int i = 0; i < length; ++i) {
+			if (i != 0)
+				buf.append("->");
+			buf.append(blockIdList[i]);
+		}
+		return buf.toString();
 	}
 
 	private void grow(int index) {

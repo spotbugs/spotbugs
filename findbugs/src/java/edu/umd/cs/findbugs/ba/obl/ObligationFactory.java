@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.ba.obl;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -28,29 +29,47 @@ import java.util.Map;
  */
 public class ObligationFactory {
 	private Map<String, Obligation> classNameToObligationMap;
+	
+	static ObligationFactory instance;
 
 	public ObligationFactory() {
 		this.classNameToObligationMap = new HashMap<String, Obligation>();
+		instance = this;
 	}
 
 	public int getMaxObligationTypes() {
 		return classNameToObligationMap.size();
 	}
+	
+	public Iterator<Obligation> obligationIterator() {
+		return classNameToObligationMap.values().iterator();
+	}
 
-	public void addObligation(String className) {
+	public Obligation addObligation(String className) {
 		int nextId = classNameToObligationMap.size();
-		if (classNameToObligationMap.put(className, new Obligation(className, nextId)) != null) {
+		Obligation obligation = new Obligation(className, nextId);
+		if (classNameToObligationMap.put(className, obligation) != null) {
 			throw new IllegalStateException("Obligation " + className +
 				" added multiple times");
 		}
-	}
-
-	public Obligation getObligation(String className) {
-		Obligation obligation = classNameToObligationMap.get(className);
-		if (obligation == null)
-			throw new IllegalArgumentException("Unknown obligation class " + className);
 		return obligation;
 	}
+	
+	public Obligation getObligationById(int id) {
+		for (Iterator<Obligation> i = classNameToObligationMap.values().iterator(); i.hasNext();) {
+			Obligation obligation = i.next();
+			if (obligation.getId() == id)
+				return obligation;
+		}
+		return null;
+	}
+
+//	public Obligation getObligation(String className) {
+//		Obligation obligation = classNameToObligationMap.get(className);
+//		if (obligation == null)
+//			throw new IllegalArgumentException("Unknown obligation class " + className);
+//		return obligation;
+//	}
 
 	public ObligationSet createObligationSet() {
 		return new ObligationSet(getMaxObligationTypes());
