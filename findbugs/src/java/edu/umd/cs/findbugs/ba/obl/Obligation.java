@@ -46,6 +46,10 @@ public class Obligation {
 	public int getId() {
 		return id;
 	}
+	
+	public String toString() {
+		return className;
+	}
 }
 
 // vim:ts=4
