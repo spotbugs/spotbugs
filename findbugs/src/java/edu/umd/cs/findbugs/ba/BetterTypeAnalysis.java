@@ -19,9 +19,12 @@
 
 package edu.umd.cs.findbugs.ba;
 
+import edu.umd.cs.findbugs.ba.type.InvalidSignatureException;
 import edu.umd.cs.findbugs.ba.type.Type;
 import edu.umd.cs.findbugs.ba.type.TypeMerger;
 import edu.umd.cs.findbugs.ba.type.TypeRepository;
+
+import org.apache.bcel.Constants;
 
 import org.apache.bcel.generic.CodeExceptionGen;
 import org.apache.bcel.generic.InstructionHandle;
@@ -54,8 +57,27 @@ public class BetterTypeAnalysis extends FrameDataflowAnalysis<Type, BetterTypeFr
 		return new BetterTypeFrame(methodGen.getMaxLocals());
 	}
 
-	public void initEntryFact(BetterTypeFrame result) {
-		// TODO: implement
+	public void initEntryFact(BetterTypeFrame result) throws DataflowAnalysisException {
+		try {
+			result.setValid();
+
+			int local = 0;
+			for (int i = 0; i < parameterSignatureList.length; ++i) {
+				String signature = parameterSignatureList[i];
+				Type type = typeRepository.typeFromSignature(signature);
+
+				result.setValue(local++, type);
+
+				// Long and double values occupy an extra local slot
+				if (type.getTypeCode() == Constants.T_LONG) {
+					result.setValue(local++, typeRepository.getLongExtraType());
+				} else if (type.getTypeCode() == Constants.T_DOUBLE) {
+					result.setValue(local++, typeRepository.getDoubleExtraType());
+				}
+			}
+		} catch (InvalidSignatureException e) {
+			throw new DataflowAnalysisException("Invalid parameter type signature", e);
+		}
 	}
 
 	public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, BetterTypeFrame fact)

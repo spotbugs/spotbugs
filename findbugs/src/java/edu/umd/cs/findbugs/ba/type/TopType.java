@@ -30,7 +30,7 @@ public class TopType implements Type {
 	TopType() { }
 
 	public String getSignature() {
-		return "<top>";
+		return SpecialTypeSignatures.TOP_TYPE_SIGNATURE;
 	}
 
 	public boolean isBasicType() {

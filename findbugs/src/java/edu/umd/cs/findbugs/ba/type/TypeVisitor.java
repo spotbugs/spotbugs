@@ -60,6 +60,18 @@ public interface TypeVisitor {
 	 * @param type the bottom type
 	 */
 	public void visitBottomType(BottomType type);
+
+	/**
+	 * Visit the long extra type.
+	 * @param type the long extra type
+	 */
+	public void visitLongExtraType(LongExtraType type);
+
+	/**
+	 * Visit the double extra type.
+	 * @param type the double extra type
+	 */
+	public void visitDoubleExtraType(DoubleExtraType type);
 }
 
 // vim:ts=4

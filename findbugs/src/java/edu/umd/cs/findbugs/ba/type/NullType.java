@@ -29,7 +29,7 @@ public class NullType implements ReferenceType {
 	NullType() { }
 
 	public String getSignature() {
-		return "<null>";
+		return SpecialTypeSignatures.NULL_TYPE_SIGNATURE;
 	}
 
 	public int getTypeCode() {

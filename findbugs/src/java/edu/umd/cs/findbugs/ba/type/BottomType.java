@@ -30,7 +30,7 @@ public class BottomType implements Type {
 	BottomType() { }
 
 	public String getSignature() {
-		return "<bottom>";
+		return SpecialTypeSignatures.BOTTOM_TYPE_SIGNATURE;
 	}
 
 	public int getTypeCode() {

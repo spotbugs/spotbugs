@@ -10,6 +10,10 @@ public class BottomTypeTest extends TestCase {
 		bottom = new BottomType();
 	}
 
+	public void testGetSignature() {
+		Assert.assertEquals(bottom.getSignature(), SpecialTypeSignatures.BOTTOM_TYPE_SIGNATURE);
+	}
+
 	public void testNotReferenceType() {
 		Assert.assertFalse(bottom.isReferenceType());
 	}
@@ -20,6 +24,10 @@ public class BottomTypeTest extends TestCase {
 
 	public void testNotValidArrayElementType() {
 		Assert.assertFalse(bottom.isValidArrayElementType());
+	}
+
+	public void testNotValidArrayBaseType() {
+		Assert.assertFalse(bottom.isValidArrayBaseType());
 	}
 
 	public void testEquals() {

@@ -10,6 +10,10 @@ public class NullTypeTest extends TestCase {
 		nullType = new NullType();
 	}
 
+	public void testGetSignature() {
+		Assert.assertEquals(nullType.getSignature(), SpecialTypeSignatures.NULL_TYPE_SIGNATURE);
+	}
+
 	public void testIsReferenceType() {
 		Assert.assertTrue(nullType.isReferenceType());
 	}
@@ -20,6 +24,10 @@ public class NullTypeTest extends TestCase {
 
 	public void testNotValidArrayElementType() {
 		Assert.assertFalse(nullType.isValidArrayElementType());
+	}
+
+	public void testNotValidArrayBaseType() {
+		Assert.assertFalse(nullType.isValidArrayBaseType());
 	}
 
 	public void testEquals() {

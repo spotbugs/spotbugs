@@ -10,6 +10,10 @@ public class TopTypeTest extends TestCase {
 		top = new TopType();
 	}
 
+	public void testGetSignature() {
+		Assert.assertEquals(top.getSignature(), SpecialTypeSignatures.TOP_TYPE_SIGNATURE);
+	}
+
 	public void testNotReferenceType() {
 		Assert.assertFalse(top.isReferenceType());
 	}
@@ -20,6 +24,10 @@ public class TopTypeTest extends TestCase {
 
 	public void testNotValidArrayElementType() {
 		Assert.assertFalse(top.isValidArrayElementType());
+	}
+
+	public void testNotValidArrayBaseType() {
+		Assert.assertFalse(top.isValidArrayBaseType());
 	}
 
 	public void testEquals() {
