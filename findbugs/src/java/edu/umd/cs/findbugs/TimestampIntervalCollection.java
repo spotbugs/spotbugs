@@ -51,6 +51,47 @@ public class TimestampIntervalCollection {
 	}
 	
 	/**
+	 * Return the number of intervals in the collection.
+	 * 
+	 * @return number of intervals in the collection
+	 */
+	public int size() {
+		return intervalList.size();
+	}
+	
+	/**
+	 * Get interval specified by given index.
+	 * 
+	 * @param index the index of the interval to get
+	 * @return the interval specified by the index
+	 */
+	public TimestampInterval get(int index) {
+		return intervalList.get(index);
+	}
+	
+	/**
+	 * Remove the interval at the given index.
+	 * 
+	 * @param index the index of the interval to remove
+	 */
+	public void remove(int index) {
+		intervalList.remove(index);
+	}
+	
+	/**
+	 * Add an interval to the collection.
+	 * The collection is sorted, and if the new interval
+	 * overlaps any existing intervals, they are coalesced.
+	 * 
+	 * @param interval the interval to add
+	 */
+	public void add(TimestampInterval interval) {
+		intervalList.add(interval);
+		sort();
+		simplify();
+	}
+	
+	/**
 	 * Return whether or not the interval collection contains the
 	 * given timestamp.
 	 * 
@@ -59,12 +100,7 @@ public class TimestampIntervalCollection {
 	 *         in the collection, false if not
 	 */
 	public boolean contains(long timestamp) {
-		// FIXME: could use binary search, since the intervals are sorted
-		for (Iterator<TimestampInterval> i = intervalIterator(); i.hasNext();) {
-			if (i.next().contains(timestamp))
-				return true;
-		}
-		return false;
+		return findInterval(timestamp) >= 0;
 	}
 
 	/**
@@ -82,7 +118,7 @@ public class TimestampIntervalCollection {
 			String token = t.nextToken();
 			result.intervalList.add(TimestampInterval.decode(token));
 		}
-		Collections.sort(result.intervalList);
+		result.sort();
 		result.simplify();
 		return result;
 	}
@@ -109,6 +145,13 @@ public class TimestampIntervalCollection {
 		}
 		return buf.toString().intern();// Save memory for identical interval collections
 	}
+	
+	/**
+	 * Sort intervals.
+	 */
+	private void sort() {
+		Collections.sort(this.intervalList);
+	}
 
 	/**
 	 * Coalesce overlapping intervals.
@@ -132,5 +175,32 @@ public class TimestampIntervalCollection {
 		
 		// Remove excess elements
 		intervalList.subList(cur+1, origSize).clear();
+	}
+	
+	/**
+	 * Find the index of the interval containing given timestamp.
+	 * 
+	 * @param timestamp the timestamp
+	 * @return the index of the interval containing the timestamp,
+	 *         or -1 if no interval contains the timestamp
+	 */
+	private int findInterval(long timestamp) {
+		int min = 0;
+		int max = intervalList.size();
+		
+		while (min <= max) {
+			int mid = min + (max-min)/2;
+			TimestampInterval interval = intervalList.get(mid);
+			if (interval.contains(timestamp)) {
+				return mid;
+			}
+			if (mid < interval.getBegin()) {
+				max = mid - 1;
+			} else {
+				min = mid + 1;
+			}
+		}
+		
+		return -1;
 	}
 }
