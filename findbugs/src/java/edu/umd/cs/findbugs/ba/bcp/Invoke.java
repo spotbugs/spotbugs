@@ -36,11 +36,45 @@ import edu.umd.cs.daveho.ba.*;
  * @author David Hovemeyer
  */
 public class Invoke extends PatternElement {
-	private boolean acceptSubclass;
-	private String className;
-	private Pattern methodNameRE;
-	private Pattern methodSigRE;
-	private boolean isStatic;
+
+	public static final int STATIC = 0;
+	public static final int INSTANCE = 1;
+	public static final int ANY = 2;
+
+	private interface StringMatcher {
+		public boolean match(String s);
+	}
+
+	private static class ExactStringMatcher implements StringMatcher {
+		private String value;
+		public ExactStringMatcher(String value) { this.value = value; }
+		public boolean match(String s) { return s.equals(value); }
+	}
+
+	private static class RegexpStringMatcher implements StringMatcher {
+		private Pattern pattern;
+		public RegexpStringMatcher(String re) {
+			pattern = Pattern.compile(re);
+		}
+		public boolean match(String s) { return pattern.matcher(s).matches(); }
+	}
+
+	private static class SubclassMatcher implements StringMatcher {
+		private String className;
+		public SubclassMatcher(String className) { this.className = className; }
+		public boolean match(String s) {
+			try {
+				return Repository.instanceOf(s, className);
+			} catch (ClassNotFoundException e) {
+				return false;
+			}
+		}
+	}
+
+	private final StringMatcher classNameMatcher;
+	private final StringMatcher methodNameMatcher;
+	private final StringMatcher methodSigMatcher;
+	private final int mode;
 
 	/**
 	 * Constructor.
@@ -50,32 +84,26 @@ public class Invoke extends PatternElement {
 	 *  then the rest of the string is treated as a regular expression
 	 * @param methodSig the signature of the method; if it begins with a "/" character,
 	 *  then the rest of the string is treated as a regular expression
-	 * @param isStatic true if the method is static, false otherwise
+	 * @param mode one of STATIC, INSTANCE, or ANY; specifies whether we should
+	 *  match static methods only, instance methods only, or either
 	 */
-	public Invoke(String className, String methodName, String methodSig, boolean isStatic) {
-		if (className.startsWith("+")) {
-			this.acceptSubclass = true;
-			className = className.substring(1);
-		} else
-			this.acceptSubclass = false;
-		this.className = className;
-
-		this.methodNameRE = createRE(methodName);
-		this.methodSigRE = createRE(methodSig);
-
-		this.isStatic = isStatic;
+	public Invoke(String className, String methodName, String methodSig, int mode) {
+		this.classNameMatcher = createClassMatcher(className);
+		this.methodNameMatcher = createMatcher(methodName);
+		this.methodSigMatcher = createMatcher(methodSig);
+		this.mode = mode;
 	}
 
-	private static Pattern createRE(String name) {
-		String pattern;
-		if (name.startsWith("/")) {
-			// Regular expression match
-			pattern = name.substring(1);
-		} else {
-			// Quote metacharacters, so we match the literal value of the string
-			pattern = "\\Q" + name + "\\E";
-		}
-		return Pattern.compile(pattern);
+	private StringMatcher createClassMatcher(String s) {
+		return s.startsWith("+")
+			? new SubclassMatcher(s.substring(1))
+			: createMatcher(s);
+	}
+
+	private StringMatcher createMatcher(String s) {
+		return s.startsWith("/")
+			? (StringMatcher) new RegexpStringMatcher(s.substring(1))
+			: (StringMatcher) new ExactStringMatcher(s);
 	}
 
 	public MatchResult match(InstructionHandle handle, ConstantPoolGen cpg,
@@ -88,34 +116,20 @@ public class Invoke extends PatternElement {
 		InvokeInstruction inv = (InvokeInstruction) ins;
 
 		// Check that it's static or non-static, as appropriate
-		boolean isStatic = inv.getOpcode() == Constants.INVOKESTATIC;
-		if (this.isStatic != isStatic)
-			return null;
+		if (mode != ANY) {
+			boolean isStatic = (inv.getOpcode() == Constants.INVOKESTATIC);
+			boolean wantStatic = (mode == STATIC);
+			if (isStatic != wantStatic)
+				return null;
+		}
 
 		// Check class name, method name, and method signature...
 		String className = inv.getClassName(cpg);
 		String methodName = inv.getMethodName(cpg);
 		String methodSig = inv.getSignature(cpg);
-
-		// Check class name
-		if (acceptSubclass) {
-			// See if the current invoked class is a subclass of the one we want
-			try {
-				if (!Repository.instanceOf(className, this.className))
-					return null;
-			} catch (ClassNotFoundException e) {
-				return null;
-			}
-		} else {
-			// Force exact class match
-			if (!this.className.equals(className))
-				return null;
-		}
-
-		// Check method name and signature
-		if (!methodNameRE.matcher(methodName).matches())
-			return null;
-		if (!methodSigRE.matcher(methodSig).matches())
+		if (!classNameMatcher.match(className) ||
+			!methodNameMatcher.match(methodName) ||
+			!methodSigMatcher.match(methodSig))
 			return null;
 
 		// It's a match!
