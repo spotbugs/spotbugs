@@ -32,11 +32,13 @@ public class I18N {
 	private final ResourceBundle annotationDescriptionBundle;
 	private final HashMap<String, BugPattern> bugPatternMap;
 	private final HashMap<String, BugCode> bugCodeMap;
+	private final HashMap<String, String> bugCategoryMap;
 
 	private I18N() {
 		annotationDescriptionBundle = ResourceBundle.getBundle("edu.umd.cs.findbugs.FindBugsAnnotationDescriptions");
 		bugPatternMap = new HashMap<String, BugPattern>();
 		bugCodeMap = new HashMap<String, BugCode>();
+		bugCategoryMap = new HashMap<String, String>();
 	}
 
 	private static final I18N theInstance = new I18N();
@@ -78,6 +80,15 @@ public class I18N {
 	 */
 	public void registerBugCode(BugCode bugCode) {
 		bugCodeMap.put(bugCode.getAbbrev(), bugCode);
+	}
+
+	/**
+	 * Register the description of a bug category.
+	 * @param category the category
+	 * @param description the description of the category
+	 */
+	public void registerBugCategory(String category, String description) {
+		bugCategoryMap.put(category, description);
 	}
 
 	/**
@@ -141,6 +152,17 @@ public class I18N {
 		if (bugCode == null)
 			return "Error: missing bug code for key " + shortBugType;
 		return bugCode.getDescription();
+	}
+
+	/**
+	 * Get the description of a bug category.
+	 * Returns the category if no description can be found.
+	 * @param category the category
+	 * @return the description of the category
+	 */
+	public String getBugCategoryDescription(String category) {
+		String description = bugCategoryMap.get(category);
+		return description != null ? description : category;
 	}
 
 }

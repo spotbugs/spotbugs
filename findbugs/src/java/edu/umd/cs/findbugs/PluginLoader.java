@@ -50,6 +50,7 @@ public class PluginLoader extends URLClassLoader {
 	private ArrayList<DetectorFactory> detectorFactoryList;
 	private ArrayList<BugPattern> bugPatternList;
 	private ArrayList<BugCode> bugCodeList;
+	private HashMap<String, String> bugCategoryMap;
 
 	/**
 	 * Constructor.
@@ -93,6 +94,13 @@ public class PluginLoader extends URLClassLoader {
 	 */
 	public BugCode[] getBugCodeList() {
 		return bugCodeList.toArray(new BugCode[0]);
+	}
+
+	/**
+	 * Get map of bug categories to their descriptions.
+	 */
+	public Map<String, String> getBugCategoryMap() {
+		return bugCategoryMap;
 	}
 
 	private void init() throws PluginException {
@@ -217,6 +225,18 @@ public class PluginLoader extends URLClassLoader {
 			String description = bugCodeNode.getText();
 			BugCode bugCode = new BugCode(abbrev, description);
 			bugCodeList.add(bugCode);
+		}
+
+		// Create BugCategory map
+		bugCategoryMap = new HashMap<String, String>();
+		List bugCategoryList = messageCollection.selectNodes("/MessageCollection/BugCategory");
+		for (Iterator i = bugCategoryList.iterator(); i.hasNext(); ) {
+			Node bugCategoryNode = (Node) i.next();
+			String category = bugCategoryNode.valueOf("@category");
+			if (category.equals(""))
+				throw new PluginException("BugCategory element with missing category attribute");
+			String description = bugCategoryNode.getText();
+			bugCategoryMap.put(category, description);
 		}
 
 	}
