@@ -99,8 +99,17 @@
 		</javac>
 	</target>
 
+	<target name="validate">
+		<xmlvalidate lenient="false" failonerror="yes">
+			<attribute name="http://apache.org/xml/features/validation/schema" value="true"/>
+			<attribute name="http://xml.org/sax/features/namespaces" value="true"/>
+			<fileset dir="${etc.dir}" includes="*.xml"/>
+		</xmlvalidate>
+
+	</target>
+	
 	<!-- Build jar files. -->
-	<target name="jars" depends="classes">
+	<target name="jars" depends="classes, validate">
 		<!-- Main engine and command line jar file. -->
 		<jar destfile="${engine.jar}"
 				manifest="etc/MANIFEST-findbugs.MF">
