@@ -19,6 +19,8 @@
 
 package edu.umd.cs.daveho.ba;
 
+import edu.umd.cs.daveho.graph.Graph;
+
 import java.util.*;
 
 // We require BCEL 5.0 or later.
@@ -31,11 +33,70 @@ import org.apache.bcel.generic.*;
  * @see BasicBlock
  * @see Edge
  */
-public class CFG implements Debug {
+public class CFG implements Graph<Edge, BasicBlock>, Debug {
+
+	/* ----------------------------------------------------------------------
+	 * Helper classes
+	 * ---------------------------------------------------------------------- */
+
+	/**
+	 * Iterator over outgoing edges.
+	 */
+	private static class OutgoingEdgeIterator implements Iterator<Edge> {
+		private Edge edge;
+
+		public OutgoingEdgeIterator(BasicBlock source) {
+			this.edge = source.getFirstOutgoingEdge();
+		}
+
+		public boolean hasNext() { return edge != null; }
+
+		public Edge next() {
+			if (!hasNext())
+				throw new NoSuchElementException();
+			Edge result = edge;
+			edge = edge.getNextOutgoingEdge();
+			return result;
+		}
+
+		public void remove() { throw new UnsupportedOperationException(); }
+	}
+
+	/**
+	 * Iterator over incoming edges.
+	 */
+	private static class IncomingEdgeIterator implements Iterator<Edge> {
+		private Edge edge;
+
+		public IncomingEdgeIterator(BasicBlock dest) {
+			this.edge = dest.getFirstIncomingEdge();
+		}
+
+		public boolean hasNext() { return edge != null; }
+
+		public Edge next() {
+			if (!hasNext())
+				throw new NoSuchElementException();
+			Edge result = edge;
+			edge = edge.getNextIncomingEdge();
+			return result;
+		}
+
+		public void remove() { throw new UnsupportedOperationException(); }
+	}
+
+	/* ----------------------------------------------------------------------
+	 * Fields
+	 * ---------------------------------------------------------------------- */
+
 	private ArrayList<BasicBlock> blockList;
 	private ArrayList<Edge> edgeList;
 	private BasicBlock entry, exit, unhandledExceptionExit;
 	private int firstEdgeId, maxEdgeId;
+
+	/* ----------------------------------------------------------------------
+	 * Public methods
+	 * ---------------------------------------------------------------------- */
 
 	/**
 	 * Constructor.
@@ -44,8 +105,6 @@ public class CFG implements Debug {
 	public CFG() {
 		blockList = new ArrayList<BasicBlock>();
 		edgeList = new ArrayList<Edge>();
-		entry = allocate();
-		exit = allocate();
 		firstEdgeId = maxEdgeId = 0;
 	}
 
@@ -185,52 +244,12 @@ public class CFG implements Debug {
 		return edgeList.iterator();
 	}
 
-	private static class OutgoingEdgeIterator implements Iterator<Edge> {
-		private Edge edge;
-
-		public OutgoingEdgeIterator(BasicBlock source) {
-			this.edge = source.getFirstOutgoingEdge();
-		}
-
-		public boolean hasNext() { return edge != null; }
-
-		public Edge next() {
-			if (!hasNext())
-				throw new NoSuchElementException();
-			Edge result = edge;
-			edge = edge.getNextOutgoingEdge();
-			return result;
-		}
-
-		public void remove() { throw new UnsupportedOperationException(); }
-	}
-
 	/**
 	 * Get an Iterator over the outgoing edges from given basic block.
 	 * @param source the source basic block
 	 */
 	public Iterator<Edge> outgoingEdgeIterator(BasicBlock source) {
 		return new OutgoingEdgeIterator(source);
-	}
-
-	private static class IncomingEdgeIterator implements Iterator<Edge> {
-		private Edge edge;
-
-		public IncomingEdgeIterator(BasicBlock dest) {
-			this.edge = dest.getFirstIncomingEdge();
-		}
-
-		public boolean hasNext() { return edge != null; }
-
-		public Edge next() {
-			if (!hasNext())
-				throw new NoSuchElementException();
-			Edge result = edge;
-			edge = edge.getNextIncomingEdge();
-			return result;
-		}
-
-		public void remove() { throw new UnsupportedOperationException(); }
 	}
 
 	/**
@@ -334,6 +353,47 @@ public class CFG implements Debug {
 				prev = handle;
 			}
 		}
+	}
+
+	/* ----------------------------------------------------------------------
+	 * Graph methods
+	 * ---------------------------------------------------------------------- */
+
+	public int getNumVertices() {
+		return getNumBasicBlocks();
+	}
+
+	public Iterator<Edge> getEdgeIterator() {
+		return edgeIterator();
+	}
+
+	public Iterator<BasicBlock> getVertexIterator() {
+		return blockIterator();
+	}
+
+	public BasicBlock addVertex() {
+		return allocate();
+	}
+
+	public Edge addEdge(BasicBlock source, BasicBlock target) {
+		return addEdge(source, target, EdgeTypes.UNKNOWN_EDGE);
+	}
+
+	public int getNumLabels() {
+		return maxEdgeId;
+	}
+
+	public void setNumLabels(int numLabels) {
+		maxEdgeId = numLabels;
+	}
+
+	public void removeVertex(BasicBlock v) {
+		// FIXME:
+		throw new UnsupportedOperationException();
+	}
+
+	public Iterator<BasicBlock> adjacencyListIterator(BasicBlock source) {
+		return successorIterator(source);
 	}
 }
 

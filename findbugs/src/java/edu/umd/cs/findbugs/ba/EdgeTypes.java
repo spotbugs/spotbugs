@@ -24,6 +24,8 @@ package edu.umd.cs.daveho.ba;
  * @see Edge
  */
 public interface EdgeTypes {
+    /** Unknown edge type. */
+    public static final int UNKNOWN_EDGE = -1;
     /** Edge type for fall-through to next instruction. */
     public static final int FALL_THROUGH_EDGE = 0;
     /** Edge type for IFCMP instructions when condition is true. */

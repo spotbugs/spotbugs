@@ -19,6 +19,7 @@
 
 package edu.umd.cs.daveho.ba;
 
+import edu.umd.cs.daveho.graph.GraphEdge;
 import java.util.*;
 import org.apache.bcel.generic.InstructionHandle;
 
@@ -28,13 +29,21 @@ import org.apache.bcel.generic.InstructionHandle;
  * @see CFG
  * @author David Hovemeyer
  */
-public class Edge implements EdgeTypes, Comparable, Debug {
+public class Edge implements GraphEdge<Edge, BasicBlock>, EdgeTypes, Debug {
+
+	/* ----------------------------------------------------------------------
+	 * Fields
+	 * ---------------------------------------------------------------------- */
 
 	private BasicBlock source, dest;
 	private int type;
 	private int id;
 	private Edge nextOutgoingEdge;
 	private Edge nextIncomingEdge;
+
+	/* ----------------------------------------------------------------------
+	 * Public methods
+	 * ---------------------------------------------------------------------- */
 
 	/**
 	 * Constructor.
@@ -104,9 +113,8 @@ public class Edge implements EdgeTypes, Comparable, Debug {
 	}
 
 	/** Compare with other edge. */
-	public int compareTo(Object o) {
+	public int compareTo(Edge other) {
 		// Lexicographically compare (source,dest) pair.
-		Edge other = (Edge) o;
 		int cmp = source.compareTo(other.source);
 		if (cmp != 0)
 			return cmp;
@@ -220,6 +228,10 @@ public class Edge implements EdgeTypes, Comparable, Debug {
 			throw new IllegalArgumentException("Unknown edge type: " + s);
 	}
 
+	/* ----------------------------------------------------------------------
+	 * Implementation
+	 * ---------------------------------------------------------------------- */
+
 	/**
 	 * Set the next edge in the BasicBlock's list of outgoing edges.
 	 * This should only be used by the BasicBlock and CFG classes.
@@ -250,6 +262,14 @@ public class Edge implements EdgeTypes, Comparable, Debug {
 	 */
 	Edge getNextIncomingEdge() {
 		return nextIncomingEdge;
+	}
+
+	/* ----------------------------------------------------------------------
+	 * GraphEdge methods
+	 * ---------------------------------------------------------------------- */
+
+	public BasicBlock getTarget() {
+		return getDest();
 	}
 }
 

@@ -21,7 +21,8 @@ package edu.umd.cs.daveho.ba;
 
 import java.util.*;
 
-// We require BCEL 5.0 or later.
+import edu.umd.cs.daveho.graph.GraphVertex;
+
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.*;
 import org.apache.bcel.generic.*;
@@ -32,7 +33,7 @@ import org.apache.bcel.generic.*;
  * @see CFG
  * @author David Hovemeyer
  */
-public class BasicBlock implements Comparable, Debug {
+public class BasicBlock implements GraphVertex<BasicBlock>, Debug {
 
 	/* ----------------------------------------------------------------------
 	 * Static data
@@ -79,6 +80,7 @@ public class BasicBlock implements Comparable, Debug {
 	private CodeExceptionGen exceptionGen; // set if this block is the entry point of an exception handler
 	private Edge firstIncomingEdge, lastIncomingEdge;
 	private Edge firstOutgoingEdge, lastOutgoingEdge;
+	private int label;
 
 	/* ----------------------------------------------------------------------
 	 * Public methods
@@ -100,13 +102,16 @@ public class BasicBlock implements Comparable, Debug {
 		this.lastIncomingEdge = null;
 		this.firstOutgoingEdge = null;
 		this.lastOutgoingEdge = null;
+
+		// Label is initially the same as the unique ID.
+		this.label = id;
 	}
 
 	/**
 	 * Get this BasicBlock's unique identifier.
 	 */
 	public int getId() {
-		return id;
+		return getLabel();
 	}
 
 	/**
@@ -286,8 +291,7 @@ public class BasicBlock implements Comparable, Debug {
 	 * For implementation of Comparable interface.
 	 * Basic blocks are ordered by their unique id.
 	 */
-	public int compareTo(Object o) {
-		BasicBlock other = (BasicBlock) o;
+	public int compareTo(BasicBlock other) {
 		return this.id - other.id;
 	}
 
@@ -311,6 +315,23 @@ public class BasicBlock implements Comparable, Debug {
 	public void setExceptionGen(CodeExceptionGen exceptionGen) {
 		this.exceptionGen = exceptionGen;
 	}
+
+
+	/* ----------------------------------------------------------------------
+	 * GraphVertex methods
+	 * ---------------------------------------------------------------------- */
+
+	public int getLabel() {
+		return label;
+	}
+
+	public void setLabel(int label) {
+		this.label = label;
+	}
+
+	/* ----------------------------------------------------------------------
+	 * Implementation
+	 * ---------------------------------------------------------------------- */
 
 	/**
 	 * Add an outgoing edge to the basic block.
