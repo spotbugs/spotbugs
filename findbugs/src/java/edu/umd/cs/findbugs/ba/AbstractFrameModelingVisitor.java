@@ -55,6 +55,12 @@ public abstract class AbstractFrameModelingVisitor<Value> implements Visitor {
 	}
 
 	/**
+	 * Get the frame.
+	 * @return the Frame object
+	 */
+	public Frame<Value> getFrame() { return frame; }
+
+	/**
 	 * Produce a "default" value.
 	 * This is what is pushed onto the stack by the
 	 * handleNormalInstruction() method for instructions which produce stack values.
@@ -154,7 +160,7 @@ public abstract class AbstractFrameModelingVisitor<Value> implements Visitor {
 	 * This models the stack for all instructions which destroy
 	 * any values they consume, and produce only "default" values.
 	 */
-	private void handleNormalInstruction(Instruction ins) {
+	public void handleNormalInstruction(Instruction ins) {
 		int nwords;
 
 		nwords = ins.consumeStack(cpg);
