@@ -602,6 +602,11 @@ public class FindBugs implements Constants2, ExitCodes {
 							.getFactory(what);
 						if (factory == null)
 							throw new IllegalArgumentException("Unknown detector: " + what);
+						if (DEBUG) {
+							System.err.println("Detector " + factory.getShortName() + " " +
+									(enabled ? "enabled" : "disabled") +
+									", userPreferences="+System.identityHashCode(userPreferences));
+						}
 						userPreferences.enableDetector(factory, enabled);
 					}
 				});
@@ -1109,12 +1114,12 @@ public class FindBugs implements Constants2, ExitCodes {
 	 */
 	private void createDetectors() {
 		ArrayList<Detector> result = new ArrayList<Detector>();
-
+		
 		Iterator<DetectorFactory> i = DetectorFactoryCollection.instance().factoryIterator();
 		while (i.hasNext()) {
 			DetectorFactory factory = i.next();
 			if (factory.getPlugin().isEnabled() &&
-					/*factory.isEnabled()*/userPreferences.isDetectorEnabled(factory)) {
+					userPreferences.isDetectorEnabled(factory)) {
 				Detector detector = factory.create(bugReporter);
 				detector.setAnalysisContext(analysisContext);
 				result.add(detector);
@@ -1488,36 +1493,36 @@ public class FindBugs implements Constants2, ExitCodes {
 			categorySet.add(tok.nextToken());
 		}
 
-		// Enable only those detectors that can emit those categories
-		// (and the ones that produce unknown bug patterns, just to be safe).
-		// Skip disabled detectors, though.
-		for (Iterator<DetectorFactory> i = DetectorFactoryCollection.instance().factoryIterator(); i.hasNext();) {
-			DetectorFactory factory = i.next();
-			if (!factory.isEnabledForCurrentJRE())
-				continue;
-			Collection<BugPattern> reported = factory.getReportedBugPatterns();
-			boolean enable = false;
-			if (reported.isEmpty()) {
-				// Don't know what bug patterns are produced by this detector
-				if (DEBUG) System.out.println("Unknown bug patterns for " + factory.getShortName());
-				enable = true;
-			} else {
-				for (Iterator<BugPattern> j = reported.iterator(); j.hasNext();) {
-					BugPattern bugPattern = j.next();
-					if (categorySet.contains(bugPattern.getCategory())) {
-						if (DEBUG)
-							System.out.println("MATCH ==> " + categorySet +
-							        " -- " + bugPattern.getCategory());
-						enable = true;
-						break;
-					}
-				}
-			}
-			if (DEBUG && enable) {
-				System.out.println("Enabling " + factory.getShortName());
-			}
-			userPreferences.enableDetector(factory, enable);
-		}
+//		// Enable only those detectors that can emit those categories
+//		// (and the ones that produce unknown bug patterns, just to be safe).
+//		// Skip disabled detectors, though.
+//		for (Iterator<DetectorFactory> i = DetectorFactoryCollection.instance().factoryIterator(); i.hasNext();) {
+//			DetectorFactory factory = i.next();
+//			if (!factory.isEnabledForCurrentJRE())
+//				continue;
+//			Collection<BugPattern> reported = factory.getReportedBugPatterns();
+//			boolean enable = false;
+//			if (reported.isEmpty()) {
+//				// Don't know what bug patterns are produced by this detector
+//				if (DEBUG) System.out.println("Unknown bug patterns for " + factory.getShortName());
+//				enable = true;
+//			} else {
+//				for (Iterator<BugPattern> j = reported.iterator(); j.hasNext();) {
+//					BugPattern bugPattern = j.next();
+//					if (categorySet.contains(bugPattern.getCategory())) {
+//						if (DEBUG)
+//							System.out.println("MATCH ==> " + categorySet +
+//							        " -- " + bugPattern.getCategory());
+//						enable = true;
+//						break;
+//					}
+//				}
+//			}
+//			if (DEBUG && enable) {
+//				System.out.println("Enabling " + factory.getShortName());
+//			}
+//			userPreferences.enableDetector(factory, enable);
+//		}
 
 		return categorySet;
 	}
