@@ -29,8 +29,68 @@ import java.io.*;
  * @author David Hovemeyer
  */
 public class SourceFile {
+	private static int intValueOf(byte b) {
+		// Why isn't there an API method to do this?
+		if ((b & 0x80) == 0)
+			return b;
+		else
+			return 0x80 | ((int)b & 0x7F);
+	}
+
+	/**
+	 * Helper object to build map of line number to byte offset
+	 * for a source file.
+	 */
+	private static class LineNumberMapBuilder {
+		private SourceFile sourceFile;
+		private int offset;
+		private int lastSeen;
+
+		public LineNumberMapBuilder(SourceFile sourceFile) {
+			this.sourceFile = sourceFile;
+			this.offset = 0;
+			this.lastSeen = -1;
+		}
+
+		public void addData(byte[] data, int len) {
+			for (int i = 0; i < len; ++i) {
+				int ch = intValueOf(data[i]);
+				//if (ch < 0) throw new IllegalStateException();
+				add(ch);
+			}
+		}
+
+		public void eof() {
+			add(-1);
+		}
+
+		private void add(int ch) {
+			switch (ch) {
+			case '\n':
+				sourceFile.addLineOffset(offset + 1);
+				break;
+			case '\r':
+				// Need to see next character to know if it's a
+				// line terminator.
+				break;
+			default:
+				if (lastSeen == '\r') {
+					// We consider a bare CR to be an end of line
+					// if it is not followed by a new line.
+					// Mac OS has historically used a bare CR as
+					// its line terminator.
+					sourceFile.addLineOffset(offset);
+				}
+			}
+
+			lastSeen = ch;
+			++offset;
+		}
+	}
+
 	private static final int DEFAULT_SIZE = 100;
 
+	private String fullFileName;
 	private byte[] data;
 	private int[] lineNumberMap;
 	private int numLines;
@@ -39,25 +99,17 @@ public class SourceFile {
 	 * Constructor.
 	 * Creates an empty SourceFile object.
 	 */
-	public SourceFile() {
+	public SourceFile(String fullFileName) {
+		this.fullFileName = fullFileName;
 		this.lineNumberMap = new int[DEFAULT_SIZE];
 		this.numLines = 0;
 	}
 
 	/**
-	 * Set the source file data.
-	 * @param data the data
+	 * Get the full path name of the source file (with directory).
 	 */
-	public void setData(byte[] data) {
-		this.data = data;
-	}
-
-	/**
-	 * Get the source file data.
-	 * @param the data
-	 */
-	public byte[] getData() {
-		return data;
+	public String getFullFileName() {
+		return fullFileName;
 	}
 
 	/**
@@ -65,7 +117,8 @@ public class SourceFile {
 	 * @return an InputStream on the data in the source file,
 	 *   starting from given offset
 	 */
-	public InputStream getInputStream() {
+	public InputStream getInputStream() throws IOException {
+		loadFileData();
 		return new ByteArrayInputStream(data);
 	}
 
@@ -75,7 +128,8 @@ public class SourceFile {
 	 * @return an InputStream on the data in the source file,
 	 *   starting at the given offset
 	 */
-	public InputStream getInputStreamFromOffset(int offset) {
+	public InputStream getInputStreamFromOffset(int offset) throws IOException {
+		loadFileData();
 		return new ByteArrayInputStream(data, offset, data.length - offset);
 	}
 
@@ -109,6 +163,52 @@ public class SourceFile {
 		if (line < 0 || line >= numLines)
 			return -1;
 		return lineNumberMap[line];
+	}
+
+	private void loadFileData() throws IOException {
+		if (data != null)
+			return;
+
+		InputStream in = null;
+
+		try {
+			in = new BufferedInputStream(new FileInputStream(fullFileName));
+			ByteArrayOutputStream out = new ByteArrayOutputStream();
+
+			addLineOffset(0); // Line 0 starts at offset 0
+			LineNumberMapBuilder mapBuilder = new LineNumberMapBuilder(this);
+
+			// Copy all of the data from the file into the byte array output stream
+			byte[] buf = new byte[1024];
+			int n;
+			while ((n = in.read(buf)) >= 0) {
+				mapBuilder.addData(buf, n);
+				out.write(buf, 0, n);
+			}
+			mapBuilder.eof();
+
+			setData(out.toByteArray());
+		} finally {
+			if (in != null)
+				in.close();
+		}
+
+	}
+
+	/**
+	 * Set the source file data.
+	 * @param data the data
+	 */
+	private void setData(byte[] data) {
+		this.data = data;
+	}
+
+	/**
+	 * Get the source file data.
+	 * @param the data
+	 */
+	private byte[] getData() {
+		return data;
 	}
 }
 
