@@ -46,7 +46,7 @@ public class FindInconsistentSync extends CFGBuildingDetector {
 	private static class FieldStats {
 		public int nReadLocked, nReadUnlocked;
 		public int nWriteLocked, nWriteUnlocked;
-		public List<SourceLineAnnotation> unsyncAccessList = new LinkedList<SourceLineAnnotation>();
+		public Set<SourceLineAnnotation> unsyncAccessList = new LinkedHashSet<SourceLineAnnotation>();
 
 		public FieldStats() {
 			nReadLocked = 0;
@@ -81,7 +81,7 @@ public class FindInconsistentSync extends CFGBuildingDetector {
 	}
 
 	private BugReporter bugReporter;
-	private HashMap<FieldAnnotation, FieldStats> statMap = new HashMap<FieldAnnotation, FieldStats>();
+	private HashMap<FieldAnnotation, FieldStats> statMap = new LinkedHashMap<FieldAnnotation, FieldStats>();
 	private HashSet<FieldAnnotation> publicFields = new HashSet<FieldAnnotation>();
 	private HashSet<FieldAnnotation> volatileAndFinalFields = new HashSet<FieldAnnotation>();
 	private HashSet<FieldAnnotation> writtenOutsideOfConstructor = new HashSet<FieldAnnotation>();
