@@ -28,8 +28,15 @@ import org.apache.bcel.classfile.*;
 import org.apache.bcel.generic.*;
 
 class Lock extends ResourceCreationPoint {
-	public Lock(Location location, String lockClass) {
+	private ValueNumber lockValue;
+
+	public Lock(Location location, String lockClass, ValueNumber lockValue) {
 		super(location, lockClass);
+		this.lockValue = lockValue;
+	}
+
+	public ValueNumber getLockValue() {
+		return lockValue;
 	}
 }
 
@@ -56,6 +63,21 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock> {
 			final Instruction ins = handle.getInstruction();
 			final ConstantPoolGen cpg = getCPG();
 			final ResourceValueFrame frame = getFrame();
+			final ValueNumberFrame vnaFrame = vnaDataflow.getFactAtLocation(new Location(handle, basicBlock));
+			final int origNumSlots = frame.getNumSlots();
+
+			// Mark any appearances of the lock value in the ResourceValueFrame.
+			// A lock value could appear "spontaneously" if, for example, the lock
+			// was in a final field.  (We reuse the same value for loads of final
+			// fields - see ValueNumberAnalysis.  FIXME: Actually, at the moment we reuse
+			// the same value number for loads of non-final fields, but that's just a bug :-)
+			System.out.println("Incoming vna frame: " + vnaFrame.toString());
+			for (int i = 0; i < origNumSlots; ++i) {
+				if (vnaFrame.getValue(i).equals(lock.getLockValue())) {
+					System.out.println("Saw lock value!");
+					frame.setValue(i, ResourceValue.instance());
+				}
+			}
 
 			int status = -1;
 
@@ -77,11 +99,15 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock> {
 					// Look in the value number frame to see which slots have
 					// the same value as the Lock object.  Mark those slots
 					// in the resource value frame as containing the resource instance.
-					ValueNumberFrame vnaFrame = vnaDataflow.getFactAtLocation(new Location(handle, basicBlock));
-					ValueNumber instanceValueNumber = vnaFrame.getTopValue();
 
-					int numSlots = frame.getNumSlots();
-					for (int i = 0; i < numSlots; ++i) {
+					// Note: this only works if the resource
+					//   - was in a local and was ALOAD'ed, or
+					//   - was on the stack and was DUP'ed
+
+					ValueNumber instanceValueNumber = vnaFrame.getTopValue();
+					final int updatedNumSlots = frame.getNumSlots();
+
+					for (int i = 0; i < updatedNumSlots; ++i) {
 						if (vnaFrame.getValue(i).equals(instanceValueNumber))
 							frame.setValue(i, ResourceValue.instance());
 					}
@@ -103,7 +129,8 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock> {
 			this.vnaDataflow = vnaDataflow;
 		}
 
-		public Lock isResourceCreation(BasicBlock basicBlock, InstructionHandle handle, ConstantPoolGen cpg) {
+		public Lock isResourceCreation(BasicBlock basicBlock, InstructionHandle handle, ConstantPoolGen cpg)
+			throws DataflowAnalysisException {
 
 			InvokeInstruction inv = toInvokeInstruction(handle.getInstruction());
 			if (inv == null)
@@ -117,7 +144,12 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock> {
 				if (Repository.instanceOf(className, "java.util.concurrent.Lock") &&
 					methodName.equals("lock") &&
 					methodSig.equals("()V")) {
-					return new Lock(new Location(handle, basicBlock), className);
+
+					Location location = new Location(handle, basicBlock);
+					ValueNumberFrame frame = vnaDataflow.getFactAtLocation(location);
+					ValueNumber lockValue = frame.getTopValue();
+					System.out.println("Lock value is " + lockValue.getNumber() + ", frame=" + frame.toString());
+					return new Lock(location, className, lockValue);
 				}
 			} catch (ClassNotFoundException e) {
 				lookupFailureCallback.reportMissingClass(e);
