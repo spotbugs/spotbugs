@@ -182,7 +182,7 @@
     <!-- Build jar file of test cases.  -->
     <target name="testjar" depends="init" >
        <javac srcdir="${test.dir}" debug="true" />
-       <jar destfile="dumb.jar" basedir="${test.dir}" includes="*.class" />
+       <jar destfile="${test.dir}/dumb.jar" basedir="${test.dir}" includes="*.class" />
     </target>
 
     <!-- Target to get the release version info. -->
