@@ -41,6 +41,8 @@ public class ReadReturnShouldBeChecked extends BytecodeScanningDetector implemen
 
     public void visit(Method obj) {
 	sawAvailable = 0;
+	sawRead = false;
+	sawSkip = false;
 	//check =  (obj.getAccessFlags() & (ACC_PUBLIC | ACC_PROTECTED)) != 0;
 	}
 
