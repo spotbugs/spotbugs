@@ -117,6 +117,15 @@ public class CFG implements Debug {
 	}
 
 	/**
+	 * Remove given Edge from the graph.
+	 * @param edge the edge
+	 */
+	public void removeEdge(Edge edge) {
+		// FIXME: implement this
+		throw new UnsupportedOperationException();
+	}
+
+	/**
 	 * Look up the Edge object connecting given BasicBlocks.
 	 * If there are multiple edges matching the given source and destination
 	 * blocks, the first one is returned.
@@ -239,11 +248,22 @@ public class CFG implements Debug {
 	 *   the specified edge type
 	 */
 	public BasicBlock getSuccessorWithEdgeType(BasicBlock source, int edgeType) {
-		Iterator<Edge> i = outgoingEdgeIterator(source);
+		Edge edge = getOutgoingEdgeWithType(source, edgeType);
+		return edge != null ? edge.getDest() : null;
+	}
+
+	/**
+	 * Get the first outgoing edge in basic block with given type.
+	 * @param basicBlock the basic block
+	 * @param edgeType the edge type
+	 * @return the Edge, or null if there is no edge with that edge type
+	 */
+	public Edge getOutgoingEdgeWithType(BasicBlock basicBlock, int edgeType) {
+		Iterator<Edge> i = outgoingEdgeIterator(basicBlock);
 		while (i.hasNext()) {
 			Edge edge = i.next();
 			if (edge.getType() == edgeType)
-				return edge.getDest();
+				return edge;
 		}
 		return null;
 	}
