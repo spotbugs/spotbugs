@@ -79,7 +79,7 @@ public interface ExtendedTypes {
 	 * Any type code equal or greated than this one is guaranteed
 	 * to be distinct from both standard and extended types.
 	 */
-	public static final byte T_AVAIL_TYPE = 23;
+	public static final byte T_AVAIL_TYPE = 100;
 }
 
 // vim:ts=4
