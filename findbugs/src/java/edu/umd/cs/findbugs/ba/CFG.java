@@ -289,7 +289,18 @@ public class CFG implements Debug {
 	}
 
 	public void checkIntegrity() {
-		// TODO: implement something here?
+		// Ensure that basic blocks have only consecutive instructions
+		for (Iterator<BasicBlock> i = blockIterator(); i.hasNext(); ) {
+			BasicBlock basicBlock = i.next();
+			InstructionHandle prev = null;
+			for (Iterator<InstructionHandle> j = basicBlock.instructionIterator(); j.hasNext(); ) {
+				InstructionHandle handle = j.next();
+				if (prev != null && prev.getNext() != handle)
+					throw new IllegalStateException("Non-consecutive instructions in block " + basicBlock.getId() +
+						": prev=" + prev + ", handle=" + handle);
+				prev = handle;
+			}
+		}
 	}
 }
 
