@@ -335,6 +335,24 @@ public class BugInstance implements Comparable {
 	}
 
 	/**
+	 * Add a source line annotation describing the
+	 * source line numbers for a range of instructions in the method being
+	 * visited by the given visitor.
+	 * Note that if the method does not have line number information, then
+	 * no source line annotation will be added.
+	 * @param visitor a BetterVisitor which is visiting the method
+	 * @param startPC the bytecode offset of the start instruction in the range
+	 * @param endPC the bytecode offset of the end instruction in the range
+	 * @return this object
+	 */
+	public BugInstance addSourceLineRange(BetterVisitor visitor, int startPC, int endPC) {
+		SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation.fromVisitedInstructionRange(visitor, startPC, endPC);
+		if (sourceLineAnnotation != null)
+			add(sourceLineAnnotation);
+		return this;
+	}
+
+	/**
 	 * Add a source line annotation for instruction currently being visited
 	 * by given visitor.
 	 * Note that if the method does not have line number information, then
