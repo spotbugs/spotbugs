@@ -578,6 +578,7 @@ public class FindBugs implements Constants2, ExitCodes
 	boolean include = false;
 	boolean setExitCode = false;
 	int priorityThreshold = Detector.NORMAL_PRIORITY;
+	PrintStream outputStream = null;
 
 	// Process command line options
 	int argCount = 0;
@@ -600,7 +601,19 @@ public class FindBugs implements Constants2, ExitCodes
 			bugReporterType = SORTING_REPORTER;
 		else if (option.equals("-xml"))
 			bugReporterType = XML_REPORTER;
-		else if (option.equals("-visitors") || option.equals("-omitVisitors")) {
+		else if (option.equals("-outputFile")) {
+			++argCount;
+			if (argCount == argv.length) throw new IllegalArgumentException(option + " option requires argument");
+
+			String outputFile = argv[argCount];
+
+			try {
+				outputStream = new PrintStream(new BufferedOutputStream(new FileOutputStream(outputFile)));
+			} catch (IOException e) {
+				System.err.println("Couldn't open " + outputFile + " for output: " + e.toString());
+				System.exit(1);
+			}
+		} else if (option.equals("-visitors") || option.equals("-omitVisitors")) {
 			++argCount;
 			if (argCount == argv.length) throw new IllegalArgumentException(option + " option requires argument");
 			boolean omit = option.equals("-omitVisitors");
@@ -699,7 +712,7 @@ public class FindBugs implements Constants2, ExitCodes
 		return;
 		}
 
-	BugReporter bugReporter = null;
+	TextUIBugReporter bugReporter = null;
 	switch (bugReporterType) {
 	case PRINTING_REPORTER:
 		bugReporter = new PrintingBugReporter(); break;
@@ -715,6 +728,9 @@ public class FindBugs implements Constants2, ExitCodes
 		bugReporter.setErrorVerbosity(BugReporter.SILENT);
 
 	bugReporter.setPriorityThreshold(priorityThreshold);
+
+	if (outputStream != null)
+		bugReporter.setOutputStream(outputStream);
 
 	for (int i = argCount; i < argv.length; ++i)
 		project.addJar(argv[i]);

@@ -19,7 +19,36 @@
 
 package edu.umd.cs.findbugs;
 
+import java.io.PrintStream;
+
 public abstract class TextUIBugReporter extends AbstractBugReporter {
+
+	protected PrintStream outputStream = System.out;
+
+	public void setOutputStream(PrintStream outputStream) {
+		this.outputStream = outputStream;
+	}
+
+	protected void printBug(BugInstance bugInstance) {
+		switch(bugInstance.getPriority()) {
+		case Detector.LOW_PRIORITY:
+			outputStream.print("L ");
+			break;
+		case Detector.NORMAL_PRIORITY:
+			outputStream.print("M ");
+			break;
+		case Detector.HIGH_PRIORITY:
+			outputStream.print("H ");
+			break;
+		}
+		SourceLineAnnotation line = 
+			bugInstance.getPrimarySourceLineAnnotation();
+		if (line == null) 
+			outputStream.println(bugInstance.getMessage());
+		else 
+			outputStream.println(bugInstance.getMessage()
+				+ "  " + line.toString());
+	}
 
 	public void beginReport() { }
 	public void reportLine(String msg) { System.err.println(msg); }

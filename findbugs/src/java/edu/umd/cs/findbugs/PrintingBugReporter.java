@@ -23,32 +23,14 @@ import java.util.*;
 
 /**
  * A simple BugReporter which simply prints the formatted message
- * to System.out.
+ * to the output stream.
  */
 public class PrintingBugReporter extends TextUIBugReporter {
 	private HashSet<BugInstance> seenAlready = new HashSet<BugInstance>();
 
 	protected void doReportBug(BugInstance bugInstance) {
 		if (seenAlready.add(bugInstance)) {
-			switch(bugInstance.getPriority()) {
-			case Detector.LOW_PRIORITY:
-				System.out.print("L ");
-				break;
-			case Detector.NORMAL_PRIORITY:
-				System.out.print("M ");
-				break;
-			case Detector.HIGH_PRIORITY:
-				System.out.print("H ");
-				break;
-			}
-			SourceLineAnnotation line = 
-				bugInstance.getPrimarySourceLineAnnotation();
-			if (line == null) 
-				System.out.println(bugInstance.getMessage());
-			else 
-				System.out.println(bugInstance.getMessage()
-					+ "  " + line.toString());
-
+			printBug(bugInstance);
 			notifyObservers(bugInstance);
 		}
 	}
