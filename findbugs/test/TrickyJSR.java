@@ -1,11 +1,12 @@
 public class TrickyJSR {
 
-	private static final boolean P = Boolean.getBoolean("P");
-	private static final boolean PP = Boolean.getBoolean("PP");
-	private static final boolean QQ = Boolean.getBoolean("QQ");
-	private static final boolean ZZ = Boolean.getBoolean("ZZ");
 
 	public static void main(String[] argv) throws Throwable {
+
+		final boolean P = Boolean.getBoolean("P");
+		final boolean PP = Boolean.getBoolean("PP");
+		final boolean QQ = Boolean.getBoolean("QQ");
+		final boolean ZZ = Boolean.getBoolean("ZZ");
 
 		int count = 0;
 
