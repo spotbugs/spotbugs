@@ -161,7 +161,7 @@ public class XDocsBugReporter extends TextUIBugReporter {
 		if (line == null) {
 			element.addAttribute("line", "0");
 		} else {
-			element.addAttribute("line", new Integer(line.getStartLine()).toString());
+			element.addAttribute("line", Integer.toString(line.getStartLine()));
 		}
 
 
