@@ -50,21 +50,23 @@ public class UseObjectEquals extends BytecodeScanningDetector implements Constan
 			if ((seen == INVOKEVIRTUAL) 
 			&&   getNameConstantOperand().equals("equals")
 			&&   getSigConstantOperand().equals("(Ljava/lang/Object;)Z")) {
-				String clsName = getClassConstantOperand();
-				JavaClass cls = Repository.lookupClass(clsName);
-				if (cls.isFinal()) {
-					if (clsName.equals("java/lang/Object")) {
-						bugReporter.reportBug(new BugInstance("UOE_USE_OBJECT_EQUALS", LOW_PRIORITY)
-			        		.addClassAndMethod(this)
-			        		.addSourceLine(this));	
-			        }
-			    }
-			    else if (stack.getStackDepth() > 1) {
+			
+				if (stack.getStackDepth() > 1) {
 					OpcodeStack.Item item = stack.getStackItem(1);
-					if (item.isArray()) {
-						bugReporter.reportBug(new BugInstance("UOE_BAD_ARRAY_COMPARE", NORMAL_PRIORITY)
+					JavaClass cls = item.getJavaClass();
+					String methodClassName = getClassConstantOperand();
+				
+					if (cls.isFinal()) {
+						if (methodClassName.equals("java/lang/Object")) {
+							bugReporter.reportBug(new BugInstance("UOE_USE_OBJECT_EQUALS", LOW_PRIORITY)
 				        		.addClassAndMethod(this)
-				        		.addSourceLine(this));		
+				        		.addSourceLine(this));	
+				        }
+				    }
+					else if (item.isArray()) {
+							bugReporter.reportBug(new BugInstance("UOE_BAD_ARRAY_COMPARE", NORMAL_PRIORITY)
+					        		.addClassAndMethod(this)
+					        		.addSourceLine(this));		
 					}
 				}
 			}
