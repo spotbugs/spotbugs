@@ -370,7 +370,7 @@ public class BugInstance implements Comparable, XMLWriteable {
 		 */
 		public void remove() {
 			if (cur == null || removed)
-				throw new NoSuchElementException();
+				throw new IllegalStateException();
 			if (prev == null) {
 				propertyListHead = cur.getNext();
 			} else {
