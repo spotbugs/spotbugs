@@ -79,7 +79,13 @@
       <pathelement path="${java.class.path}"/>
     </path>
 
-    <!-- Classpath for running build tools. -->
+    <!-- Classpath for building tools. -->
+    <path id="tools.buildclasspath">
+      <path refid="classpath"/>
+      <pathelement path="${jar.dir}/${findbugs.jar.name}"/>
+    </path>
+
+    <!-- Classpath for running tools. -->
     <path id="tools.classpath">
       <pathelement location="${tools.dir}"/>
       <pathelement location="${jar.dir}/bcel.jar" />
@@ -265,6 +271,11 @@
                 output="text" outputFile="${test.dir}/dumb.bugs">
         <class location="${test.dir}/dumb.jar"/>
         <systemProperty name="findbugs.assertionmethods" value="UserAss3rtion.makeSureItIsOK"/>
+<!--
+        <systemProperty name="cfg.prune" value="true"/>
+        <systemProperty name="cfg.prune.stats" value="true"/>
+        <systemProperty name="ta.accurateExceptions" value="true"/>
+-->
       </findbugs>
     </target>
 
@@ -279,13 +290,13 @@
        Build tools. This includes:
          - Eclipse plugin classpath extractor
     -->
-    <target name="tools" depends="init">
+    <target name="tools" depends="findbugs">
       <javac srcdir="${tools.src.dir}" destdir="${tools.dir}"
              excludes="edu/umd/cs/findbugs/tools/patcomp/*"
              source="1.5"
              debug="true"
              compiler="com.cortexeb.Jsr14CompilerAdapter">
-        <classpath refid="classpath"/>
+        <classpath refid="tools.buildclasspath"/>
       </javac> 
     </target>
 
