@@ -395,7 +395,9 @@ public class FindBugsFrame extends javax.swing.JFrame {
 //      Uncomment one of these to test I18N	    
 //	    Locale.setDefault( Locale.FRANCE );
 //	    Locale.setDefault( Locale.GERMAN );
+//		Locale.setDefault( Locale.JAPANESE );
 //	    Locale.setDefault( new Locale( "et" ));
+//	    Locale.setDefault( new Locale( "fi" ));
 	    
 		UserPreferences prefs = UserPreferences.getUserPreferences();
 		prefs.read();
