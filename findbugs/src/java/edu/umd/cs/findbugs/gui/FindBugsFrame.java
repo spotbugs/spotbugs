@@ -787,11 +787,11 @@ public class FindBugsFrame extends javax.swing.JFrame {
     }//GEN-END:initComponents
 
     private void viewBugDetailsItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_viewBugDetailsItemActionPerformed
-        if (viewBugDetailsItem.isSelected()) {
-            bugTreeBugDetailsSplitter.resetToPreferredSizes();
-        } else {
-            bugTreeBugDetailsSplitter.setDividerLocation(1.0);
+        String view = getView();
+        if (view.equals("BugTree")) {
+            checkBugDetailsVisibility();
         }
+
     }//GEN-LAST:event_viewBugDetailsItemActionPerformed
 
     private void bugTreeBugDetailsSplitterPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_bugTreeBugDetailsSplitterPropertyChange
@@ -1095,9 +1095,6 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	groupByChooser.addItem(GROUP_BY_PACKAGE);
 	groupByChooser.addItem(GROUP_BY_BUG_TYPE);
 	
-        // Bug details window starts not selected
-	bugTreeBugDetailsSplitter.setDividerLocation(1.0);
-
         // We use a special highlight painter to ensure that the highlights cover
         // complete source lines, even though the source text doesn't
         // fill the lines completely.
@@ -1202,6 +1199,15 @@ public class FindBugsFrame extends javax.swing.JFrame {
         //    ",hopefullyMax="+hopefullyMaxDivider);
 	boolean isMaximized = location.intValue() >= hopefullyMaxDivider;
         return isMaximized;
+    }
+
+    private void checkBugDetailsVisibility() {
+        if (viewBugDetailsItem.isSelected()) {
+            bugTreeBugDetailsSplitter.resetToPreferredSizes();
+        } else {
+            bugTreeBugDetailsSplitter.setDividerLocation(1.0);
+        }
+        //System.out.("New bug detail splitter location " + bugTreeBugDetailsSplitter.getDividerLocation());   
     }
     
     /* ----------------------------------------------------------------------
@@ -1392,6 +1398,16 @@ public class FindBugsFrame extends javax.swing.JFrame {
      */
     private void setView(String viewName) {
 	viewPanelLayout.show(viewPanel, viewName);
+        if (viewName.equals("BugTree"))
+            checkBugDetailsVisibility();
+        currentView = viewName;
+    }
+    
+    /**
+     * Get which view is displayed currently.
+     */
+    private String getView() {
+        return currentView;
     }
     
     /**
@@ -1440,13 +1456,11 @@ public class FindBugsFrame extends javax.swing.JFrame {
         
         // Show source code.
 	SourceLineAnnotation primarySrcLine = selected.getPrimarySourceLineAnnotation();
-	if (primarySrcLine != null) {
-	    Project project = getCurrentProject();
-	    AnalysisRun analysisRun = getCurrentAnalysisRun();
-	    if (project == null) throw new IllegalStateException("null project!");
-	    if (analysisRun == null) throw new IllegalStateException("null analysis run!");
-	    viewSource(project, analysisRun, primarySrcLine);
-	}
+	Project project = getCurrentProject();
+	AnalysisRun analysisRun = getCurrentAnalysisRun();
+	if (project == null) throw new IllegalStateException("null project!");
+	if (analysisRun == null) throw new IllegalStateException("null analysis run!");
+	viewSource(project, analysisRun, primarySrcLine);
         
         // Show bug info.
         showBugInfo(selected);
@@ -1463,15 +1477,23 @@ public class FindBugsFrame extends javax.swing.JFrame {
      *    which lines to highlight)
      */
     private void viewSource(Project project, AnalysisRun analysisRun, SourceLineAnnotation srcLine) {
-	sourceFinder.setSourceBaseList(project.getSourceDirList());
-	String sourceFile = analysisRun.getSourceFile(srcLine.getClassName());
-	if (sourceFile == null) {
-	    System.out.println("No source file for class " + srcLine.getClassName());
-	    return;
-	}
-
         // Get rid of old source code text
 	sourceTextArea.setText("");
+
+        // There is nothing to do without a source annotation
+        // TODO: actually, might want to put a message in the source window
+        // explaining that we don't have the source file, and that
+        // they might want to recompile with debugging info turned on.
+        if (srcLine == null)
+            return;
+        
+        // Look up the source file for this class.
+        sourceFinder.setSourceBaseList(project.getSourceDirList());
+        String sourceFile = analysisRun.getSourceFile(srcLine.getClassName());
+	if (sourceFile == null) {
+	    logger.logMessage(ConsoleLogger.INFO, "No source file for class " + srcLine.getClassName());
+	    return;
+	}
 
 	// Try to open the source file and display its contents
 	// in the source text area.
@@ -1627,6 +1649,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
     // My variable declarations
     private ConsoleLogger logger;
     private CardLayout viewPanelLayout;
+    private String currentView;
     private ProjectCollection projectCollection;
     private DefaultTreeModel navigatorTreeModel;
     private DefaultMutableTreeNode rootNode;
