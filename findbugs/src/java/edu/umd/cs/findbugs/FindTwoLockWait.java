@@ -37,7 +37,6 @@ public class FindTwoLockWait extends CFGBuildingDetector implements Detector {
 
 	public FindTwoLockWait(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
-		setCFGBuilderMode(CFGBuilderModes.EXCEPTION_SENSITIVE_MODE);// dataflow won't work correctly otherwise
 	}
 
 	public boolean preScreen(MethodGen mg) {

@@ -93,15 +93,8 @@ public class FindInconsistentSync extends CFGBuildingDetector {
 	private Dataflow<LockCount> dataflow;
 	private SelfCalls selfCalls;
 
-	/**
-	 * CFG builder mode must be exception sensitive:
-	 * dataflow of locks won't work correctly otherwise.
-	 */
-	private static final int CFG_BUILDER_MODE = CFGBuilderModes.EXCEPTION_SENSITIVE_MODE;
-
 	public FindInconsistentSync(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
-		setCFGBuilderMode(CFG_BUILDER_MODE);
 	}
 
 	public void startClass(ClassContext classContext) {
@@ -138,7 +131,7 @@ public class FindInconsistentSync extends CFGBuildingDetector {
 				return !method.isPublic();
 			}
 		};
-		selfCalls.execute(CFG_BUILDER_MODE);
+		selfCalls.execute();
 
 		// If the class contains ABSOLUTELY NO EXPLICIT SYNCHRONIZATION,
 		// then don't bother examining call sites.  That would only confuse matters.
@@ -169,7 +162,7 @@ public class FindInconsistentSync extends CFGBuildingDetector {
 						continue siteLoop;
 
 					// Get lock counts for call site method
-					CFG cfg = classContext.getCFG(method, CFG_BUILDER_MODE);
+					CFG cfg = classContext.getCFG(method);
 					MethodGen methodGen = classContext.getMethodGen(method);
 					Dataflow<LockCount> dataflow = getLockCountDataflow(cfg, methodGen);
 

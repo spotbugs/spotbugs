@@ -41,7 +41,7 @@ public class SelfCalls {
 		hasSynchronization = false;
 	}
 
-	public void execute(int cfgBuilderMode) {
+	public void execute() {
 		JavaClass jclass = classContext.getJavaClass();
 		Method[] methods = jclass.getMethods();
 		for (int i = 0; i < methods.length; ++i) {
@@ -50,7 +50,7 @@ public class SelfCalls {
 				continue;
 
 			MethodGen mg = classContext.getMethodGen(method);
-			CFG cfg = classContext.getCFG(method, cfgBuilderMode);
+			CFG cfg = classContext.getCFG(method);
 
 			scan(method, mg, cfg);
 		}

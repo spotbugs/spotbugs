@@ -39,7 +39,6 @@ public abstract class CFGBuildingDetector implements Detector {
 	private static final boolean NOSCREEN = Boolean.getBoolean("cbv.noscreen");
 
 	private ClassContext classContext;
-	private int cfgBuilderMode = CFGBuilderModes.NORMAL_MODE;
 
 	/**
 	 * Visit ClassContext for a class.
@@ -74,7 +73,7 @@ public abstract class CFGBuildingDetector implements Detector {
 				continue;
 
 			// Get the CFG for the method from the ClassContext
-			CFG cfg = classContext.getCFG(method, cfgBuilderMode);
+			CFG cfg = classContext.getCFG(method);
 
 			if (PRINTCFG) {
 				CFGPrinter printer = new CFGPrinter(cfg);
@@ -112,14 +111,6 @@ public abstract class CFGBuildingDetector implements Detector {
 	 */
 	public boolean preScreen(MethodGen mg) {
 		return true;
-	}
-
-	/**
-	 * Set the CFGBuilder mode.
-	 * @param mode the mode; see {@link CFGBuilderModes}
-	 */
-	public void setCFGBuilderMode(int mode) {
-		this.cfgBuilderMode = mode;
 	}
 
 	/** Return JavaClass currently being visited. */
