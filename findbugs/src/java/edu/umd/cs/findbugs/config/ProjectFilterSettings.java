@@ -331,14 +331,22 @@ public class ProjectFilterSettings implements Cloneable {
 	 * @see java.lang.Object#clone()
 	 */
 	public Object clone()  {
-		ProjectFilterSettings clone = new ProjectFilterSettings();
-	
-		clone.activeBugCategorySet = (Set<String>) ((HashSet<String>) this.activeBugCategorySet).clone();
-		clone.setDetectorFactories( (List<DetectorFactory>)
-				((ArrayList<DetectorFactory>)this.detectorFactories).clone());
-		clone.setMinPriority(this.getMinPriority());
-		
-		return clone;
+		try {
+			// Create shallow copy
+			ProjectFilterSettings clone = (ProjectFilterSettings) super.clone();
+			
+			// Copy field contents
+			clone.activeBugCategorySet = new HashSet<String>();
+			clone.activeBugCategorySet.addAll(this.activeBugCategorySet);
+			clone.detectorFactories = new ArrayList<DetectorFactory>();
+			clone.detectorFactories.addAll(this.detectorFactories);
+			clone.setMinPriority(this.getMinPriority());
+			
+			return clone;
+		} catch (CloneNotSupportedException e) {
+			// Should not happen!
+			throw new IllegalStateException();
+		}
 		
 	}
 	
@@ -377,7 +385,7 @@ public class ProjectFilterSettings implements Cloneable {
 	/**
 	 * @return Returns the enabled detector factories.
 	 */
-	public List getDetectorFactories() {
+	public List<DetectorFactory> getDetectorFactories() {
 		return detectorFactories;
 	}
 	/**
