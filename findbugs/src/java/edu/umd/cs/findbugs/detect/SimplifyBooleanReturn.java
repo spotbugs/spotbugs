@@ -87,8 +87,10 @@ public class SimplifyBooleanReturn extends BytecodeScanningDetector implements C
 			switch (state) {
 				case SAW_NOTHING:
 					if (ifOpCodes.get(seen)) {
-						state = SAW_IF;
-						startPC = getPC();
+						if (getBranchTarget() == (getPC() + 5)) {
+							state = SAW_IF;
+							startPC = getPC();
+						}						
 					}
 				break;			
 				
