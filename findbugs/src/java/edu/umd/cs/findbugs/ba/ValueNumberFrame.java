@@ -62,17 +62,17 @@ public class ValueNumberFrame extends Frame<ValueNumber> {
 		// of ValueNumberAnalysis.
 
 		if (mine != getValue(slot)) throw new IllegalStateException();
+
+		if (mine.equals(other))
+			return mine;
+
 		ValueNumber mergedValue = mergedValueList.get(slot);
-		if (mergedValue == null && !mine.equals(other)) {
+		if (mergedValue == null) {
 			mergedValue = factory.createFreshValue();
 			mergedValueList.set(slot, mergedValue);
-			mine = mergedValue;
 		}
-		// NOTE: if mergedValue == null, we could remember "other" as contributing
-		// to the merged value.  (Like input to a phi node.)  As it is, we only
-		// care that the merged value cannot reliably be thought to be the same
-		// as any of the incoming values.
-		return mine;
+
+		return mergedValue;
 	}
 
 	public ValueNumber getDefaultValue() {
