@@ -1,22 +1,11 @@
 package edu.umd.cs.findbugs;
 
-public class ClassAnnotation implements BugAnnotation {
-	private String className;
-	private String superclassName;
+public class ClassAnnotation extends PackageMemberAnnotation {
 	private String sourceFile;
 
-	public ClassAnnotation(String className, String superclassName, String sourceFile) {
-		this.className = className;
-		this.superclassName = superclassName;
+	public ClassAnnotation(String className, String sourceFile) {
+		super(className);
 		this.sourceFile = sourceFile;
-	}
-
-	public String getClassName() {
-		return className;
-	}
-
-	public String getSuperclassName() {
-		return superclassName;
 	}
 
 	public String getSourceFile() {
@@ -27,8 +16,11 @@ public class ClassAnnotation implements BugAnnotation {
 		visitor.visitClassAnnotation(this);
 	}
 
-	public String toString() {
-		return className;
+	protected String formatPackageMember(String key) {
+		if (key.equals(""))
+			return className;
+		else
+			throw new IllegalArgumentException("unknown key " + key);
 	}
 }
 

@@ -1,12 +1,11 @@
 package edu.umd.cs.findbugs;
 
-public class FieldAnnotation implements BugAnnotation {
-	public String className;
+public class FieldAnnotation extends PackageMemberAnnotation {
 	public String fieldName;
 	public String fieldSig;
 
 	public FieldAnnotation(String className, String fieldName, String fieldSig) {
-		this.className = className;
+		super(className);
 		this.fieldName = fieldName;
 		this.fieldSig = fieldSig;
 	}
@@ -27,8 +26,21 @@ public class FieldAnnotation implements BugAnnotation {
 		visitor.visitFieldAnnotation(this);
 	}
 
-	public String toString() {
-		return className + "." + fieldName;
+	protected String formatPackageMember(String key) {
+		if (key.equals(""))
+			return className + "." + fieldName;
+		else if (key.equals("fullField")) {
+			String pkgName = getPackageName();
+			SignatureConverter converter = new SignatureConverter(fieldSig);
+			StringBuffer result = new StringBuffer();
+			result.append(converter.parseNext());
+			result.append(' ');
+			result.append(className);
+			result.append('.');
+			result.append(fieldName);
+			return result.toString();
+		} else
+			throw new IllegalArgumentException("unknown key " + key);
 	}
 }
 
