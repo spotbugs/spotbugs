@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs.visitclass;
 
+import edu.umd.cs.findbugs.annotations.SuppressWarnings;
+
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
@@ -218,12 +220,14 @@ abstract public class DismantleBytecode extends PreorderVisitor implements Const
 		return PC;
 	}
 
+	@SuppressWarnings("EI")
 	public int[] getSwitchOffsets() {
 		if (switchOffsets == null)
 			throw new IllegalStateException("getSwitchOffsets called but value not available");
 		return switchOffsets;
 	}
 
+	@SuppressWarnings("EI")
 	public int[] getSwitchLabels() {
 		if (switchLabels == null)
 			throw new IllegalStateException("getSwitchOffsets called but value not available");

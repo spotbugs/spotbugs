@@ -19,10 +19,10 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.*;
-
 import edu.umd.cs.findbugs.ResourceCollection;
+import edu.umd.cs.findbugs.annotations.SuppressWarnings;
 import edu.umd.cs.findbugs.ba.*;
+import java.util.*;
 import org.apache.bcel.generic.*;
 
 /**
@@ -70,6 +70,7 @@ public class StreamResourceTracker implements ResourceTracker<Stream> {
 	 *                              where streams are created
 	 * @param lookupFailureCallback used when class hierarchy lookups fail
 	 */
+	@SuppressWarnings("EI2")
 	public StreamResourceTracker(StreamFactory[] streamFactoryList,
 	                             RepositoryLookupFailureCallback lookupFailureCallback) {
 

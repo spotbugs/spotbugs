@@ -25,6 +25,10 @@
 
 package edu.umd.cs.findbugs.gui;
 
+import edu.umd.cs.findbugs.Version;
+
+import edu.umd.cs.findbugs.annotations.SuppressWarnings;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -33,8 +37,6 @@ import java.text.MessageFormat;
 import java.util.regex.*;
 import java.net.URL;
 import javax.swing.event.HyperlinkEvent;
-
-import edu.umd.cs.findbugs.Version;
 
 /**
  * The Help:About dialog.
@@ -69,6 +71,7 @@ public class AboutDialog extends javax.swing.JDialog {
 	 * Process an HTML page to replace certain substitution patterns.
 	 * Right now, we just expand @VERSION@.
 	 */
+	@SuppressWarnings("OS")
 	private void processPage(javax.swing.JEditorPane pane, String fileName) throws IOException {
 		InputStream in = null;
 
@@ -273,3 +276,5 @@ public class AboutDialog extends javax.swing.JDialog {
     // End of variables declaration//GEN-END:variables
 
 }
+
+// vim:ts=4

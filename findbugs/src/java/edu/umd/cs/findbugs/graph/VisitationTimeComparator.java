@@ -17,9 +17,11 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-// $Revision: 1.4 $
+// $Revision: 1.5 $
 
 package edu.umd.cs.findbugs.graph;
+
+import edu.umd.cs.findbugs.annotations.SuppressWarnings;
 
 import java.util.*;
 
@@ -49,6 +51,7 @@ public class VisitationTimeComparator <VertexType extends GraphVertex> implement
 	 * @param visitationTimeList array of visitation times indexed by vertex label
 	 * @param direction          either ASCENDING or DESCENDING
 	 */
+	@SuppressWarnings("EI2")
 	public VisitationTimeComparator(int[] visitationTimeList, int direction) {
 		m_visitationTimeList = visitationTimeList;
 		m_direction = direction;

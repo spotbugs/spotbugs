@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs.ba;
 
+import edu.umd.cs.findbugs.annotations.SuppressWarnings;
+
 import edu.umd.cs.findbugs.ba.type.InvalidSignatureException;
 import edu.umd.cs.findbugs.ba.type.Type;
 import edu.umd.cs.findbugs.ba.type.TypeMerger;
@@ -38,6 +40,7 @@ public class BetterTypeAnalysis extends FrameDataflowAnalysis<Type, BetterTypeFr
 	private TypeMerger typeMerger;
 	private RepositoryLookupFailureCallback lookupFailureCallback;
 
+	@SuppressWarnings("EI2")
 	public BetterTypeAnalysis(MethodGen methodGen, String[] parameterSignatureList,
 	                          CFG cfg, DepthFirstSearch dfs,
 	                          TypeRepository typeRepository, TypeMerger typeMerger,

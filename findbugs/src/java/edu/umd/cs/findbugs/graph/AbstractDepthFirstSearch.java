@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs.graph;
 
+import edu.umd.cs.findbugs.annotations.SuppressWarnings;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -224,6 +226,7 @@ public abstract class AbstractDepthFirstSearch
 	 *
 	 * @return the array of finish times
 	 */
+	@SuppressWarnings("EI")
 	public int[] getFinishTimeList() {
 		return finishTimeList;
 	}

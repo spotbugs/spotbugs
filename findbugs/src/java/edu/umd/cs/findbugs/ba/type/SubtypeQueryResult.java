@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs.ba.type;
 
+import edu.umd.cs.findbugs.annotations.SuppressWarnings;
+
 import java.util.*;
 
 /**
@@ -64,6 +66,7 @@ public class SubtypeQueryResult {
 	 *
 	 * @param missingClassList the list of names of missing classes
 	 */
+	@SuppressWarnings("EI2")
 	public void finish(String[] missingClassList) {
 		if (missingClassList.length > 0)
 			this.missingClassList = missingClassList;

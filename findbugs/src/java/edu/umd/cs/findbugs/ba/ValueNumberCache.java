@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs.ba;
 
+import edu.umd.cs.findbugs.annotations.SuppressWarnings;
+
 import java.util.*;
 
 import org.apache.bcel.generic.InstructionHandle;
@@ -43,6 +45,7 @@ public class ValueNumberCache {
 		public final ValueNumber[] inputValueList;
 		private int cachedHashCode;
 
+		@SuppressWarnings("EI2")
 		public Entry(InstructionHandle handle, ValueNumber[] inputValueList) {
 			this.handle = handle;
 			this.inputValueList = inputValueList;
