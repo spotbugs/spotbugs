@@ -457,7 +457,7 @@ public class ClassContext implements AnalysisFeatures {
 					MethodGen methodGen = getMethodGen(method);
 					InstructionList il = methodGen.getInstructionList();
 
-					LoadedFieldSet loadedFieldSet = new LoadedFieldSet();
+					LoadedFieldSet loadedFieldSet = new LoadedFieldSet(methodGen);
 
 					for (InstructionHandle handle = il.getStart(); handle != null; handle = handle.getNext()) {
 						Instruction ins = handle.getInstruction();
