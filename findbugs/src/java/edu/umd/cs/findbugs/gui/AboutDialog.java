@@ -25,18 +25,17 @@
 
 package edu.umd.cs.findbugs.gui;
 
-import edu.umd.cs.findbugs.Version;
-
-import edu.umd.cs.findbugs.annotations.SuppressWarnings;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.text.MessageFormat;
-import java.util.regex.*;
 import java.net.URL;
+import java.text.MessageFormat;
+import java.util.regex.Pattern;
+
 import javax.swing.event.HyperlinkEvent;
+
+import edu.umd.cs.findbugs.Version;
 
 /**
  * The Help:About dialog.
@@ -44,6 +43,7 @@ import javax.swing.event.HyperlinkEvent;
  * @author David Hovemeyer
  */
 public class AboutDialog extends javax.swing.JDialog {
+	private static final long serialVersionUID = 3546076956480385584L;
 
 	private FindBugsFrame parent;
 
@@ -71,7 +71,7 @@ public class AboutDialog extends javax.swing.JDialog {
 	 * Process an HTML page to replace certain substitution patterns.
 	 * Right now, we just expand @VERSION@.
 	 */
-	@SuppressWarnings("OS")
+	//@SuppressWarnings("OS")
 	private void processPage(javax.swing.JEditorPane pane, String fileName) throws IOException {
 		InputStream in = null;
 
