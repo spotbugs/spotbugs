@@ -72,26 +72,27 @@ import java.util.List;
  * FindBugs in Java class files. This task can take the following
  * arguments:
  * <ul>
- * <li>auxClasspath    (classpath or classpathRef)
- * <li>home            (findbugs install dir)
- * <li>quietErrors     (boolean - default false)
- * <li>failOnError     (boolean - default false)
- * <li>reportLevel     (enum low|medium|high)
- * <li>sort            (boolean default true)
- * <li>debug           (boolean default false) 
- * <li>output          (enum text|xml|xml:withMessages|html - default xml)
- * <li>outputFile      (name of output file to create)
- * <li>stylesheet      (name of stylesheet to generate HTML: default is "default.xsl")
- * <li>visitors        (collection - comma seperated)
- * <li>omitVisitors    (collection - comma seperated)
- * <li>excludeFilter   (filter filename)
- * <li>includeFilter   (filter filename)
- * <li>projectFile     (project filename)
- * <li>jvmargs         (any additional jvm arguments)
- * <li>classpath       (classpath for running FindBugs)
- * <li>pluginList      (list of plugin Jar files to load)
- * <li>systemProperty  (a system property to set)
- * <li>workHard        (boolean default false)
+ * <li>auxClasspath       (classpath or classpathRef)
+ * <li>home               (findbugs install dir)
+ * <li>quietErrors        (boolean - default false)
+ * <li>failOnError        (boolean - default false)
+ * <li>reportLevel        (enum experimental|low|medium|high)
+ * <li>sort               (boolean default true)
+ * <li>debug              (boolean default false) 
+ * <li>output             (enum text|xml|xml:withMessages|html - default xml)
+ * <li>outputFile         (name of output file to create)
+ * <li>stylesheet         (name of stylesheet to generate HTML: default is "default.xsl")
+ * <li>visitors           (collection - comma seperated)
+ * <li>omitVisitors       (collection - comma seperated)
+ * <li>excludeFilter      (filter filename)
+ * <li>includeFilter      (filter filename)
+ * <li>projectFile        (project filename)
+ * <li>jvmargs            (any additional jvm arguments)
+ * <li>classpath          (classpath for running FindBugs)
+ * <li>pluginList         (list of plugin Jar files to load)
+ * <li>systemProperty     (a system property to set)
+ * <li>workHard           (boolean default false)
+ * <li>adjustExperimental (boolean default false)
  * </ul>
  * Of these arguments, the <b>home</b> is required.
  * <b>projectFile</b> is required if nested &lt;class&gt; are not
@@ -101,7 +102,7 @@ import java.util.List;
  *
  * @author Mike Fagan <a href="mailto:mfagan@tde.com">mfagan@tde.com</a>
  *
- * @version $Revision: 1.29 $
+ * @version $Revision: 1.30 $
  *
  * @since Ant 1.5
  *
@@ -119,6 +120,7 @@ public class FindBugsTask extends Task {
 	private boolean quietErrors = false;
 	private boolean failOnError = false;
 	private boolean workHard = false;
+	private boolean adjustExperimental = false;
 	private File homeDir = null;
 	private File projectFile = null;
 	private File excludeFile = null;
@@ -187,6 +189,15 @@ public class FindBugsTask extends Task {
 	 */
 	public void setWorkHard(boolean workHard){
 		this.workHard = workHard;   
+	}
+	
+	/**
+	 * Set the adjustExperimental flag
+	 * 
+	 * @param adjustExperimental true if we want experimental bug patterns to have lower priority
+	 */
+	public void setAdjustExperimental(boolean adjustExperimental){
+		this.adjustExperimental = adjustExperimental;
 	}
     
 	/**
@@ -491,11 +502,12 @@ public class FindBugsTask extends Task {
 		}
 	
 		if ( reportLevel != null  && 
-			!( reportLevel.trim().equalsIgnoreCase("low" ) || 
+			!( reportLevel.trim().equalsIgnoreCase("experimental" ) || 
+			   reportLevel.trim().equalsIgnoreCase("low" ) || 
 			   reportLevel.trim().equalsIgnoreCase("medium" ) ||
 			   reportLevel.trim().equalsIgnoreCase("high" ) ) ) { 
 			throw new BuildException( "reportlevel attribute must be either " +
-  									  "'low' or 'medium' or 'high' for task <" + 
+  									  "'experimental' or 'low' or 'medium' or 'high' for task <" + 
 										getTaskName() + "/>",
 									  getLocation() );
 		}
@@ -568,6 +580,10 @@ public class FindBugsTask extends Task {
 
 			addArg("-pluginList");
 			addArg(pluginList.toString());
+		}
+		
+		if (adjustExperimental) {
+			addArg("-adjustExperimental");
 		}
 
 		if ( sorted ) addArg("-sortByClass");
