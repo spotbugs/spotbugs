@@ -26,6 +26,7 @@
 package edu.umd.cs.findbugs.gui;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.*;
 import javax.swing.tree.DefaultTreeModel;
 import edu.umd.cs.findbugs.*;
@@ -42,15 +43,15 @@ import org.apache.bcel.util.SyntheticRepository;
  */
 public class AnalysisRun {
     /**
-     * Our BugReporter just puts the reported BugInstances into a HashSet.
+     * Our BugReporter just puts the reported BugInstances into a SortedBugCollection.
      */
     private class Reporter extends AbstractBugReporter {
-        private HashSet<BugInstance> bugSet = new HashSet<BugInstance>();
+        private SortedBugCollection bugCollection = new SortedBugCollection();
         
         public void finish() { }
         
         public void reportBug(edu.umd.cs.findbugs.BugInstance bugInstance) {
-            bugSet.add(bugInstance);
+            bugCollection.add(bugInstance);
         }
         
         public void beginReport() {
@@ -125,6 +126,13 @@ public class AnalysisRun {
     }
 
     /**
+     * Load bugs from a file.
+     */
+    public void loadBugsFromFile(File file) throws IOException, org.dom4j.DocumentException {
+        reporter.bugCollection.readXML(file);
+    }
+    
+    /**
      * Report any errors that may have occurred during analysis.
      */
     public void reportAnalysisErrors() {
@@ -139,7 +147,7 @@ public class AnalysisRun {
      * Return the collection of BugInstances.
      */
     public java.util.Collection<BugInstance> getBugInstances() {
-        return reporter.bugSet;
+        return reporter.bugCollection.getCollection();
     }
     
     /**
