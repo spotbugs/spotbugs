@@ -46,6 +46,9 @@ public abstract class ByteCodePatternDetector implements Detector {
 				Method method = methodList[i];
 				if (method.isAbstract() || method.isNative())
 					continue;
+
+				if (!prescreen(method, classContext))
+					continue;
 	
 				MethodGen methodGen = classContext.getMethodGen(method);
 				ConstantPoolGen cpg = methodGen.getConstantPool();
@@ -91,6 +94,27 @@ public abstract class ByteCodePatternDetector implements Detector {
 	 * Get the ByteCodePattern for this detector.
 	 */
 	public abstract ByteCodePattern getPattern();
+
+	/**
+	 * Prescreen a method.
+	 * It is a valid, but dumb, implementation simply to return true unconditionally.
+	 * A better implementation is to call ClassContext.getBytecodeSet() to check
+	 * whether the method actually contains the bytecode instructions that
+	 * the pattern will look for.  The theory is that checking the bytecode
+	 * set is very fast, while building the MethodGen, CFG, ValueNumberAnalysis,
+	 * etc. objects required to match ByteCodePatterns is slow, and the bytecode
+	 * pattern matching algorithm is also not particularly fast.
+	 *
+	 * <p> As a datapoint, prescreening speeds up the BCPDoubleCheck detector
+	 * <b>by a factor of 5</b> with no loss of generality and only a dozen
+	 * or so extra lines of code.
+	 *
+	 * @param method the method
+	 * @param classContext the ClassContext for the method
+	 * @return true if the method should be analyzed for instances of the 
+	 *   ByteCodePattern
+	 */
+	public abstract boolean prescreen(Method method, ClassContext classContext);
 
 	/**
 	 * Called to report an instance of the ByteCodePattern.
