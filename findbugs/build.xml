@@ -167,6 +167,7 @@
 
       <copy file="etc/findbugs.xml" todir="${class.dir}" />
       <copy file="etc/messages.xml" todir="${class.dir}" />
+      <copy file="etc/messages_ja.xml" todir="${class.dir}" />
 
       <jar destfile="${plugin.dir}/${coreplugin.jar.name}" basedir="${class.dir}">
          <include name="*.xml" />
