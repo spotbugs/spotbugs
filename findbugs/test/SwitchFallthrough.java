@@ -1,7 +1,7 @@
 
 class SwitchFallthrough {
 
-	static void num(int i) {
+	void test1(int i) {
 		switch (i) {
 		case -1:
 		case 0:
@@ -22,5 +22,19 @@ class SwitchFallthrough {
 			System.out.println("something else");
 		}
 	}
+	
+	void test2(int i, int j) {
+		switch (i) {
+			case 0:
+				switch (j) {
+					case 0:
+						System.out.println("zero zero");
+				}
+			
+			case 1:
+				System.out.println("zero");
+		}
+	}
+	
 		
 }
