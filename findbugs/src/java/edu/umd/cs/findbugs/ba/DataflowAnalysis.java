@@ -20,7 +20,6 @@
 package edu.umd.cs.daveho.ba;
 
 import org.apache.bcel.generic.InstructionHandle;
-import java.util.List;
 
 /**
  * A dataflow analysis to be used with the {@link Dataflow} class.
@@ -90,15 +89,13 @@ public interface DataflowAnalysis<Fact> {
 	public void transfer(BasicBlock basicBlock, InstructionHandle end, Fact start, Fact result) throws DataflowAnalysisException;
 
 	/**
-	 * Meet all of the logical predecessors of an edge into the start
-	 * fact for the block.
-	 * @param basicBlock the basic block whose start fact we are initializing
-	 * @param predEdgeList list of logical predecessors of the block
-	 * @param predFactList list of result facts for the logical predecessors
-	 * @param start the start fact we are initializing (which is initially TOP)
+	 * Meet a dataflow fact associated with an incoming edge into another fact.
+	 * This is used to determine the start fact for a basic block.
+	 * @param fact the predecessor fact (incoming edge)
+	 * @param edge the edge from the predecessor
+	 * @param result the result fact
 	 */
-	public void meetPredecessorFacts(BasicBlock basicBlock, List<Edge> predEdgeList, List<Fact> predFactList, Fact start)
-		throws DataflowAnalysisException;
+	public void meetInto(Fact fact, Edge edge, Fact result) throws DataflowAnalysisException;
 }
 
 // vim:ts=4

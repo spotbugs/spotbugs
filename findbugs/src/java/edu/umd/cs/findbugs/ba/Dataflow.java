@@ -108,15 +108,15 @@ public class Dataflow<Fact> {
 					if (DEBUG) debug(block, "Init entry fact ==> " + start + "\n");
 				} else {
 					Iterator<Edge> predEdgeIter = logicalPredecessorEdgeIterator(block);
-					ArrayList<Edge> predEdgeList = new ArrayList<Edge>();
-					ArrayList<Fact> predFactList = new ArrayList<Fact>();
 					while (predEdgeIter.hasNext()) {
 						Edge edge = predEdgeIter.next();
-						predEdgeList.add(edge);
 						BasicBlock logicalPred = isForwards ? edge.getSource() : edge.getDest();
-						predFactList.add(resultFactMap.get(logicalPred));
+						Fact predFact = resultFactMap.get(logicalPred);
+
+						if (DEBUG) debug(block, logicalPred, "Meet " + start + " with " + predFact);
+						analysis.meetInto(predFact, edge, start);
+						if (DEBUG) debug(block, logicalPred, " ==> " + start + "\n");
 					}
-					analysis.meetPredecessorFacts(block, predEdgeList, predFactList, start);
 				}
 				if (DEBUG) debug(block, "start fact is " + start + "\n");
 	
@@ -178,6 +178,9 @@ public class Dataflow<Fact> {
 
 	/** Get the analysis object. */
 	public DataflowAnalysis<Fact> getAnalysis() { return analysis; }
+
+	/** Get the CFG object. */
+	public CFG getCFG() { return cfg; }
 
 	/**
 	 * Return an Iterator over edges that connect given block to its

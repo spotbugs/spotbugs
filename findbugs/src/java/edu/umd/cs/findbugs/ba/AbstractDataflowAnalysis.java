@@ -25,8 +25,7 @@ import java.util.*;
 /**
  * Abstract base class providing functionality that will be useful
  * for most dataflow analysis implementations.  In particular, it implements
- * the meetPredecessorFacts() and transfer() functions by calling down
- * to the meetInto() and transferInstruction() functions, respectively.
+ * the transfer() function by calling down to the transferInstruction() function.
  * It also maintains a map of the dataflow fact for every location in the CFG,
  * which is useful when using the results of the analysis.
  *
@@ -40,14 +39,6 @@ public abstract class AbstractDataflowAnalysis<Fact> implements DataflowAnalysis
 	/* ----------------------------------------------------------------------
 	 * Public methods
 	 * ---------------------------------------------------------------------- */
-
-	/**
-	 * Meet one fact into another.
-	 * @param fact the source fact
-	 * @param edge the incoming control edge that produced the source fact
-	 * @param result the result whose value should be met with the source fact
-	 */
-	public abstract void meetInto(Fact fact, Edge edge, Fact result) throws DataflowAnalysisException;
 
 	/**
 	 * Transfer function for a single instruction.
@@ -83,21 +74,6 @@ public abstract class AbstractDataflowAnalysis<Fact> implements DataflowAnalysis
 	/* ----------------------------------------------------------------------
 	 * Implementations of interface methods
 	 * ---------------------------------------------------------------------- */
-
-	public void meetPredecessorFacts(BasicBlock basicBlock, List<Edge> predEdgeList, List<Fact> predFactList, Fact start)
-		throws DataflowAnalysisException {
-		if (predEdgeList.size() != predFactList.size())
-			throw new IllegalArgumentException("pred edge list and fact list are not the same size");
-
-		Iterator<Edge> edgeIter = predEdgeList.iterator();
-		Iterator<Fact> factIter = predFactList.iterator();
-
-		while (edgeIter.hasNext() && factIter.hasNext()) {
-			Edge edge = edgeIter.next();
-			Fact fact = factIter.next();
-			meetInto(fact, edge, start);
-		}
-	}
 
 	public void transfer(BasicBlock basicBlock, InstructionHandle end, Fact start, Fact result) throws DataflowAnalysisException {
 		copy(start, result);

@@ -87,17 +87,9 @@ public class DominatorsAnalysis implements DataflowAnalysis<BitSet> {
 		result.set(basicBlock.getId());
 	}
 
-	public void meetPredecessorFacts(BasicBlock basicBlock, List<Edge> predEdgeList, List<BitSet> predFactList, BitSet start)
-		throws DataflowAnalysisException {
-
-		// start has already been set to TOP
-
-		// Take intersection of dominators of all predecessors
-		Iterator<BitSet> i = predFactList.iterator();
-		while (i.hasNext()) {
-			BitSet pred = i.next();
-			start.and(pred);
-		}
+	public void meetInto(BitSet fact, Edge edge, BitSet result) throws DataflowAnalysisException {
+		// Meet is intersection
+		result.and(fact);
 	}
 }
 
