@@ -37,6 +37,7 @@
     <property name="findbugs.dir" value="." />
     <property name="findbugs.src.dir" value="${findbugs.dir}/src/java" />
     <property name="anttask.src.dir" value="${findbugs.dir}/src/antTask" />
+    <property name="tools.src.dir" value="${findbugs.dir}/src/tools"/>
     <property name="findbugs.jar.name" value="findbugs.jar" />
     <property name="findbugsgui.jar.name" value="findbugsGUI.jar" />
     <property name="coreplugin.jar.name" value="coreplugin.jar" />
@@ -48,6 +49,7 @@
     <property name="script.dir" value="bin" />
     <property name="plugin.dir" value="plugin" />
     <property name="class.dir" value="${build.dir}/classes" />
+    <property name="tools.dir" value="${build.dir}/tools"/>
     <property name="test.dir" value="${findbugs.dir}/test" />
     <property name="release.prop.file" value="${build.dir}/release.properties" />
     <property name="html.xsl.stylesheet" value="${xsl.stylesheet.home}/html/chunk.xsl" />
@@ -94,6 +96,7 @@
       <mkdir dir="${class.dir}" />
       <mkdir dir="${doc.dir}" />
       <mkdir dir="${build.dir}" />
+      <mkdir dir="${tools.dir}"/>
     </target>
 
     <!-- Target to compile classes. -->
@@ -104,6 +107,14 @@
              compiler="com.cortexeb.Jsr14CompilerAdapter">
         <classpath refid="classpath" />
       </javac>
+<!--
+      <javac srcdir="${findbugs.src.dir}" destdir="${class.dir}"
+             source="1.5"
+             target="1.5"
+             debug="true">
+        <classpath refid="classpath" />
+      </javac>
+-->
     </target>
 
     <!-- Target to build jar file for the main engine. -->
@@ -195,6 +206,15 @@
        <javac srcdir="${test.dir}" includes="IgnoredReturnValue.java,TryLock.java" debug="true" />
        <jar destfile="${test.dir}/jsr166test.jar" basedir="${test.dir}"
             includes="IgnoredReturnValue*.class,TryLock*.class" />
+    </target>
+
+    <!-- Target to build the Eclipse plugin classpath extractor. -->
+    <target name="eclipseClasspath" depends="init">
+      <javac srcdir="${tools.src.dir}" destdir="${tools.dir}"
+             source="1.5"
+             debug="true">
+        <classpath refid="classpath"/>
+      </javac> 
     </target>
 
     <!-- Target to get the release version info. -->
