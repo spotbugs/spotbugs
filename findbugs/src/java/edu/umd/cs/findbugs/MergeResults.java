@@ -19,7 +19,10 @@
 
 package edu.umd.cs.findbugs;
 
+import java.io.IOException;
 import java.util.*;
+
+import org.dom4j.DocumentException;
 
 /**
  * Merge a saved results file (containing annotations) with a new results file.
@@ -35,6 +38,42 @@ public class MergeResults {
 	private static final boolean VERSION_INSENSITIVE = Boolean.getBoolean("mergeResults.vi");
 	private static final boolean UPDATE_CATEGORIES = Boolean.getBoolean("mergeResults.update");
 
+	private SortedBugCollection origCollection, newCollection;
+	private Project project;
+
+	private int numPreserved;
+	private int numAlreadyAnnotated;
+	private int numLost;
+	private int numLostWithAnnotations;
+
+	public MergeResults(String origFilename, String newFilename) throws IOException, DocumentException {
+		this(new SortedBugCollection(), new SortedBugCollection(), new Project());
+		origCollection.readXML(origFilename, new Project());
+		newCollection.readXML(newFilename, this.project);
+	}
+
+	public MergeResults(SortedBugCollection origCollection, SortedBugCollection newCollection, Project project) {
+		this.origCollection = origCollection;
+		this.newCollection = newCollection;
+		this.project = project;
+	}
+
+	public SortedBugCollection getOrigCollection() { return origCollection; }
+	public SortedBugCollection getNewCollection() { return newCollection; }
+	public Project getProject() { return project; }
+
+	public int getNumPreserved() { return numPreserved; }
+	public int getNumAlreadyAnnotated() { return numAlreadyAnnotated; }
+	public int getNumLost() { return numLost; }
+	public int getNumLostWithAnnotations() { return numLostWithAnnotations; }
+
+	protected boolean preserveUnconditionally(BugInstance bugInstance) {
+		return false;
+	}
+
+	protected void lostWithAnnotation(BugInstance bugInstance) {
+	}
+
 	public static void main(String[] argv) throws Exception {
 		if (argv.length != 3) {
 			System.err.println("Usage: " + MergeResults.class.getName() + " <orig results> <new results> <output file>");
@@ -45,39 +84,61 @@ public class MergeResults {
 			System.out.println("Using version-insensitive bug comparator");
 		}
 
-		DetectorFactoryCollection.instance(); // as a side effect, loads detector plugins
-
 		String origResultsFile = argv[0];
 		String newResultsFile = argv[1];
 		String outputFile = argv[2];
 
-		Project project = new Project();
+		MergeResults mergeResults = new MergeResults(origResultsFile, newResultsFile) {
+			final Set<String> updateCategorySet = new HashSet<String>();
 
-		SortedBugCollection origCollection = new SortedBugCollection();
-		SortedBugCollection newCollection = new SortedBugCollection();
+			protected boolean preserveUnconditionally(BugInstance bugInstance) {
+				return UPDATE_CATEGORIES && !updateCategorySet.contains(bugInstance.getAbbrev());
+			}
 
-		origCollection.readXML(origResultsFile, new Project());
-		newCollection.readXML(newResultsFile, project);
+			protected void lostWithAnnotation(BugInstance bugInstance) {
+				System.out.println("Losing a bug with an annotation:");
+				System.out.println(bugInstance.getMessage());
+				SourceLineAnnotation srcLine = bugInstance.getPrimarySourceLineAnnotation();
+				if (srcLine != null)
+					System.out.println("\t" + srcLine.toString());
+				System.out.println(bugInstance.getAnnotationText());
+			}
+
+			public void execute() {
+				if (UPDATE_CATEGORIES) {
+					for (Iterator<BugInstance> i = getNewCollection().getCollection().iterator(); i.hasNext(); ) {
+						// All bugs not in categories contained in the
+						// original set will be preserved unconditionally.
+						updateCategorySet.add(i.next().getAbbrev());
+					}
+					System.out.println("Updating only categories: " + updateCategorySet);
+				}
+				super.execute();
+			}
+		};
+
+		mergeResults.execute();
+
+		System.out.println(mergeResults.getNumPreserved() + " preserved, " +
+			mergeResults.getNumAlreadyAnnotated() + " already annotated, " +
+			mergeResults.getNumLost() + " lost (" +
+			mergeResults.getNumLostWithAnnotations() + " lost with annotations)");
+
+		SortedBugCollection result = mergeResults.getNewCollection();
+		result.writeXML(outputFile, mergeResults.getProject());
+	}
+
+	public void execute() {
+		DetectorFactoryCollection.instance(); // as a side effect, loads detector plugins
 
 		SortedSet<BugInstance> origSet = createSet(origCollection);
 		SortedSet<BugInstance> newSet = createSet(newCollection);
-
-		Set<String> updateCategorySet = new HashSet<String>();
-		if (UPDATE_CATEGORIES) {
-			extractCategories(newSet, updateCategorySet);
-			System.out.println("Updating only categories: " + updateCategorySet);
-		}
-
-		int numPreserved = 0;
-		int numAlreadyAnnotated = 0;
-		int numLost = 0;
-		int numLostWithAnnotations = 0;
 
 		Iterator<BugInstance> i = origSet.iterator();
 		while (i.hasNext()) {
 			BugInstance orig = i.next();
 
-			if (UPDATE_CATEGORIES && !updateCategorySet.contains(orig.getAbbrev())) {
+			if (preserveUnconditionally(orig)) {
 				// This original bug is not in a category that we are updating.
 				// Therefore, it is copied into the results unconditionally.
 				numPreserved++;
@@ -90,6 +151,7 @@ public class MergeResults {
 					SortedSet<BugInstance> tailSet = newSet.tailSet(orig);
 					BugInstance matching = tailSet.first();
 					if (matching.getAnnotationText().equals("")) {
+						// Copy annotation text from original results to results
 						matching.setAnnotationText(orig.getAnnotationText());
 						numPreserved++;
 					} else {
@@ -98,29 +160,11 @@ public class MergeResults {
 				} else {
 					numLost++;
 					if (!orig.getAnnotationText().equals("")) {
-						System.out.println("Losing a bug with an annotation:");
-						System.out.println(orig.getMessage());
-						SourceLineAnnotation srcLine = orig.getPrimarySourceLineAnnotation();
-						if (srcLine != null)
-							System.out.println("\t" + srcLine.toString());
-						System.out.println(orig.getAnnotationText());
+						lostWithAnnotation(orig);
 						numLostWithAnnotations++;
 					}
 				}
 			}
-		}
-
-		System.out.println(numPreserved + " preserved, " +
-			numAlreadyAnnotated + " already annotated, " +
-			numLost + " lost (" + numLostWithAnnotations + " lost with annotations)");
-
-		newCollection.writeXML(outputFile, project);
-	}
-
-	private static void extractCategories(Set<BugInstance> set, Set<String> updateCategorySet) {
-		Iterator<BugInstance> i = set.iterator();
-		while (i.hasNext()) {
-			updateCategorySet.add(i.next().getAbbrev());
 		}
 	}
 
