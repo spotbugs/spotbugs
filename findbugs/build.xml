@@ -16,10 +16,12 @@
 	<property name="toolsrc.dir" value="src/tools"/>
 	<property name="scriptsrc.dir" value="src/scripts"/>
 	<property name="etc.dir" value="etc"/>
+	<property name="test.dir" value="test"/>
 	<property name="pkg.base" value="edu/umd/cs/findbugs"/>
 	<property name="engine.jar" value="${jar.dir}/findbugs.jar"/>
 	<property name="coreplugin.jar" value="${plugin.dir}/coreplugin.jar"/>
 	<property name="gui.jar" value="${jar.dir}/findbugsGUI.jar"/>
+	<property name="test.jar" value="${test.dir}/dumb.jar"/>
 	<property name="scripts.props" value="etc/script.properties"/>
 	<property name="scripts.stamp" value="build/scripts.stamp"/>
 	
@@ -31,13 +33,13 @@
 	</path>
 	
 	<path id="tools.classpath">
-		<pathelement path="findbugs.classpath"/>
 		<pathelement location="${classes.dir}"/>
+		<path refid="findbugs.classpath"/>
 	</path>
 
 	<!-- Default target builds scripts and jars, allowing execution using
-		the working directory as FINDBUGS_HOME. -->
-	<target name="build" depends="jars,scripts"/>
+		the working directory as FINDBUGS_HOME.  Also build test case jarfile. -->
+	<target name="build" depends="jars,scripts,testjar"/>
 	
 	<!-- Rebuild from scratch. -->
 	<target name="rebuild" depends="clean,build"/>
@@ -45,7 +47,7 @@
 	<!-- Compile Java source files. -->
 	<target name="classes">
 		<mkdir dir="${classes.dir}"/>
-		<javac srcdir="src/java"
+		<javac srcdir="${src.dir}"
 				destdir="${classes.dir}"
 				source="1.5"
 				target="jsr14"
@@ -144,6 +146,21 @@
 
 		<touch file="${scripts.stamp}"/>
 	</target>
+	
+	<!-- Test cases -->
+	<target name="testjar" depends="classes">
+		<javac srcdir="${test.dir}"
+				destdir="${test.dir}"
+				source="1.5"
+				debug="on">
+			<classpath refid="tools.classpath"/>
+		</javac>
+		<jar destfile="${test.jar}">
+			<fileset dir="${test.dir}">
+				<include name="*.class"/>
+			</fileset>
+		</jar>
+	</target>
 
 	<!-- Delete generated files. -->
 	<target name="clean">
@@ -151,6 +168,9 @@
 			<fileset dir="${scripts.dir}" includes="*"/>
 		</delete>
 		<delete dir="build"/>
+		<delete>
+			<fileset dir="${test.dir}" includes="*.class,*.jar"/>
+		</delete>
 		<delete file="${engine.jar}"/>
 		<delete file="${coreplugin.jar}"/>
 		<delete file="${gui.jar}"/>
