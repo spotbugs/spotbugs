@@ -192,6 +192,29 @@ These options may be used with both the GUI and Text UI.
     </listitem>
   </varlistentry>
 
+  <varlistentry>
+    <term><command>-debug</command></term>
+    <listitem>
+      <para>
+      Prints a trace of detectors run and classes analyzed to standard output.
+      Useful for troubleshooting unexpected analysis failures.
+      </para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><command>-conserveSpace</command></term>
+    <listitem>
+      <para>
+      This option disables analyses that increase precision but also
+      increase memory consumption.  You may want to try this option if
+      you find that &FindBugs; runs out of memory, or takes an unusually
+      long time to complete its analysis.
+      </para>
+    </listitem>
+  </varlistentry>
+
+
 </variablelist>
 </para>
 
