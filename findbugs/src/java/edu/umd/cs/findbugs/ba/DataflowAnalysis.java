@@ -34,6 +34,18 @@ public interface DataflowAnalysis<Fact> {
 	public Fact createFact();
 
 	/**
+	 * Get the start fact for given basic block.
+	 * @param block the basic block
+	 */
+	public Fact getStartFact(BasicBlock block);
+
+	/**
+	 * Get the result fact for given basic block.
+	 * @param block the basic block
+	 */
+	public Fact getResultFact(BasicBlock block);
+
+	/**
 	 * Copy dataflow facts.
 	 */
 	public void copy(Fact source, Fact dest);

@@ -42,8 +42,6 @@ public class Dataflow<Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 	private CFG cfg;
 	private AnalysisType analysis;
 	private BlockOrder blockOrder;
-	private IdentityHashMap<BasicBlock, Fact> startFactMap; // dataflow facts at block entries
-	private IdentityHashMap<BasicBlock, Fact> resultFactMap;// dataflow facts at block exits
 	private boolean isForwards;
 	private int numIterations;
 
@@ -58,23 +56,17 @@ public class Dataflow<Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 		this.cfg = cfg;
 		this.analysis = analysis;
 		blockOrder = analysis.getBlockOrder(cfg);
-		startFactMap = new IdentityHashMap<BasicBlock, Fact>();
-		resultFactMap = new IdentityHashMap<BasicBlock, Fact>();
 		isForwards = analysis.isForwards();
 		numIterations = 0;
 
-		// Create and initialize dataflow facts
+		// Initialize result facts
 		Iterator<BasicBlock> i = cfg.blockIterator();
 		while (i.hasNext()) {
 			BasicBlock block = i.next();
 
-			// Start fact is just empty.
-			startFactMap.put(block, analysis.createFact());
-
 			// Initial result facts are whatever the analysis sets them to be.
-			Fact result = analysis.createFact();
+			Fact result = analysis.getResultFact(block);
 			analysis.initResultFact(result);
-			resultFactMap.put(block, result);
 		}
 	}
 
@@ -103,7 +95,7 @@ public class Dataflow<Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 				if (DEBUG) debug(block, "start\n");
 	
 				// Get start fact for block.
-				Fact start = startFactMap.get(block);
+				Fact start = analysis.getStartFact(block);
 				analysis.makeFactTop(start);
 	
 				// Meet all of the logical predecessor results into this block's start.
@@ -117,7 +109,7 @@ public class Dataflow<Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 					while (predEdgeIter.hasNext()) {
 						Edge edge = predEdgeIter.next();
 						BasicBlock logicalPred = isForwards ? edge.getSource() : edge.getDest();
-						Fact predFact = resultFactMap.get(logicalPred);
+						Fact predFact = analysis.getResultFact(logicalPred);
 
 						if (DEBUG) debug(block, logicalPred, "Meet " + start + " with " + predFact);
 						analysis.meetInto(predFact, edge, start);
@@ -128,7 +120,7 @@ public class Dataflow<Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 	
 				// Get result facts for block,
 				// making a copy of it (so we can detect if it changed).
-				Fact result = resultFactMap.get(block);
+				Fact result = analysis.getResultFact(block);
 				Fact origResult = analysis.createFact();
 				analysis.copy(result, origResult);
 	
@@ -174,17 +166,12 @@ public class Dataflow<Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 
 	/** Get dataflow facts for start of given block. */
 	public Fact getStartFact(BasicBlock block) {
-		return startFactMap.get(block);
+		return analysis.getStartFact(block);
 	}
 
 	/** Get dataflow facts for end of given block. */
 	public Fact getResultFact(BasicBlock block) {
-		return resultFactMap.get(block);
-	}
-
-	/** Get an iterator over the result facts. */
-	public Iterator<Fact> resultFactIterator() {
-		return resultFactMap.values().iterator();
+		return analysis.getResultFact(block);
 	}
 
 	/** Get the analysis object. */

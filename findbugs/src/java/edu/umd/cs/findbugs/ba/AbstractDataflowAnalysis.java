@@ -39,6 +39,9 @@ public abstract class AbstractDataflowAnalysis<Fact> implements DataflowAnalysis
 	private HashMap<Location, Fact> factAtLocationMap = new HashMap<Location, Fact>();
 	private HashMap<Location, Fact> factAfterLocationMap = new HashMap<Location, Fact>();
 
+	private IdentityHashMap<BasicBlock, Fact> startFactMap = new IdentityHashMap<BasicBlock, Fact>();
+	private IdentityHashMap<BasicBlock, Fact> resultFactMap = new IdentityHashMap<BasicBlock, Fact>();
+
 	/* ----------------------------------------------------------------------
 	 * Public methods
 	 * ---------------------------------------------------------------------- */
@@ -96,6 +99,11 @@ public abstract class AbstractDataflowAnalysis<Fact> implements DataflowAnalysis
 		return factAtLocationMap.values().iterator();
 	}
 
+	/** Get an iterator over the result facts. */
+	public Iterator<Fact> resultFactIterator() {
+		return resultFactMap.values().iterator();
+	}
+
 	/**
 	 * Call this to get a dataflow value as a String.
 	 * By default, we just call toString().
@@ -108,6 +116,23 @@ public abstract class AbstractDataflowAnalysis<Fact> implements DataflowAnalysis
 	/* ----------------------------------------------------------------------
 	 * Implementations of interface methods
 	 * ---------------------------------------------------------------------- */
+
+	public Fact getStartFact(BasicBlock block) {
+		return lookupOrCreateFact(startFactMap, block);
+	}
+
+	public Fact getResultFact(BasicBlock block) {
+		return lookupOrCreateFact(resultFactMap, block);
+	}
+
+	private Fact lookupOrCreateFact(Map<BasicBlock, Fact> map, BasicBlock block) {
+		Fact fact = map.get(block);
+		if (fact == null) {
+			fact = createFact();
+			map.put(block, fact);
+		}
+		return fact;
+	}
 
 	public void transfer(BasicBlock basicBlock, InstructionHandle end, Fact start, Fact result) throws DataflowAnalysisException {
 		copy(start, result);

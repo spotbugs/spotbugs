@@ -36,6 +36,8 @@ import org.apache.bcel.generic.InstructionHandle;
  */
 public class DominatorsAnalysis implements DataflowAnalysis<BitSet> {
 	private final CFG cfg;
+	private final IdentityHashMap<BasicBlock, BitSet> startFactMap;
+	private final IdentityHashMap<BasicBlock, BitSet> resultFactMap;
 
 	/**
 	 * Constructor.
@@ -43,10 +45,29 @@ public class DominatorsAnalysis implements DataflowAnalysis<BitSet> {
 	 */
 	public DominatorsAnalysis(CFG cfg) {
 		this.cfg = cfg;
+		this.startFactMap = new IdentityHashMap<BasicBlock, BitSet>();
+		this.resultFactMap = new IdentityHashMap<BasicBlock, BitSet>();
 	}
 
 	public BitSet createFact() {
 		return new BitSet();
+	}
+
+	public BitSet getStartFact(BasicBlock block) {
+		return lookupOrCreateFact(startFactMap, block);
+	}
+
+	public BitSet getResultFact(BasicBlock block) {
+		return lookupOrCreateFact(resultFactMap, block);
+	}
+
+	private BitSet lookupOrCreateFact(Map<BasicBlock, BitSet> map, BasicBlock block) {
+		BitSet fact = map.get(block);
+		if (fact == null) {
+			fact = createFact();
+			map.put(block, fact);
+		}
+		return fact;
 	}
 
 	public void copy(BitSet source, BitSet dest) {

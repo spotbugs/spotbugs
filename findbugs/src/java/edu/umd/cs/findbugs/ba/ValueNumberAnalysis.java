@@ -188,7 +188,7 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
 			ValueNumberFrame frame = i.next();
 			markFrameValues(frame, compacter);
 		}
-		for (Iterator<ValueNumberFrame> i = dataflow.resultFactIterator(); i.hasNext(); ) {
+		for (Iterator<ValueNumberFrame> i = resultFactIterator(); i.hasNext(); ) {
 			ValueNumberFrame frame = i.next();
 			markFrameValues(frame, compacter);
 		}
