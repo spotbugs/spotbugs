@@ -389,7 +389,7 @@ To compile &FindBugs; from source, you will need the following:
 <itemizedlist>
   <listitem>
     <para>
-      The <ulink url="@WEBSITE@/release/findbugs-@VERSION@-source.tar.gz"
+      The <ulink url="@WEBSITE@/release/findbugs-@VERSION@-source.zip"
       >&FindBugs; source distribution</ulink>
     </para>
   </listitem>
@@ -460,7 +460,7 @@ After you download the source distribution, you'll need to extract it into
 a working directory.  A typical command to do this is:
 
 <screen>
-<prompt>$ </prompt><command>gunzip -c findbugs-@VERSION@-source.tar.gz | tar xvf -</command>
+<prompt>$ </prompt><command>unzip findbugs-@VERSION@-source.zip</command>
 </screen>
 
 </para>
