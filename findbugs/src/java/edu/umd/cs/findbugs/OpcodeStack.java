@@ -146,7 +146,7 @@ public class OpcodeStack implements Constants2
 	}
 	
  	public void sawOpcode(DismantleBytecode dbc, int seen) {
- 		int register;
+ 		int register, intConstant;
  		JavaClass cls;
  		String signature;
  		Item it, it2, it3;
@@ -326,11 +326,18 @@ public class OpcodeStack implements Constants2
 	 				}
 	 			break;
 	 				 			
+	 			case IINC:
+	 				register = dbc.getRegisterOperand();
+	 				it = getLVValue( register );
+	 				it2 = new Item("I", new Integer(dbc.getIntConstant()));
+	 				pushByIntMath( IADD, it, it2);
+	 				pushByLocalStore(register);
+	 			break;
+
 	 			case ATHROW:
 	 			case CHECKCAST:
 	 			case GOTO:
 	 			case GOTO_W:
-	 			case IINC:
 	 			case NOP:
 	 			case RET:
 	 			case RETURN:
