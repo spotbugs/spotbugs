@@ -16,6 +16,9 @@ import java.util.*;
  * @author David Hovemeyer
  */
 public class Project {
+    /** Project filename. */
+    private String fileName;
+    
     /** The list of jar files. */
     private List jarList;
     
@@ -23,10 +26,14 @@ public class Project {
     private List srcDirList;
     
     /** Creates a new instance of Project */
-    public Project() {
+    public Project(String fileName) {
+        this.fileName = fileName;
 	jarList = new LinkedList();
 	srcDirList = new LinkedList();
     }
+    
+    /** Get the project filename. */
+    public String getFileName() { return fileName; }
     
     /**
      * Add a Jar file to the project.
@@ -71,4 +78,6 @@ public class Project {
      * @return the source directory
      */
     public String getSourceDir(int num) { return (String) srcDirList.get(num); }
+    
+    public String toString() { return fileName; }
 }
