@@ -42,6 +42,7 @@
     <property name="findbugs.attributes.jar.name" value="findbugsAttributes.jar"/>
     <property name="findbugsgui.jar.name" value="findbugsGUI.jar" />
     <property name="coreplugin.jar.name" value="coreplugin.jar" />
+    <property name="styleplugin.jar.name" value="styleplugin.jar" />
     <property name="anttask.jar.name" value="findbugs-ant.jar" />
     <property name="doc.src.dir" value="${findbugs.dir}/src/doc" />
     <property name="doc.dir" value="${findbugs.dir}/doc" />
@@ -205,26 +206,11 @@
       </jar>
     </target>
 
-    <!-- Check if core plugin XML files need to be copied. -->
-    <target name="corepluginXMLCheck" depends="tools">
-      <condition property="coreplugin.xml.uptodate">
-        <and>
-          <uptodate>
-            <srcfiles dir="${findbugs.dir}"
-                      includes="etc/findbugs.xml,etc/messages.xml,etc/messages_ja.xml,etc/messages_fr.xml"/>
-            <mapper type="regexp"
-                    from="^etc(/|\\)(.*)\.xml$$"
-                    to="${class.dir}/\2.xml"/>
-          </uptodate>
-        </and>
-      </condition>
-    </target>
-
-    <!-- Copy XML files (plugin descriptor and messages files)
-         for the core plugin.  We run a Java program to check
+    <!-- Check XML files (plugin descriptor and messages files)
+         for the plugin being built to ensure
          that the messages files actually define all of the messages
          required by the plugin (as defined in the plugin descriptor). -->
-    <target name="corepluginXML" depends="classes,corepluginXMLCheck" unless="coreplugin.xml.uptodate">
+    <target name="pluginXML" depends="classes">
       <java dir="${findbugs.dir}"
             fork="true"
             classname="edu.umd.cs.findbugs.tools.xml.CheckMessages"
@@ -232,26 +218,31 @@
          <classpath refid="tools.classpath"/>
          <arg value="etc/findbugs.xml"/>
          <arg value="etc/messages.xml"/>
-<!--
-         <arg value="etc/messages_ja.xml"/>
-         <arg value="etc/messages_fr.xml"/>
--->
       </java>
-
-      <copy file="etc/findbugs.xml" todir="${class.dir}" />
-      <copy file="etc/messages.xml" todir="${class.dir}" />
-      <copy file="etc/messages_ja.xml" todir="${class.dir}" />
-      <copy file="etc/messages_fr.xml" todir="${class.dir}" />
     </target>
 
-    <!-- Target to build the core plugin.
-         This is all of the standard bug pattern detectors.  -->
-    <target name="coreplugin" depends="classes,corepluginXML">
-      <jar destfile="${plugin.dir}/${coreplugin.jar.name}" basedir="${class.dir}">
-         <include name="*.xml" />
-         <include name="edu/umd/cs/findbugs/detect/*.class" />
+    <!-- Generic target to build a plugin.
+         Use antcall to invoke.
+         Parameters:
+            plugin.xml.dir - where plugin descriptor and messages file(s) are
+            plugin.subpkg.name - subpkg of edu.umd.cs.findbugs containing classes
+            plugin.jar.name - filename of jar file to create
+    -->
+    <target name="plugin" depends="classes,tools,pluginXML">
+      <jar destfile="${plugin.dir}/${plugin.jar.name}">
+         <fileset dir="${plugin.xml.dir}" includes="*.xml"/>
+         <fileset dir="${class.dir}" includes="edu/umd/cs/findbugs/${plugin.subpkg.name}/*.class" />
       </jar>
     </target>
+
+   <!-- Target to build the core plugin. -->
+   <target name="coreplugin">
+     <antcall target="plugin">
+       <param name="plugin.xml.dir" value="${findbugs.dir}/etc"/>
+       <param name="plugin.subpkg.name" value="detect"/>
+       <param name="plugin.jar.name" value="${coreplugin.jar.name}"/>
+     </antcall>
+   </target>
 
     <!-- Target to build the GUI jar file. -->
     <target name="findbugsgui" depends="classes">
@@ -262,7 +253,6 @@
       <copy todir="${class.dir}/edu/umd/cs/findbugs/gui/bundle">
         <fileset dir="${findbugs.src.dir}/edu/umd/cs/findbugs/gui/bundle" includes="**/*.properties"/>
       </copy>
-      	
 
       <!--
         When building the Jar file for the GUI, we just need the contents
