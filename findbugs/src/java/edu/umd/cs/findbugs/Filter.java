@@ -24,12 +24,8 @@ import java.io.*;
 import org.dom4j.*;
 import org.dom4j.io.*;
 
-public class Filter {
-	private OrMatcher rootMatcher;
-
+public class Filter extends OrMatcher {
 	public Filter(String fileName) throws IOException, FilterException {
-		rootMatcher = new OrMatcher();
-
 		parse(fileName);
 	}
 
@@ -47,11 +43,71 @@ public class Filter {
 		// Iterate over Exclude elements
 		Iterator i = filterDoc.selectNodes("/FindBugsFilter/Exclude").iterator();
 		while (i.hasNext()) {
-			Node excludeNode = (Node) i.next();
+			Element excludeNode = (Element) i.next();
+
+			AndMatcher excludeMatcher = new AndMatcher();
+
+			// Each exclude node must have either "class" or "classregex" attributes
+			Matcher classMatcher = null;
+			String classAttr = excludeNode.valueOf("@class");
+			if (!classAttr.equals("")) {
+				classMatcher = new ClassMatcher(classAttr);
+			} else {
+				String classRegex = excludeNode.valueOf("@classregex");
+				if (!classRegex.equals(""))
+					classMatcher = new ClassRegexMatcher(classRegex);
+			}
+
+			if (classMatcher == null)
+				throw new FilterException("Exclude node must specify either class or classregex attribute");
+
+			excludeMatcher.addChild(classMatcher);
 
 			System.out.println("Exclude node");
+
+			// Iterate over child elements of Exclude node.
+			Iterator j = excludeNode.elementIterator();
+			while (j.hasNext()) {
+				Element child = (Element) j.next();
+				Matcher matcher = getMatcher(child);
+				excludeMatcher.addChild(matcher);
+			}
+
+			// Add the Exclude matcher to the overall Filter
+			this.addChild(excludeMatcher);
 		}
 
+	}
+
+	private Matcher getMatcher(Element element) throws FilterException {
+		// These will be either BugCode, Method, or Or elements.
+		String name = element.getName();
+		if (name.equals("BugCode")) {
+			return new BugCodeMatcher(element.valueOf("@name"));
+		} else if (name.equals("Method")) {
+			Attribute nameAttr = element.attribute("name");
+			Attribute paramsAttr = element.attribute("params");
+			Attribute returnsAttr = element.attribute("returns");
+
+			if (nameAttr == null)
+				throw new FilterException("Missing name attribute in Method element");
+
+			if ((paramsAttr != null || returnsAttr != null) && (paramsAttr == null || returnsAttr == null))
+				throw new FilterException("Method element must have both params and returns attributes if either is used");
+
+			if (paramsAttr == null)
+				return new MethodMatcher(nameAttr.getValue());
+			else
+				return new MethodMatcher(nameAttr.getValue(), paramsAttr.getValue(), returnsAttr.getValue());
+		} else if (name.equals("Or")) {
+			OrMatcher orMatcher = new OrMatcher();
+			Iterator i = element.elementIterator();
+			while (i.hasNext()) {
+				orMatcher.addChild(getMatcher((Element) i.next()));
+			}
+			return orMatcher;
+		} else
+			throw new FilterException("Unknown element: " + name);
 	}
 
 	public static void main(String[] argv) {
