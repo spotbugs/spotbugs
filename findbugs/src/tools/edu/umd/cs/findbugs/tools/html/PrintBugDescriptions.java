@@ -24,8 +24,6 @@ import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.I18N;
 
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintStream;
 
 import java.util.Iterator;
 
@@ -47,7 +45,7 @@ public abstract class PrintBugDescriptions {
 
 	protected abstract void prologue() throws IOException;
 
-	protected abstract void emit(BugPattern bugPattern);
+	protected abstract void emit(BugPattern bugPattern) throws IOException;
 
 	protected abstract void epilogue() throws IOException;
 }
