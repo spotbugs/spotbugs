@@ -166,6 +166,9 @@ public class FindBugs implements Constants2
 
   private static final boolean DEBUG = Boolean.getBoolean("findbugs.debug");
 
+  /** FindBugs home directory. */
+  private static String home;
+
   private BugReporter bugReporter;
   private Project project;
   private Detector detectors [];
@@ -272,6 +275,27 @@ public class FindBugs implements Constants2
 	return bugReporter.getSourceForClass(className);
   }
 
+  /**
+   * Set the FindBugs home directory.
+   */
+  public static void setHome(String home) {
+	FindBugs.home = home;
+  }
+
+  /**
+   * Get the FindBugs home directory.
+   */
+  public static String getHome() {
+	if (home == null) {
+		home = System.getProperty("findbugs.home");
+		if (home == null) {
+			System.err.println("Error: The findbugs.home property is not set!");
+			System.exit(1);
+		}
+	}
+	return home;
+  }
+
   /* ----------------------------------------------------------------------
    * Private methods
    * ---------------------------------------------------------------------- */
@@ -336,7 +360,7 @@ public class FindBugs implements Constants2
 	ClassProducer classProducer;
 
 	// Create the ClassProducer
-	if (fileName.endsWith(".jar") || fileName.endsWith(".zip"))
+	if (fileName.endsWith(".jar") || fileName.endsWith(".zip") || fileName.endsWith(".war") || fileName.endsWith(".ear"))
 		classProducer = new ZipClassProducer(fileName);
 	else if (fileName.endsWith(".class"))
 		classProducer = new SingleClassProducer(fileName);
@@ -443,7 +467,12 @@ public class FindBugs implements Constants2
 		String option = argv[argCount];
 		if (!option.startsWith("-"))
 			break;
-		if (option.equals("-low"))
+		if (option.equals("-home")) {
+			++argCount;
+			if (argCount == argv.length) throw new IllegalArgumentException(option + " option requires argument");
+			String homeDir = argv[argCount];
+			FindBugs.setHome(homeDir);
+		} else if (option.equals("-low"))
 			lowestPriorityReported = Detector.LOW_PRIORITY;
 		else if (option.equals("-medium"))
 			lowestPriorityReported = Detector.NORMAL_PRIORITY;
@@ -519,6 +548,7 @@ public class FindBugs implements Constants2
 			System.out.println("usage: java -jar findbugs.jar [options] <classfiles, zip/jar files, or directories>");
 			System.out.println("Example: java -jar findbugs.jar rt.jar");
 			System.out.println("Options:");
+			System.out.println("   -home <home directory>        specify FindBugs home directory");
 			System.out.println("   -quiet                        suppress error messages");
 			System.out.println("   -low                          report all bugs");
 			System.out.println("   -medium                       report medium and high priority bugs [default]");

@@ -90,11 +90,7 @@ public class DetectorFactoryCollection {
 	private void loadPlugins() {
 		// Load all detector plugins.
 	
-		String homeDir = System.getProperty("findbugs.home");
-		if (homeDir == null) {
-			System.err.println("Error: The findbugs.home property is not set!");
-			System.exit(1);
-		}
+		String homeDir = FindBugs.getHome();
 	
 		File pluginDir = new File(homeDir + File.separator + "plugin");
 		File[] contentList = pluginDir.listFiles();
