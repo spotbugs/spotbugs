@@ -1,10 +1,19 @@
 <!--
   Ant build script for FindBugs
   Contributed by Mike Fagan <mfagan@tde.com>
-  Minor changes by David Hovemeyer <daveho@cs.umd.edu>
+  With changes by David Hovemeyer <daveho@cs.umd.edu>
+
+  The general idea behind building FindBugs is that the top-level
+  working directory (i.e., the directory containing "build.xml")
+  looks like a findbugs binary installation (once the default "build"
+  target has executed).
+
+  The "release" target builds an actual binary installation
+  by copying files and directories from the top-level working
+  directory into a subdirectory of build/release.
 -->
 
-<project name="find-bugs" default="release">
+<project name="find-bugs" default="build">
 
     <!--
        Set this to the location where you installed the generics-enabled
@@ -18,34 +27,33 @@
     <!-- You should not need to change anything beyond this point. -->
 
     <property name="findbugs.dir" value="." />
-    <property name="findbugs.src.dir" value="${findbugs.dir}/src" />
+    <property name="findbugs.src.dir" value="${findbugs.dir}/src/java" />
     <property name="findbugs.jar.name" value="findbugs.jar" />
     <property name="findbugsgui.jar.name" value="findbugsGUI.jar" />
     <property name="coreplugin.jar.name" value="coreplugin.jar" />
+    <property name="doc.src.dir" value="${findbugs.dir}/src/doc" />
     <property name="doc.dir" value="${findbugs.dir}/doc" />
-    <property name="web.dir" value="${findbugs.dir}/web" />
     <property name="build.dir" value="${findbugs.dir}/build" />
-<!--
-    <property name="jar.dir" value="${build.dir}/lib" />
--->
     <property name="jar.dir" value="lib" />
-    <property name="plugin.dir" value="${build.dir}/plugin" />
+    <property name="plugin.dir" value="plugin" />
     <property name="class.dir" value="${build.dir}/classes" />
     <property name="release.dir" value="${build.dir}/release" />
-    <property name="release.prop.file" value="release.properties" />
+    <property name="release.prop.file" value="${build.dir}/release.properties" />
 
     <!-- define our classpath as all the jar files in the lib dir -->
-     <path id="classpath">
+    <path id="classpath">
       <fileset dir="lib">
         <include name="*.jar"/>
       </fileset>
     </path>
 
     <target name="clean" depends="init">
-      <delete dir="${build.dir}"/>
-      <delete dir="${web.dir}"/>
-      <delete dir="${release.dir}"/>
-      <delete file="${release.prop.file}"/>
+      <delete dir="${build.dir}" />
+      <delete dir="${plugin.dir}" />
+      <delete dir="${doc.dir}" />
+      <delete file="${release.prop.file}" />
+      <delete file="${jar.dir}/${findbugs.jar.name}" />
+      <delete file="${jar.dir}/${findbugsgui.jar.name}" />
     </target>
 
     <target name="init" >
@@ -53,7 +61,7 @@
       <mkdir dir="${plugin.dir}" />
       <mkdir dir="${class.dir}" />
       <mkdir dir="${release.dir}" />
-      <mkdir dir="${web.dir}" />
+      <mkdir dir="${doc.dir}" />
       <mkdir dir="${build.dir}" />
     </target>
 
@@ -170,11 +178,11 @@
 
     <!-- target to build the docs -->
     <target name="docs" depends="version">
-       <copy todir="${release.dir}/findbugs-${release.number}/doc">
-         <fileset dir="${doc.dir}" includes="**/*.png"/>
+       <copy todir="${doc.dir}">
+         <fileset dir="${doc.src.dir}" includes="**/*.png"/>
        </copy>
-       <copy todir="${release.dir}/findbugs-${release.number}/doc">
-         <fileset dir="${doc.dir}" excludes="**/*.png"/>
+       <copy todir="${doc.dir}">
+         <fileset dir="${doc.src.dir}" excludes="**/*.png"/>
          <filterset>
             <filter token="VERSION" value="${release.number}" />
             <filter token="RELEASE_DATE" value="${release.date}" />
@@ -182,22 +190,16 @@
        </copy>
     </target>
 
-    <!-- target to build the web pages -->
-    <target name="web" depends="docs">
-       <copy todir="${web.dir}">
-         <fileset dir="${release.dir}/findbugs-${release.number}/doc">
-            <include name="*.png"/>
-            <include name="*.html"/>
-         </fileset>
-       </copy>
+    <!-- Default target: just compile the code and format the docs. -->
+    <target name="build" depends="findbugs,coreplugin,findbugsgui,docs" />
 
-       <chmod dir="${web.dir}" perm="a+r" includes="*"/>
-    </target>
-
-    <!-- target to build the release -->
-    <target name="release" depends="findbugs,coreplugin,findbugsgui,docs,web">
+    <!-- Target to build the release. This just means copying generated files. -->
+    <target name="release" depends="build">
        <copy todir="${release.dir}/findbugs-${release.number}/lib">
          <fileset dir="${jar.dir}" includes="**/*.jar"/>
+       </copy>
+       <copy todir="${release.dir}/findbugs-${release.number}/doc">
+         <fileset dir="${doc.dir}" />
        </copy>
     </target>
 
