@@ -345,7 +345,7 @@ public abstract class Frame<ValueType> {
 	 * @param b second value to merge
 	 * @return the merged value
 	 */
-	public abstract ValueType mergeValues(int slot, ValueType a, ValueType b);
+	public abstract ValueType mergeValues(int slot, ValueType a, ValueType b) throws DataflowAnalysisException;
 
 	/**
 	 * Get the default value (to be put in slots of newly created frames).
