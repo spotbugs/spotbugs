@@ -145,44 +145,62 @@ public class OpcodeStack implements Constants2
  		
  		try
  		{
- 			//It would be nice to also track field values, but this currently isn't done.
- 			//It would also be nice to track array values, but this currently isn't done.
- 			
 	 		switch (seen) {
 	 			case ALOAD:
-	 				pushByLocal(dbc, dbc.getRegisterOperand());
+	 				pushByLocalObjectLoad(dbc, dbc.getRegisterOperand());
 	 			break;
 	 			
 	 			case ALOAD_0:
 	 			case ALOAD_1:
 	 			case ALOAD_2:
 	 			case ALOAD_3:
-	 				pushByLocal(dbc, seen - ALOAD_0);
+	 				pushByLocalObjectLoad(dbc, seen - ALOAD_0);
 	 			break;
 	 			
 	 			case DLOAD:
+	 				pushByLocalLoad("D", dbc.getRegisterOperand());
+	 			break;
+	 			
 	 			case DLOAD_0:
 	 			case DLOAD_1:
 	 			case DLOAD_2:
 	 			case DLOAD_3:
-	 				push(new Item("D"));
+	 				pushByLocalLoad("D", seen - DLOAD_0);
 	 			break;
 
-	 			case LLOAD:
-	 			case LLOAD_0:
-	 			case LLOAD_1:
-	 			case LLOAD_2:
-	 			case LLOAD_3:
-	 				push(new Item("L"));
+	 			case FLOAD:
+	 				pushByLocalLoad("F", dbc.getRegisterOperand());
 	 			break;
 	 			
-	 			case FLOAD:
 	 			case FLOAD_0:
 	 			case FLOAD_1:
 	 			case FLOAD_2:
 	 			case FLOAD_3:
-	 				push(new Item("F"));
+	 				pushByLocalLoad("F", seen - FLOAD_0);
 	 			break;
+
+	 			case ILOAD:
+	 				pushByLocalLoad("I", dbc.getRegisterOperand());
+	 			break;
+	 			
+	 			case ILOAD_0:
+	 			case ILOAD_1:
+	 			case ILOAD_2:
+	 			case ILOAD_3:
+	 				pushByLocalLoad("I", seen - ILOAD_0);
+	 			break;
+
+	 			case LLOAD:
+	 				pushByLocalLoad("J", dbc.getRegisterOperand());
+	 			break;
+	 			
+	 			case LLOAD_0:
+	 			case LLOAD_1:
+	 			case LLOAD_2:
+	 			case LLOAD_3:
+	 				pushByLocalLoad("J", seen - LLOAD_0);
+	 			break;
+	 			
 	 			
 	 			case GETSTATIC:
 	 				pushBySignature(dbc.getSigConstantOperand());
@@ -201,23 +219,8 @@ public class OpcodeStack implements Constants2
 				break;
 	 			
 	 			case ARETURN:
-	 			case ASTORE:
-	 			case ASTORE_0:
-	 			case ASTORE_1:
-	 			case ASTORE_2:
-	 			case ASTORE_3:
 	 			case DRETURN:
-	 			case DSTORE:
-	 			case DSTORE_0:
-	 			case DSTORE_1:
-	 			case DSTORE_2:
-	 			case DSTORE_3:
 	 			case FRETURN:
-	 			case FSTORE:
-	 			case FSTORE_0:
-	 			case FSTORE_1:
-	 			case FSTORE_2:
-	 			case FSTORE_3:
 	 			case IFEQ:
 	 			case IFNE:
 	 			case IFLT:
@@ -229,11 +232,6 @@ public class OpcodeStack implements Constants2
 	 			case IRETURN:
 	 			case LOOKUPSWITCH:
 	 			case LRETURN:
-	 			case LSTORE:
-	 			case LSTORE_0:
-	 			case LSTORE_1:
-	 			case LSTORE_2:
-	 			case LSTORE_3:
 	 			case MONITORENTER:
 	 			case MONITOREXIT:
 	 			case POP:
@@ -365,38 +363,51 @@ public class OpcodeStack implements Constants2
 	 			case ACONST_NULL:
 	 				push(new Item());
 	 			break;
-	 			
-	 			case ILOAD:
-	 			case ILOAD_0:
-	 			case ILOAD_1:
-	 			case ILOAD_2:
-	 			case ILOAD_3:
-	 				if (seen == ILOAD)
-	 					register = dbc.getRegisterOperand();
-	 				else
-	 					register = seen - ILOAD_0;
-	 				
-	 				it = getLVValue(register);
-	 				if (it == null)
-	 					push(new Item("I"));
-	 				else
-	 					push(it);
+	 				 				 			
+	 			case ASTORE:
+	 			case DSTORE:
+	 			case FSTORE:
+	 			case ISTORE:
+	 			case LSTORE:
+	 				pushByLocalStore(dbc.getRegisterOperand());
 	 			break;
 	 			
-	 			case ISTORE:
+	 			case ASTORE_0:
+	 			case ASTORE_1:
+	 			case ASTORE_2:
+	 			case ASTORE_3:
+	 				pushByLocalStore(seen - ASTORE_0);
+	 			break;
+
+	 			case DSTORE_0:
+	 			case DSTORE_1:
+	 			case DSTORE_2:
+	 			case DSTORE_3:
+	 				pushByLocalStore(seen - DSTORE_0);
+	 			break;
+
+
+	 			case FSTORE_0:
+	 			case FSTORE_1:
+	 			case FSTORE_2:
+	 			case FSTORE_3:
+	 				pushByLocalStore(seen - FSTORE_0);
+	 			break;
+
 	 			case ISTORE_0:
 	 			case ISTORE_1:
 	 			case ISTORE_2:
 	 			case ISTORE_3:
-	 				it = pop();
-	 				if (seen == ILOAD)
-	 					register = dbc.getRegisterOperand();
-	 				else
-	 					register = seen - ISTORE_0;
-	 					
-	 				setLVValue( register, it );
+	 				pushByLocalStore(seen - ISTORE_0);
 	 			break;
 	 			
+	 			case LSTORE_0:
+	 			case LSTORE_1:
+	 			case LSTORE_2:
+	 			case LSTORE_3:
+	 				pushByLocalStore(seen - LSTORE_0);
+	 			break;
+
 	 			case GETFIELD:
 	 				pop();
 	 				push(new Item(dbc.getSigConstantOperand()));
@@ -746,10 +757,11 @@ public class OpcodeStack implements Constants2
 	 		}
 	 	}
 	 	catch (Exception e) {
-	 		//If an error occurs, we clear the stack. one of two things will occur. Either the client will expect more stack
-	 		//items than really exist, and so they're condition check will fail, or the stack will resync with the code.
-	 		//But hopefully not false positives
+	 		//If an error occurs, we clear the stack and locals. one of two things will occur. 
+	 		//Either the client will expect more stack items than really exist, and so they're condition check will fail, 
+	 		//or the stack will resync with the code. But hopefully not false positives
 	 		stack.clear();
+	 		lvValues.clear();
 	 	}
 	 	finally {
 	 		if (DEBUG)
@@ -799,16 +811,18 @@ public class OpcodeStack implements Constants2
 			throw new UnsupportedOperationException("Constant type not expected" );
  	}
  	
- 	private void pushByLocal(DismantleBytecode dbc, int register) {
+ 	private void pushByLocalObjectLoad(DismantleBytecode dbc, int register) {
 		Method m = dbc.getMethod();
 		LocalVariableTable lvt = m.getLocalVariableTable();
 		if (lvt != null) {
 			LocalVariable lv = lvt.getLocalVariable(register);
-			String signature = lv.getSignature();
-			pushBySignature(signature);
-		} else {
-			pushBySignature("");
+			if (lv != null) {
+				String signature = lv.getSignature();
+				pushByLocalLoad(signature, register);
+				return;
+			}
 		}
+		pushBySignature("");
  	}
  	
  	private void pushByIntMath(int seen, Item it, Item it2) {
@@ -917,6 +931,19 @@ public class OpcodeStack implements Constants2
  		if ("V".equals(s))
  			return;
  	 	push(new Item(s, null));
+ 	}
+ 	
+ 	private void pushByLocalStore(int register) {
+		Item it = pop();
+		setLVValue( register, it );
+ 	}
+ 	
+ 	private void pushByLocalLoad(String signature, int register) {
+		Item it = getLVValue(register);
+		if (it == null)
+			push(new Item(signature));
+		else
+			push(it);
  	}
  	
  	private void setLVValue(int index, Item value ) {
