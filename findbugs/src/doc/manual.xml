@@ -88,7 +88,7 @@ Extracting a gzipped tar format distribution:
 <para>
 Extracting a zip format distribution:
 <screen>
-<prompt>C:\Software> </prompt><command>unzip findbugs-@VERSION@.zip</command>
+<prompt>C:\Software></prompt><command>unzip findbugs-@VERSION@.zip</command>
 </screen>
 </para>
 
@@ -121,7 +121,7 @@ On Unix-like systems, use the following command to invoke the wrapper script:
 <para>
 On Windows systems, the command to invoke the wrapper script is 
 <screen>
-<prompt>C:\My Directory> </prompt><command>&FBHome;\bin\findbugs.bat -home &FBHome; <replaceable>options...</replaceable></command>
+<prompt>C:\My Directory></prompt><command>&FBHome;\bin\findbugs.bat -home &FBHome; <replaceable>options...</replaceable></command>
 </screen>
 </para>
 
@@ -132,16 +132,16 @@ directory to your <envar>PATH</envar> environment variable, which allows you
 to simply run the command <command>findbugs</command> from the command prompt.
 (On Windows, you can set the
 <envar>FINDBUGS_HOME</envar> environment variable to avoid having to use the
-<arg>-home</arg> option to the wrapper script.)
+<command>-home</command> option to the wrapper script.)
 <important>
 <title>Specifying &FBHome; on Windows</title>
 <para>
   If you install &FindBugs; in a directory which contains space characters
   then you must put quote characters around the value you pass using the
-  <arg>-home</arg> option.  For example:
+  <command>-home</command> option.  For example:
   <screen>
-    <prompt>C:\My Directory> </prompt><command>set PATH=C:\Program Files\findbugs-@VERSION@\bin;%PATH%</command>
-    <prompt>C:\My Directory> </prompt><command>findbugs -home "C:\Program Files\findbugs-@VERSION@"</command>
+    <prompt>C:\My Directory></prompt><command>set PATH=C:\Program Files\findbugs-@VERSION@\bin;%PATH%</command>
+    <prompt>C:\My Directory></prompt><command>findbugs -home "C:\Program Files\findbugs-@VERSION@"</command>
   </screen>
 </para>
 </important>
@@ -149,58 +149,113 @@ to simply run the command <command>findbugs</command> from the command prompt.
 
 </sect1>
 
-<sect1>
+<sect1 id="commandLineOptions">
 <title>Command Line Options</title>
 
 <para>
-The wrapper script used to invoke &FindBugs; can take
-several command line options.
+
+There are two ways to invoke &FindBugs;.  The first invokes the the Graphical User Interface (GUI):
+
+<screen>
+<prompt>$ </prompt><command>findbugs <replaceable>[standard options]</replaceable> <replaceable>[GUI options]</replaceable></command>
+</screen>
+
+The second invokes the Command Line Interface (Text UI):
+
+<screen>
+<prompt>$ </prompt><command>findbugs -textui <replaceable>[standard options]</replaceable> <replaceable>[Text UI options]</replaceable></command>
+</screen>
+</para>
+
+<sect2>
+<title>Standard options</title>
+
+<para>
+These options may be used with both the GUI and Text UI.
+
 <variablelist>
   <varlistentry>
-    <term><arg choice="req">-gui</arg></term>
-    <listitem>
-       <para>
-         Use the Graphical User Interface (GUI) for &FindBugs;.  The GUI is the
-         default, so you will generally not need to use this option.
-       </para>
-    </listitem>
-  </varlistentry>
-
-  <varlistentry>
-    <term><arg choice="req">-textui</arg></term>
-    <listitem>
-       <para>
-         Use the command line interface instead of the GUI.
-         The command line interface is described in the <link linkend="textui">next chapter</link>.
-       </para>
-    </listitem>
-  </varlistentry>
-
-  <varlistentry>
-    <term><arg choice="req">-jvmArgs=<replaceable>args</replaceable></arg></term>
+    <term><command>-jvmArgs <replaceable>args</replaceable></command></term>
     <listitem>
        <para>
          Specifies arguments to pass to the JVM.  For example,
          you can use this option to increase the maximum Java heap size
-         if you are analyzing a very large program.
+         if you are analyzing a very large program.  You may specify multiple
+         JVM arguments by surrounding <replaceable>args</replaceable> with
+         quotes.  For example:
+<screen>
+<prompt>$ </prompt><command>findbugs -textui -jvmArgs "-Xms128m -Xmx256m" <replaceable>myApp.jar</replaceable></command>
+</screen>
        </para>
     </listitem>
   </varlistentry>
+</variablelist>
+</para>
 
+</sect2>
+
+<sect2>
+<title>GUI Options</title>
+
+<para>
+These options are only accepted by the Graphical User Interface.
+
+<variablelist>
   <varlistentry>
-    <term><arg choice="req">-plastic</arg></term>
+    <term><command>-plastic</command></term>
     <listitem>
        <para>
           Use the plastic look and feel from <ulink url="http://jgoodies.com/">jgoodies.com</ulink>.
           To use this option, put the file <filename>plastic.jar</filename>
           in the <filename class="directory">&FBHome;/lib</filename>
-          directory.
+          directory.  (This option may only be used when running the Graphical User Interface.)
        </para>
     </listitem>
   </varlistentry>
 
 </variablelist>
 </para>
+</sect2>
+
+<sect2>
+<title>Text UI Options</title>
+
+<para>
+These options are only accepted by the Text User Interface.
+
+<variablelist>
+  <varlistentry>
+    <term><command>-sortByClass</command></term>
+    <listitem>
+       <para>
+       Sort reported bug instances by class name.
+       </para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><command >-include</command> <replaceable>filterFile.xml</replaceable></term>
+    <listitem>
+       <para>
+       Only report bug instances that match the filter specified by <replaceable>filterFile.xml</replaceable>.
+       See <xref linkend="filter" />.
+       </para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><command >-exclude</command> <replaceable>filterFile.xml</replaceable></term>
+    <listitem>
+       <para>
+       Report all bug instances except those matching the filter specified by <replaceable>filterFile.xml</replaceable>.
+       See <xref linkend="filter" />.
+       </para>
+    </listitem>
+  </varlistentry>
+</variablelist>
+</para>
+
+</sect2>
 
 </sect1>
 
@@ -562,20 +617,16 @@ may be added to a future &FindBugs; release).
 <title>Using the &FindBugs; Command Line Interface</title>
 
 <para>
+The &FindBugs; Command Line Interface (or Text UI) can be used to
+analyze an application for bugs non-interactively.  Each bug instance will be
+reported on a single line.  All output is written to the standard output file descriptor.
+<xref linkend="filter" /> explains how bug reports may be filtered in order
+to get only the output you're interested in.
+</para>
 
-To use the command line interface, execute the command
-
-<cmdsynopsis>
-  <command>findbugs</command>
-  <arg choice="req">-textui</arg>
-  <arg>-sortByClass</arg>
-  <arg rep="repeat" choice="req"><replaceable>file.jar</replaceable></arg>
-</cmdsynopsis>
-
-You can list any number of Jar files (or plain class files).
-The <arg>-sortByClass</arg> option may be used to sort
-the reported bug instances by class name.  The results will be sent to
-the standard output file descriptor.
+<para>
+See <xref linkend="commandLineOptions" /> in <xref linkend="installing" /> for a description of how to invoke the
+Command Line Interface.
 </para>
 
 <note>
@@ -624,7 +675,7 @@ for example, to exclude or include them in a report.
 </para>
 
 <para>
-A filter file is an <ulink url="http://www.w3.org/XML/">XML</ulink> file with a top-level <literal>FindBugsFilter</literal> element
+A filter file is an <ulink url="http://www.w3.org/XML/">XML</ulink> document with a top-level <literal>FindBugsFilter</literal> element
 which has some number of <literal>Match</literal> elements as children.  Each <literal>Match</literal>
 element represents a predicate which is applied to generated bug instances.
 Usually, a filter will be used to exclude bug instances.  For example:
