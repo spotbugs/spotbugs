@@ -28,122 +28,254 @@ package edu.umd.cs.daveho.ba;
  * @author David Hovemeyer
  */
 public class LockSet {
-	/** Special TOP value, meaning this is an uninitialized lock count. */
+	/** An uninitialized lock value. */
 	public static final int TOP = -1;
 
-	/** Special BOTTOM value, meaning that we can't accurately determine the lock count. */
+	/**
+	 * An invalid lock count resulting from the meet of two
+	 * different (inconsistent) lock counts.
+	 */
 	public static final int BOTTOM = -2;
 
-	private int[] lockCountByValueList;
+	private static final int INVALID = -1;
+	private static final int DEFAULT_CAPACITY = 8;
+
+	/**
+	 * Lock counts are stored in an array.
+	 * Even indices <i>i</i> are value numbers of lock objects.
+	 * Odd indices <i>i+1</i> are lock counts.
+	 * This representation is fairly compact in memory.
+	 */
+	private int[] array;
+
+	/**
+	 * The lock count value to return for nonexistent lock entries.
+	 */
+	private int defaultLockCount;
 
 	/**
 	 * Constructor.
-	 * @param numValues number of ValueNumbers that will be tracked
+	 * Creates an empty lock set which returns TOP for
+	 * nonexistent lock entries.
 	 */
-	public LockSet(int numValues) {
-		lockCountByValueList = new int[numValues];
+	public LockSet() {
+		this.array = new int[DEFAULT_CAPACITY];
+		this.defaultLockCount = TOP;
+		clear();
 	}
 
 	/**
-	 * Fill all lock counts with the top value.
+	 * Get the lock count for given lock object.
+	 * @param valueNumber value number of the lock object
+	 * @return the lock count for the lock object
 	 */
-	public void makeTop() {
-		setAll(TOP);
+	public int getLockCount(int valueNumber) {
+		int index = findIndex(valueNumber);
+		if (index < 0)
+			return defaultLockCount;
+		else
+			return array[index + 1];
 	}
 
 	/**
-	 * Fill all lock counts with zero.
+	 * Set the lock count for a lock object.
+	 * @param valueNumber value number of the lock object
+	 * @param lockCount the lock count for the lock
 	 */
-	public void makeZero() {
-		setAll(0);
-	}
-
-	private void setAll(int value) {
-		for (int i = 0; i < lockCountByValueList.length; ++i)
-			lockCountByValueList[i] = value;
+	public void setLockCount(int valueNumber, int lockCount) {
+		int index = findIndex(valueNumber);
+		if (index < 0) {
+			addEntry(index, valueNumber, lockCount);
+		} else {
+			array[index + 1] = lockCount;
+		}
 	}
 
 	/**
-	 * Get the lock count for given value number.
-	 * A non-negative value is (hopefully) an accurate count.
-	 * A TOP value is uninitialized - once the analysis completes,
-	 * you should not see any TOP values.  A BOTTOM value means
-	 * that we don't have an accurate count; in addition, the
-	 * existence of a BOTTOM value means that any code reachable
-	 * from the point where the BOTTOM value exists will not
-	 * have trustworthy lock counts.
-	 *
-	 * <p> I have reason to believe that the combination of ValueNumberAnalysis
-	 * and LockSetAnalysis will not produce any BOTTOM values for properly-formed
-	 * Java code.  We'll see how this works out in practice.
-	 *
-	 * @param valueNum the value number we want the count for
-	 * @return the lock count for the value
+	 * Set the default lock count to return for nonexistent lock entries.
+	 * @param defaultLockCount the default lock count value
 	 */
-	public int getCount(int valueNum) {
-		return lockCountByValueList[valueNum];
+	public void setDefaultLockCount(int defaultLockCount) {
+		this.defaultLockCount = defaultLockCount;
 	}
 
 	/**
-	 * Set lock count for given value.
-	 * @param valueNum the value
-	 * @param count the lock count
-	 */
-	public void setCount(int valueNum, int count) {
-		lockCountByValueList[valueNum] = count;
-	}
-
-	/**
-	 * Make this LockSet the same as the one given.
-	 * @param other the other LockSet
+	 * Make this LockSet the same as the given one.
+	 * @param other the LockSet to copy
 	 */
 	public void copyFrom(LockSet other) {
-		for (int i = 0; i < lockCountByValueList.length; ++i)
-			lockCountByValueList[i] = other.lockCountByValueList[i];
+		if (other.array.length != array.length) {
+			array = new int[other.array.length];
+		}
+		System.arraycopy(other.array, 0, array, 0, array.length);
+		this.defaultLockCount = other.defaultLockCount;
 	}
 
 	/**
-	 * Determine if this LockSet is the same as the one given.
-	 * @param other the other LockSet
-	 * @return true if the LockSets are the same, false otherwise
+	 * Clear all entries out of this LockSet.
 	 */
-	public boolean sameAs(LockSet other) {
-		assert lockCountByValueList.length == other.lockCountByValueList.length;
+	public void clear() {
+		for (int i = 0; i < array.length; i += 2) {
+			array[i] = INVALID;
+		}
+	}
 
-		for (int i = 0; i < lockCountByValueList.length; ++i) {
-			if (lockCountByValueList[i] != other.lockCountByValueList[i])
-				return false;
+	/**
+	 * Meet this LockSet with another LockSet,
+	 * storing the result in this object.
+	 * @param other the other LockSet
+	 */
+	public void meetWith(LockSet other) {
+		for (int i = 0; i < array.length; i += 2) {
+			int valueNumber = array[i];
+			if (valueNumber < 0)
+				break;
+
+			int mine = array[i + 1];
+			int his = other.getLockCount(valueNumber);
+			array[i + 1] = mergeValues(mine, his);
 		}
 
+		for (int i = 0; i < other.array.length; i += 2) {
+			int valueNumber = other.array[i];
+			if (valueNumber < 0)
+				break;
+
+			int mine = getLockCount(valueNumber);
+			int his = other.array[i + 1];
+			setLockCount(valueNumber, mergeValues(mine, his));
+		}
+
+		setDefaultLockCount(0);
+	}
+
+	/**
+	 * Return whether or not this LockSet is the same as the one given.
+	 * @param other the other LockSet
+	 */
+	public boolean sameAs(LockSet other) {
+		return this.identicalSubset(other) && other.identicalSubset(this);
+	}
+
+	private boolean identicalSubset(LockSet other) {
+		for (int i = 0; i < array.length; i += 2) {
+			int valueNumber = array[i];
+			if (valueNumber < 0)
+				break;
+			int mine = array[i + 1];
+			int his = other.getLockCount(valueNumber);
+			if (mine != his)
+				return false;
+			//System.out.println("For value " + valueNumber + ", " + mine + "==" + his);
+		}
 		return true;
 	}
 
-	/**
-	 * Merge this LockSet with another.
-	 * @param other the other LockSet
-	 */
-	public void mergeWith(LockSet other) {
-		assert lockCountByValueList.length == other.lockCountByValueList.length;
-
-		for (int i = 0; i < lockCountByValueList.length; ++i) {
-			int mine = lockCountByValueList[i];
-			int his = other.lockCountByValueList[i];
-
-			int result;
-			if (mine == TOP)
-				result = his;
-			else if (his == TOP)
-				result = mine;
-			else if (mine == BOTTOM || his == BOTTOM)
-				result = BOTTOM;
-			else if (mine != his)
-				result = BOTTOM;
-			else
-				result = mine;
-
-			lockCountByValueList[i] = result;
-		}
+	private static int mergeValues(int a, int b) {
+		if (a == TOP)
+			return b;
+		else if (b == TOP)
+			return a;
+		else if (a == BOTTOM || b == BOTTOM)
+			return BOTTOM;
+		else if (a == b)
+			return a;
+		else
+			return BOTTOM;
 	}
-}
 
-// vim:ts=4
+	private int findIndex(int valueNumber) {
+		for (int i = 0; i < array.length; i += 2) {
+			int value = array[i];
+			if (value < 0)
+				return -(i + 1); // didn't find requested valueNumber - return first available slot
+			else if (value == valueNumber)
+				return i; // found requested valueNumber
+		}
+		return -(array.length + 1); // didn't find requested valueNumber, and array is full
+	}
+
+	private void addEntry(int index, int valueNumber, int lockCount) {
+		index = -(index + 1);
+		int origCapacity = array.length;
+		if (index == origCapacity) {
+			// Grow the array.
+
+			// Allocate twice the space of the old array
+			int[] data = new int[origCapacity * 2];
+
+			// Copy existing data
+			System.arraycopy(array, 0, data, 0, origCapacity);
+
+			// Clear entries in the new part of the array
+			// that won't be used to store the entry that's
+			// being added
+			for (int i = index + 2; i < data.length; i += 2) {
+				data[i] = INVALID;
+			}
+
+			// Now we're ready to use the new array
+			array = data;
+		}
+
+		array[index] = valueNumber;
+		array[index + 1] = lockCount;
+	}
+
+	public String toString() {
+		StringBuffer buf = new StringBuffer();
+		buf.append('[');
+		boolean first = true;
+		if (defaultLockCount == 0) {
+			buf.append("default=0");
+			first = false;
+		}
+		for (int i = 0; i < array.length; i += 2) {
+			int valueNumber = array[i];
+			if (valueNumber < 0)
+				continue;
+			int lockCount = array[i+1];
+			if (lockCount == 0)
+				continue;
+			if (first)
+				first = false;
+			else
+				buf.append(',');
+			buf.append(valueNumber);
+			buf.append('=');
+			if (lockCount == TOP)
+				buf.append("TOP");
+			else if (lockCount == BOTTOM)
+				buf.append("BOTTOM");
+			else
+				buf.append(lockCount);
+		}
+		buf.append(']');
+		return buf.toString();
+	}
+
+/*
+	public static void main(String[] argv) {
+		LockSet l = new LockSet();
+		l.setLockCount(0, 1);
+		System.out.println(l);
+		l.setLockCount(0, 2);
+		System.out.println(l);
+		l.setLockCount(15, 1);
+		System.out.println(l);
+		LockSet ll = new LockSet();
+		ll.setLockCount(0, 1);
+		ll.setLockCount(15, 1);
+		ll.setLockCount(69, 3);
+		LockSet tmp = new LockSet();
+		tmp.copyFrom(ll);
+		ll.meetWith(l);
+		System.out.println(l + " merge with " + tmp + " ==> " + ll);
+
+		LockSet dup = new LockSet();
+		dup.copyFrom(ll);
+		System.out.println(ll + " == " + dup + " ==> " + ll.sameAs(dup));
+		System.out.println(ll + " == " + l + " ==> " + ll.sameAs(l));
+	}
+*/
+}
