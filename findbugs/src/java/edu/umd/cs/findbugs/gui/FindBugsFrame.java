@@ -2509,9 +2509,9 @@ public class FindBugsFrame extends javax.swing.JFrame {
                 
             } else {
                 cutItem.setEnabled(false);
-                copyItem.setEnabled(false);
+                copyItem.setEnabled(true);
                 pasteItem.setEnabled(false);
-                selectAllItem.setEnabled(false);
+                selectAllItem.setEnabled(true);
             }            
         }
         
@@ -2845,6 +2845,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 		viewBugsItem.setSelected(viewingBugs);
 
 		currentView = viewName;
+                ableEditMenu();
 	}
 
 	/**
