@@ -32,17 +32,19 @@ import org.apache.bcel.classfile.Method;
 public class BadlyOverriddenAdapter extends BytecodeScanningDetector implements Constants2 {
 	private BugReporter bugReporter;
 	private boolean isAdapter;
-	private boolean classReported;
 	private Map<String, String> methodMap;
+	private Map<String, BugInstance> badOverrideMap;
 
 	public BadlyOverriddenAdapter(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 		methodMap = new HashMap<String, String>();
+		badOverrideMap = new HashMap<String,BugInstance>();
 	}
 
 	public void visit(JavaClass obj) {
 		try {
 			methodMap.clear();
+			badOverrideMap.clear();
 			JavaClass superClass = obj.getSuperClass();
 			if (superClass == null) return;
 			String packageName = superClass.getPackageName();
@@ -53,23 +55,35 @@ public class BadlyOverriddenAdapter extends BytecodeScanningDetector implements 
 				for (int i = 0; i < methods.length; i++) {
 					methodMap.put(methods[i].getName(), methods[i].getSignature());
 				}
-				classReported = false;
 			}
 		} catch (ClassNotFoundException cnfe) {
 			bugReporter.reportMissingClass(cnfe);
 		}
 	}
+	
+	public void visitAfter(JavaClass obj) {
+		Iterator it = badOverrideMap.values().iterator();
+		while (it.hasNext()) {
+			BugInstance bi = (BugInstance) it.next();
+			if (bi != null)
+				bugReporter.reportBug(bi);
+		}
+	}
 
 	public void visit(Method obj) {
-		if (isAdapter && !classReported) {
+		if (isAdapter) {
 			String methodName = obj.getName();
 			String signature = methodMap.get(methodName);
 			if (!methodName.equals("<init>") && signature != null) {
 				if (!signature.equals(obj.getSignature())) {
-					bugReporter.reportBug(new BugInstance("BOA_BADLY_OVERRIDDEN_ADAPTER", NORMAL_PRIORITY)
-					        .addClassAndMethod(this)
-					        .addSourceLine(this));
-					classReported = true;
+					if (!badOverrideMap.keySet().contains(methodName)) {
+						badOverrideMap.put(methodName, new BugInstance("BOA_BADLY_OVERRIDDEN_ADAPTER", NORMAL_PRIORITY)
+								.addClassAndMethod(this)
+								.addSourceLine(this));
+					}
+				}
+				else {
+					badOverrideMap.put(methodName, null);
 				}
 			}
 		}
