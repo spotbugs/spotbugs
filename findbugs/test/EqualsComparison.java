@@ -13,6 +13,10 @@ public class EqualsComparison {
 		return "Uh huh".equals(s);
 	}
 
+	boolean isEqualToNull(String s) {
+		return s.equals(null);
+		}
+
 	boolean unrelatedInterfaceComparison(A a, B b) {
 		// This should be a medium priority warning
 		return a.equals(b);

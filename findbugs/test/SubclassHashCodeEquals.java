@@ -11,7 +11,7 @@ abstract class SubclassHashCodeEquals {
 		return x == ((SubclassHashCodeEquals)o).x;
 		}
 
-	class Y extends SubclassHashCodeEquals {
+	static class Y extends SubclassHashCodeEquals {
 		public boolean equals(Object o) {
 			if (!(o instanceof Y)) return false;
 			return super.equals(o);
