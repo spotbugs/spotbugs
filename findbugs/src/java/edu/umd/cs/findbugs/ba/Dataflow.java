@@ -115,7 +115,7 @@ public class Dataflow<Fact> {
 
 						if (DEBUG) debug(block, logicalPred, "Meet " + start + " with " + predFact);
 						analysis.meetInto(predFact, edge, start);
-						if (DEBUG) debug(block, logicalPred, " ==> " + start + "\n");
+						if (DEBUG) System.out.println(" ==> " + start);
 					}
 				}
 				if (DEBUG) debug(block, "start fact is " + start + "\n");
