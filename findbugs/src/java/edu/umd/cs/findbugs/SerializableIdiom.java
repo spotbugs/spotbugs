@@ -63,7 +63,7 @@ public class SerializableIdiom extends PreorderVisitor
 	  if (Repository.instanceOf(obj,"java.rmi.Remote"))
 		isSerializable = false;
 	  }
-	catch (RuntimeException e) {
+	catch (ClassNotFoundException e) {
 		assert true;
 		}
 	foundSynthetic = false;

@@ -34,7 +34,7 @@ public class FindRunInvocations extends BytecodeScanningDetector implements   Co
    private boolean isThread(String clazz) {
 	  try {
 		return org.apache.bcel.Repository.instanceOf(clazz,"java.lang.Thread");
-	  } catch (RuntimeException e) {
+	  } catch (ClassNotFoundException e) {
 		bugReporter.logError("Repository lookup failure: " + e.toString());
 		return false;
 	  }

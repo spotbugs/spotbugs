@@ -220,9 +220,12 @@ public class FindBugs implements Constants2
   private void examineClass(String className) throws InterruptedException {
 	if (DEBUG) System.out.println("Examining class " + className);
 
-	JavaClass javaClass = Repository.lookupClass(className);
-	if (javaClass == null)
-		throw new AnalysisException("Could not find class " + className + " in Repository");
+	JavaClass javaClass;
+	try {
+		javaClass = Repository.lookupClass(className);
+	} catch (ClassNotFoundException e) {
+		throw new AnalysisException("Could not find class " + className + " in Repository", e);
+	}
 
 	classNameToSourceFileMap.put(javaClass.getClassName(), javaClass.getSourceFileName());
 	ClassContext classContext = new ClassContext(javaClass);

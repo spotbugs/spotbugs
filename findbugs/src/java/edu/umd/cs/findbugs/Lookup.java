@@ -30,19 +30,27 @@ public class Lookup
 {
   public static JavaClass 
 	findSuperImplementor(JavaClass clazz, String name, String signature) {
-		JavaClass c = 
-			findImplementor(Repository.getSuperClasses(clazz),
-				name, signature);
-		if (c != null) return c;
-		return clazz;
+		try {
+			JavaClass c = 
+				findImplementor(Repository.getSuperClasses(clazz),
+					name, signature);
+			return c;
+			}
+		catch (ClassNotFoundException e) {
+			return clazz;
+			}
 		}
   public static String 
 	findSuperImplementor(String clazz, String name, String signature) {
-		JavaClass c = 
-			findImplementor(Repository.getSuperClasses(clazz),
-				name, signature);
-		if (c != null) return c.getClassName();
-		return clazz;
+		try {
+			JavaClass c = 
+				findImplementor(Repository.getSuperClasses(clazz),
+					name, signature);
+			return c.getClassName();
+			}
+		catch (ClassNotFoundException e) {
+			return clazz;
+			}
 		}
   public static JavaClass 
 	findImplementor(JavaClass[] clazz, String name, String signature) {
