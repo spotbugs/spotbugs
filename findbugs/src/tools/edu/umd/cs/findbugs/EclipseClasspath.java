@@ -50,6 +50,10 @@ import org.dom4j.io.SAXReader;
  * releases will generally have different version numbers on the
  * plugins they contain, which makes this task slightly difficult.
  *
+ * <p> Basically, this is a big complicated hack to allow compilation
+ * of the FindBugs Eclipse plugin outside of the Eclipse workspace,
+ * in a way that doesn't depend on any specific release of Eclipse.
+ *
  * @author David Hovemeyer
  */
 public class EclipseClasspath {
@@ -119,11 +123,13 @@ public class EclipseClasspath {
 
 	private static class Plugin {
 		private Document document;
+		private boolean isDependent;
 		private String pluginId;
 		private List<String> requiredPluginIdList;
 
-		public Plugin(Document document) throws DocumentException, EclipseClasspathException {
+		public Plugin(Document document, boolean isDependent) throws DocumentException, EclipseClasspathException {
 			this.document = document;
+			this.isDependent = isDependent;
 
 			// Get the plugin id
 			Node plugin = document.selectSingleNode("/plugin");
@@ -147,6 +153,10 @@ public class EclipseClasspath {
 			}
 		}
 
+		public boolean isDependent() {
+			return isDependent;
+		}
+
 		public String getId() {
 			return pluginId;
 		}
@@ -160,17 +170,34 @@ public class EclipseClasspath {
 	private static final int PLUGIN_ID_GROUP = 1;
 
 	private String eclipseDir;
-	private String pluginFile;
+	private String rootPluginDir;
 	private Map<String, File> pluginDirectoryMap;
 
-	public EclipseClasspath(String eclipseDir, String pluginFile) {
+	public EclipseClasspath(String eclipseDir, String rootPluginDir) {
 		this.eclipseDir = eclipseDir;
-		this.pluginFile = pluginFile;
+		this.rootPluginDir = rootPluginDir;
 		this.pluginDirectoryMap = new HashMap<String, File>();
 	}
 
 	public void addRequiredPlugin(String pluginId, String pluginDir) {
 		pluginDirectoryMap.put(pluginId, new File(pluginDir));
+	}
+
+	private static class WorkListItem {
+		private String directory;
+		private boolean isDependent;
+
+		public WorkListItem(String directory, boolean isDependent) {
+			this.directory = directory;
+			this.isDependent = isDependent;
+		}
+
+		public String getDirectory() { return directory; }
+		public boolean isDependent() { return isDependent; }
+
+		public String getDescriptorFileName() {
+			return new File(directory, "plugin.xml").getPath();
+		}
 	}
 
 	public EclipseClasspath execute() throws EclipseClasspathException, DocumentException, IOException {
@@ -194,29 +221,29 @@ public class EclipseClasspath {
 
 		Map<String, Plugin> requiredPluginMap = new HashMap<String, Plugin>();
 
-		LinkedList<String> workList = new LinkedList<String>();
-		workList.add(pluginFile);
+		LinkedList<WorkListItem> workList = new LinkedList<WorkListItem>();
+		workList.add(new WorkListItem(rootPluginDir, false));
 
 		while (!workList.isEmpty()) {
-			String descriptor = workList.removeFirst();
+			WorkListItem item = workList.removeFirst();
 
 			// Read the plugin file
 			SAXReader reader = new SAXReader();
-			Document doc = reader.read(new EclipseXMLReader(new FileReader(descriptor)));
+			Document doc = reader.read(new EclipseXMLReader(new FileReader(item.getDescriptorFileName())));
 
 			// Add to the map
-			Plugin plugin = new Plugin(doc);
+			Plugin plugin = new Plugin(doc, item.isDependent());
 			requiredPluginMap.put(plugin.getId(), plugin);
 
 			// Add unresolved required plugins to the worklist
 			for (Iterator<String> i = plugin.requiredPluginIdIterator(); i.hasNext(); ) {
 				String requiredPluginId = i.next();
 				if (requiredPluginMap.get(requiredPluginId) == null) {
-					// Find the plugin in the Eclipse directory
+					// Find the plugin's directory
 					File requiredPluginDir = pluginDirectoryMap.get(requiredPluginId);
 					if (requiredPluginDir == null)
 						throw new EclipseClasspathException("Unable to find plugin " + requiredPluginId);
-					workList.add(new File(requiredPluginDir, "plugin.xml").getPath());
+					workList.add(new WorkListItem(requiredPluginDir.getPath(), true));
 				}
 			}
 		}
@@ -239,7 +266,7 @@ public class EclipseClasspath {
 	public static void main(String[] argv) throws Exception {
 		if (argv.length < 2 || (argv.length % 2 != 0)) {
 			System.err.println("Usage: " + EclipseClasspath.class.getName() +
-				" <eclipse dir> <plugin file> [<required plugin id> <required plugin dir> ...]");
+				" <eclipse dir> <root plugin directory> [<required plugin id> <required plugin dir> ...]");
 			System.exit(1);
 		}
 
