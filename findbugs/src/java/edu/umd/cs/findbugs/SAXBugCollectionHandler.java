@@ -125,9 +125,10 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 				if (bugAnnotation != null)
 					bugInstance.add(bugAnnotation);
 			} else if (outerElement.equals("Method")) {
-				// Method elements can contain nested SourceLineAnnotation
-				// elements.
-				methodAnnotation.setSourceLines(createSourceLineAnnotation(qName, attributes));
+				if (qName.equals("SourceLine")) {
+					// Method elements can contain nested SourceLine elements.
+					methodAnnotation.setSourceLines(createSourceLineAnnotation(qName, attributes));
+				}
 			}
 		}
 
