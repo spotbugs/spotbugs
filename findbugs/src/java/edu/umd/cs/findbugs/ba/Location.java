@@ -36,7 +36,7 @@ import org.apache.bcel.generic.InstructionHandle;
  * @see CFG
  * @author David Hovemeyer
  */
-public class Location implements Comparable {
+public class Location implements Comparable<Location> {
 	private final InstructionHandle handle;
 	private final BasicBlock basicBlock;
 
@@ -56,11 +56,7 @@ public class Location implements Comparable {
 	/** Get the basic block. */
 	public BasicBlock getBasicBlock() { return basicBlock; }
 
-	public int compareTo(Object o) {
-		if (!(o instanceof Location))
-			throw new UnsupportedOperationException("Locations can only be compared to other Locations");
-		Location other = (Location) o;
-
+	public int compareTo(Location other) {
 		int cmp = basicBlock.getId() - other.basicBlock.getId();
 		if (cmp != 0)
 			return cmp;
