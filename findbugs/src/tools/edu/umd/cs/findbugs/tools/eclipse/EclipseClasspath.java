@@ -19,9 +19,11 @@
 
 package edu.umd.cs.findbugs.tools.eclipse;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileFilter;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
@@ -31,6 +33,10 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.StringTokenizer;
+
+import java.util.jar.Attributes;
+import java.util.jar.Manifest;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -61,6 +67,10 @@ public class EclipseClasspath {
 	public static class EclipseClasspathException extends Exception {
 		public EclipseClasspathException(String msg) {
 			super(msg);
+		}
+
+		public EclipseClasspathException(String msg, Throwable e) {
+			super(msg, e);
 		}
 	}
 
@@ -123,28 +133,43 @@ public class EclipseClasspath {
 
 	private class Plugin {
 		private String directory;
-		private Document document;
 		private boolean isDependent;
 		private String pluginId;
 		private String pluginVersion;
 		private List<String> requiredPluginIdList;
 		private List<String> exportedLibraryList;
 
-		public Plugin(String directory, Document document, boolean isDependent)
-				throws DocumentException, EclipseClasspathException {
+		public Plugin(String directory, boolean isDependent)
+				throws DocumentException, EclipseClasspathException, IOException {
 			this.directory = directory;
-			this.document = document;
 			this.isDependent = isDependent;
+			this.requiredPluginIdList = new LinkedList<String>();
+			this.exportedLibraryList = new LinkedList<String>();
+
+			// Figure out whether this is an old-style (Eclipse 2.1.x)
+			// or new-style (3.0, OSGI-based) plugin.
+
+			boolean oldStyle = false;
+
+			Document document = null;
+			File pluginDescriptorFile = new File(directory + File.separator + "plugin.xml");
+			if (pluginDescriptorFile.isFile()) {
+				SAXReader reader = new SAXReader();
+				document = reader.read(new EclipseXMLReader(new FileReader(pluginDescriptorFile)));
+
+				Node plugin = document.selectSingleNode("/plugin");
+				if (plugin == null)
+					throw new EclipseClasspathException("No plugin node in plugin descriptor");
+
+				oldStyle = !plugin.valueOf("@id").equals("");
+			}
 
 			// Get the plugin id
-			Node plugin = document.selectSingleNode("/plugin");
-			if (plugin == null)
-				throw new EclipseClasspathException("No plugin node in plugin descriptor");
 
-			if (!plugin.valueOf("@id").equals("")) {
-				parseOldPluginDescriptor(directory, plugin, isDependent);
+			if (oldStyle) {
+				parseOldPluginDescriptor(directory, document, isDependent);
 			} else {
-				parseNewPluginDescriptor(directory, plugin, isDependent);
+				parseNewPluginDescriptor(directory, isDependent);
 			}
 		}
 
@@ -172,10 +197,12 @@ public class EclipseClasspath {
 			return exportedLibraryList.iterator();
 		}
 
-		private void parseOldPluginDescriptor(String directory, Node plugin, boolean isDependent)
+		private void parseOldPluginDescriptor(String directory, Document document, boolean isDependent)
 			throws DocumentException, EclipseClasspathException {
 			// In Eclipse 2.1.x, all of the information we need
 			// is in plugin.xml.
+
+			Node plugin = document.selectSingleNode("/plugin");
 
 			pluginId = plugin.valueOf("@id");
 			//System.out.println("Plugin id is " + pluginId);
@@ -184,7 +211,6 @@ public class EclipseClasspath {
 				throw new EclipseClasspathException("Cannot determine plugin version");
 
 			// Extract required plugins
-			requiredPluginIdList = new LinkedList<String>();
 			List requiredPluginNodeList = document.selectNodes("/plugin/requires/import");
 			for (Iterator i = requiredPluginNodeList.iterator(); i.hasNext(); ) {
 				Node node = (Node) i.next();
@@ -196,7 +222,6 @@ public class EclipseClasspath {
 			}
 
 			// Extract exported libraries
-			exportedLibraryList = new LinkedList<String>();
 			List exportedLibraryNodeList = document.selectNodes("/plugin/runtime/library");
 			for (Iterator i = exportedLibraryNodeList.iterator(); i.hasNext(); ) {
 				Node node = (Node) i.next();
@@ -214,12 +239,72 @@ public class EclipseClasspath {
 			}
 		}
 
-		private void parseNewPluginDescriptor(String directory, Node plugin, boolean isDependent)
+		private void parseNewPluginDescriptor(String directory, boolean isDependent)
 			throws DocumentException, EclipseClasspathException {
 			// In Eclipse 3.x, we need to parse the plugin's MANIFEST.MF
 
-			throw new EclipseClasspathException(
-				"FIXME: support parsing Eclipse 3.0 plugin manifest for " + directory);
+			BufferedInputStream in = null;
+			try {
+				String manifestFileName = directory + File.separator + "META-INF/MANIFEST.MF";
+				in = new BufferedInputStream(new FileInputStream(manifestFileName));
+
+				Manifest manifest = new Manifest(in);
+				Attributes attributes = manifest.getMainAttributes();
+
+				// Get the plugin id
+				pluginId = attributes.getValue("Bundle-SymbolicName");
+				if (pluginId == null)
+					throw new EclipseClasspathException("Missing Bundle-SymbolicName in " + manifestFileName);
+
+				pluginId = stripSemiPart(pluginId);
+
+				// Get the plugin version
+				pluginVersion = attributes.getValue("Bundle-Version");
+				if (pluginVersion == null)
+					throw new EclipseClasspathException("Missing Bundle-Version in " + manifestFileName);
+
+				// Get required plugins
+				String required = attributes.getValue("Require-Bundle");
+				if (required != null) {
+					StringTokenizer tok = new StringTokenizer(required, ",");
+					while (tok.hasMoreTokens()) {
+						String requiredPlugin = tok.nextToken();
+						requiredPlugin = requiredPlugin.trim();
+						requiredPlugin = stripSemiPart(requiredPlugin);
+						//System.out.println("Required plugin=" +requiredPlugin);
+						requiredPluginIdList.add(requiredPlugin);
+					}
+				}
+
+				// Get exported libraries
+				String exported = attributes.getValue("Bundle-ClassPath");
+				if (exported != null) {
+					StringTokenizer tok2 = new StringTokenizer(exported, ",");
+					while (tok2.hasMoreTokens()) {
+						String jar = tok2.nextToken();
+						jar = jar.trim();
+						jar = stripSemiPart(jar);
+						exportedLibraryList.add(directory + File.separator + jar);
+					}
+				}
+
+			} catch (IOException e) {
+				throw new EclipseClasspathException("Could not parse Eclipse 3.0 plugin in " + directory, e);
+			} finally {
+				try {
+					if (in != null)
+						in.close();
+				} catch (IOException e) {
+					// Ignore
+				}
+			}
+		}
+
+		private String stripSemiPart(String s) {
+			int semi = s.indexOf(';');
+			if (semi >= 0)
+				s = s.substring(0, semi);
+			return s;
 		}
 	}
 
@@ -255,10 +340,6 @@ public class EclipseClasspath {
 
 		public String getDirectory() { return directory; }
 		public boolean isDependent() { return isDependent; }
-
-		public String getDescriptorFileName() {
-			return new File(directory, "plugin.xml").getPath();
-		}
 	}
 
 	public EclipseClasspath execute() throws EclipseClasspathException, DocumentException, IOException {
@@ -295,12 +376,7 @@ public class EclipseClasspath {
 		while (!workList.isEmpty()) {
 			WorkListItem item = workList.removeFirst();
 
-			// Read the plugin file
-			SAXReader reader = new SAXReader();
-			Document doc = reader.read(new EclipseXMLReader(new FileReader(item.getDescriptorFileName())));
-
-			// Add to the map
-			Plugin plugin = new Plugin(item.getDirectory(), doc, item.isDependent());
+			Plugin plugin = new Plugin(item.getDirectory(), item.isDependent());
 			requiredPluginMap.put(plugin.getId(), plugin);
 
 			if (!plugin.isDependent()) {
