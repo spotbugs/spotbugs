@@ -287,8 +287,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 							if (opcode == Constants.IF_ACMPEQ || opcode == Constants.IF_ACMPNE) {
 								TypeFrame frame = typeDataflow.getFactAtLocation(location);
 								if (frame.getStackDepth() < 2)
-									throw new AnalysisException("Stack underflow in " +
-										SignatureConverter.convertMethodSignature(methodGen) + " at " + handle);
+									throw new AnalysisException("Stack underflow", methodGen, handle);
 								int numSlots = frame.getNumSlots();
 								Type lhsType = frame.getValue(numSlots - 1);
 								Type rhsType = frame.getValue(numSlots - 2);
