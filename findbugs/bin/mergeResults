@@ -91,6 +91,13 @@ findbugs_home=`cd "$findbugs_home" && pwd`
 
 # End of code shamelessly stolen from Ant.
 
+props=
+if [ "$1" = "-vi" ]; then
+	props=-DmergeResults.vi=true
+	shift
+fi
+
 exec java -Dfindbugs.home=$findbugs_home \
+	  $props \
           -classpath $findbugs_home/findbugs.jar:$CLASSPATH \
           edu.umd.cs.findbugs.MergeResults $@
