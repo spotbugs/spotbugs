@@ -38,6 +38,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.FindLocalSelfAssignment" speed="fast" />
   <Detector class="edu.umd.cs.findbugs.detect.FindBugsSummaryStats" speed="fast" />
   <Detector class="edu.umd.cs.findbugs.detect.LazyInit" speed="moderate"/>
+  <Detector class="edu.umd.cs.findbugs.detect.FindJSR166LockMonitorenter" speed="moderate" disabled="true"/>
 
   <BugPattern abbrev="DE" type="DE_MIGHT_DROP" category="CORRECTNESS" />
   <BugPattern abbrev="DE" type="DE_MIGHT_IGNORE" category="CORRECTNESS" />
@@ -125,4 +126,5 @@
   <BugPattern abbrev="SA" type="SA_FIELD_SELF_ASSIGNMENT" category="CORRECTNESS" />
   <BugPattern abbrev="LI" type="LI_LAZY_INIT_INSTANCE" category="MT_CORRECTNESS" experimental="true"/>
   <BugPattern abbrev="LI" type="LI_LAZY_INIT_STATIC" category="MT_CORRECTNESS" experimental="true"/>
+  <BugPattern abbrev="JLM" type="JLM_JSR166_LOCK_MONITORENTER" category="MT_CORRECTNESS" experimental="true"/>
 </FindbugsPlugin>

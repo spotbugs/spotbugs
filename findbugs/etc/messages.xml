@@ -350,6 +350,15 @@ field is not volatile.  It is a moderately fast detector.
     </Details>
   </Detector>
 
+  <Detector class="edu.umd.cs.findbugs.detect.FindJSR166LockMonitorenter">
+    <Details>
+<![CDATA[
+<p> This detector looks for ordinary synchronization performed
+on JSR166 locks.  It is a moderately fast detector.
+]]>
+    </Details>
+  </Detector>
+
   <Detector class="edu.umd.cs.findbugs.detect.FindBugsSummaryStats">
     <Details>
 <![CDATA[
@@ -1514,6 +1523,18 @@ For more information, see the
     </Details>
   </BugPattern>
 
+  <BugPattern type="JLM_JSR166_LOCK_MONITORENTER">
+    <ShortDescription>Synchronization performed on JSR166 Lock in method</ShortDescription>
+    <LongDescription>Synchronization performed on JSR166 Lock in method {1}</LongDescription>
+<Details>
+<![CDATA[
+<p> This method performs synchronization on an implementation of
+<code>java.util.concurrent.locks.Lock</code>.  You should use
+the <code>lock()</code> and <code>unlock()</code> methods instead.
+]]>
+</Details>
+  </BugPattern>
+
   <!--
   **********************************************************************
    BugCodes
@@ -1568,5 +1589,6 @@ For more information, see the
   <BugCode abbrev="MWN">Mismatched wait() or notify()</BugCode>
   <BugCode abbrev="SA">Useless self-assignment</BugCode>
   <BugCode abbrev="LI">Unsynchronized Lazy Initialization</BugCode>
+  <BugCode abbrev="JLM">Synchronization on JSR166 Lock</BugCode>
 
 </MessageCollection>
