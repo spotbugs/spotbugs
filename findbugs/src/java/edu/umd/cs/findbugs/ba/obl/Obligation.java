@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs.ba.obl;
 
+import org.apache.bcel.generic.ObjectType;
+
 /**
  * An obligation that must be cleaned up by error handling code.
  * Examples include open streams and database connections.
@@ -32,15 +34,21 @@ package edu.umd.cs.findbugs.ba.obl;
  */
 public class Obligation {
 	private final String className;
+	private final ObjectType type;
 	private final int id;
 
 	public Obligation(String className, int id) {
 		this.className = className;
+		this.type = new ObjectType(className);
 		this.id = id;
 	}
 
 	public String getClassName() {
 		return className;
+	}
+	
+	public ObjectType getType() {
+		return type;
 	}
 
 	public int getId() {
