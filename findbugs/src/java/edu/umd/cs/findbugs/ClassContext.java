@@ -40,6 +40,7 @@ public class ClassContext {
 	private IdentityHashMap<Method, MethodGen> methodGenMap = new IdentityHashMap<Method, MethodGen>();
 	private IdentityHashMap<Method, CFG> cfgMap = new IdentityHashMap<Method, CFG>();
 	private IdentityHashMap<Method, ValueNumberDataflow> vnaDataflowMap = new IdentityHashMap<Method, ValueNumberDataflow>();
+	private IdentityHashMap<Method, IsNullValueDataflow> invDataflowMap = new IdentityHashMap<Method, IsNullValueDataflow>();
 	private IdentityHashMap<Method, DepthFirstSearch> dfsMap = new IdentityHashMap<Method, DepthFirstSearch>();
 	private IdentityHashMap<Method, BitSet> bytecodeMap = new IdentityHashMap<Method, BitSet>();
 	private ClassGen classGen;
@@ -66,9 +67,7 @@ public class ClassContext {
 	public MethodGen getMethodGen(Method method) {
 		MethodGen methodGen = methodGenMap.get(method);
 		if (methodGen == null) {
-			if (classGen == null)
-				classGen = new ClassGen(jclass);
-			ConstantPoolGen cpg = classGen.getConstantPool();
+			ConstantPoolGen cpg = getConstantPoolGen();
 			methodGen = new MethodGen(method, jclass.getClassName(), cpg);
 			methodGenMap.put(method, methodGen);
 		}
@@ -94,6 +93,17 @@ public class ClassContext {
 	}
 
 	/**
+	 * Get the ConstantPoolGen used to create the MethodGens
+	 * for this class.
+	 * @return the ConstantPoolGen
+	 */
+	public ConstantPoolGen getConstantPoolGen() {
+		if (classGen == null)
+			classGen = new ClassGen(jclass);
+		return classGen.getConstantPool();
+	}
+
+	/**
 	 * Get a ValueNumberDataflow for given method.
 	 * @param method the method
 	 * @return the ValueNumberDataflow
@@ -109,6 +119,27 @@ public class ClassContext {
 			vnaDataflowMap.put(method, vnaDataflow);
 		}
 		return vnaDataflow;
+	}
+
+	/**
+	 * Get an IsNullValueDataflow for given method.
+	 * @param method the method
+	 * @return the IsNullValueDataflow
+	 */
+	public IsNullValueDataflow getIsNullValueDataflow(Method method) throws DataflowAnalysisException {
+		IsNullValueDataflow invDataflow = invDataflowMap.get(method);
+		if (invDataflow == null) {
+			MethodGen methodGen = getMethodGen(method);
+			CFG cfg = getCFG(method);
+			ValueNumberDataflow vnaDataflow = getValueNumberDataflow(method);
+
+			IsNullValueAnalysis invAnalysis = new IsNullValueAnalysis(methodGen, cfg, vnaDataflow);
+			invDataflow = new IsNullValueDataflow(cfg, invAnalysis);
+			invDataflow.execute();
+
+			invDataflowMap.put(method, invDataflow);
+		}
+		return invDataflow;
 	}
 
 	/**
