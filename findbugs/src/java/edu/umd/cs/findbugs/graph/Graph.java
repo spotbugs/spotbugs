@@ -17,7 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-// $Revision: 1.12 $
+// $Revision: 1.13 $
 
 package edu.umd.cs.findbugs.graph;
 
@@ -140,6 +140,22 @@ public interface Graph
 	 * @return an Iterator over incoming edges
 	 */
 	public Iterator<EdgeType> incomingEdgeIterator(VertexType target);
+
+	/**
+	 * Get number of edges going into given vertex.
+	 *
+	 * @param vertex the vertex
+	 * @return number of edges going into the vertex
+	 */
+	public int getNumIncomingEdges(VertexType vertex);
+
+	/**
+	 * Get number of edges going out of given vertex.
+	 *
+	 * @param vertex the vertex
+	 * @return number of edges going out of the vertex
+	 */
+	public int getNumOutgoingEdges(VertexType vertex);
 
 	/**
 	 * Get an iterator over the successors of this vertex;

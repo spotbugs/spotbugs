@@ -225,6 +225,26 @@ public abstract class AbstractGraph
 		return new IncomingEdgeIterator<EdgeType, VertexType>(target);
 	}
 
+	public int getNumIncomingEdges(VertexType vertex) {
+		int count = 0;
+		EdgeType e = vertex.firstIncomingEdge;
+		while (e != null) {
+			++count;
+			e = e.getNextIncomingEdge();
+		}
+		return count;
+	}
+
+	public int getNumOutgoingEdges(VertexType vertex) {
+		int count = 0;
+		EdgeType e = vertex.firstOutgoingEdge;
+		while (e != null) {
+			++count;
+			e = e.getNextOutgoingEdge();
+		}
+		return count;
+	}
+
 	public Iterator<VertexType> successorIterator(final VertexType source) {
 		return new Iterator<VertexType>() {
 			private Iterator<EdgeType> iter = outgoingEdgeIterator(source);
