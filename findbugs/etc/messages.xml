@@ -12,7 +12,7 @@
 <![CDATA[
 <p> Looks for uses of this.getClass().getResource(...), which can give
 unexpected results if the class is extended by a class in
-another package.</p>
+another package. It is a fast detector</p>
 
 ]]>
     </Details>
@@ -20,14 +20,14 @@ another package.</p>
   <Detector class="edu.umd.cs.findbugs.detect.InfiniteRecursiveLoop">
     <Details>
 <![CDATA[
-<p> Looks for an infinite recursive loop. </p>
+<p> Looks for an infinite recursive loop. It is a fast detector.</p>
 ]]>
     </Details>
   </Detector>
   <Detector class="edu.umd.cs.findbugs.detect.VolatileUsage">
     <Details>
 <![CDATA[
-<p> Looks for bug patterns in the usage of volatile fields.</p>
+<p> Looks for bug patterns in the usage of volatile fields. It is a fast detector.</p>
 ]]>
     </Details>
   </Detector>
@@ -35,7 +35,7 @@ another package.</p>
   <Detector class="edu.umd.cs.findbugs.detect.EmptyZipFileEntry">
     <Details>
 <![CDATA[
-<p> This looks for creation of empty zip file entries.</p>
+<p> This looks for creation of empty zip file entries. It is a fast detector.</p>
 ]]>
     </Details>
   </Detector>
@@ -88,7 +88,7 @@ boolean operators (<code>|</code> and <code>&amp;</code> instead of
   <Detector class="edu.umd.cs.findbugs.detect.FindFloatMath">
     <Details>
 <![CDATA[
-<p> This detector looks for uses of floating point math.</p>
+<p> This detector looks for uses of floating point math. It is a fast detector.</p>
 ]]>
     </Details>
   </Detector>
@@ -96,7 +96,7 @@ boolean operators (<code>|</code> and <code>&amp;</code> instead of
     <Details>
 <![CDATA[
 <p> This detector looks for violations of the idioms for writing
-cloneable classes.</p>
+cloneable classes. It is a fast detector.</p>
 ]]>
     </Details>
   </Detector>
@@ -542,7 +542,9 @@ can be done statically. It is a fast detector.</p>
 <![CDATA[
 <p>
 This detector looks for assignments to local variables that
-are never subsequently read.  it is a moderately fast detector.
+are never subsequently read.  Due to the way byte code is generated for final local variables,
+false positives for these cases are often seen, which is why the detector is currently disabled.
+ It is a moderately fast detector.
 </p>
 ]]>
     </Details>
@@ -554,7 +556,7 @@ are never subsequently read.  it is a moderately fast detector.
 <p>
 This detector looks for Applet constructors that call methods in the parent
 Applet that rely on the Applet stub. Since this stub isn't initialized until just 
-before the init() method, these methods will fail in the constructor.
+before the init() method, these methods will fail in the constructor. It is a fast detector.
 </p>
 ]]>
     </Details>
@@ -1845,7 +1847,7 @@ inner object.&nbsp; This reference makes the instances
 <![CDATA[
    <p> The return value of this method should be checked. One common
 cause of this warning is to invoke a method on an immutable object,
-thinking that it update the object. For example, in the following code 
+thinking that it updates the object. For example, in the following code 
 fragment,</p>
 <blockquote>
 <pre>
