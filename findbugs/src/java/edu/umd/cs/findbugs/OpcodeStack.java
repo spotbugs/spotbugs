@@ -863,13 +863,17 @@ public class OpcodeStack implements Constants2
 	 		//If an error occurs, we clear the stack and locals. one of two things will occur. 
 	 		//Either the client will expect more stack items than really exist, and so they're condition check will fail, 
 	 		//or the stack will resync with the code. But hopefully not false positives
-	 		stack.clear();
-	 		lvValues.clear();
+	 		clear();
 	 	}
 	 	finally {
 	 		if (DEBUG)
 	 			System.out.println(OPCODE_NAMES[seen] + "  stack depth: " + getStackDepth());
 	 	}
+ 	}
+ 	
+ 	public void clear() {
+ 		stack.clear();
+ 		lvValues.clear();
  	}
  	
  	public int getStackDepth() {
