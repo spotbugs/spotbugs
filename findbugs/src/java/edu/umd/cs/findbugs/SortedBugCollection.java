@@ -40,16 +40,12 @@ public class SortedBugCollection extends BugCollection {
 	private TreeSet<BugInstance> bugSet;
 	private List<String> errorList;
 	private TreeSet<String> missingClassSet;
-	private TreeSet<String> applicationClassSet;
-	private HashSet<String> interfaceClassSet;
 	private String summaryHTML;
 
 	public SortedBugCollection() {
 		bugSet = new TreeSet<BugInstance>(comparator);
 		errorList = new LinkedList<String>();
 		missingClassSet = new TreeSet<String>();
-		applicationClassSet = new TreeSet<String>();
-		interfaceClassSet = new HashSet<String>();
 		summaryHTML = "";
 	}
 
