@@ -63,7 +63,11 @@ public class FindDoubleCheck extends BytecodeScanningDetector implements   Const
 		}
 	switch (stage) {
 	 case 0:
-		if (seen == IFNULL || seen == IFNONNULL) stage++;
+		if (seen == IFNULL || seen == IFNONNULL) {
+			int b = getBranchOffset();
+			if (b > 0 && (seen == IFNONNULL || b < 10))
+				stage++;
+			}
 		count = 0;
 		break;
 	 case 1:
@@ -74,7 +78,7 @@ public class FindDoubleCheck extends BytecodeScanningDetector implements   Const
 			}
 		break;
 	 case 2:
-		if (seen == IFNULL || seen == IFNONNULL) {
+		if ((seen == IFNULL || seen == IFNONNULL) && getBranchOffset() >= 0) {
 			endPC = getPC();
 			stage++;
 			}
