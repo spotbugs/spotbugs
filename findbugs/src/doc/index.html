@@ -48,11 +48,13 @@ invited talk, MASPLAS 2003
 <p> Changes since version 0.6.1:
 
 <ul>
+<li> New detector to look for useless control flow (suggested by
+     Richard P. King and Mike Fagan)
+<li> Look for places where return value of java.io.File.createNewFile()
+     is ignored (suggested by Richard P. King)
 <li> Fixed bug in resolution of source files (only the first
      source directory was searched)
 <li> Fixed a NullPointerException in the bytecode pattern matching code
-<li> Look for places where return value of java.io.File.createNewFile()
-     is ignored (suggested by Richard P. King)
 <li> Ant task supports project files (contributed by Mike Fagan)
 </ul>
 
@@ -64,6 +66,10 @@ invited talk, MASPLAS 2003
 we would be happy to consider it for inclusion.&nbsp; Just send a patch
 (be sure to use the "-u" or "-c" option to diff) or send the source files you've
 modified to <a href="mailto:daveho@cs.umd.edu">daveho@cs.umd.edu</a>.
+
+<p> Note: if you are contributing a new bug detector or an enhancement
+to an existing one, please submit a test case that contains an example
+of the new kind of bug.
 
 <h1>Resources</h1>
 
