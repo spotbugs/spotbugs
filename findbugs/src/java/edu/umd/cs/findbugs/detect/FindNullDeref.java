@@ -169,18 +169,20 @@ public class FindNullDeref implements Detector {
 		// Get the stack values at entry to the null check.
 		IsNullValueFrame frame = invDataflow.getStartFact(basicBlock);
 
-		// Could the reference be null?
-		IsNullValue refValue = frame.getValue(frame.getNumSlots() - consumed);
-
-		boolean onExceptionPath = refValue.isException();
-		if (refValue.isDefinitelyNull()) {
-			String type = onExceptionPath ? "NP_ALWAYS_NULL_EXCEPTION" : "NP_ALWAYS_NULL";
-			int priority = onExceptionPath ? LOW_PRIORITY : HIGH_PRIORITY;
-			reportNullDeref(classContext, method, exceptionThrowerHandle, type, priority);
-		} else if (refValue.isNullOnSomePath()) {
-			String type = onExceptionPath ? "NP_NULL_ON_SOME_PATH_EXCEPTION" : "NP_NULL_ON_SOME_PATH";
-			int priority = onExceptionPath ? LOW_PRIORITY : NORMAL_PRIORITY;
-			reportNullDeref(classContext, method, exceptionThrowerHandle, type, priority);
+		if (frame.isValid()) {
+			// Could the reference be null?
+			IsNullValue refValue = frame.getValue(frame.getNumSlots() - consumed);
+	
+			boolean onExceptionPath = refValue.isException();
+			if (refValue.isDefinitelyNull()) {
+				String type = onExceptionPath ? "NP_ALWAYS_NULL_EXCEPTION" : "NP_ALWAYS_NULL";
+				int priority = onExceptionPath ? LOW_PRIORITY : HIGH_PRIORITY;
+				reportNullDeref(classContext, method, exceptionThrowerHandle, type, priority);
+			} else if (refValue.isNullOnSomePath()) {
+				String type = onExceptionPath ? "NP_NULL_ON_SOME_PATH_EXCEPTION" : "NP_NULL_ON_SOME_PATH";
+				int priority = onExceptionPath ? LOW_PRIORITY : NORMAL_PRIORITY;
+				reportNullDeref(classContext, method, exceptionThrowerHandle, type, priority);
+			}
 		}
 	}
 
