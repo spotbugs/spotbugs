@@ -60,6 +60,7 @@ public class UseObjectEquals extends BytecodeScanningDetector implements Constan
 					        		.addClassAndMethod(this)
 					        		.addSourceLine(this));
 					}
+/*
 					else if ((cls != null) && cls.isFinal()) {
 						if (item.getSignature().equals("Ljava/lang/Class;"))
 							return;
@@ -70,6 +71,7 @@ public class UseObjectEquals extends BytecodeScanningDetector implements Constan
 				        		.addSourceLine(this));	
 				        }
 				    }
+*/
 				}
 			}
 		} catch (ClassNotFoundException cnfe) {
