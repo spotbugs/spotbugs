@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs.detect;
 import edu.umd.cs.findbugs.*;
 import org.apache.bcel.classfile.*;
 import edu.umd.cs.pugh.visitclass.Constants2;
+import org.apache.bcel.Repository;
 
 public class StartInConstructor extends BytecodeScanningDetector implements   Constants2 {
    private BugReporter bugReporter;
@@ -40,10 +41,17 @@ public class StartInConstructor extends BytecodeScanningDetector implements   Co
 
    public void sawOpcode(int seen) {
 	if (!isFinal && seen == INVOKEVIRTUAL && nameConstant.equals("start")
-				&& sigConstant.equals("()V"))
-		bugReporter.reportBug(new BugInstance("SC_START_IN_CTOR", NORMAL_PRIORITY)
+				&& sigConstant.equals("()V")) {
+	    try {
+		if (Repository.instanceOf(betterClassConstant, "java.lang.Thread")) {
+		    bugReporter.reportBug(new BugInstance("SC_START_IN_CTOR", NORMAL_PRIORITY)
 			.addClassAndMethod(this)
 			.addCalledMethod(this)
 			.addSourceLine(this));
+		}
+	    } catch (ClassNotFoundException e) {
+		bugReporter.reportMissingClass(e);
+	    }
 	}
+   }
 }
