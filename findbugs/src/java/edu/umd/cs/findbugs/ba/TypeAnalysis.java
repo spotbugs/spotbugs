@@ -21,7 +21,7 @@ package edu.umd.cs.daveho.ba;
 
 import java.util.*;
 
-import org.apache.bcel.*;
+import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.*;
 import org.apache.bcel.generic.*;
 
@@ -92,10 +92,24 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame> {
 		if (!methodGen.isStatic())
 			result.setValue(slot++, new ObjectType(methodGen.getClassName()));
 
-		// Add locals for parameters
+		// Add locals for parameters.
+		// Note that long and double parameters need to be handled
+		// specially because they occupy two locals.
 		Type[] argumentTypes = methodGen.getArgumentTypes();
-		for (int i = 0; i < argumentTypes.length; ++i)
-			result.setValue(slot++, argumentTypes[i]);
+		for (int i = 0; i < argumentTypes.length; ++i) {
+			Type argType = argumentTypes[i];
+
+			// Add special "extra" type for long or double params.
+			// These occupy the slot before the "plain" type.
+			if (argType.getType() == Constants.T_LONG) {
+				result.setValue(slot++, TypeFrame.getLongExtraType());
+			} else if (argType.getType() == Constants.T_DOUBLE) {
+				result.setValue(slot++, TypeFrame.getDoubleExtraType());
+			}
+
+			// Add the plain parameter type.
+			result.setValue(slot++, argType);
+		}
 
 		// Set remaining locals to BOTTOM; this will cause any
 		// uses of them to be flagged
