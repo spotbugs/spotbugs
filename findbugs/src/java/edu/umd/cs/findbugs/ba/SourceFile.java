@@ -99,15 +99,15 @@ public class SourceFile {
 
 	/**
 	 * Get the byte offset in the data for a source line.
+	 * Note that lines are considered to be zero-index, so the first
+	 * line in the file is numbered zero.
 	 * @param line the line number
-	 * @return the byte offset in the file's data for the line
-	 * @throws IllegalArgumentException if the line number is out of bounds
+	 * @return the byte offset in the file's data for the line,
+	 *   or -1 if the line is not valid
 	 */
 	public int getLineOffset(int line) {
-		if (line >= numLines) {
-			throw new IllegalArgumentException("line is out of bounds (line=" + line +
-				", numLines=" + numLines + ")");
-		}
+		if (line < 0 || line >= numLines)
+			return -1;
 		return lineNumberMap[line];
 	}
 }
