@@ -201,7 +201,7 @@
         <and>
           <uptodate>
             <srcfiles dir="${findbugs.dir}"
-                      includes="etc/findbugs.xml,etc/messages.xml,etc/messages_ja.xml"/>
+                      includes="etc/findbugs.xml,etc/messages.xml,etc/messages_ja.xml,etc/messages_fr.xml"/>
             <mapper type="regexp"
                     from="^etc(/|\\)(.*)\.xml$$"
                     to="${class.dir}/\2.xml"/>
@@ -224,12 +224,14 @@
          <arg value="etc/messages.xml"/>
 <!--
          <arg value="etc/messages_ja.xml"/>
+         <arg value="etc/messages_fr.xml"/>
 -->
       </java>
 
       <copy file="etc/findbugs.xml" todir="${class.dir}" />
       <copy file="etc/messages.xml" todir="${class.dir}" />
       <copy file="etc/messages_ja.xml" todir="${class.dir}" />
+      <copy file="etc/messages_fr.xml" todir="${class.dir}" />
     </target>
 
     <!-- Target to build the core plugin.
