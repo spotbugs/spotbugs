@@ -178,18 +178,12 @@
 	<!-- Add bug annotation elements: Class, Method, Field, SourceLine, Field -->
 	<tr class="detailrow{position() mod 2}">
 		<td/>
-		<td colspan="2">
+		<td>
 			<p id="{$warningId}" style="display: none;">
-				<table>
-					<tr>
-						<td><a href="#{@type}">Bug type <xsl:value-of select="@type"/> (click for details)</a></td>
-					</tr>
-					<xsl:for-each select="./*/Message">
-						<tr>
-							<td><xsl:value-of select="text()"/></td>
-						</tr>
-					</xsl:for-each>
-				</table>
+				<a href="#{@type}">Bug type <xsl:value-of select="@type"/> (click for details)</a>
+				<xsl:for-each select="./*/Message">
+					<br/><xsl:value-of select="text()"/>
+				</xsl:for-each>
 			</p>
 		</td>
 	</tr>
@@ -206,15 +200,13 @@
 	<xsl:param name="sectionId"/>
 
 	<h2><a name="{$sectionId}"><xsl:value-of select="$sectionTitle"/></a></h2>
-	<p>
-		<table class="warningtable" width="100%" cellspacing="0">
-			<xsl:copy-of select="$bugTableHeader"/>
-			<xsl:apply-templates select="$warningSet">
-				<xsl:sort select="@abbrev"/>
-				<xsl:sort select="Class/@classname"/>
-			</xsl:apply-templates>
-		</table>
-	</p>
+	<table class="warningtable" width="100%" cellspacing="0">
+		<xsl:copy-of select="$bugTableHeader"/>
+		<xsl:apply-templates select="$warningSet">
+			<xsl:sort select="@abbrev"/>
+			<xsl:sort select="Class/@classname"/>
+		</xsl:apply-templates>
+	</table>
 </xsl:template>
 
 </xsl:stylesheet>
