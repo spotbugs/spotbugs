@@ -17,7 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-// $Revision: 1.3 $
+// $Revision: 1.4 $
 
 package edu.umd.cs.daveho.graph;
 
@@ -34,10 +34,8 @@ import edu.umd.cs.daveho.graph.GraphEdge;
  */
 public interface Graph
 	<
-	EdgeKey,
-	VertexKey,
-	EdgeType extends GraphEdge<VertexType, EdgeKey>,
-	VertexType extends GraphVertex<VertexKey>
+	EdgeType extends GraphEdge<EdgeType, VertexType>,
+	VertexType extends GraphVertex<VertexType>
 	> extends Serializable {
 
 	/** Get number of edges in the graph. */
@@ -52,36 +50,30 @@ public interface Graph
 	/** Get Iterator over all vertices in the graph. */
 	public Iterator<VertexType> getVertexIterator();
 
-	/** Add a vertex to the graph.
-	 * @param vertexKey a VertexKey object uniquely identifying the vertex
-	 * @param toolkit the GraphToolkit used to construct graph components
-	 * @return the new vertex, or an equivalent existing vertex
+	/**
+	 * Add a vertex to the graph.
+	 * @return the new vertex
 	 */
-	public VertexType addVertex(VertexKey vertexKey, GraphToolkit toolkit);
-
-	/** Add an edge to the graph.
-	 * @param sourceInfo a VertexKey object uniquely identifying the source vertex
-	 * @param targetInfo a VertexKey object uniquely identifying the target vertex
-	 * @param edgeKey an EdgeKey object providing auxiliary information about
-	 *	 the edge
-	 * @param toolkit the GraphToolkit used to construct graph components
-	 * @return the new edge, or an equivalent existing edge
-	 */
-	public EdgeType addEdge(VertexKey sourceInfo, VertexKey targetInfo, EdgeKey edgeKey,
-						 GraphToolkit toolkit);
+	public VertexType addVertex();
 
 	/**
-	 * Get the vertex identified by given VertexKey object, or null
-	 * if no such vertex exists.
+	 * Add an edge to the graph.
+	 * Duplicate edges (with same source and target vertices) are allowed.
+	 * @param source the source vertex
+	 * @param target the target vertex
+	 * @return the new edge
 	 */
-	public VertexType getVertex(VertexKey vertexKey);
+	public EdgeType addEdge(VertexType source, VertexType target);
 
 	/**
-	 * Get the edge identifier whose source and target match given VertexKey objects
-	 * and whose auxiliary information matches given EdgeKey object, or null
-	 * if no such edge exists.
+	 * Look up an edge by source and target vertex.
+	 * If multiple edges with same source and target vertex exist,
+	 * one is selected arbitrarily.
+	 * @param source the source vertex
+	 * @param target the target vertex
+	 * @return a matching edge, or null if there is no matching edge
 	 */
-	public EdgeType getEdge(VertexKey sourceInfo, VertexKey targetInfo, EdgeKey edgeKey);
+	public EdgeType lookupEdge(VertexType source, VertexType target);
 
 	/**
 	 * Get the number of numeric (integer) labels that have been assigned to vertices

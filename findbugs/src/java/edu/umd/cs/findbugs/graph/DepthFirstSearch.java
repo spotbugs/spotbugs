@@ -17,7 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-// $Revision: 1.3 $
+// $Revision: 1.4 $
 
 package edu.umd.cs.daveho.graph;
 
@@ -27,12 +27,11 @@ import java.util.*;
  * Algorithm to perform depth first search on a graph.
  * Based on Cormen, et. al, <cite>Introduction to Algorithms</cite>, p. 478.
  */
-public class DepthFirstSearch<
-	GraphType extends Graph<EdgeKey, VertexKey, EdgeType, VertexType>,
-	EdgeKey,
-	VertexKey,
-	EdgeType extends GraphEdge<VertexType, EdgeKey>,
-	VertexType extends GraphVertex<VertexKey>
+public class DepthFirstSearch
+	<
+	GraphType extends Graph<EdgeType, VertexType>,
+	EdgeType extends GraphEdge<EdgeType, VertexType>,
+	VertexType extends GraphVertex<VertexType>
 	> {
 
 	private static final int WHITE  = 0;

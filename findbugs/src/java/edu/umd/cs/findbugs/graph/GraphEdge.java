@@ -17,7 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-// $Revision: 1.2 $
+// $Revision: 1.3 $
 
 package edu.umd.cs.daveho.graph;
 
@@ -30,17 +30,14 @@ import edu.umd.cs.daveho.graph.GraphVertex;
 /**
  * GraphEdge interface; represents an edge in a graph.
  */
-public interface GraphEdge<VertexType extends GraphVertex, EdgeKey>
-	extends Serializable, Comparable<GraphEdge<VertexType, EdgeKey>> {
+public interface GraphEdge<ActualEdgeType, VertexType extends GraphVertex<VertexType>>
+	extends Serializable, Comparable<ActualEdgeType> {
 
 	/** Get the source vertex. */
 	public VertexType getSource();
 
 	/** Get the target vertex. */
 	public VertexType getTarget();
-
-	/** Get EdgeKey associated with this edge. */
-	public EdgeKey getEdgeKey();
 
 }
 

@@ -17,7 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-// $Revision: 1.3 $
+// $Revision: 1.4 $
 
 package edu.umd.cs.daveho.graph;
 
@@ -27,12 +27,11 @@ import java.util.*;
  * Algorithm to merge a set of vertices into a single vertex.
  * Note that the graph is modified as part of this process.
  */
-public class MergeVertices <
-	GraphType extends Graph<EdgeKey, VertexKey, EdgeType, VertexType>,
-	EdgeKey,
-	VertexKey,
-	EdgeType extends GraphEdge<VertexType, EdgeKey>,
-	VertexType extends GraphVertex<VertexKey>
+public class MergeVertices
+	<
+	GraphType extends Graph<EdgeType, VertexType>,
+	EdgeType extends GraphEdge<EdgeType, VertexType>,
+	VertexType extends GraphVertex<VertexType>
 	> {
 
 	/** Constructor. */
@@ -42,12 +41,9 @@ public class MergeVertices <
 	 * Merge the specified set of vertices into a single vertex.
 	 * @param vertexSet the set of vertices to be merged
 	 * @param g the graph to be modified
-	 * @param combinator object used to combine VertexKey objects
-	 * @param toolkit a GraphToolkit to be used to create new 
-	 *	graph components
+	 * @param combinator object used to combine vertices
 	 */
-	public void mergeVertices(Set<VertexType> vertexSet, GraphType g, VertexKeyCombinator<VertexKey> combinator,
-							   GraphToolkit<GraphType, EdgeKey, VertexKey, EdgeType, VertexType> toolkit) {
+	public void mergeVertices(Set<VertexType> vertexSet, GraphType g, VertexCombinator<VertexType> combinator) {
 
 		// Special case: if the vertex set contains a single vertex
 		// or is empty, there is nothing to do
@@ -64,18 +60,8 @@ public class MergeVertices <
 				edgeSet.add(e);
 		}
 
-		// Combine all of the VertexKey objects into a single composite object
-		VertexKey compositeVertexKey = null;
-		for (Iterator<VertexType> i = vertexSet.iterator(); i.hasNext(); ) {
-			VertexType v = i.next();
-			if (compositeVertexKey == null)
-				compositeVertexKey = toolkit.duplicateVertexKey(v.getVertexKey());
-			else
-				compositeVertexKey = combinator.combineVertexKey(compositeVertexKey, v.getVertexKey());
-		}
-
-		// Create the new composite vertex
-		VertexType compositeVertex = g.addVertex(compositeVertexKey, toolkit);
+		// Combine all of the vertices into a single composite vertex
+		VertexType compositeVertex = combinator.combineVertices(vertexSet);
 
 		// For each original edge into or out of the vertex set,
 		// create an equivalent edge referencing the composite
@@ -95,10 +81,11 @@ public class MergeVertices <
 				 e.getSource() != e.getTarget())
 				continue;
 
-			g.addEdge(toolkit.duplicateVertexKey(source.getVertexKey()),
-					   toolkit.duplicateVertexKey(target.getVertexKey()),
-					   toolkit.duplicateEdgeKey(e.getEdgeKey()),
-					   toolkit);
+			// Don't create duplicate edges.
+			if (g.lookupEdge(source, target) != null)
+				continue;
+
+			g.addEdge(source, target);
 		}
 
 		// Remove all of the vertices in the vertex set; this will
