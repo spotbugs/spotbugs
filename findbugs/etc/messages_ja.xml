@@ -1,460 +1,717 @@
+<?xml version="1.0" encoding="shift_JIS"?> 
 <MessageCollection>
   <BugPattern type="DE_MIGHT_DROP">
-    <ShortDescription >\u4f8b\u5916\u3092\u898b\u843d\u3068\u3057\u3066\u3044\u308b\u7591\u3044</ShortDescription>
-    <LongDescription >{1} \u306f {2} \u3092\u898b\u843d\u3068\u3057\u3066\u3044\u308b\u7591\u3044</LongDescription>
+    <ShortDescription >例外を見落としている疑い</ShortDescription>
+    <LongDescription >{1} は {2} を見落としている疑い</LongDescription>
     <Details>
 <![CDATA[
   <!-- add details here -->
+  <p> This method might drop an exception.&nbsp; In general, exceptions
+  should be handled or reported in some way, or they should be thrown
+  out of the method.
 ]]>
     </Details>
   </BugPattern>
   <BugPattern type="DE_MIGHT_IGNORE">
-    <ShortDescription >\u4f8b\u5916\u3092\u7121\u8996\u3057\u3066\u3044\u308b\u7591\u3044</ShortDescription>
-    <LongDescription >{1} \u306f {2} \u3092\u7121\u8996\u3057\u3066\u3044\u308b</LongDescription>
+    <ShortDescription >例外を無視している疑い</ShortDescription>
+    <LongDescription >{1} は {2} を無視している</LongDescription>
     <Details>
 <![CDATA[
   <!-- add details here -->
+  <p> This method might ignore an exception.&nbsp; In general, exceptions
+  should be handled or reported in some way, or they should be thrown
+  out of the method.
 ]]>
     </Details>
   </BugPattern>
   <BugPattern type="DM_STRING_CTOR">
-    <ShortDescription >\u30b3\u30f3\u30b9\u30c8\u30e9\u30af\u30bfnew String() \u3092\u547c\u3093\u3067\u3044\u308b\u3002\u6587\u5b57\u5217\u3092\u305d\u306e\u307e\u307e\u4f7f\u3046\u3079\u304d</ShortDescription>
-    <LongDescription >{1} \u30b3\u30f3\u30b9\u30c8\u30e9\u30af\u30bfnew String() \u3092\u547c\u3093\u3067\u3044\u308b\u3002\u6587\u5b57\u5217\u3092\u305d\u306e\u307e\u307e\u4f7f\u3046\u3079\u304d</LongDescription>
+    <ShortDescription >コンストラクタnew String() を呼んでいる。文字列をそのまま使うべき</ShortDescription>
+    <LongDescription >{1} コンストラクタnew String() を呼んでいる。文字列をそのまま使うべき</LongDescription>
     <Details>
 <![CDATA[
   <!-- add details here -->
+  <p> Using the <code>java.lang.String(String)</code> constructor wastes memory
+  because the object so constructed will be functionally indistinguishable
+  from the <code>String</code> passed as a parameter.&nbsp; Just use the
+  argument <code>String</code> directly.
 ]]>
     </Details>
   </BugPattern>
   <BugPattern type="DM_STRING_VOID_CTOR">
-    <ShortDescription >\u30b3\u30f3\u30b9\u30c8\u30e9\u30af\u30bfnew String() \u3092\u547c\u3093\u3067\u3044\u308b\u3002\u305d\u306e\u307e\u307e "" \u3092\u4f7f\u3046\u3079\u304d</ShortDescription>
-    <LongDescription >{1} \u30b3\u30f3\u30b9\u30c8\u30e9\u30af\u30bfnew String() \u3092\u547c\u3093\u3067\u3044\u308b\u3002\u305d\u306e\u307e\u307e "" \u3092\u4f7f\u3046\u3079\u304d</LongDescription>
+    <ShortDescription >コンストラクタnew String() を呼んでいる。そのまま "" を使うべき</ShortDescription>
+    <LongDescription >{1} コンストラクタnew String() を呼んでいる。そのまま "" を使うべき</LongDescription>
     <Details>
 <![CDATA[
   <!-- add details here -->
+  <p> Creating a new <code>java.lang.String</code> object using the
+  no-argument constructor wastes memory because the object so created will
+  be functionally indistinguishable from the empty string constant
+  <code>""</code>.&nbsp; Java guarantees that identical string constants
+  will be represented by the same <code>String</code> object.&nbsp; Therefore,
+  you should just use the empty string constant directly.
 ]]>
     </Details>
   </BugPattern>
   <BugPattern type="DM_GC">
-    <ShortDescription >\u5f37\u5236\u7684\u306b\uff27\uff23\u3092\u547c\u3093\u3067\u3044\u308b\u3002\u30d9\u30f3\u30c1\u30de\u30fc\u30af\u4ee5\u5916\u306f\u5229\u7528\u306e\u5fc5\u8981\u6027\u304c\u306a\u3044</ShortDescription>
-    <LongDescription >{1} \u5f37\u5236\u7684\u306b\uff27\uff23\u3092\u547c\u3093\u3067\u3044\u308b\u3002\u30d9\u30f3\u30c1\u30de\u30fc\u30af\u4ee5\u5916\u306f\u5229\u7528\u306e\u5fc5\u8981\u6027\u304c\u306a\u3044</LongDescription>
+    <ShortDescription >強制的にＧＣを呼んでいる。ベンチマーク以外は利用の必要性がない</ShortDescription>
+    <LongDescription >{1} 強制的にＧＣを呼んでいる。ベンチマーク以外は利用の必要性がない</LongDescription>
     <Details>
 <![CDATA[
   <!-- add details here -->
+  <p> Code explicitly invokes garbage collection.
+  Except for specific use in benchmarking, this is very dubious.
+  <p>In the past, situations where people have explicitly invoked 
+  the garbage collector in routines such as close or finalize methods
+  has led to huge performance black holes. Garbage collection 
+	can be expensive. Any situation that forces hundreds or thousands
+	of garbage collections will bring the machine to a crawl.
 ]]>
     </Details>
   </BugPattern>
   <BugPattern type="DM_BOOLEAN_CTOR">
-    <ShortDescription >Boolean\u306e\u30b3\u30f3\u30b9\u30c8\u30e9\u30af\u30bf\u3092\u547c\u3093\u3067\u3044\u308b\u3002 Boolean.valueOf(...) \u3092\u4f7f\u3046\u3079\u304d</ShortDescription>
-    <LongDescription >{1} Boolean\u306e\u30b3\u30f3\u30b9\u30c8\u30e9\u30af\u30bf\u3092\u547c\u3093\u3067\u3044\u308b\u3002 Boolean.valueOf(...) \u3092\u4f7f\u3046\u3079\u304d</LongDescription>
+    <ShortDescription >Booleanのコンストラクタを呼んでいる。 Boolean.valueOf(...) を使うべき</ShortDescription>
+    <LongDescription >{1} Booleanのコンストラクタを呼んでいる。 Boolean.valueOf(...) を使うべき</LongDescription>
     <Details>
 <![CDATA[
   <!-- add details here -->
+  <p> Creating new instances of <code>java.lang.Boolean</code> wastes
+  memory, since <code>Boolean</code> objects are immutable and there are
+  only two useful values of this type.&nbsp; Use the <code>Boolean.valueOf()</code>
+  method to create <code>Boolean</code> objects instead.
 ]]>
     </Details>
   </BugPattern>
   <BugPattern type="DC_DOUBLECHECK">
-    <ShortDescription >\u30c0\u30d6\u30eb\u30c1\u30a7\u30c3\u30af\u3057\u3066\u3044\u308b\u53ef\u80fd\u6027\u304c\u3042\u308b\u3002</ShortDescription>
-    <LongDescription >{2} \u3092 {1} \u3067\u30c0\u30d6\u30eb\u30c1\u30a7\u30c3\u30af\u3057\u3066\u3044\u308b\u53ef\u80fd\u6027\u304c\u3042\u308b\u3002</LongDescription>
+    <ShortDescription >ダブルチェックしている可能性がある。</ShortDescription>
+    <LongDescription >{2} を {1} でダブルチェックしている可能性がある。</LongDescription>
     <Details>
 <![CDATA[
   <!-- add details here -->
+  <p> This method may contain an instance of double-checked locking.&nbsp;
+  This idiom is not correct according to the semantics of the Java memory
+  model.&nbsp; For more information, see the web page
+  <a href="http://www.cs.umd.edu/~pugh/java/memoryModel/DoubleCheckedLocking.html"
+  >http://www.cs.umd.edu/~pugh/java/memoryModel/DoubleCheckedLocking.html</a>.
 ]]>
     </Details>
   </BugPattern>
   <BugPattern type="DM_EXCEPTION_GETMESSAGE">
-    <ShortDescription >Exception.getMessage()\u3092\u8aad\u3093\u3067\u3044\u308b\u3002\u5909\u308f\u308a\u306b toString() \u3092\u547c\u3076\u3079\u304d\u3002</ShortDescription>
-    <LongDescription >{1} \u306f Exception.getMessage()\u3092\u8aad\u3093\u3067\u3044\u308b\u3002\u5909\u308f\u308a\u306b toString() \u3092\u547c\u3076\u3079\u304d\u3002</LongDescription>
+    <ShortDescription >Exception.getMessage()を読んでいる。変わりに toString() を呼ぶべき。</ShortDescription>
+    <LongDescription >{1} は Exception.getMessage()を読んでいる。変わりに toString() を呼ぶべき。</LongDescription>
     <Details>
 <![CDATA[
   <!-- add details here -->
+  <p> When reporting an exception, either by printing it or using it to produce
+  another exception, it is better to use the <code>toString()</code> method than
+  the <code>getMessage()</code> method.&nbsp; The reason is that the <code>toString()</code>
+  method indicates what kind of exception is thrown.
 ]]>
     </Details>
   </BugPattern>
   <BugPattern type="FI_PUBLIC_SHOULD_BE_PROTECTED">
-    <ShortDescription >Finalizer \u306fpublic\u3060\u304cprotected\u3067\u3042\u308b\u3079\u304d</ShortDescription>
-    <LongDescription >{1} \u306fpublic\u3060\u304cprotected\u3067\u3042\u308b\u3079\u304d</LongDescription>
+    <ShortDescription >Finalizer はpublicだがprotectedであるべき</ShortDescription>
+    <LongDescription >{1} はpublicだがprotectedであるべき</LongDescription>
     <Details>
 <![CDATA[
   <!-- add details here -->
+  <p> A class's <code>finalize()</code> method should have protected access,
+   not public.
 ]]>
     </Details>
   </BugPattern>
   <BugPattern type="FI_EMPTY">
-    <ShortDescription >\u7a7a\u306aFinalizer\u306a\u306e\u3067\u524a\u9664\u3059\u3079\u304d</ShortDescription>
-    <LongDescription >{1} \u306f\u7a7a\u306a\u306e\u3067\u524a\u9664\u3059\u3079\u304d</LongDescription>
+    <ShortDescription >空なFinalizerなので削除すべき</ShortDescription>
+    <LongDescription >{1} は空なので削除すべき</LongDescription>
     <Details>
 <![CDATA[
   <!-- add details here -->
+  <p> Empty <code>finalize()</code> methods are useless, so they should
+  be deleted.
 ]]>
     </Details>
   </BugPattern>
   <BugPattern type="FI_NULLIFY_SUPER">
-    <ShortDescription >Finalizer\u306f\u30b9\u30fc\u30d1\u30fc\u30af\u30e9\u30b9\u306efinalize(); \u3092\u7121\u8996\u3057\u3066\u3044\u308b\u3002</ShortDescription>
-    <LongDescription >{1} \u306f\u30b9\u30fc\u30d1\u30fc\u30af\u30e9\u30b9\u306e {2}.finalize(); \u3092\u7121\u8996\u3057\u3066\u3044\u308b\u3002\u308f\u3056\u3068\uff1f</LongDescription>
+    <ShortDescription >Finalizerはスーパークラスのfinalize(); を無視している。</ShortDescription>
+    <LongDescription >{1} はスーパークラスの {2}.finalize(); を無視している。わざと？</LongDescription>
     <Details>
 <![CDATA[
   <!-- add details here -->
+  <p> This empty <code>finalize()</code> method explicitly negates the
+  effect of any finalizer defined by its superclass.&nbsp; Any finalizer
+  actions defined for the superclass will not be performed.&nbsp;
+  Unless this is intended, delete this method.
 ]]>
     </Details>
   </BugPattern>
   <BugPattern type="FI_USELESS">
-    <ShortDescription >super.finalize(); \u4ee5\u5916\u4f55\u3082\u3057\u3066\u3044\u306a\u3044\u3002</ShortDescription>
-    <LongDescription >{1} super.finalize(); \u4ee5\u5916\u4f55\u3082\u3057\u3066\u3044\u306a\u3044\u306e\u3067\u524a\u9664\u3059\u3079\u304d</LongDescription>
+    <ShortDescription >super.finalize(); 以外何もしていない。</ShortDescription>
+    <LongDescription >{1} super.finalize(); 以外何もしていないので削除すべき</LongDescription>
     <Details>
 <![CDATA[
   <!-- add details here -->
+  <p> The only thing this <code>finalize()</code> method does is call
+  the superclass's <code>finalize()</code> method, making it
+  redundant.&nbsp; Delete it.
 ]]>
     </Details>
   </BugPattern>
   <BugPattern type="FI_MISSING_SUPER_CALL">
-    <ShortDescription >Finalizer \u306bsuper.finalize()\u3078\u306e\u547c\u3073\u51fa\u3057\u304c\u306a\u3044</ShortDescription>
-    <LongDescription >{1} super.finalize()\u3078\u306e\u547c\u3073\u51fa\u3057\u304c\u306a\u3044\u306e\u3067 {2}.finalize() \u304c\u547c\u3073\u51fa\u3055\u308c\u306a\u3044</LongDescription>
+    <ShortDescription >Finalizer にsuper.finalize()への呼び出しがない</ShortDescription>
+    <LongDescription >{1} super.finalize()への呼び出しがないので {2}.finalize() が呼び出されない</LongDescription>
     <Details>
 <![CDATA[
   <!-- add details here -->
+  <p> This <code>finalize()</code> method does not make a call to its
+  superclass's <code>finalize()</code> method.&nbsp; So, any finalizer
+  actions defined for the superclass will not be performed.&nbsp;
+  Add a call to <code>super.finalize()</code>.
 ]]>
     </Details>
   </BugPattern>
   <BugPattern type="FI_EXPLICIT_INVOCATION">
-    <ShortDescription >Finalizer\u3092\u660e\u793a\u7684\u306b\u8aad\u3093\u3067\u3044\u308b</ShortDescription>
-    <LongDescription >{1} \u660e\u793a\u7684\u306b {2}\u3092\u547c\u3093\u3067\u3044\u308b</LongDescription>
+    <ShortDescription >Finalizerを明示的に読んでいる</ShortDescription>
+    <LongDescription >{1} 明示的に {2}を呼んでいる</LongDescription>
     <Details>
 <![CDATA[
   <!-- add details here -->
+  <p> This method contains an explicit invocation of the <code>finalize()</code>
+  method on an object.&nbsp; Because finalizer methods are supposed to be
+  executed once, and only by the VM, this is a bad idea.
 ]]>
     </Details>
   </BugPattern>
   <BugPattern type="EQ_SELF_USE_OBJECT">
-    <ShortDescription >covariant\u30e1\u30bd\u30c3\u30c9equals()\u3092\u5b9a\u7fa9\u3057\u3066\u3044\u308b\u304c, Object.equals(Object) \u306f\u7d99\u627f\u306e\u307e\u307e</ShortDescription>
-    <LongDescription >{0} \u306fequals({0})\u30e1\u30bd\u30c3\u30c9\u3092\u5b9a\u7fa9\u3057\u3066\u3044\u308b\u304cObject.equals(Object)\u3092\u5229\u7528\u3057\u3066\u3044\u308b</LongDescription>
+    <ShortDescription >covariantメソッドequals()を定義しているが, Object.equals(Object) は継承のまま</ShortDescription>
+    <LongDescription >{0} はequals({0})メソッドを定義しているがObject.equals(Object)を利用している</LongDescription>
     <Details>
 <![CDATA[
   <!-- add details here -->
+  <p> This class defines a covariant version of the <code>equals()</code>
+  method, but calls the normal <code>equals(Object)</code> method
+  defined in the base <code>java.lang.Object</code> class.&nbsp;
+  The class should probably define a non-covariant version of <code>equals()</code>.&nbsp;
+  (I.e., a method with the signature <code>boolean equals(java.lang.Object)</code>.
 ]]>
     </Details>
   </BugPattern>
   <BugPattern type="EQ_SELF_NO_OBJECT">
-    <ShortDescription >covariant\u30e1\u30bd\u30c3\u30c9equals()\u3092\u5b9a\u7fa9\u3057\u3066\u3044\u308b</ShortDescription>
-    <LongDescription >{0} \u306fequals({0})\u30e1\u30bd\u30c3\u30c9\u3092\u5b9a\u7fa9\u3057\u3066\u3044\u308b\u304cequals(Object)\u3092\u5b9a\u7fa9\u3057\u3066\u3044\u306a\u3044</LongDescription>
+    <ShortDescription >covariantメソッドequals()を定義している</ShortDescription>
+    <LongDescription >{0} はequals({0})メソッドを定義しているがequals(Object)を定義していない</LongDescription>
     <Details>
 <![CDATA[
   <!-- add details here -->
+  <p> This class defines a covariant version of <code>equals()</code>.&nbsp;
+  To correctly override the <code>equals()</code> method in
+  <code>java.lang.Object</code>, the parameter of <code>equals()</code>
+  must have type <code>java.lang.Object</code>.
 ]]>
     </Details>
   </BugPattern>
   <BugPattern type="CO_SELF_NO_OBJECT">
-    <ShortDescription >covariant\u30e1\u30bd\u30c3\u30c9compareTo()\u3092\u5b9a\u7fa9\u3057\u3066\u3044\u308b</ShortDescription>
-    <LongDescription >{0} \u306fcomparesTo({0})\u30e1\u30bd\u30c3\u30c9\u3092\u5b9a\u7fa9\u3057\u3066\u3044\u308b\u304ccomparesTo(Object)\u3092\u5b9a\u7fa9\u3057\u3066\u3044\u306a\u3044</LongDescription>
+    <ShortDescription >covariantメソッドcompareTo()を定義している</ShortDescription>
+    <LongDescription >{0} はcomparesTo({0})メソッドを定義しているがcomparesTo(Object)を定義していない</LongDescription>
     <Details>
 <![CDATA[
   <!-- add details here -->
+  <p> This class defines a covariant version of <code>compareTo()</code>.&nbsp;
+  To correctly override the <code>compareTo()</code> method in the
+  <code>Comparable</code> interface, the parameter of <code>compareTo()</code>
+  must have type <code>java.lang.Object</code>.
 ]]>
     </Details>
   </BugPattern>
   <BugPattern type="HE_HASHCODE_USE_OBJECT_EQUALS">
-    <ShortDescription >hashCode()\u3092\u5b9a\u7fa9\u3057\u3066\u3044\u308b\u304cObject.equals()\u3092\u4f7f\u3063\u3066\u3044\u308b</ShortDescription>
-    <LongDescription >{0} \u306fhashCode\u30e1\u30bd\u30c3\u30c9\u3092\u5b9a\u7fa9\u3057\u3066\u3044\u308b\u304cObject.equals()\u3092\u5229\u7528\u3057\u3066\u3044\u308b</LongDescription>
+    <ShortDescription >hashCode()を定義しているがObject.equals()を使っている</ShortDescription>
+    <LongDescription >{0} はhashCodeメソッドを定義しているがObject.equals()を利用している</LongDescription>
     <Details>
 <![CDATA[
   <!-- add details here -->
+  <p> This class defines a <code>hashCode()</code> method but inherits its
+  <code>equals()</code> method from <code>java.lang.Object</code>
+  (which defines equality by comparing object references).&nbsp; Although
+  this will probably satisfy the contract that equal objects must have
+  equal hashcodes, it is probably not what was intended by overriding
+  the <code>hashCode()</code> method.&nbsp; (Overriding <code>hashCode()</code>
+  implies that the object's identity is based on criteria more complicated
+  than simple reference equality.)
 ]]>
     </Details>
   </BugPattern>
   <BugPattern type="HE_HASHCODE_NO_EQUALS">
-    <ShortDescription >hashCode()\u3092\u5b9a\u7fa9\u3057\u3066\u3044\u308b\u304cequals()\u3092\u5b9a\u7fa9\u3057\u3066\u3044\u306a\u3044</ShortDescription>
-    <LongDescription >{0} \u306fhashCode\u30e1\u30bd\u30c3\u30c9\u3092\u5b9a\u7fa9\u3057\u3066\u3044\u308b\u304cequals\u3092\u5b9a\u7fa9\u3057\u3066\u3044\u306a\u3044</LongDescription>
+    <ShortDescription >hashCode()を定義しているがequals()を定義していない</ShortDescription>
+    <LongDescription >{0} はhashCodeメソッドを定義しているがequalsを定義していない</LongDescription>
     <Details>
 <![CDATA[
   <!-- add details here -->
+  <p> This class defines a <code>hashCode()</code> method but not an
+  <code>equals()</code> method.&nbsp; Therefore, the class may
+  violate the invariant that equal objects must have equal hashcodes.
 ]]>
     </Details>
   </BugPattern>
   <BugPattern type="HE_EQUALS_USE_HASHCODE">
-    <ShortDescription >equals\u30e1\u30bd\u30c3\u30c9\u3092\u5b9a\u7fa9\u3057\u3066\u3044\u308b\u304cObject.hashCode()\u3092\u5229\u7528\u3057\u3066\u3044\u308b</ShortDescription>
-    <LongDescription >{0} \u306fequals\u30e1\u30bd\u30c3\u30c9\u3092\u5b9a\u7fa9\u3057\u3066\u3044\u308b\u304cObject.hashCode()\u3092\u5229\u7528\u3057\u3066\u3044\u308b</LongDescription>
+    <ShortDescription >equalsメソッドを定義しているがObject.hashCode()を利用している</ShortDescription>
+    <LongDescription >{0} はequalsメソッドを定義しているがObject.hashCode()を利用している</LongDescription>
     <Details>
 <![CDATA[
   <!-- add details here -->
+  <p> This class overrides <code>equals(Object)</code>, but does not
+  override <code>hashCode()</code>, and inherits the implementation of
+  <code>hashCode()</code> from <code>java.lang.Object</code> (which returns
+  the identity hash code, an arbitrary value assigned to the object
+  by the VM).&nbsp; Therefore, the class is very likely to violate the
+  invariant that equal objects must have equal hashcodes.
 ]]>
     </Details>
   </BugPattern>
   <BugPattern type="HE_EQUALS_NO_HASHCODE">
-    <ShortDescription >equals\u30e1\u30bd\u30c3\u30c9\u3092\u5b9a\u7fa9\u3057\u3066\u3044\u308b\u304chashCode\u3092\u5b9a\u7fa9\u3057\u3066\u306a\u3044</ShortDescription>
-    <LongDescription >{0} \u306fequals\u30e1\u30bd\u30c3\u30c9\u3092\u5b9a\u7fa9\u3057\u3066\u3044\u308b\u304chashCode\u3092\u5b9a\u7fa9\u3057\u3066\u306a\u3044</LongDescription>
+    <ShortDescription >equalsメソッドを定義しているがhashCodeを定義してない</ShortDescription>
+    <LongDescription >{0} はequalsメソッドを定義しているがhashCodeを定義してない</LongDescription>
     <Details>
 <![CDATA[
   <!-- add details here -->
+  <p> This class overrides <code>equals(Object)</code>, but does not
+  override <code>hashCode()</code>.&nbsp; Therefore, the class may violate the
+  invariant that equal objects must have equal hashcodes.
 ]]>
     </Details>
   </BugPattern>
   <BugPattern type="EQ_ABSTRACT_SELF">
-    <ShortDescription >\u62bd\u8c61\u30af\u30e9\u30b9 \u306fcovariant\u30e1\u30bd\u30c3\u30c9equals()\u3092\u5b9a\u7fa9\u3057\u3066\u3044\u308b</ShortDescription>
-    <LongDescription >Abstract {0} \u306fequals({0})\u30e1\u30bd\u30c3\u30c9\u3092\u5b9a\u7fa9\u3057\u3066\u3044\u308b</LongDescription>
+    <ShortDescription >抽象クラス はcovariantメソッドequals()を定義している</ShortDescription>
+    <LongDescription >Abstract {0} はequals({0})メソッドを定義している</LongDescription>
     <Details>
 <![CDATA[
   <!-- add details here -->
+  <p> This class defines a covariant version of <code>equals()</code>.&nbsp;
+  To correctly override the <code>equals()</code> method in
+  <code>java.lang.Object</code>, the parameter of <code>equals()</code>
+  must have type <code>java.lang.Object</code>.
 ]]>
     </Details>
   </BugPattern>
   <BugPattern type="CO_ABSTRACT_SELF">
-    <ShortDescription >\u62bd\u8c61\u30af\u30e9\u30b9 \u306fcovariant\u30e1\u30bd\u30c3\u30c9compareTo()\u3092\u5b9a\u7fa9\u3057\u3066\u3044\u308b</ShortDescription>
-    <LongDescription >Abstract {0} \u306fcompareTo({0})\u30e1\u30bd\u30c3\u30c9\u3092\u5b9a\u7fa9\u3057\u3066\u3044\u308b</LongDescription>
+    <ShortDescription >抽象クラス はcovariantメソッドcompareTo()を定義している</ShortDescription>
+    <LongDescription >Abstract {0} はcompareTo({0})メソッドを定義している</LongDescription>
     <Details>
 <![CDATA[
   <!-- add details here -->
+  <p> This class defines a covariant version of <code>compareTo()</code>.&nbsp;
+  To correctly override the <code>compareTo()</code> method in the
+  <code>Comparable</code> interface, the parameter of <code>compareTo()</code>
+  must have type <code>java.lang.Object</code>.
 ]]>
     </Details>
   </BugPattern>
   <BugPattern type="IS2_INCONSISTENT_SYNC">
-    <ShortDescription >\u540c\u671f\u306e\u4ed5\u65b9\u304c\u4e0d\u7d71\u4e00</ShortDescription>
-    <LongDescription >{1}\u306e\u540c\u671f\u306e\u4ed5\u65b9\u304c\u4e0d\u7d71\u4e00\u3002{2}% \u306e\u30a2\u30af\u30bb\u30b9\u3067synchronized\u3057\u3066\u3044\u308b\u3002</LongDescription>
+    <ShortDescription >同期の仕方が不統一</ShortDescription>
+    <LongDescription >{1}の同期の仕方が不統一。{2}% のアクセスでsynchronizedしている。</LongDescription>
     <Details>
 <![CDATA[
   <!-- add details here -->
+  <p> The fields of this class appear to be accessed inconsistently with respect
+  to synchronization.&nbsp; This bug report indicates that the bug pattern detector
+  judged that
+  <ol>
+  <li> The class contains a mix of locked and unlocked accesses,
+  <li> At least one locked access was performed by one of the class's own methods, and
+  <li> The number of unsynchronized field accesses (reads and writes) was no more than
+       one third of all accesses, with writes being weighed twice as high as reads
+  </ol>
+
+  <p> A typical bug matching this bug pattern is forgetting to synchronize
+  one of the methods in a class that is intended to be thread-safe.
+
+  <p> You can select the nodes labeled "Unsynchronized access" to show the
+  code locations where the detector believed that a field was accessed
+  without synchronization.
+
+  <p> Note that there are various sources of inaccuracy in this detector;
+  for example, the detector cannot statically detect all situations in which
+  a lock is held.&nbsp; Also, even when the detector is accurate in
+  distinguishing locked vs. unlocked accesses, the code in question may still
+  be correct.
+
+  <p> This description refers to the "IS2" version of the pattern detector,
+  which has more accurate ways of detecting locked vs. unlocked accesses
+  than the older "IS" detector.
 ]]>
     </Details>
   </BugPattern>
   <BugPattern type="NN_NAKED_NOTIFY">
-    <ShortDescription >notify\u306f\u88f8\u306e\u307e\u307e\u3002</ShortDescription>
-    <LongDescription >{1} \u306enotify\u306f\u88f8\u306e\u307e\u307e\u3002</LongDescription>
+    <ShortDescription >notifyは裸のまま。</ShortDescription>
+    <LongDescription >{1} のnotifyは裸のまま。</LongDescription>
     <Details>
 <![CDATA[
   <!-- add details here -->
-]]>
+  <p> A call to <code>notify()</code> or <code>notifyAll()</code>
+  was made without any (apparent) accompanying
+  modification to mutable object state.&nbsp; In general, calling a notify
+  method on a monitor is done because some condition another thread is
+  waiting for has become true.&nbsp; However, for the condition to be meaningful,
+  it must involve a heap object that is visible to both threads.
+
+  <p> This bug does not necessarily indicate an error, since the change to
+  mutable object state may have taken place in a method which then called
+  the method containing the notification.
     </Details>
   </BugPattern>
   <BugPattern type="NN_NAKED_NOTIFY">
-    <ShortDescription >notify\u306f\u88f8\u306e\u307e\u307e\u3002</ShortDescription>
-    <LongDescription >{1} \u306enotify\u306f\u88f8\u306e\u307e\u307e\u3002</LongDescription>
+    <ShortDescription>Naked notify in method</ShortDescription>
+    <LongDescription>Naked notify in {1}</LongDescription>
     <Details>
-<![CDATA[
-  <!-- add details here -->
+  <p> A call to <code>notify()</code> or <code>notifyAll()</code>
+  was made without any (apparent) accompanying
+  modification to mutable object state.&nbsp; In general, calling a notify
+  method on a monitor is done because some condition another thread is
+  waiting for has become true.&nbsp; However, for the condition to be meaningful,
+  it must involve a heap object that is visible to both threads.
+
+  <p> This bug does not necessarily indicate an error, since the change to
+  mutable object state may have taken place in a method which then called
+  the method containing the notification.
 ]]>
     </Details>
   </BugPattern>
   <BugPattern type="MS_EXPOSE_REP">
-    <ShortDescription >Public static \u30e1\u30bd\u30c3\u30c9\u304c\u914d\u5217\u3092\u8fd4\u3059\u3053\u3068\u3067\u5185\u90e8\u8868\u73fe\u3092\u3070\u3089\u3057\u3066\u3044\u308b\u53ef\u80fd\u6027\u304c\u3042\u308b</ShortDescription>
-    <LongDescription >public static {1} \u304c {2} \u3092\u8fd4\u3059\u3053\u3068\u3067\u5185\u90e8\u8868\u73fe\u3092\u3070\u3089\u3057\u3066\u3044\u308b\u53ef\u80fd\u6027\u304c\u3042\u308b</LongDescription>
+    <ShortDescription >Public static メソッドが配列を返すことで内部表現をばらしている可能性がある</ShortDescription>
+    <LongDescription >public static {1} が {2} を返すことで内部表現をばらしている可能性がある</LongDescription>
     <Details>
 <![CDATA[
   <!-- add details here -->
+  <p> A public static method returns a reference to
+	an array that is part of the static state of the class. 
+	Any code that calls this method can freely modify
+	the underlying array.
+	One fix is to return a copy of the array.
 ]]>
     </Details>
   </BugPattern>
   <BugPattern type="EI_EXPOSE_REP">
-    <ShortDescription >\u30e1\u30bd\u30c3\u30c9\u304c\u914d\u5217\u3092\u8fd4\u3059\u3053\u3068\u3067\u5185\u90e8\u8868\u73fe\u3092\u3070\u3089\u3057\u3066\u3044\u308b\u53ef\u80fd\u6027\u304c\u3042\u308b</ShortDescription>
-    <LongDescription >{1} \u304c {2} \u3092\u8fd4\u3059\u3053\u3068\u3067\u5185\u90e8\u8868\u73fe\u3092\u3070\u3089\u3057\u3066\u3044\u308b\u53ef\u80fd\u6027\u304c\u3042\u308b</LongDescription>
+    <ShortDescription >メソッドが配列を返すことで内部表現をばらしている可能性がある</ShortDescription>
+    <LongDescription >{1} が {2} を返すことで内部表現をばらしている可能性がある</LongDescription>
     <Details>
 <![CDATA[
   <!-- add details here -->
+  <p> Returning an array value stored in one of the object's fields
+  exposes the internal representation of the object.&nbsp; For classes shared
+  by other untrusted classes, this could potentially be a security issue.&nbsp;
+  Returning a new copy of the array is better approach in many situations.
 ]]>
     </Details>
   </BugPattern>
   <BugPattern type="RU_INVOKE_RUN">
-    <ShortDescription >\u30b9\u30ec\u30c3\u30c9\u306erun\u3092\u76f4\u63a5\u547c\u3093\u3067\u3044\u308b\u3002\uff08start\u3067\u306f\u306a\u3044\u304b\uff09</ShortDescription>
-    <LongDescription >{1} \u30b9\u30ec\u30c3\u30c9\u306erun\u3092\u76f4\u63a5\u547c\u3093\u3067\u3044\u308b\u3002\uff08start\u3067\u306f\u306a\u3044\u304b\uff09</LongDescription>
+    <ShortDescription >スレッドのrunを直接呼んでいる。（startではないか）</ShortDescription>
+    <LongDescription >{1} スレッドのrunを直接呼んでいる。（startではないか）</LongDescription>
     <Details>
 <![CDATA[
   <!-- add details here -->
+  <p> This method explicitly invokes <code>run()</code> on an object.&nbsp;
+  In general, classes implement the <code>Runnable</code> interface because
+  they are going to have their <code>run()</code> method invoked in a new thread,
+  in which case <code>Thread.start()</code> is the right method to call.
 ]]>
     </Details>
   </BugPattern>
   <BugPattern type="SP_SPIN_ON_FIELD">
-    <ShortDescription >\u30b9\u30d4\u30f3\u30ed\u30c3\u30af\u3092\u4f7f\u3063\u3066\u3044\u308b\u3002</ShortDescription>
-    <LongDescription >{2} \u3092\u4f7f\u3063\u3066 {1} \u3067\u30b9\u30d4\u30f3\u30ed\u30c3\u30af\u3092\u4f7f\u3063\u3066\u3044\u308b\u3002</LongDescription>
+    <ShortDescription >スピンロックを使っている。</ShortDescription>
+    <LongDescription >{2} を使って {1} でスピンロックを使っている。</LongDescription>
     <Details>
 <![CDATA[
   <!-- add details here -->
+  <p> This method spins in a loop which reads a field.&nbsp; The compiler
+  may legally hoist the read out of the loop, turning the code into an
+  infinite loop.&nbsp; The class should be changed so it uses proper
+  synchronization (including wait and notify calls).
 ]]>
     </Details>
   </BugPattern>
   <BugPattern type="2LW_TWO_LOCK_WAIT">
-    <ShortDescription >\u4e8c\u3064\u306e\u30ed\u30c3\u30af\u3092\u6301\u3063\u305f\u307e\u307ewait()\u3057\u3066\u3044\u308b\u3002 </ShortDescription>
-    <LongDescription >{1}\u3067\u4e8c\u3064\u306e\u30ed\u30c3\u30af\u3092\u6301\u3063\u305f\u307e\u307ewait()\u3057\u3066\u3044\u308b\u3002 </LongDescription>
+    <ShortDescription >二つのロックを持ったままwait()している。 </ShortDescription>
+    <LongDescription >{1}で二つのロックを持ったままwait()している。 </LongDescription>
     <Details>
 <![CDATA[
   <!-- add details here -->
+  <p> Waiting on a monitor while two locks are held may cause
+  deadlock.&nbsp; This not necessarily a bug, but is worth examining
+  closely.
 ]]>
     </Details>
   </BugPattern>
   <BugPattern type="UW_UNCOND_WAIT">
-    <ShortDescription >wait\u306b\u6761\u4ef6\u6587\u304c\u306a\u3044</ShortDescription>
-    <LongDescription >{1} \u306ewait\u306b\u6761\u4ef6\u6587\u304c\u306a\u3044</LongDescription>
+    <ShortDescription >waitに条件文がない</ShortDescription>
+    <LongDescription >{1} のwaitに条件文がない</LongDescription>
     <Details>
 <![CDATA[
   <!-- add details here -->
+  <p> This method contains a call to <code>java.lang.Object.wait()</code> which
+  is not guarded by conditional control flow.&nbsp; If the condition that
+  the method intends to wait for has already happened, the thread could
+  wait indefinitely.
 ]]>
     </Details>
   </BugPattern>
   <BugPattern type="UR_UNINIT_READ">
-    <ShortDescription >\u30b3\u30f3\u30b9\u30c8\u30e9\u30af\u30bf\u3067\u521d\u671f\u5316\u524d\u306e\u30d5\u30a3\u30fc\u30eb\u30c9\u3092\u8aad\u3093\u3067\u3044\u308b</ShortDescription>
-    <LongDescription >{2} \u3092 {1} \u3067\u521d\u671f\u5316\u524d\u306b\u5024\u3092\u8aad\u3093\u3067\u3044\u308b\u3002</LongDescription>
+    <ShortDescription >コンストラクタで初期化前のフィールドを読んでいる</ShortDescription>
+    <LongDescription >{2} を {1} で初期化前に値を読んでいる。</LongDescription>
     <Details>
 <![CDATA[
   <!-- add details here -->
+  <p> This constructor reads a field which has not yet been assigned a value.&nbsp;
+  This is often caused when the programmer mistakenly uses the field instead
+  of one of the constructor's parameters.
 ]]>
     </Details>
   </BugPattern>
   <BugPattern type="UG_SYNC_SET_UNSYNC_GET">
-    <ShortDescription >get\u30e1\u30bd\u30c3\u30c9\u306f\u540c\u671f\u3057\u3066\u3044\u306a\u3044\u304c\u3001set\u30e1\u30bd\u30c3\u30c9\u306f\u540c\u671f\u3057\u3066\u3044\u308b\u3002</ShortDescription>
-    <LongDescription >{1} \u306fsynchronized\u304c\u306a\u3044\u304c\u3001 {2} \u306fsynchronized\u304c\u3042\u308b</LongDescription>
+    <ShortDescription >getメソッドは同期していないが、setメソッドは同期している。</ShortDescription>
+    <LongDescription >{1} はsynchronizedがないが、 {2} はsynchronizedがある</LongDescription>
     <Details>
 <![CDATA[
   <!-- add details here -->
+  <p> This class contains similarly-named get and set
+  methods where the set method is synchronized and the get method is not.&nbsp;
+  This may result in incorrect behavior at runtime, as callers of the get
+  method will not necessarily see a consistent state for the object.&nbsp;
+  The get method should be made synchronized.
 ]]>
     </Details>
   </BugPattern>
   <BugPattern type="IC_INIT_CIRCULARITY">
-    <ShortDescription >\u521d\u671f\u5316\u304c\u30eb\u30fc\u30d7\u3057\u3066\u3044\u308b</ShortDescription>
-    <LongDescription >{0} \u3068 {1} \u306e\u9593\u3067\u30eb\u30fc\u30d7\u3059\u308b\u521d\u671f\u5316\u3068\u306a\u3063\u3066\u3044\u308b</LongDescription>
+    <ShortDescription >初期化がループしている</ShortDescription>
+    <LongDescription >{0} と {1} の間でループする初期化となっている</LongDescription>
     <Details>
 <![CDATA[
   <!-- add details here -->
+  <p> A circularity was detected in the static initializers of the two
+  classes referenced by the bug instance.&nbsp; Many kinds of unexpected
+  behavior may arise from such circularity.
 ]]>
     </Details>
   </BugPattern>
   <BugPattern type="IT_NO_SUCH_ELEMENT">
-    <ShortDescription >Iterator next() \u306f NoSuchElement \u4f8b\u5916\u3092\u6295\u3052\u308b\u3053\u3068\u306f\u306a\u3044</ShortDescription>
-    <LongDescription >{1} \u306f NoSuchElement \u4f8b\u5916\u3092\u6295\u3052\u308b\u3053\u3068\u306f\u306a\u3044</LongDescription>
+    <ShortDescription >Iterator next() は NoSuchElement 例外を投げることはない</ShortDescription>
+    <LongDescription >{1} は NoSuchElement 例外を投げることはない</LongDescription>
     <Details>
 <![CDATA[
   <!-- add details here -->
+  <p> This class implements the <code>java.util.Iterator</code> interface.&nbsp;
+  However, its <code>next()</code> method is not capable of throwing
+  <code>java.util.NoSuchElementException</code>.&nbsp; The <code>next()</code>
+  method should be changed so it throws <code>NoSuchElementException</code>
+  if is called when there are no more elements to return.
 ]]>
     </Details>
   </BugPattern>
   <BugPattern type="IS_INCONSISTENT_SYNC">
-    <ShortDescription >\u540c\u671f\u306e\u4ed5\u65b9\u304c\u4e0d\u7d71\u4e00</ShortDescription>
-    <LongDescription >{1} \u306e\u30a2\u30af\u30bb\u30b9\u304c\u4e0d\u7d71\u4e00; {2}% \u306e\u5834\u5408\u540c\u671f\u30a2\u30af\u30bb\u30b9\u3057\u3066\u3044\u308b</LongDescription>
+    <ShortDescription >同期の仕方が不統一</ShortDescription>
+    <LongDescription >{1} のアクセスが不統一; {2}% の場合同期アクセスしている</LongDescription>
     <Details>
 <![CDATA[
   <!-- add details here -->
+  <p> The fields of this class appear to be accessed inconsistently with respect
+  to synchronization.&nbsp; This bug report indicates that the bug pattern detector
+  judged that
+  <ol>
+  <li> The class contains a mix of locked and unlocked accesses,
+  <li> At least one locked access was performed by one of the class's own methods, and
+  <li> The number of unsynchronized field accesses (reads and writes) was no more than
+       one third of all accesses, with writes being weighed twice as high as reads
+  </ol>
+
+  <p> A typical bug matching this bug pattern is forgetting to synchronize
+  one of the methods in a class that is intended to be thread-safe.
+
+  <p> Note that there are various sources of inaccuracy in this detector;
+  for example, the detector cannot statically detect all situations in which
+  a lock is held.&nbsp; Also, even when the detector is accurate in
+  distinguishing locked vs. unlocked accesses, the code in question may still
+  be correct.
 ]]>
     </Details>
   </BugPattern>
   <BugPattern type="ML_SYNC_ON_UPDATED_FIELD">
-    <ShortDescription >\u66f4\u65b0\u3055\u308c\u308b\u30d5\u30a3\u30fc\u30eb\u30c9\u3067\u540c\u671f\u3057\u3066\u3044\u308b</ShortDescription>
-    <LongDescription >{1} \u66f4\u65b0\u3055\u308c\u308b\u30d5\u30a3\u30fc\u30eb\u30c9 {2} \u3067\u540c\u671f\u3057\u3066\u3044\u308b</LongDescription>
+    <ShortDescription >更新されるフィールドで同期している</ShortDescription>
+    <LongDescription >{1} 更新されるフィールド {2} で同期している</LongDescription>
     <Details>
 <![CDATA[
   <!-- add details here -->
+  <p> This method synchronizes on an object 
+	references from a mutable field.
+	This is unlikely to have useful semantics, since different
+threads may be synchronizing on different objects.
 ]]>
     </Details>
   </BugPattern>
   <BugPattern type="MS_OOI_PKGPROTECT">
-    <ShortDescription >Field \u306finterface\u304b\u3089\u53d6\u308a\u51fa\u3057\u3066\u30d1\u30c3\u30b1\u30fc\u30b8\u30d7\u30ed\u30c6\u30af\u30c8\u306b\u3059\u3079\u304d\u3002</ShortDescription>
-    <LongDescription >{1} \u306finterface\u304b\u3089\u53d6\u308a\u51fa\u3057\u3066\u30d1\u30c3\u30b1\u30fc\u30b8\u30d7\u30ed\u30c6\u30af\u30c8\u306b\u3059\u3079\u304d\u3002</LongDescription>
+    <ShortDescription >Field はinterfaceから取り出してパッケージプロテクトにすべき。</ShortDescription>
+    <LongDescription >{1} はinterfaceから取り出してパッケージプロテクトにすべき。</LongDescription>
     <Details>
 <![CDATA[
   <!-- add details here -->
+<p>
+ A final static field that is 
+defined in an interface references a mutable
+	object such as an array or hashtable.
+	This mutable object could 
+	be changed by malicious code or
+        by accident from another package.
+	So solve this, the field needs to be moved to a class
+	and made package protected 
+	to avoid
+        this vulnerability.
 ]]>
     </Details>
   </BugPattern>
   <BugPattern type="MS_FINAL_PKGPROTECT">
-    <ShortDescription >Field\u306ffinal\u3067\u30d1\u30c3\u30b1\u30fc\u30b8\u30d7\u30ed\u30c6\u30af\u30c8\u306b\u3059\u3079\u304d\u3002</ShortDescription>
-    <LongDescription >{1} \u306ffinal\u3067\u30d1\u30c3\u30b1\u30fc\u30b8\u30d7\u30ed\u30c6\u30af\u30c8\u306b\u3059\u3079\u304d\u3002</LongDescription>
+    <ShortDescription >Fieldはfinalでパッケージプロテクトにすべき。</ShortDescription>
+    <LongDescription >{1} はfinalでパッケージプロテクトにすべき。</LongDescription>
     <Details>
 <![CDATA[
   <!-- add details here -->
+ <p>
+	A mutable static field could be changed by malicious code or
+        by accident from another package.
+        The field could be made package protected and/or made final 
+	to avoid
+        this vulnerability.
 ]]>
     </Details>
   </BugPattern>
   <BugPattern type="MS_SHOULD_BE_FINAL">
-    <ShortDescription >Field\u306ffinal\u3067\u306f\u306a\u3044\u304cfinal\u306b\u3059\u3079\u304d\u3002</ShortDescription>
-    <LongDescription >{1} \u306ffinal\u3067\u306f\u306a\u3044\u304cfinal\u306b\u3059\u3079\u304d\u3002</LongDescription>
+    <ShortDescription >Fieldはfinalではないがfinalにすべき。</ShortDescription>
+    <LongDescription >{1} はfinalではないがfinalにすべき。</LongDescription>
     <Details>
 <![CDATA[
   <!-- add details here -->
+	<p>
+ A mutable static field could be changed by malicious code or
+        by accident from another package.
+        The field could be made final to avoid
+        this vulnerability.
 ]]>
     </Details>
   </BugPattern>
   <BugPattern type="MS_PKGPROTECT">
-    <ShortDescription >Field\u306f\u30d1\u30c3\u30b1\u30fc\u30b8\u30d7\u30ed\u30c6\u30af\u30c8\u306b\u3059\u3079\u304d</ShortDescription>
-    <LongDescription >{1} \u306f\u30d1\u30c3\u30b1\u30fc\u30b8\u30d7\u30ed\u30c6\u30af\u30c8\u306b\u3059\u3079\u304d</LongDescription>
+    <ShortDescription >Fieldはパッケージプロテクトにすべき</ShortDescription>
+    <LongDescription >{1} はパッケージプロテクトにすべき</LongDescription>
     <Details>
 <![CDATA[
   <!-- add details here -->
+  <p> A mutable static field could be changed by malicious code or
+	by accident.
+	The field could be made package protected to avoid
+	this vulnerability.
 ]]>
     </Details>
   </BugPattern>
   <BugPattern type="MS_MUTABLE_HASHTABLE">
-    <ShortDescription >Field\u306fmutable\u306a Hashtable</ShortDescription>
-    <LongDescription >{1}\u306fmutable\u306a Hashtable</LongDescription>
+    <ShortDescription >Fieldはmutableな Hashtable</ShortDescription>
+    <LongDescription >{1}はmutableな Hashtable</LongDescription>
     <Details>
 <![CDATA[
   <!-- add details here -->
+ <p>A final static field references an Hashtable
+	and can be accessed by malicious code or
+        by accident from another package.
+	This code can freely modify the contents of the array.
 ]]>
     </Details>
   </BugPattern>
   <BugPattern type="MS_MUTABLE_ARRAY">
-    <ShortDescription >Field\u306fmutable\u306a array</ShortDescription>
-    <LongDescription >{1} \u306fmutable\u306a array</LongDescription>
+    <ShortDescription >Fieldはmutableな array</ShortDescription>
+    <LongDescription >{1} はmutableな array</LongDescription>
     <Details>
 <![CDATA[
   <!-- add details here -->
+ A final static field references an array
+	and can be accessed by malicious code or
+        by accident from another package.
+	This code can freely modify the contents of the array.
 ]]>
     </Details>
   </BugPattern>
   <BugPattern type="MS_CANNOT_BE_FINAL">
-    <ShortDescription >Field \u306ffinal\u3067\u306a\u3044\u3057final\u306b\u306a\u308c\u306a\u3044</ShortDescription>
-    <LongDescription >{1} \u306ffinal\u3067\u306a\u3044\u3057final\u306b\u306a\u308c\u306a\u3044</LongDescription>
+    <ShortDescription >Field はfinalでないしfinalになれない</ShortDescription>
+    <LongDescription >{1} はfinalでないしfinalになれない</LongDescription>
     <Details>
 <![CDATA[
   <!-- add details here -->
+  <p> 
+ A mutable static field could be changed by malicious code or
+        by accident from another package.
+	Unfortunately, the way the field is used doesn't allow
+	any easy fix to this problem.
 ]]>
     </Details>
   </BugPattern>
   <BugPattern type="NM_VERY_CONFUSING">
-    <ShortDescription >\u30e1\u30bd\u30c3\u30c9\u540d\u304c\u30c8\u30c6\u30e2\u7d1b\u3089\u308f\u3057\u3044</ShortDescription>
-    <LongDescription >\u30e1\u30bd\u30c3\u30c9 {1} \u3068\u30e1\u30bd\u30c3\u30c9 {3} \u3092\u6301\u3064\u306e\u306f\u30c8\u30c6\u30e2\u308f\u304b\u308a\u306b\u304f\u3044</LongDescription>
+    <ShortDescription >メソッド名がトテモ紛らわしい</ShortDescription>
+    <LongDescription >メソッド {1} とメソッド {3} を持つのはトテモわかりにくい</LongDescription>
     <Details>
 <![CDATA[
   <!-- add details here -->
+  <p> The referenced methods have names that differ only by capitalization.
 ]]>
     </Details>
   </BugPattern>
   <BugPattern type="NM_CONFUSING">
-    <ShortDescription >\u30e1\u30bd\u30c3\u30c9\u540d\u304c\u7d1b\u3089\u308f\u3057\u3044</ShortDescription>
-    <LongDescription >\u30e1\u30bd\u30c3\u30c9 {1} \u3068\u30e1\u30bd\u30c3\u30c9 {3} \u3092\u6301\u3064\u306e\u306f\u308f\u304b\u308a\u306b\u304f\u3044</LongDescription>
+    <ShortDescription >メソッド名が紛らわしい</ShortDescription>
+    <LongDescription >メソッド {1} とメソッド {3} を持つのはわかりにくい</LongDescription>
     <Details>
 <![CDATA[
   <!-- add details here -->
+  <p> The referenced methods have names that differ only by capitalization.
 ]]>
     </Details>
   </BugPattern>
   <BugPattern type="NM_CONFUSING_METHOD_NAME">
-    <ShortDescription >\u30e1\u30bd\u30c3\u30c9\u540d\u304c\u7d1b\u3089\u308f\u3057\u3044</ShortDescription>
-    <LongDescription >{1} \u306e\u30e1\u30bd\u30c3\u30c9\u540d\u304c\u7d1b\u3089\u308f\u3057\u3044</LongDescription>
+    <ShortDescription >メソッド名が紛らわしい</ShortDescription>
+    <LongDescription >{1} のメソッド名が紛らわしい</LongDescription>
     <Details>
 <![CDATA[
   <!-- add details here -->
+  <p> This method has the same name as the superclass of the class it
+  is defined in.
 ]]>
     </Details>
   </BugPattern>
   <BugPattern type="NM_LCASE_HASHCODE">
-    <ShortDescription >Class \u306f hashcode()\u3092\u5b9a\u7fa9\u3057\u3066\u3044\u308b\u3002 hashCode()\u306e\u9593\u9055\u3044\u3067\u306f\u306a\u3044\u304b\uff1f</ShortDescription>
-    <LongDescription >\u30af\u30e9\u30b9 {0} \u306f hashcode()\u3092\u5b9a\u7fa9\u3057\u3066\u3044\u308b\u3002 hashCode()\u306e\u9593\u9055\u3044\u3067\u306f\u306a\u3044\u304b\uff1f</LongDescription>
+    <ShortDescription >Class は hashcode()を定義している。 hashCode()の間違いではないか？</ShortDescription>
+    <LongDescription >クラス {0} は hashcode()を定義している。 hashCode()の間違いではないか？</LongDescription>
     <Details>
 <![CDATA[
   <!-- add details here -->
+  <p> This class defines a method called <code>hashcode()</code>.&nbsp; This method
+  does not override the <code>hashCode()</code> method in <code>java.lang.Object</code>,
+  which is probably what was intended.
 ]]>
     </Details>
   </BugPattern>
   <BugPattern type="NM_LCASE_TOSTRING">
-    <ShortDescription >Class  \u306f tostring()\u3092\u5b9a\u7fa9\u3057\u3066\u3044\u308b\u3002 toString()\u306e\u9593\u9055\u3044\u3067\u306f\u306a\u3044\u304b\uff1f</ShortDescription>
-    <LongDescription >\u30af\u30e9\u30b9 {0} \u306f tostring()\u3092\u5b9a\u7fa9\u3057\u3066\u3044\u308b\u3002 toString()\u306e\u9593\u9055\u3044\u3067\u306f\u306a\u3044\u304b\uff1f</LongDescription>
+    <ShortDescription >Class  は tostring()を定義している。 toString()の間違いではないか？</ShortDescription>
+    <LongDescription >クラス {0} は tostring()を定義している。 toString()の間違いではないか？</LongDescription>
     <Details>
 <![CDATA[
   <!-- add details here -->
+  <p> This class defines a method called <code>tostring()</code>.&nbsp; This method
+  does not override the <code>toString()</code> method in <code>java.lang.Object</code>,
+  which is probably what was intended.
 ]]>
     </Details>
   </BugPattern>
   <BugPattern type="RR_NOT_CHECKED">
-    <ShortDescription >InputStream.read()\u306e\u623b\u308a\u5024\u3092\u7121\u8996\u3057\u3066\u3044\u308b\u3002</ShortDescription>
-    <LongDescription >{1} \u306f {2} \u306e\u623b\u308a\u5024\u3092\u7121\u8996\u3057\u3066\u3044\u308b\u3002</LongDescription>
+    <ShortDescription >InputStream.read()の戻り値を無視している。</ShortDescription>
+    <LongDescription >{1} は {2} の戻り値を無視している。</LongDescription>
     <Details>
 <![CDATA[
   <!-- add details here -->
+  <p> This method ignores the return value of one of the variants of
+  <code>java.io.InputStream.read()</code> which can return multiple bytes.&nbsp;
+  If the return value is not checked, the caller will not be able to correctly
+  handle the case where fewer bytes were read than the caller requested.&nbsp;
+  This is a particularly insidious kind of bug, because in many programs,
+  reads from input streams usually do read the full amount of data requested,
+  causing the program to fail only sporadically.
 ]]>
     </Details>
   </BugPattern>
@@ -464,6 +721,18 @@
     <Details>
 <![CDATA[
   <!-- add details here -->
+  <p> This class implements the <code>Serializable</code> interface, but does
+  not define a <code>serialVersionUID</code> field.&nbsp; 
+  A change as simple as adding a reference to a .class object 
+	 will add synthetic fields to the class,
+	which will unfortunately change the implicit
+	serialVersionUID (e.g., adding a reference to <code>String.class</code>
+	will generate a static field <code>class$java$lang$String</code>).
+   Also, different source code to bytecode compilers may use different 
+   naming conventions for synthetic variables generated for 
+   references to class objects or inner classes.
+   To ensure interoperability of Serializable across versions,
+	consider adding an explicit serialVersionUID.
 ]]>
     </Details>
   </BugPattern>
@@ -473,6 +742,8 @@
     <Details>
 <![CDATA[
   <!-- add details here -->
+  <p> This class has a <code>writeObject()</code> method which is synchronized;
+  however, no other method of the class is synchronized.
 ]]>
     </Details>
   </BugPattern>
@@ -482,132 +753,172 @@
     <Details>
 <![CDATA[
   <!-- add details here -->
+  <p> This serializable class defines a <code>readObject()</code> which is
+  synchronized.&nbsp; By definition, an object created by unserialization
+  is only reachable by one thread, and thus there is no need for
+  <code>readObject()</code> to be synchronized.&nbsp; If the <code>readObject()</code>
+  method itself is causing the object to become visible to another thread,
+  that is an example of very dubious coding style.
 ]]>
     </Details>
   </BugPattern>
   <BugPattern type="SE_NONSTATIC_SERIALVERSIONID">
     <ShortDescription >serialVersionUID isn't static</ShortDescription>
-    <LongDescription >{1} \u306fstatic\u3067\u306f\u306a\u3044</LongDescription>
+    <LongDescription >{1} はstaticではない</LongDescription>
     <Details>
 <![CDATA[
   <!-- add details here -->
+  <p> This class defines a <code>serialVersionUID</code> field that is not static.&nbsp;
+  The field should be made static.
 ]]>
     </Details>
   </BugPattern>
   <BugPattern type="SPDC_STATIC_DOUBLECHECK">
-    <ShortDescription >\u30b9\u30bf\u30c6\u30a3\u30c3\u30af\u30d5\u30a3\u30fc\u30eb\u30c9\u3092\u4e8c\u91cd\u306b\u30c1\u30a7\u30c3\u30af\u3057\u3066\u3044\u308b\u53ef\u80fd\u6027\u304c\u3042\u308b\u3002</ShortDescription>
-    <LongDescription >\u30b9\u30bf\u30c6\u30a3\u30c3\u30af\u30d5\u30a3\u30fc\u30eb\u30c9 {2} \u3092 {1} \u3067\u4e8c\u91cd\u306b\u30c1\u30a7\u30c3\u30af\u3057\u3066\u3044\u308b\u53ef\u80fd\u6027\u304c\u3042\u308b\u3002</LongDescription>
+    <ShortDescription >スタティックフィールドを二重にチェックしている可能性がある。</ShortDescription>
+    <LongDescription >スタティックフィールド {2} を {1} で二重にチェックしている可能性がある。</LongDescription>
     <Details>
 <![CDATA[
   <!-- add details here -->
+  <p> This method may contain an instance of double-checked locking.&nbsp;
+  This idiom is not correct according to the semantics of the Java memory
+  model.&nbsp; For more information, see the web page
+  <a href="http://www.cs.umd.edu/~pugh/java/memoryModel/DoubleCheckedLocking.html"
+  >http://www.cs.umd.edu/~pugh/java/memoryModel/DoubleCheckedLocking.html</a>.
 ]]>
     </Details>
   </BugPattern>
   <BugPattern type="SPDC_DOUBLECHECK">
-    <ShortDescription >\u30d5\u30a3\u30fc\u30eb\u30c9\u3092\u4e8c\u91cd\u306b\u30c1\u30a7\u30c3\u30af\u3057\u3066\u3044\u308b\u53ef\u80fd\u6027\u304c\u3042\u308b\u3002</ShortDescription>
-    <LongDescription >{2} \u3092 {1} \u3067\u4e8c\u91cd\u306b\u30c1\u30a7\u30c3\u30af\u3057\u3066\u3044\u308b\u53ef\u80fd\u6027\u304c\u3042\u308b\u3002</LongDescription>
+    <ShortDescription >フィールドを二重にチェックしている可能性がある。</ShortDescription>
+    <LongDescription >{2} を {1} で二重にチェックしている可能性がある。</LongDescription>
     <Details>
 <![CDATA[
   <!-- add details here -->
+  <p> This method may contain an instance of double-checked locking.&nbsp;
+  This idiom is not correct according to the semantics of the Java memory
+  model.&nbsp; For more information, see the web page
+  <a href="http://www.cs.umd.edu/~pugh/java/memoryModel/DoubleCheckedLocking.html"
+  >http://www.cs.umd.edu/~pugh/java/memoryModel/DoubleCheckedLocking.html</a>.
 ]]>
     </Details>
   </BugPattern>
   <BugPattern type="SC_START_IN_CTOR">
-    <ShortDescription >\u30b3\u30f3\u30b9\u30c8\u30e9\u30af\u30bf\u304c Thread.start()\u3092\u8aad\u3093\u3067\u3044\u308b\u3002</ShortDescription>
-    <LongDescription >{1} \u306f {2} \u3092\u547c\u3073\u51fa\u3057\u3066\u3044\u308b</LongDescription>
+    <ShortDescription >コンストラクタが Thread.start()を読んでいる。</ShortDescription>
+    <LongDescription >{1} は {2} を呼び出している</LongDescription>
     <Details>
 <![CDATA[
   <!-- add details here -->
+  <p> The constructor starts a thread. This is likely to be wrong if
+	the class is ever extended/subclasses, since the thread will be started
+	before the subclass constructor is started.
 ]]>
     </Details>
   </BugPattern>
   <BugPattern type="SS_SHOULD_BE_STATIC">
-    <ShortDescription >\u30d5\u30a3\u30fc\u30eb\u30c9 \u3092\u8aad\u3093\u3067\u3044\u306a\u3044\u3002\u30b9\u30bf\u30c6\u30a3\u30c3\u30af\u306b\u3059\u3079\u304d</ShortDescription>
-    <LongDescription >\u30d5\u30a3\u30fc\u30eb\u30c9 {1}; \u3092\u8aad\u3093\u3067\u3044\u306a\u3044\u3002\u30b9\u30bf\u30c6\u30a3\u30c3\u30af\u306b\u3059\u3079\u304d</LongDescription>
+    <ShortDescription >フィールド を読んでいない。スタティックにすべき</ShortDescription>
+    <LongDescription >フィールド {1}; を読んでいない。スタティックにすべき</LongDescription>
     <Details>
 <![CDATA[
   <!-- add details here -->
+  <p> This class contains an instance final field which is never read.&nbsp;
+  The fact that it is not read may indicate that the Java source to bytecode
+  compiler has propagated its constant value.&nbsp; Consider making it
+  static.
 ]]>
     </Details>
   </BugPattern>
   <BugPattern type="UUF_UNUSED_FIELD">
-    <ShortDescription >\u30d5\u30a3\u30fc\u30eb\u30c9  \u3092\u4f7f\u3063\u3066\u3044\u306a\u3044</ShortDescription>
-    <LongDescription >\u30d5\u30a3\u30fc\u30eb\u30c9 {1} \u3092\u4f7f\u3063\u3066\u3044\u306a\u3044</LongDescription>
+    <ShortDescription >フィールド  を使っていない</ShortDescription>
+    <LongDescription >フィールド {1} を使っていない</LongDescription>
     <Details>
 <![CDATA[
   <!-- add details here -->
+  <p> This field is never used.&nbsp; Consider removing it from the class.
 ]]>
     </Details>
   </BugPattern>
   <BugPattern type="URF_UNREAD_FIELD">
-    <ShortDescription >\u30d5\u30a3\u30fc\u30eb\u30c9  \u3092\u8aad\u3093\u3067\u3044\u306a\u3044</ShortDescription>
-    <LongDescription >\u30d5\u30a3\u30fc\u30eb\u30c9 {1} \u3092\u8aad\u3093\u3067\u3044\u306a\u3044</LongDescription>
+    <ShortDescription >フィールド  を読んでいない</ShortDescription>
+    <LongDescription >フィールド {1} を読んでいない</LongDescription>
     <Details>
 <![CDATA[
   <!-- add details here -->
+  <p> This field is never read.&nbsp; Consider removing it from the class.
 ]]>
     </Details>
   </BugPattern>
   <BugPattern type="SIC_INNER_SHOULD_BE_STATIC">
-    <ShortDescription >\u5185\u90e8 _static_ \u30af\u30e9\u30b9\u306b\u3059\u3079\u304d\u3002</ShortDescription>
-    <LongDescription >\u30af\u30e9\u30b9 {0} \u306f\u5185\u90e8 _static_ \u30af\u30e9\u30b9\u306b\u3059\u3079\u304d\u3002</LongDescription>
+    <ShortDescription >内部 _static_ クラスにすべき。</ShortDescription>
+    <LongDescription >クラス {0} は内部 _static_ クラスにすべき。</LongDescription>
     <Details>
 <![CDATA[
   <!-- add details here -->
+  <p> This class is an inner class, but does not use its embedded reference
+  to the object which created it.&nbsp; This reference makes the instances
+  of the class larger, and may keep the reference to the creator object
+  alive longer than necessary.&nbsp; If possible, the class should be
+  made into a <em>static</EM> inner class.
 ]]>
     </Details>
   </BugPattern>
   <BugPattern type="WA_NOT_IN_LOOP">
-    <ShortDescription >wait\u304c\u30eb\u30fc\u30d7\u306b\u5165\u3063\u3066\u3044\u306a\u3044</ShortDescription>
-    <LongDescription >\u3000 {1}\u3067\u306ewait\u304c\u30eb\u30fc\u30d7\u306b\u5165\u3063\u3066\u3044\u306a\u3044</LongDescription>
+    <ShortDescription >waitがループに入っていない</ShortDescription>
+    <LongDescription >　 {1}でのwaitがループに入っていない</LongDescription>
     <Details>
 <![CDATA[
   <!-- add details here -->
+  <p> This method contains a call to <code>java.lang.Object.wait()</code> 
+  which is not in a loop.&nbsp; If the monitor is used for multiple conditions,
+  the condition the caller intended to wait for might not be the one
+  that actually occurred.
 ]]>
     </Details>
   </BugPattern>
   <BugPattern type="NO_NOTIFY_NOT_NOTIFYALL">
-    <ShortDescription >notifyAll\u3067\u306f\u306a\u304fnotify\u3092\u4f7f\u3063\u3066\u3044\u308b</ShortDescription>
-    <LongDescription >{1} \u3067notifyAll\u3067\u306f\u306a\u304fnotify\u3092\u4f7f\u3063\u3066\u3044\u308b</LongDescription>
+    <ShortDescription >notifyAllではなくnotifyを使っている</ShortDescription>
+    <LongDescription >{1} でnotifyAllではなくnotifyを使っている</LongDescription>
     <Details>
 <![CDATA[
   <!-- add details here -->
+  <p> This method calls <code>notify()</code> rather than <code>notifyAll()</code>.&nbsp;
+  Java monitors are often used for multiple conditions.&nbsp; Calling <code>notify()</code>
+  only wakes up one thread, meaning that the thread woken up might not be the
+  one waiting for the condition that the caller just satisfied.
 ]]>
     </Details>
   </BugPattern>
-  <BugCode abbrev="FI" >finalizer\u306e\u4f7f\u3044\u65b9\u304c\u9593\u9055\u3063\u3066\u3044\u308b</BugCode>
-  <BugCode abbrev="ML" >\u66f4\u65b0\u3055\u308c\u308b\u30d5\u30a3\u30fc\u30eb\u30c9\u3067\u30ed\u30c3\u30af\u3057\u3066\u3044\u308b\uff08\u30ed\u30c3\u30af\u30aa\u30d6\u30b8\u30a7\u30af\u30c8\u304c\u4e0d\u5909\u3067\u306a\u3044\uff09</BugCode>
-  <BugCode abbrev="UG" >get\u306fsynchro\u3057\u3066\u3044\u306a\u3044\u304cset\u306fsynchro\u3057\u3066\u3044\u308b</BugCode>
-  <BugCode abbrev="IC" >\u521d\u671f\u5316\u304c\u30eb\u30fc\u30d7\u3057\u3066\u3044\u308b</BugCode>
-  <BugCode abbrev="IS" >synchro\u306e\u4ed5\u65b9\u304c\u4e0d\u7d71\u4e00</BugCode>
-  <BugCode abbrev="IS2" >synchro\u306e\u4ed5\u65b9\u304c\u4e0d\u7d71\u4e00</BugCode>
+  <BugCode abbrev="FI" >finalizerの使い方が間違っている</BugCode>
+  <BugCode abbrev="ML" >更新されるフィールドでロックしている（ロックオブジェクトが不変でない）</BugCode>
+  <BugCode abbrev="UG" >getはsynchroしていないがsetはsynchroしている</BugCode>
+  <BugCode abbrev="IC" >初期化がループしている</BugCode>
+  <BugCode abbrev="IS" >synchroの仕方が不統一</BugCode>
+  <BugCode abbrev="IS2" >synchroの仕方が不統一</BugCode>
   <BugCode abbrev="Eq" >Covariant equals()</BugCode>
   <BugCode abbrev="Co" >Covariant compareTo()</BugCode>
-  <BugCode abbrev="HE" >equal\uff08\u540c\u3058\uff09\u30aa\u30d6\u30b8\u30a7\u30af\u30c8\u304c\u540c\u3058hashCode\u3092\u6301\u3064\u3079\u304d</BugCode>
-  <BugCode abbrev="Dm" >\u7591\u308f\u3057\u3044\u30e1\u30bd\u30c3\u30c9\u3092\u4f7f\u3063\u3066\u3044\u308b</BugCode>
-  <BugCode abbrev="UR" >\u30b3\u30f3\u30b9\u30c8\u30e9\u30af\u30bf\u3067\u521d\u671f\u5316\u524d\u306b\u30d5\u30a3\u30fc\u30eb\u30c9\u3092\u8aad\u3093\u3067\u3044\u308b</BugCode>
-  <BugCode abbrev="RR" >InputStream.read()\u306e\u623b\u308a\u5024\u3092\u7121\u8996\u3057\u3066\u3044\u308b</BugCode>
-  <BugCode abbrev="NN" >\u30e1\u30bd\u30c3\u30c9\u5185\u306e\u88f8\u306anotify</BugCode>
-  <BugCode abbrev="UW" >\u30e1\u30bd\u30c3\u30c9\u5185\u306e\u7121\u6761\u4ef6\u306await</BugCode>
-  <BugCode abbrev="SP" >\u30d5\u30a3\u30fc\u30eb\u30c9\u3067\u30b9\u30d4\u30f3\u30ed\u30c3\u30af\u3057\u3066\u3044\u308b</BugCode>
-  <BugCode abbrev="DC" >\u30d5\u30a3\u30fc\u30eb\u30c9\u3092\u4e8c\u91cd\u306b\u30c1\u30a7\u30c3\u30af\u3057\u3066\u3044\u308b\u7591\u3044</BugCode>
-  <BugCode abbrev="Wa" >\u30e1\u30bd\u30c3\u30c9\u5185\u306ewait\u306f\u30eb\u30fc\u30d7\u3067\u5f85\u3063\u3066\u3044\u306a\u3044</BugCode>
-  <BugCode abbrev="No" >\u30e1\u30bd\u30c3\u30c9\u5185\u3067notifyAll\u306e\u4ee3\u308f\u308a\u306bnotify\u3092\u4f7f\u3063\u3066\u3044\u308b</BugCode>
-  <BugCode abbrev="DE" >\u4f8b\u5916\u3092\u7121\u8996\u3057\u3066\u3044\u308b\u304b\u898b\u843d\u3068\u3057\u3066\u3044\u308b\u304b</BugCode>
-  <BugCode abbrev="Ru" >\u30e1\u30bd\u30c3\u30c9\u5185\u3067run()\u3092\u76f4\u63a5\u8aad\u3093\u3067\u3044\u308b</BugCode>
-  <BugCode abbrev="It" >Iterator\u306e\u5b9a\u7fa9\u304c\u304a\u304b\u3057\u3044</BugCode>
-  <BugCode abbrev="Se" >Serializable\u30af\u30e9\u30b9\u306e\u5b9a\u7fa9\u304c\u304a\u304b\u3057\u3044</BugCode>
+  <BugCode abbrev="HE" >equal（同じ）オブジェクトが同じhashCodeを持つべき</BugCode>
+  <BugCode abbrev="Dm" >疑わしいメソッドを使っている</BugCode>
+  <BugCode abbrev="UR" >コンストラクタで初期化前にフィールドを読んでいる</BugCode>
+  <BugCode abbrev="RR" >InputStream.read()の戻り値を無視している</BugCode>
+  <BugCode abbrev="NN" >メソッド内の裸なnotify</BugCode>
+  <BugCode abbrev="UW" >メソッド内の無条件なwait</BugCode>
+  <BugCode abbrev="SP" >フィールドでスピンロックしている</BugCode>
+  <BugCode abbrev="DC" >フィールドを二重にチェックしている疑い</BugCode>
+  <BugCode abbrev="Wa" >メソッド内のwaitはループで待っていない</BugCode>
+  <BugCode abbrev="No" >メソッド内でnotifyAllの代わりにnotifyを使っている</BugCode>
+  <BugCode abbrev="DE" >例外を無視しているか見落としているか</BugCode>
+  <BugCode abbrev="Ru" >メソッド内でrun()を直接読んでいる</BugCode>
+  <BugCode abbrev="It" >Iteratorの定義がおかしい</BugCode>
+  <BugCode abbrev="Se" >Serializableクラスの定義がおかしい</BugCode>
   <BugCode abbrev="WS" >Class's writeObject() method is synchronized but nothing else is</BugCode>
   <BugCode abbrev="RS" >Class's readObject() method is synchronized</BugCode>
-  <BugCode abbrev="SC" >\u30b3\u30f3\u30b9\u30c8\u30e9\u30af\u30bf\u3067Thread.start()\u3092\u8aad\u3093\u3067\u3044\u308b</BugCode>
-  <BugCode abbrev="MS" >\u30b9\u30bf\u30c6\u30a3\u30c3\u30af\u30d5\u30a3\u30fc\u30eb\u30c9\u304cmutable</BugCode>
-  <BugCode abbrev="EI" >\u914d\u5217\u3092\u8fd4\u3059\u30e1\u30bd\u30c3\u30c9\u306f\u5185\u90e8\u8868\u73fe\u3092\u30d0\u30e9\u3059\u53ef\u80fd\u6027\u304c\u3042\u308b</BugCode>
-  <BugCode abbrev="Nm" >\u30e1\u30bd\u30c3\u30c9\u540d\u304c\u7d1b\u3089\u308f\u3057\u3044</BugCode>
-  <BugCode abbrev="SS" >\u30d5\u30a3\u30fc\u30eb\u30c9\u3092\u8aad\u3093\u3067\u3044\u306a\u3044\u3002static\u306b\u3059\u3079\u304d</BugCode>
-  <BugCode abbrev="UuF" >\u30d5\u30a3\u30fc\u30eb\u30c9\u3092\u4f7f\u3063\u3066\u3044\u306a\u3044</BugCode>
-  <BugCode abbrev="UrF" >\u30d5\u30a3\u30fc\u30eb\u30c9\u3092\uff08\u30af\u30e9\u30b9\u5074\u3067\uff09\u8aad\u3093\u3067\u3044\u306a\u3044</BugCode>
-  <BugCode abbrev="SIC" >static\u306a\u5185\u90e8\u30af\u30e9\u30b9\u3067\u306f\u306a\u3044\u304b</BugCode>
-  <BugCode abbrev="SPSDC" >\u30b9\u30bf\u30c6\u30a3\u30c3\u30af\u30d5\u30a3\u30fc\u30eb\u30c9\u3092\u4e8c\u91cd\u306b\u30c1\u30a7\u30c3\u30af\u3057\u3066\u3044\u308b\u7591\u3044</BugCode>
-  <BugCode abbrev="SPDC" >\u30d5\u30a3\u30fc\u30eb\u30c9\u3092\u4e8c\u91cd\u306b\u30c1\u30a7\u30c3\u30af\u3057\u3066\u3044\u308b\u7591\u3044</BugCode>
-  <BugCode abbrev="2LW" >\u4e8c\u3064\u306e\u30ed\u30c3\u30af\u3092\u6301\u3063\u305f\u307e\u307ewait\u3057\u3066\u3044\u308b</BugCode>
+  <BugCode abbrev="SC" >コンストラクタでThread.start()を読んでいる</BugCode>
+  <BugCode abbrev="MS" >スタティックフィールドがmutable</BugCode>
+  <BugCode abbrev="EI" >配列を返すメソッドは内部表現をバラす可能性がある</BugCode>
+  <BugCode abbrev="Nm" >メソッド名が紛らわしい</BugCode>
+  <BugCode abbrev="SS" >フィールドを読んでいない。staticにすべき</BugCode>
+  <BugCode abbrev="UuF" >フィールドを使っていない</BugCode>
+  <BugCode abbrev="UrF" >フィールドを（クラス側で）読んでいない</BugCode>
+  <BugCode abbrev="SIC" >staticな内部クラスではないか</BugCode>
+  <BugCode abbrev="SPSDC" >スタティックフィールドを二重にチェックしている疑い</BugCode>
+  <BugCode abbrev="SPDC" >フィールドを二重にチェックしている疑い</BugCode>
+  <BugCode abbrev="2LW" >二つのロックを持ったままwaitしている</BugCode>
 </MessageCollection>
