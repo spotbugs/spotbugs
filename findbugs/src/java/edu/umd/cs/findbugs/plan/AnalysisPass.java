@@ -26,18 +26,26 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class AnalysisPass {
-	private List<DetectorFactory> factoryList;
+	private LinkedList<DetectorFactory> factoryList;
 
 	public AnalysisPass() {
 		this.factoryList = new LinkedList<DetectorFactory>();
 	}
 
 	public void addDetectorFactory(DetectorFactory factory) {
-		factoryList.add(factory);
+		factoryList.addLast(factory);
+	}
+
+	public List<DetectorFactory> getDetectorFactoryList() {
+		return factoryList;
 	}
 
 	public Iterator<DetectorFactory> detectorFactoryIterator() {
 		return factoryList.iterator();
+	}
+
+	public void clear() {
+		factoryList.clear();
 	}
 }
 
