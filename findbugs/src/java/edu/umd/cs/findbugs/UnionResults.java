@@ -64,7 +64,14 @@ public class UnionResults {
 			BugInstance matching = origCollection.getMatching(bugInstance);
 			if (matching == null)
 				result.add(bugInstance);
-			else if (matching.getAnnotationText().equals("")) {
+			else {
+				// Combine the annotations
+				StringBuffer buf = new StringBuffer();
+				buf.append(matching.getAnnotationText());
+				buf.append('\n');
+				buf.append(bugInstance.getAnnotationText());
+				bugInstance.setAnnotationText(buf.toString());
+
 				result.remove(matching);
 				result.add(bugInstance);
 			}
