@@ -81,7 +81,7 @@ public class PrettyPrintBugDescriptions extends PlainPrintBugDescriptions {
 
 		out.println("<table width=\"100%\">");
 
-		out.println("<tr bgcolor=\"#9999ee\"><th>Description</th><th>Category</th></tr>");
+		out.println("<tr bgcolor=\"#b9b9fe\"><th>Description</th><th>Category</th></tr>");
 
 		ColorAlternator colorAlternator = new ColorAlternator(TABLE_COLORS);
 
