@@ -338,7 +338,12 @@ public class EclipseClasspath {
 			buf.append(i.next());
 		}
 
-		return buf.toString();
+		// Convert backslashes to forward slashes,
+		// since raw backslashes cause problems in .properties files.
+		String s = buf.toString();
+		s = s.replace('\\', '/');
+
+		return s;
 	}
 
 	public Plugin getRootPlugin() {
