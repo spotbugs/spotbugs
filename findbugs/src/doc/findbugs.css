@@ -5,3 +5,11 @@ BODY {
 A.plain {
     text-decoration: none;
 }
+
+A.sidebar {
+    text-decoration: none;
+}
+
+A.sidebar:hover, A.sidebar:active {
+    text-decoration: underline;
+}
