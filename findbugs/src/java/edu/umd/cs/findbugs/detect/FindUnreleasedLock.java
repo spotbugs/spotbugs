@@ -42,11 +42,14 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock> {
 	private static class LockFrameModelingVisitor extends ResourceValueFrameModelingVisitor {
 		private LockResourceTracker resourceTracker;
 		private Lock lock;
+		private ValueNumberDataflow vnaDataflow;
 
-		public LockFrameModelingVisitor(ConstantPoolGen cpg, LockResourceTracker resourceTracker, Lock lock) {
+		public LockFrameModelingVisitor(ConstantPoolGen cpg, LockResourceTracker resourceTracker, Lock lock,
+			ValueNumberDataflow vnaDataflow) {
 			super(cpg);
 			this.resourceTracker = resourceTracker;
 			this.lock = lock;
+			this.vnaDataflow = vnaDataflow;
 		}
 
 		public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock) throws DataflowAnalysisException {
@@ -70,8 +73,21 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock> {
 			// If needed, update frame status
 			if (status != -1) {
 				frame.setStatus(status);
-				if (status == ResourceValueFrame.OPEN)
-					frame.setValue(frame.getNumSlots() - 1, ResourceValue.instance());
+				if (status == ResourceValueFrame.OPEN) {
+//					frame.setValue(frame.getNumSlots() - 1, ResourceValue.instance());
+
+					// Look in the value number frame to see which slots have
+					// the same value as the Lock object.  Mark those slots
+					// in the resource value frame as containing the resource instance.
+					ValueNumberFrame vnaFrame = vnaDataflow.getFactAtLocation(new Location(handle, basicBlock));
+					ValueNumber instanceValueNumber = vnaFrame.getTopValue();
+
+					int numSlots = frame.getNumSlots();
+					for (int i = 0; i < numSlots; ++i) {
+						if (vnaFrame.getValue(i).equals(instanceValueNumber))
+							frame.setValue(i, ResourceValue.instance());
+					}
+				}
 			}
 		}
 
@@ -82,9 +98,11 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock> {
 
 	private static class LockResourceTracker implements ResourceTracker<Lock> {
 		private RepositoryLookupFailureCallback lookupFailureCallback;
+		private ValueNumberDataflow vnaDataflow;
 
-		public LockResourceTracker(RepositoryLookupFailureCallback lookupFailureCallback) {
+		public LockResourceTracker(RepositoryLookupFailureCallback lookupFailureCallback, ValueNumberDataflow vnaDataflow) {
 			this.lookupFailureCallback = lookupFailureCallback;
+			this.vnaDataflow = vnaDataflow;
 		}
 
 		public Lock isResourceCreation(BasicBlock basicBlock, InstructionHandle handle, ConstantPoolGen cpg) {
@@ -138,7 +156,7 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock> {
 		}
 
 		public ResourceValueFrameModelingVisitor createVisitor(Lock resource, ConstantPoolGen cpg) {
-			return new LockFrameModelingVisitor(cpg, this, resource);
+			return new LockFrameModelingVisitor(cpg, this, resource, vnaDataflow);
 		}
 
 		private static final InvokeInstruction toInvokeInstruction(Instruction ins) {
@@ -169,8 +187,9 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock> {
 			&& (bytecodeSet.get(Constants.INVOKEVIRTUAL) || bytecodeSet.get(Constants.INVOKEINTERFACE));
 	}
 
-	public ResourceTracker<Lock> getResourceTracker() {
-		return new LockResourceTracker(bugReporter);
+	public ResourceTracker<Lock> getResourceTracker(ClassContext classContext, Method method)
+		throws CFGBuilderException, DataflowAnalysisException {
+		return new LockResourceTracker(bugReporter, classContext.getValueNumberDataflow(method));
 	}
 
 	public void inspectResult(JavaClass javaClass, MethodGen methodGen, CFG cfg,
@@ -213,8 +232,12 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock> {
 		int offset = Integer.parseInt(argv[2]);
 
 		ResourceValueAnalysisTestDriver<Lock> driver = new ResourceValueAnalysisTestDriver<Lock>() {
-			public ResourceTracker<Lock> createResourceTracker(RepositoryLookupFailureCallback lookupFailureCallback) {
-				return new LockResourceTracker(lookupFailureCallback);
+			public ResourceTracker<Lock> createResourceTracker(RepositoryLookupFailureCallback lookupFailureCallback,
+				MethodGen methodGen, CFG cfg) throws CFGBuilderException, DataflowAnalysisException {
+				ValueNumberAnalysis vna = new ValueNumberAnalysis(methodGen);
+				ValueNumberDataflow vnaDataflow = new ValueNumberDataflow(cfg, vna);
+				vnaDataflow.execute();
+				return new LockResourceTracker(lookupFailureCallback, vnaDataflow);
 			}
 		};
 
