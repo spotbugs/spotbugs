@@ -64,6 +64,18 @@ public class ExceptionSet {
 		return dup;
 	}
 
+	public int hashCode() {
+		return map.hashCode();
+	}
+
+	public boolean equals(Object o) {
+		if (o == null) return false;
+		if (o.getClass() != this.getClass()) return false;
+
+		ExceptionSet other = (ExceptionSet) o;
+		return map.equals(other.map) && universalHandler == other.universalHandler;
+	}
+
 	/**
 	 * Get the least (lowest in the lattice) common supertype
 	 * of the exceptions in the set.  Returns the special TOP

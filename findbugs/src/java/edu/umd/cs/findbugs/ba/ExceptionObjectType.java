@@ -60,6 +60,19 @@ public class ExceptionObjectType extends ReferenceType implements Constants, Ext
 		return new ExceptionObjectType(T_EXCEPTION, exceptionSupertype.getSignature(), exceptionSet);
 	}
 
+	public int hashCode() {
+		return getSignature().hashCode();
+	}
+
+	public boolean equals(Object o) {
+		if (o == null) return false;
+		if (o.getClass() != this.getClass()) return false;
+
+		ExceptionObjectType other = (ExceptionObjectType) o;
+		return getSignature().equals(other.getSignature())
+			&& exceptionSet.equals(other.exceptionSet);
+	}
+
 	/**
 	 * Return the exception set.
 	 * @return the ExceptionSet
