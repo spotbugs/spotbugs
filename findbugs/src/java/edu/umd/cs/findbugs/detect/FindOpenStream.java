@@ -29,13 +29,17 @@ import edu.umd.cs.findbugs.*;
 
 class Stream extends ResourceCreationPoint {
 	private String streamBase;
+	private boolean isByteArray;
 
-	public Stream(Location location, String streamClass, String streamBase) {
+	public Stream(Location location, String streamClass, String streamBase, boolean isByteArray) {
 		super(location, streamClass);
 		this.streamBase = streamBase;
+		this.isByteArray = isByteArray;
 	}
 
 	public String getStreamBase() { return streamBase; }
+
+	public boolean isByteArray() { return isByteArray; }
 }
 
 public class FindOpenStream extends ResourceTrackingDetector<Stream>  {
@@ -129,20 +133,17 @@ public class FindOpenStream extends ResourceTrackingDetector<Stream>  {
 			// (but not ByteArray variants)
 			String className = sig.substring(1, sig.length() - 1).replace('/', '.');
 			try {
-				if (Repository.instanceOf(className, "java.io.InputStream") &&
-					!Repository.instanceOf(className, "java.io.ByteArrayInputStream")) {
+				if (Repository.instanceOf(className, "java.io.InputStream")) {
+					boolean isByteArray = Repository.instanceOf(className, "java.io.ByteArrayInputStream");
+					return new Stream(new Location(handle, basicBlock), className, "java.io.InputStream", isByteArray);
 
-					return new Stream(new Location(handle, basicBlock), className, "java.io.InputStream");
-
-				} else if (Repository.instanceOf(className, "java.io.OutputStream") &&
-					!Repository.instanceOf(className, "java.io.ByteArrayOutputStream")) {
-
-					return new Stream(new Location(handle, basicBlock), className, "java.io.OutputStream");
+				} else if (Repository.instanceOf(className, "java.io.OutputStream")) {
+					boolean isByteArray = Repository.instanceOf(className, "java.io.ByteArrayOutputStream");
+					return new Stream(new Location(handle, basicBlock), className, "java.io.OutputStream", isByteArray);
 
 				} else
 					return null;
 					
-				//return isStream ? new Stream(new Location(handle, basicBlock), className) : null;
 			} catch (ClassNotFoundException e) {
 				lookupFailureCallback.reportMissingClass(e);
 				return null;
@@ -219,11 +220,24 @@ public class FindOpenStream extends ResourceTrackingDetector<Stream>  {
 		}
 	}
 
+	private static class PotentialOpenStream {
+		public final String bugType;
+		public final int priority;
+		public final Stream stream;
+
+		public PotentialOpenStream(String bugType, int priority, Stream stream) {
+			this.bugType = bugType;
+			this.priority = priority;
+			this.stream = stream;
+		}
+	}
+
 	/* ----------------------------------------------------------------------
 	 * Fields
 	 * ---------------------------------------------------------------------- */
 
 	private StreamResourceTracker resourceTracker;
+	private List<PotentialOpenStream> potentialOpenStreamList;
 
 	/* ----------------------------------------------------------------------
 	 * Implementation
@@ -232,6 +246,7 @@ public class FindOpenStream extends ResourceTrackingDetector<Stream>  {
 	public FindOpenStream(BugReporter bugReporter) {
 		super(bugReporter);
 		this.resourceTracker = new StreamResourceTracker(bugReporter);
+		this.potentialOpenStreamList = new LinkedList<PotentialOpenStream>();
 	}
 
 	public boolean prescreen(ClassContext classContext, Method method) {
@@ -241,6 +256,33 @@ public class FindOpenStream extends ResourceTrackingDetector<Stream>  {
 
 	public ResourceTracker<Stream> getResourceTracker(ClassContext classContext, Method method) {
 		return resourceTracker;
+	}
+
+	public void analyzeMethod(ClassContext classContext, Method method)
+		throws CFGBuilderException, DataflowAnalysisException {
+
+		potentialOpenStreamList.clear();
+
+		super.analyzeMethod(classContext, method);
+
+		JavaClass javaClass = classContext.getJavaClass();
+		MethodGen methodGen = classContext.getMethodGen(method);
+
+		Iterator<PotentialOpenStream> i = potentialOpenStreamList.iterator();
+		while (i.hasNext()) {
+			PotentialOpenStream pos = i.next();
+
+			Stream stream = pos.stream;
+
+			if (stream.isByteArray())
+				continue;
+
+			String sourceFile = javaClass.getSourceFileName();
+			bugReporter.reportBug(new BugInstance(pos.bugType, pos.priority)
+				.addClassAndMethod(methodGen, sourceFile)
+				.addSourceLine(methodGen, sourceFile, stream.getLocation().getHandle())
+			);
+		}
 	}
 
 	public void inspectResult(JavaClass javaClass, MethodGen methodGen, CFG cfg,
@@ -259,12 +301,7 @@ public class FindOpenStream extends ResourceTrackingDetector<Stream>  {
 				bugType = "OS_OPEN_STREAM_EXCEPTION_PATH";
 				priority = LOW_PRIORITY;
 			}
-
-			String sourceFile = javaClass.getSourceFileName();
-			bugReporter.reportBug(new BugInstance(bugType, priority)
-				.addClassAndMethod(methodGen, sourceFile)
-				.addSourceLine(methodGen, sourceFile, stream.getLocation().getHandle())
-			);
+			potentialOpenStreamList.add(new PotentialOpenStream(bugType, priority, stream));
 		}
 	}
 
