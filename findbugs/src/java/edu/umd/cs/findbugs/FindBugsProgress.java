@@ -13,21 +13,30 @@ public interface FindBugsProgress {
 	 * @param numArchives the number of archives
 	 */
 	public void reportNumberOfArchives(int numArchives);
+
 	/**
-	 * Report that FindBugs is going to start examining an archive.
-	 * @param the name of the archive
-	 * @param numClasses the number of classes in the archive
-	 */
-	public void startArchive(String archiveName, int numClasses);
-	/**
-	 * Report that FindBugs has finished analyzing one of the classes in
-	 * the archive.
-	 */
-	public void finishClass();
-	/**
-	 * Report that FindBugs has finished analyzing the current archive.
+	 * Report that FindBugs has finished scanning an archive in order
+	 * to add its classes to the repository.
 	 */
 	public void finishArchive();
+
+	/**
+	 * Report that FindBugs has finished scanning the archives and will
+	 * start analysing the classes contained therein.
+	 * @param numClasses number of classes found in all of the archives
+	 */
+	public void startAnalysis(int numClasses);
+
+	/**
+	 * Report that FindBugs has finished analyzing a class.
+	 */
+	public void finishClass();
+
+	/**
+	 * Called to indicate that the per-class analysis is finished, and
+	 * that the whole program analysis is taking place.
+	 */
+	public void finishPerClassAnalysis();
 }
 
 // vim:ts=4

@@ -7,6 +7,7 @@ import java.util.zip.*;
 import edu.umd.cs.pugh.io.IO;
 import edu.umd.cs.pugh.visitclass.Constants2;
 import org.apache.bcel.classfile.*;
+import org.apache.bcel.Repository;
 
 public class FindBugs implements Constants2
 {
@@ -28,9 +29,10 @@ public class FindBugs implements Constants2
 	// Create a no-op progress callback.
 	this.progressCallback = new FindBugsProgress() {
 		public void reportNumberOfArchives(int numArchives) { }
-		public void startArchive(String archiveName, int numClasses) { }
-		public void finishClass() { }
 		public void finishArchive() { }
+		public void startAnalysis(int numClasses) { }
+		public void finishClass() { }
+		public void finishPerClassAnalysis() { }
 	};
   }
 
@@ -145,93 +147,84 @@ public class FindBugs implements Constants2
     }
   }
 
-  public void examine(JavaClass c) throws InterruptedException {
-	if (detectors == null)
-		createDetectors();
-
-	classNameToSourceFileMap.put(c.getClassName(), c.getSourceFileName());
-	//bugReporter.logError("map " + c.getClassName() + " -> " + c.getSourceFileName());
-
-	ClassContext classContext = new ClassContext(c);
-
-	for(int i = 0; i < detectors.length; i++)  {
-		if (Thread.interrupted())
-			throw new InterruptedException();
-		Detector detector = detectors[i];
-		try {
-			detector.visitClassContext(classContext);
-			}
-		catch (AnalysisException e) {
-			bugReporter.logError("Analysis exception: " + e.getMessage());
-			}
-		}
-
-	progressCallback.finishClass();
-	}
-
-  public void examineFile(String fileName) throws IOException, InterruptedException {
-	if (fileName.endsWith(".zip") || fileName.endsWith(".jar")) {
-		//if (argv.length > 1) System.out.println(fileName);
-		ZipFile z = new ZipFile(fileName);
-		TreeSet<ZipEntry> zipEntries = new TreeSet<ZipEntry>(new Comparator<ZipEntry>() {
-			public int compare(ZipEntry e1, ZipEntry e2) {
-					String s1 = e1.getName();
-					int pos1 = s1.lastIndexOf('/');
-					String p1 = "null";
-					if(pos1 >= 0)
-						p1 = s1.substring(0,pos1);
-
-					String s2 = e2.getName();
-					int pos2 = s2.lastIndexOf('/');
-					String p2 = "null";
-					if(pos2 >= 0)
-						p2 = s2.substring(0,pos2);
-					int r = p1.compareTo(p2);
-					if (r != 0) return r;
-					return s1.compareTo(s2);
-					}
-			});
-
-		int classCount = 0;
-		for( Enumeration<ZipEntry> e = z.entries(); e.hasMoreElements(); )  {
-			if (Thread.interrupted())
-				throw new InterruptedException();
-			ZipEntry entry = e.nextElement();
-			if (entry.getName().endsWith(".class"))
-				++classCount;
-			zipEntries.add(entry);
-			}
-
-		progressCallback.startArchive(fileName, classCount);
-			
-		for( Iterator j = zipEntries.iterator(); j.hasNext(); ) {
-			ZipEntry ze = (ZipEntry)j.next();
-			String name = ze.getName();
-			if (name.endsWith(".class")) {
-				examine(
-				new ClassParser(z.getInputStream(ze),name).parse());
-				}
-			}
-
-		progressCallback.finishArchive();
-		}
-	else {
-		progressCallback.startArchive(fileName, 1);
-		examine( new ClassParser(fileName).parse());
-		progressCallback.finishArchive();
-		}
+  /**
+   * Get the source file in which the given class is defined.
+   * @param className fully qualified class name
+   * @return name of the source file in which the class is defined
+   */
+  public String getSourceFile(String className) {
+	return classNameToSourceFileMap.get(className);
   }
 
+  /**
+   * Add all classes contained in given file to the BCEL Repository.
+   * @param fileName the file, which may be a jar/zip archive or a single class file
+   */
+  private void addFileToRepository(String fileName, List<String> repositoryClassList)
+	throws IOException, InterruptedException {
+
+	if (fileName.endsWith(".jar") || fileName.endsWith(".zip")) {
+		ZipFile zipFile = new ZipFile(fileName);
+		Enumeration entries = zipFile.entries();
+		while (entries.hasMoreElements()) {
+			if (Thread.interrupted())
+				throw new InterruptedException();
+
+			ZipEntry entry = (ZipEntry) entries.nextElement();
+			String entryName = entry.getName();
+			if (entryName.endsWith(".class")) {
+				InputStream in = zipFile.getInputStream(entry);
+				JavaClass javaClass = new ClassParser(in, entryName).parse();
+				Repository.addClass(javaClass);
+				repositoryClassList.add(javaClass.getClassName());
+			}
+		}
+	} else {
+		if (Thread.interrupted())
+			throw new InterruptedException();
+		JavaClass javaClass = new ClassParser(fileName).parse();
+		Repository.addClass(javaClass);
+		repositoryClassList.add(javaClass.getClassName());
+	}
+
+	progressCallback.finishArchive();
+  }
+
+  /**
+   * Examine a single class by invoking all of the Detectors on it.
+   * @param className the fully qualified name of the class to examine
+   */
+  private void examineClass(String className) throws InterruptedException {
+	JavaClass javaClass = Repository.lookupClass(className);
+	if (javaClass == null)
+		throw new AnalysisException("Could not find class " + className + " in Repository");
+
+	classNameToSourceFileMap.put(javaClass.getClassName(), javaClass.getSourceFileName());
+	ClassContext classContext = new ClassContext(javaClass);
+
+	for (int i = 0; i < detectors.length; ++i) {
+		if (Thread.interrupted())
+			throw new InterruptedException();
+		try {
+			detectors[i].visitClassContext(classContext);
+		} catch (AnalysisException e) {
+			bugReporter.logError("Analysis exception: " + e.getMessage());
+		}
+	}
+
+	progressCallback.finishClass();
+  }
+
+  /**
+   * Call report() on all detectors, to give them a chance to
+   * report any accumulated bug reports.
+   */
   public void reportFinal() throws InterruptedException {
 	for (int i = 0; i < detectors.length; ++i) {
 		if (Thread.interrupted())
 			throw new InterruptedException();
 		detectors[i].report();
 	}
-  }
-
-  public String getSourceFile(String className) {
-	return classNameToSourceFileMap.get(className);
   }
 
   /**
@@ -243,11 +236,28 @@ public class FindBugs implements Constants2
    * @throws InterruptedException if the thread is interrupted while conducting the analysis
    */
   public void execute(String[] argv) throws java.io.IOException, InterruptedException {
+	if (detectors == null)
+		createDetectors();
+
+	// Purge repository of previous contents
+	Repository.clearCache();
+
 	progressCallback.reportNumberOfArchives(argv.length);
 
-	for(int i=0; i < argv.length; i++) {
-		this.examineFile(argv[i]);
-		}  
+	List<String> repositoryClassList = new LinkedList<String>();
+
+	for (int i = 0; i < argv.length; i++) {
+		addFileToRepository(argv[i], repositoryClassList);
+		}
+
+	progressCallback.startAnalysis(repositoryClassList.size());
+
+	for (Iterator<String> i = repositoryClassList.iterator(); i.hasNext(); ) {
+		String className = i.next();
+		examineClass(className);
+		}
+
+	progressCallback.finishPerClassAnalysis();
 
 	this.reportFinal();
 
