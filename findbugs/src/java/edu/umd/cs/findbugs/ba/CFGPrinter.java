@@ -83,31 +83,39 @@ public class CFGPrinter {
     public static void main(String[] argv) {
 	try {
 	    if (argv.length != 1) {
-		System.out.println("Usage: edu.umd.cs.edgecov.CFGPrinter <class file>");
+		System.out.println("Usage: " + CFGPrinter.class.getName() + " <class file>");
 		System.exit(1);
 	    }
 
 	    String className = argv[0];
 	    JavaClass cls = new ClassParser(className).parse();
+	    RepositoryLookupFailureCallback lookupFailureCallback = new RepositoryLookupFailureCallback() {
+		public void reportMissingClass(ClassNotFoundException ex) {
+		    ex.printStackTrace();
+		    System.exit(1);
+		}
+	    };
+	    ClassContext classContext = new ClassContext(cls, lookupFailureCallback);
+
 	    Method[] methods = cls.getMethods();
 	    ConstantPoolGen cp = new ConstantPoolGen(cls.getConstantPool());
 	    String methodName = System.getProperty("cfg.method");
 
 	    for (int i = 0; i < methods.length; ++i) {
 		Method method = methods[i];
-		if (method.isAbstract() || method.isNative())
+		MethodGen methodGen = classContext.getMethodGen(method);
+		if (methodGen == null)
 		    continue;
+
 		if (methodName != null && !method.getName().equals(methodName))
 		    continue;
-		MethodGen methodGen = new MethodGen(method, cls.getClassName(), cp);
 
-		CFGBuilder builder = CFGBuilderFactory.create(methodGen);
-		builder.build();
+		System.out.println();
+		System.out.println("----------------------------------------------------------------------------");
+		System.out.println("Method " + SignatureConverter.convertMethodSignature(methodGen));
+		System.out.println("----------------------------------------------------------------------------");
 
-		System.out.println("---------------------------------------------------");
-		System.out.println("Method " + method.getName());
-		CFG cfg = builder.getCFG();
-		cfg.assignEdgeIds(0);
+		CFG cfg = classContext.getCFG(method);
 		CFGPrinter printer = new CFGPrinter(cfg);
 		printer.print(System.out);
 	    }
