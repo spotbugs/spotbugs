@@ -142,7 +142,7 @@ public class EclipseClasspath {
 				throw new EclipseClasspathException("No plugin node in plugin descriptor");
 			pluginId = plugin.valueOf("@id");
 			if (pluginId.equals(""))
-				throw new EclipseClasspathException("Cannot determine plugin id");
+				throw new EclipseClasspathException("Cannot determine plugin id in directory " + directory);
 			//System.out.println("Plugin id is " + pluginId);
 			pluginVersion = plugin.valueOf("@version");
 			if (pluginVersion.equals(""))
