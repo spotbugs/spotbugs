@@ -135,6 +135,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
         editProjectPanel.setLayout(new java.awt.GridBagLayout());
 
+        jarFileLabel.setFont(new java.awt.Font("Dialog", 0, 12));
         jarFileLabel.setText("Jar file:");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -157,6 +158,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
         gridBagConstraints.weightx = 1.0;
         editProjectPanel.add(jarNameTextField, gridBagConstraints);
 
+        addJarButton.setFont(new java.awt.Font("Dialog", 0, 12));
         addJarButton.setText("Add");
         addJarButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -171,6 +173,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         editProjectPanel.add(addJarButton, gridBagConstraints);
 
+        jarFileListLabel.setFont(new java.awt.Font("Dialog", 0, 12));
         jarFileListLabel.setText("Jar Files:");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -179,6 +182,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
         editProjectPanel.add(jarFileListLabel, gridBagConstraints);
 
+        sourceDirLabel.setFont(new java.awt.Font("Dialog", 0, 12));
         sourceDirLabel.setText("Source Dir:");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -201,6 +205,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
         gridBagConstraints.weightx = 1.0;
         editProjectPanel.add(srcDirTextField, gridBagConstraints);
 
+        addSourceDirButton.setFont(new java.awt.Font("Dialog", 0, 12));
         addSourceDirButton.setText("Add");
         addSourceDirButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -215,6 +220,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         editProjectPanel.add(addSourceDirButton, gridBagConstraints);
 
+        sourceDirListLabel.setFont(new java.awt.Font("Dialog", 0, 12));
         sourceDirListLabel.setText("Source Dirs:");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -223,6 +229,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
         editProjectPanel.add(sourceDirListLabel, gridBagConstraints);
 
+        removeJarButton.setFont(new java.awt.Font("Dialog", 0, 12));
         removeJarButton.setText("Remove");
         removeJarButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -237,6 +244,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         editProjectPanel.add(removeJarButton, gridBagConstraints);
 
+        removeSrcDirButton.setFont(new java.awt.Font("Dialog", 0, 12));
         removeSrcDirButton.setText("Remove");
         removeSrcDirButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -321,6 +329,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
         jScrollPane2.setPreferredSize(new java.awt.Dimension(259, 1));
         jarFileList.setBorder(new javax.swing.border.BevelBorder(javax.swing.border.BevelBorder.LOWERED));
+        jarFileList.setFont(new java.awt.Font("Dialog", 0, 12));
         jarFileList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         jScrollPane2.setViewportView(jarFileList);
 
@@ -335,6 +344,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
         jScrollPane3.setPreferredSize(new java.awt.Dimension(259, 1));
         sourceDirList.setBorder(new javax.swing.border.BevelBorder(javax.swing.border.BevelBorder.LOWERED));
+        sourceDirList.setFont(new java.awt.Font("Dialog", 0, 12));
         sourceDirList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         jScrollPane3.setViewportView(sourceDirList);
 
@@ -353,7 +363,10 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
         getContentPane().add(jSplitPane1, java.awt.BorderLayout.CENTER);
 
+        jMenuBar1.setFont(new java.awt.Font("Dialog", 0, 12));
         fileMenu.setText("File");
+        fileMenu.setFont(new java.awt.Font("Dialog", 0, 12));
+        newProjectItem.setFont(new java.awt.Font("Dialog", 0, 12));
         newProjectItem.setText("New Project");
         newProjectItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -363,14 +376,17 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
         fileMenu.add(newProjectItem);
 
+        openProjectItem.setFont(new java.awt.Font("Dialog", 0, 12));
         openProjectItem.setText("Open Project");
         fileMenu.add(openProjectItem);
 
+        closeProjectItem.setFont(new java.awt.Font("Dialog", 0, 12));
         closeProjectItem.setText("Close Project");
         fileMenu.add(closeProjectItem);
 
         fileMenu.add(jSeparator3);
 
+        exitItem.setFont(new java.awt.Font("Dialog", 0, 12));
         exitItem.setText("Exit");
         exitItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
