@@ -46,7 +46,7 @@ public class Lookup
 			JavaClass c = 
 				findImplementor(Repository.getSuperClasses(clazz),
 					name, signature);
-			return c.getClassName();
+			return (c != null) ? c.getClassName() : clazz;
 			}
 		catch (ClassNotFoundException e) {
 			return clazz;
