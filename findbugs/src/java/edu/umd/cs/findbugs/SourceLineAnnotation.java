@@ -21,6 +21,12 @@ package edu.umd.cs.findbugs;
 
 import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
+
+import edu.umd.cs.findbugs.xml.XMLAttributeList;
+import edu.umd.cs.findbugs.xml.XMLOutput;
+
+import java.io.IOException;
+
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.LineNumber;
 import org.apache.bcel.classfile.LineNumberTable;
@@ -455,6 +461,24 @@ public class SourceLineAnnotation implements BugAnnotation {
 			element.addAttribute("role", getDescription());
 
 		return element;
+	}
+
+	public void writeXML(XMLOutput xmlOutput) throws IOException {
+		XMLAttributeList attributeList = new XMLAttributeList()
+			.addAttribute("classname", getClassName())
+			.addAttribute("start", String.valueOf(getStartLine()))
+			.addAttribute("end", String.valueOf(getEndLine()))
+			.addAttribute("startBytecode", String.valueOf(getStartBytecode()))
+			.addAttribute("endBytecode", String.valueOf(getEndBytecode()));
+
+		if (isSourceFileKnown())
+			attributeList.addAttribute("sourcefile", sourceFile);
+
+		String role = getDescription();
+		if (!role.equals(DEFAULT_ROLE))
+			attributeList.addAttribute("role", getDescription());
+
+		xmlOutput.openCloseTag(ELEMENT_NAME, attributeList);
 	}
 }
 

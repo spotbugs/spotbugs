@@ -19,6 +19,11 @@
 
 package edu.umd.cs.findbugs;
 
+import edu.umd.cs.findbugs.xml.XMLAttributeList;
+import edu.umd.cs.findbugs.xml.XMLOutput;
+
+import java.io.IOException;
+
 import org.dom4j.Branch;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
@@ -106,6 +111,15 @@ public class ClassAnnotation extends PackageMemberAnnotation {
 		if (!role.equals(DEFAULT_ROLE))
 			element.addAttribute("role", role);
 		return element;
+	}
+
+	public void writeXML(XMLOutput xmlOutput) throws IOException {
+		XMLAttributeList attributeList = new XMLAttributeList()
+			.addAttribute("classname", getClassName());
+		String role = getDescription();
+		if (!role.equals(DEFAULT_ROLE))
+			attributeList.addAttribute("role", role);
+		xmlOutput.openCloseTag(ELEMENT_NAME, attributeList);
 	}
 }
 

@@ -25,6 +25,9 @@
 
 package edu.umd.cs.findbugs;
 
+import edu.umd.cs.findbugs.xml.XMLOutput;
+import edu.umd.cs.findbugs.xml.XMLWriteable;
+
 import java.io.*;
 import java.net.URL;
 import java.net.MalformedURLException;
@@ -48,7 +51,7 @@ import org.dom4j.Element;
  *
  * @author David Hovemeyer
  */
-public class Project {
+public class Project implements XMLWriteable {
 	private static final boolean DEBUG = Boolean.getBoolean("findbugs.project.debug");
 
 	/**
@@ -694,6 +697,16 @@ public class Project {
 		for (Iterator<String> i = srcDirList.iterator(); i.hasNext();) {
 			element.addElement(SRC_DIR_ELEMENT_NAME).setText(i.next());
 		}
+	}
+
+	public void writeXML(XMLOutput xmlOutput) throws IOException {
+		xmlOutput.openTag(BugCollection.PROJECT_ELEMENT_NAME);
+
+		xmlOutput.writeElementList(JAR_ELEMENT_NAME, jarList);
+		xmlOutput.writeElementList(AUX_CLASSPATH_ENTRY_ELEMENT_NAME, auxClasspathEntryList);
+		xmlOutput.writeElementList(SRC_DIR_ELEMENT_NAME, srcDirList);
+
+		xmlOutput.closeTag(BugCollection.PROJECT_ELEMENT_NAME);
 	}
 
 	/**

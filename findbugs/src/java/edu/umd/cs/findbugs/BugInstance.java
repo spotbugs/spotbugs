@@ -21,15 +21,24 @@ package edu.umd.cs.findbugs;
 
 import java.util.*;
 
+import java.io.IOException;
+
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.bcp.FieldVariable;
+
 import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
+
+import edu.umd.cs.findbugs.xml.XMLAttributeList;
+import edu.umd.cs.findbugs.xml.XMLOutput;
+import edu.umd.cs.findbugs.xml.XMLWriteable;
+
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.MethodGen;
+
 import org.dom4j.Branch;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
@@ -59,7 +68,7 @@ import org.dom4j.Element;
  * @author David Hovemeyer
  * @see BugAnnotation
  */
-public class BugInstance implements Comparable, XMLConvertible {
+public class BugInstance implements Comparable, XMLConvertible, XMLWriteable {
 	private String type;
 	private int priority;
 	private ArrayList<BugAnnotation> annotationList;
@@ -681,6 +690,35 @@ public class BugInstance implements Comparable, XMLConvertible {
 	/* ----------------------------------------------------------------------
 	 * XML Conversion support
 	 * ---------------------------------------------------------------------- */
+
+	public void writeXML(XMLOutput xmlOutput) throws IOException {
+		XMLAttributeList attributeList = new XMLAttributeList()
+			.addAttribute("type", type)
+			.addAttribute("priority", String.valueOf(priority));
+
+		BugPattern pattern = getBugPattern();
+		if (pattern != null) {
+			// The bug abbreviation and pattern category are
+			// emitted into the XML for informational purposes only.
+			// (The information is redundant, but might be useful
+			// for processing tools that want to make sense of
+			// bug instances without looking at the plugin descriptor.)
+			attributeList.addAttribute("abbrev", pattern.getAbbrev());
+			attributeList.addAttribute("category", pattern.getCategory());
+		}
+
+		xmlOutput.openTag(ELEMENT_NAME, attributeList);
+
+		if (!annotationText.equals("")) {
+			xmlOutput.openTag("UserAnnotation");
+			xmlOutput.writeCDATA(annotationText);
+			xmlOutput.closeTag("UserAnnotation");
+		}
+
+		xmlOutput.writeCollection(annotationList);
+
+		xmlOutput.closeTag(ELEMENT_NAME);
+	}
 
 	private static final String ELEMENT_NAME = "BugInstance";
 	private static final String USER_ANNOTATION_ELEMENT_NAME = "UserAnnotation";

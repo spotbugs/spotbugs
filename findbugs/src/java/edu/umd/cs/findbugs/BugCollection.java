@@ -19,6 +19,13 @@
 
 package edu.umd.cs.findbugs;
 
+// notyet
+/*
+import edu.umd.cs.findbugs.xml.OutputStreamXMLOutput;
+import edu.umd.cs.findbugs.xml.XMLAttributeList;
+import edu.umd.cs.findbugs.xml.XMLOutput;
+*/
+
 import java.io.*;
 import java.util.*;
 
@@ -85,14 +92,14 @@ public abstract class BugCollection {
 
 	public abstract String getSummaryHTML();
 
-	private static final String ROOT_ELEMENT_NAME = "BugCollection";
-	private static final String SRCMAP_ELEMENT_NAME = "SrcMap";
-	private static final String PROJECT_ELEMENT_NAME = "Project";
-	private static final String ERRORS_ELEMENT_NAME = "Errors";
-	private static final String ANALYSIS_ERROR_ELEMENT_NAME = "AnalysisError";
-	private static final String MISSING_CLASS_ELEMENT_NAME = "MissingClass";
-	private static final String SUMMARY_HTML_ELEMENT_NAME = "SummaryHTML";
-	private static final String APP_CLASS_ELEMENT_NAME = "AppClass";
+	static final String ROOT_ELEMENT_NAME = "BugCollection";
+	static final String SRCMAP_ELEMENT_NAME = "SrcMap";
+	static final String PROJECT_ELEMENT_NAME = "Project";
+	static final String ERRORS_ELEMENT_NAME = "Errors";
+	static final String ANALYSIS_ERROR_ELEMENT_NAME = "AnalysisError";
+	static final String MISSING_CLASS_ELEMENT_NAME = "MissingClass";
+	static final String SUMMARY_HTML_ELEMENT_NAME = "SummaryHTML";
+	static final String APP_CLASS_ELEMENT_NAME = "AppClass";
 
 	public void readXML(String fileName, Project project)
 	        throws IOException, DocumentException {
@@ -276,6 +283,24 @@ public abstract class BugCollection {
 
 		XMLWriter writer = new XMLWriter(out, OutputFormat.createPrettyPrint());
 		writer.write(document);
+
+/*
+		// notyet
+		XMLOutput xmlOutput = new OutputStreamXMLOutput(out);
+
+		xmlOutput.beginDocument();
+		xmlOutput.openTag(ROOT_ELEMENT_NAME,
+			new XMLAttributeList().addAttribute("version",Version.RELEASE));
+
+		xmlOutput.write(project);
+
+		xmlOutput.writeCollection(getCollection());
+
+		// TODO: summary HTML
+
+		xmlOutput.closeTag(ROOT_ELEMENT_NAME);
+		xmlOutput.endDocument();
+*/
 	}
 
 	private void checkInputStream(InputStream in) throws IOException {

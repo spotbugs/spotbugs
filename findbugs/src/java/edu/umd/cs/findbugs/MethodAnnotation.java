@@ -21,6 +21,12 @@ package edu.umd.cs.findbugs;
 
 import edu.umd.cs.findbugs.ba.SignatureConverter;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
+
+import edu.umd.cs.findbugs.xml.XMLAttributeList;
+import edu.umd.cs.findbugs.xml.XMLOutput;
+
+import java.io.IOException;
+
 import org.dom4j.Branch;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
@@ -255,6 +261,25 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 			sourceLines.toElement(element);
 
 		return element;
+	}
+
+	public void writeXML(XMLOutput xmlOutput) throws IOException {
+		XMLAttributeList attributeList = new XMLAttributeList()
+			.addAttribute("classname", getClassName())
+			.addAttribute("name", getMethodName())
+			.addAttribute("signature", getMethodSignature());
+
+		String role = getDescription();
+		if (!role.equals(DEFAULT_ROLE))
+			attributeList.addAttribute("role", role);
+
+		if (sourceLines == null) {
+			xmlOutput.openCloseTag(ELEMENT_NAME, attributeList);
+		} else {
+			xmlOutput.openTag(ELEMENT_NAME, attributeList);
+			xmlOutput.write(sourceLines);
+			xmlOutput.closeTag(ELEMENT_NAME);
+		}
 	}
 }
 

@@ -22,6 +22,12 @@ package edu.umd.cs.findbugs;
 import edu.umd.cs.findbugs.ba.SignatureConverter;
 import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
+
+import edu.umd.cs.findbugs.xml.XMLAttributeList;
+import edu.umd.cs.findbugs.xml.XMLOutput;
+
+import java.io.IOException;
+
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.generic.*;
 import org.dom4j.Branch;
@@ -235,6 +241,20 @@ public class FieldAnnotation extends PackageMemberAnnotation {
 			element.addAttribute("role", role);
 
 		return element;
+	}
+
+	public void writeXML(XMLOutput xmlOutput) throws IOException {
+		XMLAttributeList attributeList = new XMLAttributeList()
+			.addAttribute("classname", getClassName())
+			.addAttribute("name", getFieldName())
+			.addAttribute("signature", getFieldSignature())
+			.addAttribute("isStatic", String.valueOf(isStatic()));
+
+		String role = getDescription();
+		if (!role.equals(DEFAULT_ROLE))
+			attributeList.addAttribute("role", role);
+
+		xmlOutput.openCloseTag(ELEMENT_NAME, attributeList);
 	}
 }
 

@@ -19,13 +19,15 @@
 
 package edu.umd.cs.findbugs;
 
+import edu.umd.cs.findbugs.xml.XMLWriteable;
+
 /**
  * An object providing context information about a particular BugInstance.
  *
  * @author David Hovemeyer
  * @see BugInstance
  */
-public interface BugAnnotation extends Comparable<BugAnnotation>, XMLConvertible {
+public interface BugAnnotation extends Comparable<BugAnnotation>, XMLConvertible, XMLWriteable {
 	/**
 	 * Accept a BugAnnotationVisitor.
 	 *

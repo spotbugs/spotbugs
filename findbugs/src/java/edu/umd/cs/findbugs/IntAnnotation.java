@@ -19,6 +19,11 @@
 
 package edu.umd.cs.findbugs;
 
+import edu.umd.cs.findbugs.xml.XMLAttributeList;
+import edu.umd.cs.findbugs.xml.XMLOutput;
+
+import java.io.IOException;
+
 import org.dom4j.Branch;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
@@ -134,6 +139,17 @@ public class IntAnnotation implements BugAnnotation {
 			element.addAttribute("role", role);
 
 		return element;
+	}
+
+	public void writeXML(XMLOutput xmlOutput) throws IOException {
+		XMLAttributeList attributeList = new XMLAttributeList()
+			.addAttribute("value", String.valueOf(value));
+
+		String role = getDescription();
+		if (!role.equals(DEFAULT_ROLE))
+			attributeList.addAttribute("role", role);
+
+		xmlOutput.openCloseTag(ELEMENT_NAME, attributeList);
 	}
 }
 
