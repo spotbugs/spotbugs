@@ -20,20 +20,52 @@
 package edu.umd.cs.daveho.ba;
 
 public class ResourceValueFrame extends Frame<ResourceValue> {
-	/** The resource doesn't exist. */
-	public static final int NONEXISTENT = 0;
-
 	/** The resource is open (or locked, etc). */
-	public static final int OPEN = 1;
+	public static final int OPEN = 0;
 
 	/** The resource is closed (or unlocked, etc). */
-	public static final int CLOSED = 2;
+	public static final int CLOSED = 1;
+
+	/** The resource doesn't exist. */
+	public static final int NONEXISTENT = 2;
 
 
 	private int status;
 
 	public ResourceValueFrame(int numSlots) {
 		super(numSlots);
+		this.status = NONEXISTENT;
+	}
+
+	public int getStatus() {
+		return status;
+	}
+
+	public void setStatus(int status) {
+		this.status = status;
+	}
+
+	public boolean sameAs(Frame<ResourceValue> other_) {
+		if (!super.sameAs(other_))
+			return false;
+
+		ResourceValueFrame other = (ResourceValueFrame) other_;
+		return this.status == other.status;
+	}
+
+	public void mergeWith(Frame<ResourceValue> other_) throws DataflowAnalysisException {
+		// Merge slots
+		super.mergeWith(other_);
+
+		// Merge status
+		ResourceValueFrame other = (ResourceValueFrame) other_;
+		this.status = Math.min(this.status, other.status);
+	}
+
+	public void copyFrom(Frame<ResourceValue> other_) {
+		super.copyFrom(other_);
+		ResourceValueFrame other = (ResourceValueFrame) other_;
+		this.status = other.status;
 	}
 
 	public ResourceValue mergeValues(int slot, ResourceValue a, ResourceValue b) throws DataflowAnalysisException {
