@@ -238,12 +238,28 @@ public class ConvertToARFF {
 	 * <p>Uses the Element's uid attribute if it has one.</p>
 	 */
 	public static class IdAttribute implements Attribute {
+		private TreeSet<String> possibleValueSet = new TreeSet<String>();
+		
+		private boolean scanning = true;
 		private int count = 0;
 
 		public String getName() { return "id"; }
-		public void scan(Element element, String appName) throws MissingNodeException { }
-		public String getRange() { return "string"; }
+		
+		public void scan(Element element, String appName) throws MissingNodeException {
+			possibleValueSet.add(instanceValue(element, appName));
+		}
+		
+		public String getRange() { return collectionToRange(possibleValueSet); }
+		
 		public String getInstanceValue(Element element, String appName) throws MissingNodeException {
+			if (scanning) {
+				count = 0;
+				scanning = false;
+			}
+			return instanceValue(element, appName);
+		}
+		
+		private String instanceValue(Element element, String appName) {
 			String nextId;
 
 			org.dom4j.Attribute uidAttr= element.attribute("uid");
@@ -252,7 +268,7 @@ public class ConvertToARFF {
 			} else {
 				nextId = String.valueOf(count++);
 			}
-			
+
 			return "\"" + appName + "-" + nextId + "\"";
 		}
 	}
