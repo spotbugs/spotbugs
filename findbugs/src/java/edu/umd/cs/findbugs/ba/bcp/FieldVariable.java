@@ -26,17 +26,39 @@ public class FieldVariable implements Variable {
 	private final String className;
 	private final String fieldName;
 
+	/**
+	 * Constructor for static fields.
+	 * @param className the class name
+	 * @param fieldName the field name
+	 */
+	public FieldVariable(String className, String fieldName) {
+		this(null, className, fieldName);
+	}
+
+	/**
+	 * Constructor for instance fields.
+	 * @param ref ValueNumber of the object reference
+	 * @param className the class name
+	 * @param fieldName the field name
+	 */
 	public FieldVariable(ValueNumber ref, String className, String fieldName) {
 		this.ref = ref;
 		this.className = className;
 		this.fieldName = fieldName;
 	}
 
+	/**
+	 * Return whether or not this is a static field.
+	 */
+	public boolean isStatic() { return ref == null; }
+
 	public boolean sameAs(Variable other) {
 		if (!(other instanceof FieldVariable))
 			return false;
 		FieldVariable otherField = (FieldVariable) other;
-		return ref.equals(otherField.ref)
+		if (isStatic() != otherField.isStatic())
+			return false;
+		return (ref == null || ref.equals(otherField.ref))
 			&& className.equals(otherField.className)
 			&& fieldName.equals(otherField.fieldName);
 	}
