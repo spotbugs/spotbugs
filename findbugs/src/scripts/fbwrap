@@ -1,0 +1,20 @@
+#! /bin/sh
+
+# A convenient way to call the main() method of a class
+# in findbugs.jar.
+
+@GET_FBHOME@
+
+@SET_DEFAULT_JAVA@
+
+if [ $# -eq 0 ]; then
+	echo "Usage: fbwrap <main class name> <args...>"
+	exit 1
+fi
+
+fb_mainclass="$1"
+shift
+
+@WRAP_JAVA@
+
+# vim:ts=3
