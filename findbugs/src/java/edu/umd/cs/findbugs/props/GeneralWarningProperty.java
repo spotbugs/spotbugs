@@ -39,6 +39,19 @@ public class GeneralWarningProperty implements WarningProperty {
 	/** The type of the receiver object in a method call or instance field access. */
 	public static final GeneralWarningProperty RECEIVER_OBJECT_TYPE =
 		new GeneralWarningProperty("RECEIVER_OBJECT_TYPE", PriorityAdjustment.NO_ADJUSTMENT);
+	
+	/** Name of most recently called method. */ 
+	public static final GeneralWarningProperty CALLED_METHOD_1 =
+		new GeneralWarningProperty("CALLED_METHOD_1", PriorityAdjustment.NO_ADJUSTMENT);
+	/** Name of second-most recently called method. */ 
+	public static final GeneralWarningProperty CALLED_METHOD_2 =
+		new GeneralWarningProperty("CALLED_METHOD_2", PriorityAdjustment.NO_ADJUSTMENT);
+	/** Name of third-most recently called method. */ 
+	public static final GeneralWarningProperty CALLED_METHOD_3 =
+		new GeneralWarningProperty("CALLED_METHOD_3", PriorityAdjustment.NO_ADJUSTMENT);
+	/** Name of fourth-most recently called method. */ 
+	public static final GeneralWarningProperty CALLED_METHOD_4 =
+		new GeneralWarningProperty("CALLED_METHOD_4", PriorityAdjustment.NO_ADJUSTMENT);
 
 	public PriorityAdjustment getPriorityAdjustment() {
 		return priorityAdjustment;
