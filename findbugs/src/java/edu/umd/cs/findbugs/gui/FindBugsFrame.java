@@ -1946,7 +1946,9 @@ public class FindBugsFrame extends javax.swing.JFrame {
             project.setFileName(file.getPath());
 
             UserPreferences prefs = UserPreferences.getUserPreferences();
+            prefs.useProject(file.getPath());
             prefs.read();
+            rebuildRecentProjectsMenu();
             
             updateTitle(project);
             
