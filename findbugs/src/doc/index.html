@@ -51,24 +51,28 @@ compares several Java bug checkers, including FindBugs.
 
 <ul>
 <!-- new detectors -->
+<li> New detector to find catch blocks that may inadvertently catch
+     runtime exceptions (Brian Goetz)
 <li> New detector to find objects that are instantiated based on classes that only have
-     static methods and fields, using the synthesized constructor.
+     static methods and fields, using the synthesized constructor (Dave Brosius)
 <li> New detector to find calls to Thread.interrupted() in a non static context, and especially
-     with non currentThread() threads. (Dave Brosius)
-<li> New detector to find calls to .equals methods that use Object's version. (Dave Brosius)
-<li> Extend Dumb Method detector for toUpperCase, toLowerCase without a locale, 
-     new Integer(1).toString(), new XXX().getClass(), and new Thread() without a run implementation (Dave Brosius)
+     with non currentThread() threads (Dave Brosius)
+<li> New detector to find calls to equals() methods that use Object's version. (Dave Brosius)
 <li> New detector to find Applets that call methods in the constructor 
      refering to the AppletStub (Dave Brosius)
-<li> Detector to find infinite recursion (Bill Pugh)
+<li> New detector to find some cases of infinite recursion (Bill Pugh)
+<li> New detector to find dead stores to local variables (David Hovemeyer, Bill Pugh)
+<li> Extend Dumb Method detector for toUpperCase(), toLowerCase() without a locale, 
+     new Integer(1).toString(), new XXX().getClass(), and new Thread()
+     without a run implementation (Dave Brosius)
 <!-- feature enhancements -->
-<li> New Style category for detectors (David Hovemeyer)
-<li> Ability to annotate methods using jdk5.0 annotations that suppress FindBugs warnings (Bill Pugh)
+<li> Eclipse plugin allows filtering of warnings by bug category, priority
+     (David Hovemeyer)
+<li> Ability to annotate methods using Java 1.5 annotations that suppress FindBugs warnings (Bill Pugh)
 <li> New -adjustExperimental for lowering priority of BugPatterns that are experimental (Dave Brosius)
 <li> Allow for command line options 'files' using the @ symbol (David Hovemeyer)
-<li> New -adjustPriority cmd line option to for adjusting bug priorites (David Hovemeyer)
-<li> Opcode parameter stack class for tracking types and values of stack items (Dave Brosius)
-<li> Added an Edit menu (cut/copy/paste) to gui (Dave Brosius)
+<li> New -adjustPriority command line option to for adjusting bug priorites (David Hovemeyer)
+<li> Added an Edit menu (cut/copy/paste) to Swing GUI (Dave Brosius)
 <li> French translation supplied (David Cotton)
 <!-- Bug fixes -->
 </ul>
