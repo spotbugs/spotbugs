@@ -57,6 +57,9 @@ public class BCPMethodReturnCheck extends ByteCodePatternDetector {
 		ArrayList<PatternElement> list = new ArrayList<PatternElement>();
 
 		// Standard return check methods
+		list.add(new Invoke("/.*", "equals",
+		        "/\\(Ljava/lang/Object;\\)Z",
+		        Invoke.INSTANCE, bugReporter));
 		list.add(new Invoke("java.lang.String", "/.*",
 		        "/\\(.*\\)Ljava/lang/String;",
 		        Invoke.INSTANCE, bugReporter));
