@@ -151,7 +151,7 @@ public class TypedFrame extends Frame<Type> implements Constants, ExtendedTypes 
 	 * @param b a type to be merged
 	 * @return the merged type
 	 */
-	public Type mergeValues(int slot, Type a, Type b) {
+	public Type mergeValues(int slot, Type a, Type b) throws DataflowAnalysisException {
 		byte aType = a.getType(), bType = b.getType();
 
 		if (aType == T_TOP)			// Top is the identity element
@@ -175,8 +175,11 @@ public class TypedFrame extends Frame<Type> implements Constants, ExtendedTypes 
 			// This will use the Repository to look up classes.
 			ReferenceType aRef = (ReferenceType) a;
 			ReferenceType bRef = (ReferenceType) b;
-			//return aRef.getFirstCommonSuperclass(bRef); // FIXME: start using this when we upgrade to BCEL 5.1
-			return aRef.firstCommonSuperclass(bRef);
+			try {
+				return aRef.getFirstCommonSuperclass(bRef);
+			} catch (ClassNotFoundException e) {
+				throw new DataflowAnalysisException("Repository lookup failure", e);
+			}
 		} else if (isObjectType(aType) || isObjectType(bType))	// Object meet non-object is bottom
 			return getBottomType();
 		else if (aType == bType)	// Same non-object type?
