@@ -39,6 +39,7 @@ public class DumbMethods extends BytecodeScanningDetector implements Constants2 
    private boolean sawLDCEmptyString;
 */
 	private String primitiveObjCtorSeen;
+	private boolean ctorSeen;
 	private boolean isPublicStaticVoidMain;
 
 	public DumbMethods(BugReporter bugReporter) {
@@ -59,6 +60,7 @@ public class DumbMethods extends BytecodeScanningDetector implements Constants2 
 		if (this.exceptionTable == null)
 			this.exceptionTable = new CodeException[0];
 		primitiveObjCtorSeen = null;
+		ctorSeen = false;
 	}
 
 	public void sawOpcode(int seen) {
@@ -152,7 +154,7 @@ public class DumbMethods extends BytecodeScanningDetector implements Constants2 
 				bugReporter.reportBug(new BugInstance(this, "DM_CONVERT_CASE", LOW_PRIORITY)
 				        .addClassAndMethod(this)
 				        .addSourceLine(this));
-				        
+		
 		if ((seen == INVOKESPECIAL) && getNameConstantOperand().equals("<init>")) {
 			String cls = getClassConstantOperand();
 			String sig = getSigConstantOperand();
@@ -165,7 +167,8 @@ public class DumbMethods extends BytecodeScanningDetector implements Constants2 
 			||  (cls.equals("java/lang/Short") && sig.equals("(S)V"))
 			||  (cls.equals("java/lang/Boolean") && sig.equals("(Z)V"))) {
 				primitiveObjCtorSeen = cls;
-				return;
+			} else {
+				primitiveObjCtorSeen = null;
 			}
 		} else if ((primitiveObjCtorSeen != null)
 		       &&  (seen == INVOKEVIRTUAL) 
@@ -175,8 +178,26 @@ public class DumbMethods extends BytecodeScanningDetector implements Constants2 
 				bugReporter.reportBug(new BugInstance(this, "DM_BOXED_PRIMITIVE_TOSTRING", LOW_PRIORITY)
 				        .addClassAndMethod(this)
 				        .addSourceLine(this));
+			primitiveObjCtorSeen = null;
 		}
-		primitiveObjCtorSeen = null;
+		else
+			primitiveObjCtorSeen = null;
+			
+		if ((seen == INVOKESPECIAL) && getNameConstantOperand().equals("<init>")) {
+			ctorSeen = true;
+		} else if (ctorSeen 
+		        && (seen == INVOKEVIRTUAL) 
+		        && getClassConstantOperand().equals("java/lang/Object")
+		        && getNameConstantOperand().equals("getClass")
+		        && getSigConstantOperand().equals("()Ljava/lang/Class;")) {
+					bugReporter.reportBug(new BugInstance(this, "DM_NEW_FOR_GETCLASS", LOW_PRIORITY)
+					        .addClassAndMethod(this)
+					        .addSourceLine(this));
+			ctorSeen = false;
+		} else {
+			ctorSeen = false;
+		}
+			
 		
 /*
 	//

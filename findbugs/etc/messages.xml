@@ -924,6 +924,7 @@ to use Object.clone(), which always returns an object of the correct type.</p>
 ]]>
     </Details>
   </BugPattern>
+  
   <BugPattern type="DM_BOXED_PRIMITIVE_TOSTRING">
     <ShortDescription>Method allocates a boxed primitive just to call toString</ShortDescription>
     <LongDescription>Method {1} allocates a boxed primitive just to call toString</LongDescription>
@@ -943,7 +944,19 @@ to use Object.clone(), which always returns an object of the correct type.</p>
   </table>
 ]]>
     </Details>
+  </BugPattern>
+
+  <BugPattern type="DM_NEW_FOR_GETCLASS">
+    <ShortDescription>Method allocates an object, only to get the class object</ShortDescription>
+    <LongDescription>Method {1} allocates an object, only to get the class object</LongDescription>
+    <Details>
+<![CDATA[
+  <p>This method allocates an object just to call getClass() on it, in order to 
+  retrieve the Class object for it. It is simpler to just access the .class property of the class.</p>
+]]>
+    </Details>
   </BugPattern>  
+
   <BugPattern type="DC_DOUBLECHECK">
     <ShortDescription>Possible double check of field</ShortDescription>
     <LongDescription>Possible doublecheck on {2} in {1}</LongDescription>
@@ -968,6 +981,7 @@ to use Object.clone(), which always returns an object of the correct type.</p>
 ]]>
     </Details>
   </BugPattern>
+
   <BugPattern type="FI_EMPTY">
     <ShortDescription>Empty finalizer should be deleted</ShortDescription>
     <LongDescription>{1} is empty and should be deleted</LongDescription>
@@ -978,6 +992,7 @@ to use Object.clone(), which always returns an object of the correct type.</p>
 ]]>
     </Details>
   </BugPattern>
+
   <BugPattern type="FI_NULLIFY_SUPER">
     <ShortDescription>Finalizer nullifies superclass finalizer</ShortDescription>
     <LongDescription>{1} is nullifying {2}.finalize(); is this intended?</LongDescription>
@@ -990,6 +1005,7 @@ to use Object.clone(), which always returns an object of the correct type.</p>
 ]]>
     </Details>
   </BugPattern>
+
   <BugPattern type="FI_USELESS">
     <ShortDescription>Finalizer does nothing but call superclass finalizer</ShortDescription>
     <LongDescription>{1} does nothing except call super.finalize(); delete it</LongDescription>
@@ -1001,6 +1017,7 @@ to use Object.clone(), which always returns an object of the correct type.</p>
 ]]>
     </Details>
   </BugPattern>
+
   <BugPattern type="FI_MISSING_SUPER_CALL">
     <ShortDescription>Finalizer does not call superclass finalizer</ShortDescription>
     <LongDescription>{1} missing call to super.finalize(), so {2}.finalize() doesn't get called</LongDescription>
@@ -1013,6 +1030,7 @@ to use Object.clone(), which always returns an object of the correct type.</p>
 ]]>
     </Details>
   </BugPattern>
+
   <BugPattern type="FI_EXPLICIT_INVOCATION">
     <ShortDescription>Explicit invocation of finalizer</ShortDescription>
     <LongDescription>{1} explicitly invokes {2}</LongDescription>
@@ -1024,6 +1042,7 @@ to use Object.clone(), which always returns an object of the correct type.</p>
 ]]>
     </Details>
   </BugPattern>
+
   <BugPattern type="EQ_SELF_USE_OBJECT">
     <ShortDescription>Covariant equals() method defined, Object.equals(Object) inherited</ShortDescription>
     <LongDescription>{0} defines equals({0}) method and uses Object.equals(Object)</LongDescription>
