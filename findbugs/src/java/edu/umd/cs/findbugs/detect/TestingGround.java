@@ -64,7 +64,7 @@ public class TestingGround extends BytecodeScanningDetector implements Constants
 
 	private void printOpCode(int seen) {
 		System.out.print("  TestingGround: [" + formatter.format(getPC()) + "]  " + OPCODE_NAMES[seen]);
-		if ((seen == INVOKEVIRTUAL) || (seen == INVOKESPECIAL) || (seen == INVOKEINTERFACE))
+		if ((seen == INVOKEVIRTUAL) || (seen == INVOKESPECIAL) || (seen == INVOKEINTERFACE) || (seen == INVOKESTATIC))
 			System.out.print("   " + getClassConstantOperand() + "." + getNameConstantOperand() + " " + getSigConstantOperand());
 		else if (seen == LDC || seen == LDC_W || seen == LDC2_W) {
 			Constant c = getConstantRefOperand();
