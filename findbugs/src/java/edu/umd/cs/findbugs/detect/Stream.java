@@ -34,17 +34,19 @@ public class Stream extends ResourceCreationPoint {
 	private boolean isUninteresting;
 	private boolean isOpenOnCreation;
 	private InstructionHandle ctorHandle;
+	private boolean ignoreImplicitExceptions;
 
 	public Stream(Location location, String streamClass, String streamBase,
-		boolean isUninteresting) {
-		this(location, streamClass, streamBase, isUninteresting, false);
+		boolean isUninteresting, boolean ignoreImplicitExceptions) {
+		this(location, streamClass, streamBase, isUninteresting, ignoreImplicitExceptions, false);
 	}
 
 	public Stream(Location location, String streamClass, String streamBase,
-		boolean isUninteresting, boolean isOpenOnCreation) {
+		boolean isUninteresting, boolean ignoreImplicitExceptions, boolean isOpenOnCreation) {
 		super(location, streamClass);
 		this.streamBase = streamBase;
 		this.isUninteresting = isUninteresting;
+		this.ignoreImplicitExceptions = ignoreImplicitExceptions;
 		this.isOpenOnCreation = isOpenOnCreation;
 	}
 
@@ -57,6 +59,8 @@ public class Stream extends ResourceCreationPoint {
 	public void setConstructorHandle(InstructionHandle handle) { this.ctorHandle = handle; }
 
 	public InstructionHandle getConstructorHandle() { return ctorHandle; }
+
+	public boolean ignoreImplicitExceptions() { return ignoreImplicitExceptions; }
 }
 
 // vim:ts=3

@@ -145,25 +145,25 @@ public class StreamResourceTracker implements ResourceTracker<Stream> {
 					boolean isUninteresting =
 						Hierarchy.isSubtype(className, "java.io.ByteArrayInputStream")
 						|| Hierarchy.isSubtype(className, "java.io.ObjectInputStream");
-					return new Stream(location, className, "java.io.InputStream", isUninteresting);
+					return new Stream(location, className, "java.io.InputStream", isUninteresting, true);
 
 				} else if (Hierarchy.isSubtype(className, "java.io.OutputStream")) {
 					boolean isUninteresting =
 						Hierarchy.isSubtype(className, "java.io.ByteArrayOutputStream")
 						|| Hierarchy.isSubtype(className, "java.io.ObjectOutputStream");
-					return new Stream(location, className, "java.io.OutputStream", isUninteresting);
+					return new Stream(location, className, "java.io.OutputStream", isUninteresting, true);
 
 				} else if (Hierarchy.isSubtype(className, "java.io.Reader")) {
 					boolean isUninteresting =
 						Hierarchy.isSubtype(className, "java.io.StringReader")
 						|| Hierarchy.isSubtype(className, "java.io.CharArrayReader");
-					return new Stream(location, className, "java.io.Reader", isUninteresting);
+					return new Stream(location, className, "java.io.Reader", isUninteresting, true);
 
 				} else if (Hierarchy.isSubtype(className, "java.io.Writer")) {
 					boolean isUninteresting =
 						Hierarchy.isSubtype(className, "java.io.StringWriter")
 						|| Hierarchy.isSubtype(className, "java.io.CharArrayWriter");
-					return new Stream(location, className, "java.io.Writer", isUninteresting);
+					return new Stream(location, className, "java.io.Writer", isUninteresting, true);
 
 				}
 
@@ -184,12 +184,12 @@ public class StreamResourceTracker implements ResourceTracker<Stream> {
 					if (methodName.equals("getOutputStream")
 						&& methodSig.endsWith(")Ljava/io/OutputStream;")) {
 						return new Stream(location, "java.io.OutputStream", "java.io.OutputStream",
-							true, true);
+							true, true, true);
 						
 					} else if (methodName.equals("getInputStream")
 						&& methodSig.endsWith(")Ljava/io/InputStream;")) {
 						return new Stream(location, "java.io.InputStream", "java.io.InputStream",
-							true, true);
+							true, true, true);
 					}
 				}
 
@@ -206,12 +206,12 @@ public class StreamResourceTracker implements ResourceTracker<Stream> {
 
 					if (fieldName.equals("in") && fieldSig.equals("Ljava/io/InputStream;")) {
 						return new Stream(location, "java.io.InputStream", "java.io.InputStream",
-							true, true);
+							true, true, true);
 
 					} else if ((fieldName.equals("out") || fieldName.equals("err")) &&
 						fieldSig.equals("Ljava/io/PrintStream;")) {
 						return new Stream(location, "java.io.PrintStream", "java.io.OutputStream",
-							true, true);
+							true, true, true);
 
 					}
 				}
@@ -276,6 +276,10 @@ public class StreamResourceTracker implements ResourceTracker<Stream> {
 
 	public ResourceValueFrameModelingVisitor createVisitor(Stream resource, ConstantPoolGen cpg) {
 		return new StreamFrameModelingVisitor(cpg, this, resource);
+	}
+
+	public boolean ignoreImplicitExceptions(Stream resource) {
+		return resource.ignoreImplicitExceptions();
 	}
 
 	private ResourceValue getInstanceValue(ResourceValueFrame frame, InvokeInstruction inv,

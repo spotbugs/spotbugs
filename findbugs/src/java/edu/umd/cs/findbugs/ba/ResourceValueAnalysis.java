@@ -35,6 +35,7 @@ public class ResourceValueAnalysis<Resource> extends FrameDataflowAnalysis<Resou
 	private Resource resource;
 	private ResourceValueFrameModelingVisitor visitor;
 	private RepositoryLookupFailureCallback lookupFailureCallback;
+	private boolean ignoreImplicitExceptions;
 
 	public ResourceValueAnalysis(MethodGen methodGen, CFG cfg, DepthFirstSearch dfs,
 		ResourceTracker<Resource> resourceTracker, Resource resource,
@@ -47,6 +48,8 @@ public class ResourceValueAnalysis<Resource> extends FrameDataflowAnalysis<Resou
 		this.resource = resource;
 		this.visitor = resourceTracker.createVisitor(resource, methodGen.getConstantPool());
 		this.lookupFailureCallback = lookupFailureCallback;
+
+		this.ignoreImplicitExceptions = resourceTracker.ignoreImplicitExceptions(resource);
 	}
 
 	public ResourceValueFrame createFact() {
@@ -72,8 +75,10 @@ public class ResourceValueAnalysis<Resource> extends FrameDataflowAnalysis<Resou
 		if (edge.isExceptionEdge()) {
 			// If this edge throws only implicit exceptions
 			// (as determined by TypeAnalysis and PruneInfeasibleExceptionEdges),
-			// ignore it.
+			// and the resource tracker says to ignore implicit exceptions
+			// for this resource, ignore it.
 			if (ClassContext.PRUNE_INFEASIBLE_EXCEPTION_EDGES &&
+				ignoreImplicitExceptions &&
 				!edge.isFlagSet(EXPLICIT_EXCEPTIONS_FLAG))
 				return;
 

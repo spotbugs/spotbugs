@@ -173,6 +173,12 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
 			return new LockFrameModelingVisitor(cpg, this, resource, vnaDataflow);
 		}
 
+		public boolean ignoreImplicitExceptions(Lock resource) {
+			// JSR166 locks should be ALWAYS be released,
+			// including when implicit runtime exceptions are thrown
+			return false;
+		}
+
 		private static final InvokeInstruction toInvokeInstruction(Instruction ins) {
 			short opcode = ins.getOpcode();
 			if (opcode != Constants.INVOKEVIRTUAL && opcode != Constants.INVOKEINTERFACE)

@@ -65,6 +65,20 @@ public interface ResourceTracker<Resource> {
 	 * @return a ResourceValueFrameModelingVisitor
 	 */
 	public ResourceValueFrameModelingVisitor createVisitor(Resource resource, ConstantPoolGen cpg);
+
+	/**
+	 * Determine whether the analysis should ignore exception edges
+	 * on which only implicit exceptions are propagated.
+	 * This allows different resource types to be tracked
+	 * with varying precision.  For example, we might want
+	 * to ignore implicit exceptions for stream objects,
+	 * but treat them as significant for database resources.
+	 *
+	 * @param resource the resource being tracked
+	 * @return true if implicit exceptions are significant,
+	 *   false if they should be ignore
+	 */
+	public boolean ignoreImplicitExceptions(Resource resource);
 }
 
 // vim:ts=4
