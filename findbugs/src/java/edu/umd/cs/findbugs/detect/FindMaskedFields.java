@@ -30,6 +30,7 @@ public class FindMaskedFields extends BytecodeScanningDetector implements Consta
 	private int numParms;
 	private Set<Field> maskedFields = new HashSet<Field>();
 	private Map<String, Field> classFields = new HashMap<String, Field>();
+	private boolean staticMethod;
 
 	public FindMaskedFields(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
@@ -89,9 +90,13 @@ public class FindMaskedFields extends BytecodeScanningDetector implements Consta
 	public void visit(Method obj) {
 		super.visit(obj);
 		numParms = obj.getArgumentTypes().length;
+		staticMethod = obj.isStatic();
 	}
 	
 	public void visit(LocalVariableTable obj) {
+		if (staticMethod)
+			return;
+			
 		LocalVariable[] vars = obj.getLocalVariableTable();
 		for (int v = numParms+1; v < vars.length; v++) { 
 			LocalVariable var = vars[v];
