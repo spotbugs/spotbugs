@@ -23,8 +23,13 @@ import org.apache.bcel.generic.*;
 
 public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisitor<IsNullValue, IsNullValueFrame> {
 
-	public IsNullValueFrameModelingVisitor(ConstantPoolGen cpg) {
+	private static final boolean NO_ASSERT_HACK = Boolean.getBoolean("inva.noAssertHack");
+
+	private AssertionMethods assertionMethods;
+
+	public IsNullValueFrameModelingVisitor(ConstantPoolGen cpg, AssertionMethods assertionMethods) {
 		super(cpg);
+		this.assertionMethods = assertionMethods;
 	}
 
 	public IsNullValue getDefaultValue() {
@@ -57,6 +62,27 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
 		frame.pushValue(value);
 	}
 
+	/**
+	 * Handle method invocations.
+	 * Generally, we want to get rid of null information following a
+	 * call to a likely exception thrower or assertion.
+	 */
+	private void handleInvoke(InvokeInstruction obj) {
+		handleNormalInstruction(obj);
+
+		if (!NO_ASSERT_HACK) {
+			if (assertionMethods.isAssertionCall(obj)) {
+				IsNullValueFrame frame = getFrame();
+				for (int i = 0; i < frame.getNumSlots(); ++i) {
+					IsNullValue value = frame.getValue(i);
+					if (value.isDefinitelyNull() || value.isNullOnSomePath()) {
+						frame.setValue(i, IsNullValue.doNotReportValue());
+					}
+				}
+			}
+		}
+	}
+
 	public void visitACONST_NULL(ACONST_NULL obj) {
 		produce(IsNullValue.nullValue());
 	}
@@ -75,6 +101,22 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
 
 	public void visitLDC2_W(LDC2_W obj) {
 		produce2(IsNullValue.nonNullValue());
+	}
+
+	public void visitINVOKESTATIC(INVOKESTATIC obj) {
+		handleInvoke(obj);
+	}
+
+	public void visitINVOKESPECIAL(INVOKESPECIAL obj) {
+		handleInvoke(obj);
+	}
+
+	public void visitINVOKEINTERFACE(INVOKEINTERFACE obj) {
+		handleInvoke(obj);
+	}
+
+	public void visitINVOKEVIRTUAL(INVOKEVIRTUAL obj) {
+		handleInvoke(obj);
 	}
 
 }

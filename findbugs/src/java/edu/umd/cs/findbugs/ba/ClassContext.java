@@ -66,6 +66,7 @@ public class ClassContext implements AnalysisFeatures {
 		new IdentityHashMap<Method, PostDominatorsAnalysis>();
 	private ClassGen classGen;
 	private AssignedFieldMap assignedFieldMap;
+	private AssertionMethods assertionMethods;
 
 	/**
 	 * Constructor.
@@ -77,6 +78,7 @@ public class ClassContext implements AnalysisFeatures {
 		this.lookupFailureCallback = lookupFailureCallback;
 		this.classGen = null;
 		this.assignedFieldMap = null;
+		this.assertionMethods = null;
 	}
 
 	/**
@@ -241,8 +243,9 @@ public class ClassContext implements AnalysisFeatures {
 			CFG cfg = getCFG(method);
 			ValueNumberDataflow vnaDataflow = getValueNumberDataflow(method);
 			DepthFirstSearch dfs = getDepthFirstSearch(method);
+			AssertionMethods assertionMethods = getAssertionMethods();
 
-			IsNullValueAnalysis invAnalysis = new IsNullValueAnalysis(methodGen, cfg, vnaDataflow, dfs);
+			IsNullValueAnalysis invAnalysis = new IsNullValueAnalysis(methodGen, cfg, vnaDataflow, dfs, assertionMethods);
 			invDataflow = new IsNullValueDataflow(cfg, invAnalysis);
 			invDataflow.execute();
 
@@ -467,6 +470,17 @@ public class ClassContext implements AnalysisFeatures {
 			nonExceptionPostDominatorsAnalysisMap.put(method, analysis);
 		}
 		return analysis;
+	}
+
+	/**
+	 * Get AssertionMethods for class.
+	 * @return the AssertionMethods
+	 */
+	public AssertionMethods getAssertionMethods() {
+		if (assertionMethods == null) {
+			assertionMethods = new AssertionMethods(jclass);
+		}
+		return assertionMethods;
 	}
 }
 

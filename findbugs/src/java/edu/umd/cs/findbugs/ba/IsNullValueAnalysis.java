@@ -46,10 +46,11 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
 	private int[] numNonExceptionSuccessorMap;
 	private IsNullValueFrame lastFrame;
 
-	public IsNullValueAnalysis(MethodGen methodGen, CFG cfg, ValueNumberDataflow vnaDataflow, DepthFirstSearch dfs) {
+	public IsNullValueAnalysis(MethodGen methodGen, CFG cfg, ValueNumberDataflow vnaDataflow, DepthFirstSearch dfs,
+		AssertionMethods assertionMethods) {
 		super(dfs);
 		this.methodGen = methodGen;
-		this.visitor = new IsNullValueFrameModelingVisitor(methodGen.getConstantPool());
+		this.visitor = new IsNullValueFrameModelingVisitor(methodGen.getConstantPool(), assertionMethods);
 		this.vnaDataflow = vnaDataflow;
 		this.numNonExceptionSuccessorMap = new int[cfg.getNumBasicBlocks()];
 
