@@ -28,12 +28,21 @@ import org.apache.bcel.generic.*;
 
 /**
  * Simple basic block abstraction for BCEL.
- * Does not take exception control edges into account.
+ *
+ * <p> TODO: right now we use an ArrayList to store the instructions
+ * in the basic block.  For most basic blocks, it would be sufficent
+ * to just store the first and last instruction in the block,
+ * since BCEL InstructionHandles have next and prev links.
+ * (The explicit ArrayList is only needed to handle inlined JSR
+ * subroutines.)  Avoiding the creation of the ArrayList would
+ * probably save a significant amount of memory.
+ *
  * @see CFG
+ * @author David Hovemeyer
  */
 public class BasicBlock implements Comparable {
     private int id;
-    private LinkedList<InstructionHandle> instructionList;
+    private ArrayList<InstructionHandle> instructionList;
     private boolean isExceptionThrower;
     private CodeExceptionGen exceptionGen; // set if this block is the entry point of an exception handler
 
@@ -42,7 +51,7 @@ public class BasicBlock implements Comparable {
      */
     public BasicBlock(int id) {
 	this.id = id;
-	instructionList = new LinkedList<InstructionHandle>();
+	instructionList = new ArrayList<InstructionHandle>();
 	isExceptionThrower = false;
 	exceptionGen = null;
     }
@@ -70,12 +79,12 @@ public class BasicBlock implements Comparable {
 
     /** Get the first instruction in the basic block. */
     public InstructionHandle getFirstInstruction() {
-	return instructionList.isEmpty() ? null : instructionList.getFirst();
+	return instructionList.isEmpty() ? null : instructionList.get(0);
     }
 
     /** Get the last instruction in the basic block. */
     public InstructionHandle getLastInstruction() {
-	return instructionList.isEmpty() ? null : instructionList.getLast();
+	return instructionList.isEmpty() ? null : instructionList.get(instructionList.size() - 1);
     }
 
     /**
@@ -83,16 +92,47 @@ public class BasicBlock implements Comparable {
      * @param handle the InstructionHandle
      */
     public void addInstruction(InstructionHandle handle) {
-	// Only add the instruction if it hasn't already been added.
-	if (instructionList.isEmpty() || instructionList.getLast() != handle)
-	    instructionList.addLast(handle);
+	assert handle != getLastInstruction();
+	instructionList.add(handle);
+    }
+
+    /**
+     * A forward Iterator over the instructions of a basic block.
+     * The duplicate() method can be used to make an exact copy of
+     * this iterator.  Calling next() on the duplicate will not affect
+     * the original, and vice versa.
+     */
+    public class InstructionIterator implements Iterator<InstructionHandle> {
+	private int index = 0;
+
+	public boolean hasNext() {
+	    return index < instructionList.size();
+	}
+
+	public InstructionHandle next() {
+	    if (!hasNext())
+		throw new NoSuchElementException();
+	    InstructionHandle handle = instructionList.get(index);
+	    ++index;
+	    return handle;
+	}
+
+	public void remove() {
+	    throw new UnsupportedOperationException();
+	}
+
+	public InstructionIterator duplicate() {
+	    InstructionIterator dup = new InstructionIterator();
+	    dup.index = this.index;
+	    return dup;
+	}
     }
 
     /**
      * Get an Iterator over the instructions in the basic block.
      */
-    public Iterator<InstructionHandle> instructionIterator() {
-	return instructionList.iterator();
+    public InstructionIterator instructionIterator() {
+	return new InstructionIterator();
     }
 
     /**
