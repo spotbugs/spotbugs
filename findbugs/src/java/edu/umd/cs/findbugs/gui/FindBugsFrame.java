@@ -620,8 +620,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
-        gridBagConstraints.insets = new java.awt.Insets(3, 3, 3, 0);
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.insets = new java.awt.Insets(3, 3, 3, 0);
         bugTreePanel.add(groupByLabel, gridBagConstraints);
 
         bugTreeBugDetailsSplitter.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
@@ -742,7 +742,6 @@ public class FindBugsFrame extends javax.swing.JFrame {
         viewMenu.setFont(new java.awt.Font("Dialog", 0, 12));
         viewConsoleItem.setFont(new java.awt.Font("Dialog", 0, 12));
         viewConsoleItem.setMnemonic('C');
-        viewConsoleItem.setSelected(true);
         viewConsoleItem.setText("Console");
         viewConsoleItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -754,6 +753,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
         viewBugDetailsItem.setFont(new java.awt.Font("Dialog", 0, 12));
         viewBugDetailsItem.setMnemonic('D');
+        viewBugDetailsItem.setSelected(true);
         viewBugDetailsItem.setText("Bug Details");
         viewBugDetailsItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1077,7 +1077,10 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	navigatorTree.setCellRenderer(new FindBugsFrame.NavigatorCellRenderer());
 	navigatorTree.setRootVisible(false);
 	navigatorTree.setShowsRootHandles(false);
-	
+
+        // Console starts out disabled
+        consoleSplitter.setDividerLocation(1.0);
+        
 	bugTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 	bugTree.setCellRenderer(new FindBugsFrame.BugCellRenderer());
 	bugTree.setRootVisible(false);
