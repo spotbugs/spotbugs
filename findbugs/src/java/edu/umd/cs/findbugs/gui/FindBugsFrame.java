@@ -415,6 +415,10 @@ public class FindBugsFrame extends javax.swing.JFrame {
         viewConsoleItem = new javax.swing.JCheckBoxMenuItem();
         viewBugDetailsItem = new javax.swing.JCheckBoxMenuItem();
         fullDescriptionsItem = new javax.swing.JCheckBoxMenuItem();
+        jSeparator7 = new javax.swing.JSeparator();
+        lowPriorityButton = new javax.swing.JRadioButtonMenuItem();
+        mediumPriorityButton = new javax.swing.JRadioButtonMenuItem();
+        highPriorityButton = new javax.swing.JRadioButtonMenuItem();
         settingsMenu = new javax.swing.JMenu();
         configureDetectorsItem = new javax.swing.JMenuItem();
         helpMenu = new javax.swing.JMenu();
@@ -1004,6 +1008,42 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
         viewMenu.add(fullDescriptionsItem);
 
+        viewMenu.add(jSeparator7);
+
+        lowPriorityButton.setFont(new java.awt.Font("Dialog", 0, 12));
+        lowPriorityButton.setMnemonic('L');
+        lowPriorityButton.setText("Low priority");
+        lowPriorityButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                lowPriorityButtonActionPerformed(evt);
+            }
+        });
+
+        viewMenu.add(lowPriorityButton);
+
+        mediumPriorityButton.setFont(new java.awt.Font("Dialog", 0, 12));
+        mediumPriorityButton.setMnemonic('M');
+        mediumPriorityButton.setSelected(true);
+        mediumPriorityButton.setText("Medium priority");
+        mediumPriorityButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mediumPriorityButtonActionPerformed(evt);
+            }
+        });
+
+        viewMenu.add(mediumPriorityButton);
+
+        highPriorityButton.setFont(new java.awt.Font("Dialog", 0, 12));
+        highPriorityButton.setMnemonic('H');
+        highPriorityButton.setText("High priority");
+        highPriorityButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                highPriorityButtonActionPerformed(evt);
+            }
+        });
+
+        viewMenu.add(highPriorityButton);
+
         theMenuBar.add(viewMenu);
 
         settingsMenu.setMnemonic('S');
@@ -1042,6 +1082,24 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
         pack();
     }//GEN-END:initComponents
+
+    private void highPriorityButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_highPriorityButtonActionPerformed
+        mediumPriorityButton.setSelected(false);
+        lowPriorityButton.setSelected(false);
+        setPriorityThreshold(Detector.HIGH_PRIORITY);
+    }//GEN-LAST:event_highPriorityButtonActionPerformed
+
+    private void mediumPriorityButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mediumPriorityButtonActionPerformed
+        highPriorityButton.setSelected(false);
+        lowPriorityButton.setSelected(false);
+        setPriorityThreshold(Detector.NORMAL_PRIORITY);
+    }//GEN-LAST:event_mediumPriorityButtonActionPerformed
+
+    private void lowPriorityButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_lowPriorityButtonActionPerformed
+        highPriorityButton.setSelected(false);
+        mediumPriorityButton.setSelected(false);
+        setPriorityThreshold(Detector.LOW_PRIORITY);
+    }//GEN-LAST:event_lowPriorityButtonActionPerformed
 
     private void saveBugsItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveBugsItemActionPerformed
 
@@ -1135,7 +1193,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_saveProjectAsItemActionPerformed
     
     private void viewMenuMenuSelected(javax.swing.event.MenuEvent evt) {//GEN-FIRST:event_viewMenuMenuSelected
-        // View bug details and full descriptions items
+        // View bug details and full descriptions items,
         // are only enabled if there is a project open.
         boolean hasProject = getCurrentProject() != null;
         viewBugDetailsItem.setEnabled(hasProject);
@@ -1495,6 +1553,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
         sourceTextArea.setHighlighter(sourceHighlighter);
         
         updateTitle(getCurrentProject());
+        
+        priorityThreshold = Detector.NORMAL_PRIORITY;
     }
     
     /* ----------------------------------------------------------------------
@@ -1589,6 +1649,18 @@ public class FindBugsFrame extends javax.swing.JFrame {
     /* ----------------------------------------------------------------------
      * Synchronization of data model and UI
      * ---------------------------------------------------------------------- */
+    
+    /**
+     * Set the priority threshold for display of bugs in the bug tree.
+     * @param threshold the threshold
+     */
+    private void setPriorityThreshold(int threshold) {
+        if (threshold != priorityThreshold) {
+            priorityThreshold = threshold;
+            if (currentAnalysisRun != null)
+                synchAnalysisRun(currentAnalysisRun);
+        }
+    }
     
     private void setProject(Project project) {
         currentProject = project;
@@ -1760,9 +1832,14 @@ public class FindBugsFrame extends javax.swing.JFrame {
         // Delete all children from root node
         bugRootNode.removeAllChildren();
         
-        // Sort the instances
+        // Sort the instances (considering only those that meet the
+        // priority threshold)
         TreeSet<BugInstance> sortedCollection = new TreeSet<BugInstance>(getBugInstanceComparator(groupBy));
-        sortedCollection.addAll(analysisRun.getBugInstances());
+        for (Iterator<BugInstance> i = analysisRun.getBugInstances().iterator(); i.hasNext(); ) {
+            BugInstance bugInstance = i.next();
+            if (bugInstance.getPriority() <= priorityThreshold)
+                sortedCollection.add(bugInstance);
+        }
         
         // The grouper callback is what actually adds the group and bug
         // nodes to the tree.
@@ -2283,18 +2360,22 @@ public class FindBugsFrame extends javax.swing.JFrame {
     private javax.swing.JCheckBoxMenuItem fullDescriptionsItem;
     private javax.swing.JTabbedPane groupByTabbedPane;
     private javax.swing.JMenu helpMenu;
+    private javax.swing.JRadioButtonMenuItem highPriorityButton;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JSeparator jSeparator3;
     private javax.swing.JSeparator jSeparator4;
     private javax.swing.JSeparator jSeparator5;
     private javax.swing.JSeparator jSeparator6;
+    private javax.swing.JSeparator jSeparator7;
     private javax.swing.JLabel jarFileLabel;
     private javax.swing.JList jarFileList;
     private javax.swing.JLabel jarFileListLabel;
     private javax.swing.JScrollPane jarFileListScrollPane;
     private javax.swing.JTextField jarNameTextField;
     private javax.swing.JMenuItem loadBugsItem;
+    private javax.swing.JRadioButtonMenuItem lowPriorityButton;
+    private javax.swing.JRadioButtonMenuItem mediumPriorityButton;
     private javax.swing.JMenuItem newProjectItem;
     private javax.swing.JMenuItem openProjectItem;
     private javax.swing.JMenuItem reloadProjectItem;
@@ -2332,4 +2413,5 @@ public class FindBugsFrame extends javax.swing.JFrame {
     private BugInstance currentBugInstance; // be lazy in switching bug instance details
     private SourceLineAnnotation currentSourceLineAnnotation; // as above
     private String currentBugDetailsKey;
+    private int priorityThreshold;
 }
