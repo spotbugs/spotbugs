@@ -43,6 +43,9 @@ import org.apache.bcel.generic.*;
  * (with the usual rule that the stack is cleared of all values exception for the
  * thrown exception).
  *
+ * <p> This CFGBuilder inlines JSR subroutines.  This is the simplest way
+ * to accurately capture the semantics of JSR and RET.
+ *
  * <p> Things that should be fixed or improved at some point:
  * <ul>
  * <li> ATHROW should really have exception edges both before
@@ -59,18 +62,38 @@ import org.apache.bcel.generic.*;
  */
 public class BetterCFGBuilder implements CFGBuilder, EdgeTypes {
 
+	/** If true, print debug messages. */
 	private static final boolean DEBUG = Boolean.getBoolean("cfgbuilder.debug");
 
 	/* ----------------------------------------------------------------------
 	 * Helper classes
 	 * ---------------------------------------------------------------------- */
 
+	/**
+	 * An item on the work list used by the build() method.
+	 * It represents a basic block that should be added to the CFG.
+	 */
 	private static class WorkListItem {
+		/** The start instruction for the basic block. */
 		public final InstructionHandle start;
-		public final BasicBlock basicBlock;
-		public final LinkedList<InstructionHandle> jsrStack;
-		public boolean handledPEI;
 
+		/** The basic block to be constructed. */
+		public final BasicBlock basicBlock;
+
+		/** Stack of the most recently executed JSR instructions. */
+		public final LinkedList<InstructionHandle> jsrStack;
+
+		/** Set to true if the first instruction in the basic block is a PEI
+		    for which we've already created the ETB that has its exception edges. */
+		public final boolean handledPEI;
+
+		/**
+		 * Constructor.
+		 * @param start first instruction
+		 * @param basicBlock the basic block to be constructed
+		 * @param jsrStack stack of most recently executed JSR instructions
+		 * @param handledPEI true if start is a PEI and we've already added its ETB
+		 */
 		public WorkListItem(InstructionHandle start, BasicBlock basicBlock,
 			LinkedList<InstructionHandle> jsrStack, boolean handledPEI) {
 			this.start = start;
@@ -85,26 +108,51 @@ public class BetterCFGBuilder implements CFGBuilder, EdgeTypes {
 	 * ---------------------------------------------------------------------- */
 
 	// Reasons for why a basic block was ended.
+
+	/** Basic block ends in a branch. */
 	private static final int BRANCH = 0;
+
+	/** Basic block ends in a control merge. */
 	private static final int MERGE = 1;
+
+	/** Basic block ends because its fall-through successor is a PEI. */
 	private static final int NEXT_IS_PEI = 2;
 
 	/* ----------------------------------------------------------------------
 	 * Data members
 	 * ---------------------------------------------------------------------- */
 
+	/** The MethodGen we're constructing the CFG for. */
 	private MethodGen methodGen;
+
+	/** The ConstantPoolGen for the method. */
 	private ConstantPoolGen cpg;
+
+	/** The CFG being constructed. */
 	private CFG cfg;
+
+	/** Work list representing basic blocks which need to be constructed. */
 	private LinkedList<WorkListItem> workList;
+
+	/** Map of start instructions to the basic block represented by the start instruction. */
 	private IdentityHashMap<InstructionHandle, BasicBlock> basicBlockMap;
+
+	/** Map of all instructions to the first basic block they were placed in.
+	    Note that because of a JSRs some instructions are in multiple basic blocks. */
 	private IdentityHashMap<InstructionHandle, BasicBlock> allHandlesToBasicBlockMap;
+
+	/** Object which allows us to conveniently find exception handlers for an instruction,
+	    and to find out which instructions are the start of exception handlers. */
 	private ExceptionHandlerMap exceptionHandlerMap;
 
 	/* ----------------------------------------------------------------------
 	 * Public methods
 	 * ---------------------------------------------------------------------- */
 
+	/**
+	 * Constructor.
+	 * @param methodGen the method to build the CFG for
+	 */
 	public BetterCFGBuilder(MethodGen methodGen) {
 		this.methodGen = methodGen;
 		this.cpg = methodGen.getConstantPool();
@@ -115,6 +163,9 @@ public class BetterCFGBuilder implements CFGBuilder, EdgeTypes {
 		this.exceptionHandlerMap = new ExceptionHandlerMap(methodGen);
 	}
 
+	/**
+	 * Build the CFG.
+	 */
 	public void build() {
 		BasicBlock startBlock = getBlock(methodGen.getInstructionList().getStart(), new LinkedList<InstructionHandle>());
 		addEdge(cfg.getEntry(), startBlock, START_EDGE);
@@ -287,6 +338,11 @@ public class BetterCFGBuilder implements CFGBuilder, EdgeTypes {
 		}
 	}
 	
+	/**
+	 * Get the CFG.
+	 * Assumes that the build() method has already been called.
+	 * @return the CFG
+	 */
 	public CFG getCFG() {
 		return cfg;
 	}
@@ -295,21 +351,56 @@ public class BetterCFGBuilder implements CFGBuilder, EdgeTypes {
 	 * Private methods
 	 * ---------------------------------------------------------------------- */
 
+	/**
+	 * Determine whether given instruction is a PEI. PEI means "potentially 
+	 * excepting instruction"; i.e., an instruction which might or might not
+	 * throw an exception.  Such instructions require special treatment in
+	 * the CFG because the exception generally means that the instruction did
+	 * not execute.  For some kinds of instructions (e.g., MONITORENTER),
+	 * whether or not the instruction executes is very important to dataflow
+	 * analysis, since it will affect whether or not the dataflow values
+	 * merge properly for exception handlers.
+	 *
+	 * <p> Note that somewhat counter-intuitively, the ATHROW instruction is
+	 * <em>not</em> a PEI.  This is because we treat it as though the exception
+	 * is thrown after the instruction executes.  (If we didn't, it would not
+	 * be possible for ATHROW to be in a reachable basic block.)
+	 *
+	 * @param handle the instruction
+	 * @return true if the instruction is a PEI, false otherwise
+	 */
 	private boolean isPEI(InstructionHandle handle) {
 		Instruction ins = handle.getInstruction();
-		//return (ins instanceof ExceptionThrower) && !(ins instanceof ATHROW);
+
 		if (!(ins instanceof ExceptionThrower))
 			return false;
 
 		if (ins instanceof ATHROW)
 			return false;
 
+		// Return instructions can throw exceptions only if the method is synchronized
 		if (ins instanceof ReturnInstruction && !methodGen.isSynchronized())
 			return false;
 
 		return true;
 	}
 
+	/**
+	 * Get the basic block for given start instruction.
+	 * <p> If no basic block exists for this start instruction, a basic block is
+	 * created and added to the work list.  Note that because of the way
+	 * PEIs are handled, the basic block for a PEI is actually an empty
+	 * basic block (an ETB, "exception throwing block") which is where
+	 * the exception edges are.  The PEI itself is in the fall-through successor
+	 * of the empty ETB.
+	 *
+	 * <p> If a basic block does already exist for the start instruction,
+	 * it is returned.
+	 *
+	 * @param start the start instruction for the basic block
+	 * @param jsrStack stack of the most recently executed JSR instructions
+	 * @return the basic block
+	 */
 	private BasicBlock getBlock(InstructionHandle start, LinkedList<InstructionHandle> jsrStack) {
 		BasicBlock basicBlock = basicBlockMap.get(start);
 		if (basicBlock == null) {
@@ -322,6 +413,12 @@ public class BetterCFGBuilder implements CFGBuilder, EdgeTypes {
 		return basicBlock;
 	}
 
+	/**
+	 * Add HANDLED_EXCEPTION edges for given basic block.
+	 * @param handle the execption-throwing instruction
+	 * @param sourceBlock the source basic block
+	 * @param jsrStack stack of most recently executed JSR instructions
+	 */
 	private void addExceptionEdges(InstructionHandle handle, BasicBlock sourceBlock, LinkedList<InstructionHandle> jsrStack) {
 		List<CodeExceptionGen> exceptionHandlerList = exceptionHandlerMap.getHandlerList(handle);
 		if (exceptionHandlerList == null)
@@ -335,12 +432,21 @@ public class BetterCFGBuilder implements CFGBuilder, EdgeTypes {
 		}
 	}
 
+	/**
+	 * Make a copy of given JSR stack.
+	 * These are modified, so they can't be shared between work list items.
+	 * @param jsrStack the JSR stack
+	 */
 	private LinkedList<InstructionHandle> cloneJsrStack(LinkedList<InstructionHandle> jsrStack) {
 		LinkedList<InstructionHandle> dup = new LinkedList<InstructionHandle>();
 		dup.addAll(jsrStack);
 		return dup;
 	}
 
+	/**
+	 * Determine whether or not given instruction is a control merge.
+	 * @return true if the instruction is a merge, false if not
+	 */
 	private boolean isMerge(InstructionHandle handle) {
 		if (handle.hasTargeters()) {
 			// Check all targeters of this handle to see if any
@@ -357,11 +463,21 @@ public class BetterCFGBuilder implements CFGBuilder, EdgeTypes {
 		return false;
 	}
 
+	/**
+	 * Add an edge to the CFG.
+	 * @param sourceBlock the source basic block
+	 * @param destBlock the destination basic block
+	 * @param edgeType the edge type (see {@link EdgeTypes EdgeTypes})
+	 */
 	private void addEdge(BasicBlock sourceBlock, BasicBlock destBlock, int edgeType) {
 		if (DEBUG) System.out.println("Add edge: " + sourceBlock.getId() + " -> " + destBlock.getId() + ": " + Edge.edgeTypeToString(edgeType));
 		cfg.addEdge(sourceBlock, destBlock, edgeType);
 	}
 
+	/**
+	 * Dump a basic block for debugging.
+	 * @param basicBlock the basic block
+	 */
 	private void dumpBlock(BasicBlock basicBlock) {
 		System.out.println("BLOCK " + basicBlock.getId());
 		Iterator<InstructionHandle> i = basicBlock.instructionIterator();
