@@ -39,8 +39,8 @@ public class Monitorenter extends OneVariableInstruction {
 		super(varName);
 	}
 
-	public BindingSet match(InstructionHandle handle, ValueNumberFrame frame, BindingSet bindingSet)
-		throws DataflowAnalysisException {
+	public BindingSet match(InstructionHandle handle, ConstantPoolGen cpg,
+		ValueNumberFrame before, ValueNumberFrame after, BindingSet bindingSet) throws DataflowAnalysisException {
 
 		// Instruction must be MONITORENTER.
 		Instruction ins = handle.getInstruction();
@@ -49,7 +49,7 @@ public class Monitorenter extends OneVariableInstruction {
 
 		// Ensure the object being locked matches any previous
 		// instructions which bound our variable name to a value.
-		Variable lock = new LocalVariable(frame.getTopValue());
+		Variable lock = new LocalVariable(before.getTopValue());
 		return addOrCheckDefinition(lock, bindingSet);
 	}
 }
