@@ -38,6 +38,8 @@ import javax.swing.filechooser.FileFilter;
 import javax.swing.text.*;
 import javax.swing.tree.*;
 import java.text.MessageFormat;
+import java.awt.event.KeyEvent;
+
 
 import edu.umd.cs.findbugs.*;
 import edu.umd.cs.findbugs.ba.SourceFinder;
@@ -2084,8 +2086,21 @@ public class FindBugsFrame extends javax.swing.JFrame {
 		ClassLoader classLoader = this.getClass().getClassLoader();
 		ImageIcon logoIcon = new ImageIcon(classLoader.getResource("edu/umd/cs/findbugs/gui/logo_umd.png"));
 		logoLabel.setIcon(logoIcon);
+
+		// Set common Menu Accelerators
+		newProjectItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, MENU_MASK));
+		openProjectItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, MENU_MASK));
+		saveProjectItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, MENU_MASK));
+		closeProjectItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_W, MENU_MASK));
+		reloadProjectItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, MENU_MASK));
 		
 		if (MAC_OS_X) {
+			// Some more accelerators that use modifiers. Other platforms
+			// tend not to use modifiers for menu accelerators
+			saveProjectAsItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, MENU_MASK | Event.SHIFT_MASK));
+			loadBugsItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, MENU_MASK | Event.ALT_MASK));
+			saveBugsItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, MENU_MASK | Event.ALT_MASK));
+
 			// Leave room for the growBox on Mac
 			growBoxSpacer.setMinimumSize(new java.awt.Dimension(16,16));
 
@@ -3211,6 +3226,9 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	private SourceLineAnnotation currentSourceLineAnnotation; // as above
 	private String currentBugDetailsKey;
 	private int priorityThreshold;
-	private final boolean MAC_OS_X = System.getProperty("os.name").toLowerCase().startsWith("mac os x");
+
+	// My constant declarations
+	private final static boolean MAC_OS_X = System.getProperty("os.name").toLowerCase().startsWith("mac os x");
+	private final static int MENU_MASK = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
 
 }
