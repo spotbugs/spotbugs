@@ -121,7 +121,7 @@ public class EclipseClasspath {
 		}
 	}
 
-	private static class Plugin {
+	private class Plugin {
 		private String directory;
 		private Document document;
 		private boolean isDependent;
@@ -164,7 +164,14 @@ public class EclipseClasspath {
 				String jarName = node.valueOf("@name");
 				if (jarName.equals(""))
 					throw new EclipseClasspathException("Could not get name of exported library");
-				exportedLibraryList.add(new File(directory, jarName).getPath());
+
+				jarName = replaceSpecial(jarName);
+				File jarFile = new File(jarName);
+				if (!jarFile.isAbsolute()) {
+					// Make relative to plugin directory
+					jarFile = new File(directory, jarName);
+				}
+				exportedLibraryList.add(jarFile.getPath());
 			}
 		}
 
@@ -195,12 +202,14 @@ public class EclipseClasspath {
 	private String eclipseDir;
 	private String rootPluginDir;
 	private Map<String, File> pluginDirectoryMap;
+	private Map<String, String> varMap;
 	private List<String> importList;
 
 	public EclipseClasspath(String eclipseDir, String rootPluginDir) {
 		this.eclipseDir = eclipseDir;
 		this.rootPluginDir = rootPluginDir;
 		this.pluginDirectoryMap = new HashMap<String, File>();
+		this.varMap = new HashMap<String, String>();
 	}
 
 	public void addRequiredPlugin(String pluginId, String pluginDir) {
@@ -236,10 +245,17 @@ public class EclipseClasspath {
 		if (dirList == null)
 			throw new EclipseClasspathException("Could not list plugins in directory " + pluginDir);
 		for (int i = 0; i < dirList.length; ++i) {
-			String pluginId = getPluginId(dirList[i].getName());
+			String dirName = dirList[i].getName();
+			String pluginId = getPluginId(dirName);
 			if (pluginId != null) {
 				//System.out.println(pluginId + " ==> " + dirList[i]);
 				pluginDirectoryMap.put(pluginId, dirList[i]);
+
+				// HACK - see if we can deduce the value of the special "ws" variable.
+				if (pluginId.startsWith("org.eclipse.swt.")) {
+					String ws = pluginId.substring("org.eclipse.swt.".length());
+					varMap.put("ws", new File(dirList[i] + File.separator + "ws" + File.separator + ws).getPath());
+				}
 			}
 		}
 
@@ -292,6 +308,25 @@ public class EclipseClasspath {
 		return importList.iterator();
 	}
 
+	public String getClasspath() {
+		if (importList == null) throw new IllegalStateException("execute() has not been called");
+
+		StringBuffer buf = new StringBuffer();
+		boolean first = true;
+
+		Iterator <String> i = importListIterator();
+		while (i.hasNext()) {
+			if (first)
+				first = false;
+			else
+				buf.append(File.pathSeparator);
+
+			buf.append(i.next());
+		}
+
+		return buf.toString();
+	}
+
 	/**
 	 * Get the plugin id for given directory name.
 	 * Returns null if the directory name does not seem to
@@ -300,6 +335,30 @@ public class EclipseClasspath {
 	private String getPluginId(String dirName) {
 		Matcher m = pluginDirPattern.matcher(dirName);
 		return m.matches() ? m.group(PLUGIN_ID_GROUP) : null;
+	}
+
+	/**
+	 * Expand variables of the form $varname$ in library names.
+	 * This is used to handle the "$ws" substitution used to refer to
+	 * the plugin containing swt.jar.
+	 */
+	private String replaceSpecial(String value) {
+		if (!varMap.isEmpty()) {
+			for (Iterator<String> i = varMap.keySet().iterator(); i.hasNext(); ) {
+				String key = i.next();
+				String replace = varMap.get(key);
+				Pattern pat = Pattern.compile("\\$" + key + "\\$");
+				Matcher m = pat.matcher(value);
+				StringBuffer buf = new StringBuffer();
+	
+				while (m.find())
+					m.appendReplacement(buf, replace);
+				m.appendTail(buf);
+	
+				value = buf.toString();
+			}
+		}
+		return value;
 	}
 
 	public static void main(String[] argv) throws Exception {
@@ -313,16 +372,8 @@ public class EclipseClasspath {
 		for (int i = 2; i < argv.length; i += 2) {
 			ec.addRequiredPlugin(argv[i], argv[i+1]);
 		}
-		boolean first = true;
-		Iterator <String> i = ec.execute().importListIterator();
-		while (i.hasNext()) {
-			if (first)
-				first = false;
-			else
-				System.out.print(File.pathSeparator);
-			System.out.print(i.next());
-		}
-		System.out.println();
+
+		System.out.println(ec.execute().getClasspath());
 	}
 }
 
