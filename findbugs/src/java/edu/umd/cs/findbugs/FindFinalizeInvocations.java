@@ -51,7 +51,8 @@ public class FindFinalizeInvocations extends BytecodeScanningDetector implements
 	if (seen == INVOKEVIRTUAL && nameConstant.equals("finalize"))
 		bugReporter.reportBug(new BugInstance("FI_EXPLICIT_INVOCATION", NORMAL_PRIORITY)
 			.addClassAndMethod(this)
-			.addCalledMethod(this));
+			.addCalledMethod(this).describe("METHOD_CALLED")
+			.addSourceLine(this, PC));
 	if (seen == INVOKESPECIAL && nameConstant.equals("finalize")) 
 		sawSuperFinalize = true;
 	}
