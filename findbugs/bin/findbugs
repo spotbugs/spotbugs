@@ -143,6 +143,11 @@ if [ `expr "$os" : CYGWIN` -ne 0 ]; then
     findbugs_home=`cygpath --mixed "$findbugs_home"`
 fi
 
+# extra JVM args for MacOSX:
+if [ $os = "Darwin" ]; then
+  jvmArgs="$jvmArgs -Xdock:name=FindBugs -Dapple.laf.useScreenMenuBar=true -Dcom.apple.macos.useScreenMenuBar=true"
+fi
+
 # Launch FindBugs!
 java $jvmArgs "-Dfindbugs.home=$findbugs_home" -jar "$findbugs_home/lib/$appJar" $argList
 
