@@ -44,9 +44,11 @@
 	<!-- Rebuild from scratch. -->
 	<target name="rebuild" depends="clean,build"/>
 
-	<!-- Compile Java source files. -->
+	<!-- Compile Java source files, and copy other files (properties,
+		images, html) that need to be part of the codebase. -->
 	<target name="classes">
 		<mkdir dir="${classes.dir}"/>
+		<!-- Compile Java source files. -->
 		<javac srcdir="${src.dir}"
 				destdir="${classes.dir}"
 				source="1.5"
@@ -54,6 +56,14 @@
 				debug="on">
 			<classpath refid="findbugs.classpath"/>
 		</javac>
+		<!-- Copy codebase data files. -->
+		<copy todir="${classes.dir}" overwrite="true">
+			<fileset dir="${src.dir}">
+				<include name="**/*.properties"/>
+				<include name="**/*.png"/>
+				<include name="**/*.html"/>
+			</fileset>
+		</copy>
 	</target>
 
 	<!-- Build jar files. -->
@@ -61,18 +71,12 @@
 		<!-- Main engine and command line jar file. -->
 		<jar destfile="${engine.jar}"
 				manifest="etc/MANIFEST-findbugs.MF">
-			<!-- Compiled classes. -->
+			<!-- Compiled classes, properties files. -->
 			<fileset dir="${classes.dir}">
 				<exclude name="${pkg.base}/tools/**"/>
 				<exclude name="${pkg.base}/gui/**"/>
 				<exclude name="${pkg.base}/detect/**"/>
 				<include name="**/*.class"/>
-			</fileset>
-			<!-- Properties files. -->
-			<fileset dir="${src.dir}">
-				<exclude name="${pkg.base}/tools/**"/>
-				<exclude name="${pkg.base}/gui/**"/>
-				<exclude name="${pkg.base}/detect/**"/>
 				<include name="**/*.properties"/>
 			</fileset>
 			<fileset dir="${etc.dir}">
@@ -87,7 +91,7 @@
 				<include name="messages*.xml"/>
 			</fileset>
 			<fileset dir="${classes.dir}">
-				<include name="${pkg.base}/detect/*"/>
+				<include name="${pkg.base}/detect/*.class"/>
 			</fileset>
 		</jar>
 		
@@ -96,8 +100,6 @@
 				manifest="etc/MANIFEST-findbugsGUI.MF">
 			<fileset dir="${classes.dir}">
 				<include name="${pkg.base}/gui/**/*.class"/>
-			</fileset>
-			<fileset dir="${src.dir}">
 				<include name="${pkg.base}/gui/**/*.properties"/>
 				<include name="${pkg.base}/gui/**/*.png"/>
 				<include name="${pkg.base}/gui/**/*.html"/>
