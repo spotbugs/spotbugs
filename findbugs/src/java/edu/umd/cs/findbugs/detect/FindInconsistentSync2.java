@@ -28,18 +28,14 @@ import java.util.*;
 
 public class FindInconsistentSync2 implements Detector {
 	private BugReporter bugReporter;
-	//private HashSet<Method> lockedNonpublicMethodSet;
 
 	public FindInconsistentSync2(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
-		//this.lockedNonpublicMethodSet = new HashSet<Method>();
 	}
 
 	public void visitClassContext(ClassContext classContext) {
-		//lockedNonpublicMethodSet.clear();
-
 		try {
-			findLockedNonpublicMethods(classContext);
+			Set<Method> lockedMethodSet = findLockedMethods(classContext);
 		} catch (CFGBuilderException e) {
 			throw new AnalysisException("FindInconsistentSync2 caught exception: " + e.toString(), e);
 		} catch (DataflowAnalysisException e) {
@@ -50,9 +46,13 @@ public class FindInconsistentSync2 implements Detector {
 	public void report() {
 	}
 
-	private void findLockedNonpublicMethods(ClassContext classContext)
+	private Set<Method> findLockedMethods(ClassContext classContext)
 		throws CFGBuilderException, DataflowAnalysisException {
 
+		JavaClass javaClass = classContext.getJavaClass();
+		Method[] methodList = javaClass.getMethods();
+
+		// Build self-call graph
 		SelfCalls selfCalls = new SelfCalls(classContext) {
 			public boolean wantCallsFor(Method method) {
 				return !method.isPublic();
@@ -60,25 +60,52 @@ public class FindInconsistentSync2 implements Detector {
 		};
 
 		selfCalls.execute();
+		CallGraph callGraph = selfCalls.getCallGraph();
 
+		// Find call edges that are obviously locked
 		Set<CallSite> obviouslyLockedSites = findObviouslyLockedCallSites(classContext, selfCalls);
 
-/*
-		JavaClass javaClass = classContext.getJavaClass();
+		// Initially, assume all methods are locked
+		Set<Method> lockedMethodSet = new HashSet<Method>();
+		lockedMethodSet.addAll(Arrays.asList(methodList));
 
-		Set<Method> finished = new HashSet<Method>();
-		Method[] methodList = javaClass.getMethods();
-
+		// Assume all public methods are unlocked
 		for (int i = 0; i < methodList.length; ++i) {
-			Method method = workList.removeLast();
-			if (!finished.contains(method)) {
-				if (allCallSitesLocked(selfCalls, method, finished)) {
-					lockedNonpublicMethodSet.add(method);
-				}
-				finished.add(method);
+			Method method = methodList[i];
+			if (method.isPublic()) {
+				lockedMethodSet.remove(method);
 			}
 		}
-*/
+
+		// Explore the self-call graph to find nonpublic methods
+		// that can be called from an unlocked context.
+		boolean change;
+		do {
+			change = false;
+
+			for (Iterator<CallGraphEdge> i = callGraph.edgeIterator(); i.hasNext(); ) {
+				CallGraphEdge edge = i.next();
+				CallSite callSite = edge.getCallSite();
+
+				// Ignore obviously locked edges
+				if (obviouslyLockedSites.contains(callSite))
+					continue;
+
+				// If the calling method is locked, ignore the edge
+				if (lockedMethodSet.contains(callSite.getMethod()))
+					continue;
+
+				// Calling method is unlocked, so the called method
+				// is also unlocked.
+				CallGraphNode target = edge.getTarget();
+				if (lockedMethodSet.remove(target.getMethod()))
+					change = true;
+			}
+		} while (change);
+
+		// We assume that any methods left in the locked set
+		// are called only from a locked context.
+		return lockedMethodSet;
 	}
 
 	private Set<CallSite> findObviouslyLockedCallSites(ClassContext classContext, SelfCalls selfCalls)
@@ -123,11 +150,6 @@ public class FindInconsistentSync2 implements Detector {
 
 		return obviouslyLockedSites;
 	}
-
-/*
-	private boolean allCallSitesLocked(SelfCalls selfCalls, Method method, Set<Method> finished) {
-	}
-*/
 }
 
 // vim:ts=4
