@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.detect;
 
 import java.util.*;
+import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.*;
 import org.apache.bcel.generic.*;
 import edu.umd.cs.daveho.ba.*;
@@ -48,12 +49,76 @@ public class FindOpenStream implements Detector {
 	}
 
 	/**
+	 * A visitor to model the effect of instructions on the status
+	 * of the resource.
+	 */
+	private static class StreamFrameModelingVisitor extends ResourceValueFrameModelingVisitor {
+		private Stream stream;
+
+		public StreamFrameModelingVisitor(ConstantPoolGen cpg, Stream stream) {
+			super(cpg);
+			this.stream = stream;
+		}
+
+		public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock) {
+			Instruction ins = handle.getInstruction();
+			ins.accept(this);
+
+			final ConstantPoolGen cpg = getCPG();
+			final ResourceValueFrame frame = getFrame();
+			final int numSlots = frame.getNumSlots();
+
+			Location creationPoint = stream.creationPoint;
+			if (handle == creationPoint.getHandle() && basicBlock == creationPoint.getBasicBlock()) {
+				// Resource creation
+				frame.setValue(numSlots - 1, ResourceValue.instance());
+				frame.setStatus(ResourceValueFrame.OPEN);
+			} else if (resourceTracker.isResourceClose(basicBlock, handle, cpg, stream)) {
+				// Resource closed
+				frame.setStatus(ResourceValueFrame.OPEN);
+			}
+
+		}
+	}
+
+	/**
 	 * Resource tracker which determines where streams are created,
 	 * and how they are used within the method.
 	 */
 	private static class StreamResourceTracker implements ResourceTracker<Stream> {
 		public Stream isResourceCreation(BasicBlock basicBlock, InstructionHandle handle, ConstantPoolGen cpg) {
-			return null;
+			Instruction ins = handle.getInstruction();
+			if (!(ins instanceof NEW))
+				return null;
+
+			NEW newIns = (NEW) ins;
+			Type type = newIns.getType(cpg);
+			String sig = type.getSignature();
+
+			// TODO: make this more general, to handle all input and output streams
+			if (sig.equals("Ljava/io/FileInputStream;"))
+				return new Stream(new Location(handle, basicBlock), "java.io.FileInputStream");
+			else
+				return null;
+		}
+
+		public boolean isResourceClose(BasicBlock basicBlock, InstructionHandle handle, ConstantPoolGen cpg, Stream resource) {
+			Instruction ins = handle.getInstruction();
+
+			if (ins instanceof INVOKEVIRTUAL) {
+				// Does this instruction close the stream?
+				INVOKEVIRTUAL inv = (INVOKEVIRTUAL) ins;
+
+				String className = inv.getClassName(cpg);
+				if (className.equals(resource.streamClass)) {
+					String methodName = inv.getName(cpg);
+					String methodSig = inv.getSignature(cpg);
+					if (methodName.equals("close") && methodSig.equals("()V"))
+						return true;
+				}
+			}
+
+			return false;
 		}
 
 		public ResourceValueFrameModelingVisitor createVisitor(Stream resource, ConstantPoolGen cpg) {
@@ -86,6 +151,10 @@ public class FindOpenStream implements Detector {
 			for (int i = 0; i < methodList.length; ++i) {
 				Method method = methodList[i];
 				if (method.isAbstract() || method.isNative())
+					continue;
+
+				BitSet bytecodeSet = classContext.getBytecodeSet(method);
+				if (!bytecodeSet.get(Constants.NEW))
 					continue;
 
 				MethodGen methodGen = classContext.getMethodGen(method);
