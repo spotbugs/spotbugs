@@ -40,7 +40,7 @@ import org.apache.bcel.generic.*;
  * CFGBuilder can be used to perform dataflow analysis on.  Assuming that the
  * Java source-to-bytecode compiler generated good code, all dataflow values
  * should merge successfully at control joins, including at exception handlers
- * (with the usual rule that the stack is cleared of all values exception for the
+ * (with the usual rule that the stack is cleared of all values except for the
  * thrown exception).
  *
  * <p> This CFGBuilder inlines JSR subroutines.  This is the simplest way
