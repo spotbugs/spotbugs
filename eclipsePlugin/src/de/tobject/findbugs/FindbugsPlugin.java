@@ -296,14 +296,40 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 	 * @param message message describing how/why the exception occurred
 	 */
 	public void logException(Exception e, String message) {
-		if (FindbugsPlugin.DEBUG) {
-			System.err.println("Exception in FindBugs plugin: " + message);
-			e.printStackTrace();
-		}
-		IStatus status = new Status(IStatus.ERROR, FindbugsPlugin.PLUGIN_ID, 0, message, e);
-		getLog().log(status);
+		logMessage(IStatus.ERROR, message, e);
+	}
+	
+	/**
+	 * Log an error.
+	 * 
+	 * @param message error message
+	 */
+	public void logError(String message) {
+		logMessage(IStatus.ERROR, message, null);
+	}
+	
+	/**
+	 * Log a warning.
+	 * 
+	 * @param message warning message
+	 */
+	public void logWarning(String message) {
+		logMessage(IStatus.WARNING, message, null);
 	}
 
+	private void logMessage(int severity, String message, Exception e) {
+		if (FindbugsPlugin.DEBUG) {
+			String what = (severity == IStatus.ERROR)
+				? (e != null ? "Exception" : "Error")
+				: "Warning";
+			System.err.println(what + " in FindBugs plugin: " + message);
+			if (e != null)
+				e.printStackTrace();
+		}
+		IStatus status = new Status(severity, FindbugsPlugin.PLUGIN_ID, 0, message, e);
+		getLog().log(status);
+	}
+	
 	/**
 	 * Get ProjectFilterSettings for given project.
 	 * If no settings exist yet, default settings are created.
