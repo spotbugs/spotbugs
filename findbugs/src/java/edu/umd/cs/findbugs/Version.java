@@ -41,6 +41,15 @@ public class Version {
 	/** Release date. */
 	public static final String DATE = "May 28, 2004";
 
+	/**
+	 * Version of Eclipse "core" plugin, which is just a repackaged
+	 * form of the main FindBugs application.  This is slightly
+	 * different than the RELEASE constant because Eclipse doesn't
+	 * like the "=" character in plugin versions.
+	 */
+	public static final String ECLIPSE_CORE_VERSION = MAJOR + "." + MINOR + "." +
+		PATCHLEVEL + (IS_DEVELOPMENT ? ".dev" : "");
+
 	/** Version of Eclipse UI plugin. */
 	public static final String ECLIPSE_UI_VERSION = "0.0.6";
 
@@ -66,6 +75,7 @@ public class Version {
 		else if (arg.equals("-props")) {
 			System.out.println("release.number="+RELEASE);
 			System.out.println("release.date="+DATE);
+			System.out.println("eclipse.core.version="+ECLIPSE_CORE_VERSION);
 			System.out.println("eclipse.ui.version="+ECLIPSE_UI_VERSION);
 			System.out.println("findbugs.website="+WEBSITE);
 			System.out.println("findbugs.downloads.website="+DOWNLOADS_WEBSITE);
