@@ -206,26 +206,22 @@
        </copy>
        <copy todir="${doc.dir}" overwrite="true">
          <fileset dir="${doc.src.dir}" excludes="**/*.png"/>
+         <!--
+           Perform substitutions on the documentation files.
+           This is how we ensure that things like version number,
+           release date, etc. are correct in the generated docs.
+           It also tells the doc formatting tools where to find
+           stylesheets and the like.
+         -->
          <filterset>
             <filter token="VERSION" value="${release.number}" />
             <filter token="RELEASE_DATE" value="${release.date}" />
-<!--
-            <filter token="HTML_DSSSL_STYLESHEET" value="${html.dsssl.stylesheet}" />
--->
             <filter token="HTML_XSL_STYLESHEET" value="${html.xsl.stylesheet}" />
         </filterset>  
        </copy>
 
        <!-- Format the manual as HTML. -->
        <mkdir dir="${doc.dir}/manual" />
-<!--
-       <exec dir="doc" executable="jade" failonerror="true" >
-          <arg value="-t" />
-          <arg value="sgml" />
-          <arg value="-d" />
-          <arg value="manual-html.dsl" />
-          <arg value="manual.sgml" />
--->
        <exec dir="doc" executable="java" failonerror="true" >
          <arg value="com.icl.saxon.StyleSheet" />
          <arg value="manual.xml" />
@@ -234,11 +230,15 @@
 
     </target>
 
-    <!-- Default target: just compile the code and format the docs. -->
-    <target name="build" depends="findbugs,coreplugin,findbugsgui,docs" />
+    <!-- Default target: just compile the code. -->
+    <target name="build" depends="findbugs,coreplugin,findbugsgui" />
 
-    <!-- Target to build the release. This just means copying generated files. -->
-    <target name="release" depends="build">
+    <!-- Compile the code and format the docs. -->
+    <target name="buildAll" depends="build,docs" />
+
+    <!-- Target to build the release. This just means copying generated files
+         (code and docs). -->
+    <target name="release" depends="buildAll">
        <copy todir="${release.dir}/findbugs-${release.number}/lib">
          <fileset dir="${jar.dir}" includes="**/*.jar"/>
        </copy>
