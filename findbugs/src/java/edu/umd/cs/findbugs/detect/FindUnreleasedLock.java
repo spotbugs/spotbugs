@@ -123,9 +123,9 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock> {
 			String methodSig = inv.getSignature(cpg);
 
 			try {
-				if (Repository.instanceOf(className, "java.util.concurrent.Lock") &&
-					methodName.equals("lock") &&
-					methodSig.equals("()V")) {
+				if (methodName.equals("lock") &&
+					methodSig.equals("()V") &&
+					Repository.instanceOf(className, "java.util.concurrent.Lock")) {
 
 					Location location = new Location(handle, basicBlock);
 					ValueNumberFrame frame = vnaDataflow.getFactAtLocation(location);
@@ -155,9 +155,9 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock> {
 				return false;
 
 			try {
-				if (Repository.instanceOf(className, "java.util.concurrent.Lock") &&
-					methodName.equals("unlock") &&
-					methodSig.equals("()V")) {
+				if (methodName.equals("unlock") &&
+					methodSig.equals("()V") &&
+					Repository.instanceOf(className, "java.util.concurrent.Lock")) {
 					return true;
 				}
 			} catch (ClassNotFoundException e) {

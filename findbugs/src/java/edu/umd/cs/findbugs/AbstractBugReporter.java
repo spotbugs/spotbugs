@@ -66,6 +66,9 @@ public abstract class AbstractBugReporter implements BugReporter {
 
 		String message = getMissingClassName(ex);
 
+		if (message.startsWith("["))
+			throw new IllegalStateException("Missing array class: " + message);
+
 		if (!missingClassMessageSet.contains(message)) {
 			missingClassMessageSet.add(message);
 			missingClassMessageList.add(message);

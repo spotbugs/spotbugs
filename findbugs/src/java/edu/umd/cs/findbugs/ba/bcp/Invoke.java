@@ -168,9 +168,9 @@ public class Invoke extends PatternElement {
 			return null;
 
 		// Check class name, method name, and method signature.
-		if (!classNameMatcher.match(inv.getClassName(cpg)) ||
-			!methodNameMatcher.match(methodName) ||
-			!methodSigMatcher.match(inv.getSignature(cpg)))
+		if (!methodNameMatcher.match(methodName) ||
+			!methodSigMatcher.match(inv.getSignature(cpg)) ||
+			!classNameMatcher.match(inv.getClassName(cpg)))
 			return null;
 
 		// It's a match!

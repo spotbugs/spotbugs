@@ -44,6 +44,11 @@ public class AnalysisRun {
      */
     private class Reporter extends AbstractBugReporter {
         private SortedBugCollection bugCollection = new SortedBugCollection();
+
+	public void logError(String message) {
+	    frame.getLogger().logMessage(ConsoleLogger.WARNING, message);
+	    super.logError(message);
+	}
         
         public void finish() { }
         
