@@ -368,6 +368,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
         openProjectItem = new javax.swing.JMenuItem();
         saveProjectItem = new javax.swing.JMenuItem();
         saveProjectAsItem = new javax.swing.JMenuItem();
+        reloadProjectItem = new javax.swing.JMenuItem();
         closeProjectItem = new javax.swing.JMenuItem();
         jSeparator3 = new javax.swing.JSeparator();
         exitItem = new javax.swing.JMenuItem();
@@ -848,6 +849,17 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
         fileMenu.add(saveProjectAsItem);
 
+        reloadProjectItem.setFont(new java.awt.Font("Dialog", 0, 12));
+        reloadProjectItem.setMnemonic('R');
+        reloadProjectItem.setText("Reload Project");
+        reloadProjectItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                reloadProjectItemActionPerformed(evt);
+            }
+        });
+
+        fileMenu.add(reloadProjectItem);
+
         closeProjectItem.setFont(new java.awt.Font("Dialog", 0, 12));
         closeProjectItem.setMnemonic('C');
         closeProjectItem.setText("Close Project");
@@ -945,6 +957,27 @@ public class FindBugsFrame extends javax.swing.JFrame {
         pack();
     }//GEN-END:initComponents
 
+    private void reloadProjectItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_reloadProjectItemActionPerformed
+        Project current = getCurrentProject();
+
+        if ( current == null )
+            return;
+        
+        try {
+            String filename = current.getFileName();
+            File file = new File( filename );
+            Project project = new Project(file.getPath());
+            FileInputStream in = new FileInputStream(file);
+            project.read(in);
+            setProject( null );
+            currentProject = project;
+            findBugsButtonActionPerformed( evt );
+        } catch (IOException e) {
+            logger.logMessage(ConsoleLogger.ERROR, "Could not reload project: " + e.getMessage());
+        }
+
+    }//GEN-LAST:event_reloadProjectItemActionPerformed
+
     private void saveProjectAsItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveProjectAsItemActionPerformed
         saveProject(getCurrentProject(), "Save project as", true);
     }//GEN-LAST:event_saveProjectAsItemActionPerformed
@@ -962,6 +995,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
         boolean hasProject = getCurrentProject() != null;
         saveProjectItem.setEnabled(hasProject);
         saveProjectAsItem.setEnabled(hasProject);
+	reloadProjectItem.setEnabled(hasProject);
         closeProjectItem.setEnabled(hasProject);
     }//GEN-LAST:event_fileMenuMenuSelected
     
@@ -1986,6 +2020,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
     private javax.swing.JTextField jarNameTextField;
     private javax.swing.JMenuItem newProjectItem;
     private javax.swing.JMenuItem openProjectItem;
+    private javax.swing.JMenuItem reloadProjectItem;
     private javax.swing.JButton removeClasspathEntryButton;
     private javax.swing.JButton removeJarButton;
     private javax.swing.JButton removeSrcDirButton;
