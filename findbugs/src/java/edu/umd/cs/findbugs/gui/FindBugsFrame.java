@@ -549,7 +549,6 @@ public class FindBugsFrame extends javax.swing.JFrame {
         copyItem = new javax.swing.JMenuItem();
         pasteItem = new javax.swing.JMenuItem();
         jSeparator10 = new javax.swing.JSeparator();
-        clearItem = new javax.swing.JMenuItem();
         selectAllItem = new javax.swing.JMenuItem();
         viewMenu = new javax.swing.JMenu();
         viewConsoleItem = new javax.swing.JCheckBoxMenuItem();
@@ -1367,15 +1366,16 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
             editMenu.add(jSeparator10);
 
-            clearItem.setFont(new java.awt.Font("Dialog", 0, 12));
-            clearItem.setText("Clear");
-            localiseButton(clearItem, "menu.clear_item", "Clear", true);
-            editMenu.add(clearItem);
-
             selectAllItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_A, java.awt.event.InputEvent.CTRL_MASK));
             selectAllItem.setFont(new java.awt.Font("Dialog", 0, 12));
             selectAllItem.setText("Select All");
             localiseButton(selectAllItem, "menu.selectall_item", "Select &All", true);
+            selectAllItem.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    selectAllActionPerformed(evt);
+                }
+            });
+
             editMenu.add(selectAllItem);
 
             theMenuBar.add(editMenu);
@@ -1531,6 +1531,18 @@ public class FindBugsFrame extends javax.swing.JFrame {
             pack();
         }//GEN-END:initComponents
 
+    private void selectAllActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectAllActionPerformed
+        if (selectedComponent == null)
+            return;
+        
+        if (selectedComponent instanceof JTextComponent)
+            ((JTextComponent)selectedComponent).selectAll();
+        else if (selectedComponent instanceof JList) {
+            JList list = (JList)selectedComponent;
+            list.setSelectionInterval(0, list.getModel().getSize());
+        }
+    }//GEN-LAST:event_selectAllActionPerformed
+
     private void disableEditKeyBindings(JList list) {
         list.getInputMap().put(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_X, java.awt.event.InputEvent.CTRL_MASK), "none");
         list.getInputMap().put(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_C, java.awt.event.InputEvent.CTRL_MASK), "none");
@@ -1555,8 +1567,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
         if (selectedComponent == null)
             return;
         
-        if (selectedComponent instanceof JTextField)
-            ((JTextField)selectedComponent).paste();
+        if (selectedComponent instanceof JTextComponent)
+            ((JTextComponent)selectedComponent).paste();
         else if (selectedComponent instanceof JList) {
             Clipboard cb = Toolkit.getDefaultToolkit().getSystemClipboard();
             Transferable transfer = cb.getContents(this);
@@ -1586,8 +1598,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
         if (selectedComponent == null)
             return;
         
-        if (selectedComponent instanceof JTextField)
-            ((JTextField)selectedComponent).cut();
+        if (selectedComponent instanceof JTextComponent)
+            ((JTextComponent)selectedComponent).cut();
         else if (selectedComponent instanceof JList) {
             StringSelection path = new StringSelection(buildSelectPath((JList)selectedComponent));
             Clipboard cb = Toolkit.getDefaultToolkit().getSystemClipboard();
@@ -1599,8 +1611,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
         if (selectedComponent == null)
             return;
         
-        if (selectedComponent instanceof JTextField)
-            ((JTextField)selectedComponent).cut();
+        if (selectedComponent instanceof JTextComponent)
+            ((JTextComponent)selectedComponent).cut();
         else if (selectedComponent instanceof JList) {
             StringSelection path = new StringSelection(buildSelectPath((JList)selectedComponent));
             Clipboard cb = Toolkit.getDefaultToolkit().getSystemClipboard();
@@ -2490,7 +2502,6 @@ public class FindBugsFrame extends javax.swing.JFrame {
                                     
                     cutItem.setEnabled(hasSelection);
                     copyItem.setEnabled(hasSelection);   
-                    clearItem.setEnabled(true);
                     selectAllItem.setEnabled(true);                  
                 }
 //            } else if (view.equals("BugTree")) {           
@@ -2500,7 +2511,6 @@ public class FindBugsFrame extends javax.swing.JFrame {
                 cutItem.setEnabled(false);
                 copyItem.setEnabled(false);
                 pasteItem.setEnabled(false);
-                clearItem.setEnabled(false);
                 selectAllItem.setEnabled(false);
             }            
         }
@@ -3393,7 +3403,6 @@ public class FindBugsFrame extends javax.swing.JFrame {
     private javax.swing.JScrollPane classpathEntryListScrollPane;
     private javax.swing.JTextField classpathEntryTextField;
     private javax.swing.JButton classpathUpButton;
-    private javax.swing.JMenuItem clearItem;
     private javax.swing.JMenuItem closeProjectItem;
     private javax.swing.JMenuItem configureDetectorsItem;
     private javax.swing.JTextArea consoleMessageArea;

@@ -233,17 +233,6 @@
             </MenuItem>
             <MenuItem class="javax.swing.JSeparator" name="jSeparator10">
             </MenuItem>
-            <MenuItem class="javax.swing.JMenuItem" name="clearItem">
-              <Properties>
-                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                  <Font name="Dialog" size="12" style="0"/>
-                </Property>
-                <Property name="text" type="java.lang.String" value="Clear"/>
-              </Properties>
-              <AuxValues>
-                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="localiseButton(clearItem, &quot;menu.clear_item&quot;, &quot;Clear&quot;, true);"/>
-              </AuxValues>
-            </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="selectAllItem">
               <Properties>
                 <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
@@ -254,6 +243,9 @@
                 </Property>
                 <Property name="text" type="java.lang.String" value="Select All"/>
               </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="selectAllActionPerformed"/>
+              </Events>
               <AuxValues>
                 <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="localiseButton(selectAllItem, &quot;menu.selectall_item&quot;, &quot;Select &amp;All&quot;, true);"/>
               </AuxValues>
