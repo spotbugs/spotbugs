@@ -83,7 +83,7 @@ public class BCPMethodReturnCheck extends ByteCodePatternDetector {
 					Invoke.INSTANCE, lookupFailureCallback),
 				new Invoke("java.math.BigInteger", "/.*", "/.*", 
 					Invoke.INSTANCE, lookupFailureCallback),
-			}).label("call"))
+			}).label("call").setMatchExceptionEdges(false))
 			.add(new MatchAny(new PatternElement[] {new Opcode(Constants.POP), new Opcode(Constants.POP2)}));
 	}
 
