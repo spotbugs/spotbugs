@@ -300,9 +300,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
         sourceDirListScrollPane = new javax.swing.JScrollPane();
         sourceDirList = new javax.swing.JList();
         bugTreePanel = new javax.swing.JPanel();
-        groupByChooser = new javax.swing.JComboBox();
-        groupByLabel = new javax.swing.JLabel();
         bugTreeBugDetailsSplitter = new javax.swing.JSplitPane();
+        groupByTabbedPane = new javax.swing.JTabbedPane();
         bugTreeScrollPane = new javax.swing.JScrollPane();
         bugTree = new javax.swing.JTree();
         bugDetailsTabbedPane = new javax.swing.JTabbedPane();
@@ -586,27 +585,6 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
         bugTreePanel.setLayout(new java.awt.GridBagLayout());
 
-        groupByChooser.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                groupByChooserActionPerformed(evt);
-            }
-        });
-
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        bugTreePanel.add(groupByChooser, gridBagConstraints);
-
-        groupByLabel.setFont(new java.awt.Font("Dialog", 0, 12));
-        groupByLabel.setText("Group:");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-        gridBagConstraints.insets = new java.awt.Insets(3, 3, 3, 0);
-        bugTreePanel.add(groupByLabel, gridBagConstraints);
-
         bugTreeBugDetailsSplitter.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
         bugTreeBugDetailsSplitter.setResizeWeight(1.0);
         bugTreeBugDetailsSplitter.setOneTouchExpandable(true);
@@ -618,7 +596,9 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
         bugTreeScrollPane.setViewportView(bugTree);
 
-        bugTreeBugDetailsSplitter.setLeftComponent(bugTreeScrollPane);
+        groupByTabbedPane.addTab("By Class", bugTreeScrollPane);
+
+        bugTreeBugDetailsSplitter.setTopComponent(groupByTabbedPane);
 
         bugDescriptionEditorPane.setEditable(false);
         bugDescriptionScrollPane.setViewportView(bugDescriptionEditorPane);
@@ -633,7 +613,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
         bugDetailsTabbedPane.addTab("Source code", sourceTextAreaScrollPane);
 
-        bugTreeBugDetailsSplitter.setRightComponent(bugDetailsTabbedPane);
+        bugTreeBugDetailsSplitter.setBottomComponent(bugDetailsTabbedPane);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -894,13 +874,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	    consoleSplitter.setDividerLocation(1.0);
 	}
     }//GEN-LAST:event_viewConsoleItemActionPerformed
-    
-    private void groupByChooserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_groupByChooserActionPerformed
-	String selection = groupByChooser.getSelectedItem().toString();
-	if (selection != null && currentAnalysisRun != null)
-	    populateAnalysisRunTreeModel(currentAnalysisRun, selection);
-    }//GEN-LAST:event_groupByChooserActionPerformed
-    
+        
     private void findBugsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_findBugsButtonActionPerformed
 	Project project = getCurrentProject();
 	AnalysisRun analysisRun = new AnalysisRun(project, logger);
@@ -1041,9 +1015,9 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	jarFileList.setModel(new DefaultListModel());
 	sourceDirList.setModel(new DefaultListModel());
 	
-	groupByChooser.addItem(GROUP_BY_CLASS);
-	groupByChooser.addItem(GROUP_BY_PACKAGE);
-	groupByChooser.addItem(GROUP_BY_BUG_TYPE);
+//	groupByChooser.addItem(GROUP_BY_CLASS);
+//	groupByChooser.addItem(GROUP_BY_PACKAGE);
+//	groupByChooser.addItem(GROUP_BY_BUG_TYPE);
 	
         // We use a special highlight painter to ensure that the highlights cover
         // complete source lines, even though the source text doesn't
@@ -1209,7 +1183,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	}
 	
 	// Make sure that the sort order is correct.
-	String currentSortOrder = groupByChooser.getSelectedItem().toString();
+	//String currentSortOrder = groupByChooser.getSelectedItem().toString();
+        String currentSortOrder = GROUP_BY_CLASS;
 	if (!analysisRun.getSortOrder().equals(currentSortOrder)) {
 	    populateAnalysisRunTreeModel(analysisRun, currentSortOrder);
 	}
@@ -1574,7 +1549,6 @@ public class FindBugsFrame extends javax.swing.JFrame {
     private javax.swing.JMenuItem aboutItem;
     private javax.swing.JButton addSourceDirButton;
     private javax.swing.JMenuBar theMenuBar;
-    private javax.swing.JComboBox groupByChooser;
     private javax.swing.JButton removeJarButton;
     private javax.swing.JButton addJarButton;
     private javax.swing.JScrollPane sourceTextAreaScrollPane;
@@ -1583,12 +1557,12 @@ public class FindBugsFrame extends javax.swing.JFrame {
     private javax.swing.JSplitPane bugTreeBugDetailsSplitter;
     private javax.swing.JEditorPane bugDescriptionEditorPane;
     private javax.swing.JTabbedPane bugDetailsTabbedPane;
+    private javax.swing.JTabbedPane groupByTabbedPane;
     private javax.swing.JPanel emptyPanel;
     private javax.swing.JTextArea consoleMessageArea;
     private javax.swing.JSeparator jSeparator3;
     private javax.swing.JTree bugTree;
     private javax.swing.JScrollPane jarFileListScrollPane;
-    private javax.swing.JLabel groupByLabel;
     private javax.swing.JCheckBoxMenuItem viewConsoleItem;
     private javax.swing.JMenuItem closeProjectItem;
     private javax.swing.JCheckBoxMenuItem viewBugDetailsItem;
