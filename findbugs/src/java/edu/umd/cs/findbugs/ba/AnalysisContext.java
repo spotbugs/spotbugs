@@ -19,8 +19,11 @@
 
 package edu.umd.cs.findbugs.ba;
 
+/*
+// Not yet
 import edu.umd.cs.findbugs.ba.type.BCELRepositoryClassResolver;
 import edu.umd.cs.findbugs.ba.type.TypeRepository;
+*/
 
 import java.util.List;
 import java.util.LinkedHashMap;
@@ -37,7 +40,10 @@ public class AnalysisContext implements AnalysisFeatures {
 	private RepositoryLookupFailureCallback lookupFailureCallback;
 	private SourceFinder sourceFinder;
 	private ClassContextCache classContextCache;
+/*
+	// Not yet
 	private TypeRepository typeRepository;
+*/
 
 	/**
 	 * The maximum number of ClassContext objects to cache.
@@ -57,8 +63,11 @@ public class AnalysisContext implements AnalysisFeatures {
 		this.lookupFailureCallback = lookupFailureCallback;
 		this.sourceFinder = new SourceFinder();
 		this.classContextCache = new ClassContextCache();
+/*
+		// Not yet
 		// FIXME: eventually change to not use BCEL global repository
 		this.typeRepository = new TypeRepository(new BCELRepositoryClassResolver());
+*/
 	}
 
 	/**
