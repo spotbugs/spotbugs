@@ -30,15 +30,15 @@ import java.util.*;
 public class I18N {
 
 	private final ResourceBundle annotationDescriptionBundle;
+	private final ResourceBundle bugCategoryDescriptionBundle;
 	private final HashMap<String, BugPattern> bugPatternMap;
 	private final HashMap<String, BugCode> bugCodeMap;
-	private final HashMap<String, String> bugCategoryMap;
 
 	private I18N() {
 		annotationDescriptionBundle = ResourceBundle.getBundle("edu.umd.cs.findbugs.FindBugsAnnotationDescriptions");
+		bugCategoryDescriptionBundle = ResourceBundle.getBundle("edu.umd.cs.findbugs.BugCategoryDescriptions");
 		bugPatternMap = new HashMap<String, BugPattern>();
 		bugCodeMap = new HashMap<String, BugCode>();
-		bugCategoryMap = new HashMap<String, String>();
 	}
 
 	private static final I18N theInstance = new I18N();
@@ -80,15 +80,6 @@ public class I18N {
 	 */
 	public void registerBugCode(BugCode bugCode) {
 		bugCodeMap.put(bugCode.getAbbrev(), bugCode);
-	}
-
-	/**
-	 * Register the description of a bug category.
-	 * @param category the category
-	 * @param description the description of the category
-	 */
-	public void registerBugCategory(String category, String description) {
-		bugCategoryMap.put(category, description);
 	}
 
 	/**
@@ -161,8 +152,7 @@ public class I18N {
 	 * @return the description of the category
 	 */
 	public String getBugCategoryDescription(String category) {
-		String description = bugCategoryMap.get(category);
-		return description != null ? description : category;
+		return bugCategoryDescriptionBundle.getString(category);
 	}
 
 }

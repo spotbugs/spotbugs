@@ -157,13 +157,6 @@ public class DetectorFactoryCollection {
 				BugCode[] bugCodeList = pluginLoader.getBugCodeList();
 				for (int j = 0; j < bugCodeList.length; ++j)
 					i18n.registerBugCode(bugCodeList[j]);
-
-				// Register the BugCategory descriptions
-				Map<String, String> bugCategoryMap = pluginLoader.getBugCategoryMap();
-				for (Iterator<Map.Entry<String,String>> j = bugCategoryMap.entrySet().iterator(); j.hasNext(); ) {
-					Map.Entry<String, String> entry = j.next();
-					i18n.registerBugCategory(entry.getKey(), entry.getValue());
-				}
 	
 				++numLoaded;
 			} catch (Exception e) {

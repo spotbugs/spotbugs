@@ -1630,14 +1630,4 @@ removed.
   <BugCode abbrev="JLM">Synchronization on JSR166 Lock</BugCode>
   <BugCode abbrev="UPM">Private method is never called</BugCode>
 
-  <!--
-  **********************************************************************
-  BugCategory elements
-  **********************************************************************
-  -->
-  <BugCategory category="CORRECTNESS">Correctness</BugCategory>
-  <BugCategory category="MT_CORRECTNESS">Multithreaded correctness</BugCategory>
-  <BugCategory category="PERFORMANCE">Performance</BugCategory>
-  <BugCategory category="MALICIOUS_CODE">Malicious code vulnerability</BugCategory>
-
 </MessageCollection>
