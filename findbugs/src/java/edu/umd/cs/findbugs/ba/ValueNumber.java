@@ -37,8 +37,10 @@ import java.util.*;
  *      not "interesting".
  * </ul>
  *
- * <p> Instances of ValueNumbers are unique, so reference equality may
+ * <p> Instances of ValueNumbers produced by the same
+ * {@link ValueNumberFactory ValueNumberFactory} are unique, so reference equality may
  * be used to determine whether or not two value numbers are the same.
+ * In general, ValueNumbers from different factories cannot be compared.
  *
  * @author David Hovemeyer
  */
@@ -59,53 +61,18 @@ public class ValueNumber {
 	 * Constructor.
 	 * @param number the value number
 	 */
-	private ValueNumber(int number) {
+	ValueNumber(int number) {
 		this.number = number;
 	}
 
 	/** Single instance of the special TOP value. */
-	private static final ValueNumber topValue = new ValueNumber(TOP);
+	static final ValueNumber topValue = new ValueNumber(TOP);
 
 	/** Single instance of the special BOTTOM value. */
-	private static final ValueNumber bottomValue = new ValueNumber(BOTTOM);
+	static final ValueNumber bottomValue = new ValueNumber(BOTTOM);
 
 	/** Single instance of the special DEFAULT value. */
-	private static final ValueNumber defaultValue = new ValueNumber(DEFAULT);
-
-	/** Return the instance of the special TOP value. */
-	public static ValueNumber topValue() { return topValue; }
-
-	/** Return the instance of the special BOTTOM value. */
-	public static ValueNumber bottomValue() { return bottomValue; }
-
-	/** Return the instance of the special default value. */
-	public static ValueNumber defaultValue() { return defaultValue; }
-
-	/** Lock to protect the instance map. */
-	private static final Object lock = new Object();
-
-	/** Map of numbers to the ValueNumber instances. */
-	private static final HashMap<Integer, ValueNumber> instanceMap = new HashMap<Integer, ValueNumber>();
-
-	/**
-	 * Get the ValueNumber instance for given number.
-	 * The number must be non-negative.
-	 * @param number the number
-	 * @return the ValueNumber instance
-	 */
-	public static ValueNumber getValueNumber(int number) {
-		if (number < 0)
-			throw new IllegalArgumentException("Bad value number: " + number);
-		synchronized (lock) {
-			Integer key = new Integer(number);
-			ValueNumber valueNumber = instanceMap.get(key);
-			if (valueNumber == null) {
-				valueNumber = new ValueNumber(number);
-				instanceMap.put(key, valueNumber);
-			}
-			return valueNumber;
-		}
-	}
+	static final ValueNumber defaultValue = new ValueNumber(DEFAULT);
 
 	/**
 	 * Dataflow merge of this ValueNumber with given ValueNumber.
