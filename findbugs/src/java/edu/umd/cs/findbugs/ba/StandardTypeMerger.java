@@ -50,7 +50,7 @@ public class StandardTypeMerger implements TypeMerger, Constants, ExtendedTypes 
 			return a;
 		else if (aType == T_BOTTOM || bType == T_BOTTOM)	// Bottom meet anything is bottom
 			return TypeFrame.getBottomType();
-		else if (isObjectType(aType) && isObjectType(bType)) {	// Two object types!
+		else if (isReferenceType(aType) && isReferenceType(bType)) {	// Two object types!
 			// Handle the Null type, which serves as a special "top"
 			// value for object types.
 			if (aType == T_NULL)
@@ -61,7 +61,7 @@ public class StandardTypeMerger implements TypeMerger, Constants, ExtendedTypes 
 			ReferenceType aRef = (ReferenceType) a;
 			ReferenceType bRef = (ReferenceType) b;
 			return mergeReferenceTypes(aRef, bRef);
-		} else if (isObjectType(aType) || isObjectType(bType))	// Object meet non-object is bottom
+		} else if (isReferenceType(aType) || isReferenceType(bType))	// Object meet non-object is bottom
 			return TypeFrame.getBottomType();
 		else if (aType == bType)	// Same non-object type?
 			return a;
@@ -77,7 +77,7 @@ public class StandardTypeMerger implements TypeMerger, Constants, ExtendedTypes 
 	 * or T_NULL.  Subclasses should override this if they have defined new
 	 * object types with different type codes.
 	 */
-	protected boolean isObjectType(byte type) {
+	protected boolean isReferenceType(byte type) {
 		return type == T_OBJECT || type == T_NULL;
 	}
 

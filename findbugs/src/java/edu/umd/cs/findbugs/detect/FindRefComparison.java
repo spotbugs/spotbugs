@@ -150,8 +150,8 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 			super(lookupFailureCallback);
 		}
 
-		protected boolean isObjectType(byte type) {
-			return super.isObjectType(type) || type == T_STATIC_STRING || type == T_DYNAMIC_STRING;
+		protected boolean isReferenceType(byte type) {
+			return super.isReferenceType(type) || type == T_STATIC_STRING || type == T_DYNAMIC_STRING;
 		}
 
 		protected Type mergeReferenceTypes(ReferenceType aRef, ReferenceType bRef) throws DataflowAnalysisException {
