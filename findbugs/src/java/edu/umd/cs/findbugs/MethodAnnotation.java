@@ -1,5 +1,8 @@
 package edu.umd.cs.findbugs;
 
+import edu.umd.cs.pugh.visitclass.BetterVisitor;
+import edu.umd.cs.pugh.visitclass.DismantleBytecode;
+
 /**
  * A BugAnnotation specifying a particular method in a particular class.
  *
@@ -24,6 +27,18 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 		fullMethod = null;
 	}
 
+	/**
+	 * Constructor.
+	 * The method annotation is initialized using the method the given
+	 * visitor is currently visiting.
+	 * @param visitor the BetterVisitor
+	 */
+	public MethodAnnotation(BetterVisitor visitor) {
+		super(visitor.getBetterClassName());
+		this.methodName = visitor.getMethodName();
+		this.methodSig = visitor.getMethodSig();
+	}
+
 	/** Get the method name. */
 	public String getMethodName() { return methodName; }
 
@@ -37,6 +52,8 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 	protected String formatPackageMember(String key) {
 		if (key.equals(""))
 			return getFullMethod();
+		else if (key.equals("shortMethod"))
+			return className + "." + methodName + "()";
 		else
 			throw new IllegalArgumentException("unknown key " + key);
 	}
