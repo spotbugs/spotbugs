@@ -27,3 +27,13 @@ class Utils
 		return 3;
 	}
 }
+
+class TypeSafeEnum
+{
+	public static TypeSafeEnum ONE = new TypeSafeEnum();
+	public static TypeSafeEnum TWO = new TypeSafeEnum();
+	
+	private TypeSafeEnum()
+	{
+	}
+}

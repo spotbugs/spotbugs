@@ -56,6 +56,10 @@ public class InstantiateStaticClass extends BytecodeScanningDetector implements 
 				if (getMethodName().equals("<init>") && (getPC() == 1))
 					return;
 				
+				//ignore the typesafe enumerated constant pattern
+				if (getMethodName().equals("<clinit>") && (getClassName().equals(clsName)))
+					return;
+				
 				Boolean b = isStaticClass.get(clsName);
 				if (b == null) {
 					b = Boolean.valueOf(isStaticOnlyClass(clsName));
