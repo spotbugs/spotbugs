@@ -19,9 +19,15 @@
 
 package edu.umd.cs.findbugs;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
+
+import java.nio.charset.Charset;
+
 import java.util.*;
 
 /**
@@ -96,6 +102,47 @@ public abstract class CommandLine {
 		int width = option.length() + 3 + argumentDesc.length();
 		if (width > maxWidth)
 			maxWidth = width;
+	}
+
+	/**
+	 * Expand option files in given command line.
+	 * Any token beginning with "@" is assumed to be an option file.
+	 * Option files contain one command line option per line.
+	 *
+	 * @param argv the original command line
+	 * @return the expanded command line
+	 */
+	public static String[] expandOptionFiles(String[] argv) throws IOException {
+		ArrayList<String> resultList = new ArrayList<String>();
+
+		for (int i = 0; i < argv.length; ++i) {
+			String arg = argv[i];
+			if (!arg.startsWith("@")) {
+				resultList.add(arg);
+				continue;
+			}
+
+			BufferedReader reader = null;
+			try {
+				reader = new BufferedReader(new InputStreamReader(
+					new FileInputStream(arg.substring(1)), Charset.forName("UTF-8")));
+				String line;
+				while ((line = reader.readLine()) != null) {
+					line = line.trim();
+					resultList.add(line);
+				}
+			} finally {
+				if (reader != null) {
+					try {
+						reader.close();
+					} catch (IOException ignore) {
+						// Ignore
+					}
+				}
+			}
+		}
+
+		return resultList.toArray(new String[resultList.size()]);
 	}
 
 	/**
@@ -189,6 +236,7 @@ public abstract class CommandLine {
 
 			out.println(optionDescriptionMap.get(option));
 		}
+		out.flush();
 	}
 
 	private static final String SPACES = "                    ";
