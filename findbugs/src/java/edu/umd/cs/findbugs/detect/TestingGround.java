@@ -85,7 +85,15 @@ public class TestingGround extends BytecodeScanningDetector implements Constants
 				System.out.print("   " + c);
 		} else if ((seen == ALOAD) || (seen == ASTORE))
 			System.out.print("   " + getRegisterOperand());
-		else if ((seen == GOTO) || (seen == GOTO_W))
+		else if ((seen == GOTO) || (seen == GOTO_W)
+		||       (seen == IF_ACMPEQ) || (seen == IF_ACMPNE)
+		||       (seen == IF_ICMPEQ) || (seen == IF_ICMPGE)
+		||       (seen == IF_ICMPGT) || (seen == IF_ICMPLE)
+		||       (seen == IF_ICMPLT) || (seen == IF_ICMPNE)
+		||       (seen == IFEQ) 	|| (seen == IFGE)
+		||       (seen == IFGT) 	|| (seen == IFLE)
+		||       (seen == IFLT) 	|| (seen == IFNE)
+		||       (seen == IFNONNULL) || (seen == IFNULL))
 			System.out.print("   " + getBranchTarget());
 		else if ((seen == NEW) || (seen == INSTANCEOF))
 			System.out.print("   " + getClassConstantOperand());
