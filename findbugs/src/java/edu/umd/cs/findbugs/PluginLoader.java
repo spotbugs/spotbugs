@@ -198,12 +198,12 @@ public class PluginLoader extends URLClassLoader {
 				String detectorInEarlierPass = detectorNode.valueOf("@afterpass");
 				if (!detectorInEarlierPass.equals(""))
 					plugin.addInterPassOrderingConstraint(
-						new DetectorOrderingConstraint(className, detectorInEarlierPass)
+						new DetectorOrderingConstraint(detectorInEarlierPass, className)
 						);
 				String detectorEarlierInSamePass = detectorNode.valueOf("@after");
 				if (!detectorEarlierInSamePass.equals(""))
 					plugin.addIntraPassOrderingConstraint(
-						new DetectorOrderingConstraint(className, detectorEarlierInSamePass)
+						new DetectorOrderingConstraint(detectorEarlierInSamePass, className)
 						);
 
 				// Find Detector node in one of the messages files,
