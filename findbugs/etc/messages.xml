@@ -272,6 +272,16 @@ occur.  Is is a moderately fast detector.
     </Details>
   </Detector>
 
+  <Detector class="edu.umd.cs.findbugs.detect.FindOpenStream">
+    <Details>
+<![CDATA[
+<p> This detector looks for IO stream objects which do not escape the
+method and do not appear to be closed on all paths out of the method.
+It is a moderately fast detector.
+]]>
+    </Details>
+  </Detector>
+
   <!-- BugPatterns -->
 
   <BugPattern type="DE_MIGHT_DROP">
@@ -1182,6 +1192,19 @@ before all of the static final fields are assigned.
     </Details>
   </BugPattern>
 
+  <BugPattern type="OS_OPEN_STREAM">
+    <ShortDescription>Method may fail to close stream</ShortDescription>
+    <LongDescription>{1} may fail to close stream</LongDescription>
+    <Details>
+<![CDATA[
+<p> The method creates an IO stream object, does not assign it to any
+fields or return it from the method, and does not appear to close
+the stream on all paths out of the method.&nbsp; This may result in
+a file descriptor leak.
+]]>
+    </Details>
+  </BugPattern>
+
   <!-- BugCodes -->
 
   <BugCode abbrev="FI" >Incorrect use of finalizers</BugCode>
@@ -1223,4 +1246,5 @@ before all of the static final fields are assigned.
   <BugCode abbrev="BcpDC">Possible double check of field</BugCode>
   <BugCode abbrev="RV" >Return value of method is ignored</BugCode>
   <BugCode abbrev="NP" >Null pointer dereference</BugCode>
+  <BugCode abbrev="OS">Stream not closed on all paths</BugCode>
 </MessageCollection>
