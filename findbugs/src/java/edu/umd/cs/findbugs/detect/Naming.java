@@ -38,31 +38,31 @@ public class Naming extends PreorderVisitor implements Detector, Constants2 {
 	boolean classIsPublicOrProtected;
 
 	static class MyMethod {
-		final JavaClass clazz;
+		final String className;
 		final String methodName;
 		final String methodSig;
 
-		MyMethod(JavaClass c, String n, String s) {
-			clazz = c;
+		MyMethod(String cName, String n, String s) {
+			className = cName;
 			methodName = n;
 			methodSig = s;
 		}
 
 		public String getClassName() {
-			return clazz.getClassName();
+			return className;
 		}
 
 		public boolean equals(Object o) {
 			if (!(o instanceof MyMethod)) return false;
 			MyMethod m2 = (MyMethod) o;
 			return
-			        clazz.equals(m2.clazz)
+					className.equals(m2.className)
 			        && methodName.equals(m2.methodName)
 			        && methodSig.equals(m2.methodSig);
 		}
 
 		public int hashCode() {
-			return clazz.hashCode()
+			return className.hashCode()
 			        + methodName.hashCode()
 			        + methodSig.hashCode();
 		}
@@ -73,7 +73,7 @@ public class Naming extends PreorderVisitor implements Detector, Constants2 {
 		}
 
 		public String toString() {
-			return getClassName()
+			return className
 			        + "." + methodName
 			        + ":" + methodSig;
 		}
@@ -109,8 +109,8 @@ public class Naming extends PreorderVisitor implements Detector, Constants2 {
 			MyMethod m2 = i.next();
 			try {
 				if (m.confusingMethodNames(m2)
-				        && Repository.instanceOf(m.clazz, m2.clazz)) {
-					MyMethod m3 = new MyMethod(m.clazz, m2.methodName, m.methodSig);
+				        && Repository.instanceOf(m.className, m2.className)) {
+					MyMethod m3 = new MyMethod(m.className, m2.methodName, m.methodSig);
 					boolean r = others.contains(m3);
 					if (r) continue;
 					bugReporter.reportBug(new BugInstance(this, "NM_VERY_CONFUSING", HIGH_PRIORITY)
@@ -279,7 +279,7 @@ public class Naming extends PreorderVisitor implements Detector, Constants2 {
 		String trueName = getMethodName() + getMethodSig();
 		String allSmall = getMethodName().toLowerCase() + getMethodSig();
 
-		MyMethod mm = new MyMethod(getThisClass(), getMethodName(), getMethodSig());
+		MyMethod mm = new MyMethod(getThisClass().getClassName(), getMethodName(), getMethodSig());
 		{
 			HashSet<String> s = canonicalToTrueMapping.get(allSmall);
 			if (s == null) {
