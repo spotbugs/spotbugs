@@ -699,4 +699,39 @@ defined in an interface references a mutable
   one waiting for the condition that the caller just satisfied.
     </Details>
   </BugPattern>
+  <BugCode abbrev="FI" >Incorrect use of finalizers</BugCode>
+  <BugCode abbrev="ML" >Synchronization on updated field (Mutable Lock)</BugCode>
+  <BugCode abbrev="UG" >Unsynchronized get method, synchronized set method</BugCode>
+  <BugCode abbrev="IC" >Initialization circularity</BugCode>
+  <BugCode abbrev="IS" >Inconsistent synchronization</BugCode>
+  <BugCode abbrev="IS2" >Inconsistent synchronization</BugCode>
+  <BugCode abbrev="Eq" >Covariant equals()</BugCode>
+  <BugCode abbrev="Co" >Covariant compareTo()</BugCode>
+  <BugCode abbrev="HE" >Equal objects must have equal hashcodes</BugCode>
+  <BugCode abbrev="Dm" >Dubious method used</BugCode>
+  <BugCode abbrev="UR" >Uninitialized read of field in constructor</BugCode>
+  <BugCode abbrev="RR" >Method ignores results of InputStream.read()</BugCode>
+  <BugCode abbrev="NN" >Naked notify in method</BugCode>
+  <BugCode abbrev="UW" >Unconditional wait in method</BugCode>
+  <BugCode abbrev="SP" >Method spins on field</BugCode>
+  <BugCode abbrev="DC" >Possible double check of field</BugCode>
+  <BugCode abbrev="Wa" >Wait not in loop in method</BugCode>
+  <BugCode abbrev="No" >Using notify() rather than notifyAll() in method</BugCode>
+  <BugCode abbrev="DE" >Dropped or ignored exception</BugCode>
+  <BugCode abbrev="Ru" >Method invokes run()</BugCode>
+  <BugCode abbrev="It" >Incorrect definition of Iterator</BugCode>
+  <BugCode abbrev="Se" >Incorrect definition of Serializable class</BugCode>
+  <BugCode abbrev="WS" >Class's writeObject() method is synchronized but nothing else is</BugCode>
+  <BugCode abbrev="RS" >Class's readObject() method is synchronized</BugCode>
+  <BugCode abbrev="SC" >Constructor invokes Thread.start()</BugCode>
+  <BugCode abbrev="MS" >Mutable static field</BugCode>
+  <BugCode abbrev="EI" >Method returning array may expose internal representation</BugCode>
+  <BugCode abbrev="Nm" >Confusing method name(s)</BugCode>
+  <BugCode abbrev="SS" >Unread field should be static?</BugCode>
+  <BugCode abbrev="UuF" >Unused field</BugCode>
+  <BugCode abbrev="UrF" >Unread field</BugCode>
+  <BugCode abbrev="SIC" >Should be a static inner class?</BugCode>
+  <BugCode abbrev="SPSDC" >Possible double check of static field</BugCode>
+  <BugCode abbrev="SPDC" >Possible double check of field</BugCode>
+  <BugCode abbrev="2LW" >Wait with two locks held</BugCode>
 </MessageCollection>
