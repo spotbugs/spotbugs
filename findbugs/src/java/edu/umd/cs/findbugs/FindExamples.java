@@ -76,13 +76,11 @@ public class FindExamples {
 		while (i.hasNext()) {
 			BugInstance bugInstance = i.next();
 			String annotation = bugInstance.getAnnotationText();
-			if (annotation.equals(""))
-				continue;
 
 			if (category != null && !bugInstance.getAbbrev().equals(category))
 				continue;
 
-			Set<String> contents = parseAnnotation(annotation);
+			Set<String> contents = bugInstance.getTextAnnotationWords();
 
 			if (contents.contains("GOOD_EXAMPLE") || contents.contains("EXCELLENT_EXAMPLE")) {
 				if (first)
