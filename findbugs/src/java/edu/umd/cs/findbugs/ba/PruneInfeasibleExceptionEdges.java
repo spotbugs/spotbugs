@@ -205,24 +205,40 @@ public class PruneInfeasibleExceptionEdges implements EdgeTypes {
 		// Assume that an Error may be thrown by any instruction.
 		exceptionTypeSet.addImplicit(Hierarchy.ERROR_TYPE);
 
-		// If it's an ATHROW, get the type from the TypeDataflow
 		if (ins instanceof ATHROW) {
-			TypeFrame frame = typeDataflow.getFactAtLocation(new Location(pei, basicBlock));
+			// For ATHROW instructions, we generate *two* blocks
+			// for which the ATHROW is an exception thrower.
+			//
+			// - The first, empty basic block, does the null check
+			// - The second block, which actually contains the ATHROW,
+			//   throws the object on the top of the operand stack
+			//
+			// We make a special case of the block containing the ATHROW,
+			// by removing all of the implicit exceptions,
+			// and using type information to figure out what is thrown.
 
-			// Check whether or not the frame is valid.
-			// Sun's javac sometimes emits unreachable code.
-			// For example, it will emit code that follows a JSR
-			// subroutine call that never returns.
-			// If the frame is invalid, then we can just make
-			// a conservative assumption that anything could be
-			// thrown at this ATHROW.
-			if (!frame.isValid()) {
-				exceptionTypeSet.addExplicit(Type.THROWABLE);
-			} else {
-				Type throwType = frame.getTopValue();
-				if (!(throwType instanceof ObjectType))
-					throw new DataflowAnalysisException("Non object type thrown by " + pei);
-				exceptionTypeSet.addExplicit((ObjectType) throwType);
+			if (basicBlock.containsInstruction(pei)) {
+				// This is the actual ATHROW, not the null check
+				// and implicit exceptions.
+				exceptionTypeSet.clear();
+
+				TypeFrame frame = typeDataflow.getFactAtLocation(new Location(pei, basicBlock));
+	
+				// Check whether or not the frame is valid.
+				// Sun's javac sometimes emits unreachable code.
+				// For example, it will emit code that follows a JSR
+				// subroutine call that never returns.
+				// If the frame is invalid, then we can just make
+				// a conservative assumption that anything could be
+				// thrown at this ATHROW.
+				if (!frame.isValid()) {
+					exceptionTypeSet.addExplicit(Type.THROWABLE);
+				} else {
+					Type throwType = frame.getTopValue();
+					if (!(throwType instanceof ObjectType))
+						throw new DataflowAnalysisException("Non object type thrown by " + pei);
+					exceptionTypeSet.addExplicit((ObjectType) throwType);
+				}
 			}
 		}
 
