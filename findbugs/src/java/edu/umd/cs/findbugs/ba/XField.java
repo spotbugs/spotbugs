@@ -55,6 +55,11 @@ public interface XField extends Comparable<XField> {
 	 * Is this a final field?
 	 */
 	public boolean isFinal();
+
+	/**
+	 * Is this a public field?
+	 */
+	public boolean isPublic();
 }
 
 // vim:ts=4

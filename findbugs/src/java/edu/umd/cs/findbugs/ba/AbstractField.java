@@ -55,6 +55,10 @@ public abstract  class AbstractField implements XField {
 		return (accessFlags & Constants.ACC_FINAL) != 0;
 	}
 
+	public boolean isPublic() {
+		return (accessFlags & Constants.ACC_PUBLIC) != 0;
+	}
+
 	public int compareTo(XField other) {
 		// This may be compared to any kind of XField object.
 		// If the other object is a different kind of field,
