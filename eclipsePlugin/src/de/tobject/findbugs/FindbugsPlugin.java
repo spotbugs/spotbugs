@@ -295,6 +295,10 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 	 * @param message message describing how/why the exception occurred
 	 */
 	public void logException(Exception e, String message) {
+		if (FindbugsPlugin.DEBUG) {
+			System.err.println("Exception in FindBugs plugin: " + message);
+			e.printStackTrace();
+		}
 		IStatus status = new Status(IStatus.ERROR, FindbugsPlugin.PLUGIN_ID, 0, message, e);
 		getLog().log(status);
 	}
