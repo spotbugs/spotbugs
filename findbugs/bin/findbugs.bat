@@ -19,7 +19,6 @@ set conserveSpaceArg=
 set workHardArg=
 set args=
 set javaProps=
-set start=
 set maxheap=256
 
 :: Try finding the default FINDBUGS_HOME directory
@@ -58,8 +57,16 @@ goto shift1
 if not "%firstArg%"=="-textui" goto notTextui
 set appjar=findbugs.jar
 set launcher=java.exe
+set start=
 goto shift1
 :notTextui
+
+if not "%firstArg%"=="-debug" goto notDebug
+set launcher=java.exe
+set start=
+set debugArg=-Dfindbugs.debug=true
+goto shift1
+:notDebug
 
 if "%firstArg%"=="-home" set FINDBUGS_HOME=%secondArg%
 if "%firstArg%"=="-home" goto shift2
@@ -69,9 +76,6 @@ if "%firstArg%"=="-jvmArgs" goto shift2
 
 if "%firstArg%"=="-maxHeap" set maxheap=%secondArg%
 if "%firstArg%"=="-maxHeap" goto shift2
-
-if "%firstArg%"=="-debug" set debugArg=-Dfindbugs.debug=true
-if "%firstArg%"=="-debug" goto shift1
 
 if "%firstArg%"=="-conserveSpace" set conserveSpaceArg=-Dfindbugs.conserveSpace=true
 if "%firstArg%"=="-conserveSpace" goto shift1
@@ -116,7 +120,7 @@ goto end
 :: Display usage information
 :: ----------------------------------------------------------------------
 :help
-echo Usage: findbugs [options] 
+echo Usage: findbugs [options]
 echo    -home dir       Use dir as FINDBUGS_HOME
 echo    -gui            Use the Graphical UI (default behavior)
 echo    -textui         Use the Text UI
