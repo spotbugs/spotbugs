@@ -34,6 +34,7 @@ public abstract class PatternElement {
 
 	private PatternElement next;
 	private String label;
+	private String dominatedBy;
 	private int index;
 	private boolean allowTrailingEdges = true;
 
@@ -66,6 +67,25 @@ public abstract class PatternElement {
 	 * @return the label, or null if the PatternElement is not labeled
 	 */
 	public String getLabel() { return label; }
+
+	/**
+	 * Set the label of another pattern element whose first
+	 * matched instruction must dominate the instruction(s) matched
+	 * by this element.
+	 */
+	public PatternElement dominatedBy(String dominatedBy) {
+		this.dominatedBy = dominatedBy;
+		return this;
+	}
+
+	/**
+	 * Get the label of the pattern element whose first
+	 * matched instruction must dominate the instruction(s) matched
+	 * by this element.
+	 */
+	public String getDominatedBy() {
+		return dominatedBy;
+	}
 
 	/**
 	 * Set the index.  This is just for debugging.
