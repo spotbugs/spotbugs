@@ -117,9 +117,11 @@
 	<h2>Contents</h2>
 	<ul>
 		<li><a href="#Warnings_CORRECTNESS">Correctness Warnings</a></li>
+		<li><a href="#Warnings_I18N">Internationalization Warnings</a></li>
 		<li><a href="#Warnings_MT_CORRECTNESS">Multithreaded Correctness Warnings</a></li>
 		<li><a href="#Warnings_MALICIOUS_CODE">Malicious Code Vulnerability Warnings</a></li>
 		<li><a href="#Warnings_PERFORMANCE">Performance Warnings</a></li>
+		<li><a href="#Warnings_STYLE">Style Warnings</a></li>
 		<li><a href="#Details">Details</a></li>
 	</ul>
 
@@ -131,6 +133,12 @@
 		<xsl:with-param name="warningSet" select="/BugCollection/BugInstance[@category='CORRECTNESS']"/>
 		<xsl:with-param name="sectionTitle">Correctness Warnings</xsl:with-param>
 		<xsl:with-param name="sectionId">Warnings_CORRECTNESS</xsl:with-param>
+	</xsl:call-template>
+
+	<xsl:call-template name="generateWarningTable">
+		<xsl:with-param name="warningSet" select="/BugCollection/BugInstance[@category='I18N']"/>
+		<xsl:with-param name="sectionTitle">Internationalizatino Warnings</xsl:with-param>
+		<xsl:with-param name="sectionId">Warnings_I18N</xsl:with-param>
 	</xsl:call-template>
 
 	<xsl:call-template name="generateWarningTable">
@@ -149,6 +157,12 @@
 		<xsl:with-param name="warningSet" select="/BugCollection/BugInstance[@category='PERFORMANCE']"/>
 		<xsl:with-param name="sectionTitle">Performance Warnings</xsl:with-param>
 		<xsl:with-param name="sectionId">Warnings_PERFORMANCE</xsl:with-param>
+	</xsl:call-template>
+
+	<xsl:call-template name="generateWarningTable">
+		<xsl:with-param name="warningSet" select="/BugCollection/BugInstance[@category='STYLE']"/>
+		<xsl:with-param name="sectionTitle">Style Warnings</xsl:with-param>
+		<xsl:with-param name="sectionId">Warnings_STYLE</xsl:with-param>
 	</xsl:call-template>
 
 	<h1><a name="Details">Details</a></h1>
