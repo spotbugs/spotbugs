@@ -93,22 +93,26 @@ public class FindBugs implements Constants2
   }
 
   static {
-    registerDetector("FindFinalizeInvocations", edu.umd.cs.findbugs.FindFinalizeInvocations.class);
+    /* Multithreaded checkers */
     registerDetector("MutableLock", edu.umd.cs.findbugs.MutableLock.class);
     registerDetector("FindUnsyncGet", edu.umd.cs.findbugs.FindUnsyncGet.class);
+    registerDetector("FindSpinLoop", edu.umd.cs.findbugs.FindSpinLoop.class);
+    registerDetector("FindDoubleCheck", edu.umd.cs.findbugs.FindDoubleCheck.class);
+    registerDetector("WaitInLoop", edu.umd.cs.findbugs.WaitInLoop.class);
+    registerDetector("SimplePathsFindDoubleCheck", edu.umd.cs.findbugs.SimplePathsFindDoubleCheck.class);
+    registerDetector("FindTwoLockWait", edu.umd.cs.findbugs.FindTwoLockWait.class);
+    registerDetector("FindInconsistentSync", edu.umd.cs.findbugs.FindInconsistentSync.class);
+    registerDetector("FindNakedNotify", edu.umd.cs.findbugs.FindNakedNotify.class);
+    registerDetector("FindUnconditionalWait", edu.umd.cs.findbugs.FindUnconditionalWait.class);
+    registerDetector("FindRunInvocations", edu.umd.cs.findbugs.FindRunInvocations.class);
+
+    registerDetector("FindFinalizeInvocations", edu.umd.cs.findbugs.FindFinalizeInvocations.class);
     registerDetector("InitializationChain", edu.umd.cs.findbugs.InitializationChain.class);
-    //registerDetector("LockedFields", edu.umd.cs.findbugs.LockedFields.class);
     registerDetector("FindHEmismatch", edu.umd.cs.findbugs.FindHEmismatch.class);
     registerDetector("DumbMethods", edu.umd.cs.findbugs.DumbMethods.class);
     registerDetector("FindUninitializedGet", edu.umd.cs.findbugs.FindUninitializedGet.class);
     registerDetector("ReadReturnShouldBeChecked", edu.umd.cs.findbugs.ReadReturnShouldBeChecked.class);
-    registerDetector("FindNakedNotify", edu.umd.cs.findbugs.FindNakedNotify.class);
-    registerDetector("FindUnconditionalWait", edu.umd.cs.findbugs.FindUnconditionalWait.class);
-    registerDetector("FindSpinLoop", edu.umd.cs.findbugs.FindSpinLoop.class);
-    registerDetector("FindDoubleCheck", edu.umd.cs.findbugs.FindDoubleCheck.class);
-    registerDetector("WaitInLoop", edu.umd.cs.findbugs.WaitInLoop.class);
     registerDetector("DroppedException", edu.umd.cs.findbugs.DroppedException.class);
-    registerDetector("FindRunInvocations", edu.umd.cs.findbugs.FindRunInvocations.class);
     registerDetector("IteratorIdioms", edu.umd.cs.findbugs.IteratorIdioms.class);
     registerDetector("SerializableIdiom", edu.umd.cs.findbugs.SerializableIdiom.class);
     registerDetector("StartInConstructor", edu.umd.cs.findbugs.StartInConstructor.class);
@@ -116,9 +120,6 @@ public class FindBugs implements Constants2
     registerDetector("Naming", edu.umd.cs.findbugs.Naming.class);
     registerDetector("UnreadFields", edu.umd.cs.findbugs.UnreadFields.class);
     registerDetector("MutableStaticFields", edu.umd.cs.findbugs.MutableStaticFields.class);
-    registerDetector("SimplePathsFindDoubleCheck", edu.umd.cs.findbugs.SimplePathsFindDoubleCheck.class);
-    registerDetector("FindTwoLockWait", edu.umd.cs.findbugs.FindTwoLockWait.class);
-    registerDetector("FindInconsistentSync", edu.umd.cs.findbugs.FindInconsistentSync.class);
   }
 
   private void createDetectors() {

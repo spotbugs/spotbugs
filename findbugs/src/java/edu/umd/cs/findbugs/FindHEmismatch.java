@@ -91,7 +91,10 @@ public class FindHEmismatch extends BytecodeScanningDetector implements   Consta
 		if (usesDefaultHashCode) 
 		  bugReporter.reportBug(new BugInstance("HE_EQUALS_USE_HASHCODE", HIGH_PRIORITY).addClass(betterClassName));
 		else
-		  bugReporter.reportBug(new BugInstance("HE_EQUALS_NO_HASHCODE", NORMAL_PRIORITY).addClass(betterClassName));
+		  bugReporter.reportBug(
+		    new BugInstance("HE_EQUALS_NO_HASHCODE", 
+			hasFields ? NORMAL_PRIORITY : LOW_PRIORITY)
+		    .addClass(betterClassName));
 		}
 	}
    public void visit(JavaClass obj) {

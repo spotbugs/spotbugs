@@ -120,13 +120,11 @@ public void report() {
 		FieldAnnotation f = i.next();
 		String fieldName = f.getFieldName();
 		String className = f.getClassName();
-/*
 		int lastDollar = className.lastIndexOf('$');
 		boolean isAnonymousInnerClass =
 			   (lastDollar > 0)
 			&& (lastDollar < className.length() - 1)
 			&& Character.isDigit(className.charAt(className.length() - 1));
-*/
 		boolean allUpperCase = 
 				fieldName.equals(fieldName.toUpperCase());
 		if (superReadFields.contains(f.getFieldName()))  continue;
@@ -145,9 +143,9 @@ public void report() {
 			.addField(f));
 		   }
 		  else if ( !innerClassCannotBeStatic.contains(className)
-			  // && !isAnonymousInnerClass 
 			)
-			bugReporter.reportBug(new BugInstance("SIC_INNER_SHOULD_BE_STATIC", NORMAL_PRIORITY)
+			bugReporter.reportBug(new BugInstance("SIC_INNER_SHOULD_BE_STATIC", 
+		isAnonymousInnerClass  ? LOW_PRIORITY : NORMAL_PRIORITY)
 				.addClass(className));
 		}
 

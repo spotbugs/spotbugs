@@ -48,13 +48,11 @@ public class MutableStaticFields extends BytecodeScanningDetector implements   C
 	boolean zeroOnTOS;
 	boolean emptyArrayOnTOS;
 	boolean inStaticInitializer;
-	List problems = new LinkedList();
 	String packageName;
 	HashSet<String> unsafeValue = new HashSet<String>();
 	HashSet<String> interfaces = new HashSet<String>();
 	HashSet<String> notFinal = new HashSet<String>();
 	HashSet<String> outsidePackage = new HashSet<String>();
-	HashSet allocatesZeroLengthArray = new HashSet();
 	private BugReporter bugReporter;
 
     public MutableStaticFields(BugReporter bugReporter) {

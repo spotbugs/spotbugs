@@ -26,7 +26,6 @@ public class FindSpinLoop extends BytecodeScanningDetector implements   Constant
 
     int stage = 0;
     int start;
-    String name;
     private BugReporter bugReporter;
 
     public FindSpinLoop(BugReporter bugReporter) {
@@ -49,7 +48,6 @@ public class FindSpinLoop extends BytecodeScanningDetector implements   Constant
 			if (DEBUG) System.out.println("   getfield in stage " + stage);
 			if (stage == 1) {
 				stage = 2;
-				name = betterClassConstant + "." + nameConstant;
 				}
 			else stage = 0;
 			break;
