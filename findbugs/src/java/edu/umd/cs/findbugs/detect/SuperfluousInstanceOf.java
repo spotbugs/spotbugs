@@ -28,7 +28,6 @@ import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.classfile.LocalVariableTable;
 import org.apache.bcel.classfile.LocalVariable;
-import org.apache.bcel.util.Repository;
 
 /**
  * Find occurrences of a instanceof b where it can be determined
@@ -43,14 +42,12 @@ public class SuperfluousInstanceOf extends BytecodeScanningDetector implements C
 	private static final int SEEN_ALOAD = 1;
 	
 	private BugReporter bugReporter;
-	private Repository repository;
 	private LocalVariableTable varTable;
 	private int state;
 	private int register;
 
 	public SuperfluousInstanceOf(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
-		repository = org.apache.bcel.Repository.getRepository();
 	}
 	
 	public void visit(Method obj) {

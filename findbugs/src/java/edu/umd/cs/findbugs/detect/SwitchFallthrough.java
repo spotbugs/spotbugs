@@ -37,7 +37,7 @@ public class SwitchFallthrough extends BytecodeScanningDetector implements Const
 	private BugReporter bugReporter;
 	LineNumberTable lineNumbers;
 	private int[] swOffsets = null;
-	private int[] swLabels = null;
+//	private int[] swLabels = null;
 	private int defSwOffset = 0;
 	private int lastPC = 0;
 
@@ -53,7 +53,7 @@ public class SwitchFallthrough extends BytecodeScanningDetector implements Const
 		inSwitch = false;
 		reachable = true;
 		swOffsets = null;
-		swLabels = null;
+//		swLabels = null;
 		defSwOffset = 0;
 		lastPC = 0;
 /*		lineNumbers = obj.getLineNumberTable();
@@ -69,7 +69,7 @@ public class SwitchFallthrough extends BytecodeScanningDetector implements Const
 			switchPC = getPC();
 			inSwitch = true;
 			swOffsets = getSwitchOffsets();
-			swLabels = getSwitchLabels();
+//			swLabels = getSwitchLabels();
 			defSwOffset = getDefaultSwitchOffset();
 			reachable = false;
 			nextIndex = 0;
