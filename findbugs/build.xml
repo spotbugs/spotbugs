@@ -20,18 +20,15 @@
 -->
 
 <project name="find-bugs" default="build">
-
-
     <!--
       *****************************************************************
       All properties that need to be customized for your system
       (e.g., location of third-party libraries) are
       contained in a separate properties file, build.properties.
 
-      You should not need to change anything in this file.
+      You should not need to change anything in build.xml.
       *****************************************************************
     -->
-
     <property file="build.properties"/>
 
     <property name="findbugs.dir" value="." />
@@ -95,6 +92,7 @@
     <path id="tools.buildclasspath">
       <path refid="classpath"/>
       <pathelement path="${class.dir}"/>
+      <pathelement location="${jar.dir}/junit.jar"/>
     </path>
 
     <!-- Classpath for running tools. -->
@@ -161,6 +159,7 @@
              fork="true"
              debug="true">
         <classpath refid="classpath" />
+        <compilerarg value="-Xlint:unchecked"/>
       </javac>
     </target>
 
@@ -298,6 +297,7 @@
              source="1.5"
              target="jsr14" debug="true" destdir="${class.dir}" >
         <classpath refid="classpath" />
+        <compilerarg value="-Xlint:unchecked"/>
       </javac>
  
       <copy file="${anttask.src.dir}/edu/umd/cs/findbugs/anttask/tasks.properties" 
@@ -397,12 +397,22 @@
     <!-- Build junit tests. -->
     <target name="junit" depends="findbugs">
       <mkdir dir="${junit.build.dir}" />
+
       <javac srcdir="${junit.src.dir}" destdir="${junit.build.dir}"
              source="1.5"
              target="jsr14"
              debug="true">
         <classpath refid="junit.classpath"/>
+        <compilerarg value="-Xlint:unchecked"/>
       </javac>
+
+      <jar destfile="${junit.build.dir}/junitTests.jar"
+           basedir="${junit.build.dir}"
+           includes="**/*.class" />
+    </target>
+
+    <!-- Run the junit tests. -->
+    <target name="runjunit" depends="junit">
     </target>
 
     <!--
@@ -417,6 +427,7 @@
              target="jsr14"
              debug="true">
         <classpath refid="tools.buildclasspath"/>
+        <compilerarg value="-Xlint:unchecked"/>
       </javac> 
     </target>
 
