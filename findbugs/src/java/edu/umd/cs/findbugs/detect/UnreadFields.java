@@ -129,9 +129,24 @@ public class UnreadFields extends BytecodeScanningDetector implements   Constant
 
 public void report() {
 
-	declaredFields.removeAll(readFields);
+        TreeSet<FieldAnnotation> readOnlyFields = 
+			new TreeSet<FieldAnnotation>(declaredFields);
+	readOnlyFields.removeAll(writtenFields);
+	readOnlyFields.retainAll(readFields);
+        Set<FieldAnnotation> writeOnlyFields = declaredFields;
+	writeOnlyFields.removeAll(readFields);
 
-	for(Iterator<FieldAnnotation> i = declaredFields.iterator(); i.hasNext(); )  {
+	for(Iterator<FieldAnnotation> i = readOnlyFields.iterator(); i.hasNext(); )  {
+		FieldAnnotation f = i.next();
+		String fieldName = f.getFieldName();
+		String className = f.getClassName();
+		    bugReporter.reportBug(new BugInstance("UWF_UNWRITTEN_FIELD", NORMAL_PRIORITY)
+			.addClass(className)
+			.addField(f));
+		}
+
+
+	for(Iterator<FieldAnnotation> i = writeOnlyFields.iterator(); i.hasNext(); )  {
 		FieldAnnotation f = i.next();
 		String fieldName = f.getFieldName();
 		String className = f.getClassName();
