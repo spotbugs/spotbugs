@@ -37,10 +37,6 @@ public class FindFieldSelfAssignment extends BytecodeScanningDetector implements
 	this.bugReporter = bugReporter;
   }
 
-   JavaClass jClass;
-   public void visit(JavaClass obj) {
-	jClass = obj;
-	}
    public void visit(Code obj) {
 	state = 0;
 	super.visit(obj);

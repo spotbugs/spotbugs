@@ -32,7 +32,7 @@ public class EqStringTest extends BytecodeScanningDetector implements   Constant
     boolean constantOnTOS = false;
     boolean callToInternSeen = false;
     private BugReporter bugReporter;
-    String stringOnTop;
+    // String stringOnTop;
 
   public EqStringTest(BugReporter bugReporter) {
 	this.bugReporter = bugReporter;
@@ -54,7 +54,7 @@ public class EqStringTest extends BytecodeScanningDetector implements   Constant
 	switch (seen) {
 	case LDC:
 		constantOnTOS = true;
-		stringOnTop = stringConstant;
+		// stringOnTop = stringConstant;
 		return;
  	case INVOKEVIRTUAL:
 		if (refConstant.equals("java.lang.String.intern : ()Ljava.lang.String;")

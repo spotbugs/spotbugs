@@ -28,7 +28,6 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 
 public class Naming extends PreorderVisitor implements Detector, Constants2 {
   String baseClassName;
-  Map<String, String> superClass = new HashMap<String, String>();
 
   static class MyMethod {
 	final JavaClass clazz;
@@ -75,7 +74,6 @@ public class Naming extends PreorderVisitor implements Detector, Constants2 {
   HashMap<String, HashSet<MyMethod>> canonicalToMyMethod
 	= new HashMap<String, HashSet<MyMethod>>();
 
-  HashSet<String> reported = new HashSet<String>();
   HashSet<String> visited = new HashSet<String>();
 
   private BugReporter bugReporter;
