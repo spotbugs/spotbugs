@@ -1,0 +1,5 @@
+*.bugs
+*.count
+findbugs-ant.jar
+findbugs.jar
+findbugsGUI.jar
