@@ -30,6 +30,13 @@ import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
 
+/*
+// notyet
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.XMLReader;
+*/
+
 /**
  * Abstract base class for collections of BugInstance objects
  * and error messages associated with analysis.
@@ -173,6 +180,23 @@ public abstract class BugCollection {
 				}
 			}
 		}
+
+/*
+		// notyet
+		try {
+			SAXBugCollectionHandler handler = new SAXBugCollectionHandler(this, project);
+			XMLReader xr = new org.apache.xerces.parsers.SAXParser();
+
+			xr.setContentHandler(handler);
+			xr.setErrorHandler(handler);
+
+			Reader reader = new InputStreamReader(in);
+
+			xr.parse(new InputSource(reader));
+		} catch (SAXException e) {
+			throw new DocumentException("Parse error", e);
+		}
+*/
 
 		// Presumably, project is now up-to-date
 		project.setModified(false);
