@@ -360,6 +360,9 @@ public class FindBugsTask extends Task {
 		findbugsEngine.setJar( new File( homeDir + File.separator + "lib" + 
                                          File.separator + FINDBUGS_JAR ) );
 		findbugsEngine.setTimeout( new Long( TIMEOUT ) );
+
+		if ( debug )
+			jvmargs = jvmargs + " -Dfindbugs.debug=true";
 		findbugsEngine.createJvmarg().setLine( jvmargs ); 
 
 		if ( outputFileName != null) {
@@ -368,7 +371,6 @@ public class FindBugsTask extends Task {
 
 		StringBuffer sb = new StringBuffer( 1024 );
 		sb.append( "-home " + homeDir );
-		if ( debug ) sb.append( " -debug");
 		if ( sorted ) sb.append( " -sortByClass");
 		if ( outputFormat != null && 
 			 outputFormat.trim().equalsIgnoreCase("xml") ) {
