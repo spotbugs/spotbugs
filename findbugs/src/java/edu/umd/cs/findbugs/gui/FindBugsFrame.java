@@ -1924,6 +1924,13 @@ public class FindBugsFrame extends javax.swing.JFrame {
     }
     
     /**
+     * Show an error dialog.
+     */
+    public void error(String message) {
+        JOptionPane.showMessageDialog(this, message, "Error", JOptionPane.ERROR_MESSAGE);
+    }
+    
+    /**
      * Write a message to the console window.
      */
     public void writeToConsole(String message) {

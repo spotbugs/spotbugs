@@ -44,6 +44,11 @@ public class ConsoleLogger {
     }
 
     public void logMessage(int severity, String message) {
+        // If this is an error, pass it to the GUI
+        if (severity == ERROR)
+            frame.error(message);
+        
+        // Format a message for the console window
         Date date = new Date();
         StringBuffer buf = new StringBuffer();
         buf.append('[');
