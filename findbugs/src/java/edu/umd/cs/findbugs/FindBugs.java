@@ -1236,16 +1236,16 @@ public class FindBugs implements Constants2, ExitCodes {
 			for (int i = 0; i < detectors.length; ++i) {
 				if (Thread.interrupted())
 					throw new InterruptedException();
+				Detector detector = detectors[i];
 				try {
-					Detector detector = detectors[i];
 					if (DEBUG) System.out.println("  running " + detector.getClass().getName());
 					detector.visitClassContext(classContext);
 				} catch (AnalysisException e) {
-					reportRecoverableException(className, e);
+					reportRecoverableDetectorException(className, detector, e);
 				} catch (ArrayIndexOutOfBoundsException e) {
-					reportRecoverableException(className, e);
+					reportRecoverableDetectorException(className, detector, e);
 				} catch (ClassCastException e) {
-					reportRecoverableException(className, e);
+					reportRecoverableDetectorException(className, detector, e);
 				}
 			}
 		} catch (ClassNotFoundException e) {
@@ -1264,6 +1264,15 @@ public class FindBugs implements Constants2, ExitCodes {
 			e.printStackTrace();
 		}
 		bugReporter.logError("Exception analyzing " + className + ": " + e.toString());
+	}
+
+	private void reportRecoverableDetectorException(String className, Detector detector, Exception e) {
+		if (DEBUG) {
+			e.printStackTrace();
+		}
+		bugReporter.logError("Exception analyzing " + className +
+			" using detector " + detector.getClass().getName() +
+			": " + e.toString());
 	}
 
 	/**
