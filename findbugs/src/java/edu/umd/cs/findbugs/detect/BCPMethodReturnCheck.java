@@ -58,15 +58,20 @@ public class BCPMethodReturnCheck extends ByteCodePatternDetector {
 		// followed by a POP or POP2 instruction.
 		this.pattern = new ByteCodePattern()
 			.add(new MatchAny(new PatternElement[] {
+				/*
 				new Invoke("java.lang.String", "/.*", 
 					"/\\(.*\\)Ljava\\.lang\\.String;", 
 					Invoke.INSTANCE, lookupFailureCallback),
+				*/
+				new Invoke("java.lang.String", "/.*", 
+					"/\\(.*\\)Ljava/lang/String;", 
+					Invoke.INSTANCE, lookupFailureCallback),
 				new Invoke("java.lang.StringBuffer", "toString", 
-					"()Ljava.lang.String;", 
+					"()Ljava/lang/String;", 
 					Invoke.INSTANCE, 
 					lookupFailureCallback),
 				new Invoke("java.lang.Thread", "currentThread", 
-					"()Ljava.lang.Thread;", 
+					"()Ljava/lang/Thread;", 
 					Invoke.STATIC, 
 					lookupFailureCallback),
 				new Invoke("java.security.MessageDigest", 
