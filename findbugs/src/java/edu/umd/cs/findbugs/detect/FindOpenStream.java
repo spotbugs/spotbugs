@@ -37,11 +37,11 @@ public class FindOpenStream extends ResourceTrackingDetector<ResourceCreationPoi
 	 * A visitor to model the effect of instructions on the status
 	 * of the resource.
 	 */
-	private static class ResourceCreationPointFrameModelingVisitor extends ResourceValueFrameModelingVisitor {
-		private ResourceCreationPointResourceTracker resourceTracker;
+	private static class StreamFrameModelingVisitor extends ResourceValueFrameModelingVisitor {
+		private StreamResourceTracker resourceTracker;
 		private ResourceCreationPoint stream;
 
-		public ResourceCreationPointFrameModelingVisitor(ConstantPoolGen cpg, ResourceCreationPointResourceTracker resourceTracker, ResourceCreationPoint stream) {
+		public StreamFrameModelingVisitor(ConstantPoolGen cpg, StreamResourceTracker resourceTracker, ResourceCreationPoint stream) {
 			super(cpg);
 			this.resourceTracker = resourceTracker;
 			this.stream = stream;
@@ -95,10 +95,10 @@ public class FindOpenStream extends ResourceTrackingDetector<ResourceCreationPoi
 	 * Resource tracker which determines where streams are created,
 	 * and how they are used within the method.
 	 */
-	private static class ResourceCreationPointResourceTracker implements ResourceTracker<ResourceCreationPoint> {
+	private static class StreamResourceTracker implements ResourceTracker<ResourceCreationPoint> {
 		private RepositoryLookupFailureCallback lookupFailureCallback;
 
-		public ResourceCreationPointResourceTracker(RepositoryLookupFailureCallback lookupFailureCallback) {
+		public StreamResourceTracker(RepositoryLookupFailureCallback lookupFailureCallback) {
 			this.lookupFailureCallback = lookupFailureCallback;
 		}
 
@@ -118,13 +118,13 @@ public class FindOpenStream extends ResourceTrackingDetector<ResourceCreationPoi
 			// (but not ByteArray variants)
 			String className = sig.substring(1, sig.length() - 1).replace('/', '.');
 			try {
-				boolean isResourceCreationPoint =
+				boolean isStream =
 					(Repository.instanceOf(className, "java.io.InputStream") &&
 						!Repository.instanceOf(className, "java.io.ByteArrayInputStream")) ||
 					(Repository.instanceOf(className, "java.io.OutputStream") &&
 						!Repository.instanceOf(className, "java.io.ByteArrayOutputStream"));
 					
-				return isResourceCreationPoint ? new ResourceCreationPoint(new Location(handle, basicBlock), className) : null;
+				return isStream ? new ResourceCreationPoint(new Location(handle, basicBlock), className) : null;
 			} catch (ClassNotFoundException e) {
 				lookupFailureCallback.reportMissingClass(e);
 				return null;
@@ -166,7 +166,7 @@ public class FindOpenStream extends ResourceTrackingDetector<ResourceCreationPoi
 		}
 
 		public ResourceValueFrameModelingVisitor createVisitor(ResourceCreationPoint resource, ConstantPoolGen cpg) {
-			return new ResourceCreationPointFrameModelingVisitor(cpg, this, resource);
+			return new StreamFrameModelingVisitor(cpg, this, resource);
 		}
 
 		private ResourceValue getInstanceValue(ResourceValueFrame frame, InvokeInstruction inv, ConstantPoolGen cpg) {
@@ -193,7 +193,7 @@ public class FindOpenStream extends ResourceTrackingDetector<ResourceCreationPoi
 	 * ---------------------------------------------------------------------- */
 
 	private BugReporter bugReporter;
-	private ResourceCreationPointResourceTracker resourceTracker;
+	private StreamResourceTracker resourceTracker;
 
 	/* ----------------------------------------------------------------------
 	 * Implementation
@@ -201,7 +201,7 @@ public class FindOpenStream extends ResourceTrackingDetector<ResourceCreationPoi
 
 	public FindOpenStream(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
-		this.resourceTracker = new ResourceCreationPointResourceTracker(bugReporter);
+		this.resourceTracker = new StreamResourceTracker(bugReporter);
 	}
 
 	public boolean prescreen(ClassContext classContext, Method method) {
@@ -288,7 +288,7 @@ public class FindOpenStream extends ResourceTrackingDetector<ResourceCreationPoi
 
 			if (creationInstruction == null) throw new IllegalArgumentException("No bytecode with offset " + offset);
 
-			final ResourceCreationPointResourceTracker resourceTracker = new ResourceCreationPointResourceTracker(lookupFailureCallback);
+			final StreamResourceTracker resourceTracker = new StreamResourceTracker(lookupFailureCallback);
 			final ResourceCreationPoint stream = resourceTracker.isResourceCreation(creationBlock, creationInstruction, cpg);
 
 			if (stream == null)
