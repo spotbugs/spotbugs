@@ -46,6 +46,10 @@
          is installed. -->
     <property name="saxon.home"
               value="/export/home/daveho/linux/java/saxon-6.5.2" />
+<!--
+    <property name="saxon.home"
+              value="/home/software/java/saxon-6.5.2" />
+-->
 
     <!-- Set this to the directory where FOP (http://xml.apache.org/fop/)
          is installed.  (Note: this is disabled for now.) -->
