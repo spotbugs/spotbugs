@@ -188,7 +188,11 @@
 		<td/>
 		<td colspan="2">
 			<table>
-				<xsl:apply-templates select="./*" mode="warningAnnotation"/>
+				<xsl:for-each select="./*/Message">
+					<tr>
+						<td><xsl:value-of select="text()"/></td>
+					</tr>
+				</xsl:for-each>
 			</table>
 		</td>
 	</tr>
@@ -212,24 +216,6 @@
 <xsl:template match="BugPattern">
 	<h2><a name="{@type}"><xsl:value-of select="@abbrev"/>: <xsl:value-of select="ShortDescription"/></a></h2>
 	<xsl:value-of select="Details" disable-output-escaping="yes"/>
-</xsl:template>
-
-<xsl:template match="Class">
-	<tr>
-		<td>In class <xsl:value-of select="@classname"/></td>
-	</tr>
-</xsl:template>
-
-<xsl:template match="Method" mode="warningAnnotation">
-	<tr>
-		<td>In method <xsl:value-of select="@fancyname"/></td>
-	</tr>
-</xsl:template>
-
-<xsl:template match="Field" mode="warningAnnotation">
-	<tr>
-		<td>Field <xsl:value-of select="@classname"/>.<xsl:value-of select="@name"/></td>
-	</tr>
 </xsl:template>
 
 </xsl:stylesheet>
