@@ -41,6 +41,7 @@ public class DumbMethods extends BytecodeScanningDetector implements Constants2 
 	private String primitiveObjCtorSeen;
 	private boolean ctorSeen;
 	private boolean isPublicStaticVoidMain;
+        private int randomNextIntState;
 
 	public DumbMethods(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
@@ -61,9 +62,39 @@ public class DumbMethods extends BytecodeScanningDetector implements Constants2 
 			this.exceptionTable = new CodeException[0];
 		primitiveObjCtorSeen = null;
 		ctorSeen = false;
+		randomNextIntState = 0;
 	}
 
 	public void sawOpcode(int seen) {
+
+		switch(randomNextIntState) {
+		case 0:
+			if (seen == INVOKEVIRTUAL
+				&& getClassConstantOperand().equals("java/util/Random")
+				&& getNameConstantOperand().equals("nextDouble"))
+			  randomNextIntState = 1;
+			break;
+		case 1:
+			randomNextIntState = 2;
+			break;
+		case 2:
+			if (seen == I2D) randomNextIntState = 3;
+			else randomNextIntState = 0;
+			break;
+		case 3:
+			if (seen == DMUL) randomNextIntState = 4;
+			else randomNextIntState = 0;
+			break;
+		case 4:
+			if (seen == D2I) 
+			  bugReporter.reportBug(new BugInstance(this, "DM_NEXTINT_VIA_NEXTDOUBLE", NORMAL_PRIORITY)
+			        .addClassAndMethod(this)
+			        .addSourceLine(this));
+			randomNextIntState = 0;
+			break;
+		default:
+			throw new IllegalStateException();
+			}
 		if (isPublicStaticVoidMain && seen == INVOKEVIRTUAL
 		        && getClassConstantOperand().startsWith("javax/swing/")
 		        && (getNameConstantOperand().equals("show")

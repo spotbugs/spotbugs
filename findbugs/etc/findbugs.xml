@@ -50,7 +50,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.DroppedException" speed="fast"
     reports="DE_MIGHT_DROP,DE_MIGHT_IGNORE"/>
   <Detector class="edu.umd.cs.findbugs.detect.DumbMethods" speed="fast"
-    reports="DM_STRING_CTOR,DM_STRING_VOID_CTOR,DM_STRING_TOSTRING,DM_GC,DM_BOOLEAN_CTOR,DM_STRING_EMPTY_EQUALS,DM_EXIT,DM_CONVERT_CASE,SW_SWING_METHODS_INVOKED_IN_SWING_THREAD,DM_BOXED_PRIMITIVE_TOSTRING,DM_NEW_FOR_GETCLASS"/>
+    reports="DM_STRING_CTOR,DM_STRING_VOID_CTOR,DM_STRING_TOSTRING,DM_GC,DM_BOOLEAN_CTOR,DM_STRING_EMPTY_EQUALS,DM_EXIT,DM_CONVERT_CASE,SW_SWING_METHODS_INVOKED_IN_SWING_THREAD,DM_BOXED_PRIMITIVE_TOSTRING,DM_NEW_FOR_GETCLASS,DM_NEXTINT_VIA_NEXTDOUBLE"/>
   <Detector class="edu.umd.cs.findbugs.detect.FindDoubleCheck" speed="fast"
     reports="DC_DOUBLECHECK"/>
   <Detector class="edu.umd.cs.findbugs.detect.FindFinalizeInvocations" speed="fast"
@@ -196,6 +196,7 @@
   <BugPattern abbrev="Dm" type="DM_CONVERT_CASE" category="CORRECTNESS" />
   <BugPattern abbrev="Dm" type="DM_BOXED_PRIMITIVE_TOSTRING" category="PERFORMANCE" />
   <BugPattern abbrev="Dm" type="DM_NEW_FOR_GETCLASS" category="PERFORMANCE" />
+  <BugPattern abbrev="Dm" type="DM_NEXTINT_VIA_NEXTDOUBLE" category="PERFORMANCE" />
   <BugPattern abbrev="DC" type="DC_DOUBLECHECK" category="MT_CORRECTNESS" />
   <BugPattern abbrev="FI" type="FI_PUBLIC_SHOULD_BE_PROTECTED" category="MALICIOUS_CODE" />
   <BugPattern abbrev="FI" type="FI_EMPTY" category="PERFORMANCE" />

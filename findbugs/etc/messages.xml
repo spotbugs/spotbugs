@@ -946,6 +946,7 @@ to use Object.clone(), which always returns an object of the correct type.</p>
     </Details>
   </BugPattern>
 
+
   <BugPattern type="DM_NEW_FOR_GETCLASS">
     <ShortDescription>Method allocates an object, only to get the class object</ShortDescription>
     <LongDescription>Method {1} allocates an object, only to get the class object</LongDescription>
@@ -956,6 +957,20 @@ to use Object.clone(), which always returns an object of the correct type.</p>
 ]]>
     </Details>
   </BugPattern>  
+
+
+  <BugPattern type="DM_NEXTINT_VIA_NEXTDOUBLE">
+    <ShortDescription>Use the nextInt method of Random rather than nextDouble to generate a random integer</ShortDescription>
+    <LongDescription>Method {1} uses the nextDouble method of Random to generate a random integer; using nextInt is more efficient</LongDescription>
+    <Details>
+<![CDATA[
+  <p>If r is a java.util.Random, you can generate a random number from 0 to n-1
+using r.nextInt(n) Rather than using (int)(r.nextDouble() * n).
+</p>
+]]>
+    </Details>
+  </BugPattern>  
+
 
   <BugPattern type="DC_DOUBLECHECK">
     <ShortDescription>Possible double check of field</ShortDescription>
