@@ -101,7 +101,7 @@ import java.util.List;
  *
  * @author Mike Fagan <a href="mailto:mfagan@tde.com">mfagan@tde.com</a>
  *
- * @version $Revision: 1.28 $
+ * @version $Revision: 1.29 $
  *
  * @since Ant 1.5
  *
@@ -303,7 +303,7 @@ public class FindBugsTask extends Task {
 	 */
 	public Path createAuxClasspath() {
 		if (auxClasspath == null) {
-			auxClasspath = new Path(project);
+			auxClasspath = new Path(getProject());
 		}
 		return auxClasspath.createPath();
 	}
@@ -331,7 +331,7 @@ public class FindBugsTask extends Task {
 	 */
 	public Path createSourcePath() {
 		if (sourcePath == null) {
-			sourcePath = new Path(project);
+			sourcePath = new Path(getProject());
 		}
 		return sourcePath.createPath();
 	}
@@ -394,7 +394,7 @@ public class FindBugsTask extends Task {
 	 */
 	public Path createClasspath() {
 		if (classpath == null) {
-			classpath = new Path(project);
+			classpath = new Path(getProject());
 		}
 		return classpath.createPath();
 	}
@@ -422,7 +422,7 @@ public class FindBugsTask extends Task {
 	 */
 	public Path createPluginList() {
 		if (pluginList == null) {
-			pluginList = new Path(project);
+			pluginList = new Path(getProject());
 		}
 		return pluginList.createPath();
 	}
@@ -527,7 +527,7 @@ public class FindBugsTask extends Task {
      * @since Ant 1.5
      */
 	private void execFindbugs() throws BuildException {
-		findbugsEngine = (Java) project.createTask("java");
+		findbugsEngine = (Java) getProject().createTask("java");
 
 		findbugsEngine.setTaskName( getTaskName() );
 		findbugsEngine.setFork( true );
