@@ -89,7 +89,8 @@ public class DumbMethods extends BytecodeScanningDetector implements   Constants
 				.addSourceLine(this));
 	if (!isPublicStaticVoidMain && seen == INVOKESTATIC
 				&& getClassConstantOperand().equals("java/lang/System")
-				&& getNameConstantOperand().equals("exit"))
+				&& getNameConstantOperand().equals("exit")
+			&& !getMethodName().startsWith("windowClos"))
 			bugReporter.reportBug(
 				new BugInstance("DM_EXIT", LOW_PRIORITY)
 				.addClassAndMethod(this)
