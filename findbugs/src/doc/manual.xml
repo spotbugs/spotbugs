@@ -1651,6 +1651,23 @@ The list of configurable analysis properties is shown in
       enabling this property will very likely cause a large number
       of false warnings to be produced.</entry>
     </row>
+    <row>
+      <entry>findbugs.sf.comment</entry>
+      <entry>true or false</entry>
+      <entry>If true, the SwitchFallthrough detector will only report
+      warnings for cases where the source code does not have a comment
+      containing the words "fall" or "nobreak".  (An accurate source
+      path must be used for this feature to work correctly.)
+      This helps find cases where the switch fallthrough is likely
+      to be unintentional.</entry>
+    </row>
+    <row>
+      <entry>findbugs.de.comment</entry>
+      <entry>true or false</entry>
+      <entry>If true, the DroppedException detector scans source code
+      for empty catch blocks for a comment, and if found, does not
+      report a warning.</entry>
+    </row>
 <!--
     <row>
       <entry></entry>
