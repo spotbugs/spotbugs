@@ -74,6 +74,7 @@
     <property name="script.dir" value="bin" />
     <property name="plugin.dir" value="plugin" />
     <property name="class.dir" value="${build.dir}/classes" />
+    <property name="test.dir" value="${findbugs.dir}/test" />
     <property name="release.prop.file" value="${build.dir}/release.properties" />
     <property name="html.xsl.stylesheet" value="${xsl.stylesheet.home}/html/chunk.xsl" />
     <property name="fo.xsl.stylesheet" value="${xsl.stylesheet.home}/fo/docbook.xsl" />
@@ -176,6 +177,12 @@
         <fileset dir="${class.dir}" includes="edu/umd/cs/findbugs/gui/*" />
         <fileset dir="${class.dir}" includes="edu/umd/cs/findbugs/gui/help/*" />
       </jar>
+    </target>
+
+    <!-- Build jar file of test cases.  -->
+    <target name="testjar" depends="init" >
+       <javac srcdir="${test.dir}" debug="true" />
+       <jar destfile="dumb.jar" basedir="${test.dir}" includes="*.class" />
     </target>
 
     <!-- Target to get the release version info. -->
