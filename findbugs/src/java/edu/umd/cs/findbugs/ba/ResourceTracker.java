@@ -43,6 +43,17 @@ public interface ResourceTracker<Resource> {
 	public Resource isResourceCreation(BasicBlock basicBlock, InstructionHandle handle, ConstantPoolGen cpg);
 
 	/**
+	 * Determine if the given instruction is the site where a resource
+	 * is closed.
+	 * @param basicBlock basic block containing the instruction
+	 * @param handle the instruction
+	 * @param cpg the ConstantPoolGen for the method
+	 * @param resource the resource, as returned by isResourceCreation()
+	 * @return true if the resource is closed here, false otherwise
+	 */
+	public boolean isResourceClose(BasicBlock basicBlock, InstructionHandle handle, ConstantPoolGen cpg, Resource resource);
+
+	/**
 	 * Create a ResourceValueFrameModelingVisitor to model the effect
 	 * of instructions on the state of the resource.
 	 * @param resource the resource we are tracking
