@@ -54,9 +54,11 @@
 	indent="yes"
 	encoding="UTF-8"/>
 
+<xsl:variable name="literalNbsp">&amp;nbsp;</xsl:variable>
+
 <xsl:variable name="bugTableHeader">
 	<tr class="tableheader">
-		<th align="left">Code&#160;</th>
+		<th align="left">Code<xsl:value-of select="$literalNbsp" disable-output-escaping="yes"/></th>
 		<th align="left">Warning</th>
 	</tr>
 </xsl:variable>
