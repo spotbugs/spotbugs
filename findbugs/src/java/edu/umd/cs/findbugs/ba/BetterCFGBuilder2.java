@@ -42,7 +42,7 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes {
 	 * ---------------------------------------------------------------------- */
 
 	/**
-	 * A work list item for creating the CFG for a context.
+	 * A work list item for creating the CFG for a subroutine.
 	 */
 	private static class WorkListItem {
 		private final InstructionHandle start;
@@ -58,8 +58,8 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes {
 	}
 
 	/**
-	 * A placeholder for a control edge that escapes its context to return
-	 * control back to an outer (calling) context.  It will turn into a
+	 * A placeholder for a control edge that escapes its subroutine to return
+	 * control back to an outer (calling) subroutine.  It will turn into a
 	 * real edge during inlining.
 	 */
 	private static class EscapeTarget {
@@ -76,27 +76,27 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes {
 	}
 
 	/**
-	 * A Context for inlining JSR subroutines.  The top level
-	 * context is where execution starts.  Each JSR subroutine is
-	 * its own context.  Each context has its own CFG.  Eventually,
-	 * all JSR subroutines will be inlined into the top level context,
-	 * resulting in an accurate CFG for the overall method which is
-	 * free from JSR subroutines.
+	 * JSR subroutine.  The top level subroutine is where execution starts.
+	 * Each subroutine has its own CFG.  Eventually,
+	 * all JSR subroutines will be inlined into the top level subroutine,
+	 * resulting in an accurate CFG for the overall method.
 	 */
-	private class Context {
+	private class Subroutine {
 		private final InstructionHandle start;
 		private final BitSet instructionSet;
 		private final CFG cfg;
 		private IdentityHashMap<InstructionHandle, BasicBlock> blockMap;
 		private IdentityHashMap<BasicBlock, List<EscapeTarget>> escapeTargetListMap;
+		private HashSet<BasicBlock> returnBlockSet;
 		private LinkedList<WorkListItem> workList;
 
-		public Context(InstructionHandle start) {
+		public Subroutine(InstructionHandle start) {
 			this.start = start;
 			this.instructionSet = new BitSet();
 			this.cfg = new CFG();
 			this.blockMap = new IdentityHashMap<InstructionHandle, BasicBlock>();
 			this.escapeTargetListMap = new IdentityHashMap<BasicBlock, List<EscapeTarget>>();
+			this.returnBlockSet = new HashSet<BasicBlock>();
 			this.workList = new LinkedList<WorkListItem>();
 		}
 
@@ -112,7 +112,7 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes {
 		public void addInstruction(InstructionHandle handle) throws CFGBuilderException {
 			int position = handle.getPosition();
 			if (usedInstructionSet.get(position))
-				throw new CFGBuilderException("Instruction " + handle + " visited in multiple contexts");
+				throw new CFGBuilderException("Instruction " + handle + " visited in multiple subroutines");
 			instructionSet.set(position);
 			usedInstructionSet.set(position);
 		}
@@ -127,9 +127,24 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes {
 			return block;
 		}
 
+		/**
+		 * Indicate that the method returns at the end of the given block.
+		 * @param block the returning block
+		 */
+		public void setReturnBlock(BasicBlock block) {
+			returnBlockSet.add(block);
+		}
+
+		/**
+		 * Does the method return at the end of this block?
+		 */
+		public boolean blockReturns(BasicBlock block) {
+			return returnBlockSet.contains(block);
+		}
+
 		public void addEdgeAndExplore(BasicBlock sourceBlock, InstructionHandle target, int edgeType) {
 			if (usedInstructionSet.get(target.getPosition())) {
-				// Control escapes this context
+				// Control escapes this subroutine
 				List<EscapeTarget> escapeTargetList = escapeTargetListMap.get(sourceBlock);
 				if (escapeTargetList == null) {
 					escapeTargetList = new LinkedList<EscapeTarget>();
@@ -137,7 +152,7 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes {
 				}
 				escapeTargetList.add(new EscapeTarget(target, edgeType));
 			} else {
-				// Edge within the current context
+				// Edge within the current subroutine
 				BasicBlock targetBlock = getBlock(target);
 
 				// Add only if no edge with same source and target already exists.
@@ -152,6 +167,58 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes {
 		}
 	}
 
+	/**
+	 * Inlining context.
+	 */
+	private static class Context {
+		private final Context caller;
+		private final Subroutine subroutine;
+		private final CFG result;
+		private final IdentityHashMap<BasicBlock, BasicBlock> blockMap;
+		private final LinkedList<BasicBlock> workList;
+
+		public Context(Context caller, Subroutine subroutine, CFG result) {
+			this.caller = caller;
+			this.subroutine = subroutine;
+			this.result = result;
+			this.blockMap = new IdentityHashMap<BasicBlock, BasicBlock>();
+			this.workList = new LinkedList<BasicBlock>();
+		}
+
+		public Context				getCaller()			{ return caller; }
+		public Subroutine			getSubroutine()		{ return subroutine; }
+		public CFG					getResult()			{ return result; }
+		public void					addItem(BasicBlock item){ workList.add(item); }
+		public boolean				hasMoreWork()		{ return !workList.isEmpty(); }
+		public BasicBlock			nextItem()			{ return workList.removeFirst(); }
+
+		/**
+		 * Map a basic block in a subroutine to the corresponding block
+		 * in the resulting CFG.
+		 * @param subBlock the subroutine block
+		 * @param resultBlock the result CFG block
+		 */
+		public void mapBlock(BasicBlock subBlock, BasicBlock resultBlock) {
+			blockMap.put(subBlock, resultBlock);
+		}
+
+		/**
+		 * Get the block in the result CFG corresponding to the given
+		 * subroutine block.
+		 * @param subBlock the subroutine block
+		 * @return the result CFG block
+		 */
+		public BasicBlock getBlock(BasicBlock subBlock) {
+			BasicBlock resultBlock = blockMap.get(subBlock);
+			if (resultBlock == null) {
+				resultBlock = result.allocate();
+				blockMap.put(subBlock, resultBlock);
+				workList.add(subBlock);
+			}
+			return resultBlock;
+		}
+	}
+
 	/* ----------------------------------------------------------------------
 	 * Instance data
 	 * ---------------------------------------------------------------------- */
@@ -160,9 +227,10 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes {
 	private ConstantPoolGen cpg;
 	private ExceptionHandlerMap exceptionHandlerMap;
 	private BitSet usedInstructionSet;
-	private LinkedList<Context> contextWorkList;
-	private IdentityHashMap<InstructionHandle, Context> jsrMap;
-	private Context topLevelContext;
+	private LinkedList<Subroutine> subroutineWorkList;
+	private IdentityHashMap<InstructionHandle, Subroutine> jsrSubroutineMap;
+	private Subroutine topLevelSubroutine;
+	private CFG cfg;
 
 	/* ----------------------------------------------------------------------
 	 * Public methods
@@ -173,38 +241,39 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes {
 		this.cpg = methodGen.getConstantPool();
 		this.exceptionHandlerMap = new ExceptionHandlerMap(methodGen);
 		this.usedInstructionSet = new BitSet();
-		this.jsrMap = new IdentityHashMap<InstructionHandle, Context>();
-		this.contextWorkList = new LinkedList<Context>();
+		this.jsrSubroutineMap = new IdentityHashMap<InstructionHandle, Subroutine>();
+		this.subroutineWorkList = new LinkedList<Subroutine>();
 	}
 
 	public void build() throws CFGBuilderException {
-		topLevelContext = new Context(methodGen.getInstructionList().getStart());
-		contextWorkList.add(topLevelContext);
+		topLevelSubroutine = new Subroutine(methodGen.getInstructionList().getStart());
+		subroutineWorkList.add(topLevelSubroutine);
 
-		while (!contextWorkList.isEmpty()) {
-			Context context = contextWorkList.removeFirst();
-			build(context);
+		// Build top level subroutine and all JSR subroutines
+		while (!subroutineWorkList.isEmpty()) {
+			Subroutine subroutine = subroutineWorkList.removeFirst();
+			build(subroutine);
 		}
 
-		// TODO: inline everything into the top level context
+		// Inline everything into the top level subroutine
+		cfg = inlineAll();
 	}
 
 	public CFG getCFG() {
-		// FIXME
-		return topLevelContext.getCFG();
+		return cfg;
 	}
 
 	/* ----------------------------------------------------------------------
 	 * Implementation
 	 * ---------------------------------------------------------------------- */
 
-	private void build(Context context) throws CFGBuilderException {
+	private void build(Subroutine subroutine) throws CFGBuilderException {
 		// Prime the work list
-		context.addEdgeAndExplore(context.getEntry(), context.getStartInstruction(), START_EDGE);
+		subroutine.addEdgeAndExplore(subroutine.getEntry(), subroutine.getStartInstruction(), START_EDGE);
 
-		// Keep going until all basic blocks in the context have been added
-		while (context.hasMoreWork()) {
-			WorkListItem item = context.nextItem();
+		// Keep going until all basic blocks in the subroutine have been added
+		while (subroutine.hasMoreWork()) {
+			WorkListItem item = subroutine.nextItem();
 
 			InstructionHandle handle = item.getStartInstruction();
 			Instruction ins = handle.getInstruction();
@@ -212,10 +281,10 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes {
 
 			// Add exception handler block (ETB) for exception-throwing instructions
 			if (isPEI(handle)) {
-				handleExceptions(context, handle, basicBlock);
+				handleExceptions(subroutine, handle, basicBlock);
 				basicBlock.setExceptionThrower(handle);
-				BasicBlock body = context.allocateBasicBlock();
-				context.addEdge(basicBlock, body, FALL_THROUGH_EDGE);
+				BasicBlock body = subroutine.allocateBasicBlock();
+				subroutine.addEdge(basicBlock, body, FALL_THROUGH_EDGE);
 				basicBlock = body;
 			}
 
@@ -224,7 +293,7 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes {
 			do {
 				// Add the instruction to the block
 				basicBlock.addInstruction(handle);
-				context.addInstruction(handle);
+				subroutine.addInstruction(handle);
 
 				short opcode = ins.getOpcode();
 
@@ -233,25 +302,25 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes {
 				// if (ins instanceof ASTORE) ...
 
 				if (opcode == Constants.JSR || opcode == Constants.JSR_W) {
-					// Find JSR subroutine, add it to context work list if
+					// Find JSR subroutine, add it to subroutine work list if
 					// we haven't built a CFG for it yet
 					JsrInstruction jsr = (JsrInstruction) ins;
 					InstructionHandle jsrTarget = jsr.getTarget();
-					Context jsrContext = jsrMap.get(jsrTarget);
-					if (jsrContext == null) {
-						jsrContext = new Context(jsrTarget);
-						jsrMap.put(jsrTarget, jsrContext);
-						contextWorkList.add(jsrContext);
+					Subroutine jsrSubroutine = jsrSubroutineMap.get(jsrTarget);
+					if (jsrSubroutine == null) {
+						jsrSubroutine = new Subroutine(jsrTarget);
+						jsrSubroutineMap.put(jsrTarget, jsrSubroutine);
+						subroutineWorkList.add(jsrSubroutine);
 					}
 
 					// This ends the basic block.
 					// Add a JSR_EDGE to the successor.
 					// It will be replaced later by the inlined JSR subroutine.
-					context.addEdgeAndExplore(basicBlock, handle.getNext(), JSR_EDGE);
+					subroutine.addEdgeAndExplore(basicBlock, handle.getNext(), JSR_EDGE);
 					endOfBasicBlock = true;
 				} else if (opcode == Constants.RET) {
 					// End of JSR subroutine
-					context.addEdge(basicBlock, context.getExit(), RET_EDGE);
+					subroutine.addEdge(basicBlock, subroutine.getExit(), RET_EDGE);
 					endOfBasicBlock = true;
 				} else {
 					TargetEnumeratingVisitor visitor = new TargetEnumeratingVisitor(handle, cpg);
@@ -260,12 +329,14 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes {
 
 						// Add control edges as appropriate
 						if (visitor.instructionIsThrow()) {
-							handleExceptions(context, handle, basicBlock);
+							handleExceptions(subroutine, handle, basicBlock);
+						} else if (visitor.instructionIsReturn() || visitor.instructionIsExit()) {
+							subroutine.setReturnBlock(basicBlock);
 						} else {
 							Iterator<Target> i = visitor.targetIterator();
 							while (i.hasNext()) {
 								Target target = i.next();
-								context.addEdgeAndExplore(basicBlock, target.getTargetInstruction(),
+								subroutine.addEdgeAndExplore(basicBlock, target.getTargetInstruction(),
 									target.getEdgeType());
 							}
 						}
@@ -279,7 +350,7 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes {
 
 					// Is the next instruction a control merge or a PEI?
 					if (isMerge(next) || isPEI(next)) {
-						context.addEdgeAndExplore(basicBlock, next, FALL_THROUGH_EDGE);
+						subroutine.addEdgeAndExplore(basicBlock, next, FALL_THROUGH_EDGE);
 						endOfBasicBlock = true;
 					} else {
 						// Basic block continues
@@ -291,7 +362,7 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes {
 		}
 	}
 
-	private void handleExceptions(Context context, InstructionHandle pei, BasicBlock etb) {
+	private void handleExceptions(Subroutine subroutine, InstructionHandle pei, BasicBlock etb) {
 		List<CodeExceptionGen> exceptionHandlerList = exceptionHandlerMap.getHandlerList(pei);
 		if (exceptionHandlerList == null)
 			return;
@@ -301,7 +372,7 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes {
 		while (i.hasNext()) {
 			CodeExceptionGen exceptionHandler = i.next();
 			InstructionHandle handlerStart = exceptionHandler.getHandlerPC();
-			context.addEdgeAndExplore(etb, handlerStart, HANDLED_EXCEPTION_EDGE);
+			subroutine.addEdgeAndExplore(etb, handlerStart, HANDLED_EXCEPTION_EDGE);
 		}
 	}
 
@@ -330,6 +401,64 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes {
 			}
 		}
 		return false;
+	}
+
+	private CFG inlineAll() throws CFGBuilderException {
+		// Special case: if there are no JSR subroutines, then
+		// the top level subroutine is the complete CFG for the method
+		if (jsrSubroutineMap.isEmpty())
+			return topLevelSubroutine.getCFG();
+
+		CFG result = new CFG();
+
+		Context rootContext = new Context(null, topLevelSubroutine, result);
+		rootContext.mapBlock(topLevelSubroutine.getEntry(), result.getEntry());
+		rootContext.mapBlock(topLevelSubroutine.getExit(), result.getExit());
+
+		inline(rootContext);
+
+		return result;
+	}
+
+	public void inline(Context context) {
+
+		// TODO: check to ensure we're not trying to inline something that is recursive
+
+		while (context.hasMoreWork()) {
+			BasicBlock subBlock = context.nextItem();
+
+		}
+
+/*
+		while (blocks are left) {
+
+			get block from subroutine
+			get corresponding block from result
+			copy instructions into result block
+
+			if (block terminated by JSR) {
+				get JSR subroutine
+				create new context
+				map context start to current block
+				map context end to JSR target block
+				inline (new context, result)
+			} else {
+				for each outgoing edge {
+					map each target to result blocks (add block to to work list if needed)
+					add edges to result
+				}
+
+				for each outgoing escape target {
+					add edges into blocks in outer contexts (adding those blocks to outer work list if needed)
+				}
+
+				if (block returns) {
+					add return edge from result block to result CFG exit block
+				}
+			}
+
+		}
+*/
 	}
 
 	public static void main(String[] argv) throws Exception {
