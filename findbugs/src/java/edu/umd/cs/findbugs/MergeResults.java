@@ -106,7 +106,7 @@ public class MergeResults {
 
 			public void execute() {
 				if (UPDATE_CATEGORIES) {
-					for (Iterator<BugInstance> i = getNewCollection().getCollection().iterator(); i.hasNext(); ) {
+					for (Iterator<BugInstance> i = getNewCollection().iterator(); i.hasNext(); ) {
 						// All bugs not in categories contained in the
 						// original set will be preserved unconditionally.
 						updateCategorySet.add(i.next().getAbbrev());
