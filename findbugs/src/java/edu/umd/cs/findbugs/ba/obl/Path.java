@@ -66,6 +66,19 @@ public class Path {
 		
 		return dup;
 	}
+	
+	/**
+	 * Make this Path identical to the given one.
+	 * 
+	 * @param other a Path to which this object should be made identical
+	 */
+	public void copyFrom(Path other) {
+		grow(other.length - 1);
+		for (int i = 0; i < other.length; ++i) {
+			this.blockIdList[i] = other.blockIdList[i];
+		}
+		this.length = other.length;
+	}
 
 	private void grow(int index) {
 		if (index >= blockIdList.length) {
