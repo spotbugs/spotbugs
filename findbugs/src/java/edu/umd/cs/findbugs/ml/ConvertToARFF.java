@@ -37,7 +37,6 @@ import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.TreeSet;
 
-import org.dom4j.Attribute;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.Node;
@@ -155,25 +154,43 @@ public class ConvertToARFF {
 	private static final int NOT_BUG = 2;
 	private static final int HARMLESS = 4;
 	private static final int HARMLESS_BUG = HARMLESS | BUG;
+	
+	public static abstract class AbstractClassificationAttribute implements Attribute {
 
-	public static class ClassificationAttribute implements Attribute {
+		/* (non-Javadoc)
+		 * @see edu.umd.cs.findbugs.ml.ConvertToARFF.Attribute#getName()
+		 */
 		public String getName() {
 			return "classification";
 		}
 
+		/* (non-Javadoc)
+		 * @see edu.umd.cs.findbugs.ml.ConvertToARFF.Attribute#scan(org.dom4j.Element, java.lang.String)
+		 */
 		public void scan(Element element, String appName) throws MissingNodeException {
 		}
 
-		public String getRange() {
-			return "{bug,not_bug,harmless_bug}";
-		}
-
+		/* (non-Javadoc)
+		 * @see edu.umd.cs.findbugs.ml.ConvertToARFF.Attribute#getInstanceValue(org.dom4j.Element, java.lang.String)
+		 */
 		public String getInstanceValue(Element element, String appName) throws MissingNodeException {
 			String annotationText = element.valueOf("./UserAnnotation[text()]");
 			//System.out.println("annotationText=" + annotationText);
 
 			int state = getBugClassification(annotationText);
+			return bugToString(state);
+		}
+		
+		protected abstract String bugToString(int bugType) throws MissingNodeException;
+		
+	}
 
+	public static class ClassificationAttribute extends AbstractClassificationAttribute {
+		public String getRange() {
+			return "{bug,not_bug,harmless_bug}";
+		}
+		
+		protected String bugToString(int state) throws MissingNodeException {
 			if (state == NOT_BUG)
 				return "not_bug";
 			else if (state == BUG)
@@ -182,6 +199,28 @@ public class ConvertToARFF {
 				return "harmless_bug";
 			else
 				throw new MissingNodeException("Unclassified warning");
+
+		}
+	}
+	
+	public static class BinaryClassificationAttribute extends AbstractClassificationAttribute {
+		/* (non-Javadoc)
+		 * @see edu.umd.cs.findbugs.ml.ConvertToARFF.Attribute#getRange()
+		 */
+		public String getRange() {
+			return "{bug, not_bug}";
+		}
+		
+		/* (non-Javadoc)
+		 * @see edu.umd.cs.findbugs.ml.ConvertToARFF.AbstractClassificationAttribute#bugToString(int)
+		 */
+		protected String bugToString(int state) throws MissingNodeException {
+			if (state == BUG)
+				return "bug";
+			else if (state == NOT_BUG || state == HARMLESS_BUG)
+				return "not_bug";
+			else
+				throw new MissingNodeException("unclassified warning");
 		}
 	}
 
@@ -580,6 +619,7 @@ public class ConvertToARFF {
 			addOption("-nominal", "attrName,xpath", "add a nominal attribute");
 			addOption("-numeric", "attrName,xpath", "add a numeric attribute");
 			addSwitch("-classification", "add bug classification attribute");
+			addSwitch("-binclass", "add binary (bug/not_bug) classification attribute");
 			addSwitch("-priority", "add priority attribute");
 		}
 
@@ -601,6 +641,8 @@ public class ConvertToARFF {
 				converter.addDefaultAttributes();
 			} else if (option.equals("-classification")) {
 				converter.addClassificationAttribute();
+			} else if (option.equals("-binclass")) {
+				converter.addAttribute(new BinaryClassificationAttribute());
 			} else if (option.equals("-priority")) {
 				converter.addPriorityAttribute();
 			}
