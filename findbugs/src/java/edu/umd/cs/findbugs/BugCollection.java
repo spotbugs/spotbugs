@@ -261,7 +261,7 @@ public abstract class BugCollection {
 			BufferedReader reader = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(buf)));
 			String line;
 			while ((line = reader.readLine()) != null) {
-				if (line.equals("<BugCollection>"))
+				if (line.startsWith("<BugCollection"))
 					return;
 			}
 
