@@ -23,7 +23,15 @@ import java.util.*;
 import org.apache.bcel.generic.InstructionHandle;
 import edu.umd.cs.daveho.ba.*;
 
-public class PatternMatcher {
+/**
+ * Match a ByteCodePattern against the code of a method, represented
+ * by a CFG.  Produces some number of ByteCodePatternMatch objects, which
+ * indicate how the pattern matched the bytecode instructions in the method.
+ *
+ * @see ByteCodePattern
+ * @author David Hovemeyer
+ */
+public class PatternMatcher implements DFSEdgeTypes {
 	private ByteCodePattern pattern;
 	private CFG cfg;
 	private DepthFirstSearch dfs;
@@ -31,6 +39,13 @@ public class PatternMatcher {
 	private IdentityHashMap<BasicBlock, BasicBlock> visitedBlockMap;
 	private LinkedList<ByteCodePatternMatch> resultList;
 
+	/**
+	 * Constructor.
+	 * @param pattern the ByteCodePattern to look for examples of
+	 * @param cfg the CFG for the method to search
+	 * @param dfs an initialized DepthFirstSearch object; used to detect loop backedges
+	 *   in the CFG
+	 */
 	public PatternMatcher(ByteCodePattern pattern, CFG cfg, DepthFirstSearch dfs) {
 		this.pattern = pattern;
 		this.cfg = cfg;
@@ -40,6 +55,9 @@ public class PatternMatcher {
 		this.resultList = new LinkedList<ByteCodePatternMatch>();
 	}
 
+	/**
+	 * Search for examples of the ByteCodePattern.
+	 */
 	public void execute() {
 		workList.addLast(cfg.getEntry());
 
@@ -48,10 +66,10 @@ public class PatternMatcher {
 			visitedBlockMap.put(basicBlock, basicBlock);
 
 			// Scan instructions of basic block for possible matches
-			Iterator<InstructionHandle> i = basicBlock.instructionIterator();
+			BasicBlock.InstructionIterator i = basicBlock.instructionIterator();
 			while (i.hasNext()) {
-				InstructionHandle handle = i.next();
-				attemptMatch(basicBlock, handle);
+				attemptMatch(basicBlock, i);
+				i.next();
 			}
 
 			// Add successors of the basic block (which haven't been visited already)
@@ -64,30 +82,96 @@ public class PatternMatcher {
 		}
 	}
 
-	private void attemptMatch(BasicBlock basicBlock, InstructionHandle handle) {
-		work(basicBlock, handle, pattern.getFirst(), 0, null, null);
+	/**
+	 * Return an Iterator over the ByteCodePatternMatch objects representing
+	 * successful matches of the ByteCodePattern.
+	 */
+	public Iterator<ByteCodePatternMatch> byteCodePatternMatchIterator() {
+		return resultList.iterator();
 	}
 
-	private void work(BasicBlock basicBlock, InstructionHandle handle, PatternElement patternElement, int matchCount,
-		PatternElementMatch prevMatch, BindingSet bindingSet) {
+	/**
+	 * Attempt to begin a match.
+	 * @param basicBlock the basic block
+	 * @param instructionIterator the instruction iterator positioned just before
+	 *  the first instruction to be matched
+	 */
+	private void attemptMatch(BasicBlock basicBlock, BasicBlock.InstructionIterator instructionIterator) {
+		work(basicBlock, instructionIterator, pattern.getFirst(), 0, null, null);
+	}
+
+	/**
+	 * Match a pattern.  The InstructionIterator should generally be positioned just
+	 * before the next instruction to be matched.  However, it may be positioned
+	 * at the end of a basic block, which which case nothing will happen except that
+	 * we will try to continue the match in the non-backedge successors of
+	 * the basic block.
+	 */
+	private void work(BasicBlock basicBlock, BasicBlock.InstructionIterator instructionIterator,
+		PatternElement patternElement, int matchCount,
+		PatternElementMatch currentMatch, BindingSet bindingSet) {
 
 		// Have we reached the end of the pattern?
 		if (patternElement == null) {
 			// This is a complete match.
-			resultList.add(new ByteCodePatternMatch(bindingSet, prevMatch));
+			resultList.add(new ByteCodePatternMatch(bindingSet, currentMatch));
 			return;
 		}
 
 		// If we've reached the minimum number of occurrences for this
 		// pattern element, we can advance to the next pattern element without trying
-		// to match again this instruction.
+		// to match this instruction again.
 		if (matchCount >= patternElement.minOccur())
-			work(basicBlock, handle, patternElement.getNext(), 0, prevMatch, bindingSet);
+			work(basicBlock, instructionIterator.duplicate(), patternElement.getNext(), 0, currentMatch, bindingSet);
 
-		// Try to match this instruction against the pattern element.
+		// If we've reached the maximum number of occurrences for this
+		// pattern element, then we can't continue.
+		if (matchCount >= patternElement.maxOccur())
+			return;
 
-		// If we haven't reached the maximum number of occurrences,
-		// we can continue using the same pattern element.
+		boolean matchedCurrentInstruction = false;
+
+		// Is there another instruction in this basic block?
+		if (instructionIterator.hasNext()) {
+			// Try to match the current instruction against the pattern element.
+			InstructionHandle handle = instructionIterator.next();
+			bindingSet = patternElement.match(handle, bindingSet);
+			if (bindingSet == null)
+				// Not a match.
+				return;
+
+			// Successful match!
+			matchedCurrentInstruction = true;
+			++matchCount;
+			currentMatch = new PatternElementMatch(patternElement, handle, matchCount, currentMatch);
+		}
+
+		// Continue the match at each successor instruction,
+		// using the same PatternElement.
+		if (instructionIterator.hasNext()) {
+			// Easy case; continue matching in the same basic block.
+			work(basicBlock, instructionIterator, patternElement, matchCount, currentMatch, bindingSet);
+		} else {
+			// We've reached the end of the basic block.
+			// Try to advance to the successors of this basic block,
+			// ignoring loop backedges.
+			Iterator<Edge> i = cfg.outgoingEdgeIterator(basicBlock);
+			while (i.hasNext()) {
+				Edge edge = i.next();
+				if (dfs.getDFSEdgeType(edge) == BACK_EDGE)
+					continue;
+
+				// If the PatternElement has just matched an instruction,
+				// then we allow it to choose which edges are acceptable.
+				// This allows PatternElements to select particular control edges;
+				// for example, only continue the pattern on the true branch
+				// of an "if" comparison.
+				if (!matchedCurrentInstruction || patternElement.acceptBranch(edge)) {
+					BasicBlock destBlock = edge.getDest();
+					work(destBlock, destBlock.instructionIterator(), patternElement, matchCount, currentMatch, bindingSet);
+				}
+			}
+		}
 
 	}
 }
