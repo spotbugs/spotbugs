@@ -58,11 +58,11 @@ public class MutableLock extends BytecodeScanningDetector implements   Constants
 		setFields.clear();
 		break;
 	case PUTFIELD:
-		if (classConstant == className) 
+		if (classConstant.equals(className))
 			setFields.add(nameConstant);
 		break;
 	case GETFIELD: 
-		if (thisOnTOS && classConstant == className
+		if (thisOnTOS && classConstant.equals(className)
 			&& setFields.contains(nameConstant)
 			&& asUnsignedByte(codeBytes[PC+3]) == DUP
 			&& asUnsignedByte(codeBytes[PC+5]) == MONITORENTER

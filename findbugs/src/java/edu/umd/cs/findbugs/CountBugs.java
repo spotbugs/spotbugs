@@ -126,14 +126,10 @@ public class CountBugs {
 		while(j.hasNext()) {
 			Map.Entry<String,Integer> entry = j.next();
 			int count = entry.getValue().intValue();
-			if (count > 0) {
+			if (count != 0) {
 				pout.print(entry.getKey() + ":\t");
-				if (deltas) {
-					if (count < 0)
-						pout.print("-");
-					else if (count > 0)
+				if (deltas && count > 0)
 						pout.print("+");
-				}
 				pout.println(count);
 			}
 		}

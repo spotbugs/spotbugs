@@ -83,13 +83,7 @@ public class ValueNumber implements Comparable<ValueNumber> {
 		return number - other.number;
 	}
 
-	public int hashCode() {
-		return System.identityHashCode(this);
-	}
 
-	public boolean equals(Object o) {
-		return this == o;
-	}
 
 }
 

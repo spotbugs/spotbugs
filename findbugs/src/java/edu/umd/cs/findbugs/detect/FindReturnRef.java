@@ -97,6 +97,11 @@ public class FindReturnRef extends BytecodeScanningDetector implements   Constan
 		}
 	if (!staticMethod && dangerousToStoreIntoField && seen == PUTFIELD 
 			&& MutableStaticFields.mutableSignature(sigConstant) ) {
+		bugReporter.reportBug(new BugInstance("EI_EXPOSE_REP2", NORMAL_PRIORITY)
+			.addClassAndMethod(this)
+			.addField(classConstant, nameConstant, sigConstant, 
+					true)
+			.addSourceLine(this));
 		/*
 		System.out.println("Store of parameter " 
 				+ r +"/" + parameterCount 
@@ -159,7 +164,7 @@ public class FindReturnRef extends BytecodeScanningDetector implements   Constan
 		}
 			
 
-	if (thisOnTOS && seen == GETFIELD && classConstant == className)  {
+	if (thisOnTOS && seen == GETFIELD && classConstant.equals(className))  {
 		fieldOnTOS = true;
 		thisOnTOS = false;
 		nameOnStack = nameConstant;
@@ -169,7 +174,7 @@ public class FindReturnRef extends BytecodeScanningDetector implements   Constan
 		// System.out.println("Saw getfield");
 		return;
 		}
-	if (seen == GETSTATIC && classConstant == className)  {
+	if (seen == GETSTATIC && classConstant.equals(className))  {
 		fieldOnTOS = true;
 		thisOnTOS = false;
 		nameOnStack = nameConstant;

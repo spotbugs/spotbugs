@@ -253,9 +253,6 @@ public abstract class BugCollection {
 				numRead += n;
 			}
 
-			if (numRead < buf.length)
-				throw new IOException("XML does not contain saved bug data");
-
 			in.reset();
 
 			BufferedReader reader = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(buf)));

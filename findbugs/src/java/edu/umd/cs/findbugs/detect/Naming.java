@@ -58,7 +58,7 @@ public class Naming extends PreorderVisitor implements Detector, Constants2 {
 		}
 	public boolean confusingMethodNames(MyMethod m) {
 		return methodName.equalsIgnoreCase(m.methodName)
-			& !methodName.equals(m.methodName);
+			&& !methodName.equals(m.methodName);
 		}
 	public String toString() {
 		return getClassName() 
