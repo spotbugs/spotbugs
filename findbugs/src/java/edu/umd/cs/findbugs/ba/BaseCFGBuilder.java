@@ -32,7 +32,12 @@ import org.apache.bcel.generic.*;
  * @see BasicBlock
  * @see Edge
  */
-public abstract class BaseCFGBuilder implements CFGBuilder, EdgeTypes, Debug {
+public abstract class BaseCFGBuilder implements CFGBuilder, EdgeTypes {
+    /**
+     * Set this property to true to get debug print statements.
+     */
+    private static final boolean DEBUG = Boolean.getBoolean("cfg.debug");
+
     protected MethodGen methodGen;
     protected LineNumberMap lineNumberMap;
     protected CFG cfg;

@@ -267,7 +267,7 @@ public class BasicCFGBuilder extends BaseCFGBuilder implements EdgeTypes, CFGBui
 				addDuplicateEdge(bb, cfg.getExit(), UNHANDLED_EXCEPTION_EDGE);
 		}
 
-		if (VERIFY_INTEGRITY)
+		if (Debug.VERIFY_INTEGRITY)
 			cfg.checkIntegrity();
 	}
 
