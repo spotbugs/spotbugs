@@ -36,101 +36,6 @@ import org.apache.bcel.generic.*;
 public class TypeFrame extends Frame<Type> implements Constants, ExtendedTypes {
 
 	////////////////////////////////////////////////////////////////////////////////////
-	// Helper classes
-	////////////////////////////////////////////////////////////////////////////////////
-
-	/** Special "top" type.  */
-	private static class Top extends Type {
-		public Top() {
-			super(T_TOP, "<top>");
-		}
-		public int hashCode() { return System.identityHashCode(this); }
-		public boolean equals(Object o) { return o == this; }
-	}
-
-	/** The single instance of the Top type. */
-	private static Top s_topInstance = new Top();
-
-	/** Get the single instance of the "Top" type. */
-	public static Type getTopType() { return s_topInstance; }
-
-	/** Special "bottom" type. */
-	private static class Bottom extends Type {
-		public Bottom() {
-			super(T_BOTTOM, "<bottom>");
-		}
-		public int hashCode() { return System.identityHashCode(this); }
-		public boolean equals(Object o) { return o == this; }
-	}
-
-	/** The single instance of the Bottom type. */
-	private static Bottom s_bottomInstance = new Bottom();
-
-	/** Get the single instance of the "Bottom" type. */
-	public static Type getBottomType() { return s_bottomInstance; }
-
-	/**
-	 * Special type used to represent the "extra" part of a long
-	 * value.  We say that when a long is stored, local <i>n</i> will
-	 * have type long, and local <i>n+1</i> will have this
-	 * type.
-	 */
-	private static class LongExtra extends Type {
-		public LongExtra() {
-			super(T_LONG_EXTRA, "<long extra>");
-		}
-		public int hashCode() { return System.identityHashCode(this); }
-		public boolean equals(Object o) { return o == this; }
-	}
-
-	/** The single instance of the LongExtra type. */
-	private static LongExtra s_longExtraInstance = new LongExtra();
-
-	/** Get the single instance of the "LongExtra" type. */
-	public static Type getLongExtraType() { return s_longExtraInstance; }
-
-	/**
-	 * Special type used to represent the "extra" part of a double
-	 * value.  We say that when a double is stored, local <i>n</i> will
-	 * have type double, and local <i>n+1</i> will have this
-	 * type.
-	 */
-	private static class DoubleExtra extends Type {
-		public DoubleExtra() {
-			super(T_DOUBLE_EXTRA, "<double extra>");
-		}
-		public int hashCode() { return System.identityHashCode(this); }
-		public boolean equals(Object o) { return o == this; }
-	}
-
-	/** The single instance of the DoubleExtra type. */
-	private static DoubleExtra s_doubleExtraInstance = new DoubleExtra();
-
-	/** Get the single instance of the "DoubleExtra" type. */
-	public static Type getDoubleExtraType() { return s_doubleExtraInstance; }
-
-	/**
-	 * Special type representing the null value.
-	 * This is a type which is higher in the lattice than any object type,
-	 * but lower than the overall Top type.  It represents the type
-	 * of the null value, which may logically be merged with any
-	 * object type without loss of information.
-	 */
-	private static class Null extends Type {
-		public Null() {
-			super(T_NULL, "<null type>");
-		}
-		public int hashCode() { return System.identityHashCode(this); }
-		public boolean equals(Object o) { return o == this; }
-	}
-
-	/** The single instance of the Null type. */
-	private static Null s_nullInstance = new Null();
-
-	/** Get the single instance of the "Null" type. */
-	public static Type getNullType() { return s_nullInstance; }
-
-	////////////////////////////////////////////////////////////////////////////////////
 	// Fields
 	////////////////////////////////////////////////////////////////////////////////////
 
@@ -169,6 +74,21 @@ public class TypeFrame extends Frame<Type> implements Constants, ExtendedTypes {
 	protected String valueToString(Type value) {
 		return value.toString() + ",";
 	}
+
+	/** Get the single instance of the "Top" type. */
+	public static Type getTopType() { return TopType.instance(); }
+
+	/** Get the single instance of the "Bottom" type. */
+	public static Type getBottomType() { return BottomType.instance(); }
+
+	/** Get the single instance of the "LongExtra" type. */
+	public static Type getLongExtraType() { return LongExtraType.instance(); }
+
+	/** Get the single instance of the "DoubleExtra" type. */
+	public static Type getDoubleExtraType() { return DoubleExtraType.instance(); }
+
+	/** Get the single instance of the "Null" type. */
+	public static Type getNullType() { return NullType.instance(); }
 
 }
 
