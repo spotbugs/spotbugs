@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs;
 
 import edu.umd.cs.pugh.visitclass.BetterVisitor;
 import edu.umd.cs.pugh.visitclass.DismantleBytecode;
+import edu.umd.cs.daveho.ba.SignatureConverter;
 
 /**
  * A BugAnnotation specifying a particular method in a particular class.
