@@ -299,83 +299,91 @@ public class FindInconsistentSync2 implements Detector {
 						}
 					}
 
+					if (xfield == null)
+						return;
+
 					// We only care about mutable nonvolatile nonpublic instance fields.
-					if (xfield != null &&
-						!(xfield.isStatic() || xfield.isPublic() || xfield.isVolatile() || xfield.isFinal())) {
+					if (xfield.isStatic() || xfield.isPublic() || xfield.isVolatile() || xfield.isFinal())
+						return;
 
-						ValueNumberFrame frame = vnaDataflow.getFactAtLocation(location);
-						ValueNumber thisValue = !method.isStatic() ? vnaDataflow.getAnalysis().getThisValue() : null;
-						LockSet lockSet = lockDataflow.getFactAtLocation(location);
-						InstructionHandle handle = location.getHandle();
+					// The value number frame could be invalid if the basic
+					// block became unreachable due to edge pruning (dead code).
+					ValueNumberFrame frame = vnaDataflow.getFactAtLocation(location);
+					if (!frame.isValid())
+						return;
+
+					// Get lock set and instance value
+					ValueNumber thisValue = !method.isStatic() ? vnaDataflow.getAnalysis().getThisValue() : null;
+					LockSet lockSet = lockDataflow.getFactAtLocation(location);
+					InstructionHandle handle = location.getHandle();
+					ValueNumber instance = frame.getInstance(handle.getInstruction(), cpg);
 				
-						// Is the instance locked?
-						// We consider the access to be locked if either
-						//   - the object is explicitly locked, or
-						//   - the field is accessed through the "this" reference,
-						//     and the method is in the locked method set, or
-						//   - any value returned by a called method is locked;
-						//     the (conservative) assumption is that the return lock object
-						//     is correct for synchronizing the access
-						ValueNumber instance = frame.getInstance(handle.getInstruction(), cpg);
-						boolean isExplicitlyLocked = lockSet.getLockCount(instance.getNumber()) > 0;
-						boolean isAccessedThroughThis = thisValue != null && thisValue.equals(instance);
-						boolean isLocked = isExplicitlyLocked
-							|| (lockedMethodSet.contains(method) && isAccessedThroughThis)
-							|| lockSet.containsReturnValue(vnaDataflow.getAnalysis().getFactory());
+					// Is the instance locked?
+					// We consider the access to be locked if either
+					//   - the object is explicitly locked, or
+					//   - the field is accessed through the "this" reference,
+					//     and the method is in the locked method set, or
+					//   - any value returned by a called method is locked;
+					//     the (conservative) assumption is that the return lock object
+					//     is correct for synchronizing the access
+					boolean isExplicitlyLocked = lockSet.getLockCount(instance.getNumber()) > 0;
+					boolean isAccessedThroughThis = thisValue != null && thisValue.equals(instance);
+					boolean isLocked = isExplicitlyLocked
+						|| (lockedMethodSet.contains(method) && isAccessedThroughThis)
+						|| lockSet.containsReturnValue(vnaDataflow.getAnalysis().getFactory());
 
-						// Adjust the field so its class name is the same
-						// as the type of reference it is accessed through.
-						// This helps fix false positives produced when a
-						// threadsafe class is extended by a subclass that
-						// doesn't care about thread safety.
-						if (ADJUST_SUBCLASS_ACCESSES) {
-							// Find the type of the object instance
-							TypeDataflow typeDataflow = classContext.getTypeDataflow(method);
-							TypeFrame typeFrame = typeDataflow.getFactAtLocation(location);
-							Type instanceType = typeFrame.getInstance(handle.getInstruction(), cpg);
+					// Adjust the field so its class name is the same
+					// as the type of reference it is accessed through.
+					// This helps fix false positives produced when a
+					// threadsafe class is extended by a subclass that
+					// doesn't care about thread safety.
+					if (ADJUST_SUBCLASS_ACCESSES) {
+						// Find the type of the object instance
+						TypeDataflow typeDataflow = classContext.getTypeDataflow(method);
+						TypeFrame typeFrame = typeDataflow.getFactAtLocation(location);
+						Type instanceType = typeFrame.getInstance(handle.getInstruction(), cpg);
 
-							// Note: instance type can be Null,
-							// in which case we won't adjust the field type.
-							if (instanceType != TypeFrame.getNullType()) {
-								if (!(instanceType instanceof ObjectType))
-									throw new AnalysisException("Field accessed through non-object reference " + instanceType,
-										methodGen, handle);
-								ObjectType objType = (ObjectType) instanceType;
+						// Note: instance type can be Null,
+						// in which case we won't adjust the field type.
+						if (instanceType != TypeFrame.getNullType()) {
+							if (!(instanceType instanceof ObjectType)) {
+								throw new AnalysisException("Field accessed through non-object reference " + instanceType,
+									methodGen, handle);
+							}
+							ObjectType objType = (ObjectType) instanceType;
 	
-								// If instance class name is not the same as that of the field,
-								// make it so
-								String instanceClassName = objType.getClassName();
-								if (!instanceClassName.equals(xfield.getClassName())) {
-									xfield = new InstanceField(
-										instanceClassName,
-										xfield.getFieldName(),
-										xfield.getFieldSignature(),
-										xfield.getAccessFlags()
-									);
-								}
+							// If instance class name is not the same as that of the field,
+							// make it so
+							String instanceClassName = objType.getClassName();
+							if (!instanceClassName.equals(xfield.getClassName())) {
+								xfield = new InstanceField(
+									instanceClassName,
+									xfield.getFieldName(),
+									xfield.getFieldSignature(),
+									xfield.getAccessFlags()
+								);
 							}
 						}
-				
-						int kind = 0;
-						kind |= isLocked ? LOCKED : UNLOCKED;
-						kind |= isWrite ? WRITE : READ;
-				
-						if (DEBUG) System.out.println("IS2:\t" +
-							SignatureConverter.convertMethodSignature(classContext.getMethodGen(method)) +
-							"\t" + xfield + "\t" + ((isWrite ? "W" : "R") + "/" + (isLocked ? "L" : "U")));
-				
-						FieldStats stats = getStats(xfield);
-						stats.addAccess(kind);
-				
-						if (isExplicitlyLocked && isLocal)
-							stats.addLocalLock();
-
-						if (isGetterMethod && !isLocked)
-							stats.addGetterMethodAccess();
-				
-						stats.addAccess(classContext, method, handle, isLocked);
 					}
-					// FIXME: should we do something for static fields?
+				
+					int kind = 0;
+					kind |= isLocked ? LOCKED : UNLOCKED;
+					kind |= isWrite ? WRITE : READ;
+				
+					if (DEBUG) System.out.println("IS2:\t" +
+						SignatureConverter.convertMethodSignature(classContext.getMethodGen(method)) +
+						"\t" + xfield + "\t" + ((isWrite ? "W" : "R") + "/" + (isLocked ? "L" : "U")));
+				
+					FieldStats stats = getStats(xfield);
+					stats.addAccess(kind);
+				
+					if (isExplicitlyLocked && isLocal)
+						stats.addLocalLock();
+
+					if (isGetterMethod && !isLocked)
+						stats.addGetterMethodAccess();
+				
+					stats.addAccess(classContext, method, handle, isLocked);
 				} catch (ClassNotFoundException e) {
 					bugReporter.reportMissingClass(e);
 				}
