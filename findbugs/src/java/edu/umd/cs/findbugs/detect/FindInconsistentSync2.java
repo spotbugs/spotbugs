@@ -41,6 +41,7 @@ public class FindInconsistentSync2 implements Detector {
 	private static final boolean DEBUG = Boolean.getBoolean("fis.debug");
 	private static final boolean SYNC_ACCESS = Boolean.getBoolean("fis.syncAccess");
 	private static final boolean ADJUST_SUBCLASS_ACCESSES = !Boolean.getBoolean("fis.noAdjustSubclass");
+	private static final boolean EVAL = Boolean.getBoolean("fis.eval");
 
 	/* ----------------------------------------------------------------------
 	 * Tuning parameters
@@ -238,7 +239,7 @@ public class FindInconsistentSync2 implements Detector {
 			if (unlocked == 0) 
 				continue;
 
-			if (numReadUnlocked > 0 && ((int)(UNSYNC_FACTOR * biasedUnlocked)) > biasedLocked)
+			if (!EVAL && numReadUnlocked > 0 && ((int)(UNSYNC_FACTOR * biasedUnlocked)) > biasedLocked)
 				continue;
 
 			// NOTE: we ignore access to public, volatile, and final fields
@@ -276,6 +277,11 @@ public class FindInconsistentSync2 implements Detector {
 					SourceLineAnnotation accessSourceLine = j.next();
 					bugInstance.addSourceLine(accessSourceLine).describe("SOURCE_LINE_SYNC_ACCESS");
 				}
+			}
+
+			if (EVAL) {
+				bugInstance.addInt(biasedLocked).describe("INT_BIASED_LOCKED");
+				bugInstance.addInt(biasedUnlocked).describe("INT_BIASED_UNLOCKED");
 			}
 
 			bugReporter.reportBug(bugInstance);
