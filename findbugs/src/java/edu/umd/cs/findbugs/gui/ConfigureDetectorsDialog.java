@@ -220,7 +220,7 @@ public class ConfigureDetectorsDialog extends javax.swing.JDialog {
     }
     
     private void populateTable() {
-        Iterator<DetectorFactory> i = FindBugs.factoryIterator();
+        Iterator<DetectorFactory> i = DetectorFactoryCollection.instance().factoryIterator();
         while (i.hasNext()) {
             DetectorFactory factory = i.next();
             DefaultTableModel model = (DefaultTableModel) detectorTable.getModel();
