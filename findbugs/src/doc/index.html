@@ -47,34 +47,12 @@ invited talk, MASPLAS 2003
 
 <h1>Changes since last version</h1>
 
-<p> Note that the version number jumped from 0.6.6 to 0.6.9;
-there were no 0.6.7 or 0.6.8 releases.
-
-<p> Changes since version 0.6.9:
-<ul>
-<li> Added -conserveSpace option to reduce memory use
-     at the expense of analysis precision
-<li> Bug fixes in findbugs.bat script: JAVA_HOME handling,
-     autodetection of FINDBUGS_HOME, missing output with -textui
-<li> Fixed NullPointerException when a missing class is encountered
-</ul>
-
-<p> Changes since version 0.6.6:
+<p> Changes since version 0.7.0:
 
 <ul>
-<li> The null pointer dereference detector is more powerful
-<li> Significantly improved heuristics and bug fixes in
-     inconsistent synchronization detector
-<li> Improved heuristics in open stream and dropped exception detectors;
-     fewer false positives should be reported
-<li> Save HTML summary in XML results files, rather than recomputing;
-     this makes loading results in GUI much faster
-<li> Report at most one String comparison using == or != per method
-<li> The findbugs.bat script on Windows autodetects FINDBUGS_HOME,
-     and doesn't open a DOS window when launching the GUI
-     (contributed by TJSB)
-<li> Emacs reporting format (contributed by David Li)
-<li> Various bug fixes
+<li> Zip and Jar files may be added to the source path
+<li> The GUI will automatically find source files residing in
+     analyzed Zip or Jar files
 </ul>
 
 <p> <a href="Changes.html">Older versions...</a>
