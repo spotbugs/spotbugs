@@ -19,7 +19,12 @@
 
 package edu.umd.cs.findbugs.ba;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.BitSet;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 
 import org.apache.bcel.Constants;
 
@@ -35,6 +40,9 @@ import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InstructionList;
 import org.apache.bcel.generic.INVOKESTATIC;
 import org.apache.bcel.generic.MethodGen;
+
+import edu.umd.cs.findbugs.ba.constant.ConstantAnalysis;
+import edu.umd.cs.findbugs.ba.constant.ConstantDataflow;
 
 /**
  * A ClassContext caches all of the auxiliary objects used to analyze
@@ -528,6 +536,21 @@ public class ClassContext implements AnalysisFeatures {
 		        }
 	        };
 
+	private AnalysisFactory<ConstantDataflow> constantDataflowFactory =
+		new AnalysisFactory<ConstantDataflow>("constant propagation analysis") {
+			//@Override
+			protected ConstantDataflow analyze(Method method) throws CFGBuilderException, DataflowAnalysisException {
+				ConstantAnalysis analysis = new ConstantAnalysis(
+					getMethodGen(method),
+					getDepthFirstSearch(method)
+				);
+				ConstantDataflow dataflow = new ConstantDataflow(getCFG(method), analysis);
+				dataflow.execute();
+				
+				return dataflow;
+			}
+		};
+			
 	private static final BitSet fieldInstructionOpcodeSet = new BitSet();
 	static {
 		fieldInstructionOpcodeSet.set(Constants.GETFIELD);
@@ -928,6 +951,11 @@ public class ClassContext implements AnalysisFeatures {
 			assertionMethods = new AssertionMethods(jclass);
 		}
 		return assertionMethods;
+	}
+	
+	public ConstantDataflow getConstantDataflow(Method method)
+			throws CFGBuilderException, DataflowAnalysisException {
+		return constantDataflowFactory.getAnalysis(method);
 	}
 }
 
