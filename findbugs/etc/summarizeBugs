@@ -1,0 +1,16 @@
+#! /usr/bin/perl
+
+use strict qw(refs vars);
+
+my %counts = ();
+
+while (<>) {
+	if (/^(\S+):/) {
+		$counts{$1}++;
+	}
+}
+
+foreach my $key (sort keys %counts) {
+	my $count = $counts{$key};
+	print "$key:\t$count\n";
+}
