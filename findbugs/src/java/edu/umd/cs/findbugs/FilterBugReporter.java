@@ -44,8 +44,16 @@ public class FilterBugReporter implements BugReporter {
 		realBugReporter.logError(message);
 	}
 
+	public void reportMissingClass(String message) {
+		realBugReporter.reportMissingClass(message);
+	}
+
 	public void finish() {
 		realBugReporter.finish();
+	}
+
+	public void reportQueuedErrors() {
+		realBugReporter.reportQueuedErrors();
 	}
 }
 

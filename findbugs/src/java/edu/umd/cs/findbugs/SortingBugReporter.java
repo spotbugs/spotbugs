@@ -25,7 +25,7 @@ import java.util.*;
  * A BugReporter which stores all of the reported bug instances,
  * and sorts them by class name before printing them.
  */
-public class SortingBugReporter implements BugReporter {
+public class SortingBugReporter extends TextUIBugReporter {
 	private TreeSet<BugInstance> bugInstanceSet = new TreeSet<BugInstance>(new Comparator<BugInstance>() {
 		public int compare(BugInstance lhs, BugInstance rhs) {
 			ClassAnnotation lca = lhs.getPrimaryClass();
@@ -43,10 +43,6 @@ public class SortingBugReporter implements BugReporter {
 		if (!bugInstanceSet.contains(bugInstance)) {
 			bugInstanceSet.add(bugInstance);
 		}
-	}
-
-	public void logError(String message) {
-		System.err.println(message);
 	}
 
 	public void finish() {

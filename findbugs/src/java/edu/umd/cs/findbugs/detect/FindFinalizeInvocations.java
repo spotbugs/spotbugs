@@ -54,7 +54,8 @@ public class FindFinalizeInvocations extends BytecodeScanningDetector implements
 		String overridesFinalizeIn 
 			= Lookup.findSuperImplementor(betterClassName, 
 						"finalize",
-						"()V");
+						"()V",
+						bugReporter);
 		boolean superHasNoFinalizer = overridesFinalizeIn.equals("java.lang.Object");
 		// System.out.println("superclass: " + superclassName);
 		    if (obj.getCode().length == 1)	 {

@@ -340,6 +340,9 @@ public class FindBugs implements Constants2
 
 	// Flush any queued bug reports
 	bugReporter.finish();
+
+	// Flush any queued error reports
+	bugReporter.reportQueuedErrors();
   }
 
   public static void main(String argv[]) throws Exception

@@ -42,7 +42,7 @@ public class DroppedException extends PreorderVisitor implements Detector, Const
 
     public void report() { }
 
-    static boolean isChecked(String c) {
+    boolean isChecked(String c) {
 	if (!causes.add(c)) return checkedCauses.contains(c);
 	try {
 		Class cl = Class.forName(c);
@@ -52,7 +52,7 @@ public class DroppedException extends PreorderVisitor implements Detector, Const
 		   return true;
 	    }
 	catch (ClassNotFoundException e) {
-		// just fall through
+		bugReporter.reportMissingClass(e.getMessage());
 		}
 	return false;
 	}

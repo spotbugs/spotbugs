@@ -65,7 +65,7 @@ public class SerializableIdiom extends PreorderVisitor
 		isSerializable = false;
 	  }
 	catch (ClassNotFoundException e) {
-		assert true;
+		bugReporter.reportMissingClass(e.getMessage());
 		}
 	foundSynthetic = false;
 	foundSynchronizedMethods = false;

@@ -29,7 +29,7 @@ public class Lookup
 	implements Constants2
 {
   public static JavaClass 
-	findSuperImplementor(JavaClass clazz, String name, String signature) {
+	findSuperImplementor(JavaClass clazz, String name, String signature, BugReporter bugReporter) {
 		try {
 			JavaClass c = 
 				findImplementor(Repository.getSuperClasses(clazz),
@@ -37,11 +37,12 @@ public class Lookup
 			return c;
 			}
 		catch (ClassNotFoundException e) {
+			bugReporter.reportMissingClass(e.getMessage());
 			return clazz;
 			}
 		}
   public static String 
-	findSuperImplementor(String clazz, String name, String signature) {
+	findSuperImplementor(String clazz, String name, String signature, BugReporter bugReporter) {
 		try {
 			JavaClass c = 
 				findImplementor(Repository.getSuperClasses(clazz),
@@ -49,6 +50,7 @@ public class Lookup
 			return (c != null) ? c.getClassName() : clazz;
 			}
 		catch (ClassNotFoundException e) {
+			bugReporter.reportMissingClass(e.getMessage());
 			return clazz;
 			}
 		}

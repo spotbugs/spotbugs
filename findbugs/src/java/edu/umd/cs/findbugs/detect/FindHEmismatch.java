@@ -48,13 +48,13 @@ public class FindHEmismatch extends BytecodeScanningDetector implements   Consta
 	String whereEqual = betterClassName;
 	if (!hasEqualsObject)
 		whereEqual = Lookup.findSuperImplementor(obj, "equals",
-					"(Ljava/lang/Object;)Z")
+					"(Ljava/lang/Object;)Z", bugReporter)
 			  .getClassName();
 	boolean usesDefaultEquals = whereEqual.equals("java.lang.Object");
 	String whereHashCode = betterClassName;
 	if (!hasHashCode)
 		whereHashCode = Lookup.findSuperImplementor(obj, "hashCode",
-					"()I")
+					"()I", bugReporter)
 			  .getClassName();
 	boolean usesDefaultHashCode = whereHashCode.equals("java.lang.Object");
 	if (!hasEqualsObject &&  hasEqualsSelf) {

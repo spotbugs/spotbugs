@@ -38,11 +38,23 @@ public interface BugReporter {
 	public void logError(String message);
 
 	/**
+	 * Report a class that was needed for analysis but which
+	 * could not be found.
+	 * @param message a message describing the missing class
+	 */
+	public void reportMissingClass(String message);
+
+	/**
 	 * Finish reporting bugs.
 	 * If any bug reports have been queued, calling this method
 	 * will flush them.
 	 */
 	public void finish();
+
+	/**
+	 * Report any accumulated error messages.
+	 */
+	public void reportQueuedErrors();
 }
 
 // vim:ts=4

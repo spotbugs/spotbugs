@@ -36,7 +36,7 @@ public class FindRunInvocations extends BytecodeScanningDetector implements   Co
 	  try {
 		return org.apache.bcel.Repository.instanceOf(clazz,"java.lang.Thread");
 	  } catch (ClassNotFoundException e) {
-		bugReporter.logError("Repository lookup failure: " + e.toString());
+		bugReporter.reportMissingClass(e.getMessage());
 		return false;
 	  }
 	}
