@@ -21,35 +21,69 @@
 package edu.umd.cs.findbugs.detect;
 import edu.umd.cs.findbugs.*;
 import edu.umd.cs.findbugs.visitclass.Constants2;
+import org.apache.bcel.classfile.Method;
 
 public class FindFloatEquality extends BytecodeScanningDetector implements Constants2 
 {
+	private static final int SAW_NOTHING = 0;
+	private static final int SAW_COMP = 1;
+	
 	private BugReporter bugReporter;
+	private OpcodeStack opStack;
+	private int state;
 
 	public FindFloatEquality(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 	}
+	
+	public void visit(Method obj) {
+		opStack = new OpcodeStack();
+		state = SAW_NOTHING;
+	}
 
 	public void sawOpcode(int seen) {
-		switch ( seen ) {
-			case FCMPG:
-			case FCMPL:
-			case DCMPG:
-			case DCMPL:
-				int nextOpcode = codeBytes[getPC() + 1] & 0xff;
-				if ( nextOpcode == IFEQ || nextOpcode == IFNE ) {
-					bugReporter.reportBug(
-						new BugInstance(
-							"FE_FLOATING_POINT_EQUALITY",
-							LOW_PRIORITY)
-						.addClassAndMethod(this)
-						.addSourceLine(this)
-						);
-				}
-			break;
-			
-			default:
-			break;
+		try {
+			switch ( seen ) {
+				case FCMPG:
+				case FCMPL:
+				case DCMPG:
+				case DCMPL:
+					if (opStack.getStackDepth() >= 2) {
+						OpcodeStack.Item first = opStack.getStackItem(0);
+						OpcodeStack.Item second = opStack.getStackItem(1);
+						
+						state = SAW_NOTHING;
+						Number n1 = (Number)first.getConstant();
+						Number n2 = (Number)second.getConstant();
+						if ((n1 != null) && (n1.doubleValue() == 0.0f))
+							return;
+						if ((n2 != null) && (n2.doubleValue() == 0.0f))
+							return;
+					}
+					state = SAW_COMP;
+				break;
+				
+				case IFEQ:
+				case IFNE:
+					if (state == SAW_COMP) {
+						bugReporter.reportBug(
+							new BugInstance(
+								"FE_FLOATING_POINT_EQUALITY",
+								LOW_PRIORITY)
+							.addClassAndMethod(this)
+							.addSourceLine(this)
+							);
+					}
+					state = SAW_NOTHING;
+				break;
+				
+				default:
+					state = SAW_NOTHING;
+				break;
+			}
+		}
+		finally {
+			opStack.sawOpcode(this, seen);
 		}
 	}
 }
