@@ -223,15 +223,6 @@ of Serializable classes.  It is a fast detector.
     </Details>
   </Detector>
 
-  <Detector class="edu.umd.cs.findbugs.detect.SimplePathsFindDoubleCheck" disabled="true" >
-    <Details>
-<![CDATA[
-<p> This detector looks for instances of double checked locking.
-It is a slow detector.  (It will probably be removed from FindBugs at some point.)
-]]>
-    </Details>
-  </Detector>
-
   <Detector class="edu.umd.cs.findbugs.detect.StartInConstructor" >
     <Details>
 <![CDATA[
@@ -1139,34 +1130,6 @@ defined in an interface references a mutable
   </BugPattern>
 
 
-  <BugPattern type="SPDC_STATIC_DOUBLECHECK">
-    <ShortDescription >スタティックフィールドを二重にチェックしている可能性がある。</ShortDescription>
-    <LongDescription >スタティックフィールド {2} を {1} で二重にチェックしている可能性がある。</LongDescription>
-    <Details>
-<![CDATA[
-  <!-- add details here -->
-  <p> This method may contain an instance of double-checked locking.&nbsp;
-  This idiom is not correct according to the semantics of the Java memory
-  model.&nbsp; For more information, see the web page
-  <a href="http://www.cs.umd.edu/~pugh/java/memoryModel/DoubleCheckedLocking.html"
-  >http://www.cs.umd.edu/~pugh/java/memoryModel/DoubleCheckedLocking.html</a>.
-]]>
-    </Details>
-  </BugPattern>
-  <BugPattern type="SPDC_DOUBLECHECK">
-    <ShortDescription >フィールドを二重にチェックしている可能性がある。</ShortDescription>
-    <LongDescription >{2} を {1} で二重にチェックしている可能性がある。</LongDescription>
-    <Details>
-<![CDATA[
-  <!-- add details here -->
-  <p> This method may contain an instance of double-checked locking.&nbsp;
-  This idiom is not correct according to the semantics of the Java memory
-  model.&nbsp; For more information, see the web page
-  <a href="http://www.cs.umd.edu/~pugh/java/memoryModel/DoubleCheckedLocking.html"
-  >http://www.cs.umd.edu/~pugh/java/memoryModel/DoubleCheckedLocking.html</a>.
-]]>
-    </Details>
-  </BugPattern>
   <BugPattern type="SC_START_IN_CTOR">
     <ShortDescription >コンストラクタが Thread.start()を読んでいる。</ShortDescription>
     <LongDescription >{1} は {2} を呼び出している</LongDescription>

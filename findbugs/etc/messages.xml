@@ -223,15 +223,6 @@ of Serializable classes.  It is a fast detector.
     </Details>
   </Detector>
 
-  <Detector class="edu.umd.cs.findbugs.detect.SimplePathsFindDoubleCheck" disabled="true" >
-    <Details>
-<![CDATA[
-<p> This detector looks for instances of double checked locking.
-It is a slow detector.  (It will probably be removed from FindBugs at some point.)
-]]>
-    </Details>
-  </Detector>
-
   <Detector class="edu.umd.cs.findbugs.detect.StartInConstructor" >
     <Details>
 <![CDATA[
@@ -1135,32 +1126,6 @@ Objects of this class will not be deserialized correctly.
     </Details>
   </BugPattern>
 
-  <BugPattern type="SPDC_STATIC_DOUBLECHECK">
-    <ShortDescription>Possible double check of static field</ShortDescription>
-    <LongDescription>Possible double check on static field {2} in {1}</LongDescription>
-    <Details>
-<![CDATA[
-  <p> This method may contain an instance of double-checked locking.&nbsp;
-  This idiom is not correct according to the semantics of the Java memory
-  model.&nbsp; For more information, see the web page
-  <a href="http://www.cs.umd.edu/~pugh/java/memoryModel/DoubleCheckedLocking.html"
-  >http://www.cs.umd.edu/~pugh/java/memoryModel/DoubleCheckedLocking.html</a>.
-]]>
-    </Details>
-  </BugPattern>
-  <BugPattern type="SPDC_DOUBLECHECK">
-    <ShortDescription>Possible double check of field</ShortDescription>
-    <LongDescription>Possible double check on {2} in {1}</LongDescription>
-    <Details>
-<![CDATA[
-  <p> This method may contain an instance of double-checked locking.&nbsp;
-  This idiom is not correct according to the semantics of the Java memory
-  model.&nbsp; For more information, see the web page
-  <a href="http://www.cs.umd.edu/~pugh/java/memoryModel/DoubleCheckedLocking.html"
-  >http://www.cs.umd.edu/~pugh/java/memoryModel/DoubleCheckedLocking.html</a>.
-]]>
-    </Details>
-  </BugPattern>
   <BugPattern type="SC_START_IN_CTOR">
     <ShortDescription>Constructor invokes Thread.start()</ShortDescription>
     <LongDescription>{1} invokes {2}</LongDescription>
@@ -1477,8 +1442,6 @@ for using a JSR-166 lock is:
   <BugCode abbrev="UuF" >Unused field</BugCode>
   <BugCode abbrev="UrF" >Unread field</BugCode>
   <BugCode abbrev="SIC" >Should be a static inner class?</BugCode>
-  <BugCode abbrev="SPSDC" >Possible double check of static field</BugCode>
-  <BugCode abbrev="SPDC" >Possible double check of field</BugCode>
   <BugCode abbrev="2LW" >Wait with two locks held</BugCode>
   <BugCode abbrev="BcpDC">Possible double check of field</BugCode>
   <BugCode abbrev="RV" >Return value of method is ignored</BugCode>
