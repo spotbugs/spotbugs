@@ -308,11 +308,16 @@ public class RunAnalysisDialog extends javax.swing.JDialog {
         pack();
     }//GEN-END:initComponents
 
-    private void cancelButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelButtonActionPerformed
-        // All we need to do to cancel the analysis is to interrupt
-        // the analysis thread.
-        analysisThread.interrupt();
-    }//GEN-LAST:event_cancelButtonActionPerformed
+	private void cancelButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelButtonActionPerformed
+		int option = JOptionPane.showConfirmDialog(this, "Cancel analysis?", "Analysis",
+		JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+		
+		if (option == JOptionPane.YES_OPTION) {
+			// All we need to do to cancel the analysis is to interrupt
+			// the analysis thread.
+			analysisThread.interrupt();
+		}
+	}//GEN-LAST:event_cancelButtonActionPerformed
 
     private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
         // Here is where we actually kick off the analysis thread.
