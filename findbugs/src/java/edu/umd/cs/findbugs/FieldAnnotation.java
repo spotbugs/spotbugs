@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs;
 import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 import edu.umd.cs.findbugs.ba.SignatureConverter;
+import org.apache.bcel.classfile.Field;
 import org.apache.bcel.generic.*;
 import org.dom4j.Element;
 import org.dom4j.Branch;
@@ -74,6 +75,15 @@ public class FieldAnnotation extends PackageMemberAnnotation {
 	public static FieldAnnotation fromReferencedField(DismantleBytecode visitor) {
 		return new FieldAnnotation(visitor.getDottedClassConstantOperand(), visitor.getNameConstantOperand(), visitor.getSigConstantOperand(),
 			visitor.getRefFieldIsStatic());
+	}
+
+	/**
+	 * Factory method. Construct from class name and BCEL Field object.
+	 * @param className the name of the class which defines the field
+	 * @param field the BCEL Field object
+	 */
+	public static FieldAnnotation fromBCELField(String className, Field field) {
+		return new FieldAnnotation(className, field.getName(), field.getSignature(), field.isStatic());
 	}
 
 	/**

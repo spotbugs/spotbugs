@@ -1,6 +1,7 @@
 /*
  * FindBugs - Find bugs in Java programs
- * Copyright (C) 2003,2004 University of Maryland
+ * Copyright (C) 2004, Dave Brosius <dbrosius@users.sourceforge.net>
+ * Copyright (C) 2004, University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -28,8 +29,8 @@ import edu.umd.cs.findbugs.visitclass.Constants2;
 public class FindMaskedFields extends BytecodeScanningDetector implements Constants2 {
 	private BugReporter bugReporter;
 	private int numParms;
-	private Set<Field> maskedFields = new HashSet<Field>();
-	private Map<String, Field> classFields = new HashMap<String, Field>();
+	private Map<String, FieldAnnotation> classFieldMap = new HashMap<String, FieldAnnotation>();
+	private Map<String, FieldAnnotation> superclassFieldMap = new HashMap<String, FieldAnnotation>();
 	private boolean staticMethod;
 
 	public FindMaskedFields(BugReporter bugReporter) {
@@ -39,51 +40,58 @@ public class FindMaskedFields extends BytecodeScanningDetector implements Consta
 	public void visit(JavaClass obj) {
 		if (obj.isInterface())
 			return;
-		classFields.clear();
-		
+		classFieldMap.clear();
+		superclassFieldMap.clear();
+
+		// Build map of fields in this class
 		Field[] fields = obj.getFields();
 		String fieldName;
 		for (int f = 0; f < fields.length; f++) {
-			fieldName = fields[f].getName();
-			classFields.put(fieldName, fields[f]);
+			FieldAnnotation fa = FieldAnnotation.fromBCELField(obj.getClassName(), fields[f]);
+			classFieldMap.put(fa.getFieldName(), fa);
 		}
-		
-		// Walk up the super class chain, looking for name collisions
-		try
-		{	
+
+		// Build map of visible instance fields in superclasses
+		// FIXME: would be nice to store these in a persistent data
+		// structure, rather than recreating them for each
+		// subclass.
+		try {	
 			JavaClass[] superClasses = org.apache.bcel.Repository.getSuperClasses(obj);
-				for (int c = 0; c < superClasses.length; c++) {
-					fields = superClasses[c].getFields();
-					for (int f = 0; f < fields.length; f++) {
-						Field fld = fields[f];
-						if (!fld.isStatic() 
-							&& !maskedFields.contains(fld)
-							&& (fld.isPublic() || fld.isProtected())) {
-							fieldName = fld.getName();
-							if (fieldName.length() == 1)
-								continue;
-							if (fieldName.equals("serialVersionUID"))
-								continue;
-							if (classFields.containsKey( fieldName )) {
-								maskedFields.add(fld);
-								Field maskingField = classFields.get( fieldName);
-								FieldAnnotation fa = new FieldAnnotation( getDottedClassName(),
-													  maskingField.getName(), 
-													  maskingField.getSignature(), 
-													  maskingField.isStatic());
-				                                bugReporter.reportBug(
-									new BugInstance("MF_CLASS_MASKS_FIELD", LOW_PRIORITY)
-				                                        	.addClass(this)
-				                                        	.addField(fa));
-							}
-						}
-					}
+			for (int c = 0; c < superClasses.length; c++) {
+				Field[] superFields = superClasses[c].getFields();
+				for (int f = 0; f < superFields.length; f++) {
+					Field superfield = superFields[f];
+
+					// Only want instance fields that are guaranteed to be visible
+					// FIXME: doesn't handle package-protected fields, which
+					// might be obscured by another class in the same package
+					if (superfield.isStatic() || !(superfield.isPublic() || superfield.isProtected()))
+						continue;
+
+					// Have we seen a superclass field with this name yet?
+					if (superclassFieldMap.get(superfield.getName()) != null)
+						continue;
+
+					// Add it
+					FieldAnnotation faSuper =
+						FieldAnnotation.fromBCELField(superClasses[c].getClassName(), superfield);
+					superclassFieldMap.put(superfield.getName(), faSuper);
+				}
 			}
+		} catch (ClassNotFoundException e) { 
+			bugReporter.reportMissingClass(e);
 		}
-		catch (ClassNotFoundException e) { 
-			bugReporter. reportMissingClass(e);
+
+		// Masked fields are the intersection of the fields defined
+		// by the class and the visible superclass fields.
+		Map<String, FieldAnnotation> intersection = new HashMap<String, FieldAnnotation>(superclassFieldMap);
+		intersection.keySet().retainAll(classFieldMap.keySet());
+		for (Iterator<FieldAnnotation> i = intersection.values().iterator(); i.hasNext(); ) {
+			bugReporter.reportBug(new BugInstance("MF_CLASS_MASKS_FIELD", LOW_PRIORITY)
+				.addClass(this)
+				.addField(i.next()).describe("FIELD_SUPER"));
 		}
-		
+
 		super.visit(obj);
 	}
 	
@@ -103,21 +111,18 @@ public class FindMaskedFields extends BytecodeScanningDetector implements Consta
 			String varName = var.getName();
 			if (varName.equals("serialVersionUID"))
 				continue;
-			if (classFields.containsKey(varName)) {
-				FieldAnnotation fa = new FieldAnnotation( getDottedClassName(), 
-										varName, 
-										var.getSignature(), 
-										false);
-				MethodAnnotation ma = MethodAnnotation.fromVisitedMethod(this);
+			FieldAnnotation fa;
+			if ((fa = classFieldMap.get(varName)) != null || (fa = superclassFieldMap.get(varName)) != null) {
 				if (var.getStartPC() > 0)
-		                        bugReporter.reportBug(
+					bugReporter.reportBug(
 						new BugInstance("MF_METHOD_MASKS_FIELD", NORMAL_PRIORITY)
-		                                	.addClass(this)
-		                                	.addMethod(ma)
-		                                	.addField(fa)
-		                                	.addSourceLine(this, var.getStartPC()-1));
+							.addClassAndMethod(this)
+							.addField(fa)
+							.addSourceLine(this, var.getStartPC()-1));
 			}
 		}
 		super.visit(obj);
 	}
 }
+
+// vim:ts=4
