@@ -23,6 +23,8 @@ import java.util.*;
 import org.apache.bcel.Constants;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.*;
+import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.INVOKESTATIC;
 
 /**
  * Singleton class to determine which methods are accessors used
@@ -68,6 +70,24 @@ public class InnerClassAccessMap {
 		return map.get(methodName);
 	}
 
+	/**
+	 * Get the inner class access object for given invokestatic instruction.
+	 * Returns null if the called method is not an inner class access.
+	 * @param inv the invokestatic instruction
+	 * @param cpg the ConstantPoolGen for the method
+	 * @return the InnerClassAccess, or null if the call is not an inner class access
+	 */
+	public InnerClassAccess getInnerClassAccess(INVOKESTATIC inv, ConstantPoolGen cpg) throws ClassNotFoundException {
+		String methodName = inv.getMethodName(cpg);
+		if (methodName.startsWith("access$")) {
+			String className = inv.getClassName(cpg);
+			String methodSig = inv.getSignature(cpg);
+
+			return getInnerClassAccess(className, methodName);
+		}
+		return null;
+	}
+
 	/* ----------------------------------------------------------------------
 	 * Implementation
 	 * ---------------------------------------------------------------------- */
@@ -88,6 +108,18 @@ public class InnerClassAccessMap {
 	/** Get an unsigned 16 bit constant pool index from a byte array. */
 	private static int getIndex(byte[] instructionList, int index) {
 		return (toInt(instructionList[index+1]) << 8) | toInt(instructionList[index+2]);
+	}
+
+	private static class LookupFailure extends RuntimeException {
+		private final ClassNotFoundException exception;
+
+		public LookupFailure(ClassNotFoundException exception) {
+			this.exception = exception;
+		}
+
+		public ClassNotFoundException getException() {
+			return exception;
+		}
 	}
 
 	/**
@@ -165,12 +197,13 @@ public class InnerClassAccessMap {
 			String fieldName = nameAndType.getName(cp);
 			String fieldSig = nameAndType.getSignature(cp);
 
-			XField xfield = isStatic
-				? (XField) new StaticField(className, fieldName, fieldSig)
-				: (XField) new InstanceField(className, fieldName, fieldSig);
-
-			if (isValidAccessMethod(methodSig, xfield, isLoad))
-				access = new InnerClassAccess(methodName, methodSig, xfield, isLoad);
+			try {
+				XField xfield = Lookup.findXField(className, fieldName, fieldSig);
+				if (xfield != null && xfield.isStatic() == isStatic && isValidAccessMethod(methodSig, xfield, isLoad))
+					access = new InnerClassAccess(methodName, methodSig, xfield, isLoad);
+			} catch (ClassNotFoundException e) {
+				throw new LookupFailure(e);
+			}
 		}
 
 		/**
@@ -238,7 +271,11 @@ public class InnerClassAccessMap {
 				byte[] instructionList = code.getCode();
 				String methodSig = method.getSignature();
 				InstructionCallback callback = new InstructionCallback(javaClass, methodName, methodSig, instructionList);
-				new BytecodeScanner().scan(instructionList, callback);
+				try {
+					new BytecodeScanner().scan(instructionList, callback);
+				} catch (LookupFailure lf) {
+					throw lf.getException();
+				}
 				InnerClassAccess access = callback.getAccess();
 				if (access != null)
 					map.put(methodName, access);

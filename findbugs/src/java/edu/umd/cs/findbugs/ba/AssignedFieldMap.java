@@ -89,7 +89,8 @@ public class AssignedFieldMap implements Constants {
 				assignable = myPackageName.equals(superPackageName);
 
 			if (assignable) {
-				assignableFieldSet.add(new InstanceField(superClassName, field.getName(), field.getSignature()));
+				assignableFieldSet.add(new InstanceField(superClassName, field.getName(), field.getSignature(),
+					field.getAccessFlags()));
 			}
 		}
 	}

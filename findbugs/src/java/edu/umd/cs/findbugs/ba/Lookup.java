@@ -59,6 +59,7 @@ public class Lookup {
 		return null;
 	}
 
+/*
 	public static JavaClass findClassDefiningField(String className, String fieldName, String fieldSig)
 		throws ClassNotFoundException {
 
@@ -78,6 +79,37 @@ public class Lookup {
 
 		return null;
 	}
+*/
+
+	public static XField findXField(String className, String fieldName, String fieldSig)
+		throws ClassNotFoundException {
+
+		JavaClass classDefiningField = Repository.lookupClass(className);
+
+		Field field = null;
+	loop:
+		while (classDefiningField != null) {
+			Field[] fieldList = classDefiningField.getFields();
+			for (int i = 0; i < fieldList.length; ++i) {
+				field = fieldList[i];
+				if (field.getName().equals(fieldName) && field.getSignature().equals(fieldSig)) {
+					break loop;
+				}
+			}
+	
+			classDefiningField = classDefiningField.getSuperClass();
+		}
+
+		if (classDefiningField == null)
+			return null;
+		else {
+			String realClassName = classDefiningField.getClassName();
+			int accessFlags = field.getAccessFlags();
+			return field.isStatic()
+				? (XField) new StaticField(realClassName, fieldName, fieldSig, accessFlags)
+				: (XField) new InstanceField(realClassName, fieldName, fieldSig, accessFlags);
+		}
+	}
 
 	public static XField findXField(FieldInstruction fins, ConstantPoolGen cpg)
 		throws ClassNotFoundException {
@@ -86,18 +118,13 @@ public class Lookup {
 		String fieldName = fins.getFieldName(cpg);
 		String fieldSig = fins.getSignature(cpg);
 
-		JavaClass classDefiningField = Lookup.findClassDefiningField(className, fieldName, fieldSig);
-
-		if (classDefiningField == null)
+		XField xfield = findXField(className, fieldName, fieldSig);
+		short opcode = fins.getOpcode();
+		if (xfield != null &&
+			xfield.isStatic() == (opcode == Constants.GETSTATIC || opcode == Constants.PUTSTATIC))
+			return xfield;
+		else
 			return null;
-		else {
-			short opcode = fins.getOpcode();
-			boolean isStatic = (opcode == Constants.GETSTATIC || opcode == Constants.PUTSTATIC);
-			String realClassName = classDefiningField.getClassName();
-			return isStatic
-				? (XField) new StaticField(realClassName, fieldName, fieldSig)
-				: (XField) new InstanceField(realClassName, fieldName, fieldSig);
-		}
 	}
 }
 

@@ -45,6 +45,16 @@ public interface XField extends Comparable<XField> {
 	 * Is this a static field?
 	 */
 	public boolean isStatic();
+
+	/**
+	 * Is this a volatile field?
+	 */
+	public boolean isVolatile();
+
+	/**
+	 * Is this a final field?
+	 */
+	public boolean isFinal();
 }
 
 // vim:ts=4
