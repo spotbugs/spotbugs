@@ -267,7 +267,7 @@ is suspiciously ignored.  It is a fairly fast detector.
     <Details>
 <![CDATA[
 <p> This detector looks for places where a null pointer exception might
-occur.  Is is a moderately fast detector.
+occur.  It is a moderately fast detector.
 ]]>
     </Details>
   </Detector>
