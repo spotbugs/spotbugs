@@ -29,15 +29,7 @@ import java.io.PrintStream;
 
 import java.util.Iterator;
 
-public class PrintBugDescriptions {
-	private String docTitle;
-	private PrintStream out;
-
-	public PrintBugDescriptions(String docTitle, OutputStream out) {
-		this.docTitle = docTitle;
-		this.out = new PrintStream(out);
-	}
-
+public abstract class PrintBugDescriptions {
 	public void print() throws IOException {
 		// Ensure bug patterns are loaded
 		DetectorFactoryCollection.instance();
@@ -53,27 +45,11 @@ public class PrintBugDescriptions {
 		epilogue();
 	}
 
-	private void prologue() throws IOException {
-		out.println("<html><head><title>" + docTitle + "</title></head><body>");
-		out.println("<h1>" + docTitle + "</h1>");
-	}
+	protected abstract void prologue() throws IOException;
 
-	private void emit(BugPattern bugPattern) throws IOException {
-		out.println("<h2>" + bugPattern.getAbbrev() + ": " +
-			bugPattern.getShortDescription() + "</h2>");
-		out.println(bugPattern.getDetailText());
-	}
+	protected abstract void emit(BugPattern bugPattern);
 
-	private void epilogue() throws IOException {
-		out.println("</body></html>");
-	}
-
-	public static void main(String[] args) throws Exception {
-		String docTitle = "FindBugs Bug Descriptions";
-		if (args.length > 0)
-			docTitle = args[0];
-		new PrintBugDescriptions(docTitle, System.out).print();
-	}
+	protected abstract void epilogue() throws IOException;
 }
 
 // vim:ts=3
