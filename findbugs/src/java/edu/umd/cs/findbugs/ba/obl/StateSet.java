@@ -32,9 +32,11 @@ import java.util.Map;
  * <a href="http://doi.acm.org/10.1145/1028976.1029011"
  * >Finding and preventing run-time error handling mistakes</a>,
  * OOPSLA 2004.</p>
+ * 
+ * @author David Hovemeyer
  */
 public class StateSet {
-	private interface StateCallback {
+	public interface StateCallback {
 		public void apply(State state) throws NonexistentObligationException;
 	}
 	
@@ -67,6 +69,17 @@ public class StateSet {
 
 	public boolean isValid() {
 		return !this.isTop && !this.isBottom;
+	}
+	
+	/**
+	 * Get the State which has the given ObligationSet.
+	 * Returns null if there is no such state.
+	 * 
+	 * @param obligationSet we want to get the State with this ObligationSet
+	 * @return the State with the given ObligationSet, or null if there is no such State
+	 */
+	public State getStateWithObligationSet(ObligationSet obligationSet) {
+		return stateMap.get(obligationSet);
 	}
 	
 	public void makeEmpty() {
@@ -151,7 +164,7 @@ public class StateSet {
 	 * @param callback        the callback
 	 * @param updatedStateMap updated map of ObligationSets to States
 	 */
-	private void applyToAllStatesAndUpdateMap(StateCallback callback,
+	public void applyToAllStatesAndUpdateMap(StateCallback callback,
 			Map<ObligationSet, State> updatedStateMap)
 			throws NonexistentObligationException {
 		applyToAllStates(callback);
@@ -163,7 +176,7 @@ public class StateSet {
 	 * 
 	 * @param callback
 	 */
-	private void applyToAllStates(StateCallback callback)
+	public void applyToAllStates(StateCallback callback)
 			throws NonexistentObligationException {
 		for (Iterator<State> i = stateMap.values().iterator();
 			i.hasNext();) {
