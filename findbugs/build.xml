@@ -108,6 +108,10 @@
       <pathelement location="${jar.dir}/dom4j-full.jar" />
       <pathelement location="${jar.dir}/junit.jar"/>
     </path>
+    
+    <path id="test.classpath">
+      <pathelement location="${jar.dir}/junit.jar"/>
+    </path>
 
     <!--
       *****************************************************************
@@ -391,7 +395,9 @@
        <javac srcdir="${test.dir}" 
               source="1.5"
               target="jsr14"
-              excludes="IgnoredReturnValue.java,TryLock.java,JSR166.java" debug="true" />
+              excludes="IgnoredReturnValue.java,TryLock.java,JSR166.java" debug="true">
+          <classpath refid="test.classpath"/>
+       </javac>
        <jar destfile="${test.dir}/dumb.jar" basedir="${test.dir}" includes="*.class"
             excludes="IgnoredReturnValue*.class,TryLock*.class" />
     </target>

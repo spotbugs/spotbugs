@@ -487,6 +487,14 @@ It is a fast detector.
   </Detector>
 
 
+  <Detector class="edu.umd.cs.findbugs.detect.InvalidJUnitTest">
+    <Details>
+<![CDATA[
+<p> This detector looks for JUnit tests that are malformed.
+It is a fast detector.
+]]>
+    </Details>
+  </Detector>
   <Detector class="edu.umd.cs.findbugs.detect.FindBugsSummaryStats">
     <Details>
 <![CDATA[
@@ -2195,6 +2203,38 @@ directly. This avoids the need to create a second array
     </Details>
   </BugPattern>
   
+  <BugPattern type="IJU_SETUP_NO_SUPER">
+    <ShortDescription>TestCase implements setUp but doesn't call super.setUp()</ShortDescription>
+    <LongDescription>TestCase implements setUp but doesn't call super.setUp()</LongDescription>
+    <Details>
+<![CDATA[
+<p> Class is a JUnit TestCase and implements the setUp method. The setUp method should call
+super.setUp(), but doesn't.
+]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="IJU_TEARDOWN_NO_SUPER">
+    <ShortDescription>TestCase implements tearDown but doesn't call super.tearDown()</ShortDescription>
+    <LongDescription>TestCase implements tearDown but doesn't call super.tearDown()</LongDescription>
+    <Details>
+<![CDATA[
+<p> Class is a JUnit TestCase and implements the tearDown method. The tearDown method should call
+super.tearDown(), but doesn't.
+]]>
+    </Details>
+  </BugPattern>  
+  
+  <BugPattern type="IJU_SUITE_NOT_STATIC">
+    <ShortDescription>TestCase implements a suite method, but this method is not static and should be</ShortDescription>
+    <LongDescription>TestCase implements a suite method, but this method is not static and should be</LongDescription>
+    <Details>
+<![CDATA[
+<p> Class is a JUnit TestCase and implements the suite() method. The suite method should be declared as being static, but isn't.
+]]>
+    </Details>
+  </BugPattern>  
+  
   <!--
   **********************************************************************
    BugCodes
@@ -2266,4 +2306,5 @@ directly. This avoids the need to create a second array
   <BugCode abbrev="ITA">Inefficient use of collection.toArray(new Foo[0])</BugCode>
   <BugCode abbrev="SW">Swing coding rules</BugCode>
   <BugCode abbrev="MF">Masked Field</BugCode>
+  <BugCode abbrev="IJU">Improperly implemented JUnit TestCase</BugCode>
 </MessageCollection>
