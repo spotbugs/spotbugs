@@ -457,6 +457,7 @@
 <!--
         <jvmarg value="-Dtr.debug=true"/>
 -->
+        <jvmarg value="-Dfindbugs.home=${findbugs.dir}"/>
         <classpath path="${tools.dir}"/>
         <classpath path="${jar.dir}/junit.jar"/>
         <classpath refid="classpath"/>
