@@ -221,10 +221,21 @@ public class UserPreferences {
 		}
 	}
 
+	/**
+	 * Get List of recent project filenames.
+	 * 
+	 * @return List of recent project filenames
+	 */
 	public List<String> getRecentProjects() {
 		return recentProjectsList;
 	}
 
+	/**
+	 * Add given project filename to the front of the recently-used
+	 * project list.
+	 * 
+	 * @param projectName project filename
+	 */
 	public void useProject(String projectName) {
 		for (int i = 0; i < recentProjectsList.size(); i++) {
 			if (projectName.equals(recentProjectsList.get(i))) {
@@ -238,6 +249,11 @@ public class UserPreferences {
 			recentProjectsList.removeLast();
 	}
 
+	/**
+	 * Remove project filename from the recently-used project list.
+	 * 
+	 * @param projectName project filename
+	 */
 	public void removeProject(String projectName) {
 		//It really should always be in slot 0, but...
 		for (int i = 0; i < recentProjectsList.size(); i++) {
@@ -295,14 +311,29 @@ public class UserPreferences {
 		}
 	}
 	
+	/**
+	 * Get ProjectFilterSettings.
+	 * 
+	 * @return the ProjectFilterSettings
+	 */
 	public ProjectFilterSettings getFilterSettings() {
 		return this.filterSettings;
 	}
 
+	/**
+	 * Get the detector threshold (min severity to report a warning).
+	 * 
+	 * @return the detector threshold
+	 */
 	public int getUserDetectorThreshold() {
 		return filterSettings.getMinPriorityAsInt();
 	}
 
+	/**
+	 * Set the detector threshold  (min severity to report a warning). 
+	 * 
+	 * @param threshold the detector threshold
+	 */
 	public void setUserDetectorThreshold(int threshold) {
 		String minPriority = ProjectFilterSettings.getIntPriorityAsString(threshold);
 		filterSettings.setMinPriority(minPriority);
