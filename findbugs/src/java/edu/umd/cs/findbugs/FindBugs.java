@@ -373,6 +373,7 @@ public class FindBugs implements Constants2
    * main() method
    * ---------------------------------------------------------------------- */
 
+  public static int lowestPriorityReported = Detector.NORMAL_PRIORITY;
   public static void main(String argv[]) throws Exception
   { 
 	BugReporter bugReporter = null;
@@ -388,7 +389,13 @@ public class FindBugs implements Constants2
 		String option = argv[argCount];
 		if (!option.startsWith("-"))
 			break;
-		if (option.equals("-sortByClass"))
+		if (option.equals("-low"))
+			lowestPriorityReported = Detector.LOW_PRIORITY;
+		else if (option.equals("-medium"))
+			lowestPriorityReported = Detector.NORMAL_PRIORITY;
+		else if (option.equals("-high"))
+			lowestPriorityReported = Detector.HIGH_PRIORITY;
+		else if (option.equals("-sortByClass"))
 			bugReporter = new SortingBugReporter();
 		else if (option.equals("-xml"))
 			bugReporter = new XMLBugReporter(classNameToSourceFileMap);

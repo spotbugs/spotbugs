@@ -36,6 +36,20 @@ public class SortingBugReporter extends TextUIBugReporter {
 		Iterator<BugInstance> i = bugCollection.iterator();
 		while (i.hasNext()) {
 			BugInstance bugInstance = i.next();
+			if (bugInstance.getPriority() 
+				> FindBugs.lowestPriorityReported)
+				continue;
+			switch(bugInstance.getPriority()) {
+			case Detector.LOW_PRIORITY:
+				System.out.print("L ");
+				break;
+			case Detector.NORMAL_PRIORITY:
+				System.out.print("M ");
+				break;
+			case Detector.HIGH_PRIORITY:
+				System.out.print("H ");
+				break;
+			}
 			System.out.println(bugInstance.getMessage());
 		}
 	}
