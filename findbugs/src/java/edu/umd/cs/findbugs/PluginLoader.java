@@ -146,11 +146,12 @@ public class PluginLoader extends URLClassLoader {
 				String className = detectorNode.valueOf("@class");
 				String speed = detectorNode.valueOf("@speed");
 				String disabled = detectorNode.valueOf("@disabled");
+				String reports = detectorNode.valueOf("@reports");
 	
 				//System.out.println("Found detector: class="+className+", disabled="+disabled);
 	
 				Class detectorClass = loadClass(className);
-				DetectorFactory factory = new DetectorFactory(detectorClass, !disabled.equals("true"), speed);
+				DetectorFactory factory = new DetectorFactory(detectorClass, !disabled.equals("true"), speed, reports);
 				detectorFactoryList.add(factory);
 				detectorFactoryMap.put(className, factory);
 			}

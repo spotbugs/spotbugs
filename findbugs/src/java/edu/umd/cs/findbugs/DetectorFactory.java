@@ -21,6 +21,10 @@ package edu.umd.cs.findbugs;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.StringTokenizer;
 
 /**
  * A DetectorFactory is responsible for creating instances of Detector objects
@@ -33,6 +37,7 @@ public class DetectorFactory {
 	private final Class detectorClass;
 	private boolean enabled;
 	private final String speed;
+	private final String reports;
 	private String detailHTML;
 
 	/**
@@ -41,11 +46,14 @@ public class DetectorFactory {
 	 * @param enabled true if the Detector is enabled by default, false if disabled
 	 * @param speed a string describing roughly how expensive the analysis performed
 	 *   by the detector is; suggested values are "fast", "moderate", and "slow"
+	 * @param reports comma separated list of bug pattern codes reported
+	 *   by the detector; empty if unknown
 	 */
-	public DetectorFactory(Class detectorClass, boolean enabled, String speed) {
+	public DetectorFactory(Class detectorClass, boolean enabled, String speed, String reports) {
 		this.detectorClass = detectorClass;
 		this.enabled = enabled;
 		this.speed = speed;
+		this.reports = reports;
 	}
 
 	private static final Class[] constructorArgTypes = new Class[]{BugReporter.class};
@@ -63,6 +71,28 @@ public class DetectorFactory {
 	/** Get the speed of the Detector produced by this factory. */
 	public String getSpeed() {
 		return speed;
+	}
+
+	/** Get list of bug pattern codes reported by the detector: blank if unknown. */
+	public String getReportedBugPatternCodes() {
+		return reports;
+	}
+
+	/**
+	 * Get Collection of all BugPatterns this detector reports.
+	 * An empty Collection means that we don't know what kind of
+	 * bug patterns might be reported.
+	 */
+	public Collection<BugPattern> getReportedBugPatterns() {
+		List<BugPattern> result = new LinkedList<BugPattern>();
+		StringTokenizer tok = new StringTokenizer(reports, ",");
+		while (tok.hasMoreTokens()) {
+			String type = tok.nextToken();
+			BugPattern bugPattern = I18N.instance().lookupBugPattern(type);
+			if (bugPattern != null)
+				result.add(bugPattern);
+		}
+		return result;
 	}
 
 	/** Get an HTML document describing the Detector. */
