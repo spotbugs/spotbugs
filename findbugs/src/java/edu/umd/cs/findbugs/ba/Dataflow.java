@@ -108,7 +108,7 @@ public class Dataflow<Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 					Iterator<Edge> predEdgeIter = logicalPredecessorEdgeIterator(block);
 					while (predEdgeIter.hasNext()) {
 						Edge edge = predEdgeIter.next();
-						BasicBlock logicalPred = isForwards ? edge.getSource() : edge.getDest();
+						BasicBlock logicalPred = isForwards ? edge.getSource() : edge.getTarget();
 						Fact predFact = analysis.getResultFact(logicalPred);
 
 						if (DEBUG) debug(block, logicalPred, "Meet " + start + " with " + predFact);

@@ -696,7 +696,7 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 					inline(jsrContext);
 				} else {
 					// Ordinary control edge
-					BasicBlock resultTarget = context.getBlock(edge.getDest());
+					BasicBlock resultTarget = context.getBlock(edge.getTarget());
 					result.addEdge(resultBlock, resultTarget, edge.getType());
 				}
 			}

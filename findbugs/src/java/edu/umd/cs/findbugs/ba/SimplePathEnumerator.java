@@ -105,13 +105,13 @@ public class SimplePathEnumerator implements EdgeTypes, DFSEdgeTypes {
 		Edge last = partialPath.getLast();
 
 		// Is this a complete path?
-		if (last.getDest() == cfg.getExit()) {
+		if (last.getTarget() == cfg.getExit()) {
 			pathList.add(new LinkedList<Edge>(partialPath));
 			return;
 		}
 
 		// Look for non-backedge, non-unhandled-exception outgoing edges, and recur.
-		Iterator<Edge> i = cfg.outgoingEdgeIterator(last.getDest());
+		Iterator<Edge> i = cfg.outgoingEdgeIterator(last.getTarget());
 		while (i.hasNext()) {
 			Edge outEdge = i.next();
 

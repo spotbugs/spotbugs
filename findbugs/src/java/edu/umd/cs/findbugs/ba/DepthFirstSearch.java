@@ -162,7 +162,7 @@ public class DepthFirstSearch implements DFSEdgeTypes {
 
 	private void visitSuccessor(ArrayList<Visit> stack, Edge edge) {
 		// Get the successor
-		BasicBlock succ = edge.getDest();
+		BasicBlock succ = edge.getTarget();
 		int succColor = getColor(succ);
 
 		// Classify edge type (if possible)
@@ -196,7 +196,7 @@ public class DepthFirstSearch implements DFSEdgeTypes {
 			int dfsEdgeType = getDFSEdgeType(edge);
 			if (dfsEdgeType == UNKNOWN_EDGE) {
 				int srcDiscoveryTime = getDiscoveryTime(edge.getSource());
-				int destDiscoveryTime = getDiscoveryTime(edge.getDest());
+				int destDiscoveryTime = getDiscoveryTime(edge.getTarget());
 
 				if (srcDiscoveryTime < destDiscoveryTime) {
 					// If the source was visited earlier than the

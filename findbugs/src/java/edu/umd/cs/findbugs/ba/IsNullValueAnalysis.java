@@ -125,7 +125,7 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
 				}
 			}
 
-			final BasicBlock destBlock = edge.getDest();
+			final BasicBlock destBlock = edge.getTarget();
 
 			if (destBlock.isExceptionHandler()) {
 				// Exception handler - clear stack and push a non-null value
@@ -218,7 +218,7 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
 					// For all of the instructions which have a null-checked
 					// reference operand, it is pushed onto the stack before
 					// all of the other operands to the instruction.
-					Instruction firstInDest = edge.getDest().getFirstInstruction().getInstruction();
+					Instruction firstInDest = edge.getTarget().getFirstInstruction().getInstruction();
 					int numSlotsConsumed = firstInDest.consumeStack(methodGen.getConstantPool());
 					if (numSlotsConsumed == Constants.UNPREDICTABLE)
 						throw new DataflowAnalysisException("Unpredictable stack consumption for " + firstInDest);

@@ -65,7 +65,7 @@ public class ResourceValueAnalysis<Resource> extends FrameDataflowAnalysis<Resou
 
 	public void meetInto(ResourceValueFrame fact, Edge edge, ResourceValueFrame result) throws DataflowAnalysisException {
 		BasicBlock source = edge.getSource();
-		BasicBlock dest = edge.getDest();
+		BasicBlock dest = edge.getTarget();
 
 		ResourceValueFrame tmpFact = null;
 

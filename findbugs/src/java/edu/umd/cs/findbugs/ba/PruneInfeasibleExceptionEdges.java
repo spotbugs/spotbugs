@@ -193,7 +193,7 @@ public class PruneInfeasibleExceptionEdges implements EdgeTypes {
 
 		if (DEBUG) System.out.println("Checking reachability of edge:\n\t" + edge);
 
-		BasicBlock handlerBlock = edge.getDest();
+		BasicBlock handlerBlock = edge.getTarget();
 		CodeExceptionGen handler = handlerBlock.getExceptionGen();
 		ObjectType catchType = handler.getCatchType();
 

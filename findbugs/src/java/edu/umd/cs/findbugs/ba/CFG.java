@@ -192,7 +192,7 @@ public class CFG implements Graph<Edge, BasicBlock>, Debug {
 		if (!edgeList.remove(edge))
 			throw new IllegalArgumentException("removing nonexistent edge!");
 		edge.getSource().removeOutgoingEdge(edge);
-		edge.getDest().removeIncomingEdge(edge);
+		edge.getTarget().removeIncomingEdge(edge);
 	}
 
 	/**
@@ -207,7 +207,7 @@ public class CFG implements Graph<Edge, BasicBlock>, Debug {
 		Iterator<Edge> i = outgoingEdgeIterator(source);
 		while (i.hasNext()) {
 			Edge edge = i.next();
-			if (edge.getDest() == dest)
+			if (edge.getTarget() == dest)
 				return edge;
 		}
 		return null;
@@ -265,7 +265,7 @@ public class CFG implements Graph<Edge, BasicBlock>, Debug {
 		return new Iterator<BasicBlock>() {
 			private Iterator<Edge> iter = outgoingEdgeIterator(block);
 			public boolean hasNext() { return iter.hasNext(); }
-			public BasicBlock next() { return iter.next().getDest(); }
+			public BasicBlock next() { return iter.next().getTarget(); }
 			public void remove() { throw new UnsupportedOperationException(); }
 		};
 	}
@@ -279,7 +279,7 @@ public class CFG implements Graph<Edge, BasicBlock>, Debug {
 	 */
 	public BasicBlock getSuccessorWithEdgeType(BasicBlock source, int edgeType) {
 		Edge edge = getOutgoingEdgeWithType(source, edgeType);
-		return edge != null ? edge.getDest() : null;
+		return edge != null ? edge.getTarget() : null;
 	}
 
 	/**

@@ -223,7 +223,7 @@ public class PatternMatcher implements DFSEdgeTypes {
 				// for example, only continue the pattern on the true branch
 				// of an "if" comparison.
 				if (matchedInstruction == null || matchedPatternElement.acceptBranch(edge, matchedInstruction)) {
-					BasicBlock destBlock = edge.getDest();
+					BasicBlock destBlock = edge.getTarget();
 					int destId = destBlock.getId();
 
 					// CFGs can have duplicate edges

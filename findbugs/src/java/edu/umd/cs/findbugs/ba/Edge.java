@@ -97,7 +97,7 @@ public class Edge implements GraphEdge<Edge, BasicBlock>, EdgeTypes, Debug {
 	}
 
 	/** Get the destination of the edge. */
-	public BasicBlock getDest() {
+	public BasicBlock getTarget() {
 		return dest;
 	}
 
@@ -270,10 +270,6 @@ public class Edge implements GraphEdge<Edge, BasicBlock>, EdgeTypes, Debug {
 	/* ----------------------------------------------------------------------
 	 * GraphEdge methods
 	 * ---------------------------------------------------------------------- */
-
-	public BasicBlock getTarget() {
-		return getDest();
-	}
 
 	public int getLabel() {
 		return getId();

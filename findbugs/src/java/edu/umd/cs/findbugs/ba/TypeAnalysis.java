@@ -137,7 +137,7 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame> {
 	private static final ObjectType throwableObjectType = new ObjectType("java.lang.Throwable");
 
 	public void meetInto(TypeFrame fact, Edge edge, TypeFrame result) throws DataflowAnalysisException {
-		BasicBlock basicBlock = edge.getDest();
+		BasicBlock basicBlock = edge.getTarget();
 		if (basicBlock.isExceptionHandler() && fact.isValid()) {
 			// Special case: when merging predecessor facts for entry to
 			// an exception handler, we clear the stack and push a

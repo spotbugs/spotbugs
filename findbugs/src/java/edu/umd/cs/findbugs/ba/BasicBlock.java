@@ -364,7 +364,7 @@ public class BasicBlock implements GraphVertex<BasicBlock>, Debug {
 	 * @param edge the incoming Edge
 	 */
 	void addIncomingEdge(Edge edge) {
-		if (VERIFY_INTEGRITY && edge.getDest() != this)
+		if (VERIFY_INTEGRITY && edge.getTarget() != this)
 			throw new IllegalArgumentException();
 
 		if (firstIncomingEdge == null) {

@@ -139,14 +139,14 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
 	}
 
 	public void meetInto(ValueNumberFrame fact, Edge edge, ValueNumberFrame result) throws DataflowAnalysisException {
-		if (edge.getDest().isExceptionHandler() && fact.isValid()) {
+		if (edge.getTarget().isExceptionHandler() && fact.isValid()) {
 			// Special case: when merging predecessor facts for entry to
 			// an exception handler, we clear the stack and push a
 			// single entry for the exception object.  That way, the locals
 			// can still be merged.
 
 			// Get the value number for the exception
-			BasicBlock handlerBlock = edge.getDest();
+			BasicBlock handlerBlock = edge.getTarget();
 			ValueNumber exceptionValueNumber = getExceptionValueNumber(handlerBlock);
 
 			// Set up the stack frame
