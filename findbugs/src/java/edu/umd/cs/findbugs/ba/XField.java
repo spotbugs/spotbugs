@@ -42,6 +42,11 @@ public interface XField extends Comparable<XField> {
 	public String getFieldSignature();
 
 	/**
+	 * Get the field's access flags.
+	 */
+	public int getAccessFlags();
+
+	/**
 	 * Is this a static field?
 	 */
 	public boolean isStatic();

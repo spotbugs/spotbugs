@@ -47,6 +47,10 @@ public abstract  class AbstractField implements XField {
 		return fieldSig;
 	}
 
+	public int getAccessFlags() {
+		return accessFlags;
+	}
+
 	public boolean isVolatile() {
 		return (accessFlags & Constants.ACC_VOLATILE) != 0;
 	}
