@@ -119,7 +119,7 @@ public class Invoke extends PatternElement {
 		}
 	}
 
-	private class SubclassMatcher implements StringMatcher {
+	private static class SubclassMatcher implements StringMatcher {
 		private String className;
 
 		public SubclassMatcher(String className) {
@@ -130,7 +130,9 @@ public class Invoke extends PatternElement {
 			try {
 				return Hierarchy.isSubtype(s, className);
 			} catch (ClassNotFoundException e) {
-				lookupFailureCallback.reportMissingClass(e);
+				AnalysisContext.currentAnalysisContext()
+					.getLookupFailureCallback() 
+					.reportMissingClass(e);
 				return false;
 			}
 		}
@@ -140,7 +142,6 @@ public class Invoke extends PatternElement {
 	private final StringMatcher methodNameMatcher;
 	private final StringMatcher methodSigMatcher;
 	private final int mode;
-	private final RepositoryLookupFailureCallback lookupFailureCallback;
 
 	/**
 	 * Constructor.
@@ -157,7 +158,6 @@ public class Invoke extends PatternElement {
 		this.methodNameMatcher = createMatcher(methodName);
 		this.methodSigMatcher = createMatcher(methodSig);
 		this.mode = mode;
-		this.lookupFailureCallback = lookupFailureCallback;
 	}
 
 	private StringMatcher createClassMatcher(String s) {
