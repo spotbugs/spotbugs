@@ -205,6 +205,9 @@ public abstract class BugCollection {
 		Document document = DocumentHelper.createDocument();
 		Element root = document.addElement(ROOT_ELEMENT_NAME);
 
+		// Set the version attribute of the root element
+		root.addAttribute("version", Version.RELEASE);
+
 		// Save the project information
 		Element projectElement = root.addElement(PROJECT_ELEMENT_NAME);
 		project.writeElement(projectElement);
