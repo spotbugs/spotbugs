@@ -22,7 +22,7 @@ public class IDivResultCastToDouble extends BytecodeScanningDetector {
 	
 	//@Override
 	public void visit(Method obj) {
-		System.out.println("Visiting " + obj);
+		if (DEBUG) System.out.println("Visiting " + obj);
 		state = SCAN;
 	}
 
