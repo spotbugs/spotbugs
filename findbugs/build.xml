@@ -35,6 +35,7 @@
     <property name="findbugs.dir" value="." />
     <property name="findbugs.src.dir" value="${findbugs.dir}/src/java" />
     <property name="anttask.src.dir" value="${findbugs.dir}/src/antTask" />
+    <property name="validatortask.src.dir" value="${findbugs.dir}/src/validator" />
     <property name="tools.src.dir" value="${findbugs.dir}/src/tools"/>
     <property name="script.src.dir" value="${findbugs.dir}/src/scripts"/>
     <property name="findbugs.jar.name" value="findbugs.jar" />
@@ -43,6 +44,7 @@
     <property name="coreplugin.jar.name" value="coreplugin.jar" />
     <property name="styleplugin.jar.name" value="styleplugin.jar" />
     <property name="anttask.jar.name" value="findbugs-ant.jar" />
+    <property name="validatortask.jar.name" value="validatortask.jar" />
     <property name="doc.src.dir" value="${findbugs.dir}/src/doc" />
     <property name="doc.dir" value="${findbugs.dir}/doc" />
     <property name="javadoc.dir" value="${findbugs.dir}/doc/api" />
@@ -145,6 +147,7 @@
       <delete file="${jar.dir}/${findbugs.annotations.jar.name}" />
       <delete file="${jar.dir}/${findbugsgui.jar.name}" />
       <delete file="${jar.dir}/${anttask.jar.name}" />
+      <delete file="${jar.dir}/${validatortask.jar.name}" />
       <delete>
         <fileset dir="${test.dir}" includes="**/*.class" />
         <fileset dir="${test.dir}" includes="**/*.jar" />
@@ -272,6 +275,10 @@
 
    <!-- Target to build the core plugin. -->
    <target name="coreplugin">
+     <taskdef name="SchemaValidator" classname="edu.umd.cs.findbugs.validatortask.SchemaValidatorTask" classpath="${jar.dir}/${validatortask.jar.name}"/>
+
+	 <SchemaValidator xml="${findbugs.dir}/etc/findbugs.xml" failonerror="true"/>
+	 <SchemaValidator xml="${findbugs.dir}/etc/messages.xml" failonerror="true"/>
      <antcall target="plugin">
        <param name="plugin.xml.dir" value="${findbugs.dir}/etc"/>
        <param name="plugin.subpkg.name" value="detect"/>
@@ -356,6 +363,22 @@
       <touch file="${scripts.uptodate.stamp}"/>
     </target>
 
+	<!-- Target to build the validatortask -->
+	<target name="validatortask" depends="init">
+      <javac srcdir="${validatortask.src.dir}" 
+             source="1.5"
+             target="${javac.target}"
+             debug="true" destdir="${class.dir}" >
+        <classpath refid="classpath" />
+        <compilerarg compiler="javac1.5" value="-Xlint:unchecked"/>
+        <compilerarg compiler="javac1.5" value="-Xlint:deprecation"/>
+      </javac>
+
+      <jar destfile="${jar.dir}/${validatortask.jar.name}"
+          basedir="${class.dir}" 
+          includes="edu/umd/cs/findbugs/validatortask/**"/>
+	</target>
+	
     <!-- Target to build the anttask -->
     <target name="anttask" depends="findbugs">
       <javac srcdir="${anttask.src.dir}" 
@@ -686,7 +709,7 @@
 
     <!-- Default target: just compile the code
          and build the Jar files. -->
-    <target name="build" depends="findbugs,allplugins,findbugsgui,scripts,anttask,testjar" />
+    <target name="build" depends="validatortask,findbugs,allplugins,findbugsgui,scripts,anttask,testjar" />
 
     <!-- Rebuild. -->
     <target name="rebuild" depends="clean,build" />
