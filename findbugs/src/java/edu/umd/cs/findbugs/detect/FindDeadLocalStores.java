@@ -134,6 +134,10 @@ public class FindDeadLocalStores implements Detector {
 
 			// Store is dead
 
+			// Don't compain about IINC
+			if (location.getHandle().getInstruction().getOpcode() == Constants.IINC)
+				continue;
+
 			// Ignore assignments that were killed by a subsequent assignment.
 			if (llsaDataflow.getAnalysis().killedByStore(liveStoreSet, local)) {
 				if (DEBUG) {
