@@ -32,6 +32,7 @@ public class UnreadFields extends BytecodeScanningDetector implements   Constant
     HashSet<FieldAnnotation> readFields = new HashSet<FieldAnnotation>();
     HashSet<FieldAnnotation> constantFields = new HashSet<FieldAnnotation>();
     // HashSet finalFields = new HashSet();
+    HashSet<String> needsOuterObjectInConstructor = new HashSet<String>();
     HashSet<String> superReadFields = new HashSet<String>();
     HashSet<String> superWrittenFields = new HashSet<String>();
     HashSet<String> innerClassCannotBeStatic = new HashSet<String>();
@@ -83,6 +84,16 @@ public class UnreadFields extends BytecodeScanningDetector implements   Constant
 
 
 
+    int count_aload_1;
+    public void visit(Code obj) {
+	count_aload_1 = 0;
+	super.visit(obj);
+	if (methodName.equals("<init>") && count_aload_1 > 1 
+			&& className.indexOf('$') >= 0) {
+		needsOuterObjectInConstructor.add(betterClassName);
+		// System.out.println(betterClassName + " needs outer object in constructor");
+		}
+	}
     public void visit(Method obj) {
         super.visit(obj);
 	int flags = obj.getAccessFlags();
@@ -93,7 +104,10 @@ public class UnreadFields extends BytecodeScanningDetector implements   Constant
 
     public void sawOpcode(int seen) {
 
-	if (seen == GETFIELD) {
+	if (seen == ALOAD_1) {
+		count_aload_1++;
+		}
+	else if (seen == GETFIELD) {
 		FieldAnnotation f = FieldAnnotation.fromReferencedField(this);
 		if (DEBUG) System.out.println("get: " + f);
 		readFields.add(f);
@@ -143,11 +157,19 @@ public void report() {
 			.addClass(className)
 			.addField(f));
 		   }
-		  else if ( !innerClassCannotBeStatic.contains(className)
-			)
-			bugReporter.reportBug(new BugInstance("SIC_INNER_SHOULD_BE_STATIC", 
-		isAnonymousInnerClass  ? LOW_PRIORITY : NORMAL_PRIORITY)
+		  else if ( !innerClassCannotBeStatic.contains(className)) {
+			boolean easyChange = !needsOuterObjectInConstructor.contains(className);
+			if (easyChange || !isAnonymousInnerClass) {
+	
+			  int priority = LOW_PRIORITY;
+			  if (easyChange && !isAnonymousInnerClass) 
+				priority = NORMAL_PRIORITY;
+ 
+			   bugReporter.reportBug(new BugInstance("SIC_INNER_SHOULD_BE_STATIC", 
+					priority)
 				.addClass(className));
+			   }
+			}
 		}
 
 	}	
