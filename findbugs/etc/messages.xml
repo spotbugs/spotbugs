@@ -321,6 +321,16 @@ fast detector.
     </Details>
   </Detector>
 
+  <Detector class="edu.umd.cs.findbugs.detect.FindMismatchedWaitOrNotify">
+    <Details>
+<![CDATA[
+<p> This detector looks for calls to wait(), notify(), or notifyAll()
+which do not appear to be made on an object which is currently locked.&nbsp;
+It is a moderately fast detector.
+]]>
+    </Details>
+  </Detector>
+
   <Detector class="edu.umd.cs.findbugs.detect.FindBugsSummaryStats">
     <Details>
 <![CDATA[
@@ -1394,6 +1404,30 @@ not be compared by reference are java.lang.Integer, java.lang.Float, etc.
     </Details>
   </BugPattern>
 
+  <BugPattern type="MWN_MISMATCHED_WAIT">
+    <ShortDescription>Mismatched wait()</ShortDescription>
+    <LongDescription>Mismatched wait() in {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p> This method calls Object.wait() without obviously holding a lock
+on the object.&nbsp;  Calling wait() without a lock held will result in
+an <code>IllegalMonitorStateException</code> being thrown.
+]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="MWN_MISMATCHED_NOTIFY">
+    <ShortDescription>Mismatched notify()</ShortDescription>
+    <LongDescription>Mismatched notify() in {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p> This method calls Object.notify() or Object.notifyAll() without obviously holding a lock
+on the object.&nbsp;  Calling notify() or notifyAll() without a lock held will result in
+an <code>IllegalMonitorStateException</code> being thrown.
+]]>
+    </Details>
+  </BugPattern>
+
   <!--
   **********************************************************************
    BugCodes
@@ -1443,6 +1477,6 @@ not be compared by reference are java.lang.Integer, java.lang.Float, etc.
   <BugCode abbrev="UCF">Useless control flow</BugCode>
   <BugCode abbrev="UL">Lock not released on all paths</BugCode>
   <BugCode abbrev="RC">Suspicious reference comparison</BugCode>
-
+  <BugCode abbrev="MWN">Mismatched wait() or notify()</BugCode>
 
 </MessageCollection>

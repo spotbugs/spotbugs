@@ -33,6 +33,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.FindUselessControlFlow" speed="fast" />
   <Detector class="edu.umd.cs.findbugs.detect.FindUnreleasedLock" speed="moderate" disabled="true" />
   <Detector class="edu.umd.cs.findbugs.detect.FindRefComparison" speed="moderate" />
+  <Detector class="edu.umd.cs.findbugs.detect.FindMismatchedWaitOrNotify" speed="moderate" />
   <Detector class="edu.umd.cs.findbugs.detect.FindBugsSummaryStats" speed="fast" />
 
   <BugPattern abbrev="DE" type="DE_MIGHT_DROP" category="CORRECTNESS" />
@@ -114,4 +115,6 @@
   <BugPattern abbrev="UL" type="UL_UNRELEASED_LOCK" category="MT_CORRECTNESS" />
   <BugPattern abbrev="UL" type="UL_UNRELEASED_LOCK_EXCEPTION_PATH" category="MT_CORRECTNESS" />
   <BugPattern abbrev="RC" type="RC_REF_COMPARISON" category="CORRECTNESS" experimental="true" />
+  <BugPattern abbrev="MWN" type="MWN_MISMATCHED_WAIT" category="CORRECTNESS" experimental="true" />
+  <BugPattern abbrev="MWN" type="MWN_MISMATCHED_NOTIFY" category="CORRECTNESS" experimental="true" />
 </FindbugsPlugin>
