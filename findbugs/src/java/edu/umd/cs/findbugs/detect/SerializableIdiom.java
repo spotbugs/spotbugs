@@ -110,6 +110,7 @@ public class SerializableIdiom extends PreorderVisitor
 
 	public void visitAfter(JavaClass obj) {
 	// Downgrade class-level warnings if it's a GUI class.
+	if (isGUIClass) return;
 	int priority = isGUIClass ? LOW_PRIORITY : NORMAL_PRIORITY;
 
 	if (foundSynthetic 
