@@ -106,6 +106,7 @@ public class FindBugs implements Constants2
     registerDetector("FindUnconditionalWait", edu.umd.cs.findbugs.FindUnconditionalWait.class);
     registerDetector("FindRunInvocations", edu.umd.cs.findbugs.FindRunInvocations.class);
 
+
     registerDetector("FindFinalizeInvocations", edu.umd.cs.findbugs.FindFinalizeInvocations.class);
     registerDetector("InitializationChain", edu.umd.cs.findbugs.InitializationChain.class);
     registerDetector("FindHEmismatch", edu.umd.cs.findbugs.FindHEmismatch.class);

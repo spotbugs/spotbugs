@@ -18,6 +18,7 @@
  */
 
 package edu.umd.cs.findbugs;
+import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Method;
 import edu.umd.cs.pugh.visitclass.Constants2;
 
@@ -32,13 +33,24 @@ import edu.umd.cs.pugh.visitclass.Constants2;
 public class FindNakedNotify extends BytecodeScanningDetector implements   Constants2 {
     int stage = 0;
     private BugReporter bugReporter;
+    boolean synchronizedMethod;
 
     public FindNakedNotify(BugReporter bugReporter) {
 	this.bugReporter = bugReporter;
 	}
 
     public void visit(Method obj) {
-	stage = 0;
+	int flags = obj.getAccessFlags();
+	synchronizedMethod = (flags & ACC_SYNCHRONIZED) != 0;
+	}
+
+    public void visit(Code obj) {
+	stage = synchronizedMethod ? 1 : 0;
+	super.visit(obj);
+	if (synchronizedMethod && stage == 4) 
+		bugReporter.reportBug(
+			new BugInstance("NN_NAKED_NOTIFY", NORMAL_PRIORITY)
+			.addClassAndMethod(this));
 	}
 
     public void sawOpcode(int seen) {
@@ -69,6 +81,8 @@ public class FindNakedNotify extends BytecodeScanningDetector implements   Const
 			else
 				stage = 0;
 			break; 
+		case 5:
 			}
+		
 	}
 }
