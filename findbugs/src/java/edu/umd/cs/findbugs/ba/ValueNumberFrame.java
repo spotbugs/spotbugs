@@ -68,6 +68,10 @@ public class ValueNumberFrame extends Frame<ValueNumber> {
 			mergedValueList.set(slot, mergedValue);
 			mine = mergedValue;
 		}
+		// NOTE: if mergedValue == null, we could remember "other" as contributing
+		// to the merged value.  (Like input to a phi node.)  As it is, we only
+		// care that the merged value cannot reliably be thought to be the same
+		// as any of the incoming values.
 		return mine;
 	}
 
