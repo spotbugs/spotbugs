@@ -337,7 +337,8 @@ public class FindBugsTask extends MatchingTask {
 
             errorCount = 0;            
 	        BugReporter bugReporter = new Reporter( sorted, suppressList ); 
-	        FindBugs findBugs = new FindBugs(bugReporter);
+			java.util.HashMap classNameToSourceFileMap = new java.util.HashMap();
+	        FindBugs findBugs = new FindBugs(bugReporter, classNameToSourceFileMap);
          
             try { 
               findBugs.execute( (String[])checkList.toArray( new String[0] ) ); 

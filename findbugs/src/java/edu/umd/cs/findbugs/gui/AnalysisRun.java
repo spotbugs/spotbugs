@@ -70,6 +70,7 @@ public class AnalysisRun {
     private Project project;
     private FindBugsFrame frame;
     private ConsoleLogger logger;
+    private Map<String, String> classNameToSourceFileMap;
     private FindBugs findBugs;
     private Reporter reporter;
     private HashMap<String, DefaultTreeModel> treeModelMap;
@@ -80,9 +81,10 @@ public class AnalysisRun {
         this.project = project;
         this.frame = frame;
         this.logger = frame.getLogger();
-        reporter = new Reporter();
-        findBugs = new FindBugs(reporter);
-        treeModelMap = new HashMap<String, DefaultTreeModel>();
+        this.reporter = new Reporter();
+	this.classNameToSourceFileMap = new HashMap<String, String>();
+        this.findBugs = new FindBugs(reporter, classNameToSourceFileMap);
+        this.treeModelMap = new HashMap<String, DefaultTreeModel>();
     }
     
     /**
@@ -129,7 +131,7 @@ public class AnalysisRun {
      * Load bugs from a file.
      */
     public void loadBugsFromFile(File file) throws IOException, org.dom4j.DocumentException {
-        reporter.bugCollection.readXML(file);
+        reporter.bugCollection.readXML(file, classNameToSourceFileMap);
     }
     
     /**

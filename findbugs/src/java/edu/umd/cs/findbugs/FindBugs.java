@@ -148,7 +148,7 @@ public class FindBugs implements Constants2
 
   private BugReporter bugReporter;
   private Detector detectors [];
-  private HashMap<String, String> classNameToSourceFileMap;
+  private Map<String, String> classNameToSourceFileMap;
   private FindBugsProgress progressCallback;
 
   /* ----------------------------------------------------------------------
@@ -159,12 +159,14 @@ public class FindBugs implements Constants2
    * Constructor.
    * @param bugReporter the BugReporter object that will be used to report
    *   BugInstance objects, analysis errors, etc.
+   * @param classNameToSourceFileMap map of class names to source files;
+   *   this will be populated by the analysis
    */
-  public FindBugs(BugReporter bugReporter) {
+  public FindBugs(BugReporter bugReporter, Map<String, String> classNameToSourceFileMap) {
 	if (bugReporter == null)
 		throw new IllegalArgumentException("null bugReporter");
 	this.bugReporter = bugReporter;
-	this.classNameToSourceFileMap = new HashMap<String, String>();
+	this.classNameToSourceFileMap = classNameToSourceFileMap;
 
 	// Create a no-op progress callback.
 	this.progressCallback = new FindBugsProgress() {
@@ -245,6 +247,13 @@ public class FindBugs implements Constants2
    */
   public String getSourceFile(String className) {
 	return classNameToSourceFileMap.get(className);
+  }
+
+  /**
+   * Get the complete map of classes to source files.
+   */
+  public Map<String, String> getClassToSourceFileMap() {
+	return classNameToSourceFileMap;
   }
 
   /* ----------------------------------------------------------------------
@@ -371,6 +380,8 @@ public class FindBugs implements Constants2
 	String filterFile = null;
 	boolean include = false;
 
+	HashMap<String, String> classNameToSourceFileMap = new HashMap<String, String>();
+
 	// Process command line options
 	int argCount = 0;
 	while (argCount < argv.length) {
@@ -380,7 +391,7 @@ public class FindBugs implements Constants2
 		if (option.equals("-sortByClass"))
 			bugReporter = new SortingBugReporter();
 		else if (option.equals("-xml"))
-			bugReporter = new XMLBugReporter();
+			bugReporter = new XMLBugReporter(classNameToSourceFileMap);
 		else if (option.equals("-visitors") || option.equals("-omitVisitors")) {
 			++argCount;
 			if (argCount == argv.length) throw new IllegalArgumentException(option + " option requires argument");
@@ -445,7 +456,7 @@ public class FindBugs implements Constants2
 	if (quiet)
 		bugReporter.setErrorVerbosity(BugReporter.SILENT);
 
-	FindBugs findBugs = new FindBugs(bugReporter);
+	FindBugs findBugs = new FindBugs(bugReporter, classNameToSourceFileMap);
 
 	if (filterFile != null)
 		findBugs.setFilter(filterFile, include);

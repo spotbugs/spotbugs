@@ -55,41 +55,47 @@ public abstract class BugCollection {
 	public abstract Collection<BugInstance> getCollection();
 
 	private static final String ROOT_ELEMENT_NAME = "BugCollection";
+	private static final String SRCMAP_ELEMENT_NAME= "SrcMap";
 
-	public void readXML(String fileName) throws IOException, DocumentException {
+	public void readXML(String fileName, Map<String, String> classToSourceFileMap) throws IOException, DocumentException {
 		BufferedInputStream in = new BufferedInputStream(new FileInputStream(fileName));
-		readXML(in);
+		readXML(in, classToSourceFileMap);
 	}
 
-	public void readXML(File file) throws IOException, DocumentException {
+	public void readXML(File file, Map<String, String> classToSourceFileMap) throws IOException, DocumentException {
 		BufferedInputStream in = new BufferedInputStream(new FileInputStream(file));
-		readXML(in);
+		readXML(in, classToSourceFileMap);
 	}
 
-	public void readXML(InputStream in ) throws IOException, DocumentException {
+	public void readXML(InputStream in, Map<String, String> classToSourceFileMap ) throws IOException, DocumentException {
 		SAXReader reader = new SAXReader();
 		Document document = reader.read(in);
 
 		Iterator i = document.getRootElement().elements().iterator();
 		while (i.hasNext()) {
 			Element element = (Element) i.next();
+			String elementName = element.getName();
 
-			XMLTranslator translator = XMLTranslatorRegistry.instance().getTranslator(element.getName());
-			if (translator == null)
-				throw new DocumentException("Unknown element type: " + element.getName());
+			if (elementName.equals(SRCMAP_ELEMENT_NAME)) {
+				classToSourceFileMap.put(element.attributeValue("classname"), element.attributeValue("srcfile"));
+			} else {
+				XMLTranslator translator = XMLTranslatorRegistry.instance().getTranslator(elementName);
+				if (translator == null)
+					throw new DocumentException("Unknown element type: " + elementName);
 
-			BugInstance bugInstance = (BugInstance) translator.fromElement(element);
+				BugInstance bugInstance = (BugInstance) translator.fromElement(element);
 
-			add(bugInstance);
+				add(bugInstance);
+			}
 		}
 	}
 
-	public void writeXML(String fileName) throws IOException {
+	public void writeXML(String fileName, Map<String, String> classToSourceFileMap) throws IOException {
 		BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(fileName));
-		writeXML(out);
+		writeXML(out, classToSourceFileMap);
 	}
 
-	public void writeXML(OutputStream out) throws IOException {
+	public void writeXML(OutputStream out, Map<String, String> classToSourceFileMap) throws IOException {
 		Document document = DocumentHelper.createDocument();
 		Element root = document.addElement(ROOT_ELEMENT_NAME);
 
@@ -100,6 +106,13 @@ public abstract class BugCollection {
 			bugInstance.toElement(root);
 		}
 
+		Iterator<Map.Entry<String, String>> j = classToSourceFileMap.entrySet().iterator();
+		while (j.hasNext()) {
+			Map.Entry<String, String> entry = j.next();
+			root.addElement(SRCMAP_ELEMENT_NAME)
+				.addAttribute("classname", entry.getKey())
+				.addAttribute("srcfile", entry.getValue());
+		}
 
 		XMLWriter writer = new XMLWriter(out, OutputFormat.createPrettyPrint());
 		writer.write(document);
