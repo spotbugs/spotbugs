@@ -30,6 +30,12 @@ import org.apache.bcel.generic.*;
  * in the Java stack frame at all points in a Java method.
  * The values include local variables and values on the Java operand stack.
  *
+ * <p> As a side effect, the analysis computes the exception
+ * set throwable on each exception edge in the CFG.
+ * This information can be used to prune infeasible exception
+ * edges, and mark exception edges which propagate only
+ * implicit exceptions.
+ *
  * @see Dataflow
  * @see DataflowAnalysis
  * @see TypeFrame
@@ -146,6 +152,19 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame> {
 		visitor.setFrame(fact);
 		handle.getInstruction().accept(visitor);
 	}
+
+/*
+	public void endTransfer(BasicBlock basicBlock, InstructionHandle end, Object result_) throws DataflowAnalysisException {
+		// Figure out what exceptions can be thrown out
+		// of the basic block.  That way, we'll remember
+		// exactly what kinds of exceptions can
+		// be caught later on.
+
+		if (basicBlock.isExceptionThrower()) {
+			TypeFrame result = (TypeFrame) result_;
+		}
+	}
+*/
 
 	public void meetInto(TypeFrame fact, Edge edge, TypeFrame result) throws DataflowAnalysisException {
 		BasicBlock basicBlock = edge.getTarget();
