@@ -28,6 +28,8 @@ import org.dom4j.io.*;
 public class PluginLoader extends URLClassLoader {
 
 	private ArrayList<DetectorFactory> detectorFactoryList;
+	private ArrayList<BugPattern> bugPatternList;
+	private ArrayList<BugCode> bugCodeList;
 
 	public PluginLoader(URL url) throws PluginException {
 		super(new URL[]{url});
@@ -87,11 +89,11 @@ public class PluginLoader extends URLClassLoader {
 			detectorFactoryList = new ArrayList<DetectorFactory>();
 			List detectorNodeList = pluginDescriptor.selectNodes("/FindbugsPlugin/Detector");
 			for (Iterator i = detectorNodeList.iterator(); i.hasNext(); ) {
-				Element detectorElement = (Element) i.next();
-				String className = detectorElement.valueOf("@class");
-				String disabled = detectorElement.valueOf("@disabled");
+				Node detectorNode = (Node) i.next();
+				String className = detectorNode.valueOf("@class");
+				String disabled = detectorNode.valueOf("@disabled");
 	
-				System.out.println("Found detector: class="+className+", disabled="+disabled);
+				//System.out.println("Found detector: class="+className+", disabled="+disabled);
 	
 				if (!disabled.equals("true")) {
 					Class detectorClass = loadClass(className);
@@ -103,8 +105,49 @@ public class PluginLoader extends URLClassLoader {
 			throw new PluginException("Could not instantiate detector class", e);
 		}
 
+		// Create BugPatterns
+		bugPatternList = new ArrayList<BugPattern>();
+		List bugPatternNodeList = pluginDescriptor.selectNodes("/FindbugsPlugin/BugPattern");
+		for (Iterator i = bugPatternNodeList.iterator(); i.hasNext(); ) {
+			Node bugPatternNode = (Node) i.next();
+			String type = bugPatternNode.valueOf("@type");
+			String abbrev = bugPatternNode.valueOf("@abbrev");
+			String category = bugPatternNode.valueOf("@category");
+
+			// Find the matching element in messages.xml
+			String query = "/MessageCollection/BugPattern[@type='" + type + "']";
+			Node messageNode = (Node) messageCollection.selectSingleNode(query);
+			if (messageNode == null)
+				throw new PluginException("messages.xml missing BugPattern element for type " + type);
+			String shortDesc = getChildText(messageNode, "ShortDescription");
+			String longDesc = getChildText(messageNode, "LongDescription");
+			String detailText = getChildText(messageNode, "Details");
+
+			BugPattern bugPattern = new BugPattern(type, abbrev, category, shortDesc, longDesc, detailText);
+			bugPatternList.add(bugPattern);
+		}
+
+		// Create BugCodes
+		bugCodeList = new ArrayList<BugCode>();
+		List bugCodeNodeList = messageCollection.selectNodes("/MessageCollection/BugCode");
+		for (Iterator i = bugCodeNodeList.iterator(); i.hasNext(); ) {
+			Node bugCodeNode = (Node) i.next();
+			String abbrev = bugCodeNode.valueOf("@abbrev");
+			if (abbrev.equals(""))
+				throw new PluginException("BugCode element with missing abbrev attribute");
+			String description = bugCodeNode.getText();
+			BugCode bugCode = new BugCode(abbrev, description);
+			bugCodeList.add(bugCode);
+		}
+
 	}
 
+	private static String getChildText(Node node, String childName) throws PluginException {
+		Node child = node.selectSingleNode(childName);
+		if (child == null)
+			throw new PluginException("Could not find child \"" + childName + "\" for node");
+		return child.getText();
+	}
 
 	public static void main(String[] argv) {
 		try {
