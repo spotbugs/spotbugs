@@ -30,6 +30,7 @@ import edu.umd.cs.findbugs.visitclass.Constants2;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.*;
+import java.util.regex.Pattern;
 
 public class SerializableIdiom extends PreorderVisitor
         implements Detector, Constants2 {
@@ -82,15 +83,24 @@ public class SerializableIdiom extends PreorderVisitor
 	public void report() {
 	}
 
+	static Pattern anonymousInnerClassNamePattern =
+			Pattern.compile(".+\\$\\d+");
+	boolean isAnonymousInnerClass;
 	public void visit(JavaClass obj) {
 		int flags = obj.getAccessFlags();
 		isAbstract = (flags & ACC_ABSTRACT) != 0
 		        || (flags & ACC_INTERFACE) != 0;
+		isAnonymousInnerClass 
+		  = anonymousInnerClassNamePattern
+			.matcher(getClassName()).matches();
+		
+		
 		sawSerialVersionUID = false;
 		isSerializable = implementsSerializableDirectly = false;
 		isExternalizable = false;
 		directlyImplementsExternalizable = false;
 		isGUIClass = false;
+		
 		//isRemote = false;
 
 		// Does this class directly implement Serializable?
@@ -157,9 +167,14 @@ public class SerializableIdiom extends PreorderVisitor
 		}
 
 
-		// Is this a GUI class?
+		// Is this a GUI  or other class that is rarely serialized?
 		try {
-			isGUIClass = Repository.instanceOf(obj, "java.awt.Component");
+			isGUIClass = 
+			 Repository.instanceOf(obj, "java.lang.Throwable")
+			|| Repository.instanceOf(obj, "java.awt.Component")
+			|| Repository.implementationOf(obj, "java.awt.event.ActionListener")
+			|| Repository.implementationOf(obj, "java.util.EventListener")
+			;
 		} catch (ClassNotFoundException e) {
 			bugReporter.reportMissingClass(e);
 		}
@@ -197,7 +212,9 @@ public class SerializableIdiom extends PreorderVisitor
 			        directlyImplementsExternalizable ?
 			        HIGH_PRIORITY : NORMAL_PRIORITY)
 			        .addClass(getThisClass().getClassName()));
-		if (foundSynthetic && !isExternalizable && !isGUIClass
+		if (foundSynthetic 
+			&& !isAnonymousInnerClass 
+			&& !isExternalizable && !isGUIClass
 		        && isSerializable && !isAbstract && !sawSerialVersionUID)
 			bugReporter.reportBug(new BugInstance(this, "SE_NO_SERIALVERSIONID", priority).addClass(this));
 
