@@ -369,6 +369,9 @@
               </AuxValues>
             </MenuItem>
             <MenuItem class="javax.swing.JSeparator" name="jSeparator8">
+              <AuxValues>
+                <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="ButtonGroup bg = new ButtonGroup();&#xa;bg.add(expPriorityButton);&#xa;bg.add(lowPriorityButton);&#xa;bg.add(mediumPriorityButton);&#xa;bg.add(highPriorityButton);&#xa;&#xa;"/>
+              </AuxValues>
             </MenuItem>
             <MenuItem class="javax.swing.JRadioButtonMenuItem" name="viewProjectItem">
               <Properties>

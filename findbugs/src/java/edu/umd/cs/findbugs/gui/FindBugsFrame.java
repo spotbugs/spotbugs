@@ -1522,6 +1522,12 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
             viewMenu.add(highPriorityButton);
 
+            ButtonGroup bg = new ButtonGroup();
+            bg.add(expPriorityButton);
+            bg.add(lowPriorityButton);
+            bg.add(mediumPriorityButton);
+            bg.add(highPriorityButton);
+
             viewMenu.add(jSeparator8);
 
             viewProjectItem.setFont(new java.awt.Font("Dialog", 0, 12));
@@ -1726,30 +1732,18 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	}//GEN-LAST:event_viewProjectItemActionPerformed
 
 	private void highPriorityButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_highPriorityButtonActionPerformed
-		mediumPriorityButton.setSelected(false);
-		lowPriorityButton.setSelected(false);
-		expPriorityButton.setSelected(false);
 		setPriorityThreshold(Detector.HIGH_PRIORITY);
 	}//GEN-LAST:event_highPriorityButtonActionPerformed
 
 	private void mediumPriorityButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mediumPriorityButtonActionPerformed
-		highPriorityButton.setSelected(false);
-		lowPriorityButton.setSelected(false);
-		expPriorityButton.setSelected(false);
 		setPriorityThreshold(Detector.NORMAL_PRIORITY);
 	}//GEN-LAST:event_mediumPriorityButtonActionPerformed
 
 	private void lowPriorityButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_lowPriorityButtonActionPerformed
-		highPriorityButton.setSelected(false);
-		mediumPriorityButton.setSelected(false);
-		expPriorityButton.setSelected(false);
 		setPriorityThreshold(Detector.LOW_PRIORITY);
 	}//GEN-LAST:event_lowPriorityButtonActionPerformed
 
     private void expPriorityButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_expPriorityButtonActionPerformed
-		highPriorityButton.setSelected(false);
-		mediumPriorityButton.setSelected(false);
-		lowPriorityButton.setSelected(false);
 		setPriorityThreshold(Detector.EXP_PRIORITY);
     }//GEN-LAST:event_expPriorityButtonActionPerformed
 
