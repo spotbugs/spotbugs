@@ -71,15 +71,19 @@ session.&nbsp; Hope to see you there!
 <p> Changes since version 0.7.4:
 
 <ul>
+<li> New detector to look for uses of "+" operator to
+     concatenate String objects in a loop (Dave Brosius)
 <li> Reference comparision detector looks for places where the
      argument passed to the equals(Object) method isn't the
      same type as the receiver object
 <li> Fixed problem with building Eclipse plugin on Windows
      (Thomas Klaeger)
 <li> Open stream detector looks for unclosed PreparedStatement
-     objects (Thomas Klaeger)
+     objects (Thomas Klaeger, Rohan Lloyd)
 <li> Fix for open stream detector: it wasn't detecting close() methods
      called through an invokeinterface instruction (Thomas Klaeger)
+<li> Refactoring of visitor classes to enforce
+     use of accessors for visited class features (Brian Goetz)
 </ul>
 -->
 
