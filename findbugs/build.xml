@@ -16,6 +16,7 @@
 	<property name="toolsrc.dir" value="src/tools"/>
 	<property name="scriptsrc.dir" value="src/scripts"/>
 	<property name="xslsrc.dir" value="src/xsl"/>
+	<property name="junitsrc.dir" value="src/junit"/>
 	<property name="etc.dir" value="etc"/>
 	<property name="test.dir" value="test"/>
 	<property name="pkg.base" value="edu/umd/cs/findbugs"/>
@@ -23,6 +24,7 @@
 	<property name="coreplugin.jar" value="${plugin.dir}/coreplugin.jar"/>
 	<property name="gui.jar" value="${jar.dir}/findbugsGUI.jar"/>
 	<property name="test.jar" value="${test.dir}/dumb.jar"/>
+	<property name="junittests.jar" value="build/junittests.jar"/>
 	<property name="scripts.props" value="etc/script.properties"/>
 	<property name="scripts.stamp" value="build/scripts.stamp"/>
 	
@@ -71,6 +73,23 @@
 				<include name="*.xsl"/>
 			</fileset>
 		</copy>
+		<!-- Compile JUnit test cases. -->
+		<javac srcdir="${junitsrc.dir}"
+				destdir="${classes.dir}"
+				source="1.5"
+				target="jsr14"
+				debug="on">
+			<classpath refid="tools.classpath"/>
+		</javac>
+		<!-- Compile tools. -->
+		<javac srcdir="${toolsrc.dir}"
+				destdir="${classes.dir}"
+				source="1.5"
+				target="jsr14"
+				debug="on"
+				excludes="${pkg.base}/tools/patcomp/**">
+			<classpath refid="tools.classpath"/>
+		</javac>
 	</target>
 
 	<!-- Build jar files. -->
@@ -83,6 +102,8 @@
 				<exclude name="${pkg.base}/tools/**"/>
 				<exclude name="${pkg.base}/gui/**"/>
 				<exclude name="${pkg.base}/detect/**"/>
+				<exclude name="${pkg.base}/tools/**"/>
+				<exclude name="**/*Test.class"/> <!-- Exclude JUnit tests. -->
 				<include name="**/*.class"/>
 				<include name="**/*.properties"/>
 				<include name="**/*.xsl"/>
@@ -154,7 +175,7 @@
 		<touch file="${scripts.stamp}"/>
 	</target>
 	
-	<!-- Test cases -->
+	<!-- Test cases (for detectors) -->
 	<target name="testjar" depends="classes">
 		<javac srcdir="${test.dir}"
 				destdir="${test.dir}"
@@ -165,6 +186,16 @@
 		<jar destfile="${test.jar}">
 			<fileset dir="${test.dir}">
 				<include name="*.class"/>
+			</fileset>
+		</jar>
+	</target>
+	
+	<!-- JUnit test cases -->
+	<target name="junittests" depends="classes">
+		<jar destfile="${junittests.jar}">
+			<fileset dir="${classes.dir}">
+				<exclude name="${pkg.base}/detect/**"/>
+				<include name="**/*Test.class"/>
 			</fileset>
 		</jar>
 	</target>
