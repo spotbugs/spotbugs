@@ -541,8 +541,6 @@ public class FindBugsFrame extends javax.swing.JFrame {
         bugTreePanel.add(groupByLabel, gridBagConstraints);
 
         bugTreeSourceViewSplitter.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
-        bugTreeSourceViewSplitter.setResizeWeight(1.0);
-        bugTreeSourceViewSplitter.setToolTipText("null");
         bugTreeSourceViewSplitter.setOneTouchExpandable(true);
         bugTree.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mousePressed(java.awt.event.MouseEvent evt) {
@@ -555,7 +553,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
         bugTreeSourceViewSplitter.setLeftComponent(jScrollPane4);
 
         jScrollPane6.setPreferredSize(new java.awt.Dimension(0, 100));
-        sourceTextArea.setPreferredSize(new java.awt.Dimension(0, 5));
+        sourceTextArea.setFont(new java.awt.Font("Lucida Sans Typewriter", 0, 12));
         jScrollPane6.setViewportView(sourceTextArea);
 
         bugTreeSourceViewSplitter.setRightComponent(jScrollPane6);
@@ -579,9 +577,9 @@ public class FindBugsFrame extends javax.swing.JFrame {
         jScrollPane5.setPreferredSize(new java.awt.Dimension(0, 100));
         consoleMessageArea.setBackground(new java.awt.Color(204, 204, 204));
         consoleMessageArea.setEditable(false);
-        consoleMessageArea.setFont(new java.awt.Font("Courier", 0, 12));
+        consoleMessageArea.setFont(new java.awt.Font("Lucida Sans Typewriter", 0, 12));
         consoleMessageArea.setMinimumSize(new java.awt.Dimension(0, 0));
-        consoleMessageArea.setPreferredSize(new java.awt.Dimension(0, 5));
+        consoleMessageArea.setAutoscrolls(false);
         jScrollPane5.setViewportView(consoleMessageArea);
 
         consoleSplitter.setBottomComponent(jScrollPane5);
@@ -898,6 +896,9 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	groupByChooser.addItem(GROUP_BY_BUG_TYPE);
 	
 	bugTreeSourceViewSplitter.setDividerLocation(1.0);
+        
+        for (int count = 0; count < 10; count++)
+            writeToConsole("Message " + count);
     }
     
     /**
@@ -1042,9 +1043,11 @@ public class FindBugsFrame extends javax.swing.JFrame {
 		String groupName;
 		if (groupBy == GROUP_BY_CLASS)
 		    groupName = member.getPrimaryClass().getClassName();
-		else if (groupBy == GROUP_BY_PACKAGE)
+		else if (groupBy == GROUP_BY_PACKAGE) {
 		    groupName = member.getPrimaryClass().getPackageName();
-		else if (groupBy == GROUP_BY_BUG_TYPE) {
+                    if (groupName.equals(""))
+                        groupName = "Unnamed package";
+                } else if (groupBy == GROUP_BY_BUG_TYPE) {
 		    String desc = member.toString();
 		    groupName = desc.substring(0, desc.indexOf(':'));
 		} else
@@ -1228,12 +1231,12 @@ public class FindBugsFrame extends javax.swing.JFrame {
     private javax.swing.JComboBox groupByChooser;
     private javax.swing.JButton removeJarButton;
     private javax.swing.JButton addJarButton;
+    private javax.swing.JScrollPane jScrollPane5;
     private javax.swing.JTree navigatorTree;
     private javax.swing.JList sourceDirList;
-    private javax.swing.JScrollPane jScrollPane5;
     private javax.swing.JPanel emptyPanel;
-    private javax.swing.JSeparator jSeparator3;
     private javax.swing.JTextArea consoleMessageArea;
+    private javax.swing.JSeparator jSeparator3;
     private javax.swing.JTree bugTree;
     private javax.swing.JScrollPane jScrollPane6;
     private javax.swing.JSplitPane navigatorViewSplitter;
