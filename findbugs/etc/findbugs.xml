@@ -2,6 +2,9 @@
   <Detector class="edu.umd.cs.findbugs.detect.DontCatchIllegalMonitorStateException" 
 	speed="fast" disable="false"
     reports="IMSE_DONT_CATCH_IMSE" />
+  <Detector class="edu.umd.cs.findbugs.detect.FindFloatMath" speed="moderate" 
+	disable="false"
+    reports="FL_MATH_USING_FLOAT_PRECISION" />
   <Detector class="edu.umd.cs.findbugs.detect.CloneIdiom" speed="fast" disable="true"
     reports="CN_IDIOM" />
   <Detector class="edu.umd.cs.findbugs.detect.FindFieldSelfAssignment" speed="fast"
@@ -23,7 +26,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.FindRunInvocations" speed="fast"
     reports="RU_INVOKE_RUN"/>
   <Detector class="edu.umd.cs.findbugs.detect.SwitchFallthrough" speed="fast"
-    disabled="true"
+	  disable="true"
     reports="SF_SWITCH_FALLTHROUGH"/>
   <Detector class="edu.umd.cs.findbugs.detect.FindSpinLoop" speed="fast"
     reports="SP_SPIN_ON_FIELD"/>
@@ -85,13 +88,14 @@
     reports="SA_LOCAL_SELF_ASSIGNMENT" />
   <Detector class="edu.umd.cs.findbugs.detect.LazyInit" speed="moderate"
     reports="LI_LAZY_INIT_STATIC"/>
-  <Detector class="edu.umd.cs.findbugs.detect.FindJSR166LockMonitorenter" speed="moderate" disabled="true"
+  <Detector class="edu.umd.cs.findbugs.detect.FindJSR166LockMonitorenter" speed="moderate" 
     reports="JLM_JSR166_LOCK_MONITORENTER"/>
   <Detector class="edu.umd.cs.findbugs.detect.FindUncalledPrivateMethods" speed="fast"
     reports="UPM_UNCALLED_PRIVATE_METHOD"/>
   <Detector class="edu.umd.cs.findbugs.detect.FindBugsSummaryStats" speed="fast" />
 
   <BugPattern abbrev="IMSE" type="IMSE_DONT_CATCH_IMSE" category="CORRECTNESS" />
+  <BugPattern abbrev="FL" type="FL_MATH_USING_FLOAT_PRECISION" category="CORRECTNESS" />
   <BugPattern abbrev="CN" type="CN_IDIOM" category="CORRECTNESS" />
   <BugPattern abbrev="DE" type="DE_MIGHT_DROP" category="CORRECTNESS" />
   <BugPattern abbrev="DE" type="DE_MIGHT_IGNORE" category="CORRECTNESS" />
