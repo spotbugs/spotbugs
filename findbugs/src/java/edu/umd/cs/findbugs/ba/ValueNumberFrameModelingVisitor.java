@@ -178,6 +178,69 @@ public class ValueNumberFrameModelingVisitor
 		handleNormalInstruction(obj);
 	}
 
+	private static final ValueNumber[] EMPTY_INPUT_VALUE_LIST = new ValueNumber[0];
+
+	public void visitGETSTATIC(GETSTATIC obj) {
+		if (REDUNDANT_LOAD_ELIMINATION) {
+			ValueNumberFrame frame = getFrame();
+
+			try {
+				XField xfield = Lookup.findXField(obj, getCPG());
+				if (xfield != null) {
+					StaticField staticField = (StaticField) xfield;
+					AvailableLoad availableLoad = new AvailableLoad(staticField);
+					ValueNumber[] loadedValue = frame.getAvailableLoad(availableLoad);
+
+					if (loadedValue == null) {
+						// Make the load available
+						int numWordsProduced = getNumWordsProduced(obj);
+						loadedValue = getOutputValues(EMPTY_INPUT_VALUE_LIST, numWordsProduced);
+
+						frame.addAvailableLoad(availableLoad, loadedValue);
+
+						if (RLE_DEBUG) System.out.print("[making load of " + staticField + " available]");
+					} else {
+						if (RLE_DEBUG) System.out.print("[found available load of " + staticField + "]");
+					}
+
+					pushOutputValues(loadedValue);
+					return;
+				}
+			} catch (ClassNotFoundException e) {
+				lookupFailureCallback.reportMissingClass(e);
+			}
+		}
+		handleNormalInstruction(obj);
+	}
+
+	public void visitPUTSTATIC(PUTSTATIC obj) {
+		if (REDUNDANT_LOAD_ELIMINATION) {
+			ValueNumberFrame frame = getFrame();
+
+			try {
+				XField xfield = Lookup.findXField(obj, getCPG());
+				if (xfield != null) {
+					StaticField staticField = (StaticField) xfield;
+					AvailableLoad availableLoad = new AvailableLoad(staticField);
+
+					int numWordsConsumed = getNumWordsConsumed(obj);
+					ValueNumber[] inputValueList = popInputValues(numWordsConsumed);
+
+					// Kill loads of this field
+					frame.killLoadsOfField(staticField);
+
+					// Make load available
+					frame.addAvailableLoad(availableLoad, inputValueList);
+
+					return;
+				}
+			} catch (ClassNotFoundException e) {
+				lookupFailureCallback.reportMissingClass(e);
+			}
+		}
+		handleNormalInstruction(obj);
+	}
+
 /*
 	public void visitINVOKESTATIC(INVOKESTATIC obj) {
 		handleNormalInstruction(obj);
