@@ -7,6 +7,7 @@
 package edu.umd.cs.findbugs.gui;
 
 import java.awt.CardLayout;
+import javax.swing.*;
 import javax.swing.tree.*;
 import javax.swing.event.*;
 
@@ -300,6 +301,16 @@ public class FindBugsFrame extends javax.swing.JFrame {
                 navigatorTreeSelectionChanged(e);
             }
         });
+
+        DefaultTreeCellRenderer renderer = new DefaultTreeCellRenderer();
+        
+        ClassLoader classLoader = FindBugsFrame.class.getClassLoader();
+        java.net.URL bug2URL = classLoader.getResource("edu/umd/cs/findbugs/gui/bug2.png");
+        ImageIcon icon = new javax.swing.ImageIcon(bug2URL);
+        renderer.setOpenIcon(icon);
+        renderer.setClosedIcon(icon);
+        renderer.setLeafIcon(icon);
+        navigatorTree.setCellRenderer(renderer);    
     }
     
     private void exitItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitItemActionPerformed
