@@ -7,7 +7,7 @@
   the manual for important information.  You can find it in
   "doc/manual/index.html" in the FindBugs directory, or online at
 
-     http://www.cs.umd.edu/~pugh/java/bugs/manual/index.html
+	http://findbugs.sourceforge.net/manual/index.html
 
   The general idea behind building FindBugs is that the top-level
   working directory (i.e., the directory containing "build.xml")
@@ -31,7 +31,7 @@
     -->
     <property file="build.properties"/>
 
-    <property name="javac.target" value="jsr14" />
+    <property name="javac.target" value="1.5" />
     <property name="findbugs.dir" value="." />
     <property name="findbugs.src.dir" value="${findbugs.dir}/src/java" />
     <property name="anttask.src.dir" value="${findbugs.dir}/src/antTask" />
