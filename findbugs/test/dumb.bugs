@@ -121,7 +121,7 @@ M P UrF: Unread field: IntHolder.value
 H P Dm: InvokeGC.bad() forces garbage collection; extremely dubious except in benchmarking code  At InvokeGC.java:[line 12]
 H P Dm: InvokeGC.finalize() forces garbage collection; extremely dubious except in benchmarking code  At InvokeGC.java:[line 8]
 H P Dm: InvokeGC.tricky() forces garbage collection; extremely dubious except in benchmarking code  At InvokeGC.java:[line 30]
-M S Nm: The method name LongNaming$B.Wait() doesn't start with an lower case letter  At LongNaming.java:[line 19]
+L S Nm: The method name LongNaming$B.Wait() doesn't start with an lower case letter  At LongNaming.java:[line 19]
 H C Nm: VERY confusing to have methods LongNaming$B.Wait() and java.lang.Object.wait()
 H C Nm: VERY confusing to have methods LongNaming$B.methodF() and LongNaming.methodf()
 H C Nm: VERY confusing to have methods LongNaming$B.methodG() and LongNaming$A.methodg()
@@ -129,7 +129,7 @@ M C DLS: Dead store to local variable in method MaskMe.modify_base_class_var()  
 M C MF: Class MaskMe$DerivedMaskMe defines field that obscures superclass field MaskMe.base_class_var
 M C Nm: Confusing method name: MethodCapitalization.MethodCapitalization()  At MethodCapitalization.java:[line 4]
 H C Nm: Class MethodCapitalization defines hashcode(); should it be hashCode()?  At MethodCapitalization.java:[line 10]
-M S Nm: The method name MethodCapitalization.MethodCapitalization() doesn't start with an lower case letter  At MethodCapitalization.java:[line 4]
+L S Nm: The method name MethodCapitalization.MethodCapitalization() doesn't start with an lower case letter  At MethodCapitalization.java:[line 4]
 H C Nm: VERY confusing to have methods MethodCapitalization$Foo.getx() and MethodCapitalization.getX()
 M C MWN: Mismatched notify() in MismatchedWait.bar(Object,Object)  At MismatchedWait.java:[line 11]
 M C MWN: Mismatched notify() in MismatchedWait.bar(Object,Object)  At MismatchedWait.java:[line 12]
@@ -143,7 +143,6 @@ M V MS: MutableStatic.h should be package protected
 H V MS: MutableStatic.p isn't final but should be
 H C Nm: Class N2 defines hashcode(); should it be hashCode()?  At N2.java:[line 5]
 H C Nm: Class N2 defines tostring(); should it be toString()?  At N2.java:[line 4]
-M S Nm: The method name N2.N1() doesn't start with an lower case letter  At N2.java:[line 3]
 H C Nm: VERY confusing to have methods N2.mincemeaT() and N1.mincemeat()
 H C NP: Null pointer dereference in NP.main(String[])  At NP.java:[line 11]
 L C RCN: Redundant comparision to null of previously checked value in NP.main(String[])  At NP.java:[line 19]
@@ -200,11 +199,12 @@ M P Dm: Overloaded.foo(String) invokes dubious Boolean constructor; use Boolean.
 M P Dm: Overloaded.foo(String,boolean) invokes dubious Boolean constructor; use Boolean.valueOf(...) instead  At Overloaded.java:[line 11]
 L C PZLA: Should PreferZeroLengthArrays.foo(int) return a zero length array rather than null?  At PreferZeroLengthArrays.java:[line 5]
 H V MS: RECTest.anException isn't final but should be
-M S REC: Method RECTest.testFail() catches Exception, but Exception is not thrown in the try block and RuntimeException is not explicitly caught  At RECTest.java:[line 25]
-M S REC: Method RECTest.testFail2() catches Exception, but Exception is not thrown in the try block and RuntimeException is not explicitly caught  At RECTest.java:[line 35]
-M S REC: Method RECTest.testFail3() catches Exception, but Exception is not thrown in the try block and RuntimeException is not explicitly caught  At RECTest.java:[line 46]
-M S REC: Method RECTest.testFail4() catches Exception, but Exception is not thrown in the try block and RuntimeException is not explicitly caught  At RECTest.java:[line 56]
-M S REC: Method RECTest.testFail5() catches Exception, but Exception is not thrown in the try block and RuntimeException is not explicitly caught  At RECTest.java:[line 66]
+M S REC: Method RECTest.testFail6() catches Exception, but Exception is not thrown in the try block and RuntimeException is not explicitly caught  At RECTest.java:[line 98]
+L S REC: Method RECTest.testFail() catches Exception, but Exception is not thrown in the try block and RuntimeException is not explicitly caught  At RECTest.java:[line 32]
+L S REC: Method RECTest.testFail2() catches Exception, but Exception is not thrown in the try block and RuntimeException is not explicitly caught  At RECTest.java:[line 45]
+L S REC: Method RECTest.testFail3() catches Exception, but Exception is not thrown in the try block and RuntimeException is not explicitly caught  At RECTest.java:[line 59]
+L S REC: Method RECTest.testFail4() catches Exception, but Exception is not thrown in the try block and RuntimeException is not explicitly caught  At RECTest.java:[line 72]
+L S REC: Method RECTest.testFail5() catches Exception, but Exception is not thrown in the try block and RuntimeException is not explicitly caught  At RECTest.java:[line 85]
 M P Dm: RV.main(String[]) invokes dubious new String(String) constructor; just use the argument  At RV.java:[line 3]
 H C RV: RV.f(java.security.MessageDigest,byte[]) ignores return value of java.lang.IllegalStateException.<init>(String)  At RV.java:[line 12]
 H C RV: RV.main(String[]) ignores return value of java.lang.String.trim()  At RV.java:[line 5]
@@ -251,10 +251,6 @@ L S SF: A switch statement found in SwitchFallthrough.num(int) where one case fa
 M M IS2: Inconsistent synchronization of SynchronizationTest2.x; locked 85% of time  Unsynchronized access at SynchronizationTest2.java:[line 23]
 L M IS2: Inconsistent synchronization of SynchronizationTest3.x; locked 92% of time  Unsynchronized access at SynchronizationTest3.java:[line 23]
 L M IS2: Inconsistent synchronization of SynchronizationTest4.x; locked 92% of time  Unsynchronized access at SynchronizationTest4.java:[line 23]
-M S REC: Method Test.main(String[]) catches Exception, but Exception is not thrown in the try block and RuntimeException is not explicitly caught  At Test.java:[line 35]
-M S REC: Method Test.main(String[]) catches Exception, but Exception is not thrown in the try block and RuntimeException is not explicitly caught  At Test.java:[line 41]
-M S REC: Method Test.main(String[]) catches Exception, but Exception is not thrown in the try block and RuntimeException is not explicitly caught  At Test.java:[line 46]
-M S REC: Method Test.main(String[]) catches Exception, but Exception is not thrown in the try block and RuntimeException is not explicitly caught  At Test.java:[line 49]
 L M No: Using notify rather than notifyAll in TestFalsePositiveMWN.set()  At TestFalsePositiveMWN.java:[line 9]
 M C RR: TestReadandSkipReturnShouldBeChecked.test() ignores result of java.io.BufferedInputStream.read(byte[])  At TestReadandSkipReturnShouldBeChecked.java:[line 18]
 M C RR: TestReadandSkipReturnShouldBeChecked.test() ignores result of java.io.BufferedInputStream.read(byte[])  At TestReadandSkipReturnShouldBeChecked.java:[line 20]
