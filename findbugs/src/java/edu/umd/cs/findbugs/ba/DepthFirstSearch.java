@@ -19,219 +19,36 @@
 
 package edu.umd.cs.findbugs.ba;
 
-import java.util.*;
+import java.util.Iterator;
 
 /**
- * Perform a depth first search on a control flow graph.
- * Algorithm based on Cormen, et. al, <cite>Introduction to Algorithms</cite>, p. 478.
- * Currently, this class
- * <ul>
- * <li> assigns DFS edge types (see {@link DFSEdgeTypes})
- * <li> assigns discovery and finish times for each block
- * <li> produces a topological sort of the blocks,
- *      <em>if and only if the CFG is acyclic</em>
- * </ul>
+ * Perform a forward depth first search of a control flow graph.
+ *
  * @see CFG
+ * @see AbstractDepthFirstSearch
  * @author David Hovemeyer
  */
-public class DepthFirstSearch implements DFSEdgeTypes {
-	public final static boolean DEBUG = false;
-
-	private CFG cfg;
-	private int[] colorList;
-	private int[] discoveryTimeList;
-	private int[] finishTimeList;
-	private int[] dfsEdgeTypeList;
-	private int timestamp;
-	private LinkedList<BasicBlock> topologicalSortList;
-
-	private static final int WHITE = 0;
-	private static final int GRAY = 1;
-	private static final int BLACK = 2;
-
-	/**
-	 * Constructor.
-	 * @param cfg the CFG to be searched
-	 * @throws IllegalArgumentException if the CFG has not had edge ids assigned yet
-	 */
+public class DepthFirstSearch extends AbstractDepthFirstSearch {
 	public DepthFirstSearch(CFG cfg) {
-		this.cfg = cfg;
-
-		int numBlocks = cfg.getNumBasicBlocks();
-		colorList = new int[numBlocks]; // initially all elements are WHITE
-		discoveryTimeList = new int[numBlocks];
-		finishTimeList = new int[numBlocks];
-
-		int maxEdgeId = cfg.getMaxEdgeId();
-		dfsEdgeTypeList = new int[maxEdgeId];
-
-		timestamp = 0;
-
-		topologicalSortList = new LinkedList<BasicBlock>();
+		super(cfg);
 	}
 
-	/**
-	 * Perform the depth first search.
-	 * @return this object
-	 */
-	public DepthFirstSearch search() {
-		visitAll();
-		classifyUnknownEdges();
-
-		return this;
+	protected BasicBlock getEntry(CFG cfg) {
+		return cfg.getEntry();
 	}
 
-	/**
-	 * Get the type of edge in the depth first search.
-	 * @param edge the edge
-	 * @return the DFS type of edge: TREE_EDGE, FORWARD_EDGE, CROSS_EDGE, or BACK_EDGE
-	 * @see DFSEdgeTypes
-	 */
-	public int getDFSEdgeType(Edge edge) {
-		return dfsEdgeTypeList[edge.getId()];
+	protected Iterator<Edge> outgoingEdgeIterator(CFG cfg, BasicBlock basicBlock) {
+		return cfg.outgoingEdgeIterator(basicBlock);
 	}
 
-	/**
-	 * Return the timestamp indicating when the given basic block
-	 * was discovered.
-	 * @param block the basic block
-	 */
-	public int getDiscoveryTime(BasicBlock block) {
-		return discoveryTimeList[block.getId()];
+	protected BasicBlock getTarget(Edge edge) {
+		return edge.getTarget();
 	}
 
-	/**
-	 * Return the timestamp indicating when the given basic block
-	 * was finished (meaning that all of its descendents were visited recursively).
-	 * @param block the basic block
-	 */
-	public int getFinishTime(BasicBlock block) {
-		return finishTimeList[block.getId()];
+	protected BasicBlock getSource(Edge edge) {
+		return edge.getSource();
 	}
 
-	/**
-	 * Get an iterator over the basic blocks in topological sort order.
-	 * <em>This works if and only if the CFG is acyclic.</em>
-	 */
-	public Iterator<BasicBlock> topologicalSortIterator() {
-		return topologicalSortList.iterator();
-	}
-
-	private int indentLevel = 0;
-
-	private class Visit {
-		private BasicBlock block;
-		private Iterator<Edge> outgoingEdgeIterator;
-
-		public Visit(BasicBlock block) {
-			this.block = block;
-			this.outgoingEdgeIterator = cfg.outgoingEdgeIterator(block);
-
-			// Mark the block as visited, and set its timestamp
-			setColor(block, GRAY);
-			setDiscoveryTime(block, timestamp++);
-		}
-
-		public BasicBlock getBlock() { return block; }
-		public boolean hasNextEdge() { return outgoingEdgeIterator.hasNext(); }
-		public Edge getNextEdge() { return outgoingEdgeIterator.next(); }
-	}
-
-	private void visitAll() {
-		ArrayList<Visit> stack = new ArrayList<Visit>(cfg.getNumBasicBlocks());
-		stack.add(new Visit(cfg.getEntry()));
-
-		while (!stack.isEmpty()) {
-			Visit visit = stack.get(stack.size() - 1);
-
-			if (visit.hasNextEdge()) {
-				// Continue visiting successors
-				Edge edge = visit.getNextEdge();
-				visitSuccessor(stack, edge);
-			} else {
-				// Finish the block
-				BasicBlock block = visit.getBlock();
-				setColor(block, BLACK);
-				topologicalSortList.addFirst(block);
-				setFinishTime(block, timestamp++);
-
-				stack.remove(stack.size() - 1);
-			}
-		}
-	}
-
-	private void visitSuccessor(ArrayList<Visit> stack, Edge edge) {
-		// Get the successor
-		BasicBlock succ = edge.getTarget();
-		int succColor = getColor(succ);
-
-		// Classify edge type (if possible)
-		int dfsEdgeType = 0;
-		switch (succColor) {
-		case WHITE:
-			dfsEdgeType = TREE_EDGE;
-			break;
-		case GRAY:
-			dfsEdgeType = BACK_EDGE;
-			break;
-		case BLACK:
-			dfsEdgeType = UNKNOWN_EDGE;
-			break;// We can't distinguish between CROSS and FORWARD edges at this point
-		default:
-			assert false;
-		}
-		setDFSEdgeType(edge, dfsEdgeType);
-
-		// If successor hasn't been visited yet, visit it
-		if (succColor == WHITE) {
-			stack.add(new Visit(succ));
-		}
-	}
-
-	// Classify CROSS and FORWARD edges
-	private void classifyUnknownEdges() {
-		Iterator<Edge> edgeIter = cfg.edgeIterator();
-		while (edgeIter.hasNext()) {
-			Edge edge = edgeIter.next();
-			int dfsEdgeType = getDFSEdgeType(edge);
-			if (dfsEdgeType == UNKNOWN_EDGE) {
-				int srcDiscoveryTime = getDiscoveryTime(edge.getSource());
-				int destDiscoveryTime = getDiscoveryTime(edge.getTarget());
-
-				if (srcDiscoveryTime < destDiscoveryTime) {
-					// If the source was visited earlier than the
-					// target, it's a forward edge.
-					dfsEdgeType = FORWARD_EDGE;
-				} else {
-					// If the source was visited later than the 
-					// target, it's a cross edge.
-					dfsEdgeType = CROSS_EDGE;
-				}
-
-				setDFSEdgeType(edge, dfsEdgeType);
-			}
-		}
-	}
-
-	private void setColor(BasicBlock block, int color) {
-		colorList[block.getId()] = color;
-	}
-
-	private int getColor(BasicBlock block) {
-		return colorList[block.getId()];
-	}
-
-	private void setDiscoveryTime(BasicBlock block, int ts) {
-		discoveryTimeList[block.getId()] = ts;
-	}
-
-	private void setFinishTime(BasicBlock block, int ts) {
-		finishTimeList[block.getId()] = ts;
-	}
-
-	private void setDFSEdgeType(Edge edge, int dfsEdgeType) {
-		dfsEdgeTypeList[edge.getId()] = dfsEdgeType;
-	}
 }
 
 // vim:ts=4
