@@ -39,7 +39,6 @@ public class FindSpinLoop extends BytecodeScanningDetector implements   Constant
 	}
 
     public void sawOpcode(int seen) {
-	/* prototype for short-circuit bug */
 
 	// System.out.println("PC: " + PC + ", stage: " + stage1);
 	switch (seen) {
