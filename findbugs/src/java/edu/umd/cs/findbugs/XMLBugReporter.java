@@ -19,55 +19,17 @@
 
 package edu.umd.cs.findbugs;
 
-import java.io.StringWriter;
 import java.util.*;
-import org.apache.bcel.classfile.JavaClass;
 
-import org.dom4j.Element;
-import org.dom4j.Document;
-import org.dom4j.DocumentException;
-import org.dom4j.DocumentHelper;
-import org.dom4j.io.SAXReader;
-import org.dom4j.io.XMLWriter;
-import org.dom4j.io.OutputFormat;
-
-public class XMLBugReporter extends TextUIBugReporter {
-	private SortedBugCollection bugCollection = new SortedBugCollection();
-	private Project project;
-
+public class XMLBugReporter extends BugCollectionBugReporter {
 	public XMLBugReporter(Project project) {
-		this.project = project;
-	}
-
-	public void observeClass(JavaClass javaClass) {
-	}
-
-	public void logError(String message) {
-		bugCollection.addError(message);
-		super.logError(message);
-	}
-
-	public void reportMissingClass(ClassNotFoundException ex) {
-		bugCollection.addMissingClass(getMissingClassName(ex));
-		super.reportMissingClass(ex);
-	}
-
-	public void doReportBug(BugInstance bugInstance) {
-		if (bugCollection.add(bugInstance))
-			notifyObservers(bugInstance);
+		super(project);
 	}
 
 	public void finish() {
 		try {
-			StringWriter writer = new StringWriter();
-			ProjectStats stats = getProjectStats();
-			stats.transformSummaryToHTML(writer);
-
-			String html = writer.toString();
-
-			bugCollection.setSummaryHTML(html);
-			bugCollection.writeXML(outputStream, project);
-
+			generateSummary();
+			getBugCollection().writeXML(outputStream, getProject());
 		} catch (Exception e) {
 			logError("Couldn't write XML output: " + e.toString());
 		}
