@@ -306,7 +306,7 @@ public class Project {
 	 * indirectly referenced jar.  The referenced jar files that exist
 	 * are the list of implicit classpath entries.
 	 */
-	public List getImplicitClasspathEntryList() {
+	public List<String> getImplicitClasspathEntryList() {
 		final HashSet<File> processedJars = new HashSet<File>();
 		final LinkedList<String> implicitClasspath = new LinkedList<String>();
 
