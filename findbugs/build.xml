@@ -647,6 +647,7 @@
                source="1.5"
                Private="yes"
                windowtitle="FindBugs API Reference">
+          <classpath refid="classpath" />
           <packageset dir="${findbugs.src.dir}"/>
       </javadoc>
                
