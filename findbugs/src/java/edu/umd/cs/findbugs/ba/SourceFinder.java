@@ -29,28 +29,72 @@ import java.io.*;
  */
 public class SourceFinder {
 	private static final boolean DEBUG = Boolean.getBoolean("srcfinder.debug");
-
 	private static final int CACHE_SIZE = 50;
 
+	/* ----------------------------------------------------------------------
+	 * Helper classes
+	 * ---------------------------------------------------------------------- */
+
+	/**
+	 * Cache of SourceFiles.
+	 * We use this to avoid repeatedly having to read
+	 * frequently accessed source files.
+	 */
 	private static class Cache extends LinkedHashMap<String, SourceFile> {
 		protected boolean removeEldestEntry(Map.Entry<String, SourceFile> eldest) {
 			return size() >= CACHE_SIZE;
 		}
 	}
 
-	private List<String> sourceBaseList;
+	/**
+	 * A repository of source files.
+	 */
+	private interface SourceRepository {
+		public boolean contains(String fileName);
+		public SourceFileDataSource getDataSource(String fileName);
+	}
+
+	/**
+	 * A directory containing source files.
+	 */
+	private static class DirectorySourceRepository implements SourceRepository {
+		private String baseDir;
+
+		public DirectorySourceRepository(String baseDir) {
+			this.baseDir = baseDir;
+		}
+
+		public boolean contains(String fileName) {
+			File file = new File(getFullFileName(fileName));
+			return file.exists();
+		}
+
+		public SourceFileDataSource getDataSource(String fileName) {
+			return new FileSourceFileDataSource(getFullFileName(fileName));
+		}
+
+		private String getFullFileName(String fileName) {
+			return baseDir + File.separator + fileName;
+		}
+	}
+
+	/* ----------------------------------------------------------------------
+	 * Fields
+	 * ---------------------------------------------------------------------- */
+
+	private List<SourceRepository> repositoryList;
 	private Cache cache;
 
-	public interface SourceRepository {
-		public boolean contains();
-	}
+	/* ----------------------------------------------------------------------
+	 * Public methods
+	 * ---------------------------------------------------------------------- */
 
 	/**
 	 * Constructor.
 	 * @param path the source path, in the same format as a classpath
 	 */
 	public SourceFinder() {
-		sourceBaseList = null;
+		repositoryList = new LinkedList<SourceRepository>();
 		cache = new Cache();
 	}
 
@@ -58,7 +102,17 @@ public class SourceFinder {
 	 * Set the list of source directories.
 	 */
 	public void setSourceBaseList(List<String> sourceBaseList) {
-		this.sourceBaseList = sourceBaseList;
+		//this.sourceBaseList = sourceBaseList;
+		Iterator<String> i = sourceBaseList.iterator();
+		while (i.hasNext()) {
+			String repos = i.next();
+			if (repos.endsWith(".zip") || repos.endsWith(".jar")) {
+				// FIXME
+				throw new UnsupportedOperationException();
+			} else {
+				repositoryList.add(new DirectorySourceRepository(repos));
+			}
+		}
 	}
 
 	/**
@@ -97,18 +151,13 @@ public class SourceFinder {
 			 if (DEBUG) System.out.println("Trying "  + fileName + "...");
 
 			// Query each element of the source path to find the requested source file
-			Iterator<String> i = sourceBaseList.iterator();		
+			Iterator<SourceRepository> i = repositoryList.iterator();
 			while (i.hasNext()) {
-				String sourceBase = i.next();
+				SourceRepository repos = i.next();
 
-				// Try to read the file from current source base element
-				String fullFileName = sourceBase + File.separator + fileName;
-				if (DEBUG) System.out.println("Trying " + fullFileName + "...");
-
-				File file = new File(fullFileName);
-				if (file.exists()) {
+				if (repos.contains(fileName)) {
 					// Found it
-					sourceFile = new SourceFile(new FileSourceFileDataSource(fullFileName));
+					sourceFile = new SourceFile(repos.getDataSource(fileName));
 					cache.put(fileName, sourceFile);
 					break;
 				}
