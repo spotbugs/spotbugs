@@ -138,7 +138,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 	private SourceLineAnnotation createSourceLineAnnotation(String qName, Attributes attributes)
 			throws SAXException {
 		String classname = getRequiredAttribute(attributes, "classname", qName);
-		String sourceFile = attributes.getValue("sourceFile");
+		String sourceFile = attributes.getValue("sourcefile");
 		if (sourceFile == null)
 			sourceFile = SourceLineAnnotation.UNKNOWN_SOURCE_FILE;
 		String startLine = getRequiredAttribute(attributes, "start", qName);
