@@ -1913,7 +1913,17 @@ public class FindBugsFrame extends javax.swing.JFrame {
             } else if (arg.equals("-debug")) {
                 System.out.println("Setting findbugs.debug=true");
                 System.setProperty("findbugs.debug", "true");
-            }
+            } else if (arg.equals("-plastic")) {
+		// You can get the Plastic look and feel from jgoodies.com:
+		//    http://www.jgoodies.com/downloads/libraries.html
+		// Just put "plastic.jar" in the lib directory, right next
+		// to the other jar files.
+		try {
+		    UIManager.setLookAndFeel("com.jgoodies.plaf.plastic.PlasticXPLookAndFeel");
+		} catch (Exception e) {
+		    System.err.println("Couldn't load plastic look and feel: " + e.toString());
+		}
+	    }
         
         }
         
