@@ -2132,11 +2132,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
         for (int i = 0; i < args.length; ++i) {
             String arg = args[i];
             
-            if (arg.equals("-betterCFG")) {
-                // FIXME: this is for testing of BetterCFGBuilder
-                System.out.println("Using BetterCFGBuilder");
-                System.setProperty("cfg.better", "true");
-            } else if (arg.equals("-debug")) {
+	    if (arg.equals("-debug")) {
                 System.out.println("Setting findbugs.debug=true");
                 System.setProperty("findbugs.debug", "true");
             } else if (arg.equals("-plastic")) {
