@@ -30,6 +30,12 @@ public abstract class ResourceValueFrameModelingVisitor extends AbstractFrameMod
 		return ResourceValue.notInstance();
 	}
 
+	/**
+	 * Subclasses must override this to model the effect of the
+	 * given instruction on the current frame.
+	 */
+	public abstract void transferInstruction(InstructionHandle handle, BasicBlock basicBlock);
+
 	// Things to do:
 	// Automatically detect when resource instances escape:
 	//   - putfield, putstatic
@@ -57,7 +63,6 @@ public abstract class ResourceValueFrameModelingVisitor extends AbstractFrameMod
 	public void visitPUTSTATIC(PUTSTATIC putstatic) {
 		handleFieldStore(putstatic);
 	}
-
 
 	/**
 	 * Override this to check for methods that it is legal to
