@@ -395,7 +395,7 @@ public class FindInconsistentSync extends CFGBuildingDetector {
 			// At this point, we report the field as being inconsistently synchronized
 			int freq = (100 * locked) / (locked + unlocked);
 			BugInstance bugInstance = new BugInstance("IS2_INCONSISTENT_SYNC", NORMAL_PRIORITY)
-				.addClass(className)
+				.addClass(field.getClassName())
 				.addField(field)
 				.addInt(freq).describe("INT_SYNC_PERCENT");
 
