@@ -85,7 +85,7 @@ public class ConvertToARFF {
 			StringBuffer buf = new StringBuffer();
 			buf.append("{");
 			for (Iterator<String> i = possibleValueSet.iterator(); i.hasNext();) {
-				if (!buf.toString().equals("{"))
+				if (buf.length() > 1)
 					buf.append(",");
 				buf.append('"');
 				buf.append(i.next());
