@@ -132,7 +132,8 @@ public class FindInconsistentSync2 implements Detector {
 			JavaClass javaClass = classContext.getJavaClass();
 			if (DEBUG) System.out.println("******** Analyzing class " + javaClass.getClassName());
 
-			Set<Method> lockedMethodSet = findLockedMethods(classContext);
+			Set<Method> lockedMethodSet = findNotUnlockedMethods(classContext);
+			lockedMethodSet.retainAll(findLockedMethods(classContext));
 
 			Method[] methodList = javaClass.getMethods();
 			for (int i = 0; i < methodList.length; ++i) {
@@ -358,11 +359,11 @@ public class FindInconsistentSync2 implements Detector {
 	}
 
 	/**
-	 * Find methods that appear to always be called from a locked context.
+	 * Find methods that appear to never be called from an unlocked context
 	 * We assume that nonpublic methods will only be called from
 	 * within the class, which is not really a valid assumption.
 	 */
-	private Set<Method> findLockedMethods(ClassContext classContext)
+	private Set<Method> findNotUnlockedMethods(ClassContext classContext)
 		throws CFGBuilderException, DataflowAnalysisException {
 
 		JavaClass javaClass = classContext.getJavaClass();
@@ -431,6 +432,127 @@ public class FindInconsistentSync2 implements Detector {
 		// are called only from a locked context.
 		return lockedMethodSet;
 	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	/**
+	 * Find methods that appear to always be called from a locked context.
+	 * We assume that nonpublic methods will only be called from
+	 * within the class, which is not really a valid assumption.
+	 */
+	private Set<Method> findLockedMethods(ClassContext classContext)
+		throws CFGBuilderException, DataflowAnalysisException {
+
+		JavaClass javaClass = classContext.getJavaClass();
+		Method[] methodList = javaClass.getMethods();
+
+		// Build self-call graph
+		SelfCalls selfCalls = new SelfCalls(classContext) {
+			public boolean wantCallsFor(Method method) {
+				return !method.isPublic();
+			}
+		};
+
+		selfCalls.execute();
+		CallGraph callGraph = selfCalls.getCallGraph();
+
+		// Find call edges that are obviously locked
+		Set<CallSite> obviouslyLockedSites = findObviouslyLockedCallSites(classContext, selfCalls);
+
+		// Initially, assume all methods are locked
+		Set<Method> lockedMethodSet = new HashSet<Method>();
+
+		// Assume all public methods are unlocked
+		for (int i = 0; i < methodList.length; ++i) {
+			Method method = methodList[i];
+			if (method.isSynchronized()) {
+				lockedMethodSet.add(method);
+			}
+		}
+
+		// Explore the self-call graph to find nonpublic methods
+		// that can be called from an unlocked context.
+		boolean change;
+		do {
+			change = false;
+
+			for (Iterator<CallGraphEdge> i = callGraph.edgeIterator(); i.hasNext(); ) {
+				CallGraphEdge edge = i.next();
+				CallSite callSite = edge.getCallSite();
+
+				// Ignore obviously locked edges
+				// If the calling method is locked, ignore the edge
+				if (obviouslyLockedSites.contains(callSite)
+				    || lockedMethodSet.contains(callSite.getMethod()))
+				   {
+				   // Calling method is unlocked, so the called method
+				   // is also unlocked.
+				   CallGraphNode target = edge.getTarget();
+				   if (lockedMethodSet.add(target.getMethod()))
+					change = true;
+				   }
+			}
+		} while (change);
+
+		if (DEBUG) {
+			System.out.println("Apparently locked methods:");
+			for (Iterator<Method> i = lockedMethodSet.iterator(); i.hasNext(); ) {
+				Method method = i.next();
+				System.out.println("\t" + method.getName());
+			}
+		}
+
+		// We assume that any methods left in the locked set
+		// are called only from a locked context.
+		return lockedMethodSet;
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 	/**
 	 * Find all self-call sites that are obviously locked.
