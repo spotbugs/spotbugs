@@ -75,7 +75,7 @@ public class SwitchFallthrough extends BytecodeScanningDetector implements Const
 	public void sawOpcode(int seen) {
 		if (reachable && switchHdlr.isOnSwitchOffset(this)) {
 			if (!hasFallThruComment(lastPC + 1, getPC() - 1))
-				bugReporter.reportBug(new BugInstance(this, "SF_SWITCH_FALLTHROUGH", LOW_PRIORITY)
+				bugReporter.reportBug(new BugInstance(this, "SF_SWITCH_FALLTHROUGH", NORMAL_PRIORITY)
         			.addClassAndMethod(this)
         			.addSourceLineRange(this, lastPC, getPC()));
 		}
