@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs.detect;
 
 import edu.umd.cs.findbugs.*;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 import java.util.*;
@@ -32,11 +33,16 @@ public class FindBugsSummaryStats extends PreorderVisitor
                                   implements Detector, BugReporterObserver {
   private BugReporter bugReporter;
   private ProjectStats stats;
+  private AnalysisContext analysisContext;
 
   public FindBugsSummaryStats(BugReporter bugReporter) {
     this.bugReporter = bugReporter;
     this.stats = bugReporter.getProjectStats();
     bugReporter.addObserver( this );
+  }
+
+  public void setAnalysisContext(AnalysisContext analysisContext) {
+    this.analysisContext = analysisContext;
   }
 
   public void visitClassContext(ClassContext classContext) {
