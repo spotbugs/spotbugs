@@ -5,6 +5,9 @@ import java.util.concurrent.locks.*;
 
 public class IgnoredReturnValue {
   public static void main(String args[]) throws Exception {
+	String str = " ttesting ";
+	str.trim();
+	str.equals("testing");
 	Semaphore s = new Semaphore(17, true);
 	s.tryAcquire();
 	s.tryAcquire(12, TimeUnit.MILLISECONDS);

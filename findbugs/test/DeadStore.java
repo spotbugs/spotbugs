@@ -4,6 +4,7 @@ public class DeadStore {
 		String dead = "Oops!";
 
 		System.out.println(live);
+		args = new String[0];
 	}
 
 	public int finalLocalDNR(int a) {
