@@ -115,7 +115,17 @@ public class FindBugs implements Constants2
 				for (int j = 0; j < detectorFactoryList.length; ++j)
 					registerDetector(detectorFactoryList[j]);
 
-				// TODO: register BugPatterns and BugCodes
+				I18N i18n = I18N.instance();
+
+				// Register the BugPatterns
+				BugPattern[] bugPatternList = pluginLoader.getBugPatternList();
+				for (int j = 0; j < bugPatternList.length; ++j)
+					i18n.registerBugPattern(bugPatternList[j]);
+
+				// Register the BugCodes
+				BugCode[] bugCodeList = pluginLoader.getBugCodeList();
+				for (int j = 0; j < bugCodeList.length; ++j)
+					i18n.registerBugCode(bugCodeList[j]);
 
 				++numLoaded;
 			} catch (Exception e) {

@@ -29,16 +29,14 @@ import java.util.*;
  */
 public class I18N {
 
-	private final ResourceBundle messageBundle;
-	private final ResourceBundle shortMessageBundle;
 	private final ResourceBundle annotationDescriptionBundle;
-	private final ResourceBundle bugTypeDescriptionBundle;
+	private final HashMap<String, BugPattern> bugPatternMap;
+	private final HashMap<String, BugCode> bugCodeMap;
 
 	private I18N() {
-		messageBundle = ResourceBundle.getBundle("edu.umd.cs.findbugs.FindBugsMessages");
-		shortMessageBundle = ResourceBundle.getBundle("edu.umd.cs.findbugs.FindBugsShortMessages");
 		annotationDescriptionBundle = ResourceBundle.getBundle("edu.umd.cs.findbugs.FindBugsAnnotationDescriptions");
-		bugTypeDescriptionBundle = ResourceBundle.getBundle("edu.umd.cs.findbugs.FindBugsTypeDescriptions");
+		bugPatternMap = new HashMap<String, BugPattern>();
+		bugCodeMap = new HashMap<String, BugCode>();
 	}
 
 	private static I18N theInstance = new I18N();
@@ -51,12 +49,31 @@ public class I18N {
 	}
 
 	/**
+	 * Register a BugPattern.
+	 * @param bugPattern the BugPattern
+	 */
+	public void registerBugPattern(BugPattern bugPattern) {
+		bugPatternMap.put(bugPattern.getType(), bugPattern);
+	}
+
+	/**
+	 * Register a BugCode.
+	 * @param bugCode the BugCode
+	 */
+	public void registerBugCode(BugCode bugCode) {
+		bugCodeMap.put(bugCode.getAbbrev(), bugCode);
+	}
+
+	/**
 	 * Get a message string.
 	 * This is a format pattern for describing an entire bug instance in a single line.
 	 * @param key which message to retrieve
 	 */
 	public String getMessage(String key) {
-		return messageBundle.getString(key);
+		BugPattern bugPattern = bugPatternMap.get(key);
+		if (bugPattern == null)
+			return "Error: missing bug pattern for key " + key;
+		return bugPattern.getAbbrev() + ": " + bugPattern.getLongDescription();
 	}
 
 	/**
@@ -66,7 +83,10 @@ public class I18N {
 	 * @param key which short message to retrieve
 	 */
 	public String getShortMessage(String key) {
-		return shortMessageBundle.getString(key);
+		BugPattern bugPattern = bugPatternMap.get(key);
+		if (bugPattern == null)
+			return "Error: missing bug pattern for key " + key;
+		return bugPattern.getAbbrev() + ": " + bugPattern.getShortDescription();
 	}
 
 	/**
@@ -90,7 +110,10 @@ public class I18N {
 	 * @return the description of that short bug type code means
 	 */
 	public String getBugTypeDescription(String shortBugType) {
-		return bugTypeDescriptionBundle.getString(shortBugType);
+		BugCode bugCode = bugCodeMap.get(shortBugType);
+		if (bugCode == null)
+			return "Error: missing bug code for key " + shortBugType;
+		return bugCode.getDescription();
 	}
 
 }
