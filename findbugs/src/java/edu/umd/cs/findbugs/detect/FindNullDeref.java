@@ -46,7 +46,7 @@ public class FindNullDeref implements Detector {
 				if (method.isAbstract() || method.isNative())
 					continue;
 
-				if (DEBUG) System.out.println(method.getName());
+				if (DEBUG) System.out.println(SignatureConverter.convertMethodSignature(jclass.getClassName(), method.getName(), method.getSignature()));
 
 				// Get the IsNullValueAnalysis for the method from the ClassContext
 				IsNullValueDataflow invDataflow = classContext.getIsNullValueDataflow(method);
