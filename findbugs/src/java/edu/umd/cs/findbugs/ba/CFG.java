@@ -120,6 +120,22 @@ public class CFG extends AbstractGraph<Edge, BasicBlock> implements Debug {
 	}
 
 	/**
+	 * Get Collection of basic blocks whose IDs are specified by
+	 * given BitSet.
+	 * @param idSet BitSet of block IDs
+	 * @return a Collection containing the blocks whose IDs are given
+	 */
+	public Collection<BasicBlock> getBlocks(BitSet idSet) {
+		LinkedList<BasicBlock> result = new LinkedList<BasicBlock>();
+		for (Iterator<BasicBlock> i = blockIterator(); i.hasNext(); ) {
+			BasicBlock block = i.next();
+			if (idSet.get(block.getId()))
+				result.add(block);
+		}
+		return result;
+	}
+
+	/**
 	 * Get the first successor reachable from given edge type.
 	 * @param source the source block
 	 * @param edgeType the edge type leading to the successor
