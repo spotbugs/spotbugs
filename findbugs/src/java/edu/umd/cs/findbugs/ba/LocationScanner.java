@@ -38,7 +38,7 @@ public class LocationScanner {
 		 * Visit a Location.
 		 * @param location the Location
 		 */
-		public void visitLocation(Location location);
+		public void visitLocation(Location location) throws CFGBuilderException, DataflowAnalysisException;
 	}
 
 	private CFG cfg;
@@ -55,7 +55,7 @@ public class LocationScanner {
 	 * Visit all Locations of the CFG.
 	 * @param callback the callback object to invoke on each visited Location
 	 */
-	public void scan(Callback callback) {
+	public void scan(Callback callback) throws CFGBuilderException, DataflowAnalysisException {
 		Iterator<BasicBlock> bbIter = cfg.blockIterator();
 		while (bbIter.hasNext()) {
 			BasicBlock basicBlock = bbIter.next();
