@@ -31,6 +31,16 @@
     -->
     <property file="build.properties"/>
 
+    <!-- Set the target based on whether we are using JDK1.5 or JSR14 -->
+    <condition property="javac.target" value="1.4">
+      <isset property="build.compiler"/>
+    </condition>
+    <condition property="javac.target" value="jsr14">
+      <not>
+        <isset property="build.compiler"/>
+      </not>
+    </condition>
+
     <property name="findbugs.dir" value="." />
     <property name="findbugs.src.dir" value="${findbugs.dir}/src/java" />
     <property name="anttask.src.dir" value="${findbugs.dir}/src/antTask" />
@@ -160,7 +170,7 @@
     <target name="classes" depends="init">
       <javac srcdir="${findbugs.src.dir}" destdir="${class.dir}"
              source="1.5"
-             target="jsr14"
+             target="${javac.target}"
              fork="true"
              debug="true">
         <classpath refid="classpath" />
@@ -306,7 +316,8 @@
     <target name="anttask" depends="findbugs">
       <javac srcdir="${anttask.src.dir}" 
              source="1.5"
-             target="jsr14" debug="true" destdir="${class.dir}" >
+             target="${javac.target}"
+             debug="true" destdir="${class.dir}" >
         <classpath refid="classpath" />
         <compilerarg compiler="javac1.5" value="-Xlint:unchecked"/>
         <compilerarg compiler="javac1.5" value="-Xlint:deprecation"/>
@@ -368,7 +379,7 @@
     <target name="testjar" depends="init,anttask" >
       <javac srcdir="${test.dir}" 
              source="1.5"
-             target="jsr14"
+             target="${javac.target}"
              excludes="IgnoredReturnValue.java,TryLock.java,JSR166.java" debug="true">
         <classpath refid="test.classpath"/>
       </javac>
@@ -402,7 +413,7 @@
     <target name="jsr166test">
       <javac srcdir="${test.dir}"
              source="1.5"
-             target="jsr14"
+             target="${javac.target}"
              includes="IgnoredReturnValue.java,TryLock.java,JSR166.java" debug="true" />
       <jar destfile="${test.dir}/jsr166test.jar" basedir="${test.dir}"
            includes="IgnoredReturnValue*.class,TryLock*.class,JSR166*.class" />
@@ -420,7 +431,7 @@
 
       <javac srcdir="${junit.src.dir}" destdir="${junit.build.dir}"
              source="1.5"
-             target="jsr14"
+             target="${javac.target}"
              debug="true">
         <classpath refid="junit.classpath"/>
         <compilerarg compiler="javac1.5" value="-Xlint:unchecked"/>
@@ -458,7 +469,7 @@
       <javac srcdir="${tools.src.dir}" destdir="${tools.dir}"
              excludes="edu/umd/cs/findbugs/tools/patcomp/*"
              source="1.5"
-             target="jsr14"
+             target="${javac.target}"
              debug="true">
         <classpath refid="tools.buildclasspath"/>
         <compilerarg compiler="javac1.5" value="-Xlint:unchecked"/>
