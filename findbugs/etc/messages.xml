@@ -885,6 +885,20 @@ using the <code>equals(Object)</code> method instead.
 ]]>
     </Details>
   </BugPattern>
+  <BugPattern type="EI_EXPOSE_STATIC_REP2">
+    <ShortDescription>Method may expose internal static state by storing a mutable object into a static field</ShortDescription>
+    <LongDescription>{1} may expose internal static state by storing a mutable object into a static field {2}</LongDescription>
+    <Details>
+<![CDATA[
+  <p> This code stores a reference to an externally mutable object into a static
+	field. 
+	If unchecked changes to
+	the mutable object would compromise security or other
+	important properties, you will need to do something different.
+  Storing a copy of the object is better approach in many situations.
+]]>
+    </Details>
+  </BugPattern>
   <BugPattern type="RU_INVOKE_RUN">
     <ShortDescription>Invokes run on a thread (did you mean to start it instead?)</ShortDescription>
     <LongDescription>{1} explicitly invokes run on a thread (did you mean to start it instead?)</LongDescription>

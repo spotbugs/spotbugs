@@ -89,7 +89,7 @@ public class FindReturnRef extends BytecodeScanningDetector implements   Constan
 
 	if (staticMethod && dangerousToStoreIntoField && seen == PUTSTATIC 
 			&& MutableStaticFields.mutableSignature(getSigConstantOperand()) ) {
-			bugReporter.reportBug(new BugInstance("EI_EXPOSE_REP2", HIGH_PRIORITY)
+			bugReporter.reportBug(new BugInstance("EI_EXPOSE_STATIC_REP2", NORMAL_PRIORITY)
 				.addClassAndMethod(this)
 				.addField(getClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand(),
 						true)
