@@ -33,6 +33,7 @@ import org.apache.bcel.generic.FieldInstruction;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InstructionList;
+import org.apache.bcel.generic.INVOKESTATIC;
 import org.apache.bcel.generic.MethodGen;
 
 /**
@@ -448,16 +449,25 @@ public class ClassContext implements AnalysisFeatures {
 					for (InstructionHandle handle = il.getStart(); handle != null; handle = handle.getNext()) {
 						Instruction ins = handle.getInstruction();
 						short opcode = ins.getOpcode();
-						if (!fieldInstructionOpcodeSet.get(opcode))
-							continue;
-						boolean isLoad = (opcode == Constants.GETFIELD || opcode == Constants.GETSTATIC);
 						try {
-							XField field = Hierarchy.findXField((FieldInstruction) ins, getConstantPoolGen());
-							if (field != null) {
-								if (isLoad)
-									loadedFieldSet.addLoad(handle, field);
-								else
-									loadedFieldSet.addStore(handle, field);
+							if (opcode == Constants.INVOKESTATIC) {
+								INVOKESTATIC inv = (INVOKESTATIC) ins;
+								if (Hierarchy.isInnerClassAccess(inv, getConstantPoolGen())) {
+									InnerClassAccess access = Hierarchy.getInnerClassAccess(inv, getConstantPoolGen());
+									if (access.isLoad())
+										loadedFieldSet.addLoad(handle, access.getField());
+									else
+										loadedFieldSet.addStore(handle, access.getField());
+								}
+							} else if (fieldInstructionOpcodeSet.get(opcode)) {
+								boolean isLoad = (opcode == Constants.GETFIELD || opcode == Constants.GETSTATIC);
+								XField field = Hierarchy.findXField((FieldInstruction) ins, getConstantPoolGen());
+								if (field != null) {
+									if (isLoad)
+										loadedFieldSet.addLoad(handle, field);
+									else
+										loadedFieldSet.addStore(handle, field);
+								}
 							}
 						} catch (ClassNotFoundException e) {
 							analysisContext.getLookupFailureCallback().reportMissingClass(e);
