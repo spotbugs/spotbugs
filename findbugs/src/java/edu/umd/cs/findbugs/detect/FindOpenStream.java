@@ -258,7 +258,8 @@ public class FindOpenStream extends ResourceTrackingDetector<Stream, FindOpenStr
 				// Does this instruction close the stream?
 				INVOKESPECIAL inv = (INVOKESPECIAL) ins;
 
-				if (getInstanceValue(frame, inv, cpg).isInstance() &&
+				if (frame.isValid() &&
+					getInstanceValue(frame, inv, cpg).isInstance() &&
 					matchMethod(inv, cpg, resource.getResourceClass(), "<init>"))
 					return true;
 			}
@@ -275,7 +276,8 @@ public class FindOpenStream extends ResourceTrackingDetector<Stream, FindOpenStr
 				// Does this instruction close the stream?
 				INVOKEVIRTUAL inv = (INVOKEVIRTUAL) ins;
 
-				if (!getInstanceValue(frame, inv, cpg).isInstance())
+				if (!frame.isValid() ||
+					!getInstanceValue(frame, inv, cpg).isInstance())
 					return false;
 
 				// It's a close if the invoked class is any subtype of the stream base class.
