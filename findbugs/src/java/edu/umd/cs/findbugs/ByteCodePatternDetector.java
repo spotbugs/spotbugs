@@ -47,6 +47,13 @@ public abstract class ByteCodePatternDetector implements Detector {
 				if (method.isAbstract() || method.isNative())
 					continue;
 
+				if (DEBUG) {
+					System.out.print(
+						"=====================================================================\n"+
+						"Method " + jclass.getClassName() + "." + method.getName() + "\n" +
+						"=====================================================================\n");
+				}
+
 				if (!prescreen(method, classContext))
 					continue;
 	
@@ -55,13 +62,6 @@ public abstract class ByteCodePatternDetector implements Detector {
 				CFG cfg = classContext.getCFG(method);
 				DepthFirstSearch dfs = classContext.getDepthFirstSearch(method);
 				ValueNumberDataflow vnaDataflow = classContext.getValueNumberDataflow(method);
-
-				if (DEBUG) {
-					System.out.print(
-						"=====================================================================\n"+
-						"Method " + methodGen.getName() + "\n" +
-						"=====================================================================\n");
-				}
 
 				PatternMatcher matcher = new PatternMatcher(pattern, cfg, cpg, dfs, vnaDataflow);
 				matcher.execute();
