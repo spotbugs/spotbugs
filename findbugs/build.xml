@@ -68,7 +68,6 @@
     <property name="script.dir" value="bin" />
     <property name="plugin.dir" value="plugin" />
     <property name="class.dir" value="${build.dir}/classes" />
-    <property name="release.dir" value="${build.dir}/release" />
     <property name="release.prop.file" value="${build.dir}/release.properties" />
     <property name="html.xsl.stylesheet" value="${xsl.stylesheet.home}/html/chunk.xsl" />
     <property name="fo.xsl.stylesheet" value="${xsl.stylesheet.home}/fo/docbook.xsl" />
@@ -107,7 +106,6 @@
       <mkdir dir="${jar.dir}" />
       <mkdir dir="${plugin.dir}" />
       <mkdir dir="${class.dir}" />
-      <mkdir dir="${release.dir}" />
       <mkdir dir="${doc.dir}" />
       <mkdir dir="${build.dir}" />
     </target>
@@ -190,6 +188,7 @@
          <arg value="-props"/> 
       </java>
       <loadproperties srcFile="${release.prop.file}" />
+      <property name="release.dir" value="${build.dir}/findbugs-${release.number}" />
     </target>
 
     <!-- Target to generate documentation files from their sources. -->
@@ -264,19 +263,21 @@
     <!-- Target to build the release. This just means copying generated files
          (code and docs). -->
     <target name="release" depends="buildAll">
-       <copy todir="${release.dir}/findbugs-${release.number}/lib">
+       <copy todir="${release.dir}/lib">
          <fileset dir="${jar.dir}" includes="**/*.jar"/>
        </copy>
-       <copy todir="${release.dir}/findbugs-${release.number}/plugin">
+       <copy todir="${release.dir}/plugin">
          <fileset dir="${plugin.dir}" includes="**/*.jar"/>
        </copy>
-       <copy todir="${release.dir}/findbugs-${release.number}/doc">
+       <copy todir="${release.dir}/doc">
          <fileset dir="${doc.dir}" />
        </copy>
-       <copy todir="${release.dir}/findbugs-${release.number}/bin">
+       <copy todir="${release.dir}/bin">
          <fileset dir="${script.dir}" />
        </copy>
-       <chmod file="${release.dir}/findbugs-${release.number}/bin/findbugs" perm="a+rx"/>
+       <chmod file="${release.dir}/bin/findbugs" perm="a+rx"/>
+       <copy file="LICENSE.txt" todir="${release.dir}" />
+       <copy file="README.txt" todir="${release.dir}" />
     </target>
 
     <!-- Update the FindBugs web page. -->
