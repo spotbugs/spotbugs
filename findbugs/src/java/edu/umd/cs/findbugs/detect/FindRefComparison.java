@@ -432,6 +432,11 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 		if (lhsType_.equals(rhsType_))
 			return;
 
+		// Ignore top and bottom values
+		if (lhsType_.getType() == T_TOP || lhsType_.getType() == T_BOTTOM
+			|| rhsType_.getType() == T_TOP || rhsType_.getType() == T_BOTTOM)
+			return;
+
 		if (!(lhsType_ instanceof ReferenceType) || !(rhsType_ instanceof ReferenceType)) {
 			if (rhsType_.getType() == T_NULL) {
 				// A literal null value was passed directly to equals().
@@ -444,7 +449,9 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 				// a literal null value.  This is really the
 				// purview of FindNullDeref.  So, we'll just do nothing.
 			} else {
-				bugReporter.logError("equals() used to compare non-object type(s) in " +
+				bugReporter.logError("equals() used to compare non-object type(s) " +
+					lhsType_ + " and " + rhsType_ +
+					" in " +
 					SignatureConverter.convertMethodSignature(methodGen) +
 					" at " + location.getHandle());
 			}
