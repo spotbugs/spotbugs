@@ -984,9 +984,7 @@ using the &FindBugs; task.
        <para>
       Optional boolean attribute.  If set to true, &FindBugs; prints diagnostic
       information about which classes are being analyzed, and which bug pattern
-      detectors are being run.  Default is false.  Note that if this attribute
-      is set to "true", it will cause XML output to be invalid.  Therefore,
-      it is most useful when <literal>format</literal> is "text".
+      detectors are being run.  Default is false.
        </para>
     </listitem>
   </varlistentry>
