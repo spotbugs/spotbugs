@@ -122,34 +122,50 @@ public class FindInconsistentSync2 implements Detector {
 		new LocationScanner(cfg).scan(new LocationScanner.Callback() {
 			public void visitLocation(Location location) throws CFGBuilderException, DataflowAnalysisException {
 
-				Instruction ins = location.getHandle().getInstruction();
+				try {
+					Instruction ins = location.getHandle().getInstruction();
+					XField xfield = null;
+					boolean isWrite = false;
 
-				if (ins instanceof FieldInstruction) {
-					try {
+					if (ins instanceof FieldInstruction) {
 						FieldInstruction fins = (FieldInstruction) ins;
-						XField xfield = Lookup.findXField(fins, cpg);
-
-						if (!xfield.isStatic()) {
-							// See if the field access is self-locked.
-							ValueNumberFrame frame = vnaDataflow.getFactAtLocation(location);
-							ValueNumber instance = frame.getInstance(fins, cpg);
-							LockSet lockSet = lockDataflow.getFactAtLocation(location);
-							boolean isLocked = lockSet.getLockCount(instance.getNumber()) > 0;
-							int kind = 0;
-							kind |= isLocked ? LOCKED : UNLOCKED;
-							kind |= (ins.getOpcode() == Constants.GETFIELD) ? READ : WRITE;
-
-							FieldStats stats = getStats(xfield);
-							stats.addAccess(kind);
+						xfield = Lookup.findXField(fins, cpg);
+						isWrite = ins.getOpcode() == Constants.PUTFIELD;
+					} else if (ins instanceof INVOKESTATIC) {
+						INVOKESTATIC inv = (INVOKESTATIC) ins;
+						InnerClassAccess access = icam.getInnerClassAccess(inv, cpg);
+						if (access != null && access.getMethodSignature().equals(inv.getSignature(cpg))) {
+							xfield = access.getField();
+							isWrite = !access.isLoad();
 						}
-						// FIXME: should we do something for static fields?
-					} catch (ClassNotFoundException e) {
-						bugReporter.reportMissingClass(e);
 					}
-				}
 
+					if (xfield != null && !xfield.isStatic()) {
+						instanceAccess(vnaDataflow.getFactAtLocation(location),
+									lockDataflow.getFactAtLocation(location),
+									xfield, ins, isWrite, cpg);
+					}
+					// FIXME: should we do something for static fields?
+				} catch (ClassNotFoundException e) {
+					bugReporter.reportMissingClass(e);
+				}
 			}
 		});
+	}
+
+	private void instanceAccess(ValueNumberFrame frame, LockSet lockSet, XField xfield,
+								Instruction ins, boolean isWrite, ConstantPoolGen cpg)
+		throws DataflowAnalysisException {
+
+		ValueNumber instance = frame.getInstance(ins, cpg);
+		boolean isLocked = lockSet.getLockCount(instance.getNumber()) > 0;
+
+		int kind = 0;
+		kind |= isLocked ? LOCKED : UNLOCKED;
+		kind |= isWrite ? WRITE : READ;
+
+		FieldStats stats = getStats(xfield);
+		stats.addAccess(kind);
 	}
 
 	private FieldStats getStats(XField field) {
