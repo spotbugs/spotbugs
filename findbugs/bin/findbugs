@@ -56,8 +56,8 @@ while [ $# -gt 0 ]; do
 		;;
 
 	-jvmArgs=*)
-		jvmArgs=`echo $arg | sed -e 's/^-jvmArgs=\(.*\)$/\1/'`
-		echo "jvmArgs=$jvmArgs"
+		jvmArgs="`echo $arg | sed -e 's/^-jvmArgs=\(.*\)$/\1/'`"
+		echo "jvmArgs='$jvmArgs'"
 		;;
 
 	-help)
