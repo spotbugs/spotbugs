@@ -177,7 +177,30 @@ public class BugInstance implements Comparable, XMLConvertible {
 	public String getAnnotationText() {
 		return annotationText;
 	}
-	
+
+	/**
+	 * Determine whether or not the annotation text contains
+	 * the given word.
+	 * @param word the word
+	 * @return true if the annotation text contains the word, false otherwise
+	 */
+	public boolean annotationTextContainsWord(String word) {
+		return getTextAnnotationWords().contains(word);
+	}
+
+	/**
+	 * Get set of words in the text annotation.
+	 */
+	public Set<String> getTextAnnotationWords() {
+		HashSet<String> result = new HashSet<String>();
+
+		StringTokenizer tok = new StringTokenizer(annotationText, " \t\r\n\f.,:;-");
+		while (tok.hasMoreTokens()) {
+			result.add(tok.nextToken());
+		}
+		return result;
+	}
+
 	/* ----------------------------------------------------------------------
 	 * Combined annotation adders
 	 * ---------------------------------------------------------------------- */
