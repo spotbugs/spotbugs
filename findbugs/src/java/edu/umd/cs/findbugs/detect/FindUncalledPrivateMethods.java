@@ -45,7 +45,13 @@ public class FindUncalledPrivateMethods extends BytecodeScanningDetector {
 
 	public void visitMethod(Method obj) {
 		super.visitMethod(obj);
-		if (obj.isPrivate())
+		if (obj.isPrivate() 
+				&& !methodName.equals("writeReplace")
+				&& !methodName.equals("readResolve")
+				&& !methodName.equals("readObject")
+				&& !methodName.equals("writeObject")
+				&& !methodName.equals("<init>")
+				)
 			definedPrivateMethods.add(MethodAnnotation.fromVisitedMethod(this));
 	}
 
