@@ -44,6 +44,13 @@ to find bugs at <a href="http://java.sun.com/javaone/">JavaOne 2004</a>.&nbsp;
 We will also be participating in a FindBugs BOF (Birds of a Feather)
 session.&nbsp; Hope to see you there!
 
+<p> Changes since version 0.8.1:
+<ul>
+<li> Fixed a critical ClassCastException bug (triggered if the -workHard
+     option was used, and an exception type was merged with an
+     array type during type inference)
+</ul>
+
 <p> Changes since version 0.8.0:
 
 <ul>
