@@ -28,6 +28,7 @@ import java.io.OutputStreamWriter;
 import java.io.PrintStream;
 import java.io.Writer;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -148,7 +149,7 @@ public class ConvertToARFF {
 		}
 
 		public String getRange() {
-			return "{bug,not_bug,harmless_bug,unclassified}";
+			return "{bug,not_bug,harmless_bug}";
 		}
 
 		public String getInstanceValue(Element element) throws MissingNodeException {
@@ -172,7 +173,7 @@ public class ConvertToARFF {
 			else if ((state & BUG) != 0)
 				return ((state & HARMLESS) != 0) ? "harmless_bug" : "bug";
 			else
-				return "unclassified";
+				throw new MissingNodeException("Unclassified warning");
 		}
 	}
 
@@ -270,13 +271,29 @@ public class ConvertToARFF {
 		addAttribute(new IdAttribute());
 	}
 
+	/**
+	 * Convert a single Document to ARFF format.
+	 *
+	 * @param relationName the relation name
+	 * @param document     the Document
+	 * @param out          Writer to write the ARFF output to
+	 */
 	public void convert(String relationName, Document document, final Writer out)
 			throws IOException, MissingNodeException {
-		List bugInstanceList = document.selectNodes("/BugCollection/BugInstance");
+		scan(document);
+		generateHeader(relationName, out);
+		generateInstances(document, out);
+	}
 
-		out.write("@relation ");
-		out.write(relationName);
-		out.write("\n\n");
+	/**
+	 * Scan a Document to find out the ranges of attributes.
+	 * All Documents must be scanned before generating the ARFF
+	 * header and instances.
+	 *
+	 * @param document the Document
+	 */
+	public void scan(Document document) throws MissingNodeException, IOException {
+		List bugInstanceList = document.selectNodes("/BugCollection/BugInstance");
 
 		for (Iterator i = bugInstanceList.iterator(); i.hasNext(); ) {
 			final Element element = (Element) i.next();
@@ -286,6 +303,20 @@ public class ConvertToARFF {
 				}
 			});
 		}
+	}
+
+	/**
+	 * Generate ARFF header.
+	 * Documents must have already been scanned.
+	 *
+	 * @param relationName the relation name
+	 * @param out          Writer to write the ARFF output to
+	 */
+	public void generateHeader(String relationName, final Writer out)
+			throws MissingNodeException, IOException {
+		out.write("@relation ");
+		out.write(relationName);
+		out.write("\n\n");
 
 		scanAttributeList(new AttributeCallback() {
 			public void apply(Attribute attribute) throws IOException {
@@ -299,6 +330,18 @@ public class ConvertToARFF {
 		out.write("\n");
 
 		out.write("@data\n");
+	}
+
+	/**
+	 * Generate instances from given Document.
+	 * Document should already have been scanned, and the ARFF header generated.
+	 *
+	 * @param document the Document
+	 * @param out      Writer to write the ARFF output to
+	 */
+	public void generateInstances(Document document, final Writer out)
+			throws MissingNodeException, IOException {
+		List bugInstanceList = document.selectNodes("/BugCollection/BugInstance");
 
 		for (Iterator i = bugInstanceList.iterator(); i.hasNext(); ) {
 			final Element element = (Element) i.next();
@@ -321,6 +364,11 @@ public class ConvertToARFF {
 		}
 	}
 
+	/**
+	 * Apply a callback to all Attributes.
+	 *
+	 * @param callback the callback
+	 */
 	public void scanAttributeList(AttributeCallback callback)
 			throws MissingNodeException, IOException {
 		for (Iterator<Attribute> i = attributeList.iterator(); i.hasNext();) {
@@ -332,6 +380,7 @@ public class ConvertToARFF {
 	public void addDefaultAttributes() {
 		// This conversion scheme is arbitrary.
 		// FIXME: method and field signatures?
+		addIdAttribute();
 		addNominalAttribute("bugtype", "@type");
 		addNominalAttribute("class", "./Class[1]/@classname");
 		addNominalAttribute("methodname", "./Method[1]/@name");
@@ -391,7 +440,7 @@ public class ConvertToARFF {
 
 		public void printUsage(PrintStream out) {
 			out.println("Usage: " + ConvertToARFF.class.getName() +
-				" [options] <findbugs results> <relation name> <output file>");
+				" [options] <relation name> <output file> <findbugs results> [<findbugs results>...]");
 			super.printUsage(out);
 		}
 	}
@@ -403,29 +452,46 @@ public class ConvertToARFF {
 		// Parse command line arguments
 		C2ACommandLine commandLine = new C2ACommandLine();
 		int argCount = commandLine.parse(argv);
-		if (argCount != argv.length - 3) {
+		if (argCount > argv.length - 3) {
 			commandLine.printUsage(System.err);
 			System.exit(1);
 		}
-		String fileName = argv[argCount++];
 		String relationName = argv[argCount++];
 		String outputFileName = argv[argCount++];
 
 		// Create the converter
 		ConvertToARFF converter = commandLine.getConverter();
 
-		// Read input file as dom4j tree
-		SAXReader reader = new SAXReader();
-		Document document = reader.read(fileName);
-
 		// Open output file
 		Writer out = new OutputStreamWriter(new BufferedOutputStream(
 			new FileOutputStream(outputFileName)));
 
-		// Convert input XML to output
-		converter.convert(relationName, document, out);
+		// Read documents,
+		// scan documents to find ranges of attributes
+		List<Document> documentList = new ArrayList<Document>();
+		while (argCount < argv.length) {
+			String fileName = argv[argCount++];
+
+			// Read input file as dom4j tree
+			SAXReader reader = new SAXReader();
+			Document document = reader.read(fileName);
+			documentList.add(document);
+
+			converter.scan(document);
+		}
+
+		// Generate ARFF header
+		converter.generateHeader(relationName, out);
+
+		// Generate instances from each document
+		for (Iterator<Document> i = documentList.iterator(); i.hasNext(); ) {
+			Document document = i.next();
+			converter.generateInstances(document, out);
+		}
+
 		out.close();
 	}
+
 }
 
 // vim:ts=4
