@@ -441,6 +441,7 @@ public class FindBugs implements Constants2, ExitCodes {
 			addOption("-home", "home directory", "specify FindBugs home directory");
 			addOption("-pluginList", "jar1[" + File.pathSeparator + "jar2...]",
 			        "specify list of plugin Jar files to load");
+			addSwitch("-showPlugins", "show list of available plugins");
 			addSwitch("-quiet", "suppress error messages");
 			addSwitch("-experimental", "report all warnings including experimental bug patterns");
 			addSwitch("-low", "report all warnings");
@@ -484,7 +485,20 @@ public class FindBugs implements Constants2, ExitCodes {
 		}
 
 		protected void handleOption(String option, String optionExtraPart) {
-			if (option.equals("-experimental"))
+			if (option.equals("-showPlugins")) {
+				System.out.println("Available plugins:");
+				int count = 0;
+				for (Iterator<Plugin> i = DetectorFactoryCollection.instance().pluginIterator(); i.hasNext(); ) {
+					Plugin plugin = i.next();
+					System.out.println("  " + plugin.getPluginId() + " (default: " +
+						(plugin.isEnabled() ? "enabled" : "disabled") + ")");
+					++count;
+				}
+				if (count == 0) {
+					System.out.println("  No plugins are available (FindBugs installed incorrectly?)");
+				}
+				System.exit(0);
+			} else if (option.equals("-experimental"))
 				priorityThreshold = Detector.EXP_PRIORITY;
 			else if (option.equals("-low"))
 				priorityThreshold = Detector.LOW_PRIORITY;
