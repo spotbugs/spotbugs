@@ -11,4 +11,7 @@ class StringComparision {
 	public boolean betterIsOrigin() {
 		return toString().intern() == "0,0";
 		}
+
+	public boolean compareBool(Boolean a, Boolean b) { return a == b; }
+
 	}
