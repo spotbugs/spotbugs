@@ -17,7 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-// $Revision: 1.4 $
+// $Revision: 1.5 $
 
 package edu.umd.cs.daveho.graph;
 
@@ -62,10 +62,10 @@ public class DepthFirstSearch
 	 */
 	private VertexChooser<VertexType> m_vertexChooser;
 
-	private static class UnconditionalVertexChooser<V extends GraphVertex>
-		implements VertexChooser<V> {
+	private static class UnconditionalVertexChooser<VertexType extends GraphVertex<VertexType>>
+		implements VertexChooser<VertexType> {
 		public UnconditionalVertexChooser() { }
-		public boolean isChosen(V v) { return true; }
+		public boolean isChosen(VertexType v) { return true; }
 	}
 
 	/** Constructor. */
