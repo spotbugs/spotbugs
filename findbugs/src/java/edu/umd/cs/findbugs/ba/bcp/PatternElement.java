@@ -20,6 +20,7 @@
 package edu.umd.cs.daveho.ba.bcp;
 
 import org.apache.bcel.generic.InstructionHandle;
+import edu.umd.cs.daveho.ba.Edge;
 
 /**
  * A PatternElement is an element of a ByteCodePattern.
@@ -51,6 +52,12 @@ public abstract class PatternElement {
 	 *   if the match is not successful, returns null
 	 */
 	public abstract BindingSet match(InstructionHandle handle, BindingSet bindingSet);
+
+	/**
+	 * Return whether or not it is acceptable to take the given branch.
+	 * @param edge the Edge representing the branch
+	 */
+	public abstract boolean acceptBranch(Edge edge);
 
 	/**
 	 * Return the minimum number of instructions this PatternElement
