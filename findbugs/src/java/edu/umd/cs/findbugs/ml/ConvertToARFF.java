@@ -29,6 +29,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.StringTokenizer;
 import java.util.TreeSet;
 
 import org.dom4j.Document;
@@ -58,7 +59,7 @@ public class ConvertToARFF {
 		public String getInstanceValue(Element element) throws MissingNodeException;
 	}
 
-	public class NominalAttribute implements Attribute {
+	public static class NominalAttribute implements Attribute {
 		private String name;
 		private String xpath;
 		private Set<String> possibleValueSet;
@@ -83,13 +84,15 @@ public class ConvertToARFF {
 
 		public String getRange() {
 			StringBuffer buf = new StringBuffer();
-			buf.append("{");
+			buf.append("{\n");
 			for (Iterator<String> i = possibleValueSet.iterator(); i.hasNext();) {
-				if (buf.length() > 1)
+				if (buf.length() > 2)
 					buf.append(",");
+				buf.append('\t');
 				buf.append('"');
 				buf.append(i.next());
 				buf.append('"');
+				buf.append('\n');
 			}
 			buf.append("}");
 
@@ -102,6 +105,48 @@ public class ConvertToARFF {
 				throw new MissingNodeException("Could not get value from element (path=" +
 					xpath + ")");
 			return node.getText();
+		}
+	}
+
+	private static final int UNCLASSIFIED = 0;
+	private static final int BUG = 1;
+	private static final int NOT_BUG = 2;
+	private static final int HARMLESS = 4;
+
+	public static class ClassificationAttribute implements Attribute {
+		public String getName() {
+			return "classification";
+		}
+
+		public void scan(Element element) throws MissingNodeException {
+		}
+
+		public String getRange() {
+			return "{bug,not_bug,harmless_bug,unclassified}";
+		}
+
+		public String getInstanceValue(Element element) throws MissingNodeException {
+			String annotationText = element.valueOf("./UserAnnotation[text()]");
+			StringTokenizer tok = new StringTokenizer(annotationText, " \t\r\n\f.,:;-");
+
+			int state = UNCLASSIFIED;
+
+			while (tok.hasMoreTokens()) {
+				String s = tok.nextToken();
+				if (s.equals("BUG"))
+					state |= BUG;
+				else if (s.equals("NOT_BUG"))
+					state |= NOT_BUG;
+				else if (s.equals("HARMLESS"))
+					state |= HARMLESS;
+			}
+
+			if ((state & NOT_BUG) != 0)
+				return "not_bug";
+			else if ((state & BUG) != 0)
+				return ((state & HARMLESS) != 0) ? "harmless_bug" : "bug";
+			else
+				return "unclassified";
 		}
 	}
 
@@ -121,6 +166,10 @@ public class ConvertToARFF {
 
 	public void addNominalAttribute(String name, String xpath) {
 		addAttribute(new NominalAttribute(name, xpath));
+	}
+
+	public void addClassificationAttribute() {
+		addAttribute(new ClassificationAttribute());
 	}
 
 	public void convert(String relationName, Document document, final Writer out)
@@ -207,6 +256,7 @@ public class ConvertToARFF {
 		converter.addNominalAttribute("auxmethodname", "./Method[2]/@name");
 		converter.addNominalAttribute("fieldclass", "./Field[1]/@classname");
 		converter.addNominalAttribute("fieldname", "./Field[1]/@name");
+		converter.addClassificationAttribute();
 
 		Writer out = new OutputStreamWriter(new BufferedOutputStream(
 			new FileOutputStream(outputFileName)));
