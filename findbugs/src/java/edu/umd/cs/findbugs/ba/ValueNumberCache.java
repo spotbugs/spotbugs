@@ -20,7 +20,7 @@
 package edu.umd.cs.daveho.ba;
 
 import java.util.*;
-import org.apache.bcel.generic.Instruction;
+import org.apache.bcel.generic.InstructionHandle;
 
 /**
  * A cache mapping instructions and input values to the output values they
@@ -38,12 +38,12 @@ public class ValueNumberCache {
 	 * It represents an instruction with specific input values.
 	 */
 	public static class Entry {
-		public final Instruction instruction;
+		public final InstructionHandle handle;
 		public final ValueNumber[] inputValueList;
 		private int cachedHashCode;
 
-		public Entry(Instruction instruction, ValueNumber[] inputValueList) {
-			this.instruction = instruction;
+		public Entry(InstructionHandle handle, ValueNumber[] inputValueList) {
+			this.handle = handle;
 			this.inputValueList = inputValueList;
 			this.cachedHashCode = 0;
 		}
@@ -52,7 +52,7 @@ public class ValueNumberCache {
 			if (!(o instanceof Entry))
 				return false;
 			Entry other = (Entry) o;
-			if (!instruction.equals(other.instruction))
+			if (handle.getPosition() != other.handle.getPosition())
 				return false;
 			ValueNumber[] myList = inputValueList;
 			ValueNumber[] otherList = other.inputValueList;
@@ -66,8 +66,9 @@ public class ValueNumberCache {
 
 		public int hashCode() {
 			if (cachedHashCode == 0) {
-				int code = instruction.getOpcode();
+				int code = handle.getPosition();
 				for (int i = 0; i < inputValueList.length; ++i) {
+					code *= 101;
 					ValueNumber valueNumber = inputValueList[i];
 					code += valueNumber.hashCode();
 				}
@@ -78,7 +79,7 @@ public class ValueNumberCache {
 
 		public String toString() {
 			StringBuffer buf = new StringBuffer();
-			buf.append(instruction.toString());
+			buf.append(handle.toString());
 			for (int i = 0; i < inputValueList.length; ++i) {
 				buf.append(", ");
 				buf.append(inputValueList[i].toString());

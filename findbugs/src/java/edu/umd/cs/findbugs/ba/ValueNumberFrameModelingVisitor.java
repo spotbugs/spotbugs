@@ -21,10 +21,12 @@ package edu.umd.cs.daveho.ba;
 
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.Instruction;
+import org.apache.bcel.generic.InstructionHandle;
 
 public class ValueNumberFrameModelingVisitor extends AbstractFrameModelingVisitor<ValueNumber, ValueNumberFrame> {
 	private ValueNumberFactory factory;
 	private ValueNumberCache cache;
+	private InstructionHandle handle;
 
 	public ValueNumberFrameModelingVisitor(ConstantPoolGen cpg, ValueNumberFactory factory,
 		ValueNumberCache cache) {
@@ -35,6 +37,14 @@ public class ValueNumberFrameModelingVisitor extends AbstractFrameModelingVisito
 
 	public ValueNumber getDefaultValue() {
 		return factory.createFreshValue();
+	}
+
+	/**
+	 * Set the instruction handle of the instruction currently being visited.
+	 * This must be called before the instruction accepts this visitor!
+	 */
+	public void setHandle(InstructionHandle handle) {
+		this.handle = handle;
 	}
 
 	public void modelNormalInstruction(Instruction ins, int numWordsConsumed, int numWordsProduced) {
@@ -55,7 +65,7 @@ public class ValueNumberFrameModelingVisitor extends AbstractFrameModelingVisito
 
 		// See if we have the output operands in the cache.
 		// If not, push default values for the output.
-		ValueNumberCache.Entry entry = new ValueNumberCache.Entry(ins, inputValueList);
+		ValueNumberCache.Entry entry = new ValueNumberCache.Entry(handle, inputValueList);
 		ValueNumber[] outputValueList = cache.lookupOutputValues(entry);
 		if (outputValueList == null) {
 			outputValueList = new ValueNumber[numWordsProduced];

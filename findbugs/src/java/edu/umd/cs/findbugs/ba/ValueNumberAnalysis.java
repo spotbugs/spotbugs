@@ -111,6 +111,7 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
 	public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, ValueNumberFrame fact)
 		throws DataflowAnalysisException {
 		visitor.setFrame(fact);
+		visitor.setHandle(handle);
 		Instruction ins = handle.getInstruction();
 		ins.accept(visitor);
 	}
