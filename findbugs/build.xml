@@ -262,7 +262,7 @@
 
     <!-- Default target: just compile the code
          and build the Jar files. -->
-    <target name="build" depends="findbugs,coreplugin,findbugsgui" />
+    <target name="build" depends="findbugs,coreplugin,findbugsgui,testjar" />
 
     <!-- Compile the code and format the docs. -->
     <target name="buildAll" depends="build,docs" />
