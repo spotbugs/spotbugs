@@ -500,6 +500,24 @@ public class ClassContext implements AnalysisFeatures {
 				}
 			};
 
+	private AnalysisFactory<Dataflow<BitSet, LiveLocalStoreAnalysis>> liveLocalStoreDataflowFactory =
+			new AnalysisFactory<Dataflow<BitSet, LiveLocalStoreAnalysis>>("live local stores analysis") {
+				protected Dataflow<BitSet, LiveLocalStoreAnalysis> analyze(Method method)
+					throws DataflowAnalysisException, CFGBuilderException {
+						CFG cfg = getCFG(method);
+						MethodGen methodGen = getMethodGen(method);
+						ReverseDepthFirstSearch rdfs = getReverseDepthFirstSearch(method);
+
+						LiveLocalStoreAnalysis analysis = new LiveLocalStoreAnalysis(methodGen, rdfs);
+						Dataflow<BitSet, LiveLocalStoreAnalysis> dataflow =
+							new Dataflow<BitSet, LiveLocalStoreAnalysis>(cfg, analysis);
+
+						dataflow.execute();
+
+						return dataflow;
+				}
+			};
+
 	private ClassGen classGen;
 	private AssignedFieldMap assignedFieldMap;
 	private AssertionMethods assertionMethods;
@@ -743,6 +761,17 @@ public class ClassContext implements AnalysisFeatures {
 	 */
 	public LoadedFieldSet getLoadedFieldSet(Method method) {
 		return loadedFieldSetFactory.getAnalysis(method);
+	}
+
+	/**
+	 * Get LiveLocalStoreAnalysis dataflow for given method.
+	 *
+	 * @param method the method
+	 * @return the Dataflow object for LiveLocalStoreAnalysis on the method
+	 */
+	public Dataflow<BitSet, LiveLocalStoreAnalysis> getLiveLocalStoreDataflow(Method method)
+			throws DataflowAnalysisException, CFGBuilderException {
+		return liveLocalStoreDataflowFactory.getAnalysis(method);
 	}
 
 	/**
