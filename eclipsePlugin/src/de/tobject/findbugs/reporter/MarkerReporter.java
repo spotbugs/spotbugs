@@ -1,6 +1,7 @@
 /*
  * FindBugs Eclipse Plug-in.
  * Copyright (C) 2003 - 2004, Peter Friese
+ * Copyright (C) 2005, University of Maryland
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public

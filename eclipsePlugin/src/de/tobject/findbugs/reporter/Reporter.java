@@ -1,7 +1,7 @@
 /*
  * FindBugs Eclipse Plug-in.
  * Copyright (C) 2003 - 2004, Peter Friese
- * Copyright (C) 2004, University of Maryland
+ * Copyright (C) 2004-2005, University of Maryland
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -36,7 +36,6 @@ import edu.umd.cs.findbugs.AbstractBugReporter;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.SortedBugCollection;
-import edu.umd.cs.findbugs.config.ProjectFilterSettings;
 import edu.umd.cs.findbugs.config.UserPreferences;
 
 /**
