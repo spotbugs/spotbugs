@@ -41,7 +41,7 @@ public class FindBugsSummaryStats extends PreorderVisitor
 
   public FindBugsSummaryStats(BugReporter bugReporter) {
     this.bugReporter = bugReporter;
-    this.stats = new ProjectStats();
+    this.stats = bugReporter.getProjectStats();
     bugReporter.addObserver( this );
   }
 

@@ -71,6 +71,10 @@ public class DelegatingBugReporter implements BugReporter {
 	public void addObserver(BugReporterObserver observer) {
 		realBugReporter.addObserver(observer);
 	}
+
+	public ProjectStats getProjectStats() {
+		return realBugReporter.getProjectStats();
+	}
 }
 
 // vim:ts=4

@@ -23,6 +23,10 @@ import java.util.*;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
+/**
+ * An abstract class which provides much of the functionality
+ * required of all BugReporter objects.
+ */
 public abstract class AbstractBugReporter implements BugReporter {
 
 	private int verbosityLevel = NORMAL;
@@ -31,6 +35,7 @@ public abstract class AbstractBugReporter implements BugReporter {
 	private LinkedList<String> missingClassMessageList = new LinkedList<String>();
 	private LinkedList<String> errorMessageList = new LinkedList<String>();
 	private List<BugReporterObserver> observerList = new LinkedList<BugReporterObserver>();
+	private ProjectStats projectStats = new ProjectStats();
 
 	private static final Pattern missingClassPattern = Pattern.compile("^.*while looking for class ([^:]*):.*$");
 
@@ -102,6 +107,10 @@ public abstract class AbstractBugReporter implements BugReporter {
 
 	public void addObserver(BugReporterObserver observer) {
 		observerList.add(observer);
+	}
+
+	public ProjectStats getProjectStats() {
+		return projectStats;
 	}
 
 	/**

@@ -82,6 +82,12 @@ public interface BugReporter extends RepositoryLookupFailureCallback {
 	 * @param observer the observer
 	 */
 	public void addObserver(BugReporterObserver observer);
+
+	/**
+	 * Get ProjectStats object used to store statistics about
+	 * the overall project being analyzed.
+	 */
+	public ProjectStats getProjectStats();
 }
 
 // vim:ts=4
