@@ -89,14 +89,6 @@ public class ValueNumberFrame extends Frame<ValueNumber> {
 
 		super.copyFrom(other);
 	}
-
-	public void setMergedValue(int i, ValueNumber valueNumber) {
-		mergedValueList.set(i, valueNumber);
-	}
-
-	public ValueNumber getMergedValue(int i) {
-		return mergedValueList.get(i);
-	}
 }
 
 // vim:ts=4
