@@ -127,10 +127,8 @@ public class FindHEmismatch extends BytecodeScanningDetector implements   Consta
 		  if (equalsMethodIsInstanceOfEquals) priority+= 2;
 		  else if (obj.isAbstract() || !hasEqualsObject) priority++;
 		  if (!visibleOutsidePackage) {
-			System.out.println("Not visible");
 			priority++;
 			}
-		else System.out.println("visible");
 		  bugReporter.reportBug(new BugInstance("HE_EQUALS_USE_HASHCODE", 
 				priority ).addClass(getDottedClassName()));
 		  }
