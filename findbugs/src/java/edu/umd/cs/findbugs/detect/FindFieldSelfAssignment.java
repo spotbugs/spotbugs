@@ -66,10 +66,8 @@ public class FindFieldSelfAssignment extends BytecodeScanningDetector implements
 			if (seen == PUTFIELD && getRefConstantOperand().equals(f)) {
 
 				bugReporter.reportBug(new BugInstance(this, "SA_FIELD_SELF_ASSIGNMENT", NORMAL_PRIORITY)
-				        .addClass(getClassName())
-				        .addMethod(getClassName(), getMethodName(), getMethodSig())
-				        .addField(getDottedClassConstantOperand(), getNameConstantOperand(),
-				                getDottedSigConstantOperand(), false)
+				        .addClassAndMethod(this)
+				        .addReferencedField(this)
 				        .addSourceLine(this));
 			}
 			state = 0;
