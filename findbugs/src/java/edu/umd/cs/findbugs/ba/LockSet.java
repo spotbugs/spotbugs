@@ -157,6 +157,23 @@ public class LockSet {
 		return this.identicalSubset(other) && other.identicalSubset(this);
 	}
 
+	/**
+	 * Determine whether or not this lock set contains any
+	 * locked values which are method return values.
+	 * @param factory the ValueNumberFactory that produced the lock values
+	 */
+	public boolean containsReturnValue(ValueNumberFactory factory) {
+		for (int i = 0; i < array.length; i += 2) {
+			int valueNumber = array[i];
+			if (valueNumber < 0)
+				break;
+			int lockCount = array[i + 1];
+			if (lockCount > 0 && factory.forNumber(valueNumber).hasFlag(ValueNumber.RETURN_VALUE))
+				return true;
+		}
+		return false;
+	}
+
 	private boolean identicalSubset(LockSet other) {
 		for (int i = 0; i < array.length; i += 2) {
 			int valueNumber = array[i];
