@@ -28,12 +28,26 @@ import org.apache.bcel.Constants;
  * but excludes array types.
  */
 public class XClassType extends XObjectType {
+	private static final int CLASS_OR_INTERFACE_KNOWN = 1;
+	private static final int IS_INTERFACE = 2;
+
 	private String className;
+	private int flags;
 
 	XClassType(String typeSignature) throws InvalidSignatureException {
 		super(typeSignature);
 		if (!(typeSignature.startsWith("L") && typeSignature.endsWith(";")))
 			throw new InvalidSignatureException("Bad type signature for class/interface: " + typeSignature);
+	}
+
+	public void setIsInterface() {
+		flags |= CLASS_OR_INTERFACE_KNOWN;
+		flags |= IS_INTERFACE;
+	}
+
+	public void setIsClass() {
+		flags |= CLASS_OR_INTERFACE_KNOWN;
+		flags &= ~(IS_INTERFACE);
 	}
 
 	public int getTypeCode() {
@@ -67,6 +81,14 @@ public class XClassType extends XObjectType {
 
 	public int hashCode() {
 		return getSignature().hashCode();
+	}
+
+	public boolean isInterface() throws UnknownTypeException {
+		if ((flags & CLASS_OR_INTERFACE_KNOWN) == 0)
+			throw new UnknownTypeException("Don't know whether type " + getClassName() +
+				" is a class or interface");
+
+		return (flags & IS_INTERFACE) != 0;
 	}
 }
 

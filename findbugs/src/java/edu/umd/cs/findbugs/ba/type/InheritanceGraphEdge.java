@@ -31,9 +31,32 @@ import edu.umd.cs.findbugs.graph.AbstractEdge;
 public class InheritanceGraphEdge
 	extends AbstractEdge<InheritanceGraphEdge, XObjectType> {
 
+	private int type;
+
+	/**
+	 * Constructor.
+	 * @param subtype the subtype
+	 * @param supertype the supertype
+	 */
 	InheritanceGraphEdge(XObjectType subtype, XObjectType supertype) {
 		super(subtype, supertype);
 	}
+
+	/**
+	 * Set the type of inheritance edge.
+	 * @param type the type of inheritance edge
+	 * @see {@link InheritanceGraphEdgeTypes}
+	 */
+	void setType(int type) {
+		this.type = type;
+	}
+
+	/**
+	 * Get the type of inheritance edge.
+	 * @returns type the type of inheritance edge
+	 * @see {@link InheritanceGraphEdgeTypes}
+	 */
+	public int getType() { return type; }
 }
 
 // vim:ts=4

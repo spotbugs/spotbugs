@@ -76,7 +76,16 @@ public class XTypeRepository {
 		basicTypeCodeToSignatureMap.put(new Byte(Constants.T_VOID), "V");
 	}
 
+	/* ----------------------------------------------------------------------
+	 * Fields
+	 * ---------------------------------------------------------------------- */
+
 	private HashMap<String, XType> signatureToTypeMap;
+	private InheritanceGraph inheritanceGraph;
+
+	/* ----------------------------------------------------------------------
+	 * Public methods
+	 * ---------------------------------------------------------------------- */
 
 	/**
 	 * Constructor.
@@ -84,6 +93,7 @@ public class XTypeRepository {
 	 */
 	public XTypeRepository() {
 		signatureToTypeMap = new HashMap<String, XType>();
+		inheritanceGraph = new InheritanceGraph();
 	}
 
 	/**
@@ -189,7 +199,7 @@ public class XTypeRepository {
 	 * @param superclass the superclass
 	 */
 	public void addSuperclassLink(XClassType subclass, XClassType superclass) {
-		// TODO: implement
+		inheritanceGraph.createEdge(subclass, superclass, InheritanceGraphEdgeTypes.EXTENDS_EDGE);
 	}
 
 	/**
@@ -198,14 +208,25 @@ public class XTypeRepository {
 	 * @param iface the implemented interface (i.e., the supertype)
 	 */
 	public void addInterfaceLink(XClassType implementor, XClassType iface) {
-		// TODO: implement
+		inheritanceGraph.createEdge(implementor, iface, InheritanceGraphEdgeTypes.IMPLEMENTS_EDGE);
 	}
+
+//	/**
+//	 * Determine if one object type is a subtype of another.
+//	 */
+//	public boolean isSubtype(XObjectType subtype, XObjectType supertype) throws ClassNotFoundException {
+//	}
+
+	/* ----------------------------------------------------------------------
+	 * Implementation
+	 * ---------------------------------------------------------------------- */
 
 	private XClassType createXClassType(String signature) throws InvalidSignatureException {
 		XClassType type = (XClassType) signatureToTypeMap.get(signature);
 		if (type == null) {
 			type = new XClassType(signature);
 			signatureToTypeMap.put(signature, type);
+			inheritanceGraph.addVertex(type);
 		}
 		return type;
 	}
@@ -215,6 +236,7 @@ public class XTypeRepository {
 		if (type == null) {
 			type = XArrayType.createFromSignature(this, signature);
 			signatureToTypeMap.put(signature, type);
+			inheritanceGraph.addVertex(type);
 		}
 		return type;
 	}

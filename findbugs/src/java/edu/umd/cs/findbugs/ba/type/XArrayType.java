@@ -79,6 +79,10 @@ public class XArrayType extends XObjectType {
 		visitor.visitXArrayType(this);
 	}
 
+	public boolean isInterface() {
+		return false;
+	}
+
 	public boolean equals(Object o) {
 		if (o == null)
 			return false;

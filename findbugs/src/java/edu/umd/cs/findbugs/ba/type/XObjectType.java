@@ -63,6 +63,11 @@ public abstract class XObjectType
 	public boolean isValidArrayElementType() {
 		return true;
 	}
+
+	/**
+	 * Is this type an interface type (as opposed to a class or array type)?
+	 */
+	public abstract boolean isInterface() throws UnknownTypeException;
 }
 
 // vim:ts=4
