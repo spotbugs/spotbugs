@@ -39,7 +39,7 @@ public abstract class PrintBugDescriptions {
 		Collection<BugPattern> enabledPatternSet = new HashSet<BugPattern>();
 		for (Iterator<DetectorFactory> i = factories.factoryIterator(); i.hasNext(); ) {
 			DetectorFactory factory = i.next();
-			if (factory.isEnabled())
+			if (factory.isDefaultEnabled())
 				enabledPatternSet.addAll(factory.getReportedBugPatterns());
 		}
 
