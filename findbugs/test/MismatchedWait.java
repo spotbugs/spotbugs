@@ -21,4 +21,13 @@ public class MismatchedWait {
 				lock.wait();
 		}
 	}
+
+	private static Object slock = new Object();
+
+	public static void doNotReportStatic() throws InterruptedException {
+		synchronized (slock) {
+			while (slock.toString().equals("foobar"))
+				slock.wait();
+		}
+	}
 }
