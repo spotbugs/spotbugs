@@ -156,7 +156,7 @@ public class PluginLoader extends URLClassLoader {
 				detectorFactoryMap.put(className, factory);
 			}
 		} catch (ClassNotFoundException e) {
-			throw new PluginException("Could not instantiate detector class", e);
+			throw new PluginException("Could not instantiate detector class: " + e, e);
 		}
 
 		// Get detail HTML for Detectors
