@@ -119,6 +119,8 @@ public class TypeRepository {
 	 * @return the ClassType representing the class
 	 */
 	public ClassType classTypeFromSlashedClassName(String slashedClassName) {
+		if (Debug.CHECK_ASSERTIONS && slashedClassName.endsWith(";"))
+			throw new IllegalArgumentException("Illegal slashed class name: " + slashedClassName);
 		String signature = "L" + slashedClassName + ";";
 		return createClassType(signature);
 	}
@@ -412,7 +414,7 @@ public class TypeRepository {
 			Type elementType = type.getElementType(this);
 			if (elementType.isBasicType()) {
 				// All arrays of basic types are subtypes of java.lang.Object
-				ClassType javaLangObjectType = classTypeFromSlashedClassName("Ljava/lang/Object;");
+				ClassType javaLangObjectType = classTypeFromSlashedClassName("java/lang/Object");
 				addSuperclassLink(type, javaLangObjectType);
 			} else {
 				// Array is a direct subtype of all arrays (same dimensionality)
@@ -430,8 +432,8 @@ public class TypeRepository {
 		}
 
 		// All arrays implement Serializable and Cloneable
-		addInterfaceLink(type, classTypeFromSlashedClassName("Ljava/io/Serializable;"));
-		addInterfaceLink(type, classTypeFromSlashedClassName("Ljava/lang/Cloneable;"));
+		addInterfaceLink(type, classTypeFromSlashedClassName("java/io/Serializable"));
+		addInterfaceLink(type, classTypeFromSlashedClassName("java/lang/Cloneable"));
 
 		type.setState(ObjectType.KNOWN);
 	}
@@ -452,7 +454,7 @@ public class TypeRepository {
 			// subclass of java.lang.Object.  This is a convenient
 			// fiction that makes things a bit simpler.
 			if (type.isInterface())
-				addInterfaceLink(type, classTypeFromSlashedClassName("Ljava/lang/Object;"));
+				addInterfaceLink(type, classTypeFromSlashedClassName("java/lang/Object"));
 		} catch (ClassNotFoundException e) {
 			type.setState(ObjectType.UNKNOWN);
 			type.setResolverFailure(e);
