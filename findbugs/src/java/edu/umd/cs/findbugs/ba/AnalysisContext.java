@@ -25,6 +25,7 @@ import edu.umd.cs.findbugs.ba.type.BCELRepositoryClassResolver;
 import edu.umd.cs.findbugs.ba.type.TypeRepository;
 */
 
+import java.util.BitSet;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -46,6 +47,7 @@ public class AnalysisContext implements AnalysisFeatures {
 	private ClassContextCache classContextCache;
 	public Map analysisLocals = 
 		Collections.synchronizedMap(new HashMap());
+	private BitSet boolPropertySet;
 
     /*
       // JSR14 does not support Generic ThreadLocal
@@ -81,6 +83,7 @@ public class AnalysisContext implements AnalysisFeatures {
 		this.lookupFailureCallback = lookupFailureCallback;
 		this.sourceFinder = new SourceFinder();
 		this.classContextCache = new ClassContextCache();
+		this.boolPropertySet = new BitSet();
 /*
 		// Not yet
 		// FIXME: eventually change to not use BCEL global repository
@@ -131,6 +134,27 @@ public class AnalysisContext implements AnalysisFeatures {
 			classContextCache.put(javaClass, classContext);
 		}
 		return classContext;
+	}
+	
+	/**
+	 * Set a boolean property.
+	 * 
+	 * @param prop  the property to set
+	 * @param value the value of the property
+	 */
+	public void setBoolProperty(int prop, boolean value) {
+		boolPropertySet.set(prop, value);
+	}
+	
+	/**
+	 * Get a boolean property.
+	 * 
+	 * @param prop the property
+	 * @return value of the property; defaults to false if the property
+	 *         has not had a value assigned explicitly
+	 */
+	public boolean getBoolProperty(int prop) {
+		return boolPropertySet.get(prop);
 	}
 }
 
