@@ -309,7 +309,7 @@ public class BugInstance implements Comparable, XMLWriteable {
 	 * 
 	 * @param uniqueId the unique id
 	 */
-	private void setUniqueId(String uniqueId) {
+	public void setUniqueId(String uniqueId) {
 		this.uniqueId = uniqueId;
 	}
 	
