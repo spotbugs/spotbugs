@@ -594,14 +594,14 @@ menu item.  You will see a dialog which looks like this:
 </para>
 
 <para>
-Use the "Browse" button next to the "Jar file" text field to select a Jar
-file containing java classes to analyze for bugs.  You may add multiple
-Jar files.
+Use the "Browse" button next to the "Add archive or directory" text field to select a Java archive
+file (zip, jar, ear, or war file) or directory containing java classes to analyze for bugs.  You may add multiple
+archives/directories.
 </para>
 
 <para>
 You can also add the source directories which contain
-the source code for the Jar files you are analyzing.  This will enable
+the source code for the Java archives you are analyzing.  This will enable
 &FindBugs; to highlight the source code which contains a possible error.
 The source directories you add should be the roots of the Java
 package hierarchy.  For example, if your application is contained in the
@@ -612,9 +612,9 @@ to the source directory list for the project.
 
 <para>
 Another optional step is to add additional Jar files or directories as
-classpath entries.  You should do this if the Jar files you are analyzing
+classpath entries.  You should do this if the archives and directories you are analyzing
 have references to other classes which are not included in the analyzed
-jar files and are not in the standard runtime classpath.  Some of the bug
+archives/directories and are not in the standard runtime classpath.  Some of the bug
 pattern detectors in &FindBugs; make use of class hierarchy information,
 so you will get more accurate results if the entire class hierarchy is
 available which &FindBugs; performs its analysis.
@@ -625,7 +625,7 @@ available which &FindBugs; performs its analysis.
 <sect1>
 <title>Running the Analysis</title>
 <para>
-Once you have added all of the Jar files and source directories,
+Once you have added all of the archives, directories, and source directories,
 click the "Find Bugs!" button to analyze the classes contained in the
 Jar files.  Note that for a very large program on an older computer,
 this may take quite a while (tens of minutes).  A recent computer with
