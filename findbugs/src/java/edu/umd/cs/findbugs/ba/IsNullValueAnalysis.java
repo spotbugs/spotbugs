@@ -35,7 +35,7 @@ import org.apache.bcel.generic.*;
  * @see IsNullValue
  * @author David Hovemeyer
  */
-public class IsNullValueAnalysis extends ForwardDataflowAnalysis<IsNullValueFrame> implements EdgeTypes {
+public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNullValueFrame> implements EdgeTypes {
 	private static final boolean DEBUG = Boolean.getBoolean("inva.debug");
 	private static final boolean NO_SPLIT_DOWNGRADE_NSP = Boolean.getBoolean("inva.noSplitDowngradeNSP");
 
@@ -65,31 +65,11 @@ public class IsNullValueAnalysis extends ForwardDataflowAnalysis<IsNullValueFram
 		return new IsNullValueFrame(methodGen.getMaxLocals());
 	}
 
-	public void copy(IsNullValueFrame source, IsNullValueFrame dest) {
-		dest.copyFrom(source);
-	}
-
 	public void initEntryFact(IsNullValueFrame result) {
 		result.setValid();
 		int numLocals = methodGen.getMaxLocals();
 		for (int i = 0; i < numLocals; ++i)
 			result.setValue(i, IsNullValue.doNotReportValue());
-	}
-
-	public void initResultFact(IsNullValueFrame result) {
-		result.setTop();
-	}
-
-	public void makeFactTop(IsNullValueFrame fact) {
-		fact.setTop();
-	}
-
-	public boolean isFactValid(IsNullValueFrame fact) {
-		return fact.isValid();
-	}
-
-	public boolean same(IsNullValueFrame fact1, IsNullValueFrame fact2) {
-		return fact1.sameAs(fact2);
 	}
 
 	public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, IsNullValueFrame fact)

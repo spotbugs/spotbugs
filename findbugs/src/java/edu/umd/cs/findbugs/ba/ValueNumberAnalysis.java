@@ -51,7 +51,7 @@ import org.apache.bcel.generic.*;
  * @see DominatorsAnalysis
  * @author David Hovemeyer
  */
-public class ValueNumberAnalysis extends ForwardDataflowAnalysis<ValueNumberFrame> {
+public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, ValueNumberFrame> {
 
 	private static final boolean DEBUG = Boolean.getBoolean("vna.debug");
 
@@ -96,10 +96,6 @@ public class ValueNumberAnalysis extends ForwardDataflowAnalysis<ValueNumberFram
 		return new ValueNumberFrame(methodGen.getMaxLocals(), factory);
 	}
 
-	public void copy(ValueNumberFrame source, ValueNumberFrame dest) {
-		dest.copyFrom(source);
-	}
-
 	public void initEntryFact(ValueNumberFrame result) {
 		// Change the frame from TOP to something valid.
 		result.setValid();
@@ -108,22 +104,6 @@ public class ValueNumberAnalysis extends ForwardDataflowAnalysis<ValueNumberFram
 		int numSlots = result.getNumSlots();
 		for (int i = 0; i < numSlots; ++i)
 			result.setValue(i, entryLocalValueList[i]);
-	}
-
-	public void initResultFact(ValueNumberFrame result) {
-		result.setTop();
-	}
-
-	public void makeFactTop(ValueNumberFrame fact) {
-		fact.setTop();
-	}
-
-	public boolean isFactValid(ValueNumberFrame fact) {
-		return fact.isValid();
-	}
-
-	public boolean same(ValueNumberFrame fact1, ValueNumberFrame fact2) {
-		return fact1.sameAs(fact2);
 	}
 
 	public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, ValueNumberFrame fact) throws DataflowAnalysisException {
