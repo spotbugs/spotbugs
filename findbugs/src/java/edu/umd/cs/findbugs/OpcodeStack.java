@@ -79,7 +79,7 @@ public class OpcodeStack implements Constants2
  			
  			if (baseSig.length() == 0)
  				return null;
- 			return Repository.lookupClass(baseSig);
+ 			return Repository.lookupClass(baseSig.substring(1, baseSig.length() - 1));
  		}
  		
  		public boolean isArray() {
@@ -111,7 +111,7 @@ public class OpcodeStack implements Constants2
  		JavaClass cls;
  		String signature;
  		Method m;
- 		Item it;
+ 		Item it, it2;
  		
  		try
  		{
@@ -283,6 +283,16 @@ public class OpcodeStack implements Constants2
 	 			
 	 			case SIPUSH:
 	 				push(new Item("S", new Short((short)dbc.getIntConstant())));
+	 			break;
+	 			
+	 			case ISUB:
+	 				it = pop();
+	 				it2 = pop();
+	 				if ((it.getConstant() != null) && it2.getConstant() != null) {
+	 					push(new Item("I", ((Integer)it.getConstant()).intValue() - ((Integer)it2.getConstant()).intValue()));
+	 				} else {
+	 					push(new Item("I"));
+	 				}
 	 			break;
 	 				
 	 			case INVOKEVIRTUAL:
