@@ -19,11 +19,15 @@
 
 package edu.umd.cs.findbugs.plan;
 
+import edu.umd.cs.findbugs.DetectorFactory;
 import edu.umd.cs.findbugs.DetectorOrderingConstraint;
 import edu.umd.cs.findbugs.Plugin;
 
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * A plan for executing Detectors on an application.
@@ -42,6 +46,39 @@ public class ExecutionPlan {
 
 	public void addPlugin(Plugin plugin) {
 		pluginList.add(plugin);
+	}
+
+	public void build() {
+		// Build map of detector class names to their factories
+		Map<String, DetectorFactory> factoryMap = buildFactoryMap();
+
+		// Get inter-pass ordering constraints
+		List<DetectorOrderingConstraint> interPassConstraintList =
+			new LinkedList<DetectorOrderingConstraint>();
+		for (Iterator<Plugin> i = pluginList.iterator(); i.hasNext(); ) {
+			Plugin plugin = i.next();
+			copyTo(plugin.interPassConstraintIterator(), interPassConstraintList);
+		}
+	}
+
+	private static<T> void copyTo(Iterator<T> iter, List<T> dest) {
+		while (iter.hasNext()) {
+			dest.add(iter.next());
+		}
+	}
+
+	private Map<String, DetectorFactory> buildFactoryMap() {
+		Map<String, DetectorFactory> factoryMap = new HashMap<String, DetectorFactory>();
+
+		for (Iterator<Plugin> j = pluginList.iterator(); j.hasNext(); ) {
+			Plugin plugin = j.next();
+			for (Iterator<DetectorFactory> i = plugin.detectorFactoryIterator(); i.hasNext(); ) {
+				DetectorFactory factory = i.next();
+				factoryMap.put(factory.getFullName(), factory);
+			}
+		}
+
+		return factoryMap;
 	}
 }
 
