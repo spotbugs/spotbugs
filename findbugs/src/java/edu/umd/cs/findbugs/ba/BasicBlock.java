@@ -34,6 +34,7 @@ import org.apache.bcel.generic.*;
 public class BasicBlock implements Comparable {
     private int id;
     private LinkedList<InstructionHandle> instructionList;
+    private boolean isExceptionThrower;
     private CodeExceptionGen exceptionGen; // set if this block is the entry point of an exception handler
 
     /**
@@ -42,6 +43,7 @@ public class BasicBlock implements Comparable {
     public BasicBlock(int id) {
 	this.id = id;
 	instructionList = new LinkedList<InstructionHandle>();
+	isExceptionThrower = false;
 	exceptionGen = null;
     }
 
@@ -50,6 +52,20 @@ public class BasicBlock implements Comparable {
      */
     public int getId() {
 	return id;
+    }
+
+    /**
+     * Set whether or not this block is an exception thrower.
+     */
+    public void setExceptionThrower(boolean isExceptionThrower) {
+	this.isExceptionThrower = isExceptionThrower;
+    }
+
+    /**
+     * Return whether or not this block is an exception thrower.
+     */
+    public boolean isExceptionThrower() {
+	return isExceptionThrower;
     }
 
     /** Get the first instruction in the basic block. */
