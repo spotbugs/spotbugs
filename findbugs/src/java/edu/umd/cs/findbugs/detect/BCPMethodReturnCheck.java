@@ -125,6 +125,8 @@ public class BCPMethodReturnCheck extends ByteCodePatternDetector implements Sta
 		list.add(new Invoke("java.security.MessageDigest",
 		        "digest", "([B)[B",
 		        Invoke.INSTANCE, null));
+		list.add(new Invoke("+java.sql.Connection", "/.*", "/.*",
+		        Invoke.INSTANCE, null));
 		list.add(new Invoke("+java.net.InetAddress", "/.*", "/.*",
 		        Invoke.INSTANCE, null));
 		list.add(new Invoke("java.math.BigDecimal", "/.*", "/.*",
