@@ -34,7 +34,8 @@ import java.util.Date;
 public class ConsoleLogger {
 
     public static final int INFO = 0;
-    public static final int ERROR = 1;
+    public static final int WARNING = 1;
+    public static final int ERROR = 2;
     
     private FindBugsFrame frame;
     
@@ -56,6 +57,8 @@ public class ConsoleLogger {
         buf.append("] ");
         if (severity == ERROR)
             buf.append("ERROR: ");
+        else if (severity == WARNING)
+            buf.append("WARNING: ");
         buf.append(message);
         frame.writeToConsole(buf.toString());
     }

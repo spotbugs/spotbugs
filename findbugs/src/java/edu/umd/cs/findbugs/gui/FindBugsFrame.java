@@ -1827,8 +1827,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
         // Look up the source file for this class.
         sourceFinder.setSourceBaseList(project.getSourceDirList());
         String sourceFile = analysisRun.getSourceFile(srcLine.getClassName());
-        if (sourceFile == null) {
-            logger.logMessage(ConsoleLogger.INFO, "No source file for class " + srcLine.getClassName());
+        if (sourceFile == null || sourceFile.equals("<Unknown>")) {
+            logger.logMessage(ConsoleLogger.WARNING, "No source file for class " + srcLine.getClassName());
             return;
         }
         
@@ -1845,7 +1845,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
             
             reader.close();
         } catch (IOException e) {
-            logger.logMessage(ConsoleLogger.ERROR, e.getMessage());
+            logger.logMessage(ConsoleLogger.WARNING, e.getMessage());
             return;
         }
 
@@ -1902,6 +1902,18 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	bugDescriptionEditorPane.setContentType("text/html");
 	bugDescriptionEditorPane.setText(html);
 	currentBugDetailsKey = bugDetailsKey;
+
+	// FIXME: unfortunately, using setText() on the editor pane
+	// results in the contents being scrolled to the bottom of the pane.
+	// An immediate inline call to set the scroll position does nothing.
+	// So, use invokeLater(), even though this results in flashing.
+	// [What we really need is a way to set the text WITHOUT changing
+	// the caret position.  Need to investigate.]
+	SwingUtilities.invokeLater(new Runnable() {
+	    public void run() {
+		bugDescriptionScrollPane.getViewport().setViewPosition(new Point(0, 0));
+	    }
+	});
     }
     
     /* ----------------------------------------------------------------------
