@@ -14,6 +14,49 @@
 
 <h1>FindBugs Change Log</h1>
 
+<p> Changes since version 0.8.2:
+<ul>
+
+<!-- New detectors -->
+<li> New detector to find improperly overridden GUI Adapter classes (Dave Brosius)
+<li> New detector to find improperly setup JUnit TestCases (Dave Brosius)
+<li> New detector to find variables that mask class level fields (Dave Brosius)
+<li> New detector to find comparisions of values computed
+     with bitwise operators that always yield the same result
+     (Tom Truscott)
+<li> New detector to find unsafe getClass().getResource() calls (Bill Pugh)
+<li> New detector to find GUI changes not in GUI thread but in static main (Bill Pugh)
+<li> New detector to find calls to Collection.toArray() with zero-length
+     array argument; it is more efficient to pass an array the size
+     of the collection, which can be populated and returned as the result (Dave Brosius)
+
+<!-- Analysis improvements -->
+<li> Better suppression of false warnings in various detectors (Bill Pugh, David Hovemeyer)
+<li> Enhancement to ReadReturnShouldBeChecked detector for skip() (Dave Brosius)
+<li> Enhancement to DumbMethods detector (Dave Brosius)
+<li> Open stream detector does not report wrappers of
+     streams passed as method parameters (David Hovemeyer)
+
+<!-- Feature enhancements -->
+<li> Cancel confirmation dialog in Swing GUI (Pete Angstadt)
+<li> Better relative path saving in Project file (Dave Brosius)
+<li> Detector Priority in GUI is now saved in prefs file (Dave Brosius)
+<li> Controls in GUI to reorder source and classpath entries, and
+     ability to flip between Project details and bugs pages (Dave Brosius)
+<li> In Swing GUI, analysis error dialog supports "Select All"
+     and "Copy" operations for easy generation of error reports
+     (Dave Brosius)
+<li> Complete translation of bug descriptions and messages
+     into Japanese (Hanai Shisei)
+
+<!-- Bug fixes -->
+<li> Fixed bug in DroppedException detector (Dave Brosius)
+
+<!-- Development stuff -->
+<li> The source distribution defaults to using JDK 1.5 javac
+     to compile, but support for compiling with JSR-14 prototype
+     is still supported
+
 <p> Changes since version 0.8.1:
 <ul>
 <li> Fixed a critical ClassCastException bug (triggered if the -workHard

@@ -30,10 +30,10 @@ public class Version {
 	public static final int MINOR = 8;
 
 	/** Patch level. */
-	public static final int PATCHLEVEL = 3;
+	public static final int PATCHLEVEL = 4;
 
 	/** Development version? */
-	public static final boolean IS_DEVELOPMENT = false;
+	public static final boolean IS_DEVELOPMENT = true;
 
 	/** Release version string. */
 	public static final String RELEASE = MAJOR + "." + MINOR + "." + PATCHLEVEL + (IS_DEVELOPMENT ? "-dev" : "");
