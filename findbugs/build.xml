@@ -36,7 +36,6 @@
     <property name="findbugs.src.dir" value="${findbugs.dir}/src/java" />
     <property name="anttask.src.dir" value="${findbugs.dir}/src/antTask" />
     <property name="tools.src.dir" value="${findbugs.dir}/src/tools"/>
-    <property name="eclipse.src.dir" value="${findbugs.dir}/src/eclipsePlugin"/>
     <property name="script.src.dir" value="${findbugs.dir}/src/scripts"/>
     <property name="findbugs.jar.name" value="findbugs.jar" />
     <property name="findbugs.attributes.jar.name" value="findbugsAttributes.jar"/>
@@ -155,8 +154,6 @@
         <fileset dir="${test.dir}" includes="*.class" />
         <fileset dir="${test.dir}" includes="*.jar" />
       </delete>
-      <ant dir="${eclipse.src.dir}/edu.umd.cs.findbugs" target="clean" inheritall="false"/>
-      <ant dir="${eclipse.src.dir}/de.tobject.findbugs" target="clean" inheritall="false"/>
     </target>
 
     <target name="init" >
@@ -347,52 +344,6 @@
             todir="${class.dir}/edu/umd/cs/findbugs/anttask"/>
       <jar destfile="${jar.dir}/${anttask.jar.name}"
           basedir="${class.dir}" includes="edu/umd/cs/findbugs/anttask/**" />
-    </target>
-
-    <!-- Target to build the Eclipse plugin. -->
-    <target name="eclipsePlugin" depends="findbugs,allplugins,tools,version">
-       <!-- Create the plugin descriptor files.
-            We use a filter set to ensure that the plugin version numbers
-            are up-to-date with the global version properties from
-            the edu.umd.cs.findbugs.Version class. -->
-       <copy file="${eclipse.src.dir}/edu.umd.cs.findbugs/plugin.xml.in"
-             tofile="${eclipse.src.dir}/edu.umd.cs.findbugs/plugin.xml">
-         <filterset refid="docFilters"/>
-       </copy>
-       <copy file="${eclipse.src.dir}/de.tobject.findbugs/plugin.xml.in"
-             tofile="${eclipse.src.dir}/de.tobject.findbugs/plugin.xml">
-         <filterset refid="docFilters"/>
-       </copy>
-
-       <!-- Generate build properties for core Eclipse plugin. -->
-       <java dir="${findbugs.dir}"
-             fork="true"
-             classname="edu.umd.cs.findbugs.tools.eclipse.EclipseClasspath"
-             output="${eclipse.src.dir}/edu.umd.cs.findbugs/build.properties"
-             failonerror="true">
-         <classpath refid="tools.classpath"/>
-         <arg value="${eclipse.home}"/>
-         <arg value="${eclipse.src.dir}/edu.umd.cs.findbugs"/>
-       </java>
-
-       <!-- Spawn Ant subtask to build the core Eclipse plugin. -->
-       <ant dir="${eclipse.src.dir}/edu.umd.cs.findbugs" inheritall="false"/>
-
-       <!-- Generate build properties for UI Eclipse plugin. -->
-       <java dir="${findbugs.dir}"
-             fork="true"
-             classname="edu.umd.cs.findbugs.tools.eclipse.EclipseClasspath"
-             output="${eclipse.src.dir}/de.tobject.findbugs/build.properties"
-             failonerror="true">
-         <classpath refid="tools.classpath"/>
-         <arg value="${eclipse.home}"/>
-         <arg value="${eclipse.src.dir}/de.tobject.findbugs"/>
-         <arg value="edu.umd.cs.findbugs"/>
-         <arg value="${eclipse.src.dir}/edu.umd.cs.findbugs"/>
-       </java>
-
-       <!-- Spawn Ant subtask to build the UI Eclipse plugin. -->
-       <ant dir="${eclipse.src.dir}/de.tobject.findbugs" inheritall="false"/>
     </target>
 
     <!-- Build jar file of test cases.  -->
@@ -713,7 +664,7 @@
     <target name="rebuild" depends="clean,build" />
 
     <!-- Compile the code and format the docs. -->
-    <target name="buildAll" depends="build,eclipsePlugin,docs" />
+    <target name="buildAll" depends="build,docs" />
 
     <!-- Create a signed jar version of the findbugs.jar -->
 <!--
