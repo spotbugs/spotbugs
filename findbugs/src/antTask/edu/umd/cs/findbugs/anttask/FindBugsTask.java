@@ -128,6 +128,7 @@ public class FindBugsTask extends Task {
 	private String outputFileName = null;
     private List classLocations = new ArrayList();
 
+	private Java findbugsEngine = null;
 
     //define the inner class to store class locations
 	public class ClassLocation {
@@ -345,7 +346,21 @@ public class FindBugsTask extends Task {
 										getTaskName() + "/>",
 									  getLocation() );
 		}
+
+		if ( excludeFile != null && includeFile != null ) {
+			throw new BuildException("only one of excludeFile and includeFile " +
+				" attributes may be used in task <" + getTaskName() + "/>",
+				getLocation());
+		}
     } 
+
+	/**
+	 * Add an argument to the JVM used to execute FindBugs.
+	 * @param arg the argument
+	 */
+	private void addArg(String arg) {
+		findbugsEngine.createArg().setValue(arg);
+	}
 
     /**
      * Create a new JVM to do the work.
@@ -353,7 +368,8 @@ public class FindBugsTask extends Task {
      * @since Ant 1.5
      */
 	private void execFindbugs() throws BuildException {
-		Java findbugsEngine = (Java) project.createTask("java");
+		findbugsEngine = (Java) project.createTask("java");
+
 		findbugsEngine.setTaskName( getTaskName() );
 		findbugsEngine.setFork( true );
 		findbugsEngine.setDir( new File(homeDir + File.separator + "lib"));
@@ -365,33 +381,53 @@ public class FindBugsTask extends Task {
 			jvmargs = jvmargs + " -Dfindbugs.debug=true";
 		findbugsEngine.createJvmarg().setLine( jvmargs ); 
 
-		if ( outputFileName != null) {
-			findbugsEngine.setOutput(new File(outputFileName));
-		}
+		addArg("-home");
+		addArg(homeDir.getPath());
 
-		StringBuffer sb = new StringBuffer( 1024 );
-		sb.append( "-home " + homeDir );
-		if ( sorted ) sb.append( " -sortByClass");
+		if ( sorted ) addArg("-sortByClass");
 		if ( outputFormat != null && 
 			 outputFormat.trim().equalsIgnoreCase("xml") ) {
-			sb.append( " -xml");
+			addArg("-xml");
 		}
-		if ( quietErrors ) sb.append( " -quiet" );
-		if ( reportLevel != null ) sb.append( " -" + reportLevel.trim().toLowerCase() );
-		if ( projectFile != null ) sb.append( " -project " + projectFile );
-		if ( excludeFile != null) sb.append( " -exclude " + excludeFile );
-		if ( includeFile != null) sb.append( " -include " + includeFile );
-		if ( visitors != null) sb.append( " -visitors " + visitors );
-		if ( omitVisitors != null ) sb.append( " -omitvisitors " + omitVisitors );
-		if ( auxClasspath != null ) sb.append( " -auxclasspath " + auxClasspath );
-		if ( sourcePath != null) sb.append( " -sourcepath " + sourcePath );
-		sb.append( " -exitcode" );
+		if ( quietErrors ) addArg("-quiet");
+		if ( reportLevel != null ) addArg("-" + reportLevel.trim().toLowerCase());
+		if ( projectFile != null ) {
+			addArg("-project");
+			addArg(projectFile.getPath());
+		}
+		if ( excludeFile != null ) {
+			addArg("-exclude");
+			addArg(excludeFile.getPath());
+		}
+		if ( includeFile != null) {
+			addArg("-include");
+			addArg(includeFile.getPath());
+		}
+		if ( visitors != null) {
+			addArg("-visitors");
+			addArg(visitors);
+		}
+		if ( omitVisitors != null ) {
+			addArg("-omitVisitors");
+			addArg(omitVisitors);
+		}
+		if ( auxClasspath != null ) {
+			addArg("-auxclasspath");
+			addArg(auxClasspath.toString());
+		}
+		if ( sourcePath != null) {
+			addArg("-sourcepath");
+			addArg(sourcePath.toString());
+		}
+		if ( outputFileName != null ) {
+			addArg("-outputFile");
+			addArg(outputFileName);
+		}
+		addArg("-exitcode");
         Iterator itr = classLocations.iterator();
         while ( itr.hasNext() ) {
-        	sb.append( " " + itr.next().toString() );
+			addArg(itr.next().toString());
       	} 
-
-		findbugsEngine.createArg().setLine( sb.toString() );
 
 		log("Running FindBugs...");
 
