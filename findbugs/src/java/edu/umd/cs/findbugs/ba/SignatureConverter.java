@@ -19,8 +19,12 @@
 
 package edu.umd.cs.findbugs.ba;
 
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
+
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.InvokeInstruction;
+import org.apache.bcel.generic.MethodGen;
 
 /**
  * Convert part or all of a Java type signature into something
@@ -107,9 +111,19 @@ public class SignatureConverter {
 	/**
 	 * Convenience method for generating a method signature in
 	 * human readable form.
+	 * @param javaClass the class
+	 * @param method the method
+	 */
+	public static String convertMethodSignature(JavaClass javaClass, Method method) {
+		return convertMethodSignature(javaClass.getClassName(), method.getName(), method.getSignature());
+	}
+
+	/**
+	 * Convenience method for generating a method signature in
+	 * human readable form.
 	 * @param methodGen the method to produce a method signature for
 	 */
-	public static String convertMethodSignature(org.apache.bcel.generic.MethodGen methodGen) {
+	public static String convertMethodSignature(MethodGen methodGen) {
 		return convertMethodSignature(methodGen.getClassName(), methodGen.getName(), methodGen.getSignature());
 	}
 
