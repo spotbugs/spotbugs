@@ -33,6 +33,15 @@ import edu.umd.cs.findbugs.xml.XMLWriteable;
  * @author David Hovemeyer
  */
 public class BugProperty implements XMLWriteable {
+	// Constants defining some standard bug properties
+	
+	/** Boolean property defining whether or not the BugInstance is reall a bug. */
+	public static final String IS_BUG = "isBug";
+	
+	/** Integer property defining the warning severity (1=least severe, 5=most severe). */
+	public static final String SEVERITY = "severity"; 
+
+	// Fields
 	private String name;
 	private String value;
 	private BugProperty next;
