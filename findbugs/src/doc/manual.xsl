@@ -26,4 +26,7 @@
 <!-- Admonition graphics are in the same place as the generated HTML. -->
 <xsl:variable name="admon.graphics.path"></xsl:variable>
 
+<!-- Just put chapters and sect1s in the TOC. -->
+<xsl:variable name="toc.section.depth">1</xsl:variable>
+
 </xsl:stylesheet>
