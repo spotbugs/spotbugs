@@ -223,7 +223,6 @@ public class FindOpenStream extends ResourceTrackingDetector<Stream>  {
 	 * Fields
 	 * ---------------------------------------------------------------------- */
 
-	private BugReporter bugReporter;
 	private StreamResourceTracker resourceTracker;
 
 	/* ----------------------------------------------------------------------
@@ -231,7 +230,7 @@ public class FindOpenStream extends ResourceTrackingDetector<Stream>  {
 	 * ---------------------------------------------------------------------- */
 
 	public FindOpenStream(BugReporter bugReporter) {
-		this.bugReporter = bugReporter;
+		super(bugReporter);
 		this.resourceTracker = new StreamResourceTracker(bugReporter);
 	}
 
