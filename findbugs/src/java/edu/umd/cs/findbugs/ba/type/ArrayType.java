@@ -117,6 +117,14 @@ public class ArrayType extends ObjectType {
 	public int hashCode() {
 		return baseType.hashCode() + numDimensions;
 	}
+
+	public String toString() {
+		StringBuffer buf = new StringBuffer();
+		buf.append(baseType.toString());
+		for (int i = 0; i < numDimensions; ++i)
+			buf.append("[]");
+		return buf.toString();
+	}
 }
 
 // vim:ts=4

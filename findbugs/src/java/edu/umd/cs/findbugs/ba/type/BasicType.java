@@ -66,6 +66,10 @@ public class BasicType implements Type {
 	public int hashCode() {
 		return 1003 * typeCode;
 	}
+
+	public String toString() {
+		return Constants.TYPE_NAMES[typeCode];
+	}
 }
 
 // vim:ts=4

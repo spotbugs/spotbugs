@@ -116,6 +116,10 @@ public class ClassType extends ObjectType {
 	public boolean isArray() {
 		return false;
 	}
+
+	public String toString() {
+		return getClassName();
+	}
 }
 
 // vim:ts=4
