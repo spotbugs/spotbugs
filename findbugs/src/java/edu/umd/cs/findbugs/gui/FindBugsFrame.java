@@ -516,7 +516,9 @@ public class FindBugsFrame extends javax.swing.JFrame {
 		consoleScrollPane = new javax.swing.JScrollPane();
 		consoleMessageArea = new javax.swing.JTextArea();
 		urlLabel = new javax.swing.JLabel();
+		jPanel1 = new javax.swing.JPanel();
 		logoLabel = new javax.swing.JLabel();
+		growBoxSpacer = new javax.swing.JLabel();
 		theMenuBar = new javax.swing.JMenuBar();
 		fileMenu = new javax.swing.JMenu();
 		newProjectItem = new javax.swing.JMenuItem();
@@ -1127,12 +1129,19 @@ public class FindBugsFrame extends javax.swing.JFrame {
 		gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 0);
 		getContentPane().add(urlLabel, gridBagConstraints);
 
+		jPanel1.setLayout(new javax.swing.BoxLayout(jPanel1, javax.swing.BoxLayout.X_AXIS));
+
+		jPanel1.add(logoLabel);
+
+		growBoxSpacer.setMaximumSize(new java.awt.Dimension(16, 16));
+		jPanel1.add(growBoxSpacer);
+
 		gridBagConstraints = new java.awt.GridBagConstraints();
 		gridBagConstraints.gridx = 1;
 		gridBagConstraints.gridy = 1;
-		gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+		gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTHEAST;
 		gridBagConstraints.insets = new java.awt.Insets(2, 0, 2, 2);
-		getContentPane().add(logoLabel, gridBagConstraints);
+		getContentPane().add(jPanel1, gridBagConstraints);
 
 		theMenuBar.setFont(new java.awt.Font("Dialog", 0, 12));
 		fileMenu.setMnemonic('F');
@@ -2074,6 +2083,12 @@ public class FindBugsFrame extends javax.swing.JFrame {
 		ClassLoader classLoader = this.getClass().getClassLoader();
 		ImageIcon logoIcon = new ImageIcon(classLoader.getResource("edu/umd/cs/findbugs/gui/logo_umd.png"));
 		logoLabel.setIcon(logoIcon);
+		
+		// Leave room for the growBox on Mac
+		if (MAC_OS_X) {
+			growBoxSpacer.setMinimumSize(new java.awt.Dimension(16,16));
+		}
+
 	}
 
 	private void rebuildRecentProjectsMenu() {
@@ -3085,8 +3100,10 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	private javax.swing.JButton findBugsButton;
 	private javax.swing.JCheckBoxMenuItem fullDescriptionsItem;
 	private javax.swing.JTabbedPane groupByTabbedPane;
+	private javax.swing.JLabel growBoxSpacer;
 	private javax.swing.JMenu helpMenu;
 	private javax.swing.JRadioButtonMenuItem highPriorityButton;
+	private javax.swing.JPanel jPanel1;
 	private javax.swing.JSeparator jSeparator1;
 	private javax.swing.JSeparator jSeparator2;
 	private javax.swing.JSeparator jSeparator3;
@@ -3148,4 +3165,6 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	private SourceLineAnnotation currentSourceLineAnnotation; // as above
 	private String currentBugDetailsKey;
 	private int priorityThreshold;
+	private final boolean MAC_OS_X = System.getProperty("os.name").toLowerCase().startsWith("mac os x");
+
 }
