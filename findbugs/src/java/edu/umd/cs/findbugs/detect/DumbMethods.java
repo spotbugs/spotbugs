@@ -110,6 +110,14 @@ public class DumbMethods extends BytecodeScanningDetector implements   Constants
 				&& getClassConstantOperand().equals("java/lang/System")
 				&& getNameConstantOperand().equals("currentTimeMillis"))
 			sawCurrentTimeMillis = true;
+	if ((seen == INVOKEVIRTUAL)
+				&& getClassConstantOperand().equals("java/lang/String")
+				&& getNameConstantOperand().equals("toString")
+				&& getSigConstantOperand().equals("()Ljava/lang/String;"))
+		if (alreadyReported.add(getRefConstantOperand()))
+			bugReporter.reportBug(new BugInstance("DM_STRING_TOSTRING", NORMAL_PRIORITY)
+				.addClassAndMethod(this)
+				.addSourceLine(this));
 /*
 	//
 	// TODO: put this back in when we have a standard way

@@ -12,7 +12,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.DroppedException" speed="fast"
     reports="DE_MIGHT_DROP,DE_MIGHT_IGNORE"/>
   <Detector class="edu.umd.cs.findbugs.detect.DumbMethods" speed="fast"
-    reports="DM_STRING_CTOR,DM_STRING_VOID_CTOR,DM_GC,DM_BOOLEAN_CTOR,DM_STRING_EMPTY_EQUALS"/>
+    reports="DM_STRING_CTOR,DM_STRING_VOID_CTOR,DM_STRING_TOSTRING,DM_GC,DM_BOOLEAN_CTOR,DM_STRING_EMPTY_EQUALS"/>
   <Detector class="edu.umd.cs.findbugs.detect.FindDoubleCheck" speed="fast"
     reports="DC_DOUBLECHECK"/>
   <Detector class="edu.umd.cs.findbugs.detect.FindFinalizeInvocations" speed="fast"
@@ -104,6 +104,7 @@
   <BugPattern abbrev="DE" type="DE_MIGHT_IGNORE" category="CORRECTNESS" />
   <BugPattern abbrev="Dm" type="DM_STRING_CTOR" category="PERFORMANCE" />
   <BugPattern abbrev="Dm" type="DM_STRING_VOID_CTOR" category="PERFORMANCE" />
+  <BugPattern abbrev="Dm" type="DM_STRING_TOSTRING" category="PERFORMANCE" />
   <BugPattern abbrev="Dm" type="DM_GC" category="PERFORMANCE" />
   <BugPattern abbrev="Dm" type="DM_BOOLEAN_CTOR" category="PERFORMANCE" />
   <BugPattern abbrev="Dm" type="DM_STRING_EMPTY_EQUALS" category="PERFORMANCE" />

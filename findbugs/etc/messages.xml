@@ -544,6 +544,16 @@ to use Object.clone(), which always returns an object of the correct type.
 ]]>
     </Details>
   </BugPattern>
+  <BugPattern type="DM_STRING_TOSTRING">
+    <ShortDescription>Method invokes toString() method on a String; just use the String</ShortDescription>
+    <LongDescription>Method {1} invokes toString() method on a String; just use the String</LongDescription>
+    <Details>
+<![CDATA[
+  <p> Calling <code>String.toString()</code> is just a redundant operation.
+  Just use the String.
+]]>
+    </Details>
+  </BugPattern>
   <BugPattern type="DM_GC">
     <ShortDescription>Explicit garbage collection; extremely dubious except in benchmarking code</ShortDescription>
     <LongDescription>{1} forces garbage collection; extremely dubious except in benchmarking code</LongDescription>
