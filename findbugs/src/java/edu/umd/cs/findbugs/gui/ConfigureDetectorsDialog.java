@@ -288,6 +288,7 @@ public class ConfigureDetectorsDialog extends javax.swing.JDialog {
 		} else {
 			detectorDescription.setContentType("text/html");
 			detectorDescription.setText(detailHTML);
+			detectorDescription.setToolTipText(factory.getFullName());
 		}
 	}
 
@@ -301,7 +302,7 @@ public class ConfigureDetectorsDialog extends javax.swing.JDialog {
 		while (i.hasNext()) {
 			DetectorFactory factory = i.next();
 			DefaultTableModel model = (DefaultTableModel) detectorTable.getModel();
-			model.addRow(new Object[]{factory.getFullName(), factory.getSpeed(), Boolean.valueOf(factory.isEnabled())});
+			model.addRow(new Object[]{factory.getShortName(), factory.getSpeed(), Boolean.valueOf(factory.isEnabled())});
 			factoryList.add(factory);
 		}
 	}
