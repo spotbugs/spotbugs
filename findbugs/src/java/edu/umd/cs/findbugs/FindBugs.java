@@ -342,7 +342,7 @@ public class FindBugs implements Constants2, ExitCodes
 		addOption("-visitors", "v1[,v2...]", "run only named visitors");
 		addOption("-omitVisitors", "v1[,v2...]", "omit named visitors");
 		addOption("-bugCategories", "cat1[,cat2...]", "run only detectors that report given categories");
-		addOption("-exclude", "filter file", "exclude bugs matching given filterrun only");
+		addOption("-exclude", "filter file", "exclude bugs matching given filter");
 		addOption("-include", "filter file", "include only bugs matching given filter");
 		addOption("-auxclasspath", "classpath", "set aux classpath for analysis");
 		addOption("-project", "project", "analyze given project");
