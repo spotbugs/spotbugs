@@ -161,6 +161,17 @@ public class BugInstance implements Comparable {
 		return this;
 	}
 
+	/**
+	 * Add class and method annotations for given method.
+	 * @param methodGen the method
+	 * @return this object
+	 */
+	public BugInstance addClassAndMethod(MethodGen methodGen) {
+		addClass(methodGen.getClassName());
+		addMethod(methodGen);
+		return this;
+	}
+
 	/* ----------------------------------------------------------------------
 	 * Class annotation adders
 	 * ---------------------------------------------------------------------- */
@@ -335,6 +346,24 @@ public class BugInstance implements Comparable {
 		String methodName = visitor.getNameConstant();
 		String methodSig = visitor.getBetterSigConstant();
 		addMethod(className, methodName, methodSig);
+		describe("METHOD_CALLED");
+		return this;
+	}
+
+	/**
+	 * Add a method annotation for the method which is called by given
+	 * instruction.
+	 * @param methodGen the method containing the call
+	 * @param inv the InvokeInstruction
+	 * @return this object
+	 */
+	public BugInstance addCalledMethod(MethodGen methodGen, InvokeInstruction inv) {
+		ConstantPoolGen cpg = methodGen.getConstantPool();
+		String className = inv.getClassName(cpg);
+		String methodName = inv.getMethodName(cpg);
+		String methodSig = inv.getSignature(cpg);
+		addMethod(className, methodName, methodSig);
+		describe("METHOD_CALLED");
 		return this;
 	}
 
