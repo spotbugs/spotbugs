@@ -188,14 +188,16 @@ public class RuntimeExceptionCapture extends BytecodeScanningDetector implements
 		try {
 			switch (seen) {
 			case ATHROW:
-				OpcodeStack.Item item = stack.getStackItem(0);
-				String signature = item.getSignature();
-				if (signature != null && signature.length() > 0) {
-					if (signature.startsWith("L"))
-						signature = SignatureConverter.convert(signature);
-					else
-						signature = signature.replace('/', '.');
-					throwList.add(new ThrownException(signature, getPC()));
+				if (stack.getStackDepth() > 0) {
+					OpcodeStack.Item item = stack.getStackItem(0);
+					String signature = item.getSignature();
+					if (signature != null && signature.length() > 0) {
+						if (signature.startsWith("L"))
+							signature = SignatureConverter.convert(signature);
+						else
+							signature = signature.replace('/', '.');
+						throwList.add(new ThrownException(signature, getPC()));
+					}
 				}
 				break;
 
