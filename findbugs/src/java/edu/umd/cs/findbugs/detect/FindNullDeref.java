@@ -37,6 +37,7 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.FindBugsAnalysisProperties;
 import edu.umd.cs.findbugs.StatelessDetector;
+import edu.umd.cs.findbugs.WarningSuppressor;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.AnalysisException;
 import edu.umd.cs.findbugs.ba.BasicBlock;
@@ -70,18 +71,18 @@ public class FindNullDeref implements Detector, StatelessDetector {
 	 * the same way.  (If they aren't, then we don't report it.)
 	 */
 	private static class RedundantBranch {
-		public final InstructionHandle handle;
+		public final Location location;
 		public final int lineNumber;
-		public boolean redundantNullCheck;
+		public boolean checkedValue;
 
-		public RedundantBranch(InstructionHandle handle, int lineNumber, boolean redundantNullCheck) {
-			this.handle = handle;
+		public RedundantBranch(Location location, int lineNumber, boolean checkedValue) {
+			this.location = location;
 			this.lineNumber = lineNumber;
-			this.redundantNullCheck = redundantNullCheck;
+			this.checkedValue = checkedValue;
 		}
 
 		public String toString() {
-			return handle.toString() + ": line " + lineNumber;
+			return location.toString() + ": line " + lineNumber;
 		}
 	}
 
@@ -177,7 +178,6 @@ public class FindNullDeref implements Detector, StatelessDetector {
 		while (i.hasNext()) {
 			RedundantBranch redundantBranch = i.next();
 			if (DEBUG) System.out.println("Redundant branch: " + redundantBranch);
-			InstructionHandle handle = redundantBranch.handle;
 			int lineNumber = redundantBranch.lineNumber;
 
 			// The source to bytecode compiler may sometimes duplicate blocks of
@@ -186,7 +186,7 @@ public class FindNullDeref implements Detector, StatelessDetector {
 			// place it is duplicated, and that it is determined in the same way.
 			if (!undeterminedBranchSet.get(lineNumber) &&
 			        !(definitelySameBranchSet.get(lineNumber) && definitelyDifferentBranchSet.get(lineNumber))) {
-				reportRedundantNullCheck(classContext, method, handle, redundantBranch);
+				reportRedundantNullCheck(classContext, method, redundantBranch.location, redundantBranch);
 			}
 		}
 	}
@@ -244,10 +244,15 @@ public class FindNullDeref implements Detector, StatelessDetector {
 		}
 	}
 
-	private void analyzeRefComparisonBranch(Method method, IsNullValueDataflow invDataflow, BasicBlock basicBlock,
-	                                        InstructionHandle lastHandle) throws DataflowAnalysisException {
+	private void analyzeRefComparisonBranch(
+			Method method,
+			IsNullValueDataflow invDataflow,
+			BasicBlock basicBlock,
+			InstructionHandle lastHandle) throws DataflowAnalysisException {
+		
+		Location location = new Location(lastHandle, basicBlock);
 
-		IsNullValueFrame frame = invDataflow.getFactAtLocation(new Location(lastHandle, basicBlock));
+		IsNullValueFrame frame = invDataflow.getFactAtLocation(location);
 		if (!frame.isValid()) {
 			// Probably dead code due to pruning infeasible exception edges.
 			return;
@@ -280,13 +285,13 @@ public class FindNullDeref implements Detector, StatelessDetector {
 			}
 
 			// If at least one of the values compared was
-			// the result of an explicit null check,
+			// the result of an explicit null value or null check,
 			// remember it.  We report these cases as low
 			// priority.
-			boolean redundantNullCheck = top.isChecked() || topNext.isChecked();
+			boolean checkedValue = top.isChecked() || topNext.isChecked();
 
 			//reportRedundantNullCheck(classContext, method, lastHandle);
-			RedundantBranch redundantBranch = new RedundantBranch(lastHandle, lineNumber, redundantNullCheck);
+			RedundantBranch redundantBranch = new RedundantBranch(location, lineNumber, checkedValue);
 			if (DEBUG) System.out.println("Adding redundant branch: " + redundantBranch);
 			redundantBranchList.add(redundantBranch);
 		} else {
@@ -296,10 +301,15 @@ public class FindNullDeref implements Detector, StatelessDetector {
 	}
 
 	// This is called for both IFNULL and IFNONNULL instructions.
-	private void analyzeIfNullBranch(Method method, IsNullValueDataflow invDataflow, BasicBlock basicBlock,
-	                                 InstructionHandle lastHandle) throws DataflowAnalysisException {
+	private void analyzeIfNullBranch(
+			Method method,
+			IsNullValueDataflow invDataflow,
+			BasicBlock basicBlock,
+			InstructionHandle lastHandle) throws DataflowAnalysisException {
+		
+		Location location = new Location(lastHandle, basicBlock);
 
-		IsNullValueFrame frame = invDataflow.getFactAtLocation(new Location(lastHandle, basicBlock));
+		IsNullValueFrame frame = invDataflow.getFactAtLocation(location);
 		if (!frame.isValid()) {
 			// This is probably dead code due to an infeasible exception edge.
 			return;
@@ -337,7 +347,7 @@ public class FindNullDeref implements Detector, StatelessDetector {
 		// as when a check is done after an explicit dereference.
 		boolean redundantNullCheck = top.isChecked();
 
-		RedundantBranch redundantBranch = new RedundantBranch(lastHandle, lineNumber, redundantNullCheck);
+		RedundantBranch redundantBranch = new RedundantBranch(location, lineNumber, redundantNullCheck);
 		if (DEBUG) System.out.println("Adding redundant branch: " + redundantBranch);
 		redundantBranchList.add(redundantBranch);
 	}
@@ -369,25 +379,46 @@ public class FindNullDeref implements Detector, StatelessDetector {
 		if (AnalysisContext.currentAnalysisContext().getBoolProperty(
 				FindBugsAnalysisProperties.RELAXED_REPORTING_MODE)) {
 			WarningPropertyUtil.addPropertiesForLocation(propertySet, classContext, method, location);
+			propertySet.decorateBugInstance(bugInstance);
 		}
 		
 		bugReporter.reportBug(bugInstance);
 	}
 
-	private void reportRedundantNullCheck(ClassContext classContext, Method method, InstructionHandle handle,
-	                                      RedundantBranch redundantBranch) {
+	private void reportRedundantNullCheck(
+			ClassContext classContext,
+			Method method,
+			Location location,
+			RedundantBranch redundantBranch) {
 		String sourceFile = classContext.getJavaClass().getSourceFileName();
 		MethodGen methodGen = classContext.getMethodGen(method);
 
-		boolean redundantNullCheck = redundantBranch.redundantNullCheck;
-		String type = redundantNullCheck
-		        ? "RCN_REDUNDANT_CHECKED_NULL_COMPARISON"
-		        : "RCN_REDUNDANT_COMPARISON_TO_NULL";
+		boolean redundantNullCheck = redundantBranch.checkedValue;
+//		String type = redundantNullCheck
+//		        ? "RCN_REDUNDANT_CHECKED_NULL_COMPARISON"
+//		        : "RCN_REDUNDANT_COMPARISON_TO_NULL";
 		int priority = redundantNullCheck ? LOW_PRIORITY : NORMAL_PRIORITY;
+		
+		BugInstance bugInstance =
+			new BugInstance(this, "RCN_REDUNDANT_COMPARISON_TO_NULL", priority)
+				.addClassAndMethod(methodGen, sourceFile)
+				.addSourceLine(methodGen, sourceFile, location.getHandle());
+		
+		if (AnalysisContext.currentAnalysisContext().getBoolProperty(
+				FindBugsAnalysisProperties.RELAXED_REPORTING_MODE)) {
+			WarningPropertySet propertySet = new WarningPropertySet();
+			WarningPropertyUtil.addPropertiesForLocation(propertySet, classContext, method, location);
+			if (redundantBranch.checkedValue) {
+				propertySet.addProperty(NullDerefProperty.CHECKED_VALUE);
+			}
+			
+			propertySet.decorateBugInstance(bugInstance);
+			
+			priority = propertySet.computePriority(NORMAL_PRIORITY);
+			bugInstance.setPriority(priority);
+		}
 
-		bugReporter.reportBug(new BugInstance(this, type, priority)
-		        .addClassAndMethod(methodGen, sourceFile)
-		        .addSourceLine(methodGen, sourceFile, handle));
+		bugReporter.reportBug(bugInstance);
 	}
 
 	public void report() {
