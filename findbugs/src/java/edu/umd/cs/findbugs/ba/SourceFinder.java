@@ -101,7 +101,9 @@ public class SourceFinder {
 					}
 
 					data = out.toByteArray();
-
+				} catch (FileNotFoundException e) {
+					// We're probably looking in the wrong directory -
+					// just ignore the failure and continue with the loop
 				} finally {
 					if (in != null)
 						in.close();
