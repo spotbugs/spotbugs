@@ -228,8 +228,8 @@ public class FindOpenStream extends ResourceTrackingDetector<Stream, FindOpenStr
 			if (!sig.startsWith("L") || !sig.endsWith(";"))
 				return null;
 
-			// Track any subclass of InputStream or OutputStream
-			// (but not ByteArray variants)
+			// Track any subclass of InputStream, OutputStream, Reader, and Writer
+			// (but not ByteArray/CharArray/String variants)
 			String className = sig.substring(1, sig.length() - 1).replace('/', '.');
 			try {
 				if (Repository.instanceOf(className, "java.io.InputStream")) {
@@ -239,6 +239,16 @@ public class FindOpenStream extends ResourceTrackingDetector<Stream, FindOpenStr
 				} else if (Repository.instanceOf(className, "java.io.OutputStream")) {
 					boolean isByteArray = Repository.instanceOf(className, "java.io.ByteArrayOutputStream");
 					return new Stream(new Location(handle, basicBlock), className, "java.io.OutputStream", isByteArray);
+
+				} else if (Repository.instanceOf(className, "java.io.Reader")) {
+					boolean isByteArray = Repository.instanceOf(className, "java.io.StringReader")
+						|| Repository.instanceOf(className, "java.io.CharArrayReader");
+					return new Stream(new Location(handle, basicBlock), className, "java.io.Reader", isByteArray);
+
+				} else if (Repository.instanceOf(className, "java.io.Writer")) {
+					boolean isByteArray = Repository.instanceOf(className, "java.io.StringWriter")
+						|| Repository.instanceOf(className, "java.io.CharArrayWriter");
+					return new Stream(new Location(handle, basicBlock), className, "java.io.Writer", isByteArray);
 
 				} else
 					return null;
