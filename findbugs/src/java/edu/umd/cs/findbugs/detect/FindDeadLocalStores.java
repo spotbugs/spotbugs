@@ -25,7 +25,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import java.util.StringTokenizer;
+import java.util.TreeMap;
 
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.JavaClass;
@@ -46,6 +46,7 @@ import org.apache.bcel.generic.NEWARRAY;
 import org.apache.bcel.generic.StoreInstruction;
 
 import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugProperty;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
@@ -69,6 +70,8 @@ public class FindDeadLocalStores implements Detector {
     // Define a collection of excluded local variables...
 	private static final Set<String> EXCLUDED_LOCALS = new HashSet<String>();
 
+	private static final boolean DO_EXCLUDE_LOCALS =
+		System.getProperty(FINDBUGS_EXCLUDED_LOCALS_PROP_NAME) != null;
     static {
         // Get the value of the property...
         String exclLocalsProperty = System.getProperty(FINDBUGS_EXCLUDED_LOCALS_PROP_NAME);
@@ -154,30 +157,47 @@ public class FindDeadLocalStores implements Detector {
         // Get the local variable table from the method...
         LocalVariableTable lvt = method.getLocalVariableTable();
         
+		// Get number of locals that are parameters.
+		int localsThatAreParameters = method.getArgumentTypes().length;
+		if (!method.isStatic()) localsThatAreParameters++;
+		
+		// Map to store properties used for false-positive heuristics
+		TreeMap<String, String> propertyMap = new TreeMap<String, String>();
+        
+		// Scan method to determine number of loads, stores, and increments
+		// of local variables.
 		for (Iterator<Location> i = cfg.locationIterator(); i.hasNext(); ) {
 			Location location = i.next();
+			
+			// Skip exception handlers, as the exception value is
+			// often a dead store.
 			if (location.getBasicBlock().isExceptionHandler())
 				continue;
 
 			boolean isStore = isStore(location);
 			boolean isLoad = isLoad(location);
-			if (!isStore && !isLoad) continue;
+			if (!isStore && !isLoad)
+				continue;
+			
 			IndexedInstruction ins = (IndexedInstruction) location.getHandle().getInstruction();
 			int local = ins.getIndex();
 			if (ins instanceof IINC) {
 				localUpdateCount[local]++;
 				localLoadCount[local]++;
 				localIncrementCount[local]++;
-			}
-			else if (isStore) 
+			} else if (isStore) 
 				localUpdateCount[local]++;
 			else 
 				localLoadCount[local]++;
-			}
+		}
 
-
+		// Scan method for
+		// - dead stores
+		// - stores to parameters that are dead upon entry to the method
 		for (Iterator<Location> i = cfg.locationIterator(); i.hasNext(); ) {
 			Location location = i.next();
+		
+			// Skip any instruction which is not a store
 			if (!isStore(location))
 				continue;
 
@@ -186,34 +206,41 @@ public class FindDeadLocalStores implements Detector {
 			// a local, even if the value is not used.
 			if (location.getBasicBlock().isExceptionHandler())
 				continue;
+			
+			// Clear properties for false-positive heuristics
+			propertyMap.clear();
 
-			IndexedInstruction ins = (IndexedInstruction) location.getHandle().getInstruction();
+			InstructionHandle handle = location.getHandle();
+			IndexedInstruction ins = (IndexedInstruction) handle.getInstruction();
+			int pc = handle.getPosition();
 			int local = ins.getIndex();
      
-            // Determine whether we should ignore this local variable...
+			// Get local variable name.
+			// This may serve as a heuristic to avoid false warnings.
             if (lvt != null) {
-            	LocalVariable lv = lvt.getLocalVariable(local);
+            	LocalVariable lv = lvt.getLocalVariable(local, pc);
             	if (lv != null) {
-            		String localName = lv.getName();
+					String localName = lv.getName();
+					propertyMap.put(BugProperty.LOCAL_NAME, localName);
    
 	                // Is it in our set of excluded names?
-	                if (EXCLUDED_LOCALS.contains(localName)) {
+	                if (DO_EXCLUDE_LOCALS && EXCLUDED_LOCALS.contains(localName)) {
 	                    continue;
 	                }
             	}
             }
-                
-			int localsThatAreParameters = method.getArgumentTypes().length;
-			if (!method.isStatic()) localsThatAreParameters++;
 
+			// Is this a store to a parameter which was dead on entry to the method?
 			boolean parameterThatIsDeadAtEntry = local < localsThatAreParameters
 			    && !llsaDataflow.getAnalysis().isStoreAlive(liveStoreSetAtEntry, local);
 			if (parameterThatIsDeadAtEntry && !complainedAbout.get(local)) {
-			BugInstance bugInstance = new BugInstance(this, "IP_PARAMETER_IS_DEAD_BUT_OVERWRITTEN", NORMAL_PRIORITY)
-				.addClassAndMethod(methodGen, javaClass.getSourceFileName())
-				.addSourceLine(methodGen, javaClass.getSourceFileName(), location.getHandle());
-			bugReporter.reportBug(bugInstance);
-			complainedAbout.set(local);
+				BugInstance bugInstance = new BugInstance(this, "IP_PARAMETER_IS_DEAD_BUT_OVERWRITTEN", NORMAL_PRIORITY)
+					.addClassAndMethod(methodGen, javaClass.getSourceFileName())
+					.addSourceLine(methodGen, javaClass.getSourceFileName(), location.getHandle());
+//				if (localName != null)
+//					bugInstance.setProperty(BugProperty.LOCAL_NAME, localName);
+				bugReporter.reportBug(bugInstance);
+				complainedAbout.set(local);
 			}
 
 			// Get live stores at this instruction.
@@ -224,10 +251,7 @@ public class FindDeadLocalStores implements Detector {
 			// Is store alive?
 			if (llsaDataflow.getAnalysis().isStoreAlive(liveStoreSet, local))
 				continue;
-
 			// Store is dead
-
-			
 
 			// Ignore assignments that were killed by a subsequent assignment.
 			if (llsaDataflow.getAnalysis().killedByStore(liveStoreSet, local)) {
@@ -235,14 +259,21 @@ public class FindDeadLocalStores implements Detector {
 					System.out.println("Store at " + location.getHandle() +
 						" killed by subsequent store");
 				}
-				continue;
+				propertyMap.put(BugProperty.KILLED_BY_SUBSEQUENT_STORE, "true");
+				continue; // FIXME - bail early, or collect all props and report? Need to think about
+			} else {
+				propertyMap.put(BugProperty.KILLED_BY_SUBSEQUENT_STORE, "false");
 			}
 
 			// Ignore dead assignments of null and 0.
 			// These often indicate defensive programming.
 			InstructionHandle prev = location.getBasicBlock().getPredecessorOf(location.getHandle());
-			if (prev != null && defensiveConstantValueOpcodes.get(prev.getInstruction().getOpcode()))
-				continue;
+			if (prev != null && defensiveConstantValueOpcodes.get(prev.getInstruction().getOpcode())) {
+				propertyMap.put(BugProperty.DEFENSIVE_CONSTANT_OPCODE, "true");
+				continue; // FIXME - bail early, or collect all props and report? Need to think about
+			} else {
+				propertyMap.put(BugProperty.DEFENSIVE_CONSTANT_OPCODE, "false");
+			}
 
 			int priority = LOW_PRIORITY;
 			// special handling of IINC
