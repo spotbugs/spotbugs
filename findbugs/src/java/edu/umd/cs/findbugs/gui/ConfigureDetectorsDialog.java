@@ -33,6 +33,7 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 
+import edu.umd.cs.findbugs.BugPattern;
 import edu.umd.cs.findbugs.DetectorFactory;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
 
@@ -288,7 +289,22 @@ public class ConfigureDetectorsDialog extends javax.swing.JDialog {
 		} else {
 			detectorDescription.setContentType("text/html");
 			detectorDescription.setText(detailHTML);
-			detectorDescription.setToolTipText(factory.getFullName());
+			StringBuffer toolTip = new StringBuffer(100);
+			toolTip.append("<html><body><b>");
+			toolTip.append(factory.getFullName());
+			toolTip.append("</b><br><br><table border='1' width='100%'><tr><th>");
+			toolTip.append(L10N.getLocalString("msg.bugpatternsreported_txt", "Bug Patterns Reported"));
+			toolTip.append("</th></tr>");
+			Collection<BugPattern> patterns = factory.getReportedBugPatterns();
+			Iterator<BugPattern> it = patterns.iterator();
+			while (it.hasNext()) {
+				BugPattern pattern = it.next();
+				toolTip.append("<tr><td align='center'>");
+				toolTip.append(pattern.getType());
+				toolTip.append("</td></tr>");
+			}
+			toolTip.append("</body></html>");
+			detectorDescription.setToolTipText(toolTip.toString());
 		}
 	}
 
