@@ -51,6 +51,13 @@ public abstract class BugCollection {
 		c = IntAnnotation.class;
 	}
 
+	public void addAll(Collection<BugInstance> collection) {
+		Iterator<BugInstance> i = collection.iterator();
+		while (i.hasNext()) {
+			add(i.next());
+		}
+	}
+
 	public abstract boolean add(BugInstance bugInstance);
 	public abstract Iterator<BugInstance> iterator();
 	public abstract Collection<BugInstance> getCollection();
