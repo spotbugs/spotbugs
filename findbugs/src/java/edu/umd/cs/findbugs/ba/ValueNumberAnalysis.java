@@ -57,6 +57,10 @@ public class ValueNumberAnalysis extends ForwardDataflowAnalysis<ValueNumberFram
 		this.exceptionHandlerValueNumberMap = new IdentityHashMap<BasicBlock, ValueNumber>();
 	}
 
+	public ValueNumber getEntryValue(int local) {
+		return entryLocalValueList[local];
+	}
+
 	public ValueNumberFrame createFact() {
 		return new ValueNumberFrame(methodGen.getMaxLocals(), factory);
 	}

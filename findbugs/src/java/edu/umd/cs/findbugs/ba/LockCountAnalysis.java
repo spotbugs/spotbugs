@@ -39,7 +39,6 @@ import org.apache.bcel.generic.*;
 public abstract class LockCountAnalysis extends ForwardDataflowAnalysis<LockCount> {
 
 	private static final boolean DEBUG = Boolean.getBoolean("dataflow.debug");
-	private static final boolean BETTER = Boolean.getBoolean("cfg.better");
 
 	protected MethodGen methodGen;
 	protected Dataflow<ThisValueFrame> tvaDataflow;
@@ -111,31 +110,6 @@ public abstract class LockCountAnalysis extends ForwardDataflowAnalysis<LockCoun
 	}
 
 	public void meetInto(LockCount fact, Edge edge, LockCount result) throws DataflowAnalysisException {
-		if (!BETTER && edge.getDest().isExceptionHandler()) {
-			// WARNING!
-
-			// Subtle special case - on a handled exception where the last instruction
-			// in the source basic block affects the lock count, we must undo the change
-			// to the lock count before merging the value into the start value for
-			// the exception handler.  In other words, the exception that was thrown
-			// by a monitorexit exception means that the monitorexit did not happen.
-
-			// FIXME: I really need to think of a more general way to incorporate this
-			// into the dataflow analysis framework.
-
-			BasicBlock source = edge.getSource();
-			InstructionHandle last = source.getLastInstruction();
-			ThisValueFrame frame = tvaDataflowAnalysis != null
-				? tvaDataflowAnalysis.getFactAtInstruction(last)
-				: null;
-			int delta = getDelta(last.getInstruction(), frame);
-			if (delta != 0) {
-				if (DEBUG) System.out.print("[[Undo lock count delta for source block " + source.getId() + "]]");
-				LockCount tmpFact = new LockCount(fact.getCount() - delta); // undo the lock operation
-				fact = tmpFact;
-			}
-		}
-
 		// Standard lattice thing
 		if (fact.isTop() || result.isBottom())
 			; // no change

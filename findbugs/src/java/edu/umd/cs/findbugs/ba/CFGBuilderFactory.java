@@ -21,14 +21,28 @@ package edu.umd.cs.daveho.ba;
 
 import org.apache.bcel.generic.MethodGen;
 
+/**
+ * Factory object to create CFGBuilders for methods.
+ * Using a CFGBuilderFactory is preferable to direct instantiation of
+ * CFGBuilders, because it gives us an easy hook for plugging in
+ * new CFGBuilder implementations.  (CFGs for Java are a little tricky
+ * to get right.)
+ *
+ * <p> Right now, we just create {@link BetterCFGBuilder} objects.
+ *
+ * @see CFG
+ * @see CFGBuilder
+ * @see BetterCFGBuilder
+ * @author David Hovemeyer
+ */
 public class CFGBuilderFactory {
-	private static final boolean BETTER = Boolean.getBoolean("cfg.better");
-
+	/**
+	 * Create a CFGBuilder to build a CFG for given method.
+	 * @param methodGen the method
+	 * @return a CFGBuilder for the method
+	 */
 	public static CFGBuilder create(MethodGen methodGen) {
-		if (BETTER)
-			return new BetterCFGBuilder(methodGen);
-		else
-			return new BasicCFGBuilder(methodGen);
+		return new BetterCFGBuilder(methodGen);
 	}
 }
 
