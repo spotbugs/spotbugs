@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs;
 
+import edu.umd.cs.findbugs.ba.SignatureConverter;
+
 import java.util.HashSet;
 import java.util.Set;
 import java.util.Iterator;
@@ -75,6 +77,16 @@ public class AddMessages {
 					? bugPattern.getShortDescription()
 					: bugInstance.toString());
 			element.addElement("LongMessage").addText(bugInstance.getMessage());
+
+			// Add pre-formatted display strings in "Message"
+			// elements for all bug annotations.
+			Iterator annElementIter = element.elements().iterator();
+			Iterator<BugAnnotation> annIter = bugInstance.annotationIterator();
+			while (annElementIter.hasNext() && annIter.hasNext()) {
+				Element annElement = (Element) annElementIter.next();
+				BugAnnotation ann = annIter.next();
+				annElement.addElement("Message").addText(ann.toString());
+			}
 		}
 
 		// Add BugPattern elements for each referenced bug types.
