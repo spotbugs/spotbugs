@@ -41,10 +41,10 @@ import edu.umd.cs.findbugs.ba.ClassContext;
  */
 public class MethodReturnCheck extends BytecodeScanningDetector {
 	private static boolean DEBUG = Boolean.getBoolean("mrc.debug");
-	private static boolean CHECK_CONTROL_FLOW =
-		Boolean.getBoolean("mrc.checkControlFlow");
-	private static boolean COUNT_POP_BRANCH_TARGETS =
-		Boolean.getBoolean("mrc.countPopBranchTargets");
+//	private static boolean CHECK_CONTROL_FLOW =
+//		Boolean.getBoolean("mrc.checkControlFlow");
+//	private static boolean COUNT_POP_BRANCH_TARGETS =
+//		Boolean.getBoolean("mrc.countPopBranchTargets");
 	
 	private static final int SCAN =0;
 	private static final int SAW_INVOKE = 1;
@@ -67,27 +67,27 @@ public class MethodReturnCheck extends BytecodeScanningDetector {
 	}
 
 	private BugReporter bugReporter;
-	private BitSet branchTargetSet;
+//	private BitSet branchTargetSet;
 	private List<QueuedWarning> queuedWarningList;
-	private List<Integer> popList;
-	private List<Integer> retValPopList;
 	private ClassContext classContext;
 	private Method method;
 	private int state;
 	private int callPC;
 	private String className, methodName, signature;
-	private int popIsBranchTarget;
-	private int retValPopIsBranchTarget;
-	private boolean lastIsInvoke;
+//	private List<Integer> popList;
+//	private List<Integer> retValPopList;
+//	private int popIsBranchTarget;
+//	private int retValPopIsBranchTarget;
+//	private boolean lastIsInvoke;
 	
 	public MethodReturnCheck(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
-		this.branchTargetSet = new BitSet();
+//		this.branchTargetSet = new BitSet();
 		this.queuedWarningList = new LinkedList<QueuedWarning>();
-		if (COUNT_POP_BRANCH_TARGETS) {
-			this.popList = new LinkedList<Integer>();
-			this.retValPopList = new LinkedList<Integer>();
-		}
+//		if (COUNT_POP_BRANCH_TARGETS) {
+//			this.popList = new LinkedList<Integer>();
+//			this.retValPopList = new LinkedList<Integer>();
+//		}
 	}
 	
 	public void visitClassContext(ClassContext classContext) {
@@ -122,55 +122,57 @@ public class MethodReturnCheck extends BytecodeScanningDetector {
 		for (Iterator<QueuedWarning> i = queuedWarningList.iterator(); i.hasNext();) {
 			QueuedWarning qw = i.next();
 
-			if (CHECK_CONTROL_FLOW && branchTargetSet.get(qw.popPC))
-				continue;
+//			if (CHECK_CONTROL_FLOW && branchTargetSet.get(qw.popPC))
+//				continue;
 			
 			bugReporter.reportBug(qw.warning);
 		}
-		if (COUNT_POP_BRANCH_TARGETS) {
-			for (Iterator<Integer> i = popList.iterator(); i.hasNext();) {
-				int pc = i.next().intValue();
-				if (branchTargetSet.get(pc))
-					++popIsBranchTarget;
-			}
-		}
+//		if (COUNT_POP_BRANCH_TARGETS) {
+//			for (Iterator<Integer> i = popList.iterator(); i.hasNext();) {
+//				int pc = i.next().intValue();
+//				if (branchTargetSet.get(pc))
+//					++popIsBranchTarget;
+//			}
+//		}
 		
 	}
 
 	private void reset() {
 		if (DEBUG) System.out.println("resetting state");
-		branchTargetSet.clear();
+//		branchTargetSet.clear();
 		queuedWarningList.clear();
-		if (COUNT_POP_BRANCH_TARGETS) {
-			popList.clear();
-			retValPopList.clear();
-			lastIsInvoke = false;
-		}
+//		if (COUNT_POP_BRANCH_TARGETS) {
+//			popList.clear();
+//			retValPopList.clear();
+//			lastIsInvoke = false;
+//		}
 		method = null;
 	}
 	
 	public void sawOpcode(int seen) {
 		// Mark branch and goto targets
-		if (isBranch(seen)) {
-			markBranch(getBranchTarget());
-			if (seen != GOTO && seen != GOTO_W) {
-				markBranch(getBranchFallThrough());
-			}
-		} else if (isSwitch(seen)) {
-			markBranch(getDefaultSwitchOffset());
-			int[] switchOffsetList = getSwitchOffsets();
-			for (int i = 0; i < switchOffsetList.length; ++i) {
-				markBranch(switchOffsetList[i]);
-			}
-		}
+//		if (CHECK_CONTROL_FLOW) {
+//			if (isBranch(seen)) {
+//				markBranch(getBranchTarget());
+//				if (seen != GOTO && seen != GOTO_W) {
+//					markBranch(getBranchFallThrough());
+//				}
+//			} else if (isSwitch(seen)) {
+//				markBranch(getDefaultSwitchOffset());
+//				int[] switchOffsetList = getSwitchOffsets();
+//				for (int i = 0; i < switchOffsetList.length; ++i) {
+//					markBranch(switchOffsetList[i]);
+//				}
+//			}
+//		}
 		
-		if (COUNT_POP_BRANCH_TARGETS) {
-			if (isPop(seen)) {
-				popList.add(new Integer(getPC()));
-				if (lastIsInvoke)
-					retValPopList.add(new Integer(getPC()));
-			}
-		}
+//		if (COUNT_POP_BRANCH_TARGETS) {
+//			if (isPop(seen)) {
+//				popList.add(new Integer(getPC()));
+//				if (lastIsInvoke)
+//					retValPopList.add(new Integer(getPC()));
+//			}
+//		}
 		
 		boolean redo;
 		
@@ -214,9 +216,9 @@ public class MethodReturnCheck extends BytecodeScanningDetector {
 			}
 		} while (redo);
 
-		if (COUNT_POP_BRANCH_TARGETS) {
-			lastIsInvoke = INVOKE_OPCODE_SET.get(seen);
-		}
+//		if (COUNT_POP_BRANCH_TARGETS) {
+//			lastIsInvoke = INVOKE_OPCODE_SET.get(seen);
+//		}
 
 	}
 
@@ -234,20 +236,20 @@ public class MethodReturnCheck extends BytecodeScanningDetector {
 			&& signature.endsWith(")Ljava/lang/String;");
 	}
 
-	private void markBranch(int branchTarget) {
-		if (branchTarget >= 0) {
-			branchTargetSet.set(branchTarget);
-		}
-	}
+//	private void markBranch(int branchTarget) {
+//		if (branchTarget >= 0) {
+//			branchTargetSet.set(branchTarget);
+//		}
+//	}
 	
 	//@Override
 	public void report() {
-		if (COUNT_POP_BRANCH_TARGETS) {
-			System.out.println(
-					"Observed:\n" +
-					"\t" + popIsBranchTarget + " pops which were branch targets\n" +
-					"\t" + retValPopIsBranchTarget + " return value pops which were branch targets"
-					);
-		}
+//		if (COUNT_POP_BRANCH_TARGETS) {
+//			System.out.println(
+//					"Observed:\n" +
+//					"\t" + popIsBranchTarget + " pops which were branch targets\n" +
+//					"\t" + retValPopIsBranchTarget + " return value pops which were branch targets"
+//					);
+//		}
 	}
 }
