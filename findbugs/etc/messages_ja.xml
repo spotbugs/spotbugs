@@ -7,10 +7,42 @@
   **********************************************************************
    -->
 
+  <Detector class="edu.umd.cs.findbugs.detect.SwitchFallthrough">
+    <Details>
+<![CDATA[
+<p> このディテクタは、switch文のフォールスルー(あるcase文から下のcase文に実行が移るロジック)を発見します。高速ディテクタです。
+]]>
+    </Details>
+  </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.FindFieldSelfAssignment">
+    <Details>
+<![CDATA[
+<p> このディテクタは、フィールドの自己代入を発見します。高速ディテクタです。
+]]>
+    </Details>
+  </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.FindNonShortCircuit">
+    <Details>
+<![CDATA[
+<p> このディテクタは、ビット演算子(<code>|</code> と <code>&amp;</code>)を、短絡的条件演算子(<code>||</code> と <code>&amp;&amp;</code>)と間違えて使用していると思われるコードを発見します。
+]]>
+    </Details>
+  </Detector>
+
   <Detector class="edu.umd.cs.findbugs.detect.DontCatchIllegalMonitorStateException">
     <Details>
 <![CDATA[
-<p> This detector looks for try-catch blocks that catch a IllegalMonitorStateException.
+<p> このディテクタは、IllegalMonitorStateExceptionをキャッチしているtry-catchブロックを探します。
+]]>
+    </Details>
+  </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.FindFloatMath">
+    <Details>
+<![CDATA[
+<p> このディテクタは、floatを使った浮動小数演算を発見します。
 ]]>
     </Details>
   </Detector>
@@ -18,8 +50,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.CloneIdiom">
     <Details>
 <![CDATA[
-<p> This detector looks for violations of the idioms for writing
-cloneable classes.
+<p> このディテクタは、クローン可能クラスが守るべきイディオムを守っていないクラスを探します。
 ]]>
     </Details>
   </Detector>
@@ -27,8 +58,7 @@ cloneable classes.
   <Detector class="edu.umd.cs.findbugs.detect.DroppedException">
     <Details>
 <![CDATA[
-<p> This detector looks for code where an exception is caught,
-but nothing is done to handle the exception.  It is a fast detector.
+<p> このディテクタは、例外をキャッチしているが、それに対して何も行っていないコードを探します。高速ディテクタです。
 ]]>
     </Details>
   </Detector>
@@ -36,9 +66,7 @@ but nothing is done to handle the exception.  It is a fast detector.
   <Detector class="edu.umd.cs.findbugs.detect.DumbMethods">
     <Details>
 <![CDATA[
-<p> This detector looks for calls to pointless methods,
-such as the no-argument String constructor.
-It is a fast detector.
+<p> このディテクタは、無意味なメソッド呼び出し、例えばStringのデフォルトコンストラクタの呼び出しを探します。高速ディテクタです。
 ]]>
     </Details>
   </Detector>
@@ -46,8 +74,7 @@ It is a fast detector.
   <Detector class="edu.umd.cs.findbugs.detect.FindDoubleCheck" >
     <Details>
 <![CDATA[
-<p> This detector looks for instances of double checked locking.
-It is a fast detector.
+<p> このディテクタは、ダブルチェックロックを探します。高速ディテクタです。
 ]]>
     </Details>
   </Detector>
@@ -55,8 +82,7 @@ It is a fast detector.
   <Detector class="edu.umd.cs.findbugs.detect.FindFinalizeInvocations" >
     <Details>
 <![CDATA[
-<p> This detector looks for calls to finalize() and other finalizer-related
-issues.  It is a fast detector.
+<p> このディテクタは、finalize()呼び出し、及びファイナライザに関連した問題を探します。高速ディテクタです。
 ]]>
     </Details>
   </Detector>
@@ -64,8 +90,7 @@ issues.  It is a fast detector.
   <Detector class="edu.umd.cs.findbugs.detect.FindHEmismatch" >
     <Details>
 <![CDATA[
-<p> This detector looks for problems in the definition of the hashCode() and equals()
-methods.  It is a fast detector.
+<p> このディテクタは、hashCode()とequals()メソッドの定義の問題を探します。高速ディテクタです。
 ]]>
     </Details>
   </Detector>
@@ -73,8 +98,7 @@ methods.  It is a fast detector.
   <Detector class="edu.umd.cs.findbugs.detect.FindNakedNotify" >
     <Details>
 <![CDATA[
-<p> This detector looks for calls to notify() that don't seem
-to modify mutable object state.  It is a fast detector.
+<p> このディテクタは、オブジェクトの状態を変更していないのにnotify()メソッドを呼び出しているコードを探します。高速ディテクタです。
 ]]>
     </Details>
   </Detector>
@@ -82,8 +106,7 @@ to modify mutable object state.  It is a fast detector.
   <Detector class="edu.umd.cs.findbugs.detect.FindReturnRef" >
     <Details>
 <![CDATA[
-<p> This detector looks for methods that return mutable static data.
-It is a fast detector.
+<p> このディテクタは変更可能なstaticデータを返すメソッドを探します。高速ディテクタです。
 ]]>
     </Details>
   </Detector>
@@ -91,8 +114,7 @@ It is a fast detector.
   <Detector class="edu.umd.cs.findbugs.detect.FindRunInvocations" >
     <Details>
 <![CDATA[
-<p> This detector looks for calls to Thread.run().  It is a fast
-detector.
+<p> このディテクタは、Thread.run()の呼び出しを探します。高速ディテクタです。
 ]]>
     </Details>
   </Detector>
@@ -100,8 +122,7 @@ detector.
   <Detector class="edu.umd.cs.findbugs.detect.FindSpinLoop" >
     <Details>
 <![CDATA[
-<p> This detector looks for loops that spin reading from a field.
-It is a fast detector.
+<p> このディテクタは、ループ内のスピンフィールド読みだしを探します。高速ディテクタです。
 ]]>
     </Details>
   </Detector>
@@ -109,8 +130,7 @@ It is a fast detector.
   <Detector class="edu.umd.cs.findbugs.detect.FindTwoLockWait" >
     <Details>
 <![CDATA[
-<p> This detector looks for calls to wait() with two (or more) locks held.
-It is a slow detector.
+<p> このディテクタは、2つ以上のロックを保持した状態でのwait()呼び出しを探します。低速ディテクタです。
 ]]>
     </Details>
   </Detector>
@@ -118,8 +138,7 @@ It is a slow detector.
   <Detector class="edu.umd.cs.findbugs.detect.FindUnconditionalWait" >
     <Details>
 <![CDATA[
-<p> This detector looks for calls to wait() not in a conditional or loop.
-It is a fast detector.
+<p> このディテクタは、wait()が条件付き、もしくは無条件ループ内で呼び出されている事をチェックします。高速ディテクタです。
 ]]>
     </Details>
   </Detector>
@@ -127,8 +146,7 @@ It is a fast detector.
   <Detector class="edu.umd.cs.findbugs.detect.FindUninitializedGet" >
     <Details>
 <![CDATA[
-<p> This detector looks for reads of uninitialized fields in constructors.
-It is a fast detector.
+<p> このディテクタは、コンストラクタ内での、未初期化フィールドの読み出しを探します。高速ディテクタです。
 ]]>
     </Details>
   </Detector>
@@ -136,8 +154,7 @@ It is a fast detector.
   <Detector class="edu.umd.cs.findbugs.detect.FindUnsyncGet" >
     <Details>
 <![CDATA[
-<p> This detector looks for get and set methods where the get is unsynchronized
-while the set is synchronized.  It is a fast detector.
+<p> このディテクタは、setメソッドが同期化されているが、getメソッドが同期化されてないケースを探します。高速ディテクタです。
 ]]>
     </Details>
   </Detector>
@@ -145,8 +162,7 @@ while the set is synchronized.  It is a fast detector.
   <Detector class="edu.umd.cs.findbugs.detect.InitializationChain" >
     <Details>
 <![CDATA[
-<p> This detector looks for potentially circular class initialization
-dependencies.  It is a fast detector.
+<p> このディテクタは、潜在的な循環クラス初期化を探します。高速ディテクタです。
 ]]>
     </Details>
   </Detector>
@@ -154,8 +170,7 @@ dependencies.  It is a fast detector.
   <Detector class="edu.umd.cs.findbugs.detect.IteratorIdioms" >
     <Details>
 <![CDATA[
-<p> This iterator looks for problems in how Iterator classes are defined.
-It is a fast detector.
+<p> このディテクタは、イテレータの実装方法の問題を探します。高速ディテクタです。
 ]]>
     </Details>
   </Detector>
@@ -163,8 +178,7 @@ It is a fast detector.
   <Detector class="edu.umd.cs.findbugs.detect.LockedFields" disabled="true" >
     <Details>
 <![CDATA[
-<p> This detector looks for fields that are accessed in an inconsistent manner
-with respect to locking.  It is a fast detector.
+<p> このディテクタは、ロックの使用に関して、一貫性の無いやり方でフィールドにアクセスしているコードを探します。高速ディテクタです。
 ]]>
     </Details>
   </Detector>
@@ -172,9 +186,7 @@ with respect to locking.  It is a fast detector.
   <Detector class="edu.umd.cs.findbugs.detect.EqStringTest" >
     <Details>
 <![CDATA[
-<p> This detector looks for comparisons of String objects using the == or !=
-operators.
- It is a fast detector.
+<p> このディテクタは、Stringオブジェクトを==や!=で比較しているコードを探します。高速ディテクタです。
 ]]>
     </Details>
   </Detector>
@@ -182,8 +194,7 @@ operators.
   <Detector class="edu.umd.cs.findbugs.detect.MutableLock" >
     <Details>
 <![CDATA[
-<p> This detector looks for synchronization on objects read from
-modified fields.  It is a fast detector.
+<p> このディテクタは、変更されるフィールドが参照しているオブジェクトを使って同期化を行っているコードを探します。高速ディテクタです。
 ]]>
     </Details>
   </Detector>
@@ -191,8 +202,7 @@ modified fields.  It is a fast detector.
   <Detector class="edu.umd.cs.findbugs.detect.MutableStaticFields" >
     <Details>
 <![CDATA[
-<p> This detector looks for static fields that may be modified by
-malicious code.  It is a fast detector.
+<p> このディテクタは、悪意を持ったコードによって変更されうるstaticフィールドを探します。高速ディテクタです。
 ]]>
     </Details>
   </Detector>
@@ -200,7 +210,7 @@ malicious code.  It is a fast detector.
   <Detector class="edu.umd.cs.findbugs.detect.Naming" >
     <Details>
 <![CDATA[
-<p> This detector looks for suspiciously-named methods.  It is a fast detector.
+<p> このディテクタは、名前付けが疑わしいメソッドを探します。高速ディテクタです。
 ]]>
     </Details>
   </Detector>
@@ -208,8 +218,7 @@ malicious code.  It is a fast detector.
   <Detector class="edu.umd.cs.findbugs.detect.ReadReturnShouldBeChecked" >
     <Details>
 <![CDATA[
-<p> This detector looks for calls to InputStream.read() where the
-return value is ignored.  It is a fast detector.
+<p> このディテクタは、InputStream.read()の戻り値を無視しているコードを探します。高速ディテクタです。
 ]]>
     </Details>
   </Detector>
@@ -217,8 +226,7 @@ return value is ignored.  It is a fast detector.
   <Detector class="edu.umd.cs.findbugs.detect.SerializableIdiom" >
     <Details>
 <![CDATA[
-<p> This detector looks for potential problems in the implementation
-of Serializable classes.  It is a fast detector.
+<p> このディテクタは、直列化可能クラスの潜在的な実装の問題を探します。高速ディテクタです。
 ]]>
     </Details>
   </Detector>
@@ -226,7 +234,7 @@ of Serializable classes.  It is a fast detector.
   <Detector class="edu.umd.cs.findbugs.detect.StartInConstructor" >
     <Details>
 <![CDATA[
-<p> This detector looks for constructors that start threads.  It is a fast detector.
+<p> このディテクタは、コンストラクタ内でのスレッドの開始を探します。高速ディテクタです。
 ]]>
     </Details>
   </Detector>
@@ -234,7 +242,7 @@ of Serializable classes.  It is a fast detector.
   <Detector class="edu.umd.cs.findbugs.detect.UnreadFields" >
     <Details>
 <![CDATA[
-<p> This detector looks for fields whose value is never read.  It is a fast detector.
+<p> このディテクタは、全く読み出されないフィールドを探します。高速ディテクタです。
 ]]>
     </Details>
   </Detector>
@@ -242,8 +250,7 @@ of Serializable classes.  It is a fast detector.
   <Detector class="edu.umd.cs.findbugs.detect.WaitInLoop" >
     <Details>
 <![CDATA[
-<p> This detector looks for calls to wait() that are not in a loop.
-It is a fast detector.
+<p> このディテクタは、ループ外で呼び出されているwait()を探します。高速ディテクタです。
 ]]>
     </Details>
   </Detector>
@@ -251,10 +258,7 @@ It is a fast detector.
   <Detector class="edu.umd.cs.findbugs.detect.BCPDoubleCheck" disabled="true" >
     <Details>
 <![CDATA[
-<p> This detector looks for instances of double checked locking.
-It is implemented using the ByteCodePattern class.  You might want to
-take a look at its source code as an example of an easy way to implement a bug
-pattern detector.  It is a fairly fast detector.
+<p> このディテクタは、ダブルチェックロッキングを探します。ByteCodePatternクラスを使って実装されているので、バグパターンディテクタの簡単な実装例として参照するのに適しています。準高速ディテクタです。
 ]]>
     </Details>
   </Detector>
@@ -262,8 +266,7 @@ pattern detector.  It is a fairly fast detector.
   <Detector class="edu.umd.cs.findbugs.detect.BCPMethodReturnCheck" >
     <Details>
 <![CDATA[
-<p> This detector looks for calls to methods where the return value
-is suspiciously ignored.  It is a fairly fast detector.
+<p> このディテクタは、戻り値が間違って無視されていると思われるメソッド呼び出しを探します。低速ディテクタです。
 ]]>
     </Details>
   </Detector>
@@ -271,9 +274,7 @@ is suspiciously ignored.  It is a fairly fast detector.
   <Detector class="edu.umd.cs.findbugs.detect.FindNullDeref">
     <Details>
 <![CDATA[
-<p> This detector looks for places where a null pointer exception might
-occur.  It also looks for redundant comparisons of reference values against
-null.  It is a moderately fast detector.
+<p> このディテクタは、NullPointerExceptionが起きる可能性のある場所を探します。また、無駄な参照変数とnullとの比較を発見します。中速ディテクタです。
 ]]>
     </Details>
   </Detector>
@@ -281,9 +282,7 @@ null.  It is a moderately fast detector.
   <Detector class="edu.umd.cs.findbugs.detect.FindOpenStream">
     <Details>
 <![CDATA[
-<p> This detector looks for IO stream objects which do not escape the
-method and do not appear to be closed on all paths out of the method.
-It is a moderately fast detector.
+<p> このディテクタは、入出力ストリームオブジェクトが、あるメソッド内でだけ使われており、そのメソッドから抜け出す全てのパスに、オブジェクトがクローズされる事を調べます。中速ディテクタです。
 ]]>
     </Details>
   </Detector>
@@ -291,9 +290,7 @@ It is a moderately fast detector.
   <Detector class="edu.umd.cs.findbugs.detect.PreferZeroLengthArrays">
     <Details>
 <![CDATA[
-<p> This detector looks for methods that return either arrays or an explicit null reference.
-Returning a zero length array is generally preferred in this context to returning a null reference.
-It is a fast detector.
+<p> このディテクタは、配列を返すメソッドがnullを返すケースを探します。一般にはnullではなくサイズ0の配列を返すのが良いとされます。高速ディテクタです。
 ]]>
     </Details>
   </Detector>
@@ -301,8 +298,7 @@ It is a fast detector.
   <Detector class="edu.umd.cs.findbugs.detect.FindUselessControlFlow">
     <Details>
 <![CDATA[
-<p> This detector looks for control flow statements which have no effect.
-It is a fast detector.
+<p> このディテクタは何の効果もない制御フロー式を発見します。高速ディテクタです。
 ]]>
     </Details>
   </Detector>
@@ -310,11 +306,10 @@ It is a fast detector.
   <Detector class="edu.umd.cs.findbugs.detect.FindUnreleasedLock">
     <Details>
 <![CDATA[
-<p> This detector looks for JSR-166 (<code>java.util.concurrent</code>)
-locks which are acquired, but not released on all paths out of the method.&nbsp;
-It is a moderately fast detector.&nbsp; Note that in order to use this
-detector, you need to have the <code>java.util.concurrent</code> package
-in the auxiliary classpath (or be analyzing the package itself).
+<p> このディテクタは、獲得された JSR-166 (<code>java.util.concurrent</code>)
+ロックが、メソッドから抜ける全てのパスで解放されているかどうか調べます。
+中速ディテクタです。このディテクタを利用するには、
+<code>java.util.concurrent</code> パッケージを外部クラスパスに指定する必要があります(このパッケージ自身を調査する場合を除く)。
 ]]>
     </Details>
   </Detector>
@@ -322,10 +317,7 @@ in the auxiliary classpath (or be analyzing the package itself).
   <Detector class="edu.umd.cs.findbugs.detect.FindRefComparison">
     <Details>
 <![CDATA[
-<p> This detector looks for places where two reference values are compared
-with the == or != operator, and the class is of a type (such as <code>java.lang.String</code>)
-where comparing reference values is generally an error.  It is a moderately
-fast detector.
+<p> このディテクタは、参照変数を == や != で比較しており、そのクラスが一般に、そのような比較が間違っている (例えば <code>java.lang.String</code>のように)ケースを探します。中速ディテクタです。
 ]]>
     </Details>
   </Detector>
@@ -333,10 +325,7 @@ fast detector.
   <Detector class="edu.umd.cs.findbugs.detect.FindMismatchedWaitOrNotify">
     <Details>
 <![CDATA[
-<p> This detector looks for calls to wait(), notify(), or notifyAll()
-which do not appear to be made on an object which is currently locked.&nbsp;
-It is a moderately fast detector.&nbsp; <b>This detector is disabled because
-it is still under development, and produces too many false positives.</b>
+<p> このディテクタは、ロックされていないオブジェクトに対するwait(), notify(), notifyAll()呼び出しを発見します。中速ディテクタです。<b>このディテクタは、現在開発中で、まだ間違った結果を多く出すためディスエーブルされています。</b>
 ]]>
     </Details>
   </Detector>
@@ -344,8 +333,7 @@ it is still under development, and produces too many false positives.</b>
   <Detector class="edu.umd.cs.findbugs.detect.FindInconsistentSync2" >
     <Details>
 <![CDATA[
-<p> This detector looks for fields that are accessed in an inconsistent manner
-with respect to locking.  It is a slow detector.
+<p> このディテクタは、ロックのやり方が間違ったフィールドアクセスを発見します。低速ディテクタです。
 ]]>
     </Details>
   </Detector>
@@ -353,8 +341,7 @@ with respect to locking.  It is a slow detector.
   <Detector class="edu.umd.cs.findbugs.detect.FindLocalSelfAssignment">
     <Details>
 <![CDATA[
-<p> This detector looks for self assignments of local variables.
-It is a fast detector.
+<p> このディテクタは、ローカル変数の自己代入を発見します。高速ディテクタです。
 ]]>
     </Details>
   </Detector>
@@ -362,8 +349,7 @@ It is a fast detector.
   <Detector class="edu.umd.cs.findbugs.detect.LazyInit">
     <Details>
 <![CDATA[
-<p> This detector looks for lazy field initialization where the
-field is not volatile.  It is a moderately fast detector.
+<p> このディテクタは、volatileでないフィールドの遅延初期化を発見します。中速ディテクタです。
 ]]>
     </Details>
   </Detector>
@@ -371,8 +357,7 @@ field is not volatile.  It is a moderately fast detector.
   <Detector class="edu.umd.cs.findbugs.detect.FindJSR166LockMonitorenter">
     <Details>
 <![CDATA[
-<p> This detector looks for ordinary synchronization performed
-on JSR166 locks.  It is a moderately fast detector.
+<p> このディテクタは、JSR166の通常のロックを発見します。中速ディテクタです。
 ]]>
     </Details>
   </Detector>
@@ -380,8 +365,15 @@ on JSR166 locks.  It is a moderately fast detector.
   <Detector class="edu.umd.cs.findbugs.detect.FindUncalledPrivateMethods">
     <Details>
 <![CDATA[
-<p> This detector looks for private methods that are never called.
-It is a fast detector.
+<p> このディテクタは、呼び出されないprivateメソッドを発見します。高速ディテクタです。
+]]>
+    </Details>
+  </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.StringConcatenation">
+    <Details>
+<![CDATA[
+<p> このディテクタは、ループ内で文字列を"+"を使って連結しているコードを発見します。高速ディテクタです。
 ]]>
     </Details>
   </Detector>
@@ -389,7 +381,7 @@ It is a fast detector.
   <Detector class="edu.umd.cs.findbugs.detect.FindBugsSummaryStats">
     <Details>
 <![CDATA[
-<p> This dectector just collects summary statistics information about the analysis process. 
+<p> このディテクタは、分析結果の集計をとるために使用されます。
 ]]>
     </Details>
   </Detector>
@@ -405,7 +397,18 @@ It is a fast detector.
     <LongDescription>{1} での、IllegalMonitorStateException の疑わしいキャッチ。</LongDescription>
     <Details>
 <![CDATA[
-<p>Dubious catching of IllegalMonitorStateException.
+<p>IllegalMonitorStateExceptionは一般にはコーディングの問題(ロックを獲得せずにwait()、notify()を呼び出した場合)によって発生するもので、キャッチすべきではありません。
+]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="FL_MATH_USING_FLOAT_PRECISION">
+    <ShortDescription>このメソッドはfloatの精度で演算を行っています</ShortDescription>
+    <LongDescription>{1} は、floatの精度で演算を行っています</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+このメソッドはfloatの精度で演算を行っています。floatの精度は非常に誤差の多いものです。例えば16777216.0f + 1.0f は、16777216.0fとなります。doubleを替わりに用いる事を検討してください。
 ]]>
     </Details>
   </BugPattern>
@@ -416,8 +419,20 @@ It is a fast detector.
     <Details>
 <![CDATA[
 <p>
-	Class implements Cloneable but does not define or
-	use clone method.
+クラスはCloneableを実装していますが、cloneメソッドを定義も使用もしていません。
+]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="CN_IDIOM_NO_SUPER_CALL">
+    <ShortDescription>clone()メソッドがsuper.clone()を呼び出していません</ShortDescription>
+    <LongDescription>clone()メソッド{1}は、super.clone()を呼び出していません</LongDescription>
+    <Details>
+<![CDATA[
+<p> このクラスはclone()を定義していますが、super.clone()を呼び出しておらず、finalでもありません。
+もしもクラス("<i>B</i>")が("<i>A</i>")を継承しており、サブクラス<i>B</i>がsuper.clone()を呼び出さないと、<i>B</i>のclone()メソッドは<i>A</i>のインスタンスを返してしまいます。これはclone()メソッドの規約を満たしていません。
+
+<p> 全てのclone()メソッドがsuper.clone()を呼び出すようになっていれば、Object.clone()が呼び出される事が保証され、正しい型のオブジェクトが返送されます。
 ]]>
     </Details>
   </BugPattern>
@@ -427,9 +442,7 @@ It is a fast detector.
     <LongDescription>{1} は {3} を落としている可能性があります。</LongDescription>
     <Details>
 <![CDATA[
-  <p> This method might drop an exception.&nbsp; In general, exceptions
-  should be handled or reported in some way, or they should be thrown
-  out of the method.
+<p> このメソッドは例外を握りつぶしている可能性があります。一般に、例外が発生したら何らかの形で報告するか、呼び出し元に渡すべきです。
 ]]>
     </Details>
   </BugPattern>
@@ -438,9 +451,7 @@ It is a fast detector.
     <LongDescription>{1} は {3} を無視している可能性があります。</LongDescription>
     <Details>
 <![CDATA[
-  <p> This method might ignore an exception.&nbsp; In general, exceptions
-  should be handled or reported in some way, or they should be thrown
-  out of the method.
+<p> このメソッドは例外を無視している可能性があります。一般に、例外が発生したら何らかの形で報告するか、呼び出し元に渡すべきです。
 ]]>
     </Details>
   </BugPattern>
@@ -449,10 +460,7 @@ It is a fast detector.
     <LongDescription>{1} new String(String) コンストラクタを呼び出しています。これは引数の文字列をそのまま使うべきです。</LongDescription>
     <Details>
 <![CDATA[
-  <p> Using the <code>java.lang.String(String)</code> constructor wastes memory
-  because the object so constructed will be functionally indistinguishable
-  from the <code>String</code> passed as a parameter.&nbsp; Just use the
-  argument <code>String</code> directly.
+<p><code>java.lang.String(String)</code>コンストラクタの呼び出しはメモリを浪費するだけです。このようにして生成されたオブジェクトと元の<code>String</code>オブジェクトは機能的に区別が付きません。
 ]]>
     </Details>
   </BugPattern>
@@ -461,27 +469,17 @@ It is a fast detector.
     <LongDescription>{1} new String() コンストラクタを呼び出しています。これは  "" をそのまま使うべきです。</LongDescription>
     <Details>
 <![CDATA[
-  <p> Creating a new <code>java.lang.String</code> object using the
-  no-argument constructor wastes memory because the object so created will
-  be functionally indistinguishable from the empty string constant
-  <code>""</code>.&nbsp; Java guarantees that identical string constants
-  will be represented by the same <code>String</code> object.&nbsp; Therefore,
-  you should just use the empty string constant directly.
+<p><code>java.lang.String</code>の引数無しコンストラクタの呼び出しはメモリを浪費するだけです。このようにして生成されたオブジェクトと、空文字列<code>""</code>の間には機能的に違いがありません。Javaは、同一内容の文字列定数のインスタンスを1つにまとめます。従って単に空文字列を直接使用すべきです。
 ]]>
     </Details>
   </BugPattern>
   <BugPattern type="DM_GC">
-    <ShortDescription>強制的にガベージコレクションを呼び出しています。ベンチマークのコード以外で記述されるのはきわめて疑わしいです。</ShortDescription>
-    <LongDescription>{1} 強制的にガベージコレクションを呼び出しています。ベンチマークのコード以外で記述されるのはきわめて疑わしいです。</LongDescription>
+    <ShortDescription>明示的にガベージコレクションを呼び出しています。ベンチマークのコード以外で記述されるのはきわめて疑わしいです。</ShortDescription>
+    <LongDescription>{1} 明示的にガベージコレクションを呼び出しています。ベンチマークのコード以外で記述されるのはきわめて疑わしいです。</LongDescription>
     <Details>
 <![CDATA[
-  <p> Code explicitly invokes garbage collection.
-  Except for specific use in benchmarking, this is very dubious.
-  <p>In the past, situations where people have explicitly invoked 
-  the garbage collector in routines such as close or finalize methods
-  has led to huge performance black holes. Garbage collection 
-	can be expensive. Any situation that forces hundreds or thousands
-	of garbage collections will bring the machine to a crawl.
+<p>明示的にガベージコレクションを呼び出しています。ベンチマークで使用されるケースを除けば、これは大変疑わしいコードです。
+<p>過去において、close()やfinalize()メソッドでのガベージコレクションを明示的に呼び出すことが、パフォーマンスのブラックホールに陥れるケースがありました。ガベージコレクションは高くつく場合があります。数百、数千のガベージコレクション呼び出しは、システムのパフォーマンスを極めて落とす事になります。
 ]]>
     </Details>
   </BugPattern>
@@ -490,10 +488,16 @@ It is a fast detector.
     <LongDescription>{1} Booleanのコンストラクタを呼んでいます。その代わりにBoolean.valueOf(...) を使うべきです。</LongDescription>
     <Details>
 <![CDATA[
-  <p> Creating new instances of <code>java.lang.Boolean</code> wastes
-  memory, since <code>Boolean</code> objects are immutable and there are
-  only two useful values of this type.&nbsp; Use the <code>Boolean.valueOf()</code>
-  method to create <code>Boolean</code> objects instead.
+  <p> <code>java.lang.Boolean</code>のインスタンスを新規に生成するのはメモリの浪費です。<code>Boolean</code>クラスはイミュータブルなので、TRUEとFALSEの2つのオブジェクトがあれば十分です。 <code>Boolean.valueOf()</code>を替わりに使ってください。
+]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="DM_STRING_EMPTY_EQUALS">
+    <ShortDescription>メソッドは疑わしいString.equals("")呼び出しを行っています。String.length() == 0を替わりに使用してください</ShortDescription>
+    <LongDescription>メソッドは疑わしいString.equals("")呼び出しを行っています。String.length() == 0を替わりに使用してください</LongDescription>
+    <Details>
+<![CDATA[
+<p> eauals()を使って空文字列との比較を行っています。length()メソッドを使って長さ0かどうか調べる方が高速です。
 ]]>
     </Details>
   </BugPattern>
@@ -502,11 +506,8 @@ It is a fast detector.
     <LongDescription>{1} において {2} のダブルチェックをおこなっている可能性があります。</LongDescription>
     <Details>
 <![CDATA[
-  <p> This method may contain an instance of double-checked locking.&nbsp;
-  This idiom is not correct according to the semantics of the Java memory
-  model.&nbsp; For more information, see the web page
-  <a href="http://www.cs.umd.edu/~pugh/java/memoryModel/DoubleCheckedLocking.html"
-  >http://www.cs.umd.edu/~pugh/java/memoryModel/DoubleCheckedLocking.html</a>.
+<p> メソッド内にダブルチェックロッキングイディオムがあります。このイディオムはJavaのメモリーモデルでは正しく機能しません。詳細については<a href="http://www.cs.umd.edu/~pugh/java/memoryModel/DoubleCheckedLocking.html"
+  >http://www.cs.umd.edu/~pugh/java/memoryModel/DoubleCheckedLocking.html</a>を参照してください。
 ]]>
     </Details>
   </BugPattern>
@@ -516,8 +517,7 @@ It is a fast detector.
     <LongDescription>{1} は public ですが、これは protected であるべきです。</LongDescription>
     <Details>
 <![CDATA[
-  <p> A class's <code>finalize()</code> method should have protected access,
-   not public.
+  <p> このクラスの<code>finalize()</code>メソッドはpublicになっていますが、protectedであるべきです。
 ]]>
     </Details>
   </BugPattern>
@@ -526,8 +526,7 @@ It is a fast detector.
     <LongDescription>{1} は空ですので、削除されるべきです。</LongDescription>
     <Details>
 <![CDATA[
-  <p> Empty <code>finalize()</code> methods are useless, so they should
-  be deleted.
+  <p> 空の<code>finalize()</code>メソッドは無駄です。削除するべきです。
 ]]>
     </Details>
   </BugPattern>
@@ -536,10 +535,7 @@ It is a fast detector.
     <LongDescription>{1} は {2}.finalize() を無視しています。これはわざとですか？</LongDescription>
     <Details>
 <![CDATA[
-  <p> This empty <code>finalize()</code> method explicitly negates the
-  effect of any finalizer defined by its superclass.&nbsp; Any finalizer
-  actions defined for the superclass will not be performed.&nbsp;
-  Unless this is intended, delete this method.
+<p><code>finalize()</code>メソッドが空なので、親クラスのファイナライザを無視する事になり、親クラスで定義されたファイナライザの処理が呼び出されなくなってしまいます。そのような意図が無ければ、このメソッドを削除してください。
 ]]>
     </Details>
   </BugPattern>
@@ -548,9 +544,7 @@ It is a fast detector.
     <LongDescription>{1} は単に super.finalize() を呼び出しているだけで、それ以外のことはなにもしていません。これは削除されるべきです。</LongDescription>
     <Details>
 <![CDATA[
-  <p> The only thing this <code>finalize()</code> method does is call
-  the superclass's <code>finalize()</code> method, making it
-  redundant.&nbsp; Delete it.
+<p>この<code>finalize()</code>メソッドは、親クラスの<code>finalize()</code>を呼び出しているだけで、無駄です。削除してください。
 ]]>
     </Details>
   </BugPattern>
@@ -559,21 +553,16 @@ It is a fast detector.
     <LongDescription>{1} は super.finalize() の呼び出しを忘れています。そのため {2}.finalize() は呼び出されることがありません。</LongDescription>
     <Details>
 <![CDATA[
-  <p> This <code>finalize()</code> method does not make a call to its
-  superclass's <code>finalize()</code> method.&nbsp; So, any finalizer
-  actions defined for the superclass will not be performed.&nbsp;
-  Add a call to <code>super.finalize()</code>.
+<p>この<code>finalize()</code>メソッドは、親クラスの<code>finalize()</code>を呼び出していません。このため親クラスで定義されたファイナライズ処理が行われません。<code>super.finalize()</code>を呼び出すように変更してください。
 ]]>
     </Details>
   </BugPattern>
   <BugPattern type="FI_EXPLICIT_INVOCATION">
-    <ShortDescription>finalizer を強制的に呼び出しています。</ShortDescription>
-    <LongDescription>{1} は強制的に {2} を呼び出しています。</LongDescription>
+    <ShortDescription>finalizer を明示的に呼び出しています。</ShortDescription>
+    <LongDescription>{1} は明示的に {2} を呼び出しています。</LongDescription>
     <Details>
 <![CDATA[
-  <p> This method contains an explicit invocation of the <code>finalize()</code>
-  method on an object.&nbsp; Because finalizer methods are supposed to be
-  executed once, and only by the VM, this is a bad idea.
+<p> このメソッド内で<code>finalize()</code>の明示的な呼び出しが行われています。ファイナライザは一度だけ呼び出されるべきで、それはVMによって行われるので、このコードの意図は間違っています。
 ]]>
     </Details>
   </BugPattern>
@@ -615,55 +604,39 @@ It is a fast detector.
     </Details>
   </BugPattern>
   <BugPattern type="HE_HASHCODE_USE_OBJECT_EQUALS">
-    <ShortDescription>クラスで hashCode() を宣言していますが、 Object.equals() はそのまま使っています。</ShortDescription>
-    <LongDescription>{0} は hashCode を宣言していますが、 Object.equals() はそのまま使っています。</LongDescription>
+    <ShortDescription>クラスで hashCode() を定義していますが、 Object.equals() はそのまま使っています。</ShortDescription>
+    <LongDescription>{0} は hashCode を定義していますが、 Object.equals() はそのまま使っています。</LongDescription>
     <Details>
 <![CDATA[
-  <p> This class defines a <code>hashCode()</code> method but inherits its
-  <code>equals()</code> method from <code>java.lang.Object</code>
-  (which defines equality by comparing object references).&nbsp; Although
-  this will probably satisfy the contract that equal objects must have
-  equal hashcodes, it is probably not what was intended by overriding
-  the <code>hashCode()</code> method.&nbsp; (Overriding <code>hashCode()</code>
-  implies that the object's identity is based on criteria more complicated
-  than simple reference equality.)
+<p> このクラスは<code>hashCode()</code>メソッドを定義していますが、<code>equals()</code>メソッドは<code>java.lang.Object</code>のもの(参照が同一かどうかで同値性を判定します)をそのまま利用しています。これは、同値であると判定されたオブジェクトが同じハッシュコードを返さなければならないという規約は満たしますが、恐らく<code>hashCode()</code>メソッドのオーバーライドは意図されたものでは無いと思われます(<code>hashCode()</code>のオーバーライドは、単なる参照が同一という同値性よりも複雑な基準がある事を意味します)。
 ]]>
     </Details>
   </BugPattern>
   <BugPattern type="HE_HASHCODE_NO_EQUALS">
-    <ShortDescription>クラスで hashCode() を宣言していますが、equals() は宣言されていません。</ShortDescription>
-    <LongDescription>{0} は hashCode を宣言していますが、equals は宣言されていません。</LongDescription>
+    <ShortDescription>クラスで hashCode() を定義していますが、equals() は定義していません。</ShortDescription>
+    <LongDescription>{0} は hashCode を定義していますが、equals は定義していません。</LongDescription>
     <Details>
 <![CDATA[
-  <p> This class defines a <code>hashCode()</code> method but not an
-  <code>equals()</code> method.&nbsp; Therefore, the class may
-  violate the invariant that equal objects must have equal hashcodes.
+<p> このクラスは<code>hashCode()</code>メソッドを定義していますが、<code>equals()</code>メソッドを定義していません。このため、同値のオブジェクトは同じハッシュコードを返すべきという規約を破る可能性があります。
 ]]>
     </Details>
   </BugPattern>
   <BugPattern type="HE_EQUALS_USE_HASHCODE">
-    <ShortDescription>クラスで equals() を宣言していますが、Object.hashCode() はそのまま使っています。</ShortDescription>
-    <LongDescription>{0} で equals を宣言していますが、Object.hashCode() はそのまま使っています。</LongDescription>
+    <ShortDescription>クラスで equals() を定義していますが、Object.hashCode() はそのまま使っています。</ShortDescription>
+    <LongDescription>{0} で equals を定義していますが、Object.hashCode() はそのまま使っています。</LongDescription>
     <Details>
 <![CDATA[
-  <p> This class overrides <code>equals(Object)</code>, but does not
-  override <code>hashCode()</code>, and inherits the implementation of
-  <code>hashCode()</code> from <code>java.lang.Object</code> (which returns
-  the identity hash code, an arbitrary value assigned to the object
-  by the VM).&nbsp; Therefore, the class is very likely to violate the
-  invariant that equal objects must have equal hashcodes.
+<p> このクラスは<code>equals(Object)</code>をオーバーライドしていますが、<code>hashCode()</code>をオーバーライドしていないので、<code>java.lang.Object</code>の<code>hashCode()</code>の実装をそのまま利用しています(これは、VMがObjectに割り当てた一意のハッシュコードを返します)。このため、同値のオブジェクトが等しいハッシュコードを返さなければならないという規約を破る可能性が非常に高いです。
 ]]>
     </Details>
   </BugPattern>
   <BugPattern type="HE_EQUALS_NO_HASHCODE">
-    <ShortDescription>クラスで equals() を宣言していますが hashCode() は宣言されていません。</ShortDescription>
-    <LongDescription>{0} は equals を宣言していますが hashCode は宣言されていません。</LongDescription>
+    <ShortDescription>クラスで equals() を定義していますが hashCode() は定義していません。</ShortDescription>
+    <LongDescription>{0} は equals を定義していますが hashCode は定義していません。</LongDescription>
     <Details>
 <![CDATA[
-  <p> This class overrides <code>equals(Object)</code>, but does not
-  override <code>hashCode()</code>.&nbsp; Therefore, the class may violate the
-  invariant that equal objects must have equal hashcodes.
-]]>
+<p> このクラスは<code>equals(Object)</code>をオーバーライドしていますが、<code>hashCode()</code>をオーバーライドしていません。このため、このクラスは同値のオブジェクトが等しいハッシュコードを返さなければならないという規約を破る可能性があります。
+x]]>
     </Details>
   </BugPattern>
   <BugPattern type="EQ_ABSTRACT_SELF">
@@ -684,12 +657,7 @@ It is a fast detector.
     <LongDescription>{1}の中で、文字列オブジェクトを == や != を使って比較しようとしています。</LongDescription>
     <Details>
 <![CDATA[
-  <p>This code compares <code>java.lang.String</code> objects for reference
-equality using the == or != operators.
-Unless both strings are either constants in a source file, or have been
-interned using the <code>String.intern()</code> method, the same string
-value may be represented by two different String objects. Considering
-using the <code>equals</code> method instead.
+<p>このコードは<code>java.lang.String</code>のオブジェクトは==もしくは!=を使って参照の比較を行っています。定数定義された文字列もしくは、<code>String.intern()</code>で得られた文字列でなければ、同じ内容でも別のオブジェクトとなる可能性があります。<code>equals()</code>メソッドを替わりに用いる事を検討してください。
 ]]>
     </Details>
   </BugPattern>
@@ -711,32 +679,20 @@ using the <code>equals</code> method instead.
     <LongDescription>{1} の同期化が考慮されていません。{2}% がロックされている時に。</LongDescription>
     <Details>
 <![CDATA[
-  <p> The fields of this class appear to be accessed inconsistently with respect
-  to synchronization.&nbsp; This bug report indicates that the bug pattern detector
-  judged that
-  <ol>
-  <li> The class contains a mix of locked and unlocked accesses,
-  <li> At least one locked access was performed by one of the class's own methods, and
-  <li> The number of unsynchronized field accesses (reads and writes) was no more than
-       one third of all accesses, with writes being weighed twice as high as reads
-  </ol>
+<p> このクラスのフィールドは、同期化の観点から、一貫したアクセスが行われていないようです。このバグレポートは、次のようなバグパターンを示します。
+<ol>
+  <li> クラス内でアクセスする際に、ロックたりしていなかったりしており、
+  <li> 最低でも1つのロックされたアクセスがクラス内のメソッドから行われており、
+  <li> 書き込みに対して、読み込みの2倍の重み付けをした場合に、ロックしていないフィールドアクセス(読み書き)の数が、全体のアクセス数の1/3を超えていない
+</ol>
 
-  <p> A typical bug matching this bug pattern is forgetting to synchronize
-  one of the methods in a class that is intended to be thread-safe.
+<p> このパターンに当てはまる典型的な例は、スレッドセーフを意図しているのに、メソッドを同期化するのを忘れているケースです。
 
-  <p> You can select the nodes labeled "Unsynchronized access" to show the
-  code locations where the detector believed that a field was accessed
-  without synchronization.
+<p> ディテクタにコードの意図を伝えるため「非同期アクセス」のラベルを付ける事ができます。
 
-  <p> Note that there are various sources of inaccuracy in this detector;
-  for example, the detector cannot statically detect all situations in which
-  a lock is held.&nbsp; Also, even when the detector is accurate in
-  distinguishing locked vs. unlocked accesses, the code in question may still
-  be correct.
+<p> このディテクタには、判断を誤る要因が幾つかあります。例えば、ディテクタはスレッドがロックを獲得しているかどうかを、コードを見て静的に判断する事は出来ません。例えディテクタが、ロックされたアクセスと、そうでないアクセスを的確に判定出来たとしても、依然としてコードが正しい可能性は残ります。
 
-  <p> This description refers to the "IS2" version of the pattern detector,
-  which has more accurate ways of detecting locked vs. unlocked accesses
-  than the older "IS" detector.
+<p> ここの記述は"IS2"バージョンのパターンディテクタを参考にしています。これは、ロック・非ロックアクセスの検出に関して"IS"バージョンよりも正確です。
 ]]>
     </Details>
   </BugPattern>
@@ -745,16 +701,9 @@ using the <code>equals</code> method instead.
     <LongDescription>{1} の中に裸の notify があります。</LongDescription>
     <Details>
 <![CDATA[
-  <p> A call to <code>notify()</code> or <code>notifyAll()</code>
-  was made without any (apparent) accompanying
-  modification to mutable object state.&nbsp; In general, calling a notify
-  method on a monitor is done because some condition another thread is
-  waiting for has become true.&nbsp; However, for the condition to be meaningful,
-  it must involve a heap object that is visible to both threads.
+<p> オブジェクトの状態を変更せずに<code>notify()</code>もしくは<code>notifyAll()</code>メソッドを呼び出しています。一般にはこれらのメソッドは、別のスレッドが待ち合わせている条件が成立したのを知らせるために用いられます。条件の待ち合わせを行うためには、両方のスレッドから見る事が可能なヒープオブジェクトを使用しなければなりません。
 
-  <p> This bug does not necessarily indicate an error, since the change to
-  mutable object state may have taken place in a method which then called
-  the method containing the notification.
+<p> このバグ報告は、必ずしもプログラミングエラーを意味しません。オブジェクトの状態変更がメソッド内部で行われ、そこから更にnotify()/notifyall()メソッドを持ったメソッドを呼び出しているかもしれないからです。
 ]]>
     </Details>
   </BugPattern>
@@ -763,41 +712,25 @@ using the <code>equals</code> method instead.
     <LongDescription>public static な {1} メソッドで {2} を戻すことにより、内部表現を暴露してしまう可能性があります。</LongDescription>
     <Details>
 <![CDATA[
-  <p> A public static method returns a reference to
-	an array that is part of the static state of the class. 
-	Any code that calls this method can freely modify
-	the underlying array.
-	One fix is to return a copy of the array.
+<p> public staticメソッドが、クラスのstaticフィールドに保持した配列を返しています。このメソッドを呼び出して得られた配列への参照を通じて、クラスのstaticフィールドを変更出来ていまいます。1つの修正方法は防御的コピーを行って、配列の複製を返す事です。
 ]]>
     </Details>
   </BugPattern>
   <BugPattern type="EI_EXPOSE_REP">
-    <ShortDescription>メソッドは配列の戻り値を返すことにより内部表現を暴露してしまう可能性があります。</ShortDescription>
+    <ShortDescription>メソッドは変更可能なオブジェクトの参照を返すことにより内部表現を暴露してしまう可能性があります。</ShortDescription>
     <LongDescription>{1} は {2} を戻すことにより内部表現を暴露してしまう可能性があります。</LongDescription>
     <Details>
 <![CDATA[
-  <p> Returning a reference to a mutable object value stored in one of the object's fields
-  exposes the internal representation of the object.&nbsp; 
-	If instances
-	are accessed by untrusted code, and unchecked changes to
-	the mutable object would compromise security or other
-	important properties, you will need to do something different.
-  Returning a new copy of the object is better approach in many situations.
+<p> オブジェクトのフィールドに格納された変更可能なオブジェクトの参照を返すと、オブジェクトの内部表現を暴露してしまいます。もしも、このオブジェクトが信頼されていないコードによってアクセスされる事が、セキュリティや、その他の重要な情報への脅威となる可能性があるため、このコードは修正すべきです。防御的コピーを行って、複製を返すのが、多くの場面で良いやり方です。
 ]]>
     </Details>
   </BugPattern>
   <BugPattern type="EI_EXPOSE_REP2">
-    <ShortDescription>メソッドは可変オブジェクトへの参照と結びつくことにより内部表現を暴露してしまう可能性があります。</ShortDescription>
+    <ShortDescription>メソッドは可変オブジェクトへの参照を自らに格納してしまうことにより内部表現を暴露してしまう可能性があります。</ShortDescription>
     <LongDescription>{1} は {2} の中に外部の可変オブジェクトを格納することにより内部表現を暴露してしまう可能性があります。</LongDescription>
     <Details>
 <![CDATA[
-  <p> This code stores a reference to an externally mutable object into the
-  internal representation of the object.&nbsp; 
-	If instances
-	are accessed by untrusted code, and unchecked changes to
-	the mutable object would compromise security or other
-	important properties, you will need to do something different.
-  Storing a copy of the object is better approach in many situations.
+<p> このコードは、外部の変更可能オブジェクトを自らの実装に格納しています。もしもこのオブジェクトが信頼されていないコードによってアクセスされると、セキュリティや、その他の重要な情報への脅威となる可能性があるため、このコードは修正すべきです。防御的コピーを行って、複製を返すのが、多くの場面で良いやり方です。
 ]]>
     </Details>
   </BugPattern>
@@ -806,10 +739,7 @@ using the <code>equals</code> method instead.
     <LongDescription>{1} は明示的にスレッドの run を呼び出しています。(ほんとうは start を呼び出したいと思ったのではないですか？)</LongDescription>
     <Details>
 <![CDATA[
-  <p> This method explicitly invokes <code>run()</code> on an object.&nbsp;
-  In general, classes implement the <code>Runnable</code> interface because
-  they are going to have their <code>run()</code> method invoked in a new thread,
-  in which case <code>Thread.start()</code> is the right method to call.
+<p> このメソッドは、オブジェクトの<code>run()</code>メソッドを明示的に呼び出しています。一般に<code>Runnable</code>を実装したクラスは、新しいスレッドが<code>run()</code>メソッドを呼び出す事を期待しており、この場合、<code>Thread.start()</code>を呼び出すのが正しいやり方です。
 ]]>
     </Details>
   </BugPattern>
@@ -818,26 +748,16 @@ using the <code>equals</code> method instead.
     <LongDescription>{2} を使って {1} でスピンロックを使っています。</LongDescription>
     <Details>
 <![CDATA[
-  <p> This method spins in a loop which reads a field.&nbsp; The compiler
-  may legally hoist the read out of the loop, turning the code into an
-  infinite loop.&nbsp; The class should be changed so it uses proper
-  synchronization (including wait and notify calls).
+<p> このメソッドは、フィールドの値をループの終了条件としていますが、仕様上、コンパイラはフィールドの読み出しをループの外に出しても良い事になっています。このためループは無限ループとなる可能性があります。フィールド読みだしを正しく同期化(wait/notify)する事が必要です。
 ]]>
     </Details>
   </BugPattern>
   <BugPattern type="NS_NON_SHORT_CIRCUIT">
-    <ShortDescription>non-short-circuit ロジックの疑わしい使用。</ShortDescription>
-    <LongDescription>{1} での non-short-circuit ロジックの疑わしい使用。</LongDescription>
+    <ShortDescription>非短絡的ロジックの疑わしい使用。</ShortDescription>
+    <LongDescription>{1} での非短絡的ロジックの疑わしい使用。</LongDescription>
     <Details>
 <![CDATA[
-  <p> THis code seems to be using non-short-circuit logic (e.g., &amp;
-or |) 
-rather than short-circuit logic (&amp;&amp; or ||).
-Non-short-circuit logic causes both sides of the expression
-to be evaluated even when the result can be inferred from
-knowing the left-hand side. This can be less efficient and
-can result in errors if the left-hand side guards cases
-when evaluating the right-hand side can generate an error.
+<p> 非短絡的演算子(&amp;あるいは|)を、短絡的演算子(&amp;&amp;あるいは||)と間違えて使用しているようです。非短絡的演算子は、両側の式を必ず評価します。非短絡的演算子を短絡的演算子のかわりに使うと、効率が悪いだけでなく、もしも演算子の左側の式が右側の式にアクセスするためのガード条件になっている場合には、エラーになります。
 ]]>
     </Details>
   </BugPattern>
@@ -846,14 +766,7 @@ when evaluating the right-hand side can generate an error.
     <LongDescription>{1} で２つのロックを持ったまま wait() しています。</LongDescription>
     <Details>
 <![CDATA[
-  <p> Waiting on a monitor while two locks are held may cause
-  deadlock.
-	&nbsp; 
-	Performing a wait only releases the lock on the object
-	being waited on, not any other locks.
-	&nbsp; 
-This not necessarily a bug, but is worth examining
-  closely.
+<p> 2つ以上のロックを獲得した状態でモニタの上で待ち合わせを行うと、デッドロックする場合があります。wait()メソッドは、呼び出されたオブジェクトのロックのみを解放するだけで、その他のロックは解放しません。これは必ずしもバグとは限りませんが、詳しく検討すべきです。
 ]]>
     </Details>
   </BugPattern>
@@ -862,10 +775,7 @@ This not necessarily a bug, but is worth examining
     <LongDescription>{1} のwaitに条件文がありません。</LongDescription>
     <Details>
 <![CDATA[
-  <p> This method contains a call to <code>java.lang.Object.wait()</code> which
-  is not guarded by conditional control flow.&nbsp; If the condition that
-  the method intends to wait for has already happened, the thread could
-  wait indefinitely.
+<p> このメソッドの中で<code>java.lang.Object.wait()</code>を呼び出していますが、条件判断によってガードされていません。wait()によって待ち合わせたい条件が既に成立済みの場合には、このwait()メソッドは永遠に抜けられなくなる可能性があります。
 ]]>
     </Details>
   </BugPattern>
@@ -874,9 +784,7 @@ This not necessarily a bug, but is worth examining
     <LongDescription>{2} を {1} で初期化前に値を読み込んでいます。</LongDescription>
     <Details>
 <![CDATA[
-  <p> This constructor reads a field which has not yet been assigned a value.&nbsp;
-  This is often caused when the programmer mistakenly uses the field instead
-  of one of the constructor's parameters.
+<p> このコンストラクタは、まだ何も値が代入されていないフィールドを読み込んでいます。これはしばしば、プログラマが間違えてコンストラクタのパラメータのかわりに、フィールドにアクセスしてしまった場合に起こります。
 ]]>
     </Details>
   </BugPattern>
@@ -885,11 +793,7 @@ This not necessarily a bug, but is worth examining
     <LongDescription>{1} は同期化(synchronized)されていませんが、{2} は同期化されています。</LongDescription>
     <Details>
 <![CDATA[
-  <p> This class contains similarly-named get and set
-  methods where the set method is synchronized and the get method is not.&nbsp;
-  This may result in incorrect behavior at runtime, as callers of the get
-  method will not necessarily see a consistent state for the object.&nbsp;
-  The get method should be made synchronized.
+<p> このクラスには似た名前のgetメソッドとsetメソッドがあり、setメソッドは同期化されていますが、getメソッドは同期化されていません。これは、getメソッドの呼び出しによって、必ずしも最新のオブジェクトの内容が見えるとは限らないため、実行時に、正しくない挙動を招く場合があります。getメソッドも同期化するべきです。
 ]]>
     </Details>
   </BugPattern>
@@ -898,9 +802,7 @@ This not necessarily a bug, but is worth examining
     <LongDescription>{0} と {1} の間で初期化がループしています。</LongDescription>
     <Details>
 <![CDATA[
-  <p> A circularity was detected in the static initializers of the two
-  classes referenced by the bug instance.&nbsp; Many kinds of unexpected
-  behavior may arise from such circularity.
+<p> 2つのクラスの静的初期化子が循環参照しています。様々な予測出来ない挙動が起こる可能性があります。
 ]]>
     </Details>
   </BugPattern>
@@ -909,11 +811,7 @@ This not necessarily a bug, but is worth examining
     <LongDescription>{1} は NoSuchElement 例外をthrowすることができません。</LongDescription>
     <Details>
 <![CDATA[
-  <p> This class implements the <code>java.util.Iterator</code> interface.&nbsp;
-  However, its <code>next()</code> method is not capable of throwing
-  <code>java.util.NoSuchElementException</code>.&nbsp; The <code>next()</code>
-  method should be changed so it throws <code>NoSuchElementException</code>
-  if is called when there are no more elements to return.
+<p> このクラスは<code>java.util.Iterator</code>を実装していますが、<code>next()</code>メソッドが<code>java.util.NoSuchElementException</code>をスロー出来ないようになっています。<code>next()</code>メソッドは、もう返送出来るエレメントが無くなった際に<code>NoSuchElementException</code>をスローしなければなりません。
 ]]>
     </Details>
   </BugPattern>
@@ -922,24 +820,16 @@ This not necessarily a bug, but is worth examining
     <LongDescription>{1} の同期の取り方に統一感がありません。{2}% の場合同期アクセスされています。</LongDescription>
     <Details>
 <![CDATA[
-  <p> The fields of this class appear to be accessed inconsistently with respect
-  to synchronization.&nbsp; This bug report indicates that the bug pattern detector
-  judged that
-  <ol>
-  <li> The class contains a mix of locked and unlocked accesses,
-  <li> At least one locked access was performed by one of the class's own methods, and
-  <li> The number of unsynchronized field accesses (reads and writes) was no more than
-       one third of all accesses, with writes being weighed twice as high as reads
-  </ol>
+<p> このクラスのフィールドは、同期化の観点から、一貫したアクセスが行われていないようです。このバグレポートは、次のようなバグパターンを示します。
+<ol>
+  <li> クラス内でアクセスする際に、ロックたりしていなかったりしており、
+  <li> 最低でも1つのロックされたアクセスがクラス内のメソッドから行われており、
+  <li> 書き込みに対して、読み込みの2倍の重み付けをした場合に、ロックしていないフィールドアクセス(読み書き)の数が、全体のアクセス数の1/3を超えていない
+</ol>
 
-  <p> A typical bug matching this bug pattern is forgetting to synchronize
-  one of the methods in a class that is intended to be thread-safe.
+<p> このパターンに当てはまる典型的な例は、スレッドセーフを意図しているのに、メソッドを同期化するのを忘れているケースです。
 
-  <p> Note that there are various sources of inaccuracy in this detector;
-  for example, the detector cannot statically detect all situations in which
-  a lock is held.&nbsp; Also, even when the detector is accurate in
-  distinguishing locked vs. unlocked accesses, the code in question may still
-  be correct.
+<p> このディテクタには、判断を誤る要因が幾つかあります。例えば、ディテクタはスレッドがロックを獲得しているかどうかを、コードを見て静的に判断する事は出来ません。例えディテクタが、ロックされたアクセスと、そうでないアクセスを的確に判定出来たとしても、依然としてコードが正しい可能性は残ります。
 ]]>
     </Details>
   </BugPattern>
@@ -948,43 +838,26 @@ This not necessarily a bug, but is worth examining
     <LongDescription>{1} は更新されるフィールド {2} を使って同期しています。</LongDescription>
     <Details>
 <![CDATA[
-  <p> This method synchronizes on an object 
-	references from a mutable field.
-	This is unlikely to have useful semantics, since different
-threads may be synchronizing on different objects.
+<p> このメソッドは、変更可能なフィールドが参照しているオブジェクトを同期化しています。このコードの意図は、うまく実現されないと思われます。なぜなら、別のスレッドは、別のオブジェクトで同期化を行ってしまうかもしれないからです。
 ]]>  
     </Details>
   </BugPattern>
   <BugPattern type="MS_OOI_PKGPROTECT">
-    <ShortDescription>フィールドはinterfaceから取り出してパッケージprotectedにすべきです。</ShortDescription>
-    <LongDescription>{1} はinterfaceから取り出してパッケージprotectedにすべきです。</LongDescription>
+    <ShortDescription>フィールドはinterfaceから取り出してパッケージプライベートにすべきです。</ShortDescription>
+    <LongDescription>{1} はinterfaceから取り出してパッケージプライベートにすべきです。</LongDescription>
     <Details>
 <![CDATA[
 <p>
- A final static field that is 
-defined in an interface references a mutable
-	object such as an array or hashtable.
-	This mutable object could 
-	be changed by malicious code or
-        by accident from another package.
-	So solve this, the field needs to be moved to a class
-	and made package protected 
-	to avoid
-        this vulnerability.
+インターフェースに定義されたfinal staticフィールドが、配列やhashtableのような変更可能オブジェクトを参照しています。このオブジェクトは、悪意を持ったコードによって、あるいは間違って、別のパッケージから書き換えてしまう事が可能です。このフィールドをクラスに移し、パッケージプライベートにする事で、この問題を解決してください。
 ]]>
     </Details>
   </BugPattern>
   <BugPattern type="MS_FINAL_PKGPROTECT">
-    <ShortDescription>フィールドはfinal 且つ パッケージprotectedにすべきです。</ShortDescription>
-    <LongDescription>{1} フィールドはfinal 且つ パッケージprotectedにすべきです。</LongDescription>
+    <ShortDescription>フィールドはfinal 且つ パッケージプライベートにすべきです。</ShortDescription>
+    <LongDescription>{1} フィールドはfinal 且つ パッケージプライベートにすべきです。</LongDescription>
     <Details>
 <![CDATA[
- <p>
-	A mutable static field could be changed by malicious code or
-        by accident from another package.
-        The field could be made package protected and/or made final 
-	to avoid
-        this vulnerability.
+ <p>変更可能なstaticフィールドは、悪意を持ったコードによって、あるいは間違って、別のパッケージから書き換えられてしまう可能性があります。フィールドは、パッケージプライベートにするか、final宣言して(あるいは、この両方を行って)ください。
 ]]>
     </Details>
   </BugPattern>
@@ -993,35 +866,25 @@ defined in an interface references a mutable
     <LongDescription>{1} はfinalではありませんがfinalに変更すべきです。</LongDescription>
     <Details>
 <![CDATA[
-	<p>
- A mutable static field could be changed by malicious code or
-        by accident from another package.
-        The field could be made final to avoid
-        this vulnerability.
+<p>変更可能なstaticフィールドは、悪意を持ったコードによって、あるいは間違って、別のパッケージから書き換えられてしまう可能性があります。フィールドをfinalとする事で、この脆弱性を回避出来ます。
 ]]>
     </Details>
   </BugPattern>
   <BugPattern type="MS_PKGPROTECT">
-    <ShortDescription>フィールドはパッケージ protected にすべきです。</ShortDescription>
-    <LongDescription>{1} はパッケージ protected にすべきです。</LongDescription>
+    <ShortDescription>フィールドはパッケージプライベートにすべきです。</ShortDescription>
+    <LongDescription>{1} はパッケージプライベートにすべきです。</LongDescription>
     <Details>
 <![CDATA[
-  <p> A mutable static field could be changed by malicious code or
-	by accident.
-	The field could be made package protected to avoid
-	this vulnerability.
+<p>変更可能なstaticフィールドは、悪意を持ったコードによって、あるいは間違って書き換えられてしまう可能性があります。フィールドをパッケージプライベートにすることで、この脆弱性を回避出来ます。
 ]]>
     </Details>
   </BugPattern>
   <BugPattern type="MS_MUTABLE_HASHTABLE">
-    <ShortDescription>フィールドは mutable なハッシュテーブルです。</ShortDescription>
-    <LongDescription>{1} は mutable な Hashtable です。</LongDescription>
+    <ShortDescription>フィールドは変更可能なHashtableです。</ShortDescription>
+    <LongDescription>{1} は変更可能なHashtable です。</LongDescription>
     <Details>
 <![CDATA[
- <p>A final static field references an Hashtable
-	and can be accessed by malicious code or
-        by accident from another package.
-	This code can freely modify the contents of the array.
+<p>final宣言されたstaticフィールドがHashtableの参照を保持しています。このフィールドは悪意を持ったコード、あるいは間違って別のパッケージからアクセス可能で、中身を自由に書き換える事が出来てしまいます。
 ]]>
     </Details>
   </BugPattern>
@@ -1030,23 +893,16 @@ defined in an interface references a mutable
     <LongDescription>{1} は mutable な配列です。</LongDescription>
     <Details>
 <![CDATA[
- A final static field references an array
-	and can be accessed by malicious code or
-        by accident from another package.
-	This code can freely modify the contents of the array.
+<p>final宣言されたstaticフィールドが配列の参照を保持しています。このフィールドは悪意を持ったコード、あるいは間違って別のパッケージからアクセス可能で、配列の中身を自由に書き換える事ができてしまいます。
 ]]>
     </Details>
   </BugPattern>
   <BugPattern type="MS_CANNOT_BE_FINAL">
-    <ShortDescription>フィールドは final ではないし、finalになることはできません。</ShortDescription>
-    <LongDescription>{1} は finalではないし、また final になることはできません。</LongDescription>
+    <ShortDescription>フィールドはfinalではないため、悪意を持ったコードから保護する事は出来ません。</ShortDescription>
+    <LongDescription>{1}はfinalではないため、悪意を持ったコードから穂とする事は出来ません。</LongDescription>
     <Details>
 <![CDATA[
-  <p> 
- A mutable static field could be changed by malicious code or
-        by accident from another package.
-	Unfortunately, the way the field is used doesn't allow
-	any easy fix to this problem.
+<p>書き換え可能なstaticフィールドは、悪意を持ったコードから、あるいは、間違って別のパッケージから書き換える事が可能です。残念ながら、このようなフィールドを、簡単に保護する事は出来ません。
 ]]>
     </Details>
   </BugPattern>
@@ -1055,7 +911,7 @@ defined in an interface references a mutable
     <LongDescription>{1} と {3} のメソッドは、とても混乱しがちです。</LongDescription>
     <Details>
 <![CDATA[
-  <p> The referenced methods have names that differ only by capitalization.
+<p>これらのメソッド名は、大文字小文字が違うだけです。
 ]]>
     </Details>
   </BugPattern>
@@ -1064,7 +920,7 @@ defined in an interface references a mutable
     <LongDescription>{1} と {3} のメソッドは、混乱しがちです。</LongDescription>
     <Details>
 <![CDATA[
-  <p> The referenced methods have names that differ only by capitalization.
+<p>これらのメソッド名は、大文字小文字が違うだけです。
 ]]>
     </Details>
   </BugPattern>
@@ -1073,8 +929,7 @@ defined in an interface references a mutable
     <LongDescription>{1} のメソッド名はまぎらわしいです。</LongDescription>
     <Details>
 <![CDATA[
-  <p> This method has the same name as the superclass of the class it
-  is defined in.
+<p>メソッド名が、親クラスと同じです。
 ]]>
     </Details>
   </BugPattern>
@@ -1083,9 +938,7 @@ defined in an interface references a mutable
     <LongDescription>クラス {0} で hashcode() を宣言しています。しかしこれは、 hashCode() であるべきではありませんか？</LongDescription>
     <Details>
 <![CDATA[
-  <p> This class defines a method called <code>hashcode()</code>.&nbsp; This method
-  does not override the <code>hashCode()</code> method in <code>java.lang.Object</code>,
-  which is probably what was intended.
+<p>このクラスには<code>hashcode()</code>というメソッドが定義されています。このメソッドは、<code>java.lang.Object</code>の<code>hashCode()</code>を(そのように意図したのかもしれませんが)オーバーライドしません。
 ]]>
     </Details>
   </BugPattern>
@@ -1094,68 +947,72 @@ defined in an interface references a mutable
     <LongDescription>クラス {0} で tostring() を宣言しています。これは toString() であるべきではありませんか？</LongDescription>
     <Details>
 <![CDATA[
-  <p> This class defines a method called <code>tostring()</code>.&nbsp; This method
-  does not override the <code>toString()</code> method in <code>java.lang.Object</code>,
-  which is probably what was intended.
+<p>このクラスは<code>tostring()</code>を定義しています。このメソッドは、<code>java.lang.Object</code>の<code>toString()</code>を(そのように意図したのかもしれませんが)オーバーライドしません。
 ]]>
     </Details>
   </BugPattern>
+  <BugPattern type="NM_BAD_EQUAL">
+    <ShortDescription>Class defines equal(); should it be equals()?</ShortDescription>
+    <LongDescription>Class {0} defines equal(); should it be equals()?</LongDescription>
+    <Details>
+<![CDATA[
+<p>このクラスは<code>equal(Object)</code>を定義しています。このメソッドは、<code>java.lang.Object</code>の<code>equals(Object)</code>を(そのように意図したのかもしれませんが)オーバーライドしません。
+]]>
+    </Details>
+  </BugPattern>
+
   <BugPattern type="RR_NOT_CHECKED">
     <ShortDescription>メソッドは InputStream.read() の戻り値を無視しています。</ShortDescription>
     <LongDescription>{1} は {2} の戻り値を無視しています。</LongDescription>
     <Details>
 <![CDATA[
-  <p> This method ignores the return value of one of the variants of
-  <code>java.io.InputStream.read()</code> which can return multiple bytes.&nbsp;
-  If the return value is not checked, the caller will not be able to correctly
-  handle the case where fewer bytes were read than the caller requested.&nbsp;
-  This is a particularly insidious kind of bug, because in many programs,
-  reads from input streams usually do read the full amount of data requested,
-  causing the program to fail only sporadically.
+<p>このメソッドは、<code>java.io.InputStream.read()</code>の戻り値を無視しています。戻り値を無視すると、実際に何バイトのデータが読み込まれたのか分かりません。一般には、指定された長さ分完全に読み込んでしまうケースが多いために、顕在化せず、ごくたまに発生するやっかいなバグとなります。
 ]]>
     </Details>
   </BugPattern>
-  <BugPattern type="SE_NO_SERIALVERSIONID">
-    <ShortDescription>クラスは 直列化可能(Serializable) です。しかし serialVersionUID を宣言していません。</ShortDescription>
-    <LongDescription>{0} は 直列化可能(Serializable)です。serialVersionUID を宣言することを考慮してください。</LongDescription>
+  <BugPattern type="SE_NO_SUITABLE_CONSTRUCTOR_FOR_EXTERNALIZATION">
+    <ShortDescription>クラスはExternalizableを実装していますが、引数無しコンストラクタを定義していません。</ShortDescription>
+    <LongDescription>{0} はExternalizableを実装していますが、引数無しコンストラクタを定義していません。</LongDescription>
     <Details>
 <![CDATA[
-  <p> This class implements the <code>Serializable</code> interface, but does
-  not define a <code>serialVersionUID</code> field.&nbsp; 
-  A change as simple as adding a reference to a .class object 
-	 will add synthetic fields to the class,
-	which will unfortunately change the implicit
-	serialVersionUID (e.g., adding a reference to <code>String.class</code>
-	will generate a static field <code>class$java$lang$String</code>).
-   Also, different source code to bytecode compilers may use different 
-   naming conventions for synthetic variables generated for 
-   references to class objects or inner classes.
-   To ensure interoperability of Serializable across versions,
-	consider adding an explicit serialVersionUID.
+<p>このクラスは<code>Externalizable</code>インターフェースを実装していますが、引数無しのコンストラクタを定義していません。Externalizableオブジェクト直列化復元される際、まず引数無しコンストラクタを呼んでインスタンスを生成する必要があります。このクラスには、これが無いので、実行時に直列化、直列化復元処理に失敗します。
+]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="SE_NO_SUITABLE_CONSTRUCTOR">
+    <ShortDescription>このクラスはSerializableを実装していますが、親クラスが引数無しコンストラクタを定義していません。</ShortDescription>
+    <LongDescription>{0} はSerializableを実装していますが、親クラスは、アクセス可能な引数無しコンストラクタを定義していません。</LongDescription>
+    <Details>
+<![CDATA[
+  <p> このクラスは <code>Serializable</code> インターフェースを実装していますが、親クラスは実装していません。このクラスのオブジェクトを直列化復元する場合、親クラスのフィールドの初期化は、親クラスの引数無しコンストラクタで行う必要があります。ところが、親クラスが引数無しコンストラクタを持たないので、直列化、直列化復元処理は実行時に失敗します。
+]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="SE_NO_SERIALVERSIONID">
+    <ShortDescription>クラスは直列化可能です。しかし serialVersionUID を宣言していません。</ShortDescription>
+    <LongDescription>{0} は直列化可能です。serialVersionUID を宣言することを考慮してください。</LongDescription>
+    <Details>
+<![CDATA[
+  <p> このクラスは <code>Serializable</code> を実装しています。しかし、<code>serialVersionUID</code> フィールドを定義していません。クラス参照を追加する程度の簡単な変更でも、合成フィールドを追加することになり、これは、暗黙的に生成されるserialVersionUIDの値を変えてしまいます(例えば、<code>String.class</code>への参照を追加すると、<code>class$java$lang$String</code>というスタティックフィールドが生成されます)。また、複数のJavaコンパイラの間では、このクラス参照、インナークラス参照に対して生成される、合成フィールドの命名規則が異なる場合があります。異なるバージョン間での相互運用性を保証するため、serialVersionUIDを明示的に定義する事を検討してください。
 ]]>
     </Details>
   </BugPattern>
   <BugPattern type="WS_WRITEOBJECT_SYNC">
-    <ShortDescription>クラスの writeObject() メソッドは同期化(synchronized)されています。しかし それ以外のメソッドは同期化されていません。</ShortDescription>
-    <LongDescription>{0} の writeObject メソッドは同期化(synchronized)されています。しかし、それ以外のメソッドは同期化されていません。</LongDescription>
+    <ShortDescription>クラスの writeObject() メソッドは同期化されています。しかし それ以外のメソッドは同期化されていません。</ShortDescription>
+    <LongDescription>{0} の writeObject メソッドは同期化されています。しかし、それ以外のメソッドは同期化されていません。</LongDescription>
     <Details>
 <![CDATA[
-  <p> This class has a <code>writeObject()</code> method which is synchronized;
-  however, no other method of the class is synchronized.
+  <p> このクラスの <code>writeObject()</code> メソッドは同期化されていますが、他のメソッドは同期化されていません。
 ]]>
     </Details>
   </BugPattern>
   <BugPattern type="RS_READOBJECT_SYNC">
-    <ShortDescription>クラスの readObject() メソッドは同期化(synchronized)されています。</ShortDescription>
-    <LongDescription>{0} の readObject メソッドは同期化(synchronized)されています。</LongDescription>
+    <ShortDescription>クラスの readObject() メソッドは同期化されています。</ShortDescription>
+    <LongDescription>{0} の readObject メソッドは同期化されています。</LongDescription>
     <Details>
 <![CDATA[
-  <p> This serializable class defines a <code>readObject()</code> which is
-  synchronized.&nbsp; By definition, an object created by deserialization
-  is only reachable by one thread, and thus there is no need for
-  <code>readObject()</code> to be synchronized.&nbsp; If the <code>readObject()</code>
-  method itself is causing the object to become visible to another thread,
-  that is an example of very dubious coding style.
+  <p> この直列化可能クラスは同期化された <code>readObject()</code> を定義していますが、そもそもオブジェクトが直列化復元される場合、ただ1つのスレッドによって行われる事になっています。このため、<code>readObject()</code> を同期化する必要はありません。もしも <code>readObject()</code> メソッド自体が、他のオブジェクトへの他のスレッドからのアクセスを引き起こしているなら、それは非常に疑わしいコーディングです。
 ]]>
     </Details>
   </BugPattern>
@@ -1165,10 +1022,7 @@ defined in an interface references a mutable
     <LongDescription>{1} が static ではありません。</LongDescription>
     <Details>
 <![CDATA[
-  <p> This class defines a <code>serialVersionUID</code> field that is not static.&nbsp;
-  The field should be made static
-	if it is intended to specify
-	the version UID for purposes of serialization.
+  <p> このクラスは <code>serialVersionUID</code> フィールドを定義していますが、staticではありません。直列化のバージョンUIDのために作成したのであれば、このフィールドは、staticとすべきです。
 ]]>
     </Details>
   </BugPattern>
@@ -1178,10 +1032,7 @@ defined in an interface references a mutable
     <LongDescription>{1} が final ではありません。</LongDescription>
     <Details>
 <![CDATA[
-  <p> This class defines a <code>serialVersionUID</code> field that is not final.&nbsp;
-  The field should be made final 
-	if it is intended to specify
-	the version UID for purposes of serialization.
+  <p> このクラスは <code>serialVersionUID</code> フィールドを定義しますが、finalではありません。直列化のバージョンUIDのために作成したのであれば、このフィールドは、finalとすべきです。
 ]]>
     </Details>
   </BugPattern>
@@ -1192,25 +1043,17 @@ defined in an interface references a mutable
     <LongDescription>{1} が long ではありません。</LongDescription>
     <Details>
 <![CDATA[
-  <p> This class defines a <code>serialVersionUID</code> field that is not long.&nbsp;
-  The field should be made long
-	if it is intended to specify
-	the version UID for purposes of serialization.
+  <p> このクラスは <code>serialVersionUID</code> フィールドを定義していますがlongではありません。直列化のバージョンUIDのために作成したのであれば、このフィールドは、longとすべきです。
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="SE_BAD_FIELD">
-    <ShortDescription>直列化可能(serializable)なクラスのインスタンスフィールドが、非transientで、非直列化可能(non-serializable)です。</ShortDescription>
-    <LongDescription>クラス {0} が 非transientで非直列化可能(non-serializable)なインスタンスフィールド {1} を宣言しています。</LongDescription>
+    <ShortDescription>直列化可能なクラスのインスタンスフィールドが、非transientで、非直列化可能です。</ShortDescription>
+    <LongDescription>クラス {0} が 非transientで非直列化可能なインスタンスフィールド {1} を宣言しています。</LongDescription>
     <Details>
 <![CDATA[
-<p> This Serializable class defines a non-primitive instance field which is neither transient,
-Serializable, or <code>java.lang.Object</code>, and does not appear to implement
-the <code>Externalizable</code> interface or the
-<code>readObject()</code> and <code>writeObject()</code> methods.&nbsp;
-Objects of this class will not be deserialized correctly if a non-Serializable
-object is stored in this field.
+<p> この直列化可能クラスは、transientでもなく、直列化可能でもなく、<code>java.lang.Object</code>でもないインスタンスフィールドを持っています。また、<code>Externalizable</code> インターフェースも実装していませんし、<code>readObject()</code> も <code>writeObject()</code> メソッドも定義していません。このフィールドに実際に非直列化可能クラスのインスタンスを保持している場合、このクラスのオブジェクトは、直列化復元を正しく行えません。
 ]]>
     </Details>
   </BugPattern>
@@ -1220,9 +1063,7 @@ object is stored in this field.
     <LongDescription>{1} が {2} を実行しています。</LongDescription>
     <Details>
 <![CDATA[
-  <p> The constructor starts a thread. This is likely to be wrong if
-	the class is ever extended/subclassed, since the thread will be started
-	before the subclass constructor is started.
+  <p> コンストラクタがスレッドを開始しています。継承が可能なクラスでは、この設計は間違いと思われます。なぜなら、サブクラスのコンストラクタが実行される前に、スレッドが開始してしまうためです。
 ]]>
     </Details>
   </BugPattern>
@@ -1231,9 +1072,7 @@ object is stored in this field.
     <LongDescription>読まれないフィールド {1} があります。このフィールドは static になるべきではないのですか？</LongDescription>
     <Details>
 <![CDATA[
-  <p> This class contains an instance final field that
-	is initialized to a compile-time static value.
-	Consider making the field static.
+  <p> このクラスは、staticでないfinalフィールドがあり、コンパイル時に決定される、静的な値に初期化されています。このフィールドをstaticとすることを検討してください。
 ]]>
     </Details>
   </BugPattern>
@@ -1242,7 +1081,7 @@ object is stored in this field.
     <LongDescription>利用されないフィールド {1} があります。</LongDescription>
     <Details>
 <![CDATA[
-  <p> This field is never used.&nbsp; Consider removing it from the class.
+  <p> このフィールドは利用されません。クラスから削除する事を検討してください。
 ]]>
     </Details>
   </BugPattern>
@@ -1251,7 +1090,7 @@ object is stored in this field.
     <LongDescription>読まれないフィールド {1} があります。</LongDescription>
     <Details>
 <![CDATA[
-  <p> This field is never read.&nbsp; Consider removing it from the class.
+  <p> このフィールドが読み出される事はありません。クラスから削除する事を検討してください。
 ]]>
     </Details>
   </BugPattern>
@@ -1260,8 +1099,7 @@ object is stored in this field.
     <LongDescription>書かれないフィールド {1} があります。</LongDescription>
     <Details>
 <![CDATA[
-  <p> This field is never written.&nbsp; All reads of it will return the default
-value. Check for errors (should it have been initialized?), or remove it if it is useless.
+  <p> このフィールドに書かれる事はありません。このため読み出されるのはデフォルト値です。初期化が必要ではないですか？ もしも不要なら、削除する事を検討してください。
 ]]>
     </Details>
   </BugPattern>
@@ -1270,11 +1108,25 @@ value. Check for errors (should it have been initialized?), or remove it if it i
     <LongDescription>{0} は staticな内部クラスになるべきではないのですか？</LongDescription>
     <Details>
 <![CDATA[
-  <p> This class is an inner class, but does not use its embedded reference
-  to the object which created it.&nbsp; This reference makes the instances
-  of the class larger, and may keep the reference to the creator object
-  alive longer than necessary.&nbsp; If possible, the class should be
-  made into a <em>static</EM> inner class.
+  <p> このクラスは非static内部クラスですが、インスタンス生成時に保持される、生成元のインスタンスへの参照を使用していません。この参照はインスタンスの大きさを増大させ、不必要に生成元への参照を長時間保持することにつながります。可能であれば、<EM>static</EM>内部クラスとすべきです。
+]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="SIC_INNER_SHOULD_BE_STATIC_ANON">
+    <ShortDescription>名前付きstatic内部クラスにリファクタリング可能と思われます</ShortDescription>
+    <LongDescription>クラス {0} は、名前を持ったstatic内部クラスにリファクタリング可能です</LongDescription>
+    <Details>
+<![CDATA[
+  <p> このクラスは非static内部クラスですが、インスタンス生成時に保持される、生成元のインスタンスへの参照を使用していません。 この参照はインスタンスの大きさを増大させ、不必要に生成元への参照を長時間保持することにつながります。可能であれば、<EM>static</EM>内部クラスとすべきです。匿名内部クラスはstaticと出来ないため、これを実現するには、名前を持ったstatic内部クラスに変更するよう、リファクタリングする必要があります。
+]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="SIC_INNER_SHOULD_BE_STATIC_NEEDS_THIS">
+    <ShortDescription>static内部クラスにリファクタリング可能です</ShortDescription>
+    <LongDescription>クラス {0} は、static内部クラスにリファクタリング可能です</LongDescription>
+    <Details>
+<![CDATA[
+  <p> このクラスは非static内部クラスですが、インスタンス生成時に保持される、生成元のインスタンスへの参照を使用していません。 この参照はインスタンスの大きさを増大させ、不必要に生成元への参照を長時間保持することにつながります。可能であれば、<EM>static</EM>内部クラスとすべきです。非static内部クラスの生成時には、エンクロージングクラスのインスタンスが必要となります。このため、内部クラスのコンストラクタに、エンクロージングクラスのインスタンスを渡すようにリファクタリングする必要があるかもしれません。
 ]]>
     </Details>
   </BugPattern>
@@ -1283,10 +1135,7 @@ value. Check for errors (should it have been initialized?), or remove it if it i
     <LongDescription>{1} の中でwaitがループの中にありません。</LongDescription>
     <Details>
 <![CDATA[
-  <p> This method contains a call to <code>java.lang.Object.wait()</code> 
-  which is not in a loop.&nbsp; If the monitor is used for multiple conditions,
-  the condition the caller intended to wait for might not be the one
-  that actually occurred.
+  <p> このメソッドは<code>java.lang.Object.wait()</code>を呼び出していますが、ループの中にありません。幾つかの条件を待ち合わせるためにモニタを利用する場合は、wait()を抜けたからといって、自分が待っている条件が成立している保証はありません。
 ]]>
     </Details>
   </BugPattern>
@@ -1295,10 +1144,7 @@ value. Check for errors (should it have been initialized?), or remove it if it i
     <LongDescription>{1} において、notifyAll ではなく notify を使っています。</LongDescription>
     <Details>
 <![CDATA[
-  <p> This method calls <code>notify()</code> rather than <code>notifyAll()</code>.&nbsp;
-  Java monitors are often used for multiple conditions.&nbsp; Calling <code>notify()</code>
-  only wakes up one thread, meaning that the thread woken up might not be the
-  one waiting for the condition that the caller just satisfied.
+  <p> このメソッドは<code>notifyAll()</code>ではなく<code>notify()</code>を呼び出しています。Javaのモニタは、しばしば幾つかの条件を同時に待ち合わせるために使用されますが、<code>notify()</code>を使って待機スレッドを起こすと、別の条件を待っているスレッドを起こすだけになるかもしれません。
 ]]>
     </Details>
   </BugPattern>
@@ -1308,7 +1154,7 @@ value. Check for errors (should it have been initialized?), or remove it if it i
     <LongDescription>{1} の {2} において フィールドのダブルチェックを行っている可能性があります。</LongDescription>
     <Details>
 <![CDATA[
-  <p> This is a double check found by the ByteCodePattern-based detector.
+  <p> フィールドのダブルチェックが、ByteCodePatternベースのディテクタで、検出されました。
 ]]>
     </Details>
   </BugPattern>
@@ -1318,7 +1164,7 @@ value. Check for errors (should it have been initialized?), or remove it if it i
     <LongDescription>{1} は {2} の戻り値を無視しています。</LongDescription>
     <Details>
 <![CDATA[
-   <p> The return value of this method should be checked.
+   <p> このメソッドの戻り値をチェックするべきです。
 ]]>
     </Details>
   </BugPattern>
@@ -1328,8 +1174,7 @@ value. Check for errors (should it have been initialized?), or remove it if it i
     <LongDescription>{1} の中でnullポインタを参照外しをしています。</LongDescription>
     <Details>
 <![CDATA[
-<p> A null pointer is dereferenced here.&nbsp; This will lead to a 
-<code>NullPointerException</code> when the code is executed.
+<p> nullに設定された参照を通してアクセスが行われています。コードが実行されれば<code>NullPointerException</code>が発生するでしょう。
 ]]>
     </Details>
   </BugPattern>
@@ -1339,12 +1184,8 @@ value. Check for errors (should it have been initialized?), or remove it if it i
     <LongDescription>Null pointer dereference in {1} で例外経路の際にnullポインタの参照外しをしています。</LongDescription>
     <Details>
 <![CDATA[
-<p> A pointer which is null on an exception path is dereferenced here.&nbsp;
-This will lead to a <code>NullPointerException</code> when the code is executed.&nbsp;
-Note that because FindBugs currently does not prune infeasible exception paths,
-this may be a false warning.
-<p> Also note that FindBugs considers the default case of a switch statement to
-be an exception path, since the default case is often infeasible.
+<p> nullに設定された参照を通したアクセスが、例外処理の経路で行われています。コードがじっこうされれば、<code>NullPointerException</code>が発生するでしょう。現在のFindBugsは、実行され得ない例外処理経路を考慮しません。このため、この警告は誤って報告されるかもしれません。
+<p> また、FindBugsはswitch-caseのdefaultも例外経路と見なしますが、しばしばdefaultは実行され得ない場合がありますので、注意してください。
 ]]>
     </Details>
   </BugPattern>
@@ -1354,8 +1195,7 @@ be an exception path, since the default case is often infeasible.
     <LongDescription>{1} の中でnullポインタの参照外しをしている可能性があります。</LongDescription>
     <Details>
 <![CDATA[
-<p> A reference value dereferenced here might be null at runtime.&nbsp;
-This may lead to a <code>NullPointerException</code> when the code is executed.
+<p> この参照変数を通したアクセスは、実行時に参照変数がnullとなる可能性があります。これは、実行時に<code>NullPointerException</code>を発生させる可能性があります。
 ]]>
     </Details>
   </BugPattern>
@@ -1365,13 +1205,8 @@ This may lead to a <code>NullPointerException</code> when the code is executed.
     <LongDescription>{1} の中でnullポインタの参照外しをしている可能性があります。</LongDescription>
     <Details>
 <![CDATA[
-<p> A reference value which is null on some exception control path is
-dereferenced here.&nbsp; This may lead to a <code>NullPointerException</code>
-when the code is executed.&nbsp;
-Note that because FindBugs currently does not prune infeasible exception paths,
-this may be a false warning.
-<p> Also note that FindBugs considers the default case of a switch statement to
-be an exception path, since the default case is often infeasible.
+<p> 幾つかの例外制御経路の中で、nullとなる参照を通してアクセスが行われます。これは、実行時に<code>NullPointerException</code>を発生させる可能性があります。現在のFindBugsは、実行され得ない例外処理系を考慮しません。このため、この警告は誤って報告されるかもしれません。
+<p> また、FindBugsはswitch-caseのdefaultも例外経路と見なしますが、しばしばdefaultは実行され得ない場合がありますので、注意してください。
 ]]>
     </Details>
   </BugPattern>
@@ -1381,8 +1216,7 @@ be an exception path, since the default case is often infeasible.
     <LongDescription>{0} のstatic初期化子が全てのstatic fieldが割り当てられる前にインスタンス生成をおこなっています。</LongDescription>
     <Details>
 <![CDATA[
-<p> The class's static initializer creates an instance of the class
-before all of the static final fields are assigned.
+<p> クラスのstatic初期化子が、全てのstatic finalフィールドの値が代入される前に、インスタンス生成を行っています。
 ]]>
     </Details>
   </BugPattern>
@@ -1392,12 +1226,7 @@ before all of the static final fields are assigned.
     <LongDescription>{1} でストリームのクローズに失敗する可能性があります。</LongDescription>
     <Details>
 <![CDATA[
-<p> The method creates an IO stream object, does not assign it to any
-fields, pass it to other methods, or return it, and does not appear to close
-the stream on all paths out of the method.&nbsp; This may result in
-a file descriptor leak.&nbsp; It is generally a good
-idea to use a <code>finally</code> block to ensure that streams are
-closed.
+<p> このメソッドは入出力ストリームを生成していますが、インスタンスをフィールドに保存せずに、別のメソッドに引き渡している、あるいはそのまま戻り値として返送しています。そして、このメソッドを起点とする実行経路上には、ストリームのクローズ処理が行われない経路があります。これは入出力ディスクリプタのリークにつながる恐れがあります。一般には<code>finally</code>ブロックを使ってリソースをクローズするのが良いやり方です。
 ]]>
     </Details>
   </BugPattern>
@@ -1407,12 +1236,7 @@ closed.
     <LongDescription>{1} で、例外が発生した際にストリームのクローズに失敗する可能性があります。</LongDescription>
     <Details>
 <![CDATA[
-<p> The method creates an IO stream object, does not assign it to any
-fields, pass it to other methods, or return it, and does not appear to close
-it on all possible exception paths out of the method.&nbsp;
-This may result in a file descriptor leak.&nbsp; It is generally a good
-idea to use a <code>finally</code> block to ensure that streams are
-closed.
+<p> このメソッドは入出力ストリームを生成していますが、インスタンスをフィールドに保存せずに、別のメソッドに引き渡している、あるいはそのまま戻り値として返送しています。そして、このメソッドを起点とする例外処理の実行経路上には、ストリームのクローズ処理が行われない経路があります。これは入出力ディスクリプタのリークにつながる恐れがあります。一般には<code>finally</code>ブロックを使ってリソースをクローズするのが良いやり方です。
 ]]>
     </Details>
   </BugPattern>
@@ -1422,21 +1246,17 @@ closed.
     <LongDescription>{1} では戻り値としてnullよりもむしろ長さ0の配列を返すことを検討すべきではありませんか？</LongDescription>
     <Details>
 <![CDATA[
-<p> It is generally a better design to
-return a length zero array rather than a null reference to indicate that there
-are no results. This way, no explicit check for null is needed by clients of the method.
+<p> 結果が空を表すためには、一般に、nullを返すよりもサイズ0の配列を返す方が良い設計です。これにより、利用者側のコードでnullとの明示的な比較を行わなくても済むようになります。
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="UCF_USELESS_CONTROL_FLOW">
-    <ShortDescription>メソッドで利用されない制御の流れがあります。</ShortDescription>
-    <LongDescription>{1} に、利用されない制御の流れがあります。</LongDescription>
+    <ShortDescription>メソッドで利用されないフロー制御ステートメントがあります。</ShortDescription>
+    <LongDescription>{1} に、利用されないフロー制御ステートメントあります。</LongDescription>
     <Details>
 <![CDATA[
-<p> This method contains a useless control flow statement.&nbsp;
-Often, this is caused by inadvertently using an empty statement as the
-body of an <code>if</code> statement, e.g.:
+<p> このメソッドには、無駄なフロー制御ステートメントがあります。これは、例えば以下のような空の<code>if</code>文を間違って記述してしまった事が原因です。
 <pre>
     if (argv.length == 1);
         System.out.println("Hello, " + argv[0]);
@@ -1450,18 +1270,33 @@ body of an <code>if</code> statement, e.g.:
     <LongDescription>{1} に、nullに対する無駄な比較があります。</LongDescription>
     <Details>
 <![CDATA[
-<p> This method contains a redundant comparison of a reference value
-to null. Two types of redundant comparison are reported:
+<p> このメソッドには、無駄な参照とnullとの比較があります。これには以下の2つのタイプがあります。
 <ul>
-<li> Both values compared are definitely null
-<li> One value is definitely null and the other is definitely not null
+<li> 比較されている2つの値は明らかにnullです。
+<li> 一方は明らかにnullであり、もう一方は明らかにnullではありません。
 </ul>
-<p>
-In either case, the result of the comparison will always be the same at
-runtime.  This is likely to inidicate a logic error in the method.
-Often, it means that the reference was dereferenced first, and then
-tested for null; this can happen because a method was changed without
-the programmer realizing that the dereferenced value could be null.
+
+<p> この警告は、以下の2つのタイプの無駄な比較を意味します。
+<ol>
+<li> 参照外しを行った後に、nullと比較しています。これは、メソッドのプログラミングミスをしばしば意味します。
+<li> 直定数のnullをnullと比較しています。メソッドの不変式を良く理解していない担当者がメソッドを変更した疑いがあります。
+</ol>
+]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="RCN_REDUNDANT_CHECKED_NULL_COMPARISION">
+    <ShortDescription>既にチェック済みの値を無駄にnullと比較しています</ShortDescription>
+    <LongDescription>既にチェック済みの値{1}を無駄にnullと比較しています</LongDescription>
+    <Details>
+<![CDATA[
+<p> このメソッドは、無駄な参照変数とnullとの比較を行っています。以下の2つのタイプの無駄な比較が報告されます。
+<ul>
+<li> 比較されている2つの値は明らかにnullです。
+<li> 一方は明らかにnullであり、もう一方は明らかにnullではありません。
+</ul>
+
+<p> この警告は、一般には、明らかにnullでない値をnullとチェックすることにより報告されます。単純に、実際には、チェックは全く不要な、防御的プログラミングかもしれません。
 ]]>
     </Details>
   </BugPattern>
@@ -1471,9 +1306,7 @@ the programmer realizing that the dereferenced value could be null.
     <LongDescription>{1} で、全ての経路においてロックが解放されません。</LongDescription>
     <Details>
 <![CDATA[
-<p> This method acquires a JSR-166 (<code>java.util.concurrent</code>) lock,
-but does not release it on all paths out of the method.  In general, the correct idiom
-for using a JSR-166 lock is:
+<p> このメソッドは、JSR-166 (<code>java.util.concurrent</code>) ロックを獲得していますが、このメソッドを起点とした実行経路に解放されない経路があります。一般には、このロックを使うための、正しいイディオムは次のようになります。
 <pre>
     Lock l = ...;
     l.lock();
@@ -1492,9 +1325,7 @@ for using a JSR-166 lock is:
     <LongDescription>{1} で、全ての例外経路においてロックが解放されません。</LongDescription>
     <Details>
 <![CDATA[
-<p> This method acquires a JSR-166 (<code>java.util.concurrent</code>) lock,
-but does not release it on all exception paths out of the method.  In general, the correct idiom
-for using a JSR-166 lock is:
+<p> このメソッドは、JSR-166 (<code>java.util.concurrent</code>) ロックを獲得していますが、このメソッドを起点とした例外処理経路に、解放されない経路があります。一般には、このロックを使うための、正しいイディオムは次のようになります。
 <pre>
     Lock l = ...;
     l.lock();
@@ -1513,10 +1344,27 @@ for using a JSR-166 lock is:
     <LongDescription>{1} で参照されている {3} の比較は疑わしいです。</LongDescription>
     <Details>
 <![CDATA[
-<p> This method compares two reference values using the == or != operator,
-where the correct way to compare instances of this type is generally
-with the equals() method.  Examples of classes which should generally
-not be compared by reference are java.lang.Integer, java.lang.Float, etc.
+<p> このメソッドでは、2つの参照が == あるいは != 演算子で比較されていますが、一般には、equals()メソッドを使う方が正しいやり方です。例えばjava.lang.Integerやjava.lang.Floatは、このようなクラスの例です。
+]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="EC_UNRELATED_TYPES">
+    <ShortDescription>違う型のオブジェクトを比較するのにequals()を使用しています</ShortDescription>
+    <LongDescription>{1}の中で違う型のオブジェクトを比較するのにequals()を使用しています</LongDescription>
+    <Details>
+<![CDATA[
+<p> このメソッドは、違う型のオブジェクト参照をequals(Object)で比較しています。正しいequals()の実装では、違う型のオブジェクトをequals()で比較すると、常にfalseが返ります。このため、実行時にはこの比較は常にfalseになるものと思われます。
+]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="EC_NULL_ARG">
+    <ShortDescription>equals()の引数にnullを渡しています</ShortDescription>
+    <LongDescription>{1}の中で、equals()の引数に nullを渡しています</LongDescription>
+    <Details>
+<![CDATA[
+<p> このメソッドは、equals(Object)にnullを渡しています。正しいequals()の実装では、これは常に<code>false</code>を返します。
 ]]>
     </Details>
   </BugPattern>
@@ -1526,9 +1374,7 @@ not be compared by reference are java.lang.Integer, java.lang.Float, etc.
     <LongDescription>{1} で、wait()の組合せが間違っています。</LongDescription>
     <Details>
 <![CDATA[
-<p> This method calls Object.wait() without obviously holding a lock
-on the object.&nbsp;  Calling wait() without a lock held will result in
-an <code>IllegalMonitorStateException</code> being thrown.
+<p> このメソッドは、ロックを獲得せずにObject.wait()を呼び出しています。ロックを獲得せずにwait()を呼び出すと、<code>IllegalMonitorStateException</code>が発生します。
 ]]>
     </Details>
   </BugPattern>
@@ -1538,9 +1384,7 @@ an <code>IllegalMonitorStateException</code> being thrown.
     <LongDescription>{1} で、組合せが間違った notify() があります。</LongDescription>
     <Details>
 <![CDATA[
-<p> This method calls Object.notify() or Object.notifyAll() without obviously holding a lock
-on the object.&nbsp;  Calling notify() or notifyAll() without a lock held will result in
-an <code>IllegalMonitorStateException</code> being thrown.
+<p> このメソッドは、ロックを獲得せずにObject.notify()あるいはObject.notifyAll()を呼び出しています。ロックを獲得せずにnotify()やnotifyAll()を呼び出すと、<code>IllegalMonitorStateException</code>が発生します。
 ]]>
     </Details>
   </BugPattern>
@@ -1550,14 +1394,14 @@ an <code>IllegalMonitorStateException</code> being thrown.
     <LongDescription>{1} で、ローカル変数の自己代入があります。</LongDescription>
     <Details>
 <![CDATA[
-<p> This method contains a self assignment of a local variable; e.g.
+<p> このメソッドは、ローカル変数の自己代入があります。例えば、
 <pre>
   public void foo() {
     int x = 3;
     x = x;
   }
 </pre>
-Such assignments are useless, and may indicate a logic error or typo.
+この例のような代入は、無駄です。ロジックの誤りや、タイプミスかもしれません。
 ]]>
     </Details>
   </BugPattern>
@@ -1567,14 +1411,14 @@ Such assignments are useless, and may indicate a logic error or typo.
     <LongDescription>{1} で、{2} の自己代入をおこなっています。</LongDescription>
     <Details>
 <![CDATA[
-<p> This method contains a self assignment of a field; e.g.
+<p> このメソッドは、フィールドの自己代入があります。例えば、
 <pre>
   int x;
   public void foo() {
     x = x;
   }
 </pre>
-Such assignments are useless, and may indicate a logic error or typo.
+この例のような代入は、無駄です。ロジックの誤りや、タイプミスかもしれません。
 ]]>
     </Details>
   </BugPattern>
@@ -1584,13 +1428,7 @@ Such assignments are useless, and may indicate a logic error or typo.
     <LongDescription>{1} で {2} フィールドの不正な遅延初期化がおこなわれています。</LongDescription>
     <Details>
 <![CDATA[
-<p> This method contains an unsynchronized lazy initialization of a non-volatile field.
-Because the compiler or processor may reorder instructions,
-threads are not guaranteed to see a completely initialized object,
-<em>if the method can be called by multiple threads</em>.
-You can make the field volatile to correct the problem.
-For more information, see the
-<a href="http://www.cs.umd.edu/~pugh/java/memoryModel/">Java Memory Model web site</a>.
+<p> このメソッドは、volatileでないフィールドを、同期化せずに遅延初期化しています。コンパイラやプロセッサは、命令の並べ替えを行うかもしれないので、<em>もしもこのメソッドが複数のスレッドから同時に呼び出されるのであれば、</em>別のスレッドがこのフィールドにアクセスした際に、中途半端に初期化されたインスタンスが見えてしまう危険があります。フィールドをvolatileにする事で、この問題を解決する事が出来ます。詳細は、<a href="http://www.cs.umd.edu/~pugh/java/memoryModel/">Javaメモリモデル</a>を参照してください。
 ]]>
     </Details>
   </BugPattern>
@@ -1600,13 +1438,7 @@ For more information, see the
     <LongDescription>{1} で {2} staticフィールドの不正な遅延初期化がおこなわれています。</LongDescription>
     <Details>
 <![CDATA[
-<p> This method contains an unsynchronized lazy initialization of a non-volatile static field.
-Because the compiler or processor may reorder instructions,
-threads are not guaranteed to see a completely initialized object,
-<em>if the method can be called by multiple threads</em>.
-You can make the field volatile to correct the problem.
-For more information, see the
-<a href="http://www.cs.umd.edu/~pugh/java/memoryModel/">Java Memory Model web site</a>.
+<p> このメソッドは、volatileでないstaticフィールドを、同期化せずに遅延初期化しています。コンパイラや、プロセッサは、命令の並べ替えを行うかもしれないので、<em>もしもメソッドが複数のスレッドから同時に呼び出されるのであれば、</em>別のスレッドがこのフィールドにアクセスした際に、中途半端に初期化されたインスタンスが見えてしまう危険があります。フィールドをvolatileにする事で、この問題を解決する事が出来ます。詳細は、<a href="http://www.cs.umd.edu/~pugh/java/memoryModel/">Javaメモリモデル</a>を参照してください。
 ]]>
     </Details>
   </BugPattern>
@@ -1616,9 +1448,7 @@ For more information, see the
     <LongDescription>メソッド {1} 内で、JSR166 の Lock による同期がおこなわれます。</LongDescription>
 <Details>
 <![CDATA[
-<p> This method performs synchronization on an implementation of
-<code>java.util.concurrent.locks.Lock</code>.  You should use
-the <code>lock()</code> and <code>unlock()</code> methods instead.
+<p> このメソッドは、<code>java.util.concurrent.locks.Lock</code>オブジェクトで同期化を行っています。<code>lock()</code>と<code>unlock()</code>を替わりに使用すべきです。
 ]]>
 </Details>
   </BugPattern>
@@ -1628,12 +1458,57 @@ the <code>lock()</code> and <code>unlock()</code> methods instead.
     <LongDescription>private メソッド {1} は一度も呼ばれません。</LongDescription>
 <Details>
 <![CDATA[
-<p> This private method is never called. Although it is
-possible that the method will be invoked through reflection,
-it is more likely that the method is never used, and should be
-removed.
+<p> このprivateメソッドは一度も呼ばれません。リフレクションで呼び出される可能性は残りますが、このメソッドは全く使用されておらず、削除されるべきと考えるのが自然です。
 ]]>
 </Details>
+  </BugPattern>
+
+  <BugPattern type="ODR_OPEN_DATABASE_RESOURCE">
+    <ShortDescription>メソッドは、データベースリソースの解放に失敗するかもしれません</ShortDescription>
+    <LongDescription>{1} は、データベースリソースの解放に失敗するかもしれません</LongDescription>
+    <Details>
+<![CDATA[
+<p> このメソッドは、データベースリソース(例えば、コネクションや結果セット)を生成しますが、それをフィールドに代入したり、他のメソッドに渡したり、戻り値として返送したりしておらず、このメソッドを起点とする実行経路の中にクローズが行われない経路があります。データベースリソースの解放忘れは、パフォーマンスの悪化を招いたり、アプリケーションがデータベースと通信出来なくなる恐れがあります。
+]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="ODR_OPEN_DATABASE_RESOURCE_EXCEPTION_PATH">
+    <ShortDescription>メソッドは、例外が起きた時にデータベースリソースの解放に失敗するかもしれません</ShortDescription>
+    <LongDescription>{1} は、例外が起きた時にデータベースリソースの解放に失敗するかもしれません</LongDescription>
+    <Details>
+<![CDATA[
+<p> このメソッドは、データベースリソース(例えば、コネクションや結果セット)を生成しますが、それをフィールドに代入したり、他のメソッドに渡したり、戻り値として返送したりしておらず、このメソッドを起点とする例外処理経路の中にクローズが行われない経路があります。データベースリソースの解放忘れは、パフォーマンスの悪化を招いたり、アプリケーションがデータベースと通信出来なくなる恐れがあります。
+]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="SBSC_USE_STRINGBUFFER_CONCATENATION">
+    <ShortDescription>このメソッド内で、+を使ってループ内で文字列を連結しています</ShortDescription>
+    <LongDescription>メソッド {1} ないで、+を使ってループ内で文字列を連結しています</LongDescription>
+    <Details>
+<![CDATA[
+<p> このメソッドの中で、ループ内でStringの連結を繰り返しているようです。このためStringBuffer/StringBuilderへの変換、連結、そしてStringへの再変換という処理が何度も繰り返されます。文字列が毎回コピーし直されて長くなっていくため、繰り返し回数の二乗の処理コストが必要となる場合があります。
+<p>明示的にStringBufferあるいはStringBuilder(J2SE 1.5から導入されます)を用いる事で、パフォーマンスを改善する事が出来ます。
+
+<p> 例)
+<pre>
+  // 悪い例
+  String s = "";
+  for (int i = 0; i &lt; field.length; ++i) {
+    s = s + field[i];
+  }
+
+  // 良い例
+  StringBuffer buf = new StringBuffer();
+  for (int i = 0; i &lt; field.length; ++i) {
+    buf.append(field[i]);
+  }
+  String s = buf.toString();
+</pre>
+P
+]]>
+    </Details>
   </BugPattern>
 
   <!--
@@ -1642,6 +1517,7 @@ removed.
   **********************************************************************
    -->
 
+  <BugCode abbrev="FL" >floatの精度の利用</BugCode>
   <BugCode abbrev="IMSE" >IllegalMonitorStateException の疑わしいキャッチ。</BugCode>
   <BugCode abbrev="CN" >cloneable 表現の誤った実装。</BugCode>
   <BugCode abbrev="FI" >ファイナライザの使用方法が間違っています。</BugCode>
@@ -1683,16 +1559,20 @@ removed.
   <BugCode abbrev="BcpDC">フィールドのダブルチェックをしている可能性があります。</BugCode>
   <BugCode abbrev="RV" >メソッドのreturn値が無視されています。</BugCode>
   <BugCode abbrev="NP" >nullポインタを参照外ししています。</BugCode>
-  <BugCode abbrev="OS">全てのパスにおいて、ストリームがクローズされていません。</BugCode>
+  <BugCode abbrev="OS">ストリームがクローズされない経路があります。</BugCode>
   <BugCode abbrev="PZLA" >結果無しを指し示すためには、nullよりもむしろ0の長さの配列を利用した方が良いです。</BugCode>
   <BugCode abbrev="UCF">無駄な制御の流れがあります。</BugCode>
   <BugCode abbrev="RCN">nullに対する冗長な比較があります。</BugCode>
-  <BugCode abbrev="UL">全ての経路においてロックが解放されていません。</BugCode>
+  <BugCode abbrev="UL">ロックが解放されない経路があります。</BugCode>
   <BugCode abbrev="RC">疑わしい比較演算子の参照があります。</BugCode>
   <BugCode abbrev="MWN">wait() か notify()の組み合せが間違っています。</BugCode>
   <BugCode abbrev="SA">無駄な自己代入です。</BugCode>
   <BugCode abbrev="LI">同期化(synchronized)されていない遅延初期化です。</BugCode>
   <BugCode abbrev="JLM">JSR166 の Lock による同期。</BugCode>
   <BugCode abbrev="UPM">private メソッドは一度も呼ばれません。</BugCode>
+  <BugCode abbrev="EI2">ミュータブルオブジェクトの参照の格納。</BugCode>
+  <BugCode abbrev="NS">非短絡論理演算子の疑わしい利用。</BugCode>
+  <BugCode abbrev="ODR">データベースリソースがクローズされない経路があります。</BugCode>
+  <BugCode abbrev="SBSC">ループ内での+を用いたStringの連結。</BugCode>
 
 </MessageCollection>
