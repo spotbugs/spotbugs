@@ -76,6 +76,8 @@ public class TestingGround extends BytecodeScanningDetector implements Constants
 				System.out.print("   " + c);
 		} else if ((seen == ALOAD) || (seen == ASTORE))
 			System.out.print("   " + getRegisterOperand());
+		else if ((seen == GOTO) || (seen == GOTO_W))
+			System.out.print("   " + getBranchTarget());
 
 		System.out.println();
 	}
