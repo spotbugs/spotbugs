@@ -19,6 +19,7 @@
 
 package edu.umd.cs.daveho.ba;
 
+import org.apache.bcel.Constants;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.*;
 import org.apache.bcel.generic.*;
@@ -73,8 +74,14 @@ public class Lookup {
 
 		if (classDefiningField == null)
 			return null;
-		else
-			return new InstanceField(classDefiningField.getClassName(), fieldName, fieldSig);
+		else {
+			short opcode = fins.getOpcode();
+			boolean isStatic = (opcode == Constants.GETSTATIC || opcode == Constants.PUTSTATIC);
+			String realClassName = classDefiningField.getClassName();
+			return isStatic
+				? (XField) new StaticField(realClassName, fieldName, fieldSig)
+				: (XField) new InstanceField(realClassName, fieldName, fieldSig);
+		}
 	}
 }
 
