@@ -153,7 +153,6 @@ jvmCmd=java
 if [ ! -z "$JAVA_HOME" ] && [ -x "$JAVA_HOME/bin/java" ]; then
   jvmCmd=$JAVA_HOME/bin/java
 fi
-echo $jvmCmd
 
 # Launch FindBugs!
 $jvmCmd $jvmArgs "-Dfindbugs.home=$findbugs_home" -jar "$findbugs_home/lib/$appJar" $argList
