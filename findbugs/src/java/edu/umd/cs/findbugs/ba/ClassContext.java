@@ -52,8 +52,6 @@ public class ClassContext {
 	private IdentityHashMap<Method, LockCountDataflow> thisLockCountDataflowMap =
 		new IdentityHashMap<Method, LockCountDataflow>();
 	private IdentityHashMap<Method, LockDataflow> lockDataflowMap = new IdentityHashMap<Method, LockDataflow>();
-	private IdentityHashMap<Method, ExceptionPathValueDataflow> exceptionPathDataflowMap =
-		new IdentityHashMap<Method, ExceptionPathValueDataflow>();
 	private IdentityHashMap<Method, ReturnPathDataflow> returnPathDataflowMap =
 		new IdentityHashMap<Method, ReturnPathDataflow>();
 	private ClassGen classGen;
@@ -379,28 +377,6 @@ public class ClassContext {
 			assignedFieldMap = new AssignedFieldMap(this);
 		}
 		return assignedFieldMap;
-	}
-
-	/**
-	 * Get ExceptionPathValue dataflow for method.
-	 * @param method the method
-	 * @return the ExceptionPathValue dataflow
-	 */
-	public ExceptionPathValueDataflow
-		getExceptionPathValueDataflow(Method method) throws CFGBuilderException, DataflowAnalysisException {
-
-		ExceptionPathValueDataflow dataflow = exceptionPathDataflowMap.get(method);
-		if (dataflow == null) {
-			DepthFirstSearch dfs = getDepthFirstSearch(method);
-			CFG cfg = getCFG(method);
-			ExceptionPathValueAnalysis analysis = new ExceptionPathValueAnalysis(dfs);
-			dataflow = new ExceptionPathValueDataflow(cfg, analysis);
-			dataflow.execute();
-
-			exceptionPathDataflowMap.put(method, dataflow);
-		}
-
-		return dataflow;
 	}
 
 	/**
