@@ -78,6 +78,22 @@ public class StringConcatenation extends BytecodeScanningDetector implements   C
         if (DEBUG) System.out.println("Reset from: " + new Throwable().getStackTrace()[1]);
     }
 
+	private boolean storeIntoRegister(int seen, int reg) {
+            switch (seen) {
+            case ASTORE_0:
+                return reg == 0;
+            case ASTORE_1:
+                return reg == 1;
+            case ASTORE_2:
+                return reg == 2;
+            case ASTORE_3:
+                return reg == 3;
+            case ASTORE:
+                return reg == getRegisterOperand();
+	    default:
+		return false;
+            }
+	}
     public void sawOpcode(int seen) {
         if (reportedThisMethod) return;
         int oldState = state;
@@ -101,12 +117,11 @@ public class StringConcatenation extends BytecodeScanningDetector implements   C
                 System.out.println("   " + getSigConstantOperand());
             }
             if ( seen == INVOKEVIRTUAL
-                &&  "append".equals(getNameConstantOperand())
-                && getClassConstantOperand().startsWith("java/lang/StringBu")
-                && getSigConstantOperand()
-                .startsWith("(Ljava/lang/String;)") ){
+                && "append".equals(getNameConstantOperand())
+                && getClassConstantOperand().startsWith("java/lang/StringBu") ) {
                 if (DEBUG) System.out.println("Saw string being appended from register " + registerOnStack);
-                if ( registerOnStack >= 0 ) {
+                if ( getSigConstantOperand().startsWith("(Ljava/lang/String;)") 
+			&& registerOnStack >= 0 ) {
                     if (DEBUG) 
                         System.out.println("Saw string being appended, source = " + registerOnStack);
                     state = SEEN_APPEND1;
@@ -116,7 +131,8 @@ public class StringConcatenation extends BytecodeScanningDetector implements   C
             }
             break;
         case SEEN_APPEND1:
-            if ( seen == INVOKEVIRTUAL
+	    if (storeIntoRegister(seen, stringSource)) reset();
+            else if ( seen == INVOKEVIRTUAL
                 &&  "append".equals(getNameConstantOperand())
                 && getClassConstantOperand().startsWith("java/lang/StringBu")) {
                 state = SEEN_APPEND2;
@@ -124,7 +140,8 @@ public class StringConcatenation extends BytecodeScanningDetector implements   C
             break;
 
         case SEEN_APPEND2:
-            if ( seen == INVOKEVIRTUAL
+	    if (storeIntoRegister(seen, stringSource)) reset();
+            else if ( seen == INVOKEVIRTUAL
                 &&  "toString".equals(getNameConstantOperand())
                 && getClassConstantOperand().startsWith("java/lang/StringBu")) {
                 state = CONSTRUCTED_STRING_ON_STACK;
@@ -132,34 +149,18 @@ public class StringConcatenation extends BytecodeScanningDetector implements   C
             break;
 
         case CONSTRUCTED_STRING_ON_STACK:
-            boolean match = false;
-            switch (seen) {
-            case ASTORE_0:
-                match = stringSource == 0;
-                break;
-            case ASTORE_1:
-                match = stringSource == 1;
-                break;
-            case ASTORE_2:
-                match = stringSource == 2;
-                break;
-            case ASTORE_3:
-                match = stringSource == 3;
-                break;
-            case ASTORE:
-                match = stringSource == getRegisterOperand();
-                break;
-            }
-            if (match) state = POSSIBLE_CASE;
+	    if (storeIntoRegister(seen, stringSource)) state = POSSIBLE_CASE;
             else reset();
             break;
 
         case POSSIBLE_CASE:
             if (seen == GOTO
+		&& (getPC() - getBranchTarget()) < 300
                 && getBranchTarget() < createPC ) {
                 bugReporter.reportBug(new BugInstance("SBSC_USE_STRINGBUFFER_CONCATENATION", NORMAL_PRIORITY)
                     .addClassAndMethod(this)
                     .addSourceLine(this, createPC));
+		// System.out.println("SBSC spread: " + (getPC() - getBranchTarget()));
                 reset();
                 reportedThisMethod = true;
             }
