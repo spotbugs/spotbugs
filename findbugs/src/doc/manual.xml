@@ -1642,6 +1642,15 @@ The list of configurable analysis properties is shown in
       <entry>If true, emit low priority warnings for local variables
       which obscure fields.  Default is false.</entry>
     </row>
+    <row>
+      <entry>findbugs.nullderef.assumensp</entry>
+      <entry>true or false</entry>
+      <entry>If true, the null dereference detector assumes that any
+      reference value returned from a method or passed to a method
+      in a parameter might be null.  Default is false.  Note that
+      enabling this property will very likely cause a large number
+      of false warnings to be produced.</entry>
+    </row>
 <!--
     <row>
       <entry></entry>

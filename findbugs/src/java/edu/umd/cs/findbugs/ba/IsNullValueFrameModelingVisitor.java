@@ -68,7 +68,35 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
 	 * call to a likely exception thrower or assertion.
 	 */
 	private void handleInvoke(InvokeInstruction obj) {
-		handleNormalInstruction(obj);
+		if (IsNullValueAnalysis.UNKNOWN_VALUES_ARE_NSP) {
+			// Assume that any returned value (if a reference type)
+			// might be null.
+			IsNullValueFrame frame = getFrame();
+
+			int numWordsConsumed = getNumWordsConsumed(obj);
+			int numWordsProduced = getNumWordsProduced(obj);
+
+			try {
+				while (numWordsConsumed-- > 0)
+					frame.popValue();
+			} catch (DataflowAnalysisException e) {
+				throw new AnalysisException("Stack underflow", e);
+			}
+
+			if (numWordsProduced > 0) {
+				Type type = obj.getType(getCPG());
+				if (type instanceof ReferenceType) {
+					frame.pushValue(IsNullValue.nullOnSomePathValue());
+				} else {
+					while (numWordsProduced-- > 0) {
+						frame.pushValue(IsNullValue.nonReportingNotNullValue());
+					}
+				}
+			}
+		} else {
+			// Assume returned values are non-reporting non-null.
+			handleNormalInstruction(obj);
+		}
 
 		if (!NO_ASSERT_HACK) {
 			if (assertionMethods.isAssertionCall(obj)) {

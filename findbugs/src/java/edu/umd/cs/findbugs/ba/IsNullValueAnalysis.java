@@ -43,6 +43,13 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
 	private static final boolean NO_SPLIT_DOWNGRADE_NSP = Boolean.getBoolean("inva.noSplitDowngradeNSP");
 	private static final boolean NO_SWITCH_DEFAULT_AS_EXCEPTION = Boolean.getBoolean("inva.noSwitchDefaultAsException");
 
+	/**
+	 * If this property is true, then we assume parameters
+	 * and return values can be null (but aren't definitely null).
+	 */
+	static final boolean UNKNOWN_VALUES_ARE_NSP =
+		Boolean.getBoolean("findbugs.nullderef.assumensp");
+
 	private MethodGen methodGen;
 	private IsNullValueFrameModelingVisitor visitor;
 	private ValueNumberDataflow vnaDataflow;
@@ -74,9 +81,20 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
 
 	public void initEntryFact(IsNullValueFrame result) {
 		result.setValid();
+
 		int numLocals = methodGen.getMaxLocals();
-		for (int i = 0; i < numLocals; ++i)
-			result.setValue(i, IsNullValue.nonReportingNotNullValue());
+		boolean instanceMethod = !methodGen.isStatic();
+
+		for (int i = 0; i < numLocals; ++i) {
+			IsNullValue paramValue;
+
+			if (UNKNOWN_VALUES_ARE_NSP && !(instanceMethod && i == 0))
+				paramValue = IsNullValue.nullOnSomePathValue();
+			else
+				paramValue = IsNullValue.nonReportingNotNullValue();
+
+			result.setValue(i, paramValue);
+		}
 	}
 
 /*
