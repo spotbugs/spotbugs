@@ -336,6 +336,7 @@
         <filter token="DOWNLOADS_WEBSITE" value="${findbugs.downloads.website}"/>
         <filter token="HTML_XSL_STYLESHEET" value="${html.xsl.stylesheet}" />
         <filter token="HTML_SIDEBAR" value="${doc.html.sidebar}"/>
+        <filter token="HTML_FOOTER" value="${doc.html.footer}"/>
       </filterset>  
 
 <!--
