@@ -211,21 +211,41 @@ public class SerializableIdiom extends PreorderVisitor
 		&& isSynthetic(obj)) foundSynthetic = true;
 	// System.out.println(methodName + isSynchronized);
 
-	if (getMethodName().equals("readExternal"))
+	if (getMethodName().equals("readExternal")
+		&& getMethodSig().equals("(Ljava/io/ObjectInput;)V"))  {
 		sawReadExternal = true;
-	else if (getMethodName().equals("writeExternal"))
+		if (false && !obj.isPrivate())
+			System.out.println("Non-private readExternal method in: " + getDottedClassName());
+		}
+	else if (getMethodName().equals("writeExternal")
+		&& getMethodSig().equals("(Ljava/io/Objectoutput;)V"))   {
 		sawWriteExternal = true;
-	else if (getMethodName().equals("readObject"))
+		if (false && !obj.isPrivate())
+			System.out.println("Non-private writeExternal method in: " + getDottedClassName());
+		}
+	else if (getMethodName().equals("readObject")
+		&& getMethodSig().equals("(Ljava/io/ObjectInputStream;)V") 
+		&& isSerializable)  {
 		sawReadObject = true;
-	else if (getMethodName().equals("writeObject"))
-		sawWriteObject = true;
+		if (false && !obj.isPrivate())
+			System.out.println("Non-private readObject method in: " + getDottedClassName());
+		}
+	else if (getMethodName().equals("writeObject")
+		&& getMethodSig().equals("(Ljava/io/ObjectOutputStream;)V") 
+		&& isSerializable)  {
+		sawReadObject = true;
+		if (false && !obj.isPrivate())
+			System.out.println("Non-private writeObject method in: " + getDottedClassName());
+		}
 
 	if (!isSynchronized) return;
 	if (getMethodName().equals("readObject") &&
 		getMethodSig().equals("(Ljava/io/ObjectInputStream;)V") &&
 		isSerializable) 
 		bugReporter.reportBug(new BugInstance("RS_READOBJECT_SYNC", NORMAL_PRIORITY).addClass(this));
-	else if (getMethodName().equals("writeObject"))
+	else if (getMethodName().equals("writeObject")
+		&& getMethodSig().equals("(Ljava/io/ObjectOutputStream;)V") 
+		&& isSerializable) 
 		writeObjectIsSynchronized = true;
 	else foundSynchronizedMethods = true;
 
