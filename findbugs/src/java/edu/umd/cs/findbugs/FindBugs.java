@@ -120,10 +120,10 @@ public class FindBugs implements Constants2, ExitCodes {
 		 */
 		public boolean containsSourceFiles();
 
-//		/**
-//		 * Close any internal files or streams.
-//		 */
-//		public void close();
+		/**
+		 * Close any internal files or streams.
+		 */
+		public void close();
 	}
 
 	/**
@@ -160,6 +160,10 @@ public class FindBugs implements Constants2, ExitCodes {
 
 		public boolean containsSourceFiles() {
 			return false;
+		}
+
+		public void close() {
+			// Nothing to do here
 		}
 	}
 
@@ -211,6 +215,16 @@ public class FindBugs implements Constants2, ExitCodes {
 		public boolean containsSourceFiles() {
 			return containsSourceFiles;
 		}
+
+		public void close() {
+			if (zipInputStream != null) {
+				try {
+					zipInputStream.close();
+				} catch (IOException ignore) {
+					// Ignore
+				}
+			}
+		}
 	}
 
 	/**
@@ -254,6 +268,10 @@ public class FindBugs implements Constants2, ExitCodes {
 
 		public boolean containsSourceFiles() {
 			return containsSourceFiles;
+		}
+
+		public void close() {
+			// Nothing to do here
 		}
 	}
 
@@ -851,10 +869,9 @@ public class FindBugs implements Constants2, ExitCodes {
 	        throws IOException, InterruptedException {
 
 		String fileName = item.getFileName();
+		ClassProducer classProducer = null;
 
 		try {
-			ClassProducer classProducer;
-
 			// Create a URL for the filename.
 			// The protocol defaults to "file" if not explicitly
 			// specified in the filename.
@@ -916,6 +933,10 @@ public class FindBugs implements Constants2, ExitCodes {
 			// You'd think that the message for a FileNotFoundException would include
 			// the filename, but you'd be wrong.  So, we'll add it explicitly.
 			throw new IOException("Could not analyze " + fileName + ": " + e.getMessage());
+		} finally {
+			if (classProducer != null) {
+				classProducer.close();
+			}
 		}
 	}
 
