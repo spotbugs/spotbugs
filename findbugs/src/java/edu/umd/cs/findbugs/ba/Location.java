@@ -50,6 +50,12 @@ public class Location implements Comparable {
 		this.basicBlock = basicBlock;
 	}
 
+	/** Get the instruction handle. */
+	public InstructionHandle getHandle() { return handle; }
+
+	/** Get the basic block. */
+	public BasicBlock getBasicBlock() { return basicBlock; }
+
 	public int compareTo(Object o) {
 		if (!(o instanceof Location))
 			return -1;
