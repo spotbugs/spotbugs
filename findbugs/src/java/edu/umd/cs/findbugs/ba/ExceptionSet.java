@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs.ba;
 
 import java.util.BitSet;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.ReferenceType;
@@ -62,6 +63,8 @@ public class ExceptionSet {
 		}
 
 		public ObjectType next() {
+			if (!hasNext())
+				throw new NoSuchElementException();
 			ObjectType result = factory.getType(next);
 			last = next;
 			return result;
