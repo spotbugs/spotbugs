@@ -1,6 +1,6 @@
 /*
  * FindBugs - Find bugs in Java programs
- * Copyright (C) 2004, University of Maryland
+ * Copyright (C) 2004-2005 University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -89,7 +89,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 					}
 				}
 			} else if (outerElement.equals("BugInstance")) {
-				// Parsing an attribute of a BugInstance
+				// Parsing an attribute or property of a BugInstance
 				BugAnnotation bugAnnotation = null;
 				if (qName.equals("Class")) {
 					String className = getRequiredAttribute(attributes, "classname", qName);
@@ -120,6 +120,11 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 					} catch (NumberFormatException e) {
 						throw new SAXException("Bad integer value in Int");
 					}
+				} else if (qName.equals("Property")) {
+					// A BugProperty.
+					String propName = getRequiredAttribute(attributes, "name", qName);
+					String propValue = getRequiredAttribute(attributes, "value", qName);
+					bugInstance.setProperty(propName, propValue);
 				}
 
 				if (bugAnnotation != null)

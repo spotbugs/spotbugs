@@ -1,6 +1,6 @@
 /*
  * FindBugs - Find bugs in Java programs
- * Copyright (C) 2003,2004 University of Maryland
+ * Copyright (C) 2003-2005 University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -74,6 +74,7 @@ public class BugInstance implements Comparable, XMLWriteable {
 	private FieldAnnotation primaryFieldAnnotation;
 	private int cachedHashCode;
 	private String annotationText;
+	private BugProperty propertyListHead, propertyListTail;
 
 	/**
 	 * This value is used to indicate that the cached hashcode
@@ -277,6 +278,144 @@ public class BugInstance implements Comparable, XMLWriteable {
 			result.add(tok.nextToken());
 		}
 		return result;
+	}
+	
+	/* ----------------------------------------------------------------------
+	 * Property accessors
+	 * ---------------------------------------------------------------------- */
+	
+	private class BugPropertyIterator implements Iterator<BugProperty> {
+		private BugProperty next = propertyListHead;
+		
+		/* (non-Javadoc)
+		 * @see java.util.Iterator#hasNext()
+		 */
+		public boolean hasNext() {
+			return next != null;
+		}
+		
+		/* (non-Javadoc)
+		 * @see java.util.Iterator#next()
+		 */
+		public BugProperty next() {
+			if (next == null)
+				throw new NoSuchElementException();
+			BugProperty result = next;
+			next = next.getNext();
+			return result;
+		}
+		
+		/* (non-Javadoc)
+		 * @see java.util.Iterator#remove()
+		 */
+		public void remove() {
+			throw new UnsupportedOperationException();
+		}
+	};
+	
+	/**
+	 * Get value of given property.
+	 * 
+	 * @param name name of the property to get
+	 * @return the value of the named property, or null if
+	 *         there is no such property
+	 */
+	public String getProperty(String name) {
+		BugProperty prop = lookupProperty(name);
+		return prop != null ? prop.getValue() : null;
+	}
+	
+	/**
+	 * Get an Iterator over the properties defined in this BugInstance.
+	 * 
+	 * @return Iterator over properties
+	 */
+	public Iterator<BugProperty> propertyIterator() {
+		return new BugPropertyIterator();
+	}
+	
+	/**
+	 * Set value of given property.
+	 * 
+	 * @param name  name of the property to set
+	 * @param value the value of the property
+	 */
+	public void setProperty(String name, String value) {
+		BugProperty prop = lookupProperty(name);
+		if (prop != null) {
+			prop.setValue(value);
+		} else {
+			prop = new BugProperty(name, value);
+			addProperty(prop);
+		}
+	}
+	
+	/**
+	 * Look up a property by name.
+	 * 
+	 * @param name name of the property to look for
+	 * @return the BugProperty with the given name,
+	 *         or null if there is no such property
+	 */
+	public BugProperty lookupProperty(String name) {
+		BugProperty prop = propertyListHead;
+		
+		while (prop != null) {
+			if (prop.getName().equals(name))
+				break;
+			prop = prop.getNext();
+		}
+		
+		return prop;
+	}
+	
+	/**
+	 * Delete property with given name.
+	 * 
+	 * @param name name of the property to delete
+	 * @return true if a property with that name was deleted,
+	 *         or false if there is no such property
+	 */
+	public boolean deleteProperty(String name) {
+		BugProperty prev = null;
+		BugProperty prop = propertyListHead;
+		
+		while (prop != null) {
+			if (prop.getName().equals(name))
+				break;
+			prev = prop;
+			prop = prop.getNext();
+		}
+		
+		if (prop != null) {
+			if (prev != null) {
+				// Deleted node in interior or at tail of list
+				prev.setNext(prop.getNext());
+			} else {
+				// Deleted node at head of list
+				propertyListHead = prop.getNext();
+			}
+			
+			if (prop.getNext() == null) {
+				// Deleted node at end of list
+				propertyListTail = prev;
+			}
+			
+			return true;
+		} else {
+			// No such property
+			return false;
+		}
+	}
+	
+	private void addProperty(BugProperty prop) {
+		if (propertyListTail != null) {
+			propertyListTail.setNext(prop);
+			propertyListTail = prop;
+		} else {
+			propertyListHead = propertyListTail = prop;
+		}
+		prop.setNext(null);
 	}
 
 	/* ----------------------------------------------------------------------
@@ -761,6 +900,14 @@ public class BugInstance implements Comparable, XMLWriteable {
 		}
 
 		XMLOutputUtil.writeCollection(xmlOutput, annotationList);
+		
+		if (propertyListHead != null) {
+			BugProperty prop = propertyListHead;
+			while (prop != null) {
+				prop.writeXML(xmlOutput);
+				prop = prop.getNext();
+			}
+		}
 
 		xmlOutput.closeTag(ELEMENT_NAME);
 	}
