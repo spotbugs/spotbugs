@@ -125,8 +125,9 @@ public abstract class LockCountAnalysis extends ForwardDataflowAnalysis<LockCoun
 
 			BasicBlock source = edge.getSource();
 			InstructionHandle last = source.getLastInstruction();
-			//ThisValueFrame frame = getFrame(edge.getSource(), last);
-			ThisValueFrame frame = tvaDataflowAnalysis.getFactAtInstruction(last);
+			ThisValueFrame frame = tvaDataflowAnalysis != null
+				? tvaDataflowAnalysis.getFactAtInstruction(last)
+				: null;
 			int delta = getDelta(last.getInstruction(), frame);
 			if (delta != 0) {
 				if (DEBUG) System.out.print("[[Undo lock count delta for source block " + source.getId() + "]]");
