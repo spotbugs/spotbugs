@@ -40,7 +40,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.TestingGround" 
             speed="fast"
             reports="TESTING"
-            disabled="true"
+            disabled="false"
             hidden="true" />
             
   <Detector class="edu.umd.cs.findbugs.detect.DontCatchIllegalMonitorStateException" 
@@ -171,9 +171,13 @@
             speed="fast"
             reports="SC_START_IN_CTOR" />
             
+  <Detector class="edu.umd.cs.findbugs.detect.FindBadForLoop" 
+            speed="fast"
+            reports="QF_QUESTIONABLE_FOR_LOOP"
+		/>
   <Detector class="edu.umd.cs.findbugs.detect.UnreadFields" 
             speed="fast"
-            reports="UWF_UNWRITTEN_FIELD,SS_SHOULD_BE_STATIC,UUF_UNUSED_FIELD,URF_UNREAD_FIELD,SIC_INNER_SHOULD_BE_STATIC,SIC_INNER_SHOULD_BE_STATIC_ANON,SIC_INNER_SHOULD_BE_STATIC_NEEDS_THIS" />
+            reports="UWF_FIELD_NOT_INIIALIZED_IN_CONSTRUCTOR,UWF_UNWRITTEN_FIELD,SS_SHOULD_BE_STATIC,UUF_UNUSED_FIELD,URF_UNREAD_FIELD,SIC_INNER_SHOULD_BE_STATIC,SIC_INNER_SHOULD_BE_STATIC_ANON,SIC_INNER_SHOULD_BE_STATIC_NEEDS_THIS" />
             
   <Detector class="edu.umd.cs.findbugs.detect.WaitInLoop" 
             speed="fast"
@@ -456,6 +460,8 @@
   <BugPattern abbrev="SS" type="SS_SHOULD_BE_STATIC" category="PERFORMANCE" />
   <BugPattern abbrev="UuF" type="UUF_UNUSED_FIELD" category="PERFORMANCE" />
   <BugPattern abbrev="UrF" type="URF_UNREAD_FIELD" category="PERFORMANCE" />
+  <BugPattern abbrev="QF" type="QF_QUESTIONABLE_FOR_LOOP" category="CORRECTNESS" />
+  <BugPattern abbrev="UwF" type="UWF_FIELD_NOT_INIIALIZED_IN_CONSTRUCTOR" category="STYLE" />
   <BugPattern abbrev="UwF" type="UWF_UNWRITTEN_FIELD" category="CORRECTNESS" />
   <BugPattern abbrev="SIC" type="SIC_INNER_SHOULD_BE_STATIC" category="PERFORMANCE" />
   <BugPattern abbrev="SIC" type="SIC_INNER_SHOULD_BE_STATIC_NEEDS_THIS" category="PERFORMANCE" />

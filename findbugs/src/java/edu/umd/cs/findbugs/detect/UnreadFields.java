@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs.detect;
 
 import java.util.*;
 
+import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
@@ -28,15 +29,19 @@ import edu.umd.cs.findbugs.FieldAnnotation;
 import edu.umd.cs.findbugs.visitclass.Constants2;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.*;
+import org.apache.bcel.generic.Type;
 
 public class UnreadFields extends BytecodeScanningDetector implements Constants2 {
 	private static final boolean DEBUG = Boolean.getBoolean("unreadfields.debug");
 
+	Set<FieldAnnotation> assumedNonNull = new HashSet<FieldAnnotation>();
+	Set<FieldAnnotation> nullTested = new HashSet<FieldAnnotation>();
 	Set<FieldAnnotation> declaredFields = new TreeSet<FieldAnnotation>();
 	Set<FieldAnnotation> fieldsOfSerializableOrNativeClassed
 	        = new HashSet<FieldAnnotation>();
 	Set<FieldAnnotation> myFields = new TreeSet<FieldAnnotation>();
 	Set<FieldAnnotation> writtenFields = new HashSet<FieldAnnotation>();
+	Set<FieldAnnotation> writtenInConstructorFields = new HashSet<FieldAnnotation>();
 	Set<FieldAnnotation> readFields = new HashSet<FieldAnnotation>();
 	Set<FieldAnnotation> constantFields = new HashSet<FieldAnnotation>();
 	// HashSet finalFields = new HashSet();
@@ -46,6 +51,7 @@ public class UnreadFields extends BytecodeScanningDetector implements Constants2
 	Set<String> innerClassCannotBeStatic = new HashSet<String>();
 	boolean hasNativeMethods;
 	boolean isSerializable;
+	boolean sawSelfCallInConstructor;
 	private BugReporter bugReporter;
 
 	static final int doNotConsider = ACC_PUBLIC | ACC_PROTECTED | ACC_STATIC;
@@ -57,6 +63,7 @@ public class UnreadFields extends BytecodeScanningDetector implements Constants2
 
 	public void visit(JavaClass obj) {
 		hasNativeMethods = false;
+		sawSelfCallInConstructor = false;
 		isSerializable = false;
 		if (getSuperclassName().indexOf("$") >= 0
 		        || getSuperclassName().indexOf("+") >= 0) {
@@ -99,6 +106,8 @@ public class UnreadFields extends BytecodeScanningDetector implements Constants2
 		declaredFields.addAll(myFields);
 		if (hasNativeMethods || isSerializable)
 			fieldsOfSerializableOrNativeClassed.addAll(myFields);
+		if (sawSelfCallInConstructor) 
+			writtenInConstructorFields.addAll(myFields);
 		myFields.clear();
 	}
 
@@ -124,8 +133,11 @@ public class UnreadFields extends BytecodeScanningDetector implements Constants2
 
 	int count_aload_1;
 
+	private OpcodeStack opcodeStack;
 	public void visit(Code obj) {
 		count_aload_1 = 0;
+		nullTested.clear();
+		opcodeStack = new OpcodeStack();
 		super.visit(obj);
 		if (getMethodName().equals("<init>") && count_aload_1 > 1
 		        && (getClassName().indexOf('$') >= 0
@@ -144,6 +156,78 @@ public class UnreadFields extends BytecodeScanningDetector implements Constants2
 
 
 	public void sawOpcode(int seen) {
+		
+
+		if (seen == INVOKEVIRTUAL || seen == INVOKEINTERFACE
+			|| seen == INVOKESPECIAL)  {
+				String sig = getSigConstantOperand();
+				Type[] argTypes = Type.getArgumentTypes(sig);
+				int pos = argTypes.length;
+				if (opcodeStack.getStackDepth() > pos) {
+				OpcodeStack.Item item = opcodeStack.getStackItem(pos);
+				if (DEBUG)
+				System.out.println("In " + getFullyQualifiedMethodName()
+					+ " saw call on " + item);
+				boolean superCall = seen == INVOKESPECIAL
+					&&  !getClassConstantOperand() .equals(getClassName());
+				boolean selfCall = item.getRegisterNumber() == 0 
+					&& !superCall;
+				if (selfCall && getMethodName().equals("<init>")) {
+					sawSelfCallInConstructor = true;	
+					if (DEBUG)
+					System.out.println("Saw self call in " + getFullyQualifiedMethodName()  + " to " + getClassConstantOperand() + "." + getNameConstantOperand()
+					);
+					}
+				}
+			}
+
+		if ((seen == IFNULL || seen == IFNONNULL) 
+			&& opcodeStack.getStackDepth() > 0)  {
+			OpcodeStack.Item item = opcodeStack.getStackItem(0);
+			FieldAnnotation f = item.getField();
+			if (f != null) {
+				nullTested.add(f);
+				if (DEBUG)
+				System.out.println(f + " null checked in " +
+					getFullyQualifiedMethodName());
+				}
+			}
+
+		if (seen == GETFIELD || seen == INVOKEVIRTUAL 
+				|| seen == INVOKEINTERFACE
+				|| seen == INVOKESPECIAL || seen == PUTFIELD 
+				|| seen == IALOAD
+				|| seen == IASTORE)  {
+			int pos = 0;
+			switch(seen) {
+			case GETFIELD :
+				pos = 0;
+				break;
+			case INVOKEVIRTUAL :
+			case INVOKEINTERFACE:
+			case INVOKESPECIAL:
+				String sig = getSigConstantOperand();
+				Type[] argTypes = Type.getArgumentTypes(sig);
+				pos = argTypes.length;
+				break;
+			case PUTFIELD :
+			case IALOAD :
+			case IASTORE :
+				pos = 1;
+				break;
+			default: throw new RuntimeException("Impossible");
+			}
+			if (opcodeStack.getStackDepth() > pos) {
+			OpcodeStack.Item item = opcodeStack.getStackItem(pos);
+			FieldAnnotation f = item.getField();
+			if (f != null && !nullTested.contains(f)) {
+				assumedNonNull.add(f);
+				if (DEBUG)
+				System.out.println(f + " assumed non-null in " +
+					getFullyQualifiedMethodName());
+				}
+			}
+			}
 
 		if (seen == ALOAD_1) {
 			count_aload_1++;
@@ -157,17 +241,35 @@ public class UnreadFields extends BytecodeScanningDetector implements Constants2
 			}
 		} else if (seen == PUTFIELD) {
 			FieldAnnotation f = FieldAnnotation.fromReferencedField(this);
+			if (opcodeStack.getStackDepth() > 0) {
+			OpcodeStack.Item item = opcodeStack.getStackItem(0);
+			if (!item.isNull()) nullTested.add(f);
+			}
 			if (DEBUG) System.out.println("put: " + f);
 			writtenFields.add(f);
+			if (getMethodName().equals("<init>") || getMethod().isPrivate())
+				writtenInConstructorFields.add(f);
 			if (getClassConstantOperand().equals(getClassName()) &&
 			        !myFields.contains(f)) {
 				superWrittenFields.add(getNameConstantOperand());
 			}
 		}
+		opcodeStack.sawOpcode(this, seen);
+		if (DEBUG) {
+		System.out.println("After " + OPCODE_NAMES[seen] + " opcode stack is");
+		System.out.println(opcodeStack);
+		}
+		
 	}
 
 	public void report() {
 
+		TreeSet<FieldAnnotation> notInitializedInConstructors =
+		        new TreeSet<FieldAnnotation>(declaredFields);
+		notInitializedInConstructors.retainAll(readFields);
+		notInitializedInConstructors.retainAll(writtenFields);
+		notInitializedInConstructors.retainAll(assumedNonNull);
+		notInitializedInConstructors.removeAll(writtenInConstructorFields);
 		TreeSet<FieldAnnotation> readOnlyFields =
 		        new TreeSet<FieldAnnotation>(declaredFields);
 		readOnlyFields.removeAll(writtenFields);
@@ -175,13 +277,30 @@ public class UnreadFields extends BytecodeScanningDetector implements Constants2
 		Set<FieldAnnotation> writeOnlyFields = declaredFields;
 		writeOnlyFields.removeAll(readFields);
 
+		for (Iterator<FieldAnnotation> i = notInitializedInConstructors.iterator(); i.hasNext();) {
+			FieldAnnotation f = i.next();
+			String fieldName = f.getFieldName();
+			String className = f.getClassName();
+			String fieldSignature = f.getFieldSignature();
+			if (!superWrittenFields.contains(fieldName)
+				 && !fieldsOfSerializableOrNativeClassed.contains(f)
+				 && (fieldSignature.charAt(0) == 'L' || fieldSignature.charAt(0) == '[')
+				)
+				bugReporter.reportBug(new BugInstance(this, "UWF_FIELD_NOT_INIIALIZED_IN_CONSTRUCTOR", LOW_PRIORITY)
+				        .addClass(className)
+				        .addField(f));
+		}
+
+
 		for (Iterator<FieldAnnotation> i = readOnlyFields.iterator(); i.hasNext();) {
 			FieldAnnotation f = i.next();
 			String fieldName = f.getFieldName();
 			String className = f.getClassName();
 			if (!superWrittenFields.contains(fieldName)
 				 && !fieldsOfSerializableOrNativeClassed.contains(f))
-				bugReporter.reportBug(new BugInstance(this, "UWF_UNWRITTEN_FIELD", NORMAL_PRIORITY)
+				bugReporter.reportBug(new BugInstance(this, 
+				"UWF_UNWRITTEN_FIELD", 
+				assumedNonNull.contains(f) ? HIGH_PRIORITY : NORMAL_PRIORITY)
 				        .addClass(className)
 				        .addField(f));
 		}

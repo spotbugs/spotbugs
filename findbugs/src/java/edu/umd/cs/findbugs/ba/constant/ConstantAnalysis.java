@@ -59,7 +59,7 @@ public class ConstantAnalysis extends FrameDataflowAnalysis<Constant, ConstantFr
 		frame.clearStack();
 		int numSlots = frame.getNumSlots();
 		for (int i = 0; i < numSlots; ++i) {
-			frame.setValue(i, Constant.NOT_CONSTANT);
+			frame.setValue(i, new Constant("parameter" + i));
 		}
 	}
 	

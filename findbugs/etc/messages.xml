@@ -352,6 +352,14 @@ of Serializable classes.  It is a fast detector.</p>
     </Details>
   </Detector>
 
+  <Detector class="edu.umd.cs.findbugs.detect.FindBadForLoop" >
+    <Details>
+<![CDATA[
+<p> This detector looks for incorrect for loops.
+</p>
+]]>
+    </Details>
+  </Detector>
   <Detector class="edu.umd.cs.findbugs.detect.UnreadFields" >
     <Details>
 <![CDATA[
@@ -2106,6 +2114,19 @@ object is stored in this field.</p>
 ]]>
     </Details>
   </BugPattern>
+
+  <BugPattern type="QF_QUESTIONABLE_FOR_LOOP">
+    <ShortDescription>Complicated, subtle or wrong increment in for-loop </ShortDescription>
+    <LongDescription>Complicated, subtle or wrong increment in for-loop {1} </LongDescription>
+    <Details>
+<![CDATA[
+	<p>Are you sure this for loop is incrementing the correct variable?
+	It appears that another variable is being initialized and checked
+	by the for loop. 
+</p>
+]]>
+    </Details>
+  </BugPattern>
   <BugPattern type="UWF_UNWRITTEN_FIELD">
     <ShortDescription>Unwritten field</ShortDescription>
     <LongDescription>Unwritten field: {1}</LongDescription>
@@ -2116,6 +2137,49 @@ value. Check for errors (should it have been initialized?), or remove it if it i
 ]]>
     </Details>
   </BugPattern>
+
+  <BugPattern type="SIC_INNER_SHOULD_BE_STATIC">
+    <ShortDescription>Should be a static inner class</ShortDescription>
+    <LongDescription>Should {0} be a _static_ inner class?</LongDescription>
+    <Details>
+<![CDATA[
+  <p> This class is an inner class, but does not use its embedded reference
+  to the object which created it.&nbsp; This reference makes the instances
+  of the class larger, and may keep the reference to the creator object
+  alive longer than necessary.&nbsp; If possible, the class should be
+	be made static.
+</p>
+]]>
+    </Details>
+  </BugPattern>
+
+
+
+  <BugPattern type="UWF_FIELD_NOT_INIIALIZED_IN_CONSTRUCTOR">
+    <ShortDescription>Field not initialized in constructor</ShortDescription>
+    <LongDescription>Field not initialized in constructor: {1}</LongDescription>
+    <Details>
+<![CDATA[
+  <p> This field is never initialized within any constructor, and is therefore could be null after
+the object is initialized. 
+This is a either an error or a questionable design, since
+it means a null pointer exception will be generated if that field is dereferenced
+before being initialized.  
+</p>
+]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="UWF_UNWRITTEN_FIELD">
+    <ShortDescription>Unwritten field</ShortDescription>
+    <LongDescription>Unwritten field: {1}</LongDescription>
+    <Details>
+<![CDATA[
+  <p> This field is never written.&nbsp; All reads of it will return the default
+value. Check for errors (should it have been initialized?), or remove it if it is useless.</p>
+]]>
+    </Details>
+  </BugPattern>
+
   <BugPattern type="SIC_INNER_SHOULD_BE_STATIC">
     <ShortDescription>Should be a static inner class</ShortDescription>
     <LongDescription>Should {0} be a _static_ inner class?</LongDescription>
@@ -2881,6 +2945,10 @@ This method invokes the .equals(Object o) method on a final class that doesn't o
 in the Object class, effectively making the equals method test for sameness, like ==. It is good to use
 the .equals method, but you should consider adding an .equals method in this class.
 </p>
+<p>[Bill Pugh]: Sorry, but I strongly disagree that this should be a warning, and I think your code
+is just fine. Users of your code shouldn't care how you've implemented equals(), and they should never
+depend on == to compare instances, since that bypasses the libraries ability to control how objects
+are compared.
 ]]>    
     </Details>
   </BugPattern>

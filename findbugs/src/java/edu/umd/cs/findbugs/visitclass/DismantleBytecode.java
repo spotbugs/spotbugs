@@ -313,6 +313,13 @@ abstract public class DismantleBytecode extends PreorderVisitor implements Const
 		}
 	}
 
+	public int getCodeByte(int offset) {
+		return 0xff & codeBytes[offset];
+		}
+	public int getOpcode() {
+		return opcode;
+		}
+
 	public void visit(Code obj) {
 		sizePrevOpcodeBuffer = 0;
 		currentPosInPrevOpcodeBuffer = prevOpcode.length-1;;

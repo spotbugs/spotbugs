@@ -53,18 +53,19 @@ public class UseObjectEquals extends BytecodeScanningDetector implements Constan
 		&&   getSigConstantOperand().equals("(Ljava/lang/Object;)Z")) {
 			
 			if (stack.getStackDepth() > 1) {
-				OpcodeStack.Item item = stack.getStackItem(1);
+				OpcodeStack.Item item0 = stack.getStackItem(0);
+				OpcodeStack.Item item1 = stack.getStackItem(1);
 				
-				if (item.isArray()) {
+				if (item0.isArray() || item1.isArray()) {
 					bugReporter.reportBug(new BugInstance("UOE_BAD_ARRAY_COMPARE", NORMAL_PRIORITY)
 			        		.addClassAndMethod(this)
 			        		.addSourceLine(this));
 				} else {
 					try {
-						JavaClass cls = item.getJavaClass();
+						JavaClass cls = item1.getJavaClass();
 
 						if ((cls != null) && cls.isFinal()) {
-							if (item.getSignature().equals("Ljava/lang/Class;"))
+							if (item1.getSignature().equals("Ljava/lang/Class;"))
 								return;
 							String methodClassName = getClassConstantOperand();
 							if (methodClassName.equals("java/lang/Object")) {

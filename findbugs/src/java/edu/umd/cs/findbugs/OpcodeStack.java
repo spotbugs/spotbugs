@@ -61,21 +61,68 @@ public class OpcodeStack implements Constants2
 	private static final boolean DEBUG = Boolean.getBoolean("ocstack.debug");
 	private List<Item> stack;
 	private List<Item> lvValues;
+
+
 	
 	public static class Item
 	{ 		
+		public static final Object UNKNOWN = null;
  		private String signature;
- 		private Object constValue;
- 		private boolean isNull;
+ 		private Object constValue = UNKNOWN;
+		private FieldAnnotation field;
+ 		private boolean isNull = false;
+		private int registerNumber = -1;
+
+		public String toString() {
+			StringBuffer buf = new StringBuffer("< ");
+			buf.append(signature);
+			if (constValue != UNKNOWN) {
+				buf.append(", ");
+				buf.append(constValue);
+				}
+			if (field!= UNKNOWN) {
+				buf.append(", ");
+				buf.append(field);
+				}
+			if (isNull) {
+				buf.append(", isNull");
+				}
+				
+			if (registerNumber != -1) {
+				buf.append(", r");
+				buf.append(registerNumber);
+				}
+			buf.append(" >");
+			return buf.toString();
+			}
+				
  		
+ 		public Item(String s, int reg) {
+			signature = s;
+			registerNumber = reg;
+ 		}
  		public Item(String s) {
- 			this(s, null);
+ 			this(s, UNKNOWN);
+ 		}
+ 		public Item(String s, FieldAnnotation f, int reg) {
+			signature = s;
+			field = f;
+			registerNumber = reg;
+ 		}
+ 		public Item(Item it, int reg) {
+			this.signature = it.signature;
+			this.constValue = it.constValue;
+			this.field = it.field;
+			this.isNull = it.isNull;
+			this.registerNumber = reg;
+ 		}
+ 		public Item(String s, FieldAnnotation f) {
+			this(s, f, -1);
  		}
  		
  		public Item(String s, Object v) {
  			signature = s;
  			constValue = v;
- 			isNull = false;
  		}
  		
  		public Item() {
@@ -126,6 +173,9 @@ public class OpcodeStack implements Constants2
  			return !signature.startsWith("L");
  		}
  		
+ 		public int getRegisterNumber() {
+ 			return registerNumber;
+ 		}
  		public String getSignature() {
  			return signature;
  		}
@@ -137,7 +187,14 @@ public class OpcodeStack implements Constants2
  		public Object getConstant() {
  			return constValue;
  		}
+ 		public FieldAnnotation getField() {
+ 			return field;
+ 		}
 	}
+
+	public String toString() {
+		return stack.toString();
+		}
 	
 	public OpcodeStack()
 	{
@@ -212,8 +269,12 @@ public class OpcodeStack implements Constants2
 	 			
 	 			
 	 			case GETSTATIC:
-	 				pushBySignature(dbc.getSigConstantOperand());
-	 			break;
+					{
+	 				Item i = new Item(dbc.getSigConstantOperand(), 
+						FieldAnnotation.fromReferencedField(dbc));
+	 				push(i);
+					break;
+					}
 	 			
 	 			case LDC:
 	 			case LDC_W:
@@ -431,7 +492,8 @@ public class OpcodeStack implements Constants2
 
 	 			case GETFIELD:
 	 				pop();
-	 				push(new Item(dbc.getSigConstantOperand()));
+	 				push(new Item(dbc.getSigConstantOperand(), 
+						FieldAnnotation.fromReferencedField(dbc)));
 	 			break;
 	 			
 	 			case ARRAYLENGTH:
@@ -813,8 +875,10 @@ public class OpcodeStack implements Constants2
  	public int getStackDepth() {
  		return stack.size();
  	}
- 	
+ 
  	public Item getStackItem(int stackOffset) {
+		if (stackOffset > stack.size()) throw new ArrayIndexOutOfBoundsException(
+				"Requested item at offset " + stackOffset + " in a stack of size " + stack.size());
  		int tos = stack.size() - 1;
  		int pos = tos - stackOffset;
  		return stack.get(pos);
@@ -863,7 +927,7 @@ public class OpcodeStack implements Constants2
 				return;
 			}
 		}
-		pushBySignature("");
+		pushByLocalLoad("", register);
  	}
  	
  	private void pushByIntMath(int seen, Item it, Item it2) {
@@ -982,9 +1046,9 @@ public class OpcodeStack implements Constants2
  	private void pushByLocalLoad(String signature, int register) {
 		Item it = getLVValue(register);
 		if (it == null)
-			push(new Item(signature));
+			push(new Item(signature, register));
 		else
-			push(it);
+			push(new Item(it, register));
  	}
  	
  	private void setLVValue(int index, Item value ) {
