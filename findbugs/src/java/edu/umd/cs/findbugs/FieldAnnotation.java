@@ -19,7 +19,6 @@
 
 package edu.umd.cs.findbugs;
 
-import edu.umd.cs.findbugs.visitclass.BetterVisitor;
 import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 import edu.umd.cs.findbugs.ba.SignatureConverter;
@@ -134,7 +133,6 @@ public class FieldAnnotation extends PackageMemberAnnotation {
 		if (key.equals(""))
 			return className + "." + fieldName;
 		else if (key.equals("fullField")) {
-			String pkgName = getPackageName();
 			SignatureConverter converter = new SignatureConverter(fieldSig);
 			StringBuffer result = new StringBuffer();
 			if (isStatic)

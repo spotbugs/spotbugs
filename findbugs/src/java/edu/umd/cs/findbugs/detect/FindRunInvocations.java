@@ -22,7 +22,6 @@ import edu.umd.cs.findbugs.ba.Hierarchy;
 import edu.umd.cs.findbugs.*;
 import org.apache.bcel.classfile.*;
 import edu.umd.cs.findbugs.visitclass.Constants2;
-import java.util.HashSet;
 
 public class FindRunInvocations extends BytecodeScanningDetector implements   Constants2 {
 

@@ -20,7 +20,6 @@
 package edu.umd.cs.findbugs.detect;
 import edu.umd.cs.findbugs.*;
 import java.util.*;
-import java.io.PrintStream;
 import org.apache.bcel.classfile.*;
 import java.util.zip.*;
 import java.io.*;
@@ -115,7 +114,6 @@ public class FindHEmismatch extends BytecodeScanningDetector implements   Consta
 	hasCompareToSelf = false;
 	hasEqualsObject = false;
 	hasEqualsSelf = false;
-	int accessFlags = obj.getAccessFlags();
 	}
 
     public void visit(Field obj) {

@@ -94,7 +94,7 @@ public class StreamFrameModelingVisitor extends ResourceValueFrameModelingVisito
 
 	protected boolean instanceEscapes(InvokeInstruction inv, int instanceArgNum) {
 		ConstantPoolGen cpg = getCPG();
-		String className = inv.getClassName(cpg);
+		// String className = inv.getClassName(cpg);
 
 		//System.out.print("[Passed as arg="+instanceArgNum+" at " + inv + "]");
 

@@ -89,6 +89,9 @@ public class FindNakedNotify extends BytecodeScanningDetector implements   Const
 				stage = 0;
 			break; 
 		case 5:
+			break;
+		default:
+			assert false;
 			}
 		
 	}

@@ -24,7 +24,6 @@ import org.apache.bcel.generic.*;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.Branch;
-import edu.umd.cs.findbugs.visitclass.BetterVisitor;
 import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 

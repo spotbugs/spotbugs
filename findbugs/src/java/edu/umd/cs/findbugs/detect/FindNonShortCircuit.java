@@ -102,7 +102,7 @@ public class FindNonShortCircuit extends BytecodeScanningDetector implements   C
 		default:
 			stage2 = 0;
 			break;
-		};
+		}
 
 
 

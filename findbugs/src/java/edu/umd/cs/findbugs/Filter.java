@@ -119,7 +119,7 @@ public class Filter extends OrMatcher {
 				System.exit(1);
 			}
 
-			Filter filter = new Filter(argv[0]);
+			new Filter(argv[0]);
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.exit(1);

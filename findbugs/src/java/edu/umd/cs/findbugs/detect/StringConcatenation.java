@@ -23,7 +23,6 @@ package edu.umd.cs.findbugs.detect;
 import edu.umd.cs.findbugs.*;
 import java.util.*;
 import org.apache.bcel.classfile.*;
-import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
 import edu.umd.cs.findbugs.visitclass.Constants2;
 
 /**

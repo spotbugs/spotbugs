@@ -21,10 +21,8 @@ package edu.umd.cs.findbugs.ba;
 
 import org.apache.bcel.Constants;
 import org.apache.bcel.generic.ObjectType;
-import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
 
-import java.util.Iterator;
 
 /**
  * Special ReferenceType representing the type of a caught exception.

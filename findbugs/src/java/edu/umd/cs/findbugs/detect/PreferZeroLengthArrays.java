@@ -20,12 +20,10 @@
 package edu.umd.cs.findbugs.detect;
 import edu.umd.cs.findbugs.*;
 import java.util.*;
-import java.io.PrintStream;
 import org.apache.bcel.classfile.*;
 import java.util.zip.*;
 import java.io.*;
 
-import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
 import edu.umd.cs.findbugs.visitclass.Constants2;
 
 public class PreferZeroLengthArrays extends BytecodeScanningDetector implements   Constants2 {

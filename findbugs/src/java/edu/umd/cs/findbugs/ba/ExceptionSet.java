@@ -49,7 +49,7 @@ public class ExceptionSet {
 	/**
 	 * Object to iterate over the exception types in the set.
 	 */
-	public class ThrownExceptionIterator {
+	public class ThrownExceptionIterator implements Iterator {
 		private int last = -1, next = -1;
 
 		ThrownExceptionIterator() {
