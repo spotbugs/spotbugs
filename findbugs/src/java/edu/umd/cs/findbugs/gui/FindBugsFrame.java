@@ -805,8 +805,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
             if (!isMaximized) {
                 // Details window is shown, so make sure it is populated
                 // with bug detail information
-                BugInstance bugInstance = getCurrentBugInstance();
-                synchBugInstance(bugInstance);
+                synchBugInstance();
             }
         }
     }//GEN-LAST:event_bugTreeBugDetailsSplitterPropertyChange
@@ -1036,9 +1035,10 @@ public class FindBugsFrame extends javax.swing.JFrame {
      * @param e the TreeSelectionEvent
      */
     private void bugTreeSelectionChanged(TreeSelectionEvent e) {
+        
 	BugInstance selected = getCurrentBugInstance();
 	if (selected != null) {
-	    synchBugInstance(selected);
+	    synchBugInstance();
 	}
     }
     
@@ -1444,26 +1444,44 @@ public class FindBugsFrame extends javax.swing.JFrame {
     }
 
     /**
-     * Synchronize given bug instance with the bug detail
+     * Synchronize current bug instance with the bug detail
      * window (source view, details window, etc.)
      */
-    private void synchBugInstance(BugInstance selected) {
-         // If the bug is already the current one, then there's nothing to do
-         if (selected == currentBugInstance)
+    private void synchBugInstance() {
+        // Get current bug instance
+        BugInstance selected = getCurrentBugInstance();
+        if (selected == null)
             return;
          
-         // If the details window is minimized, then the user can't see
-         // it and there is no point in updating it.
-         if (!viewBugDetailsItem.isSelected())
+        // If the details window is minimized, then the user can't see
+        // it and there is no point in updating it.
+        if (!viewBugDetailsItem.isSelected())
              return;
+
+        // Get the current source line annotation.
+        // If the current leaf selected is not a source line annotation,
+        // use the default source line annotation from the current bug instance
+        // (if any).
+        SourceLineAnnotation srcLine = null;
+        TreePath selPath = bugTree.getSelectionPath();
+        if (selPath != null) {
+            Object leaf = ((DefaultMutableTreeNode)selPath.getLastPathComponent()).getUserObject();
+            if (leaf instanceof SourceLineAnnotation)
+                srcLine = (SourceLineAnnotation) leaf;
+            else
+                srcLine = selected.getPrimarySourceLineAnnotation();
+        }
         
         // Show source code.
-	SourceLineAnnotation primarySrcLine = selected.getPrimarySourceLineAnnotation();
-	Project project = getCurrentProject();
-	AnalysisRun analysisRun = getCurrentAnalysisRun();
-	if (project == null) throw new IllegalStateException("null project!");
-	if (analysisRun == null) throw new IllegalStateException("null analysis run!");
-	viewSource(project, analysisRun, primarySrcLine);
+        if (srcLine != currentSourceLineAnnotation) {
+            Project project = getCurrentProject();
+            AnalysisRun analysisRun = getCurrentAnalysisRun();
+            if (project == null) throw new IllegalStateException("null project!");
+            if (analysisRun == null) throw new IllegalStateException("null analysis run!");
+            viewSource(project, analysisRun, srcLine);
+            
+            currentSourceLineAnnotation = srcLine;
+        }
         
         // Show bug info.
         showBugInfo(selected);
@@ -1660,4 +1678,5 @@ public class FindBugsFrame extends javax.swing.JFrame {
     private AnalysisRun currentAnalysisRun; // be lazy in switching tree models in BugTree
     private SourceFinder sourceFinder = new SourceFinder();
     private BugInstance currentBugInstance; // be lazy in switching bug instance details
+    private SourceLineAnnotation currentSourceLineAnnotation; // as above
 }
