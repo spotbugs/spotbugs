@@ -19,16 +19,34 @@
 
 package edu.umd.cs.findbugs;
 
+/**
+ * A BugCode is an abbreviation that is shared among some number
+ * of BugPatterns.  For example, the code "HE" is shared by
+ * all of the BugPatterns that represent hashcode/equals
+ * violations.
+ *
+ * @see BugPattern
+ * @author David Hovemeyer
+ */
 public class BugCode {
 	private String abbrev;
 	private String description;
 
+	/**
+	 * Constructor.
+	 * @param abbrev the abbreviation for the bug code
+	 * @param description a short textual description of the class of bug pattern
+	 *   represented by this bug code
+	 */
 	public BugCode(String abbrev, String description) {
 		this.abbrev = abbrev;
 		this.description = description;
 	}
 
+	/** Get the abbreviation for this bug code. */
 	public String getAbbrev() { return abbrev; }
+
+	/** Get the short textual description of the bug code. */
 	public String getDescription() { return description; }
 }
 
