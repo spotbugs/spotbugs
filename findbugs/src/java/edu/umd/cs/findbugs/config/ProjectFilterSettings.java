@@ -27,6 +27,7 @@ import java.util.Set;
 import java.util.StringTokenizer;
 
 import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugPattern;
 import edu.umd.cs.findbugs.BugProperty;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.I18N;
@@ -182,9 +183,27 @@ public class ProjectFilterSettings implements Cloneable {
 	 * @return true if the warning should be displayed, false if not
 	 */
 	public boolean displayWarning(BugInstance bugInstance) {
-		return bugInstance.getPriority() <= getMinPriorityAsInt()
-			&& containsCategory(bugInstance.getBugPattern().getCategory())
-			&& (displayFalseWarnings || !Boolean.valueOf(bugInstance.getProperty(BugProperty.IS_BUG, "false")).booleanValue());
+		
+		int priority = bugInstance.getPriority();
+		if (priority > getMinPriorityAsInt())
+			return false;
+		
+		BugPattern bugPattern = bugInstance.getBugPattern();
+
+		// HACK: it is conceivable that the detector plugin which generated
+		// this warning is not available any more, in which case we can't
+		// find out the category.  Let the warning be visible in this case.
+		if (bugPattern != null && !containsCategory(bugPattern.getCategory()))
+			return false;
+		
+		if (!displayFalseWarnings) {
+			boolean isFalseWarning =
+				!Boolean.valueOf(bugInstance.getProperty(BugProperty.IS_BUG, "true")).booleanValue();
+			if (isFalseWarning)
+				return false;
+		}
+		
+		return true;
 	}
 	
 	/**
