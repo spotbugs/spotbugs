@@ -40,6 +40,10 @@ public class MergeResults {
 			System.exit(1);
 		}
 
+		if (VERSION_INSENSITIVE) {
+			System.out.println("Using version-insensitive bug comparator");
+		}
+
 		DetectorFactoryCollection.instance(); // as a side effect, loads detector plugins
 
 		String origResultsFile = argv[0];
