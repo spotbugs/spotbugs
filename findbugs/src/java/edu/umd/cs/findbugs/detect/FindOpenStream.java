@@ -93,6 +93,19 @@ public class FindOpenStream extends ResourceTrackingDetector<Stream, StreamResou
 		streamFactoryCollection.add(new StaticFieldLoadStreamFactory("java.io.OutputStream",
 			"java.lang.System", "err", "Ljava/io/PrintStream;"));
 
+		// Ignore input streams loaded from instance fields
+		streamFactoryCollection.add(new InstanceFieldLoadStreamFactory("java.io.InputStream"));
+		streamFactoryCollection.add(new InstanceFieldLoadStreamFactory("java.io.Reader"));
+
+		// Ignore output streams loaded from instance fields.
+		// FIXME: what we really should do here is ignore the stream
+		// loaded from the field, but report any streams that wrap
+		// it.  This is an important and useful distinction that the
+		// detector currently doesn't handle.  Should be fairly
+		// easy to add.
+		streamFactoryCollection.add(new InstanceFieldLoadStreamFactory("java.io.OutputStream"));
+		streamFactoryCollection.add(new InstanceFieldLoadStreamFactory("java.io.Writer"));
+
 		// JDBC objects
 		streamFactoryCollection.add(new MethodReturnValueStreamFactory("java.sql.Connection",
 			"prepareStatement", "(Ljava/lang/String;)Ljava/sql/PreparedStatement;",
