@@ -85,8 +85,13 @@ while [ -h "$PRG" ] ; do
 		PRG=`dirname "$PRG"`"/$link"
 	fi
 done
-  
-findbugs_home=`dirname "$PRG"`/..
+
+# handle FHS compliant installations (eg fink)
+if [ -d `dirname "$PRG"`/../share/java/findbugs ]; then
+    findbugs_home=`dirname "$PRG"`/../share/java/findbugs
+else
+    findbugs_home=`dirname "$PRG"`/..
+fi
 
 cd "$saveddir"
 
@@ -161,6 +166,6 @@ if [ ! -z "$JAVA_HOME" ] && [ -x "$JAVA_HOME/bin/java" ]; then
 fi
 
 # Launch FindBugs!
-$jvmCmd $jvmArgs $debugArg "-Dfindbugs.home=$findbugs_home" -jar "$findbugs_home/lib/$appJar" $argList
+exec $jvmCmd $jvmArgs $debugArg "-Dfindbugs.home=$findbugs_home" -jar "$findbugs_home/lib/$appJar" $argList
 
 # vim:ts=4
