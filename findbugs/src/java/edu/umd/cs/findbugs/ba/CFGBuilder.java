@@ -19,8 +19,24 @@
 
 package edu.umd.cs.daveho.ba;
 
+/**
+ * Abstract interface for CFG builder classes.
+ *
+ * @see CFG
+ * @see BetterCFGBuilder
+ * @author David Hovemeyer
+ */
 public interface CFGBuilder {
+	/**
+	 * Build the CFG.
+	 */
 	public void build();
+
+	/**
+	 * Get the CFG built by this object.
+	 * Assumes that the build() method has already been called.
+	 * @return the CFG
+	 */
 	public CFG getCFG();
 }
 
