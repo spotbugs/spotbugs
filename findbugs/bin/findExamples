@@ -78,8 +78,8 @@ while [ -h "$PRG" ] ; do
 done
   
 # handle FHS compliant installations (eg fink)
-if [ -d `dirname "$PRG"`/../share/java/findbugs ]; then
-    findbugs_home=`dirname "$PRG"`/../share/java/findbugs
+if [ -d `dirname "$PRG"`/../share/findbugs ]; then
+    findbugs_home=`dirname "$PRG"`/../share/findbugs
 else
     findbugs_home=`dirname "$PRG"`/..
 fi
@@ -92,6 +92,6 @@ findbugs_home=`cd "$findbugs_home" && pwd`
 # End of code shamelessly stolen from Ant.
 
 exec java -Dfindbugs.home=$findbugs_home \
-	-classpath $findbugs_home/findbugs.jar:$CLASSPATH \
+	-classpath $findbugs_home/lib/findbugs.jar:$CLASSPATH \
 	edu.umd.cs.findbugs.FindExamples $@
 

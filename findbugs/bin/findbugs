@@ -92,8 +92,8 @@ while [ -h "$PRG" ] ; do
 done
 
 # handle FHS compliant installations (eg fink)
-if [ -d `dirname "$PRG"`/../share/java/findbugs ]; then
-    findbugs_home=`dirname "$PRG"`/../share/java/findbugs
+if [ -d `dirname "$PRG"`/../share/findbugs ]; then
+    findbugs_home=`dirname "$PRG"`/../share/findbugs
 else
     findbugs_home=`dirname "$PRG"`/..
 fi
@@ -191,7 +191,9 @@ fi
 
 # extra JVM args for MacOSX:
 if [ $os = "Darwin" ]; then
-  jvmArgs="$jvmArgs -Xdock:name=FindBugs -Dapple.laf.useScreenMenuBar=true -Dcom.apple.macos.useScreenMenuBar=true"
+  jvmArgs="$jvmArgs \
+           -Xdock:name=FindBugs -Xdock:icon=${findbugs_home}/lib/bug-logo.icns \
+           -Dapple.laf.useScreenMenuBar=true"
 fi
 
 # Launch FindBugs!
