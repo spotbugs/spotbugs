@@ -23,7 +23,10 @@ foreach my $key (sort keys %allKeys) {
 	my $oldBugs = $oldResults{$key};
 	my $newBugs = $newResults{$key};
 	my $delta = $newBugs - $oldBugs;
-	print "\t$key:\t$delta\n" if ($delta != 0);
+	if ($delta != 0) {
+		$delta = "+$delta" if ($delta > 0);
+		print "\t$key:\t$delta\n";
+	}
 
 	$oldTotal += $oldBugs;
 	$newTotal += $newBugs;
