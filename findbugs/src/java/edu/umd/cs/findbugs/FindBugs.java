@@ -236,7 +236,11 @@ public class FindBugs implements Constants2
 		try {
 			Detector detector = detectors[i];
 			if (DEBUG) System.out.println("  running " + detector.getClass().getName());
-			detector.visitClassContext(classContext);
+			try {
+				detector.visitClassContext(classContext);
+			} catch (AnalysisException e) {
+				bugReporter.logError(e.toString());
+			}
 		} catch (AnalysisException e) {
 			bugReporter.logError("Analysis exception: " + e.toString());
 		}
