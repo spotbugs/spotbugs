@@ -61,10 +61,10 @@ MacOS X platforms.</para>
 -->
 
 <chapter id="installing">
-<title>Installing &FindBugs;</title>
+<title>Installing and Running &FindBugs;</title>
 
 <para>
-This chapter explains how to install &FindBugs;.
+This chapter explains how to install and run &FindBugs;.
 </para>
 
 <sect1>
@@ -133,6 +133,61 @@ to simply run the command <command>findbugs</command> from the command prompt.
 (On Windows, you can set the
 <envar>FINDBUGS_HOME</envar> environment variable to avoid having to use the
 <arg>-home</arg> option to the wrapper script.)
+</para>
+
+</sect1>
+
+<sect1>
+<title>Command Line Options</title>
+
+<para>
+The wrapper script used to invoke &FindBugs; can take
+several command line options.
+<variablelist>
+  <varlistentry>
+    <term><arg choice="req">-gui</arg></term>
+    <listitem>
+       <para>
+         Use the Graphical User Interface (GUI) for &FindBugs;.  The GUI is the
+         default, so you will generally not need to use this option.
+       </para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><arg choice="req">-textui</arg></term>
+    <listitem>
+       <para>
+         Use the command line interface instead of the GUI.
+         The command line interface is described in the <link linkend="textui">next chapter</link>.
+       </para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><arg choice="req">-jvmArgs=<replaceable>args</replaceable></arg></term>
+    <listitem>
+       <para>
+         Specifies arguments to pass to the JVM.  For example,
+         you can use this option to increase the maximum Java heap size
+         if you are analyzing a very large program.
+       </para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><arg choice="req">-plastic</arg></term>
+    <listitem>
+       <para>
+          Use the plastic look and feel from <ulink url="http://jgoodies.com/">jgoodies.com</ulink>.
+          To use this option, put the file <filename>plastic.jar</filename>
+          in the <filename class="directory">&FBHome;/lib</filename>
+          directory.
+       </para>
+    </listitem>
+  </varlistentry>
+
+</variablelist>
 </para>
 
 </sect1>
@@ -381,54 +436,11 @@ apply to source distributions, too.
 command line user interface.  This chapter describes the graphical user interface.
 </para>
 
+<!--
 <sect1>
 <title>Executing the &FindBugs; GUI</title>
-
-<para>
-To start &FindBugs; using the GUI, simply run the <command>findbugs</command>
-command.  (This assumes you have set up your executable path as described in the
-<link linkend="installing">installation section</link>.
-</para>
-
-<para>
-The <command>findbugs</command> can take several options:
-<variablelist>
-  <varlistentry>
-    <term><command>-textui</command></term>
-    <listitem>
-       <para>
-         Use the command line interface instead of the GUI.
-         The command line interface is described in the <link linkend="textui">next chapter</link>.
-       </para>
-    </listitem>
-  </varlistentry>
-
-  <varlistentry>
-    <term><command>-jvmArgs=<replaceable>args</replaceable></command></term>
-    <listitem>
-       <para>
-         Specifies arguments to pass to the JVM.  For example,
-         you can use this option to increase the maximum Java heap size
-         if you are analyzing a very large program.
-       </para>
-    </listitem>
-  </varlistentry>
-
-  <varlistentry>
-    <term><command>-plastic</command></term>
-    <listitem>
-       <para>
-          Use the plastic look and feel from <ulink url="http://jgoodies.com/">jgoodies.com</ulink>.
-          To use this option, put the file <filename>plastic.jar</filename>
-          in the <filename class="directory">&FBHome;/lib</filename>
-          directory.
-       </para>
-    </listitem>
-  </varlistentry>
-
-</variablelist>
-</para>
 </sect1>
+-->
 
 <sect1>
 <title>Creating a Project</title>
