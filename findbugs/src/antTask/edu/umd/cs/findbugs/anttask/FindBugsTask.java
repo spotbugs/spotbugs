@@ -79,8 +79,9 @@ import java.util.List;
  * <li>reportLevel     (enum low|medium|high)
  * <li>sort            (boolean default true)
  * <li>debug           (boolean default false) 
- * <li>output          (enum text|xml - default xml)
+ * <li>output          (enum text|xml|xml:withMessages|html - default xml)
  * <li>outputFile      (name of output file to create)
+ * <li>stylesheet      (name of stylesheet to generate HTML: default is "default.xsl")
  * <li>visitors        (collection - comma seperated)
  * <li>omitVisitors    (collection - comma seperated)
  * <li>excludeFilter   (filter filename)
@@ -100,7 +101,7 @@ import java.util.List;
  *
  * @author Mike Fagan <a href="mailto:mfagan@tde.com">mfagan@tde.com</a>
  *
- * @version $Revision: 1.26 $
+ * @version $Revision: 1.27 $
  *
  * @since Ant 1.5
  *
@@ -130,6 +131,7 @@ public class FindBugsTask extends Task {
 	private String visitors = null;
 	private String omitVisitors = null;
 	private String outputFileName = null;
+	private String stylesheet = null;
     private List classLocations = new ArrayList();
 	private long timeout = DEFAULT_TIMEOUT;
 	private Path classpath = null;
@@ -213,6 +215,13 @@ public class FindBugsTask extends Task {
 	 */
 	public void setOutput(String format) {
 		this.outputFormat = format;
+	}
+
+	/**
+	 * Set the stylesheet filename for HTML generation.
+	 */
+	public void setStylesheet(String stylesheet) {
+		this.stylesheet = stylesheet;
 	}
 
 	/**
@@ -470,11 +479,13 @@ public class FindBugsTask extends Task {
  
 		if ( outputFormat != null  && 
 			!( outputFormat.trim().equalsIgnoreCase("xml" ) || 
+			   outputFormat.trim().equalsIgnoreCase("xml:withMessages" ) || 
+			   outputFormat.trim().equalsIgnoreCase("html" ) || 
 			   outputFormat.trim().equalsIgnoreCase("text" ) ||
 			   outputFormat.trim().equalsIgnoreCase("xdocs" ) ||
 			   outputFormat.trim().equalsIgnoreCase("emacs") ) ) { 
 			throw new BuildException( "output attribute must be either " +
-  									  "'text', 'xml', 'xdocs' or 'emacs' for task <"
+  									  "'text', 'xml', 'html', 'xdocs' or 'emacs' for task <"
 										+ getTaskName() + "/>",
 									  getLocation() );
 		}
@@ -561,7 +572,21 @@ public class FindBugsTask extends Task {
 
 		if ( sorted ) addArg("-sortByClass");
 		if ( outputFormat != null && !outputFormat.trim().equalsIgnoreCase("text") ) {
-			addArg("-" + outputFormat.trim().toLowerCase());
+			outputFormat = outputFormat.trim();
+			String outputArg = "-";
+			int colon = outputFormat.indexOf(':');
+			if (colon >= 0) {
+				outputArg += outputFormat.substring(0, colon).toLowerCase();
+				outputArg += ":";
+				outputArg += outputFormat.substring(colon + 1);
+			} else {
+				outputArg += outputFormat.toLowerCase();
+				if (stylesheet != null) {
+					outputArg += ":";
+					outputArg += stylesheet.trim();
+				}
+			}
+			addArg(outputArg);
 		}
 		if ( quietErrors ) addArg("-quiet");
 		if ( reportLevel != null ) addArg("-" + reportLevel.trim().toLowerCase());
