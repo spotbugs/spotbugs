@@ -106,11 +106,15 @@
 
 	<td>
 	<xsl:choose>
-		<xsl:when test="SourceLine[1]">
+		<xsl:when test="SourceLine">
 			<xsl:apply-templates select="SourceLine[1]"/>
 		</xsl:when>
-		<xsl:when test="Method/SourceLine[1]">
-			<xsl:apply-templates select="Method/SourceLine[1]"/>
+		<xsl:when test="Method[1]/SourceLine">
+			<xsl:apply-templates select="Method[1]/SourceLine"/>
+<!--
+			<xsl:variable name="firstMethodWithSourceLine" select="Method/SourceLine/.."/>
+			<xsl:apply-templates select="$firstMethodWithSourceLine"/>
+-->
 		</xsl:when>
 	</xsl:choose>
 	</td>
@@ -119,14 +123,12 @@
 </xsl:template>
 
 <xsl:template match="SourceLine">
-	<xsl:value-of select="@sourcefile"/><!--
---><xsl:choose>
-		<xsl:when test="@start &gt; 0"><!--
-		--><xsl:if test="@end != @start"><!--
-				-->, lines <xsl:value-of select="@start"/>-<xsl:value-of select="@end"/>
+	<xsl:value-of select="@sourcefile"/>
+	<xsl:choose>
+		<xsl:when test="@start &gt; 0">
+			<xsl:if test="@end != @start">, lines <xsl:value-of select="@start"/>-<xsl:value-of select="@end"/>
 			</xsl:if>
-			<xsl:if test="@start = @end"><!--
-				-->, line <xsl:value-of select="@start"/>
+			<xsl:if test="@start = @end">, line <xsl:value-of select="@start"/>
 			</xsl:if>
 		</xsl:when>
 	</xsl:choose>
