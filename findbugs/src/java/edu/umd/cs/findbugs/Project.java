@@ -26,6 +26,8 @@
 package edu.umd.cs.findbugs;
 
 import java.io.*;
+import java.net.URL;
+import java.net.MalformedURLException;
 import java.util.*;
 import java.util.jar.*;
 
@@ -47,6 +49,8 @@ import org.dom4j.Element;
  * @author David Hovemeyer
  */
 public class Project {
+	private static final boolean DEBUG = Boolean.getBoolean("findbugs.project.debug");
+
 	/**
 	 * Project filename.
 	 */
@@ -298,6 +302,96 @@ public class Project {
 	}
 
 	/**
+	 * Worklist item for finding implicit classpath entries.
+	 */
+	private static class WorkListItem {
+		private URL url;
+
+		/**
+		 * Constructor.
+		 *
+		 * @param url the URL of the Jar or Zip file
+		 */
+		public WorkListItem(URL url) {
+			this.url = url;
+		}
+
+		/**
+		 * Get URL of Jar/Zip file.
+		 */
+		public URL getURL() {
+			return this.url;
+		}
+	}
+
+	/**
+	 * Worklist for finding implicit classpath entries.
+	 */
+	private static class WorkList {
+		private LinkedList<WorkListItem> itemList;
+		private HashSet<String> addedSet;
+
+		/**
+		 * Constructor.
+		 * Creates an empty worklist.
+		 */
+		public WorkList() {
+			this.itemList = new LinkedList<WorkListItem>();
+			this.addedSet = new HashSet<String>();
+		}
+
+		/**
+		 * Create a URL from a filename specified in the project file.
+		 */
+		public URL createURL(String fileName) throws MalformedURLException {
+			String protocol = FindBugs.getURLProtocol(fileName);
+			if (protocol == null) {
+				fileName = "file:" + fileName;
+			}
+			return new URL(fileName);
+		}
+
+		/**
+		 * Create a URL of a file relative to another URL.
+		 */
+		public URL createRelativeURL(URL base, String fileName) throws MalformedURLException {
+			return new URL(base, fileName);
+		}
+
+		/**
+		 * Add a worklist item.
+		 *
+		 * @param item the WorkListItem representing a zip/jar file to be examined
+		 * @return true if the item was added, false if not (because it was
+		 *         examined already)
+		 */
+		public boolean add(WorkListItem item) {
+			if (DEBUG) System.out.println("Adding " + item.getURL().toString());
+			if (!addedSet.add(item.getURL().toString())) {
+				if (DEBUG) System.out.println("\t==> Already processed");
+				return false;
+			}
+
+			itemList.add(item);
+			return true;
+		}
+
+		/**
+		 * Return whether or not the worklist is empty.
+		 */
+		public boolean isEmpty() {
+			return itemList.isEmpty();
+		}
+
+		/**
+		 * Get the next item in the worklist.
+		 */
+		public WorkListItem getNextItem() {
+			return itemList.removeFirst();
+		}
+	}
+
+	/**
 	 * Return the list of implicit classpath entries.  The implicit
 	 * classpath is computed from the closure of the set of jar files
 	 * that are referenced by the <code>"Class-Path"</code> attribute
@@ -307,116 +401,77 @@ public class Project {
 	 * are the list of implicit classpath entries.
 	 */
 	public List<String> getImplicitClasspathEntryList() {
-		final HashSet<File> processedJars = new HashSet<File>();
 		final LinkedList<String> implicitClasspath = new LinkedList<String>();
+		WorkList workList = new WorkList();
 
+		// Prime the worklist by adding the zip/jar files
+		// in the project.
 		for (Iterator<String> i = jarList.iterator(); i.hasNext();) {
 			String fileName = i.next();
 
-			if (!fileName.endsWith(".zip") && !fileName.endsWith(".jar"))
-				continue;
-
-			final File jarFile = new File(fileName);
-
-			if (jarFile.isFile() && !processedJars.contains(jarFile)) {
-				// Add the name of the jar to the list of processed jars to
-				// avoid recursion.
-				processedJars.add(jarFile);
-
-				processComponentJar(jarFile, processedJars, implicitClasspath);
+			try {
+				URL url = workList.createURL(fileName);
+				WorkListItem item = new WorkListItem(url);
+				workList.add(item);
+			} catch (MalformedURLException ignore) {
+				// Ignore
 			}
+		}
+
+		// Scan recursively.
+		while (!workList.isEmpty()) {
+			WorkListItem item = workList.getNextItem();
+			processComponentJar(item.getURL(), workList, implicitClasspath);
 		}
 
 		return implicitClasspath;
 	}
 
 	/**
-	 * Get the parent directory of the specified file.  The method attempts
-	 * to determine the canonical name of the specified path and then
-	 * returns the parent directory.  If unable to determine the canonical
-	 * name of the path, then the absolute form of the path is used.  If
-	 * no parent directory can be determined from the specified path, then
-	 * the current directory of the JVM, as specified in the system property
-	 * <code>"user.dir"</code>, is used.
+	 * Examine the manifest of a single zip/jar file for implicit
+	 * classapth entries.
 	 *
-	 * @param file the file whose parent directory is to be determined
-	 * @return the file for the parent directory
+	 * @param jarFileURL        URL of the zip/jar file
+	 * @param workList          worklist of zip/jar files to examine
+	 * @param implicitClasspath list of implicit classpath entries found
 	 */
-	private static File getParentFile(File file) {
+	private void processComponentJar(URL jarFileURL, WorkList workList,
+		List<String> implicitClasspath) {
+
+		if (DEBUG) System.out.println("Processing " + jarFileURL.toString());
+
+		if (!jarFileURL.toString().endsWith(".zip") && !jarFileURL.toString().endsWith(".jar"))
+			return;
+
 		try {
-			file = file.getCanonicalFile();
-		} catch (IOException unused) {
-			file = file.getAbsoluteFile();
-		}
+			URL manifestURL = new URL("jar:" + jarFileURL.toString() + "!/META-INF/MANIFEST.MF");
 
-		File parent = file.getParentFile();
-
-		if (parent == null) {
-			parent = new File(System.getProperty("user.dir", "."));
-		}
-
-		return parent;
-	}
-
-	/**
-	 * Get the <code>Class-Path</code> attribute for the specified jar file.
-	 *
-	 * @param jarFile the file to process
-	 * @return the classpath for the specified jar file, may be
-	 *         <code>null</code>
-	 */
-	private static String getClassPath(final File jarFile) {
-		String result = null;
-
-		if (jarFile.isFile()) {
+			InputStream in = null;
 			try {
-				final JarFile jar = new JarFile(jarFile);
-				final Manifest manifest = jar.getManifest();
-				if (manifest != null) {
-					final Attributes mainAttrs = manifest.getMainAttributes();
-					result = mainAttrs.getValue("Class-Path");
-				}
-			} catch (IOException ioExc) {
-				System.err.println("Unable to access Jar file: " + jarFile +
-				        ", exc = " + ioExc);
-			}
-		} else {
-			System.err.println("Missing Jar file: " + jarFile);
-		}
+				in = manifestURL.openStream();
+				Manifest manifest = new Manifest(in);
 
-		return result;
-	}
+				Attributes mainAttrs = manifest.getMainAttributes();
+				String classPath = mainAttrs.getValue("Class-Path");
+				if (classPath != null) {
+					String[] jarList = classPath.split("\\s+");
 
-	/**
-	 * Process the specified jar file and add any new jar files on which it
-	 * depends to the list of implicit classpath entries.
-	 */
-	private void processComponentJar(final File jar, final HashSet<File> processedJars,
-	                                 final LinkedList<String> implicitClasspath) {
-		String jarClassPath = getClassPath(jar);
-
-		if (jarClassPath != null) {
-			final File baseDir = getParentFile(jar);
-
-			jarClassPath = jarClassPath.trim();
-			if (jarClassPath.length() > 0) {
-				final String[] jarList = jarClassPath.split("\\s+");
-
-				for (int i = 0; i < jarList.length; ++i) {
-					final String curJarName = jarList[i];
-					final File curJar = new File(baseDir, curJarName);
-
-					if (curJar.isFile() && !processedJars.contains(curJar)) {
-						final String curJarPath = curJar.toString();
-
-						processedJars.add(curJar);
-						if (!implicitClasspath.contains(curJarPath)) {
-							implicitClasspath.add(curJarPath);
+					for (int i = 0; i < jarList.length; ++i) {
+						String jarFile = jarList[i];
+						URL referencedURL = workList.createRelativeURL(jarFileURL, jarFile);
+						if (workList.add(new WorkListItem(referencedURL))) {
+							implicitClasspath.add(referencedURL.toString());
+							if (DEBUG) System.out.println("Implicit jar: " + referencedURL.toString());
 						}
-						processComponentJar(curJar, processedJars, implicitClasspath);
 					}
 				}
+			} finally {
+				if (in != null) {
+					in.close();
+				}
 			}
+		} catch (IOException ignore) {
+			// Ignore
 		}
 	}
 
