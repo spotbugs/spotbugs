@@ -25,6 +25,7 @@ import edu.umd.cs.findbugs.ByteCodePatternDetector;
 
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.ba.DominatorsAnalysis;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.Hierarchy;
 import edu.umd.cs.findbugs.ba.Location;
@@ -41,6 +42,7 @@ import edu.umd.cs.findbugs.ba.bcp.IfNull;
 import edu.umd.cs.findbugs.ba.bcp.Load;
 import edu.umd.cs.findbugs.ba.bcp.PatternElementMatch;
 import edu.umd.cs.findbugs.ba.bcp.Store;
+import edu.umd.cs.findbugs.ba.bcp.Wild;
 
 import java.util.BitSet;
 import java.util.Iterator;
@@ -67,7 +69,7 @@ public class LazyInit extends ByteCodePatternDetector {
 	private BugReporter bugReporter;
 
 	/** Number of wildcard instructions for creating the object. */
-	private static final int CREATE_OBJ_WILD = 10;
+	private static final int CREATE_OBJ_WILD = 150;
 
 	/** The pattern to look for. */
 	private static ByteCodePattern pattern = new ByteCodePattern();
@@ -75,7 +77,7 @@ public class LazyInit extends ByteCodePatternDetector {
 		pattern
 			.add(new Load("f", "val").label("start"))
 			.add(new IfNull("val"))
-			.addWild(CREATE_OBJ_WILD)
+			.add(new Wild(CREATE_OBJ_WILD).label("createObject"))
 			.add(new Store("f", pattern.dummyVariable()).label("end"));
 	}
 
@@ -158,6 +160,16 @@ public class LazyInit extends ByteCodePatternDetector {
 			// If the instruction sequence did not contain a NEW instruction
 			// or any Invoke instructions, then a new object was not created.
 			if (!(sawNEW || sawINVOKE))
+				return;
+
+			// The first instruction in the "create object" sequence
+			// must dominate the Store of the created object (disregarding
+			// exception edges).
+			DominatorsAnalysis dominators = classContext.getNonExceptionDominatorsAnalysis(method);
+			PatternElementMatch createBegin = match.getFirstLabeledMatch("createObject");
+			PatternElementMatch store = match.getFirstLabeledMatch("end");
+			BitSet storeDominators = dominators.getStartFact(store.getBasicBlock());
+			if (!storeDominators.get(createBegin.getBasicBlock().getId()))
 				return;
 
 			// Compute the priority:
