@@ -109,6 +109,8 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame> {
 		handle.getInstruction().accept(visitor);
 	}
 
+	private static final ObjectType throwableObjectType = new ObjectType("java.lang.Throwable");
+
 	public void meetInto(TypeFrame fact, Edge edge, TypeFrame result) throws DataflowAnalysisException {
 		BasicBlock basicBlock = edge.getDest();
 		if (basicBlock.isExceptionHandler() && fact.isValid()) {
@@ -120,7 +122,10 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame> {
 			TypeFrame tmpFact = createFact();
 			tmpFact.copyFrom(fact);
 			tmpFact.clearStack();
-			tmpFact.pushValue(exceptionGen.getCatchType());
+			Type catchType = exceptionGen.getCatchType();
+			if (catchType == null)
+				catchType = throwableObjectType; // handle catches anything throwable
+			tmpFact.pushValue(catchType);
 			fact = tmpFact;
 		}
 		result.mergeWith(fact);
