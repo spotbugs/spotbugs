@@ -192,8 +192,10 @@ public class FindOpenStream implements Detector {
 							ResourceValueFrame exitFrame = dataflow.getResultFact(cfg.getExit());
 
 							if (exitFrame.getStatus() == ResourceValueFrame.OPEN) {
-								System.out.println("Open!");
-								// TODO: use BugReporter
+								bugReporter.reportBug(new BugInstance("OS_OPEN_STREAM", NORMAL_PRIORITY)
+									.addClassAndMethod(methodGen)
+									.addSourceLine(methodGen, stream.creationPoint.getHandle())
+								);
 							}
 						}
 					}
