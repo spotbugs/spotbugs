@@ -160,6 +160,40 @@ public class FindBugs implements Constants2
 	}
   }
 
+  private static class ErrorCountingBugReporter extends DelegatingBugReporter {
+	private int bugCount;
+	private int errorCount;
+
+	public ErrorCountingBugReporter(BugReporter realBugReporter) {
+		super(realBugReporter);
+		this.bugCount = 0;
+		this.errorCount = 0;
+	}
+
+	public int getBugCount() {
+		return bugCount;
+	}
+
+	public int getErrorCount() {
+		return errorCount;
+	}
+
+	public void reportBug(BugInstance bugInstance) {
+		++bugCount;
+		super.reportBug(bugInstance);
+	}
+
+	public void logError(String message) {
+		++errorCount;
+		super.logError(message);
+	}
+
+	public void reportMissingClass(ClassNotFoundException ex) {
+		++errorCount;
+		super.reportMissingClass(ex);
+	}
+  }
+
   /* ----------------------------------------------------------------------
    * Member variables
    * ---------------------------------------------------------------------- */
@@ -169,7 +203,7 @@ public class FindBugs implements Constants2
   /** FindBugs home directory. */
   private static String home;
 
-  private BugReporter bugReporter;
+  private ErrorCountingBugReporter bugReporter;
   private Project project;
   private Detector detectors [];
   private FindBugsProgress progressCallback;
@@ -191,7 +225,7 @@ public class FindBugs implements Constants2
 	if (project == null)
 		throw new IllegalArgumentException("null project");
 
-	this.bugReporter = bugReporter;
+	this.bugReporter = new ErrorCountingBugReporter(bugReporter);
 	this.project = project;
 
 	// Create a no-op progress callback.
@@ -221,7 +255,9 @@ public class FindBugs implements Constants2
    */
   public void setFilter(String filterFileName, boolean include) throws IOException, FilterException {
 	Filter filter = new Filter(filterFileName);
-	bugReporter = new FilterBugReporter(bugReporter, filter, include);
+	BugReporter origBugReporter = bugReporter.getRealBugReporter();
+	BugReporter filterBugReporter = new FilterBugReporter(origBugReporter, filter, include);
+	bugReporter.setRealBugReporter(filterBugReporter);
   }
 
   /**
@@ -273,6 +309,20 @@ public class FindBugs implements Constants2
    */
   public String getSourceFile(String className) {
 	return bugReporter.getSourceForClass(className);
+  }
+
+  /**
+   * Get the number of bug instances that were reported during analysis.
+   */
+  public int getBugCount() {
+	return bugReporter.getBugCount();
+  }
+
+  /**
+   * Get the number of errors that occurred during analysis.
+   */
+  public int getErrorCount() {
+	return bugReporter.getErrorCount();
   }
 
   /**
@@ -592,5 +642,11 @@ public class FindBugs implements Constants2
 
 	findBugs.execute();
 
+	int bugCount = findBugs.getBugCount();
+	if (bugCount > 0)
+		System.err.println("Bugs found: " + bugCount);
+	int errorCount = findBugs.getErrorCount();
+	if (errorCount > 0)
+		System.err.println("Analysis errors: " + errorCount);
   }
 }
