@@ -19,7 +19,7 @@
 
 package edu.umd.cs.findbugs;
 
-public class FilterBugReporter implements BugReporter {
+public class FilterBugReporter extends DelegatingBugReporter {
 	private static final boolean DEBUG = Boolean.getBoolean("filter.debug");
 
 	private BugReporter realBugReporter;
@@ -27,13 +27,9 @@ public class FilterBugReporter implements BugReporter {
 	private boolean include;
 
 	public FilterBugReporter(BugReporter realBugReporter, Filter filter, boolean include) {
-		this.realBugReporter = realBugReporter;
+		super(realBugReporter);
 		this.filter = filter;
 		this.include = include;
-	}
-
-	public void setErrorVerbosity(int level) {
-		realBugReporter.setErrorVerbosity(level);
 	}
 
 	public void reportBug(BugInstance bugInstance) {
@@ -41,31 +37,7 @@ public class FilterBugReporter implements BugReporter {
 		boolean match = filter.match(bugInstance);
 		if (DEBUG) System.out.println(match ? "YES" : "NO");
 		if ((include && match) || (!include && !match))
-			realBugReporter.reportBug(bugInstance);
-	}
-
-	public void logError(String message) {
-		realBugReporter.logError(message);
-	}
-
-	public void mapClassToSource(String className, String sourceFileName) {
-		realBugReporter.mapClassToSource(className, sourceFileName);
-	}
-
-	public String getSourceForClass(String className) {
-		return realBugReporter.getSourceForClass(className);
-	}
-
-	public void reportMissingClass(ClassNotFoundException ex) {
-		realBugReporter.reportMissingClass(ex);
-	}
-
-	public void finish() {
-		realBugReporter.finish();
-	}
-
-	public void reportQueuedErrors() {
-		realBugReporter.reportQueuedErrors();
+			getRealBugReporter().reportBug(bugInstance);
 	}
 }
 
