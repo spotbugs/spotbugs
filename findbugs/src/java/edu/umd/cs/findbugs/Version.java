@@ -30,13 +30,16 @@ public class Version {
 	public static final int MINOR = 7;
 
 	/** Patch level. */
-	public static final int PATCHLEVEL = 0;
+	public static final int PATCHLEVEL = 1;
 
 	/** Release version string. */
 	public static final String RELEASE = MAJOR + "." + MINOR + "." + PATCHLEVEL;
 
 	/** Release date. */
-	public static final String DATE = "October 22, 2003";
+	public static final String DATE = "February 11, 2004";
+
+	/** Version of Eclipse UI plugin. */
+	public static final String ECLIPSE_UI_VERSION = "0.0.3";
 
 	public static void main(String[] argv) {
 		if (argv.length != 1)
@@ -51,6 +54,7 @@ public class Version {
 		else if (arg.equals("-props")) {
 			System.out.println("release.number="+RELEASE);
 			System.out.println("release.date="+DATE);
+			System.out.println("eclipse.ui.version="+ECLIPSE_UI_VERSION);
 		} else
 			usage();
 	}

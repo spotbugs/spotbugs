@@ -22,6 +22,8 @@ can analyze programs compiled for any version of Java.
 <li> <a href="http://www.cs.umd.edu/~pugh/java/bugs/release/findbugs-@VERSION@.tar.gz">Binary distribution (.tar.gz)</a>
 <li> <a href="http://www.cs.umd.edu/~pugh/java/bugs/release/findbugs-@VERSION@.zip">Binary distribution (.zip)</a>
 <li> <a href="http://www.cs.umd.edu/~pugh/java/bugs/release/findbugs-@VERSION@-source.tar.gz">Source distribution</a>
+<li> <a href="http://www.cs.umd.edu/~pugh/java/bugs/release/edu.umd.cs.findbugs_@VERSION@.zip">Core Eclipse plugin</a>
+<li> <a href="http://www.cs.umd.edu/~pugh/java/bugs/release/de.tobject.findbugs_@ECLIPSE_UI_VERSION@.zip">UI Eclipse plugin</a>
 </ul>
 
 <p> You can also browse a list of <a href="http://www.cs.umd.edu/~pugh/java/bugs/release/">all releases</a>.
@@ -48,6 +50,8 @@ invited talk, MASPLAS 2003
 <h1>Links</h1>
 
 <ul>
+<li> <a href="http://www.tobject.de/development/findbugs.html">FindBugs Eclipse plugin</a>.&nbsp;
+     This is now included as part of FindBugs.
 <li> <a href="http://maven-plugins.sourceforge.net/maven-findbugs-plugin/index.html">Maven FindBugs plugin</a>.&nbsp;
       Maven is a Java project management and project comprehension tool.&nbsp;
       The Maven FindBugs plugin allows FindBugs reports to be generated
@@ -64,6 +68,10 @@ invited talk, MASPLAS 2003
 <p> Changes since version 0.7.0:
 
 <ul>
+<li> Eclipse plugin (contributed by Peter Friese)
+<li> Source package structure rearranged: all source
+     (other than Eclipse plugin UI) is in
+     the edu.umd.cs.findbugs package, or a subpackage
 <li> Class-Path attributes of manifests of analyzed jar files are
      used to set the aux classpath automatically (Peter D. Stout)
 <li> GUI starts in directory specified by user.home property (Peter D. Stout)
