@@ -112,6 +112,8 @@ public class FindMaskedFields extends BytecodeScanningDetector implements Consta
 			if (varName.equals("serialVersionUID"))
 				continue;
 			FieldAnnotation fa;
+			// TODO: we could distinguish between obscuring a field in the same class
+			// vs. obscuring a field in a superclass.  Not sure how important that is.
 			if ((fa = classFieldMap.get(varName)) != null || (fa = superclassFieldMap.get(varName)) != null) {
 				if (var.getStartPC() > 0)
 					bugReporter.reportBug(
