@@ -92,7 +92,13 @@ a dialog which looks like this:
 containing java classes to analyze for bugs.&nbsp; You may add multiple Jar files.&nbsp;
 Optionally, you can add the source directories which contain the source code for
 the Jar files you are analyzing.&nbsp; This will enable FindBugs to highlight the
-source code which contains a possible error.
+source code which contains a possible error.&nbsp; Another optional step is to
+add additional Jar files or directories as classpath entries.&nbsp; You should do this
+if the Jar files you are analyzing have references to other classes which are not
+included in the analyzed jar files and are not in the standard runtime classpath.&nbsp;
+Some of the bug pattern detectors in FindBugs make use of class hierarchy information,
+so you will get more accurate results if the entire class hierarchy is available
+which FindBugs performs its analysis.
 
 <h3>2.1.3 Running the analysis</h3>
 
