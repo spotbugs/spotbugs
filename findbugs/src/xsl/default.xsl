@@ -54,6 +54,10 @@
 	<head>
 		<title>FindBugs Report</title>
 		<style type="text/css">
+		table.warningtable {
+			border-collapse: collapse;
+		}
+
 		.tablerow0 {
 			background: #EEEEEE;
 		}
@@ -65,7 +69,27 @@
 		.tableheader {
 			background: #b9b9fe;
 		}
+
+		.tablerow0:hover, .tablerow1:hover {
+			background: #aaffaa;
+		}
 		</style>
+		<script type="text/javascript">
+			// <![CDATA[
+			function toggleRow(elid) {
+				if (document.getElementById) {
+					element = document.getElementById(elid);
+					if (element.style.display == 'none') {
+						element.style.display = 'table-row';
+						//window.status = 'Toggle on!';
+					} else {
+						element.style.display = 'none';
+						//window.status = 'Toggle off!';
+					}
+				}
+			}
+			// ]]>
+		</script>
 	</head>
 	<body>
 
@@ -74,9 +98,11 @@
 
 	<h1>Warnings</h1>
 
+	<p>Click on a warning row to see full context information.</p>
+
 	<h2><a name="Warnings_CORRECTNESS">Correctness</a></h2>
 	<p>
-	<table width="100%">
+	<table class="warningtable" width="100%">
 	<xsl:copy-of select="$bugTableHeader"/>
 	<xsl:apply-templates select="/BugCollection/BugInstance[@category='CORRECTNESS']">
 		<xsl:sort select="@abbrev"/>
@@ -87,7 +113,7 @@
 
 	<h2><a name="Warnings_MT_CORRECTNESS">Multithreaded Correctness</a></h2>
 	<p>
-	<table width="100%">
+	<table class="warningtable" width="100%">
 	<xsl:copy-of select="$bugTableHeader"/>
 	<xsl:apply-templates select="/BugCollection/BugInstance[@category='MT_CORRECTNESS']">
 		<xsl:sort select="@abbrev"/>
@@ -98,7 +124,7 @@
 
 	<h2><a name="Warnings_MALICIOUS_CODE">Malicious Code Vulnerability</a></h2>
 	<p>
-	<table width="100%">
+	<table class="warningtable" width="100%">
 	<xsl:copy-of select="$bugTableHeader"/>
 	<xsl:apply-templates select="/BugCollection/BugInstance[@category='MALICIOUS_CODE']">
 		<xsl:sort select="@abbrev"/>
@@ -109,7 +135,7 @@
 
 	<h2><a name="Warnings_PERFORMANCE">Performance</a></h2>
 	<p>
-	<table width="100%">
+	<table class="warningtable" width="100%">
 	<xsl:copy-of select="$bugTableHeader"/>
 	<xsl:apply-templates select="/BugCollection/BugInstance[@category='PERFORMANCE']">
 		<xsl:sort select="@abbrev"/>
@@ -130,8 +156,10 @@
 </xsl:template>
 
 <xsl:template match="BugInstance">
+	<xsl:variable name="warningClass">tablerow<xsl:value-of select="position() mod 2"/></xsl:variable>
+	<xsl:variable name="warningId"><xsl:value-of select="generate-id()"/></xsl:variable>
 
-	<tr class="tablerow{position() mod 2}">
+	<tr class="{$warningClass}" onclick="toggleRow('{$warningId}');">
 
 	<td>
 	<xsl:value-of select="@abbrev"/>
@@ -154,6 +182,16 @@
 	</td>
 
 	</tr>
+
+	<!-- Add bug annotation elements: Class, Method, Field, SourceLine, Field -->
+	<tr class="{$warningClass}" id="{$warningId}" style="display: none;">
+		<td/>
+		<td colspan="2">
+			<table>
+				<xsl:apply-templates select="./*" mode="warningAnnotation"/>
+			</table>
+		</td>
+	</tr>
 </xsl:template>
 
 <xsl:template match="SourceLine">
@@ -174,6 +212,24 @@
 <xsl:template match="BugPattern">
 	<h2><a name="{@type}"><xsl:value-of select="@abbrev"/>: <xsl:value-of select="ShortDescription"/></a></h2>
 	<xsl:value-of select="Details" disable-output-escaping="yes"/>
+</xsl:template>
+
+<xsl:template match="Class">
+	<tr>
+		<td>In class <xsl:value-of select="@classname"/></td>
+	</tr>
+</xsl:template>
+
+<xsl:template match="Method" mode="warningAnnotation">
+	<tr>
+		<td>In method <xsl:value-of select="@fancyname"/></td>
+	</tr>
+</xsl:template>
+
+<xsl:template match="Field" mode="warningAnnotation">
+	<tr>
+		<td>Field <xsl:value-of select="@classname"/>.<xsl:value-of select="@name"/></td>
+	</tr>
 </xsl:template>
 
 </xsl:stylesheet>
