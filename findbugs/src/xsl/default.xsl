@@ -112,49 +112,29 @@
 
 	<p>Click on a warning row to see full context information.</p>
 
-	<h2><a name="Warnings_CORRECTNESS">Correctness</a></h2>
-	<p>
-	<table class="warningtable" width="100%">
-	<xsl:copy-of select="$bugTableHeader"/>
-	<xsl:apply-templates select="/BugCollection/BugInstance[@category='CORRECTNESS']">
-		<xsl:sort select="@abbrev"/>
-		<xsl:sort select="Class/@classname"/>
-	</xsl:apply-templates>
-	</table>
-	</p>
+	<xsl:call-template name="generateWarningTable">
+		<xsl:with-param name="warningSet" select="/BugCollection/BugInstance[@category='CORRECTNESS']"/>
+		<xsl:with-param name="sectionTitle">Correctness Warnings</xsl:with-param>
+		<xsl:with-param name="sectionId">Warnings_CORRECTNESS</xsl:with-param>
+	</xsl:call-template>
 
-	<h2><a name="Warnings_MT_CORRECTNESS">Multithreaded Correctness</a></h2>
-	<p>
-	<table class="warningtable" width="100%">
-	<xsl:copy-of select="$bugTableHeader"/>
-	<xsl:apply-templates select="/BugCollection/BugInstance[@category='MT_CORRECTNESS']">
-		<xsl:sort select="@abbrev"/>
-		<xsl:sort select="Class/@classname"/>
-	</xsl:apply-templates>
-	</table>
-	</p>
+	<xsl:call-template name="generateWarningTable">
+		<xsl:with-param name="warningSet" select="/BugCollection/BugInstance[@category='MT_CORRECTNESS']"/>
+		<xsl:with-param name="sectionTitle">Multithreaded Correctness Warnings</xsl:with-param>
+		<xsl:with-param name="sectionId">Warnings_MT_CORRECTNESS</xsl:with-param>
+	</xsl:call-template>
 
-	<h2><a name="Warnings_MALICIOUS_CODE">Malicious Code Vulnerability</a></h2>
-	<p>
-	<table class="warningtable" width="100%">
-	<xsl:copy-of select="$bugTableHeader"/>
-	<xsl:apply-templates select="/BugCollection/BugInstance[@category='MALICIOUS_CODE']">
-		<xsl:sort select="@abbrev"/>
-		<xsl:sort select="Class/@classname"/>
-	</xsl:apply-templates>
-	</table>
-	</p>
+	<xsl:call-template name="generateWarningTable">
+		<xsl:with-param name="warningSet" select="/BugCollection/BugInstance[@category='MALICIOUS_CODE']"/>
+		<xsl:with-param name="sectionTitle">Malicious Code Vulnerability Warnings</xsl:with-param>
+		<xsl:with-param name="sectionId">Warnings_MALICIOUS_CODE</xsl:with-param>
+	</xsl:call-template>
 
-	<h2><a name="Warnings_PERFORMANCE">Performance</a></h2>
-	<p>
-	<table class="warningtable" width="100%">
-	<xsl:copy-of select="$bugTableHeader"/>
-	<xsl:apply-templates select="/BugCollection/BugInstance[@category='PERFORMANCE']">
-		<xsl:sort select="@abbrev"/>
-		<xsl:sort select="Class/@classname"/>
-	</xsl:apply-templates>
-	</table>
-	</p>
+	<xsl:call-template name="generateWarningTable">
+		<xsl:with-param name="warningSet" select="/BugCollection/BugInstance[@category='PERFORMANCE']"/>
+		<xsl:with-param name="sectionTitle">Performance Warnings</xsl:with-param>
+		<xsl:with-param name="sectionId">Warnings_PERFORMANCE</xsl:with-param>
+	</xsl:call-template>
 
 	<h1><a name="Details">Details</a></h1>
 
@@ -201,6 +181,23 @@
 <xsl:template match="BugPattern">
 	<h2><a name="{@type}"><xsl:value-of select="@type"/>: <xsl:value-of select="ShortDescription"/></a></h2>
 	<xsl:value-of select="Details" disable-output-escaping="yes"/>
+</xsl:template>
+
+<xsl:template name="generateWarningTable">
+	<xsl:param name="warningSet"/>
+	<xsl:param name="sectionTitle"/>
+	<xsl:param name="sectionId"/>
+
+	<h2><a name="{$sectionId}"><xsl:value-of select="$sectionTitle"/></a></h2>
+	<p>
+		<table class="warningtable" width="100%">
+			<xsl:copy-of select="$bugTableHeader"/>
+			<xsl:apply-templates select="$warningSet">
+				<xsl:sort select="@abbrev"/>
+				<xsl:sort select="Class/@classname"/>
+			</xsl:apply-templates>
+		</table>
+	</p>
 </xsl:template>
 
 </xsl:stylesheet>
