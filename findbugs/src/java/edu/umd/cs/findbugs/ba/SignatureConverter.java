@@ -101,14 +101,35 @@ public class SignatureConverter {
 		return result.toString();
 	}
 
+	/**
+	 * Convenience method for generating a method signature in
+	 * human readable form.
+	 * @param methodGen the method to produce a method signature for
+	 */
 	public static String convertMethodSignature(org.apache.bcel.generic.MethodGen methodGen) {
 		return convertMethodSignature(methodGen.getClassName(), methodGen.getName(), methodGen.getSignature());
 	}
-
+ 
+	/**
+	 * Convenience method for generating a method signature in
+	 * human readable form.
+	 * @param className name of the class containing the method
+	 * @param methodName the name of the method
+	 * @param methodSig the signature of the method
+	 */
 	public static String convertMethodSignature(String className, String methodName, String methodSig) {
 		return convertMethodSignature(className, methodName, methodSig, "");
 	}
 
+	/**
+	 * Convenience method for generating a method signature in
+	 * human readable form.
+	 * @param className name of the class containing the method
+	 * @param methodName the name of the method
+	 * @param methodSig the signature of the method
+	 * @param pkgName the name of the package the method is in (used to shorten
+	 *   class names)
+	 */
 	public static String convertMethodSignature(String className, String methodName, String methodSig, String pkgName) {
 		StringBuffer args = new StringBuffer();
 		SignatureConverter converter = new SignatureConverter(methodSig);
@@ -134,6 +155,15 @@ public class SignatureConverter {
 		result.append(args.toString());
 
 		return result.toString();
+	}
+
+	/**
+	 * Convenience method for converting a single signature component to
+	 * human-readable form.
+	 * @param signature the signature
+	 */
+	public static String convert(String signature) {
+		return new SignatureConverter(signature).parseNext();
 	}
 
 	public static String shorten(String pkgName, String typeName) {
