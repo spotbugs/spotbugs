@@ -64,6 +64,20 @@ public class DataflowAnalysisException extends Exception {
 	public DataflowAnalysisException(String message, MethodGen methodGen, InstructionHandle handle) {
 		super(message + " in " + SignatureConverter.convertMethodSignature(methodGen) + " at " + handle);
 	}
+	
+	/**
+	 * Constructor from message, method and instruction, and Throwable object (cause).
+	 * 
+	 * @param message   reason for the error
+	 * @param methodGen the method
+	 * @param handle    the instruction
+	 * @param cause     a Throwable which is the cause of the exception
+	 */
+	public DataflowAnalysisException(
+			String message, MethodGen methodGen, InstructionHandle handle, Throwable cause) {
+		this(message, methodGen, handle);
+		this.initCause(cause);
+	}
 }
 
 // vim:ts=4
