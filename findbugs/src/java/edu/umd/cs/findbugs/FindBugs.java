@@ -14,6 +14,7 @@ public class FindBugs implements Constants2
   private Detector detectors [];
   private LinkedList<String> detectorNames;
   private boolean omit;
+  private HashMap<String, String> classNameToSourceFileMap;
 
   public FindBugs(BugReporter bugReporter, LinkedList<String> detectorNames, boolean omit) {
 	if (bugReporter == null)
@@ -21,6 +22,7 @@ public class FindBugs implements Constants2
 	this.bugReporter = bugReporter;
 	this.detectorNames = detectorNames;
 	this.omit = omit;
+	this.classNameToSourceFileMap = new HashMap<String, String>();
   }
 
 
@@ -51,9 +53,8 @@ public class FindBugs implements Constants2
   static {
     registerDetector("FindFinalizeInvocations", edu.umd.cs.findbugs.FindFinalizeInvocations.class);
     registerDetector("MutableLock", edu.umd.cs.findbugs.MutableLock.class);
+    registerDetector("FindUnsyncGet", edu.umd.cs.findbugs.FindUnsyncGet.class);
 /*
-    registerDetector("FindUnsyncGet", 
-       edu.umd.cs.pugh.visitclass.FindUnsyncGet.class);
     registerDetector("InitializationChain", 
        edu.umd.cs.pugh.visitclass.InitializationChain.class);
     registerDetector("LockedFields", 
@@ -152,6 +153,8 @@ public class FindBugs implements Constants2
 	if (detectors == null)
 		createDetectors();
 
+	classNameToSourceFileMap.put(c.getClassName(), c.getSourceFileName());
+
 	ClassContext classContext = new ClassContext(c);
 
 	for(int i = 0; i < detectors.length; i++)  {
@@ -202,6 +205,10 @@ public class FindBugs implements Constants2
 	for (int i = 0; i < detectors.length; ++i) {
 		detectors[i].report();
 	}
+  }
+
+  public String getSourceFile(String className) {
+	return classNameToSourceFileMap.get(className);
   }
 
   public static void main(String argv[]) throws Exception
