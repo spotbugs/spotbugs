@@ -230,17 +230,30 @@ public class ConvertToARFF {
 
 	/**
 	 * An attribute that just gives each instance a unique id.
+	 * The application name is prepended, so each unique id
+	 * really unique, even across applications.
 	 * Obviously, this attribute shouldn't be used as input
 	 * to a learning algorithm.
+	 * 
+	 * <p>Uses the Element's uid attribute if it has one.</p>
 	 */
 	public static class IdAttribute implements Attribute {
 		private int count = 0;
 
 		public String getName() { return "id"; }
 		public void scan(Element element, String appName) throws MissingNodeException { }
-		public String getRange() { return "numeric"; }
+		public String getRange() { return "string"; }
 		public String getInstanceValue(Element element, String appName) throws MissingNodeException {
-			return String.valueOf(count++);
+			String nextId;
+
+			org.dom4j.Attribute uidAttr= element.attribute("uid");
+			if (uidAttr != null) {
+				nextId = uidAttr.getValue();
+			} else {
+				nextId = String.valueOf(count++);
+			}
+			
+			return appName + "-" + nextId;
 		}
 	}
 
