@@ -101,6 +101,10 @@ public class SignatureConverter {
 		return result.toString();
 	}
 
+	public static String convertMethodSignature(org.apache.bcel.generic.MethodGen methodGen) {
+		return convertMethodSignature(methodGen.getClassName(), methodGen.getName(), methodGen.getSignature());
+	}
+
 	public static String convertMethodSignature(String className, String methodName, String methodSig) {
 		return convertMethodSignature(className, methodName, methodSig, "");
 	}
