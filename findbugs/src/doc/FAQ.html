@@ -45,6 +45,24 @@ property to specify the new location for programs that require these files.
 
 <p> Many thanks to Peter Meulmeester for tracking down the cause of this problem.
 
+<h2>Q3: FindBugs is running out of memory, or is taking a long time to finish</h2>
+
+<p> In general, FindBugs requires lots of memory and a relatively
+fast CPU.  For large applications, 512M or more of heap space may be
+required.  By default, FindBugs allocates 256M of heap space.
+You can increase this using the <code>-maxHeap <i>n</i></code> option,
+where <i>n</i> is the number of megabytes of heap space to allocate.
+
+<p> Version 0.6.9 of FindBugs introduced new types of analysis that
+improve precision, but require more memory and time to perform.
+In version 0.7.0 and later, you can disable these analyses by
+adding the <code>-conserveSpace</code> option to the FindBugs
+command line.  E.g.:
+
+<pre>
+   findbugs -textui -conserveSpace -xml -project myProject.fb -outputFile out.xml
+</pre>
+
 </body>
 
 </html>
