@@ -308,6 +308,10 @@
   <Detector class="edu.umd.cs.findbugs.detect.FindBugsSummaryStats" 
             speed="fast"
             hidden="true" />
+            
+  <Detector class="edu.umd.cs.findbugs.detect.UnnecessaryMath" 
+  			speed="fast"
+			reports="UM_UNNECESSARY_MATH"/>
 
 
   <BugPattern abbrev="SW" type="SW_SWING_METHODS_INVOKED_IN_SWING_THREAD" category="CORRECTNESS"
@@ -481,4 +485,5 @@
     experimental="true"/>
   <BugPattern abbrev="REC" type="REC_CATCH_EXCEPTION" category="STYLE" experimental="true" />
   <BugPattern abbrev="FE" type="FE_FLOATING_POINT_EQUALITY" category="CORRECTNESS" experimental="true" />
+  <BugPattern abbrev="UM" type="UM_UNNECESSARY_MATH" category="STYLE" experimental="true"/>
 </FindbugsPlugin>

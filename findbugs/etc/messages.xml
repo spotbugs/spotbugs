@@ -648,14 +648,6 @@ It is a fast detector.
    </Details>
   </Detector>
   
-  <Detector class="edu.umd.cs.findbugs.detect.FindBugsSummaryStats">
-    <Details>
-<![CDATA[
-<p> This detector just collects summary statistics information about the analysis process. </p>
-]]>
-    </Details>
-  </Detector>
-
   <Detector class="edu.umd.cs.findbugs.detect.RuntimeExceptionCapture">
 	  <Details>
 <![CDATA[
@@ -677,6 +669,24 @@ It is a fast detector.
 <![CDATA[
 <p>This detector looks for I/O streams and database resources that
 are not cleaned up on all paths out of a method.  This is a slow detector.</p>
+]]>
+    </Details>
+  </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.UnnecessaryMath">
+    <Details>
+<![CDATA[
+<p>This detector looks for code that calls java.lang.Math static methods on constant values,
+where the resultant value is a statically known constant. It is faster, and sometimes more 
+accurate, to use the constant instead.</p>
+]]>
+    </Details>
+  </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.FindBugsSummaryStats">
+    <Details>
+<![CDATA[
+<p> This detector just collects summary statistics information about the analysis process. </p>
 ]]>
     </Details>
   </Detector>
@@ -2831,6 +2841,45 @@ does not need to be created, just access the static methods directly using the c
   	  </Details>
     </BugPattern>
     
+  <BugPattern type="UM_UNNECESSARY_MATH">
+    <ShortDescription>Method calls static Math class method on a constant value</ShortDescription>
+    <LongDescription>Method calls static Math class method on a constant value</LongDescription>
+    <Details>
+<![CDATA[
+<p> This method uses a static method from java.lang.Math on a constant value. This method's 
+result in this case, can be determined statically, and is faster and sometimes more accurate to
+just use the constant. Methods detected are:
+<table>
+<tr><th>Method</th><th>Parameter</th></tr>
+<tr>abs<td></td><td>-any-</td></tr>
+<tr>acos<td></td><td>0.0 or 1.0</td></tr>
+<tr>asin<td></td><td>0.0 or 1.0</td></tr>
+<tr>atan<td></td><td>0.0 or 1.0</td></tr>
+<tr>atan2<td></td><td>0.0</td></tr>
+<tr>cbrt<td></td><td>0.0 or 1.0</td></tr>
+<tr>ceil<td></td><td>-any-</td></tr>
+<tr>cos<td></td><td>0.0</td></tr>
+<tr>cosh<td></td><td>0.0</td></tr>
+<tr>exp<td></td><td>0.0 or 1.0</td></tr>
+<tr>expm1<td></td><td>0.0</td></tr>
+<tr>floor<td></td><td>-any-</td></tr>
+<tr>log<td></td><td>0.0 or 1.0</td></tr>
+<tr>log10<td></td><td>0.0 or 1.0</td></tr>
+<tr>rint<td></td><td>-any-</td></tr>
+<tr>round<td></td><td>-any-</td></tr>
+<tr>sin<td></td><td>0.0</td></tr>
+<tr>sinh<td></td><td>0.0</td></tr>
+<tr>sqrt<td></td><td>0.0 or 1.0</td></tr>
+<tr>tan<td></td><td>0.0</td></tr>
+<tr>tanh<td></td><td>0.0</td></tr>
+<tr>toDegrees<td></td><td>0.0 or 1.0</td></tr>
+<tr>toRadians<td></td><td>0.0</td></tr>
+</table>
+</p>
+]]>
+    </Details>
+  </BugPattern>
+  
   <!--
   **********************************************************************
    BugCodes
@@ -2919,4 +2968,5 @@ does not need to be created, just access the static methods directly using the c
   <BugCode abbrev="ISC">Instantiated Static Class</BugCode>
   <BugCode abbrev="REC">RuntimeException capture</BugCode>
   <BugCode abbrev="FE">Test for floating point equality</BugCode>
+  <BugCode abbrev="UM">Unnecessary Math on constants</BugCode>
 </MessageCollection>
