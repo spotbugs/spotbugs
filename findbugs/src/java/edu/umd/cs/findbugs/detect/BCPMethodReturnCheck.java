@@ -30,6 +30,13 @@ import edu.umd.cs.daveho.ba.bcp.*;
 public class BCPMethodReturnCheck extends ByteCodePatternDetector {
 	private BugReporter bugReporter;
 
+	private static final ByteCodePattern pattern = new ByteCodePattern();
+	static {
+		pattern
+			.add(new Invoke("+java.io.InputStream", "read", "/^\\((\\[B|\\[BII)\\)I", false))
+			.add(new Opcode(Constants.POP));
+	}
+
 	public BCPMethodReturnCheck(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 	}
