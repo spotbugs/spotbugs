@@ -492,6 +492,12 @@ public class FindBugs implements Constants2, ExitCodes {
 					Plugin plugin = i.next();
 					System.out.println("  " + plugin.getPluginId() + " (default: " +
 						(plugin.isEnabled() ? "enabled" : "disabled") + ")");
+					if (plugin.getShortDescription() != null)
+						System.out.println("    Description: " + plugin.getShortDescription());
+					if (plugin.getProvider() != null)
+						System.out.println("    Provider: " + plugin.getProvider());
+					if (plugin.getWebsite() != null)
+						System.out.println("    Website: " + plugin.getWebsite());
 					++count;
 				}
 				if (count == 0) {

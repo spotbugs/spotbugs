@@ -11,7 +11,11 @@
 	Users should add -choosePlugins +style to the command line
 	to enable it.
 -->
-<FindbugsPlugin pluginid="style" defaultenabled="false">
+<FindbugsPlugin pluginid="style"
+                defaultenabled="false"
+                provider="FindBugs project"
+                website="http://findbugs.sourceforge.net"
+                >
 	<Detector
 		class="edu.umd.cs.findbugs.style.FindDeadLocalStores"
 		speed="moderate"

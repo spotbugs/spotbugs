@@ -149,6 +149,28 @@ public class PluginLoader extends URLClassLoader {
 		Plugin plugin = new Plugin(pluginId);
 		plugin.setEnabled(pluginEnabled);
 
+		// Set provider and website, if specified
+		String provider = pluginDescriptor.valueOf("/FindbugsPlugin/@provider");
+		if (!provider.equals(""))
+			plugin.setProvider(provider);
+		String website = pluginDescriptor.valueOf("/FindbugsPlugin/@website");
+		if (!website.equals(""))
+			plugin.setWebsite(website);
+
+		// Set short description, if specified
+		Node pluginShortDesc = null;
+		try {
+			pluginShortDesc = findMessageNode(
+					messageCollectionList,
+					"/MessageCollection/Plugin/ShortDescription",
+					"no plugin description");
+		} catch (PluginException e) {
+			// Missing description is not fatal, so ignore
+		}
+		if (pluginShortDesc != null) {
+			plugin.setShortDescription(pluginShortDesc.getText());
+		}
+
 		// Create a DetectorFactory for all Detector nodes
 		HashMap<String, DetectorFactory> detectorFactoryMap = new HashMap<String, DetectorFactory>();
 		try {

@@ -1,4 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
 <MessageCollection>
+
+  <!--
+  **********************************************************************
+  Plugin information
+  **********************************************************************
+  -->
+  <Plugin>
+    <ShortDescription>Plugin to find serious correctness and performance bugs</ShortDescription>
+    <Details>
+<![CDATA[
+<p>
+This plugin contains detectors to find serious correctness and
+performance bugs.  The accuracy target is that at least 50%
+of the high and medium priority warnings reported by the detectors
+in this plugin should be real bugs.
+</p>
+]]>
+    </Details>
+  </Plugin>
 
   <!--
   **********************************************************************

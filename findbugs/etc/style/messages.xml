@@ -4,6 +4,19 @@
 
 <MessageCollection>
 
+	<Plugin>
+		<ShortDescription>Plugin to find poor coding style</ShortDescription>
+		<Details>
+<![CDATA[
+<p>
+This plugin contains Detectors to find occurrences of poor style.
+Generally, these are not outright bugs, but often they are worth
+fixing to make the code more readable.
+</p>
+]]>
+		</Details>
+	</Plugin>
+
 	<!-- Detectors -->
 
 	<Detector class="edu.umd.cs.findbugs.style.FindDeadLocalStores">

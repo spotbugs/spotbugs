@@ -33,6 +33,9 @@ import java.util.Iterator;
  */
 public class Plugin {
 	private String pluginId;
+	private String provider;
+	private String website;
+	private String shortDescription;
 	private ArrayList<DetectorFactory> detectorFactoryList;
 	private ArrayList<BugPattern> bugPatternList;
 	private ArrayList<BugCode> bugCodeList;
@@ -67,6 +70,61 @@ public class Plugin {
 	 */
 	public boolean isEnabled() {
 		return enabled;
+	}
+
+	/**
+	 * Set plugin provider.
+	 *
+	 * @param provider the plugin provider
+	 */
+	public void setProvider(String provider) {
+		this.provider = provider;
+	}
+
+	/**
+	 * Get the plugin provider.
+	 *
+	 * @return the provider, or null if the provider was not specified
+	 */
+	public String getProvider() {
+		return provider;
+	}
+
+	/**
+	 * Set plugin website.
+	 *
+	 * @param website the plugin website
+	 */
+	public void setWebsite(String website) {
+		this.website = website;
+	}
+
+	/**
+	 * Get the plugin website.
+	 *
+	 * @return the website, or null if the was not specified
+	 */
+	public String getWebsite() {
+		return website;
+	}
+
+	/**
+	 * Set plugin short (one-line) text description.
+	 *
+	 * @param the plugin short text description
+	 */
+	public void setShortDescription(String shortDescription) {
+		this.shortDescription = shortDescription;
+	}
+
+	/**
+	 * Get the plugin short (one-line) description.
+	 *
+	 * @return the short description, or null if the 
+	 *         short description was not specified
+	 */
+	public String getShortDescription() {
+		return shortDescription;
 	}
 
 	/**

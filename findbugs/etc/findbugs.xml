@@ -8,7 +8,11 @@
 
   This plugin is enabled by default.
 -->
-<FindbugsPlugin pluginid="core" defaultenabled="true">
+<FindbugsPlugin pluginid="core"
+                defaultenabled="true"
+                provider="FindBugs project" 
+                website="http://findbugs.sourceforge.net"
+                >
   <Detector class="edu.umd.cs.findbugs.detect.NoteSuppressedWarnings" 
 	speed="fast"
 	   reports="TESTING"
