@@ -38,36 +38,6 @@ public class SourceFile {
 	}
 
 	/**
-	 * A data source which can produce a stream for a source file.
-	 */
-	private interface DataSource {
-		/** Open an InputStream on the source file. */
-		public InputStream open() throws IOException;
-		/** Get the full filename of the source file. */
-		public String getFullFileName();
-	}
-
-	/**
-	 * Data source for source files which are stored in
-	 * the filesystem.
-	 */
-	private static class FileDataSource implements DataSource {
-		private String fileName;
-
-		public FileDataSource(String fileName) {
-			this.fileName = fileName;
-		}
-
-		public InputStream open() throws IOException {
-			return new FileInputStream(fileName);
-		}
-
-		public String getFullFileName() {
-			return fileName;
-		}
-	}
-
-	/**
 	 * Helper object to build map of line number to byte offset
 	 * for a source file.
 	 */
@@ -120,7 +90,7 @@ public class SourceFile {
 
 	private static final int DEFAULT_SIZE = 100;
 
-	private DataSource dataSource;
+	private SourceFileDataSource dataSource;
 	private byte[] data;
 	private int[] lineNumberMap;
 	private int numLines;
@@ -130,7 +100,7 @@ public class SourceFile {
 	 * Creates an empty SourceFile object.
 	 */
 	public SourceFile(String fullFileName) {
-		this.dataSource = new FileDataSource(fullFileName);
+		this.dataSource = new FileSourceFileDataSource(fullFileName);
 		this.lineNumberMap = new int[DEFAULT_SIZE];
 		this.numLines = 0;
 	}
