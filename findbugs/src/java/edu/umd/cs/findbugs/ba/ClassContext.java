@@ -266,7 +266,7 @@ public class ClassContext implements AnalysisFeatures {
 			CFG cfg = getRawCFG(method);
 			DepthFirstSearch dfs = getDepthFirstSearch(method);
 
-			TypeAnalysis typeAnalysis = new TypeAnalysis(methodGen, dfs, lookupFailureCallback);
+			TypeAnalysis typeAnalysis = new TypeAnalysis(methodGen, cfg, dfs, lookupFailureCallback);
 			typeDataflow = new TypeDataflow(cfg, typeAnalysis);
 			typeDataflow.execute();
 
