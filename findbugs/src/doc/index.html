@@ -55,7 +55,7 @@ compares several Java bug checkers, including FindBugs.
      with non currentThread() threads. (Dave Brosius)
 <li> New detector to find calls to .equals methods that use Object's version. (Dave Brosius)
 <li> Extend Dumb Method detector for toUpperCase, toLowerCase without a locale, 
-     new Integer(1).toString(), and new XXX().getClass() (Dave Brosius)
+     new Integer(1).toString(), new XXX().getClass(), and new Thread() without a run implementation (Dave Brosius)
 <li> New detector to find Applets that call methods in the constructor 
      refering to the AppletStub (Dave Brosius)
 <li> Detector to find infinite recursion (Bill Pugh)
