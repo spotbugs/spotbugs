@@ -174,42 +174,16 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
 				// produce flow-sensitive information about whether or not the
 				// compared value or values were null.
 				if (lastInSourceHandle != null) {
-					short lastInSourceOpcode = lastInSourceHandle.getInstruction().getOpcode();
-					if (nullComparisonInstructionSet.get(lastInSourceOpcode)) {
-						// Get ValueNumberFrame and IsNullValueFrame at location
-						// just before the IF instruction in the source block.
-						final Location atIf = new Location(lastInSourceHandle, sourceBlock);
-						final IsNullValueFrame prevIsNullValueFrame = getFactAtLocation(atIf);
-						final ValueNumberFrame prevVnaFrame = vnaDataflow.getFactAtLocation(atIf);
-						final int prevNumSlots = prevIsNullValueFrame.getNumSlots();
-						final IsNullValue conditionValue = prevIsNullValueFrame.getTopValue();
+					Location location = new Location(lastInSourceHandle, sourceBlock);
+					ValueNumberFrame prevVnaFrame = vnaDataflow.getFactAtLocation(location);
 
-						switch (lastInSourceOpcode) {
-						case Constants.IFNULL:
-						case Constants.IFNONNULL:
-							{
-								tmpFact = replaceValues(fact, tmpFact, prevVnaFrame.getTopValue(), prevVnaFrame,
-									ifNullComparison(lastInSourceOpcode, edgeType, conditionValue));
-							}
-							break;
-						case Constants.IF_ACMPEQ:
-						case Constants.IF_ACMPNE:
-							{
-								IsNullValue tos = prevIsNullValueFrame.getValue(prevNumSlots - 1);
-								IsNullValue nextToTOS = prevIsNullValueFrame.getValue(prevNumSlots - 2);
+					IsNullConditionDecision conditionDecision =
+						checkCondition(location, edgeType, prevVnaFrame);
 
-								if (tos.isDefinitelyNull()) {
-									// TOS is null, so next-to-TOS is flow-sensitively null
-									tmpFact = replaceValues(fact, tmpFact, prevVnaFrame.getValue(prevNumSlots-2), prevVnaFrame,
-										ifNullComparison(lastInSourceOpcode, edgeType, conditionValue));
-								} else if (nextToTOS.isDefinitelyNull()) {
-									// Next-to-TOS is null, so TOS is flow-sensitively null
-									tmpFact = replaceValues(fact, tmpFact, prevVnaFrame.getTopValue(), prevVnaFrame,
-										ifNullComparison(lastInSourceOpcode, edgeType, conditionValue));
-								}
-							}
-							break;
-						}
+					if (conditionDecision != null) {
+						// Use the information
+						tmpFact = replaceValues(fact, tmpFact, conditionDecision.getValue(), prevVnaFrame,
+							conditionDecision.getDecision());
 					}
 				}
 
@@ -239,6 +213,59 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
 
 		// Normal dataflow merge
 		result.mergeWith(fact);
+	}
+
+	/**
+	 * Check to see if a condition decision carrying null information
+	 * is created at given location.
+	 * @param location location of last instruction in a basic block
+	 * @param edgeType edge leading from that basic block
+	 * @param prevVnaFrame ValueNumberFrame at the location
+	 * @return an IsNullConditionDecision representing the decision made,
+	 *   or null if no information is gained on the edge
+	 */
+	private IsNullConditionDecision checkCondition(Location location, int edgeType, ValueNumberFrame prevVnaFrame)
+		throws DataflowAnalysisException {
+
+		IsNullConditionDecision result = null;
+
+		short lastInSourceOpcode = location.getHandle().getInstruction().getOpcode();
+		if (nullComparisonInstructionSet.get(lastInSourceOpcode)) {
+			// Get ValueNumberFrame and IsNullValueFrame at location
+			// just before the IF instruction in the source block.
+			final IsNullValueFrame prevIsNullValueFrame = getFactAtLocation(location);
+			final int prevNumSlots = prevIsNullValueFrame.getNumSlots();
+			final IsNullValue conditionValue = prevIsNullValueFrame.getTopValue();
+
+			switch (lastInSourceOpcode) {
+			case Constants.IFNULL:
+			case Constants.IFNONNULL:
+				{
+					result = new IsNullConditionDecision(location, prevVnaFrame.getTopValue(),
+								ifNullComparison(lastInSourceOpcode, edgeType, conditionValue));
+				}
+				break;
+			case Constants.IF_ACMPEQ:
+			case Constants.IF_ACMPNE:
+				{
+					IsNullValue tos = prevIsNullValueFrame.getValue(prevNumSlots - 1);
+					IsNullValue nextToTOS = prevIsNullValueFrame.getValue(prevNumSlots - 2);
+
+					if (tos.isDefinitelyNull()) {
+						// TOS is null, so next-to-TOS is flow-sensitively null
+						result = new IsNullConditionDecision(location, prevVnaFrame.getValue(prevNumSlots-2),
+									ifNullComparison(lastInSourceOpcode, edgeType, conditionValue));
+					} else if (nextToTOS.isDefinitelyNull()) {
+						// Next-to-TOS is null, so TOS is flow-sensitively null
+						result = new IsNullConditionDecision(location, prevVnaFrame.getTopValue(),
+									ifNullComparison(lastInSourceOpcode, edgeType, conditionValue));
+					}
+				}
+				break;
+			}
+		}
+
+		return result;
 	}
 
 	private IsNullValueFrame replaceValues(IsNullValueFrame origFrame, IsNullValueFrame frame,
