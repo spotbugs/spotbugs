@@ -149,11 +149,11 @@ public class IsNullValue {
 		return instanceList[DNR];
 	}
 
-	public static IsNullValue flowSensitiveNullValue(IsNullValue conditionValue) {
+	public static IsNullValue flowSensitiveNullValue() {
 		return instanceList[NO_WEAK_VALUES ? NULL : WEAK_NULL];
 	}
 
-	public static IsNullValue flowSensitiveNonNullValue(IsNullValue conditionValue) {
+	public static IsNullValue flowSensitiveNonNullValue() {
 		return instanceList[NO_WEAK_VALUES ? NN : WEAK_NN];
 	}
 

@@ -21,32 +21,32 @@ package edu.umd.cs.daveho.ba;
 
 /**
  * A control decision which resulted in information being gained
- * about whether a particular value is null or non-null.
+ * about whether a particular value is null or non-null
+ * on the IFCMP_EDGE and FALL_THROUGH_EDGE branches.
  *
  * @see IsNullValue
+ * @see IsNullValueFrame
  * @see IsNullValueAnalysis
  */
-public class IsNullConditionDecision {
-	private Location branchLocation;
-	private ValueNumber value;
-	private IsNullValue decision;
+public class IsNullConditionDecision implements EdgeTypes {
+	private final ValueNumber value;
+	private final IsNullValue ifcmpDecision;
+	private final IsNullValue fallThroughDecision;
 
 	/**
 	 * Constructor.
-	 * @param branchLocation the location of the branch
-	 * @param value the ValueNumber for which we have new information
-	 * @param decision the decision reached about the value;
-	 *   i.e., whether it is null or not null
+	 * @param value the ValueNumber for which we have new information; null if no
+	 *   new information
+	 * @param ifcmpDecision the decision for the IFCMP_EDGE; null if that edge is not feasible
+	 * @param fallThroughDecision the decision for the FALL_THROUGH_EDGE; null if that edge is not feasible
 	 */
-	public IsNullConditionDecision(Location branchLocation, ValueNumber value, IsNullValue decision) {
-		this.branchLocation = branchLocation;
+	public IsNullConditionDecision(ValueNumber value, IsNullValue ifcmpDecision, IsNullValue fallThroughDecision) {
 		this.value = value;
-		this.decision = decision;
-	}
 
-	/** Get the branch location.  */
-	public Location getBranchLocation() {
-		return branchLocation;
+		// At least one of the edges must be feasible
+		assert !(ifcmpDecision == null && fallThroughDecision == null);
+		this.ifcmpDecision = ifcmpDecision;
+		this.fallThroughDecision = fallThroughDecision;
 	}
 
 	/** Get the value about which the branch yields information.  */
@@ -54,9 +54,45 @@ public class IsNullConditionDecision {
 		return value;
 	}
 
-	/** Get the decision reached about the value (whether it is null or not null).  */
-	public IsNullValue getDecision() {
-		return decision;
+	/** Determine whether or not the comparison is redundant. */
+	public boolean isRedundant() {
+		return ifcmpDecision == null || fallThroughDecision == null;
+	}
+
+	/**
+	 * Determine whether or not the given edge is feasible.
+	 * An edge may be infeasible if the comparison is redundant (i.e.,
+	 *   can only be determined one way)
+	 * @param edgeType the type of edge; must be IFCMP_EDGE or FALL_THROUGH_EDGE
+	 * @return true if the edge is feasible, false if infeasible
+	 */
+	public boolean isEdgeFeasible(int edgeType) {
+		IsNullValue decision = getDecision(edgeType);
+		return decision != null;
+	}
+
+	/**
+	 * Get the decision reached about the value on outgoing edge of given type.
+	 * @param edgeType the type of edge; must be IFCMP_EDGE or FALL_THROUGH_EDGE
+	 * @return the IsNullValue representing the decision, or null
+	 *   if the edge is infeasible
+	 */
+	public IsNullValue getDecision(int edgeType) {
+		assert edgeType == IFCMP_EDGE || edgeType == FALL_THROUGH_EDGE;
+		if (edgeType == IFCMP_EDGE)
+			return ifcmpDecision;
+		else
+			return fallThroughDecision;
+	}
+
+	public String toString() {
+		StringBuffer buf = new StringBuffer();
+		buf.append(value != null ? value.toString() : "NoValue,");
+		buf.append("ifcmp=");
+		buf.append(ifcmpDecision != null ? ifcmpDecision.toString() : "INFEASIBLE");
+		buf.append(",fallthru=");
+		buf.append(fallThroughDecision != null ? fallThroughDecision.toString() : "INFEASIBLE");
+		return buf.toString();
 	}
 }
 

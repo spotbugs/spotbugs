@@ -20,6 +20,7 @@
 package edu.umd.cs.daveho.ba;
 
 public class IsNullValueFrame extends Frame<IsNullValue> {
+	private IsNullConditionDecision decision;
 
 	public IsNullValueFrame(int numLocals) {
 		super(numLocals);
@@ -36,6 +37,22 @@ public class IsNullValueFrame extends Frame<IsNullValue> {
 	public void toExceptionValues() {
 		for (int i = 0; i < getNumSlots(); ++i)
 			setValue(i, getValue(i).toExceptionValue());
+	}
+
+	public void setDecision(IsNullConditionDecision decision) {
+		this.decision = decision;
+	}
+
+	public IsNullConditionDecision getDecision() {
+		return decision;
+	}
+
+	public String toString() {
+		String result = super.toString();
+		if (decision != null) {
+			result = result + ", [decision=" + decision.toString() + "]";
+		}
+		return result;
 	}
 }
 

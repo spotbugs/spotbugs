@@ -34,6 +34,9 @@ import org.apache.bcel.generic.*;
  */
 public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNullValueFrame> implements EdgeTypes {
 	private static final boolean DEBUG = Boolean.getBoolean("inva.debug");
+	static {
+		if (DEBUG) System.out.println("Debug enabled");
+	}
 	private static final boolean NO_SPLIT_DOWNGRADE_NSP = Boolean.getBoolean("inva.noSplitDowngradeNSP");
 	private static final boolean NO_SWITCH_DEFAULT_AS_EXCEPTION = Boolean.getBoolean("inva.noSwitchDefaultAsException");
 
@@ -41,6 +44,7 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
 	private IsNullValueFrameModelingVisitor visitor;
 	private ValueNumberDataflow vnaDataflow;
 	private int[] numNonExceptionSuccessorMap;
+	private IsNullValueFrame lastFrame;
 
 	public IsNullValueAnalysis(MethodGen methodGen, CFG cfg, ValueNumberDataflow vnaDataflow, DepthFirstSearch dfs) {
 		super(dfs);
@@ -71,16 +75,58 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
 			result.setValue(i, IsNullValue.doNotReportValue());
 	}
 
+/*
+	// FIXME: because of a bug in the 2.2 generics-enabled javac,
+	// we can't override this method.  Javac doesn't emit the needed
+	// bridge method.
 	public void transfer(BasicBlock basicBlock, InstructionHandle end, IsNullValueFrame start, IsNullValueFrame result)
 		throws DataflowAnalysisException {
 
+		lastFrame = null;
 		super.transfer(basicBlock, end, start, result);
 
 		// Determine if this basic block ends in a redundant branch.
+		if (end == null) {
+			if (lastFrame == null)
+				result.setDecision(null);
+			else {
+				IsNullConditionDecision decision = getDecision(basicBlock, lastFrame);
+				result.setDecision(decision);
+			}
+		}
+	}
+*/
+
+	// FIXME: This is a workaround for the generics-java bug.
+	public void startTransfer(BasicBlock basicBlock, Object start_) throws DataflowAnalysisException {
+		lastFrame = null;
+	}
+
+	// FIXME: This is a workaround for the generics-java bug.
+	public void endTransfer(BasicBlock basicBlock, InstructionHandle end, Object result_) throws DataflowAnalysisException {
+		IsNullValueFrame result = (IsNullValueFrame) result_;
+
+		// Determine if this basic block ends in a redundant branch.
+		if (end == null) {
+			if (lastFrame == null)
+				result.setDecision(null);
+			else {
+				IsNullConditionDecision decision = getDecision(basicBlock, lastFrame);
+				if (DEBUG) System.out.println("Decision=" + decision);
+				result.setDecision(decision);
+			}
+		}
 	}
 
 	public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, IsNullValueFrame fact)
 		throws DataflowAnalysisException {
+
+		// If this is the last instruction in the block,
+		// save the result immediately before the instruction.
+		if (handle == basicBlock.getLastInstruction()) {
+			lastFrame = createFact();
+			lastFrame.copyFrom(fact);
+		}
 
 		// Model the instruction
 		visitor.setFrame(fact);
@@ -123,27 +169,6 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
 		nullComparisonInstructionSet.set(Constants.IF_ACMPEQ);
 		nullComparisonInstructionSet.set(Constants.IF_ACMPNE);
 	}
-
-	private static final IsNullValue ifNullComparison(short opcode, int edgeType, IsNullValue conditionValue) {
-		if (opcode == Constants.IFNULL || opcode == Constants.IF_ACMPEQ) {
-			// Null on IFCMP_EDGE, non-null on FALL_THROUGH_EDGE
-			return edgeType == IFCMP_EDGE
-				? IsNullValue.flowSensitiveNullValue(conditionValue)
-				: IsNullValue.flowSensitiveNonNullValue(conditionValue);
-		} else /*if (opcode == Constants.IFNONNULL || opcode == Constants.IF_ACMPNE)*/  {
-			// Non-null on IFCMP_EDGE, null on FALL_THROUGH_EDGE
-			return edgeType == IFCMP_EDGE
-				? IsNullValue.flowSensitiveNonNullValue(conditionValue)
-				: IsNullValue.flowSensitiveNullValue(conditionValue);
-		}
-	}
-
-	private static final boolean REDUNDANT_COMPARISON_HACK = Boolean.getBoolean("inva.redundant.hack");
-/*
-	static {
-		if (REDUNDANT_COMPARISON_HACK) System.out.println("Using redundant comparison hack");
-	}
-*/
 
 	public void meetInto(IsNullValueFrame fact, Edge edge, IsNullValueFrame result)
 		throws DataflowAnalysisException {
@@ -203,82 +228,32 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
 				// Push the exception value
 				tmpFact.pushValue(IsNullValue.nonNullValue());
 			} else {
+				final int edgeType = edge.getType();
+				final BasicBlock sourceBlock = edge.getSource();
+				final ValueNumberFrame targetVnaFrame = vnaDataflow.getStartFact(destBlock);
+				assert targetVnaFrame != null;
+
 				// Determine if the edge conveys any information about the
 				// null/non-null status of operands in the incoming frame.
+				if (edgeType == IFCMP_EDGE || edgeType == FALL_THROUGH_EDGE) {
+					IsNullConditionDecision decision = getResultFact(edge.getSource()).getDecision();
+					if (decision != null) {
+						if (!decision.isEdgeFeasible(edgeType)) {
+							// The incoming edge is infeasible; just use TOP
+							// as the start fact for this block.
+							tmpFact = createFact();
+							tmpFact.setTop();
+						} else if (decision.getValue() != null) {
+							// A value has been determined for this edge.
+							// Use the value to update the is-null information in
+							// the start fact for this block.
 
-				final BasicBlock sourceBlock = edge.getSource();
-				final InstructionHandle lastInSourceHandle = sourceBlock.getLastInstruction();
-				final int edgeType = edge.getType();
+							final Location atIf = new Location(sourceBlock.getLastInstruction(), sourceBlock);
+							final IsNullValueFrame prevIsNullValueFrame = getFactAtLocation(atIf);
+							final ValueNumberFrame prevVnaFrame = vnaDataflow.getFactAtLocation(atIf);
 
-				// Get ValueNumberFrame at entry to the edge's target block.
-				final ValueNumberFrame targetVnaFrame = vnaDataflow.getStartFact(destBlock);
-
-				// Handle IFNULL, IFNONNULL, IF_ACMPEQ, and IF_ACMPNE to
-				// produce flow-sensitive information about whether or not the
-				// compared value or values were null.
-				if (lastInSourceHandle != null) {
-					short lastInSourceOpcode = lastInSourceHandle.getInstruction().getOpcode();
-					if (nullComparisonInstructionSet.get(lastInSourceOpcode)) {
-						// Get ValueNumberFrame and IsNullValueFrame at location
-						// just before the IF instruction in the source block.
-						final Location atIf = new Location(lastInSourceHandle, sourceBlock);
-						final IsNullValueFrame prevIsNullValueFrame = getFactAtLocation(atIf);
-						final ValueNumberFrame prevVnaFrame = vnaDataflow.getFactAtLocation(atIf);
-						final int prevNumSlots = prevIsNullValueFrame.getNumSlots();
-						final IsNullValue conditionValue = prevIsNullValueFrame.getTopValue();
-
-						switch (lastInSourceOpcode) {
-						case Constants.IFNULL:
-						case Constants.IFNONNULL:
-							{
-								tmpFact = replaceValues(fact, tmpFact, prevVnaFrame.getTopValue(), prevVnaFrame,
-									targetVnaFrame,
-									ifNullComparison(lastInSourceOpcode, edgeType, conditionValue));
-							}
-							break;
-						case Constants.IF_ACMPEQ:
-						case Constants.IF_ACMPNE:
-							{
-								IsNullValue tos = prevIsNullValueFrame.getValue(prevNumSlots - 1);
-								IsNullValue nextToTOS = prevIsNullValueFrame.getValue(prevNumSlots - 2);
-
-								boolean tosNull = tos.isDefinitelyNull();
-								boolean nextToTosNull = nextToTOS.isDefinitelyNull();
-
-if (REDUNDANT_COMPARISON_HACK) {
-								if (tos.isDefinitelyNull()) {
-									// TOS is null, so next-to-TOS is flow-sensitively null
-									tmpFact = replaceValues(fact, tmpFact, prevVnaFrame.getValue(prevNumSlots-2), prevVnaFrame,
-										targetVnaFrame,
-										ifNullComparison(lastInSourceOpcode, edgeType, conditionValue));
-								}
-								if (nextToTOS.isDefinitelyNull()) {
-									// Next-to-TOS is null, so TOS is flow-sensitively null
-									tmpFact = replaceValues(fact, tmpFact, prevVnaFrame.getTopValue(), prevVnaFrame,
-										targetVnaFrame,
-										ifNullComparison(lastInSourceOpcode, edgeType, conditionValue));
-								}
-} else {
-								if (tosNull && nextToTosNull) {
-									// Both values compared are known to be null.
-									// They should naturally propagate into the
-									// target frame without anything special
-									// being done.
-									if (DEBUG) System.out.println("Redundant comparison: " + atIf);
-								} else if (tos.isDefinitelyNull()) {
-									// TOS is null, so next-to-TOS is flow-sensitively null
-									tmpFact = replaceValues(fact, tmpFact, prevVnaFrame.getValue(prevNumSlots-2), prevVnaFrame,
-										targetVnaFrame,
-										ifNullComparison(lastInSourceOpcode, edgeType, conditionValue));
-								} else if (nextToTOS.isDefinitelyNull()) {
-									// Next-to-TOS is null, so TOS is flow-sensitively null
-									tmpFact = replaceValues(fact, tmpFact, prevVnaFrame.getTopValue(), prevVnaFrame,
-										targetVnaFrame,
-										ifNullComparison(lastInSourceOpcode, edgeType, conditionValue));
-								}
-}
-							}
-							break;
+							tmpFact = replaceValues(fact, tmpFact, decision.getValue(), prevVnaFrame,
+								targetVnaFrame, decision.getDecision(edgeType));
 						}
 					}
 				}
@@ -290,15 +265,9 @@ if (REDUNDANT_COMPARISON_HACK) {
 					if (vnaFrame == null)
 						throw new IllegalStateException("no vna frame at block entry?");
 
-					// For all of the instructions which have a null-checked
-					// reference operand, it is pushed onto the stack before
-					// all of the other operands to the instruction.
 					Instruction firstInDest = edge.getTarget().getFirstInstruction().getInstruction();
-					int numSlotsConsumed = firstInDest.consumeStack(methodGen.getConstantPool());
-					if (numSlotsConsumed == Constants.UNPREDICTABLE)
-						throw new DataflowAnalysisException("Unpredictable stack consumption for " + firstInDest);
-					ValueNumber replaceMe = vnaFrame.getValue(numSlots - numSlotsConsumed);
-
+					// Update the is-null information for the dereferenced value.
+					ValueNumber replaceMe = vnaFrame.getInstance(firstInDest, methodGen.getConstantPool());
 					tmpFact = replaceValues(fact, tmpFact, replaceMe, vnaFrame, targetVnaFrame, IsNullValue.nonNullValue());
 				}
 			}
@@ -311,13 +280,104 @@ if (REDUNDANT_COMPARISON_HACK) {
 		result.mergeWith(fact);
 	}
 
-	private static final boolean BUGGY_REPLACE_VALUES = Boolean.getBoolean("inva.replace.bug");
-/*
-	static {
-		if (BUGGY_REPLACE_VALUES)
-			System.out.println("Using buggy replaceValues()");
+	/**
+	 * Determine if the given basic block ends in a redundant
+	 * null comparison.
+	 * @param basicBlock the basic block
+	 * @param lastFrame the IsNullValueFrame representing values at the final instruction
+	 *   of the block
+	 * @return an IsNullConditionDecision object representing the 
+	 *   is-null information gained about the compared value,
+	 *   or null if no information is gained
+	 */
+	private IsNullConditionDecision getDecision(BasicBlock basicBlock, IsNullValueFrame lastFrame)
+		throws DataflowAnalysisException {
+
+		assert lastFrame != null;
+
+		final InstructionHandle lastInSourceHandle = basicBlock.getLastInstruction();
+		if (lastInSourceHandle == null)
+			return null; // doesn't end in null comparison
+
+		final short lastInSourceOpcode = lastInSourceHandle.getInstruction().getOpcode();
+		if (!nullComparisonInstructionSet.get(lastInSourceOpcode))
+			return null; // doesn't end in null comparison
+
+		Location atIf = new Location(lastInSourceHandle, basicBlock);
+		ValueNumberFrame prevVnaFrame = vnaDataflow.getFactAtLocation(atIf);
+
+		switch (lastInSourceOpcode) {
+		case Constants.IFNULL:
+		case Constants.IFNONNULL:
+			{
+				IsNullValue tos = lastFrame.getTopValue();
+				boolean ifnull = (lastInSourceOpcode == Constants.IFNULL);
+
+				// Initially, assume neither branch is feasible.
+				IsNullValue ifcmpDecision = null;
+				IsNullValue fallThroughDecision = null;
+
+				if (tos.isDefinitelyNull()) {
+					// Predetermined comparison - one branch is infeasible
+					if (ifnull)
+						ifcmpDecision = IsNullValue.flowSensitiveNullValue();
+					else // ifnonnull
+						fallThroughDecision = IsNullValue.flowSensitiveNullValue();
+				} else if (tos.isDefinitelyNotNull()) {
+					// Predetermined comparison - one branch is infeasible
+					if (ifnull)
+						fallThroughDecision = IsNullValue.flowSensitiveNonNullValue();
+					else // ifnonnull
+						ifcmpDecision = IsNullValue.flowSensitiveNonNullValue();
+				} else {
+					// As far as we know, both branches feasible
+					ifcmpDecision = ifnull ? IsNullValue.flowSensitiveNullValue() : IsNullValue.flowSensitiveNonNullValue();
+					fallThroughDecision = ifnull ? IsNullValue.flowSensitiveNonNullValue() : IsNullValue.flowSensitiveNullValue();
+				}
+				return new IsNullConditionDecision(prevVnaFrame.getTopValue(), ifcmpDecision, fallThroughDecision);
+			}
+		case Constants.IF_ACMPEQ:
+		case Constants.IF_ACMPNE:
+			{
+				IsNullValue tos = lastFrame.getStackValue(0);
+				IsNullValue nextToTOS = lastFrame.getStackValue(1);
+
+				boolean tosNull = tos.isDefinitelyNull();
+				boolean nextToTOSNull = nextToTOS.isDefinitelyNull();
+
+				boolean cmpeq = (lastInSourceOpcode == Constants.IF_ACMPEQ);
+
+				// Initially, assume neither branch is feasible.
+				IsNullValue ifcmpDecision = null;
+				IsNullValue fallThroughDecision = null;
+				ValueNumber value;
+
+				if (tosNull && nextToTOSNull) {
+					// Redundant comparision: both values are null, only one branch is feasible
+					value = null; // no value will be replaced - just want to indicate that one of the branches is infeasible
+					if (cmpeq)
+						ifcmpDecision = IsNullValue.flowSensitiveNullValue();
+					else // cmpne
+						fallThroughDecision = IsNullValue.flowSensitiveNullValue();
+				} else if (tosNull || nextToTOSNull) {
+					// We have updated information about whichever value is not null;
+					// both branches are feasible
+					value = prevVnaFrame.getStackValue(tosNull ? 1 : 0);
+					ifcmpDecision = cmpeq ? IsNullValue.flowSensitiveNullValue() : IsNullValue.flowSensitiveNonNullValue();
+					fallThroughDecision = cmpeq ? IsNullValue.flowSensitiveNonNullValue() : IsNullValue.flowSensitiveNullValue();
+				} else {
+					// No information gained
+					break;
+				}
+
+				return new IsNullConditionDecision(value, ifcmpDecision, fallThroughDecision);
+			}
+		default:
+			throw new IllegalStateException();
+		}
+
+		return null; // no information gained
 	}
-*/
 
 	/**
 	 * Update is-null information at a branch target based on information gained at a
@@ -336,10 +396,10 @@ if (REDUNDANT_COMPARISON_HACK) {
 	private IsNullValueFrame replaceValues(IsNullValueFrame origFrame, IsNullValueFrame frame,
 		ValueNumber replaceMe, ValueNumberFrame prevVnaFrame, ValueNumberFrame targetVnaFrame, IsNullValue replacementValue) {
 
-		assert frame.getNumSlots() == targetVnaFrame.getNumSlots();
-
 		// If required, make a copy of the frame
 		frame = modifyFrame(origFrame, frame);
+
+		assert frame.getNumSlots() == targetVnaFrame.getNumSlots();
 
 		// The VNA frame may have more slots than the IsNullValueFrame
 		// if it was produced by an IF comparison (whose operand or operands
@@ -348,12 +408,6 @@ if (REDUNDANT_COMPARISON_HACK) {
 		final int targetNumSlots = targetVnaFrame.getNumSlots();
 		final int prefixNumSlots = Math.min(frame.getNumSlots(), prevVnaFrame.getNumSlots());
 
-if (BUGGY_REPLACE_VALUES) {
-		for (int i = 0; i < prefixNumSlots; ++i) {
-			if (prevVnaFrame.getValue(i).equals(replaceMe))
-				frame.setValue(i, replacementValue);
-		}
-} else {
 		// Here's the deal:
 		// - "replaceMe" is the value number from the previous frame (at the if branch)
 		//   which indicates a value that we have updated is-null information about
@@ -373,7 +427,6 @@ if (BUGGY_REPLACE_VALUES) {
 				}
 			}
 		}
-}
 
 		return frame;
 
