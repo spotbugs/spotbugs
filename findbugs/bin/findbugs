@@ -58,6 +58,7 @@ Usage() {
 	echo "   -gui            Use the Graphical UI (default behavior)"
 	echo "   -textui         Use the Text UI"
 	echo "   -jvmArgs args   Pass args to JVM"
+	echo "   -javahome dir   Specify location of JRE"
 	echo "   -help           Display this message"
 	echo "   -debug          Enable debug tracing in FindBugs"
 	echo "All other options are passed to the FindBugs application"
@@ -108,13 +109,22 @@ if [ ! -d "$findbugs_home" ]; then
 fi
 #echo "findbugs_home=$findbugs_home"
 
-# Process command line arguments.
-# All options that aren't consumed by this script are sent
-# to the FindBugs main() method.
+# Set command line defaults
 argList=''
 jvmArgs="-Xmx256m -Xss2m"
 debugArg=""
 appJar="findbugsGUI.jar"
+
+# choose java binary
+jvmCmd=java
+if [ ! -z "$JAVA_HOME" ] && [ -x "$JAVA_HOME/bin/java" ]; then
+	jvmCmd=$JAVA_HOME/bin/java
+fi
+
+# Process command line arguments.
+# All options that aren't consumed by this script are sent
+# to the FindBugs main() method.
+
 while [ $# -gt 0 ]; do
 	arg=$1
 	shift
@@ -132,6 +142,11 @@ while [ $# -gt 0 ]; do
 		jvmArgs=$1
 		shift
 		#echo "jvmArgs='$jvmArgs'"
+		;;
+
+	-javahome)
+		jvmCmd="$1/bin/java"
+		shift
 		;;
 
 	-debug)
@@ -157,12 +172,6 @@ fi
 # extra JVM args for MacOSX:
 if [ $os = "Darwin" ]; then
   jvmArgs="$jvmArgs -Xdock:name=FindBugs -Dapple.laf.useScreenMenuBar=true -Dcom.apple.macos.useScreenMenuBar=true"
-fi
-
-# choose java binary
-jvmCmd=java
-if [ ! -z "$JAVA_HOME" ] && [ -x "$JAVA_HOME/bin/java" ]; then
-  jvmCmd=$JAVA_HOME/bin/java
 fi
 
 # Launch FindBugs!
