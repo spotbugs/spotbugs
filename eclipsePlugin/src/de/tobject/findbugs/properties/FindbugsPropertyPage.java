@@ -658,32 +658,6 @@ public class FindbugsPropertyPage extends PropertyPage {
 		
 		return settings;
 	}
-	
-	/**
-	 * Store the detectors selection in project property
-	 */
-	protected void storeDetectorFactories(IProject project, List factoryList) {
-		try {
-			StringBuffer selectionList = new StringBuffer();
-			Iterator i = factoryList.iterator();
-			while (i.hasNext()) {
-				DetectorFactory rule = (DetectorFactory) i.next();
-				selectionList.append(rule.getShortName()).append(
-					FindbugsPlugin.LIST_DELIMITER);
-			}
-
-			project.setPersistentProperty(
-				FindbugsPlugin.PERSISTENT_PROPERTY_ACTIVE_DETECTORS,
-				selectionList.toString());
-			project.setSessionProperty(
-				FindbugsPlugin.PERSISTENT_PROPERTY_ACTIVE_DETECTORS,
-				factoryList);
-		}
-		catch (CoreException e) {
-			FindbugsPlugin.getDefault().logException(
-					e, "Could not store selected detectors for project");
-		}
-	}
 
 	/**
 	 * @author Andrei
