@@ -232,6 +232,82 @@ public class FindOpenStream implements Detector {
 	}
 
 	public static void main(String[] argv) throws Exception {
+		if (argv.length != 3) {
+			System.err.println("Usage: " + FindOpenStream.class.getName() + " <class file> <method name> <bytecode offset>");
+			System.exit(1);
+		}
+
+		String classFile = argv[0];
+		String methodName = argv[1];
+		int offset = Integer.parseInt(argv[2]);
+
+		final RepositoryLookupFailureCallback lookupFailureCallback = new RepositoryLookupFailureCallback() {
+			public void reportMissingClass(ClassNotFoundException ex) {
+				ex.printStackTrace();
+				System.exit(1);
+			}
+		};
+
+		JavaClass jclass = new ClassParser(classFile).parse();
+		ClassGen classGen = new ClassGen(jclass);
+		ConstantPoolGen cpg = classGen.getConstantPool();
+
+		Method[] methodList = jclass.getMethods();
+		for (int i = 0; i < methodList.length; ++i) {
+			Method method = methodList[i];
+
+			if (!method.getName().equals(methodName))
+				continue;
+
+			MethodGen methodGen = new MethodGen(method, jclass.getClassName(), cpg);
+
+			CFGBuilder cfgBuilder = CFGBuilderFactory.create(methodGen);
+			cfgBuilder.build();
+			CFG cfg = cfgBuilder.getCFG();
+			cfg.assignEdgeIds(0);
+
+			BasicBlock creationBlock = null;
+			InstructionHandle creationInstruction = null;
+/*
+			InstructionList il = methodGen.getInstructionList();
+			for (InstructionHandle handle = il.getStart(); handle != null; handle = handle.getNext()) {
+				if (handle.getPosition() == offset) {
+					creationInstruction = handle;
+					break;
+				}
+			}
+*/
+		blockLoop:
+			for (Iterator<BasicBlock> ii = cfg.blockIterator(); ii.hasNext(); ) {
+				BasicBlock basicBlock = ii.next();
+				for (Iterator<InstructionHandle> j = basicBlock.instructionIterator(); j.hasNext(); ) {
+					InstructionHandle handle = j.next();
+					if (handle.getPosition() == offset) {
+						creationBlock = basicBlock;
+						creationInstruction = handle;
+						break blockLoop;
+					}
+				}
+			}
+
+			if (creationInstruction == null) throw new IllegalArgumentException("No bytecode with offset " + offset);
+
+			final StreamResourceTracker resourceTracker = new StreamResourceTracker(lookupFailureCallback);
+			final Stream stream = resourceTracker.isResourceCreation(creationBlock, creationInstruction, cpg);
+
+			if (stream == null)
+				throw new IllegalArgumentException("offset " + offset + " is not a resource creation");
+
+			DataflowTestDriver<ResourceValueFrame> driver = new DataflowTestDriver<ResourceValueFrame>() {
+				public AbstractDataflowAnalysis<ResourceValueFrame> createAnalysis(MethodGen methodGen, CFG cfg)
+					throws DataflowAnalysisException {
+					return new ResourceValueAnalysis<Stream>(methodGen, resourceTracker, stream);
+				}
+			};
+
+			driver.execute(methodGen, cfg);
+			break;
+		}
 	}
 
 }
