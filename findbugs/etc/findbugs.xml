@@ -124,7 +124,7 @@
    	 reports="BRSA_BAD_RESULTSET_ACCESS"/>
    <Detector class="edu.umd.cs.findbugs.detect.SuperfluousInstanceOf" speed="fast"
    	 reports="SIO_SUPERFLUOUS_INSTANCEOF"/>  
-  <Detector class="edu.umd.cs.findbugs.detect.FindDeadLocalStores" speed="moderate" disabled="true"/>
+  <Detector class="edu.umd.cs.findbugs.detect.FindDeadLocalStores" speed="moderate"/>
    <Detector class="edu.umd.cs.findbugs.detect.FindBugsSummaryStats" speed="fast" />
 
   <BugPattern abbrev="SW" type="SW_SWING_METHODS_INVOKED_IN_SWING_THREAD" category="CORRECTNESS" 
