@@ -114,7 +114,193 @@ public class PatternMatcher implements DFSEdgeTypes {
 	 */
 	private void attemptMatch(BasicBlock basicBlock, BasicBlock.InstructionIterator instructionIterator)
 		throws DataflowAnalysisException {
-		work(basicBlock, instructionIterator, pattern.getFirst(), 0, null, null, true);
+		work(new State(basicBlock, instructionIterator, pattern.getFirst()));
+	}
+
+	/**
+	 * Object representing the current state of the
+	 * matching algorithm.  Provides convenient methods to
+	 * implement the various steps of the algorithm.
+	 */
+	private class State {
+		private BasicBlock basicBlock;
+		private BasicBlock.InstructionIterator instructionIterator;
+		private PatternElement patternElement;
+		private int matchCount;
+		private PatternElementMatch currentMatch;
+		private BindingSet bindingSet;
+		private boolean canFork;
+
+		/**
+		 * Constructor.
+		 * Builds the start state.
+		 * @param basicBlock the initial basic block
+		 * @param instructionIterator the instructionIterator indicating where
+		 *   to start matching
+		 * @param patternElement the first PatternElement of the pattern
+ 		 */
+		public State(BasicBlock basicBlock, BasicBlock.InstructionIterator instructionIterator,
+			PatternElement patternElement) {
+			this(basicBlock, instructionIterator, patternElement, 0, null, null, true);
+		}
+
+		/** Constructor. */
+		public State(BasicBlock basicBlock, BasicBlock.InstructionIterator instructionIterator,
+			PatternElement patternElement, int matchCount, PatternElementMatch currentMatch,
+			BindingSet bindingSet, boolean canFork) {
+			this.basicBlock = basicBlock;
+			this.instructionIterator = instructionIterator;
+			this.patternElement = patternElement;
+			this.matchCount = matchCount;
+			this.currentMatch = currentMatch;
+			this.bindingSet = bindingSet;
+			this.canFork = canFork;
+		}
+
+		/**
+		 * Get basic block.
+		 */
+		public BasicBlock getBasicBlock() {
+			return basicBlock;
+		}
+
+		/**
+		 * Get current pattern element.
+		 */
+		public PatternElement getPatternElement() {
+			return patternElement;
+		}
+
+		/**
+		 * Get current pattern element match.
+		 */
+		public PatternElementMatch getCurrentMatch() {
+			return currentMatch;
+		}
+
+		/**
+		 * Determine if the match is complete.
+		 */
+		public boolean isComplete() {
+			// We're done when we reach the end of the chain
+			// of pattern elements.
+			return patternElement == null;
+		}
+
+		/**
+		 * Get a ByteCodePatternMatch representing the complete match.
+		 */
+		public ByteCodePatternMatch getResult() {
+			if (!isComplete()) throw new IllegalStateException("match not complete!");
+			return new ByteCodePatternMatch(bindingSet, currentMatch);
+		}
+
+		/**
+		 * Try to produce a new state that will finish matching
+		 * the current element and start matching the next element.
+		 * Returns null if the current element is not complete.
+		 */
+		public State advanceToNextElement() {
+			if (!canFork || matchCount < patternElement.minOccur())
+				// Current element is not complete, or we already
+				// forked at this point
+				return null;
+
+			// Create state to advance to matching next pattern element
+			// at current basic block and instruction.
+			State advance = new State(
+				basicBlock, instructionIterator.duplicate(), patternElement.getNext(),
+				0, currentMatch, bindingSet, true);
+
+			// Now that this state has forked from this element
+			// at this instruction, it must not do so again.
+			this.canFork = false;
+
+			return advance;
+		}
+
+		/**
+		 * Determine if the current pattern element can continue
+		 * to match instructions.
+		 */
+		public boolean currentElementCanContinue() {
+			return matchCount < patternElement.maxOccur();
+		}
+
+		/**
+		 * Determine if there are more instructions in the same basic block.
+		 */
+		public boolean moreInstructionsInBasicBlock() {
+			return instructionIterator.hasNext();
+		}
+
+		/**
+		 * Match current pattern element with next instruction
+		 * in basic block.  Returns MatchResult if match succeeds,
+		 * null otherwise.
+		 */
+		public MatchResult matchNextInBasicBlock() throws DataflowAnalysisException {
+			if (!moreInstructionsInBasicBlock()) throw new IllegalStateException("At end of BB!");
+
+			// Move to location of next instruction to be matched
+			Location location = new Location(instructionIterator.next(), basicBlock);
+
+			// Get the ValueNumberFrames before and after the instruction
+			ValueNumberFrame before = vnaDataflow.getFactAtLocation(location);
+			ValueNumberFrame after = vnaDataflow.getFactAfterLocation(location);
+
+			// Try to match the instruction against the pattern element.
+			boolean debug = DEBUG && (!(patternElement instanceof Wild) || SHOW_WILD);
+			if (debug) System.out.println("Match " + patternElement +
+				" against " + location.getHandle() + " " +
+				(bindingSet != null ? bindingSet.toString() : "[]") + "...");
+			MatchResult matchResult = patternElement.match(location.getHandle(),
+				cpg, before, after, bindingSet);
+			if (debug) System.out.println("\t" +
+				((matchResult != null) ? " ==> MATCH" : " ==> NOT A MATCH"));
+			if (matchResult != null) {
+				// Successful match!
+				// Update state to reflect that the match has occurred.
+				++matchCount;
+				canFork = true;
+				currentMatch = new PatternElementMatch(matchResult.getPatternElement(),
+					location.getHandle(), basicBlock, matchCount, currentMatch);
+				bindingSet = matchResult.getBindingSet();
+			}
+			return matchResult;
+		}
+
+		/**
+		 * Determine if it is possible to continue matching
+		 * in a successor basic block.
+		 */
+		public boolean canAdvanceToNextBasicBlock() {
+			return currentMatch == null || currentMatch.allowTrailingEdges();
+		}
+
+		/**
+		 * Get most recently matched instruction.
+		 */
+		public InstructionHandle getLastMatchedInstruction() {
+			if (currentMatch == null) throw new IllegalStateException("no current match!");
+			return currentMatch.getMatchedInstructionInstructionHandle();
+		}
+
+		/**
+		 * Return a new State for continuing the overall pattern match
+		 * in a successor basic block.
+		 * @param edge the Edge leading to the successor basic block
+		 * @param matchResult a MatchResult representing the match of the
+		 *   last instruction in the predecessor block; null if none
+		 */
+		public State advanceToSuccessor(Edge edge, MatchResult matchResult) {
+			if (matchResult != null &&
+				!matchResult.getPatternElement().acceptBranch(edge, getLastMatchedInstruction()))
+				return null;
+
+			return new State(edge.getTarget(), edge.getTarget().instructionIterator(),
+				patternElement, matchCount, currentMatch, bindingSet, canFork);
+		}
 	}
 
 	/**
@@ -124,32 +310,14 @@ public class PatternMatcher implements DFSEdgeTypes {
 	 * at the end of a basic block, in which case nothing will happen except
 	 * that we will try to continue the match in the non-backedge successors
 	 * of the basic block.
-	 *
-	 * @param basicBlock the basic block
-	 * @param instructionIterator an InstructionIterator positioned just before
-	 *   the instruction to be matched
-	 * @param patternElement the PatternElement to be applied to the next instruction;
-	 *   if canFork==true and matchCount &gt;= the element's min count, then we may
-	 *   advance to the next element in the pattern
-	 * @param matchCount number of instructions the PatternElement has matched so far
-	 * @param currentMatch the tail of the chain of PatternElementMatch objects
-	 *   representing the successful PatternElement/instruction matches so far
-	 * @param bindingSet the BindingSet representing the binding of variable names
-	 *   in the pattern to Variables (representing runtime values and fields)
-	 * @param canFork true if it is permissible to advance to the next PatternElement
-	 *   if we've reached the min count for the current PatternElement, false otherwise
 	 */
-	private void work(BasicBlock basicBlock, BasicBlock.InstructionIterator instructionIterator,
-		PatternElement patternElement, int matchCount,
-		PatternElementMatch currentMatch, BindingSet bindingSet,
-		boolean canFork)
-		throws DataflowAnalysisException {
+	private void work(State state) throws DataflowAnalysisException {
 
 		// Have we reached the end of the pattern?
-		if (patternElement == null) {
+		if (state.isComplete()) {
 			// This is a complete match.
 			if (DEBUG) System.out.println("FINISHED A MATCH!");
-			resultList.add(new ByteCodePatternMatch(bindingSet, currentMatch));
+			resultList.add(state.getResult());
 			return;
 		}
 
@@ -157,82 +325,57 @@ public class PatternMatcher implements DFSEdgeTypes {
 		// pattern element, we can advance to the next pattern element without trying
 		// to match this instruction again.  We make sure that we only advance to
 		// the next element once for this matchCount.
-		if (canFork && matchCount >= patternElement.minOccur()) {
-			work(basicBlock, instructionIterator.duplicate(), patternElement.getNext(), 0, currentMatch, bindingSet, true);
-			canFork = false;
+		State advance = state.advanceToNextElement();
+		if (advance != null) {
+			work(advance);
 		}
 
 		// If we've reached the maximum number of occurrences for this
 		// pattern element, then we can't continue.
-		if (matchCount >= patternElement.maxOccur())
+		if (!state.currentElementCanContinue())
 			return;
 
-		InstructionHandle matchedInstruction = null;
-		PatternElement matchedPatternElement = null;
-
 		// Is there another instruction in this basic block?
-		if (instructionIterator.hasNext()) {
-			InstructionHandle handle = instructionIterator.next();
-
-			// Get the ValueNumberFrames before and after the instruction
-			ValueNumberFrame before = vnaDataflow.getFactAtLocation(new Location(handle, basicBlock));
-			BasicBlock.InstructionIterator dupIter = instructionIterator.duplicate();
-			ValueNumberFrame after = dupIter.hasNext()
-				? vnaDataflow.getFactAtLocation(new Location(dupIter.next(), basicBlock))
-				: vnaDataflow.getResultFact(basicBlock);
-
-			// Try to match the instruction against the pattern element.
-			boolean isWild = patternElement instanceof Wild;
-			if (DEBUG && (!isWild || SHOW_WILD)) System.out.println("Match " + patternElement + " against " + handle + " " +
-				(bindingSet != null ? bindingSet.toString() : "[]") + "...");
-			MatchResult matchResult = patternElement.match(handle, cpg, before, after, bindingSet);
-			if (DEBUG && (!isWild || SHOW_WILD)) System.out.println("\t" + ((matchResult != null) ? " ==> MATCH" : " ==> NOT A MATCH"));
+		MatchResult matchResult = null;
+		if (state.moreInstructionsInBasicBlock()) {
+			// Try to match it.
+			matchResult = state.matchNextInBasicBlock();
 			if (matchResult == null)
-				// Not a match.
 				return;
-
-			// Successful match!
-			matchedInstruction = handle;
-			matchedPatternElement = matchResult.getPatternElement();
-			++matchCount;
-			canFork = true;
-			currentMatch = new PatternElementMatch(matchedPatternElement, handle, basicBlock,
-				matchCount, currentMatch);
-			bindingSet = matchResult.getBindingSet();
 		}
 
 		// Continue the match at each successor instruction,
 		// using the same PatternElement.
-		if (instructionIterator.hasNext()) {
+		if (state.moreInstructionsInBasicBlock()) {
 			// Easy case; continue matching in the same basic block.
-			work(basicBlock, instructionIterator, patternElement, matchCount, currentMatch, bindingSet, canFork);
-		} else if (currentMatch == null || currentMatch.allowTrailingEdges()) {
+			work(state);
+		} else if (state.canAdvanceToNextBasicBlock()) {
 			// We've reached the end of the basic block.
 			// Try to advance to the successors of this basic block,
 			// ignoring loop backedges.
-			Iterator<Edge> i = cfg.outgoingEdgeIterator(basicBlock);
+			Iterator<Edge> i = cfg.outgoingEdgeIterator(state.getBasicBlock());
 			BitSet visitedSuccessorSet = new BitSet();
 			while (i.hasNext()) {
 				Edge edge = i.next();
 				if (dfs.getDFSEdgeType(edge) == BACK_EDGE)
 					continue;
 
+				BasicBlock destBlock = edge.getTarget();
+				int destId = destBlock.getId();
+
+				// CFGs can have duplicate edges
+				if (visitedSuccessorSet.get(destId))
+					continue;
+				visitedSuccessorSet.set(destId, true);
 
 				// If we have just matched an instruction, then we allow the
 				// matching PatternElement to choose which edges are acceptable.
 				// This allows PatternElements to select particular control edges;
 				// for example, only continue the pattern on the true branch
 				// of an "if" comparison.
-				if (matchedInstruction == null || matchedPatternElement.acceptBranch(edge, matchedInstruction)) {
-					BasicBlock destBlock = edge.getTarget();
-					int destId = destBlock.getId();
-
-					// CFGs can have duplicate edges
-					if (visitedSuccessorSet.get(destId))
-						continue;
-					visitedSuccessorSet.set(destId, true);
-
-					work(destBlock, destBlock.instructionIterator(), patternElement, matchCount, currentMatch, bindingSet, canFork);
+				State succState = state.advanceToSuccessor(edge, matchResult);
+				if (succState != null) {
+					work(succState);
 				}
 			}
 		}
