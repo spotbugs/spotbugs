@@ -72,9 +72,9 @@ public class FindNullDeref implements Detector {
 						// Could the reference be null?
 						IsNullValue refValue = frame.getValue(frame.getNumSlots() - consumed);
 
-						if (refValue.equals(IsNullValue.nullValue()))
+						if (refValue.isDefinitelyNull())
 							reportNullDeref(classContext, method, exceptionThrowerHandle, "NP_ALWAYS_NULL");
-						else if (refValue.equals(IsNullValue.nullOnSomePathValue()))
+						else if (refValue.isNullOnSomePath())
 							reportNullDeref(classContext, method, exceptionThrowerHandle, "NP_NULL_ON_SOME_PATH");
 					}
 				}
