@@ -1232,7 +1232,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
      * Populate an analysis run's tree model for given sort order.
      */
     private void populateAnalysisRunTreeModel(AnalysisRun analysisRun, final String groupBy) {
-        System.out.println("Populating bug tree for order " + groupBy);
+        //System.out.println("Populating bug tree for order " + groupBy);
         
 	// Set busy cursor - this is potentially a time-consuming operation
 	Cursor orig = this.getCursor();
