@@ -725,7 +725,7 @@ public class OpcodeStack implements Constants2
 	 			
 	 			case ANEWARRAY:
 	 				pop();
-	 				pushBySignature("L"+dbc.getClassConstantOperand()+";");
+	 				pushBySignature(dbc.getClassConstantOperand());
 	 			break;
 	 			
 	 			case MULTIANEWARRAY:
@@ -961,3 +961,5 @@ public class OpcodeStack implements Constants2
  		return lvValues.get(index);
  	}
 }
+
+// vim:ts=4
