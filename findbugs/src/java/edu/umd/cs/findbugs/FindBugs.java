@@ -694,9 +694,12 @@ public class FindBugs implements Constants2, ExitCodes
 	}
 
 	// Enable only those detectors that can emit those categories
-	// (and the ones that produce unknown bug patterns, just to be safe)
+	// (and the ones that produce unknown bug patterns, just to be safe).
+	// Skip disabled detectors, though.
 	for (Iterator<DetectorFactory> i = DetectorFactoryCollection.instance().factoryIterator(); i.hasNext(); ) {
 		DetectorFactory factory = i.next();
+		if (!factory.isEnabled())
+			continue;
 		Collection<BugPattern> reported = factory.getReportedBugPatterns();
 		boolean enable = false;
 		if (reported.isEmpty()) {
