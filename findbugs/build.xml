@@ -15,6 +15,7 @@
 	<property name="src.dir" value="src/java"/>
 	<property name="toolsrc.dir" value="src/tools"/>
 	<property name="scriptsrc.dir" value="src/scripts"/>
+	<property name="xslsrc.dir" value="src/xsl"/>
 	<property name="etc.dir" value="etc"/>
 	<property name="test.dir" value="test"/>
 	<property name="pkg.base" value="edu/umd/cs/findbugs"/>
@@ -45,7 +46,7 @@
 	<target name="rebuild" depends="clean,build"/>
 
 	<!-- Compile Java source files, and copy other files (properties,
-		images, html) that need to be part of the codebase. -->
+		images, html, XSL stylesheets) that need to be part of the codebase. -->
 	<target name="classes">
 		<mkdir dir="${classes.dir}"/>
 		<!-- Compile Java source files. -->
@@ -63,6 +64,12 @@
 				<include name="**/*.png"/>
 				<include name="**/*.html"/>
 			</fileset>
+			<fileset dir="${etc.dir}">
+				<include name="summary.xsl"/>
+			</fileset>
+			<fileset dir="${xslsrc.dir}">
+				<include name="*.xsl"/>
+			</fileset>
 		</copy>
 	</target>
 
@@ -78,9 +85,7 @@
 				<exclude name="${pkg.base}/detect/**"/>
 				<include name="**/*.class"/>
 				<include name="**/*.properties"/>
-			</fileset>
-			<fileset dir="${etc.dir}">
-				<include name="summary.xsl"/>
+				<include name="**/*.xsl"/>
 			</fileset>
 		</jar>
 		
