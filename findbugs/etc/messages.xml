@@ -690,8 +690,18 @@ accurate, to use the constant instead.</p>
 ]]>
     </Details>
   </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.RedundantInterfaces">
+    <Details>
+<![CDATA[
+<p>This detector looks for classes that declare they implement the same interface
+as a super class. This is redundant, if a superclass implements an interface, so does
+the subclass.</p>
+]]>
+    </Details>
+  </Detector>
   
-    <Detector class="edu.umd.cs.findbugs.detect.FindBugsSummaryStats">
+  <Detector class="edu.umd.cs.findbugs.detect.FindBugsSummaryStats">
     <Details>
 <![CDATA[
 <p> This detector just collects summary statistics information about the analysis process. </p>
@@ -2901,6 +2911,22 @@ just use the constant. Methods detected are:
     ]]>
   	  </Details>
     </BugPattern>
+    
+    <BugPattern type="RI_REDUNDANT_INTERFACES">
+	  <ShortDescription>Class implements same interface as superclass.</ShortDescription>
+	  <LongDescription>Class {0} implements same interface as superclass.</LongDescription>
+	  <Details>
+	<![CDATA[
+    <p>
+    This class declares that it implements an interface that is also implemented by a superclass.
+    This is redundant, once a superclass implements an interface, all subclasses by default also
+    implement this interface. It may point out that the inheritance hierarchy has changed since
+    this class was created, and consideration should be taken into account for the ownership of 
+    the interface's implementation.
+    </p>
+    ]]>
+  	  </Details>
+    </BugPattern>
 
   <!--
   **********************************************************************
@@ -2992,4 +3018,5 @@ just use the constant. Methods detected are:
   <BugCode abbrev="FE">Test for floating point equality</BugCode>
   <BugCode abbrev="UM">Unnecessary Math on constants</BugCode>
   <BugCode abbrev="CD">Circular Dependencies</BugCode>
+  <BugCode abbrev="RI">Redundant Interfaces</BugCode>
   </MessageCollection>

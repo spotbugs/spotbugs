@@ -312,6 +312,10 @@
   <Detector class="edu.umd.cs.findbugs.detect.FindCircularDependencies" 
   			speed="fast"
 			reports="CD_CIRCULAR_DEPENDENCY"/>
+			
+  <Detector class="edu.umd.cs.findbugs.detect.RedundantInterfaces"
+  			speed="fast"
+  			reports="RI_REDUNDANT_INTERFACES"/>
 
   <Detector class="edu.umd.cs.findbugs.detect.FindBugsSummaryStats" 
             speed="fast"
@@ -491,4 +495,5 @@
   <BugPattern abbrev="FE" type="FE_FLOATING_POINT_EQUALITY" category="CORRECTNESS" experimental="true" />
   <BugPattern abbrev="UM" type="UM_UNNECESSARY_MATH" category="STYLE" experimental="true"/>
   <BugPattern abbrev="CD" type="CD_CIRCULAR_DEPENDENCY" category="STYLE" experimental="true"/>
+  <BugPattern abbrev="RI" type="RI_REDUNDANT_INTERFACES" category="STYLE" experimental="true"/>
 </FindbugsPlugin>
