@@ -56,7 +56,7 @@ public class LockedFields extends BytecodeScanningDetector implements   Constant
 	*/
 	for(Iterator<FieldAnnotation> i = fields.iterator(); i.hasNext(); ) {
 		FieldAnnotation f = i.next();
-		if (f.getClassName().equals(className) && mode <= WRITTEN_LOCKED) 
+		if (f.getClassName().equals(betterClassName) && mode <= WRITTEN_LOCKED) 
 			localLocks.add(f);
 		int  [] theseStats = (int []) stats.get(f); 
 		if (theseStats == null) {
