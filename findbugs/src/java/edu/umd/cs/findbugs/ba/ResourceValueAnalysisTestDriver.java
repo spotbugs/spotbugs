@@ -86,7 +86,8 @@ public abstract class ResourceValueAnalysisTestDriver<Resource> {
 			DataflowTestDriver<ResourceValueFrame> driver = new DataflowTestDriver<ResourceValueFrame>() {
 				public AbstractDataflowAnalysis<ResourceValueFrame> createAnalysis(MethodGen methodGen, CFG cfg)
 					throws DataflowAnalysisException {
-					return new ResourceValueAnalysis<Resource>(methodGen, resourceTracker, resource);
+					return new ResourceValueAnalysis<Resource>(methodGen, resourceTracker, resource,
+						lookupFailureCallback);
 				}
 			};
 
