@@ -113,9 +113,9 @@ public class ValueNumberFrameModelingVisitor
 			try {
 				InstanceField instanceField = Lookup.findInstanceField(obj, getCPG());
 				if (instanceField != null) {
-					System.out.print("[getfield of " + instanceField + "]");
 					ValueNumber reference = frame.popValue();
 					AvailableLoad availableLoad = new AvailableLoad(reference, instanceField);
+					if (RLE_DEBUG) System.out.print("[getfield of " + availableLoad + "]");
 					ValueNumber[] loadedValue = frame.getAvailableLoad(availableLoad);
 	
 					if (loadedValue == null) {
