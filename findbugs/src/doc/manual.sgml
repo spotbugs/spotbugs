@@ -108,6 +108,17 @@ Here are the required commands on Windows systems:
 
 </chapter>
 
+<chapter id="building">
+<title>Building FindBugs from Source</title>
+
+<para>
+This chapter describes how to build FindBugs from source code.  Unless you are
+interesting in modifying FindBugs, you will probably want to skip to the
+<link linkend="gui">next chapter</link>.
+</para>
+
+</chapter>
+
 
 <chapter id="gui">
 <title>Using the Findbugs Graphical User Interface</title>
