@@ -5,7 +5,7 @@
   This plugin is enabled by default.
 -->
 <FindbugsPlugin xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-   				xsi:noNamespaceSchemaLocation="findbugs.xsd">
+   				xsi:noNamespaceSchemaLocation="findbugs.xsd"
 				pluginid="core"
                 defaultenabled="true"
                 provider="FindBugs project" 
