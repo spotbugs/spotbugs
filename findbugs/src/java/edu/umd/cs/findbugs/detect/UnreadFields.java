@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.detect;
 import edu.umd.cs.findbugs.*;
+import org.apache.bcel.Repository;
 import java.util.*;
 import org.apache.bcel.classfile.*;
 import edu.umd.cs.findbugs.visitclass.Constants2;
@@ -27,6 +28,8 @@ public class UnreadFields extends BytecodeScanningDetector implements   Constant
     private static final boolean DEBUG = Boolean.getBoolean("unreadfields.debug");
 
     Set<FieldAnnotation> declaredFields = new TreeSet<FieldAnnotation>();
+    Set<FieldAnnotation> fieldsOfSerializableOrNativeClassed 
+		= new HashSet<FieldAnnotation>();
     Set<FieldAnnotation> myFields = new TreeSet<FieldAnnotation>();
     HashSet<FieldAnnotation> writtenFields = new HashSet<FieldAnnotation>();
     HashSet<FieldAnnotation> readFields = new HashSet<FieldAnnotation>();
@@ -37,10 +40,10 @@ public class UnreadFields extends BytecodeScanningDetector implements   Constant
     HashSet<String> superWrittenFields = new HashSet<String>();
     HashSet<String> innerClassCannotBeStatic = new HashSet<String>();
     boolean hasNativeMethods;
+    boolean isSerializable;
     private BugReporter bugReporter;
 
-    static final int doNotConsider = ACC_PUBLIC | ACC_PROTECTED
-			| ACC_STATIC;
+    static final int doNotConsider = ACC_PUBLIC | ACC_PROTECTED | ACC_STATIC;
 
   public UnreadFields(BugReporter bugReporter) {
 	this.bugReporter = bugReporter;
@@ -49,6 +52,7 @@ public class UnreadFields extends BytecodeScanningDetector implements   Constant
 
   public void visit(JavaClass obj)     {
 	hasNativeMethods = false;
+	isSerializable = false;
 	if (getSuperclassName().indexOf("$") >= 0
 		|| getSuperclassName().indexOf("+") >= 0) {
 		// System.out.println("hicfsc: " + betterClassName);
@@ -56,11 +60,41 @@ public class UnreadFields extends BytecodeScanningDetector implements   Constant
 		// System.out.println("hicfsc: " + betterSuperclassName);
 		innerClassCannotBeStatic.add(getDottedSuperclassName());
 		}
+       // Does this class directly implement Serializable?
+        String [] interface_names = obj.getInterfaceNames();
+        for(int i=0; i < interface_names.length; i++) {
+            if (interface_names[i].equals("java.io.Externalizable")) {
+                isSerializable = true;
+                }
+            else if (interface_names[i].equals("java.io.Serializable")) {
+                isSerializable = true;
+                break;
+                }
+            }
+
+        // Does this class indirectly implement Serializable?
+        if (!isSerializable) {
+            try {
+                if (Repository.instanceOf(obj,"java.io.Externalizable"))
+                    isSerializable = true;
+                if (Repository.instanceOf(obj,"java.io.Serializable"))
+                    isSerializable = true;
+                if (Repository.instanceOf(obj,"java.rmi.Remote")) {
+                    isSerializable = true;
+                    }
+            } catch (ClassNotFoundException e) {
+                bugReporter.reportMissingClass(e);
+            }
+	}
+
+	// System.out.println(getDottedClassName() + " is serializable: " + isSerializable);
 	super.visit(obj);
 	}
+
   public void visitAfter(JavaClass obj)     {
-	if (!hasNativeMethods)
-		declaredFields.addAll(myFields);
+	declaredFields.addAll(myFields);
+	if (hasNativeMethods || isSerializable)
+		fieldsOfSerializableOrNativeClassed.addAll(myFields);
 	myFields.clear();
 	}
 
@@ -142,6 +176,7 @@ public void report() {
 		FieldAnnotation f = i.next();
 		String fieldName = f.getFieldName();
 		String className = f.getClassName();
+		if (!superWrittenFields.contains(fieldName))
 		    bugReporter.reportBug(new BugInstance("UWF_UNWRITTEN_FIELD", NORMAL_PRIORITY)
 			.addClass(className)
 			.addField(f));
@@ -169,11 +204,14 @@ public void report() {
 		    bugReporter.reportBug(new BugInstance("SS_SHOULD_BE_STATIC", NORMAL_PRIORITY)
 			.addClass(className)
 			.addField(f));
-		  else if (!writtenFields.contains(f) && !superWrittenFields.contains(f.getFieldName()))
+		  else if (fieldsOfSerializableOrNativeClassed.contains(f)) {
+			// ignore it
+		  }
+		  else if (!writtenFields.contains(f) && !superWrittenFields.contains(f.getFieldName())) 
 		    bugReporter.reportBug(new BugInstance("UUF_UNUSED_FIELD", NORMAL_PRIORITY)
 			.addClass(className)
 			.addField(f));
-		  else
+		  else 
 		    bugReporter.reportBug(new BugInstance("URF_UNREAD_FIELD", NORMAL_PRIORITY)
 			.addClass(className)
 			.addField(f));
