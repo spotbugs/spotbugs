@@ -310,20 +310,34 @@ public class SourceLineAnnotation implements BugAnnotation {
 		if (key.equals("")) {
 			StringBuffer buf = new StringBuffer();
 			buf.append(sourceFile);
-			buf.append(":[");
-			if (startLine == endLine) {
-				buf.append("line ");
-				buf.append(startLine);
-			} else {
-				buf.append("lines ");
-				buf.append(startLine);
-				buf.append('-');
-				buf.append(endLine);
+			appendLines(buf);
+			return buf.toString();
+		} else if (key.equals("full")) {
+			StringBuffer buf = new StringBuffer();
+			String pkgName = getPackageName();
+			if (!pkgName.equals("")) {
+				buf.append(pkgName.replace('.','/'));
+				buf.append('/');
 			}
-			buf.append(']');
+			buf.append(sourceFile);
+			appendLines(buf);
 			return buf.toString();
 		} else
 			throw new IllegalStateException("Unknown format key " + key);
+	}
+
+	private void appendLines(StringBuffer buf) {
+		buf.append(":[");
+		if (startLine == endLine) {
+			buf.append("line ");
+			buf.append(startLine);
+		} else {
+			buf.append("lines ");
+			buf.append(startLine);
+			buf.append('-');
+			buf.append(endLine);
+		}
+		buf.append(']');
 	}
 
 	public String getDescription() {
