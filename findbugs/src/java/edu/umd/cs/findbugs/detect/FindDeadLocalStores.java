@@ -19,13 +19,18 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import java.util.Arrays;
 import java.util.BitSet;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
+import java.util.StringTokenizer;
 
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.LocalVariable;
+import org.apache.bcel.classfile.LocalVariableTable;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ANEWARRAY;
 import org.apache.bcel.generic.ASTORE;
@@ -54,8 +59,27 @@ import edu.umd.cs.findbugs.ba.LiveLocalStoreAnalysis;
 import edu.umd.cs.findbugs.ba.Location;
 
 public class FindDeadLocalStores implements Detector {
-	private static final boolean DEBUG = Boolean.getBoolean("fdls.debug");
+	
+    // Define the name of the property that is used to exclude named local variables
+    // from Dead Local Storage detection...
+    private static final String FINDBUGS_EXCLUDED_LOCALS_PROP_NAME = "findbugs.dls.exclusions";
+    
+    private static final boolean DEBUG = Boolean.getBoolean("fdls.debug");
+    
+    // Define a collection of excluded local variables...
+	private static final Set<String> EXCLUDED_LOCALS = new HashSet<String>();
 
+    static {
+        // Get the value of the property...
+        String exclLocalsProperty = System.getProperty(FINDBUGS_EXCLUDED_LOCALS_PROP_NAME);
+        
+        // If we have one, then split its contents into a table...
+        if (exclLocalsProperty != null) {        	
+        	EXCLUDED_LOCALS.addAll( (List<String>)Arrays.asList(exclLocalsProperty.split(",")));
+        	EXCLUDED_LOCALS.remove("");
+        }
+    }   
+        
 	private static final Set<String> classesAlreadyReportedOn = new HashSet<String>();
 	/**
 	 * Opcodes of instructions that load constant values that
@@ -127,6 +151,9 @@ public class FindDeadLocalStores implements Detector {
 		BitSet liveStoreSetAtEntry = llsaDataflow.getAnalysis().getResultFact(cfg.getEntry());
 		BitSet complainedAbout = new BitSet();
 
+        // Get the local variable table from the method...
+        LocalVariableTable lvt = method.getLocalVariableTable();
+        
 		for (Iterator<Location> i = cfg.locationIterator(); i.hasNext(); ) {
 			Location location = i.next();
 			if (location.getBasicBlock().isExceptionHandler())
@@ -162,6 +189,24 @@ public class FindDeadLocalStores implements Detector {
 
 			IndexedInstruction ins = (IndexedInstruction) location.getHandle().getInstruction();
 			int local = ins.getIndex();
+     
+            // Determine whether we should ignore this local variable...
+            if (lvt != null) {
+                // Get the name of the local...
+                String localName = null;
+                LocalVariable[] lvs = lvt.getLocalVariableTable();
+                for (int j=0; j<lvs.length; j++) {
+                    if (lvs[j].getIndex() == local) {
+                        localName = lvs[j].getName();
+                    }
+                }
+                
+                // Is it in our set of excluded names?
+                if (EXCLUDED_LOCALS.contains(localName)) {
+                    continue;
+                }
+            }
+                
 			int localsThatAreParameters = method.getArgumentTypes().length;
 			if (!method.isStatic()) localsThatAreParameters++;
 
