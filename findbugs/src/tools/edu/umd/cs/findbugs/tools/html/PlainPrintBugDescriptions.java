@@ -39,7 +39,10 @@ public class PlainPrintBugDescriptions extends PrintBugDescriptions {
 	protected PrintStream getPrintStream() { return out; }
 
 	protected void prologue() throws IOException {
-		out.println("<html><head><title>" + docTitle + "</title></head><body>");
+		out.println("<html><head><title>" + docTitle + "</title>");
+		header();
+		out.println("</head><body>");
+		beginBody();
 		out.println("<h1>" + docTitle + "</h1>");
 	}
 
@@ -50,7 +53,20 @@ public class PlainPrintBugDescriptions extends PrintBugDescriptions {
 	}
 
 	protected void epilogue() throws IOException {
+		endBody();
 		out.println("</body></html>");
+	}
+
+	/** Extra stuff that can be printed in the &lt;head&gt; element. */
+	protected void header() throws IOException {
+	}
+
+	/** Extra stuff printed at the beginning of the &lt;body&gt; element. */
+	protected void beginBody() throws IOException {
+	}
+
+	/** Extra stuff printed at the end of the &lt;body&gt; element. */
+	protected void endBody() throws IOException {
 	}
 
 	public static void main(String[] args) throws Exception {

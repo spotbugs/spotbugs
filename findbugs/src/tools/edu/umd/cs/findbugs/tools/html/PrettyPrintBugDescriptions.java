@@ -34,6 +34,10 @@ import java.util.TreeSet;
 
 public class PrettyPrintBugDescriptions extends PlainPrintBugDescriptions {
 	private Set<BugPattern> bugPatternSet;
+	private String headerText;
+	private String beginBodyText;
+	private String prologueText;
+	private String endBodyText;
 
 	private static final String[] TABLE_COLORS = new String[]{ "#eeeeee", "#ffffff" };
 
@@ -50,18 +54,29 @@ public class PrettyPrintBugDescriptions extends PlainPrintBugDescriptions {
 	public PrettyPrintBugDescriptions(String docTitle, OutputStream out) {
 		super(docTitle, out);
 		this.bugPatternSet = new TreeSet<BugPattern>(new BugPatternComparator());
+		this.headerText = this.beginBodyText = this.prologueText = this.endBodyText = "";
+	}
+
+	public void setHeaderText(String headerText) {
+		this.headerText = headerText;
+	}
+
+	public void setBeginBodyText(String beginBodyText) {
+		this.beginBodyText = beginBodyText;
+	}
+
+	public void setPrologueText(String prologueText) {
+		this.prologueText = prologueText;
+	}
+
+	public void setEndBodyText(String endBodyText) {
+		this.endBodyText = endBodyText;
 	}
 
 	protected void prologue() throws IOException {
 		super.prologue();
-
 		PrintStream out = getPrintStream();
-
-		out.println(
-			"<p> This document lists the standard bug patterns that are reported by\n" +
-			"<a href=\"" + Version.WEBSITE + "\">FindBugs</a>.&nbsp; Note that some of\n" +
-			"these bug patterns may be experimental or disabled by default"
-		);
+		out.println(prologueText);
 	}
 
 	protected void emit(BugPattern bugPattern) throws IOException {
@@ -72,6 +87,23 @@ public class PrettyPrintBugDescriptions extends PlainPrintBugDescriptions {
 		emitSummaryTable();
 		emitBugDescriptions();
 		super.epilogue();
+	}
+
+	protected void header() throws IOException {
+		PrintStream out = getPrintStream();
+		out.println(headerText);
+	}
+
+	/** Extra stuff printed at the beginning of the &lt;body&gt; element. */
+	protected void beginBody() throws IOException {
+		PrintStream out = getPrintStream();
+		out.println(beginBodyText);
+	}
+
+	/** Extra stuff printed at the end of the &lt;body&gt; element. */
+	protected void endBody() throws IOException {
+		PrintStream out = getPrintStream();
+		out.println(endBodyText);
 	}
 
 	private void emitSummaryTable() {
@@ -115,7 +147,16 @@ public class PrettyPrintBugDescriptions extends PlainPrintBugDescriptions {
 		String docTitle = "FindBugs Bug Descriptions";
 		if (args.length > 0)
 			docTitle = args[0];
-		new PrettyPrintBugDescriptions(docTitle, System.out).print();
+		PrettyPrintBugDescriptions pp = new PrettyPrintBugDescriptions(docTitle, System.out);
+		if (args.length >= 1)
+			pp.setHeaderText(args[0]);
+		if (args.length >= 2)
+			pp.setBeginBodyText(args[1]);
+		if (args.length >= 3)
+			pp.setPrologueText(args[2]);
+		if (args.length >= 4)
+			pp.setEndBodyText(args[3]);
+		pp.print();
 	}
 }
 
