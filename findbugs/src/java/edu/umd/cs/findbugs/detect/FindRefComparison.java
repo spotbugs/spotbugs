@@ -201,8 +201,9 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 	 * Type merger to use the extended String types.
 	 */
 	private static class RefComparisonTypeMerger extends StandardTypeMerger {
-		public RefComparisonTypeMerger(RepositoryLookupFailureCallback lookupFailureCallback) {
-			super(lookupFailureCallback);
+		public RefComparisonTypeMerger(RepositoryLookupFailureCallback lookupFailureCallback,
+			ExceptionSetFactory exceptionSetFactory) {
+			super(lookupFailureCallback, exceptionSetFactory);
 		}
 
 		protected boolean isReferenceType(byte type) {
@@ -276,10 +277,12 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 
 				final CFG cfg = classContext.getCFG(method);
 				final DepthFirstSearch dfs = classContext.getDepthFirstSearch(method);
+				final ExceptionSetFactory exceptionSetFactory =
+					classContext.getExceptionSetFactory(method);
 
-				RefComparisonTypeMerger typeMerger = new RefComparisonTypeMerger(bugReporter);
+				RefComparisonTypeMerger typeMerger = new RefComparisonTypeMerger(bugReporter, exceptionSetFactory);
 				TypeFrameModelingVisitor visitor = new RefComparisonTypeFrameModelingVisitor(methodGen.getConstantPool(), bugReporter);
-				TypeAnalysis typeAnalysis = new TypeAnalysis(methodGen, cfg, dfs, typeMerger, visitor, bugReporter);
+				TypeAnalysis typeAnalysis = new TypeAnalysis(methodGen, cfg, dfs, typeMerger, visitor, bugReporter, exceptionSetFactory);
 				final TypeDataflow typeDataflow = new TypeDataflow(cfg, typeAnalysis);
 				typeDataflow.execute();
 
@@ -380,12 +383,15 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 				MethodGen methodGen = classContext.getMethodGen(method);
 				DepthFirstSearch dfs = classContext.getDepthFirstSearch(method);
 				CFG cfg = classContext.getCFG(method);
+				ExceptionSetFactory exceptionSetFactory = classContext.getExceptionSetFactory(method);
 
-				TypeMerger typeMerger = new RefComparisonTypeMerger(lookupFailureCallback);
+				TypeMerger typeMerger = new RefComparisonTypeMerger(lookupFailureCallback, exceptionSetFactory);
 				TypeFrameModelingVisitor visitor =
 					new RefComparisonTypeFrameModelingVisitor(methodGen.getConstantPool(), lookupFailureCallback);
-				TypeAnalysis analysis = new TypeAnalysis(methodGen, cfg, dfs, typeMerger, visitor, lookupFailureCallback);
-				Dataflow<TypeFrame, TypeAnalysis> dataflow = new Dataflow<TypeFrame, TypeAnalysis>(cfg, analysis);
+				TypeAnalysis analysis = new TypeAnalysis(methodGen, cfg, dfs, typeMerger, visitor,
+					lookupFailureCallback, exceptionSetFactory);
+				Dataflow<TypeFrame, TypeAnalysis> dataflow =
+					new Dataflow<TypeFrame, TypeAnalysis>(cfg, analysis);
 				dataflow.execute();
 
 				return dataflow;
@@ -396,4 +402,4 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 	}
 }
 
-// vim:ts=4
+// vim:ts=3
