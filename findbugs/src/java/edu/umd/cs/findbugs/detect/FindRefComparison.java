@@ -30,6 +30,7 @@ import org.apache.bcel.generic.*;
 
 public class FindRefComparison implements Detector, ExtendedTypes {
 	private static final boolean DEBUG = Boolean.getBoolean("frc.debug");
+	private static final boolean REPORT_ALL_STRING_COMPARISONS = Boolean.getBoolean("findbugs.eqstring.reportAll");
 
 	/**
 	 * Classes that are suspicious if compared by reference.
@@ -400,7 +401,9 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 							.addSourceLine(methodGen, sourceFile, handle)
 							.addClass("java.lang.String").describe("CLASS_REFTYPE");
 
-					if (stringComparison == null || priority < stringComparison.getPriority())
+					if (REPORT_ALL_STRING_COMPARISONS)
+						bugReporter.reportBug(instance);
+					else if (stringComparison == null || priority < stringComparison.getPriority())
 						stringComparison = instance;
 				}
 

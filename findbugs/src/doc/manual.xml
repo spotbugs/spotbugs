@@ -1580,6 +1580,14 @@ The list of configurable analysis properties is shown in
       false warnings for values which are checked by assertion
       methods.</entry>
     </row>
+    <row>
+      <entry>findbugs.eqstring.reportAll</entry>
+      <entry>true or false</entry>
+      <entry>If true, all suspicious comparisons of String objects
+      using the == and != operators are reported.&nbsp; If false,
+      only one such warning is issued per method.&nbsp; Default
+      is false.</entry>
+    </row>
 <!--
     <row>
       <entry></entry>
