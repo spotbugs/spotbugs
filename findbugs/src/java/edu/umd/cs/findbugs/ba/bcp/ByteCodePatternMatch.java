@@ -32,7 +32,7 @@ public class ByteCodePatternMatch {
 		// The PatternElementMatch objects are stored in reverse order.
 		// So, put them in a LinkedList to get them in the right order.
 		while (lastElementMatch != null) {
-			patternElementMatchList.addLast(lastElementMatch);
+			patternElementMatchList.addFirst(lastElementMatch);
 			lastElementMatch = lastElementMatch.getPrev();
 		}
 	}
