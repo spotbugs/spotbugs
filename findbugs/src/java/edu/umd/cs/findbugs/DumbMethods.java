@@ -51,6 +51,17 @@ public class DumbMethods extends BytecodeScanningDetector implements   Constants
 			bugReporter.reportBug(new BugInstance("DM_STRING_VOID_CTOR", NORMAL_PRIORITY)
 				.addClassAndMethod(this)
 				.addSourceLine(this));
+	if (((seen == INVOKESTATIC
+				&& classConstant.equals("java/lang/System"))
+	    || (seen == INVOKEVIRTUAL
+				&& classConstant.equals("java/lang/Runtime")))
+				&& nameConstant.equals("gc")
+				&& sigConstant.equals("()V")
+				&& !betterClassName.startsWith("java.lang"))
+		if (alreadyReported.add(betterMethodName))
+			bugReporter.reportBug(new BugInstance("DM_GC", NORMAL_PRIORITY)
+				.addClassAndMethod(this)
+				.addSourceLine(this));
 	if ((seen == INVOKESPECIAL)
 				&& classConstant.equals("java/lang/Boolean")
 				&& nameConstant.equals("<init>")
