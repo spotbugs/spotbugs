@@ -71,9 +71,7 @@ public class FindInconsistentSync2 implements Detector {
 	private BugReporter bugReporter;
 	private Map<XField, FieldStats> statMap = new HashMap<XField, FieldStats>();
 	private Set<XField> publicFields = new HashSet<XField>();
-//	private Set<XField> volatileAndFinalFields = new HashSet<XField>();
 	private Set<XField> writtenOutsideOfConstructor = new HashSet<XField>();
-//	private Set<XField> localLocks = new HashSet<XField>();
 
 	/* ----------------------------------------------------------------------
 	 * Public methods
@@ -140,7 +138,7 @@ public class FindInconsistentSync2 implements Detector {
 						}
 					}
 
-					if (xfield != null && !xfield.isStatic() /*&& !xfield.isPublic()*/ && !xfield.isVolatile() && !xfield.isFinal()) {
+					if (xfield != null && !xfield.isStatic()) {
 						instanceAccess(vnaDataflow.getFactAtLocation(location),
 									lockDataflow.getFactAtLocation(location),
 									xfield, ins, isWrite, cpg);
@@ -156,6 +154,9 @@ public class FindInconsistentSync2 implements Detector {
 	private void instanceAccess(ValueNumberFrame frame, LockSet lockSet, XField xfield,
 								Instruction ins, boolean isWrite, ConstantPoolGen cpg)
 		throws DataflowAnalysisException {
+
+		if (xfield.isPublic() || xfield.isVolatile() || xfield.isFinal())
+			return;
 
 		ValueNumber instance = frame.getInstance(ins, cpg);
 		boolean isLocked = lockSet.getLockCount(instance.getNumber()) > 0;
