@@ -341,6 +341,15 @@ It is a fast detector.
     </Details>
   </Detector>
 
+  <Detector class="edu.umd.cs.findbugs.detect.LazyInit">
+    <Details>
+<![CDATA[
+<p> This detector looks for lazy field initialization where the
+field is not volatile.  It is a moderately fast detector.
+]]>
+    </Details>
+  </Detector>
+
   <Detector class="edu.umd.cs.findbugs.detect.FindBugsSummaryStats">
     <Details>
 <![CDATA[
@@ -1455,6 +1464,7 @@ Such assignments are useless, and may indicate a logic error or typo.
 ]]>
     </Details>
   </BugPattern>
+
   <BugPattern type="SA_FIELD_SELF_ASSIGNMENT">
     <ShortDescription>Self assignment of field</ShortDescription>
     <LongDescription>Self assignment of field {2} in {1}</LongDescription>
@@ -1468,6 +1478,21 @@ Such assignments are useless, and may indicate a logic error or typo.
   }
 </pre>
 Such assignments are useless, and may indicate a logic error or typo.
+]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="LI_LAZY_INIT">
+    <ShortDescription>Incorrect lazy initalization of field</ShortDescription>
+    <LongDescription>Incorrect lazy initialization of field {2} in {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p> This method contains a lazy initialization of a non-volatile field.
+Because the compiler or processor may reorder instructions,
+threads are not guaranteed to see a completely initialized object.
+You should make the field volatile to correct the problem.
+For more information, see the
+<a href="http://www.cs.umd.edu/~pugh/java/memoryModel/">Java Memory Model web site</a>.
 ]]>
     </Details>
   </BugPattern>
@@ -1525,5 +1550,6 @@ Such assignments are useless, and may indicate a logic error or typo.
   <BugCode abbrev="RC">Suspicious reference comparison</BugCode>
   <BugCode abbrev="MWN">Mismatched wait() or notify()</BugCode>
   <BugCode abbrev="SA">Useless self-assignment</BugCode>
+  <BugCode abbrev="LI">Incorrect Lazy Initialzation</BugCode>
 
 </MessageCollection>
