@@ -156,7 +156,6 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 			consumeStack(obj);
 			if (returnsString(obj)) {
 				String className = obj.getClassName(getCPG());
-				String methodName = obj.getName(getCPG());
 				if (className.equals("java.lang.String")) {
 					pushValue(dynamicStringTypeInstance);
 				} else {

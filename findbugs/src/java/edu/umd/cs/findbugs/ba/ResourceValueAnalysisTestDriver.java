@@ -56,7 +56,6 @@ public abstract class ResourceValueAnalysisTestDriver <Resource, ResourceTracker
 			if (!method.getName().equals(methodName))
 				continue;
 
-			MethodGen methodGen = classContext.getMethodGen(method);
 			CFG cfg = classContext.getCFG(method);
 
 			BasicBlock creationBlock = null;

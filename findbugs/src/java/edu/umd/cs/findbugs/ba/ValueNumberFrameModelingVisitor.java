@@ -176,7 +176,6 @@ public class ValueNumberFrameModelingVisitor
 	 * This is the default instruction modeling method.
 	 */
 	public void modelNormalInstruction(Instruction ins, int numWordsConsumed, int numWordsProduced) {
-		ValueNumberFrame frame = getFrame();
 
 		int flags = (ins instanceof InvokeInstruction) ? ValueNumber.RETURN_VALUE : 0;
 
@@ -198,7 +197,6 @@ public class ValueNumberFrameModelingVisitor
 
 	public void visitGETFIELD(GETFIELD obj) {
 		if (doRedundantLoadElimination()) {
-			ValueNumberFrame frame = getFrame();
 
 			try {
 				XField xfield = Hierarchy.findXField(obj, getCPG());

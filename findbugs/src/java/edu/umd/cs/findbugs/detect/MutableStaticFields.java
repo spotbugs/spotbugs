@@ -91,7 +91,6 @@ public class MutableStaticFields extends BytecodeScanningDetector implements Con
 		switch (seen) {
 		case GETSTATIC:
 		case PUTSTATIC:
-			String packageConstant = extractPackage(getClassConstantOperand());
 			boolean samePackage =
 			        packageName.equals(extractPackage(getClassConstantOperand()));
 			boolean initOnly =

@@ -150,7 +150,7 @@ public class CloneIdiom extends DismantleBytecode implements Detector, Constants
 		if (!getMethodSig().startsWith("()")) return;
 		hasCloneMethod = true;
 		cloneMethodAnnotation = MethodAnnotation.fromVisitedMethod(this);
-		ExceptionTable tbl = obj.getExceptionTable();
+		//ExceptionTable tbl = obj.getExceptionTable();
 		//throwsExceptions = tbl != null && tbl.getNumberOfExceptions() > 0;
 	}
 }

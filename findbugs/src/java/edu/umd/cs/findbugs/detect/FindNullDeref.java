@@ -109,8 +109,6 @@ public class FindNullDeref implements Detector {
 	private void analyzeMethod(ClassContext classContext, Method method)
 	        throws CFGBuilderException, DataflowAnalysisException {
 
-		JavaClass jclass = classContext.getJavaClass();
-
 		if (DEBUG) System.out.println("Clearing redundant branch information");
 		redundantBranchList.clear();
 		definitelySameBranchSet.clear();

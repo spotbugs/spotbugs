@@ -73,13 +73,14 @@ public class FindUnsyncGet extends BytecodeScanningDetector implements Constants
 		int flags = obj.getAccessFlags();
 		if ((flags & doNotConsider) != 0) return;
 		String name = obj.getName();
+		boolean isSynchronized = (flags & ACC_SYNCHRONIZED) != 0;
+		/*
 		String sig = obj.getSignature();
 		char firstArg = sig.charAt(1);
 		char returnValue = sig.charAt(1 + sig.indexOf(')'));
 		boolean firstArgIsRef = (firstArg == 'L') || (firstArg == '[');
 		boolean returnValueIsRef = (returnValue == 'L') || (returnValue == '[');
-		boolean isSynchronized = (flags & ACC_SYNCHRONIZED) != 0;
-		/*
+
 		System.out.println(className + "." + name
 				+ " " +  firstArgIsRef
 				+ " " +  returnValueIsRef
