@@ -28,6 +28,7 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.StatelessDetector;
+import edu.umd.cs.findbugs.SwitchHandler;
 import edu.umd.cs.findbugs.visitclass.Constants2;
 
 public class SimplifyBooleanReturn extends BytecodeScanningDetector implements Constants2, StatelessDetector {
@@ -58,6 +59,7 @@ public class SimplifyBooleanReturn extends BytecodeScanningDetector implements C
 	}};
 	
 	private BugReporter bugReporter;
+	private SwitchHandler switchHdlr;
 	private int state;
 	private int startPC;
 	
@@ -72,48 +74,56 @@ public class SimplifyBooleanReturn extends BytecodeScanningDetector implements C
 	public void visit(Code obj) {
 		if (getMethodSig().endsWith(")Z")) {
 			state = SAW_NOTHING;
+			switchHdlr = new SwitchHandler();
 			super.visit(obj);
 		}
 	}
 	
 	public void sawOpcode(int seen) {
-		switch (state) {
-			case SAW_NOTHING:
-				if (ifOpCodes.get(seen)) {
-					state = SAW_IF;
-					startPC = getPC();
-				}
-			break;			
-			
-			case SAW_IF:
-				if ((seen == ICONST_0) || (seen == ICONST_1))
-					state = SAW_ICONST_PART1;
-				else
-					state = SAW_NOTHING;
-			break;
-			
-			case SAW_ICONST_PART1:
-				if (seen == IRETURN)
-					state = SAW_IRETURN_PART1;
-				else
-					state = SAW_NOTHING;
-			break;
-			
-			case SAW_IRETURN_PART1:
-				if ((seen == ICONST_0) || (seen == ICONST_1))
-					state = SAW_ICONST_PART2;
-				else
-					state = SAW_NOTHING;
-			break;
-			
-			case SAW_ICONST_PART2:
-				if (seen == IRETURN)
-					bugReporter.reportBug( new BugInstance(this, "SBR_SIMPLIFY_BOOLEAN_RETURN", LOW_PRIORITY )
-				        	.addClassAndMethod(this)
-				        	.addSourceLineRange(this, startPC, getPC()));
-				else
-					state = SAW_NOTHING;
-			break;
+		if ((seen == TABLESWITCH) || (seen == LOOKUPSWITCH)) {
+			switchHdlr.enterSwitch(this);
+			state = SAW_NOTHING;
+		} else {
+			switch (state) {
+				case SAW_NOTHING:
+					if (ifOpCodes.get(seen)) {
+						state = SAW_IF;
+						startPC = getPC();
+					}
+				break;			
+				
+				case SAW_IF:
+					if ((seen == ICONST_0) || (seen == ICONST_1))
+						state = SAW_ICONST_PART1;
+					else
+						state = SAW_NOTHING;
+				break;
+				
+				case SAW_ICONST_PART1:
+					if (seen == IRETURN)
+						state = SAW_IRETURN_PART1;
+					else
+						state = SAW_NOTHING;
+				break;
+				
+				case SAW_IRETURN_PART1:
+					if (switchHdlr.getNextSwitchOffset(this) == getPC())
+						state = SAW_NOTHING;
+					else if ((seen == ICONST_0) || (seen == ICONST_1))
+						state = SAW_ICONST_PART2;
+					else
+						state = SAW_NOTHING;
+				break;
+				
+				case SAW_ICONST_PART2:
+					if (seen == IRETURN)
+						bugReporter.reportBug( new BugInstance(this, "SBR_SIMPLIFY_BOOLEAN_RETURN", LOW_PRIORITY )
+					        	.addClassAndMethod(this)
+					        	.addSourceLineRange(this, startPC, getPC()));
+					else
+						state = SAW_NOTHING;
+				break;
+			}
 		}
 	}
 }

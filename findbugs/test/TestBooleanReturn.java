@@ -32,12 +32,29 @@ public class TestBooleanReturn
 	public boolean test3(int a, int b)
 	{
 		//this should not be reported
-		switch (a)
-		{
+		switch (a) {
 			case 0:
 				if (b == 0)
 					return true;
 			case 1:
+				return false;
+				
+			case 2:
+				switch (b) {
+					case 0:
+						if (a == b)
+							return false;
+							
+					case 1:
+						return true;
+				}
+				break;
+				
+			case 3:
+				if (b == 1)
+					return true;
+			
+			default:
 				return false;
 		}
 		
