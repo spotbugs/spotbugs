@@ -28,7 +28,7 @@ package edu.umd.cs.findbugs.ba;
  * @see IsNullValueFrame
  * @see IsNullValueAnalysis
  */
-public class IsNullValue {
+public class IsNullValue implements IsNullValueAnalysisFeatures {
 	private static final boolean DEBUG_EXCEPTION = Boolean.getBoolean("inv.debugException");
 
 	/** Definitely null. */
@@ -241,7 +241,15 @@ public class IsNullValue {
 	 */
 	public boolean isNullOnSomePath() {
 		int baseKind = getBaseKind();
-		return baseKind == NSP;
+		if (NCP_EXTRA_BRANCH) {
+			// Note: NCP_EXTRA_BRANCH is an experimental feature
+			// to see how many false warnings we get when we allow
+			// two branches between an explicit null and a
+			// a dereference.
+			return baseKind == NSP || baseKind == NCP2;
+		} else {
+			return baseKind == NSP;
+		}
 	}
 
 	/**
