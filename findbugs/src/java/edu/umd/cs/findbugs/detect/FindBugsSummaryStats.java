@@ -26,15 +26,10 @@ import edu.umd.cs.daveho.ba.ClassContext;
 import java.util.*;
 import java.io.*;
 
-import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.*;
 
-import org.dom4j.Element;
-import org.dom4j.Branch;
 import org.dom4j.Document;
-import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
-import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
 import org.dom4j.io.OutputFormat;
 
