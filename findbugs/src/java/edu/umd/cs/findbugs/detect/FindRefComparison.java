@@ -242,6 +242,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 	 * ---------------------------------------------------------------------- */
 
 	private BugReporter bugReporter;
+	private BugInstance stringComparison;
 
 	/* ----------------------------------------------------------------------
 	 * Implementation
@@ -287,7 +288,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 
 		// Report at most one String comparison per method.
 		// We report the first highest priority warning.
-		BugInstance stringComparison = null;
+		stringComparison = null;
 
 		CFG cfg = classContext.getCFG(method);
 		DepthFirstSearch dfs = classContext.getDepthFirstSearch(method);
@@ -309,65 +310,10 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 		for (Iterator<Location> i = cfg.locationIterator(); i.hasNext(); ) {
 			Location location = i.next();
 
-			InstructionHandle handle = location.getHandle();
-			Instruction ins = handle.getInstruction();
+			Instruction ins = location.getHandle().getInstruction();
 			short opcode = ins.getOpcode();
 			if (opcode == Constants.IF_ACMPEQ || opcode == Constants.IF_ACMPNE) {
-				TypeFrame frame = typeDataflow.getFactAtLocation(location);
-				if (frame.getStackDepth() < 2)
-					throw new AnalysisException("Stack underflow", methodGen, handle);
-
-				int numSlots = frame.getNumSlots();
-				Type lhsType = frame.getValue(numSlots - 1);
-				Type rhsType = frame.getValue(numSlots - 2);
-	
-				if (lhsType instanceof ReferenceType && rhsType instanceof ReferenceType) {
-					String lhs = SignatureConverter.convert(lhsType.getSignature());
-					String rhs = SignatureConverter.convert(rhsType.getSignature());
-
-					if (!lhs.equals(rhs))
-						continue;
-	
-					if (lhs.equals("java.lang.String") && rhs.equals("java.lang.String")) {
-						if (DEBUG) System.out.println("String/String comparison at " +
-							handle);
-
-						// Compute the priority:
-						// - two static strings => do not report
-						// - dynamic string and anything => high
-						// - static string and unknown => medium
-						// - all other cases => low
-						int priority = LOW_PRIORITY;
-						byte type1 = lhsType.getType();
-						byte type2 = rhsType.getType();
-						if (type1 == T_STATIC_STRING && type2 == T_STATIC_STRING)
-							priority = LOW_PRIORITY + 1;
-						else if (type1 == T_DYNAMIC_STRING || type2 == T_DYNAMIC_STRING)
-							priority = HIGH_PRIORITY;
-						else if (type1 == T_STATIC_STRING || type2 == T_STATIC_STRING)
-							priority = NORMAL_PRIORITY;
-
-						if (priority <= LOW_PRIORITY) {
-							String sourceFile = jclass.getSourceFileName();
-							BugInstance instance = 
-								new BugInstance("ES_COMPARING_STRINGS_WITH_EQ", priority)
-									.addClassAndMethod(methodGen, sourceFile)
-									.addSourceLine(methodGen, sourceFile, handle)
-									.addClass("java.lang.String").describe("CLASS_REFTYPE");
-
-							if (stringComparison == null || priority < stringComparison.getPriority())
-								stringComparison = instance;
-						}
-
-					} else if (suspiciousSet.contains(lhs) && suspiciousSet.contains(rhs)) {
-						String sourceFile = jclass.getSourceFileName();
-						bugReporter.reportBug(new BugInstance("RC_REF_COMPARISON", NORMAL_PRIORITY)
-							.addClassAndMethod(methodGen, sourceFile)
-							.addSourceLine(methodGen, sourceFile, handle)
-							.addClass(lhs).describe("CLASS_REFTYPE")
-						);
-					}
-				}
+				checkRefComparison(location, jclass, methodGen, typeDataflow);
 			}
 		}
 
@@ -375,6 +321,68 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 		// report it
 		if (stringComparison != null)
 			bugReporter.reportBug(stringComparison);
+	}
+
+	private void checkRefComparison(Location location, JavaClass jclass, MethodGen methodGen,
+		TypeDataflow typeDataflow) throws DataflowAnalysisException {
+
+		InstructionHandle handle = location.getHandle();
+
+		TypeFrame frame = typeDataflow.getFactAtLocation(location);
+		if (frame.getStackDepth() < 2)
+			throw new AnalysisException("Stack underflow", methodGen, handle);
+
+		int numSlots = frame.getNumSlots();
+		Type lhsType = frame.getValue(numSlots - 1);
+		Type rhsType = frame.getValue(numSlots - 2);
+	
+		if (lhsType instanceof ReferenceType && rhsType instanceof ReferenceType) {
+			String lhs = SignatureConverter.convert(lhsType.getSignature());
+			String rhs = SignatureConverter.convert(rhsType.getSignature());
+
+			if (!lhs.equals(rhs))
+				return;
+	
+			if (lhs.equals("java.lang.String") && rhs.equals("java.lang.String")) {
+				if (DEBUG) System.out.println("String/String comparison at " +
+					handle);
+
+				// Compute the priority:
+				// - two static strings => do not report
+				// - dynamic string and anything => high
+				// - static string and unknown => medium
+				// - all other cases => low
+				int priority = LOW_PRIORITY;
+				byte type1 = lhsType.getType();
+				byte type2 = rhsType.getType();
+				if (type1 == T_STATIC_STRING && type2 == T_STATIC_STRING)
+					priority = LOW_PRIORITY + 1;
+				else if (type1 == T_DYNAMIC_STRING || type2 == T_DYNAMIC_STRING)
+					priority = HIGH_PRIORITY;
+				else if (type1 == T_STATIC_STRING || type2 == T_STATIC_STRING)
+					priority = NORMAL_PRIORITY;
+
+				if (priority <= LOW_PRIORITY) {
+					String sourceFile = jclass.getSourceFileName();
+					BugInstance instance = 
+						new BugInstance("ES_COMPARING_STRINGS_WITH_EQ", priority)
+							.addClassAndMethod(methodGen, sourceFile)
+							.addSourceLine(methodGen, sourceFile, handle)
+							.addClass("java.lang.String").describe("CLASS_REFTYPE");
+
+					if (stringComparison == null || priority < stringComparison.getPriority())
+						stringComparison = instance;
+				}
+
+			} else if (suspiciousSet.contains(lhs) && suspiciousSet.contains(rhs)) {
+				String sourceFile = jclass.getSourceFileName();
+				bugReporter.reportBug(new BugInstance("RC_REF_COMPARISON", NORMAL_PRIORITY)
+					.addClassAndMethod(methodGen, sourceFile)
+					.addSourceLine(methodGen, sourceFile, handle)
+					.addClass(lhs).describe("CLASS_REFTYPE")
+				);
+			}
+		}
 	}
 
 	public void report() {
