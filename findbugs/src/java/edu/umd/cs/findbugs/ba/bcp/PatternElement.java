@@ -21,6 +21,8 @@ package edu.umd.cs.daveho.ba.bcp;
 
 import org.apache.bcel.generic.InstructionHandle;
 import edu.umd.cs.daveho.ba.Edge;
+import edu.umd.cs.daveho.ba.ValueNumberFrame;
+import edu.umd.cs.daveho.ba.DataflowAnalysisException;
 
 /**
  * A PatternElement is an element of a ByteCodePattern.
@@ -44,14 +46,30 @@ public abstract class PatternElement {
 	}
 
 	/**
+	 * Look up a variable definition in given BindingSet.
+	 * @param varName the name of the variable
+	 * @param bindingSet the BindingSet to look in
+	 * @return the Variable, or null if no Variable is bound to the name
+	 */
+	public static Variable lookup(String varName, BindingSet bindingSet) {
+		if (bindingSet == null)
+			return null;
+		Binding binding = bindingSet.lookup(varName);
+		return (binding != null) ? binding.getVariable() : null;
+	}
+
+	/**
 	 * Return whether or not this element matches the given
 	 * instruction with the given Bindings in effect.
 	 * @param handle the instruction
+	 * @param frame the ValueNumberFrame representing values in the Java stack frame
+	 *   just prior to the execution of the instruction
 	 * @param bindingSet the set of Bindings
 	 * @return if the match is successful, returns an updated BindingSet;
 	 *   if the match is not successful, returns null
 	 */
-	public abstract BindingSet match(InstructionHandle handle, BindingSet bindingSet);
+	public abstract BindingSet match(InstructionHandle handle, ValueNumberFrame frame, BindingSet bindingSet)
+		throws DataflowAnalysisException;
 
 	/**
 	 * Return whether or not it is acceptable to take the given branch.

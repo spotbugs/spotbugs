@@ -35,6 +35,7 @@ public class PatternMatcher implements DFSEdgeTypes {
 	private ByteCodePattern pattern;
 	private CFG cfg;
 	private DepthFirstSearch dfs;
+	private ValueNumberDataflow vnaDataflow;
 	private LinkedList<BasicBlock> workList;
 	private IdentityHashMap<BasicBlock, BasicBlock> visitedBlockMap;
 	private LinkedList<ByteCodePatternMatch> resultList;
@@ -45,11 +46,14 @@ public class PatternMatcher implements DFSEdgeTypes {
 	 * @param cfg the CFG for the method to search
 	 * @param dfs an initialized DepthFirstSearch object; used to detect loop backedges
 	 *   in the CFG
+	 * @param vnaDataflow an initialized ValueNumberDataflow object which tracks the
+	 *   flow of values in the method
 	 */
-	public PatternMatcher(ByteCodePattern pattern, CFG cfg, DepthFirstSearch dfs) {
+	public PatternMatcher(ByteCodePattern pattern, CFG cfg, DepthFirstSearch dfs, ValueNumberDataflow vnaDataflow) {
 		this.pattern = pattern;
 		this.cfg = cfg;
 		this.dfs = dfs;
+		this.vnaDataflow = vnaDataflow;
 		this.workList = new LinkedList<BasicBlock>();
 		this.visitedBlockMap = new IdentityHashMap<BasicBlock, BasicBlock>();
 		this.resultList = new LinkedList<ByteCodePatternMatch>();
@@ -57,8 +61,11 @@ public class PatternMatcher implements DFSEdgeTypes {
 
 	/**
 	 * Search for examples of the ByteCodePattern.
+	 * @return this object
+	 * @throws DataflowAnalysisException if the ValueNumberAnalysis did not produce useful
+	 *   values for the method
 	 */
-	public void execute() {
+	public PatternMatcher execute() throws DataflowAnalysisException {
 		workList.addLast(cfg.getEntry());
 
 		while (!workList.isEmpty()) {
@@ -80,6 +87,8 @@ public class PatternMatcher implements DFSEdgeTypes {
 					workList.addLast(succ);
 			}
 		}
+
+		return this;
 	}
 
 	/**
@@ -96,12 +105,13 @@ public class PatternMatcher implements DFSEdgeTypes {
 	 * @param instructionIterator the instruction iterator positioned just before
 	 *  the first instruction to be matched
 	 */
-	private void attemptMatch(BasicBlock basicBlock, BasicBlock.InstructionIterator instructionIterator) {
+	private void attemptMatch(BasicBlock basicBlock, BasicBlock.InstructionIterator instructionIterator)
+		throws DataflowAnalysisException {
 		work(basicBlock, instructionIterator, pattern.getFirst(), 0, null, null);
 	}
 
 	/**
-	 * Match a pattern.  The InstructionIterator should generally be positioned just
+	 * Match a pattern element.  The InstructionIterator should generally be positioned just
 	 * before the next instruction to be matched.  However, it may be positioned
 	 * at the end of a basic block, which which case nothing will happen except that
 	 * we will try to continue the match in the non-backedge successors of
@@ -109,7 +119,8 @@ public class PatternMatcher implements DFSEdgeTypes {
 	 */
 	private void work(BasicBlock basicBlock, BasicBlock.InstructionIterator instructionIterator,
 		PatternElement patternElement, int matchCount,
-		PatternElementMatch currentMatch, BindingSet bindingSet) {
+		PatternElementMatch currentMatch, BindingSet bindingSet)
+		throws DataflowAnalysisException {
 
 		// Have we reached the end of the pattern?
 		if (patternElement == null) {
@@ -135,7 +146,8 @@ public class PatternMatcher implements DFSEdgeTypes {
 		if (instructionIterator.hasNext()) {
 			// Try to match the current instruction against the pattern element.
 			InstructionHandle handle = instructionIterator.next();
-			bindingSet = patternElement.match(handle, bindingSet);
+			ValueNumberFrame frame = vnaDataflow.getFactAtLocation(new Location(handle, basicBlock));
+			bindingSet = patternElement.match(handle, frame, bindingSet);
 			if (bindingSet == null)
 				// Not a match.
 				return;
