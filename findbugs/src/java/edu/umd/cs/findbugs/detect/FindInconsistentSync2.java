@@ -171,7 +171,7 @@ public class FindInconsistentSync2 implements Detector {
 		} catch (CFGBuilderException e) {
 			throw new AnalysisException("FindInconsistentSync2 caught exception: " + e.toString(), e);
 		} catch (DataflowAnalysisException e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 			throw new AnalysisException("FindInconsistentSync2 caught exception: " + e.toString(), e);
 		}
 	}
