@@ -1,4 +1,7 @@
 import java.io.*;
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
 
 class Serializable2  {
 	int x;
@@ -11,6 +14,17 @@ class Serializable2  {
 			super(42);
 			}
 		}
+		
+	public void exampleOfSerializableAnonymousClass()
+	{	
+		JMenuItem mi = new JMenuItem( new AbstractAction()
+		{
+			public void actionPerformed(ActionEvent ae)
+			{
+			}
+		});
+	}
+	
 	static public void main(String args[]) throws Exception {
 		ByteArrayOutputStream pout = new ByteArrayOutputStream();
 		ObjectOutputStream oout = new ObjectOutputStream(pout);
