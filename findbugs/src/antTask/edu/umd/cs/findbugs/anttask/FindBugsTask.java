@@ -120,7 +120,14 @@ public class FindBugsTask extends MatchingTask {
     private int archiveCount = 0;
     private ArrayList checkList = new ArrayList();
     private ArrayList suppressList = new ArrayList();
+	private String homeDir;
 
+	/**
+	 * Set findbugs.home.
+	 */
+	public void setHome(String homeDir) {
+		this.homeDir = homeDir;
+	}
 
     /**
      * Add a error suppress
@@ -294,6 +301,9 @@ public class FindBugsTask extends MatchingTask {
             throw new BuildException("classdir attribute must be set!",
                                      getLocation());
         }
+
+		if (homeDir == null)
+			throw new BuildException("home attribute must be set!", getLocation());
     }
 
     /**
@@ -302,6 +312,9 @@ public class FindBugsTask extends MatchingTask {
      * @since Ant 1.5
      */
     protected void checkCode() {
+		// Make sure findbugs.home property is set
+		System.setProperty("findbugs.home", homeDir);
+
         if ( listFiles ) {
             for ( int i = 0; i < checkList.size(); i++ ) {
                  String filename = (String)checkList.get(i);
