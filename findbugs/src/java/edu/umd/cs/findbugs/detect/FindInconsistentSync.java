@@ -238,7 +238,7 @@ public class FindInconsistentSync extends CFGBuildingDetector {
 					return null;
 
 				ValueNumberAnalysis valueNumberAnalysis = new ValueNumberAnalysis(methodGen);
-				Dataflow<ValueNumberFrame> vnaDataflow = new Dataflow<ValueNumberFrame>(cfg, valueNumberAnalysis);
+				ValueNumberDataflow vnaDataflow = new ValueNumberDataflow(cfg, valueNumberAnalysis);
 				vnaDataflow.execute();
 				valueNumberAnalysis.compactValueNumbers(vnaDataflow);
 				analysis = new ThisLockCountAnalysis(methodGen, vnaDataflow);
