@@ -148,6 +148,14 @@ public class BasicBlock implements Comparable {
     }
 
     /**
+     * Get the instruction for which this block is an exception thrower.
+     * @return the instruction, or null if this block is not an exception thrower
+     */
+    public InstructionHandle getExceptionThrower() {
+	return exceptionThrower;
+    }
+
+    /**
      * Return whether or not this block is a null check.
      */
     public boolean isNullCheck() {
