@@ -26,6 +26,9 @@
 package edu.umd.cs.findbugs.gui;
 
 import javax.swing.ImageIcon;
+import java.io.*;
+import java.util.regex.*;
+import edu.umd.cs.findbugs.Version;
 
 /**
  * The Help:About dialog.
@@ -34,18 +37,61 @@ import javax.swing.ImageIcon;
 public class AboutDialog extends javax.swing.JDialog {
     
     private FindBugsFrame parent;
-    private java.net.URL aboutURL;
-    private java.net.URL licenseURL;
-    private java.net.URL acknowledgementsURL;
     
     /** Creates new form AboutDialog */
     public AboutDialog(FindBugsFrame parent, boolean modal) {
 	super(parent, modal);
         this.parent = parent;
-        aboutURL = getClass().getClassLoader().getResource("edu/umd/cs/findbugs/gui/help/About.html");
-        licenseURL = getClass().getClassLoader().getResource("edu/umd/cs/findbugs/gui/help/License.html");
-        acknowledgementsURL = getClass().getClassLoader().getResource("edu/umd/cs/findbugs/gui/help/Acknowledgements.html");
+
 	initComponents();
+
+        try {
+            processPage(aboutEditorPane, "edu/umd/cs/findbugs/gui/help/About.html");
+            licenseEditorPane.setPage(getClass().getClassLoader().getResource("edu/umd/cs/findbugs/gui/help/License.html"));
+            acknowldgementsEditorPane.setPage(getClass().getClassLoader().getResource("edu/umd/cs/findbugs/gui/help/Acknowledgements.html"));
+        } catch (IOException e) {
+            parent.getLogger().logMessage(ConsoleLogger.ERROR, e.getMessage());
+        }
+
+        setTitle("About FindBugs " + Version.RELEASE);
+    }
+
+    /**
+     * Process an HTML page to replace certain substitution patterns.
+     * Right now, we just expand @VERSION@.
+     */
+    private void processPage(javax.swing.JEditorPane pane, String fileName) throws IOException {
+        InputStream in = null;
+        
+        try {
+            StringBuffer buf = new StringBuffer();
+
+            // Open the file as a stream
+            in = getClass().getClassLoader().getResourceAsStream(fileName);
+            if (in == null)
+                throw new IOException("Couldn't load " + fileName);
+            BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+
+            // Replace instances of @VERSION@ with actual version number
+            Pattern pattern = Pattern.compile("@VERSION@");
+            String line;
+            while ((line = reader.readLine()) != null) {
+                line = pattern.matcher(line).replaceAll(Version.RELEASE);
+                buf.append(line);
+                buf.append('\n');
+            }
+
+            // Load the page into the editor pane
+            String text = buf.toString();
+            pane.setContentType("text/html");
+            pane.setText(text);
+        } finally {
+            try {
+                if (in != null)
+                    in.close();
+            } catch (IOException e) {
+            }
+        }
     }
     
     /** This method is called from within the constructor to
@@ -61,14 +107,13 @@ public class AboutDialog extends javax.swing.JDialog {
         aboutEditorPane = new javax.swing.JEditorPane();
         licenseScrollPane = new javax.swing.JScrollPane();
         licenseEditorPane = new javax.swing.JEditorPane();
-        acknolwedgementsScrollPane = new javax.swing.JScrollPane();
-        acknowledgementsEditorPane = new javax.swing.JEditorPane();
+        acknowledgmentsScrollPane = new javax.swing.JScrollPane();
+        acknowldgementsEditorPane = new javax.swing.JEditorPane();
         jSeparator1 = new javax.swing.JSeparator();
         okButton = new javax.swing.JButton();
 
         getContentPane().setLayout(new java.awt.GridBagLayout());
 
-        setTitle("About FindBugs");
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 closeDialog(evt);
@@ -76,34 +121,19 @@ public class AboutDialog extends javax.swing.JDialog {
         });
 
         aboutEditorPane.setEditable(false);
-        try {
-            aboutEditorPane.setPage(aboutURL);
-        } catch (java.io.IOException e) {
-            parent.getLogger().logMessage(ConsoleLogger.ERROR, "Error loading about URL: " + e.toString());
-        }
         aboutScrollPane.setViewportView(aboutEditorPane);
 
         aboutTabPane.addTab("About", aboutScrollPane);
 
         licenseEditorPane.setEditable(false);
-        try {
-            licenseEditorPane.setPage(licenseURL);
-        } catch (java.io.IOException e) {
-            parent.getLogger().logMessage(ConsoleLogger.ERROR, "Error loading license URL: " + e.toString());
-        }
         licenseScrollPane.setViewportView(licenseEditorPane);
 
         aboutTabPane.addTab("License", licenseScrollPane);
 
-        acknowledgementsEditorPane.setEditable(false);
-        try {
-            acknowledgementsEditorPane.setPage(acknowledgementsURL);
-        } catch (java.io.IOException e) {
-            parent.getLogger().logMessage(ConsoleLogger.ERROR, "Error loading acknowledgements URL: " + e.toString());
-        }
-        acknolwedgementsScrollPane.setViewportView(acknowledgementsEditorPane);
+        acknowldgementsEditorPane.setEditable(false);
+        acknowledgmentsScrollPane.setViewportView(acknowldgementsEditorPane);
 
-        aboutTabPane.addTab("Acknowledgements", acknolwedgementsScrollPane);
+        aboutTabPane.addTab("Acknowledgments", acknowledgmentsScrollPane);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
@@ -152,8 +182,8 @@ public class AboutDialog extends javax.swing.JDialog {
     private javax.swing.JEditorPane aboutEditorPane;
     private javax.swing.JScrollPane aboutScrollPane;
     private javax.swing.JTabbedPane aboutTabPane;
-    private javax.swing.JScrollPane acknolwedgementsScrollPane;
-    private javax.swing.JEditorPane acknowledgementsEditorPane;
+    private javax.swing.JEditorPane acknowldgementsEditorPane;
+    private javax.swing.JScrollPane acknowledgmentsScrollPane;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JEditorPane licenseEditorPane;
     private javax.swing.JScrollPane licenseScrollPane;
