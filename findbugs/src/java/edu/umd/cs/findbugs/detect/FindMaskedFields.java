@@ -57,8 +57,10 @@ public class FindMaskedFields extends BytecodeScanningDetector implements Consta
 					fields = superClasses[c].getFields();
 					for (int f = 0; f < fields.length; f++) {
 						Field fld = fields[f];
-						if (fld.isPublic() || fld.isProtected()) {
+						if (!fld.isStatic() && (fld.isPublic() || fld.isProtected())) {
 							fieldName = fld.getName();
+							if (fieldName.length() == 1)
+								continue;
 							if (fieldName.equals("serialVersionUID"))
 								continue;
 							if (classFields.contains( fieldName )) {
