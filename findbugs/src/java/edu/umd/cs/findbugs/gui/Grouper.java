@@ -46,11 +46,11 @@ public class Grouper {
 	while (i.hasNext()) {
 	    Object current = i.next();
 	    if (last != null && comparator.compare(last, current) == 0) {
-		// Start of a new group
-		callback.startGroup(current);
-	    } else {
 		// Same group as before
 		callback.addToGroup(current);
+	    } else {
+		// Start of a new group
+		callback.startGroup(current);
 	    }
 	    
 	    last = current;
