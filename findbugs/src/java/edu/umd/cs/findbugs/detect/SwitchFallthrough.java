@@ -30,6 +30,7 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.StatelessDetector;
+import edu.umd.cs.findbugs.SwitchHandler;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.SourceFile;
@@ -43,16 +44,10 @@ public class SwitchFallthrough extends BytecodeScanningDetector implements Const
 		Boolean.getBoolean("findbugs.sf.comment");
 
 	private AnalysisContext analysisContext;
-	int nextIndex = -1;
-	boolean reachable = false;
-	boolean inSwitch = false;
-	int switchPC;
+	private SwitchHandler switchHdlr;
+	private boolean reachable;
 	private BugReporter bugReporter;
-//	LineNumberTable lineNumbers;
-	private int[] swOffsets = null;
-//	private int[] swLabels = null;
-	private int defSwOffset = 0;
-	private int lastPC = 0;
+	private int lastPC;
 
 	public SwitchFallthrough(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
@@ -71,59 +66,27 @@ public class SwitchFallthrough extends BytecodeScanningDetector implements Const
 	}
 
 	public void visit(Code obj) {
-		inSwitch = false;
-		reachable = true;
-		swOffsets = null;
-//		swLabels = null;
-		defSwOffset = 0;
+		reachable = false;
 		lastPC = 0;
-/*		lineNumbers = obj.getLineNumberTable();
-		if (lineNumbers != null)
-*/			super.visit(obj);
+		switchHdlr = new SwitchHandler();
+		super.visit(obj);
 	}
 
 	public void sawOpcode(int seen) {
-		
-		switch (seen) {
-		case TABLESWITCH:
-		case LOOKUPSWITCH:
-			switchPC = getPC();
-			inSwitch = true;
-			swOffsets = getSwitchOffsets();
-//			swLabels = getSwitchLabels();
-			defSwOffset = getDefaultSwitchOffset();
-			reachable = false;
-			nextIndex = 0;
-			break;		
-		default:
+		if (reachable && switchHdlr.isOnSwitchOffset(this)) {
+			if (!hasFallThruComment(lastPC + 1, getPC() - 1))
+				bugReporter.reportBug(new BugInstance(this, "SF_SWITCH_FALLTHROUGH", LOW_PRIORITY)
+        			.addClassAndMethod(this)
+        			.addSourceLineRange(this, lastPC, getPC()));
 		}
 		
-		if (inSwitch) {
-			if (nextIndex >= swOffsets.length)
-				inSwitch = false;
-
-			if (inSwitch) {
-				if ((getPC() == (switchPC + swOffsets[nextIndex]))
-				&&  (swOffsets[nextIndex] != defSwOffset)) {
-					if (nextIndex > 0 && reachable) {
-						if (!hasFallThruComment(lastPC + 1, getPC() - 1))
-							bugReporter.reportBug(new BugInstance(this, "SF_SWITCH_FALLTHROUGH", LOW_PRIORITY)
-			        			.addClassAndMethod(this)
-			        			.addSourceLineRange(this, lastPC, getPC()));
-					}
-					do {
-						nextIndex++;
-						if (nextIndex >= swOffsets.length) {
-							inSwitch = false;
-							break;
-						}
-					} while (getPC() == switchPC + swOffsets[nextIndex]);
-				}
-			}
-	
-			switch (seen) {
+		switch (seen) {
 			case TABLESWITCH:
 			case LOOKUPSWITCH:
+				reachable = false;
+				switchHdlr.enterSwitch(this);
+				break;		
+
 			case ATHROW:
 			case RETURN:
 			case ARETURN:
@@ -137,7 +100,6 @@ public class SwitchFallthrough extends BytecodeScanningDetector implements Const
 				break;
 			default:
 				reachable = true;
-			}
 		}
 		
 		lastPC = getPC();

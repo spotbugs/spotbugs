@@ -35,16 +35,26 @@ public class SwitchHandler
 	}
 	
 	public void enterSwitch( DismantleBytecode dbc ) {
-		switchOffsetStack.add(
-				new SwitchDetails( dbc.getPC(), 
-								   dbc.getSwitchOffsets(),
-								   dbc.getDefaultSwitchOffset()));
+
+		SwitchDetails details = new SwitchDetails( dbc.getPC(), dbc.getSwitchOffsets(), dbc.getDefaultSwitchOffset());
+		
+		int size = switchOffsetStack.size();
+		while (--size >= 0) {
+			SwitchDetails existingDetail = switchOffsetStack.get(size);
+			if (details.switchPC > (existingDetail.switchPC + existingDetail.swOffsets[existingDetail.swOffsets.length-1])) 
+				switchOffsetStack.remove(size);
+		}
+		switchOffsetStack.add(details);
 	}
 	
-	public boolean inSwitch( DismantleBytecode dbc ) {
-		return getNextSwitchOffset(dbc) >= 0;
+	public boolean isOnSwitchOffset( DismantleBytecode dbc ) {
+		int pc = dbc.getPC();
+		if (pc == getDefaultOffset())
+			return false;
+		
+		return (pc == getNextSwitchOffset(dbc));		
 	}
-	
+
 	public int getNextSwitchOffset( DismantleBytecode dbc ) {
 		int size = switchOffsetStack.size();
 		while (size > 0) {
@@ -61,6 +71,15 @@ public class SwitchHandler
 		return -1;
 	}
 	
+	public int getDefaultOffset() {
+		int size = switchOffsetStack.size();
+		if (size == 0)
+			return -1;
+		
+		SwitchDetails details = switchOffsetStack.get(size-1);
+		return details.getDefaultOffset();
+	}
+	
 	public class SwitchDetails
 	{
 		int   switchPC;
@@ -70,10 +89,24 @@ public class SwitchHandler
 		
 		public SwitchDetails(int pc, int[] offsets, int defOffset) {
 			switchPC = pc;
-			swOffsets = new int[offsets.length+1];
-			System.arraycopy( offsets, 0, swOffsets, 0, offsets.length );
-			swOffsets[offsets.length] = defOffset;
-			Arrays.sort(swOffsets);
+			int uniqueOffsets = 0;
+			int lastValue = -1;
+			for (int i = 0; i < offsets.length; i++) {
+				if (offsets[i] != lastValue) {
+					uniqueOffsets++;
+					lastValue = offsets[i];
+				}
+			}
+			
+			swOffsets = new int[uniqueOffsets];
+			int insertPos = 0;
+			lastValue = -1;
+			for (int i = 0; i < offsets.length; i++) {
+				if (offsets[i] != lastValue) {
+					swOffsets[insertPos++] = offsets[i];
+					lastValue = offsets[i];
+				}
+			}
 			defaultOffset = defOffset;
 			nextOffset = 0;
 		}	
@@ -88,8 +121,8 @@ public class SwitchHandler
 			return switchPC + swOffsets[nextOffset];
 		}
 		
-		public boolean inSwitch(int currentPC) {
-			return getNextSwitchOffset(currentPC) >= 0;
+		public int getDefaultOffset() {
+			return switchPC + defaultOffset;
 		}
 	}
 }
