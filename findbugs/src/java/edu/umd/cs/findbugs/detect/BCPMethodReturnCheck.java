@@ -33,14 +33,14 @@ public class BCPMethodReturnCheck extends ByteCodePatternDetector {
 	private static final ByteCodePattern pattern = new ByteCodePattern();
 	static {
 		pattern
-			.add(new Invoke("+java.io.InputStream", "read", "/^\\((\\[B|\\[BII)\\)I", false))
+			.add(new Invoke("+java.io.InputStream", "read", "/^\\((\\[B|\\[BII)\\)I$", false))
 			.add(new Opcode(Constants.POP));
 	}
 
 	public BCPMethodReturnCheck(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 	}
-	public ByteCodePattern getPattern() { return null; }
+	public ByteCodePattern getPattern() { return pattern; }
 	public boolean prescreen(Method method, ClassContext classContext) { return true; }
 	public void reportMatch(MethodGen methodGen, ByteCodePatternMatch match) { }
 
