@@ -30,6 +30,8 @@ import org.apache.bcel.generic.*;
  * Visitor to find all of the targets of an instruction
  * whose InstructionHandle is given.
  * Note that we don't consider exception edges.
+ * @author David Hovemeyer
+ * @author Chadd Williams
  */
 public class TargetEnumeratingVisitor extends org.apache.bcel.generic.EmptyVisitor
     implements EdgeTypes {
