@@ -76,11 +76,27 @@ public class ConvertToARFF {
 		}
 
 		public String getInstanceValue(Element element) throws MissingNodeException {
-			Node node = element.selectSingleNode(xpath);
-			if (node == null)
+			Object value = element.selectObject(xpath);
+			if (value == null)
 				throw new MissingNodeException("Could not get value from element (path=" +
 					xpath + ")");
-			return node.getText();
+			if (value instanceof List) {
+				List list = (List) value;
+				value = list.get(0);
+			}
+
+			if (value instanceof Node) {
+				Node node = (Node) value;
+				return node.getText();
+			} else if (value instanceof String) {
+				return (String) value;
+			} else if (value instanceof Number) {
+				String s = value.toString();
+				if (s.endsWith(".0"))
+					s = s.substring(0, s.length() - 2);
+				return s;
+			} else
+				throw new IllegalStateException("Unexpected object returned from xpath query: " + value);
 		}
 	}
 
@@ -173,6 +189,53 @@ public class ConvertToARFF {
 		}
 	}
 
+	public static class PriorityAttribute implements Attribute {
+		public String getName() {
+			return "priority";
+		}
+
+		public void scan(Element element) throws MissingNodeException {
+		}
+
+		public String getRange() {
+			return "{low,medium,high}";
+		}
+
+		public String getInstanceValue(Element element) throws MissingNodeException {
+			org.dom4j.Attribute attribute = element.attribute("priority");
+			if (attribute ==  null)
+				throw new MissingNodeException("Missing priority attribute");
+			String value = attribute.getValue();
+			try {
+				int prio = Integer.parseInt(value);
+				switch (prio) {
+				case 1: return "high";
+				case 2: return "medium";
+				case 3: return "low";
+				default: return "?";
+				}
+			} catch (NumberFormatException e) {
+				throw new MissingNodeException("Invalid priority value: " + value);
+			}
+		}
+	}
+
+	/**
+	 * An attribute that just gives each instance a unique id.
+	 * Obviously, this attribute shouldn't be used as input
+	 * to a learning algorithm.
+	 */
+	public static class IdAttribute implements Attribute {
+		private int count = 0;
+
+		public String getName() { return "id"; }
+		public void scan(Element element) throws MissingNodeException { }
+		public String getRange() { return "numeric"; }
+		public String getInstanceValue(Element element) throws MissingNodeException {
+			return String.valueOf(count++);
+		}
+	}
+
 	public interface AttributeCallback {
 		public void apply(Attribute attribute) throws MissingNodeException, IOException;
 	}
@@ -197,6 +260,14 @@ public class ConvertToARFF {
 
 	public void addNumericAttribute(String name, String xpath) {
 		addAttribute(new NumericAttribute(name, xpath));
+	}
+
+	public void addPriorityAttribute() {
+		addAttribute(new PriorityAttribute());
+	}
+
+	public void addIdAttribute() {
+		addAttribute(new IdAttribute());
 	}
 
 	public void convert(String relationName, Document document, final Writer out)
@@ -268,7 +339,8 @@ public class ConvertToARFF {
 		addNominalAttribute("auxmethodname", "./Method[2]/@name");
 		addNominalAttribute("fieldclass", "./Field[1]/@classname");
 		addNominalAttribute("fieldname", "./Field[1]/@name");
-		addNumericAttribute("priority", "@priority");
+		//addNumericAttribute("priority", "@priority");
+		addPriorityAttribute();
 		addClassificationAttribute();
 	}
 
@@ -276,10 +348,12 @@ public class ConvertToARFF {
 		private ConvertToARFF converter = new ConvertToARFF();
 
 		public C2ACommandLine() {
+			addSwitch("-id", "add unique id attribute");
 			addSwitch("-default", "add default attributes");
 			addOption("-nominal", "attrName,xpath", "add a nominal attribute");
 			addOption("-numeric", "attrName,xpath", "add a numeric attribute");
 			addSwitch("-classification", "add bug classification attribute");
+			addSwitch("-priority", "add priority attribute");
 		}
 
 		public ConvertToARFF getConverter() {
@@ -288,10 +362,14 @@ public class ConvertToARFF {
 
 		protected void handleOption(String option, String optionExtraPart)
 				throws IOException {
-			if (option.equals("-default")) {
+			if (option.equals("-id")) {
+				converter.addIdAttribute();
+			} else if (option.equals("-default")) {
 				converter.addDefaultAttributes();
 			} else if (option.equals("-classification")) {
 				converter.addClassificationAttribute();
+			} else if (option.equals("-priority")) {
+				converter.addPriorityAttribute();
 			}
 		}
 
