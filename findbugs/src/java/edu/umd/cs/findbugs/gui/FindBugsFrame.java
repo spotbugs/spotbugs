@@ -143,6 +143,12 @@ public class FindBugsFrame extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 3);
         editProjectPanel.add(jarFileLabel, gridBagConstraints);
 
+        jarNameTextField.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jarNameTextFieldActionPerformed(evt);
+            }
+        });
+
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 2;
@@ -369,6 +375,10 @@ public class FindBugsFrame extends javax.swing.JFrame {
         pack();
     }//GEN-END:initComponents
 
+    private void jarNameTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jarNameTextFieldActionPerformed
+        addJarToList();
+    }//GEN-LAST:event_jarNameTextFieldActionPerformed
+
     private void browseJarButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_browseJarButtonActionPerformed
         JFileChooser chooser = new JFileChooser();
         FileFilter filter = new FileFilter() {
@@ -425,14 +435,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_addSourceDirButtonActionPerformed
 
     private void addJarButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addJarButtonActionPerformed
-	String jarFile = jarNameTextField.getText();
-	if (!jarFile.equals("")) {
-	    Project project = getCurrentProject();
-	    project.addJar(jarFile);
-	    DefaultListModel listModel = (DefaultListModel)  jarFileList.getModel();
-	    listModel.addElement(jarFile);
-	    jarNameTextField.setText("");
-	}
+        addJarToList();
     }//GEN-LAST:event_addJarButtonActionPerformed
     
     /** Exit the Application */
@@ -544,6 +547,21 @@ public class FindBugsFrame extends javax.swing.JFrame {
      */
     public void setView(String viewName) {
         viewPanelLayout.show(viewPanel, viewName);
+    }
+    
+    /**
+     * Called to add the jar file in the jarNameTextField to the
+     * Jar file list (and the project it represents).
+     */
+    private void addJarToList() {
+	String jarFile = jarNameTextField.getText();
+	if (!jarFile.equals("")) {
+	    Project project = getCurrentProject();
+	    project.addJar(jarFile);
+	    DefaultListModel listModel = (DefaultListModel)  jarFileList.getModel();
+	    listModel.addElement(jarFile);
+	    jarNameTextField.setText("");
+	}
     }
     
     /**
