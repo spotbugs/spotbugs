@@ -370,7 +370,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
         viewConsoleItem = new javax.swing.JCheckBoxMenuItem();
         viewBugDetailsItem = new javax.swing.JCheckBoxMenuItem();
         fullDescriptionsItem = new javax.swing.JCheckBoxMenuItem();
-        jSeparator6 = new javax.swing.JSeparator();
+        settingsMenu = new javax.swing.JMenu();
         configureDetectorsItem = new javax.swing.JMenuItem();
         helpMenu = new javax.swing.JMenu();
         aboutItem = new javax.swing.JMenuItem();
@@ -930,9 +930,13 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
         viewMenu.add(fullDescriptionsItem);
 
-        viewMenu.add(jSeparator6);
+        theMenuBar.add(viewMenu);
 
+        settingsMenu.setMnemonic('S');
+        settingsMenu.setText("Settings");
+        settingsMenu.setFont(new java.awt.Font("Dialog", 0, 12));
         configureDetectorsItem.setFont(new java.awt.Font("Dialog", 0, 12));
+        configureDetectorsItem.setMnemonic('C');
         configureDetectorsItem.setText("Configure Detectors...");
         configureDetectorsItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -940,9 +944,9 @@ public class FindBugsFrame extends javax.swing.JFrame {
             }
         });
 
-        viewMenu.add(configureDetectorsItem);
+        settingsMenu.add(configureDetectorsItem);
 
-        theMenuBar.add(viewMenu);
+        theMenuBar.add(settingsMenu);
 
         helpMenu.setMnemonic('H');
         helpMenu.setText("Help");
@@ -967,7 +971,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
     private void configureDetectorsItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_configureDetectorsItemActionPerformed
         ConfigureDetectorsDialog dialog = new ConfigureDetectorsDialog(this, true);
-        dialog.setSize(600, 400);
+        dialog.setSize(700, 520);
+        dialog.setLocationRelativeTo(null); // center the dialog
         dialog.show();
     }//GEN-LAST:event_configureDetectorsItemActionPerformed
 
@@ -2055,7 +2060,6 @@ public class FindBugsFrame extends javax.swing.JFrame {
     private javax.swing.JSeparator jSeparator3;
     private javax.swing.JSeparator jSeparator4;
     private javax.swing.JSeparator jSeparator5;
-    private javax.swing.JSeparator jSeparator6;
     private javax.swing.JLabel jarFileLabel;
     private javax.swing.JList jarFileList;
     private javax.swing.JLabel jarFileListLabel;
@@ -2070,6 +2074,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
     private javax.swing.JPanel reportPanel;
     private javax.swing.JMenuItem saveProjectAsItem;
     private javax.swing.JMenuItem saveProjectItem;
+    private javax.swing.JMenu settingsMenu;
     private javax.swing.JLabel sourceDirLabel;
     private javax.swing.JList sourceDirList;
     private javax.swing.JLabel sourceDirListLabel;
