@@ -59,7 +59,7 @@ public class ExceptionSet {
 	public ExceptionSet duplicate() {
 		ExceptionSet dup = new ExceptionSet();
 		for (Iterator<ThrownException> i = iterator(); i.hasNext(); ) {
-			dup.add(i.next().duplicate());
+			dup.addAndAdopt(i.next().duplicate());
 		}
 		return dup;
 	}
@@ -124,7 +124,7 @@ public class ExceptionSet {
 	 * @param type type of the exception
 	 */
 	public void addExplicit(ObjectType type) {
-		add(new ThrownException(type, true));
+		addAndAdopt(new ThrownException(type, true));
 	}
 
 	/**
@@ -132,7 +132,7 @@ public class ExceptionSet {
 	 * @param type type of the exception
 	 */
 	public void addImplicit(ObjectType type) {
-		add(new ThrownException(type, false));
+		addAndAdopt(new ThrownException(type, false));
 	}
 
 	/**
@@ -141,11 +141,15 @@ public class ExceptionSet {
 	 */
 	public void addAll(ExceptionSet other) {
 		for (Iterator<ThrownException> i = other.iterator(); i.hasNext(); ) {
-			add(i.next().duplicate());
+			addAndAdopt(i.next().duplicate());
 		}
 	}
 
-	private void add(ThrownException thrownException) {
+	/**
+	 * Add given ThrownException to the set.
+	 * @param thrownException the exception to add
+	 */
+	public void addAndAdopt(ThrownException thrownException) {
 		ThrownException old = map.put(thrownException.getType(), thrownException);
 
 		// Avoid replacing an explicit exception with an identical
