@@ -35,6 +35,36 @@ public class AssertionMethods implements Constants {
 	/** Bitset of methodref constant pool indexes referring to likely assertion methods. */
 	private BitSet assertionMethodRefSet;
 
+	private static class UserAssertionMethod {
+		private String className;
+		private String methodName;
+
+		public UserAssertionMethod(String className, String methodName) {
+			this.className = className;
+			this.methodName = methodName;
+		}
+
+		public String getClassName() { return className; }
+		public String getMethodName() { return methodName; }
+	}
+
+	private static final List<UserAssertionMethod> userAssertionMethodList = new ArrayList<UserAssertionMethod>();
+	static {
+		String userProperty = System.getProperty("findbugs.assertionmethods");
+		if (userProperty != null) {
+			StringTokenizer tok = new StringTokenizer(userProperty, ",");
+			while (tok.hasMoreTokens()) {
+				String fullyQualifiedName = tok.nextToken();
+				int lastDot = fullyQualifiedName.lastIndexOf('.');
+				if (lastDot < 0)
+					continue;
+				String className = fullyQualifiedName.substring(0, lastDot);
+				String methodName = fullyQualifiedName.substring(lastDot + 1);
+				userAssertionMethodList.add(new UserAssertionMethod(className, methodName));
+			}
+		}
+	}
+
 	/**
 	 * Constructor.
 	 * @param jclass the JavaClass containing the methodrefs
@@ -53,19 +83,32 @@ public class AssertionMethods implements Constants {
 				if (c instanceof ConstantMethodref) {
 					ConstantMethodref cmr = (ConstantMethodref) c;
 					ConstantNameAndType cnat = (ConstantNameAndType)cp.getConstant(cmr.getNameAndTypeIndex(), CONSTANT_NameAndType);
-					String methodName = ((ConstantUtf8) cp.getConstant(cnat.getNameIndex(), CONSTANT_Utf8)).getBytes().toLowerCase();
-					String className = cp.getConstantString(cmr.getClassIndex(), CONSTANT_Class).replace('/', '.').toLowerCase();
+					String methodName = ((ConstantUtf8) cp.getConstant(cnat.getNameIndex(), CONSTANT_Utf8)).getBytes();
+					String className = cp.getConstantString(cmr.getClassIndex(), CONSTANT_Class).replace('/', '.');
 
-					if (className.indexOf("assert") >= 0 ||
-						methodName.indexOf("assert") >= 0 || methodName.indexOf("error") >= 0 ||
-						methodName.indexOf("abort") >= 0 || methodName.indexOf("check") >= 0 ||
-						methodName.indexOf("failed") >= 0)
+					String classNameLC = className.toLowerCase();
+					String methodNameLC = methodName.toLowerCase();
+
+					if (isUserAssertionMethod(className, methodName) ||
+						classNameLC.indexOf("assert") >= 0 ||
+						methodNameLC.indexOf("assert") >= 0 || methodNameLC.indexOf("error") >= 0 ||
+						methodNameLC.indexOf("abort") >= 0 || methodNameLC.indexOf("check") >= 0 ||
+						methodNameLC.indexOf("failed") >= 0)
 						assertionMethodRefSet.set(i);
 				}
 			} catch (ClassFormatException e) {
 				// FIXME: should report
 			}
 		}
+	}
+
+	private static boolean isUserAssertionMethod(String className, String methodName) {
+		for (Iterator<UserAssertionMethod> i = userAssertionMethodList.iterator(); i.hasNext(); ) {
+			UserAssertionMethod uam = i.next();
+			if (className.equals(uam.getClassName()) && methodName.equals(uam.getMethodName()))
+				return true;
+		}
+		return false;
 	}
 
 	/**
