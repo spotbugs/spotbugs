@@ -23,14 +23,23 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
 public class DetectorFactory {
-	private Class detectorClass;
-	// Other meta-information about the detector?
+	private final Class detectorClass;
+	private boolean enabled;
 
-	public DetectorFactory(Class detectorClass) {
+	public DetectorFactory(Class detectorClass, boolean enabled) {
 		this.detectorClass = detectorClass;
+		this.enabled = enabled;
 	}
 
 	private static final Class[] constructorArgTypes = new Class[]{BugReporter.class};
+
+	public boolean isEnabled() {
+		return enabled;
+	}
+
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
+	}
 
 	public Detector create(BugReporter bugReporter) {
 		try {

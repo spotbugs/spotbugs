@@ -148,12 +148,19 @@ public class FindBugs implements Constants2
   private void createDetectors() {
     if (detectorNames == null) {
 	// Detectors were not named explicitly on command line,
-	// so create all of them.
-	detectors = new Detector[factories.size()];
+	// so create all of them (except those that are disabled).
+
+	ArrayList<Detector> result = new ArrayList<Detector>();
+
 	Iterator<DetectorFactory> i = factories.iterator();
 	int count = 0;
-	while (i.hasNext())
-		detectors[count++] = makeDetector(i.next());
+	while (i.hasNext()) {
+		DetectorFactory factory = i.next();
+		if (factory.isEnabled())
+			result.add(makeDetector(factory));
+	}
+
+	detectors = result.toArray(new Detector[0]);
     } else {
 	// Detectors were named explicitly on command line.
 

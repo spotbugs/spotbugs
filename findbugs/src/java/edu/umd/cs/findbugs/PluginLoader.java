@@ -63,7 +63,7 @@ public class PluginLoader extends URLClassLoader {
 
 	/**
 	 * Get the DetectorFactory array containing factories for creating all
-	 * of the non-disabled detectors in the plugin.
+	 * of the detectors in the plugin.
 	 */
 	public DetectorFactory[] getDetectorFactoryList() {
 		return detectorFactoryList.toArray(new DetectorFactory[0]);
@@ -135,11 +135,9 @@ public class PluginLoader extends URLClassLoader {
 	
 				//System.out.println("Found detector: class="+className+", disabled="+disabled);
 	
-				if (!disabled.equals("true")) {
-					Class detectorClass = loadClass(className);
-					DetectorFactory factory = new DetectorFactory(detectorClass);
-					detectorFactoryList.add(factory);
-				}
+				Class detectorClass = loadClass(className);
+				DetectorFactory factory = new DetectorFactory(detectorClass, !disabled.equals("true"));
+				detectorFactoryList.add(factory);
 			}
 		} catch (ClassNotFoundException e) {
 			throw new PluginException("Could not instantiate detector class", e);
