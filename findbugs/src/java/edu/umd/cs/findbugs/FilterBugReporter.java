@@ -48,8 +48,8 @@ public class FilterBugReporter implements BugReporter {
 		realBugReporter.logError(message);
 	}
 
-	public void reportMissingClass(String message) {
-		realBugReporter.reportMissingClass(message);
+	public void reportMissingClass(ClassNotFoundException ex) {
+		realBugReporter.reportMissingClass(ex);
 	}
 
 	public void finish() {

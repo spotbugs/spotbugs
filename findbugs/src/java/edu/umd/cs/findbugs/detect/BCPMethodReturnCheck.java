@@ -49,7 +49,7 @@ public class BCPMethodReturnCheck extends ByteCodePatternDetector {
 		// Create a callback for reporting Repository lookup failures.
 		RepositoryLookupFailureCallback lookupFailureCallback = new RepositoryLookupFailureCallback() {
 			public void lookupFailure(ClassNotFoundException ex) {
-				BCPMethodReturnCheck.this.bugReporter.reportMissingClass(ex.getMessage());
+				BCPMethodReturnCheck.this.bugReporter.reportMissingClass(ex);
 			}
 		};
 

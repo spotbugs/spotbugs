@@ -36,9 +36,11 @@ public abstract class AbstractBugReporter implements BugReporter {
 		this.verbosityLevel = level;
 	}
 
-	public void reportMissingClass(String message) {
+	public void reportMissingClass(ClassNotFoundException ex) {
 		if (verbosityLevel == SILENT)
 			return;
+
+		String message = ex.getMessage();
 
 		// Try to decode the error message by extracting the class name.
 		// BCEL seems to report missing classes in a fairly consistent way.

@@ -52,7 +52,7 @@ public class DroppedException extends PreorderVisitor implements Detector, Const
 		   return true;
 	    }
 	catch (ClassNotFoundException e) {
-		bugReporter.reportMissingClass(e.getMessage());
+		bugReporter.reportMissingClass(e);
 		}
 	return false;
 	}

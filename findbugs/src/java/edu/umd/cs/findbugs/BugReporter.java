@@ -53,9 +53,9 @@ public interface BugReporter {
 	/**
 	 * Report a class that was needed for analysis but which
 	 * could not be found.
-	 * @param message a message describing the missing class
+	 * @param ex a ClassNotFoundException describing the missing class
 	 */
-	public void reportMissingClass(String message);
+	public void reportMissingClass(ClassNotFoundException ex);
 
 	/**
 	 * Finish reporting bugs.

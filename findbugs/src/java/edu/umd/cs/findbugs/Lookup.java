@@ -37,7 +37,7 @@ public class Lookup
 			return c;
 			}
 		catch (ClassNotFoundException e) {
-			bugReporter.reportMissingClass(e.getMessage());
+			bugReporter.reportMissingClass(e);
 			return clazz;
 			}
 		}
@@ -50,7 +50,7 @@ public class Lookup
 			return (c != null) ? c.getClassName() : clazz;
 			}
 		catch (ClassNotFoundException e) {
-			bugReporter.reportMissingClass(e.getMessage());
+			bugReporter.reportMissingClass(e);
 			return clazz;
 			}
 		}
