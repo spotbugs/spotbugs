@@ -10,7 +10,6 @@ public class SimpleNode implements Node {
 
   /* DHH: added these fields to keep track of tokens */
   private Token firstToken, lastToken;
-  private int numTokens;
 
   public SimpleNode(int i) {
     id = i;
@@ -23,6 +22,7 @@ public class SimpleNode implements Node {
 
   /** Set first token. */
   public void setFirstToken(Token t) {
+    if (t == null) throw new IllegalStateException();
     this.firstToken = t;
   }
 
@@ -34,15 +34,6 @@ public class SimpleNode implements Node {
   /** Set last token. */
   public void setLastToken(Token t) {
     this.lastToken = t;
-
-    int count = 1;
-    Token cur = firstToken;
-    while (cur != lastToken) {
-      ++count;
-      cur = cur.next;
-    }
-
-    numTokens = count;
   }
 
   /** Get the last token. */
@@ -52,7 +43,13 @@ public class SimpleNode implements Node {
 
   /** Get number of tokens. */
   public int getNumTokens() {
-    return numTokens;
+    int count = 0;
+    Token cur = firstToken;
+    while (cur != lastToken) {
+      ++count;
+      cur = cur.next;
+    }
+    return count;
   }
 
   /**
