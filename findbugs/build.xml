@@ -192,15 +192,13 @@
       <loadproperties srcFile="${release.prop.file}" />
     </target>
 
-    <!-- Target to build the docs. -->
-    <target name="docs" depends="version">
-       <mkdir dir="${doc.dir}/manual" />
-
+    <!-- Target to generate documentation files from their sources. -->
+    <target name="docfiles" depends="version">
        <copy todir="${doc.dir}">
          <fileset dir="${doc.src.dir}" includes="**/*.png"/>
        </copy>
 
-       <copy todir="${doc.dir}" overwrite="true">
+       <copy todir="${doc.dir}">
          <fileset dir="${doc.src.dir}" excludes="**/*.png"/>
          <!--
            Perform substitutions on the documentation files.
@@ -214,7 +212,19 @@
             <filter token="RELEASE_DATE" value="${release.date}" />
             <filter token="HTML_XSL_STYLESHEET" value="${html.xsl.stylesheet}" />
         </filterset>  
-       </copy>
+      </copy>
+
+      <!-- The manual is up to date as long as the generated HTML
+           file are newer than manual.xml and manual.xsl. -->
+      <uptodate property="manual.build.notRequired" >
+        <srcfiles dir="${doc.dir}" includes="manual.xml,manual.xsl" />
+        <mapper type="merge" to="manual/index.html" />
+      </uptodate>
+    </target>
+
+    <!-- Target to build the manual. -->
+    <target name="manual" depends="docfiles" unless="manual.build.notRequired" >
+       <mkdir dir="${doc.dir}/manual" />
 
        <!-- Format the manual as HTML. -->
        <java fork="true" dir="${doc.dir}" failonerror="true" classname="com.icl.saxon.StyleSheet" >
@@ -238,7 +248,10 @@
          <arg value="manual.pdf" />
        </java>
 -->
+    </target>
 
+    <!-- Target to build the docs. -->
+    <target name="docs" depends="docfiles,manual">
     </target>
 
     <!-- Default target: just compile the code
@@ -266,6 +279,16 @@
        <chmod file="${release.dir}/findbugs-${release.number}/bin/findbugs" perm="a+rx"/>
     </target>
 
+    <!-- Update the FindBugs web page. -->
+<!--
+    <property name="findbugs.web.dir" value="/fs/www/users/pugh/java/bugs" />
+-->
+    <property name="findbugs.web.dir" value="/tmp/bugs" />
+    <target name="web" depends="docs" >
+      <copy todir="${findbugs.web.dir}" >
+        <fileset dir="${doc.dir}" />
+      </copy>
+    </target>
     
 </project>
 
