@@ -1,6 +1,6 @@
 /*
  * Generic graph library
- * Copyright (C) 2000,2003,2004 University of Maryland
+ * Copyright (C) 2000,2003-2005 University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -17,7 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-// $Revision: 1.9 $
+// $Revision: 1.10 $
 
 package edu.umd.cs.findbugs.graph;
 
