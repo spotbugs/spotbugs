@@ -33,6 +33,7 @@ package edu.umd.cs.daveho.ba;
  */
 public class IsNullValue {
 	private static final boolean NO_WEAK_VALUES = !Boolean.getBoolean("inv.weak");
+	private static final boolean DEBUG_EXCEPTION = Boolean.getBoolean("inv.debugException");
 
 	private static final int NULL      = 0;
 	private static final int WEAK_NULL = 1;
@@ -77,19 +78,21 @@ public class IsNullValue {
 		new IsNullValue(DNR)
 	};
 
-	private static IsNullValue[] exceptionInstanceList = {
-		new IsNullValue(NULL | EXCEPTION),
-		new IsNullValue(WEAK_NULL | EXCEPTION),
-		new IsNullValue(NN | EXCEPTION),
-		new IsNullValue(WEAK_NN | EXCEPTION),
-		new IsNullValue(NSP | EXCEPTION),
-		new IsNullValue(DNR | EXCEPTION)
-	};
-
 	private int kind;
 
 	private IsNullValue(int kind) {
 		this.kind = kind;
+	}
+
+	public boolean equals(Object o) {
+		if (this.getClass() != o.getClass())
+			return false;
+		IsNullValue other = (IsNullValue) o;
+		return kind == other.kind;
+	}
+
+	public int hashCode() {
+		throw new UnsupportedOperationException();
 	}
 
 	private int getBaseKind() {
@@ -114,7 +117,10 @@ public class IsNullValue {
 	 * Convert to an exception path value.
 	 */
 	public IsNullValue toExceptionValue() {
-		return exceptionInstanceList[getBaseKind()];
+		if (isException())
+			return this;
+		else
+			return new IsNullValue(kind | EXCEPTION);
 	}
 
 	/** Get the instance representing values that are definitely null. */
@@ -166,7 +172,10 @@ public class IsNullValue {
 		}
 
 		int result = mergeMatrix[a.kind][b.kind];
-		return (isException ? exceptionInstanceList : instanceList)[result];
+		IsNullValue resultValue = instanceList[result];
+		if (isException)
+			resultValue = resultValue.toExceptionValue();
+		return resultValue;
 	}
 
 	/** Is this value definitely null? */
@@ -188,19 +197,23 @@ public class IsNullValue {
 	}
 
 	public String toString() {
+		String pfx = "";
+		if (DEBUG_EXCEPTION) {
+			pfx = (kind & EXCEPTION) != 0 ? "e" : "_";
+		}
 		switch (kind & ~EXCEPTION) {
 		case NULL:
-			return "n";
+			return pfx + "n";
 		case WEAK_NULL:
-			return "w";
+			return pfx + "w";
 		case NN:
-			return "N";
+			return pfx + "N";
 		case WEAK_NN:
-			return "W";
+			return pfx + "W";
 		case NSP:
-			return "s";
+			return pfx + "s";
 		case DNR:
-			return "-";
+			return pfx + "-";
 		default:
 			throw new IllegalStateException("unknown kind of IsNullValue: " + kind);
 		}
