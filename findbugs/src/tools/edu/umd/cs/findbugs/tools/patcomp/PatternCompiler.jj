@@ -1,5 +1,7 @@
 options {
     STATIC = false;
+	LOOKAHEAD = 2;
+	FORCE_LA_CHECK = true;
 }
 
 PARSER_BEGIN(PatternCompiler)
@@ -42,13 +44,27 @@ MORE :
 
 TOKEN :
 {
+	// Section keywords
 	<PRESCREEN: "prescreen">
 |	<MATCH: "match">
 |	<CHECK: "check">
 |	<REPORT: "report">
+
+	// Expression keywords
+|	<WHERE: "where">
+
+	// Identifiers
 |	<ID: <IDSTART>(<IDCHAR>)*>
+
+	// Syntax bits
 |	<LBRACE: "{">
 |	<RBRACE: "}">
+|	<LPAREN: "(">
+|	<RPAREN: ")">
+|	<COMMA: ",">
+|	<COLON: ":">
+
+	// Character classes
 |	<#IDSTART: (["A"-"Z"]|["a"-"z"]|"_")>
 |	<#IDCHAR: (["A"-"Z"]|["a"-"z"]|<DIGIT>|"_")>
 |	<#DIGIT: ["0"-"9"]>
@@ -72,7 +88,50 @@ void opt_prescreen() :
 void match() :
 { }
 {
-	<MATCH> <LBRACE> <RBRACE>
+	<MATCH> <LBRACE> instruction_list() <RBRACE>
+	{ }
+}
+
+void instruction_list() :
+{ }
+{
+	instruction() instruction_list()
+	{ }
+|	/* epsilon */
+	{ }
+}
+
+void instruction() :
+{ }
+{
+	opt_label() <ID> arg_list()
+	{ }
+}
+
+void opt_label() :
+{ }
+{
+	<ID> <COLON>
+	{ }
+|	/* epsilon */
+	{ }
+}
+
+void arg_list() :
+{ }
+{
+	<ID> arg_list_rest()
+	{ }
+|	/* epsilon */
+	{ }
+}
+
+void arg_list_rest() :
+{ }
+{
+	<COMMA> <ID> arg_list_rest()
+	{ }
+|	/* epsilon */
 	{ }
 }
 
