@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs;
 
+import edu.umd.cs.findbugs.xml.Dom4JXMLOutput;
 import edu.umd.cs.findbugs.xml.OutputStreamXMLOutput;
 import edu.umd.cs.findbugs.xml.XMLAttributeList;
 import edu.umd.cs.findbugs.xml.XMLOutput;
@@ -27,10 +28,9 @@ import edu.umd.cs.findbugs.xml.XMLOutputUtil;
 import java.io.*;
 import java.util.*;
 
-/*
 import org.dom4j.Document;
-*/
 import org.dom4j.DocumentException;
+import org.dom4j.DocumentFactory;
 /*
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
@@ -283,6 +283,19 @@ public abstract class BugCollection {
 		return document;
 	}
 */
+	public Document toDocument(Project project) {
+		DocumentFactory docFactory = new DocumentFactory();
+		Document document = docFactory.createDocument();
+		Dom4JXMLOutput treeBuilder = new Dom4JXMLOutput(document);
+
+		try {
+			writeXML(treeBuilder, project);
+		} catch (IOException e) {
+			// Can't happen
+		}
+
+		return document;
+	}
 
 	public void writeXML(OutputStream out, Project project) throws IOException {
 /*
