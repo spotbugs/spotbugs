@@ -76,6 +76,7 @@ echo    -gui            Use the Graphical UI (default behavior)
 echo    -textui         Use the Text UI
 echo    -jvmArgs args   Pass args to JVM
 echo    -help           Display this message
+echo    -debug          Enable debug tracing in FindBugs
 echo All other options are passed to the FindBugs application
 goto end
 
