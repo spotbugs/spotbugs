@@ -40,7 +40,7 @@
             </Property>
           </Properties>
           <AuxValues>
-            <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="{&#xa;    DefaultTableModel m = (DefaultTableModel)detectorTable.getModel();&#xa;    m.setColumnIdentifiers( new String[]&#xa;    {&#xa;        L10N.getLocalString(&quot;dlg.bugdetector_lbl&quot;, &quot;Bug Detector&quot;),&#xa;        L10N.getLocalString(&quot;dlg.speed_lbl&quot;, &quot;Speed&quot;),&#xa;        L10N.getLocalString(&quot;dlg.enabled_lbl&quot;, &quot;Enabled&quot;),&#xa;    });&#xa;}"/>
+            <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="&#xa;{&#xa;    DefaultTableModel m = (DefaultTableModel)detectorTable.getModel();&#xa;    m.setColumnIdentifiers( new String[]&#xa;    {&#xa;        L10N.getLocalString(&quot;dlg.bugdetector_lbl&quot;, &quot;Bug Detector&quot;),&#xa;        L10N.getLocalString(&quot;dlg.speed_lbl&quot;, &quot;Speed&quot;),&#xa;        L10N.getLocalString(&quot;dlg.enabled_lbl&quot;, &quot;Enabled&quot;),&#xa;    });&#xa;&#xa;&#xa;    TableSorter sorter = new TableSorter(m);&#xa;    detectorTable.setModel(sorter);&#xa;    sorter.setTableHeader(detectorTable.getTableHeader());&#xa;}  &#xa;"/>
           </AuxValues>
         </Component>
       </SubComponents>
