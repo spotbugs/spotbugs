@@ -80,29 +80,38 @@ public abstract class DataflowTestDriver<Fact> {
 				continue;
 			if (methodName != null && !method.getName().equals(methodName))
 				continue;
+
+
 			System.out.println("Method: " + method.getName());
 
 			MethodGen methodGen = new MethodGen(method, jclass.getClassName(), cpg);
 
 			CFGBuilder cfgBuilder = CFGBuilderFactory.create(methodGen);
 			cfgBuilder.build();
-
 			CFG cfg = cfgBuilder.getCFG();
 			cfg.assignEdgeIds(0);
 
-			AbstractDataflowAnalysis<Fact> analysis = createAnalysis(methodGen, cfg);
-			Dataflow<Fact> dataflow = new Dataflow<Fact>(cfg, analysis);
+			execute(methodGen, cfg);
+		}
+	}
 
-			dataflow.execute();
+	/**
+	 * Execute the analysis on a single method of a class.
+	 */
+	public void execute(MethodGen methodGen, CFG cfg) throws DataflowAnalysisException, CFGBuilderException {
 
-			System.out.println("Finished in " + dataflow.getNumIterations() + " iterations");
+		AbstractDataflowAnalysis<Fact> analysis = createAnalysis(methodGen, cfg);
+		Dataflow<Fact> dataflow = new Dataflow<Fact>(cfg, analysis);
 
-			examineResults(cfg, dataflow);
+		dataflow.execute();
 
-			if (Boolean.getBoolean("dataflow.printcfg")) {
-				CFGPrinter p = new DataflowCFGPrinter<Fact>(cfg, dataflow, analysis);
-				p.print(System.out);
-			}
+		System.out.println("Finished in " + dataflow.getNumIterations() + " iterations");
+
+		examineResults(cfg, dataflow);
+
+		if (Boolean.getBoolean("dataflow.printcfg")) {
+			CFGPrinter p = new DataflowCFGPrinter<Fact>(cfg, dataflow, analysis);
+			p.print(System.out);
 		}
 	}
 
