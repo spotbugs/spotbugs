@@ -17,7 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-// $Revision: 1.5 $
+// $Revision: 1.6 $
 
 package edu.umd.cs.daveho.graph;
 
@@ -64,6 +64,9 @@ public class Transpose
 			VertexType dupVertex = trans.addVertex();
 			dupVertex.setLabel(v.getLabel());
 
+			// Copy auxiliary information for vertex
+			toolkit.copyVertex(v, dupVertex);
+
 			// Keep track of correspondence between equivalent vertices
 			m_origToTransposeMap.put(v, dupVertex);
 			m_transposeToOrigMap.put(dupVertex, v);
@@ -78,7 +81,10 @@ public class Transpose
 			VertexType transSource = m_origToTransposeMap.get(e.getTarget());
 			VertexType transTarget = m_origToTransposeMap.get(e.getSource());
 
-			trans.addEdge(transSource, transTarget);
+			EdgeType dupEdge = trans.addEdge(transSource, transTarget);
+
+			// Copy auxiliary information for edge
+			toolkit.copyEdge(e, dupEdge);
 		}
 
 		return trans;
