@@ -108,18 +108,26 @@ public class FindCircularDependencies extends BytecodeScanningDetector implement
 		}
 		
 		{	//Remove references that are not roots
-			Iterator<Map.Entry<String, Set<String>>> it = dependencyGraph.entrySet().iterator();
-			while (it.hasNext()) {
-				Map.Entry<String, Set<String>> entry = it.next();
-				String clsName = entry.getKey();
-				Set<String> dependencies = entry.getValue();
-				Iterator dit = dependencies.iterator();
-				while (dit.hasNext()) {
-					if (!dependencyGraph.containsKey(dit.next()))
-						dit.remove();
+			boolean didRemoval = true;
+			while (didRemoval) {
+				didRemoval = false;
+				Iterator<Map.Entry<String, Set<String>>> it = dependencyGraph.entrySet().iterator();
+				while (it.hasNext()) {
+					Map.Entry<String, Set<String>> entry = it.next();
+					String clsName = entry.getKey();
+					Set<String> dependencies = entry.getValue();
+					Iterator dit = dependencies.iterator();
+					while (dit.hasNext()) {
+						if (!dependencyGraph.containsKey(dit.next())) {
+							dit.remove();
+							didRemoval = true;
+						}
+					}
+					if (dependencies.size() == 0) {
+						it.remove();
+						didRemoval = true;
+					}
 				}
-				if (dependencies.size() == 0)
-					it.remove();
 			}
 		}
 		
