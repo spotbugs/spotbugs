@@ -64,12 +64,12 @@ public class FindUnsyncGet extends BytecodeScanningDetector implements   Constan
 			&& !isSynchronized
 			// && returnValueIsRef
 			) {
-			getMethods.put(name.substring(3), new MethodAnnotation(this));
+			getMethods.put(name.substring(3), MethodAnnotation.fromVisitedMethod(this));
 	} else if (name.startsWith("set") 
 			&& isSynchronized
 			// && firstArgIsRef
 			) {
-			setMethods.put(name.substring(3), new MethodAnnotation(this));
+			setMethods.put(name.substring(3), MethodAnnotation.fromVisitedMethod(this));
 			}
 	}
 }
