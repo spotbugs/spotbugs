@@ -94,8 +94,7 @@ public class FindUncalledPrivateMethods extends BytecodeScanningDetector {
 			MethodAnnotation m = i.next();
 			// System.out.println("Checking " + m);
 			int priority = LOW_PRIORITY;
-			if (calledMethodNames.contains(m.getMethodName())
-					.toLowerCase())
+			if (calledMethodNames.contains(m.getMethodName().toLowerCase()))
 				priority = NORMAL_PRIORITY;
 			BugInstance bugInstance 
 			  = new BugInstance("UPM_UNCALLED_PRIVATE_METHOD", 
