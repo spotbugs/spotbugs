@@ -77,6 +77,7 @@ public class RunAnalysisDialog extends javax.swing.JDialog {
                     // TODO: log the exception
                 } catch (InterruptedException e) {
                     // TODO: log the fact that the user cancelled the analysis
+                    System.out.println("User cancelled the analysis!");
                 }
                 
                 SwingUtilities.invokeLater(new Runnable() {
@@ -113,7 +114,7 @@ public class RunAnalysisDialog extends javax.swing.JDialog {
         classesLabel = new javax.swing.JLabel();
         archivesProgress = new javax.swing.JProgressBar();
         classesProgress = new javax.swing.JProgressBar();
-        jButton1 = new javax.swing.JButton();
+        cancelButton = new javax.swing.JButton();
         jSeparator1 = new javax.swing.JSeparator();
         archiveLabel = new javax.swing.JLabel();
         archiveName = new javax.swing.JLabel();
@@ -176,15 +177,21 @@ public class RunAnalysisDialog extends javax.swing.JDialog {
         gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 3);
         getContentPane().add(classesProgress, gridBagConstraints);
 
-        jButton1.setFont(new java.awt.Font("Dialog", 0, 12));
-        jButton1.setText("Cancel");
-        jButton1.setToolTipText("null");
+        cancelButton.setFont(new java.awt.Font("Dialog", 0, 12));
+        cancelButton.setText("Cancel");
+        cancelButton.setToolTipText("null");
+        cancelButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cancelButtonActionPerformed(evt);
+            }
+        });
+
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 8;
         gridBagConstraints.gridwidth = 2;
         gridBagConstraints.insets = new java.awt.Insets(3, 0, 3, 0);
-        getContentPane().add(jButton1, gridBagConstraints);
+        getContentPane().add(cancelButton, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -225,6 +232,12 @@ public class RunAnalysisDialog extends javax.swing.JDialog {
         pack();
     }//GEN-END:initComponents
 
+    private void cancelButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelButtonActionPerformed
+        // All we need to do to cancel the analysis is to interrupt
+        // the analysis thread.
+        analysisThread.interrupt();
+    }//GEN-LAST:event_cancelButtonActionPerformed
+
     private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
         // Here is where we actually kick off the analysis thread.
         analysisThread.start();
@@ -240,9 +253,9 @@ public class RunAnalysisDialog extends javax.swing.JDialog {
     private javax.swing.JProgressBar classesProgress;
     private javax.swing.JLabel archiveName;
     private javax.swing.JLabel classesLabel;
-    private javax.swing.JButton jButton1;
     private javax.swing.JProgressBar archivesProgress;
     private javax.swing.JLabel archiveLabel;
+    private javax.swing.JButton cancelButton;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JLabel findBugsLabel;
     private javax.swing.JLabel bottomVerticalFiller;
