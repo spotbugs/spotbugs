@@ -19,10 +19,7 @@
 
 package edu.umd.cs.findbugs;
 
-import edu.umd.cs.findbugs.xml.Dom4JXMLOutput;
-
 import org.dom4j.Document;
-import org.dom4j.DocumentFactory;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
 
@@ -55,10 +52,7 @@ public class XMLBugReporter extends BugCollectionBugReporter {
 				// write the tree to the output stream.
 
 				// Build tree
-				DocumentFactory docFactory = new DocumentFactory();
-				Document document = docFactory.createDocument();
-				Dom4JXMLOutput treeBuilder = new Dom4JXMLOutput(document);
-				getBugCollection().writeXML(treeBuilder, getProject());
+				Document document = getBugCollection().toDocument(getProject());
 
 				// Add messages
 				AddMessages addMessages = new AddMessages(getBugCollection(), document);
