@@ -92,14 +92,15 @@ public class ConfigureDetectorsDialog extends javax.swing.JDialog {
             }
         });
         populateTable();
+        detectorTable.getColumnModel().getColumn(1).setMaxWidth(60);
         detectorTableScrollPane.setViewportView(detectorTable);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = 3;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 0.8;
+        gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
         getContentPane().add(detectorTableScrollPane, gridBagConstraints);
 
         detectorDescriptionScrollPane.setViewportView(detectorDescription);
@@ -109,8 +110,8 @@ public class ConfigureDetectorsDialog extends javax.swing.JDialog {
         gridBagConstraints.gridy = 1;
         gridBagConstraints.gridwidth = 3;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
         gridBagConstraints.weighty = 0.2;
+        gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
         getContentPane().add(detectorDescriptionScrollPane, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();

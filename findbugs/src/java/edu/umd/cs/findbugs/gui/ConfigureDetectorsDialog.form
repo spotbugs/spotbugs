@@ -24,7 +24,7 @@
       <SubComponents>
         <Component class="javax.swing.JTable" name="detectorTable">
           <Properties>
-            <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor" postCode="populateTable();">
+            <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor" postCode="populateTable();&#xa;detectorTable.getColumnModel().getColumn(1).setMaxWidth(60);&#xa;">
               <Table columnCount="2" rowCount="0">
                 <Column editable="false" title="Bug Detector" type="java.lang.String"/>
                 <Column editable="true" title="Enabled" type="java.lang.Boolean"/>
