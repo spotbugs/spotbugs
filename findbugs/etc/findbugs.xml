@@ -462,6 +462,6 @@
               experimental="true"/>
   <BugPattern abbrev="ISC" type="ISC_INSTANTIATE_STATIC_CLASS" category="CORRECTNESS"
     experimental="true"/>
-	<BugPattern abbrev="REC" type="REC_CATCH_EXCEPTION" category="CORRECTNESS" experimental="true" />
+	<BugPattern abbrev="REC" type="REC_CATCH_EXCEPTION" category="STYLE" experimental="true" />
 
 </FindbugsPlugin>
