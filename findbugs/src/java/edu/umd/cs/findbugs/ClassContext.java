@@ -37,11 +37,13 @@ import edu.umd.cs.daveho.ba.*;
  */
 public class ClassContext {
 	private JavaClass jclass;
+	private RepositoryLookupFailureCallback lookupFailureCallback;
 	private IdentityHashMap<Method, MethodGen> methodGenMap = new IdentityHashMap<Method, MethodGen>();
 	private IdentityHashMap<Method, CFG> cfgMap = new IdentityHashMap<Method, CFG>();
 	private IdentityHashMap<Method, ValueNumberDataflow> vnaDataflowMap = new IdentityHashMap<Method, ValueNumberDataflow>();
 	private IdentityHashMap<Method, IsNullValueDataflow> invDataflowMap = new IdentityHashMap<Method, IsNullValueDataflow>();
 	private IdentityHashMap<Method, DepthFirstSearch> dfsMap = new IdentityHashMap<Method, DepthFirstSearch>();
+	private IdentityHashMap<Method, TypeDataflow> typeDataflowMap = new IdentityHashMap<Method, TypeDataflow>();
 	private IdentityHashMap<Method, BitSet> bytecodeMap = new IdentityHashMap<Method, BitSet>();
 	private ClassGen classGen;
 
@@ -49,8 +51,9 @@ public class ClassContext {
 	 * Constructor.
 	 * @param jclass the JavaClass
 	 */
-	public ClassContext(JavaClass jclass) {
+	public ClassContext(JavaClass jclass, RepositoryLookupFailureCallback lookupFailureCallback) {
 		this.jclass = jclass;
+		this.lookupFailureCallback = lookupFailureCallback;
 		this.classGen = null;
 	}
 
@@ -143,6 +146,26 @@ public class ClassContext {
 			invDataflowMap.put(method, invDataflow);
 		}
 		return invDataflow;
+	}
+
+	/**
+	 * Get a TypeDataflow for given method.
+	 * @param method the method
+	 * @return the TypeDataflow
+	 */
+	public TypeDataflow getTypeDataflow(Method method) throws DataflowAnalysisException, CFGBuilderException {
+		TypeDataflow typeDataflow = typeDataflowMap.get(method);
+		if (typeDataflow == null ) {
+			MethodGen methodGen = getMethodGen(method);
+			CFG cfg = getCFG(method);
+
+			TypeAnalysis typeAnalysis = new TypeAnalysis(methodGen, lookupFailureCallback);
+			typeDataflow = new TypeDataflow(cfg, typeAnalysis);
+			typeDataflow.execute();
+
+			typeDataflowMap.put(method, typeDataflow);
+		}
+		return typeDataflow;
 	}
 
 	/**
