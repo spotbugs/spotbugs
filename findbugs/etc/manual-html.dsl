@@ -13,6 +13,9 @@
 ;; Root of document is "index"
 (define %root-filename% "index")
 
+;; Base HTML filenames on id attribute values
+(define %use-id-as-filename% #t)
+
 ;; Use extension ".html"
 (define %html-ext% ".html")
 
