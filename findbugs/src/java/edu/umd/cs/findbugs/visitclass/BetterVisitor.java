@@ -19,6 +19,7 @@ public abstract class BetterVisitor implements Visitor {
    protected JavaClass thisClass;
    protected String methodSig = "none";
    protected String betterMethodSig = "none";
+   protected Method method = null;
    protected String methodName = "none";
    protected String betterMethodName = "none";
    protected String betterFieldName = "none";
@@ -48,6 +49,7 @@ public abstract class BetterVisitor implements Visitor {
   public String getFieldName() { return fieldName; }
   public String getFieldSig() { return fieldSig; }
   public boolean getFieldIsStatic() { return fieldIsStatic; }
+  public Method getMethod() { return method; }
   public String getMethodName() { return methodName; }
   public String getMethodSig() { return methodSig; }
 
@@ -171,6 +173,7 @@ public abstract class BetterVisitor implements Visitor {
   public void visitLocalVariableTable(LocalVariableTable obj)    
 		{ visit(obj); }
   public void visitMethod(Method obj)    {
+		method = obj;
 	        methodName = getStringFromIndex(obj.getNameIndex());
 	        methodSig = getStringFromIndex(obj.getSignatureIndex());
 		betterMethodSig = methodSig.replace('/','.');
