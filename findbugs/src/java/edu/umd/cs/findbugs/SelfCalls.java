@@ -56,12 +56,15 @@ public class SelfCalls {
 		JavaClass jclass = classContext.getJavaClass();
 		Method[] methods = jclass.getMethods();
 
+		if (DEBUG) System.out.println("Class has " + methods.length + " methods");
+
 		// Add call graph nodes for all methods
 		for (int i = 0; i < methods.length; ++i) {
 			Method method = methods[i];
 
 			callGraph.addNode(method);
 		}
+		if (DEBUG) System.out.println("Added " + callGraph.getNumVertices() + " nodes to graph");
 
 		// Scan methods for self calls
 		for (int i = 0; i < methods.length; ++i) {
