@@ -154,9 +154,9 @@ public class SerializableIdiom extends PreorderVisitor
 				int priority = implementsSerializableDirectly ? HIGH_PRIORITY : NORMAL_PRIORITY;
 
 				// Lower the priority for fields which are of an interface
-				// type, since the user may know that all subtypes of
+				// or abstract type, since the user may know that all subtypes of
 				// the interface will be Serializable.
-				if (fieldClass.isInterface())
+				if (fieldClass.isInterface() || fieldClass.isAbstract())
 				    priority = Math.max(LOW_PRIORITY, priority + 1);
 
 				// Report is queued until after the entire class has been seen.
