@@ -31,9 +31,14 @@ import org.apache.bcel.generic.*;
  */
 public class FindLocalSelfAssignment implements Detector {
 	private BugReporter bugReporter;
+	private AnalysisContext analysisContext;
 
 	public FindLocalSelfAssignment(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
+	}
+
+	public void setAnalysisContext(AnalysisContext analysisContext) {
+		this.analysisContext = analysisContext;
 	}
 
 	public void visitClassContext(ClassContext classContext) {

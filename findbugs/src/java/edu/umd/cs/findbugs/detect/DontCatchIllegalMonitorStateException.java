@@ -24,6 +24,7 @@ import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.*;
 import edu.umd.cs.findbugs.visitclass.Constants2;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 public class DontCatchIllegalMonitorStateException 
@@ -31,11 +32,16 @@ public class DontCatchIllegalMonitorStateException
 
 
   BugReporter bugReporter;
+  AnalysisContext analysisContext;
   HashSet<String> msgs = new HashSet<String>();
 
   public DontCatchIllegalMonitorStateException(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
         }
+
+  public void setAnalysisContext(AnalysisContext analysisContext) {
+	this.analysisContext = analysisContext;
+	}
 
    public void visit(ExceptionTable obj) {
 	if (false) {

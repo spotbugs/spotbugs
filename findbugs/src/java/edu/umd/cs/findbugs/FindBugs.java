@@ -587,9 +587,8 @@ public class FindBugs implements Constants2, ExitCodes
 	// as the AnalysisContext
 	bugReporter.setEngine(this);
 
-	// Create detectors, if required
-	if (detectors == null)
-		createDetectors();
+	// Create detectors
+	createDetectors();
 
 	// Clear the repository of classes
 	clearRepository();
@@ -714,8 +713,11 @@ public class FindBugs implements Constants2, ExitCodes
 	int count = 0;
 	while (i.hasNext()) {
 		DetectorFactory factory = i.next();
-		if (factory.isEnabled())
-			result.add(factory.create(bugReporter));
+		if (factory.isEnabled()) {
+			Detector detector = factory.create(bugReporter);
+			detector.setAnalysisContext(analysisContext);
+			result.add(detector);
+		}
 	}
 
 	detectors = result.toArray(new Detector[0]);

@@ -27,6 +27,15 @@ import org.apache.bcel.generic.*;
 import edu.umd.cs.findbugs.ba.*;
 import edu.umd.cs.findbugs.*;
 
+/**
+ * Abstract implementation of a Detector to find methods where a
+ * particular kind of created resource is not cleaned up
+ * or closed properly.  Subclasses should override the
+ * abstract methods to determine what kinds of resources
+ * are tracked by the detector.
+ *
+ * @author David Hovemeyer
+ */
 public abstract class ResourceTrackingDetector<Resource, ResourceTrackerType extends ResourceTracker<Resource>>
 	implements Detector {
 
@@ -35,6 +44,7 @@ public abstract class ResourceTrackingDetector<Resource, ResourceTrackerType ext
 	private static final String DEBUG_METHOD_NAME = System.getProperty("rtd.method");
 
 	protected BugReporter bugReporter;
+	private AnalysisContext analysisContext;
 
 	public ResourceTrackingDetector(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
@@ -45,6 +55,18 @@ public abstract class ResourceTrackingDetector<Resource, ResourceTrackerType ext
 		throws DataflowAnalysisException, CFGBuilderException;
 	public abstract void inspectResult(JavaClass javaClass, MethodGen methodGen, CFG cfg,
 		Dataflow<ResourceValueFrame, ResourceValueAnalysis<Resource>> dataflow, Resource resource);
+
+	public void setAnalysisContext(AnalysisContext analysisContext) {
+		this.analysisContext = analysisContext;
+	}
+
+	/**
+	 * Get the AnalysisContext.
+	 * @return the AnalysisContext
+	 */
+	protected AnalysisContext getAnalysisContext() {
+		return analysisContext;
+	}
 
 	public void visitClassContext(ClassContext classContext) {
 

@@ -32,10 +32,15 @@ import edu.umd.cs.findbugs.ba.*;
 public class FindTwoLockWait implements Detector {
 
 	private BugReporter bugReporter;
+	private AnalysisContext analysisContext;
 	private JavaClass javaClass;
 
 	public FindTwoLockWait(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
+	}
+
+	public void setAnalysisContext(AnalysisContext analysisContext) {
+		this.analysisContext = analysisContext;
 	}
 
 	public void visitClassContext(ClassContext classContext) {

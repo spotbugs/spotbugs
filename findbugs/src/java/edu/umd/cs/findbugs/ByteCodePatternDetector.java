@@ -37,6 +37,20 @@ public abstract class ByteCodePatternDetector implements Detector {
 	private static final boolean DEBUG = Boolean.getBoolean("bcpd.debug");
 	private static final String METHOD = System.getProperty("bcpd.method");
 
+	private AnalysisContext analysisContext;
+
+	public void setAnalysisContext(AnalysisContext analysisContext) {
+		this.analysisContext = analysisContext;
+	}
+
+	/**
+	 * Get the AnalysisContext.
+	 * @return the AnalysisContext
+	 */
+	protected AnalysisContext getAnalysisContext() {
+		return analysisContext;
+	}
+
 	public void visitClassContext(ClassContext classContext) {
 		try {
 			ByteCodePattern pattern = getPattern();

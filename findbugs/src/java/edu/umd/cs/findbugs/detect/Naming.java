@@ -24,6 +24,7 @@ import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.*;
 import edu.umd.cs.findbugs.visitclass.Constants2;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 public class Naming extends PreorderVisitor implements Detector, Constants2 {
@@ -77,9 +78,14 @@ public class Naming extends PreorderVisitor implements Detector, Constants2 {
   HashSet<String> visited = new HashSet<String>();
 
   private BugReporter bugReporter;
+  private AnalysisContext analysisContext;
 
   public Naming(BugReporter bugReporter) {
 	this.bugReporter = bugReporter;
+	}
+
+  public void setAnalysisContext(AnalysisContext analysisContext) {
+	this.analysisContext = analysisContext;
 	}
 
   public void visitClassContext(ClassContext classContext) {

@@ -25,6 +25,7 @@ import org.apache.bcel.classfile.*;
 import edu.umd.cs.findbugs.visitclass.Constants2;
 import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 public class CloneIdiom extends DismantleBytecode implements Detector, Constants2 {
@@ -39,9 +40,14 @@ public class CloneIdiom extends DismantleBytecode implements Detector, Constants
   //boolean throwsExceptions;
   boolean implementsCloneableDirectly;
   private BugReporter bugReporter;
+  private AnalysisContext analysisContext;
 
   public CloneIdiom(BugReporter bugReporter) {
 	this.bugReporter = bugReporter;
+	}
+
+  public void setAnalysisContext(AnalysisContext analysisContext) {
+	this.analysisContext = analysisContext;
 	}
 
   public void visitClassContext(ClassContext classContext) {

@@ -269,6 +269,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 	 * ---------------------------------------------------------------------- */
 
 	private BugReporter bugReporter;
+	private AnalysisContext analysisContext;
 	private BugInstance stringComparison;
 	private BugInstance refComparison;
 
@@ -278,6 +279,10 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 
 	public FindRefComparison(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
+	}
+
+	public void setAnalysisContext(AnalysisContext analysisContext) {
+		this.analysisContext = analysisContext;
 	}
 
 	public void visitClassContext(ClassContext classContext) {

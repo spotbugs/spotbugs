@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs;
 
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
@@ -35,8 +36,17 @@ public interface Detector {
 	public static final int HIGH_PRIORITY = 1;
 
 	/**
+	 * Set the AnalysisContext that will be used.
+	 * This is called before visitClassContext() is called
+	 * on any class to be analyzed.
+	 * @param analysisContext the AnalysisContext
+	 */
+	public void setAnalysisContext(AnalysisContext analysisContext);
+
+	/**
 	 * Visit the ClassContext for a class which should be analyzed
 	 * for instances of bug patterns.
+	 * @param classContext the ClassContext
 	 */
 	public void visitClassContext(ClassContext classContext);
 

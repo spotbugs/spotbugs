@@ -158,6 +158,7 @@ public class FindInconsistentSync2 implements Detector {
 	 * ---------------------------------------------------------------------- */
 
 	private BugReporter bugReporter;
+	private AnalysisContext analysisContext;
 	private Map<XField, FieldStats> statMap = new HashMap<XField, FieldStats>();
 
 	/* ----------------------------------------------------------------------
@@ -166,6 +167,10 @@ public class FindInconsistentSync2 implements Detector {
 
 	public FindInconsistentSync2(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
+	}
+
+	public void setAnalysisContext(AnalysisContext analysisContext) {
+		this.analysisContext = analysisContext;
 	}
 
 	public void visitClassContext(ClassContext classContext) {

@@ -24,6 +24,7 @@ import org.apache.bcel.classfile.*;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 import edu.umd.cs.findbugs.visitclass.Constants2;
 import java.util.*;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 public class SerializableIdiom extends PreorderVisitor 
@@ -38,6 +39,7 @@ public class SerializableIdiom extends PreorderVisitor
     boolean foundSynchronizedMethods;
     boolean writeObjectIsSynchronized;
     private BugReporter bugReporter;
+    private AnalysisContext analysisContext;
     boolean isAbstract;
     private List<BugInstance> fieldWarningList = new LinkedList<BugInstance>();
     private boolean sawReadExternal;
@@ -53,6 +55,11 @@ public class SerializableIdiom extends PreorderVisitor
     public SerializableIdiom(BugReporter bugReporter) {
 	this.bugReporter = bugReporter;
 	}
+
+    public void setAnalysisContext(AnalysisContext analysisContext) {
+	this.analysisContext = analysisContext;
+	}
+
      public void visitClassContext(ClassContext classContext) {
        classContext.getJavaClass().accept(this);
        flush();

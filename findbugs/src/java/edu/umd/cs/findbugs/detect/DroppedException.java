@@ -41,10 +41,15 @@ public class DroppedException extends PreorderVisitor implements Detector, Const
     Set<String> checkedCauses = new HashSet<String>();
     private ClassContext classContext;
     private BugReporter bugReporter;
+    private AnalysisContext analysisContext;
 
     public DroppedException(BugReporter bugReporter) {
 	this.bugReporter = bugReporter;
 	if (DEBUG) System.out.println("Dropped Exception debugging turned on");
+	}
+
+    public void setAnalysisContext(AnalysisContext analysisContext) {
+	this.analysisContext = analysisContext;
 	}
 
     public void visitClassContext(ClassContext classContext) {

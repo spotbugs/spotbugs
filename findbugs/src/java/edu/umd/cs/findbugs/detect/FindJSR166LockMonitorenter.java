@@ -23,6 +23,7 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
 
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.AnalysisException;
 import edu.umd.cs.findbugs.ba.BasicBlock;
 import edu.umd.cs.findbugs.ba.CFG;
@@ -55,11 +56,16 @@ import java.util.Iterator;
  */
 public class FindJSR166LockMonitorenter implements Detector {
 	private BugReporter bugReporter;
+	private AnalysisContext analysisContext;
 
 	private static final ObjectType LOCK_TYPE = new ObjectType("java.util.concurrent.locks.Lock");
 
 	public FindJSR166LockMonitorenter(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
+	}
+
+	public void setAnalysisContext(AnalysisContext analysisContext) {
+		this.analysisContext = analysisContext;
 	}
 
 	public void visitClassContext(ClassContext classContext) {
