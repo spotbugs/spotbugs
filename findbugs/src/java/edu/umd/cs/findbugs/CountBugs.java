@@ -20,6 +20,8 @@
 package edu.umd.cs.findbugs;
 
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
 
 import java.util.*;
 
@@ -68,6 +70,13 @@ public class CountBugs {
 		}
 	}
 
+	public Integer getCount(String category) {
+		Integer count = countMap.get(category);
+		if (count == null)
+			count = new Integer(0);
+		return count;
+	}
+
 	public Iterator<Map.Entry<String, Integer>> entryIterator() {
 		return countMap.entrySet().iterator();
 	}
@@ -88,6 +97,39 @@ public class CountBugs {
 				count = new Integer(0);
 			countMap.put(category, new Integer(count.intValue() + 1));
 		}
+	}
+
+	public void diffCounts(CountBugs other) {
+		TreeSet<String> allCategories = new TreeSet<String>();
+		allCategories.addAll(countMap.keySet());
+		allCategories.addAll(other.countMap.keySet());
+
+		for (Iterator<String> i = allCategories.iterator(); i.hasNext(); ) {
+			String category = i.next();
+			Integer delta = new Integer(getCount(category).intValue() - other.getCount(category).intValue());
+			countMap.put(category, delta);
+		}
+	}
+
+	public void printCounts(OutputStream out, boolean deltas) {
+		PrintStream pout = new PrintStream(out);
+
+		Iterator<Map.Entry<String, Integer>> j = entryIterator();
+		while(j.hasNext()) {
+			Map.Entry<String,Integer> entry = j.next();
+			int count = entry.getValue().intValue();
+			if (count > 0) {
+				pout.print(entry.getKey() + ":\t");
+				if (deltas) {
+					if (count < 0)
+						pout.print("-");
+					else if (count > 0)
+						pout.print("+");
+				}
+				pout.println(count);
+			}
+		}
+		pout.flush();
 	}
 
 	private static void usage() {
@@ -125,16 +167,20 @@ public class CountBugs {
 		if (arg >= argv.length)
 			usage();
 
-		String filename = argv[arg];
+		String filename = argv[arg++];
 		CountBugs countBugs = new CountBugs(filename);
 		countBugs.execute();
 
-		Iterator<Map.Entry<String, Integer>> j = countBugs.entryIterator();
-		while(j.hasNext()) {
-			Map.Entry<String,Integer> entry = j.next();
-			System.out.println(entry.getKey() + ": " + entry.getValue());
+		if (diffMode) {
+			if (arg >= argv.length)
+				usage();
+			CountBugs countBugs2 = new CountBugs(argv[arg]);
+			countBugs2.execute();
+
+			countBugs.diffCounts(countBugs2);
 		}
 
+		countBugs.printCounts(System.out, diffMode);
 	}
 }
 
