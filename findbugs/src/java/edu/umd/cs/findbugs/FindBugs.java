@@ -476,7 +476,11 @@ public class FindBugs implements Constants2
 				throw new IllegalArgumentException(option + " option requires argument");
 
 			String projectFile = argv[argCount];
-			project = new Project();
+
+			// Convert project file to be an absolute path
+			projectFile = new File(projectFile).getAbsolutePath();
+
+			project = new Project(projectFile);
 			project.read(new BufferedInputStream(new FileInputStream(projectFile)));
 		} else
 			throw new IllegalArgumentException("Unknown option: " + option);
