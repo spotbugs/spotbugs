@@ -202,9 +202,10 @@ public class LazyInit extends ByteCodePatternDetector {
 						lockSet.intersectWith(insLockSet);
 				}
 			}
-			if (!lockSet.isEmpty())
-				return;
 			if (!(sawNEW || sawINVOKE))
+				return;
+			if (lockSet == null) throw new IllegalStateException();
+			if (!lockSet.isEmpty())
 				return;
 
 			// Compute the priority:
