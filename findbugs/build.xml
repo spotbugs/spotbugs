@@ -56,6 +56,7 @@
     <property name="release.prop.file" value="${build.dir}/release.properties" />
     <property name="html.xsl.stylesheet" value="${xsl.stylesheet.home}/html/chunk.xsl" />
     <property name="fo.xsl.stylesheet" value="${xsl.stylesheet.home}/fo/docbook.xsl" />
+    <property name="doc.prop.file" value="${doc.src.dir}/doc.properties"/>
 
 
     <!-- Classpath for compiling FindBugs. -->
@@ -322,6 +323,9 @@
       <property name="src.release.scripts"
                 value="${bin.release.scripts},${release.base}/etc/createXML,${release.base}/etc/runTests,${release.base}/etc/summarizeBugs,${release.base}/etc/diffBugSummaries" />
 
+      <!-- Get HTML doc properties -->
+      <loadproperties srcFile="${doc.prop.file}"/>
+
       <!-- Filter set used for generating text substitution values for
            documentation and Eclipse plugin descriptors. -->
       <filterset id="findbugsFilters">
@@ -331,17 +335,21 @@
         <filter token="WEBSITE" value="${findbugs.website}"/>
         <filter token="DOWNLOADS_WEBSITE" value="${findbugs.downloads.website}"/>
         <filter token="HTML_XSL_STYLESHEET" value="${html.xsl.stylesheet}" />
+        <filter token="HTML_SIDEBAR" value="${doc.html.sidebar}"/>
       </filterset>  
+
+      <echo>doc.html.sidebar is ${doc.html.sidebar}</echo>
     </target>
 
     <!-- Target to generate documentation files from their sources. -->
     <target name="docfiles" depends="version,tools">
+
        <copy todir="${doc.dir}">
          <fileset dir="${doc.src.dir}" includes="**/*.png"/>
        </copy>
 
-       <copy todir="${doc.dir}">
-         <fileset dir="${doc.src.dir}" excludes="**/*.png"/>
+       <copy todir="${doc.dir}" overwrite="true">
+         <fileset dir="${doc.src.dir}" excludes="**/*.png,manual.xml,manual.xsl"/>
          <!--
            Perform substitutions on the documentation files.
            This is how we ensure that things like version number,
@@ -349,6 +357,11 @@
            It also tells the doc formatting tools where to find
            stylesheets and the like.
          -->
+        <filterset refid="findbugsFilters"/>
+      </copy>
+
+      <copy todir="${doc.dir}">
+        <fileset dir="${doc.src.dir}" includes="manual.xml,manual.xsl"/>
         <filterset refid="findbugsFilters"/>
       </copy>
 
