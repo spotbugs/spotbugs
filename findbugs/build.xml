@@ -236,7 +236,7 @@
     </target>
 
   <!-- Target to build all standard plugins. -->
-  <target name="allplugins" depends="coreplugin,styleplugin"/>
+  <target name="allplugins" depends="coreplugin"/>
 
    <!-- Target to build the core plugin. -->
    <target name="coreplugin">
@@ -248,6 +248,7 @@
    </target>
 
   <!-- Target to build the style plugin. -->
+<!--
   <target name="styleplugin">
     <antcall target="plugin">
        <param name="plugin.xml.dir" value="${findbugs.dir}/etc/style"/>
@@ -255,6 +256,7 @@
        <param name="plugin.jar.name" value="${styleplugin.jar.name}"/>
     </antcall>
   </target>
+-->
 
     <!-- Target to build the GUI jar file. -->
     <target name="findbugsgui" depends="classes">
