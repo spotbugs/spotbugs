@@ -31,14 +31,14 @@ import java.util.*;
 /**
  * User Preferences outside of any one Project
  * This consists of a class to manage the findbugs.prop file found in the user.dir
- *   -- initially this file only contains the recent project list
- *   -- perhaps in the future will contain enabled/disabled detectors
  */
  
 public class UserPreferences {
 	private static final int MAX_RECENT_FILES = 9;
+	private static final String DETECTOR_THRESHOLD_KEY = "detector_threshold";
 	private LinkedList<String> recentProjectsList = new LinkedList<String>();
 	private HashMap<String,Boolean> detectorStateList = new HashMap<String,Boolean>();
+	private int detectorThreshold = Detector.NORMAL_PRIORITY;
 	private static UserPreferences preferencesSingleton = new UserPreferences();
 	
 	private UserPreferences() {
@@ -91,6 +91,17 @@ public class UserPreferences {
 		    }
 		    i++;
 		}
+		
+		String threshold = (String)props.get(DETECTOR_THRESHOLD_KEY);
+		if (threshold != null) {
+			try {
+				detectorThreshold = Integer.parseInt(threshold);
+			}
+			catch (NumberFormatException nfe) {
+				//Ok to ignore
+			}
+		}
+		
 		    
 	}
 	
@@ -109,6 +120,8 @@ public class UserPreferences {
 		    props.put( "detector" + i, entry.getKey() + "|" + String.valueOf(((Boolean)entry.getValue()).booleanValue()));
 		    i++;
 		}
+		
+		props.put( DETECTOR_THRESHOLD_KEY, String.valueOf(detectorThreshold));
 		
 		File prefFile = new File( System.getProperty( "user.home" ), "Findbugs.prefs" );
 		BufferedOutputStream prefStream = null;
@@ -171,6 +184,14 @@ public class UserPreferences {
 			DetectorFactory factory = i.next();
 			detectorStateList.put( factory.getShortName(), Boolean.valueOf(factory.isEnabled()));
 	    }
+	}
+	
+	public int getUserDetectorThreshold() {
+		return detectorThreshold;
+	}
+	
+	public void setUserDetectorThreshold(int threshold) {
+		detectorThreshold = threshold;
 	}
 }
 

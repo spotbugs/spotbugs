@@ -384,21 +384,22 @@ public class FindBugsFrame extends javax.swing.JFrame {
      * ---------------------------------------------------------------------- */
     
     /** Creates new form FindBugsFrame. */
-    public FindBugsFrame() {
-        String dirProp = System.getProperty("user.dir");
+	public FindBugsFrame() {
+		String dirProp = System.getProperty("user.dir");
+	
+		if (dirProp != null) {
+			currentDirectory = new File(dirProp);
+		}
+	    
+		UserPreferences prefs = UserPreferences.getUserPreferences();
+		prefs.read();
+		
+		prefs.loadUserDetectorPreferences();
+		priorityThreshold = prefs.getUserDetectorThreshold();
 
-        if (dirProp != null) {
-            currentDirectory = new File(dirProp);
-        }
-        
-  	UserPreferences prefs = UserPreferences.getUserPreferences();
-  	prefs.read();
-  	
-  	prefs.loadUserDetectorPreferences();
-        
-        initComponents();
-        postInitComponents();
-    }
+		initComponents();
+		postInitComponents();
+	}
     
     /* ----------------------------------------------------------------------
      * Component initialization and event handlers
@@ -533,8 +534,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;
-        gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 3);
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 3);
         editProjectPanel.add(jarFileLabel, gridBagConstraints);
 
         jarNameTextField.addActionListener(new java.awt.event.ActionListener() {
@@ -547,8 +548,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 2;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 0);
         gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 0);
         editProjectPanel.add(jarNameTextField, gridBagConstraints);
 
         addJarButton.setFont(new java.awt.Font("Dialog", 0, 12));
@@ -565,8 +566,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 3;
         gridBagConstraints.gridy = 2;
-        gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 3);
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 3);
         editProjectPanel.add(addJarButton, gridBagConstraints);
 
         jarFileListLabel.setFont(new java.awt.Font("Dialog", 0, 12));
@@ -574,8 +575,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 3;
-        gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 3);
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 3);
         editProjectPanel.add(jarFileListLabel, gridBagConstraints);
 
         sourceDirLabel.setFont(new java.awt.Font("Dialog", 0, 12));
@@ -583,8 +584,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 8;
-        gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 3);
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 3);
         editProjectPanel.add(sourceDirLabel, gridBagConstraints);
 
         srcDirTextField.addActionListener(new java.awt.event.ActionListener() {
@@ -597,8 +598,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 8;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 0);
         gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 0);
         editProjectPanel.add(srcDirTextField, gridBagConstraints);
 
         addSourceDirButton.setFont(new java.awt.Font("Dialog", 0, 12));
@@ -615,8 +616,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 3;
         gridBagConstraints.gridy = 8;
-        gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 3);
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 3);
         editProjectPanel.add(addSourceDirButton, gridBagConstraints);
 
         sourceDirListLabel.setFont(new java.awt.Font("Dialog", 0, 12));
@@ -624,8 +625,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 9;
-        gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 3);
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 3);
         editProjectPanel.add(sourceDirListLabel, gridBagConstraints);
 
         removeJarButton.setFont(new java.awt.Font("Dialog", 0, 12));
@@ -642,8 +643,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 3;
         gridBagConstraints.gridy = 3;
-        gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 3);
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 3);
         editProjectPanel.add(removeJarButton, gridBagConstraints);
 
         removeSrcDirButton.setFont(new java.awt.Font("Dialog", 0, 12));
@@ -660,8 +661,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 3;
         gridBagConstraints.gridy = 9;
-        gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 3);
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 3);
         editProjectPanel.add(removeSrcDirButton, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -760,8 +761,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
         gridBagConstraints.gridy = 3;
         gridBagConstraints.gridwidth = 2;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 3);
         gridBagConstraints.weighty = 0.4;
+        gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 3);
         editProjectPanel.add(jarFileListScrollPane, gridBagConstraints);
 
         sourceDirListScrollPane.setPreferredSize(new java.awt.Dimension(259, 1));
@@ -776,8 +777,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
         gridBagConstraints.gridwidth = 2;
         gridBagConstraints.gridheight = 3;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 3);
         gridBagConstraints.weighty = 0.1;
+        gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 3);
         editProjectPanel.add(sourceDirListScrollPane, gridBagConstraints);
 
         classpathEntryLabel.setFont(new java.awt.Font("Dialog", 0, 12));
@@ -785,8 +786,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 15;
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 3);
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 3);
         editProjectPanel.add(classpathEntryLabel, gridBagConstraints);
 
         classpathEntryListLabel.setFont(new java.awt.Font("Dialog", 0, 12));
@@ -794,8 +795,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 16;
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 3);
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 3);
         editProjectPanel.add(classpathEntryListLabel, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -835,8 +836,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 3;
         gridBagConstraints.gridy = 15;
-        gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 0);
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 0);
         editProjectPanel.add(addClasspathEntryButton, gridBagConstraints);
 
         removeClasspathEntryButton.setFont(new java.awt.Font("Dialog", 0, 12));
@@ -853,8 +854,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 3;
         gridBagConstraints.gridy = 16;
-        gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 0);
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 0);
         editProjectPanel.add(removeClasspathEntryButton, gridBagConstraints);
 
         classpathEntryListScrollPane.setPreferredSize(new java.awt.Dimension(259, 1));
@@ -868,8 +869,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
         gridBagConstraints.gridwidth = 2;
         gridBagConstraints.gridheight = 3;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 3);
         gridBagConstraints.weighty = 0.1;
+        gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 3);
         editProjectPanel.add(classpathEntryListScrollPane, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -1223,6 +1224,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
         lowPriorityButton.setFont(new java.awt.Font("Dialog", 0, 12));
         lowPriorityButton.setMnemonic('L');
         lowPriorityButton.setText("Low Priority");
+        lowPriorityButton.setSelected(priorityThreshold == Detector.LOW_PRIORITY);
         lowPriorityButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 lowPriorityButtonActionPerformed(evt);
@@ -1233,8 +1235,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
         mediumPriorityButton.setFont(new java.awt.Font("Dialog", 0, 12));
         mediumPriorityButton.setMnemonic('M');
-        mediumPriorityButton.setSelected(true);
         mediumPriorityButton.setText("Medium Priority");
+        mediumPriorityButton.setSelected(priorityThreshold == Detector.NORMAL_PRIORITY);
         mediumPriorityButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 mediumPriorityButtonActionPerformed(evt);
@@ -1246,6 +1248,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
         highPriorityButton.setFont(new java.awt.Font("Dialog", 0, 12));
         highPriorityButton.setMnemonic('H');
         highPriorityButton.setText("High Priority");
+        highPriorityButton.setSelected(priorityThreshold == Detector.HIGH_PRIORITY);
         highPriorityButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 highPriorityButtonActionPerformed(evt);
@@ -1862,8 +1865,6 @@ public class FindBugsFrame extends javax.swing.JFrame {
         sourceTextArea.setHighlighter(sourceHighlighter);
         
         updateTitle(getCurrentProject());
-        
-        priorityThreshold = Detector.NORMAL_PRIORITY;
         
         // Load the icon for the UMD logo
         ClassLoader classLoader = this.getClass().getClassLoader();
@@ -2628,6 +2629,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
     private void exitFindBugs() {
         // TODO: offer to save work, etc.
         UserPreferences.getUserPreferences().storeUserDetectorPreferences();
+        UserPreferences.getUserPreferences().setUserDetectorThreshold(priorityThreshold);
         UserPreferences.getUserPreferences().write();
         System.exit(0);
     }
