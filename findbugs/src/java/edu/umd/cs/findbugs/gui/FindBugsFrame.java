@@ -753,7 +753,6 @@ public class FindBugsFrame extends javax.swing.JFrame {
         jarFileListScrollPane.setPreferredSize(new java.awt.Dimension(259, 1));
         jarFileList.setBorder(new javax.swing.border.BevelBorder(javax.swing.border.BevelBorder.LOWERED));
         jarFileList.setFont(new java.awt.Font("Dialog", 0, 12));
-        jarFileList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         jarFileListScrollPane.setViewportView(jarFileList);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -768,7 +767,6 @@ public class FindBugsFrame extends javax.swing.JFrame {
         sourceDirListScrollPane.setPreferredSize(new java.awt.Dimension(259, 1));
         sourceDirList.setBorder(new javax.swing.border.BevelBorder(javax.swing.border.BevelBorder.LOWERED));
         sourceDirList.setFont(new java.awt.Font("Dialog", 0, 12));
-        sourceDirList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         sourceDirListScrollPane.setViewportView(sourceDirList);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -1321,61 +1319,23 @@ public class FindBugsFrame extends javax.swing.JFrame {
     }//GEN-END:initComponents
 
     private void classpathUpButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_classpathUpButtonActionPerformed
-        int[] selIndices = classpathEntryList.getSelectedIndices();
-        if (selIndices.length == 0)
-        	return;
-        
-        int lastInsertPos = -1;	
-        DefaultListModel model = (DefaultListModel)classpathEntryList.getModel();
-        for (int i = 0; i < selIndices.length; i++) {
-        	int sel = selIndices[i];
-        	if ((sel-1) > lastInsertPos) {
-        		model.add( sel - 1, model.remove(sel));
-        		selIndices[i] = sel - 1;
-        	}
-        	lastInsertPos = selIndices[i];
-        }
-        
-        classpathEntryList.setSelectedIndices(selIndices);
+        if (moveEntriesUp(classpathEntryList))
+        	resyncAuxClasspathEntries();
     }//GEN-LAST:event_classpathUpButtonActionPerformed
 
     private void sourceDownButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sourceDownButtonActionPerformed
-        int sel = sourceDirList.getSelectedIndex();
-        DefaultListModel model = (DefaultListModel)sourceDirList.getModel();
-        if ((sel < 0) || (sel == (model.getSize()-1)))
-            return;
-    
-        model.add(sel+1, model.remove(sel));
-        sourceDirList.setSelectedIndex(sel+1);
+		if (moveEntriesDown(sourceDirList))
+			resyncSourceEntries();
     }//GEN-LAST:event_sourceDownButtonActionPerformed
 
     private void sourceUpButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sourceUpButtonActionPerformed
-        int sel = sourceDirList.getSelectedIndex();
-        if (sel <= 0)
-            return;
-    
-        DefaultListModel model = (DefaultListModel)sourceDirList.getModel();
-        model.add(sel-1, model.remove(sel));
-        sourceDirList.setSelectedIndex(sel-1);
+		if (moveEntriesUp(sourceDirList))
+			resyncSourceEntries();
     }//GEN-LAST:event_sourceUpButtonActionPerformed
 
     private void classpathDownButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_classpathDownButtonActionPerformed
-        int[] selIndices = classpathEntryList.getSelectedIndices();
-        if (selIndices.length == 0)
-        	return;
-        
-        DefaultListModel model = (DefaultListModel)classpathEntryList.getModel();
-        int lastInsertPos = model.getSize();	
-        for (int i = selIndices.length-1; i >= 0; i--) {
-        	int sel = selIndices[i];
-        	if ((sel+1) < lastInsertPos) {
-        		model.add( sel + 1, model.remove(sel));
-        		selIndices[i] = sel + 1;
-        	}
-        	lastInsertPos = selIndices[i];
-        }
-        
-        classpathEntryList.setSelectedIndices(selIndices);
+		if (moveEntriesDown(classpathEntryList))
+			resyncAuxClasspathEntries();
     }//GEN-LAST:event_classpathDownButtonActionPerformed
 
     private void viewBugsItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_viewBugsItemActionPerformed
@@ -1704,15 +1664,19 @@ public class FindBugsFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_findBugsButtonActionPerformed
     
     private void browseSrcDirButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_browseSrcDirButtonActionPerformed
-	JFileChooser chooser = createFileChooser();
-	chooser.setFileFilter(archiveAndDirectoryFilter);
+		JFileChooser chooser = createFileChooser();
+		chooser.setFileFilter(archiveAndDirectoryFilter);
+        chooser.setMultiSelectionEnabled(true);
         chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-	int rc = chooseFile(chooser, "Add source directory or archive");
+        
+		int rc = chooseFile(chooser, "Add source directory or archive");
         if (rc == JFileChooser.APPROVE_OPTION) {
-        	File selectedFile = chooser.getSelectedFile();
-        	selectedFile = verifyFileSelection(selectedFile);
-            srcDirTextField.setText(selectedFile.getPath());
-            addSourceDirToList();
+            File[] selectedFileList = chooser.getSelectedFiles();
+            for (int i = 0; i < selectedFileList.length; ++i) {
+            	selectedFileList[i] = verifyFileSelection(selectedFileList[i]);
+                String entry = selectedFileList[i].getPath();
+                addSrcToProject(entry);
+            }
         }
     }//GEN-LAST:event_browseSrcDirButtonActionPerformed
     
@@ -1755,22 +1719,26 @@ public class FindBugsFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_exitItemActionPerformed
     
     private void removeSrcDirButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeSrcDirButtonActionPerformed
-        int selIndex = sourceDirList.getSelectedIndex();
-        if (selIndex >= 0) {
-            Project project = getCurrentProject();
-            project.removeSourceDir(selIndex);
-            DefaultListModel listModel = (DefaultListModel) sourceDirList.getModel();
-            listModel.removeElementAt(selIndex);
+        Project project = getCurrentProject();
+        DefaultListModel listModel = (DefaultListModel) sourceDirList.getModel();
+        
+        int[] selIndices = sourceDirList.getSelectedIndices();
+        for (int i = selIndices.length - 1; i >= 0; i--) {
+        	int sel = selIndices[i];
+        	project.removeSourceDir(sel);
+        	listModel.remove(sel);
         }
     }//GEN-LAST:event_removeSrcDirButtonActionPerformed
     
     private void removeJarButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeJarButtonActionPerformed
-        int selIndex = jarFileList.getSelectedIndex();
-        if (selIndex >= 0) {
-            Project project = getCurrentProject();
-            project.removeJarFile(selIndex);
-            DefaultListModel listModel = (DefaultListModel) jarFileList.getModel();
-            listModel.removeElementAt(selIndex);
+        Project project = getCurrentProject();
+        DefaultListModel listModel = (DefaultListModel) jarFileList.getModel();
+        
+        int[] selIndices = jarFileList.getSelectedIndices();
+        for (int i = selIndices.length - 1; i >= 0; i--) {
+        	int sel = selIndices[i];
+        	project.removeJarFile(sel);
+        	listModel.remove(sel);
         }
     }//GEN-LAST:event_removeJarButtonActionPerformed
     
@@ -1818,10 +1786,73 @@ public class FindBugsFrame extends javax.swing.JFrame {
         finally {
             rebuildRecentProjectsMenu();
         }
-
     }
-
     
+    private boolean moveEntriesUp(JList entryList) {
+        int[] selIndices = entryList.getSelectedIndices();
+        if (selIndices.length == 0)
+        	return false;
+        
+        boolean changed = false;
+        int lastInsertPos = -1;	
+        DefaultListModel model = (DefaultListModel)entryList.getModel();
+        for (int i = 0; i < selIndices.length; i++) {
+        	int sel = selIndices[i];
+        	if ((sel-1) > lastInsertPos) {
+        		model.add( sel - 1, model.remove(sel));
+        		selIndices[i] = sel - 1;
+        		changed = true;
+        	}
+        	lastInsertPos = selIndices[i];
+        }
+        
+        entryList.setSelectedIndices(selIndices);
+        return changed;
+    }
+    
+    private boolean moveEntriesDown(JList entryList) {
+        int[] selIndices = entryList.getSelectedIndices();
+        if (selIndices.length == 0)
+        	return false;
+        
+		boolean changed = false;
+        DefaultListModel model = (DefaultListModel)entryList.getModel();
+        int lastInsertPos = model.getSize();	
+        for (int i = selIndices.length-1; i >= 0; i--) {
+        	int sel = selIndices[i];
+        	if ((sel+1) < lastInsertPos) {
+        		model.add( sel + 1, model.remove(sel));
+        		selIndices[i] = sel + 1;
+        		changed = true;
+        	}
+        	lastInsertPos = selIndices[i];
+        }
+        
+        entryList.setSelectedIndices(selIndices);
+        return changed;
+    }
+    
+    private void resyncAuxClasspathEntries() {
+    	Project project = getCurrentProject();
+    	int numEntries = project.getNumAuxClasspathEntries();
+    	while (numEntries-- > 0)
+    		project.removeAuxClasspathEntry(0);
+    	
+    	DefaultListModel model = (DefaultListModel)classpathEntryList.getModel();
+    	for (int i = 0; i < model.size(); i++)
+    		project.addAuxClasspathEntry((String)model.get(i));
+    }
+    
+    private void resyncSourceEntries() {
+    	Project project = getCurrentProject();
+    	int numEntries = project.getNumSourceDirs();
+    	while (numEntries-- > 0)
+    		project.removeSourceDir(0);
+    	
+    	DefaultListModel model = (DefaultListModel)sourceDirList.getModel();
+    	for (int i = 0; i < model.size(); i++)
+    		project.addSourceDir((String)model.get(i));
+    }
     /* ----------------------------------------------------------------------
      * Component initialization support
      * ---------------------------------------------------------------------- */
@@ -2374,6 +2405,18 @@ public class FindBugsFrame extends javax.swing.JFrame {
         if (!jarFile.equals("")) {
             addJarToProject(jarFile);
             jarNameTextField.setText("");
+        }
+    }
+    
+    /**
+     * Add a Src file to the current project.
+     * @param srcFile the jar file to add to the project
+     */
+    private void addSrcToProject(String srcFile) {
+        Project project = getCurrentProject();
+        if (project.addSourceDir(srcFile)) {
+            DefaultListModel listModel = (DefaultListModel)  sourceDirList.getModel();
+            listModel.addElement(srcFile);
         }
     }
     
