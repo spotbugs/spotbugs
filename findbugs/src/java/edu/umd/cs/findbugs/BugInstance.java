@@ -34,7 +34,6 @@ import org.apache.bcel.generic.*;
 public class BugInstance implements Comparable {
 	private String type;
 	private int priority;
-	private int count;
 	private ArrayList<BugAnnotation> annotationList;
 	private ClassAnnotation primaryClassAnnotation;
 	private MethodAnnotation primaryMethodAnnotation;
@@ -54,11 +53,14 @@ public class BugInstance implements Comparable {
 	public BugInstance(String type, int priority) {
 		this.type = type;
 		this.priority = priority;
-		this.count = count;
 		annotationList = new ArrayList<BugAnnotation>();
 		primaryClassAnnotation = null;
 		cachedHashCode = INVALID_HASH_CODE;
 	}
+
+	/* ----------------------------------------------------------------------
+	 * Accessors
+	 * ---------------------------------------------------------------------- */
 
 	/** Get the bug type. */
 	public String getType() {
@@ -91,6 +93,26 @@ public class BugInstance implements Comparable {
 		return annotationList.iterator();
 	}
 
+	/* ----------------------------------------------------------------------
+	 * Combined annotation adders
+	 * ---------------------------------------------------------------------- */
+
+	/**
+	 * Add a class annotation and a method annotation for the class and method
+	 * which the given visitor is currently visiting.
+	 * @param visitor the BetterVisitor
+	 * @return this object
+	 */
+	public BugInstance addClassAndMethod(BetterVisitor visitor) {
+		addClass(visitor);
+		addMethod(visitor);
+		return this;
+	}
+
+	/* ----------------------------------------------------------------------
+	 * Class annotation adders
+	 * ---------------------------------------------------------------------- */
+
 	/**
 	 * Add a class annotation.  If this is the first class annotation added,
 	 * it becomes the primary class annotation.
@@ -117,6 +139,33 @@ public class BugInstance implements Comparable {
 	}
 
 	/**
+	 * Add a class annotation for the class that the visitor is currently visiting.
+	 * @param visitor the BetterVisitor
+	 * @return this object
+	 */
+	public BugInstance addClass(BetterVisitor visitor) {
+		String className = visitor.getBetterClassName();
+		addClass(className);
+		return this;
+	}
+
+	/**
+	 * Add a class annotation for the superclass of the class the visitor
+	 * is currently visiting.
+	 * @param visitor the BetterVisitor
+	 * @return this object
+	 */
+	public BugInstance addSuperclass(BetterVisitor visitor) {
+		String className = visitor.getSuperclassName();
+		addClass(className);
+		return this;
+	}
+
+	/* ----------------------------------------------------------------------
+	 * Field annotation adders
+	 * ---------------------------------------------------------------------- */
+
+	/**
 	 * Add a field annotation.
 	 * @param className name of the class containing the field
 	 * @param fieldName the name of the field
@@ -138,6 +187,36 @@ public class BugInstance implements Comparable {
 		add(fieldAnnotation);
 		return this;
 	}
+
+	/**
+	 * Add a field annotation for the field which has just been accessed
+	 * by the method currently being visited by given visitor.
+	 * Assumes that a getfield/putfield or getstatic/putstatic
+	 * has just been seen.
+	 * @param visitor the DismantleBytecode object
+	 * @return this object
+	 */
+	public BugInstance addReferencedField(DismantleBytecode visitor) {
+		FieldAnnotation f = FieldAnnotation.fromReferencedField(visitor);
+		addField(f);
+		return this;
+	}
+
+	/**
+	 * Add a field annotation for the field which is being visited by
+	 * given visitor.
+	 * @param visitor the visitor
+	 * @return this object
+	 */
+	public BugInstance addVisitedField(BetterVisitor visitor) {
+		FieldAnnotation f = FieldAnnotation.fromVisitedField(visitor);
+		addField(f);
+		return this;
+	}
+
+	/* ----------------------------------------------------------------------
+	 * Method annotation adders
+	 * ---------------------------------------------------------------------- */
 
 	/**
 	 * Add a method annotation.  If this is the first method annotation added,
@@ -177,29 +256,6 @@ public class BugInstance implements Comparable {
 	}
 
 	/**
-	 * Add a class annotation for the class that the visitor is currently visiting.
-	 * @param visitor the BetterVisitor
-	 * @return this object
-	 */
-	public BugInstance addClass(BetterVisitor visitor) {
-		String className = visitor.getBetterClassName();
-		addClass(className);
-		return this;
-	}
-
-	/**
-	 * Add a class annotation for the superclass of the class the visitor
-	 * is currently visiting.
-	 * @param visitor the BetterVisitor
-	 * @return this object
-	 */
-	public BugInstance addSuperclass(BetterVisitor visitor) {
-		String className = visitor.getSuperclassName();
-		addClass(className);
-		return this;
-	}
-
-	/**
 	 * Add a method annotation for the method which has been called
 	 * by the method currently being visited by given visitor.
 	 * Assumes that the visitor has just looked at an invoke instruction
@@ -216,52 +272,18 @@ public class BugInstance implements Comparable {
 	}
 
 	/**
-	 * Add a field annotation for the field which has just been accessed
-	 * by the method currently being visited by given visitor.
-	 * Assumes that a getfield/putfield or getstatic/putstatic
-	 * has just been seen.
-	 * @param visitor the DismantleBytecode object
-	 * @return this object
-	 */
-	public BugInstance addReferencedField(DismantleBytecode visitor) {
-		FieldAnnotation f = FieldAnnotation.fromReferencedField(visitor);
-		addField(f);
-		return this;
-	}
-
-	/**
-	 * Add a field annotation for the field which is being visited by
-	 * given visitor.
-	 * @param visitor the visitor
-	 * @return this object
-	 */
-	public BugInstance addVisitedField(BetterVisitor visitor) {
-		FieldAnnotation f = FieldAnnotation.fromVisitedField(visitor);
-		addField(f);
-		return this;
-	}
-
-	/**
 	 * Add a method annotation for the method which the given visitor is currently visiting.
 	 * @param visitor the BetterVisitor
 	 * @return this object
 	 */
 	public BugInstance addMethod(BetterVisitor visitor) {
-		addMethod(new MethodAnnotation(visitor));
+		addMethod(MethodAnnotation.fromVisitedMethod(visitor));
 		return this;
 	}
 
-	/**
-	 * Add a class annotation and a method annotation for the class and method
-	 * which the given visitor is currently visiting.
-	 * @param visitor the BetterVisitor
-	 * @return this object
-	 */
-	public BugInstance addClassAndMethod(BetterVisitor visitor) {
-		addClass(visitor);
-		addMethod(visitor);
-		return this;
-	}
+	/* ----------------------------------------------------------------------
+	 * Integer annotation adders
+	 * ---------------------------------------------------------------------- */
 
 	/**
 	 * Add an integer annotation.
@@ -272,6 +294,24 @@ public class BugInstance implements Comparable {
 		add(new IntAnnotation(value));
 		return this;
 	}
+
+	/* ----------------------------------------------------------------------
+	 * Source line annotation adders
+	 * ---------------------------------------------------------------------- */
+
+	/**
+	 * Add a source line annotation.
+	 * @param sourceLine the source line annotation
+	 * @return this object
+	 */
+	public BugInstance addSourceLine(SourceLineAnnotation sourceLine) {
+		add(sourceLine);
+		return this;
+	}
+
+	/* ----------------------------------------------------------------------
+	 * Formatting support
+	 * ---------------------------------------------------------------------- */
 
 	/**
 	 * Format a string describing this bug instance.
@@ -305,7 +345,13 @@ public class BugInstance implements Comparable {
 		return I18N.instance().getShortMessage(type);
 	}
 
+	/* ----------------------------------------------------------------------
+	 * Implementation
+	 * ---------------------------------------------------------------------- */
+
 	private void add(BugAnnotation annotation) {
+		if (annotation == null)
+			throw new IllegalStateException("Missing BugAnnotation!");
 		// This object is being modified, so the cached hashcode
 		// must be invalidated
 		cachedHashCode = INVALID_HASH_CODE;
