@@ -64,7 +64,7 @@ public class BasicBlock implements Comparable, Debug {
 		nullCheckInstructionSet.set(Constants.SASTORE);
 		nullCheckInstructionSet.set(Constants.MONITORENTER);
 		nullCheckInstructionSet.set(Constants.MONITOREXIT);
-		nullCheckInstructionSet.set(Constants.ATHROW);
+		//nullCheckInstructionSet.set(Constants.ATHROW);
 		// Any others?
 	}
 
