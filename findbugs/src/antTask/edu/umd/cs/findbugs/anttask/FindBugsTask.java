@@ -465,7 +465,6 @@ public class FindBugsTask extends Task {
 			// Use findbugs.home to locate findbugs.jar and the standard
 			// plugins.  This is the usual means of initialization.
 
-			findbugsEngine.setDir( new File(homeDir + File.separator + "lib"));
 			findbugsEngine.setJar( new File( homeDir + File.separator + "lib" + 
                                          File.separator + FINDBUGS_JAR ) );
 
