@@ -21,6 +21,8 @@ package edu.umd.cs.findbugs.ba;
 
 import java.util.*;
 
+import org.apache.bcel.Constants;
+
 import org.apache.bcel.generic.*;
 
 /**
@@ -96,26 +98,78 @@ public class ValueNumberFrameModelingVisitor
 	 * ---------------------------------------------------------------------- */
 
 	/**
-	 * Determine whether redundant load elimination and forward substitution
+	 * Determine whether redundant load elimination
 	 * should be performed for the heap location referenced by
-	 * the current instruction.  We don't want to bother doing RLE/FS for
-	 * non-reference types.
-	 * @return true if we should do RLE/FS for the current instruction, false if not
+	 * the current instruction.
+	 *
+	 * @return true if we should do redundant load elimination
+	 *         for the current instruction, false if not
 	 */
 	private boolean doRedundantLoadElimination() {
 		if (!REDUNDANT_LOAD_ELIMINATION)
 			return false;
+
 		XField xfield = loadedFieldSet.getField(handle);
 		if (xfield == null)
 			return false;
+
 		if (!xfield.isReferenceType())
 			return false;
 
-		// Don't do FS for fields that are never read
+		// Don't do redundant load elimination for fields that
+		// are loaded in only one place.
+		if (loadedFieldSet.getLoadStoreCount(xfield).getLoadCount() <= 1)
+			return false;
+
+		return true;
+	}
+
+	/**
+	 * Determine whether forward substitution
+	 * should be performed for the heap location referenced by
+	 * the current instruction.
+	 *
+	 * @return true if we should do forward substitution
+	 *         for the current instruction, false if not
+	 */
+	private boolean doForwardSubstitution() {
+		if (!REDUNDANT_LOAD_ELIMINATION)
+			return false;
+
+		XField xfield = loadedFieldSet.getField(handle);
+		if (xfield == null)
+			return false;
+
+		if (!xfield.isReferenceType())
+			return false;
+
+		// Don't do forward substitution for fields that
+		// are never read.
 		if (!loadedFieldSet.isLoaded(xfield))
 			return false;
 
 		return true;
+	}
+
+	private void checkConsumedAndProducedValues(Instruction ins, ValueNumber[] consumedValueList,
+			ValueNumber[] producedValueList) {
+		int numConsumed = ins.consumeStack(getCPG());
+		int numProduced = ins.produceStack(getCPG());
+
+		if (numConsumed == Constants.UNPREDICTABLE)
+			throw new IllegalStateException("Unpredictable stack consumption for " + ins);
+		if (numProduced == Constants.UNPREDICTABLE)
+			throw new IllegalStateException("Unpredictable stack production for " + ins);
+
+		if (consumedValueList.length != numConsumed) {
+			throw new IllegalStateException("Wrong number of values consumed for " + ins +
+				": expected " + numConsumed + ", got " + consumedValueList.length);
+		}
+
+		if (producedValueList.length != numProduced) {
+			throw new IllegalStateException("Wrong number of values produced for " + ins +
+				": expected " + numProduced + ", got " + producedValueList.length);
+		}
 	}
 
 	/**
@@ -135,8 +189,7 @@ public class ValueNumberFrameModelingVisitor
 		ValueNumber[] outputValueList = getOutputValues(inputValueList, numWordsProduced, flags);
 
 		if (VERIFY_INTEGRITY) {
-			if (outputValueList.length != numWordsProduced)
-				throw new IllegalStateException("cache produced wrong num words");
+			checkConsumedAndProducedValues(ins, inputValueList, outputValueList);
 		}
 
 		// Push output operands on stack.
@@ -161,7 +214,7 @@ public class ValueNumberFrameModelingVisitor
 	}
 
 	public void visitPUTFIELD(PUTFIELD obj) {
-		if (doRedundantLoadElimination()) {
+		if (doForwardSubstitution()) {
 			try {
 				XField xfield = Hierarchy.findXField(obj, getCPG());
 				if (xfield != null) {
@@ -188,7 +241,7 @@ public class ValueNumberFrameModelingVisitor
 			// Is this an access of a Class object?
 			if (fieldName.startsWith("class$") && fieldSig.equals("Ljava/lang/Class;")) {
 				String className = fieldName.substring("class$".length()).replace('$', '.');
-				if (RLE_DEBUG) System.out.print("[found load of class object " + className + "]");
+				if (RLE_DEBUG) System.out.println("[found load of class object " + className + "]");
 				ValueNumber value = getClassObjectValue(className);
 				frame.pushValue(value);
 				return;
@@ -209,7 +262,7 @@ public class ValueNumberFrameModelingVisitor
 	}
 
 	public void visitPUTSTATIC(PUTSTATIC obj) {
-		if (doRedundantLoadElimination()) {
+		if (doForwardSubstitution()) {
 			try {
 				XField xfield = Hierarchy.findXField(obj, getCPG());
 				if (xfield != null) {
@@ -237,7 +290,7 @@ public class ValueNumberFrameModelingVisitor
 					String className = stringConstantMap.get(arg);
 					if (className != null) {
 						frame.popValue();
-						if (RLE_DEBUG) System.out.print("[found access of class object " + className + "]");
+						if (RLE_DEBUG) System.out.println("[found access of class object " + className + "]");
 						frame.pushValue(getClassObjectValue(className));
 						return;
 					}
@@ -247,23 +300,31 @@ public class ValueNumberFrameModelingVisitor
 			} else if (Hierarchy.isInnerClassAccess(obj, cpg)) {
 				// Possible access of field via an inner-class access method
 				XField xfield = loadedFieldSet.getField(handle);
-				if (xfield != null /*&& doRedundantLoadElimination(xfield)*/) {
+				if (xfield != null) {
 					if (loadedFieldSet.instructionIsLoad(handle)) {
-						if (xfield.isStatic())
-							loadStaticField((StaticField) xfield, obj);
-						else
-							loadInstanceField((InstanceField) xfield, obj);
+						// Load via inner-class accessor
+						if (doRedundantLoadElimination()) {
+							if (xfield.isStatic())
+								loadStaticField((StaticField) xfield, obj);
+							else
+								loadInstanceField((InstanceField) xfield, obj);
+							return;
+						}
 					} else {
-						// Some inner class access store methods
-						// return the value stored.
-						boolean pushValue = !methodSig.endsWith(")V");
+						// Store via inner-class accessor
+						if (doForwardSubstitution()) {
+							// Some inner class access store methods
+							// return the value stored.
+							boolean pushValue = !methodSig.endsWith(")V");
+	
+							if (xfield.isStatic())
+								storeStaticField((StaticField) xfield, obj, pushValue);
+							else
+								storeInstanceField((InstanceField) xfield, obj, pushValue);
 
-						if (xfield.isStatic())
-							storeStaticField((StaticField) xfield, obj, pushValue);
-						else
-							storeInstanceField((InstanceField) xfield, obj, pushValue);
+							return;
+						}
 					}
-					return;
 				}
 			}
 		}
@@ -353,9 +414,25 @@ public class ValueNumberFrameModelingVisitor
 				freshValue.setFlags(flags);
 				outputValueList[i] = freshValue;
 			}
+			if (RLE_DEBUG) {
+				System.out.println("<<cache fill for " + handle.getPosition() + ": " +
+					vlts(inputValueList) + " ==> " + vlts(outputValueList) + ">>");
+			}
 			cache.addOutputValues(entry, outputValueList);
+		} else if (RLE_DEBUG) {
+			System.out.println("<<cache hit for " + handle.getPosition() + ": " +
+				vlts(inputValueList) + " ==> " + vlts(outputValueList) + ">>");
 		}
 		return outputValueList;
+	}
+
+	private static String vlts(ValueNumber[] vl) {
+		StringBuffer buf = new StringBuffer();
+		for (int i = 0; i < vl.length; ++i) {
+			if (buf.length() > 0) buf.append(',');
+			buf.append(vl[i].getNumber());
+		}
+		return buf.toString();
 	}
 
 	/**
@@ -366,13 +443,17 @@ public class ValueNumberFrameModelingVisitor
 	 * @param obj           the Instruction loading the field
 	 */
 	private void loadInstanceField(InstanceField instanceField, Instruction obj) {
+		if (RLE_DEBUG) {
+			System.out.println("[loadInstanceField for field " + instanceField + " in instruction " + handle);
+		}
+
 		ValueNumberFrame frame = getFrame();
 
 		try {
 			ValueNumber reference = frame.popValue();
 
 			AvailableLoad availableLoad = new AvailableLoad(reference, instanceField);
-			if (RLE_DEBUG) System.out.print("[getfield of " + availableLoad + "]");
+			if (RLE_DEBUG) System.out.println("[getfield of " + availableLoad + "]");
 			ValueNumber[] loadedValue = frame.getAvailableLoad(availableLoad);
 
 			if (loadedValue == null) {
@@ -382,13 +463,24 @@ public class ValueNumberFrameModelingVisitor
 	
 				// Make the load available
 				frame.addAvailableLoad(availableLoad, loadedValue);
-				if (RLE_DEBUG) System.out.print("[Making load available " + loadedValue[0] + "]");
+				if (RLE_DEBUG) {
+					System.out.println("[Making load available " +
+						availableLoad + " <- " +
+						vlts(loadedValue) + "]");
+				}
 			} else {
 				// Found an available load!
-				if (RLE_DEBUG) System.out.print("[Found available load " + availableLoad + "]");
+				if (RLE_DEBUG) {
+					System.out.println("[Found available load " +
+						availableLoad + " <- " + vlts(loadedValue) + "]");
+				}
 			}
 
 			pushOutputValues(loadedValue);
+
+			if (VERIFY_INTEGRITY) {
+				checkConsumedAndProducedValues(obj, new ValueNumber[]{reference}, loadedValue);
+			}
 		} catch (DataflowAnalysisException e) {
 			throw new AnalysisException("ValueNumberFrameModelingVisitor caught exception: " + e.toString(), e);
 		}
@@ -401,6 +493,10 @@ public class ValueNumberFrameModelingVisitor
 	 * @param obj         the Instruction loading the field
 	 */
 	private void loadStaticField(StaticField staticField, Instruction obj) {
+		if (RLE_DEBUG) {
+			System.out.println("[loadStaticField for field " + staticField + " in instruction " + handle);
+		}
+
 		ValueNumberFrame frame = getFrame();
 
 		AvailableLoad availableLoad = new AvailableLoad(staticField);
@@ -413,9 +509,13 @@ public class ValueNumberFrameModelingVisitor
 
 			frame.addAvailableLoad(availableLoad, loadedValue);
 
-			if (RLE_DEBUG) System.out.print("[making load of " + staticField + " available]");
+			if (RLE_DEBUG) System.out.println("[making load of " + staticField + " available]");
 		} else {
-			if (RLE_DEBUG) System.out.print("[found available load of " + staticField + "]");
+			if (RLE_DEBUG) System.out.println("[found available load of " + staticField + "]");
+		}
+
+		if (VERIFY_INTEGRITY) {
+			checkConsumedAndProducedValues(obj, new ValueNumber[0], loadedValue);
 		}
 
 		pushOutputValues(loadedValue);
@@ -430,9 +530,17 @@ public class ValueNumberFrameModelingVisitor
 	 *                        (because we are modeling an inner-class field access method)
 	 */
 	private void storeInstanceField(InstanceField instanceField, Instruction obj, boolean pushStoredValue) {
+		if (RLE_DEBUG) {
+			System.out.println("[storeInstanceField for field " + instanceField + " in instruction " + handle);
+		}
+
 		ValueNumberFrame frame = getFrame();
 
 		int numWordsConsumed = getNumWordsConsumed(obj);
+/*
+		System.out.println("Instruction is " + handle);
+		System.out.println("numWordsConsumed="+numWordsConsumed);
+*/
 		ValueNumber[] inputValueList = popInputValues(numWordsConsumed);
 		ValueNumber reference = inputValueList[0];
 		ValueNumber[] storedValue = new ValueNumber[inputValueList.length - 1];
@@ -447,6 +555,16 @@ public class ValueNumberFrameModelingVisitor
 
 		// Forward substitution
 		frame.addAvailableLoad(new AvailableLoad(reference, instanceField), storedValue);
+
+		if (RLE_DEBUG) System.out.println("[making store of " + instanceField + " available]");
+
+		if (VERIFY_INTEGRITY) {
+/*
+			System.out.println("pushStoredValue="+pushStoredValue);
+*/
+			checkConsumedAndProducedValues(obj, inputValueList,
+				pushStoredValue ? storedValue : new ValueNumber[0]);
+		}
 	}
 
 	/**
@@ -458,6 +576,10 @@ public class ValueNumberFrameModelingVisitor
 	 *                        (because we are modeling an inner-class field access method)
 	 */
 	private void storeStaticField(StaticField staticField, Instruction obj, boolean pushStoredValue) {
+		if (RLE_DEBUG) {
+			System.out.println("[storeStaticField for field " + staticField + " in instruction " + handle);
+		}
+
 		ValueNumberFrame frame = getFrame();
 
 		AvailableLoad availableLoad = new AvailableLoad(staticField);
@@ -473,6 +595,13 @@ public class ValueNumberFrameModelingVisitor
 
 		// Make load available
 		frame.addAvailableLoad(availableLoad, inputValueList);
+
+		if (RLE_DEBUG) System.out.println("[making store of " + staticField + " available]");
+
+		if (VERIFY_INTEGRITY) {
+			checkConsumedAndProducedValues(obj, inputValueList,
+				pushStoredValue ? inputValueList : new ValueNumber[0]);
+		}
 	}
 
 	/**
