@@ -841,6 +841,12 @@ public class FindBugsFrame extends javax.swing.JFrame {
         saveProjectAsItem.setFont(new java.awt.Font("Dialog", 0, 12));
         saveProjectAsItem.setMnemonic('A');
         saveProjectAsItem.setText("Save Project As");
+        saveProjectAsItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                saveProjectAsItemActionPerformed(evt);
+            }
+        });
+
         fileMenu.add(saveProjectAsItem);
 
         closeProjectItem.setFont(new java.awt.Font("Dialog", 0, 12));
@@ -938,6 +944,10 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
         pack();
     }//GEN-END:initComponents
+
+    private void saveProjectAsItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveProjectAsItemActionPerformed
+        saveProject(getCurrentProject(), "Save project as", true);
+    }//GEN-LAST:event_saveProjectAsItemActionPerformed
     
     private void viewMenuMenuSelected(javax.swing.event.MenuEvent evt) {//GEN-FIRST:event_viewMenuMenuSelected
         // View bug details and full descriptions items
@@ -1061,7 +1071,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_openProjectItemActionPerformed
     
     private void saveProjectItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveProjectItemActionPerformed
-        saveProject(getCurrentProject());
+        saveProject(getCurrentProject(), "Save project");
     }//GEN-LAST:event_saveProjectItemActionPerformed
     
     private void aboutItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aboutItemActionPerformed
@@ -1382,17 +1392,40 @@ public class FindBugsFrame extends javax.swing.JFrame {
         if (project != null) {
             synchProject(project);
             setView("EditProjectPanel");
-        } else
+        } else {
             setView("EmptyPanel");
+        }
+        updateTitle(project);
+    }
+    
+    private void updateTitle(Project project) {
+        if (project == null)
+            this.setTitle("FindBugs - no project");
+        else
+            this.setTitle("FindBugs - " + project.toString());
+    }
+    
+    /**
+     * Save given project.
+     * If the project already has a valid filename, use that filename.
+     * Otherwise, prompt for one.
+     * @param project the Project to save
+     * @param dialogTitle the title for the save dialog (if needed)
+     */
+    private boolean saveProject(Project project, String dialogTitle) {
+        return saveProject(project, dialogTitle, false);
     }
     
     /**
      * Offer to save the current Project to a file.
      * @param project the Project to save
+     * @param dialogTitle the title for the save dialog (if needed)
+     * @param chooseFilename if true, force a dialog to prompt the user
+     *   for a filename
      * @return true if the project is saved successfully, false if the user
      *   cancels or an error occurs
      */
-    private boolean saveProject(Project project) {
+    private boolean saveProject(Project project, String dialogTitle, boolean chooseFilename) {
         try {
             if (project == null)
                 return true;
@@ -1400,22 +1433,26 @@ public class FindBugsFrame extends javax.swing.JFrame {
             File file;
             String fileName = project.getFileName();
             
-            if (!fileName.startsWith("<")) {
+            if (!fileName.startsWith("<") && !chooseFilename) {
                 file = new File(fileName);
             } else {
                 JFileChooser chooser = new JFileChooser();
                 chooser.setFileFilter(projectFileFilter);
                 
-                int result = chooser.showSaveDialog(this);
+                int result = chooser.showDialog(this, dialogTitle);
                 if (result == JFileChooser.CANCEL_OPTION)
                     return false;
                 file = chooser.getSelectedFile();
+                fileName = Project.transformFilename(file.getPath());
+                file = new File(fileName);
             }
             
             FileOutputStream out = new FileOutputStream(file);
             project.write(out);
             logger.logMessage(ConsoleLogger.INFO, "Project saved");
             project.setFileName(file.getPath());
+            
+            updateTitle(project);
             
             return true;
         } catch (IOException e) {
@@ -1444,7 +1481,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
         if (option == JOptionPane.CANCEL_OPTION)
             return false;
         else if (option == JOptionPane.YES_OPTION) {
-            boolean result = saveProject(project);
+            boolean result = saveProject(project, "Save project");
             if (result)
                 JOptionPane.showMessageDialog(this, "Project saved");
             return result;
@@ -1615,6 +1652,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
      * Set the view panel to display the named view.
      */
     private void setView(String viewName) {
+        System.out.println("Showing view " + viewName);
         viewPanelLayout.show(viewPanel, viewName);
         if (viewName.equals("BugTree"))
             checkBugDetailsVisibility();
