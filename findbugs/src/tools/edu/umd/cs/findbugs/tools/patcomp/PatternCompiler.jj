@@ -62,6 +62,7 @@ TOKEN :
 |	<LPAREN: "(">
 |	<RPAREN: ")">
 |	<COMMA: ",">
+|	<SEMICOLON: ";">
 |	<COLON: ":">
 
 	// Character classes
@@ -104,7 +105,7 @@ void instruction_list() :
 void instruction() :
 { }
 {
-	opt_label() <ID> arg_list()
+	opt_label() <ID> arg_list() <SEMICOLON>
 	{ }
 }
 
@@ -120,7 +121,7 @@ void opt_label() :
 void arg_list() :
 { }
 {
-	<ID> arg_list_rest()
+	<ID> [ arg_list_rest() ]
 	{ }
 |	/* epsilon */
 	{ }
@@ -129,11 +130,25 @@ void arg_list() :
 void arg_list_rest() :
 { }
 {
-	<COMMA> <ID> arg_list_rest()
-	{ }
-|	/* epsilon */
+	<COMMA> <ID> [ arg_list_rest() ]
 	{ }
 }
+
+/*
+void expression1() :
+{ }
+{
+	expression2() [ expression1_rest() ]
+	{ }
+}
+
+void expression2() :
+{ }
+{
+	expression3() [ expression2_rest() ]
+	{ }
+}
+*/
 
 void opt_check() :
 { }
