@@ -20,6 +20,9 @@
 package edu.umd.cs.daveho.ba;
 
 import java.util.*;
+import org.apache.bcel.Constants;
+import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.Instruction;
 
 /**
  * Generic class for representing a Java stack frame as a dataflow value.
@@ -231,6 +234,22 @@ public abstract class Frame<ValueType> implements Debug {
 		if (loc >= stackDepth)
 			throw new DataflowAnalysisException("not enough values on stack");
 		return slotList.get(slotList.size() - loc);
+	}
+
+	/**
+	 * Get the value corresponding to the object instance used in
+	 * the given instruction.  This relies on the observation that in
+	 * instructions which use an object instance (such as getfield,
+	 * invokevirtual, etc.), the object instance is the first
+	 * operand used by the instruction.
+	 * @param ins the instruction
+	 * @param cpg the ConstantPoolGen for the method
+	 */
+	public ValueType getInstance(Instruction ins, ConstantPoolGen cpg) throws DataflowAnalysisException {
+		int numConsumed = ins.consumeStack(cpg);
+		if (numConsumed == Constants.UNPREDICTABLE)
+			throw new DataflowAnalysisException("Unpredictable stack consumption in " + ins);
+		return getStackValue(numConsumed);
 	}
 
 	/**
