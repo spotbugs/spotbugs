@@ -740,6 +740,334 @@ Command Line Interface.
 </chapter>
 
 
+<!--
+   **************************************************************************
+   Using the FindBugs Ant task
+   **************************************************************************
+-->
+
+<chapter id="anttask">
+<title>Using the &FindBugs; &Ant; task</title>
+
+<para>
+This chapter describes how to integrate &FindBugs; into a build script
+for <ulink url="http://ant.apache.org/">&Ant;</ulink>, which is a popular Java build
+and deployment tool.  Using the &FindBugs; &Ant; task, your build script can
+automatically run &FindBugs; on your Java code.
+</para>
+
+<para>
+The &Ant; task was generously contributed by Mike Fagan.
+</para>
+
+<sect1>
+<title>Installing the &Ant; task</title>
+
+<para>
+To install the &Ant; task, simply copy <filename>&FBHome;/lib/findbugs-ant.jar</filename>
+into the <filename>lib</filename> subdirectory of your &Ant; installation.
+
+<note>
+<para>It is strongly recommended that you use the &Ant; task with the version
+of &FindBugs; it was included with.  We do not guarantee that the &Ant; task Jar file
+will work with any version of &FindBugs; other than the one it was included with.</para>
+</note>
+</para>
+
+</sect1>
+
+<sect1>
+<title>Modifying build.xml</title>
+
+<para>
+To incorporate &FindBugs; into <filename>build.xml</filename> (the build script
+for &Ant;), you first need to add a task definition.  This should appear as follows:
+
+<screen>
+  &lt;taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask"/&gt;
+</screen>
+
+The task definition specifies that when a <literal>findbugs</literal> element is
+seen in <filename>build.xml</filename>, it should use the indicated class to execute the task.
+</para>
+
+<para>
+After you have added the task definition, you can define a target
+which uses the <literal>findbugs</literal> task.  Here is an example
+which could be added to the <filename>build.xml</filename> for the
+Apache <ulink url="http://jakarta.apache.org/bcel/">BCEL</ulink> library.
+
+<screen>
+  &lt;property name="findbugs.home" value="/export/home/daveho/work/findbugs" /&gt;
+
+  &lt;target name="findbugs" depends="jar"&gt;
+    &lt;findbugs home="${findbugs.home}"
+              output="xml"
+              outputFile="bcel-fb.xml" &gt;
+      &lt;auxClasspath path="${basedir}/lib/Regex.jar" /&gt;
+      &lt;sourcePath path="${basedir}/src/java" /&gt;
+      &lt;class location="${basedir}/bin/bcel.jar" /&gt;
+    &lt;/findbugs&gt;
+  &lt;/target&gt;
+</screen>
+
+The <literal>findbugs</literal> element must have the <literal>home</literal>
+attribute set to the directory in which &FindBugs; is installed; in other words,
+&FBHome;.  See <xref linkend="installing" />.
+</para>
+
+<para>
+This target will execute &FindBugs; on <filename>bcel.jar</filename>, which is the
+Jar file produced by BCEL's build script.  (By making it depend on the "jar"
+target, we ensure that the library is fully compiled before running &FindBugs; on it.)
+The output of &FindBugs; will be saved in XML format to a file called
+<filename>bcel-fb.xml</filename>.
+An auxiliary Jar file, <filename>Regex.jar</filename>, is added to the aux classpath,
+because it is referenced by the main BCEL library.  A source path is specified
+so that the saved bug data will have accurate references to the BCEL source code.
+</para>
+</sect1>
+
+<sect1>
+<title>Executing the task</title>
+
+<para>
+Here is an example of invoking &Ant; from the command line, using the <literal>findbugs</literal>
+target defined above.
+
+<screen>
+  <prompt>[daveho@noir]$</prompt> <command>ant findbugs</command>
+  Buildfile: build.xml
+  
+  init:
+  
+  compile:
+  
+  examples:
+  
+  jar:
+  
+  findbugs:
+   [findbugs] Running FindBugs...
+   [findbugs] Bugs were found
+   [findbugs] Output saved to bcel-fb.xml
+  
+  BUILD SUCCESSFUL
+  Total time: 35 seconds
+</screen>
+
+In this case, because we saved the bug results in an XML file, we can
+use the &FindBugs; GUI to view the results; see <xref linkend="gui"/>.
+</para>
+
+</sect1>
+
+<sect1>
+<title>Parameters</title>
+
+<para>This section describes the parameters that may be specified when
+using the &FindBugs; task.
+
+<variablelist>
+
+  <varlistentry>
+    <term><literal>class</literal></term>
+    <listitem>
+       <para>
+       A nested element specifying which classes to analyze.  The <literal>class</literal>
+       element must specify a <literal>location</literal> attribute which names the
+       archive file (jar, zip, etc.), directory, or class file to be analyzed.  Multiple <literal>class</literal>
+       elements may be specified as children of a single <literal>findbugs</literal> element.
+       </para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><literal>auxClasspath</literal></term>
+    <listitem>
+       <para>
+       An optional nested element which specifies a classpath (Jar files or directories)
+       containing classes used by the analyzed library or application, but which
+       you don't want to analyze.  It is specified the same way as
+       &Ant;'s <literal>classpath</literal> element for the Java task.
+       </para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><literal>sourcePath</literal></term>
+    <listitem>
+       <para>
+       An optional nested element which specifies a source directory path
+       containing source files used to compile the Java code being analyzed.
+       By specifying a source path, any generated XML bug output will have
+       complete source information, which allows later viewing in the
+       GUI.
+       </para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><literal>home</literal></term>
+    <listitem>
+       <para>
+       A required attribute.
+       It must be set to the name of the directory where &FindBugs; is installed.
+       </para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><literal>quietErrors</literal></term>
+    <listitem>
+       <para>
+       An optional boolean attribute.
+       If true, reports of serious analysis errors and missing classes will
+       be supressed in the &FindBugs; output.  Default is false.
+       </para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><literal>reportLevel</literal></term>
+    <listitem>
+       <para>
+       An optional attribute.  It specifies
+       the priority threshold for reporting bugs.  If set to "low", all bugs are reported.
+       If set to "medium" (the default), medium and high priority bugs are reported.
+       If set to "high", only high priority bugs are reported.
+       </para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><literal>output</literal></term>
+    <listitem>
+       <para>
+       Optional attribute.
+       It specifies the output format.  If set to "xml" (the default), output
+       is in XML format.  If set to "text", output is in ad-hoc text format.
+       </para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><literal>sort</literal></term>
+    <listitem>
+       <para>
+       Optional attribute.  If the <literal>output</literal> attribute
+       is set to "text", then the <literal>sort</literal> attribute specifies
+       whether or not reported bugs are sorted by class.  Default is true.
+       </para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><literal>outputFile</literal></term>
+    <listitem>
+       <para>
+       Optional attribute.  If specified, names the output file in which the
+       &FindBugs; output will be saved.  By default, the output is displayed
+       directly by &Ant;.
+       </para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><literal>debug</literal></term>
+    <listitem>
+       <para>
+      Optional boolean attribute.  If set to true, &FindBugs; prints diagnostic
+      information about which classes are being analyzed, and which bug pattern
+      detectors are being run.  Default is false.  Note that if this attribute
+      is set to "true", it will cause XML output to be invalid.  Therefore,
+      it is most useful when <literal>format</literal> is "text".
+       </para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><literal>visitors</literal></term>
+    <listitem>
+       <para>
+       Optional attribute.  It specifies a comma-separated list of bug detectors
+       which should be run.  The bug detectors are specified by their class names,
+       without any package qualification.  By default, all detectors which are
+       not disabled by default are run.
+       </para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><literal>omitVisitors</literal></term>
+    <listitem>
+       <para>
+       Optional attribute.  It is like the <literal>visitors</literal> attribute,
+       except it specifies detectors which will <emphasis>not</emphasis> be run.
+       </para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><literal>excludeFilter</literal></term>
+    <listitem>
+       <para>
+       Optional attribute.  It specifies the filename of a filter specifying bugs
+       to exclude from being reported.  See <xref linkend="filter" />.
+       </para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><literal>includeFilter</literal></term>
+    <listitem>
+       <para>
+       Optional attribute.  It specifies the filename of a filter specifying
+       which bugs are reported.  See <xref linkend="filter" />.
+       </para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><literal>projectFile</literal></term>
+    <listitem>
+       <para>
+       Optional attribute.  It specifies the name of a project file.
+       Project files are created by the &FindBugs; GUI, and specify classes,
+       aux classpath entries, and source directories.  By naming a project,
+       you don't need to specify any <literal>class</literal> elements,
+       nor do you need to specify <literal>auxClasspath</literal> or
+       <literal>sourcePath</literal> attributes.
+       See <xref linkend="gui"/> for how to create a project.
+       </para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><literal>jvmargs</literal></term>
+    <listitem>
+       <para>
+       Optional attribute.  It specifies any arguments that should be passed
+       to the Java virtual machine used to run &FindBugs;.  You may need to
+       use this attribute to specify flags to increase the amount of memory
+       the JVM may use if you are analyzing a very large program.
+       </para>
+    </listitem>
+  </varlistentry>
+
+</variablelist>
+
+
+</para>
+
+<!--
+
+-->
+
+</sect1>
+
+</chapter>
+
 
 <!--
    **************************************************************************
