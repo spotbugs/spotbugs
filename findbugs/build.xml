@@ -432,9 +432,10 @@
        <delete dir="${build.dir}/src/findbugs-${release.number}" />
 
        <!-- Export the code from CVS. -->
-       <cvs cvsRoot="/fs/pugh/p/cvs"
+       <cvs cvsRoot="daveho@cvs.sourceforge.net:/cvsroot/findbugs"
+            cvsRsh="ssh"
             dest="${build.dir}/src"
-            command="export -r HEAD -d findbugs-${release.number} findbugsAll" />
+            command="export -r HEAD -d findbugs-${release.number} findbugs" />
 
        <!-- Copy generated documentation -->
        <copy todir="${build.dir}/src/findbugs-${release.number}/doc" >
