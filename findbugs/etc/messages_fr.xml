@@ -479,6 +479,14 @@
     </Details>
   </Detector>
 
+  <Detector class="edu.umd.cs.findbugs.detect.BadAppletConstructor">
+    <Details>
+<![CDATA[
+<p>Ce détecteur recherche les constructeurs d'applet invoquant des méthodes de l'applet mère non encore initialisées par init(). Ces appels feraient échouer le constructeur. C'est un détecteur rapide.</p>
+]]>
+    </Details>
+  </Detector>
+
   <Detector class="edu.umd.cs.findbugs.detect.FindBugsSummaryStats">
     <Details>
 <![CDATA[
@@ -2034,4 +2042,5 @@ Si le tableau transmis est assez grand pour stocker tous les éléments de la coll
   <BugCode abbrev="BRSA">Mauvais accès à un ResultSet</BugCode>
   <BugCode abbrev="SIO">Opérateur instanceof superflu</BugCode>*
   <BugCode abbrev="DLS">Alimentation à perte</BugCode>
+  <BugCode abbrev="BAC">Constructeur d'Applet erroné</BugCode>
 </MessageCollection>
