@@ -101,26 +101,8 @@ public class ValueNumberFrameModelingVisitor
 			try {
 				XField xfield = Lookup.findXField(obj, getCPG());
 				if (xfield != null) {
-					InstanceField instanceField = (InstanceField) xfield;
 					ValueNumber reference = frame.popValue();
-					AvailableLoad availableLoad = new AvailableLoad(reference, instanceField);
-					if (RLE_DEBUG) System.out.print("[getfield of " + availableLoad + "]");
-					ValueNumber[] loadedValue = frame.getAvailableLoad(availableLoad);
-	
-					if (loadedValue == null) {
-						// Get (or create) the cached result for this instruction
-						ValueNumber[] inputValueList = new ValueNumber[]{reference};
-						loadedValue = getOutputValues(inputValueList, getNumWordsProduced(obj));
-
-						// Make the load available
-						frame.addAvailableLoad(availableLoad, loadedValue);
-						if (RLE_DEBUG) System.out.print("[Making load available "+ loadedValue[0] + "]");
-					} else {
-						// Found an available load!
-						if (RLE_DEBUG) System.out.print("[Found available load " + availableLoad + "]");
-					}
-
-					pushOutputValues(loadedValue);
+					loadInstanceField((InstanceField) xfield, reference, obj);
 					return;
 				}
 			} catch (ClassNotFoundException e) {
@@ -188,23 +170,7 @@ public class ValueNumberFrameModelingVisitor
 			try {
 				XField xfield = Lookup.findXField(obj, getCPG());
 				if (xfield != null) {
-					StaticField staticField = (StaticField) xfield;
-					AvailableLoad availableLoad = new AvailableLoad(staticField);
-					ValueNumber[] loadedValue = frame.getAvailableLoad(availableLoad);
-
-					if (loadedValue == null) {
-						// Make the load available
-						int numWordsProduced = getNumWordsProduced(obj);
-						loadedValue = getOutputValues(EMPTY_INPUT_VALUE_LIST, numWordsProduced);
-
-						frame.addAvailableLoad(availableLoad, loadedValue);
-
-						if (RLE_DEBUG) System.out.print("[making load of " + staticField + " available]");
-					} else {
-						if (RLE_DEBUG) System.out.print("[found available load of " + staticField + "]");
-					}
-
-					pushOutputValues(loadedValue);
+					loadStaticField((StaticField) xfield, obj);
 					return;
 				}
 			} catch (ClassNotFoundException e) {
@@ -249,8 +215,8 @@ public class ValueNumberFrameModelingVisitor
 			String methodName = obj.getName(cpg);
 			String methodSig = obj.getSignature(cpg);
 	
-			// Is this an access of a Class object?
 			if (methodName.equals("class$") && methodSig.equals("(Ljava/lang/String;)Ljava/lang/Class;")) {
+				// Access of a Class object
 				ValueNumberFrame frame = getFrame();
 				try {
 					ValueNumber arg = frame.getTopValue();
@@ -264,6 +230,8 @@ public class ValueNumberFrameModelingVisitor
 				} catch (DataflowAnalysisException e) {
 					throw new IllegalStateException("stack underflow at " + handle);
 				}
+			} else if (methodName.startsWith("access$")) {
+				// Field access from inner class to outer
 			}
 		}
 
@@ -348,6 +316,61 @@ public class ValueNumberFrameModelingVisitor
 			cache.addOutputValues(entry, outputValueList);
 		}
 		return outputValueList;
+	}
+
+	/**
+	 * Load an instance field.
+	 * @param instanceField the field
+	 * @param reference the ValueNumber of the object reference
+	 * @param obj the Instruction loading the field
+	 */
+	private void loadInstanceField(InstanceField instanceField, ValueNumber reference, Instruction obj) {
+		ValueNumberFrame frame = getFrame();
+
+		AvailableLoad availableLoad = new AvailableLoad(reference, instanceField);
+		if (RLE_DEBUG) System.out.print("[getfield of " + availableLoad + "]");
+		ValueNumber[] loadedValue = frame.getAvailableLoad(availableLoad);
+	
+		if (loadedValue == null) {
+			// Get (or create) the cached result for this instruction
+			ValueNumber[] inputValueList = new ValueNumber[]{reference};
+			loadedValue = getOutputValues(inputValueList, getNumWordsProduced(obj));
+
+			// Make the load available
+			frame.addAvailableLoad(availableLoad, loadedValue);
+			if (RLE_DEBUG) System.out.print("[Making load available "+ loadedValue[0] + "]");
+		} else {
+			// Found an available load!
+			if (RLE_DEBUG) System.out.print("[Found available load " + availableLoad + "]");
+		}
+
+		pushOutputValues(loadedValue);
+	}
+
+	/**
+	 * Load a static field.
+	 * @param staticField the field
+	 * @param obj the Instruction loading the field
+	 */
+	private void loadStaticField(StaticField staticField, Instruction obj) {
+		ValueNumberFrame frame = getFrame();
+
+		AvailableLoad availableLoad = new AvailableLoad(staticField);
+		ValueNumber[] loadedValue = frame.getAvailableLoad(availableLoad);
+
+		if (loadedValue == null) {
+			// Make the load available
+			int numWordsProduced = getNumWordsProduced(obj);
+			loadedValue = getOutputValues(EMPTY_INPUT_VALUE_LIST, numWordsProduced);
+
+			frame.addAvailableLoad(availableLoad, loadedValue);
+
+			if (RLE_DEBUG) System.out.print("[making load of " + staticField + " available]");
+		} else {
+			if (RLE_DEBUG) System.out.print("[found available load of " + staticField + "]");
+		}
+
+		pushOutputValues(loadedValue);
 	}
 
 	/**
