@@ -39,7 +39,7 @@ import java.util.*;
  * <p> A Frame may have the special "BOTTOM" value. The result of merging
  * any frame with BOTTOM is BOTTOM.
  *
- * @see FrameAnalysis
+ * @see FrameDataflowAnalysis
  * @author David Hovemeyer
  */
 public abstract class Frame<ValueType> implements Debug {
