@@ -85,7 +85,10 @@ public class StackDepthAnalysis extends ForwardDataflowAnalysis<StackDepth> {
 			throw new IllegalStateException("Unpredictable stack delta for instruction: " + handle);
 		int depth = fact.getDepth();
 		depth += (produced - consumed);
-		fact.setDepth(depth);
+		if (depth < 0)
+			fact.setDepth(BOTTOM);
+		else
+			fact.setDepth(depth);
 	}
 
 	public void meetInto(StackDepth fact, Edge edge, StackDepth result) {

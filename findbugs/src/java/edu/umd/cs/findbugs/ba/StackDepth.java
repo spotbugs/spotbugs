@@ -42,11 +42,11 @@ public class StackDepth {
 
 	public String toString() {
 		if (getDepth() == StackDepthAnalysis.TOP)
-			return "<uninitialized>";
+			return "[TOP]";
 		else if (getDepth() == StackDepthAnalysis.BOTTOM)
-			return "<unknown, likely error>";
+			return "[BOTTOM]";
 		else
-			return String.valueOf(depth);
+			return "[" + String.valueOf(depth) + "]";
 	}
 }
 
