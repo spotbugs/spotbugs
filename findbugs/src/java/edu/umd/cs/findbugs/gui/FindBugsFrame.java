@@ -1558,6 +1558,27 @@ public class FindBugsFrame extends javax.swing.JFrame {
         if (selectedComponent instanceof JTextField)
             ((JTextField)selectedComponent).paste();
         else if (selectedComponent instanceof JList) {
+            Clipboard cb = Toolkit.getDefaultToolkit().getSystemClipboard();
+            Transferable transfer = cb.getContents(this);
+            if (transfer.isDataFlavorSupported(DataFlavor.stringFlavor)) {
+                try {
+                    String path = (String)transfer.getTransferData(DataFlavor.stringFlavor);
+
+                    if (selectedComponent == jarFileList) {
+                        jarNameTextField.setText(path);
+                        addJarButtonActionPerformed(evt);
+                    }
+                    else if (selectedComponent == sourceDirList) {
+                        srcDirTextField.setText(path);
+                        this.addSourceDirButtonActionPerformed(evt);
+                    }
+                    else if (selectedComponent == classpathEntryList) {
+                        classpathEntryTextField.setText(path);
+                        addClasspathEntryButtonActionPerformed(evt);
+                    }
+                } catch (Exception e) {
+                }
+            }
         }
     }//GEN-LAST:event_pasteActionPerformed
 
@@ -2828,11 +2849,15 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	 * Jar file list (and the project it represents).
 	 */
 	private void addJarToList() {
-		String jarFile = jarNameTextField.getText();
+            String dirs = jarNameTextField.getText();
+            String[] jarDirs = parsePaths(dirs);
+            for (int i = 0; i < jarDirs.length; i++) {
+                String jarFile = jarDirs[i];
 		if (!jarFile.equals("")) {
 			addJarToProject(jarFile);
-			jarNameTextField.setText("");
 		}
+            }
+	    jarNameTextField.setText("");
 	}
 
 	/**
@@ -2860,21 +2885,35 @@ public class FindBugsFrame extends javax.swing.JFrame {
 			listModel.addElement(jarFile);
 		}
 	}
+        
+        /**
+         * Parses a classpath into it's sub paths
+         *
+         * @param path the classpath
+         * @return an array of paths
+         */
+        private String[] parsePaths(String paths) {
+            return paths.split(System.getProperty("path.separator"));
+        }
 
 	/**
 	 * Called to add the source directory in the sourceDirTextField
 	 * to the source directory list (and the project it represents).
 	 */
 	private void addSourceDirToList() {
-		String sourceDir = srcDirTextField.getText();
-		if (!sourceDir.equals("")) {
-			Project project = getCurrentProject();
-			if (project.addSourceDir(sourceDir)) {
-				DefaultListModel listModel = (DefaultListModel) sourceDirList.getModel();
-				listModel.addElement(sourceDir);
-			}
-			srcDirTextField.setText("");
-		}
+            String dirs = srcDirTextField.getText();
+            String[] sourceDirs = parsePaths(dirs);
+            for (int i = 0; i < sourceDirs.length; i++) {
+                String sourceDir = sourceDirs[i];
+                if (!sourceDir.equals("")) {
+                    Project project = getCurrentProject();
+                    if (project.addSourceDir(sourceDir)) {
+                        DefaultListModel listModel = (DefaultListModel) sourceDirList.getModel();
+                        listModel.addElement(sourceDir);
+                    }
+                }
+            }
+            srcDirTextField.setText("");
 	}
 
 	/**
@@ -2882,11 +2921,15 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	 * to the classpath entry list (and the project it represents).
 	 */
 	private void addClasspathEntryToList() {
-		String classpathEntry = classpathEntryTextField.getText();
+            String dirs = classpathEntryTextField.getText();
+            String[] classDirs = parsePaths(dirs);
+            for (int i = 0; i < classDirs.length; i++) {
+                String classpathEntry = classDirs[i];
 		if (!classpathEntry.equals("")) {
 			addClasspathEntryToProject(classpathEntry);
-			classpathEntryTextField.setText("");
 		}
+            }
+            classpathEntryTextField.setText("");
 	}
 
 	/**
