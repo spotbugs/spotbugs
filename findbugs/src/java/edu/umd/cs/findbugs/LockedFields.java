@@ -262,7 +262,7 @@ public void report() {
 		bugReporter.reportBug(new BugInstance("IS_INCONSISTENT_SYNC", NORMAL_PRIORITY)
 			.addClass(f.getClassName())
 			.addField(f)
-			.addInt(freq));
+			.addInt(freq).describe("INT_SYNC_PERCENT"));
 		if (DEBUG) {
 			System.out.print(freq
 				+ "	");

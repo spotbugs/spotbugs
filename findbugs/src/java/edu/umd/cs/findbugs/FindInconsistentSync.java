@@ -369,7 +369,7 @@ public class FindInconsistentSync extends CFGBuildingDetector {
 			bugReporter.reportBug(new BugInstance("IS2_INCONSISTENT_SYNC", NORMAL_PRIORITY)
 				.addClass(className)
 				.addField(field)
-				.addInt(freq));
+				.addInt(freq).describe("INT_SYNC_PERCENT"));
 			if (DEBUG) {
 				System.out.println(freq + "\t" + stats.nReadLocked + "\t" + stats.nWriteLocked + "\t" + stats.nReadUnlocked + "\t"
 					+ stats.nWriteUnlocked + "\t" + field.toString());
