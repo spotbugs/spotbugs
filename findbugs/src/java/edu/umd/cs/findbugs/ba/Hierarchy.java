@@ -34,10 +34,29 @@ import org.apache.bcel.generic.*;
  * @author David Hovemeyer
  */
 public class Hierarchy {
+	/**
+	 * Determine whether one class (or reference type) is a subtype
+	 * of another.
+	 * @param clsName the name of the class or reference type
+	 * @param possibleSupertypeClassName the name of the possible superclass
+	 * @return true if clsName is a subtype of possibleSupertypeClassName,
+	 *   false if not
+	 */
 	public static boolean isSubtype(String clsName, String possibleSupertypeClassName) throws ClassNotFoundException {
 		ObjectType cls = new ObjectType(clsName);
 		ObjectType superCls = new ObjectType(possibleSupertypeClassName);
-		return cls.isAssignmentCompatibleWith(superCls);
+		return isSubtype(cls, superCls);
+	}
+
+	/**
+	 * Determine if one reference type is a subtype of another.
+	 * @param t a reference type
+	 * @param possibleSupertype the possible supertype
+	 * @return true if t is a subtype of possibleSupertype,
+	 *   false if not
+	 */
+	public static boolean isSubtype(ReferenceType t, ReferenceType possibleSupertype) throws ClassNotFoundException {
+		return t.isAssignmentCompatibleWith(possibleSupertype);
 	}
 
 	/**
