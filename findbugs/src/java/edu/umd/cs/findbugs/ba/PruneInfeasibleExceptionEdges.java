@@ -36,6 +36,18 @@ import org.apache.bcel.generic.*;
  */
 public class PruneInfeasibleExceptionEdges implements EdgeTypes {
 	private static final boolean DEBUG = Boolean.getBoolean("cfg.prune.debug");
+	private static final boolean STATS = Boolean.getBoolean("cfg.prune.stats");
+	private static int numEdgesPruned = 0;
+
+	static {
+		if (STATS) {
+			Runtime.getRuntime().addShutdownHook(new Thread() {
+				public void run() {
+					System.err.println("Exception edges pruned: " + numEdgesPruned);
+				}
+			});
+		}
+	}
 
 	private CFG cfg;
 	private TypeDataflow typeDataflow;
@@ -104,6 +116,7 @@ public class PruneInfeasibleExceptionEdges implements EdgeTypes {
 		for (Iterator<Edge> j = deletedEdgeSet.iterator(); j.hasNext(); ) {
 			Edge edge = j.next();
 			cfg.removeEdge(edge);
+			if (STATS) ++numEdgesPruned;
 		}
 	}
 
