@@ -21,6 +21,14 @@ package edu.umd.cs.findbugs;
 
 import java.util.*;
 
+/**
+ * Analyze bug results to find new, fixed, and retained bugs
+ * between versions of the same program.  In order to determine that
+ * bugs in different versions are the "same", we just eliminate source
+ * lines from consideration when comparing bug instances.
+ * This isn't guaranteed to do the right thing, so we might want
+ * to make this determination more sophisticated in the future.
+ */
 public class BugHistory {
 
 	/**
