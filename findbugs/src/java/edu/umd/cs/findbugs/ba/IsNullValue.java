@@ -48,7 +48,7 @@ public class IsNullValue {
 		// NULL,      WEAK_NULL, NN,        WEAK_NN,   NSP,       DNR
 		{  NULL                                                         }, // NULL
 		{  WEAK_NULL, WEAK_NULL,                                        }, // WEAK_NULL
-		{  NSP,       NN,        NN                                     }, // NN
+		{  NSP,       DNR,       NN                                     }, // NN
 		{  NSP,       DNR,       WEAK_NN,   WEAK_NN,                    }, // WEAK_NN
 		{  NSP,       NSP,       NSP,       NSP,       NSP              }, // NSP
 		{  NSP,       DNR,       DNR,       DNR,       DNR,       DNR   }  // DNR
@@ -171,6 +171,12 @@ public class IsNullValue {
 	public boolean isNullOnSomePath() {
 		int baseKind = getBaseKind();
 		return baseKind == NSP;
+	}
+
+	/** Is this value definitely not null? */
+	public boolean isDefinitelyNotNull() {
+		int baseKind = getBaseKind();
+		return baseKind == NN || baseKind == WEAK_NN;
 	}
 
 	public String toString() {
