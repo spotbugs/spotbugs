@@ -111,24 +111,27 @@ public class RuntimeExceptionCapture extends BytecodeScanningDetector implements
 			case INVOKEVIRTUAL:
 			case INVOKESPECIAL:
 			case INVOKESTATIC:
+				String className = getDottedClassConstantOperand();
 				try {
-					JavaClass clazz = Repository.lookupClass(getDottedClassConstantOperand());
-					Method[] methods = clazz.getMethods();
-					for (int i = 0; i < methods.length; i++) {
-						Method method = methods[i];
-						if (method.getName().equals(getNameConstantOperand())
-						&& method.getSignature().equals(getSigConstantOperand())) {
-							ExceptionTable et = method.getExceptionTable();
-							if (et != null) {
-								String[] names = et.getExceptionNames();
-								for (int j = 0; j < names.length; j++)
-									throwList.add(new ThrownException(names[j], getPC()));
+					if (!className.startsWith("[")) {
+						JavaClass clazz = Repository.lookupClass(className);
+						Method[] methods = clazz.getMethods();
+						for (int i = 0; i < methods.length; i++) {
+							Method method = methods[i];
+							if (method.getName().equals(getNameConstantOperand())
+							        && method.getSignature().equals(getSigConstantOperand())) {
+								ExceptionTable et = method.getExceptionTable();
+								if (et != null) {
+									String[] names = et.getExceptionNames();
+									for (int j = 0; j < names.length; j++)
+										throwList.add(new ThrownException(names[j], getPC()));
+								}
+								break;
 							}
-							break;
 						}
 					}
 				} catch (ClassNotFoundException e) {
-					System.out.println("Class not found: " + getDottedClassConstantOperand());
+					System.out.println("Class not found: " + className);
 				}
 				break;
 			default:
