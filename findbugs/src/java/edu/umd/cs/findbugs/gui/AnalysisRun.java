@@ -36,6 +36,7 @@ public class AnalysisRun {
     private Reporter reporter;
     private int runNumber;
     private DefaultTreeModel treeModel;
+    private String sortOrder;
     
     /** Creates a new instance of AnalysisRun. */
     public AnalysisRun(Project project) {
@@ -43,6 +44,7 @@ public class AnalysisRun {
         reporter = new Reporter();
         findBugs = new FindBugs(reporter);
 	runNumber = project.getNextAnalysisRun();
+        sortOrder = "invalid";
     }
     
     /**
@@ -83,6 +85,20 @@ public class AnalysisRun {
      */
     public DefaultTreeModel getTreeModel() {
         return treeModel;
+    }
+    
+    /**
+     * Set current sort order of the run's tree model.
+     */
+    public void setSortOrder(String sortOrder) {
+        this.sortOrder = sortOrder;
+    }
+    
+    /**
+     * Get current sort order of the run's tree model.
+     */
+    public String getSortOrder() {
+        return sortOrder;
     }
     
     public String toString() {
