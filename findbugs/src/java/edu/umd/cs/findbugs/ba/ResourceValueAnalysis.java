@@ -21,7 +21,8 @@ package edu.umd.cs.daveho.ba;
 
 import org.apache.bcel.generic.*;
 
-public class ResourceValueAnalysis<Resource> extends FrameDataflowAnalysis<ResourceValue, ResourceValueFrame> {
+public class ResourceValueAnalysis<Resource> extends FrameDataflowAnalysis<ResourceValue, ResourceValueFrame>
+	implements EdgeTypes {
 
 	private MethodGen methodGen;
 	private ResourceTracker<Resource> resourceTracker;
@@ -51,13 +52,12 @@ public class ResourceValueAnalysis<Resource> extends FrameDataflowAnalysis<Resou
 		BasicBlock source = edge.getSource();
 		BasicBlock dest = edge.getDest();
 
-		if (dest.isExceptionHandler()) {
-			ResourceValueFrame tmpFact = null;
+		ResourceValueFrame tmpFact = null;
 
+		if (dest.isExceptionHandler()) {
 			// Clear stack, push value for exception
 			if (fact.isValid()) {
-				tmpFact = createFact();
-				tmpFact.copyFrom(fact);
+				tmpFact = modifyFrame(fact, tmpFact);
 				tmpFact.clearStack();
 				tmpFact.pushValue(ResourceValue.notInstance());
 			}
@@ -68,18 +68,46 @@ public class ResourceValueAnalysis<Resource> extends FrameDataflowAnalysis<Resou
 			InstructionHandle exceptionThrower = source.getExceptionThrower();
 			assert exceptionThrower != null; // is it possible to reach an exception handler by a non-exception edge?
 			if (resourceTracker.isResourceClose(dest, exceptionThrower, methodGen.getConstantPool(), resource)) {
-				if (tmpFact == null) {
-					tmpFact = createFact();
-					tmpFact.copyFrom(fact);
-				}
+				tmpFact = modifyFrame(fact, tmpFact);
 				tmpFact.setStatus(ResourceValueFrame.CLOSED);
 			}
-
-			if (tmpFact != null)
-				fact = tmpFact;
 		}
 
+		// Make the resource nonexistent if it is compared against null
+		int edgeType = edge.getType();
+		if (edgeType == IFCMP_EDGE || edgeType == FALL_THROUGH_EDGE) {
+			InstructionHandle lastInSourceHandle = source.getLastInstruction();
+			if (lastInSourceHandle != null) {
+				Instruction lastInSource = lastInSourceHandle.getInstruction();
+				if (lastInSource instanceof IFNULL || lastInSource instanceof IFNONNULL) {
+					// Get the frame at the if statement
+					ResourceValueFrame frameAtIf = getFactAtLocation(new Location(lastInSourceHandle, source));
+					ResourceValue topValue = frameAtIf.getValue(frameAtIf.getNumSlots() - 1);
+
+					if (topValue.isInstance()) {
+						if ((lastInSource instanceof IFNULL && edgeType == IFCMP_EDGE) ||
+							(lastInSource instanceof IFNONNULL && edgeType == FALL_THROUGH_EDGE)) {
+							//System.out.println("**** making resource nonexistent on edge "+edge.getId());
+							tmpFact = modifyFrame(fact, tmpFact);
+							tmpFact.setStatus(ResourceValueFrame.NONEXISTENT);
+						}
+					}
+				}
+			}
+		}
+
+		if (tmpFact != null)
+			fact = tmpFact;
+
 		result.mergeWith(fact);
+	}
+
+	private ResourceValueFrame modifyFrame(ResourceValueFrame orig, ResourceValueFrame copy) {
+		if (copy == null) {
+			copy = createFact();
+			copy.copyFrom(orig);
+		}
+		return copy;
 	}
 
 	public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, ResourceValueFrame fact)
