@@ -29,6 +29,7 @@ abstract public class DismantleBytecode extends PreorderVisitor implements   Con
   protected  int opCode;
   protected  int branchOffset;
   protected  int branchTarget;
+  protected  int branchFallThrough;
   protected  int PC;
   protected  int[] switchOffsets;
   protected  int[] switchLabels;
@@ -258,6 +259,7 @@ abstract public class DismantleBytecode extends PreorderVisitor implements   Con
                         case M_BR : 
                             branchOffset = v;
                             branchTarget = v+PC;
+			    branchFallThrough = i;
 			    break;
                         case M_CP : 
 			    constantRef = constant_pool.getConstant(v);
