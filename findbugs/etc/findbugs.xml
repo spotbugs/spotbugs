@@ -94,6 +94,8 @@
     reports="UPM_UNCALLED_PRIVATE_METHOD"/>
   <Detector class="edu.umd.cs.findbugs.detect.StringConcatenation" speed="fast"
     reports="SBSC_USE_STRINGBUFFER_CONCATENATION"/>
+  <Detector class="edu.umd.cs.findbugs.detect.InefficientToArray" speed="fast"
+    reports="ITA_INEFFICIENT_TO_ARRAY"/>
   <Detector class="edu.umd.cs.findbugs.detect.FindBugsSummaryStats" speed="fast" />
 
   <BugPattern abbrev="IMSE" type="IMSE_DONT_CATCH_IMSE" category="CORRECTNESS" />
@@ -206,5 +208,7 @@
   <BugPattern abbrev="ODR" type="ODR_OPEN_DATABASE_RESOURCE_EXCEPTION_PATH" category="CORRECTNESS"
     experimental="true"/>
   <BugPattern abbrev="SBSC" type="SBSC_USE_STRINGBUFFER_CONCATENATION" category="PERFORMANCE"
+    experimental="true"/>
+  <BugPattern abbrev="ITA" type="ITA_INEFFICIENT_TO_ARRAY" category="PERFORMANCE"
     experimental="true"/>
 </FindbugsPlugin>

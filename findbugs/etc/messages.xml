@@ -427,6 +427,17 @@ It is a fast detector.
     </Details>
   </Detector>
 
+  <Detector class="edu.umd.cs.findbugs.detect.InefficientToArray">
+    <Details>
+<![CDATA[
+<p> This detector looks for code that converts Collections to arrays
+using the toArray() method that takes a prototype array, passing
+an array argument which is zero-length.
+It is a fast detector.
+]]>
+    </Details>
+  </Detector>
+
   <Detector class="edu.umd.cs.findbugs.detect.FindBugsSummaryStats">
     <Details>
 <![CDATA[
@@ -1936,6 +1947,22 @@ P
     </Details>
   </BugPattern>
 
+  <BugPattern type="ITA_INEFFICIENT_TO_ARRAY">
+    <ShortDescription>Method uses toArray() with zero-length array argument</ShortDescription>
+    <LongDescription>Method {1} uses Collection.toArray() with zero-length array argument</LongDescription>
+    <Details>
+<![CDATA[
+<p> This method uses the toArray() method of a collection derived class, and passes
+in a zero-length prototype array argument.  It is more efficient to use 
+<pre>myCollection.toArray(new Foo[myCollection.size()])</pre>
+If the array passed in is big enough to store all of the
+elements of the collection, then it is populated and returned
+directly. This avoids the need to create a second array
+(by reflection) to return as the result.
+]]>
+    </Details>
+  </BugPattern>
+  
   <!--
   **********************************************************************
    BugCodes
@@ -2000,5 +2027,6 @@ P
   <BugCode abbrev="NS">Suspicious use of non-short-circuit boolean operator</BugCode>
   <BugCode abbrev="ODR">Database resource not closed on all paths</BugCode>
   <BugCode abbrev="SBSC">String concatenation in loop using + operator</BugCode>
+  <BugCode abbrev="ITA">Inefficient use of collection.toArray(new Foo[0])</BugCode>
 
 </MessageCollection>
