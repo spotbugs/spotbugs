@@ -461,6 +461,14 @@ it is still under development, and produces too many false positives.</b></p>
     </Details>
   </Detector>
 
+  <Detector class="edu.umd.cs.findbugs.detect.FindEmptySynchronizedBlock" >
+    <Details>
+<![CDATA[
+<p> This detector looks for empty synchronized blocks.</p>
+]]>
+    </Details>
+  </Detector>
+
   <Detector class="edu.umd.cs.findbugs.detect.FindInconsistentSync2" >
     <Details>
 <![CDATA[
@@ -1617,6 +1625,25 @@ This not necessarily a bug, but is worth examining
 ]]>
     </Details>
   </BugPattern>
+
+  <BugPattern type="ESync_EMPTY_SYNC">
+    <ShortDescription>Empty synchronized block</ShortDescription>
+    <LongDescription>Empty synchronized block in {1}</LongDescription>
+    <Details>
+<![CDATA[
+  <p> The code contains an empty synchronized block:</p>
+<pre>
+synchronized() {}
+</pre>
+<p>Empty synchronized blocks are far more subtle and hard to use correctly
+than most people recognize, and empty synchronized blocks
+are almost never a better solution
+than less contrived solutions. 
+</p>
+]]>
+    </Details>
+  </BugPattern>
+
   <BugPattern type="IS_INCONSISTENT_SYNC">
     <ShortDescription>Inconsistent synchronization</ShortDescription>
     <LongDescription>Inconsistent synchronization of {1}; locked {2}% of the time</LongDescription>
@@ -1644,6 +1671,7 @@ This not necessarily a bug, but is worth examining
 ]]>
     </Details>
   </BugPattern>
+
   <BugPattern type="ML_SYNC_ON_UPDATED_FIELD">
     <ShortDescription>Method synchronizes on an updated field</ShortDescription>
     <LongDescription>{1} synchronizes on updated field {2}</LongDescription>

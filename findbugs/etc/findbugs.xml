@@ -208,6 +208,10 @@
             speed="moderate"
             reports="MWN_MISMATCHED_WAIT,MWN_MISMATCHED_NOTIFY" />
             
+  <Detector class="edu.umd.cs.findbugs.detect.FindEmptySynchronizedBlock" 
+            speed="fast"
+            reports="ESync_EMPTY_SYNC" />
+
   <Detector class="edu.umd.cs.findbugs.detect.FindInconsistentSync2" 
             speed="slow"
             reports="IS2_INCONSISTENT_SYNC" />
@@ -394,6 +398,7 @@
   <BugPattern abbrev="HE" type="HE_EQUALS_NO_HASHCODE" category="CORRECTNESS" />
   <BugPattern abbrev="Eq" type="EQ_ABSTRACT_SELF" category="CORRECTNESS" />
   <BugPattern abbrev="Co" type="CO_ABSTRACT_SELF" category="CORRECTNESS" />
+  <BugPattern abbrev="ESync" type="ESync_EMPTY_SYNC" category="MT_CORRECTNESS" />
   <BugPattern abbrev="IS2" type="IS2_INCONSISTENT_SYNC" category="MT_CORRECTNESS" />
   <BugPattern abbrev="NN" type="NN_NAKED_NOTIFY" category="MT_CORRECTNESS" />
   <BugPattern abbrev="MS" type="MS_EXPOSE_REP" category="MALICIOUS_CODE" />
