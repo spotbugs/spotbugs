@@ -30,6 +30,12 @@ import org.apache.bcel.generic.Type;
  * @author David Hovemeyer
  */
 public interface TypeMerger {
+	/**
+	 * Merge type Types.
+	 * @param a a Type
+	 * @param b a Type
+	 * @return the result of merging the two Types
+	 */
 	public Type mergeTypes(Type a, Type b) throws DataflowAnalysisException;
 }
 
