@@ -33,7 +33,7 @@ public class Version {
 	public static final int PATCHLEVEL = 0;
 
 	/** Development version? */
-	public static final boolean IS_DEVELOPMENT = true;
+	public static final boolean IS_DEVELOPMENT = false;
 
 	/** Release version string. */
 	public static final String RELEASE = MAJOR + "." + MINOR + "." + PATCHLEVEL + (IS_DEVELOPMENT ? "-dev" : "");
