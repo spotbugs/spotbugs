@@ -55,8 +55,6 @@ public class ClassContext implements AnalysisFeatures {
 	private IdentityHashMap<Method, BitSet> bytecodeMap = new IdentityHashMap<Method, BitSet>();
 	private IdentityHashMap<Method, LockCountDataflow> anyLockCountDataflowMap =
 		new IdentityHashMap<Method, LockCountDataflow>();
-	private IdentityHashMap<Method, LockCountDataflow> thisLockCountDataflowMap =
-		new IdentityHashMap<Method, LockCountDataflow>();
 	private IdentityHashMap<Method, LockDataflow> lockDataflowMap = new IdentityHashMap<Method, LockDataflow>();
 	private IdentityHashMap<Method, ReturnPathDataflow> returnPathDataflowMap =
 		new IdentityHashMap<Method, ReturnPathDataflow>();
