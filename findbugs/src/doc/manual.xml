@@ -1034,6 +1034,17 @@ using the &FindBugs; task.
   </varlistentry>
 
   <varlistentry>
+    <term><literal>conserveSpace</literal></term>
+    <listitem>
+       <para>
+      Optional boolean attribute.  If set to true, &FindBugs;
+      will disable analyses that improve precision but consume extra memory.
+      Default is false.
+       </para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
     <term><literal>visitors</literal></term>
     <listitem>
        <para>
