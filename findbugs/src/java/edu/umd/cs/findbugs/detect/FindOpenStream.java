@@ -29,7 +29,6 @@ import edu.umd.cs.findbugs.ba.*;
 
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Constant;
-import org.apache.bcel.classfile.ConstantClass;
 import org.apache.bcel.classfile.ConstantMethodref;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
