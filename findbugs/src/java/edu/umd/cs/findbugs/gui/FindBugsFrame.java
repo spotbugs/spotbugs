@@ -996,21 +996,22 @@ public class FindBugsFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_browseClasspathEntryButtonActionPerformed
     
     private void fullDescriptionsItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fullDescriptionsItemActionPerformed
-        JTree bugTree = getCurrentBugTree();
+        for (int j = 0; j < bugTreeList.length; ++j) {
+            JTree bugTree = bugTreeList[j];
         
-        // Redisplay the visible bug instance nodes
-        DefaultTreeModel bugTreeModel = (DefaultTreeModel) bugTree.getModel();
+            // Redisplay the displayed bug instance nodes
+            DefaultTreeModel bugTreeModel = (DefaultTreeModel) bugTree.getModel();
+            int numRows = bugTree.getRowCount();
         
-        int firstVisibleRow = bugTree.getRowForLocation(0, 0);
-        int numVisibleRows = bugTree.getVisibleRowCount();
-        for (int i = firstVisibleRow; i < (firstVisibleRow + numVisibleRows); ++i) {
-            //System.out.println("Getting path for row " + i);
-            TreePath path = bugTree.getPathForRow(i);
-            if (path == null)
-                continue;
-            DefaultMutableTreeNode node = (DefaultMutableTreeNode) path.getLastPathComponent();
-            if (node instanceof BugTreeNode)
-                bugTreeModel.valueForPathChanged(path, node.getUserObject());
+            for (int i = 0; i < numRows; ++i) {
+                //System.out.println("Getting path for row " + i);
+                TreePath path = bugTree.getPathForRow(i);
+                if (path == null)
+                    continue;
+                DefaultMutableTreeNode node = (DefaultMutableTreeNode) path.getLastPathComponent();
+                if (node instanceof BugTreeNode)
+                    bugTreeModel.valueForPathChanged(path, node.getUserObject());
+            }
         }
     }//GEN-LAST:event_fullDescriptionsItemActionPerformed
     
