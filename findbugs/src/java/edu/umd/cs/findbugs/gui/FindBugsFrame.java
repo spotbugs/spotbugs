@@ -15,8 +15,7 @@ import javax.swing.*;
 import javax.swing.tree.*;
 import javax.swing.event.*;
 import javax.swing.filechooser.*;
-
-import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.*;
 
 /**
  * The main GUI frame for FindBugs.
@@ -61,10 +60,16 @@ public class FindBugsFrame extends javax.swing.JFrame {
      */
     private static class BugCellRenderer extends DefaultTreeCellRenderer {
         private ImageIcon bugIcon;
+        private ImageIcon classIcon;
+        private ImageIcon methodIcon;
+        private ImageIcon fieldIcon;
         
         public BugCellRenderer() {
             ClassLoader classLoader = this.getClass().getClassLoader();
             bugIcon = new ImageIcon(classLoader.getResource("edu/umd/cs/findbugs/gui/bug2.png"));
+            classIcon = new ImageIcon(classLoader.getResource("edu/umd/cs/findbugs/gui/class.gif"));
+            methodIcon = new ImageIcon(classLoader.getResource("edu/umd/cs/findbugs/gui/methodPublic.gif"));
+            fieldIcon = new ImageIcon(classLoader.getResource("edu/umd/cs/findbugs/gui/variablePrivate.gif"));
         }
         
         public Component getTreeCellRendererComponent(JTree tree, Object value, boolean sel,
@@ -77,6 +82,14 @@ public class FindBugsFrame extends javax.swing.JFrame {
             Object obj = node.getUserObject();
             if (obj instanceof BugInstance) {
                 setIcon(bugIcon);
+            } else if (obj instanceof ClassAnnotation) {
+                setIcon(classIcon);
+            } else if (obj instanceof MethodAnnotation) {
+                setIcon(methodIcon);
+            } else if (obj instanceof FieldAnnotation) {
+                setIcon(fieldIcon);
+            } else {
+                setIcon(null);
             }
             
             return this;
@@ -475,6 +488,14 @@ public class FindBugsFrame extends javax.swing.JFrame {
                     BugInstance bugInstance = (BugInstance) i.next();
                     DefaultMutableTreeNode bugNode = new DefaultMutableTreeNode(bugInstance);
                     bugTreeModel.insertNodeInto(bugNode, bugRootNode, bugRootNode.getChildCount());
+                    
+                    // Insert annotations
+                    Iterator j = bugInstance.annotationIterator();
+                    while (j.hasNext()) {
+                        BugAnnotation annotation = (BugAnnotation) j.next();
+                        DefaultMutableTreeNode annotationNode = new DefaultMutableTreeNode(annotation);
+                        bugTreeModel.insertNodeInto(annotationNode, bugNode,  bugNode.getChildCount());
+                    }
                 }
                 
                 this.setCursor(orig);
@@ -601,11 +622,11 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
         navigatorTree.setCellRenderer(new FindBugsFrame.NavigatorCellRenderer());
         navigatorTree.setRootVisible(false);
-        navigatorTree.setShowsRootHandles(true);
+        navigatorTree.setShowsRootHandles(false);
 
         bugTree.setCellRenderer(new FindBugsFrame.BugCellRenderer());
         bugTree.setRootVisible(false);
-        bugTree.setShowsRootHandles(false);
+        bugTree.setShowsRootHandles(true);
         
 	jarFileList.setModel(new DefaultListModel());
 	sourceDirList.setModel(new DefaultListModel());
