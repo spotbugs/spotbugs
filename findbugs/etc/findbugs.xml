@@ -328,6 +328,10 @@
   <Detector class="edu.umd.cs.findbugs.detect.MethodReturnCheck"
             speed="fast"
             reports="RV_RETURN_VALUE_IGNORED" disabled="true"/>
+  
+  <Detector class="edu.umd.cs.findbugs.detect.IDivResultCastToDouble"
+            speed="fast"
+            reports="IDCD_IDIV_CAST_TO_DOUBLE" disabled="true"/>
   			
   <Detector class="edu.umd.cs.findbugs.detect.FindBugsSummaryStats" 
             speed="fast"
@@ -505,4 +509,5 @@
   <BugPattern abbrev="MTIA" type="MTIA_SUSPECT_STRUTS_INSTANCE_FIELD" category="STYLE" experimental="true"/>
   <BugPattern abbrev="MTIA" type="MTIA_SUSPECT_SERVLET_INSTANCE_FIELD" category="STYLE" experimental="true"/>
   <BugPattern abbrev="PS" type="PS_PUBLIC_SEMAPHORES" category="STYLE" experimental="true"/>
+  <BugPattern abbrev="IDCD" type="IDCD_IDIV_CAST_TO_DOUBLE" category="CORRECTNESS"/>
 </FindbugsPlugin>

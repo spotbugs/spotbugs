@@ -731,6 +731,18 @@ is suspiciously ignored.  It is a fast detector.</p>
     </Details>
   </Detector>
   
+  <Detector class="edu.umd.cs.findbugs.detect.IDivResultCastToDouble">
+    <Details>
+<![CDATA[
+<p>
+This detector looks for places where the result of integer division is
+cast to double. Often, what was meant was to cast the integer operands
+to double and then perform the division.  It is a fast detector.
+</p>
+]]>
+    </Details>
+  </Detector>
+  
   <Detector class="edu.umd.cs.findbugs.detect.FindBugsSummaryStats">
     <Details>
 <![CDATA[
@@ -3034,6 +3046,31 @@ just use the constant. Methods detected are:
       </Details>
     </BugPattern>
     
+  <BugPattern type="IDCD_IDIV_CAST_TO_DOUBLE">
+    <ShortDescription>Integer division result cast to double</ShortDescription>
+    <LongDescription>Integer division result cast to double in {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+This code casts the result of an integer division operation to double.
+Doing division on integers loses precision.  The fact that the result
+was cast to double suggests that this precision should have been retained.
+What was probably meant was to cast one or both of the operands to
+double <em>before</em> performing the division.  Here is an example:
+<blockquote>
+<pre>
+// Wrong: yields result 0.0
+double value1 = (double) (2 / 5);
+
+// Right: yields result 0.4
+double value2 = (double) 2 / (double) 5;
+</pre>
+</blockquote>
+</p>
+]]>
+    </Details>
+  </BugPattern>
+    
     <!--
   **********************************************************************
    BugCodes
@@ -3127,4 +3164,5 @@ just use the constant. Methods detected are:
   <BugCode abbrev="RI">Redundant Interfaces</BugCode>
   <BugCode abbrev="MTIA">Multithreaded Instance Access</BugCode>
   <BugCode abbrev="PS">Public Semaphores</BugCode>
+  <BugCode abbrev="IDCD">Integer division result cast to double</BugCode>
   </MessageCollection>
