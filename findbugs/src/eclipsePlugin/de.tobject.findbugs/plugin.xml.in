@@ -172,6 +172,7 @@
             id="de.tobject.findbugs.view.detailsview">
       </view>
    </extension>
+   
    <extension
          point="org.eclipse.ui.markerImageProviders">
       <imageprovider
