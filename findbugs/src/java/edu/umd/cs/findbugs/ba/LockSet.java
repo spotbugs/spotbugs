@@ -174,6 +174,47 @@ public class LockSet {
 		return false;
 	}
 
+	/**
+	 * Destructively intersect this lock set with another.
+	 * Note that this is <em>not</em> a dataflow merge:
+	 * we are interested in finding out which locks are held
+	 * in both sets, not in the exact lock counts.
+	 * @param other the other LockSet
+	 */
+	public void intersectWith(LockSet other) {
+		for (int i = 0; i < array.length; i += 2) {
+			int valueNumber = array[i];
+			if (valueNumber < 0)
+				break;
+			int myLockCount = array[i+1];
+			if (myLockCount <= 0)
+				continue;
+			int otherLockCount = other.getLockCount(valueNumber);
+			if (otherLockCount <= 0) {
+				/* This set holds the lock, but the other one doesn't. */
+				array[i+1] = 0;
+			}
+		}
+	}
+
+	/**
+	 * Return whether or not this lock set is empty,
+	 * meaning that no locks have a positive lock count.
+	 * @return true if no locks are held, false if at least
+	 *   one lock is held
+	 */
+	public boolean isEmpty() {
+		for (int i = 0; i < array.length; i += 2) {
+			int valueNumber = array[i];
+			if (valueNumber < 0)
+				return true;
+			int myLockCount = array[i+1];
+			if (myLockCount >  0)
+				return false;
+		}
+		return true;
+	}
+
 	private boolean identicalSubset(LockSet other) {
 		for (int i = 0; i < array.length; i += 2) {
 			int valueNumber = array[i];
