@@ -2,6 +2,8 @@
 
 <Form version="1.0" type="org.netbeans.modules.form.forminfo.JFrameFormInfo">
   <NonVisualComponents>
+    <Component class="javax.swing.ButtonGroup" name="priorityButtonGroup">
+    </Component>
     <Menu class="javax.swing.JMenuBar" name="theMenuBar">
       <Properties>
         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
@@ -254,7 +256,7 @@
             <EventHandler event="menuSelected" listener="javax.swing.event.MenuListener" parameters="javax.swing.event.MenuEvent" handler="viewMenuMenuSelected"/>
           </Events>
           <AuxValues>
-            <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="localiseButton(viewMenu, &quot;menu.view_menu&quot;, &quot;&amp;View&quot;, true);"/>
+            <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="localiseButton(viewMenu, &quot;menu.view_menu&quot;, &quot;&amp;View&quot;, true);&#xa;"/>
           </AuxValues>
           <SubComponents>
             <MenuItem class="javax.swing.JCheckBoxMenuItem" name="viewConsoleItem">
@@ -303,62 +305,86 @@
             </MenuItem>
             <MenuItem class="javax.swing.JSeparator" name="jSeparator7">
             </MenuItem>
-            <MenuItem class="javax.swing.JRadioButtonMenuItem" name="expPriorityButton">
+            <Menu class="javax.swing.JMenu" name="filterWarningsMenu">
               <Properties>
+                <Property name="text" type="java.lang.String" value="Filter Warnings"/>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Dialog" size="12" style="0"/>
                 </Property>
-                <Property name="text" type="java.lang.String" value="Experimental Priority"/>
               </Properties>
-              <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="expPriorityButtonActionPerformed"/>
-              </Events>
-              <AuxValues>
-                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="localiseButton(expPriorityButton, &quot;menu.exppriority_item&quot;, &quot;&amp;Experimental Priority&quot;, true);&#xa;expPriorityButton.setSelected(priorityThreshold == Detector.EXP_PRIORITY);"/>
-              </AuxValues>
-            </MenuItem>
-            <MenuItem class="javax.swing.JRadioButtonMenuItem" name="lowPriorityButton">
-              <Properties>
-                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                  <Font name="Dialog" size="12" style="0"/>
-                </Property>
-                <Property name="text" type="java.lang.String" value="Low Priority"/>
-              </Properties>
-              <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="lowPriorityButtonActionPerformed"/>
-              </Events>
-              <AuxValues>
-                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="localiseButton(lowPriorityButton, &quot;menu.lowpriority_item&quot;, &quot;&amp;Low Priority&quot;, true);&#xa;lowPriorityButton.setSelected(priorityThreshold == Detector.LOW_PRIORITY);"/>
-              </AuxValues>
-            </MenuItem>
-            <MenuItem class="javax.swing.JRadioButtonMenuItem" name="mediumPriorityButton">
-              <Properties>
-                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                  <Font name="Dialog" size="12" style="0"/>
-                </Property>
-                <Property name="text" type="java.lang.String" value="Medium Priority"/>
-              </Properties>
-              <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="mediumPriorityButtonActionPerformed"/>
-              </Events>
-              <AuxValues>
-                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="localiseButton(mediumPriorityButton, &quot;menu.mediumpriority_item&quot;, &quot;&amp;Medium Priority&quot;, true);&#xa;mediumPriorityButton.setSelected(priorityThreshold == Detector.NORMAL_PRIORITY);"/>
-              </AuxValues>
-            </MenuItem>
-            <MenuItem class="javax.swing.JRadioButtonMenuItem" name="highPriorityButton">
-              <Properties>
-                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                  <Font name="Dialog" size="12" style="0"/>
-                </Property>
-                <Property name="text" type="java.lang.String" value="High Priority"/>
-              </Properties>
-              <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="highPriorityButtonActionPerformed"/>
-              </Events>
-              <AuxValues>
-                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="localiseButton(highPriorityButton, &quot;menu.highpriority_item&quot;, &quot;&amp;High Priority&quot;, true);&#xa;highPriorityButton.setSelected(priorityThreshold == Detector.HIGH_PRIORITY);"/>
-              </AuxValues>
-            </MenuItem>
+              <SubComponents>
+                <MenuItem class="javax.swing.JRadioButtonMenuItem" name="expPriorityButton">
+                  <Properties>
+                    <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+                      <ComponentRef name="priorityButtonGroup"/>
+                    </Property>
+                    <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                      <Font name="Dialog" size="12" style="0"/>
+                    </Property>
+                    <Property name="text" type="java.lang.String" value="Experimental Priority"/>
+                  </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="expPriorityButtonActionPerformed"/>
+                  </Events>
+                  <AuxValues>
+                    <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="localiseButton(expPriorityButton, &quot;menu.exppriority_item&quot;, &quot;&amp;Experimental Priority&quot;, true);&#xa;expPriorityButton.setSelected(priorityThreshold == Detector.EXP_PRIORITY);"/>
+                  </AuxValues>
+                </MenuItem>
+                <MenuItem class="javax.swing.JRadioButtonMenuItem" name="lowPriorityButton">
+                  <Properties>
+                    <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+                      <ComponentRef name="priorityButtonGroup"/>
+                    </Property>
+                    <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                      <Font name="Dialog" size="12" style="0"/>
+                    </Property>
+                    <Property name="text" type="java.lang.String" value="Low Priority"/>
+                  </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="lowPriorityButtonActionPerformed"/>
+                  </Events>
+                  <AuxValues>
+                    <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="localiseButton(lowPriorityButton, &quot;menu.lowpriority_item&quot;, &quot;&amp;Low Priority&quot;, true);&#xa;lowPriorityButton.setSelected(priorityThreshold == Detector.LOW_PRIORITY);"/>
+                  </AuxValues>
+                </MenuItem>
+                <MenuItem class="javax.swing.JRadioButtonMenuItem" name="mediumPriorityButton">
+                  <Properties>
+                    <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+                      <ComponentRef name="priorityButtonGroup"/>
+                    </Property>
+                    <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                      <Font name="Dialog" size="12" style="0"/>
+                    </Property>
+                    <Property name="text" type="java.lang.String" value="Medium Priority"/>
+                  </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="mediumPriorityButtonActionPerformed"/>
+                  </Events>
+                  <AuxValues>
+                    <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="localiseButton(mediumPriorityButton, &quot;menu.mediumpriority_item&quot;, &quot;&amp;Medium Priority&quot;, true);&#xa;mediumPriorityButton.setSelected(priorityThreshold == Detector.NORMAL_PRIORITY);"/>
+                  </AuxValues>
+                </MenuItem>
+                <MenuItem class="javax.swing.JRadioButtonMenuItem" name="highPriorityButton">
+                  <Properties>
+                    <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+                      <ComponentRef name="priorityButtonGroup"/>
+                    </Property>
+                    <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                      <Font name="Dialog" size="12" style="0"/>
+                    </Property>
+                    <Property name="text" type="java.lang.String" value="High Priority"/>
+                  </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="highPriorityButtonActionPerformed"/>
+                  </Events>
+                  <AuxValues>
+                    <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="localiseButton(highPriorityButton, &quot;menu.highpriority_item&quot;, &quot;&amp;High Priority&quot;, true);&#xa;highPriorityButton.setSelected(priorityThreshold == Detector.HIGH_PRIORITY);"/>
+                  </AuxValues>
+                </MenuItem>
+                <MenuItem class="javax.swing.JSeparator" name="jSeparator11">
+                </MenuItem>
+              </SubComponents>
+            </Menu>
             <MenuItem class="javax.swing.JSeparator" name="jSeparator8">
               <AuxValues>
                 <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="ButtonGroup bg = new ButtonGroup();&#xa;bg.add(expPriorityButton);&#xa;bg.add(lowPriorityButton);&#xa;bg.add(mediumPriorityButton);&#xa;bg.add(highPriorityButton);&#xa;&#xa;"/>
