@@ -97,7 +97,7 @@ public class FindBugsWorker {
 			System.out.println("Looking for detecors in: " + findBugsHome); //$NON-NLS-1$
 		}
 
-		// XXX hardcoded findbugs.home property
+		// FIXME hardcoded findbugs.home property
 		System.setProperty("findbugs.home", findBugsHome); //$NON-NLS-1$
 
 		Project findBugsProject = new Project();

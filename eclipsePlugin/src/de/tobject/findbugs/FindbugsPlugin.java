@@ -518,8 +518,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 				try {
 					bugCollection.writeXML(pout, findbugsProject);
 				} catch (IOException e) {
-					// FIXME: log error
-					e.printStackTrace();
+					FindbugsPlugin.getDefault().logException(e, "Exception while creating XML bug description file.");
 				} finally {
 					try {
 						pout.close();
@@ -528,11 +527,12 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 					}
 				}
 			}
-		};
-		worker.start();
+		};		
 		
 		try {
 			pin.connect(pout);
+			worker.start();
+			
 			if (!bugCollectionFile.exists())
 				bugCollectionFile.create(pin, true, monitor);
 			else
