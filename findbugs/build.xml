@@ -645,10 +645,11 @@
       <mkdir dir="${javadoc.dir}"/>
       <javadoc destdir="${javadoc.dir}"
                source="1.5"
-               windowtitle="FindBugs API Reference"
-               >
-        <fileset dir="${findbugs.src.dir}"/>
+               Private="yes"
+               windowtitle="FindBugs API Reference">
+          <packageset dir="${findbugs.src.dir}"/>
       </javadoc>
+               
     </target>
 
     <!-- Default target: just compile the code
