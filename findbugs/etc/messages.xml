@@ -15,6 +15,15 @@
     </Details>
   </Detector>
 
+  <Detector class="edu.umd.cs.findbugs.detect.NoteCheckReturnValue">
+    <Details>
+<![CDATA[
+<p> Looks for annotations to check return values of a method.
+</p>
+]]>
+    </Details>
+  </Detector>
+
 
   <Detector class="edu.umd.cs.findbugs.detect.InheritanceUnsafeGetResource">
     <Details>

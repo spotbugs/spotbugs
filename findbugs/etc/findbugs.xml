@@ -3,6 +3,10 @@
 	speed="fast"
 	   reports="TESTING"
 	/> 
+  <Detector class="edu.umd.cs.findbugs.detect.NoteCheckReturnValue" 
+	speed="fast"
+	   reports="TESTING"
+	/> 
   <Detector class="edu.umd.cs.findbugs.detect.InfiniteRecursiveLoop" 
 	speed="fast"
    reports="IL_INFINITE_RECURSIVE_LOOP" /> 
