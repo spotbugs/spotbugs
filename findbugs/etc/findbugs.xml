@@ -103,7 +103,7 @@
             reports="NS_NON_SHORT_CIRCUIT" />
             
   <Detector class="edu.umd.cs.findbugs.detect.FindTwoLockWait" 
-            speed="moderate"
+            speed="slow"
             reports="2LW_TWO_LOCK_WAIT" />
             
   <Detector class="edu.umd.cs.findbugs.detect.FindUnconditionalWait" 
@@ -177,7 +177,7 @@
             reports="BCPDC_DOUBLECHECK" />
             
   <Detector class="edu.umd.cs.findbugs.detect.BCPMethodReturnCheck" 
-            speed="moderate"
+            speed="slow"
             reports="RV_RETURN_VALUE_IGNORED" />
             
   <Detector class="edu.umd.cs.findbugs.detect.FindNullDeref" 
@@ -225,7 +225,7 @@
             reports="BIT_AND,BIT_AND_ZZ,BIT_IOR" />
             
   <Detector class="edu.umd.cs.findbugs.detect.LazyInit" 
-            speed="slow"
+            speed="moderate"
             reports="LI_LAZY_INIT_STATIC" />
             
   <Detector class="edu.umd.cs.findbugs.detect.FindJSR166LockMonitorenter" 

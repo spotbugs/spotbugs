@@ -71,7 +71,7 @@ another package. It is a fast detector</p>
   <Detector class="edu.umd.cs.findbugs.detect.EmptyZipFileEntry">
     <Details>
 <![CDATA[
-<p> This looks for creation of empty zip file entries. It is a fast detector.</p>
+<p> This looks for creation of empty zip file entries. It is a moderately fast detector.</p>
 ]]>
     </Details>
   </Detector>
@@ -124,7 +124,7 @@ boolean operators (<code>|</code> and <code>&amp;</code> instead of
   <Detector class="edu.umd.cs.findbugs.detect.FindFloatMath">
     <Details>
 <![CDATA[
-<p> This detector looks for uses of floating point math. It is a fast detector.</p>
+<p> This detector looks for uses of floating point math. It is a moderately fast detector.</p>
 ]]>
     </Details>
   </Detector>
@@ -365,7 +365,7 @@ It is a fast detector.</p>
 <p> This detector looks for instances of double checked locking.
 It is implemented using the ByteCodePattern class.  You might want to
 take a look at its source code as an example of an easy way to implement a bug
-pattern detector.  It is a fairly fast detector.</p>
+pattern detector.  It is a moderately fast detector.</p>
 ]]>
     </Details>
   </Detector>
@@ -384,7 +384,7 @@ is suspiciously ignored.  It is a slow detector.</p>
 <![CDATA[
 <p> This detector looks for places where a null pointer exception might
 occur.  It also looks for redundant comparisons of reference values against
-null.  It is a moderately fast detector.</p>
+null.  It is a slow detector.</p>
 ]]>
     </Details>
   </Detector>
@@ -394,7 +394,7 @@ null.  It is a moderately fast detector.</p>
 <![CDATA[
 <p> This detector looks for IO stream objects which do not escape the
 method and do not appear to be closed on all paths out of the method.
-It is a moderately fast detector.</p>
+It is a slow detector.</p>
 ]]>
     </Details>
   </Detector>
@@ -435,8 +435,7 @@ in the auxiliary classpath (or be analyzing the package itself).</p>
 <![CDATA[
 <p> This detector looks for places where two reference values are compared
 with the == or != operator, and the class is of a type (such as <code>java.lang.String</code>)
-where comparing reference values is generally an error.  It is a moderately
-fast detector.</p>
+where comparing reference values is generally an error.  It is a slow detector.</p>
 ]]>
     </Details>
   </Detector>
