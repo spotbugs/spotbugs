@@ -39,7 +39,8 @@ import edu.umd.cs.findbugs.visitclass.Constants2;
 
 public class SwitchFallthrough extends BytecodeScanningDetector implements Constants2 {
 	private static final boolean DEBUG = Boolean.getBoolean("switchFallthrough.debug");
-	private static final boolean LOOK_IN_SOURCE_FOR_FALLTHRU_COMMENT = Boolean.getBoolean("sf.comment");
+	private static final boolean LOOK_IN_SOURCE_FOR_FALLTHRU_COMMENT =
+		Boolean.getBoolean("findbugs.sf.comment");
 
 	private AnalysisContext analysisContext;
 	int nextIndex = -1;
@@ -156,8 +157,8 @@ public class SwitchFallthrough extends BytecodeScanningDetector implements Const
 				for (int i = 0; i < startLine; i++)
 					r.readLine();
 				for (int i = 0; i < numLines; i++) {
-					String line = r.readLine();
-					if (line.toLowerCase().contains("fall")) {
+					String line = r.readLine().toLowerCase();
+					if (line.indexOf("fall") > 0 || line.indexOf("nobreak") > 0) {
 						return true;
 					}
 				}
