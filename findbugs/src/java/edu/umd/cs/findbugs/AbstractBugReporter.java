@@ -36,10 +36,7 @@ public abstract class AbstractBugReporter implements BugReporter {
 		this.verbosityLevel = level;
 	}
 
-	public void reportMissingClass(ClassNotFoundException ex) {
-		if (verbosityLevel == SILENT)
-			return;
-
+	protected String getMissingClassName(ClassNotFoundException ex) {
 		String message = ex.getMessage();
 
 		// Try to decode the error message by extracting the class name.
@@ -47,6 +44,15 @@ public abstract class AbstractBugReporter implements BugReporter {
 		Matcher matcher = missingClassPattern.matcher(message);
 		if (matcher.matches())
 			message = matcher.group(1);
+
+		return message;
+	}
+
+	public void reportMissingClass(ClassNotFoundException ex) {
+		if (verbosityLevel == SILENT)
+			return;
+
+		String message = getMissingClassName(ex);
 
 		if (!missingClassMessageSet.contains(message)) {
 			missingClassMessageSet.add(message);
