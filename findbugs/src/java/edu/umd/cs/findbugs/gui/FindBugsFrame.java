@@ -866,6 +866,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
     private void aboutItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aboutItemActionPerformed
 	AboutDialog dialog = new AboutDialog(this, true);
+        dialog.setSize(500, 350);
 	dialog.setLocationRelativeTo(null); // center the dialog
 	dialog.show();
     }//GEN-LAST:event_aboutItemActionPerformed
