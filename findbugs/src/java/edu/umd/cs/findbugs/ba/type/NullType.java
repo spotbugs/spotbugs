@@ -19,48 +19,46 @@
 
 package edu.umd.cs.findbugs.ba.type;
 
-import org.apache.bcel.Constants;
+import edu.umd.cs.findbugs.ba.ExtendedTypes;
 
-public class XBasicType implements XType {
-	private int typeCode;
-
-	XBasicType(int typeCode) {
-		this.typeCode = typeCode;
-	}
+/**
+ * The type of a null value.
+ * @author David Hovemeyer
+ */
+public class NullType implements ReferenceType {
+	NullType() { }
 
 	public String getSignature() {
-		return Constants.SHORT_TYPE_NAMES[typeCode];
+		return "<null>";
 	}
 
 	public int getTypeCode() {
-		return typeCode;
+		return ExtendedTypes.T_NULL;
 	}
 
 	public boolean isBasicType() {
-		return true;
-	}
-
-	public boolean isReferenceType() {
 		return false;
 	}
 
-	public boolean isValidArrayElementType() {
-		return typeCode != Constants.T_VOID;
+	public boolean isReferenceType() {
+		return true;
 	}
 
-	public void accept(XTypeVisitor visitor) {
-		visitor.visitXBasicType(this);
+	// The null type can't be used as an array element type.
+	public boolean isValidArrayElementType() {
+		return false;
+	}
+
+	public void accept(TypeVisitor visitor) {
+		visitor.visitNullType(this);
 	}
 
 	public boolean equals(Object o) {
-		if (o.getClass() != this.getClass())
-			return false;
-		XBasicType other = (XBasicType) o;
-		return this.typeCode == other.typeCode;
+		return this.getClass() == o.getClass();
 	}
 
 	public int hashCode() {
-		return 1003 * typeCode;
+		return NullType.class.getName().hashCode();
 	}
 }
 

@@ -28,16 +28,16 @@ import edu.umd.cs.findbugs.graph.AbstractVertex;
  * Note that not all object types represent Java classes
  * or interfaces: e.g., array types.
  *
- * <p> Instances of XType participate in the flyweight pattern,
+ * <p> Instances of Type participate in the flyweight pattern,
  * meaning there is at most one instance per type.
- * Instances should be created and accessed using the XTypeRepository
+ * Instances should be created and accessed using the TypeRepository
  * class.
  *
  * @author David Hovemeyer
  */
-public abstract class XObjectType
-	extends AbstractVertex<InheritanceGraphEdge, XObjectType>
-	implements XReferenceType {
+public abstract class ObjectType
+	extends AbstractVertex<InheritanceGraphEdge, ObjectType>
+	implements ReferenceType {
 
 	public static final int UNCHECKED = 0;
 	public static final int KNOWN = 1;
@@ -47,14 +47,14 @@ public abstract class XObjectType
 	private int state;
 	//private boolean supertypesKnown;
 
-	protected XObjectType(String typeSignature) {
+	protected ObjectType(String typeSignature) {
 		this.typeSignature = typeSignature;
 		this.state = UNCHECKED;
 	}
 
 	/**
 	 * Get the state of this type: UNCHECKED, KNOWN, or UNKNOWN.
-	 * This information is used by XTypeRepository to determine
+	 * This information is used by TypeRepository to determine
 	 * when it needs to perform lazy hierarchy graph construction,
 	 * or to dynamically resolve a class type.
 	 * <ul>

@@ -19,47 +19,47 @@
 
 package edu.umd.cs.findbugs.ba.type;
 
-import edu.umd.cs.findbugs.ba.ExtendedTypes;
-
 /**
- * The type of a null value.
+ * Visitor for subclasses of Type.
+ *
  * @author David Hovemeyer
  */
-public class XNullType implements XReferenceType {
-	XNullType() { }
+public interface TypeVisitor {
+	/**
+	 * Visit an array type.
+	 * @param type the array type
+	 */
+	public void visitArrayType(ArrayType type);
 
-	public String getSignature() {
-		return "<null>";
-	}
+	/**
+	 * Visit a basic type.
+	 * @param type the basic type
+	 */
+	public void visitBasicType(BasicType type);
 
-	public int getTypeCode() {
-		return ExtendedTypes.T_NULL;
-	}
+	/**
+	 * Visit a class type.
+	 * @param type the class type
+	 */
+	public void visitClassType(ClassType type);
 
-	public boolean isBasicType() {
-		return false;
-	}
+	/**
+	 * Visit the null type.
+	 * @param type the null typs
+	 */
+	public void visitNullType(NullType type);
 
-	public boolean isReferenceType() {
-		return true;
-	}
+	/**
+	 * Visit the top type.
+	 * @param type the top type
+	 */
+	public void visitTopType(TopType type);
 
-	// The null type can't be used as an array element type.
-	public boolean isValidArrayElementType() {
-		return false;
-	}
-
-	public void accept(XTypeVisitor visitor) {
-		visitor.visitXNullType(this);
-	}
-
-	public boolean equals(Object o) {
-		return this.getClass() == o.getClass();
-	}
-
-	public int hashCode() {
-		return XNullType.class.getName().hashCode();
-	}
+	/**
+	 * Visit the bottom type.
+	 * @param type the bottom type
+	 */
+	public void visitBottomType(BottomType type);
 }
 
 // vim:ts=4

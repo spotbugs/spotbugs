@@ -19,47 +19,7 @@
 
 package edu.umd.cs.findbugs.ba.type;
 
-/**
- * Visitor for subclasses of XType.
- *
- * @author David Hovemeyer
- */
-public interface XTypeVisitor {
-	/**
-	 * Visit an array type.
-	 * @param type the array type
-	 */
-	public void visitXArrayType(XArrayType type);
-
-	/**
-	 * Visit a basic type.
-	 * @param type the basic type
-	 */
-	public void visitXBasicType(XBasicType type);
-
-	/**
-	 * Visit a class type.
-	 * @param type the class type
-	 */
-	public void visitXClassType(XClassType type);
-
-	/**
-	 * Visit the null type.
-	 * @param type the null typs
-	 */
-	public void visitXNullType(XNullType type);
-
-	/**
-	 * Visit the top type.
-	 * @param type the top type
-	 */
-	public void visitXTopType(XTopType type);
-
-	/**
-	 * Visit the bottom type.
-	 * @param type the bottom type
-	 */
-	public void visitXBottomType(XBottomType type);
+public interface ReferenceType extends Type {
 }
 
 // vim:ts=4

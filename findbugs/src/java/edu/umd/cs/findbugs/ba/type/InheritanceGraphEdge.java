@@ -23,13 +23,13 @@ import edu.umd.cs.findbugs.graph.AbstractEdge;
 
 /**
  * An edge in the graph of direct inheritance (supertype/subtype)
- * relationships.  XObjectType objects are the vertices
+ * relationships.  ObjectType objects are the vertices
  * in the inheritance graph.
  *
  * @author David Hovemeyer
  */
 public class InheritanceGraphEdge
-	extends AbstractEdge<InheritanceGraphEdge, XObjectType> {
+	extends AbstractEdge<InheritanceGraphEdge, ObjectType> {
 
 	private int type;
 
@@ -38,7 +38,7 @@ public class InheritanceGraphEdge
 	 * @param subtype the subtype
 	 * @param supertype the supertype
 	 */
-	InheritanceGraphEdge(XObjectType subtype, XObjectType supertype) {
+	InheritanceGraphEdge(ObjectType subtype, ObjectType supertype) {
 		super(subtype, supertype);
 	}
 

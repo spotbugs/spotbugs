@@ -26,8 +26,8 @@ import edu.umd.cs.findbugs.ba.ExtendedTypes;
  * Top is the identity element for the dataflow meet operation.
  * @author David Hovemeyer
  */
-public class XTopType implements XType {
-	XTopType() { }
+public class TopType implements Type {
+	TopType() { }
 
 	public String getSignature() {
 		return "<top>";
@@ -49,8 +49,8 @@ public class XTopType implements XType {
 		return ExtendedTypes.T_TOP;
 	}
 
-	public void accept(XTypeVisitor visitor) {
-		visitor.visitXTopType(this);
+	public void accept(TypeVisitor visitor) {
+		visitor.visitTopType(this);
 	}
 
 	public boolean equals(Object o) {
@@ -58,7 +58,7 @@ public class XTopType implements XType {
 	}
 
 	public int hashCode() {
-		return XTopType.class.getName().hashCode();
+		return TopType.class.getName().hashCode();
 	}
 }
 

@@ -19,7 +19,49 @@
 
 package edu.umd.cs.findbugs.ba.type;
 
-public interface XReferenceType extends XType {
+import org.apache.bcel.Constants;
+
+public class BasicType implements Type {
+	private int typeCode;
+
+	BasicType(int typeCode) {
+		this.typeCode = typeCode;
+	}
+
+	public String getSignature() {
+		return Constants.SHORT_TYPE_NAMES[typeCode];
+	}
+
+	public int getTypeCode() {
+		return typeCode;
+	}
+
+	public boolean isBasicType() {
+		return true;
+	}
+
+	public boolean isReferenceType() {
+		return false;
+	}
+
+	public boolean isValidArrayElementType() {
+		return typeCode != Constants.T_VOID;
+	}
+
+	public void accept(TypeVisitor visitor) {
+		visitor.visitBasicType(this);
+	}
+
+	public boolean equals(Object o) {
+		if (o.getClass() != this.getClass())
+			return false;
+		BasicType other = (BasicType) o;
+		return this.typeCode == other.typeCode;
+	}
+
+	public int hashCode() {
+		return 1003 * typeCode;
+	}
 }
 
 // vim:ts=4

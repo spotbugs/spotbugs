@@ -24,15 +24,15 @@ import edu.umd.cs.findbugs.ba.Debug;
 import edu.umd.cs.findbugs.graph.AbstractGraph;
 
 public class InheritanceGraph
-	extends AbstractGraph<InheritanceGraphEdge, XObjectType> {
+	extends AbstractGraph<InheritanceGraphEdge, ObjectType> {
 
-	public InheritanceGraphEdge createEdge(XObjectType subtype, XObjectType supertype, int edgeType) {
+	public InheritanceGraphEdge createEdge(ObjectType subtype, ObjectType supertype, int edgeType) {
 		InheritanceGraphEdge edge = createEdge(subtype, supertype);
 		edge.setType(edgeType);
 		return edge;
 	}
 
-	protected InheritanceGraphEdge allocateEdge(XObjectType subtype, XObjectType supertype) {
+	protected InheritanceGraphEdge allocateEdge(ObjectType subtype, ObjectType supertype) {
 		return new InheritanceGraphEdge(subtype, supertype);
 	}
 

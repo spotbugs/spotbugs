@@ -20,7 +20,7 @@
 package edu.umd.cs.findbugs.ba.type;
 
 public class UnknownSupertypesException extends ClassNotFoundException {
-	public UnknownSupertypesException(XObjectType type) {
+	public UnknownSupertypesException(ObjectType type) {
 		super("Unknown supertypes for type " + type);
 	}
 }

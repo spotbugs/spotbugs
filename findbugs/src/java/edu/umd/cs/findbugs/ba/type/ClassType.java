@@ -27,13 +27,13 @@ import org.apache.bcel.Constants;
  * This includes all class and interface types,
  * but excludes array types.
  */
-public class XClassType extends XObjectType {
+public class ClassType extends ObjectType {
 
 	private String className;
 	private int state;
 	private boolean isInterface;
 
-	XClassType(String typeSignature) {
+	ClassType(String typeSignature) {
 		super(typeSignature);
 	}
 
@@ -85,14 +85,14 @@ public class XClassType extends XObjectType {
 		return className;
 	}
 
-	public void accept(XTypeVisitor visitor) {
-		visitor.visitXClassType(this);
+	public void accept(TypeVisitor visitor) {
+		visitor.visitClassType(this);
 	}
 
 	public boolean equals(Object o) {
 		if (o.getClass() != this.getClass())
 			return false;
-		XClassType other = (XClassType) o;
+		ClassType other = (ClassType) o;
 		return this.getSignature().equals(other.getSignature());
 	}
 

@@ -21,14 +21,14 @@ package edu.umd.cs.findbugs.ba.type;
 
 import org.apache.bcel.Constants;
 
-public class XArrayType extends XObjectType {
+public class ArrayType extends ObjectType {
 	private static final String brackets =
 		"[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[";
 
 	private int numDimensions;
-	private XType baseType;
+	private Type baseType;
 
-	public static String makeArraySignature(int numDimensions, XType baseType) {
+	public static String makeArraySignature(int numDimensions, Type baseType) {
 		StringBuffer buf = new StringBuffer();
 		if (numDimensions <= brackets.length()) {
 			buf.append(brackets.substring(0, numDimensions));
@@ -41,19 +41,19 @@ public class XArrayType extends XObjectType {
 		return buf.toString();
 	}
 
-	XArrayType(int numDimensions, XType baseType) {
+	ArrayType(int numDimensions, Type baseType) {
 		super(makeArraySignature(numDimensions, baseType));
 		this.numDimensions = numDimensions;
 		this.baseType = baseType;
 	}
 
-	XArrayType(String signature, int numDimensions, XType baseType) {
+	ArrayType(String signature, int numDimensions, Type baseType) {
 		super(signature);
 		this.numDimensions = numDimensions;
 		this.baseType = baseType;
 	}
 
-	static XArrayType typeFromSignature(XTypeRepository repos, String signature) throws InvalidSignatureException {
+	static ArrayType typeFromSignature(TypeRepository repos, String signature) throws InvalidSignatureException {
 		int numDimensions = 0;
 		while (numDimensions < signature.length()) {
 			if (signature.charAt(numDimensions) != '[')
@@ -62,19 +62,19 @@ public class XArrayType extends XObjectType {
 		}
 		if (numDimensions == 0 || numDimensions == signature.length())
 			throw new InvalidSignatureException("Bad array signature: " + signature);
-		XType baseType = repos.typeFromSignature(signature.substring(numDimensions));
-		return new XArrayType(numDimensions, baseType);
+		Type baseType = repos.typeFromSignature(signature.substring(numDimensions));
+		return new ArrayType(numDimensions, baseType);
 	}
 
 	public int getNumDimensions() {
 		return numDimensions;
 	}
 
-	public XType getBaseType() {
+	public Type getBaseType() {
 		return baseType;
 	}
 
-	public XType getElementType(XTypeRepository repos) {
+	public Type getElementType(TypeRepository repos) {
 		if (numDimensions == 1)
 			return baseType;
 		else
@@ -85,8 +85,8 @@ public class XArrayType extends XObjectType {
 		return Constants.T_ARRAY;
 	}
 
-	public void accept(XTypeVisitor visitor) {
-		visitor.visitXArrayType(this);
+	public void accept(TypeVisitor visitor) {
+		visitor.visitArrayType(this);
 	}
 
 	public boolean isInterface() {
@@ -102,7 +102,7 @@ public class XArrayType extends XObjectType {
 			return false;
 		if (o.getClass() != this.getClass())
 			return false;
-		XArrayType other = (XArrayType) o;
+		ArrayType other = (ArrayType) o;
 		return this.numDimensions == other.numDimensions
 			&& this.baseType.equals(other.baseType);
 	}

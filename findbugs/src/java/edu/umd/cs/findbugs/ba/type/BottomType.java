@@ -26,8 +26,8 @@ import edu.umd.cs.findbugs.ba.ExtendedTypes;
  * Bottom is the zero element for the dataflow meet operation.
  * @author David Hovemeyer
  */
-public class XBottomType implements XType {
-	XBottomType() { }
+public class BottomType implements Type {
+	BottomType() { }
 
 	public String getSignature() {
 		return "<bottom>";
@@ -49,8 +49,8 @@ public class XBottomType implements XType {
 		return false;
 	}
 
-	public void accept(XTypeVisitor visitor) {
-		visitor.visitXBottomType(this);
+	public void accept(TypeVisitor visitor) {
+		visitor.visitBottomType(this);
 	}
 
 	public boolean equals(Object o) {
@@ -58,7 +58,7 @@ public class XBottomType implements XType {
 	}
 
 	public int hashCode() {
-		return XBottomType.class.getName().hashCode();
+		return BottomType.class.getName().hashCode();
 	}
 }
 
