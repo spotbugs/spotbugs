@@ -30,7 +30,7 @@ import org.apache.bcel.generic.*;
  * @see ThisValueAnalysis
  * @author David Hovemeyer
  */
-public class ThisValueFrameModelingVisitor extends ValueFrameModelingVisitor<ThisValue> {
+public class ThisValueFrameModelingVisitor extends AbstractFrameModelingVisitor<ThisValue> {
 	/**
 	 * Constructor.
 	 * @param frame the frame to be transformed
@@ -49,3 +49,5 @@ public class ThisValueFrameModelingVisitor extends ValueFrameModelingVisitor<Thi
 		return ThisValue.notThisValue();
 	}
 }
+
+// vim:ts=4
