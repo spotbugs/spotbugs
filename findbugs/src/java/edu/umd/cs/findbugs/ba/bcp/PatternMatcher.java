@@ -34,6 +34,7 @@ import edu.umd.cs.daveho.ba.*;
  */
 public class PatternMatcher implements DFSEdgeTypes {
 	private static final boolean DEBUG = Boolean.getBoolean("bcp.debug");
+	private static final boolean SHOW_WILD = Boolean.getBoolean("bcp.showWild");
 
 	private ByteCodePattern pattern;
 	private CFG cfg;
@@ -161,9 +162,10 @@ public class PatternMatcher implements DFSEdgeTypes {
 				: vnaDataflow.getResultFact(basicBlock);
 
 			// Try to match the instruction against the pattern element.
-			if (DEBUG) System.out.println("Match " + patternElement + " against " + handle + "...");
+			boolean isWild = patternElement instanceof Wild;
+			if (DEBUG && (!isWild || SHOW_WILD)) System.out.println("Match " + patternElement + " against " + handle + "...");
 			bindingSet = patternElement.match(handle, cpg, before, after, bindingSet);
-			if (DEBUG) System.out.println("\t" + ((bindingSet != null) ? " ==> MATCH" : " ==> NOT A MATCH"));
+			if (DEBUG && (!isWild || SHOW_WILD)) System.out.println("\t" + ((bindingSet != null) ? " ==> MATCH" : " ==> NOT A MATCH"));
 			if (bindingSet == null)
 				// Not a match.
 				return;
