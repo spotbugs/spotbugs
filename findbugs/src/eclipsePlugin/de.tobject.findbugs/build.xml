@@ -23,10 +23,17 @@
 	</target>
 
 	<target name="build" depends="init">
+<!--
 		<javac source="1.5" srcdir="${src.dir}" destdir="${class.dir}"
 			target="1.4"
 			debug="true"
 			compiler="com.cortexeb.Jsr14CompilerAdapter">
+			<classpath path="${plugin.build.classpath}"/>
+		</javac>
+-->
+		<javac source="1.5" srcdir="${src.dir}" destdir="${class.dir}"
+			target="jsr14"
+			debug="true">
 			<classpath path="${plugin.build.classpath}"/>
 		</javac>
 
