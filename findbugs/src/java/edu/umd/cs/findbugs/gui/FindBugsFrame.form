@@ -68,7 +68,6 @@
           <Properties>
             <Property name="mnemonic" type="int" value="86"/>
             <Property name="text" type="java.lang.String" value="View"/>
-            <Property name="toolTipText" type="java.lang.String" value="null"/>
             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
               <Font name="Dialog" size="12" style="0"/>
             </Property>
@@ -97,8 +96,8 @@
     <SyntheticProperty name="formSizePolicy" type="int" value="1"/>
   </SyntheticProperties>
   <Events>
-    <EventHandler event="windowOpened" listener="java.awt.event.WindowListener" parameters="java.awt.event.WindowEvent" handler="formWindowOpened"/>
     <EventHandler event="windowClosing" listener="java.awt.event.WindowListener" parameters="java.awt.event.WindowEvent" handler="exitForm"/>
+    <EventHandler event="windowOpened" listener="java.awt.event.WindowListener" parameters="java.awt.event.WindowEvent" handler="formWindowOpened"/>
   </Events>
 
   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>

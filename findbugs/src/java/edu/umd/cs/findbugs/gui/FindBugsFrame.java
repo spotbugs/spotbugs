@@ -33,8 +33,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
         public NavigatorCellRenderer() {
             ClassLoader classLoader = this.getClass().getClassLoader();
-            projectIcon = new ImageIcon(classLoader.getResource("edu/umd/cs/findbugs/gui/gear.png"));
-            analysisRunIcon = new ImageIcon(classLoader.getResource("edu/umd/cs/findbugs/gui/mg-3.png"));
+            projectIcon = new ImageIcon(classLoader.getResource("edu/umd/cs/findbugs/gui/project.png"));
+            analysisRunIcon = new ImageIcon(classLoader.getResource("edu/umd/cs/findbugs/gui/execute.png"));
         }
 
         public Component getTreeCellRendererComponent(JTree tree, Object value, boolean sel,
@@ -67,9 +67,9 @@ public class FindBugsFrame extends javax.swing.JFrame {
         public BugCellRenderer() {
             ClassLoader classLoader = this.getClass().getClassLoader();
             bugIcon = new ImageIcon(classLoader.getResource("edu/umd/cs/findbugs/gui/bug2.png"));
-            classIcon = new ImageIcon(classLoader.getResource("edu/umd/cs/findbugs/gui/class.gif"));
-            methodIcon = new ImageIcon(classLoader.getResource("edu/umd/cs/findbugs/gui/methodPublic.gif"));
-            fieldIcon = new ImageIcon(classLoader.getResource("edu/umd/cs/findbugs/gui/variablePrivate.gif"));
+            classIcon = new ImageIcon(classLoader.getResource("edu/umd/cs/findbugs/gui/class.png"));
+            methodIcon = new ImageIcon(classLoader.getResource("edu/umd/cs/findbugs/gui/method.png"));
+            fieldIcon = new ImageIcon(classLoader.getResource("edu/umd/cs/findbugs/gui/field.png"));
         }
         
         public Component getTreeCellRendererComponent(JTree tree, Object value, boolean sel,
