@@ -122,6 +122,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
 					setIcon(packageIcon);
 				} else if (groupType == GROUP_BY_BUG_TYPE) {
 					setIcon(bugGroupIcon);
+                                } else if (groupType == GROUP_BY_BUG_CATEGORY) {
+					setIcon(bugGroupIcon);
 				}
 			} else {
 				setIcon(null);
@@ -256,6 +258,25 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	private static final Comparator<BugInstance> bugInstanceTypeComparator = new BugInstanceTypeComparator();
 
 	/**
+	 * Compare BugInstance bug categories.
+	 * This is useful for grouping bug instances by bug category.
+	 * Note that all instances with the same bug category will compare
+	 * as equal.
+	 */
+	private static class BugInstanceCategoryComparator implements Comparator<BugInstance> {
+		public int compare(BugInstance lhs, BugInstance rhs) {
+			String lhsString = lhs.getBugPattern().getCategory();
+			String rhsString = rhs.getBugPattern().getCategory();
+			return lhsString.compareTo(rhsString);
+		}
+	}
+
+	/**
+	 * The instance of BugInstanceCategoryComparator.
+	 */
+	private static final Comparator<BugInstance> bugInstanceCategoryComparator = new BugInstanceCategoryComparator();
+
+        /**
 	 * Two-level comparison of bug instances by class name and
 	 * BugInstance natural ordering.
 	 */
@@ -303,13 +324,31 @@ public class FindBugsFrame extends javax.swing.JFrame {
 			return a.compareTo(b);
 		}
 	}
-
-	/**
+        
+        /**
 	 * The instance of BugTypeByTypeComparator.
 	 */
 	private static final Comparator<BugInstance> bugInstanceByTypeComparator = new FindBugsFrame.BugInstanceByTypeComparator();
 
 	/**
+	 * Two-level comparison of bug instances by bug category and
+	 * BugInstance natural ordering.
+	 */
+	private static class BugInstanceByCategoryComparator implements Comparator<BugInstance> {
+		public int compare(BugInstance a, BugInstance b) {
+			int cmp = bugInstanceCategoryComparator.compare(a, b);
+			if (cmp != 0)
+				return cmp;
+			return a.compareTo(b);
+		}
+	}
+
+         /**
+	 * The instance of BugTypeByCategoryComparator.
+	 */
+	private static final Comparator<BugInstance> bugInstanceByCategoryComparator = new FindBugsFrame.BugInstanceByCategoryComparator();
+
+        /**
 	 * Swing FileFilter class for file selection dialogs for FindBugs project files.
 	 */
 	private static class ProjectFileFilter extends FileFilter {
@@ -322,7 +361,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 		}
 	}
 
-	/**
+        /**
 	 * The instance of ProjectFileFilter.
 	 */
 	private static final FileFilter projectFileFilter = new ProjectFileFilter();
@@ -409,8 +448,9 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	private static final String GROUP_BY_CLASS = "By class";
 	private static final String GROUP_BY_PACKAGE = "By package";
 	private static final String GROUP_BY_BUG_TYPE = "By bug type";
+        private static final String GROUP_BY_BUG_CATEGORY="By bug category";
 	private static final String[] GROUP_BY_ORDER_LIST = {
-		GROUP_BY_CLASS, GROUP_BY_PACKAGE, GROUP_BY_BUG_TYPE
+		GROUP_BY_CLASS, GROUP_BY_PACKAGE, GROUP_BY_BUG_TYPE, GROUP_BY_BUG_CATEGORY
 	};
 
 	/**
@@ -512,6 +552,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
         byPackageBugTree = new javax.swing.JTree();
         byBugTypeScrollPane = new javax.swing.JScrollPane();
         byBugTypeBugTree = new javax.swing.JTree();
+        byBugCategoryScrollPane = new javax.swing.JScrollPane();
+        byBugCategoryBugTree = new javax.swing.JTree();
         bySummary = new javax.swing.JScrollPane();
         bugSummaryEditorPane = new javax.swing.JEditorPane();
         bugDetailsTabbedPane = new javax.swing.JTabbedPane();
@@ -1108,6 +1150,16 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
         groupByTabbedPane.addTab("By Bug Type", byBugTypeScrollPane);
 
+        byBugCategoryBugTree.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                focusGainedHandler(evt);
+            }
+        });
+
+        byBugCategoryScrollPane.setViewportView(byBugCategoryBugTree);
+
+        groupByTabbedPane.addTab("By Category Type", byBugCategoryScrollPane);
+
         bugSummaryEditorPane.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusGained(java.awt.event.FocusEvent evt) {
                 focusGainedHandler(evt);
@@ -1192,7 +1244,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
                 groupByTabbedPane.setTitleAt(0, L10N.getLocalString( "dlg.byclass_tab", "By Class"));
                 groupByTabbedPane.setTitleAt(1, L10N.getLocalString( "dlg.bypackage_tab", "By Package"));
                 groupByTabbedPane.setTitleAt(2, L10N.getLocalString( "dlg.bybugtype_tab", "By Bug Type"));
-                groupByTabbedPane.setTitleAt(3, L10N.getLocalString( "dlg.summary_tab", "Summary"));
+                groupByTabbedPane.setTitleAt(3, L10N.getLocalString( "dlg.bybugcategory_tab", "By Bug Category"));
+                groupByTabbedPane.setTitleAt(4, L10N.getLocalString( "dlg.summary_tab", "Summary"));
                 bugDetailsTabbedPane.setTitleAt(0, L10N.getLocalString( "dlg.details_tab", "Details"));
                 bugDetailsTabbedPane.setTitleAt(1, L10N.getLocalString( "dlg.sourcecode_tab", "Source Code"));
                 bugDetailsTabbedPane.setTitleAt(2, L10N.getLocalString( "dlg.annotations_tab", "Annotations"));
@@ -1480,9 +1533,9 @@ public class FindBugsFrame extends javax.swing.JFrame {
             filterWarningsMenu.setText("Filter Warnings");
             filterWarningsMenu.setFont(new java.awt.Font("Dialog", 0, 12));
             localiseButton(filterWarningsMenu, "menu.filterwarnings_menu", "Filter &Warnings", true);
-            priorityButtonGroup.add(expPriorityButton);
             expPriorityButton.setFont(new java.awt.Font("Dialog", 0, 12));
             expPriorityButton.setText("Experimental Priority");
+            priorityButtonGroup.add(expPriorityButton);
             localiseButton(expPriorityButton, "menu.exppriority_item", "&Experimental Priority", true);
             expPriorityButton.setSelected(getPriorityThreshold() == Detector.EXP_PRIORITY);
             expPriorityButton.addActionListener(new java.awt.event.ActionListener() {
@@ -1493,9 +1546,9 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
             filterWarningsMenu.add(expPriorityButton);
 
-            priorityButtonGroup.add(lowPriorityButton);
             lowPriorityButton.setFont(new java.awt.Font("Dialog", 0, 12));
             lowPriorityButton.setText("Low Priority");
+            priorityButtonGroup.add(lowPriorityButton);
             localiseButton(lowPriorityButton, "menu.lowpriority_item", "&Low Priority", true);
             lowPriorityButton.setSelected(getPriorityThreshold() == Detector.LOW_PRIORITY);
             lowPriorityButton.addActionListener(new java.awt.event.ActionListener() {
@@ -1506,9 +1559,9 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
             filterWarningsMenu.add(lowPriorityButton);
 
-            priorityButtonGroup.add(mediumPriorityButton);
             mediumPriorityButton.setFont(new java.awt.Font("Dialog", 0, 12));
             mediumPriorityButton.setText("Medium Priority");
+            priorityButtonGroup.add(mediumPriorityButton);
             localiseButton(mediumPriorityButton, "menu.mediumpriority_item", "&Medium Priority", true);
             mediumPriorityButton.setSelected(getPriorityThreshold() == Detector.NORMAL_PRIORITY);
             mediumPriorityButton.addActionListener(new java.awt.event.ActionListener() {
@@ -1519,9 +1572,9 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
             filterWarningsMenu.add(mediumPriorityButton);
 
-            priorityButtonGroup.add(highPriorityButton);
             highPriorityButton.setFont(new java.awt.Font("Dialog", 0, 12));
             highPriorityButton.setText("High Priority");
+            priorityButtonGroup.add(highPriorityButton);
             localiseButton(highPriorityButton, "menu.highpriority_item", "&High Priority", true);
             highPriorityButton.setSelected(getPriorityThreshold() == Detector.HIGH_PRIORITY);
             highPriorityButton.addActionListener(new java.awt.event.ActionListener() {
@@ -2346,7 +2399,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 		
 		// List of bug group tabs.
 		// This must be in the same order as GROUP_BY_ORDER_LIST!
-		bugTreeList = new JTree[]{byClassBugTree, byPackageBugTree, byBugTypeBugTree};
+		bugTreeList = new JTree[]{byClassBugTree, byPackageBugTree, byBugTypeBugTree, byBugCategoryBugTree};
 		
 		// Configure bug trees
 		for (int i = 0; i < bugTreeList.length; ++i) {
@@ -2868,6 +2921,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
 					String shortBugType = desc.substring(0, desc.indexOf(':'));
 					String bugTypeDescription = I18N.instance().getBugTypeDescription(shortBugType);
 					groupName = shortBugType + ": " + bugTypeDescription;
+                                } else if (groupBy == GROUP_BY_BUG_CATEGORY) {
+                                        groupName = I18N.instance().getBugCategoryDescription(member.getBugPattern().getCategory());
 				} else
 					throw new IllegalStateException("Unknown sort order: " + groupBy);
 				currentGroup = new BugInstanceGroup(groupBy, groupName);
@@ -2922,6 +2977,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
 			return bugInstanceByPackageComparator;
 		else if (sortOrder.equals(GROUP_BY_BUG_TYPE))
 			return bugInstanceByTypeComparator;
+                else if (sortOrder.equals(GROUP_BY_BUG_CATEGORY))
+                        return bugInstanceByCategoryComparator;
 		else
 			throw new IllegalArgumentException("Bad sort order: " + sortOrder);
 	}
@@ -2936,6 +2993,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
 			return bugInstancePackageComparator;
 		} else if (groupBy.equals(GROUP_BY_BUG_TYPE)) {
 			return bugInstanceTypeComparator;
+		} else if (groupBy.equals(GROUP_BY_BUG_CATEGORY)) {
+			return bugInstanceCategoryComparator;
 		} else
 			throw new IllegalArgumentException("Bad sort order: " + groupBy);
 	}
@@ -3560,6 +3619,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
     private javax.swing.JEditorPane bugSummaryEditorPane;
     private javax.swing.JSplitPane bugTreeBugDetailsSplitter;
     private javax.swing.JPanel bugTreePanel;
+    private javax.swing.JTree byBugCategoryBugTree;
+    private javax.swing.JScrollPane byBugCategoryScrollPane;
     private javax.swing.JTree byBugTypeBugTree;
     private javax.swing.JScrollPane byBugTypeScrollPane;
     private javax.swing.JTree byClassBugTree;

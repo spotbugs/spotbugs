@@ -318,13 +318,13 @@
               <SubComponents>
                 <MenuItem class="javax.swing.JRadioButtonMenuItem" name="expPriorityButton">
                   <Properties>
-                    <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
-                      <ComponentRef name="priorityButtonGroup"/>
-                    </Property>
                     <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                       <Font name="Dialog" size="12" style="0"/>
                     </Property>
                     <Property name="text" type="java.lang.String" value="Experimental Priority"/>
+                    <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+                      <ComponentRef name="priorityButtonGroup"/>
+                    </Property>
                   </Properties>
                   <Events>
                     <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="expPriorityButtonActionPerformed"/>
@@ -335,13 +335,13 @@
                 </MenuItem>
                 <MenuItem class="javax.swing.JRadioButtonMenuItem" name="lowPriorityButton">
                   <Properties>
-                    <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
-                      <ComponentRef name="priorityButtonGroup"/>
-                    </Property>
                     <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                       <Font name="Dialog" size="12" style="0"/>
                     </Property>
                     <Property name="text" type="java.lang.String" value="Low Priority"/>
+                    <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+                      <ComponentRef name="priorityButtonGroup"/>
+                    </Property>
                   </Properties>
                   <Events>
                     <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="lowPriorityButtonActionPerformed"/>
@@ -352,13 +352,13 @@
                 </MenuItem>
                 <MenuItem class="javax.swing.JRadioButtonMenuItem" name="mediumPriorityButton">
                   <Properties>
-                    <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
-                      <ComponentRef name="priorityButtonGroup"/>
-                    </Property>
                     <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                       <Font name="Dialog" size="12" style="0"/>
                     </Property>
                     <Property name="text" type="java.lang.String" value="Medium Priority"/>
+                    <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+                      <ComponentRef name="priorityButtonGroup"/>
+                    </Property>
                   </Properties>
                   <Events>
                     <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="mediumPriorityButtonActionPerformed"/>
@@ -369,13 +369,13 @@
                 </MenuItem>
                 <MenuItem class="javax.swing.JRadioButtonMenuItem" name="highPriorityButton">
                   <Properties>
-                    <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
-                      <ComponentRef name="priorityButtonGroup"/>
-                    </Property>
                     <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                       <Font name="Dialog" size="12" style="0"/>
                     </Property>
                     <Property name="text" type="java.lang.String" value="High Priority"/>
+                    <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+                      <ComponentRef name="priorityButtonGroup"/>
+                    </Property>
                   </Properties>
                   <Events>
                     <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="highPriorityButtonActionPerformed"/>
@@ -1298,6 +1298,24 @@
                             </Component>
                           </SubComponents>
                         </Container>
+                        <Container class="javax.swing.JScrollPane" name="byBugCategoryScrollPane">
+                          <Constraints>
+                            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+                              <JTabbedPaneConstraints tabName="By Category Type">
+                                <Property name="tabTitle" type="java.lang.String" value="By Category Type"/>
+                              </JTabbedPaneConstraints>
+                            </Constraint>
+                          </Constraints>
+
+                          <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
+                          <SubComponents>
+                            <Component class="javax.swing.JTree" name="byBugCategoryBugTree">
+                              <Events>
+                                <EventHandler event="focusGained" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="focusGainedHandler"/>
+                              </Events>
+                            </Component>
+                          </SubComponents>
+                        </Container>
                         <Container class="javax.swing.JScrollPane" name="bySummary">
                           <Constraints>
                             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
@@ -1417,7 +1435,7 @@
             </Property>
           </Properties>
           <AuxValues>
-            <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="{  &#xa;    equalizeControls( new JComponent[] &#xa;    {&#xa;        addJarButton,&#xa;        addSourceDirButton,&#xa;        addClasspathEntryButton,&#xa;        removeJarButton,&#xa;        removeSrcDirButton,&#xa;        removeClasspathEntryButton,&#xa;        browseJarButton,&#xa;        browseSrcDirButton,&#xa;        browseClasspathEntryButton,&#xa;        sourceUpButton,&#xa;        sourceDownButton,&#xa;        classpathUpButton,&#xa;        classpathDownButton&#xa;    });&#xa;    &#xa;    groupByTabbedPane.setTitleAt(0, L10N.getLocalString( &quot;dlg.byclass_tab&quot;, &quot;By Class&quot;));         &#xa;    groupByTabbedPane.setTitleAt(1, L10N.getLocalString( &quot;dlg.bypackage_tab&quot;, &quot;By Package&quot;));         &#xa;    groupByTabbedPane.setTitleAt(2, L10N.getLocalString( &quot;dlg.bybugtype_tab&quot;, &quot;By Bug Type&quot;));         &#xa;    groupByTabbedPane.setTitleAt(3, L10N.getLocalString( &quot;dlg.summary_tab&quot;, &quot;Summary&quot;));         &#xa;    bugDetailsTabbedPane.setTitleAt(0, L10N.getLocalString( &quot;dlg.details_tab&quot;, &quot;Details&quot;));         &#xa;    bugDetailsTabbedPane.setTitleAt(1, L10N.getLocalString( &quot;dlg.sourcecode_tab&quot;, &quot;Source Code&quot;));         &#xa;    bugDetailsTabbedPane.setTitleAt(2, L10N.getLocalString( &quot;dlg.annotations_tab&quot;, &quot;Annotations&quot;)); &#xa;}"/>
+            <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="{  &#xa;    equalizeControls( new JComponent[] &#xa;    {&#xa;        addJarButton,&#xa;        addSourceDirButton,&#xa;        addClasspathEntryButton,&#xa;        removeJarButton,&#xa;        removeSrcDirButton,&#xa;        removeClasspathEntryButton,&#xa;        browseJarButton,&#xa;        browseSrcDirButton,&#xa;        browseClasspathEntryButton,&#xa;        sourceUpButton,&#xa;        sourceDownButton,&#xa;        classpathUpButton,&#xa;        classpathDownButton&#xa;    });&#xa;    &#xa;    groupByTabbedPane.setTitleAt(0, L10N.getLocalString( &quot;dlg.byclass_tab&quot;, &quot;By Class&quot;));         &#xa;    groupByTabbedPane.setTitleAt(1, L10N.getLocalString( &quot;dlg.bypackage_tab&quot;, &quot;By Package&quot;));         &#xa;    groupByTabbedPane.setTitleAt(2, L10N.getLocalString( &quot;dlg.bybugtype_tab&quot;, &quot;By Bug Type&quot;));         &#xa;    groupByTabbedPane.setTitleAt(3, L10N.getLocalString( &quot;dlg.bybugcategory_tab&quot;, &quot;By Bug Category&quot;));         &#xa;    groupByTabbedPane.setTitleAt(4, L10N.getLocalString( &quot;dlg.summary_tab&quot;, &quot;Summary&quot;));         &#xa;    bugDetailsTabbedPane.setTitleAt(0, L10N.getLocalString( &quot;dlg.details_tab&quot;, &quot;Details&quot;));         &#xa;    bugDetailsTabbedPane.setTitleAt(1, L10N.getLocalString( &quot;dlg.sourcecode_tab&quot;, &quot;Source Code&quot;));         &#xa;    bugDetailsTabbedPane.setTitleAt(2, L10N.getLocalString( &quot;dlg.annotations_tab&quot;, &quot;Annotations&quot;)); &#xa;}"/>
           </AuxValues>
           <Constraints>
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JSplitPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JSplitPaneSupportLayout$JSplitPaneConstraintsDescription">
