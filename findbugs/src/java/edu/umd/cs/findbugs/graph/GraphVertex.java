@@ -17,7 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-// $Revision: 1.1 $
+// $Revision: 1.2 $
 
 package edu.umd.cs.daveho.graph;
 
@@ -27,8 +27,8 @@ import java.lang.Comparable;
 /**
  * GraphVertex interface; represents a vertex in a graph.
  */
-public interface GraphVertex<VertexInfo>
-	extends Serializable, Comparable<GraphVertex<VertexInfo>> {
+public interface GraphVertex<VertexKey>
+	extends Serializable, Comparable<GraphVertex<VertexKey>> {
 
 	/** Get the numeric label for this vertex. */
 	public int getLabel();
@@ -36,8 +36,8 @@ public interface GraphVertex<VertexInfo>
 	/** Set the numeric label for this vertex. */
 	public void setLabel(int label);
 
-	/** Get the VertexInfo object uniquely identifying this vertex. */
-	public VertexInfo getVertexInfo();
+	/** Get the VertexKey object uniquely identifying this vertex. */
+	public VertexKey getVertexKey();
 
 }
 

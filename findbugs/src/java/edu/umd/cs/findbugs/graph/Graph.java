@@ -17,7 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-// $Revision: 1.2 $
+// $Revision: 1.3 $
 
 package edu.umd.cs.daveho.graph;
 
@@ -34,10 +34,10 @@ import edu.umd.cs.daveho.graph.GraphEdge;
  */
 public interface Graph
 	<
-	EdgeInfo,
-	VertexInfo,
-	EdgeType extends GraphEdge<VertexType, EdgeInfo>,
-	VertexType extends GraphVertex<VertexInfo>
+	EdgeKey,
+	VertexKey,
+	EdgeType extends GraphEdge<VertexType, EdgeKey>,
+	VertexType extends GraphVertex<VertexKey>
 	> extends Serializable {
 
 	/** Get number of edges in the graph. */
@@ -53,35 +53,35 @@ public interface Graph
 	public Iterator<VertexType> getVertexIterator();
 
 	/** Add a vertex to the graph.
-	 * @param vertexInfo a VertexInfo object uniquely identifying the vertex
+	 * @param vertexKey a VertexKey object uniquely identifying the vertex
 	 * @param toolkit the GraphToolkit used to construct graph components
 	 * @return the new vertex, or an equivalent existing vertex
 	 */
-	public VertexType addVertex(VertexInfo vertexInfo, GraphToolkit toolkit);
+	public VertexType addVertex(VertexKey vertexKey, GraphToolkit toolkit);
 
 	/** Add an edge to the graph.
-	 * @param sourceInfo a VertexInfo object uniquely identifying the source vertex
-	 * @param targetInfo a VertexInfo object uniquely identifying the target vertex
-	 * @param edgeInfo an EdgeInfo object providing auxiliary information about
+	 * @param sourceInfo a VertexKey object uniquely identifying the source vertex
+	 * @param targetInfo a VertexKey object uniquely identifying the target vertex
+	 * @param edgeKey an EdgeKey object providing auxiliary information about
 	 *	 the edge
 	 * @param toolkit the GraphToolkit used to construct graph components
 	 * @return the new edge, or an equivalent existing edge
 	 */
-	public EdgeType addEdge(VertexInfo sourceInfo, VertexInfo targetInfo, EdgeInfo edgeInfo,
+	public EdgeType addEdge(VertexKey sourceInfo, VertexKey targetInfo, EdgeKey edgeKey,
 						 GraphToolkit toolkit);
 
 	/**
-	 * Get the vertex identified by given VertexInfo object, or null
+	 * Get the vertex identified by given VertexKey object, or null
 	 * if no such vertex exists.
 	 */
-	public VertexType getVertex(VertexInfo vertexInfo);
+	public VertexType getVertex(VertexKey vertexKey);
 
 	/**
-	 * Get the edge identifier whose source and target match given VertexInfo objects
-	 * and whose auxiliary information matches given EdgeInfo object, or null
+	 * Get the edge identifier whose source and target match given VertexKey objects
+	 * and whose auxiliary information matches given EdgeKey object, or null
 	 * if no such edge exists.
 	 */
-	public EdgeType getEdge(VertexInfo sourceInfo, VertexInfo targetInfo, EdgeInfo edgeInfo);
+	public EdgeType getEdge(VertexKey sourceInfo, VertexKey targetInfo, EdgeKey edgeKey);
 
 	/**
 	 * Get the number of numeric (integer) labels that have been assigned to vertices

@@ -17,7 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-// $Revision: 1.2 $
+// $Revision: 1.3 $
 
 package edu.umd.cs.daveho.graph;
 
@@ -29,11 +29,11 @@ import java.util.*;
  * p. 489.
  */
 public class StronglyConnectedComponents<
-	GraphType extends Graph<EdgeInfo, VertexInfo, EdgeType, VertexType>,
-	EdgeInfo,
-	VertexInfo,
-	EdgeType extends GraphEdge<VertexType, EdgeInfo>,
-	VertexType extends GraphVertex<VertexInfo>
+	GraphType extends Graph<EdgeKey, VertexKey, EdgeType, VertexType>,
+	EdgeKey,
+	VertexKey,
+	EdgeType extends GraphEdge<VertexType, EdgeKey>,
+	VertexType extends GraphVertex<VertexKey>
 	> {
 
 	private ArrayList<SearchTree<VertexType>> m_stronglyConnectedSearchTreeList;
@@ -63,18 +63,18 @@ public class StronglyConnectedComponents<
 	 *	create temporary graph components needed by the algorithm
 	 */
 	public void findStronglyConnectedComponents(GraphType g,
-		GraphToolkit<GraphType, EdgeInfo, VertexInfo, EdgeType, VertexType> toolkit) {
+		GraphToolkit<GraphType, EdgeKey, VertexKey, EdgeType, VertexType> toolkit) {
 
 		// Perform the initial depth first search
-		DepthFirstSearch<GraphType, EdgeInfo, VertexInfo, EdgeType, VertexType> initialDFS =
-			new DepthFirstSearch<GraphType, EdgeInfo, VertexInfo, EdgeType, VertexType>();
+		DepthFirstSearch<GraphType, EdgeKey, VertexKey, EdgeType, VertexType> initialDFS =
+			new DepthFirstSearch<GraphType, EdgeKey, VertexKey, EdgeType, VertexType>();
 		if (m_vertexChooser != null)
 			initialDFS.setVertexChooser(m_vertexChooser);
 		initialDFS.search(g);
 
 		// Create a transposed graph
-		Transpose<GraphType, EdgeInfo, VertexInfo, EdgeType, VertexType> t =
-			new Transpose<GraphType, EdgeInfo, VertexInfo, EdgeType, VertexType>();
+		Transpose<GraphType, EdgeKey, VertexKey, EdgeType, VertexType> t =
+			new Transpose<GraphType, EdgeKey, VertexKey, EdgeType, VertexType>();
 		GraphType transpose = t.transpose(g, toolkit);
 
 		// Create a set of vertices in the transposed graph,
@@ -91,8 +91,8 @@ public class StronglyConnectedComponents<
 
 		// Now perform a DFS on the transpose, choosing the vertices
 		// to visit in the main loop by descending finish time
-		DepthFirstSearch<GraphType, EdgeInfo, VertexInfo, EdgeType, VertexType> transposeDFS =
-			new DepthFirstSearch<GraphType, EdgeInfo, VertexInfo, EdgeType, VertexType>();
+		DepthFirstSearch<GraphType, EdgeKey, VertexKey, EdgeType, VertexType> transposeDFS =
+			new DepthFirstSearch<GraphType, EdgeKey, VertexKey, EdgeType, VertexType>();
 		if (m_vertexChooser != null)
 			transposeDFS.setVertexChooser(m_vertexChooser);
 		transposeDFS.search(transpose, descendingByFinishTimeSet.iterator());
@@ -114,7 +114,7 @@ public class StronglyConnectedComponents<
 	 */
 	private SearchTree<VertexType> copySearchTree(SearchTree<VertexType> tree, GraphType g) {
 		// Copy this node
-		SearchTree<VertexType> copy = new SearchTree<VertexType>(g.getVertex(tree.getVertex().getVertexInfo()));
+		SearchTree<VertexType> copy = new SearchTree<VertexType>(g.getVertex(tree.getVertex().getVertexKey()));
 
 		// Copy children
 		Iterator<SearchTree<VertexType>> i = tree.childIterator();

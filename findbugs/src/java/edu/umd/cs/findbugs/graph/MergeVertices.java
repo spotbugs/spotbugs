@@ -17,7 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-// $Revision: 1.2 $
+// $Revision: 1.3 $
 
 package edu.umd.cs.daveho.graph;
 
@@ -28,11 +28,11 @@ import java.util.*;
  * Note that the graph is modified as part of this process.
  */
 public class MergeVertices <
-	GraphType extends Graph<EdgeInfo, VertexInfo, EdgeType, VertexType>,
-	EdgeInfo,
-	VertexInfo,
-	EdgeType extends GraphEdge<VertexType, EdgeInfo>,
-	VertexType extends GraphVertex<VertexInfo>
+	GraphType extends Graph<EdgeKey, VertexKey, EdgeType, VertexType>,
+	EdgeKey,
+	VertexKey,
+	EdgeType extends GraphEdge<VertexType, EdgeKey>,
+	VertexType extends GraphVertex<VertexKey>
 	> {
 
 	/** Constructor. */
@@ -42,12 +42,12 @@ public class MergeVertices <
 	 * Merge the specified set of vertices into a single vertex.
 	 * @param vertexSet the set of vertices to be merged
 	 * @param g the graph to be modified
-	 * @param combinator object used to combine VertexInfo objects
+	 * @param combinator object used to combine VertexKey objects
 	 * @param toolkit a GraphToolkit to be used to create new 
 	 *	graph components
 	 */
-	public void mergeVertices(Set<VertexType> vertexSet, GraphType g, VertexInfoCombinator<VertexInfo> combinator,
-							   GraphToolkit<GraphType, EdgeInfo, VertexInfo, EdgeType, VertexType> toolkit) {
+	public void mergeVertices(Set<VertexType> vertexSet, GraphType g, VertexKeyCombinator<VertexKey> combinator,
+							   GraphToolkit<GraphType, EdgeKey, VertexKey, EdgeType, VertexType> toolkit) {
 
 		// Special case: if the vertex set contains a single vertex
 		// or is empty, there is nothing to do
@@ -64,18 +64,18 @@ public class MergeVertices <
 				edgeSet.add(e);
 		}
 
-		// Combine all of the VertexInfo objects into a single composite object
-		VertexInfo compositeVertexInfo = null;
+		// Combine all of the VertexKey objects into a single composite object
+		VertexKey compositeVertexKey = null;
 		for (Iterator<VertexType> i = vertexSet.iterator(); i.hasNext(); ) {
 			VertexType v = i.next();
-			if (compositeVertexInfo == null)
-				compositeVertexInfo = toolkit.duplicateVertexInfo(v.getVertexInfo());
+			if (compositeVertexKey == null)
+				compositeVertexKey = toolkit.duplicateVertexKey(v.getVertexKey());
 			else
-				compositeVertexInfo = combinator.combineVertexInfo(compositeVertexInfo, v.getVertexInfo());
+				compositeVertexKey = combinator.combineVertexKey(compositeVertexKey, v.getVertexKey());
 		}
 
 		// Create the new composite vertex
-		VertexType compositeVertex = g.addVertex(compositeVertexInfo, toolkit);
+		VertexType compositeVertex = g.addVertex(compositeVertexKey, toolkit);
 
 		// For each original edge into or out of the vertex set,
 		// create an equivalent edge referencing the composite
@@ -95,9 +95,9 @@ public class MergeVertices <
 				 e.getSource() != e.getTarget())
 				continue;
 
-			g.addEdge(toolkit.duplicateVertexInfo(source.getVertexInfo()),
-					   toolkit.duplicateVertexInfo(target.getVertexInfo()),
-					   toolkit.duplicateEdgeInfo(e.getEdgeInfo()),
+			g.addEdge(toolkit.duplicateVertexKey(source.getVertexKey()),
+					   toolkit.duplicateVertexKey(target.getVertexKey()),
+					   toolkit.duplicateEdgeKey(e.getEdgeKey()),
 					   toolkit);
 		}
 

@@ -17,7 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-// $Revision: 1.2 $
+// $Revision: 1.3 $
 
 package edu.umd.cs.daveho.graph;
 
@@ -28,11 +28,11 @@ import java.util.*;
  * Based on Cormen, et. al, <cite>Introduction to Algorithms</cite>, p. 478.
  */
 public class DepthFirstSearch<
-	GraphType extends Graph<EdgeInfo, VertexInfo, EdgeType, VertexType>,
-	EdgeInfo,
-	VertexInfo,
-	EdgeType extends GraphEdge<VertexType, EdgeInfo>,
-	VertexType extends GraphVertex<VertexInfo>
+	GraphType extends Graph<EdgeKey, VertexKey, EdgeType, VertexType>,
+	EdgeKey,
+	VertexKey,
+	EdgeType extends GraphEdge<VertexType, EdgeKey>,
+	VertexType extends GraphVertex<VertexKey>
 	> {
 
 	private static final int WHITE  = 0;

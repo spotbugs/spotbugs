@@ -17,7 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-// $Revision: 1.1 $
+// $Revision: 1.2 $
 
 package edu.umd.cs.daveho.graph;
 
@@ -29,27 +29,27 @@ import java.util.Comparator;
  * about them.
  */
 public interface GraphToolkit<
-	GraphType extends Graph<EdgeInfo, VertexInfo, EdgeType, VertexType>,
-	EdgeInfo,
-	VertexInfo,
-	EdgeType extends GraphEdge<VertexType, EdgeInfo>,
-	VertexType extends GraphVertex<VertexInfo>
+	GraphType extends Graph<EdgeKey, VertexKey, EdgeType, VertexType>,
+	EdgeKey,
+	VertexKey,
+	EdgeType extends GraphEdge<VertexType, EdgeKey>,
+	VertexType extends GraphVertex<VertexKey>
 	> {
 
 	/** Create a Graph object. */
 	public GraphType createGraph();
 
 	/** Create a GraphVertex object. */
-	public VertexType createVertex(VertexInfo vertexInfo, int label);
+	public VertexType createVertex(VertexKey vertexKey, int label);
 
 	/** Create an GraphEdge object. */
-	public EdgeType createEdge(VertexType source, VertexType target, EdgeInfo edgeInfo);
+	public EdgeType createEdge(VertexType source, VertexType target, EdgeKey edgeKey);
 
-	/** Duplicate an EdgeInfo object. */
-	public EdgeInfo duplicateEdgeInfo(EdgeInfo edgeInfo);
+	/** Duplicate an EdgeKey object. */
+	public EdgeKey duplicateEdgeKey(EdgeKey edgeKey);
 
-	/** Duplicate a VertexInfo object. */
-	public VertexInfo duplicateVertexInfo(VertexInfo vertexInfo);
+	/** Duplicate a VertexKey object. */
+	public VertexKey duplicateVertexKey(VertexKey vertexKey);
 
 }
 

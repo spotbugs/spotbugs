@@ -22,14 +22,14 @@
 package edu.umd.cs.daveho.graph;
 
 /**
- * Interface for an object which combines two VertexInfo objects into
- * a single composite VertexInfo object; used when merging
+ * Interface for an object which combines two VertexKey objects into
+ * a single composite VertexKey object; used when merging
  * a collection of vertices into a single vertex (for example,
  * after finding strongly connected components).
  */
-public interface VertexInfoCombinator<VertexInfo> {
-	/** Combine given VertexInfo objects into a single VertexInfo object. */
-	public VertexInfo combineVertexInfo(VertexInfo a, VertexInfo b);
+public interface VertexKeyCombinator<VertexKey> {
+	/** Combine given VertexKey objects into a single VertexKey object. */
+	public VertexKey combineVertexKey(VertexKey a, VertexKey b);
 }
 
 // vim:ts=4

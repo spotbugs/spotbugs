@@ -17,7 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-// $Revision: 1.2 $
+// $Revision: 1.3 $
 
 package edu.umd.cs.daveho.graph;
 
@@ -27,11 +27,11 @@ import java.util.*;
  * Algorithm to transpose a graph.
  */
 public class Transpose<
-	GraphType extends Graph<EdgeInfo, VertexInfo, EdgeType, VertexType>,
-	EdgeInfo,
-	VertexInfo,
-	EdgeType extends GraphEdge<VertexType, EdgeInfo>,
-	VertexType extends GraphVertex<VertexInfo>
+	GraphType extends Graph<EdgeKey, VertexKey, EdgeType, VertexType>,
+	EdgeKey,
+	VertexKey,
+	EdgeType extends GraphEdge<VertexType, EdgeKey>,
+	VertexType extends GraphVertex<VertexKey>
 	> {
 
 	/** Constructor. */
@@ -45,7 +45,7 @@ public class Transpose<
 	 * @return the transposed Graph
 	 */
 	public GraphType transpose(GraphType orig,
-		GraphToolkit<GraphType, EdgeInfo, VertexInfo, EdgeType, VertexType> toolkit) {
+		GraphToolkit<GraphType, EdgeKey, VertexKey, EdgeType, VertexType> toolkit) {
 
 		GraphType trans = toolkit.createGraph();
 
@@ -53,22 +53,22 @@ public class Transpose<
 		// vertex in the transposed graph
 		for (Iterator<VertexType> i = orig.getVertexIterator(); i.hasNext(); ) {
 			VertexType v = (VertexType) i.next();
-			trans.addVertex(toolkit.duplicateVertexInfo(v.getVertexInfo()), toolkit);
+			trans.addVertex(toolkit.duplicateVertexKey(v.getVertexKey()), toolkit);
 		}
 
 		// Ensure that vertex labels in the transposed graph
 		// match vertex labels in the original graph
-		LabelEquivalentVertices<GraphType, EdgeInfo, VertexInfo, EdgeType, VertexType> l =
-			new LabelEquivalentVertices<GraphType, EdgeInfo, VertexInfo, EdgeType, VertexType>();
+		LabelEquivalentVertices<GraphType, EdgeKey, VertexKey, EdgeType, VertexType> l =
+			new LabelEquivalentVertices<GraphType, EdgeKey, VertexKey, EdgeType, VertexType>();
 		l.labelEquivalentVertices(trans, orig);
 
 		// For each edge in the original graph, create a reversed edge
 		// in the transposed graph
 		for (Iterator<EdgeType> i = orig.getEdgeIterator(); i.hasNext(); ) {
 			EdgeType e = i.next();
-			trans.addEdge(toolkit.duplicateVertexInfo(e.getTarget().getVertexInfo()),
-						   toolkit.duplicateVertexInfo(e.getSource().getVertexInfo()),
-						   toolkit.duplicateEdgeInfo(e.getEdgeInfo()),
+			trans.addEdge(toolkit.duplicateVertexKey(e.getTarget().getVertexKey()),
+						   toolkit.duplicateVertexKey(e.getSource().getVertexKey()),
+						   toolkit.duplicateEdgeKey(e.getEdgeKey()),
 						   toolkit);
 		}
 
