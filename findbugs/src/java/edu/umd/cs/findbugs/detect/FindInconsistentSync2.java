@@ -21,22 +21,22 @@ package edu.umd.cs.findbugs.detect;
 
 import edu.umd.cs.daveho.ba.*;
 import edu.umd.cs.findbugs.*;
+import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.*;
 import org.apache.bcel.generic.*;
-import java.util.HashSet;
-import java.util.Iterator;
+import java.util.*;
 
 public class FindInconsistentSync2 implements Detector {
 	private BugReporter bugReporter;
-	private HashSet<Method> lockedNonpublicMethodSet;
+	//private HashSet<Method> lockedNonpublicMethodSet;
 
 	public FindInconsistentSync2(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
-		this.lockedNonpublicMethodSet = new HashSet<Method>();
+		//this.lockedNonpublicMethodSet = new HashSet<Method>();
 	}
 
 	public void visitClassContext(ClassContext classContext) {
-		lockedNonpublicMethodSet.clear();
+		//lockedNonpublicMethodSet.clear();
 
 		try {
 			findLockedNonpublicMethods(classContext);
@@ -61,18 +61,7 @@ public class FindInconsistentSync2 implements Detector {
 
 		selfCalls.execute();
 
-		// Find all obviously locked self-call sites
-		for (Iterator<CallSite> i = selfCalls.callSiteIterator(); i.hasNext(); ) {
-			CallSite callSite = i.next();
-
-			Method method = callSite.getMethod();
-
-			// Get the LockDataflow for the site
-			LockDataflow lockDataflow = classContext.getLockDataflow(method);
-			LockSet lockSet = lockDataflow.getFactAtLocation(callSite.getLocation());
-
-			// Find the ValueNumber of the instance
-		}
+		Set<CallSite> obviouslyLockedSites = findObviouslyLockedCallSites(classContext, selfCalls);
 
 /*
 		JavaClass javaClass = classContext.getJavaClass();
@@ -90,6 +79,49 @@ public class FindInconsistentSync2 implements Detector {
 			}
 		}
 */
+	}
+
+	private Set<CallSite> findObviouslyLockedCallSites(ClassContext classContext, SelfCalls selfCalls)
+		throws CFGBuilderException, DataflowAnalysisException {
+		ConstantPoolGen cpg = classContext.getConstantPoolGen();
+
+		// Find all obviously locked call sites
+		HashSet<CallSite> obviouslyLockedSites = new HashSet<CallSite>();
+		for (Iterator<CallSite> i = selfCalls.callSiteIterator(); i.hasNext(); ) {
+			CallSite callSite = i.next();
+			Method method = callSite.getMethod();
+			Location location = callSite.getLocation();
+			InstructionHandle handle = location.getHandle();
+
+			// Only instance method calls qualify as candidates for
+			// "obviously locked"
+			Instruction ins = handle.getInstruction();
+			if (ins.getOpcode() == Constants.INVOKESTATIC)
+				continue;
+
+			// Get lock set for site
+			LockDataflow lockDataflow = classContext.getLockDataflow(method);
+			LockSet lockSet = lockDataflow.getFactAtLocation(location);
+
+			// Get value number frame for site
+			ValueNumberDataflow vnaDataflow = classContext.getValueNumberDataflow(method);
+			ValueNumberFrame frame = vnaDataflow.getFactAtLocation(location);
+
+			// Find the ValueNumber of the receiver object
+			int numConsumed = ins.consumeStack(cpg);
+			if (numConsumed == Constants.UNPREDICTABLE)
+				throw new AnalysisException("Unpredictable stack consumption: " + handle);
+			ValueNumber instance = frame.getStackValue(numConsumed);
+
+			// Is the instance locked?
+			int lockCount = lockSet.getLockCount(instance.getNumber());
+			if (lockCount > 0) {
+				// This is a locked call site
+				obviouslyLockedSites.add(callSite);
+			}
+		}
+
+		return obviouslyLockedSites;
 	}
 
 /*
