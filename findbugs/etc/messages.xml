@@ -513,6 +513,15 @@ It is a fast detector.
     </Details>
   </Detector>
 
+  <Detector class="edu.umd.cs.findbugs.detect.SuperfluousInstanceOf">
+    <Details>
+<![CDATA[
+<p> This detector looks for type checks using the instanceof operator where the determination
+can be done statically. It is a fast detector.
+]]>
+    </Details>
+  </Detector>
+  
   <Detector class="edu.umd.cs.findbugs.detect.FindBugsSummaryStats">
     <Details>
 <![CDATA[
@@ -2322,7 +2331,18 @@ field index is 0. As ResultSet fields start at index 1, this is always a mistake
     </Details>
   </BugPattern>
   
-    <!--
+  <BugPattern type="SIO_SUPERFLUOUS_INSTANCEOF">
+    <ShortDescription>Unnecessary type check done using instanceof operator</ShortDescription>
+    <LongDescription>Unnecessary type check done using instanceof operator when it can be determined statically</LongDescription>
+    <Details>
+<![CDATA[
+<p> Type check performed using the instanceof operator where it can be statically determined whether the object
+is of the type requested. 
+]]>
+    </Details>
+  </BugPattern>
+  
+   <!--
   **********************************************************************
    BugCodes
   **********************************************************************
@@ -2398,4 +2418,5 @@ field index is 0. As ResultSet fields start at index 1, this is always a mistake
   <BugCode abbrev="BOA">Badly Overridden Adapter</BugCode>
   <BugCode abbrev="SF">Switch case falls thru</BugCode>
   <BugCode abbrev="BRSA">Bad ResultSet access</BugCode>
-</MessageCollection>
+  <BugCode abbrev="SIO">Superfluous instanceof</BugCode>
+  </MessageCollection>

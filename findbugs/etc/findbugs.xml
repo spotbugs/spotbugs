@@ -119,7 +119,9 @@
      reports="BOA_BADLY_OVERRIDDEN_ADAPTER"/>
    <Detector class="edu.umd.cs.findbugs.detect.BadResultSetAccess" speed="fast"
    	 reports="BRSA_BAD_RESULTSET_ACCESS"/>
-  <Detector class="edu.umd.cs.findbugs.detect.FindBugsSummaryStats" speed="fast" />
+   <Detector class="edu.umd.cs.findbugs.detect.SuperfluousInstanceOf" speed="fast"
+   	 reports="SIO_SUPERFLUOUS_INSTANCEOF"/>  
+   <Detector class="edu.umd.cs.findbugs.detect.FindBugsSummaryStats" speed="fast" />
 
   <BugPattern abbrev="SW" type="SW_SWING_METHODS_INVOKED_IN_SWING_THREAD" category="CORRECTNESS" 
     experimental="true"/>
@@ -262,4 +264,6 @@
     experimental="true"/>
   <BugPattern abbrev="BRSA" type="BRSA_BAD_RESULTSET_ACCESS" category="CORRECTNESS"
     experimental="true"/>
+  <BugPattern abbrev="SIO" type="SIO_SUPERFLUOUS_INSTANCEOF" category="CORRECTNESS"
+    expermental="true"/>
 </FindbugsPlugin>
