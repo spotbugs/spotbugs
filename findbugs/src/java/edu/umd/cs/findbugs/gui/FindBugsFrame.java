@@ -366,12 +366,14 @@ public class FindBugsFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_addSourceDirButtonActionPerformed
 
     private void addJarButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addJarButtonActionPerformed
-	// if (!jarTextField.isEmpty()) {
-	//    Project project = getCurrentProject();
-	//    String jarFile = jarTextField.getValue();
-	//    project.addJar(jarFile);
-	//    jarTextField.clear();
-	// }
+	String jarFile = jarNameTextField.getText();
+	if (!jarFile.equals("")) {
+	    Project project = getCurrentProject();
+	    project.addJar(jarFile);
+	    DefaultListModel listModel = (DefaultListModel)  jarFileList.getModel();
+	    listModel.addElement(jarFile);
+	    jarNameTextField.setText("");
+	}
     }//GEN-LAST:event_addJarButtonActionPerformed
     
     /** Exit the Application */
@@ -406,6 +408,9 @@ public class FindBugsFrame extends javax.swing.JFrame {
         DefaultTreeCellRenderer renderer = new DefaultTreeCellRenderer();
         
         navigatorTree.setCellRenderer(new FindBugsFrame.MyCellRenderer());
+	
+	jarFileList.setModel(new DefaultListModel());
+	sourceDirList.setModel(new DefaultListModel());
     }
     
     /**
@@ -414,7 +419,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
      * @param e the TreeSelectionEvent
      */
     private void navigatorTreeSelectionChanged(TreeSelectionEvent e) {
-         DefaultMutableTreeNode node = (DefaultMutableTreeNode) navigatorTree.getLastSelectedPathComponent();
+        DefaultMutableTreeNode node = (DefaultMutableTreeNode) navigatorTree.getLastSelectedPathComponent();
 
         if (node == null)
             return;
@@ -424,9 +429,50 @@ public class FindBugsFrame extends javax.swing.JFrame {
             // Project collection node - there is no view associated with this node
             setView("EmptyPanel");
         } else if (nodeInfo instanceof Project) {
-            // TODO: synch dialog with project
+            synchProject((Project) nodeInfo);
             setView("EditProjectPanel");
         }
+    }
+  
+    /**
+     * Get the currently selected project.
+     * @return the current project, or null if no project is selected
+     *   (which should only be possible if the root node is selected)
+     */
+    private Project getCurrentProject() {
+	TreePath selPath = navigatorTree.getSelectionPath();
+	// Work backwards from end until we get to a project.
+	Object[] nodeList = selPath.getPath();
+	for (int i = nodeList.length - 1; i >= 0; --i) {
+	    DefaultMutableTreeNode node = (DefaultMutableTreeNode) nodeList[i];
+	    Object nodeInfo = node.getUserObject();
+	    if (nodeInfo instanceof Project)
+		return (Project) nodeInfo;
+	}
+	return null;
+    }
+    
+    /**
+     * Synchronize the edit project dialog with given project.
+     * @param project the selected project
+     */
+    private void synchProject(Project project) {
+	// Clear text fields
+	jarNameTextField.setText("");
+	srcDirTextField.setText("");
+
+	// Populate jar and source dir lists
+	DefaultListModel jarListModel = (DefaultListModel) jarFileList.getModel();
+	jarListModel.clear();
+	for (int i = 0; i < project.getNumJarFiles(); ++i) {
+	    jarListModel.addElement(project.getJarFile(i));
+	}
+	
+	DefaultListModel srcDirListModel = (DefaultListModel) sourceDirList.getModel();
+	srcDirListModel.clear();
+	for (int i = 0; i < project.getNumSourceDirs(); ++i) {
+	    srcDirListModel.addElement(project.getSourceDir(i));
+	}
     }
     
     public void exitFindBugs() {
