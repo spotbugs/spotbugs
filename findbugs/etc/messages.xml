@@ -12,7 +12,7 @@
 <![CDATA[
 <p> Looks for uses of this.getClass().getResource(...), which can give
 unexpected results if the class is extended by a class in
-another package.
+another package.</p>
 
 ]]>
     </Details>
@@ -20,7 +20,7 @@ another package.
   <Detector class="edu.umd.cs.findbugs.detect.VolatileUsage">
     <Details>
 <![CDATA[
-<p> Looks for bug patterns in the usage of volatile fields.
+<p> Looks for bug patterns in the usage of volatile fields.</p>
 ]]>
     </Details>
   </Detector>
@@ -28,7 +28,7 @@ another package.
   <Detector class="edu.umd.cs.findbugs.detect.EmptyZipFileEntry">
     <Details>
 <![CDATA[
-<p> This looks for creation of empty zip file entries.
+<p> This looks for creation of empty zip file entries.</p>
 ]]>
     </Details>
   </Detector>
@@ -37,7 +37,7 @@ another package.
     <Details>
 <![CDATA[
 <p> This detector is just a hook for testing new detectors.
-Normally, this detector does nothing.
+Normally, this detector does nothing.</p>
 ]]>
     </Details>
   </Detector>
@@ -46,7 +46,7 @@ Normally, this detector does nothing.
     <Details>
 <![CDATA[
 <p> This detector looks for switch statements containing fall through.
-It is a fast detector.
+It is a fast detector.</p>
 ]]>
     </Details>
   </Detector>
@@ -55,7 +55,7 @@ It is a fast detector.
     <Details>
 <![CDATA[
 <p> This detector looks for places where a field is assigned
-by reading the value of the same field.  It is a fast detector.
+by reading the value of the same field.  It is a fast detector.</p>
 ]]>
     </Details>
   </Detector>
@@ -65,7 +65,7 @@ by reading the value of the same field.  It is a fast detector.
 <![CDATA[
 <p> This detector looks for suspicious uses of non-short-circuiting
 boolean operators (<code>|</code> and <code>&amp;</code> instead of
-<code>||</code> and <code>&amp;&amp;</code>).
+<code>||</code> and <code>&amp;&amp;</code>).</p>
 ]]>
     </Details>
   </Detector>
@@ -73,7 +73,7 @@ boolean operators (<code>|</code> and <code>&amp;</code> instead of
   <Detector class="edu.umd.cs.findbugs.detect.DontCatchIllegalMonitorStateException">
     <Details>
 <![CDATA[
-<p> This detector looks for try-catch blocks that catch a IllegalMonitorStateException.
+<p> This detector looks for try-catch blocks that catch a IllegalMonitorStateException.</p>
 ]]>
     </Details>
   </Detector>
@@ -81,7 +81,7 @@ boolean operators (<code>|</code> and <code>&amp;</code> instead of
   <Detector class="edu.umd.cs.findbugs.detect.FindFloatMath">
     <Details>
 <![CDATA[
-<p> This detector looks for uses of floating path math.
+<p> This detector looks for uses of floating path math.</p>
 ]]>
     </Details>
   </Detector>
@@ -89,7 +89,7 @@ boolean operators (<code>|</code> and <code>&amp;</code> instead of
     <Details>
 <![CDATA[
 <p> This detector looks for violations of the idioms for writing
-cloneable classes.
+cloneable classes.</p>
 ]]>
     </Details>
   </Detector>
@@ -97,7 +97,7 @@ cloneable classes.
     <Details>
 <![CDATA[
 <p> This detector looks for code where an exception is caught,
-but nothing is done to handle the exception.  It is a fast detector.
+but nothing is done to handle the exception.  It is a fast detector.</p>
 ]]>
     </Details>
   </Detector>
@@ -106,7 +106,7 @@ but nothing is done to handle the exception.  It is a fast detector.
 <![CDATA[
 <p> This detector looks for calls to pointless methods,
 such as the no-argument String constructor.
-It is a fast detector.
+It is a fast detector.</p>
 ]]>
     </Details>
   </Detector>
@@ -115,7 +115,7 @@ It is a fast detector.
     <Details>
 <![CDATA[
 <p> This detector looks for instances of double checked locking.
-It is a fast detector.
+It is a fast detector.</p>
 ]]>
     </Details>
   </Detector>
@@ -124,7 +124,7 @@ It is a fast detector.
     <Details>
 <![CDATA[
 <p> This detector looks for calls to finalize() and other finalizer-related
-issues.  It is a fast detector.
+issues.  It is a fast detector.</p>
 ]]>
     </Details>
   </Detector>
@@ -133,7 +133,7 @@ issues.  It is a fast detector.
     <Details>
 <![CDATA[
 <p> This detector looks for problems in the definition of the hashCode() and equals()
-methods.  It is a fast detector.
+methods.  It is a fast detector.</p>
 ]]>
     </Details>
   </Detector>
@@ -142,7 +142,7 @@ methods.  It is a fast detector.
     <Details>
 <![CDATA[
 <p> This detector looks for calls to notify() that don't seem
-to modify mutable object state.  It is a fast detector.
+to modify mutable object state.  It is a fast detector.</p>
 ]]>
     </Details>
   </Detector>
@@ -151,7 +151,7 @@ to modify mutable object state.  It is a fast detector.
     <Details>
 <![CDATA[
 <p> This detector looks for methods that return mutable static data.
-It is a fast detector.
+It is a fast detector.</p>
 ]]>
     </Details>
   </Detector>
@@ -160,7 +160,7 @@ It is a fast detector.
     <Details>
 <![CDATA[
 <p> This detector looks for calls to Thread.run().  It is a fast
-detector.
+detector.</p>
 ]]>
     </Details>
   </Detector>
@@ -169,7 +169,7 @@ detector.
     <Details>
 <![CDATA[
 <p> This detector looks for loops that spin reading from a field.
-It is a fast detector.
+It is a fast detector.</p>
 ]]>
     </Details>
   </Detector>
@@ -178,7 +178,7 @@ It is a fast detector.
     <Details>
 <![CDATA[
 <p> This detector looks for calls to wait() with two (or more) locks held.
-It is a slow detector.
+It is a slow detector.</p>
 ]]>
     </Details>
   </Detector>
@@ -187,7 +187,7 @@ It is a slow detector.
     <Details>
 <![CDATA[
 <p> This detector looks for calls to wait() not in a conditional or loop.
-It is a fast detector.
+It is a fast detector.</p>
 ]]>
     </Details>
   </Detector>
@@ -196,7 +196,7 @@ It is a fast detector.
     <Details>
 <![CDATA[
 <p> This detector looks for reads of uninitialized fields in constructors.
-It is a fast detector.
+It is a fast detector.</p>
 ]]>
     </Details>
   </Detector>
@@ -205,7 +205,7 @@ It is a fast detector.
     <Details>
 <![CDATA[
 <p> This detector looks for get and set methods where the get is unsynchronized
-while the set is synchronized.  It is a fast detector.
+while the set is synchronized.  It is a fast detector.</p>
 ]]>
     </Details>
   </Detector>
@@ -214,7 +214,7 @@ while the set is synchronized.  It is a fast detector.
     <Details>
 <![CDATA[
 <p> This detector looks for potentially circular class initialization
-dependencies.  It is a fast detector.
+dependencies.  It is a fast detector.</p>
 ]]>
     </Details>
   </Detector>
@@ -223,7 +223,7 @@ dependencies.  It is a fast detector.
     <Details>
 <![CDATA[
 <p> This iterator looks for problems in how Iterator classes are defined.
-It is a fast detector.
+It is a fast detector.</p>
 ]]>
     </Details>
   </Detector>
@@ -232,7 +232,7 @@ It is a fast detector.
     <Details>
 <![CDATA[
 <p> This detector looks for fields that are accessed in an inconsistent manner
-with respect to locking.  It is a fast detector.
+with respect to locking.  It is a fast detector.</p>
 ]]>
     </Details>
   </Detector>
@@ -242,7 +242,7 @@ with respect to locking.  It is a fast detector.
 <![CDATA[
 <p> This detector looks for comparisons of String objects using the == or !=
 operators.
- It is a fast detector.
+ It is a fast detector.</p>
 ]]>
     </Details>
   </Detector>
@@ -251,7 +251,7 @@ operators.
     <Details>
 <![CDATA[
 <p> This detector looks for synchronization on objects read from
-modified fields.  It is a fast detector.
+modified fields.  It is a fast detector.</p>
 ]]>
     </Details>
   </Detector>
@@ -260,7 +260,7 @@ modified fields.  It is a fast detector.
     <Details>
 <![CDATA[
 <p> This detector looks for static fields that may be modified by
-malicious code.  It is a fast detector.
+malicious code.  It is a fast detector.</p>
 ]]>
     </Details>
   </Detector>
@@ -268,7 +268,7 @@ malicious code.  It is a fast detector.
   <Detector class="edu.umd.cs.findbugs.detect.Naming" >
     <Details>
 <![CDATA[
-<p> This detector looks for suspiciously-named methods.  It is a fast detector.
+<p> This detector looks for suspiciously-named methods.  It is a fast detector.</p>
 ]]>
     </Details>
   </Detector>
@@ -277,7 +277,7 @@ malicious code.  It is a fast detector.
     <Details>
 <![CDATA[
 <p> This detector looks for calls to InputStream.read() or InputStream.skip() where the
-return value is ignored.  It is a fast detector.
+return value is ignored.  It is a fast detector.</p>
 ]]>
     </Details>
   </Detector>
@@ -286,7 +286,7 @@ return value is ignored.  It is a fast detector.
     <Details>
 <![CDATA[
 <p> This detector looks for potential problems in the implementation
-of Serializable classes.  It is a fast detector.
+of Serializable classes.  It is a fast detector.</p>
 ]]>
     </Details>
   </Detector>
@@ -294,7 +294,7 @@ of Serializable classes.  It is a fast detector.
   <Detector class="edu.umd.cs.findbugs.detect.StartInConstructor" >
     <Details>
 <![CDATA[
-<p> This detector looks for constructors that start threads.  It is a fast detector.
+<p> This detector looks for constructors that start threads.  It is a fast detector.</p>
 ]]>
     </Details>
   </Detector>
@@ -302,7 +302,7 @@ of Serializable classes.  It is a fast detector.
   <Detector class="edu.umd.cs.findbugs.detect.UnreadFields" >
     <Details>
 <![CDATA[
-<p> This detector looks for fields whose value is never read.  It is a fast detector.
+<p> This detector looks for fields whose value is never read.  It is a fast detector.</p>
 ]]>
     </Details>
   </Detector>
@@ -311,7 +311,7 @@ of Serializable classes.  It is a fast detector.
     <Details>
 <![CDATA[
 <p> This detector looks for calls to wait() that are not in a loop.
-It is a fast detector.
+It is a fast detector.</p>
 ]]>
     </Details>
   </Detector>
@@ -322,7 +322,7 @@ It is a fast detector.
 <p> This detector looks for instances of double checked locking.
 It is implemented using the ByteCodePattern class.  You might want to
 take a look at its source code as an example of an easy way to implement a bug
-pattern detector.  It is a fairly fast detector.
+pattern detector.  It is a fairly fast detector.</p>
 ]]>
     </Details>
   </Detector>
@@ -331,7 +331,7 @@ pattern detector.  It is a fairly fast detector.
     <Details>
 <![CDATA[
 <p> This detector looks for calls to methods where the return value
-is suspiciously ignored.  It is a slow detector.
+is suspiciously ignored.  It is a slow detector.</p>
 ]]>
     </Details>
   </Detector>
@@ -341,7 +341,7 @@ is suspiciously ignored.  It is a slow detector.
 <![CDATA[
 <p> This detector looks for places where a null pointer exception might
 occur.  It also looks for redundant comparisons of reference values against
-null.  It is a moderately fast detector.
+null.  It is a moderately fast detector.</p>
 ]]>
     </Details>
   </Detector>
@@ -351,7 +351,7 @@ null.  It is a moderately fast detector.
 <![CDATA[
 <p> This detector looks for IO stream objects which do not escape the
 method and do not appear to be closed on all paths out of the method.
-It is a moderately fast detector.
+It is a moderately fast detector.</p>
 ]]>
     </Details>
   </Detector>
@@ -361,7 +361,7 @@ It is a moderately fast detector.
 <![CDATA[
 <p> This detector looks for methods that return either arrays or an explicit null reference.
 Returning a zero length array is generally preferred in this context to returning a null reference.
-It is a fast detector.
+It is a fast detector.</p>
 ]]>
     </Details>
   </Detector>
@@ -370,7 +370,7 @@ It is a fast detector.
     <Details>
 <![CDATA[
 <p> This detector looks for control flow statements which have no effect.
-It is a fast detector.
+It is a fast detector.</p>
 ]]>
     </Details>
   </Detector>
@@ -382,7 +382,7 @@ It is a fast detector.
 locks which are acquired, but not released on all paths out of the method.&nbsp;
 It is a moderately fast detector.&nbsp; Note that in order to use this
 detector, you need to have the <code>java.util.concurrent</code> package
-in the auxiliary classpath (or be analyzing the package itself).
+in the auxiliary classpath (or be analyzing the package itself).</p>
 ]]>
     </Details>
   </Detector>
@@ -393,7 +393,7 @@ in the auxiliary classpath (or be analyzing the package itself).
 <p> This detector looks for places where two reference values are compared
 with the == or != operator, and the class is of a type (such as <code>java.lang.String</code>)
 where comparing reference values is generally an error.  It is a moderately
-fast detector.
+fast detector.</p>
 ]]>
     </Details>
   </Detector>
@@ -404,7 +404,7 @@ fast detector.
 <p> This detector looks for calls to wait(), notify(), or notifyAll()
 which do not appear to be made on an object which is currently locked.&nbsp;
 It is a moderately fast detector.&nbsp; <b>This detector is disabled because
-it is still under development, and produces too many false positives.</b>
+it is still under development, and produces too many false positives.</b></p>
 ]]>
     </Details>
   </Detector>
@@ -413,7 +413,7 @@ it is still under development, and produces too many false positives.</b>
     <Details>
 <![CDATA[
 <p> This detector looks for fields that are accessed in an inconsistent manner
-with respect to locking.  It is a slow detector.
+with respect to locking.  It is a slow detector.</p>
 ]]>
     </Details>
   </Detector>
@@ -422,7 +422,7 @@ with respect to locking.  It is a slow detector.
     <Details>
 <![CDATA[
 <p> This detector looks for self assignments of local variables.
-It is a fast detector.
+It is a fast detector.</p>
 ]]>
     </Details>
   </Detector>
@@ -431,7 +431,7 @@ It is a fast detector.
     <Details>
 <![CDATA[
 <p> This detector looks for suspicious bitwise logical expressions.
-It is a fast detector.
+It is a fast detector.</p>
 ]]>
     </Details>
   </Detector>
@@ -440,7 +440,7 @@ It is a fast detector.
     <Details>
 <![CDATA[
 <p> This detector looks for lazy field initialization where the
-field is not volatile.  It is a moderately fast detector.
+field is not volatile.  It is a moderately fast detector.</p>
 ]]>
     </Details>
   </Detector>
@@ -449,7 +449,7 @@ field is not volatile.  It is a moderately fast detector.
     <Details>
 <![CDATA[
 <p> This detector looks for ordinary synchronization performed
-on JSR166 locks.  It is a moderately fast detector.
+on JSR166 locks.  It is a moderately fast detector.</p>
 ]]>
     </Details>
   </Detector>
@@ -458,7 +458,7 @@ on JSR166 locks.  It is a moderately fast detector.
     <Details>
 <![CDATA[
 <p> This detector looks for private methods that are never called.
-It is a fast detector.
+It is a fast detector.</p>
 ]]>
     </Details>
   </Detector>
@@ -467,7 +467,7 @@ It is a fast detector.
     <Details>
 <![CDATA[
 <p> This detector looks for String concatenation in loops using +.
-It is a fast detector.
+It is a fast detector.</p>
 ]]>
     </Details>
   </Detector>
@@ -478,7 +478,7 @@ It is a fast detector.
 <p> This detector looks for code that converts Collections to arrays
 using the toArray() method that takes a prototype array, passing
 an array argument which is zero-length.
-It is a fast detector.
+It is a fast detector.</p>
 ]]>
     </Details>
   </Detector>
@@ -488,7 +488,7 @@ It is a fast detector.
 <![CDATA[
 <p> This detector looks for class level fields that are masked by
 local fields defined in methods.
-It is a fast detector.
+It is a fast detector.</p>
 ]]>
     </Details>
   </Detector>
@@ -497,7 +497,7 @@ It is a fast detector.
     <Details>
 <![CDATA[
 <p> This detector looks for JUnit tests that are malformed.
-It is a fast detector.
+It is a fast detector.</p>
 ]]>
     </Details>
   </Detector>
@@ -506,7 +506,7 @@ It is a fast detector.
     <Details>
 <![CDATA[
 <p> This detector looks for code that extends an Adapter class and overrides a Listener
-method with the wrong signature. It is a fast detector.
+method with the wrong signature. It is a fast detector.</p>
 ]]>
     </Details>
   </Detector>
@@ -516,7 +516,7 @@ method with the wrong signature. It is a fast detector.
 <![CDATA[
 <p> This detector looks for calls to getXXX or setXXX methods of a result set where the
 field index is 0. As ResultSet fields start at index 1, this is always a mistake.
-It is a fast detector.
+It is a fast detector.</p>
 ]]>
     </Details>
   </Detector>
@@ -525,7 +525,7 @@ It is a fast detector.
     <Details>
 <![CDATA[
 <p> This detector looks for type checks using the instanceof operator where the determination
-can be done statically. It is a fast detector.
+can be done statically. It is a fast detector.</p>
 ]]>
     </Details>
   </Detector>
@@ -533,7 +533,7 @@ can be done statically. It is a fast detector.
   <Detector class="edu.umd.cs.findbugs.detect.FindBugsSummaryStats">
     <Details>
 <![CDATA[
-<p> This detector just collects summary statistics information about the analysis process. 
+<p> This detector just collects summary statistics information about the analysis process. </p>
 ]]>
     </Details>
   </Detector>
@@ -553,7 +553,7 @@ can be done statically. It is a fast detector.
 <p> This method defines a local variable with the same name as a field
 in this class or a superclass.  This may cause the method to
 read an uninitialized value from the field, leave the field uninitialized,
-or both.
+or both.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -566,7 +566,7 @@ or both.
 <p> This class defines a field with the same name as a visible
 instance field in a superclass.  This is confusing, and
 may indicate an error if methods update or access one of
-the fields when they wanted the other.
+the fields when they wanted the other.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -577,14 +577,14 @@ the fields when they wanted the other.
     <Details>
 <![CDATA[
 <p>(<a href="http://java.sun.com/developer/JDCTechTips/2003/tt1208.html#1">From JDC Tech Tip</a>): The Swing methods
-show, setVisible and pack will create the associated peer for the frame. 
+show(), setVisible(), and pack() will create the associated peer for the frame. 
 With the creation of the peer, the system creates the event dispatch thread. 
 This makes things problematic because the event dispatch thread could be notifying 
 listeners while pack and validate are still processing. This situation could result in 
 two threads going through the Swing component-based GUI -- it's a serious flaw that 
 could result in deadlocks or other related threading issues. A pack call causes 
 components to be realized. As they are being realized (that is, not necessarily 
-visible), they could trigger listener notification on the event dispatch thread.
+visible), they could trigger listener notification on the event dispatch thread.</p>
 
 ]]>
     </Details>
@@ -602,7 +602,7 @@ you want. With a volatile reference to an array, reads and writes of
 the reference to the array are treated as volatile, but the array elements
 are non-volatile. To get volatile array elements, you will need to use
 one of the atomic array classes in java.util.concurrent (provided
-in Java 5.0).
+in Java 5.0).</p>
 ]]>
     </Details>
   </BugPattern>
@@ -614,7 +614,7 @@ in Java 5.0).
 <![CDATA[
 <p>Calling <code>this.getClass().getResource(...)</code> could give
 results other than expected if this class is extended by a class in 
-another package.
+another package.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -626,7 +626,7 @@ another package.
     <Details>
 <![CDATA[
 <p>This bug pattern is only generated by new, incompletely implemented
-bug detectors.
+bug detectors.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -637,12 +637,12 @@ bug detectors.
     <LongDescription>Empty zip file entry created in {1}</LongDescription>
     <Details>
 <![CDATA[
-<p>The code calls <code>putNextEntry</code>, immediately
-followed by a call to <code>closeEntry</code>. This results
+<p>The code calls <code>putNextEntry()</code>, immediately
+followed by a call to <code>closeEntry()</code>. This results
 in an empty ZipFile entry. The contents of the entry
 should be written to the ZipFile between the calls to 
-<code>putNextEntry</code> and
-<code>closeEntry</code>.
+<code>putNextEntry()</code> and
+<code>closeEntry()</code>.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -652,12 +652,12 @@ should be written to the ZipFile between the calls to
     <LongDescription>Empty jar file entry created in {1}</LongDescription>
     <Details>
 <![CDATA[
-<p>The code calls <code>putNextEntry</code>, immediately
-followed by a call to <code>closeEntry</code>. This results
+<p>The code calls <code>putNextEntry()</code>, immediately
+followed by a call to <code>closeEntry()</code>. This results
 in an empty JarFile entry. The contents of the entry
 should be written to the JarFile between the calls to 
-<code>putNextEntry</code> and
-<code>closeEntry</code>.
+<code>putNextEntry()</code> and
+<code>closeEntry()</code>.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -669,7 +669,7 @@ should be written to the JarFile between the calls to
 <![CDATA[
 <p>IllegalMonitorStateException is generally only
 	thrown in case of a design flaw in your code (calling wait or
-	notify on an object you do not hold a lock on).
+	notify on an object you do not hold a lock on).</p>
 ]]>
     </Details>
   </BugPattern>
@@ -683,7 +683,7 @@ should be written to the JarFile between the calls to
 <p>
 	The method performs math operations using floating point precision.
 	Floating point precision is very imprecise. For example,
-	16777216.0f + 1.0f = 16777216.0f. Consider using double math instead.
+	16777216.0f + 1.0f = 16777216.0f. Consider using double math instead.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -695,7 +695,7 @@ should be written to the JarFile between the calls to
 <![CDATA[
 <p>
 	Class implements Cloneable but does not define or
-	use clone method.
+	use clone method.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -710,10 +710,10 @@ and is not final.
 If this class ("<i>A</i>") is extended by a subclass ("<i>B</i>"),
 and the subclass <i>B</i> calls super.clone(), then it is likely that
 <i>B</i>'s clone() method will return an object of type <i>A</i>,
-which violates the standard contract for clone().
+which violates the standard contract for clone().</p>
 
 <p> If all clone() methods call super.clone(), then they are guaranteed
-to use Object.clone(), which always returns an object of the correct type.
+to use Object.clone(), which always returns an object of the correct type.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -725,7 +725,7 @@ to use Object.clone(), which always returns an object of the correct type.
 <![CDATA[
   <p> This method might drop an exception.&nbsp; In general, exceptions
   should be handled or reported in some way, or they should be thrown
-  out of the method.
+  out of the method.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -736,7 +736,7 @@ to use Object.clone(), which always returns an object of the correct type.
 <![CDATA[
   <p> This method might ignore an exception.&nbsp; In general, exceptions
   should be handled or reported in some way, or they should be thrown
-  out of the method.
+  out of the method.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -748,7 +748,7 @@ to use Object.clone(), which always returns an object of the correct type.
   <p> Invoking System.exit shuts down the entire Java virtual machine. This
 	should only been done when it is appropriate. Such calls make it 
 	hard or impossible for your code to be invoked by other code.
-	Consider throwing a RuntimeException instead.
+	Consider throwing a RuntimeException instead.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -760,7 +760,7 @@ to use Object.clone(), which always returns an object of the correct type.
   <p> Using the <code>java.lang.String(String)</code> constructor wastes memory
   because the object so constructed will be functionally indistinguishable
   from the <code>String</code> passed as a parameter.&nbsp; Just use the
-  argument <code>String</code> directly.
+  argument <code>String</code> directly.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -776,7 +776,7 @@ to use Object.clone(), which always returns an object of the correct type.
   be functionally indistinguishable from the empty string constant
   <code>""</code>.&nbsp; Java guarantees that identical string constants
   will be represented by the same <code>String</code> object.&nbsp; Therefore,
-  you should just use the empty string constant directly.
+  you should just use the empty string constant directly.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -786,7 +786,7 @@ to use Object.clone(), which always returns an object of the correct type.
     <Details>
 <![CDATA[
   <p> Calling <code>String.toString()</code> is just a redundant operation.
-  Just use the String.
+  Just use the String.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -801,7 +801,7 @@ to use Object.clone(), which always returns an object of the correct type.
   the garbage collector in routines such as close or finalize methods
   has led to huge performance black holes. Garbage collection 
 	can be expensive. Any situation that forces hundreds or thousands
-	of garbage collections will bring the machine to a crawl.
+	of garbage collections will bring the machine to a crawl.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -813,7 +813,7 @@ to use Object.clone(), which always returns an object of the correct type.
   <p> Creating new instances of <code>java.lang.Boolean</code> wastes
   memory, since <code>Boolean</code> objects are immutable and there are
   only two useful values of this type.&nbsp; Use the <code>Boolean.valueOf()</code>
-  method to create <code>Boolean</code> objects instead.
+  method to create <code>Boolean</code> objects instead.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -823,7 +823,7 @@ to use Object.clone(), which always returns an object of the correct type.
     <Details>
 <![CDATA[
   <p> An object is compared to the empty String object using the equals() method here.
-      Checking that the String object's length is zero may be faster.
+      Checking that the String object's length is zero may be faster.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -834,7 +834,7 @@ to use Object.clone(), which always returns an object of the correct type.
 <![CDATA[
   <p> An array is being compared to another object using the equals method of the array. This is the same as 
       comparing the object using ==, meaning it compares whether the array is the same as the object passed as a parameter.
-      To compare the contents of the array, use Arrays.equals( array1, array2 );
+      To compare the contents of the array, use Arrays.equals( array1, array2 );</p>
 ]]>
     </Details>  
   </BugPattern>
@@ -847,7 +847,7 @@ to use Object.clone(), which always returns an object of the correct type.
   This idiom is not correct according to the semantics of the Java memory
   model.&nbsp; For more information, see the web page
   <a href="http://www.cs.umd.edu/~pugh/java/memoryModel/DoubleCheckedLocking.html"
-  >http://www.cs.umd.edu/~pugh/java/memoryModel/DoubleCheckedLocking.html</a>.
+  >http://www.cs.umd.edu/~pugh/java/memoryModel/DoubleCheckedLocking.html</a>.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -858,7 +858,7 @@ to use Object.clone(), which always returns an object of the correct type.
     <Details>
 <![CDATA[
   <p> A class's <code>finalize()</code> method should have protected access,
-   not public.
+   not public.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -868,7 +868,7 @@ to use Object.clone(), which always returns an object of the correct type.
     <Details>
 <![CDATA[
   <p> Empty <code>finalize()</code> methods are useless, so they should
-  be deleted.
+  be deleted.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -880,7 +880,7 @@ to use Object.clone(), which always returns an object of the correct type.
   <p> This empty <code>finalize()</code> method explicitly negates the
   effect of any finalizer defined by its superclass.&nbsp; Any finalizer
   actions defined for the superclass will not be performed.&nbsp;
-  Unless this is intended, delete this method.
+  Unless this is intended, delete this method.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -891,7 +891,7 @@ to use Object.clone(), which always returns an object of the correct type.
 <![CDATA[
   <p> The only thing this <code>finalize()</code> method does is call
   the superclass's <code>finalize()</code> method, making it
-  redundant.&nbsp; Delete it.
+  redundant.&nbsp; Delete it.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -903,7 +903,7 @@ to use Object.clone(), which always returns an object of the correct type.
   <p> This <code>finalize()</code> method does not make a call to its
   superclass's <code>finalize()</code> method.&nbsp; So, any finalizer
   actions defined for the superclass will not be performed.&nbsp;
-  Add a call to <code>super.finalize()</code>.
+  Add a call to <code>super.finalize()</code>.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -914,7 +914,7 @@ to use Object.clone(), which always returns an object of the correct type.
 <![CDATA[
   <p> This method contains an explicit invocation of the <code>finalize()</code>
   method on an object.&nbsp; Because finalizer methods are supposed to be
-  executed once, and only by the VM, this is a bad idea.
+  executed once, and only by the VM, this is a bad idea.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -927,7 +927,7 @@ to use Object.clone(), which always returns an object of the correct type.
   method, but calls the normal <code>equals(Object)</code> method
   defined in the base <code>java.lang.Object</code> class.&nbsp;
   The class should probably define a non-covariant version of <code>equals()</code>.&nbsp;
-  (I.e., a method with the signature <code>boolean equals(java.lang.Object)</code>.
+  (I.e., a method with the signature <code>boolean equals(java.lang.Object)</code>.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -939,7 +939,7 @@ to use Object.clone(), which always returns an object of the correct type.
   <p> This class defines a covariant version of <code>equals()</code>.&nbsp;
   To correctly override the <code>equals()</code> method in
   <code>java.lang.Object</code>, the parameter of <code>equals()</code>
-  must have type <code>java.lang.Object</code>.
+  must have type <code>java.lang.Object</code>.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -951,7 +951,7 @@ to use Object.clone(), which always returns an object of the correct type.
   <p> This class defines a covariant version of <code>compareTo()</code>.&nbsp;
   To correctly override the <code>compareTo()</code> method in the
   <code>Comparable</code> interface, the parameter of <code>compareTo()</code>
-  must have type <code>java.lang.Object</code>.
+  must have type <code>java.lang.Object</code>.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -967,7 +967,7 @@ to use Object.clone(), which always returns an object of the correct type.
   equal hashcodes, it is probably not what was intended by overriding
   the <code>hashCode()</code> method.&nbsp; (Overriding <code>hashCode()</code>
   implies that the object's identity is based on criteria more complicated
-  than simple reference equality.)
+  than simple reference equality.)</p>
 ]]>
     </Details>
   </BugPattern>
@@ -978,7 +978,7 @@ to use Object.clone(), which always returns an object of the correct type.
 <![CDATA[
   <p> This class defines a <code>hashCode()</code> method but not an
   <code>equals()</code> method.&nbsp; Therefore, the class may
-  violate the invariant that equal objects must have equal hashcodes.
+  violate the invariant that equal objects must have equal hashcodes.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -993,11 +993,12 @@ to use Object.clone(), which always returns an object of the correct type.
   <code>hashCode()</code> from <code>java.lang.Object</code> (which returns
   the identity hash code, an arbitrary value assigned to the object
   by the VM).&nbsp; Therefore, the class is very likely to violate the
-  invariant that equal objects must have equal hashcodes.
+  invariant that equal objects must have equal hashcodes.</p>
+
   <p>If you don't want to define a hashCode method, and/or don't
 	believe the object will ever be put into a HashMap/Hashtable,
 	define the <code>hashCode()</code> method
-	to throw <code>UnsupportedOperationException</code>.
+	to throw <code>UnsupportedOperationException</code>.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1011,11 +1012,12 @@ to use Object.clone(), which always returns an object of the correct type.
 from <code>java.lang.Object</code> (which returns
   the identity hash code, an arbitrary value assigned to the object
   by the VM).&nbsp; Therefore, the class is very likely to violate the
-  invariant that equal objects must have equal hashcodes.
+  invariant that equal objects must have equal hashcodes.</p>
+
   <p>If you don't want to define a hashCode method, and/or don't
 	believe the object will ever be put into a HashMap/Hashtable,
 	define the <code>hashCode()</code> method
-	to throw <code>UnsupportedOperationException</code>.
+	to throw <code>UnsupportedOperationException</code>.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1026,7 +1028,7 @@ from <code>java.lang.Object</code> (which returns
 <![CDATA[
   <p> This class overrides <code>equals(Object)</code>, but does not
   override <code>hashCode()</code>.&nbsp; Therefore, the class may violate the
-  invariant that equal objects must have equal hashcodes.
+  invariant that equal objects must have equal hashcodes.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1038,7 +1040,7 @@ from <code>java.lang.Object</code> (which returns
   <p> This class defines a covariant version of <code>equals()</code>.&nbsp;
   To correctly override the <code>equals()</code> method in
   <code>java.lang.Object</code>, the parameter of <code>equals()</code>
-  must have type <code>java.lang.Object</code>.
+  must have type <code>java.lang.Object</code>.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1053,7 +1055,7 @@ equality using the == or != operators.
 Unless both strings are either constants in a source file, or have been
 interned using the <code>String.intern()</code> method, the same string
 value may be represented by two different String objects. Consider
-using the <code>equals(Object)</code> method instead.
+using the <code>equals(Object)</code> method instead.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1066,7 +1068,7 @@ using the <code>equals(Object)</code> method instead.
   <p> This class defines a covariant version of <code>compareTo()</code>.&nbsp;
   To correctly override the <code>compareTo()</code> method in the
   <code>Comparable</code> interface, the parameter of <code>compareTo()</code>
-  must have type <code>java.lang.Object</code>.
+  must have type <code>java.lang.Object</code>.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1079,28 +1081,29 @@ using the <code>equals(Object)</code> method instead.
   to synchronization.&nbsp; This bug report indicates that the bug pattern detector
   judged that
   <ol>
-  <li> The class contains a mix of locked and unlocked accesses,
-  <li> At least one locked access was performed by one of the class's own methods, and
+  <li> The class contains a mix of locked and unlocked accesses,<li>
+  <li> At least one locked access was performed by one of the class's own methods, and</li>
   <li> The number of unsynchronized field accesses (reads and writes) was no more than
-       one third of all accesses, with writes being weighed twice as high as reads
+       one third of all accesses, with writes being weighed twice as high as reads</li>
   </ol>
+  </p>
 
   <p> A typical bug matching this bug pattern is forgetting to synchronize
-  one of the methods in a class that is intended to be thread-safe.
+  one of the methods in a class that is intended to be thread-safe.</p>
 
   <p> You can select the nodes labeled "Unsynchronized access" to show the
   code locations where the detector believed that a field was accessed
-  without synchronization.
+  without synchronization.</p>
 
   <p> Note that there are various sources of inaccuracy in this detector;
   for example, the detector cannot statically detect all situations in which
   a lock is held.&nbsp; Also, even when the detector is accurate in
   distinguishing locked vs. unlocked accesses, the code in question may still
-  be correct.
+  be correct.</p>
 
   <p> This description refers to the "IS2" version of the pattern detector,
   which has more accurate ways of detecting locked vs. unlocked accesses
-  than the older "IS" detector.
+  than the older "IS" detector.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1114,11 +1117,11 @@ using the <code>equals(Object)</code> method instead.
   modification to mutable object state.&nbsp; In general, calling a notify
   method on a monitor is done because some condition another thread is
   waiting for has become true.&nbsp; However, for the condition to be meaningful,
-  it must involve a heap object that is visible to both threads.
+  it must involve a heap object that is visible to both threads.</p>
 
   <p> This bug does not necessarily indicate an error, since the change to
   mutable object state may have taken place in a method which then called
-  the method containing the notification.
+  the method containing the notification.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1131,7 +1134,7 @@ using the <code>equals(Object)</code> method instead.
 	an array that is part of the static state of the class. 
 	Any code that calls this method can freely modify
 	the underlying array.
-	One fix is to return a copy of the array.
+	One fix is to return a copy of the array.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1146,7 +1149,7 @@ using the <code>equals(Object)</code> method instead.
 	are accessed by untrusted code, and unchecked changes to
 	the mutable object would compromise security or other
 	important properties, you will need to do something different.
-  Returning a new copy of the object is better approach in many situations.
+  Returning a new copy of the object is better approach in many situations.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1161,7 +1164,7 @@ using the <code>equals(Object)</code> method instead.
 	are accessed by untrusted code, and unchecked changes to
 	the mutable object would compromise security or other
 	important properties, you will need to do something different.
-  Storing a copy of the object is better approach in many situations.
+  Storing a copy of the object is better approach in many situations.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1175,7 +1178,7 @@ using the <code>equals(Object)</code> method instead.
 	If unchecked changes to
 	the mutable object would compromise security or other
 	important properties, you will need to do something different.
-  Storing a copy of the object is better approach in many situations.
+  Storing a copy of the object is better approach in many situations.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1187,7 +1190,7 @@ using the <code>equals(Object)</code> method instead.
   <p> This method explicitly invokes <code>run()</code> on an object.&nbsp;
   In general, classes implement the <code>Runnable</code> interface because
   they are going to have their <code>run()</code> method invoked in a new thread,
-  in which case <code>Thread.start()</code> is the right method to call.
+  in which case <code>Thread.start()</code> is the right method to call.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1199,7 +1202,7 @@ using the <code>equals(Object)</code> method instead.
   <p> This method spins in a loop which reads a field.&nbsp; The compiler
   may legally hoist the read out of the loop, turning the code into an
   infinite loop.&nbsp; The class should be changed so it uses proper
-  synchronization (including wait and notify calls).
+  synchronization (including wait and notify calls).</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1215,7 +1218,7 @@ Non-short-circuit logic causes both sides of the expression
 to be evaluated even when the result can be inferred from
 knowing the left-hand side. This can be less efficient and
 can result in errors if the left-hand side guards cases
-when evaluating the right-hand side can generate an error.
+when evaluating the right-hand side can generate an error.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1231,7 +1234,7 @@ when evaluating the right-hand side can generate an error.
 	being waited on, not any other locks.
 	&nbsp; 
 This not necessarily a bug, but is worth examining
-  closely.
+  closely.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1243,7 +1246,7 @@ This not necessarily a bug, but is worth examining
   <p> This method contains a call to <code>java.lang.Object.wait()</code> which
   is not guarded by conditional control flow.&nbsp; If the condition that
   the method intends to wait for has already happened, the thread could
-  wait indefinitely.
+  wait indefinitely.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1254,7 +1257,7 @@ This not necessarily a bug, but is worth examining
 <![CDATA[
   <p> This constructor reads a field which has not yet been assigned a value.&nbsp;
   This is often caused when the programmer mistakenly uses the field instead
-  of one of the constructor's parameters.
+  of one of the constructor's parameters.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1267,7 +1270,7 @@ This not necessarily a bug, but is worth examining
   methods where the set method is synchronized and the get method is not.&nbsp;
   This may result in incorrect behavior at runtime, as callers of the get
   method will not necessarily see a consistent state for the object.&nbsp;
-  The get method should be made synchronized.
+  The get method should be made synchronized.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1278,7 +1281,7 @@ This not necessarily a bug, but is worth examining
 <![CDATA[
   <p> A circularity was detected in the static initializers of the two
   classes referenced by the bug instance.&nbsp; Many kinds of unexpected
-  behavior may arise from such circularity.
+  behavior may arise from such circularity.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1291,7 +1294,7 @@ This not necessarily a bug, but is worth examining
   However, its <code>next()</code> method is not capable of throwing
   <code>java.util.NoSuchElementException</code>.&nbsp; The <code>next()</code>
   method should be changed so it throws <code>NoSuchElementException</code>
-  if is called when there are no more elements to return.
+  if is called when there are no more elements to return.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1304,20 +1307,21 @@ This not necessarily a bug, but is worth examining
   to synchronization.&nbsp; This bug report indicates that the bug pattern detector
   judged that
   <ol>
-  <li> The class contains a mix of locked and unlocked accesses,
-  <li> At least one locked access was performed by one of the class's own methods, and
+  <li> The class contains a mix of locked and unlocked accesses,</li>
+  <li> At least one locked access was performed by one of the class's own methods, and</li>
   <li> The number of unsynchronized field accesses (reads and writes) was no more than
-       one third of all accesses, with writes being weighed twice as high as reads
+       one third of all accesses, with writes being weighed twice as high as reads</li>
   </ol>
+  </p>
 
   <p> A typical bug matching this bug pattern is forgetting to synchronize
-  one of the methods in a class that is intended to be thread-safe.
+  one of the methods in a class that is intended to be thread-safe.</p>
 
   <p> Note that there are various sources of inaccuracy in this detector;
   for example, the detector cannot statically detect all situations in which
   a lock is held.&nbsp; Also, even when the detector is accurate in
   distinguishing locked vs. unlocked accesses, the code in question may still
-  be correct.
+  be correct.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1329,7 +1333,7 @@ This not necessarily a bug, but is worth examining
   <p> This method synchronizes on an object 
 	references from a mutable field.
 	This is unlikely to have useful semantics, since different
-threads may be synchronizing on different objects.
+threads may be synchronizing on different objects.</p>
 ]]>  
     </Details>
   </BugPattern>
@@ -1348,7 +1352,7 @@ defined in an interface references a mutable
 	So solve this, the field needs to be moved to a class
 	and made package protected 
 	to avoid
-        this vulnerability.
+        this vulnerability.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1362,7 +1366,7 @@ defined in an interface references a mutable
         by accident from another package.
         The field could be made package protected and/or made final 
 	to avoid
-        this vulnerability.
+        this vulnerability.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1375,7 +1379,7 @@ defined in an interface references a mutable
  A mutable static field could be changed by malicious code or
         by accident from another package.
         The field could be made final to avoid
-        this vulnerability.
+        this vulnerability.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1387,7 +1391,7 @@ defined in an interface references a mutable
   <p> A mutable static field could be changed by malicious code or
 	by accident.
 	The field could be made package protected to avoid
-	this vulnerability.
+	this vulnerability.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1399,7 +1403,7 @@ defined in an interface references a mutable
  <p>A final static field references a Hashtable
 	and can be accessed by malicious code or
         by accident from another package.
-	This code can freely modify the contents of the Hashtable.
+	This code can freely modify the contents of the Hashtable.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1411,7 +1415,7 @@ defined in an interface references a mutable
  A final static field references an array
 	and can be accessed by malicious code or
         by accident from another package.
-	This code can freely modify the contents of the array.
+	This code can freely modify the contents of the array.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1424,7 +1428,7 @@ defined in an interface references a mutable
  A mutable static field could be changed by malicious code or
         by accident from another package.
 	Unfortunately, the way the field is used doesn't allow
-	any easy fix to this problem.
+	any easy fix to this problem.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1433,7 +1437,7 @@ defined in an interface references a mutable
     <LongDescription>VERY confusing to have methods {1} and {3}</LongDescription>
     <Details>
 <![CDATA[
-  <p> The referenced methods have names that differ only by capitalization.
+  <p> The referenced methods have names that differ only by capitalization.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1442,7 +1446,7 @@ defined in an interface references a mutable
     <LongDescription>Confusing to have methods {1} and {3}</LongDescription>
     <Details>
 <![CDATA[
-  <p> The referenced methods have names that differ only by capitalization.
+  <p> The referenced methods have names that differ only by capitalization.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1452,7 +1456,7 @@ defined in an interface references a mutable
     <Details>
 <![CDATA[
   <p> This method has the same name as the superclass of the class it
-  is defined in.
+  is defined in.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1463,7 +1467,7 @@ defined in an interface references a mutable
 <![CDATA[
   <p> This class defines a method called <code>hashcode()</code>.&nbsp; This method
   does not override the <code>hashCode()</code> method in <code>java.lang.Object</code>,
-  which is probably what was intended.
+  which is probably what was intended.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1474,7 +1478,7 @@ defined in an interface references a mutable
 <![CDATA[
   <p> This class defines a method called <code>tostring()</code>.&nbsp; This method
   does not override the <code>toString()</code> method in <code>java.lang.Object</code>,
-  which is probably what was intended.
+  which is probably what was intended.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1486,7 +1490,7 @@ defined in an interface references a mutable
 <![CDATA[
 <p> This class defines a method <code>equal(Object)</code>.&nbsp; This method does
 not override the <code>equals(Object)</code> method in <code>java.lang.Object</code>,
-which is probably what was intended.
+which is probably what was intended.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1502,7 +1506,7 @@ which is probably what was intended.
   handle the case where fewer bytes were read than the caller requested.&nbsp;
   This is a particularly insidious kind of bug, because in many programs,
   reads from input streams usually do read the full amount of data requested,
-  causing the program to fail only sporadically.
+  causing the program to fail only sporadically.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1519,7 +1523,7 @@ which is probably what was intended.
   skips from input streams usually do skip the full amount of data requested,
   causing the program to fail only sporadically. With Buffered streams, however,
   skip() will only skip data in the buffer, and will routinely fail to skip the
-  requested number of bytes.
+  requested number of bytes.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1532,7 +1536,7 @@ which is probably what was intended.
   not define a void constructor. When Externalizable objects are deserialized,
 	they first need to be constructed by invoking the void
 	constructor. Since this class does not have one,
-	serialization and deserialization will fail at runtime.
+	serialization and deserialization will fail at runtime.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1546,7 +1550,7 @@ which is probably what was intended.
 	the fields of the superclass need to be initialized by
 	invoking the void constructor of the superclass.
 	Since the superclass does not have one,
-	serialization and deserialization will fail at runtime.
+	serialization and deserialization will fail at runtime.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1567,7 +1571,7 @@ which is probably what was intended.
    naming conventions for synthetic variables generated for 
    references to class objects or inner classes.
    To ensure interoperability of Serializable across versions,
-	consider adding an explicit serialVersionUID.
+	consider adding an explicit serialVersionUID.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1578,7 +1582,7 @@ which is probably what was intended.
     <Details>
 <![CDATA[
   <p> This method contains a switch statement where one case branch will fall thru to the next case.
-  Usually you need to end this case with a break or return.
+  Usually you need to end this case with a break or return.</p>
 ]]>
     </Details>  
   </BugPattern>
@@ -1589,7 +1593,7 @@ which is probably what was intended.
     <Details>
 <![CDATA[
   <p> This class has a <code>writeObject()</code> method which is synchronized;
-  however, no other method of the class is synchronized.
+  however, no other method of the class is synchronized.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1603,7 +1607,7 @@ which is probably what was intended.
   is only reachable by one thread, and thus there is no need for
   <code>readObject()</code> to be synchronized.&nbsp; If the <code>readObject()</code>
   method itself is causing the object to become visible to another thread,
-  that is an example of very dubious coding style.
+  that is an example of very dubious coding style.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1616,7 +1620,7 @@ which is probably what was intended.
   <p> This class defines a <code>serialVersionUID</code> field that is not static.&nbsp;
   The field should be made static
 	if it is intended to specify
-	the version UID for purposes of serialization.
+	the version UID for purposes of serialization.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1629,7 +1633,7 @@ which is probably what was intended.
   <p> This class defines a <code>serialVersionUID</code> field that is not final.&nbsp;
   The field should be made final 
 	if it is intended to specify
-	the version UID for purposes of serialization.
+	the version UID for purposes of serialization.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1643,7 +1647,7 @@ which is probably what was intended.
   <p> This class defines a <code>serialVersionUID</code> field that is not long.&nbsp;
   The field should be made long
 	if it is intended to specify
-	the version UID for purposes of serialization.
+	the version UID for purposes of serialization.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1658,7 +1662,7 @@ Serializable, or <code>java.lang.Object</code>, and does not appear to implement
 the <code>Externalizable</code> interface or the
 <code>readObject()</code> and <code>writeObject()</code> methods.&nbsp;
 Objects of this class will not be deserialized correctly if a non-Serializable
-object is stored in this field.
+object is stored in this field.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1670,7 +1674,7 @@ object is stored in this field.
 <![CDATA[
   <p> The constructor starts a thread. This is likely to be wrong if
 	the class is ever extended/subclassed, since the thread will be started
-	before the subclass constructor is started.
+	before the subclass constructor is started.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1681,7 +1685,7 @@ object is stored in this field.
 <![CDATA[
   <p> This class contains an instance final field that
 	is initialized to a compile-time static value.
-	Consider making the field static.
+	Consider making the field static.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1690,7 +1694,7 @@ object is stored in this field.
     <LongDescription>Unused field: {1}</LongDescription>
     <Details>
 <![CDATA[
-  <p> This field is never used.&nbsp; Consider removing it from the class.
+  <p> This field is never used.&nbsp; Consider removing it from the class.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1699,7 +1703,7 @@ object is stored in this field.
     <LongDescription>Unread field: {1}</LongDescription>
     <Details>
 <![CDATA[
-  <p> This field is never read.&nbsp; Consider removing it from the class.
+  <p> This field is never read.&nbsp; Consider removing it from the class.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1709,7 +1713,7 @@ object is stored in this field.
     <Details>
 <![CDATA[
   <p> This field is never written.&nbsp; All reads of it will return the default
-value. Check for errors (should it have been initialized?), or remove it if it is useless.
+value. Check for errors (should it have been initialized?), or remove it if it is useless.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1722,7 +1726,7 @@ value. Check for errors (should it have been initialized?), or remove it if it i
   to the object which created it.&nbsp; This reference makes the instances
   of the class larger, and may keep the reference to the creator object
   alive longer than necessary.&nbsp; If possible, the class should be
-  made into a <em>static</EM> inner class.
+  made into a <em>static</em> inner class.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1735,9 +1739,9 @@ value. Check for errors (should it have been initialized?), or remove it if it i
   to the object which created it.&nbsp; This reference makes the instances
   of the class larger, and may keep the reference to the creator object
   alive longer than necessary.&nbsp; If possible, the class should be
-  made into a <em>static</EM> inner class. Since anonymous inner
+  made into a <em>static</em> inner class. Since anonymous inner
 classes cannot be marked as static, doing this will requiring refactoring
-the inner class so that it is a named inner class.
+the inner class so that it is a named inner class.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1751,11 +1755,11 @@ the inner class so that it is a named inner class.
 inner object.&nbsp; This reference makes the instances
   of the class larger, and may keep the reference to the creator object
   alive longer than necessary.&nbsp; If possible, the class should be
-  made into a <em>static</EM> inner class. Since the reference to the
+  made into a <em>static</em> inner class. Since the reference to the
 	outer object is required during construction of the inner instance,
 	the inner class will need to be refactored so as to 
 	pass  a reference to the outer instance to the constructor
-	for the inner class.
+	for the inner class.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1767,7 +1771,7 @@ inner object.&nbsp; This reference makes the instances
   <p> This method contains a call to <code>java.lang.Object.wait()</code> 
   which is not in a loop.&nbsp; If the monitor is used for multiple conditions,
   the condition the caller intended to wait for might not be the one
-  that actually occurred.
+  that actually occurred.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1779,7 +1783,7 @@ inner object.&nbsp; This reference makes the instances
   <p> This method calls <code>notify()</code> rather than <code>notifyAll()</code>.&nbsp;
   Java monitors are often used for multiple conditions.&nbsp; Calling <code>notify()</code>
   only wakes up one thread, meaning that the thread woken up might not be the
-  one waiting for the condition that the caller just satisfied.
+  one waiting for the condition that the caller just satisfied.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1789,7 +1793,7 @@ inner object.&nbsp; This reference makes the instances
     <LongDescription>Possible doublecheck on {2} in {1}</LongDescription>
     <Details>
 <![CDATA[
-  <p> This is a double check found by the ByteCodePattern-based detector.
+  <p> This is a double check found by the ByteCodePattern-based detector.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1799,7 +1803,7 @@ inner object.&nbsp; This reference makes the instances
     <LongDescription>{1} ignores return value of {2}</LongDescription>
     <Details>
 <![CDATA[
-   <p> The return value of this method should be checked.
+   <p> The return value of this method should be checked.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1810,7 +1814,7 @@ inner object.&nbsp; This reference makes the instances
     <Details>
 <![CDATA[
 <p> A null pointer is dereferenced here.&nbsp; This will lead to a 
-<code>NullPointerException</code> when the code is executed.
+<code>NullPointerException</code> when the code is executed.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1823,9 +1827,10 @@ inner object.&nbsp; This reference makes the instances
 <p> A pointer which is null on an exception path is dereferenced here.&nbsp;
 This will lead to a <code>NullPointerException</code> when the code is executed.&nbsp;
 Note that because FindBugs currently does not prune infeasible exception paths,
-this may be a false warning.
+this may be a false warning.</p>
+
 <p> Also note that FindBugs considers the default case of a switch statement to
-be an exception path, since the default case is often infeasible.
+be an exception path, since the default case is often infeasible.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1836,7 +1841,7 @@ be an exception path, since the default case is often infeasible.
     <Details>
 <![CDATA[
 <p> A reference value dereferenced here might be null at runtime.&nbsp;
-This may lead to a <code>NullPointerException</code> when the code is executed.
+This may lead to a <code>NullPointerException</code> when the code is executed.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1850,9 +1855,10 @@ This may lead to a <code>NullPointerException</code> when the code is executed.
 dereferenced here.&nbsp; This may lead to a <code>NullPointerException</code>
 when the code is executed.&nbsp;
 Note that because FindBugs currently does not prune infeasible exception paths,
-this may be a false warning.
+this may be a false warning.</p>
+
 <p> Also note that FindBugs considers the default case of a switch statement to
-be an exception path, since the default case is often infeasible.
+be an exception path, since the default case is often infeasible.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1863,7 +1869,7 @@ be an exception path, since the default case is often infeasible.
     <Details>
 <![CDATA[
 <p> The class's static initializer creates an instance of the class
-before all of the static final fields are assigned.
+before all of the static final fields are assigned.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1878,7 +1884,7 @@ fields, pass it to other methods, or return it, and does not appear to close
 the stream on all paths out of the method.&nbsp; This may result in
 a file descriptor leak.&nbsp; It is generally a good
 idea to use a <code>finally</code> block to ensure that streams are
-closed.
+closed.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1893,7 +1899,7 @@ fields, pass it to other methods, or return it, and does not appear to close
 it on all possible exception paths out of the method.&nbsp;
 This may result in a file descriptor leak.&nbsp; It is generally a good
 idea to use a <code>finally</code> block to ensure that streams are
-closed.
+closed.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1906,12 +1912,13 @@ closed.
 <p> It is often a better design to
 return a length zero array rather than a null reference to indicate that there
 are no results (i.e., an empty list of results).
-This way, no explicit check for null is needed by clients of the method.
+This way, no explicit check for null is needed by clients of the method.</p>
+
 <p>On the otherhand, using null to indicate 
 "there is no answer to this question", then it is probably appropriate. 
 For example, <code>File.listFiles()</code> returns an empty list
 if given a directory containing no files, and returns null if the file
-is not a directory.
+is not a directory.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1928,6 +1935,7 @@ body of an <code>if</code> statement, e.g.:
     if (argv.length == 1);
         System.out.println("Hello, " + argv[0]);
 </pre>
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1940,19 +1948,21 @@ body of an <code>if</code> statement, e.g.:
 <p> This method contains a redundant comparison of a reference value
 to null. Two types of redundant comparison are reported:
 <ul>
-<li> Both values compared are definitely null
-<li> One value is definitely null and the other is definitely not null
+<li> Both values compared are definitely null</li>
+<li> One value is definitely null and the other is definitely not null</li>
 </ul>
+</p>
 
 <p> This particular warning represents two specific kinds of
 redundant comparisions:
 <ol>
 <li> A value was dereferenced, and later explicitly compared to null:
-     this often indicates an error in the method
+     this often indicates an error in the method</li>
 <li> A literal null value was explicitly compared to null:
      this may indicate that the method was modified without
-     complete understanding of the invariants of the method
+     complete understanding of the invariants of the method</li>
 </ol>
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1965,14 +1975,15 @@ redundant comparisions:
 <p> This method contains a redundant comparison of a reference value
 to null. Two types of redundant comparison are reported:
 <ul>
-<li> Both values compared are definitely null
-<li> One value is definitely null and the other is definitely not null
+<li> Both values compared are definitely null</li>
+<li> One value is definitely null and the other is definitely not null</li>
 </ul>
+</p>
 
 <p> This particular warning generally indicates that a
 value known not to be null was checked against null.
 While the check is not necessary, it may simply be a case
-of defensive programming.
+of defensive programming.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1994,6 +2005,7 @@ for using a JSR-166 lock is:
         l.unlock();
     }
 </pre>
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -2015,6 +2027,7 @@ for using a JSR-166 lock is:
         l.unlock();
     }
 </pre>
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -2027,7 +2040,7 @@ for using a JSR-166 lock is:
 <p> This method compares two reference values using the == or != operator,
 where the correct way to compare instances of this type is generally
 with the equals() method.  Examples of classes which should generally
-not be compared by reference are java.lang.Integer, java.lang.Float, etc.
+not be compared by reference are java.lang.Integer, java.lang.Float, etc.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -2040,7 +2053,7 @@ not be compared by reference are java.lang.Integer, java.lang.Float, etc.
 <p> This method calls equals(Object) on two references of different
 types.  According to the contract of equals(), objects of different
 classes should always compare as unequal; therefore, it is likely
-that the result of this comparision will always be false at runtime.
+that the result of this comparision will always be false at runtime.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -2056,7 +2069,7 @@ the contract of equals(), objects of different classes should always
 compare as unequal. Note that it is possible that
 the program contains classes that implement both interfaces,
 so the comparison may be valid.  However, it is worth
-inspecting closely.
+inspecting closely.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -2068,7 +2081,7 @@ inspecting closely.
 <![CDATA[
 <p> This method calls equals(Object), passing a null value as
 the argument. According to the contract of the equals() method,
-this call should always return <code>false</code>.
+this call should always return <code>false</code>.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -2080,7 +2093,7 @@ this call should always return <code>false</code>.
 <![CDATA[
 <p> This method calls Object.wait() without obviously holding a lock
 on the object.&nbsp;  Calling wait() without a lock held will result in
-an <code>IllegalMonitorStateException</code> being thrown.
+an <code>IllegalMonitorStateException</code> being thrown.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -2092,7 +2105,7 @@ an <code>IllegalMonitorStateException</code> being thrown.
 <![CDATA[
 <p> This method calls Object.notify() or Object.notifyAll() without obviously holding a lock
 on the object.&nbsp;  Calling notify() or notifyAll() without a lock held will result in
-an <code>IllegalMonitorStateException</code> being thrown.
+an <code>IllegalMonitorStateException</code> being thrown.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -2109,7 +2122,7 @@ an <code>IllegalMonitorStateException</code> being thrown.
     x = x;
   }
 </pre>
-Such assignments are useless, and may indicate a logic error or typo.
+Such assignments are useless, and may indicate a logic error or typo.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -2127,6 +2140,7 @@ Such assignments are useless, and may indicate a logic error or typo.
   }
 </pre>
 Such assignments are useless, and may indicate a logic error or typo.
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -2136,10 +2150,10 @@ Such assignments are useless, and may indicate a logic error or typo.
     <LongDescription>Incompatible bit masks yield a constant result in {1}</LongDescription>
     <Details>
 <![CDATA[
-<p> This method compares an expression of the form (a & C) to D,
+<p> This method compares an expression of the form (a &amp; C) to D,
 which will always compare unequal
 due to the specific values of constants C and D.
-This may indicate a logic error or typo.
+This may indicate a logic error or typo.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -2149,9 +2163,9 @@ This may indicate a logic error or typo.
     <LongDescription>Incompatible bit masks yield a constant result in {1}</LongDescription>
     <Details>
 <![CDATA[
-<p> This method compares an expression of the form (a & 0) to 0,
+<p> This method compares an expression of the form (a &amp; 0) to 0,
 which will always compare equal.
-This may indicate a logic error or typo.
+This may indicate a logic error or typo.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -2164,11 +2178,11 @@ This may indicate a logic error or typo.
 <p> This method compares an expression of the form (a | C) to D.
 which will always compare unequal
 due to the specific values of constants C and D.
-This may indicate a logic error or typo.
+This may indicate a logic error or typo.</p>
 
 <p> Typically, this bug occurs because the code wants to perform
 a membership test in a bit set, but uses the bitwise OR
-operator ("|") instead of bitwise AND ("&").
+operator ("|") instead of bitwise AND ("&amp;").</p>
 ]]>
     </Details>
   </BugPattern>
@@ -2185,6 +2199,7 @@ threads are not guaranteed to see a completely initialized object,
 You can make the field volatile to correct the problem.
 For more information, see the
 <a href="http://www.cs.umd.edu/~pugh/java/memoryModel/">Java Memory Model web site</a>.
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -2201,6 +2216,7 @@ threads are not guaranteed to see a completely initialized object,
 You can make the field volatile to correct the problem.
 For more information, see the
 <a href="http://www.cs.umd.edu/~pugh/java/memoryModel/">Java Memory Model web site</a>.
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -2213,6 +2229,7 @@ For more information, see the
 <p> This method performs synchronization on an implementation of
 <code>java.util.concurrent.locks.Lock</code>.  You should use
 the <code>lock()</code> and <code>unlock()</code> methods instead.
+</p>
 ]]>
 </Details>
   </BugPattern>
@@ -2226,6 +2243,7 @@ the <code>lock()</code> and <code>unlock()</code> methods instead.
 possible that the method will be invoked through reflection,
 it is more likely that the method is never used, and should be
 removed.
+</p>
 ]]>
 </Details>
   </BugPattern>
@@ -2242,6 +2260,7 @@ the object on all paths out of the method.&nbsp; Failure to
 close database resources on all paths out of a method may
 result in poor performance, and could cause the application to
 have problems communicating with the database.
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -2257,7 +2276,7 @@ fields, pass it to other methods, or return it, and does not appear to close
 the object on all exception paths out of the method.&nbsp; Failure to
 close database resources on all paths out of a method may
 result in poor performance, and could cause the application to
-have problems communicating with the database.
+have problems communicating with the database.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -2271,10 +2290,10 @@ have problems communicating with the database.
 In each iteration, the String is converted to a StringBuffer/StringBuilder, 
 	appended to, and converted back to a String.
 	This can lead to a cost quadractic in the number of iterations,
-	as the growing string is recopied in each iteration. 
+	as the growing string is recopied in each iteration. </p>
 	
 <p>Better performance can be obtained by using 
-a StringBuffer (or StringBuilder in Java 1.5) explicitly.
+a StringBuffer (or StringBuilder in Java 1.5) explicitly.</p>
 
 <p> For example:
 <pre>
@@ -2291,7 +2310,7 @@ a StringBuffer (or StringBuilder in Java 1.5) explicitly.
   }
   String s = buf.toString();
 </pre>
-P
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -2307,7 +2326,7 @@ in a zero-length prototype array argument.  It is more efficient to use
 If the array passed in is big enough to store all of the
 elements of the collection, then it is populated and returned
 directly. This avoids the need to create a second array
-(by reflection) to return as the result.
+(by reflection) to return as the result.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -2318,7 +2337,7 @@ directly. This avoids the need to create a second array
     <Details>
 <![CDATA[
 <p> Class is a JUnit TestCase and implements the setUp method. The setUp method should call
-super.setUp(), but doesn't.
+super.setUp(), but doesn't.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -2329,7 +2348,7 @@ super.setUp(), but doesn't.
     <Details>
 <![CDATA[
 <p> Class is a JUnit TestCase and implements the tearDown method. The tearDown method should call
-super.tearDown(), but doesn't.
+super.tearDown(), but doesn't.</p>
 ]]>
     </Details>
   </BugPattern>  
@@ -2339,7 +2358,8 @@ super.tearDown(), but doesn't.
     <LongDescription>TestCase implements a suite method, but this method is not static and should be</LongDescription>
     <Details>
 <![CDATA[
-<p> Class is a JUnit TestCase and implements the suite() method. The suite method should be declared as being static, but isn't.
+<p> Class is a JUnit TestCase and implements the suite() method.
+ The suite method should be declared as being static, but isn't.</p>
 ]]>
     </Details>
   </BugPattern>  
@@ -2351,7 +2371,7 @@ super.tearDown(), but doesn't.
 <![CDATA[
 <p> This method overrides a method found in a parent class, where that class is an Adapter that implements
 a listener defined in the java.awt.event or javax.swing.event package. As a result, this method will not 
-get called when the event occurs.
+get called when the event occurs.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -2362,7 +2382,7 @@ get called when the event occurs.
     <Details>
 <![CDATA[
 <p> A call to getXXX or updateXXX methods of a result set was made where the
-field index is 0. As ResultSet fields start at index 1, this is always a mistake.
+field index is 0. As ResultSet fields start at index 1, this is always a mistake.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -2373,7 +2393,7 @@ field index is 0. As ResultSet fields start at index 1, this is always a mistake
     <Details>
 <![CDATA[
 <p> Type check performed using the instanceof operator where it can be statically determined whether the object
-is of the type requested. 
+is of the type requested. </p>
 ]]>
     </Details>
   </BugPattern>
