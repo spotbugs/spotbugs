@@ -199,7 +199,7 @@ public class XTypeRepository {
 	 * @param superclass the superclass
 	 */
 	public void addSuperclassLink(XClassType subclass, XClassType superclass) {
-		inheritanceGraph.createEdge(subclass, superclass, InheritanceGraphEdgeTypes.EXTENDS_EDGE);
+		inheritanceGraph.createEdge(subclass, superclass, InheritanceGraphEdgeTypes.CLASS_EDGE);
 	}
 
 	/**
@@ -208,7 +208,7 @@ public class XTypeRepository {
 	 * @param iface the implemented interface (i.e., the supertype)
 	 */
 	public void addInterfaceLink(XClassType implementor, XClassType iface) {
-		inheritanceGraph.createEdge(implementor, iface, InheritanceGraphEdgeTypes.IMPLEMENTS_EDGE);
+		inheritanceGraph.createEdge(implementor, iface, InheritanceGraphEdgeTypes.INTERFACE_EDGE);
 	}
 
 //	/**
