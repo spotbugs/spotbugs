@@ -1,6 +1,7 @@
 package edu.umd.cs.findbugs.ba.ca;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 public class CallList {
 	private boolean isTop, isBottom;
@@ -73,5 +74,29 @@ public class CallList {
 			}
 		}
 		return result;
+	}
+	
+	//@Override
+	public boolean equals(Object obj) {
+		if (obj == null || obj.getClass() != this.getClass())
+			return false;
+		CallList other = (CallList) obj;
+		return this.callList.equals(other.callList);
+	}
+	
+	//@Override
+	public int hashCode() {
+		return callList.hashCode();
+	}
+	
+	public String toString() {
+		StringBuffer buf = new StringBuffer();
+		for (Iterator<Call> i = callList.iterator(); i.hasNext(); ) {
+			Call call = i.next();
+			if (buf.length() > 0)
+				buf.append(',');
+			buf.append(call.getMethodName());
+		}
+		return buf.toString();
 	}
 }
