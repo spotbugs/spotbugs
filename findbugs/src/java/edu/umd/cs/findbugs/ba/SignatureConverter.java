@@ -19,6 +19,9 @@
 
 package edu.umd.cs.findbugs.ba;
 
+import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.InvokeInstruction;
+
 /**
  * Convert part or all of a Java type signature into something
  * closer to what types look like in the source code.
@@ -108,6 +111,16 @@ public class SignatureConverter {
 	 */
 	public static String convertMethodSignature(org.apache.bcel.generic.MethodGen methodGen) {
 		return convertMethodSignature(methodGen.getClassName(), methodGen.getName(), methodGen.getSignature());
+	}
+
+	/**
+	 * Convenience method for generating a method signature in
+	 * human readable form.
+	 * @param inv an InvokeInstruction
+	 * @param cpg the ConstantPoolGen for the class the instruction belongs to
+	 */
+	public static String convertMethodSignature(InvokeInstruction inv, ConstantPoolGen cpg) {
+		return convertMethodSignature(inv.getClassName(cpg), inv.getName(cpg), inv.getSignature(cpg));
 	}
  
 	/**
