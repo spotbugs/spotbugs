@@ -23,6 +23,8 @@
 package de.tobject.findbugs.classify;
 
 import org.eclipse.core.resources.IMarker;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.SWT;
@@ -36,9 +38,11 @@ import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.IWorkbenchWindowPulldownDelegate2;
 
+import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.reporter.MarkerUtil;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugProperty;
+import edu.umd.cs.findbugs.config.UserPreferences;
 
 /**
  * Pulldown toolbar action for classifying a FindBugs warning
@@ -52,6 +56,7 @@ public class AccuracyClassificationPulldownAction
 	private Menu menu;
 	private MenuItem isBugItem;
 	private MenuItem notBugItem;
+	private IMarker marker;
 	private BugInstance bugInstance;
 
 	/* (non-Javadoc)
@@ -87,7 +92,7 @@ public class AccuracyClassificationPulldownAction
 			 */
 			public void widgetSelected(SelectionEvent e) {
 				if (bugInstance != null) {
-					bugInstance.setProperty(BugProperty.IS_BUG, "true");
+					classifyWarning(bugInstance, true);
 				}
 			}
 		});
@@ -98,7 +103,7 @@ public class AccuracyClassificationPulldownAction
 			 */
 			public void widgetSelected(SelectionEvent e) {
 				if (bugInstance != null) {
-					bugInstance.setProperty(BugProperty.IS_BUG, "false");
+					classifyWarning(bugInstance, false);
 				}
 			}
 		});
@@ -111,6 +116,41 @@ public class AccuracyClassificationPulldownAction
 				syncMenu();
 			}
 		});
+	}
+	
+	private void classifyWarning(BugInstance warning, boolean isBug) {
+		System.out.println("Classifying warning " + warning.getUniqueId());
+		
+		BugProperty isBugProp = warning.lookupProperty(BugProperty.IS_BUG);
+		if (isBugProp != null) {
+			// Warning was previously classified
+			if (isBugProp.getValueAsBoolean() == isBug) {
+				// No change
+				return;
+			}
+		}
+		
+		// Warning is being classified for the first time,
+		// or the classification is being changed
+		warning.setProperty(BugProperty.IS_BUG, isBug ? "true" : "false");
+
+		// Currently, we are displaying a marker for this warning.
+		// If the user has classified it as a false warning,
+		// and false warnings are not being displayed, then we can
+		// remove the marker.
+		if (!isBug) {
+			IProject project = marker.getResource().getProject();
+			try {
+				UserPreferences userPrefs = FindbugsPlugin.getUserPreferences(project);
+				if (!MarkerUtil.displayWarning(warning, userPrefs.getFilterSettings())) {
+					System.out.println("Deleting marker for false warning!");
+					marker.delete();
+				}
+			} catch (CoreException e) {
+				FindbugsPlugin.getDefault().logException(
+						e, "Could not get FindBugs preferences for project");
+			}
+		}
 	}
 
 	/* (non-Javadoc)
@@ -144,8 +184,7 @@ public class AccuracyClassificationPulldownAction
 		System.out.println("Selection is " + selection.getClass().getName());
 		
 		bugInstance = null;
-		
-		IMarker marker = MarkerUtil.getMarkerFromSelection(selection);
+		marker = MarkerUtil.getMarkerFromSelection(selection);
 		
 		if (marker == null) {
 			// No marker selected. 
