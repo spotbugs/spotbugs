@@ -45,6 +45,8 @@ public class SortingBugReporter extends TextUIBugReporter {
 			BugInstance bugInstance = i.next();
 			printBug(bugInstance);
 		}
+
+		outputStream.close();
 	}
 }
 

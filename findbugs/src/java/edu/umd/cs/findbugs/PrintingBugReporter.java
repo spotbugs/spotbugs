@@ -41,7 +41,9 @@ public class PrintingBugReporter extends TextUIBugReporter {
 		}
 	}
 
-	public void finish() { }
+	public void finish() {
+		outputStream.close();
+	}
 }
 
 // vim:ts=4
