@@ -772,8 +772,8 @@ to use Object.clone(), which always returns an object of the correct type.
 equality using the == or != operators.
 Unless both strings are either constants in a source file, or have been
 interned using the <code>String.intern()</code> method, the same string
-value may be represented by two different String objects. Considering
-using the <code>equals</code> method instead.
+value may be represented by two different String objects. Consider
+using the <code>equals(Object)</code> method instead.
 ]]>
     </Details>
   </BugPattern>
