@@ -77,6 +77,14 @@ public class CountBugs {
 		return count;
 	}
 
+	public int getTotal() {
+		int total = 0;
+		for (Iterator<Integer> i = countMap.values().iterator(); i.hasNext(); ) {
+			total += i.next().intValue();
+		}
+		return total;
+	}
+
 	public Iterator<Map.Entry<String, Integer>> entryIterator() {
 		return countMap.entrySet().iterator();
 	}
@@ -183,6 +191,8 @@ public class CountBugs {
 		}
 
 		countBugs.printCounts(System.out, diffMode);
+		if (!diffMode)
+			System.out.println("Total:\t" + countBugs.getTotal());
 	}
 }
 
