@@ -32,13 +32,41 @@ import edu.umd.cs.daveho.ba.*;
  * We also don't distinguish between invokevirtual, invokeinterface,
  * and invokespecial.
  *
+ * <p> Invoke objects match by class name, method name, method signature,
+ * and static/nonstatic status.
+ *
+ * <p> Names and signatures may be matched in several ways:
+ * <ol>
+ * <li> By an exact match. This is the default behavior.
+ * <li> By a regular expression. If the string provided to the Invoke
+ *   constructor begins with a "/" character, the rest of the string
+ *   is treated as a regular expression.
+ * <li> As a subclass match. This only applies to class name matches.
+ *   If the first character of a class name string is "+", then the
+ *   rest of the string is treated as the name of a base class.
+ *   Any subclass or subinterface of the named type will be accepted.
+ * </ol>
+ *
+ * <p> Static/nonstatic status is specified as the <em>mode</em> of
+ * the Invoke object.  This can have three values:
+ * <ol>
+ * <li> <code>STATIC</code>. Only static invocations are matched.
+ * <li> <code>INSTANCE</code>. Only non-static (instance) invocations are matched.
+ * <li> <code>ANY</code>. Both static and instance invocations are matched.
+ * </ol>
+ *
  * @see PatternElement
  * @author David Hovemeyer
  */
 public class Invoke extends PatternElement {
 
+	/** Match only static invocations. */
 	public static final int STATIC = 0;
+
+	/** Match only non-static (instance) invocations. */
 	public static final int INSTANCE = 1;
+
+	/** Match both static and instance invocations. */
 	public static final int ANY = 2;
 
 	private interface StringMatcher {
@@ -78,12 +106,10 @@ public class Invoke extends PatternElement {
 
 	/**
 	 * Constructor.
-	 * @param className the class name of the method; if it begins with a "+"
-	 *  character, then any subclass of the named class is accepted
-	 * @param methodName the name of the method; if it begins with a "/" character,
-	 *  then the rest of the string is treated as a regular expression
-	 * @param methodSig the signature of the method; if it begins with a "/" character,
-	 *  then the rest of the string is treated as a regular expression
+	 * @param className the class name of the method; may be specified exactly,
+	 *   as a regexp, or as a subtype match
+	 * @param methodName the name of the method; may be specified exactly or as a regexp
+	 * @param methodSig the signature of the method; may be specified exactly or as a regexp
 	 * @param mode one of STATIC, INSTANCE, or ANY; specifies whether we should
 	 *  match static methods only, instance methods only, or either
 	 */
@@ -123,13 +149,10 @@ public class Invoke extends PatternElement {
 				return null;
 		}
 
-		// Check class name, method name, and method signature...
-		String className = inv.getClassName(cpg);
-		String methodName = inv.getMethodName(cpg);
-		String methodSig = inv.getSignature(cpg);
-		if (!classNameMatcher.match(className) ||
-			!methodNameMatcher.match(methodName) ||
-			!methodSigMatcher.match(methodSig))
+		// Check class name, method name, and method signature.
+		if (!classNameMatcher.match(inv.getClassName(cpg)) ||
+			!methodNameMatcher.match(inv.getMethodName(cpg)) ||
+			!methodSigMatcher.match(inv.getSignature(cpg)))
 			return null;
 
 		// It's a match!
