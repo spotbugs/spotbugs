@@ -290,6 +290,20 @@ public class BasicBlock extends AbstractVertex<Edge, BasicBlock> implements Debu
 	public void setExceptionGen(CodeExceptionGen exceptionGen) {
 		this.exceptionGen = exceptionGen;
 	}
+
+	/**
+	 * Return whether or not the basic block contains the given instruction.
+	 * @param handle the instruction
+	 * @return true if the block contains the instruction, false otherwise
+	 */
+	public boolean containsInstruction(InstructionHandle handle) {
+		Iterator<InstructionHandle> i = instructionIterator();
+		while (i.hasNext()) {
+			if (i.next() == handle)
+				return true;
+		}
+		return false;
+	}
 }
 
 // vim:ts=4
