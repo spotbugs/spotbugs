@@ -90,6 +90,10 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
 		return thisValue != null && thisValue.getNumber() == value.getNumber();
 	}
 
+	public ValueNumber getThisValue() {
+		return thisValue;
+	}
+
 	public ValueNumber getEntryValue(int local) {
 		return entryLocalValueList[local];
 	}
