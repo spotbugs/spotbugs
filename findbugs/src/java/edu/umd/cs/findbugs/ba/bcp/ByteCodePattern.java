@@ -31,6 +31,7 @@ import java.util.*;
 public class ByteCodePattern {
 	private PatternElement first, last;
 	private int interElementWild;
+	private int numElements;
 	private int dummyVariableCount;
 
 	/**
@@ -84,6 +85,7 @@ public class ByteCodePattern {
 	}
 
 	private void addElement(PatternElement element) {
+		element.setIndex(numElements++);
 		if (first == null) {
 			first = last = element;
 		} else {
