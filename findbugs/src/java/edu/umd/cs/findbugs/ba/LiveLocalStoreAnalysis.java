@@ -23,12 +23,14 @@ import java.util.BitSet;
 
 import org.apache.bcel.classfile.Method;
 
+import org.apache.bcel.generic.IndexedInstruction;
 import org.apache.bcel.generic.IINC;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.LoadInstruction;
 import org.apache.bcel.generic.LocalVariableInstruction;
 import org.apache.bcel.generic.MethodGen;
+import org.apache.bcel.generic.RET;
 import org.apache.bcel.generic.StoreInstruction;
 
 /**
@@ -97,11 +99,11 @@ public class LiveLocalStoreAnalysis extends BackwardDataflowAnalysis<BitSet> {
 			fact.clear(local);
 		}
 
-		if (ins instanceof LoadInstruction || ins instanceof IINC) {
+		if (ins instanceof LoadInstruction || ins instanceof IINC || ins instanceof RET) {
 			// Local is loaded: it will be live on any path leading
 			// to this instruction
 
-			LocalVariableInstruction load = (LocalVariableInstruction) ins;
+			IndexedInstruction load = (IndexedInstruction) ins;
 			int local = load.getIndex();
 			fact.set(local);
 		}
@@ -109,6 +111,13 @@ public class LiveLocalStoreAnalysis extends BackwardDataflowAnalysis<BitSet> {
 
 	public boolean isFactValid(BitSet fact) {
 		return !isTop(fact);
+	}
+
+	public String factToString(BitSet fact) {
+		if (isTop(fact))
+			return "[TOP]";
+		else
+			return fact.toString();
 	}
 
 	private boolean isTop(BitSet fact) {
