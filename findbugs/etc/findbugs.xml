@@ -2,7 +2,6 @@
   <Detector class="edu.umd.cs.findbugs.detect.DroppedException" speed="fast" />
   <Detector class="edu.umd.cs.findbugs.detect.DumbMethods" speed="fast" />
   <Detector class="edu.umd.cs.findbugs.detect.FindDoubleCheck" speed="fast" />
-  <Detector class="edu.umd.cs.findbugs.detect.FindExceptionGetMessage" speed="fast" disabled="true" />
   <Detector class="edu.umd.cs.findbugs.detect.FindFinalizeInvocations" speed="fast" />
   <Detector class="edu.umd.cs.findbugs.detect.FindHEmismatch" speed="fast" />
   <Detector class="edu.umd.cs.findbugs.detect.FindInconsistentSync" speed="slow" />
@@ -43,7 +42,6 @@
   <BugPattern abbrev="Dm" type="DM_GC" category="PERFORMANCE" />
   <BugPattern abbrev="Dm" type="DM_BOOLEAN_CTOR" category="PERFORMANCE" />
   <BugPattern abbrev="DC" type="DC_DOUBLECHECK" category="MT_CORRECTNESS" />
-  <BugPattern abbrev="Dm" type="DM_EXCEPTION_GETMESSAGE" category="CORRECTNESS" />
   <BugPattern abbrev="FI" type="FI_PUBLIC_SHOULD_BE_PROTECTED" category="MALICIOUS_CODE" />
   <BugPattern abbrev="FI" type="FI_EMPTY" category="PERFORMANCE" />
   <BugPattern abbrev="FI" type="FI_NULLIFY_SUPER" category="CORRECTNESS" />

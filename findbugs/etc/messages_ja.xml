@@ -34,15 +34,6 @@ It is a fast detector.
     </Details>
   </Detector>
 
-  <Detector class="edu.umd.cs.findbugs.detect.FindExceptionGetMessage" disabled="true" >
-    <Details>
-<![CDATA[
-<p> This detector looks for calls to Exception.getMessage(). You probably don't
-want to use this.  It is a fast detector.
-]]>
-    </Details>
-  </Detector>
-
   <Detector class="edu.umd.cs.findbugs.detect.FindFinalizeInvocations" >
     <Details>
 <![CDATA[
@@ -421,19 +412,7 @@ Bug patterns
 ]]>
     </Details>
   </BugPattern>
-  <BugPattern type="DM_EXCEPTION_GETMESSAGE">
-    <ShortDescription >Exception.getMessage()を読んでいる。変わりに toString() を呼ぶべき。</ShortDescription>
-    <LongDescription >{1} は Exception.getMessage()を読んでいる。変わりに toString() を呼ぶべき。</LongDescription>
-    <Details>
-<![CDATA[
-  <!-- add details here -->
-  <p> When reporting an exception, either by printing it or using it to produce
-  another exception, it is better to use the <code>toString()</code> method than
-  the <code>getMessage()</code> method.&nbsp; The reason is that the <code>toString()</code>
-  method indicates what kind of exception is thrown.
-]]>
-    </Details>
-  </BugPattern>
+
   <BugPattern type="FI_PUBLIC_SHOULD_BE_PROTECTED">
     <ShortDescription >Finalizer はpublicだがprotectedであるべき</ShortDescription>
     <LongDescription >{1} はpublicだがprotectedであるべき</LongDescription>
