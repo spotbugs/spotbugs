@@ -130,6 +130,16 @@ command.  (This assumes you have set up your executable path as described in the
 The <command>findbugs</command> can take several options:
 <variablelist>
   <varlistentry>
+    <term><command>-textui</command></term>
+    <listitem>
+       <para>
+         Use the command line interface instead of the GUI.
+         The command line interface is described in the <link linkend="textui">next chapter</link>.
+       </para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
     <term><command>-jvmArgs=<replaceable>args</replaceable></command></term>
     <listitem>
        <para>
@@ -157,6 +167,114 @@ The <command>findbugs</command> can take several options:
 
 </sect1>
 
+<sect1>
+<title>Creating and Analyzing a Project</title>
+<para>
+This section explains how to create a project in FindBugs and
+analyze it for potential bugs.
+</para>
+
+<sect2>
+<title>Creating a Project</title>
+<para>
+After you have started FindBugs using the <command>findbugs</command> command,
+choose the <menuchoice><guimenu>File</guimenu><guimenuitem>New Project</guimenuitem></menuchoice>
+menu item.  You will see a dialog which looks like this:
+<mediaobject>
+<imageobject>
+<imagedata fileref="../project-dialog.png">
+</imageobject>
+</mediaobject>
+</para>
+
+<para>
+Use the "Browse" button next to the "Jar file" text field to select a Jar
+file containing java classes to analyze for bugs.  You may add multiple
+Jar files.
+</para>
+
+<para>
+You can also add the source directories which contain
+the source code for the Jar files you are analyzing.  This will enable
+FindBugs to highlight the source code which contains a possible error.
+The source directories you add should be the roots of the Java
+package hierarchy.  For example, if your application is contained in the
+<varname>org.foobar.myapp</varname> package, you should add the
+parent directory of the <filename class=directory>org</filename> directory
+to the source directory list for the project.
+</para>
+
+<para>
+Another optional step is to add additional Jar files or directories as
+classpath entries.  You should do this if the Jar files you are analyzing
+have references to other classes which are not included in the analyzed
+jar files and are not in the standard runtime classpath.  Some of the bug
+pattern detectors in FindBugs make use of class hierarchy information,
+so you will get more accurate results if the entire class hierarchy is
+available which FindBugs performs its analysis.
+</para>
+
+</sect2>
+
+<sect2>
+<title>Running the Analysis</title>
+<para>
+Once you have added all of the Jar files and source directories,
+click the "Find Bugs!" button to analyze the classes contained in the
+Jar files.  Note that for a very large program on an older computer,
+this may take quite a while (tens of minutes).  A recent computer with
+ample memory will typically be able to analyze a large program in only a
+few minutes.
+</para>
+</sect2>
+
+<sect2>
+<title>Browsing Results</title>
+
+<para>
+When the analysis completes, you will see a screen like the following:
+<mediaobject>
+  <imageobject>
+    <imagedata fileref="../example-details.png">
+  </imageobject>
+</mediaobject>
+</para>
+
+<para>
+The top pane of the window shows the bug tree; this is a hierarchical
+representation of all of the potential bugs detected in the analyzed
+Jar files.  The tabs allow you to browse by class, package, or bug type.
+</para>
+
+<para>
+When you select a particular bug instance in the top pane, you will
+see a description of the bug in the "Details" tab of the bottom pane.
+In addition, the "Source code" tab of the bottom pane will, for some
+kinds of bugs, show the program source code when the potential bug occurs.
+In the above example, the bug is an access to an uninitialized field in
+a constructor.  The source code window highlights the line containing
+the problematic access.
+</para>
+
+<para>
+You may use the "File:Save project" menu option to save the current lists
+of Jar files and source directories.  A saved project may be loaded with
+the "File:Open project" menu option.  Note that the analysis results are
+not saved, so you will have to run the analysis again.  (Saving results
+may be added to a future FindBugs release).
+</para>
+
+</sect2>
+
+</sect1>
+
+
+</chapter>
+
+<chapter id="textui">
+<title>Using the FindBugs Command Line Interface</title>
+
+<para>Yep.</para>
 
 </chapter>
 
