@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs;
 
 import java.io.*;
+import java.net.URL;
 import java.lang.reflect.Constructor;
 import java.util.*;
 import java.util.zip.*;
@@ -70,59 +71,60 @@ public class FindBugs implements Constants2
 	this.progressCallback = progressCallback;
   }
 
-  private static ArrayList<Class> factories = new ArrayList<Class>();
-  private static HashMap<String, Class> factoriesByName = new HashMap<String, Class>();
-  private static IdentityHashMap<Class, String> namesByFactory = new IdentityHashMap<Class, String>();
+  private static ArrayList<DetectorFactory> factories = new ArrayList<DetectorFactory>();
+  private static HashMap<String, DetectorFactory> factoriesByName = new HashMap<String, DetectorFactory>();
+  private static IdentityHashMap<DetectorFactory, String> namesByFactory = new IdentityHashMap<DetectorFactory, String>();
 
-  private static Class [] constructorArgTypes = {BugReporter.class};
+  private Detector makeDetector(DetectorFactory factory) {
+	return factory.create(bugReporter);
+  }
 
-  private Detector makeDetector(Class c) {
-	try {
-	if (!Detector.class.isAssignableFrom(c))
-		throw new IllegalStateException(c + " is not a Detector");
-	Constructor constructor = c.getConstructor(constructorArgTypes);
-	return (Detector) constructor.newInstance(
-				new Object[] {bugReporter});
-	} catch (Exception e) {
-		e.printStackTrace();
-		throw new RuntimeException(e.toString());
-		}
-	}
-  public static void registerDetector(String detectorName, Class detector)  {
-	factories.add(detector);
-	factoriesByName.put(detectorName, detector);
-	namesByFactory.put(detector, detectorName);
+  private static void registerDetector(DetectorFactory factory)  {
+	String detectorName = factory.getShortName();
+	factories.add(factory);
+	factoriesByName.put(detectorName, factory);
+	namesByFactory.put(factory, detectorName);
   }
 
   static {
-    /* Multithreaded checkers */
-    registerDetector("MutableLock", edu.umd.cs.findbugs.detect.MutableLock.class);
-    registerDetector("FindUnsyncGet", edu.umd.cs.findbugs.detect.FindUnsyncGet.class);
-    registerDetector("FindSpinLoop", edu.umd.cs.findbugs.detect.FindSpinLoop.class);
-    registerDetector("FindDoubleCheck", edu.umd.cs.findbugs.detect.FindDoubleCheck.class);
-    registerDetector("WaitInLoop", edu.umd.cs.findbugs.detect.WaitInLoop.class);
-    registerDetector("SimplePathsFindDoubleCheck", edu.umd.cs.findbugs.detect.SimplePathsFindDoubleCheck.class);
-    registerDetector("FindTwoLockWait", edu.umd.cs.findbugs.detect.FindTwoLockWait.class);
-    registerDetector("FindInconsistentSync", edu.umd.cs.findbugs.detect.FindInconsistentSync.class);
-    registerDetector("FindNakedNotify", edu.umd.cs.findbugs.detect.FindNakedNotify.class);
-    registerDetector("FindUnconditionalWait", edu.umd.cs.findbugs.detect.FindUnconditionalWait.class);
-    registerDetector("FindRunInvocations", edu.umd.cs.findbugs.detect.FindRunInvocations.class);
+	// Load all detector plugins.
 
+	String homeDir = System.getProperty("findbugs.home");
+	if (homeDir == null) {
+		System.err.println("Error: The findbugs.home property is not set!");
+		System.exit(1);
+	}
 
-    registerDetector("FindFinalizeInvocations", edu.umd.cs.findbugs.detect.FindFinalizeInvocations.class);
-    registerDetector("InitializationChain", edu.umd.cs.findbugs.detect.InitializationChain.class);
-    registerDetector("FindHEmismatch", edu.umd.cs.findbugs.detect.FindHEmismatch.class);
-    registerDetector("DumbMethods", edu.umd.cs.findbugs.detect.DumbMethods.class);
-    registerDetector("FindUninitializedGet", edu.umd.cs.findbugs.detect.FindUninitializedGet.class);
-    registerDetector("ReadReturnShouldBeChecked", edu.umd.cs.findbugs.detect.ReadReturnShouldBeChecked.class);
-    registerDetector("DroppedException", edu.umd.cs.findbugs.detect.DroppedException.class);
-    registerDetector("IteratorIdioms", edu.umd.cs.findbugs.detect.IteratorIdioms.class);
-    registerDetector("SerializableIdiom", edu.umd.cs.findbugs.detect.SerializableIdiom.class);
-    registerDetector("StartInConstructor", edu.umd.cs.findbugs.detect.StartInConstructor.class);
-    registerDetector("FindReturnRef", edu.umd.cs.findbugs.detect.FindReturnRef.class);
-    registerDetector("Naming", edu.umd.cs.findbugs.detect.Naming.class);
-    registerDetector("UnreadFields", edu.umd.cs.findbugs.detect.UnreadFields.class);
-    registerDetector("MutableStaticFields", edu.umd.cs.findbugs.detect.MutableStaticFields.class);
+	File pluginDir = new File(homeDir + File.separator + "plugin");
+	File[] contentList = pluginDir.listFiles();
+	if (contentList == null) {
+		System.err.println("Error: The path " + pluginDir.getPath() + " does not seem to be a directory!");
+		System.exit(1);
+	}
+
+	int numLoaded = 0;
+	for (int i = 0; i < contentList.length; ++i) {
+		File file = contentList[i];
+		if (file.getName().endsWith(".jar")) {
+			try {
+				URL url = file.toURL();
+				PluginLoader pluginLoader = new PluginLoader(url);
+
+				// Register all of the detectors that this plugin contains
+				DetectorFactory[] detectorFactoryList = pluginLoader.getDetectorFactoryList();
+				for (int j = 0; j < detectorFactoryList.length; ++j)
+					registerDetector(detectorFactoryList[j]);
+
+				// TODO: register BugPatterns and BugCodes
+
+				++numLoaded;
+			} catch (Exception e) {
+				System.err.println("Warning: could not load plugin " + file.getPath() + ": " + e.toString());
+			}
+		}
+	}
+
+	System.out.println("Loaded " + numLoaded + " plugins");
   }
 
   private void createDetectors() {
@@ -130,10 +132,10 @@ public class FindBugs implements Constants2
 	// Detectors were not named explicitly on command line,
 	// so create all of them.
 	detectors = new Detector[factories.size()];
-	Iterator i = factories.iterator();
+	Iterator<DetectorFactory> i = factories.iterator();
 	int count = 0;
 	while (i.hasNext())
-		detectors[count++] = makeDetector((Class) i.next());
+		detectors[count++] = makeDetector(i.next());
     } else {
 	// Detectors were named explicitly on command line.
 
@@ -144,7 +146,7 @@ public class FindBugs implements Constants2
 		int count = 0;
 		while (i.hasNext()) {
 			String name = (String) i.next();
-			Class factory = (Class) factoriesByName.get(name);
+			DetectorFactory factory = (DetectorFactory) factoriesByName.get(name);
 			if (factory == null)
 				throw new IllegalArgumentException("No such detector: " + name);
 			detectors[count++] = makeDetector(factory);
@@ -156,7 +158,7 @@ public class FindBugs implements Constants2
 		Iterator i = factories.iterator();
 		int count = 0;
 		while (i.hasNext()) {
-			Class factory = (Class) i.next();
+			DetectorFactory factory = (DetectorFactory) i.next();
 			String name = (String) namesByFactory.get(factory);
 			if (!detectorNames.contains(name)) {
 				// Add the detector.
