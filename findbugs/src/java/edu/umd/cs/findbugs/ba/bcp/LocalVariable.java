@@ -19,30 +19,21 @@
 
 package edu.umd.cs.findbugs.bcp;
 
-/**
- * A Binding binds a name to a Variable.
- *
- * @see Variable
- */
-public class Binding {
-	private final String varName;
-	private final Variable variable;
+import edu.umd.cs.daveho.ba.ValueNumber;
 
-	/**
-	 * Constructor.
-	 * @param varName the name of the variable
-	 * @param variable the variable
-	 */
-	public Binding(String varName, Variable variable) {
-		this.varName = varName;
-		this.variable = variable;
+public class LocalVariable implements Variable {
+	private ValueNumber valueNumber;
+
+	public LocalVariable(ValueNumber valueNumber) {
+		this.valueNumber = valueNumber;
 	}
 
-	/** Get the variable name. */
-	public String getVarName() { return varName; }
-
-	/** Get the variable of the variable. */
-	public Variable getVariable() { return variable; }
+	public boolean sameAs(Variable other) {
+		if (!(other instanceof LocalVariable))
+			return false;
+		LocalVariable otherLocal = (LocalVariable) other;
+		return valueNumber.equals(otherLocal.valueNumber);
+	}
 }
 
 // vim:ts=4
