@@ -315,8 +315,8 @@ public class FindBugs implements Constants2
 		InputStream in = FindBugs.class.getClassLoader().getResourceAsStream("USAGE");
 		if (in == null)  {
 			System.out.println("FindBugs tool, version " + Version.RELEASE);
-			System.out.println("usage: java -jar FindBugs.jar [options] <classfiles, zip files or jar files>");
-			System.out.println("Example: java -jar FindBugs.jar rt.jar");
+			System.out.println("usage: java -jar findbugs.jar [options] <classfiles, zip files or jar files>");
+			System.out.println("Example: java -jar findbugs.jar rt.jar");
 			System.out.println("Options:");
 			System.out.println("   -sortByClass                           sort bug reports by class");
 			System.out.println("   -visitors <visitor 1>,<visitor 2>,...  run only named visitors");
