@@ -72,7 +72,8 @@ public class FindReturnRef extends BytecodeScanningDetector implements   Constan
 		) {
 			bugReporter.reportBug(new BugInstance(staticMethod ? "MS_EXPOSE_REP" : "EI_EXPOSE_REP", NORMAL_PRIORITY)
 				.addClassAndMethod(this)
-				.addField(classNameOnStack, nameOnStack, sigOnStack, fieldIsStatic));
+				.addField(classNameOnStack, nameOnStack, sigOnStack, fieldIsStatic)
+				.addSourceLine(this));
 		}
 
 	fieldOnTOS = false;

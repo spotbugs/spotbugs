@@ -8,6 +8,7 @@ import edu.umd.cs.pugh.visitclass.Constants2;
 
 public class FindDoubleCheck extends BytecodeScanningDetector implements   Constants2 {
     int stage = 0;
+    int startPC;
     int count;
     boolean sawMonitorEnter;
     HashSet<FieldAnnotation> fields = new HashSet<FieldAnnotation>();
@@ -32,8 +33,10 @@ public class FindDoubleCheck extends BytecodeScanningDetector implements   Const
 	if (seen == MONITORENTER) sawMonitorEnter = true;
 	if (seen == GETFIELD || seen == GETSTATIC)  {
 		FieldAnnotation f = FieldAnnotation.fromReferencedField(this);
-		if (!sawMonitorEnter)
-		      fields.add(f);
+		if (!sawMonitorEnter) {
+			fields.add(f);
+			startPC = PC;
+			}
 		else if(fields.contains(f))
 			twice.add(f);
 		}
@@ -64,7 +67,8 @@ public class FindDoubleCheck extends BytecodeScanningDetector implements   Const
 			if (fields.contains(f) && !nameConstant.startsWith("class$")) {
 				bugReporter.reportBug(new BugInstance("DC_DOUBLECHECK", NORMAL_PRIORITY)
 					.addClassAndMethod(this)
-					.addField(f));
+					.addField(f).describe("FIELD_ON")
+					.addSourceLine(this, startPC));
 				stage++;
 				}
 			}
