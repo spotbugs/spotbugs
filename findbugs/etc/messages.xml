@@ -1,7 +1,7 @@
 <MessageCollection>
   <BugPattern type="DE_MIGHT_DROP">
     <ShortDescription>Method might drop exception</ShortDescription>
-    <LongDescription>{1} might drop {2}</LongDescription>
+    <LongDescription>{1} might drop {3}</LongDescription>
     <Details>
   &lt;p&gt; This method might drop an exception.&amp;nbsp; In general, exceptions
   should be handled or reported in some way, or they should be thrown
@@ -10,7 +10,7 @@
   </BugPattern>
   <BugPattern type="DE_MIGHT_IGNORE">
     <ShortDescription>Method might ignore exception</ShortDescription>
-    <LongDescription>{1} might ignore {2}</LongDescription>
+    <LongDescription>{1} might ignore {3}</LongDescription>
     <Details>
   &lt;p&gt; This method might ignore an exception.&amp;nbsp; In general, exceptions
   should be handled or reported in some way, or they should be thrown
