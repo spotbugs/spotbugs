@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.ba;
 
+import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.MethodGen;
 
@@ -57,6 +58,16 @@ public class AnalysisException extends RuntimeException {
 	}
 
 	/**
+	 * Constructor from method and instruction.
+	 * @param message reason for the error
+	 * @param methodGen the method
+	 * @param ins the instruction
+	 */
+	public AnalysisException(String message, MethodGen methodGen, Instruction ins) {
+		super(message + " in " + SignatureConverter.convertMethodSignature(methodGen) + " at " + ins);
+	}
+
+	/**
 	 * Constructor from method, instruction, and causing Throwable object.
 	 * @param message reason for the error
 	 * @param methodGen the method
@@ -66,6 +77,18 @@ public class AnalysisException extends RuntimeException {
 	public AnalysisException(String message, MethodGen methodGen, InstructionHandle handle,
 		Throwable throwable) {
 		super(message + " in " + SignatureConverter.convertMethodSignature(methodGen) + " at " + handle, throwable);
+	}
+
+	/**
+	 * Constructor from method, instruction, and causing Throwable object.
+	 * @param message reason for the error
+	 * @param methodGen the method
+	 * @param ins the instruction
+	 * @param throwable the cause of the error
+	 */
+	public AnalysisException(String message, MethodGen methodGen, Instruction ins,
+		Throwable throwable) {
+		super(message + " in " + SignatureConverter.convertMethodSignature(methodGen) + " at " + ins, throwable);
 	}
 }
 
