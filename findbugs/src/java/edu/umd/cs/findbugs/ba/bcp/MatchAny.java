@@ -52,6 +52,16 @@ public class MatchAny extends PatternElement {
 		return this;
 	}
 
+	public PatternElement setMatchExceptionEdges(boolean matchExceptionEdges) {
+		// Just forward this on to all children,
+		// since it is the children that the PatternMatcher will ask
+		// about edges.
+		for (int i = 0; i < childList.length; ++i)
+			childList[i].setMatchExceptionEdges(matchExceptionEdges);
+
+		return this;
+	}
+
 	public MatchResult match(InstructionHandle handle, ConstantPoolGen cpg,
 		ValueNumberFrame before, ValueNumberFrame after, BindingSet bindingSet) throws DataflowAnalysisException {
 
