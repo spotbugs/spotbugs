@@ -54,6 +54,7 @@
 
 package edu.umd.cs.findbugs.anttask;
 
+import edu.umd.cs.findbugs.ExitCodes;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Task;
@@ -63,6 +64,8 @@ import org.apache.tools.ant.taskdefs.Java;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -116,11 +119,13 @@ public class FindBugsTask extends Task {
 	private File excludeFile = null;
 	private File includeFile = null;
 	private Path auxClasspath = null;
+	private Path sourcePath = null;
 	private String outputFormat = "xml";
 	private String reportLevel = null;
 	private String jvmargs = "";
 	private String visitors = null;
 	private String omitVisitors = null;
+	private String outputFileName = null;
     private List classLocations = new ArrayList();
 
 
@@ -248,10 +253,38 @@ public class FindBugsTask extends Task {
 	}
 
 	/**
-	 * Adds a reference to a auxclasspath defined elsewhere.
+	 * Adds a reference to a sourcepath defined elsewhere.
 	 */
 	public void setAuxClasspathRef(Reference r) {
 		createAuxClasspath().setRefid(r);
+	}
+
+	/**
+	 * the sourcepath to use.
+	 */
+	public void setSourcePath(Path src) {
+		if (sourcePath == null) {
+			sourcePath = src;
+		} else {
+			sourcePath.append(src);
+		}
+	}
+
+	/**
+	 * Path to use for sourcepath.
+	 */
+	public Path createSourcePath() {
+		if (sourcePath == null) {
+			sourcePath = new Path(project);
+		}
+		return sourcePath.createPath();
+	}
+
+	/**
+	 * Adds a reference to a source path defined elsewhere.
+	 */
+	public void setSourcePathRef(Reference r) {
+		createSourcePath().setRefid(r);
 	}
 
 	/**
@@ -261,6 +294,13 @@ public class FindBugsTask extends Task {
 		ClassLocation cl = new ClassLocation();
 		classLocations.add( cl );
 		return cl;
+	}
+
+	/**
+	 * Set name of output file.
+	 */
+	public void setOutputFile(String outputFileName) {
+		this.outputFileName = outputFileName;
 	}
 
 	public void execute() throws BuildException {
@@ -322,6 +362,10 @@ public class FindBugsTask extends Task {
 		findbugsEngine.setTimeout( new Long( TIMEOUT ) );
 		findbugsEngine.createJvmarg().setLine( jvmargs ); 
 
+		if ( outputFileName != null) {
+			findbugsEngine.setOutput(new File(outputFileName));
+		}
+
 		StringBuffer sb = new StringBuffer( 1024 );
 		sb.append( "-home " + homeDir );
 		if ( debug ) sb.append( " -debug");
@@ -338,6 +382,7 @@ public class FindBugsTask extends Task {
 		if ( visitors != null) sb.append( " -visitors " + visitors );
 		if ( omitVisitors != null ) sb.append( " -omitvisitors " + omitVisitors );
 		if ( auxClasspath != null ) sb.append( " -auxclasspath " + auxClasspath );
+		if ( sourcePath != null) sb.append( " -sourcepath " + sourcePath );
 		sb.append( " -exitcode" );
         Iterator itr = classLocations.iterator();
         while ( itr.hasNext() ) {
@@ -345,8 +390,22 @@ public class FindBugsTask extends Task {
       	} 
 
 		findbugsEngine.createArg().setLine( sb.toString() );
-		if ( findbugsEngine.executeJava() != 0 ) {
+
+		log("Running FindBugs...");
+
+		int rc = findbugsEngine.executeJava();
+
+		if ((rc & ExitCodes.ERROR_FLAG) != 0) {
 			throw new BuildException("Execution of findbugs failed.");
+		}
+		if ((rc & ExitCodes.BUGS_FOUND_FLAG) != 0) {
+			log("Bugs were found");
+		}
+		if ((rc & ExitCodes.MISSING_CLASS_FLAG) != 0) {
+			log("Some classes needed for analysis were missing");
+		}
+		if (outputFileName != null) {
+			log("Output saved to " + outputFileName);
 		}
     } 
 
