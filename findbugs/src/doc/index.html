@@ -53,15 +53,16 @@ invited talk, MASPLAS 2003
 <li> Rewritten inconsistent synchronization detector;
      accuracy is significantly improved, and bug reports are
      prioritized
+<li> New detector to find self assignment (x=x) of local variables
+     (suggested by Jeff Martin)
+<li> New detector to find calls to wait(), notify(), and notifyAll()
+     on an object which is not obviously locked
 <li> Open stream detector now reports Readers and Writers
 <li> Fixed bug in finalizer idioms detector which caused spurious warnings about
      failure to call super.finalize() (reported by Jim Menard)
 <li> Fixed bug where output stream was not closed using non-XML output
      (reported by Sigiswald Madou)
 <li> Fixed corrupted HTML bug detail message (reported by Trevor Harmon)
-<li> New detector to find calls to wait(), notify(), and notifyAll()
-     on an object which is not obviously locked
-<li> 
 </ul>
 
 <p> <a href="Changes.html">Older versions...</a>
