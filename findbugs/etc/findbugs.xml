@@ -187,6 +187,8 @@
   <BugPattern abbrev="LI" type="LI_LAZY_INIT_STATIC" category="MT_CORRECTNESS" experimental="true"/>
   <BugPattern abbrev="JLM" type="JLM_JSR166_LOCK_MONITORENTER" category="MT_CORRECTNESS" experimental="true"/>
   <BugPattern abbrev="UPM" type="UPM_UNCALLED_PRIVATE_METHOD" category="PERFORMANCE"/>
-  <BugPattern abbrev="ODR" type="ODR_OPEN_DATABASE_RESOURCE" category="CORRECTNESS"/>
-  <BugPattern abbrev="ODR" type="ODR_OPEN_DATABASE_RESOURCE_EXCEPTION_PATH" category="CORRECTNESS"/>
+  <BugPattern abbrev="ODR" type="ODR_OPEN_DATABASE_RESOURCE" category="CORRECTNESS"
+    experimental="true"/>
+  <BugPattern abbrev="ODR" type="ODR_OPEN_DATABASE_RESOURCE_EXCEPTION_PATH" category="CORRECTNESS"
+    experimental="true"/>
 </FindbugsPlugin>
