@@ -102,7 +102,6 @@ public class FindBugsFrame extends javax.swing.JFrame {
         navigatorTree = new javax.swing.JTree();
         viewPanel = new javax.swing.JPanel();
         emptyPanel = new javax.swing.JPanel();
-        bugTree = new javax.swing.JTree();
         reportPanel = new javax.swing.JPanel();
         editProjectPanel = new javax.swing.JPanel();
         jarFileLabel = new javax.swing.JLabel();
@@ -126,6 +125,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
         jarFileList = new javax.swing.JList();
         jScrollPane3 = new javax.swing.JScrollPane();
         sourceDirList = new javax.swing.JList();
+        jScrollPane4 = new javax.swing.JScrollPane();
+        bugTree = new javax.swing.JTree();
         jMenuBar1 = new javax.swing.JMenuBar();
         fileMenu = new javax.swing.JMenu();
         newProjectItem = new javax.swing.JMenuItem();
@@ -153,8 +154,6 @@ public class FindBugsFrame extends javax.swing.JFrame {
         viewPanel.setLayout(new java.awt.CardLayout());
 
         viewPanel.add(emptyPanel, "EmptyPanel");
-
-        viewPanel.add(bugTree, "BugTree");
 
         viewPanel.add(reportPanel, "ReportPanel");
 
@@ -389,6 +388,10 @@ public class FindBugsFrame extends javax.swing.JFrame {
         editProjectPanel.add(jScrollPane3, gridBagConstraints);
 
         viewPanel.add(editProjectPanel, "EditProjectPanel");
+
+        jScrollPane4.setViewportView(bugTree);
+
+        viewPanel.add(jScrollPane4, "BugTree");
 
         jSplitPane1.setRightComponent(viewPanel);
 
@@ -750,6 +753,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
     private javax.swing.JMenuItem newProjectItem;
     private javax.swing.JTextField jarNameTextField;
     private javax.swing.JButton browseJarButton;
+    private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JSplitPane jSplitPane1;
     private javax.swing.JMenuItem openProjectItem;
     private javax.swing.JList jarFileList;
