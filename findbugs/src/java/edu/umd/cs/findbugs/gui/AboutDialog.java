@@ -141,6 +141,11 @@ public class AboutDialog extends javax.swing.JDialog {
         gridBagConstraints.weighty = 1.0;
         getContentPane().add(aboutTabPane, gridBagConstraints);
 
+        {
+            aboutTabPane.setTitleAt(0, L10N.getLocalString("dlg.about_tab", "About"));
+            aboutTabPane.setTitleAt(1, L10N.getLocalString("dlg.license_tab", "License"));
+            aboutTabPane.setTitleAt(2, L10N.getLocalString("dlg.acknowledgements_tab", "Acknowledgements"));
+        }
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
@@ -149,6 +154,7 @@ public class AboutDialog extends javax.swing.JDialog {
 
         okButton.setMnemonic('O');
         okButton.setText("OK");
+        okButton.setText(L10N.getLocalString("dlg.ok_btn", "OK"));
         okButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 okButtonActionPerformed(evt);
