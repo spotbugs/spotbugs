@@ -48,6 +48,10 @@ public class BasicType implements Type {
 		return typeCode != Constants.T_VOID;
 	}
 
+	public boolean isValidArrayBaseType() {
+		return typeCode != Constants.T_VOID;
+	}
+
 	public void accept(TypeVisitor visitor) {
 		visitor.visitBasicType(this);
 	}

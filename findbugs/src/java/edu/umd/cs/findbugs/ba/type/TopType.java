@@ -45,6 +45,10 @@ public class TopType implements Type {
 		return false;
 	}
 
+	public boolean isValidArrayBaseType() {
+		return false;
+	}
+
 	public int getTypeCode() {
 		return ExtendedTypes.T_TOP;
 	}

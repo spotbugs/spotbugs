@@ -180,13 +180,51 @@ public class TypeRepository {
 	}
 
 	/**
-	 * Get an ArrayType from number of dimensions and element type. 
+	 * Get an ArrayType from number of dimensions and base type. 
+	 * The base type must not be an array type.
 	 * @param numDimensions the number of dimensions
-	 * @param elementType the element type: must be created from this type repository
+	 * @param baseType the base type (e.g, "Object" in the array type
+	 *    "Object[][]"): must be created from this type repository
 	 * @return the array type
 	 */
-	public ArrayType arrayTypeFromDimensionsAndBaseType(int numDimensions, Type elementType) {
-		return createArrayType(numDimensions, elementType);
+	public ArrayType arrayTypeFromDimensionsAndBaseType(int numDimensions, Type baseType) {
+		if (!baseType.isValidArrayBaseType())
+			throw new IllegalArgumentException("Type " + baseType.getSignature() +
+				" is not a valid array base type");
+		return createArrayType(numDimensions, baseType);
+	}
+
+	/**
+	 * Create a one-dimensional array type with given element type,
+	 * which can be an array type.  Sometimes it is easier to
+	 * think of all arrays as being one dimensional.
+	 * @param elementType the element type
+	 * @return an array type with the given element type
+	 */
+	public ArrayType arrayTypeFromElementType(Type elementType) {
+		if (!elementType.isValidArrayElementType())
+			throw new IllegalArgumentException("Type " + elementType.getSignature() +
+				" is not a valid array element type");
+
+		int numDimensions;
+		Type baseType;
+
+		if (elementType.isBasicType()) {
+			numDimensions = 1;
+			baseType = elementType;
+		} else {
+			ObjectType elementObjectType = (ObjectType) elementType;
+			if (elementObjectType.isArray()) {
+				ArrayType arrayType = (ArrayType) elementObjectType;
+				numDimensions = 1 + arrayType.getNumDimensions();
+				baseType = arrayType.getBaseType();
+			} else {
+				numDimensions = 1;
+				baseType = elementType;
+			}
+		}
+
+		return arrayTypeFromDimensionsAndBaseType(numDimensions, elementType);
 	}
 
 	/**
@@ -252,6 +290,7 @@ public class TypeRepository {
 	 * @param superclass the superclass
 	 */
 	public void addSuperclassLink(ObjectType subclass, ObjectType superclass) {
+		//System.out.println("Superclass link: " + subclass.getSignature() + " --> " + superclass.getSignature());
 		inheritanceGraph.createEdge(subclass, superclass, InheritanceGraphEdgeTypes.CLASS_EDGE);
 	}
 
@@ -261,6 +300,7 @@ public class TypeRepository {
 	 * @param iface the implemented interface (i.e., the supertype)
 	 */
 	public void addInterfaceLink(ObjectType implementor, ClassType iface) {
+		//System.out.println("Interface link: " + implementor.getSignature() + " --> " + iface.getSignature());
 		inheritanceGraph.createEdge(implementor, iface, InheritanceGraphEdgeTypes.INTERFACE_EDGE);
 	}
 
@@ -484,42 +524,41 @@ public class TypeRepository {
 	private void resolveArrayClass(ArrayType type) throws ClassNotFoundException {
 		// FIXME: avoid repeated failed attempts to resolve
 
-		Type baseType = type.getBaseType();
+		// The rule for arrays is:
+		//
+		// - Arrays whose element type is a basic type
+		//   or java.lang.Object are direct subclasses of
+		//   java.lang.Object
+		//
+		// - Arrays whose element type is a object type
+		//   are direct subclasses arrays with the
+		//   direct superclass of the element type as
+		//   their element type
 
-		if (baseType.getSignature().equals(JAVA_LANG_OBJECT_SIGNATURE)) {
-			// Special case: an array whose base type is java.lang.Object
-			// is a direct subtype of an array of Object with one less dimension.
-			// Except, a single dimensional array of Object is a
-			// a direct subtype of java.lang.Object.
-			ObjectType directBaseType;
-			if (type.getNumDimensions() == 1) {
-				directBaseType = (ObjectType) baseType;
-			} else {
-				directBaseType =
-					arrayTypeFromDimensionsAndBaseType(type.getNumDimensions() - 1, baseType);
-			}
+		ObjectType javaLangObjectType = classTypeFromSignature(JAVA_LANG_OBJECT_SIGNATURE);
 
-			addSuperclassLink(type, directBaseType);
+		Type elementType = type.getElementType(this);
 
+		if (elementType.isBasicType() || elementType.equals(javaLangObjectType)) {
+			addSuperclassLink(type, javaLangObjectType);
 		} else {
-			Type elementType = type.getElementType(this);
-			if (elementType.isBasicType()) {
-				// All arrays of basic types are subtypes of java.lang.Object
-				ClassType javaLangObjectType = classTypeFromSignature(JAVA_LANG_OBJECT_SIGNATURE);
-				addSuperclassLink(type, javaLangObjectType);
-			} else {
-				// Array is a direct subtype of all arrays (same dimensionality)
-				// of supertypes of the element type.
-				ObjectType elementObjectType = (ObjectType) elementType;
-				resolveObjectType(elementObjectType);
-				for (Iterator<ObjectType> i = inheritanceGraph.successorIterator(elementObjectType); i.hasNext(); ) {
-					ObjectType elementSupertype = i.next();
-					ObjectType arraySupertype =
-						arrayTypeFromDimensionsAndBaseType(type.getNumDimensions(), elementSupertype);
-					addSuperclassLink(type, arraySupertype);
+			ObjectType elementObjectType = (ObjectType) elementType;
+			resolveObjectType(elementObjectType);
+			for (Iterator<ObjectType> i = inheritanceGraph.successorIterator(elementObjectType); i.hasNext(); ) {
+				ObjectType elementSupertype = i.next();
+/*
+				ObjectType supertype;
+				if (elementSupertype.isArray()) {
+					ArrayType elementSuperArrayType = (ArrayType) elementSupertype;
+					supertype = arrayTypeFromDimensionsAndBaseType(1 + elementSuperArrayType.getNumDimensions(),
+						elementSuperArrayType.getBaseType());
+				} else {
+					supertype = arrayTypeFromDimensionsAndBaseType(type.getNumDimensions(), elementSupertype);
 				}
+*/
+				ObjectType supertype = arrayTypeFromElementType(elementSupertype);
+				addSuperclassLink(type, supertype);
 			}
-
 		}
 
 		// All arrays implement Serializable and Cloneable

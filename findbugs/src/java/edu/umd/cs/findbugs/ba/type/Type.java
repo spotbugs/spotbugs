@@ -93,6 +93,11 @@ public interface Type {
 	public boolean isValidArrayElementType();
 
 	/**
+	 * Is this a valid array base type?
+	 */
+	public boolean isValidArrayBaseType();
+
+	/**
 	 * Accept an TypeVisitor.
 	 * @param visitor the visitor
 	 */

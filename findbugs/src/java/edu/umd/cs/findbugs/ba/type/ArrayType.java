@@ -29,6 +29,9 @@ public class ArrayType extends ObjectType {
 	private Type baseType;
 
 	public static String makeArraySignature(int numDimensions, Type baseType) {
+		if (!baseType.isValidArrayBaseType())
+			throw new IllegalArgumentException("Illegal request to use array type " +
+				baseType.getSignature() + " as base type of array");
 		StringBuffer buf = new StringBuffer();
 		if (numDimensions <= brackets.length()) {
 			buf.append(brackets.substring(0, numDimensions));
@@ -83,6 +86,10 @@ public class ArrayType extends ObjectType {
 
 	public int getTypeCode() {
 		return Constants.T_ARRAY;
+	}
+
+	public boolean isValidArrayBaseType() {
+		return false;
 	}
 
 	public void accept(TypeVisitor visitor) {

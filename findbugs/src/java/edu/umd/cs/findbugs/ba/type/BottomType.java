@@ -49,6 +49,10 @@ public class BottomType implements Type {
 		return false;
 	}
 
+	public boolean isValidArrayBaseType() {
+		return false;
+	}
+
 	public void accept(TypeVisitor visitor) {
 		visitor.visitBottomType(this);
 	}

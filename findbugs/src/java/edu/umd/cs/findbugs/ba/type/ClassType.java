@@ -86,6 +86,10 @@ public class ClassType extends ObjectType {
 		return className;
 	}
 
+	public boolean isValidArrayBaseType() {
+		return true;
+	}
+
 	public void accept(TypeVisitor visitor) {
 		visitor.visitClassType(this);
 	}

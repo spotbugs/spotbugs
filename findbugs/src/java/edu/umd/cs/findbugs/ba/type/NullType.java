@@ -49,6 +49,10 @@ public class NullType implements ReferenceType {
 		return false;
 	}
 
+	public boolean isValidArrayBaseType() {
+		return false;
+	}
+
 	public void accept(TypeVisitor visitor) {
 		visitor.visitNullType(this);
 	}
