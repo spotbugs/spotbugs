@@ -231,6 +231,18 @@ These options may be used with both the GUI and Text UI.
   </varlistentry>
 
   <varlistentry>
+    <term><command>-workHard</command></term>
+    <listitem>
+      <para>
+      This option makes the analysis performed by &FindBugs; more precise,
+      at the expense of slowing down the execution by 30%-100%.
+      Currently, this option is mainly useful for reducing false positives
+      in the open stream detector.
+      </para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
     <term><command>-property</command> <replaceable>name=value</replaceable></term>
     <listitem>
       <para>
@@ -1535,6 +1547,7 @@ The list of configurable analysis properties is shown in
     </row>
   </thead>
   <tbody>
+<!--
     <row>
       <entry>cfg.noprune</entry>
       <entry>true or false</entry>
@@ -1543,6 +1556,7 @@ The list of configurable analysis properties is shown in
       increases the speed of the analysis (by about 20%-30%),
       but causes some detectors to produce more false warnings.</entry>
     </row>
+-->
     <row>
       <entry>findbugs.assertionmethods</entry>
       <entry>Comma separated list of fully qualified method names:
