@@ -106,6 +106,7 @@ public class MergeResults {
 
 			public void execute() {
 				if (UPDATE_CATEGORIES) {
+					DetectorFactoryCollection.instance(); // as a side effect, loads detector plugins
 					for (Iterator<BugInstance> i = getNewCollection().iterator(); i.hasNext(); ) {
 						// All bugs not in categories contained in the
 						// original set will be preserved unconditionally.
