@@ -117,6 +117,44 @@ public class PatternMatcher implements DFSEdgeTypes {
 		work(basicBlock, instructionIterator, pattern.getFirst(), 0, null, null);
 	}
 
+	private static class State {
+		private final BasicBlock.InstructionIterator iter;
+		private final PatternElement patternElement;
+		private final int matchCount;
+
+		public State(BasicBlock.InstructionIterator iter, PatternElement patternElement, int matchCount) {
+			this.iter = iter;
+			this.patternElement = patternElement;
+			this.matchCount = matchCount;
+		}
+
+		public boolean equals(Object o) {
+			if (!(o instanceof State))
+				return false;
+			State other = (State) o;
+			return iter.equals(other.iter)
+				&& patternElement == other.patternElement
+				&& matchCount == other.matchCount;
+		}
+
+		public int hashCode() {
+			return iter.hashCode() + patternElement.hashCode() + matchCount;
+		}
+
+		public String toString() {
+			StringBuffer buf = new StringBuffer();
+			buf.append("iter=");
+			buf.append(iter.toString());
+			buf.append(", patternElement=");
+			buf.append(patternElement.toString());
+			buf.append(", matchCount=");
+			buf.append(matchCount);
+			return buf.toString();
+		}
+	}
+
+	private HashSet<State> visitedStateSet = new HashSet<State>();
+
 	/**
 	 * Match a pattern element.  The InstructionIterator should generally be positioned just
 	 * before the next instruction to be matched.  However, it may be positioned
@@ -128,6 +166,11 @@ public class PatternMatcher implements DFSEdgeTypes {
 		PatternElement patternElement, int matchCount,
 		PatternElementMatch currentMatch, BindingSet bindingSet)
 		throws DataflowAnalysisException {
+
+		State state = new State(instructionIterator, patternElement, matchCount);
+		if (visitedStateSet.contains(state))
+			throw new IllegalStateException("Already visited this state: " + state);
+		visitedStateSet.add(state);
 
 		// Have we reached the end of the pattern?
 		if (patternElement == null) {
