@@ -35,6 +35,7 @@ public class Binding {
 	 * @param variable the variable
 	 */
 	public Binding(String varName, Variable variable) {
+		if (variable == null) throw new IllegalArgumentException("No variable!");
 		this.varName = varName;
 		this.variable = variable;
 	}
