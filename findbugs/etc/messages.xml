@@ -863,6 +863,16 @@ defined in an interface references a mutable
     </Details>
   </BugPattern>
 
+  <BugPattern type="RV_RETURN_VALUE_IGNORED">
+    <ShortDescription>Method ignores return value</ShortDescription>
+    <LongDescription>{1} ignores return value of {2}</LongDescription>
+    <Details>
+<![CDATA[
+   <p> The return value of this method should be checked.
+]]>
+    </Details>
+  </BugPattern>
+
   <BugCode abbrev="FI" >Incorrect use of finalizers</BugCode>
   <BugCode abbrev="ML" >Synchronization on updated field (Mutable Lock)</BugCode>
   <BugCode abbrev="UG" >Unsynchronized get method, synchronized set method</BugCode>
@@ -898,4 +908,5 @@ defined in an interface references a mutable
   <BugCode abbrev="SPSDC" >Possible double check of static field</BugCode>
   <BugCode abbrev="SPDC" >Possible double check of field</BugCode>
   <BugCode abbrev="2LW" >Wait with two locks held</BugCode>
+  <BugCode abbrev="RV" >Return value of method is ignored</BugCode>
 </MessageCollection>
