@@ -79,7 +79,9 @@ public class OpcodeStack implements Constants2
  			
  			if (baseSig.length() == 0)
  				return null;
- 			return Repository.lookupClass(baseSig.substring(1, baseSig.length() - 1));
+ 			baseSig = baseSig.substring(1, baseSig.length() - 1);
+ 			baseSig = baseSig.replace('/', '.');
+ 			return Repository.lookupClass(baseSig);
  		}
  		
  		public boolean isArray() {
