@@ -28,6 +28,7 @@ public class FindNonShortCircuit extends BytecodeScanningDetector implements   C
     int stage2 = 0;
     int distance = 0;
     int distance2 = 0;
+    int operator;
     private BugReporter bugReporter;
 
     public FindNonShortCircuit(BugReporter bugReporter) {
@@ -67,6 +68,7 @@ public class FindNonShortCircuit extends BytecodeScanningDetector implements   C
 			// System.out.println("Saw IOR or IAND at distance " + distance);
 			
 			if (distance < 4)  {
+				operator = seen;
 				distance2 = distance;
 				stage2 = 1;
 				}
@@ -74,14 +76,24 @@ public class FindNonShortCircuit extends BytecodeScanningDetector implements   C
 			break;
 		case IFEQ: 
 		case IFNE: 
-		case PUTFIELD: 
-		case PUTSTATIC: 
-		case IRETURN: 
 			if (stage2 == 1)   {
 				// System.out.println("Found nsc");
                                 bugReporter.reportBug(
 				new BugInstance("NS_NON_SHORT_CIRCUIT", 
 						NORMAL_PRIORITY)
+                                        .addClassAndMethod(this)
+					.addSourceLine(this, PC));
+				}
+			stage2 = 0;
+			break;
+		case PUTFIELD: 
+		case PUTSTATIC: 
+		case IRETURN: 
+			if (operator == IAND && stage2 == 1)   {
+				// System.out.println("Found nsc");
+                                bugReporter.reportBug(
+				new BugInstance("NS_NON_SHORT_CIRCUIT", 
+						LOW_PRIORITY)
                                         .addClassAndMethod(this)
 					.addSourceLine(this, PC));
 				}
