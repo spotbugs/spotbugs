@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs.detect;
 import java.util.BitSet;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Code;
@@ -40,6 +41,10 @@ import edu.umd.cs.findbugs.ba.ClassContext;
  */
 public class MethodReturnCheck extends BytecodeScanningDetector {
 	private static boolean DEBUG = Boolean.getBoolean("mrc.debug");
+	private static boolean CHECK_CONTROL_FLOW =
+		Boolean.getBoolean("mrc.checkControlFlow");
+	private static boolean COUNT_POP_BRANCH_TARGETS =
+		Boolean.getBoolean("mrc.countPopBranchTargets");
 	
 	private static final int SCAN =0;
 	private static final int SAW_INVOKE = 1;
@@ -51,20 +56,34 @@ public class MethodReturnCheck extends BytecodeScanningDetector {
 		INVOKE_OPCODE_SET.set(Constants.INVOKESTATIC);
 		INVOKE_OPCODE_SET.set(Constants.INVOKEVIRTUAL);
 	}
+	
+	private static class QueuedWarning {
+		BugInstance warning;
+		int popPC;
+		QueuedWarning(BugInstance warning, int popPC) {
+			this.warning = warning;
+			this.popPC = popPC;
+		}
+	}
 
 	private BugReporter bugReporter;
 	private BitSet branchTargetSet;
-	private LinkedList<BugInstance> queuedWarningList;
+	private List<QueuedWarning> queuedWarningList;
+	private List<Integer> popList;
 	private ClassContext classContext;
 	private Method method;
 	private int state;
 	private int callPC;
 	private String className, methodName, signature;
+	private int popIsBranchTarget;
 	
 	public MethodReturnCheck(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 		this.branchTargetSet = new BitSet();
-		this.queuedWarningList = new LinkedList<BugInstance>();
+		this.queuedWarningList = new LinkedList<QueuedWarning>();
+		if (COUNT_POP_BRANCH_TARGETS) {
+			this.popList = new LinkedList<Integer>();
+		}
 	}
 	
 	public void visitClassContext(ClassContext classContext) {
@@ -96,13 +115,20 @@ public class MethodReturnCheck extends BytecodeScanningDetector {
 		if (DEBUG)System.out.println(
 				"After visit: " +
 				queuedWarningList.size() + " queued warnings");
-		for (Iterator<BugInstance> i = queuedWarningList.iterator(); i.hasNext();) {
-			BugInstance warning = i.next();
+		for (Iterator<QueuedWarning> i = queuedWarningList.iterator(); i.hasNext();) {
+			QueuedWarning qw = i.next();
+
+			if (CHECK_CONTROL_FLOW && branchTargetSet.get(qw.popPC))
+				continue;
 			
-			// TODO: could check to ensure that the POP instruction
-			// was not a branch target.  (That should really never
-			// happen, though, so maybe it's not important.)
-			bugReporter.reportBug(warning);
+			bugReporter.reportBug(qw.warning);
+		}
+		if (COUNT_POP_BRANCH_TARGETS) {
+			for (Iterator<Integer> i = popList.iterator(); i.hasNext();) {
+				int pc = i.next().intValue();
+				if (branchTargetSet.get(pc))
+					++popIsBranchTarget;
+			}
 		}
 		
 	}
@@ -129,6 +155,10 @@ public class MethodReturnCheck extends BytecodeScanningDetector {
 			}
 		}
 		
+		if (COUNT_POP_BRANCH_TARGETS && isPop(seen)) {
+			popList.add(new Integer(getPC()));
+		}
+		
 		boolean redo;
 		
 		do {
@@ -149,14 +179,15 @@ public class MethodReturnCheck extends BytecodeScanningDetector {
 				break;
 				
 			case SAW_INVOKE:
-				if (seen == Constants.POP || seen == Constants.POP2) {
-					if (DEBUG) System.out.println("Saw POP @"+getPC());
+				if (isPop(seen)) {
+					int popPC = getPC();
+					if (DEBUG) System.out.println("Saw POP @"+popPC);
 					BugInstance warning =
 						new BugInstance(this, "RV_RETURN_VALUE_IGNORED", NORMAL_PRIORITY)
 							.addClassAndMethod(this)
 							.addMethod(className, methodName, signature).describe("METHOD_CALLED")
 							.addSourceLine(this, callPC);
-					queuedWarningList.add(warning);
+					queuedWarningList.add(new QueuedWarning(warning, popPC));
 					if (DEBUG) System.out.println(queuedWarningList.size() + " queued warnings so far");
 				} else {
 					// This instruction might be an invocation, too.
@@ -169,6 +200,10 @@ public class MethodReturnCheck extends BytecodeScanningDetector {
 			default:
 			}
 		} while (redo);
+	}
+
+	private boolean isPop(int seen) {
+		return seen == Constants.POP || seen == Constants.POP2;
 	}
 
 	private boolean requiresReturnValueCheck() {
@@ -184,6 +219,16 @@ public class MethodReturnCheck extends BytecodeScanningDetector {
 	private void markBranch(int branchTarget) {
 		if (branchTarget >= 0) {
 			branchTargetSet.set(branchTarget);
+		}
+	}
+	
+	//@Override
+	public void report() {
+		if (COUNT_POP_BRANCH_TARGETS) {
+			System.out.println(
+					"Observed " +
+					popIsBranchTarget +
+					" pop instructions which were branch targets");
 		}
 	}
 }
