@@ -351,7 +351,7 @@
 
     <!-- Build jar file of test cases.  -->
     <target name="testjar" depends="init,anttask" >
-       <javac srcdir="${test.dir}" excludes="IgnoredReturnValue.java,TryLock.java" debug="true" />
+       <javac srcdir="${test.dir}" excludes="IgnoredReturnValue.java,TryLock.java,JSR166.java" debug="true" />
        <jar destfile="${test.dir}/dumb.jar" basedir="${test.dir}" includes="*.class"
             excludes="IgnoredReturnValue*.class,TryLock*.class" />
     </target>
@@ -380,9 +380,9 @@
 
     <!-- Build test cases that require JSR166 library. -->
     <target name="jsr166test">
-       <javac srcdir="${test.dir}" includes="IgnoredReturnValue.java,TryLock.java" debug="true" />
+       <javac srcdir="${test.dir}" includes="IgnoredReturnValue.java,TryLock.java,JSR166.java" debug="true" />
        <jar destfile="${test.dir}/jsr166test.jar" basedir="${test.dir}"
-            includes="IgnoredReturnValue*.class,TryLock*.class" />
+            includes="IgnoredReturnValue*.class,TryLock*.class,JSR166*.class" />
     </target>
 
     <!--
