@@ -631,6 +631,15 @@ a keySet iterator. It is a fast detector.
    </Details>
   </Detector>
 
+  <Detector class="edu.umd.cs.findbugs.detect.InstantiateStaticClass">
+    <Details>
+<![CDATA[
+<p> This detector looks for code that creates objects based on classes that only define static methods.
+It is a fast detector.
+]]>
+   </Details>
+  </Detector>
+  
   <Detector class="edu.umd.cs.findbugs.detect.FindBugsSummaryStats">
     <Details>
 <![CDATA[
@@ -2703,6 +2712,17 @@ Map.get(key) lookup.
         </Details>
     </BugPattern>
   
+    <BugPattern type="ISC_INSTANTIATE_STATIC_CLASS">
+        <ShortDescription>Needless instantiation of class that only supplies static methods</ShortDescription>
+        <LongDescription>Method {1} needlessly instantiates a class that only supplies static methods</LongDescription>
+        <Details>
+<![CDATA[
+<p> This detector looks for allocating objects that are based on classes that only supply static methods. These objects
+do not need to be created, just access the static methods directly using the classname as a qualifier.
+]]>
+        </Details>
+    </BugPattern>
+    
   <!--
   **********************************************************************
    BugCodes
@@ -2788,5 +2808,6 @@ Map.get(key) lookup.
   <BugCode abbrev="IP">Ignored parameter</BugCode>
   <BugCode abbrev="MF">Masked Field</BugCode>
   <BugCode abbrev="WMI">Wrong Map Iterator</BugCode>
+  <BugCode abbrev="ISC">Instantiated Static Class</BugCode>
 
   </MessageCollection>

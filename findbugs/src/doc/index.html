@@ -51,6 +51,8 @@ compares several Java bug checkers, including FindBugs.
 
 <ul>
 <!-- new detectors -->
+<li> New detector to find objects that are instantiated based on classes that only have
+     static methods and fields, using the synthesized constructor.
 <li> New detector to find calls to Thread.interrupted() in a non static context, and especially
      with non currentThread() threads. (Dave Brosius)
 <li> New detector to find calls to .equals methods that use Object's version. (Dave Brosius)

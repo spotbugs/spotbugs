@@ -163,6 +163,9 @@
   <Detector class="edu.umd.cs.findbugs.detect.WrongMapIterator" 
             speed="fast"
             reports="MVI_WRONG_MAP_ITERATOR"/>
+  <Detector class="edu.umd.cs.findbugs.detect.InstantiateStaticClass"
+  			speed="fast"
+  			reports="ISC_INSTANTIATE_STATIC_CLASS"/>
 
   <Detector class="edu.umd.cs.findbugs.detect.FindBugsSummaryStats" speed="fast" />
 
@@ -330,5 +333,7 @@
   <BugPattern abbrev="MF" type="MF_CLASS_MASKS_FIELD" category="CORRECTNESS"/>
   <BugPattern abbrev="WMI" type="WMI_WRONG_MAP_ITERATOR" category="PERFORMANCE"
               experimental="true"/>
+  <BugPattern abbrev="ISC" type="ISC_INSTANTIATE_STATIC_CLASS" category="CORRECTNESS"
+    experimental="true"/>
 
 </FindbugsPlugin>
