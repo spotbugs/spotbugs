@@ -177,13 +177,16 @@ public class FindBugs implements Constants2, ExitCodes {
 	private class ZipClassProducer implements ClassProducer {
 		private URL url;
 		private LinkedList<ArchiveWorkListItem> archiveWorkList;
+		private List<String> additionalAuxClasspathEntryList;
 		private ZipInputStream zipInputStream;
 		private boolean containsSourceFiles;
 
-		public ZipClassProducer(URL url, LinkedList<ArchiveWorkListItem> archiveWorkList)
+		public ZipClassProducer(URL url, LinkedList<ArchiveWorkListItem> archiveWorkList,
+				List<String> additionalAuxClasspathEntryList)
 				throws IOException {
 			this.url = url;
 			this.archiveWorkList = archiveWorkList;
+			this.additionalAuxClasspathEntryList = additionalAuxClasspathEntryList;
 			if (DEBUG) System.out.println("Opening jar/zip input stream for " + url.toString());
 			this.zipInputStream = new ZipInputStream(url.openStream());
 			this.containsSourceFiles = false;
@@ -203,7 +206,11 @@ public class FindBugs implements Constants2, ExitCodes {
 
 					// ClassScreener may veto this class.
 					if (!classScreener.matches(entryName)) {
-						// FIXME: Add archive URL to aux classpath
+						// Add archive URL to aux classpath
+						if (!additionalAuxClasspathEntryList.contains(url.toString())) {
+							//System.out.println("Adding additional aux classpath entry: " + url.toString());
+							additionalAuxClasspathEntryList.add(url.toString());
+						}
 						continue;
 					}
 
@@ -246,10 +253,16 @@ public class FindBugs implements Constants2, ExitCodes {
 	 * The directory is scanned recursively for class files.
 	 */
 	private class DirectoryClassProducer implements ClassProducer {
+		private String dirName;
+		private List<String> additionalAuxClasspathEntryList;
 		private Iterator<String> rfsIter;
 		private boolean containsSourceFiles;
 
-		public DirectoryClassProducer(String dirName) throws InterruptedException {
+		public DirectoryClassProducer(String dirName,
+				List<String> additionalAuxClasspathEntryList) throws InterruptedException {
+			this.dirName = dirName;
+			this.additionalAuxClasspathEntryList = additionalAuxClasspathEntryList;
+
 			FileFilter filter = new FileFilter() {
 				public boolean accept(File file) {
 					String fileName = file.getName();
@@ -277,7 +290,12 @@ public class FindBugs implements Constants2, ExitCodes {
 				if (classScreener.matches(fileName)) {
 					break;
 				} else {
-					// FIXME: add directory URL to aux classpath
+					// Add directory URL to aux classpath
+					String dirURL= "file:" + dirName;
+					if (!additionalAuxClasspathEntryList.contains(dirURL)) {
+						//System.out.println("Adding additional aux classpath entry: " + dirURL);
+						additionalAuxClasspathEntryList.add(dirURL);
+					}
 				}
 			}
 			try {
@@ -761,16 +779,22 @@ public class FindBugs implements Constants2, ExitCodes {
 		// Keep track of the names of all classes to be analyzed
 		List<String> repositoryClassList = new LinkedList<String>();
 
+		// Record additional entries that should be added to
+		// the aux classpath.  These occur when one or more classes
+		// in a directory or archive are skipped, to ensure that
+		// the skipped classes can still be referenced.
+		List<String> additionalAuxClasspathEntryList = new LinkedList<String>();
+
 		// Add all classes in analyzed archives/directories/files
-		// FIXME: collect additional aux classpath entries
 		while (!archiveWorkList.isEmpty()) {
 			ArchiveWorkListItem item = archiveWorkList.removeFirst();
-			scanArchiveOrDirectory(item, archiveWorkList, repositoryClassList);
+			scanArchiveOrDirectory(item, archiveWorkList, repositoryClassList,
+				additionalAuxClasspathEntryList);
 		}
 		
 		// Now that we have scanned all specified archives and directories,
 		// we can set the repository classpath.
-		setRepositoryClassPath();
+		setRepositoryClassPath(additionalAuxClasspathEntryList);
 
 		// Callback for progress dialog: analysis is starting
 		progressCallback.startAnalysis(repositoryClassList.size());
@@ -906,7 +930,8 @@ public class FindBugs implements Constants2, ExitCodes {
 	 * by the Repository when looking up classes.
 	 * @throws IOException
 	 */
-	private void setRepositoryClassPath() throws IOException {
+	private void setRepositoryClassPath(List<String> additionalAuxClasspathEntryList)
+			throws IOException {
 
 		URLClassPathRepository repository =
 			(URLClassPathRepository) Repository.getRepository();
@@ -916,6 +941,10 @@ public class FindBugs implements Constants2, ExitCodes {
 		
 		// Set implicit classpath entries
 		addCollectionToClasspath(project.getImplicitClasspathEntryList(), repository);
+
+		// Add "extra" aux classpath entries needed to ensure that
+		// skipped classes can be referenced.
+		addCollectionToClasspath(additionalAuxClasspathEntryList, repository);
 
 		// Add system classpath entries
 		repository.addSystemClasspathComponents();
@@ -950,7 +979,8 @@ public class FindBugs implements Constants2, ExitCodes {
 	 *                            which files to analyze
 	 */
 	private void scanArchiveOrDirectory(ArchiveWorkListItem item,
-			LinkedList<ArchiveWorkListItem> archiveWorkList, List<String> repositoryClassList)
+			LinkedList<ArchiveWorkListItem> archiveWorkList, List<String> repositoryClassList,
+			List<String> additionalAuxClasspathEntryList)
 	        throws IOException, InterruptedException {
 
 		String fileName = item.getFileName();
@@ -976,7 +1006,7 @@ public class FindBugs implements Constants2, ExitCodes {
 
 			// Create the ClassProducer
 			if (fileExtension != null && isArchiveExtension(fileExtension))
-				classProducer = new ZipClassProducer(url, archiveWorkList);
+				classProducer = new ZipClassProducer(url, archiveWorkList, additionalAuxClasspathEntryList);
 			else if (fileExtension != null && fileExtension.equals(".class"))
 				classProducer = new SingleClassProducer(url);
 			else if (protocol.equals("file")) {
@@ -985,7 +1015,7 @@ public class FindBugs implements Constants2, ExitCodes {
 				File dir = new File(fileName);
 				if (!dir.isDirectory())
 					throw new IOException("Path " + fileName + " is not an archive, class file, or directory");
-				classProducer = new DirectoryClassProducer(fileName);
+				classProducer = new DirectoryClassProducer(fileName, additionalAuxClasspathEntryList);
 			} else
 				throw new IOException("URL " + fileName + " is not an archive, class file, or directory");
 
