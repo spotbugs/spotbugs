@@ -750,7 +750,8 @@ public class Project {
 	 */
 	private static String makeAbsoluteCWD(String fileName) {
 		File file = new File(fileName);
-		if (!file.isAbsolute())
+		boolean hasProtocol = (FindBugs.getURLProtocol(fileName) != null);
+		if (!hasProtocol && !file.isAbsolute())
 			fileName = file.getAbsolutePath();
 		return fileName;
 	}

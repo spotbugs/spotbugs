@@ -20,6 +20,9 @@
 package edu.umd.cs.findbugs;
 
 import java.io.*;
+
+import java.net.URL;
+
 import java.util.*;
 import java.util.zip.*;
 
@@ -46,6 +49,23 @@ public class FindBugs implements Constants2, ExitCodes {
 	 * ---------------------------------------------------------------------- */
 
 	/**
+	 * Delegating InputStream wrapper that never closes the
+	 * underlying input stream.
+	 */
+	private static class NoCloseInputStream extends DataInputStream {
+		/**
+		 * Constructor.
+		 * @param in the real InputStream
+		 */
+		public NoCloseInputStream(InputStream in) {
+			super(in);
+		}
+
+		public void close() {
+		}
+	}
+
+	/**
 	 * Interface for an object representing a source of class files to analyze.
 	 */
 	private interface ClassProducer {
@@ -68,31 +88,32 @@ public class FindBugs implements Constants2, ExitCodes {
 	 * ClassProducer for single class files.
 	 */
 	private static class SingleClassProducer implements ClassProducer {
-		private String fileName;
+		//private String fileName;
+		private URL url;
 
 		/**
 		 * Constructor.
 		 *
-		 * @param fileName the single class file to be analyzed
+		 * @param url the single class file to be analyzed
 		 */
-		public SingleClassProducer(String fileName) {
-			this.fileName = fileName;
+		public SingleClassProducer(URL url) {
+			this.url = url;
 		}
 
 		public JavaClass getNextClass() throws IOException, InterruptedException {
-			if (fileName == null)
+			if (url == null)
 				return null;
 			if (Thread.interrupted())
 				throw new InterruptedException();
 
-			String fileNameToParse = fileName;
-			fileName = null; // don't return it next time
+			URL urlToParse = url;
+			url = null; // don't return it next time
 
 			try {
-				return parseClass(fileNameToParse);
+				return parseClass(urlToParse);
 			} catch (ClassFormatException e) {
 				throw new ClassFormatException("Invalid class file format for " +
-				        fileNameToParse + ": " + e.getMessage());
+				        url.toString() + ": " + e.getMessage());
 			}
 		}
 
@@ -102,107 +123,42 @@ public class FindBugs implements Constants2, ExitCodes {
 	}
 
 	/**
-	 * ClassProducer for .zip and .jar files.
-	 * Nested jar and zip files are also scanned for classes;
-	 * this is needed for .ear and .war files associated with EJBs.
+	 * ClassProducer for zip/jar archives.
 	 */
 	private static class ZipClassProducer implements ClassProducer {
-		private String fileName;
-		private String nestedFileName;
-		private ZipFile zipFile;
-		private Enumeration entries;
-		private ZipInputStream zipStream;
+		private URL url;
+		private ZipInputStream zipInputStream;
 		private boolean containsSourceFiles;
 
-		// a DataInputStream wrapper that cannot be closed
-		private static class DupDataStream extends DataInputStream {
-			public DupDataStream(InputStream in) {
-				super(in);
-			}
-
-			public void close() {
-			};
-		}
-
-		/**
-		 * Constructor.
-		 *
-		 * @param fileName the name of the zip or jar file
-		 */
-		public ZipClassProducer(String fileName) throws IOException {
-			this.fileName = fileName;
-			this.zipFile = new ZipFile(fileName);
-			this.entries = zipFile.entries();
-			this.zipStream = null;
-			this.nestedFileName = null;
+		public ZipClassProducer(URL url) throws IOException {
+			this.url = url;
+			System.out.println("Opening jar/zip input stream for " + url.toString());
+			this.zipInputStream = new ZipInputStream(url.openStream());
 			this.containsSourceFiles = false;
 		}
 
-		private void setZipStream(ZipInputStream in, String fileName) {
-			zipStream = in;
-			nestedFileName = fileName;
-		}
+		public JavaClass getNextClass() throws IOException, InterruptedException {
+			for (;;) {
+				ZipEntry zipEntry = zipInputStream.getNextEntry();
+				if (zipEntry == null)
+					return null;
 
-		private void closeZipStream() throws IOException {
-			zipStream.close();
-			zipStream = null;
-			nestedFileName = null;
-		}
-
-		private JavaClass getNextNestedClass() throws IOException, InterruptedException {
-			JavaClass parsedClass = null;
-			if (zipStream != null) {
-
-				ZipEntry entry = zipStream.getNextEntry();
-				while (entry != null) {
-					if (Thread.interrupted()) throw new InterruptedException();
-					if (entry.getName().endsWith(".class")) {
-						try {
-							parsedClass = parseClass(nestedFileName, new DupDataStream(zipStream), entry.getName());
-							break;
-						} catch (ClassFormatException e) {
-							throw new ClassFormatException("Invalid class file format for " +
-							        fileName + ":" + nestedFileName + ":" +
-							        entry.getName() + ": " + e.getMessage());
+				try {
+					String entryName = zipEntry.getName();
+					String fileExtension = getFileExtension(entryName);
+					if (fileExtension != null) {
+						if (fileExtension.equals(".class")) {
+							return parseClass(url.toString(), new NoCloseInputStream(zipInputStream), entryName);
+						} else if (archiveExtensionSet.contains(fileExtension)) {
+							// TODO: add nested archive to archive work list
+						} else if (fileExtension.equals(".java")) {
+							containsSourceFiles = true;
 						}
 					}
-					entry = zipStream.getNextEntry();
-				}
-				if (parsedClass == null) {
-					closeZipStream();
+				} finally {
+					zipInputStream.closeEntry();
 				}
 			}
-			return parsedClass;
-		}
-
-		public JavaClass getNextClass() throws IOException, InterruptedException {
-			JavaClass parsedClass = getNextNestedClass();
-			if (parsedClass != null)
-				return parsedClass;
-
-			while (entries.hasMoreElements()) {
-				if (Thread.interrupted()) throw new InterruptedException();
-				ZipEntry entry = (ZipEntry) entries.nextElement();
-				String name = entry.getName();
-				if (name.endsWith(".class")) {
-					try {
-						parsedClass = parseClass(fileName, zipFile.getInputStream(entry), name);
-						break;
-					} catch (ClassFormatException e) {
-						throw new ClassFormatException("Invalid class file format for " +
-						        fileName + ":" + name + ": " + e.getMessage());
-					}
-				} else if (name.endsWith(".jar") || name.endsWith(".zip")) {
-					setZipStream(new ZipInputStream(zipFile.getInputStream(entry)), name);
-					parsedClass = getNextNestedClass();
-					if (parsedClass != null) {
-						break;
-					}
-				} else if (name.endsWith(".java"))
-					containsSourceFiles = true;
-
-			}
-			return parsedClass;
 		}
 
 		public boolean containsSourceFiles() {
@@ -242,7 +198,7 @@ public class FindBugs implements Constants2, ExitCodes {
 				return null;
 			String fileName = rfsIter.next();
 			try {
-				return parseClass(fileName);
+				return parseClass(new URL("file:" + fileName));
 			} catch (ClassFormatException e) {
 				throw new ClassFormatException("Invalid class file format for " +
 				        fileName + ": " + e.getMessage());
@@ -514,6 +470,31 @@ public class FindBugs implements Constants2, ExitCodes {
 	 */
 	private static String home;
 
+	/**
+	 * File extensions that indicate an archive (zip, jar, or similar).
+	 */
+	private static final Set<String> archiveExtensionSet = new HashSet<String>();
+	static {
+		archiveExtensionSet.add(".jar");
+		archiveExtensionSet.add(".zip");
+		archiveExtensionSet.add(".war");
+		archiveExtensionSet.add(".ear");
+		archiveExtensionSet.add(".sar");
+	}
+
+	/**
+	 * Known URL protocols.
+	 * Filename URLs that do not have an explicit protocol are
+	 * assumed to be files.
+	 */
+	private static final Set<String> knownURLProtocolSet = new HashSet<String>();
+	static {
+		knownURLProtocolSet.add("file");
+		knownURLProtocolSet.add("http");
+		knownURLProtocolSet.add("https");
+		knownURLProtocolSet.add("jar");
+	}
+
 	private ErrorCountingBugReporter bugReporter;
 	private Project project;
 	private List<ClassObserver> classObserverList;
@@ -639,7 +620,7 @@ public class FindBugs implements Constants2, ExitCodes {
 		// Add all classes in analyzed archives/directories/files
 		while (!archiveWorkList.isEmpty()) {
 			String archive = archiveWorkList.removeFirst();
-			addFileToRepository(archive, repositoryClassList);
+			addFileToRepository(archive, archiveWorkList, repositoryClassList);
 		}
 
 		// Callback for progress dialog: analysis is starting
@@ -807,29 +788,49 @@ public class FindBugs implements Constants2, ExitCodes {
 	 *
 	 * @param fileName            the file, which may be a jar/zip archive, a single class file,
 	 *                            or a directory to be recursively searched for class files
+	 * @param archiveWorkList     work list of archives to analyze: this method
+	 *                            may add to the work list if it finds nested archives
 	 * @param repositoryClassList a List to which all classes found in
 	 *                            the archive or directory are added, so we later know
 	 *                            which files to analyze
 	 */
-	private void addFileToRepository(String fileName, List<String> repositoryClassList)
+	private void addFileToRepository(String fileName, List<String> archiveWorkList, List<String> repositoryClassList)
 	        throws IOException, InterruptedException {
 
 		try {
 			ClassProducer classProducer;
 
+			// Create a URL for the filename.
+			// The protocol defaults to "file" if not explicitly
+			// specified in the filename.
+			String protocol = getURLProtocol(fileName);
+			if (protocol == null) {
+				protocol = "file";
+				fileName = "file:" + fileName;
+			}
+			URL url = new URL(fileName);
+
+			// Figure out the file extension
+			String fileExtension = null;
+			int lastDot = fileName.lastIndexOf('.');
+			if (lastDot >= 0) {
+				fileExtension = fileName.substring(lastDot);
+			}
+
 			// Create the ClassProducer
-			if (fileName.endsWith(".jar") || fileName.endsWith(".zip")
-			        || fileName.endsWith(".war") || fileName.endsWith(".ear")
-			        || fileName.endsWith(".sar"))
-				classProducer = new ZipClassProducer(fileName);
-			else if (fileName.endsWith(".class"))
-				classProducer = new SingleClassProducer(fileName);
-			else {
+			if (fileExtension != null && archiveExtensionSet.contains(fileExtension))
+				classProducer = new ZipClassProducer(url);
+			else if (fileExtension != null && fileExtension.equals(".class"))
+				classProducer = new SingleClassProducer(url);
+			else if (protocol.equals("file")) {
+				// Assume it's a directory
+				fileName = fileName.substring("file:".length());
 				File dir = new File(fileName);
 				if (!dir.isDirectory())
 					throw new IOException("Path " + fileName + " is not an archive, class file, or directory");
 				classProducer = new DirectoryClassProducer(fileName);
-			}
+			} else
+				throw new IOException("URL " + fileName + " is not an archive, class file, or directory");
 
 			// Load all referenced classes into the Repository
 			for (; ;) {
@@ -930,6 +931,33 @@ public class FindBugs implements Constants2, ExitCodes {
 	}
 
 	/**
+	 * Get the file extension of given fileName.
+	 * @return the file extension, or null if there is no file extension
+	 */
+	static String getFileExtension(String fileName) {
+		int lastDot = fileName.lastIndexOf('.');
+		return (lastDot >= 0)
+			? fileName.substring(lastDot)
+			: null;
+	}
+
+	/**
+	 * Get the URL protocol of given URL string.
+	 * @param urlString the URL string
+	 * @return the protocol name ("http", "file", etc.), or null if there is no protocol
+	 */
+	static String getURLProtocol(String urlString) {
+		String protocol = null;
+		int firstColon = urlString.indexOf(':');
+		if (firstColon >= 0) {
+			String specifiedProtocol = urlString.substring(0, firstColon);
+			if (knownURLProtocolSet.contains(specifiedProtocol))
+				protocol = specifiedProtocol;
+		}
+		return protocol;
+	}
+
+	/**
 	 * Parse the data for a class to create a JavaClass object.
 	 */
 	private static JavaClass parseClass(String archiveName, InputStream in, String fileName)
@@ -941,9 +969,9 @@ public class FindBugs implements Constants2, ExitCodes {
 	/**
 	 * Parse the data for a class to create a JavaClass object.
 	 */
-	private static JavaClass parseClass(String fileName) throws IOException {
-		if (DEBUG) System.out.println("About to parse " + fileName);
-		return new ClassParser(fileName).parse();
+	private static JavaClass parseClass(URL url) throws IOException {
+		if (DEBUG) System.out.println("About to parse " + url.toString());
+		return new ClassParser(url.openStream(), url.toString()).parse();
 	}
 
 	/**
@@ -1013,6 +1041,9 @@ public class FindBugs implements Constants2, ExitCodes {
 
 		} catch (java.io.IOException e) {
 			// Probably a missing file
+			if (DEBUG) {
+				e.printStackTrace();
+			}
 			System.err.println("IO Error: " + e.getMessage());
 			System.exit(1);
 		} catch (FilterException e) {
