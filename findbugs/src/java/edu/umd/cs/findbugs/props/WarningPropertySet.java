@@ -24,6 +24,8 @@ import java.util.Map;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.Detector;
+import edu.umd.cs.findbugs.FindBugsAnalysisProperties;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 
 /**
  * A Set of WarningProperty objects, each with an optional attribute Object.
@@ -120,21 +122,26 @@ public class WarningPropertySet {
 	 * @return the computed warning priority
 	 */
 	public int computePriority(int basePriority) {
-		int priority = basePriority;
-		for (Iterator<WarningProperty> i = map.keySet().iterator(); i.hasNext();) {
-			PriorityAdjustment adj = i.next().getPriorityAdjustment();
-			if (adj == PriorityAdjustment.FALSE_POSITIVE)
-				return Detector.EXP_PRIORITY + 1;
-			else if (adj == PriorityAdjustment.RAISE_PRIORITY)
-				--priority;
-			else if (adj == PriorityAdjustment.LOWER_PRIORITY)
-				++priority;
-		}
+		boolean relaxedReporting = AnalysisContext.currentAnalysisContext().getBoolProperty(
+				FindBugsAnalysisProperties.RELAXED_REPORTING_MODE);
 		
-		if (priority < Detector.HIGH_PRIORITY)
-			priority = Detector.HIGH_PRIORITY;
-		else if (priority > Detector.EXP_PRIORITY)
-			priority = Detector.EXP_PRIORITY;
+		int priority = basePriority;
+		if (!relaxedReporting) {
+			for (Iterator<WarningProperty> i = map.keySet().iterator(); i.hasNext();) {
+				PriorityAdjustment adj = i.next().getPriorityAdjustment();
+				if (adj == PriorityAdjustment.FALSE_POSITIVE)
+					return Detector.EXP_PRIORITY + 1;
+				else if (adj == PriorityAdjustment.RAISE_PRIORITY)
+					--priority;
+				else if (adj == PriorityAdjustment.LOWER_PRIORITY)
+					++priority;
+			}
+			
+			if (priority < Detector.HIGH_PRIORITY)
+				priority = Detector.HIGH_PRIORITY;
+			else if (priority > Detector.EXP_PRIORITY)
+				priority = Detector.EXP_PRIORITY;
+		}
 		
 		return priority;
 	}
