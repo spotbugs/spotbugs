@@ -27,9 +27,9 @@ import edu.umd.cs.pugh.visitclass.PreorderVisitor;
 public class DroppedException extends PreorderVisitor implements Detector, Constants2 {
     private static final boolean DEBUG = Boolean.getBoolean("de.debug");
 
-    static Set reported = new HashSet();
-    static Set causes = new HashSet();
-    static Set checkedCauses = new HashSet();
+    static Set<String> reported = new HashSet<String>();
+    static Set<String> causes = new HashSet<String>();
+    static Set<String> checkedCauses = new HashSet<String>();
     private BugReporter bugReporter;
 
     public DroppedException(BugReporter bugReporter) {
