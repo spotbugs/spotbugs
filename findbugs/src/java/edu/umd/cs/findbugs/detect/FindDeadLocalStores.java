@@ -30,8 +30,12 @@ import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.Dataflow;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
+import edu.umd.cs.findbugs.ba.ExtendedTypes;
 import edu.umd.cs.findbugs.ba.LiveLocalStoreAnalysis;
 import edu.umd.cs.findbugs.ba.Location;
+import edu.umd.cs.findbugs.ba.TypeAnalysis;
+import edu.umd.cs.findbugs.ba.TypeDataflow;
+import edu.umd.cs.findbugs.ba.TypeFrame;
 
 import java.util.BitSet;
 import java.util.Iterator;
@@ -44,8 +48,11 @@ import org.apache.bcel.generic.IINC;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.MethodGen;
 import org.apache.bcel.generic.StoreInstruction;
+import org.apache.bcel.generic.Type;
 
 public class FindDeadLocalStores implements Detector {
+	private static final boolean DEBUG = Boolean.getBoolean("fdls.debug");
+
 	private BugReporter bugReporter;
 
 	public FindDeadLocalStores(BugReporter bugReporter) {
@@ -88,7 +95,7 @@ public class FindDeadLocalStores implements Detector {
 
 		JavaClass javaClass = classContext.getJavaClass();
 
-		Dataflow<BitSet, LiveLocalStoreAnalysis> dataflow =
+		Dataflow<BitSet, LiveLocalStoreAnalysis> llsaDataflow =
 			classContext.getLiveLocalStoreDataflow(method);
 
 		MethodGen methodGen = classContext.getMethodGen(method);
@@ -108,17 +115,30 @@ public class FindDeadLocalStores implements Detector {
 			IndexedInstruction store = (IndexedInstruction) location.getHandle().getInstruction();
 			int local = store.getIndex();
 
-			BitSet liveStoreSet = dataflow.getAnalysis().getFactAtLocation(location);
+			BitSet liveStoreSet = llsaDataflow.getAnalysis().getFactAtLocation(location);
 
-			if (!liveStoreSet.get(local)) {
-				// Store is dead
+			if (liveStoreSet.get(local))
+				continue;
 
-				BugInstance bugInstance = new BugInstance("DLS_DEAD_LOCAL_STORE", NORMAL_PRIORITY)
-					.addClassAndMethod(methodGen, javaClass.getSourceFileName())
-					.addSourceLine(methodGen, javaClass.getSourceFileName(), location.getHandle());
+			// Store is dead
 
-				bugReporter.reportBug(bugInstance);
+			// Ignore dead assignments of null.
+			// This is generally just defensive programming.
+			TypeDataflow typeDataflow = classContext.getTypeDataflow(method);
+			TypeFrame frame = typeDataflow.getFactAtLocation(location);
+			if (!frame.isValid() || frame.getStackDepth() == 0)
+				continue;
+			Type tos = frame.getTopValue();
+			if (tos.getType() == ExtendedTypes.T_NULL) {
+				if (DEBUG) System.out.println("Ignoring dead store of null value");
+				continue;
 			}
+
+			BugInstance bugInstance = new BugInstance("DLS_DEAD_LOCAL_STORE", NORMAL_PRIORITY)
+				.addClassAndMethod(methodGen, javaClass.getSourceFileName())
+				.addSourceLine(methodGen, javaClass.getSourceFileName(), location.getHandle());
+
+			bugReporter.reportBug(bugInstance);
 		}
 	}
 
