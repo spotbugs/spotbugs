@@ -17,6 +17,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.InitializationChain" speed="fast" />
   <Detector class="edu.umd.cs.findbugs.detect.IteratorIdioms" speed="fast" />
   <Detector class="edu.umd.cs.findbugs.detect.LockedFields" speed="fast" disabled="true" />
+  <Detector class="edu.umd.cs.findbugs.detect.PreferZeroLengthArrays" speed="fast" />
   <Detector class="edu.umd.cs.findbugs.detect.EqStringTest" speed="fast" />
   <Detector class="edu.umd.cs.findbugs.detect.MutableLock" speed="fast" />
   <Detector class="edu.umd.cs.findbugs.detect.MutableStaticFields" speed="fast" />
@@ -107,4 +108,5 @@
   <BugPattern abbrev="NP" type="NP_NULL_ON_SOME_PATH_EXCEPTION" category="CORRECTNESS" />
   <BugPattern abbrev="OS" type="OS_OPEN_STREAM" category="CORRECTNESS" />
   <BugPattern abbrev="OS" type="OS_OPEN_STREAM_EXCEPTION_PATH" category="CORRECTNESS" />
+  <BugPattern abbrev="PZLA" type="PZLA_PREFER_ZERO_LENGTH_ARRAYS" category="CORRECTNESS" />
 </FindbugsPlugin>

@@ -291,6 +291,16 @@ It is a moderately fast detector.
     </Details>
   </Detector>
 
+  <Detector class="edu.umd.cs.findbugs.detect.PreferZeroLengthArrays">
+    <Details>
+<![CDATA[
+<p> This detector looks for methods that return either arrays or an explicit null reference.
+Returning a zero length array is generally preferred in this context to returning a null reference.
+It is a fast detector.
+]]>
+    </Details>
+  </Detector>
+
   <!-- BugPatterns -->
 
   <BugPattern type="DE_MIGHT_DROP">
@@ -727,8 +737,8 @@ using the <code>equals</code> method instead.
     </Details>
   </BugPattern>
   <BugPattern type="UR_UNINIT_READ">
-    <ShortDescription>Unitialized read of field in constructor</ShortDescription>
-    <LongDescription>Unitialized read of {2} in {1}</LongDescription>
+    <ShortDescription>Uninitialized read of field in constructor</ShortDescription>
+    <LongDescription>Uninitialized read of {2} in {1}</LongDescription>
     <Details>
 <![CDATA[
   <p> This constructor reads a field which has not yet been assigned a value.&nbsp;
@@ -1267,6 +1277,17 @@ closed.
 ]]>
     </Details>
   </BugPattern>
+  <BugPattern type="PZLA_PREFER_ZERO_LENGTH_ARRAYS">
+    <ShortDescription>Consider returning a zero length array rather than null</ShortDescription>
+    <LongDescription>Should {1} return a zero length array rather than null?</LongDescription>
+    <Details>
+<![CDATA[
+<p> It is generally a better design to
+return a length zero array rather than a null reference to indicate that there
+are no results. This way, no explicit check for null is needed by clients of the method.
+]]>
+    </Details>
+  </BugPattern>
 
   <!-- BugCodes -->
 
@@ -1311,4 +1332,5 @@ closed.
   <BugCode abbrev="RV" >Return value of method is ignored</BugCode>
   <BugCode abbrev="NP" >Null pointer dereference</BugCode>
   <BugCode abbrev="OS">Stream not closed on all paths</BugCode>
+  <BugCode abbrev="PZLA" >Prefer zero length arrays to null to indicate no results</BugCode>
 </MessageCollection>
