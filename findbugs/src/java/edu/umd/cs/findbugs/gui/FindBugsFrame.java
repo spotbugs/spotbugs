@@ -1759,15 +1759,31 @@ public class FindBugsFrame extends javax.swing.JFrame {
         // Highlight the lines from the source annotation.
         // Note that the source lines start at 1, while the line numbers
         // in the text area start at 0.
+        int selBegin;
         try {
-            int selBegin = sourceTextArea.getLineStartOffset(srcLine.getStartLine() - 1);
+            selBegin = sourceTextArea.getLineStartOffset(srcLine.getStartLine() - 1);
             int selEnd = sourceTextArea.getLineStartOffset(srcLine.getEndLine());
             sourceTextArea.select(selBegin, selEnd);
             sourceTextArea.getCaret().setSelectionVisible(true);
-
         } catch (javax.swing.text.BadLocationException e) {
-            logger.logMessage(ConsoleLogger.ERROR, e.getMessage());
+            logger.logMessage(ConsoleLogger.ERROR, e.toString());
+            return;
         }
+
+        // This hack is required because Swing doesn't really manage
+        // to get the selection into the visible part of the source text
+        // area on the first attempt.
+        final int show = selBegin;
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                try {
+                    sourceTextArea.scrollRectToVisible(sourceTextArea.modelToView(show));
+                } catch (javax.swing.text.BadLocationException e) {
+                    logger.logMessage(ConsoleLogger.ERROR,  e.toString());
+                }
+            }
+        });
+    
     }
     
     /**
