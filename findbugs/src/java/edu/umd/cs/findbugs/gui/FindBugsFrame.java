@@ -755,6 +755,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
         sourceTextAreaScrollPane.setPreferredSize(new java.awt.Dimension(0, 100));
         sourceTextArea.setEditable(false);
         sourceTextArea.setFont(new java.awt.Font("Lucida Sans Typewriter", 0, 12));
+        sourceTextArea.setEnabled(false);
         sourceTextAreaScrollPane.setViewportView(sourceTextArea);
 
         bugDetailsTabbedPane.addTab("Source code", sourceTextAreaScrollPane);
@@ -1812,12 +1813,20 @@ public class FindBugsFrame extends javax.swing.JFrame {
         }
         
         // Show source code.
-        if (srcLine != currentSourceLineAnnotation) {
+        if (srcLine == null || srcLine != currentSourceLineAnnotation) {
             Project project = getCurrentProject();
             AnalysisRun analysisRun = getCurrentAnalysisRun();
             if (project == null) throw new IllegalStateException("null project!");
             if (analysisRun == null) throw new IllegalStateException("null analysis run!");
-            viewSource(project, analysisRun, srcLine);
+            try {
+                boolean success = viewSource(project, analysisRun, srcLine);
+                sourceTextArea.setEnabled(success);
+                if (!success)
+                    sourceTextArea.setText("No source line information for this bug");
+            } catch (IOException e) {
+                sourceTextArea.setText("Could not find source: " + e.getMessage());
+                logger.logMessage(ConsoleLogger.WARNING, e.getMessage());
+            }
             
             currentSourceLineAnnotation = srcLine;
         }
@@ -1837,8 +1846,10 @@ public class FindBugsFrame extends javax.swing.JFrame {
      * @param analysisRun the analysis run (containing the mapping of classes to source files)
      * @param srcLine the source line annotation (specifying source file to load and
      *    which lines to highlight)
+     * @return true if the source was shown successfully, false otherwise
      */
-    private void viewSource(Project project, AnalysisRun analysisRun, final SourceLineAnnotation srcLine) {
+    private boolean viewSource(Project project, AnalysisRun analysisRun, final SourceLineAnnotation srcLine)
+        throws IOException {
         // Get rid of old source code text
         sourceTextArea.setText("");
         
@@ -1847,32 +1858,27 @@ public class FindBugsFrame extends javax.swing.JFrame {
         // explaining that we don't have the source file, and that
         // they might want to recompile with debugging info turned on.
         if (srcLine == null)
-            return;
+            return false;
         
         // Look up the source file for this class.
         sourceFinder.setSourceBaseList(project.getSourceDirList());
         String sourceFile = analysisRun.getSourceFile(srcLine.getClassName());
         if (sourceFile == null || sourceFile.equals("<Unknown>")) {
             logger.logMessage(ConsoleLogger.WARNING, "No source file for class " + srcLine.getClassName());
-            return;
+            return false;
         }
         
         // Try to open the source file and display its contents
         // in the source text area.
-        try {
-            InputStream in = sourceFinder.openSource(srcLine.getPackageName(), sourceFile);
-            BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+        InputStream in = sourceFinder.openSource(srcLine.getPackageName(), sourceFile);
+        BufferedReader reader = new BufferedReader(new InputStreamReader(in));
             
-            String line;
-            while ((line = reader.readLine()) != null) {
-                sourceTextArea.append(line + "\n");
-            }
-            
-            reader.close();
-        } catch (IOException e) {
-            logger.logMessage(ConsoleLogger.WARNING, e.getMessage());
-            return;
+        String line;
+        while ((line = reader.readLine()) != null) {
+            sourceTextArea.append(line + "\n");
         }
+            
+        reader.close();
 
         // Highlight the annotation.
         // There seems to be some bug in Swing that sometimes prevents this code
@@ -1909,7 +1915,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
                 }
             }
         });
-        
+
+        return true;
     }
     
     /**
