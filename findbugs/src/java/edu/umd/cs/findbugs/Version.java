@@ -36,7 +36,7 @@ public class Version {
 	public static final String RELEASE = MAJOR + "." + MINOR + "." + PATCHLEVEL;
 
 	/** Release date. */
-	public static final String DATE = "September 2, 2003";
+	public static final String DATE = "August 22, 2003";
 
 	public static void main(String[] argv) {
 		if (argv.length != 1)
