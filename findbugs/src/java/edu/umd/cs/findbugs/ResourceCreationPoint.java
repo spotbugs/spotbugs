@@ -19,7 +19,7 @@
 
 package edu.umd.cs.findbugs;
 
-import edu.umd.cs.daveho.ba.Location;
+import edu.umd.cs.findbugs.ba.Location;
 
 /**
  * A resource creation point.

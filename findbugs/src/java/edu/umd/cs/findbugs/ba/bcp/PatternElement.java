@@ -17,13 +17,13 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package edu.umd.cs.daveho.ba.bcp;
+package edu.umd.cs.findbugs.ba.bcp;
 
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.ConstantPoolGen;
-import edu.umd.cs.daveho.ba.Edge;
-import edu.umd.cs.daveho.ba.ValueNumberFrame;
-import edu.umd.cs.daveho.ba.DataflowAnalysisException;
+import edu.umd.cs.findbugs.ba.Edge;
+import edu.umd.cs.findbugs.ba.ValueNumberFrame;
+import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 
 /**
  * A PatternElement is an element of a ByteCodePattern.

@@ -17,16 +17,16 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-// $Revision: 1.6 $
+// $Revision: 1.7 $
 
-package edu.umd.cs.daveho.graph;
+package edu.umd.cs.findbugs.graph;
 
 import java.io.Serializable;
 
 import java.util.Iterator;
 
-import edu.umd.cs.daveho.graph.GraphVertex;
-import edu.umd.cs.daveho.graph.GraphEdge;
+import edu.umd.cs.findbugs.graph.GraphVertex;
+import edu.umd.cs.findbugs.graph.GraphEdge;
 
 /**
  * Graph interface; defines the operations used to access and manipulate

@@ -17,7 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package edu.umd.cs.daveho.ba;
+package edu.umd.cs.findbugs.ba;
 
 import java.util.*;
 
@@ -62,7 +62,7 @@ public class OtherLockCountAnalysis extends LockCountAnalysis {
 	public static void main(String[] argv) {
 		try {
 			if (argv.length != 1) {
-				System.out.println("edu.umd.cs.daveho.ba.OtherLockCountAnalysis <filename>");
+				System.out.println("edu.umd.cs.findbugs.ba.OtherLockCountAnalysis <filename>");
 				System.exit(1);
 			}
 

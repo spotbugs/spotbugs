@@ -24,7 +24,7 @@ import org.apache.bcel.Constants;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.*;
 import org.apache.bcel.generic.*;
-import edu.umd.cs.daveho.ba.*;
+import edu.umd.cs.findbugs.ba.*;
 import edu.umd.cs.findbugs.*;
 
 public abstract class ResourceTrackingDetector<Resource, ResourceTrackerType extends ResourceTracker<Resource>>

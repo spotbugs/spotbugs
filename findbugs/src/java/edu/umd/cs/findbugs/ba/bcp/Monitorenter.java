@@ -17,12 +17,12 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package edu.umd.cs.daveho.ba.bcp;
+package edu.umd.cs.findbugs.ba.bcp;
 
 import org.apache.bcel.generic.*;
-import edu.umd.cs.daveho.ba.ValueNumberFrame;
-import edu.umd.cs.daveho.ba.ValueNumber;
-import edu.umd.cs.daveho.ba.DataflowAnalysisException;
+import edu.umd.cs.findbugs.ba.ValueNumberFrame;
+import edu.umd.cs.findbugs.ba.ValueNumber;
+import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 
 /**
  * A PatternElement for matching a MONITORENTER instruction.

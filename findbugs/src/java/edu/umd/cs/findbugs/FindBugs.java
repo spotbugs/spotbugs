@@ -22,16 +22,16 @@ package edu.umd.cs.findbugs;
 import java.io.*;
 import java.util.*;
 import java.util.zip.*;
-import edu.umd.cs.pugh.io.IO;
-import edu.umd.cs.pugh.visitclass.Constants2;
+import edu.umd.cs.findbugs.io.IO;
+import edu.umd.cs.findbugs.visitclass.Constants2;
 import org.apache.bcel.classfile.*;
 import org.apache.bcel.Repository;
 import org.apache.bcel.util.ClassPath;
 import org.apache.bcel.util.SyntheticRepository;
-import edu.umd.cs.daveho.ba.AnalysisContext;
-import edu.umd.cs.daveho.ba.AnalysisException;
-import edu.umd.cs.daveho.ba.ClassContext;
-import edu.umd.cs.daveho.ba.ClassObserver;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.ba.AnalysisException;
+import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.ba.ClassObserver;
 
 /**
  * An instance of this class is used to apply the selected set of

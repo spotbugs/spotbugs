@@ -19,7 +19,7 @@
 
 package edu.umd.cs.findbugs;
 
-import edu.umd.cs.daveho.ba.*;
+import edu.umd.cs.findbugs.ba.*;
 import java.io.*;
 import java.util.*;
 import org.apache.bcel.classfile.JavaClass;

@@ -18,17 +18,17 @@
  */
 
 package edu.umd.cs.findbugs.detect;
-import edu.umd.cs.daveho.ba.AnalysisContext;
-import edu.umd.cs.daveho.ba.ClassContext;
-import edu.umd.cs.daveho.ba.SourceFile;
-import edu.umd.cs.daveho.ba.SourceFinder;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.ba.SourceFile;
+import edu.umd.cs.findbugs.ba.SourceFinder;
 import edu.umd.cs.findbugs.*;
 import java.io.*;
 import java.util.*;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.*;
-import edu.umd.cs.pugh.visitclass.Constants2;
-import edu.umd.cs.pugh.visitclass.PreorderVisitor;
+import edu.umd.cs.findbugs.visitclass.Constants2;
+import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
 public class DroppedException extends PreorderVisitor implements Detector, Constants2 {
     private static final boolean DEBUG = Boolean.getBoolean("de.debug");

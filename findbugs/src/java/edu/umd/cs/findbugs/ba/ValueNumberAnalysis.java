@@ -17,7 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package edu.umd.cs.daveho.ba;
+package edu.umd.cs.findbugs.ba;
 
 import java.util.*;
 
@@ -281,7 +281,7 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
 	public static void main(String[] argv) {
 		try {
 			if (argv.length != 1) {
-				System.out.println("Usage: edu.umd.cs.daveho.ba.ValueNumberAnalysis <filename>");
+				System.out.println("Usage: edu.umd.cs.findbugs.ba.ValueNumberAnalysis <filename>");
 				System.exit(1);
 			}
 

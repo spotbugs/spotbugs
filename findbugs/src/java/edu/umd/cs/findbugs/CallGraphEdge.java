@@ -19,7 +19,7 @@
 
 package edu.umd.cs.findbugs;
 
-import edu.umd.cs.daveho.graph.AbstractEdge;
+import edu.umd.cs.findbugs.graph.AbstractEdge;
 import org.apache.bcel.classfile.Method;
 
 public class CallGraphEdge extends AbstractEdge<CallGraphEdge, CallGraphNode> {

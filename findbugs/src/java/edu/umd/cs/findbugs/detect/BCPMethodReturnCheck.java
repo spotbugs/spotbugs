@@ -26,8 +26,8 @@ import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.*;
 import org.apache.bcel.generic.*;
 import edu.umd.cs.findbugs.*;
-import edu.umd.cs.daveho.ba.*;
-import edu.umd.cs.daveho.ba.bcp.*;
+import edu.umd.cs.findbugs.ba.*;
+import edu.umd.cs.findbugs.ba.bcp.*;
 
 /**
  * This detector looks for places where the return value of a method

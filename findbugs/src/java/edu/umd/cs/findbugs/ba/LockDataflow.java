@@ -17,7 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package edu.umd.cs.daveho.ba;
+package edu.umd.cs.findbugs.ba;
 
 public class LockDataflow extends Dataflow<LockSet, LockAnalysis> {
 	public LockDataflow(CFG cfg, LockAnalysis lockAnalysis) {

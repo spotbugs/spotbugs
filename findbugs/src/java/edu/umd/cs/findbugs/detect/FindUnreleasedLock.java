@@ -21,7 +21,7 @@ package edu.umd.cs.findbugs.detect;
 
 import java.util.*;
 import edu.umd.cs.findbugs.*;
-import edu.umd.cs.daveho.ba.*;
+import edu.umd.cs.findbugs.ba.*;
 import org.apache.bcel.Constants;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.*;

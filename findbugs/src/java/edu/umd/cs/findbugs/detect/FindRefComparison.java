@@ -22,7 +22,7 @@ package edu.umd.cs.findbugs.detect;
 import java.util.BitSet;
 import java.util.HashSet;
 import edu.umd.cs.findbugs.*;
-import edu.umd.cs.daveho.ba.*;
+import edu.umd.cs.findbugs.ba.*;
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.*;
 import org.apache.bcel.generic.*;
@@ -176,7 +176,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 				try {
 					String className = obj.getClassName(getCPG());
 					String fieldName = obj.getName(getCPG());
-					Field field = edu.umd.cs.daveho.ba.Lookup.findField(className, fieldName);
+					Field field = edu.umd.cs.findbugs.ba.Lookup.findField(className, fieldName);
 
 					if (field != null) {
 						// If the field is final, we'll assume that the String value

@@ -20,7 +20,7 @@
 package edu.umd.cs.findbugs.detect;
 import edu.umd.cs.findbugs.*;
 import org.apache.bcel.classfile.Method;
-import edu.umd.cs.pugh.visitclass.Constants2;
+import edu.umd.cs.findbugs.visitclass.Constants2;
 
 public class FindSpinLoop extends BytecodeScanningDetector implements   Constants2 {
     private static final boolean DEBUG = Boolean.getBoolean("findspinloop.debug");

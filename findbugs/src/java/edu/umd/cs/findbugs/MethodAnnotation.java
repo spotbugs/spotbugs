@@ -19,9 +19,9 @@
 
 package edu.umd.cs.findbugs;
 
-import edu.umd.cs.pugh.visitclass.BetterVisitor;
-import edu.umd.cs.pugh.visitclass.DismantleBytecode;
-import edu.umd.cs.daveho.ba.SignatureConverter;
+import edu.umd.cs.findbugs.visitclass.BetterVisitor;
+import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
+import edu.umd.cs.findbugs.ba.SignatureConverter;
 import org.dom4j.Element;
 import org.dom4j.Branch;
 import org.dom4j.DocumentException;

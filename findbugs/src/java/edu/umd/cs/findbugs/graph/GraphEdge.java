@@ -17,15 +17,15 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-// $Revision: 1.4 $
+// $Revision: 1.5 $
 
-package edu.umd.cs.daveho.graph;
+package edu.umd.cs.findbugs.graph;
 
 import java.io.Serializable;
 import java.lang.Comparable;
 import java.util.Set;
 
-import edu.umd.cs.daveho.graph.GraphVertex;
+import edu.umd.cs.findbugs.graph.GraphVertex;
 
 /**
  * GraphEdge interface; represents an edge in a graph.

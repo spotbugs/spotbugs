@@ -49,7 +49,7 @@ import javax.swing.tree.*;
 import javax.swing.event.*;
 import javax.swing.text.*;
 import javax.swing.filechooser.*;
-import edu.umd.cs.daveho.ba.SourceFinder;
+import edu.umd.cs.findbugs.ba.SourceFinder;
 import edu.umd.cs.findbugs.*;
 
 /**

@@ -27,7 +27,7 @@ import org.apache.bcel.*;
 import org.apache.bcel.classfile.*;
 import org.apache.bcel.generic.*;
 
-import edu.umd.cs.daveho.ba.*;
+import edu.umd.cs.findbugs.ba.*;
 
 public class FindTwoLockWait implements Detector {
 

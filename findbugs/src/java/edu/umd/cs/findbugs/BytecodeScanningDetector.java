@@ -19,8 +19,8 @@
 
 package edu.umd.cs.findbugs;
 
-import edu.umd.cs.daveho.ba.ClassContext;
-import edu.umd.cs.pugh.visitclass.DismantleBytecode;
+import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
 
 /**
  * Base class for Detectors which want to extend DismantleBytecode.

@@ -19,7 +19,7 @@
 
 package edu.umd.cs.findbugs;
 
-import edu.umd.cs.daveho.ba.ClassContext;
+import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
  * The interface which all bug pattern detectors must implement.

@@ -17,11 +17,11 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package edu.umd.cs.daveho.ba;
+package edu.umd.cs.findbugs.ba;
 
 import java.util.*;
 
-import edu.umd.cs.daveho.graph.AbstractVertex;
+import edu.umd.cs.findbugs.graph.AbstractVertex;
 
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.*;

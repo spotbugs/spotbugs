@@ -22,9 +22,9 @@ import edu.umd.cs.findbugs.*;
 import java.util.*;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.*;
-import edu.umd.cs.pugh.visitclass.Constants2;
-import edu.umd.cs.pugh.visitclass.PreorderVisitor;
-import edu.umd.cs.daveho.ba.ClassContext;
+import edu.umd.cs.findbugs.visitclass.Constants2;
+import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
+import edu.umd.cs.findbugs.ba.ClassContext;
 
 public class Naming extends PreorderVisitor implements Detector, Constants2 {
   String baseClassName;

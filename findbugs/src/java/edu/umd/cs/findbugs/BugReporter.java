@@ -19,8 +19,8 @@
 
 package edu.umd.cs.findbugs;
 
-import edu.umd.cs.daveho.ba.ClassObserver;
-import edu.umd.cs.daveho.ba.RepositoryLookupFailureCallback;
+import edu.umd.cs.findbugs.ba.ClassObserver;
+import edu.umd.cs.findbugs.ba.RepositoryLookupFailureCallback;
 
 /**
  * Generic interface for bug reporter objects.

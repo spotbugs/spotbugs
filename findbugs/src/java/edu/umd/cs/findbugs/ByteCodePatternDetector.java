@@ -22,8 +22,8 @@ package edu.umd.cs.findbugs;
 import java.util.*;
 import org.apache.bcel.classfile.*;
 import org.apache.bcel.generic.*;
-import edu.umd.cs.daveho.ba.*;
-import edu.umd.cs.daveho.ba.bcp.*;
+import edu.umd.cs.findbugs.ba.*;
+import edu.umd.cs.findbugs.ba.bcp.*;
 
 /**
  * A base class for bug detectors that are based on a ByteCodePattern.

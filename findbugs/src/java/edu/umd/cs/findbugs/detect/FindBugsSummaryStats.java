@@ -20,8 +20,8 @@
 package edu.umd.cs.findbugs.detect;
 
 import edu.umd.cs.findbugs.*;
-import edu.umd.cs.pugh.visitclass.PreorderVisitor;
-import edu.umd.cs.daveho.ba.ClassContext;
+import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
+import edu.umd.cs.findbugs.ba.ClassContext;
 
 import java.util.*;
 import java.io.*;

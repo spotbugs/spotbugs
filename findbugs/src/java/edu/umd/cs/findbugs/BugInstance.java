@@ -20,10 +20,10 @@
 package edu.umd.cs.findbugs;
 
 import java.util.*;
-import edu.umd.cs.pugh.visitclass.BetterVisitor;
-import edu.umd.cs.pugh.visitclass.DismantleBytecode;
-import edu.umd.cs.daveho.ba.bcp.FieldVariable;
-import edu.umd.cs.daveho.ba.XField;
+import edu.umd.cs.findbugs.visitclass.BetterVisitor;
+import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
+import edu.umd.cs.findbugs.ba.bcp.FieldVariable;
+import edu.umd.cs.findbugs.ba.XField;
 import org.apache.bcel.classfile.*;
 import org.apache.bcel.generic.*;
 import org.dom4j.DocumentException;

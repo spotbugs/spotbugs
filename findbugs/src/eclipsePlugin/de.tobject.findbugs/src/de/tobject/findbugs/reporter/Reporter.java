@@ -218,7 +218,7 @@ public class Reporter extends AbstractBugReporter {
 	}
 
 	/**
-	 * @see edu.umd.cs.daveho.ba.ClassObserver#observeClass(org.apache.bcel.classfile.JavaClass)
+	 * @see edu.umd.cs.findbugs.ba.ClassObserver#observeClass(org.apache.bcel.classfile.JavaClass)
 	 */
 	public void observeClass(JavaClass clazz) {
 		System.out.println("Observing class: " +  clazz.getClassName() );		

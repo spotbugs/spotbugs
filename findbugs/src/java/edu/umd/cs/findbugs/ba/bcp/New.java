@@ -17,10 +17,10 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package edu.umd.cs.daveho.ba.bcp;
+package edu.umd.cs.findbugs.ba.bcp;
 
 import org.apache.bcel.generic.*;
-import edu.umd.cs.daveho.ba.*;
+import edu.umd.cs.findbugs.ba.*;
 
 /**
  * A PatternElement which matches NEW instructions and binds the

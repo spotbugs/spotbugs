@@ -20,7 +20,7 @@
 package edu.umd.cs.findbugs.detect;
 import edu.umd.cs.findbugs.*;
 import org.apache.bcel.classfile.*;
-import edu.umd.cs.pugh.visitclass.Constants2;
+import edu.umd.cs.findbugs.visitclass.Constants2;
 
 public class FindReturnRef extends BytecodeScanningDetector implements   Constants2 {
     boolean check = false;

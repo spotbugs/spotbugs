@@ -17,9 +17,9 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-// $Revision: 1.1 $
+// $Revision: 1.2 $
 
-package edu.umd.cs.daveho.graph;
+package edu.umd.cs.findbugs.graph;
 
 import java.util.Set;
 

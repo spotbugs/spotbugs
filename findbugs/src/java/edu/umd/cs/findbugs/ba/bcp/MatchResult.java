@@ -17,7 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package edu.umd.cs.daveho.ba.bcp;
+package edu.umd.cs.findbugs.ba.bcp;
 
 /**
  * The result of matching a single PatternElement against a single instruction.

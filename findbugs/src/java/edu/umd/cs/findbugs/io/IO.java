@@ -32,7 +32,7 @@
 //   Lesser General Public License for more details.
 //
 
-package edu.umd.cs.pugh.io;
+package edu.umd.cs.findbugs.io;
 
 import java.io.*;
 

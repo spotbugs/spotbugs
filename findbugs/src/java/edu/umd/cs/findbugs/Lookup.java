@@ -21,7 +21,7 @@ package edu.umd.cs.findbugs;
 
 import java.io.*;
 import java.util.*;
-import edu.umd.cs.pugh.visitclass.Constants2;
+import edu.umd.cs.findbugs.visitclass.Constants2;
 import org.apache.bcel.classfile.*;
 import org.apache.bcel.Repository;
 

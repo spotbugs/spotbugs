@@ -19,7 +19,7 @@
 
 package edu.umd.cs.findbugs;
 
-import edu.umd.cs.daveho.graph.AbstractGraph;
+import edu.umd.cs.findbugs.graph.AbstractGraph;
 import org.apache.bcel.classfile.Method;
 import java.util.IdentityHashMap;
 
