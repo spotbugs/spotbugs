@@ -418,6 +418,15 @@ It is a fast detector.
     </Details>
   </Detector>
 
+  <Detector class="edu.umd.cs.findbugs.detect.StringConcatenation">
+    <Details>
+<![CDATA[
+<p> This detector looks for String concatenation in loops using +.
+It is a fast detector.
+]]>
+    </Details>
+  </Detector>
+
   <Detector class="edu.umd.cs.findbugs.detect.FindBugsSummaryStats">
     <Details>
 <![CDATA[
@@ -1845,6 +1854,18 @@ have problems communicating with the database.
     </Details>
   </BugPattern>
 
+  <BugPattern type="SBSC_USE_STRINGBUFFER_CONCATENATION">
+    <ShortDescription>Method concatenates strings using + in a loop</ShortDescription>
+    <LongDescription>Method concatenates strings using + in a loop, StringBuffer should be used</LongDescription>
+    <Details>
+<![CDATA[
+<p> The method concatenates strings using + in a loop. Each time this occurs, a new temporary
+implied StringBuffer is allocated to perform this concatenation. This causes many StringBuffer
+object allocations. It is better to use StringBuffer explicitly, and only create one instance.
+]]>
+    </Details>
+  </BugPattern>
+
   <!--
   **********************************************************************
    BugCodes
@@ -1908,5 +1929,6 @@ have problems communicating with the database.
   <BugCode abbrev="EI2">Storing reference to mutable object</BugCode>
   <BugCode abbrev="NS">Suspicious use of non-short-circuit boolean operator</BugCode>
   <BugCode abbrev="ODR">Database resource not closed on all paths</BugCode>
+  <BugCode abbrev="SBSC">Use StringBuffer for String concatenation</BugCode>
 
 </MessageCollection>

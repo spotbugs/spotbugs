@@ -92,6 +92,11 @@
     reports="JLM_JSR166_LOCK_MONITORENTER"/>
   <Detector class="edu.umd.cs.findbugs.detect.FindUncalledPrivateMethods" speed="fast"
     reports="UPM_UNCALLED_PRIVATE_METHOD"/>
+  <!-- Note: StringConcatenation disabled for now - need to test
+       more thoroughly and hopefully enable -->
+  <Detector class="edu.umd.cs.findbugs.detect.StringConcatenation" speed="fast"
+    disabled="true"
+    reports="SBSC_USE_STRINGBUFFER_CONCATENATION"/>
   <Detector class="edu.umd.cs.findbugs.detect.FindBugsSummaryStats" speed="fast" />
 
   <BugPattern abbrev="IMSE" type="IMSE_DONT_CATCH_IMSE" category="CORRECTNESS" />
@@ -199,5 +204,7 @@
   <BugPattern abbrev="ODR" type="ODR_OPEN_DATABASE_RESOURCE" category="CORRECTNESS"
     experimental="true"/>
   <BugPattern abbrev="ODR" type="ODR_OPEN_DATABASE_RESOURCE_EXCEPTION_PATH" category="CORRECTNESS"
+    experimental="true"/>
+  <BugPattern abbrev="SBSC" type="SBSC_USE_STRINGBUFFER_CONCATENATION" category="PERFORMANCE"
     experimental="true"/>
 </FindbugsPlugin>
