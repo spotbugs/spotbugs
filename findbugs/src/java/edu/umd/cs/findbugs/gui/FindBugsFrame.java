@@ -1652,7 +1652,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
      * Set the view panel to display the named view.
      */
     private void setView(String viewName) {
-        System.out.println("Showing view " + viewName);
+        //System.out.println("Showing view " + viewName);
         viewPanelLayout.show(viewPanel, viewName);
         if (viewName.equals("BugTree"))
             checkBugDetailsVisibility();
