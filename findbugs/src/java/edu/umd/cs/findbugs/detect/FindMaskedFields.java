@@ -91,9 +91,9 @@ public class FindMaskedFields extends BytecodeScanningDetector implements Consta
 										priority)
 				                                        	.addClass(this)
 										.addField(maskedFieldAnnotation)
-											.describe("MASKED_FIELD")
+											.describe("FIELD_MASKED")
 				                                        	.addField(fa)
-											.describe("MASKING_FIELD")
+											.describe("FIELD_MASKING")
 											);
 							}
 						}
