@@ -24,30 +24,58 @@ import org.apache.bcel.generic.InstructionHandle;
 
 public class ByteCodePatternMatch {
 	private ByteCodePattern byteCodePattern;
-	private List<PatternElementMatch> patternElementMatchList;
+	private LinkedList<PatternElementMatch> patternElementMatchList;
 	private BindingSet bindingSet;
-	private Iterator<PatternElement> elementIter;
-	private PatternElementMatch currentPatternElementMatch;
+	private PatternElement nextElement;
+	private PatternElementMatch curMatch;
+
+	private ByteCodePatternMatch() {
+	}
 
 	public ByteCodePatternMatch(ByteCodePattern byteCodePattern) {
 		this.byteCodePattern = byteCodePattern;
 		this.patternElementMatchList = new LinkedList<PatternElementMatch>();
 		this.bindingSet = null;
-		this.elementIter = byteCodePattern.patternElementIterator();
+		this.nextElement = byteCodePattern.getFirst();
+		this.curMatch = null;
 	}
 
 	public boolean hasMoreElements() {
-		return elementIter.hasNext();
+		return nextElement != null;
 	}
 
 	public PatternElement nextElement() {
-		PatternElement patternElement = elementIter.next();
-		currentPatternElementMatch = new PatternElementMatch(patternElement);
+		PatternElement patternElement = nextElement;
+		nextElement = patternElement.getNext();
+		curMatch = new PatternElementMatch(patternElement);
+		patternElementMatchList.add(curMatch);
 		return patternElement;
 	}
 
 	public void addMatchedInstruction(InstructionHandle handle) {
-		currentPatternElementMatch.addMatchedInstruction(handle);
+		curMatch.addMatchedInstruction(handle);
+	}
+
+	public ByteCodePatternMatch duplicate() {
+		ByteCodePatternMatch dup = new ByteCodePatternMatch();
+		dup.byteCodePattern = this.byteCodePattern;
+
+		// Copy only the first n-1 PatternElementMatches, since the last
+		// PatternElementMatch is the current one, and we may want to
+		// modify it in both this object and the duplicate.
+		dup.patternElementMatchList = new LinkedList<PatternElementMatch>();
+		int count = patternElementMatchList.size() - 1;
+		Iterator<PatternElementMatch> i = patternElementMatchList.iterator();
+		while (count-- > 0 && i.hasNext()) {
+			dup.patternElementMatchList.add(i.next());
+		}
+
+		// TODO: make a duplicate of the last PatternElementMatch,
+		// and set it to curMatch
+
+		dup.bindingSet = this.bindingSet;
+
+		return dup;
 	}
 }
 
