@@ -47,7 +47,7 @@ public class RunAnalysisDialog extends javax.swing.JDialog {
 	private synchronized int getCount() { return count; }
 	
         public void reportNumberOfArchives(final int numArchives) {
-	    beginStage("Scanning archives", numArchives);
+	    beginStage(L10N.getLocalString("msg.scanningarchives_txt", "Scanning archives"), numArchives);
         }
         
         public void finishArchive() {
@@ -55,7 +55,7 @@ public class RunAnalysisDialog extends javax.swing.JDialog {
         }
 	
 	public void startAnalysis(int numClasses) {
-	    beginStage("Analyzing classes", numClasses);
+	    beginStage(L10N.getLocalString("msg.analysingclasses_txt","Analyzing classes"), numClasses);
 	}
         
         public void finishClass() {
@@ -65,7 +65,7 @@ public class RunAnalysisDialog extends javax.swing.JDialog {
 	public void finishPerClassAnalysis() {
 	    SwingUtilities.invokeLater(new Runnable() {
 		public void run() {
-		    stageNameLabel.setText("Finishing analysis");
+		    stageNameLabel.setText(L10N.getLocalString("msg.finishedanalysis_txt","Finishing analysis"));
 		}
 	    });
 	}
@@ -313,7 +313,7 @@ public class RunAnalysisDialog extends javax.swing.JDialog {
     }//GEN-END:initComponents
 
 	private void cancelButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelButtonActionPerformed
-		int option = JOptionPane.showConfirmDialog(this, "Cancel analysis?", "Analysis",
+		int option = JOptionPane.showConfirmDialog(this, L10N.getLocalString("msg.cancelanalysis_txt", "Cancel analysis?"), L10N.getLocalString("msg.analyze_txt", "Analysis"),
 		JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 		
 		if (option == JOptionPane.YES_OPTION) {
