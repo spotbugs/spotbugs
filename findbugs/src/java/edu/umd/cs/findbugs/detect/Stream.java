@@ -52,7 +52,7 @@ import org.apache.bcel.generic.INVOKEINTERFACE;
  * probably be abstract, so we can customize how they work
  * for different kinds of streams
  */
-public class Stream extends ResourceCreationPoint {
+public class Stream extends ResourceCreationPoint implements Comparable<Stream> {
 	private String streamBase;
 	private boolean isUninteresting;
 	private boolean isOpenOnCreation;
@@ -197,6 +197,27 @@ public class Stream extends ResourceCreationPoint {
 		String methodName) {
 		return inv.getClassName(cpg).equals(className)
 			&& inv.getName(cpg).equals(methodName);
+	}
+
+	public int compareTo(Stream other) {
+		int cmp;
+
+		// The main idea in comparing streams is that
+		// if they can't be differentiated by location
+		// and base/stream class, then we should try
+		// instanceParam.  This allows streams passed in
+		// different parameters to be distinguished.
+
+		cmp = getLocation().compareTo(other.getLocation());
+		if (cmp != 0) return cmp;
+		cmp = streamBase.compareTo(other.streamBase);
+		if (cmp != 0) return cmp;
+		cmp = getResourceClass().compareTo(other.getResourceClass());
+		if (cmp != 0) return cmp;
+		cmp = instanceParam - other.instanceParam;
+		if (cmp != 0) return cmp;
+
+		return 0;
 	}
 }
 
