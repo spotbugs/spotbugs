@@ -274,7 +274,7 @@ public class InnerClassAccessMap {
 			}
 
 			// Return type can be either the type of the field, or void.
-			if (!methodReturnType.equals("V") && !methodReturnType.equals(field.getFieldSignature())) {
+			if (/*!methodReturnType.equals("V") &&*/ !methodReturnType.equals(field.getFieldSignature())) {
 				if (DEBUG) {
 					System.out.println("In " + javaClass.getClassName() + "." + methodName +
 						" expected return type V or " + field.getFieldSignature() +
