@@ -1,0 +1,24 @@
+<!--
+	Plugin descriptor for FindBugs style plugin.
+-->
+
+<FindbugsPlugin pluginid="style">
+	<Detector
+		class="edu.umd.cs.findbugs.detect.FindDeadLocalStores"
+		speed="moderate"
+		reports="DLS_DEAD_LOCAL_STORE"/>
+
+	<Detector
+		class="edu.umd.cs.findbugs.detect.FindMaskedFields"
+		speed="fast"
+		reports="MF_METHOD_MASKS_FIELD,MF_CLASS_MASKS_FIELD"/>
+
+	<!-- FIXME: change "CORRECTNESS" to "STYLE" -->
+
+	<BugPattern abbrev="DLS" type="DLS_DEAD_LOCAL_STORE" category="CORRECTNESS"/>
+
+	<BugPattern abbrev="MF" type="MF_METHOD_MASKS_FIELD" category="CORRECTNESS"/>
+	<BugPattern abbrev="MF" type="MF_CLASS_MASKS_FIELD" category="CORRECTNESS"/>
+</FindbugsPlugin>
+
+<!-- vim:set ts=4: -->
