@@ -59,19 +59,34 @@ public class ConvertToARFF {
 		public String getInstanceValue(Element element) throws MissingNodeException;
 	}
 
-	public static class NominalAttribute implements Attribute {
+	private abstract static class XPathAttribute implements Attribute {
 		private String name;
 		private String xpath;
-		private Set<String> possibleValueSet;
 
-		public NominalAttribute(String name, String xpath) {
+		public XPathAttribute(String name, String xpath) {
 			this.name = name;
 			this.xpath = xpath;
-			this.possibleValueSet = new TreeSet<String>();
 		}
 
 		public String getName() {
 			return name;
+		}
+
+		public String getInstanceValue(Element element) throws MissingNodeException {
+			Node node = element.selectSingleNode(xpath);
+			if (node == null)
+				throw new MissingNodeException("Could not get value from element (path=" +
+					xpath + ")");
+			return node.getText();
+		}
+	}
+
+	public static class NominalAttribute extends XPathAttribute {
+		private Set<String> possibleValueSet;
+
+		public NominalAttribute(String name, String xpath) {
+			super(name, xpath);
+			this.possibleValueSet = new TreeSet<String>();
 		}
 
 		public void scan(Element element) {
@@ -84,15 +99,11 @@ public class ConvertToARFF {
 
 		public String getRange() {
 			StringBuffer buf = new StringBuffer();
-			buf.append("{\n");
+			buf.append("{");
 			for (Iterator<String> i = possibleValueSet.iterator(); i.hasNext();) {
-				if (buf.length() > 2)
-					buf.append(",");
-				buf.append('\t');
-				buf.append('"');
+				if (buf.length() > 1)
+					buf.append(',');
 				buf.append(i.next());
-				buf.append('"');
-				buf.append('\n');
 			}
 			buf.append("}");
 
@@ -100,11 +111,7 @@ public class ConvertToARFF {
 		}
 
 		public String getInstanceValue(Element element) throws MissingNodeException {
-			Node node = element.selectSingleNode(xpath);
-			if (node == null)
-				throw new MissingNodeException("Could not get value from element (path=" +
-					xpath + ")");
-			return node.getText();
+			return "\"" + super.getInstanceValue(element) + "\"";
 		}
 	}
 
@@ -150,6 +157,19 @@ public class ConvertToARFF {
 		}
 	}
 
+	public static class NumericAttribute extends XPathAttribute {
+		public NumericAttribute(String name, String xpath) {
+			super(name, xpath);
+		}
+
+		public void scan(Element element) throws MissingNodeException {
+		}
+
+		public String getRange() {
+			return "numeric";
+		}
+	}
+
 	public interface AttributeCallback {
 		public void apply(Attribute attribute) throws MissingNodeException, IOException;
 	}
@@ -170,6 +190,10 @@ public class ConvertToARFF {
 
 	public void addClassificationAttribute() {
 		addAttribute(new ClassificationAttribute());
+	}
+
+	public void addNumericAttribute(String name, String xpath) {
+		addAttribute(new NumericAttribute(name, xpath));
 	}
 
 	public void convert(String relationName, Document document, final Writer out)
@@ -212,7 +236,7 @@ public class ConvertToARFF {
 					first = false;
 					String value;
 					try {
-						value = "\"" + attribute.getInstanceValue(element) + "\"";
+						value = attribute.getInstanceValue(element);
 					} catch (MissingNodeException e) {
 						value = "?";
 					}
@@ -256,6 +280,7 @@ public class ConvertToARFF {
 		converter.addNominalAttribute("auxmethodname", "./Method[2]/@name");
 		converter.addNominalAttribute("fieldclass", "./Field[1]/@classname");
 		converter.addNominalAttribute("fieldname", "./Field[1]/@name");
+		converter.addNumericAttribute("priority", "@priority");
 		converter.addClassificationAttribute();
 
 		Writer out = new OutputStreamWriter(new BufferedOutputStream(
