@@ -34,7 +34,7 @@ public class L10N {
 	
 	static {
 		try {
-			bundle = ResourceBundle.getBundle( "edu.umd.cs.findbugs.gui.findbugs" );
+			bundle = ResourceBundle.getBundle( "edu.umd.cs.findbugs.gui.bundle.findbugs" );
 		}
 		catch (MissingResourceException mre) {
 			bundle = null;
