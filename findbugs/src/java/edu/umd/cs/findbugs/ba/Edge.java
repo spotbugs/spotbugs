@@ -118,7 +118,10 @@ public class Edge implements GraphEdge<Edge, BasicBlock>, EdgeTypes, Debug {
 		int cmp = source.compareTo(other.source);
 		if (cmp != 0)
 			return cmp;
-		return dest.compareTo(other.dest);
+		cmp = dest.compareTo(other.dest);
+		if (cmp != 0)
+			return cmp;
+		return type - other.type;
 	}
 
 	/** Return a string representation of the edge. */
@@ -270,6 +273,14 @@ public class Edge implements GraphEdge<Edge, BasicBlock>, EdgeTypes, Debug {
 
 	public BasicBlock getTarget() {
 		return getDest();
+	}
+
+	public int getLabel() {
+		return getId();
+	}
+
+	public void setLabel(int label) {
+		setId(label);
 	}
 }
 

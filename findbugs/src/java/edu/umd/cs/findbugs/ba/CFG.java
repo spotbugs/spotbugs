@@ -35,6 +35,13 @@ import org.apache.bcel.generic.*;
  */
 public class CFG implements Graph<Edge, BasicBlock>, Debug {
 
+	// Implementation notes:
+	// - Edge ids and edge labels are the same thing.
+	// - Basic block ids and basic block labels are *not* the same thing;
+	//   ids are assigned once (to allow blocks to implement Comparable),
+	//   and then never changed.  Block labels may be reassigned
+	//   by graph algorithms.
+
 	/* ----------------------------------------------------------------------
 	 * Helper classes
 	 * ---------------------------------------------------------------------- */
@@ -93,6 +100,8 @@ public class CFG implements Graph<Edge, BasicBlock>, Debug {
 	private ArrayList<Edge> edgeList;
 	private BasicBlock entry, exit, unhandledExceptionExit;
 	private int maxEdgeId;
+	private int nextBlockId; // next block id to be assigned
+	private int maxBlockLabel; // maximum block label
 
 	/* ----------------------------------------------------------------------
 	 * Public methods
@@ -106,6 +115,8 @@ public class CFG implements Graph<Edge, BasicBlock>, Debug {
 		blockList = new ArrayList<BasicBlock>();
 		edgeList = new ArrayList<Edge>();
 		maxEdgeId = 0;
+		nextBlockId = 0;
+		maxBlockLabel = 0;
 	}
 
 	/** Get the value 1 greater than the maximum known edge id. */
@@ -300,19 +311,13 @@ public class CFG implements Graph<Edge, BasicBlock>, Debug {
 	}
 
 	/**
-	 * Get the next block id to be assigned.
-	 * This will need to change if we want to allow blocks to be removed.
-	 */
-	private int getNextId() {
-		return blockList.size();
-	}
-
-	/**
 	 * Allocate a new BasicBlock.  The block won't be connected to
 	 * any node in the graph.
 	 */
 	public BasicBlock allocate() {
-		BasicBlock bb = new BasicBlock(getNextId());
+		int nextId = nextBlockId++;
+		maxBlockLabel = nextBlockId;
+		BasicBlock bb = new BasicBlock(nextId);
 		blockList.add(bb);
 		return bb;
 	}
@@ -366,12 +371,20 @@ public class CFG implements Graph<Edge, BasicBlock>, Debug {
 		return addEdge(source, target, EdgeTypes.UNKNOWN_EDGE);
 	}
 
-	public int getNumLabels() {
+	public int getNumEdgeLabels() {
 		return getMaxEdgeId();
 	}
 
-	public void setNumLabels(int numLabels) {
+	public void setNumEdgeLabels(int numLabels) {
 		setMaxEdgeId(numLabels);
+	}
+
+	public int getNumVertexLabels() {
+		return maxBlockLabel;
+	}
+
+	public void setNumVertexLabels(int numLabels) {
+		maxBlockLabel = numLabels;
 	}
 
 	public void removeVertex(BasicBlock v) {

@@ -111,7 +111,7 @@ public class BasicBlock implements GraphVertex<BasicBlock>, Debug {
 	 * Get this BasicBlock's unique identifier.
 	 */
 	public int getId() {
-		return getLabel();
+		return id;
 	}
 
 	/**
