@@ -728,8 +728,14 @@ public class FindBugs implements Constants2, ExitCodes
 			// Convert project file to be an absolute path
 			projectFile = new File(projectFile).getAbsolutePath();
 
+			try {
 			project = new Project(projectFile);
 			project.read(new BufferedInputStream(new FileInputStream(projectFile)));
+			} catch (IOException e) {
+				System.err.println("Error opening " + projectFile);
+				e.printStackTrace(System.err);
+				throw e;
+				}
 		} else if (option.equals("-exitcode")) {
 			setExitCode = true;
 		} else
