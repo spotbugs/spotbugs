@@ -40,7 +40,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
         srcDirTextField = new javax.swing.JTextField();
         jButton2 = new javax.swing.JButton();
         sourceDirListLabel = new javax.swing.JLabel();
-        jList2 = new javax.swing.JList();
+        sourceDirList = new javax.swing.JList();
         removeJarButton = new javax.swing.JButton();
         removeSrcDirButton = new javax.swing.JButton();
         jSeparator1 = new javax.swing.JSeparator();
@@ -144,7 +144,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 0.5;
-        editProjectPanel.add(jList2, gridBagConstraints);
+        editProjectPanel.add(sourceDirList, gridBagConstraints);
 
         removeJarButton.setText("Remove");
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -239,14 +239,14 @@ public class FindBugsFrame extends javax.swing.JFrame {
     private javax.swing.JButton removeJarButton;
     private javax.swing.JLabel jarFileListLabel;
     private javax.swing.JButton addJarButton;
+    private javax.swing.JList sourceDirList;
     private javax.swing.JTree navigatorTree;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JPanel reportPanel;
     private javax.swing.JPanel editProjectPanel;
-    private javax.swing.JTextField srcDirTextField;
     private javax.swing.JButton browseSrcDirButton;
+    private javax.swing.JTextField srcDirTextField;
     private javax.swing.JLabel sourceDirListLabel;
-    private javax.swing.JList jList2;
     private javax.swing.JTree bugTree;
     // End of variables declaration//GEN-END:variables
     
