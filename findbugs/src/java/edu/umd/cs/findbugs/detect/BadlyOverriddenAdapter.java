@@ -60,15 +60,13 @@ public class BadlyOverriddenAdapter extends BytecodeScanningDetector implements 
     	if (isAdapter && !classReported) {
 	    	String methodName = obj.getName();
 	    	String signature = methodMap.get(methodName);
-	    	if (signature != null) {
-/*
+	    	if (!methodName.equals("<init>") && signature != null) {
 	    		if (!signature.equals(obj.getSignature())) {
 					bugReporter.reportBug(new BugInstance("BOA_BADLY_OVERRIDDEN_ADAPTER", NORMAL_PRIORITY)
 										.addClassAndMethod(this)
 										.addSourceLine(this));
 					classReported = true;
 	    		}
-*/
 	    	}
 	    }
     }
