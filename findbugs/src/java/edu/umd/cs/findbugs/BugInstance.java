@@ -103,6 +103,11 @@ public class BugInstance implements Comparable, XMLConvertible {
 	public int getPriority() {
 		return priority;
 	}
+	
+	/** Set the bug priority. */
+	public void setPriority(int p) {
+		 priority = p;
+	}
 
 	/** Is this bug instance the result of an experimental detector? */
 	public boolean isExperimental() {
