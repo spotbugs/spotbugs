@@ -10,6 +10,7 @@ public class WaitInLoop extends BytecodeScanningDetector implements   Constants2
 
    boolean sawWait = false;
    boolean sawNotify = false;
+   int notifyPC;
    int earliestJump = 0;
    int waitAt= 0;
    private BugReporter bugReporter;
@@ -24,11 +25,13 @@ public class WaitInLoop extends BytecodeScanningDetector implements   Constants2
 	earliestJump = 9999999;
 	super.visit(obj);
 	if (sawWait && waitAt < earliestJump) 
-		//bugReporter.reportBug(BugInstance.inMethod("WA_NOT_IN_LOOP", UNKNOWN_PRIORITY, this));
-		bugReporter.reportBug(new BugInstance("WA_NOT_IN_LOOP", NORMAL_PRIORITY).addClassAndMethod(this));
+		bugReporter.reportBug(new BugInstance("WA_NOT_IN_LOOP", NORMAL_PRIORITY)
+			.addClassAndMethod(this)
+			.addSourceLine(this, waitAt));
 	if (sawNotify)
-		//bugReporter.reportBug(BugInstance.inMethod("NO_NOTIFY_NOT_NOTIFYALL", UNKNOWN_PRIORITY, this));
-		bugReporter.reportBug(new BugInstance("NO_NOTIFY_NOT_NOTIFYALL", NORMAL_PRIORITY).addClassAndMethod(this));
+		bugReporter.reportBug(new BugInstance("NO_NOTIFY_NOT_NOTIFYALL", NORMAL_PRIORITY)
+			.addClassAndMethod(this)
+			.addSourceLine(this, notifyPC));
 	}
 
     public void sawOpcode(int seen) {
@@ -37,6 +40,7 @@ public class WaitInLoop extends BytecodeScanningDetector implements   Constants2
 		&& nameConstant.equals("notify")
 		&& sigConstant.equals("()V")){
 		sawNotify = true;
+		notifyPC = PC;
 		}
 	if (!sawWait && (seen == INVOKEVIRTUAL || seen == INVOKEINTERFACE)
 		&& nameConstant.equals("wait")
