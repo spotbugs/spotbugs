@@ -151,6 +151,7 @@ public class CountBugs {
 	private KeyFactory keyFactory;
 	private Set<Key> keySet;
 	private TreeMap<Key, Integer> countMap;
+	private int minPriority;
 
 	public CountBugs(String resultsFileName) throws IOException, DocumentException {
 		this(new SortedBugCollection(), new Project());
@@ -164,6 +165,7 @@ public class CountBugs {
 		this.keyFactory = new CategoryKeyFactory();
 		this.keySet = new HashSet<Key>();
 		this.countMap = new TreeMap<Key, Integer>();
+		this.minPriority = 3;
 	}
 
 	public SortedBugCollection getBugCollection() {
@@ -217,6 +219,9 @@ public class CountBugs {
 		while (i.hasNext()) {
 			BugInstance bugInstance = i.next();
 			Key key = keyFactory.createKey(bugInstance);//bugInstance.getAbbrev();
+
+			if (bugInstance.getPriority() > minPriority)
+				continue;
 
 			if (keySet.size() > 0 && !keySet.contains(key))
 				continue;
@@ -273,6 +278,7 @@ public class CountBugs {
 		String keyList = "";
 		String keyMode = "-categories";
 		boolean diffMode = false;
+		int minPriority = 3;
 
 		while (arg < argv.length - 1) {
 			String option = argv[arg];
@@ -285,6 +291,12 @@ public class CountBugs {
 				keyList = argv[arg];
 			} else if (option.equals("-diff")) {
 				diffMode = true;
+			} else if (option.equals("-minPriority")) {
+				++arg;
+				if (arg >= argv.length)
+					throw new IllegalArgumentException("-minPriority option requires argument");
+				minPriority = Integer.parseInt(argv[arg]);
+				System.err.println("Min priority is " + minPriority);
 			} else
 				break;
 
@@ -298,6 +310,7 @@ public class CountBugs {
 		CountBugs countBugs = new CountBugs(filename);
 		countBugs.setKeyFactory(keyMode);
 		countBugs.setKeys(keyList);
+		countBugs.minPriority = minPriority;
 		countBugs.execute();
 
 		if (diffMode) {
@@ -306,6 +319,7 @@ public class CountBugs {
 			CountBugs countBugs2 = new CountBugs(argv[arg++]);
 			countBugs2.setKeyFactory(keyMode);
 			countBugs2.setKeys(keyList);
+			countBugs2.minPriority = minPriority;
 			countBugs2.execute();
 
 			countBugs.diffCounts(countBugs2);
