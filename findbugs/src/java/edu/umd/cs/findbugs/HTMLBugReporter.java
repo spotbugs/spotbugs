@@ -21,15 +21,18 @@ package edu.umd.cs.findbugs;
 
 import edu.umd.cs.findbugs.xml.Dom4JXMLOutput;
 
+import java.io.BufferedInputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 import org.dom4j.Document;
-import org.dom4j.DocumentFactory;
 import org.dom4j.io.DocumentSource;
 
 public class HTMLBugReporter extends BugCollectionBugReporter {
@@ -42,20 +45,25 @@ public class HTMLBugReporter extends BugCollectionBugReporter {
 
 	public void finish() {
 		try {
-			// Get the XML Document with the saved bugs
 			generateSummary();
 			BugCollection bugCollection = getBugCollection();
 
-			DocumentFactory docFactory = new DocumentFactory();
-			Document document = docFactory.createDocument();
-			Dom4JXMLOutput treeBuilder = new Dom4JXMLOutput(document);
-			bugCollection.writeXML(treeBuilder, getProject());
+			// Decorate the XML with messages to display
+			Document document = bugCollection.toDocument(getProject());
+			new AddMessages(bugCollection, document).execute();
 
-			// Get the stylesheet as a StreamSource
-			InputStream xslInputStream =
-			        this.getClass().getClassLoader().getResourceAsStream(stylesheet);
-			if (xslInputStream == null)
-				throw new IOException("Could not load HTML generation stylesheet " + stylesheet);
+			// Get the stylesheet as a StreamSource.
+			// First, try to load the stylesheet from the filesystem.
+			// If that fails, try loading it as a resource.
+			InputStream xslInputStream;
+			if (FindBugs.DEBUG) System.out.println("Attempting to load stylesheet " + stylesheet);
+			try {
+				xslInputStream = new BufferedInputStream(new FileInputStream(stylesheet));
+			} catch (FileNotFoundException fnfe) {
+				xslInputStream = this.getClass().getClassLoader().getResourceAsStream(stylesheet);
+				if (xslInputStream == null)
+					throw new IOException("Could not load HTML generation stylesheet " + stylesheet);
+			}
 			StreamSource xsl = new StreamSource(xslInputStream);
 
 			// Create a transformer using the stylesheet
@@ -72,6 +80,7 @@ public class HTMLBugReporter extends BugCollectionBugReporter {
 			transformer.transform(source, result);
 		} catch (Exception e) {
 			logError("Could not generate HTML output: " + e.toString());
+			if (FindBugs.DEBUG) e.printStackTrace();
 		}
 	}
 }

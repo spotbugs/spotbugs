@@ -418,7 +418,7 @@ public class FindBugs implements Constants2, ExitCodes {
 			addSwitch("-sortByClass", "sort warnings by class");
 			addSwitch("-xml", "XML output");
 			addSwitch("-xdocs", "xdoc XML output to use with Apache Maven");
-			addOption("-html", "stylesheet", "HTML output using given XSL stylesheet");
+			addSwitch("-html", "Generate HTML output");
 			addSwitch("-emacs", "Use emacs reporting format");
 			addOption("-outputFile", "filename", "Save output in named file");
 			addOption("-visitors", "v1[,v2...]", "run only named visitors");
@@ -464,7 +464,14 @@ public class FindBugs implements Constants2, ExitCodes {
 				}
 			} else if (option.equals("-emacs"))
 				bugReporterType = EMACS_REPORTER;
-			else if (option.equals("-xdocs"))
+			else if (option.equals("-html")) {
+				bugReporterType = HTML_REPORTER;
+				if (!optionExtraPart.equals("")) {
+					stylesheet = optionExtraPart;
+				} else {
+					stylesheet = "default.xsl";
+				}
+			} else if (option.equals("-xdocs"))
 				bugReporterType = XDOCS_REPORTER;
 			else if (option.equals("-quiet"))
 				quiet = true;
@@ -486,9 +493,6 @@ public class FindBugs implements Constants2, ExitCodes {
 				}
 
 				DetectorFactoryCollection.setPluginList((File[]) pluginList.toArray(new File[pluginList.size()]));
-			} else if (option.equals("-html")) {
-				bugReporterType = HTML_REPORTER;
-				stylesheet = argument;
 			} else if (option.equals("-outputFile")) {
 				String outputFile = argument;
 
@@ -617,7 +621,7 @@ public class FindBugs implements Constants2, ExitCodes {
 	 * Member variables
 	 * ---------------------------------------------------------------------- */
 
-	private static final boolean DEBUG = Boolean.getBoolean("findbugs.debug");
+	static final boolean DEBUG = Boolean.getBoolean("findbugs.debug");
 
 	/**
 	 * FindBugs home directory.

@@ -177,6 +177,9 @@
         <fileset dir="${findbugs.src.dir}" includes="**/*.properties"/>
       </copy>
       <copy file="${findbugs.dir}/etc/summary.xsl" todir="${class.dir}" />
+      <copy todir="${class.dir}">
+        <fileset dir="${findbugs.dir}/src/xsl" includes="*.xsl"/>
+      </copy>
 
       <!--
         FindBugs engine - all classes except those in the GUI,
