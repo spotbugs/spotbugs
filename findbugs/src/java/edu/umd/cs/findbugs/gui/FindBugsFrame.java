@@ -242,6 +242,9 @@ public class FindBugsFrame extends javax.swing.JFrame {
     private static final String GROUP_BY_CLASS = "By class";
     private static final String GROUP_BY_PACKAGE = "By package";
     private static final String GROUP_BY_BUG_TYPE = "By bug type";
+    private static final String[] GROUP_BY_ORDER_LIST = {
+        GROUP_BY_CLASS, GROUP_BY_PACKAGE, GROUP_BY_BUG_TYPE
+    };
     
     /**
      * A fudge value required in our hack to get the REAL maximum
@@ -302,8 +305,12 @@ public class FindBugsFrame extends javax.swing.JFrame {
         bugTreePanel = new javax.swing.JPanel();
         bugTreeBugDetailsSplitter = new javax.swing.JSplitPane();
         groupByTabbedPane = new javax.swing.JTabbedPane();
-        bugTreeScrollPane = new javax.swing.JScrollPane();
-        bugTree = new javax.swing.JTree();
+        byClassScrollPane = new javax.swing.JScrollPane();
+        byClassBugTree = new javax.swing.JTree();
+        byPackageScrollPane = new javax.swing.JScrollPane();
+        byPackageBugTree = new javax.swing.JTree();
+        byBugTypeScrollPane = new javax.swing.JScrollPane();
+        byBugTypeBugTree = new javax.swing.JTree();
         bugDetailsTabbedPane = new javax.swing.JTabbedPane();
         bugDescriptionScrollPane = new javax.swing.JScrollPane();
         bugDescriptionEditorPane = new javax.swing.JEditorPane();
@@ -594,9 +601,17 @@ public class FindBugsFrame extends javax.swing.JFrame {
             }
         });
 
-        bugTreeScrollPane.setViewportView(bugTree);
+        byClassScrollPane.setViewportView(byClassBugTree);
 
-        groupByTabbedPane.addTab("By Class", bugTreeScrollPane);
+        groupByTabbedPane.addTab("By Class", byClassScrollPane);
+
+        byPackageScrollPane.setViewportView(byPackageBugTree);
+
+        groupByTabbedPane.addTab("By Package", byPackageScrollPane);
+
+        byBugTypeScrollPane.setViewportView(byBugTypeBugTree);
+
+        groupByTabbedPane.addTab("By Bug Type", byBugTypeScrollPane);
 
         bugTreeBugDetailsSplitter.setTopComponent(groupByTabbedPane);
 
@@ -759,6 +774,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
     }//GEN-END:initComponents
 
     private void fullDescriptionsItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fullDescriptionsItemActionPerformed
+        JTree bugTree = getCurrentBugTree();
+        
         // Redisplay the visible bug instance nodes
         DefaultTreeModel bugTreeModel = (DefaultTreeModel) bugTree.getModel();
         
@@ -1001,23 +1018,27 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
         // Console starts out disabled
         consoleSplitter.setDividerLocation(1.0);
-        
-	bugTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
-	bugTree.setCellRenderer(new FindBugsFrame.BugCellRenderer());
-	bugTree.setRootVisible(false);
-	bugTree.setShowsRootHandles(true);
-	bugTree.addTreeSelectionListener(new TreeSelectionListener() {
-	    public void valueChanged(TreeSelectionEvent e) {
-		bugTreeSelectionChanged(e);
-	    }
-	});
+
+        // List of bug group tabs.
+        // This must be in the same order as GROUP_BY_ORDER_LIST!
+        bugTreeList = new JTree[]{byClassBugTree, byPackageBugTree, byBugTypeBugTree};
+
+        // Configure bug trees
+        for (int i = 0; i < bugTreeList.length; ++i) {
+            JTree bugTree = bugTreeList[i];
+            bugTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+            bugTree.setCellRenderer(new FindBugsFrame.BugCellRenderer());
+            bugTree.setRootVisible(false);
+            bugTree.setShowsRootHandles(true);
+            bugTree.addTreeSelectionListener(new TreeSelectionListener() {
+                public void valueChanged(TreeSelectionEvent e) {
+                    bugTreeSelectionChanged(e);
+                }
+            });
+        }
 	
 	jarFileList.setModel(new DefaultListModel());
 	sourceDirList.setModel(new DefaultListModel());
-	
-//	groupByChooser.addItem(GROUP_BY_CLASS);
-//	groupByChooser.addItem(GROUP_BY_PACKAGE);
-//	groupByChooser.addItem(GROUP_BY_BUG_TYPE);
 	
         // We use a special highlight painter to ensure that the highlights cover
         // complete source lines, even though the source text doesn't
@@ -1097,6 +1118,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
      * Get the bug instance currently selected in the bug tree.
      */
     private BugInstance getCurrentBugInstance() {
+        JTree bugTree = getCurrentBugTree();
 	return (BugInstance) getTreeSelectionOf(bugTree, BugInstance.class);
     }
     
@@ -1128,6 +1150,12 @@ public class FindBugsFrame extends javax.swing.JFrame {
             bugTreeBugDetailsSplitter.setDividerLocation(1.0);
         }
         //System.out.("New bug detail splitter location " + bugTreeBugDetailsSplitter.getDividerLocation());   
+    }
+    
+    private JTree getCurrentBugTree() {
+        JScrollPane selected = (JScrollPane) groupByTabbedPane.getSelectedComponent();
+        JTree selectedTree = (JTree) selected.getViewport().getView();
+        return selectedTree;
     }
     
     /* ----------------------------------------------------------------------
@@ -1164,48 +1192,34 @@ public class FindBugsFrame extends javax.swing.JFrame {
     }
     
     /**
-     * Synchronize the bug tree with the given analysisRun object.
+     * Synchronize the bug trees with the given analysisRun object.
      * @param analysisRun the selected analysis run
      */
     private void synchAnalysisRun(AnalysisRun analysisRun) {
-	boolean modelChanged = false;
-	
-	if (analysisRun != currentAnalysisRun) {
-	    modelChanged = true;
-	    // If this is the first time the analysis run is being shown in
-	    // the bug tree, it won't have a tree model yet.
-	    if (analysisRun.getTreeModel() == null) {
-		DefaultMutableTreeNode bugRootNode = new DefaultMutableTreeNode();
-		DefaultTreeModel bugTreeModel = new DefaultTreeModel(bugRootNode);
-		analysisRun.setTreeModel(bugTreeModel);
-	    }
-	    
-	}
-	
-	// Make sure that the sort order is correct.
-	//String currentSortOrder = groupByChooser.getSelectedItem().toString();
-        String currentSortOrder = GROUP_BY_CLASS;
-	if (!analysisRun.getSortOrder().equals(currentSortOrder)) {
-	    populateAnalysisRunTreeModel(analysisRun, currentSortOrder);
-	}
-	
-	if (modelChanged) {
-	    bugTree.setModel(analysisRun.getTreeModel());
-	    currentAnalysisRun = analysisRun;
-	}
-	
-	// TODO: restore state of tree! I.e., which nodes expanded, and selection
+        // Create and populate tree models
+        for (int i = 0; i < GROUP_BY_ORDER_LIST.length; ++i) {
+            DefaultMutableTreeNode bugRootNode = new DefaultMutableTreeNode();
+            DefaultTreeModel bugTreeModel = new DefaultTreeModel(bugRootNode);
+            
+            String groupByOrder = GROUP_BY_ORDER_LIST[i];
+            analysisRun.setTreeModel(groupByOrder, bugTreeModel);
+            populateAnalysisRunTreeModel(analysisRun, groupByOrder);
+            if (i < bugTreeList.length)
+                bugTreeList[i].setModel(bugTreeModel);
+        }
     }
     
     /**
      * Populate an analysis run's tree model for given sort order.
      */
     private void populateAnalysisRunTreeModel(AnalysisRun analysisRun, final String groupBy) {
+        System.out.println("Populating bug tree for order " + groupBy);
+        
 	// Set busy cursor - this is potentially a time-consuming operation
 	Cursor orig = this.getCursor();
 	this.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 	
-	final DefaultTreeModel bugTreeModel = analysisRun.getTreeModel();
+	final DefaultTreeModel bugTreeModel = analysisRun.getTreeModel(groupBy);
 	final DefaultMutableTreeNode bugRootNode = (DefaultMutableTreeNode) bugTreeModel.getRoot();
 	
 	// Delete all children from root node
@@ -1269,9 +1283,6 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	Grouper grouper = new Grouper(callback);
 	Comparator groupComparator = getGroupComparator(groupBy);
 	grouper.group(sortedCollection, groupComparator);
-	
-	// Sort order is up to date now
-	analysisRun.setSortOrder(groupBy);
 	
 	// Let the tree know it needs to update itself
 	bugTreeModel.nodeStructureChanged(bugRootNode);
@@ -1374,6 +1385,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
         // If the current leaf selected is not a source line annotation,
         // use the default source line annotation from the current bug instance
         // (if any).
+        JTree bugTree = getCurrentBugTree();
         SourceLineAnnotation srcLine = null;
         TreePath selPath = bugTree.getSelectionPath();
         if (selPath != null) {
@@ -1561,21 +1573,25 @@ public class FindBugsFrame extends javax.swing.JFrame {
     private javax.swing.JPanel emptyPanel;
     private javax.swing.JTextArea consoleMessageArea;
     private javax.swing.JSeparator jSeparator3;
-    private javax.swing.JTree bugTree;
     private javax.swing.JScrollPane jarFileListScrollPane;
+    private javax.swing.JScrollPane byBugTypeScrollPane;
     private javax.swing.JCheckBoxMenuItem viewConsoleItem;
+    private javax.swing.JTree byPackageBugTree;
     private javax.swing.JMenuItem closeProjectItem;
     private javax.swing.JCheckBoxMenuItem viewBugDetailsItem;
     private javax.swing.JTextField jarNameTextField;
     private javax.swing.JScrollPane consoleScrollPane;
     private javax.swing.JButton browseJarButton;
+    private javax.swing.JScrollPane byClassScrollPane;
     private javax.swing.JTextArea sourceTextArea;
+    private javax.swing.JTree byBugTypeBugTree;
     private javax.swing.JButton findBugsButton;
     private javax.swing.JPanel bugTreePanel;
     private javax.swing.JScrollPane bugDescriptionScrollPane;
     private javax.swing.JLabel sourceDirLabel;
     private javax.swing.JPanel viewPanel;
     private javax.swing.JLabel jarFileListLabel;
+    private javax.swing.JScrollPane byPackageScrollPane;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JPanel reportPanel;
     private javax.swing.JPanel editProjectPanel;
@@ -1584,8 +1600,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
     private javax.swing.JTextField srcDirTextField;
     private javax.swing.JButton browseSrcDirButton;
     private javax.swing.JLabel sourceDirListLabel;
+    private javax.swing.JTree byClassBugTree;
     private javax.swing.JMenuItem exitItem;
-    private javax.swing.JScrollPane bugTreeScrollPane;
     private javax.swing.JScrollPane sourceDirListScrollPane;
     // End of variables declaration//GEN-END:variables
     
@@ -1594,6 +1610,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
     private CardLayout viewPanelLayout;
     private String currentView;
     private Project currentProject;
+    private JTree[] bugTreeList;
     private AnalysisRun currentAnalysisRun;
     private SourceFinder sourceFinder = new SourceFinder();
     private BugInstance currentBugInstance; // be lazy in switching bug instance details
