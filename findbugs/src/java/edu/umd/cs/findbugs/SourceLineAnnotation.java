@@ -52,17 +52,28 @@ public class SourceLineAnnotation implements BugAnnotation {
 	}
 
 	/**
+	 * Factory method to create an unknown source line annotation.
+	 * @param className the class name
+	 * @return the SourceLineAnnotation
+	 */
+	public static SourceLineAnnotation createUnknown(String className) {
+		SourceLineAnnotation result = new SourceLineAnnotation(className, -1, -1);
+		result.setDescription("SOURCE_LINE_UNKNOWN");
+		return result;
+	}
+
+	/**
 	 * Factory method for creating a source line annotation describing
 	 * an entire method.
 	 * @param visitor a BetterVisitor which is visiting the method
-	 * @return the SourceLineAnnotation, or null if we do not have line number information
-	 *   for the method
+	 * @return the SourceLineAnnotation
 	 */
 	public static SourceLineAnnotation fromVisitedMethod(BetterVisitor visitor) {
 		LineNumberTable lineNumberTable = getLineNumberTable(visitor);
+		String className = visitor.getBetterClassName();
 		if (lineNumberTable == null)
-			return null;
-		return forEntireMethod(visitor.getBetterClassName(), lineNumberTable);
+			return createUnknown(className);
+		return forEntireMethod(className, lineNumberTable);
 	}
 
 	/**
@@ -74,16 +85,17 @@ public class SourceLineAnnotation implements BugAnnotation {
 	 */
 	public static SourceLineAnnotation fromVisitedMethod(MethodGen methodGen) {
 		LineNumberTable lineNumberTable = methodGen.getLineNumberTable(methodGen.getConstantPool());
+		String className = methodGen.getClassName();
 		if (lineNumberTable == null)
-			return null;
-		return forEntireMethod(methodGen.getClassName(), lineNumberTable);
+			return createUnknown(className);
+		return forEntireMethod(className, lineNumberTable);
 	}
 
 	private static SourceLineAnnotation forEntireMethod(String className, LineNumberTable lineNumberTable) {
 		LineNumber[] table = lineNumberTable.getLineNumberTable();
 		return (table != null && table.length > 0)
 			? new SourceLineAnnotation(className, table[0].getLineNumber(), table[table.length-1].getLineNumber())
-			: null;
+			: createUnknown(className);
 	}
 
 	/**
@@ -110,12 +122,14 @@ public class SourceLineAnnotation implements BugAnnotation {
 	 */
 	public static SourceLineAnnotation fromVisitedInstructionRange(BetterVisitor visitor, int startPC, int endPC) {
 		LineNumberTable lineNumberTable = getLineNumberTable(visitor);
+		String className = visitor.getBetterClassName();
+
 		if (lineNumberTable == null)
-			return null;
+			return createUnknown(className);
 
 		int startLine = lineNumberTable.getSourceLine(startPC);
 		int endLine = lineNumberTable.getSourceLine(endPC);
-		return new SourceLineAnnotation(visitor.getBetterClassName(), startLine, endLine);
+		return new SourceLineAnnotation(className, startLine, endLine);
 	}
 
 	/**
@@ -139,11 +153,13 @@ public class SourceLineAnnotation implements BugAnnotation {
 	 */
 	public static SourceLineAnnotation fromVisitedInstruction(MethodGen methodGen, InstructionHandle handle) {
 		LineNumberTable table = methodGen.getLineNumberTable(methodGen.getConstantPool());
+		String className = methodGen.getClassName();
+
 		if (table == null)
-			return null;
+			return createUnknown(className);
 
 		int lineNumber = table.getSourceLine(handle.getPosition());
-		return new SourceLineAnnotation(methodGen.getClassName(), lineNumber, lineNumber);
+		return new SourceLineAnnotation(className, lineNumber, lineNumber);
 	}
 
 	/**
@@ -155,12 +171,14 @@ public class SourceLineAnnotation implements BugAnnotation {
 	 */
 	public static SourceLineAnnotation fromVisitedInstructionRange(MethodGen methodGen, InstructionHandle start, InstructionHandle end) {
 		LineNumberTable lineNumberTable = methodGen.getLineNumberTable(methodGen.getConstantPool());
+		String className = methodGen.getClassName();
+
 		if (lineNumberTable == null)
-			return null;
+			return createUnknown(className);
 
 		int startLine = lineNumberTable.getSourceLine(start.getPosition());
 		int endLine = lineNumberTable.getSourceLine(end.getPosition());
-		return new SourceLineAnnotation(methodGen.getClassName(), startLine, endLine);
+		return new SourceLineAnnotation(className, startLine, endLine);
 	}
 
 	private static LineNumberTable getLineNumberTable(BetterVisitor visitor) {
