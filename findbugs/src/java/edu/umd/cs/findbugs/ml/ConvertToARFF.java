@@ -45,7 +45,7 @@ import org.dom4j.io.SAXReader;
  * @author David Hovemeyer
  */
 public class ConvertToARFF {
-	private class MissingNodeException extends Exception {
+	private static class MissingNodeException extends Exception {
 		public MissingNodeException(String msg) {
 			super(msg);
 		}
