@@ -25,6 +25,7 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
+import java.util.StringTokenizer;
 
 import org.dom4j.DocumentException;
 import org.eclipse.core.resources.IFile;
@@ -53,9 +54,12 @@ import de.tobject.findbugs.io.IO;
 import de.tobject.findbugs.nature.FindBugsNature;
 import de.tobject.findbugs.reporter.Reporter;
 import de.tobject.findbugs.view.DetailsView;
+import edu.umd.cs.findbugs.DetectorFactory;
+import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.config.ProjectFilterSettings;
+import edu.umd.cs.findbugs.config.UserPreferences;
 
 /**
  * The main plugin class to be used in the desktop.
@@ -94,8 +98,12 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 	private static final String REPORTER_DEBUG = PLUGIN_ID + "/debug/reporter"; //$NON-NLS-1$
 	private static final String UTIL_DEBUG = PLUGIN_ID + "/debug/util"; //$NON-NLS-1$
 	private static final String VISITOR_DEBUG = PLUGIN_ID + "/debug/visitor"; //$NON-NLS-1$
-	public static final QualifiedName PERSISTENT_PROPERTY_ACTIVE_DETECTORS = new QualifiedName(FindbugsPlugin.PLUGIN_ID + ".persprops", "detectors.active"); //$NON-NLS-1$//$NON-NLS-2$
-	public static final QualifiedName SESSION_PROPERTY_ACTIVE_DETECTORS = new QualifiedName(FindbugsPlugin.PLUGIN_ID + ".sessionprops", "detectors.active"); //$NON-NLS-1$//$NON-NLS-2$
+	
+	// Persistent and session property keys
+	public static final QualifiedName PERSISTENT_PROPERTY_ACTIVE_DETECTORS =
+		new QualifiedName(FindbugsPlugin.PLUGIN_ID + ".persprops", "detectors.active"); //$NON-NLS-1$//$NON-NLS-2$
+	public static final QualifiedName SESSION_PROPERTY_ACTIVE_DETECTORS =
+		new QualifiedName(FindbugsPlugin.PLUGIN_ID + ".sessionprops", "detectors.active"); //$NON-NLS-1$//$NON-NLS-2$
 	public static final QualifiedName PERSISTENT_PROPERTY_FILTER_SETTINGS =
 		new QualifiedName(FindbugsPlugin.PLUGIN_ID + ".persprops", "filter.settings");
 	public static final QualifiedName SESSION_PROPERTY_FILTER_SETTINGS =
@@ -106,8 +114,9 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 		new QualifiedName(FindbugsPlugin.PLUGIN_ID + ".sessionprops", "fbproject");
 	public static final QualifiedName SESSION_PROPERTY_BUG_COLLECTION_UPTODATE =
 		new QualifiedName(FindbugsPlugin.PLUGIN_ID + ".sessionprops", "bugcollection_uptodate");
+	public static final QualifiedName SESSION_PROPERTY_USERPREFS =
+		new QualifiedName(FindbugsPlugin.PLUGIN_ID + ".sessionprops", "userprefs");
 	public static final String LIST_DELIMITER = ";"; //$NON-NLS-1$
-	
 	
 	/** The shared instance. */
 	private static FindbugsPlugin plugin;
@@ -499,6 +508,65 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 	 */
 	public static IFile getUserPreferencesFile(IProject project) {
 		return project.getFile(".fbprefs");
+	}
+	
+	/**
+	 * Get the UserPreferences for given project.
+	 * 
+	 * @param project the project
+	 * @return the UserPreferences for the project
+	 * @throws CoreException
+	 */
+	public static UserPreferences getUserPreferences(IProject project) throws CoreException {
+		UserPreferences prefs =
+			(UserPreferences)project.getSessionProperty(SESSION_PROPERTY_USERPREFS);
+		if (prefs == null) {
+			prefs = readUserPreferences(project);
+			if (prefs == null) {
+				prefs = createDefaultUserPreferences(project);
+			}
+			project.setSessionProperty(SESSION_PROPERTY_USERPREFS, prefs);
+		}
+		return prefs;
+	}
+
+	private static UserPreferences readUserPreferences(IProject project) {
+		// TODO: implement
+		return null;
+	}
+
+	private static UserPreferences createDefaultUserPreferences(IProject project) {
+		UserPreferences prefs = new UserPreferences();
+		
+		try {
+			
+			// For backwards-compatibility, try to use the old project filter settings
+			// and active detector set. 
+			
+			// Project filter settings
+			ProjectFilterSettings filterSettings = getProjectFilterSettings(project);
+			
+			// Active detector set
+			String activeDetectorList =
+				(String) project.getSessionProperty(SESSION_PROPERTY_ACTIVE_DETECTORS);
+			if (activeDetectorList != null) {
+				prefs.enableAllDetectors(false);
+				DetectorFactoryCollection factoryCollection = DetectorFactoryCollection.instance();
+				
+				StringTokenizer st = new StringTokenizer(activeDetectorList, LIST_DELIMITER);
+				while (st.hasMoreTokens()) {
+					String factoryName = st.nextToken();
+					DetectorFactory factory = factoryCollection.getFactory(factoryName);
+					if (factory != null) {
+						prefs.enableDetector(factory, true);
+					}
+				}
+			}
+		} catch (CoreException e) {
+			FindbugsPlugin.getDefault().logException(e, "Could not get FindBugs settings");
+		}
+		
+		return prefs;
 	}
 	
 }

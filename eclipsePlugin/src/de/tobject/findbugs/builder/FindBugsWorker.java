@@ -22,7 +22,6 @@ package de.tobject.findbugs.builder;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 
 import org.dom4j.DocumentException;
@@ -41,11 +40,10 @@ import de.tobject.findbugs.util.Util;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.ClassAnnotation;
 import edu.umd.cs.findbugs.Detector;
-import edu.umd.cs.findbugs.DetectorFactory;
-import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.FindBugs;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.SortedBugCollection;
+import edu.umd.cs.findbugs.config.UserPreferences;
 
 /**
  * Execute FindBugs on a collection of Java resources in a project.
@@ -60,7 +58,7 @@ public class FindBugsWorker {
 	public static boolean DEBUG;
 
 	private IProgressMonitor monitor;
-	private List selectedDetectorFactories;
+	private UserPreferences userPrefs;
 	private IProject project;
 
 	/**
@@ -74,7 +72,7 @@ public class FindBugsWorker {
 		this.project = project;
 		this.monitor = monitor;
 		try {
-			  selectedDetectorFactories = FindbugsPlugin.getProjectFilterSettings(project).getDetectorFactories();
+			this.userPrefs = FindbugsPlugin.getUserPreferences(project);
 		}
 		catch (CoreException e) {
 			FindbugsPlugin.getDefault().logException(e, "Could not get selected detectors for project");
@@ -141,17 +139,7 @@ public class FindBugsWorker {
 		}
 
 		// configure detectors.
-		// XXX currently detector factories are shared between different projects!!!
-		// cause detector factories list is a singleton!!!
-		// if multiple workers are working (Eclipse 3.0 allows background build),
-		// there is a big problem!!! TODO philc fix..
-		if (selectedDetectorFactories != null) {
-			Iterator iterator = DetectorFactoryCollection.instance().factoryIterator();
-			while (iterator.hasNext()) {
-				DetectorFactory factory = (DetectorFactory) iterator.next();
-				factory.setEnabled(selectedDetectorFactories.contains(factory));
-			}
-		}
+		findBugs.setUserPreferences(this.userPrefs);
 
 		try {
 			// Perform the analysis!
