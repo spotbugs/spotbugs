@@ -136,8 +136,15 @@ public class Hierarchy {
 		if (inv instanceof INVOKESTATIC || inv instanceof INVOKESPECIAL) {
 			// Non-virtual dispatch
 			m = findExactMethod(inv, cpg);
-			if (inv instanceof INVOKESTATIC && !m.isStatic())
+			if (m == null) {
+				// XXX
+/*
+				System.out.println("Could not resolve " + inv + " in " +
+					SignatureConverter.convertMethodSignature(inv, cpg));
+*/
+			} else if (inv instanceof INVOKESTATIC && !m.isStatic()) {
 				m = null;
+			}
 		} else if (inv instanceof INVOKEVIRTUAL) {
 			// Virtual dispatch
 			m = findMethod(Repository.lookupClass(className), methodName, methodSig);
