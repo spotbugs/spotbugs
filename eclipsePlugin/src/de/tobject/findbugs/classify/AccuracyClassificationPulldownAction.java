@@ -133,6 +133,11 @@ public class AccuracyClassificationPulldownAction
 		// Warning is being classified for the first time,
 		// or the classification is being changed
 		warning.setProperty(BugProperty.IS_BUG, isBug ? "true" : "false");
+		try {
+			FindbugsPlugin.markBugCollectionDirty(marker.getResource().getProject(), true);
+		} catch (CoreException e) {
+			FindbugsPlugin.getDefault().logException(e, "Could not mark bug collection dirty");
+		}
 
 		// Currently, we are displaying a marker for this warning.
 		// If the user has classified it as a false warning,
