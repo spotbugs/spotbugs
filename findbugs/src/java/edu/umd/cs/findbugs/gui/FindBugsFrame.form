@@ -174,9 +174,6 @@
       </SubComponents>
     </Menu>
   </NonVisualComponents>
-  <Properties>
-    <Property name="title" type="java.lang.String" value="FindBugs"/>
-  </Properties>
   <SyntheticProperties>
     <SyntheticProperty name="menuBar" type="java.lang.String" value="theMenuBar"/>
     <SyntheticProperty name="formSizePolicy" type="int" value="1"/>

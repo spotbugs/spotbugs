@@ -378,7 +378,6 @@ public class FindBugsFrame extends javax.swing.JFrame {
         helpMenu = new javax.swing.JMenu();
         aboutItem = new javax.swing.JMenuItem();
 
-        setTitle("FindBugs");
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 exitForm(evt);
@@ -1283,15 +1282,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
             }
         };
         sourceTextArea.setHighlighter(sourceHighlighter);
-        /*
-        javax.swing.text.Caret caret = new javax.swing.text.DefaultCaret() {
-            private int count = 0;
-            protected void adjustVisibility(int nloc) {
-                System.out.println("Adjusting visibility " + count++);
-            }
-        };
-        sourceTextArea.setCaret(caret);
-         */
+        
+        updateTitle(getCurrentProject());
     }
     
     /* ----------------------------------------------------------------------
@@ -1911,6 +1903,20 @@ public class FindBugsFrame extends javax.swing.JFrame {
      * @param args the command line arguments
      */
     public static void main(String args[]) {
+        for (int i = 0; i < args.length; ++i) {
+            String arg = args[i];
+            
+            if (arg.equals("-betterCFG")) {
+                // FIXME: this is for testing of BetterCFGBuilder
+                System.out.println("Using BetterCFGBuilder");
+                System.setProperty("cfg.better", "true");
+            } else if (arg.equals("-debug")) {
+                System.out.println("Setting findbugs.debug=true");
+                System.setProperty("findbugs.debug", "true");
+            }
+        
+        }
+        
         FindBugsFrame frame = new FindBugsFrame();
         frame.setSize(800, 600);
         frame.show();
