@@ -42,10 +42,15 @@ public class FindInconsistentSync2 implements Detector {
 	 * Helper classes
 	 * ---------------------------------------------------------------------- */
 
-	private static final int READ_UNLOCKED = 0;
-	private static final int WRITE_UNLOCKED = 1;
-	private static final int READ_LOCKED = 2;
-	private static final int WRITE_LOCKED = 3;
+	private static final int UNLOCKED = 0;
+	private static final int LOCKED = 1;
+	private static final int READ = 0;
+	private static final int WRITE = 2;
+
+	private static final int READ_UNLOCKED = READ | UNLOCKED;
+	private static final int WRITE_UNLOCKED = WRITE | UNLOCKED;
+	private static final int READ_LOCKED = READ | LOCKED;
+	private static final int WRITE_LOCKED = WRITE | LOCKED;
 
 	private static class FieldStats {
 		private int[] countList = new int[4];
@@ -130,6 +135,12 @@ public class FindInconsistentSync2 implements Detector {
 							ValueNumber instance = frame.getInstance(fins, cpg);
 							LockSet lockSet = lockDataflow.getFactAtLocation(location);
 							boolean isLocked = lockSet.getLockCount(instance.getNumber()) > 0;
+							int kind = 0;
+							kind |= isLocked ? LOCKED : UNLOCKED;
+							kind |= (ins.getOpcode() == Constants.GETFIELD) ? READ : WRITE;
+
+							FieldStats stats = getStats(xfield);
+							stats.addAccess(kind);
 						}
 						// FIXME: should we do something for static fields?
 					} catch (ClassNotFoundException e) {
@@ -139,6 +150,15 @@ public class FindInconsistentSync2 implements Detector {
 
 			}
 		});
+	}
+
+	private FieldStats getStats(XField field) {
+		FieldStats stats = statMap.get(field);
+		if (stats == null) {
+			stats = new FieldStats();
+			statMap.put(field, stats);
+		}
+		return stats;
 	}
 
 	/**
