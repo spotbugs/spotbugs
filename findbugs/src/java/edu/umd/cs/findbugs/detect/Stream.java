@@ -58,18 +58,48 @@ public class Stream extends ResourceCreationPoint {
 	private InstructionHandle ctorHandle;
 	private boolean ignoreImplicitExceptions;
 
-	public Stream(Location location, String streamClass, String streamBase,
-		boolean isUninteresting, boolean ignoreImplicitExceptions) {
-		this(location, streamClass, streamBase, isUninteresting, ignoreImplicitExceptions, false);
-	}
-
-	public Stream(Location location, String streamClass, String streamBase,
-		boolean isUninteresting, boolean ignoreImplicitExceptions, boolean isOpenOnCreation) {
+	/**
+	 * Constructor.
+	 * By default, Stream objects are marked as uninteresting.
+	 * setIsUninteresting(false) must be called explicitly to mark
+	 * the Stream as interesting.
+	 * @param location where the stream is created
+	 * @param streamClass type of Stream
+	 * @param baseClass highest class in the class hierarchy through which
+	 *   stream's close() method could be called
+	 */
+	public Stream(Location location, String streamClass, String streamBase) {
 		super(location, streamClass);
 		this.streamBase = streamBase;
-		this.isUninteresting = isUninteresting;
-		this.ignoreImplicitExceptions = ignoreImplicitExceptions;
-		this.isOpenOnCreation = isOpenOnCreation;
+		isUninteresting = true;
+	}
+
+	/**
+	 * Mark whether or not Stream is uninteresting.
+	 */
+	public Stream setIsUninteresting(boolean enable) {
+		isUninteresting = enable;
+		return this;
+	}
+
+	/**
+	 * Mark whether or not implicit exception edges should be
+	 * ignored by ResourceValueAnalysis when determining whether or
+	 * not stream is closed on all paths out of method.
+	 */
+	public Stream setIgnoreImplicitExceptions(boolean enable) {
+		ignoreImplicitExceptions = enable;
+		return this;
+	}
+
+	/**
+	 * Mark whether or not Stream is open as soon as it is created,
+	 * or whether a later method or constructor must explicitly
+	 * open it.
+	 */
+	public Stream setIsOpenOnCreation(boolean enable) {
+		isOpenOnCreation = enable;
+		return this;
 	}
 
 	public String getStreamBase() { return streamBase; }

@@ -91,7 +91,10 @@ public class MethodReturnValueStreamFactory implements StreamFactory {
 				return null;
 
 			String streamClass = type.getClassName();
-			return new Stream(location, streamClass, streamClass, isUninteresting, true, true);
+			return new Stream(location, streamClass, streamClass)
+				.setIsUninteresting(isUninteresting)
+				.setIgnoreImplicitExceptions(true)
+				.setIsOpenOnCreation(true);
 		} catch (ClassNotFoundException e) {
 			lookupFailureCallback.reportMissingClass(e);
 		}

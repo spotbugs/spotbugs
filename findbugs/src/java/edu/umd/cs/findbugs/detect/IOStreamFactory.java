@@ -62,8 +62,9 @@ public class IOStreamFactory implements StreamFactory {
 						break;
 					}
 				}
-				return new Stream(location, type.getClassName(), baseClassType.getClassName(),
-					isUninteresting, true);
+				return new Stream(location, type.getClassName(), baseClassType.getClassName())
+					.setIsUninteresting(isUninteresting)
+					.setIgnoreImplicitExceptions(true);
 			}
 		} catch (ClassNotFoundException e) {
 			lookupFailureCallback.reportMissingClass(e);

@@ -73,8 +73,10 @@ public class StaticFieldLoadStreamFactory implements StreamFactory {
 			|| !fieldSig.equals(getstatic.getSignature(cpg)))
 			return null;
 
-		return new Stream(location, type.getClassName(), streamBaseClass,
-			isUninteresting, true, true);
+		return new Stream(location, type.getClassName(), streamBaseClass)
+			.setIsUninteresting(isUninteresting)
+			.setIgnoreImplicitExceptions(true)
+			.setIsOpenOnCreation(true);
 	}
 }
 
