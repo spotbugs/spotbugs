@@ -32,10 +32,16 @@ import org.apache.bcel.generic.*;
  *
  * @author David Hovemeyer
  */
-public class ClassContext {
+public class ClassContext implements AnalysisFeatures {
 	public static final boolean PRUNE_INFEASIBLE_EXCEPTION_EDGES = Boolean.getBoolean("cfg.prune");
+
+	/**
+	 * Only try to determine unconditional exception throwers
+	 * if we're not trying to conserve space.
+	 */
 	public static final boolean PRUNE_UNCONDITIONAL_EXCEPTION_THROWER_EDGES =
-		!Boolean.getBoolean("cfg.prune.noPruneThrowers");
+		!CONSERVE_SPACE;
+
 	public static final boolean DEBUG = Boolean.getBoolean("classContext.debug");
 
 	private JavaClass jclass;

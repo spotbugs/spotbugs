@@ -30,7 +30,7 @@ import org.apache.bcel.classfile.JavaClass;
  * and data structures.
  * @author David Hovemeyer
  */
-public class AnalysisContext {
+public class AnalysisContext implements AnalysisFeatures {
 	private RepositoryLookupFailureCallback lookupFailureCallback;
 	private SourceFinder sourceFinder;
 	private ClassContextCache classContextCache;
@@ -40,11 +40,11 @@ public class AnalysisContext {
 	 * FIXME: need to evaluate this parameter. Need to keep stats
 	 * about accesses.
 	 */
-	private static final int MAX_SIZE = 60;
+	private static final int MAX_SIZE = CONSERVE_SPACE ? 1 : 60;
 
 	private static class ClassContextCache extends LinkedHashMap<JavaClass, ClassContext> {
 		public boolean removeEldestEntry(Map.Entry<JavaClass, ClassContext> entry) {
-			return size() > MAX_SIZE;
+			return size() >= MAX_SIZE;
 		}
 	}
 

@@ -24,7 +24,7 @@ import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.*;
 import org.apache.bcel.generic.*;
 
-public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes {
+public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes, AnalysisFeatures {
 	private static final boolean DEBUG = Boolean.getBoolean("cfg.prune.throwers.debug");
 
 	private MethodGen methodGen;
@@ -42,6 +42,8 @@ public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes {
 	}
 
 	public void execute() throws CFGBuilderException, DataflowAnalysisException {
+		if (CONSERVE_SPACE) throw new IllegalStateException("This should not happen");
+
 		HashSet<Edge> deletedEdgeSet = new HashSet<Edge>();
 
 		if (DEBUG) System.out.println("PruneUnconditionalExceptionThrowerEdges: examining " +

@@ -3,6 +3,9 @@
 :: Adapted from scripts found at http://www.ericphelps.com/batch/
 :: This will only work on Windows NT or later!
 
+:: Don't affect environment outside of this invocation
+setlocal
+
 :: ----------------------------------------------------------------------
 :: Set up default values
 :: ----------------------------------------------------------------------
@@ -12,6 +15,7 @@ set launcher=javaw.exe
 set start=start "FindBugs"
 set jvmargs=
 set debugArg=
+set conserveSpaceArg=
 set args=
 set javaProps=
 set start=
@@ -64,6 +68,9 @@ if "%firstArg%"=="-maxHeap" goto shift2
 if "%firstArg%"=="-debug" set debugArg=-Dfindbugs.debug=true
 if "%firstArg%"=="-debug" goto shift1
 
+if "%firstArg%"=="-conserveSpace" set conserveSpaceArg=-Dfindbugs.conserveSpace=true
+if "%firstArg%"=="-conserveSpace" goto shift1
+
 if "%firstArg%"=="-javahome" set javahome=%secondArg%\bin\
 if "%firstArg%"=="-javahome" goto shift2
 
@@ -90,7 +97,7 @@ if not exist "%FINDBUGS_HOME%\lib\%appjar%" goto homeNotSet
 
 :found_home
 :: Launch FindBugs!
-%start% "%javahome%%launcher%" %debugArg% %javaProps% "-Dfindbugs.home=%FINDBUGS_HOME%" -Xmx%maxheap%m %jvmargs% -jar "%FINDBUGS_HOME%\lib\%appjar%" %args%
+%start% "%javahome%%launcher%" %debugArg% %conserveSpaceArg% %javaProps% "-Dfindbugs.home=%FINDBUGS_HOME%" -Xmx%maxheap%m %jvmargs% -jar "%FINDBUGS_HOME%\lib\%appjar%" %args%
 goto end
 
 :: ----------------------------------------------------------------------
@@ -106,6 +113,7 @@ echo    -maxHeap size   Set maximum Java heap size in megabytes (default %maxhea
 echo    -javahome dir   Specify location of JRE
 echo    -help           Display this message
 echo    -debug          Enable debug tracing in FindBugs
+echo    -conserveSpace  Conserve memory at the expense of precision
 echo All other options are passed to the FindBugs application
 goto end
 

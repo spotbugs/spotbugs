@@ -64,6 +64,7 @@ Usage() {
 	echo "   -javahome dir   Specify location of JRE"
 	echo "   -help           Display this message"
 	echo "   -debug          Enable debug tracing in FindBugs"
+	echo "   -conserveSpace  Conserve memory at the expense of precision"
 	echo "All other options are passed to the FindBugs application"
 	exit 0;
 }
@@ -116,6 +117,7 @@ fi
 argList=''
 jvmArgs=""
 debugArg=""
+conserveSpaceArg=""
 appJar="findbugsGUI.jar"
 javaProps=""
 
@@ -162,6 +164,10 @@ while [ $# -gt 0 ]; do
 		debugArg="-Dfindbugs.debug=true"
 		;;
 
+	-conserveSpace)
+		conserveSpaceArg="-Dfindbugs.conserveSpace=true"
+		;;
+
 	-property)
 		javaProps="-D$1 $javaProps"
 		shift
@@ -189,6 +195,6 @@ if [ $os = "Darwin" ]; then
 fi
 
 # Launch FindBugs!
-exec $jvmCmd -Xmx${maxheap}m $jvmArgs $javaProps $debugArg "-Dfindbugs.home=$findbugs_home" -jar "$findbugs_home/lib/$appJar" $argList
+exec $jvmCmd -Xmx${maxheap}m $jvmArgs $javaProps $debugArg $conserveSpaceArg "-Dfindbugs.home=$findbugs_home" -jar "$findbugs_home/lib/$appJar" $argList
 
 # vim:ts=4
