@@ -39,6 +39,7 @@ public class DetectorFactory {
 	private final String requireJRE;
 	private String detailHTML;
 	private int priorityAdjustment;
+	private boolean firstInPass;
 
 	/**
 	 * Constructor.
@@ -64,6 +65,7 @@ public class DetectorFactory {
 		this.reports = reports;
 		this.requireJRE = requireJRE;
 		this.priorityAdjustment = 0;
+		this.firstInPass = false;
 	}
 
 	private static final Class[] constructorArgTypes = new Class[]{BugReporter.class};
@@ -126,6 +128,24 @@ public class DetectorFactory {
 	 */
 	public int getPriorityAdjustment() {
 		return priorityAdjustment;
+	}
+
+	/**
+	 * Mark whether or not this detector needs to be first in its analysis pass.
+	 *
+	 * @param firstInPass true if the detector should be first in its pass,
+	 *                    false if it does not
+	 */
+	public void setFirstInPass(boolean firstInPass) {
+		this.firstInPass = firstInPass;
+	}
+
+	/**
+	 * Return whether or not this detector needs to be first in
+	 * its analysis pass.
+	 */
+	public boolean isFirstInPass() {
+		return firstInPass;
 	}
 
 	/**
