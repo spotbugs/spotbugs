@@ -29,7 +29,7 @@ import edu.umd.cs.pugh.visitclass.DismantleBytecode;
 import edu.umd.cs.pugh.visitclass.Constants2;
 
 public class MutableLock extends BytecodeScanningDetector implements   Constants2 {
-    HashSet setFields = new HashSet();
+    HashSet<String> setFields = new HashSet<String>();
     boolean thisOnTOS = false;
     private BugReporter bugReporter;
 
