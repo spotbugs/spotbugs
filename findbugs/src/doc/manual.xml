@@ -49,7 +49,8 @@ as information about the &FindBugs; mailing lists.</para>
 &FindBugs; is platform independent, and is known to run on GNU/Linux, Windows, and
 MacOS X platforms.</para>
 
-<para>You should have at least 256 MB of memory to use &FindBugs;.</para>
+<para>You should have at least 256 MB of memory to use &FindBugs;.
+To analyze very large projects, more memory may be needed.</para>
 </sect1>
  
 </chapter>
