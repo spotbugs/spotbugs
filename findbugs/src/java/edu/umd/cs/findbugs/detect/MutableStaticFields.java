@@ -142,6 +142,8 @@ public class MutableStaticFields extends BytecodeScanningDetector implements Con
 		int flags = obj.getAccessFlags();
 		boolean isStatic = (flags & ACC_STATIC) != 0;
 		if (!isStatic) return;
+		boolean isVolatile = (flags & ACC_VOLATILE) != 0;
+		if (isVolatile) return;
 		boolean isFinal = (flags & ACC_FINAL) != 0;
 		boolean isPublic = publicClass && (flags & ACC_PUBLIC) != 0;
 		boolean isProtected = publicClass && (flags & ACC_PROTECTED) != 0;
