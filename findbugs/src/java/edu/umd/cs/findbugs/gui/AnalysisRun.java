@@ -7,6 +7,7 @@
 package edu.umd.cs.findbugs.gui;
 
 import java.util.*;
+import javax.swing.tree.DefaultTreeModel;
 import edu.umd.cs.findbugs.*;
 
 /**
@@ -34,6 +35,7 @@ public class AnalysisRun {
     private FindBugs findBugs;
     private Reporter reporter;
     private int runNumber;
+    private DefaultTreeModel treeModel;
     
     /** Creates a new instance of AnalysisRun. */
     public AnalysisRun(Project project) {
@@ -60,6 +62,27 @@ public class AnalysisRun {
         
         // Run the analysis!
         findBugs.execute(project.getJarFileArray());
+    }
+    
+    /**
+     * Return the collection of BugInstances.
+     */
+    public java.util.Collection getBugInstances() {
+        return reporter.bugSet;
+    }
+    
+    /**
+     * Set the tree model to be used in the BugTree.
+     */
+    public void setTreeModel(DefaultTreeModel treeModel) {
+        this.treeModel = treeModel;
+    }
+    
+    /**
+     * Get the tree model to be used in the BugTree.
+     */
+    public DefaultTreeModel getTreeModel() {
+        return treeModel;
     }
     
     public String toString() {
