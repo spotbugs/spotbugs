@@ -128,6 +128,20 @@ public class BetterCFGBuilder implements CFGBuilder, EdgeTypes {
 
 			if (DEBUG) System.out.println("START BLOCK " + basicBlock.getId());
 
+			boolean isCanonical = (basicBlockMap.get(start) == basicBlock);
+			if (DEBUG) System.out.println("  Block " + basicBlock.getId() + (isCanonical ? " is" : " is not") +
+				" the canonical block for " + start);
+
+			// See if the block is an exception handler.
+			// Note that when we create an empty ETB for a block which begins
+			// with a PEI (see below), the ETB is considered the start of the
+			// exception handler, not the block actually containing the PEI.
+			if (!handledPEI) {
+				CodeExceptionGen codeExceptionGen = exceptionHandlerMap.getHandlerForStartInstruction(start);
+				if (codeExceptionGen != null)
+					basicBlock.setExceptionGen(codeExceptionGen);
+			}
+
 			// If the start instruction is a PEI which we haven't handled yet, then
 			// this block is an Exception Thrower Block (ETB).
 			if (isPEI(start) && !handledPEI) {
@@ -297,6 +311,7 @@ public class BetterCFGBuilder implements CFGBuilder, EdgeTypes {
 			WorkListItem item = new WorkListItem(start, basicBlock, cloneJsrStack(jsrStack), false);
 			workList.add(item);
 		}
+		if (DEBUG) System.out.println("** Start ins " + start + " -> block " + basicBlock.getId());
 		return basicBlock;
 	}
 
