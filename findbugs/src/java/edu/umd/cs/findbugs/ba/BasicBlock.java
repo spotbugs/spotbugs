@@ -64,6 +64,7 @@ public class BasicBlock extends AbstractVertex<Edge, BasicBlock> implements Debu
 		nullCheckInstructionSet.set(Constants.SALOAD);
 		nullCheckInstructionSet.set(Constants.SASTORE);
 		nullCheckInstructionSet.set(Constants.MONITORENTER);
+		nullCheckInstructionSet.set(Constants.ARRAYLENGTH);
 		// nullCheckInstructionSet.set(Constants.MONITOREXIT);
 		//nullCheckInstructionSet.set(Constants.ATHROW);
 		// Any others?
