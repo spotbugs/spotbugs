@@ -173,6 +173,14 @@ public class OpcodeStack implements Constants2
 	 				push(new Item("L"));
 	 			break;
 	 			
+	 			case FLOAD:
+	 			case FLOAD_0:
+	 			case FLOAD_1:
+	 			case FLOAD_2:
+	 			case FLOAD_3:
+	 				push(new Item("F"));
+	 			break;
+	 			
 	 			case GETSTATIC:
 	 				pushBySignature(dbc.getSigConstantOperand());
 	 			break;
@@ -332,6 +340,12 @@ public class OpcodeStack implements Constants2
 	 				push(new Item("D", new Double(seen-DCONST_0)));
 	 			break;
 
+	 			case FCONST_0:
+	 			case FCONST_1:
+	 			case FCONST_2:
+	 				push(new Item("F", new Float(seen-FCONST_0)));
+	 			break;
+
 	 			case ACONST_NULL:
 	 				push(new Item());
 	 			break;
@@ -363,6 +377,7 @@ public class OpcodeStack implements Constants2
 	 			case AASTORE:
 	 			case BASTORE:
 	 			case CASTORE:
+	 			case FASTORE:
 	 			case IASTORE:
 	 			case LASTORE:
 	 				pop(3);
@@ -383,6 +398,7 @@ public class OpcodeStack implements Constants2
 	 			case ISHL:
 	 			case ISHR:
 	 			case IREM:
+	 			case IUSHR:
 	 				it = pop();
 	 				it2 = pop();
 	 				pushByIntMath(seen, it, it2);
@@ -397,6 +413,15 @@ public class OpcodeStack implements Constants2
 	 				}
 	 			break;
 	 			
+	 			case DNEG:
+	 				it = pop();
+	 				if (it.getConstant() != null) {
+	 					push(new Item("D", new Double(-((Double)it.getConstant()).doubleValue())));
+	 				} else {
+	 					push(new Item("D"));
+	 				}
+	 			break;
+
 	 			case LADD:
 	 			case LSUB:
 	 			case LMUL:
@@ -429,6 +454,24 @@ public class OpcodeStack implements Constants2
 	 				}
 	 			break;
 	 				
+	 			case FCMPG:
+	 			case FCMPL:
+	 				it = pop();
+	 				it2 = pop();
+	 				if ((it.getConstant() != null) && it2.getConstant() != null) {
+	 					float f = ((Float)it.getConstant()).floatValue();
+	 					float f2 = ((Float)it.getConstant()).floatValue();
+	 					if (f2 < f)
+	 						push(new Item("I", new Integer(-1)));
+	 					else if (f2 > f)
+	 						push(new Item("I", new Integer(1)));
+	 					else
+	 						push(new Item("I", new Integer(0)));
+	 				} else {
+	 					push(new Item("I"));
+	 				}
+	 			break;
+
 	 			case DCMPG:
 	 			case DCMPL:
 	 				it = pop();
@@ -447,6 +490,15 @@ public class OpcodeStack implements Constants2
 	 				}
 	 			break;
 	 			
+	 			case FADD:
+	 			case FSUB:
+	 			case FMUL:
+	 			case FDIV:
+	 				it = pop();
+	 				it2 = pop();
+	 				pushByFloatMath(seen, it, it2);
+	 			break;
+
 	 			case DADD:
 	 			case DSUB:
 	 			case DMUL:
@@ -519,6 +571,15 @@ public class OpcodeStack implements Constants2
 	 				}
 	 			break;
 	 			
+	 			case D2F:
+	 				it = pop();
+	 				if (it.getConstant() != null) {
+	 					push(new Item("F", new Float((float)((Double)it.getConstant()).doubleValue())));
+	 				} else {
+	 					push(new Item("F"));
+	 				}
+	 			break;
+
 	 			case L2I:
 	 				it = pop();
 	 				if (it.getConstant() != null) {
@@ -532,6 +593,24 @@ public class OpcodeStack implements Constants2
 	 				it = pop();
 	 				if (it.getConstant() != null) {
 	 					push(new Item("D", new Double((double)((Long)it.getConstant()).longValue())));
+	 				} else {
+	 					push(new Item("D"));
+	 				}
+	 			break;
+	 			
+	 			case F2I:
+	 				it = pop();
+	 				if (it.getConstant() != null) {
+	 					push(new Item("I", new Integer((int)((Float)it.getConstant()).floatValue())));
+	 				} else {
+	 					push(new Item("I"));
+	 				}
+	 			break;
+
+	 			case F2D:
+	 				it = pop();
+	 				if (it.getConstant() != null) {
+	 					push(new Item("D", new Double((double)((Float)it.getConstant()).floatValue())));
 	 				} else {
 	 					push(new Item("D"));
 	 				}
@@ -657,6 +736,8 @@ public class OpcodeStack implements Constants2
 				push(new Item("I", new Integer(((Integer)it2.getConstant()).intValue() >> ((Integer)it.getConstant()).intValue())));
 			else if (seen == IREM)
 				push(new Item("I", new Integer(((Integer)it2.getConstant()).intValue() % ((Integer)it.getConstant()).intValue())));
+			else if (seen == IUSHR)
+				push(new Item("I", new Integer(((Integer)it2.getConstant()).intValue() >>> ((Integer)it.getConstant()).intValue())));
 		} else {
 			push(new Item("I"));
 		}
@@ -686,6 +767,21 @@ public class OpcodeStack implements Constants2
 				push(new Item("J", new Long(((Long)it2.getConstant()).longValue() % ((Long)it.getConstant()).longValue())));
 		} else {
 			push(new Item("J"));
+		}
+	}
+	
+	private void pushByFloatMath(int seen, Item it, Item it2) {
+		if ((it.getConstant() != null) && it2.getConstant() != null) {
+			if (seen == FADD)
+				push(new Item("F", new Float(((Float)it2.getConstant()).floatValue() + ((Float)it.getConstant()).floatValue())));
+			else if (seen == FSUB)
+				push(new Item("F", new Float(((Float)it2.getConstant()).floatValue() - ((Float)it.getConstant()).floatValue())));
+			else if (seen == FMUL)
+				push(new Item("F", new Float(((Float)it2.getConstant()).floatValue() * ((Float)it.getConstant()).floatValue())));
+			else if (seen == FDIV)
+				push(new Item("F", new Float(((Float)it2.getConstant()).floatValue() / ((Float)it.getConstant()).floatValue())));
+		} else {
+			push(new Item("F"));
 		}
 	}
 	
