@@ -67,7 +67,7 @@ public class DumbMethods extends BytecodeScanningDetector implements   Constants
 					&& getSigConstantOperand().equals("()V")
 				     || getNameConstantOperand().equals("setVisible")
 					&& getSigConstantOperand().equals("(Z)V")))
-			bugReporter.reportBug(new BugInstance("SW_SWING_METHODS_INVOKED_IN_SWING_THREAD", NORMAL_PRIORITY)
+			bugReporter.reportBug(new BugInstance("SW_SWING_METHODS_INVOKED_IN_SWING_THREAD", LOW_PRIORITY)
 				.addClassAndMethod(this)
 				.addSourceLine(this));
 
