@@ -165,6 +165,15 @@ with respect to locking.  It is a fast detector.
     </Details>
   </Detector>
 
+  <Detector class="edu.umd.cs.findbugs.detect.EqStringTest" >
+    <Details>
+<![CDATA[
+<p> This detector looks for comparisons of String objects using the == or !=
+operators.
+ It is a fast detector.
+]]>
+    </Details>
+  </Detector>
   <Detector class="edu.umd.cs.findbugs.detect.MutableLock" >
     <Details>
 <![CDATA[
@@ -548,6 +557,20 @@ It is a moderately fast detector.
   To correctly override the <code>equals()</code> method in
   <code>java.lang.Object</code>, the parameter of <code>equals()</code>
   must have type <code>java.lang.Object</code>.
+]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="COMPARING_STRINGS_WITH_EQ">
+    <ShortDescription>Comparison of String objects using == or !=</ShortDescription>
+    <LongDescription>Comparison of String objects using == or != in {1} </LongDescription>
+    <Details>
+<![CDATA[
+  <p>This code compares <code>java.lang.String</code> objects for reference
+equality using the == or != operators.
+Unless both strings are either constants in a source file, or have been
+interned using the <code>String.intern()</code> method, the same string
+value may be represented by two different String objects. Considering
+using the <code>equals</code> method instead.
 ]]>
     </Details>
   </BugPattern>
@@ -1248,6 +1271,7 @@ closed.
   <!-- BugCodes -->
 
   <BugCode abbrev="FI" >Incorrect use of finalizers</BugCode>
+  <BugCode abbrev="ES" >Checking String equality using == or !=</BugCode>
   <BugCode abbrev="ML" >Synchronization on updated field (Mutable Lock)</BugCode>
   <BugCode abbrev="UG" >Unsynchronized get method, synchronized set method</BugCode>
   <BugCode abbrev="IC" >Initialization circularity</BugCode>

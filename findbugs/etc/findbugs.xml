@@ -17,6 +17,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.InitializationChain" speed="fast" />
   <Detector class="edu.umd.cs.findbugs.detect.IteratorIdioms" speed="fast" />
   <Detector class="edu.umd.cs.findbugs.detect.LockedFields" speed="fast" disabled="true" />
+  <Detector class="edu.umd.cs.findbugs.detect.EqStringTest" speed="fast" />
   <Detector class="edu.umd.cs.findbugs.detect.MutableLock" speed="fast" />
   <Detector class="edu.umd.cs.findbugs.detect.MutableStaticFields" speed="fast" />
   <Detector class="edu.umd.cs.findbugs.detect.Naming" speed="fast" />
@@ -48,6 +49,7 @@
   <BugPattern abbrev="Eq" type="EQ_SELF_USE_OBJECT" category="CORRECTNESS" />
   <BugPattern abbrev="Eq" type="EQ_SELF_NO_OBJECT" category="CORRECTNESS" />
   <BugPattern abbrev="Co" type="CO_SELF_NO_OBJECT" category="CORRECTNESS" />
+  <BugPattern abbrev="ES" type="COMPARING_STRINGS_WITH_EQ" category="CORRECTNESS" />
   <BugPattern abbrev="HE" type="HE_HASHCODE_USE_OBJECT_EQUALS" category="CORRECTNESS" />
   <BugPattern abbrev="HE" type="HE_HASHCODE_NO_EQUALS" category="CORRECTNESS" />
   <BugPattern abbrev="HE" type="HE_EQUALS_USE_HASHCODE" category="CORRECTNESS" />
