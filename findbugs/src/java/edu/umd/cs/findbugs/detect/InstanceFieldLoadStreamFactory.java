@@ -76,9 +76,12 @@ public class InstanceFieldLoadStreamFactory implements StreamFactory {
 				return null;
 
 			Stream stream = new Stream(location, fieldClass, streamBaseClass);
+			stream.setIsOpenOnCreation(true);
+			stream.setOpenLocation(location);
 			if (bugPatternType != null)
 				stream.setInteresting(bugPatternType);
 
+			//System.out.println("Instance field stream at " + location);
 			return stream;
 		} catch (ClassNotFoundException e) {
 			lookupFailureCallback.reportMissingClass(e);
