@@ -133,7 +133,7 @@ public class DetectorFactoryCollection {
 				if (contentList[i].getName().endsWith(".jar"))
 					arr.add(contentList[i]);
 			}
-			pluginList = (File[]) arr.toArray(new File[0]);
+			pluginList = (File[]) arr.toArray(new File[arr.size()]);
 		}
 	
 		int numLoaded = 0;

@@ -77,7 +77,7 @@ public class PluginLoader extends URLClassLoader {
 	 * of the detectors in the plugin.
 	 */
 	public DetectorFactory[] getDetectorFactoryList() {
-		return detectorFactoryList.toArray(new DetectorFactory[0]);
+		return detectorFactoryList.toArray(new DetectorFactory[detectorFactoryList.size()]);
 	}
 
 	/**
@@ -85,14 +85,14 @@ public class PluginLoader extends URLClassLoader {
 	 * the plugin.
 	 */
 	public BugPattern[] getBugPatternList() {
-		return bugPatternList.toArray(new BugPattern[0]);
+		return bugPatternList.toArray(new BugPattern[bugPatternList.size()]);
 	}
 
 	/**
 	 * Get array of BugCode objects for bug codes reported by this plugin.
 	 */
 	public BugCode[] getBugCodeList() {
-		return bugCodeList.toArray(new BugCode[0]);
+		return bugCodeList.toArray(new BugCode[bugCodeList.size()]);
 	}
 
 	private void init() throws PluginException {

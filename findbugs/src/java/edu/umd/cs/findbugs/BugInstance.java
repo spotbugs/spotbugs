@@ -606,7 +606,7 @@ public class BugInstance implements Comparable, XMLConvertible {
 	public String getMessage() {
 		String pattern = I18N.instance().getMessage(type);
 		FindBugsMessageFormat format = new FindBugsMessageFormat(pattern);
-		return format.format((BugAnnotation[]) annotationList.toArray(new BugAnnotation[0]));
+		return format.format((BugAnnotation[]) annotationList.toArray(new BugAnnotation[annotationList.size()]));
 	}
 
 	/**

@@ -165,7 +165,7 @@ public class BCPMethodReturnCheck extends ByteCodePatternDetector {
 				*/
 		}
 
-		return list.toArray(new PatternElement[0]);
+		return list.toArray(new PatternElement[list.size()]);
 	}
 
 	/**

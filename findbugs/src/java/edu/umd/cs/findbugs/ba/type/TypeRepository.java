@@ -516,7 +516,7 @@ public class TypeRepository {
 				}
 			}
 	
-			cachedResult.finish(missingClassList.toArray(new String[0]));
+			cachedResult.finish(missingClassList.toArray(new String[missingClassList.size()]));
 	
 			// Cache result for future queries
 			subtype.setSubtypeQueryResult(cachedResult);

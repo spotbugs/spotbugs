@@ -392,7 +392,7 @@ public class FindBugs implements Constants2, ExitCodes
 				pluginList.add(new File(tok.nextToken()));
 			}
 
-			DetectorFactoryCollection.setPluginList((File[]) pluginList.toArray(new File[0]));
+			DetectorFactoryCollection.setPluginList((File[]) pluginList.toArray(new File[pluginList.size()]));
 		} else if (option.equals("-html")) {
 			bugReporterType = HTML_REPORTER;
 			stylesheet = argument;
@@ -720,7 +720,7 @@ public class FindBugs implements Constants2, ExitCodes
 		}
 	}
 
-	detectors = result.toArray(new Detector[0]);
+	detectors = result.toArray(new Detector[result.size()]);
   }
 
   /**
