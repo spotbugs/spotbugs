@@ -74,7 +74,13 @@ public class URLClassPath implements Serializable {
 		private ZipFile zipFile;
 		
 		public LocalArchiveEntry(String fileName) throws IOException {
-			zipFile = new ZipFile(fileName);
+			try {
+				zipFile = new ZipFile(fileName);
+			} catch (IOException e) {
+				IOException ioe = new IOException("Could not open archive file " + fileName);
+				ioe.initCause(e);
+				throw ioe;
+			}
 		}
 
 		/* (non-Javadoc)
