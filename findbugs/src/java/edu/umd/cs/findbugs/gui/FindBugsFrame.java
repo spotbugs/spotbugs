@@ -1321,13 +1321,22 @@ public class FindBugsFrame extends javax.swing.JFrame {
     }//GEN-END:initComponents
 
     private void classpathUpButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_classpathUpButtonActionPerformed
-        int sel = classpathEntryList.getSelectedIndex();
-        if (sel <= 0)
-            return;
-    
+        int[] selIndices = classpathEntryList.getSelectedIndices();
+        if (selIndices.length == 0)
+        	return;
+        
+        int lastInsertPos = -1;	
         DefaultListModel model = (DefaultListModel)classpathEntryList.getModel();
-        model.add(sel-1, model.remove(sel));
-        classpathEntryList.setSelectedIndex(sel-1);
+        for (int i = 0; i < selIndices.length; i++) {
+        	int sel = selIndices[i];
+        	if ((sel-1) > lastInsertPos) {
+        		model.add( sel - 1, model.remove(sel));
+        		selIndices[i] = sel - 1;
+        	}
+        	lastInsertPos = selIndices[i];
+        }
+        
+        classpathEntryList.setSelectedIndices(selIndices);
     }//GEN-LAST:event_classpathUpButtonActionPerformed
 
     private void sourceDownButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sourceDownButtonActionPerformed
@@ -1351,13 +1360,22 @@ public class FindBugsFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_sourceUpButtonActionPerformed
 
     private void classpathDownButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_classpathDownButtonActionPerformed
-        int sel = classpathEntryList.getSelectedIndex();
+        int[] selIndices = classpathEntryList.getSelectedIndices();
+        if (selIndices.length == 0)
+        	return;
+        
         DefaultListModel model = (DefaultListModel)classpathEntryList.getModel();
-        if ((sel < 0) || (sel == (model.getSize()-1)))
-            return;
-    
-        model.add(sel+1, model.remove(sel));
-        classpathEntryList.setSelectedIndex(sel+1);
+        int lastInsertPos = model.getSize();	
+        for (int i = selIndices.length-1; i >= 0; i--) {
+        	int sel = selIndices[i];
+        	if ((sel+1) < lastInsertPos) {
+        		model.add( sel + 1, model.remove(sel));
+        		selIndices[i] = sel + 1;
+        	}
+        	lastInsertPos = selIndices[i];
+        }
+        
+        classpathEntryList.setSelectedIndices(selIndices);
     }//GEN-LAST:event_classpathDownButtonActionPerformed
 
     private void viewBugsItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_viewBugsItemActionPerformed
