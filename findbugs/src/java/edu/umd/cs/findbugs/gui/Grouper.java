@@ -18,7 +18,7 @@ import java.util.*;
 public class Grouper {
     
     public interface Callback {
-	public void startGroup();
+	public void startGroup(Object firstMember);
 	public void addToGroup(Object member);
     }
     
@@ -45,14 +45,11 @@ public class Grouper {
 	Object last = null;
 	while (i.hasNext()) {
 	    Object current = i.next();
-	    if (last == null) {
-		callback.startGroup();
-		callback.addToGroup(current);
-	    } else if (comparator.compare(last, current) == 0) {
-		// Same group as before
-		callback.addToGroup(current);
+	    if (last != null && comparator.compare(last, current) == 0) {
+		// Start of a new group
+		callback.startGroup(current);
 	    } else {
-		callback.startGroup();
+		// Same group as before
 		callback.addToGroup(current);
 	    }
 	    
