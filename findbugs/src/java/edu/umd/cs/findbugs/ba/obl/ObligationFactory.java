@@ -23,6 +23,10 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.apache.bcel.generic.ObjectType;
+
+import edu.umd.cs.findbugs.ba.Hierarchy;
+
 /**
  * Factory for Obligation and ObligationSet objects to be
  * used in an instance of ObligationAnalysis.
@@ -43,6 +47,27 @@ public class ObligationFactory {
 	
 	public Iterator<Obligation> obligationIterator() {
 		return classNameToObligationMap.values().iterator();
+	}
+	
+	/**
+	 * Look up an Obligation by type.
+	 * This returns the first Obligation that is a supertype
+	 * of the type given (meaning that the given type could
+	 * be an instance of the returned Obligation).
+	 * 
+	 * @param type a type
+	 * @return an Obligation that is a supertype of the given type,
+	 *         or null if there is no such Obligation
+	 * @throws ClassNotFoundException
+	 */
+	public Obligation getObligationByType(ObjectType type)
+			throws ClassNotFoundException {
+		for (Iterator<Obligation> i = obligationIterator(); i.hasNext(); ) {
+			Obligation obligation = i.next();
+			if (Hierarchy.isSubtype(type, obligation.getType()))
+				return obligation;
+		}
+		return null;
 	}
 
 	public Obligation addObligation(String className) {
