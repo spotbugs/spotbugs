@@ -44,8 +44,13 @@ public class AnalysisContext implements AnalysisFeatures {
 	public Map analysisLocals = 
 		Collections.synchronizedMap(new HashMap());
 
+    /*
+      // JSR14 does not support Generic ThreadLocal
 	private static InheritableThreadLocal<AnalysisContext> currentAnalysisContext
 		= new InheritableThreadLocal<AnalysisContext>();
+    */
+	private static InheritableThreadLocal currentAnalysisContext
+		= new InheritableThreadLocal();
 /*
 	// Not yet
 	private TypeRepository typeRepository;
@@ -84,7 +89,7 @@ public class AnalysisContext implements AnalysisFeatures {
 	 * Get the AnalysisContext associated with this thread
 	 */
 	static public AnalysisContext currentAnalysisContext() {
-		return currentAnalysisContext.get();
+		return (AnalysisContext)currentAnalysisContext.get();
 	}
 
 	/**
