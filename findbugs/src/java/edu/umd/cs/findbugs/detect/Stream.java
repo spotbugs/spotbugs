@@ -36,6 +36,7 @@ import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.INVOKESPECIAL;
 import org.apache.bcel.generic.INVOKEVIRTUAL;
+import org.apache.bcel.generic.INVOKEINTERFACE;
 
 /**
  * A Stream object marks the location in the code where a
@@ -145,9 +146,9 @@ public class Stream extends ResourceCreationPoint {
 
 		Instruction ins = handle.getInstruction();
 
-		if (ins instanceof INVOKEVIRTUAL) {
+		if ((ins instanceof INVOKEVIRTUAL) || (ins instanceof INVOKEINTERFACE)) {
 			// Does this instruction close the stream?
-			INVOKEVIRTUAL inv = (INVOKEVIRTUAL) ins;
+			InvokeInstruction inv = (InvokeInstruction) ins;
 
 			if (!frame.isValid() ||
 				!getInstanceValue(frame, inv, cpg).isInstance())
