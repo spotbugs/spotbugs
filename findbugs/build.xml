@@ -31,16 +31,7 @@
     -->
     <property file="build.properties"/>
 
-    <!-- Set the target based on whether we are using JDK1.5 or JSR14 -->
-    <condition property="javac.target" value="1.4">
-      <isset property="build.compiler"/>
-    </condition>
-    <condition property="javac.target" value="jsr14">
-      <not>
-        <isset property="build.compiler"/>
-      </not>
-    </condition>
-
+    <property name="javac.target" value="jsr14" />
     <property name="findbugs.dir" value="." />
     <property name="findbugs.src.dir" value="${findbugs.dir}/src/java" />
     <property name="anttask.src.dir" value="${findbugs.dir}/src/antTask" />
