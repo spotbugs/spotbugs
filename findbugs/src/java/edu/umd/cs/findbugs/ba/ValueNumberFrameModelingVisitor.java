@@ -111,12 +111,10 @@ public class ValueNumberFrameModelingVisitor
 		if (!xfield.isReferenceType())
 			return false;
 
-/*
-		// NOTYET
 		// Don't do FS for fields that are never read
 		if (!loadedFieldSet.isLoaded(xfield))
 			return false;
-*/
+
 		return true;
 	}
 
