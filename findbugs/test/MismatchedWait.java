@@ -37,4 +37,20 @@ public class MismatchedWait {
 				MismatchedWait.class.wait();
 		}
 	}
+
+	private int value = 0;
+
+	public void doNotReportInnerClass() {
+		new Runnable() {
+			public void run() {
+				synchronized (lock) {
+					try {
+						while(value == 0)
+							lock.wait();
+					} catch (InterruptedException e) {
+					}
+				}
+			}
+		}.run();
+	}
 }
