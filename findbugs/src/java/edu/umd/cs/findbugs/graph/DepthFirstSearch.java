@@ -17,7 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-// $Revision: 1.1 $
+// $Revision: 1.2 $
 
 package edu.umd.cs.daveho.graph;
 
@@ -86,7 +86,7 @@ public class DepthFirstSearch<
 
 	/** Perform the depth first search. */
 	public void search(GraphType g) {
-		search(g, g.getVertexSet().iterator());
+		search(g, g.getVertexIterator());
 	}
 
 	/**

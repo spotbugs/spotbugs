@@ -17,7 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-// $Revision: 1.1 $
+// $Revision: 1.2 $
 
 package edu.umd.cs.daveho.graph;
 
@@ -84,7 +84,7 @@ public class StronglyConnectedComponents<
 			new VisitationTimeComparator<VertexType>(initialDFS.getFinishTimeList(),
 										  VisitationTimeComparator.DESCENDING);
 		Set<VertexType> descendingByFinishTimeSet = new TreeSet<VertexType>(comparator);
-		Iterator<VertexType> i = transpose.getVertexSet().iterator();
+		Iterator<VertexType> i = transpose.getVertexIterator();
 		while (i.hasNext()) {
 			descendingByFinishTimeSet.add(i.next());
 		}

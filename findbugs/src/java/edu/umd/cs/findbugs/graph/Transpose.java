@@ -17,7 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-// $Revision: 1.1 $
+// $Revision: 1.2 $
 
 package edu.umd.cs.daveho.graph;
 
@@ -51,8 +51,7 @@ public class Transpose<
 
 		// For each vertex in original graph, create an equivalent
 		// vertex in the transposed graph
-		Set<VertexType> origVertexSet = orig.getVertexSet();
-		for (Iterator<VertexType> i = origVertexSet.iterator(); i.hasNext(); ) {
+		for (Iterator<VertexType> i = orig.getVertexIterator(); i.hasNext(); ) {
 			VertexType v = (VertexType) i.next();
 			trans.addVertex(toolkit.duplicateVertexInfo(v.getVertexInfo()), toolkit);
 		}
@@ -65,8 +64,7 @@ public class Transpose<
 
 		// For each edge in the original graph, create a reversed edge
 		// in the transposed graph
-		Set<EdgeType> origEdgeSet = orig.getEdgeSet();
-		for (Iterator<EdgeType> i = origEdgeSet.iterator(); i.hasNext(); ) {
+		for (Iterator<EdgeType> i = orig.getEdgeIterator(); i.hasNext(); ) {
 			EdgeType e = i.next();
 			trans.addEdge(toolkit.duplicateVertexInfo(e.getTarget().getVertexInfo()),
 						   toolkit.duplicateVertexInfo(e.getSource().getVertexInfo()),

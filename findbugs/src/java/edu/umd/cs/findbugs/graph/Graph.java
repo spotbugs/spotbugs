@@ -17,14 +17,13 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-// $Revision: 1.1 $
+// $Revision: 1.2 $
 
 package edu.umd.cs.daveho.graph;
 
 import java.io.Serializable;
 
 import java.util.Iterator;
-import java.util.Set;
 
 import edu.umd.cs.daveho.graph.GraphVertex;
 import edu.umd.cs.daveho.graph.GraphEdge;
@@ -41,13 +40,17 @@ public interface Graph
 	VertexType extends GraphVertex<VertexInfo>
 	> extends Serializable {
 
-	/** Get the set of all edges in the graph; elements implement
-		the GraphEdge interface. */
-	public Set<EdgeType> getEdgeSet();
+	/** Get number of edges in the graph. */
+	public int getNumEdges();
 
-	/** Get the set of all vertices in the graph; elements implement the
-		GraphVertex interface. */
-	public Set<VertexType> getVertexSet();
+	/** Get number of vertices in the graph. */
+	public int getNumVertices();
+
+	/** Get Iterator over all edges in the graph. */
+	public Iterator<EdgeType> getEdgeIterator();
+
+	/** Get Iterator over all vertices in the graph. */
+	public Iterator<VertexType> getVertexIterator();
 
 	/** Add a vertex to the graph.
 	 * @param vertexInfo a VertexInfo object uniquely identifying the vertex
