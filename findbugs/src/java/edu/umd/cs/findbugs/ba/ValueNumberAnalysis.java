@@ -62,11 +62,6 @@ public class ValueNumberAnalysis extends ForwardDataflowAnalysis<ValueNumberFram
 	private IdentityHashMap<BasicBlock, ValueNumber> exceptionHandlerValueNumberMap;
 	private ValueNumber thisValue;
 
-	// These fields are used by the compactValueNumbers() method.
-	private BitSet valuesUsed;
-	private int numValuesUsed;
-	private int[] discovered;
-
 	public ValueNumberAnalysis(MethodGen methodGen) {
 		this.methodGen = methodGen;
 		this.factory = new ValueNumberFactory();
@@ -159,6 +154,30 @@ public class ValueNumberAnalysis extends ForwardDataflowAnalysis<ValueNumberFram
 		result.mergeWith(fact);
 	}
 
+	// These fields are used by the compactValueNumbers() method.
+	private static class ValueCompacter {
+		public final BitSet valuesUsed;
+		public int numValuesUsed;
+		public final int[] discovered;
+
+		public ValueCompacter(int origNumValuesAllocated) {
+			valuesUsed = new BitSet();
+			numValuesUsed = 0;
+
+			// The "discovered" array tells us the mapping of old value numbers
+			// to new (which are based on order of discovery).  Negative values
+			// specify value numbers which are not actually used (and thus can
+			// be purged.)
+			discovered = new int[origNumValuesAllocated];
+			for (int i = 0; i < discovered.length; ++i)
+				discovered[i] = -1;
+		}
+
+		public boolean isUsed(int number) { return valuesUsed.get(number); }
+		public void setUsed(int number) { valuesUsed.set(number, true); }
+		public int allocateValue() { return numValuesUsed++; }
+	}
+
 	/**
 	 * Compact the value numbers assigned.
 	 * This should be done only after the dataflow algorithm has executed.
@@ -173,33 +192,23 @@ public class ValueNumberAnalysis extends ForwardDataflowAnalysis<ValueNumberFram
 	 *  (and has all of the block result values)
 	 */
 	public void compactValueNumbers(Dataflow<ValueNumberFrame> dataflow) {
-		valuesUsed = new BitSet();
-		numValuesUsed = 0;
-
-		// The "discovered" array tells us the mapping of old value numbers
-		// to new (which are based on order of discovery).  Negative values
-		// specify value numbers which are not actually used (and thus can
-		// be purged.)
-		discovered = new int[factory.getNumValuesAllocated()];
-		for (int i = 0; i < discovered.length; ++i) {
-			discovered[i] = -1;
-		}
+		ValueCompacter compacter = new ValueCompacter(factory.getNumValuesAllocated());
 
 		// We can get all extant Frames by looking at the values in
 		// the location to value map, and also the block result values.
 		for (Iterator<ValueNumberFrame> i = factIterator(); i.hasNext(); ) {
 			ValueNumberFrame frame = i.next();
-			markFrameValues(frame);
+			markFrameValues(frame, compacter);
 		}
 		for (Iterator<ValueNumberFrame> i = dataflow.resultFactIterator(); i.hasNext(); ) {
 			ValueNumberFrame frame = i.next();
-			markFrameValues(frame);
+			markFrameValues(frame, compacter);
 		}
 
 		int before = factory.getNumValuesAllocated();
 
 		// Now the factory can modify the ValueNumbers.
-		factory.compact(discovered, numValuesUsed);
+		factory.compact(compacter.discovered, compacter.numValuesUsed);
 
 		int after = factory.getNumValuesAllocated();
 
@@ -211,7 +220,7 @@ public class ValueNumberAnalysis extends ForwardDataflowAnalysis<ValueNumberFram
 	/**
 	 * Mark value numbers in a value number frame for compaction.
 	 */
-	private void markFrameValues(ValueNumberFrame frame) {
+	private static void markFrameValues(ValueNumberFrame frame, ValueCompacter compacter) {
 		// We don't need to do anything for top and bottom frames.
 		if (!frame.isValid())
 			return;
@@ -220,9 +229,9 @@ public class ValueNumberAnalysis extends ForwardDataflowAnalysis<ValueNumberFram
 			ValueNumber value = frame.getValue(j);
 			int number = value.getNumber();
 
-			if (!valuesUsed.get(number)) {
-				discovered[number] = numValuesUsed++;
-				valuesUsed.set(number, true);
+			if (!compacter.isUsed(number)) {
+				compacter.discovered[number] = compacter.allocateValue();
+				compacter.setUsed(number);
 			}
 		}
 	}
