@@ -391,6 +391,26 @@ public class BugInstance implements Comparable {
 	}
 
 	/**
+	 * Add a source line annotation describing a range of instructions.
+	 * @param methodGen the method
+	 * @param start the start instruction in the range
+	 * @param end the end instruction in the range (inclusive)
+	 * @return this object
+	 */
+	public BugInstance addSourceLine(MethodGen methodGen, InstructionHandle start, InstructionHandle end) {
+		// Make sure start and end are really in the right order.
+		if (start.getPosition() > end.getPosition()) {
+			InstructionHandle tmp = start;
+			start = end;
+			end = tmp;
+		}
+		SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation.fromVisitedInstructionRange(methodGen, start, end);
+		if (sourceLineAnnotation != null)
+			add(sourceLineAnnotation);
+		return this;
+	}
+
+	/**
 	 * Add a source line annotation describing the
 	 * source line numbers for a range of instructions in the method being
 	 * visited by the given visitor.

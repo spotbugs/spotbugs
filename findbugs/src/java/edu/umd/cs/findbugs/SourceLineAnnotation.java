@@ -144,6 +144,23 @@ public class SourceLineAnnotation implements BugAnnotation {
 		return new SourceLineAnnotation(methodGen.getClassName(), lineNumber, lineNumber);
 	}
 
+	/**
+	 * Factory method for creating a source line annotation describing
+	 * the source line numbers for a range of instruction in a method.
+	 * @param methodGen the method
+	 * @param start the start instruction
+	 * @param end the end instruction (inclusive)
+	 */
+	public static SourceLineAnnotation fromVisitedInstructionRange(MethodGen methodGen, InstructionHandle start, InstructionHandle end) {
+		LineNumberTable lineNumberTable = methodGen.getLineNumberTable(methodGen.getConstantPool());
+		if (lineNumberTable == null)
+			return null;
+
+		int startLine = lineNumberTable.getSourceLine(start.getPosition());
+		int endLine = lineNumberTable.getSourceLine(end.getPosition());
+		return new SourceLineAnnotation(methodGen.getClassName(), startLine, endLine);
+	}
+
 	private static LineNumberTable getLineNumberTable(BetterVisitor visitor) {
 		Code code = visitor.getMethod().getCode();
 		if (code == null)
