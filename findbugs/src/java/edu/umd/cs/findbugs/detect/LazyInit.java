@@ -23,6 +23,8 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.ByteCodePatternDetector;
 
+import edu.umd.cs.findbugs.ba.BasicBlock;
+import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.DominatorsAnalysis;
@@ -109,6 +111,7 @@ public class LazyInit extends ByteCodePatternDetector {
 		throws CFGBuilderException, DataflowAnalysisException {
 		JavaClass javaClass = classContext.getJavaClass();
 		MethodGen methodGen = classContext.getMethodGen(method);
+		CFG cfg = classContext.getCFG(method);
 
 		try {
 			// Get the variable referenced in the pattern instance.
@@ -127,6 +130,10 @@ public class LazyInit extends ByteCodePatternDetector {
 			if (!xfield.isStatic())
 				return;
 
+			// Definitely ignore synthetic class$ fields
+			if (xfield.getFieldName().startsWith("class$"))
+				return;
+
 			// Get locations matching the beginning of the object creation,
 			// and the final field store.
 			PatternElementMatch createBegin = match.getFirstLabeledMatch("createObject");
@@ -141,7 +148,6 @@ public class LazyInit extends ByteCodePatternDetector {
 			// Exception edges are not considered in computing dominators/postdominators.
 			// We will consider this to be all of the code that creates
 			// the object.
-
 			DominatorsAnalysis domAnalysis =
 				classContext.getNonExceptionDominatorsAnalysis(method);
 			PostDominatorsAnalysis postDomAnalysis =
@@ -150,57 +156,44 @@ public class LazyInit extends ByteCodePatternDetector {
 			extent.and(postDomAnalysis.getAllDominatedBy(store.getBasicBlock()));
 			//System.out.println("Extent: " + extent);
 
-			// TODO: check all instructions in the extent
-			// to ensure the object creation is really there
-
-/*
-			// Examine the lock sets for all matched instructions.
-			// If the intersection is nonempty, then there was at
-			// least one lock held for the entire sequence.
+			// Check all instructions in the object creation extent
+			//
+			//   (1) to determine the common lock set, and
+			//   (2) to check for NEW and Invoke instructions that might create an object
+			//
+			// We ignore matches where a lock is held consistently,
+			// or if the extent does not appear to create a new object.
 			LockDataflow lockDataflow = classContext.getLockDataflow(method);
 			LockSet lockSet = null;
 			boolean sawNEW = false, sawINVOKE = false;
-			for (Iterator<PatternElementMatch> i = match.patternElementMatchIterator(); i.hasNext(); ) {
-				PatternElementMatch element = i.next();
-				InstructionHandle handle = element.getMatchedInstructionInstructionHandle();
-				Location location = new Location(handle, element.getBasicBlock());
+			for (Iterator<BasicBlock> i = cfg.getBlocks(extent).iterator(); i.hasNext(); ) {
+				BasicBlock block = i.next();
+				for (Iterator<InstructionHandle> j = block.instructionIterator(); j.hasNext(); ) {
+					InstructionHandle handle = j.next();
 
-				// Keep track of whether we saw any instructions
-				// that might actually have created a new object.
-				Instruction ins = handle.getInstruction();
-				if (ins instanceof NEW)
-					sawNEW = true;
-				else if (ins instanceof InvokeInstruction)
-					sawINVOKE = true;
+					Location location = new Location(handle, block);
 
-				// Compute lock set intersection for all matched instructions.
-				LockSet insLockSet = lockDataflow.getFactAtLocation(location);
-				if (lockSet == null) {
-					lockSet = new LockSet();
-					lockSet.copyFrom(insLockSet);
-				} else
-					lockSet.intersectWith(insLockSet);
+					// Keep track of whether we saw any instructions
+					// that might actually have created a new object.
+					Instruction ins = handle.getInstruction();
+					if (ins instanceof NEW)
+						sawNEW = true;
+					else if (ins instanceof InvokeInstruction)
+						sawINVOKE = true;
+
+					// Compute lock set intersection for all matched instructions.
+					LockSet insLockSet = lockDataflow.getFactAtLocation(location);
+					if (lockSet == null) {
+						lockSet = new LockSet();
+						lockSet.copyFrom(insLockSet);
+					} else
+						lockSet.intersectWith(insLockSet);
+				}
 			}
 			if (!lockSet.isEmpty())
 				return;
-
-			// If the instruction sequence did not contain a NEW instruction
-			// or any Invoke instructions, then a new object was not created.
 			if (!(sawNEW || sawINVOKE))
 				return;
-
-			if (CHECK_PROPER_OBJECT_CREATION) {
-				// The first instruction in the "create object" sequence
-				// must dominate the Store of the created object (disregarding
-				// exception edges).
-				DominatorsAnalysis dominators = classContext.getNonExceptionDominatorsAnalysis(method);
-				PatternElementMatch createBegin = match.getFirstLabeledMatch("createObject");
-				PatternElementMatch store = match.getFirstLabeledMatch("end");
-				BitSet storeDominators = dominators.getStartFact(store.getBasicBlock());
-				if (!storeDominators.get(createBegin.getBasicBlock().getId()))
-					return;
-			}
-*/
 
 			// Compute the priority:
 			//  - ignore lazy initialization of instance fields
