@@ -75,6 +75,7 @@ public abstract class BugCollection {
 	private static final String ANALYSIS_ERROR_ELEMENT_NAME = "AnalysisError";
 	private static final String MISSING_CLASS_ELEMENT_NAME = "MissingClass";
 	private static final String SUMMARY_HTML_ELEMENT_NAME = "SummaryHTML";
+	private static final String APP_CLASS_ELEMENT_NAME = "AppClass";
 
 	public void readXML(String fileName, Project project)
 		throws IOException, DocumentException {
@@ -111,6 +112,8 @@ public abstract class BugCollection {
 				readErrors(element);
 			} else if (elementName.equals(SUMMARY_HTML_ELEMENT_NAME)) {
 				setSummaryHTML(element.getText());
+			} else if (elementName.equals(APP_CLASS_ELEMENT_NAME)) {
+				// Ignore for backwards compatibility
 			} else {
 				XMLTranslator translator = XMLTranslatorRegistry.instance().getTranslator(elementName);
 				if (translator == null)
