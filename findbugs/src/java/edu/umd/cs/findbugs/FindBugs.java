@@ -378,9 +378,15 @@ public class FindBugs implements Constants2, ExitCodes
 
 	progressCallback.startAnalysis(repositoryClassList.size());
 
+	// Examine all classes for bugs.
+	// Don't examine the same class more than once.
+	// (The user might specify two jar files that contain
+	// the same class.)
+	Set<String> examinedClassSet = new HashSet<String>();
 	for (Iterator<String> i = repositoryClassList.iterator(); i.hasNext(); ) {
 		String className = i.next();
-		examineClass(className);
+		if (examinedClassSet.add(className))
+			examineClass(className);
 		}
 
 	progressCallback.finishPerClassAnalysis();
