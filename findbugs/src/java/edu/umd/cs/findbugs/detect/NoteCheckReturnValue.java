@@ -1,6 +1,6 @@
 /*
  * FindBugs - Find bugs in Java programs
- * Copyright (C) 2003,2004 University of Maryland
+ * Copyright (C) 2003-2005 University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,17 +19,15 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.*;
+import java.util.Map;
 
-import edu.umd.cs.findbugs.*;
-import edu.umd.cs.findbugs.ba.bcp.Invoke;
+import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.ba.bcp.Invoke;
 import edu.umd.cs.findbugs.visitclass.AnnotationVisitor;
-import org.apache.bcel.Repository;
-import org.apache.bcel.classfile.*;
 import edu.umd.cs.findbugs.visitclass.Constants2;
-import static edu.umd.cs.findbugs.visitclass.Constants2.*;
 
 public class NoteCheckReturnValue extends AnnotationVisitor 
   implements Detector, Constants2 {
