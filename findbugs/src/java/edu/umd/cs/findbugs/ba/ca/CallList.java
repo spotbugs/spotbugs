@@ -29,6 +29,14 @@ public class CallList {
 		this.callList = new ArrayList<Call>();
 	}
 	
+	public boolean isValid() {
+		return !(isTop() || isBottom());
+	}
+	
+	public Iterator<Call> callIterator() {
+		return callList.iterator();
+	}
+	
 	public boolean isTop() {
 		return isTop;
 	}
