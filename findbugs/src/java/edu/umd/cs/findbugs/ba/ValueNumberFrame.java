@@ -32,8 +32,7 @@ import java.util.Map;
  * @see ValueNumberAnalysis
  * @author David Hovemeyer
  */
-public class ValueNumberFrame extends Frame<ValueNumber> {
-	private static final boolean REDUNDANT_LOAD_ELIMINATION = Boolean.getBoolean("vna.rle");
+public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberAnalysisFeatures {
 
 	private ValueNumberFactory factory;
 	private ArrayList<ValueNumber> mergedValueList;

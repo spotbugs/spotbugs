@@ -69,6 +69,10 @@ public class InstanceField implements Comparable<InstanceField> {
 			&& fieldName.equals(other.fieldName)
 			&& fieldSig.equals(other.fieldSig);
 	}
+
+	public String toString() {
+		return className + "." + fieldName;
+	}
 }
 
 // vim:ts=4

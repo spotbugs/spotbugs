@@ -21,10 +21,9 @@ package edu.umd.cs.daveho.ba;
 
 import org.apache.bcel.generic.*;
 
-public class ValueNumberFrameModelingVisitor extends AbstractFrameModelingVisitor<ValueNumber, ValueNumberFrame>
-	implements Debug {
-
-	private static final boolean REDUNDANT_LOAD_ELIMINATION = Boolean.getBoolean("vna.rle");
+public class ValueNumberFrameModelingVisitor
+	extends AbstractFrameModelingVisitor<ValueNumber, ValueNumberFrame>
+	implements Debug, ValueNumberAnalysisFeatures {
 
 	private ValueNumberFactory factory;
 	private ValueNumberCache cache;
@@ -114,6 +113,7 @@ public class ValueNumberFrameModelingVisitor extends AbstractFrameModelingVisito
 					ValueNumber[] loadedValue = frame.getAvailableLoad(availableLoad);
 	
 					if (loadedValue != null) {
+						if (RLE_DEBUG) System.out.print("[Found available load " + availableLoad + "]");
 						// Found an available load!
 						frame.popValue();
 						pushOutputValues(loadedValue);
@@ -160,6 +160,24 @@ public class ValueNumberFrameModelingVisitor extends AbstractFrameModelingVisito
 		}
 		handleNormalInstruction(obj);
 	}
+
+/*
+	public void visitINVOKESTATIC(INVOKESTATIC obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitINVOKESPECIAL(INVOKESPECIAL obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitINVOKEINTERFACE(INVOKEINTERFACE obj) {
+		handleNormalInstruction(obj);
+	}
+
+	public void visitINVOKEVIRTUAL(INVOKEVIRTUAL obj) {
+		handleNormalInstruction(obj);
+	}
+*/
 
 }
 

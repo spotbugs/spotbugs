@@ -53,6 +53,10 @@ public class AvailableLoad implements Comparable<AvailableLoad> {
 		AvailableLoad other = (AvailableLoad) o;
 		return reference.equals(other.reference) && field.equals(other.field);
 	}
+
+	public String toString() {
+		return reference.getNumber() + "." + field;
+	}
 }
 
 // vim:ts=4
