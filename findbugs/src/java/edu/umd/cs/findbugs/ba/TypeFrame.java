@@ -121,7 +121,7 @@ public class TypeFrame extends Frame<Type> implements Constants, ExtendedTypes {
 	}
 
 	/** The single instance of the Null type. */
-	private static Null s_nullInstance;
+	private static Null s_nullInstance = new Null();
 
 	/** Get the single instance of the "Null" type. */
 	public static Type getNullType() { return s_nullInstance; }
