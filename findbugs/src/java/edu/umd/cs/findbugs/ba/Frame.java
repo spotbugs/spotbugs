@@ -222,6 +222,18 @@ public abstract class Frame<ValueType> implements Debug {
 	}
 
 	/**
+	 * Get a value on the operand stack.
+	 * @param loc the stack location, counting downwards from the
+	 *    top (location 0)
+	 */
+	public ValueType getStackValue(int loc) throws DataflowAnalysisException {
+		int stackDepth = getStackDepth();
+		if (loc >= stackDepth)
+			throw new DataflowAnalysisException("not enough values on stack");
+		return slotList.get(slotList.size() - loc);
+	}
+
+	/**
 	 * Clear the Java operand stack.
 	 * Only local variable slots will remain in the frame.
 	 */
