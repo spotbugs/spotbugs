@@ -148,6 +148,8 @@ public class AnalysisRun {
 	}
     }
 
+    private static final boolean CREATE_SUMMARY = !Boolean.getBoolean("findbugs.gui.noSummary");
+
     /**
      * Load bugs from a file.
      */
@@ -157,7 +159,7 @@ public class AnalysisRun {
 	// Update summary stats
 	ProjectStats stats = reporter.getProjectStats();
 	stats.initFrom(reporter.bugCollection);
-	if (stats.getNumClasses() > 0)
+	if (CREATE_SUMMARY && stats.getNumClasses() > 0)
 	    createSummary(stats);
     }
     
