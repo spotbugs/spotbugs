@@ -185,6 +185,7 @@ public class SerializableIdiom extends PreorderVisitor
 			.addClass(getThisClass().getClassName()));
 	// Downgrade class-level warnings if it's a GUI class.
 	int priority = isGUIClass ? LOW_PRIORITY : NORMAL_PRIORITY;
+	if (obj.getClassName().endsWith("_Stub")) priority++;
 
 	if (isExternalizable && !hasPublicVoidConstructor && !isAbstract)
 		bugReporter.reportBug(new BugInstance("SE_NO_SUITABLE_CONSTRUCTOR_FOR_EXTERNALIZATION", 
