@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.detect;
 
 import java.util.BitSet;
+import java.util.HashSet;
 import edu.umd.cs.findbugs.*;
 import edu.umd.cs.daveho.ba.*;
 import org.apache.bcel.Constants;
@@ -28,6 +29,21 @@ import org.apache.bcel.generic.*;
 
 public class FindRefComparison implements Detector, ExtendedTypes {
 	private static final boolean DEBUG = Boolean.getBoolean("frc.debug");
+
+	/**
+	 * Classes that are suspicious if compared by reference.
+	 */
+	private static final HashSet<String> suspiciousSet = new HashSet<String>();
+	static {
+		suspiciousSet.add("java.lang.Boolean");
+		suspiciousSet.add("java.lang.Byte");
+		suspiciousSet.add("java.lang.Character");
+		suspiciousSet.add("java.lang.Double");
+		suspiciousSet.add("java.lang.Float");
+		suspiciousSet.add("java.lang.Integer");
+		suspiciousSet.add("java.lang.Long");
+		suspiciousSet.add("java.lang.Short");
+	}
 
 	/* ----------------------------------------------------------------------
 	 * Helper classes
@@ -162,11 +178,6 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 					String fieldName = obj.getName(getCPG());
 					Field field = edu.umd.cs.daveho.ba.Lookup.findField(className, fieldName);
 
-/*
-					if (field == null)
-						System.err.println("Unknown field: " + className + "." + fieldName);
-*/
-
 					if (field != null) {
 						// If the field is final, we'll assume that the String value
 						// is static.
@@ -279,15 +290,17 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 									throw new AnalysisException("Stack underflow in " +
 										SignatureConverter.convertMethodSignature(methodGen) + " at " + handle);
 								int numSlots = frame.getNumSlots();
-								Type op1 = frame.getValue(numSlots - 1);
-								Type op2 = frame.getValue(numSlots - 2);
+								Type lhsType = frame.getValue(numSlots - 1);
+								Type rhsType = frame.getValue(numSlots - 2);
 	
-								if (op1 instanceof ReferenceType && op2 instanceof ReferenceType) {
-									ReferenceType ot1 = (ReferenceType) op1;
-									ReferenceType ot2 = (ReferenceType) op2;
+								if (lhsType instanceof ReferenceType && rhsType instanceof ReferenceType) {
+									String lhs = SignatureConverter.convert(lhsType.getSignature());
+									String rhs = SignatureConverter.convert(rhsType.getSignature());
+
+									if (!lhs.equals(rhs))
+										return;
 	
-									if (ot1.getSignature().equals(STRING_SIGNATURE) &&
-										ot2.getSignature().equals(STRING_SIGNATURE)) {
+									if (lhs.equals("java.lang.String") && rhs.equals("java.lang.String")) {
 										//System.out.println("String/String comparison!");
 
 										// Compute the priority:
@@ -296,8 +309,8 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 										// - static string and unknown => medium
 										// - all other cases => low
 										int priority = LOW_PRIORITY;
-										byte type1 = ot1.getType();
-										byte type2 = ot2.getType();
+										byte type1 = lhsType.getType();
+										byte type2 = rhsType.getType();
 										if (type1 == T_STATIC_STRING && type2 == T_STATIC_STRING)
 											priority = LOW_PRIORITY + 1;
 										else if (type1 == T_DYNAMIC_STRING || type2 == T_DYNAMIC_STRING)
@@ -314,6 +327,13 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 											);
 										}
 	
+									} else if (suspiciousSet.contains(lhs) && suspiciousSet.contains(rhs)) {
+										String sourceFile = jclass.getSourceFileName();
+										bugReporter.reportBug(new BugInstance("RC_REF_COMPARISON", NORMAL_PRIORITY)
+											.addClassAndMethod(methodGen, sourceFile)
+											.addSourceLine(methodGen, sourceFile, handle)
+											.addClass(lhs).describe("CLASS_REFTYPE")
+										);
 									}
 								}
 							}
