@@ -219,29 +219,28 @@ public class ObligationAnalysis
 	 */
 	public void meetInto(StateSet fact, Edge edge, StateSet result)
 			throws DataflowAnalysisException {
-		// TODO: implement
-		
-		// Handle easy top and bottom cases
-		if (fact.isTop() || result.isBottom()) {
-			// Nothing to do
-		} else if (fact.isBottom() || result.isTop()) {
-			copy(fact, result);
-		} else {
-			// If the edge is an exception thrown from a method that
-			// tries to discharge an obligation, then that obligation needs to
-			// be removed from all states.
-			if (edge.isExceptionEdge()) {
-				BasicBlock sourceBlock = edge.getSource();
-				InstructionHandle handle = sourceBlock.getExceptionThrower();
-				Obligation obligation;
-				if ((obligation = deletesObligation(handle)) != null) {
-					fact = fact.duplicate();
-					deleteObligation(fact, obligation, handle);
-				}
+
+		// If the edge is an exception thrown from a method that
+		// tries to discharge an obligation, then that obligation needs to
+		// be removed from all states in the input fact.
+		if (edge.isExceptionEdge() && fact.isValid()) {
+			BasicBlock sourceBlock = edge.getSource();
+			InstructionHandle handle = sourceBlock.getExceptionThrower();
+			Obligation obligation;
+			if ((obligation = deletesObligation(handle)) != null) {
+				fact = fact.duplicate();
+				deleteObligation(fact, obligation, handle);
 			}
-			
-			final StateSet inputFact = fact;
-			
+		}
+
+		final StateSet inputFact = fact;
+
+		// Handle easy top and bottom cases
+		if (inputFact.isTop() || result.isBottom()) {
+			// Nothing to do
+		} else if (inputFact.isBottom() || result.isTop()) {
+			copy(inputFact, result);
+		} else {
 			// Various things need to happen here
 			// - Match up states with equal ObligationSets
 			// - Paths with multiple occurences of a program point,
@@ -256,7 +255,7 @@ public class ObligationAnalysis
 			// Get all of the States from the input fact that don't
 			// have matching states.  These will be copied verbatim
 			// into the result fact.
-			for (Iterator<State> i = fact.stateIterator(); i.hasNext(); ) {
+			for (Iterator<State> i = inputFact.stateIterator(); i.hasNext(); ) {
 				State otherState = i.next();
 				if (result.getStateWithObligationSet(otherState.getObligationSet()) == null) {
 					// Input fact has a State with an ObligationSet not in
@@ -278,8 +277,8 @@ public class ObligationAnalysis
 						if (state.getPath().getLength() > matchingState.getPath().getLength()) {
 							state.getPath().copyFrom(matchingState.getPath());
 						}
-						updatedStateMap.put(state.getObligationSet(), state);
 					}
+					updatedStateMap.put(state.getObligationSet(), state);
 				}
 			};
 			
