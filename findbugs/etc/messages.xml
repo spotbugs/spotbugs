@@ -332,6 +332,15 @@ it is still under development, and produces too many false positives.</b>
     </Details>
   </Detector>
 
+  <Detector class="edu.umd.cs.findbugs.detect.FindInconsistentSync2" >
+    <Details>
+<![CDATA[
+<p> This detector looks for fields that are accessed in an inconsistent manner
+with respect to locking.  It is a slow detector.
+]]>
+    </Details>
+  </Detector>
+
   <Detector class="edu.umd.cs.findbugs.detect.FindBugsSummaryStats">
     <Details>
 <![CDATA[
