@@ -198,7 +198,10 @@ public class BCPMethodReturnCheck extends ByteCodePatternDetector {
 		return bytecodeSet.get(Constants.POP) || bytecodeSet.get(Constants.POP2);
 	}
 
-	public void reportMatch(JavaClass javaClass, MethodGen methodGen, ByteCodePatternMatch match) {
+	public void reportMatch(ClassContext classContext, Method method, ByteCodePatternMatch match) {
+		MethodGen methodGen = classContext.getMethodGen(method);
+		JavaClass javaClass = classContext.getJavaClass();
+
 		InstructionHandle call = match.getLabeledInstruction("call");
 
 		// Ignore inner-class access methods

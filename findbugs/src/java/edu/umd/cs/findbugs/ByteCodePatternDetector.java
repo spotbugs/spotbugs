@@ -86,7 +86,7 @@ public abstract class ByteCodePatternDetector implements Detector {
 						}
 					}
 
-					reportMatch(jclass, methodGen, match);
+					reportMatch(classContext, method, match);
 				}
 			}
 		} catch (DataflowAnalysisException e) {
@@ -127,12 +127,13 @@ public abstract class ByteCodePatternDetector implements Detector {
 
 	/**
 	 * Called to report an instance of the ByteCodePattern.
-	 * @param javaClass the class in which the pattern was detected
-	 * @param methodGen the method in which the pattern was detected
+	 * @param classContext the ClassContext for the analyzed class
+	 * @param method the method to instance appears in
 	 * @param match the ByteCodePatternMatch object representing the match
 	 *   of the ByteCodePattern against actual instructions in the method
 	 */
-	public abstract void reportMatch(JavaClass javaClass, MethodGen methodGen, ByteCodePatternMatch match);
+	public abstract void reportMatch(ClassContext classContext, Method method, ByteCodePatternMatch match)
+		throws CFGBuilderException, DataflowAnalysisException;
 }
 
 // vim:ts=4

@@ -98,7 +98,10 @@ public class BCPDoubleCheck extends ByteCodePatternDetector {
 		return true;
 	}
 
-	public void reportMatch(JavaClass javaClass, MethodGen methodGen, ByteCodePatternMatch match) {
+	public void reportMatch(ClassContext classContext, Method method, ByteCodePatternMatch match) {
+		MethodGen methodGen = classContext.getMethodGen(method);
+		JavaClass javaClass = classContext.getJavaClass();
+
 		BindingSet bindingSet = match.getBindingSet();
 
 		// Note that the lookup of "h" cannot fail, and
