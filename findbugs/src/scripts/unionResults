@@ -1,0 +1,12 @@
+#! /bin/sh
+
+# Create the union of two results files, preserving
+# annotations in both files in the result.
+
+@GET_FBHOME@
+
+fb_mainclass=edu.umd.cs.findbugs.UnionResults
+
+@WRAP_JAVA@
+
+# vim:ts=3
