@@ -104,82 +104,22 @@ public class StackDepthAnalysis extends ForwardDataflowAnalysis<StackDepth> {
 		result.setDepth(combined);
 	}
 
-	private static class StackDepthCFGPrinter extends CFGPrinter {
-		private Dataflow<StackDepth> dataflow;
-		private ConstantPoolGen cpg;
-
-		public StackDepthCFGPrinter(CFG cfg, Dataflow<StackDepth> dataflow, ConstantPoolGen cpg) {
-			super(cfg);
-			this.dataflow = dataflow;
-			this.cpg = cpg;
-		}
-
-		public String blockStartAnnotate(BasicBlock block) {
-			StackDepth in = dataflow.getStartFact(block);
-			return " start stack depth = " + in;
-		}
-
-		public String blockAnnotate(BasicBlock block) {
-			StackDepth out = dataflow.getResultFact(block);
-			return " end stack depth = " + out;
-		}
-
-		public String instructionAnnotate(InstructionHandle handle, BasicBlock bb){
-			Instruction ins = handle.getInstruction();
-			int produced = ins.produceStack(cpg);
-			int consumed = ins.consumeStack(cpg);
-			if (produced == Constants.UNPREDICTABLE || consumed == Constants.UNPREDICTABLE)
-				return " stack delta = unpredictable";
-			else
-				return " stack delta = " + (produced - consumed);
-		}
-	}
-
 	/**
 	 * Command line driver, for testing.
 	 */
-	public static void main(String[] argv) {
-		try {
-			if (argv.length != 1) {
-				System.out.println("Usage: edu.umd.cs.daveho.ba.StackDepthAnalysis <class file>");
-				System.exit(1);
-			}
-
-			String className = argv[0];
-			JavaClass jclass = new RepositoryClassParser(className).parse();
-			ClassGen cg = new ClassGen(jclass);
-			ConstantPoolGen cpg = cg.getConstantPool();
-			String methodName = System.getProperty("sda.method");
-
-			Method[] methods = cg.getMethods();
-			for (int i = 0; i < methods.length; ++i) {
-				Method method = methods[i];
-				if (method.isAbstract() || method.isNative())
-					continue;
-				if (methodName != null && !method.getName().equals(methodName))
-					continue;
-
-				MethodGen methodGen = new MethodGen(method, jclass.getClassName(), cpg);
-
-				CFGBuilder cfgBuilder = CFGBuilderFactory.create(methodGen);
-				cfgBuilder.build();
-
-				CFG cfg = cfgBuilder.getCFG();
-				cfg.assignEdgeIds(0);
-
-				StackDepthAnalysis analysis = new StackDepthAnalysis(cpg);
-				Dataflow<StackDepth> dataflow = new Dataflow<StackDepth>(cfg, analysis);
-
-				dataflow.execute();
-
-				System.out.println("Finished in " + dataflow.getNumIterations() + " iterations");
-
-				StackDepthCFGPrinter printer = new StackDepthCFGPrinter(cfg, dataflow, cpg);
-				printer.print(System.out);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
+	public static void main(String[] argv) throws Exception {
+		if (argv.length != 1) {
+			System.out.println("Usage: " + StackDepthAnalysis.class.getName() + " <class file>");
+			System.exit(1);
 		}
+
+		DataflowTestDriver<StackDepth, StackDepthAnalysis> driver = new DataflowTestDriver<StackDepth, StackDepthAnalysis>() {
+			public StackDepthAnalysis createAnalysis(MethodGen methodGen, CFG cfg) {
+				return new StackDepthAnalysis(methodGen.getConstantPool());
+			}
+		};
+
+		driver.execute(argv[0]);
 	}
 }
 

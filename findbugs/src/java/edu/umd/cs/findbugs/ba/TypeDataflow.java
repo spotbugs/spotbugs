@@ -19,19 +19,14 @@
 
 package edu.umd.cs.daveho.ba;
 
-public class TypeDataflow extends Dataflow<TypeFrame> {
-	private TypeAnalysis analysis;
-
+public class TypeDataflow extends Dataflow<TypeFrame, TypeAnalysis> {
 	public TypeDataflow(CFG cfg, TypeAnalysis analysis) {
 		super(cfg, analysis);
-		this.analysis = analysis;
 	}
 
-	public TypeAnalysis getAnalysis() { return analysis; }
+	public TypeFrame getFactAtLocation(Location loc) { return getAnalysis().getFactAtLocation(loc); }
 
-	public TypeFrame getFactAtLocation(Location loc) { return analysis.getFactAtLocation(loc); }
-
-	public TypeFrame getFactAfterLocation(Location loc) { return analysis.getFactAfterLocation(loc); }
+	public TypeFrame getFactAfterLocation(Location loc) { return getAnalysis().getFactAfterLocation(loc); }
 }
 
 // vim:ts=4

@@ -89,9 +89,9 @@ public class FindInconsistentSync extends CFGBuildingDetector {
 
 	// Per-class data structures:
 	private boolean inConstructor;
-	private HashMap<LCAKey, Dataflow<LockCount>> lcaMap = new HashMap<LCAKey, Dataflow<LockCount>>();
+	private HashMap<LCAKey, Dataflow<LockCount, LockCountAnalysis>> lcaMap = new HashMap<LCAKey, Dataflow<LockCount, LockCountAnalysis>>();
 	private HashSet<MethodGen> lockedPrivateMethods = new HashSet<MethodGen>();
-	private Dataflow<LockCount> dataflow;
+	private Dataflow<LockCount, LockCountAnalysis> dataflow;
 	private SelfCalls selfCalls;
 
 	public FindInconsistentSync(BugReporter bugReporter) {
@@ -174,7 +174,7 @@ public class FindInconsistentSync extends CFGBuildingDetector {
 						throw new AnalysisException(e.getMessage());
 					}
 					MethodGen methodGen = classContext.getMethodGen(method);
-					Dataflow<LockCount> dataflow = getLockCountDataflow(cfg, methodGen);
+					Dataflow<LockCount, LockCountAnalysis> dataflow = getLockCountDataflow(cfg, methodGen);
 
 					// Is the call site locked?
 					LockCount lockCount = getLockCount(dataflow, handle, basicBlock);
@@ -232,9 +232,9 @@ public class FindInconsistentSync extends CFGBuildingDetector {
 		}
 	}
 
-	private Dataflow<LockCount> getLockCountDataflow(CFG cfg, MethodGen methodGen) throws DataflowAnalysisException {
+	private Dataflow<LockCount, LockCountAnalysis> getLockCountDataflow(CFG cfg, MethodGen methodGen) throws DataflowAnalysisException {
 		LCAKey key = new LCAKey(cfg, methodGen);
-		Dataflow<LockCount> lcaDataflow = lcaMap.get(key);
+		Dataflow<LockCount, LockCountAnalysis> lcaDataflow = lcaMap.get(key);
 
 		if (lcaDataflow == null) {
 			LockCountAnalysis analysis;
@@ -253,7 +253,7 @@ public class FindInconsistentSync extends CFGBuildingDetector {
 				analysis = new ThisLockCountAnalysis(methodGen, vnaDataflow);
 			}
 
-			lcaDataflow = new Dataflow<LockCount>(cfg, analysis);
+			lcaDataflow = new Dataflow<LockCount, LockCountAnalysis>(cfg, analysis);
 			lcaDataflow.execute();
 
 			lcaMap.put(key, lcaDataflow);
@@ -332,7 +332,7 @@ public class FindInconsistentSync extends CFGBuildingDetector {
 		return stats;
 	}
 
-	private static LockCount getLockCount(Dataflow<LockCount> dataflow, InstructionHandle handle, BasicBlock bb)
+	private static LockCount getLockCount(Dataflow<LockCount, LockCountAnalysis> dataflow, InstructionHandle handle, BasicBlock bb)
 		throws DataflowAnalysisException {
 		LockCount count = new LockCount(0); // assume there are no locks
 		if (dataflow != null) {

@@ -244,7 +244,7 @@ public class FindOpenStream extends ResourceTrackingDetector<Stream>  {
 	}
 
 	public void inspectResult(JavaClass javaClass, MethodGen methodGen, CFG cfg,
-		Dataflow<ResourceValueFrame> dataflow, Stream stream) {
+		Dataflow<ResourceValueFrame, ResourceValueAnalysis<Stream>> dataflow, Stream stream) {
 
 		ResourceValueFrame exitFrame = dataflow.getResultFact(cfg.getExit());
 

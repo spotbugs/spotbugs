@@ -250,8 +250,8 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
 			System.exit(1);
 		}
 
-		DataflowTestDriver<IsNullValueFrame> driver = new DataflowTestDriver<IsNullValueFrame>() {
-			public AbstractDataflowAnalysis<IsNullValueFrame> createAnalysis(MethodGen methodGen, CFG cfg)
+		DataflowTestDriver<IsNullValueFrame, IsNullValueAnalysis> driver = new DataflowTestDriver<IsNullValueFrame, IsNullValueAnalysis>() {
+			public IsNullValueAnalysis createAnalysis(MethodGen methodGen, CFG cfg)
 				throws DataflowAnalysisException {
 
 				// Create the ValueNumberAnalysis

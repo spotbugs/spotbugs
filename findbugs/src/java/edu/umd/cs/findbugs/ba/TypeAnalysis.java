@@ -154,8 +154,8 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame> {
 			}
 		};
 
-		DataflowTestDriver<TypeFrame> driver = new DataflowTestDriver<TypeFrame>() {
-			public AbstractDataflowAnalysis<TypeFrame> createAnalysis(MethodGen methodGen, CFG cfg) {
+		DataflowTestDriver<TypeFrame, TypeAnalysis> driver = new DataflowTestDriver<TypeFrame, TypeAnalysis>() {
+			public TypeAnalysis createAnalysis(MethodGen methodGen, CFG cfg) {
 				return new TypeAnalysis(methodGen, lookupFailureCallback);
 			}
 		};

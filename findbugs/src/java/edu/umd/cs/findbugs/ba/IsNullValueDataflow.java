@@ -19,16 +19,9 @@
 
 package edu.umd.cs.daveho.ba;
 
-public class IsNullValueDataflow extends Dataflow<IsNullValueFrame> {
-	private final IsNullValueAnalysis analysis;
-
+public class IsNullValueDataflow extends Dataflow<IsNullValueFrame, IsNullValueAnalysis> {
 	public IsNullValueDataflow(CFG cfg, IsNullValueAnalysis analysis) {
 		super(cfg, analysis);
-		this.analysis = analysis;
-	}
-
-	public IsNullValueAnalysis getAnalysis() {
-		return analysis;
 	}
 }
 

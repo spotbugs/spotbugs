@@ -38,9 +38,9 @@ import java.util.*;
  * @see DataflowAnalysis
  * @author David Hovemeyer
  */
-public class Dataflow<Fact> {
+public class Dataflow<Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 	private CFG cfg;
-	private DataflowAnalysis<Fact> analysis;
+	private AnalysisType analysis;
 	private BlockOrder blockOrder;
 	private IdentityHashMap<BasicBlock, Fact> startFactMap; // dataflow facts at block entries
 	private IdentityHashMap<BasicBlock, Fact> resultFactMap;// dataflow facts at block exits
@@ -54,7 +54,7 @@ public class Dataflow<Fact> {
 	 * @param cfg the control flow graph
 	 * @param analysis the DataflowAnalysis to be run
 	 */
-	public Dataflow(CFG cfg, DataflowAnalysis<Fact> analysis) {
+	public Dataflow(CFG cfg, AnalysisType analysis) {
 		this.cfg = cfg;
 		this.analysis = analysis;
 		blockOrder = analysis.getBlockOrder(cfg);
@@ -188,7 +188,7 @@ public class Dataflow<Fact> {
 	}
 
 	/** Get the analysis object. */
-	public DataflowAnalysis<Fact> getAnalysis() { return analysis; }
+	public AnalysisType getAnalysis() { return analysis; }
 
 	/** Get the CFG object. */
 	public CFG getCFG() { return cfg; }

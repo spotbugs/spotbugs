@@ -34,7 +34,7 @@ public class FindTwoLockWait extends CFGBuildingDetector implements Detector {
 
 	private BugReporter bugReporter;
 	private AnyLockCountAnalysis analysis;
-	private Dataflow<LockCount> dataflow;
+	private Dataflow<LockCount, LockCountAnalysis> dataflow;
 
 	public FindTwoLockWait(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
@@ -66,7 +66,7 @@ public class FindTwoLockWait extends CFGBuildingDetector implements Detector {
 	public void visitCFG(CFG cfg, MethodGen methodGen) {
 		try {
 			analysis = new AnyLockCountAnalysis(methodGen, null);
-			dataflow = new Dataflow<LockCount>(cfg, analysis);
+			dataflow = new Dataflow<LockCount, LockCountAnalysis>(cfg, analysis);
 			dataflow.execute();
 
 			visitCFGInstructions(cfg, methodGen);

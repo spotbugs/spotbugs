@@ -198,7 +198,7 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock> {
 	}
 
 	public void inspectResult(JavaClass javaClass, MethodGen methodGen, CFG cfg,
-		Dataflow<ResourceValueFrame> dataflow, Lock resource) {
+		Dataflow<ResourceValueFrame, ResourceValueAnalysis<Lock>> dataflow, Lock resource) {
 
 		ResourceValueFrame exitFrame = dataflow.getResultFact(cfg.getExit());
 		int exitStatus = exitFrame.getStatus();

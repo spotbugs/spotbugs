@@ -19,24 +19,17 @@
 
 package edu.umd.cs.daveho.ba;
 
-public class ValueNumberDataflow extends Dataflow<ValueNumberFrame> {
-	private final ValueNumberAnalysis analysis;
-
+public class ValueNumberDataflow extends Dataflow<ValueNumberFrame, ValueNumberAnalysis> {
 	public ValueNumberDataflow(CFG cfg, ValueNumberAnalysis analysis) {
 		super(cfg, analysis);
-		this.analysis = analysis;
-	}
-
-	public ValueNumberAnalysis getAnalysis() {
-		return analysis;
 	}
 
 	public ValueNumberFrame getFactAtLocation(Location loc) {
-		return analysis.getFactAtLocation(loc);
+		return getAnalysis().getFactAtLocation(loc);
 	}
 
 	public ValueNumberFrame getFactAfterLocation(Location loc) {
-		return analysis.getFactAfterLocation(loc);
+		return getAnalysis().getFactAfterLocation(loc);
 	}
 }
 

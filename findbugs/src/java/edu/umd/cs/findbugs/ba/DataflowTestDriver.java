@@ -37,13 +37,13 @@ import org.apache.bcel.generic.*;
  * @see DataflowAnalysis
  * @author David Hovemeyer
  */
-public abstract class DataflowTestDriver<Fact> {
+public abstract class DataflowTestDriver<Fact, AnalysisType extends AbstractDataflowAnalysis<Fact>> {
 
-	private static class DataflowCFGPrinter<Fact> extends CFGPrinter {
-		private Dataflow<Fact> dataflow;
-		private AbstractDataflowAnalysis<Fact> analysis;
+	private static class DataflowCFGPrinter<Fact, AnalysisType extends AbstractDataflowAnalysis<Fact>> extends CFGPrinter {
+		private Dataflow<Fact, AnalysisType> dataflow;
+		private AnalysisType analysis;
 
-		public DataflowCFGPrinter(CFG cfg, Dataflow<Fact> dataflow, AbstractDataflowAnalysis<Fact> analysis) {
+		public DataflowCFGPrinter(CFG cfg, Dataflow<Fact, AnalysisType> dataflow, AnalysisType analysis) {
 			super(cfg);
 			this.dataflow = dataflow;
 			this.analysis = analysis;
@@ -101,8 +101,8 @@ public abstract class DataflowTestDriver<Fact> {
 	 */
 	public void execute(MethodGen methodGen, CFG cfg) throws DataflowAnalysisException, CFGBuilderException {
 
-		AbstractDataflowAnalysis<Fact> analysis = createAnalysis(methodGen, cfg);
-		Dataflow<Fact> dataflow = new Dataflow<Fact>(cfg, analysis);
+		AnalysisType analysis = createAnalysis(methodGen, cfg);
+		Dataflow<Fact, AnalysisType> dataflow = new Dataflow<Fact, AnalysisType>(cfg, analysis);
 
 		dataflow.execute();
 
@@ -111,7 +111,7 @@ public abstract class DataflowTestDriver<Fact> {
 		examineResults(cfg, dataflow);
 
 		if (Boolean.getBoolean("dataflow.printcfg")) {
-			CFGPrinter p = new DataflowCFGPrinter<Fact>(cfg, dataflow, analysis);
+			CFGPrinter p = new DataflowCFGPrinter<Fact, AnalysisType>(cfg, dataflow, analysis);
 			p.print(System.out);
 		}
 	}
@@ -121,7 +121,7 @@ public abstract class DataflowTestDriver<Fact> {
 	 * @param methodGen the method to be analyzed
 	 * @param cfg control flow graph of the method to be analyzed
 	 */
-	public abstract AbstractDataflowAnalysis<Fact> createAnalysis(MethodGen methodGen, CFG cfg) throws DataflowAnalysisException;
+	public abstract AnalysisType createAnalysis(MethodGen methodGen, CFG cfg) throws DataflowAnalysisException;
 
 	/**
 	 * Downcall method to inspect the analysis results.
@@ -129,7 +129,7 @@ public abstract class DataflowTestDriver<Fact> {
 	 * @param cfg the control flow graph
 	 * @param dataflow the analysis results
 	 */
-	public void examineResults(CFG cfg, Dataflow<Fact> dataflow) {
+	public void examineResults(CFG cfg, Dataflow<Fact, AnalysisType> dataflow) {
 	}
 }
 

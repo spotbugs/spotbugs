@@ -174,7 +174,7 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
 	 * @param dataflow the Dataflow object which executed this analysis
 	 *  (and has all of the block result values)
 	 */
-	public void compactValueNumbers(Dataflow<ValueNumberFrame> dataflow) {
+	public void compactValueNumbers(Dataflow<ValueNumberFrame, ValueNumberAnalysis> dataflow) {
 		ValueCompacter compacter = new ValueCompacter(factory.getNumValuesAllocated());
 
 		// We can get all extant Frames by looking at the values in
@@ -229,8 +229,9 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
 				System.exit(1);
 			}
 
-			DataflowTestDriver<ValueNumberFrame> driver = new DataflowTestDriver<ValueNumberFrame>() {
-				public AbstractDataflowAnalysis<ValueNumberFrame> createAnalysis(MethodGen methodGen, CFG cfg) {
+			DataflowTestDriver<ValueNumberFrame, ValueNumberAnalysis> driver =
+				new DataflowTestDriver<ValueNumberFrame, ValueNumberAnalysis>() {
+				public ValueNumberAnalysis createAnalysis(MethodGen methodGen, CFG cfg) {
 					return new ValueNumberAnalysis(methodGen);
 				}
 			};

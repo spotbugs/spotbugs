@@ -78,8 +78,8 @@ public class ThisLockCountAnalysis extends LockCountAnalysis {
 				System.exit(1);
 			}
 
-			DataflowTestDriver<LockCount> driver = new DataflowTestDriver<LockCount>() {
-				public AbstractDataflowAnalysis<LockCount> createAnalysis(MethodGen methodGen, CFG cfg) throws DataflowAnalysisException {
+			DataflowTestDriver<LockCount, LockCountAnalysis> driver = new DataflowTestDriver<LockCount, LockCountAnalysis>() {
+				public LockCountAnalysis createAnalysis(MethodGen methodGen, CFG cfg) throws DataflowAnalysisException {
 					// Perform the analysis to propagate "this" value references,
 					// since ThisLockCountAnalysis depends on it.
 					ValueNumberDataflow vnaDataflow = new ValueNumberDataflow(cfg, new ValueNumberAnalysis(methodGen));

@@ -83,8 +83,9 @@ public abstract class ResourceValueAnalysisTestDriver<Resource> {
 			if (resource == null)
 				throw new IllegalArgumentException("offset " + offset + " is not a resource creation");
 
-			DataflowTestDriver<ResourceValueFrame> driver = new DataflowTestDriver<ResourceValueFrame>() {
-				public AbstractDataflowAnalysis<ResourceValueFrame> createAnalysis(MethodGen methodGen, CFG cfg)
+			DataflowTestDriver<ResourceValueFrame, ResourceValueAnalysis<Resource>> driver =
+				new DataflowTestDriver<ResourceValueFrame, ResourceValueAnalysis<Resource>>() {
+				public ResourceValueAnalysis<Resource> createAnalysis(MethodGen methodGen, CFG cfg)
 					throws DataflowAnalysisException {
 					return new ResourceValueAnalysis<Resource>(methodGen, cfg, resourceTracker, resource,
 						lookupFailureCallback);

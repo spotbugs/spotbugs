@@ -40,7 +40,7 @@ public abstract class ResourceTrackingDetector<Resource> implements Detector {
 	public abstract ResourceTracker<Resource> getResourceTracker(ClassContext classContext, Method method)
 		throws DataflowAnalysisException, CFGBuilderException;
 	public abstract void inspectResult(JavaClass javaClass, MethodGen methodGen, CFG cfg,
-		Dataflow<ResourceValueFrame> dataflow, Resource resource);
+		Dataflow<ResourceValueFrame, ResourceValueAnalysis<Resource>> dataflow, Resource resource);
 
 	public void visitClassContext(ClassContext classContext) {
 
@@ -74,7 +74,8 @@ public abstract class ResourceTrackingDetector<Resource> implements Detector {
 							if (resource != null) {
 								ResourceValueAnalysis<Resource> analysis =
 									new ResourceValueAnalysis<Resource>(methodGen, cfg, resourceTracker, resource, bugReporter);
-								Dataflow<ResourceValueFrame> dataflow = new Dataflow<ResourceValueFrame>(cfg, analysis);
+								Dataflow<ResourceValueFrame, ResourceValueAnalysis<Resource>> dataflow =
+									new Dataflow<ResourceValueFrame, ResourceValueAnalysis<Resource>>(cfg, analysis);
 	
 								dataflow.execute();
 								inspectResult(jclass, methodGen, cfg, dataflow, resource);
