@@ -124,7 +124,9 @@ public class SerializableIdiom extends PreorderVisitor
 		sawWriteObject = true;
 
 	if (!isSynchronized) return;
-	if (methodName.equals("readObject")) 
+	if (methodName.equals("readObject") &&
+		methodSig.equals("(Ljava/io/ObjectInputStream;)V") &&
+		isSerializable) 
 		bugReporter.reportBug(new BugInstance("RS_READOBJECT_SYNC", NORMAL_PRIORITY).addClass(this));
 	else if (methodName.equals("writeObject")) 
 		writeObjectIsSynchronized = true;
