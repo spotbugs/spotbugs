@@ -433,8 +433,16 @@ public class FindOpenStream extends ResourceTrackingDetector<Stream, FindOpenStr
 		return new StreamResourceTracker(bugReporter);
 	}
 
+	public static boolean isMainMethod(Method method) {
+		return  method.isStatic()
+			&& method.getName().equals("main")
+			&& method.getSignature().equals("([Ljava/lang/String;)V");
+		}
+		
 	public void analyzeMethod(ClassContext classContext, Method method, StreamResourceTracker resourceTracker)
 		throws CFGBuilderException, DataflowAnalysisException {
+
+		if (isMainMethod(method)) return;
 
 		potentialOpenStreamList.clear();
 
