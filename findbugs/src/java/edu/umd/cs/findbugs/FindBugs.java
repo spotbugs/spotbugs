@@ -626,18 +626,20 @@ public class FindBugs implements Constants2, ExitCodes {
 		// Note that despite the name getJarFileArray(),
 		// they can also be zip files, directories,
 		// and single class files.
-		String[] argv = project.getJarFileArray();
+		LinkedList<String> archiveWorkList = new LinkedList<String>();
+		archiveWorkList.addAll(project.getJarFileList());
 
 		// Report how many archives/directories/files will be analyzed,
 		// for progress dialog in GUI
-		progressCallback.reportNumberOfArchives(argv.length);
+		progressCallback.reportNumberOfArchives(archiveWorkList.size());
 
 		// Keep track of the names of all classes to be analyzed
 		List<String> repositoryClassList = new LinkedList<String>();
 
 		// Add all classes in analyzed archives/directories/files
-		for (int i = 0; i < argv.length; i++) {
-			addFileToRepository(argv[i], repositoryClassList);
+		while (!archiveWorkList.isEmpty()) {
+			String archive = archiveWorkList.removeFirst();
+			addFileToRepository(archive, repositoryClassList);
 		}
 
 		// Callback for progress dialog: analysis is starting
