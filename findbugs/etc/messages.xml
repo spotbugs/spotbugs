@@ -3284,6 +3284,44 @@ double value2 =  x / (double) y;
     </Details>
   </BugPattern>
 
+  <BugPattern type="BC_BAD_CAST_TO_ABSTRACT_COLLECTION">
+    <ShortDescription>Questionable cast to abstract collection </ShortDescription>
+    <LongDescription>Questionable cast from Collection to abstract class {4} in {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+This code casts a Collection to an abstract collection (such as a Collection).
+Ensure that you are guaranteed that the object is of the type
+you are casting to. If all you need is to be able
+to iterate through a collection, you don't need to cast it to a Set or List.
+</p>
+]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="BC_IMPOSSIBLE_CAST">
+    <ShortDescription>Impossible cast</ShortDescription>
+    <LongDescription>Impossible cast from {3} to class {4} in {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+This cast will always throw a ClassCastException.
+</p>
+]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="BC_UNCONFIRMED_CAST">
+    <ShortDescription>Unchecked/unconfirmed cast</ShortDescription>
+    <LongDescription>Unchecked/unconfirmed cast from {3} to class {4} in {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+This cast is unchecked, and not all instances of the type casted from can be cast to
+the type it is being cast to. Ensure that your program logic ensures that this
+cast will not fail.
+</p>
+]]>
+    </Details>
+  </BugPattern>
   <BugPattern type="BC_BAD_CAST_TO_CONCRETE_COLLECTION">
     <ShortDescription>Questionable cast to concrete collection</ShortDescription>
     <LongDescription>Questionable cast from {3} to concrete class {4} in {1}</LongDescription>

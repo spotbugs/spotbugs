@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Constant;
+import org.apache.bcel.classfile.ConstantClass;
 import org.apache.bcel.classfile.ConstantUtf8;
 import org.apache.bcel.classfile.ConstantInteger;
 import org.apache.bcel.classfile.ConstantDouble;
@@ -63,6 +64,8 @@ public class OpcodeStack implements Constants2
 	private List<Item> stack;
 	private List<Item> lvValues;
 
+	private boolean seenTransferOfControl = false;
+
 
 	
 	public static class Item
@@ -73,6 +76,24 @@ public class OpcodeStack implements Constants2
 		private FieldAnnotation field;
  		private boolean isNull = false;
 		private int registerNumber = -1;
+		private boolean isInitialParameter = false;
+
+		private static boolean equals(Object o1, Object o2) {
+			if (o1 == o2) return true;
+			if (o1 == null || o2 == null) return false;
+			return o1.equals(o2);
+			}
+
+		public boolean equals(Object o) {
+			if (!(o instanceof Item)) return false;
+			Item that = (Item) o;
+
+			return equals(this.signature, that.signature)
+				&& equals(this.constValue, that.constValue)
+				&& equals(this.field, that.field)
+				&& this.isNull == that.isNull
+				&& this.registerNumber == that.registerNumber;
+			}
 
 		public String toString() {
 			StringBuffer buf = new StringBuffer("< ");
@@ -84,6 +105,9 @@ public class OpcodeStack implements Constants2
 			if (field!= UNKNOWN) {
 				buf.append(", ");
 				buf.append(field);
+				}
+			if (isInitialParameter) {
+				buf.append(", IP");
 				}
 			if (isNull) {
 				buf.append(", isNull");
@@ -98,6 +122,23 @@ public class OpcodeStack implements Constants2
 			}
 				
  		
+ 		public static Item merge(Item i1, Item i2) {
+			if (i1 == null) return i2;
+			if (i2 == null) return i1;
+			if (i1.equals(i2)) return i1;
+			Item m = new Item();
+			if (equals(i1.signature,i2.signature))
+				m.signature = i1.signature;
+			if (equals(i1.constValue,i2.constValue))
+				m.constValue = i1.constValue;
+			if (equals(i1.field,i2.field))
+				m.field = i1.field;
+			if (i1.isNull == i2.isNull)
+				m.isNull = i1.isNull;
+			if (i1.registerNumber == i2.registerNumber)
+				m.registerNumber = i1.registerNumber;
+			return m;
+		}
  		public Item(String s, int reg) {
 			signature = s;
 			registerNumber = reg;
@@ -154,6 +195,9 @@ public class OpcodeStack implements Constants2
  		public boolean isArray() {
  			return signature.startsWith("[");
  		}
+ 		public boolean isInitialParameter() {
+ 			return isInitialParameter;
+ 		}
  		
  		public String getElementSignature() {
  			if (!isArray())
@@ -195,7 +239,7 @@ public class OpcodeStack implements Constants2
 	}
 
 	public String toString() {
-		return stack.toString();
+		return stack.toString() + "::" +  lvValues.toString();
 	}
 	
 	public OpcodeStack()
@@ -304,11 +348,14 @@ public class OpcodeStack implements Constants2
 	 			case IRETURN:
 	 			case LOOKUPSWITCH:
 	 			case LRETURN:
+	 			case TABLESWITCH:
+					seenTransferOfControl = true;
+	 				pop();
+	 			break;
 	 			case MONITORENTER:
 	 			case MONITOREXIT:
 	 			case POP:
 	 			case PUTSTATIC:
-	 			case TABLESWITCH:
 	 				pop();
 	 			break;
 	 			
@@ -320,6 +367,9 @@ public class OpcodeStack implements Constants2
 	 			case IF_ICMPLE:
 	 			case IF_ICMPGT:
 	 			case IF_ICMPGE:
+					seenTransferOfControl = true;
+	 				pop(2);
+					break;
 	 			case POP2:
 	 			case PUTFIELD:
 	 				pop(2);
@@ -403,12 +453,15 @@ public class OpcodeStack implements Constants2
 
 	 			case CHECKCAST:
 	 			case NOP:
+					break;
 	 			case RET:
 	 			case RETURN:
-	 			break;
+					seenTransferOfControl = true;
+					break;
 	 			
 	 			case GOTO:
 	 			case GOTO_W:					//It is assumed that no stack items are present when
+					seenTransferOfControl = true;
 	 				if (getStackDepth() > 0)    //when goto is executed. This is not true for trinaries
 	 					pop();					//so hack it so that if there are pop 1
 	 			break;
@@ -881,20 +934,28 @@ public class OpcodeStack implements Constants2
  		lvValues.clear();
  	}
  	
- 	public void resetForMethodEntry(PreorderVisitor v) {
+ 	public int resetForMethodEntry(PreorderVisitor v) {
  		stack.clear();
  		lvValues.clear();
+		seenTransferOfControl = false;
 		String className = v.getClassName();
 		Method m = v.getMethod();
 		String signature = v.getMethodSig();
 		Type[] argTypes = Type.getArgumentTypes(signature);
 		int reg = 0;
 		if (!m.isStatic()) {
-			setLVValue( reg++, new Item("L" + className+";") );
+			Item it = new Item("L" + className+";");
+			it.isInitialParameter = true;
+			it.registerNumber = reg;
+			setLVValue( reg++, it);
 			}
 		for(int i = 0; i < argTypes.length; i++) {
-			setLVValue( reg++, new Item(argTypes[i].getSignature()));
+			Item it = new Item(argTypes[i].getSignature());
+			it.registerNumber = reg;
+			it.isInitialParameter = true;
+			setLVValue( reg++, it);
 			}
+		return reg;
 		}
 		
  	public int getStackDepth() {
@@ -925,7 +986,9 @@ public class OpcodeStack implements Constants2
  	
  	private void pushByConstant(DismantleBytecode dbc, Constant c) {
  		
-		if (c instanceof ConstantInteger)
+		if (c instanceof ConstantClass)
+			push(new Item("Ljava/lang/Class;", null));
+		else if (c instanceof ConstantInteger)
 			push(new Item("I", new Integer(((ConstantInteger) c).getBytes())));
 		else if (c instanceof ConstantString) {
 			int s = ((ConstantString) c).getStringIndex();
@@ -1072,15 +1135,20 @@ public class OpcodeStack implements Constants2
 		Item it = getLVValue(register);
 		if (it == null)
 			push(new Item(signature, register));
-		else
+		else if (it.getRegisterNumber() >= 0)
+			push(it);
+		else  {
 			push(new Item(it, register));
+			}
  	}
  	
  	private void setLVValue(int index, Item value ) {
  		int addCount = index - lvValues.size() + 1;
  		while ((addCount--) > 0)
  			lvValues.add(null);
- 		lvValues.set(index, value );
+		if (seenTransferOfControl) 
+			value = Item.merge(value, lvValues.get(index) );
+ 		lvValues.set(index, value);
  	}
  	
  	private Item getLVValue(int index) {

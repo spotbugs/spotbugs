@@ -296,13 +296,20 @@ public class UnreadFields extends BytecodeScanningDetector implements Constants2
 			FieldAnnotation f = i.next();
 			String fieldName = f.getFieldName();
 			String className = f.getClassName();
+			String fieldSignature = f.getFieldSignature();
 			if (!superWrittenFields.contains(fieldName)
-				 && !fieldsOfSerializableOrNativeClassed.contains(f))
+				 && !fieldsOfSerializableOrNativeClassed.contains(f)) {
+				int priority = NORMAL_PRIORITY;
+				if (!(fieldSignature.charAt(0) == 'L' || fieldSignature.charAt(0) == '['))
+					priority++;
+				else if (assumedNonNull.contains(f)) priority--;
 				bugReporter.reportBug(new BugInstance(this, 
-				"UWF_UNWRITTEN_FIELD", 
-				assumedNonNull.contains(f) ? HIGH_PRIORITY : NORMAL_PRIORITY)
+					"UWF_UNWRITTEN_FIELD", 
+					priority)
 				        .addClass(className)
 				        .addField(f));
+			}
+				
 		}
 
 

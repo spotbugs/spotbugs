@@ -353,7 +353,7 @@
   			
   <Detector class="edu.umd.cs.findbugs.detect.FindBadCast"
             speed="fast"
-            reports="BC_BAD_CAST_TO_CONCRETE_COLLECTION"
+            reports="BC_BAD_CAST_TO_CONCRETE_COLLECTION,BC_BAD_CAST_TO_ABSTRACT_COLLECTION,BC_UNCONFIRMED_CAST,BC_IMPOSSIBLE_CAST"
 	    />
   <Detector class="edu.umd.cs.findbugs.detect.BadSyntaxForRegularExpression"
             speed="fast"
@@ -550,6 +550,9 @@
   <BugPattern abbrev="ICAST" type="ICAST_IDIV_CAST_TO_DOUBLE" category="CORRECTNESS"/>
   <BugPattern abbrev="ICAST" type="ICAST_INT_CAST_TO_DOUBLE_PASSED_TO_CEIL" category="CORRECTNESS"/>
   <BugPattern abbrev="BC" type="BC_BAD_CAST_TO_CONCRETE_COLLECTION" category="STYLE"/>
+  <BugPattern abbrev="BC" type="BC_UNCONFIRMED_CAST" category="STYLE"/>
+  <BugPattern abbrev="BC" type="BC_IMPOSSIBLE_CAST" category="CORRECTNESS"/>
+  <BugPattern abbrev="BC" type="BC_BAD_CAST_TO_ABSTRACT_COLLECTION" category="STYLE"/>
   <BugPattern abbrev="RE" type="RE_BAD_SYNTAX_FOR_REGULAR_EXPRESSION" category="CORRECTNESS"/>
   <BugPattern abbrev="DLS" type="DLS_OVERWRITTEN_INCREMENT" category="CORRECTNESS"/>
   <BugPattern abbrev="ICAST" type="ICAST_QUESTIONABLE_UNSIGNED_RIGHT_SHIFT" category="STYLE"/>
