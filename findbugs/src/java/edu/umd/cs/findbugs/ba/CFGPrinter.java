@@ -62,16 +62,19 @@ public class CFGPrinter {
 			if (exceptionGen != null) {
 				System.out.println("	CATCHES " + exceptionGen.getCatchType());
 			}
-			Iterator<InstructionHandle> j = bb.instructionIterator();
+			Iterator<InstructionHandle> j = instructionIterator(bb);
 			while (j.hasNext()) {
 				InstructionHandle handle = j.next();
 				out.println(handle + instructionAnnotate(handle, bb));
 			}
 			out.println("END" + blockAnnotate(bb));
-			Iterator<Edge> edgeIter = cfg.outgoingEdgeIterator(bb);
+			Iterator<Edge> edgeIter =
+				isForwards
+					? cfg.outgoingEdgeIterator(bb)
+					: cfg.incomingEdgeIterator(bb);
 			while (edgeIter.hasNext()) {
 				Edge edge = edgeIter.next();
-				out.println("  " + edge + " " + edgeAnnotate(edge));
+				out.println("  " + edge.formatAsString(!isForwards) + " " + edgeAnnotate(edge));
 			}
 		}
 	}
