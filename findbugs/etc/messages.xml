@@ -1146,10 +1146,10 @@ defined in an interface references a mutable
     <LongDescription>{1} is a mutable Hashtable</LongDescription>
     <Details>
 <![CDATA[
- <p>A final static field references an Hashtable
+ <p>A final static field references a Hashtable
 	and can be accessed by malicious code or
         by accident from another package.
-	This code can freely modify the contents of the array.
+	This code can freely modify the contents of the Hashtable.
 ]]>
     </Details>
   </BugPattern>
