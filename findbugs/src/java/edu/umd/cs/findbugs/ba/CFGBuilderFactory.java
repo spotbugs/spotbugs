@@ -36,13 +36,17 @@ import org.apache.bcel.generic.MethodGen;
  * @author David Hovemeyer
  */
 public class CFGBuilderFactory {
+	private static final boolean OLD_CFG = Boolean.getBoolean("cfg.old");
+
 	/**
 	 * Create a CFGBuilder to build a CFG for given method.
 	 * @param methodGen the method
 	 * @return a CFGBuilder for the method
 	 */
 	public static CFGBuilder create(MethodGen methodGen) {
-		return new BetterCFGBuilder(methodGen);
+		return OLD_CFG
+			? (CFGBuilder) new BetterCFGBuilder(methodGen)
+			: (CFGBuilder) new BetterCFGBuilder2(methodGen);
 	}
 }
 
