@@ -44,29 +44,288 @@ public class ClassContext implements AnalysisFeatures {
 
 	public static final boolean DEBUG = Boolean.getBoolean("classContext.debug");
 
+	private static final int PRUNED_INFEASIBLE_EXCEPTIONS = 1;
+	private static final int PRUNED_UNCONDITIONAL_THROWERS = 2;
+
+	/* ----------------------------------------------------------------------
+	 * Helper classes
+	 * ---------------------------------------------------------------------- */
+
+	private abstract class AnalysisFactory<AnalysisResult> {
+		private IdentityHashMap<Method, AnalysisResult> map = new IdentityHashMap<Method, AnalysisResult>();
+
+		public AnalysisResult getAnalysis(Method method) throws CFGBuilderException, DataflowAnalysisException {
+			AnalysisResult result = map.get(method);
+			if (result == null) {
+				result = analyze(method);
+				map.put(method, result);
+			}
+			return result;
+		}
+
+		protected abstract AnalysisResult analyze(Method method)
+			throws CFGBuilderException, DataflowAnalysisException;
+	}
+
+	private abstract class NoExceptionAnalysisFactory<AnalysisResult> extends AnalysisFactory<AnalysisResult> {
+		public AnalysisResult getAnalysis(Method method) {
+			try {
+				return super.getAnalysis(method);
+			} catch (DataflowAnalysisException e) {
+				throw new IllegalStateException("Should not happen");
+			} catch (CFGBuilderException e) {
+				throw new IllegalStateException("Should not happen");
+			}
+		}
+	}
+
+	private abstract class NoDataflowAnalysisFactory<AnalysisResult> extends AnalysisFactory<AnalysisResult> {
+		public AnalysisResult getAnalysis(Method method) throws CFGBuilderException {
+			try {
+				return super.getAnalysis(method);
+			} catch (DataflowAnalysisException e) {
+				throw new IllegalStateException("Should not happen");
+			}
+		}
+	}
+
+	private class CFGFactory extends AnalysisFactory<CFG> {
+		private Set<String> busyCFGSet = new HashSet<String>();
+
+		public CFG getAnalysis(Method method) throws CFGBuilderException {
+			try {
+				return super.getAnalysis(method);
+			} catch (DataflowAnalysisException e) {
+				throw new IllegalStateException("Should not happen");
+			}
+		}
+
+		public CFG getRawCFG(Method method) throws CFGBuilderException {
+			return getAnalysis(method);
+		}
+
+		public CFG getRefinedCFG(Method method) throws CFGBuilderException {
+			MethodGen methodGen = getMethodGen(method);
+
+			CFG cfg = getRawCFG(method);
+
+			// HACK:
+			// Due to recursive method invocations, we may get a recursive
+			// request for the pruned CFG of a method.  In this case,
+			// we just return the raw CFG.
+			String methodId = methodGen.getClassName()+"."+methodGen.getName()+":"+methodGen.getSignature();
+			if (DEBUG) System.out.println("ClassContext: request to prune " + methodId);
+			if (!busyCFGSet.add(methodId))
+				return cfg;
+
+			if (PRUNE_INFEASIBLE_EXCEPTION_EDGES && !cfg.isFlagSet(PRUNED_INFEASIBLE_EXCEPTIONS)) {
+				try {
+					TypeDataflow typeDataflow = getTypeDataflow(method);
+					new PruneInfeasibleExceptionEdges(cfg, getMethodGen(method), typeDataflow, getConstantPoolGen()).execute();
+				} catch (DataflowAnalysisException e) {
+					// FIXME: should report the error
+				} catch (ClassNotFoundException e) {
+					lookupFailureCallback.reportMissingClass(e);
+				}
+			}
+			cfg.setFlags(cfg.getFlags() | PRUNED_INFEASIBLE_EXCEPTIONS);
+
+			if (PRUNE_UNCONDITIONAL_EXCEPTION_THROWER_EDGES && !cfg.isFlagSet(PRUNED_UNCONDITIONAL_THROWERS)) {
+				try {
+					new PruneUnconditionalExceptionThrowerEdges(
+						methodGen, cfg, getConstantPoolGen(), lookupFailureCallback).execute();
+				} catch (DataflowAnalysisException e) {
+					// FIXME: should report the error
+				}
+			}
+			cfg.setFlags(cfg.getFlags() | PRUNED_UNCONDITIONAL_THROWERS);
+
+			busyCFGSet.remove(methodId);
+
+			return cfg;
+		}
+
+		protected CFG analyze(Method method) throws CFGBuilderException {
+			MethodGen methodGen = getMethodGen(method);
+			CFGBuilder cfgBuilder = CFGBuilderFactory.create(methodGen);
+			cfgBuilder.build();
+			return cfgBuilder.getCFG();
+		}
+	}
+
+	/* ----------------------------------------------------------------------
+	 * Fields
+	 * ---------------------------------------------------------------------- */
+
 	private JavaClass jclass;
 	private RepositoryLookupFailureCallback lookupFailureCallback;
-	private IdentityHashMap<Method, MethodGen> methodGenMap = new IdentityHashMap<Method, MethodGen>();
-	private IdentityHashMap<Method, CFG> cfgMap = new IdentityHashMap<Method, CFG>();
-	private IdentityHashMap<Method, ValueNumberDataflow> vnaDataflowMap = new IdentityHashMap<Method, ValueNumberDataflow>();
-	private IdentityHashMap<Method, IsNullValueDataflow> invDataflowMap = new IdentityHashMap<Method, IsNullValueDataflow>();
-	private IdentityHashMap<Method, DepthFirstSearch> dfsMap = new IdentityHashMap<Method, DepthFirstSearch>();
-	private IdentityHashMap<Method, ReverseDepthFirstSearch> rdfsMap =
-		new IdentityHashMap<Method, ReverseDepthFirstSearch>();
-	private IdentityHashMap<Method, TypeDataflow> typeDataflowMap = new IdentityHashMap<Method, TypeDataflow>();
-	private IdentityHashMap<Method, BitSet> bytecodeMap = new IdentityHashMap<Method, BitSet>();
-	private IdentityHashMap<Method, LockCountDataflow> anyLockCountDataflowMap =
-		new IdentityHashMap<Method, LockCountDataflow>();
-	private IdentityHashMap<Method, LockDataflow> lockDataflowMap = new IdentityHashMap<Method, LockDataflow>();
-	private IdentityHashMap<Method, ReturnPathDataflow> returnPathDataflowMap =
-		new IdentityHashMap<Method, ReturnPathDataflow>();
-	private IdentityHashMap<Method, DominatorsAnalysis> nonExceptionDominatorsAnalysisMap =
-		new IdentityHashMap<Method, DominatorsAnalysis>();
-	private IdentityHashMap<Method, PostDominatorsAnalysis> nonExceptionPostDominatorsAnalysisMap =
-		new IdentityHashMap<Method, PostDominatorsAnalysis>();
+	private NoExceptionAnalysisFactory<MethodGen> methodGenFactory = new NoExceptionAnalysisFactory<MethodGen>() {
+		protected MethodGen analyze(Method method) {
+			if (method.getCode() == null)
+				return null;
+			return new MethodGen(method, jclass.getClassName(), getConstantPoolGen());
+		}
+	};
+
+	private CFGFactory cfgFactory = new CFGFactory();
+
+	private AnalysisFactory<ValueNumberDataflow> vnaDataflowFactory = new AnalysisFactory<ValueNumberDataflow>() {
+		protected ValueNumberDataflow analyze(Method method) throws DataflowAnalysisException, CFGBuilderException {
+			MethodGen methodGen = getMethodGen(method);
+			DepthFirstSearch dfs = getDepthFirstSearch(method);
+			ValueNumberAnalysis analysis = new ValueNumberAnalysis(methodGen, dfs, lookupFailureCallback);
+			CFG cfg = getCFG(method);
+			ValueNumberDataflow vnaDataflow = new ValueNumberDataflow(cfg, analysis);
+			vnaDataflow.execute();
+			return vnaDataflow;
+		}
+	};
+
+	private AnalysisFactory<IsNullValueDataflow> invDataflowFactory = new AnalysisFactory<IsNullValueDataflow>() {
+		protected IsNullValueDataflow analyze(Method method) throws DataflowAnalysisException, CFGBuilderException {
+			MethodGen methodGen = getMethodGen(method);
+			CFG cfg = getCFG(method);
+			ValueNumberDataflow vnaDataflow = getValueNumberDataflow(method);
+			DepthFirstSearch dfs = getDepthFirstSearch(method);
+			AssertionMethods assertionMethods = getAssertionMethods();
+
+			IsNullValueAnalysis invAnalysis = new IsNullValueAnalysis(methodGen, cfg, vnaDataflow, dfs, assertionMethods);
+			IsNullValueDataflow invDataflow = new IsNullValueDataflow(cfg, invAnalysis);
+			invDataflow.execute();
+			return invDataflow;
+		}
+	};
+
+	private AnalysisFactory<TypeDataflow> typeDataflowFactory = new AnalysisFactory<TypeDataflow>() {
+		protected TypeDataflow analyze(Method method) throws DataflowAnalysisException, CFGBuilderException {
+			MethodGen methodGen = getMethodGen(method);
+			CFG cfg = getRawCFG(method);
+			DepthFirstSearch dfs = getDepthFirstSearch(method);
+
+			TypeAnalysis typeAnalysis = new TypeAnalysis(methodGen, cfg, dfs, lookupFailureCallback);
+			TypeDataflow typeDataflow = new TypeDataflow(cfg, typeAnalysis);
+			typeDataflow.execute();
+
+			return typeDataflow;
+		}
+	};
+
+	private NoDataflowAnalysisFactory<DepthFirstSearch> dfsFactory = new NoDataflowAnalysisFactory<DepthFirstSearch>() {
+		protected DepthFirstSearch analyze(Method method) throws CFGBuilderException {
+			CFG cfg = getRawCFG(method);
+			DepthFirstSearch dfs = new DepthFirstSearch(cfg);
+			dfs.search();
+			return dfs;
+		}
+	};
+
+	private NoDataflowAnalysisFactory<ReverseDepthFirstSearch> rdfsFactory =
+	new NoDataflowAnalysisFactory<ReverseDepthFirstSearch>() {
+		protected ReverseDepthFirstSearch analyze(Method method) throws CFGBuilderException {
+			CFG cfg = getRawCFG(method);
+			ReverseDepthFirstSearch rdfs = new ReverseDepthFirstSearch(cfg);
+			rdfs.search();
+			return rdfs;
+		}
+	};
+
+	private NoExceptionAnalysisFactory<BitSet> bytecodeSetFactory = new NoExceptionAnalysisFactory<BitSet>() {
+		protected BitSet analyze(Method method) {
+			final BitSet result = new BitSet();
+
+			Code code = method.getCode();
+			if (code != null) {
+				byte[] instructionList = code.getCode();
+	
+				// Create a callback to put the opcodes of the method's
+				// bytecode instructions into the BitSet.
+				BytecodeScanner.Callback callback = new BytecodeScanner.Callback() {
+					public void handleInstruction(int opcode, int index) {
+						result.set(opcode, true);
+					}
+				};
+	
+				// Scan the method.
+				BytecodeScanner scanner = new BytecodeScanner();
+				scanner.scan(instructionList, callback);
+			}
+
+			return result;
+		}
+	};
+
+	private AnalysisFactory<LockCountDataflow> anyLockCountDataflowFactory = new AnalysisFactory<LockCountDataflow>() {
+		protected LockCountDataflow analyze(Method method) throws DataflowAnalysisException, CFGBuilderException {
+			MethodGen methodGen = getMethodGen(method);
+			ValueNumberDataflow vnaDataflow = getValueNumberDataflow(method);
+			DepthFirstSearch dfs = getDepthFirstSearch(method);
+			CFG cfg = getCFG(method);
+
+			AnyLockCountAnalysis analysis = new AnyLockCountAnalysis(methodGen, vnaDataflow, dfs);
+			LockCountDataflow dataflow = new LockCountDataflow(cfg, analysis);
+			dataflow.execute();
+			return dataflow;
+		}
+	};
+
+	private AnalysisFactory<LockDataflow> lockDataflowFactory = new AnalysisFactory<LockDataflow>() {
+		protected LockDataflow analyze(Method method) throws DataflowAnalysisException, CFGBuilderException {
+			MethodGen methodGen = getMethodGen(method);
+			ValueNumberDataflow vnaDataflow = getValueNumberDataflow(method);
+			DepthFirstSearch dfs = getDepthFirstSearch(method);
+			CFG cfg = getCFG(method);
+
+			LockAnalysis analysis = new LockAnalysis(methodGen, vnaDataflow, dfs);
+			LockDataflow dataflow = new LockDataflow(cfg, analysis);
+			dataflow.execute();
+			return dataflow;
+		}
+	};
+
+	private AnalysisFactory<ReturnPathDataflow> returnPathDataflowFactory = new AnalysisFactory<ReturnPathDataflow>() {
+		protected ReturnPathDataflow analyze(Method method) throws DataflowAnalysisException, CFGBuilderException {
+			CFG cfg = getCFG(method);
+			DepthFirstSearch dfs = getDepthFirstSearch(method);
+			ReturnPathAnalysis analysis = new ReturnPathAnalysis(dfs);
+			ReturnPathDataflow dataflow = new ReturnPathDataflow(cfg, analysis);
+			dataflow.execute();
+			return dataflow;
+		}
+	};
+
+	private AnalysisFactory<DominatorsAnalysis> nonExceptionDominatorsAnalysisFactory =
+	new AnalysisFactory<DominatorsAnalysis>() {
+		protected DominatorsAnalysis analyze(Method method) throws DataflowAnalysisException, CFGBuilderException {
+			CFG cfg = getCFG(method);
+			DepthFirstSearch dfs = getDepthFirstSearch(method);
+			DominatorsAnalysis analysis = new DominatorsAnalysis(cfg, dfs, true);
+			Dataflow<java.util.BitSet, DominatorsAnalysis> dataflow =
+				new Dataflow<java.util.BitSet, DominatorsAnalysis>(cfg, analysis);
+			dataflow.execute();
+			return analysis;
+		}
+	};
+
+	private AnalysisFactory<PostDominatorsAnalysis> nonExceptionPostDominatorsAnalysisFactory =
+	new AnalysisFactory<PostDominatorsAnalysis>() {
+		protected PostDominatorsAnalysis analyze(Method method) throws DataflowAnalysisException, CFGBuilderException {
+			CFG cfg = getCFG(method);
+			ReverseDepthFirstSearch rdfs = getReverseDepthFirstSearch(method);
+			PostDominatorsAnalysis analysis = new PostDominatorsAnalysis(cfg, rdfs, true);
+			Dataflow<java.util.BitSet, PostDominatorsAnalysis> dataflow =
+				new Dataflow<java.util.BitSet, PostDominatorsAnalysis>(cfg, analysis);
+			dataflow.execute();
+			return analysis;
+		}
+	};
+
 	private ClassGen classGen;
 	private AssignedFieldMap assignedFieldMap;
 	private AssertionMethods assertionMethods;
+
+	/* ----------------------------------------------------------------------
+	 * Public methods
+	 * ---------------------------------------------------------------------- */
 
 	/**
 	 * Constructor.
@@ -101,17 +360,8 @@ public class ClassContext implements AnalysisFeatures {
 	 *   if the method has no Code attribute (and thus cannot be analyzed)
 	 */
 	public MethodGen getMethodGen(Method method) {
-		MethodGen methodGen = methodGenMap.get(method);
-		if (methodGen == null && method.getCode() != null) {
-			ConstantPoolGen cpg = getConstantPoolGen();
-			methodGen = new MethodGen(method, jclass.getClassName(), cpg);
-			methodGenMap.put(method, methodGen);
-		}
-		return methodGen;
+		return methodGenFactory.getAnalysis(method);
 	}
-
-	private static final int PRUNED_INFEASIBLE_EXCEPTIONS = 1;
-	private static final int PRUNED_UNCONDITIONAL_THROWERS = 2;
 
 	/**
 	 * Get a "raw" CFG for given method.
@@ -120,34 +370,8 @@ public class ClassContext implements AnalysisFeatures {
 	 * @return the raw CFG
 	 */
 	public CFG getRawCFG(Method method) throws CFGBuilderException {
-		CFG cfg = cfgMap.get(method);
-		if (cfg == null) {
-			MethodGen methodGen = getMethodGen(method);
-			if (DEBUG) System.out.println("Building CFG for " + methodGen.getClassName() + "." + methodGen.getName() + ":" + methodGen.getSignature());
-			CFGBuilder cfgBuilder = CFGBuilderFactory.create(methodGen);
-			cfgBuilder.build();
-			cfg = cfgBuilder.getCFG();
-			cfgMap.put(method, cfg);
-		}
-		return cfg;
+		return cfgFactory.getRawCFG(method);
 	}
-
-	/**
-	 * Set to keep track of which CFGs are being pruned.
-	 * Because pruning is potentially interprocedural, we have
-	 * to guard against recursive (and thus infinite) invocations.
-	 * This has to be static because in the interest of conserving
-	 * memory, we do <em>not</em> depend on having unique
-	 * a ClassContext object for a given class.  The reason is that
-	 * only a fixed number of ClassContext objects are cached
-	 * at any given time, and the least recently used one will be
-	 * discarded when the cache becomes full.  Therefore,
-	 * recursive CFG construction requests for the same class/method
-	 * may be made to different ClassContext objects.
-	 * <p> At some point, we will probably want to put more thought into
-	 * how interprocedural analyses are integrated into FindBugs.
-	 */
-	private static Set<String> busyCFGSet = new HashSet<String>();
 
 	/**
 	 * Get a CFG for given method.
@@ -161,44 +385,7 @@ public class ClassContext implements AnalysisFeatures {
 	 * @throws CFGBuilderException if a CFG cannot be constructed for the method
 	 */
 	public CFG getCFG(Method method) throws CFGBuilderException {
-		MethodGen methodGen = getMethodGen(method);
-
-		CFG cfg = getRawCFG(method);
-
-		// HACK:
-		// Due to recursive method invocations, we may get a recursive
-		// request for the pruned CFG of a method.  In this case,
-		// we just return the raw CFG.
-		String methodId = methodGen.getClassName()+"."+methodGen.getName()+":"+methodGen.getSignature();
-		if (DEBUG) System.out.println("ClassContext: request to prune " + methodId);
-		if (!busyCFGSet.add(methodId))
-			return cfg;
-
-		if (PRUNE_INFEASIBLE_EXCEPTION_EDGES && !cfg.isFlagSet(PRUNED_INFEASIBLE_EXCEPTIONS)) {
-			try {
-				TypeDataflow typeDataflow = getTypeDataflow(method);
-				new PruneInfeasibleExceptionEdges(cfg, getMethodGen(method), typeDataflow, getConstantPoolGen()).execute();
-			} catch (DataflowAnalysisException e) {
-				// FIXME: should report the error
-			} catch (ClassNotFoundException e) {
-				lookupFailureCallback.reportMissingClass(e);
-			}
-		}
-		cfg.setFlags(cfg.getFlags() | PRUNED_INFEASIBLE_EXCEPTIONS);
-
-		if (PRUNE_UNCONDITIONAL_EXCEPTION_THROWER_EDGES && !cfg.isFlagSet(PRUNED_UNCONDITIONAL_THROWERS)) {
-			try {
-				new PruneUnconditionalExceptionThrowerEdges(
-					methodGen, cfg, getConstantPoolGen(), lookupFailureCallback).execute();
-			} catch (DataflowAnalysisException e) {
-				// FIXME: should report the error
-			}
-		}
-		cfg.setFlags(cfg.getFlags() | PRUNED_UNCONDITIONAL_THROWERS);
-
-		busyCFGSet.remove(methodId);
-
-		return cfg;
+		return cfgFactory.getRefinedCFG(method);
 	}
 
 	/**
@@ -218,17 +405,7 @@ public class ClassContext implements AnalysisFeatures {
 	 * @return the ValueNumberDataflow
 	 */
 	public ValueNumberDataflow getValueNumberDataflow(Method method) throws DataflowAnalysisException, CFGBuilderException {
-		ValueNumberDataflow vnaDataflow = vnaDataflowMap.get(method);
-		if (vnaDataflow == null) {
-			MethodGen methodGen = getMethodGen(method);
-			DepthFirstSearch dfs = getDepthFirstSearch(method);
-			ValueNumberAnalysis analysis = new ValueNumberAnalysis(methodGen, dfs, lookupFailureCallback);
-			CFG cfg = getCFG(method);
-			vnaDataflow = new ValueNumberDataflow(cfg, analysis);
-			vnaDataflow.execute();
-			vnaDataflowMap.put(method, vnaDataflow);
-		}
-		return vnaDataflow;
+		return vnaDataflowFactory.getAnalysis(method);
 	}
 
 	/**
@@ -237,21 +414,7 @@ public class ClassContext implements AnalysisFeatures {
 	 * @return the IsNullValueDataflow
 	 */
 	public IsNullValueDataflow getIsNullValueDataflow(Method method) throws DataflowAnalysisException, CFGBuilderException {
-		IsNullValueDataflow invDataflow = invDataflowMap.get(method);
-		if (invDataflow == null) {
-			MethodGen methodGen = getMethodGen(method);
-			CFG cfg = getCFG(method);
-			ValueNumberDataflow vnaDataflow = getValueNumberDataflow(method);
-			DepthFirstSearch dfs = getDepthFirstSearch(method);
-			AssertionMethods assertionMethods = getAssertionMethods();
-
-			IsNullValueAnalysis invAnalysis = new IsNullValueAnalysis(methodGen, cfg, vnaDataflow, dfs, assertionMethods);
-			invDataflow = new IsNullValueDataflow(cfg, invAnalysis);
-			invDataflow.execute();
-
-			invDataflowMap.put(method, invDataflow);
-		}
-		return invDataflow;
+		return invDataflowFactory.getAnalysis(method);
 	}
 
 	/**
@@ -260,19 +423,7 @@ public class ClassContext implements AnalysisFeatures {
 	 * @return the TypeDataflow
 	 */
 	public TypeDataflow getTypeDataflow(Method method) throws DataflowAnalysisException, CFGBuilderException {
-		TypeDataflow typeDataflow = typeDataflowMap.get(method);
-		if (typeDataflow == null ) {
-			MethodGen methodGen = getMethodGen(method);
-			CFG cfg = getRawCFG(method);
-			DepthFirstSearch dfs = getDepthFirstSearch(method);
-
-			TypeAnalysis typeAnalysis = new TypeAnalysis(methodGen, cfg, dfs, lookupFailureCallback);
-			typeDataflow = new TypeDataflow(cfg, typeAnalysis);
-			typeDataflow.execute();
-
-			typeDataflowMap.put(method, typeDataflow);
-		}
-		return typeDataflow;
+		return typeDataflowFactory.getAnalysis(method);
 	}
 
 	/**
@@ -281,14 +432,7 @@ public class ClassContext implements AnalysisFeatures {
 	 * @return the DepthFirstSearch
 	 */
 	public DepthFirstSearch getDepthFirstSearch(Method method) throws CFGBuilderException {
-		DepthFirstSearch dfs = dfsMap.get(method);
-		if (dfs == null) {
-			CFG cfg = getRawCFG(method);
-			dfs = new DepthFirstSearch(cfg);
-			dfs.search();
-			dfsMap.put(method, dfs);
-		}
-		return dfs;
+		return dfsFactory.getAnalysis(method);
 	}
 
 	/**
@@ -298,14 +442,7 @@ public class ClassContext implements AnalysisFeatures {
 	 */
 	public ReverseDepthFirstSearch getReverseDepthFirstSearch(Method method)
 		throws CFGBuilderException {
-		ReverseDepthFirstSearch rdfs = rdfsMap.get(method);
-		if (rdfs == null) {
-			CFG cfg = getRawCFG(method);
-			rdfs = new ReverseDepthFirstSearch(cfg);
-			rdfs.search();
-			rdfsMap.put(method, rdfs);
-		}
-		return rdfs;
+		return rdfsFactory.getAnalysis(method);
 	}
 
 	/**
@@ -319,32 +456,7 @@ public class ClassContext implements AnalysisFeatures {
 	 * @return the BitSet containing the opcodes which appear in the method
 	 */
 	public BitSet getBytecodeSet(Method method) {
-		BitSet bytecodeSet = bytecodeMap.get(method);
-		if (bytecodeSet == null) {
-			final BitSet result = new BitSet();
-
-			Code code = method.getCode();
-			if (code != null) {
-				byte[] instructionList = code.getCode();
-	
-				// Create a callback to put the opcodes of the method's
-				// bytecode instructions into the BitSet.
-				BytecodeScanner.Callback callback = new BytecodeScanner.Callback() {
-					public void handleInstruction(int opcode, int index) {
-						result.set(opcode, true);
-					}
-				};
-	
-				// Scan the method.
-				BytecodeScanner scanner = new BytecodeScanner();
-				scanner.scan(instructionList, callback);
-			}
-
-			// Save the result in the map.
-			bytecodeSet = result;
-			bytecodeMap.put(method, bytecodeSet);
-		}
-		return bytecodeSet;
+		return bytecodeSetFactory.getAnalysis(method);
 	}
 
 	/**
@@ -354,22 +466,7 @@ public class ClassContext implements AnalysisFeatures {
 	 */
 	public LockCountDataflow getAnyLockCountDataflow(Method method)
 		throws CFGBuilderException, DataflowAnalysisException {
-
-		LockCountDataflow dataflow = anyLockCountDataflowMap.get(method);
-		if (dataflow == null) {
-			MethodGen methodGen = getMethodGen(method);
-			ValueNumberDataflow vnaDataflow = getValueNumberDataflow(method);
-			DepthFirstSearch dfs = getDepthFirstSearch(method);
-			CFG cfg = getCFG(method);
-
-			AnyLockCountAnalysis analysis = new AnyLockCountAnalysis(methodGen, vnaDataflow, dfs);
-			dataflow = new LockCountDataflow(cfg, analysis);
-			dataflow.execute();
-
-			anyLockCountDataflowMap.put(method, dataflow);
-		}
-
-		return dataflow;
+		return anyLockCountDataflowFactory.getAnalysis(method);
 	}
 
 	/**
@@ -379,21 +476,39 @@ public class ClassContext implements AnalysisFeatures {
 	 */
 	public LockDataflow getLockDataflow(Method method)
 		throws CFGBuilderException, DataflowAnalysisException {
+		return lockDataflowFactory.getAnalysis(method);
+	}
 
-		LockDataflow dataflow = lockDataflowMap.get(method);
-		if (dataflow == null) {
-			MethodGen methodGen = getMethodGen(method);
-			ValueNumberDataflow vnaDataflow = getValueNumberDataflow(method);
-			DepthFirstSearch dfs = getDepthFirstSearch(method);
-			CFG cfg = getCFG(method);
+	/**
+	 * Get ReturnPathDataflow for method.
+	 * @param method the method
+	 * @return the ReturnPathDataflow
+	 */
+	public ReturnPathDataflow getReturnPathDataflow(Method method)
+		throws CFGBuilderException, DataflowAnalysisException {
+		return returnPathDataflowFactory.getAnalysis(method);
+	}
 
-			LockAnalysis analysis = new LockAnalysis(methodGen, vnaDataflow, dfs);
-			dataflow = new LockDataflow(cfg, analysis);
-			dataflow.execute();
+	/**
+	 * Get DominatorsAnalysis for given method,
+	 * where exception edges are ignored.
+	 * @param method the method
+	 * @return the DominatorsAnalysis
+	 */
+	public DominatorsAnalysis getNonExceptionDominatorsAnalysis(Method method)
+		throws CFGBuilderException, DataflowAnalysisException {
+		return nonExceptionDominatorsAnalysisFactory.getAnalysis(method);
+	}
 
-			lockDataflowMap.put(method, dataflow);
-		}
-		return dataflow;
+	/**
+	 * Get PostDominatorsAnalysis for given method,
+	 * where exception edges are ignored.
+	 * @param method the method
+	 * @param the PostDominatorsAnalysis
+	 */
+	public PostDominatorsAnalysis getNonExceptionPostDominatorsAnalysis(Method method)
+		throws CFGBuilderException, DataflowAnalysisException {
+		return nonExceptionPostDominatorsAnalysisFactory.getAnalysis(method);
 	}
 
 	/**
@@ -411,68 +526,6 @@ public class ClassContext implements AnalysisFeatures {
 	}
 
 	/**
-	 * Get ReturnPathDataflow for method.
-	 * @param method the method
-	 * @return the ReturnPathDataflow
-	 */
-	public ReturnPathDataflow getReturnPathDataflow(Method method)
-		throws CFGBuilderException, DataflowAnalysisException {
-
-		ReturnPathDataflow dataflow = returnPathDataflowMap.get(method);
-		if (dataflow == null) {
-			CFG cfg = getCFG(method);
-			DepthFirstSearch dfs = getDepthFirstSearch(method);
-			ReturnPathAnalysis analysis = new ReturnPathAnalysis(dfs);
-			dataflow = new ReturnPathDataflow(cfg, analysis);
-			dataflow.execute();
-			returnPathDataflowMap.put(method, dataflow);
-		}
-		return dataflow;
-	}
-
-	/**
-	 * Get DominatorsAnalysis for given method,
-	 * where exception edges are ignored.
-	 * @param method the method
-	 * @return the DominatorsAnalysis
-	 */
-	public DominatorsAnalysis getNonExceptionDominatorsAnalysis(Method method)
-		throws CFGBuilderException, DataflowAnalysisException {
-		DominatorsAnalysis analysis = nonExceptionDominatorsAnalysisMap.get(method);
-		if (analysis == null) {
-			CFG cfg = getCFG(method);
-			DepthFirstSearch dfs = getDepthFirstSearch(method);
-			analysis = new DominatorsAnalysis(cfg, dfs, true);
-			Dataflow<java.util.BitSet, DominatorsAnalysis> dataflow =
-				new Dataflow<java.util.BitSet, DominatorsAnalysis>(cfg, analysis);
-			dataflow.execute();
-			nonExceptionDominatorsAnalysisMap.put(method, analysis);
-		}
-		return analysis;
-	}
-
-	/**
-	 * Get PostDominatorsAnalysis for given method,
-	 * where exception edges are ignored.
-	 * @param method the method
-	 * @param the PostDominatorsAnalysis
-	 */
-	public PostDominatorsAnalysis getNonExceptionPostDominatorsAnalysis(Method method)
-		throws CFGBuilderException, DataflowAnalysisException {
-		PostDominatorsAnalysis analysis = nonExceptionPostDominatorsAnalysisMap.get(method);
-		if (analysis == null) {
-			CFG cfg = getCFG(method);
-			ReverseDepthFirstSearch rdfs = getReverseDepthFirstSearch(method);
-			analysis = new PostDominatorsAnalysis(cfg, rdfs, true);
-			Dataflow<java.util.BitSet, PostDominatorsAnalysis> dataflow =
-				new Dataflow<java.util.BitSet, PostDominatorsAnalysis>(cfg, analysis);
-			dataflow.execute();
-			nonExceptionPostDominatorsAnalysisMap.put(method, analysis);
-		}
-		return analysis;
-	}
-
-	/**
 	 * Get AssertionMethods for class.
 	 * @return the AssertionMethods
 	 */
@@ -484,4 +537,4 @@ public class ClassContext implements AnalysisFeatures {
 	}
 }
 
-// vim:ts=4
+// vim:ts=3
