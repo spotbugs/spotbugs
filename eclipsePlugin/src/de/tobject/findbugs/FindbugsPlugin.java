@@ -38,14 +38,18 @@ import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.QualifiedName;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
+
+import sun.security.action.GetLongAction;
 
 import de.tobject.findbugs.builder.AbstractFilesCollector;
 import de.tobject.findbugs.builder.FilesCollectorFactory;
@@ -285,6 +289,17 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 		// TODO implement me!
 		return key;
 	}
+
+	/**
+	 * Log an exception.
+	 * 
+	 * @param e       the exception
+	 * @param message message describing how/why the exception occurred
+	 */
+	public void logException(Exception e, String message) {
+		IStatus status = new Status(IStatus.ERROR, FindbugsPlugin.PLUGIN_ID, 0, message, e);
+		getLog().log(status);
+	}
 	
 	/**
 	 * Get a sub ruleset from a rule list
@@ -302,8 +317,8 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 				}
 			}
 			catch (RuntimeException e) {
-				// TODO exception handling
-				e.printStackTrace();
+				FindbugsPlugin.getDefault().logException(
+						e, "Could not parse selected detectors for project");
 			}
 		}
 		return factoryList;

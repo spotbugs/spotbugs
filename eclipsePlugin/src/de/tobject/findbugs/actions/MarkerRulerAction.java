@@ -161,7 +161,8 @@ public class MarkerRulerAction implements IEditorActionDelegate, IUpdate, MouseL
 			allMarkers = resource.findMarkers(FindBugsMarker.NAME, true, 0);
 		}
 		catch (CoreException e) {
-			// TODO log exception
+			FindbugsPlugin.getDefault().logException(
+					e, "Could not enumerate markers for resource " + resource.getName());
 			return;
 		}
 
@@ -177,7 +178,8 @@ public class MarkerRulerAction implements IEditorActionDelegate, IUpdate, MouseL
 					}
 				}
 				catch (CoreException e) {
-					// TODO log exception
+					FindbugsPlugin.getDefault().logException(
+							e, "Error inspecting markers to find FindBugs warnings");
 				}
 			}
 		}
@@ -207,7 +209,8 @@ public class MarkerRulerAction implements IEditorActionDelegate, IUpdate, MouseL
 
 				}
 				catch (PartInitException e) {
-					// TODO log view exception
+					FindbugsPlugin.getDefault().logException(
+							e, "Could not update bug details view");
 				}
 			}
 		}
@@ -230,7 +233,7 @@ public class MarkerRulerAction implements IEditorActionDelegate, IUpdate, MouseL
 				}
 			}
 			catch (BadLocationException x) {
-				//TODO: log location exception
+				FindbugsPlugin.getDefault().logException(x, "Error getting marker line");
 			}
 		}
 		return false;

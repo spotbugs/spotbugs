@@ -20,12 +20,9 @@
 
 package de.tobject.findbugs.reporter;
 
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Iterator;
-import java.util.Set;
 
-import org.dom4j.DocumentException;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
@@ -48,7 +45,6 @@ import org.eclipse.swt.widgets.Shell;
 
 import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.marker.FindBugsMarker;
-
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.PackageMemberAnnotation;
 import edu.umd.cs.findbugs.SortedBugCollection;
@@ -91,8 +87,8 @@ public abstract class MarkerUtil {
 			resource = getUnderlyingResource(bug, project);
 		}
 		catch (JavaModelException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			FindbugsPlugin.getDefault().logException(
+					e1, "Could not find class resource for FindBugs warning");
 		}
 		if (resource != null) {
 			// default - first class line
@@ -224,8 +220,7 @@ public abstract class MarkerUtil {
 				}
 			}
 			catch (InvalidInputException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				FindbugsPlugin.getDefault().logException(e, "Could not find line number for Java type");
 			}
 			return scanner.getLineNumber(range.getOffset());
 		}
@@ -239,11 +234,11 @@ public abstract class MarkerUtil {
 		}
 		try {
 			int innerNumber = Integer.parseInt(name);
-			return findInnerAnonimousClassSourceLine(javaElement, innerNumber);
+			return findInnerAnonymousClassSourceLine(javaElement, innerNumber);
 		}
 		catch (NumberFormatException e) {
-			// TODO: handle exception
-			e.printStackTrace();
+			FindbugsPlugin.getDefault().logException(
+					e, "Could not find source line information for class member");
 		}
 		return -1;
 	}
@@ -252,7 +247,7 @@ public abstract class MarkerUtil {
 	 * @param javaElement
 	 * @return
 	 */
-	public static int findInnerAnonimousClassSourceLine(IJavaElement javaElement, int innerNumber) {
+	public static int findInnerAnonymousClassSourceLine(IJavaElement javaElement, int innerNumber) {
 		IOpenable op = javaElement.getOpenable();
 		if (!(op instanceof CompilationUnit)) {
 			return -1;
@@ -293,8 +288,7 @@ public abstract class MarkerUtil {
 			}
 		}
 		catch (InvalidInputException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			FindbugsPlugin.getDefault().logException(e, "Error scanning for inner class start line");
 		}
 		return -1;
 	}
@@ -388,25 +382,22 @@ public abstract class MarkerUtil {
 							}
 						}
 						
-					} catch (CoreException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (DocumentException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+					} catch (RuntimeException e) {
+						throw e;
+					} catch (Exception e) {
+						// Multiple checked exception types caught here
+						FindbugsPlugin.getDefault().logException(
+								e, "Error redisplaying FindBugs warning markers");
 					}
 				}
 				
 			});
-		} catch (InvocationTargetException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} catch (RuntimeException e) {
+			throw e;
+		} catch (Exception e) {
+			// Multiple checked exception types caught here
+			FindbugsPlugin.getDefault().logException(
+					e, "Error redisplaying FindBugs warning markers");
 		}
 
 	}

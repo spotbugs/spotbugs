@@ -78,8 +78,7 @@ public class Reporter extends AbstractBugReporter {
 		try {
 			this.filterSettings = FindbugsPlugin.getProjectFilterSettings(project);
 		} catch (CoreException e) {
-			// FIXME: log the error
-			e.printStackTrace();
+			FindbugsPlugin.getDefault().logException(e, "Error getting filter settings for project");
 			this.filterSettings = ProjectFilterSettings.createDefault();
 		}
 	}
@@ -131,11 +130,9 @@ public class Reporter extends AbstractBugReporter {
 		try {
 			FindbugsPlugin.storeBugCollection(project, getBugCollection(), findBugsProject, monitor);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			FindbugsPlugin.getDefault().logException(e, "Could not save FindBugs warnings for project");
 		} catch (CoreException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			FindbugsPlugin.getDefault().logException(e, "Could not save FindBugs warnings for project");
 		}
 	}
 	

@@ -118,7 +118,7 @@ public class FindbugsPropertyPage extends PropertyPage {
 			// Get the ProjectFilterSettings for the project.
 			this.origFilterSettings = FindbugsPlugin.getProjectFilterSettings(project);
 		} catch (CoreException e) {
-			// FIXME: log the exception
+			FindbugsPlugin.getDefault().logException(e, "Could not get filter settings for project");
 			
 			// Use default settings
 			this.origFilterSettings = ProjectFilterSettings.createDefault();
@@ -299,8 +299,7 @@ public class FindbugsPropertyPage extends PropertyPage {
 			selectedFactoryList = FindbugsPlugin.readDetectorFactories(project);
 		}
 		catch (CoreException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			FindbugsPlugin.getDefault().logException(e, "Could not populate detector table");
 			return;
 		}
 
@@ -398,8 +397,7 @@ public class FindbugsPropertyPage extends PropertyPage {
 			try {
 				FindbugsPlugin.storeProjectFilterSettings(project, updatedFilterSettings);
 			} catch (CoreException e) {
-				// FIXME: log the error
-				e.printStackTrace();
+				FindbugsPlugin.getDefault().logException(e, "Could not store filter settings for project");
 			}
 		}
 		
@@ -584,8 +582,8 @@ public class FindbugsPropertyPage extends PropertyPage {
 				factoryList);
 		}
 		catch (CoreException e) {
-			// TODO exception handling
-			e.printStackTrace();
+			FindbugsPlugin.getDefault().logException(
+					e, "Could not store selected detectors for project");
 		}
 	}
 

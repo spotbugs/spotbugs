@@ -43,7 +43,7 @@ import edu.umd.cs.findbugs.FindBugs;
 import edu.umd.cs.findbugs.Project;
 
 /**
- * TODO Enter a comment for .
+ * Execute FindBugs on a collection of Java resources in a project.
  * 
  * @author Peter Friese
  * @version 1.0
@@ -72,8 +72,7 @@ public class FindBugsWorker {
 			selectedDetectorFactories = FindbugsPlugin.readDetectorFactories(project);
 		}
 		catch (CoreException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			FindbugsPlugin.getDefault().logException(e, "Could not get selected detectors for project");
 		}
 	}
 
@@ -170,8 +169,7 @@ public class FindBugsWorker {
 		}
 		catch (CoreException e) {
 			if (DEBUG) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				FindbugsPlugin.getDefault().logException(e, "Could not compute classpath for project");
 			}
 		}
 		return new String[0];
