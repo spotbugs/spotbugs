@@ -137,7 +137,7 @@ public class OpcodeStack implements Constants2
  		int register;
  		JavaClass cls;
  		String signature;
- 		Item it, it2;
+ 		Item it, it2, it3;
  		Constant cons;
  		
  		try
@@ -157,6 +157,14 @@ public class OpcodeStack implements Constants2
 	 				pushByLocal(dbc, seen - ALOAD_0);
 	 			break;
 	 			
+	 			case DLOAD:
+	 			case DLOAD_0:
+	 			case DLOAD_1:
+	 			case DLOAD_2:
+	 			case DLOAD_3:
+	 				push(new Item("D"));
+	 			break;
+
 	 			case LLOAD:
 	 			case LLOAD_0:
 	 			case LLOAD_1:
@@ -269,6 +277,23 @@ public class OpcodeStack implements Constants2
 	 				push(it2);
 	 				push(it);
 	 			break;
+	 			
+	 			case DUP_X2:
+	 				it = pop();
+	 				it2 = pop();
+	 				signature = it2.getSignature();
+	 				if (signature.equals("J") || signature.equals("D")) {
+	 					push(it);
+	 					push(it2);
+	 					push(it);	 				
+	 				} else {
+	 					it3 = pop();
+	 					push(it);
+	 					push(it3);
+	 					push(it2);
+	 					push(it);
+	 				}
+	 			break;
 	 				 			
 	 			case ATHROW:
 	 			case CHECKCAST:
@@ -330,15 +355,16 @@ public class OpcodeStack implements Constants2
 	 			break;
 	 			
 	 			case BALOAD:
-	 				it = pop();
-	 				pop();
-	 				signature = it.getSignature();
-	 				push(new Item(signature));
+	 			case CALOAD:
+	 				pop(2);
+	 				push(new Item("I"));
 	 			break;
 	 			
 	 			case AASTORE:
 	 			case BASTORE:
+	 			case CASTORE:
 	 			case IASTORE:
+	 			case LASTORE:
 	 				pop(3);
 	 			break;
 	 			
@@ -356,6 +382,7 @@ public class OpcodeStack implements Constants2
 	 			case IXOR:
 	 			case ISHL:
 	 			case ISHR:
+	 			case IREM:
 	 				it = pop();
 	 				it2 = pop();
 	 				pushByIntMath(seen, it, it2);
@@ -377,6 +404,9 @@ public class OpcodeStack implements Constants2
 	 			case LAND:
 	 			case LOR:
 	 			case LXOR:
+	 			case LSHL:
+	 			case LSHR:
+	 			case LREM:
 	 				it = pop();
 	 				it2 = pop();
 	 				pushByLongMath(seen, it, it2);
@@ -399,6 +429,24 @@ public class OpcodeStack implements Constants2
 	 				}
 	 			break;
 	 				
+	 			case DCMPG:
+	 			case DCMPL:
+	 				it = pop();
+	 				it2 = pop();
+	 				if ((it.getConstant() != null) && it2.getConstant() != null) {
+	 					double d = ((Double)it.getConstant()).doubleValue();
+	 					double d2 = ((Double)it.getConstant()).doubleValue();
+	 					if (d2 < d)
+	 						push(new Item("I", new Integer(-1)));
+	 					else if (d2 > d)
+	 						push(new Item("I", new Integer(1)));
+	 					else
+	 						push(new Item("I", new Integer(0)));
+	 				} else {
+	 					push(new Item("I"));
+	 				}
+	 			break;
+	 			
 	 			case DADD:
 	 			case DSUB:
 	 			case DMUL:
@@ -471,6 +519,24 @@ public class OpcodeStack implements Constants2
 	 				}
 	 			break;
 	 			
+	 			case L2I:
+	 				it = pop();
+	 				if (it.getConstant() != null) {
+	 					push(new Item("I", new Integer((int)((Long)it.getConstant()).longValue())));
+	 				} else {
+	 					push(new Item("I"));
+	 				}
+	 			break;
+	 			
+	 			case L2D:
+	 				it = pop();
+	 				if (it.getConstant() != null) {
+	 					push(new Item("D", new Double((double)((Long)it.getConstant()).longValue())));
+	 				} else {
+	 					push(new Item("D"));
+	 				}
+	 			break;
+	 			
 	 			case NEW:
 	 				pushBySignature(dbc.getClassConstantOperand());
 	 			break;
@@ -491,9 +557,9 @@ public class OpcodeStack implements Constants2
 	 				it = pop();
 	 				pushBySignature(it.getElementSignature());
 	 			break;
-	 			
-	 			case DLOAD:
-	 				push(new Item("D"));
+	 				 			
+	 			case JSR:
+	 				push(new Item("")); //?
 	 			break;
 	 			
 				case INVOKEINTERFACE:
@@ -589,6 +655,8 @@ public class OpcodeStack implements Constants2
 				push(new Item("I", new Integer(((Integer)it2.getConstant()).intValue() << ((Integer)it.getConstant()).intValue())));
 			else if (seen == ISHR)
 				push(new Item("I", new Integer(((Integer)it2.getConstant()).intValue() >> ((Integer)it.getConstant()).intValue())));
+			else if (seen == IREM)
+				push(new Item("I", new Integer(((Integer)it2.getConstant()).intValue() % ((Integer)it.getConstant()).intValue())));
 		} else {
 			push(new Item("I"));
 		}
@@ -610,6 +678,12 @@ public class OpcodeStack implements Constants2
 				push(new Item("J", new Long(((Long)it2.getConstant()).longValue() | ((Long)it.getConstant()).longValue())));
 			else if (seen == LXOR)
 				push(new Item("J", new Long(((Long)it2.getConstant()).longValue() ^ ((Long)it.getConstant()).longValue())));
+			else if (seen == LSHL)
+				push(new Item("J", new Long(((Long)it2.getConstant()).longValue() << ((Long)it.getConstant()).longValue())));
+			else if (seen == LSHR)
+				push(new Item("J", new Long(((Long)it2.getConstant()).longValue() >> ((Long)it.getConstant()).longValue())));
+			else if (seen == LREM)
+				push(new Item("J", new Long(((Long)it2.getConstant()).longValue() % ((Long)it.getConstant()).longValue())));
 		} else {
 			push(new Item("J"));
 		}
