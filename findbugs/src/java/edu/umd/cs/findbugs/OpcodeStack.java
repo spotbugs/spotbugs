@@ -730,10 +730,19 @@ public class OpcodeStack implements Constants2
 	 				signature = BasicType.getType((byte)dbc.getIntConstant()).getSignature();
 	 				pushBySignature(signature);
 	 			break;
+
+				// According to the VM Spec 4.4.1, anewarray and multianewarray
+				// can refer to normal class/interface types (encoded in
+				// "internal form"), or array classes (encoded as signatures
+				// beginning with "[").
 	 			
 	 			case ANEWARRAY:
 	 				pop();
-	 				pushBySignature(dbc.getClassConstantOperand());
+					signature = dbc.getClassConstantOperand();
+					if (!signature.startsWith("[")) {
+						signature = "L" + signature + ";";
+					}
+	 				pushBySignature(signature);
 	 			break;
 	 			
 	 			case MULTIANEWARRAY:
@@ -741,7 +750,11 @@ public class OpcodeStack implements Constants2
 	 				while ((dims--) > 0) {
 	 					pop();
 	 				}
-	 				push(new Item(dbc.getClassConstantOperand()));
+					signature = dbc.getClassConstantOperand();
+					if (!signature.startsWith("[")) {
+						signature = "L" + signature + ";";
+					}
+					pushBySignature(signature);
 	 			break;
 	 				
 	 			case AALOAD:
