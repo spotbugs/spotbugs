@@ -131,8 +131,7 @@ public class Naming extends PreorderVisitor implements Detector, Constants2 {
 				bugReporter.reportBug(new BugInstance(this, "NM_CONFUSING", LOW_PRIORITY)
 				        .addClass(m.getClassName())
 				        .addMethod(m.getClassName(), m.methodName, m.methodSig)
-				        .addClass(m2.getClassName())
-				        .addMethod(m2.getClassName(), m2.methodName, m2.methodSig));
+				        .addClass(m2.getClassName()) .addMethod(m2.getClassName(), m2.methodName, m2.methodSig));
 				return true;
 			}
 		}
@@ -187,7 +186,10 @@ public class Naming extends PreorderVisitor implements Detector, Constants2 {
 
 		if (getMethodName().equals(baseClassName)) {
 			bugReporter.reportBug(new BugInstance(this, "NM_CONFUSING_METHOD_NAME",
-			        (getMethodSig().endsWith("V") && !obj.isNative())
+			        (getMethodSig().equals("()V") 
+					&& obj.getCode().getCode().length > 1
+					&& !obj.isNative()
+					)
 			        ? HIGH_PRIORITY : NORMAL_PRIORITY)
 			        .addClassAndMethod(this));
 			return;
