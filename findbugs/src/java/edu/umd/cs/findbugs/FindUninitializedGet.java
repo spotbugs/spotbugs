@@ -110,12 +110,17 @@ public class FindUninitializedGet extends BytecodeScanningDetector implements   
 			}
 		}
 
-	else if ((seen == INVOKESPECIAL  
+	else if (
+		(seen == INVOKESPECIAL  
 			&& !(nameConstant.equals("<init>")
 					&& !classConstant.equals(className))
 				)
-			|| seen == INVOKEVIRTUAL
-					&& classConstant.equals(className)) {
+		 || (seen == INVOKESTATIC  
+			&& nameConstant.equals("doPrivileged")
+			&& classConstant.equals("java/security/AccessController")
+				)
+		 || (seen == INVOKEVIRTUAL
+				&& classConstant.equals(className))) {
 			/*
 			System.out.println("Saw invocation of " 
 				+ classConstant + "." + nameConstant
