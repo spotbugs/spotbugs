@@ -21,8 +21,6 @@ package edu.umd.cs.findbugs.xml;
 
 import java.io.IOException;
 
-import java.util.Collection;
-
 /**
  * Interface to generate an XML document in some form.
  * E.g., writing it to a stream, generating SAX events,
