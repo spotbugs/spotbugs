@@ -68,6 +68,7 @@ public class ConfigureDetectorsDialog extends javax.swing.JDialog {
             }
         });
 
+        detectorTableScrollPane.setBorder(new javax.swing.border.BevelBorder(javax.swing.border.BevelBorder.LOWERED));
         detectorTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
@@ -98,11 +99,12 @@ public class ConfigureDetectorsDialog extends javax.swing.JDialog {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = 3;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.insets = new java.awt.Insets(6, 6, 2, 6);
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 0.8;
-        gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
         getContentPane().add(detectorTableScrollPane, gridBagConstraints);
 
+        detectorDescriptionScrollPane.setBorder(new javax.swing.border.BevelBorder(javax.swing.border.BevelBorder.LOWERED));
         detectorDescriptionScrollPane.setViewportView(detectorDescription);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -110,8 +112,8 @@ public class ConfigureDetectorsDialog extends javax.swing.JDialog {
         gridBagConstraints.gridy = 1;
         gridBagConstraints.gridwidth = 3;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.insets = new java.awt.Insets(2, 6, 2, 6);
         gridBagConstraints.weighty = 0.2;
-        gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
         getContentPane().add(detectorDescriptionScrollPane, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -119,22 +121,35 @@ public class ConfigureDetectorsDialog extends javax.swing.JDialog {
         gridBagConstraints.gridy = 2;
         gridBagConstraints.gridwidth = 3;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.insets = new java.awt.Insets(3, 0, 3, 0);
         getContentPane().add(jSeparator1, gridBagConstraints);
 
         okButton.setMnemonic('O');
         okButton.setText("OK");
+        okButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                okButtonActionPerformed(evt);
+            }
+        });
+
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 3;
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 2);
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 4, 2);
         getContentPane().add(okButton, gridBagConstraints);
 
         cancelButton.setMnemonic('C');
         cancelButton.setText("Cancel");
+        cancelButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cancelButtonActionPerformed(evt);
+            }
+        });
+
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 3;
-        gridBagConstraints.insets = new java.awt.Insets(0, 2, 0, 2);
+        gridBagConstraints.insets = new java.awt.Insets(0, 2, 4, 6);
         getContentPane().add(cancelButton, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -146,6 +161,21 @@ public class ConfigureDetectorsDialog extends javax.swing.JDialog {
 
         pack();
     }//GEN-END:initComponents
+
+    private void cancelButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelButtonActionPerformed
+	closeDialog();
+    }//GEN-LAST:event_cancelButtonActionPerformed
+
+    private void okButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_okButtonActionPerformed
+	// Update new enabled/disabled status for the Detectors
+	int num = factoryList.size();
+	for (int i = 0; i < num; ++i) {
+	    DetectorFactory factory = factoryList.get(i);
+	    Boolean enabled = (Boolean) detectorTable.getValueAt(i, 1);
+	    factory.setEnabled(enabled.booleanValue());
+	}
+	closeDialog();
+    }//GEN-LAST:event_okButtonActionPerformed
     
     /** Closes the dialog */
     private void closeDialog(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_closeDialog
@@ -155,14 +185,17 @@ public class ConfigureDetectorsDialog extends javax.swing.JDialog {
 
     private void populateTable() {
         Iterator<DetectorFactory> i = FindBugs.factoryIterator();
-        int count = 0;
         while (i.hasNext()) {
             DetectorFactory factory = i.next();
             DefaultTableModel model = (DefaultTableModel) detectorTable.getModel();
             model.addRow(new Object[]{factory.getFullName(), Boolean.valueOf(factory.isEnabled())});
-            ++count;
+	    factoryList.add(factory);
         }
-        System.out.println("Added " + count + " detectors to table");
+    }
+    
+    private void closeDialog() {
+	setVisible(false);
+	dispose();
     }
     
     /**
@@ -184,4 +217,6 @@ public class ConfigureDetectorsDialog extends javax.swing.JDialog {
     private javax.swing.JLabel spacer;
     // End of variables declaration//GEN-END:variables
     
+    // My variables
+    private ArrayList<DetectorFactory> factoryList = new ArrayList<DetectorFactory>();
 }
