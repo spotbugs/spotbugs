@@ -1352,6 +1352,10 @@ public class FindBugsFrame extends javax.swing.JFrame {
      */
     private static Object getTreeSelectionOf(JTree tree, Class c) {
 	TreePath selPath = tree.getSelectionPath();
+        
+        // There may not be anything selected at the moment
+        if (selPath == null)
+            return null;
 	
 	// Work backwards from end until we get to the kind of
 	// object we're looking for.
