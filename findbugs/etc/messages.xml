@@ -548,6 +548,18 @@ are never subsequently read.  it is a moderately fast detector.
     </Details>
   </Detector>
   
+  <Detector class="edu.umd.cs.findbugs.detect.BadAppletConstructor">
+    <Details>
+<![CDATA[
+<p>
+This detector looks for Applet constructors that call methods in the parent
+Applet that rely on the Applet stub. Since this stub isn't initialized until just 
+before the init() method, these methods will fail in the constructor.
+</p>
+]]>
+    </Details>
+  </Detector>
+  
   <Detector class="edu.umd.cs.findbugs.detect.FindBugsSummaryStats">
     <Details>
 <![CDATA[
@@ -2439,7 +2451,21 @@ is never used.
     </Details>
   </BugPattern>
   
-   <!--
+  <BugPattern type="BAC_BAD_APPLET_CONSTRUCTOR">
+    <ShortDescription>Bad Applet Constructor relies on unitialized AppletStub</ShortDescription>
+    <LongDescription>Bad Applet Constructor relies on unitialized AppletStub</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+This constructor calls methods in the parent Applet that rely on the AppletStub. Since the AppletStub
+isn't initialized until the init() method of this applet is called, these methods will not perform
+correctly.
+</p>
+]]>
+    </Details>
+  </BugPattern>
+  
+  <!--
   **********************************************************************
    BugCodes
   **********************************************************************
@@ -2519,4 +2545,5 @@ is never used.
   <BugCode abbrev="BRSA">Bad ResultSet access</BugCode>
   <BugCode abbrev="SIO">Superfluous instanceof</BugCode>
   <BugCode abbrev="DLS">Dead local store</BugCode>
+  <BugCode abbrev="BAC">Bad Applet Constructor</BugCode>
   </MessageCollection>
