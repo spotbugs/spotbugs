@@ -3420,6 +3420,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
 				} catch (IOException e) {
 					System.err.println("Couldn't load project: " + e.getMessage());
 				}
+			} else if (arg.equals("-adjustExperimental")) {
+				BugInstance.setAdjustExperimental(true);
 			}
 		}
 
