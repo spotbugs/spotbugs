@@ -36,7 +36,7 @@ public interface ValueNumberAnalysisFeatures {
 	 * accurate modeling of which fields a called method could modify,
 	 * which would allow a more correct implementation.
 	 */
-	public static final boolean REDUNDANT_LOAD_ELIMINATION = Boolean.getBoolean("vna.rle");
+	public static final boolean REDUNDANT_LOAD_ELIMINATION = !Boolean.getBoolean("vna.noRLE");
 
 	/**
 	 * Debug redundant load elimination.
