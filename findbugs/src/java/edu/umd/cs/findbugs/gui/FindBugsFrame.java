@@ -1018,19 +1018,16 @@ public class FindBugsFrame extends javax.swing.JFrame {
         JFileChooser chooser = new JFileChooser(currentDirectory);
         chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
         chooser.setFileFilter(auxClasspathEntryFileFilter);
+        chooser.setMultiSelectionEnabled(true);
+        
         int result = chooser.showDialog(this, "Add entry");
+
         if (result != JFileChooser.CANCEL_OPTION) {
-            /*
             File[] selectedFileList = chooser.getSelectedFiles();
             for (int i = 0; i < selectedFileList.length; ++i) {
                 String entry = selectedFileList[i].getPath();
-                addClasspathEntryToList(entry);
+                addClasspathEntryToProject(entry);
             }
-             */
-            File selectedFile = chooser.getSelectedFile();
-            currentDirectory = selectedFile.getParentFile();
-            classpathEntryTextField.setText(selectedFile.getPath());
-            addClasspathEntryToList();
         }
     }//GEN-LAST:event_browseClasspathEntryButtonActionPerformed
     
@@ -1189,11 +1186,15 @@ public class FindBugsFrame extends javax.swing.JFrame {
             public String getDescription() { return "Jar files (*.jar)"; }
         };
         chooser.setFileFilter(filter);
+        chooser.setMultiSelectionEnabled(true);
+        
         int rc = chooser.showDialog(this, "Add Jar file");
         if (rc == JFileChooser.APPROVE_OPTION) {
-            currentDirectory = chooser.getSelectedFile().getParentFile();
-            jarNameTextField.setText(chooser.getSelectedFile().getPath());
-            addJarToList();
+            File[] selectedFileList = chooser.getSelectedFiles();
+            for (int i = 0; i < selectedFileList.length; ++i) {
+                String entry = selectedFileList[i].getPath();
+                addJarToProject(entry);
+            }
         }
     }//GEN-LAST:event_browseJarButtonActionPerformed
     
@@ -1698,12 +1699,20 @@ public class FindBugsFrame extends javax.swing.JFrame {
     private void addJarToList() {
         String jarFile = jarNameTextField.getText();
         if (!jarFile.equals("")) {
-            Project project = getCurrentProject();
-            if (project.addJar(jarFile)) {
-                DefaultListModel listModel = (DefaultListModel)  jarFileList.getModel();
-                listModel.addElement(jarFile);
-            }
+            addJarToProject(jarFile);
             jarNameTextField.setText("");
+        }
+    }
+    
+    /**
+     * Add a Jar file to the current project.
+     * @param jarFile the jar file to add to the project
+     */
+    private void addJarToProject(String jarFile) {
+        Project project = getCurrentProject();
+        if (project.addJar(jarFile)) {
+            DefaultListModel listModel = (DefaultListModel)  jarFileList.getModel();
+            listModel.addElement(jarFile);
         }
     }
     
@@ -1730,12 +1739,20 @@ public class FindBugsFrame extends javax.swing.JFrame {
     private void addClasspathEntryToList() {
         String classpathEntry = classpathEntryTextField.getText();
         if (!classpathEntry.equals("")) {
-            Project project = getCurrentProject();
-            if (project.addAuxClasspathEntry(classpathEntry)) {
-                DefaultListModel listModel = (DefaultListModel) classpathEntryList.getModel();
-                listModel.addElement(classpathEntry);
-            }
+            addClasspathEntryToProject(classpathEntry);
             classpathEntryTextField.setText("");
+        }
+    }
+    
+    /**
+     * Add a classpath entry to the current project.
+     * @param classpathEntry the classpath entry to add
+     */
+    private void addClasspathEntryToProject(String classpathEntry) {
+        Project project = getCurrentProject();
+        if (project.addAuxClasspathEntry(classpathEntry)) {
+            DefaultListModel listModel = (DefaultListModel) classpathEntryList.getModel();
+            listModel.addElement(classpathEntry);
         }
     }
     
