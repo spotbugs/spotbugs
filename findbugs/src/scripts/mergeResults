@@ -5,6 +5,8 @@
 
 @GET_FBHOME@
 
+@SET_DEFAULT_JAVA@
+
 fb_jvmargs=''
 out='no'
 

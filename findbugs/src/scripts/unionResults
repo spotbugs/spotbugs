@@ -5,6 +5,8 @@
 
 @GET_FBHOME@
 
+@SET_DEFAULT_JAVA@
+
 fb_mainclass=edu.umd.cs.findbugs.UnionResults
 
 @WRAP_JAVA@
