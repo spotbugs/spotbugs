@@ -55,6 +55,11 @@ public abstract class AbstractFrameModelingVisitor<Value, FrameType extends Fram
 	}
 
 	/**
+	 * Get the ConstantPoolGen for the method.
+	 */
+	public ConstantPoolGen getCPG() { return cpg; }
+
+	/**
 	 * Set the frame.
 	 * @param frame the Frame object
 	 */
