@@ -80,12 +80,8 @@ public class SortedBugCollection extends BugCollection {
 		registerUniqueId(bugInstance);
 
 		// Mark the BugInstance as being active at the BugCollection's current timestamp.
-		TimestampIntervalCollection activeIntervalCollection;
-		try {
-			activeIntervalCollection = bugInstance.getActiveIntervalCollection();
-		} catch (InvalidTimestampIntervalException e) {
-			activeIntervalCollection = new TimestampIntervalCollection();
-		}
+		TimestampIntervalCollection activeIntervalCollection =
+			bugInstance.getActiveIntervalCollection();
 		activeIntervalCollection.add(new TimestampInterval(timestamp, timestamp));
 		bugInstance.setActiveIntervalCollection(activeIntervalCollection);
 		
