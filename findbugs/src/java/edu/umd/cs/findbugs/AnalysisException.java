@@ -19,6 +19,10 @@
 
 package edu.umd.cs.findbugs;
 
+import edu.umd.cs.daveho.ba.SignatureConverter;
+import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.MethodGen;
+
 /**
  * A kind of runtime exception that can be thrown to indicate
  * a fatal error in an analysis.  It would be nice to make this a
@@ -41,6 +45,16 @@ public class AnalysisException extends RuntimeException {
 	 */
 	public AnalysisException(String message, Throwable throwable) {
 		super(message, throwable);
+	}
+
+	/**
+	 * Constructor from method and instruction.
+	 * @param message reason for the error
+	 * @param methodGen the method
+	 * @param handle the instruction
+	 */
+	public AnalysisException(String message, MethodGen methodGen, InstructionHandle handle) {
+		super(message + " in " + SignatureConverter.convertMethodSignature(methodGen) + " at " + handle);
 	}
 }
 
