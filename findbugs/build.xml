@@ -29,20 +29,18 @@
        You can download it from
           http://www.thecortex.net/clover/generics/jsr14adapter-1.1.jar
      -->
+<!--
     <property name="jsr14.home" value="/export/home/daveho/linux/java/jsr14_adding_generics-1_3-ea"/>
+-->
+    <property name="jsr14.home" value="/home/software/java/jsr14_adding_generics-1_3-ea" />
 
     <!--
-      Set this to the full path to the HTML DSSSL stylesheet from the
-      Docbook modular stylesheets, http://docbook.sourceforge.net/projects/dsssl/.
-      This is needed for the "docs" target.
-      (Note also that you need to have openjade and the DocBook 4.2 DTD
-      installed on your system.)
+       Set this to the full path to the HTML XSL stylesheet "chunk.xsl" from the
+       DocBook modular stylesheets, http://docbook.sourceforge.net/projects/xsl/
+       Note that in order to build the "docs" target, you will need Saxon
+       (http://saxon.sourceforge.net/) installed and in your CLASSPATH.
     -->
-    <!-- This should work on RedHat 8.0 systems. -->
-    <property name="html.dsssl.stylesheet" value="/usr/share/sgml/docbook/dsssl-stylesheets/html/docbook.dsl" />
-<!--
-    <property name="html.dsssl.stylesheet" value="/export/home/daveho/linux/docbook/docbook-dsssl-1.78/html/docbook.dsl" />
--->
+    <property name="html.xsl.stylesheet" value="/home/software/docbook/docbook-xsl-1.61.0/html/chunk.xsl" />
 
     <!--
       *****************************************************************
@@ -211,18 +209,27 @@
          <filterset>
             <filter token="VERSION" value="${release.number}" />
             <filter token="RELEASE_DATE" value="${release.date}" />
+<!--
             <filter token="HTML_DSSSL_STYLESHEET" value="${html.dsssl.stylesheet}" />
+-->
+            <filter token="HTML_XSL_STYLESHEET" value="${html.xsl.stylesheet}" />
         </filterset>  
        </copy>
 
        <!-- Format the manual as HTML. -->
        <mkdir dir="${doc.dir}/manual" />
+<!--
        <exec dir="doc" executable="jade" failonerror="true" >
           <arg value="-t" />
           <arg value="sgml" />
           <arg value="-d" />
           <arg value="manual-html.dsl" />
           <arg value="manual.sgml" />
+-->
+       <exec dir="doc" executable="java" failonerror="true" >
+         <arg value="com.icl.saxon.StyleSheet" />
+         <arg value="manual.xml" />
+         <arg value="manual.xsl" />
        </exec>
 
     </target>
