@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.detect;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 import org.apache.bcel.Repository;
@@ -43,25 +44,29 @@ import edu.umd.cs.findbugs.visitclass.Constants2;
 
 public class MultithreadedInstanceAccess extends BytecodeScanningDetector implements Constants2, StatelessDetector
 {
+	private static final String STRUTS_ACTION_NAME = "org.apache.struts.action.Action";
+	private static final String SERVLET_NAME = "javax.servlet.Servlet";
 	private BugReporter bugReporter;
-	private static JavaClass actionClass = null;
+	private static Set<JavaClass> mtClasses = new HashSet<JavaClass>();
+	private static String mtClassName;
 	private int monitorCount;
 	private Set<String> alreadyReported;
-//	private static ClassNotFoundException missingClassEx = null;
 	
 	static {
 		try {
-			actionClass = Repository.lookupClass("org.apache.struts.action.Action");
+			mtClasses.add(Repository.lookupClass(STRUTS_ACTION_NAME));
 		} catch (ClassNotFoundException cnfe) {
 			//probably would be annoying to report
-//			missingClassEx = cnfe;
+		}		
+		try {
+			mtClasses.add(Repository.lookupClass(SERVLET_NAME));
+		} catch (ClassNotFoundException cnfe) {
+			//probably would be annoying to report
 		}		
 	}
 	
 	public MultithreadedInstanceAccess(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
-//		if (missingClassEx != null)
-//			bugReporter.reportMissingClass(missingClassEx);
 	}
 	
 	public Object clone() throws CloneNotSupportedException {
@@ -75,11 +80,26 @@ public class MultithreadedInstanceAccess extends BytecodeScanningDetector implem
 			if ("java.lang.Object".equals(superClsName))
 				return;
 			
-			if ("org.apache.struts.action.Action".equals(superClsName)) {
+			if (STRUTS_ACTION_NAME.equals(superClsName)) {
+				mtClassName = STRUTS_ACTION_NAME;
 				super.visitClassContext(classContext);
-			} else if ((actionClass != null)
-			       &&  cls.implementationOf(actionClass)) {
+			}
+			else if (SERVLET_NAME.equals(superClsName)) {
+				mtClassName = SERVLET_NAME;
 				super.visitClassContext(classContext);
+			}
+			else {
+				Iterator<JavaClass> it = mtClasses.iterator();
+				while (it.hasNext())
+				{
+					JavaClass mtClass = it.next();
+					if (cls.implementationOf(mtClass)
+					||  cls.instanceOf(mtClass)) {
+						mtClassName = mtClass.getClassName();
+						super.visitClassContext(classContext);
+						return;
+					}
+				}
 			}
 		} catch (Exception e) {
 			//already reported
@@ -118,7 +138,9 @@ public class MultithreadedInstanceAccess extends BytecodeScanningDetector implem
 							if (alreadyReported.contains(nameCons.getBytes()))
 								return;
 							alreadyReported.add(nameCons.getBytes());
-							bugReporter.reportBug( new BugInstance(this, "MTIA_SUSPECT_STRUTS_INSTANCE_FIELD", LOW_PRIORITY )
+							bugReporter.reportBug( new BugInstance(this, 
+									 STRUTS_ACTION_NAME.equals(mtClassName) ? "MTIA_SUSPECT_STRUTS_INSTANCE_FIELD" : "MTIA_SUSPECT_SERVLET_INSTANCE_FIELD",
+									 LOW_PRIORITY )
 									.addClass(this).addSourceLine(this)
 									.addField( new FieldAnnotation(getClassName(), nameCons.getBytes(), typeCons.getBytes(), false)));
 						}
