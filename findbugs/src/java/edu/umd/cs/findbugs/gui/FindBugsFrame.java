@@ -305,7 +305,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 		}
 
 		public String getDescription() {
-			return "FindBugs projects (*.fb)";
+			return L10N.getLocalString("dlg.findbugsprojects_lbl", "FindBugs projects (*.fb)");
 		}
 	}
 
@@ -324,7 +324,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 		}
 
 		public String getDescription() {
-			return "Jar files and directories";
+			return L10N.getLocalString("dlg.jarsanddirectories_lbl", "Jar files and directories");
 		}
 	}
 
@@ -342,7 +342,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 		}
 
 		public String getDescription() {
-			return "XML saved bug files";
+			return L10N.getLocalString("dlg.xmlsavedbugs_lbl", "XML saved bug files");
 		}
 	}
 
@@ -380,7 +380,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 		}
 
 		public String getDescription() {
-			return "Java archives (*.jar,*.zip,*.ear,*.war)";
+			return L10N.getLocalString("dlg.javaarchives_lbl", "Java archives (*.jar,*.zip,*.ear,*.war)");
 		}
 	};
 
@@ -1698,12 +1698,12 @@ public class FindBugsFrame extends javax.swing.JFrame {
 			rebuildRecentProjectsMenu();
 
 		} catch (IOException e) {
-			logger.logMessage(ConsoleLogger.ERROR, "Could not open project: " + e.getMessage());
+			logger.logMessage(ConsoleLogger.ERROR, MessageFormat.format( L10N.getLocalString("msg.couldnotopenproject_txt", "Could not open project: {0}"), e.getMessage()));
 		}
 	}//GEN-LAST:event_openProjectItemActionPerformed
 
 	private void saveProjectItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveProjectItemActionPerformed
-		saveProject(getCurrentProject(), "Save Project");
+		saveProject(getCurrentProject(), L10N.getLocalString("msg.saveproject_txt", "Save Project"));
 	}//GEN-LAST:event_saveProjectItemActionPerformed
 
 	private void aboutItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aboutItemActionPerformed
@@ -1737,7 +1737,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 		Project project = getCurrentProject();
 
 		if (project.getNumJarFiles() == 0) {
-			logger.logMessage(ConsoleLogger.ERROR, "Project " + project + " has no Jar files selected");
+			logger.logMessage(ConsoleLogger.ERROR, MessageFormat.format(L10N.getLocalString("msg.projectnojars_txt", "Project {0} has no Jar files selected"), project));
 			return;
 		}
 
@@ -1745,7 +1745,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 		sourceTextArea.setText("");
 		AnalysisRun analysisRun = new AnalysisRun(project, this);
 
-		logger.logMessage(ConsoleLogger.INFO, "Beginning analysis of " + project);
+		logger.logMessage(ConsoleLogger.INFO, MessageFormat.format(L10N.getLocalString("msg.beginninganalysis_txt", "Beginning analysis of {0}"), project));
 
 		// Run the analysis!
 		RunAnalysisDialog dialog = new RunAnalysisDialog(this, analysisRun);
@@ -1754,7 +1754,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 		dialog.setVisible(true);
 
 		if (dialog.isCompleted()) {
-			logger.logMessage(ConsoleLogger.INFO, "Analysis " + project + " completed");
+			logger.logMessage(ConsoleLogger.INFO, MessageFormat.format(L10N.getLocalString("msg.analysiscompleted_txt", "Analysis {0} completed"), project));
 
 			// Report any errors that might have occurred during analysis
 			analysisRun.reportAnalysisErrors();
@@ -1766,7 +1766,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 				// The analysis was killed by an unexpected exception
 				Exception e = dialog.getException();
 				AnalysisErrorDialog err = new AnalysisErrorDialog(this, true);
-				err.addLine("Fatal analysis exception: " + e.toString());
+				err.addLine(MessageFormat.format(L10N.getLocalString("msg.fatalanalysisexception_txt", "Fatal analysis exception: {0}"),  e.toString()));
 				StackTraceElement[] callList = e.getStackTrace();
 				for (int i = 0; i < callList.length; ++i)
 					err.addLine("\t" + callList[i]);
@@ -1776,7 +1776,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 				err.setVisible(true);
 			} else {
 				// Cancelled by user
-				logger.logMessage(ConsoleLogger.INFO, "Analysis of " + project + " cancelled by user");
+				logger.logMessage(ConsoleLogger.INFO, MessageFormat.format(L10N.getLocalString("msg.analysiscancelled_txt", "Analysis of {0} cancelled by user"), project));
 			}
 		}
 	}//GEN-LAST:event_findBugsButtonActionPerformed
@@ -1787,7 +1787,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 		chooser.setMultiSelectionEnabled(true);
 		chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
 
-		int rc = chooseFile(chooser, "Add source directory or archive");
+		int rc = chooseFile(chooser, L10N.getLocalString("msg_addsource_lbl", "Add source directory or archive"));
 		if (rc == JFileChooser.APPROVE_OPTION) {
 			File[] selectedFileList = chooser.getSelectedFiles();
 			for (int i = 0; i < selectedFileList.length; ++i) {
@@ -1812,7 +1812,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 		chooser.setMultiSelectionEnabled(true);
 		chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
 
-		int rc = chooseFile(chooser, "Add archive or directory");
+		int rc = chooseFile(chooser, L10N.getLocalString("msg.addarchiveordirectory_txt", "Add archive or directory"));
 		if (rc == JFileChooser.APPROVE_OPTION) {
 			File[] selectedFileList = chooser.getSelectedFiles();
 			for (int i = 0; i < selectedFileList.length; ++i) {
@@ -1825,7 +1825,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
 	private void newProjectItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newProjectItemActionPerformed
 
-		if (!closeProjectHook(getCurrentProject(), "New Project"))
+		if (!closeProjectHook(getCurrentProject(), L10N.getLocalString("msg.newproject_txt", "New Project")))
 			return;
 
 		Project project = new Project();
@@ -1918,7 +1918,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	}
 
 	private void openRecentProjectItemActionPerformed(java.awt.event.ActionEvent evt) {
-		if (!closeProjectHook(getCurrentProject(), "Open Project"))
+		if (!closeProjectHook(getCurrentProject(), L10N.getLocalString("msg.openproject_txt", "Open Project")))
 			return;
 
 		JMenuItem recentProjectItem = (JMenuItem) evt.getSource();
@@ -1931,7 +1931,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 			UserPreferences.getUserPreferences().useProject(file.getPath());
 		} catch (IOException e) {
 			UserPreferences.getUserPreferences().removeProject(file.getPath());
-			logger.logMessage(ConsoleLogger.ERROR, "Could not open project: " + e.getMessage());
+			logger.logMessage(ConsoleLogger.ERROR, MessageFormat.format(L10N.getLocalString("msg.couldnotopenproject_txt", "Could not open project: {0}"), e.getMessage()));
 		} finally {
 			rebuildRecentProjectsMenu();
 		}
@@ -2084,7 +2084,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 				recentProjectsMenu.removeAll();
 				java.awt.Font ft = new java.awt.Font("Dialog", 0, 12);
 				if (recentProjects.size() == 0) {
-					JMenuItem emptyItem = new JMenuItem("Empty");
+					JMenuItem emptyItem = new JMenuItem(L10N.getLocalString("menu.empty_item", "Empty"));
 					emptyItem.setFont(ft);
 					emptyItem.setEnabled(false);
 					recentProjectsMenu.add(emptyItem);
