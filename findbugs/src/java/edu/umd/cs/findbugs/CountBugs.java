@@ -83,6 +83,69 @@ public class CountBugs {
 		}
 	}
 
+	private static final HashMap<String, String> kingdomToAbbrevMap = new HashMap<String,String>();
+	private static final HashMap<Integer, String> priorityToAbbrevMap = new HashMap<Integer,String>();
+	static {
+		kingdomToAbbrevMap.put("CORRECTNESS", "C");
+		kingdomToAbbrevMap.put("MT_CORRECTNESS", "M");
+		kingdomToAbbrevMap.put("MALICIOUS_CODE", "V");
+		kingdomToAbbrevMap.put("PERFORMANCE", "P");
+		priorityToAbbrevMap.put(new Integer(1), "H");
+		priorityToAbbrevMap.put(new Integer(2), "M");
+		priorityToAbbrevMap.put(new Integer(3), "L");
+	}
+
+	private static class KingdomAndPriorityKey implements Key {
+		private String legend;
+
+		public KingdomAndPriorityKey(String legend) {
+			this.legend = legend;
+		}
+
+		public KingdomAndPriorityKey(String kingdom, int prio) {
+			this(priorityToAbbrevMap.get(new Integer(prio)) + "/" + kingdomToAbbrevMap.get(kingdom));
+		}
+
+		public int compareTo(Key o) {
+			int cmp;
+			cmp = this.getClass().getName().compareTo(o.getClass().getName());
+			if (cmp != 0) return cmp;
+			KingdomAndPriorityKey other =(KingdomAndPriorityKey) o;
+			return legend.compareTo(other.legend);
+		}
+
+		public int hashCode() { return legend.hashCode(); }
+
+		public boolean equals(Object o) {
+			if (this.getClass() != o.getClass()) return false;
+			KingdomAndPriorityKey other = (KingdomAndPriorityKey) o;
+			return legend.equals(other.legend);
+		}
+
+		public String toString() {
+			return legend;
+		}
+	}
+
+	private static class KingdomAndPriorityKeyFactory implements KeyFactory {
+		public Key createKey(BugInstance bugInstance) {
+			BugPattern bugPattern = bugInstance.getBugPattern();
+			return new KingdomAndPriorityKey(bugPattern.getCategory(), bugInstance.getPriority());
+		}
+
+		public Set<Key> createKeySet(String keyList) {
+			//System.out.println("key list string is " + keyList);
+			Set<Key> keySet = new HashSet<Key>();
+			StringTokenizer tok = new StringTokenizer(keyList, ",");
+			while (tok.hasMoreTokens()) {
+				String legend = tok.nextToken();
+				//System.out.println("adding " + legend);
+				keySet.add(new KingdomAndPriorityKey(legend));
+			}
+			return keySet;
+		}
+	}
+
 	private SortedBugCollection bugCollection;
 	private Project project;
 	private KeyFactory keyFactory;
@@ -118,10 +181,8 @@ public class CountBugs {
 	public void setKeyFactory(String keyMode) {
 		if (keyMode.equals("-categories"))
 			keyFactory = new CategoryKeyFactory();
-/*
 		else if (keyMode.equals("-kingdomAndPriority"))
 			keyFactory = new KingdomAndPriorityKeyFactory();
-*/
 		else
 			throw new IllegalArgumentException("Unknown key mode: " + keyMode);
 	}
@@ -216,7 +277,7 @@ public class CountBugs {
 		while (arg < argv.length - 1) {
 			String option = argv[arg];
 
-			if (option.equals("-categories") || option.equals("-hmcm")) {
+			if (option.equals("-categories") || option.equals("-kingdomAndPriority")) {
 				keyMode = argv[arg];
 				++arg;
 				if (arg >= argv.length)
@@ -243,6 +304,7 @@ public class CountBugs {
 			if (arg >= argv.length)
 				usage();
 			CountBugs countBugs2 = new CountBugs(argv[arg++]);
+			countBugs2.setKeyFactory(keyMode);
 			countBugs2.setKeys(keyList);
 			countBugs2.execute();
 
