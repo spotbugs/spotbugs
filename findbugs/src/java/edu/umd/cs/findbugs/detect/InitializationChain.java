@@ -30,6 +30,8 @@ public class InitializationChain extends BytecodeScanningDetector implements   C
     Set<String> requires = new TreeSet<String>();
     Map<String, Set<String>> classRequires = new TreeMap<String, Set<String>>();
     private BugReporter bugReporter;
+    private boolean instanceCreated;
+    private boolean instanceCreatedWarningGiven;
 
     private static final boolean DEBUG = Boolean.getBoolean("ic.debug");
 
@@ -38,6 +40,8 @@ public class InitializationChain extends BytecodeScanningDetector implements   C
     }
 
     public void visit(Code obj) {
+	instanceCreated = false;
+	instanceCreatedWarningGiven = false;
         if (!methodName.equals("<clinit>")) return;
         super.visit(obj);
 	requires.remove(betterClassName);
@@ -56,11 +60,27 @@ public class InitializationChain extends BytecodeScanningDetector implements   C
 
 
     public void sawOpcode(int seen) {
-	if (PC + 6 >= codeBytes.length) return;
 
-        if (seen == PUTSTATIC || seen == GETSTATIC || seen == INVOKESTATIC
+
+	if (seen == PUTSTATIC)
+		System.out.println("Saw putstatic " + nameConstant);
+        if (seen == PUTSTATIC && classConstant.equals(className))  {
+		if (instanceCreated && !instanceCreatedWarningGiven)  {
+			String okSig = "L" + className + ";";
+			if (!okSig.equals(sigConstant)) {
+			  System.out.println("Instance created in static initializer before static field " + nameConstant + " assigned");
+			  System.out.println("Class is " + className);
+			  instanceCreatedWarningGiven = true;
+			  }
+			}
+		}
+        else if (seen == NEW && classConstant.equals(className))  {
+		instanceCreated = true;
+		}
+        else if (seen == PUTSTATIC || seen == GETSTATIC || seen == INVOKESTATIC
 			|| seen == NEW)  
-		requires.add(betterClassConstant);
+		if (PC + 6 < codeBytes.length) 
+			requires.add(betterClassConstant);
 	}
 
     public void compute() {
