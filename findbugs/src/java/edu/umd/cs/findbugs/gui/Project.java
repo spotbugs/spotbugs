@@ -214,6 +214,13 @@ public class Project {
         isModified = true;
     }
 
+    /**
+     * Return the list of aux classpath entries.
+     */
+    public List getAuxClasspathEntryList() {
+	return auxClasspathEntryList;
+    }
+
     private static final String JAR_FILES_KEY = "[Jar files]";
     private static final String SRC_DIRS_KEY = "[Source dirs]";
     private static final String AUX_CLASSPATH_ENTRIES_KEY = "[Aux classpath entries]";
