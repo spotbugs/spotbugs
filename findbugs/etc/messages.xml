@@ -327,6 +327,17 @@ in the auxiliary classpath (or be analyzing the package itself).
     </Details>
   </Detector>
 
+  <Detector class="edu.umd.cs.findbugs.detect.FindRefComparison">
+    <Details>
+<![CDATA[
+<p> This detector looks for places where two reference values are compared
+with the == or != operator, and the class is of a type (such as <code>java.lang.String</code>)
+where comparing reference values is generally an error.  It is a moderately
+fast detector.
+]]>
+    </Details>
+  </Detector>
+
   <!--
   **********************************************************************
   BugPatterns

@@ -34,6 +34,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.FindOpenStream" speed="moderate" />
   <Detector class="edu.umd.cs.findbugs.detect.FindUselessControlFlow" speed="fast" />
   <Detector class="edu.umd.cs.findbugs.detect.FindUnreleasedLock" speed="moderate" disabled="true" />
+  <Detector class="edu.umd.cs.findbugs.detect.FindRefComparison" speed="moderate" disabled="true" />
 
   <BugPattern abbrev="DE" type="DE_MIGHT_DROP" category="CORRECTNESS" />
   <BugPattern abbrev="DE" type="DE_MIGHT_IGNORE" category="CORRECTNESS" />
