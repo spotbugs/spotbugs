@@ -27,10 +27,10 @@ public class Version {
 	public static final int MAJOR = 0;
 
 	/** Minor version number. */
-	public static final int MINOR = 5;
+	public static final int MINOR = 6;
 
 	/** Patch level. */
-	public static final int PATCHLEVEL = 5;
+	public static final int PATCHLEVEL = 0;
 
 	/** Release version string. */
 	public static final String RELEASE = MAJOR + "." + MINOR + "." + PATCHLEVEL;
