@@ -34,6 +34,8 @@ import org.apache.bcel.generic.*;
  * @author David Hovemeyer
  */
 public class ClassContext {
+	private static final boolean PRUNE_INFEASIBLE_EXCEPTION_EDGES = Boolean.getBoolean("cfg.prune");
+
 	private JavaClass jclass;
 	private RepositoryLookupFailureCallback lookupFailureCallback;
 	private IdentityHashMap<Method, MethodGen> methodGenMap = new IdentityHashMap<Method, MethodGen>();
@@ -107,6 +109,17 @@ public class ClassContext {
 			cfg = cfgBuilder.getCFG();
 			cfg.assignEdgeIds(0);
 			cfgMap.put(method, cfg);
+
+			if (PRUNE_INFEASIBLE_EXCEPTION_EDGES) {
+				try {
+					TypeDataflow typeDataflow = getTypeDataflow(method);
+					new PruneInfeasibleExceptionEdges(cfg, typeDataflow, getConstantPoolGen()).execute();
+				} catch (DataflowAnalysisException e) {
+					// FIXME: should report the error
+				} catch (ClassNotFoundException e) {
+					lookupFailureCallback.reportMissingClass(e);
+				}
+			}
 		}
 		return cfg;
 	}
