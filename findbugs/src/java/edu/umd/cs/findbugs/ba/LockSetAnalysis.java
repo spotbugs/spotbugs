@@ -79,15 +79,27 @@ public class LockSetAnalysis extends ForwardDataflowAnalysis<LockSet> {
 	}
 
 	public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, LockSet fact) throws DataflowAnalysisException {
-/*
 		Instruction ins = handle.getInstruction();
 
 		if (ins instanceof MONITORENTER) {
-			// See what's on the top of the stack
-			ValueNumberFrame frame = valueNumberAnalysis();
+			lockOperation(handle, basicBlock, fact, 1);
 		} else if (ins instanceof MONITOREXIT) {
+			lockOperation(handle, basicBlock, fact, -1);
 		}
-*/
+	}
+
+	private void lockOperation(InstructionHandle handle, BasicBlock basicBlock, LockSet fact, int delta)
+		throws DataflowAnalysisException {
+		// See what's on the top of the stack
+		Location location = new Location(handle, basicBlock);
+		ValueNumberFrame frame = valueNumberAnalysis.getFactAtLocation(location);
+		ValueNumber topOfStack = frame.getTopValue();
+		int valNum = topOfStack.getNumber();
+		int lockCount = fact.getCount(valNum);
+		if (lockCount == LockSet.TOP)
+			throw new IllegalStateException("transferring top value!");
+		else if (lockCount != LockSet.BOTTOM)
+			fact.setCount(valNum, lockCount + delta);
 	}
 
 	public boolean isFactValid(LockSet fact) {
