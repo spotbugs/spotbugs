@@ -42,7 +42,7 @@ public class Version {
 	public static final String DATE = "May 28, 2004";
 
 	/** Version of Eclipse UI plugin. */
-	public static final String ECLIPSE_UI_VERSION = "0.0.5";
+	public static final String ECLIPSE_UI_VERSION = "0.0.6";
 
 	/** FindBugs website. */
 	public static final String WEBSITE = "http://findbugs.sourceforge.net";
