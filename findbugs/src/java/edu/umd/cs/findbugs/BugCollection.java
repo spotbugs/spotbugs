@@ -120,6 +120,15 @@ public abstract class BugCollection {
 	 * Get the summary HTML text.
 	 */
 	public abstract String getSummaryHTML();
+	
+	/**
+	 * Look up a BugInstance by its unique id.
+	 * 
+	 * @param uniqueId the BugInstance's unique id.
+	 * @return the BugInstance with the given unique id,
+	 *         or null if there is no such BugInstance
+	 */
+	public abstract BugInstance lookupFromUniqueId(String uniqueId);
 
 	static final String ROOT_ELEMENT_NAME = "BugCollection";
 	static final String SRCMAP_ELEMENT_NAME = "SrcMap";
