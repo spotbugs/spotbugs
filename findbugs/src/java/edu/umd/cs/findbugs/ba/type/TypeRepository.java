@@ -266,54 +266,7 @@ public class TypeRepository {
 					supertype.getSignature());
 		}
 
-		// See if there is a cached query result.
-		SubtypeQueryResult cachedResult = subtype.getSubtypeQueryResult();
-		if (cachedResult == null) {
-			// Breadth first traversal of supertypes
-	
-			// Work queue
-			LinkedList<ObjectType> work = new LinkedList<ObjectType>();
-			work.add(subtype);
-	
-			// Keep track of where we've been
-			HashSet<ObjectType> visited = new HashSet<ObjectType>();
-	
-			// Keep track of missing classes
-			LinkedList<String> missingClassList = new LinkedList<String>();
-	
-			// Cached result for future queries
-			cachedResult = new SubtypeQueryResult();
-	
-			// Keep going until we have examined all supertypes.
-			while (!work.isEmpty()) {
-				ObjectType type = work.removeFirst();
-				if (!visited.add(type))
-					continue;
-	
-				cachedResult.addSupertype(type);
-	
-				try {
-					// Resolve the type so we know its supertypes.
-					resolveObjectType(type);
-	
-					// Add all supertypes to work queue.
-					for (Iterator<ObjectType> i = inheritanceGraph.successorIterator(type); i.hasNext(); )
-						work.add(i.next());
-				} catch (ClassNotFoundException e) {
-					String missingClassName = ClassNotFoundExceptionParser.getMissingClassName(e);
-					if (missingClassName == null)
-						missingClassName = "<unknown class>";
-					missingClassList.add(missingClassName);
-				}
-			}
-	
-			if (!missingClassList.isEmpty())
-				cachedResult.setAndAdoptMissingClassList(missingClassList.toArray(new String[0]));
-	
-			// Cache result for future queries
-			subtype.setSubtypeQueryResult(cachedResult);
-		}
-
+		SubtypeQueryResult cachedResult = findSupertypes(subtype);
 		return cachedResult.isSupertype(supertype);
 	}
 
@@ -373,6 +326,58 @@ public class TypeRepository {
 			inheritanceGraph.addVertex(type);
 		}
 		return type;
+	}
+
+	private SubtypeQueryResult findSupertypes(ObjectType subtype) throws ClassNotFoundException {
+		// See if there is a cached query result.
+		SubtypeQueryResult cachedResult = subtype.getSubtypeQueryResult();
+
+		if (cachedResult == null) {
+			// Breadth first traversal of supertypes
+	
+			// Work queue
+			LinkedList<ObjectType> work = new LinkedList<ObjectType>();
+			work.add(subtype);
+	
+			// Keep track of where we've been
+			HashSet<ObjectType> visited = new HashSet<ObjectType>();
+	
+			// Keep track of missing classes
+			LinkedList<String> missingClassList = new LinkedList<String>();
+	
+			// Cached result for future queries
+			cachedResult = new SubtypeQueryResult();
+	
+			// Keep going until we have examined all supertypes.
+			while (!work.isEmpty()) {
+				ObjectType type = work.removeFirst();
+				if (!visited.add(type))
+					continue;
+	
+				cachedResult.addSupertype(subtype, type);
+	
+				try {
+					// Resolve the type so we know its supertypes.
+					resolveObjectType(type);
+	
+					// Add all supertypes to work queue.
+					for (Iterator<ObjectType> i = inheritanceGraph.successorIterator(type); i.hasNext(); )
+						work.add(i.next());
+				} catch (ClassNotFoundException e) {
+					String missingClassName = ClassNotFoundExceptionParser.getMissingClassName(e);
+					if (missingClassName == null)
+						missingClassName = "<unknown class>";
+					missingClassList.add(missingClassName);
+				}
+			}
+	
+			cachedResult.finish(missingClassList.toArray(new String[0]));
+	
+			// Cache result for future queries
+			subtype.setSubtypeQueryResult(cachedResult);
+		}
+
+		return cachedResult;
 	}
 
 	/**
@@ -461,6 +466,15 @@ public class TypeRepository {
 			throw new ClassNotFoundException("Class " + type.getClassName() +
 				" cannot be resolved", e);
 		}
+	}
+
+	/**
+	 * Get an ObjectType by its vertex label in the inheritance graph.
+	 * @param label the vertex label
+	 * @return the ObjectType with that label
+	 */
+	ObjectType getObjectTypeByVertexLabel(int label) {
+		return inheritanceGraph.getVertexByLabel(label);
 	}
 }
 
