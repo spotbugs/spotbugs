@@ -2513,8 +2513,8 @@ contents of the arrays, use java.util.Array.equals(Object[], Object[]);
   </BugPattern>
 
   <BugPattern type="UOE_USE_OBJECT_EQUALS">
-    <ShortDescription>Calls to equals on a final object that doesn't override Object's version</ShortDescription>
-    <LongDescription>Calls to equals on a final object that doesn't override Object's version</LongDescription>
+    <ShortDescription>Calls to equals on a final class that doesn't override Object's version</ShortDescription>
+    <LongDescription>Calls to equals on a final class that doesn't override Object's version</LongDescription>
     <Details>
 <![CDATA[
 <p>
