@@ -148,7 +148,14 @@ if [ $os = "Darwin" ]; then
   jvmArgs="$jvmArgs -Xdock:name=FindBugs -Dapple.laf.useScreenMenuBar=true -Dcom.apple.macos.useScreenMenuBar=true"
 fi
 
+# choose java binary
+jvmCmd=java
+if [ ! -z "$JAVA_HOME" ] && [ -x "$JAVA_HOME/bin/java" ]; then
+  jvmCmd=$JAVA_HOME/bin/java
+fi
+echo $jvmCmd
+
 # Launch FindBugs!
-java $jvmArgs "-Dfindbugs.home=$findbugs_home" -jar "$findbugs_home/lib/$appJar" $argList
+$jvmCmd $jvmArgs "-Dfindbugs.home=$findbugs_home" -jar "$findbugs_home/lib/$appJar" $argList
 
 # vim:ts=4
