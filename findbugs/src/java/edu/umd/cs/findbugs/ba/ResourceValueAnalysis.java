@@ -57,6 +57,12 @@ public class ResourceValueAnalysis<Resource> extends FrameDataflowAnalysis<Resou
 		ResourceValueFrame tmpFact = null;
 
 		if (dest.isExceptionHandler()) {
+			// If status is OPEN, downgrade to OPEN_ON_EXCEPTION_PATH
+			if (fact.getStatus() == ResourceValueFrame.OPEN) {
+				tmpFact = modifyFrame(fact, tmpFact);
+				tmpFact.setStatus(ResourceValueFrame.OPEN_ON_EXCEPTION_PATH);
+			}
+
 			// Clear stack, push value for exception
 			if (fact.isValid()) {
 				tmpFact = modifyFrame(fact, tmpFact);
