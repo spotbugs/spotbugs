@@ -49,8 +49,6 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
-import sun.security.action.GetLongAction;
-
 import de.tobject.findbugs.builder.AbstractFilesCollector;
 import de.tobject.findbugs.builder.FilesCollectorFactory;
 import de.tobject.findbugs.builder.FindBugsBuilder;
