@@ -53,9 +53,9 @@ public class Project {
     
     /** The list of auxiliary classpath entries. */
     private LinkedList auxClasspathEntryList;
-    
-    /** Number of analysis runs done so far on this project. */
-    private int numAnalysisRuns;
+
+    /** Flag to indicate that this Project has been modified. */
+    private boolean isModified;
     
     /** Creates a new instance of Project */
     public Project(String fileName) {
@@ -63,7 +63,12 @@ public class Project {
 	jarList = new LinkedList();
 	srcDirList = new LinkedList();
         auxClasspathEntryList = new LinkedList();
-	numAnalysisRuns = 0;
+        isModified = false;
+    }
+    
+    /** Return whether or not this Project has unsaved modifications. */
+    public boolean isModified() {
+        return isModified;
     }
     
     /** Get the project filename. */
@@ -86,6 +91,7 @@ public class Project {
     public boolean addJar(String fileName) {
 	if (!jarList.contains(fileName)) {
 	    jarList.add(fileName);
+            isModified = true;
             return true;
         } else
             return false;
@@ -100,6 +106,7 @@ public class Project {
     public boolean addSourceDir(String dirName) {
 	if (!srcDirList.contains(dirName)) {
 	    srcDirList.add(dirName);
+            isModified = true;
             return true;
         } else
             return false;
@@ -124,6 +131,7 @@ public class Project {
      */
     public void removeJarFile(int num) {
         jarList.remove(num);
+        isModified = true;
     }
     
     /**
@@ -145,6 +153,7 @@ public class Project {
      */
     public void removeSourceDir(int num) {
         srcDirList.remove(num);
+        isModified = true;
     }
     
     /**
@@ -177,6 +186,7 @@ public class Project {
     public boolean addAuxClasspathEntry(String auxClasspathEntry) {
         if (!auxClasspathEntryList.contains(auxClasspathEntry)) {
             auxClasspathEntryList.add(auxClasspathEntry);
+            isModified = true;
             return true;
         } else
             return false;
@@ -201,6 +211,7 @@ public class Project {
      */
     public void removeAuxClasspathEntry(int n) {
         auxClasspathEntryList.remove(n);
+        isModified = true;
     }
 
     private static final String JAR_FILES_KEY = "[Jar files]";
@@ -230,6 +241,9 @@ public class Project {
             writer.println(auxClasspathEntry);
         }
         writer.close();
+        
+        // Project successfully saved
+        isModified = false;
     }
     
     /**
@@ -238,6 +252,9 @@ public class Project {
      * @throws IOException if an error occurs while reading
      */
     public void read(InputStream in) throws IOException {
+        if (isModified)
+            throw new IllegalStateException("Reading into a modified Project!");
+        
         BufferedReader reader = new BufferedReader(new InputStreamReader(in));
         String line;
         line = reader.readLine();
