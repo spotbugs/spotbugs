@@ -30,10 +30,10 @@ public class Naming extends PreorderVisitor implements Detector, Constants2 {
   String baseClassName;
 
   static class MyMethod {
-	String superClass;
-	String className;
-	String methodName;
-	String methodSig;
+	final String superClass;
+	final String className;
+	final String methodName;
+	final String methodSig;
 	MyMethod(String sc, String c, String n, String s) {
 		superClass = sc;
 		className = c;
@@ -59,7 +59,8 @@ public class Naming extends PreorderVisitor implements Detector, Constants2 {
 			& !methodName.equals(m.methodName);
 		}
 	public String toString() {
-		return className + "." + methodName
+		return superClass  + " -> "
+			+ className + "." + methodName
 				+ ":" + methodSig;
 		}
 	}
@@ -88,11 +89,18 @@ public class Naming extends PreorderVisitor implements Detector, Constants2 {
   private boolean checkSuper(MyMethod m, HashSet<MyMethod> others) {
 	for(Iterator<MyMethod> i = others.iterator(); i.hasNext() ; ) {
 		MyMethod m2 =  i.next();
+		if (m2.superClass == null)
+			throw new RuntimeException("This is wrong");
 		if (m.confusingMethodNames(m2)
 				&& m.superClass.equals(m2.className)) {
-		  MyMethod m3 = new MyMethod(m.superClass,
+		  MyMethod m3 = new MyMethod(null,
 					m.className, m2.methodName, m.methodSig);
-		  if (others.contains(m3)) continue;
+		  int size1 = others.size();
+		  boolean r = others.contains(m3);
+		  int size2 = others.size();
+		  if (size1 != size2)
+			throw new RuntimeException ("this is wrong");
+		  if (r) continue;
 		  bugReporter.reportBug(new BugInstance("NM_VERY_CONFUSING", HIGH_PRIORITY)
 			.addClass(m.className)
 			.addMethod(m.className, m.methodName, m.methodSig)
@@ -144,27 +152,37 @@ public class Naming extends PreorderVisitor implements Detector, Constants2 {
 	}
  }
 
-  public void visit(JavaClass obj)     {
+  public void visitJavaClass(JavaClass obj)     {
 	String name = obj.getClassName();
 	if (!visited.add(name)) return;
-	String[] parts = name.split("[.]");
-        baseClassName = parts[parts.length-1];
-	// System.out.println("base name of " + name + " is " + baseClassName);
-	super.visit(obj);
 	try {
 	JavaClass supers[] = Repository.getSuperClasses(obj);
-	for(int i = 0; i < supers.length; i++)
-		visit(supers[i]);
+		for(int i = 0; i < supers.length; i++) {
+			visitJavaClass(supers[i]);
+			}
 	} catch (ClassNotFoundException e) {
 		// ignore it
 		}
+	super.visitJavaClass(obj);
+		}
+  public void visit(JavaClass obj)     {
+	String name = obj.getClassName();
+	String[] parts = name.split("[$.]");
+        baseClassName = parts[parts.length-1];
+	super.visit(obj);
 	}
 
     public void visit(Method obj) {
-	if (methodName.length() == 1
-			|| obj.isPrivate()
+	if (methodName.length() == 1) return;
+
+	if (methodName.equals(baseClassName)) 
+		bugReporter.reportBug(new BugInstance("NM_CONFUSING_METHOD_NAME", NORMAL_PRIORITY)
+			.addClassAndMethod(this));
+
+	if (obj.isPrivate()
 			|| obj.isStatic()
 			) return;
+
 	String trueName = methodName + methodSig;
 	String allSmall = methodName.toLowerCase() + methodSig;
 	
@@ -187,9 +205,6 @@ public class Naming extends PreorderVisitor implements Detector, Constants2 {
 	s.add(mm);
 	}
 
-	if (methodName.equals(baseClassName)) 
-		bugReporter.reportBug(new BugInstance("NM_CONFUSING_METHOD_NAME", NORMAL_PRIORITY)
-			.addClassAndMethod(this));
 	if (methodName.equals("hashcode") && methodSig.equals("()I")) 
 		bugReporter.reportBug(new BugInstance("NM_LCASE_HASHCODE", HIGH_PRIORITY)
 			.addClassAndMethod(this));
@@ -199,37 +214,5 @@ public class Naming extends PreorderVisitor implements Detector, Constants2 {
 	}
 
 
-/*	
-	classes.put(methodName, betterClassName);
-	String old = canonicalNames.put(allSmall, methodName);
-	Set<String> all = allDefiningClasses.get(allSmall);
-	if (all == null) {
-		all = new HashSet<String>();
-		allDefiningClasses.put(allSmall,all);
-		}
-	all.add(betterClassName);
-	String oldSig = canonicalSigs.put(allSmall, methodSig);
-	if (oldSig != null && !oldSig.equals(methodSig)) {
-		System.out.println("Nm puzzle: " + allSmall 
-			+"/" + methodSig
-			+"/" + oldSig
-			);
-		}
-	if (old != null && !old.equals(methodName) && !reported.contains(allSmall)) {
-		reported.add(allSmall);
-		String oldClass = classes.get(old);
-		if (betterSuperclassName.equals(oldClass)) 
-		else 
-		  bugReporter.reportBug(new BugInstance( "NM_CONFUSING", LOW_PRIORITY)
-			.addClass(betterClassName)
-			.addMethod(betterClassName, methodName, methodSig)
-			.addClass(classes.get(old))
-			.addMethod(classes.get(old), old, oldSig));
-		}
-	// FIXME: I think that the "baseClassName" field is broken.
-	// Need to look at the code that sets it.
-	//System.out.println("methodName="+methodName+", baseClassName="+baseClassName);
-
-*/
 
 }
