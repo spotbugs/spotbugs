@@ -223,6 +223,7 @@ public class RunAnalysisDialog extends javax.swing.JDialog {
 
         countLabel.setFont(new java.awt.Font("Dialog", 0, 12));
         countLabel.setText("Count:");
+        countLabel.setText(L10N.getLocalString("dlg.count_lbl", "Count:"));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 3;
@@ -232,6 +233,7 @@ public class RunAnalysisDialog extends javax.swing.JDialog {
 
         progressLabel.setFont(new java.awt.Font("Dialog", 0, 12));
         progressLabel.setText("Progress:");
+        progressLabel.setText(L10N.getLocalString("dlg.progress_lbl", "Progress:"));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 5;
@@ -248,6 +250,7 @@ public class RunAnalysisDialog extends javax.swing.JDialog {
 
         cancelButton.setFont(new java.awt.Font("Dialog", 0, 12));
         cancelButton.setText("Cancel");
+        cancelButton.setText(L10N.getLocalString("dlg.cancel_btn", "Cancel"));
         cancelButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cancelButtonActionPerformed(evt);
@@ -270,6 +273,7 @@ public class RunAnalysisDialog extends javax.swing.JDialog {
 
         stageLabel.setFont(new java.awt.Font("Dialog", 0, 12));
         stageLabel.setText("Stage:");
+        stageLabel.setText(L10N.getLocalString("dlg.stage_lbl", "Stage:"));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;
