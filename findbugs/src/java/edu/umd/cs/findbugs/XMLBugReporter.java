@@ -45,7 +45,6 @@ public class XMLBugReporter extends BugCollectionBugReporter {
 		super(project);
 		this.addMessages = false;
 		this.started = false;
-		this.xmlOutput = new OutputStreamXMLOutput(outputStream);
 	}
 
 	public void setAddMessages(boolean enable) {
@@ -55,11 +54,7 @@ public class XMLBugReporter extends BugCollectionBugReporter {
 	//@Override
 	public void doReportBug(BugInstance bugInstance) {
 		try {
-			if (!started) {
-				started = true;
-				getBugCollection().writePrologue(xmlOutput, getProject());
-			}
-			
+			getReady();
 			bugInstance.writeXML(xmlOutput, addMessages);
 		} catch (IOException e) {
 			throw new FatalException("Error writing XML output", e);
@@ -67,12 +62,22 @@ public class XMLBugReporter extends BugCollectionBugReporter {
 		
 		super.doReportBug(bugInstance);
 	}
-	
+
+	private void getReady() throws IOException {
+		if (!started) {
+			started = true;
+			xmlOutput = new OutputStreamXMLOutput(outputStream);
+			getBugCollection().writePrologue(xmlOutput, getProject());
+		}
+	}
 	
 	public void finish() {
+		
 		generateSummary();
 		
 		try {
+			getReady(); // If no warnings were issued, then nothing has been written yet
+
 			if (addMessages) {
 				writeBugPatterns();
 			}
