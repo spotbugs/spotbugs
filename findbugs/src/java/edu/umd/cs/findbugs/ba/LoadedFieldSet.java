@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.ba;
 
+import java.util.BitSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -29,15 +30,18 @@ import org.apache.bcel.generic.InstructionHandle;
 public class LoadedFieldSet {
 	private Set<XField> loadedFieldSet;
 	private Map<InstructionHandle, XField> handleToFieldMap;
+	private BitSet loadHandleSet;
 
 	public LoadedFieldSet() {
 		this.loadedFieldSet = new HashSet<XField>();
 		this.handleToFieldMap = new HashMap<InstructionHandle, XField>();
+		this.loadHandleSet = new BitSet();
 	}
 
 	public void addLoad(InstructionHandle handle, XField field) {
 		loadedFieldSet.add(field);
 		handleToFieldMap.put(handle, field);
+		loadHandleSet.set(handle.getPosition());
 	}
 
 	public void addStore(InstructionHandle handle, XField field) {
@@ -50,6 +54,10 @@ public class LoadedFieldSet {
 
 	public boolean isLoaded(XField field) {
 		return loadedFieldSet.contains(field);
+	}
+
+	public boolean instructionIsLoad(InstructionHandle handle) {
+		return loadHandleSet.get(handle.getPosition());
 	}
 }
 
