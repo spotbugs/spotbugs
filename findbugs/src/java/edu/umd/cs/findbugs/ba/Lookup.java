@@ -25,6 +25,22 @@ import org.apache.bcel.classfile.*;
 import org.apache.bcel.generic.*;
 
 public class Lookup {
+	public static Method findExactMethod(InvokeInstruction inv, ConstantPoolGen cpg) throws ClassNotFoundException {
+		String className = inv.getClassName(cpg);
+		String methodName = inv.getName(cpg);
+		String methodSig = inv.getSignature(cpg);
+
+		JavaClass jclass = Repository.lookupClass(className);
+		Method[] methodList = jclass.getMethods();
+		for (int i = 0; i < methodList.length; ++i) {
+			Method method = methodList[i];
+			if (method.getName().equals(methodName) && method.getSignature().equals(methodSig))
+				return method;
+		}
+
+		return null;
+	}
+
 	public static Field findField(String className, String fieldName) throws ClassNotFoundException {
 		JavaClass jclass = Repository.lookupClass(className);
 
