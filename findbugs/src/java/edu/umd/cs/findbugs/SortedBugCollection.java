@@ -50,6 +50,10 @@ public class SortedBugCollection extends BugCollection {
 	private TreeSet<String> missingClassSet;
 	private String summaryHTML;
 
+	/**
+	 * Constructor.
+	 * Creates an empty object.
+	 */
 	public SortedBugCollection() {
 		bugSet = new TreeSet<BugInstance>(comparator);
 		errorList = new LinkedList<String>();
