@@ -38,7 +38,7 @@ public abstract class OneVariableInstruction extends SingleInstruction {
 
 	/**
 	 * Add a variable definition to the given BindingSet, or if
-	 * there is an existing definitions, make sure it is consistent with
+	 * there is an existing definition, make sure it is consistent with
 	 * the new definition.
 	 * @param variable the Variable which should be added or checked for consistency
 	 * @param bindingSet the existing set of bindings
@@ -47,17 +47,8 @@ public abstract class OneVariableInstruction extends SingleInstruction {
 	 *   the previous bindings
 	 */
 	protected BindingSet addOrCheckDefinition(Variable variable, BindingSet bindingSet) {
-		Variable existingVariable = lookup(varName, bindingSet);
-		if (existingVariable == null) {
-			bindingSet = new BindingSet(new Binding(varName, existingVariable), bindingSet);
-		} else {
-			if (!existingVariable.equals(variable))
-				return null;
-		}
-
-		return bindingSet;
+		return addOrCheckDefinition(varName, variable, bindingSet);
 	}
-
 
 }
 
