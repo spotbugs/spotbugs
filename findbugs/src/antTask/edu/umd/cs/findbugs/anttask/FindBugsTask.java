@@ -101,8 +101,9 @@ import java.util.List;
  * <p>
  *
  * @author Mike Fagan <a href="mailto:mfagan@tde.com">mfagan@tde.com</a>
+ * @author Michael Tamm <a href="mailto:mail@michaeltamm.de">mail@michaeltamm.de</a>
  *
- * @version $Revision: 1.30 $
+ * @version $Revision: 1.31 $
  *
  * @since Ant 1.5
  *
@@ -119,6 +120,7 @@ public class FindBugsTask extends Task {
 	private boolean sorted = true;
 	private boolean quietErrors = false;
 	private boolean failOnError = false;
+	private String errorProperty = null;
 	private boolean workHard = false;
 	private boolean adjustExperimental = false;
 	private File homeDir = null;
@@ -264,6 +266,14 @@ public class FindBugsTask extends Task {
 	}
 
 	/**
+	 * Tells this task to set the property with the
+	 * given name to "true" when there were errors.
+	 */
+	public void setErrorProperty(String name) {
+		this.errorProperty = name;
+	}
+
+	/**
 	 * Set the debug flag
 	 */
 	public void setDebug(boolean flag) {
@@ -383,6 +393,9 @@ public class FindBugsTask extends Task {
 		try {
 			execFindbugs();
 		} catch (BuildException e) {
+			if (errorProperty != null) {
+				getProject().setProperty(errorProperty, "true");
+			}
 			if (failOnError) {
 				throw e;
 			}
