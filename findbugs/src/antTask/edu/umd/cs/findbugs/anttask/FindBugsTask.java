@@ -400,9 +400,11 @@ public class FindBugsTask extends Task {
 		}
 		if ((rc & ExitCodes.BUGS_FOUND_FLAG) != 0) {
 			log("Bugs were found");
+		} else {
+			log("No bugs were found");
 		}
 		if ((rc & ExitCodes.MISSING_CLASS_FLAG) != 0) {
-			log("Some classes needed for analysis were missing");
+			log("Classes needed for analysis were missing");
 		}
 		if (outputFileName != null) {
 			log("Output saved to " + outputFileName);
