@@ -30,6 +30,7 @@
 
 <xsl:stylesheet
 	version="1.0"
+	xmlns="http://www.w3.org/1999/xhtml"
 	xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 
 <xsl:output
@@ -42,14 +43,14 @@
 	encoding="UTF-8"/>
 
 <xsl:variable name="bugTableHeader">
-	<tr xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+	<tr>
 		<th align="left">Warning</th>
 		<th align="left">Location</th>
 	</tr>
 </xsl:variable>
 
 <xsl:template match="/">
-	<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+	<html>
 	<head>
 		<title>FindBugs Report</title>
 	</head>
@@ -97,7 +98,7 @@
 </xsl:template>
 
 <xsl:template match="BugInstance">
-	<tr xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+	<tr>
 
 	<td>
 	<xsl:value-of select="LongMessage"/>
