@@ -28,6 +28,7 @@ import edu.umd.cs.findbugs.visitclass.Constants2;
 
 public class FindHEmismatch extends BytecodeScanningDetector implements   Constants2 {
    boolean hasFields = false;
+   boolean visibleOutsidePackage = false;
    boolean hasHashCode = false;
    boolean hasEqualsObject = false;
    boolean hashCodeIsAbstract = false;
@@ -48,6 +49,7 @@ public class FindHEmismatch extends BytecodeScanningDetector implements   Consta
 	if (getDottedClassName().equals("java.lang.Object")) return;
 	int accessFlags = obj.getAccessFlags();
 	if ((accessFlags & ACC_INTERFACE) != 0) return;
+  	visibleOutsidePackage = obj.isPublic() || obj.isProtected();
 	String whereEqual = getDottedClassName();
 	boolean classThatDefinesEqualsIsAbstract = false;
 	if (!hasEqualsObject)  {
@@ -82,15 +84,20 @@ public class FindHEmismatch extends BytecodeScanningDetector implements   Consta
 
 	if (!hasEqualsObject &&  hasEqualsSelf) {
 		
-		if (usesDefaultEquals) 
-		  bugReporter.reportBug(new BugInstance("EQ_SELF_USE_OBJECT", 
-				(usesDefaultHashCode || obj.isAbstract()) 
-				? NORMAL_PRIORITY : HIGH_PRIORITY).addClass(getDottedClassName()));
+		if (usesDefaultEquals)  {
+		  int priority = HIGH_PRIORITY;
+		  if (usesDefaultHashCode || obj.isAbstract()) 
+			priority++;
+		  if (!visibleOutsidePackage)
+			priority++;
+		  bugReporter.reportBug(new BugInstance("EQ_SELF_USE_OBJECT", priority).addClass(getDottedClassName()));
+		   }
 		else {
-		  int priority = hasFields ? NORMAL_PRIORITY : LOW_PRIORITY;
+		  int priority = NORMAL_PRIORITY;
+		  if (hasFields)
+			priority++;
 		  if (obj.isAbstract()) priority++;
-		  if (priority <= LOW_PRIORITY)
-		  bugReporter.reportBug(new BugInstance("EQ_SELF_NO_OBJECT", NORMAL_PRIORITY).addClass(getDottedClassName()));
+		  bugReporter.reportBug(new BugInstance("EQ_SELF_NO_OBJECT", priority).addClass(getDottedClassName()));
 		}
 		}
 	/*
@@ -108,21 +115,22 @@ public class FindHEmismatch extends BytecodeScanningDetector implements   Consta
 
 	// if (!hasFields) return;
 	if (hasHashCode && !hashCodeIsAbstract && !(hasEqualsObject ||  hasEqualsSelf))  { 
-		/*
-		System.out.println("has hashCode, missing equals");
-		System.out.println("equals defined in " + whereEqual);
-		System.out.println("extendsObject: " + extendsObject);
-		*/
+		int priority = LOW_PRIORITY;
 		if (usesDefaultEquals) 
-		  bugReporter.reportBug(new BugInstance("HE_HASHCODE_USE_OBJECT_EQUALS", LOW_PRIORITY).addClass(getDottedClassName()));
+		  bugReporter.reportBug(new BugInstance("HE_HASHCODE_USE_OBJECT_EQUALS", priority).addClass(getDottedClassName()));
 		else
-		  bugReporter.reportBug(new BugInstance("HE_HASHCODE_NO_EQUALS", LOW_PRIORITY). addClass(getDottedClassName()));
+		  bugReporter.reportBug(new BugInstance("HE_HASHCODE_NO_EQUALS", priority). addClass(getDottedClassName()));
 		}
 	if (!hasHashCode && (hasEqualsObject && !equalsObjectIsAbstract ||  hasEqualsSelf))  {
 		if (usesDefaultHashCode) {
 		  int priority = HIGH_PRIORITY;
 		  if (equalsMethodIsInstanceOfEquals) priority+= 2;
 		  else if (obj.isAbstract() || !hasEqualsObject) priority++;
+		  if (!visibleOutsidePackage) {
+			System.out.println("Not visible");
+			priority++;
+			}
+		else System.out.println("visible");
 		  bugReporter.reportBug(new BugInstance("HE_EQUALS_USE_HASHCODE", 
 				priority ).addClass(getDottedClassName()));
 		  }
@@ -131,7 +139,6 @@ public class FindHEmismatch extends BytecodeScanningDetector implements   Consta
 		  if (hasFields) priority++;
 		  if (obj.isAbstract()) priority++;
 		  if (equalsMethodIsInstanceOfEquals) priority++;
-		  if (priority <= LOW_PRIORITY)
 		   bugReporter.reportBug(
 		    new BugInstance("HE_EQUALS_NO_HASHCODE", 
 			priority)
