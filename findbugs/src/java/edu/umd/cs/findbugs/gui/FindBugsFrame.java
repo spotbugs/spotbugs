@@ -1583,7 +1583,13 @@ public class FindBugsFrame extends javax.swing.JFrame {
         else if (selectedComponent instanceof JList) {
             StringSelection path = new StringSelection(buildSelectPath((JList)selectedComponent));
             Clipboard cb = Toolkit.getDefaultToolkit().getSystemClipboard();
-            cb.setContents(path, path);            
+            cb.setContents(path, path);
+            if (selectedComponent == jarFileList)
+                removeJarButtonActionPerformed(evt);
+            else if (selectedComponent == sourceDirList)
+                removeSrcDirButtonActionPerformed(evt);
+            else if (selectedComponent == classpathEntryList)
+                removeClasspathEntryButtonActionPerformed(evt);
         }
     }//GEN-LAST:event_cutActionPerformed
 
