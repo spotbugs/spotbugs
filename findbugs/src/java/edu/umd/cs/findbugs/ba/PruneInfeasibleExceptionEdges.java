@@ -122,10 +122,22 @@ public class PruneInfeasibleExceptionEdges implements EdgeTypes {
 		// If it's an ATHROW, get the type from the TypeDataflow
 		if (ins instanceof ATHROW) {
 			TypeFrame frame = typeDataflow.getFactAtLocation(new Location(pei, basicBlock));
-			Type throwType = frame.getTopValue();
-			if (!(throwType instanceof ObjectType))
-				throw new DataflowAnalysisException("Non object type thrown by " + pei);
-			exceptionTypeSet.add((ObjectType) throwType);
+
+			// Check whether or not the frame is valid.
+			// Sun's javac sometimes emits unreachable code.
+			// For example, it will emit code that follows a JSR
+			// subroutine call that never returns.
+			// If the frame is invalid, then we can just make
+			// a conservative assumption that anything could be
+			// thrown at this ATHROW.
+			if (!frame.isValid()) {
+				exceptionTypeSet.add(new ObjectType("java.lang.Throwable"));
+			} else {
+				Type throwType = frame.getTopValue();
+				if (!(throwType instanceof ObjectType))
+					throw new DataflowAnalysisException("Non object type thrown by " + pei);
+				exceptionTypeSet.add((ObjectType) throwType);
+			}
 		}
 
 		// If it's an InvokeInstruction, add declared exceptions
