@@ -96,6 +96,20 @@ public class Project {
 	}
 
 	/**
+	 * Return an exact copy of this Project.
+	 */
+	public Project duplicate() {
+		Project dup = new Project();
+		dup.projectFileName = this.projectFileName;
+		dup.optionsMap.putAll(this.optionsMap);
+		dup.jarList.addAll(this.jarList);
+		dup.srcDirList.addAll(this.srcDirList);
+		dup.auxClasspathEntryList.addAll(this.auxClasspathEntryList);
+
+		return dup;
+	}
+
+	/**
 	 * Return whether or not this Project has unsaved modifications.
 	 */
 	public boolean isModified() {
