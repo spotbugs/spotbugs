@@ -113,6 +113,7 @@ public class FindBugsTask extends Task {
     private static final long DEFAULT_TIMEOUT = 600000; // ten minutes
 
 	private boolean debug = false;
+	private boolean conserveSpace = false;
 	private boolean sorted = true;
 	private boolean quietErrors = false;
 	private File homeDir = null;
@@ -213,6 +214,13 @@ public class FindBugsTask extends Task {
 	 */
 	public void setDebug(boolean flag) {
 		this.debug = flag;
+	}
+
+	/**
+	 * Set the conserveSpace flag.
+	 */
+	public void setConserveSpace(boolean flag) {
+		this.conserveSpace = flag;
 	}
 
 	/**
@@ -460,6 +468,8 @@ public class FindBugsTask extends Task {
 
 		if ( debug )
 			jvmargs = jvmargs + " -Dfindbugs.debug=true";
+		if ( conserveSpace )
+			jvmargs = jvmargs + " -Dfindbugs.conserveSpace=true";
 		findbugsEngine.createJvmarg().setLine( jvmargs ); 
 
 		if (homeDir != null) {
