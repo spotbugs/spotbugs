@@ -51,13 +51,15 @@ compares several Java bug checkers, including FindBugs.
 
 <ul>
 <!-- new detectors -->
-<li> New detector to find calls to .equals methods that use Object's version.
+<li> New detector to find calls to .equals methods that use Object's version. (Dave Brosius)
 <li> Extend Dumb Method detector for toUpperCase, toLowerCase without a locale, 
      and new Integer(1).toString() (Dave Brosius)
 <li> New detector to find Applets that call methods in the constructor 
      refering to the AppletStub (Dave Brosius)
 <li> Detector to find infinite recursion (Bill Pugh)
 <!-- feature enhancements -->
+<li> Allow for command line options 'files' using the @ symbol (David Hovemeyer)
+<li> New -adjustPriority cmd line option to for adjusting bug priorites (David Hovemeyer)
 <li> Opcode parameter stack class for tracking types and values of stack items (Dave Brosius)
 <li> Added an Edit menu (cut/copy/paste) to gui (Dave Brosius)
 <li> French translation supplied (David Cotton)
