@@ -110,7 +110,7 @@ public abstract class BetterVisitor implements Visitor {
      public void visit(LocalVariableTable obj) { visit((Attribute) obj); }
      public void visit(SourceFile obj) { visit((Attribute) obj); }
      public void visit(Synthetic obj) { visit((Attribute) obj); }
-     public void visit(Deprecated obj) { visit((Attribute) obj); }
+     public void visit(org.apache.bcel.classfile.Deprecated obj) { visit((Attribute) obj); }
      public void visit(Unknown obj) { visit((Attribute) obj); }
      public void visit(Signature obj) { visit((Attribute) obj); }
 
@@ -153,7 +153,7 @@ public abstract class BetterVisitor implements Visitor {
 		{ visit(obj); }
   public void visitConstantValue(ConstantValue obj)    
 		{ visit(obj); }
-  public void visitDeprecated(Deprecated obj)    
+  public void visitDeprecated(org.apache.bcel.classfile.Deprecated obj)    
 		{ visit(obj); }
   public void visitExceptionTable(ExceptionTable obj)    
 		{ visit(obj); }
