@@ -59,6 +59,9 @@ session.&nbsp; Hope to see you there!
 <li> Improvements to findbugs.bat script for launching FindBugs
      on Windows (Dave Brosius)
 <li> Updated Japanese message translations (Hiroshi Okugawa)
+<li> Uncalled private methods are now reported as low priority,
+     unless they have the same name as another method in the class
+     (which is more likely to indicate an actual bug)
 <li> Added some missing data in the bug messages XML files
 <li> Fixed some problems building from source on Windows systems
 <li> Various minor bug fixes
