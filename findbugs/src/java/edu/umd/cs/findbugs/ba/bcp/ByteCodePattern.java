@@ -23,9 +23,14 @@ import java.util.*;
 
 /**
  * A ByteCodePattern is a pattern matching a sequence of bytecode instructions.
+ *
+ * @see PatternElement
+ * @see PatternMatcher
+ * @author David Hovemeyer
  */
 public class ByteCodePattern {
 	private PatternElement first, last;
+	private int dummyVariableCount;
 
 	/**
 	 * Add a PatternElement to the end of the pattern.
@@ -42,7 +47,25 @@ public class ByteCodePattern {
 		return this;
 	}
 
+	/**
+	 * Get the first PatternElement in the pattern.
+	 */
 	public PatternElement getFirst() { return first; }
+
+	/**
+	 * Get a dummy variable name.
+	 * The name returned will begin with the <code>'$'</code> character,
+	 * and will be different than any previous dummy variable name allocated
+	 * by this object.  Dummy variable names are useful for creating
+	 * PatternElements where you don't care whether the value it uses
+	 * is the same as one used by another PatternElement.
+	 */
+	public String dummyVariable() {
+		StringBuffer buf = new StringBuffer();
+		buf.append("$_");
+		buf.append(dummyVariableCount++);
+		return buf.toString();
+	}
 }
 
 // vim:ts=4
