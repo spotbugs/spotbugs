@@ -60,4 +60,33 @@ public class Doublecheck {
 
 
 
+    boolean ready;
+    int [] data;
+
+    boolean setReady() {
+	if (!ready) {
+	  synchronized(this) {
+		if (!ready) {
+			ready = true;
+			return true;
+			}
+		}
+	}
+	return false;
+	}
+			
+
+    int[] getData() {
+        if (!ready) 
+            synchronized (this) {
+                if (!ready) {
+                    ready = true;
+                    data = new int[10];
+                    for(int i = 0; i < 10; i++)
+                        data[i] = i*i;
+                }
+            }
+	return data;
+    }
+
 }
