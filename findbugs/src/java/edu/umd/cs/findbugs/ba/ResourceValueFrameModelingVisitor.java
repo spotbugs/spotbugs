@@ -97,7 +97,7 @@ public abstract class ResourceValueFrameModelingVisitor extends AbstractFrameMod
 		handleNormalInstruction(inv);
 	}
 
-	public void visitINVOKEINSTANCE(INVOKEINTERFACE inv) {
+	public void visitINVOKEVIRTUAL(INVOKEVIRTUAL inv) {
 		handleInvoke(inv);
 	}
 
