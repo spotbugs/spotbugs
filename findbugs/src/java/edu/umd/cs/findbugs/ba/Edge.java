@@ -123,22 +123,26 @@ public class Edge extends AbstractEdge<Edge, BasicBlock> implements EdgeTypes, D
 		return type - other.type;
 	}
 
+	public String toString() {
+		return formatAsString(false);
+	}
+
 	/**
 	 * Return a string representation of the edge.
 	 */
-	public String toString() {
+	public String formatAsString(boolean reverse) {
 		BasicBlock source = getSource();
 		BasicBlock target = getTarget();
 
 		StringBuffer buf = new StringBuffer();
-		buf.append("EDGE(");
+		buf.append(reverse ? "REVERSE_EDGE(" : "EDGE(");
 		buf.append(getLabel());
 		buf.append(") type ");
 		buf.append(edgeTypeToString(type));
 		buf.append(" from block ");
-		buf.append(source.getId());
+		buf.append(reverse ? target.getId() : source.getId());
 		buf.append(" to block ");
-		buf.append(target.getId());
+		buf.append(reverse ? source.getId() : target.getId());
 		InstructionHandle sourceInstruction = source.getLastInstruction();
 		InstructionHandle targetInstruction = target.getFirstInstruction();
 		String exInfo = " -> ";
