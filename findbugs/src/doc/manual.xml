@@ -370,6 +370,11 @@ To compile &FindBugs; from source, you will need the following:
      <ulink url="http://developer.java.sun.com/developer/earlyAccess/adding_generics/index.html"
      >generics-enabled javac
      </ulink>
+     <note>
+       <para>If you are using version 2.2 of the generics-enabled javac,
+         you should rename the Jar file <filename>gcj-rt.jar</filename>
+         to <filename>javac.jar</filename></para>
+     </note>
     </para>
   </listitem>
   <listitem>
