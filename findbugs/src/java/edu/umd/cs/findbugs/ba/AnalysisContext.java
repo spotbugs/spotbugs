@@ -37,9 +37,10 @@ public class AnalysisContext {
 
 	/**
 	 * The maximum number of ClassContext objects to cache.
-	 * FIXME: need to evaluate this parameter.
+	 * FIXME: need to evaluate this parameter. Need to keep stats
+	 * about accesses.
 	 */
-	private static final int MAX_SIZE = 30;
+	private static final int MAX_SIZE = 60;
 
 	private static class ClassContextCache extends LinkedHashMap<JavaClass, ClassContext> {
 		public boolean removeEldestEntry(Map.Entry<JavaClass, ClassContext> entry) {
