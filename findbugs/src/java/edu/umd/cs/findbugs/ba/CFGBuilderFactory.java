@@ -28,25 +28,18 @@ import org.apache.bcel.generic.MethodGen;
  * new CFGBuilder implementations.  (CFGs for Java are a little tricky
  * to get right.)
  *
- * <p> Right now, we just create {@link BetterCFGBuilder} objects.
- *
  * @see CFG
  * @see CFGBuilder
- * @see BetterCFGBuilder
  * @author David Hovemeyer
  */
 public class CFGBuilderFactory {
-	private static final boolean OLD_CFG = Boolean.getBoolean("cfg.old");
-
 	/**
 	 * Create a CFGBuilder to build a CFG for given method.
 	 * @param methodGen the method
 	 * @return a CFGBuilder for the method
 	 */
 	public static CFGBuilder create(MethodGen methodGen) {
-		return OLD_CFG
-			? (CFGBuilder) new BetterCFGBuilder(methodGen)
-			: (CFGBuilder) new BetterCFGBuilder2(methodGen);
+		return new BetterCFGBuilder2(methodGen);
 	}
 }
 
