@@ -67,7 +67,9 @@ public class ValueNumberAnalysis extends ForwardDataflowAnalysis<ValueNumberFram
 	}
 
 	public void transferInstruction(InstructionHandle handle, ValueNumberFrame fact) throws DataflowAnalysisException {
-		// TODO: implement
+		ValueNumberFrameModelingVisitor visitor = new ValueNumberFrameModelingVisitor(fact, methodGen.getConstantPool(), factory);
+		Instruction ins = handle.getInstruction();
+		ins.accept(visitor);
 	}
 
 	public void meetInto(ValueNumberFrame fact, Edge edge, ValueNumberFrame result) throws DataflowAnalysisException {
