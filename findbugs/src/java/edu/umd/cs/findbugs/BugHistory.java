@@ -27,7 +27,7 @@ public class BugHistory {
 	 * Compare bug instances by only those criteria which we would expect to
 	 * remain constant between versions.
 	 */
-	private static class BugComparator implements Comparator<BugInstance> {
+	private static class VersionInsensitiveBugComparator implements Comparator<BugInstance> {
 		public int compare(BugInstance lhs, BugInstance rhs) {
 			// Attributes of BugInstance.
 			// Compare type and priority.
@@ -49,6 +49,8 @@ public class BugHistory {
 				BugAnnotation lhsAnnotation = lhsIter.next();
 				BugAnnotation rhsAnnotation = rhsIter.next();
 
+				// Different annotation types obviously cannot be equal,
+				// so just compare by class name.
 				if (lhsAnnotation.getClass() != rhsAnnotation.getClass())
 					return lhsAnnotation.getClass().getName().compareTo(rhsAnnotation.getClass().getName());
 
@@ -80,14 +82,50 @@ public class BugHistory {
 		}
 	}
 
-	public static void main(String[] argv) {
-		if (argv.length != 2) {
-			System.err.println("Usage: " + BugHistory.class.getName() + " <old results> <new results>");
+	/** The instance of the version-insensitive comparator. */
+	private static final VersionInsensitiveBugComparator versionInsensitiveBugComparator =
+		new VersionInsensitiveBugComparator();
+
+	public static void main(String[] argv) throws Exception {
+		if (argv.length != 3) {
+			System.err.println("Usage: " + BugHistory.class.getName() +
+				" <operation> <old results> <new results>\n" +
+				"Operations:\n" +
+				"   -new        Output new bugs (in new results but not in old results)\n" +
+				"   -fixed      Output fixed bugs (in old results but not in new results)\n" +
+				"   -retained   Output retained bugs (in both old and new results)");
 			System.exit(1);
 		}
 
-		String oldResults = argv[0];
-		String newResults = argv[1];
+		Project project = new Project();
+
+		String op = argv[0];
+		TreeSet<BugInstance> oldBugs = readSet(argv[1], project);
+		TreeSet<BugInstance> newBugs = readSet(argv[2], new Project());
+
+		SortedBugCollection result = new SortedBugCollection();
+
+		if (op.equals("-new")) {
+			newBugs.removeAll(oldBugs);
+			result.addAll(newBugs);
+		} else if (op.equals("-fixed")) {
+			oldBugs.removeAll(newBugs);
+			result.addAll(oldBugs);
+		} else if (op.equals("-retained")) {
+			oldBugs.retainAll(newBugs);
+			result.addAll(oldBugs);
+		} else
+			throw new IllegalArgumentException("Unknown operation: " + op);
+
+		result.writeXML(System.out, project);
+	}
+
+	private static TreeSet<BugInstance> readSet(String filename, Project project) throws Exception {
+		SortedBugCollection bugCollection = new SortedBugCollection();
+		bugCollection.readXML(filename, project);
+		TreeSet<BugInstance> result = new TreeSet<BugInstance>(versionInsensitiveBugComparator);
+		result.addAll(bugCollection.getCollection());
+		return result;
 	}
 }
 
