@@ -642,6 +642,16 @@ public class FindBugs implements Constants2, ExitCodes
 			StringTokenizer tok = new StringTokenizer(auxClassPath, File.pathSeparator);
 			while (tok.hasMoreTokens())
 				project.addAuxClasspathEntry(tok.nextToken());
+		} else if (option.equals("-sourcepath")) {
+			++argCount;
+			if (argCount == argv.length)
+				throw new IllegalArgumentException(option + " option requires argument");
+
+			String sourcePath = argv[argCount];
+			StringTokenizer tok = new StringTokenizer(sourcePath, File.pathSeparator);
+			while (tok.hasMoreTokens()) {
+				project.addSourceDir(new File(tok.nextToken()).getAbsolutePath());
+			}
 		} else if (option.equals("-project")) {
 			++argCount;
 			if (argCount == argv.length)
@@ -680,6 +690,7 @@ public class FindBugs implements Constants2, ExitCodes
 			System.out.println("   -exclude <filter file>        exclude bugs matching given filter");
 			System.out.println("   -include <filter file>        include only bugs matching given filter");
 			System.out.println("   -auxclasspath <classpath>     set aux classpath for analysis");
+			System.out.println("   -sourcepath                   path in which source files are found");
 			System.out.println("   -project <project>            analyze given project");
 			System.out.println("   -exitcode                     set exit code of process");
 			}
