@@ -4,7 +4,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.FindDoubleCheck" speed="fast" />
   <Detector class="edu.umd.cs.findbugs.detect.FindFinalizeInvocations" speed="fast" />
   <Detector class="edu.umd.cs.findbugs.detect.FindHEmismatch" speed="fast" />
-  <Detector class="edu.umd.cs.findbugs.detect.FindInconsistentSync" speed="slow" />
+  <Detector class="edu.umd.cs.findbugs.detect.FindInconsistentSync" speed="slow" disabled="true" />
   <Detector class="edu.umd.cs.findbugs.detect.FindNakedNotify" speed="fast" />
   <Detector class="edu.umd.cs.findbugs.detect.FindReturnRef" speed="fast" />
   <Detector class="edu.umd.cs.findbugs.detect.FindRunInvocations" speed="fast" />
@@ -34,6 +34,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.FindUnreleasedLock" speed="moderate" disabled="true" />
   <Detector class="edu.umd.cs.findbugs.detect.FindRefComparison" speed="moderate" />
   <Detector class="edu.umd.cs.findbugs.detect.FindMismatchedWaitOrNotify" speed="moderate" />
+  <Detector class="edu.umd.cs.findbugs.detect.FindInconsistentSync2" speed="slow" />
   <Detector class="edu.umd.cs.findbugs.detect.FindBugsSummaryStats" speed="fast" />
 
   <BugPattern abbrev="DE" type="DE_MIGHT_DROP" category="CORRECTNESS" />
