@@ -1,0 +1,64 @@
+/*
+ * Bytecode Analysis Framework
+ * Copyright (C) 2003, University of Maryland
+ * 
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ * 
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
+package edu.umd.cs.daveho.ba.bcp;
+
+import org.apache.bcel.generic.*;
+import edu.umd.cs.daveho.ba.*;
+
+/**
+ * A wildcard PatternElement, which matches any kind of instruction
+ * indiscriminately.
+ *
+ * @see PatternElement
+ * @author David Hovemeyer
+ */
+public class Wild extends PatternElement {
+	private int min, max;
+
+	/**
+	 * Default constructor.
+	 * Creates a wildcard that matches from 0 to Integer.MAX_VALUE instructions.
+	 */
+	public Wild() {
+		this.min = 0;
+		this.max = Integer.MAX_VALUE;
+	}
+
+	/**
+	 * Constructor.
+	 * @param min minimum number of times the wildcard must match
+	 * @param max maximum number of times the wildcard may match
+	 */
+	public Wild(int min, int max) {
+		this.min = min;
+		this.max = max;
+	}
+
+	public int minOccur() { return min; }
+	public int maxOccur() { return max; }
+	public boolean acceptBranch(Edge edge, InstructionHandle source) { return true; }
+
+	public BindingSet match(InstructionHandle handle, ConstantPoolGen cpg,
+		ValueNumberFrame before, ValueNumberFrame after, BindingSet bindingSet) throws DataflowAnalysisException {
+		return bindingSet;
+	}
+}
+
+// vim:ts=4
