@@ -38,7 +38,7 @@ public interface InstructionScanner {
 	/**
 	 * Traverse an instruction.
 	 */
-	public void scanInstruction(Instruction ins);
+	public void scanInstruction(InstructionHandle handle);
 	/**
 	 * Return true if this scanner has completed, false otherwise.
 	 */

@@ -66,16 +66,16 @@ public class InstructionScannerDriver {
 			Iterator<InstructionHandle> i = source.instructionIterator();
 			int count = 0;
 			while (i.hasNext()) {
-				Instruction ins = i.next().getInstruction();
+				InstructionHandle handle = i.next();
 
 				// Check if the generator wants to create a new scanner
-				if (generator.start(ins))
+				if (generator.start(handle))
 					scannerList.add(generator.createScanner());
 
 				// Pump the instruction into all scanners
 				for (Iterator<InstructionScanner> j = scannerList.iterator(); j.hasNext(); ) {
 					InstructionScanner scanner = j.next();
-					scanner.scanInstruction(ins);
+					scanner.scanInstruction(handle);
 				}
 
 				++count;
