@@ -66,11 +66,20 @@ public interface ExtendedTypes {
 	public static final byte T_NULL = 21;
 
 	/**
+	 * Special type code for "Exception" object type,
+	 * which is an instance of the ExceptionObjectType class.
+	 * These instances maintain an ExceptionSet to keep track
+	 * of possible exceptions that are feasible, and whether those
+	 * exceptions are explicit or implicit.
+	 */
+	public static final byte T_EXCEPTION = 22;
+
+	/**
 	 * A Type code that is available for "user-defined" types.
 	 * Any type code equal or greated than this one is guaranteed
 	 * to be distinct from both standard and extended types.
 	 */
-	public static final byte T_AVAIL_TYPE = 22;
+	public static final byte T_AVAIL_TYPE = 23;
 }
 
 // vim:ts=4
