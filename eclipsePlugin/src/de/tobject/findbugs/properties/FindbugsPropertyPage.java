@@ -90,6 +90,7 @@ public class FindbugsPropertyPage extends PropertyPage {
 	private boolean initialEnabled;
 	private Button chkEnableFindBugs;
 	private Combo minPriorityCombo;
+	private Button chkDisplayFalseWarnings;
 	private Button[] chkEnableBugCategoryList;
 	private String[] bugCategoryList;
 	private UserPreferences origUserPreferences;
@@ -136,7 +137,7 @@ public class FindbugsPropertyPage extends PropertyPage {
 		chkEnableFindBugs.setSelection(initialEnabled);
 
 		Composite prioGroup = new Composite(composite, SWT.NONE);
-		GridLayout prioLayout = new GridLayout(2, false);
+		GridLayout prioLayout = new GridLayout(3, false);
 		prioGroup.setLayout(prioLayout);
 		
 		Label minPrioLabel = new Label(prioGroup, SWT.NONE);
@@ -149,6 +150,15 @@ public class FindbugsPropertyPage extends PropertyPage {
 		minPriorityCombo.add(ProjectFilterSettings.LOW_PRIORITY);
 		minPriorityCombo.setText(origUserPreferences.getFilterSettings().getMinPriority());
 		minPriorityCombo.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
+		
+		chkDisplayFalseWarnings = new Button(prioGroup, SWT.CHECK);
+		chkDisplayFalseWarnings.setText("Display false warnings");
+		GridData chkDisplayFalseWarningsLayoutData =
+			new GridData(SWT.BEGINNING, SWT.CENTER, false, false);
+		chkDisplayFalseWarningsLayoutData.horizontalIndent = 15;
+		chkDisplayFalseWarnings.setLayoutData(chkDisplayFalseWarningsLayoutData);
+		chkDisplayFalseWarnings.setSelection(
+				origUserPreferences.getFilterSettings().displayFalseWarnings());
 		
 		Composite categoryGroup = new Composite(composite, SWT.NONE);
 		categoryGroup.setLayout(new GridLayout(2, true));
@@ -643,6 +653,8 @@ public class FindbugsPropertyPage extends PropertyPage {
 		}
 		
 		settings.setMinPriority(minPriorityCombo.getText());
+		
+		settings.setDisplayFalseWarnings(chkDisplayFalseWarnings.getSelection());
 		
 		return settings;
 	}
