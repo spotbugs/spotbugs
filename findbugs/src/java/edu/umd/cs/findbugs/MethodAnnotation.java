@@ -86,6 +86,19 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 		return fullMethod;
 	}
 
+	public int hashCode() {
+		return className.hashCode() + methodName.hashCode() + methodSig.hashCode();
+	}
+
+	public boolean equals(Object o) {
+		if (!(o instanceof MethodAnnotation))
+			return false;
+		MethodAnnotation other = (MethodAnnotation) o;
+		return className.equals(other.className)
+			&& methodName.equals(other.methodName)
+			&& methodSig.equals(other.methodSig);
+	}
+
 /*
 	public static void main(String[] argv) {
 		MethodAnnotation m = new MethodAnnotation("edu.umd.cs.daveho.ba.CFG", "fooIterator",
