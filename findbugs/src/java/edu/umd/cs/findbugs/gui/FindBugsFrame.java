@@ -2267,7 +2267,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	 *         cancels or an error occurs
 	 */
 	private boolean saveProject(Project project, String dialogTitle, boolean chooseFilename) {
-		JRadioButton relativePaths = null;
+		boolean useRelativePaths = false;
 		try {
 			if (project == null)
 				return true;
@@ -2277,8 +2277,10 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
 			if (!fileName.startsWith("<") && !chooseFilename) {
 				file = new File(fileName);
+				Boolean relativePaths = project.getOption( Project.RELATIVE_PATHS );
+				useRelativePaths = (relativePaths != null) && relativePaths.booleanValue();
 			} else {
-				relativePaths = new JRadioButton("Use Relative Paths");
+				JRadioButton relativePaths = new JRadioButton("Use Relative Paths");
 				relativePaths.setSelected(project.getOption(Project.RELATIVE_PATHS));
 				JFileChooser chooser = createFileChooser(relativePaths);
 				chooser.setFileFilter(projectFileFilter);
@@ -2288,10 +2290,10 @@ public class FindBugsFrame extends javax.swing.JFrame {
 				file = chooser.getSelectedFile();
 				fileName = Project.transformFilename(file.getPath());
 				file = new File(fileName);
+				useRelativePaths = relativePaths.isSelected();
 			}
 
-			project.write(file.getPath(), (relativePaths != null) && relativePaths.isSelected(),
-			        file.getParent());
+			project.write(file.getPath(), useRelativePaths, file.getParent());
 			logger.logMessage(ConsoleLogger.INFO, "Project saved");
 			project.setFileName(file.getPath());
 
