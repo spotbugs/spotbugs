@@ -50,7 +50,7 @@ import edu.umd.cs.findbugs.DetectorFactoryCollection;
  *
  * @author Dave Brosius
  */
-public class UserPreferences {
+public class UserPreferences implements Cloneable {
 	private static final int MAX_RECENT_FILES = 9;
 	private static final String DETECTOR_THRESHOLD_KEY = "detector_threshold";
 	private static final String FILTER_SETTINGS_KEY = "filter_settings";
@@ -365,6 +365,28 @@ public class UserPreferences {
 		return recentProjectsList.hashCode()
 			+ detectorEnablementMap.hashCode()
 			+ filterSettings.hashCode();
+	}
+	
+	//@Override
+	public Object clone() {
+		try {
+			UserPreferences dup;
+			dup = (UserPreferences) this.getClass().newInstance();
+			
+			dup.recentProjectsList = new LinkedList<String>();
+			dup.recentProjectsList.addAll(this.recentProjectsList);
+			
+			dup.detectorEnablementMap = new HashMap<String, Boolean>();
+			dup.detectorEnablementMap.putAll(this.detectorEnablementMap);
+			
+			dup.filterSettings = (ProjectFilterSettings) this.filterSettings.clone();
+			
+			return dup;
+		} catch (InstantiationException e) {
+			throw new IllegalStateException();
+		} catch (IllegalAccessException e) {
+			throw new IllegalStateException();
+		}
 	}
 }
 
