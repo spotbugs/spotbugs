@@ -1127,6 +1127,18 @@ using the &FindBugs; task.
   </varlistentry>
 
   <varlistentry>
+    <term><literal>systemProperty</literal></term>
+    <listitem>
+      <para>
+      Optional nested element.  If specified, defines a system property.
+      The <literal>name</literal> attribute specifies the name of the
+      system property, and the <literal>value</literal> attribute specifies
+      the value of the system property.
+      </para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
     <term><literal>timeout</literal></term>
     <listitem>
        <para>
