@@ -616,7 +616,8 @@ public class FindBugs implements Constants2, ExitCodes {
 	 * @param bugReporter the BugReporter object that will be used to report
 	 *                    BugInstance objects, analysis errors, class to source mapping, etc.
 	 * @param project     the Project indicating which files to analyze and
-	 *                    the auxiliary classpath to use
+	 *                    the auxiliary classpath to use; note that the FindBugs
+	 *                    object will create a private copy of the Project object
 	 */
 	public FindBugs(BugReporter bugReporter, Project project) {
 		if (bugReporter == null)
@@ -625,7 +626,7 @@ public class FindBugs implements Constants2, ExitCodes {
 			throw new IllegalArgumentException("null project");
 
 		this.bugReporter = new ErrorCountingBugReporter(bugReporter);
-		this.project = project;
+		this.project = project.duplicate();
 		this.classObserverList = new LinkedList<ClassObserver>();
 
 		// Create a no-op progress callback.
@@ -725,7 +726,6 @@ public class FindBugs implements Constants2, ExitCodes {
 		// they can also be zip files, directories,
 		// and single class files.
 		LinkedList<ArchiveWorkListItem> archiveWorkList = new LinkedList<ArchiveWorkListItem>();
-		//archiveWorkList.addAll(project.getJarFileList());
 		for (Iterator<String> i = project.getJarFileList().iterator(); i.hasNext(); ) {
 			String fileName = i.next();
 			archiveWorkList.add(new ArchiveWorkListItem(fileName, true));
@@ -739,10 +739,15 @@ public class FindBugs implements Constants2, ExitCodes {
 		List<String> repositoryClassList = new LinkedList<String>();
 
 		// Add all classes in analyzed archives/directories/files
+		// FIXME: collect additional aux classpath entries
 		while (!archiveWorkList.isEmpty()) {
 			ArchiveWorkListItem item = archiveWorkList.removeFirst();
-			addFileToRepository(item, archiveWorkList, repositoryClassList);
+			scanArchiveOrDirectory(item, archiveWorkList, repositoryClassList);
 		}
+		
+		// Now that we have scanned all specified archives and directories,
+		// we can set the repository classpath.
+		setRepositoryClassPath();
 
 		// Callback for progress dialog: analysis is starting
 		progressCallback.startAnalysis(repositoryClassList.size());
@@ -867,45 +872,50 @@ public class FindBugs implements Constants2, ExitCodes {
 		// Clear InnerClassAccessMap cache.
 		InnerClassAccessMap.instance().clearCache();
 
-		// Create a SyntheticRepository based on the current project,
+		// Create a URLClassPathRepository based on the current project,
 		// and make it current.
-
-		StringBuffer buf = new StringBuffer();
-
-		// Add aux class path entries specified in project
-		addCollectionToClasspath(project.getAuxClasspathEntryList(), buf);
-
-		// Add implicit class path entries determined from project jar files
-		addCollectionToClasspath(project.getImplicitClasspathEntryList(), buf);
-
-		// Add the system classpath entries
-		buf.append(ClassPath.getClassPath());
-
-		if (DEBUG) System.out.println("Using classpath: " + buf);
-
-		// Set up the Repository to use the combined classpath
-		ClassPath classPath = new ClassPath(buf.toString());
-		SyntheticRepository repository = SyntheticRepository.getInstance(classPath);
+		URLClassPathRepository repository = new URLClassPathRepository(); 
 		Repository.setRepository(repository);
+	}
+	
+	/**
+	 * Based on Project settings, set the classpath to be used
+	 * by the Repository when looking up classes.
+	 * @throws IOException
+	 */
+	private void setRepositoryClassPath() throws IOException {
+
+		URLClassPathRepository repository =
+			(URLClassPathRepository) Repository.getRepository();
+
+		// Set aux classpath entries
+		addCollectionToClasspath(project.getAuxClasspathEntryList(), repository);
+		
+		// Set implicit classpath entries
+		addCollectionToClasspath(project.getImplicitClasspathEntryList(), repository);
+
+		// Add system classpath entries
+		repository.addSystemClasspathComponents();
 	}
 
 	/**
-	 * Add the list of classpath entries to the provided buffer.
-	 *
-	 * @param collection the collection of classpath entries to add
-	 * @param buf        the buffer to which the entries should be added
+	 * Add all classpath entries in given Collection to the given
+	 * URLClassPathRepository. 
+	 * 
+	 * @param collection classpath entries to add
+	 * @param repository URLClassPathRepository to add the entries to
+	 * @throws IOException
 	 */
-	private void addCollectionToClasspath(Collection collection, StringBuffer buf) {
-		Iterator i = collection.iterator();
-		while (i.hasNext()) {
-			String entry = (String) i.next();
-			buf.append(entry);
-			buf.append(File.pathSeparatorChar);
+	private static void addCollectionToClasspath(Collection<String> collection, URLClassPathRepository repository) throws IOException {
+		// Add aux classpath entries
+		for (Iterator<String> i = collection.iterator(); i.hasNext(); ) {
+			String entry = i.next();
+			repository.addURL(entry);
 		}
 	}
 
 	/**
-	 * Add all classes contained in given file to the BCEL Repository.
+	 * Add all classes contained in given file or directory to the BCEL Repository.
 	 *
 	 * @param item                work list item representing the file, which may be a jar/zip
 	 *                            archive, a single class file, or a directory to be recursively
@@ -916,7 +926,7 @@ public class FindBugs implements Constants2, ExitCodes {
 	 *                            the archive or directory are added, so we later know
 	 *                            which files to analyze
 	 */
-	private void addFileToRepository(ArchiveWorkListItem item,
+	private void scanArchiveOrDirectory(ArchiveWorkListItem item,
 			LinkedList<ArchiveWorkListItem> archiveWorkList, List<String> repositoryClassList)
 	        throws IOException, InterruptedException {
 
