@@ -395,7 +395,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 //      Uncomment one of these to test I18N	    
 //	    Locale.setDefault( Locale.FRENCH );
 //	    Locale.setDefault( Locale.GERMAN );
-//		Locale.setDefault( Locale.JAPANESE );
+//	    Locale.setDefault( Locale.JAPANESE );
 //	    Locale.setDefault( new Locale( "et" ));
 //	    Locale.setDefault( new Locale( "fi" ));
 	    
@@ -564,9 +564,9 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
         addJarButton.setFont(new java.awt.Font("Dialog", 0, 12));
         addJarButton.setText("Add");
-        addJarButton.setMaximumSize(new java.awt.Dimension(80, 25));
-        addJarButton.setMinimumSize(new java.awt.Dimension(80, 25));
-        addJarButton.setPreferredSize(new java.awt.Dimension(80, 25));
+        addJarButton.setMaximumSize(new java.awt.Dimension(90, 25));
+        addJarButton.setMinimumSize(new java.awt.Dimension(90, 25));
+        addJarButton.setPreferredSize(new java.awt.Dimension(90, 25));
         addJarButton.setText(L10N.getLocalString("dlg.add_btn", "Add"));
         addJarButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -617,9 +617,9 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
         addSourceDirButton.setFont(new java.awt.Font("Dialog", 0, 12));
         addSourceDirButton.setText("Add");
-        addSourceDirButton.setMaximumSize(new java.awt.Dimension(80, 25));
-        addSourceDirButton.setMinimumSize(new java.awt.Dimension(80, 25));
-        addSourceDirButton.setPreferredSize(new java.awt.Dimension(80, 25));
+        addSourceDirButton.setMaximumSize(new java.awt.Dimension(90, 25));
+        addSourceDirButton.setMinimumSize(new java.awt.Dimension(90, 25));
+        addSourceDirButton.setPreferredSize(new java.awt.Dimension(90, 25));
         addSourceDirButton.setText(L10N.getLocalString("dlg.add_btn", "Add"));
         addSourceDirButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -646,9 +646,9 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
         removeJarButton.setFont(new java.awt.Font("Dialog", 0, 12));
         removeJarButton.setText("Remove");
-        removeJarButton.setMaximumSize(new java.awt.Dimension(80, 25));
-        removeJarButton.setMinimumSize(new java.awt.Dimension(80, 25));
-        removeJarButton.setPreferredSize(new java.awt.Dimension(80, 25));
+        removeJarButton.setMaximumSize(new java.awt.Dimension(90, 25));
+        removeJarButton.setMinimumSize(new java.awt.Dimension(90, 25));
+        removeJarButton.setPreferredSize(new java.awt.Dimension(90, 25));
         removeJarButton.setText(L10N.getLocalString("dlg.remove_btn", "Remove"));
         removeJarButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -665,9 +665,9 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
         removeSrcDirButton.setFont(new java.awt.Font("Dialog", 0, 12));
         removeSrcDirButton.setText("Remove");
-        removeSrcDirButton.setMaximumSize(new java.awt.Dimension(80, 25));
-        removeSrcDirButton.setMinimumSize(new java.awt.Dimension(80, 25));
-        removeSrcDirButton.setPreferredSize(new java.awt.Dimension(80, 25));
+        removeSrcDirButton.setMaximumSize(new java.awt.Dimension(90, 25));
+        removeSrcDirButton.setMinimumSize(new java.awt.Dimension(90, 25));
+        removeSrcDirButton.setPreferredSize(new java.awt.Dimension(90, 25));
         removeSrcDirButton.setText(L10N.getLocalString("dlg.remove_btn", "Remove"));
         removeSrcDirButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -692,9 +692,9 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
         browseJarButton.setFont(new java.awt.Font("Dialog", 0, 12));
         browseJarButton.setText("Browse");
-        browseJarButton.setMaximumSize(new java.awt.Dimension(80, 25));
-        browseJarButton.setMinimumSize(new java.awt.Dimension(80, 25));
-        browseJarButton.setPreferredSize(new java.awt.Dimension(80, 25));
+        browseJarButton.setMaximumSize(new java.awt.Dimension(90, 25));
+        browseJarButton.setMinimumSize(new java.awt.Dimension(90, 25));
+        browseJarButton.setPreferredSize(new java.awt.Dimension(90, 25));
         browseJarButton.setText(L10N.getLocalString("dlg.browse_btn", "Browse"));
         browseJarButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -710,9 +710,9 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
         browseSrcDirButton.setFont(new java.awt.Font("Dialog", 0, 12));
         browseSrcDirButton.setText("Browse");
-        browseSrcDirButton.setMaximumSize(new java.awt.Dimension(80, 25));
-        browseSrcDirButton.setMinimumSize(new java.awt.Dimension(80, 25));
-        browseSrcDirButton.setPreferredSize(new java.awt.Dimension(80, 25));
+        browseSrcDirButton.setMaximumSize(new java.awt.Dimension(90, 25));
+        browseSrcDirButton.setMinimumSize(new java.awt.Dimension(90, 25));
+        browseSrcDirButton.setPreferredSize(new java.awt.Dimension(90, 25));
         browseSrcDirButton.setText(L10N.getLocalString("dlg.browse_btn", "Browse"));
         browseSrcDirButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -828,9 +828,9 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
         browseClasspathEntryButton.setFont(new java.awt.Font("Dialog", 0, 12));
         browseClasspathEntryButton.setText("Browse");
-        browseClasspathEntryButton.setMaximumSize(new java.awt.Dimension(80, 25));
-        browseClasspathEntryButton.setMinimumSize(new java.awt.Dimension(80, 25));
-        browseClasspathEntryButton.setPreferredSize(new java.awt.Dimension(80, 25));
+        browseClasspathEntryButton.setMaximumSize(new java.awt.Dimension(90, 25));
+        browseClasspathEntryButton.setMinimumSize(new java.awt.Dimension(90, 25));
+        browseClasspathEntryButton.setPreferredSize(new java.awt.Dimension(90, 25));
         browseClasspathEntryButton.setText(L10N.getLocalString("dlg.browse_btn", "Browse"));
         browseClasspathEntryButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -845,9 +845,9 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
         addClasspathEntryButton.setFont(new java.awt.Font("Dialog", 0, 12));
         addClasspathEntryButton.setText("Add");
-        addClasspathEntryButton.setMaximumSize(new java.awt.Dimension(80, 25));
-        addClasspathEntryButton.setMinimumSize(new java.awt.Dimension(80, 25));
-        addClasspathEntryButton.setPreferredSize(new java.awt.Dimension(80, 25));
+        addClasspathEntryButton.setMaximumSize(new java.awt.Dimension(90, 25));
+        addClasspathEntryButton.setMinimumSize(new java.awt.Dimension(90, 25));
+        addClasspathEntryButton.setPreferredSize(new java.awt.Dimension(90, 25));
         addClasspathEntryButton.setText(L10N.getLocalString("dlg.add_btn", "Add"));
         addClasspathEntryButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -864,9 +864,9 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
         removeClasspathEntryButton.setFont(new java.awt.Font("Dialog", 0, 12));
         removeClasspathEntryButton.setText("Remove");
-        removeClasspathEntryButton.setMaximumSize(new java.awt.Dimension(80, 25));
-        removeClasspathEntryButton.setMinimumSize(new java.awt.Dimension(80, 25));
-        removeClasspathEntryButton.setPreferredSize(new java.awt.Dimension(80, 25));
+        removeClasspathEntryButton.setMaximumSize(new java.awt.Dimension(90, 25));
+        removeClasspathEntryButton.setMinimumSize(new java.awt.Dimension(90, 25));
+        removeClasspathEntryButton.setPreferredSize(new java.awt.Dimension(90, 25));
         removeClasspathEntryButton.setText(L10N.getLocalString("dlg.remove_btn", "Remove"));
         removeClasspathEntryButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -906,9 +906,9 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
         sourceUpButton.setFont(new java.awt.Font("Dialog", 0, 12));
         sourceUpButton.setText("Up");
-        sourceUpButton.setMaximumSize(new java.awt.Dimension(80, 25));
-        sourceUpButton.setMinimumSize(new java.awt.Dimension(80, 25));
-        sourceUpButton.setPreferredSize(new java.awt.Dimension(80, 25));
+        sourceUpButton.setMaximumSize(new java.awt.Dimension(90, 25));
+        sourceUpButton.setMinimumSize(new java.awt.Dimension(90, 25));
+        sourceUpButton.setPreferredSize(new java.awt.Dimension(90, 25));
         sourceUpButton.setText(L10N.getLocalString("dlg.up_btn", "Up"));
         sourceUpButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -924,9 +924,9 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
         sourceDownButton.setFont(new java.awt.Font("Dialog", 0, 12));
         sourceDownButton.setText("Down");
-        sourceDownButton.setMaximumSize(new java.awt.Dimension(80, 25));
-        sourceDownButton.setMinimumSize(new java.awt.Dimension(80, 25));
-        sourceDownButton.setPreferredSize(new java.awt.Dimension(80, 25));
+        sourceDownButton.setMaximumSize(new java.awt.Dimension(90, 25));
+        sourceDownButton.setMinimumSize(new java.awt.Dimension(90, 25));
+        sourceDownButton.setPreferredSize(new java.awt.Dimension(90, 25));
         sourceDownButton.setText(L10N.getLocalString("dlg.down_btn", "Down"));
         sourceDownButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -940,9 +940,9 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
         classpathUpButton.setFont(new java.awt.Font("Dialog", 0, 12));
         classpathUpButton.setText("Up");
-        classpathUpButton.setMaximumSize(new java.awt.Dimension(80, 25));
-        classpathUpButton.setMinimumSize(new java.awt.Dimension(80, 25));
-        classpathUpButton.setPreferredSize(new java.awt.Dimension(80, 25));
+        classpathUpButton.setMaximumSize(new java.awt.Dimension(90, 25));
+        classpathUpButton.setMinimumSize(new java.awt.Dimension(90, 25));
+        classpathUpButton.setPreferredSize(new java.awt.Dimension(90, 25));
         classpathUpButton.setText(L10N.getLocalString("dlg.up_btn", "Up"));
         classpathUpButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -958,9 +958,9 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
         classpathDownButton.setFont(new java.awt.Font("Dialog", 0, 12));
         classpathDownButton.setText("Down");
-        classpathDownButton.setMaximumSize(new java.awt.Dimension(80, 25));
-        classpathDownButton.setMinimumSize(new java.awt.Dimension(80, 25));
-        classpathDownButton.setPreferredSize(new java.awt.Dimension(80, 25));
+        classpathDownButton.setMaximumSize(new java.awt.Dimension(90, 25));
+        classpathDownButton.setMinimumSize(new java.awt.Dimension(90, 25));
+        classpathDownButton.setPreferredSize(new java.awt.Dimension(90, 25));
         classpathDownButton.setText(L10N.getLocalString("dlg.down_btn", "Down"));
         classpathDownButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
