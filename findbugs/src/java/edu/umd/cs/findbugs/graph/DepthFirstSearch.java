@@ -17,7 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-// $Revision: 1.5 $
+// $Revision: 1.6 $
 
 package edu.umd.cs.daveho.graph;
 
@@ -94,14 +94,13 @@ public class DepthFirstSearch
 	 */
 	public void search(GraphType g, Iterator<VertexType> vertexIter) {
 
-		final int numLabels = g.getNumLabels();
+		final int numVertexLabels = g.getNumVertexLabels();
 
-		m_colorList	   = new int[ numLabels ]; // colors initially WHITE
-		m_startTimeList   = new int[ numLabels ];
-		m_finishTimeList  = new int[ numLabels ];
-		//m_predecessorList = new VertexType[ numLabels ]; // predecessors initially null
-		m_predecessorList = new ArrayList<VertexType>(numLabels);
-		for (int i = 0; i < numLabels; ++i) {
+		m_colorList	   = new int[ numVertexLabels ]; // colors initially WHITE
+		m_startTimeList   = new int[ numVertexLabels ];
+		m_finishTimeList  = new int[ numVertexLabels ];
+		m_predecessorList = new ArrayList<VertexType>(numVertexLabels);
+		for (int i = 0; i < numVertexLabels; ++i) {
 			m_predecessorList.add(null);
 		}
 		m_searchTreeList  = new ArrayList<SearchTree<VertexType>>();

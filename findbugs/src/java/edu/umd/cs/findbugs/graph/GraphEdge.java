@@ -17,7 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-// $Revision: 1.3 $
+// $Revision: 1.4 $
 
 package edu.umd.cs.daveho.graph;
 
@@ -38,6 +38,12 @@ public interface GraphEdge<ActualEdgeType, VertexType extends GraphVertex<Vertex
 
 	/** Get the target vertex. */
 	public VertexType getTarget();
+
+	/** Get the integer label. */
+	public int getLabel();
+
+	/** Set the integer label. */
+	public void setLabel(int label);
 
 }
 

@@ -17,7 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-// $Revision: 1.4 $
+// $Revision: 1.5 $
 
 package edu.umd.cs.daveho.graph;
 
@@ -80,13 +80,23 @@ public interface Graph
 	 * in the graph.  All vertices in the graph are guaranteed to have labels in the
 	 * range 0..n, where n is the value returned by this method.
 	 */
-	public int getNumLabels();
+	public int getNumVertexLabels();
 
 	/**
 	 * Reset number of (integer) labels.  This might be necessary
 	 * if an algorithm has assigned new labels to a graph's vertices.
 	 */
-	public void setNumLabels(int numLabels);
+	public void setNumVertexLabels(int numLabels);
+
+	/**
+	 * Get the number of numeric labels that have been assigned to edges.
+	 */
+	public int getNumEdgeLabels();
+
+	/**
+	 * Reset the number of edge labels.
+	 */
+	public void setNumEdgeLabels(int numLabels);
 
 	/**
 	 * Remove given edge from the graph.
@@ -100,11 +110,27 @@ public interface Graph
 	 */
 	public void removeVertex(VertexType v);
 
-	/** Get an iterator over the adjacency list
-		(vertices reachable through this vertex's outgoing edges). */
-	public Iterator<VertexType> adjacencyListIterator(VertexType source);
+	/**
+	 * Get an Iterator over outgoing edges from given vertex.
+	 * @param source the source vertex
+	 * @return an Iterator over outgoing edges
+	 */
+	public Iterator<EdgeType> outgoingEdgeIterator(VertexType source);
 
-	// TODO: add other methods for accessing edges and vertices
+	/**
+	 * Get an Iterator over incoming edges to a given vertex.
+	 * @param target the target vertex
+	 * @return an Iterator over incoming edges
+	 */
+	public Iterator<EdgeType> incomingEdgeIterator(VertexType target);
+
+	/**
+	 * Get an iterator over the adjacency list
+	 * (vertices reachable through this vertex's outgoing edges).
+	 * @param source the source vertex
+	 * @return an Iterator over the successors of the vertex
+	 */
+	public Iterator<VertexType> adjacencyListIterator(VertexType source);
 
 }
 
