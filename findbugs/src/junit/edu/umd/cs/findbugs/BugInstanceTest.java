@@ -81,6 +81,15 @@ public class BugInstanceTest extends TestCase {
 		checkPropertyIterator(b.propertyIterator(),
 				new String[]{"A","B","D","E"}, new String[]{"a","b","d","e"});
 	}
+	
+	public void testRemoveAll1() {
+		removeThroughIterator(b.propertyIterator(), "A");
+		checkPropertyIterator(b.propertyIterator(), new String[]{"B","C"}, new String[]{"b","c"});
+		removeThroughIterator(b.propertyIterator(), "B");
+		checkPropertyIterator(b.propertyIterator(), new String[]{"C"}, new String[]{"c"});
+		removeThroughIterator(b.propertyIterator(), "C");
+		checkPropertyIterator(b.propertyIterator(), new String[0], new String[0]);
+	}
 
 	private void get(Iterator<BugProperty> iter) {
 		try {
