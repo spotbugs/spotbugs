@@ -279,3 +279,5 @@ public class LockSet {
 	}
 */
 }
+
+// vim:ts=4
