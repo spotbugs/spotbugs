@@ -23,9 +23,13 @@ package edu.umd.cs.findbugs;
  * The interface which all bug pattern detectors must implement.
  */
 public interface Detector {
-	/** Normal priority for bug instances. */
+	/** Low priority for bug instances. */
 	public static final int LOW_PRIORITY = 3;
+
+	/** Normal priority for bug instances. */
 	public static final int NORMAL_PRIORITY = 2;
+
+	/** High priority for bug instances. */
 	public static final int HIGH_PRIORITY = 1;
 
 	/**
