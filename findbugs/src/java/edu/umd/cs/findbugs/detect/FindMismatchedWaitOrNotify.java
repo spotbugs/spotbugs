@@ -27,6 +27,7 @@ import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.*;
 import org.apache.bcel.generic.*;
 import java.util.BitSet;
+import java.util.Iterator;
 
 public class FindMismatchedWaitOrNotify implements Detector {
 	private BugReporter bugReporter;
@@ -61,65 +62,62 @@ public class FindMismatchedWaitOrNotify implements Detector {
 		}
 	}
 
-	private void analyzeMethod(final ClassContext classContext, Method method)
+	private void analyzeMethod(ClassContext classContext, Method method)
 		throws CFGBuilderException, DataflowAnalysisException {
 
-		final MethodGen methodGen = classContext.getMethodGen(method);
-		final ConstantPoolGen cpg = methodGen.getConstantPool();
-		final CFG cfg = classContext.getCFG(method);
-		final ValueNumberDataflow vnaDataflow = classContext.getValueNumberDataflow(method);
-		final LockDataflow dataflow = classContext.getLockDataflow(method);
+		MethodGen methodGen = classContext.getMethodGen(method);
+		ConstantPoolGen cpg = methodGen.getConstantPool();
+		CFG cfg = classContext.getCFG(method);
+		ValueNumberDataflow vnaDataflow = classContext.getValueNumberDataflow(method);
+		LockDataflow dataflow = classContext.getLockDataflow(method);
 
-		new LocationScanner(cfg).scan(new LocationScanner.Callback() {
-			public void visitLocation(Location location) {
-				try {
-					BasicBlock basicBlock = location.getBasicBlock();
-					InstructionHandle handle = location.getHandle();
+		for (Iterator<Location> i = cfg.locationIterator(); i.hasNext(); ) {
+			Location location = i.next();
 
-					Instruction ins = handle.getInstruction();
-					if (!(ins instanceof INVOKEVIRTUAL))
-						return;
-					INVOKEVIRTUAL inv = (INVOKEVIRTUAL) ins;
+			BasicBlock basicBlock = location.getBasicBlock();
+			InstructionHandle handle = location.getHandle();
 
-					String methodName = inv.getName(cpg);
-					String methodSig = inv.getSignature(cpg);
+			Instruction ins = handle.getInstruction();
+			if (!(ins instanceof INVOKEVIRTUAL))
+				return;
+			INVOKEVIRTUAL inv = (INVOKEVIRTUAL) ins;
 
-					if (Hierarchy.isMonitorWait(methodName, methodSig) || Hierarchy.isMonitorNotify(methodName, methodSig)) {
-						int numConsumed = inv.consumeStack(cpg);
-						if (numConsumed == Constants.UNPREDICTABLE)
-							throw new AnalysisException("Unpredictable stack consumption", methodGen, handle);
+			String methodName = inv.getName(cpg);
+			String methodSig = inv.getSignature(cpg);
 
-						ValueNumberFrame frame = vnaDataflow.getFactAtLocation(location);
-						if (!frame.isValid())
-							// Probably dead code
-							return;
-						if (frame.getStackDepth() - numConsumed < 0)
-							throw new AnalysisException("Stack underflow", methodGen, handle);
-						ValueNumber ref = frame.getValue(frame.getNumSlots() - numConsumed);
+			if (Hierarchy.isMonitorWait(methodName, methodSig)
+				|| Hierarchy.isMonitorNotify(methodName, methodSig)) {
+				int numConsumed = inv.consumeStack(cpg);
+				if (numConsumed == Constants.UNPREDICTABLE)
+					throw new AnalysisException("Unpredictable stack consumption", methodGen, handle);
 
-						LockSet lockSet = dataflow.getFactAtLocation(location);
-						int lockCount = lockSet.getLockCount(ref.getNumber());
+				ValueNumberFrame frame = vnaDataflow.getFactAtLocation(location);
+				if (!frame.isValid())
+					// Probably dead code
+					return;
+				if (frame.getStackDepth() - numConsumed < 0)
+					throw new AnalysisException("Stack underflow", methodGen, handle);
+				ValueNumber ref = frame.getValue(frame.getNumSlots() - numConsumed);
 
-						if (lockCount == 0) {
-							String sourceFile = classContext.getJavaClass().getSourceFileName();
-							String type = methodName.equals("wait")
-								? "MWN_MISMATCHED_WAIT"
-								: "MWN_MISMATCHED_NOTIFY";
-							bugReporter.reportBug(new BugInstance(type, NORMAL_PRIORITY)
-								.addClassAndMethod(methodGen, sourceFile)
-								.addSourceLine(methodGen, sourceFile, handle)
-							);
-						}
-					}
-				} catch (DataflowAnalysisException e) {
-					throw new AnalysisException("FindMismatchedWaitOrNotify: caught exception " + e.toString(), e);
+				LockSet lockSet = dataflow.getFactAtLocation(location);
+				int lockCount = lockSet.getLockCount(ref.getNumber());
+
+				if (lockCount == 0) {
+					String sourceFile = classContext.getJavaClass().getSourceFileName();
+					String type = methodName.equals("wait")
+						? "MWN_MISMATCHED_WAIT"
+						: "MWN_MISMATCHED_NOTIFY";
+					bugReporter.reportBug(new BugInstance(type, NORMAL_PRIORITY)
+						.addClassAndMethod(methodGen, sourceFile)
+						.addSourceLine(methodGen, sourceFile, handle)
+					);
 				}
 			}
-		});
+		}
 	}
 
 	public void report() {
 	}
 }
 
-// vim:ts=4
+// vim:ts=3

@@ -41,33 +41,37 @@ public class FindTwoLockWait implements Detector {
 	public void visitClassContext(ClassContext classContext) {
 		javaClass = classContext.getJavaClass();
 
-		try {
+		Method[] methodList = javaClass.getMethods();
+		for (int i = 0; i < methodList.length; ++i) {
+			Method method = methodList[i];
 
-			Method[] methodList = javaClass.getMethods();
-			for (int i = 0; i < methodList.length; ++i) {
-				Method method = methodList[i];
+			MethodGen methodGen = classContext.getMethodGen(method);
+			if (methodGen == null)
+				continue;
 
-				final MethodGen methodGen = classContext.getMethodGen(method);
-				if (methodGen == null)
-					continue;
+			if (!preScreen(methodGen))
+				continue;
 
-				if (!preScreen(methodGen))
-					continue;
-
-				final CFG cfg = classContext.getCFG(method);
-				final LockCountDataflow dataflow = classContext.getAnyLockCountDataflow(method);
-
-				new LocationScanner(cfg).scan(new LocationScanner.Callback() {
-					public void visitLocation(Location location) {
-						visitInstruction(location.getHandle(), location.getBasicBlock(), methodGen, dataflow);
-					}
-				});
+			try {
+				analyzeMethod(classContext, method);
+			} catch (DataflowAnalysisException e) {
+				bugReporter.logError(e.toString());
+			} catch (CFGBuilderException e) {
+				bugReporter.logError(e.toString());
 			}
+		}
+	}
 
-		} catch (DataflowAnalysisException e) {
-			throw new AnalysisException("FindTwoLockWait caught exception: " + e.toString(), e);
-		} catch (CFGBuilderException e) {
-			throw new AnalysisException("FindTwoLockWait caught exception: " + e.toString(), e);
+	private void analyzeMethod(ClassContext classContext, Method method)
+		throws CFGBuilderException, DataflowAnalysisException {
+
+		MethodGen methodGen = classContext.getMethodGen(method);
+		CFG cfg = classContext.getCFG(method);
+		LockCountDataflow dataflow = classContext.getAnyLockCountDataflow(method);
+
+		for (Iterator<Location> j = cfg.locationIterator(); j.hasNext(); ) {
+			Location location = j.next();
+			visitInstruction(location.getHandle(), location.getBasicBlock(), methodGen, dataflow);
 		}
 	}
 
@@ -131,4 +135,4 @@ public class FindTwoLockWait implements Detector {
 	}
 }
 
-// vim:ts=4
+// vim:ts=3

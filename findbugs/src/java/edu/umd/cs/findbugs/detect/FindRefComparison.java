@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs.detect;
 
 import java.util.BitSet;
 import java.util.HashSet;
+import java.util.Iterator;
 import edu.umd.cs.findbugs.*;
 import edu.umd.cs.findbugs.ba.*;
 import org.apache.bcel.Constants;
@@ -241,7 +242,6 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 	 * ---------------------------------------------------------------------- */
 
 	private BugReporter bugReporter;
-	private BugInstance stringComparison; 
 
 	/* ----------------------------------------------------------------------
 	 * Implementation
@@ -252,119 +252,129 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 	}
 
 	public void visitClassContext(ClassContext classContext) {
-		try {
+		JavaClass jclass = classContext.getJavaClass();
+		Method[] methodList = jclass.getMethods();
 
-			final JavaClass jclass = classContext.getJavaClass();
-			Method[] methodList = jclass.getMethods();
+		for (int i = 0; i < methodList.length; ++i) {
+			Method method = methodList[i];
+			MethodGen methodGen = classContext.getMethodGen(method);
+			if (methodGen == null)
+				continue;
 
-			for (int i = 0; i < methodList.length; ++i) {
-				Method method = methodList[i];
-				final MethodGen methodGen = classContext.getMethodGen(method);
-				if (methodGen == null)
-					continue;
+			// Prescreening - must have IF_ACMPEQ or IF_ACMPNE
+			BitSet bytecodeSet = classContext.getBytecodeSet(method);
+			if (!(bytecodeSet.get(Constants.IF_ACMPEQ) || bytecodeSet.get(Constants.IF_ACMPNE)))
+				continue;
 
-				// Prescreening - must have IF_ACMPEQ or IF_ACMPNE
-				BitSet bytecodeSet = classContext.getBytecodeSet(method);
-				if (!(bytecodeSet.get(Constants.IF_ACMPEQ) || bytecodeSet.get(Constants.IF_ACMPNE)))
-					continue;
+			if (DEBUG) System.out.println("FindRefComparison: analyzing " +
+				SignatureConverter.convertMethodSignature(methodGen));
 
-				if (DEBUG) System.out.println("FindRefComparison: analyzing " +
-					SignatureConverter.convertMethodSignature(methodGen));
-
-				// Report at most one String comparison per method.
-				// We report the first highest priority warning.
-				stringComparison = null;
-
-				final CFG cfg = classContext.getCFG(method);
-				final DepthFirstSearch dfs = classContext.getDepthFirstSearch(method);
-				final ExceptionSetFactory exceptionSetFactory =
-					classContext.getExceptionSetFactory(method);
-
-				RefComparisonTypeMerger typeMerger = new RefComparisonTypeMerger(bugReporter, exceptionSetFactory);
-				TypeFrameModelingVisitor visitor = new RefComparisonTypeFrameModelingVisitor(methodGen.getConstantPool(), bugReporter);
-				TypeAnalysis typeAnalysis = new TypeAnalysis(methodGen, cfg, dfs, typeMerger, visitor, bugReporter, exceptionSetFactory);
-				final TypeDataflow typeDataflow = new TypeDataflow(cfg, typeAnalysis);
-				typeDataflow.execute();
-
-				new LocationScanner(cfg).scan(new LocationScanner.Callback() {
-					public void visitLocation(Location location) {
-						try {
-							InstructionHandle handle = location.getHandle();
-							Instruction ins = handle.getInstruction();
-							short opcode = ins.getOpcode();
-							if (opcode == Constants.IF_ACMPEQ || opcode == Constants.IF_ACMPNE) {
-								TypeFrame frame = typeDataflow.getFactAtLocation(location);
-								if (frame.getStackDepth() < 2)
-									throw new AnalysisException("Stack underflow", methodGen, handle);
-								int numSlots = frame.getNumSlots();
-								Type lhsType = frame.getValue(numSlots - 1);
-								Type rhsType = frame.getValue(numSlots - 2);
-	
-								if (lhsType instanceof ReferenceType && rhsType instanceof ReferenceType) {
-									String lhs = SignatureConverter.convert(lhsType.getSignature());
-									String rhs = SignatureConverter.convert(rhsType.getSignature());
-
-									if (!lhs.equals(rhs))
-										return;
-	
-									if (lhs.equals("java.lang.String") && rhs.equals("java.lang.String")) {
-										if (DEBUG) System.out.println("String/String comparison at " +
-											handle);
-
-										// Compute the priority:
-										// - two static strings => do not report
-										// - dynamic string and anything => high
-										// - static string and unknown => medium
-										// - all other cases => low
-										int priority = LOW_PRIORITY;
-										byte type1 = lhsType.getType();
-										byte type2 = rhsType.getType();
-										if (type1 == T_STATIC_STRING && type2 == T_STATIC_STRING)
-											priority = LOW_PRIORITY + 1;
-										else if (type1 == T_DYNAMIC_STRING || type2 == T_DYNAMIC_STRING)
-											priority = HIGH_PRIORITY;
-										else if (type1 == T_STATIC_STRING || type2 == T_STATIC_STRING)
-											priority = NORMAL_PRIORITY;
-
-										if (priority <= LOW_PRIORITY) {
-											String sourceFile = jclass.getSourceFileName();
-											BugInstance instance = 
-												new BugInstance("ES_COMPARING_STRINGS_WITH_EQ", priority)
-													.addClassAndMethod(methodGen, sourceFile)
-													.addSourceLine(methodGen, sourceFile, handle)
-													.addClass("java.lang.String").describe("CLASS_REFTYPE");
-
-											if (stringComparison == null || priority < stringComparison.getPriority())
-												stringComparison = instance;
-										}
-	
-									} else if (suspiciousSet.contains(lhs) && suspiciousSet.contains(rhs)) {
-										String sourceFile = jclass.getSourceFileName();
-										bugReporter.reportBug(new BugInstance("RC_REF_COMPARISON", NORMAL_PRIORITY)
-											.addClassAndMethod(methodGen, sourceFile)
-											.addSourceLine(methodGen, sourceFile, handle)
-											.addClass(lhs).describe("CLASS_REFTYPE")
-										);
-									}
-								}
-							}
-						} catch (DataflowAnalysisException e) {
-							throw new AnalysisException("Caught exception: " + e.toString(), e);
-						}
-					}
-				});
-
-				// If a String reference comparison was found in the method,
-				// report it
-				if (stringComparison != null)
-					bugReporter.reportBug(stringComparison);
+			try {
+				analyzeMethod(classContext, method);
+			} catch (CFGBuilderException e) {
+				bugReporter.logError(e.toString());
+			} catch (DataflowAnalysisException e) {
+				bugReporter.logError(e.toString());
 			}
-
-		} catch (DataflowAnalysisException e) {
-			throw new AnalysisException("Exception in FindRefComparison: " + e.getMessage(), e);
-		} catch (CFGBuilderException e) {
-			throw new AnalysisException("Exception in FindRefComparison: " + e.getMessage(), e);
 		}
+	}
+
+	private void analyzeMethod(ClassContext classContext, Method method)
+		throws CFGBuilderException, DataflowAnalysisException {
+
+		JavaClass jclass = classContext.getJavaClass();
+		MethodGen methodGen = classContext.getMethodGen(method);
+
+		// Report at most one String comparison per method.
+		// We report the first highest priority warning.
+		BugInstance stringComparison = null;
+
+		CFG cfg = classContext.getCFG(method);
+		DepthFirstSearch dfs = classContext.getDepthFirstSearch(method);
+		ExceptionSetFactory exceptionSetFactory =
+			classContext.getExceptionSetFactory(method);
+
+		// Perform type analysis using our special type merger
+		// (which handles String types specially, keeping track of
+		// which ones appear to be dynamically created)
+		RefComparisonTypeMerger typeMerger =
+			new RefComparisonTypeMerger(bugReporter, exceptionSetFactory);
+		TypeFrameModelingVisitor visitor =
+			new RefComparisonTypeFrameModelingVisitor(methodGen.getConstantPool(), bugReporter);
+		TypeAnalysis typeAnalysis =
+			new TypeAnalysis(methodGen, cfg, dfs, typeMerger, visitor, bugReporter, exceptionSetFactory);
+		TypeDataflow typeDataflow = new TypeDataflow(cfg, typeAnalysis);
+		typeDataflow.execute();
+
+		for (Iterator<Location> i = cfg.locationIterator(); i.hasNext(); ) {
+			Location location = i.next();
+
+			InstructionHandle handle = location.getHandle();
+			Instruction ins = handle.getInstruction();
+			short opcode = ins.getOpcode();
+			if (opcode == Constants.IF_ACMPEQ || opcode == Constants.IF_ACMPNE) {
+				TypeFrame frame = typeDataflow.getFactAtLocation(location);
+				if (frame.getStackDepth() < 2)
+					throw new AnalysisException("Stack underflow", methodGen, handle);
+
+				int numSlots = frame.getNumSlots();
+				Type lhsType = frame.getValue(numSlots - 1);
+				Type rhsType = frame.getValue(numSlots - 2);
+	
+				if (lhsType instanceof ReferenceType && rhsType instanceof ReferenceType) {
+					String lhs = SignatureConverter.convert(lhsType.getSignature());
+					String rhs = SignatureConverter.convert(rhsType.getSignature());
+
+					if (!lhs.equals(rhs))
+						return;
+	
+					if (lhs.equals("java.lang.String") && rhs.equals("java.lang.String")) {
+						if (DEBUG) System.out.println("String/String comparison at " +
+							handle);
+
+						// Compute the priority:
+						// - two static strings => do not report
+						// - dynamic string and anything => high
+						// - static string and unknown => medium
+						// - all other cases => low
+						int priority = LOW_PRIORITY;
+						byte type1 = lhsType.getType();
+						byte type2 = rhsType.getType();
+						if (type1 == T_STATIC_STRING && type2 == T_STATIC_STRING)
+							priority = LOW_PRIORITY + 1;
+						else if (type1 == T_DYNAMIC_STRING || type2 == T_DYNAMIC_STRING)
+							priority = HIGH_PRIORITY;
+						else if (type1 == T_STATIC_STRING || type2 == T_STATIC_STRING)
+							priority = NORMAL_PRIORITY;
+
+						if (priority <= LOW_PRIORITY) {
+							String sourceFile = jclass.getSourceFileName();
+							BugInstance instance = 
+								new BugInstance("ES_COMPARING_STRINGS_WITH_EQ", priority)
+									.addClassAndMethod(methodGen, sourceFile)
+									.addSourceLine(methodGen, sourceFile, handle)
+									.addClass("java.lang.String").describe("CLASS_REFTYPE");
+
+							if (stringComparison == null || priority < stringComparison.getPriority())
+								stringComparison = instance;
+						}
+
+					} else if (suspiciousSet.contains(lhs) && suspiciousSet.contains(rhs)) {
+						String sourceFile = jclass.getSourceFileName();
+						bugReporter.reportBug(new BugInstance("RC_REF_COMPARISON", NORMAL_PRIORITY)
+							.addClassAndMethod(methodGen, sourceFile)
+							.addSourceLine(methodGen, sourceFile, handle)
+							.addClass(lhs).describe("CLASS_REFTYPE")
+						);
+					}
+				}
+			}
+		}
+
+		// If a String reference comparison was found in the method,
+		// report it
+		if (stringComparison != null)
+			bugReporter.reportBug(stringComparison);
 	}
 
 	public void report() {
@@ -376,17 +386,20 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 			System.exit(1);
 		}
 
-		DataflowTestDriver<TypeFrame, TypeAnalysis> driver = new DataflowTestDriver<TypeFrame, TypeAnalysis>() {
+		DataflowTestDriver<TypeFrame, TypeAnalysis> driver =
+			new DataflowTestDriver<TypeFrame, TypeAnalysis>() {
 			public Dataflow<TypeFrame, TypeAnalysis> createDataflow(ClassContext classContext, Method method)
 				throws CFGBuilderException, DataflowAnalysisException {
 
-				RepositoryLookupFailureCallback lookupFailureCallback = classContext.getLookupFailureCallback();
+				RepositoryLookupFailureCallback lookupFailureCallback =
+					classContext.getLookupFailureCallback();
 				MethodGen methodGen = classContext.getMethodGen(method);
 				DepthFirstSearch dfs = classContext.getDepthFirstSearch(method);
 				CFG cfg = classContext.getCFG(method);
 				ExceptionSetFactory exceptionSetFactory = classContext.getExceptionSetFactory(method);
 
-				TypeMerger typeMerger = new RefComparisonTypeMerger(lookupFailureCallback, exceptionSetFactory);
+				TypeMerger typeMerger =
+					new RefComparisonTypeMerger(lookupFailureCallback, exceptionSetFactory);
 				TypeFrameModelingVisitor visitor =
 					new RefComparisonTypeFrameModelingVisitor(methodGen.getConstantPool(), lookupFailureCallback);
 				TypeAnalysis analysis = new TypeAnalysis(methodGen, cfg, dfs, typeMerger, visitor,
