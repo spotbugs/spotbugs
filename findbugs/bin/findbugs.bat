@@ -7,12 +7,13 @@
 :: Set up default values
 :: ----------------------------------------------------------------------
 set appjar=findbugsGUI.jar
-set jvmargs=-Xmx256m -Xss2m
+set jvmargs=
 set javacmd=java
 set debugArg=
 set args=
 set javaProps=
 set start=
+set maxheap=256
 
 :: Honor JAVA_HOME environment variable if it is set
 if "%JAVA_HOME%"=="" goto nojavahome
@@ -51,6 +52,9 @@ if "%firstArg%"=="-home" goto shift2
 if "%firstArg%"=="-jvmArgs" set jvmargs=%secondArg%
 if "%firstArg%"=="-jvmArgs" goto shift2
 
+if "%firstArg%"=="-maxHeap" set maxheap=%secondArg%
+if "%firstArg%"=="-maxHeap" goto shift2
+
 if "%firstArg%"=="-debug" set debugArg=-Dfindbugs.debug=true
 if "%firstArg%"=="-debug" goto shift1
 
@@ -83,7 +87,7 @@ if not exist %FINDBUGS_HOME%\lib\%appjar% goto homeNotSet
 :: echo appjar is %appjar%
 :: echo args is %args%
 :: echo jvmargs is %jvmargs%
-%start% "%javacmd%" %debugArg% %javaProps% "-Dfindbugs.home=%FINDBUGS_HOME%" %jvmargs% -jar "%FINDBUGS_HOME%\lib\%appjar%" %args%
+%start% "%javacmd%" %debugArg% %javaProps% "-Dfindbugs.home=%FINDBUGS_HOME%" -Xmx%maxheap%m %jvmargs% -jar "%FINDBUGS_HOME%\lib\%appjar%" %args%
 goto end
 
 :: ----------------------------------------------------------------------
@@ -95,6 +99,7 @@ echo    -home dir       Use dir as FINDBUGS_HOME
 echo    -gui            Use the Graphical UI (default behavior)
 echo    -textui         Use the Text UI
 echo    -jvmArgs args   Pass args to JVM
+echo    -maxHeap size   Set maximum Java heap size in megabytes (default %maxheap%)
 echo    -javahome dir   Specify location of JRE
 echo    -help           Display this message
 echo    -debug          Enable debug tracing in FindBugs
