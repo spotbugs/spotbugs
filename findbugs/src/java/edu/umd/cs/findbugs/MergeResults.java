@@ -33,6 +33,7 @@ import java.util.*;
  */
 public class MergeResults {
 	private static final boolean VERSION_INSENSITIVE = Boolean.getBoolean("mergeResults.vi");
+	private static final boolean UPDATE_CATEGORIES = Boolean.getBoolean("mergeResults.update");
 
 	public static void main(String[] argv) throws Exception {
 		if (argv.length != 3) {
@@ -61,6 +62,12 @@ public class MergeResults {
 		SortedSet<BugInstance> origSet = createSet(origCollection);
 		SortedSet<BugInstance> newSet = createSet(newCollection);
 
+		Set<String> updateCategorySet = new HashSet<String>();
+		if (UPDATE_CATEGORIES) {
+			extractCategories(newSet, updateCategorySet);
+			System.out.println("Updating only categories: " + updateCategorySet);
+		}
+
 		int numPreserved = 0;
 		int numAlreadyAnnotated = 0;
 		int numLost = 0;
@@ -69,25 +76,36 @@ public class MergeResults {
 		Iterator<BugInstance> i = origSet.iterator();
 		while (i.hasNext()) {
 			BugInstance orig = i.next();
-			if (newSet.contains(orig)) {
-				SortedSet<BugInstance> tailSet = newSet.tailSet(orig);
-				BugInstance matching = tailSet.first();
-				if (matching.getAnnotationText().equals("")) {
-					matching.setAnnotationText(orig.getAnnotationText());
-					numPreserved++;
-				} else {
-					numAlreadyAnnotated++;
-				}
+
+			if (UPDATE_CATEGORIES && !updateCategorySet.contains(orig.getAbbrev())) {
+				// This original bug is not in a category that we are updating.
+				// Therefore, it is copied into the results unconditionally.
+				numPreserved++;
+				newSet.add(orig);
 			} else {
-				numLost++;
-				if (!orig.getAnnotationText().equals("")) {
-					System.out.println("Losing a bug with an annotation:");
-					System.out.println(orig.getMessage());
-					SourceLineAnnotation srcLine = orig.getPrimarySourceLineAnnotation();
-					if (srcLine != null)
-						System.out.println("\t" + srcLine.toString());
-					System.out.println(orig.getAnnotationText());
-					numLostWithAnnotations++;
+				// This original bug is in an updated category.
+				// So, to be preserved, it must also be in the new set.
+
+				if (newSet.contains(orig)) {
+					SortedSet<BugInstance> tailSet = newSet.tailSet(orig);
+					BugInstance matching = tailSet.first();
+					if (matching.getAnnotationText().equals("")) {
+						matching.setAnnotationText(orig.getAnnotationText());
+						numPreserved++;
+					} else {
+						numAlreadyAnnotated++;
+					}
+				} else {
+					numLost++;
+					if (!orig.getAnnotationText().equals("")) {
+						System.out.println("Losing a bug with an annotation:");
+						System.out.println(orig.getMessage());
+						SourceLineAnnotation srcLine = orig.getPrimarySourceLineAnnotation();
+						if (srcLine != null)
+							System.out.println("\t" + srcLine.toString());
+						System.out.println(orig.getAnnotationText());
+						numLostWithAnnotations++;
+					}
 				}
 			}
 		}
@@ -97,6 +115,13 @@ public class MergeResults {
 			numLost + " lost (" + numLostWithAnnotations + " lost with annotations)");
 
 		newCollection.writeXML(outputFile, project);
+	}
+
+	private static void extractCategories(Set<BugInstance> set, Set<String> updateCategorySet) {
+		Iterator<BugInstance> i = set.iterator();
+		while (i.hasNext()) {
+			updateCategorySet.add(i.next().getAbbrev());
+		}
 	}
 
 	private static SortedSet<BugInstance> createSet(BugCollection bugCollection) {
