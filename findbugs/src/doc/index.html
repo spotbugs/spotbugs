@@ -70,6 +70,14 @@ invited talk, MASPLAS 2003
 <p> Changes since version 0.7.2:
 
 <ul>
+<li> Changed the Inconsistent Synchronization detector so that fields
+     synchronized 50% of the time (or more) are reported as
+     medium priority bugs (previously they were reported as low)
+<!--
+<li> Changed CFG construction to distinguish "implicit" unchecked
+     exceptions, so analyses such as the Open Stream detector can
+     avoid reporting them
+-->
 <li> New detector to find private methods that are never called
 <li> New detector to find suspicious uses of non-short-circuiting boolean
      operators (<code>&amp;</code> and <code>|</code>, rather than
