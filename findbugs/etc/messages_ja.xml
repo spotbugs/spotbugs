@@ -1,6 +1,21 @@
 <?xml version="1.0" encoding="Shift_JIS"?>
-<MessageCollection xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-   				   xsi:noNamespaceSchemaLocation="messagecollection.xsd">
+<MessageCollection>
+
+  <!--
+  **********************************************************************
+  Plugin information
+  **********************************************************************
+  -->
+  <Plugin>
+    <ShortDescription>デフォルトのFindBugsプラグイン</ShortDescription>
+    <Details>
+<![CDATA[
+<p>
+このプラグインは、全てのFindBugsの標準ディテクタを含んでいます。
+</p>
+]]>
+    </Details>
+  </Plugin>
 
   <!--
   **********************************************************************
@@ -8,11 +23,52 @@
   **********************************************************************
    -->
 
+  <Detector class="edu.umd.cs.findbugs.detect.NoteSuppressedWarnings">
+    <Details>
+<![CDATA[
+<p> edu.umd.cs.findbugs.annotations.NoteSuppressWarnings アノテーションの使用に基づき警告出力を抑制する。</p>
+]]>
+    </Details>
+  </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.NoteCheckReturnValue">
+    <Details>
+<![CDATA[
+<p> メソッドの戻り値チェックのアノテーションを検出する。
+</p>
+]]>
+    </Details>
+  </Detector>
+
   <Detector class="edu.umd.cs.findbugs.detect.InheritanceUnsafeGetResource">
     <Details>
 <![CDATA[
-<p> this.getClass().getResource(...) の使用を探します。このコードは、このクラスの継承クラスが、別パッケージに作成されると、思わぬ結果を招きます。
+<p> this.getClass().getResource(...) の使用を発見します。このコードは、このクラスの継承クラスが、別パッケージに作成されると、思わぬ結果を招きます。高速ディテクタです。</p>
 
+]]>
+    </Details>
+  </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.InfiniteRecursiveLoop">
+    <Details>
+<![CDATA[
+<p> 無限再帰呼び出しのループを検出します。高速ディテクタです。</p>
+]]>
+    </Details>
+  </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.VolatileUsage">
+    <Details>
+<![CDATA[
+<p> volatileフィールドの誤った使用を検出します。高速ディテクタです。</p>
+]]>
+    </Details>
+  </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.EmptyZipFileEntry">
+    <Details>
+<![CDATA[
+<p> 空のzip fileエントリーを検出します。高速ディテクタです。</p>
 ]]>
     </Details>
   </Detector>
@@ -20,7 +76,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.TestingGround">
     <Details>
 <![CDATA[
-<p> このディテクタは、テストのためのフックです。普通は、このディテクタは、何も行ないません。
+<p> このディテクタは、テストのためのフックです。普通は、このディテクタは、何も行ないません。</p>
 ]]>
     </Details>
   </Detector>
@@ -28,7 +84,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.SwitchFallthrough">
     <Details>
 <![CDATA[
-<p> このディテクタは、switch文のフォールスルー(あるcase文から下のcase文に実行が移るロジック)を発見します。高速ディテクタです。
+<p> このディテクタは、switch文のフォールスルー(あるcase文から下のcase文に実行が移るロジック)を発見します。高速ディテクタです。</p>
 ]]>
     </Details>
   </Detector>
@@ -36,7 +92,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.FindFieldSelfAssignment">
     <Details>
 <![CDATA[
-<p> このディテクタは、フィールドの自己代入を発見します。高速ディテクタです。
+<p> このディテクタは、フィールドの自己代入を発見します。高速ディテクタです。</p>
 ]]>
     </Details>
   </Detector>
@@ -44,7 +100,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.FindNonShortCircuit">
     <Details>
 <![CDATA[
-<p> このディテクタは、ビット演算子(<code>|</code> と <code>&amp;</code>)を、短絡的条件演算子(<code>||</code> と <code>&amp;&amp;</code>)と間違えて使用していると思われるコードを発見します。
+<p> このディテクタは、ビット演算子(<code>|</code> と <code>&amp;</code>)を、短絡的条件演算子(<code>||</code> と <code>&amp;&amp;</code>)と間違えて使用していると思われるコードを発見します。</p>
 ]]>
     </Details>
   </Detector>
@@ -52,7 +108,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.DontCatchIllegalMonitorStateException">
     <Details>
 <![CDATA[
-<p> このディテクタは、IllegalMonitorStateExceptionをキャッチしているtry-catchブロックを探します。
+<p> このディテクタは、IllegalMonitorStateExceptionをキャッチしているtry-catchブロックを発見します。</p>
 ]]>
     </Details>
   </Detector>
@@ -60,7 +116,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.FindFloatMath">
     <Details>
 <![CDATA[
-<p> このディテクタは、floatを使った浮動小数演算を発見します。
+<p> このディテクタは、floatを使った浮動小数演算を発見します。高速ディテクタです。</p>
 ]]>
     </Details>
   </Detector>
@@ -68,7 +124,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.CloneIdiom">
     <Details>
 <![CDATA[
-<p> このディテクタは、クローン可能クラスが守るべきイディオムを守っていないクラスを探します。
+<p> このディテクタは、クローン可能クラスが守るべきイディオムを守っていないクラスを発見します。高速ディテクタです。</p>
 ]]>
     </Details>
   </Detector>
@@ -76,7 +132,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.DroppedException">
     <Details>
 <![CDATA[
-<p> このディテクタは、例外をキャッチしているが、それに対して何も行っていないコードを探します。高速ディテクタです。
+<p> このディテクタは、例外をキャッチしているが、それに対して何も行っていないコードを発見します。高速ディテクタです。</p>
 ]]>
     </Details>
   </Detector>
@@ -84,7 +140,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.DumbMethods">
     <Details>
 <![CDATA[
-<p> このディテクタは、無意味なメソッド呼び出し、例えばStringのデフォルトコンストラクタの呼び出しを探します。高速ディテクタです。
+<p> このディテクタは、無意味なメソッド呼び出し、例えばStringのデフォルトコンストラクタの呼び出しを発見します。高速ディテクタです。</p>
 ]]>
     </Details>
   </Detector>
@@ -92,7 +148,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.FindDoubleCheck" >
     <Details>
 <![CDATA[
-<p> このディテクタは、ダブルチェックロックを探します。高速ディテクタです。
+<p> このディテクタは、ダブルチェックロックを発見します。高速ディテクタです。</p>
 ]]>
     </Details>
   </Detector>
@@ -100,7 +156,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.FindFinalizeInvocations" >
     <Details>
 <![CDATA[
-<p> このディテクタは、finalize()呼び出し、及びファイナライザに関連した問題を探します。高速ディテクタです。
+<p> このディテクタは、finalize()呼び出し、及びファイナライザに関連した問題を発見します。高速ディテクタです。</p>
 ]]>
     </Details>
   </Detector>
@@ -108,7 +164,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.FindHEmismatch" >
     <Details>
 <![CDATA[
-<p> このディテクタは、hashCode()とequals()メソッドの定義の問題を探します。高速ディテクタです。
+<p> このディテクタは、hashCode()とequals()メソッドの定義の問題を発見します。高速ディテクタです。</p>
 ]]>
     </Details>
   </Detector>
@@ -116,7 +172,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.FindNakedNotify" >
     <Details>
 <![CDATA[
-<p> このディテクタは、オブジェクトの状態を変更していないのにnotify()メソッドを呼び出しているコードを探します。高速ディテクタです。
+<p> このディテクタは、オブジェクトの状態を変更していないのにnotify()メソッドを呼び出しているコードを発見します。高速ディテクタです。</p>
 ]]>
     </Details>
   </Detector>
@@ -124,7 +180,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.FindReturnRef" >
     <Details>
 <![CDATA[
-<p> このディテクタは変更可能なstaticデータを返すメソッドを探します。高速ディテクタです。
+<p> このディテクタは変更可能なstaticデータを返すメソッドを発見します。高速ディテクタです。</p>
 ]]>
     </Details>
   </Detector>
@@ -132,7 +188,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.FindRunInvocations" >
     <Details>
 <![CDATA[
-<p> このディテクタは、Thread.run()の呼び出しを探します。高速ディテクタです。
+<p> このディテクタは、Thread.run()の呼び出しを発見します。高速ディテクタです。</p>
 ]]>
     </Details>
   </Detector>
@@ -140,7 +196,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.FindSpinLoop" >
     <Details>
 <![CDATA[
-<p> このディテクタは、ループ内のスピンフィールド読みだしを探します。高速ディテクタです。
+<p> このディテクタは、ループ内のスピンフィールド読みだしを発見します。高速ディテクタです。</p>
 ]]>
     </Details>
   </Detector>
@@ -148,7 +204,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.FindTwoLockWait" >
     <Details>
 <![CDATA[
-<p> このディテクタは、2つ以上のロックを保持した状態でのwait()呼び出しを探します。低速ディテクタです。
+<p> このディテクタは、2つ以上のロックを保持した状態でのwait()呼び出しを発見します。低速ディテクタです。</p>
 ]]>
     </Details>
   </Detector>
@@ -156,7 +212,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.FindUnconditionalWait" >
     <Details>
 <![CDATA[
-<p> このディテクタは、wait()が条件付き、もしくは無条件ループ内で呼び出されている事をチェックします。高速ディテクタです。
+<p> このディテクタは、wait()が条件付き、もしくは無条件ループ内で呼び出されている事をチェックします。高速ディテクタです。</p>
 ]]>
     </Details>
   </Detector>
@@ -164,7 +220,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.FindUninitializedGet" >
     <Details>
 <![CDATA[
-<p> このディテクタは、コンストラクタ内での、未初期化フィールドの読み出しを探します。高速ディテクタです。
+<p> このディテクタは、コンストラクタ内での、未初期化フィールドの読み出しを発見します。高速ディテクタです。</p>
 ]]>
     </Details>
   </Detector>
@@ -172,7 +228,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.FindUnsyncGet" >
     <Details>
 <![CDATA[
-<p> このディテクタは、setメソッドが同期化されているが、getメソッドが同期化されてないケースを探します。高速ディテクタです。
+<p> このディテクタは、setメソッドが同期化されているが、getメソッドが同期化されてないケースを発見します。高速ディテクタです。</p>
 ]]>
     </Details>
   </Detector>
@@ -180,7 +236,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.InitializationChain" >
     <Details>
 <![CDATA[
-<p> このディテクタは、潜在的な循環クラス初期化を探します。高速ディテクタです。
+<p> このディテクタは、潜在的な循環クラス初期化を発見します。高速ディテクタです。</p>
 ]]>
     </Details>
   </Detector>
@@ -188,7 +244,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.IteratorIdioms" >
     <Details>
 <![CDATA[
-<p> このディテクタは、イテレータの実装方法の問題を探します。高速ディテクタです。
+<p> このディテクタは、イテレータの実装方法の問題を発見します。高速ディテクタです。</p>
 ]]>
     </Details>
   </Detector>
@@ -196,7 +252,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.LockedFields" disabled="true" >
     <Details>
 <![CDATA[
-<p> このディテクタは、ロックの使用に関して、一貫性の無いやり方でフィールドにアクセスしているコードを探します。高速ディテクタです。
+<p> このディテクタは、ロックの使用に関して、一貫性の無いやり方でフィールドにアクセスしているコードを発見します。高速ディテクタです。</p>
 ]]>
     </Details>
   </Detector>
@@ -204,7 +260,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.EqStringTest" >
     <Details>
 <![CDATA[
-<p> このディテクタは、Stringオブジェクトを==や!=で比較しているコードを探します。高速ディテクタです。
+<p> このディテクタは、Stringオブジェクトを==や!=で比較しているコードを発見します。高速ディテクタです。</p>
 ]]>
     </Details>
   </Detector>
@@ -212,7 +268,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.MutableLock" >
     <Details>
 <![CDATA[
-<p> このディテクタは、変更されるフィールドが参照しているオブジェクトを使って同期化を行っているコードを探します。高速ディテクタです。
+<p> このディテクタは、変更されるフィールドが参照しているオブジェクトを使って同期化を行っているコードを発見します。高速ディテクタです。</p>
 ]]>
     </Details>
   </Detector>
@@ -220,7 +276,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.MutableStaticFields" >
     <Details>
 <![CDATA[
-<p> このディテクタは、悪意を持ったコードによって変更されうるstaticフィールドを探します。高速ディテクタです。
+<p> このディテクタは、悪意を持ったコードによって変更されうるstaticフィールドを発見します。高速ディテクタです。</p>
 ]]>
     </Details>
   </Detector>
@@ -228,7 +284,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.Naming" >
     <Details>
 <![CDATA[
-<p> このディテクタは、名前付けが疑わしいメソッドを探します。高速ディテクタです。
+<p> このディテクタは、名前付けが疑わしいメソッドを発見します。高速ディテクタです。</p>
 ]]>
     </Details>
   </Detector>
@@ -236,7 +292,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.ReadReturnShouldBeChecked" >
     <Details>
 <![CDATA[
-<p> このディテクタは、InputStream.read()あるいは、InputStream.skip()の戻り値を無視しているコードを探します。高速ディテクタです。
+<p> このディテクタは、InputStream.read()あるいは、InputStream.skip()の戻り値を無視しているコードを発見します。高速ディテクタです。</p>
 ]]>
     </Details>
   </Detector>
@@ -244,7 +300,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.SerializableIdiom" >
     <Details>
 <![CDATA[
-<p> このディテクタは、直列化可能クラスの潜在的な実装の問題を探します。高速ディテクタです。
+<p> このディテクタは、直列化可能クラスの潜在的な実装の問題を発見します。高速ディテクタです。</p>
 ]]>
     </Details>
   </Detector>
@@ -252,7 +308,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.StartInConstructor" >
     <Details>
 <![CDATA[
-<p> このディテクタは、コンストラクタ内でのスレッドの開始を探します。高速ディテクタです。
+<p> このディテクタは、コンストラクタ内でのスレッドの開始を発見します。高速ディテクタです。</p>
 ]]>
     </Details>
   </Detector>
@@ -260,7 +316,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.UnreadFields" >
     <Details>
 <![CDATA[
-<p> このディテクタは、全く読み出されないフィールドを探します。高速ディテクタです。
+<p> このディテクタは、全く読み出されないフィールドを発見します。高速ディテクタです。</p>
 ]]>
     </Details>
   </Detector>
@@ -268,7 +324,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.WaitInLoop" >
     <Details>
 <![CDATA[
-<p> このディテクタは、ループ外で呼び出されているwait()を探します。高速ディテクタです。
+<p> このディテクタは、ループ外で呼び出されているwait()を発見します。高速ディテクタです。</p>
 ]]>
     </Details>
   </Detector>
@@ -276,7 +332,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.BCPDoubleCheck" disabled="true" >
     <Details>
 <![CDATA[
-<p> このディテクタは、ダブルチェックロッキングを探します。ByteCodePatternクラスを使って実装されているので、バグパターンディテクタの簡単な実装例として参照するのに適しています。準高速ディテクタです。
+<p> このディテクタは、ダブルチェックロッキングを発見します。ByteCodePatternクラスを使って実装されているので、バグパターンディテクタの簡単な実装例として参照するのに適しています。準高速ディテクタです。</p>
 ]]>
     </Details>
   </Detector>
@@ -284,7 +340,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.BCPMethodReturnCheck" >
     <Details>
 <![CDATA[
-<p> このディテクタは、戻り値が間違って無視されていると思われるメソッド呼び出しを探します。低速ディテクタです。
+<p> このディテクタは、戻り値が間違って無視されていると思われるメソッド呼び出しを発見します。低速ディテクタです。</p>
 ]]>
     </Details>
   </Detector>
@@ -292,7 +348,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.FindNullDeref">
     <Details>
 <![CDATA[
-<p> このディテクタは、NullPointerExceptionが起きる可能性のある場所を探します。また、無駄な参照変数とnullとの比較を発見します。中速ディテクタです。
+<p> このディテクタは、NullPointerExceptionが起きる可能性のある場所を発見します。また、無駄な参照変数とnullとの比較を発見します。中速ディテクタです。</p>
 ]]>
     </Details>
   </Detector>
@@ -300,7 +356,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.FindOpenStream">
     <Details>
 <![CDATA[
-<p> このディテクタは、入出力ストリームオブジェクトが、あるメソッド内でだけ使われており、そのメソッドを起点とする全てのパスで、オブジェクトがクローズされている事を調べます。中速ディテクタです。
+<p> このディテクタは、入出力ストリームオブジェクトが、あるメソッド内でだけ使われており、そのメソッドを起点とする全てのパスで、オブジェクトがクローズされている事を調べます。中速ディテクタです。</p>
 ]]>
     </Details>
   </Detector>
@@ -308,7 +364,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.PreferZeroLengthArrays">
     <Details>
 <![CDATA[
-<p> このディテクタは、配列を返すメソッドがnullを返すケースを探します。一般にはnullではなくサイズ0の配列を返すのが良いとされます。高速ディテクタです。
+<p> このディテクタは、配列を返すメソッドがnullを返すケースを発見します。一般にはnullではなくサイズ0の配列を返すのが良いとされます。高速ディテクタです。</p>
 ]]>
     </Details>
   </Detector>
@@ -316,7 +372,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.FindUselessControlFlow">
     <Details>
 <![CDATA[
-<p> このディテクタは何の効果もない制御フロー式を発見します。高速ディテクタです。
+<p> このディテクタは何の効果もない制御フロー式を発見します。高速ディテクタです。</p>
 ]]>
     </Details>
   </Detector>
@@ -327,7 +383,7 @@
 <p> このディテクタは、獲得された JSR-166 (<code>java.util.concurrent</code>)
 ロックが、このメソッドを起点とする全てのパスで解放されているかどうか調べます。
 中速ディテクタです。このディテクタを利用するには、
-<code>java.util.concurrent</code> パッケージを外部クラスパスに指定する必要があります(このパッケージ自身を調査する場合を除く)。
+<code>java.util.concurrent</code> パッケージを外部クラスパスに指定する必要があります(このパッケージ自身を調査する場合を除く)。</p>
 ]]>
     </Details>
   </Detector>
@@ -335,7 +391,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.FindRefComparison">
     <Details>
 <![CDATA[
-<p> このディテクタは、参照変数を == や != で比較しており、そのクラスが一般に、そのような比較が間違っている (例えば <code>java.lang.String</code>のように)ケースを探します。中速ディテクタです。
+<p> このディテクタは、参照変数を == や != で比較しており、そのクラスが一般に、そのような比較が間違っている (例えば <code>java.lang.String</code>のように)ケースを発見します。中速ディテクタです。</p>
 ]]>
     </Details>
   </Detector>
@@ -343,7 +399,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.FindMismatchedWaitOrNotify">
     <Details>
 <![CDATA[
-<p> このディテクタは、ロックされていないオブジェクトに対するwait(), notify(), notifyAll()呼び出しを発見します。中速ディテクタです。<b>このディテクタは、現在開発中で、まだ間違った結果を多く出すためディスエーブルされています。</b>
+<p> このディテクタは、ロックされていないオブジェクトに対するwait(), notify(), notifyAll()呼び出しを発見します。中速ディテクタです。<b>このディテクタは、現在開発中で、まだ間違った結果を多く出すためディスエーブルされています。</b></p>
 ]]>
     </Details>
   </Detector>
@@ -351,7 +407,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.FindInconsistentSync2" >
     <Details>
 <![CDATA[
-<p> このディテクタは、ロックのやり方が間違ったフィールドアクセスを発見します。低速ディテクタです。
+<p> このディテクタは、ロックのやり方が間違ったフィールドアクセスを発見します。低速ディテクタです。</p>
 ]]>
     </Details>
   </Detector>
@@ -359,7 +415,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.FindLocalSelfAssignment">
     <Details>
 <![CDATA[
-<p> このディテクタは、ローカル変数の自己代入を発見します。高速ディテクタです。
+<p> このディテクタは、ローカル変数の自己代入を発見します。高速ディテクタです。</p>
 ]]>
     </Details>
   </Detector>
@@ -367,7 +423,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.IncompatMask">
     <Details>
 <![CDATA[
-<p> このディテクタは、疑わしいビット論理演算を発見します。高速ディテクタです。
+<p> このディテクタは、疑わしいビット論理演算を発見します。高速ディテクタです。</p>
 ]]>
     </Details>
   </Detector>
@@ -375,7 +431,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.LazyInit">
     <Details>
 <![CDATA[
-<p> このディテクタは、volatileでないフィールドの遅延初期化を発見します。中速ディテクタです。
+<p> このディテクタは、volatileでないフィールドの遅延初期化を発見します。中速ディテクタです。</p>
 ]]>
     </Details>
   </Detector>
@@ -383,7 +439,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.FindJSR166LockMonitorenter">
     <Details>
 <![CDATA[
-<p> このディテクタは、JSR166の通常のロックを発見します。中速ディテクタです。
+<p> このディテクタは、JSR166の通常のロックを発見します。中速ディテクタです。</p>
 ]]>
     </Details>
   </Detector>
@@ -391,7 +447,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.FindUncalledPrivateMethods">
     <Details>
 <![CDATA[
-<p> このディテクタは、呼び出されないprivateメソッドを発見します。高速ディテクタです。
+<p> このディテクタは、呼び出されないprivateメソッドを発見します。高速ディテクタです。</p>
 ]]>
     </Details>
   </Detector>
@@ -399,7 +455,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.StringConcatenation">
     <Details>
 <![CDATA[
-<p> このディテクタは、ループ内で文字列を"+"を使って連結しているコードを発見します。高速ディテクタです。
+<p> このディテクタは、ループ内で文字列を"+"を使って連結しているコードを発見します。高速ディテクタです。</p>
 ]]>
     </Details>
   </Detector>
@@ -407,7 +463,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.InefficientToArray">
     <Details>
 <![CDATA[
-<p> このディテクタは、コレクションを配列に変換する際に、toArray()メソッドにサイズ0の配列を渡しているコードを発見します。高速ディテクタです。
+<p> このディテクタは、コレクションを配列に変換する際に、toArray()メソッドにサイズ0の配列を渡しているコードを発見します。高速ディテクタです。</p>
 ]]>
     </Details>
   </Detector>
@@ -415,7 +471,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.InvalidJUnitTest">
     <Details>
 <![CDATA[
-<p> このディテクタは、正しくないJUnitテストコードを発見します。高速ディテクタです。
+<p> このディテクタは、正しくないJUnitテストを検出します。高速ディテクタです。</p>
 ]]>
     </Details>
   </Detector>
@@ -423,15 +479,63 @@
   <Detector class="edu.umd.cs.findbugs.detect.BadlyOverriddenAdapter">
     <Details>
 <![CDATA[
-<p> このディテクタは、アダプタクラスを継承しており、間違ったシグニチャのリスナメソッドをオーバーライドしているコードを発見します。高速ディテクタです。
+<p> このディテクタは、アダプタクラスを継承しているが、リスナメソッドを間違ったシグニチャでオーバーライドしているコードを検出します。高速ディテクタです。
+</p>
+]]>
+    </Details>
+  </Detector>
+  
+  <Detector class="edu.umd.cs.findbugs.detect.BadResultSetAccess">
+    <Details>
+<![CDATA[
+<p> このディテクタは、ResultSetのゲッタ、セッタメソッドを添字0でアクセスしているコードを検出します。ResultSetで使用する添字は1から始まるので、このコードは常に誤りです。高速ディテクタです。</p>
 ]]>
     </Details>
   </Detector>
 
-  <Detector class="edu.umd.cs.findbugs.detect.FindBugsSummaryStats">
+  <Detector class="edu.umd.cs.findbugs.detect.SuperfluousInstanceOf">
     <Details>
 <![CDATA[
-<p> このディテクタは、分析結果の集計をとるために使用されます。
+<p> このディテクタは、静的な型チェックが可能なのに、instanceofを使って型チェックを行なっているコードを検出します。高速ディテクタです。</p>
+]]>
+    </Details>
+  </Detector>
+  
+  <Detector class="edu.umd.cs.findbugs.detect.BadAppletConstructor">
+    <Details>
+<![CDATA[
+<p>
+このディテクタは、アプレットのスタブに依存したメソッドを継承クラスのコンストラクタが呼び出している箇所を発見します。こうしたメソッドのコンストラクタからの呼び出しは失敗します。なぜならアプレットのスタブはinit()メソッドが呼び出されるまでは初期化されないからです。高速ディテクタです。
+</p>
+]]>
+    </Details>
+  </Detector>
+  
+  <Detector class="edu.umd.cs.findbugs.detect.UseObjectEquals">
+    <Details>
+<![CDATA[
+<p>
+このディテクタは、配列オブジェクトのequals(java.lang.Object)メソッドや、equalsメソッドをオーバーライドしていないfinalクラスのequalsメソッドの呼び出しを発見します。これらは意味的には==と同じであり、恐らく間違っていると思われます。
+</p>
+]]>    
+    </Details>
+  </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.SuspiciousThreadInterrupted">
+    <Details>
+<![CDATA[
+<p>
+このディテクタは、非staticコンテキストでのThread.interrupted()呼び出しを発見します。Thread.currentThread().interrupted()といった呼び出しは、無駄でありThread.interrupted()で十分です。また、任意のスレッドオブジェクトに対して、interrupted()メソッドを呼び出すのは、ほぼ間違いなく誤りです。interrupted()メソッドは、常に自スレッドが割り込まれたかどうかを返します。
+</p>
+]]>    
+    </Details>
+  </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.FindDeadLocalStores">
+    <Details>
+<![CDATA[
+<p>
+このディテクタは、その後読み出されることのないローカル変数への代入を発見します。final宣言されたローカル変数によって生成されるバイトコードが間違って検出されるケースがあるため、現在は、このディテクタは無効化されています。準高速ディテクタです。
+</p>
 ]]>
     </Details>
   </Detector>
@@ -439,10 +543,42 @@
   <Detector class="edu.umd.cs.findbugs.detect.FindMaskedFields">
     <Details>
 <![CDATA[
-<p> このディテクタは、クラスのフィールドが、メソッド内のローカル変数で隠されてしまっているコードを発見します。高速ディテクタです。
+<p> このディテクタは、クラスのフィールドが、メソッド内のローカル変数で隠されてしまっているコードを発見します。高速ディテクタです。</p>
 ]]>
     </Details>
   </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.WrongMapIterator">
+    <Details>
+<![CDATA[
+<p> このディテクタは、keySetメソッドによって得たイテレータを使って取り出したキーを用いてMapの中身にアクセスしているコードを発見します。高速ディテクタです。</p>
+]]>
+   </Details>
+  </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.InstantiateStaticClass">
+    <Details>
+<![CDATA[
+<p> このディテクタはstaticメソッドしか定義されていないクラスのインスタンスを生成しているコードを発見します。高速ディテクタです。</p>
+]]>
+   </Details>
+  </Detector>
+  
+  <Detector class="edu.umd.cs.findbugs.detect.FindBugsSummaryStats">
+    <Details>
+<![CDATA[
+<p> このディテクタは、分析結果の集計をとるために使用されます。</p>
+]]>
+    </Details>
+  </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.RuntimeExceptionCapture">
+    <Details>
+<![CDATA[
+<p> このディテクタはtry節の中にExceptionをスローするコードが無いのにExceptionをキャッチしているcatch節を発見します。</p>
+]]>
+  </Details>
+</Detector>
 
   <!--
   **********************************************************************
@@ -450,66 +586,82 @@
   **********************************************************************
    -->
 
-
-
   <BugPattern type="SW_SWING_METHODS_INVOKED_IN_SWING_THREAD">
-
     <ShortDescription>ある種のSwingのメソッドは、awtイベントディスパッチスレッドからしかアクセスできません</ShortDescription>
-
     <LongDescription> {1} でのSwingメソッド呼び出しは、awtイベントディスパッチスレッドから呼び出す必要があります</LongDescription>
-
     <Details>
-
 <![CDATA[
-
-<p>(<a href="http://java.sun.com/developer/JDCTechTips/2003/tt1208.html#1">From JDC Tech Tip</a>): に解説されている通り、Swingのメソッド、show、setVisible、packが呼び出されると、フレームのピアが生成されます。これにともない、システムは、イベントディスパッチスレッドを生成します。これが問題を引き起す事があります。なぜなら、イベントディパッチスレッドは、packとvalidateメソッドの実行中にもリスナを呼び出す事が可能だからです。これは、2つのスレッドが同時にSwingコンポーネントにアクセスする事態を招き、デッドロックや、その他のスレッドに関する問題を引き起す危険があります。packの呼び出しは、コンポーネントを実体化します。その途上で、リスナの呼び出しが、イベントディスパッチスレッドによって行なわれるかもしれません。
+<p>(<a href="http://java.sun.com/developer/JDCTechTips/2003/tt1208.html#1">From JDC Tech Tip</a>): に解説されている通り、Swingのメソッド、show、setVisible、packが呼び出されると、フレームのピアが生成されます。これにともない、システムは、イベントディスパッチスレッドを生成します。これが問題を引き起す事があります。なぜなら、イベントディパッチスレッドは、packとvalidateメソッドの実行中にもリスナを呼び出す事が可能だからです。これは、2つのスレッドが同時にSwingコンポーネントにアクセスする事態を招き、デッドロックや、その他のスレッドに関する問題を引き起す危険があります。packの呼び出しは、コンポーネントを実体化します。その途上で、リスナの呼び出しが、イベントディスパッチスレッドによって行なわれるかもしれません。</p>
 ]]>
+    </Details>
+  </BugPattern>
 
+  <BugPattern type="IL_INFINITE_RECURSIVE_LOOP">
+    <ShortDescription>明らかな無限再帰ループ</ShortDescription>
+    <LongDescription>{1}は、明らかな無限再帰ループです</LongDescription>
+    <Details>
+<![CDATA[
+<p>このメソッドは無条件に自分自身を呼び出しています。これは無限再帰ループでありスタックオーバーフローを招くと考えられます。</p>
+]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="VO_VOLATILE_REFERENCE_TO_ARRAY">
+    <ShortDescription>配列の参照を格納するフィールドをvolatile宣言しても、配列の各要素はvolatileとしては扱われません。</ShortDescription>
+    <LongDescription>{1} は配列の参照変数でvolatile宣言されていますが、配列の要素はvolatileとしては扱われません。</LongDescription>
+    <Details>
+<![CDATA[
+<p>配列への参照変数がvolatile宣言されていますが、これは、あなたが意図した動作をしない可能性があります。配列の参照変数がvolatile宣言されている場合、この参照変数自体への書き込み、読み込みはvolatileとして扱われますが、配列の各要素はvolatileではありません。もしも配列の要素へのアクセスをvolatileとして扱いたいのであれば、Java 5.0で提供されるjava.util.concurrentパッケージに含まれるアトミック配列クラスを利用する必要があります。</p>
+]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="UI_INHERITANCE_UNSAFE_GETRESOURCE">
     <ShortDescription>クラスが継承されている場合GetResourceの呼び出しは安全ではありません</ShortDescription>
-
     <LongDescription>{1} でGetResourceが使用されていますが、クラスが継承されている場合、これは安全ではありません</LongDescription>
-
     <Details>
-
 <![CDATA[
-
-<p><code>this.getClass().getResource(...)</code> の呼び出しは、別のパッケージに継承クラスがある場合には、予期しない結果をもたらす可能性があります。
+<p><code>this.getClass().getResource(...)</code> の呼び出しは、別のパッケージに継承クラスがある場合には、予期しない結果をもたらす可能性があります。</p>
 ]]>
-
     </Details>
-
   </BugPattern>
-
 
   <BugPattern type="TESTING">
-
     <ShortDescription>テスト</ShortDescription>
-
     <LongDescription>{1}で生成されたテストの警告</LongDescription>
-
     <Details>
-
 <![CDATA[
-
-<p>このバグパターンは、未完成のバグディテクタでテストのために使用されます。
+<p>このバグパターンは、未完成のバグディテクタでテストのために使用されます。</p>
 ]]>
-
     </Details>
-
   </BugPattern>
 
+  <BugPattern type="AM_CREATES_EMPTY_ZIP_FILE_ENTRY">
+    <ShortDescription>空のzipファイルエントリを作成しています</ShortDescription>
+    <LongDescription>{1}の中で空のzipファイルエントリを作成しています</LongDescription>
+    <Details>
+<![CDATA[
+<p>このコードでは<code>putNextEntry()</code>を<code>closeEntry()</code>呼び出しのすぐあとに呼び出しています。これは、空のzipファイルエントリを生成してしまいます。zipファイルへのエントリ書き込みは<code>putNextEntry()</code>と<code>closeEntry()</code>の間に行う必要があります。</p>
+]]>
+    </Details>
+  </BugPattern>
 
+  <BugPattern type="AM_CREATES_EMPTY_JAR_FILE_ENTRY">
+    <ShortDescription>空のjarファイルエントリを作成しています</ShortDescription>
+    <LongDescription>{1}の中で空のzipファイルエントリを作成しています</LongDescription>
+    <Details>
+<![CDATA[
+<p>このコードでは<code>putNextEntry()</code>を<code>closeEntry()</code>呼び出しのすぐあとに呼び出しています。これは、空のjarファイルエントリを生成してしまいます。jarファイルへのエントリ書き込みは<code>putNextEntry()</code>と<code>closeEntry()</code>の間に行う必要があります。</p>
+]]>
+    </Details>
+  </BugPattern>
 
   <BugPattern type="IMSE_DONT_CATCH_IMSE">
     <ShortDescription>IllegalMonitorStateException の疑わしいキャッチ。</ShortDescription>
     <LongDescription>{1} での、IllegalMonitorStateException の疑わしいキャッチ。</LongDescription>
     <Details>
 <![CDATA[
-<p>IllegalMonitorStateExceptionは一般にはコーディングの問題(ロックを獲得せずにwait()、notify()を呼び出した場合)によって発生するもので、キャッチすべきではありません。
+<p>IllegalMonitorStateExceptionは一般にはコーディングの問題(ロックを獲得せずにwait()、notify()を呼び出した場合)によって発生するもので、キャッチすべきではありません。</p>
 ]]>
     </Details>
   </BugPattern>
@@ -520,7 +672,7 @@
     <Details>
 <![CDATA[
 <p>
-このメソッドはfloatの精度で演算を行っています。floatの精度は非常に誤差の多いものです。例えば16777216.0f + 1.0f は、16777216.0fとなります。doubleを替わりに用いる事を検討してください。
+このメソッドはfloatの精度で演算を行っています。floatの精度は非常に誤差の多いものです。例えば16777216.0f + 1.0f は、16777216.0fとなります。doubleを替わりに用いる事を検討してください。</p>
 ]]>
     </Details>
   </BugPattern>
@@ -531,7 +683,7 @@
     <Details>
 <![CDATA[
 <p>
-クラスはCloneableを実装していますが、cloneメソッドを定義も使用もしていません。
+クラスはCloneableを実装していますが、cloneメソッドを定義も使用もしていません。</p>
 ]]>
     </Details>
   </BugPattern>
@@ -542,9 +694,9 @@
     <Details>
 <![CDATA[
 <p> このクラスはclone()を定義していますが、super.clone()を呼び出しておらず、finalでもありません。
-もしもクラス("<i>B</i>")が("<i>A</i>")を継承しており、サブクラス<i>B</i>がsuper.clone()を呼び出さないと、<i>B</i>のclone()メソッドは<i>A</i>のインスタンスを返してしまいます。これはclone()メソッドの規約を満たしていません。
+もしもクラス("<i>B</i>")が("<i>A</i>")を継承しており、サブクラス<i>B</i>がsuper.clone()を呼び出さないと、<i>B</i>のclone()メソッドは<i>A</i>のインスタンスを返してしまいます。これはclone()メソッドの規約を満たしていません。</p>
 
-<p> 全てのclone()メソッドがsuper.clone()を呼び出すようになっていれば、Object.clone()が呼び出される事が保証され、正しい型のオブジェクトが返送されます。
+<p> 全てのclone()メソッドがsuper.clone()を呼び出すようになっていれば、Object.clone()が呼び出される事が保証され、正しい型のオブジェクトが返送されます。</p>
 ]]>
     </Details>
   </BugPattern>
@@ -554,7 +706,7 @@
     <LongDescription>{1} は {3} を落としている可能性があります。</LongDescription>
     <Details>
 <![CDATA[
-<p> このメソッドは例外を握りつぶしている可能性があります。一般に、例外が発生したら何らかの形で報告するか、呼び出し元に渡すべきです。
+<p> このメソッドは例外を握りつぶしている可能性があります。一般に、例外が発生したら何らかの形で報告するか、呼び出し元に渡すべきです。</p>
 ]]>
     </Details>
   </BugPattern>
@@ -564,37 +716,29 @@
     <LongDescription>{1} は {3} を無視している可能性があります。</LongDescription>
     <Details>
 <![CDATA[
-<p> このメソッドは例外を無視している可能性があります。一般に、例外が発生したら何らかの形で報告するか、呼び出し元に渡すべきです。
+<p> このメソッドは例外を無視している可能性があります。一般に、例外が発生したら何らかの形で報告するか、呼び出し元に渡すべきです。</p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="DM_EXIT">
-
     <ShortDescription>System.exit(...)を呼び出しています</ShortDescription>
-
     <LongDescription>{1} でSystem.exit(...)を呼び出していますが、これはVM全体を終了させてしまいます</LongDescription>
-
     <Details>
-
 <![CDATA[
-
-  <p> System.exit は、VM全体を終了させてしまいます。これは、本当に必要な場面限って
+<p> System.exit は、VM全体を終了させてしまいます。これは、本当に必要な場面限って
 使用すべきです。このようなコードは、再利用性を損なう事があります。替りにRuntimeException
-をスローする事を検討してください。
+をスローする事を検討してください。</p>
 ]]>
-
     </Details>
-
   </BugPattern>
-
 
   <BugPattern type="DM_STRING_CTOR">
     <ShortDescription>メソッドで 推奨されない new String(String) コンストラクタを呼び出しています。これは引数の文字列をそのまま使うべきです。</ShortDescription>
     <LongDescription>{1} new String(String) コンストラクタを呼び出しています。これは引数の文字列をそのまま使うべきです。</LongDescription>
     <Details>
 <![CDATA[
-<p><code>java.lang.String(String)</code>コンストラクタの呼び出しはメモリを浪費するだけです。このようにして生成されたオブジェクトと元の<code>String</code>オブジェクトは機能的に区別が付きません。
+<p><code>java.lang.String(String)</code>コンストラクタの呼び出しはメモリを浪費するだけです。このようにして生成されたオブジェクトと元の<code>String</code>オブジェクトは機能的に区別が付きません。</p>
 ]]>
     </Details>
   </BugPattern>
@@ -604,29 +748,21 @@
     <LongDescription>{1} new String() コンストラクタを呼び出しています。これは  "" をそのまま使うべきです。</LongDescription>
     <Details>
 <![CDATA[
-<p><code>java.lang.String</code>の引数無しコンストラクタの呼び出しはメモリを浪費するだけです。このようにして生成されたオブジェクトと、空文字列<code>""</code>の間には機能的に違いがありません。Javaは、同一内容の文字列定数のインスタンスを1つにまとめます。従って単に空文字列を直接使用すべきです。
+<p><code>java.lang.String</code>の引数無しコンストラクタの呼び出しはメモリを浪費するだけです。このようにして生成されたオブジェクトと、空文字列<code>""</code>の間には機能的に違いがありません。Javaは、同一内容の文字列定数のインスタンスを1つにまとめます。従って単に空文字列を直接使用すべきです。</p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="DM_STRING_TOSTRING">
-
     <ShortDescription>StringのtoString()メソッドが呼び出されています。単純に元のオブジェクトを使用すべきです</ShortDescription>
-
     <LongDescription>{1} メソッドで、StringのtoString()メソッドが呼び出されています。単純に元のオブジェクトを使用してください</LongDescription>
-
     <Details>
-
 <![CDATA[
-
-  <p> <code>String.toString()</code>を明示的に呼び出すのは冗長です。
-  元のStringをそのまま使用してください。
+  <p><code>String.toString()</code>を明示的に呼び出すのは冗長です。</p>
+  <p>元のStringをそのまま使用してください。</p>
 ]]>
-
     </Details>
-
   </BugPattern>
-
 
   <BugPattern type="DM_GC">
     <ShortDescription>明示的にガベージコレクションを呼び出しています。ベンチマークのコード以外で記述されるのはきわめて疑わしいです。</ShortDescription>
@@ -634,7 +770,7 @@
     <Details>
 <![CDATA[
 <p>明示的にガベージコレクションを呼び出しています。ベンチマークで使用されるケースを除けば、これは大変疑わしいコードです。
-<p>過去において、close()やfinalize()メソッドでのガベージコレクションを明示的に呼び出すことが、パフォーマンスのブラックホールに陥れるケースがありました。ガベージコレクションは高くつく場合があります。数百、数千のガベージコレクション呼び出しは、システムのパフォーマンスを極めて落とす事になります。
+<p>過去において、close()やfinalize()メソッドでのガベージコレクションを明示的に呼び出すことが、パフォーマンスのブラックホールに陥れるケースがありました。ガベージコレクションは高くつく場合があります。数百、数千のガベージコレクション呼び出しは、システムのパフォーマンスを極めて落とす事になります。</p>
 ]]>
     </Details>
   </BugPattern>
@@ -644,28 +780,92 @@
     <LongDescription>{1} Booleanのコンストラクタを呼んでいます。その代わりにBoolean.valueOf(...) を使うべきです。</LongDescription>
     <Details>
 <![CDATA[
-  <p> <code>java.lang.Boolean</code>のインスタンスを新規に生成するのはメモリの浪費です。<code>Boolean</code>クラスはイミュータブルなので、TRUEとFALSEの2つのオブジェクトがあれば十分です。 <code>Boolean.valueOf()</code>を替わりに使ってください。
+  <p> <code>java.lang.Boolean</code>のインスタンスを新規に生成するのはメモリの浪費です。<code>Boolean</code>クラスはイミュータブルなので、TRUEとFALSEの2つのオブジェクトがあれば十分です。 <code>Boolean.valueOf()</code>を替わりに使ってください。</p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="DM_STRING_EMPTY_EQUALS">
     <ShortDescription>メソッドは疑わしいString.equals("")呼び出しを行っています。String.length() == 0を替わりに使用してください</ShortDescription>
-    <LongDescription>メソッドは疑わしいString.equals("")呼び出しを行っています。String.length() == 0を替わりに使用してください</LongDescription>
+    <LongDescription>メソッド{1}は疑わしいString.equals("")呼び出しを行っています。String.length() == 0を替わりに使用してください</LongDescription>
     <Details>
 <![CDATA[
-<p> eauals()を使って空文字列との比較を行っています。length()メソッドを使って長さ0かどうか調べる方が高速です。
+<p> eauals()を使って空文字列との比較を行っています。length()メソッドを使って長さ0かどうか調べる方が高速です。また、このようにすることでクラスファイルから無駄な文字列を削除することが出来ます。</p>
 ]]>
     </Details>
   </BugPattern>
 
+  <BugPattern type="DM_CONVERT_CASE">
+    <ShortDescription>疑わしいString.toUpperCase()、String.toLowerCaseメソッドの呼び出しです。これらと同名でLocaleを引数にとるメソッドを使用してください</ShortDescription>
+    <LongDescription>メソッド {1} は、疑わしいString.toUpperCase()、String.toLowerCaseを呼び出しています。これらと同名でLocaleを引数にとるメソッドを使用してください</LongDescription>
+    <Details>
+<![CDATA[
+  <p> 文字列がプラットホームのデフォルトエンコーディングで、大文字、小文字に変換されています。これらは国際文字に対して行なわれると間違った結果を招くことがあります。かわりに</p>
+      <table><tr><td>String.toUpperCase(Locale l)</td></tr><tr><td>String.toLowerCase(Locale l)</td></tr></table>
+      <p>を使用してください。</p>
+]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="DM_BOXED_PRIMITIVE_TOSTRING">
+    <ShortDescription>プリミティブ型のラッパクラスのインスタンスがtoStringを呼び出すためだけに生成されています</ShortDescription>
+    <LongDescription>メソッド {1} は、プリミティブ型のラッパクラスのインスタンスをtoStringを呼び出すためだけに生成しています</LongDescription>
+    <Details>
+<![CDATA[
+  <p>プリミティブ型のラッパクラスのインスタンスがtoStringを呼び出すためだけに生成されています。これは、より効率的なプリミティブ型を引数にとるstaticなtoStringメソッドに置き替えることができます。</p>
+  <table>
+     <tr><th>置換前</th><th>置換後</th></tr>
+     <tr><td>new Integer(1).toString()</td><td>Integer.toString(1)</td></tr>
+     <tr><td>new Long(1).toString()</td><td>Long.toString(1)</td></tr>
+     <tr><td>new Float(1.0).toString()</td><td>Float.toString(1.0)</td></tr>
+     <tr><td>new Double(1.0).toString()</td><td>Double.toString(1.0)</td></tr>
+     <tr><td>new Byte(1).toString()</td><td>Byte.toString(1)</td></tr>
+     <tr><td>new Short(1).toString()</td><td>Short.toString(1)</td></tr>
+     <tr><td>new Boolean(true).toString()</td><td>Boolean.toString(true)</td></tr>
+  </table>
+]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="DM_NEW_FOR_GETCLASS">
+    <ShortDescription>クラスオブジェクトを得るためだけにインスタンス生成が行なわれています</ShortDescription>
+    <LongDescription>メソッド {1} は、クラスオブジェクトを得るためだけにインスタンス生成を行なっています</LongDescription>
+    <Details>
+<![CDATA[
+  <p>このメソッドは、getClass()を呼び出すためだけに、インスタンスを生成しています。あるクラスのクラスオブジェクトを得るには、.classプロパティを使用した方が単純です。</p>
+]]>
+    </Details>
+  </BugPattern>  
+
+  <BugPattern type="DM_NEXTINT_VIA_NEXTDOUBLE">
+    <ShortDescription>整数の乱数値を得たいのであれば、nextDoubleではなくnextIntメソッドを使用してください</ShortDescription>
+    <LongDescription>メソッド {1} は、整数の乱数値を得るためにnextDoubleメソッドを使用しています。nextIntを使用した方が効率的です</LongDescription>
+    <Details>
+<![CDATA[
+  <p>java.util.Randomのインスタンスrに対して0からn-1の乱数を得たいのであれば、(int)(r.nextDouble() * n)のかわりにr.nextInt(n)を用いることができます。
+</p>
+]]>
+    </Details>
+  </BugPattern>  
+
+  <BugPattern type="DM_USELESS_THREAD">
+    <ShortDescription>実行する内容を指定せずにThreadオブジェクトを生成しています</ShortDescription>
+    <LongDescription>メソッド {1} は、実行する内容を指定せずにThreadオブジェクトを生成しています</LongDescription>
+    <Details>
+<![CDATA[
+  <p>このメソッドは、Theadインスタンスを生成していますが、Runnableオブジェクトも渡していなければ、runメソッドをオーバーライドした継承クラスも生成していません。このスレッドは無駄です。
+</p>
+]]>
+    </Details>
+  </BugPattern>  
+  
   <BugPattern type="DC_DOUBLECHECK">
     <ShortDescription>フィールドのダブルチェックをおこなっている可能性があります。</ShortDescription>
     <LongDescription>{1} において {2} のダブルチェックをおこなっている可能性があります。</LongDescription>
     <Details>
 <![CDATA[
 <p> メソッド内にダブルチェックロッキングイディオムがあります。このイディオムはJavaのメモリーモデルでは正しく機能しません。詳細については<a href="http://www.cs.umd.edu/~pugh/java/memoryModel/DoubleCheckedLocking.html"
-  >http://www.cs.umd.edu/~pugh/java/memoryModel/DoubleCheckedLocking.html</a>を参照してください。
+  >http://www.cs.umd.edu/~pugh/java/memoryModel/DoubleCheckedLocking.html</a>を参照してください。</p>
 ]]>
     </Details>
   </BugPattern>
@@ -675,7 +875,7 @@
     <LongDescription>{1} は public ですが、これは protected であるべきです。</LongDescription>
     <Details>
 <![CDATA[
-  <p> このクラスの<code>finalize()</code>メソッドはpublicになっていますが、protectedであるべきです。
+  <p> このクラスの<code>finalize()</code>メソッドはpublicになっていますが、protectedであるべきです。</p>
 ]]>
     </Details>
   </BugPattern>
@@ -685,7 +885,7 @@
     <LongDescription>{1} は空ですので、削除されるべきです。</LongDescription>
     <Details>
 <![CDATA[
-  <p> 空の<code>finalize()</code>メソッドは無駄です。削除するべきです。
+  <p> 空の<code>finalize()</code>メソッドは無駄です。削除するべきです。</p>
 ]]>
     </Details>
   </BugPattern>
@@ -695,7 +895,7 @@
     <LongDescription>{1} は {2}.finalize() を無視しています。これはわざとですか？</LongDescription>
     <Details>
 <![CDATA[
-<p><code>finalize()</code>メソッドが空なので、親クラスのファイナライザを無視する事になり、親クラスで定義されたファイナライザの処理が呼び出されなくなってしまいます。そのような意図が無ければ、このメソッドを削除してください。
+<p><code>finalize()</code>メソッドが空なので、親クラスのファイナライザを無視する事になり、親クラスで定義されたファイナライザの処理が呼び出されなくなってしまいます。そのような意図が無ければ、このメソッドを削除してください。</p>
 ]]>
     </Details>
   </BugPattern>
@@ -705,7 +905,7 @@
     <LongDescription>{1} は単に super.finalize() を呼び出しているだけで、それ以外のことはなにもしていません。これは削除されるべきです。</LongDescription>
     <Details>
 <![CDATA[
-<p>この<code>finalize()</code>メソッドは、親クラスの<code>finalize()</code>を呼び出しているだけで、無駄です。削除してください。
+<p>この<code>finalize()</code>メソッドは、親クラスの<code>finalize()</code>を呼び出しているだけで、無駄です。削除してください。</p>
 ]]>
     </Details>
   </BugPattern>
@@ -715,7 +915,7 @@
     <LongDescription>{1} は super.finalize() の呼び出しを忘れています。そのため {2}.finalize() は呼び出されることがありません。</LongDescription>
     <Details>
 <![CDATA[
-<p>この<code>finalize()</code>メソッドは、親クラスの<code>finalize()</code>を呼び出していません。このため親クラスで定義されたファイナライズ処理が行われません。<code>super.finalize()</code>を呼び出すように変更してください。
+<p>この<code>finalize()</code>メソッドは、親クラスの<code>finalize()</code>を呼び出していません。このため親クラスで定義されたファイナライズ処理が行われません。<code>super.finalize()</code>を呼び出すように変更してください。</p>
 ]]>
     </Details>
   </BugPattern>
@@ -725,7 +925,7 @@
     <LongDescription>{1} は明示的に {2} を呼び出しています。</LongDescription>
     <Details>
 <![CDATA[
-<p> このメソッド内で<code>finalize()</code>の明示的な呼び出しが行われています。ファイナライザは一度だけ呼び出されるべきで、それはVMによって行われるので、このコードの意図は間違っています。
+<p> このメソッド内で<code>finalize()</code>の明示的な呼び出しが行われています。ファイナライザは一度だけ呼び出されるべきで、それはVMによって行われるので、このコードの意図は間違っています。</p>
 ]]>
     </Details>
   </BugPattern>
@@ -737,7 +937,7 @@
 <![CDATA[
   <p> このクラスには、引数がObjectでない<code>equals()</code>メソッドが定義されていますが、Objectクラスの<code>equals(Object)</code>を呼び出しています。
   このクラスは、おそらく共変でない<code>equals()</code>を定義すべきです。
-  (すなわち、メソッドシグニチャを次のようにすべきです <code>boolean equals(java.lang.Object)</code>。
+  (すなわち、メソッドシグニチャを次のようにすべきです <code>boolean equals(java.lang.Object)</code>。</p>
 ]]>
     </Details>
   </BugPattern>
@@ -748,7 +948,7 @@
     <Details>
 <![CDATA[
   <p> このクラスには、引数がObjectでない<code>equals()</code>メソッドが定義されています。
-  <code>java.lang.Object</code>の<code>equals()</code>メソッドを正しくオーバーライドするには、<code>equals()</code>メソッドの引数は、<code>java.lang.Object</code>でなければなりません。
+  <code>java.lang.Object</code>の<code>equals()</code>メソッドを正しくオーバーライドするには、<code>equals()</code>メソッドの引数は、<code>java.lang.Object</code>でなければなりません。</p>
 ]]>
     </Details>
   </BugPattern>
@@ -759,7 +959,7 @@
     <Details>
 <![CDATA[
   <p> このクラスは、引数が<code>java.lang.Object</code>でない<code>compareTo()</code>メソッドを定義しています。
-  <code>Comparable</code>インターフェースの<code>compareTo()</code>メソッドを正しく実装するには、<code>compareTo()</code>メソッドの引数の型は、<code>java.lang.Object</code>でなければなりません。
+  <code>Comparable</code>インターフェースの<code>compareTo()</code>メソッドを正しく実装するには、<code>compareTo()</code>メソッドの引数の型は、<code>java.lang.Object</code>でなければなりません。</p>
 ]]>
     </Details>
   </BugPattern>
@@ -769,25 +969,27 @@
     <LongDescription>{0} は hashCode を定義していますが、 Object.equals() はそのまま使っています。</LongDescription>
     <Details>
 <![CDATA[
-<p> このクラスは<code>hashCode()</code>メソッドを定義していますが、<code>equals()</code>メソッドは<code>java.lang.Object</code>のもの(参照が同一かどうかで同値性を判定します)をそのまま利用しています。これは、同値であると判定されたオブジェクトが同じハッシュコードを返さなければならないという規約は満たしますが、恐らく<code>hashCode()</code>メソッドのオーバーライドは意図されたものでは無いと思われます(<code>hashCode()</code>のオーバーライドは、単なる参照が同一という同値性よりも複雑な基準がある事を意味します)。
+<p> このクラスは<code>hashCode()</code>メソッドを定義していますが、<code>equals()</code>メソッドは<code>java.lang.Object</code>のもの(参照が同一かどうかで同値性を判定します)をそのまま利用しています。これは、同値であると判定されたオブジェクトが同じハッシュコードを返さなければならないという規約は満たしますが、恐らく<code>hashCode()</code>メソッドのオーバーライドは意図されたものでは無いと思われます(<code>hashCode()</code>のオーバーライドは、単なる参照が同一という同値性よりも複雑な基準がある事を意味します)。</p>
 ]]>
     </Details>
   </BugPattern>
+
   <BugPattern type="HE_HASHCODE_NO_EQUALS">
     <ShortDescription>クラスで hashCode() を定義していますが、equals() は定義していません。</ShortDescription>
     <LongDescription>{0} は hashCode を定義していますが、equals は定義していません。</LongDescription>
     <Details>
 <![CDATA[
-<p> このクラスは<code>hashCode()</code>メソッドを定義していますが、<code>equals()</code>メソッドを定義していません。このため、同値のオブジェクトは同じハッシュコードを返すべきという規約を破る可能性があります。
+<p> このクラスは<code>hashCode()</code>メソッドを定義していますが、<code>equals()</code>メソッドを定義していません。このため、同値のオブジェクトは同じハッシュコードを返すべきという規約を破る可能性があります。</p>
 ]]>
     </Details>
   </BugPattern>
+
   <BugPattern type="HE_EQUALS_USE_HASHCODE">
     <ShortDescription>クラスで equals() を定義していますが、Object.hashCode() はそのまま使っています。</ShortDescription>
     <LongDescription>{0} で equals を定義していますが、Object.hashCode() はそのまま使っています。</LongDescription>
     <Details>
 <![CDATA[
-<p> このクラスは<code>equals(Object)</code>をオーバーライドしていますが、<code>hashCode()</code>をオーバーライドしていないので、<code>java.lang.Object</code>の<code>hashCode()</code>の実装をそのまま利用しています(これは、VMがObjectに割り当てた一意のハッシュコードを返します)。このため、同値のオブジェクトが等しいハッシュコードを返さなければならないという規約を破る可能性が非常に高いです。
+<p> このクラスは<code>equals(Object)</code>をオーバーライドしていますが、<code>hashCode()</code>をオーバーライドしていないので、<code>java.lang.Object</code>の<code>hashCode()</code>の実装をそのまま利用しています(これは、VMがObjectに割り当てた一意のハッシュコードを返します)。このため、同値のオブジェクトが等しいハッシュコードを返さなければならないという規約を破る可能性が非常に高いです。</p>
 ]]>
     </Details>
   </BugPattern>
@@ -800,10 +1002,10 @@
   <p> このクラスは<code>equals(Object)</code>を親の抽象クラスから継承し<code>hashCode()</code>
 は、<code>java.lang.Object</code>クラスのものをそのまま使用しています(これは、VMによってアサイン
 された任意の値を返送します)。このクラスは「等しいオブジェクトが、同値のハッシュコードを返さなければならない」
-という契約を満たすのが非常に困難になっています。
+という契約を満たすのが非常に困難になっています。</p>
 <p>もしもhashCodelを定義する必要がない、あるいはこのオブジェクトをHashMap/Hashtableに格納したく
 ないと考えるのであれは、<code>hashCode()</code>メソッドを<code>UnsupportedOperationException</code>を
-スローするように実装してください。
+スローするように実装してください。</p>
 ]]>
     </Details>
   </BugPattern>
@@ -813,17 +1015,18 @@
     <LongDescription>{0} は equals を定義していますが hashCode は定義していません。</LongDescription>
     <Details>
 <![CDATA[
-<p> このクラスは<code>equals(Object)</code>をオーバーライドしていますが、<code>hashCode()</code>をオーバーライドしていません。このため、このクラスは同値のオブジェクトが等しいハッシュコードを返さなければならないという規約を破る可能性があります。
+<p> このクラスは<code>equals(Object)</code>をオーバーライドしていますが、<code>hashCode()</code>をオーバーライドしていません。このため、このクラスは同値のオブジェクトが等しいハッシュコードを返さなければならないという規約を破る可能性があります。</p>
 ]]>
     </Details>
   </BugPattern>
+
   <BugPattern type="EQ_ABSTRACT_SELF">
     <ShortDescription>抽象クラスで共変な equals() メソッドを宣言しています。</ShortDescription>
     <LongDescription>抽象クラス {0} で equals({0}) メソッドを宣言しています。</LongDescription>
     <Details>
 <![CDATA[
   <p> このクラスには、引数がObjectでない<code>equals()</code>メソッドが定義されています。
-  <code>java.lang.Object</code>の<code>equals()</code>メソッドを正しくオーバーライドするには、<code>equals()</code>メソッドの引数は、<code>java.lang.Object</code>でなければなりません。
+  <code>java.lang.Object</code>の<code>equals()</code>メソッドを正しくオーバーライドするには、<code>equals()</code>メソッドの引数は、<code>java.lang.Object</code>でなければなりません。</p>
 ]]>
     </Details>
   </BugPattern>
@@ -833,7 +1036,7 @@
     <LongDescription>{1}の中で、文字列オブジェクトを == や != を使って比較しようとしています。</LongDescription>
     <Details>
 <![CDATA[
-<p>このコードは<code>java.lang.String</code>のオブジェクトは==もしくは!=を使って参照の比較を行っています。定数定義された文字列もしくは、<code>String.intern()</code>で得られた文字列でなければ、同じ内容でも別のオブジェクトとなる可能性があります。<code>equals(Object)</code>メソッドを替わりに用いる事を検討してください。
+<p>このコードは<code>java.lang.String</code>のオブジェクトは==もしくは!=を使って参照の比較を行っています。定数定義された文字列もしくは、<code>String.intern()</code>で得られた文字列でなければ、同じ内容でも別のオブジェクトとなる可能性があります。<code>equals(Object)</code>メソッドを替わりに用いる事を検討してください。</p>
 ]]>
     </Details>
   </BugPattern>
@@ -844,7 +1047,7 @@
     <Details>
 <![CDATA[
   <p> このクラスは、引数が<code>java.lang.Object</code>でない<code>compareTo()</code>メソッドを定義しています。
-  <code>Comparable</code>インターフェースの<code>compareTo()</code>メソッドを正しく実装するには、<code>compareTo()</code>メソッドの引数の型は、<code>java.lang.Object</code>でなければなりません。
+  <code>Comparable</code>インターフェースの<code>compareTo()</code>メソッドを正しく実装するには、<code>compareTo()</code>メソッドの引数の型は、<code>java.lang.Object</code>でなければなりません。</p>
 ]]>
     </Details>
   </BugPattern>
@@ -856,18 +1059,19 @@
 <![CDATA[
 <p> このクラスのフィールドは、同期化の観点から、一貫したアクセスが行われていないようです。このバグレポートは、次のようなバグパターンを示します。
 <ol>
-  <li> クラス内でアクセスする際に、ロックしたりしていなかったりしており、
-  <li> 最低でも1つのロックされたアクセスがクラス内のメソッドから行われており、
-  <li> 書き込みに対して、読み込みの2倍の重み付けをした場合に、ロックしていないフィールドアクセス(読み書き)の数が、全体のアクセス数の1/3を超えていない
+  <li> クラス内でアクセスする際に、ロックしたりしていなかったりしており、</li>
+  <li> 最低でも1つのロックされたアクセスがクラス内のメソッドから行われており、</li>
+  <li> 書き込みに対して、読み込みの2倍の重み付けをした場合に、ロックしていないフィールドアクセス(読み書き)の数が、全体のアクセス数の1/3を超えていない</li>
 </ol>
+</p>
 
-<p> このパターンに当てはまる典型的な例は、スレッドセーフを意図しているのに、メソッドを同期化するのを忘れているケースです。
+<p> このパターンに当てはまる典型的な例は、スレッドセーフを意図しているのに、メソッドを同期化するのを忘れているケースです。</p>
 
 <p> ディテクタにコードの意図を伝えるため「非同期アクセス」のラベルを付ける事ができます。
 
-<p> このディテクタには、判断を誤る要因が幾つかあります。例えば、ディテクタはスレッドがロックを獲得しているかどうかを、コードを見て静的に判断する事は出来ません。例えディテクタが、ロックされたアクセスと、そうでないアクセスを的確に判定出来たとしても、依然としてコードが正しい可能性は残ります。
+<p> このディテクタには、判断を誤る要因が幾つかあります。例えば、ディテクタはスレッドがロックを獲得しているかどうかを、コードを見て静的に判断する事は出来ません。例えディテクタが、ロックされたアクセスと、そうでないアクセスを的確に判定出来たとしても、依然としてコードが正しい可能性は残ります。</p>
 
-<p> ここの記述は"IS2"バージョンのパターンディテクタを参考にしています。これは、ロック・非ロックアクセスの検出に関して"IS"バージョンよりも正確です。
+<p> ここの記述は"IS2"バージョンのパターンディテクタを参考にしています。これは、ロック・非ロックアクセスの検出に関して"IS"バージョンよりも正確です。</p>
 ]]>
     </Details>
   </BugPattern>
@@ -877,9 +1081,9 @@
     <LongDescription>{1} の中に裸の notify があります。</LongDescription>
     <Details>
 <![CDATA[
-<p> オブジェクトの状態を変更せずに<code>notify()</code>もしくは<code>notifyAll()</code>メソッドを呼び出しています。一般にはこれらのメソッドは、別のスレッドが待ち合わせている条件が成立したのを知らせるために用いられます。条件の待ち合わせを行うためには、両方のスレッドから見る事が可能なヒープオブジェクトを使用しなければなりません。
+<p> オブジェクトの状態を変更せずに<code>notify()</code>もしくは<code>notifyAll()</code>メソッドを呼び出しています。一般にはこれらのメソッドは、別のスレッドが待ち合わせている条件が成立したのを知らせるために用いられます。条件の待ち合わせを行うためには、両方のスレッドから見る事が可能なヒープオブジェクトを使用しなければなりません。</p>
 
-<p> このバグ報告は、必ずしもプログラミングエラーを意味しません。オブジェクトの状態変更がメソッド内部で行われ、そこから更にnotify()/notifyall()メソッドを持ったメソッドを呼び出しているかもしれないからです。
+<p> このバグ報告は、必ずしもプログラミングエラーを意味しません。オブジェクトの状態変更がメソッド内部で行われ、そこから更にnotify()/notifyall()メソッドを持ったメソッドを呼び出しているかもしれないからです。</p>
 ]]>
     </Details>
   </BugPattern>
@@ -889,7 +1093,7 @@
     <LongDescription>public static な {1} メソッドで {2} を戻すことにより、内部表現を暴露してしまう可能性があります。</LongDescription>
     <Details>
 <![CDATA[
-<p> public staticメソッドが、クラスのstaticフィールドに保持した配列を返しています。このメソッドを呼び出して得られた配列への参照を通じて、クラスのstaticフィールドを変更出来ていまいます。1つの修正方法は防御的コピーを行って、配列の複製を返す事です。
+<p> public staticメソッドが、クラスのstaticフィールドに保持した配列を返しています。このメソッドを呼び出して得られた配列への参照を通じて、クラスのstaticフィールドを変更出来ていまいます。1つの修正方法は防御的コピーを行って、配列の複製を返す事です。</p>
 ]]>
     </Details>
   </BugPattern>
@@ -899,7 +1103,7 @@
     <LongDescription>{1} は {2} を戻すことにより内部表現を暴露してしまう可能性があります。</LongDescription>
     <Details>
 <![CDATA[
-<p> オブジェクトのフィールドに格納された変更可能なオブジェクトの参照を返すと、オブジェクトの内部表現を暴露してしまいます。もしも、このオブジェクトが信頼されていないコードによってアクセスされる事が、セキュリティや、その他の重要な情報への脅威となる可能性があるため、このコードは修正すべきです。防御的コピーを行って、複製を返すのが、多くの場面で良いやり方です。
+<p> オブジェクトのフィールドに格納された変更可能なオブジェクトの参照を返すと、オブジェクトの内部表現を暴露してしまいます。もしも、このオブジェクトが信頼されていないコードによってアクセスされる事が、セキュリティや、その他の重要な情報への脅威となる可能性があるため、このコードは修正すべきです。防御的コピーを行って、複製を返すのが、多くの場面で良いやり方です。</p>
 ]]>
     </Details>
   </BugPattern>
@@ -909,109 +1113,111 @@
     <LongDescription>{1} は {2} の中に外部の可変オブジェクトを格納することにより内部表現を暴露してしまう可能性があります。</LongDescription>
     <Details>
 <![CDATA[
-<p> このコードは、外部の変更可能オブジェクトを自らの実装に格納しています。もしもこのオブジェクトが信頼されていないコードによってアクセスされると、セキュリティや、その他の重要な情報への脅威となる可能性があるため、このコードは修正すべきです。防御的コピーを行って、複製を返すのが、多くの場面で良いやり方です。
+<p> このコードは、外部の変更可能オブジェクトを自らの実装に格納しています。もしもこのオブジェクトが信頼されていないコードによってアクセスされると、セキュリティや、その他の重要な情報への脅威となる可能性があるため、このコードは修正すべきです。防御的コピーを行って、複製を返すのが、多くの場面で良いやり方です。</p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="EI_EXPOSE_STATIC_REP2">
-
     <ShortDescription>このメソッドは、ミュータブルなオブジェクトをstaticフィールドに格納する事で、内部の状態を外部に晒す危険があります</ShortDescription>
-    <LongDescription>{1} は、ミュータブルオブジェクトをstaticフィールド {2} に格納する事で、内部の状態を、外部に晒す危険があります</LongDescription>
-
+    <LongDescription>{1} は、ミュータブルオブジェクトをstaticフィールド {2} に格納する事で、内部の状態を、外部に晒す危険があります<LongDescription>
     <Details>
-
 <![CDATA[
-
-  <p> このコードは、外部から変更可能なオブジェクトをstaticフィールドに格納しています。ミュータブルオブジェクトのチェックされない変更が、セキュリティや、重要な情報を危機に晒す可能性があるなら、違うやり方を検討してください。防御的コピーは、一つの良いアイデアです。
+  <p> このコードは、外部から変更可能なオブジェクトをstaticフィールドに格納しています。ミュータブルオブジェクトのチェックされない変更が、セキュリティや、重要な情報を危機に晒す可能性があるなら、違うやり方を検討してください。防御的コピーは、一つの良いアイデアです。</p>
 ]]>
-
     </Details>
-
   </BugPattern>
-
 
   <BugPattern type="RU_INVOKE_RUN">
     <ShortDescription>スレッドの中で run を実行しています。(本当は startを代わりに呼び出すべきではないのですか？)</ShortDescription>
     <LongDescription>{1} は明示的にスレッドの run を呼び出しています。(本当は start を呼び出したいと思ったのではないですか？)</LongDescription>
     <Details>
 <![CDATA[
-<p> このメソッドは、オブジェクトの<code>run()</code>メソッドを明示的に呼び出しています。一般に<code>Runnable</code>を実装したクラスは、新しいスレッドが<code>run()</code>メソッドを呼び出す事を期待しており、この場合、<code>Thread.start()</code>を呼び出すのが正しいやり方です。
+<p> このメソッドは、オブジェクトの<code>run()</code>メソッドを明示的に呼び出しています。一般に<code>Runnable</code>を実装したクラスは、新しいスレッドが<code>run()</code>メソッドを呼び出す事を期待しており、この場合、<code>Thread.start()</code>を呼び出すのが正しいやり方です。</p>
 ]]>
     </Details>
   </BugPattern>
+
   <BugPattern type="SP_SPIN_ON_FIELD">
     <ShortDescription>メソッドはフィールドのスピンロックを利用しています。</ShortDescription>
-    <LongDescription>{2} を使って {1} でスピンロックを使っています。</LongDescription>
+    <LongDescription>{3} を使って {1} でスピンロックを使っています。</LongDescription>
     <Details>
 <![CDATA[
-<p> このメソッドは、フィールドの値をループの終了条件としていますが、仕様上、コンパイラはフィールドの読み出しをループの外に出しても良い事になっています。このためループは無限ループとなる可能性があります。フィールド読みだしを正しく同期化(wait/notify)する事が必要です。
+<p> このメソッドは、フィールドの値をループの終了条件としていますが、仕様上、コンパイラはフィールドの読み出しをループの外に出しても良い事になっています。このためループは無限ループとなる可能性があります。フィールド読みだしを正しく同期化(wait/notify)する事が必要です。</p>
 ]]>
     </Details>
   </BugPattern>
+
   <BugPattern type="NS_NON_SHORT_CIRCUIT">
     <ShortDescription>非短絡的ロジックの疑わしい使用。</ShortDescription>
     <LongDescription>{1} での非短絡的ロジックの疑わしい使用。</LongDescription>
     <Details>
 <![CDATA[
-<p> 非短絡的演算子(&amp;あるいは|)を、短絡的演算子(&amp;&amp;あるいは||)と間違えて使用しているようです。非短絡的演算子は、両側の式を必ず評価します。非短絡的演算子を短絡的演算子のかわりに使うと、効率が悪いだけでなく、もしも演算子の左側の式が右側の式にアクセスするためのガード条件になっている場合には、エラーになります。
+<p> 非短絡的演算子(&amp;あるいは|)を、短絡的演算子(&amp;&amp;あるいは||)と間違えて使用しているようです。非短絡的演算子は、両側の式を必ず評価します。非短絡的演算子を短絡的演算子のかわりに使うと、効率が悪いだけでなく、もしも演算子の左側の式が右側の式にアクセスするためのガード条件になっている場合には、エラーになります。</p>
 ]]>
     </Details>
   </BugPattern>
+
   <BugPattern type="2LW_TWO_LOCK_WAIT">
     <ShortDescription>２つのロックを持ったまま wait しています。</ShortDescription>
     <LongDescription>{1} で２つのロックを持ったまま wait() しています。</LongDescription>
     <Details>
 <![CDATA[
-<p> 2つ以上のロックを獲得した状態でモニタの上で待ち合わせを行うと、デッドロックする場合があります。wait()メソッドは、呼び出されたオブジェクトのロックのみを解放するだけで、その他のロックは解放しません。これは必ずしもバグとは限りませんが、詳しく検討すべきです。
+<p> 2つ以上のロックを獲得した状態でモニタの上で待ち合わせを行うと、デッドロックする場合があります。wait()メソッドは、呼び出されたオブジェクトのロックのみを解放するだけで、その他のロックは解放しません。これは必ずしもバグとは限りませんが、詳しく検討すべきです。</p>
 ]]>
     </Details>
   </BugPattern>
+
   <BugPattern type="UW_UNCOND_WAIT">
     <ShortDescription>メソッドのwaitに条件文がありません。</ShortDescription>
     <LongDescription>{1} のwaitに条件文がありません。</LongDescription>
     <Details>
 <![CDATA[
-<p> このメソッドの中で<code>java.lang.Object.wait()</code>を呼び出していますが、条件判断によってガードされていません。wait()によって待ち合わせたい条件が既に成立済みの場合には、このwait()メソッドは永遠に抜けられなくなる可能性があります。
+<p> このメソッドの中で<code>java.lang.Object.wait()</code>を呼び出していますが、条件判断によってガードされていません。wait()によって待ち合わせたい条件が既に成立済みの場合には、このwait()メソッドは永遠に抜けられなくなる可能性があります。</p>
 ]]>
     </Details>
   </BugPattern>
+
   <BugPattern type="UR_UNINIT_READ">
     <ShortDescription>コンストラクタで初期化前のフィールドを読んでいます。</ShortDescription>
     <LongDescription>{2} を {1} で初期化前に値を読み込んでいます。</LongDescription>
     <Details>
 <![CDATA[
-<p> このコンストラクタは、まだ何も値が代入されていないフィールドを読み込んでいます。これはしばしば、プログラマが間違えてコンストラクタのパラメータのかわりに、フィールドにアクセスしてしまった場合に起こります。
+<p> このコンストラクタは、まだ何も値が代入されていないフィールドを読み込んでいます。これはしばしば、プログラマが間違えてコンストラクタのパラメータのかわりに、フィールドにアクセスしてしまった場合に起こります。</p>
 ]]>
     </Details>
   </BugPattern>
+
   <BugPattern type="UG_SYNC_SET_UNSYNC_GET">
     <ShortDescription>getメソッドは同期化(synchronized)されていませんが、setメソッド同期化されています。</ShortDescription>
     <LongDescription>{1} は同期化(synchronized)されていませんが、{2} は同期化されています。</LongDescription>
     <Details>
 <![CDATA[
-<p> このクラスには似た名前のgetメソッドとsetメソッドがあり、setメソッドは同期化されていますが、getメソッドは同期化されていません。これは、getメソッドの呼び出しによって、必ずしも最新のオブジェクトの内容が見えるとは限らないため、実行時に、正しくない挙動を招く場合があります。getメソッドも同期化するべきです。
+<p> このクラスには似た名前のgetメソッドとsetメソッドがあり、setメソッドは同期化されていますが、getメソッドは同期化されていません。これは、getメソッドの呼び出しによって、必ずしも最新のオブジェクトの内容が見えるとは限らないため、実行時に、正しくない挙動を招く場合があります。getメソッドも同期化するべきです。</p>
 ]]>
     </Details>
   </BugPattern>
+
   <BugPattern type="IC_INIT_CIRCULARITY">
     <ShortDescription>初期化がループしています。</ShortDescription>
     <LongDescription>{0} と {1} の間で初期化がループしています。</LongDescription>
     <Details>
 <![CDATA[
-<p> 2つのクラスの静的初期化子が循環参照しています。様々な予測出来ない挙動が起こる可能性があります。
+<p> 2つのクラスの静的初期化子が循環参照しています。様々な予測出来ない挙動が起こる可能性があります。</p>
 ]]>
     </Details>
   </BugPattern>
+
   <BugPattern type="IT_NO_SUCH_ELEMENT">
     <ShortDescription>iterator の next() メソッドが NoSuchElement 例外をthrowすることができません。</ShortDescription>
     <LongDescription>{1} は NoSuchElement 例外をthrowすることができません。</LongDescription>
     <Details>
 <![CDATA[
-<p> このクラスは<code>java.util.Iterator</code>を実装していますが、<code>next()</code>メソッドが<code>java.util.NoSuchElementException</code>をスロー出来ないようになっています。<code>next()</code>メソッドは、もう返送出来るエレメントが無くなった際に<code>NoSuchElementException</code>をスローしなければなりません。
+<p> このクラスは<code>java.util.Iterator</code>を実装していますが、<code>next()</code>メソッドが<code>java.util.NoSuchElementException</code>をスロー出来ないようになっています。<code>next()</code>メソッドは、もう返送出来るエレメントが無くなった際に<code>NoSuchElementException</code>をスローしなければなりません。</p>
 ]]>
     </Details>
   </BugPattern>
+
   <BugPattern type="IS_INCONSISTENT_SYNC">
     <ShortDescription>同期の取り方に統一感がありません。</ShortDescription>
     <LongDescription>{1} の同期の取り方に統一感がありません。{2}% の場合同期アクセスされています。</LongDescription>
@@ -1019,141 +1225,191 @@
 <![CDATA[
 <p> このクラスのフィールドは、同期化の観点から、一貫したアクセスが行われていないようです。このバグレポートは、次のようなバグパターンを示します。
 <ol>
-  <li> クラス内でアクセスする際に、ロックしたりしていなかったりしており、
-  <li> 最低でも1つのロックされたアクセスがクラス内のメソッドから行われており、
-  <li> 書き込みに対して、読み込みの2倍の重み付けをした場合に、ロックしていないフィールドアクセス(読み書き)の数が、全体のアクセス数の1/3を超えていない
+  <li> クラス内でアクセスする際に、ロックしたりしていなかったりしており、</li>
+  <li> 最低でも1つのロックされたアクセスがクラス内のメソッドから行われており、</li>
+  <li> 書き込みに対して、読み込みの2倍の重み付けをした場合に、ロックしていないフィールドアクセス(読み書き)の数が、全体のアクセス数の1/3を超えていない</li>
 </ol>
+</p>
 
-<p> このパターンに当てはまる典型的な例は、スレッドセーフを意図しているのに、メソッドを同期化するのを忘れているケースです。
+<p> このパターンに当てはまる典型的な例は、スレッドセーフを意図しているのに、メソッドを同期化するのを忘れているケースです。</p>
 
-<p> このディテクタには、判断を誤る要因が幾つかあります。例えば、ディテクタはスレッドがロックを獲得しているかどうかを、コードを見て静的に判断する事は出来ません。例えディテクタが、ロックされたアクセスと、そうでないアクセスを的確に判定出来たとしても、依然としてコードが正しい可能性は残ります。
+<p> このディテクタには、判断を誤る要因が幾つかあります。例えば、ディテクタはスレッドがロックを獲得しているかどうかを、コードを見て静的に判断する事は出来ません。例えディテクタが、ロックされたアクセスと、そうでないアクセスを的確に判定出来たとしても、依然としてコードが正しい可能性は残ります。</p>
 ]]>
     </Details>
   </BugPattern>
+
   <BugPattern type="ML_SYNC_ON_UPDATED_FIELD">
     <ShortDescription>メソッドは更新されるフィールドを使って同期しています。</ShortDescription>
     <LongDescription>{1} は更新されるフィールド {2} を使って同期しています。</LongDescription>
     <Details>
 <![CDATA[
-<p> このメソッドは、変更可能なフィールドが参照しているオブジェクトを同期化しています。このコードの意図は、うまく実現されないと思われます。なぜなら、別のスレッドは、別のオブジェクトで同期化を行ってしまうかもしれないからです。
+<p> このメソッドは、変更可能なフィールドが参照しているオブジェクトを同期化しています。このコードの意図は、うまく実現されないと思われます。なぜなら、別のスレッドは、別のオブジェクトで同期化を行ってしまうかもしれないからです。</p>
 ]]>  
     </Details>
   </BugPattern>
+
   <BugPattern type="MS_OOI_PKGPROTECT">
     <ShortDescription>フィールドはinterfaceから取り出してパッケージプライベートにすべきです。</ShortDescription>
     <LongDescription>{1} はinterfaceから取り出してパッケージプライベートにすべきです。</LongDescription>
     <Details>
 <![CDATA[
 <p>
-インターフェースに定義されたfinal staticフィールドが、配列やhashtableのような変更可能オブジェクトを参照しています。このオブジェクトは、悪意を持ったコードによって、あるいは間違って、別のパッケージから書き換えてしまう事が可能です。このフィールドをクラスに移し、パッケージプライベートにする事で、この問題を解決してください。
+インターフェースに定義されたfinal staticフィールドが、配列やhashtableのような変更可能オブジェクトを参照しています。このオブジェクトは、悪意を持ったコードによって、あるいは間違って、別のパッケージから書き換えてしまう事が可能です。このフィールドをクラスに移し、パッケージプライベートにする事で、この問題を解決してください。</p>
 ]]>
     </Details>
   </BugPattern>
+
   <BugPattern type="MS_FINAL_PKGPROTECT">
     <ShortDescription>フィールドはfinal 且つ パッケージプライベートにすべきです。</ShortDescription>
     <LongDescription>{1} フィールドはfinal 且つ パッケージプライベートにすべきです。</LongDescription>
     <Details>
 <![CDATA[
- <p>変更可能なstaticフィールドは、悪意を持ったコードによって、あるいは間違って、別のパッケージから書き換えられてしまう可能性があります。フィールドは、パッケージプライベートにするか、final宣言して(あるいは、この両方を行って)ください。
+ <p>変更可能なstaticフィールドは、悪意を持ったコードによって、あるいは間違って、別のパッケージから書き換えられてしまう可能性があります。フィールドは、パッケージプライベートにするか、final宣言して(あるいは、この両方を行って)ください。</p>
 ]]>
     </Details>
   </BugPattern>
+
   <BugPattern type="MS_SHOULD_BE_FINAL">
     <ShortDescription>フィールドは final ではありませんが、finalに変更すべきです。</ShortDescription>
     <LongDescription>{1} はfinalではありませんがfinalに変更すべきです。</LongDescription>
     <Details>
 <![CDATA[
-<p>変更可能なstaticフィールドは、悪意を持ったコードによって、あるいは間違って、別のパッケージから書き換えられてしまう可能性があります。フィールドをfinalとする事で、この脆弱性を回避出来ます。
+<p>変更可能なstaticフィールドは、悪意を持ったコードによって、あるいは間違って、別のパッケージから書き換えられてしまう可能性があります。フィールドをfinalとする事で、この脆弱性を回避出来ます。</p>
 ]]>
     </Details>
   </BugPattern>
+
   <BugPattern type="MS_PKGPROTECT">
     <ShortDescription>フィールドはパッケージプライベートにすべきです。</ShortDescription>
     <LongDescription>{1} はパッケージプライベートにすべきです。</LongDescription>
     <Details>
 <![CDATA[
-<p>変更可能なstaticフィールドは、悪意を持ったコードによって、あるいは間違って書き換えられてしまう可能性があります。フィールドをパッケージプライベートにすることで、この脆弱性を回避出来ます。
+<p>変更可能なstaticフィールドは、悪意を持ったコードによって、あるいは間違って書き換えられてしまう可能性があります。フィールドをパッケージプライベートにすることで、この脆弱性を回避出来ます。</p>
 ]]>
     </Details>
   </BugPattern>
+
   <BugPattern type="MS_MUTABLE_HASHTABLE">
     <ShortDescription>フィールドは変更可能なHashtableです。</ShortDescription>
     <LongDescription>{1} は変更可能なHashtable です。</LongDescription>
     <Details>
 <![CDATA[
-<p>final宣言されたstaticフィールドがHashtableの参照を保持しています。このフィールドは悪意を持ったコード、あるいは間違って別のパッケージからアクセス可能で、中身を自由に書き換える事が出来てしまいます。
+<p>final宣言されたstaticフィールドがHashtableの参照を保持しています。このフィールドは悪意を持ったコード、あるいは間違って別のパッケージからアクセス可能で、中身を自由に書き換える事が出来てしまいます。</p>
 ]]>
     </Details>
   </BugPattern>
+
   <BugPattern type="MS_MUTABLE_ARRAY">
     <ShortDescription>フィールドは mutable な配列です。</ShortDescription>
     <LongDescription>{1} は mutable な配列です。</LongDescription>
     <Details>
 <![CDATA[
-<p>final宣言されたstaticフィールドが配列の参照を保持しています。このフィールドは悪意を持ったコード、あるいは間違って別のパッケージからアクセス可能で、配列の中身を自由に書き換える事ができてしまいます。
+<p>final宣言されたstaticフィールドが配列の参照を保持しています。このフィールドは悪意を持ったコード、あるいは間違って別のパッケージからアクセス可能で、配列の中身を自由に書き換える事ができてしまいます。</p>
 ]]>
     </Details>
   </BugPattern>
+
   <BugPattern type="MS_CANNOT_BE_FINAL">
     <ShortDescription>フィールドはfinalではないため、悪意を持ったコードから保護する事は出来ません。</ShortDescription>
     <LongDescription>{1}はfinalではないため、悪意を持ったコードから穂とする事は出来ません。</LongDescription>
     <Details>
 <![CDATA[
-<p>書き換え可能なstaticフィールドは、悪意を持ったコードから、あるいは、間違って別のパッケージから書き換える事が可能です。残念ながら、このようなフィールドを、簡単に保護する事は出来ません。
+<p>書き換え可能なstaticフィールドは、悪意を持ったコードから、あるいは、間違って別のパッケージから書き換える事が可能です。残念ながら、このようなフィールドを、簡単に保護する事は出来ません。</p>
 ]]>
     </Details>
   </BugPattern>
+
+  <BugPattern type="NM_CLASS_NAMING_CONVENTION">
+    <ShortDescription>クラス名は大文字で始めるべきです</ShortDescription>
+    <LongDescription>クラス名 {0} が大文字で始まっていません</LongDescription>
+    <Details>
+<![CDATA[
+  <p> クラス名には名詞を採用し、構成単語の最初の文字を大文字として、残りを小文字とすべきです。クラス名は単純明解であるよう心がけてください。頭文字や略語の使用は避けてください(ただし一般に広く用いられているURLやHTMLといったものは構いません)。
+</p>
+]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="NM_METHOD_NAMING_CONVENTION">
+    <ShortDescription>メソッド名は、小文字で始めるべきです</ShortDescription>
+    <LongDescription>メソッド名 {1} が小文字で始まっていません</LongDescription>
+    <Details>
+<![CDATA[
+  <p> 
+メソッド名には動詞を採用し、メソッド名の最初の文字以外の構成単語の最初の文字を大文字として、残りを小文字とすべきです。
+</p>
+]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="NM_FIELD_NAMING_CONVENTION">
+    <ShortDescription>フィールド名は、小文字で始めるべきです</ShortDescription>
+    <LongDescription>フィールド名 {1} が小文字で始まっていません</LongDescription>
+    <Details>
+<![CDATA[
+  <p> 
+finalでないフィールド名は、最初の文字以外の構成単語の最初の文字を大文字として、残りを小文字とすべきです。
+</p>
+]]>
+    </Details>
+  </BugPattern>
+
   <BugPattern type="NM_VERY_CONFUSING">
     <ShortDescription>メソッドの命名が大変まぎらわしいです。</ShortDescription>
     <LongDescription>{1} と {3} のメソッドは、とても混乱しがちです。</LongDescription>
     <Details>
 <![CDATA[
-<p>これらのメソッド名は、大文字小文字が違うだけです。
+<p>これらのメソッド名は、大文字小文字が違うだけです。</p>
 ]]>
     </Details>
   </BugPattern>
+
   <BugPattern type="NM_CONFUSING">
     <ShortDescription>メソッド名がまぎらわしいです。</ShortDescription>
     <LongDescription>{1} と {3} のメソッドは、混乱しがちです。</LongDescription>
     <Details>
 <![CDATA[
-<p>これらのメソッド名は、大文字小文字が違うだけです。
+<p>これらのメソッド名は、大文字小文字が違うだけです。</p>
 ]]>
     </Details>
   </BugPattern>
+
   <BugPattern type="NM_CONFUSING_METHOD_NAME">
     <ShortDescription>メソッド名がまぎらわしいです。</ShortDescription>
     <LongDescription>{1} のメソッド名はまぎらわしいです。</LongDescription>
     <Details>
 <![CDATA[
-<p>メソッド名が、親クラスと同じです。
+<p>メソッド名が、親クラスと同じです。</p>
 ]]>
     </Details>
   </BugPattern>
+
   <BugPattern type="NM_LCASE_HASHCODE">
     <ShortDescription>クラスで hashcode() を宣言しています。これは hashCode() であるべきではありませんか？</ShortDescription>
     <LongDescription>クラス {0} で hashcode() を宣言しています。しかしこれは、 hashCode() であるべきではありませんか？</LongDescription>
     <Details>
 <![CDATA[
-<p>このクラスには<code>hashcode()</code>というメソッドが定義されています。このメソッドは、<code>java.lang.Object</code>の<code>hashCode()</code>を(そのように意図したのかもしれませんが)オーバーライドしません。
+<p>このクラスには<code>hashcode()</code>というメソッドが定義されています。このメソッドは、<code>java.lang.Object</code>の<code>hashCode()</code>を(そのように意図したのかもしれませんが)オーバーライドしません。</p>
 ]]>
     </Details>
   </BugPattern>
+
   <BugPattern type="NM_LCASE_TOSTRING">
     <ShortDescription>クラスで tostring() を宣言しています。これは toString() であるべきではありませんか？</ShortDescription>
     <LongDescription>クラス {0} で tostring() を宣言しています。これは toString() であるべきではありませんか？</LongDescription>
     <Details>
 <![CDATA[
-<p>このクラスは<code>tostring()</code>を定義しています。このメソッドは、<code>java.lang.Object</code>の<code>toString()</code>を(そのように意図したのかもしれませんが)オーバーライドしません。
+<p>このクラスは<code>tostring()</code>を定義しています。このメソッドは、<code>java.lang.Object</code>の<code>toString()</code>を(そのように意図したのかもしれませんが)オーバーライドしません。</p>
 ]]>
     </Details>
   </BugPattern>
+
   <BugPattern type="NM_BAD_EQUAL">
     <ShortDescription>クラスは、equal()を定義していますが、equals()の間違いではないですか?</ShortDescription>
     <LongDescription>クラス {0} は equal() を定義していますが、equals()の間違いではないですか?</LongDescription>
     <Details>
 <![CDATA[
-<p>このクラスは<code>equal(Object)</code>を定義しています。このメソッドは、<code>java.lang.Object</code>の<code>equals(Object)</code>を(そのように意図したのかもしれませんが)オーバーライドしません。
+<p>このクラスは<code>equal(Object)</code>を定義しています。このメソッドは、<code>java.lang.Object</code>の<code>equals(Object)</code>を(そのように意図したのかもしれませんが)オーバーライドしません。</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1163,47 +1419,40 @@
     <LongDescription>{1} は {2} の戻り値を無視しています。</LongDescription>
     <Details>
 <![CDATA[
-<p>このメソッドは、<code>java.io.InputStream.read()</code>の戻り値を無視しています。戻り値を無視すると、実際に何バイトのデータが読み込まれたのか分かりません。一般には、指定された長さ分完全に読み込んでしまうケースが多いために、顕在化せず、ごくたまに発生するやっかいなバグとなります。
+<p>このメソッドは、<code>java.io.InputStream.read()</code>の戻り値を無視しています。戻り値を無視すると、実際に何バイトのデータが読み込まれたのか分かりません。一般には、指定された長さ分完全に読み込んでしまうケースが多いために、顕在化せず、ごくたまに発生するやっかいなバグとなります。</p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="SR_NOT_CHECKED">
-
     <ShortDescription>このメソッドで、InputStream.skip()の戻り値を無視しています</ShortDescription>
-
     <LongDescription>{1} は、 {2} の戻り値を無視しています</LongDescription>
-
     <Details>
-
 <![CDATA[
-
   <p> このメソッドは、データの読み込みをスキップするメソッド<code>java.io.InputStream.skip()</code> の戻り値を無視しています。
   戻り値をチェックしないと、実際には呼び出し元が要求したバイト数よりも少ないバイト数しかスキップしなかった場合に、何バイトスキップしたのか分らなくなります。
   これは潜在的なバグとなります。なぜなら、大抵の場合、要求通りのスキップが行なわれるので、まれにしか現象が起きないからです。
-  これに対し、バッファストリームの場合、skip()はバッファ内部のデータをスキップするだけなので、頻繁に現象が起きることになります。
+  これに対し、バッファストリームの場合、skip()はバッファ内部のデータをスキップするだけなので、頻繁に現象が起きることになります。</p>
 ]]>
-
     </Details>
-
   </BugPattern>
-
 
   <BugPattern type="SE_NO_SUITABLE_CONSTRUCTOR_FOR_EXTERNALIZATION">
     <ShortDescription>クラスはExternalizableを実装していますが、引数無しコンストラクタを定義していません。</ShortDescription>
     <LongDescription>{0} はExternalizableを実装していますが、アクセス可能な引数無しコンストラクタを定義していません。</LongDescription>
     <Details>
 <![CDATA[
-<p>このクラスは<code>Externalizable</code>インターフェースを実装していますが、引数無しのコンストラクタを定義していません。Externalizableオブジェクト直列化復元される際、まず引数無しコンストラクタを呼んでインスタンスを生成する必要があります。このクラスには、これが無いので、実行時に直列化、直列化復元処理に失敗します。
+<p>このクラスは<code>Externalizable</code>インターフェースを実装していますが、引数無しのコンストラクタを定義していません。Externalizableオブジェクト直列化復元される際、まず引数無しコンストラクタを呼んでインスタンスを生成する必要があります。このクラスには、これが無いので、実行時に直列化、直列化復元処理に失敗します。</p>
 ]]>
     </Details>
   </BugPattern>
+
   <BugPattern type="SE_NO_SUITABLE_CONSTRUCTOR">
     <ShortDescription>このクラスはSerializableを実装していますが、親クラスが引数無しコンストラクタを定義していません。</ShortDescription>
     <LongDescription>{0} はSerializableを実装していますが、親クラスは、アクセス可能な引数無しコンストラクタを定義していません。</LongDescription>
     <Details>
 <![CDATA[
-  <p> このクラスは <code>Serializable</code> インターフェースを実装していますが、親クラスは実装していません。このクラスのオブジェクトを直列化復元する場合、親クラスのフィールドの初期化は、親クラスの引数無しコンストラクタで行う必要があります。ところが、親クラスが引数無しコンストラクタを持たないので、直列化、直列化復元処理は実行時に失敗します。
+  <p> このクラスは <code>Serializable</code> インターフェースを実装していますが、親クラスは実装していません。このクラスのオブジェクトを直列化復元する場合、親クラスのフィールドの初期化は、親クラスの引数無しコンストラクタで行う必要があります。ところが、親クラスが引数無しコンストラクタを持たないので、直列化、直列化復元処理は実行時に失敗します。</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1213,25 +1462,37 @@
     <LongDescription>{0} は直列化可能です。serialVersionUID を宣言することを考慮してください。</LongDescription>
     <Details>
 <![CDATA[
-  <p> このクラスは <code>Serializable</code> を実装しています。しかし、<code>serialVersionUID</code> フィールドを定義していません。クラス参照を追加する程度の簡単な変更でも、合成フィールドを追加することになり、これは、暗黙的に生成されるserialVersionUIDの値を変えてしまいます(例えば、<code>String.class</code>への参照を追加すると、<code>class$java$lang$String</code>というスタティックフィールドが生成されます)。また、複数のJavaコンパイラの間では、このクラス参照、インナークラス参照に対して生成される、合成フィールドの命名規則が異なる場合があります。異なるバージョン間での相互運用性を保証するため、serialVersionUIDを明示的に定義する事を検討してください。
+  <p> このクラスは <code>Serializable</code> を実装しています。しかし、<code>serialVersionUID</code> フィールドを定義していません。クラス参照を追加する程度の簡単な変更でも、合成フィールドを追加することになり、これは、暗黙的に生成されるserialVersionUIDの値を変えてしまいます(例えば、<code>String.class</code>への参照を追加すると、<code>class$java$lang$String</code>というスタティックフィールドが生成されます)。また、複数のJavaコンパイラの間では、このクラス参照、インナークラス参照に対して生成される、合成フィールドの命名規則が異なる場合があります。異なるバージョン間での相互運用性を保証するため、serialVersionUIDを明示的に定義する事を検討してください。</p>
 ]]>
     </Details>
   </BugPattern>
+
+  <BugPattern type="SF_SWITCH_FALLTHROUGH">
+  	<ShortDescription>breakしないcase文が、switch文の中にあります。</ShortDescription>
+  	<LongDescription>{1}で使用されているswitch文のcase文の中にbreakしていないものがあります。</LongDescription>
+    <Details>
+<![CDATA[
+  <p> このメソッド内のswitch文の中には、breakしていないcase文があります。この場合、制御は次のcase文にフォールスルーします。大抵の場合case文はbreakかreturnで終了する必要があります。</p>
+]]>
+    </Details>  
+  </BugPattern>
+
   <BugPattern type="WS_WRITEOBJECT_SYNC">
     <ShortDescription>クラスの writeObject() メソッドは同期化されています。しかし それ以外のメソッドは同期化されていません。</ShortDescription>
     <LongDescription>{0} の writeObject メソッドは同期化されています。しかし、それ以外のメソッドは同期化されていません。</LongDescription>
     <Details>
 <![CDATA[
-  <p> このクラスの <code>writeObject()</code> メソッドは同期化されていますが、他のメソッドは同期化されていません。
+  <p> このクラスの <code>writeObject()</code> メソッドは同期化されていますが、他のメソッドは同期化されていません。</p>
 ]]>
     </Details>
   </BugPattern>
+
   <BugPattern type="RS_READOBJECT_SYNC">
     <ShortDescription>クラスの readObject() メソッドは同期化されています。</ShortDescription>
     <LongDescription>{0} の readObject メソッドは同期化されています。</LongDescription>
     <Details>
 <![CDATA[
-  <p> この直列化可能クラスは同期化された <code>readObject()</code> を定義していますが、そもそもオブジェクトが直列化復元される場合、ただ1つのスレッドによって行われる事になっています。このため、<code>readObject()</code> を同期化する必要はありません。もしも <code>readObject()</code> メソッド自体が、他のオブジェクトへの他のスレッドからのアクセスを引き起こしているなら、それは非常に疑わしいコーディングです。
+  <p> この直列化可能クラスは同期化された <code>readObject()</code> を定義していますが、そもそもオブジェクトが直列化復元される場合、ただ1つのスレッドによって行われる事になっています。このため、<code>readObject()</code> を同期化する必要はありません。もしも <code>readObject()</code> メソッド自体が、他のオブジェクトへの他のスレッドからのアクセスを引き起こしているなら、それは非常に疑わしいコーディングです。</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1241,7 +1502,7 @@
     <LongDescription>{1} が static ではありません。</LongDescription>
     <Details>
 <![CDATA[
-  <p> このクラスは <code>serialVersionUID</code> フィールドを定義していますが、staticではありません。直列化のバージョンUIDのために作成したのであれば、このフィールドは、staticとすべきです。
+  <p> このクラスは <code>serialVersionUID</code> フィールドを定義していますが、staticではありません。直列化のバージョンUIDのために作成したのであれば、このフィールドは、staticとすべきです。</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1251,18 +1512,17 @@
     <LongDescription>{1} が final ではありません。</LongDescription>
     <Details>
 <![CDATA[
-  <p> このクラスは <code>serialVersionUID</code> フィールドを定義しますが、finalではありません。直列化のバージョンUIDのために作成したのであれば、このフィールドは、finalとすべきです。
+  <p> このクラスは <code>serialVersionUID</code> フィールドを定義しますが、finalではありません。直列化のバージョンUIDのために作成したのであれば、このフィールドは、finalとすべきです。</p>
 ]]>
     </Details>
   </BugPattern>
-
 
   <BugPattern type="SE_NONLONG_SERIALVERSIONID">
     <ShortDescription>serialVersionUID が long ではありません。</ShortDescription>
     <LongDescription>{1} が long ではありません。</LongDescription>
     <Details>
 <![CDATA[
-  <p> このクラスは <code>serialVersionUID</code> フィールドを定義していますがlongではありません。直列化のバージョンUIDのために作成したのであれば、このフィールドは、longとすべきです。
+  <p> このクラスは <code>serialVersionUID</code> フィールドを定義していますがlongではありません。直列化のバージョンUIDのために作成したのであれば、このフィールドは、longとすべきです。</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1272,7 +1532,7 @@
     <LongDescription>クラス {0} が 非transientで非直列化可能なインスタンスフィールド {1} を宣言しています。</LongDescription>
     <Details>
 <![CDATA[
-<p> この直列化可能クラスは、transientでもなく、直列化可能でもなく、<code>java.lang.Object</code>でもないインスタンスフィールドを持っています。また、<code>Externalizable</code> インターフェースも実装していませんし、<code>readObject()</code> も <code>writeObject()</code> メソッドも定義していません。このフィールドに実際に非直列化可能クラスのインスタンスを保持している場合、このクラスのオブジェクトは、直列化復元を正しく行えません。
+<p> この直列化可能クラスは、transientでもなく、直列化可能でもなく、<code>java.lang.Object</code>でもないインスタンスフィールドを持っています。また、<code>Externalizable</code> インターフェースも実装していませんし、<code>readObject()</code> も <code>writeObject()</code> メソッドも定義していません。このフィールドに実際に非直列化可能クラスのインスタンスを保持している場合、このクラスのオブジェクトは、直列化復元を正しく行えません。</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1282,52 +1542,57 @@
     <LongDescription>{1} が {2} を実行しています。</LongDescription>
     <Details>
 <![CDATA[
-  <p> コンストラクタがスレッドを開始しています。継承が可能なクラスでは、この設計は間違いと思われます。なぜなら、サブクラスのコンストラクタが実行される前に、スレッドが開始してしまうためです。
+  <p> コンストラクタがスレッドを開始しています。継承が可能なクラスでは、この設計は間違いと思われます。なぜなら、サブクラスのコンストラクタが実行される前に、スレッドが開始してしまうためです。</p>
 ]]>
     </Details>
   </BugPattern>
+
   <BugPattern type="SS_SHOULD_BE_STATIC">
     <ShortDescription>読まれないフィールドがあります。このフィールドは static になるべきではないのですか？</ShortDescription>
     <LongDescription>読まれないフィールド {1} があります。このフィールドは static になるべきではないのですか？</LongDescription>
     <Details>
 <![CDATA[
-  <p> このクラスは、staticでないfinalフィールドがあり、コンパイル時に決定される、静的な値に初期化されています。このフィールドをstaticとすることを検討してください。
+  <p> このクラスは、staticでないfinalフィールドがあり、コンパイル時に決定される、静的な値に初期化されています。このフィールドをstaticとすることを検討してください。</p>
 ]]>
     </Details>
   </BugPattern>
+
   <BugPattern type="UUF_UNUSED_FIELD">
     <ShortDescription>利用されないフィールドがあります。</ShortDescription>
     <LongDescription>利用されないフィールド {1} があります。</LongDescription>
     <Details>
 <![CDATA[
-  <p> このフィールドは利用されません。クラスから削除する事を検討してください。
+  <p> このフィールドは利用されません。クラスから削除する事を検討してください。</p>
 ]]>
     </Details>
   </BugPattern>
+
   <BugPattern type="URF_UNREAD_FIELD">
     <ShortDescription>読まれないフィールドがあります。</ShortDescription>
     <LongDescription>読まれないフィールド {1} があります。</LongDescription>
     <Details>
 <![CDATA[
-  <p> このフィールドが読み出される事はありません。クラスから削除する事を検討してください。
+  <p> このフィールドが読み出される事はありません。クラスから削除する事を検討してください。</p>
 ]]>
     </Details>
   </BugPattern>
+
   <BugPattern type="UWF_UNWRITTEN_FIELD">
     <ShortDescription>書かれないフィールドがあります。</ShortDescription>
     <LongDescription>書かれないフィールド {1} があります。</LongDescription>
     <Details>
 <![CDATA[
-  <p> このフィールドに書かれる事はありません。このため読み出されるのはデフォルト値です。初期化が必要ではないですか？ もしも不要なら、削除する事を検討してください。
+  <p> このフィールドに書かれる事はありません。このため読み出されるのはデフォルト値です。初期化が必要ではないですか？ もしも不要なら、削除する事を検討してください。</p>
 ]]>
     </Details>
   </BugPattern>
+
   <BugPattern type="SIC_INNER_SHOULD_BE_STATIC">
     <ShortDescription>staticな内部クラスになるべきではないのですか？</ShortDescription>
     <LongDescription>{0} は staticな内部クラスになるべきではないのですか？</LongDescription>
     <Details>
 <![CDATA[
-  <p> このクラスは非static内部クラスですが、インスタンス生成時に保持される、生成元のインスタンスへの参照を使用していません。この参照はインスタンスの大きさを増大させ、不必要に生成元への参照を長時間保持することにつながります。可能であれば、<EM>static</EM>内部クラスとすべきです。
+  <p> このクラスは非static内部クラスですが、インスタンス生成時に保持される、生成元のインスタンスへの参照を使用していません。この参照はインスタンスの大きさを増大させ、不必要に生成元への参照を長時間保持することにつながります。可能であれば、<EM>static</EM>内部クラスとすべきです。</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1337,7 +1602,7 @@
     <LongDescription>クラス {0} は、名前を持ったstatic内部クラスにリファクタリング可能です</LongDescription>
     <Details>
 <![CDATA[
-  <p> このクラスは非static内部クラスですが、インスタンス生成時に保持される、生成元のインスタンスへの参照を使用していません。 この参照はインスタンスの大きさを増大させ、不必要に生成元への参照を長時間保持することにつながります。可能であれば、<EM>static</EM>内部クラスとすべきです。匿名内部クラスはstaticと出来ないため、これを実現するには、名前を持ったstatic内部クラスに変更するよう、リファクタリングする必要があります。
+  <p> このクラスは非static内部クラスですが、インスタンス生成時に保持される、生成元のインスタンスへの参照を使用していません。 この参照はインスタンスの大きさを増大させ、不必要に生成元への参照を長時間保持することにつながります。可能であれば、<EM>static</EM>内部クラスとすべきです。匿名内部クラスはstaticと出来ないため、これを実現するには、名前を持ったstatic内部クラスに変更するよう、リファクタリングする必要があります。</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1347,7 +1612,7 @@
     <LongDescription>クラス {0} は、static内部クラスにリファクタリング可能です</LongDescription>
     <Details>
 <![CDATA[
-  <p> このクラスは非static内部クラスですが、インスタンス生成時に保持される、生成元のインスタンスへの参照を使用していません。 この参照はインスタンスの大きさを増大させ、不必要に生成元への参照を長時間保持することにつながります。可能であれば、<EM>static</EM>内部クラスとすべきです。非static内部クラスの生成時には、エンクロージングクラスのインスタンスが必要となります。このため、内部クラスのコンストラクタに、エンクロージングクラスのインスタンスを渡すようにリファクタリングする必要があるかもしれません。
+  <p> このクラスは非static内部クラスですが、インスタンス生成時に保持される、生成元のインスタンスへの参照を使用していません。 この参照はインスタンスの大きさを増大させ、不必要に生成元への参照を長時間保持することにつながります。可能であれば、<EM>static</EM>内部クラスとすべきです。非static内部クラスの生成時には、エンクロージングクラスのインスタンスが必要となります。このため、内部クラスのコンストラクタに、エンクロージングクラスのインスタンスを渡すようにリファクタリングする必要があるかもしれません。</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1357,16 +1622,17 @@
     <LongDescription>{1} の中でwaitがループの中にありません。</LongDescription>
     <Details>
 <![CDATA[
-  <p> このメソッドは<code>java.lang.Object.wait()</code>を呼び出していますが、ループの中にありません。幾つかの条件を待ち合わせるためにモニタを利用する場合は、wait()を抜けたからといって、自分が待っている条件が成立している保証はありません。
+  <p> このメソッドは<code>java.lang.Object.wait()</code>を呼び出していますが、ループの中にありません。幾つかの条件を待ち合わせるためにモニタを利用する場合は、wait()を抜けたからといって、自分が待っている条件が成立している保証はありません。</p>
 ]]>
     </Details>
   </BugPattern>
+
   <BugPattern type="NO_NOTIFY_NOT_NOTIFYALL">
     <ShortDescription>メソッドで、notifyAll() ではなく notify() を使っています。</ShortDescription>
     <LongDescription>{1} において、notifyAll ではなく notify を使っています。</LongDescription>
     <Details>
 <![CDATA[
-  <p> このメソッドは<code>notifyAll()</code>ではなく<code>notify()</code>を呼び出しています。Javaのモニタは、しばしば幾つかの条件を同時に待ち合わせるために使用されますが、<code>notify()</code>を使って待機スレッドを起こすと、別の条件を待っているスレッドを起こすだけになるかもしれません。
+  <p> このメソッドは<code>notifyAll()</code>ではなく<code>notify()</code>を呼び出しています。Javaのモニタは、しばしば幾つかの条件を同時に待ち合わせるために使用されますが、<code>notify()</code>を使って待機スレッドを起こすと、別の条件を待っているスレッドを起こすだけになるかもしれません。</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1376,7 +1642,7 @@
     <LongDescription>{1} の {2} において フィールドのダブルチェックを行っている可能性があります。</LongDescription>
     <Details>
 <![CDATA[
-  <p> フィールドのダブルチェックが、ByteCodePatternベースのディテクタで、検出されました。
+  <p> フィールドのダブルチェックが、ByteCodePatternベースのディテクタで、検出されました。</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1386,7 +1652,7 @@
     <LongDescription>{1} は {2} の戻り値を無視しています。</LongDescription>
     <Details>
 <![CDATA[
-   <p> このメソッドの戻り値をチェックするべきです。
+   <p> このメソッドの戻り値をチェックするべきです。</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1396,7 +1662,7 @@
     <LongDescription>{1} の中でnullポインタを参照外しをしています。</LongDescription>
     <Details>
 <![CDATA[
-<p> nullに設定された参照を通してアクセスが行われています。コードが実行されれば<code>NullPointerException</code>が発生するでしょう。
+<p> nullに設定された参照を通してアクセスが行われています。コードが実行されれば<code>NullPointerException</code>が発生するでしょう。</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1406,8 +1672,8 @@
     <LongDescription>Null pointer dereference in {1} で例外経路の際にnullポインタの参照外しをしています。</LongDescription>
     <Details>
 <![CDATA[
-<p> nullに設定された参照を通したアクセスが、例外処理の経路で行われています。コードがじっこうされれば、<code>NullPointerException</code>が発生するでしょう。現在のFindBugsは、実行され得ない例外処理経路を考慮しません。このため、この警告は誤って報告されるかもしれません。
-<p> また、FindBugsはswitch-caseのdefaultも例外経路と見なしますが、しばしばdefaultは実行され得ない場合がありますので、注意してください。
+<p> nullに設定された参照を通したアクセスが、例外処理の経路で行われています。コードがじっこうされれば、<code>NullPointerException</code>が発生するでしょう。現在のFindBugsは、実行され得ない例外処理経路を考慮しません。このため、この警告は誤って報告されるかもしれません。</p>
+<p> また、FindBugsはswitch-caseのdefaultも例外経路と見なしますが、しばしばdefaultは実行され得ない場合がありますので、注意してください。</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1417,7 +1683,7 @@
     <LongDescription>{1} の中でnullポインタの参照外しをしている可能性があります。</LongDescription>
     <Details>
 <![CDATA[
-<p> この参照変数を通したアクセスは、実行時に参照変数がnullとなる可能性があります。これは、実行時に<code>NullPointerException</code>を発生させる可能性があります。
+<p> この参照変数を通したアクセスは、実行時に参照変数がnullとなる可能性があります。これは、実行時に<code>NullPointerException</code>を発生させる可能性があります。</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1427,8 +1693,8 @@
     <LongDescription>{1} の中でnullポインタの参照外しをしている可能性があります。</LongDescription>
     <Details>
 <![CDATA[
-<p> 幾つかの例外制御経路の中で、nullとなる参照を通してアクセスが行われます。これは、実行時に<code>NullPointerException</code>を発生させる可能性があります。現在のFindBugsは、実行され得ない例外処理系を考慮しません。このため、この警告は誤って報告されるかもしれません。
-<p> また、FindBugsはswitch-caseのdefaultも例外経路と見なしますが、しばしばdefaultは実行され得ない場合がありますので、注意してください。
+<p> 幾つかの例外制御経路の中で、nullとなる参照を通してアクセスが行われます。これは、実行時に<code>NullPointerException</code>を発生させる可能性があります。現在のFindBugsは、実行され得ない例外処理系を考慮しません。このため、この警告は誤って報告されるかもしれません。</p>
+<p> また、FindBugsはswitch-caseのdefaultも例外経路と見なしますが、しばしばdefaultは実行され得ない場合がありますので、注意してください。</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1438,7 +1704,7 @@
     <LongDescription>{0} のstatic初期化子が全てのstatic fieldが割り当てられる前にインスタンス生成をおこなっています。</LongDescription>
     <Details>
 <![CDATA[
-<p> クラスのstatic初期化子が、全てのstatic finalフィールドの値が代入される前に、インスタンス生成を行っています。
+<p> クラスのstatic初期化子が、全てのstatic finalフィールドの値が代入される前に、インスタンス生成を行っています。</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1448,17 +1714,7 @@
     <LongDescription>{1} でストリームのクローズに失敗する可能性があります。</LongDescription>
     <Details>
 <![CDATA[
-<p> このメソッドは入出力ストリームを生成していますが、インスタンスをフィールドに保存せずに、別のメソッドに引き渡している、あるいはそのまま戻り値として返送しています。そして、このメソッドを起点とする実行経路上には、ストリームのクローズ処理が行われない経路があります。これは入出力ディスクリプタのリークにつながる恐れがあります。一般には<code>finally</code>ブロックを使ってリソースをクローズするのが良いやり方です。
-]]>
-    </Details>
-  </BugPattern>
-
-  <BugPattern type="OS_OPEN_STREAM_EXCEPTION_PATH">
-    <ShortDescription>メソッドで、例外が発生した際にストリームのクローズに失敗する可能性があります。</ShortDescription>
-    <LongDescription>{1} で、例外が発生した際にストリームのクローズに失敗する可能性があります。</LongDescription>
-    <Details>
-<![CDATA[
-<p> このメソッドは入出力ストリームを生成していますが、インスタンスをフィールドに保存せずに、別のメソッドに引き渡している、あるいはそのまま戻り値として返送しています。そして、このメソッドを起点とする例外処理の実行経路上には、ストリームのクローズ処理が行われない経路があります。これは入出力ディスクリプタのリークにつながる恐れがあります。一般には<code>finally</code>ブロックを使ってリソースをクローズするのが良いやり方です。
+<p> このメソッドは入出力ストリームを生成していますが、インスタンスをフィールドに保存せずに、別のメソッドに引き渡している、あるいはそのまま戻り値として返送しています。そして、このメソッドを起点とする実行経路上には、ストリームのクローズ処理が行われない経路があります。これは入出力ディスクリプタのリークにつながる恐れがあります。一般には<code>finally</code>ブロックを使ってリソースをクローズするのが良いやり方です。</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1468,8 +1724,8 @@
     <LongDescription>{1} では戻り値としてnullよりもむしろ長さ0の配列を返すことを検討すべきではありませんか？</LongDescription>
     <Details>
 <![CDATA[
-<p> 結果が空を表すためには、多くの場合、nullを返すよりもサイズ0の配列を返す方が良い設計です。これにより、利用者側のコードでnullとの明示的な比較を行わなくても済むようになります。
-<p>これに対し「返すべき値が無い事を示す」のにnullを用いるのが、恐らく適切です。例えば、<code>File.listFiles()</code>は、ディレクトリにファイルが無い時はサイズ0の配列を、指定されたパスがディレクトリでなければnullを返します。
+<p> 結果が空を表すためには、多くの場合、nullを返すよりもサイズ0の配列を返す方が良い設計です。これにより、利用者側のコードでnullとの明示的な比較を行わなくても済むようになります。</p>
+<p>これに対し「返すべき値が無い事を示す」のにnullを用いるのが、恐らく適切です。例えば、<code>File.listFiles()</code>は、ディレクトリにファイルが無い時はサイズ0の配列を、指定されたパスがディレクトリでなければnullを返します。</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1479,7 +1735,7 @@
     <LongDescription>{1} に、利用されないフロー制御ステートメントあります。</LongDescription>
     <Details>
 <![CDATA[
-<p> このメソッドには、無駄なフロー制御ステートメントがあります。これは、例えば以下のような空の<code>if</code>文を間違って記述してしまった事が原因です。
+<p> このメソッドには、無駄なフロー制御ステートメントがあります。これは、例えば以下のような空の<code>if</code>文を間違って記述してしまった事が原因です。</p>
 <pre>
     if (argv.length == 1);
         System.out.println("Hello, " + argv[0]);
@@ -1495,16 +1751,18 @@
 <![CDATA[
 <p> このメソッドには、無駄な参照とnullとの比較があります。これには以下の2つのタイプがあります。
 <ul>
-<li> 比較されている2つの値は明らかにnullです。
-<li> 一方は明らかにnullであり、もう一方は明らかにnullではありません。
+<li> 比較されている2つの値は明らかにnullです。</li>
+<li> 一方は明らかにnullであり、もう一方は明らかにnullではありません。</li>
 </ul>
+</p>
 
 <p> この警告は、以下の2つのタイプの無駄な比較を意味します。
 <ol>
-<li> 参照外しを行った後に、nullと比較しています。これは、メソッドのプログラミングミスをしばしば意味します。
-<li> 直定数のnullをnullと比較しています。メソッドの不変式を良く理解していない担当者がメソッドを変更した疑いがあります。
+<li> 参照外しを行った後に、nullと比較しています。これは、メソッドのプログラミングミスをしばしば意味します。</li>
+<li> 直定数のnullをnullと比較しています。メソッドの不変式を良く理解していない担当者がメソッドを変更した疑いがあります。</li>
 </ol>
 ]]>
+</p>
     </Details>
   </BugPattern>
 
@@ -1515,11 +1773,12 @@
 <![CDATA[
 <p> このメソッドは、無駄な参照変数とnullとの比較を行っています。以下の2つのタイプの無駄な比較が報告されます。
 <ul>
-<li> 比較されている2つの値は明らかにnullです。
-<li> 一方は明らかにnullであり、もう一方は明らかにnullではありません。
+<li> 比較されている2つの値は明らかにnullです。</li>
+<li> 一方は明らかにnullであり、もう一方は明らかにnullではありません。</li>
 </ul>
+</p>
 
-<p> この警告は、一般には、明らかにnullでない値をnullとチェックすることにより報告されます。単純に、実際には、チェックは全く不要な、防御的プログラミングかもしれません。
+<p> この警告は、一般には、明らかにnullでない値をnullとチェックすることにより報告されます。単純に、実際には、チェックは全く不要な、防御的プログラミングかもしれません。</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1539,6 +1798,7 @@
         l.unlock();
     }
 </pre>
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1558,6 +1818,7 @@
         l.unlock();
     }
 </pre>
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1567,7 +1828,7 @@
     <LongDescription>{1} で参照されている {3} の比較は疑わしいです。</LongDescription>
     <Details>
 <![CDATA[
-<p> このメソッドでは、2つの参照が == あるいは != 演算子で比較されていますが、一般には、equals()メソッドを使う方が正しいやり方です。例えばjava.lang.Integerやjava.lang.Floatは、このようなクラスの例です。
+<p> このメソッドでは、2つの参照が == あるいは != 演算子で比較されていますが、一般には、equals()メソッドを使う方が正しいやり方です。例えばjava.lang.Integerやjava.lang.Floatは、このようなクラスの例で、参照の比較を使うべきではありません。</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1577,38 +1838,30 @@
     <LongDescription>{1}の中で違う型のオブジェクトを比較するのにequals()を使用しています</LongDescription>
     <Details>
 <![CDATA[
-<p> このメソッドは、違う型のオブジェクト参照をequals(Object)で比較しています。正しいequals()の実装では、違う型のオブジェクトをequals()で比較すると、常にfalseが返ります。このため、実行時にはこの比較は常にfalseになるものと思われます。
+<p> このメソッドは、違う型のオブジェクト参照をequals(Object)で比較しています。正しいequals()の実装では、違う型のオブジェクトをequals()で比較すると、常にfalseが返ります。このため、実行時にはこの比較は常にfalseになるものと思われます。</p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="EC_UNRELATED_INTERFACES">
-
     <ShortDescription>違う型のオブジェクトをequals()で比較しています</ShortDescription>
-
     <LongDescription>{1}の中で、違う型のオブジェクトをequals()で比較しています</LongDescription>
-
     <Details>
-
 <![CDATA[
-
 <p> このメソッドで equals(Object) が無関係のインターフェース(サブタイプでもない)の2つの
 インスタンス間で使用されています。equals()の契約では、こういったケースは、常にfalseが返ります。
 もちろん、両方のインターフェースを実装したクラスを作成することも可能ですが、もう一度
-プログラムを良く調べた方がいいでしょう。
+プログラムを良く調べた方がいいでしょう。</p>
 ]]>
-
     </Details>
-
   </BugPattern>
-
 
   <BugPattern type="EC_NULL_ARG">
     <ShortDescription>equals()の引数にnullを渡しています</ShortDescription>
     <LongDescription>{1}の中で、equals()の引数に nullを渡しています</LongDescription>
     <Details>
 <![CDATA[
-<p> このメソッドは、equals(Object)にnullを渡しています。正しいequals()の実装では、これは常に<code>false</code>を返します。
+<p> このメソッドは、equals(Object)にnullを渡しています。正しいequals()の実装では、これは常に<code>false</code>を返します。</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1618,7 +1871,7 @@
     <LongDescription>{1} で、wait()の組合せが間違っています。</LongDescription>
     <Details>
 <![CDATA[
-<p> このメソッドは、ロックを獲得せずにObject.wait()を呼び出しています。ロックを獲得せずにwait()を呼び出すと、<code>IllegalMonitorStateException</code>が発生します。
+<p> このメソッドは、ロックを獲得せずにObject.wait()を呼び出しています。ロックを獲得せずにwait()を呼び出すと、<code>IllegalMonitorStateException</code>が発生します。</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1628,7 +1881,7 @@
     <LongDescription>{1} で、組合せが間違った notify() があります。</LongDescription>
     <Details>
 <![CDATA[
-<p> このメソッドは、ロックを獲得せずにObject.notify()あるいはObject.notifyAll()を呼び出しています。ロックを獲得せずにnotify()やnotifyAll()を呼び出すと、<code>IllegalMonitorStateException</code>が発生します。
+<p> このメソッドは、ロックを獲得せずにObject.notify()あるいはObject.notifyAll()を呼び出しています。ロックを獲得せずにnotify()やnotifyAll()を呼び出すと、<code>IllegalMonitorStateException</code>が発生します。</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1646,6 +1899,7 @@
   }
 </pre>
 この例のような代入は、無駄です。ロジックの誤りや、タイプミスかもしれません。
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1663,73 +1917,48 @@
   }
 </pre>
 この例のような代入は、無駄です。ロジックの誤りや、タイプミスかもしれません。
+</p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="BIT_AND">
-
     <ShortDescription>互換性のないビットマスク</ShortDescription>
-
     <LongDescription>{1}で互換性の無いビットマスクが行われています。これは常に決った結果を返します</LongDescription>
-
     <Details>
-
 <![CDATA[
-
-<p> このメソッドは、(a & C) と D(CとDは定数) を比較しています。しかし、このCとDの値では、比較の結果は、常に等しくないはずで、プログラミングエラーや、タイプミスの疑いがあります。
+<p> このメソッドは、(a & C) と D(CとDは定数) を比較しています。しかし、このCとDの値では、比較の結果は、常に等しくないはずで、プログラミングエラーや、タイプミスの疑いがあります。</p>
 ]]>
-
     </Details>
-
   </BugPattern>
-
 
   <BugPattern type="BIT_AND_ZZ">
-
     <ShortDescription>互換性のないビットマスク</ShortDescription>
-
     <LongDescription>{1}で互換性の無いビットマスクが行われています。これは常に決った結果を返します</LongDescription>
-
     <Details>
-
 <![CDATA[
-
-<p> このメソッドは、(a & 0) と 0を比較しています。しかし、この結果は常に等しくなるはずで、プログラミングエラーや、タイプミスの疑いがあります。
+<p> このメソッドは、(a & 0) と 0を比較しています。しかし、この結果は常に等しくなるはずで、プログラミングエラーや、タイプミスの疑いがあります。</p>
 ]]>
-
     </Details>
-
   </BugPattern>
-
-
 
   <BugPattern type="BIT_IOR">
-
     <ShortDescription>互換性のないビットマスク</ShortDescription>
-
     <LongDescription>{1}で互換性の無いビットマスクが行われています。これは常に決った結果を返します</LongDescription>
-
     <Details>
-
 <![CDATA[
-
-<p> このメソッドは、(a | C) と D(CとDは定数)を比較しています。しかし、このCとDの値では、比較の結果は、常に等しくないはずで、プログラミングエラーや、タイプミスの疑いがあります。
-<p> このバグの典型的なパターンとして、ビットセットのテストのために、論理積("&")を使うべきところを、間違って論理和("|")を使用してしまったケースが考えられます。
+<p> このメソッドは、(a | C) と D(CとDは定数)を比較しています。しかし、このCとDの値では、比較の結果は、常に等しくないはずで、プログラミングエラーや、タイプミスの疑いがあります。</p>
+<p> このバグの典型的なパターンとして、ビットセットのテストのために、論理積("&")を使うべきところを、間違って論理和("|")を使用してしまったケースが考えられます。</p>
 ]]>
-
     </Details>
-
   </BugPattern>
-
-
 
   <BugPattern type="LI_LAZY_INIT_INSTANCE">
     <ShortDescription>インスタンスフィールドの不正な遅延初期化がおこなわれています。</ShortDescription>
     <LongDescription>{1} で {2} フィールドの不正な遅延初期化がおこなわれています。</LongDescription>
     <Details>
 <![CDATA[
-<p> このメソッドは、volatileでないフィールドを、同期化せずに遅延初期化しています。コンパイラやプロセッサは、命令の並べ替えを行うかもしれないので、<em>もしもこのメソッドが複数のスレッドから同時に呼び出されるのであれば、</em>別のスレッドがこのフィールドにアクセスした際に、中途半端に初期化されたインスタンスが見えてしまう危険があります。フィールドをvolatileにする事で、この問題を解決する事が出来ます。詳細は、<a href="http://www.cs.umd.edu/~pugh/java/memoryModel/">Javaメモリモデル</a>を参照してください。
+<p> このメソッドは、volatileでないフィールドを、同期化せずに遅延初期化しています。コンパイラやプロセッサは、命令の並べ替えを行うかもしれないので、<em>もしもこのメソッドが複数のスレッドから同時に呼び出されるのであれば、</em>別のスレッドがこのフィールドにアクセスした際に、中途半端に初期化されたインスタンスが見えてしまう危険があります。フィールドをvolatileにする事で、この問題を解決する事が出来ます。詳細は、<a href="http://www.cs.umd.edu/~pugh/java/memoryModel/">Javaメモリモデル</a>を参照してください。</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1739,7 +1968,7 @@
     <LongDescription>{1} で {2} staticフィールドの不正な遅延初期化がおこなわれています。</LongDescription>
     <Details>
 <![CDATA[
-<p> このメソッドは、volatileでないstaticフィールドを、同期化せずに遅延初期化しています。コンパイラや、プロセッサは、命令の並べ替えを行うかもしれないので、<em>もしもメソッドが複数のスレッドから同時に呼び出されるのであれば、</em>別のスレッドがこのフィールドにアクセスした際に、中途半端に初期化されたインスタンスが見えてしまう危険があります。フィールドをvolatileにする事で、この問題を解決する事が出来ます。詳細は、<a href="http://www.cs.umd.edu/~pugh/java/memoryModel/">Javaメモリモデル</a>を参照してください。
+<p> このメソッドは、volatileでないstaticフィールドを、同期化せずに遅延初期化しています。コンパイラや、プロセッサは、命令の並べ替えを行うかもしれないので、<em>もしもメソッドが複数のスレッドから同時に呼び出されるのであれば、</em>別のスレッドがこのフィールドにアクセスした際に、中途半端に初期化されたインスタンスが見えてしまう危険があります。フィールドをvolatileにする事で、この問題を解決する事が出来ます。詳細は、<a href="http://www.cs.umd.edu/~pugh/java/memoryModel/">Javaメモリモデル</a>を参照してください。</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1749,7 +1978,7 @@
     <LongDescription>メソッド {1} 内で、JSR166 の Lock による同期がおこなわれます。</LongDescription>
 <Details>
 <![CDATA[
-<p> このメソッドは、<code>java.util.concurrent.locks.Lock</code>オブジェクトで同期化を行っています。<code>lock()</code>と<code>unlock()</code>を替わりに使用すべきです。
+<p> このメソッドは、<code>java.util.concurrent.locks.Lock</code>オブジェクトで同期化を行っています。<code>lock()</code>と<code>unlock()</code>を替わりに使用すべきです。</p>
 ]]>
 </Details>
   </BugPattern>
@@ -1759,7 +1988,7 @@
     <LongDescription>private メソッド {1} は一度も呼ばれません。</LongDescription>
 <Details>
 <![CDATA[
-<p> このprivateメソッドは一度も呼ばれません。リフレクションで呼び出される可能性は残りますが、このメソッドは全く使用されておらず、削除されるべきと考えるのが自然です。
+<p> このprivateメソッドは一度も呼ばれません。リフレクションで呼び出される可能性は残りますが、このメソッドは全く使用されておらず、削除されるべきと考えるのが自然です。</p>
 ]]>
 </Details>
   </BugPattern>
@@ -1769,7 +1998,7 @@
     <LongDescription>{1} は、データベースリソースの解放に失敗するかもしれません</LongDescription>
     <Details>
 <![CDATA[
-<p> このメソッドは、データベースリソース(例えば、コネクションや結果セット)を生成しますが、それをフィールドに代入したり、他のメソッドに渡したり、戻り値として返送したりしておらず、このメソッドを起点とする実行経路の中にクローズが行われない経路があります。データベースリソースの解放忘れは、パフォーマンスの悪化を招いたり、アプリケーションがデータベースと通信出来なくなる恐れがあります。
+<p> このメソッドは、データベースリソース(例えば、コネクションや結果セット)を生成しますが、それをフィールドに代入したり、他のメソッドに渡したり、戻り値として返送したりしておらず、このメソッドを起点とする実行経路の中にクローズが行われない経路があります。データベースリソースの解放忘れは、パフォーマンスの悪化を招いたり、アプリケーションがデータベースと通信出来なくなる恐れがあります。</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1779,7 +2008,7 @@
     <LongDescription>{1} は、例外が起きた時にデータベースリソースの解放に失敗するかもしれません</LongDescription>
     <Details>
 <![CDATA[
-<p> このメソッドは、データベースリソース(例えば、コネクションや結果セット)を生成しますが、それをフィールドに代入したり、他のメソッドに渡したり、戻り値として返送したりしておらず、このメソッドを起点とする例外処理経路の中にクローズが行われない経路があります。データベースリソースの解放忘れは、パフォーマンスの悪化を招いたり、アプリケーションがデータベースと通信出来なくなる恐れがあります。
+<p> このメソッドは、データベースリソース(例えば、コネクションや結果セット)を生成しますが、それをフィールドに代入したり、他のメソッドに渡したり、戻り値として返送したりしておらず、このメソッドを起点とする例外処理経路の中にクローズが行われない経路があります。データベースリソースの解放忘れは、パフォーマンスの悪化を招いたり、アプリケーションがデータベースと通信出来なくなる恐れがあります。</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1789,10 +2018,10 @@
     <LongDescription>メソッド {1} ないで、+を使ってループ内で文字列を連結しています</LongDescription>
     <Details>
 <![CDATA[
-<p> このメソッドの中で、ループ内でStringの連結を繰り返しているようです。このためStringBuffer/StringBuilderへの変換、連結、そしてStringへの再変換という処理が何度も繰り返されます。文字列が毎回コピーし直されて長くなっていくため、繰り返し回数の二乗の処理コストが必要となる場合があります。
-<p>明示的にStringBufferあるいはStringBuilder(J2SE 1.5から導入されます)を用いる事で、パフォーマンスを改善する事が出来ます。
+<p> このメソッドの中で、ループ内でStringの連結を繰り返しているようです。このためStringBuffer/StringBuilderへの変換、連結、そしてStringへの再変換という処理が何度も繰り返されます。文字列が毎回コピーし直されて長くなっていくため、繰り返し回数の二乗の処理コストが必要となる場合があります。</p>
+<p>明示的にStringBufferあるいはStringBuilder(J2SE 1.5から導入されます)を用いる事で、パフォーマンスを改善する事が出来ます。</p>
 
-<p> 例)
+<p> 例)</p>
 <pre>
   // 悪い例
   String s = "";
@@ -1807,137 +2036,218 @@
   }
   String s = buf.toString();
 </pre>
-P
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="ITA_INEFFICIENT_TO_ARRAY">
-
     <ShortDescription>このメソッドは、toArray()に長さ0の配列を渡しています</ShortDescription>
-
     <LongDescription>{1} メソッドは、Collection.toArray() に流さ0の配列を引数として渡しています</LongDescription>
-
     <Details>
-
 <![CDATA[
-
 <p> このメソッドで、Collectionの実装クラスのtoArray()メソッドに長さ0の配列を引数に渡しています。<pre>myCollection.toArray(new Foo[myCollection.size()])</pre>とする方が、効率の良いやり方です。
-もしも引数のサイズが、Collectionの中身を格納するのに十分な大きさであれば、そのまま、その配列に格納されて返送されます。さもなければリフレクションによって、新たに配列を生成しなければなりません。
+もしも引数のサイズが、Collectionの中身を格納するのに十分な大きさであれば、そのまま、その配列に格納されて返送されます。さもなければリフレクションによって、新たに配列を生成しなければなりません。</p>
 ]]>
-
     </Details>
-
   </BugPattern>
-
 
   <BugPattern type="IJU_SETUP_NO_SUPER">
-
     <ShortDescription>TestCase は setUp を定義していますが、super.setUp()を呼び出していません</ShortDescription>
-    <LongDescription>TestCase は setUp を定義していますが、super.setUp()を呼び出していません</LongDescription>
-
+    <LongDescription>TestCase {0} は setUp を定義していますが、super.setUp()を呼び出していません</LongDescription>
     <Details>
-
 <![CDATA[
-
-<p> このクラスは、JUnitのTestCaseで、setUpを定義しています。setUpメソッドは、super.setUp()呼び出さなければならないのに、呼び出していません。
+<p> このクラスは、JUnitのTestCaseで、setUpを定義しています。setUpメソッドは、super.setUp()呼び出さなければならないのに、呼び出していません。</p>
 ]]>
-
     </Details>
-
   </BugPattern>
 
-
-
   <BugPattern type="IJU_TEARDOWN_NO_SUPER">
-
     <ShortDescription>TestCase は tearDown を定義していますが、super.tearDown()を呼び出していません</ShortDescription>
-
-    <LongDescription>TestCase は tearDown を定義していますが、super.tearDown()を呼び出していません</LongDescription>
-
+    <LongDescription>TestCase {0} は tearDown を定義していますが、super.tearDown()を呼び出していません</LongDescription>
     <Details>
-
 <![CDATA[
-
-<p> このクラスはJUnitのTestCaseで、tearDownを定義しています。tearDownは、super.tearDown()を呼び出さなければなりませんが、呼び出していません。
+<p> このクラスはJUnitのTestCaseで、tearDownを定義しています。tearDownは、super.tearDown()を呼び出さなければなりませんが、呼び出していません。</p>
 ]]>
-
     </Details>
-
   </BugPattern>  
-
-  
 
   <BugPattern type="IJU_SUITE_NOT_STATIC">
-
     <ShortDescription>TestCase は suite メソッドを定義していますが、staticメソッドになっていません</ShortDescription>
-
-    <LongDescription>TestCase は、suite メソッドを定義していますが、staticメソッドになっていません</LongDescription>
+    <LongDescription>TestCase {0} は、suite メソッドを定義していますが、staticメソッドになっていません</LongDescription>
     <Details>
-
 <![CDATA[
-
-<p> このクラスは、JUnitのTestCaseで、suite()メソッドを定義しています。suiteメソッドは、staticメソッドとしなければなりませんが、そうなっていません。
+<p> このクラスは、JUnitのTestCaseで、suite()メソッドを定義しています。suiteメソッドは、staticメソッドとしなければなりませんが、そうなっていません。</p>
 ]]>
-
     </Details>
-
   </BugPattern>  
 
-  
-
   <BugPattern type="BOA_BADLY_OVERRIDDEN_ADAPTER">
-
     <ShortDescription>親のアダプタクラスのメソッドを不適切にオーバーライドしています</ShortDescription>
-    <LongDescription>親のアダプタクラスのメソッドを不適切にオーバーライドしています</LongDescription>
-
+    <LongDescription>親のアダプタクラス {0} のメソッド {1} を不適切にオーバーライドしています</LongDescription>
     <Details>
-
 <![CDATA[
-
-<p> このメソッドは、親クラスのメソッドを不適切にオーバーライドしています。親クラスは、java.awt.event、javax.swing.event packageで定義されているリスナのアダプタなので、結果としてイベントが受け取れなくなります。
+<p> このメソッドは、親クラスのメソッドを不適切にオーバーライドしています。親クラスは、java.awt.event、javax.swing.event packageで定義されているリスナのアダプタなので、結果としてイベントが受け取れなくなります。</p>
 ]]>
-
     </Details>
+   </BugPattern>
 
+  <BugPattern type="BRSA_BAD_RESULTSET_ACCESS">
+    <ShortDescription>このメソッドは、ResultSetのインデックス0のフィールドにアクセスしようとしています。</ShortDescription>
+    <LongDescription>メソッド {1} は、インデックス0のフィールドにアクセスしようとしています。</LongDescription>
+    <Details>
+<![CDATA[
+<p> インデックスが0の状態で、ResultSetのgetXXXあるいはupdateXXXメソッドを呼び出そうとしています。ResultSetのインデックスは、1から始まるので、このコードは常に間違いです。</p>
+]]>
+    </Details>
+  </BugPattern>
+  
+  <BugPattern type="SIO_SUPERFLUOUS_INSTANCEOF">
+    <ShortDescription>instanceof演算子で型チェックをする必要はありません</ShortDescription>
+    <LongDescription>メソッド {1} はinstanceofを使って不要な型チェックを行なっています。これは静的に行うことが可能です。</LongDescription>
+    <Details>
+<![CDATA[
+<p> 静的に型チェックが可能なのにinstanceof演算子を使用して型チェックを行なっています。</p>
+]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="BAC_BAD_APPLET_CONSTRUCTOR">
+    <ShortDescription>未初期化状態のAppletStubに依存した間違ったアプレットコンストラクタ</ShortDescription>
+    <LongDescription>未初期化状態のAppletStubに依存した間違ったアプレットコンストラクタ</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+このコンストラクタは親アプレットのメソッドを呼び出しますが、これらはAppletStubに依存しています。AppletStubはinit()メソッドが呼び出されるまでは初期化されないため、この呼び出しは正しく動作しません。
+</p>
+]]>
+    </Details>
+  </BugPattern>
+  
+  <BugPattern type="UOE_BAD_ARRAY_COMPARE">
+    <ShortDescription>配列オブジェクトのequals呼び出しは、==と等価です</ShortDescription>
+    <LongDescription>配列オブジェクトのequals呼び出しは、==と等価です</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+このメソッドは配列オブジェクトの.equals(Object o)メソッドを呼び出しています。配列はequalsメソッドをオーバーライドしていないため、これは参照の比較しか行ないません。配列の内容を比較するならjava.util.Array.equals(Object[], Object[])を用いなければなりません。
+</p>
+]]>    
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="UOE_USE_OBJECT_EQUALS">
+    <ShortDescription>Objectのequalsメソッドをオーバーライドしていないfinalクラスのequalsメソッドを呼び出しています</ShortDescription>
+    <LongDescription>Objectのequalsメソッドをオーバーライドしていないfinalクラスのequalsメソッドを呼び出しています</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+Objectのequalsメソッドをオーバーライドしていないfinalクラスの.equals(Object o)メソッドが呼び出されています。これは==による参照の比較と同値です。このクラスでequalsメソッドをオーバーライドすることを検討してください。
+</p>
+]]>    
+    </Details>
+  </BugPattern>
+  
+  <BugPattern type="STI_INTERRUPTED_ON_CURRENTTHREAD">
+    <ShortDescription>interrupted()を呼び出すために無駄なcurrentThread()呼び出しを行なっています</ShortDescription>
+    <LongDescription>メソッド {1} は、interrupted()を呼び出すために無駄なcurrentThread()呼び出しを行なっています</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+このメソッドは、interrupted()メソッドを呼び出すためだけにThread.currentThread()を呼び出しています。interrupted()メソッドはstaticメソッドなので、単にThread.interrupted()とすれのが、より単純明解です。
+</p>
+]]>    
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="STI_INTERRUPTED_ON_UNKNOWNTHREAD">
+    <ShortDescription>staticメソッドThread.interrupted()が誤ってスレッドオブジェクトに対して呼び出されています</ShortDescription>
+    <LongDescription>メソッド {1} の中でstaticメソッドThread.interrupted()が、誤ってスレッドオブジェクトに対して呼び出されています</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+このメソッドはThread.interrupted()が、自スレッドではないと思われるスレッドに対して呼び出されています。このinterrupted()メソッドはstaticメソッドであり常に自スレッドに対して呼び出されるため、コード作成者の意図とは異なるスレッドに対して呼び出されることになります。
+</p>
+]]>    
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="IP_PARAMETER_IS_DEAD_BUT_OVERWRITTEN">
+    <ShortDescription>パラメータへの変更内容は、上書きではなく単に捨てられます</ShortDescription>
+    <LongDescription>{1} へのパラメータを書き変えても、内容の上書きにはならず単に捨てられます</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+引数で渡された値が無視され、ここで内容が上書きされています。パラメータの内容を書き変えれば、呼び出し元に変更が伝わるとプログラマが誤解している可能性があります。
+</p>
+]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="DLS_DEAD_LOCAL_STORE">
+    <ShortDescription>ローカル変数への意味の無い代入</ShortDescription>
+    <LongDescription>メソッド {1} で、ローカル変数への意味の無い代入が行なわれています。</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+ローカル変数への代入が行なわれていますが、これ以降この値が読み出されることはありません。計算された値が結局は使用されないので、大抵の場合は間違いです。
+</p>
+]]>
+     </Details>
   </BugPattern>
 
   <BugPattern type="MF_METHOD_MASKS_FIELD">
-
     <ShortDescription>フィールドと同名のローカル変数を定義しています</ShortDescription>
-
     <LongDescription>メソッド {1} は、ローカル変数 {2} を定義しており、これがフィールドを隠しています</LongDescription>
-
     <Details>
-
 <![CDATA[
-
 <p> このメソッドは、このクラスもしくは親クラスが持つフィールドと同名のローカル変数を定義しています。
-これにより、フィールドが初期化されなかったり、未初期化のフィールドの値を読みこんだりする恐れがあります。
+これにより、フィールドが初期化されなかったり、未初期化のフィールドの値を読みこんだりする恐れがあります。</p>
 ]]>
-
     </Details>
-
   </BugPattern>
-
 
   <BugPattern type="MF_CLASS_MASKS_FIELD">
-
     <ShortDescription>親クラスで定義されたフィールドと同名のフィールドを定義しています</ShortDescription>
-
     <LongDescription>クラス {0} は、親クラスが定義しているフィールド {1} と同名のフィールドを定義しています</LongDescription>
-
     <Details>
-
 <![CDATA[
-
-<p> このクラスは、親クラスが定義しているフィールドと同名のフィールドを定義しています。これは混乱を招きやすく、間違えて意図しないフィールドを更新したり参照したりするプログラミングミスにつながります。
+<p> このクラスは、親クラスが定義しているフィールドと同名のフィールドを定義しています。これは混乱を招きやすく、間違えて意図しないフィールドを更新したり参照したりするプログラミングミスにつながります。</p>
 ]]>
-
     </Details>
-
   </BugPattern>
 
+    <BugPattern type="WMI_WRONG_MAP_ITERATOR">
+        <ShortDescription>entrySetイテレータを使用すべき場所での非効率なkeySetイテレータの使用</ShortDescription>
+        <LongDescription>メソッド {1} はentrySetイテレータを使用すべき場所で、keySetイテレータを使用しているため非効率なコードになっています</LongDescription>
+        <Details>
+<![CDATA[
+<p> このディテクタは、Mapの内容にkeySetイテレータから取り出したキーを用いてアクセスしているコードを発見します。このようなケースはentrySetを用いれば、無駄なMap.get(key)呼び出しを回避できます。</p>
+]]>
+        </Details>
+    </BugPattern>
+  
+  <BugPattern type="ISC_INSTANTIATE_STATIC_CLASS">
+        <ShortDescription>staticメソッドしか提供していないクラスのインスタンスを無駄に生成しています</ShortDescription>
+        <LongDescription>メソッド {1} は、staticメソッドしか提供していないクラスのインスタンスを無駄に生成しています</LongDescription>
+        <Details>
+<![CDATA[
+<p> このディテクタはstaticメソッドしか提供していないクラスのインスタンスの生成を発見します。このインスタンス生成は無駄です。クラス名を使用して直接メソッドを呼び出してください。
+</p>
+]]>
+        </Details>
+    </BugPattern>
+
+	<BugPattern type="REC_CATCH_EXCEPTION">
+	  <ShortDescription>Exceptionが発生しないのにjava.lang.Exceptionをキャッチしています</ShortDescription>
+	  <LongDescription>メソッド {1} はExceptionをキャッチしていますが、このtry節の名ではExceptionは発生しません。また、ここにはRuntimeExceptionのキャッチ節もありません。</LongDescription>
+	  <Details>
+  <![CDATA[
+  <p>
+このディテクタはtry節の中でExceptionをスローしないのにExceptionのキャッチ節があり、RuntimExceptionのキャッチ節がないtry-catchブロックを発見します。これは同じ内容のキャッチ節を書くのが面倒でtry { ... } catch (Exception e) { something }と記述してしまい、間違ってRuntimeExceptionまでキャッチしてしまうというバグパターンです。
+  </p>
+  ]]>
+	  </Details>
+	</BugPattern>
 
   <!--
   **********************************************************************
@@ -1945,10 +2255,11 @@ P
   **********************************************************************
    -->
 
+  <BugCode abbrev="IL" >無限ループ</BugCode>
+  <BugCode abbrev="VO" >volatileの使用方法</BugCode>
   <BugCode abbrev="UI" >安全でない継承</BugCode>
   <BugCode abbrev="FL" >floatの精度の利用</BugCode>
   <BugCode abbrev="TEST" >プロトタイプ、未完成バグパターンのためのテスト用</BugCode>
-
   <BugCode abbrev="IMSE" >IllegalMonitorStateException の疑わしいキャッチ。</BugCode>
   <BugCode abbrev="CN" >cloneable 表現の誤った実装。</BugCode>
   <BugCode abbrev="FI" >ファイナライザの使用方法が間違っています。</BugCode>
@@ -1962,6 +2273,7 @@ P
   <BugCode abbrev="Eq" >共変なequals()です。</BugCode>
   <BugCode abbrev="Co" >共変なcompareTo()です。</BugCode>
   <BugCode abbrev="HE" >同じ(equal)オブジェクトは同じハッシュ値を持つべきです。</BugCode>
+  <BugCode abbrev="AM" >APIの誤用</BugCode>
   <BugCode abbrev="Dm" >疑わしいメソッドを使っています。</BugCode>
   <BugCode abbrev="UR" >コンストラクタで初期化の前にフィールドの値を読んでいます。</BugCode>
   <BugCode abbrev="RR" >メソッドでInputStream.read()の戻り値を無視しています。</BugCode>
@@ -1975,7 +2287,6 @@ P
   <BugCode abbrev="Ru" >メソッドで run() を直接実行しています。</BugCode>
   <BugCode abbrev="It" >iteratorの宣言が不正です。</BugCode>
   <BugCode abbrev="SnVI" >Version IDを持たない直列化可能クラス</BugCode>
-
   <BugCode abbrev="Se" >直列化(Serializable)クラスの宣言が不正です。</BugCode>
   <BugCode abbrev="WS" >クラスのwriteObject()メソッドは同期化(sunchronized)されていますが、それ以外のメソッドは適切に宣言されていません。</BugCode>
   <BugCode abbrev="RS" >クラスの readObject()メソッドが同期化(synchronized)されています。</BugCode>
@@ -1999,11 +2310,9 @@ P
   <BugCode abbrev="UL">ロックが解放されない経路があります。</BugCode>
   <BugCode abbrev="RC">疑わしい比較演算子の参照があります。</BugCode>
   <BugCode abbrev="EC">疑わしいequals()による比較</BugCode>
-
   <BugCode abbrev="MWN">wait() か notify()の組み合せが間違っています。</BugCode>
   <BugCode abbrev="SA">無駄な自己代入です。</BugCode>
   <BugCode abbrev="BIT">疑わしいビット演算式</BugCode>
-
   <BugCode abbrev="LI">同期化(synchronized)されていない遅延初期化です。</BugCode>
   <BugCode abbrev="JLM">JSR166 の Lock による同期。</BugCode>
   <BugCode abbrev="UPM">private メソッドは一度も呼ばれません。</BugCode>
@@ -2012,13 +2321,19 @@ P
   <BugCode abbrev="ODR">データベースリソースがクローズされない経路があります。</BugCode>
   <BugCode abbrev="SBSC">ループ内での+を用いたStringの連結。</BugCode>
   <BugCode abbrev="ITA">非効率なCollection.toArray(new Foo[0])呼び出し</BugCode>
-
   <BugCode abbrev="SW">Swingのコーディングルール</BugCode>
-
   <BugCode abbrev="IJU">JUnit TestCaseの正しくない実装</BugCode>
-
   <BugCode abbrev="BOA">不適切にオーバーライドされたアダプタ</BugCode>
+  <BugCode abbrev="SF">Switch-case文のフォールスルー</BugCode>
+  <BugCode abbrev="BRSA">ResultSetへの間違ったアクセス</BugCode>
+  <BugCode abbrev="SIO">余計なinstanceof</BugCode>
+  <BugCode abbrev="BAC">間違ったアプレットのコンストラクタ</BugCode>
+  <BugCode abbrev="UOE">Objectのequalsの使用</BugCode>
+  <BugCode abbrev="STI">疑わしいThreadのinterrupted呼び出し</BugCode>
+  <BugCode abbrev="DLS">意味の無いローカル変数への代入</BugCode>
+  <BugCode abbrev="IP">引数の無視</BugCode>
   <BugCode abbrev="MF">マスクフィールド</BugCode>
-
-
+  <BugCode abbrev="WMI">間違ったMapイテレータ</BugCode>
+  <BugCode abbrev="ISC">staticクラスのインスタンス生成</BugCode>
+  <BugCode abbrev="REC">RuntimeExceptionの捕捉</BugCode>
 </MessageCollection>
