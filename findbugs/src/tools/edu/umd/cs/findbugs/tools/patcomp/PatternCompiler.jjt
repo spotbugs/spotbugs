@@ -85,16 +85,15 @@ MORE :
 
 TOKEN :
 {
-	// Section keywords
+	// Our keywords
 	<PRESCREEN: "prescreen">
 |	<MATCH: "match">
 |	<CHECK: "check">
 |	<REPORT: "report">
-
-	// Expression keywords
 |	<WHERE: "where">
 |	<DOMINATEDBY: "dominatedby">
 |	<BLOCKS: "blocks">
+|	<VARS: "vars">
 
 	// Java keywords - needed to understand Java expressions
 |	<VOID: "void">
@@ -199,7 +198,7 @@ SimpleNode unit() :
 void prescreen() :
 { }
 {
-	<PRESCREEN> <LBRACE> [ <LBRACKET> ( declaration() )+ <RBRACKET> ] expression() <RBRACE>
+	<PRESCREEN> <LBRACE> [ declaration_section() ] expression() <RBRACE>
 }
 
 // The required "match" section specifies a bytecode pattern
@@ -217,7 +216,7 @@ void match() :
 void check() :
 { }
 {
-	<CHECK> <LBRACE> [ <LBRACKET> ( declaration() )+ <RBRACKET> ] expression() <RBRACE>
+	<CHECK> <LBRACE> [ declaration_section() ] expression() <RBRACE>
 }
 
 // The required "report" section emits a bug warning based on the
@@ -225,7 +224,13 @@ void check() :
 void report() :
 { }
 {
-	<REPORT> <LBRACE> [ <LBRACKET> ( declaration() )+ <RBRACKET> ] expression() <RBRACE>
+	<REPORT> <LBRACE> [ declaration_section() ] expression() <RBRACE>
+}
+
+void declaration_section() :
+{ }
+{
+	<VARS> <LBRACE> ( declaration() )+ <RBRACE>
 }
 
 void declaration() :
