@@ -256,7 +256,8 @@ public class ConfigureDetectorsDialog extends javax.swing.JDialog {
 				ListSelectionModel lsm = (ListSelectionModel) e.getSource();
 				if (!lsm.isSelectionEmpty()) {
 					int selectedRow = lsm.getMinSelectionIndex();
-					viewDetectorDetails(factoryList.get(selectedRow));
+					TableSorter sorter = (TableSorter) detectorTable.getModel();
+					viewDetectorDetails(factoryList.get(sorter.modelIndex(selectedRow)));
 				}
 			}
 		});
