@@ -27,8 +27,9 @@ import edu.umd.cs.daveho.ba.bcp.*;
 
 /**
  * A base class for bug detectors that are based on a ByteCodePattern.
- * ByteCodePatterns provide an easy way to detect patterns in bytecode,
- * including control flow and uses of fields and values.
+ * ByteCodePatterns provide an easy way to detect patterns of
+ * bytecode instructions, taking into account control flow and
+ * uses of fields and values.
  *
  * @see ByteCodePattern
  */
