@@ -1,5 +1,6 @@
 <!--
   Build the UI FindBugs Eclipse plugin.
+  The Core FindBugs plugin should be built *before* building this plugin.
 -->
 <project name="eclipseUIPlugin" default="build">
 
@@ -9,6 +10,7 @@
 	<property name="build.dir" value="build"/>
 	<property name="class.dir" value="${build.dir}/classes"/>
 	<property name="src.dir" value="src"/>
+	<property name="plugin.zip" value="${plugin.id}_${plugin.version}.zip"/>
 
 	<target name="init">
 		<mkdir dir="${build.dir}"/>
@@ -20,6 +22,14 @@
 		<javac source="1.5" srcdir="${src.dir}" destdir="${class.dir}">
 			<classpath path="${plugin.build.classpath}"/>
 		</javac>
+
+		<jar destfile="findbugs-plugin.jar">
+			<fileset dir="${class.dir}" includes="**/*.class"/>
+		</jar>
+
+		<zip destfile="${plugin.zip}">
+			<fileset dir="." includes="findbugs-plugin.jar,icons/*.gif,plugin.xml"/>
+		</zip>
 	</target>
 
 </project>
