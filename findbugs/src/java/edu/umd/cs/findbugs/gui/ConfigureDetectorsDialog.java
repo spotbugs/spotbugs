@@ -1,6 +1,7 @@
 /*
  * FindBugs - Find bugs in Java programs
  * Copyright (C) 2003,2004 University of Maryland
+ * Copyright (C) 2004 Dave Brosius <dbrosius@users.sourceforge.net>
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -211,6 +212,11 @@ public class ConfigureDetectorsDialog extends javax.swing.JDialog {
             pack();
         }//GEN-END:initComponents
 
+	/**
+	 * reverts the selected state of all the detectors to their defaults as specified in the findbugs.xml file
+	 *
+	 * @param evt the swing event corresponding to the mouse click of the Restore Defaults button
+	 */
 	private void restoreDefaultsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_restoreDefaultsButtonActionPerformed
 		Iterator<DetectorFactory> i = DetectorFactoryCollection.instance().factoryIterator();
 		TableSorter sorter = (TableSorter) detectorTable.getModel();
@@ -245,6 +251,10 @@ public class ConfigureDetectorsDialog extends javax.swing.JDialog {
 		dispose();
 	}//GEN-LAST:event_closeDialog
 
+	/**
+	 * installs a list selection listener to populate the bottom details page based on selection changes in top grid.
+	 * A conversion from the table sorter index to the base model index is done to get the correct details
+	 */
 	private void postInitComponents() {
 		// Listen to detector table selections so we can (hopefully)
 		// display the description of the detector
@@ -264,6 +274,11 @@ public class ConfigureDetectorsDialog extends javax.swing.JDialog {
 		});
 	}
 
+	/**
+	 * populates the bottom detector details pane based on the detector selected
+	 *
+	 * @param factory the detector that is currently selected
+	 */
 	private void viewDetectorDetails(DetectorFactory factory) {
 		String detailHTML = factory.getDetailHTML();
 		if (detailHTML == null) {
@@ -274,6 +289,11 @@ public class ConfigureDetectorsDialog extends javax.swing.JDialog {
 		}
 	}
 
+	/**
+	 * populates the Detector JTable model with all available detectors
+	 * Due to Netbeans form builder, populate table gets called before the tablesorter is installed, 
+	 * so it is correct for the model retrieved from the table to be assumed to be the base DefaultTableModel.
+	 */
 	private void populateTable() {
 		Iterator<DetectorFactory> i = DetectorFactoryCollection.instance().factoryIterator();
 		while (i.hasNext()) {
