@@ -260,6 +260,13 @@ public class SourceLineAnnotation implements BugAnnotation {
 		return endLine;
 	}
 
+	/**
+	 * Is this an unknown source line annotation?
+	 */
+	public boolean isUnknown() {
+		return startLine < 0 || endLine < 0;
+	}
+
 	public void accept(BugAnnotationVisitor visitor) {
 		visitor.visitSourceLineAnnotation(this);
 	}

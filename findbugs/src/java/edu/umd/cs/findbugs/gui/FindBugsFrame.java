@@ -2111,14 +2111,29 @@ public class FindBugsFrame extends javax.swing.JFrame {
         // Try to open the source file and display its contents
         // in the source text area.
         InputStream in = sourceFinder.openSource(srcLine.getPackageName(), sourceFile);
-        BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+        BufferedReader reader = null;
+
+	try {
+	    reader = new BufferedReader(new InputStreamReader(in));
             
-        String line;
-        while ((line = reader.readLine()) != null) {
-            sourceTextArea.append(line + "\n");
-        }
-            
-        reader.close();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                sourceTextArea.append(line + "\n");
+            }
+        } finally {
+	    if (reader != null)
+        	reader.close();
+	}
+
+	if (srcLine.isUnknown()) {
+	    // No line number information, so can't highlight anything
+	    SwingUtilities.invokeLater(new Runnable() {
+		public void run() {
+		    sourceTextAreaScrollPane.getViewport().setViewPosition(new Point(0, 0));
+		}
+	    });
+	    return true;
+	}
 
         // Highlight the annotation.
         // There seems to be some bug in Swing that sometimes prevents this code

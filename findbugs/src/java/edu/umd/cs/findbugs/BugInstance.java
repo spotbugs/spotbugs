@@ -519,6 +519,20 @@ public class BugInstance implements Comparable, XMLConvertible {
 		return this;
 	}
 
+	/**
+	 * Add a non-specific source line annotation.
+	 * This will result in the entire source file being displayed.
+	 * @param className the class name
+	 * @param sourceFile the source file name
+	 * @return this object
+	 */
+	public BugInstance addUnknownSourceLine(String className, String sourceFile) {
+		SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation.createUnknown(className, sourceFile);
+		if (sourceLineAnnotation != null)
+			add(sourceLineAnnotation);
+		return this;
+	}
+
 	/* ----------------------------------------------------------------------
 	 * Formatting support
 	 * ---------------------------------------------------------------------- */
