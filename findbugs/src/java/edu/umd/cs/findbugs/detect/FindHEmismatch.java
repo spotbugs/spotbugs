@@ -119,6 +119,7 @@ public class FindHEmismatch extends BytecodeScanningDetector implements   Consta
 	if ((accessFlags & ACC_STATIC) != 0) return;
 	String name = obj.getName();
 	String sig = obj.getSignature();
+	/*
 	if ((accessFlags & ACC_ABSTRACT) != 0) {
 		if (name.equals("equals")
 			&& sig.equals("(L"+className+";)Z"))
@@ -128,6 +129,7 @@ public class FindHEmismatch extends BytecodeScanningDetector implements   Consta
 		  bugReporter.reportBug(new BugInstance("CO_ABSTRACT_SELF", NORMAL_PRIORITY).addClass(betterClassName));
 		
 		}
+	*/
 	boolean sigIsObject = sig.equals("(Ljava/lang/Object;)Z");
 	if (name.equals("hashCode")
 		&& sig.equals("()I")) {

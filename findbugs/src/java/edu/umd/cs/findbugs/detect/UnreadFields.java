@@ -130,7 +130,7 @@ public void report() {
 				fieldName.equals(fieldName.toUpperCase());
 		if (superReadFields.contains(f.getFieldName()))  continue;
 		if (!fieldName.startsWith("this$"))  {
-		  if (allUpperCase || constantFields.contains(f) )
+		  if (constantFields.contains(f) )
 		    bugReporter.reportBug(new BugInstance("SS_SHOULD_BE_STATIC", NORMAL_PRIORITY)
 			.addClass(className)
 			.addField(f));

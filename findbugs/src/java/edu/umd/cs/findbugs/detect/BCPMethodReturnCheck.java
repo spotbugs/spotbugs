@@ -58,12 +58,26 @@ public class BCPMethodReturnCheck extends ByteCodePatternDetector {
 		// followed by a POP or POP2 instruction.
 		this.pattern = new ByteCodePattern()
 			.add(new MatchAny(new PatternElement[] {
-				new Invoke("/^java\\.lang\\.(String|Byte|Boolean|Character|Short|Integer|Long|Float|Double)$", "/.*", "/.*",
+				new Invoke("java.lang.String", "/.*", 
+					"/\\(.*\\)Ljava\\.lang\\.String;", 
 					Invoke.INSTANCE, lookupFailureCallback),
-				new Invoke("+java.security.MessageDigest", "digest", "([B)[B", Invoke.INSTANCE, lookupFailureCallback),
-				new Invoke("+java.net.InetAddress", "/.*", "/.*", Invoke.INSTANCE, lookupFailureCallback),
-				new Invoke("/^java\\.math\\.BigDecimal$", "/.*", "/.*", Invoke.INSTANCE, lookupFailureCallback),
-				new Invoke("/^java\\.math\\.BigInteger$", "/.*", "/.*", Invoke.INSTANCE, lookupFailureCallback),
+				new Invoke("java.lang.StringBuffer", "toString", 
+					"()Ljava.lang.String;", 
+					Invoke.INSTANCE, 
+					lookupFailureCallback),
+				new Invoke("java.lang.Thread", "currentThread", 
+					"()Ljava.lang.Thread;", 
+					Invoke.STATIC, 
+					lookupFailureCallback),
+				new Invoke("java.security.MessageDigest", 
+					"digest", "([B)[B", 
+					Invoke.INSTANCE, lookupFailureCallback),
+				new Invoke("+java.net.InetAddress", "/.*", "/.*", 
+					Invoke.INSTANCE, lookupFailureCallback),
+				new Invoke("java.math.BigDecimal", "/.*", "/.*", 
+					Invoke.INSTANCE, lookupFailureCallback),
+				new Invoke("java.math.BigInteger", "/.*", "/.*", 
+					Invoke.INSTANCE, lookupFailureCallback),
 			}).label("call"))
 			.add(new MatchAny(new PatternElement[] {new Opcode(Constants.POP), new Opcode(Constants.POP2)}));
 	}
