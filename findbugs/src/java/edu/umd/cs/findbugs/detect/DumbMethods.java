@@ -30,9 +30,15 @@ public class DumbMethods extends BytecodeScanningDetector implements   Constants
 
    private HashSet<String> alreadyReported = new HashSet<String>();
    private BugReporter bugReporter;
+   private boolean sawCurrentTimeMillis;
+   private BugInstance systemGC;
 
    public DumbMethods(BugReporter bugReporter) {
 	this.bugReporter = bugReporter;
+   }
+
+   public void visit(Method method) {
+	flush();
    }
 
    public void sawOpcode(int seen) {
@@ -60,9 +66,12 @@ public class DumbMethods extends BytecodeScanningDetector implements   Constants
 				&& sigConstant.equals("()V")
 				&& !betterClassName.startsWith("java.lang"))
 		if (alreadyReported.add(betterMethodName))
-			bugReporter.reportBug(new BugInstance("DM_GC", HIGH_PRIORITY)
+			// Just save this report in a field; it will be flushed
+			// IFF there were no calls to System.currentTimeMillis();
+			// in the method.
+			systemGC = new BugInstance("DM_GC", HIGH_PRIORITY)
 				.addClassAndMethod(this)
-				.addSourceLine(this));
+				.addSourceLine(this);
 	if ((seen == INVOKESPECIAL)
 				&& classConstant.equals("java/lang/Boolean")
 				&& nameConstant.equals("<init>")
@@ -72,5 +81,26 @@ public class DumbMethods extends BytecodeScanningDetector implements   Constants
 			bugReporter.reportBug(new BugInstance("DM_BOOLEAN_CTOR", NORMAL_PRIORITY)
 				.addClassAndMethod(this)
 				.addSourceLine(this));
+	if ((seen == INVOKESTATIC)
+				&& classConstant.equals("java/lang/System")
+				&& nameConstant.equals("currentTimeMillis"))
+			sawCurrentTimeMillis = true;
 	}
+
+   public void report() {
+	flush();
+   }
+
+   /** 
+    * Flush out cached state at the end of a method.
+    */
+   private void flush() {
+	if (systemGC != null && !sawCurrentTimeMillis) {
+		bugReporter.reportBug(systemGC);
+	}
+
+	sawCurrentTimeMillis = false;
+	systemGC = null;
+	alreadyReported.clear();
+   }
 }
