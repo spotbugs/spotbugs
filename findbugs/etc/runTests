@@ -23,7 +23,7 @@ foreach my $jar (@jarList) {
 
 	my $outFile = "build/$shortName.out";
 
-	my $rc = system("bin/findbugs -textui -jvmArgs=$JVM_ARGS $jar | etc/summarizeBugs > $outFile");
+	my $rc = system("bin/findbugs -textui -jvmArgs '$JVM_ARGS' $jar | etc/summarizeBugs > $outFile");
 	if ($rc/256 != 0) {
 		print STDERR "Command failed!\n";
 		exit 1;
