@@ -1,6 +1,6 @@
 <!--
   Build the UI FindBugs Eclipse plugin.
-  The Core FindBugs plugin should be built *before* building this plugin.
+  The Core FindBugs Eclipse plugin should be built *before* building this plugin.
 -->
 <project name="eclipseUIPlugin" default="build">
 
@@ -14,7 +14,6 @@
 
 	<target name="init">
 		<mkdir dir="${build.dir}"/>
-		<mkdir dir="${build.dir}/icons"/>
 		<mkdir dir="${class.dir}"/>
 	</target>
 
@@ -30,6 +29,12 @@
 		<zip destfile="${plugin.zip}">
 			<fileset dir="." includes="findbugs-plugin.jar,icons/*.gif,plugin.xml"/>
 		</zip>
+	</target>
+
+	<target name="clean">
+		<delete dir="${build.dir}"/>
+		<delete file="findbugs-plugin.jar"/>
+		<delete file="${plugin.zip}"/>
 	</target>
 
 </project>
