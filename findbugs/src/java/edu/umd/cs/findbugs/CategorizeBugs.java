@@ -41,8 +41,10 @@ public class CategorizeBugs {
 			if (annotation.equals(""))
 				continue;
 
-			boolean isBug = annotation.indexOf("BUG") >= 0 && annotation.indexOf("NOT_BUG") < 0;
-			boolean isNotBug = annotation.indexOf("NOT_BUG") >= 0;
+			Set<String> contents = parseAnnotation(annotation);
+
+			boolean isBug = contents.contains("BUG");
+			boolean isNotBug = contents.contains("NOT_BUG");
 			if (!isBug && !isNotBug) {
 				System.out.println("Unknown status for bug:");
 				dumpBug(bugInstance);
@@ -50,17 +52,12 @@ public class CategorizeBugs {
 			}
 
 			int severity = -1;
-			if (annotation.indexOf("BENIGN") >= 0 || annotation.indexOf("HARMLESS") >= 0)
+			if (contents.contains("BENIGN") || contents.contains("HARMLESS"))
 				severity = BENIGN;
-			else if (annotation.indexOf("DUBIOUS") >= 0)
+			else if (contents.contains("DUBIOUS"))
 				severity = DUBIOUS;
-			else if (annotation.indexOf("SERIOUS") >= 0)
+			else if (contents.contains("SERIOUS"))
 				severity = SERIOUS;
-			//else if (isBug) {
-			//	System.out.println("Unknown severity for bug:");
-			//	dumpBug(bugInstance);
-			//	continue;
-			//}
 
 			updateStats(bugInstance.getType(), statsByType, isBug, severity);
 			updateStats(bugInstance.getAbbrev(), statsByCode, isBug, severity);
@@ -113,6 +110,14 @@ public class CategorizeBugs {
 
 			System.out.println();
 		}
+	}
+
+	private static Set<String> parseAnnotation(String annotation) {
+		HashSet<String> result = new HashSet<String>();
+		StringTokenizer tok = new StringTokenizer(annotation, " \t\r\n\f");
+		while (tok.hasMoreTokens())
+			result.add(tok.nextToken());
+		return result;
 	}
 }
 
