@@ -76,6 +76,14 @@ public class FieldVariable implements Variable {
 			&& fieldName.equals(otherField.fieldName)
 			&& fieldSig.equals(otherField.fieldSig);
 	}
+
+	public String toString() {
+		StringBuffer buf = new StringBuffer();
+		buf.append(className);
+		buf.append('.');
+		buf.append(fieldName);
+		return buf.toString();
+	}
 }
 
 // vim:ts=4
