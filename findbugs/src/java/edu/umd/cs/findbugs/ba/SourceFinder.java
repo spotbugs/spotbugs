@@ -179,6 +179,10 @@ public class SourceFinder {
 		// file in a zip file. In a directory tree the separator used is '\', while in a zip it's '/'
 		// Therefore for each repository figure out what kind it is and use the appropriate separator.
 		
+		// In all practicality, this code could just use the hardcoded '/' char, as windows can open 
+		// files with this separator, but to allow for the mythical 'other' platform that uses an
+		// alternate separator, make a distinction
+		
 		// Create a fully qualified source filename using the package name for both directories and zips
 		String platformName = packageName.replace('.', File.separatorChar) + File.separatorChar + fileName;
 		String canonicalName = packageName.replace('.', '/') + '/' + fileName;
