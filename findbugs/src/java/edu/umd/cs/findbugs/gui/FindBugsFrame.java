@@ -423,36 +423,37 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
 	private static final boolean BUG_COUNT = Boolean.getBoolean("findbugs.gui.bugCount");
 
-		/* ----------------------------------------------------------------------
-		 * Member fields
-		 * ---------------------------------------------------------------------- */
-		Component selectedComponent = null;
+	/* ----------------------------------------------------------------------
+	 * Member fields
+	 * ---------------------------------------------------------------------- */
+	Component selectedComponent = null;
+	
 	/* ----------------------------------------------------------------------
 	 * Constructor
 	 * ---------------------------------------------------------------------- */
-
+	
 	/**
 	 * Creates new form FindBugsFrame.
 	 */
 	public FindBugsFrame() {
 		String dirProp = System.getProperty("user.dir");
-
+		
 		if (dirProp != null) {
 			currentDirectory = new File(dirProp);
 		}
-
+		
 		UserPreferences prefs = UserPreferences.getUserPreferences();
 		prefs.read();
 		prefs.loadUserDetectorPreferences();
-
+		
 		initComponents();
 		postInitComponents();
 	}
-
+	
 	/* ----------------------------------------------------------------------
 	 * Component initialization and event handlers
 	 * ---------------------------------------------------------------------- */
-
+	
 	/**
 	 * This method is called from within the constructor to
 	 * initialize the form.
@@ -2318,14 +2319,23 @@ public class FindBugsFrame extends javax.swing.JFrame {
 		this.bugCategoryList = new String[bugCategoryCollection.size()];
 		int count = 0;
 		for(Iterator<String> i = bugCategoryCollection.iterator(); i.hasNext();) {
-			// TODO: get settings from user prefs
 			String bugCategory = i.next();
 			String bugCategoryDescription = edu.umd.cs.findbugs.I18N.instance().getBugCategoryDescription(bugCategory);
-			JCheckBoxMenuItem item = new JCheckBoxMenuItem(bugCategoryDescription, true);
+
+			final JCheckBoxMenuItem item = new JCheckBoxMenuItem(bugCategoryDescription, true);
 			item.setFont(new java.awt.Font("Dialog", 0, 12));
+			item.setSelected(getFilterSettings().containsCategory(bugCategory));
+			item.addActionListener(new java.awt.event.ActionListener() {
+				public void actionPerformed(java.awt.event.ActionEvent evt) {
+					toggleBugCategory(item);
+				}
+			});
+			
 			filterWarningsMenu.add(item);
+
 			this.bugCategoryCheckBoxList[count] = item;
 			this.bugCategoryList[count] = bugCategory;
+
 			++count;
 		}
 		
@@ -3272,6 +3282,41 @@ public class FindBugsFrame extends javax.swing.JFrame {
 		annotationTextArea.setText(selected.getAnnotationText());
 	}
 	
+	/**
+	 * Toggle a bug category checkbox.
+	 * Changes are reflected in the displayed bug trees (if any)
+	 * and also in the user preferences.
+	 *
+	 * @param checkBox the bug category checkbox
+	 */
+	private void toggleBugCategory(JCheckBoxMenuItem checkBox) {
+		int index = 0;
+		
+		while (index < bugCategoryCheckBoxList.length) {
+			if (bugCategoryCheckBoxList[index] == checkBox)
+				break;
+			++index;
+		}
+		
+		if (index == bugCategoryCheckBoxList.length) {
+			error("Could not find bug category checkbox");
+			return;
+		}
+		
+		boolean selected = checkBox.isSelected();
+		String bugCategory = bugCategoryList[index];
+		
+		if (selected) {
+			getFilterSettings().addCategory(bugCategory);
+		} else {
+			getFilterSettings().removeCategory(bugCategory);
+		}
+		
+		if (currentAnalysisRun != null) {
+			synchAnalysisRun(currentAnalysisRun);
+		}
+	}
+	
 	/* ----------------------------------------------------------------------
 	 * Misc. helpers
 	 * ---------------------------------------------------------------------- */
@@ -3617,7 +3662,6 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	private BugInstance currentBugInstance; // be lazy in switching bug instance details
 	private SourceLineAnnotation currentSourceLineAnnotation; // as above
 	private String currentBugDetailsKey;
-	//private int priorityThreshold;
 	private JCheckBoxMenuItem[] bugCategoryCheckBoxList;
 	private String[] bugCategoryList;
 
