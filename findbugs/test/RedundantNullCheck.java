@@ -16,7 +16,7 @@ public class RedundantNullCheck {
 		}
 
 		Object o2 = null;
-		if (o2 == null) { // medium priority
+		if (o2 == null) { // low priority
 			System.out.println("This is silly");
 		}
 	}
