@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.config;
 
+import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.I18N;
 
 import java.util.Iterator;
@@ -28,9 +29,31 @@ import junit.framework.TestCase;
 
 public class ProjectFilterSettingsTest extends TestCase {
 	ProjectFilterSettings plain;
+	ProjectFilterSettings otherPlain;
+	ProjectFilterSettings changed;
+	ProjectFilterSettings changed2;
+	ProjectFilterSettings changed3;
+	ProjectFilterSettings changed4;
 
 	protected void setUp() {
 		plain = ProjectFilterSettings.createDefault();
+
+		otherPlain = ProjectFilterSettings.createDefault();
+
+		changed = ProjectFilterSettings.createDefault();
+		changed.setMinPriority("High");
+
+		changed2 = ProjectFilterSettings.createDefault();
+		changed2.removeCategory("MALICIOUS_CODE");
+
+		changed3 = ProjectFilterSettings.createDefault();
+		changed3.addCategory("FAKE_CATEGORY");
+
+		changed4 = ProjectFilterSettings.createDefault();
+		changed4.setMinPriority("High");
+		changed4.removeCategory("MALICIOUS_CODE");
+		changed4.addCategory("FAKE_CATEGORY");
+		
 	}
 
 	public void testPlainPrio() {
@@ -58,6 +81,44 @@ public class ProjectFilterSettingsTest extends TestCase {
 		Assert.assertTrue(plain.containsCategory("MALICIOUS_CODE"));
 		plain.removeCategory("MALICIOUS_CODE");
 		Assert.assertFalse(plain.containsCategory("MALICIOUS_CODE"));
+	}
+
+	public void testSetMinPriority() {
+		plain.setMinPriority("High");
+		Assert.assertTrue(plain.getMinPriority().equals("High"));
+		Assert.assertTrue(plain.getMinPriorityAsInt() == Detector.HIGH_PRIORITY);
+		plain.setMinPriority("Medium");
+		Assert.assertTrue(plain.getMinPriority().equals("Medium"));
+		Assert.assertTrue(plain.getMinPriorityAsInt() == Detector.NORMAL_PRIORITY);
+		plain.setMinPriority("Low");
+		Assert.assertTrue(plain.getMinPriority().equals("Low"));
+		Assert.assertTrue(plain.getMinPriorityAsInt() == Detector.LOW_PRIORITY);
+	}
+
+	public void testEquals() {
+		Assert.assertEquals(plain, otherPlain);
+
+		Assert.assertFalse(plain.equals(changed));
+		Assert.assertFalse(changed.equals(plain));
+
+		Assert.assertFalse(plain.equals(changed2));
+		Assert.assertFalse(changed2.equals(plain));
+
+		Assert.assertFalse(plain.equals(changed3));
+		Assert.assertFalse(changed3.equals(plain));
+
+		Assert.assertFalse(plain.equals(changed4));
+		Assert.assertFalse(changed4.equals(plain));
+	}
+
+	public void testEncodeDecode() {
+		ProjectFilterSettings copyOfPlain =
+			ProjectFilterSettings.fromEncodedString(plain.toEncodedString());
+		Assert.assertEquals(plain, copyOfPlain);
+
+		ProjectFilterSettings copyOfChanged4 =
+			ProjectFilterSettings.fromEncodedString(changed4.toEncodedString());
+		Assert.assertEquals(changed4, copyOfChanged4);
 	}
 }
 
