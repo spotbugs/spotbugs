@@ -200,6 +200,20 @@
 		</jar>
 	</target>
 
+	<!-- Run JUnit test cases -->
+	<target name="runjunit" depends="junittests">
+		<echo>Running JUnit test cases for FindBugs...</echo>
+		<java dir="."
+			fork="true"
+			failonerror="true"
+			classname="edu.umd.cs.findbugs.tools.junit.JUnitJarRunner">
+			<jvmarg value="-Dfindbugs.home=."/>
+			<classpath refid="tools.classpath"/>
+			<arg value="${junittests.jar}"/>
+			<arg value="${engine.jar}"/>
+		</java>
+	</target>
+
 	<!-- Delete generated files. -->
 	<target name="clean">
 		<delete>
