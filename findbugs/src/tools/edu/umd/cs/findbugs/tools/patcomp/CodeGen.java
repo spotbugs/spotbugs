@@ -32,6 +32,23 @@ public class CodeGen {
 	}
 
 	public void generate(SimpleNode root, PrintStream out) {
+		visit(root);
+	}
+
+	private void visit(SimpleNode node) {
+		switch (node.getId()) {
+		case PatternCompilerTreeConstants.JJTOPT_PRESCREEN:
+			generatePrescreen(node);
+			break;
+		default:
+			for (int i = 0; i < node.jjtGetNumChildren(); ++i)
+				visit((SimpleNode) node.jjtGetChild(i));
+			break;
+		}
+	}
+
+	public void generatePrescreen(SimpleNode node) {
+		System.out.println("Generating prescreen code");
 	}
 }
 
