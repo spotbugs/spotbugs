@@ -443,23 +443,6 @@ public class ClassContext implements AnalysisFeatures {
 		        }
 	        };
 
-/*
-	private AnalysisFactory<LockCountDataflow> anyLockCountDataflowFactory =
-	new AnalysisFactory<LockCountDataflow>("lock count analysis (any lock)") {
-		protected LockCountDataflow analyze(Method method) throws DataflowAnalysisException, CFGBuilderException {
-			MethodGen methodGen = getMethodGen(method);
-			ValueNumberDataflow vnaDataflow = getValueNumberDataflow(method);
-			DepthFirstSearch dfs = getDepthFirstSearch(method);
-			CFG cfg = getCFG(method);
-
-			AnyLockCountAnalysis analysis = new AnyLockCountAnalysis(methodGen, vnaDataflow, dfs);
-			LockCountDataflow dataflow = new LockCountDataflow(cfg, analysis);
-			dataflow.execute();
-			return dataflow;
-		}
-	};
-*/
-
 	private AnalysisFactory<LockDataflow> lockDataflowFactory =
 	        new AnalysisFactory<LockDataflow>("lock set analysis") {
 		        protected LockDataflow analyze(Method method) throws DataflowAnalysisException, CFGBuilderException {
@@ -475,6 +458,19 @@ public class ClassContext implements AnalysisFeatures {
 		        }
 	        };
 
+	private AnalysisFactory<LockChecker> lockCheckerFactory =
+			new AnalysisFactory<LockChecker>("lock checker meta-analysis") {
+				/* (non-Javadoc)
+				 * @see edu.umd.cs.findbugs.ba.ClassContext.AnalysisFactory#analyze(org.apache.bcel.classfile.Method)
+				 */
+				protected LockChecker analyze(Method method) throws CFGBuilderException,
+						DataflowAnalysisException {
+					LockChecker lockChecker = new LockChecker(ClassContext.this, method);
+					lockChecker.execute();
+					return lockChecker;
+				}
+			};
+	        
 	private AnalysisFactory<ReturnPathDataflow> returnPathDataflowFactory =
 	        new AnalysisFactory<ReturnPathDataflow>("return path analysis") {
 		        protected ReturnPathDataflow analyze(Method method) throws DataflowAnalysisException, CFGBuilderException {
@@ -793,16 +789,6 @@ public class ClassContext implements AnalysisFeatures {
 		return bytecodeSetFactory.getAnalysis(method);
 	}
 
-//	/**
-//	 * Get dataflow for AnyLockCountAnalysis for given method.
-//	 * @param method the method
-//	 * @return the Dataflow
-//	 */
-//	public LockCountDataflow getAnyLockCountDataflow(Method method)
-//		throws CFGBuilderException, DataflowAnalysisException {
-//		return anyLockCountDataflowFactory.getAnalysis(method);
-//	}
-
 	/**
 	 * Get dataflow for LockAnalysis for given method.
 	 *
@@ -814,6 +800,21 @@ public class ClassContext implements AnalysisFeatures {
 		return lockDataflowFactory.getAnalysis(method);
 	}
 
+	/**
+	 * Get LockChecker for method.
+	 * This is like LockDataflow, but may be able to avoid performing
+	 * the actual dataflow analyses if the method doesn't contain
+	 * explicit monitorenter/monitorexit instructions.
+	 * 
+	 * @param method the method
+	 * @return the LockChecker
+	 * @throws CFGBuilderException
+	 * @throws DataflowAnalysisException
+	 */
+	public LockChecker getLockChecker(Method method) throws CFGBuilderException, DataflowAnalysisException {
+		return lockCheckerFactory.getAnalysis(method);
+	}
+	
 	/**
 	 * Get ReturnPathDataflow for method.
 	 *
