@@ -23,8 +23,13 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.ByteCodePatternDetector;
 
+import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.Hierarchy;
+import edu.umd.cs.findbugs.ba.Location;
+import edu.umd.cs.findbugs.ba.LockDataflow;
+import edu.umd.cs.findbugs.ba.LockSet;
 import edu.umd.cs.findbugs.ba.XField;
 
 import edu.umd.cs.findbugs.ba.bcp.Binding;
@@ -34,9 +39,11 @@ import edu.umd.cs.findbugs.ba.bcp.ByteCodePatternMatch;
 import edu.umd.cs.findbugs.ba.bcp.FieldVariable;
 import edu.umd.cs.findbugs.ba.bcp.IfNull;
 import edu.umd.cs.findbugs.ba.bcp.Load;
+import edu.umd.cs.findbugs.ba.bcp.PatternElementMatch;
 import edu.umd.cs.findbugs.ba.bcp.Store;
 
 import java.util.BitSet;
+import java.util.Iterator;
 
 import org.apache.bcel.Constants;
 
@@ -79,21 +86,57 @@ public class LazyInit extends ByteCodePatternDetector {
 
 	public boolean prescreen(Method method, ClassContext classContext) {
 		BitSet bytecodeSet = classContext.getBytecodeSet(method);
-		return bytecodeSet.get(Constants.GETSTATIC) && bytecodeSet.get(Constants.PUTSTATIC);
+
+		// The pattern requires a get/put pair accessing the same field.
+		if (!(bytecodeSet.get(Constants.GETSTATIC) && bytecodeSet.get(Constants.PUTSTATIC)) &&
+			!(bytecodeSet.get(Constants.GETFIELD) && bytecodeSet.get(Constants.PUTFIELD)))
+			return false;
+
+		// If the method is synchronized, then we'll assume that
+		// things are properly synchronized
+		if (method.isSynchronized())
+			return false;
+
+		return true;
 	}
 
-	public void reportMatch(JavaClass javaClass, MethodGen methodGen, ByteCodePatternMatch match) {
-		// Get the variable referenced in the pattern instance.
-		BindingSet bindingSet = match.getBindingSet();
-		Binding binding = bindingSet.lookup("f");
-
-		// Look up the field as an XField.
-		// If it is volatile, then the instance is not a bug.
-		FieldVariable field = (FieldVariable) binding.getVariable();
+	public void reportMatch(ClassContext classContext, Method method, ByteCodePatternMatch match)
+		throws CFGBuilderException, DataflowAnalysisException {
+		JavaClass javaClass = classContext.getJavaClass();
+		MethodGen methodGen = classContext.getMethodGen(method);
 
 		try {
+			// Get the variable referenced in the pattern instance.
+			BindingSet bindingSet = match.getBindingSet();
+			Binding binding = bindingSet.lookup("f");
+
+			// Examine the lock sets for all matched instructions.
+			// If the intersection is nonempty, then there was at
+			// least one lock held for the entire sequence.
+			LockDataflow lockDataflow = classContext.getLockDataflow(method);
+			LockSet lockSet = null;
+			for (Iterator<PatternElementMatch> i = match.patternElementMatchIterator(); i.hasNext(); ) {
+				PatternElementMatch element = i.next();
+				Location location = new Location(element.getMatchedInstructionInstructionHandle(), element.getBasicBlock());
+
+				LockSet insLockSet = lockDataflow.getFactAtLocation(location);
+				if (lockSet == null) {
+					lockSet = new LockSet();
+					lockSet.copyFrom(insLockSet);
+				} else
+					lockSet.intersectWith(insLockSet);
+			}
+
+			if (!lockSet.isEmpty())
+				return;
+
+			// Look up the field as an XField.
+			// If it is volatile, then the instance is not a bug.
+			FieldVariable field = (FieldVariable) binding.getVariable();
 			XField xfield =
 				Hierarchy.findXField(field.getClassName(), field.getFieldName(), field.getFieldSig());
+			if (xfield == null)
+				return;
 
 			if (xfield != null && (xfield.getAccessFlags() & Constants.ACC_VOLATILE) == 0) {
 				InstructionHandle start = match.getLabeledInstruction("start");
