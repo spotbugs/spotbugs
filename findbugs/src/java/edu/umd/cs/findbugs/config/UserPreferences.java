@@ -32,6 +32,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -61,30 +63,59 @@ public class UserPreferences {
 		this.filterSettings = ProjectFilterSettings.createDefault();
 	}
 	
+	/**
+	 * Create default UserPreferences.
+	 * 
+	 * @return default UserPreferences
+	 */
 	public static UserPreferences createDefaultUserPreferences() {
 		return new UserPreferences();
 	}
 
+	/**
+	 * Get UserPreferences singleton.
+	 * This should only be used if there is a single set of user
+	 * preferences to be used for all projects.
+	 * 
+	 * @return the UserPreferences
+	 */
 	public static UserPreferences getUserPreferences() {
 		return preferencesSingleton;
 	}
 
+	/**
+	 * Read persistent global UserPreferences from file in 
+	 * the user's home directory.
+	 */
 	public void read() {
 		File prefFile = new File(System.getProperty("user.home"), "Findbugs.prefs");
 		if (!prefFile.exists() || !prefFile.isFile())
 			return;
+		try {
+			read(new FileInputStream(prefFile));
+		} catch (IOException e) {
+			// Ignore - just use default preferences
+		}
+	}
+	
+	/**
+	 * Read user preferences from given input stream.
+	 * 
+	 * @param in the InputStream
+	 * @throws IOException
+	 */
+	public void read(InputStream in) throws IOException {
 		BufferedInputStream prefStream = null;
 		Properties props = new Properties();
 		try {
-			prefStream = new BufferedInputStream(new FileInputStream(prefFile));
+			prefStream = new BufferedInputStream(in);
 			props.load(prefStream);
-		} catch (Exception e) {
-			//Report? - probably not
 		} finally {
 			try {
 				if (prefStream != null)
 					prefStream.close();
 			} catch (IOException ioe) {
+				// Ignore
 			}
 		}
 
@@ -131,7 +162,26 @@ public class UserPreferences {
 
 	}
 
+	/**
+	 * Write persistent global UserPreferences to file 
+	 * in user's home directory.
+	 */
 	public void write() {
+		try {
+			File prefFile = new File(System.getProperty("user.home"), "Findbugs.prefs"); 
+			write(new FileOutputStream(prefFile));
+		} catch (IOException e) {
+			// Ignore
+		}
+	}
+
+	/**
+	 * Write UserPreferences to given OutputStream.
+	 * 
+	 * @param out the OutputStream
+	 * @throws IOException
+	 */
+	public void write(OutputStream out) throws IOException {
 		Properties props = new Properties();
 		for (int i = 0; i < recentProjectsList.size(); i++) {
 			String projectName = recentProjectsList.get(i);
@@ -155,14 +205,11 @@ public class UserPreferences {
 		// of FindBugs.
 		props.put(DETECTOR_THRESHOLD_KEY, String.valueOf(filterSettings.getMinPriorityAsInt()));
 
-		File prefFile = new File(System.getProperty("user.home"), "Findbugs.prefs");
-		BufferedOutputStream prefStream = null;
+		OutputStream prefStream = null;
 		try {
-			prefStream = new BufferedOutputStream(new FileOutputStream(prefFile));
+			prefStream = new BufferedOutputStream(out);
 			props.store(prefStream, "FindBugs User Preferences");
 			prefStream.flush();
-		} catch (IOException e) {
-			//Report? -- probably not
 		} finally {
 			try {
 				if (prefStream != null)

@@ -21,6 +21,7 @@
 package de.tobject.findbugs;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.util.MissingResourceException;
@@ -530,8 +531,10 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 		return prefs;
 	}
 
-	private static UserPreferences readUserPreferences(IProject project) {
-		// TODO: implement
+	private static UserPreferences readUserPreferences(IProject project) throws CoreException {
+//		IFile userPrefsFile = getUserPreferencesFile(project);
+//		
+//		InputStream in = userPrefsFile.getContents();
 		return null;
 	}
 
