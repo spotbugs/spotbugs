@@ -165,7 +165,8 @@
             reports="MVI_WRONG_MAP_ITERATOR"/>
   <Detector class="edu.umd.cs.findbugs.detect.InstantiateStaticClass"
   			speed="fast"
-  			reports="ISC_INSTANTIATE_STATIC_CLASS"/>
+  			reports="ISC_INSTANTIATE_STATIC_CLASS"
+  			disabled="true" />
 
   <Detector class="edu.umd.cs.findbugs.detect.FindBugsSummaryStats" speed="fast" />
 
