@@ -32,6 +32,7 @@ public class ReadReturnShouldBeChecked extends BytecodeScanningDetector implemen
    boolean sawRead = false;
    boolean sawSkip = false;
    int sawAvailable = 0;
+   boolean isBufferedInputStream = false;
    private BugReporter bugReporter;
    private int readPC, skipPC;
    private String lastCallClass = null, lastCallMethod = null, lastCallSig = null;
@@ -79,9 +80,9 @@ public class ReadReturnShouldBeChecked extends BytecodeScanningDetector implemen
 		&& sawAvailable <= 0)   {
 		/*
 		System.out.println("Saw invocation of "
-			+ nameConstant + "("
-			+sigConstant
-			+")");
+			+ getNameConstantOperand() + "("
+			+ getSigConstantOperand()
+			+"), available = " + sawAvailable);
 		*/
 
 		boolean b = false;
@@ -97,12 +98,18 @@ public class ReadReturnShouldBeChecked extends BytecodeScanningDetector implemen
 	} else if ((seen == INVOKEVIRTUAL || seen == INVOKEINTERFACE)
 		&& !getClassConstantOperand().equals("java/io/ByteArrayInputStream")
 		&& getNameConstantOperand().equals("skip")) {
-		boolean b = false;
+		boolean bais = false;
+		boolean bis = false;
 		try {
-		b = Repository.instanceOf(getClassConstantOperand(), "java/io/ByteArrayInputStream");
+		bais = Repository.instanceOf(getClassConstantOperand(), "java/io/ByteArrayInputStream");
+		bis = Repository.instanceOf(getClassConstantOperand(), "java/io/BufferedInputStream");
 		} catch (ClassNotFoundException e) {
 		}
-		if (!b) {
+		// if not ByteArrayInput Stream 
+		//  and either no recent calls to length
+		//        or it is a BufferedInputStream
+		if (!bais && (sawAvailable <= 0 || bis)) {
+			isBufferedInputStream = bis;
 			sawSkip = true;
 			skipPC = getPC();
 			return;	
