@@ -23,6 +23,11 @@ package edu.umd.cs.findbugs;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.bcel.Repository;
+import org.apache.bcel.classfile.Constant;
+import org.apache.bcel.classfile.ConstantUtf8;
+import org.apache.bcel.classfile.ConstantInteger;
+import org.apache.bcel.classfile.ConstantFloat;
+import org.apache.bcel.classfile.ConstantString;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.LocalVariableTable;
 import org.apache.bcel.classfile.LocalVariable;
@@ -123,6 +128,24 @@ public class OpcodeStack implements Constants2
 	  				}
 	 				pushBySignature(signature);
 	 			break;
+	 			
+	 			case GETSTATIC:
+	 				pushBySignature(dbc.getSigConstantOperand());
+	 			break;
+	 			
+	 			case LDC:
+	 				Constant c = dbc.getConstantRefOperand();
+	 				if (c instanceof ConstantInteger)
+	 					pushByConstant(new Integer(((ConstantInteger) c).getBytes()));
+					else if (c instanceof ConstantFloat)
+						pushByConstant(new Float(((ConstantInteger) c).getBytes()));
+					else if (c instanceof ConstantString) {
+						int s = ((ConstantString) c).getStringIndex();
+						pushByConstant(getStringFromIndex(dbc, s));
+					}
+					else
+						throw new UnsupportedOperationException("Constant type not expected" );
+				break;
 	 			
 	 			case ASTORE:
 	 			case ASTORE_0:
@@ -249,6 +272,15 @@ public class OpcodeStack implements Constants2
  		stack.add(i);
  	}
  	
+ 	private void pushByConstant(Object o) {
+ 		try {
+ 			push( new Item(Item.CONSTANT_TYPE, Repository.lookupClass(o.getClass()), o));
+ 		}
+ 		catch (ClassNotFoundException cnfe) {
+			push( new Item(Item.UNKNOWN_TYPE ));
+ 		}
+ 	}
+ 	
  	private void pushBySignature(String signature) {
  		try {
 	 		if ("V".equals(signature))
@@ -283,5 +315,10 @@ public class OpcodeStack implements Constants2
 			push( new Item(Item.UNKNOWN_TYPE ));
 		}			
  	}
+ 	
+ 	private String getStringFromIndex(DismantleBytecode dbc, int i) {
+		ConstantUtf8 name = (ConstantUtf8) dbc.getConstantPool().getConstant(i);
+		return name.getBytes();
+	}
 	
 }
