@@ -13,7 +13,8 @@
 	<property name="build.dir" value="build"/>
 	<property name="class.dir" value="${build.dir}/classes"/>
 	<property name="src.dir" value="src"/>
-	<property name="plugin.zip" value="${plugin.id}_${plugin.version}.zip"/>
+	<property name="plugin.dir.name" value="${plugin.id}_${plugin.version}"/>
+	<property name="plugin.zip" value="${plugin.dir.name}.zip"/>
 
 	<target name="init">
 		<mkdir dir="${build.dir}"/>
@@ -31,7 +32,8 @@
 		</jar>
 
 		<zip destfile="${plugin.zip}">
-			<fileset dir="." includes="findbugs-plugin.jar,icons/*.gif,plugin.xml"/>
+			<zipfileset dir="." includes="findbugs-plugin.jar,icons/*.gif,plugin.xml"
+				prefix="${plugin.dir.name}"/>
 		</zip>
 	</target>
 

@@ -12,7 +12,8 @@
 	<property name="core.lib.dir" value="../../../lib"/>
 	<property name="core.libs" value="bcel.jar,dom4j-full.jar,findbugs.jar"/>
 	<property name="plugin.lib.dir" value="../../../plugin"/>
-	<property name="plugin.zip" value="${plugin.id}_${plugin.version}.zip"/>
+	<property name="plugin.dir.name" value="${plugin.id}_${plugin.version}"/>
+	<property name="plugin.zip" value="${plugin.dir.name}.zip"/>
 
 	<!-- Ensure build directories exist. -->
 	<target name="init">
@@ -33,7 +34,8 @@
 	<!-- Build the plugin .zip file. -->
 	<target name="build" depends="copyfiles">
 		<zip destfile="${plugin.zip}">
-			<zipfileset dir="${build.dir}" includes="**" excludes=".*,*.properties"/>
+			<zipfileset dir="${build.dir}" includes="**" excludes=".*,*.properties"
+				prefix="${plugin.dir.name}/"/>
 		</zip>
 	</target>
 
