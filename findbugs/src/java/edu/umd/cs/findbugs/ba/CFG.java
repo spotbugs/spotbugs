@@ -248,6 +248,12 @@ public class CFG {
     private void storeEdge(Edge edge) {
 	outgoingEdgeMap.put(edge, edge);
 	incomingEdgeMap.put(edge, edge);
+
+	// Update incoming and outgoing edge counts
+	BasicBlock source = edge.getSource();
+	BasicBlock dest = edge.getDest();
+	source.setNumOutgoingEdges(source.getNumOutgoingEdges() + 1);
+	dest.setNumIncomingEdges(dest.getNumIncomingEdges() + 1);
     }
 
     /**
@@ -259,6 +265,12 @@ public class CFG {
 	    throw new IllegalArgumentException("edge is not part of this CFG");
 	outgoingEdgeMap.remove(edge);
 	incomingEdgeMap.remove(edge);
+
+	// Update incoming and outgoing edge counts
+	BasicBlock source = edge.getSource();
+	BasicBlock dest = edge.getDest();
+	source.setNumOutgoingEdges(source.getNumOutgoingEdges() - 1);
+	dest.setNumIncomingEdges(dest.getNumIncomingEdges() - 1);
     }
 
     /**

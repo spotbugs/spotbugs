@@ -45,6 +45,8 @@ public class BasicBlock implements Comparable {
     private ArrayList<InstructionHandle> instructionList;
     private boolean isExceptionThrower;
     private CodeExceptionGen exceptionGen; // set if this block is the entry point of an exception handler
+    private int numIncomingEdges;
+    private int numOutgoingEdges;
 
     /**
      * Constructor.
@@ -54,6 +56,8 @@ public class BasicBlock implements Comparable {
 	instructionList = new ArrayList<InstructionHandle>();
 	isExceptionThrower = false;
 	exceptionGen = null;
+	numIncomingEdges = 0;
+	numOutgoingEdges = 0;
     }
 
     /**
@@ -61,6 +65,28 @@ public class BasicBlock implements Comparable {
      */
     public int getId() {
 	return id;
+    }
+
+    /** Get the number of incoming edges. */
+    public int getNumIncomingEdges() { return numIncomingEdges; }
+
+    /**
+     * Set the number of incoming edges.
+     * @param numIncomingEdges the number of incoming edges
+     */
+    void setNumIncomingEdges(int numIncomingEdges) {
+	this.numIncomingEdges = numIncomingEdges;
+    }
+
+    /** Get the number of outgoing edges */
+    public int getNumOutgoingEdges() { return numOutgoingEdges; }
+
+    /**
+     * Set the number of outgoing edges.
+     * @param numOutgoingEdges the number of outgoing edges
+     */
+    void setNumOutgoingEdges(int numOutgoingEdges) {
+	this.numOutgoingEdges = numOutgoingEdges;
     }
 
     /**
