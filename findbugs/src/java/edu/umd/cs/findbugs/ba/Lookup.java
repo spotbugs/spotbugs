@@ -25,6 +25,16 @@ import org.apache.bcel.classfile.*;
 import org.apache.bcel.generic.*;
 
 public class Lookup {
+	public static boolean isMonitorWait(String methodName, String methodSig) {
+		return methodName.equals("wait") &&
+			(methodSig.equals("()V") || methodSig.equals("(J)V") || methodSig.equals("(JI)V"));
+	}
+
+	public static boolean isMonitorNotify(String methodName, String methodSig) {
+		return (methodName.equals("notify") || methodName.equals("notifyAll")) &&
+			methodSig.equals("()V");
+	}
+
 	public static Method findExactMethod(InvokeInstruction inv, ConstantPoolGen cpg) throws ClassNotFoundException {
 		String className = inv.getClassName(cpg);
 		String methodName = inv.getName(cpg);
