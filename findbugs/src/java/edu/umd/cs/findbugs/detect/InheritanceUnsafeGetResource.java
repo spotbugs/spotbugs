@@ -37,6 +37,7 @@ public class InheritanceUnsafeGetResource extends BytecodeScanningDetector imple
 	private boolean methodIsStatic;
 	int state = 0;
 	int sawGetClass;
+	boolean reportedForThisClass;
 
 	public InheritanceUnsafeGetResource(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
@@ -45,6 +46,7 @@ public class InheritanceUnsafeGetResource extends BytecodeScanningDetector imple
 
 	public void visit(JavaClass obj) {
 		classIsFinal = obj.isFinal();
+		reportedForThisClass = false;
 		classIsVisibleToOtherPackages = obj.isPublic() || obj.isProtected();
 		}
 
@@ -56,6 +58,7 @@ public class InheritanceUnsafeGetResource extends BytecodeScanningDetector imple
 		}
 
 	public void sawOpcode(int seen) {
+		if (reportedForThisClass) return;
 
 		switch(seen) {
 		    case ALOAD_0:
@@ -69,6 +72,7 @@ public class InheritanceUnsafeGetResource extends BytecodeScanningDetector imple
                 bugReporter.reportBug(new BugInstance("UI_INHERITANCE_UNSAFE_GETRESOURCE", NORMAL_PRIORITY)
                         .addClassAndMethod(this)
                         .addSourceLine(this));
+		reportedForThisClass = true;
 
 				}
 			else if (state == 1
