@@ -32,6 +32,7 @@ import java.awt.Graphics;
 import java.awt.Shape;
 import java.awt.Rectangle;
 import java.awt.Point;
+import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -61,6 +62,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
     
     /**
      * Custom cell renderer for the bug tree.
+     * We use this to select the tree icons, and to set the
+     * text color based on the bug priority.
      */
     private static class BugCellRenderer extends DefaultTreeCellRenderer {
         private ImageIcon bugGroupIcon;
@@ -70,6 +73,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
         private ImageIcon methodIcon;
         private ImageIcon fieldIcon;
         private ImageIcon sourceFileIcon;
+        private Object value;
         
         public BugCellRenderer() {
             ClassLoader classLoader = this.getClass().getClassLoader();
@@ -84,12 +88,14 @@ public class FindBugsFrame extends javax.swing.JFrame {
         
         public Component getTreeCellRendererComponent(JTree tree, Object value, boolean sel,
         boolean expanded, boolean leaf, int row, boolean hasFocus) {
+            DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
+            Object obj = node.getUserObject();
+            
+            this.value = obj;
             
             super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
             
             // Set the icon, depending on what kind of node it is
-            DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
-            Object obj = node.getUserObject();
             if (obj instanceof BugInstance) {
                 setIcon(bugIcon);
             } else if (obj instanceof ClassAnnotation) {
@@ -116,6 +122,27 @@ public class FindBugsFrame extends javax.swing.JFrame {
             }
             
             return this;
+        }
+       
+        public Color getTextNonSelectionColor() {
+            return getCellTextColor();
+        }
+        
+        private Color getCellTextColor() {
+            // Based on the priority, color-code the bug instance.
+            Color color = Color.BLACK;
+            if (value instanceof BugInstance) {
+                BugInstance bugInstance = (BugInstance) value;
+                switch (bugInstance.getPriority()) {
+                case Detector.LOW_PRIORITY:
+                    color = Color.BLACK; break;
+                case Detector.NORMAL_PRIORITY:
+                    color = new Color(0x9f0000); break;
+                case Detector.HIGH_PRIORITY:
+                    color = new Color(0xff0000); break;
+                }
+            }
+            return color;
         }
     }
     
