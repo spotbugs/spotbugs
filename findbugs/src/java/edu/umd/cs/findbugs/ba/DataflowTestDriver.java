@@ -58,16 +58,6 @@ public abstract class DataflowTestDriver<Fact> {
 		}
 
 		public String instructionAnnotate(InstructionHandle handle, BasicBlock bb) {
-/*
-			DataflowAnalysis<Fact> analysis = dataflow.getAnalysis();
-			Fact result = analysis.createFact();
-			try {
-				analysis.transfer(bb, handle, dataflow.getStartFact(bb), result);
-				return " " + result;
-			} catch (DataflowAnalysisException e) {
-				return " EXCEPTION" + e;
-			}
-*/
 			Fact result = analysis.getFactAtLocation(new Location(handle, bb));
 			return " " + result;
 		}
@@ -86,7 +76,7 @@ public abstract class DataflowTestDriver<Fact> {
 		Method[] methods = cg.getMethods();
 		for (int i = 0; i < methods.length; ++i) {
 			Method method = methods[i];
-			if (method.isAbstract() || method.isNative() || method.isStatic())
+			if (method.isAbstract() || method.isNative())
 				continue;
 			if (methodName != null && !method.getName().equals(methodName))
 				continue;
