@@ -9,12 +9,18 @@ public class SplitCamelCaseIdentifierTest extends TestCase {
 	SplitCamelCaseIdentifier splitter;
 	SplitCamelCaseIdentifier splitter2;
 	SplitCamelCaseIdentifier splitterLong;
+	SplitCamelCaseIdentifier allLower;
+	SplitCamelCaseIdentifier allUpper;
+	SplitCamelCaseIdentifier capitalized;
 	
 	//@Override
 	protected void setUp() throws Exception {
 		splitter = new SplitCamelCaseIdentifier("displayGUIWindow");
 		splitter2 = new SplitCamelCaseIdentifier("DisplayGUIWindow");
 		splitterLong = new SplitCamelCaseIdentifier("nowIsTheWINTEROfOURDiscontent");
+		allLower = new SplitCamelCaseIdentifier("foobar");
+		allUpper = new SplitCamelCaseIdentifier("NSA");
+		capitalized = new SplitCamelCaseIdentifier("Maryland");
 	}
 	
 	public void testSplit() {
@@ -31,9 +37,24 @@ public class SplitCamelCaseIdentifierTest extends TestCase {
 		Collection<String> words = splitterLong.split();
 		checkContents(words, new String[]{"now","is","the","winter","of","our","discontent"});
 	}
+	
+	public void testAllLower() {
+		Collection<String> words = allLower.split();
+		checkContents(words, new String[]{"foobar"});
+	}
+	
+	public void testAllUpper() {
+		Collection<String> words = allUpper.split();
+		checkContents(words, new String[]{"nsa"});
+	}
+	
+	public void testCapitalized() {
+		Collection<String> words = capitalized.split();
+		checkContents(words, new String[]{"maryland"});
+	}
 
 	private void checkContents(Collection<String> words, String[] expected) {
-		Assert.assertEquals(words.size(), expected.length);
+		Assert.assertEquals( expected.length, words.size());
 		for (int i = 0; i < expected.length; ++i) {
 			Assert.assertTrue(words.contains(expected[i]));
 		}
