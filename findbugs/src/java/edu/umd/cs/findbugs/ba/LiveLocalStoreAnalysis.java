@@ -21,6 +21,8 @@ package edu.umd.cs.findbugs.ba;
 
 import java.util.BitSet;
 
+import org.apache.bcel.classfile.Method;
+
 import org.apache.bcel.generic.IINC;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
@@ -111,6 +113,27 @@ public class LiveLocalStoreAnalysis extends BackwardDataflowAnalysis<BitSet> {
 
 	private boolean isTop(BitSet fact) {
 		return fact.get(topBit);
+	}
+
+	public static void main(String[] argv) throws Exception {
+		if (argv.length != 1) {
+			System.err.println("Usage: " + LiveLocalStoreAnalysis.class.getName() +
+				" <classfile>");
+			System.exit(1);
+		}
+
+		String filename = argv[0];
+
+		DataflowTestDriver<BitSet,LiveLocalStoreAnalysis> driver =
+			new DataflowTestDriver<BitSet, LiveLocalStoreAnalysis>() {
+
+			public Dataflow<BitSet, LiveLocalStoreAnalysis> createDataflow(ClassContext classContext, Method method)
+	        		throws CFGBuilderException, DataflowAnalysisException {
+				return classContext.getLiveLocalStoreDataflow(method);
+			}
+		};
+
+		driver.execute(filename);
 	}
 }
 
