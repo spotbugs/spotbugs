@@ -13,12 +13,21 @@
 		speed="fast"
 		reports="MF_METHOD_MASKS_FIELD,MF_CLASS_MASKS_FIELD"/>
 
+    <Detector 
+        class="edu.umd.cs.findbugs.style.WrongMapIterator" 
+        speed="fast"
+        reports="MVI_WRONG_MAP_ITERATOR"/>
+
 	<!-- FIXME: change "CORRECTNESS" to "STYLE" -->
 
 	<BugPattern abbrev="DLS" type="DLS_DEAD_LOCAL_STORE" category="CORRECTNESS"/>
 
 	<BugPattern abbrev="MF" type="MF_METHOD_MASKS_FIELD" category="CORRECTNESS"/>
 	<BugPattern abbrev="MF" type="MF_CLASS_MASKS_FIELD" category="CORRECTNESS"/>
+
+    <BugPattern abbrev="WMI" type="WMI_WRONG_MAP_ITERATOR" category="PERFORMANCE"
+         experimental="true"/>
+
 </FindbugsPlugin>
 
 <!-- vim:set ts=4: -->

@@ -29,6 +29,15 @@ It is a fast detector.</p>
 		</Details>
 	</Detector>
 
+    <Detector class="edu.umd.cs.findbugs.style.WrongMapIterator">
+        <Details>
+<![CDATA[
+<p> This detector looks for accessing the value of a Map entry, using a key that was retrieved from
+a keySet iterator. It is a fast detector.
+]]>
+       </Details>
+    </Detector>
+
 	<!-- BugPatterns -->
 
 	<BugPattern type="DLS_DEAD_LOCAL_STORE">
@@ -72,10 +81,23 @@ the fields when they wanted the other.</p>
 		</Details>
 	</BugPattern>
 
+    <BugPattern type="WMI_WRONG_MAP_ITERATOR">
+        <ShortDescription>Inefficient use of keySet iterator instead of entrySet iterator</ShortDescription>
+        <LongDescription>Method {1} makes inefficient use of keySet iterator instead of entrySet iterator</LongDescription>
+        <Details>
+<![CDATA[
+<p> This detector looks for accessing the value of a Map entry, using a key that was retrieved from
+a keySet iterator. It is more efficient to use an iterator on the entrySet of the map, to avoid the 
+Map.get(key) lookup.
+]]>
+        </Details>
+    </BugPattern>
+
 	<!-- BugCodes -->
 
 	<BugCode abbrev="DLS">Dead local store</BugCode>
 	<BugCode abbrev="MF">Masked Field</BugCode>
+    <BugCode abbrev="WMI">Wrong Map Iterator</BugCode>
 
 </MessageCollection>
 
