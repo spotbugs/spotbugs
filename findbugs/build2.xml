@@ -42,8 +42,7 @@
 	<!-- Rebuild from scratch. -->
 	<target name="rebuild" depends="clean,build"/>
 
-	<!-- Compile Java source files, and copy other auxiliary files
-		needed to execute the classes. -->
+	<!-- Compile Java source files. -->
 	<target name="classes">
 		<javac srcdir="src/java"
 				destdir="${classes.dir}"
@@ -52,13 +51,6 @@
 				debug="on">
 			<classpath refid="findbugs.classpath"/>
 		</javac>
-		<copy todir="${classes.dir}">
-			<fileset dir="${src.dir}">
-				<include name="**/*.properties"/>
-				<include name="**/*.png"/>
-				<include name="**/*.html"/>
-			</fileset>
-		</copy>
 	</target>
 
 	<!-- Build jar files. -->
@@ -66,11 +58,18 @@
 		<!-- Main engine and command line jar file. -->
 		<jar destfile="${engine.jar}"
 				manifest="etc/MANIFEST-findbugs.MF">
+			<!-- Compiled classes. -->
 			<fileset dir="${classes.dir}">
 				<exclude name="${pkg.base}/tools/**"/>
 				<exclude name="${pkg.base}/gui/**"/>
 				<exclude name="${pkg.base}/detect/**"/>
 				<include name="**/*.class"/>
+			</fileset>
+			<!-- Properties files. -->
+			<fileset dir="${src.dir}">
+				<exclude name="${pkg.base}/tools/**"/>
+				<exclude name="${pkg.base}/gui/**"/>
+				<exclude name="${pkg.base}/detect/**"/>
 				<include name="**/*.properties"/>
 			</fileset>
 			<fileset dir="${etc.dir}">
@@ -94,6 +93,8 @@
 				manifest="etc/MANIFEST-findbugsGUI.MF">
 			<fileset dir="${classes.dir}">
 				<include name="${pkg.base}/gui/**/*.class"/>
+			</fileset>
+			<fileset dir="${src.dir}">
 				<include name="${pkg.base}/gui/**/*.properties"/>
 				<include name="${pkg.base}/gui/**/*.png"/>
 				<include name="${pkg.base}/gui/**/*.html"/>
