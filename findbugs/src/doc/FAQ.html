@@ -22,6 +22,7 @@
 <li> <a href="#q2">When I click the "Find Bugs!" button, I get a NoSuchMethodError</a>
 <li> <a href="#q3">FindBugs is running out of memory, or is taking a long time to finish</a>
 <li> <a href="#q4">What is the "auxiliary classpath"?  Why should I specify it?</a>
+<li> <a href="#q5">The Eclipse plugin doesn't load</a>
 </ol>
 
 <h2><a name="q1">Q1: I'm getting java.lang.UnsupportedClassVersionError when I try to run FindBugs</a></h2>
@@ -120,6 +121,20 @@ by using the <code>-auxclasspath</code> command line option, or the
 will print out a message when the analysis completes, specifying the
 classes that were missing.&nbsp; You should modify the auxiliary classpath
 to specify how to find the missing classes, and then run FindBugs again.
+
+<h2><a name="q5">Q5: The Eclipse plugin doesn't load</a></h2>
+
+<p> The symptom of this problem is that Eclipse fails to load
+the FindBugs UI plugin with the message:
+<blockquote>
+Plug-in "de.tobject.findbugs" was disabled due to missing or disabled
+prerequisite plug-in "org.eclipse.ui.ide"
+</blockquote>
+
+<p> The reason for this problem is that starting with FindBugs
+version 0.7.3, the FindBugs Eclipse plugin
+no longer works on 2.x versions of Eclipse.&nbsp; The plugin should
+work on recent 3.0 milestones (for example, 3.0 M8).
 
 @HTML_FOOTER@
 
