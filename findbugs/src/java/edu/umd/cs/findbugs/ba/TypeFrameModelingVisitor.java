@@ -231,9 +231,14 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 		// popped off of the stack.
 		TypeFrame frame = getFrame();
 		try {
-			Type arrayType = frame.popValue();
-			ArrayType arr = (ArrayType) arrayType;
-			pushValue(arr.getElementType());
+			frame.popValue(); // index
+			Type arrayType = frame.popValue(); // arrayref
+			if (arrayType instanceof ArrayType) {
+				ArrayType arr = (ArrayType) arrayType;
+				pushValue(arr.getElementType());
+			} else {
+				pushValue(TypeFrame.getBottomType());
+			}
 		} catch (DataflowAnalysisException e) {
 			throw new IllegalStateException("Stack underflow: " + e.getMessage());
 		}
