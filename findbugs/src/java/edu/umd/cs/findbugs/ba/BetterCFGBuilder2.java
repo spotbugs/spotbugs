@@ -161,6 +161,7 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes {
 	private ExceptionHandlerMap exceptionHandlerMap;
 	private BitSet usedInstructionSet;
 	private LinkedList<Context> contextWorkList;
+	private IdentityHashMap<InstructionHandle, Context> jsrMap;
 	private Context topLevelContext;
 
 	/* ----------------------------------------------------------------------
@@ -172,6 +173,7 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes {
 		this.cpg = methodGen.getConstantPool();
 		this.exceptionHandlerMap = new ExceptionHandlerMap(methodGen);
 		this.usedInstructionSet = new BitSet();
+		this.jsrMap = new IdentityHashMap<InstructionHandle, Context>();
 		this.contextWorkList = new LinkedList<Context>();
 	}
 
@@ -231,8 +233,16 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes {
 				// if (ins instanceof ASTORE) ...
 
 				if (opcode == Constants.JSR || opcode == Constants.JSR_W) {
-					// TODO: find JSR subroutine, add it to context work list if
+					// Find JSR subroutine, add it to context work list if
 					// we haven't built a CFG for it yet
+					JsrInstruction jsr = (JsrInstruction) ins;
+					InstructionHandle jsrTarget = jsr.getTarget();
+					Context jsrContext = jsrMap.get(jsrTarget);
+					if (jsrContext == null) {
+						jsrContext = new Context(jsrTarget);
+						jsrMap.put(jsrTarget, jsrContext);
+						contextWorkList.add(jsrContext);
+					}
 
 					// This ends the basic block.
 					// Add a JSR_EDGE to the successor.
@@ -311,14 +321,12 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes {
 	private static boolean isMerge(InstructionHandle handle) {
 		if (handle.hasTargeters()) {
 			// Check all targeters of this handle to see if any
-			// of them are branches.  Note that we don't consider JSR
-			// instructions to be branches, since we inline JSR subroutines.
+			// of them are branches.  If so, the instruction is a merge.
 			InstructionTargeter[] targeterList = handle.getTargeters();
 			for (int i = 0; i < targeterList.length; ++i) {
 				InstructionTargeter targeter = targeterList[i];
-				if (targeter instanceof BranchInstruction && !(targeter instanceof JsrInstruction)) {
+				if (targeter instanceof BranchInstruction)
 					return true;
-				}
 			}
 		}
 		return false;
