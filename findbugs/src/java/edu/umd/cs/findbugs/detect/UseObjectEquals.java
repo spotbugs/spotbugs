@@ -73,7 +73,7 @@ public class UseObjectEquals extends BytecodeScanningDetector implements Constan
 				}
 			}
 		} catch (ClassNotFoundException cnfe) {
-			cnfe.printStackTrace();
+			//cnfe.printStackTrace();
 			bugReporter.reportMissingClass(cnfe);
 		}
 		finally {
