@@ -198,7 +198,7 @@ public class ValueNumberFrameModelingVisitor
 	}
 
 	public void visitINVOKESTATIC(INVOKESTATIC obj) {
-		if (doRedundantLoadElimination(obj)) {
+		if (REDUNDANT_LOAD_ELIMINATION/*doRedundantLoadElimination(obj)*/) {
 			ConstantPoolGen cpg = getCPG();
 			String methodName = obj.getName(cpg);
 			String methodSig = obj.getSignature(cpg);
@@ -219,7 +219,25 @@ public class ValueNumberFrameModelingVisitor
 					throw new AnalysisException("stack underflow", methodGen, handle, e);
 				}
 			} else if (Hierarchy.isInnerClassAccess(obj, cpg)) {
+/*
 				try {
+*/
+					XField xfield = loadedFieldSet.getField(handle);
+					if (xfield != null /*&& doRedundantLoadElimination(xfield)*/) {
+						if (loadedFieldSet.instructionIsLoad(handle)) {
+							if (xfield.isStatic())
+								loadStaticField((StaticField) xfield, obj);
+							else
+								loadInstanceField((InstanceField) xfield, obj);
+						} else {
+							if (xfield.isStatic())
+								storeStaticField((StaticField) xfield, obj, true);
+							else
+								storeInstanceField((InstanceField) xfield, obj, true);
+						}
+						return;
+					}
+/*
 					InnerClassAccess access = Hierarchy.getInnerClassAccess(obj, cpg);
 					if (access != null && access.getMethodSignature().equals(methodSig)) {
 						// Inner class field access method found.
@@ -238,9 +256,12 @@ public class ValueNumberFrameModelingVisitor
 
 						return;
 					}
+*/
+/*
 				} catch (ClassNotFoundException e) {
 					lookupFailureCallback.reportMissingClass(e);
 				}
+*/
 			}
 		}
 
