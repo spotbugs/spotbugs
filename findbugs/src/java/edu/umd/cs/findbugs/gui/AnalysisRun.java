@@ -102,7 +102,7 @@ public class AnalysisRun {
 		this.frame = frame;
 		this.logger = frame.getLogger();
 		this.reporter = new Reporter();
-		this.reporter.setPriorityThreshold(Detector.LOW_PRIORITY);
+		this.reporter.setPriorityThreshold(Detector.EXP_PRIORITY);
 		this.findBugs = new FindBugs(reporter, project);
 		this.treeModelMap = new HashMap<String, DefaultTreeModel>();
 	}

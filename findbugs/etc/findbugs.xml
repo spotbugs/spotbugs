@@ -283,7 +283,7 @@
   <BugPattern abbrev="BRSA" type="BRSA_BAD_RESULTSET_ACCESS" category="CORRECTNESS"
     experimental="true"/>
   <BugPattern abbrev="SIO" type="SIO_SUPERFLUOUS_INSTANCEOF" category="CORRECTNESS"
-    expermental="true"/>
+    experimental="true"/>
   <BugPattern abbrev="DLS" type="DLS_DEAD_LOCAL_STORE" category="CORRECTNESS"
     experimental="true"/>
   <BugPattern abbrev="BAC" type="BAC_BAD_APPLET_CONSTRUCTOR" category="CORRECTNESS"

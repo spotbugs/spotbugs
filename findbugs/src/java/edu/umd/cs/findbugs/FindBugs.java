@@ -467,7 +467,9 @@ public class FindBugs implements Constants2, ExitCodes {
 		}
 
 		protected void handleOption(String option, String optionExtraPart) {
-			if (option.equals("-low"))
+			if (option.equals("-experimental"))
+				priorityThreshold = Detector.EXP_PRIORITY;
+			else if (option.equals("-low"))
 				priorityThreshold = Detector.LOW_PRIORITY;
 			else if (option.equals("-medium"))
 				priorityThreshold = Detector.NORMAL_PRIORITY;

@@ -79,7 +79,7 @@ public class BugInstance implements Comparable, XMLWriteable {
 	 * is invalid, and should be recomputed.
 	 */
 	private static final int INVALID_HASH_CODE = 0;
-
+	
 	/**
 	 * Constructor.
 	 *
@@ -93,6 +93,9 @@ public class BugInstance implements Comparable, XMLWriteable {
 		primaryClassAnnotation = null;
 		cachedHashCode = INVALID_HASH_CODE;
 		annotationText = "";
+		
+		if (/*-adjustExperimental && */isExperimental())
+			this.priority = Detector.EXP_PRIORITY;
 	}
 
 	/**
@@ -116,8 +119,11 @@ public class BugInstance implements Comparable, XMLWriteable {
 					this.priority = 0;
 			}
 		}
+		
+		if (/* -adjustExperimental && */isExperimental())
+			this.priority = Detector.EXP_PRIORITY;
 	}
-	
+		
 	/* ----------------------------------------------------------------------
 	 * Accessors
 	 * ---------------------------------------------------------------------- */

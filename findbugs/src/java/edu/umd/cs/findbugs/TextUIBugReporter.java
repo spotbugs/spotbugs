@@ -42,6 +42,9 @@ public abstract class TextUIBugReporter extends AbstractBugReporter {
 
 	protected void printBug(BugInstance bugInstance) {
 		switch (bugInstance.getPriority()) {
+		case Detector.EXP_PRIORITY:
+			outputStream.print("E ");
+			break;
 		case Detector.LOW_PRIORITY:
 			outputStream.print("L ");
 			break;

@@ -32,6 +32,7 @@ public interface AnalysisFeatures {
 	 * of speed.
 	 */
 	public static final boolean WORK_HARD = Boolean.getBoolean("findbugs.workHard");
+
 }
 
 // vim:ts=4

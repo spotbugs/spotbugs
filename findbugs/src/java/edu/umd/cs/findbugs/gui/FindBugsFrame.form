@@ -312,6 +312,20 @@
             </MenuItem>
             <MenuItem class="javax.swing.JSeparator" name="jSeparator7">
             </MenuItem>
+            <MenuItem class="javax.swing.JRadioButtonMenuItem" name="expPriorityButton">
+              <Properties>
+                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                  <Font name="Dialog" size="12" style="0"/>
+                </Property>
+                <Property name="text" type="java.lang.String" value="Experimental Priority"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="expPriorityButtonActionPerformed"/>
+              </Events>
+              <AuxValues>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="localiseButton(expPriorityButton, &quot;menu.exppriority_item&quot;, &quot;&amp;Experimental Priority&quot;, true);&#xa;expPriorityButton.setSelected(priorityThreshold == Detector.EXP_PRIORITY);"/>
+              </AuxValues>
+            </MenuItem>
             <MenuItem class="javax.swing.JRadioButtonMenuItem" name="lowPriorityButton">
               <Properties>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">

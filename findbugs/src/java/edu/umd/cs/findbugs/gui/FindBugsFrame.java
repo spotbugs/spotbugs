@@ -61,6 +61,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	private static final Color HIGH_PRIORITY_COLOR = new Color(0xff0000);
 	private static final Color NORMAL_PRIORITY_COLOR = new Color(0x9f0000);
 	private static final Color LOW_PRIORITY_COLOR = Color.BLACK;
+	private static final Color EXP_PRIORITY_COLOR = Color.BLACK;
 
 	/**
 	 * Custom cell renderer for the bug tree.
@@ -136,6 +137,9 @@ public class FindBugsFrame extends javax.swing.JFrame {
 			if (value instanceof BugInstance) {
 				BugInstance bugInstance = (BugInstance) value;
 				switch (bugInstance.getPriority()) {
+				case Detector.EXP_PRIORITY:
+					color = EXP_PRIORITY_COLOR;
+					break;
 				case Detector.LOW_PRIORITY:
 					color = LOW_PRIORITY_COLOR;
 					break;
@@ -546,6 +550,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
         viewBugDetailsItem = new javax.swing.JCheckBoxMenuItem();
         fullDescriptionsItem = new javax.swing.JCheckBoxMenuItem();
         jSeparator7 = new javax.swing.JSeparator();
+        expPriorityButton = new javax.swing.JRadioButtonMenuItem();
         lowPriorityButton = new javax.swing.JRadioButtonMenuItem();
         mediumPriorityButton = new javax.swing.JRadioButtonMenuItem();
         highPriorityButton = new javax.swing.JRadioButtonMenuItem();
@@ -1469,6 +1474,18 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
             viewMenu.add(jSeparator7);
 
+            expPriorityButton.setFont(new java.awt.Font("Dialog", 0, 12));
+            expPriorityButton.setText("Experimental Priority");
+            localiseButton(expPriorityButton, "menu.exppriority_item", "&Experimental Priority", true);
+            expPriorityButton.setSelected(priorityThreshold == Detector.EXP_PRIORITY);
+            expPriorityButton.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    expPriorityButtonActionPerformed(evt);
+                }
+            });
+
+            viewMenu.add(expPriorityButton);
+
             lowPriorityButton.setFont(new java.awt.Font("Dialog", 0, 12));
             lowPriorityButton.setText("Low Priority");
             localiseButton(lowPriorityButton, "menu.lowpriority_item", "&Low Priority", true);
@@ -1711,20 +1728,30 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	private void highPriorityButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_highPriorityButtonActionPerformed
 		mediumPriorityButton.setSelected(false);
 		lowPriorityButton.setSelected(false);
+		expPriorityButton.setSelected(false);
 		setPriorityThreshold(Detector.HIGH_PRIORITY);
 	}//GEN-LAST:event_highPriorityButtonActionPerformed
 
 	private void mediumPriorityButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mediumPriorityButtonActionPerformed
 		highPriorityButton.setSelected(false);
 		lowPriorityButton.setSelected(false);
+		expPriorityButton.setSelected(false);
 		setPriorityThreshold(Detector.NORMAL_PRIORITY);
 	}//GEN-LAST:event_mediumPriorityButtonActionPerformed
 
 	private void lowPriorityButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_lowPriorityButtonActionPerformed
 		highPriorityButton.setSelected(false);
 		mediumPriorityButton.setSelected(false);
+		expPriorityButton.setSelected(false);
 		setPriorityThreshold(Detector.LOW_PRIORITY);
 	}//GEN-LAST:event_lowPriorityButtonActionPerformed
+
+    private void expPriorityButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_expPriorityButtonActionPerformed
+		highPriorityButton.setSelected(false);
+		mediumPriorityButton.setSelected(false);
+		lowPriorityButton.setSelected(false);
+		setPriorityThreshold(Detector.EXP_PRIORITY);
+    }//GEN-LAST:event_expPriorityButtonActionPerformed
 
 	private void saveBugsItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveBugsItemActionPerformed
 
@@ -3470,6 +3497,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
     private javax.swing.JPanel editProjectPanel;
     private javax.swing.JPanel emptyPanel;
     private javax.swing.JMenuItem exitItem;
+    private javax.swing.JRadioButtonMenuItem expPriorityButton;
     private javax.swing.JMenu fileMenu;
     private javax.swing.JButton findBugsButton;
     private javax.swing.JCheckBoxMenuItem fullDescriptionsItem;
