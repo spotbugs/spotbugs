@@ -19,7 +19,7 @@
 
 package edu.umd.cs.findbugs.tools.patcomp;
 
-import java.io.PrintStream;
+import java.io.IOException;
 
 /**
  * From a parsed FindBugs Pattern (.fbp) file,
@@ -28,18 +28,17 @@ import java.io.PrintStream;
  * @author David Hovemeyer
  */
 public class CodeGen implements PatternCompilerTreeConstants {
-	private PrintStream out;
-	private int indent = 0;
+	private CodeEmitter emitter;
 
 	public CodeGen() {
 	}
 
-	public void generate(SimpleNode root, PrintStream out) {
-		this.out = out;
+	public void generate(SimpleNode root, CodeEmitter emitter) throws IOException {
+		this.emitter = emitter;
 		visit(root);
 	}
 
-	private void visit(SimpleNode node) {
+	private void visit(SimpleNode node) throws IOException {
 		switch (node.getId()) {
 		case JJTPRESCREEN:
 			generatePrescreen(node);
@@ -50,7 +49,7 @@ public class CodeGen implements PatternCompilerTreeConstants {
 		}
 	}
 
-	public void generateDefault(SimpleNode node) {
+	public void generateDefault(SimpleNode node) throws IOException {
 //		System.out.println("START " + node.toString() +
 //			": first=" + node.getFirstToken() + ", last=" + node.getLastToken());
 
@@ -74,15 +73,13 @@ public class CodeGen implements PatternCompilerTreeConstants {
 				t = nextChild.getFirstToken();
 
 			while (t != nextChild.getFirstToken()) {
-				emit(t.image);
+				emitter.emitToken(t.image);
 				t = t.next;
 			}
 
 			child = nextChild;
 
-			++indent;
 			visit(child);
-			--indent;
 
 			++childNum;
 		}
@@ -96,7 +93,7 @@ public class CodeGen implements PatternCompilerTreeConstants {
 			t = null;
 
 		while (t != null) {
-			emit(t.image);
+			emitter.emitToken(t.image);
 			if (t == node.getLastToken())
 				break;
 			t = t.next;
@@ -106,14 +103,8 @@ public class CodeGen implements PatternCompilerTreeConstants {
 //			": first=" + node.getFirstToken() + ", last=" + node.getLastToken());
 	}
 
-	public void generatePrescreen(SimpleNode node) {
+	public void generatePrescreen(SimpleNode node) throws IOException {
 		System.out.println("Generating prescreen code");
-	}
-
-	private void emit(String t) {
-		for (int i = 0; i < indent; ++i)
-			out.print("  ");
-		out.println(t);
 	}
 }
 
