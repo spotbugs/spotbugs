@@ -80,7 +80,7 @@ public class FindReturnRef extends BytecodeScanningDetector implements   Constan
     public void sawOpcode(int seen) {
 	assert check;
 	/*
-	System.out.println("Saw " + OPCODE_NAMES[seen] + "	" 
+	System.out.println("Saw " + PC + ": " + OPCODE_NAMES[seen] + "	" 
 			+ thisOnTOS
 			+ "	"
 			+ fieldOnTOS
@@ -171,7 +171,7 @@ public class FindReturnRef extends BytecodeScanningDetector implements   Constan
 		classNameOnStack = betterClassConstant;
 		sigOnStack = sigConstant;
 		fieldIsStatic = false;
-		// System.out.println("Saw getfield");
+		 // System.out.println("Saw getfield");
 		return;
 		}
 	if (seen == GETSTATIC && classConstant.equals(className))  {

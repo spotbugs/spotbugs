@@ -38,6 +38,7 @@ public class FindUncalledPrivateMethods extends BytecodeScanningDetector {
 	private BugReporter bugReporter;
 	private String className;
 	private HashSet<MethodAnnotation> definedPrivateMethods, calledMethods;
+	private HashSet<String> calledMethodNames;
 
 	public FindUncalledPrivateMethods(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
@@ -49,7 +50,12 @@ public class FindUncalledPrivateMethods extends BytecodeScanningDetector {
 				&& !methodName.equals("writeReplace")
 				&& !methodName.equals("readResolve")
 				&& !methodName.equals("readObject")
+				&& !methodName.equals("readObjectNoData")
 				&& !methodName.equals("writeObject")
+				&& methodName.indexOf("debug") == -1
+				&& methodName.indexOf("Debug") == -1
+				&& methodName.indexOf("trace") == -1
+				&& methodName.indexOf("Trace") == -1
 				&& !methodName.equals("<init>")
 				&& !methodName.equals("<clinit>")
 				)
@@ -64,6 +70,9 @@ public class FindUncalledPrivateMethods extends BytecodeScanningDetector {
 			if (betterClassConstant.equals(className)) {
 				MethodAnnotation called = new MethodAnnotation(betterClassConstant, nameConstant, sigConstant);
 				calledMethods.add(called);
+				calledMethodNames.add(nameConstant.toLowerCase());
+				// System.out.println("Saw call to " + called);
+				
 			}
 			break;
 		default:
@@ -74,6 +83,7 @@ public class FindUncalledPrivateMethods extends BytecodeScanningDetector {
 	public void visitClassContext(ClassContext classContext) {
 		definedPrivateMethods = new HashSet<MethodAnnotation>();
 		calledMethods = new HashSet<MethodAnnotation>();
+		calledMethodNames = new HashSet<String>();
 		className = classContext.getJavaClass().getClassName();
 
 		super.visitClassContext(classContext);
@@ -81,9 +91,17 @@ public class FindUncalledPrivateMethods extends BytecodeScanningDetector {
 		definedPrivateMethods.removeAll(calledMethods);
 
 		for (Iterator<MethodAnnotation> i = definedPrivateMethods.iterator(); i.hasNext(); ) {
-			BugInstance bugInstance = new BugInstance("UPM_UNCALLED_PRIVATE_METHOD", NORMAL_PRIORITY)
+			MethodAnnotation m = i.next();
+			// System.out.println("Checking " + m);
+			int priority = LOW_PRIORITY;
+			if (calledMethodNames.contains(m.getMethodName())
+					.toLowerCase())
+				priority = NORMAL_PRIORITY;
+			BugInstance bugInstance 
+			  = new BugInstance("UPM_UNCALLED_PRIVATE_METHOD", 
+					priority)
 				.addClass(this)
-				.addMethod(i.next());
+				.addMethod(m);
 			bugReporter.reportBug(bugInstance);
 		}
 

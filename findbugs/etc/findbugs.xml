@@ -1,11 +1,11 @@
 <FindbugsPlugin>
   <Detector class="edu.umd.cs.findbugs.detect.DontCatchIllegalMonitorStateException" 
-	speed="fast" disable="false"
+	speed="fast"
     reports="IMSE_DONT_CATCH_IMSE" />
   <Detector class="edu.umd.cs.findbugs.detect.FindFloatMath" speed="moderate" 
-	disable="true"
+	disabled="true"
     reports="FL_MATH_USING_FLOAT_PRECISION" />
-  <Detector class="edu.umd.cs.findbugs.detect.CloneIdiom" speed="fast" disable="true"
+  <Detector class="edu.umd.cs.findbugs.detect.CloneIdiom" speed="fast" 
     reports="CN_IDIOM" />
   <Detector class="edu.umd.cs.findbugs.detect.FindFieldSelfAssignment" speed="fast"
     reports="SA_FIELD_SELF_ASSIGNMENT"/>
@@ -59,7 +59,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.ReadReturnShouldBeChecked" speed="fast"
     reports="RR_NOT_CHECKED" />
   <Detector class="edu.umd.cs.findbugs.detect.SerializableIdiom" speed="fast"
-    reports="SE_NO_SERIALVERSIONID,WS_WRITEOBJECT_SYNC,RS_READOBJECT_SYNC,SE_BAD_FIELD,SE_NONLONG_SERIALVERSIONID,SE_NONSTATIC_SERIALVERSIONID,SE_NONFINAL_SERIALVERSIONID" />
+    reports="SE_NO_SERIALVERSIONID,WS_WRITEOBJECT_SYNC,RS_READOBJECT_SYNC,SE_BAD_FIELD,SE_NONLONG_SERIALVERSIONID,SE_NONSTATIC_SERIALVERSIONID,SE_NONFINAL_SERIALVERSIONID,SE_NO_SUITABLE_CONSTRUCTOR,SE_NO_SUITABLE_CONSTRUCTOR_FOR_EXTERNALIZATION" />
   <Detector class="edu.umd.cs.findbugs.detect.StartInConstructor" speed="fast"
     reports="SC_START_IN_CTOR" />
   <Detector class="edu.umd.cs.findbugs.detect.UnreadFields" speed="fast"
@@ -150,6 +150,8 @@
   <BugPattern abbrev="Nm" type="NM_LCASE_HASHCODE" category="CORRECTNESS" />
   <BugPattern abbrev="Nm" type="NM_LCASE_TOSTRING" category="CORRECTNESS" />
   <BugPattern abbrev="RR" type="RR_NOT_CHECKED" category="CORRECTNESS" />
+  <BugPattern abbrev="Se" type="SE_NO_SUITABLE_CONSTRUCTOR" category="CORRECTNESS" />
+  <BugPattern abbrev="Se" type="SE_NO_SUITABLE_CONSTRUCTOR_FOR_EXTERNALIZATION" category="CORRECTNESS" />
   <BugPattern abbrev="Se" type="SE_NO_SERIALVERSIONID" category="CORRECTNESS" />
   <BugPattern abbrev="WS" type="WS_WRITEOBJECT_SYNC" category="MT_CORRECTNESS" />
   <BugPattern abbrev="RS" type="RS_READOBJECT_SYNC" category="MT_CORRECTNESS" />

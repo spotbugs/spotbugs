@@ -32,6 +32,7 @@ public class SerializableIdiom extends PreorderVisitor
 
     boolean sawSerialVersionUID;
     boolean isSerializable, implementsSerializableDirectly;
+    boolean isExternalizable;
     boolean isGUIClass;
     boolean foundSynthetic;
     boolean foundSynchronizedMethods;
@@ -43,6 +44,11 @@ public class SerializableIdiom extends PreorderVisitor
     private boolean sawWriteExternal;
     private boolean sawReadObject;
     private boolean sawWriteObject;
+    private boolean superClassImplementsSerializable;
+    private boolean hasPublicVoidConstructor;
+    private boolean superClassHasVoidConstructor;
+    private boolean directlyImplementsExternalizable;
+    private boolean isRemote;
 
     public SerializableIdiom(BugReporter bugReporter) {
 	this.bugReporter = bugReporter;
@@ -70,12 +76,20 @@ public class SerializableIdiom extends PreorderVisitor
 			   || (flags & ACC_INTERFACE) != 0;
         sawSerialVersionUID = false;
         isSerializable = implementsSerializableDirectly = false;
+	isExternalizable = false;
+	directlyImplementsExternalizable = false;
 	isGUIClass = false;
+	isRemote = false;
 
         // Does this class directly implement Serializable?
         String [] interface_names = obj.getInterfaceNames();
         for(int i=0; i < interface_names.length; i++) {
-            if (interface_names[i].equals("java.io.Serializable")) {
+            if (interface_names[i].equals("java.io.Externalizable")) {
+		directlyImplementsExternalizable = true;
+                isExternalizable = true;
+		// System.out.println("Directly implements Externalizable: " + betterClassName);
+		}
+            else if (interface_names[i].equals("java.io.Serializable")) {
 		implementsSerializableDirectly = true;
                 isSerializable = true;
 		break;
@@ -85,14 +99,49 @@ public class SerializableIdiom extends PreorderVisitor
         // Does this class indirectly implement Serializable?
 	if (!isSerializable) {
 	    try {
+	        if (Repository.instanceOf(obj,"java.io.Externalizable"))
+		    isExternalizable = true;
 	        if (Repository.instanceOf(obj,"java.io.Serializable"))
 		    isSerializable = true;
-	        if (Repository.instanceOf(obj,"java.rmi.Remote"))
-		    isSerializable = false;
+	        if (Repository.instanceOf(obj,"java.rmi.Remote")) {
+		    isRemote = true;
+		    }
 	    } catch (ClassNotFoundException e) {
 		bugReporter.reportMissingClass(e);
 	    }
 	}
+
+        hasPublicVoidConstructor = false;
+        superClassHasVoidConstructor = true;
+        superClassImplementsSerializable = isSerializable && !implementsSerializableDirectly;
+	try {
+	JavaClass superClass = obj.getSuperClass();
+	Method [] superClassMethods = superClass.getMethods();
+	superClassImplementsSerializable = Repository.instanceOf(superClass,
+				"java.io.Serializable");
+        superClassHasVoidConstructor = false;
+	for(int i = 0; i < superClassMethods.length; i++) {
+		Method m = superClassMethods[i];
+		/*
+		System.out.println("Supercase has method named " + m.getName()
+			+ " with sig " + m.getSignature());
+		*/
+		if (m.getName().equals("<init>")
+			 && m.getSignature().equals("()V")
+			 && m.isPublic()
+			)
+		  superClassHasVoidConstructor = true;
+		}
+	} catch (ClassNotFoundException e) {}
+
+
+
+	if (isSerializable && !isExternalizable
+		&& !superClassHasVoidConstructor 
+		&& !superClassImplementsSerializable)
+		bugReporter.reportBug(new BugInstance("SE_NO_SUITABLE_CONSTRUCTOR", implementsSerializableDirectly ?
+					HIGH_PRIORITY : NORMAL_PRIORITY)
+			.addClass(thisClass.getClassName()));
 
 	// Is this a GUI class?
 	try {
@@ -109,11 +158,25 @@ public class SerializableIdiom extends PreorderVisitor
 	}
 
 	public void visitAfter(JavaClass obj) {
+	if (false) {
+	System.out.println(betterClassName);
+	System.out.println("  hasPublicVoidConstructor: " + hasPublicVoidConstructor);
+	System.out.println("  superClassHasVoidConstructor: " + superClassHasVoidConstructor);
+	System.out.println("  isExternalizable: " + isExternalizable);
+	System.out.println("  isSerializable: " + isSerializable);
+	System.out.println("  isAbstract: " + isAbstract);
+	System.out.println("  superClassImplementsSerializable: " + superClassImplementsSerializable);
+	}
 	// Downgrade class-level warnings if it's a GUI class.
 	if (isGUIClass) return;
 	int priority = isGUIClass ? LOW_PRIORITY : NORMAL_PRIORITY;
 
-	if (foundSynthetic 
+	if (isExternalizable && !hasPublicVoidConstructor && !isAbstract)
+		bugReporter.reportBug(new BugInstance("SE_NO_SUITABLE_CONSTRUCTOR_FOR_EXTERNALIZATION", 
+					directlyImplementsExternalizable ?
+					HIGH_PRIORITY : NORMAL_PRIORITY)
+			.addClass(thisClass.getClassName()));
+	if (foundSynthetic  && !isExternalizable
 		&& isSerializable && !isAbstract && !sawSerialVersionUID)
 		bugReporter.reportBug(new BugInstance("SE_NO_SERIALVERSIONID", priority).addClass(this));
 
@@ -124,6 +187,10 @@ public class SerializableIdiom extends PreorderVisitor
     public void visit(Method obj) {
 	int accessFlags = obj.getAccessFlags();
         boolean isSynchronized = (accessFlags & ACC_SYNCHRONIZED) != 0;
+	if (methodName.equals("<init>") && methodSig.equals("()V")
+			&& (accessFlags & ACC_PUBLIC) != 0
+			) 
+		hasPublicVoidConstructor = true;
 	if (!methodName.equals("<init>") 
 		&& isSynthetic(obj)) foundSynthetic = true;
 	// System.out.println(methodName + isSynchronized);
@@ -160,7 +227,9 @@ public class SerializableIdiom extends PreorderVisitor
 	int flags = obj.getAccessFlags();
 
 	if (className.indexOf("ObjectStreamClass") == -1
-	    && isSerializable && fieldSig.indexOf("L")  >= 0 && !obj.isTransient() && !obj.isStatic()) {
+	    && isSerializable 
+		&& !isExternalizable
+		&& fieldSig.indexOf("L")  >= 0 && !obj.isTransient() && !obj.isStatic()) {
 		try {
 			String fieldClassName = fieldSig.substring(fieldSig.indexOf("L")+1, fieldSig.length() - 1).replace('/', '.');
 			JavaClass fieldClass = Repository.lookupClass(fieldClassName);
@@ -193,8 +262,7 @@ public class SerializableIdiom extends PreorderVisitor
 				// Report is queued until after the entire class has been seen.
 				fieldWarningList.add(new BugInstance("SE_BAD_FIELD", priority)
 					.addClass(thisClass.getClassName())
-					.addField(fieldClassName, obj.getName(), fieldSig, false)
-					.addUnknownSourceLine(thisClass.getClassName(), thisClass.getSourceFileName()));
+					.addField(fieldClassName, obj.getName(), fieldSig, false));
 			}
 		} catch (ClassNotFoundException e) {
 			bugReporter.reportMissingClass(e);

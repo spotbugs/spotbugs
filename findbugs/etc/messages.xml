@@ -57,7 +57,6 @@ cloneable classes.
 ]]>
     </Details>
   </Detector>
-
   <Detector class="edu.umd.cs.findbugs.detect.DroppedException">
     <Details>
 <![CDATA[
@@ -66,7 +65,6 @@ but nothing is done to handle the exception.  It is a fast detector.
 ]]>
     </Details>
   </Detector>
-
   <Detector class="edu.umd.cs.findbugs.detect.DumbMethods">
     <Details>
 <![CDATA[
@@ -1164,6 +1162,34 @@ defined in an interface references a mutable
 ]]>
     </Details>
   </BugPattern>
+  <BugPattern type="SE_NO_SUITABLE_CONSTRUCTOR_FOR_EXTERNALIZATION">
+    <ShortDescription>Class is Externalizable but doesn't define a void constructor</ShortDescription>
+    <LongDescription>{0} is Externalizable but doesn't define a void constructor</LongDescription>
+    <Details>
+<![CDATA[
+  <p> This class implements the <code>Externalizable</code> interface, but does
+  not define a void constructor. When Externalizable objects are deserialized,
+	they first need to be constructed by invoking the void
+	constructor. Since this class does not have one,
+	serialization and deserialization will fail at runtime.
+]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="SE_NO_SUITABLE_CONSTRUCTOR">
+    <ShortDescription>Class is Serializable but its superclass doesn't define a void constructor</ShortDescription>
+    <LongDescription>{0} is Serializable  but its superclass doesn't define a void constructor</LongDescription>
+    <Details>
+<![CDATA[
+  <p> This class implements the <code>Serializable</code> interface
+	and its superclass does not. When such an object is deserialized,
+	the fields of the superclass need to be initialized by
+	invoking the void constructor of the superclass.
+	Since the superclass does not have one,
+	serialization and deserialization will fail at runtime.
+]]>
+    </Details>
+  </BugPattern>
+
   <BugPattern type="SE_NO_SERIALVERSIONID">
     <ShortDescription>Class is Serializable, but doesn't define serialVersionUID</ShortDescription>
     <LongDescription>{0} is Serializable; consider declaring a serialVersionUID</LongDescription>
@@ -1184,6 +1210,9 @@ defined in an interface references a mutable
 ]]>
     </Details>
   </BugPattern>
+
+
+
   <BugPattern type="WS_WRITEOBJECT_SYNC">
     <ShortDescription>Class's writeObject() method is synchronized but nothing else is</ShortDescription>
     <LongDescription>{0}'s writeObject method is synchronized but nothing else is</LongDescription>
