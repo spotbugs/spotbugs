@@ -291,10 +291,6 @@ public class ObligationAnalysis
 				throw new DataflowAnalysisException("This shouldn't happen", e);
 			}
 		}
-		
-		if (result.isValid()) {
-			// FIXME: do we need to do a path append here?
-		}
 	}
 }
 

@@ -100,7 +100,7 @@ public class ObligationSet {
 				buf.append("id=");
 				buf.append(i);
 			}
-			buf.append("x");
+			buf.append("*");
 			buf.append(countList[i]);
 			++count;
 		}
