@@ -399,6 +399,18 @@ public class ClassContext implements AnalysisFeatures {
 		}
 	};
 
+	private NoExceptionAnalysisFactory<String[]> parameterSignatureListFactory =
+	new NoExceptionAnalysisFactory<String[]>("parameter signature list factory") {
+		protected String[] analyze(Method method) {
+			SignatureParser parser = new SignatureParser(method.getSignature());
+			ArrayList<String> resultList = new ArrayList<String>();
+			for (Iterator<String> i = parser.parameterSignatureIterator(); i.hasNext(); ) {
+				resultList.add(i.next());
+			}
+			return resultList.toArray(new String[resultList.size()]);
+		}
+	};
+
 	private ClassGen classGen;
 	private AssignedFieldMap assignedFieldMap;
 	private AssertionMethods assertionMethods;
@@ -602,6 +614,16 @@ public class ClassContext implements AnalysisFeatures {
 	 */
 	public ExceptionSetFactory getExceptionSetFactory(Method method) {
 		return exceptionSetFactoryFactory.getAnalysis(method);
+	}
+
+	/**
+	 * Get array of type signatures of parameters for given method.
+	 * @param method the method
+	 * @return an array of type signatures indicating the types
+	 *    of the method's parameters
+	 */
+	public String[] getParameterSignatureList(Method method) {
+		return parameterSignatureListFactory.getAnalysis(method);
 	}
 
 	/**

@@ -28,14 +28,17 @@ import org.apache.bcel.generic.MethodGen;
 
 public class BetterTypeAnalysis extends FrameDataflowAnalysis<Type, BetterTypeFrame> {
 	private MethodGen methodGen;
+	private String[] parameterSignatureList;
 	private CFG cfg;
 	private TypeRepository typeRepository;
 	private TypeMerger typeMerger;
 
-	public BetterTypeAnalysis(MethodGen methodGen, CFG cfg, DepthFirstSearch dfs,
+	public BetterTypeAnalysis(MethodGen methodGen, String[] parameterSignatureList,
+			CFG cfg, DepthFirstSearch dfs,
 			TypeRepository typeRepository, TypeMerger typeMerger) {
 		super(dfs);
 		this.methodGen = methodGen;
+		this.parameterSignatureList = parameterSignatureList;
 		this.cfg = cfg;
 		this.typeRepository = typeRepository;
 		this.typeMerger = typeMerger;
