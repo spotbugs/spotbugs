@@ -112,6 +112,7 @@ public abstract class BetterVisitor implements Visitor {
      public void visit(Synthetic obj) { visit((Attribute) obj); }
      public void visit(Deprecated obj) { visit((Attribute) obj); }
      public void visit(Unknown obj) { visit((Attribute) obj); }
+     public void visit(Signature obj) { visit((Attribute) obj); }
 
    // Extra classes (i.e. leaves in this context)
    public void visit(InnerClass obj) {}
@@ -210,6 +211,8 @@ public abstract class BetterVisitor implements Visitor {
 
 		visit(obj); 
 		}
+  public void visitSignature(Signature obj)
+		{ visit(obj); }
   public void visitSourceFile(SourceFile obj)    
 		{ visit(obj); }
   public void visitSynthetic(Synthetic obj)    
