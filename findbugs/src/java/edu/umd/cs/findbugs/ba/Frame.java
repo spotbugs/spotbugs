@@ -362,13 +362,22 @@ public abstract class Frame<ValueType> {
 		buf.append('[');
 		int numSlots = getNumSlots();
 		for (int i = 0; i < numSlots; ++i) {
-			String value = getValue(i).toString();
+			String value = valueToString(getValue(i));
 			if (i == numSlots - 1 && value.endsWith(","))
 				value = value.substring(0, value.length() - 1);
 			buf.append(value);
 		}
 		buf.append(']');
 		return buf.toString();
+	}
+
+	/**
+	 * Subclasses may override this if they want to do something special
+	 * to convert Value objects to Strings.  By default, we just call
+	 * toString() on the values.
+	 */
+	protected String valueToString(ValueType value) {
+		return value.toString();
 	}
 
 }
