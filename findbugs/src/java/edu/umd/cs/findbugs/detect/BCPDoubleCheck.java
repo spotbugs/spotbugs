@@ -115,8 +115,7 @@ public class BCPDoubleCheck extends ByteCodePatternDetector {
 		InstructionHandle end   = match.getLabeledInstruction("endDC");
 
 		bugReporter.reportBug(new BugInstance("BCPDC_DOUBLECHECK", NORMAL_PRIORITY)
-			.addClass(methodGen.getClassName())
-			.addMethod(methodGen)
+			.addClassAndMethod(methodGen)
 			.addField(field).describe("FIELD_ON")
 			.addSourceLine(methodGen, start, end));
 	}
