@@ -528,7 +528,7 @@ public class FindBugs implements Constants2, ExitCodes
 	try {
 		javaClass = Repository.lookupClass(className);
 
-		ClassContext classContext = new ClassContext(javaClass);
+		ClassContext classContext = new ClassContext(javaClass, bugReporter);
 
 		for (int i = 0; i < detectors.length; ++i) {
 			if (Thread.interrupted())
