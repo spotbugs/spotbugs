@@ -118,7 +118,7 @@
   <BugPattern abbrev="UR" type="UR_UNINIT_READ" category="CORRECTNESS" />
   <BugPattern abbrev="UG" type="UG_SYNC_SET_UNSYNC_GET" category="MT_CORRECTNESS" />
   <BugPattern abbrev="IC" type="IC_INIT_CIRCULARITY" category="CORRECTNESS" />
-  <BugPattern abbrev="SI" type="SI_INSTANCE_BEFORE_FINALS_ASSIGNED" />
+  <BugPattern abbrev="SI" type="SI_INSTANCE_BEFORE_FINALS_ASSIGNED" category="CORRECTNESS" />
   <BugPattern abbrev="It" type="IT_NO_SUCH_ELEMENT" category="CORRECTNESS" />
   <BugPattern abbrev="IS" type="IS_INCONSISTENT_SYNC" category="MT_CORRECTNESS" />
   <BugPattern abbrev="ML" type="ML_SYNC_ON_UPDATED_FIELD" category="MT_CORRECTNESS" />
