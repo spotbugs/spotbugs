@@ -38,7 +38,7 @@ public class BugProperty implements XMLWriteable, Serializable {
 
 	// Constants defining some standard bug properties
 
-	/** Boolean property defining whether or not the BugInstance is reall a bug. */
+	/** Boolean property defining whether or not the BugInstance is really a bug. */
 	public static final String IS_BUG = "isBug";
 	
 	/** Integer property defining the warning severity (1=least severe, 5=most severe). */
