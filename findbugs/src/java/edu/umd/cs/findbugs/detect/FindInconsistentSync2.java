@@ -47,13 +47,13 @@ public class FindInconsistentSync2 implements Detector {
 	 * ---------------------------------------------------------------------- */
 
 	/**
-	 * Minimum percent of field accesses that must be synchronized in
+	 * Minimum percent of unbiased field accesses that must be synchronized in
 	 * order to report a field as inconsistently synchronized.
 	 * This is meant to distinguish incidental synchronization from
 	 * intentional synchronization.
 	 */
-	private static final int MIN_SYNCHRONIZED_PERCENT =
-		Integer.getInteger("findbugs.fis.minSynchronizedPercent", 50).intValue();
+	private static final int MIN_SYNC_PERCENT =
+		Integer.getInteger("findbugs.fis.minSyncPercent", 50).intValue();
 
 	/**
 	 * Bias that writes are given with respect to reads.
@@ -74,7 +74,7 @@ public class FindInconsistentSync2 implements Detector {
 	 * then we report a bug.  Default value is 2.0, which means that we
 	 * report a bug if more than 1/3 of accesses are unsynchronized.
 	 *
-	 * <p> Note that <code>MIN_SYNCHRONIZED_PERCENT</code> also influences
+	 * <p> Note that <code>MIN_SYNC_PERCENT</code> also influences
 	 * whether we report a bug: it specifies the minimum unbiased percentage
 	 * of synchronized accesses.
 	 */
@@ -251,7 +251,7 @@ public class FindInconsistentSync2 implements Detector {
 				continue;
 
 			int freq = (100 * locked) / (locked + unlocked);
-			if (freq < MIN_SYNCHRONIZED_PERCENT) continue;
+			if (freq < MIN_SYNC_PERCENT) continue;
 
 			// At this point, we report the field as being inconsistently synchronized
 			int priority = freq > 75 ? NORMAL_PRIORITY : LOW_PRIORITY;
