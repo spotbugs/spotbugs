@@ -225,7 +225,7 @@
 	<!-- Delete generated files. -->
 	<target name="clean">
 		<delete>
-			<fileset dir="${scripts.dir}" includes="*"/>
+			<fileset dir="${scripts.dir}" includes="*" excludes="findbugs.bat"/>
 		</delete>
 		<delete dir="build"/>
 		<delete>
