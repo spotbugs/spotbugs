@@ -102,8 +102,6 @@ public class SourceFinder {
 
 					data = out.toByteArray();
 
-				} catch (IOException e) {
-
 				} finally {
 					if (in != null)
 						in.close();
