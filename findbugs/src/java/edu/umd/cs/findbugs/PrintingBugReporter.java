@@ -43,7 +43,13 @@ public class PrintingBugReporter extends TextUIBugReporter {
                                 System.out.print("H ");
                                 break;
                         }
-			System.out.println(bugInstance.getMessage());
+			SourceLineAnnotation line = 
+				bugInstance.getPrimarySourceLineAnnotation();
+			if (line == null) 
+				System.out.println(bugInstance.getMessage());
+			else 
+				System.out.println(bugInstance.getMessage()
+					+ "  " + line.toString());
 		}
 	}
 
