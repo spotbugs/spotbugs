@@ -79,6 +79,17 @@ public interface ResourceTracker<Resource> {
 	 *   false if they should be ignore
 	 */
 	public boolean ignoreImplicitExceptions(Resource resource);
+
+	/**
+	 * Return if the given parameter slot contains the
+	 * resource instance upon entry to the method.
+	 * This is for resources passed as parameters.
+	 * @param resource the resource
+	 * @param slot the local variable slot
+	 * @return true if the slot contains the resource instance,
+	 *   false otherwise
+	 */
+	public boolean isParamInstance(Resource resource, int slot);
 }
 
 // vim:ts=4

@@ -226,6 +226,10 @@ public class StreamResourceTracker implements ResourceTracker<Stream> {
 	public boolean ignoreImplicitExceptions(Stream resource) {
 		return resource.ignoreImplicitExceptions();
 	}
+
+	public boolean isParamInstance(Stream resource, int slot) {
+		return resource.getInstanceParam() == slot;
+	}
 }
 
 // vim:ts=3

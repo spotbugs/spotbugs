@@ -59,6 +59,7 @@ public class Stream extends ResourceCreationPoint {
 	private Location openLocation;
 	private boolean ignoreImplicitExceptions;
 	private String bugType;
+	private int instanceParam;
 
 	/**
 	 * Constructor.
@@ -74,6 +75,7 @@ public class Stream extends ResourceCreationPoint {
 		super(location, streamClass);
 		this.streamBase = streamBase;
 		isUninteresting = true;
+		instanceParam = -1;
 	}
 
 	/**
@@ -107,6 +109,15 @@ public class Stream extends ResourceCreationPoint {
 		return this;
 	}
 
+	/**
+	 * Set the number of the parameter which passes the
+	 * stream instance.
+	 * @param instanceParam number of the parameter passing the stream instance
+	 */
+	public void setInstanceParam(int instanceParam) {
+		this.instanceParam = instanceParam;
+	}
+
 	public String getStreamBase() { return streamBase; }
 
 	public boolean isUninteresting() { return isUninteresting; }
@@ -118,6 +129,10 @@ public class Stream extends ResourceCreationPoint {
 	public Location getOpenLocation() { return openLocation; }
 
 	public boolean ignoreImplicitExceptions() { return ignoreImplicitExceptions; }
+
+	public int getInstanceParam() {
+		return instanceParam;
+	}
 
 	public String getBugType() {
 		return bugType;

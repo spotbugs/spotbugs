@@ -59,8 +59,10 @@ public class ResourceValueAnalysis<Resource> extends FrameDataflowAnalysis<Resou
 		result.setValid();
 		result.clearStack();
 		final int numSlots = result.getNumSlots();
-		for (int i = 0; i < numSlots; ++i)
-			result.setValue(i, ResourceValue.notInstance());
+		for (int i = 0; i < numSlots; ++i) {
+			boolean slotContainsInstance = resourceTracker.isParamInstance(resource, i);
+			result.setValue(i, slotContainsInstance ? ResourceValue.instance() : ResourceValue.notInstance());
+		}
 	}
 
 	public void meetInto(ResourceValueFrame fact, Edge edge, ResourceValueFrame result) throws DataflowAnalysisException {

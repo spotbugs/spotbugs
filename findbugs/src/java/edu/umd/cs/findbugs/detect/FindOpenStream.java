@@ -30,7 +30,11 @@ import edu.umd.cs.findbugs.*;
 /**
  * A Detector to look for streams that are opened in a method,
  * do not escape the method, and are not closed on all paths
- * out of the method.
+ * out of the method.  Note that "stream" is a bit misleading,
+ * since we also use the detector to look for database resources
+ * that aren't closed.
+ *
+ * @author David Hovemeyer
  */
 public class FindOpenStream extends ResourceTrackingDetector<Stream, StreamResourceTracker>  {
 	static final boolean DEBUG = Boolean.getBoolean("fos.debug");
@@ -40,6 +44,22 @@ public class FindOpenStream extends ResourceTrackingDetector<Stream, StreamResou
 	 * Tracked resource types
 	 * ---------------------------------------------------------------------- */
 
+	/**
+	 * List of base classes of tracked resources.
+	 */
+	static final ObjectType[] streamBaseList =
+		 { new ObjectType("java.io.InputStream"),
+			new ObjectType("java.io.OutputStream"),
+			new ObjectType("java.io.Reader"),
+			new ObjectType("java.io.Writer"),
+			new ObjectType("java.sql.Connection"),
+			new ObjectType("java.sql.Statement"),
+			new ObjectType("java.sql.ResultSet") };
+
+	/**
+	 * StreamFactory objects used to detect resources
+	 * created within analyzed methods.
+	 */
 	static final StreamFactory[] streamFactoryList;
 	static {
 		ArrayList<StreamFactory> streamFactoryCollection = new ArrayList<StreamFactory>();
@@ -201,6 +221,57 @@ public class FindOpenStream extends ResourceTrackingDetector<Stream, StreamResou
 
 		potentialOpenStreamList.clear();
 
+		JavaClass javaClass = classContext.getJavaClass();
+		MethodGen methodGen = classContext.getMethodGen(method);
+		CFG cfg = classContext.getCFG(method);
+
+		// Add Streams passed into the method as parameters.
+		// These are uninteresting, and should poison
+		// any streams which wrap them.
+		try {
+			Type[] parameterTypeList = Type.getArgumentTypes(methodGen.getSignature());
+			Location firstLocation = new Location(cfg.getEntry().getFirstInstruction(), cfg.getEntry());
+
+			int local = methodGen.isStatic() ? 0 : 1;
+
+			for (int i = 0; i < parameterTypeList.length; ++i) {
+				Type type = parameterTypeList[i];
+				if (type instanceof ObjectType) {
+					ObjectType objectType = (ObjectType) type;
+					for (int j = 0; j < streamBaseList.length; ++j) {
+						ObjectType streamBase = streamBaseList[j];
+						if (Hierarchy.isSubtype(objectType, streamBase)) {
+							// OK, found a parameter that is a resource.
+							// Create a Stream object to represent it.
+							// The Stream will be uninteresting, so it will
+							// inhibit reporting for any stream that wraps it.
+
+							Stream paramStream =
+								new Stream(firstLocation, objectType.getClassName(), streamBase.getClassName());
+							paramStream.setIsOpenOnCreation(true);
+							paramStream.setOpenLocation(firstLocation);
+							paramStream.setInstanceParam(local);
+							resourceCollection.addPreexistingResource(paramStream);
+
+							break;
+						}
+					}
+				}
+
+				switch (type.getType()) {
+				case Constants.T_LONG:
+				case Constants.T_DOUBLE:
+					local += 2;
+					break;
+				default:
+					local += 1;
+					break;
+				}
+			}
+		} catch (ClassNotFoundException e) {
+			bugReporter.reportMissingClass(e);
+		}
+
 		// Set precomputed map of Locations to Stream creation points.
 		// That way, the StreamResourceTracker won't have to
 		// repeatedly try to figure out where Streams are created.
@@ -208,8 +279,6 @@ public class FindOpenStream extends ResourceTrackingDetector<Stream, StreamResou
 
 		super.analyzeMethod(classContext, method, resourceTracker, resourceCollection);
 
-		JavaClass javaClass = classContext.getJavaClass();
-		MethodGen methodGen = classContext.getMethodGen(method);
 
 		resourceTracker.markTransitiveUninterestingStreamEscapes();
 

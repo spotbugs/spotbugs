@@ -179,6 +179,12 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
 			return false;
 		}
 
+		public boolean isParamInstance(Lock resource, int slot) {
+			// There is nothing special about Lock objects passed
+			// into the method as parameters.
+			return false;
+		}
+
 		private static final InvokeInstruction toInvokeInstruction(Instruction ins) {
 			short opcode = ins.getOpcode();
 			if (opcode != Constants.INVOKEVIRTUAL && opcode != Constants.INVOKEINTERFACE)
