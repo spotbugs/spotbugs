@@ -23,18 +23,34 @@ package edu.umd.cs.findbugs.detect;
 import java.util.*;
 
 import edu.umd.cs.findbugs.*;
+
+import edu.umd.cs.findbugs.ba.BasicBlock;
+import edu.umd.cs.findbugs.ba.CFG;
+import edu.umd.cs.findbugs.ba.CFGBuilderException;
+import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
+import edu.umd.cs.findbugs.ba.LiveLocalStoreDataflow;
+import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.SignatureConverter;
-import org.apache.bcel.classfile.*;
+
 import org.apache.bcel.Repository;
+
+import org.apache.bcel.classfile.*;
+
+import org.apache.bcel.generic.ASTORE;
+import org.apache.bcel.generic.InstructionHandle;;
 
 /**
  * RuntimeExceptionCapture
  *
  * @author Brian Goetz
+ * @author Bill Pugh
+ * @author David Hovemeyer
  */
 public class RuntimeExceptionCapture extends BytecodeScanningDetector implements Detector {
+	private static final boolean DEBUG = Boolean.getBoolean("rec.debug");
 
 	private BugReporter bugReporter;
+	private Method method;
 	private OpcodeStack stack;
 	private List<CaughtException> catchList;
 	private List<ThrownException> throwList;
@@ -43,6 +59,7 @@ public class RuntimeExceptionCapture extends BytecodeScanningDetector implements
 		public String exceptionClass;
 		public int startOffset, endOffset, sourcePC;
 		public boolean seen = false;
+		public boolean dead = false;
 
 		public CaughtException(String exceptionClass, int startOffset, int endOffset, int sourcePC) {
 			this.exceptionClass = exceptionClass;
@@ -65,6 +82,14 @@ public class RuntimeExceptionCapture extends BytecodeScanningDetector implements
 
 	public RuntimeExceptionCapture(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
+	}
+
+	public void visitMethod(Method method) {
+		this.method = method;
+		if (DEBUG) {
+			System.out.println("RuntimeExceptionCapture visiting " + method);
+		}
+		super.visitMethod(method);
 	}
 
 	public void visitCode(Code obj) {
@@ -99,8 +124,14 @@ public class RuntimeExceptionCapture extends BytecodeScanningDetector implements
 				}
 				int range = caughtException.endOffset - caughtException.startOffset;
 				if (!rteCaught && range > 80) {
-					bugReporter.reportBug(new BugInstance(this, "REC_CATCH_EXCEPTION", 
-			range > 300 ? NORMAL_PRIORITY : LOW_PRIORITY)
+					int priority = range > 300 ? NORMAL_PRIORITY : LOW_PRIORITY;
+					if (caughtException.dead) {
+						if (DEBUG) {
+							System.out.println("*** Boosting priority because of dead exception store");
+						}
+						priority = (priority > 0) ? priority - 1 : 0;
+					}
+					bugReporter.reportBug(new BugInstance(this, "REC_CATCH_EXCEPTION", priority)
 					        .addClassAndMethod(this)
 					        .addSourceLine(this, caughtException.sourcePC));
 					}
@@ -113,7 +144,42 @@ public class RuntimeExceptionCapture extends BytecodeScanningDetector implements
 		int type = obj.getCatchType();
 		if (type == 0) return;
 		String name = getConstantPool().constantToString(getConstantPool().getConstant(type));
-		catchList.add(new CaughtException(name, obj.getStartPC(), obj.getEndPC(), obj.getHandlerPC()));
+
+		CaughtException caughtException =
+			new CaughtException(name, obj.getStartPC(), obj.getEndPC(), obj.getHandlerPC());
+		catchList.add(caughtException);
+
+		try {
+			// See if the store that saves the exception object
+			// is alive or dead.  We rely on the fact that javac
+			// always (?) emits an ASTORE instruction to save
+			// the caught exception.
+			LiveLocalStoreDataflow dataflow = getClassContext().getLiveLocalStoreDataflow(this.method);
+			CFG cfg = getClassContext().getCFG(method);
+			Collection<BasicBlock> blockList = cfg.getBlocksContainingInstructionWithOffset(obj.getHandlerPC());
+			for (Iterator<BasicBlock> i = blockList.iterator(); i.hasNext(); ) {
+				BasicBlock block = i.next();
+				InstructionHandle first = block.getFirstInstruction();
+				if (first != null
+					&& first.getPosition() == obj.getHandlerPC()
+					&& first.getInstruction() instanceof ASTORE) {
+					ASTORE astore = (ASTORE) first.getInstruction();
+					BitSet liveStoreSet = dataflow.getFactAtLocation(new Location(first, block));
+					if (!liveStoreSet.get(astore.getIndex())) {
+						// The ASTORE storing the exception object is dead
+						if (DEBUG) {
+							System.out.println("Dead exception store at " + first);
+						}
+						caughtException.dead = true;
+						break;
+					}
+				}
+			}
+		} catch (DataflowAnalysisException e) {
+			bugReporter.logError("Error checking for dead exception store: " + e.toString());
+		} catch (CFGBuilderException e) {
+			bugReporter.logError("Error checking for dead exception store: " + e.toString());
+		}
 	}
 
 	public void sawOpcode(int seen) {
@@ -166,3 +232,5 @@ public class RuntimeExceptionCapture extends BytecodeScanningDetector implements
 	}
 
 }
+
+// vim:ts=4
