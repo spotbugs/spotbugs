@@ -35,6 +35,7 @@
     <property name="doc.dir" value="${findbugs.dir}/doc" />
     <property name="build.dir" value="${findbugs.dir}/build" />
     <property name="jar.dir" value="lib" />
+    <property name="script.dir" value="bin" />
     <property name="plugin.dir" value="plugin" />
     <property name="class.dir" value="${build.dir}/classes" />
     <property name="release.dir" value="${build.dir}/release" />
@@ -201,6 +202,10 @@
        <copy todir="${release.dir}/findbugs-${release.number}/doc">
          <fileset dir="${doc.dir}" />
        </copy>
+       <copy todir="${release.dir}/findbugs-${release.number}/bin">
+         <fileset dir="${script.dir}" />
+       </copy>
+       <chmod file="${release.dir}/findbugs-${release.number}/bin/findbugs" perm="a+rx"/>
     </target>
 
     
