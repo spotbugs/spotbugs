@@ -31,9 +31,8 @@ import edu.umd.cs.daveho.ba.*;
  * The site of a method call.
  */
 public class CallSite {
-	private Method method;
-	private BasicBlock basicBlock;
-	private InstructionHandle handle;
+	private final Method method;
+	private final Location location;
 
 	/**
 	 * Constructor.
@@ -43,28 +42,34 @@ public class CallSite {
 	 */
 	public CallSite(Method method, BasicBlock basicBlock, InstructionHandle handle) {
 		this.method = method;
-		this.basicBlock = basicBlock;
-		this.handle = handle;
+		this.location = new Location(handle, basicBlock);
 	}
 
 	/** Get the method containing the call site. */
 	public Method getMethod() { return method; }
 
+	/** Get the Location (basic block and instruction) where the call site is located. */
+	public Location getLocation() { return location; }
+
 	/** Get the basic block where the call site is located. */
-	public BasicBlock getBasicBlock() { return basicBlock; }
+	public BasicBlock getBasicBlock() { return location.getBasicBlock(); }
 
 	/** Get the instruction which performs the call. */
-	public InstructionHandle getHandle() { return handle; }
+	public InstructionHandle getHandle() { return location.getHandle(); }
 
 	public int hashCode() {
-		return System.identityHashCode(method) ^ basicBlock.getId() ^ System.identityHashCode(handle);
+		return System.identityHashCode(method)
+			^ getBasicBlock().getId()
+			^ System.identityHashCode(location.getHandle());
 	}
 
 	public boolean equals(Object o) {
 		if (!(o instanceof CallSite))
 			return false;
 		CallSite other = (CallSite) o;
-		return method == other.method && basicBlock == other.basicBlock && handle == other.handle;
+		return method == other.method
+			&& getBasicBlock() == other.getBasicBlock()
+			&& getHandle() == other.getHandle();
 	}
 }
 
