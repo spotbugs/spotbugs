@@ -53,11 +53,14 @@
 # on behalf of the  Apache Software Foundation.  For more  information  on the 
 # Apache Software Foundation, please see <http://www.apache.org/>.
 
+maxheap=256
+
 Usage() {
 	echo "Usage: findbugs [options]"
 	echo "   -gui            Use the Graphical UI (default behavior)"
 	echo "   -textui         Use the Text UI"
 	echo "   -jvmArgs args   Pass args to JVM"
+	echo "   -maxHeap size   Maximum Java heap size in megabytes (default=$maxheap)"
 	echo "   -javahome dir   Specify location of JRE"
 	echo "   -help           Display this message"
 	echo "   -debug          Enable debug tracing in FindBugs"
@@ -111,7 +114,7 @@ fi
 
 # Set command line defaults
 argList=''
-jvmArgs="-Xmx256m -Xss2m"
+jvmArgs=""
 debugArg=""
 appJar="findbugsGUI.jar"
 javaProps=""
@@ -143,6 +146,11 @@ while [ $# -gt 0 ]; do
 		jvmArgs=$1
 		shift
 		#echo "jvmArgs='$jvmArgs'"
+		;;
+
+	-maxHeap)
+		maxheap=$1
+		shift
 		;;
 
 	-javahome)
@@ -181,6 +189,6 @@ if [ $os = "Darwin" ]; then
 fi
 
 # Launch FindBugs!
-exec $jvmCmd $jvmArgs $javaProps $debugArg "-Dfindbugs.home=$findbugs_home" -jar "$findbugs_home/lib/$appJar" $argList
+exec $jvmCmd -Xmx${maxheap}m $jvmArgs $javaProps $debugArg "-Dfindbugs.home=$findbugs_home" -jar "$findbugs_home/lib/$appJar" $argList
 
 # vim:ts=4
