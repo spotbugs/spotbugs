@@ -57,7 +57,7 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 	 * Consume stack.  This is a convenience method for instructions
 	 * where the types of popped operands can be ignored.
 	 */
-	private void consumeStack(Instruction ins) {
+	protected void consumeStack(Instruction ins) {
 		ConstantPoolGen cpg = getCPG();
 		TypeFrame frame = getFrame();
 
@@ -79,7 +79,7 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 	 * stack.  This method ensures that we push two types for
 	 * each double or long value.
 	 */
-	private void pushValue(Type type) {
+	protected void pushValue(Type type) {
 		TypeFrame frame = getFrame();
 		if (type.getType() == T_LONG) {
 			frame.pushValue(Type.LONG);
@@ -94,7 +94,7 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 	/**
 	 * Helper for pushing the return type of an invoke instruction.
 	 */
-	private void pushReturnType(InvokeInstruction ins) {
+	protected void pushReturnType(InvokeInstruction ins) {
 		ConstantPoolGen cpg = getCPG();
 		Type type = ins.getType(cpg);
 		if (type.getType() != T_VOID)
