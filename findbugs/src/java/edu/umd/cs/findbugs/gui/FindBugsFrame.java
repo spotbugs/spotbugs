@@ -1018,32 +1018,32 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
     private void saveBugsItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveBugsItemActionPerformed
 
-	try {
-		if (currentAnalysisRun == null) {
-			logger.logMessage(ConsoleLogger.ERROR,  "No bugs are loaded!");
-			return;
-		}
-		
-		JFileChooser chooser = new JFileChooser(currentDirectory);
-		chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-		chooser.setFileFilter(xmlFileFilter);
-		
-		int result = chooser.showDialog(this, "Save bugs");
-		
-		if (result != JFileChooser.CANCEL_OPTION) {
-			// Make sure current annotation text is up to date with its
-			// corresponding bug instance
-			if (currentBugInstance != null)
-				synchBugAnnotation(currentBugInstance);
-
-			// Save bugs to file
-			File selectedFile = chooser.getSelectedFile();
-			currentAnalysisRun.saveBugsToFile(selectedFile);
-		}
-	} catch (Exception e) {
-		e.printStackTrace();
-		logger.logMessage(ConsoleLogger.ERROR, "Could not save bugs: " + e.toString());
-	}
+        try {
+            if (currentAnalysisRun == null) {
+                logger.logMessage(ConsoleLogger.ERROR,  "No bugs are loaded!");
+                return;
+            }
+            
+            JFileChooser chooser = new JFileChooser(currentDirectory);
+            chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+            chooser.setFileFilter(xmlFileFilter);
+            
+            int result = chooser.showDialog(this, "Save bugs");
+            
+            if (result != JFileChooser.CANCEL_OPTION) {
+                // Make sure current annotation text is up to date with its
+                // corresponding bug instance
+                if (currentBugInstance != null)
+                    synchBugAnnotation(currentBugInstance);
+    
+                // Save bugs to file
+                File selectedFile = chooser.getSelectedFile();
+                currentAnalysisRun.saveBugsToFile(selectedFile);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.logMessage(ConsoleLogger.ERROR, "Could not save bugs: " + e.toString());
+        }
     }//GEN-LAST:event_saveBugsItemActionPerformed
 
     private void loadBugsItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loadBugsItemActionPerformed
