@@ -33,6 +33,10 @@ public class AnalysisErrorDialog extends javax.swing.JDialog {
         leftSpacer = new javax.swing.JLabel();
         rightSpacer = new javax.swing.JLabel();
         okButton = new javax.swing.JButton();
+        analysisMenuBar = new javax.swing.JMenuBar();
+        editMenu = new javax.swing.JMenu();
+        selectAllMenuItem = new javax.swing.JMenuItem();
+        copyMenuItem = new javax.swing.JMenuItem();
 
         getContentPane().setLayout(new java.awt.GridBagLayout());
 
@@ -49,8 +53,8 @@ public class AnalysisErrorDialog extends javax.swing.JDialog {
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.gridwidth = 3;
-        gridBagConstraints.insets = new java.awt.Insets(6, 6, 3, 0);
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(6, 6, 3, 0);
         getContentPane().add(errorLabel, gridBagConstraints);
 
         errorMessageTextArea.setBorder(new javax.swing.border.BevelBorder(javax.swing.border.BevelBorder.LOWERED));
@@ -62,9 +66,9 @@ public class AnalysisErrorDialog extends javax.swing.JDialog {
         gridBagConstraints.gridy = 1;
         gridBagConstraints.gridwidth = 3;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.insets = new java.awt.Insets(4, 6, 4, 6);
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(4, 6, 4, 6);
         getContentPane().add(errorMessageScrollPane, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -100,8 +104,53 @@ public class AnalysisErrorDialog extends javax.swing.JDialog {
         gridBagConstraints.insets = new java.awt.Insets(3, 0, 3, 0);
         getContentPane().add(okButton, gridBagConstraints);
 
+        analysisMenuBar.setFont(new java.awt.Font("Dialog", 0, 12));
+        editMenu.setText("Edit");
+        editMenu.setFont(new java.awt.Font("Dialog", 0, 12));
+        editMenu.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                editMenuActionPerformed(evt);
+}
+        });
+
+        selectAllMenuItem.setText("Select All");
+        selectAllMenuItem.setFont(new java.awt.Font("Dialog", 0, 12));
+        selectAllMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                selectAllItemActionListener(evt);
+            }
+        });
+
+        editMenu.add(selectAllMenuItem);
+
+        copyMenuItem.setText("Copy");
+        copyMenuItem.setFont(new java.awt.Font("Dialog", 0, 12));
+        copyMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                copyMenuItemActionPerformed(evt);
+            }
+        });
+
+        editMenu.add(copyMenuItem);
+
+        analysisMenuBar.add(editMenu);
+
+        setJMenuBar(analysisMenuBar);
+
         pack();
     }//GEN-END:initComponents
+
+    private void copyMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_copyMenuItemActionPerformed
+        errorMessageTextArea.copy();
+    }//GEN-LAST:event_copyMenuItemActionPerformed
+
+    private void selectAllItemActionListener(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectAllItemActionListener
+        errorMessageTextArea.selectAll();
+    }//GEN-LAST:event_selectAllItemActionListener
+
+    private void editMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editMenuActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_editMenuActionPerformed
 
     private void okButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_okButtonActionPerformed
         closeDialog(null);
@@ -134,6 +183,9 @@ public class AnalysisErrorDialog extends javax.swing.JDialog {
     
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JMenuBar analysisMenuBar;
+    private javax.swing.JMenuItem copyMenuItem;
+    private javax.swing.JMenu editMenu;
     private javax.swing.JLabel errorLabel;
     private javax.swing.JScrollPane errorMessageScrollPane;
     private javax.swing.JTextPane errorMessageTextArea;
@@ -141,6 +193,7 @@ public class AnalysisErrorDialog extends javax.swing.JDialog {
     private javax.swing.JLabel leftSpacer;
     private javax.swing.JButton okButton;
     private javax.swing.JLabel rightSpacer;
+    private javax.swing.JMenuItem selectAllMenuItem;
     // End of variables declaration//GEN-END:variables
     
 }
