@@ -12,8 +12,10 @@
             <MenuItem class="javax.swing.JMenuItem" name="newProjectItem">
               <Properties>
                 <Property name="text" type="java.lang.String" value="New Project"/>
-                <Property name="toolTipText" type="java.lang.String" value="null"/>
               </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="newProjectItemActionPerformed"/>
+              </Events>
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="openProjectItem">
               <Properties>

@@ -7,6 +7,7 @@
 package edu.umd.cs.findbugs.gui;
 
 import java.awt.CardLayout;
+import java.awt.Component;
 import javax.swing.*;
 import javax.swing.tree.*;
 import javax.swing.event.*;
@@ -20,6 +21,40 @@ import javax.swing.event.*;
  * @author David Hovemeyer
  */
 public class FindBugsFrame extends javax.swing.JFrame {
+    
+    /**
+     * Custom cell renderer for the navigator tree.
+     */
+    private static class MyCellRenderer extends DefaultTreeCellRenderer {
+        private ImageIcon rootIcon;
+        private ImageIcon projectIcon;
+
+        public MyCellRenderer() {
+            ClassLoader classLoader = this.getClass().getClassLoader();
+            rootIcon = new ImageIcon(classLoader.getResource("edu/umd/cs/findbugs/gui/bug2.png"));
+            projectIcon = new ImageIcon(classLoader.getResource("edu/umd/cs/findbugs/gui/gear.png"));
+        }
+
+        public Component getTreeCellRendererComponent(JTree tree, Object value, boolean sel,
+             boolean expanded, boolean leaf, int row, boolean hasFocus) {
+
+            super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
+
+            // Set the icon, depending on what kind of node it is
+            DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
+            Object obj = node.getUserObject();
+            if (obj instanceof ProjectCollection) {
+                setIcon(rootIcon);
+            } else if (obj instanceof Project) {
+                setIcon(projectIcon);
+            }
+
+            return this;
+        }
+    }
+    
+    /** Filename used for new projects. */
+    private static final String UNTITLED_PROJECT = "<<untitled project>>";
     
     /** Creates new form FindBugsFrame */
     public FindBugsFrame() {
@@ -251,7 +286,12 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
         fileMenu.setText("File");
         newProjectItem.setText("New Project");
-        newProjectItem.setToolTipText("null");
+        newProjectItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                newProjectItemActionPerformed(evt);
+            }
+        });
+
         fileMenu.add(newProjectItem);
 
         openProjectItem.setText("Open Project");
@@ -277,41 +317,14 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
         pack();
     }//GEN-END:initComponents
-    
-    /**
-     * Create the tree model that will be used by the navigator tree.
-     */
-    private TreeModel createNavigatorTreeModel() {
-        projectCollection = new ProjectCollection();
-        rootNode = new DefaultMutableTreeNode(projectCollection);
-        navigatorTreeModel = new DefaultTreeModel(rootNode);
-        return navigatorTreeModel;
-    }
 
-    /**
-     * This is called from the constructor to perform post-initialization
-     * of the components in the form.
-     */
-    private void postInitComponents() {
-        viewPanelLayout = (CardLayout) viewPanel.getLayout();
-        navigatorTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
-
-        navigatorTree.addTreeSelectionListener(new TreeSelectionListener() {
-            public void valueChanged(TreeSelectionEvent e) {
-                navigatorTreeSelectionChanged(e);
-            }
-        });
-
-        DefaultTreeCellRenderer renderer = new DefaultTreeCellRenderer();
-        
-        ClassLoader classLoader = FindBugsFrame.class.getClassLoader();
-        java.net.URL bug2URL = classLoader.getResource("edu/umd/cs/findbugs/gui/bug2.png");
-        ImageIcon icon = new javax.swing.ImageIcon(bug2URL);
-        renderer.setOpenIcon(icon);
-        renderer.setClosedIcon(icon);
-        renderer.setLeafIcon(icon);
-        navigatorTree.setCellRenderer(renderer);    
-    }
+    private void newProjectItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newProjectItemActionPerformed
+        Project project = new Project(UNTITLED_PROJECT);
+        projectCollection.addProject(project);
+        DefaultMutableTreeNode projectNode = new DefaultMutableTreeNode(project);
+        rootNode.add(projectNode);
+        navigatorTree.setSelectionPath(new TreePath(new Object[]{rootNode, projectNode}));
+    }//GEN-LAST:event_newProjectItemActionPerformed
     
     private void exitItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitItemActionPerformed
         exitFindBugs();
@@ -359,6 +372,35 @@ public class FindBugsFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_exitForm
     
     /**
+     * Create the tree model that will be used by the navigator tree.
+     */
+    private TreeModel createNavigatorTreeModel() {
+        projectCollection = new ProjectCollection();
+        rootNode = new DefaultMutableTreeNode(projectCollection);
+        navigatorTreeModel = new DefaultTreeModel(rootNode);
+        return navigatorTreeModel;
+    }
+
+    /**
+     * This is called from the constructor to perform post-initialization
+     * of the components in the form.
+     */
+    private void postInitComponents() {
+        viewPanelLayout = (CardLayout) viewPanel.getLayout();
+        navigatorTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+
+        navigatorTree.addTreeSelectionListener(new TreeSelectionListener() {
+            public void valueChanged(TreeSelectionEvent e) {
+                navigatorTreeSelectionChanged(e);
+            }
+        });
+
+        DefaultTreeCellRenderer renderer = new DefaultTreeCellRenderer();
+        
+        navigatorTree.setCellRenderer(new FindBugsFrame.MyCellRenderer());
+    }
+    
+    /**
      * This handler is called whenever the selection in the navigator
      * tree changes.
      * @param e the TreeSelectionEvent
@@ -373,6 +415,9 @@ public class FindBugsFrame extends javax.swing.JFrame {
         if (nodeInfo instanceof ProjectCollection) {
             // Project collection node - there is no view associated with this node
             setView("EmptyPanel");
+        } else if (nodeInfo instanceof Project) {
+            // TODO: synch dialog with project
+            setView("EditProjectPanel");
         }
     }
     
