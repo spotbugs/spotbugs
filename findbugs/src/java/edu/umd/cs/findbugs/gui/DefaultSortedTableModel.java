@@ -24,7 +24,6 @@ package edu.umd.cs.findbugs.gui;
 import java.awt.Component;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -167,7 +166,7 @@ public class DefaultSortedTableModel extends AbstractTableModel
 		return baseModel.getRowCount();
 	}
 	
-	public Class getColumnClass( int column ) {
+	public Class<?> getColumnClass( int column ) {
 		if (baseModel == null)
 			return null;
 			
@@ -205,7 +204,7 @@ public class DefaultSortedTableModel extends AbstractTableModel
 	
 	private void setupMapping() {
 		int numRows = baseModel.getRowCount();
-		viewToModelMapping = new ArrayList(numRows);
+		viewToModelMapping = new ArrayList<Integer>(numRows);
 		for (int i = 0; i < numRows; i++)
 			viewToModelMapping.add(new Integer(i));
 		
