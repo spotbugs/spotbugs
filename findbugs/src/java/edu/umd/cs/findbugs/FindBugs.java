@@ -89,7 +89,7 @@ public class FindBugs implements Constants2, ExitCodes
 		fileName = null; // don't return it next time
 
 		try {
-			return new ClassParser(fileNameToParse).parse();
+			return parseClass(fileNameToParse);
 		} catch (ClassFormatException e) {
 			throw new ClassFormatException("Invalid class file format for " +
 				fileNameToParse + ": " + e.getMessage());
@@ -155,7 +155,7 @@ public class FindBugs implements Constants2, ExitCodes
 				if (Thread.interrupted()) throw new InterruptedException();
 				if ( entry.getName().endsWith( ".class" ) ) {
 					try {
-						parsedClass = new ClassParser( new DupDataStream(zipStream), entry.getName()).parse();
+						parsedClass = parseClass(nestedFileName, new DupDataStream(zipStream), entry.getName());
 						break;	
 					} catch (ClassFormatException e) {
 						throw new ClassFormatException("Invalid class file format for " +
@@ -174,30 +174,30 @@ public class FindBugs implements Constants2, ExitCodes
 
 	public JavaClass getNextClass() throws IOException, InterruptedException {
 		JavaClass parsedClass = getNextNestedClass();
-		if ( parsedClass == null ) {
-			while (entries.hasMoreElements()) {
-				if (Thread.interrupted()) throw new InterruptedException();
-				ZipEntry entry = (ZipEntry) entries.nextElement();
-				String name = entry.getName();
-				if (name.endsWith(".class")) {
-					try {
-						parsedClass =  new ClassParser(zipFile.getInputStream(entry), name).parse();
-						break;
-					} catch (ClassFormatException e) {
-						throw new ClassFormatException("Invalid class file format for " +
-							fileName + ":" + name + ": " + e.getMessage());
-					}
-				} else if ( name.endsWith(".jar") || name.endsWith( ".zip" ) ) {
-					setZipStream(new ZipInputStream(zipFile.getInputStream(entry)),
-								 name );
-					parsedClass = getNextNestedClass();
-					if ( parsedClass != null ) {
-						break;
-					}
-				} else if (name.endsWith(".java"))
-					containsSourceFiles = true;
+		if ( parsedClass != null )
+			return parsedClass;
 
-			}
+		while (entries.hasMoreElements()) {
+			if (Thread.interrupted()) throw new InterruptedException();
+			ZipEntry entry = (ZipEntry) entries.nextElement();
+			String name = entry.getName();
+			if (name.endsWith(".class")) {
+				try {
+					parsedClass = parseClass(fileName, zipFile.getInputStream(entry), name);
+					break;
+				} catch (ClassFormatException e) {
+					throw new ClassFormatException("Invalid class file format for " +
+						fileName + ":" + name + ": " + e.getMessage());
+				}
+			} else if ( name.endsWith(".jar") || name.endsWith( ".zip" ) ) {
+				setZipStream(new ZipInputStream(zipFile.getInputStream(entry)), name );
+				parsedClass = getNextNestedClass();
+				if ( parsedClass != null ) {
+					break;
+				}
+			} else if (name.endsWith(".java"))
+				containsSourceFiles = true;
+
 		}
         	return parsedClass;
 	}
@@ -239,7 +239,7 @@ public class FindBugs implements Constants2, ExitCodes
 			return null;
 		String fileName = rfsIter.next();
 		try {
-			return new ClassParser(fileName).parse();
+			return parseClass(fileName);
 		} catch (ClassFormatException e) {
 			throw new ClassFormatException("Invalid class file format for " +
 				fileName + ": " + e.getMessage());
@@ -578,6 +578,7 @@ public class FindBugs implements Constants2, ExitCodes
 			JavaClass jclass = classProducer.getNextClass();
 			if (jclass == null)
 				break;
+			if (DEBUG) System.out.println("Scanned " + jclass.getClassName());
 			Repository.addClass(jclass);
 			repositoryClassList.add(jclass.getClassName());
 		} catch (ClassFormatException e) {
@@ -658,6 +659,23 @@ public class FindBugs implements Constants2, ExitCodes
 			throw new InterruptedException();
 		detectors[i].report();
 	}
+  }
+
+  /**
+   * Parse the data for a class to create a JavaClass object.
+   */
+  private static JavaClass parseClass(String archiveName, InputStream in, String fileName)
+	throws IOException {
+	if (DEBUG) System.out.println("About to parse " + fileName + " in " + archiveName);
+	return new ClassParser(in, fileName).parse();
+  }
+
+  /**
+   * Parse the data for a class to create a JavaClass object.
+   */
+  private static JavaClass parseClass(String fileName) throws IOException {
+	if (DEBUG) System.out.println("About to parse " + fileName);
+	return new ClassParser(fileName).parse();
   }
 
   /* ----------------------------------------------------------------------
