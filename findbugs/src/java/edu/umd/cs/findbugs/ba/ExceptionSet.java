@@ -24,6 +24,8 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.bcel.generic.ObjectType;
+import org.apache.bcel.generic.ReferenceType;
+import org.apache.bcel.generic.Type;
 
 /**
  * Class for keeping track of exceptions that can be
@@ -40,6 +42,7 @@ import org.apache.bcel.generic.ObjectType;
 public class ExceptionSet {
 	private Map<ObjectType, ThrownException> map;
 	private boolean universalHandler;
+	private Type commonSupertype;
 
 	/**
 	 * Constructor.
@@ -48,6 +51,50 @@ public class ExceptionSet {
 	public ExceptionSet() {
 		this.map = new HashMap<ObjectType, ThrownException>();
 		this.universalHandler = false;
+	}
+
+	/**
+	 * Return an exact copy of this object.
+	 */
+	public ExceptionSet duplicate() {
+		ExceptionSet dup = new ExceptionSet();
+		for (Iterator<ThrownException> i = iterator(); i.hasNext(); ) {
+			dup.add(i.next().duplicate());
+		}
+		return dup;
+	}
+
+	/**
+	 * Get the least (lowest in the lattice) common supertype
+	 * of the exceptions in the set.  Returns the special TOP
+	 * type if the set is empty.
+	 */
+	public Type getCommonSupertype() throws ClassNotFoundException {
+		if (commonSupertype != null)
+			return commonSupertype;
+
+		if (isEmpty()) {
+			// This probably means that we're looking at an
+			// infeasible exception path.
+			return TypeFrame.getTopType();
+		}
+
+		// Compute first common superclass
+		Iterator<ThrownException> i = iterator();
+		ReferenceType result = i.next().getType();
+		while (i.hasNext()) {
+			result = result.getFirstCommonSuperclass(i.next().getType());
+			if (result == null) {
+				// This should only happen if the class hierarchy
+				// is incomplete.  We'll just be conservative.
+				result = Type.THROWABLE;
+				break;
+			}
+		}
+
+		// Cache and return the result
+		commonSupertype = result;
+		return result;
 	}
 
 	/**
@@ -76,6 +123,16 @@ public class ExceptionSet {
 		add(new ThrownException(type, false));
 	}
 
+	/**
+	 * Add all exceptions in the given set.
+	 * @param other the set
+	 */
+	public void addAll(ExceptionSet other) {
+		for (Iterator<ThrownException> i = other.iterator(); i.hasNext(); ) {
+			add(i.next().duplicate());
+		}
+	}
+
 	private void add(ThrownException thrownException) {
 		ThrownException old = map.put(thrownException.getType(), thrownException);
 
@@ -83,6 +140,17 @@ public class ExceptionSet {
 		// implicit exception.
 		if (old != null && old.isExplicit())
 			thrownException.setExplicit(true);
+
+		// Invalidate cached common superclass
+		commonSupertype = null;
+	}
+
+	/**
+	 * Remove all exceptions from the set.
+	 */
+	public void clear() {
+		map.clear();
+		commonSupertype = null;
 	}
 
 	/**
@@ -92,6 +160,7 @@ public class ExceptionSet {
 	public void sawUniversal() {
 		universalHandler = true;
 		map.clear();
+		commonSupertype = null;
 	}
 
 	/**
