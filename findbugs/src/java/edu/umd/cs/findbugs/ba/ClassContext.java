@@ -184,7 +184,7 @@ public class ClassContext implements AnalysisFeatures {
 				} catch (DataflowAnalysisException e) {
 					// FIXME: should report the error
 				} catch (ClassNotFoundException e) {
-					lookupFailureCallback.reportMissingClass(e);
+					getLookupFailureCallback().reportMissingClass(e);
 				}
 			}
 			cfg.setFlags(cfg.getFlags() | PRUNED_INFEASIBLE_EXCEPTIONS);
@@ -192,7 +192,7 @@ public class ClassContext implements AnalysisFeatures {
 			if (PRUNE_UNCONDITIONAL_EXCEPTION_THROWER_EDGES && !cfg.isFlagSet(PRUNED_UNCONDITIONAL_THROWERS)) {
 				try {
 					new PruneUnconditionalExceptionThrowerEdges(
-						methodGen, cfg, getConstantPoolGen(), lookupFailureCallback).execute();
+						methodGen, cfg, getConstantPoolGen(), analysisContext).execute();
 				} catch (DataflowAnalysisException e) {
 					// FIXME: should report the error
 				}
@@ -217,7 +217,8 @@ public class ClassContext implements AnalysisFeatures {
 	 * ---------------------------------------------------------------------- */
 
 	private JavaClass jclass;
-	private RepositoryLookupFailureCallback lookupFailureCallback;
+	private AnalysisContext analysisContext;
+
 	private NoExceptionAnalysisFactory<MethodGen> methodGenFactory =
 	new NoExceptionAnalysisFactory<MethodGen>("MethodGen construction") {
 		protected MethodGen analyze(Method method) {
@@ -234,7 +235,7 @@ public class ClassContext implements AnalysisFeatures {
 		protected ValueNumberDataflow analyze(Method method) throws DataflowAnalysisException, CFGBuilderException {
 			MethodGen methodGen = getMethodGen(method);
 			DepthFirstSearch dfs = getDepthFirstSearch(method);
-			ValueNumberAnalysis analysis = new ValueNumberAnalysis(methodGen, dfs, lookupFailureCallback);
+			ValueNumberAnalysis analysis = new ValueNumberAnalysis(methodGen, dfs, getLookupFailureCallback());
 			CFG cfg = getCFG(method);
 			ValueNumberDataflow vnaDataflow = new ValueNumberDataflow(cfg, analysis);
 			vnaDataflow.execute();
@@ -267,7 +268,7 @@ public class ClassContext implements AnalysisFeatures {
 			ExceptionSetFactory exceptionSetFactory = getExceptionSetFactory(method);
 
 			TypeAnalysis typeAnalysis =
-				new TypeAnalysis(methodGen, cfg, dfs, lookupFailureCallback, exceptionSetFactory);
+				new TypeAnalysis(methodGen, cfg, dfs, getLookupFailureCallback(), exceptionSetFactory);
 			TypeDataflow typeDataflow = new TypeDataflow(cfg, typeAnalysis);
 			typeDataflow.execute();
 
@@ -410,10 +411,9 @@ public class ClassContext implements AnalysisFeatures {
 	 * Constructor.
 	 * @param jclass the JavaClass
 	 */
-	public ClassContext(JavaClass jclass, RepositoryLookupFailureCallback lookupFailureCallback) {
-		if (lookupFailureCallback == null) throw new IllegalArgumentException();
+	public ClassContext(JavaClass jclass, AnalysisContext analysisContext) {
 		this.jclass = jclass;
-		this.lookupFailureCallback = lookupFailureCallback;
+		this.analysisContext = analysisContext;
 		this.classGen = null;
 		this.assignedFieldMap = null;
 		this.assertionMethods = null;
@@ -425,11 +425,16 @@ public class ClassContext implements AnalysisFeatures {
 	public JavaClass getJavaClass() { return jclass; }
 
 	/**
+	 * Get the AnalysisContext.
+	 */
+	public AnalysisContext getAnalysisContext() { return analysisContext; }
+
+	/**
 	 * Get the RepositoryLookupFailureCallback.
 	 * @return the RepositoryLookupFailureCallback
 	 */
 	public RepositoryLookupFailureCallback getLookupFailureCallback() {
-		return lookupFailureCallback;
+		return analysisContext.getLookupFailureCallback();
 	}
 
 	/**

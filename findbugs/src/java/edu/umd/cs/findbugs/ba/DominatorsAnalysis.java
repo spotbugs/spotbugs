@@ -64,10 +64,11 @@ public class DominatorsAnalysis extends AbstractDominatorsAnalysis {
 				System.exit(1);
 			}
 		};
-		AnalysisContext.instance().setLookupFailureCallback(lookupFailureCallback);
+
+		AnalysisContext analysisContext = new AnalysisContext(lookupFailureCallback);
 
 		JavaClass jclass = new ClassParser(argv[0]).parse();
-		ClassContext classContext = AnalysisContext.instance().getClassContext(jclass);
+		ClassContext classContext = analysisContext.getClassContext(jclass);
 
 		String methodName = System.getProperty("dominators.method");
 		boolean ignoreExceptionEdges = Boolean.getBoolean("dominators.ignoreExceptionEdges");

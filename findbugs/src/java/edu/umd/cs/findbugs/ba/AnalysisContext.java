@@ -52,32 +52,20 @@ public class AnalysisContext implements AnalysisFeatures {
 		}
 	}
 
-	private static AnalysisContext instance;
-
 	/** Constructor. */
-	private AnalysisContext() {
+	public AnalysisContext(RepositoryLookupFailureCallback lookupFailureCallback) {
+		this.lookupFailureCallback = lookupFailureCallback;
 		this.sourceFinder = new SourceFinder();
 		this.classContextCache = new ClassContextCache();
 		// FIXME: eventually change to not use BCEL global repository
 		this.typeRepository = new TypeRepository(new BCELRepositoryClassResolver());
 	}
 
-	/** Get the single AnalysisContext instance. */
-	public static AnalysisContext instance() {
-		if (instance == null) {
-			instance = new AnalysisContext();
-		}
-		return instance;
-	}
-
-	/** Clear old ClassContexts out of the cache. */
-	public void clearCache() {
-		classContextCache.clear();
-	}
-
-	/** Set the repository lookup failure callback for created ClassContexts. */
-	public void setLookupFailureCallback(RepositoryLookupFailureCallback lookupFailureCallback) {
-		this.lookupFailureCallback = lookupFailureCallback;
+	/**
+	 * Get the lookup failure callback.
+	 */
+	public RepositoryLookupFailureCallback getLookupFailureCallback() {
+		return lookupFailureCallback;
 	}
 
 	/** Set the source path. */
@@ -98,7 +86,7 @@ public class AnalysisContext implements AnalysisFeatures {
 	public ClassContext getClassContext(JavaClass javaClass) {
 		ClassContext classContext = classContextCache.get(javaClass);
 		if (classContext == null) {
-			classContext = new ClassContext(javaClass, lookupFailureCallback);
+			classContext = new ClassContext(javaClass, this);
 			classContextCache.put(javaClass, classContext);
 		}
 		return classContext;

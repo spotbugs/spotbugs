@@ -30,15 +30,14 @@ public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes, Analy
 	private MethodGen methodGen;
 	private CFG cfg;
 	private ConstantPoolGen cpg;
-	private RepositoryLookupFailureCallback lookupFailureCallback;
+	private AnalysisContext analysisContext;
 
 	public PruneUnconditionalExceptionThrowerEdges(MethodGen methodGen, CFG cfg, ConstantPoolGen cpg,
-		RepositoryLookupFailureCallback lookupFailureCallback) {
-		assert lookupFailureCallback != null;
+		AnalysisContext analysisContext) {
 		this.methodGen = methodGen;
 		this.cfg = cfg;
 		this.cpg = cpg;
-		this.lookupFailureCallback = lookupFailureCallback;
+		this.analysisContext = analysisContext;
 	}
 
 	public void execute() throws CFGBuilderException, DataflowAnalysisException {
@@ -64,7 +63,7 @@ public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes, Analy
 				if (className.startsWith("["))
 					continue;
 				JavaClass javaClass = Repository.lookupClass(className);
-				ClassContext classContext = AnalysisContext.instance().getClassContext(javaClass);
+				ClassContext classContext = analysisContext.getClassContext(javaClass);
 
 				if (DEBUG) System.out.println("\tlooking up method for "+ basicBlock.getExceptionThrower());
 				Method method = Hierarchy.findExactMethod(inv, cpg);
@@ -106,7 +105,7 @@ public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes, Analy
 					}
 				}
 			} catch (ClassNotFoundException e) {
-				lookupFailureCallback.reportMissingClass(e);
+				analysisContext.getLookupFailureCallback().reportMissingClass(e);
 			}
 		}
 

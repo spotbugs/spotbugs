@@ -39,6 +39,7 @@ public class DroppedException extends PreorderVisitor implements Detector, Const
     Set<String> reported = new HashSet<String>();
     Set<String> causes = new HashSet<String>();
     Set<String> checkedCauses = new HashSet<String>();
+    private ClassContext classContext;
     private BugReporter bugReporter;
 
     public DroppedException(BugReporter bugReporter) {
@@ -47,6 +48,7 @@ public class DroppedException extends PreorderVisitor implements Detector, Const
 	}
 
     public void visitClassContext(ClassContext classContext) {
+	this.classContext = classContext;
 	classContext.getJavaClass().accept(this);
 	}
 
@@ -329,7 +331,7 @@ public class DroppedException extends PreorderVisitor implements Detector, Const
     if (!LOOK_IN_SOURCE_TO_FIND_COMMENTED_CATCH_BLOCKS)
 	return false;
 
-    AnalysisContext analysisContext = AnalysisContext.instance();
+    AnalysisContext analysisContext = classContext.getAnalysisContext();
     SourceFinder sourceFinder = analysisContext.getSourceFinder();
     try {
 	SourceFile sourceFile = sourceFinder.findSourceFile(srcLine.getPackageName(), srcLine.getSourceFile());

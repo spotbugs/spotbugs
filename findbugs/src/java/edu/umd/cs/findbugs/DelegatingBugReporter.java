@@ -42,6 +42,10 @@ public class DelegatingBugReporter implements BugReporter {
 		this.realBugReporter = realBugReporter;
 	}
 
+	public void setEngine(FindBugs engine) {
+		realBugReporter.setEngine(engine);
+	}
+
 	public void setErrorVerbosity(int level) {
 		realBugReporter.setErrorVerbosity(level);
 	}

@@ -29,6 +29,7 @@ import java.util.*;
  */
 public abstract class AbstractBugReporter implements BugReporter {
 
+	private FindBugs engine;
 	private int verbosityLevel = NORMAL;
 	private int priorityThreshold;
 	private HashSet<String> missingClassMessageSet = new HashSet<String>();
@@ -36,6 +37,14 @@ public abstract class AbstractBugReporter implements BugReporter {
 	private LinkedList<String> errorMessageList = new LinkedList<String>();
 	private List<BugReporterObserver> observerList = new LinkedList<BugReporterObserver>();
 	private ProjectStats projectStats = new ProjectStats();
+
+	public void setEngine(FindBugs engine) {
+		this.engine = engine;
+	}
+
+	public FindBugs getEngine() {
+		return engine;
+	}
 
 	public void setErrorVerbosity(int level) {
 		this.verbosityLevel = level;

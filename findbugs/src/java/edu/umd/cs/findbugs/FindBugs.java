@@ -504,6 +504,7 @@ public class FindBugs implements Constants2, ExitCodes
   private List<ClassObserver> classObserverList;
   private Detector detectors [];
   private FindBugsProgress progressCallback;
+  private AnalysisContext analysisContext;
   private String currentClass;
 
   /* ----------------------------------------------------------------------
@@ -577,11 +578,14 @@ public class FindBugs implements Constants2, ExitCodes
    * @throws InterruptedException if the thread is interrupted while conducting the analysis
    */
   public void execute() throws java.io.IOException, InterruptedException {
-
 	// Configure the analysis context
-	AnalysisContext analysisContext = AnalysisContext.instance();
-	analysisContext.setLookupFailureCallback(bugReporter);
+	analysisContext = new AnalysisContext(bugReporter);
 	analysisContext.setSourcePath(project.getSourceDirList());
+
+	// Give the BugReporter a reference to this object,
+	// in case it wants to access information such
+	// as the AnalysisContext
+	bugReporter.setEngine(this);
 
 	// Create detectors, if required
 	if (detectors == null)
@@ -634,6 +638,15 @@ public class FindBugs implements Constants2, ExitCodes
 
 	// Flush any queued error reports
 	bugReporter.reportQueuedErrors();
+  }
+
+  /**
+   * Get the analysis context.
+   * It is only valid to call this method after the execute()
+   * method has been called.
+   */
+  public AnalysisContext getAnalysisContext() {
+	return analysisContext;
   }
 
   /**
@@ -715,9 +728,6 @@ public class FindBugs implements Constants2, ExitCodes
   private void clearRepository() {
 	// Purge repository of previous contents
 	Repository.clearCache();
-
-	// Clear the cache in the AnalysisContext.
-	AnalysisContext.instance().clearCache();
 
 	// Clear InnerClassAccessMap cache.
 	InnerClassAccessMap.instance().clearCache();
@@ -837,7 +847,7 @@ public class FindBugs implements Constants2, ExitCodes
 		}
 
 		// Create a ClassContext for the class
-		ClassContext classContext = AnalysisContext.instance().getClassContext(javaClass);
+		ClassContext classContext = analysisContext.getClassContext(javaClass);
 
 		// Run the Detectors
 		for (int i = 0; i < detectors.length; ++i) {

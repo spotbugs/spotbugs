@@ -79,9 +79,10 @@ public abstract class DataflowTestDriver<Fact, AnalysisType extends AbstractData
 				System.exit(1);
 			}
 		};
-		AnalysisContext.instance().setLookupFailureCallback(lookupFailureCallback);
 
-		ClassContext classContext = AnalysisContext.instance().getClassContext(jclass);
+		AnalysisContext analysisContext = new AnalysisContext(lookupFailureCallback);
+
+		ClassContext classContext = analysisContext.getClassContext(jclass);
 		String methodName = System.getProperty("dataflow.method");
 
 		Method[] methods = jclass.getMethods();

@@ -42,10 +42,10 @@ public abstract class ResourceValueAnalysisTestDriver<Resource, ResourceTrackerT
 		};
 
 		// Set the lookup failure callback in the Analysis Context
-		AnalysisContext.instance().setLookupFailureCallback(lookupFailureCallback);
+		AnalysisContext analysisContext = new AnalysisContext(lookupFailureCallback);
 
 		JavaClass jclass = new ClassParser(classFile).parse();
-		ClassContext classContext = new ClassContext(jclass, lookupFailureCallback);
+		ClassContext classContext = analysisContext.getClassContext(jclass);
 
 		Method[] methodList = jclass.getMethods();
 		for (int i = 0; i < methodList.length; ++i) {

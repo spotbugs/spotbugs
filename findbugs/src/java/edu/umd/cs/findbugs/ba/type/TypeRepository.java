@@ -59,7 +59,7 @@ import org.apache.bcel.Constants;
  * @author David Hovemeyer
  */
 public class TypeRepository {
-	// FIME:
+	// FIXME:
 	// - signatures should probably be interned
 	//   (do experiment, see if it makes any difference in memory use)
 

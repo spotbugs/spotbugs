@@ -32,6 +32,7 @@ import org.apache.bcel.classfile.JavaClass;
 public class EmacsBugReporter extends TextUIBugReporter {
 
 	private HashSet<BugInstance> seenAlready = new HashSet<BugInstance>();
+	private FindBugs engine;
 
 	public void observeClass(JavaClass javaClass) {
 		// Don't need to do anything special, since we won't be
@@ -44,7 +45,7 @@ public class EmacsBugReporter extends TextUIBugReporter {
                 if (line == null) {
                         outputStream.print(bugInstance.getMessage());
                 } else {
-			SourceFinder sourceFinder = AnalysisContext.instance().getSourceFinder();
+			SourceFinder sourceFinder = getEngine().getAnalysisContext().getSourceFinder();
 			String fullPath;
 			String pkgName = line.getPackageName();
 			try {
