@@ -30,31 +30,47 @@ public class TestingGround extends BytecodeScanningDetector implements Constants
 
 	private BugReporter bugReporter;
 	private final boolean active = false;
+	private int state = 0;
 
 	public TestingGround(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 	}
 
 
+	public void visit(JavaClass obj) {
+		}
+
+	public void visit(Method obj) {
+		}
+
 	public void visit(Code obj) {
 		// unless active, don't bother dismantling bytecode
 		if (active) {
-			System.out.println("TestingGround: " + getFullyQualifiedMethodName());
+		        System.out.println("TestingGround: " + getFullyQualifiedMethodName());
 			super.visit(obj);
 			}
 		}
 
 
 	public void sawOpcode(int seen) {
+
 		printOpCode(seen);
+
 	}
 	
 	private void printOpCode(int seen) {
 		System.out.print("  TestingGround: " +  OPCODE_NAMES[seen]);
 		if ((seen == INVOKEVIRTUAL) || (seen == INVOKESPECIAL) || (seen == INVOKEINTERFACE))
 			System.out.print("   " + getClassConstantOperand() + "." + getNameConstantOperand() + " " + getSigConstantOperand());
-		else if (seen == LDC)
-			System.out.print("   \"" + getStringConstantOperand() + "\"");
+		else if (seen == LDC || seen == LDC_W || seen == LDC2_W) {
+			Constant c = getConstantRefOperand();
+			if (c instanceof ConstantString) 
+				System.out.print("   \"" + getStringConstantOperand() + "\"");
+			else if (c instanceof ConstantClass) 
+				System.out.print("   " + getClassConstantOperand());
+			else
+				System.out.print("   " + c);
+			}
 		else if ((seen == ALOAD) || (seen == ASTORE))
 			System.out.print("   " + getRegisterOperand());
 		
