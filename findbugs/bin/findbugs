@@ -14,7 +14,7 @@ Usage() {
 
 # Find absolute path of this script
 command=$0
-if [ `expr $command : '/'` -ne 1 ]; then
+if [ `expr $command : '\/'` -ne 1 ]; then
 	# We were invoked using a relative path.
 	# Prepend pwd to command to make it absolute.
 	# NOTE: I can't think of any reason why this could fail,
