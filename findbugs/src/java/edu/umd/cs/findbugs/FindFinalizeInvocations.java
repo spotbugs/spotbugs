@@ -62,12 +62,14 @@ public class FindFinalizeInvocations extends BytecodeScanningDetector implements
 			else
 				bugReporter.reportBug(new BugInstance("FI_NULLIFY_SUPER", NORMAL_PRIORITY)
 					.addClassAndMethod(this)
-					.addClass(superclassName));
+					.addClass(overridesFinalizeIn));
 			}
 		    else if (obj.getCode().length == 5 && sawSuperFinalize) 
 			bugReporter.reportBug(new BugInstance("FI_USELESS", NORMAL_PRIORITY).addClassAndMethod(this));
 		    else if (!sawSuperFinalize && !superHasNoFinalizer)
-			bugReporter.reportBug(new BugInstance("FI_MISSING_SUPER_CALL", NORMAL_PRIORITY).addClassAndMethod(this));
+			bugReporter.reportBug(new BugInstance("FI_MISSING_SUPER_CALL", NORMAL_PRIORITY).addClassAndMethod(this)
+					.addClass(overridesFinalizeIn)
+			);
 		}
    public void sawOpcode(int seen) {
 	if (seen == INVOKEVIRTUAL && nameConstant.equals("finalize"))

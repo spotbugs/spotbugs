@@ -45,6 +45,7 @@ public class FindExceptionGetMessage extends BytecodeScanningDetector implements
 		this.bugReporter = bugReporter;
 	}
 
+/*
 	public void sawOpcode(int seen) {
 		if (seen == INVOKEVIRTUAL &&
 			nameConstant.equals("getMessage") &&
@@ -54,6 +55,7 @@ public class FindExceptionGetMessage extends BytecodeScanningDetector implements
 				.addSourceLine(this, PC));
 		}
 	}
+*/
 }
 
 // vim:ts=4
