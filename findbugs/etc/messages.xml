@@ -789,7 +789,12 @@ when evaluating the right-hand side can generate an error.
     <Details>
 <![CDATA[
   <p> Waiting on a monitor while two locks are held may cause
-  deadlock.&nbsp; This not necessarily a bug, but is worth examining
+  deadlock.
+	&nbsp; 
+	Performing a wait only releases the lock on the object
+	being waited on, not any other locks.
+	&nbsp; 
+This not necessarily a bug, but is worth examining
   closely.
 ]]>
     </Details>
