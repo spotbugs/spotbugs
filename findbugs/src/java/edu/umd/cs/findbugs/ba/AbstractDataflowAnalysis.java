@@ -57,6 +57,12 @@ public abstract class AbstractDataflowAnalysis<Fact> implements DataflowAnalysis
 	public abstract void transferInstruction(InstructionHandle handle, Fact fact) throws DataflowAnalysisException;
 
 	/**
+	 * Determine whether the given fact is <em>valid</em>
+	 * (neither top nor bottom).
+	 */
+	public abstract boolean isFactValid(Fact fact);
+
+	/**
 	 * Get the dataflow fact representing the point just before given instruction.
 	 * Note "before" is meant in the logical sense, so for backward analyses,
 	 * before means after the instruction in the control flow sense.

@@ -58,12 +58,6 @@ public interface DataflowAnalysis<Fact> {
 	public void makeFactTop(Fact fact);
 
 	/**
-	 * Determine whether the given fact is <em>valid</em>
-	 * (neither top nor bottom).
-	 */
-	public boolean isFactValid(Fact fact);
-
-	/**
 	 * Returns true if the analysis is forwards, false if backwards.
 	 */
 	public boolean isForwards();
