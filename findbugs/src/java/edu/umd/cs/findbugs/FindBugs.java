@@ -808,7 +808,7 @@ public class FindBugs implements Constants2, ExitCodes
 
 	if (!quiet || setExitCode) {
 		if (bugCount > 0)
-			System.err.println("Bugs found: " + bugCount);
+			System.err.println("Warnings generated: " + bugCount);
 		if (missingClassCount > 0)
 			System.err.println("Missing classes: " + missingClassCount);
 		if (errorCount > 0)
