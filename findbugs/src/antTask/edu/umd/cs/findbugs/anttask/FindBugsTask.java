@@ -69,6 +69,7 @@ import org.apache.tools.ant.util.JavaEnvUtils;
 import org.apache.tools.ant.taskdefs.MatchingTask;
 
 import java.io.File;
+import java.io.FileInputStream;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -121,6 +122,15 @@ public class FindBugsTask extends MatchingTask {
     private ArrayList checkList = new ArrayList();
     private ArrayList suppressList = new ArrayList();
 	private String homeDir;
+    private String projectFile; 
+
+
+	/**
+	 * Set project file
+	 */
+    public void setProjectFile( String projectFile ) {
+       this.projectFile = projectFile;
+    }
 
 	/**
 	 * Set findbugs.home.
@@ -137,6 +147,7 @@ public class FindBugsTask extends MatchingTask {
         suppressList.add( e );
         return e;
     }
+
     /**
      * Adds a path for source compilation.
      *
@@ -248,30 +259,32 @@ public class FindBugsTask extends MatchingTask {
         checkParameters();
         resetFileLists();
 
-        // scan class directories ato build up
-        // check lists
-        String[] list = classes.list();
-        for (int i = 0; i < list.length; i++) {
-            File classDir = getProject().resolveFile(list[i]);
-            if (!classDir.exists()) {
-                throw new BuildException("classdir \""
-                                         + classDir.getPath()
-                                         + "\" does not exist!", getLocation());
-            }
+        if ( projectFile == null ) {
+			// scan class directories to build up
+			// check lists
+			String[] list = classes.list();
+			for (int i = 0; i < list.length; i++) {
+				File classDir = getProject().resolveFile(list[i]);
+				if (!classDir.exists()) {
+					throw new BuildException("classdir \""
+											 + classDir.getPath()
+											 + "\" does not exist!", getLocation());
+				}
 
-            DirectoryScanner ds = this.getDirectoryScanner(classDir);
-            String filenames[] = ds.getIncludedFiles();
-            for ( int j = 0; j < filenames.length; j++ ) {
-                if ( filenames[j].endsWith( ".class" ) ) {
-                  classCount++;
-                  checkList.add( new File(classDir,filenames[j]).getAbsolutePath());
-                }
-                else if ( filenames[j].endsWith( ".zip" )
-                     || filenames[j].endsWith( ".jar" ) ) {
-                  archiveCount++;
-                  checkList.add( new File(classDir,filenames[j]).getAbsolutePath());
-                }
-            }
+				DirectoryScanner ds = this.getDirectoryScanner(classDir);
+				String filenames[] = ds.getIncludedFiles();
+				for ( int j = 0; j < filenames.length; j++ ) {
+					if ( filenames[j].endsWith( ".class" ) ) {
+					  classCount++;
+					  checkList.add( new File(classDir,filenames[j]).getAbsolutePath());
+					}
+					else if ( filenames[j].endsWith( ".zip" )
+						 || filenames[j].endsWith( ".jar" ) ) {
+					  archiveCount++;
+					  checkList.add( new File(classDir,filenames[j]).getAbsolutePath());
+					}
+				}
+			}
         }
                
         checkCode();
@@ -297,8 +310,12 @@ public class FindBugsTask extends MatchingTask {
      * @since Ant 1.5
      */
     protected void checkParameters() throws BuildException {
-        if (classes == null || classes.size() == 0 ) {
-            throw new BuildException("classdir attribute must be set!",
+        if ( projectFile != null && !(new File(projectFile).exists()) ) {
+            throw new BuildException("file not found in projectFile attribute!",
+                                     getLocation());
+        }
+        if ( projectFile == null && (classes == null || classes.size() == 0 )  ) {
+            throw new BuildException("classdir attribute must be set when not using projectFile attribute!",
                                      getLocation());
         }
 
@@ -314,6 +331,10 @@ public class FindBugsTask extends MatchingTask {
     protected void checkCode() {
 		// Make sure findbugs.home property is set
 		System.setProperty("findbugs.home", homeDir);
+        if ( debug ) {
+		  System.setProperty("findbugs.debug", "true");
+        }
+       
 
         if ( listFiles ) {
             for ( int i = 0; i < checkList.size(); i++ ) {
@@ -334,34 +355,42 @@ public class FindBugsTask extends MatchingTask {
                            + " archive" + (archiveCount==1? " " : "s") );
             }
             log( sb.toString() );
-
-            errorCount = 0;            
-	        BugReporter bugReporter = new Reporter( sorted, suppressList ); 
-         
-            try { 
-			  edu.umd.cs.findbugs.Project findBugsProject = new edu.umd.cs.findbugs.Project();
-	          FindBugs findBugs = new FindBugs(bugReporter, findBugsProject);
-
-			  Iterator i = checkList.iterator();
-			  while (i.hasNext()) {
-				String fileName = (String) i.next();
-				findBugsProject.addJar(fileName);
-			  }
-
-              findBugs.execute(); 
-            } catch ( Exception e ) {
-				log( e.getMessage(), Project.MSG_ERR );
-                errorCount++;
-            }
-            if ( errorCount > 0 ) { 
-				if (failOnError) {
-				    log( "Found " + errorCount + " error" + (errorCount ==1?"":"s"), Project.MSG_ERR );
-					throw new BuildException(FAIL_MSG, getLocation());
-				} else {
-					log(FAIL_MSG, Project.MSG_ERR);
-				}
-            }
         }
+		errorCount = 0;            
+		BugReporter bugReporter = new Reporter( sorted, suppressList ); 
+	 
+		try { 
+		  edu.umd.cs.findbugs.Project findBugsProject = 
+			new edu.umd.cs.findbugs.Project();
+		  FindBugs findBugs = new FindBugs(bugReporter, findBugsProject);
+		 
+		  // load the project file if defined 
+		  if ( projectFile != null ) {
+			findBugsProject.setFileName( projectFile );
+			FileInputStream dataIn = new FileInputStream( projectFile );
+			findBugsProject.read( dataIn );
+			dataIn.close();
+		  } 
+
+		  Iterator i = checkList.iterator();
+		  while (i.hasNext()) {
+			String fileName = (String) i.next();
+			findBugsProject.addJar(fileName);
+		  }
+		  findBugs.execute(); 
+		} catch ( Exception e ) {
+            e.printStackTrace();
+			log( e.getMessage(), Project.MSG_ERR );
+			errorCount++;
+		}
+		if ( errorCount > 0 ) { 
+			if (failOnError) {
+				log( "Found " + errorCount + " error" + (errorCount ==1?"":"s"), Project.MSG_ERR );
+				throw new BuildException(FAIL_MSG, getLocation());
+			} else {
+				log(FAIL_MSG, Project.MSG_ERR);
+			}
+		}
     }
 
 	private static final Pattern missingClassPattern = Pattern.compile("^.*while looking for class ([^:]*):.*$");
