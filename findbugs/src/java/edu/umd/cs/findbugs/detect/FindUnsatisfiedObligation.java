@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs.detect;
 
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.MethodGen;
@@ -134,7 +135,7 @@ public class FindUnsatisfiedObligation implements Detector {
 			
 			// See if there are any states with nonempty obligation sets
 			StateSet factAtExit = dataflow.getStartFact(cfg.getExit());
-			HashSet<Obligation> leakedObligationSet = new HashSet<Obligation>();
+			Set<Obligation> leakedObligationSet = new HashSet<Obligation>();
 			for (Iterator<State> i = factAtExit.stateIterator(); i.hasNext();) {
 				State state = i.next();
 				for (int id = 0; id < factory.getMaxObligationTypes(); ++id) {

@@ -37,8 +37,8 @@ public class FindDoubleCheck extends BytecodeScanningDetector implements Constan
 	int startPC, endPC;
 	int count;
 	boolean sawMonitorEnter;
-	HashSet<FieldAnnotation> fields = new HashSet<FieldAnnotation>();
-	HashSet<FieldAnnotation> twice = new HashSet<FieldAnnotation>();
+	Set<FieldAnnotation> fields = new HashSet<FieldAnnotation>();
+	Set<FieldAnnotation> twice = new HashSet<FieldAnnotation>();
 	FieldAnnotation pendingFieldLoad;
 
 	int countSinceGetReference;

@@ -132,7 +132,7 @@ public class CategorizeBugs {
 	}
 
 	private static Set<String> parseAnnotation(String annotation) {
-		HashSet<String> result = new HashSet<String>();
+		Set<String> result = new HashSet<String>();
 		StringTokenizer tok = new StringTokenizer(annotation, " \t\r\n\f");
 		while (tok.hasMoreTokens())
 			result.add(tok.nextToken());

@@ -34,12 +34,12 @@ import org.apache.bcel.classfile.Method;
 public class LockedFields extends BytecodeScanningDetector implements Constants2 {
 	private static final boolean DEBUG = Boolean.getBoolean("lockedfields.debug");
 
-	HashSet<FieldAnnotation> volatileOrFinalFields = new HashSet<FieldAnnotation>();
-	HashSet<FieldAnnotation> fieldsWritten = new HashSet<FieldAnnotation>();
-	HashSet<FieldAnnotation> fieldsRead = new HashSet<FieldAnnotation>();
-	HashSet<FieldAnnotation> localLocks = new HashSet<FieldAnnotation>();
-	HashSet<FieldAnnotation> publicFields = new HashSet<FieldAnnotation>();
-	HashSet<FieldAnnotation> writtenOutsideOfConstructor = new HashSet<FieldAnnotation>();
+	Set<FieldAnnotation> volatileOrFinalFields = new HashSet<FieldAnnotation>();
+	Set<FieldAnnotation> fieldsWritten = new HashSet<FieldAnnotation>();
+	Set<FieldAnnotation> fieldsRead = new HashSet<FieldAnnotation>();
+	Set<FieldAnnotation> localLocks = new HashSet<FieldAnnotation>();
+	Set<FieldAnnotation> publicFields = new HashSet<FieldAnnotation>();
+	Set<FieldAnnotation> writtenOutsideOfConstructor = new HashSet<FieldAnnotation>();
 	boolean synchronizedMethod;
 	boolean publicMethod;
 	boolean protectedMethod;

@@ -724,7 +724,7 @@ public class FindInconsistentSync2 implements Detector {
 		ConstantPoolGen cpg = classContext.getConstantPoolGen();
 
 		// Find all obviously locked call sites
-		HashSet<CallSite> obviouslyLockedSites = new HashSet<CallSite>();
+		Set<CallSite> obviouslyLockedSites = new HashSet<CallSite>();
 		for (Iterator<CallSite> i = selfCalls.callSiteIterator(); i.hasNext();) {
 			CallSite callSite = i.next();
 			Method method = callSite.getMethod();

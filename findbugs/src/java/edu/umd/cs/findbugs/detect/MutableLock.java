@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.detect;
 
 import java.util.HashSet;
+import java.util.Set;
 
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
@@ -31,7 +32,7 @@ import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.visitclass.Constants2;
 
 public class MutableLock extends BytecodeScanningDetector implements Constants2, StatelessDetector {
-	HashSet<String> setFields = new HashSet<String>();
+	Set<String> setFields = new HashSet<String>();
 	boolean thisOnTOS = false;
 	private BugReporter bugReporter;
 

@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.detect;
 
 import java.util.HashSet;
+import java.util.Set;
 
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
@@ -33,8 +34,8 @@ import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.visitclass.Constants2;
 
 public class FindUninitializedGet extends BytecodeScanningDetector implements Constants2, StatelessDetector {
-	HashSet<FieldAnnotation> initializedFields = new HashSet<FieldAnnotation>();
-	HashSet<FieldAnnotation> declaredFields = new HashSet<FieldAnnotation>();
+	Set<FieldAnnotation> initializedFields = new HashSet<FieldAnnotation>();
+	Set<FieldAnnotation> declaredFields = new HashSet<FieldAnnotation>();
 	boolean inConstructor;
 	boolean thisOnTOS = false;
 	private BugReporter bugReporter;

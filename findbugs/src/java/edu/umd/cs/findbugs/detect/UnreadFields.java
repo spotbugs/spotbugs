@@ -36,14 +36,14 @@ public class UnreadFields extends BytecodeScanningDetector implements Constants2
 	Set<FieldAnnotation> fieldsOfSerializableOrNativeClassed
 	        = new HashSet<FieldAnnotation>();
 	Set<FieldAnnotation> myFields = new TreeSet<FieldAnnotation>();
-	HashSet<FieldAnnotation> writtenFields = new HashSet<FieldAnnotation>();
-	HashSet<FieldAnnotation> readFields = new HashSet<FieldAnnotation>();
-	HashSet<FieldAnnotation> constantFields = new HashSet<FieldAnnotation>();
+	Set<FieldAnnotation> writtenFields = new HashSet<FieldAnnotation>();
+	Set<FieldAnnotation> readFields = new HashSet<FieldAnnotation>();
+	Set<FieldAnnotation> constantFields = new HashSet<FieldAnnotation>();
 	// HashSet finalFields = new HashSet();
-	HashSet<String> needsOuterObjectInConstructor = new HashSet<String>();
-	HashSet<String> superReadFields = new HashSet<String>();
-	HashSet<String> superWrittenFields = new HashSet<String>();
-	HashSet<String> innerClassCannotBeStatic = new HashSet<String>();
+	Set<String> needsOuterObjectInConstructor = new HashSet<String>();
+	Set<String> superReadFields = new HashSet<String>();
+	Set<String> superWrittenFields = new HashSet<String>();
+	Set<String> innerClassCannotBeStatic = new HashSet<String>();
 	boolean hasNativeMethods;
 	boolean isSerializable;
 	private BugReporter bugReporter;

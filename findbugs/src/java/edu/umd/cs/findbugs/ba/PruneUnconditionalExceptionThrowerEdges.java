@@ -48,7 +48,7 @@ public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes, Analy
 	public void execute() throws CFGBuilderException, DataflowAnalysisException {
 		if (CONSERVE_SPACE) throw new IllegalStateException("This should not happen");
 
-		HashSet<Edge> deletedEdgeSet = new HashSet<Edge>();
+		Set<Edge> deletedEdgeSet = new HashSet<Edge>();
 
 		if (DEBUG)
 			System.out.println("PruneUnconditionalExceptionThrowerEdges: examining " +

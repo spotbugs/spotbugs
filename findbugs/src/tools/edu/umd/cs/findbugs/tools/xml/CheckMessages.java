@@ -82,7 +82,7 @@ public class CheckMessages {
 		 */
 		public Set<String> collectAttributes(String xpath, String attrName)
 			throws DocumentException {
-			HashSet<String> result = new HashSet<String>();
+			Set<String> result = new HashSet<String>();
 
 			for (Iterator i = xpathIterator(xpath); i.hasNext(); ) {
 				Node node = (Node) i.next();

@@ -21,6 +21,7 @@
 package edu.umd.cs.findbugs.detect;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
@@ -37,7 +38,7 @@ import edu.umd.cs.findbugs.visitclass.Constants2;
 public class InstantiateStaticClass extends BytecodeScanningDetector implements Constants2 {
 	private BugReporter bugReporter;
 
-	HashMap<String,Boolean> isStaticClass = new HashMap<String,Boolean>();
+	Map<String,Boolean> isStaticClass = new HashMap<String,Boolean>();
 	
 	public InstantiateStaticClass(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;

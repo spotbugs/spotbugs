@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs.detect;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.bcel.classfile.Field;
 
@@ -57,9 +58,9 @@ static class FieldRecord {
         }
 
 
-	HashMap<String,FieldRecord> fieldInfo = new HashMap<String,FieldRecord>();
-	HashSet<String> initializationWrites = new HashSet<String>();
-	HashSet<String> otherWrites = new HashSet<String>();
+	Map<String,FieldRecord> fieldInfo = new HashMap<String,FieldRecord>();
+	Set<String> initializationWrites = new HashSet<String>();
+	Set<String> otherWrites = new HashSet<String>();
 	
 
 	public void visit(Field obj) {

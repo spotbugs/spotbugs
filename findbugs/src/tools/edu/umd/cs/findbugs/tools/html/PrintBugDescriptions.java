@@ -26,6 +26,7 @@ import edu.umd.cs.findbugs.I18N;
 
 import java.io.IOException;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 
@@ -35,7 +36,7 @@ public abstract class PrintBugDescriptions {
 		DetectorFactoryCollection factories = DetectorFactoryCollection.instance();
 
 		// Find all bug patterns reported by at least one non-disabled detector.
-		HashSet<BugPattern> enabledPatternSet = new HashSet<BugPattern>();
+		Collection<BugPattern> enabledPatternSet = new HashSet<BugPattern>();
 		for (Iterator<DetectorFactory> i = factories.factoryIterator(); i.hasNext(); ) {
 			DetectorFactory factory = i.next();
 			if (factory.isEnabled())

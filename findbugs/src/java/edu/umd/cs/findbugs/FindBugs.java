@@ -1440,7 +1440,7 @@ public class FindBugs implements Constants2, ExitCodes {
 	 */
 	private static Set<String> handleBugCategories(String categories) {
 		// Parse list of bug categories
-		HashSet<String> categorySet = new HashSet<String>();
+		Set<String> categorySet = new HashSet<String>();
 		StringTokenizer tok = new StringTokenizer(categories, ",");
 		while (tok.hasMoreTokens()) {
 			categorySet.add(tok.nextToken());

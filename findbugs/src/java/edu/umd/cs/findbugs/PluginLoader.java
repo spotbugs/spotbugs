@@ -26,6 +26,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 import org.dom4j.Attribute;
 import org.dom4j.Document;
@@ -292,7 +293,7 @@ public class PluginLoader extends URLClassLoader {
 		}
 
 		// Create BugCodes
-		HashSet<String> definedBugCodes = new HashSet<String>();
+		Set<String> definedBugCodes = new HashSet<String>();
 		for (Iterator<Document> i = messageCollectionList.iterator(); i.hasNext();) {
 			Document messageCollection = i.next();
 

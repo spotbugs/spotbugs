@@ -187,8 +187,7 @@ public class DetectorFactory {
 	 * An empty Collection means that we don't know what kind of
 	 * bug patterns might be reported.
 	 */
-	// public Collection<BugPattern> getReportedBugPatterns() {
-	public Collection getReportedBugPatterns() {
+	public Collection<BugPattern> getReportedBugPatterns() {
 		List<BugPattern> result = new LinkedList<BugPattern>();
 		StringTokenizer tok = new StringTokenizer(reports, ",");
 		while (tok.hasMoreTokens()) {

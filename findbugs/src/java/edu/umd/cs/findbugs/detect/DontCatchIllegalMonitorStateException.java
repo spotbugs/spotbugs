@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.detect;
 
 import java.util.HashSet;
+import java.util.Set;
 
 import org.apache.bcel.classfile.CodeException;
 import org.apache.bcel.classfile.ExceptionTable;
@@ -40,7 +41,7 @@ public class DontCatchIllegalMonitorStateException
 
 	BugReporter bugReporter;
 	//AnalysisContext analysisContext;
-	HashSet<String> msgs = null;
+	Set<String> msgs = null;
 
 	public DontCatchIllegalMonitorStateException(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;

@@ -641,7 +641,7 @@ public class TypeRepository {
 			work.add(subtype);
 	
 			// Keep track of where we've been
-			HashSet<ObjectType> visited = new HashSet<ObjectType>();
+			Set<ObjectType> visited = new HashSet<ObjectType>();
 	
 			// Keep track of missing classes
 			LinkedList<String> missingClassList = new LinkedList<String>();

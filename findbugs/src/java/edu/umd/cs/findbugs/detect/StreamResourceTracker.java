@@ -133,7 +133,7 @@ public class StreamResourceTracker implements ResourceTracker<Stream> {
 		// Starting with the set of uninteresting stream open location points,
 		// propagate all uninteresting stream escapes.  Iterate until there
 		// is no change.  This also builds the map of stream equivalence classes.
-		HashSet<Stream> orig = new HashSet<Stream>();
+		Set<Stream> orig = new HashSet<Stream>();
 		do {
 			orig.clear();
 			orig.addAll(uninterestingStreamEscapeSet);

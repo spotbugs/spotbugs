@@ -45,7 +45,7 @@ public class FindUnsyncGet extends BytecodeScanningDetector implements Constants
 	public void report() {
 		// Find the set of properties for which we have both
 		// unsynchronized get and synchronized set methods
-		HashSet<String> commonProperties = new HashSet<String>(getMethods.keySet());
+		Set<String> commonProperties = new HashSet<String>(getMethods.keySet());
 		commonProperties.retainAll(setMethods.keySet());
 
 		// Report method pairs

@@ -102,7 +102,7 @@ public class PruneInfeasibleExceptionEdges implements EdgeTypes {
 	 * partially modified and should be considered invalid.
 	 */
 	public void execute() throws ClassNotFoundException {
-		HashSet<Edge> deletedEdgeSet = new HashSet<Edge>();
+		Set<Edge> deletedEdgeSet = new HashSet<Edge>();
 		List<MarkedEdge> markedEdgeList = new LinkedList<MarkedEdge>();
 
 		// Mark edges to delete,

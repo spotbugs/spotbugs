@@ -59,10 +59,10 @@ public class MutableStaticFields extends BytecodeScanningDetector implements Con
 	boolean emptyArrayOnTOS;
 	boolean inStaticInitializer;
 	String packageName;
-	HashSet<String> unsafeValue = new HashSet<String>();
-	HashSet<String> interfaces = new HashSet<String>();
-	HashSet<String> notFinal = new HashSet<String>();
-	HashSet<String> outsidePackage = new HashSet<String>();
+	Set<String> unsafeValue = new HashSet<String>();
+	Set<String> interfaces = new HashSet<String>();
+	Set<String> notFinal = new HashSet<String>();
+	Set<String> outsidePackage = new HashSet<String>();
 	private BugReporter bugReporter;
 
 	public MutableStaticFields(BugReporter bugReporter) {

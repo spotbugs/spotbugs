@@ -41,7 +41,7 @@ public class AssignedFieldMap implements Constants {
 
 		// Build a set of all fields that could be assigned
 		// by methods in this class
-		HashSet<XField> assignableFieldSet = new HashSet<XField>();
+		Set<XField> assignableFieldSet = new HashSet<XField>();
 		scanFields(jclass, assignableFieldSet);
 		JavaClass[] superClassList = jclass.getSuperClasses();
 		if (superClassList != null) {
