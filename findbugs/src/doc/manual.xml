@@ -663,14 +663,42 @@ the problematic access.
 </para>
 
 <para>
+You may add a textual annotations to bug instances.  To do so, choose the
+"Annotations" tab in the bottom pane.  Simply type in any information which
+you would like to record.  When you load and save bug results files,
+the annotations are preserved.
+</para>
+
+<para>
 You may use the <menuchoice><guimenu>File</guimenu><guimenuitem>Save project</guimenuitem></menuchoice>
 menu option to save the current lists
 of Jar files and source directories.  A saved project may be loaded with
 the <menuchoice><guimenu>File</guimenu><guimenuitem>Open project</guimenuitem></menuchoice> menu option.
-Note that the analysis results are
-not saved, so you will have to run the analysis again.  (Saving results
-may be added to a future &FindBugs; release).
+Note that when you save a project, the analysis results are
+not saved.
 </para>
+
+</sect1>
+
+<sect1>
+<title>Loading and saving results</title>
+
+<para>
+You may use the <menuchoice><guimenu>File</guimenu><guimenuitem>Load bugs</guimenuitem></menuchoice>
+and <menuchoice><guimenu>File</guimenu><guimenuitem>Save bugs</guimenuitem></menuchoice> to load
+and save the bug results produced by running &FindBugs; on your project.  The results are
+saved in XML format.  Any annotations you have added to bug reports are saved in the
+resulting XML file.
+</para>
+
+<note>
+<title>Planned Features</title>
+<para>
+Support for loading and saving bugs is still under development.
+You may find bugs in this feature, and the file format and/or implementation
+may change in future releases.
+</para>
+</note>
 
 </sect1>
 

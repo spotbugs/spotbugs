@@ -52,6 +52,10 @@ invited talk, MASPLAS 2003
      null pointer might be dereferenced
 <li> New bug pattern detector which looks for IO streams that are opened,
      do not escape the method, and are not closed on all paths out of the method
+<li> New bug pattern detector to find methods that can return null instead
+     of a zero-length array
+<li> New bug pattern detector to find places where the == or != operators
+     are used to compare String objects
 <li> Command line interface can save bugs as XML
 <li> GUI can save bugs to and load bugs from XML
 <li> An "Annotations" window in the GUI allows the user to add
@@ -66,6 +70,7 @@ invited talk, MASPLAS 2003
      memory use and possibly improve performance
 <li> Improvements to command line interface (list bug priorities, filter by priority,
      specify aux classpath, specify project to analyze)
+<li> Various bug fixes and enhancements
 </ul>
 
 <p> <a href="Changes.html">Older versions...</a>
