@@ -19,7 +19,9 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import edu.umd.cs.findbugs.*;
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.daveho.ba.*;
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.*;
@@ -82,7 +84,7 @@ public class FindMismatchedWaitOrNotify implements Detector {
 					String methodName = inv.getName(cpg);
 					String methodSig = inv.getSignature(cpg);
 
-					if (methodName.equals("wait") || methodName.equals("notify") || methodName.equals("notifyAll")) {
+					if (Lookup.isMonitorWait(methodName, methodSig) || Lookup.isMonitorNotify(methodName, methodSig)) {
 						int numConsumed = inv.consumeStack(cpg);
 						if (numConsumed == Constants.UNPREDICTABLE)
 							throw new AnalysisException("Unpredictable stack consumption", methodGen, handle);
@@ -92,8 +94,6 @@ public class FindMismatchedWaitOrNotify implements Detector {
 							throw new AnalysisException("Stack underflow", methodGen, handle);
 						ValueNumber ref = frame.getValue(frame.getNumSlots() - numConsumed);
 
-						//int[] lockCountList = dataflow.getFactAtLocation(location);
-						//int lockCount = lockCountList[ref.getNumber()];
 						LockSet lockSet = dataflow.getFactAtLocation(location);
 						int lockCount = lockSet.getLockCount(ref.getNumber());
 
