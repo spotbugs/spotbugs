@@ -92,7 +92,7 @@ public abstract class WarningPropertyUtil {
 	 * @param method       the method
 	 * @param location     Location within the method
 	 */
-	public static void addReceiverObjectType(
+	private static void addReceiverObjectType(
 			WarningPropertySet propertySet,
 			ClassContext classContext,
 			Method method,
@@ -119,30 +119,6 @@ public abstract class WarningPropertyUtil {
 	}
 	
 	/**
-	 * Add a RECEIVER_OBJECT_TYPE warning property for a particular
-	 * instruction in a method to given warning property set.
-	 * 
-	 * @param propertySet  the property set
-	 * @param classContext ClassContext of the class containing the method 
-	 * @param method       the method
-	 * @param pc           PC value of the instruction
-	 */
-	public static void addReceiverObjectType(
-			WarningPropertySet propertySet,
-			ClassContext classContext,
-			Method method,
-			int pc) {
-		try {
-			Location location = pcToLocation(classContext, method, pc);
-			if (location != null) {
-				addReceiverObjectType(propertySet, classContext, method, location);
-			}
-		} catch (CFGBuilderException e) {
-			// Ignore
-		}
-	}
-	
-	/**
 	 * Add CALLED_METHOD_<i>n</i> warning properties based on methods
 	 * which have been called and returned normally at given Location.
 	 * 
@@ -151,7 +127,7 @@ public abstract class WarningPropertyUtil {
 	 * @param method       the Method
 	 * @param location     the Location
 	 */
-	public static void addRecentlyCalledMethods(
+	private static void addRecentlyCalledMethods(
 			WarningPropertySet propertySet,
 			ClassContext classContext,
 			Method method,
@@ -201,5 +177,29 @@ public abstract class WarningPropertyUtil {
 			Location location) {
 		addReceiverObjectType(propertySet, classContext, method, location);
 		addRecentlyCalledMethods(propertySet, classContext, method, location);
+	}
+	
+	/**
+	 * Add all relevant general warning properties to the given property set
+	 * for the given Location.
+	 * 
+	 * @param propertySet  the WarningPropertySet
+	 * @param classContext the ClassContext
+	 * @param method       the Method
+	 * @param location     the Location
+	 */
+	public static void addPropertiesForLocation(
+			WarningPropertySet propertySet,
+			ClassContext classContext,
+			Method method,
+			int pc) {
+		try {
+			Location location = pcToLocation(classContext, method, pc);
+			if (location == null) {
+				addPropertiesForLocation(propertySet, classContext, method, location);
+			}
+		} catch (CFGBuilderException e) {
+			// Ignore
+		}
 	}
 }
