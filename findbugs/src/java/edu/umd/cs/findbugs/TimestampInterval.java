@@ -149,7 +149,7 @@ public class TimestampInterval implements Comparable<TimestampInterval> {
 		return new TimestampInterval(Math.min(a.begin,b.begin), Math.max(a.end,b.end));
 	}
 	
-	@Override
+	// @Override
 	public String toString() {
 		StringBuffer buf = new StringBuffer();
 		buf.append(begin);
@@ -158,7 +158,7 @@ public class TimestampInterval implements Comparable<TimestampInterval> {
 		return buf.toString();
 	}
 	
-	@Override
+	// @Override
 	public boolean equals(Object obj) {
 		if (obj == null || obj.getClass() != this.getClass())
 			return false;
@@ -167,7 +167,7 @@ public class TimestampInterval implements Comparable<TimestampInterval> {
 			&& this.end == other.end;
 	}
 	
-	@Override
+	// @Override
 	public int hashCode() {
 		return (int)(begin * 1009 + end);
 	}

@@ -7,7 +7,7 @@ public class TimestampIntervalCollectionTest extends TestCase {
 	TimestampIntervalCollection c1;
 	TimestampIntervalCollection c2;
 	
-	@Override
+	// @Override
 	protected void setUp() throws Exception {
 		c1 = TimestampIntervalCollection.decode("0-4,6-10");
 		c2 = TimestampIntervalCollection.decode("20-30,5-10,8-15");

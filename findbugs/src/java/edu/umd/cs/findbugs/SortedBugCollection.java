@@ -170,12 +170,12 @@ public class SortedBugCollection extends BugCollection {
 		return uniqueIdToBugInstanceMap.get(uniqueId);
 	}
 
-	@Override
+	// @Override
 	public long getTimestamp() {
 		return timestamp;
 	}
 
-	@Override
+	// @Override
 	public void setTimestamp(long timestamp) {
 		this.timestamp = timestamp;
 	}

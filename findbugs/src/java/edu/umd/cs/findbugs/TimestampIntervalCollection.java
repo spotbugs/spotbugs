@@ -135,7 +135,7 @@ public class TimestampIntervalCollection {
 		return collection.toString();
 	}
 	
-	@Override
+	// @Override
 	public String toString() {
 		StringBuffer buf = new StringBuffer();
 		for (Iterator<TimestampInterval> i = intervalIterator(); i.hasNext();) {

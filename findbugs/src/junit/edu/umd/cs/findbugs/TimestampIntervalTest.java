@@ -12,7 +12,7 @@ public class TimestampIntervalTest extends TestCase {
 	TimestampInterval t4;
 	TimestampInterval t4SameBegin;
 	
-	@Override
+	// @Override
 	protected void setUp() throws Exception {
 		t1 = new TimestampInterval(0L, 4L);
 		t1Copy = new TimestampInterval(0L, 4L);
