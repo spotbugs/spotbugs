@@ -42,7 +42,6 @@ public abstract class BugCollection {
 	static int x;
 
 	static {
-		System.out.println("BugCollection static initializer");
 		// Make sure BugInstance and all of the annotation classes
 		// are loaded, and that their static initializers run,
 		// to ensure that their XMLTranslators are registered.
