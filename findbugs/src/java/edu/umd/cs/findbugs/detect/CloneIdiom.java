@@ -118,7 +118,8 @@ public class CloneIdiom extends DismantleBytecode implements Detector, Constants
 		}
 
 	if (hasCloneMethod && !invokesSuperClone && !isFinal && obj.isPublic()) {
-		bugReporter.reportBug(new BugInstance("CN_IDIOM_NO_SUPER_CALL", NORMAL_PRIORITY)
+		bugReporter.reportBug(new BugInstance("CN_IDIOM_NO_SUPER_CALL", 			(obj.isPublic() || obj.isProtected()) ?
+				NORMAL_PRIORITY : LOW_PRIORITY)
 			.addClass(this)
 			.addMethod(cloneMethodAnnotation)
 			);
