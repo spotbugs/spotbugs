@@ -36,6 +36,7 @@ import java.util.StringTokenizer;
 public class DetectorFactory {
 	private final Class detectorClass;
 	private boolean enabled;
+	private boolean defEnabled;
 	private final String speed;
 	private final String reports;
 	private String detailHTML;
@@ -52,6 +53,7 @@ public class DetectorFactory {
 	public DetectorFactory(Class detectorClass, boolean enabled, String speed, String reports) {
 		this.detectorClass = detectorClass;
 		this.enabled = enabled;
+		this.defEnabled = enabled;
 		this.speed = speed;
 		this.reports = reports;
 	}
@@ -66,6 +68,11 @@ public class DetectorFactory {
 	/** Set the enabled status of the factory. */
 	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
+	}
+ 
+	/** Is this factory enabled by default */
+	public boolean isDefaultEnabled() {
+		return defEnabled;
 	}
 
 	/** Get the speed of the Detector produced by this factory. */

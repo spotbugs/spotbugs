@@ -393,6 +393,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
         
   	UserPreferences prefs = UserPreferences.getUserPreferences();
   	prefs.read();
+  	
+  	prefs.loadUserDetectorPreferences();
         
         initComponents();
         postInitComponents();
@@ -2432,6 +2434,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
      */
     private void exitFindBugs() {
         // TODO: offer to save work, etc.
+        UserPreferences.getUserPreferences().storeUserDetectorPreferences();
         UserPreferences.getUserPreferences().write();
         System.exit(0);
     }

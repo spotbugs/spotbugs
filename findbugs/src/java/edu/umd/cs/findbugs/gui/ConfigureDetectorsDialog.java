@@ -63,6 +63,7 @@ public class ConfigureDetectorsDialog extends javax.swing.JDialog {
         okButton = new javax.swing.JButton();
         cancelButton = new javax.swing.JButton();
         spacer = new javax.swing.JLabel();
+        restoreDefaultsButton = new javax.swing.JButton();
 
         getContentPane().setLayout(new java.awt.GridBagLayout());
 
@@ -104,7 +105,7 @@ public class ConfigureDetectorsDialog extends javax.swing.JDialog {
         detectorTableScrollPane.setViewportView(detectorTable);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridwidth = 3;
+        gridBagConstraints.gridwidth = 4;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 0.8;
@@ -118,7 +119,7 @@ public class ConfigureDetectorsDialog extends javax.swing.JDialog {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
-        gridBagConstraints.gridwidth = 3;
+        gridBagConstraints.gridwidth = 4;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.weighty = 0.3;
         gridBagConstraints.insets = new java.awt.Insets(2, 6, 2, 6);
@@ -127,7 +128,7 @@ public class ConfigureDetectorsDialog extends javax.swing.JDialog {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;
-        gridBagConstraints.gridwidth = 3;
+        gridBagConstraints.gridwidth = 4;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.insets = new java.awt.Insets(3, 0, 3, 0);
         getContentPane().add(jSeparator1, gridBagConstraints);
@@ -141,7 +142,7 @@ public class ConfigureDetectorsDialog extends javax.swing.JDialog {
         });
 
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 3;
         gridBagConstraints.insets = new java.awt.Insets(0, 0, 4, 2);
         getContentPane().add(okButton, gridBagConstraints);
@@ -155,20 +156,44 @@ public class ConfigureDetectorsDialog extends javax.swing.JDialog {
         });
 
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridx = 3;
         gridBagConstraints.gridy = 3;
         gridBagConstraints.insets = new java.awt.Insets(0, 2, 4, 6);
         getContentPane().add(cancelButton, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 3;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.weightx = 1.0;
         getContentPane().add(spacer, gridBagConstraints);
 
+        restoreDefaultsButton.setText("Restore Defaults");
+        restoreDefaultsButton.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        restoreDefaultsButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                restoreDefaultsButtonActionPerformed(evt);
+            }
+        });
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.insets = new java.awt.Insets(0, 6, 4, 0);
+        getContentPane().add(restoreDefaultsButton, gridBagConstraints);
+
         pack();
     }//GEN-END:initComponents
+
+    private void restoreDefaultsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_restoreDefaultsButtonActionPerformed
+        Iterator<DetectorFactory> i = DetectorFactoryCollection.instance().factoryIterator();
+        DefaultTableModel model = (DefaultTableModel) detectorTable.getModel();
+        int row = 0;
+        while (i.hasNext()) {
+            DetectorFactory factory = i.next();
+            model.setValueAt(factory.isDefaultEnabled() ? Boolean.TRUE : Boolean.FALSE, row++, ENABLED_COLUMN);
+        }
+    }//GEN-LAST:event_restoreDefaultsButtonActionPerformed
 
     private void cancelButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelButtonActionPerformed
 	closeDialog();
@@ -250,6 +275,7 @@ public class ConfigureDetectorsDialog extends javax.swing.JDialog {
     private javax.swing.JScrollPane detectorTableScrollPane;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JButton okButton;
+    private javax.swing.JButton restoreDefaultsButton;
     private javax.swing.JLabel spacer;
     // End of variables declaration//GEN-END:variables
     

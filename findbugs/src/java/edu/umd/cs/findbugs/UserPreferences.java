@@ -38,6 +38,7 @@ import java.util.*;
 public class UserPreferences {
 	private static final int MAX_RECENT_FILES = 9;
 	private LinkedList<String> recentProjectsList = new LinkedList<String>();
+	private HashMap<String,Boolean> detectorStateList = new HashMap<String,Boolean>();
 	private static UserPreferences preferencesSingleton = new UserPreferences();
 	
 	private UserPreferences() {
@@ -55,7 +56,6 @@ public class UserPreferences {
 		Properties props = new Properties();
 		try {
 			prefStream = new BufferedInputStream(new FileInputStream(prefFile));
-			props = new Properties();
 			props.load(prefStream);
 		} catch (Exception e) {
 			//Report? - probably not
@@ -76,6 +76,22 @@ public class UserPreferences {
 			if (projectName != null)
 				recentProjectsList.add(projectName);
 		}
+		
+		int i = 0; 
+		while (true) {
+		    String key = "detector" + i;
+		    String detectorState = (String)props.get(key);
+		    if (detectorState == null)
+			break;
+		    int pipePos = detectorState.indexOf("|");
+		    if (pipePos >= 0) {
+				String name = detectorState.substring(0, pipePos);
+				String enabled = detectorState.substring(pipePos+1);
+				detectorStateList.put(name, Boolean.valueOf(enabled));
+		    }
+		    i++;
+		}
+		    
 	}
 	
 	public void write() {
@@ -85,6 +101,15 @@ public class UserPreferences {
 			String key = "recent" + i;
 			props.put(key,projectName);
 		}
+		
+		Iterator it = detectorStateList.entrySet().iterator();
+		int i = 0;
+		while (it.hasNext()) {
+		    Map.Entry entry = (Map.Entry) it.next();
+		    props.put( "detector" + i, entry.getKey() + "|" + String.valueOf(((Boolean)entry.getValue()).booleanValue()));
+		    i++;
+		}
+		
 		File prefFile = new File( System.getProperty( "user.home" ), "Findbugs.prefs" );
 		BufferedOutputStream prefStream = null;
 		try {
@@ -127,6 +152,25 @@ public class UserPreferences {
 				break;
 			}
 		}	
+	}
+	
+	public void loadUserDetectorPreferences() {
+	    Iterator<DetectorFactory> i = DetectorFactoryCollection.instance().factoryIterator();
+	    while (i.hasNext()) {
+		DetectorFactory factory = i.next();
+		Boolean enabled = detectorStateList.get( factory.getShortName());
+		if (enabled != null)
+		    factory.setEnabled(enabled.booleanValue());
+	    }
+	}
+	
+	public void storeUserDetectorPreferences() {
+	    detectorStateList.clear();
+	    Iterator<DetectorFactory> i = DetectorFactoryCollection.instance().factoryIterator();
+	    while (i.hasNext()) {
+			DetectorFactory factory = i.next();
+			detectorStateList.put( factory.getShortName(), Boolean.valueOf(factory.isEnabled()));
+	    }
 	}
 }
 
