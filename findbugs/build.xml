@@ -396,8 +396,14 @@
             includes="IgnoredReturnValue*.class,TryLock*.class,JSR166*.class" />
     </target>
 
+    <target name="junitTestJarCheck">
+      <uptodate property="junit.jar.uptodate" targetfile="${junit.build.dir}/junitTests.jar">
+        <srcfiles dir="${junit.src.dir}" includes="**/*.java"/>
+      </uptodate>
+    </target>
+
     <!-- Build junit tests. -->
-    <target name="junit" depends="findbugs">
+    <target name="junit" depends="findbugs,tools,junitTestJarCheck" unless="junit.jar.uptodate">
       <mkdir dir="${junit.build.dir}" />
 
       <javac srcdir="${junit.src.dir}" destdir="${junit.build.dir}"
@@ -416,6 +422,17 @@
 
     <!-- Run the junit tests. -->
     <target name="runjunit" depends="junit">
+      <echo>Running JUnit test cases for FindBugs...</echo>
+      <java dir="${findbugs.dir}"
+            fork="true"
+            failonerror="true"
+            classname="edu.umd.cs.findbugs.tools.junit.JUnitJarRunner">
+        <classpath path="${tools.dir}"/>
+        <classpath path="${jar.dir}/junit.jar"/>
+        <classpath refid="classpath"/>
+        <arg value="${junit.build.dir}/junitTests.jar"/>
+        <arg value="${jar.dir}/findbugs.jar"/>
+      </java>
     </target>
 
     <!--
