@@ -41,6 +41,9 @@ public class Version {
 	/** Version of Eclipse UI plugin. */
 	public static final String ECLIPSE_UI_VERSION = "0.0.3";
 
+	/** FindBugs website. This will be on SourceForge real soon now. */
+	public static final String WEBSITE = "http://www.cs.umd.edu/~pugh/java/bugs";
+
 	public static void main(String[] argv) {
 		if (argv.length != 1)
 			usage();
@@ -55,6 +58,7 @@ public class Version {
 			System.out.println("release.number="+RELEASE);
 			System.out.println("release.date="+DATE);
 			System.out.println("eclipse.ui.version="+ECLIPSE_UI_VERSION);
+			System.out.println("findbugs.website="+WEBSITE);
 		} else
 			usage();
 	}
