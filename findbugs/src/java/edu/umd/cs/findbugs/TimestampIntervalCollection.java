@@ -102,6 +102,33 @@ public class TimestampIntervalCollection {
 	public boolean contains(long timestamp) {
 		return findInterval(timestamp) >= 0;
 	}
+	
+	/**
+	 * Find the index of the interval containing given timestamp.
+	 * 
+	 * @param timestamp the timestamp
+	 * @return the index of the interval containing the timestamp,
+	 *         or -1 if no interval contains the timestamp
+	 */
+	public int findInterval(long timestamp) {
+		int min = 0;
+		int max = intervalList.size();
+		
+		while (min <= max) {
+			int mid = min + (max-min)/2;
+			TimestampInterval interval = intervalList.get(mid);
+			if (interval.contains(timestamp)) {
+				return mid;
+			}
+			if (mid < interval.getBegin()) {
+				max = mid - 1;
+			} else {
+				min = mid + 1;
+			}
+		}
+		
+		return -1;
+	}
 
 	/**
 	 * Decode TimestampIntervalCollection from String.
@@ -201,32 +228,5 @@ public class TimestampIntervalCollection {
 		
 		// Remove excess elements
 		intervalList.subList(cur+1, origSize).clear();
-	}
-	
-	/**
-	 * Find the index of the interval containing given timestamp.
-	 * 
-	 * @param timestamp the timestamp
-	 * @return the index of the interval containing the timestamp,
-	 *         or -1 if no interval contains the timestamp
-	 */
-	private int findInterval(long timestamp) {
-		int min = 0;
-		int max = intervalList.size();
-		
-		while (min <= max) {
-			int mid = min + (max-min)/2;
-			TimestampInterval interval = intervalList.get(mid);
-			if (interval.contains(timestamp)) {
-				return mid;
-			}
-			if (mid < interval.getBegin()) {
-				max = mid - 1;
-			} else {
-				min = mid + 1;
-			}
-		}
-		
-		return -1;
 	}
 }
