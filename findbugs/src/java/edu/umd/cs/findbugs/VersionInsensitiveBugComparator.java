@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs;
 
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 /**
  * Compare bug instances by only those criteria which we would expect to
@@ -30,9 +31,70 @@ public class VersionInsensitiveBugComparator implements Comparator<BugInstance> 
 	private VersionInsensitiveBugComparator() {
 	}
 
+	/**
+	 * Wrapper for BugAnnotation iterators, which filters out
+	 * annotations we don't care about.
+	 */
+	private class FilteringAnnotationIterator implements Iterator<BugAnnotation> {
+		private Iterator<BugAnnotation> iter;
+		private BugAnnotation next;
+
+		public FilteringAnnotationIterator(Iterator<BugAnnotation> iter) {
+			this.iter = iter;
+			this.next = null;
+		}
+
+		public boolean hasNext() {
+			findNext();
+			return next != null;
+		}
+
+		public BugAnnotation next() {
+			findNext();
+			if (next == null)
+				throw new NoSuchElementException();
+			BugAnnotation result = next;
+			next = null;
+			return result;
+		}
+
+		public void remove() {
+			throw new UnsupportedOperationException();
+		}
+		
+		private void findNext() {
+			while (next == null) {
+				if (!iter.hasNext())
+					break;
+				BugAnnotation candidate = iter.next();
+				if (!isBoring(candidate)) {
+					next = candidate;
+					break;
+				}
+			}
+		}
+
+	}
+
+	private boolean isBoring(BugAnnotation annotation) {
+		// We ignore int annotations.
+		if (annotation.getClass() == IntAnnotation.class)
+			return true;
+
+		// Ignore source line annotations that aren't
+		// either default or unknown.
+		if (annotation instanceof SourceLineAnnotation) {
+			SourceLineAnnotation srcLine = (SourceLineAnnotation) annotation;
+			String description = srcLine.getDescription();
+			return !(description.equals("SOURCE_LINE_DEFAULT") || description.equals("SOURCE_LINE_UNKNOWN"));
+		}
+
+		return false;
+	}
+
 	public int compare(BugInstance lhs, BugInstance rhs) {
 		// Attributes of BugInstance.
-		// Compare type and priority.
+		// Compare type.
 		// Compare class and method annotations (ignoring line numbers).
 		// Compare field annotations.
 
@@ -41,11 +103,16 @@ public class VersionInsensitiveBugComparator implements Comparator<BugInstance> 
 		cmp = lhs.getType().compareTo(rhs.getType());
 		if (cmp != 0) return cmp;
 
+/*
+		// Don't compare priority.
+		// This is something that can reasonably change
+		// from one release of FindBugs to anther.
 		cmp = lhs.getPriority() - rhs.getPriority();
 		if (cmp != 0) return cmp;
+*/
 
-		Iterator<BugAnnotation> lhsIter = lhs.annotationIterator();
-		Iterator<BugAnnotation> rhsIter = rhs.annotationIterator();
+		Iterator<BugAnnotation> lhsIter = new FilteringAnnotationIterator(lhs.annotationIterator());
+		Iterator<BugAnnotation> rhsIter = new FilteringAnnotationIterator(rhs.annotationIterator());
 
 		while (lhsIter.hasNext() && rhsIter.hasNext()) {
 			BugAnnotation lhsAnnotation = lhsIter.next();
@@ -74,8 +141,8 @@ public class VersionInsensitiveBugComparator implements Comparator<BugInstance> 
 				if (cmp != 0) return cmp;
 				cmp = lhsSource.getEndBytecode() - rhsSource.getEndBytecode();
 				if (cmp != 0) return cmp;
-			} else if (lhsAnnotation.getClass() == IntAnnotation.class) {
-				// Just ignore IntAnnotations.
+			} else if (isBoring(lhsAnnotation)) {
+				throw new IllegalStateException("Impossible");
 			} else
 				throw new IllegalStateException("Unknown annotation type: " + lhsAnnotation.getClass().getName());
 		}
