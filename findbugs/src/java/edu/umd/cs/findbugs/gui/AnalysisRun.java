@@ -56,9 +56,16 @@ public class AnalysisRun {
 	    bugCollection.addApplicationClass(javaClass.getClassName(), javaClass.isInterface());
 	}
 
+	public void reportMissingClass(ClassNotFoundException ex) {
+	    super.reportMissingClass(ex);
+	    String message = getMissingClassName(ex);
+	    bugCollection.addMissingClass(message);
+	}
+
 	public void logError(String message) {
 	    frame.getLogger().logMessage(ConsoleLogger.WARNING, message);
 	    super.logError(message);
+	    bugCollection.addError(message);
 	}
         
         public void finish() { }
