@@ -27,6 +27,8 @@ import org.dom4j.io.*;
 
 public class PluginLoader extends URLClassLoader {
 
+	private ArrayList<DetectorFactory> detectorFactoryList;
+
 	public PluginLoader(URL url) throws PluginException {
 		super(new URL[]{url});
 		init();
@@ -81,12 +83,24 @@ public class PluginLoader extends URLClassLoader {
 		}
 
 		// Create a DetectorFactory for all Detector nodes
-		List detectorNodeList = pluginDescriptor.selectNodes("/FindbugsPlugin/Detector");
-		for (Iterator i = detectorNodeList.iterator(); i.hasNext(); ) {
-			Element detectorElement = (Element) i.next();
-			String className = detectorElement.valueOf("@class");
-
-			System.out.println("Found detector: class="+className);
+		try {
+			detectorFactoryList = new ArrayList<DetectorFactory>();
+			List detectorNodeList = pluginDescriptor.selectNodes("/FindbugsPlugin/Detector");
+			for (Iterator i = detectorNodeList.iterator(); i.hasNext(); ) {
+				Element detectorElement = (Element) i.next();
+				String className = detectorElement.valueOf("@class");
+				String disabled = detectorElement.valueOf("@disabled");
+	
+				System.out.println("Found detector: class="+className+", disabled="+disabled);
+	
+				if (!disabled.equals("true")) {
+					Class detectorClass = loadClass(className);
+					DetectorFactory factory = new DetectorFactory(detectorClass);
+					detectorFactoryList.add(factory);
+				}
+			}
+		} catch (ClassNotFoundException e) {
+			throw new PluginException("Could not instantiate detector class", e);
 		}
 
 	}
