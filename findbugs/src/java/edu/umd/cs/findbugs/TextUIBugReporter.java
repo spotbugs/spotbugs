@@ -32,6 +32,8 @@ public abstract class TextUIBugReporter extends AbstractBugReporter {
 		categoryMap.put("MT_CORRECTNESS", "M "); // "M"ultithreaded correctness
 		categoryMap.put("MALICIOUS_CODE", "V "); // malicious code "V"ulnerability
 		categoryMap.put("PERFORMANCE", "P "); // "P"erformance
+		categoryMap.put("STYLE", "S "); // "S"tyle
+		categoryMap.put("I18N", "I "); // "I"nternationalization
 	}
 
 	protected PrintStream outputStream = System.out;
