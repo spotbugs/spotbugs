@@ -1,4 +1,4 @@
-<FindbugsPlugin>
+<FindbugsPlugin pluginid="core">
   <Detector class="edu.umd.cs.findbugs.detect.NoteSuppressedWarnings" 
 	speed="fast"
 	   reports="TESTING"
@@ -121,8 +121,6 @@
     reports="SBSC_USE_STRINGBUFFER_CONCATENATION"/>
   <Detector class="edu.umd.cs.findbugs.detect.InefficientToArray" speed="fast"
     reports="ITA_INEFFICIENT_TO_ARRAY"/>
-   <Detector class="edu.umd.cs.findbugs.detect.FindMaskedFields" speed="fast"
-     reports="MF_METHOD_MASKS_FIELD,MF_CLASS_MASKS_FIELD"/>
    <Detector class="edu.umd.cs.findbugs.detect.InvalidJUnitTest" speed="fast"
      reports="IJU_SETUP_NO_SUPER, IJU_TEARDOWN_NO_SUPER, IJU_SUITE_NOT_STATIC"/>
    <Detector class="edu.umd.cs.findbugs.detect.BadlyOverriddenAdapter" speed="fast"
@@ -131,8 +129,6 @@
    	 reports="BRSA_BAD_RESULTSET_ACCESS"/>
    <Detector class="edu.umd.cs.findbugs.detect.SuperfluousInstanceOf" speed="fast"
    	 reports="SIO_SUPERFLUOUS_INSTANCEOF"/>  
-   <Detector class="edu.umd.cs.findbugs.detect.FindDeadLocalStores" speed="moderate"
-    reports="DLS_DEAD_LOCAL_STORE" disabled="true"/>
    <Detector class="edu.umd.cs.findbugs.detect.BadAppletConstructor" speed="fast"
     reports="BAC_BAD_APPLET_CONSTRUCTOR" disabled="true"/> 
    <Detector class="edu.umd.cs.findbugs.detect.UseObjectEquals" speed="fast"
@@ -274,10 +270,6 @@
   <BugPattern abbrev="ODR" type="ODR_OPEN_DATABASE_RESOURCE_EXCEPTION_PATH" category="CORRECTNESS" />
   <BugPattern abbrev="SBSC" type="SBSC_USE_STRINGBUFFER_CONCATENATION" category="PERFORMANCE" />
   <BugPattern abbrev="ITA" type="ITA_INEFFICIENT_TO_ARRAY" category="PERFORMANCE" />
-  <BugPattern abbrev="MF" type="MF_METHOD_MASKS_FIELD" category="CORRECTNESS"
-    experimental="true"/>
-  <BugPattern abbrev="MF" type="MF_CLASS_MASKS_FIELD" category="CORRECTNESS"
-    experimental="true"/>
   <BugPattern abbrev="IJU" type="IJU_SETUP_NO_SUPER" category="CORRECTNESS"
     experimental="true"/>
   <BugPattern abbrev="IJU" type="IJU_TEARDOWN_NO_SUPER" category="CORRECTNESS"
@@ -289,8 +281,6 @@
   <BugPattern abbrev="BRSA" type="BRSA_BAD_RESULTSET_ACCESS" category="CORRECTNESS"
     experimental="true"/>
   <BugPattern abbrev="SIO" type="SIO_SUPERFLUOUS_INSTANCEOF" category="CORRECTNESS"
-    experimental="true"/>
-  <BugPattern abbrev="DLS" type="DLS_DEAD_LOCAL_STORE" category="CORRECTNESS"
     experimental="true"/>
   <BugPattern abbrev="BAC" type="BAC_BAD_APPLET_CONSTRUCTOR" category="CORRECTNESS"
     experimental="true"/>

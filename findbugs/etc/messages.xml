@@ -499,16 +499,6 @@ It is a fast detector.</p>
     </Details>
   </Detector>
 
-  <Detector class="edu.umd.cs.findbugs.detect.FindMaskedFields">
-    <Details>
-<![CDATA[
-<p> This detector looks for class level fields that are masked by
-local fields defined in methods.
-It is a fast detector.</p>
-]]>
-    </Details>
-  </Detector>
-
   <Detector class="edu.umd.cs.findbugs.detect.InvalidJUnitTest">
     <Details>
 <![CDATA[
@@ -542,19 +532,6 @@ It is a fast detector.</p>
 <![CDATA[
 <p> This detector looks for type checks using the instanceof operator where the determination
 can be done statically. It is a fast detector.</p>
-]]>
-    </Details>
-  </Detector>
-
-  <Detector class="edu.umd.cs.findbugs.detect.FindDeadLocalStores">
-    <Details>
-<![CDATA[
-<p>
-This detector looks for assignments to local variables that
-are never subsequently read.  Due to the way byte code is generated for final local variables,
-false positives for these cases are often seen, which is why the detector is currently disabled.
- It is a moderately fast detector.
-</p>
 ]]>
     </Details>
   </Detector>
@@ -609,31 +586,6 @@ is always called on the current thread.
    -->
 
 
-  <BugPattern type="MF_METHOD_MASKS_FIELD">
-    <ShortDescription>Method defines a variable that obscures a field</ShortDescription>
-    <LongDescription>Method {1} defines a variable that obscures field {2}</LongDescription>
-    <Details>
-<![CDATA[
-<p> This method defines a local variable with the same name as a field
-in this class or a superclass.  This may cause the method to
-read an uninitialized value from the field, leave the field uninitialized,
-or both.</p>
-]]>
-    </Details>
-  </BugPattern>
-
-  <BugPattern type="MF_CLASS_MASKS_FIELD">
-    <ShortDescription>Class defines field that obscures a superclass field</ShortDescription>
-    <LongDescription>Class {0} defines field that obscures superclass field {1}</LongDescription>
-    <Details>
-<![CDATA[
-<p> This class defines a field with the same name as a visible
-instance field in a superclass.  This is confusing, and
-may indicate an error if methods update or access one of
-the fields when they wanted the other.</p>
-]]>
-    </Details>
-  </BugPattern>
 
   <BugPattern type="SW_SWING_METHODS_INVOKED_IN_SWING_THREAD">
     <ShortDescription>Certain swing methods should only be invoked from the Swing event thread</ShortDescription>
@@ -2508,21 +2460,6 @@ is of the type requested. </p>
 ]]>
     </Details>
   </BugPattern>
-
-  <BugPattern type="DLS_DEAD_LOCAL_STORE">
-    <ShortDescription>Dead store to local variable</ShortDescription>
-    <LongDescription>Dead store to local variable in method {1}</LongDescription>
-    <Details>
-<![CDATA[
-<p>
-This instruction assigns a value to a local variable,
-but the value is not read by any subsequent instruction.
-Often, this indicates an error, because the value computed 
-is never used.
-</p>
-]]>
-    </Details>
-  </BugPattern>
   
   <BugPattern type="BAC_BAD_APPLET_CONSTRUCTOR">
     <ShortDescription>Bad Applet Constructor relies on unitialized AppletStub</ShortDescription>
@@ -2545,8 +2482,8 @@ correctly.
 <![CDATA[
 <p>
 This method invokes the .equals(Object o) method on an array. Since arrays do not override the equals
-method of Object, calling equals on an array is the same as comparing they're addresses. To compare the 
-contents of the arrays, use java.util.Array.equals(Object[], Object[]);
+method of Object, calling equals on an array is the same as comparing their addresses. To compare the 
+contents of the arrays, use java.util.Array.equals(Object[], Object[]).
 </p>
 ]]>    
     </Details>
@@ -2672,8 +2609,8 @@ object than the one the author intended.
   <BugCode abbrev="SF">Switch case falls thru</BugCode>
   <BugCode abbrev="BRSA">Bad ResultSet access</BugCode>
   <BugCode abbrev="SIO">Superfluous instanceof</BugCode>
-  <BugCode abbrev="DLS">Dead local store</BugCode>
   <BugCode abbrev="BAC">Bad Applet Constructor</BugCode>
   <BugCode abbrev="UOE">Use Object Equals</BugCode>
   <BugCode abbrev="STI">Suspicious Thread Interrupted</BugCode>
+
   </MessageCollection>
