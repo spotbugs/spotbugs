@@ -48,7 +48,7 @@ public class AnalysisErrorDialog extends javax.swing.JDialog {
         });
 
         errorLabel.setFont(new java.awt.Font("Dialog", 0, 12));
-        errorLabel.setText("Errors occured during the analysis:");
+        errorLabel.setText("Errors occurred during the analysis:");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
