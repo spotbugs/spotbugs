@@ -73,7 +73,12 @@ public class URLClassPathRepository implements Repository {
 		StringTokenizer tok = new StringTokenizer(systemClassPath, File.pathSeparator);
 		while (tok.hasMoreTokens()) {
 			String entryName = tok.nextToken();
-			urlClassPath.addURL(entryName);
+			try {
+				urlClassPath.addURL(entryName);
+			}
+			catch (IOException e) {
+				System.err.println("Warning: couldn't add path to classpath: " + entryName);
+			}
 		}
 	}
 	
