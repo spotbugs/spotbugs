@@ -23,6 +23,7 @@ package edu.umd.cs.daveho.ba.bcp;
  * A Binding binds a name to a Variable.
  *
  * @see Variable
+ * @author David Hovemeyer
  */
 public class Binding {
 	private final String varName;

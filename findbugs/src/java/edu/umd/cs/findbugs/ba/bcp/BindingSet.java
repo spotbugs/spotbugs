@@ -23,6 +23,9 @@ package edu.umd.cs.daveho.ba.bcp;
  * A set of Bindings, which are definitions of variables occuring
  * in a ByteCodePattern.  BindingSets are immutable; to add a binding,
  * a new cell is allocated.  (Are we CONSING yet?)
+ *
+ * @see Binding
+ * @author David Hovemeyer
  */
 public class BindingSet {
 	private final Binding binding;
