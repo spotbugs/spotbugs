@@ -19,6 +19,10 @@
  */
 package edu.umd.cs.findbugs.detect;
 
+import java.util.Iterator;
+import java.util.SortedSet;
+import java.util.TreeSet;
+
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.JavaClass;
 
@@ -56,15 +60,24 @@ public class RedundantInterfaces extends PreorderVisitor implements Detector, Co
 
 		try {
 			JavaClass superObj = obj.getSuperClass();
+			SortedSet<String> redundantInfNames = new TreeSet<String>();
 			
 			for (int i = 0; i < interfaceNames.length; i++) {
 				JavaClass inf = Repository.lookupClass(interfaceNames[i]);
-				if (superObj.instanceOf(inf)) {
-					bugReporter.reportBug( new BugInstance( this, "RI_REDUNDANT_INTERFACES", LOW_PRIORITY )
-						.addClass(obj)
-						.addClass(inf));
-				}
+				if (superObj.instanceOf(inf))
+					redundantInfNames.add(inf.getClassName());
 			}
+				
+			if (redundantInfNames.size() > 0) {
+				BugInstance bug = new BugInstance( this, "RI_REDUNDANT_INTERFACES", LOW_PRIORITY )
+							.addClass(obj);
+				Iterator<String> it = redundantInfNames.iterator();
+				while (it.hasNext())
+					bug.addClass(it.next());
+					
+				bugReporter.reportBug(bug);
+			}
+
 		} catch (ClassNotFoundException cnfe) {
 			bugReporter.reportMissingClass(cnfe);
 		}
