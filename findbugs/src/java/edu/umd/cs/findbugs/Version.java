@@ -44,6 +44,9 @@ public class Version {
 	/** FindBugs website. */
 	public static final String WEBSITE = "http://findbugs.sourceforge.net";
 
+	/** Downloads website. */
+	public static final String DOWNLOADS_WEBSITE = "http://prdownloads.sourceforge.net/findbugs";
+
 	public static void main(String[] argv) {
 		if (argv.length != 1)
 			usage();
@@ -59,6 +62,7 @@ public class Version {
 			System.out.println("release.date="+DATE);
 			System.out.println("eclipse.ui.version="+ECLIPSE_UI_VERSION);
 			System.out.println("findbugs.website="+WEBSITE);
+			System.out.println("findbugs.downloads.website="+DOWNLOADS_WEBSITE);
 		} else
 			usage();
 	}
