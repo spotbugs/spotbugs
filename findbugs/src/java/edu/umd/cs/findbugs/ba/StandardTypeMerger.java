@@ -77,12 +77,12 @@ public class StandardTypeMerger implements TypeMerger, Constants, ExtendedTypes 
 
 	/**
 	 * Determine if the given typecode refers to an Object (reference) type.
-	 * This implementation just checks that the type code is T_OBJECT
-	 * or T_NULL.  Subclasses should override this if they have defined new
-	 * object types with different type codes.
+	 * This implementation just checks that the type code is T_OBJECT,
+	 * T_ARRAY, T_NULL, or T_EXCEPTION.  Subclasses should override this
+	 * if they have defined new object types with different type codes.
 	 */
 	protected boolean isReferenceType(byte type) {
-		return type == T_OBJECT || type == T_NULL || type == T_EXCEPTION;
+		return type == T_OBJECT || type == T_ARRAY || type == T_NULL || type == T_EXCEPTION;
 	}
 
 	/**
