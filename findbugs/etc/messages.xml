@@ -971,7 +971,18 @@ using r.nextInt(n) Rather than using (int)(r.nextDouble() * n).
     </Details>
   </BugPattern>  
 
-
+  <BugPattern type="DM_USELESS_THREAD">
+    <ShortDescription>A thread was created using the default empty run method</ShortDescription>
+    <LongDescription>Method {1} creates a thread using the default empty run method</LongDescription>
+    <Details>
+<![CDATA[
+  <p>This method creates a thread without specifying a run method either by deriving from the Thread class, or 
+  by passing a Runnable object. This thread, then, does nothing but waste time.
+</p>
+]]>
+    </Details>
+  </BugPattern>  
+  
   <BugPattern type="DC_DOUBLECHECK">
     <ShortDescription>Possible double check of field</ShortDescription>
     <LongDescription>Possible doublecheck on {2} in {1}</LongDescription>
