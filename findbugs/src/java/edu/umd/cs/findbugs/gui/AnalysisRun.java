@@ -107,6 +107,15 @@ public class AnalysisRun {
         return sortOrder;
     }
     
+    /**
+     * Look up the source file for given class.
+     * @return the source file name, or null if we don't have a source filename
+     *   for the class
+     */
+    public String getSourceFile(String className) {
+	return findBugs.getSourceFile(className);
+    }
+    
     public String toString() {
 	return "Run " + runNumber;
     }
