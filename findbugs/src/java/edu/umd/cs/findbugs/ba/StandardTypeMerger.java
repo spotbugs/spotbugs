@@ -91,6 +91,13 @@ public class StandardTypeMerger implements TypeMerger, Constants, ExtendedTypes 
 		return type == T_INT || type == T_BYTE || type == T_BOOLEAN || type == T_CHAR || type == T_SHORT;
 	}
 
+	private static void updateExceptionSet(ExceptionSet exceptionSet, ReferenceType type) {
+		if (type instanceof ExceptionObjectType)
+			exceptionSet.addAll(((ExceptionObjectType) type).getExceptionSet());
+		else
+			exceptionSet.addExplicit((ObjectType) type);
+	}
+
 	/**
 	 * Default implementation of merging reference types.
 	 * This just returns the first common superclass, which is compliant
@@ -113,10 +120,9 @@ public class StandardTypeMerger implements TypeMerger, Constants, ExtendedTypes 
 			// in order to track the exact set of exceptions
 			if (aRef instanceof ExceptionObjectType || bRef instanceof ExceptionObjectType) {
 				ExceptionSet union = new ExceptionSet();
-				if (aRef instanceof ExceptionObjectType)
-					union.addAll(((ExceptionObjectType) aRef).getExceptionSet());
-				if (bRef instanceof ExceptionObjectType)
-					union.addAll(((ExceptionObjectType) bRef).getExceptionSet());
+
+				updateExceptionSet(union, aRef);
+				updateExceptionSet(union, bRef);
 
 				return ExceptionObjectType.fromExceptionSet(union);
 			}
