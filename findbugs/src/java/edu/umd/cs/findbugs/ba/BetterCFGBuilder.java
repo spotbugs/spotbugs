@@ -199,7 +199,7 @@ public class BetterCFGBuilder implements CFGBuilder, EdgeTypes {
 			// this block is an Exception Thrower Block (ETB).
 			if (isPEI(start) && !handledPEI) {
 				// This block is an ETB.
-				basicBlock.setExceptionThrower(true);
+				basicBlock.setExceptionThrower(start);
 
 				// Add handled exception edges.
 				addExceptionEdges(start, basicBlock, jsrStack);
@@ -313,7 +313,7 @@ public class BetterCFGBuilder implements CFGBuilder, EdgeTypes {
 					// Explicit ATHROW instruction.  Add exception edges,
 					// and mark the block as an ETB.
 					addExceptionEdges(handle, basicBlock, jsrStack);
-					basicBlock.setExceptionThrower(true);
+					basicBlock.setExceptionThrower(basicBlock.getLastInstruction());
 				} else if (visitor.instructionIsReturn() || visitor.instructionIsExit()) {
 					// Return or call to System.exit().  In either case,
 					// add a return edge.

@@ -41,12 +41,55 @@ import org.apache.bcel.generic.*;
  * @author David Hovemeyer
  */
 public class BasicBlock implements Comparable {
+
+    /* ----------------------------------------------------------------------
+     * Static data
+     * ---------------------------------------------------------------------- */
+
+    /** Set of instruction opcodes that have an implicit null check. */
+    private static final BitSet nullCheckInstructionSet = new BitSet();
+    static {
+	nullCheckInstructionSet.set(Constants.GETFIELD);
+	nullCheckInstructionSet.set(Constants.PUTFIELD);
+	nullCheckInstructionSet.set(Constants.INVOKESPECIAL);
+	nullCheckInstructionSet.set(Constants.INVOKEVIRTUAL);
+	nullCheckInstructionSet.set(Constants.INVOKEINTERFACE);
+	nullCheckInstructionSet.set(Constants.AALOAD);
+	nullCheckInstructionSet.set(Constants.AASTORE);
+	nullCheckInstructionSet.set(Constants.BALOAD);
+	nullCheckInstructionSet.set(Constants.BASTORE);
+	nullCheckInstructionSet.set(Constants.CALOAD);
+	nullCheckInstructionSet.set(Constants.CASTORE);
+	nullCheckInstructionSet.set(Constants.DALOAD);
+	nullCheckInstructionSet.set(Constants.DASTORE);
+	nullCheckInstructionSet.set(Constants.FALOAD);
+	nullCheckInstructionSet.set(Constants.FASTORE);
+	nullCheckInstructionSet.set(Constants.IALOAD);
+	nullCheckInstructionSet.set(Constants.IASTORE);
+	nullCheckInstructionSet.set(Constants.LALOAD);
+	nullCheckInstructionSet.set(Constants.LASTORE);
+	nullCheckInstructionSet.set(Constants.SALOAD);
+	nullCheckInstructionSet.set(Constants.SASTORE);
+	nullCheckInstructionSet.set(Constants.MONITORENTER);
+	nullCheckInstructionSet.set(Constants.MONITOREXIT);
+	// FIXME: Can't handle yet: ATHROW (need a fix in BetterCFGBuilder)
+	// Any others?
+    }
+
+    /* ----------------------------------------------------------------------
+     * Fields
+     * ---------------------------------------------------------------------- */
+
     private int id;
     private ArrayList<InstructionHandle> instructionList;
-    private boolean isExceptionThrower;
+    private InstructionHandle exceptionThrower; // instruction for which this block is the ETB
     private CodeExceptionGen exceptionGen; // set if this block is the entry point of an exception handler
     private int numIncomingEdges;
     private int numOutgoingEdges;
+
+    /* ----------------------------------------------------------------------
+     * Public methods
+     * ---------------------------------------------------------------------- */
 
     /**
      * Constructor.
@@ -54,7 +97,7 @@ public class BasicBlock implements Comparable {
     public BasicBlock(int id) {
 	this.id = id;
 	instructionList = new ArrayList<InstructionHandle>();
-	isExceptionThrower = false;
+	exceptionThrower = null;
 	exceptionGen = null;
 	numIncomingEdges = 0;
 	numOutgoingEdges = 0;
@@ -90,17 +133,31 @@ public class BasicBlock implements Comparable {
     }
 
     /**
-     * Set whether or not this block is an exception thrower.
+     * Set the instruction for which this block is the ETB.
+     * @param exceptionThrower the instruction
      */
-    public void setExceptionThrower(boolean isExceptionThrower) {
-	this.isExceptionThrower = isExceptionThrower;
+    public void setExceptionThrower(InstructionHandle exceptionThrower) {
+	this.exceptionThrower = exceptionThrower;
     }
 
     /**
      * Return whether or not this block is an exception thrower.
      */
     public boolean isExceptionThrower() {
-	return isExceptionThrower;
+	return exceptionThrower != null;
+    }
+
+    /**
+     * Return whether or not this block is a null check.
+     */
+    public boolean isNullCheck() {
+	// Null check blocks must be exception throwers,
+	// and are always empty.  (The only kind of non-empty
+	// exception throwing block is one terminated by an ATHROW).
+	if (!isExceptionThrower() || getFirstInstruction() != null)
+	    return false;
+	short opcode = exceptionThrower.getInstruction().getOpcode();
+	return nullCheckInstructionSet.get(opcode);
     }
 
     /** Get the first instruction in the basic block. */
