@@ -19,37 +19,33 @@
 
 package edu.umd.cs.findbugs.ba;
 
-import java.util.*;
-
 /**
- * Perform a reverse depth first search of a control flow graph.
- * (I.e., depth first search of reversed CFG.)
+ * Algorithm to perform a reverse depth first search on a CFG.
+ * (I.e., depth first search on reversed CFG.)
  *
- * @author David Hovemeyer
  * @see CFG
- * @see AbstractDepthFirstSearch
+ * @author David Hovemeyer
  */
-public class ReverseDepthFirstSearch extends AbstractDepthFirstSearch {
+public class ReverseDepthFirstSearch
+	extends edu.umd.cs.findbugs.graph.ReverseDepthFirstSearch<CFG, Edge, BasicBlock>
+{
+	private BasicBlock firstRoot;
+
+	/**
+	 * Constructor.
+	 *
+	 * @param cfg the CFG to perform the reverse depth first search on
+	 */
 	public ReverseDepthFirstSearch(CFG cfg) {
 		super(cfg);
+		this.firstRoot = cfg.getExit();
 	}
 
-	protected BasicBlock getEntry(CFG cfg) {
-		return cfg.getExit();
+	protected BasicBlock getNextSearchTreeRoot() {
+		BasicBlock result = firstRoot;
+		firstRoot = null;
+		return result;
 	}
-
-	protected Iterator<Edge> outgoingEdgeIterator(CFG cfg, BasicBlock basicBlock) {
-		return cfg.incomingEdgeIterator(basicBlock);
-	}
-
-	protected BasicBlock getTarget(Edge edge) {
-		return edge.getSource();
-	}
-
-	protected BasicBlock getSource(Edge edge) {
-		return edge.getTarget();
-	}
-
 }
 
 // vim:ts=4

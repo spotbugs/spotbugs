@@ -19,36 +19,32 @@
 
 package edu.umd.cs.findbugs.ba;
 
-import java.util.*;
-
 /**
- * Perform a forward depth first search of a control flow graph.
+ * Algorithm to perform a depth first search on a CFG.
  *
- * @author David Hovemeyer
  * @see CFG
- * @see AbstractDepthFirstSearch
+ * @author David Hovemeyer
  */
-public class DepthFirstSearch extends AbstractDepthFirstSearch {
+public class DepthFirstSearch
+	extends edu.umd.cs.findbugs.graph.DepthFirstSearch<CFG, Edge, BasicBlock>
+{
+	private BasicBlock firstRoot;
+
+	/**
+	 * Constructor.
+	 *
+	 * @param cfg the CFG to perform the depth first search on
+	 */
 	public DepthFirstSearch(CFG cfg) {
 		super(cfg);
+		firstRoot = cfg.getEntry();
 	}
 
-	protected BasicBlock getEntry(CFG cfg) {
-		return cfg.getEntry();
+	protected BasicBlock getNextSearchTreeRoot() {
+		BasicBlock result = firstRoot;
+		firstRoot = null;
+		return result;
 	}
-
-	protected Iterator<Edge> outgoingEdgeIterator(CFG cfg, BasicBlock basicBlock) {
-		return cfg.outgoingEdgeIterator(basicBlock);
-	}
-
-	protected BasicBlock getTarget(Edge edge) {
-		return edge.getTarget();
-	}
-
-	protected BasicBlock getSource(Edge edge) {
-		return edge.getSource();
-	}
-
 }
 
 // vim:ts=4

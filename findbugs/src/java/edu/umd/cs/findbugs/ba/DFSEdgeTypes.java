@@ -20,32 +20,12 @@
 package edu.umd.cs.findbugs.ba;
 
 /**
- * Edge types in a depth first search.
+ * Interface defining depth first search edge type constants.
+ * This is just a placeholder that forwards to the real
+ * interface in the edu.umd.cs.findbugs.graph package.
  *
- * @see DepthFirstSearch
+ * @see edu.umd.cs.findbugs.graph.DFSEdgeTypes
+ * @author David Hovemeyer
  */
-public interface DFSEdgeTypes {
-	/**
-	 * Unknown DFS edge type. This is for internal use only.
-	 */
-	public static final int UNKNOWN_EDGE = -1;
-	/**
-	 * Tree edge.  Basically, and edge that is part of a depth-first search tree.
-	 */
-	public static final int TREE_EDGE = 0;
-	/**
-	 * Back edge. An edge to an ancestor in the same depth-first search tree.
-	 */
-	public static final int BACK_EDGE = 1;
-	/**
-	 * Forward edge. An edge to a descendant in the same depth-first search tree.
-	 */
-	public static final int FORWARD_EDGE = 2;
-	/**
-	 * Cross edge. Edge between unrelated nodes in the same depth-first search tree,
-	 * or an edge between nodes in different depth-first search trees.
-	 */
-	public static final int CROSS_EDGE = 3;
+public interface DFSEdgeTypes extends edu.umd.cs.findbugs.graph.DFSEdgeTypes {
 }
-
-// vim:ts=4
