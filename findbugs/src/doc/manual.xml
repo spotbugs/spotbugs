@@ -1513,7 +1513,7 @@ You can find the latest version of FindBugs, along with its source code, from th
 
 <para>&FindBugs; was originally written by Bill Pugh (<email>pugh@cs.umd.edu</email>).
 David Hovemeyer (<email>daveho@cs.umd.edu</email>) implemented some of the
-detectors, added the Swing GUI, and is the current maintainer.</para>
+detectors, added the Swing GUI, and is a co-maintainer.</para>
 
 <para>Mike Fagan (<email>mfagan@tde.com</email>) contributed the &Ant; build script,
 the &Ant; task, and several enhancements and bug fixes to the GUI.</para>
@@ -1526,7 +1526,16 @@ summaries.</para>
 <para>Peter D. Stout contributed recursive detection of Class-Path
 attributes in analyzed Jar files, and other fixes.</para>
 
-<para>Peter Friese wrote the FindBugs Eclipse plugin.</para>
+<para>Peter Friese wrote the &FindBugs; Eclipse plugin.</para>
+
+<para>Rohan Lloyd contributed several Mac OS X enhancements,
+and maintains the Fink package for &FindBugs;.</para>
+
+<para>Hiroshi Okugawa translated the &FindBugs; manual and
+more of the bug summaries into Japanese.</para>
+
+<para>Phil Crosby enhanced the Eclipse plugin to add a view
+to display the bug details.</para>
 
 <para>If you have contributed to &FindBugs;, but aren't mentioned above,
 please send email to <email>daveho@cs.umd.edu</email> (and also accept
