@@ -569,6 +569,11 @@ public class FindBugs implements Constants2, ExitCodes
 
 	progressCallback.finishArchive();
 
+	// If the archive or directory scanned contained source files,
+	// add it to the end of the source path.
+	if (classProducer.containsSourceFiles())
+		project.addSourceDir(fileName);
+
      } catch (IOException e) {
 	// You'd think that the message for a FileNotFoundException would include
 	// the filename, but you'd be wrong.  So, we'll add it explicitly.
