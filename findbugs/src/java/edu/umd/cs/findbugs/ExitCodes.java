@@ -20,35 +20,19 @@
 package edu.umd.cs.findbugs;
 
 /**
- * Process exit codes returned when the FindBugs text UI is
- * invoked with the -exitcode command line argument.
+ * Flags returned in the process exit code returned when
+ * the FindBugs text UI is invoked with the -exitcode
+ * command line argument.  These are combined in a bit set.
  */
 public interface ExitCodes {
-	/**
-	 * Exit status code to indicate that serious analysis errors
-	 * occurred.
-	 */
-	public static final int ERROR_EXIT_CODE = 3;
+	/** Serious analysis errors occurred.  */
+	public static final int ERROR_FLAG = 4;
 
-	/**
-	 * Exit status code to indicate that classes needed for analysis
-	 * were missing.  This is a minor error, so the bug reports may
-	 * generally be trusted, although they might not be as accurate as
-	 * possible.
-	 */
-	public static final int MISSING_CLASS_EXIT_CODE = 2;
+	/** Classes needed for analysis were missing.  */
+	public static final int MISSING_CLASS_FLAG = 2;
 
-	/**
-	 * Exit status code to indicate that the analysis completed normally,
-	 * but bugs were reported.
-	 */
-	public static final int BUGS_FOUND_EXIT_CODE = 1;
-
-	/**
-	 * Exit status code to indicate that the analysis completed normally,
-	 * and no bugs were found in the analyzed code.
-	 */
-	public static final int NO_BUGS_FOUND_EXIT_CODE = 0;
+	/** Bugs were reported.  */
+	public static final int BUGS_FOUND_FLAG = 1;
 }
 
 // vim:ts=4
