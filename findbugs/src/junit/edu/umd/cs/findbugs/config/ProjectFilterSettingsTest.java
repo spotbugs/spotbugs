@@ -120,6 +120,18 @@ public class ProjectFilterSettingsTest extends TestCase {
 			ProjectFilterSettings.fromEncodedString(changed4.toEncodedString());
 		Assert.assertEquals(changed4, copyOfChanged4);
 	}
+	
+	public void testDisplayFalseWarnings() {
+		Assert.assertFalse(plain.displayFalseWarnings());
+		plain.setDisplayFalseWarnings(true);
+		
+		ProjectFilterSettings copyOfPlain =
+			ProjectFilterSettings.fromEncodedString(plain.toEncodedString());
+		
+		Assert.assertTrue(copyOfPlain.displayFalseWarnings());
+		Assert.assertEquals(copyOfPlain, plain);
+		Assert.assertEquals(plain, copyOfPlain);
+	}
 }
 
 // vim:ts=4

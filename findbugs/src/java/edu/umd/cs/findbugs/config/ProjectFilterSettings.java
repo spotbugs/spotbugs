@@ -79,6 +79,7 @@ public class ProjectFilterSettings implements Cloneable {
 	private Set<String> activeBugCategorySet;
 	private String minPriority;
 	private int minPriorityAsInt;
+	private boolean displayFalseWarnings;
 	
 	/**
 	 * Constructor.
@@ -87,6 +88,7 @@ public class ProjectFilterSettings implements Cloneable {
 	private ProjectFilterSettings() {
 		this.activeBugCategorySet = new HashSet<String>();
 		setMinPriority(DEFAULT_PRIORITY);
+		this.displayFalseWarnings = false;
 	}
 	
 	/**
@@ -119,25 +121,52 @@ public class ProjectFilterSettings implements Cloneable {
 	public static ProjectFilterSettings fromEncodedString(String s) {
 		ProjectFilterSettings result = new ProjectFilterSettings();
 		
-		int bar = s.indexOf(FIELD_DELIMITER);
-		if (bar >= 0) {
-			String minPriority = s.substring(0, bar);
+		if (s.length() > 0) {
+			int bar = s.indexOf(FIELD_DELIMITER);
+			String minPriority;
+			if (bar >= 0) {
+				minPriority = s.substring(0, bar);
+				s = s.substring(bar+1);
+			} else {
+				minPriority = s;
+				s = "";
+			}
 			if (priorityNameToValueMap.get(minPriority) == null)
 				minPriority = DEFAULT_PRIORITY;
-			
 			result.setMinPriority(minPriority);
-			
-			s = s.substring(bar + 1);
+		}
+
+		if (s.length() > 0) {
+			int bar = s.indexOf(FIELD_DELIMITER);
+			String categories;
+			if (bar >= 0) {
+				categories = s.substring(0, bar);
+				s = s.substring(bar+1);
+			} else {
+				categories = s;
+				s = "";
+			}
+			StringTokenizer t = new StringTokenizer(categories, LISTITEM_DELIMITER);
+			while (t.hasMoreTokens()) {
+				String category = t.nextToken();
+				result.addCategory(category);
+			}
+		}
+
+		if (s.length() > 0) {
+			int bar = s.indexOf(FIELD_DELIMITER);
+			String displayFalseWarnings;
+			if (bar >= 0) {
+				displayFalseWarnings = s.substring(0, bar);
+				s = s.substring(bar+1);
+			} else {
+				displayFalseWarnings = s;
+				s = "";
+			}
+			result.setDisplayFalseWarnings(Boolean.valueOf(displayFalseWarnings).booleanValue());
 		}
 		
-		// Parse bug categories
-		bar = s.indexOf(FIELD_DELIMITER);		
-		String categories = (bar >=0) ? s.substring(0,bar) : s;
-		StringTokenizer t = new StringTokenizer(categories, LISTITEM_DELIMITER);
-		while (t.hasMoreTokens()) {
-			String category = t.nextToken();
-			result.addCategory(category);
-		}
+		// Can add other fields here...
 		
 		return result;
 			
@@ -241,11 +270,31 @@ public class ProjectFilterSettings implements Cloneable {
 	}
 
 	/**
+	 * Set whether or not false warnings should be displayed.
+	 * 
+	 * @param displayFalseWarnings true if false warnings should be displayed,
+	 *                             false if not
+	 */
+	public void setDisplayFalseWarnings(boolean displayFalseWarnings) {
+		this.displayFalseWarnings = displayFalseWarnings;
+	}
+	
+	/**
+	 * Get whether or not false warnings should be displayed.
+	 * 
+	 * @return true if false warnings should be displayed, false if not
+	 */
+	public boolean displayFalseWarnings() {
+		return displayFalseWarnings;
+	}
+
+	/**
 	 * Create a string containing the encoded form of the ProjectFilterSettings.
 	 * 
 	 * @return an encoded string
 	 */
 	public String toEncodedString() {
+		// Priority threshold
 		StringBuffer buf = new StringBuffer();
 		buf.append(getMinPriority());
 		
@@ -257,6 +306,10 @@ public class ProjectFilterSettings implements Cloneable {
 				buf.append(LISTITEM_DELIMITER);			
 			
 		}
+		
+		// Whether or display false warnings
+		buf.append(FIELD_DELIMITER);
+		buf.append(displayFalseWarnings ? "true" : "false");
 		
 		return buf.toString();
 	}
