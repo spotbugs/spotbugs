@@ -32,8 +32,7 @@ import edu.umd.cs.findbugs.visitclass.Constants2;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
 public class DroppedException extends PreorderVisitor implements Detector, Constants2 {
-    private static final boolean DEBUG  
-			= Boolean.getBoolean("de.debug");
+    private static final boolean DEBUG   =  Boolean.getBoolean("de.debug");
     private static final boolean LOOK_IN_SOURCE_TO_FIND_COMMENTED_CATCH_BLOCKS  
 			 = Boolean.getBoolean("de.comment");
 
@@ -211,9 +210,14 @@ public class DroppedException extends PreorderVisitor implements Detector, Const
 	}
 
 	boolean multiLineHandler = false;
+	if (DEBUG) 
+		System.out.println("afterHandler = " + afterHandler
+				+ ", handled = " + handled);
 	if (afterHandler > handled && lineNumbers != null) {
 	  int startHandlerLinenumber = lineNumbers.getSourceLine(handled);
-	  int endHandlerLinenumber = lineNumbers.getSourceLine(afterHandler) -1;
+
+	  int endHandlerLinenumber 
+		= getNextExecutableLineNumber(lineNumbers, afterHandler) - 1;
 	  if (DEBUG) System.out.println("Handler in lines " 
 			+ startHandlerLinenumber
 			+ "-"
@@ -239,10 +243,19 @@ public class DroppedException extends PreorderVisitor implements Detector, Const
 		// can't look at source
 		if (lineNumbers == null || multiLineHandler) priority+=2;
 		}
+	if (c.equals("java.lang.Error") 
+	    || c.equals("java.lang.Exception") 
+	    || c.equals("java.lang.Throwable") 
+	    || c.equals("java.lang.RuntimeException") ) {
+	  priority--;
+	  if (end-start > 30) priority--;
+	  }
+
 	if (DEBUG) {
 		System.out.println("Priority is " + priority);
 		}
 	if (priority > LOW_PRIORITY) return;
+	if (priority < HIGH_PRIORITY) priority = HIGH_PRIORITY;
 	if (DEBUG) {
 		System.out.println("reporting warning");
 		}
@@ -263,6 +276,27 @@ public class DroppedException extends PreorderVisitor implements Detector, Const
 	}
 		}
 }
+
+  private int getNextExecutableLineNumber(LineNumberTable linenumbers,
+			int PC) {
+	LineNumber [] entries = linenumbers.getLineNumberTable();
+	int beforePC = 0;
+	int i = 0;
+	for(; i < entries.length && entries[i].getStartPC() < PC; i++)  {
+		int line = entries[i].getLineNumber();
+		if (line > beforePC)
+			beforePC = line;
+		}
+	int secondChoice = entries[i].getLineNumber();
+	for(; i < entries.length; i++)  {
+		int line = entries[i].getLineNumber();
+		if (line > beforePC)
+			return line;
+		}
+	return secondChoice;
+	}
+		
+		
 
   private static final int START = 0;
   private static final int CATCH = 1;
