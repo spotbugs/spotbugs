@@ -119,7 +119,7 @@ public class ClassContext implements AnalysisFeatures {
 	 * @param method the method
 	 * @return the raw CFG
 	 */
-	private CFG getRawCFG(Method method) throws CFGBuilderException {
+	public CFG getRawCFG(Method method) throws CFGBuilderException {
 		CFG cfg = cfgMap.get(method);
 		if (cfg == null) {
 			MethodGen methodGen = getMethodGen(method);
