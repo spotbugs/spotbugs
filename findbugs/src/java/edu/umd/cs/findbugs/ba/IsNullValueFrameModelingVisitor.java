@@ -51,6 +51,12 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
 		frame.pushValue(value);
 	}
 
+	private void produce2(IsNullValue value) {
+		Frame<IsNullValue> frame = getFrame();
+		frame.pushValue(value);
+		frame.pushValue(value);
+	}
+
 	public void visitACONST_NULL(ACONST_NULL obj) {
 		produce(IsNullValue.nullValue());
 	}
@@ -61,6 +67,14 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
 
 	public void visitLDC(LDC obj) {
 		produce(IsNullValue.nonNullValue());
+	}
+
+	public void visitLDC_W(LDC_W obj) {
+		produce(IsNullValue.nonNullValue());
+	}
+
+	public void visitLDC2_W(LDC2_W obj) {
+		produce2(IsNullValue.nonNullValue());
 	}
 
 }
