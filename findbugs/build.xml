@@ -442,19 +442,18 @@
          <fileset dir="${doc.dir}" />
        </copy>
 
-       <!-- Put it in a tarball. -->
-       <tar tarfile="${build.dir}/src/findbugs-${release.number}-source.tar.gz"
-            compression="gzip">
-         <tarfileset dir="${build.dir}/src" includes="findbugs-${release.number}/**" excludes="${src.release.scripts}" />
-         <tarfileset dir="${build.dir}/src" includes="${src.release.scripts}" mode="555" />
-       </tar>
+       <!-- Put it in a zip file. -->
+       <zip destfile="${build.dir}/src/findbugs-${release.number}-source.zip">
+         <zipfileset dir="${build.dir}/src" includes="findbugs-${release.number}/**" excludes="${src.release.scripts}" />
+         <zipfileset dir="${build.dir}/src" includes="${src.release.scripts}" mode="555" />
+       </zip>
     </target>
 
     <!-- Update the FindBugs web page. -->
-<!--
     <property name="findbugs.web.dir" value="/fs/www/users/pugh/java/bugs" />
--->
+<!--
     <property name="findbugs.web.dir" value="/export/home/daveho/bugs" />
+-->
     <target name="web" depends="docs" >
       <copy todir="${findbugs.web.dir}" >
         <fileset dir="${doc.dir}" />
