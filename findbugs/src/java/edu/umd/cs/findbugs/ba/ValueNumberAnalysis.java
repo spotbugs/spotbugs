@@ -30,22 +30,8 @@ import org.apache.bcel.generic.MethodGen;
  * A dataflow analysis to track the production and flow of values in the Java
  * stack frame.  See the {@link ValueNumber ValueNumber} class for an explanation
  * of what the value numbers mean, and when they can be compared.
- * <p/>
- * <p> This class is still experimental.
- * <p/>
- * <p> TODO: we will need redundant load elimination in order to
- * successfully capture the programmer's intent in a lot of cases.
- * For example:
- * <pre>
- *    synchronized (foo) {
- *       foo.blat();
- *    }
- * </pre>
- * Assuming foo is an instance field, there will be two GETFIELD instructions;
- * one for the MONITORENTER, and one for the call to blat().  At runtime,
- * it is more or less certain that the JIT will reuse the value of the
- * first GETFIELD for the call to blat(), and this is almost certainly what
- * the programmer intended to happen.
+ *
+ * <p>This class is still experimental.
  *
  * @author David Hovemeyer
  * @see ValueNumber
@@ -56,6 +42,7 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
 	private static final boolean DEBUG = Boolean.getBoolean("vna.debug");
 
 	private MethodGen methodGen;
+	private Set<XField> loadedFieldSet;
 	private ValueNumberFactory factory;
 	private ValueNumberCache cache;
 	private ValueNumberFrameModelingVisitor visitor;
@@ -66,10 +53,12 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
 	private HashMap<Location, ValueNumberFrame> factAfterLocationMap;
 
 	public ValueNumberAnalysis(MethodGen methodGen, DepthFirstSearch dfs,
+							   Set<XField> loadedFieldSet,
 	                           RepositoryLookupFailureCallback lookupFailureCallback) {
 
 		super(dfs);
 		this.methodGen = methodGen;
+		this.loadedFieldSet = loadedFieldSet;
 		this.factory = new ValueNumberFactory();
 		this.cache = new ValueNumberCache();
 		this.visitor = new ValueNumberFrameModelingVisitor(methodGen, factory, cache,

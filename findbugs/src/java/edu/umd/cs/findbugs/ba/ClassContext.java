@@ -21,11 +21,18 @@ package edu.umd.cs.findbugs.ba;
 
 import java.util.*;
 
+import org.apache.bcel.Constants;
+
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
+
 import org.apache.bcel.generic.ClassGen;
 import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.FieldInstruction;
+import org.apache.bcel.generic.Instruction;
+import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.InstructionList;
 import org.apache.bcel.generic.MethodGen;
 
 /**
@@ -244,7 +251,9 @@ public class ClassContext implements AnalysisFeatures {
 		        protected ValueNumberDataflow analyze(Method method) throws DataflowAnalysisException, CFGBuilderException {
 			        MethodGen methodGen = getMethodGen(method);
 			        DepthFirstSearch dfs = getDepthFirstSearch(method);
-			        ValueNumberAnalysis analysis = new ValueNumberAnalysis(methodGen, dfs, getLookupFailureCallback());
+			        Set<XField> loadedFieldSet = getLoadedFieldSet(method);
+			        ValueNumberAnalysis analysis = new ValueNumberAnalysis(methodGen, dfs, loadedFieldSet,
+							getLookupFailureCallback());
 			        CFG cfg = getCFG(method);
 			        ValueNumberDataflow vnaDataflow = new ValueNumberDataflow(cfg, analysis);
 			        vnaDataflow.execute();
@@ -419,6 +428,32 @@ public class ClassContext implements AnalysisFeatures {
 			        return resultList.toArray(new String[resultList.size()]);
 		        }
 	        };
+
+	private NoExceptionAnalysisFactory<Set<XField>> loadedFieldSetFactory =
+			new NoExceptionAnalysisFactory<Set<XField>>("loaded field set factory") {
+				protected Set<XField> analyze(Method method) {
+					MethodGen methodGen = getMethodGen(method);
+					InstructionList il = methodGen.getInstructionList();
+
+					Set<XField> loadedFieldSet = new HashSet<XField>();
+
+					for (InstructionHandle handle = il.getStart(); handle != null; handle = handle.getNext()) {
+						Instruction ins = handle.getInstruction();
+						short opcode = ins.getOpcode();
+						if (opcode != Constants.GETFIELD || opcode != Constants.GETSTATIC)
+							continue;
+						try {
+							XField loadedField = Hierarchy.findXField((FieldInstruction) ins, getConstantPoolGen());
+							if (loadedField != null)
+								loadedFieldSet.add(loadedField);
+						} catch (ClassNotFoundException e) {
+							analysisContext.getLookupFailureCallback().reportMissingClass(e);
+						}
+					}
+
+					return loadedFieldSet;
+				}
+			};
 
 	private ClassGen classGen;
 	private AssignedFieldMap assignedFieldMap;
@@ -653,6 +688,16 @@ public class ClassContext implements AnalysisFeatures {
 	 */
 	public String[] getParameterSignatureList(Method method) {
 		return parameterSignatureListFactory.getAnalysis(method);
+	}
+
+	/**
+	 * Get the set of fields loaded by given method.
+	 *
+	 * @param method the method
+	 * @return the set of fields loaded by the method
+	 */
+	public Set<XField> getLoadedFieldSet(Method method) {
+		return loadedFieldSetFactory.getAnalysis(method);
 	}
 
 	/**
