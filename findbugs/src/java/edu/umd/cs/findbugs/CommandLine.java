@@ -43,12 +43,14 @@ public abstract class CommandLine {
 	}
 
 	/**
-	 * Add an option.
+	 * Add a command line switch.
+	 * This method is for adding options that do not require
+	 * an argument.
 	 *
 	 * @param option      the option, must start with "-"
 	 * @param description single line description of the option
 	 */
-	public void addOption(String option, String description) {
+	public void addSwitch(String option, String description) {
 		optionList.add(option);
 		optionDescriptionMap.put(option, description);
 

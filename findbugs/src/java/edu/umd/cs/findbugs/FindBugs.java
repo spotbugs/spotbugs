@@ -331,25 +331,26 @@ public class FindBugs implements Constants2, ExitCodes {
 			addOption("-home", "home directory", "specify FindBugs home directory");
 			addOption("-pluginList", "jar1[" + File.pathSeparator + "jar2...]",
 			        "specify list of plugin Jar files to load");
-			addOption("-quiet", "suppress error messages");
-			addOption("-low", "report all warnings");
-			addOption("-medium", "report only medium and high priority warnings [default]");
-			addOption("-high", "report only high priority warnings");
-			addOption("-sortByClass", "sort warnings by class");
-			addOption("-xml", "XML output");
-			addOption("-xdocs", "xdoc XML output to use with Apache Maven");
+			addSwitch("-quiet", "suppress error messages");
+			addSwitch("-low", "report all warnings");
+			addSwitch("-medium", "report only medium and high priority warnings [default]");
+			addSwitch("-high", "report only high priority warnings");
+			addSwitch("-sortByClass", "sort warnings by class");
+			addSwitch("-xml", "XML output");
+			addSwitch("-xdocs", "xdoc XML output to use with Apache Maven");
 			addOption("-html", "stylesheet", "HTML output using given XSL stylesheet");
-			addOption("-emacs", "Use emacs reporting format");
+			addSwitch("-emacs", "Use emacs reporting format");
 			addOption("-outputFile", "filename", "Save output in named file");
 			addOption("-visitors", "v1[,v2...]", "run only named visitors");
 			addOption("-omitVisitors", "v1[,v2...]", "omit named visitors");
 			addOption("-bugCategories", "cat1[,cat2...]", "run only detectors that report given categories");
+			addOption("-onlyAnalyze", "classes/packages", "only analyze given classes and packages");
 			addOption("-exclude", "filter file", "exclude bugs matching given filter");
 			addOption("-include", "filter file", "include only bugs matching given filter");
 			addOption("-auxclasspath", "classpath", "set aux classpath for analysis");
 			addOption("-sourcepath", "source path", "set source path for analyzed classes");
 			addOption("-project", "project", "analyze given project");
-			addOption("-exitcode", "set exit code of process");
+			addSwitch("-exitcode", "set exit code of process");
 		}
 
 		public Project getProject() {
