@@ -22,8 +22,13 @@ package edu.umd.cs.daveho.ba;
 import org.apache.bcel.generic.MethodGen;
 
 public class CFGBuilderFactory {
+	private static final boolean BETTER = Boolean.getBoolean("cfg.better");
+
 	public static CFGBuilder create(MethodGen methodGen) {
-		return new BasicCFGBuilder(methodGen);
+		if (BETTER)
+			return new BetterCFGBuilder(methodGen);
+		else
+			return new BasicCFGBuilder(methodGen);
 	}
 }
 

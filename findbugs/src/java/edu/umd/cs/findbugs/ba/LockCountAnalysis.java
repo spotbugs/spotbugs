@@ -39,6 +39,7 @@ import org.apache.bcel.generic.*;
 public abstract class LockCountAnalysis extends ForwardDataflowAnalysis<LockCount> {
 
 	private static final boolean DEBUG = Boolean.getBoolean("dataflow.debug");
+	private static final boolean BETTER = Boolean.getBoolean("cfg.better");
 
 	protected MethodGen methodGen;
 	protected Dataflow<ThisValueFrame> tvaDataflow;
@@ -125,7 +126,8 @@ public abstract class LockCountAnalysis extends ForwardDataflowAnalysis<LockCoun
 	}
 
 	public void meetInto(LockCount fact, Edge edge, LockCount result) throws DataflowAnalysisException {
-		if (edge.getDest().isExceptionHandler()) {
+
+		if (!BETTER && edge.getDest().isExceptionHandler()) {
 			// WARNING!
 
 			// Subtle special case - on a handled exception where the last instruction
