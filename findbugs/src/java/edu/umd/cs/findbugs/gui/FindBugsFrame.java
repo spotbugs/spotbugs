@@ -1323,26 +1323,36 @@ public class FindBugsFrame extends javax.swing.JFrame {
             editMenu.setText("Edit");
             editMenu.setFont(new java.awt.Font("Dialog", 0, 12));
             editMenu.setEnabled(false);
+            localiseButton(editMenu, "menu.edit_menu", "&Edit", true);
+            cutItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_X, java.awt.event.InputEvent.CTRL_MASK));
             cutItem.setFont(new java.awt.Font("Dialog", 0, 12));
             cutItem.setText("Cut");
+            localiseButton(cutItem, "menu.cut_item", "Cut", true);
             editMenu.add(cutItem);
 
+            copyItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_C, java.awt.event.InputEvent.CTRL_MASK));
             copyItem.setFont(new java.awt.Font("Dialog", 0, 12));
             copyItem.setText("Copy");
+            localiseButton(copyItem, "menu.copy_item", "Copy", true);
             editMenu.add(copyItem);
 
+            pasteItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_V, java.awt.event.InputEvent.CTRL_MASK));
             pasteItem.setFont(new java.awt.Font("Dialog", 0, 12));
             pasteItem.setText("Paste");
+            localiseButton(pasteItem, "menu.paste_item", "Paste", true);
             editMenu.add(pasteItem);
 
             editMenu.add(jSeparator10);
 
             clearItem.setFont(new java.awt.Font("Dialog", 0, 12));
             clearItem.setText("Clear");
+            localiseButton(clearItem, "menu.clear_item", "Clear", true);
             editMenu.add(clearItem);
 
+            selectAllItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_A, java.awt.event.InputEvent.CTRL_MASK));
             selectAllItem.setFont(new java.awt.Font("Dialog", 0, 12));
             selectAllItem.setText("Select All");
+            localiseButton(selectAllItem, "menu.selectall_item", "Select &All", true);
             editMenu.add(selectAllItem);
 
             theMenuBar.add(editMenu);
