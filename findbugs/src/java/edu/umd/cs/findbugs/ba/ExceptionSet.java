@@ -38,6 +38,8 @@ import org.apache.bcel.generic.Type;
  * @see TypeAnalysis
  */
 public class ExceptionSet implements Serializable {
+        private static final long serialVersionUID = 1;
+
 	private ExceptionSetFactory factory;
 	private BitSet exceptionSet;
 	private BitSet explicitSet;
