@@ -99,6 +99,12 @@ public class FindDeadLocalStores implements Detector {
 			if (!isStore(location))
 				continue;
 
+			// Ignore exception handler blocks:
+			// javac always stores caught exceptions in
+			// a local, even if the value is not used.
+			if (location.getBasicBlock().isExceptionHandler())
+				continue;
+
 			IndexedInstruction store = (IndexedInstruction) location.getHandle().getInstruction();
 			int local = store.getIndex();
 
