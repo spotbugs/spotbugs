@@ -56,7 +56,9 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
@@ -78,6 +80,7 @@ import edu.umd.cs.findbugs.config.UserPreferences;
  * @author Andrei Loskutov
  * @author Peter Friese 
  * @author David Hovemeyer
+ * @author Phil Crosby
  * @version 1.0
  * @since 17.06.2004
  */
@@ -94,6 +97,7 @@ public class FindbugsPropertyPage extends PropertyPage {
 	private Button[] chkEnableBugCategoryList;
 	private String[] bugCategoryList;
 	private UserPreferences origUserPreferences;
+	private UserPreferences currentUserPreferences;
 	private IProject project;
 	protected TableViewer availableFactoriesTableViewer;
 	protected Map factoriesToBugAbbrev;
@@ -118,14 +122,7 @@ public class FindbugsPropertyPage extends PropertyPage {
 		IAdaptable resource = getElement();
 		this.project = (IProject) resource.getAdapter(IProject.class);
 		
-		// Get current user preferences for project
-		try {
-			this.origUserPreferences = FindbugsPlugin.getUserPreferences(project);
-		} catch (CoreException e) {
-			// Use default settings
-			FindbugsPlugin.getDefault().logException(e, "Could not get user preferences for project");
-			this.origUserPreferences = UserPreferences.createDefaultUserPreferences();
-		}
+		collectUserPreferences();
 		
 		Composite composite = new Composite(parent, SWT.NONE);
 		GridLayout layout = new GridLayout();
@@ -198,6 +195,18 @@ public class FindbugsPropertyPage extends PropertyPage {
 		return composite;
 	}
 
+	private void collectUserPreferences() {
+		// Get current user preferences for project
+		try {
+			this.origUserPreferences = FindbugsPlugin.getUserPreferences(project);
+		} catch (CoreException e) {
+			// Use default settings
+			FindbugsPlugin.getDefault().logException(e, "Could not get user preferences for project");
+			this.origUserPreferences = UserPreferences.createDefaultUserPreferences();
+		}
+		this.currentUserPreferences = (UserPreferences) origUserPreferences.clone();
+	}
+
 	/**
 	 * Restore default settings.
 	 * This just changes the dialog widgets - the user still needs
@@ -246,7 +255,7 @@ public class FindbugsPropertyPage extends PropertyPage {
 	 * @param categoryGroup control checkboxes should be added to
 	 * @param project       the project being configured
 	 */
-	private void buildBugCategoryList(Composite categoryGroup, IProject project) {
+	private void buildBugCategoryList(Composite categoryGroup, final IProject project) {
 		List bugCategoryList = new LinkedList(I18N.instance().getBugCategories());
 		List checkBoxList = new LinkedList();
 		for (Iterator i = bugCategoryList.iterator(); i.hasNext(); ) {
@@ -259,12 +268,41 @@ public class FindbugsPropertyPage extends PropertyPage {
 			layoutData.horizontalIndent = 15;
 			checkBox.setLayoutData(layoutData);
 			
+			// Every time a checkbox is clicked, rebuild the detector factory table
+			// to show only relevant entries
+			
+			checkBox.addListener(SWT.Selection, 
+				new Listener(){
+					public void handleEvent(Event e){
+						System.out.println("Category preferences changed!");
+						syncSelectedCategories();
+						populateAvailableRulesTable(project);
+					}
+				} 
+			);
+
+			
 			checkBoxList.add(checkBox);
 		}
 		
 		this.chkEnableBugCategoryList = (Button[]) checkBoxList.toArray(new Button[checkBoxList.size()]);
 		this.bugCategoryList = (String[]) bugCategoryList.toArray(new String[bugCategoryList.size()]);
 	}
+
+	/**
+	 * Synchronize selected bug category checkboxes with the current user preferences.
+	 */
+	private void syncSelectedCategories() {
+		for (int i = 0; i < chkEnableBugCategoryList.length; ++i) {
+			Button checkBox = chkEnableBugCategoryList[i];
+			String category = bugCategoryList[i];
+			if (checkBox.getSelection()) {
+				currentUserPreferences.getFilterSettings().addCategory(category);
+			} else {
+				currentUserPreferences.getFilterSettings().removeCategory(category);
+			}
+		}
+	}				
 
 	/**
 	 * Build rule table viewer
@@ -352,20 +390,28 @@ public class FindbugsPropertyPage extends PropertyPage {
 			}
 		});
 	}
-
+	
+	/**
+	 * Return whether or not given DetectorFactory reports bug patterns
+	 * in one of the currently-enabled set of bug categories.
+	 * 
+	 * @param factory the DetectorFactory
+	 * @return true if the factory reports bug patterns in one of the
+	 *         currently-enabled bug categories, false if not
+	 */
+	private boolean reportsInEnabledCategory(DetectorFactory factory) {
+		for (Iterator i = factory.getReportedBugPatterns().iterator(); i.hasNext();) {
+			BugPattern pattern = (BugPattern) i.next();
+			if (currentUserPreferences.getFilterSettings().containsCategory(pattern.getCategory()))
+				return true;
+		}
+		return false;
+	}
+	
 	/**
 	 * Populate the rule table
 	 */
 	private void populateAvailableRulesTable(IProject project) {
-		UserPreferences userPrefs;
-		try {
-			userPrefs = FindbugsPlugin.getUserPreferences(project);
-		}
-		catch (CoreException e) {
-			FindbugsPlugin.getDefault().logException(e, "Could not populate detector table");
-			return;
-		}
-
 		List allAvailableList = new ArrayList();
 		factoriesToBugAbbrev = new HashMap();
 		Iterator iterator =
@@ -379,6 +425,10 @@ public class FindbugsPropertyPage extends PropertyPage {
 				continue;
 			}
 			
+			// Only add items for detectors which report in currently-enabled categories
+			if (!reportsInEnabledCategory(factory))
+				continue;
+			
 			allAvailableList.add(factory);
 			addBugsAbbreviation(factory);
 		}
@@ -389,9 +439,17 @@ public class FindbugsPropertyPage extends PropertyPage {
 		for (int i = 0; i < itemList.length; i++) {
 			DetectorFactory rule = (DetectorFactory) itemList[i].getData();
 			//set enabled if defined in configuration
-			if (userPrefs.isDetectorEnabled(rule)) {
+			if (currentUserPreferences.isDetectorEnabled(rule)) {
 				itemList[i].setChecked(true);
 			}
+			
+			// Listen for check/uncheck events, update user preferences accordingly
+			itemList[i].addListener(SWT.Selection, new Listener() {
+				public void handleEvent(Event event) {
+					System.out.println("Detector selection changed!");
+					syncUserPreferencesWithTable();
+				}
+			});
 		}
 	}
 
@@ -457,15 +515,12 @@ public class FindbugsPropertyPage extends PropertyPage {
 		// which warning markers are shown.
 		boolean filterOptionsChanged = false;
 
-		// Get updated user preferences for the project
-		UserPreferences updatedUserPreferences = getUpdatedUserPreferences();
-
 		// Have user preferences for project changed?
 		// If so, write them to the user preferences file.
-		if (!updatedUserPreferences.equals(origUserPreferences)) {
+		if (!currentUserPreferences.equals(origUserPreferences)) {
 			//System.out.println("User preferences for project changed!");
 			try {
-				FindbugsPlugin.saveUserPreferences(project, updatedUserPreferences);
+				FindbugsPlugin.saveUserPreferences(project, currentUserPreferences);
 			} catch (CoreException e) {
 				FindbugsPlugin.getDefault().logException(e, "Could not store FindBugs preferences for project");
 			} catch (IOException e) {
@@ -474,7 +529,7 @@ public class FindbugsPropertyPage extends PropertyPage {
 			
 			// Have filter settings changed?
 			// If so, we need to redisplay warnings.
-			if (!updatedUserPreferences.getFilterSettings().equals(
+			if (!currentUserPreferences.getFilterSettings().equals(
 					origUserPreferences.getFilterSettings())) {
 				//System.out.println("Filter setting for project changed!");
 				filterOptionsChanged = true;
@@ -495,22 +550,6 @@ public class FindbugsPropertyPage extends PropertyPage {
 		}
 		
 		return result;
-	}
-
-	private UserPreferences getUpdatedUserPreferences() {
-		UserPreferences updatedUserPreferences = UserPreferences.createDefaultUserPreferences();
-		
-		List selectedDetectorFactoryList = getSelectedDetectorFactories();
-		updatedUserPreferences.enableAllDetectors(false);
-		for (Iterator i = selectedDetectorFactoryList.iterator(); i.hasNext(); ) {
-			DetectorFactory factory = (DetectorFactory) i.next();
-			updatedUserPreferences.enableDetector(factory, true);
-		}
-		
-		ProjectFilterSettings filterSettings = getUpdatedProjectFilterSettings();
-		updatedUserPreferences.setProjectFilterSettings(filterSettings);
-		
-		return updatedUserPreferences;
 	}
 
 	/**
@@ -617,46 +656,19 @@ public class FindbugsPropertyPage extends PropertyPage {
 	}
 
 	/**
-	 * Get user selected bug factories from view
-	 * @return list with elements instanceof DetectorFactory
+	 * Disables all unchecked detector factories and enables checked factory detectors, leaving
+	 * those not in the table unmodified.
+	 * @param userPrefs the UserPreferences to adjust to match the UI table
 	 */
-	protected List getSelectedDetectorFactories() {
+	protected void syncUserPreferencesWithTable(){
 		TableItem[] itemList =
 			availableFactoriesTableViewer.getTable().getItems();
-		List detectorFactoriesList = new ArrayList();
 		for (int i = 0; i < itemList.length; i++) {
-			Object factory = itemList[i].getData();
+			DetectorFactory factory = (DetectorFactory) itemList[i].getData();
+			
 			//set enabled if defined in configuration
-			if (itemList[i].getChecked()) {
-				detectorFactoriesList.add(factory);
-			}
-		}
-		return detectorFactoriesList;
-	}
-
-	/**
-	 * Get the updated project filter settings chosen by the user.
-	 * 
-	 * @return the updated ProjectFilterSettings
-	 */
-	private ProjectFilterSettings getUpdatedProjectFilterSettings() {
-		ProjectFilterSettings settings = ProjectFilterSettings.createDefault();
-		settings.clearAllCategories();
-		
-		for (int i = 0; i < chkEnableBugCategoryList.length; ++i) {
-			Button checkBox = chkEnableBugCategoryList[i];
-			String category = bugCategoryList[i];
-			if (checkBox.getSelection())
-				settings.addCategory(category);
-			else
-				settings.removeCategory(category);
-		}
-		
-		settings.setMinPriority(minPriorityCombo.getText());
-		
-		settings.setDisplayFalseWarnings(chkDisplayFalseWarnings.getSelection());
-		
-		return settings;
+			currentUserPreferences.enableDetector(factory, itemList[i].getChecked());
+		}	
 	}
 
 	/**
