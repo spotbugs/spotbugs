@@ -58,7 +58,7 @@ public class Location implements Comparable {
 
 	public int compareTo(Object o) {
 		if (!(o instanceof Location))
-			return -1;
+			return new UnsupportedOperationException();
 		Location other = (Location) o;
 
 		int cmp = basicBlock.getId() - other.basicBlock.getId();
