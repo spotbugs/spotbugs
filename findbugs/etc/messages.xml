@@ -819,7 +819,7 @@ to use Object.clone(), which always returns an object of the correct type.</p>
   </BugPattern>
   <BugPattern type="DM_STRING_EMPTY_EQUALS">
     <ShortDescription>Method invokes dubious String.equals(""); use String.length() == 0 instead</ShortDescription>
-    <LongDescription>Method invokes dubious String.equals(""); use String.length() == 0 instead</LongDescription>
+    <LongDescription>Method {1} invokes dubious String.equals(""); use String.length() == 0 instead</LongDescription>
     <Details>
 <![CDATA[
   <p> An object is compared to the empty String object using the equals() method here.
@@ -829,7 +829,7 @@ to use Object.clone(), which always returns an object of the correct type.</p>
   </BugPattern>
   <BugPattern type="DM_ARRAY_COMPARE">
     <ShortDescription>Method invokes dubious equals method on an array. Use Arrays.equals instead</ShortDescription>
-    <LongDescription>Method invokes dubious equals method on an array. Use Arrays.equals instead</LongDescription>
+    <LongDescription>Method {1} invokes dubious equals method on an array. Use Arrays.equals instead</LongDescription>
     <Details>
 <![CDATA[
   <p> An array is being compared to another object using the equals method of the array. This is the same as 
@@ -1578,7 +1578,7 @@ which is probably what was intended.</p>
 
   <BugPattern type="SF_SWITCH_FALLTHROUGH">
   	<ShortDescription>A switch statement found where one case falls thru to the next case</ShortDescription>
-  	<LongDescription>A switch statement found where one case falls thru to the next case</LongDescription>
+  	<LongDescription>A switch statement found in {1} where one case falls thru to the next case</LongDescription>
     <Details>
 <![CDATA[
   <p> This method contains a switch statement where one case branch will fall thru to the next case.
@@ -2333,7 +2333,7 @@ directly. This avoids the need to create a second array
   
   <BugPattern type="IJU_SETUP_NO_SUPER">
     <ShortDescription>TestCase implements setUp but doesn't call super.setUp()</ShortDescription>
-    <LongDescription>TestCase implements setUp but doesn't call super.setUp()</LongDescription>
+    <LongDescription>TestCase {0} implements setUp but doesn't call super.setUp()</LongDescription>
     <Details>
 <![CDATA[
 <p> Class is a JUnit TestCase and implements the setUp method. The setUp method should call
@@ -2344,7 +2344,7 @@ super.setUp(), but doesn't.</p>
 
   <BugPattern type="IJU_TEARDOWN_NO_SUPER">
     <ShortDescription>TestCase implements tearDown but doesn't call super.tearDown()</ShortDescription>
-    <LongDescription>TestCase implements tearDown but doesn't call super.tearDown()</LongDescription>
+    <LongDescription>TestCase {0} implements tearDown but doesn't call super.tearDown()</LongDescription>
     <Details>
 <![CDATA[
 <p> Class is a JUnit TestCase and implements the tearDown method. The tearDown method should call
@@ -2355,7 +2355,7 @@ super.tearDown(), but doesn't.</p>
   
   <BugPattern type="IJU_SUITE_NOT_STATIC">
     <ShortDescription>TestCase implements a suite method, but this method is not static and should be</ShortDescription>
-    <LongDescription>TestCase implements a suite method, but this method is not static and should be</LongDescription>
+    <LongDescription>TestCase {0} implements a suite method, but this method is not static and should be</LongDescription>
     <Details>
 <![CDATA[
 <p> Class is a JUnit TestCase and implements the suite() method.
@@ -2365,8 +2365,8 @@ super.tearDown(), but doesn't.</p>
   </BugPattern>  
   
   <BugPattern type="BOA_BADLY_OVERRIDDEN_ADAPTER">
-    <ShortDescription>Method overrides a method implemented in super class Adapter wrongly</ShortDescription>
-    <LongDescription>Method overrides a method implemented in super class Adapter wrongly</LongDescription>
+    <ShortDescription>Class {0} overrides a method implemented in super class Adapter wrongly</ShortDescription>
+    <LongDescription>Class {0} overrides a method {1} implemented in super class Adapter wrongly</LongDescription>
     <Details>
 <![CDATA[
 <p> This method overrides a method found in a parent class, where that class is an Adapter that implements
@@ -2378,7 +2378,7 @@ get called when the event occurs.</p>
   
   <BugPattern type="BRSA_BAD_RESULTSET_ACCESS">
     <ShortDescription>Method attempts to access a result set field with index 0</ShortDescription>
-    <LongDescription>Method attempts to access a result set field with index 0</LongDescription>
+    <LongDescription>Method {1} attempts to access a result set field with index 0</LongDescription>
     <Details>
 <![CDATA[
 <p> A call to getXXX or updateXXX methods of a result set was made where the
@@ -2389,7 +2389,7 @@ field index is 0. As ResultSet fields start at index 1, this is always a mistake
   
   <BugPattern type="SIO_SUPERFLUOUS_INSTANCEOF">
     <ShortDescription>Unnecessary type check done using instanceof operator</ShortDescription>
-    <LongDescription>Unnecessary type check done using instanceof operator when it can be determined statically</LongDescription>
+    <LongDescription>Method {1} does an unnecessary type check using instanceof operator when it can be determined statically</LongDescription>
     <Details>
 <![CDATA[
 <p> Type check performed using the instanceof operator where it can be statically determined whether the object
