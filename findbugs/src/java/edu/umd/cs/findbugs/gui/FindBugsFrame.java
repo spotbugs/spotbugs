@@ -206,11 +206,11 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
         setTitle("FindBugs");
         addWindowListener(new java.awt.event.WindowAdapter() {
-            public void windowOpened(java.awt.event.WindowEvent evt) {
-                formWindowOpened(evt);
-            }
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 exitForm(evt);
+            }
+            public void windowOpened(java.awt.event.WindowEvent evt) {
+                formWindowOpened(evt);
             }
         });
 
@@ -223,7 +223,6 @@ public class FindBugsFrame extends javax.swing.JFrame {
             }
         });
 
-        navigatorViewSplitter.setEnabled(false);
         jScrollPane1.setPreferredSize(new java.awt.Dimension(200, 0));
         navigatorTree.setModel(createNavigatorTreeModel());
         jScrollPane1.setViewportView(navigatorTree);
@@ -574,7 +573,6 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
         viewMenu.setMnemonic('V');
         viewMenu.setText("View");
-        viewMenu.setToolTipText("null");
         viewMenu.setFont(new java.awt.Font("Dialog", 0, 12));
         viewConsoleItem.setMnemonic('C');
         viewConsoleItem.setSelected(true);
@@ -1027,10 +1025,10 @@ public class FindBugsFrame extends javax.swing.JFrame {
     private javax.swing.JSplitPane navigatorViewSplitter;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JButton removeSrcDirButton;
-    private javax.swing.JCheckBoxMenuItem viewConsoleItem;
     private javax.swing.JSeparator jSeparator4;
-    private javax.swing.JMenu viewMenu;
+    private javax.swing.JCheckBoxMenuItem viewConsoleItem;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JMenu viewMenu;
     private javax.swing.JMenu fileMenu;
     private javax.swing.JMenuItem closeProjectItem;
     private javax.swing.JMenuItem newProjectItem;
