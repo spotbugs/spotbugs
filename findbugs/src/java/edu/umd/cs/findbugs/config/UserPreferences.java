@@ -214,6 +214,10 @@ public class UserPreferences {
 			detectorStateList.put(factory.getShortName(), Boolean.valueOf(factory.isEnabled()));
 		}
 	}
+	
+	public ProjectFilterSettings getFilterSettings() {
+		return this.filterSettings;
+	}
 
 	public int getUserDetectorThreshold() {
 		return filterSettings.getMinPriorityAsInt();
