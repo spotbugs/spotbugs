@@ -1036,6 +1036,21 @@ defined in an interface references a mutable
 ]]>
     </Details>
   </BugPattern>
+
+  <BugPattern type="SE_NONFINAL_SERIALVERSIONID">
+    <ShortDescription>serialVersionUID isn't final</ShortDescription>
+    <LongDescription>{1} isn't final</LongDescription>
+    <Details>
+<![CDATA[
+  <p> This class defines a <code>serialVersionUID</code> field that is not final.&nbsp;
+  The field should be made final 
+	if it is intended to specify
+	the version UID for purposes of serialization.
+]]>
+    </Details>
+  </BugPattern>
+
+
   <BugPattern type="SPDC_STATIC_DOUBLECHECK">
     <ShortDescription >スタティックフィールドを二重にチェックしている可能性がある。</ShortDescription>
     <LongDescription >スタティックフィールド {2} を {1} で二重にチェックしている可能性がある。</LongDescription>
