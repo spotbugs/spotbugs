@@ -83,37 +83,35 @@ public abstract class ResourceTrackingDetector<Resource, ResourceTrackerType ext
 
 	}
 
-	public void analyzeMethod(final ClassContext classContext, Method method, final ResourceTrackerType resourceTracker)
+	public void analyzeMethod(final ClassContext classContext, Method method,
+		ResourceTrackerType resourceTracker)
 		throws CFGBuilderException, DataflowAnalysisException {
 
-		final MethodGen methodGen = classContext.getMethodGen(method);
-		final CFG cfg = classContext.getCFG(method);
-		final DepthFirstSearch dfs = classContext.getDepthFirstSearch(method);
+		MethodGen methodGen = classContext.getMethodGen(method);
+		CFG cfg = classContext.getCFG(method);
+		DepthFirstSearch dfs = classContext.getDepthFirstSearch(method);
 
 		if (DEBUG) System.out.println(SignatureConverter.convertMethodSignature(methodGen));
 
-		new LocationScanner(cfg).scan(new LocationScanner.Callback() {
-			public void visitLocation(Location location) {
-				BasicBlock basicBlock = location.getBasicBlock();
-				InstructionHandle handle = location.getHandle();
+		for (Iterator<Location> i = cfg.locationIterator(); i.hasNext(); ) {
+			Location location = i.next();
+			BasicBlock basicBlock = location.getBasicBlock();
+			InstructionHandle handle = location.getHandle();
 
-				try {
-					Resource resource = resourceTracker.isResourceCreation(basicBlock, handle, methodGen.getConstantPool());
-					if (resource != null) {
-						if (DEBUG) System.out.println("Resource creation at " + handle.getPosition());
-						ResourceValueAnalysis<Resource> analysis =
-							new ResourceValueAnalysis<Resource>(methodGen, cfg, dfs, resourceTracker, resource, bugReporter);
-						Dataflow<ResourceValueFrame, ResourceValueAnalysis<Resource>> dataflow =
-							new Dataflow<ResourceValueFrame, ResourceValueAnalysis<Resource>>(cfg, analysis);
+			Resource resource =
+				resourceTracker.isResourceCreation(basicBlock, handle, methodGen.getConstantPool());
+			if (resource != null) {
+				if (DEBUG) System.out.println("Resource creation at " + handle.getPosition());
+				ResourceValueAnalysis<Resource> analysis =
+					new ResourceValueAnalysis<Resource>(methodGen, cfg, dfs, resourceTracker,
+						resource, bugReporter);
+				Dataflow<ResourceValueFrame, ResourceValueAnalysis<Resource>> dataflow =
+					new Dataflow<ResourceValueFrame, ResourceValueAnalysis<Resource>>(cfg, analysis);
 	
-						dataflow.execute();
-						inspectResult(classContext.getJavaClass(), methodGen, cfg, dataflow, resource);
-					}
-				} catch (DataflowAnalysisException e) {
-					throw new AnalysisException("FindOpenResource caught exception: " + e.toString(), e);
-				}
+				dataflow.execute();
+				inspectResult(classContext.getJavaClass(), methodGen, cfg, dataflow, resource);
 			}
-		});
+		}
 	}
 
 	public void report() {
@@ -121,4 +119,4 @@ public abstract class ResourceTrackingDetector<Resource, ResourceTrackerType ext
 
 }
 
-// vim:ts=4
+// vim:ts=3
