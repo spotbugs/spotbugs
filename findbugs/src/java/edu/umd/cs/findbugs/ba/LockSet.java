@@ -100,6 +100,20 @@ public class LockSet {
 	}
 
 	/**
+	 * Get the number of distinct lock values with positive lock counts.
+	 */
+	public int getNumLockedObjects() {
+		int result = 0;
+		for (int i = 0; i < array.length; i += 2) {
+			if (array[i] == INVALID)
+				break;
+			if (array[i+1] > 0)
+				++result;
+		}
+		return result;
+	}
+
+	/**
 	 * Make this LockSet the same as the given one.
 	 * @param other the LockSet to copy
 	 */
