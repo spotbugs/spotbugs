@@ -20,6 +20,8 @@
 package edu.umd.cs.findbugs.detect;
 
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.*;
 import org.apache.bcel.generic.*;
@@ -39,6 +41,139 @@ public class BCPMethodReturnCheck extends ByteCodePatternDetector {
 	private final BugReporter bugReporter;
 	private final ByteCodePattern pattern;
 
+	private static final boolean CHECK_ALL = Boolean.getBoolean("mrc.checkall");
+
+	/**
+	 * Return array of PatternElement objects representing
+	 * method invocations requiring a return value check.
+	 */
+	private static PatternElement[] createPatternElementList(BugReporter bugReporter) {
+		ArrayList<PatternElement> list = new ArrayList<PatternElement>();
+
+		// Standard return check methods
+		list.add(new Invoke("java.lang.String", "/.*", 
+					"/\\(.*\\)Ljava/lang/String;", 
+					Invoke.INSTANCE, bugReporter));
+		list.add(new Invoke("java.lang.StringBuffer", "toString", 
+					"()Ljava/lang/String;", 
+					Invoke.INSTANCE, 
+					bugReporter));
+		list.add(new Invoke("+java.lang.Thread", "<init>", 
+					"/.*", 
+					Invoke.CONSTRUCTOR, 
+					bugReporter));
+		list.add(new Invoke("java.security.MessageDigest", 
+					"digest", "([B)[B", 
+					Invoke.INSTANCE, bugReporter));
+		list.add(new Invoke("+java.net.InetAddress", "/.*", "/.*", 
+					Invoke.INSTANCE, bugReporter));
+		list.add(new Invoke("java.math.BigDecimal", "/.*", "/.*", 
+					Invoke.INSTANCE, bugReporter));
+		list.add(new Invoke("java.math.BigInteger", "/.*", "/.*", 
+					Invoke.INSTANCE, bugReporter));
+		list.add(new Invoke("java.io.File", "createNewFile", "()Z", Invoke.INSTANCE, bugReporter));
+		/*
+		new Invoke("java.lang.Thread", "currentThread", 
+			"()Ljava/lang/Thread;", 
+			Invoke.STATIC, 
+			bugReporter),
+		*/
+
+		// Determine which Java version we're using
+		String version = System.getProperty("java.version");
+		Pattern pattern = Pattern.compile("^(\\d+)\\.(\\d+)\\..*$");
+		Matcher matcher = pattern.matcher(version);
+
+		if (matcher.matches()) {
+			try {
+				int major = Integer.parseInt(matcher.group(1));
+				int minor = Integer.parseInt(matcher.group(2));
+
+				//System.out.println("major = " + major + ", minor = " + minor);
+	
+				if (CHECK_ALL || major > 1 || minor >= 5) {
+					// Add JDK 1.5 and later return check functions
+					list.add(new Invoke("+java.util.concurrent.locks.ReadWriteLock", 
+							"readLock", 
+							"()Ljava/util/concurrent/Lock;", 
+							Invoke.INSTANCE, 
+							bugReporter));
+					list.add(new Invoke("+java.util.concurrent.locks.ReadWriteLock", 
+							"writeLock", 
+							"()Ljava/util/concurrent/Lock;", 
+							Invoke.INSTANCE, 
+							bugReporter));
+					list.add(new Invoke("+java.util.concurrent.locks.Condition", 
+							"await", 
+							"(JLjava/util/concurrent/TimeUnit;)Z", 
+							Invoke.INSTANCE, 
+							bugReporter));
+					list.add(new Invoke("+java.util.concurrent.locks.Condition", 
+							"awaitUtil", 
+							"(Ljava/util/Date;)Z", 
+							Invoke.INSTANCE, 
+							bugReporter));
+					list.add(new Invoke("+java.util.concurrent.locks.Condition", 
+							"awaitNanos", 
+							"(J)Z", 
+							Invoke.INSTANCE, 
+							bugReporter));
+					list.add(new Invoke("+java.util.concurrent.Semaphore", 
+							"tryAcquire", 
+							"(JLjava/util/concurrent/TimeUnit;)Z", 
+							Invoke.INSTANCE, 
+							bugReporter));
+					list.add(new Invoke("+java.util.concurrent.Semaphore", 
+							"tryAcquire", 
+							"()Z", 
+							Invoke.INSTANCE, 
+							bugReporter));
+					list.add(new Invoke("+java.util.concurrent.locks.Lock", 
+							"tryLock", 
+							"(JLjava/util/concurrent/TimeUnit;)Z", 
+							Invoke.INSTANCE, 
+							bugReporter));
+					list.add(new Invoke("+java.util.concurrent.locks.Lock", 
+							"tryLock", 
+							"()Z", 
+							Invoke.INSTANCE, 
+							bugReporter));
+					list.add(new Invoke("+java.util.Queue", 
+							"offer", 
+							"(Ljava/lang/Object;)Z", 
+							Invoke.INSTANCE, 
+							bugReporter));
+					list.add(new Invoke("+java.util.concurrent.BlockingQueue", 
+							"offer", 
+							"(Ljava/lang/Object;JLjava/util/concurrent/TimeUnit;)Z",
+							Invoke.INSTANCE, 
+							bugReporter));
+					list.add(new Invoke("+java.util.concurrent.BlockingQueue", 
+							"poll", 
+							"(JLjava/util/concurrent/TimeUnit;)Ljava/lang/Object;", 
+							Invoke.INSTANCE, 
+							bugReporter));
+					list.add(new Invoke("+java.util.Queue", 
+							"poll", 
+							"()Ljava/lang/Object;", 
+							Invoke.INSTANCE, 
+							bugReporter));
+						/*
+						new Invoke("java.util.concurrent.locks.ReentrantLock",
+							"tryLock", 
+							"()Z", 
+							Invoke.INSTANCE, 
+							bugReporter),
+						*/
+				}
+			} catch (NumberFormatException e) {
+				bugReporter.logError("Bad java version: "  + version);
+			}
+		}
+
+		return list.toArray(new PatternElement[0]);
+	}
+
 	/**
 	 * Constructor.
 	 * @param bugReporter the BugReporter to report bug instances with
@@ -50,112 +185,7 @@ public class BCPMethodReturnCheck extends ByteCodePatternDetector {
 		// we're looking for.  We want to match the invocation of certain methods
 		// followed by a POP or POP2 instruction.
 		this.pattern = new ByteCodePattern()
-			.add(new MatchAny(new PatternElement[] {
-				/*
-				new Invoke("java.lang.String", "/.*", 
-					"/\\(.*\\)Ljava\\.lang\\.String;", 
-					Invoke.INSTANCE, bugReporter),
-				*/
-				new Invoke("java.lang.String", "/.*", 
-					"/\\(.*\\)Ljava/lang/String;", 
-					Invoke.INSTANCE, bugReporter),
-				new Invoke("java.lang.StringBuffer", "toString", 
-					"()Ljava/lang/String;", 
-					Invoke.INSTANCE, 
-					bugReporter),
-				new Invoke("+java.lang.Thread", "<init>", 
-					"/.*", 
-					Invoke.CONSTRUCTOR, 
-					bugReporter),
-				new Invoke("+java.util.concurrent.locks.ReadWriteLock", 
-					"readLock", 
-					"()Ljava/util/concurrent/Lock;", 
-					Invoke.INSTANCE, 
-					bugReporter),
-				new Invoke("+java.util.concurrent.locks.ReadWriteLock", 
-					"writeLock", 
-					"()Ljava/util/concurrent/Lock;", 
-					Invoke.INSTANCE, 
-					bugReporter),
-				new Invoke("+java.util.concurrent.locks.Condition", 
-					"await", 
-					"(JLjava/util/concurrent/TimeUnit;)Z", 
-					Invoke.INSTANCE, 
-					bugReporter),
-				new Invoke("+java.util.concurrent.locks.Condition", 
-					"awaitUtil", 
-					"(Ljava/util/Date;)Z", 
-					Invoke.INSTANCE, 
-					bugReporter),
-				new Invoke("+java.util.concurrent.locks.Condition", 
-					"awaitNanos", 
-					"(J)Z", 
-					Invoke.INSTANCE, 
-					bugReporter),
-				new Invoke("+java.util.concurrent.Semaphore", 
-					"tryAcquire", 
-					"(JLjava/util/concurrent/TimeUnit;)Z", 
-					Invoke.INSTANCE, 
-					bugReporter),
-				new Invoke("+java.util.concurrent.Semaphore", 
-					"tryAcquire", 
-					"()Z", 
-					Invoke.INSTANCE, 
-					bugReporter),
-				new Invoke("+java.util.concurrent.locks.Lock", 
-					"tryLock", 
-					"(JLjava/util/concurrent/TimeUnit;)Z", 
-					Invoke.INSTANCE, 
-					bugReporter),
-				new Invoke("+java.util.concurrent.locks.Lock", 
-					"tryLock", 
-					"()Z", 
-					Invoke.INSTANCE, 
-					bugReporter),
-				new Invoke("+java.util.Queue", 
-					"offer", 
-					"(Ljava/lang/Object;)Z", 
-					Invoke.INSTANCE, 
-					bugReporter),
-				new Invoke("+java.util.concurrent.BlockingQueue", 
-					"offer", 
-		"(Ljava/lang/Object;JLjava/util/concurrent/TimeUnit;)Z",
-					Invoke.INSTANCE, 
-					bugReporter),
-				new Invoke("+java.util.concurrent.BlockingQueue", 
-					"poll", 
-		"(JLjava/util/concurrent/TimeUnit;)Ljava/lang/Object;", 
-					Invoke.INSTANCE, 
-					bugReporter),
-				new Invoke("+java.util.Queue", 
-					"poll", 
-					"()Ljava/lang/Object;", 
-					Invoke.INSTANCE, 
-					bugReporter),
-				/*
-				new Invoke("java.util.concurrent.locks.ReentrantLock",
-					"tryLock", 
-					"()Z", 
-					Invoke.INSTANCE, 
-					bugReporter),
-				*/
-				/*
-				new Invoke("java.lang.Thread", "currentThread", 
-					"()Ljava/lang/Thread;", 
-					Invoke.STATIC, 
-					bugReporter),
-				*/
-				new Invoke("java.security.MessageDigest", 
-					"digest", "([B)[B", 
-					Invoke.INSTANCE, bugReporter),
-				new Invoke("+java.net.InetAddress", "/.*", "/.*", 
-					Invoke.INSTANCE, bugReporter),
-				new Invoke("java.math.BigDecimal", "/.*", "/.*", 
-					Invoke.INSTANCE, bugReporter),
-				new Invoke("java.math.BigInteger", "/.*", "/.*", 
-					Invoke.INSTANCE, bugReporter),
-				new Invoke("java.io.File", "createNewFile", "()Z", Invoke.INSTANCE, bugReporter),
-			}).label("call").setAllowTrailingEdges(false))
+			.add(new MatchAny(createPatternElementList(bugReporter)).label("call").setAllowTrailingEdges(false))
 			.add(new MatchAny(new PatternElement[] {new Opcode(Constants.POP), new Opcode(Constants.POP2)}));
 	}
 
