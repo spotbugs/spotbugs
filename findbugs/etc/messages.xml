@@ -22,6 +22,7 @@ cloneable classes.
 ]]>
     </Details>
   </Detector>
+
   <Detector class="edu.umd.cs.findbugs.detect.DroppedException">
     <Details>
 <![CDATA[
@@ -399,20 +400,18 @@ It is a fast detector.
    -->
 
   <BugPattern type="IMSE_DONT_CATCH_IMSE">
-    <ShortDescription>Dubious catching of IllegalMonitorStateException </ShortDescription>
-    <LongDescription>Dubious catching of IllegalMonitorStateException </LongDescription>
+    <ShortDescription>Dubious catching of IllegalMonitorStateException</ShortDescription>
+    <LongDescription>Dubious catching of IllegalMonitorStateException in {1}</LongDescription>
     <Details>
 <![CDATA[
-<p>Dubious catching of IllegalMonitorStateException
+<p>Dubious catching of IllegalMonitorStateException.
 ]]>
     </Details>
   </BugPattern>
 
-
-
   <BugPattern type="CN_IDIOM">
-    <ShortDescription>Class implements Cloneable but does not define or use clone method.  </ShortDescription>
-    <LongDescription>Class {0} implements Cloneable but does not define or use clone method. </LongDescription>
+    <ShortDescription>Class implements Cloneable but does not define or use clone method</ShortDescription>
+    <LongDescription>Class {0} implements Cloneable but does not define or use clone method</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -421,10 +420,6 @@ It is a fast detector.
 ]]>
     </Details>
   </BugPattern>
-
-
-
-
 
   <BugPattern type="DE_MIGHT_DROP">
     <ShortDescription>Method might drop exception</ShortDescription>
@@ -1647,7 +1642,7 @@ removed.
    -->
 
   <BugCode abbrev="IMSE" >Dubious catching of IllegalMonitorStateException</BugCode>
-  <BugCode abbrev="CN" >Bad implementation of cloneable idiom </BugCode>
+  <BugCode abbrev="CN" >Bad implementation of cloneable idiom</BugCode>
   <BugCode abbrev="FI" >Incorrect use of finalizers</BugCode>
   <BugCode abbrev="ES" >Checking String equality using == or !=</BugCode>
   <BugCode abbrev="ML" >Synchronization on updated field (Mutable Lock)</BugCode>
