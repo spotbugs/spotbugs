@@ -40,17 +40,11 @@ public class IsNullValueAnalysis extends ForwardDataflowAnalysis<IsNullValueFram
 	private MethodGen methodGen;
 	private CFG cfg;
 	private ValueNumberDataflow vnaDataflow;
-/*
-	private IdentityHashMap<BasicBlock, Integer> nonExceptionSuccCountMap;
-*/
 
 	public IsNullValueAnalysis(MethodGen methodGen, CFG cfg, ValueNumberDataflow vnaDataflow) {
 		this.methodGen = methodGen;
 		this.cfg = cfg;
 		this.vnaDataflow = vnaDataflow;
-/*
-		this.nonExceptionSuccCountMap = new IdentityHashMap<BasicBlock, Integer>();
-*/
 	}
 
 	public IsNullValueFrame createFact() {
@@ -84,53 +78,12 @@ public class IsNullValueAnalysis extends ForwardDataflowAnalysis<IsNullValueFram
 		return fact1.sameAs(fact2);
 	}
 
-/*
-	public void transfer(BasicBlock basicBlock, InstructionHandle end, IsNullValueFrame start, IsNullValueFrame result)
-		throws DataflowAnalysisException {
-
-		// This will call transferInstruction() for all of the instructions
-		// in the basic block.
-		super.transfer(basicBlock, end, start, result);
-
-		// Special case: if this block has multiple non-exception successors,
-		// we downgrade "definitely null on some path" values to
-		// "not definitely null".  This should eliminate false positives
-		// due to (non-exception) infeasible paths.  Note that in the case of
-		// IFNULL and IFNONNULL branches, we will recover more precise
-		// information later on in the meetInto() method.
-		if (getNumNonExceptionSuccessors(basicBlock) > 1) {
-			// TODO: figure out whether exception edges should really be ignored
-			int numSlots = result.getNumSlots();
-			for (int i = 0; i < numSlots; ++i) {
-				IsNullValue value = result.getValue(i);
-				if (value == IsNullValue.nullOnSomePathValue())
-					result.setValue(i, IsNullValue.notDefinitelyNull());
-			}
-		}
-	}
-
-	private int getNumNonExceptionSuccessors(BasicBlock basicBlock) {
-		Integer count = nonExceptionSuccCountMap.get(basicBlock);
-		if (count == null) {
-			int nonExceptionSuccCount = 0;
-			Iterator<Edge> i = cfg.outgoingEdgeIterator(basicBlock);
-			while (i.hasNext()) {
-				Edge edge = i.next();
-				int edgeType = edge.getType();
-				if (edgeType != EdgeTypes.UNHANDLED_EXCEPTION_EDGE && edgeType != EdgeTypes.HANDLED_EXCEPTION_EDGE)
-					++nonExceptionSuccCount;
-			}
-			count = new Integer(nonExceptionSuccCount);
-			nonExceptionSuccCountMap.put(basicBlock, count);
-		}
-		return count.intValue();
-	}
-*/
-
 	public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, IsNullValueFrame fact)
 		throws DataflowAnalysisException {
 
-		// TODO: implement
+		IsNullValueFrameModelingVisitor visitor =
+			new IsNullValueFrameModelingVisitor(fact, methodGen.getConstantPool());
+		handle.getInstruction().accept(visitor);
 
 	}
 
@@ -163,108 +116,131 @@ public class IsNullValueAnalysis extends ForwardDataflowAnalysis<IsNullValueFram
 		// Any others?
 	}
 
-	public void meetInto(IsNullValueFrame fact, Edge edge, IsNullValueFrame result) throws DataflowAnalysisException {
+	public void meetInto(IsNullValueFrame fact, Edge edge, IsNullValueFrame result)
+		throws DataflowAnalysisException {
+
+		if (fact.isValid() && result.isValid()) {
+			// Determine if the edge conveys any information about the
+			// null/non-null status of operands in the incoming frame.
+			final int numSlots = result.getNumSlots();
+			final BasicBlock destBlock = edge.getDest();
+
+			int nullInfo = getNullInfoFromEdge(edge);
+			switch (nullInfo) {
+			case TOS_NULL:
+				fact = replaceValues(fact, numSlots - 1, destBlock, IsNullValue.nullValue());
+				break;
+			case TOS_NON_NULL:
+				fact = replaceValues(fact, numSlots - 1, destBlock, IsNullValue.nonNullValue());
+				break;
+			case REF_OPERAND_NON_NULL:
+				{
+					// For all of the instructions which have a null-checked
+					// reference operand, it is pushed onto the stack before
+					// all of the other operands to the instruction.
+					Instruction firstInDest = edge.getDest().getFirstInstruction().getInstruction();
+					int numSlotsConsumed = firstInDest.consumeStack(methodGen.getConstantPool());
+					if (numSlotsConsumed == Constants.UNPREDICTABLE)
+						throw new DataflowAnalysisException("Unpredictable stack consumption for " + firstInDest);
+					fact = replaceValues(fact, numSlots - numSlotsConsumed, destBlock, IsNullValue.nonNullValue());
+				}
+				break;
+			default:
+				break;
+			}
+
+		}
+
 		// Normal dataflow merge
 		result.mergeWith(fact);
-
-		// If we're at TOP or BOTTOM after merge, nothing more to do
-		if (!result.isValid())
-			return;
-
-		final int numSlots = result.getNumSlots();
-
-		// If we have a single predecessor then we can use the following
-		// information to make the result frame more precise:
-		//   - the type of edge
-		//   - the last instruction in the predecessor block
-		//   - the first instruction in the successor block (i.e., if the
-		//     predecessor is the exception throwing block (ETB) for
-		//     the instruction; for example, the null check for a field access)
-		BasicBlock dest = edge.getDest();
-		if (dest.getNumIncomingEdges() == 1) {
-			BasicBlock source = edge.getSource();
-
-			int edgeType = edge.getType();
-			if (edgeType == IFCMP_EDGE || edgeType == FALL_THROUGH_EDGE) {
-				// Check for IFNULL and IFNONNULL branches.
-				// This will tell us something about the value on the
-				// top of the Java operand stack.
-				InstructionHandle lastInSourceHandle = source.getLastInstruction();
-				if (lastInSourceHandle == null)
-					return;
-
-				Instruction lastInSource = lastInSourceHandle.getInstruction();
-				short opcode = lastInSource.getOpcode();
-
-				// If the last instruction was IFNULL or IFNONNULL
-				// then we have more precise information about the value
-				// on the top of the stack.
-				IsNullValue newTOS = null;
-				if (opcode == Constants.IFNULL) {
-					newTOS = (edgeType == IFCMP_EDGE) ? IsNullValue.nullValue() : IsNullValue.notNullValue();
-				} else if (opcode == Constants.IFNONNULL) {
-					newTOS = (edgeType == IFCMP_EDGE) ? IsNullValue.notNullValue() : IsNullValue.nullValue();
-				}
-
-				if (newTOS != null) {
-					// Get value number frame at start of dest block.
-					ValueNumberFrame vnaFrame = getVnaFrameAtEntry(dest);
-					if (vnaFrame == null)
-						return;
-					assert vnaFrame.getNumSlots() == numSlots;
-
-					// Get the value number of the value on top of the stack.
-					// All occurrences of that value in the frame can
-					// be updated to reflect the more precise null/non-null
-					// information.
-					ValueNumber oldTOS = vnaFrame.getTopValue();
-
-					for (int i = 0; i < numSlots; ++i) {
-						if (vnaFrame.getValue(i).equals(oldTOS))
-							result.setValue(i, newTOS);
-					}
-				}
-			} else {
-				// Check to see if the first instruction in the destination
-				// block is one that has a null check exception associated with it.
-				// If so, then at entry to the destination block, we know that
-				// the null check has occurred and the value on top of
-				// the stack is not null.
-
-				InstructionHandle firstInDestHandle = dest.getFirstInstruction();
-				if (firstInDestHandle == null)
-					return;
-				Instruction firstInDest = firstInDestHandle.getInstruction();
-				short opcode = firstInDest.getOpcode();
-				if (!nullCheckInstructionSet.get(opcode))
-					return;
-
-				ValueNumberFrame vnaFrame = getVnaFrameAtEntry(dest);
-				if (vnaFrame == null)
-					return;
-				assert vnaFrame.getNumSlots() == numSlots;
-
-				// The block starts with an instruction whose implicit null check
-				// has succeeded.  Now we need to figure out the stack slot which
-				// contains the reference that was checked for null.
-				// This is extremely easy.  We just find out how many
-				// slots the instruction consumes, and subtract that value from
-				// the number of slots in the frame.
-				int numSlotsConsumed = firstInDest.consumeStack(methodGen.getConstantPool());
-				if (numSlotsConsumed == Constants.UNPREDICTABLE)
-					throw new DataflowAnalysisException("Unpredictable stack consumption for " + firstInDest);
-				ValueNumber checkedValue = vnaFrame.getValue(numSlots - numSlotsConsumed);
-
-				// Now we know that all occurrences of the checked value
-				// are not null.
-				for (int i = 0; i < numSlots; ++i) {
-					if (vnaFrame.getValue(i).equals(checkedValue))
-						result.setValue(i, IsNullValue.notNullValue());
-				}
-			}
-		}
 	}
 
+	private static final int TOS_NULL = 0;
+	private static final int TOS_NON_NULL = 1;
+	private static final int REF_OPERAND_NON_NULL = 2;
+	private static final int NO_INFO = -1;
+
+	/**
+	 * Return a value indicating what information about the null/non-null
+	 * status of values in the stack frame is conveyed by the
+	 * given edge.
+	 * @param edge the edge
+	 * @return TOS_NULL if the value on top of the stack is null,
+	 *   TOS_NON_NULL if the value on top of the stack is non-null,
+	 *   REF_OPERAND_NON_NULL if the reference operand to the
+	 *   first instruction in the destination block is non-null,
+	 *   or NO_INFO if the edge conveys no extra information
+	 */
+	private int getNullInfoFromEdge(Edge edge) {
+		final InstructionHandle lastInSourceHandle = edge.getSource().getLastInstruction();
+		final int edgeType = edge.getType();
+
+		if (lastInSourceHandle != null) {
+			Instruction lastInSource = lastInSourceHandle.getInstruction();
+			short opcode = lastInSource.getOpcode();
+			if (opcode == Constants.IFNULL)
+				return edgeType == IFCMP_EDGE ? TOS_NULL : TOS_NON_NULL;
+			else if (opcode == Constants.IFNONNULL)
+				return edgeType == IFCMP_EDGE ? TOS_NON_NULL : TOS_NULL;
+		} else {
+			InstructionHandle firstInDestHandle = edge.getDest().getFirstInstruction();
+			if (firstInDestHandle != null) {
+				Instruction firstInDest = firstInDestHandle.getInstruction();
+				short opcode = firstInDest.getOpcode();
+				if (nullCheckInstructionSet.get(opcode))
+					return REF_OPERAND_NON_NULL;
+			}
+		}
+
+		return NO_INFO;
+	}
+
+	/**
+	 * Replace all values in the frame matching the value in given stack
+	 * slot with the given value.
+	 * @param frame the original frame
+	 * @param stackSlot the stack slot in the frame whose value should be replaced
+	 * @param block the basic block whose entry value is represented
+	 *   by the frame
+	 * @param value the new value
+	 * @return the new frame
+	 */
+	private IsNullValueFrame replaceValues(IsNullValueFrame frame, int stackSlot, BasicBlock block,
+		IsNullValue replacementValue) throws DataflowAnalysisException {
+
+		ValueNumberFrame vnaFrame = getVnaFrameAtEntry(block);
+		final int numSlots = frame.getNumSlots();
+
+		// Create a new frame for the result,
+		// since we don't want to modify the original.
+		IsNullValueFrame result = new IsNullValueFrame(numSlots);
+		result.copyFrom(frame);
+
+		if (vnaFrame != null) {
+			assert numSlots == vnaFrame.getNumSlots();
+
+			// Replace all values which are the same as the one in the slot.
+			ValueNumber origValue = vnaFrame.getValue(stackSlot);
+			for (int i = 0; i < numSlots; ++i) {
+				ValueNumber valueNum = vnaFrame.getValue(i);
+				if (valueNum.equals(origValue))
+					result.setValue(i, replacementValue);
+			}
+		} else {
+			// Just replace the value in the specified slot, since we don't
+			// know the value numbers.
+			result.setValue(stackSlot, replacementValue);
+		}
+
+		return result;
+	}
+
+	/**
+	 * Get the ValueNumberFrame at entry to given block.
+	 * @param block the block
+	 * @return the ValueNumberFrame at entry to the block,
+	 *   or null if we have no information at that location
+	 */
 	private ValueNumberFrame getVnaFrameAtEntry(BasicBlock block) {
 		InstructionHandle first = block.getFirstInstruction();
 		if (first == null)
