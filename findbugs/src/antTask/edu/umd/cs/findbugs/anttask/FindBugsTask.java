@@ -109,7 +109,7 @@ public class FindBugsTask extends Task {
     private static final String FAIL_MSG
         = "Findbugs found errors; see the error output for details.";
     private static final String FINDBUGS_JAR = "findbugs.jar";
-    private static final long TIMEOUT = 300000; //five minutes
+    private static final long DEFAULT_TIMEOUT = 600000; // ten minutes
 
 	private boolean debug = false;
 	private boolean sorted = true;
@@ -127,6 +127,7 @@ public class FindBugsTask extends Task {
 	private String omitVisitors = null;
 	private String outputFileName = null;
     private List classLocations = new ArrayList();
+	private long timeout = DEFAULT_TIMEOUT;
 
 	private Java findbugsEngine = null;
 
@@ -304,6 +305,14 @@ public class FindBugsTask extends Task {
 		this.outputFileName = outputFileName;
 	}
 
+	/**
+	 * Set timeout in milliseconds.
+	 * @param timeout the timeout
+	 */
+	public void setTimeout(long timeout) {
+		this.timeout = timeout;
+	}
+
 	public void execute() throws BuildException {
 		checkParameters();
 		execFindbugs();
@@ -375,7 +384,7 @@ public class FindBugsTask extends Task {
 		findbugsEngine.setDir( new File(homeDir + File.separator + "lib"));
 		findbugsEngine.setJar( new File( homeDir + File.separator + "lib" + 
                                          File.separator + FINDBUGS_JAR ) );
-		findbugsEngine.setTimeout( new Long( TIMEOUT ) );
+		findbugsEngine.setTimeout( new Long( timeout ) );
 
 		if ( debug )
 			jvmargs = jvmargs + " -Dfindbugs.debug=true";
