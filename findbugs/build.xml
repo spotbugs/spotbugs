@@ -25,9 +25,12 @@
     <!-- Set this to the location where you installed the generics-enabled
          version of javac.  Note: you need to install the JSR-14 Compiler Adapter,
          http://www.thecortex.net/clover/generics/jsr14adapter-1.1.jar,
-         in the lib subdirectory of your Ant installation. -->
+         in the lib subdirectory of your Ant installation.
+         If you are using version 2.2 of the generics-enabled javac,
+         then you will need to rename "gjc-rt.jar" to "javac.jar".
+     -->
     <property name="jsr14.home"
-              value="/export/home/daveho/linux/java/jsr14_adding_generics-1_3-ea"/>
+              value="/export/home/daveho/linux/java/adding_generics-2_2-ea"/>
 <!--
     <property name="jsr14.home"
               value="/home/software/java/jsr14_adding_generics-1_3-ea" />
@@ -350,7 +353,7 @@
        <property name="src.base" value="findbugs-${release.number}" />
 
        <property name="src.scripts"
-                 value="${src.base}/bin/findbugs,${src.base}/etc/createXML,${src.base}/etc/runTests,${src.base}/etc/summarizeBugs,${src.base}/etc/diffBugSummaries" />
+                 value="${src.base}/bin/findbugs,${src.base}/bin/mergeResults,${src.base}/etc/createXML,${src.base}/etc/runTests,${src.base}/etc/summarizeBugs,${src.base}/etc/diffBugSummaries" />
 
        <!-- Put it in a tarball. -->
        <tar tarfile="${build.dir}/src/findbugs-${release.number}-source.tar.gz"
