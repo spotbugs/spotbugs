@@ -4,11 +4,29 @@ public class InvokeGC {
 		System.currentTimeMillis();
 	}
 
-	public void finalize() {
+	protected void finalize() {
 		System.gc();
 	}
 
 	public void bad() {
+		System.gc();
+	}
+
+	public void ok() {
+		try {
+			System.out.println("ok()");
+		} catch (OutOfMemoryError e) {
+			System.gc();
+		}
+	}
+
+	public void tricky() {
+		try {
+			System.out.println("tricky()");
+		} catch (OutOfMemoryError e) {
+			e.printStackTrace();
+		}
+
 		System.gc();
 	}
 }
