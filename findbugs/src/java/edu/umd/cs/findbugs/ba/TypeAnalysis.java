@@ -171,7 +171,7 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 	}
 
 	public TypeFrame createFact() {
-		return new TypeFrame(methodGen.getMaxLocals(), typeMerger);
+		return new TypeFrame(methodGen.getMaxLocals());
 	}
 
 	public void initEntryFact(TypeFrame result) {

@@ -19,11 +19,7 @@
 
 package edu.umd.cs.findbugs.ba;
 
-import java.util.*;
-
-import org.apache.bcel.*;
-import org.apache.bcel.classfile.*;
-import org.apache.bcel.generic.*;
+import org.apache.bcel.generic.Type;
 
 /**
  * A specialization of {@link Frame} for determining the types
@@ -33,24 +29,12 @@ import org.apache.bcel.generic.*;
  * @see TypeAnalysis
  * @author David Hovemeyer
  */
-public class TypeFrame extends Frame<Type> implements Constants, ExtendedTypes {
-
-	////////////////////////////////////////////////////////////////////////////////////
-	// Fields
-	////////////////////////////////////////////////////////////////////////////////////
-
-	private TypeMerger typeMerger;
-
-	////////////////////////////////////////////////////////////////////////////////////
-	// Methods
-	////////////////////////////////////////////////////////////////////////////////////
-
+public class TypeFrame extends Frame<Type> {
 	/**
 	 * Constructor.
 	 */
-	public TypeFrame(int numLocals, TypeMerger typeMerger) {
+	public TypeFrame(int numLocals) {
 		super(numLocals);
-		this.typeMerger = typeMerger;
 	}
 
 	protected String valueToString(Type value) {
