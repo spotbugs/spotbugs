@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs.detect;
 import edu.umd.cs.findbugs.*;
 import java.util.*;
 import java.io.PrintStream;
+import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.*;
 import java.util.zip.*;
 import java.io.*;
@@ -85,7 +86,15 @@ public class FindDoubleCheck extends BytecodeScanningDetector implements   Const
 	 case 3:
 		if (seen == PUTFIELD || seen == PUTSTATIC) {
 			FieldAnnotation f = FieldAnnotation.fromReferencedField(this);
-			if (fields.contains(f) && !getNameConstantOperand().startsWith("class$")) {
+			if (fields.contains(f) && !getNameConstantOperand().startsWith("class$")
+					&& !getSigConstantOperand().equals("Ljava/lang/String;")) {
+				Field declaration = findField(getClassConstantOperand(), getNameConstantOperand());
+				/*
+				System.out.println(f);
+				System.out.println(declaration);
+				System.out.println(getSigConstantOperand());
+				*/
+				if (declaration == null || !declaration.isVolatile())
 				bugReporter.reportBug(new BugInstance("DC_DOUBLECHECK", NORMAL_PRIORITY)
 					.addClassAndMethod(this)
 					.addField(f).describe("FIELD_ON")
@@ -97,4 +106,25 @@ public class FindDoubleCheck extends BytecodeScanningDetector implements   Const
 	default:
 	}
 	}
+	Field findField(String className, String fieldName) {
+		try  {
+		// System.out.println("Looking for " + className);
+		JavaClass fieldDefinedIn = getThisClass();
+		if (!className.equals(getClassName())) {
+			// System.out.println("Using repository to look for " + className);
+			
+			fieldDefinedIn = Repository.lookupClass(className);
+			}
+		Field [] f = fieldDefinedIn.getFields();
+		for(int i = 0; i < f.length; i++) 
+			if (f[i].getName().equals(fieldName)) {
+				// System.out.println("Found " + f[i]);
+				return f[i];	
+				}
+		return null;
+		}catch (ClassNotFoundException e) {
+			return null;
+			}
+		}
+		
 }
