@@ -30,7 +30,7 @@ public class Version {
 	public static final int MINOR = 5;
 
 	/** Patch level. */
-	public static final int PATCHLEVEL = 4;
+	public static final int PATCHLEVEL = 5;
 
 	/** Release version string. */
 	public static final String RELEASE = MAJOR + "." + MINOR + "." + PATCHLEVEL;
