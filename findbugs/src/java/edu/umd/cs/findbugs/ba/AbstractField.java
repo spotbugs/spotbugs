@@ -48,7 +48,7 @@ public abstract class AbstractField implements XField {
 	}
 
 	public boolean isReferenceType() {
-		return fieldSig.startsWith("L");
+		return fieldSig.startsWith("L") || fieldSig.startsWith("[");
 	}
 
 	public int getAccessFlags() {
