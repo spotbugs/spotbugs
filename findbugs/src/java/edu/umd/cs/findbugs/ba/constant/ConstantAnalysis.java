@@ -68,7 +68,7 @@ public class ConstantAnalysis extends FrameDataflowAnalysis<Constant, ConstantFr
 			BasicBlock basicBlock,
 			ConstantFrame frame) throws DataflowAnalysisException {
 		visitor.setFrame(frame);
-		handle.getInstruction().accept(visitor);
+		visitor.analyzeInstruction(handle.getInstruction());
 	}
 	
 	public void meetInto(
