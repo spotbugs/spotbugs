@@ -303,6 +303,192 @@ public class FindBugs implements Constants2, ExitCodes
 	}
   }
 
+  private static final int PRINTING_REPORTER = 0;
+  private static final int SORTING_REPORTER = 1;
+  private static final int XML_REPORTER = 2;
+  private static final int EMACS_REPORTER = 3;
+  private static final int HTML_REPORTER = 4;
+  private static final int XDOCS_REPORTER = 5;
+
+  /**
+   * Helper class to parse the command line and create
+   * the FindBugs engine object.
+   */
+  private static class FindBugsCommandLine extends CommandLine {
+	private int bugReporterType = PRINTING_REPORTER;
+	private String stylesheet = null;
+	private Project project = new Project();
+	private boolean quiet = false;
+	private String filterFile = null;
+	private boolean include = false;
+	private boolean setExitCode = false;
+	private int priorityThreshold = Detector.NORMAL_PRIORITY;
+	private PrintStream outputStream = null;
+
+	public FindBugsCommandLine() {
+		addOption("-home", "home directory", "specify FindBugs home directory");
+		addOption("-pluginList", "jar1["+File.pathSeparator+"jar2...]",
+			"specify list of plugin Jar files to load");
+		addOption("-quiet", "suppress error messages");
+		addOption("-low", "report all warnings");
+		addOption("-medium", "report only medium and high priority warnings [default]");
+		addOption("-high", "report only high priority warnings");
+		addOption("-sortByClass", "sort warnings by class");
+		addOption("-xml", "XML output");
+		addOption("-xdocs", "xdoc XML output to use with Apache Maven");
+		addOption("-html", "HTML output using given XSL stylesheet");
+		addOption("-emacs", "Use emacs reporting format");
+		addOption("-outputFile", "filename", "Save output in named file");
+		addOption("-visitors", "v1[,v2...]", "run only named visitors");
+		addOption("-omitVisitors", "v1[,v2...]", "omit named visitors");
+		addOption("-bugCategories", "cat1[,cat2...]", "run only detectors that report given categories");
+		addOption("-exclude", "filter file", "exclude bugs matching given filterrun only");
+		addOption("-include", "filter file", "include only bugs matching given filter");
+		addOption("-auxclasspath", "classpath", "set aux classpath for analysis");
+		addOption("-project", "project", "analyze given project");
+		addOption("-exitcode", "set exit code of process");
+	}
+
+	public Project getProject() {
+		return project;
+	}
+
+	public boolean setExitCode() { return setExitCode; }
+
+	public boolean quiet() { return quiet; }
+
+	protected void handleOption(String option) {
+		if (option.equals("-low"))
+			priorityThreshold = Detector.LOW_PRIORITY;
+		else if (option.equals("-medium"))
+			priorityThreshold = Detector.NORMAL_PRIORITY;
+		else if (option.equals("-high"))
+			priorityThreshold = Detector.HIGH_PRIORITY;
+		else if (option.equals("-sortByClass"))
+			bugReporterType = SORTING_REPORTER;
+		else if (option.equals("-xml"))
+			bugReporterType = XML_REPORTER;
+		else if (option.equals("-emacs"))
+			bugReporterType = EMACS_REPORTER;
+		else if (option.equals("-xdocs"))
+			bugReporterType = XDOCS_REPORTER;
+		else if (option.equals("-quiet"))
+			quiet = true;
+		else if (option.equals("-exitcode"))
+			setExitCode = true;
+		else
+			throw new IllegalStateException();
+	}
+
+	protected void handleOptionWithArgument(String option, String argument) throws IOException {
+		if (option.equals("-home")) {
+			FindBugs.setHome(argument);
+		} else if (option.equals("-pluginList")) {
+			String pluginListStr = argument;
+			ArrayList<File> pluginList = new ArrayList<File>();
+			StringTokenizer tok = new StringTokenizer(pluginListStr, File.pathSeparator);
+			while (tok.hasMoreTokens()) {
+				pluginList.add(new File(tok.nextToken()));
+			}
+
+			DetectorFactoryCollection.setPluginList((File[]) pluginList.toArray(new File[0]));
+		} else if (option.equals("-html")) {
+			bugReporterType = HTML_REPORTER;
+			stylesheet = argument;
+		} else if (option.equals("-outputFile")) {
+			String outputFile = argument;
+
+			try {
+				outputStream = new PrintStream(new BufferedOutputStream(new FileOutputStream(outputFile)));
+			} catch (IOException e) {
+				System.err.println("Couldn't open " + outputFile + " for output: " + e.toString());
+				System.exit(1);
+			}
+		} else if (option.equals("-visitors") || option.equals("-omitVisitors")) {
+			boolean omit = option.equals("-omitVisitors");
+
+			if (!omit) {
+				// Selecting detectors explicitly, so start out by
+				// disabling all of them.  The selected ones will
+				// be re-enabled.
+				DetectorFactoryCollection.instance().disableAll();
+			}
+
+			// Explicitly enable or disable the selected detectors.
+			StringTokenizer tok = new StringTokenizer(argument, ",");
+			while (tok.hasMoreTokens()) {
+				String visitorName = tok.nextToken();
+				DetectorFactory factory = DetectorFactoryCollection.instance().getFactory(visitorName);
+				if (factory == null)
+					throw new IllegalArgumentException("Unknown detector: " + visitorName);
+				factory.setEnabled(!omit);
+			}
+		} else if (option.equals("-bugCategories")) {
+			handleBugCategories(argument);
+		} else if (option.equals("-exclude") || option.equals("-include")) {
+			filterFile = argument;
+			include = option.equals("-include");
+		} else if (option.equals("-auxclasspath")) {
+			StringTokenizer tok = new StringTokenizer(argument, File.pathSeparator);
+			while (tok.hasMoreTokens())
+				project.addAuxClasspathEntry(tok.nextToken());
+		} else if (option.equals("-sourcepath")) {
+			StringTokenizer tok = new StringTokenizer(argument, File.pathSeparator);
+			while (tok.hasMoreTokens())
+				project.addSourceDir(new File(tok.nextToken()).getAbsolutePath());
+		} else if (option.equals("-project")) {
+			String projectFile = argument;
+
+			// Convert project file to be an absolute path
+			projectFile = new File(projectFile).getAbsolutePath();
+
+			try {
+				project = new Project(projectFile);
+				project.read(new BufferedInputStream(new FileInputStream(projectFile)));
+			} catch (IOException e) {
+				System.err.println("Error opening " + projectFile);
+				e.printStackTrace(System.err);
+				throw e;
+			}
+		}
+	}
+
+	public FindBugs createEngine() throws IOException, FilterException {
+		TextUIBugReporter bugReporter = null;
+		switch (bugReporterType) {
+		case PRINTING_REPORTER:
+			bugReporter = new PrintingBugReporter(); break;
+		case SORTING_REPORTER:
+			bugReporter = new SortingBugReporter(); break;
+		case XML_REPORTER:
+			bugReporter = new XMLBugReporter(project); break;
+		case EMACS_REPORTER:
+			bugReporter = new EmacsBugReporter(); break;
+		case HTML_REPORTER:
+			bugReporter = new HTMLBugReporter(project, stylesheet); break;
+		case XDOCS_REPORTER:
+			bugReporter = new XDocsBugReporter(project); break;
+		default:
+			throw new IllegalStateException();
+		}
+	
+		if (quiet)
+			bugReporter.setErrorVerbosity(BugReporter.SILENT);
+	
+		bugReporter.setPriorityThreshold(priorityThreshold);
+	
+		if (outputStream != null)
+			bugReporter.setOutputStream(outputStream);
+	
+		FindBugs findBugs = new FindBugs(bugReporter, project);
+	
+		if (filterFile != null)
+			findBugs.setFilter(filterFile, include);
+
+		return findBugs;
+	}
+  }
+
   /* ----------------------------------------------------------------------
    * Member variables
    * ---------------------------------------------------------------------- */
@@ -727,233 +913,32 @@ public class FindBugs implements Constants2, ExitCodes
   /* ----------------------------------------------------------------------
    * main() method
    * ---------------------------------------------------------------------- */
-
-  private static final int PRINTING_REPORTER = 0;
-  private static final int SORTING_REPORTER = 1;
-  private static final int XML_REPORTER = 2;
-  private static final int EMACS_REPORTER = 3;
-  private static final int HTML_REPORTER = 4;
-  private static final int XDOCS_REPORTER = 5;
   
   public static void main(String argv[]) throws Exception
   { 
-	int bugReporterType = PRINTING_REPORTER;
-	String stylesheet = null;
-	Project project = new Project();
-	boolean quiet = false;
-	String filterFile = null;
-	boolean include = false;
-	boolean setExitCode = false;
-	int priorityThreshold = Detector.NORMAL_PRIORITY;
-	PrintStream outputStream = null;
+	FindBugsCommandLine commandLine = new FindBugsCommandLine();
+	int argCount = commandLine.parse(argv);
 
-	// Process command line options
-	int argCount = 0;
-	while (argCount < argv.length) {
-		String option = argv[argCount];
-		if (!option.startsWith("-"))
-			break;
-		if (option.equals("-home")) {
-			++argCount;
-			if (argCount == argv.length) throw new IllegalArgumentException(option + " option requires argument");
-			String homeDir = argv[argCount];
-			FindBugs.setHome(homeDir);
-		} else if (option.equals("-pluginList")) {
-			++argCount;
-			if (argCount == argv.length) throw new IllegalArgumentException(option + " option requires argument");
-
-			String pluginListStr = argv[argCount];
-			ArrayList<File> pluginList = new ArrayList<File>();
-			StringTokenizer tok = new StringTokenizer(pluginListStr, File.pathSeparator);
-			while (tok.hasMoreTokens()) {
-				pluginList.add(new File(tok.nextToken()));
-			}
-
-			DetectorFactoryCollection.setPluginList((File[]) pluginList.toArray(new File[0]));
-		} else if (option.equals("-low"))
-			priorityThreshold = Detector.LOW_PRIORITY;
-		else if (option.equals("-medium"))
-			priorityThreshold = Detector.NORMAL_PRIORITY;
-		else if (option.equals("-high"))
-			priorityThreshold = Detector.HIGH_PRIORITY;
-		else if (option.equals("-sortByClass"))
-			bugReporterType = SORTING_REPORTER;
-		else if (option.equals("-xml"))
-			bugReporterType = XML_REPORTER;
-		else if (option.equals("-html")) {
-			++argCount;
-			if (argCount == argv.length) throw new IllegalArgumentException(option + " option requires argument");
-			bugReporterType = HTML_REPORTER;
-			stylesheet = argv[argCount];
-		} else if (option.equals("-emacs"))
-			bugReporterType = EMACS_REPORTER;
-		else if (option.equals("-xdocs"))
-			bugReporterType = XDOCS_REPORTER;
-		else if (option.equals("-outputFile")) {
-			++argCount;
-			if (argCount == argv.length) throw new IllegalArgumentException(option + " option requires argument");
-
-			String outputFile = argv[argCount];
-
-			try {
-				outputStream = new PrintStream(new BufferedOutputStream(new FileOutputStream(outputFile)));
-			} catch (IOException e) {
-				System.err.println("Couldn't open " + outputFile + " for output: " + e.toString());
-				System.exit(1);
-			}
-		} else if (option.equals("-visitors") || option.equals("-omitVisitors")) {
-			++argCount;
-			if (argCount == argv.length) throw new IllegalArgumentException(option + " option requires argument");
-			boolean omit = option.equals("-omitVisitors");
-
-			if (!omit) {
-				// Selecting detectors explicitly, so start out by
-				// disabling all of them.  The selected ones will
-				// be re-enabled.
-				DetectorFactoryCollection.instance().disableAll();
-			}
-
-			// Explicitly enable or disable the selected detectors.
-			StringTokenizer tok = new StringTokenizer(argv[argCount], ",");
-			while (tok.hasMoreTokens()) {
-				String visitorName = tok.nextToken();
-				DetectorFactory factory = DetectorFactoryCollection.instance().getFactory(visitorName);
-				if (factory == null)
-					throw new IllegalArgumentException("Unknown detector: " + visitorName);
-				factory.setEnabled(!omit);
-			}
-		} else if (option.equals("-bugCategories")) {
-			++argCount;
-			if (argCount == argv.length) throw new IllegalArgumentException(option + " option requires argument");
-			String categories = argv[argCount];
-			handleBugCategories(categories);
-		} else if (option.equals("-exclude") || option.equals("-include")) {
-			++argCount;
-			if (argCount == argv.length) throw new IllegalArgumentException(option + " option requires argument");
-			filterFile = argv[argCount];
-			include = option.equals("-include");
-		} else if (option.equals("-quiet")) {
-			quiet = true;
-		} else if (option.equals("-auxclasspath")) {
-			++argCount;
-			if (argCount == argv.length)
-				throw new IllegalArgumentException(option + " option requires argument");
-
-			String auxClassPath = argv[argCount];
-			StringTokenizer tok = new StringTokenizer(auxClassPath, File.pathSeparator);
-			while (tok.hasMoreTokens())
-				project.addAuxClasspathEntry(tok.nextToken());
-		} else if (option.equals("-sourcepath")) {
-			++argCount;
-			if (argCount == argv.length)
-				throw new IllegalArgumentException(option + " option requires argument");
-
-			String sourcePath = argv[argCount];
-			StringTokenizer tok = new StringTokenizer(sourcePath, File.pathSeparator);
-			while (tok.hasMoreTokens()) {
-				project.addSourceDir(new File(tok.nextToken()).getAbsolutePath());
-			}
-		} else if (option.equals("-project")) {
-			++argCount;
-			if (argCount == argv.length)
-				throw new IllegalArgumentException(option + " option requires argument");
-
-			String projectFile = argv[argCount];
-
-			// Convert project file to be an absolute path
-			projectFile = new File(projectFile).getAbsolutePath();
-
-			try {
-				project = new Project(projectFile);
-				project.read(new BufferedInputStream(new FileInputStream(projectFile)));
-			} catch (IOException e) {
-				System.err.println("Error opening " + projectFile);
-				e.printStackTrace(System.err);
-				throw e;
-			}
-		} else if (option.equals("-exitcode")) {
-			setExitCode = true;
-		} else
-			throw new IllegalArgumentException("Unknown option: [" + option + "]");
-		++argCount;
-	}
-
-	if (argCount == argv.length && project.getNumJarFiles() == 0) {
-		InputStream in = FindBugs.class.getClassLoader().getResourceAsStream("USAGE");
-		if (in == null)  {
-			System.out.println("FindBugs tool, version " + Version.RELEASE);
-			System.out.println("usage: java -jar findbugs.jar [options] <classfiles, zip/jar files, or directories>");
-			System.out.println("Example: java -jar findbugs.jar rt.jar");
-			System.out.println("Options:");
-			System.out.println("   -home <home directory>        specify FindBugs home directory");
-			System.out.println("   -pluginList <jar1>" + File.pathSeparatorChar + "<jar2>...  " +
-				"specify list of plugin Jar files to load");
-			System.out.println("   -quiet                        suppress error messages");
-			System.out.println("   -low                          report all bugs");
-			System.out.println("   -medium                       report medium and high priority bugs [default]");
-			System.out.println("   -high                         report high priority bugs only");
-			System.out.println("   -sortByClass                  sort bug reports by class");
-			System.out.println("   -xml                          XML output");
-			System.out.println("   -xdocs                        xdoc XML output to use with Apache Maven");
-			System.out.println("   -html <stylesheet>            HTML output using given XSL stylesheet");
-			System.out.println("   -emacs                        Use emacs reporting format");
-			System.out.println("   -outputFile <filename>        Save output in named file");
-			System.out.println("   -visitors <v1>,<v2>,...       run only named visitors");
-			System.out.println("   -omitVisitors <v1>,<v2>,...   omit named visitors");
-			System.out.println("   -bugCategories <cat1>,...     run only detectors that report given categories");
-			System.out.println("   -exclude <filter file>        exclude bugs matching given filter");
-			System.out.println("   -include <filter file>        include only bugs matching given filter");
-			System.out.println("   -auxclasspath <classpath>     set aux classpath for analysis");
-			System.out.println("   -sourcepath                   path in which source files are found");
-			System.out.println("   -project <project>            analyze given project");
-			System.out.println("   -exitcode                     set exit code of process");
-			}
-		else
-			IO.copy(in,System.out);
-		return;
-		}
-
-	TextUIBugReporter bugReporter = null;
-	switch (bugReporterType) {
-	case PRINTING_REPORTER:
-		bugReporter = new PrintingBugReporter(); break;
-	case SORTING_REPORTER:
-		bugReporter = new SortingBugReporter(); break;
-	case XML_REPORTER:
-		bugReporter = new XMLBugReporter(project); break;
-	case EMACS_REPORTER:
-		bugReporter = new EmacsBugReporter(); break;
-	case HTML_REPORTER:
-		bugReporter = new HTMLBugReporter(project, stylesheet); break;
-	case XDOCS_REPORTER:
-		bugReporter = new XDocsBugReporter(project); break;
-	default:
-		throw new IllegalStateException();
-	}
-
-	if (quiet)
-		bugReporter.setErrorVerbosity(BugReporter.SILENT);
-
-	bugReporter.setPriorityThreshold(priorityThreshold);
-
-	if (outputStream != null)
-		bugReporter.setOutputStream(outputStream);
-
+	Project project = commandLine.getProject();
 	for (int i = argCount; i < argv.length; ++i)
 		project.addJar(argv[i]);
 
-	FindBugs findBugs = new FindBugs(bugReporter, project);
+	if (argCount == argv.length && project.getNumJarFiles() == 0) {
+		System.out.println("FindBugs version " + Version.RELEASE + ", " + Version.WEBSITE);
+		System.out.println("Usage: findbugs -textui [options...] [jar/zip/class files, directories...]");
+		System.out.println("Options:");
+		commandLine.printUsage(System.out);
+		return;
+	}
 
-	if (filterFile != null)
-		findBugs.setFilter(filterFile, include);
-
+	FindBugs findBugs = commandLine.createEngine();
 	findBugs.execute();
 
 	int bugCount = findBugs.getBugCount();
 	int missingClassCount = findBugs.getMissingClassCount();
 	int errorCount = findBugs.getErrorCount();
 
-	if (!quiet || setExitCode) {
+	if (!commandLine.quiet() || commandLine.setExitCode()) {
 		if (bugCount > 0)
 			System.err.println("Warnings generated: " + bugCount);
 		if (missingClassCount > 0)
@@ -962,7 +947,7 @@ public class FindBugs implements Constants2, ExitCodes
 			System.err.println("Analysis errors: " + errorCount);
 	}
 
-	if (setExitCode) {
+	if (commandLine.setExitCode()) {
 		int exitCode = 0;
 		if (errorCount > 0)
 			exitCode |= ERROR_FLAG;
