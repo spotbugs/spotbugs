@@ -46,13 +46,6 @@ public class BCPMethodReturnCheck extends ByteCodePatternDetector {
 	public BCPMethodReturnCheck(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 
-//		// Create a callback for reporting Repository lookup failures.
-//		RepositoryLookupFailureCallback lookupFailureCallback = new RepositoryLookupFailureCallback() {
-//			public void lookupFailure(ClassNotFoundException ex) {
-//				BCPMethodReturnCheck.this.bugReporter.reportMissingClass(ex);
-//			}
-//		};
-
 		// The ByteCodePattern which specifies the kind of code pattern
 		// we're looking for.  We want to match the invocation of certain methods
 		// followed by a POP or POP2 instruction.
@@ -89,6 +82,7 @@ public class BCPMethodReturnCheck extends ByteCodePatternDetector {
 					Invoke.INSTANCE, bugReporter),
 				new Invoke("java.math.BigInteger", "/.*", "/.*", 
 					Invoke.INSTANCE, bugReporter),
+				new Invoke("java.io.File", "createNewFile", "()Z", Invoke.INSTANCE, bugReporter),
 			}).label("call").setAllowTrailingEdges(false))
 			.add(new MatchAny(new PatternElement[] {new Opcode(Constants.POP), new Opcode(Constants.POP2)}));
 	}
