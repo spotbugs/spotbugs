@@ -35,15 +35,16 @@
 
 <xsl:output
 	method="xml"
-	omit-xml-declaration="no"
+	omit-xml-declaration="yes"
 	standalone="yes"
-	doctype-public="-//W3C//DTD XHTML 1.0 Strict//EN"
-	doctype-system= "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"
+	doctype-public="-//W3C//DTD XHTML 1.0 Transitional//EN"
+	doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"
 	indent="yes"
 	encoding="UTF-8"/>
 
 <xsl:variable name="bugTableHeader">
 	<tr>
+		<th align="left">Code</th>
 		<th align="left">Warning</th>
 		<th align="left">Location</th>
 	</tr>
@@ -63,35 +64,51 @@
 
 	<h2><a name="Warnings_CORRECTNESS">Correctness</a></h2>
 	<p>
-	<table>
+	<table width="100%">
 	<xsl:copy-of select="$bugTableHeader"/>
-	<xsl:apply-templates select="/BugCollection/BugInstance[@category='CORRECTNESS']"/>
+	<xsl:apply-templates select="/BugCollection/BugInstance[@category='CORRECTNESS']">
+		<xsl:sort select="@abbrev"/>
+		<xsl:sort select="Class/@classname"/>
+	</xsl:apply-templates>
 	</table>
 	</p>
 
 	<h2><a name="Warnings_MT_CORRECTNESS">Multithreaded Correctness</a></h2>
 	<p>
-	<table>
+	<table width="100%">
 	<xsl:copy-of select="$bugTableHeader"/>
-	<xsl:apply-templates select="/BugCollection/BugInstance[@category='MT_CORRECTNESS']"/>
+	<xsl:apply-templates select="/BugCollection/BugInstance[@category='MT_CORRECTNESS']">
+		<xsl:sort select="@abbrev"/>
+		<xsl:sort select="Class/@classname"/>
+	</xsl:apply-templates>
 	</table>
 	</p>
 
 	<h2><a name="Warnings_MALICIOUS_CODE">Malicious Code Vulnerability</a></h2>
 	<p>
-	<table>
+	<table width="100%">
 	<xsl:copy-of select="$bugTableHeader"/>
-	<xsl:apply-templates select="/BugCollection/BugInstance[@category='MALICIOUS_CODE']"/>
+	<xsl:apply-templates select="/BugCollection/BugInstance[@category='MALICIOUS_CODE']">
+		<xsl:sort select="@abbrev"/>
+		<xsl:sort select="Class/@classname"/>
+	</xsl:apply-templates>
 	</table>
 	</p>
 
 	<h2><a name="Warnings_PERFORMANCE">Performance</a></h2>
 	<p>
-	<table>
+	<table width="100%">
 	<xsl:copy-of select="$bugTableHeader"/>
-	<xsl:apply-templates select="/BugCollection/BugInstance[@category='PERFORMANCE']"/>
+	<xsl:apply-templates select="/BugCollection/BugInstance[@category='PERFORMANCE']">
+		<xsl:sort select="@abbrev"/>
+		<xsl:sort select="Class/@classname"/>
+	</xsl:apply-templates>
 	</table>
 	</p>
+
+	<h1>Details</h1>
+
+	<xsl:apply-templates select="/BugCollection/BugPattern"/>
 
 	</body>
 	</html>
@@ -101,16 +118,21 @@
 	<tr>
 
 	<td>
-	<xsl:value-of select="LongMessage"/>
+	<xsl:value-of select="@abbrev"/>
 	</td>
 
 	<td>
+	<a href="#{@type}"><xsl:value-of select="ShortMessage"/></a>
+	</td>
+
+	<td>
+	<xsl:value-of select="Class/@classname"/><br/>
 	<xsl:choose>
 		<xsl:when test="SourceLine">
 			<xsl:apply-templates select="SourceLine[1]"/>
 		</xsl:when>
 		<xsl:when test="Method/SourceLine">
-			<xsl:apply-templates select="Method/SourceLine"/>
+			at <xsl:apply-templates select="Method/SourceLine"/>
 		</xsl:when>
 	</xsl:choose>
 	</td>
@@ -131,6 +153,11 @@
 			</xsl:when>
 		</xsl:choose>
 	</xsl:if>
+</xsl:template>
+
+<xsl:template match="BugPattern">
+	<h2><a name="{@type}"><xsl:value-of select="@abbrev"/>: <xsl:value-of select="ShortDescription"/></a></h2>
+	<xsl:value-of select="Details" disable-output-escaping="yes"/>
 </xsl:template>
 
 </xsl:stylesheet>
