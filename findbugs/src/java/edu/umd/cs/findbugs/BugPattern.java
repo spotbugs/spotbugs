@@ -26,6 +26,7 @@ public class BugPattern implements Comparable {
 	private String shortDescription;
 	private String longDescription;
 	private String detailText;
+	private transient String detailHTML;
 
 	public BugPattern(String type, String abbrev, String category, String shortDescription,
 		String longDescription, String detailText) {
@@ -43,6 +44,22 @@ public class BugPattern implements Comparable {
 	public String getShortDescription() { return shortDescription; }
 	public String getLongDescription() { return longDescription; }
 	public String getDetailText() { return detailText; }
+
+	public String getDetailHTML() {
+		if (detailHTML == null) {
+			StringBuffer buf = new StringBuffer();
+			buf.append("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">\n");
+			buf.append("<HTML><HEAD><TITLE>");
+			buf.append(getShortDescription());
+			buf.append("</TITLE></HEAD><BODY><H1>");
+			buf.append(getShortDescription());
+			buf.append("</H1>\n");
+			buf.append(getDetailText());
+			buf.append("</BODY></HTML>\n");
+			detailHTML = buf.toString();
+		}
+		return detailHTML;
+	}
 
 	public int compareTo(Object o) {
 		if (!(o instanceof BugPattern))

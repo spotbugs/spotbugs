@@ -39,7 +39,7 @@ public class I18N {
 		bugCodeMap = new HashMap<String, BugCode>();
 	}
 
-	private static I18N theInstance = new I18N();
+	private static final I18N theInstance = new I18N();
 
 	/**
 	 * Get the single object instance.
@@ -87,6 +87,17 @@ public class I18N {
 		if (bugPattern == null)
 			return "Error: missing bug pattern for key " + key;
 		return bugPattern.getAbbrev() + ": " + bugPattern.getShortDescription();
+	}
+
+	/**
+	 * Get an HTML document describing the bug pattern for given key in detail.
+	 * @param key which HTML details for retrieve
+	 */
+	public String getDetailHTML(String key) {
+		BugPattern bugPattern = bugPatternMap.get(key);
+		if (bugPattern == null)
+			return "Error: missing bug pattern for key " + key;
+		return bugPattern.getDetailHTML();
 	}
 
 	/**
