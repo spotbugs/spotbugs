@@ -1,4 +1,7 @@
 <FindbugsPlugin>
+  <Detector class="edu.umd.cs.findbugs.detect.TestingGround" 
+	speed="fast"
+    reports="TESTING" />
   <Detector class="edu.umd.cs.findbugs.detect.DontCatchIllegalMonitorStateException" 
 	speed="fast"
     reports="IMSE_DONT_CATCH_IMSE" />
@@ -100,6 +103,8 @@
     reports="ITA_INEFFICIENT_TO_ARRAY"/>
   <Detector class="edu.umd.cs.findbugs.detect.FindBugsSummaryStats" speed="fast" />
 
+  <BugPattern abbrev="TEST" type="TESTING" category="CORRECTNESS" 
+    experimental="true"/>
   <BugPattern abbrev="IMSE" type="IMSE_DONT_CATCH_IMSE" category="CORRECTNESS" />
   <BugPattern abbrev="FL" type="FL_MATH_USING_FLOAT_PRECISION" category="CORRECTNESS" />
   <BugPattern abbrev="CN" type="CN_IDIOM" category="CORRECTNESS" />
