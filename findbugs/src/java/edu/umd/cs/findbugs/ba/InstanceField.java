@@ -23,6 +23,7 @@ public class InstanceField implements Comparable<InstanceField> {
 	private String className;
 	private String fieldName;
 	private String fieldSig;
+	private int cachedHashCode = 0;
 
 	public InstanceField(String className, String fieldName, String fieldSig) {
 		this.className = className;
@@ -51,6 +52,22 @@ public class InstanceField implements Comparable<InstanceField> {
 		if (cmp != 0)
 			return cmp;
 		return fieldSig.compareTo(other.fieldSig);
+	}
+
+	public int hashCode() {
+		if (cachedHashCode == 0) {
+			cachedHashCode = (className.hashCode() * 1009) + (fieldName.hashCode() * 433) + fieldSig.hashCode();
+		}
+		return cachedHashCode;
+	}
+
+	public boolean equals(Object o) {
+		if (this.getClass() != o.getClass())
+			return false;
+		InstanceField other = (InstanceField) o;
+		return className.equals(other.className)
+			&& fieldName.equals(other.fieldName)
+			&& fieldSig.equals(other.fieldSig);
 	}
 }
 
