@@ -45,6 +45,8 @@ public class FindRunInvocations extends BytecodeScanningDetector implements   Co
 				&& sigConstant.equals("()V")
 				&& isThread(betterClassConstant)
 				)
-		bugReporter.reportBug(new BugInstance("RU_INVOKE_RUN", NORMAL_PRIORITY).addClassAndMethod(this));
+		bugReporter.reportBug(new BugInstance("RU_INVOKE_RUN", NORMAL_PRIORITY)
+			.addClassAndMethod(this)
+			.addSourceLine(this));
 	}
 }
