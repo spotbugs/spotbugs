@@ -167,7 +167,7 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 	public void visitI2C(I2C obj)					{ consumeStack(obj); pushValue(Type.CHAR); }
 	public void visitI2D(I2D obj)					{ consumeStack(obj); pushValue(Type.DOUBLE); }
 	public void visitI2F(I2F obj)					{ consumeStack(obj); pushValue(Type.FLOAT); }
-	public void visitI2L(I2L obj)					{ consumeStack(obj); pushValue(Type.INT); }
+	public void visitI2L(I2L obj)					{ consumeStack(obj); pushValue(Type.LONG); }
 	public void visitI2S(I2S obj)					{ } // no change
 
 	public void visitL2D(L2D obj)					{ consumeStack(obj); pushValue(Type.DOUBLE); }
@@ -244,7 +244,7 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 		}
 	}
 
-	public void visitBALOAD(BALOAD obj)				{ consumeStack(obj); pushValue(Type.BOOLEAN); }
+	public void visitBALOAD(BALOAD obj)				{ consumeStack(obj); pushValue(Type.BYTE); }
 	public void visitCALOAD(CALOAD obj)				{ consumeStack(obj); pushValue(Type.CHAR); }
 	public void visitDALOAD(DALOAD obj)				{ consumeStack(obj); pushValue(Type.DOUBLE); }
 	public void visitFALOAD(FALOAD obj)				{ consumeStack(obj); pushValue(Type.FLOAT); }
