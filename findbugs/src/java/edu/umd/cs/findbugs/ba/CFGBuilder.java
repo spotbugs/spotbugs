@@ -23,7 +23,7 @@ package edu.umd.cs.daveho.ba;
  * Abstract interface for CFG builder classes.
  *
  * @see CFG
- * @see BetterCFGBuilder
+ * @see CFGBuilderFactory
  * @author David Hovemeyer
  */
 public interface CFGBuilder {
