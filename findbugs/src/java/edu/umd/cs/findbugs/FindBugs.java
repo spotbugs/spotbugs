@@ -673,7 +673,7 @@ public class FindBugs implements Constants2, ExitCodes
 	int missingClassCount = findBugs.getMissingClassCount();
 	int errorCount = findBugs.getErrorCount();
 
-	if (!quiet) {
+	if (!quiet || setExitCode) {
 		if (bugCount > 0)
 			System.err.println("Bugs found: " + bugCount);
 		if (missingClassCount > 0)
