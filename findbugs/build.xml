@@ -246,20 +246,25 @@
 
     <!-- Build jar file of test cases.  -->
     <target name="testjar" depends="init,anttask" >
-    <taskdef name="findbugs"
-        classname="edu.umd.cs.findbugs.anttask.FindBugsTask">
-            <classpath>
-                <pathelement location="${jar.dir}/${findbugs.jar.name}"/>
-                <pathelement location="${jar.dir}/${anttask.jar.name}"/>
-            </classpath>
-        </taskdef>
        <javac srcdir="${test.dir}" excludes="IgnoredReturnValue.java,TryLock.java" debug="true" />
        <jar destfile="${test.dir}/dumb.jar" basedir="${test.dir}" includes="*.class"
             excludes="IgnoredReturnValue*.class,TryLock*.class" />
-        <findbugs home="." reportLevel="low"
+    </target>
+
+    <!-- Run findbugs on the test Jar file. -->
+    <target name="runtests" depends="testjar">
+      <taskdef name="findbugs"
+               classname="edu.umd.cs.findbugs.anttask.FindBugsTask">
+        <classpath>
+          <pathelement location="${jar.dir}/${findbugs.jar.name}"/>
+          <pathelement location="${jar.dir}/${anttask.jar.name}"/>
+        </classpath>
+      </taskdef>
+
+      <findbugs home="." reportLevel="low"
                 output="text" outputFile="${test.dir}/dumb.bugs">
-          <class location="${test.dir}/dumb.jar"/>
-          </findbugs>
+        <class location="${test.dir}/dumb.jar"/>
+      </findbugs>
     </target>
 
     <!-- Build test cases that require JSR166 library. -->
