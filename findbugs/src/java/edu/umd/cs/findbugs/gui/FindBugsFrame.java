@@ -962,8 +962,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	TreeSet sortedCollection = new TreeSet(getBugInstanceComparator(sortOrder));
 	sortedCollection.addAll(analysisRun.getBugInstances());
 	
-	// Create an appropriate grouper object to create the group
-	// nodes in the bug tree
+	// The grouper callback is what actually adds the group and bug
+	// nodes to the tree.
 	Grouper.Callback callback = new Grouper.Callback() {
 	    private DefaultMutableTreeNode currentGroupNode;
 	    
@@ -1008,27 +1008,9 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	    }
 	};
 	
+	// Create the grouper, and execute it to populate the bug tree
 	Grouper grouper = new Grouper(callback);
-	
-	// Add all instances as children of the root, in sorted order
-/*
-	Iterator i = sortedCollection.iterator();
-	while (i.hasNext()) {
-	    BugInstance bugInstance = (BugInstance) i.next();
-	    DefaultMutableTreeNode bugNode = new DefaultMutableTreeNode(bugInstance);
-	    bugTreeModel.insertNodeInto(bugNode, bugRootNode, bugRootNode.getChildCount());
- 
-	    // Insert annotations
-	    Iterator j = bugInstance.annotationIterator();
-	    while (j.hasNext()) {
-		BugAnnotation annotation = (BugAnnotation) j.next();
-		DefaultMutableTreeNode annotationNode = new DefaultMutableTreeNode(annotation);
-		bugTreeModel.insertNodeInto(annotationNode, bugNode,  bugNode.getChildCount());
-	    }
-	}
- */
 	Comparator groupComparator = getGroupComparator(sortOrder);
-	
 	grouper.group(sortedCollection, groupComparator);
 	
 	// Sort order is up to date now
