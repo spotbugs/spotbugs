@@ -27,7 +27,7 @@
          http://www.thecortex.net/clover/generics/jsr14adapter-1.1.jar,
          in the lib subdirectory of your Ant installation. -->
     <property name="jsr14.home"
-              value="/fs/pugh/p/tools/jsr14_adding_generics-1_3-ea" />
+              value="/export/home/daveho/linux/java/jsr14_adding_generics-1_3-ea"/>
 <!--
     <property name="jsr14.home"
               value="/home/software/java/jsr14_adding_generics-1_3-ea" />
@@ -36,16 +36,16 @@
     <!-- Set this to the directory containing the DocBook Modular XSL Stylesheets
          from http://docbook.sourceforge.net/projects/xsl/ -->
     <property name="xsl.stylesheet.home"
-              value="/fs/pugh/p/tools/docbook-xsl-1.61.0" />
+              value="/export/home/daveho/linux/docbook/docbook-xsl-1.61.0" />
 <!--
     <property name="xsl.stylesheet.home"
-              value="/export/home/daveho/linux/docbook/docbook-xsl-1.61.0" />
+              value="/home/software/docbook/docbook-xsl-1.61.0" />
 -->
 
     <!-- Set this to the directory where Saxon (http://saxon.sourceforge.net/)
          is installed. -->
     <property name="saxon.home"
-              value="/fs/pugh/p/tools/saxon-6.5.2" />
+              value="/export/home/daveho/linux/java/saxon-6.5.2" />
 <!--
     <property name="saxon.home"
               value="/home/software/java/saxon-6.5.2" />
