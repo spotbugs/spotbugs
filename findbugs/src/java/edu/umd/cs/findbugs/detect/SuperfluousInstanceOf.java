@@ -81,10 +81,12 @@ public class SuperfluousInstanceOf extends BytecodeScanningDetector implements C
 							objSignature = objSignature.substring(1, objSignature.length()-1).replace('/', '.');
 							String clsSignature = getDottedClassConstantOperand();
 							
-							if (org.apache.bcel.Repository.instanceOf( objSignature, clsSignature )) {
-								bugReporter.reportBug(new BugInstance("SIO_SUPERFLUOUS_INSTANCEOF", LOW_PRIORITY)
-						        	.addClassAndMethod(this)
-						        	.addSourceLine(this));
+							if (clsSignature.charAt(0) != '[') {
+								if (org.apache.bcel.Repository.instanceOf( objSignature, clsSignature )) {
+									bugReporter.reportBug(new BugInstance("SIO_SUPERFLUOUS_INSTANCEOF", LOW_PRIORITY)
+							        	.addClassAndMethod(this)
+							        	.addSourceLine(this));
+								}
 							}
 						}
 					}
