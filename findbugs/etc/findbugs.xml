@@ -300,6 +300,11 @@
             speed="fast"
             reports="FE_FLOATING_POINT_EQUALITY"/>
 
+  <Detector class="edu.umd.cs.findbugs.detect.FindUnsatisfiedObligation"
+            speed="slow"
+            reports="OS_OPEN_STREAM"
+            disabled="true"/>
+
   <Detector class="edu.umd.cs.findbugs.detect.FindBugsSummaryStats" 
             speed="fast"
             hidden="true" />

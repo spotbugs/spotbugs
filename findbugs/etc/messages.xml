@@ -667,10 +667,19 @@ It is a fast detector.
   <Detector class="edu.umd.cs.findbugs.detect.FindFloatEquality">
       <Details>
 <![CDATA[
-Looks for floating point equality expressions. A fast detector.
+<p> Looks for floating point equality expressions. A fast detector. </p>
 ]]>
       </Details>
   </Detector>  
+  
+  <Detector class="edu.umd.cs.findbugs.detect.FindUnsatisfiedObligation">
+    <Details>
+<![CDATA[
+<p>This detector looks for I/O streams and database resources that
+are not cleaned up on all paths out of a method.  This is a slow detector.</p>
+]]>
+    </Details>
+  </Detector>
   
   <!--
   **********************************************************************
