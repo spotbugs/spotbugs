@@ -14,7 +14,10 @@
 <h1>FindBugs FAQ</h1>
 
 <p> This document contains answers to frequently asked questions about
-<a href="index.html">FindBugs</a>.
+<a href="index.html">FindBugs</a>.&nbsp; If you just want general
+information about FindBugs, have a look at the
+<a href="factSheet.html">fact sheet</a> and the
+<a href="manual/index.html">manual</a>.
 
 <h2>Contents</h2>
 <ol>
@@ -24,6 +27,7 @@
 <li> <a href="#q4">What is the "auxiliary classpath"?  Why should I specify it?</a>
 <li> <a href="#q5">The Eclipse plugin doesn't load</a>
 <li> <a href="#q6">I'm getting a lot of false "OS" and "ODR" warnings</a>
+<li> <a href="#q7">The Eclipse plugin loads, but doesn't work correctly</a>
 </ol>
 
 <h2><a name="q1">Q1: I'm getting java.lang.UnsupportedClassVersionError when I try to run FindBugs</a></h2>
@@ -153,6 +157,19 @@ to make FindBugs work harder to prune unlikely exception
 edges.&nbsp; This generally reduces the number of
 false warnings, at the expense of slowing down the
 analysis.
+
+<h2><a name="q7">Q7: The Eclipse plugin loads, but doesn't work correctly</a></h2>
+
+<p> In versions 0.0.6 and 0.0.7 of the FindBugs Eclipse plugin,
+which correspond to the 0.7.4 and 0.8.0 releases,
+bugs in the experimental SwitchFallthrough detector can prevent
+FindBugs from running properly within Eclipse.
+
+<p> To work around the problem, make sure that SwitchFallthrough
+is disabled in the FindBugs Properties of your project.&nbsp;
+Right click on your project, and choose "Properties".&nbsp;
+In the Properties dialog, choose "FindBugs",
+and disable the checkbox next to SwitchFallthrough.
 
 @HTML_FOOTER@
 
