@@ -50,9 +50,8 @@ public class FindBugs implements Constants2
 
   static {
     registerDetector("FindFinalizeInvocations", edu.umd.cs.findbugs.FindFinalizeInvocations.class);
+    registerDetector("MutableLock", edu.umd.cs.findbugs.MutableLock.class);
 /*
-    registerDetector("MutableLock", 
-       edu.umd.cs.pugh.visitclass.MutableLock.class);
     registerDetector("FindUnsyncGet", 
        edu.umd.cs.pugh.visitclass.FindUnsyncGet.class);
     registerDetector("InitializationChain", 
