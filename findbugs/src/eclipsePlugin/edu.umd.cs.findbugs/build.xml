@@ -14,6 +14,7 @@
 	<property name="plugin.lib.dir" value="../../../plugin"/>
 	<property name="plugin.dir.name" value="${plugin.id}_${plugin.version}"/>
 	<property name="plugin.zip" value="${plugin.dir.name}.zip"/>
+	<property name="plugin.files" value="*.jar,plugin/*.jar,plugin.xml,plugin.properties"/>
 
 	<!-- Ensure build directories exist. -->
 	<target name="init">
@@ -34,8 +35,7 @@
 	<!-- Build the plugin .zip file. -->
 	<target name="build" depends="copyfiles">
 		<zip destfile="${plugin.zip}">
-			<zipfileset dir="${build.dir}" includes="**" excludes=".*,*.properties"
-				prefix="${plugin.dir.name}/"/>
+			<zipfileset dir="${build.dir}" includes="${plugin.files}" prefix="${plugin.dir.name}/"/>
 		</zip>
 	</target>
 
