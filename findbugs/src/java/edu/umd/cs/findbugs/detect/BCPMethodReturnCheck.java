@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs.detect;
 
 import java.util.*;
 
+import edu.umd.cs.findbugs.AnalysisLocal;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.ByteCodePatternDetector;
@@ -45,54 +46,81 @@ import org.apache.bcel.generic.MethodGen;
  */
 public class BCPMethodReturnCheck extends ByteCodePatternDetector {
 	private final BugReporter bugReporter;
-	private final ByteCodePattern pattern;
 
 	private static final boolean CHECK_ALL = Boolean.getBoolean("mrc.checkall");
 
+	private static AnalysisLocal<ByteCodePattern> localByteCodePattern
+			= new AnalysisLocal<ByteCodePattern>();
+
+        private static AnalysisLocal<ArrayList<PatternElement>> localPatternElementList
+			= new AnalysisLocal<ArrayList<PatternElement>>();
+
+	public ByteCodePattern  getPattern() {
+		ByteCodePattern  result = localByteCodePattern.get();
+		if (result == null) {
+			ArrayList<PatternElement> list = getPatternElementList();
+			PatternElement [] calls = list.toArray(new PatternElement[list.size()]);
+			// The ByteCodePattern which specifies the kind of code pattern
+			// we're looking for.  We want to match the invocation of certain methods
+			// followed by a POP or POP2 instruction.
+			result = new ByteCodePattern()
+				.add(new MatchAny(calls).label("call").setAllowTrailingEdges(false))
+				.add(new MatchAny(new PatternElement[]{new Opcode(Constants.POP), new Opcode(Constants.POP2)}));
+			localByteCodePattern.set(result);
+			}
+		return result;
+		}
+
+	public static  void
+		addMethodWhoseReturnMustBeChecked(String className, String methodName, 
+				String methodSig, int mode) {
+		ArrayList<PatternElement> list = getPatternElementList();
+		list.add(new Invoke(className, methodName, methodSig, mode, null));
+		localByteCodePattern.remove();
+		}
+			
 	/**
-	 * Return array of PatternElement objects representing
+	 * Return List of PatternElement objects representing
 	 * method invocations requiring a return value check.
 	 */
-	private static PatternElement[] createPatternElementList(BugReporter bugReporter) {
-		ArrayList<PatternElement> list = new ArrayList<PatternElement>();
+	private static 
+		ArrayList<PatternElement> getPatternElementList() {
+		ArrayList<PatternElement> list = localPatternElementList.get();
+		if (list != null) return list;
+
+		list = new ArrayList<PatternElement>();
 
 		// Standard return check methods
 		list.add(new Invoke("/.*", "equals",
 		        "/\\(Ljava/lang/Object;\\)Z",
-		        Invoke.INSTANCE, bugReporter));
+		        Invoke.INSTANCE, null));
 		list.add(new Invoke("java.lang.String", "/.*",
 		        "/\\(.*\\)Ljava/lang/String;",
-		        Invoke.INSTANCE, bugReporter));
+		        Invoke.INSTANCE, null));
 		list.add(new Invoke("java.lang.StringBuffer", "toString",
 		        "()Ljava/lang/String;",
 		        Invoke.INSTANCE,
-		        bugReporter));
+		        null));
 		list.add(new Invoke("+java.lang.Thread", "<init>",
 		        "/.*",
 		        Invoke.CONSTRUCTOR,
-		        bugReporter));
+		        null));
 		list.add(new Invoke("+java.lang.Throwable", "<init>",
 		        "/.*",
 		        Invoke.CONSTRUCTOR,
-		        bugReporter));
+		        null));
 		list.add(new Invoke("java.security.MessageDigest",
 		        "digest", "([B)[B",
-		        Invoke.INSTANCE, bugReporter));
+		        Invoke.INSTANCE, null));
 		list.add(new Invoke("+java.net.InetAddress", "/.*", "/.*",
-		        Invoke.INSTANCE, bugReporter));
+		        Invoke.INSTANCE, null));
 		list.add(new Invoke("java.math.BigDecimal", "/.*", "/.*",
-		        Invoke.INSTANCE, bugReporter));
+		        Invoke.INSTANCE, null));
 		list.add(new Invoke("java.math.BigInteger", "/.*", "/.*",
-		        Invoke.INSTANCE, bugReporter));
-		list.add(new Invoke("+java.util.Enumeration", "hasMoreElements", "()Z", Invoke.INSTANCE, bugReporter));
-		list.add(new Invoke("+java.util.Iterator", "hasNext", "()Z", Invoke.INSTANCE, bugReporter));
-		list.add(new Invoke("java.io.File", "createNewFile", "()Z", Invoke.INSTANCE, bugReporter));
-		/*
-		new Invoke("java.lang.Thread", "currentThread", 
-			"()Ljava/lang/Thread;", 
-			Invoke.STATIC, 
-			bugReporter),
-		*/
+		        Invoke.INSTANCE, null));
+		list.add(new Invoke("+java.util.Enumeration", "hasMoreElements", "()Z", Invoke.INSTANCE, null));
+		list.add(new Invoke("+java.util.Iterator", "hasNext", "()Z", Invoke.INSTANCE, null));
+		list.add(new Invoke("java.io.File", "createNewFile", "()Z", Invoke.INSTANCE, null));
 
 		if (CHECK_ALL ||
 		        JavaVersion.getRuntimeVersion().isSameOrNewerThan(JavaVersion.JAVA_1_5)) {
@@ -101,74 +129,76 @@ public class BCPMethodReturnCheck extends ByteCodePatternDetector {
 			        "readLock",
 			        "()Ljava/util/concurrent/locks/Lock;",
 			        Invoke.INSTANCE,
-			        bugReporter));
+			        null));
 			list.add(new Invoke("+java.util.concurrent.locks.ReadWriteLock",
 			        "writeLock",
 			        "()Ljava/util/concurrent/locks/Lock;",
 			        Invoke.INSTANCE,
-			        bugReporter));
+			        null));
 			list.add(new Invoke("+java.util.concurrent.locks.Condition",
 			        "await",
 			        "(JLjava/util/concurrent/TimeUnit;)Z",
 			        Invoke.INSTANCE,
-			        bugReporter));
+			        null));
 			list.add(new Invoke("+java.util.concurrent.locks.Condition",
 			        "awaitUtil",
 			        "(Ljava/util/Date;)Z",
 			        Invoke.INSTANCE,
-			        bugReporter));
+			        null));
 			list.add(new Invoke("+java.util.concurrent.locks.Condition",
 			        "awaitNanos",
 			        "(J)Z",
 			        Invoke.INSTANCE,
-			        bugReporter));
+			        null));
 			list.add(new Invoke("+java.util.concurrent.Semaphore",
 			        "tryAcquire",
 			        "(JLjava/util/concurrent/TimeUnit;)Z",
 			        Invoke.INSTANCE,
-			        bugReporter));
+			        null));
 			list.add(new Invoke("+java.util.concurrent.Semaphore",
 			        "tryAcquire",
 			        "()Z",
 			        Invoke.INSTANCE,
-			        bugReporter));
+			        null));
 			list.add(new Invoke("+java.util.concurrent.locks.Lock",
 			        "tryLock",
 			        "(JLjava/util/concurrent/TimeUnit;)Z",
 			        Invoke.INSTANCE,
-			        bugReporter));
+			        null));
 			list.add(new Invoke("+java.util.concurrent.locks.Lock",
 			        "newCondition",
 			        "()Ljava/util/concurrent/locks/Condition;",
 			        Invoke.INSTANCE,
-			        bugReporter));
+			        null));
 			list.add(new Invoke("+java.util.concurrent.locks.Lock",
 			        "tryLock",
 			        "()Z",
 			        Invoke.INSTANCE,
-			        bugReporter));
+			        null));
 			list.add(new Invoke("+java.util.Queue",
 			        "offer",
 			        "(Ljava/lang/Object;)Z",
 			        Invoke.INSTANCE,
-			        bugReporter));
+			        null));
 			list.add(new Invoke("+java.util.concurrent.BlockingQueue",
 			        "offer",
 			        "(Ljava/lang/Object;JLjava/util/concurrent/TimeUnit;)Z",
 			        Invoke.INSTANCE,
-			        bugReporter));
+			        null));
 			list.add(new Invoke("+java.util.concurrent.BlockingQueue",
 			        "poll",
 			        "(JLjava/util/concurrent/TimeUnit;)Ljava/lang/Object;",
 			        Invoke.INSTANCE,
-			        bugReporter));
+			        null));
 			list.add(new Invoke("+java.util.Queue",
 			        "poll",
 			        "()Ljava/lang/Object;",
 			        Invoke.INSTANCE,
-			        bugReporter));
+			        null));
 		}
-		return list.toArray(new PatternElement[list.size()]);
+		
+		localPatternElementList.set(list);
+		return list;
 	}
 
 	/**
@@ -179,17 +209,8 @@ public class BCPMethodReturnCheck extends ByteCodePatternDetector {
 	public BCPMethodReturnCheck(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 
-		// The ByteCodePattern which specifies the kind of code pattern
-		// we're looking for.  We want to match the invocation of certain methods
-		// followed by a POP or POP2 instruction.
-		this.pattern = new ByteCodePattern()
-		        .add(new MatchAny(createPatternElementList(bugReporter)).label("call").setAllowTrailingEdges(false))
-		        .add(new MatchAny(new PatternElement[]{new Opcode(Constants.POP), new Opcode(Constants.POP2)}));
 	}
 
-	public ByteCodePattern getPattern() {
-		return pattern;
-	}
 
 	public boolean prescreen(Method method, ClassContext classContext) {
 		// Pre-screen for methods with POP or POP2 bytecodes.
