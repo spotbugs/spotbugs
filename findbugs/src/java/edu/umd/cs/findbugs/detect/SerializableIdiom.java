@@ -23,53 +23,78 @@ import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.*;
 import edu.umd.cs.pugh.visitclass.PreorderVisitor;
 import edu.umd.cs.pugh.visitclass.Constants2;
+import java.util.*;
 
 public class SerializableIdiom extends PreorderVisitor 
 	implements Detector, Constants2 {
 
 
     boolean sawSerialVersionUID;
-    boolean isSerializable;
+    boolean isSerializable, implementsSerializableDirectly;
     boolean foundSynthetic;
     boolean foundSynchronizedMethods;
     boolean writeObjectIsSynchronized;
     private BugReporter bugReporter;
     boolean isAbstract;
+    private List<BugInstance> fieldWarningList = new LinkedList<BugInstance>();
+    private boolean sawReadExternal;
+    private boolean sawWriteExternal;
+    private boolean sawReadObject;
+    private boolean sawWriteObject;
 
     public SerializableIdiom(BugReporter bugReporter) {
 	this.bugReporter = bugReporter;
 	}
      public void visitClassContext(ClassContext classContext) {
        classContext.getJavaClass().accept(this);
+       flush();
        }
+
+    private void flush() {
+	if (!isAbstract &&
+	    !((sawReadExternal && sawWriteExternal) || (sawReadObject || sawWriteObject))) {
+		Iterator<BugInstance> i = fieldWarningList.iterator();
+		while (i.hasNext())
+			bugReporter.reportBug(i.next());
+	}
+	fieldWarningList.clear();
+    }
  
-    public void report() {
-		}
+    public void report() { }
+
     public void visit(JavaClass obj)     {      
 	int flags = obj.getAccessFlags();
 	isAbstract = (flags & ACC_ABSTRACT) != 0 
 			   || (flags & ACC_INTERFACE) != 0;
         sawSerialVersionUID = false;
-               isSerializable = false;
-               String [] interface_names = obj.getInterfaceNames();
-               for(int i=0; i < interface_names.length; i++) {
-                       if (interface_names[i].equals("java.io.Serializable")) {
-                               isSerializable = true;
-                       }
-               }
+        isSerializable = implementsSerializableDirectly = false;
 
-	try {
-	  if (Repository.instanceOf(obj,"java.io.Serializable"))
-		isSerializable = true;
-	  if (Repository.instanceOf(obj,"java.rmi.Remote"))
-		isSerializable = false;
-	  }
-	catch (ClassNotFoundException e) {
+        // Does this class directly implement Serializable?
+        String [] interface_names = obj.getInterfaceNames();
+        for(int i=0; i < interface_names.length; i++) {
+            if (interface_names[i].equals("java.io.Serializable")) {
+		implementsSerializableDirectly = true;
+                isSerializable = true;
+		break;
+                }
+            }
+
+        // Does this class indirectly implement Serializable?
+	if (!isSerializable) {
+	    try {
+	        if (Repository.instanceOf(obj,"java.io.Serializable"))
+		    isSerializable = true;
+	        if (Repository.instanceOf(obj,"java.rmi.Remote"))
+		    isSerializable = false;
+	    } catch (ClassNotFoundException e) {
 		bugReporter.reportMissingClass(e);
-		}
+	    }
+	}
 	foundSynthetic = false;
 	foundSynchronizedMethods = false;
 	writeObjectIsSynchronized = false;
+
+	sawReadExternal = sawWriteExternal = sawReadObject = sawWriteObject = false;
 	}
 
 	public void visitAfter(JavaClass obj) {
@@ -87,6 +112,16 @@ public class SerializableIdiom extends PreorderVisitor
 	if (!methodName.equals("<init>") 
 		&& isSynthetic(obj)) foundSynthetic = true;
 	// System.out.println(methodName + isSynchronized);
+
+	if (methodName.equals("readExternal"))
+		sawReadExternal = true;
+	else if (methodName.equals("writeExternal"))
+		sawWriteExternal = true;
+	else if (methodName.equals("readObject"))
+		sawReadObject = true;
+	else if (methodName.equals("writeObject"))
+		sawWriteObject = true;
+
 	if (!isSynchronized) return;
 	if (methodName.equals("readObject")) 
 		bugReporter.reportBug(new BugInstance("RS_READOBJECT_SYNC", NORMAL_PRIORITY).addClass(this));
@@ -112,9 +147,11 @@ public class SerializableIdiom extends PreorderVisitor
 			String fieldClassName = fieldSig.substring(1, fieldSig.length() - 1).replace('/', '.');
 			if (!fieldClassName.equals("java.lang.Object") &&
 			    !Repository.instanceOf(fieldClassName, "java.io.Serializable"))
-				bugReporter.reportBug(new BugInstance("SE_BAD_FIELD", HIGH_PRIORITY)
+				fieldWarningList.add(new BugInstance("SE_BAD_FIELD",
+					implementsSerializableDirectly ? HIGH_PRIORITY : NORMAL_PRIORITY)
 					.addClass(thisClass.getClassName())
-					.addField(fieldClassName, obj.getName(), fieldSig, false));
+					.addField(fieldClassName, obj.getName(), fieldSig, false)
+					.addUnknownSourceLine(thisClass.getClassName(), thisClass.getSourceFileName()));
 		} catch (ClassNotFoundException e) {
 			bugReporter.reportMissingClass(e);
 		}
