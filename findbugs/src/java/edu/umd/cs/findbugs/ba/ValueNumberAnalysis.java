@@ -62,6 +62,8 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
 	private ValueNumber[] entryLocalValueList;
 	private IdentityHashMap<BasicBlock, ValueNumber> exceptionHandlerValueNumberMap;
 	private ValueNumber thisValue;
+	private HashMap<Location, ValueNumberFrame> factAtLocationMap;
+	private HashMap<Location, ValueNumberFrame> factAfterLocationMap;
 
 	public ValueNumberAnalysis(MethodGen methodGen) {
 		this.methodGen = methodGen;
@@ -80,6 +82,9 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
 		// "this" reference
 		if (!methodGen.isStatic())
 			this.thisValue = entryLocalValueList[0];
+
+		this.factAtLocationMap = new HashMap<Location, ValueNumberFrame>();
+		this.factAfterLocationMap = new HashMap<Location, ValueNumberFrame>();
 	}
 
 	public int getNumValuesAllocated() {
@@ -114,10 +119,19 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
 
 	public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, ValueNumberFrame fact)
 		throws DataflowAnalysisException {
+
+		Location location = new Location(handle, basicBlock);
+
+		ValueNumberFrame atLocation = getFactAtLocation(location);
+		copy(fact, atLocation);
+
 		visitor.setFrame(fact);
 		visitor.setHandle(handle);
 		Instruction ins = handle.getInstruction();
 		ins.accept(visitor);
+
+		ValueNumberFrame afterLocation = getFactAfterLocation(location);
+		copy(fact, afterLocation);
 	}
 
 	public void meetInto(ValueNumberFrame fact, Edge edge, ValueNumberFrame result) throws DataflowAnalysisException {
@@ -140,6 +154,34 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
 		}
 
 		result.mergeWith(fact);
+	}
+
+	public ValueNumberFrame getFactAtLocation(Location location) {
+		ValueNumberFrame fact = factAtLocationMap.get(location);
+		if (fact == null) {
+			fact = createFact();
+			factAtLocationMap.put(location, fact);
+		}
+		return fact;
+	}
+
+	public ValueNumberFrame getFactAfterLocation(Location location) {
+		ValueNumberFrame fact = factAfterLocationMap.get(location);
+		if (fact == null) {
+			fact = createFact();
+			factAfterLocationMap.put(location, fact);
+		}
+		return fact;
+	}
+
+	/**
+	 * Get an Iterator over all dataflow facts that we've recorded for
+	 * the Locations in the CFG.  Note that this does not include
+	 * result facts (since there are no Locations corresponding to
+	 * the end of basic blocks).
+	 */
+	public Iterator<ValueNumberFrame> factIterator() {
+		return factAtLocationMap.values().iterator();
 	}
 
 	// These fields are used by the compactValueNumbers() method.

@@ -24,9 +24,13 @@ public class TypeDataflow extends Dataflow<TypeFrame, TypeAnalysis> {
 		super(cfg, analysis);
 	}
 
-	public TypeFrame getFactAtLocation(Location loc) { return getAnalysis().getFactAtLocation(loc); }
+	public TypeFrame getFactAtLocation(Location loc) throws DataflowAnalysisException {
+		return getAnalysis().getFactAtLocation(loc);
+	}
 
-	public TypeFrame getFactAfterLocation(Location loc) { return getAnalysis().getFactAfterLocation(loc); }
+	public TypeFrame getFactAfterLocation(Location loc) throws DataflowAnalysisException {
+		return getAnalysis().getFactAfterLocation(loc);
+	}
 }
 
 // vim:ts=4

@@ -66,34 +66,38 @@ public class FindRefComparison implements Detector {
 
 				new LocationScanner(cfg).scan(new LocationScanner.Callback() {
 					public void visitLocation(Location location) {
-						InstructionHandle handle = location.getHandle();
-						Instruction ins = handle.getInstruction();
-						short opcode = ins.getOpcode();
-						if (opcode == Constants.IF_ACMPEQ || opcode == Constants.IF_ACMPNE) {
-							TypeFrame frame = typeDataflow.getFactAtLocation(location);
-							if (frame.getStackDepth() < 2)
-								throw new AnalysisException("Stack underflow at " + handle);
-							int numSlots = frame.getNumSlots();
-							Type op1 = frame.getValue(numSlots - 1);
-							Type op2 = frame.getValue(numSlots - 2);
-
-							if (op1 instanceof ObjectType && op2 instanceof ObjectType) {
-								ObjectType ot1 = (ObjectType) op1;
-								ObjectType ot2 = (ObjectType) op2;
-
-								if (ot1.getClassName().equals("java.lang.String") &&
-									ot2.getClassName().equals("java.lang.String")) {
-									//System.out.println("String/String comparison!");
-
-									String sourceFile = jclass.getSourceFileName();
-									bugReporter.reportBug(new BugInstance("RC_REF_COMPARISON", NORMAL_PRIORITY)
-										.addClassAndMethod(methodGen, sourceFile)
-										.addSourceLine(methodGen, sourceFile, handle)
-										.addClass(ot1.getClassName()).describe("CLASS_REFTYPE")
-									);
-
+						try {
+							InstructionHandle handle = location.getHandle();
+							Instruction ins = handle.getInstruction();
+							short opcode = ins.getOpcode();
+							if (opcode == Constants.IF_ACMPEQ || opcode == Constants.IF_ACMPNE) {
+								TypeFrame frame = typeDataflow.getFactAtLocation(location);
+								if (frame.getStackDepth() < 2)
+									throw new AnalysisException("Stack underflow at " + handle);
+								int numSlots = frame.getNumSlots();
+								Type op1 = frame.getValue(numSlots - 1);
+								Type op2 = frame.getValue(numSlots - 2);
+	
+								if (op1 instanceof ObjectType && op2 instanceof ObjectType) {
+									ObjectType ot1 = (ObjectType) op1;
+									ObjectType ot2 = (ObjectType) op2;
+	
+									if (ot1.getClassName().equals("java.lang.String") &&
+										ot2.getClassName().equals("java.lang.String")) {
+										//System.out.println("String/String comparison!");
+	
+										String sourceFile = jclass.getSourceFileName();
+										bugReporter.reportBug(new BugInstance("RC_REF_COMPARISON", NORMAL_PRIORITY)
+											.addClassAndMethod(methodGen, sourceFile)
+											.addSourceLine(methodGen, sourceFile, handle)
+											.addClass(ot1.getClassName()).describe("CLASS_REFTYPE")
+										);
+	
+									}
 								}
 							}
+						} catch (DataflowAnalysisException e) {
+							throw new AnalysisException("Caught exception: " + e.toString(), e);
 						}
 					}
 				});

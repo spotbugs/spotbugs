@@ -58,8 +58,12 @@ public abstract class DataflowTestDriver<Fact, AnalysisType extends AbstractData
 		}
 
 		public String instructionAnnotate(InstructionHandle handle, BasicBlock bb) {
-			Fact result = analysis.getFactAtLocation(new Location(handle, bb));
-			return " " + analysis.factToString(result);
+			try {
+				Fact result = analysis.getFactAtLocation(new Location(handle, bb));
+				return " " + analysis.factToString(result);
+			} catch (DataflowAnalysisException e) {
+				throw new IllegalStateException("Caught exception: " + e.toString());
+			}
 		}
 	}
 

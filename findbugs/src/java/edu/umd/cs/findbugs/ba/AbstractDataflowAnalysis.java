@@ -36,9 +36,6 @@ import java.util.*;
 public abstract class AbstractDataflowAnalysis<Fact> implements DataflowAnalysis<Fact> {
 	private static final boolean DEBUG = Boolean.getBoolean("dataflow.transfer");
 
-	private HashMap<Location, Fact> factAtLocationMap = new HashMap<Location, Fact>();
-	private HashMap<Location, Fact> factAfterLocationMap = new HashMap<Location, Fact>();
-
 	private IdentityHashMap<BasicBlock, Fact> startFactMap = new IdentityHashMap<BasicBlock, Fact>();
 	private IdentityHashMap<BasicBlock, Fact> resultFactMap = new IdentityHashMap<BasicBlock, Fact>();
 
@@ -68,13 +65,12 @@ public abstract class AbstractDataflowAnalysis<Fact> implements DataflowAnalysis
 	 * @param location the location
 	 * @return the fact at the point just before the location
 	 */
-	public Fact getFactAtLocation(Location location) {
-		Fact fact = factAtLocationMap.get(location);
-		if (fact == null) {
-			fact = createFact();
-			factAtLocationMap.put(location, fact);
-		}
-		return fact;
+	public Fact getFactAtLocation(Location location) throws DataflowAnalysisException {
+		Fact start = getStartFact(location.getBasicBlock());
+		Fact result = createFact();
+		makeFactTop(result);
+		transfer(location.getBasicBlock(), location.getHandle(), start, result);
+		return result;
 	}
 
 	/**
@@ -82,24 +78,19 @@ public abstract class AbstractDataflowAnalysis<Fact> implements DataflowAnalysis
 	 * Note "after" is meant in the logical sense, so for backward analyses,
 	 * after means before the location in the control flow sense.
 	 */
-	public Fact getFactAfterLocation(Location location) {
-		Fact fact = factAfterLocationMap.get(location);
-		if (fact == null) {
-			fact = createFact();
-			factAfterLocationMap.put(location, fact);
-		}
-		return fact;
+	public Fact getFactAfterLocation(Location location) throws DataflowAnalysisException {
+		BasicBlock basicBlock = location.getBasicBlock();
+		InstructionHandle handle = location.getHandle();
+
+		if (handle == basicBlock.getLastInstruction())
+			return getResultFact(basicBlock);
+		else
+			return getFactAtLocation(new Location(isForwards() ? handle.getNext() : handle.getPrev(), basicBlock));
 	}
 
 	/**
-	 * Get an Iterator over all dataflow facts that we've recorded for
-	 * the Locations in the CFG.
+	 * Get an iterator over the result facts.
 	 */
-	public Iterator<Fact> factIterator() {
-		return factAtLocationMap.values().iterator();
-	}
-
-	/** Get an iterator over the result facts. */
 	public Iterator<Fact> resultFactIterator() {
 		return resultFactMap.values().iterator();
 	}
@@ -140,23 +131,10 @@ public abstract class AbstractDataflowAnalysis<Fact> implements DataflowAnalysis
 		if (isFactValid(result)) {
 			Iterator<InstructionHandle> i = isForwards() ? basicBlock.instructionIterator() : basicBlock.instructionReverseIterator();
 
-			Location prevLocation = null;
-
 			while (i.hasNext()) {
 				InstructionHandle handle = i.next();
 				if (handle == end)
 					break;
-	
-				// Record the fact at this location
-				Location location = new Location(handle, basicBlock);
-				Fact factAtLocation = getFactAtLocation(location);
-				copy(result, factAtLocation);
-
-				// The fact AT this location is also the fact AFTER the
-				// previous location.
-				if (end == null && prevLocation != null)
-					factAfterLocationMap.put(prevLocation, factAtLocation);
-				prevLocation = location;
 
 				if (DEBUG) System.out.print("Transfer " + result.toString() + " for " + handle);
 	
@@ -164,13 +142,6 @@ public abstract class AbstractDataflowAnalysis<Fact> implements DataflowAnalysis
 				transferInstruction(handle, basicBlock, result);
 
 				if (DEBUG) System.out.println(" ==> " + result.toString());
-			}
-
-			if (end == null && prevLocation != null) {
-				// The fact AFTER the last location is the result fact.
-				Location lastLocation = prevLocation;
-				Fact factAfterLocation = getFactAfterLocation(lastLocation);
-				copy(result, factAfterLocation);
 			}
 		}
 	}
