@@ -59,7 +59,7 @@ public class ResourceValueAnalysis<Resource> extends FrameDataflowAnalysis<Resou
 		throws DataflowAnalysisException {
 
 		visitor.setFrame(fact);
-		handle.getInstruction().accept(visitor);
+		visitor.transferInstruction(handle, basicBlock);
 
 	}
 
