@@ -187,7 +187,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
 				return result.toString();
 			} catch (Exception e) {
-				return MessageFormat.format(L10N.getLocalString("msg.errorformatting_txt", "Error formatting message for bug: "), e.toString());
+				return MessageFormat.format(L10N.getLocalString("msg.errorformatting_txt", "Error formatting message for bug: "), new Object[]{e.toString()});
 			}
 		}
 	}
@@ -1713,7 +1713,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 			rebuildRecentProjectsMenu();
 
 		} catch (IOException e) {
-			logger.logMessage(ConsoleLogger.ERROR, MessageFormat.format( L10N.getLocalString("msg.couldnotopenproject_txt", "Could not open project: {0}"), e.getMessage()));
+			logger.logMessage(ConsoleLogger.ERROR, MessageFormat.format( L10N.getLocalString("msg.couldnotopenproject_txt", "Could not open project: {0}"), new Object[]{e.getMessage()}));
 		}
 	}//GEN-LAST:event_openProjectItemActionPerformed
 
@@ -1749,7 +1749,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 		Project project = getCurrentProject();
 
 		if (project.getNumJarFiles() == 0) {
-			logger.logMessage(ConsoleLogger.ERROR, MessageFormat.format(L10N.getLocalString("msg.projectnojars_txt", "Project {0} has no Jar files selected"), project));
+			logger.logMessage(ConsoleLogger.ERROR, MessageFormat.format(L10N.getLocalString("msg.projectnojars_txt", "Project {0} has no Jar files selected"), new Object[]{project}));
 			return;
 		}
 
@@ -1757,7 +1757,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 		sourceTextArea.setText("");
 		AnalysisRun analysisRun = new AnalysisRun(project, this);
 
-		logger.logMessage(ConsoleLogger.INFO, MessageFormat.format(L10N.getLocalString("msg.beginninganalysis_txt", "Beginning analysis of {0}"), project));
+		logger.logMessage(ConsoleLogger.INFO, MessageFormat.format(L10N.getLocalString("msg.beginninganalysis_txt", "Beginning analysis of {0}"), new Object[]{project}));
 
 		// Run the analysis!
 		RunAnalysisDialog dialog = new RunAnalysisDialog(this, analysisRun);
@@ -1766,7 +1766,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 		dialog.setVisible(true);
 
 		if (dialog.isCompleted()) {
-			logger.logMessage(ConsoleLogger.INFO, MessageFormat.format(L10N.getLocalString("msg.analysiscompleted_txt", "Analysis {0} completed"), project));
+			logger.logMessage(ConsoleLogger.INFO, MessageFormat.format(L10N.getLocalString("msg.analysiscompleted_txt", "Analysis {0} completed"), new Object[]{project}));
 
 			// Report any errors that might have occurred during analysis
 			analysisRun.reportAnalysisErrors();
@@ -1778,7 +1778,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 				// The analysis was killed by an unexpected exception
 				Exception e = dialog.getException();
 				AnalysisErrorDialog err = new AnalysisErrorDialog(this, true);
-				err.addLine(MessageFormat.format(L10N.getLocalString("msg.fatalanalysisexception_txt", "Fatal analysis exception: {0}"),  e.toString()));
+				err.addLine(MessageFormat.format(L10N.getLocalString("msg.fatalanalysisexception_txt", "Fatal analysis exception: {0}"),  new Object[]{e.toString()}));
 				StackTraceElement[] callList = e.getStackTrace();
 				for (int i = 0; i < callList.length; ++i)
 					err.addLine("\t" + callList[i]);
@@ -1788,7 +1788,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 				err.setVisible(true);
 			} else {
 				// Cancelled by user
-				logger.logMessage(ConsoleLogger.INFO, MessageFormat.format(L10N.getLocalString("msg.analysiscancelled_txt", "Analysis of {0} cancelled by user"), project));
+				logger.logMessage(ConsoleLogger.INFO, MessageFormat.format(L10N.getLocalString("msg.analysiscancelled_txt", "Analysis of {0} cancelled by user"), new Object[]{project}));
 			}
 		}
 	}//GEN-LAST:event_findBugsButtonActionPerformed
@@ -1943,7 +1943,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 			UserPreferences.getUserPreferences().useProject(file.getPath());
 		} catch (IOException e) {
 			UserPreferences.getUserPreferences().removeProject(file.getPath());
-			logger.logMessage(ConsoleLogger.ERROR, MessageFormat.format(L10N.getLocalString("msg.couldnotopenproject_txt", "Could not open project: {0}"), e.getMessage()));
+			logger.logMessage(ConsoleLogger.ERROR, MessageFormat.format(L10N.getLocalString("msg.couldnotopenproject_txt", "Could not open project: {0}"), new Object[]{e.getMessage()}));
 		} finally {
 			rebuildRecentProjectsMenu();
 		}

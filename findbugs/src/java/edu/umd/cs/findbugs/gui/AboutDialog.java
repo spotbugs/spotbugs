@@ -60,7 +60,7 @@ public class AboutDialog extends javax.swing.JDialog {
 			parent.getLogger().logMessage(ConsoleLogger.ERROR, e.toString());
 		}
 
-		setTitle(MessageFormat.format(L10N.getLocalString("dlg.aboutfindbugs_ttl", "About FindBugs {0}"), Version.RELEASE));
+		setTitle(MessageFormat.format(L10N.getLocalString("dlg.aboutfindbugs_ttl", "About FindBugs {0}"), new Object[]{Version.RELEASE}));
 	}
 
 	/**
@@ -76,7 +76,7 @@ public class AboutDialog extends javax.swing.JDialog {
 			// Open the file as a stream
 			in = getClass().getClassLoader().getResourceAsStream(fileName);
 			if (in == null)
-				throw new IOException(MessageFormat.format(L10N.getLocalString("msg.couldntload_txt", "Couldn't load {0}"), fileName));
+				throw new IOException(MessageFormat.format(L10N.getLocalString("msg.couldntload_txt", "Couldn't load {0}"), new Object[]{fileName}));
 			BufferedReader reader = new BufferedReader(new InputStreamReader(in));
 
 			// Replace instances of @VERSION@ with actual version number
