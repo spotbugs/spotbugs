@@ -29,6 +29,7 @@ import edu.umd.cs.pugh.visitclass.Constants2;
 public class WaitInLoop extends BytecodeScanningDetector implements   Constants2 {
 
    boolean sawWait = false;
+   boolean waitHasTimeout = false;
    boolean sawNotify = false;
    int notifyPC;
    int earliestJump = 0;
@@ -41,11 +42,12 @@ public class WaitInLoop extends BytecodeScanningDetector implements   Constants2
 
     public void visit(Code obj) {
 	sawWait = false;
+	waitHasTimeout = false;
 	sawNotify = false;
 	earliestJump = 9999999;
 	super.visit(obj);
 	if (sawWait && waitAt < earliestJump) 
-		bugReporter.reportBug(new BugInstance("WA_NOT_IN_LOOP", NORMAL_PRIORITY)
+		bugReporter.reportBug(new BugInstance("WA_NOT_IN_LOOP", waitHasTimeout ? LOW_PRIORITY : NORMAL_PRIORITY)
 			.addClassAndMethod(this)
 			.addSourceLine(this, waitAt));
 	if (sawNotify)
@@ -76,6 +78,7 @@ public class WaitInLoop extends BytecodeScanningDetector implements   Constants2
 		*/
 
 		sawWait = true;
+		waitHasTimeout = !sigConstant.equals("()V");
 		waitAt = PC;
 		earliestJump = PC+1;
 		return;
