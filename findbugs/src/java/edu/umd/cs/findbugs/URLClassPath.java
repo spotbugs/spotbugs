@@ -58,6 +58,11 @@ public class URLClassPath {
 		 * @throws IOException if an I/O error occurs
 		 */
 		public InputStream openStream(String resourceName) throws IOException;
+		
+		/**
+		 * Get filename or URL as string.
+		 */
+		public String getURL();
 	}
 
 	/**
@@ -79,6 +84,13 @@ public class URLClassPath {
 			if (zipEntry == null)
 				return null;
 			return zipFile.getInputStream(zipEntry);
+		}
+
+		/* (non-Javadoc)
+		 * @see edu.umd.cs.findbugs.URLClassPath.Entry#getURL()
+		 */
+		public String getURL() {
+			return zipFile.getName();
 		}
 	}
 	
@@ -109,6 +121,13 @@ public class URLClassPath {
 			if (!file.exists())
 				return null;
 			return new BufferedInputStream(new FileInputStream(file));
+		}
+
+		/* (non-Javadoc)
+		 * @see edu.umd.cs.findbugs.URLClassPath.Entry#getURL()
+		 */
+		public String getURL() {
+			return dirName;
 		}
 		
 	}
@@ -141,6 +160,13 @@ public class URLClassPath {
 				return null;
 			}
 		}
+
+		/* (non-Javadoc)
+		 * @see edu.umd.cs.findbugs.URLClassPath.Entry#getURL()
+		 */
+		public String getURL() {
+			return remoteArchiveURL.toString();
+		}
 		
 	}
 	
@@ -168,6 +194,13 @@ public class URLClassPath {
 			} catch (IOException e) {
 				return null;
 			}
+		}
+
+		/* (non-Javadoc)
+		 * @see edu.umd.cs.findbugs.URLClassPath.Entry#getURL()
+		 */
+		public String getURL() {
+			return remoteDirURL.toString();
 		}
 	}
 
@@ -224,6 +257,21 @@ public class URLClassPath {
 		}
 		
 		entryList.add(entry);
+	}
+	
+	/**
+	 * Return the classpath string.
+	 * @return the classpath string
+	 */
+	public String getClassPath() {
+		StringBuffer buf = new StringBuffer();
+		for (Iterator<Entry> i = entryList.iterator(); i.hasNext(); ) {
+			Entry entry = i.next();
+			if (buf.length() > 0)
+				buf.append(";");
+			buf.append(entry.getURL());
+		}
+		return buf.toString();
 	}
 	
 	/**
