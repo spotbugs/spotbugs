@@ -50,6 +50,18 @@ public class AnalysisException extends RuntimeException {
 	}
 
 	/**
+	 * Constructor from MethodGen and another Throwable object.
+	 * This is useful for chaining exceptions.
+	 *
+	 * @param message   reason for the error
+	 * @param methodGen the method
+	 * @param throwable cause of the error
+	 */
+	public AnalysisException(String message, MethodGen methodGen, Throwable throwable) {
+		super(message + " in " + SignatureConverter.convertMethodSignature(methodGen), throwable);
+	}
+
+	/**
 	 * Constructor from method and instruction.
 	 *
 	 * @param message   reason for the error
