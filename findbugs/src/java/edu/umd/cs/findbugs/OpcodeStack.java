@@ -49,36 +49,45 @@ public class OpcodeStack implements Constants2
 	private List<Item> stack;
 	
 	public static class Item
-	{
- 		public static int UNKNOWN_TYPE = 1;   //No idea what kind of object this is, repository failure
- 		public static int PRIMITIVE_TYPE = 2; //A primitive type, but no idea what the value is
- 		public static int OBJECT_TYPE = 3;    //An object, but no idea what the value is
- 		public static int CONSTANT_TYPE = 4;  //A primitive or String with a constant value
- 		
- 		private int clsType;
- 		private JavaClass cls;
+	{ 		
+ 		private String signature;
  		private Object constValue;
  		
- 		public Item(int type) {
- 			this(type, null);
+ 		public Item(String s) {
+ 			this(s, null);
  		}
  		
- 		public Item(int type, JavaClass c) {
- 			this(type,c,null);
+ 		public Item(String s, Object v) {
+ 			signature = s;
+ 			constValue = v;
+ 		}
+ 		 		 		
+ 		public JavaClass getJavaClass() throws ClassNotFoundException {
+ 			String baseSig;
+ 			
+ 			if (isPrimitive())
+ 				return null;
+ 				
+ 			if (isArray()) {
+ 				String[] tokens = signature.split("[");
+ 				baseSig = tokens[0];
+ 			} else {
+ 				baseSig = signature;
+ 			}
+ 			
+ 			return Repository.lookupClass(baseSig);
  		}
  		
- 		public Item(int type, JavaClass c, Object value) {
- 			clsType = type;
- 			cls = c;
-			constValue = value;
+ 		public boolean isArray() {
+ 			return signature.startsWith("[");
  		}
  		
- 		public int getType() {
- 			return clsType;
+ 		public boolean isPrimitive() {
+ 			return !signature.startsWith("L");
  		}
  		
- 		public JavaClass getJavaClass() {
- 			return cls;
+ 		public String getSignature() {
+ 			return signature;
  		}
  		
  		public Object getConstant() {
@@ -135,16 +144,12 @@ public class OpcodeStack implements Constants2
 	 			
 	 			case LDC:
 	 				Constant c = dbc.getConstantRefOperand();
-	 				if (c instanceof ConstantInteger)
-	 					pushByConstant(new Integer(((ConstantInteger) c).getBytes()));
-					else if (c instanceof ConstantFloat)
-						pushByConstant(new Float(((ConstantInteger) c).getBytes()));
-					else if (c instanceof ConstantString) {
-						int s = ((ConstantString) c).getStringIndex();
-						pushByConstant(getStringFromIndex(dbc, s));
-					}
-					else
-						throw new UnsupportedOperationException("Constant type not expected" );
+	 				pushByConstant(dbc, c);
+				break;
+				
+				case INSTANCEOF:
+					pop();
+					pushBySignature("I");
 				break;
 	 			
 	 			case ASTORE:
@@ -272,53 +277,27 @@ public class OpcodeStack implements Constants2
  		stack.add(i);
  	}
  	
- 	private void pushByConstant(Object o) {
- 		try {
- 			push( new Item(Item.CONSTANT_TYPE, Repository.lookupClass(o.getClass()), o));
- 		}
- 		catch (ClassNotFoundException cnfe) {
-			push( new Item(Item.UNKNOWN_TYPE ));
- 		}
+ 	private void pushByConstant(DismantleBytecode dbc, Constant c) {
+		if (c instanceof ConstantInteger)
+			push(new Item("I", new Integer(((ConstantInteger) c).getBytes())));
+		else if (c instanceof ConstantFloat)
+			push(new Item("F", new Float(((ConstantInteger) c).getBytes())));
+		else if (c instanceof ConstantString) {
+			int s = ((ConstantString) c).getStringIndex();
+			push(new Item("Ljava/lang/String;", getStringFromIndex(dbc, s)));
+		}
+		else
+			throw new UnsupportedOperationException("Constant type not expected" );
  	}
  	
- 	private void pushBySignature(String signature) {
- 		try {
-	 		if ("V".equals(signature))
-	 			return;
-	 		if (signature == null)
-	 			push( new Item(Item.UNKNOWN_TYPE ));
-			else if (signature.startsWith("L"))
-				push( new Item(Item.OBJECT_TYPE, Repository.lookupClass(signature.substring(1, signature.length() - 1))));
-			else if ("B".equals(signature))
-				push( new Item(Item.PRIMITIVE_TYPE, Repository.lookupClass("java.lang.Byte")));
-			else if ("C".equals(signature))
-				push( new Item(Item.PRIMITIVE_TYPE, Repository.lookupClass("java.lang.Character")));
-			else if ("D".equals(signature))
-				push( new Item(Item.PRIMITIVE_TYPE, Repository.lookupClass("java.lang.Double")));
-			else if ("F".equals(signature))
-				push( new Item(Item.PRIMITIVE_TYPE, Repository.lookupClass("java.lang.Float")));
-			else if ("I".equals(signature))
-				push( new Item(Item.PRIMITIVE_TYPE, Repository.lookupClass("java.lang.Integer")));
-			else if ("J".equals(signature))
-				push( new Item(Item.PRIMITIVE_TYPE, Repository.lookupClass("java.lang.Long")));
-			else if ("S".equals(signature))
-				push( new Item(Item.PRIMITIVE_TYPE, Repository.lookupClass("java.lang.Short")));
-			else if ("Z".equals(signature))
-				push( new Item(Item.PRIMITIVE_TYPE, Repository.lookupClass("java.lang.Boolean")));
-			else //I'm not sure how to load a JavaClass based on an array. I'll put this here to remind myself to figure that out
-				push( new Item(Item.OBJECT_TYPE, Repository.lookupClass(signature)));
-		}
-		catch (ClassNotFoundException cnfe) {
-			push( new Item(Item.UNKNOWN_TYPE ));
-		}
-		catch (Exception e) { //This is currently for the Arrays that are failing. This will be removed eventually
-			push( new Item(Item.UNKNOWN_TYPE ));
-		}			
- 	}
- 	
- 	private String getStringFromIndex(DismantleBytecode dbc, int i) {
+	private String getStringFromIndex(DismantleBytecode dbc, int i) {
 		ConstantUtf8 name = (ConstantUtf8) dbc.getConstantPool().getConstant(i);
 		return name.getBytes();
 	}
 	
+	private void pushBySignature(String s) {
+ 		if ("V".equals(s))
+ 			return;
+	 	push(new Item(s, null));
+ 	}
 }
