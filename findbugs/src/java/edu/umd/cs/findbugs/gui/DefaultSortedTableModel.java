@@ -21,6 +21,7 @@
 
 package edu.umd.cs.findbugs.gui;
 
+import java.awt.Component;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -29,10 +30,16 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
+import javax.swing.JTable;
+import javax.swing.SwingConstants;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
+import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
 
 /**
@@ -49,14 +56,19 @@ public class DefaultSortedTableModel extends AbstractTableModel
 	private AbstractTableModel baseModel;
 	private JTableHeader baseHeader = null;
 	private MouseListener headerListener = new HeaderListener();
+	private TableCellRenderer baseRenderer = null;;
 	private List<Integer> viewToModelMapping;
 	private int sortDirection = SORT_ASCENDING_ORDER;
 	private int sortColumn = 0;
+	private ImageIcon upIcon, downIcon;
 	
 	
 	public DefaultSortedTableModel( AbstractTableModel model ) {
 		baseModel = model;
 		setupMapping();
+		ClassLoader classLoader = this.getClass().getClassLoader();
+		upIcon = new ImageIcon(classLoader.getResource("edu/umd/cs/findbugs/gui/up.png"));
+		downIcon = new ImageIcon(classLoader.getResource("edu/umd/cs/findbugs/gui/down.png"));
 	}
 	
 	// Base Model handling
@@ -70,10 +82,33 @@ public class DefaultSortedTableModel extends AbstractTableModel
 	}
 	
 	public void setBaseTableHeader( JTableHeader header ) {
-		if (baseHeader != null)
+		if (baseHeader != null) {
 			baseHeader.removeMouseListener(headerListener);
+			baseHeader.setDefaultRenderer(baseRenderer);
+		}
+		
+			
 		baseHeader = header;
-		baseHeader.addMouseListener(headerListener);	
+		baseHeader.addMouseListener(headerListener);
+		baseRenderer = baseHeader.getDefaultRenderer();
+		baseHeader.setDefaultRenderer( new DefaultTableCellRenderer() {
+			public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+				JLabel label = (JLabel)baseRenderer.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+				if (baseHeader.getTable().convertColumnIndexToModel(column) == sortColumn) {
+					if (sortDirection != SORT_NO_ORDER) {
+						label.setHorizontalTextPosition(SwingConstants.LEFT);
+						label.setIcon( sortDirection == SORT_ASCENDING_ORDER ? downIcon : upIcon );
+					} else {
+						label.setIcon(null);
+					}
+				} else {
+					label.setIcon(null);
+				}
+				return label;
+			}
+ 
+		});
+		
 	}
 	
 	// Listener handling
