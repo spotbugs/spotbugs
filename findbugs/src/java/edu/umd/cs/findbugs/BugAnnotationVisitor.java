@@ -5,6 +5,7 @@ public interface BugAnnotationVisitor {
 	public void visitFieldAnnotation(FieldAnnotation fieldAnnotation);
 	public void visitMethodAnnotation(MethodAnnotation methodAnnotation);
 	public void visitIntAnnotation(IntAnnotation intAnnotation);
+	public void visitSourceLineAnnotation(SourceLineAnnotation sourceLineAnnotation);
 }
 
 // vim:ts=4
