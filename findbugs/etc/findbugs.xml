@@ -1,44 +1,83 @@
 <FindbugsPlugin>
-  <Detector class="edu.umd.cs.findbugs.detect.FindFieldSelfAssignment" speed="fast"/>
-  <Detector class="edu.umd.cs.findbugs.detect.DroppedException" speed="fast" />
-  <Detector class="edu.umd.cs.findbugs.detect.DumbMethods" speed="fast" />
-  <Detector class="edu.umd.cs.findbugs.detect.FindDoubleCheck" speed="fast" />
-  <Detector class="edu.umd.cs.findbugs.detect.FindFinalizeInvocations" speed="fast" />
-  <Detector class="edu.umd.cs.findbugs.detect.FindHEmismatch" speed="fast" />
-  <Detector class="edu.umd.cs.findbugs.detect.FindNakedNotify" speed="fast" />
-  <Detector class="edu.umd.cs.findbugs.detect.FindReturnRef" speed="fast" />
-  <Detector class="edu.umd.cs.findbugs.detect.FindRunInvocations" speed="fast" />
-  <Detector class="edu.umd.cs.findbugs.detect.FindSpinLoop" speed="fast" />
-  <Detector class="edu.umd.cs.findbugs.detect.FindTwoLockWait" speed="slow" />
-  <Detector class="edu.umd.cs.findbugs.detect.FindUnconditionalWait" speed="fast" />
-  <Detector class="edu.umd.cs.findbugs.detect.FindUninitializedGet" speed="fast" />
-  <Detector class="edu.umd.cs.findbugs.detect.FindUnsyncGet" speed="fast" />
-  <Detector class="edu.umd.cs.findbugs.detect.InitializationChain" speed="fast" />
-  <Detector class="edu.umd.cs.findbugs.detect.IteratorIdioms" speed="fast" />
-  <Detector class="edu.umd.cs.findbugs.detect.LockedFields" speed="fast" disabled="true" />
-  <Detector class="edu.umd.cs.findbugs.detect.PreferZeroLengthArrays" speed="fast" />
-  <Detector class="edu.umd.cs.findbugs.detect.EqStringTest" speed="fast" disabled="true" />
-  <Detector class="edu.umd.cs.findbugs.detect.MutableLock" speed="fast" />
-  <Detector class="edu.umd.cs.findbugs.detect.MutableStaticFields" speed="fast" />
-  <Detector class="edu.umd.cs.findbugs.detect.Naming" speed="fast" />
-  <Detector class="edu.umd.cs.findbugs.detect.ReadReturnShouldBeChecked" speed="fast" />
-  <Detector class="edu.umd.cs.findbugs.detect.SerializableIdiom" speed="fast" />
-  <Detector class="edu.umd.cs.findbugs.detect.StartInConstructor" speed="fast" />
-  <Detector class="edu.umd.cs.findbugs.detect.UnreadFields" speed="fast" />
-  <Detector class="edu.umd.cs.findbugs.detect.WaitInLoop" speed="fast" />
-  <Detector class="edu.umd.cs.findbugs.detect.BCPDoubleCheck" speed="moderate" disabled="true" />
-  <Detector class="edu.umd.cs.findbugs.detect.BCPMethodReturnCheck" speed="fast" />
-  <Detector class="edu.umd.cs.findbugs.detect.FindNullDeref" speed="moderate" />
-  <Detector class="edu.umd.cs.findbugs.detect.FindOpenStream" speed="moderate" />
-  <Detector class="edu.umd.cs.findbugs.detect.FindUselessControlFlow" speed="fast" />
-  <Detector class="edu.umd.cs.findbugs.detect.FindUnreleasedLock" speed="moderate" disabled="true" />
-  <Detector class="edu.umd.cs.findbugs.detect.FindRefComparison" speed="moderate" />
-  <Detector class="edu.umd.cs.findbugs.detect.FindMismatchedWaitOrNotify" speed="moderate" />
-  <Detector class="edu.umd.cs.findbugs.detect.FindInconsistentSync2" speed="slow" />
-  <Detector class="edu.umd.cs.findbugs.detect.FindLocalSelfAssignment" speed="fast" />
+  <Detector class="edu.umd.cs.findbugs.detect.FindFieldSelfAssignment" speed="fast"
+    reports="SA_FIELD_SELF_ASSIGNMENT"/>
+  <Detector class="edu.umd.cs.findbugs.detect.DroppedException" speed="fast"
+    reports="DE_MIGHT_DROP,DE_MIGHT_IGNORE"/>
+  <Detector class="edu.umd.cs.findbugs.detect.DumbMethods" speed="fast"
+    reports="DM_STRING_CTOR,DM_STRING_VOID_CTOR,DM_GC,DM_BOOLEAN_CTOR"/>
+  <Detector class="edu.umd.cs.findbugs.detect.FindDoubleCheck" speed="fast"
+    reports="DC_DOUBLECHECK"/>
+  <Detector class="edu.umd.cs.findbugs.detect.FindFinalizeInvocations" speed="fast"
+    reports="FI_PUBLIC_SHOULD_BE_PROTECTED,FI_EMPTY,FI_NULLIFY_SUPER,FI_USELESS,FI_MISSING_SUPER_CALL,FI_EXPLICIT_INVOCATION"/>
+  <Detector class="edu.umd.cs.findbugs.detect.FindHEmismatch" speed="fast"
+    reports="EQ_SELF_USE_OBJECT,EQ_SELF_NO_OBJECT,CO_SELF_NO_OBJECT,HE_HASHCODE_USE_OBJECT_EQUALS,HE_HASHCODE_NO_EQUALS,HE_EQUALS_USE_HASHCODE,HE_EQUALS_NO_HASHCODE"/>
+  <Detector class="edu.umd.cs.findbugs.detect.FindNakedNotify" speed="fast"
+    reports="NN_NAKED_NOTIFY"/>
+  <Detector class="edu.umd.cs.findbugs.detect.FindReturnRef" speed="fast"
+    reports="MS_EXPOSE_REP,EI_EXPOSE_REP"/>
+  <Detector class="edu.umd.cs.findbugs.detect.FindRunInvocations" speed="fast"
+    reports="RU_INVOKE_RUN"/>
+  <Detector class="edu.umd.cs.findbugs.detect.FindSpinLoop" speed="fast"
+    reports="SP_SPIN_ON_FIELD"/>
+  <Detector class="edu.umd.cs.findbugs.detect.FindTwoLockWait" speed="slow"
+    reports="2LW_TWO_LOCK_WAIT"/>
+  <Detector class="edu.umd.cs.findbugs.detect.FindUnconditionalWait" speed="fast"
+    reports="UW_UNCOND_WAIT"/>
+  <Detector class="edu.umd.cs.findbugs.detect.FindUninitializedGet" speed="fast"
+    reports="UR_UNINIT_READ"/>
+  <Detector class="edu.umd.cs.findbugs.detect.FindUnsyncGet" speed="fast"
+    reports="UG_SYNC_SET_UNSYNC_GET"/>
+  <Detector class="edu.umd.cs.findbugs.detect.InitializationChain" speed="fast"
+    reports="SI_INSTANCE_BEFORE_FINALS_ASSIGNED,IC_INIT_CIRCULARITY"/>
+  <Detector class="edu.umd.cs.findbugs.detect.IteratorIdioms" speed="fast"
+    reports="IT_NO_SUCH_ELEMENT"/>
+  <Detector class="edu.umd.cs.findbugs.detect.LockedFields" speed="fast" disabled="true"
+    reports="IS_INCONSISTENT_SYNC"/>
+  <Detector class="edu.umd.cs.findbugs.detect.PreferZeroLengthArrays" speed="fast"
+    reports="PZLA_PREFER_ZERO_LENGTH_ARRAYS"/>
+  <Detector class="edu.umd.cs.findbugs.detect.EqStringTest" speed="fast" disabled="true"
+    reports="ES_COMPARING_STRINGS_WITH_EQ"/>
+  <Detector class="edu.umd.cs.findbugs.detect.MutableLock" speed="fast"
+    reports="ML_SYNC_ON_UPDATED_FIELD" />
+  <Detector class="edu.umd.cs.findbugs.detect.MutableStaticFields" speed="fast"
+    reports="MS_OOI_PKGPROTECT,MS_FINAL_PKGPROTECT,MS_SHOULD_BE_FINAL,MS_PKGPROTECT,MS_MUTABLE_HASHTABLE,MS_MUTABLE_ARRAY,MS_CANNOT_BE_FINAL"/>
+  <Detector class="edu.umd.cs.findbugs.detect.Naming" speed="fast"
+    reports="NM_VERY_CONFUSING,NM_CONFUSING,NM_CONFUSING_METHOD_NAME,NM_LCASE_HASHCODE,NM_LCASE_TOSTRING" />
+  <Detector class="edu.umd.cs.findbugs.detect.ReadReturnShouldBeChecked" speed="fast"
+    reports="RR_NOT_CHECKED" />
+  <Detector class="edu.umd.cs.findbugs.detect.SerializableIdiom" speed="fast"
+    reports="SE_NO_SERIALVERSIONID,WS_WRITEOBJECT_SYNC,RS_READOBJECT_SYNC,SE_BAD_FIELD,SE_NONLONG_SERIALVERSIONID,SE_NONSTATIC_SERIALVERSIONID,SE_NONFINAL_SERIALVERSIONID" />
+  <Detector class="edu.umd.cs.findbugs.detect.StartInConstructor" speed="fast"
+    reports="SC_START_IN_CTOR" />
+  <Detector class="edu.umd.cs.findbugs.detect.UnreadFields" speed="fast"
+    reports="UWF_UNWRITTEN_FIELD,SS_SHOULD_BE_STATIC,UUF_UNUSED_FIELD,URF_UNREAD_FIELD,SIC_INNER_SHOULD_BE_STATIC" />
+  <Detector class="edu.umd.cs.findbugs.detect.WaitInLoop" speed="fast"
+    reports="WA_NOT_IN_LOOP,NO_NOTIFY_NOT_NOTIFYALL" />
+  <Detector class="edu.umd.cs.findbugs.detect.BCPDoubleCheck" speed="moderate" disabled="true"
+    reports="BCPDC_DOUBLECHECK" />
+  <Detector class="edu.umd.cs.findbugs.detect.BCPMethodReturnCheck" speed="fast"
+    reports="RV_RETURN_VALUE_IGNORED" />
+  <Detector class="edu.umd.cs.findbugs.detect.FindNullDeref" speed="moderate"
+    reports="NP_ALWAYS_NULL_EXCEPTION,NP_ALWAYS_NULL,NP_NULL_ON_SOME_PATH_EXCEPTION,NP_NULL_ON_SOME_PATH,RCN_REDUNDANT_COMPARISON_TO_NULL" />
+  <Detector class="edu.umd.cs.findbugs.detect.FindOpenStream" speed="moderate"
+    reports="OS_OPEN_STREAM,OS_OPEN_STREAM_EXCEPTION_PATH" />
+  <Detector class="edu.umd.cs.findbugs.detect.FindUselessControlFlow" speed="fast"
+    reports="UCF_USELESS_CONTROL_FLOW" />
+  <Detector class="edu.umd.cs.findbugs.detect.FindUnreleasedLock" speed="moderate" disabled="true"
+    reports="UL_UNRELEASED_LOCK,UL_UNRELEASED_LOCK_EXCEPTION_PATH" />
+  <Detector class="edu.umd.cs.findbugs.detect.FindRefComparison" speed="moderate"
+    reports="ES_COMPARING_STRINGS_WITH_EQ,RC_REF_COMPARISON" />
+  <Detector class="edu.umd.cs.findbugs.detect.FindMismatchedWaitOrNotify" speed="moderate"
+    reports="MWN_MISMATCHED_WAIT,MWN_MISMATCHED_NOTIFY" />
+  <Detector class="edu.umd.cs.findbugs.detect.FindInconsistentSync2" speed="slow"
+    reports="IS2_INCONSISTENT_SYNC" />
+  <Detector class="edu.umd.cs.findbugs.detect.FindLocalSelfAssignment" speed="fast"
+    reports="SA_LOCAL_SELF_ASSIGNMENT" />
+  <Detector class="edu.umd.cs.findbugs.detect.LazyInit" speed="moderate"
+    reports="LI_LAZY_INIT_STATIC"/>
+  <Detector class="edu.umd.cs.findbugs.detect.FindJSR166LockMonitorenter" speed="moderate" disabled="true"
+    reports="JLM_JSR166_LOCK_MONITORENTER"/>
   <Detector class="edu.umd.cs.findbugs.detect.FindBugsSummaryStats" speed="fast" />
-  <Detector class="edu.umd.cs.findbugs.detect.LazyInit" speed="moderate"/>
-  <Detector class="edu.umd.cs.findbugs.detect.FindJSR166LockMonitorenter" speed="moderate" disabled="true"/>
 
   <BugPattern abbrev="DE" type="DE_MIGHT_DROP" category="CORRECTNESS" />
   <BugPattern abbrev="DE" type="DE_MIGHT_IGNORE" category="CORRECTNESS" />
