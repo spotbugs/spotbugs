@@ -35,7 +35,7 @@ import java.util.*;
  * @author David Hovemeyer
  */
 public class DepthFirstSearch implements DFSEdgeTypes /*, Debug*/ {
-	public static boolean DEBUG = false;
+	public final static boolean DEBUG = false;
 
 	private CFG cfg;
 	private int firstEdgeId;
