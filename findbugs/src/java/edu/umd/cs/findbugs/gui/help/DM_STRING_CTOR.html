@@ -5,6 +5,9 @@
   </HEAD>
   <BODY>
   <h1>Method invokes dubious new String(String) constructor; just use the argument</h1>
-  <p> The description of this bug hasn't been written yet.
+  <p> Using the <code>java.lang.String(String)</code> constructor wastes memory
+  because the object so constructed will be functionally indistinguishable
+  from the <code>String</code> passed as a parameter.&nbsp; Just use the
+  argument <code>String</code> directly.
   </BODY>
 </HTML>

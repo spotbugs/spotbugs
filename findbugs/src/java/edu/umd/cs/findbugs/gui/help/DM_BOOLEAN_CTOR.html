@@ -5,6 +5,9 @@
   </HEAD>
   <BODY>
   <h1>Method invokes dubious Boolean constructor; use Boolean.valueOf(...) instead</h1>
-  <p> The description of this bug hasn't been written yet.
+  <p> Creating new instances of <code>java.lang.Boolean</code> wastes
+  memory, since <code>Boolean</code> objects are immutable and there are
+  only two useful values of this type.&nbsp; Use the <code>Boolean.valueOf()</code>
+  method to create <code>Boolean</code> objects instead.
   </BODY>
 </HTML>
