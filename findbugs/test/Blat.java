@@ -11,10 +11,17 @@ public class Blat implements Runnable, java.util.Iterator, Serializable {
 		public void run() { }
 	}
 
+	private static class NotThread {
+		public void start() {
+			System.out.println("Don't report this");
+		}
+	}
+
 	public Blat() {
 		yarm = 5;
 		System.out.println(lock);
 		new Y().start();
+		new NotThread().start();
 	}
 
 	public void xxx() {
