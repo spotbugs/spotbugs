@@ -58,7 +58,7 @@ public class SwitchFallthrough extends BytecodeScanningDetector implements   Con
 		break;
 		default:
 		}
-	if (nextIndex >= switchOffsets.length) 
+	if (inSwitch && nextIndex >= switchOffsets.length) 
 		inSwitch = false;
 	if (inSwitch) {
 	  if (PC == switchPC + switchOffsets[nextIndex]
