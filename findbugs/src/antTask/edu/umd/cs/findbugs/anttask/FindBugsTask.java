@@ -57,7 +57,6 @@ package edu.umd.cs.findbugs.anttask;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.ClassAnnotation;
 import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.AbstractBugReporter;
 import edu.umd.cs.findbugs.FindBugs;
 
 import org.apache.tools.ant.BuildException;
@@ -78,6 +77,9 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.TreeSet;
+
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 
 /**
  * FindBugs in Java class files. This task can take the following
@@ -341,19 +343,24 @@ public class FindBugsTask extends MatchingTask {
         }
     }
 
+	private static final Pattern missingClassPattern = Pattern.compile("^.*while looking for class ([^:]*):.*$");
 
     /**
      * Our BugReporter. 
      */
-    private class Reporter extends AbstractBugReporter {
+    private class Reporter implements BugReporter {
     	private Set bugInstanceSet;
+		private Set missingClassSet;
         private boolean sorted;
         private ArrayList suppressList;
-
+		private int verbosity;
 
         public Reporter( boolean sorted, ArrayList suppressList ) {
             this.sorted = sorted;
             this.suppressList = suppressList;
+			this.verbosity = BugReporter.NORMAL;
+			this.missingClassSet = new HashSet();
+
             if ( sorted ) {
               bugInstanceSet = new TreeSet(new Comparator() {
 				public int compare(Object lhs, Object rhs) {
@@ -373,6 +380,10 @@ public class FindBugsTask extends MatchingTask {
             }
         }
 
+		public void setErrorVerbosity(int level) {
+			this.verbosity = level;
+		}
+
 		public void reportBug(BugInstance bug) {
 			if ( !suppressed( bug ) && !bugInstanceSet.contains( bug ) ) {
 				bugInstanceSet.add( bug );
@@ -383,14 +394,22 @@ public class FindBugsTask extends MatchingTask {
 			}
 		}
 
-		public void beginReport() {
+		public void logError(String message) {
+			outputErrorMessage(message);
 		}
 
-		public void reportLine(String msg) {
-			outputErrorMessage(msg);
-		}
+		public void reportMissingClass(ClassNotFoundException ex) {
+			String message = ex.getMessage();
 
-		public void endReport() {
+			// Try to extract class name from exception message
+			Matcher matcher = missingClassPattern.matcher(message);
+			if (matcher.matches())
+				message = matcher.group(1);
+
+			if (!missingClassSet.contains(message)) {
+				outputErrorMessage("A class required by the analysis is missing: " + message);
+				missingClassSet.add(message);
+			}
 		}
 
         private boolean suppressed( BugInstance bug ) {
@@ -413,8 +432,13 @@ public class FindBugsTask extends MatchingTask {
 			}
 		}
 
-		public void outputErrorMessage(String message) {
-			log(message, Project.MSG_ERR);
+		public void reportQueuedErrors() {
+			// We don't queue errors.
+		}
+
+		private void outputErrorMessage(String message) {
+			if (verbosity != BugReporter.SILENT)
+				log(message, Project.MSG_ERR);
 		}
 	}
 
