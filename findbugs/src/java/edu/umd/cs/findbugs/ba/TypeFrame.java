@@ -212,6 +212,10 @@ public class TypeFrame extends Frame<Type> implements Constants, ExtendedTypes {
 		return type == T_OBJECT || type == T_NULL;
 	}
 
+	protected String valueToString(Type value) {
+		return value.toString() + ",";
+	}
+
 }
 
 // vim:ts=4
