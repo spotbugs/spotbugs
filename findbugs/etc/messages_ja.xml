@@ -1342,7 +1342,8 @@ are no results. This way, no explicit check for null is needed by clients of the
 Serializable, or <code>java.lang.Object</code>, and does not appear to implement
 the <code>Externalizable</code> interface or the
 <code>readObject()</code> and <code>writeObject()</code> methods.&nbsp;
-Objects of this class will not be deserialized correctly.
+Objects of this class will not be deserialized correctly if a non-Serializable
+object is stored in this field.
 ]]>
     </Details>
   </BugPattern>
@@ -1422,6 +1423,19 @@ for using a JSR-166 lock is:
     </Details>
   </BugPattern>
 
+  <BugPattern type="RC_REF_COMPARISON">
+    <ShortDescription>Suspicious reference comparison</ShortDescription>
+    <LongDescription>Suspicious comparison of {3} references in {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p> This method compares two reference values using the == or != operator,
+where the correct way to compare instances of this type is generally
+with the equals() method.  Examples of classes which should generally
+not be compared by reference are java.lang.Integer, java.lang.Float, etc.
+]]>
+    </Details>
+  </BugPattern>
+
 <!--
 ************************************************************************
 Bug codes
@@ -1471,4 +1485,5 @@ Bug codes
   <BugCode abbrev="PZLA" >Prefer zero length arrays to null to indicate no results</BugCode>
   <BugCode abbrev="UCF">Useless control flow</BugCode>
   <BugCode abbrev="UL">Lock not released on all paths</BugCode>
+  <BugCode abbrev="RC">Suspicious reference comparison</BugCode>
 </MessageCollection>
