@@ -48,6 +48,7 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugProperty;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
+import edu.umd.cs.findbugs.FindBugsAnalysisProperties;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.AnalysisException;
 import edu.umd.cs.findbugs.ba.CFG;
@@ -60,30 +61,36 @@ import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ml.HeuristicPropertySet;
 import edu.umd.cs.findbugs.ml.HeuristicPropertySetSchema;
 
+/**
+ * Find dead stores to local variables.
+ * 
+ * @author David Hovemeyer
+ * @author Bill Pugh
+ */
 public class FindDeadLocalStores implements Detector {
 	
-    // Define the name of the property that is used to exclude named local variables
-    // from Dead Local Storage detection...
-    private static final String FINDBUGS_EXCLUDED_LOCALS_PROP_NAME = "findbugs.dls.exclusions";
-    
-    private static final boolean DEBUG = Boolean.getBoolean("fdls.debug");
-    
-    // Define a collection of excluded local variables...
+	private static final boolean DEBUG = Boolean.getBoolean("fdls.debug");
+	
+	// Define the name of the property that is used to exclude named local variables
+	// from Dead Local Storage detection...
+	private static final String FINDBUGS_EXCLUDED_LOCALS_PROP_NAME = "findbugs.dls.exclusions";
+	
+	// Define a collection of excluded local variables...
 	private static final Set<String> EXCLUDED_LOCALS = new HashSet<String>();
-
+	
 	private static final boolean DO_EXCLUDE_LOCALS =
 		System.getProperty(FINDBUGS_EXCLUDED_LOCALS_PROP_NAME) != null;
-    static {
-        // Get the value of the property...
-        String exclLocalsProperty = System.getProperty(FINDBUGS_EXCLUDED_LOCALS_PROP_NAME);
-        
-        // If we have one, then split its contents into a table...
-        if (exclLocalsProperty != null) {        	
-        	EXCLUDED_LOCALS.addAll( (List<String>)Arrays.asList(exclLocalsProperty.split(",")));
-        	EXCLUDED_LOCALS.remove("");
-        }
-    }   
-        
+	static {
+		// Get the value of the property...
+		String exclLocalsProperty = System.getProperty(FINDBUGS_EXCLUDED_LOCALS_PROP_NAME);
+		
+		// If we have one, then split its contents into a table...
+		if (exclLocalsProperty != null) {        	
+			EXCLUDED_LOCALS.addAll( (List<String>)Arrays.asList(exclLocalsProperty.split(",")));
+			EXCLUDED_LOCALS.remove("");
+		}
+	}   
+	
 	private static final Set<String> classesAlreadyReportedOn = new HashSet<String>();
 	/**
 	 * Opcodes of instructions that load constant values that
@@ -99,37 +106,37 @@ public class FindDeadLocalStores implements Detector {
 		defensiveConstantValueOpcodes.set(Constants.ICONST_0);
 		defensiveConstantValueOpcodes.set(Constants.ICONST_1);
 	}
-
+	
 	private BugReporter bugReporter;
 	private HeuristicPropertySet propertySet;
-
+	
 	public FindDeadLocalStores(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 		this.propertySet = new HeuristicPropertySet();
 		if (DEBUG) System.out.println("Debugging FindDeadLocalStores detector");
 	}
-
+	
 	public void setAnalysisContext(AnalysisContext analysisContext) {
 	}
-
+	
 	private boolean prescreen(ClassContext classContext, Method method) {
 		return true;
 	}
-
+	
 	public void visitClassContext(ClassContext classContext) {
 		JavaClass javaClass = classContext.getJavaClass();
 		Method[] methodList = javaClass.getMethods();
-
+		
 		for (int i = 0; i < methodList.length; ++i) {
 			Method method = methodList[i];
-
+			
 			MethodGen methodGen = classContext.getMethodGen(method);
 			if (methodGen == null)
 				continue;
-
+			
 			if (!prescreen(classContext, method))
 				continue;
-
+			
 			try {
 				analyzeMethod(classContext, method);
 			} catch (DataflowAnalysisException e) {
@@ -150,15 +157,15 @@ public class FindDeadLocalStores implements Detector {
 	};
 	private static final HeuristicPropertySetSchema schema =
 		new HeuristicPropertySetSchema(boolPropertyNameList);
-
+	
 	private void analyzeMethod(ClassContext classContext, Method method)
-		throws DataflowAnalysisException, CFGBuilderException {
-
+	throws DataflowAnalysisException, CFGBuilderException {
+		
 		JavaClass javaClass = classContext.getJavaClass();
-
+		
 		Dataflow<BitSet, LiveLocalStoreAnalysis> llsaDataflow =
 			classContext.getLiveLocalStoreDataflow(method);
-
+		
 		int numLocals = method.getCode().getMaxLocals();
 		int [] localUpdateCount = new int[numLocals];
 		int [] localLoadCount = new int[numLocals];
@@ -167,26 +174,26 @@ public class FindDeadLocalStores implements Detector {
 		CFG cfg = classContext.getCFG(method);
 		BitSet liveStoreSetAtEntry = llsaDataflow.getAnalysis().getResultFact(cfg.getEntry());
 		BitSet complainedAbout = new BitSet();
-        
+		
 		// Get number of locals that are parameters.
 		int localsThatAreParameters = method.getArgumentTypes().length;
 		if (!method.isStatic()) localsThatAreParameters++;
-        
+		
 		// Scan method to determine number of loads, stores, and increments
 		// of local variables.
-		countLocalUpdatesLoadsAndIncrements(
+		countLocalStoresLoadsAndIncrements(
 				localUpdateCount, localLoadCount, localIncrementCount, cfg);
-
+		
 		// Scan method for
 		// - dead stores
 		// - stores to parameters that are dead upon entry to the method
 		for (Iterator<Location> i = cfg.locationIterator(); i.hasNext(); ) {
 			Location location = i.next();
-		
+			
 			// Skip any instruction which is not a store
 			if (!isStore(location))
 				continue;
-
+			
 			// Heuristic: exception handler blocks often contain
 			// dead stores generated by the compiler.
 			propertySet.setBoolProperty(
@@ -194,16 +201,16 @@ public class FindDeadLocalStores implements Detector {
 			
 			IndexedInstruction ins = (IndexedInstruction) location.getHandle().getInstruction();
 			int local = ins.getIndex();
-     
+			
 			// Heuristic: name of local variable.
 			checkLocalVariableName(
 					method.getLocalVariableTable(),
 					local,
 					location.getHandle().getPosition());
-
+			
 			// Is this a store to a parameter which was dead on entry to the method?
 			boolean parameterThatIsDeadAtEntry = local < localsThatAreParameters
-			    && !llsaDataflow.getAnalysis().isStoreAlive(liveStoreSetAtEntry, local);
+			&& !llsaDataflow.getAnalysis().isStoreAlive(liveStoreSetAtEntry, local);
 			if (parameterThatIsDeadAtEntry && !complainedAbout.get(local)) {
 				BugInstance bugInstance = new BugInstance(this, "IP_PARAMETER_IS_DEAD_BUT_OVERWRITTEN", NORMAL_PRIORITY)
 					.addClassAndMethod(methodGen, javaClass.getSourceFileName())
@@ -211,17 +218,17 @@ public class FindDeadLocalStores implements Detector {
 				bugReporter.reportBug(bugInstance);
 				complainedAbout.set(local);
 			}
-
+			
 			// Get live stores at this instruction.
 			// Note that the analysis also computes which stores were
 			// killed by a subsequent unconditional store.
 			BitSet liveStoreSet = llsaDataflow.getAnalysis().getFactAtLocation(location);
-
+			
 			// Is store alive?
 			if (llsaDataflow.getAnalysis().isStoreAlive(liveStoreSet, local))
 				continue;
 			// Store is dead
-
+			
 			// Ignore assignments that were killed by a subsequent assignment.
 			propertySet.setBoolProperty(
 					KILLED_BY_SUBSEQUENT_STORE,
@@ -233,7 +240,7 @@ public class FindDeadLocalStores implements Detector {
 			propertySet.setBoolProperty(
 					DEFENSIVE_CONSTANT_OPCODE,
 					prev != null && defensiveConstantValueOpcodes.get(prev.getInstruction().getOpcode())
-					);
+			);
 			
 			// TODO: further heuristic properties
 			
@@ -241,62 +248,74 @@ public class FindDeadLocalStores implements Detector {
 			// special handling of IINC
 			if (ins instanceof IINC) {
 				
-				 if (localIncrementCount[local] == 1) 
+				if (localIncrementCount[local] == 1) 
 					priority = NORMAL_PRIORITY;
 				else continue;
-
-				}
-
+				
+			}
+			
 			else if (ins instanceof ASTORE
-				&& prev != null) { 
+					&& prev != null) { 
 				Instruction prevIns = prev.getInstruction();
 				if ((prevIns instanceof INVOKESPECIAL &&
-					((INVOKESPECIAL)prevIns).getMethodName(methodGen.getConstantPool()).equals("<init>"))
-				    || prevIns instanceof ANEWARRAY
-				    || prevIns instanceof NEWARRAY
-				    || prevIns instanceof MULTIANEWARRAY)
+						((INVOKESPECIAL)prevIns).getMethodName(methodGen.getConstantPool()).equals("<init>"))
+						|| prevIns instanceof ANEWARRAY
+						|| prevIns instanceof NEWARRAY
+						|| prevIns instanceof MULTIANEWARRAY)
 					priority--;
 			}
-
-
+			
+			
 			else if (localUpdateCount[local] == 2
-				&& localLoadCount[local] > 0) priority--; // raise priority
+					&& localLoadCount[local] > 0) priority--; // raise priority
 			else if (localUpdateCount[local] == 1)
 				priority++;
-
+			
 			else if (localLoadCount[local] == 0) priority++; // lower priority
 			if (parameterThatIsDeadAtEntry) {
 				if (DEBUG) System.out.println("Raising priority");
 				priority--;
-				}
-
+			}
+			
 			if (priority < HIGH_PRIORITY)
 				priority =  HIGH_PRIORITY;
 			if (DEBUG) System.out.println(" considering reporting bug:" + priority);
 			if (priority != LOW_PRIORITY 
-				|| classesAlreadyReportedOn.add(javaClass.getClassName())) {
-
-			if (reportWarning()) {	
+					|| classesAlreadyReportedOn.add(javaClass.getClassName())) {
 				
-				// Report the bug
-				BugInstance bugInstance = new BugInstance(this, "DLS_DEAD_LOCAL_STORE", priority)
-					.addClassAndMethod(methodGen, javaClass.getSourceFileName())
-					.addSourceLine(methodGen, javaClass.getSourceFileName(), location.getHandle());
-				if (DEBUG) System.out.println("Reporting " + bugInstance);
-				
-				bugReporter.reportBug(bugInstance);
-			}
+				if (reportWarning()) {	
+					
+					// Report the bug
+					BugInstance bugInstance = new BugInstance(this, "DLS_DEAD_LOCAL_STORE", priority)
+						.addClassAndMethod(methodGen, javaClass.getSourceFileName())
+						.addSourceLine(methodGen, javaClass.getSourceFileName(), location.getHandle());
+					if (DEBUG) System.out.println("Reporting " + bugInstance);
+					
+					// Encode heuristic information.
+					propertySet.decorateBugInstance(bugInstance, schema);
+					
+					bugReporter.reportBug(bugInstance);
+				}
 			}
 		}
 	}
-
-	private void countLocalUpdatesLoadsAndIncrements(int[] localUpdateCount, int[] localLoadCount, int[] localIncrementCount, CFG cfg) {
+	
+	/**
+	 * Count stores, loads, and increments of local variables
+	 * in method whose CFG is given.
+	 * 
+	 * @param localUpdateCount    counts of local stores (indexed by local)
+	 * @param localLoadCount      counts of local loads (indexed by local)
+	 * @param localIncrementCount counts of local increments (indexed by local)
+	 * @param cfg                 control flow graph (CFG) of method
+	 */
+	private void countLocalStoresLoadsAndIncrements(int[] localUpdateCount, int[] localLoadCount, int[] localIncrementCount, CFG cfg) {
 		for (Iterator<Location> i = cfg.locationIterator(); i.hasNext(); ) {
 			Location location = i.next();
 			
 			if (location.getBasicBlock().isExceptionHandler())
 				continue;
-
+			
 			boolean isStore = isStore(location);
 			boolean isLoad = isLoad(location);
 			if (!isStore && !isLoad)
@@ -314,22 +333,40 @@ public class FindDeadLocalStores implements Detector {
 				localLoadCount[local]++;
 		}
 	}
-
+	
+	/**
+	 * Get the name of given local variable (if possible) and store it in
+	 * the HeuristicPropertySet.
+	 * 
+	 * @param lvt   the LocalVariableTable
+	 * @param local index of the local
+	 * @param pc    program counter value of the instruction
+	 */
 	private void checkLocalVariableName(LocalVariableTable lvt, int local, int pc) {
-       if (lvt != null) {
-        	LocalVariable lv = lvt.getLocalVariable(local, pc);
-        	if (lv != null) {
+		if (lvt != null) {
+			LocalVariable lv = lvt.getLocalVariable(local, pc);
+			if (lv != null) {
 				String localName = lv.getName();
 				propertySet.setStringProperty(BugProperty.LOCAL_NAME, localName);
-        	}
-        }
-
+			}
+		}
+		
 	}
-
+	
+	/**
+	 * Based on current HeuristicPropertySet contents, decide whether
+	 * or not to report a warning.
+	 * 
+	 * @return true if the warning should be reported, false if not
+	 */
 	private boolean reportWarning() {
-		// FIXME: allow "loose" reporting mode where we just report
+		// Allow "relaxed" reporting mode where we just report
 		// everything and let the machine learning ranking find the
 		// real problems.
+		if (AnalysisContext.currentAnalysisContext().getBoolProperty(
+				FindBugsAnalysisProperties.RELAXED_REPORTING_MODE)) {
+			return true;
+		}
 		
 		if (DO_EXCLUDE_LOCALS) {
 			String localName = propertySet.getStringProperty(BugProperty.LOCAL_NAME);
@@ -348,18 +385,31 @@ public class FindDeadLocalStores implements Detector {
 		
 		return true;
 	}
-
+	
+	/**
+	 * Is instruction at given location a store?
+	 * 
+	 * @param location the location
+	 * @return true if instruction at given location is a store, false if not
+	 */
 	private boolean isStore(Location location) {
 		Instruction ins = location.getHandle().getInstruction();
 		return (ins instanceof StoreInstruction) || (ins instanceof IINC);
 	}
+
+	/**
+	 * Is instruction at given location a load?
+	 * 
+	 * @param location the location
+	 * @return true if instruction at given location is a load, false if not
+	 */
 	private boolean isLoad(Location location) {
 		Instruction ins = location.getHandle().getInstruction();
 		return (ins instanceof LoadInstruction) || (ins instanceof IINC);
 	}
-
+	
 	public void report() {
 	}
 }
 
-// vim:ts=4
+//vim:ts=4
