@@ -76,7 +76,7 @@ public class Naming extends PreorderVisitor implements Detector, Constants2 {
 	// Need to look at the code that sets it.
 	//System.out.println("methodName="+methodName+", baseClassName="+baseClassName);
 	if (methodName.equals(baseClassName)) 
-		bugReporter.reportBug(new BugInstance("NM_CONFUSING_METHOD_NAME", HIGH_PRIORITY)
+		bugReporter.reportBug(new BugInstance("NM_CONFUSING_METHOD_NAME", NORMAL_PRIORITY)
 			.addClassAndMethod(this));
 	if (methodName.equals("hashcode") && methodSig.equals("()I")) 
 		bugReporter.reportBug(new BugInstance("NM_LCASE_HASHCODE", HIGH_PRIORITY)
