@@ -615,10 +615,6 @@ public class Project {
 	 * @return the converted filename
 	 */
 	private String convertToRelative(String srcFile, String base) {
-		// At present relative paths are only calculated if the fileName is
-		// below the project file. This need not be the case, and we could use ..
-		// syntax to move up the tree. (To Be Added)
-	  
 		String slash = System.getProperty("file.separator");
 
 		if (FILE_IGNORE_CASE) {
