@@ -67,7 +67,8 @@ public class FindTwoLockWait extends CFGBuildingDetector implements Detector {
 					// A wait with multiple locks held?
 					bugReporter.reportBug(new BugInstance("2LW_TWO_LOCK_WAIT", NORMAL_PRIORITY)
 						.addClass(getJavaClass())
-						.addMethod(methodGen));
+						.addMethod(methodGen)
+						.addSourceLine(methodGen, handle));
 				}
 			}
 		} catch (DataflowAnalysisException e) {
