@@ -181,7 +181,12 @@ public void report() {
 		  else if ( !innerClassCannotBeStatic.contains(className)) {
 			boolean easyChange = !needsOuterObjectInConstructor.contains(className);
 			if (easyChange || !isAnonymousInnerClass) {
-	
+
+			  // easyChange    isAnonymousInnerClass	
+			  // true          false			medium, SIC
+			  // true          true				low, SIC_ANON
+			  // false         true				not reported
+			  // false         false			low, SIC_THIS
 			  int priority = LOW_PRIORITY;
 			  if (easyChange && !isAnonymousInnerClass) 
 				priority = NORMAL_PRIORITY;
@@ -189,7 +194,7 @@ public void report() {
 			   String bug = "SIC_INNER_SHOULD_BE_STATIC";
 			   if (isAnonymousInnerClass)
 			   	bug = "SIC_INNER_SHOULD_BE_STATIC_ANON";
-			   else if (easyChange)
+			   else if (!easyChange)
 			   	bug = "SIC_INNER_SHOULD_BE_STATIC_NEEDS_THIS";
 			 
 			   bugReporter.reportBug(new BugInstance(
