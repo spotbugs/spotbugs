@@ -469,6 +469,24 @@ It is a fast detector.
     </Details>
   </BugPattern>
 
+  <BugPattern type="CN_IDIOM_NO_SUPER_CALL">
+    <ShortDescription>Clone method does not call super.clone()</ShortDescription>
+    <LongDescription>Clone method {1} does not call super.clone()</LongDescription>
+    <Details>
+<![CDATA[
+<p> This class defines a clone() method that does not call super.clone(),
+and is not final.
+If this class ("<i>A</i>") is extended by a subclass ("<i>B</i>"),
+and the subclass <i>B</i> calls super.clone(), then it is likely that
+<i>B</i>'s clone() method will return an object of type <i>A</i>,
+which violates the contract for clone().
+
+<p> If all clone() methods call super.clone(), then they are guaranteed
+to use Object.clone(), which always returns an object of the correct type.
+]]>
+    </Details>
+  </BugPattern>
+
   <BugPattern type="DE_MIGHT_DROP">
     <ShortDescription>Method might drop exception</ShortDescription>
     <LongDescription>{1} might drop {3}</LongDescription>

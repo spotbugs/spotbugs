@@ -30,6 +30,7 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 public class CloneIdiom extends DismantleBytecode implements Detector, Constants2 {
 
   boolean isCloneable, hasCloneMethod;
+  MethodAnnotation cloneMethodAnnotation;
   boolean referencesCloneMethod;
   boolean invokesSuperClone;
   boolean isFinal;
@@ -110,8 +111,12 @@ public class CloneIdiom extends DismantleBytecode implements Detector, Constants
                                 .addClass(this));
 		}
 
-	if (hasCloneMethod && !invokesSuperClone && !isFinal)
-		System.out.println("class has clone method that doesn't invoke super.clone(): " + betterClassName);
+	if (hasCloneMethod && !invokesSuperClone && !isFinal) {
+		bugReporter.reportBug(new BugInstance("CN_IDIOM_NO_SUPER_CALL", NORMAL_PRIORITY)
+			.addClass(this)
+			.addMethod(cloneMethodAnnotation)
+			);
+	}
 
 	/*
 	if (!isCloneable && hasCloneMethod) {
@@ -136,6 +141,7 @@ public class CloneIdiom extends DismantleBytecode implements Detector, Constants
 	if (!methodName.equals("clone")) return;
 	if (!methodSig.startsWith("()")) return;
 	hasCloneMethod = true;
+	cloneMethodAnnotation = MethodAnnotation.fromVisitedMethod(this);
 	ExceptionTable tbl = obj.getExceptionTable();
 	throwsExceptions = tbl != null && tbl.getNumberOfExceptions() > 0;
 	}

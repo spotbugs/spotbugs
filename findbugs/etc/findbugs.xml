@@ -6,7 +6,7 @@
 	disabled="true"
     reports="FL_MATH_USING_FLOAT_PRECISION" />
   <Detector class="edu.umd.cs.findbugs.detect.CloneIdiom" speed="fast" 
-    reports="CN_IDIOM" />
+    reports="CN_IDIOM,CN_IDIOM_NO_SUPER_CALL" />
   <Detector class="edu.umd.cs.findbugs.detect.FindFieldSelfAssignment" speed="fast"
     reports="SA_FIELD_SELF_ASSIGNMENT"/>
   <Detector class="edu.umd.cs.findbugs.detect.DroppedException" speed="fast"
@@ -97,6 +97,7 @@
   <BugPattern abbrev="IMSE" type="IMSE_DONT_CATCH_IMSE" category="CORRECTNESS" />
   <BugPattern abbrev="FL" type="FL_MATH_USING_FLOAT_PRECISION" category="CORRECTNESS" />
   <BugPattern abbrev="CN" type="CN_IDIOM" category="CORRECTNESS" />
+  <BugPattern abbrev="CN" type="CN_IDIOM_NO_SUPER_CALL" category="CORRECTNESS" />
   <BugPattern abbrev="DE" type="DE_MIGHT_DROP" category="CORRECTNESS" />
   <BugPattern abbrev="DE" type="DE_MIGHT_IGNORE" category="CORRECTNESS" />
   <BugPattern abbrev="Dm" type="DM_STRING_CTOR" category="PERFORMANCE" />
