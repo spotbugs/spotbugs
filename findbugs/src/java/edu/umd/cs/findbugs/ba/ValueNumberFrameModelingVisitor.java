@@ -21,6 +21,7 @@ package edu.umd.cs.daveho.ba;
 
 import java.util.IdentityHashMap;
 import java.util.HashMap;
+import java.util.Map;
 import org.apache.bcel.generic.*;
 
 public class ValueNumberFrameModelingVisitor
@@ -101,14 +102,11 @@ public class ValueNumberFrameModelingVisitor
 			try {
 				XField xfield = Lookup.findXField(obj, getCPG());
 				if (xfield != null) {
-					ValueNumber reference = frame.popValue();
-					loadInstanceField((InstanceField) xfield, reference, obj);
+					loadInstanceField((InstanceField) xfield, obj);
 					return;
 				}
 			} catch (ClassNotFoundException e) {
 				lookupFailureCallback.reportMissingClass(e);
-			} catch (DataflowAnalysisException e) {
-				throw new IllegalStateException("ValueNumberFrameModelingVisitor caught exception: " + e.toString());
 			}
 		}
 		handleNormalInstruction(obj);
@@ -116,34 +114,15 @@ public class ValueNumberFrameModelingVisitor
 
 	public void visitPUTFIELD(PUTFIELD obj) {
 		if (REDUNDANT_LOAD_ELIMINATION) {
-			ValueNumberFrame frame = getFrame();
-	
 			try {
 				XField xfield = Lookup.findXField(obj, getCPG());
-
 				if (xfield != null) {
-					InstanceField instanceField = (InstanceField) xfield;
-
-					int numWordsConsumed = getNumWordsConsumed(obj);
-					ValueNumber[] inputValueList = popInputValues(numWordsConsumed);
-					ValueNumber reference = inputValueList[0];
-					ValueNumber[] loadedValue = new ValueNumber[inputValueList.length - 1];
-					System.arraycopy(inputValueList, 1, loadedValue, 0, inputValueList.length - 1);
-
-					// Kill all previous loads of the same field,
-					// in case there is aliasing we don't know about
-					frame.killLoadsOfField(instanceField);
-
-					// Forward substitution
-					frame.addAvailableLoad(new AvailableLoad(reference, instanceField), loadedValue);
-
+					storeInstanceField((InstanceField) xfield, obj);
 					return;
 				}
-
 			} catch (ClassNotFoundException e) {
 				lookupFailureCallback.reportMissingClass(e);
 			}
-			
 		}
 		handleNormalInstruction(obj);
 	}
@@ -183,23 +162,10 @@ public class ValueNumberFrameModelingVisitor
 
 	public void visitPUTSTATIC(PUTSTATIC obj) {
 		if (REDUNDANT_LOAD_ELIMINATION) {
-			ValueNumberFrame frame = getFrame();
-
 			try {
 				XField xfield = Lookup.findXField(obj, getCPG());
 				if (xfield != null) {
-					StaticField staticField = (StaticField) xfield;
-					AvailableLoad availableLoad = new AvailableLoad(staticField);
-
-					int numWordsConsumed = getNumWordsConsumed(obj);
-					ValueNumber[] inputValueList = popInputValues(numWordsConsumed);
-
-					// Kill loads of this field
-					frame.killLoadsOfField(staticField);
-
-					// Make load available
-					frame.addAvailableLoad(availableLoad, inputValueList);
-
+					storeStaticField((StaticField) xfield, obj);
 					return;
 				}
 			} catch (ClassNotFoundException e) {
@@ -231,7 +197,48 @@ public class ValueNumberFrameModelingVisitor
 					throw new IllegalStateException("stack underflow at " + handle);
 				}
 			} else if (methodName.startsWith("access$")) {
-				// Field access from inner class to outer
+				String className = obj.getClassName(cpg);
+				try {
+					Map<String, XField> accessMap = InnerClassAccessMap.instance().getAccessMapForClass(className);
+					XField accessField = accessMap.get(methodName);
+					if (accessField != null) {
+						// Field access from inner class to outer
+						Type[] argumentTypeList = Type.getArgumentTypes(methodSig);
+						Type returnType = Type.getReturnType(methodSig);
+
+						String classSig = "L" + className.replace('.', '/') + ";";
+		
+						if (returnType.equals(Type.VOID)) {
+							// Store
+							if (argumentTypeList.length == 1 && accessField.isStatic()) {
+								// Static store
+								storeStaticField((StaticField) accessField, obj);
+								return;
+							} else if (argumentTypeList.length == 2
+									&& classSig.equals(argumentTypeList[0].getSignature())
+									&& !accessField.isStatic()) {
+								// Instance store
+								storeInstanceField((InstanceField) accessField, obj);
+								return;
+							}
+						} else {
+							// Load
+							if (argumentTypeList.length == 0 && accessField.isStatic()) {
+								// Static load
+								loadStaticField((StaticField) accessField, obj);
+								return;
+							} else if (argumentTypeList.length == 1
+									&& classSig.equals(argumentTypeList[0].getSignature())
+									&& !accessField.isStatic()) {
+								// Instance load
+								loadInstanceField((InstanceField) accessField, obj);
+								return;
+							}
+						}
+					}
+				} catch (ClassNotFoundException e) {
+					lookupFailureCallback.reportMissingClass(e);
+				}
 			}
 		}
 
@@ -324,27 +331,33 @@ public class ValueNumberFrameModelingVisitor
 	 * @param reference the ValueNumber of the object reference
 	 * @param obj the Instruction loading the field
 	 */
-	private void loadInstanceField(InstanceField instanceField, ValueNumber reference, Instruction obj) {
+	private void loadInstanceField(InstanceField instanceField, Instruction obj) {
 		ValueNumberFrame frame = getFrame();
 
-		AvailableLoad availableLoad = new AvailableLoad(reference, instanceField);
-		if (RLE_DEBUG) System.out.print("[getfield of " + availableLoad + "]");
-		ValueNumber[] loadedValue = frame.getAvailableLoad(availableLoad);
+		try {
+			ValueNumber reference = frame.popValue();
 	
-		if (loadedValue == null) {
-			// Get (or create) the cached result for this instruction
-			ValueNumber[] inputValueList = new ValueNumber[]{reference};
-			loadedValue = getOutputValues(inputValueList, getNumWordsProduced(obj));
-
-			// Make the load available
-			frame.addAvailableLoad(availableLoad, loadedValue);
-			if (RLE_DEBUG) System.out.print("[Making load available "+ loadedValue[0] + "]");
-		} else {
-			// Found an available load!
-			if (RLE_DEBUG) System.out.print("[Found available load " + availableLoad + "]");
+			AvailableLoad availableLoad = new AvailableLoad(reference, instanceField);
+			if (RLE_DEBUG) System.out.print("[getfield of " + availableLoad + "]");
+			ValueNumber[] loadedValue = frame.getAvailableLoad(availableLoad);
+		
+			if (loadedValue == null) {
+				// Get (or create) the cached result for this instruction
+				ValueNumber[] inputValueList = new ValueNumber[]{reference};
+				loadedValue = getOutputValues(inputValueList, getNumWordsProduced(obj));
+	
+				// Make the load available
+				frame.addAvailableLoad(availableLoad, loadedValue);
+				if (RLE_DEBUG) System.out.print("[Making load available "+ loadedValue[0] + "]");
+			} else {
+				// Found an available load!
+				if (RLE_DEBUG) System.out.print("[Found available load " + availableLoad + "]");
+			}
+	
+			pushOutputValues(loadedValue);
+		} catch (DataflowAnalysisException e) {
+			throw new IllegalStateException("ValueNumberFrameModelingVisitor caught exception: " + e.toString());
 		}
-
-		pushOutputValues(loadedValue);
 	}
 
 	/**
@@ -371,6 +384,48 @@ public class ValueNumberFrameModelingVisitor
 		}
 
 		pushOutputValues(loadedValue);
+	}
+
+	/**
+	 * Store an instance field.
+	 * @param instanceField the field
+	 * @param obj the instruction which stores the field
+	 */
+	private void storeInstanceField(InstanceField instanceField, Instruction obj) {
+		ValueNumberFrame frame = getFrame();
+
+		int numWordsConsumed = getNumWordsConsumed(obj);
+		ValueNumber[] inputValueList = popInputValues(numWordsConsumed);
+		ValueNumber reference = inputValueList[0];
+		ValueNumber[] loadedValue = new ValueNumber[inputValueList.length - 1];
+		System.arraycopy(inputValueList, 1, loadedValue, 0, inputValueList.length - 1);
+
+		// Kill all previous loads of the same field,
+		// in case there is aliasing we don't know about
+		frame.killLoadsOfField(instanceField);
+
+		// Forward substitution
+		frame.addAvailableLoad(new AvailableLoad(reference, instanceField), loadedValue);
+	}
+
+	/**
+	 * Store a static field.
+	 * @param staticField the static field
+	 * @param obj the instruction which stores the field
+	 */
+	private void storeStaticField(StaticField staticField, Instruction obj) {
+		ValueNumberFrame frame = getFrame();
+
+		AvailableLoad availableLoad = new AvailableLoad(staticField);
+
+		int numWordsConsumed = getNumWordsConsumed(obj);
+		ValueNumber[] inputValueList = popInputValues(numWordsConsumed);
+
+		// Kill loads of this field
+		frame.killLoadsOfField(staticField);
+
+		// Make load available
+		frame.addAvailableLoad(availableLoad, inputValueList);
 	}
 
 	/**
