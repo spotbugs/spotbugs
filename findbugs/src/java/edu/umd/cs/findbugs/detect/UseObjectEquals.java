@@ -46,41 +46,42 @@ public class UseObjectEquals extends BytecodeScanningDetector implements Constan
 	}
 	
 	public void sawOpcode(int seen) {					
-		try {
-			if ((seen == INVOKEVIRTUAL) 
-			&&   getNameConstantOperand().equals("equals")
-			&&   getSigConstantOperand().equals("(Ljava/lang/Object;)Z")) {
+		if ((seen == INVOKEVIRTUAL) 
+		&&   getNameConstantOperand().equals("equals")
+		&&   getSigConstantOperand().equals("(Ljava/lang/Object;)Z")) {
 			
-				if (stack.getStackDepth() > 1) {
-					OpcodeStack.Item item = stack.getStackItem(1);
-					JavaClass cls = item.getJavaClass();
+			if (stack.getStackDepth() > 1) {
+				OpcodeStack.Item item = stack.getStackItem(1);
 				
-					if (item.isArray()) {
-							bugReporter.reportBug(new BugInstance("UOE_BAD_ARRAY_COMPARE", NORMAL_PRIORITY)
-					        		.addClassAndMethod(this)
-					        		.addSourceLine(this));
-					}
+				if (item.isArray()) {
+					bugReporter.reportBug(new BugInstance("UOE_BAD_ARRAY_COMPARE", NORMAL_PRIORITY)
+			        		.addClassAndMethod(this)
+			        		.addSourceLine(this));
+				} else {
 /*
-					else if ((cls != null) && cls.isFinal()) {
-						if (item.getSignature().equals("Ljava/lang/Class;"))
-							return;
-						String methodClassName = getClassConstantOperand();
-						if (methodClassName.equals("java/lang/Object")) {
-							bugReporter.reportBug(new BugInstance("UOE_USE_OBJECT_EQUALS", LOW_PRIORITY)
-				        		.addClassAndMethod(this)
-				        		.addSourceLine(this));	
-				        }
-				    }
+					try {
+						JavaClass cls = item.getJavaClass();
+
+						if ((cls != null) && cls.isFinal()) {
+							if (item.getSignature().equals("Ljava/lang/Class;"))
+								return;
+							String methodClassName = getClassConstantOperand();
+							if (methodClassName.equals("java/lang/Object")) {
+								bugReporter.reportBug(new BugInstance("UOE_USE_OBJECT_EQUALS", LOW_PRIORITY)
+				    	    		.addClassAndMethod(this)
+				    	    		.addSourceLine(this));	
+				    	    }
+				    	}
+					} catch (ClassNotFoundException cnfe) {
+						//cnfe.printStackTrace();
+						bugReporter.reportMissingClass(cnfe);
+					}
 */
 				}
 			}
-		} catch (ClassNotFoundException cnfe) {
-			//cnfe.printStackTrace();
-			bugReporter.reportMissingClass(cnfe);
 		}
-		finally {
-			stack.sawOpcode(this, seen);
-		}
+
+		stack.sawOpcode(this, seen);
 	}
 }
 
