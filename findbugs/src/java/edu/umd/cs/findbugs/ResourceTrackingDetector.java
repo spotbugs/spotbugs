@@ -28,6 +28,7 @@ import edu.umd.cs.daveho.ba.*;
 import edu.umd.cs.findbugs.*;
 
 public abstract class ResourceTrackingDetector<Resource> implements Detector {
+	private static final boolean DEBUG = Boolean.getBoolean("rtd.debug");
 
 	protected BugReporter bugReporter;
 
@@ -60,6 +61,8 @@ public abstract class ResourceTrackingDetector<Resource> implements Detector {
 				if (methodGen == null)
 					continue;
 				final CFG cfg = classContext.getCFG(method);
+
+				if (DEBUG) System.out.println(SignatureConverter.convertMethodSignature(methodGen));
 
 				new LocationScanner(cfg).scan(new LocationScanner.Callback() {
 					public void visitLocation(Location location) {
