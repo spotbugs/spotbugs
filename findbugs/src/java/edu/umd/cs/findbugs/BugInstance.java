@@ -23,6 +23,7 @@ import java.util.*;
 import edu.umd.cs.pugh.visitclass.BetterVisitor;
 import edu.umd.cs.pugh.visitclass.DismantleBytecode;
 import edu.umd.cs.daveho.ba.bcp.FieldVariable;
+import edu.umd.cs.daveho.ba.XField;
 import org.apache.bcel.classfile.*;
 import org.apache.bcel.generic.*;
 import org.dom4j.DocumentException;
@@ -284,6 +285,15 @@ public class BugInstance implements Comparable, XMLConvertible {
 	 */
 	public BugInstance addField(FieldVariable field) {
 		return addField(field.getClassName(), field.getFieldName(), field.getFieldSig(), field.isStatic());
+	}
+
+	/**
+	 * Add a field annotation for an XField.
+	 * @param xfield the XField
+	 * @return this object
+	 */
+	public BugInstance addField(XField xfield) {
+		return addField(xfield.getClassName(), xfield.getFieldName(), xfield.getFieldSignature(), xfield.isStatic());
 	}
 
 	/**
