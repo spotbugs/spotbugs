@@ -1,5 +1,5 @@
 <!DOCTYPE style-sheet PUBLIC "-//James Clark//DTD DSSSL Style Sheet//EN" [
-<!ENTITY dbstyle SYSTEM "/export/home/daveho/linux/docbook/docbook-dsssl-1.78/html/docbook.dsl" CDATA DSSSL>
+<!ENTITY dbstyle SYSTEM "@HTML_DSSSL_STYLESHEET@" CDATA DSSSL>
 ]>
 
 <style-sheet>
