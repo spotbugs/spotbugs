@@ -349,9 +349,6 @@ public class FindInconsistentSync extends CFGBuildingDetector {
 		int noLocked = 0, noUnlocked = 0, nPublic = 0, nVolatileOrFinal = 0, couldBeFinal = 0,
 			mostlyUnlocked = 0, noLocalLocks = 0;
 
-		JavaClass jclass = getJavaClass();
-		String className = jclass.getClassName();
-
 		Iterator<Map.Entry<FieldAnnotation, FieldStats>> i = statMap.entrySet().iterator();
 		while (i.hasNext()) {
 			Map.Entry<FieldAnnotation, FieldStats> entry = i.next();
