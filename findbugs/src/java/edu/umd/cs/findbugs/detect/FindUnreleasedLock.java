@@ -49,8 +49,8 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
 	private static final boolean DEBUG = Boolean.getBoolean("ful.debug");
 	private static int numAcquires = 0;
 	
-	private static final int JDK15_MINOR = 0;
-	private static final int JDK15_MAJOR = 49;
+	private static final int JDK15_MAJOR = 0;
+	private static final int JDK15_MINOR = 49;
 
 	/* ----------------------------------------------------------------------
 	 * Helper classes
