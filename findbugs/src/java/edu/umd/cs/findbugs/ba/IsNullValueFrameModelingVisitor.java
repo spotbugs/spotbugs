@@ -112,7 +112,7 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
 	}
 
 	public void visitACONST_NULL(ACONST_NULL obj) {
-		produce(IsNullValue.nullValue());
+		produce(IsNullValue.checkedNullValue());
 	}
 
 	public void visitNEW(NEW obj) {

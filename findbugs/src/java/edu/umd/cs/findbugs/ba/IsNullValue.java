@@ -140,6 +140,14 @@ public class IsNullValue implements IsNullValueAnalysisFeatures {
 	}
 
 	/**
+	 * Get the instance representing a value known to be null
+	 * because it was compared against null value, or because
+	 * we saw that it was assigned the null constant.
+	 */
+	public static IsNullValue checkedNullValue() {
+		return instanceList[CHECKED_NULL];
+	}
+	/**
 	 * Get the instance representing values that are definitely not null.
 	 */
 	public static IsNullValue nonNullValue() {
