@@ -105,12 +105,29 @@ public class SerializableIdiom extends PreorderVisitor
 		
 	
     public void visit(Field obj) {
-	if (!fieldName.equals("serialVersionUID")) return;
 	if (!fieldName.startsWith("this") 
 		&& isSynthetic(obj)) foundSynthetic = true;
+	if (!fieldName.equals("serialVersionUID")) return;
 	int flags = obj.getAccessFlags();
-	if ((flags & ACC_STATIC) == 0) {
+	int mask = ACC_STATIC | ACC_FINAL;
+	if ( !fieldSig.equals("I")
+			 && !fieldSig.equals("J")) return;
+	if ((flags & mask) == mask 
+		&& fieldSig.equals("I")) {
+		bugReporter.reportBug(new BugInstance("SE_NONLONG_SERIALVERSIONID", LOW_PRIORITY)
+			.addClass(this)
+			.addVisitedField(this));
+		sawSerialVersionUID = true;
+		return;
+		}
+	else if ((flags & ACC_STATIC) == 0) {
 		bugReporter.reportBug(new BugInstance("SE_NONSTATIC_SERIALVERSIONID", NORMAL_PRIORITY)
+			.addClass(this)
+			.addVisitedField(this));
+		return;
+		}
+	else if ((flags & ACC_FINAL) == 0) {
+		bugReporter.reportBug(new BugInstance("SE_NONFINAL_SERIALVERSIONID", NORMAL_PRIORITY)
 			.addClass(this)
 			.addVisitedField(this));
 		return;

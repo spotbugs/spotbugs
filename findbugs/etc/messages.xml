@@ -708,16 +708,46 @@ defined in an interface references a mutable
 ]]>
     </Details>
   </BugPattern>
+
   <BugPattern type="SE_NONSTATIC_SERIALVERSIONID">
     <ShortDescription>serialVersionUID isn't static</ShortDescription>
     <LongDescription>{1} isn't static</LongDescription>
     <Details>
 <![CDATA[
   <p> This class defines a <code>serialVersionUID</code> field that is not static.&nbsp;
-  The field should be made static.
+  The field should be made static
+	if it is intended to specify
+	the version UID for purposes of serialization.
 ]]>
     </Details>
   </BugPattern>
+  <BugPattern type="SE_NONFINAL_SERIALVERSIONID">
+    <ShortDescription>serialVersionUID isn't final</ShortDescription>
+    <LongDescription>{1} isn't final</LongDescription>
+    <Details>
+<![CDATA[
+  <p> This class defines a <code>serialVersionUID</code> field that is not final.&nbsp;
+  The field should be made final 
+	if it is intended to specify
+	the version UID for purposes of serialization.
+]]>
+    </Details>
+  </BugPattern>
+
+
+  <BugPattern type="SE_NONLONG_SERIALVERSIONID">
+    <ShortDescription>serialVersionUID isn't long</ShortDescription>
+    <LongDescription>{1} isn't long</LongDescription>
+    <Details>
+<![CDATA[
+  <p> This class defines a <code>serialVersionUID</code> field that is not long.&nbsp;
+  The field should be made long
+	if it is intended to specify
+	the version UID for purposes of serialization.
+]]>
+    </Details>
+  </BugPattern>
+
   <BugPattern type="SPDC_STATIC_DOUBLECHECK">
     <ShortDescription>Possible double check of static field</ShortDescription>
     <LongDescription>Possible double check on static field {2} in {1}</LongDescription>

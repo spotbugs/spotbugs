@@ -80,7 +80,9 @@
   <BugPattern abbrev="Se" type="SE_NO_SERIALVERSIONID" category="CORRECTNESS" />
   <BugPattern abbrev="WS" type="WS_WRITEOBJECT_SYNC" category="MT_CORRECTNESS" />
   <BugPattern abbrev="RS" type="RS_READOBJECT_SYNC" category="MT_CORRECTNESS" />
+  <BugPattern abbrev="Se" type="SE_NONFINAL_SERIALVERSIONID" category="CORRECTNESS" />
   <BugPattern abbrev="Se" type="SE_NONSTATIC_SERIALVERSIONID" category="CORRECTNESS" />
+  <BugPattern abbrev="Se" type="SE_NONLONG_SERIALVERSIONID" category="CORRECTNESS" />
   <BugPattern abbrev="SPSDC" type="SPDC_STATIC_DOUBLECHECK" category="MT_CORRECTNESS" />
   <BugPattern abbrev="SPDC" type="SPDC_DOUBLECHECK" category="MT_CORRECTNESS" />
   <BugPattern abbrev="SC" type="SC_START_IN_CTOR" category="MT_CORRECTNESS" />
