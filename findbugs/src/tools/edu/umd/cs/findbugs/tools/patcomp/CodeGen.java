@@ -27,23 +27,69 @@ import java.io.PrintStream;
  *
  * @author David Hovemeyer
  */
-public class CodeGen {
+public class CodeGen implements PatternCompilerTreeConstants {
+	private PrintStream out;
+
 	public CodeGen() {
 	}
 
 	public void generate(SimpleNode root, PrintStream out) {
+		this.out = out;
 		visit(root);
 	}
 
 	private void visit(SimpleNode node) {
 		switch (node.getId()) {
-		case PatternCompilerTreeConstants.JJTOPT_PRESCREEN:
+		case JJTPRESCREEN:
 			generatePrescreen(node);
 			break;
 		default:
-			for (int i = 0; i < node.jjtGetNumChildren(); ++i)
-				visit((SimpleNode) node.jjtGetChild(i));
+			generateDefault(node);
 			break;
+		}
+	}
+
+	public void generateDefault(SimpleNode node) {
+		int numChildren = node.jjtGetNumChildren();
+		int numTokens = node.getNumTokens();
+		if (numChildren == 0 && numTokens == 0)
+			return;
+
+		// If there are no child nodes, just emit all of
+		// the tokens.
+		if (numChildren == 0) {
+			Token t = node.getFirstToken();
+			while (t != node.getLastToken()) {
+				out.println(t.image);
+				t = t.next;
+			}
+			return;
+		}
+
+		// For each child, emit tokens preceeding that
+		// child not covered by previous children,
+		// then visit the child.
+		Token t = node.getFirstToken();
+		int childNum = 0;
+		do {
+			SimpleNode child = (SimpleNode) node.jjtGetChild(childNum);
+			while (t != null && t != child.getFirstToken()) {
+				out.println(t.image);
+				t = t.next;
+			}
+
+			visit(child);
+
+			if (child.getNumTokens() > 0)
+				t = child.getLastToken().next;
+
+			++childNum;
+		} while (childNum < numChildren);
+
+		// Emit rest of tokens
+		while (t != null && t != node.getLastToken()) {
+			out.println(t.image);
+			t = t.next;
 		}
 	}
 
