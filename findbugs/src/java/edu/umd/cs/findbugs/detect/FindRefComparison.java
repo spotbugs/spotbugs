@@ -162,14 +162,21 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 					String fieldName = obj.getName(getCPG());
 					Field field = edu.umd.cs.daveho.ba.Lookup.findField(className, fieldName);
 
-					// If the field is final, we'll assume that the String value
-					// is static.
-					if (field.isFinal())
-						pushValue(staticStringTypeInstance);
-					else
-						pushValue(type);
+/*
+					if (field == null)
+						System.err.println("Unknown field: " + className + "." + fieldName);
+*/
 
-					return;
+					if (field != null) {
+						// If the field is final, we'll assume that the String value
+						// is static.
+						if (field.isFinal())
+							pushValue(staticStringTypeInstance);
+						else
+							pushValue(type);
+
+						return;
+					}
 				} catch (ClassNotFoundException ex) {
 					lookupFailureCallback.reportMissingClass(ex);
 				}
@@ -267,7 +274,8 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 							if (opcode == Constants.IF_ACMPEQ || opcode == Constants.IF_ACMPNE) {
 								TypeFrame frame = typeDataflow.getFactAtLocation(location);
 								if (frame.getStackDepth() < 2)
-									throw new AnalysisException("Stack underflow at " + handle);
+									throw new AnalysisException("Stack underflow in " +
+										SignatureConverter.convertMethodSignature(methodGen) + " at " + handle);
 								int numSlots = frame.getNumSlots();
 								Type op1 = frame.getValue(numSlots - 1);
 								Type op2 = frame.getValue(numSlots - 2);
