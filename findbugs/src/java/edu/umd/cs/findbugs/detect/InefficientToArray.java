@@ -35,8 +35,7 @@ import edu.umd.cs.findbugs.visitclass.Constants2;
  * @author Dave Brosius
  */
 public class InefficientToArray extends BytecodeScanningDetector implements   Constants2 {
-	private static final boolean DEBUG
-		= Boolean.getBoolean("ita.debug") || true;
+	private static final boolean DEBUG = Boolean.getBoolean("ita.debug");
 
 	static final int SEEN_NOTHING = 0;
 	static final int SEEN_ICONST_0 = 1;
