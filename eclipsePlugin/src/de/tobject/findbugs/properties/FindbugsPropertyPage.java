@@ -453,7 +453,7 @@ public class FindbugsPropertyPage extends PropertyPage {
 		// Have user preferences for project changed?
 		// If so, write them to the user preferences file.
 		if (!updatedUserPreferences.equals(origUserPreferences)) {
-			System.out.println("User preferences for project changed!");
+			//System.out.println("User preferences for project changed!");
 			try {
 				FindbugsPlugin.saveUserPreferences(project, updatedUserPreferences);
 			} catch (CoreException e) {
@@ -466,7 +466,7 @@ public class FindbugsPropertyPage extends PropertyPage {
 			// If so, we need to redisplay warnings.
 			if (!updatedUserPreferences.getFilterSettings().equals(
 					origUserPreferences.getFilterSettings())) {
-				System.out.println("Filter setting for project changed!");
+				//System.out.println("Filter setting for project changed!");
 				filterOptionsChanged = true;
 			}
 		}
@@ -480,7 +480,7 @@ public class FindbugsPropertyPage extends PropertyPage {
 		}
 		
 		if (result && filterOptionsChanged) {
-			System.out.println("Redisplaying markers!");
+			//System.out.println("Redisplaying markers!");
 			MarkerUtil.redisplayMarkers(project, getShell());
 		}
 		
