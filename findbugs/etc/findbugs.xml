@@ -6,8 +6,9 @@
 	speed="moderate"
     reports="AM_CREATES_EMPTY_ZIP_FILE_ENTRY,AM_CREATES_EMPTY_JAR_FILE_ENTRY" />
   <Detector class="edu.umd.cs.findbugs.detect.TestingGround" 
-	speed="fast"
-    reports="TESTING" />
+            speed="fast"
+            reports="TESTING"
+            disabled="true" />
   <Detector class="edu.umd.cs.findbugs.detect.DontCatchIllegalMonitorStateException" 
 	speed="fast"
     reports="IMSE_DONT_CATCH_IMSE" />
