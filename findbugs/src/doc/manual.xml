@@ -230,6 +230,16 @@ These options may be used with both the GUI and Text UI.
     </listitem>
   </varlistentry>
 
+  <varlistentry>
+    <term><command>-property</command> <replaceable>name=value</replaceable></term>
+    <listitem>
+      <para>
+      This option sets a system property.&nbsp; &FindBugs; uses system properties
+      to configure analysis options.  See <xref linkend="analysisprops"/>.
+      You can use this option multiple times in order to set multiple properties.
+      </para>
+    </listitem>
+  </varlistentry>
 
 </variablelist>
 </para>
@@ -1472,6 +1482,87 @@ as expected.
 
 </sect1>
 
+
+</chapter>
+
+
+<!--
+   **************************************************************************
+   Analysis properties
+   **************************************************************************
+-->
+
+<chapter id="analysisprops">
+<title>Analysis Properties</title>
+
+<para>
+&FindBugs; allows several aspects of the analyses it performs to be
+customized.  System properties are used to configure these options.
+This chapter describes the configurable analysis options.
+</para>
+
+<para>
+The analysis options have two main purposes.  First, they allow you
+to inform &FindBugs; about the meaning of methods in your application,
+so that it can produce more accurate results, or produce fewer
+false warnings.  Second, they allow you to configure the precision
+of the analysis performed.  Reducing analysis precision can save
+memory and analysis time, at the expense of missing some real bugs,
+or producing more false warnings.
+</para>
+
+<para>
+The analysis options are set using the <command>-property</command>
+command line option.  For example:
+<screen>
+<prompt>$ </prompt><command>findbugs -textui -property cfg.noprune=true <replaceable>myApp.jar</replaceable></command>
+</screen>
+</para>
+
+<para>
+The list of configurable analysis properties is shown in
+<xref linkend="analysisproptable"/>.
+</para>
+
+<table id="analysisproptable">
+<title>Configurable Analysis Properties</title>
+<tgroup cols="3" align="left">
+  <thead>
+    <row>
+      <entry>Property Name</entry>
+      <entry>Value</entry>
+      <entry>Meaning</entry>
+    </row>
+  </thead>
+  <tbody>
+    <row>
+      <entry>cfg.noprune</entry>
+      <entry>true or false</entry>
+      <entry>If true, infeasible exception edges are not pruned from
+      the control flow graphs of analyzed methods.  This option
+      increases the speed of the analysis (by about 20%-30%),
+      but causes some detectors to produce more false warnings.</entry>
+    </row>
+    <row>
+      <entry>findbugs.assertionmethods</entry>
+      <entry>Comma separated list of fully qualified method names:
+      e.g., "com.foo.MyClass.checkAssertion"</entry>
+      <entry>This property specifies the names of methods that are used
+      to check program assertions.  Specifying these methods allows
+      the null pointer dereference bug detector to avoid reporting
+      false warnings for values which are checked by assertion
+      methods.</entry>
+    </row>
+<!--
+    <row>
+      <entry></entry>
+      <entry></entry>
+      <entry></entry>
+    </row>
+-->
+  </tbody>
+</tgroup>
+</table>
 
 </chapter>
 
