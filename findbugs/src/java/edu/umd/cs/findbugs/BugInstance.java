@@ -343,32 +343,49 @@ public class BugInstance implements Comparable, XMLWriteable {
 	 * ---------------------------------------------------------------------- */
 	
 	private class BugPropertyIterator implements Iterator<BugProperty> {
-		private BugProperty next = propertyListHead;
+		private BugProperty prev, cur;
+		private boolean removed;
 		
 		/* (non-Javadoc)
 		 * @see java.util.Iterator#hasNext()
 		 */
 		public boolean hasNext() {
-			return next != null;
+			return findNext() != null;
 		}
-		
 		/* (non-Javadoc)
 		 * @see java.util.Iterator#next()
 		 */
 		public BugProperty next() {
+			BugProperty next = findNext();
 			if (next == null)
 				throw new NoSuchElementException();
-			BugProperty result = next;
-			next = next.getNext();
-			return result;
+			prev = cur;
+			cur = next;
+			removed = false;
+			return cur;
 		}
 		
 		/* (non-Javadoc)
 		 * @see java.util.Iterator#remove()
 		 */
 		public void remove() {
-			throw new UnsupportedOperationException();
+			if (cur == null || removed)
+				throw new NoSuchElementException();
+			if (prev == null) {
+				propertyListHead = cur.getNext();
+			} else {
+				prev.setNext(cur.getNext());
+			}
+			if (cur == propertyListTail) {
+				propertyListTail = prev;
+			}
+			removed = true;
 		}
+		
+		private BugProperty findNext() {
+			return cur == null ? propertyListHead : cur.getNext();
+		}
+
 	};
 	
 	/**
