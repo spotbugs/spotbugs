@@ -50,9 +50,12 @@ import org.apache.bcel.generic.MethodGen;
  */
 public class ObligationAnalysis
 	extends ForwardDataflowAnalysis<StateSet> {
+	
+	private static final boolean DEBUG = Boolean.getBoolean("oa.debug");
 
-	private PolicyDatabase database;
 	private MethodGen methodGen;
+	private ObligationFactory factory;
+	private PolicyDatabase database;
 	private RepositoryLookupFailureCallback lookupFailureCallback;
 
 	/**
@@ -60,6 +63,7 @@ public class ObligationAnalysis
 	 * 
 	 * @param dfs       a DepthFirstSearch on the method to be analyzed
 	 * @param methodGen the MethodGen of the method being analyzed
+	 * @param factory   the ObligationFactory defining the obligation types
 	 * @param database  the PolicyDatabase defining the methods which
 	 *                  add and delete obligations
 	 * @param lookupFailureCallback callback to use when reporting
@@ -68,11 +72,13 @@ public class ObligationAnalysis
 	public ObligationAnalysis(
 			DepthFirstSearch dfs,
 			MethodGen methodGen,
+			ObligationFactory factory,
 			PolicyDatabase database,
 			RepositoryLookupFailureCallback lookupFailureCallback) {
 		super(dfs);
-		this.database = database;
 		this.methodGen = methodGen;
+		this.factory = factory;
+		this.database = database;
 		this.lookupFailureCallback = lookupFailureCallback;
 	}
 
@@ -88,11 +94,14 @@ public class ObligationAnalysis
 			throws DataflowAnalysisException {
 
 		Obligation obligation;
-
+		
 		if ((obligation = addsObligation(handle)) != null) {
 			// Add obligation to all states
+			if (DEBUG) { System.out.println("Adding obligation " + obligation.toString()); }
 			fact.addObligation(obligation);
 		} else if ((obligation = deletesObligation(handle)) != null) {
+			// Delete obligation from all states
+			if (DEBUG) { System.out.println("Deleting obligation " + obligation.toString()); }
 			deleteObligation(fact, obligation, handle);
 		}
 
@@ -132,6 +141,13 @@ public class ObligationAnalysis
 		String methodName = inv.getName(cpg);
 		String signature = inv.getSignature(cpg);
 		boolean isStatic = inv.getOpcode() == Constants.INVOKESTATIC;
+		
+		if (DEBUG) {
+			System.out.println("Checking instruction: " + handle);
+			System.out.println("  class    =" + className);
+			System.out.println("  method   =" + methodName);
+			System.out.println("  signature=" + signature);
+		}
 		
 		try {
 			return database.lookup(
@@ -174,7 +190,7 @@ public class ObligationAnalysis
 	 * @see edu.umd.cs.findbugs.ba.DataflowAnalysis#initEntryFact(edu.umd.cs.findbugs.ba.obl.StateSet)
 	 */
 	public void initEntryFact(StateSet fact) throws DataflowAnalysisException {
-		fact.makeEmpty();
+		fact.initEntryFact(factory);
 	}
 
 	/* (non-Javadoc)
