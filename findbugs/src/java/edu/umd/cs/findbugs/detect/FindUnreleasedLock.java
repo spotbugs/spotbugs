@@ -85,7 +85,7 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
 			}
 
 			// Model use of instance values in frame slots
-			ins.accept(this);
+			analyzeInstruction(ins);
 
 			final int updatedNumSlots = frame.getNumSlots();
 

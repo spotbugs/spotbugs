@@ -80,7 +80,7 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
 				while (numWordsConsumed-- > 0)
 					frame.popValue();
 			} catch (DataflowAnalysisException e) {
-				throw new AnalysisException("Stack underflow", e);
+				throw new InvalidBytecodeException("Stack underflow", e);
 			}
 
 			if (numWordsProduced > 0) {

@@ -145,7 +145,7 @@ public class IsNullValueAnalysis
 		// Model the instruction
 		visitor.setFrame(fact);
 		Instruction ins = handle.getInstruction();
-		ins.accept(visitor);
+		visitor.analyzeInstruction(ins);
 
 		// Special case:
 		// The instruction may have produced previously seen values

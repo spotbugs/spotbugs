@@ -42,7 +42,7 @@ public class StreamFrameModelingVisitor extends ResourceValueFrameModelingVisito
 		this.stream = stream;
 	}
 
-	public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock) {
+	public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock) throws DataflowAnalysisException {
 		// Record what Location we are analyzing
 		this.location = new Location(handle, basicBlock);
 
@@ -76,7 +76,7 @@ public class StreamFrameModelingVisitor extends ResourceValueFrameModelingVisito
 		}
 
 		// Model use of instance values in frame slots
-		ins.accept(this);
+		analyzeInstruction(ins);
 
 		// If needed, update frame status
 		if (status != -1) {

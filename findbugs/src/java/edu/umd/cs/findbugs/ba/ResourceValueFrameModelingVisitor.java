@@ -50,7 +50,7 @@ public abstract class ResourceValueFrameModelingVisitor extends AbstractFrameMod
 			if (topValue.equals(ResourceValue.instance()))
 				frame.setStatus(ResourceValueFrame.ESCAPED);
 		} catch (DataflowAnalysisException e) {
-			throw new IllegalStateException(e.toString());
+			throw new InvalidBytecodeException("Stack underflow", e);
 		}
 
 		handleNormalInstruction(ins);
@@ -121,7 +121,7 @@ public abstract class ResourceValueFrameModelingVisitor extends AbstractFrameMod
 			if (topValue.equals(ResourceValue.instance()))
 				frame.setStatus(ResourceValueFrame.ESCAPED);
 		} catch (DataflowAnalysisException e) {
-			throw new IllegalStateException(e.toString());
+			throw new InvalidBytecodeException("Stack underflow", e);
 		}
 
 		handleNormalInstruction(ins);
