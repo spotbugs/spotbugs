@@ -370,6 +370,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
         viewConsoleItem = new javax.swing.JCheckBoxMenuItem();
         viewBugDetailsItem = new javax.swing.JCheckBoxMenuItem();
         fullDescriptionsItem = new javax.swing.JCheckBoxMenuItem();
+        jSeparator6 = new javax.swing.JSeparator();
+        configureDetectorsItem = new javax.swing.JMenuItem();
         helpMenu = new javax.swing.JMenu();
         aboutItem = new javax.swing.JMenuItem();
 
@@ -928,6 +930,18 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
         viewMenu.add(fullDescriptionsItem);
 
+        viewMenu.add(jSeparator6);
+
+        configureDetectorsItem.setFont(new java.awt.Font("Dialog", 0, 12));
+        configureDetectorsItem.setText("Configure Detectors...");
+        configureDetectorsItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                configureDetectorsItemActionPerformed(evt);
+            }
+        });
+
+        viewMenu.add(configureDetectorsItem);
+
         theMenuBar.add(viewMenu);
 
         helpMenu.setMnemonic('H');
@@ -950,6 +964,11 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
         pack();
     }//GEN-END:initComponents
+
+    private void configureDetectorsItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_configureDetectorsItemActionPerformed
+        ConfigureDetectorsDialog dialog = new ConfigureDetectorsDialog(this, true);
+        dialog.show();
+    }//GEN-LAST:event_configureDetectorsItemActionPerformed
 
     private void reloadProjectItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_reloadProjectItemActionPerformed
         Project current = getCurrentProject();
@@ -2017,6 +2036,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
     private javax.swing.JScrollPane classpathEntryListScrollPane;
     private javax.swing.JTextField classpathEntryTextField;
     private javax.swing.JMenuItem closeProjectItem;
+    private javax.swing.JMenuItem configureDetectorsItem;
     private javax.swing.JTextArea consoleMessageArea;
     private javax.swing.JScrollPane consoleScrollPane;
     private javax.swing.JSplitPane consoleSplitter;
@@ -2034,6 +2054,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
     private javax.swing.JSeparator jSeparator3;
     private javax.swing.JSeparator jSeparator4;
     private javax.swing.JSeparator jSeparator5;
+    private javax.swing.JSeparator jSeparator6;
     private javax.swing.JLabel jarFileLabel;
     private javax.swing.JList jarFileList;
     private javax.swing.JLabel jarFileListLabel;
