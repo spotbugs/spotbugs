@@ -160,18 +160,22 @@ public class FindBugsFrame extends javax.swing.JFrame {
         }
         
         public String toString() {
-            BugInstance bugInstance = (BugInstance) getUserObject();
-            String result;
-            if (fullDescriptionsItem.isSelected()) {
-                result = bugInstance.getMessage();
-            } else {
-                result = bugInstance.toString();
-            }
-	    boolean experimental = bugInstance.isExperimental();
-	    if (experimental)
-		return "EXP: " + result;
-	    else
-        	return result;
+	    try {
+                BugInstance bugInstance = (BugInstance) getUserObject();
+                String result;
+                if (fullDescriptionsItem.isSelected()) {
+                    result = bugInstance.getMessage();
+                } else {
+                    result = bugInstance.toString();
+                }
+		boolean experimental = bugInstance.isExperimental();
+		if (experimental)
+		    return "EXP: " + result;
+		else
+       		    return result;
+	    } catch (Exception e) {
+		return "Error formatting message for bug: " + e.toString();
+	    }
         }
     }
     
