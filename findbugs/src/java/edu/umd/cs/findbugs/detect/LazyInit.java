@@ -64,7 +64,7 @@ public class LazyInit extends ByteCodePatternDetector {
 	static {
 		pattern
 			.add(new Load("f", "val").label("start"))
-			.add(new IfNull("val").label("end"))
+			.add(new IfNull("val"))
 			.addWild(CREATE_OBJ_WILD)
 			.add(new Store("f", pattern.dummyVariable()).label("end"));
 	}
