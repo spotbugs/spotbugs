@@ -250,13 +250,13 @@ public class FindInconsistentSync2 implements Detector {
 			int writes = numWriteLocked + numWriteUnlocked;
 
 			if (locked == 0) {
-//				continue;
-				propertySet.addProperty(InconsistentSyncWarningProperty.NEVER_LOCKED);
+				continue;
+//				propertySet.addProperty(InconsistentSyncWarningProperty.NEVER_LOCKED);
 			}
 
 			if (unlocked == 0) {
-//				continue;
-				propertySet.addProperty(InconsistentSyncWarningProperty.NEVER_UNLOCKED);
+				continue;
+//				propertySet.addProperty(InconsistentSyncWarningProperty.NEVER_UNLOCKED);
 			}
 
 

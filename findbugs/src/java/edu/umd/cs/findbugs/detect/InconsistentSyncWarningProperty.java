@@ -35,12 +35,12 @@ public class InconsistentSyncWarningProperty implements WarningProperty {
 		this.priorityAdjustment = priorityAdjustment;
 	}
 	
-	/** Field is never accessed while locked. */
-	public static final InconsistentSyncWarningProperty NEVER_LOCKED =
-		new InconsistentSyncWarningProperty("NEVER_LOCKED", PriorityAdjustment.FALSE_POSITIVE);
-	/** Field is never accessed while unlocked. */
-	public static final InconsistentSyncWarningProperty NEVER_UNLOCKED =
-		new InconsistentSyncWarningProperty("NEVER_UNLOCKED", PriorityAdjustment.FALSE_POSITIVE);
+//	/** Field is never accessed while locked. */
+//	public static final InconsistentSyncWarningProperty NEVER_LOCKED =
+//		new InconsistentSyncWarningProperty("NEVER_LOCKED", PriorityAdjustment.FALSE_POSITIVE);
+//	/** Field is never accessed while unlocked. */
+//	public static final InconsistentSyncWarningProperty NEVER_UNLOCKED =
+//		new InconsistentSyncWarningProperty("NEVER_UNLOCKED", PriorityAdjustment.FALSE_POSITIVE);
 	/**
 	 * Field is accessed unlocked most of the time, and therefore is probably
 	 * not intended to be safely used from multiple threads.
