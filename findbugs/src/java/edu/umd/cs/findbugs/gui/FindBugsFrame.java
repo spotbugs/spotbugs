@@ -36,6 +36,7 @@ import java.awt.Color;
 import java.io.File;
 import java.io.StringWriter;
 import java.io.IOException;
+import java.io.BufferedInputStream;
 import java.io.InputStream;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -2423,30 +2424,67 @@ public class FindBugsFrame extends javax.swing.JFrame {
      * @param args the command line arguments
      */
     public static void main(String args[]) {
+        Project project = null;
+
         for (int i = 0; i < args.length; ++i) {
             String arg = args[i];
             
 	    if (arg.equals("-debug")) {
                 System.out.println("Setting findbugs.debug=true");
                 System.setProperty("findbugs.debug", "true");
-            } else if (arg.equals("-plastic")) {
-		// You can get the Plastic look and feel from jgoodies.com:
-		//    http://www.jgoodies.com/downloads/libraries.html
-		// Just put "plastic.jar" in the lib directory, right next
-		// to the other jar files.
+            } else if (arg.startsWith("-look:")) {
+	        arg = arg.substring(6);
+
+		String theme = null;
+		if (arg.equals("plastic")) {
+		    // You can get the Plastic look and feel from jgoodies.com:
+		    //    http://www.jgoodies.com/downloads/libraries.html
+		    // Just put "plastic.jar" in the lib directory, right next
+		    // to the other jar files.
+		    theme = "com.jgoodies.plaf.plastic.PlasticXPLookAndFeel";
+		} else if (arg.equals("gtk")) {
+		    theme = "com.sun.java.swing.plaf.gtk.GTKLookAndFeel";
+		} else if (arg.equals("native")) {
+		    theme = UIManager.getSystemLookAndFeelClassName();
+		} else {
+		    System.err.println("Style '" + arg + "' not supported");
+		}
+
+		if (theme != null) {
+		    try {
+		        UIManager.setLookAndFeel(theme);
+		    } catch (Exception e) {
+		        System.err.println("Couldn't load " + arg +
+					   " look and feel: " + e.toString());
+		    }
+		}
+	    } else if (arg.equals("-project")) {
+	        ++i;
+		if (i == args.length)
+		    throw new IllegalArgumentException(arg + " option requires argument");
+
+		// Convert project file to be an absolute path
+		String projectFile = new File(args[i]).getAbsolutePath();
+
 		try {
-		    UIManager.setLookAndFeel("com.jgoodies.plaf.plastic.PlasticXPLookAndFeel");
-		} catch (Exception e) {
-		    System.err.println("Couldn't load plastic look and feel: " + e.toString());
+		  project = new Project(projectFile);
+		  InputStream in = new BufferedInputStream(new FileInputStream(projectFile));
+		  project.read(in);
+		  in.close();
+		} catch (IOException e) {
+		  System.err.println("Couldn't load project: " + e.getMessage());
 		}
 	    }
-        
-        }
+	}
 
 	// Load plugins!
 	DetectorFactoryCollection.instance();
         
         FindBugsFrame frame = new FindBugsFrame();
+
+	if (project != null) {
+	    frame.setProject(project);
+	}
         frame.setSize(800, 600);
         frame.show();
     }
