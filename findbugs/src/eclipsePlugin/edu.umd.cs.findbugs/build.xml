@@ -46,6 +46,7 @@
 		<delete>
 			<fileset dir="${build.dir}" includes="${core.libs}"/>
 		</delete>
+		<delete file="build.properties"/>
 	</target>
 
 </project>

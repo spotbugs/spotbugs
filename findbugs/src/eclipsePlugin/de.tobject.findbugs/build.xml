@@ -43,6 +43,7 @@
 		<delete dir="${build.dir}"/>
 		<delete file="findbugs-plugin.jar"/>
 		<delete file="${plugin.zip}"/>
+		<delete file="build.properties"/>
 	</target>
 
 </project>
