@@ -7,7 +7,7 @@
 :: Set up default values
 :: ----------------------------------------------------------------------
 set appjar=findbugsGUI.jar
-set jvmargs=-Xmx128m -Xss1m
+set jvmargs=-Xmx256m -Xss2m
 set args=
 
 goto loop
