@@ -39,10 +39,8 @@ public class ReversePostfixOrder extends AbstractBlockOrder {
 	private static class ReversePostfixComparator implements Comparator<BasicBlock> {
 		private DepthFirstSearch dfs;
 
-		public ReversePostfixComparator(CFG cfg) {
-			// Perform the depth first search
-			dfs = new DepthFirstSearch(cfg);
-			dfs.search();
+		public ReversePostfixComparator(DepthFirstSearch dfs) {
+			this.dfs = dfs;
 		}
 
 		public int compare(BasicBlock aa, BasicBlock bb) {
@@ -52,10 +50,11 @@ public class ReversePostfixOrder extends AbstractBlockOrder {
 
 	/**
 	 * Constructor.
-	 * @param cfg the CFG whose blocks should be put in reverse postfix order
+	 * @param cfg the CFG for the method
+	 * @param dfs the DepthFirstSearch on the method
 	 */
-	public ReversePostfixOrder(CFG cfg) {
-		super(cfg, new ReversePostfixComparator(cfg));
+	public ReversePostfixOrder(CFG cfg, DepthFirstSearch dfs) {
+		super(cfg, new ReversePostfixComparator(dfs));
 	}
 }
 

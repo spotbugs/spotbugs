@@ -65,7 +65,8 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
 	private HashMap<Location, ValueNumberFrame> factAtLocationMap;
 	private HashMap<Location, ValueNumberFrame> factAfterLocationMap;
 
-	public ValueNumberAnalysis(MethodGen methodGen) {
+	public ValueNumberAnalysis(MethodGen methodGen, DepthFirstSearch dfs) {
+		super(dfs);
 		this.methodGen = methodGen;
 		this.factory = new ValueNumberFactory();
 		this.cache = new ValueNumberCache();
@@ -279,7 +280,7 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
 			DataflowTestDriver<ValueNumberFrame, ValueNumberAnalysis> driver =
 				new DataflowTestDriver<ValueNumberFrame, ValueNumberAnalysis>() {
 				public ValueNumberAnalysis createAnalysis(MethodGen methodGen, CFG cfg) {
-					return new ValueNumberAnalysis(methodGen);
+					return new ValueNumberAnalysis(methodGen, new DepthFirstSearch(cfg).search());
 				}
 			};
 

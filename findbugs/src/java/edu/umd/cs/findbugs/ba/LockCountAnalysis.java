@@ -47,8 +47,10 @@ public abstract class LockCountAnalysis extends ForwardDataflowAnalysis<LockCoun
 	 * Constructor.
 	 * @param methodGen method being analyzed
 	 * @param vnaDataflow the Dataflow object used to execute ValueNumberAnalysis on the method
+	 * @param dfs DepthFirstSearch on the method
 	 */
-	public LockCountAnalysis(MethodGen methodGen, ValueNumberDataflow vnaDataflow) {
+	public LockCountAnalysis(MethodGen methodGen, ValueNumberDataflow vnaDataflow, DepthFirstSearch dfs) {
+		super(dfs);
 		this.methodGen = methodGen;
 		this.vnaDataflow = vnaDataflow;
 	}

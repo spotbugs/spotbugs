@@ -27,6 +27,10 @@ package edu.umd.cs.daveho.ba;
  * @author David Hovemeyer
  */
 public abstract class FrameDataflowAnalysis<ValueType, FrameType extends Frame<ValueType>> extends ForwardDataflowAnalysis<FrameType> {
+	public FrameDataflowAnalysis(DepthFirstSearch dfs) {
+		super(dfs);
+	}
+
 	public void copy(FrameType source, FrameType dest) {
 		dest.copyFrom(source);
 	}

@@ -87,7 +87,8 @@ public abstract class ResourceValueAnalysisTestDriver<Resource> {
 				new DataflowTestDriver<ResourceValueFrame, ResourceValueAnalysis<Resource>>() {
 				public ResourceValueAnalysis<Resource> createAnalysis(MethodGen methodGen, CFG cfg)
 					throws DataflowAnalysisException {
-					return new ResourceValueAnalysis<Resource>(methodGen, cfg, resourceTracker, resource,
+					DepthFirstSearch dfs = new DepthFirstSearch(cfg).search();
+					return new ResourceValueAnalysis<Resource>(methodGen, cfg, dfs, resourceTracker, resource,
 						lookupFailureCallback);
 				}
 			};

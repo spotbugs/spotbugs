@@ -28,12 +28,19 @@ package edu.umd.cs.daveho.ba;
  * @author David Hovemeyer
  */
 public abstract class ForwardDataflowAnalysis<Fact> extends AbstractDataflowAnalysis<Fact> {
+	private DepthFirstSearch dfs;
+
+	public ForwardDataflowAnalysis(DepthFirstSearch dfs) {
+		if (dfs == null) throw new IllegalArgumentException();
+		this.dfs = dfs;
+	}
+
 	public boolean isForwards() {
 		return true;
 	}
 
 	public BlockOrder getBlockOrder(CFG cfg) {
-		return new ReversePostfixOrder(cfg);
+		return new ReversePostfixOrder(cfg, dfs);
 	}
 }
 

@@ -30,14 +30,46 @@ import org.apache.bcel.generic.*;
 
 import edu.umd.cs.daveho.ba.*;
 
-public class FindTwoLockWait extends CFGBuildingDetector implements Detector {
+public class FindTwoLockWait implements Detector {
 
 	private BugReporter bugReporter;
-	private AnyLockCountAnalysis analysis;
-	private Dataflow<LockCount, LockCountAnalysis> dataflow;
+	private JavaClass javaClass;
 
 	public FindTwoLockWait(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
+	}
+
+	public void visitClassContext(ClassContext classContext) {
+		javaClass = classContext.getJavaClass();
+
+		try {
+
+			Method[] methodList = javaClass.getMethods();
+			for (int i = 0; i < methodList.length; ++i) {
+				Method method = methodList[i];
+
+				final MethodGen methodGen = classContext.getMethodGen(method);
+				if (methodGen == null)
+					continue;
+
+				if (!preScreen(methodGen))
+					continue;
+
+				final CFG cfg = classContext.getCFG(method);
+				final LockCountDataflow dataflow = classContext.getAnyLockCountDataflow(method);
+
+				new LocationScanner(cfg).scan(new LocationScanner.Callback() {
+					public void visitLocation(Location location) {
+						visitInstruction(location.getHandle(), location.getBasicBlock(), methodGen, dataflow);
+					}
+				});
+			}
+
+		} catch (DataflowAnalysisException e) {
+			throw new AnalysisException("FindTwoLockWait caught exception: " + e.toString(), e);
+		} catch (CFGBuilderException e) {
+			throw new AnalysisException("FindTwoLockWait caught exception: " + e.toString(), e);
+		}
 	}
 
 	public boolean preScreen(MethodGen mg) {
@@ -63,30 +95,17 @@ public class FindTwoLockWait extends CFGBuildingDetector implements Detector {
 		return lockCount >= 2 && sawWait;
 	}
 
-	public void visitCFG(CFG cfg, MethodGen methodGen) {
-		try {
-			analysis = new AnyLockCountAnalysis(methodGen, null);
-			dataflow = new Dataflow<LockCount, LockCountAnalysis>(cfg, analysis);
-			dataflow.execute();
-
-			visitCFGInstructions(cfg, methodGen);
-		} catch (DataflowAnalysisException e) {
-			throw new AnalysisException(e.getMessage());
-		}
-	}
-
-	public void visitInstruction(InstructionHandle handle, BasicBlock bb, MethodGen methodGen) {
+	public void visitInstruction(InstructionHandle handle, BasicBlock bb, MethodGen methodGen, LockCountDataflow dataflow) {
 		try {
 			ConstantPoolGen cpg = methodGen.getConstantPool();
 	
 			if (isWait(handle, cpg)) {
-				LockCount count = analysis.createFact();
-				analysis.transfer(bb, handle, dataflow.getStartFact(bb), count);
+				LockCount count = dataflow.getFactAtLocation(new Location(handle, bb));
 				if (count.getCount() > 1) {
 					// A wait with multiple locks held?
-					String sourceFile = getJavaClass().getSourceFileName();
+					String sourceFile = javaClass.getSourceFileName();
 					bugReporter.reportBug(new BugInstance("2LW_TWO_LOCK_WAIT", NORMAL_PRIORITY)
-						.addClass(getJavaClass())
+						.addClass(javaClass)
 						.addMethod(methodGen, sourceFile)
 						.addSourceLine(methodGen, sourceFile, handle));
 				}
@@ -109,7 +128,7 @@ public class FindTwoLockWait extends CFGBuildingDetector implements Detector {
 			(methodSig.equals("()V") || methodSig.equals("(J)V") || methodSig.equals("(JI)V"));
 	}
 
-	public void report(java.io.PrintStream out) {
+	public void report() {
 	}
 }
 

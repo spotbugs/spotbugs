@@ -259,9 +259,11 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 					SignatureConverter.convertMethodSignature(methodGen));
 
 				final CFG cfg = classContext.getCFG(method);
+				final DepthFirstSearch dfs = classContext.getDepthFirstSearch(method);
+
 				RefComparisonTypeMerger typeMerger = new RefComparisonTypeMerger(bugReporter);
 				TypeFrameModelingVisitor visitor = new RefComparisonTypeFrameModelingVisitor(methodGen.getConstantPool(), bugReporter);
-				TypeAnalysis typeAnalysis = new TypeAnalysis(methodGen, typeMerger, visitor);
+				TypeAnalysis typeAnalysis = new TypeAnalysis(methodGen, dfs, typeMerger, visitor);
 				final TypeDataflow typeDataflow = new TypeDataflow(cfg, typeAnalysis);
 				typeDataflow.execute();
 
@@ -348,7 +350,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 			public TypeAnalysis createAnalysis(MethodGen methodGen, CFG cfg) {
 				TypeMerger typeMerger = new RefComparisonTypeMerger(lookupFailureCallback);
 				TypeFrameModelingVisitor visitor = new RefComparisonTypeFrameModelingVisitor(methodGen.getConstantPool(), lookupFailureCallback);
-				TypeAnalysis analysis = new TypeAnalysis(methodGen, typeMerger, visitor);
+				TypeAnalysis analysis = new TypeAnalysis(methodGen, new DepthFirstSearch(cfg).search(), typeMerger, visitor);
 				return analysis;
 			}
 		};

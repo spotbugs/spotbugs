@@ -42,8 +42,10 @@ public class StackDepthAnalysis extends ForwardDataflowAnalysis<StackDepth> {
 	/**
 	 * Constructor.
 	 * @param cpg the ConstantPoolGen of the method whose CFG we're performing the analysis on
+	 * @param dfs DepthFirstSearch of the method's CFG
 	 */
-	public StackDepthAnalysis(ConstantPoolGen cpg) {
+	public StackDepthAnalysis(ConstantPoolGen cpg, DepthFirstSearch dfs) {
+		super(dfs);
 		this.cpg = cpg;
 	}
 
@@ -115,7 +117,7 @@ public class StackDepthAnalysis extends ForwardDataflowAnalysis<StackDepth> {
 
 		DataflowTestDriver<StackDepth, StackDepthAnalysis> driver = new DataflowTestDriver<StackDepth, StackDepthAnalysis>() {
 			public StackDepthAnalysis createAnalysis(MethodGen methodGen, CFG cfg) {
-				return new StackDepthAnalysis(methodGen.getConstantPool());
+				return new StackDepthAnalysis(methodGen.getConstantPool(), new DepthFirstSearch(cfg).search());
 			}
 		};
 

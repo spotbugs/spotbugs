@@ -36,7 +36,8 @@ public class LockSetAnalysis extends ForwardDataflowAnalysis<LockSet> {
 	private MethodGen methodGen;
 	private ValueNumberDataflow valueNumberDataflow;
 
-	public LockSetAnalysis(MethodGen methodGen, ValueNumberDataflow valueNumberDataflow) {
+	public LockSetAnalysis(MethodGen methodGen, ValueNumberDataflow valueNumberDataflow, DepthFirstSearch dfs) {
+		super(dfs);
 		this.methodGen = methodGen;
 		this.valueNumberDataflow = valueNumberDataflow;
 	}

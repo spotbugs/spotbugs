@@ -36,15 +36,18 @@ import org.apache.bcel.generic.InstructionHandle;
  */
 public class DominatorsAnalysis implements DataflowAnalysis<BitSet> {
 	private final CFG cfg;
+	private final DepthFirstSearch dfs;
 	private final IdentityHashMap<BasicBlock, BitSet> startFactMap;
 	private final IdentityHashMap<BasicBlock, BitSet> resultFactMap;
 
 	/**
 	 * Constructor.
-	 * @param CFG the CFG to compute dominator relationships for
+	 * @param cfg the CFG to compute dominator relationships for
+	 * @param dfs the DepthFirstSearch on the CFG
 	 */
-	public DominatorsAnalysis(CFG cfg) {
+	public DominatorsAnalysis(CFG cfg, DepthFirstSearch dfs) {
 		this.cfg = cfg;
+		this.dfs = dfs;
 		this.startFactMap = new IdentityHashMap<BasicBlock, BitSet>();
 		this.resultFactMap = new IdentityHashMap<BasicBlock, BitSet>();
 	}
@@ -93,7 +96,7 @@ public class DominatorsAnalysis implements DataflowAnalysis<BitSet> {
 	}
 
 	public BlockOrder getBlockOrder(CFG cfg) {
-		return new ReversePostfixOrder(cfg);
+		return new ReversePostfixOrder(cfg, dfs);
 	}
 
 	public boolean same(BitSet fact1, BitSet fact2) {

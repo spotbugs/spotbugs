@@ -61,6 +61,7 @@ public abstract class ResourceTrackingDetector<Resource> implements Detector {
 				if (methodGen == null)
 					continue;
 				final CFG cfg = classContext.getCFG(method);
+				final DepthFirstSearch dfs = classContext.getDepthFirstSearch(method);
 
 				if (DEBUG) System.out.println(SignatureConverter.convertMethodSignature(methodGen));
 
@@ -74,7 +75,7 @@ public abstract class ResourceTrackingDetector<Resource> implements Detector {
 							if (resource != null) {
 								if (DEBUG) System.out.println("Resource creation at " + handle.getPosition());
 								ResourceValueAnalysis<Resource> analysis =
-									new ResourceValueAnalysis<Resource>(methodGen, cfg, resourceTracker, resource, bugReporter);
+									new ResourceValueAnalysis<Resource>(methodGen, cfg, dfs, resourceTracker, resource, bugReporter);
 								Dataflow<ResourceValueFrame, ResourceValueAnalysis<Resource>> dataflow =
 									new Dataflow<ResourceValueFrame, ResourceValueAnalysis<Resource>>(cfg, analysis);
 	

@@ -44,11 +44,13 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame> {
 	/**
 	 * Constructor.
 	 * @param methodGen the MethodGen whose CFG we'll be analyzing
+	 * @param dfs DepthFirstSearch of the method
 	 * @param typeMerger object to merge types
 	 * @param visitor a TypeFrameModelingVisitor to use to model the effect
 	 *   of instructions
 	 */
-	public TypeAnalysis(MethodGen methodGen, TypeMerger typeMerger, TypeFrameModelingVisitor visitor) {
+	public TypeAnalysis(MethodGen methodGen, DepthFirstSearch dfs, TypeMerger typeMerger, TypeFrameModelingVisitor visitor) {
+		super(dfs);
 		this.methodGen = methodGen;
 		this.typeMerger = typeMerger;
 		this.visitor = visitor;
@@ -57,19 +59,21 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame> {
 	/**
 	 * Constructor.
 	 * @param methodGen the MethodGen whose CFG we'll be analyzing
+	 * @param dfs DepthFirstSearch of the method
 	 * @param typeMerger object to merge types
 	 */
-	public TypeAnalysis(MethodGen methodGen, TypeMerger typeMerger) {
-		this(methodGen, typeMerger, new TypeFrameModelingVisitor(methodGen.getConstantPool()));
+	public TypeAnalysis(MethodGen methodGen, DepthFirstSearch dfs, TypeMerger typeMerger) {
+		this(methodGen, dfs, typeMerger, new TypeFrameModelingVisitor(methodGen.getConstantPool()));
 	}
 
 	/**
 	 * Constructor which uses StandardTypeMerger.
 	 * @param methodGen the MethodGen whose CFG we'll be analyzing
+	 * @param dfs DepthFirstSearch of the method
 	 * @param lookupFailureCallback callback for Repository lookup failures
 	 */
-	public TypeAnalysis(MethodGen methodGen, RepositoryLookupFailureCallback lookupFailureCallback) {
-		this(methodGen, new StandardTypeMerger(lookupFailureCallback));
+	public TypeAnalysis(MethodGen methodGen, DepthFirstSearch dfs, RepositoryLookupFailureCallback lookupFailureCallback) {
+		this(methodGen, dfs, new StandardTypeMerger(lookupFailureCallback));
 	}
 
 	public TypeFrame createFact() {
@@ -166,7 +170,7 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame> {
 
 		DataflowTestDriver<TypeFrame, TypeAnalysis> driver = new DataflowTestDriver<TypeFrame, TypeAnalysis>() {
 			public TypeAnalysis createAnalysis(MethodGen methodGen, CFG cfg) {
-				return new TypeAnalysis(methodGen, lookupFailureCallback);
+				return new TypeAnalysis(methodGen, new DepthFirstSearch(cfg).search(), lookupFailureCallback);
 			}
 		};
 

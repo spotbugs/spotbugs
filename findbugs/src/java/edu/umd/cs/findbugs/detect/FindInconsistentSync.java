@@ -29,7 +29,7 @@ import org.apache.bcel.generic.*;
 
 import edu.umd.cs.daveho.ba.*;
 
-public class FindInconsistentSync extends CFGBuildingDetector {
+public class FindInconsistentSync implements Detector {
 
 	private static final boolean DEBUG = Boolean.getBoolean("fis.debug");
 	private static final boolean ANY_LOCKS = Boolean.getBoolean("fis.anylocks");
@@ -56,30 +56,6 @@ public class FindInconsistentSync extends CFGBuildingDetector {
 		}
 	}
 
-	/**
-	 * Hash map key for caching lock count analysis.
-	 */
-	private static class LCAKey {
-		private CFG cfg;
-		private MethodGen methodGen;
-
-		public LCAKey(CFG cfg, MethodGen methodGen) {
-			this.cfg = cfg;
-			this.methodGen = methodGen;
-		}
-
-		public int hashCode() {
-			return System.identityHashCode(cfg) + System.identityHashCode(methodGen);
-		}
-
-		public boolean equals(Object o) {
-			if (!(o instanceof LCAKey))
-				return false;
-			LCAKey other = (LCAKey) o;
-			return cfg == other.cfg && methodGen == other.methodGen;
-		}
-	}
-
 	private BugReporter bugReporter;
 	private HashMap<FieldAnnotation, FieldStats> statMap = new LinkedHashMap<FieldAnnotation, FieldStats>();
 	private HashSet<FieldAnnotation> publicFields = new HashSet<FieldAnnotation>();
@@ -88,26 +64,63 @@ public class FindInconsistentSync extends CFGBuildingDetector {
 	private HashSet<FieldAnnotation> localLocks = new HashSet<FieldAnnotation>();
 
 	// Per-class data structures:
+	private JavaClass javaClass;
 	private boolean inConstructor;
-	private HashMap<LCAKey, Dataflow<LockCount, LockCountAnalysis>> lcaMap = new HashMap<LCAKey, Dataflow<LockCount, LockCountAnalysis>>();
 	private HashSet<MethodGen> lockedPrivateMethods = new HashSet<MethodGen>();
-	private Dataflow<LockCount, LockCountAnalysis> dataflow;
 	private SelfCalls selfCalls;
 
 	public FindInconsistentSync(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 	}
 
-	public void startClass(ClassContext classContext) {
-		JavaClass jclass = classContext.getJavaClass();
+	public void visitClassContext(final ClassContext classContext) {
 
-		String className = jclass.getClassName();
+		try {
+			try {
+				startClass(classContext);
+
+				JavaClass jclass = classContext.getJavaClass();
+				Method[] methodList = jclass.getMethods();
+				for (int i = 0; i < methodList.length; ++i) {
+					final Method method = methodList[i];
+					final MethodGen methodGen = classContext.getMethodGen(method);
+					if (methodGen == null)
+						continue;
+
+					// Don't bothing looking at reads and writes in constructors (and similiar methods)
+					inConstructor = isConstructor(methodGen.getName());
+					if (inConstructor)
+						continue;
+
+					final CFG cfg = classContext.getCFG(method);
+					final LockCountDataflow dataflow = getLockCountDataflow(classContext, method);
+
+					new LocationScanner(cfg).scan(new LocationScanner.Callback() {
+						public void visitLocation(Location location) {
+							visitInstruction(dataflow, location.getHandle(), location.getBasicBlock(), methodGen);
+						}
+					});
+				}
+			} finally {
+				finishClass();
+			}
+		} catch (DataflowAnalysisException e) {
+			throw new AnalysisException("FindInconsistentSync caught exception: " + e.toString(), e);
+		} catch (CFGBuilderException e) {
+			throw new AnalysisException("FindInconsistentSync caught exception: " + e.toString(), e);
+		}
+	}
+
+	public void startClass(ClassContext classContext) {
+		javaClass = classContext.getJavaClass();
+
+		String className = javaClass.getClassName();
 		//System.out.println("********** " + className + " *************");
 
 		// Examine fields of this class so we know which ones are public, volatile, and/or final.
 		// We don't bother finding this out for other fields (since that would involve looking
 		// at other classes).
-		org.apache.bcel.classfile.Field[] jfields = jclass.getFields();
+		org.apache.bcel.classfile.Field[] jfields = javaClass.getFields();
 		for (int i = 0; i < jfields.length; ++i) {
 			org.apache.bcel.classfile.Field jfield = jfields[i];
 			String fieldName = jfield.getName();
@@ -174,13 +187,13 @@ public class FindInconsistentSync extends CFGBuildingDetector {
 						throw new AnalysisException(e.getMessage());
 					}
 					MethodGen methodGen = classContext.getMethodGen(method);
-					Dataflow<LockCount, LockCountAnalysis> dataflow = getLockCountDataflow(cfg, methodGen);
+					LockCountDataflow dataflow = getLockCountDataflow(classContext, method);
 
 					// Is the call site locked?
 					LockCount lockCount = getLockCount(dataflow, handle, basicBlock);
 					if (lockCount.getCount() <= 0) {
 						// No lock held at this site
-						if (DEBUG) System.out.println("Unlocked call to " + jclass.getClassName() + "." + called.getName()  +
+						if (DEBUG) System.out.println("Unlocked call to " + javaClass.getClassName() + "." + called.getName()  +
 							" from method " +methodGen.getClassName() + "." + methodGen.getName() );
 						allSitesLocked = false;
 						break siteLoop;
@@ -195,15 +208,15 @@ public class FindInconsistentSync extends CFGBuildingDetector {
 			}
 
 		} catch (DataflowAnalysisException e) {
-			throw new AnalysisException(e.toString());
+			throw new AnalysisException("FindInconsistentSync caught exception: " + e.toString(), e);
+		} catch (CFGBuilderException e) {
+			throw new AnalysisException("FindInconsistentSync caught exception: " + e.toString(), e);
 		}
 	}
 
 	public void finishClass() {
 		// Clear per-class data structures
-		lcaMap.clear();
 		lockedPrivateMethods.clear();
-		dataflow = null;
 		selfCalls = null;
 	}
 
@@ -216,54 +229,17 @@ public class FindInconsistentSync extends CFGBuildingDetector {
         		||  methodName.equals("finalize");
 	}
 
-	public void visitCFG(CFG cfg, MethodGen methodGen) {
-		inConstructor = isConstructor(methodGen.getName());
-
-		// Don't bothing looking at reads and writes in constructors (and similiar methods)
-		if (inConstructor)
-			return;
-
-		try {
-			ConstantPoolGen cpg = methodGen.getConstantPool();
-			dataflow = getLockCountDataflow(cfg, methodGen);
-			visitCFGInstructions(cfg, methodGen);
-		} catch (DataflowAnalysisException e) {
-			throw new AnalysisException(e.toString());
-		}
-	}
-
-	private Dataflow<LockCount, LockCountAnalysis> getLockCountDataflow(CFG cfg, MethodGen methodGen) throws DataflowAnalysisException {
-		LCAKey key = new LCAKey(cfg, methodGen);
-		Dataflow<LockCount, LockCountAnalysis> lcaDataflow = lcaMap.get(key);
-
-		if (lcaDataflow == null) {
-			LockCountAnalysis analysis;
-
-			if (ANY_LOCKS) {
-				analysis = new AnyLockCountAnalysis(methodGen, null);
-			} else {
-				if (methodGen.isStatic())
-					// Static method, so by definition, there are no interesting locks in this method
-					return null;
-
-				ValueNumberAnalysis valueNumberAnalysis = new ValueNumberAnalysis(methodGen);
-				ValueNumberDataflow vnaDataflow = new ValueNumberDataflow(cfg, valueNumberAnalysis);
-				vnaDataflow.execute();
-				valueNumberAnalysis.compactValueNumbers(vnaDataflow);
-				analysis = new ThisLockCountAnalysis(methodGen, vnaDataflow);
-			}
-
-			lcaDataflow = new Dataflow<LockCount, LockCountAnalysis>(cfg, analysis);
-			lcaDataflow.execute();
-
-			lcaMap.put(key, lcaDataflow);
-		}
-
-		return lcaDataflow;
+	private static LockCountDataflow getLockCountDataflow(ClassContext classContext, Method method)
+		throws DataflowAnalysisException, CFGBuilderException {
+		return ANY_LOCKS
+			? classContext.getAnyLockCountDataflow(method)
+			: classContext.getThisLockCountDataflow(method);
 	}
 
 	// This is called by visitCFGInstructions(), for each instruction in each basic block in the CFG.
-	public void visitInstruction(InstructionHandle handle, BasicBlock bb, MethodGen methodGen) {
+	public void visitInstruction(LockCountDataflow dataflow,
+		InstructionHandle handle, BasicBlock bb, MethodGen methodGen) {
+
 		try {
 			if (inConstructor) throw new IllegalStateException("visiting instruction in constructor!");
 
@@ -312,14 +288,14 @@ public class FindInconsistentSync extends CFGBuildingDetector {
 	}
 
 	private void addUnsyncAccess(FieldStats stats, MethodGen methodGen, InstructionHandle handle) {
-		String sourceFile = getJavaClass().getSourceFileName();
+		String sourceFile = javaClass.getSourceFileName();
 		SourceLineAnnotation accessSourceLine = SourceLineAnnotation.fromVisitedInstruction(methodGen, sourceFile, handle);
 		if (accessSourceLine != null)
 			stats.unsyncAccessList.add(accessSourceLine);
 	}
 
 	private void debug(FieldAnnotation field, MethodGen mg, String accessType) {
-		String fullMethodName = getJavaClass().getClassName() + "." + mg.getName() + " : " + mg.getSignature();
+		String fullMethodName = javaClass.getClassName() + "." + mg.getName() + " : " + mg.getSignature();
 		System.out.println(accessType + "\t" + fullMethodName + "\t" + field.toString() + " (IS2)");
 	}
 
@@ -332,18 +308,13 @@ public class FindInconsistentSync extends CFGBuildingDetector {
 		return stats;
 	}
 
-	private static LockCount getLockCount(Dataflow<LockCount, LockCountAnalysis> dataflow, InstructionHandle handle, BasicBlock bb)
+	private static LockCount getLockCount(LockCountDataflow dataflow, InstructionHandle handle, BasicBlock bb)
 		throws DataflowAnalysisException {
-		LockCount count = new LockCount(0); // assume there are no locks
-		if (dataflow != null) {
-			DataflowAnalysis<LockCount> analysis = dataflow.getAnalysis();
-			analysis.transfer(bb, handle, dataflow.getStartFact(bb), count);
-		}
-		return count;
+		return dataflow.getFactAtLocation(new Location(handle, bb));
 	}
 
 	private boolean isLocal(FieldAnnotation field) {
-		return field.getClassName().equals(getJavaClass().getClassName());
+		return field.getClassName().equals(javaClass.getClassName());
 	}
 
 	public void report() {

@@ -1,5 +1,5 @@
 /*
- * Bytecode Analysis Framework
+ * FindBugs - Find bugs in Java programs
  * Copyright (C) 2003, University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
@@ -19,31 +19,13 @@
 
 package edu.umd.cs.daveho.ba;
 
-// We require BCEL 5.1 or later.
-import org.apache.bcel.*;
-import org.apache.bcel.classfile.*;
-import org.apache.bcel.generic.*;
-
-public class AnyLockCountAnalysis extends LockCountAnalysis {
-
-	public AnyLockCountAnalysis(MethodGen methodGen, ValueNumberDataflow vnaDataflow, DepthFirstSearch dfs) {
-		super(methodGen, vnaDataflow, dfs);
+public class LockCountDataflow extends Dataflow<LockCount, LockCountAnalysis> {
+	public LockCountDataflow(CFG cfg, LockCountAnalysis analysis) {
+		super(cfg, analysis);
 	}
 
-	public void initEntryFact(LockCount result) {
-		if (methodGen.isSynchronized())
-			result.setCount(1);
-		else
-			result.setCount(0);
-	}
-
-	public int getDelta(Instruction ins, ValueNumberFrame frame) throws DataflowAnalysisException {
-		int delta = 0;
-		if (ins instanceof MONITORENTER)
-			++delta;
-		else if (ins instanceof MONITOREXIT)
-			--delta;
-		return delta;
+	public LockCount getFactAtLocation(Location location) throws DataflowAnalysisException {
+		return getAnalysis().getFactAtLocation(location);
 	}
 }
 

@@ -44,7 +44,8 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
 	private ValueNumberDataflow vnaDataflow;
 	private int[] numNonExceptionSuccessorMap;
 
-	public IsNullValueAnalysis(MethodGen methodGen, CFG cfg, ValueNumberDataflow vnaDataflow) {
+	public IsNullValueAnalysis(MethodGen methodGen, CFG cfg, ValueNumberDataflow vnaDataflow, DepthFirstSearch dfs) {
+		super(dfs);
 		this.methodGen = methodGen;
 		this.visitor = new IsNullValueFrameModelingVisitor(methodGen.getConstantPool());
 		this.vnaDataflow = vnaDataflow;
@@ -266,12 +267,14 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
 			public IsNullValueAnalysis createAnalysis(MethodGen methodGen, CFG cfg)
 				throws DataflowAnalysisException {
 
+				DepthFirstSearch dfs = new DepthFirstSearch(cfg).search();
+
 				// Create the ValueNumberAnalysis
-				ValueNumberAnalysis vna = new ValueNumberAnalysis(methodGen);
+				ValueNumberAnalysis vna = new ValueNumberAnalysis(methodGen, dfs);
 				ValueNumberDataflow vnaDataflow = new ValueNumberDataflow(cfg, vna);
 				vnaDataflow.execute();
 
-				IsNullValueAnalysis analysis = new IsNullValueAnalysis(methodGen, cfg, vnaDataflow);
+				IsNullValueAnalysis analysis = new IsNullValueAnalysis(methodGen, cfg, vnaDataflow, dfs);
 				return analysis;
 			}
 		};

@@ -36,8 +36,11 @@ public class ResourceValueAnalysis<Resource> extends FrameDataflowAnalysis<Resou
 	private ResourceValueFrameModelingVisitor visitor;
 	private RepositoryLookupFailureCallback lookupFailureCallback;
 
-	public ResourceValueAnalysis(MethodGen methodGen, CFG cfg, ResourceTracker<Resource> resourceTracker, Resource resource,
+	public ResourceValueAnalysis(MethodGen methodGen, CFG cfg, DepthFirstSearch dfs,
+		ResourceTracker<Resource> resourceTracker, Resource resource,
 		RepositoryLookupFailureCallback lookupFailureCallback) {
+
+		super(dfs);
 		this.methodGen = methodGen;
 		this.cfg = cfg;
 		this.resourceTracker = resourceTracker;

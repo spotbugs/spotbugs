@@ -45,7 +45,8 @@ public class LockAnalysis extends ForwardDataflowAnalysis<int[]> {
 	/** A lock count resulting from a flow merge of conflicting lock counts. */
 	public static final int BOTTOM = -2;
 
-	public LockAnalysis(MethodGen methodGen, ValueNumberDataflow vnaDataflow) {
+	public LockAnalysis(MethodGen methodGen, ValueNumberDataflow vnaDataflow, DepthFirstSearch dfs) {
+		super(dfs);
 		this.methodGen = methodGen;
 		this.vnaDataflow = vnaDataflow;
 		this.vna = vnaDataflow.getAnalysis();
@@ -166,11 +167,13 @@ public class LockAnalysis extends ForwardDataflowAnalysis<int[]> {
 
 		DataflowTestDriver<int[], LockAnalysis> driver = new DataflowTestDriver<int[], LockAnalysis>() {
 			public LockAnalysis createAnalysis(MethodGen methodGen, CFG cfg) throws DataflowAnalysisException {
-				ValueNumberAnalysis vna = new ValueNumberAnalysis(methodGen);
+				DepthFirstSearch dfs = new DepthFirstSearch(cfg).search();
+
+				ValueNumberAnalysis vna = new ValueNumberAnalysis(methodGen, dfs);
 				ValueNumberDataflow vnaDataflow = new ValueNumberDataflow(cfg, vna);
 				vnaDataflow.execute();
 
-				return new LockAnalysis(methodGen, vnaDataflow);
+				return new LockAnalysis(methodGen, vnaDataflow, dfs);
 			}
 		};
 

@@ -35,8 +35,8 @@ import org.apache.bcel.generic.*;
  * @author David Hovemeyer
  */
 public class OtherLockCountAnalysis extends LockCountAnalysis {
-	public OtherLockCountAnalysis(MethodGen methodGen, ValueNumberDataflow vnaDataflow) {
-		super(methodGen, vnaDataflow);
+	public OtherLockCountAnalysis(MethodGen methodGen, ValueNumberDataflow vnaDataflow, DepthFirstSearch dfs) {
+		super(methodGen, vnaDataflow, dfs);
 	}
 
 	public void initEntryFact(LockCount result) {
@@ -69,10 +69,11 @@ public class OtherLockCountAnalysis extends LockCountAnalysis {
 
 			DataflowTestDriver<LockCount, LockCountAnalysis> driver = new DataflowTestDriver<LockCount, LockCountAnalysis>() {
 				public LockCountAnalysis createAnalysis(MethodGen methodGen, CFG cfg) throws DataflowAnalysisException {
-					ValueNumberDataflow vnaDataflow = new ValueNumberDataflow(cfg, new ValueNumberAnalysis(methodGen));
+					DepthFirstSearch dfs = new DepthFirstSearch(cfg).search();
+					ValueNumberDataflow vnaDataflow = new ValueNumberDataflow(cfg, new ValueNumberAnalysis(methodGen, dfs));
 					vnaDataflow.execute();
 
-					return new OtherLockCountAnalysis(methodGen, vnaDataflow);
+					return new OtherLockCountAnalysis(methodGen, vnaDataflow, dfs);
 				}
 			};
 

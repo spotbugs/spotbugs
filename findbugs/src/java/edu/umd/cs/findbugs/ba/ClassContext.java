@@ -1,5 +1,5 @@
 /*
- * FindBugs - Find bugs in Java programs
+ * Bytecode Analysis Framework
  * Copyright (C) 2003, University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
@@ -43,6 +43,10 @@ public class ClassContext {
 	private IdentityHashMap<Method, DepthFirstSearch> dfsMap = new IdentityHashMap<Method, DepthFirstSearch>();
 	private IdentityHashMap<Method, TypeDataflow> typeDataflowMap = new IdentityHashMap<Method, TypeDataflow>();
 	private IdentityHashMap<Method, BitSet> bytecodeMap = new IdentityHashMap<Method, BitSet>();
+	private IdentityHashMap<Method, LockCountDataflow> anyLockCountDataflowMap =
+		new IdentityHashMap<Method, LockCountDataflow>();
+	private IdentityHashMap<Method, LockCountDataflow> thisLockCountDataflowMap =
+		new IdentityHashMap<Method, LockCountDataflow>();
 	private ClassGen classGen;
 
 	/**
@@ -116,7 +120,8 @@ public class ClassContext {
 		ValueNumberDataflow vnaDataflow = vnaDataflowMap.get(method);
 		if (vnaDataflow == null) {
 			MethodGen methodGen = getMethodGen(method);
-			ValueNumberAnalysis analysis = new ValueNumberAnalysis(methodGen);
+			DepthFirstSearch dfs = getDepthFirstSearch(method);
+			ValueNumberAnalysis analysis = new ValueNumberAnalysis(methodGen, dfs);
 			CFG cfg = getCFG(method);
 			vnaDataflow = new ValueNumberDataflow(cfg, analysis);
 			vnaDataflow.execute();
@@ -136,8 +141,9 @@ public class ClassContext {
 			MethodGen methodGen = getMethodGen(method);
 			CFG cfg = getCFG(method);
 			ValueNumberDataflow vnaDataflow = getValueNumberDataflow(method);
+			DepthFirstSearch dfs = getDepthFirstSearch(method);
 
-			IsNullValueAnalysis invAnalysis = new IsNullValueAnalysis(methodGen, cfg, vnaDataflow);
+			IsNullValueAnalysis invAnalysis = new IsNullValueAnalysis(methodGen, cfg, vnaDataflow, dfs);
 			invDataflow = new IsNullValueDataflow(cfg, invAnalysis);
 			invDataflow.execute();
 
@@ -156,8 +162,9 @@ public class ClassContext {
 		if (typeDataflow == null ) {
 			MethodGen methodGen = getMethodGen(method);
 			CFG cfg = getCFG(method);
+			DepthFirstSearch dfs = getDepthFirstSearch(method);
 
-			TypeAnalysis typeAnalysis = new TypeAnalysis(methodGen, lookupFailureCallback);
+			TypeAnalysis typeAnalysis = new TypeAnalysis(methodGen, dfs, lookupFailureCallback);
 			typeDataflow = new TypeDataflow(cfg, typeAnalysis);
 			typeDataflow.execute();
 
@@ -219,6 +226,56 @@ public class ClassContext {
 			bytecodeMap.put(method, bytecodeSet);
 		}
 		return bytecodeSet;
+	}
+
+	/**
+	 * Get dataflow for AnyLockCountAnalysis for given method.
+	 * @param method the method
+	 * @return the Dataflow
+	 */
+	public LockCountDataflow getAnyLockCountDataflow(Method method)
+		throws CFGBuilderException, DataflowAnalysisException {
+
+		LockCountDataflow dataflow = anyLockCountDataflowMap.get(method);
+		if (dataflow == null) {
+			MethodGen methodGen = getMethodGen(method);
+			ValueNumberDataflow vnaDataflow = getValueNumberDataflow(method);
+			DepthFirstSearch dfs = getDepthFirstSearch(method);
+			CFG cfg = getCFG(method);
+
+			AnyLockCountAnalysis analysis = new AnyLockCountAnalysis(methodGen, vnaDataflow, dfs);
+			dataflow = new LockCountDataflow(cfg, analysis);
+			dataflow.execute();
+
+			anyLockCountDataflowMap.put(method, dataflow);
+		}
+
+		return dataflow;
+	}
+
+	/**
+	 * Get dataflow for ThisLockCountAnalysis for given method.
+	 * @param method the method
+	 * @return the Dataflow
+	 */
+	public LockCountDataflow getThisLockCountDataflow(Method method)
+		throws CFGBuilderException, DataflowAnalysisException {
+
+		LockCountDataflow dataflow = thisLockCountDataflowMap.get(method);
+		if (dataflow == null) {
+			MethodGen methodGen = getMethodGen(method);
+			ValueNumberDataflow vnaDataflow = getValueNumberDataflow(method);
+			DepthFirstSearch dfs = getDepthFirstSearch(method);
+			CFG cfg = getCFG(method);
+
+			ThisLockCountAnalysis analysis = new ThisLockCountAnalysis(methodGen, vnaDataflow, dfs);
+			dataflow = new LockCountDataflow(cfg, analysis);
+			dataflow.execute();
+
+			thisLockCountDataflowMap.put(method, dataflow);
+		}
+
+		return dataflow;
 	}
 }
 
