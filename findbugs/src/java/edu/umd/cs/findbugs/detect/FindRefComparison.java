@@ -55,6 +55,12 @@ public class FindRefComparison implements Detector {
 				if (DEBUG) System.out.println("FindRefComparison: analyzing " +
 					SignatureConverter.convertMethodSignature(methodGen));
 
+				// Scan for calls to String.intern().
+				// If we find any, assume the programmer knew what he/she
+				// was doing.
+				if (callsIntern(methodGen))
+					continue;
+
 				final CFG cfg = classContext.getCFG(method);
 				final TypeDataflow typeDataflow = classContext.getTypeDataflow(method);
 
@@ -98,6 +104,25 @@ public class FindRefComparison implements Detector {
 		} catch (CFGBuilderException e) {
 			throw new AnalysisException("Exception in FindRefComparison: " + e.getMessage(), e);
 		}
+	}
+
+	private static boolean callsIntern(MethodGen methodGen) {
+		InstructionHandle handle = methodGen.getInstructionList().getStart();
+		while (handle != null) {
+			Instruction ins = handle.getInstruction();
+			short opcode = ins.getOpcode();
+			if (opcode == Constants.INVOKEVIRTUAL) {
+				INVOKEVIRTUAL inv = (INVOKEVIRTUAL) ins;
+				ConstantPoolGen cpg = methodGen.getConstantPool();
+				if (inv.getClassName(cpg).equals("java.lang.String") &&
+					inv.getName(cpg).equals("intern") &&
+					inv.getSignature(cpg).equals("()Ljava/lang/String;"))
+					return true;
+			}
+
+			handle = handle.getNext();
+		}
+		return false;
 	}
 
 	public void report() {
