@@ -92,6 +92,8 @@ public class JUnitJarRunner {
 			if (entryName.endsWith(".class")) {
 				String className =
 					entryName.substring(0, entryName.length() - ".class".length()).replace('/', '.');
+				if (!className.endsWith("Test"))
+					continue;
 				System.out.println("Loading test class: " + className);
 				System.out.flush();
 				Class jarClass = cl.loadClass(className);
