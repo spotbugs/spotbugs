@@ -65,6 +65,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	private ImageIcon classIcon;
 	private ImageIcon methodIcon;
 	private ImageIcon fieldIcon;
+        private ImageIcon sourceFileIcon;
 	
 	public BugCellRenderer() {
 	    ClassLoader classLoader = this.getClass().getClassLoader();
@@ -74,6 +75,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	    classIcon = new ImageIcon(classLoader.getResource("edu/umd/cs/findbugs/gui/class.png"));
 	    methodIcon = new ImageIcon(classLoader.getResource("edu/umd/cs/findbugs/gui/method.png"));
 	    fieldIcon = new ImageIcon(classLoader.getResource("edu/umd/cs/findbugs/gui/field.png"));
+            sourceFileIcon = new ImageIcon(classLoader.getResource("edu/umd/cs/findbugs/gui/sourcefile.png"));
 	}
 	
 	public Component getTreeCellRendererComponent(JTree tree, Object value, boolean sel,
@@ -92,6 +94,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
 		setIcon(methodIcon);
 	    } else if (obj instanceof FieldAnnotation) {
 		setIcon(fieldIcon);
+            } else if (obj instanceof SourceLineAnnotation) {
+                setIcon(sourceFileIcon);
 	    } else if (obj instanceof BugInstanceGroup) {
 		// This is a "group" node
 		BugInstanceGroup groupNode = (BugInstanceGroup) obj;
