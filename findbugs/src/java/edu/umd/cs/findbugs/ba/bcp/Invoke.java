@@ -33,7 +33,7 @@ import edu.umd.cs.daveho.ba.*;
  * and invokespecial.
  *
  * <p> Invoke objects match by class name, method name, method signature,
- * and static/nonstatic status.
+ * and <em>mode</em>.
  *
  * <p> Names and signatures may be matched in several ways:
  * <ol>
@@ -47,27 +47,36 @@ import edu.umd.cs.daveho.ba.*;
  *   Any subclass or subinterface of the named type will be accepted.
  * </ol>
  *
- * <p> Static/nonstatic status is specified as the <em>mode</em> of
- * the Invoke object.  This can have three values:
+ * <p> The <em>mode</em> specifies what kind of invocations in the Invoke
+ * element matches. It is specified as the bitwise combination of the
+ * following values:
  * <ol>
- * <li> <code>STATIC</code>. Only static invocations are matched.
- * <li> <code>INSTANCE</code>. Only non-static (instance) invocations are matched.
- * <li> <code>ANY</code>. Both static and instance invocations are matched.
+ * <li> <code>INSTANCE</code>, which matches ordinary instance method invocations
+ * <li> <code>STATIC</code>, which matches static method invocations
+ * <li> <code>CONSTRUCTOR</code>, which matches object constructor invocations
  * </ol>
+ * The special mode <code>ORDINARY_METHOD</code> is equivalent to <code>INSTANCE|STATIC</code>.
+ * The special mode <code>ANY</code> is equivalent to <code>INSTANCE|STATIC|CONSTRUCTOR</code>.
  *
  * @see PatternElement
  * @author David Hovemeyer
  */
 public class Invoke extends PatternElement {
 
-	/** Match only static invocations. */
-	public static final int STATIC = 0;
-
-	/** Match only non-static (instance) invocations. */
+	/** Match ordinary (non-constructor) instance invocations. */
 	public static final int INSTANCE = 1;
 
+	/** Match static invocations. */
+	public static final int STATIC = 2;
+
+	/** Match object constructor invocations. */
+	public static final int CONSTRUCTOR = 4;
+
+	/** Match ordinary methods (everything except constructors). */
+	public static final int ORDINARY_METHOD = INSTANCE | STATIC;
+
 	/** Match both static and instance invocations. */
-	public static final int ANY = 2;
+	public static final int ANY = INSTANCE | STATIC | CONSTRUCTOR;
 
 	private interface StringMatcher {
 		public boolean match(String s);
@@ -110,8 +119,7 @@ public class Invoke extends PatternElement {
 	 *   as a regexp, or as a subtype match
 	 * @param methodName the name of the method; may be specified exactly or as a regexp
 	 * @param methodSig the signature of the method; may be specified exactly or as a regexp
-	 * @param mode one of STATIC, INSTANCE, or ANY; specifies whether we should
-	 *  match static methods only, instance methods only, or either
+	 * @param mode the mode of invocation
 	 */
 	public Invoke(String className, String methodName, String methodSig, int mode) {
 		this.classNameMatcher = createClassMatcher(className);
@@ -141,17 +149,23 @@ public class Invoke extends PatternElement {
 			return null;
 		InvokeInstruction inv = (InvokeInstruction) ins;
 
-		// Check that it's static or non-static, as appropriate
-		if (mode != ANY) {
-			boolean isStatic = (inv.getOpcode() == Constants.INVOKESTATIC);
-			boolean wantStatic = (mode == STATIC);
-			if (isStatic != wantStatic)
-				return null;
-		}
+		String methodName = inv.getMethodName(cpg);
+		boolean isStatic = inv.getOpcode() == Constants.INVOKESTATIC;
+		boolean isCtor = methodName.equals("<init>");
+
+		int actualMode = 0;
+
+		if (isStatic) actualMode |= STATIC;
+		if (isCtor) actualMode |= CONSTRUCTOR;
+		if (!isStatic && !isCtor) actualMode |= INSTANCE;
+
+		// Intersection of actual and desired modes must be nonempty.
+		if ((actualMode & mode) == 0)
+			return null;
 
 		// Check class name, method name, and method signature.
 		if (!classNameMatcher.match(inv.getClassName(cpg)) ||
-			!methodNameMatcher.match(inv.getMethodName(cpg)) ||
+			!methodNameMatcher.match(methodName) ||
 			!methodSigMatcher.match(inv.getSignature(cpg)))
 			return null;
 
