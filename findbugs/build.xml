@@ -96,6 +96,8 @@
         <fileset dir="${test.dir}" includes="*.class" />
         <fileset dir="${test.dir}" includes="*.jar" />
       </delete>
+      <ant dir="${eclipse.src.dir}/edu.umd.cs.findbugs" target="clean" inheritall="false"/>
+      <ant dir="${eclipse.src.dir}/de.tobject.findbugs" target="clean" inheritall="false"/>
     </target>
 
     <target name="init" >
@@ -205,7 +207,7 @@
        </java>
 
        <!-- Spawn Ant subtask to build the core Eclipse plugin. -->
-       <ant dir="${eclipse.src.dir}/edu.umd.cs.findbugs"/>
+       <ant dir="${eclipse.src.dir}/edu.umd.cs.findbugs" inheritall="false"/>
 
        <!-- Generate build properties for UI Eclipse plugin. -->
        <java dir="${findbugs.dir}"
@@ -221,7 +223,7 @@
        </java>
 
        <!-- Spawn Ant subtask to build the UI Eclipse plugin. -->
-       <ant dir="${eclipse.src.dir}/de.tobject.findbugs"/>
+       <ant dir="${eclipse.src.dir}/de.tobject.findbugs" inheritall="false"/>
     </target>
 
     <!-- Build jar file of test cases.  -->
@@ -256,7 +258,8 @@
     <target name="tools" depends="init">
       <javac srcdir="${tools.src.dir}" destdir="${tools.dir}"
              source="1.5"
-             debug="true">
+             debug="true"
+             compiler="com.cortexeb.Jsr14CompilerAdapter">
         <classpath refid="classpath"/>
       </javac> 
     </target>
