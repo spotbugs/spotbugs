@@ -79,7 +79,35 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
 		throws DataflowAnalysisException {
 
 		visitor.setFrame(fact);
-		handle.getInstruction().accept(visitor);
+		Instruction ins = handle.getInstruction();
+		ins.accept(visitor);
+
+		// Special case:
+		// The instruction may have produced previously seen values
+		// about which new is-null information is known.
+		// If any other instances of the produced values exist,
+		// update their is-null information.
+		int numProduced = ins.produceStack(methodGen.getConstantPool());
+		if (numProduced == Constants.UNPREDICTABLE)
+			throw new AnalysisException("Unpredictable stack production", methodGen, handle);
+
+		int start = fact.getNumSlots() - numProduced;
+		ValueNumberFrame vnaFrameAfter = vnaDataflow.getFactAfterLocation(new Location(handle, basicBlock));
+
+		for (int i = start; i < fact.getNumSlots(); ++i) {
+			ValueNumber value = vnaFrameAfter.getValue(i);
+			IsNullValue isNullValue = fact.getValue(i);
+
+			for (int j = 0; j < start; ++j) {
+				ValueNumber otherValue = vnaFrameAfter.getValue(j);
+				if (value.equals(otherValue)) {
+					// Same value is in both slots.
+					// Update the is-null information to match
+					// the new information.
+					fact.setValue(j, isNullValue);
+				}
+			}
+		}
 
 	}
 
