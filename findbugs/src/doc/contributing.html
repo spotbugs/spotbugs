@@ -18,14 +18,31 @@ we would be happy to consider it for inclusion.&nbsp; The best way to
 send an enhancement is to create a diff against the latest code
 in the FindBugs CVS repository.&nbsp;  Just run the command <code>cvs diff</code>
 from the root of your CVS working directory.&nbsp;
-Be sure to use the "-u" or "-c"
-option to diff.&nbsp; Instructions for checking out the latest FindBugs
+Instructions for checking out the latest FindBugs
 source code can be found on the
 <a href="http://sourceforge.net/cvs/?group_id=96405">project CVS web page</a>.
 
-<p> Note: if you are contributing a new bug detector or an enhancement
-to an existing one, please submit a test case that contains an example
-of the new kind of bug.
+<h2>Preparing a patch</h2>
+
+<p> Please follow these guidelines when preparing your patch:
+<ul>
+<li> Generate the patch using the "-c" or "-u" option to diff.
+<li> <b>Use the same indentation style as the source file(s) you
+     are modifying</b>.&nbsp; In particular, please use tabs (not spaces)
+     to indent your code; one tab per indent level.
+<li> If at all possible, avoid making whitespace modifications.
+<li> Small patches are appreciated.
+</ul>
+
+<p> Following these guidelines makes it much easier for us
+to incorporate new code.
+
+<h2>How to submit a patch</h2>
+
+<p> Patches may be submitted through the
+<a href="http://sourceforge.net/tracker/?atid=614695&group_id=96405&func=browse">Patches</a> tracker on the
+<a href="http://sourceforge.net/projects/findbugs/">sourceforge project page</a>.&nbsp;
+Or, you may email them directly to <a href="mailto:daveho@cs.umd.edu">daveho@cs.umd.edu</a>.
 
 @HTML_FOOTER@
 
