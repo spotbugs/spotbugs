@@ -51,6 +51,8 @@ public class ClassContext implements AnalysisFeatures {
 	private IdentityHashMap<Method, ValueNumberDataflow> vnaDataflowMap = new IdentityHashMap<Method, ValueNumberDataflow>();
 	private IdentityHashMap<Method, IsNullValueDataflow> invDataflowMap = new IdentityHashMap<Method, IsNullValueDataflow>();
 	private IdentityHashMap<Method, DepthFirstSearch> dfsMap = new IdentityHashMap<Method, DepthFirstSearch>();
+	private IdentityHashMap<Method, ReverseDepthFirstSearch> rdfsMap =
+		new IdentityHashMap<Method, ReverseDepthFirstSearch>();
 	private IdentityHashMap<Method, TypeDataflow> typeDataflowMap = new IdentityHashMap<Method, TypeDataflow>();
 	private IdentityHashMap<Method, BitSet> bytecodeMap = new IdentityHashMap<Method, BitSet>();
 	private IdentityHashMap<Method, LockCountDataflow> anyLockCountDataflowMap =
@@ -282,6 +284,23 @@ public class ClassContext implements AnalysisFeatures {
 			dfsMap.put(method, dfs);
 		}
 		return dfs;
+	}
+
+	/**
+	 * Get a ReverseDepthFirstSearch for given method.
+	 * @param method the method
+	 * @param the ReverseDepthFirstSearch
+	 */
+	public ReverseDepthFirstSearch getReverseDepthFirstSearch(Method method)
+		throws CFGBuilderException {
+		ReverseDepthFirstSearch rdfs = rdfsMap.get(method);
+		if (rdfs == null) {
+			CFG cfg = getRawCFG(method);
+			rdfs = new ReverseDepthFirstSearch(cfg);
+			rdfs.search();
+			rdfsMap.put(method, rdfs);
+		}
+		return rdfs;
 	}
 
 	/**
