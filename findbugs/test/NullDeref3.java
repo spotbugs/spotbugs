@@ -22,4 +22,12 @@ class NullDeref3 {
 	else
 		return false;
 	}
+  // A variation of a null pointer bug from commons-collection-2.1
+  //   org/apache/commons/collections/CollectionUtils.java
+  static boolean same3(Object a, Object b) {
+	if ((a == null && b == null) || a.equals(b))
+		return true;
+	else
+		return false;
+	}
  }
