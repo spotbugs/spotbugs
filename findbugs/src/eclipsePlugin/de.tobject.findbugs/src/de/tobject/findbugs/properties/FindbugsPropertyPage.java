@@ -109,7 +109,7 @@ public class FindbugsPropertyPage extends PropertyPage {
 		composite.setLayout(layout);
 
 		chkEnableFindBugs = new Button(composite, SWT.CHECK);
-		chkEnableFindBugs.setText("Enable FindBugs");
+		chkEnableFindBugs.setText("Run FindBugs automatically");
 		initialEnabled = isEnabled();
 		chkEnableFindBugs.setSelection(initialEnabled);
 
