@@ -162,13 +162,17 @@ public class FindBugsWorker {
 			// Algorithm:
 			// Remove all old warnings for classes which were just analyzed.
 			// Then add all new warnings.
-			Set analyzedClassNameSet = bugReporter.getAnalyzedClassNames();
-			for (Iterator i = oldBugCollection.iterator(); i.hasNext(); ) {
-				BugInstance oldWarning = (BugInstance) i.next();
-				ClassAnnotation warningClass = oldWarning.getPrimaryClass();
-				if (warningClass != null && analyzedClassNameSet.contains(warningClass.getClassName())) {
-					i.remove();
+			if (oldBugCollection != null) {
+				Set analyzedClassNameSet = bugReporter.getAnalyzedClassNames();
+				for (Iterator i = oldBugCollection.iterator(); i.hasNext(); ) {
+					BugInstance oldWarning = (BugInstance) i.next();
+					ClassAnnotation warningClass = oldWarning.getPrimaryClass();
+					if (warningClass != null && analyzedClassNameSet.contains(warningClass.getClassName())) {
+						i.remove();
+					}
 				}
+			} else {
+				oldBugCollection = new SortedBugCollection();
 			}
 			for (Iterator i = newBugCollection.iterator(); i.hasNext(); ) {
 				BugInstance newWarning = (BugInstance) i.next();
