@@ -541,6 +541,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
         bugTreePanel.add(groupByLabel, gridBagConstraints);
 
         bugTreeSourceViewSplitter.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
+        bugTreeSourceViewSplitter.setResizeWeight(1.0);
         bugTreeSourceViewSplitter.setOneTouchExpandable(true);
         bugTree.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mousePressed(java.awt.event.MouseEvent evt) {
@@ -552,7 +553,9 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
         bugTreeSourceViewSplitter.setLeftComponent(jScrollPane4);
 
+        jScrollPane6.setMinimumSize(new java.awt.Dimension(22, 180));
         jScrollPane6.setPreferredSize(new java.awt.Dimension(0, 100));
+        sourceTextArea.setEditable(false);
         sourceTextArea.setFont(new java.awt.Font("Lucida Sans Typewriter", 0, 12));
         jScrollPane6.setViewportView(sourceTextArea);
 
@@ -896,9 +899,6 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	groupByChooser.addItem(GROUP_BY_BUG_TYPE);
 	
 	bugTreeSourceViewSplitter.setDividerLocation(1.0);
-        
-        for (int count = 0; count < 10; count++)
-            writeToConsole("Message " + count);
     }
     
     /**
