@@ -125,34 +125,47 @@ public class PluginLoader extends URLClassLoader {
 		}
 
 		// Create a DetectorFactory for all Detector nodes
+		HashMap<String, DetectorFactory> detectorFactoryMap = new HashMap<String, DetectorFactory>();
 		try {
 			detectorFactoryList = new ArrayList<DetectorFactory>();
 			List detectorNodeList = pluginDescriptor.selectNodes("/FindbugsPlugin/Detector");
 			for (Iterator i = detectorNodeList.iterator(); i.hasNext(); ) {
 				Node detectorNode = (Node) i.next();
 				String className = detectorNode.valueOf("@class");
+				String speed = detectorNode.valueOf("@speed");
 				String disabled = detectorNode.valueOf("@disabled");
 	
 				//System.out.println("Found detector: class="+className+", disabled="+disabled);
 	
 				Class detectorClass = loadClass(className);
 				DetectorFactory factory = new DetectorFactory(detectorClass, !disabled.equals("true"));
-
-				Element details = ((Element) detectorNode).element("Details");
-				if (details != null) {
-					String detailHTML = details.getText();
-					StringBuffer buf = new StringBuffer();
-					buf.append("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">\n");
-					buf.append("<HTML><HEAD><TITLE>Detector Description</TITLE></HEAD><BODY>\n");
-					buf.append(detailHTML);
-					buf.append("</BODY></HTML>\n");
-					factory.setDetailHTML(buf.toString());
-				}
-
 				detectorFactoryList.add(factory);
+				detectorFactoryMap.put(className, factory);
 			}
 		} catch (ClassNotFoundException e) {
 			throw new PluginException("Could not instantiate detector class", e);
+		}
+
+		// Get detail HTML for Detectors
+		List detectorMessageList = messageCollection.selectNodes("/MessageCollection/Detector");
+		for (Iterator i = detectorMessageList.iterator(); i.hasNext(); ) {
+			Element detector = (Element) i.next();
+
+			Element details = detector.element("Details");
+			String className = detector.valueOf("@class");
+			DetectorFactory factory = detectorFactoryMap.get(className);
+			if (factory == null)
+				throw new PluginException("In \"messages.xml\": unknown detector \"" + className + "\"");
+
+			if (details != null) {
+				String detailHTML = details.getText();
+				StringBuffer buf = new StringBuffer();
+				buf.append("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">\n");
+				buf.append("<HTML><HEAD><TITLE>Detector Description</TITLE></HEAD><BODY>\n");
+				buf.append(detailHTML);
+				buf.append("</BODY></HTML>\n");
+				factory.setDetailHTML(buf.toString());
+			}
 		}
 
 		// Create BugPatterns
