@@ -1,7 +1,7 @@
 /*
  * FindBugs - Find bugs in Java programs
- * Copyright (C) 2004,2005 Dave Brosius <dbrosius@users.sourceforge.net>
- * Copyright (C) 2004,2005 University of Maryland
+ * Copyright (C) 2005 Dave Brosius <dbrosius@users.sourceforge.net>
+ * Copyright (C) 2005 University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -79,15 +79,15 @@ public class SimplifyBooleanReturn extends BytecodeScanningDetector implements C
 	public void sawOpcode(int seen) {
 		switch (state) {
 			case SAW_NOTHING:
-				if (ifOpCodes.get(seen)) 
+				if (ifOpCodes.get(seen)) {
 					state = SAW_IF;
-			break;
-			
-			case SAW_IF:
-				if ((seen == ICONST_0) || (seen == ICONST_1)) {
-					state = SAW_ICONST_PART1;
 					startPC = getPC();
 				}
+			break;			
+			
+			case SAW_IF:
+				if ((seen == ICONST_0) || (seen == ICONST_1))
+					state = SAW_ICONST_PART1;
 				else
 					state = SAW_NOTHING;
 			break;
