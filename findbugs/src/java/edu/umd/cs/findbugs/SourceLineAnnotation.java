@@ -81,7 +81,9 @@ public class SourceLineAnnotation implements BugAnnotation {
 
 	private static SourceLineAnnotation forEntireMethod(String className, LineNumberTable lineNumberTable) {
 		LineNumber[] table = lineNumberTable.getLineNumberTable();
-		return new SourceLineAnnotation(className, table[0].getLineNumber(), table[table.length-1].getLineNumber());
+		return (table != null && table.length > 0)
+			? new SourceLineAnnotation(className, table[0].getLineNumber(), table[table.length-1].getLineNumber())
+			: null;
 	}
 
 	/**
