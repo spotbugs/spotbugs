@@ -126,6 +126,31 @@ public class BasicBlock implements Comparable {
 	    dup.index = this.index;
 	    return dup;
 	}
+
+	public boolean equals(Object o) {
+	    if (!(o instanceof InstructionIterator))
+		return false;
+	    InstructionIterator other = (InstructionIterator) o;
+	    return index == other.index && getBasicBlock() == other.getBasicBlock();
+	}
+
+	public int hashCode() {
+	    return getBasicBlock().hashCode() + index;
+	}
+
+	private BasicBlock getBasicBlock() {
+	    return BasicBlock.this;
+	}
+
+	public String toString() {
+	    StringBuffer buf = new StringBuffer();
+	    buf.append("[basicBlock=");
+	    buf.append(getBasicBlock().getId());
+	    buf.append(", index=");
+	    buf.append(index);
+	    buf.append(']');
+	    return buf.toString();
+	}
     }
 
     /**
