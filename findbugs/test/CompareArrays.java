@@ -13,12 +13,12 @@ public class CompareArrays
 	}
 	
 	public static boolean cmpArraysOK( String[] a, String[] b )
-	{
+	{// this one is ok, but not optimal
 		if (a.length != b.length)
 			return false;
 			
 		for (int i = 0; i < a.length; i++)
-			if (!a[i].equals(b[i]))
+			if (!(a[i].equals(b[i])))
 				return false;
 		return true;
 	}

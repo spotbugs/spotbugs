@@ -141,11 +141,12 @@ public class DumbMethods extends BytecodeScanningDetector implements Constants2 
 				bugReporter.reportBug(new BugInstance("DM_STRING_TOSTRING", NORMAL_PRIORITY)
 				        .addClassAndMethod(this)
 				        .addSourceLine(this));
-				        
+/*	Gack! i'm a meathead, this is all wrong, i don't think it can be done.			        
 		if ((seen == INVOKEVIRTUAL)
 				&& getClassConstantOperand().equals("java/lang/Object")
 				&& getNameConstantOperand().equals("equals")
 				&& getSigConstantOperand().equals("(Ljava/lang/Object;)Z")) {
+			//This is stupid. getDottedMethodSig is the parent method, not the equals method, Duh!
 			String[] argTypes = Utility.methodSignatureArgumentTypes(getDottedMethodSig());
 			if ((argTypes.length == 2) 
 			&&  (argTypes[0].indexOf("[") >= 0)
@@ -156,6 +157,7 @@ public class DumbMethods extends BytecodeScanningDetector implements Constants2 
 					        .addSourceLine(this));
 			}
 	    }
+*/
 
 /*
 	//
