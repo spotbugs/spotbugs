@@ -419,6 +419,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 		TypeDataflow typeDataflow) throws DataflowAnalysisException {
 
 		InstructionHandle handle = location.getHandle();
+		String sourceFile = jclass.getSourceFileName();
 
 		TypeFrame frame = typeDataflow.getFactAtLocation(location);
 		if (frame.getStackDepth() < 2)
@@ -432,9 +433,21 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 			return;
 
 		if (!(lhsType_ instanceof ReferenceType) || !(rhsType_ instanceof ReferenceType)) {
-			bugReporter.logError("equals() used to compare non-object type(s) in " +
-				SignatureConverter.convertMethodSignature(methodGen) +
-				" at " + location.getHandle());
+			if (rhsType_.getType() == T_NULL) {
+				// A literal null value was passed directly to equals().
+				bugReporter.reportBug(new BugInstance("EC_NULL_ARG", NORMAL_PRIORITY)
+					.addClassAndMethod(methodGen, sourceFile)
+					.addSourceLine(methodGen, sourceFile, location.getHandle())
+				);
+			} else if (lhsType_.getType() == T_NULL) {
+				// Hmm...in this case, equals() is being invoked on
+				// a literal null value.  This is really the
+				// purview of FindNullDeref.  So, we'll just do nothing.
+			} else {
+				bugReporter.logError("equals() used to compare non-object type(s) in " +
+					SignatureConverter.convertMethodSignature(methodGen) +
+					" at " + location.getHandle());
+			}
 			return;
 		}
 
@@ -446,26 +459,26 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 		ObjectType lhsType = (ObjectType) lhsType_;
 		ObjectType rhsType = (ObjectType) rhsType_;
 
-		int priority = LOW_PRIORITY;
+		int priority = LOW_PRIORITY + 1;
 
 		// If neither object is a subtype of the other,
 		// make it medium priority
 		try {
-			if (!Hierarchy.isSubtype(lhsType, rhsType) &&
-				!Hierarchy.isSubtype(rhsType, lhsType))
+			if (!Hierarchy.isSubtype(lhsType, rhsType) && !Hierarchy.isSubtype(rhsType, lhsType))
 				priority = NORMAL_PRIORITY;
 		} catch (ClassNotFoundException e) {
 			bugReporter.reportMissingClass(e);
 			return;
 		}
 
-		String sourceFile = jclass.getSourceFileName();
-		bugReporter.reportBug(new BugInstance("RC_SUSPCIOUS_EQUALS", priority)
-			.addClassAndMethod(methodGen, sourceFile)
-			.addSourceLine(methodGen, sourceFile, location.getHandle())
-			.addClass(lhsType.getClassName()).describe("CLASS_REFTYPE")
-			.addClass(rhsType.getClassName()).describe("CLASS_REFTYPE")
+		if (priority <= LOW_PRIORITY) {
+			bugReporter.reportBug(new BugInstance("EC_UNRELATED_TYPES", priority)
+				.addClassAndMethod(methodGen, sourceFile)
+				.addSourceLine(methodGen, sourceFile, location.getHandle())
+				.addClass(lhsType.getClassName()).describe("CLASS_REFTYPE")
+				.addClass(rhsType.getClassName()).describe("CLASS_REFTYPE")
 			);
+		}
 	}
 
 	public void report() {
