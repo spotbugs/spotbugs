@@ -2277,8 +2277,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
 			if (!fileName.startsWith("<") && !chooseFilename) {
 				file = new File(fileName);
-				Boolean relativePaths = project.getOption( Project.RELATIVE_PATHS );
-				useRelativePaths = (relativePaths != null) && relativePaths.booleanValue();
+				useRelativePaths = project.getOption( Project.RELATIVE_PATHS );
 			} else {
 				JRadioButton relativePaths = new JRadioButton("Use Relative Paths");
 				relativePaths.setSelected(project.getOption(Project.RELATIVE_PATHS));
