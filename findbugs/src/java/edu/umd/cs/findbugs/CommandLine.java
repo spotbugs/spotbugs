@@ -109,10 +109,14 @@ public abstract class CommandLine {
 	 * Any token beginning with "@" is assumed to be an option file.
 	 * Option files contain one command line option per line.
 	 *
-	 * @param argv the original command line
+	 * @param argv             the original command line
+	 * @param ignoreComments   ignore comments (lines starting with "#")
+	 * @param ignoreBlankLines ignore blank lines
 	 * @return the expanded command line
 	 */
-	public static String[] expandOptionFiles(String[] argv) throws IOException {
+	public static String[] expandOptionFiles(
+				String[] argv, boolean ignoreComments, boolean ignoreBlankLines)
+				throws IOException {
 		ArrayList<String> resultList = new ArrayList<String>();
 
 		for (int i = 0; i < argv.length; ++i) {
@@ -129,6 +133,13 @@ public abstract class CommandLine {
 				String line;
 				while ((line = reader.readLine()) != null) {
 					line = line.trim();
+
+					if (ignoreComments && line.startsWith("#"))
+						continue;
+
+					if (ignoreBlankLines && line.equals(""))
+						continue;
+
 					resultList.add(line);
 				}
 			} finally {
