@@ -115,26 +115,28 @@ public class SerializableIdiom extends PreorderVisitor
         superClassHasVoidConstructor = true;
         superClassImplementsSerializable = isSerializable && !implementsSerializableDirectly;
 	try {
-	JavaClass superClass = obj.getSuperClass();
-	Method [] superClassMethods = superClass.getMethods();
-	superClassImplementsSerializable = Repository.instanceOf(superClass,
-				"java.io.Serializable");
-        superClassHasVoidConstructor = false;
-	for(int i = 0; i < superClassMethods.length; i++) {
-		Method m = superClassMethods[i];
-		/*
-		System.out.println("Supercase has method named " + m.getName()
-			+ " with sig " + m.getSignature());
-		*/
-		if (m.getName().equals("<init>")
-			 && m.getSignature().equals("()V")
-			 && m.isPublic()
-			)
-		  superClassHasVoidConstructor = true;
+	    JavaClass superClass = obj.getSuperClass();
+	    if (superClass != null) {
+		Method [] superClassMethods = superClass.getMethods();
+		superClassImplementsSerializable = Repository.instanceOf(superClass,
+					"java.io.Serializable");
+	        superClassHasVoidConstructor = false;
+		for(int i = 0; i < superClassMethods.length; i++) {
+			Method m = superClassMethods[i];
+			/*
+			System.out.println("Supercase has method named " + m.getName()
+				+ " with sig " + m.getSignature());
+			*/
+			if (m.getName().equals("<init>")
+				 && m.getSignature().equals("()V")
+				 && m.isPublic()
+				)
+			  superClassHasVoidConstructor = true;
+			}
 		}
-	} catch (ClassNotFoundException e) {}
-
-
+	} catch (ClassNotFoundException e) {
+	    bugReporter.reportMissingClass(e);
+	}
 
 	if (isSerializable && !isExternalizable
 		&& !superClassHasVoidConstructor 
