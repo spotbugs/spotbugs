@@ -219,7 +219,8 @@ public class FindInconsistentSync2 implements Detector {
         		||  methodName.equals("readObject")
         		||  methodName.equals("clone")
         		||  methodName.equals("close")
-        		||  methodName.equals("finalize");
+        		||  methodName.equals("finalize")
+				||  methodName.equals("this");
 	}
 
 	private void analyzeMethod(final ClassContext classContext, final Method method, final Set<Method> lockedMethodSet)
