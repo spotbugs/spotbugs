@@ -23,13 +23,16 @@ import java.util.*;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.*;
 import edu.umd.cs.findbugs.visitclass.Constants2;
+import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
-public class CloneIdiom extends PreorderVisitor implements Detector, Constants2 {
+public class CloneIdiom extends DismantleBytecode implements Detector, Constants2 {
 
   boolean isCloneable, hasCloneMethod;
   boolean referencesCloneMethod;
+  boolean invokesSuperClone;
+  boolean isFinal;
  
   boolean check;
   boolean throwsExceptions;
@@ -48,10 +51,31 @@ public class CloneIdiom extends PreorderVisitor implements Detector, Constants2 
   public void report() {
 	}
 
+    public void visit(Code obj)  {
+	if (methodName.equals("clone") && 
+		methodSig.startsWith("()"))
+		super.visit(obj);
+	}
+
+ public void sawOpcode(int seen) {
+	if (seen == INVOKESPECIAL
+		&& nameConstant.equals("clone")
+		&& sigConstant.startsWith("()")) {
+		/*
+		System.out.println("Saw call to " + nameConstant
+					+ ":" + sigConstant 
+					+ " in " + betterMethodName);
+		*/
+		  invokesSuperClone = true;
+		}
+	}
+
   public void visit(JavaClass obj)     {
 	implementsCloneableDirectly = false;
+        invokesSuperClone = false;
 	isCloneable = false;
 	check = false;
+	isFinal = obj.isFinal();
 	if (obj.isInterface()) return;
 	if (obj.isAbstract()) return;
         // Does this class directly implement Cloneable?
@@ -86,6 +110,9 @@ public class CloneIdiom extends PreorderVisitor implements Detector, Constants2 
                                 .addClass(this));
 		}
 
+	if (hasCloneMethod && !invokesSuperClone && !isFinal)
+		System.out.println("class has clone method that doesn't invoke super.clone(): " + betterClassName);
+
 	/*
 	if (!isCloneable && hasCloneMethod) {
 		if (throwsExceptions) 
@@ -99,14 +126,15 @@ public class CloneIdiom extends PreorderVisitor implements Detector, Constants2 
 		String methodName = obj.getName(constant_pool);
 		String methodSig = obj.getSignature(constant_pool);
 		if (!methodName.equals("clone")) return;
-		if (!methodSig.equals("()Ljava/lang/Object;")) return;
+		if (!methodSig.startsWith("()")) return;
 		referencesCloneMethod = true;
 		}
+
     public void visit(Method obj) {
 	if (obj.isAbstract()) return;
 	if (!obj.isPublic()) return;
 	if (!methodName.equals("clone")) return;
-	if (!methodSig.equals("()Ljava/lang/Object;")) return;
+	if (!methodSig.startsWith("()")) return;
 	hasCloneMethod = true;
 	ExceptionTable tbl = obj.getExceptionTable();
 	throwsExceptions = tbl != null && tbl.getNumberOfExceptions() > 0;
