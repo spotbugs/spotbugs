@@ -83,6 +83,9 @@ public class FindMaskedFields extends BytecodeScanningDetector implements Consta
 								if (fld.getAccessFlags() 
 									!= maskingField.getAccessFlags()) 
 								  priority++;
+								if (!fld.getSignature().equals(
+									maskingField.getSignature()) )
+								  priority++;
 
 								FieldAnnotation maskedFieldAnnotation 
 								 = FieldAnnotation.fromBCELField(superClasses[c].getClassName(), fld);
