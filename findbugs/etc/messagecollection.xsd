@@ -1,6 +1,18 @@
 <?xml version="1.0"?>
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
 
+	<xsd:simpleType name="ClassType">
+		<xsd:restriction base="xsd:string">
+			<xsd:pattern value="[A-Za-z_][A-Za-z0-9_]*(.[A-Za-z_][A-Za-z0-9_]*)*"/> 
+		</xsd:restriction>
+	</xsd:simpleType>
+		
+	<xsd:simpleType name="IdentifierType">
+		<xsd:restriction base="xsd:string">
+			<xsd:pattern value="[A-Za-z0-9_]*"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+
 	<xsd:complexType name="PluginType">
 		<xsd:sequence>
 			<xsd:element name="ShortDescription" type="xsd:string"/>
@@ -12,7 +24,7 @@
 		<xsd:sequence>
 			<xsd:element name="Details" type="xsd:string"/>
 		</xsd:sequence>
-		<xsd:attribute name="class" type="xsd:string"/>
+		<xsd:attribute name="class" type="ClassType"/>
 		<xsd:attribute name="disabled" type="xsd:boolean" use="optional"/>
 	</xsd:complexType>
 
@@ -22,11 +34,11 @@
 			<xsd:element name="LongDescription" type="xsd:string"/>
 			<xsd:element name="Details" type="xsd:string"/>
 		</xsd:sequence>
-		<xsd:attribute name="type" type="xsd:string"/>
+		<xsd:attribute name="type" type="IdentifierType"/>
 	</xsd:complexType>
 	
 	<xsd:complexType name="BugCodeType" mixed="true">
-		<xsd:attribute name="abbrev" type="xsd:string"/>
+		<xsd:attribute name="abbrev" type="IdentifierType"/>
 	</xsd:complexType>
 
 	<xsd:complexType name="MessageCollectionType" mixed="true">
