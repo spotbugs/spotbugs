@@ -139,7 +139,9 @@ public class FieldAnnotation extends PackageMemberAnnotation {
 			&& isStatic == other.isStatic;
 	}
 
-	public int compareTo(Object o) {
+	public int compareTo(BugAnnotation o) {
+		if (!(o instanceof FieldAnnotation)) // BugAnnotations must be Comparable with any type of BugAnnotation
+			return this.getClass().getName().compareTo(o.getClass().getName());
 		FieldAnnotation other = (FieldAnnotation) o;
 		int cmp;
 		cmp = className.compareTo(other.className);

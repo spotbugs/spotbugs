@@ -33,7 +33,9 @@ public class IntAnnotation implements BugAnnotation {
 		return value == ((IntAnnotation) o).value;
 	}
 
-	public int compareTo(Object o) {
+	public int compareTo(BugAnnotation o) {
+		if (!(o instanceof IntAnnotation)) // BugAnnotations must be Comparable with any type of BugAnnotation
+			return this.getClass().getName().compareTo(o.getClass().getName());
 		return value - ((IntAnnotation) o).value;
 	}
 }

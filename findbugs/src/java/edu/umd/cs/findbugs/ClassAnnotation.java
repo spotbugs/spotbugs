@@ -33,14 +33,16 @@ public class ClassAnnotation extends PackageMemberAnnotation {
 	}
 
 	public boolean equals(Object o) {
-		if (!(o instanceof PackageMemberAnnotation))
+		if (!(o instanceof ClassAnnotation))
 			return false;
-		PackageMemberAnnotation other = (PackageMemberAnnotation) o;
+		ClassAnnotation other = (ClassAnnotation) o;
 		return className.equals(other.className);
 	}
 
-	public int compareTo(Object o) {
-		PackageMemberAnnotation other = (PackageMemberAnnotation) o;
+	public int compareTo(BugAnnotation o) {
+		if (!(o instanceof ClassAnnotation)) // BugAnnotations must be Comparable with any type of BugAnnotation
+			return this.getClass().getName().compareTo(o.getClass().getName());
+		ClassAnnotation other = (ClassAnnotation) o;
 		return className.compareTo(other.className);
 	}
 }

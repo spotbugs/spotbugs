@@ -116,7 +116,9 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 			&& methodSig.equals(other.methodSig);
 	}
 
-	public int compareTo(Object o) {
+	public int compareTo(BugAnnotation o) {
+		if (!(o instanceof MethodAnnotation)) // BugAnnotations must be Comparable with any type of BugAnnotation
+			return this.getClass().getName().compareTo(o.getClass().getName());
 		MethodAnnotation other = (MethodAnnotation) o;
 		int cmp;
 		cmp = className.compareTo(other.className);
