@@ -23,9 +23,10 @@
  */
 
 options {
-    STATIC = false;
+	STATIC = false;
 	LOOKAHEAD = 2;
 	FORCE_LA_CHECK = true;
+	NODE_SCOPE_HOOK = true;
 }
 
 PARSER_BEGIN(PatternCompiler)
@@ -43,6 +44,16 @@ public class PatternCompiler {
 	public static void main(String[] argv) throws Exception {
 		PatternCompiler pc = new PatternCompiler(System.in);
 		pc.unit();
+	}
+
+	void jjtreeOpenNodeScope(Node node) {
+		System.out.println("Setting first token");
+		((SimpleNode)node).setFirstToken(getToken(1));
+	}
+
+	void jjtreeCloseNodeScope(Node node) {
+		System.out.println("Setting last token");
+		((SimpleNode)node).setLastToken(getToken(0));
 	}
 }
 
