@@ -218,10 +218,9 @@ public class ValueNumberFrameModelingVisitor
 				} catch (DataflowAnalysisException e) {
 					throw new AnalysisException("stack underflow", methodGen, handle, e);
 				}
-			} else if (methodName.startsWith("access$")) {
-				String className = obj.getClassName(cpg);
+			} else if (Hierarchy.isInnerClassAccess(obj, cpg)) {
 				try {
-					InnerClassAccess access = InnerClassAccessMap.instance().getInnerClassAccess(className, methodName);
+					InnerClassAccess access = Hierarchy.getInnerClassAccess(obj, cpg);
 					if (access != null && access.getMethodSignature().equals(methodSig)) {
 						// Inner class field access method found.
 

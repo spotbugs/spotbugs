@@ -388,6 +388,39 @@ public class Hierarchy {
 		else
 			return null;
 	}
+
+	/**
+	 * Determine whether the given INVOKESTATIC instruction
+	 * is an inner-class field accessor method.
+	 * @param inv the INVOKESTATIC instruction
+	 * @param cpg the ConstantPoolGen for the method
+	 * @return true if the instruction is an inner-class field accessor, false if not
+	 */
+	public static boolean isInnerClassAccess(INVOKESTATIC inv, ConstantPoolGen cpg) {
+		String methodName = inv.getName(cpg);
+		return methodName.startsWith("access$");
+	}
+
+	/**
+	 * Get the InnerClassAccess for access method called
+	 * by given INVOKESTATIC.
+	 * @param inv the INVOKESTATIC instruction
+	 * @param cpg the ConstantPoolGen for the method
+	 * @return the InnerClassAccess, or null if the instruction is not
+	 *    an inner-class access
+	 */
+	public static InnerClassAccess getInnerClassAccess(INVOKESTATIC inv, ConstantPoolGen cpg)
+			throws ClassNotFoundException {
+
+		String className = inv.getClassName(cpg);
+		String methodName = inv.getName(cpg);
+		String methodSig = inv.getSignature(cpg);
+
+		InnerClassAccess access = InnerClassAccessMap.instance().getInnerClassAccess(className, methodName);
+		return (access != null && access.getMethodSignature().equals(methodSig))
+			? access
+			: null;
+	}
 }
 
 // vim:ts=4
