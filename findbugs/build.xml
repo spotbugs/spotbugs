@@ -39,6 +39,7 @@
     <property name="eclipse.src.dir" value="${findbugs.dir}/src/eclipsePlugin"/>
     <property name="script.src.dir" value="${findbugs.dir}/src/scripts"/>
     <property name="findbugs.jar.name" value="findbugs.jar" />
+    <property name="findbugs.attributes.jar.name" value="findbugsAttributes.jar"/>
     <property name="findbugsgui.jar.name" value="findbugsGUI.jar" />
     <property name="coreplugin.jar.name" value="coreplugin.jar" />
     <property name="anttask.jar.name" value="findbugs-ant.jar" />
@@ -139,6 +140,7 @@
       <delete file="${doc.src.dir}/bugDescriptions.html"/>
       <delete file="${release.prop.file}" />
       <delete file="${jar.dir}/${findbugs.jar.name}" />
+      <delete file="${jar.dir}/${findbugs.attributes.jar.name}" />
       <delete file="${jar.dir}/${findbugsgui.jar.name}" />
       <delete file="${jar.dir}/${anttask.jar.name}" />
       <delete>
@@ -192,6 +194,14 @@
         <exclude name="edu/umd/cs/findbugs/detect/*" />
         <exclude name="*.xml" />
         <exclude name="edu/umd/cs/findbugs/anttask/**" />
+      </jar>
+
+      <!--
+        JDK 1.5 attributes supported by FindBugs.
+      -->
+      <jar destfile="${jar.dir}/${findbugs.attributes.jar.name}"
+           basedir="${class.dir}">
+        <include name="edu/umd/cs/findbugs/annotations/**"/>
       </jar>
     </target>
 
