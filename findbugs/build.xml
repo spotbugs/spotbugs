@@ -11,6 +11,9 @@
        version of javac.
      -->
     <property name="jsr14.home" value="/export/home/daveho/linux/java/jsr14_adding_generics-1_3-ea"/>
+<!--
+    <property name="jsr14.home" value="/home/software/java/jsr14_adding_generics-1_3-ea"/>
+-->
 
     <!-- You should not need to change anything beyond this point. -->
 
@@ -63,9 +66,12 @@
         <fileset dir="${findbugs.src.dir}" includes="**/*.properties"/>
       </copy>
 
-      <copy todir="${jar.dir}">
-        <fileset dir="lib" includes="*.jar"/>
-      </copy>
+      <!--
+        Copy Jar files from lib to ${jar.dir}.
+        We just want the library files that are essential for compiling
+        and running FindBugs.  At the moment, this is just bcel.jar.
+      -->
+      <copy file="lib/bcel.jar" todir="${jar.dir}" />
 
       <uptodate property="findbugs.jarBuild.notRequired" 
                 targetfile="${jar.dir}/${findbugs.jar.name}" >
