@@ -1066,7 +1066,7 @@ defined in an interface references a mutable
     <Details>
 <![CDATA[
   <p> The constructor starts a thread. This is likely to be wrong if
-	the class is ever extended/subclasses, since the thread will be started
+	the class is ever extended/subclassed, since the thread will be started
 	before the subclass constructor is started.
 ]]>
     </Details>
@@ -1198,9 +1198,26 @@ before all of the static final fields are assigned.
     <Details>
 <![CDATA[
 <p> The method creates an IO stream object, does not assign it to any
-fields or return it from the method, and does not appear to close
+fields, pass it to other methods, or return it, and does not appear to close
 the stream on all paths out of the method.&nbsp; This may result in
-a file descriptor leak.
+a file descriptor leak.&nbsp; It is generally a good
+idea to use a <code>finally</code> block to ensure that streams are
+closed.
+]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="OS_OPEN_STREAM_EXCEPTION_PATH">
+    <ShortDescription>Method may fail to close stream on exception</ShortDescription>
+    <LongDescription>{1} may fail to close stream on exception</LongDescription>
+    <Details>
+<![CDATA[
+<p> The method creates an IO stream object, does not assign it to any
+fields, pass it to other methods, or return it, and does not appear to close
+it on all possible exception paths out of the method.&nbsp;
+This may result in a file descriptor leak.&nbsp; It is generally a good
+idea to use a <code>finally</code> block to ensure that streams are
+closed.
 ]]>
     </Details>
   </BugPattern>
