@@ -54,6 +54,14 @@ public class AnnotatedString {
 	 * Return the string minus any annotation
 	 */
 	public String toString() {
+		if (MAC_OS_X) {
+			// Support annotations like "File(&F)"
+			if (myAnnotatedString.matches("[^&]+\\(&\\p{Alnum}\\)")) {
+				int endIndex = myAnnotatedString.length() - "(&X)".length();
+
+				return myAnnotatedString.substring(0, endIndex);
+			}
+		}
 		return myAnnotatedString.replaceFirst("&", "");
 	}
 

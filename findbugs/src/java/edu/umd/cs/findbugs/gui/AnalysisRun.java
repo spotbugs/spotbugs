@@ -142,7 +142,7 @@ public class AnalysisRun {
 			stats.transformSummaryToHTML(html);
 			summary = html.toString();
 		} catch (Exception e) {
-			logger.logMessage(ConsoleLogger.WARNING, MessageFormat.format(L10N.getLocalString("failedtotransform_txt", "Failed to transform summary: "), new Object[]{e.toString()}));
+			logger.logMessage(ConsoleLogger.WARNING, MessageFormat.format(L10N.getLocalString("msg.failedtotransform_txt", "Failed to transform summary: {0}"), new Object[]{e.toString()}));
 			summary = MISSING_SUMMARY_MESSAGE;
 		}
 	}
