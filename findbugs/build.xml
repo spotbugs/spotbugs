@@ -78,6 +78,7 @@
 
     <!-- Classpath for compiling FindBugs. -->
     <path id="classpath">
+      <pathelement location="${jar.dir}/clover.jar" />
       <pathelement location="${jar.dir}/bcel.jar" />
       <pathelement location="${jar.dir}/dom4j-full.jar" />
       <pathelement location="${jar.dir}/AppleJavaExtensions.jar" />
@@ -151,8 +152,8 @@
       <delete file="${jar.dir}/${findbugsgui.jar.name}" />
       <delete file="${jar.dir}/${anttask.jar.name}" />
       <delete>
-        <fileset dir="${test.dir}" includes="*.class" />
-        <fileset dir="${test.dir}" includes="*.jar" />
+        <fileset dir="${test.dir}" includes="**/*.class" />
+        <fileset dir="${test.dir}" includes="**/*.jar" />
       </delete>
     </target>
 
@@ -164,6 +165,38 @@
       <mkdir dir="${build.dir}" />
       <mkdir dir="${tools.dir}"/>
     </target>
+
+
+<target name="pmd-rt">
+    <taskdef name="pmd" classname="net.sourceforge.pmd.ant.PMDTask"/>
+    <pmd rulesetfiles="recommendedruleset.xml">
+        <formatter type="html" toFile="pmd-rt_report.html"/>
+        <fileset dir="/user/pugh/jdk1.5/src">
+            <include name="**/*.java"/>
+        </fileset>
+    </pmd>
+</target>
+
+<target name="pmd">
+    <taskdef name="pmd" classname="net.sourceforge.pmd.ant.PMDTask"/>
+    <pmd rulesetfiles="customruleset.xml">
+        <formatter type="html" toFile="pmd_report.html"/>
+        <fileset dir="${findbugs.src.dir}">
+            <include name="**/*.java"/>
+        </fileset>
+    </pmd>
+</target>
+
+<target name="cpd">
+    <taskdef name="cpd" classname="net.sourceforge.pmd.cpd.CPDTask" />
+    <cpd minimumTokenCount="100" outputFile="cpd.txt">
+        <fileset dir="${findbugs.src.dir}">
+            <include name="**/*.java"/>
+        </fileset>
+    </cpd>
+</target>
+
+
 
     <!-- Target to compile classes. -->
     <target name="classes" depends="init">
@@ -351,15 +384,15 @@
       <javac srcdir="${test.dir}" 
              source="1.5"
              target="${javac.target}"
-             excludes="IgnoredReturnValue.java,TryLock.java,JSR166.java" debug="true">
+		debug="true">
         <classpath refid="test.classpath"/>
       </javac>
-      <jar destfile="${test.dir}/dumb.jar" basedir="${test.dir}" includes="*.class"
-           excludes="IgnoredReturnValue*.class,TryLock*.class" />
+      <jar destfile="${test.dir}/dumb.jar" basedir="${test.dir}" includes="**/*.class"
+		 />
     </target>
 
     <!-- Run findbugs on the test Jar file. -->
-    <target name="runtests" depends="testjar">
+    <target name="runtests" depends="init,anttask,testjar">
       <taskdef name="findbugs"
                classname="edu.umd.cs.findbugs.anttask.FindBugsTask">
         <classpath>
@@ -767,6 +800,36 @@
         <fileset dir="${doc.dir}" />
       </copy>
     </target>
+
+ <taskdef resource="clovertasks"/>
+
+ <target name="with.clover">
+    <clover-setup initString="mycoverage.db">
+     <files>
+       <exclude name="test/*.java"/>
+       <exclude name="**/NullDeref3.java"/>
+     </files>
+    </clover-setup>
+ </target>
+
+ <target name="clover_html" depends="with.clover">
+<clover-report>
+   <current outfile="clover_html" title="FindBugs" summary="true">
+         <format type="html"/>
+      </current>
+   </clover-report>
+ </target>
+ <target name="clover_xml" depends="with.clover">
+<clover-report>
+   <current outfile="clover.xml" title="FindBugs">
+         <format type="xml"/>
+      </current>
+   </clover-report>
+ </target>
+
+ <target name="clover-clean" depends="with.clover">
+  <clover-clean/>
+ </target>
 
 </project>
 
