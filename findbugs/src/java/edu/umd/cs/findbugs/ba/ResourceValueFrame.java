@@ -29,8 +29,11 @@ public class ResourceValueFrame extends Frame<ResourceValue> {
 	/** The resource is closed (or unlocked, etc). */
 	public static final int CLOSED = 2;
 
+	/** The resource has been created, but is not open. */
+	public static final int CREATED = 3;
+
 	/** The resource doesn't exist. */
-	public static final int NONEXISTENT = 3;
+	public static final int NONEXISTENT = 4;
 
 	private int status;
 
@@ -78,7 +81,7 @@ public class ResourceValueFrame extends Frame<ResourceValue> {
 		return ResourceValue.notInstance();
 	}
 
-	private static final String[] statusList = { "(escaped)", "(open)", "(closed)", "(nonexistent)" };
+	private static final String[] statusList = { "(escaped)", "(open)", "(closed)", "(created)", "(nonexistent)" };
 
 	public String toString() {
 		return super.toString() + statusList[status];
