@@ -38,8 +38,8 @@
 	
 	<xsd:complexType name="FindBugsPluginType" mixed="true">
 		<xsd:sequence>
-			<xsd:element name="Detector" type="DetectorType" minOccurs="0" maxOccurs="unbounded"/>
-			<xsd:element name="BugPattern" type="BugPatternType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Detector" type="DetectorType" minOccurs="1" maxOccurs="unbounded"/>
+			<xsd:element name="BugPattern" type="BugPatternType" minOccurs="1" maxOccurs="unbounded"/>
 		</xsd:sequence>
 		<xsd:attribute name="pluginid" type="xsd:string"/>
 		<xsd:attribute name="defaultenabled" type="xsd:boolean"/>
