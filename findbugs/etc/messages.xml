@@ -2777,7 +2777,7 @@ the fields when they wanted the other.</p>
         <LongDescription>Method {1} makes inefficient use of keySet iterator instead of entrySet iterator</LongDescription>
         <Details>
 <![CDATA[
-<p> This detector looks for accessing the value of a Map entry, using a key that was retrieved from
+<p> This method  accessing the value of a Map entry, using a key that was retrieved from
 a keySet iterator. It is more efficient to use an iterator on the entrySet of the map, to avoid the 
 Map.get(key) lookup.
 ]]>
@@ -2789,8 +2789,8 @@ Map.get(key) lookup.
         <LongDescription>Method {1} needlessly instantiates a class that only supplies static methods</LongDescription>
         <Details>
 <![CDATA[
-<p> This detector looks for allocating objects that are based on classes that only supply static methods. These objects
-do not need to be created, just access the static methods directly using the classname as a qualifier.
+<p> This class allocats an object that is based on a class that only supplies static methods. This object
+does not need to be created, just access the static methods directly using the classname as a qualifier.
 ]]>
         </Details>
     </BugPattern>
@@ -2801,7 +2801,7 @@ do not need to be created, just access the static methods directly using the cla
 	  <Details>
   <![CDATA[
   <p>
-  This detector looks for try-catch blocks where there is a catch block for Exception, but Exception is not
+  This method uses a try-catch block that catches Exception objects, but Exception is not
   thrown within the try block, and RuntimeException is not explicitly caught.  It is a common bug pattern to
   say try { ... } catch (Exception e) { something } as a shorthand for catching a number of types of exception
   each of whose catch blocks is identical, but this construct also accidentally catches RuntimeException as well,
