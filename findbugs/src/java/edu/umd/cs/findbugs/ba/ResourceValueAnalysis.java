@@ -19,6 +19,9 @@
 
 package edu.umd.cs.daveho.ba;
 
+import java.util.BitSet;
+import org.apache.bcel.Repository;
+import org.apache.bcel.classfile.*;
 import org.apache.bcel.generic.*;
 
 public class ResourceValueAnalysis<Resource> extends FrameDataflowAnalysis<ResourceValue, ResourceValueFrame>
@@ -30,12 +33,15 @@ public class ResourceValueAnalysis<Resource> extends FrameDataflowAnalysis<Resou
 	private ResourceTracker<Resource> resourceTracker;
 	private Resource resource;
 	private ResourceValueFrameModelingVisitor visitor;
+	private RepositoryLookupFailureCallback lookupFailureCallback;
 
-	public ResourceValueAnalysis(MethodGen methodGen, ResourceTracker<Resource> resourceTracker, Resource resource) {
+	public ResourceValueAnalysis(MethodGen methodGen, ResourceTracker<Resource> resourceTracker, Resource resource,
+		RepositoryLookupFailureCallback lookupFailureCallback) {
 		this.methodGen = methodGen;
 		this.resourceTracker = resourceTracker;
 		this.resource = resource;
 		this.visitor = resourceTracker.createVisitor(resource, methodGen.getConstantPool());
+		this.lookupFailureCallback = lookupFailureCallback;
 	}
 
 	public ResourceValueFrame createFact() {
@@ -56,13 +62,22 @@ public class ResourceValueAnalysis<Resource> extends FrameDataflowAnalysis<Resou
 
 		ResourceValueFrame tmpFact = null;
 
-		if (dest.isExceptionHandler()) {
-			// If status is OPEN, downgrade to OPEN_ON_EXCEPTION_PATH
-			if (fact.getStatus() == ResourceValueFrame.OPEN) {
+		if (source.isExceptionThrower()) {
+			// Ignore exceptions thrown by load of final instance fields.
+			// We'll just assume (in the name of reducing false positives)
+			// that they got initialized to something.
+			InstructionHandle handle = source.getExceptionThrower();
+			if (isFinalFieldLoad(handle)) {
+				tmpFact = modifyFrame(fact, tmpFact);
+				tmpFact.setStatus(ResourceValueFrame.NONEXISTENT);
+			} else if (fact.getStatus() == ResourceValueFrame.OPEN) {
+				// If status is OPEN, downgrade to OPEN_ON_EXCEPTION_PATH
 				tmpFact = modifyFrame(fact, tmpFact);
 				tmpFact.setStatus(ResourceValueFrame.OPEN_ON_EXCEPTION_PATH);
 			}
+		}
 
+		if (dest.isExceptionHandler()) {
 			// Clear stack, push value for exception
 			if (fact.isValid()) {
 				tmpFact = modifyFrame(fact, tmpFact);
@@ -116,6 +131,39 @@ public class ResourceValueAnalysis<Resource> extends FrameDataflowAnalysis<Resou
 		visitor.setFrame(fact);
 		visitor.transferInstruction(handle, basicBlock);
 
+	}
+
+	private final BitSet checked = new BitSet();
+	private final BitSet finalFieldLoadSet = new BitSet();
+
+	private boolean isFinalFieldLoad(InstructionHandle handle) {
+		int offset = handle.getPosition();
+		if (!checked.get(offset)) {
+			checked.set(offset);
+
+			Instruction ins = handle.getInstruction();
+			if (ins instanceof GETFIELD || ins instanceof GETSTATIC) {
+				FieldInstruction fins = (FieldInstruction) ins;
+
+				ConstantPoolGen cpg = methodGen.getConstantPool();
+				String className = fins.getClassName(cpg);
+				String fieldName = fins.getName(cpg);
+				try {
+					JavaClass jclass = Repository.lookupClass(className);
+					Field[] fieldList = jclass.getFields();
+					for (int i = 0; i < fieldList.length; ++i) {
+						Field field = fieldList[i];
+						if (field.getName().equals(fieldName)) {
+							finalFieldLoadSet.set(offset, field.isFinal());
+							break;
+						}
+					}
+				} catch (ClassNotFoundException e) {
+					lookupFailureCallback.reportMissingClass(e);
+				}
+			}
+		}
+		return finalFieldLoadSet.get(offset);
 	}
 
 }
