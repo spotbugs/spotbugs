@@ -3,11 +3,16 @@ package edu.umd.cs.findbugs.ba.type;
 import junit.framework.Assert;
 import junit.framework.TestCase;
 
+import org.apache.bcel.Constants;
+
+/**
+ * Unit tests for TypeRepository.
+ */
 public class TypeRepositoryTest extends TestCase {
 
 	/**
 	 * A do-nothing class resolver that just throws
-	 * ClassNotFoundExceptions.
+	 * ClassNotFoundException.
 	 */
 	static class NullClassResolver implements ClassResolver {
 		public void resolveClass(ClassType type, TypeRepository repos) throws ClassNotFoundException {
@@ -16,6 +21,16 @@ public class TypeRepositoryTest extends TestCase {
 	}
 
 	TypeRepository repos;
+
+	BasicType booleanType;
+	BasicType byteType;
+	BasicType charType;
+	BasicType shortType;
+	BasicType intType;
+	BasicType longType;
+	BasicType floatType;
+	BasicType doubleType;
+	BasicType voidType;
 
 	ClassType javaLangObjectType;
 	ClassType javaIoSerializableType;
@@ -33,6 +48,9 @@ public class TypeRepositoryTest extends TestCase {
 
 	ArrayType javaLangObjectArray1Type;
 	ArrayType javaLangObjectArray2Type;
+
+	ArrayType booleanArray1Type;
+	ArrayType booleanArray2Type;
 
 	void setClass(ClassType type) {
 		type.setIsInterface(false);
@@ -63,11 +81,20 @@ public class TypeRepositoryTest extends TestCase {
 		javaLangCloneableType = repos.classTypeFromDottedClassName("java.lang.Cloneable");
 		setInterface(javaLangCloneableType);
 
-		// Class types should have a unique representation
-		myClassType = repos.classTypeFromSlashedClassName("com/foobar/MyClass");
-		setClass(myClassType);
+		// Basic types
+		booleanType = repos.basicTypeFromTypeCode(Constants.T_BOOLEAN);
+		byteType = repos.basicTypeFromTypeCode(Constants.T_BYTE);
+		charType = repos.basicTypeFromTypeCode(Constants.T_CHAR);
+		shortType = repos.basicTypeFromTypeCode(Constants.T_SHORT);
+		intType = repos.basicTypeFromTypeCode(Constants.T_INT);
+		longType = repos.basicTypeFromTypeCode(Constants.T_LONG);
+		floatType = repos.basicTypeFromTypeCode(Constants.T_FLOAT);
+		doubleType = repos.basicTypeFromTypeCode(Constants.T_DOUBLE);
+		voidType = repos.basicTypeFromTypeCode(Constants.T_VOID);
 
 		// Fake hierarchy classes
+		myClassType = repos.classTypeFromSlashedClassName("com/foobar/MyClass");
+		setClass(myClassType);
 		mySuperclassType = repos.classTypeFromDottedClassName("com.foobar.MySuperClass");
 		setClass(mySuperclassType);
 		myInterfaceType = repos.classTypeFromDottedClassName("com.foobar.MyInterface");
@@ -86,6 +113,8 @@ public class TypeRepositoryTest extends TestCase {
 		mySubinterfaceArrayType = repos.arrayTypeFromDimensionsAndElementType(1, mySubinterfaceType);
 		javaLangObjectArray1Type = repos.arrayTypeFromDimensionsAndElementType(1, javaLangObjectType);
 		javaLangObjectArray2Type = repos.arrayTypeFromDimensionsAndElementType(2, javaLangObjectType);
+		booleanArray1Type = repos.arrayTypeFromDimensionsAndElementType(1, booleanType);
+		booleanArray2Type = repos.arrayTypeFromDimensionsAndElementType(2, booleanType);
 	}
 
 	public void testClassFromSlashedClassName() {
@@ -167,6 +196,45 @@ public class TypeRepositoryTest extends TestCase {
 	public void testArrayOfObjectSupertypes() throws ClassNotFoundException {
 		Assert.assertTrue(checkUnidirectionalSubtype(javaLangObjectArray2Type, javaLangObjectArray1Type));
 		Assert.assertTrue(checkUnidirectionalSubtype(javaLangObjectArray1Type, javaLangObjectType));
+	}
+
+	public void testArrayFromSignature() throws ClassNotFoundException, InvalidSignatureException {
+		ArrayType javaLangObjectArray1TypeCopy = repos.arrayTypeFromSignature("[Ljava/lang/Object;");
+		ArrayType javaLangObjectArray2TypeCopy = repos.arrayTypeFromSignature("[[Ljava/lang/Object;");
+
+		Assert.assertTrue(javaLangObjectArray1TypeCopy == javaLangObjectArray1Type);
+		Assert.assertTrue(javaLangObjectArray2TypeCopy == javaLangObjectArray2Type);
+	}
+
+	public void testBasicTypes() {
+		Assert.assertEquals(booleanType.getSignature(),"Z");
+		Assert.assertEquals(byteType.getSignature(),"B");
+		Assert.assertEquals(charType.getSignature(),"C");
+		Assert.assertEquals(shortType.getSignature(),"S");
+		Assert.assertEquals(intType.getSignature(),"I");
+		Assert.assertEquals(longType.getSignature(),"J");
+		Assert.assertEquals(floatType.getSignature(),"F");
+		Assert.assertEquals(doubleType.getSignature(),"D");
+		Assert.assertEquals(voidType.getSignature(),"V");
+	}
+
+	public void testBasicTypesUnique() {
+		Assert.assertTrue(booleanType == repos.basicTypeFromTypeCode(Constants.T_BOOLEAN));
+		Assert.assertTrue(floatType == repos.basicTypeFromTypeCode(Constants.T_FLOAT));
+	}
+
+	public void testBasicTypesFromSignature() throws InvalidSignatureException {
+		Assert.assertTrue(intType == repos.basicTypeFromSignature("I"));
+		Assert.assertTrue(longType == repos.basicTypeFromSignature("J"));
+		Assert.assertTrue(voidType == repos.basicTypeFromSignature("V"));
+	}
+
+	public void testBasicArrayType() throws ClassNotFoundException {
+		Assert.assertTrue(checkUnidirectionalSubtype(booleanArray1Type, javaLangObjectType));
+		Assert.assertTrue(checkUnidirectionalSubtype(booleanArray2Type, javaLangObjectArray1Type));
+		Assert.assertTrue(checkUnidirectionalSubtype(booleanArray2Type, javaLangObjectType));
+		Assert.assertTrue(checkUnidirectionalSubtype(booleanArray1Type, javaIoSerializableType));
+		Assert.assertTrue(checkUnidirectionalSubtype(booleanArray1Type, javaLangCloneableType));
 	}
 
 }
