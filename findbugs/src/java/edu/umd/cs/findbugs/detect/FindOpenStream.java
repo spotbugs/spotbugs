@@ -112,11 +112,13 @@ public class FindOpenStream implements Detector {
 			// Track any subclass of InputStream or OutputStream
 			// (but not ByteArray variants)
 			String className = sig.substring(1, sig.length() - 1).replace('/', '.');
-			if (className.startsWith("ByteArray"))
-				return null;
 			try {
-				boolean isStream = Repository.instanceOf(className, "java.io.InputStream")
-					|| Repository.instanceOf(className, "java.io.OutputStream");
+				boolean isStream =
+					(Repository.instanceOf(className, "java.io.InputStream") &&
+						!Repository.instanceOf(className, "java.io.ByteArrayInputStream")) ||
+					(Repository.instanceOf(className, "java.io.OutputStream") &&
+						!Repository.instanceOf(className, "java.io.ByteArrayOutputStream"));
+					
 				return isStream ? new Stream(new Location(handle, basicBlock), className) : null;
 			} catch (ClassNotFoundException e) {
 				bugReporter.reportMissingClass(e);
