@@ -44,6 +44,8 @@ import java.util.*;
  * be used to determine whether or not two value numbers are the same.
  * In general, ValueNumbers from different factories cannot be compared.
  *
+ * @see ValueNumberAnalysis
+ * @see DominatorsAnalysis
  * @author David Hovemeyer
  */
 public class ValueNumber {
