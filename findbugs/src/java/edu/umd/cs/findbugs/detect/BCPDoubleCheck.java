@@ -106,7 +106,7 @@ public class BCPDoubleCheck extends ByteCodePatternDetector {
 		Binding binding = bindingSet.lookup("h");
 		FieldVariable field = (FieldVariable) binding.getVariable();
 
-		// Ignore synthetic inner-class access fields
+		// Ignore fields generated for accesses to Foo.class
 		if (field.getFieldName().startsWith("class$"))
 			return;
 
