@@ -1363,10 +1363,11 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	String jarFile = jarNameTextField.getText();
 	if (!jarFile.equals("")) {
 	    Project project = getCurrentProject();
-	    project.addJar(jarFile);
-	    DefaultListModel listModel = (DefaultListModel)  jarFileList.getModel();
-	    listModel.addElement(jarFile);
-	    jarNameTextField.setText("");
+	    if (project.addJar(jarFile)) {
+                DefaultListModel listModel = (DefaultListModel)  jarFileList.getModel();
+                listModel.addElement(jarFile);
+                jarNameTextField.setText("");
+            }
 	}
     }
     
@@ -1378,10 +1379,11 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	String sourceDir = srcDirTextField.getText();
 	if (!sourceDir.equals("")) {
 	    Project project = getCurrentProject();
-	    project.addSourceDir(sourceDir);
-	    DefaultListModel listModel = (DefaultListModel) sourceDirList.getModel();
-	    listModel.addElement(sourceDir);
-	    srcDirTextField.setText("");
+	    if (project.addSourceDir(sourceDir)) {
+                DefaultListModel listModel = (DefaultListModel) sourceDirList.getModel();
+                listModel.addElement(sourceDir);
+                srcDirTextField.setText("");
+            }
 	}
     }
 
@@ -1610,8 +1612,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
     private javax.swing.JLabel sourceDirLabel;
     private javax.swing.JPanel viewPanel;
     private javax.swing.JLabel jarFileListLabel;
-    private javax.swing.JScrollPane byPackageScrollPane;
     private javax.swing.JSeparator jSeparator1;
+    private javax.swing.JScrollPane byPackageScrollPane;
     private javax.swing.JPanel reportPanel;
     private javax.swing.JPanel editProjectPanel;
     private javax.swing.JMenu helpMenu;
@@ -1619,8 +1621,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
     private javax.swing.JTextField srcDirTextField;
     private javax.swing.JButton browseSrcDirButton;
     private javax.swing.JLabel sourceDirListLabel;
-    private javax.swing.JTree byClassBugTree;
     private javax.swing.JMenuItem exitItem;
+    private javax.swing.JTree byClassBugTree;
     private javax.swing.JScrollPane sourceDirListScrollPane;
     // End of variables declaration//GEN-END:variables
     
