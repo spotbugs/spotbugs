@@ -75,10 +75,6 @@ public class StreamEquivalenceClass {
 			}
 		}
 	}
-
-	public String toString() {
-		return memberSet.toString() + (isClosed ? "[closed]" : "");
-	}
 }
 
 // vim:ts=4

@@ -27,7 +27,7 @@ import org.apache.bcel.generic.*;
 public class ResourceValueAnalysis<Resource> extends FrameDataflowAnalysis<ResourceValue, ResourceValueFrame>
 	implements EdgeTypes {
 
-	private static final boolean DEBUG = Boolean.getBoolean("rva.debug");
+	private static final boolean DEBUG = Boolean.getBoolean("dataflow.debug");
 
 	private MethodGen methodGen;
 	private CFG cfg;
@@ -128,8 +128,7 @@ public class ResourceValueAnalysis<Resource> extends FrameDataflowAnalysis<Resou
 						if (topValue.isInstance()) {
 							if ((lastInSource instanceof IFNULL && edgeType == IFCMP_EDGE) ||
 								(lastInSource instanceof IFNONNULL && edgeType == FALL_THROUGH_EDGE)) {
-								if (DEBUG) System.out.println("**** making resource nonexistent on edge "+
-									edge.getSource().getId() + " to " + edge.getTarget().getId());
+								//System.out.println("**** making resource nonexistent on edge "+edge.getId());
 								tmpFact = modifyFrame(fact, tmpFact);
 								tmpFact.setStatus(ResourceValueFrame.NONEXISTENT);
 							}
@@ -152,10 +151,6 @@ public class ResourceValueAnalysis<Resource> extends FrameDataflowAnalysis<Resou
 
 		// Merge status
 		result.setStatus(Math.min(result.getStatus(), frame.getStatus()));
-
-		// Merge escaped status
-		if (frame.isEscaped())
-			result.setEscaped(true);
 	}
 
 	protected ResourceValue mergeValues(ResourceValueFrame frame, int slot, ResourceValue a, ResourceValue b)
