@@ -40,7 +40,7 @@ public abstract class FrameDataflowAnalysis<ValueType, FrameType extends Frame<V
 	}
 
 	public boolean same(FrameType fact1, FrameType fact2) {
-		return fact1.sameAs(fact1);
+		return fact1.sameAs(fact2);
 	}
 
 	public boolean isFactValid(FrameType fact) {
