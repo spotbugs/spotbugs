@@ -188,6 +188,7 @@ public class OpcodeStack implements Constants2
  		public Object getConstant() {
  			return constValue;
  		}
+
  		public FieldAnnotation getField() {
  			return field;
  		}
@@ -195,7 +196,7 @@ public class OpcodeStack implements Constants2
 
 	public String toString() {
 		return stack.toString();
-		}
+	}
 	
 	public OpcodeStack()
 	{
@@ -397,6 +398,9 @@ public class OpcodeStack implements Constants2
 	 			break;
 
 	 			case ATHROW:
+					pop();
+					break;
+
 	 			case CHECKCAST:
 	 			case NOP:
 	 			case RET:
@@ -928,7 +932,7 @@ public class OpcodeStack implements Constants2
 			push(new Item("Ljava/lang/String;", getStringFromIndex(dbc, s)));
 		}
 		else if (c instanceof ConstantFloat)
-			push(new Item("F", new Float(((ConstantInteger) c).getBytes())));
+			push(new Item("F", new Float(((ConstantFloat) c).getBytes())));
 		else if (c instanceof ConstantDouble)
 			push(new Item("D", new Double(((ConstantDouble) c).getBytes())));
 		else if (c instanceof ConstantLong)
