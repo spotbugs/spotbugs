@@ -108,6 +108,7 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 		private IdentityHashMap<InstructionHandle, BasicBlock> blockMap;
 		private IdentityHashMap<BasicBlock, List<EscapeTarget>> escapeTargetListMap;
 		private BitSet returnBlockSet;
+		private BitSet unhandledExceptionBlockSet;
 		private LinkedList<WorkListItem> workList;
 
 		/**
@@ -121,6 +122,7 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 			this.blockMap = new IdentityHashMap<InstructionHandle, BasicBlock>();
 			this.escapeTargetListMap = new IdentityHashMap<BasicBlock, List<EscapeTarget>>();
 			this.returnBlockSet = new BitSet();
+			this.unhandledExceptionBlockSet = new BitSet();
 			this.workList = new LinkedList<WorkListItem>();
 		}
 
@@ -211,6 +213,22 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 		 */
 		public boolean isReturnBlock(BasicBlock block) {
 			return returnBlockSet.get(block.getId());
+		}
+
+		/**
+		 * Indicate that an unhandled exception may be thrown by
+		 * the given block.
+		 * @param block the block throwing an unhandled exception
+		 */
+		public void setUnhandledExceptionBlock(BasicBlock block) {
+			unhandledExceptionBlockSet.set(block.getId());
+		}
+
+		/**
+		 * Does this block throw an unhandled exception?
+		 */
+		public boolean isUnhandledExceptionBlock(BasicBlock block) {
+			return unhandledExceptionBlockSet.get(block.getId());
 		}
 
 		/**
@@ -545,13 +563,13 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 			}
 		}
 
-		// If required, add UNHANDLED_EXCEPTION edges.
+		// If required, mark this block as throwing an unhandled exception.
 		// For now, we assume that if there is no reachable handler that handles
 		// ANY exception type, then the exception can be thrown out of the method.
 		// FIXME: this is more conservative than necessary.
 		if (!sawAnyExceptionHandler) {
 			if (DEBUG) System.out.println("Adding unhandled exception edge from " + pei);
-			subroutine.addEdge(etb, subroutine.getExit(), UNHANDLED_EXCEPTION_EDGE);
+			subroutine.setUnhandledExceptionBlock(etb);
 		}
 	}
 
@@ -714,6 +732,12 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 				result.addEdge(resultBlock, result.getExit(), RETURN_EDGE);
 			}
 
+			// If the block throws an unhandled exception, add an unhandled
+			// exception edge
+			if (subroutine.isUnhandledExceptionBlock(subBlock)) {
+				result.addEdge(resultBlock, result.getExit(), UNHANDLED_EXCEPTION_EDGE);
+			}
+
 		}
 
 /*
@@ -741,6 +765,10 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 
 				if (block returns) {
 					add return edge from result block to result CFG exit block
+				}
+
+				if (block throws unhandled exception) {
+					add unhandled exception edge from result block to result CFG exit block
 				}
 			}
 
