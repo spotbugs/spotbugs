@@ -51,6 +51,8 @@ compares several Java bug checkers, including FindBugs.
 
 <ul>
 <!-- new detectors -->
+<li> New detector to find calls to Thread.interrupted() in a non static context, and especially
+     with non currentThread() threads. (Dave Brosius)
 <li> New detector to find calls to .equals methods that use Object's version. (Dave Brosius)
 <li> Extend Dumb Method detector for toUpperCase, toLowerCase without a locale, 
      and new Integer(1).toString() (Dave Brosius)

@@ -582,8 +582,19 @@ override the equals method in the Object class. This means that equals semantics
 ]]>    
     </Details>
   </Detector>
-  
-    <Detector class="edu.umd.cs.findbugs.detect.FindBugsSummaryStats">
+  <Detector class="edu.umd.cs.findbugs.detect.SuspiciousThreadInterrupted">
+    <Details>
+<![CDATA[
+<p>
+This detector looks for calls to Thread.interrupted() from a non static context. If it is called from
+Thread.currentThread().interrupted(), then it is just a useless exercise, just use Thread.interrupted().
+However if it is called on an arbitrary thread object, it is most probably an error, as interrupted()
+is always called on the current thread.
+</p>
+]]>    
+    </Details>
+  </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.FindBugsSummaryStats">
     <Details>
 <![CDATA[
 <p> This detector just collects summary statistics information about the analysis process. </p>
@@ -2555,6 +2566,33 @@ method in this class.
     </Details>
   </BugPattern>
   
+  <BugPattern type="STI_INTERRUPTED_ON_CURRENTTHREAD">
+    <ShortDescription>Unneeded use of currentThread() call, to call interrupted() </ShortDescription>
+    <LongDescription>Method {1} makes an unneeded call to currentThread() just to call interrupted()</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+This method invokes the Thread.currentThread() call, just to call the interrupted() method. As interrupted() is a 
+static method, is more simple and clear to use Thread.interrupted().
+</p>
+]]>    
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="STI_INTERRUPTED_ON_UNKNOWNTHREAD">
+    <ShortDescription>Static Thread.interrupted() method is mistakenly attempted to be called on an arbitrary Thread object</ShortDescription>
+    <LongDescription>Method {1} makes a call to the static Thread.interrupted() method, mistakenly attempting to call it on an arbitrary Thread object</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+This method invokes the Thread.interrupted() method on a Thread object that appears to be a Thread object that is
+not the current thread. As the interrupted() method is static, the interrupted method will be called on a different 
+object than the one the author intended.
+</p>
+]]>    
+    </Details>
+  </BugPattern>
+  
   <!--
   **********************************************************************
    BugCodes
@@ -2637,4 +2675,5 @@ method in this class.
   <BugCode abbrev="DLS">Dead local store</BugCode>
   <BugCode abbrev="BAC">Bad Applet Constructor</BugCode>
   <BugCode abbrev="UOE">Use Object Equals</BugCode>
+  <BugCode abbrev="STI">Suspicious Thread Interrupted</BugCode>
   </MessageCollection>

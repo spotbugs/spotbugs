@@ -131,12 +131,14 @@
    	 reports="BRSA_BAD_RESULTSET_ACCESS"/>
    <Detector class="edu.umd.cs.findbugs.detect.SuperfluousInstanceOf" speed="fast"
    	 reports="SIO_SUPERFLUOUS_INSTANCEOF"/>  
-  <Detector class="edu.umd.cs.findbugs.detect.FindDeadLocalStores" speed="moderate"
+   <Detector class="edu.umd.cs.findbugs.detect.FindDeadLocalStores" speed="moderate"
     reports="DLS_DEAD_LOCAL_STORE" disabled="true"/>
-  <Detector class="edu.umd.cs.findbugs.detect.BadAppletConstructor" speed="fast"
+   <Detector class="edu.umd.cs.findbugs.detect.BadAppletConstructor" speed="fast"
     reports="BAC_BAD_APPLET_CONSTRUCTOR" disabled="true"/> 
    <Detector class="edu.umd.cs.findbugs.detect.UseObjectEquals" speed="fast"
     reports="UOE_BAD_ARRAY_COMPARE,UOE_USE_OBJECT_EQUALS"/>
+   <Detector class="edu.umd.cs.findbugs.detect.SuspiciousThreadInterrupted" speed="fast"
+    reports="STI_INTERRUPTED_ON_CURRENTTHREAD,STI_INTERRUPTED_ON_UNKNOWNTHREAD" disabled="true"/>
    <Detector class="edu.umd.cs.findbugs.detect.FindBugsSummaryStats" speed="fast" />
 
   <BugPattern abbrev="SW" type="SW_SWING_METHODS_INVOKED_IN_SWING_THREAD" category="CORRECTNESS" 
@@ -295,5 +297,9 @@
   <BugPattern abbrev="UOE" type="UOE_USE_OBJECT_EQUALS" category="CORRECTNESS"
     experimental="true"/>  
   <BugPattern abbrev="UOE" type="UOE_BAD_ARRAY_COMPARE" category="CORRECTNESS"
+    experimental="true"/>
+  <BugPattern abbrev="STI" type="STI_INTERRUPTED_ON_CURRENTTHREAD" category="CORRECTNESS"
+    experimental="true"/>
+  <BugPattern abbrev="STI" type="STI_INTERRUPTED_ON_UNKNOWNTHREAD" category="CORRECTNESS"
     experimental="true"/>
 </FindbugsPlugin>
