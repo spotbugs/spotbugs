@@ -46,11 +46,11 @@ public class BCPMethodReturnCheck extends ByteCodePatternDetector {
 	private static final ByteCodePattern pattern = new ByteCodePattern()
 		.add(new MatchAny(new PatternElement[] {
 			new Invoke("/^java\\.lang\\.(String|Byte|Boolean|Character|Short|Integer|Long|Float|Double)$", "/.*", "/.*",
-				Invoke.ORDINARY_METHOD),
+				Invoke.INSTANCE),
 			new Invoke("+java.security.MessageDigest", "digest", "([B)[B", Invoke.INSTANCE),
-			new Invoke("+java.net.InetAddress", "/.*", "/.*", Invoke.ORDINARY_METHOD),
-			new Invoke("/^java\\.math\\.BigDecimal$", "/.*", "/.*", Invoke.ORDINARY_METHOD),
-			new Invoke("/^java\\.math\\.BigInteger$", "/.*", "/.*", Invoke.ORDINARY_METHOD),
+			new Invoke("+java.net.InetAddress", "/.*", "/.*", Invoke.INSTANCE),
+			new Invoke("/^java\\.math\\.BigDecimal$", "/.*", "/.*", Invoke.INSTANCE),
+			new Invoke("/^java\\.math\\.BigInteger$", "/.*", "/.*", Invoke.INSTANCE),
 		}).label("call"))
 		.add(new MatchAny(new PatternElement[] {new Opcode(Constants.POP), new Opcode(Constants.POP2)}));
 
