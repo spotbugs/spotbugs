@@ -495,6 +495,16 @@ It is a fast detector.
 ]]>
     </Details>
   </Detector>
+  
+  <Detector class="edu.umd.cs.findbugs.detect.BadlyOverriddenAdapter">
+    <Details>
+<![CDATA[
+<p> This detector looks for code that extends an Adapter class and overrides a Listener
+method with the wrong signature. It is a fast detector.
+]]>
+    </Details>
+  </Detector>
+
   <Detector class="edu.umd.cs.findbugs.detect.FindBugsSummaryStats">
     <Details>
 <![CDATA[
@@ -2235,7 +2245,19 @@ super.tearDown(), but doesn't.
     </Details>
   </BugPattern>  
   
-  <!--
+  <BugPattern type="BOA_BADLY_OVERRIDDEN_ADAPTER">
+    <ShortDescription>Method overrides a method implemented in super class Adapter wrongly</ShortDescription>
+    <LongDescription>Method overrides a method implemented in super class Adapter wrongly</LongDescription>
+    <Details>
+<![CDATA[
+<p> This method overrides a method found in a parent class, where that class is an Adapter that implements
+a listener defined in the java.awt.event or javax.swing.event package. As a result, this method will not 
+get called when the event occurs.
+]]>
+    </Details>
+  </BugPattern>
+  
+    <!--
   **********************************************************************
    BugCodes
   **********************************************************************
@@ -2307,4 +2329,5 @@ super.tearDown(), but doesn't.
   <BugCode abbrev="SW">Swing coding rules</BugCode>
   <BugCode abbrev="MF">Masked Field</BugCode>
   <BugCode abbrev="IJU">Improperly implemented JUnit TestCase</BugCode>
+  <BugCode abbrev="BOA">Badly Overridden Adapter</BugCode>
 </MessageCollection>
