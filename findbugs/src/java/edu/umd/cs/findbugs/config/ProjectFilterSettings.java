@@ -174,6 +174,15 @@ public class ProjectFilterSettings {
 	public void addCategory(String category) {
 		this.activeBugCategorySet.add(category);
 	}
+
+	/**
+	 * Remove a bug category from the set of categories to be displayed.
+	 *
+	 * @param category the bug category: e.g., "CORRECTNESS"
+	 */
+	public void removeCategory(String category) {
+		this.activeBugCategorySet.remove(category);
+	}
 	
 	/**
 	 * Return whether or not the given category is enabled
@@ -249,3 +258,5 @@ public class ProjectFilterSettings {
 		return minPriority.hashCode() + 1009 * activeBugCategorySet.hashCode();
 	}
 }
+
+// vim:ts=4
