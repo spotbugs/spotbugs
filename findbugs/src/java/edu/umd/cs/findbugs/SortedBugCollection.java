@@ -38,9 +38,13 @@ public class SortedBugCollection extends BugCollection {
 	private static final BugInstanceComparator comparator = new BugInstanceComparator();
 
 	private TreeSet<BugInstance> bugSet;
+	private List<String> errorList;
+	private TreeSet<String> missingClassSet;
 
 	public SortedBugCollection() {
 		bugSet = new TreeSet<BugInstance>(comparator);
+		errorList = new LinkedList<String>();
+		missingClassSet = new TreeSet<String>();
 	}
 
 	public boolean add(BugInstance bugInstance) {
@@ -53,6 +57,22 @@ public class SortedBugCollection extends BugCollection {
 
 	public Collection<BugInstance> getCollection() {
 		return bugSet;
+	}
+
+	public void addError(String message) {
+		errorList.add(message);
+	}
+
+	public void addMissingClass(String message) {
+		missingClassSet.add(message);
+	}
+
+	public Iterator<String> errorIterator() {
+		return errorList.iterator();
+	}
+
+	public Iterator<String> missingClassIterator() {
+		return missingClassSet.iterator();
 	}
 
 	public boolean contains(BugInstance bugInstance) {

@@ -31,7 +31,8 @@ import org.dom4j.io.XMLWriter;
 import org.dom4j.io.OutputFormat;
 
 /**
- * Abstract base class for collections of BugInstance objects.
+ * Abstract base class for collections of BugInstance objects
+ * and error messages associated with analysis.
  * Supports reading and writing XML files.
  * @see BugInstance
  * @author David Hovemeyer
@@ -53,10 +54,17 @@ public abstract class BugCollection {
 	public abstract boolean add(BugInstance bugInstance);
 	public abstract Iterator<BugInstance> iterator();
 	public abstract Collection<BugInstance> getCollection();
+	public abstract void addError(String message);
+	public abstract void addMissingClass(String message);
+	public abstract Iterator<String> errorIterator();
+	public abstract Iterator<String> missingClassIterator();
 
 	private static final String ROOT_ELEMENT_NAME = "BugCollection";
 	private static final String SRCMAP_ELEMENT_NAME= "SrcMap";
 	private static final String PROJECT_ELEMENT_NAME = "Project";
+	private static final String ERRORS_ELEMENT_NAME = "Errors";
+	private static final String ANALYSIS_ERROR_ELEMENT_NAME = "AnalysisError";
+	private static final String MISSING_CLASS_ELEMENT_NAME = "MissingClass";
 
 	public void readXML(String fileName, Project project)
 		throws IOException, DocumentException {
@@ -87,6 +95,8 @@ public abstract class BugCollection {
 				classToSourceFileMap.put(element.attributeValue("classname"), element.attributeValue("srcfile"));
 			} else if (elementName.equals(PROJECT_ELEMENT_NAME)) {
 				project.readElement(element);
+			} else if (elementName.equals(ERRORS_ELEMENT_NAME)) {
+				readErrors(element);
 			} else {
 				XMLTranslator translator = XMLTranslatorRegistry.instance().getTranslator(elementName);
 				if (translator == null)
@@ -130,6 +140,21 @@ public abstract class BugCollection {
 		}
 	}
 
+	private void readErrors(Element element) throws DocumentException {
+		Iterator i = element.elements().iterator();
+		while (i.hasNext()) {
+			Element child = (Element) i.next();
+			String elementName = child.getName();
+
+			if (elementName.equals(ANALYSIS_ERROR_ELEMENT_NAME)) {
+				addError(child.getText());
+			} else if (elementName.equals(MISSING_CLASS_ELEMENT_NAME)) {
+				addMissingClass(child.getText());
+			} else
+				throw new DocumentException("Unknown element type: " + elementName);
+		}
+	}
+
 	public void writeXML(String fileName, Project project) throws IOException {
 		BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(fileName));
 		writeXML(out, project);
@@ -153,6 +178,15 @@ public abstract class BugCollection {
 		while (i.hasNext()) {
 			BugInstance bugInstance = i.next();
 			bugInstance.toElement(root);
+		}
+
+		// Save the error information
+		Element errorsElement = root.addElement(ERRORS_ELEMENT_NAME);
+		for (Iterator<String> j = errorIterator(); j.hasNext(); ) {
+			errorsElement.addElement(ANALYSIS_ERROR_ELEMENT_NAME).setText(j.next());
+		}
+		for (Iterator<String> j = missingClassIterator(); j.hasNext(); ) {
+			errorsElement.addElement(MISSING_CLASS_ELEMENT_NAME).setText(j.next());
 		}
 
 		XMLWriter writer = new XMLWriter(out, OutputFormat.createPrettyPrint());

@@ -29,6 +29,16 @@ public class XMLBugReporter extends TextUIBugReporter {
 		this.project = project;
 	}
 
+	public void logError(String message) {
+		bugCollection.addError(message);
+		super.logError(message);
+	}
+
+	public void reportMissingClass(ClassNotFoundException ex) {
+		bugCollection.addMissingClass(getMissingClassName(ex));
+		super.reportMissingClass(ex);
+	}
+
 	public void doReportBug(BugInstance bugInstance) {
 		if (bugCollection.add(bugInstance))
 			notifyObservers(bugInstance);
