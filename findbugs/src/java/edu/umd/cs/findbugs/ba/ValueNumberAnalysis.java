@@ -167,6 +167,7 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
 		ValueNumberFrame fact = factAtLocationMap.get(location);
 		if (fact == null) {
 			fact = createFact();
+			makeFactTop(fact);
 			factAtLocationMap.put(location, fact);
 		}
 		return fact;
@@ -176,6 +177,7 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
 		ValueNumberFrame fact = factAfterLocationMap.get(location);
 		if (fact == null) {
 			fact = createFact();
+			makeFactTop(fact);
 			factAfterLocationMap.put(location, fact);
 		}
 		return fact;
