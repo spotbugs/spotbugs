@@ -48,6 +48,10 @@ public class InstantiateStaticClass extends BytecodeScanningDetector implements 
 				if (clsName.equals("java/lang/Object"))
 					return;
 				
+				//ignore superclass synthesized ctor calls
+				if (getMethodName().equals("<init>") && (getPC() == 1))
+					return;
+				
 				JavaClass cls = Repository.lookupClass(clsName);
 				if (cls.getInterfaceNames().length > 0)
 					return;
