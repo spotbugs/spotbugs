@@ -31,28 +31,16 @@
      -->
     <property name="jsr14.home"
               value="/export/home/daveho/linux/java/adding_generics-2_2-ea"/>
-<!--
-    <property name="jsr14.home"
-              value="/home/software/java/jsr14_adding_generics-1_3-ea" />
--->
 
     <!-- Set this to the directory containing the DocBook Modular XSL Stylesheets
          from http://docbook.sourceforge.net/projects/xsl/ -->
     <property name="xsl.stylesheet.home"
               value="/export/home/daveho/linux/docbook/docbook-xsl-1.61.0" />
-<!--
-    <property name="xsl.stylesheet.home"
-              value="/home/software/docbook/docbook-xsl-1.61.3" />
--->
 
     <!-- Set this to the directory where Saxon (http://saxon.sourceforge.net/)
          is installed. -->
     <property name="saxon.home"
               value="/export/home/daveho/linux/java/saxon-6.5.2" />
-<!--
-    <property name="saxon.home"
-              value="/home/software/java/saxon-6.5.2" />
--->
 
     <!-- Set this to the directory where FOP (http://xml.apache.org/fop/)
          is installed.  (Note: this is disabled for now.) -->
