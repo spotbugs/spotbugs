@@ -31,6 +31,7 @@ public class FindMaskedFields extends BytecodeScanningDetector implements Consta
 	private int numParms;
 	private Map<String, FieldAnnotation> classFieldMap = new HashMap<String, FieldAnnotation>();
 	private Map<String, FieldAnnotation> superclassFieldMap = new HashMap<String, FieldAnnotation>();
+	private Set<String> finalClassFieldSet = new HashSet<String>();
 	private boolean staticMethod;
 
 	public FindMaskedFields(BugReporter bugReporter) {
@@ -42,6 +43,7 @@ public class FindMaskedFields extends BytecodeScanningDetector implements Consta
 			return;
 		classFieldMap.clear();
 		superclassFieldMap.clear();
+		finalClassFieldSet.clear();
 
 		// Build map of fields in this class
 		Field[] fields = obj.getFields();
@@ -49,6 +51,8 @@ public class FindMaskedFields extends BytecodeScanningDetector implements Consta
 		for (int f = 0; f < fields.length; f++) {
 			FieldAnnotation fa = FieldAnnotation.fromBCELField(obj.getClassName(), fields[f]);
 			classFieldMap.put(fa.getFieldName(), fa);
+			if (fields[f].isFinal())
+				finalClassFieldSet.add(fa.getFieldName());
 		}
 
 		// Build map of visible instance fields in superclasses
@@ -87,9 +91,20 @@ public class FindMaskedFields extends BytecodeScanningDetector implements Consta
 		Map<String, FieldAnnotation> intersection = new HashMap<String, FieldAnnotation>(superclassFieldMap);
 		intersection.keySet().retainAll(classFieldMap.keySet());
 		for (Iterator<FieldAnnotation> i = intersection.values().iterator(); i.hasNext(); ) {
-			bugReporter.reportBug(new BugInstance("MF_CLASS_MASKS_FIELD", LOW_PRIORITY)
+			FieldAnnotation fa = i.next();
+
+			// Report final fields, String fields, and primitive value fields
+			// as low priority, and everything else as medium.
+
+			int priority = NORMAL_PRIORITY;
+			if (finalClassFieldSet.contains(fa.getFieldName())
+				|| (fa.getFieldSignature().length() == 1 && "ZBCSIJFD".indexOf(fa.getFieldSignature()) >= 0)
+				|| fa.getFieldSignature().equals("Ljava/lang/String;"))
+				priority = LOW_PRIORITY;
+
+			bugReporter.reportBug(new BugInstance("MF_CLASS_MASKS_FIELD", priority)
 				.addClass(this)
-				.addField(i.next()).describe("FIELD_SUPER"));
+				.addField(fa).describe("FIELD_SUPER"));
 		}
 
 		super.visit(obj);
