@@ -231,7 +231,7 @@ public class DroppedException extends PreorderVisitor implements Detector, Const
    * The number of lines that we'll scan to look at the source
    * for a catch block.
    */
-  private static final int MAX_LINES = 5;
+  private static final int MAX_LINES = 7;
 
   /**
    * Analyze a class's source code to see if there is a comment
