@@ -50,7 +50,7 @@ public abstract class BugCollection {
 		c = IntAnnotation.class;
 	}
 
-	public abstract void add(BugInstance bugInstance);
+	public abstract boolean add(BugInstance bugInstance);
 	public abstract Iterator<BugInstance> iterator();
 	public abstract Collection<BugInstance> getCollection();
 

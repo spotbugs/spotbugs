@@ -29,8 +29,9 @@ public class XMLBugReporter extends TextUIBugReporter {
 		this.project = project;
 	}
 
-	public void reportBug(BugInstance bugInstance) {
-		bugCollection.add(bugInstance);
+	public void doReportBug(BugInstance bugInstance) {
+		if (bugCollection.add(bugInstance))
+			notifyObservers(bugInstance);
 	}
 
 	public void finish() {

@@ -28,17 +28,15 @@ import java.util.*;
 public class SortingBugReporter extends TextUIBugReporter {
 	private SortedBugCollection bugCollection = new SortedBugCollection();
 
-	public void reportBug(BugInstance bugInstance) {
-		bugCollection.add(bugInstance);
+	public void doReportBug(BugInstance bugInstance) {
+		if (bugCollection.add(bugInstance))
+			notifyObservers(bugInstance);
 	}
 
 	public void finish() {
 		Iterator<BugInstance> i = bugCollection.iterator();
 		while (i.hasNext()) {
 			BugInstance bugInstance = i.next();
-			if (bugInstance.getPriority() 
-				> FindBugs.lowestPriorityReported)
-				continue;
 			switch(bugInstance.getPriority()) {
 			case Detector.LOW_PRIORITY:
 				System.out.print("L ");

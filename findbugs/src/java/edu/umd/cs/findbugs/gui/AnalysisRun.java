@@ -47,8 +47,9 @@ public class AnalysisRun {
         
         public void finish() { }
         
-        public void reportBug(edu.umd.cs.findbugs.BugInstance bugInstance) {
-            bugCollection.add(bugInstance);
+        public void doReportBug(edu.umd.cs.findbugs.BugInstance bugInstance) {
+            if (bugCollection.add(bugInstance))
+		notifyObservers(bugInstance);
         }
         
         public void beginReport() {

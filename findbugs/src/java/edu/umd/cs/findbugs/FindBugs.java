@@ -174,6 +174,15 @@ public class FindBugs implements Constants2, ExitCodes
 		this.bugCount = 0;
 		this.missingClassCount = 0;
 		this.errorCount = 0;
+
+		// Add an observer to record when bugs make it through
+		// all priority and filter criteria, so our bug count is
+		// accurate.
+		realBugReporter.addObserver(new BugReporterObserver() {
+			public void reportBug(BugInstance bugInstance) {
+				++bugCount;
+			}
+		});
 	}
 
 	public int getBugCount() {
@@ -186,11 +195,6 @@ public class FindBugs implements Constants2, ExitCodes
 
 	public int getErrorCount() {
 		return errorCount;
-	}
-
-	public void reportBug(BugInstance bugInstance) {
-		++bugCount;
-		super.reportBug(bugInstance);
 	}
 
 	public void logError(String message) {
@@ -519,7 +523,6 @@ public class FindBugs implements Constants2, ExitCodes
   private static final int SORTING_REPORTER = 1;
   private static final int XML_REPORTER = 2;
 
-  static int lowestPriorityReported = Detector.NORMAL_PRIORITY;
   public static void main(String argv[]) throws Exception
   { 
 	int bugReporterType = PRINTING_REPORTER;
@@ -528,6 +531,7 @@ public class FindBugs implements Constants2, ExitCodes
 	String filterFile = null;
 	boolean include = false;
 	boolean setExitCode = false;
+	int priorityThreshold = Detector.NORMAL_PRIORITY;
 
 	// Process command line options
 	int argCount = 0;
@@ -541,11 +545,11 @@ public class FindBugs implements Constants2, ExitCodes
 			String homeDir = argv[argCount];
 			FindBugs.setHome(homeDir);
 		} else if (option.equals("-low"))
-			lowestPriorityReported = Detector.LOW_PRIORITY;
+			priorityThreshold = Detector.LOW_PRIORITY;
 		else if (option.equals("-medium"))
-			lowestPriorityReported = Detector.NORMAL_PRIORITY;
+			priorityThreshold = Detector.NORMAL_PRIORITY;
 		else if (option.equals("-high"))
-			lowestPriorityReported = Detector.HIGH_PRIORITY;
+			priorityThreshold = Detector.HIGH_PRIORITY;
 		else if (option.equals("-sortByClass"))
 			bugReporterType = SORTING_REPORTER;
 		else if (option.equals("-xml"))
@@ -652,6 +656,8 @@ public class FindBugs implements Constants2, ExitCodes
 
 	if (quiet)
 		bugReporter.setErrorVerbosity(BugReporter.SILENT);
+
+	bugReporter.setPriorityThreshold(priorityThreshold);
 
 	for (int i = argCount; i < argv.length; ++i)
 		project.addJar(argv[i]);

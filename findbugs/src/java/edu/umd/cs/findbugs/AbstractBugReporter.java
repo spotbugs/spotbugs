@@ -26,15 +26,27 @@ import java.util.regex.Matcher;
 public abstract class AbstractBugReporter implements BugReporter {
 
 	private int verbosityLevel = NORMAL;
+	private int priorityThreshold;
 	private HashSet<String> missingClassMessageSet = new HashSet<String>();
 	private LinkedList<String> missingClassMessageList = new LinkedList<String>();
 	private LinkedList<String> errorMessageList = new LinkedList<String>();
 	protected Map<String, String> classToSourceMap = new HashMap<String, String>();
+	private List<BugReporterObserver> observerList = new LinkedList<BugReporterObserver>();
 
 	private static final Pattern missingClassPattern = Pattern.compile("^.*while looking for class ([^:]*):.*$");
 
 	public void setErrorVerbosity(int level) {
 		this.verbosityLevel = level;
+	}
+
+	public void setPriorityThreshold(int threshold) {
+		this.priorityThreshold = threshold;
+	}
+
+	// Subclasses must override doReportBug(), not this method.
+	public final void reportBug(BugInstance bugInstance) {
+		if (bugInstance.getPriority() <= priorityThreshold)
+			doReportBug(bugInstance);
 	}
 
 	protected String getMissingClassName(ClassNotFoundException ex) {
@@ -93,6 +105,25 @@ public abstract class AbstractBugReporter implements BugReporter {
 		}
 		endReport();
 	}
+
+	public void addObserver(BugReporterObserver observer) {
+		observerList.add(observer);
+	}
+
+	/**
+	 * This should be called when a bug is reported by a subclass.
+	 */
+	protected void notifyObservers(BugInstance bugInstance) {
+		Iterator<BugReporterObserver> i = observerList.iterator();
+		while (i.hasNext())
+			i.next().reportBug(bugInstance);
+	}
+
+	/**
+	 * Subclasses must override this.
+	 * It will be called only for bugs which meet the priority threshold.
+	 */
+	protected abstract void doReportBug(BugInstance bugInstance);
 
 	public abstract void beginReport();
 	public abstract void reportLine(String msg);

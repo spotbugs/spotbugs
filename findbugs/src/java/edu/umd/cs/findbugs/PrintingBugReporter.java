@@ -28,21 +28,19 @@ import java.util.*;
 public class PrintingBugReporter extends TextUIBugReporter {
 	private HashSet<BugInstance> seenAlready = new HashSet<BugInstance>();
 
-	public void reportBug(BugInstance bugInstance) {
-		if (bugInstance.getPriority() 
-                                 <= FindBugs.lowestPriorityReported
-		    && seenAlready.add(bugInstance)) {
-                        switch(bugInstance.getPriority()) {
-                        case Detector.LOW_PRIORITY:
-                                System.out.print("L ");
-                                break;
-                        case Detector.NORMAL_PRIORITY:
-                                System.out.print("M ");
-                                break;
-                        case Detector.HIGH_PRIORITY:
-                                System.out.print("H ");
-                                break;
-                        }
+	protected void doReportBug(BugInstance bugInstance) {
+		if (seenAlready.add(bugInstance)) {
+			switch(bugInstance.getPriority()) {
+			case Detector.LOW_PRIORITY:
+				System.out.print("L ");
+				break;
+			case Detector.NORMAL_PRIORITY:
+				System.out.print("M ");
+				break;
+			case Detector.HIGH_PRIORITY:
+				System.out.print("H ");
+				break;
+			}
 			SourceLineAnnotation line = 
 				bugInstance.getPrimarySourceLineAnnotation();
 			if (line == null) 
@@ -50,6 +48,8 @@ public class PrintingBugReporter extends TextUIBugReporter {
 			else 
 				System.out.println(bugInstance.getMessage()
 					+ "  " + line.toString());
+
+			notifyObservers(bugInstance);
 		}
 	}
 

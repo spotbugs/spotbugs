@@ -43,8 +43,8 @@ public class SortedBugCollection extends BugCollection {
 		bugSet = new TreeSet<BugInstance>(comparator);
 	}
 
-	public void add(BugInstance bugInstance) {
-		bugSet.add(bugInstance);
+	public boolean add(BugInstance bugInstance) {
+		return bugSet.add(bugInstance);
 	}
 
 	public Iterator<BugInstance> iterator() {

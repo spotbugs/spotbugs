@@ -19,6 +19,12 @@
 
 package edu.umd.cs.findbugs;
 
+/**
+ * A BugReporter which delegates all method calls to another BugReporter.
+ * This is useful for customizing the behavior of another bug reporter.
+ *
+ * @author David Hovemeyer
+ */
 public class DelegatingBugReporter implements BugReporter {
 	private BugReporter realBugReporter;
 
@@ -36,6 +42,10 @@ public class DelegatingBugReporter implements BugReporter {
 
 	public void setErrorVerbosity(int level) {
 		realBugReporter.setErrorVerbosity(level);
+	}
+
+	public void setPriorityThreshold(int threshold) {
+		realBugReporter.setPriorityThreshold(threshold);
 	}
 
 	public void reportBug(BugInstance bugInstance) {
@@ -64,6 +74,10 @@ public class DelegatingBugReporter implements BugReporter {
 
 	public void reportQueuedErrors() {
 		realBugReporter.reportQueuedErrors();
+	}
+
+	public void addObserver(BugReporterObserver observer) {
+		realBugReporter.addObserver(observer);
 	}
 }
 

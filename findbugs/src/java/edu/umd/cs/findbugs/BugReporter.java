@@ -45,6 +45,13 @@ public interface BugReporter extends RepositoryLookupFailureCallback {
 	public void setErrorVerbosity(int level);
 
 	/**
+	 * Set the priority threshold.
+	 * @param threshold bug instances must be at least as important as
+	 *   this priority to be reported
+	 */
+	public void setPriorityThreshold(int threshold);
+
+	/**
 	 * Report a bug.
 	 * The implementation may report the bug immediately,
 	 * or queue it for later.
@@ -84,6 +91,12 @@ public interface BugReporter extends RepositoryLookupFailureCallback {
 	 * Report any accumulated error messages.
 	 */
 	public void reportQueuedErrors();
+
+	/**
+	 * Add an observer.
+	 * @param observer the observer
+	 */
+	public void addObserver(BugReporterObserver observer);
 }
 
 // vim:ts=4
