@@ -32,6 +32,7 @@ import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.AnalysisException;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.ClassObserver;
+import edu.umd.cs.findbugs.ba.InnerClassAccessMap;
 
 /**
  * An instance of this class is used to apply the selected set of
@@ -508,6 +509,9 @@ public class FindBugs implements Constants2, ExitCodes
 
 	// Clear the cache in the AnalysisContext.
 	AnalysisContext.instance().clearCache();
+
+	// Clear InnerClassAccessMap cache.
+	InnerClassAccessMap.instance().clearCache();
 
 	// Create a SyntheticRepository based on the current project,
 	// and make it current.
