@@ -26,7 +26,11 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.ResourceCollection;
 import edu.umd.cs.findbugs.ResourceTrackingDetector;
 import edu.umd.cs.findbugs.ba.*;
+
 import org.apache.bcel.Constants;
+import org.apache.bcel.classfile.Constant;
+import org.apache.bcel.classfile.ConstantClass;
+import org.apache.bcel.classfile.ConstantMethodref;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.MethodGen;
@@ -211,6 +215,52 @@ public class FindOpenStream extends ResourceTrackingDetector<Stream, StreamResou
 	public FindOpenStream(BugReporter bugReporter) {
 		super(bugReporter);
 		this.potentialOpenStreamList = new LinkedList<PotentialOpenStream>();
+	}
+	
+	// List of words that must appear in names of classes which
+	// create possible resources to be tracked.  If we don't see a
+	// class containing one of these words, then we don't run the
+	// detector on the class.
+	private static final String[] PRESCREEN_CLASS_LIST =
+		{ "Stream", "Reader", "Writer", "DriverManager", "Connection" }; 
+
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.Detector#visitClassContext(edu.umd.cs.findbugs.ba.ClassContext)
+	 */
+	public void visitClassContext(ClassContext classContext) {
+		JavaClass jclass = classContext.getJavaClass();
+
+		// Check to see if the class references any other classes
+		// which could be resources we want to track.
+		// If we don't find any such classes, we skip analyzing
+		// the class.  (Note: could do this by method.)
+		boolean sawResourceClass = false;
+		for (int i = 0; i < jclass.getConstantPool().getLength(); ++i) {
+			Constant constant = jclass.getConstantPool().getConstant(i);
+			
+			if (constant instanceof ConstantMethodref) {
+				ConstantMethodref cmr = (ConstantMethodref) constant;
+				
+				int classIndex = cmr.getClassIndex();
+				String className = jclass.getConstantPool().getConstantString(
+						classIndex, Constants.CONSTANT_Class);
+				
+				if (DEBUG) System.out.println("FindOpenStream: saw class " + className);
+				
+				if (className != null) {
+					for (int j = 0; j < PRESCREEN_CLASS_LIST.length; ++j) {
+						if (className.indexOf(PRESCREEN_CLASS_LIST[j]) >= 0) {
+							sawResourceClass = true;
+							break;
+						}
+					}
+				}
+			}
+		}
+		
+		if (sawResourceClass) {
+			super.visitClassContext(classContext);
+		}
 	}
 
 	public boolean prescreen(ClassContext classContext, Method method) {
