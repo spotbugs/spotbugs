@@ -211,7 +211,9 @@
          <classpath refid="tools.classpath"/>
          <arg value="etc/findbugs.xml"/>
          <arg value="etc/messages.xml"/>
+<!--
          <arg value="etc/messages_ja.xml"/>
+-->
       </java>
 
       <copy file="etc/findbugs.xml" todir="${class.dir}" />
