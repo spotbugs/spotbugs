@@ -32,6 +32,8 @@ public abstract class ResourceTrackingDetector<Resource, ResourceTrackerType ext
 
 	private static final boolean DEBUG = Boolean.getBoolean("rtd.debug");
 
+	private static final String DEBUG_METHOD_NAME = System.getProperty("rtd.method");
+
 	protected BugReporter bugReporter;
 
 	public ResourceTrackingDetector(BugReporter bugReporter) {
@@ -56,6 +58,9 @@ public abstract class ResourceTrackingDetector<Resource, ResourceTrackerType ext
 
 				MethodGen methodGen = classContext.getMethodGen(method);
 				if (methodGen == null)
+					continue;
+
+				if (DEBUG_METHOD_NAME != null && !DEBUG_METHOD_NAME.equals(method.getName()))
 					continue;
 
 				if (!prescreen(classContext, method))
