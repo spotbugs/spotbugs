@@ -4,7 +4,8 @@
 
 Usage() {
 	echo "Usage: findbugs [options]"
-	echo "   -textui         Use the Text UI instead of the Graphical UI"
+	echo "   -gui            Use the Graphical UI (default behavior)"
+	echo "   -textui         Use the Text UI"
 	echo "   -jvmArgs=args   Pass args to JVM"
 	echo "   -help           Display this message"
 	echo "All other options are passed to the FindBugs application"
@@ -46,6 +47,10 @@ while [ $# -gt 0 ]; do
 	shift
 
 	case $arg in
+	-gui)
+		appJar="findbugsGUI.jar"
+		;;
+
 	-textui)
 		appJar="findbugs.jar"
 		;;
@@ -66,6 +71,6 @@ while [ $# -gt 0 ]; do
 done
 
 # Launch FindBugs!
-java $jvmArgs -jar $findbugs_home/lib/$appJar $argList
+java $jvmArgs -Dfindbugs.home=$findbugs_home -jar $findbugs_home/lib/$appJar $argList
 
 # vim:ts=4
