@@ -38,6 +38,36 @@ public class SourceFile {
 	}
 
 	/**
+	 * A data source which can produce a stream for a source file.
+	 */
+	private interface DataSource {
+		/** Open an InputStream on the source file. */
+		public InputStream open() throws IOException;
+		/** Get the full filename of the source file. */
+		public String getFullFileName();
+	}
+
+	/**
+	 * Data source for source files which are stored in
+	 * the filesystem.
+	 */
+	private static class FileDataSource implements DataSource {
+		private String fileName;
+
+		public FileDataSource(String fileName) {
+			this.fileName = fileName;
+		}
+
+		public InputStream open() throws IOException {
+			return new FileInputStream(fileName);
+		}
+
+		public String getFullFileName() {
+			return fileName;
+		}
+	}
+
+	/**
 	 * Helper object to build map of line number to byte offset
 	 * for a source file.
 	 */
@@ -90,7 +120,7 @@ public class SourceFile {
 
 	private static final int DEFAULT_SIZE = 100;
 
-	private String fullFileName;
+	private DataSource dataSource;
 	private byte[] data;
 	private int[] lineNumberMap;
 	private int numLines;
@@ -100,7 +130,7 @@ public class SourceFile {
 	 * Creates an empty SourceFile object.
 	 */
 	public SourceFile(String fullFileName) {
-		this.fullFileName = fullFileName;
+		this.dataSource = new FileDataSource(fullFileName);
 		this.lineNumberMap = new int[DEFAULT_SIZE];
 		this.numLines = 0;
 	}
@@ -109,7 +139,7 @@ public class SourceFile {
 	 * Get the full path name of the source file (with directory).
 	 */
 	public String getFullFileName() {
-		return fullFileName;
+		return dataSource.getFullFileName();
 	}
 
 	/**
@@ -172,7 +202,7 @@ public class SourceFile {
 		InputStream in = null;
 
 		try {
-			in = new BufferedInputStream(new FileInputStream(fullFileName));
+			in = dataSource.open();
 			ByteArrayOutputStream out = new ByteArrayOutputStream();
 
 			addLineOffset(0); // Line 0 starts at offset 0
