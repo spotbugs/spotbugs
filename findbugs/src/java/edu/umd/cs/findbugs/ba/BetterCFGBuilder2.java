@@ -66,10 +66,14 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 		}
 
 		/** Get the start instruction. */
-		public InstructionHandle	getStartInstruction()	{ return start; }
+		public InstructionHandle getStartInstruction() {
+			return start;
+		}
 
 		/** Get the basic block. */
-		public BasicBlock			getBasicBlock()			{ return basicBlock; }
+		public BasicBlock getBasicBlock() {
+			return basicBlock;
+		}
 	}
 
 	/**
@@ -93,10 +97,14 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 		}
 
 		/** Get the target instruction. */
-		public InstructionHandle	getTarget()				{ return target; }
+		public InstructionHandle getTarget() {
+			return target;
+		}
 
 		/** Get the edge type. */
-		public int					getEdgeType()			{ return edgeType; }
+		public int getEdgeType() {
+			return edgeType;
+		}
 	}
 
 	private static final LinkedList<EscapeTarget> emptyEscapeTargetList = new LinkedList<EscapeTarget>();
@@ -135,32 +143,50 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 		}
 
 		/** Get the start instruction. */
-		public InstructionHandle	getStartInstruction()	{ return start; }
+		public InstructionHandle getStartInstruction() {
+			return start;
+		}
 
 		/** Allocate a new basic block in the subroutine. */
-		public BasicBlock			allocateBasicBlock()	{ return cfg.allocate(); }
+		public BasicBlock allocateBasicBlock() {
+			return cfg.allocate();
+		}
 
 		/** Add a work list item for a basic block to be constructed. */
-		public void					addItem(WorkListItem item){ workList.add(item); }
+		public void addItem(WorkListItem item) {
+			workList.add(item);
+		}
 
 		/** Are there more work list items? */
-		public boolean				hasMoreWork()			{ return !workList.isEmpty(); }
+		public boolean hasMoreWork() {
+			return !workList.isEmpty();
+		}
 
 		/** Get the next work list item. */
-		public WorkListItem			nextItem()				{ return workList.removeFirst(); }
+		public WorkListItem nextItem() {
+			return workList.removeFirst();
+		}
 
 		/** Get the entry block for the subroutine's CFG. */
-		public BasicBlock			getEntry()				{ return cfg.getEntry(); }
+		public BasicBlock getEntry() {
+			return cfg.getEntry();
+		}
 
 		/** Get the exit block for the subroutine's CFG. */
-		public BasicBlock			getExit()				{ return cfg.getExit(); }
+		public BasicBlock getExit() {
+			return cfg.getExit();
+		}
 
 		/** Get the start block for the subroutine's CFG.
 		    (I.e., the block containing the start instruction.) */
-		public BasicBlock			getStartBlock()			{ return getBlock(start); }
+		public BasicBlock getStartBlock() {
+			return getBlock(start);
+		}
 
 		/** Get the subroutine's CFG. */
-		public CFG					getCFG()				{ return cfg; }
+		public CFG getCFG() {
+			return cfg;
+		}
 
 		/**
 		 * Add an instruction to the subroutine.
@@ -336,22 +362,34 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 		}
 
 		/** Get the calling context. */
-		public Context				getCaller()			{ return caller; }
+		public Context getCaller() {
+			return caller;
+		}
 
 		/** Get the subroutine being inlined. */
-		public Subroutine			getSubroutine()		{ return subroutine; }
+		public Subroutine getSubroutine() {
+			return subroutine;
+		}
 
 		/** Get the result CFG. */
-		public CFG					getResult()			{ return result; }
+		public CFG getResult() {
+			return result;
+		}
 
 		/** Add a basic block to the inlining work list. */
-		public void					addItem(BasicBlock item){ workList.add(item); }
+		public void addItem(BasicBlock item) {
+			workList.add(item);
+		}
 
 		/** Are there more work list items? */
-		public boolean				hasMoreWork()		{ return !workList.isEmpty(); }
+		public boolean hasMoreWork() {
+			return !workList.isEmpty();
+		}
 
 		/** Get the next work list item (basic block to be inlined). */
-		public BasicBlock			nextItem()			{ return workList.removeFirst(); }
+		public BasicBlock nextItem() {
+			return workList.removeFirst();
+		}
 
 		/**
 		 * Map a basic block in a subroutine to the corresponding block
