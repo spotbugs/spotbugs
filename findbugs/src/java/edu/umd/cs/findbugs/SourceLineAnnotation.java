@@ -48,6 +48,8 @@ public class SourceLineAnnotation implements BugAnnotation {
 	private String sourceFile;
 	private int startLine;
 	private int endLine;
+	private int startBytecode;
+	private int endBytecode;
 
 	/**
 	 * Constructor.
@@ -55,8 +57,11 @@ public class SourceLineAnnotation implements BugAnnotation {
 	 * @param sourceFile the name of the source file
 	 * @param startLine the first line (inclusive)
 	 * @param endLine the ending line (inclusive)
+	 * @param startBytecode the first bytecode offset (inclusive)
+	 * @param endBytecode the end bytecode offset (inclusive)
 	 */
-	public SourceLineAnnotation(String className, String sourceFile, int startLine, int endLine) {
+	public SourceLineAnnotation(String className, String sourceFile, int startLine, int endLine,
+		int startBytecode, int endBytecode) {
 		if (className == null) throw new IllegalArgumentException("class name is null");
 		if (sourceFile == null) throw new IllegalArgumentException("source file is null");
 		this.description = DEFAULT_ROLE;
@@ -64,6 +69,8 @@ public class SourceLineAnnotation implements BugAnnotation {
 		this.sourceFile = sourceFile;
 		this.startLine = startLine;
 		this.endLine = endLine;
+		this.startBytecode = startBytecode;
+		this.endBytecode = endBytecode;
 	}
 
 	/**
@@ -72,7 +79,11 @@ public class SourceLineAnnotation implements BugAnnotation {
 	 * @return the SourceLineAnnotation
 	 */
 	public static SourceLineAnnotation createUnknown(String className, String sourceFile) {
-		SourceLineAnnotation result = new SourceLineAnnotation(className, sourceFile, -1, -1);
+		return createUnknown(className, sourceFile, -1, -1);
+	}
+
+	public static SourceLineAnnotation createUnknown(String className, String sourceFile, int startBytecode, int endBytecode) {
+		SourceLineAnnotation result = new SourceLineAnnotation(className, sourceFile, -1, -1, startBytecode, endBytecode);
 		result.setDescription("SOURCE_LINE_UNKNOWN");
 		return result;
 	}
@@ -87,9 +98,10 @@ public class SourceLineAnnotation implements BugAnnotation {
 		LineNumberTable lineNumberTable = getLineNumberTable(visitor);
 		String className = visitor.getBetterClassName();
 		String sourceFile = visitor.getSourceFile();
+		int codeSize = visitor.getMethod().getCode().getCode().length;
 		if (lineNumberTable == null)
-			return createUnknown(className, sourceFile);
-		return forEntireMethod(className, sourceFile, lineNumberTable);
+			return createUnknown(className, sourceFile, 0, codeSize - 1);
+		return forEntireMethod(className, sourceFile, lineNumberTable, codeSize);
 	}
 
 	/**
@@ -102,17 +114,23 @@ public class SourceLineAnnotation implements BugAnnotation {
 	public static SourceLineAnnotation fromVisitedMethod(MethodGen methodGen, String sourceFile) {
 		LineNumberTable lineNumberTable = methodGen.getLineNumberTable(methodGen.getConstantPool());
 		String className = methodGen.getClassName();
+		int codeSize = methodGen.getInstructionList().getLength();
 		if (lineNumberTable == null)
-			return createUnknown(className, sourceFile);
-		return forEntireMethod(className, sourceFile, lineNumberTable);
+			return createUnknown(className, sourceFile, 0, codeSize - 1);
+		return forEntireMethod(className, sourceFile, lineNumberTable, codeSize);
 	}
 
 	private static SourceLineAnnotation forEntireMethod(String className, String sourceFile,
-		LineNumberTable lineNumberTable) {
+		LineNumberTable lineNumberTable, int codeSize) {
 		LineNumber[] table = lineNumberTable.getLineNumberTable();
-		return (table != null && table.length > 0)
-			? new SourceLineAnnotation(className, sourceFile, table[0].getLineNumber(), table[table.length-1].getLineNumber())
-			: createUnknown(className, sourceFile);
+		if (table != null && table.length > 0) {
+			LineNumber first = table[0];
+			LineNumber last = table[table.length-1];
+			return new SourceLineAnnotation(className, sourceFile, first.getLineNumber(), last.getLineNumber(),
+				0, codeSize - 1);
+		} else {
+			return createUnknown(className, sourceFile, 0, codeSize - 1);
+		}
 	}
 
 	/**
@@ -143,11 +161,11 @@ public class SourceLineAnnotation implements BugAnnotation {
 		String sourceFile = visitor.getSourceFile();
 
 		if (lineNumberTable == null)
-			return createUnknown(className, sourceFile);
+			return createUnknown(className, sourceFile, startPC, endPC);
 
 		int startLine = lineNumberTable.getSourceLine(startPC);
 		int endLine = lineNumberTable.getSourceLine(endPC);
-		return new SourceLineAnnotation(className, sourceFile, startLine, endLine);
+		return new SourceLineAnnotation(className, sourceFile, startLine, endLine, startPC, endPC);
 	}
 
 	/**
@@ -173,11 +191,13 @@ public class SourceLineAnnotation implements BugAnnotation {
 		LineNumberTable table = methodGen.getLineNumberTable(methodGen.getConstantPool());
 		String className = methodGen.getClassName();
 
+		int bytecodeOffset = handle.getPosition();
+
 		if (table == null)
-			return createUnknown(className, sourceFile);
+			return createUnknown(className, sourceFile, bytecodeOffset, bytecodeOffset);
 
 		int lineNumber = table.getSourceLine(handle.getPosition());
-		return new SourceLineAnnotation(className, sourceFile, lineNumber, lineNumber);
+		return new SourceLineAnnotation(className, sourceFile, lineNumber, lineNumber, bytecodeOffset, bytecodeOffset);
 	}
 
 	/**
@@ -192,11 +212,11 @@ public class SourceLineAnnotation implements BugAnnotation {
 		String className = methodGen.getClassName();
 
 		if (lineNumberTable == null)
-			return createUnknown(className, sourceFile);
+			return createUnknown(className, sourceFile, start.getPosition(), end.getPosition());
 
 		int startLine = lineNumberTable.getSourceLine(start.getPosition());
 		int endLine = lineNumberTable.getSourceLine(end.getPosition());
-		return new SourceLineAnnotation(className, sourceFile, startLine, endLine);
+		return new SourceLineAnnotation(className, sourceFile, startLine, endLine, start.getPosition(), end.getPosition());
 	}
 
 	private static LineNumberTable getLineNumberTable(BetterVisitor visitor) {
@@ -258,6 +278,20 @@ public class SourceLineAnnotation implements BugAnnotation {
 	 */
 	public int getEndLine() {
 		return endLine;
+	}
+
+	/**
+	 * Get start bytecode (inclusive).
+	 */
+	public int getStartBytecode() {
+		return startBytecode;
+	}
+
+	/**
+	 * Get end bytecode (inclusive).
+	 */
+	public int getEndBytecode() {
+		return endBytecode;
 	}
 
 	/**
@@ -352,8 +386,14 @@ public class SourceLineAnnotation implements BugAnnotation {
 					sourceFile = UNKNOWN_SOURCE_FILE;
 				int startLine = Integer.parseInt(element.attributeValue("start"));
 				int endLine = Integer.parseInt(element.attributeValue("end"));
+				int startBytecode = -1, endBytecode = -1;
+				if (element.attributeValue("startBytecode") != null)
+					startBytecode = Integer.parseInt(element.attributeValue("startBytecode"));
+				if (element.attributeValue("endBytecode") != null)
+					endBytecode = Integer.parseInt(element.attributeValue("endBytecode"));
 
-				SourceLineAnnotation annotation = new SourceLineAnnotation(className, sourceFile, startLine, endLine);
+				SourceLineAnnotation annotation = new SourceLineAnnotation(className, sourceFile, startLine, endLine,
+					startBytecode, endBytecode);
 				String role = element.attributeValue("role");
 				if (role != null)
 					annotation.setDescription(role);
@@ -373,7 +413,9 @@ public class SourceLineAnnotation implements BugAnnotation {
 		Element element = parent.addElement(ELEMENT_NAME)
 			.addAttribute("classname", getClassName())
 			.addAttribute("start", String.valueOf(getStartLine()))
-			.addAttribute("end", String.valueOf(getEndLine()));
+			.addAttribute("end", String.valueOf(getEndLine()))
+			.addAttribute("startBytecode", String.valueOf(getStartBytecode()))
+			.addAttribute("endBytecode", String.valueOf(getEndBytecode()));
 
 		if (isSourceFileKnown())
 			element.addAttribute("sourcefile", sourceFile);
