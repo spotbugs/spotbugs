@@ -55,9 +55,9 @@ my @tagStack = ();
 # Scan properties files to get short and long messages.
 # This indirectly creates all of the Pattern objects.
 my %patternNameToPattern = ();
-scanProperties(new FileHandle("<src/edu/umd/cs/findbugs/FindBugsShortMessages.properties"),
+scanProperties(new FileHandle("<src/java/edu/umd/cs/findbugs/FindBugsShortMessages_ja.properties"),
 	sub { my ($pattern, $value) = @_; $pattern->setShortDesc($value); });
-scanProperties(new FileHandle("<src/edu/umd/cs/findbugs/FindBugsMessages.properties"),
+scanProperties(new FileHandle("<src/java/edu/umd/cs/findbugs/FindBugsMessages_ja.properties"),
 	sub { my ($pattern, $value) = @_; $pattern->setLongDesc($value); });
 
 my @patternTypes = keys %patternNameToPattern;
@@ -65,9 +65,14 @@ print "Found ", scalar(@patternTypes), " bug patterns\n";
 
 # Scan the HTML files to get the detail messages.
 foreach my $type (@patternTypes) {
-	my $htmlDoc = "src/edu/umd/cs/findbugs/gui/help/$type.html";
+	my $htmlDoc = "src/java/edu/umd/cs/findbugs/gui/help/$type.html";
+	my $pattern = $patternNameToPattern{$type};
 	my $fh = new FileHandle("<$htmlDoc");
-	(defined $fh) || die "Couldn't open $htmlDoc: $!\n";
+	#(defined $fh) || die "Couldn't open $htmlDoc: $!\n";
+	if (!defined $fh) {
+		$pattern->setDetailText("  <!-- add details here -->\n");
+		next;
+	}
 	my $detailText = '';
 	my $state = 0;
 	while (<$fh>) {
@@ -86,13 +91,12 @@ foreach my $type (@patternTypes) {
 	if ($state != 2) {
 		die "Unexpected HTML formatting in $htmlDoc\n";
 	}
-	my $pattern = $patternNameToPattern{$type};
 	$pattern->setDetailText($detailText);
 }
 
 # Scan the detector sources to see which patterns are reported from
 # which detectors.
-my @detectorFiles = split(/\s+/, `ls src/edu/umd/cs/findbugs/detect/*.java`);
+my @detectorFiles = split(/\s+/, `ls src/java/edu/umd/cs/findbugs/detect/*.java`);
 my @detectors = ();
 my %seenAlready = ();
 my $totalPatterns = 0;
@@ -154,24 +158,25 @@ my $outfh;
 my $detector;
 
 # Generate findbugs.xml
-$outfh = new FileHandle(">findbugs.xml");
-(defined $outfh) || die "Couldn't open findbugs.xml for output: $!\n";
-beginNode($outfh, "FindbugsPlugin");
-foreach $detector (@detectors) {
-	addEmptyElement($outfh, "Detector", {'class' => $detector->getJavaClass()});
-}
-foreach $detector (@detectors) {
-	my @patterns = $detector->getPatterns();
-	foreach my $pattern (@patterns) {
-		addEmptyElement($outfh, "BugPattern", {'type' => $pattern->getType(), 'abbrev' => $pattern->getAbbrev()});
-	}
-}
-endNode($outfh); # FindbugsPlugin
-$outfh->close();
+#$outfh = new FileHandle(">findbugs.xml");
+#(defined $outfh) || die "Couldn't open findbugs.xml for output: $!\n";
+#beginNode($outfh, "FindbugsPlugin");
+#foreach $detector (@detectors) {
+#	addEmptyElement($outfh, "Detector", {'class' => $detector->getJavaClass()});
+#}
+#foreach $detector (@detectors) {
+#	my @patterns = $detector->getPatterns();
+#	foreach my $pattern (@patterns) {
+#		addEmptyElement($outfh, "BugPattern", {'type' => $pattern->getType(), 'abbrev' => $pattern->getAbbrev()});
+#	}
+#}
+#endNode($outfh); # FindbugsPlugin
+#$outfh->close();
 
 # Generate messages.xml
-$outfh = new FileHandle(">messages.xml");
-(defined $outfh) || die "Couldn't open patterns.xml for output: $!\n";
+my $outfile = "messages_ja.xml";
+$outfh = new FileHandle(">$outfile");
+(defined $outfh) || die "Couldn't open $outfile for output: $!\n";
 beginNode($outfh, "MessageCollection");
 foreach $detector (@detectors) {
 	my @patterns = $detector->getPatterns();
@@ -180,11 +185,26 @@ foreach $detector (@detectors) {
 		addElement($outfh, "ShortDescription", $pattern->getShortDesc());
 		addElement($outfh, "LongDescription", $pattern->getLongDesc());
 		beginNode($outfh, "Details");
+		print $outfh "<![CDATA[\n";
 		print $outfh $pattern->getDetailText();
+		print $outfh "]]>\n";
 		endNode($outfh); # Details
 		endNode($outfh); # Message
 	}
 }
+
+#scanProperties(new FileHandle("<src/java/edu/umd/cs/findbugs/FindBugsTypeDescriptions_ja.properties"),
+#	sub { my ($key, $value) = @_; addElement($outfh, "BugCode", $value, {'abbrev' => $key}); } );
+my $descfh = new FileHandle("<src/java/edu/umd/cs/findbugs/FindBugsTypeDescriptions_ja.properties");
+(defined $descfh) || die;
+while (<$descfh>) {
+	if (/^\s*(\S+)\s*=(.*)/) {
+		my $key = $1;
+		my $value = $2;
+		addElement($outfh, "BugCode", $value, {'abbrev' => $key});
+	}
+}
+
 endNode($outfh); # MessageCollection
 $outfh->close();
 
@@ -240,9 +260,15 @@ sub beginNode {
 }
 
 sub addElement {
-	my ($outfh, $tag, $value) = @_;
+	my ($outfh, $tag, $value, $attributes) = @_;
 	my $indent = '  ' x scalar(@tagStack);
-	print $outfh "$indent<$tag>$value</$tag>\n";
+	print $outfh "$indent<$tag ";
+	if (defined $attributes) {
+		foreach my $attrName (sort keys %{$attributes}) {
+			print $outfh "$attrName=\"", $attributes->{$attrName}, "\" ";
+		}
+	}
+	print $outfh ">$value</$tag>\n";
 }
 
 sub addEmptyElement {
