@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import java.text.NumberFormat;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.visitclass.Constants2;
@@ -27,10 +28,16 @@ import org.apache.bcel.classfile.*;
 public class TestingGround extends BytecodeScanningDetector implements Constants2 {
 
 	private BugReporter bugReporter;
-	private final boolean active = false;
+	private final boolean active = true;
+	private NumberFormat formatter = null;
 
 	public TestingGround(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
+		if (active) {
+			formatter = NumberFormat.getIntegerInstance();
+			formatter.setMinimumIntegerDigits(4);
+			formatter.setGroupingUsed(false);
+		}
 	}
 
 
@@ -56,7 +63,7 @@ public class TestingGround extends BytecodeScanningDetector implements Constants
 	}
 
 	private void printOpCode(int seen) {
-		System.out.print("  TestingGround: " + OPCODE_NAMES[seen]);
+		System.out.print("  TestingGround: [" + formatter.format(getPC()) + "]  " + OPCODE_NAMES[seen]);
 		if ((seen == INVOKEVIRTUAL) || (seen == INVOKESPECIAL) || (seen == INVOKEINTERFACE))
 			System.out.print("   " + getClassConstantOperand() + "." + getNameConstantOperand() + " " + getSigConstantOperand());
 		else if (seen == LDC || seen == LDC_W || seen == LDC2_W) {
