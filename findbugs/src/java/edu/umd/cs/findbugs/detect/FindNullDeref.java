@@ -35,6 +35,7 @@ import org.apache.bcel.generic.MethodGen;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
+import edu.umd.cs.findbugs.FindBugsAnalysisProperties;
 import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.AnalysisException;
@@ -48,6 +49,9 @@ import edu.umd.cs.findbugs.ba.IsNullValueDataflow;
 import edu.umd.cs.findbugs.ba.IsNullValueFrame;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.SignatureConverter;
+import edu.umd.cs.findbugs.props.GeneralWarningProperty;
+import edu.umd.cs.findbugs.props.WarningPropertySet;
+import edu.umd.cs.findbugs.props.WarningPropertyUtil;
 
 /**
  * A Detector to find instructions where a NullPointerException
@@ -204,22 +208,39 @@ public class FindNullDeref implements Detector, StatelessDetector {
 
 		// Get the stack values at entry to the null check.
 		IsNullValueFrame frame = invDataflow.getStartFact(basicBlock);
+		if (!frame.isValid())
+			return;
 
-		if (frame.isValid()) {
-			// Could the reference be null?
-			IsNullValue refValue = frame.getValue(frame.getNumSlots() - consumed);
+		// Could the reference be null?
+		IsNullValue refValue = frame.getValue(frame.getNumSlots() - consumed);
+		if (!refValue.mightBeNull())
+			return;
+	
+		// Issue a warning
+		issueNullDerefWarning(classContext, method, new Location(exceptionThrowerHandle, basicBlock), refValue);
+	}
 
-			boolean onExceptionPath = refValue.isException();
-			if (refValue.isDefinitelyNull()) {
-				String type = onExceptionPath ? "NP_ALWAYS_NULL_EXCEPTION" : "NP_ALWAYS_NULL";
-				int priority = onExceptionPath ? LOW_PRIORITY : HIGH_PRIORITY;
-				reportNullDeref(classContext, method, exceptionThrowerHandle, type, priority);
-			} else if (refValue.isNullOnSomePath()) {
-				String type = onExceptionPath ? "NP_NULL_ON_SOME_PATH_EXCEPTION" : "NP_NULL_ON_SOME_PATH";
-				int priority = onExceptionPath ? LOW_PRIORITY : NORMAL_PRIORITY;
-				if (DEBUG) System.out.println("Reporting null on some path: value=" + refValue);
-				reportNullDeref(classContext, method, exceptionThrowerHandle, type, priority);
-			}
+	private void issueNullDerefWarning(
+			ClassContext classContext,
+			Method method,
+			Location location,
+			IsNullValue refValue) {
+		WarningPropertySet propertySet = new WarningPropertySet();
+		
+		boolean onExceptionPath = refValue.isException();
+		if (onExceptionPath) {
+			propertySet.addProperty(GeneralWarningProperty.ON_EXCEPTION_PATH);
+		}
+		
+		if (refValue.isDefinitelyNull()) {
+			String type = onExceptionPath ? "NP_ALWAYS_NULL_EXCEPTION" : "NP_ALWAYS_NULL";
+			int priority = onExceptionPath ? LOW_PRIORITY : HIGH_PRIORITY;
+			reportNullDeref(propertySet, classContext, method, location, type, priority);
+		} else if (refValue.isNullOnSomePath()) {
+			String type = onExceptionPath ? "NP_NULL_ON_SOME_PATH_EXCEPTION" : "NP_NULL_ON_SOME_PATH";
+			int priority = onExceptionPath ? LOW_PRIORITY : NORMAL_PRIORITY;
+			if (DEBUG) System.out.println("Reporting null on some path: value=" + refValue);
+			reportNullDeref(propertySet, classContext, method, location, type, priority);
 		}
 	}
 
@@ -328,18 +349,28 @@ public class FindNullDeref implements Detector, StatelessDetector {
 		return table.getSourceLine(handle.getPosition());
 	}
 
-	private void reportNullDeref(ClassContext classContext, Method method, InstructionHandle exceptionThrowerHandle,
-	                             String type, int priority) {
+	private void reportNullDeref(
+			WarningPropertySet propertySet,
+			ClassContext classContext,
+			Method method,
+			Location location,
+			String type,
+			int priority) {
 		MethodGen methodGen = classContext.getMethodGen(method);
 		String sourceFile = classContext.getJavaClass().getSourceFileName();
 
 		BugInstance bugInstance = new BugInstance(this, type, priority)
 		        .addClassAndMethod(methodGen, sourceFile)
-		        .addSourceLine(methodGen, sourceFile, exceptionThrowerHandle);
+		        .addSourceLine(methodGen, sourceFile, location.getHandle());
 
 		if (DEBUG)
-			bugInstance.addInt(exceptionThrowerHandle.getPosition()).describe("INT_BYTECODE_OFFSET");
+			bugInstance.addInt(location.getHandle().getPosition()).describe("INT_BYTECODE_OFFSET");
 
+		if (AnalysisContext.currentAnalysisContext().getBoolProperty(
+				FindBugsAnalysisProperties.RELAXED_REPORTING_MODE)) {
+			WarningPropertyUtil.addPropertiesForLocation(propertySet, classContext, method, location);
+		}
+		
 		bugReporter.reportBug(bugInstance);
 	}
 
