@@ -53,8 +53,8 @@ public class AssertionMethods implements Constants {
 				if (c instanceof ConstantMethodref) {
 					ConstantMethodref cmr = (ConstantMethodref) c;
 					ConstantNameAndType cnat = (ConstantNameAndType)cp.getConstant(cmr.getNameAndTypeIndex(), CONSTANT_NameAndType);
-					String methodName = ((ConstantUtf8) cp.getConstant(cnat.getNameIndex(), CONSTANT_Utf8)).getBytes();
-					String className = cp.getConstantString(cmr.getClassIndex(), CONSTANT_Class).replace('/', '.');
+					String methodName = ((ConstantUtf8) cp.getConstant(cnat.getNameIndex(), CONSTANT_Utf8)).getBytes().toLowerCase();
+					String className = cp.getConstantString(cmr.getClassIndex(), CONSTANT_Class).replace('/', '.').toLowerCase();
 
 					if (className.indexOf("assert") >= 0 ||
 						methodName.indexOf("assert") >= 0 || methodName.indexOf("error") >= 0 ||
