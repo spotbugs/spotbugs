@@ -19,6 +19,8 @@
 
 package edu.umd.cs.daveho.ba;
 
+import java.util.ArrayList;
+
 /**
  * A dataflow value representing a Java stack frame with value number
  * information.
@@ -30,18 +32,44 @@ package edu.umd.cs.daveho.ba;
 public class ValueNumberFrame extends Frame<ValueNumber> {
 
 	private ValueNumberFactory factory;
+	private ArrayList<ValueNumber> mergedValueList;
 
 	public ValueNumberFrame(int numLocals, final ValueNumberFactory factory) {
-		super(numLocals, new Frame.DefaultValueFactory<ValueNumber>() {
-			public ValueNumber getDefaultValue() { return factory.topValue(); }
-		});
+		super(numLocals);
+		this.factory = factory;
 	}
 
 	public ValueNumber mergeValues(ValueNumber a, ValueNumber b) {
-		return a.mergeWith(b);
+		// This method is not needed for ValueNumberFrame.
+		throw new IllegalStateException("mergeValues called on a ValueNumberFrame");
 	}
 
 	public ValueNumber getDefaultValue() {
-		return factory.topValue();
+		//return factory.topValue();
+		return null;
+	}
+
+	public void copyFrom(Frame<ValueNumber> other) {
+		// If merged value list hasn't been created yet, create it.
+		if (mergedValueList == null) {
+			// This is where this frame gets its size.
+			// It will have the same size as long as it remains valid.
+			mergedValueList = new ArrayList<ValueNumber>();
+			int numSlots = other.getNumSlots();
+			for (int i = 0; i < numSlots; ++i)
+				mergedValueList.add(null);
+		}
+
+		super.copyFrom(other);
+	}
+
+	public void setMergedValue(int i, ValueNumber valueNumber) {
+		mergedValueList.set(i, valueNumber);
+	}
+
+	public ValueNumber getMergedValue(int i) {
+		return mergedValueList.get(i);
 	}
 }
+
+// vim:ts=4

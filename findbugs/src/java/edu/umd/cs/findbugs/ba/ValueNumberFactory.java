@@ -41,15 +41,6 @@ public class ValueNumberFactory {
 		return new ValueNumber(maxValueNumber++);
 	}
 
-	/** Return the instance of the special TOP value. */
-	public ValueNumber topValue() { return ValueNumber.topValue; }
-
-	/** Return the instance of the special BOTTOM value. */
-	public ValueNumber bottomValue() { return ValueNumber.bottomValue; }
-
-	/** Return the instance of the special default value. */
-	public ValueNumber defaultValue() { return ValueNumber.defaultValue; }
-
 }
 
 // vim:ts=4
