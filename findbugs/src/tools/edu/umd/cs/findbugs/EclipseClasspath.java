@@ -142,7 +142,7 @@ public class EclipseClasspath {
 			pluginId = plugin.valueOf("@id");
 			if (pluginId.equals(""))
 				throw new EclipseClasspathException("Cannot determine plugin id");
-			System.out.println("Plugin id is " + pluginId);
+			//System.out.println("Plugin id is " + pluginId);
 
 			// Extract required plugins
 			requiredPluginIdList = new LinkedList<String>();
@@ -152,7 +152,7 @@ public class EclipseClasspath {
 				String requiredPluginId = node.valueOf("@plugin");
 				if (requiredPluginId.equals(""))
 					throw new EclipseClasspathException("Import has no plugin id");
-				System.out.println(" Required plugin ==> " + requiredPluginId);
+				//System.out.println(" Required plugin ==> " + requiredPluginId);
 				requiredPluginIdList.add(requiredPluginId);
 			}
 
@@ -195,6 +195,7 @@ public class EclipseClasspath {
 	private String eclipseDir;
 	private String rootPluginDir;
 	private Map<String, File> pluginDirectoryMap;
+	private List<String> importList;
 
 	public EclipseClasspath(String eclipseDir, String rootPluginDir) {
 		this.eclipseDir = eclipseDir;
@@ -271,18 +272,24 @@ public class EclipseClasspath {
 			}
 		}
 
-		System.out.println("Found " + requiredPluginMap.size() + " required plugins");
+		//System.out.println("Found " + requiredPluginMap.size() + " required plugins");
 
+		importList = new LinkedList<String>();
 		for (Iterator<Plugin> i = requiredPluginMap.values().iterator(); i.hasNext(); ) {
 			Plugin plugin = i.next();
 			if (plugin.isDependent()) {
 				for (Iterator<String> j = plugin.exportedLibraryIterator(); j.hasNext(); ) {
-					System.out.println("Import: " + j.next());
+					//System.out.println("Import: " + j.next());
+					importList.add(j.next());
 				}
 			}
 		}
 
 		return this;
+	}
+
+	public Iterator<String> importListIterator() {
+		return importList.iterator();
 	}
 
 	/**
@@ -306,7 +313,16 @@ public class EclipseClasspath {
 		for (int i = 2; i < argv.length; i += 2) {
 			ec.addRequiredPlugin(argv[i], argv[i+1]);
 		}
-		ec.execute();
+		boolean first = true;
+		Iterator <String> i = ec.execute().importListIterator();
+		while (i.hasNext()) {
+			if (first)
+				first = false;
+			else
+				System.out.print(File.pathSeparator);
+			System.out.print(i.next());
+		}
+		System.out.println();
 	}
 }
 
