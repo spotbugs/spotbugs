@@ -35,7 +35,6 @@ public class SelfCalls {
 
 	private ClassContext classContext;
 	private CallGraph callGraph;
-	private IdentityHashMap<Method, CallGraphNode> methodToNodeMap;
 	private HashSet<Method> calledMethodSet;
 	private boolean hasSynchronization;
 
@@ -46,7 +45,6 @@ public class SelfCalls {
 	public SelfCalls(ClassContext classContext) {
 		this.classContext = classContext;
 		this.callGraph = new CallGraph();
-		this.methodToNodeMap = new IdentityHashMap<Method, CallGraphNode>();
 		this.calledMethodSet = new HashSet<Method>();
 		this.hasSynchronization = false;
 	}
@@ -62,8 +60,7 @@ public class SelfCalls {
 		for (int i = 0; i < methods.length; ++i) {
 			Method method = methods[i];
 
-			CallGraphNode node = callGraph.addNode(method);
-			methodToNodeMap.put(method, node);
+			callGraph.addNode(method);
 		}
 
 		// Scan methods for self calls
@@ -73,7 +70,7 @@ public class SelfCalls {
 			if (mg == null)
 				continue;
 
-			scan(methodToNodeMap.get(method));
+			scan(callGraph.getNodeForMethod(method));
 		}
 
 		if (DEBUG) System.out.println("Found " + callGraph.getNumEdges() + " self calls");
@@ -145,7 +142,7 @@ public class SelfCalls {
 					if (called != null) {
 						// Add edge to call graph
 						CallSite callSite = new CallSite(method, block, handle);
-						callGraph.addEdge(node, methodToNodeMap.get(called), callSite);
+						callGraph.addEdge(node, callGraph.getNodeForMethod(called), callSite);
 
 						// Add to called method set
 						calledMethodSet.add(called);

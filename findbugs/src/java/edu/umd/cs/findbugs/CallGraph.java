@@ -21,8 +21,15 @@ package edu.umd.cs.findbugs;
 
 import edu.umd.cs.daveho.graph.AbstractGraph;
 import org.apache.bcel.classfile.Method;
+import java.util.IdentityHashMap;
 
 public class CallGraph extends AbstractGraph<CallGraphEdge, CallGraphNode> {
+	private IdentityHashMap<Method, CallGraphNode> methodToNodeMap;
+
+	public CallGraph() {
+		this.methodToNodeMap = new IdentityHashMap<Method, CallGraphNode>();
+	}
+
 	public CallGraphEdge addEdge(CallGraphNode source, CallGraphNode target, CallSite callSite) {
 		CallGraphEdge edge = createEdge(source, target);
 		edge.setCallSite(callSite);
@@ -32,7 +39,12 @@ public class CallGraph extends AbstractGraph<CallGraphEdge, CallGraphNode> {
 	public CallGraphNode addNode(Method method) {
 		CallGraphNode node = createVertex();
 		node.setMethod(method);
+		methodToNodeMap.put(method, node);
 		return node;
+	}
+
+	public CallGraphNode getNodeForMethod(Method method) {
+		return methodToNodeMap.get(method);
 	}
 
 	protected CallGraphEdge createEdge(CallGraphNode source, CallGraphNode target) {
