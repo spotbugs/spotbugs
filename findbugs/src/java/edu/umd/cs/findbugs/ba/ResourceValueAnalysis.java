@@ -68,6 +68,7 @@ public class ResourceValueAnalysis<Resource> extends FrameDataflowAnalysis<Resou
 			// that they got initialized to something.
 			InstructionHandle handle = source.getExceptionThrower();
 			if (isFinalFieldLoad(handle)) {
+				if (DEBUG) System.out.println("Making resource nonexistent on load of final field from block " + source.getId());
 				tmpFact = modifyFrame(fact, tmpFact);
 				tmpFact.setStatus(ResourceValueFrame.NONEXISTENT);
 			} else if (fact.getStatus() == ResourceValueFrame.OPEN) {
@@ -137,6 +138,7 @@ public class ResourceValueAnalysis<Resource> extends FrameDataflowAnalysis<Resou
 	private final BitSet finalFieldLoadSet = new BitSet();
 
 	private boolean isFinalFieldLoad(InstructionHandle handle) {
+		if (DEBUG) System.out.print("[Checking " + handle + " for load of final field ");
 		int offset = handle.getPosition();
 		if (!checked.get(offset)) {
 			checked.set(offset);
@@ -148,22 +150,21 @@ public class ResourceValueAnalysis<Resource> extends FrameDataflowAnalysis<Resou
 				ConstantPoolGen cpg = methodGen.getConstantPool();
 				String className = fins.getClassName(cpg);
 				String fieldName = fins.getName(cpg);
+
+				if (DEBUG) System.out.print("field=" + className + "." + fieldName);
+
 				try {
-					JavaClass jclass = Repository.lookupClass(className);
-					Field[] fieldList = jclass.getFields();
-					for (int i = 0; i < fieldList.length; ++i) {
-						Field field = fieldList[i];
-						if (field.getName().equals(fieldName)) {
-							finalFieldLoadSet.set(offset, field.isFinal());
-							break;
-						}
-					}
+					Field field = Lookup.findField(className, fieldName);
+					if (field != null)
+						finalFieldLoadSet.set(offset, field.isFinal());
 				} catch (ClassNotFoundException e) {
 					lookupFailureCallback.reportMissingClass(e);
 				}
 			}
 		}
-		return finalFieldLoadSet.get(offset);
+		boolean result = finalFieldLoadSet.get(offset);
+		if (DEBUG) System.out.print(" ==> " + result + "]");
+		return result;
 	}
 
 }
