@@ -1640,6 +1640,19 @@ not be compared by reference are java.lang.Integer, java.lang.Float, etc.
     </Details>
   </BugPattern>
 
+  <BugPattern type="RC_SUSPCIOUS_EQUALS">
+    <ShortDescription>Call to equals() comparing objects of different types</ShortDescription>
+    <LongDescription>Call to equals() comparing objects of different types in {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p> This method calls equals(Object) on two references of different
+types.  According to the contract of equals(), objects of different
+classes should always compare as unequal; therefore, it is likely
+that the result of this comparision will always be false at runtime.
+]]>
+    </Details>
+  </BugPattern>
+
   <BugPattern type="MWN_MISMATCHED_WAIT">
     <ShortDescription>Mismatched wait()</ShortDescription>
     <LongDescription>Mismatched wait() in {1}</LongDescription>
