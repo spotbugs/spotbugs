@@ -197,7 +197,7 @@ public class FindInconsistentSync2 implements Detector {
 
 			// At this point, we report the field as being inconsistently synchronized
 			int priority = freq > 75 ? NORMAL_PRIORITY : LOW_PRIORITY;
-			if (stats.getNumGetterMethodAccesses() == unlocked)
+			if (stats.getNumGetterMethodAccesses() >= unlocked)
 				// Unlocked accesses are only in getter method(s).
 				priority = LOW_PRIORITY;
 			BugInstance bugInstance = new BugInstance("IS2_INCONSISTENT_SYNC", priority)
@@ -342,7 +342,7 @@ public class FindInconsistentSync2 implements Detector {
 						if (isExplicitlyLocked && isLocal)
 							stats.addLocalLock();
 
-						if (isGetterMethod)
+						if (isGetterMethod && !isLocked)
 							stats.addGetterMethodAccess();
 				
 						stats.addAccess(classContext, method, handle, isLocked);
@@ -365,16 +365,49 @@ public class FindInconsistentSync2 implements Detector {
 	public static boolean isGetterMethod(ClassContext classContext, Method method) {
 		MethodGen methodGen = classContext.getMethodGen(method);
 		InstructionList il = methodGen.getInstructionList();
-		if (il.getLength() != 3)
+		// System.out.println("Checking getter method: " + method.getName());
+		if (il.getLength() > 60)
 			return false;
-		InstructionHandle handle = il.getStart();
-		if (handle.getInstruction().getOpcode() != Constants.ALOAD_0)
-			return false;
-		handle = handle.getNext();
-		if (handle.getInstruction().getOpcode() != Constants.GETFIELD)
-			return false;
-		handle = handle.getNext();
-		return (handle.getInstruction() instanceof ReturnInstruction);
+
+		int count = 0;
+		Iterator it = il.iterator();
+		while (it.hasNext()) {
+			InstructionHandle ih = (InstructionHandle)it.next();
+			switch (ih.getInstruction().getOpcode()) {
+			  case Constants.GETFIELD:
+			    count++;
+			    if (count > 1) return false;
+			    break;
+			  case Constants.PUTFIELD:
+			  case Constants.BALOAD:
+			  case Constants.CALOAD: 
+			  case Constants.DALOAD:
+			  case Constants.FALOAD:
+			  case Constants.IALOAD:
+			  case Constants.LALOAD:
+			  case Constants.SALOAD:
+			  case Constants.AALOAD:
+			  case Constants.BASTORE:
+			  case Constants.CASTORE: 
+			  case Constants.DASTORE:
+			  case Constants.FASTORE:
+			  case Constants.IASTORE:
+			  case Constants.LASTORE:
+			  case Constants.SASTORE:
+			  case Constants.AASTORE:
+			    return false;
+			  case Constants.INVOKESTATIC:
+			  case Constants.INVOKEVIRTUAL:
+			  case Constants.INVOKEINTERFACE:
+			  case Constants.INVOKESPECIAL:
+			  case Constants.GETSTATIC:
+			  case Constants.PUTSTATIC:
+				// no-op
+			  
+			}
+		}
+		// System.out.println("Found getter method: " + method.getName());
+		return true;
 	}
 
 	/**
