@@ -11,7 +11,7 @@ public class IgnoredReturnValue {
 	Semaphore s = new Semaphore(17, true);
 	s.tryAcquire();
 	s.tryAcquire(12, TimeUnit.MILLISECONDS);
-	BlockingQueue q = new LinkedBlockingQueue();
+	BlockingQueue<Object> q = new LinkedBlockingQueue<Object>();
 	q.offer(new Object());
 	q.offer(new Object(), 12, TimeUnit.MILLISECONDS);
 	q.poll(12, TimeUnit.MILLISECONDS);
