@@ -156,6 +156,11 @@ public class FindOpenStream extends ResourceTrackingDetector<Stream, StreamResou
 
 		potentialOpenStreamList.clear();
 
+		// Set precomputed map of Locations to Stream creation points.
+		// That way, the StreamResourceTracker won't have to
+		// repeatedly try to figure out where Streams are created.
+		resourceTracker.setLocationToStreamMap(locationToResourceMap);
+
 		super.analyzeMethod(classContext, method, resourceTracker, locationToResourceMap);
 
 		JavaClass javaClass = classContext.getJavaClass();

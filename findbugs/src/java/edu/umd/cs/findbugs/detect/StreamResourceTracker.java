@@ -30,6 +30,7 @@ import edu.umd.cs.findbugs.ba.ResourceValueFrameModelingVisitor;
 
 import java.util.BitSet;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.TreeSet;
 
 import org.apache.bcel.Constants;
@@ -54,6 +55,7 @@ import org.apache.bcel.generic.TypedInstruction;
 public class StreamResourceTracker implements ResourceTracker<Stream> {
 	private StreamFactory[] streamFactoryList;
 	private RepositoryLookupFailureCallback lookupFailureCallback;
+	private Map<Location, Stream> locationToResourceMap;
 
 	/** Set of all stream construction points. */
 	private BitSet streamConstructionSet;
@@ -78,6 +80,13 @@ public class StreamResourceTracker implements ResourceTracker<Stream> {
 		this.streamConstructionSet = new BitSet();
 		this.uninterestingStreamEscapeSet = new BitSet();
 		this.streamEscapeSet = new TreeSet<StreamEscape>();
+	}
+
+	/**
+	 * Set precomputed map of Locations to Stream creation points.
+	 */
+	public void setLocationToStreamMap(Map<Location, Stream> locationToResourceMap) {
+		this.locationToResourceMap = locationToResourceMap;
 	}
 
 	/**
@@ -166,6 +175,12 @@ public class StreamResourceTracker implements ResourceTracker<Stream> {
 
 	public Stream isResourceCreation(BasicBlock basicBlock, InstructionHandle handle,
 		ConstantPoolGen cpg) {
+
+		// Use precomputed map of Locations to Stream creations,
+		// if present
+		if (locationToResourceMap != null)
+			return locationToResourceMap.get(new Location(handle, basicBlock));
+
 		Instruction ins = handle.getInstruction();
 		if (!(ins instanceof TypedInstruction))
 			return null;
