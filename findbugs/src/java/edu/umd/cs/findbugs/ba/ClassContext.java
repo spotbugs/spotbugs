@@ -33,7 +33,7 @@ import org.apache.bcel.generic.*;
  * @author David Hovemeyer
  */
 public class ClassContext implements AnalysisFeatures {
-	public static final boolean PRUNE_INFEASIBLE_EXCEPTION_EDGES = Boolean.getBoolean("cfg.prune");
+	public static final boolean PRUNE_INFEASIBLE_EXCEPTION_EDGES = !Boolean.getBoolean("cfg.noprune");
 
 	/**
 	 * Only try to determine unconditional exception throwers
