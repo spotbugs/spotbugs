@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs.detect;
 
 import java.util.*;
 import org.apache.bcel.Constants;
+import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.*;
 import org.apache.bcel.generic.*;
 import edu.umd.cs.daveho.ba.*;
@@ -52,7 +53,7 @@ public class FindOpenStream implements Detector {
 	 * A visitor to model the effect of instructions on the status
 	 * of the resource.
 	 */
-	private static class StreamFrameModelingVisitor extends ResourceValueFrameModelingVisitor {
+	private class StreamFrameModelingVisitor extends ResourceValueFrameModelingVisitor {
 		private Stream stream;
 
 		public StreamFrameModelingVisitor(ConstantPoolGen cpg, Stream stream) {
@@ -79,13 +80,26 @@ public class FindOpenStream implements Detector {
 			}
 
 		}
+
+		protected boolean instanceEscapes(InvokeInstruction inv) {
+			ConstantPoolGen cpg = getCPG();
+			String className = inv.getClassName(cpg);
+
+			try {
+				// FIXME: is this right?
+				return !Repository.instanceOf(className, "java.io.InputStream");
+			} catch (ClassNotFoundException e) {
+				bugReporter.reportMissingClass(e);
+				return true;
+			}
+		}
 	}
 
 	/**
 	 * Resource tracker which determines where streams are created,
 	 * and how they are used within the method.
 	 */
-	private static class StreamResourceTracker implements ResourceTracker<Stream> {
+	private class StreamResourceTracker implements ResourceTracker<Stream> {
 		public Stream isResourceCreation(BasicBlock basicBlock, InstructionHandle handle, ConstantPoolGen cpg) {
 			Instruction ins = handle.getInstruction();
 			if (!(ins instanceof NEW))
@@ -122,17 +136,16 @@ public class FindOpenStream implements Detector {
 		}
 
 		public ResourceValueFrameModelingVisitor createVisitor(Stream resource, ConstantPoolGen cpg) {
-			return null;
+			return new StreamFrameModelingVisitor(cpg, resource);
 		}
 	}
-
-	private static final StreamResourceTracker resourceTracker = new StreamResourceTracker();
 
 	/* ----------------------------------------------------------------------
 	 * Fields
 	 * ---------------------------------------------------------------------- */
 
 	private BugReporter bugReporter;
+	private StreamResourceTracker resourceTracker;
 
 	/* ----------------------------------------------------------------------
 	 * Implementation
@@ -140,6 +153,7 @@ public class FindOpenStream implements Detector {
 
 	public FindOpenStream(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
+		this.resourceTracker = new StreamResourceTracker();
 	}
 
 	public void visitClassContext(ClassContext classContext) {
