@@ -169,12 +169,14 @@ public class CountBugs {
 
 		String filename = argv[arg++];
 		CountBugs countBugs = new CountBugs(filename);
+		countBugs.setCategories(categoryList);
 		countBugs.execute();
 
 		if (diffMode) {
 			if (arg >= argv.length)
 				usage();
 			CountBugs countBugs2 = new CountBugs(argv[arg]);
+			countBugs2.setCategories(categoryList);
 			countBugs2.execute();
 
 			countBugs.diffCounts(countBugs2);
