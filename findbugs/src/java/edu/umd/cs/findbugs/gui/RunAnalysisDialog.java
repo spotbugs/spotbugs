@@ -107,6 +107,7 @@ public class RunAnalysisDialog extends javax.swing.JDialog {
     private final AnalysisRun analysisRun;
     private Thread analysisThread;
     private boolean completed;
+    private Exception fatalException;
     
     /** Creates new form RunAnalysisDialog */
     public RunAnalysisDialog(java.awt.Frame parent, AnalysisRun analysisRun_) {
@@ -127,12 +128,14 @@ public class RunAnalysisDialog extends javax.swing.JDialog {
                     analysisRun.execute(progress);
                     setCompleted(true);
                 } catch (java.io.IOException e) {
-                    logger.logMessage(ConsoleLogger.ERROR, e.getMessage());
+		    setException(e);
                 } catch (InterruptedException e) {
                     // We don't need to do anything here.
                     // The completed flag is not set, so the frame
                     // will know that the analysis did not complete.
-                }
+                } catch (Exception e) {
+		    setException(e);
+		}
 
                 // Send a message to the dialog that it should close
                 // That way, it goes away without any need for user intervention
@@ -154,6 +157,25 @@ public class RunAnalysisDialog extends javax.swing.JDialog {
      * or not the analysis completed normally.
      */
     public synchronized boolean isCompleted() { return completed; }
+
+    public synchronized void setException(Exception e) {
+	fatalException = e;
+    }
+
+    /**
+     * Determine whether or not a fatal exception occurred
+     * during analysis.
+     */
+    public synchronized boolean exceptionOccurred() {
+	return fatalException != null;
+    }
+
+    /**
+     * Get the exception that abnormally terminated the analysis.
+     */
+    public synchronized Exception getException() {
+	return fatalException;
+    }
     
     /** This method is called from within the constructor to
      * initialize the form.

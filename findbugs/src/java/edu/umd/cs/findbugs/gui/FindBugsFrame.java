@@ -1403,7 +1403,21 @@ public class FindBugsFrame extends javax.swing.JFrame {
             // Now we have an analysis run to look at
             synchAnalysisRun(analysisRun);
         } else {
-            logger.logMessage(ConsoleLogger.INFO, "Analysis of " + project + " cancelled by user");
+	    if (dialog.exceptionOccurred()) {
+		// The analysis was killed by an unexpected exception
+		Exception e = dialog.getException();
+		AnalysisErrorDialog err = new AnalysisErrorDialog(this, true);
+		err.addLine("Fatal analysis exception: " + e.toString());
+		StackTraceElement[] callList = e.getStackTrace();
+		for (int i = 0; i < callList.length; ++i)
+		    err.addLine("\t" + callList[i]);
+		err.finish();
+		err.setSize(650,500);
+		err.show();
+	    } else {
+		// Cancelled by user
+                logger.logMessage(ConsoleLogger.INFO, "Analysis of " + project + " cancelled by user");
+	    }
         }
     }//GEN-LAST:event_findBugsButtonActionPerformed
     
