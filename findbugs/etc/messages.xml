@@ -1147,6 +1147,19 @@ defined in an interface references a mutable
 ]]>
     </Details>
   </BugPattern>
+
+  <BugPattern type="NM_BAD_EQUAL">
+    <ShortDescription>Class defines equal(); should it be equals()?</ShortDescription>
+    <LongDescription>Class {0} defines equal(); should it be equals()?</LongDescription>
+    <Details>
+<![CDATA[
+<p> This class defines a method <code>equal(Object)</code>.&nbsp; This method does
+not override the <code>equals(Object)</code> method in <code>java.lang.Object</code>,
+which is probably what was intended.
+]]>
+    </Details>
+  </BugPattern>
+
   <BugPattern type="RR_NOT_CHECKED">
     <ShortDescription>Method ignores results of InputStream.read()</ShortDescription>
     <LongDescription>{1} ignores result of {2}</LongDescription>
