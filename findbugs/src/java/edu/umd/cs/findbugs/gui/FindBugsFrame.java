@@ -1192,8 +1192,18 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	    logger.logMessage(ConsoleLogger.ERROR, e.getMessage());
 	    return;
 	}
-	
-	// TODO: highlight the selected source line(s)
+
+        // Highlight the lines from the source annotation
+        try {
+            int selBegin = sourceTextArea.getLineStartOffset(srcLine.getStartLine());
+            int selEnd = sourceTextArea.getLineStartOffset(srcLine.getEndLine()+1);
+            writeToConsole("Select " + selBegin + " to " + selEnd);
+            sourceTextArea.select(selBegin, selEnd);
+            sourceTextArea.getCaret().setSelectionVisible(true);
+
+        } catch (javax.swing.text.BadLocationException e) {
+            logger.logMessage(ConsoleLogger.ERROR, e.getMessage());
+        }
     }
     
     /**
