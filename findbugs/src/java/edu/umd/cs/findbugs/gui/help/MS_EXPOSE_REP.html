@@ -5,6 +5,10 @@
   </HEAD>
   <BODY>
   <h1>Public static method may expose internal representation by returning array</h1>
-  <p> TODO: describe.
+  <p> A public static method returns a reference to
+	an array that is part of the static state of the class. 
+	Any code that calls this method can freely modify
+	the underlaying array.
+	One fix is to return a copy of the array.
   </BODY>
 </HTML>
