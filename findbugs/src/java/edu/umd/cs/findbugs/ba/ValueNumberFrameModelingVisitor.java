@@ -34,6 +34,7 @@ public class ValueNumberFrameModelingVisitor
 	private MethodGen methodGen;
 	private ValueNumberFactory factory;
 	private ValueNumberCache cache;
+	private LoadedFieldSet loadedFieldSet;
 	private HashMap<String, ValueNumber> classObjectValueMap;
 	private IdentityHashMap<InstructionHandle, ValueNumber> constantValueMap;
 	private HashMap<ValueNumber, String> stringConstantMap;
@@ -45,12 +46,15 @@ public class ValueNumberFrameModelingVisitor
 	 * ---------------------------------------------------------------------- */
 
 	public ValueNumberFrameModelingVisitor(MethodGen methodGen, ValueNumberFactory factory,
-	                                       ValueNumberCache cache, RepositoryLookupFailureCallback lookupFailureCallback) {
+	                                       ValueNumberCache cache,
+	                                       LoadedFieldSet loadedFieldSet,
+	                                       RepositoryLookupFailureCallback lookupFailureCallback) {
 
 		super(methodGen.getConstantPool());
 		this.methodGen = methodGen;
 		this.factory = factory;
 		this.cache = cache;
+		this.loadedFieldSet = loadedFieldSet;
 		this.classObjectValueMap = new HashMap<String, ValueNumber>();
 		this.constantValueMap = new IdentityHashMap<InstructionHandle, ValueNumber>();
 		this.stringConstantMap = new HashMap<ValueNumber, String>();

@@ -42,7 +42,7 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
 	private static final boolean DEBUG = Boolean.getBoolean("vna.debug");
 
 	private MethodGen methodGen;
-	private Set<XField> loadedFieldSet;
+	private LoadedFieldSet loadedFieldSet;
 	private ValueNumberFactory factory;
 	private ValueNumberCache cache;
 	private ValueNumberFrameModelingVisitor visitor;
@@ -53,7 +53,7 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
 	private HashMap<Location, ValueNumberFrame> factAfterLocationMap;
 
 	public ValueNumberAnalysis(MethodGen methodGen, DepthFirstSearch dfs,
-							   Set<XField> loadedFieldSet,
+							   LoadedFieldSet loadedFieldSet,
 	                           RepositoryLookupFailureCallback lookupFailureCallback) {
 
 		super(dfs);
@@ -62,6 +62,7 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
 		this.factory = new ValueNumberFactory();
 		this.cache = new ValueNumberCache();
 		this.visitor = new ValueNumberFrameModelingVisitor(methodGen, factory, cache,
+				loadedFieldSet,
 		        lookupFailureCallback);
 
 		int numLocals = methodGen.getMaxLocals();
