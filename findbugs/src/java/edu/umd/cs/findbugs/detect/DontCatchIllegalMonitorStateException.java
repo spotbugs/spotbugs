@@ -34,13 +34,16 @@ import org.apache.bcel.classfile.ExceptionTable;
 public class DontCatchIllegalMonitorStateException
         extends PreorderVisitor implements Detector, Constants2 {
 
+	private static final boolean DEBUG = Boolean.getBoolean("dcimse.debug");
 
 	BugReporter bugReporter;
 	AnalysisContext analysisContext;
-	HashSet<String> msgs = new HashSet<String>();
+	HashSet<String> msgs = null;
 
 	public DontCatchIllegalMonitorStateException(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
+		if (DEBUG)
+			msgs = new HashSet<String>();
 	}
 
 	public void setAnalysisContext(AnalysisContext analysisContext) {
@@ -48,7 +51,7 @@ public class DontCatchIllegalMonitorStateException
 	}
 
 	public void visit(ExceptionTable obj) {
-		if (false) {
+		if (DEBUG) {
 			String names[] = obj.getExceptionNames();
 			for (int i = 0; i < names.length; i++)
 				if (names[i].equals("java.lang.Exception")
@@ -61,7 +64,7 @@ public class DontCatchIllegalMonitorStateException
 		int type = obj.getCatchType();
 		if (type == 0) return;
 		String name = getConstantPool().constantToString(getConstantPool().getConstant(type));
-		if (false) {
+		if (DEBUG) {
 			String msg = "Catching " + name + " in " + getFullyQualifiedMethodName();
 			if (msgs.add(msg))
 				System.out.println(msg);
