@@ -274,6 +274,8 @@ public class TypeRepositoryTest extends TestCase {
 		checkFirstCommonSuperclass(myClassArray2Type, mySuperclassArray2Type, mySuperclassArray2Type);
 
 		checkFirstCommonSuperclass(myClassArrayType, myClassArray2Type, javaLangObjectArray1Type);
+
+		checkFirstCommonSuperclass(myClassArrayType, booleanArray2Type, javaLangObjectArray1Type);
 	}
 
 }
