@@ -205,6 +205,24 @@ public class CFG extends AbstractGraph<Edge, BasicBlock> implements Debug {
 	}
 
 	/**
+	 * Get a Collection of basic blocks which contain the bytecode
+	 * instruction with given offset.
+	 *
+	 * @param offset the bytecode offset of an instruction
+	 * @return Collection of BasicBlock objects which contain the instruction
+	 *         with that offset
+	 */
+	public Collection<BasicBlock> getBlocksContainingInstructionWithOffset(int offset) {
+		LinkedList<BasicBlock> result = new LinkedList<BasicBlock>();
+		for (Iterator<BasicBlock> i = blockIterator(); i.hasNext(); ) {
+			BasicBlock block = i.next();
+			if (block.containsInstructionWithOffset(offset))
+				result.add(block);
+		}
+		return result;
+	}
+
+	/**
 	 * Get the first successor reachable from given edge type.
 	 *
 	 * @param source   the source block
