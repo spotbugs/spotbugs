@@ -51,7 +51,7 @@ public class Version {
 		PATCHLEVEL + (IS_DEVELOPMENT ? ".dev" : "");
 
 	/** Version of Eclipse UI plugin. */
-	public static final String ECLIPSE_UI_VERSION = "0.0.7" + (IS_DEVELOPMENT ? ".dev" : "");
+	public static final String ECLIPSE_UI_VERSION = "0.0.8" + (IS_DEVELOPMENT ? ".dev" : "");
 
 	/** FindBugs website. */
 	public static final String WEBSITE = "http://findbugs.sourceforge.net";
