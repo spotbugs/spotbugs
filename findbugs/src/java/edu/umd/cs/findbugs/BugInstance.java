@@ -41,6 +41,12 @@ public class BugInstance implements Comparable {
 	private int cachedHashCode;
 
 	/**
+	 * This value is used to indicate that the cached hashcode
+	 * is invalid, and should be recomputed.
+	 */
+	private static final int INVALID_HASH_CODE = 0;
+
+	/**
 	 * Constructor.
 	 * @param type the bug type
 	 * @param priority the bug priority
@@ -51,7 +57,7 @@ public class BugInstance implements Comparable {
 		this.count = count;
 		annotationList = new ArrayList<BugAnnotation>();
 		primaryClassAnnotation = null;
-		cachedHashCode = 0;
+		cachedHashCode = INVALID_HASH_CODE;
 	}
 
 	/** Get the bug type. */
@@ -280,11 +286,14 @@ public class BugInstance implements Comparable {
 	}
 
 	private void add(BugAnnotation annotation) {
+		// This object is being modified, so the cached hashcode
+		// must be invalidated
+		cachedHashCode = INVALID_HASH_CODE;
 		annotationList.add(annotation);
 	}
 
 	public int hashCode() {
-		if (cachedHashCode == 0) {
+		if (cachedHashCode == INVALID_HASH_CODE) {
 			int hashcode = type.hashCode() + priority;
 			Iterator<BugAnnotation> i = annotationIterator();
 			while (i.hasNext())
