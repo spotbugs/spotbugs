@@ -41,13 +41,13 @@ public class Version {
 	/**
 	 * Development version or release candidate?
 	 */
-	public static final boolean IS_DEVELOPMENT = true;
+	public static final boolean IS_DEVELOPMENT = false;
 
 	/**
 	 * Release candidate number.
 	 * "0" indicates that the version is not a release candidate.
 	 */
-	public static final int RELEASE_CANDIDATE = 2;
+	public static final int RELEASE_CANDIDATE = 0;
 
 	private static final String RELEASE_SUFFIX_WORD =
 		(RELEASE_CANDIDATE > 0 ? "rc" + RELEASE_CANDIDATE : "dev");
@@ -61,19 +61,10 @@ public class Version {
 	/**
 	 * Release date.
 	 */
-	public static final String DATE = "December 16, 2004";
+	public static final String DATE = "December 22, 2004";
 
 	/**
-	 * Version of Eclipse "core" plugin, which is just a repackaged
-	 * form of the main FindBugs application.  This is slightly
-	 * different than the RELEASE constant because Eclipse doesn't
-	 * like the "-" character in plugin versions.
-	 */
-	public static final String ECLIPSE_CORE_VERSION = MAJOR + "." + MINOR + "." +
-	        PATCHLEVEL + (IS_DEVELOPMENT ? "." + RELEASE_SUFFIX_WORD : "");
-
-	/**
-	 * Version of Eclipse UI plugin.
+	 * Version of Eclipse plugin.
 	 */
 	public static final String ECLIPSE_UI_VERSION =
 		"0.0.13" + (IS_DEVELOPMENT ? "." + RELEASE_SUFFIX_WORD: "");
@@ -91,7 +82,7 @@ public class Version {
 	/**
 	 * Support email.
 	 */
-	public static final String SUPPORT_EMAIL = "daveho@cs.umd.edu";
+	public static final String SUPPORT_EMAIL = "http://findbugs.sourceforge.net/reportingBugs.html";
 
 	public static void main(String[] argv) {
 		if (argv.length != 1)
@@ -106,7 +97,6 @@ public class Version {
 		else if (arg.equals("-props")) {
 			System.out.println("release.number=" + RELEASE);
 			System.out.println("release.date=" + DATE);
-			System.out.println("eclipse.core.version=" + ECLIPSE_CORE_VERSION);
 			System.out.println("eclipse.ui.version=" + ECLIPSE_UI_VERSION);
 			System.out.println("findbugs.website=" + WEBSITE);
 			System.out.println("findbugs.downloads.website=" + DOWNLOADS_WEBSITE);
