@@ -2,10 +2,6 @@
 
 <!--
   Plugin descriptor for FindBugs "core" plugin.
-  This plugin contains the detectors for which at least 50%
-  of the reported high and medium priority warnings
-  are real bugs.
-
   This plugin is enabled by default.
 -->
 <FindbugsPlugin pluginid="core"
@@ -15,11 +11,13 @@
                 >
   <Detector class="edu.umd.cs.findbugs.detect.NoteSuppressedWarnings" 
 	        speed="fast"
-	        reports="TESTING" /> 
+	        reports="TESTING"
+		hidden="true" /> 
 	        
   <Detector class="edu.umd.cs.findbugs.detect.NoteCheckReturnValue" 
 	        speed="fast"
-	        reports="TESTING" /> 
+	        reports="TESTING"
+                hidden="true" /> 
 	        
   <Detector class="edu.umd.cs.findbugs.detect.InfiniteRecursiveLoop" 
 	        speed="fast"
@@ -40,7 +38,8 @@
   <Detector class="edu.umd.cs.findbugs.detect.TestingGround" 
             speed="fast"
             reports="TESTING"
-            disabled="true" />
+            disabled="true"
+            hidden="true" />
             
   <Detector class="edu.umd.cs.findbugs.detect.DontCatchIllegalMonitorStateException" 
 	        speed="fast"
@@ -287,12 +286,13 @@
   			reports="ISC_INSTANTIATE_STATIC_CLASS"
   			disabled="true" />
 
-  <Detector class="edu.umd.cs.findbugs.detect.FindBugsSummaryStats" 
+  <Detector class="edu.umd.cs.findbugs.detect.RuntimeExceptionCapture"
+            reports="REC_CATCH_EXCEPTION"
             speed="fast" />
 
-	<Detector class="edu.umd.cs.findbugs.detect.RuntimeExceptionCapture"
-		reports="REC_CATCH_EXCEPTION"
-		speed="fast" />
+  <Detector class="edu.umd.cs.findbugs.detect.FindBugsSummaryStats" 
+            speed="fast"
+            hidden="true" />
 
 
   <BugPattern abbrev="SW" type="SW_SWING_METHODS_INVOKED_IN_SWING_THREAD" category="CORRECTNESS"
