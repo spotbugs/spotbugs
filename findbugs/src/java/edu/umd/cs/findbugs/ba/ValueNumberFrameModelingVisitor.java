@@ -23,6 +23,15 @@ import java.util.*;
 
 import org.apache.bcel.generic.*;
 
+/**
+ * Visitor which models the effects of bytecode instructions
+ * on value numbers of values in the operand stack frames.
+ *
+ * @see ValueNumber
+ * @see ValueNumberFrame
+ * @see ValueNumberAnalaysis
+ * @author David Hovemeyer
+ */
 public class ValueNumberFrameModelingVisitor
         extends AbstractFrameModelingVisitor<ValueNumber, ValueNumberFrame>
         implements Debug, ValueNumberAnalysisFeatures {
@@ -45,6 +54,15 @@ public class ValueNumberFrameModelingVisitor
 	 * Public interface
 	 * ---------------------------------------------------------------------- */
 
+	/**
+	 * Constructor.
+	 *
+	 * @param methodGen             the method being analyzed
+	 * @param factory               factory for ValueNumbers for the method
+	 * @param cache                 cache of input/output transformations for each instruction
+	 * @param loadedFieldSet        fields loaded/stored by each instruction and entire method
+	 * @param lookupFailureCallback callback to use to report class lookup failures
+	 */
 	public ValueNumberFrameModelingVisitor(MethodGen methodGen, ValueNumberFactory factory,
 	                                       ValueNumberCache cache,
 	                                       LoadedFieldSet loadedFieldSet,
@@ -219,53 +237,26 @@ public class ValueNumberFrameModelingVisitor
 					throw new AnalysisException("stack underflow", methodGen, handle, e);
 				}
 			} else if (Hierarchy.isInnerClassAccess(obj, cpg)) {
-/*
-				try {
-*/
-					XField xfield = loadedFieldSet.getField(handle);
-					if (xfield != null /*&& doRedundantLoadElimination(xfield)*/) {
-						if (loadedFieldSet.instructionIsLoad(handle)) {
-							if (xfield.isStatic())
-								loadStaticField((StaticField) xfield, obj);
-							else
-								loadInstanceField((InstanceField) xfield, obj);
-						} else {
-							// Some inner class access store methods
-							// return the value stored.
-							boolean pushValue = !methodSig.endsWith(")V");
+				// Possible access of field via an inner-class access method
+				XField xfield = loadedFieldSet.getField(handle);
+				if (xfield != null /*&& doRedundantLoadElimination(xfield)*/) {
+					if (loadedFieldSet.instructionIsLoad(handle)) {
+						if (xfield.isStatic())
+							loadStaticField((StaticField) xfield, obj);
+						else
+							loadInstanceField((InstanceField) xfield, obj);
+					} else {
+						// Some inner class access store methods
+						// return the value stored.
+						boolean pushValue = !methodSig.endsWith(")V");
 
-							if (xfield.isStatic())
-								storeStaticField((StaticField) xfield, obj, pushValue);
-							else
-								storeInstanceField((InstanceField) xfield, obj, pushValue);
-						}
-						return;
+						if (xfield.isStatic())
+							storeStaticField((StaticField) xfield, obj, pushValue);
+						else
+							storeInstanceField((InstanceField) xfield, obj, pushValue);
 					}
-/*
-					InnerClassAccess access = Hierarchy.getInnerClassAccess(obj, cpg);
-					if (access != null && access.getMethodSignature().equals(methodSig)) {
-						// Inner class field access method found.
-
-						if (access.isLoad()) {
-							if (access.isStatic())
-								loadStaticField((StaticField) access.getField(), obj); // Static load
-							else
-								loadInstanceField((InstanceField) access.getField(), obj); // Instance load
-						} else {
-							if (access.isStatic())
-								storeStaticField((StaticField) access.getField(), obj, true); // Static store
-							else
-								storeInstanceField((InstanceField) access.getField(), obj, true); // Instance store
-						}
-
-						return;
-					}
-*/
-/*
-				} catch (ClassNotFoundException e) {
-					lookupFailureCallback.reportMissingClass(e);
+					return;
 				}
-*/
 			}
 		}
 
