@@ -63,7 +63,7 @@ public class EqStringTest extends BytecodeScanningDetector implements   Constant
  	case IF_ACMPEQ:
 	case IF_ACMPNE:
 		if (constantOnTOS && !callToInternSeen) 
-                  bugReporter.reportBug(new BugInstance("COMPARING_STRINGS_WITH_EQ", NORMAL_PRIORITY)
+                  bugReporter.reportBug(new BugInstance("ES_COMPARING_STRINGS_WITH_EQ", NORMAL_PRIORITY)
                         .addClassAndMethod(this)
                         .addSourceLine(this, PC));
 		break;

@@ -297,7 +297,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 
 										if (priority <= LOW_PRIORITY) {
 											String sourceFile = jclass.getSourceFileName();
-											bugReporter.reportBug(new BugInstance("RC_REF_COMPARISON", priority)
+											bugReporter.reportBug(new BugInstance("ES_COMPARING_STRINGS_WITH_EQ", priority)
 												.addClassAndMethod(methodGen, sourceFile)
 												.addSourceLine(methodGen, sourceFile, handle)
 												.addClass("java.lang.String").describe("CLASS_REFTYPE")
