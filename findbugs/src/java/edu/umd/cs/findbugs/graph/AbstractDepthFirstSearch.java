@@ -1,5 +1,5 @@
 /*
- * Bytecode Analysis Framework
+ * Generic graph library
  * Copyright (C) 2003,2004 University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
