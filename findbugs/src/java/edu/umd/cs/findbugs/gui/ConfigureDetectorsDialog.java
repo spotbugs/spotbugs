@@ -125,9 +125,9 @@ public class ConfigureDetectorsDialog extends javax.swing.JDialog {
                     L10N.getLocalString("dlg.enabled_lbl", "Enabled"),
                 });
 
-                TableSorter sorter = new TableSorter(m);
-                detectorTable.setModel(sorter);
-                sorter.setTableHeader(detectorTable.getTableHeader());
+                DefaultSortedTableModel sortedModel = new DefaultSortedTableModel(m);
+                detectorTable.setModel(sortedModel);
+                sortedModel.setBaseTableHeader(detectorTable.getTableHeader());
             }
 
             detectorTableScrollPane.setViewportView(detectorTable);
@@ -227,8 +227,8 @@ public class ConfigureDetectorsDialog extends javax.swing.JDialog {
 	 */
 	private void restoreDefaultsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_restoreDefaultsButtonActionPerformed
 		Iterator<DetectorFactory> i = DetectorFactoryCollection.instance().factoryIterator();
-		TableSorter sorter = (TableSorter) detectorTable.getModel();
-		TableModel model = sorter.getTableModel();
+		DefaultSortedTableModel sorter = (DefaultSortedTableModel) detectorTable.getModel();
+		TableModel model = sorter.getBaseTableModel();
 		int row = 0;
 		while (i.hasNext()) {
 			DetectorFactory factory = i.next();
@@ -243,8 +243,8 @@ public class ConfigureDetectorsDialog extends javax.swing.JDialog {
 	private void okButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_okButtonActionPerformed
 		// Update new enabled/disabled status for the Detectors
 		int num = factoryList.size();
-		TableSorter sorter = (TableSorter) detectorTable.getModel();
-		TableModel model = sorter.getTableModel();
+		DefaultSortedTableModel sorter = (DefaultSortedTableModel) detectorTable.getModel();
+		TableModel model = sorter.getBaseTableModel();
 		for (int i = 0; i < num; ++i) {
 			DetectorFactory factory = factoryList.get(i);
 			Boolean enabled = (Boolean) model.getValueAt(i, ENABLED_COLUMN);
@@ -277,8 +277,8 @@ public class ConfigureDetectorsDialog extends javax.swing.JDialog {
 				ListSelectionModel lsm = (ListSelectionModel) e.getSource();
 				if (!lsm.isSelectionEmpty()) {
 					int selectedRow = lsm.getMinSelectionIndex();
-					TableSorter sorter = (TableSorter) detectorTable.getModel();
-					viewDetectorDetails(factoryList.get(sorter.modelIndex(selectedRow)));
+					DefaultSortedTableModel sorter = (DefaultSortedTableModel) detectorTable.getModel();
+					viewDetectorDetails(factoryList.get(sorter.getBaseModelIndex(selectedRow)));
 				}
 			}
 		});
