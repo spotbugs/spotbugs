@@ -24,6 +24,18 @@ public class IntAnnotation implements BugAnnotation {
 	public String format(String key) {
 		return String.valueOf(value);
 	}
+
+	public int hashCode() { return value; }
+
+	public boolean equals(Object o) {
+		if (!(o instanceof IntAnnotation))
+			return false;
+		return value == ((IntAnnotation) o).value;
+	}
+
+	public int compareTo(Object o) {
+		return value - ((IntAnnotation) o).value;
+	}
 }
 
 // vim:ts=4

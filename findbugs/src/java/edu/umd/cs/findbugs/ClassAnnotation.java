@@ -27,6 +27,22 @@ public class ClassAnnotation extends PackageMemberAnnotation {
 		else
 			throw new IllegalArgumentException("unknown key " + key);
 	}
+
+	public int hashCode() {
+		return className.hashCode();
+	}
+
+	public boolean equals(Object o) {
+		if (!(o instanceof PackageMemberAnnotation))
+			return false;
+		PackageMemberAnnotation other = (PackageMemberAnnotation) o;
+		return className.equals(other.className);
+	}
+
+	public int compareTo(Object o) {
+		PackageMemberAnnotation other = (PackageMemberAnnotation) o;
+		return className.compareTo(other.className);
+	}
 }
 
 // vim:ts=4

@@ -116,6 +116,18 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 			&& methodSig.equals(other.methodSig);
 	}
 
+	public int compareTo(Object o) {
+		MethodAnnotation other = (MethodAnnotation) o;
+		int cmp;
+		cmp = className.compareTo(other.className);
+		if (cmp != 0)
+			return cmp;
+		cmp = methodName.compareTo(other.methodName);
+		if (cmp != 0)
+			return cmp;
+		return methodSig.compareTo(other.methodSig);
+	}
+
 /*
 	public static void main(String[] argv) {
 		MethodAnnotation m = new MethodAnnotation("edu.umd.cs.daveho.ba.CFG", "fooIterator",

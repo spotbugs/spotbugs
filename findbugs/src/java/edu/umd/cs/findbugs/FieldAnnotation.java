@@ -2,6 +2,7 @@ package edu.umd.cs.findbugs;
 
 import edu.umd.cs.pugh.visitclass.BetterVisitor;
 import edu.umd.cs.pugh.visitclass.DismantleBytecode;
+import org.apache.bcel.generic.*;
 
 /**
  * A BugAnnotation specifying a particular field in particular class.
@@ -9,7 +10,7 @@ import edu.umd.cs.pugh.visitclass.DismantleBytecode;
  * @see BugAnnotation
  * @author David Hovemeyer
  */
-public class FieldAnnotation extends PackageMemberAnnotation implements Comparable {
+public class FieldAnnotation extends PackageMemberAnnotation {
 	private String fieldName;
 	private String fieldSig;
 	private boolean isStatic;
@@ -71,6 +72,34 @@ public class FieldAnnotation extends PackageMemberAnnotation implements Comparab
 		return isStatic;
 	}
 
+	/**
+	 * Is the given instruction a read of a field?
+	 * @param ins the Instruction to check
+	 * @param cpg ConstantPoolGen of the method containing the instruction
+	 * @return the Field if the instruction is a read of a field, null otherwise
+	 */
+	public static FieldAnnotation isRead(Instruction ins, ConstantPoolGen cpg) {
+		if (ins instanceof GETFIELD || ins instanceof GETSTATIC) {
+			FieldInstruction fins = (FieldInstruction) ins;
+			return new FieldAnnotation(fins.getClassName(cpg), fins.getName(cpg), fins.getSignature(cpg), fins instanceof GETSTATIC);
+		} else
+			return null;
+	}
+
+	/**
+	 * Is the instruction a write of a field?
+	 * @param the Instruction to check
+	 * @param cpg ConstantPoolGen of the method containing the instruction
+	 * @return the Field if instruction is a write of a field, null otherwise
+	 */
+	public static FieldAnnotation isWrite(Instruction ins, ConstantPoolGen cpg) {
+		if (ins instanceof PUTFIELD || ins instanceof PUTSTATIC) {
+			FieldInstruction fins = (FieldInstruction) ins;
+			return new FieldAnnotation(fins.getClassName(cpg), fins.getName(cpg), fins.getSignature(cpg), fins instanceof PUTSTATIC);
+		} else
+			return null;
+	}
+
 	public void accept(BugAnnotationVisitor visitor) {
 		visitor.visitFieldAnnotation(this);
 	}
@@ -106,7 +135,8 @@ public class FieldAnnotation extends PackageMemberAnnotation implements Comparab
 		FieldAnnotation other = (FieldAnnotation) o;
 		return className.equals(other.className)
 			&& fieldName.equals(other.fieldName)
-			&& fieldSig.equals(other.fieldSig);
+			&& fieldSig.equals(other.fieldSig)
+			&& isStatic == other.isStatic;
 	}
 
 	public int compareTo(Object o) {
