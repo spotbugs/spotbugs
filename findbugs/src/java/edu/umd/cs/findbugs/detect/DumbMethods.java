@@ -34,6 +34,7 @@ public class DumbMethods extends BytecodeScanningDetector implements   Constants
    private BugInstance gcInvocationBugReport;
    private int gcInvocationPC;
    private CodeException[] exceptionTable;
+   private boolean sawLDCEmptyString;
 
    public DumbMethods(BugReporter bugReporter) {
 	this.bugReporter = bugReporter;
@@ -96,7 +97,19 @@ public class DumbMethods extends BytecodeScanningDetector implements   Constants
 				&& classConstant.equals("java/lang/System")
 				&& nameConstant.equals("currentTimeMillis"))
 			sawCurrentTimeMillis = true;
-	}
+	if ((seen == INVOKEVIRTUAL)
+				&& sawLDCEmptyString
+				&& nameConstant.equals("equals"))
+		bugReporter.reportBug(new BugInstance("DM_STRING_EMPTY_EQUALS", LOW_PRIORITY)
+				.addClassAndMethod(this)
+				.addSourceLine(this));
+	if ((seen == LDC)
+				&& (constantRef instanceof ConstantString)
+				&& (stringConstant.length() == 0))
+		sawLDCEmptyString = true;
+	else
+		sawLDCEmptyString = false;
+   }
 
    public void report() {
 	flush();

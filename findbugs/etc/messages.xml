@@ -544,6 +544,16 @@ It is a fast detector.
 ]]>
     </Details>
   </BugPattern>
+  <BugPattern type="DM_STRING_EMPTY_EQUALS">
+    <ShortDescription>Method invokes dubious String.equals(""); use String.length() == 0 instead</ShortDescription>
+    <LongDescription>Method invokes dubious String.equals(""); use String.length() == 0 instead</LongDescription>
+    <Details>
+<![CDATA[
+  <p> An object is compared to the empty String object using the equals() method here.
+      Checking that the String object's length is zero may be faster.
+]]>
+    </Details>
+  </BugPattern>
   <BugPattern type="DC_DOUBLECHECK">
     <ShortDescription>Possible double check of field</ShortDescription>
     <LongDescription>Possible doublecheck on {2} in {1}</LongDescription>
