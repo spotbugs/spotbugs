@@ -5,6 +5,9 @@
   </HEAD>
   <BODY>
   <h1>Method explicitly invokes run (did you mean to start it instead?)</h1>
-  <p> The description of this bug hasn't been written yet.
+  <p> This method explicitly invokes <code>run()</code> on an object.&nbsp;
+  In general, classes implement the <code>Runnable</code> interface because
+  they are going to have their <code>run()</code> method invoked in a new thread,
+  in which case <code>Thread.start()</code> is the right method to call.
   </BODY>
 </HTML>

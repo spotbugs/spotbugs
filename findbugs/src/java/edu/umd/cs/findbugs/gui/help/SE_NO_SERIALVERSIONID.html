@@ -5,6 +5,9 @@
   </HEAD>
   <BODY>
   <h1>Class is Serializable, but doesn't define serialVersionUID</h1>
-  <p> The description of this bug hasn't been written yet.
+  <p> This class implements the <code>Serializable</code> interface, but does
+  not define a <code>serialVersionUID</code> field.&nbsp; Classes defined
+  without a <code>serialVersionUID</code> are very difficult to use correctly
+  with different Java source to bytecode compilers.
   </BODY>
 </HTML>
