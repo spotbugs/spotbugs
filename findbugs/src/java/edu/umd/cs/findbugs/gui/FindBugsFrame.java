@@ -212,7 +212,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
         consoleSplitter = new javax.swing.JSplitPane();
         navigatorViewSplitter = new javax.swing.JSplitPane();
-        jScrollPane1 = new javax.swing.JScrollPane();
+        navigatorScrollPane = new javax.swing.JScrollPane();
         navigatorTree = new javax.swing.JTree();
         viewPanel = new javax.swing.JPanel();
         emptyPanel = new javax.swing.JPanel();
@@ -235,21 +235,21 @@ public class FindBugsFrame extends javax.swing.JFrame {
         jSeparator2 = new javax.swing.JSeparator();
         findBugsButton = new javax.swing.JButton();
         jSeparator4 = new javax.swing.JSeparator();
-        jScrollPane2 = new javax.swing.JScrollPane();
+        jarFileListScrollPane = new javax.swing.JScrollPane();
         jarFileList = new javax.swing.JList();
-        jScrollPane3 = new javax.swing.JScrollPane();
+        sourceDirListScrollPane = new javax.swing.JScrollPane();
         sourceDirList = new javax.swing.JList();
         bugTreePanel = new javax.swing.JPanel();
         groupByChooser = new javax.swing.JComboBox();
         groupByLabel = new javax.swing.JLabel();
         bugTreeSourceViewSplitter = new javax.swing.JSplitPane();
-        jScrollPane4 = new javax.swing.JScrollPane();
+        bugTreeScrollPane = new javax.swing.JScrollPane();
         bugTree = new javax.swing.JTree();
-        jScrollPane6 = new javax.swing.JScrollPane();
+        sourceTextAreaScrollPane = new javax.swing.JScrollPane();
         sourceTextArea = new javax.swing.JTextArea();
-        jScrollPane5 = new javax.swing.JScrollPane();
+        consoleScrollPane = new javax.swing.JScrollPane();
         consoleMessageArea = new javax.swing.JTextArea();
-        jMenuBar1 = new javax.swing.JMenuBar();
+        theMenuBar = new javax.swing.JMenuBar();
         fileMenu = new javax.swing.JMenu();
         newProjectItem = new javax.swing.JMenuItem();
         openProjectItem = new javax.swing.JMenuItem();
@@ -281,11 +281,11 @@ public class FindBugsFrame extends javax.swing.JFrame {
             }
         });
 
-        jScrollPane1.setPreferredSize(new java.awt.Dimension(140, 0));
+        navigatorScrollPane.setPreferredSize(new java.awt.Dimension(140, 0));
         navigatorTree.setModel(createNavigatorTreeModel());
-        jScrollPane1.setViewportView(navigatorTree);
+        navigatorScrollPane.setViewportView(navigatorTree);
 
-        navigatorViewSplitter.setLeftComponent(jScrollPane1);
+        navigatorViewSplitter.setLeftComponent(navigatorScrollPane);
 
         viewPanel.setLayout(new java.awt.CardLayout());
 
@@ -493,11 +493,11 @@ public class FindBugsFrame extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(3, 3, 3, 3);
         editProjectPanel.add(jSeparator4, gridBagConstraints);
 
-        jScrollPane2.setPreferredSize(new java.awt.Dimension(259, 1));
+        jarFileListScrollPane.setPreferredSize(new java.awt.Dimension(259, 1));
         jarFileList.setBorder(new javax.swing.border.BevelBorder(javax.swing.border.BevelBorder.LOWERED));
         jarFileList.setFont(new java.awt.Font("Dialog", 0, 12));
         jarFileList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
-        jScrollPane2.setViewportView(jarFileList);
+        jarFileListScrollPane.setViewportView(jarFileList);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
@@ -506,13 +506,13 @@ public class FindBugsFrame extends javax.swing.JFrame {
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.weighty = 0.7;
         gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 3);
-        editProjectPanel.add(jScrollPane2, gridBagConstraints);
+        editProjectPanel.add(jarFileListScrollPane, gridBagConstraints);
 
-        jScrollPane3.setPreferredSize(new java.awt.Dimension(259, 1));
+        sourceDirListScrollPane.setPreferredSize(new java.awt.Dimension(259, 1));
         sourceDirList.setBorder(new javax.swing.border.BevelBorder(javax.swing.border.BevelBorder.LOWERED));
         sourceDirList.setFont(new java.awt.Font("Dialog", 0, 12));
         sourceDirList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
-        jScrollPane3.setViewportView(sourceDirList);
+        sourceDirListScrollPane.setViewportView(sourceDirList);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
@@ -521,7 +521,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.weighty = 0.3;
         gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 3);
-        editProjectPanel.add(jScrollPane3, gridBagConstraints);
+        editProjectPanel.add(sourceDirListScrollPane, gridBagConstraints);
 
         viewPanel.add(editProjectPanel, "EditProjectPanel");
 
@@ -556,17 +556,17 @@ public class FindBugsFrame extends javax.swing.JFrame {
             }
         });
 
-        jScrollPane4.setViewportView(bugTree);
+        bugTreeScrollPane.setViewportView(bugTree);
 
-        bugTreeSourceViewSplitter.setLeftComponent(jScrollPane4);
+        bugTreeSourceViewSplitter.setLeftComponent(bugTreeScrollPane);
 
-        jScrollPane6.setMinimumSize(new java.awt.Dimension(22, 180));
-        jScrollPane6.setPreferredSize(new java.awt.Dimension(0, 100));
+        sourceTextAreaScrollPane.setMinimumSize(new java.awt.Dimension(22, 180));
+        sourceTextAreaScrollPane.setPreferredSize(new java.awt.Dimension(0, 100));
         sourceTextArea.setEditable(false);
         sourceTextArea.setFont(new java.awt.Font("Lucida Sans Typewriter", 0, 12));
-        jScrollPane6.setViewportView(sourceTextArea);
+        sourceTextAreaScrollPane.setViewportView(sourceTextArea);
 
-        bugTreeSourceViewSplitter.setRightComponent(jScrollPane6);
+        bugTreeSourceViewSplitter.setRightComponent(sourceTextAreaScrollPane);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -583,20 +583,20 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
         consoleSplitter.setTopComponent(navigatorViewSplitter);
 
-        jScrollPane5.setMinimumSize(new java.awt.Dimension(22, 100));
-        jScrollPane5.setPreferredSize(new java.awt.Dimension(0, 100));
+        consoleScrollPane.setMinimumSize(new java.awt.Dimension(22, 100));
+        consoleScrollPane.setPreferredSize(new java.awt.Dimension(0, 100));
         consoleMessageArea.setBackground(new java.awt.Color(204, 204, 204));
         consoleMessageArea.setEditable(false);
         consoleMessageArea.setFont(new java.awt.Font("Lucida Sans Typewriter", 0, 12));
         consoleMessageArea.setMinimumSize(new java.awt.Dimension(0, 0));
         consoleMessageArea.setAutoscrolls(false);
-        jScrollPane5.setViewportView(consoleMessageArea);
+        consoleScrollPane.setViewportView(consoleMessageArea);
 
-        consoleSplitter.setBottomComponent(jScrollPane5);
+        consoleSplitter.setBottomComponent(consoleScrollPane);
 
         getContentPane().add(consoleSplitter, java.awt.BorderLayout.CENTER);
 
-        jMenuBar1.setFont(new java.awt.Font("Dialog", 0, 12));
+        theMenuBar.setFont(new java.awt.Font("Dialog", 0, 12));
         fileMenu.setMnemonic('F');
         fileMenu.setText("File");
         fileMenu.setFont(new java.awt.Font("Dialog", 0, 12));
@@ -651,7 +651,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
         fileMenu.add(exitItem);
 
-        jMenuBar1.add(fileMenu);
+        theMenuBar.add(fileMenu);
 
         viewMenu.setMnemonic('V');
         viewMenu.setText("View");
@@ -667,7 +667,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
         viewMenu.add(viewConsoleItem);
 
-        jMenuBar1.add(viewMenu);
+        theMenuBar.add(viewMenu);
 
         helpMenu.setMnemonic('H');
         helpMenu.setText("Help");
@@ -683,9 +683,9 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
         helpMenu.add(aboutItem);
 
-        jMenuBar1.add(helpMenu);
+        theMenuBar.add(helpMenu);
 
-        setJMenuBar(jMenuBar1);
+        setJMenuBar(theMenuBar);
 
         pack();
     }//GEN-END:initComponents
@@ -1364,10 +1364,12 @@ public class FindBugsFrame extends javax.swing.JFrame {
     private javax.swing.JLabel jarFileLabel;
     private javax.swing.JMenuItem aboutItem;
     private javax.swing.JButton addSourceDirButton;
+    private javax.swing.JMenuBar theMenuBar;
     private javax.swing.JComboBox groupByChooser;
+    private javax.swing.JScrollPane navigatorScrollPane;
     private javax.swing.JButton removeJarButton;
     private javax.swing.JButton addJarButton;
-    private javax.swing.JScrollPane jScrollPane5;
+    private javax.swing.JScrollPane sourceTextAreaScrollPane;
     private javax.swing.JTree navigatorTree;
     private javax.swing.JList sourceDirList;
     private javax.swing.JMenuItem saveProjectItem;
@@ -1375,18 +1377,16 @@ public class FindBugsFrame extends javax.swing.JFrame {
     private javax.swing.JTextArea consoleMessageArea;
     private javax.swing.JSeparator jSeparator3;
     private javax.swing.JTree bugTree;
-    private javax.swing.JScrollPane jScrollPane6;
+    private javax.swing.JScrollPane jarFileListScrollPane;
     private javax.swing.JSplitPane navigatorViewSplitter;
     private javax.swing.JLabel groupByLabel;
     private javax.swing.JCheckBoxMenuItem viewConsoleItem;
-    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JMenuItem closeProjectItem;
     private javax.swing.JTextField jarNameTextField;
+    private javax.swing.JScrollPane consoleScrollPane;
     private javax.swing.JButton browseJarButton;
     private javax.swing.JTextArea sourceTextArea;
-    private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JButton findBugsButton;
-    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JPanel bugTreePanel;
     private javax.swing.JSplitPane bugTreeSourceViewSplitter;
     private javax.swing.JLabel sourceDirLabel;
@@ -1400,8 +1400,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
     private javax.swing.JButton browseSrcDirButton;
     private javax.swing.JLabel sourceDirListLabel;
     private javax.swing.JMenuItem exitItem;
-    private javax.swing.JScrollPane jScrollPane3;
-    private javax.swing.JMenuBar jMenuBar1;
+    private javax.swing.JScrollPane bugTreeScrollPane;
+    private javax.swing.JScrollPane sourceDirListScrollPane;
     // End of variables declaration//GEN-END:variables
     
     // My variable declarations
