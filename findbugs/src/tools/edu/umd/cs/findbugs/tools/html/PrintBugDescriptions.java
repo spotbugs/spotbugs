@@ -59,8 +59,8 @@ public class PrintBugDescriptions {
 	}
 
 	private void emit(BugPattern bugPattern) throws IOException {
-		out.println("<h1>" + bugPattern.getAbbrev() + ": " +
-			bugPattern.getShortDescription() + "</h1>");
+		out.println("<h2>" + bugPattern.getAbbrev() + ": " +
+			bugPattern.getShortDescription() + "</h2>");
 		out.println(bugPattern.getDetailText());
 	}
 
