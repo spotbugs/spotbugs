@@ -21,6 +21,7 @@ package edu.umd.cs.daveho.ba.bcp;
 
 import java.util.*;
 import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.ConstantPoolGen;
 import edu.umd.cs.daveho.ba.*;
 
 /**
@@ -34,6 +35,7 @@ import edu.umd.cs.daveho.ba.*;
 public class PatternMatcher implements DFSEdgeTypes {
 	private ByteCodePattern pattern;
 	private CFG cfg;
+	private ConstantPoolGen cpg;
 	private DepthFirstSearch dfs;
 	private ValueNumberDataflow vnaDataflow;
 	private LinkedList<BasicBlock> workList;
@@ -44,14 +46,16 @@ public class PatternMatcher implements DFSEdgeTypes {
 	 * Constructor.
 	 * @param pattern the ByteCodePattern to look for examples of
 	 * @param cfg the CFG for the method to search
+	 * @param cpg the ConstantPoolGen for the method
 	 * @param dfs an initialized DepthFirstSearch object; used to detect loop backedges
 	 *   in the CFG
 	 * @param vnaDataflow an initialized ValueNumberDataflow object which tracks the
 	 *   flow of values in the method
 	 */
-	public PatternMatcher(ByteCodePattern pattern, CFG cfg, DepthFirstSearch dfs, ValueNumberDataflow vnaDataflow) {
+	public PatternMatcher(ByteCodePattern pattern, CFG cfg, ConstantPoolGen cpg, DepthFirstSearch dfs, ValueNumberDataflow vnaDataflow) {
 		this.pattern = pattern;
 		this.cfg = cfg;
+		this.cpg = cpg;
 		this.dfs = dfs;
 		this.vnaDataflow = vnaDataflow;
 		this.workList = new LinkedList<BasicBlock>();
@@ -140,20 +144,27 @@ public class PatternMatcher implements DFSEdgeTypes {
 		if (matchCount >= patternElement.maxOccur())
 			return;
 
-		boolean matchedCurrentInstruction = false;
+		InstructionHandle matchedInstruction = null;
 
 		// Is there another instruction in this basic block?
 		if (instructionIterator.hasNext()) {
-			// Try to match the current instruction against the pattern element.
 			InstructionHandle handle = instructionIterator.next();
-			ValueNumberFrame frame = vnaDataflow.getFactAtLocation(new Location(handle, basicBlock));
-			bindingSet = patternElement.match(handle, frame, bindingSet);
+
+			// Get the ValueNumberFrames before and after the instruction
+			ValueNumberFrame before = vnaDataflow.getFactAtLocation(new Location(handle, basicBlock));
+			BasicBlock.InstructionIterator dupIter = instructionIterator.duplicate();
+			ValueNumberFrame after = dupIter.hasNext()
+				? vnaDataflow.getFactAtLocation(new Location(dupIter.next(), basicBlock))
+				: vnaDataflow.getResultFact(basicBlock);
+
+			// Try to match the instruction against the pattern element.
+			bindingSet = patternElement.match(handle, cpg, before, after, bindingSet);
 			if (bindingSet == null)
 				// Not a match.
 				return;
 
 			// Successful match!
-			matchedCurrentInstruction = true;
+			matchedInstruction = handle;
 			++matchCount;
 			currentMatch = new PatternElementMatch(patternElement, handle, matchCount, currentMatch);
 		}
@@ -178,7 +189,7 @@ public class PatternMatcher implements DFSEdgeTypes {
 				// This allows PatternElements to select particular control edges;
 				// for example, only continue the pattern on the true branch
 				// of an "if" comparison.
-				if (!matchedCurrentInstruction || patternElement.acceptBranch(edge)) {
+				if (matchedInstruction == null || patternElement.acceptBranch(edge, matchedInstruction)) {
 					BasicBlock destBlock = edge.getDest();
 					work(destBlock, destBlock.instructionIterator(), patternElement, matchCount, currentMatch, bindingSet);
 				}
