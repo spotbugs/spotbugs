@@ -20,6 +20,9 @@
           <Events>
             <EventHandler event="menuSelected" listener="javax.swing.event.MenuListener" parameters="javax.swing.event.MenuEvent" handler="fileMenuMenuSelected"/>
           </Events>
+          <AuxValues>
+            <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="fileMenu.setText(L10N.getLocalString(&quot;menu.file_menu&quot;, &quot;File&quot;));"/>
+          </AuxValues>
           <SubComponents>
             <MenuItem class="javax.swing.JMenuItem" name="newProjectItem">
               <Properties>
@@ -32,6 +35,9 @@
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="newProjectItemActionPerformed"/>
               </Events>
+              <AuxValues>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="newProjectItem.setText(L10N.getLocalString(&quot;menu.new_item&quot;, &quot;New Project&quot;));"/>
+              </AuxValues>
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="openProjectItem">
               <Properties>
@@ -44,6 +50,9 @@
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="openProjectItemActionPerformed"/>
               </Events>
+              <AuxValues>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="openProjectItem.setText(L10N.getLocalString(&quot;menu.open_item&quot;, &quot;Open Project...&quot;));"/>
+              </AuxValues>
             </MenuItem>
             <Menu class="javax.swing.JMenu" name="recentProjectsMenu">
               <Properties>
@@ -54,7 +63,7 @@
                 </Property>
               </Properties>
               <AuxValues>
-                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="rebuildRecentProjectsMenu();"/>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="recentProjectsMenu.setText(L10N.getLocalString(&quot;menu_recent_menu&quot;, &quot;Recent Projects...&quot;));rebuildRecentProjectsMenu();"/>
               </AuxValues>
             </Menu>
             <MenuItem class="javax.swing.JMenuItem" name="saveProjectItem">
@@ -68,6 +77,9 @@
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="saveProjectItemActionPerformed"/>
               </Events>
+              <AuxValues>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="saveProjectItem.setText(L10N.getLocalString(&quot;menu.save_item&quot;, &quot;Save Project&quot;));"/>
+              </AuxValues>
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="saveProjectAsItem">
               <Properties>
@@ -80,6 +92,9 @@
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="saveProjectAsItemActionPerformed"/>
               </Events>
+              <AuxValues>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="saveProjectAsItem.setText(L10N.getLocalString(&quot;menu.saveas_item&quot;, &quot;Save Project As...&quot;));"/>
+              </AuxValues>
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="reloadProjectItem">
               <Properties>
@@ -92,6 +107,9 @@
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="reloadProjectItemActionPerformed"/>
               </Events>
+              <AuxValues>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="reloadProjectItem.setText(L10N.getLocalString(&quot;menu.reload_item&quot;, &quot;Reload Project&quot;));"/>
+              </AuxValues>
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="closeProjectItem">
               <Properties>
@@ -104,6 +122,9 @@
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="closeProjectItemActionPerformed"/>
               </Events>
+              <AuxValues>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="closeProjectItem.setText(L10N.getLocalString(&quot;menu.close_item&quot;, &quot;Close&quot;));"/>
+              </AuxValues>
             </MenuItem>
             <MenuItem class="javax.swing.JSeparator" name="jSeparator3">
             </MenuItem>
@@ -118,6 +139,9 @@
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="loadBugsItemActionPerformed"/>
               </Events>
+              <AuxValues>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="loadBugsItem.setText(L10N.getLocalString(&quot;menu.loadbugs_item&quot;, &quot;Load Bugs...&quot;));"/>
+              </AuxValues>
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="saveBugsItem">
               <Properties>
@@ -130,6 +154,9 @@
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="saveBugsItemActionPerformed"/>
               </Events>
+              <AuxValues>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="saveBugsItem.setText(L10N.getLocalString(&quot;menu.savebugs_item&quot;, &quot;Save Bugs...&quot;));"/>
+              </AuxValues>
             </MenuItem>
             <MenuItem class="javax.swing.JSeparator" name="jSeparator6">
             </MenuItem>
@@ -144,6 +171,9 @@
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="exitItemActionPerformed"/>
               </Events>
+              <AuxValues>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="exitItem.setText(L10N.getLocalString(&quot;menu.exit_item&quot;, &quot;Exit&quot;));"/>
+              </AuxValues>
             </MenuItem>
           </SubComponents>
         </Menu>
@@ -158,6 +188,9 @@
           <Events>
             <EventHandler event="menuSelected" listener="javax.swing.event.MenuListener" parameters="javax.swing.event.MenuEvent" handler="viewMenuMenuSelected"/>
           </Events>
+          <AuxValues>
+            <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="viewMenu.setText(L10N.getLocalString(&quot;menu.view_menu&quot;, &quot;View&quot;));"/>
+          </AuxValues>
           <SubComponents>
             <MenuItem class="javax.swing.JCheckBoxMenuItem" name="viewConsoleItem">
               <Properties>
@@ -170,6 +203,9 @@
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="viewConsoleItemActionPerformed"/>
               </Events>
+              <AuxValues>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="viewConsoleItem.setText(L10N.getLocalString(&quot;menu.console_item&quot;, &quot;Console&quot;));"/>
+              </AuxValues>
             </MenuItem>
             <MenuItem class="javax.swing.JCheckBoxMenuItem" name="viewBugDetailsItem">
               <Properties>
@@ -183,6 +219,9 @@
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="viewBugDetailsItemActionPerformed"/>
               </Events>
+              <AuxValues>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="viewBugDetailsItem.setText(L10N.getLocalString(&quot;menu.bugdetails_item&quot;, &quot;Bug Details&quot;));"/>
+              </AuxValues>
             </MenuItem>
             <MenuItem class="javax.swing.JCheckBoxMenuItem" name="fullDescriptionsItem">
               <Properties>
@@ -196,6 +235,9 @@
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="fullDescriptionsItemActionPerformed"/>
               </Events>
+              <AuxValues>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="fullDescriptionsItem.setText(L10N.getLocalString(&quot;menu.fulldescriptions_item&quot;, &quot;Full Descriptions&quot;));"/>
+              </AuxValues>
             </MenuItem>
             <MenuItem class="javax.swing.JSeparator" name="jSeparator7">
             </MenuItem>
@@ -211,7 +253,8 @@
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="lowPriorityButtonActionPerformed"/>
               </Events>
               <AuxValues>
-                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="lowPriorityButton.setSelected(priorityThreshold == Detector.LOW_PRIORITY);"/>
+                <AuxValue name="JavaCodeGenerator_CreateCodePost" type="java.lang.String" value="lowPriorityButton.setText(L10N.getLocalString(&quot;menu.lowpriority_item&quot;, &quot;Low Priority&quot;));"/>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="lowPriorityButton.setText(L10N.getLocalString(&quot;menu.lowpriority_item&quot;, &quot;Low Priority&quot;));&#xa;lowPriorityButton.setSelected(priorityThreshold == Detector.LOW_PRIORITY);"/>
               </AuxValues>
             </MenuItem>
             <MenuItem class="javax.swing.JRadioButtonMenuItem" name="mediumPriorityButton">
@@ -226,7 +269,7 @@
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="mediumPriorityButtonActionPerformed"/>
               </Events>
               <AuxValues>
-                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="mediumPriorityButton.setSelected(priorityThreshold == Detector.NORMAL_PRIORITY);"/>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="mediumPriorityButton.setText(L10N.getLocalString(&quot;menu.mediumpriority_item&quot;, &quot;Medium Priority&quot;));&#xa;mediumPriorityButton.setSelected(priorityThreshold == Detector.NORMAL_PRIORITY);"/>
               </AuxValues>
             </MenuItem>
             <MenuItem class="javax.swing.JRadioButtonMenuItem" name="highPriorityButton">
@@ -241,7 +284,7 @@
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="highPriorityButtonActionPerformed"/>
               </Events>
               <AuxValues>
-                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="highPriorityButton.setSelected(priorityThreshold == Detector.HIGH_PRIORITY);"/>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="highPriorityButton.setText(L10N.getLocalString(&quot;menu.highpriority_item&quot;, &quot;High Priority&quot;));&#xa;highPriorityButton.setSelected(priorityThreshold == Detector.HIGH_PRIORITY);"/>
               </AuxValues>
             </MenuItem>
             <MenuItem class="javax.swing.JSeparator" name="jSeparator8">
@@ -257,6 +300,9 @@
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="viewProjectItemActionPerformed"/>
               </Events>
+              <AuxValues>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="viewProjectItem.setText(L10N.getLocalString(&quot;menu.viewprojectdetails_item&quot;, &quot;View Project Details&quot;));"/>
+              </AuxValues>
             </MenuItem>
             <MenuItem class="javax.swing.JRadioButtonMenuItem" name="viewBugsItem">
               <Properties>
@@ -269,6 +315,9 @@
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="viewBugsItemActionPerformed"/>
               </Events>
+              <AuxValues>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="viewBugsItem.setText(L10N.getLocalString(&quot;menu.viewbugs_item&quot;, &quot;View Bugs&quot;));"/>
+              </AuxValues>
             </MenuItem>
           </SubComponents>
         </Menu>
@@ -280,6 +329,9 @@
               <Font name="Dialog" size="12" style="0"/>
             </Property>
           </Properties>
+          <AuxValues>
+            <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="settingsMenu.setText(L10N.getLocalString(&quot;menu.settings_menu&quot;, &quot;Settings&quot;));"/>
+          </AuxValues>
           <SubComponents>
             <MenuItem class="javax.swing.JMenuItem" name="configureDetectorsItem">
               <Properties>
@@ -292,6 +344,9 @@
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="configureDetectorsItemActionPerformed"/>
               </Events>
+              <AuxValues>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="configureDetectorsItem.setText(L10N.getLocalString(&quot;menu.configure_item&quot;, &quot;Configure Detectors&quot;));"/>
+              </AuxValues>
             </MenuItem>
           </SubComponents>
         </Menu>
@@ -303,6 +358,9 @@
               <Font name="Dialog" size="12" style="0"/>
             </Property>
           </Properties>
+          <AuxValues>
+            <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="helpMenu.setText(L10N.getLocalString(&quot;menu.help_menu&quot;, &quot;Help&quot;));"/>
+          </AuxValues>
           <SubComponents>
             <MenuItem class="javax.swing.JMenuItem" name="aboutItem">
               <Properties>
@@ -315,6 +373,9 @@
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="aboutItemActionPerformed"/>
               </Events>
+              <AuxValues>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="aboutItem.setText(L10N.getLocalString(&quot;menu.about_item&quot;, &quot;About...&quot;));"/>
+              </AuxValues>
             </MenuItem>
           </SubComponents>
         </Menu>
