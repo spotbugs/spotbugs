@@ -164,6 +164,21 @@ public class I18N {
 		return bugCategoryDescriptionBundle.getString(category);
 	}
 
+	/**
+	 * Get a Collection containing all known bug category keys.
+	 * E.g., "CORRECTNESS", "MT_CORRECTNESS", "PERFORMANCE", etc.
+	 *
+	 * @return Collection of bug category keys.
+	 */
+	public Collection<String> getBugCategories() {
+		List<String> result = new LinkedList<String>();
+		for (Enumeration<String> e = bugCategoryDescriptionBundle.getKeys(); e.hasMoreElements(); ) {
+			String key = e.nextElement();
+			result.add(key);
+		}
+		return result;
+	}
+
 }
 
 // vim:ts=4
