@@ -241,7 +241,7 @@ public class TypeRepository {
 	 * @return the BasicType representing the basic type
 	 */
 	public BasicType basicTypeFromSignature(String signature) throws InvalidSignatureException {
-		if (signature.length() != 1 && "ZBCSILFDV".indexOf(signature) < 0)
+		if (signature.length() != 1 && "ZBCSIJFDV".indexOf(signature) < 0)
 			throw new InvalidSignatureException("Bad type signature: " + signature);
 		return (BasicType) signatureToTypeMap.get(signature);
 	}
