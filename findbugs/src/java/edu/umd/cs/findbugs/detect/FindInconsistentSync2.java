@@ -43,6 +43,45 @@ public class FindInconsistentSync2 implements Detector {
 	private static final boolean ADJUST_SUBCLASS_ACCESSES = !Boolean.getBoolean("fis.noAdjustSubclass");
 
 	/* ----------------------------------------------------------------------
+	 * Tuning parameters
+	 * ---------------------------------------------------------------------- */
+
+	/**
+	 * Minimum percent of field accesses that must be synchronized in
+	 * order to report a field as inconsistently synchronized.
+	 * This is meant to distinguish incidental synchronization from
+	 * intentional synchronization.
+	 */
+	private static final int MIN_SYNCHRONIZED_PERCENT =
+		Integer.getInteger("findbugs.fis.minSynchronizedPercent", 50).intValue();
+
+	/**
+	 * Bias that writes are given with respect to reads.
+	 * The idea is that this should be above 1.0, because unsynchronized
+	 * writes are more dangerous than unsynchronized reads.
+	 */
+	private static final double WRITE_BIAS =
+		Double.parseDouble(System.getProperty("findbugs.fis.writeBias", "2.0"));
+
+	/**
+	 * Factor which the biased number of unsynchronized accesses is multiplied by.
+	 * I.e., for factor <i>f</i>, if <i>nUnsync</i> is the biased number of unsynchronized
+	 * accesses, and <i>nSync</i> is the biased number of synchronized accesses,
+	 * and
+	 * <pre>
+	 *      <i>f</i>(<i>nUnsync</i>) &gt; <i>nSync</i>
+	 * </pre>
+	 * then we report a bug.  Default value is 2.0, which means that we
+	 * report a bug if more than 1/3 of accesses are unsynchronized.
+	 *
+	 * <p> Note that <code>MIN_SYNCHRONIZED_PERCENT</code> also influences
+	 * whether we report a bug: it specifies the minimum unbiased percentage
+	 * of synchronized accesses.
+	 */
+	private static final double UNSYNC_FACTOR =
+		Double.parseDouble(System.getProperty("findbugs.fis.unsyncFactor", "2.0"));
+
+	/* ----------------------------------------------------------------------
 	 * Helper classes
 	 * ---------------------------------------------------------------------- */
 
@@ -188,9 +227,9 @@ public class FindInconsistentSync2 implements Detector {
 			int numWriteLocked = stats.getNumAccesses(WRITE_LOCKED);
 
 			int locked =  numReadLocked + numWriteLocked;
-			int biasedLocked =  numReadLocked + 2 * numWriteLocked;
+			int biasedLocked =  numReadLocked + (int)(WRITE_BIAS * numWriteLocked);
 			int unlocked =  numReadUnlocked + numWriteUnlocked;
-			int biasedUnlocked =  numReadUnlocked + 2 * numWriteUnlocked;
+			int biasedUnlocked =  numReadUnlocked + (int)(WRITE_BIAS * numWriteUnlocked);
 			int writes =  numWriteLocked + numWriteUnlocked;
 
 			if (locked == 0)
@@ -199,7 +238,7 @@ public class FindInconsistentSync2 implements Detector {
 			if (unlocked == 0) 
 				continue;
 
-			if (numReadUnlocked > 0 && 2 * biasedUnlocked > biasedLocked)
+			if (numReadUnlocked > 0 && ((int)(UNSYNC_FACTOR * biasedUnlocked)) > biasedLocked)
 				continue;
 
 			// NOTE: we ignore access to public, volatile, and final fields
@@ -212,7 +251,7 @@ public class FindInconsistentSync2 implements Detector {
 				continue;
 
 			int freq = (100 * locked) / (locked + unlocked);
-			if (freq < 50) continue;
+			if (freq < MIN_SYNCHRONIZED_PERCENT) continue;
 
 			// At this point, we report the field as being inconsistently synchronized
 			int priority = freq > 75 ? NORMAL_PRIORITY : LOW_PRIORITY;
