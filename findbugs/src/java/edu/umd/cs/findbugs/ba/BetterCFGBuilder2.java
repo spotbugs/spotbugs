@@ -39,6 +39,9 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 	private static final boolean NO_STATIC_FIELD_EXCEPTIONS =
 		!Boolean.getBoolean("cfgbuilder.staticFieldExceptions");
 
+	private static final boolean NO_LOAD_CONSTANT_EXCEPTIONS =
+		!Boolean.getBoolean("cfgbuilder.ldcExceptions");
+
 	// TODO: don't forget to change BasicBlock so ATHROW is considered to have a null check
 
 	/* ----------------------------------------------------------------------
@@ -596,6 +599,11 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 		// thrown by static field accesses.
 		if (NO_STATIC_FIELD_EXCEPTIONS &&
 			(opcode == Constants.GETSTATIC || opcode == Constants.PUTSTATIC))
+			return false;
+
+		// Exceptions from LDC instructions seem a bit far fetched as well.
+		if (NO_LOAD_CONSTANT_EXCEPTIONS &&
+			(opcode == Constants.LDC || opcode == Constants.LDC_W || opcode == Constants.LDC2_W))
 			return false;
 
 		return true;
