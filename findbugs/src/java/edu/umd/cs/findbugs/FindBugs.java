@@ -94,6 +94,14 @@ public class FindBugs implements Constants2
 	namesByFactory.put(factory, detectorName);
   }
 
+  /**
+   * Return an Iterator over the DetectorFactory objects for all
+   * registered Detectors.
+   */
+  public static Iterator<DetectorFactory> factoryIterator() {
+	return factories.iterator();
+  }
+
   static {
 	// Load all detector plugins.
 
