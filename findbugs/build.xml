@@ -252,6 +252,10 @@
         <fileset dir="${findbugs.src.dir}" includes="**/*.png"/>
         <fileset dir="${findbugs.src.dir}" includes="**/*.html"/>
       </copy>
+      <copy todir="${class.dir}/edu/umd/cs/findbugs/gui/bundle">
+        <fileset dir="${findbugs.src.dir}/edu/umd/cs/findbugs/gui/bundle" includes="**/*.properties"/>
+      </copy>
+      	
 
       <!--
         When building the Jar file for the GUI, we just need the contents
@@ -263,6 +267,7 @@
            manifest="${findbugs.dir}/etc/MANIFEST-findbugsGUI.MF">
         <fileset dir="${class.dir}" includes="edu/umd/cs/findbugs/gui/*" />
         <fileset dir="${class.dir}" includes="edu/umd/cs/findbugs/gui/help/*" />
+        <fileset dir="${class.dir}" includes="edu/umd/cs/findbugs/gui/bundle/*" />
       </jar>
     </target>
 
