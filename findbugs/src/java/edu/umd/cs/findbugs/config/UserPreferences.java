@@ -158,7 +158,7 @@ public class UserPreferences {
 			prefStream = new BufferedOutputStream(new FileOutputStream(prefFile));
 			props.store(prefStream, "FindBugs User Preferences");
 			prefStream.flush();
-		} catch (Exception e) {
+		} catch (IOException e) {
 			//Report? -- probably not
 		} finally {
 			try {
