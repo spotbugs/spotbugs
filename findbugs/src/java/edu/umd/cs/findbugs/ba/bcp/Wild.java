@@ -30,7 +30,7 @@ import edu.umd.cs.daveho.ba.*;
  * @author David Hovemeyer
  */
 public class Wild extends PatternElement {
-	private final int min, max;
+	private int min, max;
 
 	/**
 	 * Default constructor.
@@ -56,6 +56,16 @@ public class Wild extends PatternElement {
 	 * @param max maximum number of times the wildcard may match
 	 */
 	public Wild(int min, int max) {
+		this.min = min;
+		this.max = max;
+	}
+
+	/**
+	 * Set min and max values.
+	 * @param min minimum number of times the wildcard must match
+	 * @param max maximum number of times the wildcard may match
+	 */
+	public void setMinAndMax(int min, int max) {
 		this.min = min;
 		this.max = max;
 	}
