@@ -19,8 +19,10 @@
 
 package edu.umd.cs.daveho.ba;
 
-import java.util.*;
 import java.io.*;
+import java.util.*;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 /**
  * Class to open input streams on source files.
@@ -78,6 +80,25 @@ public class SourceFinder {
 		}
 	}
 
+	/**
+	 * A zip or jar archive containing source files.
+	 */
+	private static class ZipSourceRepository implements SourceRepository {
+		private ZipFile zipFile;
+
+		public ZipSourceRepository(ZipFile zipFile) {
+			this.zipFile = zipFile;
+		}
+
+		public boolean contains(String fileName) {
+			return zipFile.getEntry(fileName) != null;
+		}
+
+		public SourceFileDataSource getDataSource(String fileName) {
+			return new ZipSourceFileDataSource(zipFile, fileName);
+		}
+	}
+
 	/* ----------------------------------------------------------------------
 	 * Fields
 	 * ---------------------------------------------------------------------- */
@@ -102,14 +123,19 @@ public class SourceFinder {
 	 * Set the list of source directories.
 	 */
 	public void setSourceBaseList(List<String> sourceBaseList) {
-		//this.sourceBaseList = sourceBaseList;
 		Iterator<String> i = sourceBaseList.iterator();
 		while (i.hasNext()) {
 			String repos = i.next();
 			if (repos.endsWith(".zip") || repos.endsWith(".jar")) {
-				// FIXME
-				throw new UnsupportedOperationException();
+				// Zip or jar archive
+				try {
+					ZipFile zipFile = new ZipFile(repos);
+					repositoryList.add(new ZipSourceRepository(zipFile));
+				} catch (IOException e) {
+					// Ignored - we won't use this archive
+				}
 			} else {
+				// Directory
 				repositoryList.add(new DirectorySourceRepository(repos));
 			}
 		}
