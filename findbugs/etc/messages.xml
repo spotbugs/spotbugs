@@ -6,6 +6,17 @@
   **********************************************************************
    -->
 
+  <Detector class="edu.umd.cs.findbugs.detect.InheritanceUnsafeGetResource">
+    <Details>
+<![CDATA[
+<p> Looks for uses of this.getClass().getResource(...), which can give
+unexpected results if the class is extended by a class in
+another package.
+
+]]>
+    </Details>
+  </Detector>
+
   <Detector class="edu.umd.cs.findbugs.detect.TestingGround">
     <Details>
 <![CDATA[
@@ -469,6 +480,20 @@ It is a fast detector.
   **********************************************************************
    -->
 
+
+  <BugPattern type="UI_INHERITANCE_UNSAFE_GETRESOURCE">
+    <ShortDescription>Usage of GetResource may be unsafe if class is extended</ShortDescription>
+    <LongDescription>Usage of GetResource in {1} may be unsafe if class is extended</LongDescription>
+    <Details>
+<![CDATA[
+<p>Calling <tt>this.getClass().getResource(...)</tt> could give
+results other than expected if this class is extended by a class in 
+another package.
+]]>
+    </Details>
+  </BugPattern>
+
+
   <BugPattern type="TESTING">
     <ShortDescription>Testing</ShortDescription>
     <LongDescription>Test warning generated in {1}</LongDescription>
@@ -479,6 +504,8 @@ bug detectors.
 ]]>
     </Details>
   </BugPattern>
+
+
 
   <BugPattern type="IMSE_DONT_CATCH_IMSE">
     <ShortDescription>Dubious catching of IllegalMonitorStateException</ShortDescription>
@@ -558,6 +585,18 @@ to use Object.clone(), which always returns an object of the correct type.
 ]]>
     </Details>
   </BugPattern>
+  <BugPattern type="DM_EXIT">
+    <ShortDescription>Method invokes System.exit(...)</ShortDescription>
+    <LongDescription>{1} invokes System.exit(...), which shuts down the entire virtual machine</LongDescription>
+    <Details>
+<![CDATA[
+  <p> Invoking System.exit shuts down the entire Java virtual machine. This
+	should only been done when it is appropriate. Such calls make it 
+	hard or impossible for your code to be invoked by other code.
+	Consider throwing a RuntimeException instead.
+]]>
+    </Details>
+  </BugPattern>
   <BugPattern type="DM_STRING_CTOR">
     <ShortDescription>Method invokes dubious new String(String) constructor; just use the argument</ShortDescription>
     <LongDescription>{1} invokes dubious new String(String) constructor; just use the argument</LongDescription>
@@ -570,6 +609,8 @@ to use Object.clone(), which always returns an object of the correct type.
 ]]>
     </Details>
   </BugPattern>
+
+
   <BugPattern type="DM_STRING_VOID_CTOR">
     <ShortDescription>Method invokes dubious new String() constructor; just use ""</ShortDescription>
     <LongDescription>{1} invokes dubious new String() constructor; just use ""</LongDescription>
@@ -2040,6 +2081,7 @@ directly. This avoids the need to create a second array
   **********************************************************************
    -->
 
+  <BugCode abbrev="UI" >Unsafe inheritance</BugCode>
   <BugCode abbrev="FL" >Use of floating point precision</BugCode>
   <BugCode abbrev="TEST" >Testing prototype and incomplete bug pattern</BugCode>
   <BugCode abbrev="IMSE" >Dubious catching of IllegalMonitorStateException</BugCode>
