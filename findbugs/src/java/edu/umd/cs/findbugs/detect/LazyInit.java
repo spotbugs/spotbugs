@@ -31,6 +31,7 @@ import edu.umd.cs.findbugs.ba.Hierarchy;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.LockDataflow;
 import edu.umd.cs.findbugs.ba.LockSet;
+import edu.umd.cs.findbugs.ba.PostDominatorsAnalysis;
 import edu.umd.cs.findbugs.ba.XField;
 
 import edu.umd.cs.findbugs.ba.bcp.Binding;
@@ -126,6 +127,33 @@ public class LazyInit extends ByteCodePatternDetector {
 			if (!xfield.isStatic())
 				return;
 
+			// Get locations matching the beginning of the object creation,
+			// and the final field store.
+			PatternElementMatch createBegin = match.getFirstLabeledMatch("createObject");
+			PatternElementMatch store = match.getFirstLabeledMatch("end");
+
+			// Get all blocks
+			//
+			//   (1) dominated by the wildcard instruction matching
+			//       the beginning of the instructions creating the object, and
+			//   (2) postdominated by the field store
+			//
+			// Exception edges are not considered in computing dominators/postdominators.
+			// We will consider this to be all of the code that creates
+			// the object.
+
+			DominatorsAnalysis domAnalysis =
+				classContext.getNonExceptionDominatorsAnalysis(method);
+			PostDominatorsAnalysis postDomAnalysis =
+				classContext.getNonExceptionPostDominatorsAnalysis(method);
+			BitSet extent = domAnalysis.getAllDominatedBy(createBegin.getBasicBlock());
+			extent.and(postDomAnalysis.getAllDominatedBy(store.getBasicBlock()));
+			//System.out.println("Extent: " + extent);
+
+			// TODO: check all instructions in the extent
+			// to ensure the object creation is really there
+
+/*
 			// Examine the lock sets for all matched instructions.
 			// If the intersection is nonempty, then there was at
 			// least one lock held for the entire sequence.
@@ -172,6 +200,7 @@ public class LazyInit extends ByteCodePatternDetector {
 				if (!storeDominators.get(createBegin.getBasicBlock().getId()))
 					return;
 			}
+*/
 
 			// Compute the priority:
 			//  - ignore lazy initialization of instance fields
