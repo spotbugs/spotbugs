@@ -69,7 +69,9 @@ public class LazyInit extends ByteCodePatternDetector {
 	private BugReporter bugReporter;
 
 	/** Number of wildcard instructions for creating the object. */
-	private static final int CREATE_OBJ_WILD = 150;
+	private static final int CREATE_OBJ_WILD = 80;
+
+	private static final boolean CHECK_PROPER_OBJECT_CREATION = Boolean.getBoolean("lazyinit.checkproper");
 
 	/** The pattern to look for. */
 	private static ByteCodePattern pattern = new ByteCodePattern();
@@ -162,15 +164,17 @@ public class LazyInit extends ByteCodePatternDetector {
 			if (!(sawNEW || sawINVOKE))
 				return;
 
-			// The first instruction in the "create object" sequence
-			// must dominate the Store of the created object (disregarding
-			// exception edges).
-			DominatorsAnalysis dominators = classContext.getNonExceptionDominatorsAnalysis(method);
-			PatternElementMatch createBegin = match.getFirstLabeledMatch("createObject");
-			PatternElementMatch store = match.getFirstLabeledMatch("end");
-			BitSet storeDominators = dominators.getStartFact(store.getBasicBlock());
-			if (!storeDominators.get(createBegin.getBasicBlock().getId()))
-				return;
+			if (CHECK_PROPER_OBJECT_CREATION) {
+				// The first instruction in the "create object" sequence
+				// must dominate the Store of the created object (disregarding
+				// exception edges).
+				DominatorsAnalysis dominators = classContext.getNonExceptionDominatorsAnalysis(method);
+				PatternElementMatch createBegin = match.getFirstLabeledMatch("createObject");
+				PatternElementMatch store = match.getFirstLabeledMatch("end");
+				BitSet storeDominators = dominators.getStartFact(store.getBasicBlock());
+				if (!storeDominators.get(createBegin.getBasicBlock().getId()))
+					return;
+			}
 
 			// Compute the priority:
 			//  - ignore lazy initialization of instance fields
