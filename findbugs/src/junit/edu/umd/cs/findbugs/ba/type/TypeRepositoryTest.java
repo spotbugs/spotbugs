@@ -1,5 +1,7 @@
 package edu.umd.cs.findbugs.ba.type;
 
+import edu.umd.cs.findbugs.ba.ExtendedTypes;
+
 import junit.framework.Assert;
 import junit.framework.TestCase;
 
@@ -31,6 +33,12 @@ public class TypeRepositoryTest extends TestCase {
 	BasicType floatType;
 	BasicType doubleType;
 	BasicType voidType;
+
+	Type topType;
+	Type bottomType;
+	Type nullType;
+	Type longExtraType;
+	Type doubleExtraType;
 
 	ClassType javaLangObjectType;
 	ClassType javaIoSerializableType;
@@ -108,6 +116,13 @@ public class TypeRepositoryTest extends TestCase {
 		floatType = repos.basicTypeFromTypeCode(Constants.T_FLOAT);
 		doubleType = repos.basicTypeFromTypeCode(Constants.T_DOUBLE);
 		voidType = repos.basicTypeFromTypeCode(Constants.T_VOID);
+
+		// Special types
+		topType = repos.getTopType();
+		bottomType = repos.getBottomType();
+		nullType = repos.getNullType();
+		longExtraType = repos.getLongExtraType();
+		doubleExtraType = repos.getDoubleExtraType();
 
 		// Fake hierarchy classes
 		myClassType = repos.classTypeFromSlashedClassName("com/foobar/MyClass");
@@ -276,6 +291,14 @@ public class TypeRepositoryTest extends TestCase {
 		checkFirstCommonSuperclass(myClassArrayType, myClassArray2Type, javaLangObjectArray1Type);
 
 		checkFirstCommonSuperclass(myClassArrayType, booleanArray2Type, javaLangObjectArray1Type);
+	}
+
+	public void testSpecialTypes() {
+		Assert.assertTrue(topType.getTypeCode() == ExtendedTypes.T_TOP);
+		Assert.assertTrue(bottomType.getTypeCode() == ExtendedTypes.T_BOTTOM);
+		Assert.assertTrue(nullType.getTypeCode() == ExtendedTypes.T_NULL);
+		Assert.assertTrue(longExtraType.getTypeCode() == ExtendedTypes.T_LONG_EXTRA);
+		Assert.assertTrue(doubleExtraType.getTypeCode() == ExtendedTypes.T_DOUBLE_EXTRA);
 	}
 
 }
