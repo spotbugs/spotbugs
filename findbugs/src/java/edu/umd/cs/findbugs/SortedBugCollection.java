@@ -21,6 +21,14 @@ package edu.umd.cs.findbugs;
 
 import java.util.*;
 
+/**
+ * An implementation of {@link BugCollection} that keeps the BugInstances
+ * sorted by class (using the native comparison ordering of BugInstance's
+ * compareTo() method as a tie-breaker).
+ *
+ * @see BugInstance
+ * @author David Hovemeyer
+ */
 public class SortedBugCollection extends BugCollection {
 	private static class BugInstanceComparator implements Comparator<BugInstance> {
 		public int compare(BugInstance lhs, BugInstance rhs) {
