@@ -20,10 +20,17 @@
 package edu.umd.cs.findbugs.ba;
 
 /**
- * Types of control-flow edges
+ * Constants defining the type of control flow edges,
+ * as well as flags defining additional information
+ * about the edges.
+ *
  * @see Edge
  */
 public interface EdgeTypes {
+    /* ----------------------------------------------------------------------
+     * Edge types
+     * ---------------------------------------------------------------------- */
+
     /** Unknown edge type. */
     public static final int UNKNOWN_EDGE = -1;
     /** Edge type for fall-through to next instruction. */
@@ -57,4 +64,31 @@ public interface EdgeTypes {
     public static final int BACKEDGE_SOURCE_EDGE = 12;
     /** System.exit() edge. */
     public static final int EXIT_EDGE = 13;
+
+    /* ----------------------------------------------------------------------
+     * Edge flags
+     * ---------------------------------------------------------------------- */
+
+    /**
+     * Flag indicating that an exception edge represents only
+     * checked exceptions.
+     */
+    public static final int CHECKED_EXCEPTIONS_ONLY_FLAG = 1;
+
+    /**
+     * Flag indicating that an exception edge represents only
+     * <em>explicit</em> unchecked exceptions.  By explicit, we
+     * mean that the unchecked exception is either thrown directly
+     * or explicitly declared to be thrown from a called method.
+     */
+    public static final int EXPLICIT_CHECKED_EXCEPTIONS_ONLY_FLAG = 2;
+
+    /**
+     * Flag indicating that an exception edge represents only
+     * <em>implicit</em> unchecked exceptions.  Such exceptions
+     * should usually be ignored from the standpoint of finding bugs,
+     * since they represent abnormal program behavior and should
+     * never occur at runtime.
+     */
+    public static final int IMPLICIT_CHECKED_EXCEPTIONS_ONLY_FLAG = 4;
 }

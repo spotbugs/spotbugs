@@ -36,6 +36,7 @@ public class Edge extends AbstractEdge<Edge, BasicBlock> implements EdgeTypes, D
 	 * ---------------------------------------------------------------------- */
 
 	private int type;
+	private int flags;
 
 	/* ----------------------------------------------------------------------
 	 * Public methods
@@ -66,6 +67,20 @@ public class Edge extends AbstractEdge<Edge, BasicBlock> implements EdgeTypes, D
 	 */
 	public void setType(int type) {
 		this.type = type;
+	}
+
+	/**
+	 * Get the edge flags.
+	 */
+	public int getFlags() {
+		return flags;
+	}
+
+	/**
+	 * Set the edge flags.
+	 */
+	public void setFlags(int flags) {
+		this.flags = flags;
 	}
 
 	/**
