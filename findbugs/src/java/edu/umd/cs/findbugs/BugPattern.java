@@ -33,6 +33,7 @@ public class BugPattern implements Comparable {
 	private String type;
 	private String abbrev;
 	private String category;
+	private boolean experimental;
 	private String shortDescription;
 	private String longDescription;
 	private String detailText;
@@ -43,16 +44,18 @@ public class BugPattern implements Comparable {
 	 * @param type the type (species) of BugInstance
 	 * @param abbrev the abbreviation or "bug code"; see {@link BugCode}
 	 * @param category the category
+	 * @param experimental true if the bug pattern is experimental
 	 * @param shortDescription short one-line description of the bug species
 	 * @param longDescription longer one-line description; may contain placeholders
 	 *   for use by {@link FindBugsMessageFormat} to format BugAnnotations
 	 * @param detailText HTML text containing a full description of the bug species
 	 */
-	public BugPattern(String type, String abbrev, String category, String shortDescription,
-		String longDescription, String detailText) {
+	public BugPattern(String type, String abbrev, String category, boolean experimental,
+		String shortDescription, String longDescription, String detailText) {
 		this.type = type;
 		this.abbrev = abbrev;
 		this.category = category;
+		this.experimental = experimental;
 		this.shortDescription = shortDescription;
 		this.longDescription = longDescription;
 		this.detailText = detailText;
@@ -66,6 +69,9 @@ public class BugPattern implements Comparable {
 
 	/** Get the category. */
 	public String getCategory() { return category; }
+
+	/** Is the bug pattern experimental? */
+	public boolean isExperimental() { return experimental; }
 
 	/** Get the short description. */
 	public String getShortDescription() { return shortDescription; }

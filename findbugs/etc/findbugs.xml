@@ -115,5 +115,5 @@
   <BugPattern abbrev="UCF" type="UCF_USELESS_CONTROL_FLOW" category="CORRECTNESS" />
   <BugPattern abbrev="UL" type="UL_UNRELEASED_LOCK" category="MT_CORRECTNESS" />
   <BugPattern abbrev="UL" type="UL_UNRELEASED_LOCK_EXCEPTION_PATH" category="MT_CORRECTNESS" />
-  <BugPattern abbrev="RC" type="RC_REF_COMPARISON" category="CORRECTNESS" />
+  <BugPattern abbrev="RC" type="RC_REF_COMPARISON" category="CORRECTNESS" experimental="true" />
 </FindbugsPlugin>

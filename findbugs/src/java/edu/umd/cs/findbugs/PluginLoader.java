@@ -177,6 +177,7 @@ public class PluginLoader extends URLClassLoader {
 			String type = bugPatternNode.valueOf("@type");
 			String abbrev = bugPatternNode.valueOf("@abbrev");
 			String category = bugPatternNode.valueOf("@category");
+			String experimental = bugPatternNode.valueOf("@experimental");
 
 			// Find the matching element in messages.xml
 			String query = "/MessageCollection/BugPattern[@type='" + type + "']";
@@ -187,7 +188,9 @@ public class PluginLoader extends URLClassLoader {
 			String longDesc = getChildText(messageNode, "LongDescription");
 			String detailText = getChildText(messageNode, "Details");
 
-			BugPattern bugPattern = new BugPattern(type, abbrev, category, shortDesc, longDesc, detailText);
+			BugPattern bugPattern = new BugPattern(type, abbrev, category,
+				Boolean.valueOf(experimental).booleanValue(),
+				shortDesc, longDesc, detailText);
 			bugPatternList.add(bugPattern);
 		}
 

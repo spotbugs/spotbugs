@@ -167,7 +167,11 @@ public class FindBugsFrame extends javax.swing.JFrame {
             } else {
                 result = bugInstance.toString();
             }
-            return result;
+	    boolean experimental = bugInstance.isExperimental();
+	    if (experimental)
+		return "EXP: " + result;
+	    else
+        	return result;
         }
     }
     

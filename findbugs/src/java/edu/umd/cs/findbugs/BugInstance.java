@@ -77,7 +77,7 @@ public class BugInstance implements Comparable, XMLConvertible {
 	public BugInstance(String type, int priority) {
 		this.type = type;
 		this.priority = priority;
-		annotationList = new ArrayList<BugAnnotation>();
+		annotationList = new ArrayList<BugAnnotation>(4);
 		primaryClassAnnotation = null;
 		cachedHashCode = INVALID_HASH_CODE;
 		annotationText = "";
@@ -95,6 +95,12 @@ public class BugInstance implements Comparable, XMLConvertible {
 	/** Get the bug priority. */
 	public int getPriority() {
 		return priority;
+	}
+
+	/** Is this bug instance the result of an experimental detector? */
+	public boolean isExperimental() {
+		BugPattern pattern = I18N.instance().lookupBugPattern(type);
+		return (pattern != null) ? pattern.isExperimental() : false;
 	}
 
 	/**
