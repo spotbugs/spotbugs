@@ -27,6 +27,9 @@ package edu.umd.cs.findbugs;
 
 import java.util.*;
 import java.io.*;
+import java.util.jar.Attributes;
+import java.util.jar.JarFile;
+import java.util.jar.Manifest;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 
@@ -182,14 +185,14 @@ public class Project {
 	 * Get Jar files as an array of Strings.
 	 */
 	public String[] getJarFileArray() {
-		return (String[]) jarList.toArray(new String[0]);
+		return (String[]) jarList.toArray(new String[jarList.size()]);
 	}
 	
 	/**
 	 * Get source dirs as an array of Strings.
 	 */
 	public String[] getSourceDirArray() {
-		return (String[]) srcDirList.toArray(new String[0]);
+		return (String[]) srcDirList.toArray(new String[srcDirList.size()]);
 	}
 	
 	/**
@@ -243,6 +246,124 @@ public class Project {
 		return auxClasspathEntryList;
 	}
 
+	/**
+	 * Return the list of implicit classpath entries.  The implicit
+	 * classpath is computed from the closure of the set of jar files
+	 * that are referenced by the <code>"Class-Path"</code> attribute
+	 * of the manifest of the any jar file that is part of this project
+	 * or by the <code>"Class-Path"</code> attribute of any directly or
+	 * indirectly referenced jar.  The referenced jar files that exist
+	 * are the list of implicit classpath entries.
+	 */
+	public List getImplicitClasspathEntryList() {
+		final HashSet<File> processedJars = new HashSet<File>();
+		final LinkedList<String> implicitClasspath = new LinkedList<String>();
+
+		for (Iterator<String> i = jarList.iterator(); i.hasNext(); ) {
+			final File jarFile = new File(i.next());
+
+			if (jarFile.isFile() && !processedJars.contains(jarFile)) {
+				// Add the name of the jar to the list of processed jars to
+				// avoid recursion.
+				processedJars.add(jarFile);
+
+				processComponentJar(jarFile, processedJars, implicitClasspath);
+			}
+		}
+
+		return implicitClasspath;
+	}
+
+	/**
+	 * Get the parent directory of the specified file.  The method attempts
+	 * to determine the canonical name of the specified path and then
+	 * returns the parent directory.  If unable to determine the canonical
+	 * name of the path, then the absolute form of the path is used.  If
+	 * no parent directory can be determined from the specified path, then
+	 * the current directory of the JVM, as specified in the system property
+	 * <code>"user.dir"</code>, is used.
+	 *
+	 * @param file the file whose parent directory is to be determined
+	 *
+	 * @return the file for the parent directory
+	 */ 
+	private static File getParentFile(File file) {
+		try {
+			file = file.getCanonicalFile();
+		} catch (IOException unused) {
+			file = file.getAbsoluteFile();
+		}
+
+		File parent = file.getParentFile();
+
+		if (parent == null) {
+			parent = new File(System.getProperty("user.dir", "."));
+		}
+
+		return parent;
+	}
+
+	/**
+	 * Get the <code>Class-Path</code> attribute for the specified jar file.
+	 *
+	 * @param jarFile the file to process
+	 *
+	 * @return the classpath for the specified jar file, may be
+	 * <code>null</code>
+	 */ 
+	private static String getClassPath(final File jarFile) {
+		String result = null;
+
+		if (jarFile.isFile()) {
+			try {
+				final JarFile jar = new JarFile(jarFile);
+				final Manifest manifest = jar.getManifest();
+				final Attributes mainAttrs = manifest.getMainAttributes();
+
+				result = mainAttrs.getValue("Class-Path");
+			} catch (IOException ioExc) {
+				System.err.println("Unable to access Jar file: " + jarFile +
+								   ", exc = " + ioExc);
+			}
+		} else {
+			System.err.println("Missing Jar file: " + jarFile);
+		}
+
+		return result;
+	}
+
+	/**
+	 * Process the specified jar file and add any new jar files on which it
+	 * depends to the list of implicit classpath entries.
+	 */
+	private void processComponentJar(final File jar, final HashSet<File> processedJars, final LinkedList<String> implicitClasspath) {
+		String jarClassPath = getClassPath(jar);
+
+		if (jarClassPath != null) {
+			final File baseDir = getParentFile(jar);
+
+			jarClassPath = jarClassPath.trim();
+			if (jarClassPath.length() > 0) {
+				final String[] jarList = jarClassPath.split("\\s+");
+
+				for (int i = 0; i < jarList.length; ++i) {
+					final String curJarName = jarList[i];
+					final File curJar = new File(baseDir, curJarName);
+
+					if (curJar.isFile() && !processedJars.contains(curJar)) {
+						final String curJarPath = curJar.toString();
+
+						processedJars.add(curJar);
+						if (!implicitClasspath.contains(curJarPath)) {
+							implicitClasspath.add(curJarPath);
+						}
+						processComponentJar(curJar, processedJars, implicitClasspath);
+					}
+				}
+			}
+		}
+	}
+
 	private static final String JAR_FILES_KEY = "[Jar files]";
 	private static final String SRC_DIRS_KEY = "[Source dirs]";
 	private static final String AUX_CLASSPATH_ENTRIES_KEY = "[Aux classpath entries]";
@@ -289,18 +410,21 @@ public class Project {
 		line = getLine(reader);
 		if (line == null || !line.equals(JAR_FILES_KEY)) throw new IOException("Bad format: missing jar files key");
 		while ((line = getLine(reader)) != null && !line.equals(SRC_DIRS_KEY)) {
-			jarList.add(line);
+			addJar(line);
 		}
 		if (line == null) throw new IOException("Bad format: missing source dirs key");
 		while ((line = getLine(reader)) != null && !line.equals(AUX_CLASSPATH_ENTRIES_KEY)) {
-			srcDirList.add(line);
+			addSourceDir(line);
 		}
 		if (line != null) {
 			// The list of aux classpath entries is optional
 			while ((line = getLine(reader)) != null) {
-				auxClasspathEntryList.add(line);
+				addAuxClasspathEntry(line);
 			}
 		}
+
+		// Clear the modification flag set by the various "add" methods.
+		isModified = false;
 		
 		reader.close();
 	}
