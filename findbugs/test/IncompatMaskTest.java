@@ -41,5 +41,15 @@ public class IncompatMaskTest {
         if ((i & 0L )  == 0) return;  /* always   equal */
         if ((i & 0L )  != 0) return;  /* always   equal */
         }
+        
+    public static void moreBars(short i) {
+    	if ((i | 0xff00) == 0xFFFF0000) {
+			System.out.println();
+		}
+
+		if ((i | 0xff00) == 0x00FF) {
+			System.out.println();
+		}
+    }
 
 }

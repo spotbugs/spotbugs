@@ -121,6 +121,11 @@ public class IncompatMask extends BytecodeScanningDetector implements Constants2
 		case LDC2_W:
 			return;  /* will pick up value via sawLong */
 
+        case SIPUSH:
+		    return;  /* will pick up value via sawInt */
+        case LDC:
+		    return;  /* will pick up value via sawInt */
+
 		case IAND:
 		case LAND:
 			bitop = IAND;
