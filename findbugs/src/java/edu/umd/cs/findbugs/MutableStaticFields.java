@@ -163,8 +163,8 @@ public class MutableStaticFields extends BytecodeScanningDetector implements   C
 	*/
 	String bugType;
 	if (isFinal && !isHashtable && !isArray) {
-		// System.out.println( header + " is a safe zero length array");
-		return;
+		// System.out.println( name +" is a safe zero length array");
+		continue;
 	} else if (movedOutofInterface && couldBeFinal) {
 		bugType = "MS_FINAL_OOI_PKGPROTECT";
 	} else if (couldBePackage && couldBeFinal && (isHashtable || isArray)) 
@@ -185,7 +185,7 @@ public class MutableStaticFields extends BytecodeScanningDetector implements   C
 
 	bugReporter.reportBug(new BugInstance(bugType, NORMAL_PRIORITY)
 		.addClass(className)
-		.addField(className, f.name, f.signature, true));
+		.addField(className, fieldName, fieldSig, true));
 
 	}
 	}
