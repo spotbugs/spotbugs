@@ -30,7 +30,6 @@ import org.apache.bcel.Constants;
 public class ClassType extends ObjectType {
 
 	private String className;
-	private int state;
 	private boolean isInterface;
 	private ClassNotFoundException resolverFailure;
 
@@ -48,24 +47,17 @@ public class ClassType extends ObjectType {
 
 	/**
 	 * Mark the type as an interface.
+	 * The user is responsible for ensuring that
+	 * a class type is not marked as both a class and and
+	 * interface, and that the type is marked as one
+	 * or the other before isInterface() is called.
 	 */
-	public void setIsInterface() throws UnknownTypeException {
-		if (getState() == KNOWN && !isInterface())
-			throw new UnknownTypeException("Type " + getSignature() +
+	public void setIsInterface(boolean isInterface) {
+		if (getState() == KNOWN && isInterface() != isInterface)
+			throw new IllegalStateException("Type " + getClassName() +
 				" marked as both class and interface");
 		setState(KNOWN);
-		isInterface = true;
-	}
-
-	/**
-	 * Mark the type as a class.
-	 */
-	public void setIsClass() throws UnknownTypeException {
-		if (getState() == KNOWN && isInterface())
-			throw new UnknownTypeException("Type " + getSignature() +
-				" marked as both class and interface");
-		setState(KNOWN);
-		isInterface = false;
+		this.isInterface = isInterface;
 	}
 
 	/**
@@ -109,9 +101,9 @@ public class ClassType extends ObjectType {
 		return getSignature().hashCode();
 	}
 
-	public boolean isInterface() throws UnknownTypeException {
-		if (state != KNOWN)
-			throw new UnknownTypeException("Don't know whether type " + getClassName() +
+	public boolean isInterface() {
+		if (getState() != KNOWN)
+			throw new IllegalStateException("Don't know whether type " + getClassName() +
 				" is a class or interface");
 
 		return isInterface;

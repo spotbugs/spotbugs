@@ -45,7 +45,6 @@ public abstract class ObjectType
 
 	private String typeSignature;
 	private int state;
-	//private boolean supertypesKnown;
 
 	protected ObjectType(String typeSignature) {
 		this.typeSignature = typeSignature;
@@ -103,9 +102,13 @@ public abstract class ObjectType
 	}
 
 	/**
-	 * Is this type an interface type (as opposed to a class or array type)?
+	 * Determine if this type is an interface type
+	 * (as opposed to a class or array type).
+	 * Note that for ClassTypes, the type must have been explicitly
+	 * marked as a class or interface before this method is called.
+	 * Otherwise, an IllegalStateException will be thrown.
 	 */
-	public abstract boolean isInterface() throws UnknownTypeException;
+	public abstract boolean isInterface();
 
 	/**
 	 * Is this type an array type?
