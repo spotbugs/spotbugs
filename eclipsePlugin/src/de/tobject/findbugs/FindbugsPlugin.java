@@ -21,8 +21,7 @@
 package de.tobject.findbugs;
 
 import java.io.IOException;
-import java.io.PipedInputStream;
-import java.io.PipedOutputStream;
+import java.io.OutputStream;
 import java.net.URL;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
@@ -30,7 +29,6 @@ import java.util.ResourceBundle;
 import org.dom4j.DocumentException;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
@@ -50,6 +48,8 @@ import de.tobject.findbugs.builder.AbstractFilesCollector;
 import de.tobject.findbugs.builder.FilesCollectorFactory;
 import de.tobject.findbugs.builder.FindBugsBuilder;
 import de.tobject.findbugs.builder.FindBugsWorker;
+import de.tobject.findbugs.io.FileOutput;
+import de.tobject.findbugs.io.IO;
 import de.tobject.findbugs.nature.FindBugsNature;
 import de.tobject.findbugs.reporter.Reporter;
 import de.tobject.findbugs.view.DetailsView;
@@ -478,45 +478,27 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 		// Save to file
 		IFile bugCollectionFile = FindbugsPlugin.getBugCollectionFile(project);
 		
-		PipedInputStream pin = new PipedInputStream();
-		final PipedOutputStream pout = new PipedOutputStream();
-		
-		// Create a thread to write bug collection to output stream
-		Thread worker = new Thread() {
-			public void run() {
-				try {
-					bugCollection.writeXML(pout, findbugsProject);
-				} catch (IOException e) {
-					FindbugsPlugin.getDefault().logException(e, "Exception while creating XML bug description file.");
-				} finally {
-					try {
-						pout.close();
-					} catch (IOException e) {
-						// ignore
-					}
-				}
+		FileOutput fileOutput = new FileOutput() {
+			public void writeFile(OutputStream os) throws IOException {
+				bugCollection.writeXML(os, findbugsProject);
 			}
-		};		
-		
-		try {
-			pin.connect(pout);
-			worker.start();			
-			
-			if (!bugCollectionFile.exists())
-				bugCollectionFile.create(pin, true, monitor);
-			else
-				bugCollectionFile.setContents(pin, true, false, monitor);
-			
-			// Need to refresh here?
-			bugCollectionFile.refreshLocal(IResource.DEPTH_INFINITE, monitor);
-		} finally {
-			try {
-				pin.close();
-			} catch (IOException e) {
-				// ignore
+
+			public String getTaskDescription() {
+				return "creating XML FindBugs data file";
 			}
-		}
-		
+		};
+
+		IO.writeFile(bugCollectionFile, fileOutput, monitor);
+	}
+
+	/**
+	 * Get the FindBugs preferences file for a project.
+	 * 
+	 * @param project the project
+	 * @return the IFile for the FindBugs preferences file
+	 */
+	public static IFile getUserPreferencesFile(IProject project) {
+		return project.getFile(".fbprefs");
 	}
 	
 }
