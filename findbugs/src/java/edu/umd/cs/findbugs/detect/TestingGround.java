@@ -78,6 +78,8 @@ public class TestingGround extends BytecodeScanningDetector implements Constants
 			System.out.print("   " + getRegisterOperand());
 		else if ((seen == GOTO) || (seen == GOTO_W))
 			System.out.print("   " + getBranchTarget());
+		else if ((seen == NEW) || (seen == INSTANCEOF))
+			System.out.print("   " + getClassConstantOperand());
 
 		System.out.println();
 	}
