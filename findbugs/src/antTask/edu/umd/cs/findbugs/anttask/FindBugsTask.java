@@ -100,7 +100,7 @@ import java.util.List;
  *
  * @author Mike Fagan <a href="mailto:mfagan@tde.com">mfagan@tde.com</a>
  *
- * @version $Revision: 1.25 $
+ * @version $Revision: 1.26 $
  *
  * @since Ant 1.5
  *
@@ -139,7 +139,7 @@ public class FindBugsTask extends Task {
 	private Java findbugsEngine = null;
 
     //define the inner class to store class locations
-	public class ClassLocation {
+	public static class ClassLocation {
 		File classLocation = null;
 
 		public void setLocation( File location ) {
@@ -157,7 +157,7 @@ public class FindBugsTask extends Task {
 	}
 
 	// A System property to set when FindBugs is run
-	public class SystemProperty {
+	public static class SystemProperty {
 		private String name;
 		private String value;
 
