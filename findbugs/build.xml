@@ -338,10 +338,8 @@
         <class location="${test.dir}/dumb.jar"/>
         <systemProperty name="findbugs.assertionmethods" value="UserAss3rtion.makeSureItIsOK"/>
 <!--
-        <systemProperty name="cfg.prune" value="true"/>
         <systemProperty name="cfg.prune.stats" value="true"/>
         <systemProperty name="classContext.timeAnalyses" value="true"/>
-        <systemProperty name="ta.accurateExceptions" value="true"/>
         <systemProperty name="dataflow.maxiters" value="500"/>
 -->
       </findbugs>
