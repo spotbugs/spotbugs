@@ -20,8 +20,8 @@ public class Blat implements Runnable, java.util.Iterator, Serializable {
 	public int greeb() { return yarg; }
 
 	public class Bleem{
-		public void gnasp() { System.out.println("oog"); 
-		}
+		public void gnasp() { System.out.println("oog"); }
+		protected void finalize() { }
 	}
 
 	public Bleem makeBleem() { return new Bleem(); }
