@@ -28,6 +28,7 @@ package edu.umd.cs.daveho.ba;
  * <li> on a path in which exception control flow has merged back
  *      with non-exception control flow, or
  * <li> on a completely non-exception path.
+ * </ul>
  *
  * @see ExceptionPathValueAnalysis
  * @author David Hovemeyer
@@ -98,7 +99,7 @@ public class ExceptionPathValue {
 		case CONDITIONAL_UNHANDLED_EXCEPTION:
 			return "[Conditional unhandled exception]";
 		case EXCEPTION:
-			return "[Exception]";
+			return "[Handled or Unhandled Exception]";
 		default:
 			throw new IllegalStateException("Unknown kind of ExceptionPathValue: " + kind);
 		}
