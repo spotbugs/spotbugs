@@ -38,6 +38,7 @@ public class SimpleNode implements Node {
 
   /** Set last token. */
   public void setLastToken(Token t) {
+    if (t == null) throw new IllegalStateException();
     this.lastToken = t;
   }
 
