@@ -1,10 +1,22 @@
 package edu.umd.cs.findbugs;
 
+/**
+ * A BugAnnotation specifying a particular method in a particular class.
+ *
+ * @see BugAnnotation
+ * @author David Hovemeyer
+ */
 public class MethodAnnotation extends PackageMemberAnnotation {
 	private String methodName;
 	private String methodSig;
 	private String fullMethod;
 
+	/**
+	 * Constructor.
+	 * @param className the name of the class containing the method
+	 * @param methodName the name of the method
+	 * @param methodSig the Java type signature of the method
+	 */
 	public MethodAnnotation(String className, String methodName, String methodSig) {
 		super(className);
 		this.methodName = methodName;
@@ -12,8 +24,10 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 		fullMethod = null;
 	}
 
+	/** Get the method name. */
 	public String getMethodName() { return methodName; }
 
+	/** Get the method type signature. */
 	public String getMethodSignature() { return methodSig; }
 
 	public void accept(BugAnnotationVisitor visitor) {
@@ -27,6 +41,11 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 			throw new IllegalArgumentException("unknown key " + key);
 	}
 
+	/**
+	 * Get the "full" method name.
+	 * This is a format which looks sort of like a method signature
+	 * that would appear in Java source code.
+	 */
 	public String getFullMethod() {
 		if (fullMethod == null) {
 			// Convert to "nice" representation
