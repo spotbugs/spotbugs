@@ -19,6 +19,9 @@
 
 package edu.umd.cs.findbugs;
 
+import java.io.File;
+import java.io.FileFilter;
+
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -27,6 +30,9 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.dom4j.Attribute;
 import org.dom4j.Document;
@@ -47,21 +53,27 @@ import org.dom4j.io.SAXReader;
  */
 public class EclipseClasspath {
 
+	public static class EclipseClasspathException extends Exception {
+		public EclipseClasspathException(String msg) {
+			super(msg);
+		}
+	}
+
 	private static class Plugin {
 		private Document document;
 		private String pluginId;
 		private List<String> requiredPluginIdList;
 
-		public Plugin(Document document) throws DocumentException {
+		public Plugin(Document document) throws DocumentException, EclipseClasspathException {
 			this.document = document;
 
 			// Get the plugin id
 			Node plugin = document.selectSingleNode("//plugin");
 			if (plugin == null)
-				throw new DocumentException("No plugin node in plugin descriptor");
+				throw new EclipseClasspathException("No plugin node in plugin descriptor");
 			pluginId = plugin.valueOf("@id");
 			if (pluginId.equals(""))
-				throw new DocumentException("Cannot determine plugin id");
+				throw new EclipseClasspathException("Cannot determine plugin id");
 
 			// Extract required plugins
 			requiredPluginIdList = new LinkedList<String>();
@@ -69,6 +81,9 @@ public class EclipseClasspath {
 			for (Iterator i = requiredPluginIdList.iterator(); i.hasNext(); ) {
 				Node node = (Node) i.next();
 				String requiredPluginId = node.valueOf("@plugin");
+				if (requiredPluginId.equals(""))
+					throw new EclipseClasspathException("Import has no plugin id");
+				System.out.println(" Required plugin ==> " + requiredPluginId);
 				requiredPluginIdList.add(requiredPluginId);
 			}
 		}
@@ -82,41 +97,97 @@ public class EclipseClasspath {
 		}
 	}
 
+	private static final Pattern pluginDirPattern = Pattern.compile("^(\\w+(\\.\\w+)*)_(\\w+(\\.\\w+)*)$");
+	private static final int PLUGIN_ID_GROUP = 1;
+
 	private String eclipseDir;
 	private String pluginFile;
+	private Map<String, File> pluginDirectoryMap;
 
 	public EclipseClasspath(String eclipseDir, String pluginFile) {
 		this.eclipseDir = eclipseDir;
 		this.pluginFile = pluginFile;
+		this.pluginDirectoryMap = new HashMap<String, File>();
 	}
 
-	public EclipseClasspath execute() throws DocumentException, MalformedURLException {
-		Map<String, Plugin> pluginMap = new HashMap<String, Plugin>();
+	public void addRequiredPlugin(String pluginId, String pluginDir) {
+		pluginDirectoryMap.put(pluginId, new File(pluginDir));
+	}
 
-		List workList = new LinkedList<String>();
+	public EclipseClasspath execute() throws EclipseClasspathException, DocumentException, MalformedURLException {
+
+		// Build plugin directory map
+		File pluginDir = new File(eclipseDir, "plugins");
+		File[] dirList = pluginDir.listFiles(new FileFilter() {
+			public boolean accept(File pathname) {
+				return pathname.isDirectory();
+			}
+		});
+		if (dirList == null)
+			throw new EclipseClasspathException("Could not list plugins in directory " + pluginDir);
+		for (int i = 0; i < dirList.length; ++i) {
+			String pluginId = getPluginId(dirList[i].getName());
+			if (pluginId != null) {
+				//System.out.println(pluginId + " ==> " + dirList[i]);
+				pluginDirectoryMap.put(pluginId, dirList[i]);
+			}
+		}
+
+		Map<String, Plugin> requiredPluginMap = new HashMap<String, Plugin>();
+
+		LinkedList<String> workList = new LinkedList<String>();
 		workList.add(pluginFile);
 
 		while (!workList.isEmpty()) {
+			String descriptor = workList.removeFirst();
+
 			// Read the plugin file
 			SAXReader reader = new SAXReader();
-			Document doc = reader.read(new URL("file:" + pluginFile));
+			Document doc = reader.read(new URL("file:" + descriptor));
 
 			// Add to the map
 			Plugin plugin = new Plugin(doc);
-			pluginMap.put(plugin.getId(), plugin);
+			requiredPluginMap.put(plugin.getId(), plugin);
+
+			// Add unresolved required plugins to the worklist
+			for (Iterator<String> i = plugin.requiredPluginIdIterator(); i.hasNext(); ) {
+				String requiredPluginId = i.next();
+				if (requiredPluginMap.get(requiredPluginId) == null) {
+					// Find the plugin in the Eclipse directory
+					File requiredPluginDir = pluginDirectoryMap.get(requiredPluginId);
+					if (requiredPluginDir == null)
+						throw new EclipseClasspathException("Unable to find plugin " + requiredPluginId);
+					workList.add(requiredPluginDir.getPath());
+				}
+			}
 		}
+
+		System.out.println("Found " + requiredPluginMap.size() + " required plugins");
 
 		return this;
 	}
 
+	/**
+	 * Get the plugin id for given directory name.
+	 * Returns null if the directory name does not seem to
+	 * be a plugin.
+	 */
+	private String getPluginId(String dirName) {
+		Matcher m = pluginDirPattern.matcher(dirName);
+		return m.matches() ? m.group(PLUGIN_ID_GROUP) : null;
+	}
+
 	public static void main(String[] argv) throws Exception {
-		if (argv.length != 2) {
+		if (argv.length < 2 || (argv.length % 2 != 0)) {
 			System.err.println("Usage: " + EclipseClasspath.class.getName() +
-				" <eclipse dir> <plugin file>");
+				" <eclipse dir> <plugin file> [<required plugin id> <required plugin dir> ...]");
 			System.exit(1);
 		}
 
 		EclipseClasspath ec = new EclipseClasspath(argv[0], argv[1]);
+		for (int i = 2; i < argv.length; i += 2) {
+			ec.addRequiredPlugin(argv[i], argv[i+1]);
+		}
 		ec.execute();
 	}
 }
