@@ -19,6 +19,8 @@
     reports="RU_INVOKE_RUN"/>
   <Detector class="edu.umd.cs.findbugs.detect.FindSpinLoop" speed="fast"
     reports="SP_SPIN_ON_FIELD"/>
+  <Detector class="edu.umd.cs.findbugs.detect.FindNonShortCircuit" speed="fast"
+    reports="NS_NON_SHORT_CIRCUIT"/>
   <Detector class="edu.umd.cs.findbugs.detect.FindTwoLockWait" speed="slow"
     reports="2LW_TWO_LOCK_WAIT"/>
   <Detector class="edu.umd.cs.findbugs.detect.FindUnconditionalWait" speed="fast"
@@ -108,6 +110,7 @@
   <BugPattern abbrev="EI" type="EI_EXPOSE_REP" category="MALICIOUS_CODE" />
   <BugPattern abbrev="Ru" type="RU_INVOKE_RUN" category="MT_CORRECTNESS" />
   <BugPattern abbrev="SP" type="SP_SPIN_ON_FIELD" category="MT_CORRECTNESS" />
+  <BugPattern abbrev="NS" type="NS_NON_SHORT_CIRCUIT" category="CORRECTNESS" />
   <BugPattern abbrev="2LW" type="2LW_TWO_LOCK_WAIT" category="MT_CORRECTNESS" />
   <BugPattern abbrev="UW" type="UW_UNCOND_WAIT" category="MT_CORRECTNESS" />
   <BugPattern abbrev="UR" type="UR_UNINIT_READ" category="CORRECTNESS" />

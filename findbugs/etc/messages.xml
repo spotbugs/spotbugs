@@ -758,6 +758,22 @@ using the <code>equals</code> method instead.
 ]]>
     </Details>
   </BugPattern>
+  <BugPattern type="NS_NON_SHORT_CIRCUIT">
+    <ShortDescription>Questionable use of non-short-circuit logic</ShortDescription>
+    <LongDescription>Questionable use of non-short-circuit logic in {1}</LongDescription>
+    <Details>
+<![CDATA[
+  <p> THis code seems to be using non-short-circuit logic (e.g., &amp;
+or |) 
+rather than short-circuit logic (&amp;&amp; or ||).
+Non-short-circuit logic causes both sides of the expression
+to be evaluated even when the result can be inferred from
+knowing the left-hand side. This can be less efficient and
+can result in errors if the left-hand side guards cases
+when evaluating the right-hand side can generate an error.
+]]>
+    </Details>
+  </BugPattern>
   <BugPattern type="2LW_TWO_LOCK_WAIT">
     <ShortDescription>Wait with two locks held</ShortDescription>
     <LongDescription>wait() with two locks held in {1}</LongDescription>

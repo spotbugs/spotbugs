@@ -22,58 +22,77 @@ import edu.umd.cs.findbugs.*;
 import org.apache.bcel.classfile.Method;
 import edu.umd.cs.findbugs.visitclass.Constants2;
 
-public class FindSpinLoop extends BytecodeScanningDetector implements   Constants2 {
-    private static final boolean DEBUG = Boolean.getBoolean("findspinloop.debug");
+public class FindNonShortCircuit extends BytecodeScanningDetector implements   Constants2 {
 
-    int stage = 0;
-    int start;
+    int stage1 = 0;
+    int stage2 = 0;
+    int distance = 0;
+    int distance2 = 0;
     private BugReporter bugReporter;
 
-    public FindSpinLoop(BugReporter bugReporter) {
+    public FindNonShortCircuit(BugReporter bugReporter) {
+	// System.out.println("Looking for non-short-circuit evaluation");
 	this.bugReporter = bugReporter;
 	}
 
     public void visit(Method obj) {
-	if (DEBUG) System.out.println("Saw " + betterMethodName);
-	stage = 0;
+	stage1 = 0;
+	stage2 = 0;
+	distance = 1000000;
+	distance2 = 1000000;
 	}
 
     public void sawOpcode(int seen) {
 	/* prototype for short-circuit bug */
-
-	// System.out.println("PC: " + PC + ", stage: " + stage1);
+	distance++;
 	switch (seen) {
-		case ALOAD_0: 
-			if (DEBUG) System.out.println("   ALOAD_0 at PC " + PC);
-			start = PC;
-			stage  = 1;
-			break;
-		case GETFIELD:
-			if (DEBUG) System.out.println("   getfield in stage " + stage);
-			if (stage == 1) {
-				stage = 2;
-				}
-			else stage = 0;
+		case ICONST_1: 
+			stage1 = 1;
 			break;
 		case GOTO:
-		case IFNE:
-		case IFEQ:
-		case IFNULL:
-		case IFNONNULL:
-			if (DEBUG) System.out.println("   conditional branch in stage " + stage + " to " + branchTarget );
-			if (stage == 2 && branchTarget == start) {
-				bugReporter.reportBug(new BugInstance("SP_SPIN_ON_FIELD", NORMAL_PRIORITY)
-					.addClassAndMethod(this)
-					.addReferencedField(this));
-				stage = 0;
+			if (stage1 == 1) stage1 = 2;
+			else stage1 = 0;
+			break;
+		case ICONST_0:
+			if (stage1 == 2)  {
+				distance = 0;
+				// System.out.println("saw 1; goto X; 0");
 				}
-			else if (branchTarget < PC)
-				stage = 0;
+			stage1 = 0;
+		default:
+			stage1 = 0;
+		}
+	switch (seen) {
+		case IAND: 
+		case IOR: 
+			// System.out.println("Saw IOR or IAND at distance " + distance);
+			
+			if (distance < 4)  {
+				distance2 = distance;
+				stage2 = 1;
+				}
+			else stage2 = 0;
+			break;
+		case IFEQ: 
+		case IFNE: 
+		case PUTFIELD: 
+		case PUTSTATIC: 
+		case IRETURN: 
+			if (stage2 == 1)   {
+				// System.out.println("Found nsc");
+                                bugReporter.reportBug(
+				new BugInstance("NS_NON_SHORT_CIRCUIT", 
+						NORMAL_PRIORITY)
+                                        .addClassAndMethod(this));
+				}
+			stage2 = 0;
 			break;
 		default:
-			stage = 0;
+			stage2 = 0;
 			break;
-		}
+		};
+
+
 
 		}
 }

@@ -137,7 +137,7 @@ public class LazyInit extends ByteCodePatternDetector {
 			}
 
 			// Ignore non-reference fields
-			if (!xfield.getFieldSignature().startsWith("L") && !xfield.getFieldSignature().startsWith("[")) {
+			if (!xfield.getFieldSignature().startsWith("[")) {
 				if (DEBUG) System.out.println("Ignoring non-reference field " + xfield.getFieldName());
 				return;
 			}
