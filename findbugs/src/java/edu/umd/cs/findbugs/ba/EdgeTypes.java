@@ -55,4 +55,6 @@ public interface EdgeTypes {
     public static final int BACKEDGE_TARGET_EDGE = 11;
     /** Special (synthetic) edge for path profiling; backedge source to CFG exit. */
     public static final int BACKEDGE_SOURCE_EDGE = 12;
+    /** System.exit() edge. */
+    public static final int EXIT_EDGE = 13;
 }
