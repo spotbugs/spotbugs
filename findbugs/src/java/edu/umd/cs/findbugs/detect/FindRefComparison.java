@@ -31,6 +31,7 @@ import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.FindBugsAnalysisProperties;
 import edu.umd.cs.findbugs.ba.*;
 import edu.umd.cs.findbugs.props.WarningPropertySet;
+import edu.umd.cs.findbugs.props.WarningPropertyUtil;
 
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Field;
@@ -345,7 +346,6 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 	 * ---------------------------------------------------------------------- */
 
 	private BugReporter bugReporter;
-	private BugInstance refComparison;
 
 	/* ----------------------------------------------------------------------
 	 * Implementation
@@ -388,18 +388,27 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 			}
 		}
 	}
-	
+
+	/**
+	 * A BugInstance and its WarningPropertySet.
+	 */
 	private static class WarningWithProperties {
 		BugInstance instance;
 		WarningPropertySet propertySet;
+		Location location;
 		
-		WarningWithProperties(BugInstance warning, WarningPropertySet propertySet) {
+		WarningWithProperties(BugInstance warning, WarningPropertySet propertySet, Location location) {
 			this.instance = warning;
 			this.propertySet = propertySet;
+			this.location = location;
 		}
 	}
+	
+	private interface WarningDecorator {
+		public void decorate(WarningWithProperties warn);
+	}
 
-	private void analyzeMethod(ClassContext classContext, Method method)
+	private void analyzeMethod(ClassContext classContext, final Method method)
 	        throws CFGBuilderException, DataflowAnalysisException {
 
 		boolean sawCallToEquals = false;
@@ -407,9 +416,12 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 		ConstantPoolGen cpg = classContext.getConstantPoolGen();
 		MethodGen methodGen = classContext.getMethodGen(method);
 
-		// Report at most one String comparison per method.
-		// We report the first highest priority warning.
-		refComparison = null;
+		// Enqueue all of the potential violations we find in the method.
+		// Normally we'll only report the first highest-priority warning,
+		// but if in relaxed mode or if REPORT_ALL_REF_COMPARISONS is set,
+		// then we'll report everything.
+		LinkedList<WarningWithProperties> refComparisonList =
+			new LinkedList<WarningWithProperties>();
 		LinkedList<WarningWithProperties> stringComparisonList =
 			new LinkedList<WarningWithProperties>();
 
@@ -430,75 +442,131 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 		TypeDataflow typeDataflow = new TypeDataflow(cfg, typeAnalysis);
 		typeDataflow.execute();
 
+		// Inspect Locations in the method for suspicious ref comparisons and calls to equals()
 		for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
 			Location location = i.next();
 
-			Instruction ins = location.getHandle().getInstruction();
-			short opcode = ins.getOpcode();
-			if (opcode == Constants.IF_ACMPEQ || opcode == Constants.IF_ACMPNE) {
-				checkRefComparison(
-						location,
-						jclass,
-						methodGen,
-						visitor,
-						typeDataflow,
-						stringComparisonList);
-			} else if (invokeInstanceSet.get(opcode)) {
-				InvokeInstruction inv = (InvokeInstruction) ins;
-				String methodName = inv.getMethodName(cpg);
-				String methodSig = inv.getSignature(cpg);
-				if ((methodName.equals("equals") && methodSig.equals("(Ljava/lang/Object;)Z"))
-				        || (methodName.equals("equalIgnoreCases") && methodSig.equals("(Ljava/lang/String;)Z"))) {
-					sawCallToEquals = true;
-					checkEqualsComparison(location, jclass, methodGen, typeDataflow);
-				}
-			}
+			sawCallToEquals = inspectLocation(
+					sawCallToEquals,
+					jclass,
+					cpg,
+					methodGen,
+					refComparisonList,
+					stringComparisonList,
+					visitor,
+					typeDataflow,
+					location);
 		}
 		
+		// Add method-wide properties to BugInstances
+		final boolean sawEquals = sawCallToEquals;
+		decorateWarnings(stringComparisonList, new WarningDecorator(){
+			public void decorate(WarningWithProperties warn) {
+				if (sawEquals) {
+					warn.propertySet.addProperty(RefComparisonWarningProperty.SAW_CALL_TO_EQUALS);
+				}
+				
+				if (!(method.isPublic() || method.isProtected())) {
+					warn.propertySet.addProperty(RefComparisonWarningProperty.PRIVATE_METHOD);
+				}
+			}
+		});
+		decorateWarnings(refComparisonList, new WarningDecorator() {
+			public void decorate(WarningWithProperties warn) {
+				if (sawEquals) {
+					warn.propertySet.addProperty(RefComparisonWarningProperty.SAW_CALL_TO_EQUALS);
+				}
+			}
+		});
+		
+		// Report violations
 		boolean relaxed = AnalysisContext.currentAnalysisContext().getBoolProperty(
 				FindBugsAnalysisProperties.RELAXED_REPORTING_MODE);
+		reportBest(classContext, method, stringComparisonList, relaxed);
+		reportBest(classContext, method, refComparisonList, relaxed);
+	}
 
-		// Add method-wide properties to BugInstances
+	private boolean inspectLocation(
+			boolean sawCallToEquals,
+			JavaClass jclass,
+			ConstantPoolGen cpg,
+			MethodGen methodGen,
+			LinkedList<WarningWithProperties> refComparisonList,
+			LinkedList<WarningWithProperties> stringComparisonList,
+			RefComparisonTypeFrameModelingVisitor visitor,
+			TypeDataflow typeDataflow,
+			Location location) throws DataflowAnalysisException {
+		Instruction ins = location.getHandle().getInstruction();
+		short opcode = ins.getOpcode();
+		if (opcode == Constants.IF_ACMPEQ || opcode == Constants.IF_ACMPNE) {
+			checkRefComparison(
+					location,
+					jclass,
+					methodGen,
+					visitor,
+					typeDataflow,
+					stringComparisonList,
+					refComparisonList);
+		} else if (invokeInstanceSet.get(opcode)) {
+			InvokeInstruction inv = (InvokeInstruction) ins;
+			String methodName = inv.getMethodName(cpg);
+			String methodSig = inv.getSignature(cpg);
+			if (isEqualsMethod(methodName, methodSig)) {
+				sawCallToEquals = true;
+				checkEqualsComparison(location, jclass, methodGen, typeDataflow);
+			}
+		}
+		return sawCallToEquals;
+	}
+
+	private void decorateWarnings(
+			LinkedList<WarningWithProperties> stringComparisonList,
+			WarningDecorator warningDecorator) {
 		for (Iterator<WarningWithProperties> i = stringComparisonList.iterator(); i.hasNext();) {
 			WarningWithProperties warn = i.next();
 
-			if (sawCallToEquals) {
-				warn.propertySet.addProperty(RefComparisonWarningProperty.SAW_CALL_TO_EQUALS);
-			}
-			
-			if (!(method.isPublic() || method.isProtected())) {
-				warn.propertySet.addProperty(RefComparisonWarningProperty.PRIVATE_METHOD);
-			}
-			
+			warningDecorator.decorate(warn);
 			warn.instance.setPriority(warn.propertySet.computePriority(NORMAL_PRIORITY));
 		}
+	}
+
+	private void reportBest(
+			ClassContext classContext,
+			Method method,
+			LinkedList<WarningWithProperties> warningList,
+			boolean relaxed) {
+		boolean reportAll = relaxed || REPORT_ALL_REF_COMPARISONS;
 		
-		// If a String reference comparison was found in the method,
-		// report it
 		WarningWithProperties best = null;
-		for (Iterator<WarningWithProperties> i = stringComparisonList.iterator(); i.hasNext();) {
+		for (Iterator<WarningWithProperties> i = warningList.iterator(); i.hasNext();) {
 			WarningWithProperties warn = i.next();
 			if (best == null || warn.instance.getPriority() < best.instance.getPriority()) {
 				best = warn;
 			}
 			
-			if (relaxed) {
-				warn.propertySet.decorateBugInstance(warn.instance);
+			if (reportAll) {
+				if (relaxed) {
+					// Add general warning properties
+					WarningPropertyUtil.addPropertiesForLocation(
+							warn.propertySet,
+							classContext,
+							method,
+							warn.location);
+					
+					// Convert warning properties to bug properties
+					warn.propertySet.decorateBugInstance(warn.instance);
+				}
 				bugReporter.reportBug(warn.instance);
 			}
 		}
-		if (best != null && !relaxed) {
+		if (best != null && !reportAll) {
 			bugReporter.reportBug(best.instance);
 		}
-		
-		if (refComparison != null) {
-			if (false && sawCallToEquals) {
-				// System.out.println("Reducing priority of " + refComparison);
-				refComparison.setPriority(1 + refComparison.getPriority());
-			}
-			if (refComparison.getPriority() <= LOW_PRIORITY)
-				bugReporter.reportBug(refComparison);
-		}
+	}
+
+	private boolean isEqualsMethod(String methodName, String methodSig) {
+		return (methodName.equals("equals") && methodSig.equals("(Ljava/lang/Object;)Z"))
+		        || (methodName.equals("equalIgnoreCases") && methodSig.equals("(Ljava/lang/String;)Z"));
 	}
 
 	private void checkRefComparison(
@@ -507,7 +575,8 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 			MethodGen methodGen,
 			RefComparisonTypeFrameModelingVisitor visitor,
 			TypeDataflow typeDataflow,
-			List<WarningWithProperties> stringComparisonList) throws DataflowAnalysisException {
+			List<WarningWithProperties> stringComparisonList,
+			List<WarningWithProperties> refComparisonList) throws DataflowAnalysisException {
 
 		InstructionHandle handle = location.getHandle();
 
@@ -527,66 +596,76 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 				return;
 
 			if (lhs.equals("java.lang.String") && rhs.equals("java.lang.String")) {
-				if (DEBUG)
-					System.out.println("String/String comparison at " +
-					        handle);
-
-				// Compute the priority:
-				// - two static strings => do not report
-				// - dynamic string and anything => high
-				// - static string and unknown => medium
-				// - all other cases => low
-				// System.out.println("Compare " + lhsType + " == " + rhsType);
-				byte type1 = lhsType.getType();
-				byte type2 = rhsType.getType();
-				// T1 T2 result
-				// S  S  no-op
-				// D  ?  high
-				// ?  D  high
-				// S  ?  normal
-				// ?  S  normal
-				
-				WarningPropertySet propertySet = new WarningPropertySet();
-				
-				if (type1 == T_STATIC_STRING && type2 == T_STATIC_STRING) {
-					//priority = LOW_PRIORITY + 1;
-					propertySet.addProperty(RefComparisonWarningProperty.COMPARE_STATIC_STRINGS);
-				} else if (type1 == T_DYNAMIC_STRING || type2 == T_DYNAMIC_STRING) {
-					//priority = HIGH_PRIORITY;
-					propertySet.addProperty(RefComparisonWarningProperty.DYNAMIC_AND_UNKNOWN);
-				} else if (type1 == T_STATIC_STRING || type2 == T_STATIC_STRING) {
-					//priority = LOW_PRIORITY;
-					propertySet.addProperty(RefComparisonWarningProperty.STATIC_AND_UNKNOWN);
-				} else if (visitor.sawStringIntern()) {
-					//priority = LOW_PRIORITY;
-					propertySet.addProperty(RefComparisonWarningProperty.SAW_INTERN);
-				}
-
-				String sourceFile = jclass.getSourceFileName();
-				BugInstance instance =
-					new BugInstance(this, "ES_COMPARING_STRINGS_WITH_EQ", NORMAL_PRIORITY)
-					.addClassAndMethod(methodGen, sourceFile)
-					.addSourceLine(methodGen, sourceFile, handle)
-					.addClass("java.lang.String").describe("CLASS_REFTYPE");
-				WarningWithProperties warn = new WarningWithProperties(instance, propertySet);
-				
-				stringComparisonList.add(warn);
-				
-				stringComparisonList.add(new WarningWithProperties(
-						instance, propertySet));
-
+				handleStringComparison(jclass, methodGen, visitor, stringComparisonList, location, lhsType, rhsType);
 			} else if (suspiciousSet.contains(lhs) && suspiciousSet.contains(rhs)) {
-				String sourceFile = jclass.getSourceFileName();
-				BugInstance instance = new BugInstance(this, "RC_REF_COMPARISON", NORMAL_PRIORITY)
-				        .addClassAndMethod(methodGen, sourceFile)
-				        .addSourceLine(methodGen, sourceFile, handle)
-				        .addClass(lhs).describe("CLASS_REFTYPE");
-				if (REPORT_ALL_REF_COMPARISONS)
-					bugReporter.reportBug(instance);
-				else if (refComparison == null)
-					refComparison = instance;
+				handleSuspiciousRefComparison(jclass, methodGen, refComparisonList, location, lhs);
 			}
 		}
+	}
+
+	private void handleStringComparison(
+			JavaClass jclass,
+			MethodGen methodGen,
+			RefComparisonTypeFrameModelingVisitor visitor,
+			List<WarningWithProperties> stringComparisonList,
+			Location location,
+			Type lhsType,
+			Type rhsType) {
+		if (DEBUG) System.out.println("String/String comparison at " + location.getHandle());
+
+		// Compute the priority:
+		// - two static strings => do not report
+		// - dynamic string and anything => high
+		// - static string and unknown => medium
+		// - all other cases => low
+		// System.out.println("Compare " + lhsType + " == " + rhsType);
+		byte type1 = lhsType.getType();
+		byte type2 = rhsType.getType();
+		
+		// T1 T2 result
+		// S  S  no-op
+		// D  ?  high
+		// ?  D  high
+		// S  ?  normal
+		// ?  S  normal
+		WarningPropertySet propertySet = new WarningPropertySet();
+		if (type1 == T_STATIC_STRING && type2 == T_STATIC_STRING) {
+			//priority = LOW_PRIORITY + 1;
+			propertySet.addProperty(RefComparisonWarningProperty.COMPARE_STATIC_STRINGS);
+		} else if (type1 == T_DYNAMIC_STRING || type2 == T_DYNAMIC_STRING) {
+			//priority = HIGH_PRIORITY;
+			propertySet.addProperty(RefComparisonWarningProperty.DYNAMIC_AND_UNKNOWN);
+		} else if (type1 == T_STATIC_STRING || type2 == T_STATIC_STRING) {
+			//priority = LOW_PRIORITY;
+			propertySet.addProperty(RefComparisonWarningProperty.STATIC_AND_UNKNOWN);
+		} else if (visitor.sawStringIntern()) {
+			//priority = LOW_PRIORITY;
+			propertySet.addProperty(RefComparisonWarningProperty.SAW_INTERN);
+		}
+		
+		String sourceFile = jclass.getSourceFileName();
+		BugInstance instance =
+			new BugInstance(this, "ES_COMPARING_STRINGS_WITH_EQ", NORMAL_PRIORITY)
+			.addClassAndMethod(methodGen, sourceFile)
+			.addSourceLine(methodGen, sourceFile, location.getHandle())
+			.addClass("java.lang.String").describe("CLASS_REFTYPE");
+		
+		WarningWithProperties warn = new WarningWithProperties(instance, propertySet, location);
+		stringComparisonList.add(warn);
+	}
+
+	private void handleSuspiciousRefComparison(
+			JavaClass jclass,
+			MethodGen methodGen,
+			List<WarningWithProperties> refComparisonList,
+			Location location,
+			String lhs) {
+		String sourceFile = jclass.getSourceFileName();
+		BugInstance instance = new BugInstance(this, "RC_REF_COMPARISON", NORMAL_PRIORITY)
+		        .addClassAndMethod(methodGen, sourceFile)
+		        .addSourceLine(methodGen, sourceFile, location.getHandle())
+		        .addClass(lhs).describe("CLASS_REFTYPE");
+		refComparisonList.add(new WarningWithProperties(instance, new WarningPropertySet(), location));
 	}
 
 	private void checkEqualsComparison(
