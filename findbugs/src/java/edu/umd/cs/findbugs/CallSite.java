@@ -27,21 +27,33 @@ import org.apache.bcel.generic.*;
 
 import edu.umd.cs.daveho.ba.*;
 
+/**
+ * The site of a method call.
+ */
 public class CallSite {
 	private Method method;
 	private BasicBlock basicBlock;
 	private InstructionHandle handle;
 
+	/**
+	 * Constructor.
+	 * @param method the method containing the call site
+	 * @param basicBlock the basic block where the call site is located
+	 * @param handle the instruction which performs the call
+	 */
 	public CallSite(Method method, BasicBlock basicBlock, InstructionHandle handle) {
 		this.method = method;
 		this.basicBlock = basicBlock;
 		this.handle = handle;
 	}
 
+	/** Get the method containing the call site. */
 	public Method getMethod() { return method; }
 
+	/** Get the basic block where the call site is located. */
 	public BasicBlock getBasicBlock() { return basicBlock; }
 
+	/** Get the instruction which performs the call. */
 	public InstructionHandle getHandle() { return handle; }
 
 	public int hashCode() {
