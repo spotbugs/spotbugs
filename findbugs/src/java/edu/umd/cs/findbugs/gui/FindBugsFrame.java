@@ -429,6 +429,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
 //	    Locale.setDefault( Locale.JAPANESE );
 //	    Locale.setDefault( new Locale( "et" ));
 //	    Locale.setDefault( new Locale( "fi" ));
+//	    Locale.setDefault( new Locale( "es" ));
+//	    Locale.setDefault( new Locale( "pl" ));
 
 		UserPreferences prefs = UserPreferences.getUserPreferences();
 		prefs.read();
