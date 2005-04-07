@@ -82,54 +82,7 @@ public class FindCircularDependencies extends BytecodeScanningDetector implement
 	}
 	
 	public void report() {
-		{	//Remove classes that don't have cycles
-			boolean changed = true;
-			while (changed) {
-				changed = false;
-				Iterator<Map.Entry<String, Set<String>>> it = dependencyGraph.entrySet().iterator();
-				while (it.hasNext()) {
-					Map.Entry<String, Set<String>> entry = it.next();
-					String clsName = entry.getKey();
-					Set<String> dependencies = entry.getValue();
-					
-					boolean foundClass = false;
-					Iterator dit = dependencies.iterator();
-					while (dit.hasNext()) {
-						foundClass = dependencyGraph.containsKey(dit.next());
-						if (foundClass)
-							break;
-					}
-					if (!foundClass) {
-						it.remove();
-						changed = true;
-					}
-				}
-			}
-		}
-		
-		{	//Remove references that are not roots
-			boolean didRemoval = true;
-			while (didRemoval) {
-				didRemoval = false;
-				Iterator<Map.Entry<String, Set<String>>> it = dependencyGraph.entrySet().iterator();
-				while (it.hasNext()) {
-					Map.Entry<String, Set<String>> entry = it.next();
-					String clsName = entry.getKey();
-					Set<String> dependencies = entry.getValue();
-					Iterator dit = dependencies.iterator();
-					while (dit.hasNext()) {
-						if (!dependencyGraph.containsKey(dit.next())) {
-							dit.remove();
-							didRemoval = true;
-						}
-					}
-					if (dependencies.size() == 0) {
-						it.remove();
-						didRemoval = true;
-					}
-				}
-			}
-		}
+		removeDependencyLeaves(dependencyGraph);
 		
 		Set<String> alreadyReported = new HashSet<String>();
 		Iterator<Map.Entry<String, Set<String>>> it = dependencyGraph.entrySet().iterator();
@@ -158,5 +111,32 @@ public class FindCircularDependencies extends BytecodeScanningDetector implement
 		    bugReporter.reportBug(bug);
 		}
 		dependencyGraph.clear();
+	}
+	
+	private void removeDependencyLeaves(Map<String, Set<String>> dependencyGraph)
+	{
+		boolean changed = true;
+		while (changed) {
+			changed = false;
+			Iterator<Map.Entry<String, Set<String>>> it = dependencyGraph.entrySet().iterator();
+			while (it.hasNext()) {
+				Map.Entry<String, Set<String>> entry = it.next();
+				String clsName = entry.getKey();
+				Set<String> dependencies = entry.getValue();
+				
+				boolean foundClass = false;
+				Iterator dit = dependencies.iterator();
+				while (dit.hasNext()) {
+					foundClass = dependencyGraph.containsKey(dit.next());
+					if (!foundClass) {
+						dit.remove();
+						changed = true;
+					}
+				}
+				if (dependencies.size() == 0) {
+					it.remove();
+				}
+			}
+		}
 	}
 }
