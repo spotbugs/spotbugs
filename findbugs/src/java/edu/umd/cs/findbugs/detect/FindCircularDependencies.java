@@ -81,36 +81,80 @@ public class FindCircularDependencies extends BytecodeScanningDetector implement
 		}
 	}
 	
+	/*
+	Map.Entry<String, Set<String>> entry = it.next();
+	String clsName = entry.getKey();
+	if (alreadyReported.contains(clsName))
+		continue;
+	
+	alreadyReported.add(clsName);
+	Set<String> dependencies = entry.getValue();
+	
+	BugInstance bug = new BugInstance(
+			this,
+			"CD_CIRCULAR_DEPENDENCY",
+			clsName.indexOf("$") >= 0 ? LOW_PRIORITY : NORMAL_PRIORITY)
+			.addClass(clsName);
+	
+    Iterator dit = dependencies.iterator();
+    while (dit.hasNext()) {
+    	clsName = (String)dit.next();
+    	bug.addClass(clsName);
+    	alreadyReported.add(clsName);
+    }
+
+    bugReporter.reportBug(bug);
+}
+*/
+	
 	public void report() {
 		removeDependencyLeaves(dependencyGraph);
 		
-		Set<String> alreadyReported = new HashSet<String>();
-		Iterator<Map.Entry<String, Set<String>>> it = dependencyGraph.entrySet().iterator();
-		while (it.hasNext()) {
-			Map.Entry<String, Set<String>> entry = it.next();
-			String clsName = entry.getKey();
-			if (alreadyReported.contains(clsName))
+		Set<String> visited = new HashSet<String>();
+		
+		while (dependencyGraph.size() > 0) {
+			String clsName = dependencyGraph.keySet().iterator().next();
+			if (reportLoop(dependencyGraph, visited, clsName, clsName)) {
+				BugInstance bug = new BugInstance(
+						this,
+						"CD_CIRCULAR_DEPENDENCY",
+						NORMAL_PRIORITY);
+				Iterator<String> vIt = visited.iterator();
+				while (vIt.hasNext()) {
+					String loopCls = vIt.next();
+					bug.addClass(loopCls);
+					dependencyGraph.remove(loopCls);
+				}
+				bugReporter.reportBug(bug);
+			}
+			dependencyGraph.remove(clsName);
+			visited.clear();
+		}
+			
+		dependencyGraph.clear();
+	}
+	
+	private boolean reportLoop(Map<String, Set<String>> dependencyGraph, Set<String> visited, String startClsName, String curClsName) {
+		Set<String> dependencies = dependencyGraph.get(curClsName);
+		if (dependencies == null)
+			return false;
+		
+		visited.add(curClsName);
+		Iterator<String> dit = dependencies.iterator();
+		while (dit.hasNext()) {
+			String depClass = dit.next();
+			if (depClass.equals(startClsName))
+				return true;
+			
+			if (visited.contains(depClass))
 				continue;
 			
-			alreadyReported.add(clsName);
-			Set<String> dependencies = entry.getValue();
-			
-			BugInstance bug = new BugInstance(
-					this,
-					"CD_CIRCULAR_DEPENDENCY",
-					clsName.indexOf("$") >= 0 ? LOW_PRIORITY : NORMAL_PRIORITY)
-					.addClass(clsName);
-			
-		    Iterator dit = dependencies.iterator();
-		    while (dit.hasNext()) {
-		    	clsName = (String)dit.next();
-		    	bug.addClass(clsName);
-		    	alreadyReported.add(clsName);
-		    }
-
-		    bugReporter.reportBug(bug);
+			if (reportLoop(dependencyGraph, visited, startClsName, depClass))
+				return true;
 		}
-		dependencyGraph.clear();
+		
+		visited.remove(curClsName);
+		return false;
 	}
 	
 	private void removeDependencyLeaves(Map<String, Set<String>> dependencyGraph)
