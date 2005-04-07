@@ -133,6 +133,7 @@ public class FindCircularDependencies extends BytecodeScanningDetector implement
 				}
 				if (dependencies.size() == 0) {
 					it.remove();
+					changed = true;
 				}
 			}
 		}

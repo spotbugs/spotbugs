@@ -40,7 +40,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.TestingGround" 
             speed="fast"
             reports="TESTING"
-            disabled="false"
+            disabled="true"
             hidden="true" />
             
   <Detector class="edu.umd.cs.findbugs.detect.DontCatchIllegalMonitorStateException" 
@@ -71,7 +71,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.FindSqlInjection" 
             speed="moderate"
             reports="SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE" 
-	    disabled="true"
+	    	disabled="true"
 		/>
 
   <Detector class="edu.umd.cs.findbugs.detect.FindDoubleCheck" 
@@ -287,8 +287,7 @@
              
    <Detector class="edu.umd.cs.findbugs.detect.SuspiciousThreadInterrupted" 
              speed="fast"
-             reports="STI_INTERRUPTED_ON_CURRENTTHREAD,STI_INTERRUPTED_ON_UNKNOWNTHREAD" 
-             disabled="true" />
+             reports="STI_INTERRUPTED_ON_CURRENTTHREAD,STI_INTERRUPTED_ON_UNKNOWNTHREAD" />
 
   <Detector class="edu.umd.cs.findbugs.detect.FindDeadLocalStores"
             speed="moderate"
@@ -324,7 +323,7 @@
 			reports="UM_UNNECESSARY_MATH"/>
 
   <Detector class="edu.umd.cs.findbugs.detect.FindCircularDependencies" 
-  			speed="fast"
+  			speed="moderate"
 			reports="CD_CIRCULAR_DEPENDENCY"/>
 			
   <Detector class="edu.umd.cs.findbugs.detect.RedundantInterfaces"
@@ -341,7 +340,7 @@
 
   <Detector class="edu.umd.cs.findbugs.detect.BadUseOfReturnValue"
             speed="fast"
-            reports="RV_CHECK_FOR_POSITIVE_INDEXOF,RV_DONT_JUST_NULL_CHECK_READLINE" disabled="false"/>
+            reports="RV_CHECK_FOR_POSITIVE_INDEXOF,RV_DONT_JUST_NULL_CHECK_READLINE" />
 
   <Detector class="edu.umd.cs.findbugs.detect.MethodReturnCheck"
             speed="fast"
@@ -349,7 +348,7 @@
   
   <Detector class="edu.umd.cs.findbugs.detect.IDivResultCastToDouble"
             speed="fast"
-            reports="ICAST_IDIV_CAST_TO_DOUBLE,ICAST_INT_CAST_TO_DOUBLE_PASSED_TO_CEIL" disabled="false"/>
+            reports="ICAST_IDIV_CAST_TO_DOUBLE,ICAST_INT_CAST_TO_DOUBLE_PASSED_TO_CEIL" />
   			
   <Detector class="edu.umd.cs.findbugs.detect.FindBadCast"
             speed="fast"
