@@ -99,11 +99,13 @@ public class FindCircularDependencies extends BytecodeScanningDetector implement
 				while (lIt.hasNext()) {
 					String loopCls = lIt.next();
 					bug.addClass(loopCls);
-					dependencyGraph.remove(loopCls);
 				}
 				bugReporter.reportBug(bug);
+				removeLoopLinks(dependencyGraph, loop);
+			} else {
+				dependencyGraph.remove(clsName);
 			}
-			dependencyGraph.remove(clsName);
+			removeDependencyLeaves(dependencyGraph);
 		}
 			
 		dependencyGraph.clear();
@@ -134,6 +136,20 @@ public class FindCircularDependencies extends BytecodeScanningDetector implement
 				}
 			}
 		}
+	}
+	
+	private void removeLoopLinks(Map<String, Set<String>> dependencyGraph, Set<String> loop) 
+	{
+		Set<String> dependencies = null;
+		Iterator<String> cIt = loop.iterator();
+		while (cIt.hasNext()) {
+			String clsName = cIt.next();
+			if (dependencies != null)
+				dependencies.remove(clsName);
+			dependencies = dependencyGraph.get(clsName);
+		}
+		if (dependencies != null)
+			dependencies.remove(loop.iterator().next());
 	}
 	
 	static class LoopFinder
