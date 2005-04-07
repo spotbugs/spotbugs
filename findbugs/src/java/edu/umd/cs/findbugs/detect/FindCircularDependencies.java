@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs.detect;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -84,51 +85,28 @@ public class FindCircularDependencies extends BytecodeScanningDetector implement
 	public void report() {
 		removeDependencyLeaves(dependencyGraph);
 		
-		Set<String> visited = new HashSet<String>();
+		LoopFinder lf = new LoopFinder();
 		
 		while (dependencyGraph.size() > 0) {
 			String clsName = dependencyGraph.keySet().iterator().next();
-			if (reportLoop(dependencyGraph, visited, clsName, clsName)) {
+			Set<String> loop = lf.findLoop(dependencyGraph, clsName);
+			if (loop != null) {
 				BugInstance bug = new BugInstance(
 						this,
 						"CD_CIRCULAR_DEPENDENCY",
 						NORMAL_PRIORITY);
-				Iterator<String> vIt = visited.iterator();
-				while (vIt.hasNext()) {
-					String loopCls = vIt.next();
+				Iterator<String> lIt = loop.iterator();
+				while (lIt.hasNext()) {
+					String loopCls = lIt.next();
 					bug.addClass(loopCls);
 					dependencyGraph.remove(loopCls);
 				}
 				bugReporter.reportBug(bug);
 			}
 			dependencyGraph.remove(clsName);
-			visited.clear();
 		}
 			
 		dependencyGraph.clear();
-	}
-	
-	private boolean reportLoop(Map<String, Set<String>> dependencyGraph, Set<String> visited, String startClsName, String curClsName) {
-		Set<String> dependencies = dependencyGraph.get(curClsName);
-		if (dependencies == null)
-			return false;
-		
-		visited.add(curClsName);
-		Iterator<String> dit = dependencies.iterator();
-		while (dit.hasNext()) {
-			String depClass = dit.next();
-			if (depClass.equals(startClsName))
-				return true;
-			
-			if (visited.contains(depClass))
-				continue;
-			
-			if (reportLoop(dependencyGraph, visited, startClsName, depClass))
-				return true;
-		}
-		
-		visited.remove(curClsName);
-		return false;
 	}
 	
 	private void removeDependencyLeaves(Map<String, Set<String>> dependencyGraph)
@@ -155,6 +133,47 @@ public class FindCircularDependencies extends BytecodeScanningDetector implement
 					it.remove();
 				}
 			}
+		}
+	}
+	
+	static class LoopFinder
+	{
+		private Map<String, Set<String>> dGraph = null;
+		private String startClass = null;
+		private Set<String> visited = null;
+		private Set<String> loop = null;
+				
+		public Set<String> findLoop(Map<String, Set<String>> dependencyGraph, String startCls) {
+			dGraph = dependencyGraph;
+			startClass = startCls;
+			visited = new HashSet<String>();
+			loop = new LinkedHashSet<String>();
+			if (findLoop(startClass))
+				return loop;
+			return null;
+		}
+		
+		private boolean findLoop(String curClass) {
+			Set<String> dependencies = dGraph.get(curClass);
+			if (dependencies == null)
+				return false;
+			
+			visited.add(curClass);
+			loop.add(curClass);
+			Iterator<String> dit = dependencies.iterator();
+			while (dit.hasNext()) {
+				String depClass = dit.next();
+				if (depClass.equals(startClass))
+					return true;
+				
+				if (visited.contains(depClass))
+					continue;
+				
+				if (findLoop(depClass))
+					return true;
+			}
+			loop.remove(curClass);
+			return false;			
 		}
 	}
 }
