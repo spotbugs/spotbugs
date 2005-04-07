@@ -81,32 +81,6 @@ public class FindCircularDependencies extends BytecodeScanningDetector implement
 		}
 	}
 	
-	/*
-	Map.Entry<String, Set<String>> entry = it.next();
-	String clsName = entry.getKey();
-	if (alreadyReported.contains(clsName))
-		continue;
-	
-	alreadyReported.add(clsName);
-	Set<String> dependencies = entry.getValue();
-	
-	BugInstance bug = new BugInstance(
-			this,
-			"CD_CIRCULAR_DEPENDENCY",
-			clsName.indexOf("$") >= 0 ? LOW_PRIORITY : NORMAL_PRIORITY)
-			.addClass(clsName);
-	
-    Iterator dit = dependencies.iterator();
-    while (dit.hasNext()) {
-    	clsName = (String)dit.next();
-    	bug.addClass(clsName);
-    	alreadyReported.add(clsName);
-    }
-
-    bugReporter.reportBug(bug);
-}
-*/
-	
 	public void report() {
 		removeDependencyLeaves(dependencyGraph);
 		
