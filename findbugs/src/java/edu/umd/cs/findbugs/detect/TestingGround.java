@@ -28,6 +28,7 @@ import org.apache.bcel.classfile.ConstantString;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
+import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
@@ -36,10 +37,13 @@ import edu.umd.cs.findbugs.visitclass.Constants2;
 
 public class TestingGround extends BytecodeScanningDetector implements Constants2, StatelessDetector {
 
-	private static final boolean active = Boolean.getBoolean("findbugs.tg.active");
+	private static final boolean active 
+		= Boolean.getBoolean("findbugs.tg.active");
 	private NumberFormat formatter = null;
 
 	BugReporter bugReporter;
+
+	OpcodeStack stack = new OpcodeStack();
 	public TestingGround(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 		if (active) {
@@ -63,6 +67,7 @@ public class TestingGround extends BytecodeScanningDetector implements Constants
 		// unless active, don't bother dismantling bytecode
 		if (active) {
 			System.out.println("TestingGround: " + getFullyQualifiedMethodName());
+                	stack.resetForMethodEntry(this);
 			super.visit(obj);
 		}
 	}
