@@ -33,8 +33,8 @@ import java.util.LinkedList;
 public class SearchTreeBuilder <VertexType extends GraphVertex<VertexType>>
 	implements SearchTreeCallback<VertexType> {
 
-	private HashMap<VertexType, SearchTree> searchTreeMap =
-		new HashMap<VertexType, SearchTree>();
+	private HashMap<VertexType, SearchTree<VertexType>> searchTreeMap =
+		new HashMap<VertexType, SearchTree<VertexType>>();
 
 	private LinkedList<SearchTree<VertexType>> searchTreeList =
 		new LinkedList<SearchTree<VertexType>>();
