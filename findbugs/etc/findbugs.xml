@@ -50,6 +50,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.FindFloatMath"
             speed="moderate" 
 	        disabled="true"
+			hidden="true"
             reports="FL_MATH_USING_FLOAT_PRECISION" />
             
   <Detector class="edu.umd.cs.findbugs.detect.CloneIdiom" 
@@ -72,6 +73,7 @@
             speed="moderate"
             reports="SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE" 
 	    	disabled="true"
+			hidden="true"
 		/>
 
   <Detector class="edu.umd.cs.findbugs.detect.FindDoubleCheck" 
@@ -136,6 +138,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.LockedFields" 
             speed="fast" 
             disabled="true"
+			hidden="true"
             reports="IS_INCONSISTENT_SYNC" />
             
   <Detector class="edu.umd.cs.findbugs.detect.PreferZeroLengthArrays" 
@@ -145,6 +148,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.EqStringTest" 
             speed="fast" 
             disabled="true"
+			hidden="true"
             reports="ES_COMPARING_STRINGS_WITH_EQ" />
             
   <Detector class="edu.umd.cs.findbugs.detect.MutableLock" 
@@ -183,11 +187,6 @@
             speed="fast"
             reports="WA_NOT_IN_LOOP,NO_NOTIFY_NOT_NOTIFYALL" />
             
-  <Detector class="edu.umd.cs.findbugs.detect.BCPDoubleCheck" 
-            speed="moderate" 
-            disabled="true"
-            reports="BCPDC_DOUBLECHECK" />
-            
   <Detector class="edu.umd.cs.findbugs.detect.BCPMethodReturnCheck" 
             speed="slow"
             reports="RV_RETURN_VALUE_IGNORED" />
@@ -225,11 +224,6 @@
   <Detector class="edu.umd.cs.findbugs.detect.FindInconsistentSync2" 
             speed="slow"
             reports="IS2_INCONSISTENT_SYNC" />
-            
-  <Detector class="edu.umd.cs.findbugs.detect.FindLocalSelfAssignment" 
-            speed="slow" 
-            reports="SA_LOCAL_SELF_ASSIGNMENT" 
-	    	disabled="true"/>
 
   <Detector class="edu.umd.cs.findbugs.detect.FindLocalSelfAssignment2" 
             speed="fast" 
@@ -316,6 +310,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.FindUnsatisfiedObligation"
             speed="slow"
             reports="OS_OPEN_STREAM"
+			hidden="true"
             disabled="true"/>
 
   <Detector class="edu.umd.cs.findbugs.detect.UnnecessaryMath" 

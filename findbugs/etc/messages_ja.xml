@@ -332,14 +332,6 @@
     </Details>
   </Detector>
 
-  <Detector class="edu.umd.cs.findbugs.detect.BCPDoubleCheck" disabled="true" >
-    <Details>
-<![CDATA[
-<p> ‚±‚ÌƒfƒBƒeƒNƒ^‚ÍAƒ_ƒuƒ‹ƒ`ƒFƒbƒNƒƒbƒLƒ“ƒO‚ð”­Œ©‚µ‚Ü‚·BByteCodePatternƒNƒ‰ƒX‚ðŽg‚Á‚ÄŽÀ‘•‚³‚ê‚Ä‚¢‚é‚Ì‚ÅAƒoƒOƒpƒ^[ƒ“ƒfƒBƒeƒNƒ^‚ÌŠÈ’P‚ÈŽÀ‘•—á‚Æ‚µ‚ÄŽQÆ‚·‚é‚Ì‚É“K‚µ‚Ä‚¢‚Ü‚·B’†‘¬ƒfƒBƒeƒNƒ^‚Å‚·B</p>
-]]>
-    </Details>
-  </Detector>
-
   <Detector class="edu.umd.cs.findbugs.detect.BCPMethodReturnCheck" >
     <Details>
 <![CDATA[
@@ -411,14 +403,6 @@
     <Details>
 <![CDATA[
 <p> ‚±‚ÌƒfƒBƒeƒNƒ^‚ÍAƒƒbƒN‚Ì‚â‚è•û‚ªŠÔˆá‚Á‚½ƒtƒB[ƒ‹ƒhƒAƒNƒZƒX‚ð”­Œ©‚µ‚Ü‚·B’á‘¬ƒfƒBƒeƒNƒ^‚Å‚·B</p>
-]]>
-    </Details>
-  </Detector>
-
-  <Detector class="edu.umd.cs.findbugs.detect.FindLocalSelfAssignment">
-    <Details>
-<![CDATA[
-<p> ‚±‚ÌƒfƒBƒeƒNƒ^‚ÍAƒ[ƒJƒ‹•Ï”‚ÌŽ©ŒÈ‘ã“ü‚ð”­Œ©‚µ‚Ü‚·B’á‘¬ƒfƒBƒeƒNƒ^‚Å‚·B</p>
 ]]>
     </Details>
   </Detector>
@@ -1722,16 +1706,6 @@ final‚Å‚È‚¢ƒtƒB[ƒ‹ƒh–¼‚ÍAÅ‰‚Ì•¶ŽšˆÈŠO‚Ì\¬’PŒê‚ÌÅ‰‚Ì•¶Žš‚ð‘å•¶Žš‚Æ‚µ‚ÄAŽ
     </Details>
   </BugPattern>
 
-  <BugPattern type="BCPDC_DOUBLECHECK">
-    <ShortDescription>ƒtƒB[ƒ‹ƒh‚Ìƒ_ƒuƒ‹ƒ`ƒFƒbƒN‚ðs‚Á‚Ä‚¢‚é‰Â”\«‚ª‚ ‚è‚Ü‚·B</ShortDescription>
-    <LongDescription>{1} ‚Ì {2} ‚É‚¨‚¢‚Ä ƒtƒB[ƒ‹ƒh‚Ìƒ_ƒuƒ‹ƒ`ƒFƒbƒN‚ðs‚Á‚Ä‚¢‚é‰Â”\«‚ª‚ ‚è‚Ü‚·B</LongDescription>
-    <Details>
-<![CDATA[
-  <p> ƒtƒB[ƒ‹ƒh‚Ìƒ_ƒuƒ‹ƒ`ƒFƒbƒN‚ªAByteCodePatternƒx[ƒX‚ÌƒfƒBƒeƒNƒ^‚ÅAŒŸo‚³‚ê‚Ü‚µ‚½B</p>
-]]>
-    </Details>
-  </BugPattern>
-
   <BugPattern type="RV_RETURN_VALUE_IGNORED">
     <ShortDescription>ƒƒ\ƒbƒh‚É‚¨‚¢‚Ä–ß‚è’l‚ð–³Ž‹‚µ‚Ä‚¢‚Ü‚·B</ShortDescription>
     <LongDescription>{1} ‚Í {2} ‚Ì–ß‚è’l‚ð–³Ž‹‚µ‚Ä‚¢‚Ü‚·B</LongDescription>
@@ -2509,7 +2483,6 @@ Object‚Ìequalsƒƒ\ƒbƒh‚ðƒI[ƒo[ƒ‰ƒCƒh‚µ‚Ä‚¢‚È‚¢finalƒNƒ‰ƒX‚Ì.equals(Object o)ƒ
   <BugCode abbrev="UwF" >‘‚©‚ê‚È‚¢ƒtƒB[ƒ‹ƒh‚ª‚ ‚è‚Ü‚·B</BugCode>
   <BugCode abbrev="SIC" >ƒXƒ^ƒeƒBƒbƒN‚È“à•”ƒNƒ‰ƒX‚É‚·‚éŽ–‚ª‰Â”\‚Å‚·</BugCode>
   <BugCode abbrev="TLW" >‚Q‚Â‚ÌƒƒbƒN‚ðŽ‚Á‚½‚Ü‚Üwait‚µ‚Ä‚¢‚Ü‚·B</BugCode>
-  <BugCode abbrev="BcpDC">ƒtƒB[ƒ‹ƒh‚Ìƒ_ƒuƒ‹ƒ`ƒFƒbƒN‚ð‚µ‚Ä‚¢‚é‰Â”\«‚ª‚ ‚è‚Ü‚·B</BugCode>
   <BugCode abbrev="RV" >ƒƒ\ƒbƒh‚Ìreturn’l‚ª–³Ž‹‚³‚ê‚Ä‚¢‚Ü‚·B</BugCode>
   <BugCode abbrev="NP" >nullƒ|ƒCƒ“ƒ^‚ðŽQÆŠO‚µ‚µ‚Ä‚¢‚Ü‚·B</BugCode>
   <BugCode abbrev="OS">ƒXƒgƒŠ[ƒ€‚ªƒNƒ[ƒY‚³‚ê‚È‚¢Œo˜H‚ª‚ ‚è‚Ü‚·B</BugCode>

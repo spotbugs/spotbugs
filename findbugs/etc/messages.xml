@@ -377,17 +377,6 @@ It is a fast detector.</p>
     </Details>
   </Detector>
 
-  <Detector class="edu.umd.cs.findbugs.detect.BCPDoubleCheck" disabled="true" >
-    <Details>
-<![CDATA[
-<p> This detector looks for instances of double checked locking.
-It is implemented using the ByteCodePattern class.  You might want to
-take a look at its source code as an example of an easy way to implement a bug
-pattern detector.  It is a moderately fast detector.</p>
-]]>
-    </Details>
-  </Detector>
-
   <Detector class="edu.umd.cs.findbugs.detect.BCPMethodReturnCheck" >
     <Details>
 <![CDATA[
@@ -486,14 +475,6 @@ with respect to locking.  It is a slow detector.</p>
     </Details>
   </Detector>
 
-  <Detector class="edu.umd.cs.findbugs.detect.FindLocalSelfAssignment">
-    <Details>
-<![CDATA[
-<p> This detector looks for self assignments of local variables.
-It is a slow detector.</p>
-]]>
-    </Details>
-  </Detector>
   <Detector class="edu.umd.cs.findbugs.detect.FindLocalSelfAssignment2">
     <Details>
 <![CDATA[
@@ -2278,16 +2259,6 @@ inner object.&nbsp; This reference makes the instances
     </Details>
   </BugPattern>
 
-  <BugPattern type="BCPDC_DOUBLECHECK">
-    <ShortDescription>Possible double check of field</ShortDescription>
-    <LongDescription>Possible doublecheck on {2} in {1}</LongDescription>
-    <Details>
-<![CDATA[
-  <p> This is a double check found by the ByteCodePattern-based detector.</p>
-]]>
-    </Details>
-  </BugPattern>
-
   <BugPattern type="RV_CHECK_FOR_POSITIVE_INDEXOF">
     <ShortDescription>Method checks to see if result of String.indexOf is positive</ShortDescription>
     <LongDescription>{1} checks to see if result of String.indexOf is positive</LongDescription>
@@ -3432,7 +3403,6 @@ a signed and unsigned right shift (depending upon the size of the shift).
   <BugCode abbrev="UwF" >Unwritten field</BugCode>
   <BugCode abbrev="SIC" >Inner class could be made static</BugCode>
   <BugCode abbrev="TLW" >Wait with two locks held</BugCode>
-  <BugCode abbrev="BcpDC">Possible double check of field</BugCode>
   <BugCode abbrev="RV" >Return value of method is ignored</BugCode>
   <BugCode abbrev="NP" >Null pointer dereference</BugCode>
   <BugCode abbrev="OS">Stream not closed on all paths</BugCode>

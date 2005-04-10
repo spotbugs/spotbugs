@@ -326,14 +326,6 @@
     </Details>
   </Detector>
 
-  <Detector class="edu.umd.cs.findbugs.detect.BCPDoubleCheck" disabled="true" >
-    <Details>
-<![CDATA[
-<p>Ce détecteur recherche les occurrences de verrous par double-vérification. Il est implémenté au moyen de la classe ByteCodePattern. Vous voudrez peut-être étudier son source, comme exemple de la façon d'implémenter simplement un détecteur de bogue générique. C'est un détecteur assez rapide.</p>
-]]>
-    </Details>
-  </Detector>
-
   <Detector class="edu.umd.cs.findbugs.detect.BCPMethodReturnCheck" >
     <Details>
 <![CDATA[
@@ -402,14 +394,6 @@
     <Details>
 <![CDATA[
 <p>Ce détecteur détecte les champs utilisés de manière inconsistante du point de vue des verrous. C'est un détecteur lent.</p>
-]]>
-    </Details>
-  </Detector>
-
-  <Detector class="edu.umd.cs.findbugs.detect.FindLocalSelfAssignment">
-    <Details>
-<![CDATA[
-<p>Ce détecteur recherche les variables locales qui s'auto-alimentent. C'est un détecteur rapide.</p>
 ]]>
     </Details>
   </Detector>
@@ -1655,16 +1639,6 @@ devrait être modifiée pour déclencher NoSuchElementException si elle est appelée
     </Details>
   </BugPattern>
 
-  <BugPattern type="BCPDC_DOUBLECHECK">
-    <ShortDescription>Possible double-vérification d'un champs</ShortDescription>
-    <LongDescription>Possible double-vérification de {2} dans {1}</LongDescription>
-    <Details>
-<![CDATA[
-<p>Ceci est une double-vérification découverte par le détecteur basé sur ByteCodePattern.</p>
-]]>
-    </Details>
-  </BugPattern>
-
   <BugPattern type="RV_RETURN_VALUE_IGNORED">
     <ShortDescription>La méthode ignore une valeur de retour</ShortDescription>
     <LongDescription>La méthode {1} ignore la valeur renvoyée par {2}</LongDescription>
@@ -2371,7 +2345,6 @@ Cf section 4.2.4 des spécifications du langage Java.</p>
   <BugCode abbrev="UwF">Champs jamais alimenté</BugCode>
   <BugCode abbrev="SIC">Classe interne pouvant être rendue statique</BugCode>
   <BugCode abbrev="TLW">wait() avec deux verrous en attente</BugCode>
-  <BugCode abbrev="BcpDC">Possible double-vérification d'un champs</BugCode>
   <BugCode abbrev="RV">Valeur de retour d'une méthode ignorée</BugCode>
   <BugCode abbrev="NP">Déréférencement d'un pointeur à null</BugCode>
   <BugCode abbrev="OS">Flux pas toujours fermé dans les différents chemins d'éxécution</BugCode>
