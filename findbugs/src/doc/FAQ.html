@@ -104,6 +104,12 @@ required.  By default, FindBugs allocates 256M of heap space.
 You can increase this using the <code>-maxHeap <i>n</i></code> option,
 where <i>n</i> is the number of megabytes of heap space to allocate.
 
+<p>If you are using the GUI version of FindBugs, and have many classes to analyze,
+a good amount of memory is needed to generate the summary report. If the process
+appears to be hanging after all classes have been parsed, but before the final
+details have been shown, you can turn this summary report off, by specifying<br/>
+<code>-jvmArgs "-Dfindbugs.noSummary=true"</code><br/> on the command line.</p>
+
 <p> Version 0.6.9 of FindBugs introduced new types of analysis that
 improve precision, but require more memory and time to perform.
 In version 0.7.0 and later, you can disable these analyses by
