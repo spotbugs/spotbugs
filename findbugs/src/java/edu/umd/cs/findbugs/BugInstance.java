@@ -534,6 +534,17 @@ public class BugInstance implements Comparable, XMLWriteableWithMessages, Serial
 	/**
 	 * Add class and method annotations for given method.
 	 *
+	 * @param methodAnnotation  the method
+	 * @return this object
+	 */
+	public BugInstance addClassAndMethod(MethodAnnotation methodAnnotation) {
+		addClass(methodAnnotation.getClassName());
+		addMethod(methodAnnotation);
+		return this;
+	}
+	/**
+	 * Add class and method annotations for given method.
+	 *
 	 * @param methodGen  the method
 	 * @param sourceFile source file the method is defined in
 	 * @return this object
