@@ -371,8 +371,7 @@ public class UserPreferences implements Cloneable {
 	//@Override
 	public Object clone() {
 		try {
-			UserPreferences dup;
-			dup = (UserPreferences) this.getClass().newInstance();
+			UserPreferences dup = (UserPreferences) super.clone();
 			
 			dup.recentProjectsList = new LinkedList<String>();
 			dup.recentProjectsList.addAll(this.recentProjectsList);
@@ -383,10 +382,8 @@ public class UserPreferences implements Cloneable {
 			dup.filterSettings = (ProjectFilterSettings) this.filterSettings.clone();
 			
 			return dup;
-		} catch (InstantiationException e) {
-			throw new IllegalStateException();
-		} catch (IllegalAccessException e) {
-			throw new IllegalStateException();
+		} catch (CloneNotSupportedException e) {
+			throw new RuntimeException(e);
 		}
 	}
 }
