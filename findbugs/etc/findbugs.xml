@@ -40,7 +40,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.TestingGround" 
             speed="fast"
             reports="TESTING"
-            disabled="true"
+            disabled="false"
             hidden="true" />
             
   <Detector class="edu.umd.cs.findbugs.detect.DontCatchIllegalMonitorStateException" 
@@ -161,7 +161,7 @@
             
   <Detector class="edu.umd.cs.findbugs.detect.Naming" 
             speed="fast"
-            reports="NM_VERY_CONFUSING,NM_CONFUSING,NM_CONFUSING_METHOD_NAME,NM_LCASE_HASHCODE,NM_LCASE_TOSTRING,NM_BAD_EQUAL,NM_CLASS_NAMING_CONVENTION,NM_FIELD_NAMING_CONVENTION,NM_METHOD_NAMING_CONVENTION,NM_CLASS_NOT_EXCEPTION" />
+            reports="NM_VERY_CONFUSING,NM_CONFUSING,NM_METHOD_CONSTRUCTOR_CONFUSION,NM_LCASE_HASHCODE,NM_LCASE_TOSTRING,NM_BAD_EQUAL,NM_CLASS_NAMING_CONVENTION,NM_FIELD_NAMING_CONVENTION,NM_METHOD_NAMING_CONVENTION,NM_CLASS_NOT_EXCEPTION" />
             
   <Detector class="edu.umd.cs.findbugs.detect.ReadReturnShouldBeChecked" 
             speed="fast"
@@ -181,7 +181,7 @@
 		/>
   <Detector class="edu.umd.cs.findbugs.detect.UnreadFields" 
             speed="fast"
-            reports="UWF_FIELD_NOT_INIIALIZED_IN_CONSTRUCTOR,UWF_UNWRITTEN_FIELD,SS_SHOULD_BE_STATIC,UUF_UNUSED_FIELD,URF_UNREAD_FIELD,SIC_INNER_SHOULD_BE_STATIC,SIC_INNER_SHOULD_BE_STATIC_ANON,SIC_INNER_SHOULD_BE_STATIC_NEEDS_THIS" />
+            reports="ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD,NP_UNWRITTEN_FIELD,NP_FIELD_NOT_INIIALIZED_IN_CONSTRUCTOR,UWF_FIELD_NOT_INIIALIZED_IN_CONSTRUCTOR,UWF_UNWRITTEN_FIELD,SS_SHOULD_BE_STATIC,UUF_UNUSED_FIELD,URF_UNREAD_FIELD,SIC_INNER_SHOULD_BE_STATIC,SIC_INNER_SHOULD_BE_STATIC_ANON,SIC_INNER_SHOULD_BE_STATIC_NEEDS_THIS" />
             
   <Detector class="edu.umd.cs.findbugs.detect.WaitInLoop" 
             speed="fast"
@@ -355,7 +355,7 @@
 	    />
   <Detector class="edu.umd.cs.findbugs.detect.FindPuzzlers"
             speed="fast"
-            reports="DLS_OVERWRITTEN_INCREMENT,ICAST_QUESTIONABLE_UNSIGNED_RIGHT_SHIFT"
+            reports="DLS_OVERWRITTEN_INCREMENT,ICAST_BAD_SHIFT_AMOUNT,ICAST_QUESTIONABLE_UNSIGNED_RIGHT_SHIFT,PZ_BAD_MONTH,IM_MULTIPLYING_RESULT_OF_IREM"
 	    />
   			
   <Detector class="edu.umd.cs.findbugs.detect.FindBugsSummaryStats" 
@@ -446,7 +446,7 @@
   <BugPattern abbrev="Nm" type="NM_CLASS_NAMING_CONVENTION" category="STYLE" />
   <BugPattern abbrev="Nm" type="NM_VERY_CONFUSING" category="CORRECTNESS" />
   <BugPattern abbrev="Nm" type="NM_CONFUSING" category="CORRECTNESS" />
-  <BugPattern abbrev="Nm" type="NM_CONFUSING_METHOD_NAME" category="CORRECTNESS" />
+  <BugPattern abbrev="Nm" type="NM_METHOD_CONSTRUCTOR_CONFUSION" category="CORRECTNESS" />
   <BugPattern abbrev="Nm" type="NM_LCASE_HASHCODE" category="CORRECTNESS" />
   <BugPattern abbrev="Nm" type="NM_LCASE_TOSTRING" category="CORRECTNESS" />
   <BugPattern abbrev="Nm" type="NM_BAD_EQUAL" category="CORRECTNESS"/>
@@ -468,6 +468,8 @@
   <BugPattern abbrev="UuF" type="UUF_UNUSED_FIELD" category="PERFORMANCE" />
   <BugPattern abbrev="UrF" type="URF_UNREAD_FIELD" category="PERFORMANCE" />
   <BugPattern abbrev="QF" type="QF_QUESTIONABLE_FOR_LOOP" category="CORRECTNESS" />
+  <BugPattern abbrev="NP" type="NP_FIELD_NOT_INIIALIZED_IN_CONSTRUCTOR" category="STYLE" />
+  <BugPattern abbrev="NP" type="NP_UNWRITTEN_FIELD" category="CORRECTNESS" />
   <BugPattern abbrev="UwF" type="UWF_FIELD_NOT_INIIALIZED_IN_CONSTRUCTOR" category="STYLE" />
   <BugPattern abbrev="UwF" type="UWF_UNWRITTEN_FIELD" category="CORRECTNESS" />
   <BugPattern abbrev="SIC" type="SIC_INNER_SHOULD_BE_STATIC" category="PERFORMANCE" />
@@ -548,5 +550,9 @@
   <BugPattern abbrev="BC" type="BC_BAD_CAST_TO_ABSTRACT_COLLECTION" category="STYLE"/>
   <BugPattern abbrev="RE" type="RE_BAD_SYNTAX_FOR_REGULAR_EXPRESSION" category="CORRECTNESS"/>
   <BugPattern abbrev="DLS" type="DLS_OVERWRITTEN_INCREMENT" category="CORRECTNESS"/>
+  <BugPattern abbrev="ICAST" type="ICAST_BAD_SHIFT_AMOUNT" category="CORRECTNESS"/>
+  <BugPattern abbrev="IM" type="IM_MULTIPLYING_RESULT_OF_IREM" category="CORRECTNESS"/>
   <BugPattern abbrev="ICAST" type="ICAST_QUESTIONABLE_UNSIGNED_RIGHT_SHIFT" category="STYLE"/>
+  <BugPattern abbrev="PZ" type="PZ_BAD_MONTH" category="CORRECTNESS"/>
+  <BugPattern abbrev="ST" type="ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD" category="STYLE"/>
 </FindbugsPlugin>

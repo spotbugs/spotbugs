@@ -1854,9 +1854,9 @@ Names of fields that are not final should be in mixed case with a lowercase firs
 ]]>
     </Details>
   </BugPattern>
-  <BugPattern type="NM_CONFUSING_METHOD_NAME">
-    <ShortDescription>Confusing method name</ShortDescription>
-    <LongDescription>Confusing method name: {1}</LongDescription>
+  <BugPattern type="NM_METHOD_CONSTRUCTOR_CONFUSION">
+    <ShortDescription>Apparent method/constructor confusion</ShortDescription>
+    <LongDescription>Method {1} was probably intended to be a constructor</LongDescription>
     <Details>
 <![CDATA[
   <p> This regular method has the same name as the class it is defined in. It is likely that this was intended to be a constructor.
@@ -2145,6 +2145,29 @@ value. Check for errors (should it have been initialized?), or remove it if it i
 ]]>
     </Details>
   </BugPattern>
+  <BugPattern type="ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD">
+    <ShortDescription>Write to static field from instance method</ShortDescription>
+    <LongDescription>Write to static field {2} from instance method {1}</LongDescription>
+    <Details>
+<![CDATA[
+  <p> This instance method writes to a static field. This is tricky to get
+correct if multiple instances are being manipulated, 
+and generally bad practice.
+</p>
+]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="NP_UNWRITTEN_FIELD">
+    <ShortDescription>Read of unwritten field</ShortDescription>
+    <LongDescription>Read of of unwritten field at {1}</LongDescription>
+    <Details>
+<![CDATA[
+  <p> The program is ferencing a field that does not seem to ever be
+written to. Deferencing this value will generate a null pointer exception.
+</p>
+]]>
+    </Details>
+  </BugPattern>
 
   <BugPattern type="SIC_INNER_SHOULD_BE_STATIC">
     <ShortDescription>Should be a static inner class</ShortDescription>
@@ -2163,6 +2186,19 @@ value. Check for errors (should it have been initialized?), or remove it if it i
 
 
 
+  <BugPattern type="NP_FIELD_NOT_INIIALIZED_IN_CONSTRUCTOR">
+    <ShortDescription>Read of field not initialized in constructor</ShortDescription>
+    <LongDescription>Read of field not initialized in constructor at {1}</LongDescription>
+    <Details>
+<![CDATA[
+  <p> This is a read of a field is never initialized within any constructor, and is therefore could be null after
+the object is initialized. This might be a coding error, or else the class containing the field
+is written in a way that depends upon methods being called in some specific order (a little bit dodgy,
+but not necessarily wrong).
+</p>
+]]>
+    </Details>
+  </BugPattern>
   <BugPattern type="UWF_FIELD_NOT_INIIALIZED_IN_CONSTRUCTOR">
     <ShortDescription>Field not initialized in constructor</ShortDescription>
     <LongDescription>Field not initialized in constructor: {1}</LongDescription>
@@ -2177,6 +2213,8 @@ before being initialized.
 ]]>
     </Details>
   </BugPattern>
+
+
   <BugPattern type="UWF_UNWRITTEN_FIELD">
     <ShortDescription>Unwritten field</ShortDescription>
     <LongDescription>Unwritten field: {1}</LongDescription>
@@ -3350,6 +3388,48 @@ a signed and unsigned right shift (depending upon the size of the shift).
 ]]>
     </Details>
   </BugPattern>
+  <BugPattern type="ICAST_BAD_SHIFT_AMOUNT">
+    <ShortDescription>Integer shift by an amount not in the range 0..31</ShortDescription>
+    <LongDescription>Integer shift by {2} in {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+The code performs an integer shift by a constant amount outside
+the range 0..31.
+The effect of this is to use the lower 5 bits of the integer
+value to decide how much to shift by. This probably isn't want was expected,
+and it at least confusing.
+</p>
+]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="IM_MULTIPLYING_RESULT_OF_IREM">
+    <ShortDescription>Integer multiply of result of integer remainder</ShortDescription>
+    <LongDescription>Integer multiple of result of integer remainder in {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+The code multiplies the result of an integer remaining by an integer constant.
+Be sure you don't have your operator precedence confused. For example
+i % 60 * 1000 is (i % 60) * 1000, not i % (60 * 1000).
+</p>
+]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="PZ_BAD_MONTH">
+    <ShortDescription>Passes a constant value for a month outside of the expected range of 0..11</ShortDescription>
+    <LongDescription>{1} passes a bad month value of {2} to {3}</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+This code passes a constant month 
+value outside the expected range of 0..11 to a method.
+</p>
+]]>
+    </Details>
+  </BugPattern>
+
+
    
  
     <!--
@@ -3450,4 +3530,6 @@ a signed and unsigned right shift (depending upon the size of the shift).
   <BugCode abbrev="ESync">Empty Synchronized blocks</BugCode>
   <BugCode abbrev="QF">Questionable for loops</BugCode>
   <BugCode abbrev="BC">Bad casts of object references</BugCode>
+  <BugCode abbrev="IM">Questionable integer math</BugCode>
+  <BugCode abbrev="ST">Misuse of static fields</BugCode>
   </MessageCollection>

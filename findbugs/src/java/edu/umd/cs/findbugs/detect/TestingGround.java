@@ -38,7 +38,7 @@ import edu.umd.cs.findbugs.visitclass.Constants2;
 public class TestingGround extends BytecodeScanningDetector implements Constants2, StatelessDetector {
 
 	private static final boolean active 
-		= Boolean.getBoolean("findbugs.tg.active");
+		 = Boolean.getBoolean("findbugs.tg.active");
 	private NumberFormat formatter = null;
 
 	BugReporter bugReporter;
@@ -66,7 +66,7 @@ public class TestingGround extends BytecodeScanningDetector implements Constants
 	public void visit(Code obj) {
 		// unless active, don't bother dismantling bytecode
 		if (active) {
-			System.out.println("TestingGround: " + getFullyQualifiedMethodName());
+			// System.out.println("TestingGround: " + getFullyQualifiedMethodName());
                 	stack.resetForMethodEntry(this);
 			super.visit(obj);
 		}
@@ -74,9 +74,25 @@ public class TestingGround extends BytecodeScanningDetector implements Constants
 
 
 	public void sawOpcode(int seen) {
+		if (seen == INVOKESTATIC
+			&& getNameConstantOperand().equals("forName")
+			&& getClassConstantOperand().equals("java/lang/Class")
+			&& getSigConstantOperand().equals("(Ljava/lang/String;)Ljava/lang/Class;"))
+			if (stack.getStackDepth() == 0) 
+				System.out.println("empty stack");
+			else {
 
-		printOpCode(seen);
+			OpcodeStack.Item item = stack.getStackItem(0);
+			Object constantValue = item.getConstant();
+			if (constantValue != null
+				&& constantValue instanceof String)
+				System.out.println("XXYYZ: " + getFullyQualifiedMethodName() + " Class.forName("+constantValue+")");
+			else
+				System.out.println("XXYYZ: " + getFullyQualifiedMethodName() + " Class.forName(???)");
 
+			}
+
+		stack.sawOpcode(this,seen);
 	}
 
 	private void printOpCode(int seen) {

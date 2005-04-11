@@ -63,8 +63,10 @@ public class FindPuzzlers extends BytecodeScanningDetector implements Constants2
 		if ((seen == IFEQ || seen == IFNE) && getPrevOpcode(1) == IMUL
 			&& ( getPrevOpcode(2) == SIPUSH
 				|| getPrevOpcode(2) == BIPUSH
-				))
-			 bugReporter.reportBug(new BugInstance(this, "TESTING", LOW_PRIORITY)
+				)
+			&& getPrevOpcode(3) == IREM
+				)
+			 bugReporter.reportBug(new BugInstance(this, "IM_MULTIPLYING_RESULT_OF_IREM", LOW_PRIORITY)
                                         .addClassAndMethod(this)
                                         .addSourceLine(this));
 		if (seen == I2S && getPrevOpcode(1) == IUSHR
@@ -95,9 +97,11 @@ public class FindPuzzlers extends BytecodeScanningDetector implements Constants2
 				constantArgumentToShift = true;
 				valueOfConstantArgumentToShift = ((Integer)rightHandSide).intValue();
 				if (valueOfConstantArgumentToShift < 0 || valueOfConstantArgumentToShift >= 32)
-				 bugReporter.reportBug(new BugInstance(this, "TESTING", LOW_PRIORITY)
+				 bugReporter.reportBug(new BugInstance(this, "ICAST_BAD_SHIFT_AMOUNT", NORMAL_PRIORITY)
 						.addClassAndMethod(this)
-						.addSourceLine(this));
+						.addInt(valueOfConstantArgumentToShift)
+						.addSourceLine(this)
+						);
 				}
 				if (leftHandSide != null 
 					&& leftHandSide instanceof Integer
@@ -121,9 +125,12 @@ public class FindPuzzlers extends BytecodeScanningDetector implements Constants2
 			if (o != null && o instanceof Integer) {
 				int v =  ((Integer)o).intValue();
 				if (v < 0 || v > 11)
-				 bugReporter.reportBug(new BugInstance(this, "TESTING", LOW_PRIORITY)
+				 bugReporter.reportBug(new BugInstance(this, "PZ_BAD_MONTH", NORMAL_PRIORITY)
 						.addClassAndMethod(this)
-						.addSourceLine(this));
+						.addInt(v)
+						.addCalledMethod(this)
+						.addSourceLine(this)
+					);
 				}
 		}
 				
@@ -142,9 +149,12 @@ public class FindPuzzlers extends BytecodeScanningDetector implements Constants2
 			if (o != null && o instanceof Integer) {
 				int v =  ((Integer)o).intValue();
 				if (v < 0 || v > 11)
-				 bugReporter.reportBug(new BugInstance(this, "TESTING", LOW_PRIORITY)
+				 bugReporter.reportBug(new BugInstance(this, "PZ_BAD_MONTH", NORMAL_PRIORITY)
 						.addClassAndMethod(this)
-						.addSourceLine(this));
+						.addInt(v)
+						.addCalledMethod(this)
+						.addSourceLine(this)
+						);
 				}
 		}
 				

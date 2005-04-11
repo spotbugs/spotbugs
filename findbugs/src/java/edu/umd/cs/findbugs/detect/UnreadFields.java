@@ -25,8 +25,11 @@ import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import edu.umd.cs.findbugs.MethodAnnotation;
+import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.FieldAnnotation;
 import edu.umd.cs.findbugs.visitclass.Constants2;
+import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.*;
 import org.apache.bcel.generic.Type;
@@ -34,11 +37,23 @@ import org.apache.bcel.generic.Type;
 public class UnreadFields extends BytecodeScanningDetector implements Constants2 {
 	private static final boolean DEBUG = Boolean.getBoolean("unreadfields.debug");
 
-	Set<FieldAnnotation> assumedNonNull = new HashSet<FieldAnnotation>();
+	static class ProgramPoint {
+		ProgramPoint(DismantleBytecode v) {
+			method = MethodAnnotation.fromVisitedMethod(v);
+			sourceLine = SourceLineAnnotation
+				.fromVisitedInstruction(v,v.getPC());
+			}
+		MethodAnnotation method;
+		SourceLineAnnotation sourceLine;
+		}
+
+	Map<FieldAnnotation,HashSet<ProgramPoint> >
+		assumedNonNull = new HashMap<FieldAnnotation,HashSet<ProgramPoint>>();
 	Set<FieldAnnotation> nullTested = new HashSet<FieldAnnotation>();
 	Set<FieldAnnotation> declaredFields = new TreeSet<FieldAnnotation>();
 	Set<FieldAnnotation> fieldsOfSerializableOrNativeClassed
 	        = new HashSet<FieldAnnotation>();
+	Set<FieldAnnotation> staticFieldsReadInThisMethod = new HashSet<FieldAnnotation>();
 	Set<FieldAnnotation> myFields = new TreeSet<FieldAnnotation>();
 	Set<FieldAnnotation> writtenFields = new HashSet<FieldAnnotation>();
 	Set<FieldAnnotation> writtenInConstructorFields = new HashSet<FieldAnnotation>();
@@ -137,7 +152,9 @@ public class UnreadFields extends BytecodeScanningDetector implements Constants2
 	public void visit(Code obj) {
 		count_aload_1 = 0;
 		nullTested.clear();
+		seenInvokeStatic = false;
                 opcodeStack.resetForMethodEntry(this);
+                staticFieldsReadInThisMethod.clear();
 		super.visit(obj);
 		if (getMethodName().equals("<init>") && count_aload_1 > 1
 		        && (getClassName().indexOf('$') >= 0
@@ -154,9 +171,45 @@ public class UnreadFields extends BytecodeScanningDetector implements Constants2
 			hasNativeMethods = true;
 	}
 
+	boolean seenInvokeStatic;
 
 	public void sawOpcode(int seen) {
 		
+
+		if (seen == GETSTATIC) {
+			FieldAnnotation f = FieldAnnotation.fromReferencedField(this);
+                	staticFieldsReadInThisMethod.add(f);
+			}
+		else if (seen == INVOKESTATIC) {
+			seenInvokeStatic = true;
+			}
+		else if (seen == PUTSTATIC 
+			&& !getMethod().isStatic()) {
+			FieldAnnotation f = FieldAnnotation.fromReferencedField(this);
+                	if (!staticFieldsReadInThisMethod.contains(f)) {
+				int priority = LOW_PRIORITY;
+				if (!seenInvokeStatic 
+				     && staticFieldsReadInThisMethod.isEmpty())
+					priority--;
+				if (getThisClass().isPublic() 
+					&& getMethod().isPublic())
+					priority--;
+				if (getThisClass().isPrivate() 
+				    || getMethod().isPrivate())
+					priority++;
+				if (getClassName().indexOf('$') != -1)
+					priority++;
+				bugReporter.reportBug(new BugInstance(this, 
+						"ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD",
+					priority
+					)
+				        .addClassAndMethod(this)
+				        .addField(f)
+				        .addSourceLine(this)
+					);
+				}
+			}
+
 
 		if (seen == INVOKEVIRTUAL || seen == INVOKEINTERFACE
 			|| seen == INVOKESPECIAL)  {
@@ -220,8 +273,14 @@ public class UnreadFields extends BytecodeScanningDetector implements Constants2
 			if (opcodeStack.getStackDepth() > pos) {
 			OpcodeStack.Item item = opcodeStack.getStackItem(pos);
 			FieldAnnotation f = item.getField();
-			if (f != null && !nullTested.contains(f)) {
-				assumedNonNull.add(f);
+			if (f != null && !nullTested.contains(f) && !writtenInConstructorFields.contains(f)) {
+				ProgramPoint p = new ProgramPoint(this);
+				HashSet <ProgramPoint> s = assumedNonNull.get(f);
+				if (s == null) {
+					s = new HashSet<ProgramPoint>();
+					assumedNonNull.put(f,s);
+					}
+				s.add(p);
 				if (DEBUG)
 				System.out.println(f + " assumed non-null in " +
 					getFullyQualifiedMethodName());
@@ -268,7 +327,7 @@ public class UnreadFields extends BytecodeScanningDetector implements Constants2
 		        new TreeSet<FieldAnnotation>(declaredFields);
 		notInitializedInConstructors.retainAll(readFields);
 		notInitializedInConstructors.retainAll(writtenFields);
-		notInitializedInConstructors.retainAll(assumedNonNull);
+		notInitializedInConstructors.retainAll(assumedNonNull.keySet());
 		notInitializedInConstructors.removeAll(writtenInConstructorFields);
 		TreeSet<FieldAnnotation> readOnlyFields =
 		        new TreeSet<FieldAnnotation>(declaredFields);
@@ -285,10 +344,17 @@ public class UnreadFields extends BytecodeScanningDetector implements Constants2
 			if (!superWrittenFields.contains(fieldName)
 				 && !fieldsOfSerializableOrNativeClassed.contains(f)
 				 && (fieldSignature.charAt(0) == 'L' || fieldSignature.charAt(0) == '[')
-				)
-				bugReporter.reportBug(new BugInstance(this, "UWF_FIELD_NOT_INIIALIZED_IN_CONSTRUCTOR", LOW_PRIORITY)
+				) {
+				int priority = LOW_PRIORITY;
+				if (assumedNonNull.get(f).size() < 4) {
+				   priority = NORMAL_PRIORITY;
+				}
+				bugReporter.reportBug(new BugInstance(this, 
+						"UWF_FIELD_NOT_INIIALIZED_IN_CONSTRUCTOR", 
+						priority)
 				        .addClass(className)
 				        .addField(f));
+				}
 		}
 
 
@@ -302,7 +368,16 @@ public class UnreadFields extends BytecodeScanningDetector implements Constants2
 				int priority = NORMAL_PRIORITY;
 				if (!(fieldSignature.charAt(0) == 'L' || fieldSignature.charAt(0) == '['))
 					priority++;
-				else if (assumedNonNull.contains(f)) priority--;
+				else if (assumedNonNull.containsKey(f)) {
+				priority--;
+				for(ProgramPoint p : assumedNonNull.get(f)) 
+				bugReporter.reportBug(new BugInstance(this, 
+					"NP_UNWRITTEN_FIELD", 
+					NORMAL_PRIORITY)
+				        .addClassAndMethod(p.method)
+				        .addSourceLine(p.sourceLine)
+					);
+				}
 				bugReporter.reportBug(new BugInstance(this, 
 					"UWF_UNWRITTEN_FIELD", 
 					priority)

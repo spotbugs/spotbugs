@@ -241,7 +241,7 @@ public class Naming extends PreorderVisitor implements Detector, Constants2 {
 				: LOW_PRIORITY)
 			        .addClassAndMethod(this));
 		if (getMethodName().equals(baseClassName)) {
-			bugReporter.reportBug(new BugInstance(this, "NM_CONFUSING_METHOD_NAME",
+			bugReporter.reportBug(new BugInstance(this, "NM_METHOD_CONSTRUCTOR_CONFUSION",
 			        (getMethodSig().equals("()V") 
 					&& obj.getCode().getCode().length > 1
 					&& !obj.isNative()
