@@ -1134,6 +1134,14 @@ public class FindBugs implements Constants2, ExitCodes {
 	 * specified by the current project.
 	 */
 	private void clearRepository() {
+		// If the old repository backing store is a URLClassPathRepository
+		// (which it certainly should be), destroy it.
+		// This will close all underlying resources (archive files, etc.)
+		org.apache.bcel.util.Repository repos = Repository.getRepository();
+		if (repos instanceof URLClassPathRepository) {
+			((URLClassPathRepository) repos).destroy();
+		}
+		
 		// Purge repository of previous contents
 		Repository.clearCache();
 

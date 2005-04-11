@@ -46,6 +46,8 @@ import org.apache.bcel.classfile.JavaClass;
  * @author David Hovemeyer
  */
 public class URLClassPath implements Serializable {
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * Interface describing a single classpath entry.
 	 */
@@ -64,6 +66,11 @@ public class URLClassPath implements Serializable {
 		 * Get filename or URL as string.
 		 */
 		public String getURL();
+		
+		/**
+		 * Close the underlying resource.
+		 */
+		public void close();
 	}
 
 	/**
@@ -98,6 +105,14 @@ public class URLClassPath implements Serializable {
 		 */
 		public String getURL() {
 			return zipFile.getName();
+		}
+
+		public void close() {
+			try {
+				zipFile.close();
+			} catch (IOException e) {
+				// Ignore
+			}
 		}
 	}
 	
@@ -135,6 +150,10 @@ public class URLClassPath implements Serializable {
 		 */
 		public String getURL() {
 			return dirName;
+		}
+
+		public void close() {
+			// Nothing to do here
 		}
 		
 	}
@@ -174,6 +193,10 @@ public class URLClassPath implements Serializable {
 		public String getURL() {
 			return remoteArchiveURL.toString();
 		}
+
+		public void close() {
+			// Nothing to do
+		}
 		
 	}
 	
@@ -208,6 +231,10 @@ public class URLClassPath implements Serializable {
 		 */
 		public String getURL() {
 			return remoteDirURL.toString();
+		}
+
+		public void close() {
+			// Nothing to do
 		}
 	}
 
@@ -357,6 +384,16 @@ public class URLClassPath implements Serializable {
 					// Ignore
 				}
 			}
+		}
+	}
+	
+	/**
+	 * Close all underlying resources.
+	 */
+	public void close() {
+		for (Iterator<Entry> i = entryList.iterator(); i.hasNext();) {
+			Entry entry = i.next();
+			entry.close();
 		}
 	}
 }

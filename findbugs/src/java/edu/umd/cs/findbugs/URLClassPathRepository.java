@@ -47,12 +47,22 @@ import org.apache.bcel.util.Repository;
  * @author David Hovemeyer
  */
 public class URLClassPathRepository implements Repository {
+	private static final long serialVersionUID = 1L;
+
 	private Map<String, JavaClass> nameToClassMap;
 	private URLClassPath urlClassPath;
 	
 	public URLClassPathRepository() {
 		this.nameToClassMap = new HashMap<String, JavaClass>();
 		this.urlClassPath = new URLClassPath();
+	}
+	
+	/**
+	 * Clear the repository and close all underlying resources.
+	 */
+	public void destroy() {
+		nameToClassMap.clear();
+		urlClassPath.close();
 	}
 
 	/**
