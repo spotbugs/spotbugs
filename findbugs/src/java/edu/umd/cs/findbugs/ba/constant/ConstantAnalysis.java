@@ -41,7 +41,6 @@ import edu.umd.cs.findbugs.ba.FrameDataflowAnalysis;
  */
 public class ConstantAnalysis extends FrameDataflowAnalysis<Constant, ConstantFrame> {
 	private MethodGen methodGen;
-	private DepthFirstSearch dfs;
 	private ConstantFrameModelingVisitor visitor;
 	
 	public ConstantAnalysis(MethodGen methodGen, DepthFirstSearch dfs) {
