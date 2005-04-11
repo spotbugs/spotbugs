@@ -475,7 +475,6 @@
   <BugPattern abbrev="SIC" type="SIC_INNER_SHOULD_BE_STATIC_ANON" category="PERFORMANCE" />
   <BugPattern abbrev="Wa" type="WA_NOT_IN_LOOP" category="MT_CORRECTNESS" />
   <BugPattern abbrev="No" type="NO_NOTIFY_NOT_NOTIFYALL" category="MT_CORRECTNESS" />
-  <BugPattern abbrev="BcpDC" type="BCPDC_DOUBLECHECK" category="MT_CORRECTNESS" />
   <BugPattern abbrev="RV" type="RV_RETURN_VALUE_IGNORED" category="CORRECTNESS" />
   <BugPattern abbrev="RV" type="RV_CHECK_FOR_POSITIVE_INDEXOF" category="CORRECTNESS" />
   <BugPattern abbrev="RV" type="RV_DONT_JUST_NULL_CHECK_READLINE" category="CORRECTNESS" />
