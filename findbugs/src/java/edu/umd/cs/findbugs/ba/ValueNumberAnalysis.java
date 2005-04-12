@@ -19,10 +19,12 @@
 
 package edu.umd.cs.findbugs.ba;
 
-import java.util.*;
+import java.util.BitSet;
+import java.util.HashMap;
+import java.util.IdentityHashMap;
+import java.util.Iterator;
 
 import org.apache.bcel.classfile.Method;
-import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.MethodGen;
 
