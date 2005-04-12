@@ -26,6 +26,7 @@ public class ClassScreenerTest extends TestCase {
 	private ClassScreener emptyScreener;
 	private ClassScreener particularClassScreener;
 	private ClassScreener particularPackageScreener;
+	private ClassScreener particularPackageScreener2;
 
 	private static String makeFileName(String className) {
 		return className.replace('.', '/') + ".class";
@@ -36,8 +37,9 @@ public class ClassScreenerTest extends TestCase {
 	}
 
 	private static final String FOOBAR_PACKAGE = "com.foobar";
+	private static final String FOOBAR_PACKAGE_WITH_TRAILING_DOT = "com.foobar.";
 	private static final String FURRYLEMUR_PACKAGE = "org.furrylemur";
-
+	
 	private static final String SOME_CLASS = FOOBAR_PACKAGE + ".SomeClass";
 	private static final String SOME_OTHER_CLASS = FOOBAR_PACKAGE + ".SomeOtherClass";
 	private static final String UNRELATED_THING_CLASS = FURRYLEMUR_PACKAGE + ".UnrelatedThing";
@@ -58,6 +60,9 @@ public class ClassScreenerTest extends TestCase {
 
 		particularPackageScreener = new ClassScreener();
 		particularPackageScreener.addAllowedPackage(FOOBAR_PACKAGE);
+		
+		particularPackageScreener2 = new ClassScreener();
+		particularPackageScreener2.addAllowedPackage(FOOBAR_PACKAGE_WITH_TRAILING_DOT);
 	}
 
 	public void testEmptyClassScreener() {
@@ -81,13 +86,17 @@ public class ClassScreenerTest extends TestCase {
 	}
 
 	public void testParticularPackageScreener() {
-		Assert.assertTrue(particularPackageScreener.matches(SOME_CLASS_FILENAME));
-		Assert.assertTrue(particularPackageScreener.matches(SOME_OTHER_CLASS_FILENAME));
-		Assert.assertFalse(particularPackageScreener.matches(UNRELATED_THING_CLASS_FILENAME));
+		testPackageScreener(particularPackageScreener);
+		testPackageScreener(particularPackageScreener2);
+	}
 
-		Assert.assertTrue(particularPackageScreener.matches(SOME_CLASS_JARFILENAME));
-		Assert.assertTrue(particularPackageScreener.matches(SOME_OTHER_CLASS_JARFILENAME));
-		Assert.assertFalse(particularPackageScreener.matches(UNRELATED_THING_CLASS_JARFILENAME));
+	private void testPackageScreener(ClassScreener screener) {
+		Assert.assertTrue(screener.matches(SOME_CLASS_FILENAME));
+		Assert.assertTrue(screener.matches(SOME_OTHER_CLASS_FILENAME));
+		Assert.assertFalse(screener.matches(UNRELATED_THING_CLASS_FILENAME));
+		Assert.assertTrue(screener.matches(SOME_CLASS_JARFILENAME));
+		Assert.assertTrue(screener.matches(SOME_OTHER_CLASS_JARFILENAME));
+		Assert.assertFalse(screener.matches(UNRELATED_THING_CLASS_JARFILENAME));
 	}
 }
 
