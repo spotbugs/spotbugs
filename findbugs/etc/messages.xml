@@ -2957,7 +2957,7 @@ correctly.
     </Details>
   </BugPattern>
   
-  <BugPattern type="UOE_BAD_ARRAY_COMPARE">
+  <BugPattern type="EC_BAD_ARRAY_COMPARE">
     <ShortDescription>Invocation of equals() on an array, which is equivalent to ==</ShortDescription>
     <LongDescription>{1} invokes equals() on an array, which is equivalent to ==</LongDescription>
     <Details>
@@ -3532,4 +3532,5 @@ value outside the expected range of 0..11 to a method.
   <BugCode abbrev="BC">Bad casts of object references</BugCode>
   <BugCode abbrev="IM">Questionable integer math</BugCode>
   <BugCode abbrev="ST">Misuse of static fields</BugCode>
+  <BugCode abbrev="PZ">Bug inspired by Josh Bloch's and Neal Gafter's Programming Puzzlers</BugCode>
   </MessageCollection>
