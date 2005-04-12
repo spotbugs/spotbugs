@@ -771,7 +771,7 @@ public class FindBugs implements Constants2, ExitCodes {
 	 * Member variables
 	 * ---------------------------------------------------------------------- */
 
-	static final boolean DEBUG = Boolean.getBoolean("findbugs.debug");
+	public static final boolean DEBUG = Boolean.getBoolean("findbugs.debug");
 
 	/**
 	 * FindBugs home directory.
