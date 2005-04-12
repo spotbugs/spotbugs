@@ -103,7 +103,7 @@ import java.util.List;
  * @author Mike Fagan <a href="mailto:mfagan@tde.com">mfagan@tde.com</a>
  * @author Michael Tamm <a href="mailto:mail@michaeltamm.de">mail@michaeltamm.de</a>
  *
- * @version $Revision: 1.31 $
+ * @version $Revision: 1.32 $
  *
  * @since Ant 1.5
  *
@@ -312,10 +312,22 @@ public class FindBugsTask extends Task {
 	 * the auxclasspath to use.
 	 */
 	public void setAuxClasspath(Path src) {
-		if (auxClasspath == null) {
-			auxClasspath = src;
-		} else {
-			auxClasspath.append(src);
+		boolean nonEmpty = false;
+		
+		String[] elementList = src.list();
+		for (int i = 0; i < elementList.length; ++i) {
+			if (!elementList[i].equals("")) {
+				nonEmpty = true;
+				break;
+			}
+		}
+		
+		if (nonEmpty) {
+			if (auxClasspath == null) {
+				auxClasspath = src;
+			} else {
+				auxClasspath.append(src);
+			}
 		}
 	}
 
