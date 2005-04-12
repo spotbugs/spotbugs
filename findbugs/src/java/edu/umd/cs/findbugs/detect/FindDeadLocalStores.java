@@ -49,6 +49,7 @@ import org.apache.bcel.generic.StoreInstruction;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
+import edu.umd.cs.findbugs.FindBugs;
 import edu.umd.cs.findbugs.FindBugsAnalysisProperties;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.CFG;
@@ -147,6 +148,10 @@ public class FindDeadLocalStores implements Detector {
 	
 	private void analyzeMethod(ClassContext classContext, Method method)
 			throws DataflowAnalysisException, CFGBuilderException {
+		
+		if (FindBugs.DEBUG) {
+			System.out.println("    Analyzing method " + method.toString());
+		}
 		
 		JavaClass javaClass = classContext.getJavaClass();
 		
