@@ -84,11 +84,14 @@ public class BadResultSetAccess extends BytecodeScanningDetector implements Cons
 
 	public void sawOpcode(int seen) {
 		try {
-			if ((seen == INVOKEINTERFACE)
-			&&  (getClassConstantOperand().equals("java/sql/ResultSet"))) {
+			if (seen == INVOKEINTERFACE) {
 				String methodName = getNameConstantOperand();
-				if ((methodName.startsWith("get") && dbFieldTypesSet.contains(methodName.substring(3)))
-				||  (methodName.startsWith("update") && dbFieldTypesSet.contains(methodName.substring(6)))) {
+				String clsConstant = getClassConstantOperand();
+				if  ((clsConstant.equals("java/sql/ResultSet") && 
+						((methodName.startsWith("get") && dbFieldTypesSet.contains(methodName.substring(3))) ||  
+						 (methodName.startsWith("update") && dbFieldTypesSet.contains(methodName.substring(6)))))
+			    ||   ((clsConstant.equals("java/sql/PreparedStatement") &&  
+			    		((methodName.startsWith("set") && dbFieldTypesSet.contains(methodName.substring(3))))))) {
 					String signature = getSigConstantOperand();
 					Type[] argTypes = Type.getArgumentTypes(signature);
 					int numParms = argTypes.length;
@@ -101,7 +104,7 @@ public class BadResultSetAccess extends BytecodeScanningDetector implements Cons
 							        .addSourceLine(this));
 						}
 					}
-				} 
+				}
 			}
 		} finally {
 			stack.sawOpcode(this, seen);

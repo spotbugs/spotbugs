@@ -1,4 +1,6 @@
 
+import java.io.ByteArrayInputStream;
+import java.sql.PreparedStatement;
 import java.sql.ResultSetMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -50,5 +52,9 @@ public class BadResultSetAccessTest
 	
 	public void test6(ResultSet rs, boolean get1) throws SQLException {
 		String name = rs.getString( get1 ? 1 : 0 );
+	}
+	
+	public void test7(PreparedStatement ps) throws SQLException {
+		ps.setAsciiStream(0, new ByteArrayInputStream(new byte[0]), 0);
 	}
 }
