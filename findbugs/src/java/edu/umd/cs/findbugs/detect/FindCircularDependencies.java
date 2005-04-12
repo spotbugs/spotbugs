@@ -90,6 +90,7 @@ public class FindCircularDependencies extends BytecodeScanningDetector implement
 		while (dependencyGraph.size() > 0) {
 			String clsName = dependencyGraph.keySet().iterator().next();
 			Set<String> loop = lf.findLoop(dependencyGraph, clsName);
+			boolean pruneLeaves;
 			if (loop != null) {
 				BugInstance bug = new BugInstance(
 						this,
@@ -101,11 +102,13 @@ public class FindCircularDependencies extends BytecodeScanningDetector implement
 					bug.addClass(loopCls);
 				}
 				bugReporter.reportBug(bug);
-				removeLoopLinks(dependencyGraph, loop);
+				pruneLeaves = removeLoopLinks(dependencyGraph, loop);
 			} else {
 				dependencyGraph.remove(clsName);
+				pruneLeaves = true;
 			}
-			removeDependencyLeaves(dependencyGraph);
+			if (pruneLeaves)
+				removeDependencyLeaves(dependencyGraph);
 		}
 			
 		dependencyGraph.clear();
@@ -139,7 +142,7 @@ public class FindCircularDependencies extends BytecodeScanningDetector implement
 		}
 	}
 	
-	private void removeLoopLinks(Map<String, Set<String>> dependencyGraph, Set<String> loop) 
+	private boolean removeLoopLinks(Map<String, Set<String>> dependencyGraph, Set<String> loop) 
 	{
 		Set<String> dependencies = null;
 		Iterator<String> cIt = loop.iterator();
@@ -151,6 +154,18 @@ public class FindCircularDependencies extends BytecodeScanningDetector implement
 		}
 		if (dependencies != null)
 			dependencies.remove(loop.iterator().next());
+		
+		boolean removedClass = false;
+		cIt = loop.iterator();
+		while (cIt.hasNext()) {
+			String clsName = cIt.next();
+			dependencies = dependencyGraph.get(clsName);
+			if (dependencies.size() == 0) {
+				cIt.remove();
+				removedClass = true;
+			}
+		}
+		return removedClass;
 	}
 	
 	static class LoopFinder
