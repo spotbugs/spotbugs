@@ -28,10 +28,12 @@
 </copyright>
 
 <legalnotice>
+<para>
 This work is licensed under the Creative Commons Attribution-NonCommercial-ShareAlike License.
 To view a copy of this license, visit
 <ulink url="http://creativecommons.org/licenses/by-nc-sa/1.0/">http://creativecommons.org/licenses/by-nc-sa/1.0/</ulink>
 or send a letter to Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA.
+</para>
 </legalnotice>
 
 <edition>@VERSION@</edition>
