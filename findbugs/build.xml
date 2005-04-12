@@ -17,6 +17,7 @@
 	<property name="scriptsrc.dir" value="src/scripts"/>
 	<property name="xslsrc.dir" value="src/xsl"/>
 	<property name="junitsrc.dir" value="src/junit"/>
+	<property name="anttasksrc.dir" value="src/antTask"/>
 	<property name="etc.dir" value="etc"/>
 	<property name="test.dir" value="test"/>
 	<property name="pkg.base" value="edu/umd/cs/findbugs"/>
@@ -25,6 +26,7 @@
 	<property name="gui.jar" value="${jar.dir}/findbugsGUI.jar"/>
 	<property name="test.jar" value="${test.dir}/dumb.jar"/>
 	<property name="junittests.jar" value="build/junittests.jar"/>
+	<property name="anttask.jar" value="${jar.dir}/findbugs-ant.jar"/>
 	<property name="scripts.props" value="etc/script.properties"/>
 	<property name="scripts.stamp" value="build/scripts.stamp"/>
 	
@@ -49,7 +51,7 @@
 
 	<!-- Default target builds scripts and jars, allowing execution using
 		the working directory as FINDBUGS_HOME.  Also build test case jarfile. -->
-	<target name="build" depends="jars,scripts,testjar"/>
+	<target name="build" depends="jars,scripts,testjar,anttask"/>
 	
 	<!-- Rebuild from scratch. -->
 	<target name="rebuild" depends="clean,build"/>
@@ -97,6 +99,14 @@
 				excludes="${pkg.base}/tools/patcomp/**">
 			<classpath refid="tools.classpath"/>
 		</javac>
+		<!-- Compile Ant task. -->
+		<javac srcdir="${anttasksrc.dir}"
+			destdir="${classes.dir}"
+			source="1.5"
+			target="jsr14"
+			debug="on">
+			<classpath refid="tools.classpath"/>
+		</javac>
 	</target>
 
 	<target name="validate">
@@ -119,6 +129,7 @@
 				<exclude name="${pkg.base}/gui/**"/>
 				<exclude name="${pkg.base}/detect/**"/>
 				<exclude name="${pkg.base}/tools/**"/>
+				<exclude name="${pkg.base}/antTask/**"/>
 				<exclude name="**/*Test.class"/> <!-- Exclude JUnit tests. -->
 				<include name="**/*.class"/>
 				<include name="**/*.properties"/>
@@ -207,6 +218,18 @@
 		</jar>
 	</target>
 	
+	<!-- Ant task jar file. -->
+	<target name="anttask" depends="classes">
+		<jar destfile="${anttask.jar}">
+			<fileset dir="${classes.dir}">
+				<include name="${pkg.base}/anttask/**"/>
+			</fileset>
+			<fileset dir="${anttasksrc.dir}">
+				<include name="${pkg.base}/anttask/*.properties"/>
+			</fileset>
+		</jar>
+	</target>
+	
 	<!-- JUnit test cases -->
 	<target name="junittests" depends="classes">
 		<jar destfile="${junittests.jar}">
@@ -243,6 +266,7 @@
 		<delete file="${engine.jar}"/>
 		<delete file="${coreplugin.jar}"/>
 		<delete file="${gui.jar}"/>
+		<delete file="${anttask.jar}"/>
 	</target>
 	
 </project>
