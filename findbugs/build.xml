@@ -10,6 +10,7 @@
 	
 	<property name="jar.dir" value="lib"/>
 	<property name="plugin.dir" value="plugin"/>
+	<property name="build.dir" value="build"/>
 	<property name="classes.dir" value="build/classes"/>
 	<property name="scripts.dir" value="bin"/>
 	<property name="src.dir" value="src/java"/>
@@ -18,8 +19,10 @@
 	<property name="xslsrc.dir" value="src/xsl"/>
 	<property name="junitsrc.dir" value="src/junit"/>
 	<property name="anttasksrc.dir" value="src/antTask"/>
+	<property name="docsrc.dir" value="src/doc"/>
 	<property name="etc.dir" value="etc"/>
 	<property name="test.dir" value="test"/>
+	<property name="doc.dir" value="doc"/>
 	<property name="pkg.base" value="edu/umd/cs/findbugs"/>
 	<property name="engine.jar" value="${jar.dir}/findbugs.jar"/>
 	<property name="coreplugin.jar" value="${plugin.dir}/coreplugin.jar"/>
@@ -28,7 +31,9 @@
 	<property name="junittests.jar" value="build/junittests.jar"/>
 	<property name="anttask.jar" value="${jar.dir}/findbugs-ant.jar"/>
 	<property name="scripts.props" value="etc/script.properties"/>
-	<property name="scripts.stamp" value="build/scripts.stamp"/>
+	<property name="scripts.stamp" value="${build.dir}/scripts.stamp"/>
+	<property name="doc.props.file" value="${etc.dir}/doc.properties"/>
+	<property name="version.props.file" value="${build.dir}/version.properties"/>
 	
 	<path id="findbugs.classpath">
 	    <pathelement location="${jar.dir}/bcel.jar"/>
@@ -109,13 +114,13 @@
 		</javac>
 	</target>
 
+	<!-- Validate findbugs.xml and messagesXXX.xml files. -->
 	<target name="validate">
 		<xmlvalidate lenient="false" failonerror="yes">
 			<attribute name="http://apache.org/xml/features/validation/schema" value="true"/>
 			<attribute name="http://xml.org/sax/features/namespaces" value="true"/>
 			<fileset dir="${etc.dir}" includes="*.xml"/>
 		</xmlvalidate>
-
 	</target>
 	
 	<!-- Build jar files. -->
@@ -252,6 +257,47 @@
 			<arg value="${junittests.jar}"/>
 			<arg value="${engine.jar}"/>
 		</java>
+	</target>
+
+	<!-- Get version properties. -->
+	<target name="version" depends="classes">
+		<java classpathref="tools.classpath"
+			output="${version.props.file}"
+			classname="edu.umd.cs.findbugs.Version"
+			failonerror="true">
+			<arg value="-props"/>
+		</java>
+		
+		<loadproperties srcfile="${version.props.file}"/>
+	</target>
+	
+	
+	<!-- Generate formatted documentation. -->
+	<target name="docs" depends="classes,version">
+		<!-- Get HTML doc properties -->
+		<loadproperties srcFile="${doc.props.file}"/>
+
+		<!-- Filter set used for generating text substitution values for
+			documentation. -->
+		<filterset id="doc.filters">
+			<filter token="VERSION" value="${release.number}" />
+			<filter token="RELEASE_DATE" value="${release.date}" />
+			<filter token="ECLIPSE_CORE_VERSION" value="${eclipse.core.version}"/>
+			<filter token="ECLIPSE_UI_VERSION" value="${eclipse.ui.version}" />
+			<filter token="WEBSITE" value="${findbugs.website}"/>
+			<filter token="DOWNLOADS_WEBSITE" value="${findbugs.downloads.website}"/>
+			<filter token="HTML_XSL_STYLESHEET" value="${html.xsl.stylesheet}" />
+			<filter token="ECLIPSE_XSL_STYLESHEET" value="${eclipse.xsl.stylesheet}" />
+			<filter token="HTML_SIDEBAR" value="${doc.html.sidebar}"/>
+			<filter token="HTML_FOOTER" value="${doc.html.footer}"/>
+		</filterset>  
+		
+		<copy todir="${doc.dir}">
+			<filterset refid="doc.filters"/>
+			<fileset dir="${docsrc.dir}">
+				<include name="*.html"/>
+			</fileset>
+		</copy>
 	</target>
 
 	<!-- Delete generated files. -->
