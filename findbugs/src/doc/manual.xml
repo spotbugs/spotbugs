@@ -366,6 +366,16 @@ These options are only accepted by the Text User Interface.
     </para>
   </listitem>
   </varlistentry>
+  
+  <varlistentry>
+	<term><command>-relaxed</command></term>
+	<listitem>
+		<para>
+			Relaxed reporting mode.  For many detectors, this option
+			suppresses the heuristics used to avoid reporting false positives.
+		</para>
+	</listitem>
+  </varlistentry>
 
   <varlistentry>
   <term><command>-xml</command></term>
