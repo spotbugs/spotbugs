@@ -37,12 +37,6 @@ public class IteratorIdioms extends BytecodeScanningDetector implements Constant
 	
 	public IteratorIdioms(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
-		try {
-	        iteratorClass = Repository.lookupClass("java.util.Iterator");
-		} catch (ClassNotFoundException cnfe) {
-		    iteratorClass = null;
-		    bugReporter.reportMissingClass(cnfe);
-		}
 	}
 
 	public Object clone() throws CloneNotSupportedException {
@@ -50,6 +44,8 @@ public class IteratorIdioms extends BytecodeScanningDetector implements Constant
 	}
 
 	public void visitClassContext(ClassContext classContext) {
+		findJavaUtilIterator();
+
 	    if (iteratorClass == null)
 	        return;
 	    try {
@@ -60,6 +56,17 @@ public class IteratorIdioms extends BytecodeScanningDetector implements Constant
 	    catch (ClassNotFoundException cnfe) {
 	        //Already logged
 	    }
+	}
+
+	private void findJavaUtilIterator() {
+		if (iteratorClass == null) {
+			try {
+				iteratorClass = Repository.lookupClass("java.util.Iterator");
+			} catch (ClassNotFoundException cnfe) {
+				iteratorClass = null;
+				bugReporter.reportMissingClass(cnfe);
+			}
+		}
 	}
 	
 	boolean sawNoSuchElement;
