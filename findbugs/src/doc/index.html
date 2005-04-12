@@ -1,7 +1,7 @@
 <html>
 <head>
 <title>FindBugs - A Bug Pattern Detector for Java</title>
-<link rel="stylesheet" type="text/css" href="findbugs.css">
+<link rel="stylesheet" type="text/css" href="findbugs.css" />
 </head>
 
 <body>
@@ -12,64 +12,67 @@
 
 <td align="left" valign="top">
 
-<p> <a href="@WEBSITE@/"><img src="buggy-sm.png" alt="FindBugs logo" border=0></a>
-    <a href="http://www.umd.edu/"><img src="informal.png" alt="UMD logo" border=0></a>
+<p>
+	<a href="@WEBSITE@/"><img src="buggy-sm.png" alt="FindBugs logo" border="0" /></a>
+	<a href="http://www.umd.edu/"><img src="informal.png" alt="UMD logo" border="0" /></a>
+</p>
 
 <h1>FindBugs - A Bug Pattern Detector for Java</h1>
 
 <p> This is the web page for FindBugs, a program which looks for bugs
 in Java code.&nbsp; It is free software, distributed under the terms
-of the <a href="http://www.gnu.org/licenses/lgpl.html">Lesser GNU Public License</a>.
+of the <a href="http://www.gnu.org/licenses/lgpl.html">Lesser GNU Public License</a>.</p>
 
 <p> FindBugs requires JRE (or JDK) 1.4.0 or later to run.&nbsp; However, it
-can analyze programs compiled for any version of Java.
+can analyze programs compiled for any version of Java.</p>
 
 <p> The current version of FindBugs is @VERSION@,
-released on @RELEASE_DATE@.
+released on @RELEASE_DATE@.</p>
 
 <p> FindBugs is beta quality software.&nbsp; You may find bugs in it,
 and the features and source code may change significantly in future releases.&nbsp;
 We are very interested in getting feedback on how to improve FindBugs.&nbsp;
-Send your comments to <a href="mailto:daveho@cs.umd.edu">daveho@cs.umd.edu</a>.
+Send your comments to <a href="mailto:daveho@cs.umd.edu">daveho@cs.umd.edu</a>.</p>
 
 <h1>News</h1>
 
-<p> Changes since version 0.8.6:
+<p> Changes since version 0.8.6:</p>
 
 <ul>
-<!-- new detectors -->
-<li> Extend Naming detector to look for classes that are named XXXException but that are 
-     not Exceptions (Dave Brosius)
-<li> New detector to find classes that expose semaphores in the public implementation through
-     the 'this' reference. (Dave Brosius)
-<li> New Style detector to find Struts Action/Servlet derived classes that reference instance
-     member variable not in synchronized blocks. (Dave Brosius)
-<li> New Style detector to find classes that declare implementation of interfaces
-     that are already implemented by super classes (Dave Brosius)
-<li> New Style detector to find circular dependencies between classes (Dave Brosius)
-<li> New Style detector to find unnecessary math on constants (Dave Brosius)
-<li> New detector to find equality comparisons using floating pt math (Jay Dunning)
-<li> New faster detector to find local self assignments (Bill Pugh)
-<!-- feature enhancements -->
-<li> New system property to suppress reporting of DLS based on local variable name (Glenn Boysko)
-<li> Allow for saving enabled detectors in eclipse projects (Phil Crosby)
-<li> Sortable columns in detector dialog (Dave Brosius)
-<li> New tab in gui for showing bugs grouped by category (Dave Brosius)
-<li> Option '-onlySerious' to only count serious warnings (David Hovemeyer)
-<!-- Bug fixes -->
-<li> Don't scan equals methods in FindHEMismatch if code is native (Greg Bentz)
-<li> French translation fixes (David Cotton)
-<li> Internationalization report fixes (K.Hashimoto)
-<li> Japanese translations updates (SHISEI Hanai)
+	<!-- new detectors -->
+	<li> Extend Naming detector to look for classes that are named XXXException but that are 
+     not Exceptions (Dave Brosius)</li>
+	<li> New detector to find classes that expose semaphores in the public implementation through
+     the 'this' reference. (Dave Brosius)</li>
+	<li> New Style detector to find Struts Action/Servlet derived classes that reference instance
+     member variable not in synchronized blocks. (Dave Brosius)</li>
+	<li> New Style detector to find classes that declare implementation of interfaces
+     that are already implemented by super classes (Dave Brosius)</li>
+	<li> New Style detector to find circular dependencies between classes (Dave Brosius)</li>
+	<li> New Style detector to find unnecessary math on constants (Dave Brosius)</li>
+	<li> New detector to find equality comparisons using floating point math (Jay Dunning)</li>
+	<li> New faster detector to find local self assignments (Bill Pugh)</li>
+
+	<!-- feature enhancements -->
+	<li> New system property to suppress reporting of DLS based
+		 on local variable name (Glenn Boysko)</li>
+	<li> Allow for saving enabled detectors in eclipse projects (Phil Crosby)</li>
+	<li> Sortable columns in detector dialog (Dave Brosius)</li>
+	<li> New tab in gui for showing bugs grouped by category (Dave Brosius)</li>
+	<!-- Bug fixes -->
+	<li> Don't scan equals methods in FindHEMismatch if code is native (Greg Bentz)</li>
+	<li> French translation fixes (David Cotton)</li>
+	<li> Internationalization report fixes (K.Hashimoto)</li>
+	<li> Japanese translations updates (SHISEI Hanai)</li>
 </ul>
 
 
-<p> <a href="Changes.html">Older versions...</a>
+<p> <a href="Changes.html">Older versions...</a></p>
 
 <h1>Sponsors</h1>
 
 <p> This work has been supported by the National Science Foundation grants
-ASC9720199 and CCR-0098162, and by an IBM Eclipse Innovation award.
+ASC9720199 and CCR-0098162, and by an IBM Eclipse Innovation award.</p>
 
 @HTML_FOOTER@
 
