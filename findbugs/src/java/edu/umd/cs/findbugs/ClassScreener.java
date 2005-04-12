@@ -49,9 +49,9 @@ public class ClassScreener {
 	}
 
 	/**
-	 * Add the name of a class that should be matched by the screener.
+	 * Add the name of a class to be matched by the screener.
 	 *
-	 * @param className name of a class that should be matched
+	 * @param className name of a class to be matched
 	 */
 	public void addAllowedClass(String className) {
 		String classRegex = "\\Q" + className.replace('.', '/') + "\\E\\.class$";
@@ -60,12 +60,16 @@ public class ClassScreener {
 	}
 
 	/**
-	 * Add the name of a package that should be matched by the screener.
+	 * Add the name of a package to be matched by the screener.
 	 * All class files that appear to be in the package should be matched.
 	 *
-	 * @param packageName name of the package that should be matched
+	 * @param packageName name of the package to be matched
 	 */
 	public void addAllowedPackage(String packageName) {
+		if (packageName.endsWith(".")) {
+			packageName = packageName.substring(0, packageName.length() - 1);
+		}
+		
 		// Note: \u0024 is the dollar sign ("$")
 		String packageRegex = "\\Q" + packageName.replace('.', '/') + "\\E" +
 			"\\/[A-Za-z_\\u0024][A-Za-z_\\u0024\\d]*\\.class$";
@@ -74,16 +78,16 @@ public class ClassScreener {
 	}
 
 	/**
-	 * Add the name of a package that should be matched by the screener.
-	 * All class files that appear to be in the package should be matched.
+	 * Add the name of a prefix to be matched by the screener.
+	 * All class files that appear to be in the package specified
+	 * by the prefix, or a more deeply nested package, should be matched.
 	 *
-	 * @param packageName name of the package that should be matched
+	 * @param prefix name of the prefix to be matched
 	 */
 	public void addAllowedPrefix(String prefix) {
 		if (DEBUG) System.out.println("Allowed prefix: " + prefix);
-		// Note: \u0024 is the dollar sign ("$")
 		String packageRegex = "\\Q" + prefix.replace('.', '/') + "\\E";
-		if (DEBUG) System.out.println("Package regex: " + packageRegex);
+		if (DEBUG) System.out.println("Prefix regex: " + packageRegex);
 		patternList.add(Pattern.compile(packageRegex));
 	}
 
