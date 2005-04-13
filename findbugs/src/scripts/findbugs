@@ -10,18 +10,10 @@
 
 maxheap=256
 
-Usage() {
-	echo "Usage: findbugs [options]"
-	echo "   -gui            Use the Graphical UI (default behavior)"
-	echo "   -textui         Use the Text UI"
-	echo "   -jvmArgs args   Pass args to JVM"
-	echo "   -maxHeap size   Maximum Java heap size in megabytes (default=$maxheap)"
-	echo "   -javahome dir   Specify location of JRE"
-	echo "   -help           Display this message"
-	echo "   -debug          Enable debug tracing in FindBugs"
-	echo "   -conserveSpace  Conserve memory at the expense of precision"
-	echo "   -workHard       Do extra work to make the analysis more precise"
-	echo "All other options are passed to the FindBugs application"
+ShowHelpAndExit() {
+	fb_appjar="$findbugs_home/lib/findbugsGUI.jar"
+	fb_mainclass="edu.umd.cs.findbugs.ShowHelp"
+	@WRAP_JAVA@
 	exit 0
 }
 
@@ -91,7 +83,7 @@ while [ $# -gt 0 ]; do
 		;;
 
 	-help)
-		Usage
+		ShowHelpAndExit
 		;;
 
 	# All unrecognized arguments will be accumulated and

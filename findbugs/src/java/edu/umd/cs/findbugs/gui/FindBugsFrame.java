@@ -105,6 +105,7 @@ import edu.umd.cs.findbugs.FindBugs;
 import edu.umd.cs.findbugs.I18N;
 import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.Project;
+import edu.umd.cs.findbugs.ShowHelp;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.ba.SourceFinder;
 import edu.umd.cs.findbugs.config.ProjectFilterSettings;
@@ -3650,6 +3651,11 @@ public class FindBugsFrame extends javax.swing.JFrame {
 				}
 			} else if (arg.equals("-adjustExperimental")) {
 				BugInstance.setAdjustExperimental(true);
+			} else {
+				showSynopsis();
+				ShowHelp.showGeneralOptions();
+				showCommandLineOptions();
+				System.exit(1);
 			}
 		}
 		
@@ -3673,6 +3679,18 @@ public class FindBugsFrame extends javax.swing.JFrame {
 		frame.setSize(800, 600);
 		frame.setLocationRelativeTo(null); // center the frame
 		frame.setVisible(true);
+	}
+
+	public static void showCommandLineOptions() {
+		System.out.println("GUI options:");
+		System.out.println("  -debug                   Print diagnostic information");
+		System.out.println("  -look:<lnf class>        Use the Swing look&feel whose class is given");
+		System.out.println("  -project <project file>  Open given FindBugs project");
+		System.out.println("  -adjustExperimental      Lower priority of warnings from experimental detectors");
+	}
+
+	public static void showSynopsis() {
+		System.out.println("Usage: findbugs [general options] [gui options]");
 	}
 	
 	/* ----------------------------------------------------------------------

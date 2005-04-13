@@ -1583,21 +1583,30 @@ public class FindBugs implements Constants2, ExitCodes {
 		// are ignored.
 		argv = CommandLine.expandOptionFiles(argv, true, true);
 		
-		int argCount = commandLine.parse(argv);
+		int argCount = 0;
+		try {
+			argCount = commandLine.parse(argv);
+		} catch (IllegalArgumentException e) {
+			System.out.println(e.getMessage());
+			showHelp(commandLine);
+		}
 
 		Project project = commandLine.getProject();
 		for (int i = argCount; i < argv.length; ++i)
 			project.addFile(argv[i]);
 
 		if (project.getFileCount() == 0) {
-			System.out.println("FindBugs version " + Version.RELEASE + ", " + Version.WEBSITE);
-			System.out.println("Usage: findbugs -textui [options...] [jar/zip/class files, directories...]");
-			System.out.println("Options:");
-			commandLine.printUsage(System.out);
-			System.exit(0);
+			showHelp(commandLine);
 		}
 
 		return commandLine.createEngine();
+	}
+
+	private static void showHelp(FindBugsCommandLine commandLine) {
+		showSynopsis();
+		ShowHelp.showGeneralOptions();
+		FindBugs.showCommandLineOptions(commandLine);
+		System.exit(1);
 	}
 
 	private static void runMain(FindBugs findBugs, FindBugsCommandLine commandLine)
@@ -1632,6 +1641,22 @@ public class FindBugs implements Constants2, ExitCodes {
 
 			System.exit(exitCode);
 		}
+	}
+	
+	/**
+	 * Print command line options synopses to stdout.
+	 */
+	public static void showCommandLineOptions() {
+		showCommandLineOptions(new FindBugsCommandLine());
+	}
+	
+	public static void showCommandLineOptions(FindBugsCommandLine commandLine) {
+		System.out.println("Command line options:");
+		commandLine.printUsage(System.out);
+	}
+
+	public static void showSynopsis() {
+		System.out.println("Usage: findbugs [general options] -textui [command line options...] [jar/zip/class files, directories...]");
 	}
 }
 
