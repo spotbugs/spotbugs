@@ -59,6 +59,7 @@ import edu.umd.cs.findbugs.ba.obl.StateSet;
  */
 public class FindUnsatisfiedObligation implements Detector {
 	
+	private static final boolean ENABLE = Boolean.getBoolean("oa.enable");
 	private static final boolean DEBUG = Boolean.getBoolean("oa.debug");
 	private static final boolean DEBUG_PRINTCFG = Boolean.getBoolean("oa.printcfg");
 	private static final String DEBUG_METHOD = System.getProperty("oa.method");
@@ -83,6 +84,10 @@ public class FindUnsatisfiedObligation implements Detector {
 	 * @see edu.umd.cs.findbugs.Detector#visitClassContext(edu.umd.cs.findbugs.ba.ClassContext)
 	 */
 	public void visitClassContext(ClassContext classContext) {
+		if (!ENABLE) {
+			return;
+		}
+		
 		// FIXME: prescreen class
 		
 		Method[] methodList = classContext.getJavaClass().getMethods();
