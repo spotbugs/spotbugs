@@ -41,6 +41,7 @@ public class DumbMethods extends BytecodeScanningDetector implements Constants2,
 */
 	private String primitiveObjCtorSeen;
 	private boolean ctorSeen;
+	private boolean prevOpcodeWasReadLine;
 	private boolean isPublicStaticVoidMain;
         private int randomNextIntState;
 
@@ -60,6 +61,7 @@ public class DumbMethods extends BytecodeScanningDetector implements Constants2,
 		        && getMethodName().equals("main")
 		        || cName.toLowerCase().indexOf("benchmark") >= 0;
 		// System.out.println("method " + getMethodName() + " is main? " + isPublicStaticVoidMain);
+		prevOpcodeWasReadLine = false;
 		Code code = method.getCode();
 		if (code != null)
 			this.exceptionTable = code.getExceptionTable();
@@ -72,7 +74,21 @@ public class DumbMethods extends BytecodeScanningDetector implements Constants2,
 
 	public void sawOpcode(int seen) {
 
-		switch(randomNextIntState) {
+
+	if (prevOpcodeWasReadLine && seen == INVOKEVIRTUAL
+		&& getClassConstantOperand().equals("java/lang/String")) {
+	  bugReporter.reportBug(new BugInstance(this, "NP_IMMEDIATE_DEREFERENCE_OF_READLINE", NORMAL_PRIORITY)
+		.addClassAndMethod(this)
+		.addSourceLine(this));
+		}
+
+	prevOpcodeWasReadLine =
+		(seen == INVOKEVIRTUAL||seen == INVOKEINTERFACE)
+		&& getNameConstantOperand().equals("readLine")
+		&& getSigConstantOperand().equals("()Ljava/lang/String;");
+
+		
+	switch(randomNextIntState) {
 		case 0:
 			if (seen == INVOKEVIRTUAL
 				&& getClassConstantOperand().equals("java/util/Random")

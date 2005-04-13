@@ -2157,17 +2157,33 @@ and generally bad practice.
 ]]>
     </Details>
   </BugPattern>
-  <BugPattern type="NP_UNWRITTEN_FIELD">
-    <ShortDescription>Read of unwritten field</ShortDescription>
-    <LongDescription>Read of of unwritten field at {1}</LongDescription>
+
+  <BugPattern type="NP_IMMEDIATE_DEREFERENCE_OF_READLINE">
+    <ShortDescription>Immediate dereference of the result of readLine()</ShortDescription>
+    <LongDescription>Immediate dereference of the result of readLine() in {1}</LongDescription>
     <Details>
 <![CDATA[
-  <p> The program is ferencing a field that does not seem to ever be
+  <p> The result of invoking readLine() is immediately dereferenced. If there are no more lines of text
+to read, readLine() will return null and dereferencing that will generate a null pointer exception.
+</p>
+]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="NP_UNWRITTEN_FIELD">
+    <ShortDescription>Read of unwritten field</ShortDescription>
+    <LongDescription>Read of unwritten field in {1}</LongDescription>
+    <Details>
+<![CDATA[
+  <p> The program is deferencing a field that does not seem to ever be
 written to. Deferencing this value will generate a null pointer exception.
 </p>
 ]]>
     </Details>
   </BugPattern>
+
+
+
 
   <BugPattern type="SIC_INNER_SHOULD_BE_STATIC">
     <ShortDescription>Should be a static inner class</ShortDescription>

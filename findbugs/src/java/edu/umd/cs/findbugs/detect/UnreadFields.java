@@ -54,6 +54,7 @@ public class UnreadFields extends BytecodeScanningDetector implements Constants2
 	Set<FieldAnnotation> fieldsOfSerializableOrNativeClassed
 	        = new HashSet<FieldAnnotation>();
 	Set<FieldAnnotation> staticFieldsReadInThisMethod = new HashSet<FieldAnnotation>();
+	Set<FieldAnnotation> allMyFields = new TreeSet<FieldAnnotation>();
 	Set<FieldAnnotation> myFields = new TreeSet<FieldAnnotation>();
 	Set<FieldAnnotation> writtenFields = new HashSet<FieldAnnotation>();
 	Set<FieldAnnotation> writtenInConstructorFields = new HashSet<FieldAnnotation>();
@@ -68,8 +69,9 @@ public class UnreadFields extends BytecodeScanningDetector implements Constants2
 	boolean isSerializable;
 	boolean sawSelfCallInConstructor;
 	private BugReporter bugReporter;
+	boolean publicOrProtectedConstructor;
 
-	static final int doNotConsider = ACC_PUBLIC | ACC_PROTECTED | ACC_STATIC;
+	static final int doNotConsider = ACC_PUBLIC | ACC_PROTECTED;
 
 	public UnreadFields(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
@@ -79,6 +81,7 @@ public class UnreadFields extends BytecodeScanningDetector implements Constants2
 	public void visit(JavaClass obj) {
 		hasNativeMethods = false;
 		sawSelfCallInConstructor = false;
+		publicOrProtectedConstructor = false;
 		isSerializable = false;
 		if (getSuperclassName().indexOf("$") >= 0
 		        || getSuperclassName().indexOf("+") >= 0) {
@@ -124,16 +127,18 @@ public class UnreadFields extends BytecodeScanningDetector implements Constants2
 		if (sawSelfCallInConstructor) 
 			writtenInConstructorFields.addAll(myFields);
 		myFields.clear();
+		allMyFields.clear();
 	}
 
 
 	public void visit(Field obj) {
 		super.visit(obj);
+		FieldAnnotation f = FieldAnnotation.fromVisitedField(this);
+		allMyFields.add(f);
 		int flags = obj.getAccessFlags();
 		if ((flags & doNotConsider) == 0
 		        && !getFieldName().equals("serialVersionUID")) {
 
-			FieldAnnotation f = FieldAnnotation.fromVisitedField(this);
 			myFields.add(f);
 		}
 	}
@@ -165,6 +170,10 @@ public class UnreadFields extends BytecodeScanningDetector implements Constants2
 	}
 
 	public void visit(Method obj) {
+		if (getMethodName().equals("<init>")
+			&& (obj.isPublic() 
+			    || obj.isProtected() ))
+			publicOrProtectedConstructor = true;
 		super.visit(obj);
 		int flags = obj.getAccessFlags();
 		if ((flags & ACC_NATIVE) != 0)
@@ -188,6 +197,8 @@ public class UnreadFields extends BytecodeScanningDetector implements Constants2
 			FieldAnnotation f = FieldAnnotation.fromReferencedField(this);
                 	if (!staticFieldsReadInThisMethod.contains(f)) {
 				int priority = LOW_PRIORITY;
+				if (!publicOrProtectedConstructor)
+					priority--;
 				if (!seenInvokeStatic 
 				     && staticFieldsReadInThisMethod.isEmpty())
 					priority--;
@@ -290,15 +301,15 @@ public class UnreadFields extends BytecodeScanningDetector implements Constants2
 
 		if (seen == ALOAD_1) {
 			count_aload_1++;
-		} else if (seen == GETFIELD) {
+		} else if (seen == GETFIELD || seen == GETSTATIC) {
 			FieldAnnotation f = FieldAnnotation.fromReferencedField(this);
 			if (DEBUG) System.out.println("get: " + f);
 			readFields.add(f);
 			if (getClassConstantOperand().equals(getClassName()) &&
-			        !myFields.contains(f)) {
+			        !allMyFields.contains(f)) {
 				superReadFields.add(getNameConstantOperand());
 			}
-		} else if (seen == PUTFIELD) {
+		} else if (seen == PUTFIELD || seen == PUTSTATIC) {
 			FieldAnnotation f = FieldAnnotation.fromReferencedField(this);
 			if (opcodeStack.getStackDepth() > 0) {
 			OpcodeStack.Item item = opcodeStack.getStackItem(0);
@@ -306,10 +317,15 @@ public class UnreadFields extends BytecodeScanningDetector implements Constants2
 			}
 			if (DEBUG) System.out.println("put: " + f);
 			writtenFields.add(f);
-			if (getMethodName().equals("<init>") || getMethod().isPrivate())
+			if (
+				getMethodName().equals("<init>") 
+				|| getMethodName().equals("<clinit>") 
+				|| getMethod().isPrivate()) {
 				writtenInConstructorFields.add(f);
+				assumedNonNull.remove(f);
+				}
 			if (getClassConstantOperand().equals(getClassName()) &&
-			        !myFields.contains(f)) {
+			        !allMyFields.contains(f)) {
 				superWrittenFields.add(getNameConstantOperand());
 			}
 		}
@@ -399,16 +415,29 @@ public class UnreadFields extends BytecodeScanningDetector implements Constants2
 			        (lastDollar > 0)
 			        && (lastDollar < className.length() - 1)
 			        && Character.isDigit(className.charAt(className.length() - 1));
+
+			if (DEBUG) {
+			System.out.println("Checking write only field " + className
+					+ "." + fieldName
+					+ "\t" + superReadFields.contains(f.getFieldName())
+					+ "\t" + constantFields.contains(f)
+					+ "\t" + f.isStatic()
+					);
+			}
 			boolean allUpperCase =
 			        fieldName.equals(fieldName.toUpperCase());
 			if (superReadFields.contains(f.getFieldName())) continue;
 			if (!fieldName.startsWith("this$")
 			        && !fieldName.startsWith("this+")
 			) {
-				if (constantFields.contains(f))
-					bugReporter.reportBug(new BugInstance(this, "SS_SHOULD_BE_STATIC", NORMAL_PRIORITY)
+				if (constantFields.contains(f)) {
+					if (!f.isStatic())
+					bugReporter.reportBug(new BugInstance(this, 
+							"SS_SHOULD_BE_STATIC", 
+							NORMAL_PRIORITY)
 					        .addClass(className)
 					        .addField(f));
+					}
 				else if (fieldsOfSerializableOrNativeClassed.contains(f)) {
 					// ignore it
 				} else if (!writtenFields.contains(f) && !superWrittenFields.contains(f.getFieldName()))

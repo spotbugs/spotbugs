@@ -313,6 +313,9 @@ abstract public class DismantleBytecode extends PreorderVisitor implements Const
 		}
 	}
 
+	public int getMaxPC() {
+		return codeBytes.length-1;
+		}
 	public int getCodeByte(int offset) {
 		return 0xff & codeBytes[offset];
 		}
@@ -647,6 +650,7 @@ abstract public class DismantleBytecode extends PreorderVisitor implements Const
 					sawInt(switchHigh);
 					int prevOffset = i - PC;
 					for (int o = 0; o <= switchHigh - switchLow; o++) {
+						sawBranchTo(switchOffsets[o] + PC);
 						sawOffset(switchOffsets[o] - prevOffset);
 						prevOffset = switchOffsets[o];
 					}
@@ -655,7 +659,7 @@ abstract public class DismantleBytecode extends PreorderVisitor implements Const
 					sawInt(switchOffsets.length);
 					int prevOffset = i - PC;
 					for (int o = 0; o < switchOffsets.length; o++) {
-						sawOffset(switchOffsets[o] - prevOffset);
+						sawBranchTo(switchOffsets[o] + PC);
 						prevOffset = switchOffsets[o];
 						sawInt(switchLabels[o]);
 					}
@@ -665,6 +669,7 @@ abstract public class DismantleBytecode extends PreorderVisitor implements Const
 						int m = MEANING_OF_OPERANDS[opcode][k];
 						switch (m) {
 						case M_BR:
+							sawBranchTo(branchOffset + PC);
 							if (branchOffset > 0)
 								sawOffset(branchOffset - (i - PC));
 							else
@@ -726,6 +731,8 @@ abstract public class DismantleBytecode extends PreorderVisitor implements Const
 	public void sawLong(long seen) {
 	}
 
+	public void sawBranchTo(int seen) {
+	}
 	public void sawOffset(int seen) {
 	}
 

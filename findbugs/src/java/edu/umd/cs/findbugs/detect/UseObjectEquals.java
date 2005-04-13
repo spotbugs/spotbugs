@@ -56,11 +56,6 @@ public class UseObjectEquals extends BytecodeScanningDetector implements Constan
 				OpcodeStack.Item item0 = stack.getStackItem(0);
 				OpcodeStack.Item item1 = stack.getStackItem(1);
 				
-				if (item0.isArray() || item1.isArray()) {
-					bugReporter.reportBug(new BugInstance("EC_BAD_ARRAY_COMPARE", NORMAL_PRIORITY)
-			        		.addClassAndMethod(this)
-			        		.addSourceLine(this));
-				} else {
 					try {
 						JavaClass cls = item1.getJavaClass();
 
@@ -79,7 +74,6 @@ public class UseObjectEquals extends BytecodeScanningDetector implements Constan
 						bugReporter.reportMissingClass(cnfe);
 					}
 				}
-			}
 		}
 
 		stack.sawOpcode(this, seen);

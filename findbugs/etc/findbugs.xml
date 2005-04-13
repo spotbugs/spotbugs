@@ -67,7 +67,7 @@
             
   <Detector class="edu.umd.cs.findbugs.detect.DumbMethods" 
             speed="fast"
-            reports="RV_01_TO_INT,DM_RUN_FINALIZERS_ON_EXIT,DM_STRING_CTOR,DM_STRING_VOID_CTOR,DM_STRING_TOSTRING,DM_GC,DM_BOOLEAN_CTOR,DM_STRING_EMPTY_EQUALS,DM_EXIT,DM_CONVERT_CASE,SW_SWING_METHODS_INVOKED_IN_SWING_THREAD,DM_BOXED_PRIMITIVE_TOSTRING,DM_NEW_FOR_GETCLASS,DM_NEXTINT_VIA_NEXTDOUBLE,DM_USELESS_THREAD" />
+            reports="NP_IMMEDIATE_DEREFERENCE_OF_READLINE,RV_01_TO_INT,DM_RUN_FINALIZERS_ON_EXIT,DM_STRING_CTOR,DM_STRING_VOID_CTOR,DM_STRING_TOSTRING,DM_GC,DM_BOOLEAN_CTOR,DM_STRING_EMPTY_EQUALS,DM_EXIT,DM_CONVERT_CASE,SW_SWING_METHODS_INVOKED_IN_SWING_THREAD,DM_BOXED_PRIMITIVE_TOSTRING,DM_NEW_FOR_GETCLASS,DM_NEXTINT_VIA_NEXTDOUBLE,DM_USELESS_THREAD" />
 
   <Detector class="edu.umd.cs.findbugs.detect.FindSqlInjection" 
             speed="moderate"
@@ -277,7 +277,8 @@
              
    <Detector class="edu.umd.cs.findbugs.detect.UseObjectEquals" 
              speed="fast"
-             reports="EC_BAD_ARRAY_COMPARE,UOE_USE_OBJECT_EQUALS" />
+             reports="UOE_USE_OBJECT_EQUALS"
+	     disabled="true" />
              
    <Detector class="edu.umd.cs.findbugs.detect.SuspiciousThreadInterrupted" 
              speed="fast"
@@ -355,7 +356,7 @@
 	    />
   <Detector class="edu.umd.cs.findbugs.detect.FindPuzzlers"
             speed="fast"
-            reports="DLS_OVERWRITTEN_INCREMENT,ICAST_BAD_SHIFT_AMOUNT,ICAST_QUESTIONABLE_UNSIGNED_RIGHT_SHIFT,PZ_BAD_MONTH,IM_MULTIPLYING_RESULT_OF_IREM"
+            reports="EC_BAD_ARRAY_COMPARE,DLS_OVERWRITTEN_INCREMENT,ICAST_BAD_SHIFT_AMOUNT,ICAST_QUESTIONABLE_UNSIGNED_RIGHT_SHIFT,PZ_BAD_MONTH,IM_MULTIPLYING_RESULT_OF_IREM"
 	    />
   			
   <Detector class="edu.umd.cs.findbugs.detect.FindBugsSummaryStats" 
@@ -393,6 +394,7 @@
   <BugPattern abbrev="Dm" type="DM_CONVERT_CASE" category="I18N" />
   <BugPattern abbrev="Dm" type="DM_BOXED_PRIMITIVE_TOSTRING" category="PERFORMANCE" />
   <BugPattern abbrev="Dm" type="DM_NEW_FOR_GETCLASS" category="PERFORMANCE" />
+  <BugPattern abbrev="NP" type="NP_IMMEDIATE_DEREFERENCE_OF_READLINE" category="CORRECTNESS" />
   <BugPattern abbrev="RV" type="RV_01_TO_INT" category="CORRECTNESS" />
   <BugPattern abbrev="Dm" type="DM_NEXTINT_VIA_NEXTDOUBLE" category="PERFORMANCE" />
   <BugPattern abbrev="Dm" type="DM_USELESS_THREAD" category="CORRECTNESS" />

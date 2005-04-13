@@ -59,6 +59,21 @@ public class FindPuzzlers extends BytecodeScanningDetector implements Constants2
 	OpcodeStack stack = new OpcodeStack();
 	public void sawOpcode(int seen) {
 
+         if ((seen == INVOKEVIRTUAL)
+                &&   getNameConstantOperand().equals("equals")
+                &&   getSigConstantOperand().equals("(Ljava/lang/Object;)Z")
+		&& stack.getStackDepth() > 1) {
+			OpcodeStack.Item item0 = stack.getStackItem(0);
+			OpcodeStack.Item item1 = stack.getStackItem(1);
+
+			if (item0.isArray() || item1.isArray()) {
+				bugReporter.reportBug(new BugInstance("EC_BAD_ARRAY_COMPARE", NORMAL_PRIORITY)
+					.addClassAndMethod(this)
+					.addSourceLine(this));
+		}
+		}
+ 
+
 
 		if ((seen == IFEQ || seen == IFNE) && getPrevOpcode(1) == IMUL
 			&& ( getPrevOpcode(2) == SIPUSH

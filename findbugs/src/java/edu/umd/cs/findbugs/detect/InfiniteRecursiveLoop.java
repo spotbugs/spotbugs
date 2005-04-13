@@ -34,9 +34,11 @@ public class InfiniteRecursiveLoop extends BytecodeScanningDetector implements C
 	private BugReporter bugReporter;
 	private boolean staticMethod ;
 	private boolean seenTransferOfControl;
+	private boolean seenReturn;
 	private boolean seenStateChange;
+	private int largestBranchTarget;
 
-	private boolean DEBUG = false;
+	private final static boolean DEBUG = false;
 	public InfiniteRecursiveLoop(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 	}
@@ -52,6 +54,8 @@ public class InfiniteRecursiveLoop extends BytecodeScanningDetector implements C
 	public void visit(Method obj) {
 		seenTransferOfControl = false;
 		seenStateChange = false;
+		seenReturn = false;
+		largestBranchTarget = -1;
                 parameters = stack.resetForMethodEntry(this);
 		staticMethod = (obj.getAccessFlags() & (ACC_STATIC)) != 0;
 		if (DEBUG ) {
@@ -61,9 +65,12 @@ public class InfiniteRecursiveLoop extends BytecodeScanningDetector implements C
 		}
 	}
 
-	public void sawOffset(int offset) {
+	public void sawBranchTo(int seen) {
+		if (largestBranchTarget < seen)
+			largestBranchTarget = seen;
 		seenTransferOfControl = true;
-	}
+		}
+
 
 	OpcodeStack stack = new OpcodeStack();
 
@@ -74,7 +81,8 @@ public class InfiniteRecursiveLoop extends BytecodeScanningDetector implements C
 	 * has been no transfer of control.	
 	 */
 	public void sawOpcode(int seen) {
-		if (seenTransferOfControl && seenStateChange) return;
+		
+		if (seenReturn && seenTransferOfControl && seenStateChange) return;
 
 	
 		if (DEBUG ) {
@@ -99,24 +107,26 @@ public class InfiniteRecursiveLoop extends BytecodeScanningDetector implements C
 			// Now need to see if parameters are the same
 			int firstParameter = 0;
 			if (getMethodName().equals("<init>")) firstParameter = 1;
+			
 			boolean match1 = !seenStateChange;
 			for(int i = firstParameter; match1 && i < parameters; i++) {
 				OpcodeStack.Item it = stack.getStackItem(parameters-1-i);
 				if (!it.isInitialParameter() || it.getRegisterNumber() != i)
 					match1 = false;
 				}
-			boolean match2 = !seenTransferOfControl;
-			if (match2 && seen != INVOKESTATIC
-					&& !getNameConstantOperand().equals("<init>")) {
+			boolean sameMethod = 
+				seen == INVOKESTATIC
+				|| getNameConstantOperand().equals("<init>");
+			if (!sameMethod) {
 				// Have to check if first parmeter is the same
 				// know there must be a this argument
 				OpcodeStack.Item p = stack.getStackItem(parameters-1);
-				if (!p.isInitialParameter()
-					|| p.getRegisterNumber() != 0)
-					match2 = false;
+				sameMethod = p.isInitialParameter()
+					&& p.getRegisterNumber() == 0;
 				}
-
-			if (match1 || match2)  
+			boolean match2 = sameMethod && !seenTransferOfControl;
+			boolean match3 = sameMethod && !seenReturn && largestBranchTarget < getPC();
+			if (match1 || match2 || match3)  
 				bugReporter.reportBug(new BugInstance(this, "IL_INFINITE_RECURSIVE_LOOP", HIGH_PRIORITY)
 				        .addClassAndMethod(this)
 				        .addSourceLine(this)
@@ -131,6 +141,7 @@ public class InfiniteRecursiveLoop extends BytecodeScanningDetector implements C
                        case RETURN:
                        case DRETURN:
                        case FRETURN:
+				seenReturn = true;
                                seenTransferOfControl = true;
 				break;
 			case PUTSTATIC:
