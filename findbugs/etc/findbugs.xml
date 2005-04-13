@@ -277,7 +277,7 @@
              
    <Detector class="edu.umd.cs.findbugs.detect.UseObjectEquals" 
              speed="fast"
-             reports="UOE_BAD_ARRAY_COMPARE,UOE_USE_OBJECT_EQUALS" />
+             reports="EC_BAD_ARRAY_COMPARE,UOE_USE_OBJECT_EQUALS" />
              
    <Detector class="edu.umd.cs.findbugs.detect.SuspiciousThreadInterrupted" 
              speed="fast"
@@ -523,7 +523,7 @@
     experimental="true"/>
   <BugPattern abbrev="UOE" type="UOE_USE_OBJECT_EQUALS" category="STYLE"
     experimental="true"/>  
-  <BugPattern abbrev="UOE" type="UOE_BAD_ARRAY_COMPARE" category="CORRECTNESS"/>
+  <BugPattern abbrev="EC" type="EC_BAD_ARRAY_COMPARE" category="CORRECTNESS"/>
   <BugPattern abbrev="STI" type="STI_INTERRUPTED_ON_CURRENTTHREAD" category="CORRECTNESS"
     experimental="true"/>
   <BugPattern abbrev="STI" type="STI_INTERRUPTED_ON_UNKNOWNTHREAD" category="CORRECTNESS"

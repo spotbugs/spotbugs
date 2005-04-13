@@ -2195,7 +2195,7 @@ dateString = dateString.trim();
     </Details>
   </BugPattern>
   
-  <BugPattern type="UOE_BAD_ARRAY_COMPARE">
+  <BugPattern type="EC_BAD_ARRAY_COMPARE">
     <ShortDescription>配列オブジェクトのequals呼び出しは、==と等価です</ShortDescription>
     <LongDescription>配列オブジェクトのequals呼び出しは、==と等価です</LongDescription>
     <Details>

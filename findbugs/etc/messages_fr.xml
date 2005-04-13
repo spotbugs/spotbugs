@@ -2115,7 +2115,7 @@ Si le tableau transmis est assez grand pour stocker tous les éléments de la coll
     </Details>
   </BugPattern>
   
-  <BugPattern type="UOE_BAD_ARRAY_COMPARE">
+  <BugPattern type="EC_BAD_ARRAY_COMPARE">
     <ShortDescription>Appel à equals() sur un tableau équivalent à ==</ShortDescription>
     <LongDescription>Les appels à equals sur un tableau sont équivalents à ==</LongDescription>
     <Details>
