@@ -19,11 +19,14 @@
 
 package edu.umd.cs.findbugs;
 
+import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+
+import org.apache.bcel.classfile.JavaClass;
 
 import edu.umd.cs.findbugs.ba.SourceFinder;
-import org.apache.bcel.classfile.JavaClass;
 
 /**
  * BugReporter to output warnings in Emacs format.
@@ -34,19 +37,39 @@ public class EmacsBugReporter extends TextUIBugReporter {
 
 	private HashSet<BugInstance> seenAlready = new HashSet<BugInstance>();
 
+	private HashMap<String,String> sourceFileNameCache = new HashMap<String,String>();
+
 	public void observeClass(JavaClass javaClass) {
-		// Don't need to do anything special, since we won't be
-		// reporting statistics.
+		String sourceFileName = fileNameFor(javaClass.getPackageName(), javaClass.getSourceFileName());
+		sourceFileNameCache.put(javaClass.getClassName(), sourceFileName);
+	}
+	
+	private final String fileNameFor(final String packageName, final String sourceName) { 
+		String result;
+		SourceFinder sourceFinder = getEngine().getAnalysisContext().getSourceFinder();
+		try {
+			result = sourceFinder.findSourceFile(packageName, sourceName).getFullFileName();
+		} catch (IOException e) {
+			result = packageName.replace('.', File.separatorChar) + File.separatorChar + sourceName;
+		}
+		return result;
 	}
 
 	protected void printBug(BugInstance bugInstance) {
-		SourceLineAnnotation line =
-		        bugInstance.getPrimarySourceLineAnnotation();
+		int lineStart = 0;
+		int lineEnd = 0;
+		String fullPath = "???";
+
+		SourceLineAnnotation line = bugInstance.getPrimarySourceLineAnnotation();
 		if (line == null) {
-			outputStream.print(bugInstance.getMessage());
+			ClassAnnotation classInfo = bugInstance.getPrimaryClass();
+			if (classInfo != null) {
+				fullPath = (String) sourceFileNameCache.get(classInfo.getClassName());
+			}
 		} else {
+			lineStart = line.getStartLine();
+			lineEnd = line.getEndLine();
 			SourceFinder sourceFinder = getEngine().getAnalysisContext().getSourceFinder();
-			String fullPath;
 			String pkgName = line.getPackageName();
 			try {
 				fullPath = sourceFinder.findSourceFile(pkgName, line.getSourceFile()).getFullFileName();
@@ -56,12 +79,11 @@ public class EmacsBugReporter extends TextUIBugReporter {
 				else
 					fullPath = pkgName.replace('.', '/') + "/" + line.getSourceFile();
 			}
-
-			outputStream.print(fullPath + ":"
-			        + line.getStartLine() + ":"
-			        + line.getEndLine() + " "
-			        + bugInstance.getMessage());
 		}
+		outputStream.print(fullPath + ":"
+		        + lineStart + ":"
+		        + lineEnd + " "
+		        + bugInstance.getMessage());
 
 		switch (bugInstance.getPriority()) {
 		case Detector.EXP_PRIORITY:
