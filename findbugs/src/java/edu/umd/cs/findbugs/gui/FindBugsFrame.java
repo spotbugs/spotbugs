@@ -96,10 +96,12 @@ import javax.swing.tree.TreeSelectionModel;
 
 import edu.umd.cs.findbugs.BugAnnotation;
 import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugPattern;
 import edu.umd.cs.findbugs.ClassAnnotation;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.FieldAnnotation;
+import edu.umd.cs.findbugs.FindBugs;
 import edu.umd.cs.findbugs.I18N;
 import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.Project;
@@ -323,9 +325,18 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	 */
 	private static class BugInstanceCategoryComparator implements Comparator<BugInstance> {
 		public int compare(BugInstance lhs, BugInstance rhs) {
-			String lhsString = lhs.getBugPattern().getCategory();
-			String rhsString = rhs.getBugPattern().getCategory();
-			return lhsString.compareTo(rhsString);
+			return getCategory(lhs).compareTo(getCategory(rhs));
+		}
+		
+		private String getCategory(BugInstance warning) {
+			BugPattern bugPattern = warning.getBugPattern();
+			if (bugPattern == null) {
+				if (FindBugs.DEBUG)
+					System.out.println("Unknown bug pattern for bug type: " + warning.getType());
+				return "";
+			} else {
+				return bugPattern.getCategory();
+			}
 		}
 	}
 
@@ -2979,8 +2990,15 @@ public class FindBugsFrame extends javax.swing.JFrame {
 					String shortBugType = desc.substring(0, desc.indexOf(':'));
 					String bugTypeDescription = I18N.instance().getBugTypeDescription(shortBugType);
 					groupName = shortBugType + ": " + bugTypeDescription;
-								} else if (groupBy == GROUP_BY_BUG_CATEGORY) {
-										groupName = I18N.instance().getBugCategoryDescription(member.getBugPattern().getCategory());
+				} else if (groupBy == GROUP_BY_BUG_CATEGORY) {
+					BugPattern pattern = member.getBugPattern();
+					if (pattern == null) {
+						if (FindBugs.DEBUG)
+							System.out.println("Unknown bug pattern " + member.getType());
+						groupName = "Unknown category";
+					} else {
+						groupName = I18N.instance().getBugCategoryDescription(pattern.getCategory());
+					}
 				} else
 					throw new IllegalStateException("Unknown sort order: " + groupBy);
 				currentGroup = new BugInstanceGroup(groupBy, groupName);
