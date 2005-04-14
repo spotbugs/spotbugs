@@ -47,12 +47,12 @@ public class MultithreadedInstanceAccess extends BytecodeScanningDetector implem
 	private static final String STRUTS_ACTION_NAME = "org.apache.struts.action.Action";
 	private static final String SERVLET_NAME = "javax.servlet.Servlet";
 	private BugReporter bugReporter;
-	private static Set<JavaClass> mtClasses = new HashSet<JavaClass>();
-	private static String mtClassName;
+	private Set<JavaClass> mtClasses = new HashSet<JavaClass>();
+	private String mtClassName;
 	private int monitorCount;
 	private Set<String> alreadyReported;
 	
-	static {
+	public MultithreadedInstanceAccess(BugReporter bugReporter) {
 		try {
 			mtClasses.add(Repository.lookupClass(STRUTS_ACTION_NAME));
 		} catch (ClassNotFoundException cnfe) {
@@ -63,9 +63,7 @@ public class MultithreadedInstanceAccess extends BytecodeScanningDetector implem
 		} catch (ClassNotFoundException cnfe) {
 			//probably would be annoying to report
 		}		
-	}
 	
-	public MultithreadedInstanceAccess(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 	}
 	

@@ -84,6 +84,23 @@ public class OpcodeStack implements Constants2
 			return o1.equals(o2);
 			}
 
+		public int hashCode() {
+			int r = 42;
+			if (signature != null)
+				r+= signature.hashCode();
+			r *= 31;
+			if (constValue != null)
+				r+= constValue.hashCode();
+			r *= 31;
+			if (field != null)
+				r+= field.hashCode();
+			r *= 31;
+			if (isInitialParameter)
+				r += 17;
+			r += registerNumber;
+			return r;
+			
+			}
 		public boolean equals(Object o) {
 			if (!(o instanceof Item)) return false;
 			Item that = (Item) o;

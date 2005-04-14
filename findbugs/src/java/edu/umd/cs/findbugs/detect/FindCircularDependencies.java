@@ -37,7 +37,7 @@ import edu.umd.cs.findbugs.visitclass.Constants2;
 
 public class FindCircularDependencies extends BytecodeScanningDetector implements Constants2
 {
-	private static HashMap<String, Set<String>> dependencyGraph = null;
+	private HashMap<String, Set<String>> dependencyGraph = null;
 
 	private BugReporter bugReporter;
 	private String clsName;

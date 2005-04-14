@@ -53,7 +53,6 @@ public class UseObjectEquals extends BytecodeScanningDetector implements Constan
 		&&   getSigConstantOperand().equals("(Ljava/lang/Object;)Z")) {
 			
 			if (stack.getStackDepth() > 1) {
-				OpcodeStack.Item item0 = stack.getStackItem(0);
 				OpcodeStack.Item item1 = stack.getStackItem(1);
 				
 					try {

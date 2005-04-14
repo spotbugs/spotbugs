@@ -60,7 +60,7 @@ public class UnreadFields extends BytecodeScanningDetector implements Constants2
 	Set<FieldAnnotation> writtenInConstructorFields = new HashSet<FieldAnnotation>();
 	Set<FieldAnnotation> readFields = new HashSet<FieldAnnotation>();
 	Set<FieldAnnotation> constantFields = new HashSet<FieldAnnotation>();
-	// HashSet finalFields = new HashSet();
+	Set<FieldAnnotation> finalFields = new HashSet<FieldAnnotation>();
 	Set<String> needsOuterObjectInConstructor = new HashSet<String>();
 	Set<String> superReadFields = new HashSet<String>();
 	Set<String> superWrittenFields = new HashSet<String>();
@@ -140,6 +140,7 @@ public class UnreadFields extends BytecodeScanningDetector implements Constants2
 		        && !getFieldName().equals("serialVersionUID")) {
 
 			myFields.add(f);
+			if (obj.isFinal()) finalFields.add(f);
 		}
 	}
 
@@ -362,9 +363,6 @@ public class UnreadFields extends BytecodeScanningDetector implements Constants2
 				 && (fieldSignature.charAt(0) == 'L' || fieldSignature.charAt(0) == '[')
 				) {
 				int priority = LOW_PRIORITY;
-				if (assumedNonNull.get(f).size() < 4) {
-				   priority = NORMAL_PRIORITY;
-				}
 				bugReporter.reportBug(new BugInstance(this, 
 						"UWF_FIELD_NOT_INIIALIZED_IN_CONSTRUCTOR", 
 						priority)
@@ -444,7 +442,7 @@ public class UnreadFields extends BytecodeScanningDetector implements Constants2
 					bugReporter.reportBug(new BugInstance(this, "UUF_UNUSED_FIELD", NORMAL_PRIORITY)
 					        .addClass(className)
 					        .addField(f));
-				else
+				else if (!f.isStatic() || !finalFields.contains(f))
 					bugReporter.reportBug(new BugInstance(this, "URF_UNREAD_FIELD", NORMAL_PRIORITY)
 					        .addClass(className)
 					        .addField(f));

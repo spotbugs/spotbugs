@@ -655,6 +655,7 @@ abstract public class DismantleBytecode extends PreorderVisitor implements Const
 						prevOffset = switchOffsets[o];
 					}
 					sawOffset(defaultSwitchOffset - prevOffset);
+					sawBranchTo(defaultSwitchOffset + PC);
 				} else if (opcode == LOOKUPSWITCH) {
 					sawInt(switchOffsets.length);
 					int prevOffset = i - PC;
@@ -664,6 +665,7 @@ abstract public class DismantleBytecode extends PreorderVisitor implements Const
 						sawInt(switchLabels[o]);
 					}
 					sawOffset(defaultSwitchOffset - prevOffset);
+					sawBranchTo(defaultSwitchOffset + PC);
 				} else
 					for (int k = 0; k < TYPE_OF_OPERANDS[opcode].length; k++) {
 						int m = MEANING_OF_OPERANDS[opcode][k];

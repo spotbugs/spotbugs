@@ -32,7 +32,6 @@ import edu.umd.cs.findbugs.visitclass.Constants2;
 public class InfiniteRecursiveLoop extends BytecodeScanningDetector implements Constants2, StatelessDetector {
 
 	private BugReporter bugReporter;
-	private boolean staticMethod ;
 	private boolean seenTransferOfControl;
 	private boolean seenReturn;
 	private boolean seenStateChange;
@@ -57,7 +56,6 @@ public class InfiniteRecursiveLoop extends BytecodeScanningDetector implements C
 		seenReturn = false;
 		largestBranchTarget = -1;
                 parameters = stack.resetForMethodEntry(this);
-		staticMethod = (obj.getAccessFlags() & (ACC_STATIC)) != 0;
 		if (DEBUG ) {
 		System.out.println();
 		System.out.println(" --- " + getFullyQualifiedMethodName());
@@ -87,7 +85,7 @@ public class InfiniteRecursiveLoop extends BytecodeScanningDetector implements C
 	
 		if (DEBUG ) {
 		System.out.println(stack);	
-		System.out.println(OPCODE_NAMES[seen]);
+		System.out.println(getPC() + " : " + OPCODE_NAMES[seen]);
 		}
 
 	

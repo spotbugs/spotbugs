@@ -120,10 +120,14 @@ public class SwitchFallthrough extends BytecodeScanningDetector implements Const
 					return false;
 				r = new BufferedReader( 
 						new InputStreamReader(sourceFile.getInputStream()));
-				for (int i = 0; i < startLine; i++)
-					r.readLine();
+				for (int i = 0; i < startLine; i++) {
+					String line = r.readLine();
+					if (line == null) return false;
+					}
 				for (int i = 0; i < numLines; i++) {
-					String line = r.readLine().toLowerCase();
+					String line = r.readLine();
+					if (line == null) return false;
+					line = line.toLowerCase();
 					if (line.indexOf("fall") > 0 || line.indexOf("nobreak") > 0) {
 						return true;
 					}

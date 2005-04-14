@@ -45,7 +45,7 @@ import edu.umd.cs.findbugs.ba.Hierarchy;
  */
 public class MethodReturnCheck extends BytecodeScanningDetector {
 	private static boolean DEBUG = Boolean.getBoolean("mrc.debug");
-	private static boolean CHECK_ALL = Boolean.getBoolean("mrc.checkall");
+	private static final boolean CHECK_ALL = Boolean.getBoolean("mrc.checkall");
 	
 	private static final int SCAN =0;
 	private static final int SAW_INVOKE = 1;
