@@ -52,15 +52,29 @@ Send your comments to <a href="mailto:daveho@cs.umd.edu">daveho@cs.umd.edu</a>.<
 	<li> New Style detector to find unnecessary math on constants (Dave Brosius)</li>
 	<li> New detector to find equality comparisons using floating point math (Jay Dunning)</li>
 	<li> New faster detector to find local self assignments (Bill Pugh)</li>
+	<li>New detector to find infinite recursive loops (Bill Pugh)</li>
+	<li>New detector to find for loops with an incorrect increment (Bill Pugh)</li>
+	<li>
+		New detector to find suspicious uses of BufferedReader.readLine()
+		and String.indexOf() (Bill Pugh)
+	</li>
+	<li>
+		New detector to find suspicious integer to double casts
+		(David Hovemeyer, Bill Pugh)
+	</li>
+	<li>New detector to find invalid regular expression patterns (Bill Pugh)</li>
+	<li>New detector to find Bloch/Gafter Java puzzlers (Bill Pugh)</li>
 
 	<!-- feature enhancements -->
 	<li> New system property to suppress reporting of DLS based
 		 on local variable name (Glenn Boysko)</li>
-	<li> Allow for saving enabled detectors in eclipse projects (Phil Crosby)</li>
+	<li> Enhancements to configuration dialog in Eclipse plugin,
+		 allow for saving enabled detectors in Eclipse projects (Phil Crosby)</li>
 	<li> Sortable columns in detector dialog (Dave Brosius)</li>
 	<li> New tab in gui for showing bugs grouped by category (Dave Brosius)</li>
 	<li>Improved German translation of Swing GUI (Thomas Kuehne)</li>
 	<li>Improved source file detection in Emacs output format (Len Trigg)</li>
+	<li>Improvements to redundant null comparison detector (Bill Pugh)</li>
 	
 	<!-- Bug fixes -->
 	<li> Don't scan equals methods in FindHEMismatch if code is native (Greg Bentz)</li>
