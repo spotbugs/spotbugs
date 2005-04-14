@@ -1,0 +1,40 @@
+   
+   <!-- Action set for classifying FindBugs warnings. -->
+   <extension point="org.eclipse.ui.actionSets">
+   		<actionSet
+   			label="FindBugs Warning Classification"
+   			id="de.tobject.findbugs.classificationActionSet"
+   			visible="true">
+   			<!-- Note that actions appear in the toolbar in the reverse of
+	   			the order in which they're specified here. -->
+			<action
+				id="de.tobject.findbugs.classificationActionSet.severity"
+				class="de.tobject.findbugs.classify.SeverityClassificationPulldownAction"
+				toolbarPath="/findbugsclassification"
+				label="Classify Warning Severity"
+				tooltip="Classify Warning Severity"
+				style="pulldown"
+				icon="icons/warning.png"
+				enablesFor="1"
+				>
+				<enablement>
+					<objectState name="type" value="de.tobject.findbugs.findbugsMarker"/>
+				</enablement>
+			</action>
+
+			<action
+				id="de.tobject.findbugs.classificationActionSet.accuracy"
+				class="de.tobject.findbugs.classify.AccuracyClassificationPulldownAction"
+				toolbarPath="/findbugsclassification"
+				label="Classify Warning"
+				tooltip="Classify Warning"
+				style="pulldown"
+				icon="icons/buggy-tiny.png"
+				enablesFor="1"
+				>
+				<enablement>
+					<objectState name="type" value="de.tobject.findbugs.findbugsMarker"/>
+				</enablement>
+			</action>
+   		</actionSet>
+   </extension>
