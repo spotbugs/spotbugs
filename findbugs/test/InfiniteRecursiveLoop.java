@@ -14,4 +14,13 @@ class InfiniteRecursiveLoop {
 	int muchMore() {
 		return 2 + muchMore();
 		}
+
+	public boolean equals(Object o) {
+		return equals(o);
+		}
+
+	public int hashCode() {
+		int i = System.identityHashCode(this);
+		return i+hashCode();
+		}
 }
