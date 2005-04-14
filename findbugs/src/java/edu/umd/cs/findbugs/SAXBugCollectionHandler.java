@@ -45,6 +45,8 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 	private StringBuffer textBuffer;
 	private BugInstance bugInstance;
 	private MethodAnnotation methodAnnotation;
+	private AnalysisError analysisError;
+	private ArrayList<String> stackTrace;
 
 	public SAXBugCollectionHandler(BugCollection bugCollection, Project project) {
 		this.bugCollection = bugCollection;
@@ -52,6 +54,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 
 		this.elementStack = new ArrayList<String>();
 		this.textBuffer = new StringBuffer();
+		this.stackTrace = new ArrayList<String>();
 	}
 
 	public void startDocument() {
@@ -169,6 +172,12 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 					// Method elements can contain nested SourceLine elements.
 					methodAnnotation.setSourceLines(createSourceLineAnnotation(qName, attributes));
 				}
+			} else if (outerElement.equals(BugCollection.ERRORS_ELEMENT_NAME)) {
+				if (qName.equals(BugCollection.ANALYSIS_ERROR_ELEMENT_NAME) ||
+						qName.equals(BugCollection.ERROR_ELEMENT_NAME)) {
+					analysisError = new AnalysisError("Unknown error");
+					stackTrace.clear();
+				}
 			}
 		}
 
@@ -212,10 +221,6 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 					bugCollection.setSummaryHTML(textBuffer.toString());
 				else if (qName.equals("BugInstance"))
 					bugCollection.add(bugInstance);
-				else if (qName.equals(BugCollection.ANALYSIS_ERROR_ELEMENT_NAME))
-					bugCollection.addError(textBuffer.toString());
-				else if (qName.equals(BugCollection.MISSING_CLASS_ELEMENT_NAME))
-					bugCollection.addMissingClass(textBuffer.toString());
 			} else if (outerElement.equals("Project")) {
 				//System.out.println("Adding project element " + qName + ": " + textBuffer.toString());
 				if (qName.equals("Jar"))
@@ -227,6 +232,27 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 			} else if (outerElement.equals("BugInstance")) {
 				if (qName.equals("UserAnnotation")) {
 					bugInstance.setAnnotationText(textBuffer.toString());
+				}
+			} else if (outerElement.equals(BugCollection.ERRORS_ELEMENT_NAME)) {
+				if (qName.equals(BugCollection.ANALYSIS_ERROR_ELEMENT_NAME)) {
+					analysisError.setMessage(textBuffer.toString());
+					bugCollection.addError(analysisError);
+				} else if (qName.equals(BugCollection.ERROR_ELEMENT_NAME)) {
+					if (stackTrace.size() > 0) {
+						analysisError.setStackTrace(stackTrace.toArray(new String[stackTrace.size()]));
+					}
+					bugCollection.addError(analysisError);
+				} else if (qName.equals(BugCollection.MISSING_CLASS_ELEMENT_NAME)) {
+					bugCollection.addMissingClass(textBuffer.toString());
+				}
+				
+			} else if (outerElement.equals(BugCollection.ERROR_ELEMENT_NAME)) {
+				if (qName.equals(BugCollection.ERROR_MESSAGE_ELEMENT_NAME)) {
+					analysisError.setMessage(textBuffer.toString());
+				} else if (qName.equals(BugCollection.ERROR_EXCEPTION_ELEMENT_NAME)) {
+					analysisError.setExceptionMessage(textBuffer.toString());
+				} else if (qName.equals(BugCollection.ERROR_STACK_TRACE_ELEMENT_NAME)) {
+					stackTrace.add(textBuffer.toString());
 				}
 			}
 		}

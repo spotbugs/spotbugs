@@ -54,7 +54,7 @@ public class SortedBugCollection extends BugCollection {
 	private static final BugInstanceComparator comparator = new BugInstanceComparator();
 
 	private TreeSet<BugInstance> bugSet;
-	private List<String> errorList;
+	private List<AnalysisError> errorList;
 	private TreeSet<String> missingClassSet;
 	private String summaryHTML;
 
@@ -68,7 +68,7 @@ public class SortedBugCollection extends BugCollection {
 	 */
 	public SortedBugCollection() {
 		bugSet = new TreeSet<BugInstance>(comparator);
-		errorList = new LinkedList<String>();
+		errorList = new LinkedList<AnalysisError>();
 		missingClassSet = new TreeSet<String>();
 		summaryHTML = "";
 		uniqueIdToBugInstanceMap = new HashMap<String, BugInstance>();
@@ -137,15 +137,21 @@ public class SortedBugCollection extends BugCollection {
 		return bugSet;
 	}
 
-	public void addError(String message) {
-		errorList.add(message);
+	//@Override
+	public void addError(String message, Throwable exception) {
+		errorList.add(new AnalysisError(message, exception));
 	}
-
+	
+	//@Override
+	public void addError(AnalysisError error) {
+		errorList.add(error);
+	}
+	
 	public void addMissingClass(String message) {
 		missingClassSet.add(message);
 	}
 
-	public Iterator<String> errorIterator() {
+	public Iterator<AnalysisError> errorIterator() {
 		return errorList.iterator();
 	}
 

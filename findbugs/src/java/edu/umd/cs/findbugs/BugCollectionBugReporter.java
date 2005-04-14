@@ -50,6 +50,11 @@ public abstract class BugCollectionBugReporter extends TextUIBugReporter {
 		super.logError(message);
 	}
 
+	public void logError(String message, Throwable e) {
+		bugCollection.addError(message, e);
+		super.logError(message, e);
+	}
+
 	public void reportMissingClass(ClassNotFoundException ex) {
 		bugCollection.addMissingClass(getMissingClassName(ex));
 		super.reportMissingClass(ex);

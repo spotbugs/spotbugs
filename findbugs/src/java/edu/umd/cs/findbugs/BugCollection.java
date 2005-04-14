@@ -19,22 +19,33 @@
 
 package edu.umd.cs.findbugs;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.Reader;
+import java.util.Collection;
+import java.util.Iterator;
+
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.DocumentFactory;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.XMLReader;
+
 import edu.umd.cs.findbugs.xml.Dom4JXMLOutput;
 import edu.umd.cs.findbugs.xml.OutputStreamXMLOutput;
 import edu.umd.cs.findbugs.xml.XMLAttributeList;
 import edu.umd.cs.findbugs.xml.XMLOutput;
 import edu.umd.cs.findbugs.xml.XMLOutputUtil;
-
-import java.io.*;
-import java.util.*;
-
-import org.dom4j.Document;
-import org.dom4j.DocumentException;
-import org.dom4j.DocumentFactory;
-
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import org.xml.sax.XMLReader;
 
 /**
  * Abstract base class for collections of BugInstance objects
@@ -88,12 +99,29 @@ public abstract class BugCollection {
 	public abstract Collection<BugInstance> getCollection();
 
 	/**
-	 * Add an analysis error message.
+	 * Add an analysis error.
 	 *
 	 * @param message the error message
 	 */
-	public abstract void addError(String message);
+	public void addError(String message) {
+		addError(message, null);
+	}
 
+	/**
+	 * Add an analysis error.
+	 * 
+	 * @param message   the error message
+	 * @param exception the cause of the error
+	 */
+	public abstract void addError(String message, Throwable exception);
+	
+	/**
+	 * Add an analysis error.
+	 * 
+	 * @param the AnalysisError object to add
+	 */
+	public abstract void addError(AnalysisError error);
+	
 	/**
 	 * Add a missing class message.
 	 *
@@ -102,10 +130,10 @@ public abstract class BugCollection {
 	public abstract void addMissingClass(String message);
 
 	/**
-	 * Return an Iterator over error messages.
+	 * Return an Iterator over analysis errors.
 	 */
-	public abstract Iterator<String> errorIterator();
-
+	public abstract Iterator<AnalysisError> errorIterator();
+	
 	/**
 	 * Return an Iterator over missing class messages.
 	 */
@@ -152,7 +180,11 @@ public abstract class BugCollection {
 	static final String SRCMAP_ELEMENT_NAME = "SrcMap";
 	static final String PROJECT_ELEMENT_NAME = "Project";
 	static final String ERRORS_ELEMENT_NAME = "Errors";
-	static final String ANALYSIS_ERROR_ELEMENT_NAME = "AnalysisError";
+	static final String ANALYSIS_ERROR_ELEMENT_NAME = "AnalysisError"; // 0.8.6 and earlier
+	static final String ERROR_ELEMENT_NAME = "Error";                  // 0.8.7 and later
+	static final String ERROR_MESSAGE_ELEMENT_NAME = "ErrorMessage";   // 0.8.7 and later
+	static final String ERROR_EXCEPTION_ELEMENT_NAME = "Exception";    // 0.8.7 and later
+	static final String ERROR_STACK_TRACE_ELEMENT_NAME = "StackTrace"; // 0.8.7 and later
 	static final String MISSING_CLASS_ELEMENT_NAME = "MissingClass";
 	static final String SUMMARY_HTML_ELEMENT_NAME = "SummaryHTML";
 	static final String APP_CLASS_ELEMENT_NAME = "AppClass";
@@ -317,12 +349,8 @@ public abstract class BugCollection {
 
 	public void writeEpilogue(XMLOutput xmlOutput) throws IOException {
 		// Errors, missing classes
-		xmlOutput.openTag(ERRORS_ELEMENT_NAME);
-		XMLOutputUtil.writeElementList(xmlOutput, ANALYSIS_ERROR_ELEMENT_NAME,
-			errorIterator());
-		XMLOutputUtil.writeElementList(xmlOutput, MISSING_CLASS_ELEMENT_NAME,
-			missingClassIterator());
-		xmlOutput.closeTag(ERRORS_ELEMENT_NAME);
+		emitErrors(xmlOutput);
+
 		// Summary HTML
 		String html = getSummaryHTML();
 		if (!html.equals("")) {
@@ -332,6 +360,45 @@ public abstract class BugCollection {
 		}
 
 		xmlOutput.closeTag(ROOT_ELEMENT_NAME);
+	}
+
+	private void emitErrors(XMLOutput xmlOutput) throws IOException {
+		System.err.println("Writing errors to XML output");
+		
+		xmlOutput.openTag(ERRORS_ELEMENT_NAME);
+		
+		// Emit Error elements describing analysis errors
+		for (Iterator<AnalysisError> i = errorIterator(); i.hasNext(); ) {
+			AnalysisError error = i.next();
+			xmlOutput.openTag(BugCollection.ERROR_ELEMENT_NAME);
+			
+			xmlOutput.openTag(BugCollection.ERROR_MESSAGE_ELEMENT_NAME);
+			xmlOutput.writeText(error.getMessage());
+			xmlOutput.closeTag(BugCollection.ERROR_MESSAGE_ELEMENT_NAME);
+			
+			if (error.getExceptionMessage() != null) {
+				xmlOutput.openTag(BugCollection.ERROR_EXCEPTION_ELEMENT_NAME);
+				xmlOutput.writeText(error.getExceptionMessage());
+				xmlOutput.closeTag(BugCollection.ERROR_EXCEPTION_ELEMENT_NAME);
+			}
+			
+			String stackTrace[] = error.getStackTrace();
+			if (stackTrace != null) {
+				for (int j = 0; j < stackTrace.length; ++j) {
+					xmlOutput.openTag(BugCollection.ERROR_STACK_TRACE_ELEMENT_NAME);
+					xmlOutput.writeText(stackTrace[j]);
+					xmlOutput.closeTag(BugCollection.ERROR_STACK_TRACE_ELEMENT_NAME);
+				}
+			}
+			
+			xmlOutput.closeTag(BugCollection.ERROR_ELEMENT_NAME);
+		}
+		
+		// Emit missing classes
+		XMLOutputUtil.writeElementList(xmlOutput, MISSING_CLASS_ELEMENT_NAME,
+			missingClassIterator());
+		
+		xmlOutput.closeTag(ERRORS_ELEMENT_NAME);
 	}
 
 	private void checkInputStream(InputStream in) throws IOException {

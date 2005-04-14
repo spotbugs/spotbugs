@@ -1119,7 +1119,8 @@ public class FindBugs implements Constants2, ExitCodes {
 		while (i.hasNext()) {
 			DetectorFactory factory = i.next();
 			if (factory.getPlugin().isEnabled() &&
-					userPreferences.isDetectorEnabled(factory)) {
+					userPreferences.isDetectorEnabled(factory) &&
+					factory.isEnabledForCurrentJRE()) {
 				Detector detector = factory.create(bugReporter);
 				detector.setAnalysisContext(analysisContext);
 				result.add(detector);
