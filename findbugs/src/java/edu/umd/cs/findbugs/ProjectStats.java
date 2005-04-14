@@ -93,7 +93,7 @@ public class ProjectStats {
 	 */
 	public Element toElement(Branch parent) {
 		Element root = parent.addElement("FindBugsSummary");
-		DateFormat df = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z");
+		DateFormat df = DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.FULL);
 		Date date = new Date();
 		root.addAttribute("timestamp", df.format(date));
 		root.addAttribute("total_classes", String.valueOf(totalClasses));
