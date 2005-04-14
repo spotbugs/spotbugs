@@ -1,6 +1,6 @@
 /*
  * FindBugs - Find bugs in Java programs
- * Copyright (C) 2003,2004 University of Maryland
+ * Copyright (C) 2003-2005, University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,9 +20,21 @@
 package edu.umd.cs.findbugs;
 
 import java.io.PrintStream;
-import java.util.*;
+import java.util.HashMap;
 
+/**
+ * Base class for BugReporters which provides convenient formatting
+ * and reporting of warnings and analysis errors.
+ * 
+ * <p>
+ * "TextUIBugReporter" is a bit of a misnomer, since this class
+ * is useful in GUIs, too.
+ * </p>
+ * 
+ * @author David Hovemeyer
+ */
 public abstract class TextUIBugReporter extends AbstractBugReporter {
+	private boolean reportStackTrace;
 
 	// Map of category codes to abbreviations used in printBug()
 	private static final HashMap<String, String> categoryMap = new HashMap<String, String>();
@@ -37,11 +49,34 @@ public abstract class TextUIBugReporter extends AbstractBugReporter {
 	}
 
 	protected PrintStream outputStream = System.out;
+	
+	public TextUIBugReporter() {
+		reportStackTrace = true;
+	}
 
+	/**
+	 * Set the PrintStream to write bug output to.
+	 * 
+	 * @param outputStream the PrintStream to write bug output to
+	 */
 	public void setOutputStream(PrintStream outputStream) {
 		this.outputStream = outputStream;
 	}
+	
+	/**
+	 * Set whether or not stack traces should be reported in error output.
+	 * 
+	 * @param reportStackTrace true if stack traces should be reported, false if not
+	 */
+	public void setReportStackTrace(boolean reportStackTrace) {
+		this.reportStackTrace = reportStackTrace;
+	}
 
+	/**
+	 * Print bug in one-line format.
+	 * 
+	 * @param bugInstance the bug to print
+	 */
 	protected void printBug(BugInstance bugInstance) {
 		switch (bugInstance.getPriority()) {
 		case Detector.EXP_PRIORITY:
@@ -74,14 +109,44 @@ public abstract class TextUIBugReporter extends AbstractBugReporter {
 			        + "  " + line.toString());
 	}
 
-	public void beginReport() {
+	private boolean analysisErrors;
+	private boolean missingClasses;
+	
+	//@Override
+	public void reportQueuedErrors() {
+		analysisErrors = missingClasses = false;
+		super.reportQueuedErrors();
+	}
+	
+	public void reportAnalysisError(AnalysisError error) {
+		if (!analysisErrors) {
+			emitLine("The following errors occurred during analysis:");
+			analysisErrors = true;
+		}
+		emitLine("\t" + error.getMessage());
+		if (error.getExceptionMessage() != null) {
+			emitLine("\t\t" + error.getExceptionMessage());
+			if (reportStackTrace) {
+				String[] stackTrace = error.getStackTrace();
+				if (stackTrace != null) {
+					for (int i = 0; i < stackTrace.length; ++i) {
+						emitLine("\t\t\tAt " + stackTrace[i]);
+					}
+				}
+			}
+		}
 	}
 
-	public void reportLine(String msg) {
-		System.err.println(msg);
+	public void reportMissingClass(String message) {
+		if (!missingClasses) {
+			emitLine("The following classes needed for analysis were missing:");
+			missingClasses = true;
+		}
+		emitLine("\t" + message);
 	}
-
-	public void endReport() {
+	
+	protected void emitLine(String line) {
+		System.err.println(line);
 	}
 }
 

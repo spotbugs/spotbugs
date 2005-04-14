@@ -1,4 +1,23 @@
 /*
+ * FindBugs - Find bugs in Java programs
+ * Copyright (C) 2003-2005, University of Maryland
+ * 
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ * 
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
+/*
  * AnalysisErrorDialog.java
  *
  * Created on June 5, 2003, 3:20 PM
@@ -13,13 +32,20 @@ package edu.umd.cs.findbugs.gui;
  */
 public class AnalysisErrorDialog extends javax.swing.JDialog {
 	private static final long serialVersionUID = 3256728359756379184L;
+	
+	private SwingGUIBugReporter reporter;
 
 	/**
 	 * Creates new form AnalysisErrorDialog
 	 */
-	public AnalysisErrorDialog(java.awt.Frame parent, boolean modal) {
+	public AnalysisErrorDialog(java.awt.Frame parent, boolean modal, SwingGUIBugReporter reporter) {
 		super(parent, modal);
+		this.reporter = reporter;
 		initComponents();
+	}
+	
+	public void generateContents() {
+		reporter.reportQueuedErrors();
 	}
 
 	/**
@@ -182,17 +208,13 @@ public class AnalysisErrorDialog extends javax.swing.JDialog {
 		buf.append('\n');
 	}
 
+	public void clear() {
+		errorMessageTextArea.setText("");
+	}
+	
 	public void finish() {
 		errorMessageTextArea.setText(buf.toString());
 	}
-
-	/**
-	 * @param args the command line arguments
-	 */
-	public static void main(String args[]) {
-		new AnalysisErrorDialog(new javax.swing.JFrame(), true).setVisible(true);
-	}
-
 
 	// Variables declaration - do not modify//GEN-BEGIN:variables
 	private javax.swing.JMenuBar analysisMenuBar;

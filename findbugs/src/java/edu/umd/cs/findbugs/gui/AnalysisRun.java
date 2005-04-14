@@ -1,6 +1,6 @@
 /*
  * FindBugs - Find bugs in Java programs
- * Copyright (C) 2003,2004 University of Maryland
+ * Copyright (C) 2003-2005, University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -35,7 +35,7 @@ import javax.swing.tree.DefaultTreeModel;
 import edu.umd.cs.findbugs.*;
 import edu.umd.cs.findbugs.config.UserPreferences;
 
-import org.apache.bcel.classfile.JavaClass;
+
 
 /**
  * Representation of a run of the FindBugs analysis on a Project.
@@ -45,56 +45,14 @@ import org.apache.bcel.classfile.JavaClass;
  * @author David Hovemeyer
  */
 public class AnalysisRun {
-	/**
-	 * Our BugReporter just puts the reported BugInstances into a SortedBugCollection.
-	 */
-	private class Reporter extends AbstractBugReporter {
-		private SortedBugCollection bugCollection = new SortedBugCollection();
-
-		public void observeClass(JavaClass javaClass) {
-		}
-
-		public void reportMissingClass(ClassNotFoundException ex) {
-			super.reportMissingClass(ex);
-			String message = getMissingClassName(ex);
-			bugCollection.addMissingClass(message);
-		}
-
-		public void logError(String message) {
-			frame.getLogger().logMessage(ConsoleLogger.WARNING, message);
-			super.logError(message);
-			bugCollection.addError(message);
-		}
-
-		public void finish() {
-		}
-
-		public void doReportBug(edu.umd.cs.findbugs.BugInstance bugInstance) {
-			if (bugCollection.add(bugInstance))
-				notifyObservers(bugInstance);
-		}
-
-		public void beginReport() {
-			errorDialog = new AnalysisErrorDialog(frame, true);
-		}
-
-		public void reportLine(String msg) {
-			errorDialog.addLine(msg);
-		}
-
-		public void endReport() {
-			errorDialog.finish();
-		}
-	}
-
 	private Project project;
-	private FindBugsFrame frame;
+	FindBugsFrame frame;
 	private String summary;
 	private ConsoleLogger logger;
 	private FindBugs findBugs;
-	private Reporter reporter;
+	private SwingGUIBugReporter reporter;
 	private HashMap<String, DefaultTreeModel> treeModelMap;
-	private AnalysisErrorDialog errorDialog;
+//	AnalysisErrorDialog errorDialog;
 
 	/**
 	 * Creates a new instance of AnalysisRun.
@@ -103,7 +61,7 @@ public class AnalysisRun {
 		this.project = project;
 		this.frame = frame;
 		this.logger = frame.getLogger();
-		this.reporter = new Reporter();
+		this.reporter = new SwingGUIBugReporter(this);
 		this.reporter.setPriorityThreshold(Detector.EXP_PRIORITY);
 		this.findBugs = new FindBugs(reporter, project);
 		this.treeModelMap = new HashMap<String, DefaultTreeModel>();
@@ -160,27 +118,28 @@ public class AnalysisRun {
 	 * Load bugs from a file.
 	 */
 	public void loadBugsFromFile(File file) throws IOException, org.dom4j.DocumentException {
-		reporter.bugCollection.readXML(file, project);
+		reporter.getBugCollection().readXML(file, project);
 
 		// Update summary stats
-		summary = reporter.bugCollection.getSummaryHTML();
+		summary = reporter.getBugCollection().getSummaryHTML();
 	}
 
 	/**
 	 * Save bugs to a file.
 	 */
 	public void saveBugsToFile(File file) throws IOException {
-		reporter.bugCollection.writeXML(file, project);
+		reporter.getBugCollection().writeXML(file, project);
 	}
 
 	/**
 	 * Report any errors that may have occurred during analysis.
 	 */
 	public void reportAnalysisErrors() {
-		if (errorDialog != null) {
-			errorDialog.setSize(750, 520);
-			errorDialog.setLocationRelativeTo(null); // center the dialog
-			errorDialog.setVisible(true);
+		if (reporter.getErrorDialog() != null) {
+			reporter.getErrorDialog().generateContents();
+			reporter.getErrorDialog().setSize(750, 520);
+			reporter.getErrorDialog().setLocationRelativeTo(null); // center the dialog
+			reporter.getErrorDialog().setVisible(true);
 		}
 	}
 
@@ -188,7 +147,7 @@ public class AnalysisRun {
 	 * Return the collection of BugInstances.
 	 */
 	public java.util.Collection<BugInstance> getBugInstances() {
-		return reporter.bugCollection.getCollection();
+		return reporter.getBugCollection().getCollection();
 	}
 
 	/**

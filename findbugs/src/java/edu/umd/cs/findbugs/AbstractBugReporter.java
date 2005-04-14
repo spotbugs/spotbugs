@@ -142,31 +142,14 @@ public abstract class AbstractBugReporter implements BugReporter {
 	}
 
 	public void reportQueuedErrors() {
-		if (errorMessageList.isEmpty() && missingClassMessageList.isEmpty())
-			return;
-
-		beginReport();
-		if (!errorMessageList.isEmpty()) {
-			reportLine("The following errors occured during analysis:");
-			for (Iterator<Error> i = errorMessageList.iterator(); i.hasNext();) {
-				Error error = i.next();
-				reportLine("\t" + error.getMessage());
-				Throwable cause = error.getCause();
-				if (cause != null) {
-					reportLine("\t\t" + cause.toString());
-					StackTraceElement[] stackTrace = cause.getStackTrace();
-					for (int j = 0; j < stackTrace.length; ++j) {
-						reportLine("\t\t\t" + stackTrace[j].toString());
-					}
-				}
-			}
+		for (Iterator<Error> i = errorMessageList.iterator(); i.hasNext(); ) {
+			Error error = i.next();
+			reportAnalysisError(new AnalysisError(error.getMessage(), error.getCause()));
 		}
-		if (!missingClassMessageList.isEmpty()) {
-			reportLine("The following classes needed for analysis were missing:");
-			for (Iterator<String> i = missingClassMessageList.iterator(); i.hasNext();)
-				reportLine("\t" + i.next());
+		
+		for (Iterator<String> i = missingClassMessageList.iterator(); i.hasNext();) {
+			reportMissingClass(i.next());
 		}
-		endReport();
 	}
 
 	public void addObserver(BugReporterObserver observer) {
@@ -192,11 +175,19 @@ public abstract class AbstractBugReporter implements BugReporter {
 	 */
 	protected abstract void doReportBug(BugInstance bugInstance);
 
-	public abstract void beginReport();
+	/**
+	 * Report a queued error.
+	 * 
+	 * @param error the queued error
+	 */
+	public abstract void reportAnalysisError(AnalysisError error);
 
-	public abstract void reportLine(String msg);
-
-	public abstract void endReport();
+	/**
+	 * Report a missing class.
+	 * 
+	 * @param string
+	 */
+	public abstract void reportMissingClass(String string);
 }
 
 // vim:ts=4

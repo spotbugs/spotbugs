@@ -1,6 +1,6 @@
 /*
  * FindBugs - Find bugs in Java programs
- * Copyright (C) 2003,2004 University of Maryland
+ * Copyright (C) 2003-2005, University of Maryland
  * Copyright (C) 2004 Dave Brosius <dbrosius@users.sourceforge.net>
  *
  * This library is free software; you can redistribute it and/or
@@ -2162,7 +2162,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 			if (dialog.exceptionOccurred()) {
 				// The analysis was killed by an unexpected exception
 				Exception e = dialog.getException();
-				AnalysisErrorDialog err = new AnalysisErrorDialog(this, true);
+				AnalysisErrorDialog err = new AnalysisErrorDialog(this, true, null);
 				err.addLine(MessageFormat.format(L10N.getLocalString("msg.fatalanalysisexception_txt", "Fatal analysis exception: {0}"),  new Object[]{e.toString()}));
 				StackTraceElement[] callList = e.getStackTrace();
 				for (int i = 0; i < callList.length; ++i)
