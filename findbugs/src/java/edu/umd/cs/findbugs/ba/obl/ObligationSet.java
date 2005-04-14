@@ -93,8 +93,8 @@ public class ObligationSet {
 				continue;
 			if (count > 0)
 				buf.append(",");
-			if (ObligationFactory.instance != null) {
-				buf.append(ObligationFactory.instance.getObligationById(i).toString());
+			if (ObligationFactory.lastInstance != null) {
+				buf.append(ObligationFactory.lastInstance.getObligationById(i).toString());
 			} else {
 				buf.append("id=");
 				buf.append(i);
