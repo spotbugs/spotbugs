@@ -2412,14 +2412,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	 */
 	private void localiseButton(AbstractButton button, String key, String defaultString,
 								boolean setMnemonic) {
-		AnnotatedString as = new AnnotatedString(L10N.getLocalString(key, defaultString));
-		button.setText(as.toString());
-		int mnemonic;
-		if (setMnemonic &&
-			(mnemonic = as.getMnemonic()) != KeyEvent.VK_UNDEFINED) {
-			button.setMnemonic(mnemonic);
-			button.setDisplayedMnemonicIndex(as.getMnemonicIndex());
-		}
+		L10N.localiseButton(button, key, defaultString, setMnemonic);
 	}
 
 	/* ----------------------------------------------------------------------

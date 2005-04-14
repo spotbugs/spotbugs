@@ -20,11 +20,14 @@
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="editMenuActionPerformed"/>
           </Events>
           <AuxValues>
-            <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="editMenu.setText(L10N.getLocalString(&quot;menu.edit_menu&quot;, &quot;Edit&quot;));"/>
+            <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="L10N.localiseButton(editMenu, &quot;menu.edit_menu&quot;, &quot;&amp;Edit&quot;, true);"/>
           </AuxValues>
           <SubComponents>
             <MenuItem class="javax.swing.JMenuItem" name="selectAllMenuItem">
               <Properties>
+                <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
+                  <KeyStroke key="Ctrl+A"/>
+                </Property>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Dialog" size="12" style="0"/>
                 </Property>
@@ -34,11 +37,14 @@
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="selectAllItemActionListener"/>
               </Events>
               <AuxValues>
-                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="selectAllMenuItem.setText(L10N.getLocalString(&quot;menu.selectall_item&quot;, &quot;Select All&quot;));"/>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="L10N.localiseButton(selectAllMenuItem, &quot;menu.selectall_item&quot;, &quot;Select &amp;All&quot;, true);"/>
               </AuxValues>
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="copyMenuItem">
               <Properties>
+                <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
+                  <KeyStroke key="Ctrl+C"/>
+                </Property>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Dialog" size="12" style="0"/>
                 </Property>
@@ -48,7 +54,7 @@
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="copyMenuItemActionPerformed"/>
               </Events>
               <AuxValues>
-                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="copyMenuItem.setText(L10N.getLocalString(&quot;menu.copy_item&quot;, &quot;Copy&quot;));"/>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="L10N.localiseButton(copyMenuItem, &quot;menu.copy_item&quot;, &quot;Copy&quot;, true);"/>
               </AuxValues>
             </MenuItem>
           </SubComponents>
@@ -57,7 +63,7 @@
     </Menu>
   </NonVisualComponents>
   <Properties>
-    <Property name="title" type="java.lang.String" value="Analysis Errors"/>
+    <Property name="title" type="java.lang.String" value="Analysis Errors" postCode="setTitle(L10N.getLocalString(&quot;dlg.analysiserrors_ttl&quot;, &quot;Analysis Errors&quot;));"/>
   </Properties>
   <SyntheticProperties>
     <SyntheticProperty name="menuBar" type="java.lang.String" value="analysisMenuBar"/>

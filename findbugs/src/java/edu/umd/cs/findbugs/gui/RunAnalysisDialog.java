@@ -210,11 +210,12 @@ public class RunAnalysisDialog extends javax.swing.JDialog {
 
 		getContentPane().setLayout(new java.awt.GridBagLayout());
 
+		setTitle("Run Analysis");
+		this.setTitle(L10N.getLocalString("dlg.runanalysis_ttl", "Run Analysis"));
 		addWindowListener(new java.awt.event.WindowAdapter() {
 			public void windowClosing(java.awt.event.WindowEvent evt) {
 				closeDialog(evt);
 			}
-
 			public void windowOpened(java.awt.event.WindowEvent evt) {
 				formWindowOpened(evt);
 			}

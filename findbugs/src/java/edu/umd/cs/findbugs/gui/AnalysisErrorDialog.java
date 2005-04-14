@@ -71,6 +71,7 @@ public class AnalysisErrorDialog extends javax.swing.JDialog {
 
 		getContentPane().setLayout(new java.awt.GridBagLayout());
 
+		setTitle("Analysis Errors");
 		setTitle(L10N.getLocalString("dlg.analysiserrors_ttl", "Analysis Errors"));
 		addWindowListener(new java.awt.event.WindowAdapter() {
 			public void windowClosing(java.awt.event.WindowEvent evt) {
@@ -140,16 +141,17 @@ public class AnalysisErrorDialog extends javax.swing.JDialog {
 		analysisMenuBar.setFont(new java.awt.Font("Dialog", 0, 12));
 		editMenu.setText("Edit");
 		editMenu.setFont(new java.awt.Font("Dialog", 0, 12));
-		editMenu.setText(L10N.getLocalString("menu.edit_menu", "Edit"));
+		L10N.localiseButton(editMenu, "menu.edit_menu", "&Edit", true);
 		editMenu.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				editMenuActionPerformed(evt);
 			}
 		});
 
+		selectAllMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_A, java.awt.event.InputEvent.CTRL_MASK));
 		selectAllMenuItem.setFont(new java.awt.Font("Dialog", 0, 12));
 		selectAllMenuItem.setText("Select All");
-		selectAllMenuItem.setText(L10N.getLocalString("menu.selectall_item", "Select All"));
+		L10N.localiseButton(selectAllMenuItem, "menu.selectall_item", "Select &All", true);
 		selectAllMenuItem.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				selectAllItemActionListener(evt);
@@ -158,9 +160,10 @@ public class AnalysisErrorDialog extends javax.swing.JDialog {
 
 		editMenu.add(selectAllMenuItem);
 
+		copyMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_C, java.awt.event.InputEvent.CTRL_MASK));
 		copyMenuItem.setFont(new java.awt.Font("Dialog", 0, 12));
 		copyMenuItem.setText("Copy");
-		copyMenuItem.setText(L10N.getLocalString("menu.copy_item", "Copy"));
+		L10N.localiseButton(copyMenuItem, "menu.copy_item", "Copy", true);
 		copyMenuItem.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				copyMenuItemActionPerformed(evt);
