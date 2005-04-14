@@ -1256,7 +1256,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 		sourceTextAreaScrollPane.setMinimumSize(new java.awt.Dimension(22, 180));
 		sourceTextAreaScrollPane.setPreferredSize(new java.awt.Dimension(0, 100));
 		sourceTextArea.setEditable(false);
-		sourceTextArea.setFont(new java.awt.Font("Lucida Sans Typewriter", 0, 12));
+		sourceTextArea.setFont(new java.awt.Font("Monospaced", 0, 12));
 		sourceTextArea.setEnabled(false);
 		sourceTextArea.addFocusListener(new java.awt.event.FocusAdapter() {
 			public void focusGained(java.awt.event.FocusEvent evt) {
@@ -1324,7 +1324,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 			consoleScrollPane.setPreferredSize(new java.awt.Dimension(0, 100));
 			consoleMessageArea.setBackground(new java.awt.Color(204, 204, 204));
 			consoleMessageArea.setEditable(false);
-			consoleMessageArea.setFont(new java.awt.Font("Lucida Sans Typewriter", 0, 12));
+			consoleMessageArea.setFont(new java.awt.Font("Monospaced", 0, 12));
 			consoleMessageArea.setAutoscrolls(false);
 			consoleMessageArea.setMinimumSize(new java.awt.Dimension(0, 0));
 			consoleMessageArea.addFocusListener(new java.awt.event.FocusAdapter() {
