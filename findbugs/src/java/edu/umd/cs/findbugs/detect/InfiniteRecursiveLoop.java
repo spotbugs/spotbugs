@@ -91,6 +91,21 @@ public class InfiniteRecursiveLoop extends BytecodeScanningDetector implements C
 		}
 
 	
+		if ((seen == INVOKEVIRTUAL || seen == INVOKEINTERFACE)
+			    && getNameConstantOperand().equals("add")
+			    && getSigConstantOperand().equals(
+				"(Ljava/lang/Object;)Z")
+			    && stack.getStackDepth() >= 1)  {
+				OpcodeStack.Item it0 = stack.getStackItem(0);
+				OpcodeStack.Item it1 = stack.getStackItem(1);
+				if (it0.equals(it1))
+				bugReporter.reportBug(new BugInstance(this, "IL_CONTAINER_ADDED_TO_ITSELF", NORMAL_PRIORITY)
+				        .addClassAndMethod(this)
+				        .addSourceLine(this)
+					);
+		}
+
+
 		if ((seen == INVOKEVIRTUAL || seen == INVOKESPECIAL || seen == INVOKEINTERFACE || seen == INVOKESTATIC) 
 			    && getNameConstantOperand().equals(getMethodName())
 			    && getSigConstantOperand().equals(getMethodSig())

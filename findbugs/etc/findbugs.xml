@@ -23,7 +23,7 @@
 	        
   <Detector class="edu.umd.cs.findbugs.detect.InfiniteRecursiveLoop" 
 	        speed="fast"
-            reports="IL_INFINITE_RECURSIVE_LOOP" /> 
+            reports="IL_INFINITE_RECURSIVE_LOOP,IL_CONTAINER_ADDED_TO_ITSELF" /> 
             
   <Detector class="edu.umd.cs.findbugs.detect.VolatileUsage" 
 	        speed="fast"
@@ -369,6 +369,8 @@
   <BugPattern abbrev="SW" type="SW_SWING_METHODS_INVOKED_IN_SWING_THREAD" category="CORRECTNESS"
     experimental="true"/>
   <BugPattern abbrev="IL" type="IL_INFINITE_RECURSIVE_LOOP" category="CORRECTNESS" 
+    experimental="true"/>
+  <BugPattern abbrev="IL" type="IL_CONTAINER_ADDED_TO_ITSELF" category="CORRECTNESS" 
     experimental="true"/>
   <BugPattern abbrev="VO" type="VO_VOLATILE_REFERENCE_TO_ARRAY" category="MT_CORRECTNESS" 
     experimental="true"/>

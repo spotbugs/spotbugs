@@ -156,8 +156,8 @@ public class FindBadCast extends BytecodeScanningDetector implements Constants2,
 			if (toClass.isInterface()) priority++;
 			if (DEBUG)
 				System.out.println(" priority: " + priority);
-			if (signatureClass.isInterface()
-				|| signatureClass.isAbstract()) priority++;
+			if (priority <= LOW_PRIORITY && (signatureClass.isInterface()
+				|| signatureClass.isAbstract())) priority++;
 			if (DEBUG)
 				System.out.println(" priority: " + priority);
 			 if (abstractCollectionClasses.contains(to))
@@ -166,8 +166,16 @@ public class FindBadCast extends BytecodeScanningDetector implements Constants2,
 				System.out.println(" priority: " + priority);
 			int reg = it.getRegisterNumber();
 			if (reg >= 0 && reg < parameters
-				&& getMethod().isPublic())
+				&& it.isInitialParameter()
+				&& getMethod().isPublic()) {
 				priority--;
+				if (getPC() < 4 && priority > LOW_PRIORITY)
+					priority--;
+				}
+			if (DEBUG)
+				System.out.println(" priority: " + priority);
+			if (getMethodName().equals("compareTo"))
+				priority++;
 			if (DEBUG)
 				System.out.println(" priority: " + priority);
 			if (priority < HIGH_PRIORITY)

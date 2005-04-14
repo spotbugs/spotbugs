@@ -831,6 +831,23 @@ an infinite recursive loop that will result in a stack overflow.</p>
 ]]>
     </Details>
   </BugPattern>
+
+
+  <BugPattern type="IL_CONTAINER_ADDED_TO_ITSELF">
+    <ShortDescription>A container is added to itself.</ShortDescription>
+    <LongDescription>A container is added to itself in {1}.</LongDescription>
+    <Details>
+<![CDATA[
+<p>A container is added to itself. As a result, computing the hashCode of this
+set will throw a StackOverflowException.
+</p>
+]]>
+    </Details>
+  </BugPattern>
+
+
+
+
   <BugPattern type="VO_VOLATILE_REFERENCE_TO_ARRAY">
     <ShortDescription>A volatile reference to an array doesn't treat the array elements as volatile</ShortDescription>
     <LongDescription>{1} is a volatile reference to an array; the array elements are non-volatile.</LongDescription>
