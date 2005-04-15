@@ -339,6 +339,7 @@
 		</java>
 	</target>
 	
+	<!-- Generate binary distribution (both .zip and .tar.gz) -->
 	<target name="bindist" depends="rebuild,docs">
 		<patternset id="bindist.miscfile.pats">
 			<include name="README.txt"/>
@@ -359,7 +360,7 @@
 			<exclude name="bin/*.bat"/>
 		</patternset>
 
-		<zip destfile="${build.dir}/findbugs-${release.number}.zip">
+		<zip destfile="${build.dir}/findbugs-${release.number}.zip" compress="true">
 			<zipfileset prefix="findbugs-${release.number}" dir=".">
 				<patternset refid="bindist.miscfile.pats"/>
 			</zipfileset>
@@ -392,8 +393,24 @@
 		</tar>
 
 	</target>
-	
-	<target name="srcdist" depends="bindist">
+
+	<!-- Build source distribution. -->
+	<target name="srcdist" depends="docs">
+		<mkdir dir="${build.dir}/src"/>
+		<delete dir="${build.dir}/src/findbugs-${release.number}"/>
+
+		<cvs cvsRoot="daveho@cvs.sourceforge.net:/cvsroot/findbugs"
+			cvsRsh="ssh"
+			dest="${build.dir}/src"
+			command="export -r HEAD -d findbugs-${release.number} findbugs"/>
+		
+		<zip destfile="${build.dir}/findbugs-${release.number}-source.zip" compress="true">
+			<zipfileset dir="${build.dir}/src" includes="findbugs-${release.number}/**"/>
+			<zipfileset prefix="findbugs-${release.number}/doc" dir="${doc.dir}">
+				<patternset refid="doc.src.pats"/>
+				<patternset refid="doc.img.pats"/>
+			</zipfileset>
+		</zip>
 	</target>
 	
 	<!-- Delete generated files. -->
