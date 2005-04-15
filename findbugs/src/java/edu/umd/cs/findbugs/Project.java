@@ -44,6 +44,7 @@ import java.util.Map;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
+import edu.umd.cs.findbugs.xml.XMLAttributeList;
 import edu.umd.cs.findbugs.xml.XMLOutput;
 import edu.umd.cs.findbugs.xml.XMLOutputUtil;
 import edu.umd.cs.findbugs.xml.XMLWriteable;
@@ -658,13 +659,15 @@ public class Project implements XMLWriteable {
 		return fileName;
 	}
 
-	private static final String JAR_ELEMENT_NAME = "Jar";
-	private static final String AUX_CLASSPATH_ENTRY_ELEMENT_NAME = "AuxClasspathEntry";
-	private static final String SRC_DIR_ELEMENT_NAME = "SrcDir";
-	private static final String FILENAME_ATTRIBUTE_NAME = "filename";
+	static final String JAR_ELEMENT_NAME = "Jar";
+	static final String AUX_CLASSPATH_ENTRY_ELEMENT_NAME = "AuxClasspathEntry";
+	static final String SRC_DIR_ELEMENT_NAME = "SrcDir";
+	static final String FILENAME_ATTRIBUTE_NAME = "filename";
 
 	public void writeXML(XMLOutput xmlOutput) throws IOException {
-		xmlOutput.openTag(BugCollection.PROJECT_ELEMENT_NAME);
+		xmlOutput.openTag(
+				BugCollection.PROJECT_ELEMENT_NAME,
+				new XMLAttributeList().addAttribute(FILENAME_ATTRIBUTE_NAME, getProjectFileName()));
 
 		XMLOutputUtil.writeElementList(xmlOutput, JAR_ELEMENT_NAME, fileList);
 		XMLOutputUtil.writeElementList(xmlOutput, AUX_CLASSPATH_ENTRY_ELEMENT_NAME, auxClasspathEntryList);

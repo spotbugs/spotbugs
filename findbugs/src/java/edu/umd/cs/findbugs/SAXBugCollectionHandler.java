@@ -91,7 +91,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 				// Parsing a top-level element of the BugCollection
 				if (qName.equals("Project")) {
 					// Project element
-					String filename = attributes.getValue("filename");
+					String filename = attributes.getValue(Project.FILENAME_ATTRIBUTE_NAME);
 					if (filename != null)
 						project.setProjectFileName(filename);
 				} else if (qName.equals("BugInstance")) {
