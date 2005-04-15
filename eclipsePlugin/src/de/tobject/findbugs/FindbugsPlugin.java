@@ -327,6 +327,15 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 	public void logWarning(String message) {
 		logMessage(IStatus.WARNING, message, null);
 	}
+	
+	/**
+	 * Log an informational message.
+	 * 
+	 * @param message the informational message
+	 */
+	public void logInfo(String message) {
+		logMessage(IStatus.INFO, message, null);
+	}
 
 	private void logMessage(int severity, String message, Exception e) {
 		if (FindbugsPlugin.DEBUG) {
