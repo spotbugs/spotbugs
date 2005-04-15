@@ -101,7 +101,8 @@ public class ConfigureDetectorsDialog extends javax.swing.JDialog {
                 "Bug Detector", "Speed", "Enabled"
             }
         ) {
-            Class[] types = new Class [] {
+			private static final long serialVersionUID = 1L;
+			Class[] types = new Class [] {
                 java.lang.String.class, java.lang.String.class, java.lang.Boolean.class
             };
             boolean[] canEdit = new boolean [] {
@@ -236,6 +237,8 @@ public class ConfigureDetectorsDialog extends javax.swing.JDialog {
 		int row = 0;
 		while (i.hasNext()) {
 			DetectorFactory factory = i.next();
+			if (factory.isHidden())
+				continue;
 			model.setValueAt(factory.isDefaultEnabled() ? Boolean.TRUE : Boolean.FALSE, row++, ENABLED_COLUMN);
 		}
 	}//GEN-LAST:event_restoreDefaultsButtonActionPerformed
@@ -329,6 +332,8 @@ public class ConfigureDetectorsDialog extends javax.swing.JDialog {
 		Iterator<DetectorFactory> i = DetectorFactoryCollection.instance().factoryIterator();
 		while (i.hasNext()) {
 			DetectorFactory factory = i.next();
+			if (factory.isHidden())
+				continue;
 			DefaultTableModel model = (DefaultTableModel) detectorTable.getModel();
 			model.addRow(new Object[]{
 					factory.getShortName(),
