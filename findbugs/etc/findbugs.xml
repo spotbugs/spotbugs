@@ -240,8 +240,8 @@
   <Detector class="edu.umd.cs.findbugs.detect.FindJSR166LockMonitorenter" 
             speed="moderate" 
             requirejre="1.5"
-            reports="JLM_JSR166_LOCK_MONITORENTER"
-            disabled="true" />
+            reports="JLM_JSR166_LOCK_MONITORENTER" />
+
   <Detector class="edu.umd.cs.findbugs.detect.FindUncalledPrivateMethods" 
             speed="fast"
             reports="UPM_UNCALLED_PRIVATE_METHOD" />

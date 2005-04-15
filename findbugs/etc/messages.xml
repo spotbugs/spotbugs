@@ -2796,8 +2796,8 @@ For more information, see the
   </BugPattern>
 
   <BugPattern type="JLM_JSR166_LOCK_MONITORENTER">
-    <ShortDescription>Synchronization performed on JSR166 Lock in method</ShortDescription>
-    <LongDescription>Synchronization performed on JSR166 Lock in method {1}</LongDescription>
+    <ShortDescription>Synchronization performed on java.util.concurrent Lock in method</ShortDescription>
+    <LongDescription>Synchronization performed on java.util.concurrent Lock in method {1}</LongDescription>
 <Details>
 <![CDATA[
 <p> This method performs synchronization on an implementation of

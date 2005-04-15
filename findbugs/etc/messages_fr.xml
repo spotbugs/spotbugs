@@ -1967,8 +1967,8 @@ De telles affectations sont inutiles et peuvent indiquer une faute de frappe ou 
   </BugPattern>
 
   <BugPattern type="JLM_JSR166_LOCK_MONITORENTER">
-    <ShortDescription>Synchronisation effectuée sur un Lock JSR166</ShortDescription>
-    <LongDescription>Synchronisation effectuée sur un Lock JSR166 dans la méthode {1}</LongDescription>
+    <ShortDescription>Synchronisation effectuée sur un Lock java.util.concurrent</ShortDescription>
+    <LongDescription>Synchronisation effectuée sur un Lock java.util.concurrent dans la méthode {1}</LongDescription>
 <Details>
 <![CDATA[
 <p>Cette méthode se synchronise au moyen d'une implémentation de java.util.concurrent.locks.Lock. Vous devriez plutôt utiliser les méthodes lock() et unlock().</p>

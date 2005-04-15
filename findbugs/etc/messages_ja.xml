@@ -2046,8 +2046,8 @@ dateString = dateString.trim();
   </BugPattern>
 
   <BugPattern type="JLM_JSR166_LOCK_MONITORENTER">
-    <ShortDescription>メソッド内で、JSR166 の Lock による同期がおこなわれます。</ShortDescription>
-    <LongDescription>メソッド {1} 内で、JSR166 の Lock による同期がおこなわれます。</LongDescription>
+    <ShortDescription>メソッド内で、java.util.concurrent の Lock による同期がおこなわれます。</ShortDescription>
+    <LongDescription>メソッド {1} 内で、java.util.concurrent の Lock による同期がおこなわれます。</LongDescription>
 <Details>
 <![CDATA[
 <p> このメソッドは、<code>java.util.concurrent.locks.Lock</code>オブジェクトで同期化を行っています。<code>lock()</code>と<code>unlock()</code>を替わりに使用すべきです。</p>
