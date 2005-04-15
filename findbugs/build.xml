@@ -336,6 +336,9 @@
 		</java>
 	</target>
 	
+	<!-- Generate binary and source distributions. -->
+	<target name="dist" depends="bindist,srcdist"/>
+	
 	<!-- Generate binary distribution (both .zip and .tar.gz) -->
 	<target name="bindist" depends="rebuild,docs">
 		<patternset id="bindist.miscfile.pats">
