@@ -35,11 +35,11 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
-import edu.umd.cs.findbugs.ba.AnalysisException;
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
+import edu.umd.cs.findbugs.ba.Hierarchy;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.LockDataflow;
 
@@ -94,7 +94,7 @@ public class FindTwoLockWait implements Detector, StatelessDetector {
 
 		for (Iterator<Location> j = cfg.locationIterator(); j.hasNext();) {
 			Location location = j.next();
-			visitInstruction(location, methodGen, dataflow);
+			visitLocation(location, methodGen, dataflow);
 		}
 	}
 
@@ -121,37 +121,20 @@ public class FindTwoLockWait implements Detector, StatelessDetector {
 		return lockCount >= 2 && sawWait;
 	}
 
-	public void visitInstruction(Location location, MethodGen methodGen, LockDataflow dataflow) {
-		try {
-			ConstantPoolGen cpg = methodGen.getConstantPool();
-
-			if (isWait(location.getHandle(), cpg)) {
-				int count = dataflow.getFactAtLocation(location).getNumLockedObjects();
-				if (count > 1) {
-					// A wait with multiple locks held?
-					String sourceFile = javaClass.getSourceFileName();
-					bugReporter.reportBug(new BugInstance(this, "TLW_TWO_LOCK_WAIT", NORMAL_PRIORITY)
-					        .addClass(javaClass)
-					        .addMethod(methodGen, sourceFile)
-					        .addSourceLine(methodGen, sourceFile, location.getHandle()));
-				}
+	public void visitLocation(Location location, MethodGen methodGen, LockDataflow dataflow) throws DataflowAnalysisException {
+		ConstantPoolGen cpg = methodGen.getConstantPool();
+		
+		if (Hierarchy.isMonitorWait(location.getHandle().getInstruction(), cpg)) {
+			int count = dataflow.getFactAtLocation(location).getNumLockedObjects();
+			if (count > 1) {
+				// A wait with multiple locks held?
+				String sourceFile = javaClass.getSourceFileName();
+				bugReporter.reportBug(new BugInstance(this, "TLW_TWO_LOCK_WAIT", NORMAL_PRIORITY)
+						.addClass(javaClass)
+						.addMethod(methodGen, sourceFile)
+						.addSourceLine(methodGen, sourceFile, location.getHandle()));
 			}
-		} catch (DataflowAnalysisException e) {
-			throw new AnalysisException(e.getMessage());
 		}
-	}
-
-	private boolean isWait(InstructionHandle handle, ConstantPoolGen cpg) {
-		Instruction ins = handle.getInstruction();
-		if (!(ins instanceof INVOKEVIRTUAL))
-			return false;
-		INVOKEVIRTUAL inv = (INVOKEVIRTUAL) ins;
-
-		String methodName = inv.getMethodName(cpg);
-		String methodSig = inv.getSignature(cpg);
-
-		return methodName.equals("wait") &&
-		        (methodSig.equals("()V") || methodSig.equals("(J)V") || methodSig.equals("(JI)V"));
 	}
 
 	public void report() {
