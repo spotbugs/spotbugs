@@ -20,7 +20,10 @@
 package edu.umd.cs.findbugs;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 import java.util.*;
+
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 
 /**
  * A DetectorFactory is responsible for creating instances of Detector objects
@@ -40,6 +43,8 @@ public class DetectorFactory {
 	private int priorityAdjustment;
 	private boolean hidden;
 	private boolean firstInPass;
+	
+	private Method setAnalysisContext;
 
 	/**
 	 * Constructor.
@@ -66,6 +71,13 @@ public class DetectorFactory {
 		this.priorityAdjustment = 0;
 		this.hidden = false;
 		this.firstInPass = false;
+
+		try {
+			setAnalysisContext = detectorClass.getDeclaredMethod(
+					"setAnalysisContext", new Class[]{AnalysisContext.class});
+		} catch (NoSuchMethodException e) {
+			// Ignore
+		}
 	}
 
 	private static final Class[] constructorArgTypes = new Class[]{BugReporter.class};
@@ -212,7 +224,18 @@ public class DetectorFactory {
 	public Detector create(BugReporter bugReporter) {
 		try {
 			Constructor constructor = detectorClass.getConstructor(constructorArgTypes);
-			return (Detector) constructor.newInstance(new Object[]{bugReporter});
+			Detector detector = (Detector) constructor.newInstance(new Object[]{bugReporter});
+			
+			// Backwards-compatibility: if the Detector has a setAnalysisContext()
+			// method, call it, passing the current AnalysisContext.  We do this
+			// because some released versions of FindBugs had a Detector
+			// interface which specified this method (and ensured it was called
+			// before the Detector was used to analyze any code).
+			if (setAnalysisContext != null) {
+				setAnalysisContext.invoke(detector, new Object[]{AnalysisContext.currentAnalysisContext()});
+			}
+			
+			return detector;
 		} catch (Exception e) {
 			throw new RuntimeException("Could not instantiate Detector", e);
 		}
