@@ -33,6 +33,7 @@ import org.eclipse.jdt.core.JavaCore;
 
 import de.tobject.findbugs.FindbugsPlugin;
 import edu.umd.cs.findbugs.AbstractBugReporter;
+import edu.umd.cs.findbugs.AnalysisError;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.SortedBugCollection;
@@ -103,31 +104,6 @@ public class Reporter extends AbstractBugReporter {
 		getBugCollection().add(bug);
 		if (MarkerUtil.displayWarning(bug, userPrefs.getFilterSettings())) {
 			MarkerUtil.createMarker(bug, project);
-		}
-	}
-	
-	
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.AbstractBugReporter#beginReport()
-	 */
-	public void beginReport() {
-	}
-
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.AbstractBugReporter#reportLine(java.lang.String)
-	 */
-	public void reportLine(String arg0) {
-		if (DEBUG) {
-			System.out.println("reportline: " + arg0); //$NON-NLS-1$
-		}
-	}
-	
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.AbstractBugReporter#endReport()
-	 */
-	public void endReport() {
-		if (DEBUG) {
-			System.out.println("endreport"); //$NON-NLS-1$
 		}
 	}
 	
@@ -230,5 +206,13 @@ public class Reporter extends AbstractBugReporter {
 			name = ".." + name.substring(startCutIdx); //$NON-NLS-1$
 		}
 		return name;
+	}
+
+	public void reportAnalysisError(AnalysisError error) {
+		FindbugsPlugin.getDefault().logWarning("FindBugs analysis error: " + error.getMessage());
+	}
+
+	public void reportMissingClass(String missingClass) {
+		FindbugsPlugin.getDefault().logWarning("FindBugs missing class: " + missingClass);
 	}
 }
