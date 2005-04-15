@@ -46,6 +46,24 @@
 		<pathelement location="${classes.dir}"/>
 		<path refid="findbugs.classpath"/>
 	</path>
+	
+	<patternset id="codebase.data.pats">
+		<include name="**/*.properties"/>
+		<include name="**/*.png"/>
+		<include name="**/*.html"/>
+	</patternset>
+	
+	<patternset id="doc.src.pats">
+		<include name="**/*.html"/>
+		<include name="**/*.xml"/>
+		<include name="**/*.xsl"/>
+	</patternset>
+	
+	<patternset id="doc.img.pats">
+		<include name="**/*.png"/>
+		<include name="**/*.css"/>
+		<include name="**/*.txt"/>
+	</patternset>
 
 	<!-- Some of the test classes require a real JDK 1.5 -->
 	<condition property="jsr14.excludes"
@@ -76,9 +94,7 @@
 		<!-- Copy codebase data files. -->
 		<copy todir="${classes.dir}">
 			<fileset dir="${src.dir}">
-				<include name="**/*.properties"/>
-				<include name="**/*.png"/>
-				<include name="**/*.html"/>
+				<patternset refid="codebase.data.pats"/>
 			</fileset>
 			<fileset dir="${etc.dir}">
 				<include name="summary.xsl"/>
@@ -300,17 +316,13 @@
 		<copy todir="${doc.dir}">
 			<filterset refid="doc.filters"/>
 			<fileset dir="${docsrc.dir}">
-				<include name="*.html"/>
-				<include name="*.xml"/>
-				<include name="*.xsl"/>
+				<patternset refid="doc.src.pats"/>
 			</fileset>
 		</copy>
 		
 		<copy todir="${doc.dir}">
 			<fileset dir="${docsrc.dir}">
-				<include name="*.png"/>
-				<include name="*.css"/>
-				<include name="*.txt"/>
+				<patternset refid="doc.img.pats"/>
 			</fileset>
 		</copy>
 	</target>
@@ -327,39 +339,61 @@
 		</java>
 	</target>
 	
-	<target name="bindist" depends="build,docs">
-		<patternset id="bindist.files">
+	<target name="bindist" depends="rebuild,docs">
+		<patternset id="bindist.miscfile.pats">
 			<include name="README.txt"/>
 			<include name="LICENSE.txt"/>
 			<include name="bin/*.bat"/>
-			<include name="doc/*.html"/>
-			<include name="doc/**/*.html"/>
-			<include name="doc/**/*.css"/>
-			<include name="doc/**/*.txt"/>
-			<include name="doc/**/*.png"/>
-			<include name="doc/**/*.xml"/>
-			<include name="doc/**/*.xsl"/>
 		</patternset>
 		
-		<patternset id="bindist.jars">
+		<patternset id="bindist.jar.pats">
 			<include name="lib/*.jar"/>
 			<include name="plugin/*.jar"/>
 			<exclude name="lib/AppleJavaExtensions.jar"/>
 			<exclude name="lib/junit.jar"/>
 			<exclude name="lib/plastic.jar"/>
 		</patternset>
+		
+		<patternset id="bindist.unixscript.pats">
+			<include name="bin/*"/>
+			<exclude name="bin/*.bat"/>
+		</patternset>
 
 		<zip destfile="${build.dir}/findbugs-${release.number}.zip">
 			<zipfileset prefix="findbugs-${release.number}" dir=".">
-				<patternset refid="bindist.files"/>
-				<patternset refid="bindist.jars"/>
+				<patternset refid="bindist.miscfile.pats"/>
 			</zipfileset>
-			<zipfileset prefix="findbugs-${release.number}"
-				dir="." includes="bin/*" excludes="bin/*.bat" filemode="555" />
+			<zipfileset prefix="findbugs-${release.number}" dir="." filemode="555">
+				<patternset refid="bindist.unixscript.pats"/>
+			</zipfileset>
+			<zipfileset prefix="findbugs-${release.number}" dir=".">
+				<patternset refid="bindist.jar.pats"/>
+			</zipfileset>
+			<zipfileset prefix="findbugs-${release.number}/doc" dir="${doc.dir}">
+				<patternset refid="doc.src.pats"/>
+				<patternset refid="doc.img.pats"/>
+			</zipfileset>
 		</zip>
+
+		<tar destfile="${build.dir}/findbugs-${release.number}.tar.gz" compression="gzip">
+			<tarfileset prefix="findbugs-${release.number}" dir=".">
+				<patternset refid="bindist.miscfile.pats"/>
+			</tarfileset>
+			<tarfileset prefix="findbugs-${release.number}" dir="." mode="555">
+				<patternset refid="bindist.unixscript.pats"/>
+			</tarfileset>
+			<tarfileset prefix="findbugs-${release.number}" dir=".">
+				<patternset refid="bindist.jar.pats"/>
+			</tarfileset>
+			<tarfileset prefix="findbugs-${release.number}/doc" dir="${doc.dir}">
+				<patternset refid="doc.src.pats"/>
+				<patternset refid="doc.img.pats"/>
+			</tarfileset>
+		</tar>
+
 	</target>
 	
-	<target name="srcdist">
+	<target name="srcdist" depends="bindist">
 	</target>
 	
 	<!-- Delete generated files. -->
