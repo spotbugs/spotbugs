@@ -627,15 +627,13 @@ on SQL statements in switch something other than a constant string is passed as 
 <Detector class="edu.umd.cs.findbugs.detect.FindDeadLocalStores">
 <Details>
 <![CDATA[
- This detector looks for assignments to local variables that
- are never subsequently read.  Due to the way byte code is generated for final local variables,
- false positives for these cases are often seen, which is why the detector is currently disabled.
-  It is a moderately fast detector.
+<p>
+This detector looks for assignments to local variables that
+are never subsequently read. It is a moderately fast detector.
+</p>
 ]]>
     </Details>
   </Detector>
-
-
 
   <Detector class="edu.umd.cs.findbugs.detect.FindMaskedFields">
     <Details>
@@ -651,7 +649,7 @@ It is a fast detector.</p>
     <Details>
 <![CDATA[
 <p> This detector looks for accessing the value of a Map entry, using a key that was retrieved from
-a keySet iterator. It is a fast detector.
+a keySet iterator. It is a fast detector.</p>
 ]]>
    </Details>
   </Detector>
@@ -660,7 +658,7 @@ a keySet iterator. It is a fast detector.
     <Details>
 <![CDATA[
 <p> This detector looks for code that creates objects based on classes that only define static methods.
-It is a fast detector.
+It is a fast detector.</p>
 ]]>
    </Details>
   </Detector>
@@ -668,7 +666,8 @@ It is a fast detector.
   <Detector class="edu.umd.cs.findbugs.detect.RuntimeExceptionCapture">
 	  <Details>
 <![CDATA[
-<p> This detector looks for catch clauses that catch Exception, when no code in the block throws Exception. </p>
+<p> This detector looks for catch clauses that catch Exception,
+when no code in the block throws Exception. </p>
 ]]>
 	  </Details>
   </Detector>
@@ -2199,9 +2198,6 @@ written to. Deferencing this value will generate a null pointer exception.
     </Details>
   </BugPattern>
 
-
-
-
   <BugPattern type="SIC_INNER_SHOULD_BE_STATIC">
     <ShortDescription>Should be a static inner class</ShortDescription>
     <LongDescription>Should {0} be a _static_ inner class?</LongDescription>
@@ -2338,7 +2334,7 @@ inner object.&nbsp; This reference makes the instances
    <p> The method invokes String.indexOf and checks to see if the result is positive or non-positive.
 	It is much more typical to check to see if the result is negative or non-negative. It is
 	positive only if the substring checked for occurs at some place other than at the beginning of
-	the String.
+	the String.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -2350,7 +2346,7 @@ inner object.&nbsp; This reference makes the instances
 <![CDATA[
    <p> The value returned by readLine is discarded after checking to see if the return
 value is non-null. In almost all situations, if the result is non-null, you will want
-to use that non-null value. Calling readLine again will give you a different line.
+to use that non-null value. Calling readLine again will give you a different line.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -2384,9 +2380,6 @@ dateString = dateString.trim();
 ]]>
     </Details>
   </BugPattern>
-
-
-
 
   <BugPattern type="NP_ALWAYS_NULL">
     <ShortDescription>Null pointer dereference in method</ShortDescription>
@@ -2526,14 +2519,15 @@ body of an <code>if</code> statement, e.g.:</p>
 <![CDATA[
 <p> This method contains a redundant comparison of a reference value
 to null. Two types of redundant comparison are reported:
+</p>
 <ul>
 <li> Both values compared are definitely null</li>
 <li> One value is definitely null and the other is definitely not null</li>
 </ul>
-</p>
 
 <p> This particular warning represents two specific kinds of
 redundant comparisons:
+</p>
 <ol>
 <li> A value was dereferenced, and later explicitly compared to null:
      this often indicates an error in the method</li>
@@ -2541,7 +2535,6 @@ redundant comparisons:
      this may indicate that the method was modified without
      complete understanding of the invariants of the method</li>
 </ol>
-</p>
 ]]>
     </Details>
   </BugPattern>
@@ -2575,6 +2568,7 @@ of defensive programming.</p>
 <p> This method acquires a JSR-166 (<code>java.util.concurrent</code>) lock,
 but does not release it on all paths out of the method.  In general, the correct idiom
 for using a JSR-166 lock is:
+</p>
 <pre>
     Lock l = ...;
     l.lock();
@@ -2584,7 +2578,6 @@ for using a JSR-166 lock is:
         l.unlock();
     }
 </pre>
-</p>
 ]]>
     </Details>
   </BugPattern>
@@ -2597,6 +2590,7 @@ for using a JSR-166 lock is:
 <p> This method acquires a JSR-166 (<code>java.util.concurrent</code>) lock,
 but does not release it on all exception paths out of the method.  In general, the correct idiom
 for using a JSR-166 lock is:
+</p>
 <pre>
     Lock l = ...;
     l.lock();
@@ -2606,7 +2600,6 @@ for using a JSR-166 lock is:
         l.unlock();
     }
 </pre>
-</p>
 ]]>
     </Details>
   </BugPattern>
@@ -2694,14 +2687,16 @@ an <code>IllegalMonitorStateException</code> being thrown.</p>
     <LongDescription>Self assignment of local variable in {1}</LongDescription>
     <Details>
 <![CDATA[
-<p> This method contains a self assignment of a local variable; e.g.
+<p> This method contains a self assignment of a local variable; e.g.</p>
 <pre>
   public void foo() {
     int x = 3;
     x = x;
   }
 </pre>
-Such assignments are useless, and may indicate a logic error or typo.</p>
+<p>
+Such assignments are useless, and may indicate a logic error or typo.
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -2712,14 +2707,14 @@ Such assignments are useless, and may indicate a logic error or typo.</p>
     <Details>
 <![CDATA[
 <p> This method contains a self assignment of a field; e.g.
+</p>
 <pre>
   int x;
   public void foo() {
     x = x;
   }
 </pre>
-Such assignments are useless, and may indicate a logic error or typo.
-</p>
+<p>Such assignments are useless, and may indicate a logic error or typo.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -3112,7 +3107,7 @@ the fields when they wanted the other.</p>
 <![CDATA[
 <p> This method accesses the value of a Map entry, using a key that was retrieved from
 a keySet iterator. It is more efficient to use an iterator on the entrySet of the map, to avoid the 
-Map.get(key) lookup.
+Map.get(key) lookup.</p>
 ]]>
         </Details>
     </BugPattern>
@@ -3123,7 +3118,7 @@ Map.get(key) lookup.
         <Details>
 <![CDATA[
 <p> This class allocates an object that is based on a class that only supplies static methods. This object
-does not need to be created, just access the static methods directly using the class name as a qualifier.
+does not need to be created, just access the static methods directly using the class name as a qualifier.</p>
 ]]>
         </Details>
     </BugPattern>
@@ -3172,6 +3167,7 @@ does not need to be created, just access the static methods directly using the c
 <p> This method uses a static method from java.lang.Math on a constant value. This method's 
 result in this case, can be determined statically, and is faster and sometimes more accurate to
 just use the constant. Methods detected are:
+</p>
 <table>
 <tr><th>Method</th><th>Parameter</th></tr>
 <tr>abs<td></td><td>-any-</td></tr>
@@ -3198,7 +3194,6 @@ just use the constant. Methods detected are:
 <tr>toDegrees<td></td><td>0.0 or 1.0</td></tr>
 <tr>toRadians<td></td><td>0.0</td></tr>
 </table>
-</p>
 ]]>
     </Details>
   </BugPattern>
@@ -3310,6 +3305,7 @@ Doing division on integers loses precision.  The fact that the result
 was cast to double suggests that this precision should have been retained.
 What was probably meant was to cast one or both of the operands to
 double <em>before</em> performing the division.  Here is an example:
+</p>
 <blockquote>
 <pre>
 int x = 2;
@@ -3321,7 +3317,6 @@ double value1 =  x / y;
 double value2 =  x / (double) y;
 </pre>
 </blockquote>
-</p>
 ]]>
     </Details>
   </BugPattern>
@@ -3461,9 +3456,6 @@ value outside the expected range of 0..11 to a method.
 ]]>
     </Details>
   </BugPattern>
-
-
-   
  
     <!--
   **********************************************************************
@@ -3566,4 +3558,4 @@ value outside the expected range of 0..11 to a method.
   <BugCode abbrev="IM">Questionable integer math</BugCode>
   <BugCode abbrev="ST">Misuse of static fields</BugCode>
   <BugCode abbrev="PZ">Bug inspired by Josh Bloch's and Neal Gafter's Programming Puzzlers</BugCode>
-  </MessageCollection>
+</MessageCollection>
