@@ -96,9 +96,6 @@
 			<fileset dir="${src.dir}">
 				<patternset refid="codebase.data.pats"/>
 			</fileset>
-			<fileset dir="${etc.dir}">
-				<include name="summary.xsl"/>
-			</fileset>
 			<fileset dir="${xslsrc.dir}">
 				<include name="*.xsl"/>
 			</fileset>
