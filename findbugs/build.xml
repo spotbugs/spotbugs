@@ -327,6 +327,41 @@
 		</java>
 	</target>
 	
+	<target name="bindist" depends="build,docs">
+		<patternset id="bindist.files">
+			<include name="README.txt"/>
+			<include name="LICENSE.txt"/>
+			<include name="bin/*.bat"/>
+			<include name="doc/*.html"/>
+			<include name="doc/**/*.html"/>
+			<include name="doc/**/*.css"/>
+			<include name="doc/**/*.txt"/>
+			<include name="doc/**/*.png"/>
+			<include name="doc/**/*.xml"/>
+			<include name="doc/**/*.xsl"/>
+		</patternset>
+		
+		<patternset id="bindist.jars">
+			<include name="lib/*.jar"/>
+			<include name="plugin/*.jar"/>
+			<exclude name="lib/AppleJavaExtensions.jar"/>
+			<exclude name="lib/junit.jar"/>
+			<exclude name="lib/plastic.jar"/>
+		</patternset>
+
+		<zip destfile="${build.dir}/findbugs-${release.number}.zip">
+			<zipfileset prefix="findbugs-${release.number}" dir=".">
+				<patternset refid="bindist.files"/>
+				<patternset refid="bindist.jars"/>
+			</zipfileset>
+			<zipfileset prefix="findbugs-${release.number}"
+				dir="." includes="bin/*" excludes="bin/*.bat" filemode="555" />
+		</zip>
+	</target>
+	
+	<target name="srcdist">
+	</target>
+	
 	<!-- Delete generated files. -->
 	<target name="clean">
 		<delete>
