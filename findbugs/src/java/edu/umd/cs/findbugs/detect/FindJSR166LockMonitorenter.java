@@ -46,6 +46,7 @@ import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.Hierarchy;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.TypeDataflow;
+import edu.umd.cs.findbugs.ba.TypeFrame;
 
 /**
  * Find places where ordinary (balanced) synchronization is performed
@@ -98,41 +99,43 @@ public class FindJSR166LockMonitorenter implements Detector, StatelessDetector {
 		ConstantPoolGen cpg = classContext.getConstantPoolGen();
 		CFG cfg = classContext.getCFG(method);
 		TypeDataflow typeDataflow = classContext.getTypeDataflow(method);
-		
-		for (Iterator<BasicBlock> i = cfg.blockIterator(); i.hasNext();) {
-			BasicBlock basicBlock = i.next();
-			for (Iterator<InstructionHandle> j = basicBlock.instructionIterator(); j.hasNext();) {
-				InstructionHandle handle = j.next();
-				Instruction ins = handle.getInstruction();
+
+		for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
+			Location location = i.next();
+			
+			InstructionHandle handle = location.getHandle();
+			Instruction ins = handle.getInstruction();
+			
+			if (ins.getOpcode() != Constants.MONITORENTER)
+				continue;
+			
+			TypeFrame frame = typeDataflow.getFactAtLocation(location);
+			if (!frame.isValid())
+				continue;
+			Type type = frame.getInstance(ins, cpg);
+			
+			if (!(type instanceof ReferenceType)) {
+				// Something is deeply wrong if a non-reference type
+				// is used for a monitorenter.  But, that's really a
+				// verification problem.
+				return;
+			}
+			
+			boolean isSubtype;
+			try {
+				isSubtype = Hierarchy.isSubtype((ReferenceType) type, LOCK_TYPE);
+			} catch (ClassNotFoundException e) {
+				bugReporter.reportMissingClass(e);
+				return;
+			}
+			
+			if (isSubtype) {
+				MethodGen mg = classContext.getMethodGen(method);
+				String sourceFile = classContext.getJavaClass().getSourceFileName();
 				
-				if (ins.getOpcode() != Constants.MONITORENTER)
-					continue;
-				
-				Type type = typeDataflow.getFactAtLocation(new Location(handle, basicBlock)).getInstance(ins, cpg);
-				
-				if (!(type instanceof ReferenceType)) {
-					// Something is deeply wrong if a non-reference type
-					// is used for a monitorenter.  But, that's really a
-					// verification problem.
-					return;
-				}
-				
-				boolean isSubtype;
-				try {
-					isSubtype = Hierarchy.isSubtype((ReferenceType) type, LOCK_TYPE);
-				} catch (ClassNotFoundException e) {
-					bugReporter.reportMissingClass(e);
-					return;
-				}
-				
-				if (isSubtype) {
-					MethodGen mg = classContext.getMethodGen(method);
-					String sourceFile = classContext.getJavaClass().getSourceFileName();
-					
-					bugReporter.reportBug(new BugInstance(this, "JLM_JSR166_LOCK_MONITORENTER", NORMAL_PRIORITY)
-							.addClassAndMethod(mg, sourceFile)
-							.addSourceLine(mg, sourceFile, handle));
-				}
+				bugReporter.reportBug(new BugInstance(this, "JLM_JSR166_LOCK_MONITORENTER", NORMAL_PRIORITY)
+						.addClassAndMethod(mg, sourceFile)
+						.addSourceLine(mg, sourceFile, handle));
 			}
 		}
 	}
