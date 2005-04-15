@@ -35,7 +35,6 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.StatelessDetector;
-import edu.umd.cs.findbugs.ba.BasicBlock;
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.ClassContext;
@@ -97,7 +96,6 @@ public class FindMismatchedWaitOrNotify implements Detector, StatelessDetector {
 		for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
 			Location location = i.next();
 
-			BasicBlock basicBlock = location.getBasicBlock();
 			InstructionHandle handle = location.getHandle();
 
 			Instruction ins = handle.getInstruction();
