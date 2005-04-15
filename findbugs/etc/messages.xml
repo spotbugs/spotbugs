@@ -2215,7 +2215,7 @@ written to. Deferencing this value will generate a null pointer exception.
 
 
 
-  <BugPattern type="NP_FIELD_NOT_INIIALIZED_IN_CONSTRUCTOR">
+  <BugPattern type="NP_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR">
     <ShortDescription>Read of field not initialized in constructor</ShortDescription>
     <LongDescription>Read of field not initialized in constructor at {1}</LongDescription>
     <Details>
@@ -2228,7 +2228,7 @@ but not necessarily wrong).
 ]]>
     </Details>
   </BugPattern>
-  <BugPattern type="UWF_FIELD_NOT_INIIALIZED_IN_CONSTRUCTOR">
+  <BugPattern type="UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR">
     <ShortDescription>Field not initialized in constructor</ShortDescription>
     <LongDescription>Field not initialized in constructor: {1}</LongDescription>
     <Details>

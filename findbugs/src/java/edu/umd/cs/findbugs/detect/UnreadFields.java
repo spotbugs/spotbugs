@@ -364,7 +364,7 @@ public class UnreadFields extends BytecodeScanningDetector implements Constants2
 				) {
 				int priority = LOW_PRIORITY;
 				bugReporter.reportBug(new BugInstance(this, 
-						"UWF_FIELD_NOT_INIIALIZED_IN_CONSTRUCTOR", 
+						"UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR", 
 						priority)
 				        .addClass(className)
 				        .addField(f));
