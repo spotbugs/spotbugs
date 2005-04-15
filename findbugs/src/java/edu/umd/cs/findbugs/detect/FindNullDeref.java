@@ -104,9 +104,6 @@ public class FindNullDeref implements Detector, StatelessDetector {
 		return super.clone();
 	}
 
-	public void setAnalysisContext(AnalysisContext analysisContext) {
-	}
-
 	public void visitClassContext(ClassContext classContext) {
 		try {
 

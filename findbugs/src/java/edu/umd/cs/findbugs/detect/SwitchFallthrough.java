@@ -43,7 +43,6 @@ public class SwitchFallthrough extends BytecodeScanningDetector implements Const
 	private static final boolean LOOK_IN_SOURCE_FOR_FALLTHRU_COMMENT =
 		Boolean.getBoolean("findbugs.sf.comment");
 
-	private AnalysisContext analysisContext;
 	private SwitchHandler switchHdlr;
 	private boolean reachable;
 	private BugReporter bugReporter;
@@ -55,10 +54,6 @@ public class SwitchFallthrough extends BytecodeScanningDetector implements Const
 
 	public Object clone() throws CloneNotSupportedException {
 		return super.clone();
-	}
-
-	public void setAnalysisContext(AnalysisContext analysisContext) {
-		this.analysisContext = analysisContext;
 	}
 
 	public void visitClassContext(ClassContext classContext) {
@@ -111,7 +106,7 @@ public class SwitchFallthrough extends BytecodeScanningDetector implements Const
 			try {
 				SourceLineAnnotation srcLine
 	        		= SourceLineAnnotation.fromVisitedInstructionRange(this, lastPC, getPC());
-				SourceFinder sourceFinder = analysisContext.getSourceFinder();
+				SourceFinder sourceFinder = AnalysisContext.currentAnalysisContext().getSourceFinder();
 				SourceFile sourceFile = sourceFinder.findSourceFile(srcLine.getPackageName(), srcLine.getSourceFile());
 				
 				int startLine = srcLine.getStartLine();

@@ -29,7 +29,6 @@ import org.apache.bcel.generic.MethodGen;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
-import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.ClassContext;
@@ -72,12 +71,6 @@ public class FindUnsatisfiedObligation implements Detector {
 		this.bugReporter = bugReporter;
 		this.factory = new ObligationFactory();
 		this.database = buildDatabase();
-	}
-
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.Detector#setAnalysisContext(edu.umd.cs.findbugs.ba.AnalysisContext)
-	 */
-	public void setAnalysisContext(AnalysisContext analysisContext) {
 	}
 
 	/* (non-Javadoc)

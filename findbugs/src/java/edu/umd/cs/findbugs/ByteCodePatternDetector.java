@@ -19,16 +19,19 @@
 
 package edu.umd.cs.findbugs;
 
-import java.util.*;
+import java.util.Iterator;
 
-import edu.umd.cs.findbugs.ba.*;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.MethodGen;
+
+import edu.umd.cs.findbugs.ba.CFGBuilderException;
+import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.bcp.ByteCodePattern;
 import edu.umd.cs.findbugs.ba.bcp.ByteCodePatternMatch;
 import edu.umd.cs.findbugs.ba.bcp.PatternElementMatch;
 import edu.umd.cs.findbugs.ba.bcp.PatternMatcher;
-import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.classfile.Method;
-import org.apache.bcel.generic.MethodGen;
 
 /**
  * A base class for bug detectors that are based on a ByteCodePattern.
@@ -41,21 +44,6 @@ import org.apache.bcel.generic.MethodGen;
 public abstract class ByteCodePatternDetector implements Detector {
 	private static final boolean DEBUG = Boolean.getBoolean("bcpd.debug");
 	private static final String METHOD = System.getProperty("bcpd.method");
-
-	private AnalysisContext analysisContext;
-
-	public void setAnalysisContext(AnalysisContext analysisContext) {
-		this.analysisContext = analysisContext;
-	}
-
-	/**
-	 * Get the AnalysisContext.
-	 *
-	 * @return the AnalysisContext
-	 */
-	protected AnalysisContext getAnalysisContext() {
-		return analysisContext;
-	}
 	
 	protected abstract BugReporter getBugReporter();
 

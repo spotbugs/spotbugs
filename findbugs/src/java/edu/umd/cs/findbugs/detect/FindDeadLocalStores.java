@@ -115,9 +115,6 @@ public class FindDeadLocalStores implements Detector {
 		if (DEBUG) System.out.println("Debugging FindDeadLocalStores detector");
 	}
 	
-	public void setAnalysisContext(AnalysisContext analysisContext) {
-	}
-	
 	private boolean prescreen(ClassContext classContext, Method method) {
 		return true;
 	}

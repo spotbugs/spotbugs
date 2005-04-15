@@ -38,7 +38,6 @@ import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.MethodWarningSuppressor;
 import edu.umd.cs.findbugs.PackageWarningSuppressor;
 import edu.umd.cs.findbugs.SuppressionMatcher;
-import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.visitclass.AnnotationVisitor;
 import edu.umd.cs.findbugs.visitclass.Constants2;
@@ -51,7 +50,6 @@ public class NoteSuppressedWarnings extends AnnotationVisitor
 	private SuppressionMatcher suppressionMatcher;
 
 	private BugReporter bugReporter;
-        private AnalysisContext analysisContext;
 
 	private NoteSuppressedWarnings recursiveDetector;
 
@@ -72,10 +70,6 @@ public class NoteSuppressedWarnings extends AnnotationVisitor
 	
 
 		this.bugReporter = bugReporter;
-	}
-
-	public void setAnalysisContext(AnalysisContext analysisContext) {
-		this.analysisContext = analysisContext;
 	}
 
 	public void visitClassContext(ClassContext classContext) {

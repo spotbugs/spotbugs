@@ -31,9 +31,7 @@ import org.apache.bcel.classfile.JavaClass;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
-import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.visitclass.Constants2;
-
 
 public class FindCircularDependencies extends BytecodeScanningDetector implements Constants2
 {
@@ -44,10 +42,7 @@ public class FindCircularDependencies extends BytecodeScanningDetector implement
 	
 	public FindCircularDependencies(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
-	}
-	
-	public void setAnalysisContext(AnalysisContext analysisContext){
-		dependencyGraph = new HashMap<String,Set<String>>();
+		this.dependencyGraph = new HashMap<String,Set<String>>();
 	}
 	
 	public void visit(JavaClass obj) {

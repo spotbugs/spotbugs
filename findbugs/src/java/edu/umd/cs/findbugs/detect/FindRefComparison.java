@@ -355,10 +355,6 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 		this.bugReporter = bugReporter;
 	}
 
-	public void setAnalysisContext(AnalysisContext analysisContext) {
-		//this.analysisContext = analysisContext;
-	}
-
 	public void visitClassContext(ClassContext classContext) {
 		JavaClass jclass = classContext.getJavaClass();
 		Method[] methodList = jclass.getMethods();

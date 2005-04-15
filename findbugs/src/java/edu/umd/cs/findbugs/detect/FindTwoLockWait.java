@@ -34,7 +34,6 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.StatelessDetector;
-import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.ClassContext;
@@ -46,7 +45,6 @@ import edu.umd.cs.findbugs.ba.LockDataflow;
 public class FindTwoLockWait implements Detector, StatelessDetector {
 
 	private BugReporter bugReporter;
-	//private AnalysisContext analysisContext;
 	private JavaClass javaClass;
 
 	public FindTwoLockWait(BugReporter bugReporter) {
@@ -55,10 +53,6 @@ public class FindTwoLockWait implements Detector, StatelessDetector {
 
 	public Object clone() throws CloneNotSupportedException {
 		return super.clone();
-	}
-
-	public void setAnalysisContext(AnalysisContext analysisContext) {
-		//this.analysisContext = analysisContext;
 	}
 
 	public void visitClassContext(ClassContext classContext) {

@@ -19,24 +19,23 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import edu.umd.cs.findbugs.*;
-import edu.umd.cs.findbugs.ba.AnalysisContext;
+import org.apache.bcel.classfile.JavaClass;
+
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.BugReporterObserver;
+import edu.umd.cs.findbugs.Detector;
+import edu.umd.cs.findbugs.ProjectStats;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
-import org.apache.bcel.classfile.JavaClass;
 
 public class FindBugsSummaryStats extends PreorderVisitor
         implements Detector, BugReporterObserver {
 	private ProjectStats stats;
-	//private AnalysisContext analysisContext;
 
 	public FindBugsSummaryStats(BugReporter bugReporter) {
 		this.stats = bugReporter.getProjectStats();
 		bugReporter.addObserver(this);
-	}
-
-	public void setAnalysisContext(AnalysisContext analysisContext) {
-		//this.analysisContext = analysisContext;
 	}
 
 	public void visitClassContext(ClassContext classContext) {

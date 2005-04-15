@@ -1,6 +1,6 @@
 /*
  * FindBugs - Find bugs in Java programs
- * Copyright (C) 2003,2004 University of Maryland
+ * Copyright (C) 2003-2005, University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -39,15 +39,10 @@ public class DroppedException extends PreorderVisitor implements Detector, Const
 	Set<String> causes = new HashSet<String>();
 	Set<String> checkedCauses = new HashSet<String>();
 	private BugReporter bugReporter;
-	private AnalysisContext analysisContext;
 
 	public DroppedException(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 		if (DEBUG) System.out.println("Dropped Exception debugging turned on");
-	}
-
-	public void setAnalysisContext(AnalysisContext analysisContext) {
-		this.analysisContext = analysisContext;
 	}
 
 	public void visitClassContext(ClassContext classContext) {
@@ -333,7 +328,7 @@ public class DroppedException extends PreorderVisitor implements Detector, Const
 		if (!LOOK_IN_SOURCE_TO_FIND_COMMENTED_CATCH_BLOCKS)
 			return false;
 
-		SourceFinder sourceFinder = analysisContext.getSourceFinder();
+		SourceFinder sourceFinder = AnalysisContext.currentAnalysisContext().getSourceFinder();
 		try {
 			SourceFile sourceFile = sourceFinder.findSourceFile(srcLine.getPackageName(), srcLine.getSourceFile());
 			int startLine = srcLine.getStartLine();

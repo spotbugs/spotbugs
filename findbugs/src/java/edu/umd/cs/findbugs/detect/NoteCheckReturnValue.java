@@ -24,7 +24,6 @@ import java.util.Map;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.StatelessDetector;
-import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.bcp.Invoke;
 import edu.umd.cs.findbugs.visitclass.AnnotationVisitor;
@@ -34,7 +33,6 @@ public class NoteCheckReturnValue extends AnnotationVisitor
   implements Detector, Constants2, StatelessDetector {
 
 	private BugReporter bugReporter;
-    private AnalysisContext analysisContext;
 
 
 	public NoteCheckReturnValue(BugReporter bugReporter) {
@@ -44,10 +42,6 @@ public class NoteCheckReturnValue extends AnnotationVisitor
 
 	public Object clone() throws CloneNotSupportedException {
 		return super.clone();
-	}
-
-	public void setAnalysisContext(AnalysisContext analysisContext) {
-		this.analysisContext = analysisContext;
 	}
 
 	public void visitClassContext(ClassContext classContext) {

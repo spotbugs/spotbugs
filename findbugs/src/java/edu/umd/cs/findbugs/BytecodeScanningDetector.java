@@ -19,7 +19,6 @@
 
 package edu.umd.cs.findbugs;
 
-import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
 
@@ -30,20 +29,6 @@ import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
  */
 public class BytecodeScanningDetector extends DismantleBytecode implements Detector {
 	private ClassContext classContext;
-	private AnalysisContext analysisContext;
-
-	public void setAnalysisContext(AnalysisContext analysisContext) {
-		this.analysisContext = analysisContext;
-	}
-
-	/**
-	 * Get the AnalysisContext.
-	 *
-	 * @return the AnalysisContext
-	 */
-	protected AnalysisContext getAnalysisContext() {
-		return analysisContext;
-	}
 
 	public void visitClassContext(ClassContext classContext) {
 		this.classContext = classContext;

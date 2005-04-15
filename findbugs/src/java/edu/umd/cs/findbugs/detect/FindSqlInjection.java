@@ -19,29 +19,29 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import edu.umd.cs.findbugs.ba.constant.Constant;
-
-import java.util.Arrays;
-import java.util.BitSet;
-import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
 
-import org.apache.bcel.Constants;
-import org.apache.bcel.classfile.*;
-import org.apache.bcel.generic.*;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.INVOKEINTERFACE;
+import org.apache.bcel.generic.Instruction;
+import org.apache.bcel.generic.MethodGen;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
-import edu.umd.cs.findbugs.FindBugsAnalysisProperties;
-import edu.umd.cs.findbugs.ba.*;
-import edu.umd.cs.findbugs.ba.constant.*;
-import edu.umd.cs.findbugs.props.WarningPropertySet;
+import edu.umd.cs.findbugs.ba.CFG;
+import edu.umd.cs.findbugs.ba.CFGBuilderException;
+import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
+import edu.umd.cs.findbugs.ba.Location;
+import edu.umd.cs.findbugs.ba.constant.Constant;
+import edu.umd.cs.findbugs.ba.constant.ConstantDataflow;
+import edu.umd.cs.findbugs.ba.constant.ConstantFrame;
 
 /**
- * Find dead stores to local variables.
+ * Find potential SQL injection vulnerabilities.
  * 
  * @author David Hovemeyer
  * @author Bill Pugh
@@ -52,9 +52,6 @@ public class FindSqlInjection implements Detector {
 	
 	public FindSqlInjection(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
-	}
-	
-	public void setAnalysisContext(AnalysisContext analysisContext) {
 	}
 	
 	private boolean prescreen(ClassContext classContext, Method method) {
@@ -78,9 +75,9 @@ public class FindSqlInjection implements Detector {
 			try {
 				analyzeMethod(classContext, method);
 			} catch (DataflowAnalysisException e) {
-				throw new AnalysisException("FindDeadLocalStores caught exception", methodGen, e);
+				bugReporter.logError("FindDeadLocalStores caught exception while analyzing " + methodGen, e);
 			} catch (CFGBuilderException e) {
-				throw new AnalysisException("FindDeadLocalStores caught exception", methodGen, e);
+				bugReporter.logError("FindDeadLocalStores caught exception while analyzing " + methodGen, e);
 			}
 		}
 	}

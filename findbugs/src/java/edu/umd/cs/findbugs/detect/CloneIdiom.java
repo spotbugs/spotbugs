@@ -1,6 +1,6 @@
 /*
  * FindBugs - Find bugs in Java programs
- * Copyright (C) 2003,2004 University of Maryland
+ * Copyright (C) 2003-2005, University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -30,7 +30,6 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.StatelessDetector;
-import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.visitclass.Constants2;
 import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
@@ -47,7 +46,6 @@ public class CloneIdiom extends DismantleBytecode implements Detector, Constants
 	//boolean throwsExceptions;
 	boolean implementsCloneableDirectly;
 	private BugReporter bugReporter;
-	//private AnalysisContext analysisContext;
 
 	public CloneIdiom(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
@@ -55,10 +53,6 @@ public class CloneIdiom extends DismantleBytecode implements Detector, Constants
 	
 	public Object clone() throws CloneNotSupportedException {
 		return super.clone();
-	}
-
-	public void setAnalysisContext(AnalysisContext analysisContext) {
-		//this.analysisContext = analysisContext;
 	}
 
 	public void visitClassContext(ClassContext classContext) {

@@ -29,7 +29,6 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.StatelessDetector;
-import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.visitclass.Constants2;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
@@ -40,7 +39,6 @@ public class DontCatchIllegalMonitorStateException
 	private static final boolean DEBUG = Boolean.getBoolean("dcimse.debug");
 
 	BugReporter bugReporter;
-	//AnalysisContext analysisContext;
 	Set<String> msgs = null;
 
 	public DontCatchIllegalMonitorStateException(BugReporter bugReporter) {
@@ -51,10 +49,6 @@ public class DontCatchIllegalMonitorStateException
 	
 	public Object clone() throws CloneNotSupportedException {
 		return super.clone();
-	}
-
-	public void setAnalysisContext(AnalysisContext analysisContext) {
-		//this.analysisContext = analysisContext;
 	}
 
 	public void visit(ExceptionTable obj) {

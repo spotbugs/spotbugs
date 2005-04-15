@@ -29,14 +29,12 @@ import org.apache.bcel.classfile.Field;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
-import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.visitclass.Constants2;
 
 public class VolatileUsage extends BytecodeScanningDetector implements 
 		Constants2 {
 	  private BugReporter bugReporter;
-	//private AnalysisContext analysisContext;
 
     public VolatileUsage(BugReporter bugReporter) {
             this.bugReporter = bugReporter;
@@ -44,10 +42,6 @@ public class VolatileUsage extends BytecodeScanningDetector implements
     	
 	public void visitClassContext(ClassContext classContext) {
 	            classContext.getJavaClass().accept(this);
-	}
-
-	public void setAnalysisContext(AnalysisContext analysisContext) {
-	        //this.analysisContext = analysisContext;
 	}
 
 static class FieldRecord {

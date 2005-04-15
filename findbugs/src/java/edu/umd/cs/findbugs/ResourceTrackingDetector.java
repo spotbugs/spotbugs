@@ -19,13 +19,24 @@
 
 package edu.umd.cs.findbugs;
 
-import java.util.*;
+import java.util.Iterator;
 
-import edu.umd.cs.findbugs.ba.*;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.MethodGen;
+
+import edu.umd.cs.findbugs.ba.CFG;
+import edu.umd.cs.findbugs.ba.CFGBuilderException;
+import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.ba.Dataflow;
+import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
+import edu.umd.cs.findbugs.ba.DepthFirstSearch;
+import edu.umd.cs.findbugs.ba.Location;
+import edu.umd.cs.findbugs.ba.ResourceTracker;
+import edu.umd.cs.findbugs.ba.ResourceValueAnalysis;
+import edu.umd.cs.findbugs.ba.ResourceValueFrame;
+import edu.umd.cs.findbugs.ba.SignatureConverter;
 
 /**
  * Abstract implementation of a Detector to find methods where a
@@ -44,7 +55,6 @@ public abstract class ResourceTrackingDetector <Resource, ResourceTrackerType ex
 	private static final String DEBUG_METHOD_NAME = System.getProperty("rtd.method");
 
 	protected BugReporter bugReporter;
-	private AnalysisContext analysisContext;
 
 	public ResourceTrackingDetector(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
@@ -57,19 +67,6 @@ public abstract class ResourceTrackingDetector <Resource, ResourceTrackerType ex
 
 	public abstract void inspectResult(JavaClass javaClass, MethodGen methodGen, CFG cfg,
 	                                   Dataflow<ResourceValueFrame, ResourceValueAnalysis<Resource>> dataflow, Resource resource);
-
-	public void setAnalysisContext(AnalysisContext analysisContext) {
-		this.analysisContext = analysisContext;
-	}
-
-	/**
-	 * Get the AnalysisContext.
-	 *
-	 * @return the AnalysisContext
-	 */
-	protected AnalysisContext getAnalysisContext() {
-		return analysisContext;
-	}
 
 	public void visitClassContext(ClassContext classContext) {
 

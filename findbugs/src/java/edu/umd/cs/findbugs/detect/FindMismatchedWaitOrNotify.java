@@ -35,7 +35,6 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.StatelessDetector;
-import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.BasicBlock;
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
@@ -58,9 +57,6 @@ public class FindMismatchedWaitOrNotify implements Detector, StatelessDetector {
 
 	public Object clone() throws CloneNotSupportedException {
 		return super.clone();
-	}
-	
-	public void setAnalysisContext(AnalysisContext analysisContext) {
 	}
 
 	public void visitClassContext(ClassContext classContext) {

@@ -19,18 +19,25 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.*;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.regex.Pattern;
+
+import org.apache.bcel.Repository;
+import org.apache.bcel.classfile.Attribute;
+import org.apache.bcel.classfile.Field;
+import org.apache.bcel.classfile.FieldOrMethod;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
+import org.apache.bcel.classfile.Synthetic;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
-import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.visitclass.Constants2;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
-import org.apache.bcel.Repository;
-import org.apache.bcel.classfile.*;
-import java.util.regex.Pattern;
 
 public class SerializableIdiom extends PreorderVisitor
         implements Detector, Constants2 {
@@ -44,7 +51,6 @@ public class SerializableIdiom extends PreorderVisitor
 	boolean foundSynchronizedMethods;
 	boolean writeObjectIsSynchronized;
 	private BugReporter bugReporter;
-	//private AnalysisContext analysisContext;
 	boolean isAbstract;
 	private List<BugInstance> fieldWarningList = new LinkedList<BugInstance>();
 	private boolean sawReadExternal;
@@ -59,10 +65,6 @@ public class SerializableIdiom extends PreorderVisitor
 
 	public SerializableIdiom(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
-	}
-
-	public void setAnalysisContext(AnalysisContext analysisContext) {
-		//this.analysisContext = analysisContext;
 	}
 
 	public void visitClassContext(ClassContext classContext) {
