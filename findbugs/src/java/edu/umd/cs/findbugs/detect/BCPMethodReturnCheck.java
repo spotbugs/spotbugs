@@ -240,6 +240,11 @@ public class BCPMethodReturnCheck extends ByteCodePatternDetector implements Sta
 
 	}
 
+	//@Override
+	protected BugReporter getBugReporter() {
+		return bugReporter;
+	}
+
 
 	public boolean prescreen(Method method, ClassContext classContext) {
 		// Pre-screen for methods with POP or POP2 bytecodes.

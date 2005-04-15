@@ -56,6 +56,8 @@ public abstract class ByteCodePatternDetector implements Detector {
 	protected AnalysisContext getAnalysisContext() {
 		return analysisContext;
 	}
+	
+	protected abstract BugReporter getBugReporter();
 
 	public void visitClassContext(ClassContext classContext) {
 		try {
@@ -104,10 +106,19 @@ public abstract class ByteCodePatternDetector implements Detector {
 				}
 			}
 		} catch (DataflowAnalysisException e) {
-			throw new AnalysisException("BCPDoubleCheck caught exception", e);
+			getBugReporter().logError(getDetectorName() + " caught exception", e);
 		} catch (CFGBuilderException e) {
-			throw new AnalysisException(e.getMessage());
+			getBugReporter().logError(getDetectorName() + " caught exception", e);
 		}
+	}
+	
+	private String getDetectorName() {
+		String className = this.getClass().getName();
+		int lastDot = className.lastIndexOf('.');
+		if (lastDot >= 0) {
+			className = className.substring(lastDot + 1);
+		}
+		return className;
 	}
 
 	public void report() {
