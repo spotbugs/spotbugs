@@ -133,6 +133,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	 * text color based on the bug priority.
 	 */
 	private static class BugCellRenderer extends DefaultTreeCellRenderer {
+		private static final long serialVersionUID = 1L;
 		private ImageIcon bugGroupIcon;
 		private ImageIcon packageIcon;
 		private ImageIcon bugIcon;
@@ -232,6 +233,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	 * get more control over the exact text that is shown in the tree.
 	 */
 	private class BugTreeNode extends DefaultMutableTreeNode {
+		private static final long serialVersionUID = 1L;
 		private int count;
 
 		public BugTreeNode(BugInstance bugInstance) {
@@ -3489,6 +3491,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	 */
 	private JFileChooser createFileChooser(final JComponent extraComp) {
 		return new JFileChooser(currentDirectory) {
+			private static final long serialVersionUID = 1L;
+
 			protected JDialog createDialog(Component parent) throws HeadlessException {
 				JDialog dialog = super.createDialog(parent);
 				dialog.getContentPane().add(extraComp, BorderLayout.SOUTH);
