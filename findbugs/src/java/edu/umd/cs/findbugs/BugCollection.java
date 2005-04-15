@@ -363,7 +363,7 @@ public abstract class BugCollection {
 	}
 
 	private void emitErrors(XMLOutput xmlOutput) throws IOException {
-		System.err.println("Writing errors to XML output");
+		//System.err.println("Writing errors to XML output");
 		
 		xmlOutput.openTag(ERRORS_ELEMENT_NAME);
 		
