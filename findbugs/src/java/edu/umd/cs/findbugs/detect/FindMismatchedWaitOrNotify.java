@@ -36,7 +36,6 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
-import edu.umd.cs.findbugs.ba.AnalysisException;
 import edu.umd.cs.findbugs.ba.BasicBlock;
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
@@ -83,9 +82,9 @@ public class FindMismatchedWaitOrNotify implements Detector, StatelessDetector {
 			try {
 				analyzeMethod(classContext, method);
 			} catch (DataflowAnalysisException e) {
-				throw new AnalysisException("FindMismatchedWaitOrNotify: caught exception " + e.toString(), e);
+				bugReporter.logError("FindMismatchedWaitOrNotify: caught exception", e);
 			} catch (CFGBuilderException e) {
-				throw new AnalysisException("FindMismatchedWaitOrNotify: caught exception " + e.toString(), e);
+				bugReporter.logError("FindMismatchedWaitOrNotify: caught exception", e);
 			}
 		}
 	}
@@ -117,14 +116,14 @@ public class FindMismatchedWaitOrNotify implements Detector, StatelessDetector {
 			        || Hierarchy.isMonitorNotify(methodName, methodSig)) {
 				int numConsumed = inv.consumeStack(cpg);
 				if (numConsumed == Constants.UNPREDICTABLE)
-					throw new AnalysisException("Unpredictable stack consumption", methodGen, handle);
+					throw new DataflowAnalysisException("Unpredictable stack consumption", methodGen, handle);
 
 				ValueNumberFrame frame = vnaDataflow.getFactAtLocation(location);
 				if (!frame.isValid())
-				// Probably dead code
+					// Probably dead code
 					continue;
 				if (frame.getStackDepth() - numConsumed < 0)
-					throw new AnalysisException("Stack underflow", methodGen, handle);
+					throw new DataflowAnalysisException("Stack underflow", methodGen, handle);
 				ValueNumber ref = frame.getValue(frame.getNumSlots() - numConsumed);
 
 				LockSet lockSet = dataflow.getFactAtLocation(location);
@@ -135,7 +134,12 @@ public class FindMismatchedWaitOrNotify implements Detector, StatelessDetector {
 					String type = methodName.equals("wait")
 					        ? "MWN_MISMATCHED_WAIT"
 					        : "MWN_MISMATCHED_NOTIFY";
-					bugReporter.reportBug(new BugInstance(this, type, NORMAL_PRIORITY)
+					
+					// Report as medium priority only if the method is public.
+					// Non-public methods may be properly locked in a calling context.
+					int priority = method.isPublic() ? NORMAL_PRIORITY : LOW_PRIORITY;
+					
+					bugReporter.reportBug(new BugInstance(this, type, priority)
 					        .addClassAndMethod(methodGen, sourceFile)
 					        .addSourceLine(methodGen, sourceFile, handle));
 				}
