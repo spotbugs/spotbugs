@@ -157,7 +157,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 		// - see de.tobject.findbugs.builder.FindBugsWorker.work() too
 		String findBugsHome = getFindBugsEnginePluginLocation();
 		if (DEBUG) {
-			System.out.println("Looking for detecors in: " + findBugsHome);
+			logInfo("Looking for FindBugs detectors in: " + findBugsHome);
 		}
 		System.setProperty("findbugs.home", findBugsHome);
 		
