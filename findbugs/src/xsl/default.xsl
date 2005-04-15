@@ -2,7 +2,7 @@
 
 <!--
   FindBugs - Find bugs in Java programs
-  Copyright (C) 2004, University of Maryland
+  Copyright (C) 2004,2005 University of Maryland
   
   This library is free software; you can redistribute it and/or
   modify it under the terms of the GNU Lesser General Public
@@ -114,6 +114,9 @@
 
 	<h1>FindBugs Report</h1>
 
+	<h2>Project Information</h2>	
+	<xsl:apply-templates select="/BugCollection/Project"/>
+
 	<h2>Contents</h2>
 	<ul>
 		<li><a href="#Warnings_CORRECTNESS">Correctness Warnings</a></li>
@@ -174,6 +177,18 @@
 
 	</body>
 	</html>
+</xsl:template>
+
+<xsl:template match="Project">
+	<p>Project: <xsl:value-of select="@filename"/></p>
+	<p>FindBugs version: <xsl:value-of select="/BugCollection/@version"/></p>
+	
+	<p>Code analyzed:</p>
+	<ul>
+		<xsl:for-each select="./Jar">
+			<li><xsl:value-of select="text()"/></li>
+		</xsl:for-each>
+	</ul>
 </xsl:template>
 
 <xsl:template match="BugInstance">
