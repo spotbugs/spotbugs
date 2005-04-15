@@ -37,9 +37,7 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.FindBugsAnalysisProperties;
 import edu.umd.cs.findbugs.StatelessDetector;
-import edu.umd.cs.findbugs.WarningSuppressor;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
-import edu.umd.cs.findbugs.ba.AnalysisException;
 import edu.umd.cs.findbugs.ba.BasicBlock;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.ClassContext;
@@ -123,9 +121,9 @@ public class FindNullDeref implements Detector, StatelessDetector {
 			}
 
 		} catch (DataflowAnalysisException e) {
-			throw new AnalysisException("FindNullDeref caught exception: " + e, e);
+			bugReporter.logError("FindNullDeref caught exception", e);
 		} catch (CFGBuilderException e) {
-			throw new AnalysisException(e.getMessage());
+			bugReporter.logError("FindNullDeref caught exception", e);
 		}
 	}
 
@@ -258,7 +256,7 @@ public class FindNullDeref implements Detector, StatelessDetector {
 			return;
 		}
 		if (frame.getStackDepth() < 2)
-			throw new AnalysisException("Stack underflow at " + lastHandle);
+			throw new DataflowAnalysisException("Stack underflow at " + lastHandle);
 
 		// Find the line number.
 		int lineNumber = getLineNumber(method, lastHandle);
