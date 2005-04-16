@@ -345,6 +345,7 @@
 			<include name="README.txt"/>
 			<include name="LICENSE.txt"/>
 			<include name="bin/*.bat"/>
+			<include name="lib/buggy.icns"/>
 		</patternset>
 		
 		<patternset id="bindist.jar.pats">
