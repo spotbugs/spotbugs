@@ -1,3 +1,4 @@
+import java.util.Collection;
 
 class DumbMethods {
 	
