@@ -39,7 +39,7 @@ public abstract class PrintBugDescriptions {
 		Collection<BugPattern> enabledPatternSet = new HashSet<BugPattern>();
 		for (Iterator<DetectorFactory> i = factories.factoryIterator(); i.hasNext(); ) {
 			DetectorFactory factory = i.next();
-			if (factory.isDefaultEnabled())
+			if (isEnabled(factory))
 				enabledPatternSet.addAll(factory.getReportedBugPatterns());
 		}
 
@@ -54,6 +54,10 @@ public abstract class PrintBugDescriptions {
 		}
 
 		epilogue();
+	}
+
+	protected boolean isEnabled(DetectorFactory factory) {
+		return factory.isDefaultEnabled();
 	}
 
 	protected abstract void prologue() throws IOException;

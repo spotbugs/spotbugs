@@ -19,19 +19,17 @@
 
 package edu.umd.cs.findbugs.tools.html;
 
-import edu.umd.cs.findbugs.BugPattern;
-import edu.umd.cs.findbugs.DetectorFactoryCollection;
-import edu.umd.cs.findbugs.I18N;
-import edu.umd.cs.findbugs.Version;
-
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
-
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeSet;
+
+import edu.umd.cs.findbugs.BugPattern;
+import edu.umd.cs.findbugs.DetectorFactory;
+import edu.umd.cs.findbugs.I18N;
 
 public class PrettyPrintBugDescriptions extends PlainPrintBugDescriptions {
 	private Set<BugPattern> bugPatternSet;
@@ -39,6 +37,7 @@ public class PrettyPrintBugDescriptions extends PlainPrintBugDescriptions {
 	private String beginBodyText;
 	private String prologueText;
 	private String endBodyText;
+	private boolean unabridged;
 
 	private static final String[] TABLE_COLORS = new String[]{ "#eeeeee", "#ffffff" };
 
@@ -144,16 +143,23 @@ public class PrettyPrintBugDescriptions extends PlainPrintBugDescriptions {
 		}
 	}
 
+	protected boolean isEnabled(DetectorFactory factory) {
+		return unabridged || super.isEnabled(factory);
+	}
+
 	public static void main(String[] args) throws Exception {
 		int argCount = 0;
-
+		boolean unabridged = false;
+		
 		if (argCount < args.length && args[argCount].equals("-unabridged")) {
 			++argCount;
 			// Unabridged mode: emit all warnings reported by at least one
 			// detector, even for disabled detectors.
-			// FIXME: enabled/disabled not static any more
-//			DetectorFactoryCollection factories = DetectorFactoryCollection.instance();
-//			factories.enableAll();
+			unabridged = true;
+		}
+		
+		if (Boolean.getBoolean("findbugs.bugdesc.unabridged")) {
+			unabridged = true;
 		}
 
 		String docTitle = "FindBugs Bug Descriptions";
@@ -161,6 +167,7 @@ public class PrettyPrintBugDescriptions extends PlainPrintBugDescriptions {
 			docTitle = args[argCount++];
 		}
 		PrettyPrintBugDescriptions pp = new PrettyPrintBugDescriptions(docTitle, System.out);
+		
 		if (argCount < args.length) {
 			pp.setHeaderText(args[argCount++]);
 		}
@@ -173,6 +180,10 @@ public class PrettyPrintBugDescriptions extends PlainPrintBugDescriptions {
 		if (argCount < args.length) {
 			pp.setEndBodyText(args[argCount++]);
 		}
+
+		if (unabridged)
+			pp.unabridged = true;
+
 		pp.print();
 	}
 }
