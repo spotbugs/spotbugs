@@ -67,7 +67,10 @@ public class JavaVersion {
 		try {
 			major = Integer.parseInt(matcher.group(1));
 			minor = Integer.parseInt(matcher.group(2));
-			rest = matcher.group(3);
+			if (matcher.group(3) != null)
+				rest = matcher.group(3);
+			else
+				rest = "";
 		} catch (NumberFormatException e) {
 			throw new JavaVersionException("Could not parse Java Version string: " + versionString, e);
 		}
