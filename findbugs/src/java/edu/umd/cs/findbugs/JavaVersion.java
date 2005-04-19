@@ -105,6 +105,18 @@ public class JavaVersion {
 	public String getRest() {
 		return rest;
 	}
+	
+	public String toString() {
+		StringBuffer buf = new StringBuffer();
+		buf.append(major);
+		buf.append('.');
+		buf.append(minor);
+		if (rest != null) {
+			buf.append(rest);
+		}
+		
+		return buf.toString();
+	}
 
 	/**
 	 * Get the version of Java that we are currently
@@ -123,7 +135,7 @@ public class JavaVersion {
 	 *         the one given
 	 */
 	public boolean isSameOrNewerThan(JavaVersion other) {
-		return this.major >= other.major ||
+		return this.major > other.major ||
 		        (this.major == other.major && this.minor >= other.minor);
 	}
 }
