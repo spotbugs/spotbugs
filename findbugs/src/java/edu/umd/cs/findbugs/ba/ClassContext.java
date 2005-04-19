@@ -239,12 +239,12 @@ public class ClassContext implements AnalysisFeatures {
 		        throws CFGBuilderException, DataflowAnalysisException;
 	}
 
-	private abstract class NoExceptionAnalysisFactory <AnalysisResult> extends AnalysisFactory<AnalysisResult> {
+	private abstract class NoExceptionAnalysisFactory <Analysis> extends AnalysisFactory<Analysis> {
 		public NoExceptionAnalysisFactory(String analysisName) {
 			super(analysisName);
 		}
 
-		public AnalysisResult getAnalysis(Method method) {
+		public Analysis getAnalysis(Method method) {
 			try {
 				return super.getAnalysis(method);
 			} catch (DataflowAnalysisException e) {
@@ -255,12 +255,12 @@ public class ClassContext implements AnalysisFeatures {
 		}
 	}
 
-	private abstract class NoDataflowAnalysisFactory <AnalysisResult> extends AnalysisFactory<AnalysisResult> {
+	private abstract class NoDataflowAnalysisFactory <Analysis> extends AnalysisFactory<Analysis> {
 		public NoDataflowAnalysisFactory(String analysisName) {
 			super(analysisName);
 		}
 
-		public AnalysisResult getAnalysis(Method method) throws CFGBuilderException {
+		public Analysis getAnalysis(Method method) throws CFGBuilderException {
 			try {
 				return super.getAnalysis(method);
 			} catch (DataflowAnalysisException e) {
