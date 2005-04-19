@@ -29,9 +29,13 @@ class JSR166 {
 		  l.unlock();
 		  }
 		}
+	
+	
+	void waitOnCondition(Condition cond) throws InterruptedException {
+		while (x == 0) {
+		cond.wait();
+		cond.wait(1000L);
+		cond.wait(1000L, 10);
+		}
 	}
-
-
-
-	
-	
+	}
