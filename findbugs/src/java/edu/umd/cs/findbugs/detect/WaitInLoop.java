@@ -30,6 +30,7 @@ import edu.umd.cs.findbugs.visitclass.Constants2;
 public class WaitInLoop extends BytecodeScanningDetector implements Constants2, StatelessDetector {
 
 	boolean sawWait = false;
+	boolean sawAwait = false;
 	boolean waitHasTimeout = false;
 	boolean sawNotify = false;
 	int notifyPC;
@@ -47,14 +48,17 @@ public class WaitInLoop extends BytecodeScanningDetector implements Constants2, 
 
 	public void visit(Code obj) {
 		sawWait = false;
+		sawAwait = false;
 		waitHasTimeout = false;
 		sawNotify = false;
 		earliestJump = 9999999;
 		super.visit(obj);
-		if (sawWait && waitAt < earliestJump)
-			bugReporter.reportBug(new BugInstance(this, "WA_NOT_IN_LOOP", waitHasTimeout ? LOW_PRIORITY : NORMAL_PRIORITY)
+		if ((sawWait || sawAwait) && waitAt < earliestJump) {
+			String bugType = sawWait ? "WA_NOT_IN_LOOP" : "WA_AWAIT_NOT_IN_LOOP";
+			bugReporter.reportBug(new BugInstance(this, bugType, waitHasTimeout ? LOW_PRIORITY : NORMAL_PRIORITY)
 			        .addClassAndMethod(this)
 			        .addSourceLine(this, waitAt));
+		}
 		if (sawNotify)
 			bugReporter.reportBug(new BugInstance(this, "NO_NOTIFY_NOT_NOTIFYALL", LOW_PRIORITY)
 			        .addClassAndMethod(this)
@@ -69,20 +73,15 @@ public class WaitInLoop extends BytecodeScanningDetector implements Constants2, 
 			sawNotify = true;
 			notifyPC = getPC();
 		}
-		if (!sawWait && (seen == INVOKEVIRTUAL || seen == INVOKEINTERFACE)
-		        && getNameConstantOperand().equals("wait")
-		        && (getSigConstantOperand().equals("()V")
-		        || getSigConstantOperand().equals("(J)V")
-		        || getSigConstantOperand().equals("(JI)V"))
-		) {
-			/*
-			System.out.println("Saw invocation of "
-				+ nameConstant + "("
-				+sigConstant
-				+")");
-			*/
+		if (!(sawWait || sawAwait)
+				&& (seen == INVOKEVIRTUAL || seen == INVOKEINTERFACE)
+		        && (isMonitorWait() || isConditionAwait())) {
 
-			sawWait = true;
+			if (getNameConstantOperand().equals("wait")) {
+				sawWait = true;
+			} else {
+				sawAwait = true;
+			}
 			waitHasTimeout = !getSigConstantOperand().equals("()V");
 			waitAt = getPC();
 			earliestJump = getPC() + 1;
@@ -92,6 +91,31 @@ public class WaitInLoop extends BytecodeScanningDetector implements Constants2, 
 		        || seen >= IFNULL && seen <= GOTO_W)
 			earliestJump = Math.min(earliestJump, getBranchTarget());
 
+	}
+
+	private boolean isConditionAwait() {
+		String name = getNameConstantOperand();
+		String sig = getSigConstantOperand();
+		
+		if (name.equals("await") &&
+				(sig.equals("()V") || sig.equals("(JLjava/util/concurrent/TimeUnit;)V")))
+			return true;
+		if (name.equals("awaitNanos") && sig.equals("(J)V"))
+			return true;
+		if (name.equals("awaitUninterruptibly") && sig.equals("()V"))
+			return true;
+		if (name.equals("awaitUntil") && sig.equals("(Ljava/util/Date;)V"))
+			return true;
+		
+		return false;
+	}
+
+	private boolean isMonitorWait() {
+		String name = getNameConstantOperand();
+		String sig = getSigConstantOperand();
+
+		return name.equals("wait")
+		        && (sig.equals("()V") || sig.equals("(J)V") || sig.equals("(JI)V"));
 	}
 
 

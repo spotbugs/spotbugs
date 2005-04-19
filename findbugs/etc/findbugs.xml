@@ -185,7 +185,7 @@
             
   <Detector class="edu.umd.cs.findbugs.detect.WaitInLoop" 
             speed="fast"
-            reports="WA_NOT_IN_LOOP,NO_NOTIFY_NOT_NOTIFYALL" />
+            reports="WA_NOT_IN_LOOP,WA_AWAIT_NOT_IN_LOOP,NO_NOTIFY_NOT_NOTIFYALL" />
             
   <Detector class="edu.umd.cs.findbugs.detect.BCPMethodReturnCheck" 
             speed="slow"
@@ -482,6 +482,7 @@
   <BugPattern abbrev="SIC" type="SIC_INNER_SHOULD_BE_STATIC_NEEDS_THIS" category="PERFORMANCE" />
   <BugPattern abbrev="SIC" type="SIC_INNER_SHOULD_BE_STATIC_ANON" category="PERFORMANCE" />
   <BugPattern abbrev="Wa" type="WA_NOT_IN_LOOP" category="MT_CORRECTNESS" />
+  <BugPattern abbrev="Wa" type="WA_AWAIT_NOT_IN_LOOP" category="MT_CORRECTNESS" />
   <BugPattern abbrev="No" type="NO_NOTIFY_NOT_NOTIFYALL" category="MT_CORRECTNESS" />
   <BugPattern abbrev="RV" type="RV_RETURN_VALUE_IGNORED" category="CORRECTNESS" />
   <BugPattern abbrev="RV" type="RV_CHECK_FOR_POSITIVE_INDEXOF" category="CORRECTNESS" />

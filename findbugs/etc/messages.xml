@@ -2315,6 +2315,7 @@ inner object.&nbsp; This reference makes the instances
 ]]>
     </Details>
   </BugPattern>
+  
   <BugPattern type="WA_NOT_IN_LOOP">
     <ShortDescription>Wait not in loop in method</ShortDescription>
     <LongDescription>Wait not in loop in {1}</LongDescription>
@@ -2327,6 +2328,21 @@ inner object.&nbsp; This reference makes the instances
 ]]>
     </Details>
   </BugPattern>
+  
+  <BugPattern type="WA_AWAIT_NOT_IN_LOOP">
+    <ShortDescription>Condition.await() not in loop in method</ShortDescription>
+    <LongDescription>Condition.await() not in loop in {1}</LongDescription>
+    <Details>
+<![CDATA[
+  <p> This method contains a call to <code>java.util.concurrent.await()</code> 
+   (or variants)
+  which is not in a loop.&nbsp; If the object is used for multiple conditions,
+  the condition the caller intended to wait for might not be the one
+  that actually occurred.</p>
+]]>
+    </Details>
+  </BugPattern>
+  
   <BugPattern type="NO_NOTIFY_NOT_NOTIFYALL">
     <ShortDescription>Using notify() rather than notifyAll() in method</ShortDescription>
     <LongDescription>Using notify rather than notifyAll in {1}</LongDescription>

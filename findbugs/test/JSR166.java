@@ -38,4 +38,8 @@ class JSR166 {
 		cond.wait(1000L, 10);
 		}
 	}
+	
+	void awaitNotInLoop(Condition cond) throws InterruptedException {
+		cond.await();
+	}
 	}
