@@ -84,6 +84,18 @@ public interface ResourceTracker <Resource> {
 	public boolean ignoreImplicitExceptions(Resource resource);
 
 	/**
+	 * Determine whether the analysis should ignore given exception edge.
+	 * This allows the analysis to customize which kinds of exceptions are
+	 * significant.
+	 * 
+	 * @param edge     the exception edge
+	 * @param resource the resource
+	 * @param cpg      the ConstantPoolGen
+	 * @return true if exception edge should be ignored, false if it should be considered
+	 */
+	public boolean ignoreExceptionEdge(Edge edge, Resource resource, ConstantPoolGen cpg);
+
+	/**
 	 * Return if the given parameter slot contains the
 	 * resource instance upon entry to the method.
 	 * This is for resources passed as parameters.

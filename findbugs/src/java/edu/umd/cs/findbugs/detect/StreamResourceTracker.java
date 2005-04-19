@@ -253,9 +253,13 @@ public class StreamResourceTracker implements ResourceTracker<Stream> {
 	public ResourceValueFrameModelingVisitor createVisitor(Stream resource, ConstantPoolGen cpg) {
 		return new StreamFrameModelingVisitor(cpg, this, resource);
 	}
-
+	
 	public boolean ignoreImplicitExceptions(Stream resource) {
 		return resource.ignoreImplicitExceptions();
+	}
+
+	public boolean ignoreExceptionEdge(Edge edge, Stream resource, ConstantPoolGen cpg) {
+		return false;
 	}
 
 	public boolean isParamInstance(Stream resource, int slot) {

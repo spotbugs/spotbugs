@@ -31,7 +31,7 @@ public class ResourceValueAnalysis <Resource> extends FrameDataflowAnalysis<Reso
 	private ResourceTracker<Resource> resourceTracker;
 	private Resource resource;
 	private ResourceValueFrameModelingVisitor visitor;
-	private boolean ignoreImplicitExceptions;
+//	private boolean ignoreImplicitExceptions;
 
 	public ResourceValueAnalysis(MethodGen methodGen, CFG cfg, DepthFirstSearch dfs,
 	                             ResourceTracker<Resource> resourceTracker, Resource resource) {
@@ -42,8 +42,8 @@ public class ResourceValueAnalysis <Resource> extends FrameDataflowAnalysis<Reso
 		this.resourceTracker = resourceTracker;
 		this.resource = resource;
 		this.visitor = resourceTracker.createVisitor(resource, methodGen.getConstantPool());
-
-		this.ignoreImplicitExceptions = resourceTracker.ignoreImplicitExceptions(resource);
+//
+//		this.ignoreImplicitExceptions = resourceTracker.ignoreImplicitExceptions(resource);
 	}
 
 	public ResourceValueFrame createFact() {
@@ -74,10 +74,14 @@ public class ResourceValueAnalysis <Resource> extends FrameDataflowAnalysis<Reso
 			// and the resource tracker says to ignore implicit exceptions
 			// for this resource, ignore it.
 			if (ClassContext.PRUNE_INFEASIBLE_EXCEPTION_EDGES &&
-			        ignoreImplicitExceptions &&
+			        resourceTracker.ignoreExceptionEdge(edge, resource, methodGen.getConstantPool()) &&
 			        !edge.isFlagSet(EXPLICIT_EXCEPTIONS_FLAG))
 				return;
 
+			// The ResourceTracker may veto the exception edge
+			if (resourceTracker.ignoreExceptionEdge(edge, resource, methodGen.getConstantPool()))
+				return;
+			
 			if (fact.getStatus() == ResourceValueFrame.OPEN) {
 				// If status is OPEN, downgrade to OPEN_ON_EXCEPTION_PATH
 				tmpFact = modifyFrame(fact, tmpFact);

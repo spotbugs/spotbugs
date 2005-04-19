@@ -60,13 +60,19 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
 		private LockResourceTracker resourceTracker;
 		private Lock lock;
 		private ValueNumberDataflow vnaDataflow;
+		private IsNullValueDataflow isNullDataflow;
 
-		public LockFrameModelingVisitor(ConstantPoolGen cpg, LockResourceTracker resourceTracker, Lock lock,
-		                                ValueNumberDataflow vnaDataflow) {
+		public LockFrameModelingVisitor(
+				ConstantPoolGen cpg,
+				LockResourceTracker resourceTracker,
+				Lock lock,
+		        ValueNumberDataflow vnaDataflow,
+		        IsNullValueDataflow isNullDataflow) {
 			super(cpg);
 			this.resourceTracker = resourceTracker;
 			this.lock = lock;
 			this.vnaDataflow = vnaDataflow;
+			this.isNullDataflow = isNullDataflow;
 		}
 
 		public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock) throws DataflowAnalysisException {
@@ -112,11 +118,19 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
 
 	static class LockResourceTracker implements ResourceTracker<Lock> {
 		private RepositoryLookupFailureCallback lookupFailureCallback;
+		private CFG cfg;
 		private ValueNumberDataflow vnaDataflow;
+		private IsNullValueDataflow isNullDataflow;
 
-		public LockResourceTracker(RepositoryLookupFailureCallback lookupFailureCallback, ValueNumberDataflow vnaDataflow) {
+		public LockResourceTracker(
+				RepositoryLookupFailureCallback lookupFailureCallback,
+				CFG cfg,
+				ValueNumberDataflow vnaDataflow,
+				IsNullValueDataflow isNullDataflow) {
 			this.lookupFailureCallback = lookupFailureCallback;
+			this.cfg = cfg;
 			this.vnaDataflow = vnaDataflow;
+			this.isNullDataflow = isNullDataflow;
 		}
 
 		public Lock isResourceCreation(BasicBlock basicBlock, InstructionHandle handle, ConstantPoolGen cpg)
@@ -177,7 +191,7 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
 		}
 
 		public ResourceValueFrameModelingVisitor createVisitor(Lock resource, ConstantPoolGen cpg) {
-			return new LockFrameModelingVisitor(cpg, this, resource, vnaDataflow);
+			return new LockFrameModelingVisitor(cpg, this, resource, vnaDataflow, isNullDataflow);
 		}
 
 		public boolean ignoreImplicitExceptions(Lock resource) {
@@ -186,6 +200,38 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
 			return false;
 		}
 
+		public boolean ignoreExceptionEdge(Edge edge, Lock resource, ConstantPoolGen cpg) {
+			
+			try {
+				Location location = cfg.getExceptionThrowerLocation(edge);
+				if (DEBUG) {
+					System.out.println("Exception thrower location: " + location);
+				}
+				Instruction ins = location.getHandle().getInstruction();
+				
+				if (ins instanceof GETFIELD) {
+					if (DEBUG) {
+						System.out.println("Inspecting GETFIELD at " + location);
+					}
+					// Ignore exceptions from getfield instructions where the
+					// object referece is known not to be null
+					IsNullValueFrame frame = isNullDataflow.getFactAtLocation(location);
+					if (!frame.isValid())
+						return false;
+					IsNullValue receiver = frame.getInstance(ins, cpg);
+					boolean notNull = receiver.isDefinitelyNotNull();
+					if (DEBUG && notNull) {
+						System.out.println("Ignoring exception from non-null GETFIELD");
+					}
+					return notNull;
+				}
+			} catch (DataflowAnalysisException e) {
+				// Report...
+			}
+			
+			return false;
+		}
+		
 		public boolean isParamInstance(Lock resource, int slot) {
 			// There is nothing special about Lock objects passed
 			// into the method as parameters.
@@ -231,7 +277,11 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
 
 	public LockResourceTracker getResourceTracker(ClassContext classContext, Method method)
 	        throws CFGBuilderException, DataflowAnalysisException {
-		return new LockResourceTracker(bugReporter, classContext.getValueNumberDataflow(method));
+		return new LockResourceTracker(
+				bugReporter,
+				classContext.getCFG(method),
+				classContext.getValueNumberDataflow(method),
+				classContext.getIsNullValueDataflow(method));
 	}
 
 	public void inspectResult(JavaClass javaClass, MethodGen methodGen, CFG cfg,
@@ -281,10 +331,13 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
 			        public LockResourceTracker createResourceTracker(ClassContext classContext, Method method)
 			                throws CFGBuilderException, DataflowAnalysisException {
 
-				        ValueNumberDataflow vnaDataflow = classContext.getValueNumberDataflow(method);
 				        RepositoryLookupFailureCallback lookupFailureCallback = classContext.getLookupFailureCallback();
 
-				        return new LockResourceTracker(lookupFailureCallback, vnaDataflow);
+						return new LockResourceTracker(
+								lookupFailureCallback,
+								classContext.getCFG(method),
+								classContext.getValueNumberDataflow(method),
+								classContext.getIsNullValueDataflow(method));
 			        }
 		        };
 

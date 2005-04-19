@@ -22,6 +22,8 @@ package edu.umd.cs.findbugs.ba;
 import java.util.*;
 
 import edu.umd.cs.findbugs.graph.AbstractGraph;
+
+import org.apache.bcel.generic.ATHROW;
 import org.apache.bcel.generic.InstructionHandle;
 
 /**
@@ -251,6 +253,30 @@ public class CFG extends AbstractGraph<Edge, BasicBlock> implements Debug {
 	public BasicBlock getSuccessorWithEdgeType(BasicBlock source, int edgeType) {
 		Edge edge = getOutgoingEdgeWithType(source, edgeType);
 		return edge != null ? edge.getTarget() : null;
+	}
+
+	/**
+	 * Get the Location where exception(s) thrown on given exception edge
+	 * are thrown.
+	 * 
+	 * @param exceptionEdge the exception Edge
+	 * @return Location where exception(s) are thrown from
+	 */
+	public Location getExceptionThrowerLocation(Edge exceptionEdge) {
+		if (!exceptionEdge.isExceptionEdge())
+			throw new IllegalArgumentException();
+
+		InstructionHandle handle = exceptionEdge.getSource().getExceptionThrower();
+		if (handle == null)
+			throw new IllegalStateException();
+		
+		BasicBlock basicBlock = (handle.getInstruction() instanceof ATHROW)
+			? exceptionEdge.getSource()
+			: getSuccessorWithEdgeType(exceptionEdge.getSource(), EdgeTypes.FALL_THROUGH_EDGE);
+		if (basicBlock == null)
+			throw new IllegalStateException("No basic block for thrower " + handle);
+		
+		return new Location(handle, basicBlock);
 	}
 
 	/**
