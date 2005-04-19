@@ -205,7 +205,6 @@
             
   <Detector class="edu.umd.cs.findbugs.detect.FindUnreleasedLock" 
             speed="moderate"
-	        disabled="true"
             requirejre="1.5"
             reports="UL_UNRELEASED_LOCK,UL_UNRELEASED_LOCK_EXCEPTION_PATH" />
             
