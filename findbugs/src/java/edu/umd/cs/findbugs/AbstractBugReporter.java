@@ -29,6 +29,8 @@ import edu.umd.cs.findbugs.ba.ClassNotFoundExceptionParser;
  * required of all BugReporter objects.
  */
 public abstract class AbstractBugReporter implements BugReporter {
+	private static final boolean DEBUG_MISSING_CLASSES = Boolean.getBoolean("findbugs.debug.missingclasses");
+	
 	private static class Error {
 		private String message;
 		private Throwable cause;
@@ -106,6 +108,11 @@ public abstract class AbstractBugReporter implements BugReporter {
 	}
 
 	public void reportMissingClass(ClassNotFoundException ex) {
+		if (DEBUG_MISSING_CLASSES) {
+			System.out.println("Missing class: " + ex.toString());
+			ex.printStackTrace(System.out);
+		}
+		
 		if (verbosityLevel == SILENT)
 			return;
 
