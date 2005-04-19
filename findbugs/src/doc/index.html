@@ -46,8 +46,18 @@ Send your comments to <a href="mailto:daveho@cs.umd.edu">daveho@cs.umd.edu</a>.<
 
 <p>Changes since version 0.8.7:</p>
 <ul>
-	<li>Restored some files inadvertently omitted from previous release (David Hovemeyer)</li>
+	<!-- New detectors and bug patterns -->
+	<li>Look for calls to wait() on Condition objects (David Hovemeyer)</li>
+	<li>Look for java.util.concurrent.Lock objects not released on every path
+		out of method (David Hovemeyer)</li>
+	
+	<!-- Feature enhancements -->
 	<li>Saved XML now contains project statistics (Jay Dunning)</li>
+
+	<!-- Bug fixes -->
+	<li>Restored some files inadvertently omitted from previous release (David Hovemeyer)</li>
+	<li>Make sure detectors requiring JDK 1.5 runtime classes are only executed
+		if those classes are available (David Hovemeyer)</li>
 </ul>
 
 <p> Changes since version 0.8.6:</p>
