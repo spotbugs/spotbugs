@@ -33,6 +33,8 @@ import edu.umd.cs.findbugs.ba.AnalysisContext;
  * @see Detector
  */
 public class DetectorFactory {
+	private static final boolean DEBUG_JAVA_VERSION = Boolean.getBoolean("findbugs.debug.javaversion");
+	
 	private Plugin plugin;
 	private final Class detectorClass;
 	private boolean defEnabled;
@@ -103,8 +105,26 @@ public class DetectorFactory {
 			return true;
 		try {
 			JavaVersion requiredVersion = new JavaVersion(requireJRE);
-			return JavaVersion.getRuntimeVersion().isSameOrNewerThan(requiredVersion);
+			JavaVersion runtimeVersion = JavaVersion.getRuntimeVersion(); 
+
+			if (DEBUG_JAVA_VERSION) {
+				System.out.println(
+						"Checking JRE version for " + getShortName() +
+						" (requires " + requiredVersion +
+						", running on " + runtimeVersion + ")");
+			}
+
+			
+			boolean enabledForCurrentJRE = runtimeVersion.isSameOrNewerThan(requiredVersion);
+			if (DEBUG_JAVA_VERSION) {
+				System.out.println("\t==> " + enabledForCurrentJRE);
+			}
+			return enabledForCurrentJRE;
 		} catch (JavaVersionException e) {
+			if (DEBUG_JAVA_VERSION) {
+				System.out.println("Couldn't check Java version: " + e.toString());
+				e.printStackTrace(System.out);
+			}
 			return false;
 		}
 	}
