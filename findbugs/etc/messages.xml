@@ -1141,6 +1141,20 @@ dangerous methods in the Java libraries.</em> -- Joshua Bloch</p>
     </Details>
   </BugPattern>  
 
+  <BugPattern type="DM_MONITOR_WAIT_ON_CONDITION">
+	<ShortDescription>Monitor wait() called on Condition</ShortDescription>
+	<LongDescription>Monitor wait() called on a Condition in {1}</LongDescription>
+	<Details>
+		<![CDATA[
+		<p>
+		This method calls <code>wait()</code> on a
+		<code>java.util.concurrent.locks.Condition</code> object.&nbsp;
+		Waiting for a <code>Condition</code> should be done using one of the <code>await()</code>
+		methods defined by the <code>Condition</code> interface.
+		</p>
+		]]>
+	</Details>
+  </BugPattern>
 
   <BugPattern type="RV_01_TO_INT">
     <ShortDescription>Random value from 0 to 1 is coerced to the integer 0</ShortDescription>

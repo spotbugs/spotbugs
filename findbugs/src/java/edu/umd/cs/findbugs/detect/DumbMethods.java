@@ -19,16 +19,33 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.*;
+import java.util.HashSet;
+
+import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.CodeException;
+import org.apache.bcel.classfile.Constant;
+import org.apache.bcel.classfile.ConstantClass;
+import org.apache.bcel.classfile.ConstantPool;
+import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.ObjectType;
+import org.apache.bcel.generic.ReferenceType;
+import org.apache.bcel.generic.Type;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import edu.umd.cs.findbugs.JavaVersion;
 import edu.umd.cs.findbugs.StatelessDetector;
+import edu.umd.cs.findbugs.ba.CFGBuilderException;
+import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
+import edu.umd.cs.findbugs.ba.Hierarchy;
+import edu.umd.cs.findbugs.ba.TypeDataflow;
+import edu.umd.cs.findbugs.ba.TypeFrame;
 import edu.umd.cs.findbugs.visitclass.Constants2;
-import org.apache.bcel.classfile.*;
 
 public class DumbMethods extends BytecodeScanningDetector implements Constants2, StatelessDetector {
+	
+	private static final ObjectType CONDITION_TYPE = new ObjectType("java.util.concurrent.locks.Condition");
 
 	private HashSet<String> alreadyReported = new HashSet<String>();
 	private BugReporter bugReporter;
@@ -43,10 +60,17 @@ public class DumbMethods extends BytecodeScanningDetector implements Constants2,
 	private boolean ctorSeen;
 	private boolean prevOpcodeWasReadLine;
 	private boolean isPublicStaticVoidMain;
-        private int randomNextIntState;
+	private int randomNextIntState;
+	
+	private boolean jdk15ChecksEnabled;
 
 	public DumbMethods(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
+		
+		jdk15ChecksEnabled = JavaVersion.getRuntimeVersion().isSameOrNewerThan(JavaVersion.JAVA_1_5);
+		if (jdk15ChecksEnabled) {
+			System.out.println("Enabling JDK 1.5 checks");
+		}
 	}
 	
 	public Object clone() throws CloneNotSupportedException {
@@ -277,6 +301,11 @@ public class DumbMethods extends BytecodeScanningDetector implements Constants2,
 			ctorSeen = false;
 		}
 
+		if (jdk15ChecksEnabled
+				&& (seen == INVOKEVIRTUAL)
+				&& isMonitorWait(getNameConstantOperand(), getSigConstantOperand())) {
+			checkMonitorWait();
+		}
 
 
 		if ((seen == INVOKESPECIAL) 
@@ -313,6 +342,44 @@ public class DumbMethods extends BytecodeScanningDetector implements Constants2,
 	else
 		sawLDCEmptyString = false;
 */
+	}
+
+	private void checkMonitorWait() {
+		try {
+//			System.out.println("Check call on " + getDottedClassConstantOperand() + " object");
+
+			TypeDataflow typeDataflow = getClassContext().getTypeDataflow(getMethod());
+			TypeDataflow.LocationAndFactPair pair = typeDataflow.getLocationAndFactForInstruction(getPC());
+			
+			if (pair == null)
+				return;
+
+			Type receiver = pair.frame.getInstance(
+					pair.location.getHandle().getInstruction(),
+					getClassContext().getConstantPoolGen()
+			);
+			
+			if (!(receiver instanceof ReferenceType))
+				return;
+			
+			if (Hierarchy.isSubtype((ReferenceType) receiver, CONDITION_TYPE)) {
+				bugReporter.reportBug(new BugInstance("DM_MONITOR_WAIT_ON_CONDITION", HIGH_PRIORITY)
+						.addClassAndMethod(this)
+						.addSourceLine(this));
+			}
+		} catch (ClassNotFoundException e) {
+			bugReporter.reportMissingClass(e);
+		} catch (DataflowAnalysisException e) {
+			bugReporter.logError("Exception caught by DumbMethods", e);
+		} catch (CFGBuilderException e) {
+			bugReporter.logError("Exception caught by DumbMethods", e);
+		}
+	}
+
+	private boolean isMonitorWait(String name, String sig) {
+//		System.out.println("Check call " + name + "," + sig);
+		return name.equals("wait")
+				&& (sig.equals("()V") || sig.equals("(J)V") || sig.equals("(JI)V"));
 	}
 
 	public void report() {
