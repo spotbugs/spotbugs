@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs;
 
+import java.io.IOException;
+import java.io.StringWriter;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -28,6 +30,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
+
+import javax.xml.transform.TransformerException;
 
 /**
  * An implementation of {@link BugCollection} that keeps the BugInstances
@@ -57,6 +61,7 @@ public class SortedBugCollection extends BugCollection {
 	private List<AnalysisError> errorList;
 	private TreeSet<String> missingClassSet;
 	private String summaryHTML;
+	private ProjectStats projectStats;
 
 	private Map<String, BugInstance> uniqueIdToBugInstanceMap;
 	private int generatedUniqueIdCount;
@@ -67,6 +72,18 @@ public class SortedBugCollection extends BugCollection {
 	 * Creates an empty object.
 	 */
 	public SortedBugCollection() {
+		this(new ProjectStats());
+	}
+	
+	/**
+	 * Constructor.
+	 * Creates an empty object given an existing ProjectStats.
+	 * 
+	 * @param projectStats the ProjectStats
+	 */
+	public SortedBugCollection(ProjectStats projectStats) {
+		this.projectStats = projectStats;
+		bugSet = new TreeSet<BugInstance>(comparator);
 		bugSet = new TreeSet<BugInstance>(comparator);
 		errorList = new LinkedList<AnalysisError>();
 		missingClassSet = new TreeSet<String>();
@@ -171,14 +188,27 @@ public class SortedBugCollection extends BugCollection {
 		return bugInstance.equals(first) ? first : null;
 	}
 
-	public void setSummaryHTML(String html) {
-		this.summaryHTML = html;
-	}
+	public String getSummaryHTML() throws IOException {
+		if ( summaryHTML == null ) {
+			try {
+				StringWriter writer = new StringWriter();
+				ProjectStats stats = getProjectStats();
+				stats.transformSummaryToHTML(writer);
+				summaryHTML = writer.toString();
+			} catch (final TransformerException e) {
+				IOException ioe = new IOException("Couldn't generate summary HTML");
+				ioe.initCause(e);
+				throw ioe;
+			}
+		}
 
-	public String getSummaryHTML() {
 		return summaryHTML;
 	}
 
+	public ProjectStats getProjectStats() {
+		return projectStats;
+	}
+	
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.BugCollection#lookupFromUniqueId(java.lang.String)
 	 */

@@ -19,159 +19,144 @@
 
 package edu.umd.cs.findbugs;
 
-import edu.umd.cs.findbugs.xml.Dom4JXMLOutput;
+import edu.umd.cs.findbugs.xml.XMLOutput;
 import edu.umd.cs.findbugs.xml.XMLWriteable;
 
+import java.io.IOException;
 import java.util.*;
-
-import org.dom4j.Branch;
-import org.dom4j.Element;
 
 /**
  * Class to store package bug statistics.
  *
  * @author Mike Fagan
+ * @author Jay Dunning
  */
-public class PackageStats {
+public class PackageStats implements XMLWriteable {
+
+	private static class ClassStats implements XMLWriteable {
+		private String name;
+		private boolean isInterface;
+		// nBugs[0] is total; nBugs[n] is total for bug priority n
+		private int[] nBugs = new int[] { 0, 0, 0, 0, 0 };
+		private int size;
+
+		public ClassStats(String name) {
+			this.name = name;
+		}
+
+		public void setInterface(boolean isInterface) {
+			this.isInterface = isInterface;
+		}
+		
+		public void setSize(int size) {
+			this.size = size;
+		}
+		
+		public void addError(BugInstance bug) {
+			++nBugs[bug.getPriority()];
+			++nBugs[0];
+		}
+
+		public void writeXML(XMLOutput xmlOutput) throws IOException {
+			xmlOutput.startTag("ClassStats");
+
+			xmlOutput.addAttribute("class", name);
+			xmlOutput.addAttribute("interface", String.valueOf(isInterface));
+			xmlOutput.addAttribute("size", String.valueOf(size));
+			xmlOutput.addAttribute("bugs", String.valueOf(nBugs[0]));
+			writeBugPriorities(xmlOutput, nBugs);			
+
+			xmlOutput.stopTag(true);
+		}
+	}
+
 	public static final String ELEMENT_NAME = "PackageStats";
 	public static final int ALL_ERRORS = 0;
 	private final String packageName;
+	// nBugs[0] is total; nBugs[n] is total for bug priority n
+	private int[] nBugs = new int[] { 0, 0, 0, 0, 0 };
+	private int size;
+
 	// list of errors for this package
 	private LinkedList<BugInstance> packageErrors = new LinkedList<BugInstance>();
 
-	// list of all classes and interfaces in package
-	private LinkedList<String> packageClasses = new LinkedList<String>();
-
-	// set of interfaces in the package
-	private HashSet<String> packageInterfaces = new HashSet<String>();
+	// all classes and interfaces in this package
+	private SortedMap<String, ClassStats> packageMembers = 
+		new TreeMap<String, ClassStats>();
 
 	public PackageStats(String packageName) {
 		this.packageName = packageName;
 	}
 
-	public int getTotalPackageTypes() {
-		return packageClasses.size();
-	}
-
-	public int getTotalPackageErrors() {
-		return packageErrors.size();
-	}
-
-	public int getNumClasses() throws ClassNotFoundException {
-		return countClasses(false);
-	}
-
-	public int getNumInnerClasses() {
-		int count = 0;
-		Iterator<String> itr = packageClasses.iterator();
-		while (itr.hasNext()) {
-			String name = itr.next();
-			if (name.indexOf("$") >= 0) {
-				count++;
-			}
+	private ClassStats getClassStats(String name) {
+		ClassStats result = packageMembers.get(name);
+		if ( result == null ) {
+			result = new ClassStats(name);
+			packageMembers.put(name, result);
 		}
-		return count;
-	}
 
-	public int getNumInterfaces() throws ClassNotFoundException {
-		return countClasses(true);
+		return result;
 	}
-
+	
 	public void addError(BugInstance bug) {
-		packageErrors.add(bug);
+		++nBugs[bug.getPriority()];
+		++nBugs[0];
+
+		getClassStats(bug.getPrimaryClass().getClassName()).addError(bug);
 	}
 
-	public void addClass(String name, boolean isInterface) {
-		packageClasses.add(name);
-		if (isInterface)
-			packageInterfaces.add(name);
+	public void addClass(String name, boolean isInterface, int size) {
+		ClassStats classStats = getClassStats(name);
+		classStats.setInterface(isInterface);
+		classStats.setSize(size);
+		this.size += size;
 	}
 
 	public String getPackageName() {
 		return packageName;
 	}
 
-	private int countClasses(boolean isInterface) {
-		int numInterfaces = packageInterfaces.size();
-		if (isInterface)
-			return numInterfaces;
-		else
-			return packageClasses.size() - numInterfaces;
+	public void writeXML(XMLOutput xmlOutput) throws IOException{
+
+		xmlOutput.startTag(ELEMENT_NAME);
+
+		xmlOutput.addAttribute("package", packageName);
+		xmlOutput.addAttribute("total_bugs", String.valueOf(nBugs[0]));
+		xmlOutput.addAttribute("total_types",
+			String.valueOf(packageMembers.size()));
+		xmlOutput.addAttribute("total_size", String.valueOf(size));
+		writeBugPriorities(xmlOutput, nBugs);
+
+		xmlOutput.stopTag(false);
+
+		Iterator<ClassStats> i = packageMembers.values().iterator();
+		while (i.hasNext()) {
+			i.next().writeXML(xmlOutput);
+		}
+
+		xmlOutput.closeTag(ELEMENT_NAME);
 	}
 
-	private List<BugInstance> getErrors(boolean isInterface, int priority) {
-		ArrayList<BugInstance> items = new ArrayList<BugInstance>();
-		Iterator<BugInstance> itr = packageErrors.iterator();
-		while (itr.hasNext()) {
-			BugInstance bug = itr.next();
-			String clss = bug.getPrimaryClass().getClassName();
-			if (packageInterfaces.contains(clss) == isInterface
-			        && (priority == bug.getPriority() || priority == ALL_ERRORS)) {
-				items.add(bug);
+	/**
+	 *  Add priority attributes to a started tag. 
+	 *  Each priority at offset n, where n &gt; 0, is output using
+	 *  attribute priority_n if the value at offset n is greater than
+	 *  zero. 
+	 *  
+	 *  @param xmlOutput an output stream for which startTag has been
+	 *				   called but stopTag has not.
+	 *  @param bugs	  an array for which the element at offset n is 
+	 *				   the number of bugs for priority n.
+	 */
+	public static void writeBugPriorities(XMLOutput xmlOutput, int[] bugs) throws IOException {
+		int i = bugs.length;
+		while ( --i > 0 ) {
+			if ( bugs[i] > 0 ) {
+				xmlOutput.addAttribute("priority_" + i, 
+					String.valueOf(bugs[i]));
 			}
 		}
-		return items;
 	}
-
-	private void toElement(XMLWriteable obj, Branch parent) {
-		Dom4JXMLOutput treeBuilder = new Dom4JXMLOutput(parent);
-		treeBuilder.write(obj);
-	}
-
-	public Element toElement(Branch parent) {
-		List<BugInstance> classErrorList = null;
-		List<BugInstance> interfaceErrorList = null;
-		int classCount = 0;
-		int interfaceCount = 0;
-		Element element = parent.addElement(ELEMENT_NAME);
-
-		try {
-			classErrorList = getErrors(false, ALL_ERRORS);
-			interfaceErrorList = getErrors(true, ALL_ERRORS);
-			classCount = getNumClasses();
-			interfaceCount = getNumInterfaces();
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-			return element;
-		}
-		element.addAttribute("package", packageName);
-		element.addAttribute("total_bugs",
-		        String.valueOf(classErrorList.size() + interfaceErrorList.size()));
-		element.addAttribute("total_types",
-		        String.valueOf(getTotalPackageTypes()));
-
-		Element classes = element.addElement("Classes");
-		classes.addAttribute("outer", String.valueOf(classCount - getNumInnerClasses()));
-		classes.addAttribute("inner", String.valueOf(getNumInnerClasses()));
-		classes.addAttribute("total_bugs",
-		        String.valueOf(classErrorList.size()));
-
-		if (classErrorList.size() > 0) {
-			Element classErrors = classes.addElement("ClassErrors");
-			Iterator<BugInstance> itr = classErrorList.iterator();
-			while (itr.hasNext()) {
-				BugInstance bug = itr.next();
-				//bug.toElement(classErrors);
-				toElement(bug, classErrors);
-			}
-		}
-
-		Element interfaces = element.addElement("Interfaces");
-		interfaces.addAttribute("count", String.valueOf(interfaceCount));
-		interfaces.addAttribute("total_bugs",
-		        String.valueOf(interfaceErrorList.size()));
-		if (interfaceErrorList.size() > 0) {
-			Element interfaceErrors = classes.addElement("InterfaceErrors");
-			Iterator<BugInstance> itr = interfaceErrorList.iterator();
-			while (itr.hasNext()) {
-				BugInstance bug = itr.next();
-				//bug.toElement(interfaceErrors);
-				toElement(bug, interfaceErrors);
-			}
-		}
-		return element;
-	}
-
 }
 
 // vim:ts=4

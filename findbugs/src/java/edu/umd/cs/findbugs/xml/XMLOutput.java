@@ -50,6 +50,32 @@ public interface XMLOutput {
 	public void openTag(String tagName, XMLAttributeList attributeList) throws IOException;
 
 	/**
+	 * Start a tag, with the intention of adding attributes.
+	 * Must be followed by stopTag after zero or more addAttribute
+	 * calls.
+	 *
+	 * @param tagName	   the tag name
+	 */
+	public void startTag(String tagName) throws IOException;
+	
+	/**
+	 * Add an attribute to a started tag.
+	 * Must follow a call to startTag.
+	 *
+	 * @param name  	the attribute name.
+	 * @param value 	the attribute value, unescaped.
+	 */
+	public void addAttribute(String name, String value) throws IOException;
+
+	/**
+	 * End a started tag.
+	 * Must follow a call to startTag.
+	 *
+	 * @param close  	true if the element has no content.
+	 */
+	public void stopTag(boolean close) throws IOException;
+
+	/**
 	 * Open and close tag with given name.
 	 *
 	 * @param tagName the tag name

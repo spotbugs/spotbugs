@@ -43,7 +43,6 @@ public class HTMLBugReporter extends BugCollectionBugReporter {
 
 	public void finish() {
 		try {
-			generateSummary();
 			BugCollection bugCollection = getBugCollection();
 
 			// Decorate the XML with messages to display

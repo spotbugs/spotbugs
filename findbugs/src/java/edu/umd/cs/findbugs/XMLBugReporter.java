@@ -72,9 +72,6 @@ public class XMLBugReporter extends BugCollectionBugReporter {
 	}
 	
 	public void finish() {
-		
-		generateSummary();
-		
 		try {
 			getReady(); // If no warnings were issued, then nothing has been written yet
 

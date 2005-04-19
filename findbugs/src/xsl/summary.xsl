@@ -10,6 +10,7 @@
 <xsl:param name="PACKAGE.HEADER" select="'Bugs By Package'" />
 <xsl:param name="PACKAGE.SORT.LABEL" select="'Sorted by Total Bugs'" />
 <xsl:param name="PACKAGE.LABEL" select="'Analysis of Package: '" />
+<xsl:param name="DEFAULT.PACKAGE.NAME" select="'default package'" />
 <xsl:param name="PACKAGE.BUGCLASS.LABEL" select="'Most Buggy Class in Package with #1 $1:'" />
 <xsl:param name="TOTAL.PACKAGES.LABEL" select="'#1 $1 Analyzed'" />
 
@@ -31,7 +32,6 @@
 
 <xsl:param name="PERCENTAGE.FORMAT" select="'#0.00%'" />
 
-
 <!-- This template drives the rest of the output -->
 <xsl:template match="/" >
   <html>
@@ -40,14 +40,14 @@
   <body>
   <h1><center><xsl:value-of select="$SUMMARY.HEADER" /></center></h1>
   <h2><center><xsl:value-of select="$SUMMARY.LABEL" /> 
-      <i><xsl:value-of select="FindBugsSummary/@timestamp" /></i></center></h2>
-  <xsl:apply-templates select="FindBugsSummary" />
+      <i><xsl:value-of select="//FindBugsSummary/@timestamp" /></i></center></h2>
+  <xsl:apply-templates select="//FindBugsSummary" />
   <br/>
   <center>
   <font face="{$PAGE.FONT}" size="6"><xsl:value-of select="$PACKAGE.HEADER" /></font>
     <br/><font face="{$PAGE.FONT}" size="4"><i>(<xsl:value-of select="$PACKAGE.SORT.LABEL"/>)</i></font>
   </center>
-  <xsl:for-each select="FindBugsSummary/PackageStats">
+  <xsl:for-each select="//FindBugsSummary/PackageStats">
   <xsl:sort select="@total_bugs" data-type="number" order="descending" />
   <xsl:apply-templates select="." />
   </xsl:for-each>
@@ -59,12 +59,12 @@
   <xsl:param name="LABEL" select="''" />
   <xsl:param name="COUNT" select="1" />
   <xsl:param name="BUGS" select="0" />
-  <xsl:param name="SIZE" select="4" />
+  <xsl:param name="FONT_SIZE" select="4" />
   <tr>
-   <td align="left"><font face="{$PAGE.FONT}" size="{$SIZE}"><xsl:value-of select="$LABEL" /></font></td>
-   <td align="center"><font face="{$PAGE.FONT}" color="green" size="{$SIZE}"><xsl:value-of select="$COUNT" /></font></td>
-   <td align="center"><font face="{$PAGE.FONT}" color="red" size="{$SIZE}"><xsl:value-of select="$BUGS" /></font></td>
-   <td align="center"><font face="{$PAGE.FONT}" color="blue" size="{$SIZE}">
+   <td align="left"><font face="{$PAGE.FONT}" size="{$FONT_SIZE}"><xsl:value-of select="$LABEL" /></font></td>
+   <td align="center"><font face="{$PAGE.FONT}" color="green" size="{$FONT_SIZE}"><xsl:value-of select="$COUNT" /></font></td>
+   <td align="center"><font face="{$PAGE.FONT}" color="red" size="{$FONT_SIZE}"><xsl:value-of select="$BUGS" /></font></td>
+   <td align="center"><font face="{$PAGE.FONT}" color="blue" size="{$FONT_SIZE}">
       <xsl:choose>
       <xsl:when test="$COUNT &gt; 0">
        <xsl:value-of select="format-number(number($BUGS div $COUNT), $PERCENTAGE.FORMAT)"/>
@@ -93,27 +93,27 @@
 
    <xsl:call-template name="status_table_row">
      <xsl:with-param name="LABEL" select="$TABLE.ROW.OUTER" />
-     <xsl:with-param name="COUNT" select="sum(PackageStats/Classes/@outer)" />
-     <xsl:with-param name="BUGS" select="count(PackageStats/Classes/ClassErrors/BugInstance/Class[not(contains(@classname,'$'))])"/>
+     <xsl:with-param name="COUNT" select="count(PackageStats/ClassStats[@interface='false' and substring-after(@class,'$')=''])" />
+     <xsl:with-param name="BUGS" select="sum(PackageStats/ClassStats[@interface='false' and substring-after(@class,'$')='']/@bugs)" />
    </xsl:call-template>
 
    <xsl:call-template name="status_table_row">
      <xsl:with-param name="LABEL" select="$TABLE.ROW.INNER" />
-     <xsl:with-param name="COUNT" select="sum(PackageStats/Classes/@inner)" />
-     <xsl:with-param name="BUGS" select="count(PackageStats/Classes/ClassErrors/BugInstance/Class[contains(@classname,'$')])"/>
+     <xsl:with-param name="COUNT" select="count(PackageStats/ClassStats[@interface='false' and substring-after(@class,'$')!=''])" />
+     <xsl:with-param name="BUGS" select="sum(PackageStats/ClassStats[@interface='false' and substring-after(@class,'$')!='']/@bugs)" />
    </xsl:call-template>
 
    <xsl:call-template name="status_table_row">
      <xsl:with-param name="LABEL" select="$TABLE.ROW.INTERFACE" />
-     <xsl:with-param name="COUNT" select="sum(PackageStats/Interfaces/@count)" />
-     <xsl:with-param name="BUGS" select="count(PackageStats/Interfaces/InterfaceErrors/BugInstance)"/>
+     <xsl:with-param name="COUNT" select="count(PackageStats/ClassStats[@interface='true'])" />
+     <xsl:with-param name="BUGS" select="sum(PackageStats/ClassStats[@interface='true']/@bugs)" />
    </xsl:call-template>
 
    <xsl:call-template name="status_table_row">
      <xsl:with-param name="LABEL" select="$TABLE.ROW.TOTAL" />
      <xsl:with-param name="COUNT" select="@total_classes" />
      <xsl:with-param name="BUGS" select="@total_bugs"/>
-     <xsl:with-param name="SIZE" select="5"/>
+     <xsl:with-param name="FONT_SIZE" select="5"/>
    </xsl:call-template>
    <xsl:variable name="num_packages" select="count(PackageStats)" />
    <tr><td align="center" colspan="4"><font face="{$PAGE.FONT}" size="4">
@@ -147,61 +147,68 @@
 </xsl:template>
 
 
-<xsl:key name='errors' match="BugInstance"  use="Class[1]/@classname" />
-
 <xsl:template match="PackageStats" >
-  <center><h2><xsl:value-of select="$PACKAGE.LABEL"/><i><font color='green'><xsl:value-of select="@package" /></font></i></h2></center>
+  <xsl:variable name="package-name">
+    <xsl:choose>
+      <xsl:when test="@package = ''">
+        <xsl:value-of select="$DEFAULT.PACKAGE.NAME"/>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:value-of select="@package"/>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
+  <xsl:variable name="package-prefix">
+    <xsl:choose>
+      <xsl:when test="@package = ''">
+        <xsl:text></xsl:text>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:value-of select="concat(@package,'.')"/>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
+  <center><h2><xsl:value-of select="$PACKAGE.LABEL"/><i><font color='green'><xsl:value-of select="$package-name" /></font></i></h2></center>
   <center><table width="{$TABLE.WIDTH}" border="1">
    <xsl:call-template name="table_header" />
 
    <xsl:call-template name="status_table_row">
      <xsl:with-param name="LABEL" select="$TABLE.ROW.OUTER" />
-     <xsl:with-param name="COUNT" select="Classes/@outer" />
-     <xsl:with-param name="BUGS" select="count(./Classes/ClassErrors/BugInstance/Class[1][not(contains(@classname,'$'))])"/>
+     <xsl:with-param name="COUNT" select="count(ClassStats[@interface='false' and substring-after(@class,'$')=''])" />
+     <xsl:with-param name="BUGS" select="sum(ClassStats[@interface='false' and substring-after(@class,'$')='']/@bugs)" />
    </xsl:call-template>
 
    <xsl:call-template name="status_table_row">
      <xsl:with-param name="LABEL" select="$TABLE.ROW.INNER" />
-     <xsl:with-param name="COUNT" select="Classes/@inner" />
-     <xsl:with-param name="BUGS" select="count(Classes/ClassErrors/BugInstance/Class[1][contains(@classname,'$')])"/>
+     <xsl:with-param name="COUNT" select="count(ClassStats[@interface='false' and substring-after(@class,'$')!=''])" />
+     <xsl:with-param name="BUGS" select="sum(ClassStats[@interface='false' and substring-after(@class,'$')!='']/@bugs)" />
    </xsl:call-template>
 
    <xsl:call-template name="status_table_row">
      <xsl:with-param name="LABEL" select="$TABLE.ROW.INTERFACE" />
-     <xsl:with-param name="COUNT" select="Interfaces/@count" />
-     <xsl:with-param name="BUGS" select="count(Interfaces/InterfaceErrors/BugInstance)"/>
+     <xsl:with-param name="COUNT" select="count(ClassStats[@interface='true'])" />
+     <xsl:with-param name="BUGS" select="sum(ClassStats[@interface='true']/@bugs)" />
    </xsl:call-template>
 
    <xsl:call-template name="status_table_row">
      <xsl:with-param name="LABEL" select="$TABLE.ROW.TOTAL" />
      <xsl:with-param name="COUNT" select="@total_types" />
      <xsl:with-param name="BUGS" select="@total_bugs" />
-     <xsl:with-param name="SIZE" select="5"/>
+     <xsl:with-param name="FONT_SIZE" select="5"/>
    </xsl:call-template>
 
   </table>
-  <xsl:if test=".//BugInstance">
+  <xsl:if test="@total_bugs &gt; 0">
   <table width="{$TABLE.WIDTH}" border="0">
-       <xsl:variable name="max">
-     <xsl:for-each select=".//BugInstance[generate-id(.)=generate-id(key('errors', Class[1]/@classname)[1])]">
-       <xsl:variable name="count" select="count(key('errors', Class[1]/@classname))" />
-       <xsl:value-of select="$count" /><xsl:value-of select="' '" />
-     </xsl:for-each>
+     <xsl:variable name="max_bugs">
+       <xsl:for-each select="ClassStats">
+         <xsl:sort select="@bugs" data-type="number" order="descending"/>
+         <xsl:if test="position()=1">
+           <xsl:value-of select="@bugs"/>
+         </xsl:if>
+       </xsl:for-each>
      </xsl:variable>
 
-     <xsl:variable name="max_bugs" >     
-     <xsl:call-template name="max">
-       <xsl:with-param name="LAST" select="0"/>
-       <xsl:with-param name="LIST" select="$max"/>
-     </xsl:call-template>
-     </xsl:variable>
-  <!-- 
-     <tr>
-       <td align="left" colspan="2">
-       <xsl:value-of select="$max"/>
-       </td>
-     </tr>
-  -->
      <tr>
        <td align="left" colspan="2">
          <font face="{$PAGE.FONT}" size="4">
@@ -215,12 +222,11 @@
        </td>
      </tr>
 
-     <xsl:for-each select=".//BugInstance[generate-id(.)=generate-id(key('errors', Class/@classname)[1])]">
-       <xsl:variable name="counts" select="count(key('errors', Class/@classname))" />
-       <xsl:if test="$counts = $max_bugs">
+     <xsl:for-each select="ClassStats">
+       <xsl:if test="@bugs = $max_bugs">
        <tr>
           <td>&#160;&#160;&#160;&#160;&#160;&#160;&#160;</td>
-          <td align="left"><font face="{$PAGE.FONT}" color="red" size="4"><i><xsl:value-of select="Class/@classname" /></i></font></td>
+          <td align="left"><font face="{$PAGE.FONT}" color="red" size="4"><i><xsl:value-of select="$package-prefix"/><xsl:value-of select="@class" /></i></font></td>
        </tr>
        </xsl:if>
      </xsl:for-each>
@@ -229,23 +235,6 @@
   </xsl:if>
   </center>
   <br/>
-</xsl:template>
-
-<xsl:template name="max">
-  <xsl:param name="LAST" />
-  <xsl:param name="LIST" />
-   <xsl:variable name="wlist" select="concat(normalize-space($LIST), ' ')"/>
-  <xsl:choose>
-     <xsl:when test="$wlist!=' '">
-       <xsl:variable name="first" select="substring-before($wlist, ' ')" />
-       <xsl:variable name="rest" select="substring-after($wlist, ' ')" />
-         <xsl:call-template name="max">
-           <xsl:with-param name="LAST"><xsl:choose><xsl:when test="number($first) &gt; number($LAST)"><xsl:value-of select="number($first)" /></xsl:when><xsl:otherwise><xsl:value-of select="number($LAST)" /></xsl:otherwise></xsl:choose></xsl:with-param>
-           <xsl:with-param name="LIST" select="$rest"/>
-         </xsl:call-template>
-     </xsl:when>
-     <xsl:otherwise><xsl:value-of select="$LAST"/></xsl:otherwise>
-  </xsl:choose>
 </xsl:template>
 
 </xsl:stylesheet>

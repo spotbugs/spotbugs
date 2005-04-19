@@ -46,13 +46,12 @@ import edu.umd.cs.findbugs.config.UserPreferences;
  */
 public class AnalysisRun {
 	private Project project;
-	FindBugsFrame frame;
+	private FindBugsFrame frame;
 	private String summary;
 	private ConsoleLogger logger;
 	private FindBugs findBugs;
 	private SwingGUIBugReporter reporter;
 	private HashMap<String, DefaultTreeModel> treeModelMap;
-//	AnalysisErrorDialog errorDialog;
 
 	/**
 	 * Creates a new instance of AnalysisRun.
@@ -65,6 +64,15 @@ public class AnalysisRun {
 		this.reporter.setPriorityThreshold(Detector.EXP_PRIORITY);
 		this.findBugs = new FindBugs(reporter, project);
 		this.treeModelMap = new HashMap<String, DefaultTreeModel>();
+	}
+	
+	/**
+	 * Get the FindBugsFrame which created this analysis run.
+	 * 
+	 * @return the FindBugsFrame
+	 */
+	public FindBugsFrame getFrame() {
+		return frame;
 	}
 
 	/**

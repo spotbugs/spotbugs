@@ -87,10 +87,20 @@ public class OutputStreamXMLOutput implements XMLOutput {
 		emitTag(tagName, attributeList.toString(), true);
 	}
 
-	private void emitTag(String tagName, boolean close) throws IOException {
+	public void startTag(String tagName) throws IOException {
 		indent();
 		++nestingLevel;
 		out.write("<" + tagName);
+	}
+	
+	public void addAttribute(String name, String value) throws IOException {
+		out.write(' ');
+		out.write(name);
+		out.write('=');
+		out.write(XMLAttributeList.getQuotedAttributeValue(value));
+	}
+	
+	public void stopTag(boolean close) throws IOException {
 		if (close) {
 			out.write("/>\n");
 			--nestingLevel;
@@ -100,24 +110,20 @@ public class OutputStreamXMLOutput implements XMLOutput {
 			newLine = false;
 		}
 	}
+	
+	private void emitTag(String tagName, boolean close) throws IOException {
+		startTag(tagName);
+		stopTag(close);
+	}
 
 	private void emitTag(String tagName, String attributes, boolean close) throws IOException {
-		indent();
-		++nestingLevel;
-		out.write("<" + tagName);
+		startTag(tagName);
 		attributes = attributes.trim();
 		if (attributes.length() > 0) {
 			out.write(" ");
 			out.write(attributes);
 		}
-		if (close) {
-			out.write("/>\n");
-			--nestingLevel;
-			newLine = true;
-		} else {
-			out.write(">");
-			newLine = false;
-		}
+		stopTag(close);
 	}
 
 	public void closeTag(String tagName) throws IOException {

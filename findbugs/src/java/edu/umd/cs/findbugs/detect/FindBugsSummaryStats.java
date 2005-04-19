@@ -47,9 +47,55 @@ public class FindBugsSummaryStats extends PreorderVisitor
 
 	public void visit(JavaClass obj) {
 		super.visit(obj);
-		stats.addClass(getDottedClassName(), obj.isInterface());
+		stats.addClass(getDottedClassName(), obj.isInterface(),
+			calculateClassSize(obj));
 	}
 
+	/**
+		Calculate a normalized class size value that can be used 
+		across projects as the basis for a bug density metric.
+		<p>
+		The size value is calculated as the sum of the following
+		(somewhat arbitrary) values: 
+		</p>
+		<ul>
+		  <li>8 for the class or interface itself
+			(to prevent tag interfaces from having zero size)</li>
+		  <li>+8 for each field</li>
+		  <li>+8 for each method</li>
+		  <li>For each method, the length of the method body
+			  in bytes.</li>
+		</ul>
+		<p>
+		This is a compromise between speed/complexity and accuracy.
+		It would be faster to use the total size of the class, but this
+		would include the constant pool, which would skew results.
+		Another alternative might be to use the number of statements
+		in each method (similar to NCSS), but this would require the
+		method code to be parsed.
+		</p>
+		<p>
+		This value is calculated here instead of in ProjectStats
+		so that ProjectStats can have a single method to support
+		both this class and SAXBugCollectionHandler.
+		</p>
+	**/
+	private int calculateClassSize(JavaClass obj) {
+		int result = 8;
+		result += 8 * obj.getFields().length;
+		org.apache.bcel.classfile.Method[] methods = obj.getMethods();
+		result += 8 * methods.length;
+		int i = methods.length;
+		while ( --i >= 0 ) {
+			org.apache.bcel.classfile.Code code = methods[i].getCode();
+			if ( code != null ) {
+				result += code.getCode().length;
+			}
+		}
+
+		return result;
+	}
+	
 	public void reportBug(BugInstance bug) {
 		stats.addBug(bug);
 	}

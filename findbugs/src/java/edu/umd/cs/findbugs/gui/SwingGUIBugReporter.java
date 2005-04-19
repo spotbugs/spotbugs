@@ -38,7 +38,7 @@ public class SwingGUIBugReporter extends TextUIBugReporter {
 	 */
 	public SwingGUIBugReporter(AnalysisRun analysisRun) {
 		this.analysisRun = analysisRun;
-		this.bugCollection = new SortedBugCollection();
+		this.bugCollection = new SortedBugCollection(getProjectStats());
 	}
 	
 	public SortedBugCollection getBugCollection() {
@@ -59,7 +59,7 @@ public class SwingGUIBugReporter extends TextUIBugReporter {
 	}
 	
 	public void logError(String message) {
-		analysisRun.frame.getLogger().logMessage(ConsoleLogger.WARNING, message);
+		analysisRun.getFrame().getLogger().logMessage(ConsoleLogger.WARNING, message);
 		super.logError(message);
 		bugCollection.addError(message);
 	}
@@ -74,7 +74,7 @@ public class SwingGUIBugReporter extends TextUIBugReporter {
 
 	private void createDialog() {
 		if (errorDialog == null) {
-			errorDialog = new AnalysisErrorDialog(analysisRun.frame, true, this);
+			errorDialog = new AnalysisErrorDialog(analysisRun.getFrame(), true, this);
 		}
 	}
 	

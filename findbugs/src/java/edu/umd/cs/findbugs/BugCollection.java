@@ -140,15 +140,15 @@ public abstract class BugCollection {
 	public abstract Iterator<String> missingClassIterator();
 
 	/**
-	 * Set the summary HTML text.
-	 */
-	public abstract void setSummaryHTML(String html);
-
-	/**
 	 * Get the summary HTML text.
 	 */
-	public abstract String getSummaryHTML();
+	public abstract String getSummaryHTML() throws IOException;
 	
+	/**
+	 * Get the project stats.
+	 */
+	public abstract ProjectStats getProjectStats();
+
 	/**
 	 * Look up a BugInstance by its unique id.
 	 * 
@@ -175,6 +175,9 @@ public abstract class BugCollection {
 	 * @param timestamp the timestamp
 	 */
 	public abstract void setTimestamp(long timestamp);
+
+	private static final boolean REPORT_SUMMARY_HTML = 
+		Boolean.getBoolean("findbugs.report.SummaryHTML");
 
 	static final String ROOT_ELEMENT_NAME = "BugCollection";
 	static final String SRCMAP_ELEMENT_NAME = "SrcMap";
@@ -331,6 +334,11 @@ public abstract class BugCollection {
 	 * The finish() method of the XMLOutput object is guaranteed
 	 * to be called.
 	 *
+	 * <p>
+	 * To write the SummaryHTML element, set property
+	 * findbugs.report.SummaryHTML to "true".
+	 * </p>
+	 *
 	 * @param xmlOutput the XMLOutput object
 	 * @param project   the Project from which the BugCollection was generated
 	 */
@@ -352,11 +360,23 @@ public abstract class BugCollection {
 		emitErrors(xmlOutput);
 
 		// Summary HTML
-		String html = getSummaryHTML();
-		if (!html.equals("")) {
-			xmlOutput.openTag(SUMMARY_HTML_ELEMENT_NAME);
-			xmlOutput.writeCDATA(html);
-			xmlOutput.closeTag(SUMMARY_HTML_ELEMENT_NAME);
+//		String html = getSummaryHTML();
+//		if (!html.equals("")) {
+//			xmlOutput.openTag(SUMMARY_HTML_ELEMENT_NAME);
+//			xmlOutput.writeCDATA(html);
+//			xmlOutput.closeTag(SUMMARY_HTML_ELEMENT_NAME);
+//		}
+		// Statistics
+		getProjectStats().writeXML(xmlOutput);
+		
+		// Summary HTML
+		if ( REPORT_SUMMARY_HTML ) {
+			String html = getSummaryHTML();
+			if (html != null && !html.equals("")) {
+				xmlOutput.openTag(SUMMARY_HTML_ELEMENT_NAME);
+				xmlOutput.writeCDATA(html);
+				xmlOutput.closeTag(SUMMARY_HTML_ELEMENT_NAME);
+			}
 		}
 
 		xmlOutput.closeTag(ROOT_ELEMENT_NAME);

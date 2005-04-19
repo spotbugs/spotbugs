@@ -19,19 +19,15 @@
 
 package edu.umd.cs.findbugs;
 
-import java.io.IOException;
-import java.io.StringWriter;
-
-import javax.xml.transform.TransformerException;
-
 import org.apache.bcel.classfile.JavaClass;
 
 public abstract class BugCollectionBugReporter extends TextUIBugReporter {
-	private SortedBugCollection bugCollection = new SortedBugCollection();
+	private SortedBugCollection bugCollection;
 	private Project project;
 
 	public BugCollectionBugReporter(Project project) {
 		this.project = project;
+		this.bugCollection = new SortedBugCollection(getProjectStats());
 	}
 
 	public Project getProject() {
@@ -64,20 +60,20 @@ public abstract class BugCollectionBugReporter extends TextUIBugReporter {
 		if (bugCollection.add(bugInstance))
 			notifyObservers(bugInstance);
 	}
-
-	protected void generateSummary() {
-		try {
-			StringWriter writer = new StringWriter();
-			ProjectStats stats = getProjectStats();
-			stats.transformSummaryToHTML(writer);
-			String html = writer.toString();
-			bugCollection.setSummaryHTML(html);
-		} catch (IOException e) {
-			logError("Couldn't generate summary HTML", e);
-		} catch (TransformerException e) {
-			logError("Couldn't generate summary HTML", e);
-		}
-	}
+//
+//	protected void generateSummary() {
+//		try {
+//			StringWriter writer = new StringWriter();
+//			ProjectStats stats = getProjectStats();
+//			stats.transformSummaryToHTML(writer);
+//			String html = writer.toString();
+//			bugCollection.setSummaryHTML(html);
+//		} catch (IOException e) {
+//			logError("Couldn't generate summary HTML", e);
+//		} catch (TransformerException e) {
+//			logError("Couldn't generate summary HTML", e);
+//		}
+//	}
 }
 
 // vim:ts=4

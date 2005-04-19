@@ -77,6 +77,23 @@ public class Dom4JXMLOutput implements XMLOutput {
 		closeTag(tagName);
 	}
 
+	public void startTag(String tagName) {
+		Branch top = stack.getLast();
+		Element element = top.addElement(tagName);
+		stack.addLast(element);
+	}
+	
+	public void addAttribute(String name, String value) {
+		Element element = (Element) stack.getLast();
+		element.addAttribute(name, value);
+	}
+	
+	public void stopTag(boolean close) {
+		if ( close ) {
+			closeTag(null);
+		}
+	}
+	
 	public void closeTag(String tagName) {
 		stack.removeLast();
 	}

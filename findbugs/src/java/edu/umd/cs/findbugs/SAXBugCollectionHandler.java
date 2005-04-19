@@ -125,6 +125,13 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 							bugInstance.setActiveIntervalCollection(activeCollection);
 						}
 					}
+				} else if (qName.equals("FindBugsSummary")) {
+					String timestamp = getRequiredAttribute(attributes, "timestamp", qName);
+					try {
+						bugCollection.getProjectStats().setTimestamp(timestamp);
+					} catch (java.text.ParseException e) {
+						throw new SAXException("Unparseable timestamp: '" + timestamp + "'", e);
+					}
 				}
 			} else if (outerElement.equals("BugInstance")) {
 				// Parsing an attribute or property of a BugInstance
@@ -178,6 +185,15 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 					analysisError = new AnalysisError("Unknown error");
 					stackTrace.clear();
 				}
+			} else if (outerElement.equals("PackageStats")) {
+				if (qName.equals("ClassStats")) {
+					String className = getRequiredAttribute(attributes, "class", qName);
+					Boolean isInterface = Boolean.valueOf(
+						getRequiredAttribute(attributes, "interface", qName));
+					int size = Integer.valueOf(
+						getRequiredAttribute(attributes, "size", qName));
+					bugCollection.getProjectStats().addClass(className, isInterface, size);
+				}
 			}
 		}
 
@@ -217,10 +233,10 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 			String outerElement = elementStack.get(elementStack.size() - 2);
 
 			if (outerElement.equals("BugCollection")) {
-				if (qName.equals("SummaryHTML"))
-					bugCollection.setSummaryHTML(textBuffer.toString());
-				else if (qName.equals("BugInstance"))
+				if (qName.equals("BugInstance")) {
 					bugCollection.add(bugInstance);
+                    bugCollection.getProjectStats().addBug(bugInstance);
+				}
 			} else if (outerElement.equals("Project")) {
 				//System.out.println("Adding project element " + qName + ": " + textBuffer.toString());
 				if (qName.equals("Jar"))

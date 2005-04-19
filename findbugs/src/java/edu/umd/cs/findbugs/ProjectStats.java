@@ -20,40 +20,60 @@
 
 package edu.umd.cs.findbugs;
 
-import java.io.*;
-import java.text.DateFormat;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.Reader;
+import java.io.Writer;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
-import org.dom4j.Branch;
-import org.dom4j.Document;
-import org.dom4j.DocumentHelper;
-import org.dom4j.Element;
-import org.dom4j.io.OutputFormat;
-import org.dom4j.io.XMLWriter;
+import edu.umd.cs.findbugs.xml.OutputStreamXMLOutput;
+import edu.umd.cs.findbugs.xml.XMLOutput;
+import edu.umd.cs.findbugs.xml.XMLWriteable;
 
 /**
  * Statistics resulting from analyzing a project.
  */
-public class ProjectStats {
+public class ProjectStats implements XMLWriteable {
+	private static final String TIMESTAMP_FORMAT = "EEE, d MMM yyyy HH:mm:ss Z";
 	private HashMap<String, PackageStats> packageStatsMap;
-	private int totalErrors;
+	private int[] totalErrors = new int[] { 0, 0, 0, 0, 0 };
 	private int totalClasses;
+	private int totalSize;
+	private Date timestamp;
 
 	/**
 	 * Constructor. Creates an empty object.
 	 */
 	public ProjectStats() {
 		this.packageStatsMap = new HashMap<String, PackageStats>();
-		this.totalErrors = 0;
 		this.totalClasses = 0;
+		this.timestamp = new Date();
 	}
 
+	/**
+	 * Set the timestamp for this analysis run.
+	 *
+	 * @param timestamp	 the time of the analysis run this 
+	 *                   ProjectStats represents, as previously
+	 *                   reported by writeXML.
+	 */
+	public void setTimestamp(String timestamp) throws ParseException {
+		this.timestamp = new SimpleDateFormat(TIMESTAMP_FORMAT).parse(timestamp);
+	}
+	
 	/**
 	 * Get the number of classes analyzed.
 	 */
@@ -66,8 +86,10 @@ public class ProjectStats {
 	 *
 	 * @param className   the full name of the class
 	 * @param isInterface true if the class is an interface
+	 * @param size        a normalized class size value;
+	 *                    see detect/FindBugsSummaryStats.
 	 */
-	public void addClass(String className, boolean isInterface) {
+	public void addClass(String className, boolean isInterface, int size) {
 		String packageName;
 		int lastDot = className.lastIndexOf('.');
 		if (lastDot < 0)
@@ -75,8 +97,9 @@ public class ProjectStats {
 		else
 			packageName = className.substring(0, lastDot);
 		PackageStats stat = getPackageStats(packageName);
-		stat.addClass(className, isInterface);
+		stat.addClass(className, isInterface, size);
 		totalClasses++;
+		totalSize += size;
 	}
 
 	/**
@@ -85,44 +108,43 @@ public class ProjectStats {
 	public void addBug(BugInstance bug) {
 		PackageStats stat = getPackageStats(bug.getPrimaryClass().getPackageName());
 		stat.addError(bug);
-		totalErrors++;
+		++totalErrors[0];
+		++totalErrors[bug.getPriority()];
 	}
 
 	/**
-	 * Convert to an XML element.
+	 * Output as XML.
 	 */
-	public Element toElement(Branch parent) {
-		Element root = parent.addElement("FindBugsSummary");
-		DateFormat df = DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.FULL);
-		Date date = new Date();
-		root.addAttribute("timestamp", df.format(date));
-		root.addAttribute("total_classes", String.valueOf(totalClasses));
-		root.addAttribute("total_bugs", String.valueOf(totalErrors));
-		root.addAttribute("num_packages", String.valueOf(packageStatsMap.size()));
-
+	public void writeXML(XMLOutput xmlOutput) throws IOException {
+		xmlOutput.startTag("FindBugsSummary");
+		
+		xmlOutput.addAttribute("timestamp",
+				new SimpleDateFormat(TIMESTAMP_FORMAT).format(timestamp));
+		xmlOutput.addAttribute("total_classes", String.valueOf(totalClasses));
+		xmlOutput.addAttribute("total_bugs", String.valueOf(totalErrors[0]));
+		xmlOutput.addAttribute("total_size", String.valueOf(totalSize));
+		xmlOutput.addAttribute("num_packages", String.valueOf(packageStatsMap.size()));
+		
+		PackageStats.writeBugPriorities(xmlOutput, totalErrors);
+		
+		xmlOutput.stopTag(false);
+		
 		Iterator<PackageStats> i = packageStatsMap.values().iterator();
 		while (i.hasNext()) {
 			PackageStats stats = i.next();
-			stats.toElement(root);
+			stats.writeXML(xmlOutput);
 		}
-
-		return root;
+		
+		xmlOutput.closeTag("FindBugsSummary");
 	}
-
+	
 	/**
 	 * Report statistics as an XML document to given output stream.
 	 */
-	public void reportSummary(OutputStream out) {
-		Document document = DocumentHelper.createDocument();
-
-		toElement(document);
-
-		try {
-			XMLWriter writer = new XMLWriter(out, OutputFormat.createPrettyPrint());
-			writer.write(document);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+	public void reportSummary(OutputStream out) throws IOException {
+		XMLOutput xmlOutput = new OutputStreamXMLOutput(out);
+		writeXML(xmlOutput);
+		xmlOutput.finish();
 	}
 
 	/**
@@ -131,7 +153,7 @@ public class ProjectStats {
 	 * @param htmlWriter the Writer to write the HTML output to
 	 */
 	public void transformSummaryToHTML(Writer htmlWriter)
-	        throws IOException, TransformerException {
+			throws IOException, TransformerException {
 
 		ByteArrayOutputStream summaryOut = new ByteArrayOutputStream(8096);
 		reportSummary(summaryOut);
