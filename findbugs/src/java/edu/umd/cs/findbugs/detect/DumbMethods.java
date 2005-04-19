@@ -40,7 +40,6 @@ import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.Hierarchy;
 import edu.umd.cs.findbugs.ba.TypeDataflow;
-import edu.umd.cs.findbugs.ba.TypeFrame;
 import edu.umd.cs.findbugs.visitclass.Constants2;
 
 public class DumbMethods extends BytecodeScanningDetector implements Constants2, StatelessDetector {
@@ -68,9 +67,6 @@ public class DumbMethods extends BytecodeScanningDetector implements Constants2,
 		this.bugReporter = bugReporter;
 		
 		jdk15ChecksEnabled = JavaVersion.getRuntimeVersion().isSameOrNewerThan(JavaVersion.JAVA_1_5);
-		if (jdk15ChecksEnabled) {
-			System.out.println("Enabling JDK 1.5 checks");
-		}
 	}
 	
 	public Object clone() throws CloneNotSupportedException {
@@ -84,7 +80,6 @@ public class DumbMethods extends BytecodeScanningDetector implements Constants2,
 		isPublicStaticVoidMain = method.isPublic() && method.isStatic()
 		        && getMethodName().equals("main")
 		        || cName.toLowerCase().indexOf("benchmark") >= 0;
-		// System.out.println("method " + getMethodName() + " is main? " + isPublicStaticVoidMain);
 		prevOpcodeWasReadLine = false;
 		Code code = method.getCode();
 		if (code != null)
@@ -346,8 +341,6 @@ public class DumbMethods extends BytecodeScanningDetector implements Constants2,
 
 	private void checkMonitorWait() {
 		try {
-//			System.out.println("Check call on " + getDottedClassConstantOperand() + " object");
-
 			TypeDataflow typeDataflow = getClassContext().getTypeDataflow(getMethod());
 			TypeDataflow.LocationAndFactPair pair = typeDataflow.getLocationAndFactForInstruction(getPC());
 			
