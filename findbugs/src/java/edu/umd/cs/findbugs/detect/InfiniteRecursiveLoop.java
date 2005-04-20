@@ -95,8 +95,10 @@ public class InfiniteRecursiveLoop extends BytecodeScanningDetector implements C
 				"(Ljava/lang/Object;)Z")
 			    && stack.getStackDepth() >= 1)  {
 				OpcodeStack.Item it0 = stack.getStackItem(0);
+				int r0 = it0.getRegisterNumber();
 				OpcodeStack.Item it1 = stack.getStackItem(1);
-				if (it0.equals(it1))
+				int r1 = it1.getRegisterNumber();
+				if (r0 == r1 && r0 > 0)
 				bugReporter.reportBug(new BugInstance(this, "IL_CONTAINER_ADDED_TO_ITSELF", NORMAL_PRIORITY)
 				        .addClassAndMethod(this)
 				        .addSourceLine(this)
