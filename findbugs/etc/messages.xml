@@ -3615,4 +3615,5 @@ value outside the expected range of 0..11 to a method.
   <BugCode abbrev="IM">Questionable integer math</BugCode>
   <BugCode abbrev="ST">Misuse of static fields</BugCode>
   <BugCode abbrev="PZ">Bug inspired by Josh Bloch's and Neal Gafter's Programming Puzzlers</BugCode>
+  <BugCode abbrev="SWL">Sleep with lock held</BugCode>
 </MessageCollection>
