@@ -78,6 +78,9 @@ public class FindBadCast extends BytecodeScanningDetector implements Constants2,
 	private int parameters;
 	OpcodeStack stack = new OpcodeStack();
 	public void visit(Code obj) {
+		if (DEBUG)  {
+			System.out.println(getFullyQualifiedMethodName());
+			}
 		parameters = stack.resetForMethodEntry(this);
 		castTo.clear();
 		super.visit(obj);
@@ -85,6 +88,10 @@ public class FindBadCast extends BytecodeScanningDetector implements Constants2,
 
 
 	public void sawOpcode(int seen) {
+		if (DEBUG)  {
+			System.out.println(stack);
+			printOpCode(seen);
+			}
 
 
 		if (stack.getStackDepth() > 0) {
