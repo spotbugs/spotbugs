@@ -359,6 +359,11 @@
             speed="fast"
             reports="EC_BAD_ARRAY_COMPARE,DLS_OVERWRITTEN_INCREMENT,ICAST_BAD_SHIFT_AMOUNT,ICAST_QUESTIONABLE_UNSIGNED_RIGHT_SHIFT,PZ_BAD_MONTH,IM_MULTIPLYING_RESULT_OF_IREM"
 	    />
+
+  <Detector class="edu.umd.cs.findbugs.detect.FindSleepWithLockHeld"
+	speed="slow"
+	reports="SWL_SLEEP_WITH_LOCK_HELD"
+	 />
   			
   <Detector class="edu.umd.cs.findbugs.detect.FindBugsSummaryStats" 
             speed="fast"
@@ -562,4 +567,5 @@
   <BugPattern abbrev="ICAST" type="ICAST_QUESTIONABLE_UNSIGNED_RIGHT_SHIFT" category="STYLE"/>
   <BugPattern abbrev="PZ" type="PZ_BAD_MONTH" category="CORRECTNESS"/>
   <BugPattern abbrev="ST" type="ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD" category="STYLE"/>
+  <BugPattern abbrev="SWL" type="SWL_SLEEP_WITH_LOCK_HELD" category="MT_CORRECTNESS"/>
 </FindbugsPlugin>

@@ -785,6 +785,17 @@ their work on Programming Puzzlers.
 ]]>
     </Details>
   </Detector>
+  
+  <Detector class="edu.umd.cs.findbugs.detect.FindSleepWithLockHeld">
+	<Details>
+		<![CDATA[
+		<p>
+			This detector looks for calls to Thread.sleep() made with
+			a lock held.  It is a slow detector.
+		</p>
+		]]>
+	</Details>
+  </Detector>
 
   <Detector class="edu.umd.cs.findbugs.detect.FindBugsSummaryStats">
     <Details>
@@ -3485,6 +3496,22 @@ value outside the expected range of 0..11 to a method.
 </p>
 ]]>
     </Details>
+  </BugPattern>
+  
+  <BugPattern type="SWL_SLEEP_WITH_LOCK_HELD">
+	<ShortDescription>Method calls Thread.sleep() with a lock held</ShortDescription>
+	<LongDescription>{1} calls Thread.sleep() with a lock held</LongDescription>
+	<Details>
+		<![CDATA[
+		<p>
+		This method calls Thread.sleep() with a lock held.  This may result
+		in very poor performance and scalability, or a deadlock, since other threads may
+		be waiting to acquire the lock.  It is a much better idea to call
+		wait() on the lock, which releases the lock and allows other threads
+		to run.
+		</p>
+		]]>
+	</Details>
   </BugPattern>
  
     <!--
