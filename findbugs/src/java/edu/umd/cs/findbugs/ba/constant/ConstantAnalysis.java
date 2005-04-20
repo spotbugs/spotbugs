@@ -32,6 +32,7 @@ import edu.umd.cs.findbugs.ba.DataflowTestDriver;
 import edu.umd.cs.findbugs.ba.DepthFirstSearch;
 import edu.umd.cs.findbugs.ba.Edge;
 import edu.umd.cs.findbugs.ba.FrameDataflowAnalysis;
+import edu.umd.cs.findbugs.ba.Location;
 
 /**
  * Dataflow analysis to find constant values.
@@ -66,7 +67,7 @@ public class ConstantAnalysis extends FrameDataflowAnalysis<Constant, ConstantFr
 			InstructionHandle handle,
 			BasicBlock basicBlock,
 			ConstantFrame frame) throws DataflowAnalysisException {
-		visitor.setFrame(frame);
+		visitor.setFrameAndLocation(frame, new Location(handle, basicBlock));
 		visitor.analyzeInstruction(handle.getInstruction());
 	}
 	

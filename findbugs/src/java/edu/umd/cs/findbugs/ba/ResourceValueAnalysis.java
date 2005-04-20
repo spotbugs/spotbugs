@@ -162,7 +162,7 @@ public class ResourceValueAnalysis <Resource> extends FrameDataflowAnalysis<Reso
 	public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, ResourceValueFrame fact)
 	        throws DataflowAnalysisException {
 
-		visitor.setFrame(fact);
+		visitor.setFrameAndLocation(fact, new Location(handle, basicBlock));
 		visitor.transferInstruction(handle, basicBlock);
 
 	}

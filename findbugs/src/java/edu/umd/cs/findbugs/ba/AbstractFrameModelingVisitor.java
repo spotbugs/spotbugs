@@ -50,6 +50,7 @@ import org.apache.bcel.generic.*;
  */
 public abstract class AbstractFrameModelingVisitor <Value, FrameType extends Frame<Value>> implements Visitor {
 	private FrameType frame;
+	private Location location;
 	private ConstantPoolGen cpg;
 
 	/**
@@ -86,12 +87,15 @@ public abstract class AbstractFrameModelingVisitor <Value, FrameType extends Fra
 	}
 
 	/**
-	 * Set the frame.
+	 * Set the frame and Location for the instruction about to
+	 * be modeled.
 	 *
-	 * @param frame the Frame object
+	 * @param frame    the Frame
+	 * @param location the Location
 	 */
-	public void setFrame(FrameType frame) {
+	public void setFrameAndLocation(FrameType frame, Location location) {
 		this.frame = frame;
+		this.location = location;
 	}
 
 	/**
@@ -101,6 +105,15 @@ public abstract class AbstractFrameModelingVisitor <Value, FrameType extends Fra
 	 */
 	public FrameType getFrame() {
 		return frame;
+	}
+	
+	/**
+	 * Get the Location.
+	 * 
+	 * @return the Location
+	 */
+	public Location getLocation() {
+		return location;
 	}
 
 	/**

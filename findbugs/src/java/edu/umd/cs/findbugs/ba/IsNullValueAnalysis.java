@@ -143,7 +143,7 @@ public class IsNullValueAnalysis
 		}
 
 		// Model the instruction
-		visitor.setFrame(fact);
+		visitor.setFrameAndLocation(fact, new Location(handle, basicBlock));
 		Instruction ins = handle.getInstruction();
 		visitor.analyzeInstruction(ins);
 
