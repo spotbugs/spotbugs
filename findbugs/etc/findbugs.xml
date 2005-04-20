@@ -401,7 +401,7 @@
   <BugPattern abbrev="NP" type="NP_IMMEDIATE_DEREFERENCE_OF_READLINE" category="CORRECTNESS" />
   <BugPattern abbrev="RV" type="RV_01_TO_INT" category="CORRECTNESS" />
   <BugPattern abbrev="Dm" type="DM_NEXTINT_VIA_NEXTDOUBLE" category="PERFORMANCE" />
-  <BugPattern abbrev="Dm" type="DM_USELESS_THREAD" category="CORRECTNESS" />
+  <BugPattern abbrev="Dm" type="DM_USELESS_THREAD" category="MT_CORRECTNESS" />
   <BugPattern abbrev="SQL" type="SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE" category="CORRECTNESS" />
   <BugPattern abbrev="DC" type="DC_DOUBLECHECK" category="MT_CORRECTNESS" />
   <BugPattern abbrev="FI" type="FI_PUBLIC_SHOULD_BE_PROTECTED" category="MALICIOUS_CODE" />
