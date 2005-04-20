@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Constant;
 import org.apache.bcel.classfile.ConstantClass;
@@ -60,9 +61,13 @@ import edu.umd.cs.findbugs.visitclass.LVTHelper;
  */
 public class OpcodeStack implements Constants2
 {
-	private static final boolean DEBUG = Boolean.getBoolean("ocstack.debug");
+	private static final boolean DEBUG 
+			 = Boolean.getBoolean("ocstack.debug");
 	private List<Item> stack;
 	private List<Item> lvValues;
+	private int jumpTarget;
+	private Stack<List<Item>> jumpStack;
+		
 
 	private boolean seenTransferOfControl = false;
 
@@ -264,6 +269,7 @@ public class OpcodeStack implements Constants2
 		stack = new ArrayList<Item>();
 		lvValues = new ArrayList<Item>();
 	}
+
 	
  	public void sawOpcode(DismantleBytecode dbc, int seen) {
  		int register, intConstant;
@@ -271,6 +277,34 @@ public class OpcodeStack implements Constants2
  		String signature;
  		Item it, it2, it3;
  		Constant cons;
+
+		if (dbc.getPC() == jumpTarget) {
+			jumpTarget = -1;
+			if (!jumpStack.empty()) {
+			List<Item> stackToMerge = jumpStack.pop();
+			
+			// merge stacks
+			if (stack.size() != stackToMerge.size()) {
+				if (DEBUG)  {
+				System.out.println("Bad merging stacks");
+				System.out.println("current stack: " + stack);
+				System.out.println("jump stack: " + stackToMerge);
+				}
+			} else {
+				if (DEBUG)  {
+				System.out.println("Merging stacks");
+				System.out.println("current stack: " + stack);
+				System.out.println("jump stack: " + stackToMerge);
+				}
+				
+				for(int i = 0; i < stack.size(); i++)
+					stack.set(i, Item.merge(stack.get(i), stackToMerge.get(i)));
+				if (DEBUG)  {
+				System.out.println("merged stack: " + stack);
+				}
+				}
+			}
+			}
  		
  		try
  		{
@@ -479,8 +513,11 @@ public class OpcodeStack implements Constants2
 	 			case GOTO:
 	 			case GOTO_W:					//It is assumed that no stack items are present when
 					seenTransferOfControl = true;
-	 				if (getStackDepth() > 0)    //when goto is executed. This is not true for trinaries
-	 					pop();					//so hack it so that if there are pop 1
+					if (getStackDepth() > 0) {
+						jumpStack.push(new ArrayList(stack));
+						pop();
+						jumpTarget = dbc.getBranchTarget();
+						}
 	 			break;
 	 				
 	 			
@@ -953,6 +990,7 @@ public class OpcodeStack implements Constants2
  	
  	public int resetForMethodEntry(PreorderVisitor v) {
  		stack.clear();
+		jumpTarget = -1;
  		lvValues.clear();
 		seenTransferOfControl = false;
 		String className = v.getClassName();
