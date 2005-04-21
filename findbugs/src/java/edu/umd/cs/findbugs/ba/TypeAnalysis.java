@@ -170,7 +170,7 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 	 * 
 	 * @param valueNumberDataflow the ValueNumberDataflow
 	 */
-	public void setValueNumberAnalysis(ValueNumberDataflow valueNumberDataflow) {
+	public void setValueNumberDataflow(ValueNumberDataflow valueNumberDataflow) {
 		this.valueNumberDataflow = valueNumberDataflow;
 	}
 

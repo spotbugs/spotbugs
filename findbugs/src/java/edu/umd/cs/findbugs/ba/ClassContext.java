@@ -405,7 +405,7 @@ public class ClassContext implements AnalysisFeatures {
 			                new TypeAnalysis(methodGen, cfg, dfs, getLookupFailureCallback(), exceptionSetFactory);
 			        
 					if (MODEL_INSTANCEOF) {
-						typeAnalysis.setValueNumberAnalysis(getValueNumberDataflow(method));
+						typeAnalysis.setValueNumberDataflow(getValueNumberDataflow(method));
 					}
 					
 					TypeDataflow typeDataflow = new TypeDataflow(cfg, typeAnalysis);
