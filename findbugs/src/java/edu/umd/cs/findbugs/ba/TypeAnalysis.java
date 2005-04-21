@@ -172,6 +172,7 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 	 */
 	public void setValueNumberDataflow(ValueNumberDataflow valueNumberDataflow) {
 		this.valueNumberDataflow = valueNumberDataflow;
+		this.visitor.setValueNumberDataflow(valueNumberDataflow);
 	}
 
 	/**
@@ -251,50 +252,11 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 	public boolean same(TypeFrame fact1, TypeFrame fact2) {
 		return fact1.sameAs(fact2);
 	}
-	
-	public void startTransfer(BasicBlock basicBlock, Object fact) throws DataflowAnalysisException {
-		visitor.startBasicBlock();
-	}
 
 	public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, TypeFrame fact)
 	        throws DataflowAnalysisException {
-		
-//		short opcode = handle.getInstruction().getOpcode();
-//		
-//		// If the instruction is instanceof, and we have value numbers,
-//		// get the value number for the value on the top of the stack.
-//		// We'll use this to update the checked type for other instances
-//		// of the same value in the result frame.
-//		ValueNumber tosValueNumber = null;
-//		if (opcode == Constants.INSTANCEOF && valueNumberDataflow != null) {
-//			ValueNumberFrame vnaFrameBefore = valueNumberDataflow.getFactAtLocation(
-//					new Location(handle, basicBlock));
-//			tosValueNumber = vnaFrameBefore.getTopValue();
-//		}
-		
 		visitor.setFrameAndLocation(fact, new Location(handle, basicBlock));
 		visitor.analyzeInstruction(handle.getInstruction());
-		
-//		if (opcode == Constants.INSTANCEOF && valueNumberDataflow != null) {
-//			Type instanceOfType = visitor.getInstanceOfType();
-//			if (!(instanceOfType instanceof ReferenceType))
-//				throw new DataflowAnalysisException(
-//						"Instanceof instruction checks for non-reference type " +
-//						instanceOfType, methodGen, handle);
-//			
-//			// FIXME: we could actually lose type information if instanceof type is a supertype
-//			
-//			ValueNumberFrame vnaFrameAfter = valueNumberDataflow.getFactAfterLocation(
-//					new Location(handle, basicBlock));
-//			if (vnaFrameAfter.getNumSlots() == fact.getNumSlots()) {
-//				int numSlots = fact.getNumSlots();
-//				for (int i = 0; i < numSlots; ++i) {
-//					if (vnaFrameAfter.getValue(i).equals(tosValueNumber)) {
-//						fact.setValue(i, visitor.getInstanceOfType());
-//					}
-//				}
-//			}
-//		}
 	}
 
 	public void endTransfer(BasicBlock basicBlock, InstructionHandle end, Object result)
@@ -340,47 +302,110 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 	public void meetInto(TypeFrame fact, Edge edge, TypeFrame result) throws DataflowAnalysisException {
 		BasicBlock basicBlock = edge.getTarget();
 
-		if (basicBlock.isExceptionHandler() && fact.isValid()) {
-			// Special case: when merging predecessor facts for entry to
-			// an exception handler, we clear the stack and push a
-			// single entry for the exception object.  That way, the locals
-			// can still be merged.
-			CodeExceptionGen exceptionGen = basicBlock.getExceptionGen();
-			TypeFrame tmpFact = createFact();
-			tmpFact.copyFrom(fact);
-			tmpFact.clearStack();
+		if (fact.isValid()) {
+			TypeFrame tmpFact = null;
 
-			// Determine the type of exception(s) caught.
-			Type catchType = null;
-
-			if (ACCURATE_EXCEPTIONS) {
-				try {
-					// Ideally, the exceptions that can be propagated
-					// on this edge has already been computed.
-					CachedExceptionSet cachedExceptionSet = getCachedExceptionSet(edge.getSource());
-					ExceptionSet edgeExceptionSet = cachedExceptionSet.getEdgeExceptionSet(edge);
-					if (!edgeExceptionSet.isEmpty()) {
-						//System.out.println("Using computed edge exception set!");
-						catchType = ExceptionObjectType.fromExceptionSet(edgeExceptionSet);
+			// Handling an exception?
+			if (basicBlock.isExceptionHandler()) {
+				tmpFact = modifyFrame(fact, tmpFact);
+				
+				// Special case: when merging predecessor facts for entry to
+				// an exception handler, we clear the stack and push a
+				// single entry for the exception object.  That way, the locals
+				// can still be merged.
+				CodeExceptionGen exceptionGen = basicBlock.getExceptionGen();
+				tmpFact.clearStack();
+				
+				// Determine the type of exception(s) caught.
+				Type catchType = null;
+				
+				if (ACCURATE_EXCEPTIONS) {
+					try {
+						// Ideally, the exceptions that can be propagated
+						// on this edge has already been computed.
+						CachedExceptionSet cachedExceptionSet = getCachedExceptionSet(edge.getSource());
+						ExceptionSet edgeExceptionSet = cachedExceptionSet.getEdgeExceptionSet(edge);
+						if (!edgeExceptionSet.isEmpty()) {
+							//System.out.println("Using computed edge exception set!");
+							catchType = ExceptionObjectType.fromExceptionSet(edgeExceptionSet);
+						}
+					} catch (ClassNotFoundException e) {
+						lookupFailureCallback.reportMissingClass(e);
 					}
-				} catch (ClassNotFoundException e) {
-					lookupFailureCallback.reportMissingClass(e);
 				}
+				
+				if (catchType == null) {
+					// No information about propagated exceptions, so
+					// pick a type conservatively using the handler catch type.
+					catchType = exceptionGen.getCatchType();
+					if (catchType == null)
+						catchType = Type.THROWABLE; // handle catches anything throwable
+				}
+				
+				tmpFact.pushValue(catchType);
+			}
+			
+			// See if we can make some types more precise due to
+			// a successful instanceof check in the source block.
+			if (valueNumberDataflow != null) {
+				tmpFact = handleInstanceOfBranch(fact, tmpFact, edge);
 			}
 
-			if (catchType == null) {
-				// No information about propagated exceptions, so
-				// pick a type conservatively using the handler catch type.
-				catchType = exceptionGen.getCatchType();
-				if (catchType == null)
-					catchType = Type.THROWABLE; // handle catches anything throwable
+			if (tmpFact != null) {
+				fact = tmpFact;
 			}
-
-			tmpFact.pushValue(catchType);
-			fact = tmpFact;
 		}
 
 		mergeInto(fact, result);
+	}
+
+	private TypeFrame handleInstanceOfBranch(TypeFrame fact, TypeFrame tmpFact, Edge edge) throws DataflowAnalysisException {
+		ValueNumber instanceOfValueNumber = fact.getInstanceOfValueNumber();
+		if (instanceOfValueNumber == null)
+			return tmpFact;
+
+		short branchOpcode = edge.getSource().getLastInstruction().getInstruction().getOpcode();
+		
+		if (   (edge.getType() == EdgeTypes.IFCMP_EDGE &&
+						(branchOpcode == Constants.IFNE || branchOpcode == Constants.IFGT))
+				
+			|| (edge.getType() == EdgeTypes.FALL_THROUGH_EDGE &&
+						(branchOpcode == Constants.IFEQ || branchOpcode == Constants.IFLE))
+		) {
+			// Successful instanceof check.
+			ValueNumberFrame vnaFrame = valueNumberDataflow.getStartFact(edge.getTarget());
+			if (!vnaFrame.isValid())
+				return tmpFact;
+			
+			Type instanceOfType = fact.getInstanceOfType();
+			if (!(instanceOfType instanceof ReferenceType))
+				return tmpFact;
+			
+			int numSlots = Math.min(fact.getNumSlots(), vnaFrame.getNumSlots());
+			for (int i = 0; i < numSlots; ++i) {
+				if (!vnaFrame.getValue(i).equals(instanceOfValueNumber))
+					continue;
+
+				Type checkedType = fact.getValue(i);
+				if (!(checkedType instanceof ReferenceType))
+					continue;
+				
+				// Make sure we don't lose information if the instanceof type
+				// is a supertype of the checked type.
+				try {
+					if (Hierarchy.isSubtype((ReferenceType) checkedType, (ReferenceType) instanceOfType))
+						continue;
+				} catch (ClassNotFoundException e) {
+					lookupFailureCallback.reportMissingClass(e);
+					throw new DataflowAnalysisException("Missing class", e);
+				}
+				
+				tmpFact = modifyFrame(fact, tmpFact);
+				tmpFact.setValue(i, instanceOfType);
+			}
+		}
+		
+		return tmpFact;
 	}
 
 	protected Type mergeValues(TypeFrame frame, int slot, Type a, Type b)

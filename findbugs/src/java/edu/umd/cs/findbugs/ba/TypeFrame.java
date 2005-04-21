@@ -30,11 +30,52 @@ import org.apache.bcel.generic.Type;
  * @see TypeAnalysis
  */
 public class TypeFrame extends Frame<Type> {
+	// These are used for more precise modeling of instanceof instructions
+	private ValueNumber instanceOfValueNumber;
+	private Type instanceOfType;
+	
 	/**
 	 * Constructor.
 	 */
 	public TypeFrame(int numLocals) {
 		super(numLocals);
+	}
+	
+	/**
+	 * Reset information for modeling of instanceof branches.
+	 */
+	public void clearInstanceOfValueNumberAndType() {
+		this.instanceOfValueNumber = null;
+		this.instanceOfType = null;
+	}
+
+	/**
+	 * Set information for modeling of instanceof branches.
+	 * 
+	 * @param instanceOfValueNumber ValueNumber of checked instance
+	 * @param instanceOfType        instanceof Type
+	 */
+	public void setInstanceOfValueNumberAndType(ValueNumber instanceOfValueNumber, Type instanceOfType) {
+		this.instanceOfValueNumber = instanceOfValueNumber;
+		this.instanceOfType = instanceOfType;
+	}
+
+	/**
+	 * Get the value number of the value checked by the instanceof branch.
+	 * 
+	 * @return the ValueNumber of the value checked by the instanceof branch
+	 */
+	public ValueNumber getInstanceOfValueNumber() {
+		return instanceOfValueNumber;
+	}
+	
+	/**
+	 * Get the instanceof Type.
+	 * 
+	 * @return the instanceof Type
+	 */
+	public Type getInstanceOfType() {
+		return instanceOfType;
 	}
 
 	protected String valueToString(Type value) {

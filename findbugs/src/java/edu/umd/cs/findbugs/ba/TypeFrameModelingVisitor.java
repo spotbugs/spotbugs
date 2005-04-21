@@ -109,24 +109,37 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 		return instanceOfValueNumber;
 	}
 
-	/**
-	 * Called when a basic block is started.
-	 *
-	 */
-	public void startBasicBlock() {
-		lastOpcode = -1;
-		instanceOfFollowedByBranch = false;
-		instanceOfType = null;
-		instanceOfValueNumber = null;
-	}
-
 	public Type getDefaultValue() {
 		return TypeFrame.getBottomType();
 	}
 	
 	public void analyzeInstruction(Instruction ins) throws DataflowAnalysisException {
+		Location location = getLocation();
+		
+		if (location.isFirstInstructionInBasicBlock()) {
+			startBasicBlock();
+		}
+		
+		instanceOfFollowedByBranch = false;
 		super.analyzeInstruction(ins);
 		lastOpcode = ins.getOpcode();
+		
+		if (location.isLastInstructionInBasicBlock()) {
+			endBasicBlock();
+		}
+	}
+
+	private void startBasicBlock() {
+		lastOpcode = -1;
+		instanceOfType = null;
+		instanceOfValueNumber = null;
+		getFrame().clearInstanceOfValueNumberAndType();
+	}
+
+	private void endBasicBlock() {
+		if (instanceOfFollowedByBranch) {
+			getFrame().setInstanceOfValueNumberAndType(instanceOfValueNumber, instanceOfType);
+		}
 	}
 
 	/**
@@ -279,8 +292,10 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 			// and the type the value was compared to.
 			try {
 				ValueNumberFrame vnaFrame = valueNumberDataflow.getFactAtLocation(getLocation());
-				instanceOfValueNumber = vnaFrame.getTopValue();
-				instanceOfType = obj.getType(getCPG());
+				if (vnaFrame.isValid()) {
+					instanceOfValueNumber = vnaFrame.getTopValue();
+					instanceOfType = obj.getType(getCPG());
+				}
 			} catch (DataflowAnalysisException e) {
 				// Ignore
 			}
