@@ -37,7 +37,12 @@ import org.apache.bcel.generic.*;
 public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type, TypeFrame>
         implements Constants, Debug {
 			
+	private ValueNumberDataflow valueNumberDataflow;
+
+	private short lastOpcode;
+	private boolean instanceOfFollowedByBranch;
 	private Type instanceOfType;
+	private ValueNumber instanceOfValueNumber;
 
 	/**
 	 * Constructor.
@@ -48,8 +53,38 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 		super(cpg);
 	}
 
-	public Type getDefaultValue() {
-		return TypeFrame.getBottomType();
+	/**
+	 * Set ValueNumberDataflow for the method being analyzed.
+	 * This is optional; if set, we will use the information to more
+	 * accurately model the effects of instanceof instructions.
+	 * 
+	 * @param valueNumberDataflow the ValueNumberDataflow
+	 */
+	public void setValueNumberDataflow(ValueNumberDataflow valueNumberDataflow) {
+		this.valueNumberDataflow = valueNumberDataflow;
+	}
+	
+	/**
+	 * Get the last opcode analyzed by this visitor.
+	 * The TypeAnalysis may use this to get more precise types in
+	 * the resulting frame.
+	 * 
+	 * @return the last opcode analyzed by this visitor
+	 */
+	public short getLastOpcode() {
+		return lastOpcode;
+	}
+	
+	/**
+	 * Return whether an instanceof instruction was followed by a branch.
+	 * The TypeAnalysis may use this to get more precise types in
+	 * the resulting frame.
+	 * 
+	 * @return true if an instanceof instruction was followed by a branch,
+	 *         false if not
+	 */
+	public boolean isInstanceOfFollowedByBranch() {
+		return instanceOfFollowedByBranch;
 	}
 	
 	/**
@@ -61,6 +96,37 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 	 */
 	public Type getInstanceOfType() {
 		return instanceOfType;
+	}
+	
+	/**
+	 * Get the value number of the most recent instanceof instruction modeled.
+	 * The TypeAnalysis may use this to get more precise types in
+	 * the resulting frame.
+	 * 
+	 * @return the ValueNumber checked by the most recent instanceof instruction
+	 */
+	public ValueNumber getInstanceOfValueNumber() {
+		return instanceOfValueNumber;
+	}
+
+	/**
+	 * Called when a basic block is started.
+	 *
+	 */
+	public void startBasicBlock() {
+		lastOpcode = -1;
+		instanceOfFollowedByBranch = false;
+		instanceOfType = null;
+		instanceOfValueNumber = null;
+	}
+
+	public Type getDefaultValue() {
+		return TypeFrame.getBottomType();
+	}
+	
+	public void analyzeInstruction(Instruction ins) throws DataflowAnalysisException {
+		super.analyzeInstruction(ins);
+		lastOpcode = ins.getOpcode();
 	}
 
 	/**
@@ -208,12 +274,20 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 	}
 
 	public void visitINSTANCEOF(INSTANCEOF obj) {
+		if (valueNumberDataflow != null) {
+			// Record the value number of the value checked by this instruction,
+			// and the type the value was compared to.
+			try {
+				ValueNumberFrame vnaFrame = valueNumberDataflow.getFactAtLocation(getLocation());
+				instanceOfValueNumber = vnaFrame.getTopValue();
+				instanceOfType = obj.getType(getCPG());
+			} catch (DataflowAnalysisException e) {
+				// Ignore
+			}
+		}
+		
 		consumeStack(obj);
 		pushValue(Type.INT);
-		
-		// The TypeAnalysis may use this type to make other values
-		// in the resulting frame more precise
-		instanceOfType = obj.getType(getCPG());
 	}
 
 	public void visitFCMPL(FCMPL obj) {
@@ -586,6 +660,30 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 
 	public void visitRET(RET obj) {
 	} // no change
+
+	public void visitIFEQ(IFEQ obj) {
+		if (lastOpcode == Constants.INSTANCEOF)
+			instanceOfFollowedByBranch = true;
+		super.visitIFEQ(obj);
+	}
+
+	public void visitIFGT(IFGT obj) {
+		if (lastOpcode == Constants.INSTANCEOF)
+			instanceOfFollowedByBranch = true;
+		super.visitIFGT(obj);
+	}
+
+	public void visitIFLE(IFLE obj) {
+		if (lastOpcode == Constants.INSTANCEOF)
+			instanceOfFollowedByBranch = true;
+		super.visitIFLE(obj);
+	}
+
+	public void visitIFNE(IFNE obj) {
+		if (lastOpcode == Constants.INSTANCEOF)
+			instanceOfFollowedByBranch = true;
+		super.visitIFNE(obj);
+	}
 
 }
 

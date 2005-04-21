@@ -251,46 +251,50 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 	public boolean same(TypeFrame fact1, TypeFrame fact2) {
 		return fact1.sameAs(fact2);
 	}
+	
+	public void startTransfer(BasicBlock basicBlock, Object fact) throws DataflowAnalysisException {
+		visitor.startBasicBlock();
+	}
 
 	public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, TypeFrame fact)
 	        throws DataflowAnalysisException {
 		
-		short opcode = handle.getInstruction().getOpcode();
-		
-		// If the instruction is instanceof, and we have value numbers,
-		// get the value number for the value on the top of the stack.
-		// We'll use this to update the checked type for other instances
-		// of the same value in the result frame.
-		ValueNumber tosValueNumber = null;
-		if (opcode == Constants.INSTANCEOF && valueNumberDataflow != null) {
-			ValueNumberFrame vnaFrameBefore = valueNumberDataflow.getFactAtLocation(
-					new Location(handle, basicBlock));
-			tosValueNumber = vnaFrameBefore.getTopValue();
-		}
+//		short opcode = handle.getInstruction().getOpcode();
+//		
+//		// If the instruction is instanceof, and we have value numbers,
+//		// get the value number for the value on the top of the stack.
+//		// We'll use this to update the checked type for other instances
+//		// of the same value in the result frame.
+//		ValueNumber tosValueNumber = null;
+//		if (opcode == Constants.INSTANCEOF && valueNumberDataflow != null) {
+//			ValueNumberFrame vnaFrameBefore = valueNumberDataflow.getFactAtLocation(
+//					new Location(handle, basicBlock));
+//			tosValueNumber = vnaFrameBefore.getTopValue();
+//		}
 		
 		visitor.setFrameAndLocation(fact, new Location(handle, basicBlock));
 		visitor.analyzeInstruction(handle.getInstruction());
 		
-		if (opcode == Constants.INSTANCEOF && valueNumberDataflow != null) {
-			Type instanceOfType = visitor.getInstanceOfType();
-			if (!(instanceOfType instanceof ReferenceType))
-				throw new DataflowAnalysisException(
-						"Instanceof instruction checks for non-reference type " +
-						instanceOfType, methodGen, handle);
-			
-			// FIXME: we could actually lose type information if instanceof type is a supertype
-			
-			ValueNumberFrame vnaFrameAfter = valueNumberDataflow.getFactAfterLocation(
-					new Location(handle, basicBlock));
-			if (vnaFrameAfter.getNumSlots() == fact.getNumSlots()) {
-				int numSlots = fact.getNumSlots();
-				for (int i = 0; i < numSlots; ++i) {
-					if (vnaFrameAfter.getValue(i).equals(tosValueNumber)) {
-						fact.setValue(i, visitor.getInstanceOfType());
-					}
-				}
-			}
-		}
+//		if (opcode == Constants.INSTANCEOF && valueNumberDataflow != null) {
+//			Type instanceOfType = visitor.getInstanceOfType();
+//			if (!(instanceOfType instanceof ReferenceType))
+//				throw new DataflowAnalysisException(
+//						"Instanceof instruction checks for non-reference type " +
+//						instanceOfType, methodGen, handle);
+//			
+//			// FIXME: we could actually lose type information if instanceof type is a supertype
+//			
+//			ValueNumberFrame vnaFrameAfter = valueNumberDataflow.getFactAfterLocation(
+//					new Location(handle, basicBlock));
+//			if (vnaFrameAfter.getNumSlots() == fact.getNumSlots()) {
+//				int numSlots = fact.getNumSlots();
+//				for (int i = 0; i < numSlots; ++i) {
+//					if (vnaFrameAfter.getValue(i).equals(tosValueNumber)) {
+//						fact.setValue(i, visitor.getInstanceOfType());
+//					}
+//				}
+//			}
+//		}
 	}
 
 	public void endTransfer(BasicBlock basicBlock, InstructionHandle end, Object result)
