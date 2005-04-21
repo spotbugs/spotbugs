@@ -34,6 +34,8 @@ import java.util.Map;
 
 import org.apache.bcel.classfile.JavaClass;
 
+import edu.umd.cs.findbugs.ba.ch.ClassHierarchyGraph;
+
 /**
  * A context for analysis of a complete project.
  * This serves as the repository for whole-program information
@@ -45,6 +47,7 @@ public class AnalysisContext implements AnalysisFeatures {
 	private RepositoryLookupFailureCallback lookupFailureCallback;
 	private SourceFinder sourceFinder;
 	private ClassContextCache classContextCache;
+	private ClassHierarchyGraph classHierarchyGraph;
 	public Map analysisLocals = 
 		Collections.synchronizedMap(new HashMap());
 	private BitSet boolPropertySet;
@@ -83,6 +86,7 @@ public class AnalysisContext implements AnalysisFeatures {
 		this.lookupFailureCallback = lookupFailureCallback;
 		this.sourceFinder = new SourceFinder();
 		this.classContextCache = new ClassContextCache();
+		this.classHierarchyGraph = new ClassHierarchyGraph();
 		this.boolPropertySet = new BitSet();
 /*
 		// Not yet
