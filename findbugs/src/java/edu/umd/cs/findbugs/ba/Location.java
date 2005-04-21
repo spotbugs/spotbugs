@@ -64,6 +64,22 @@ public class Location implements Comparable<Location> {
 	public BasicBlock getBasicBlock() {
 		return basicBlock;
 	}
+	
+	/**
+	 * Return whether or not the Location is positioned at the
+	 * first instruction in the basic block.
+	 */
+	public boolean isFirstInstructionInBasicBlock() {
+		return !basicBlock.isEmpty() && handle == basicBlock.getFirstInstruction();
+	}
+	
+	/**
+	 * Return whether or not the Location is positioned at the
+	 * last instruction in the basic block.
+	 */
+	public boolean isLastInstructionInBasicBlock() {
+		return !basicBlock.isEmpty() && handle == basicBlock.getLastInstruction();
+	}
 
 	public int compareTo(Location other) {
 		int cmp = basicBlock.getId() - other.basicBlock.getId();
