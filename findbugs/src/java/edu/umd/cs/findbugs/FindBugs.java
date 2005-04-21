@@ -45,12 +45,13 @@ import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.ClassFormatException;
 import org.apache.bcel.classfile.ClassParser;
 import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.util.ClassPath;
 
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.AnalysisException;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.ClassObserver;
-import edu.umd.cs.findbugs.ba.InnerClassAccessMap;
+import edu.umd.cs.findbugs.ba.URLClassPath;
 import edu.umd.cs.findbugs.config.UserPreferences;
 import edu.umd.cs.findbugs.visitclass.Constants2;
 
@@ -233,7 +234,7 @@ public class FindBugs implements Constants2, ExitCodes {
 						continue;
 					}
 
-					String fileExtension = getFileExtension(entryName);
+					String fileExtension = URLClassPath.getFileExtension(entryName);
 					if (fileExtension != null) {
 						if (fileExtension.equals(".class")) {
 							return parseClass(url.toString(), new NoCloseInputStream(zipInputStream), entryName);
@@ -781,7 +782,7 @@ public class FindBugs implements Constants2, ExitCodes {
 	/**
 	 * File extensions that indicate an archive (zip, jar, or similar).
 	 */
-	private static final Set<String> archiveExtensionSet = new HashSet<String>();
+	static public final Set<String> archiveExtensionSet = new HashSet<String>();
 	static {
 		archiveExtensionSet.add(".jar");
 		archiveExtensionSet.add(".zip");
@@ -795,7 +796,7 @@ public class FindBugs implements Constants2, ExitCodes {
 	 * Filename URLs that do not have an explicit protocol are
 	 * assumed to be files.
 	 */
-	private static final Set<String> knownURLProtocolSet = new HashSet<String>();
+	static public final Set<String> knownURLProtocolSet = new HashSet<String>();
 	static {
 		knownURLProtocolSet.add("file");
 		knownURLProtocolSet.add("http");
@@ -955,7 +956,7 @@ public class FindBugs implements Constants2, ExitCodes {
 		createDetectors();
 
 		// Clear the repository of classes
-		clearRepository();
+		analysisContext.clearRepository();
 		
 		// Get list of files to analyze.
 		// Note that despite the name getJarFileArray(),
@@ -1042,7 +1043,7 @@ public class FindBugs implements Constants2, ExitCodes {
 		bugReporter.reportQueuedErrors();
 
 		// Free up memory for reports
-		clearRepository();
+		analysisContext.clearRepository();
 	}
 
 	/**
@@ -1128,55 +1129,35 @@ public class FindBugs implements Constants2, ExitCodes {
 
 		detectors = result.toArray(new Detector[result.size()]);
 	}
-
-	/**
-	 * Clear the Repository and update it to reflect the classpath
-	 * specified by the current project.
-	 */
-	private void clearRepository() {
-		// If the old repository backing store is a URLClassPathRepository
-		// (which it certainly should be), destroy it.
-		// This will close all underlying resources (archive files, etc.)
-		org.apache.bcel.util.Repository repos = Repository.getRepository();
-		if (repos instanceof URLClassPathRepository) {
-			((URLClassPathRepository) repos).destroy();
-		}
-		
-		// Purge repository of previous contents
-		Repository.clearCache();
-
-		// Clear InnerClassAccessMap cache.
-		InnerClassAccessMap.instance().clearCache();
-
-		// Create a URLClassPathRepository based on the current project,
-		// and make it current.
-		URLClassPathRepository repository = new URLClassPathRepository(); 
-		Repository.setRepository(repository);
-	}
 	
 	/**
 	 * Based on Project settings, set the classpath to be used
 	 * by the Repository when looking up classes.
 	 * @throws IOException
 	 */
-	private void setRepositoryClassPath(List<String> additionalAuxClasspathEntryList)
-			throws IOException {
-
-		URLClassPathRepository repository =
-			(URLClassPathRepository) Repository.getRepository();
-
+	private void setRepositoryClassPath(List<String> additionalAuxClasspathEntryList) {
 		// Set aux classpath entries
-		addCollectionToClasspath(project.getAuxClasspathEntryList(), repository);
+		addCollectionToClasspath(project.getAuxClasspathEntryList());
 		
 		// Set implicit classpath entries
-		addCollectionToClasspath(project.getImplicitClasspathEntryList(), repository);
+		addCollectionToClasspath(project.getImplicitClasspathEntryList());
 
 		// Add "extra" aux classpath entries needed to ensure that
 		// skipped classes can be referenced.
-		addCollectionToClasspath(additionalAuxClasspathEntryList, repository);
+		addCollectionToClasspath(additionalAuxClasspathEntryList);
 
 		// Add system classpath entries
-		repository.addSystemClasspathComponents();
+		String systemClassPath = ClassPath.getClassPath();
+		StringTokenizer tok = new StringTokenizer(systemClassPath, File.pathSeparator);
+		while (tok.hasMoreTokens()) {
+			String entry = tok.nextToken();
+			try {
+				analysisContext.addClasspathEntry(entry);
+			} catch (IOException e) {
+				bugReporter.logError("Warning: could not add URL "  +
+						entry + " to classpath", e);
+			}
+		}
 	}
 
 	/**
@@ -1188,12 +1169,12 @@ public class FindBugs implements Constants2, ExitCodes {
 	 * @param collection classpath entries to add
 	 * @param repository URLClassPathRepository to add the entries to
 	 */
-	private void addCollectionToClasspath(Collection<String> collection,
-			URLClassPathRepository repository) {
+	private void addCollectionToClasspath(Collection<String> collection) {
 		for (Iterator<String> i = collection.iterator(); i.hasNext(); ) {
 			String entry = i.next();
 			try {
-				repository.addURL(entry);
+				//repository.addURL(entry);
+				analysisContext.addClasspathEntry(entry);
 			} catch (IOException e) {
 				bugReporter.logError("Warning: could not add URL "  +
 					entry + " to classpath", e);
@@ -1225,7 +1206,7 @@ public class FindBugs implements Constants2, ExitCodes {
 			// Create a URL for the filename.
 			// The protocol defaults to "file" if not explicitly
 			// specified in the filename.
-			String protocol = getURLProtocol(fileName);
+			String protocol = URLClassPath.getURLProtocol(fileName);
 			if (protocol == null) {
 				protocol = "file";
 				fileName = "file:" + fileName;
@@ -1240,7 +1221,7 @@ public class FindBugs implements Constants2, ExitCodes {
 			}
 
 			// Create the ClassProducer
-			if (fileExtension != null && isArchiveExtension(fileExtension))
+			if (fileExtension != null && URLClassPath.isArchiveExtension(fileExtension))
 				classProducer = new ZipClassProducer(url, archiveWorkList, additionalAuxClasspathEntryList);
 			else if (fileExtension != null && fileExtension.equals(".class"))
 				classProducer = new SingleClassProducer(url);
@@ -1403,44 +1384,6 @@ public class FindBugs implements Constants2, ExitCodes {
 				throw new InterruptedException();
 			detectors[i].report();
 		}
-	}
-
-	/**
-	 * Get the file extension of given fileName.
-	 * @return the file extension, or null if there is no file extension
-	 */
-	static String getFileExtension(String fileName) {
-		int lastDot = fileName.lastIndexOf('.');
-		return (lastDot >= 0)
-			? fileName.substring(lastDot)
-			: null;
-	}
-
-	/**
-	 * Get the URL protocol of given URL string.
-	 * @param urlString the URL string
-	 * @return the protocol name ("http", "file", etc.), or null if there is no protocol
-	 */
-	static String getURLProtocol(String urlString) {
-		String protocol = null;
-		int firstColon = urlString.indexOf(':');
-		if (firstColon >= 0) {
-			String specifiedProtocol = urlString.substring(0, firstColon);
-			if (knownURLProtocolSet.contains(specifiedProtocol))
-				protocol = specifiedProtocol;
-		}
-		return protocol;
-	}
-
-	/**
-	 * Determine if given file extension indicates an archive file.
-	 * 
-	 * @param fileExtension the file extension (e.g., ".jar")
-	 * @return true if the file extension indicates an archive,
-	 *   false otherwise
-	 */
-	static boolean isArchiveExtension(String fileExtension) {
-		return archiveExtensionSet.contains(fileExtension);
 	}
 
 	/**

@@ -17,26 +17,25 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package edu.umd.cs.findbugs;
+package edu.umd.cs.findbugs.ba;
 
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.InputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.net.URL;
-
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import org.apache.bcel.classfile.ClassFormatException;
 import org.apache.bcel.classfile.ClassParser;
 import org.apache.bcel.classfile.JavaClass;
+
+import edu.umd.cs.findbugs.FindBugs;
 
 /**
  * A work-alike class to use instead of BCEL's ClassPath class.
@@ -260,14 +259,14 @@ public class URLClassPath implements Serializable {
 	 * @throws IOException if entry is invalid or does not exist
 	 */
 	public void addURL(String fileName) throws IOException {
-		String protocol = FindBugs.getURLProtocol(fileName);
+		String protocol = URLClassPath.getURLProtocol(fileName);
 		if (protocol == null) {
 			fileName = "file:" + fileName;
 			protocol = "file";
 		}
 		
-		String fileExtension = FindBugs.getFileExtension(fileName);
-		boolean isArchive = fileExtension != null && FindBugs.isArchiveExtension(fileExtension);
+		String fileExtension = URLClassPath.getFileExtension(fileName);
+		boolean isArchive = fileExtension != null && URLClassPath.isArchiveExtension(fileExtension);
 		
 		Entry entry;
 		if (protocol.equals("file")) {
@@ -395,6 +394,44 @@ public class URLClassPath implements Serializable {
 			Entry entry = i.next();
 			entry.close();
 		}
+	}
+
+	/**
+	 * Get the URL protocol of given URL string.
+	 * @param urlString the URL string
+	 * @return the protocol name ("http", "file", etc.), or null if there is no protocol
+	 */
+	public static String getURLProtocol(String urlString) {
+		String protocol = null;
+		int firstColon = urlString.indexOf(':');
+		if (firstColon >= 0) {
+			String specifiedProtocol = urlString.substring(0, firstColon);
+			if (FindBugs.knownURLProtocolSet.contains(specifiedProtocol))
+				protocol = specifiedProtocol;
+		}
+		return protocol;
+	}
+
+	/**
+	 * Get the file extension of given fileName.
+	 * @return the file extension, or null if there is no file extension
+	 */
+	public static String getFileExtension(String fileName) {
+		int lastDot = fileName.lastIndexOf('.');
+		return (lastDot >= 0)
+			? fileName.substring(lastDot)
+			: null;
+	}
+
+	/**
+	 * Determine if given file extension indicates an archive file.
+	 * 
+	 * @param fileExtension the file extension (e.g., ".jar")
+	 * @return true if the file extension indicates an archive,
+	 *   false otherwise
+	 */
+	public static boolean isArchiveExtension(String fileExtension) {
+		return FindBugs.archiveExtensionSet.contains(fileExtension);
 	}
 }
 

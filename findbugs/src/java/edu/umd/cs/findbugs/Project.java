@@ -44,6 +44,7 @@ import java.util.Map;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
+import edu.umd.cs.findbugs.ba.URLClassPath;
 import edu.umd.cs.findbugs.xml.XMLAttributeList;
 import edu.umd.cs.findbugs.xml.XMLOutput;
 import edu.umd.cs.findbugs.xml.XMLOutputUtil;
@@ -359,7 +360,7 @@ public class Project implements XMLWriteable {
 		 * Create a URL from a filename specified in the project file.
 		 */
 		public URL createURL(String fileName) throws MalformedURLException {
-			String protocol = FindBugs.getURLProtocol(fileName);
+			String protocol = URLClassPath.getURLProtocol(fileName);
 			if (protocol == null) {
 				fileName = "file:" + fileName;
 			}
@@ -799,7 +800,7 @@ public class Project implements XMLWriteable {
 	 */
 	private static String makeAbsoluteCWD(String fileName) {
 		File file = new File(fileName);
-		boolean hasProtocol = (FindBugs.getURLProtocol(fileName) != null);
+		boolean hasProtocol = (URLClassPath.getURLProtocol(fileName) != null);
 		if (!hasProtocol && !file.isAbsolute())
 			fileName = file.getAbsolutePath();
 		return fileName;

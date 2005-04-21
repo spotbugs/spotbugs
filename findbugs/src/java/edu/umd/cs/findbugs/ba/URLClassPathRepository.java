@@ -20,17 +20,16 @@
 /*
  * Created on Sep 20, 2004
  */
-package edu.umd.cs.findbugs;
+package edu.umd.cs.findbugs.ba;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.StringTokenizer;
 
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.util.ClassPath;
 import org.apache.bcel.util.Repository;
+
 
 /**
  * BCEL Repository implementation that uses an URLClassPath
@@ -72,24 +71,6 @@ public class URLClassPathRepository implements Repository {
 	 */
 	public void addURL(String fileName) throws IOException {
 		urlClassPath.addURL(fileName);
-	}
-
-	/**
-	 * Add components of system classpath.
-	 * @throws IOException
-	 */
-	public void addSystemClasspathComponents() throws IOException {
-		String systemClassPath = ClassPath.getClassPath();
-		StringTokenizer tok = new StringTokenizer(systemClassPath, File.pathSeparator);
-		while (tok.hasMoreTokens()) {
-			String entryName = tok.nextToken();
-			try {
-				urlClassPath.addURL(entryName);
-			}
-			catch (IOException e) {
-				System.err.println("Warning: couldn't add path to classpath: " + entryName);
-			}
-		}
 	}
 	
 	/* (non-Javadoc)

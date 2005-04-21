@@ -25,6 +25,7 @@ import edu.umd.cs.findbugs.ba.type.BCELRepositoryClassResolver;
 import edu.umd.cs.findbugs.ba.type.TypeRepository;
 */
 
+import java.io.IOException;
 import java.util.BitSet;
 import java.util.Collections;
 import java.util.HashMap;
@@ -32,9 +33,11 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.JavaClass;
 
 import edu.umd.cs.findbugs.ba.ch.ClassHierarchyGraph;
+
 
 /**
  * A context for analysis of a complete project.
@@ -48,8 +51,8 @@ public class AnalysisContext implements AnalysisFeatures {
 	private SourceFinder sourceFinder;
 	private ClassContextCache classContextCache;
 	private ClassHierarchyGraph classHierarchyGraph;
-	public Map<Object,Object> analysisLocals = 
-		Collections.synchronizedMap(new HashMap<Object,Object>());
+	public Map analysisLocals = 
+		Collections.synchronizedMap(new HashMap());
 	private BitSet boolPropertySet;
 
     /*
@@ -123,6 +126,40 @@ public class AnalysisContext implements AnalysisFeatures {
 	 */
 	public SourceFinder getSourceFinder() {
 		return sourceFinder;
+	}
+	
+	/**
+	 * Clear the BCEL Repository in preparation for analysis.
+	 */
+	public void clearRepository() {
+		// If the old repository backing store is a URLClassPathRepository
+		// (which it certainly should be), destroy it.
+		// This will close all underlying resources (archive files, etc.)
+		org.apache.bcel.util.Repository repos = Repository.getRepository();
+		if (repos instanceof URLClassPathRepository) {
+			((URLClassPathRepository) repos).destroy();
+		}
+		
+		// Purge repository of previous contents
+		Repository.clearCache();
+
+		// Clear InnerClassAccessMap cache.
+		InnerClassAccessMap.instance().clearCache();
+
+		// Create a URLClassPathRepository and make it current.
+		URLClassPathRepository repository = new URLClassPathRepository(); 
+		Repository.setRepository(repository);
+	}
+	
+	/**
+	 * Add an entry to the Repository's classpath.
+	 * 
+	 * @param url the classpath entry URL
+	 * @throws IOException
+	 */
+	public void addClasspathEntry(String url) throws IOException {
+		URLClassPathRepository repos = (URLClassPathRepository) Repository.getRepository();
+		repos.addURL(url);
 	}
 
 	/**
