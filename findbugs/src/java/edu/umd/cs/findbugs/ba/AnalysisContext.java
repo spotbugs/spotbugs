@@ -48,8 +48,8 @@ public class AnalysisContext implements AnalysisFeatures {
 	private SourceFinder sourceFinder;
 	private ClassContextCache classContextCache;
 	private ClassHierarchyGraph classHierarchyGraph;
-	public Map analysisLocals = 
-		Collections.synchronizedMap(new HashMap());
+	public Map<Object,Object> analysisLocals = 
+		Collections.synchronizedMap(new HashMap<Object,Object>());
 	private BitSet boolPropertySet;
 
     /*
