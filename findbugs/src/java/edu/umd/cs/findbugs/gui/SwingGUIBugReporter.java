@@ -30,6 +30,7 @@ public class SwingGUIBugReporter extends TextUIBugReporter {
 	private final AnalysisRun analysisRun;
 	private SortedBugCollection bugCollection;
 	private AnalysisErrorDialog errorDialog;
+	private int errorCount;
 	
 	/**
 	 * Constructor.
@@ -45,6 +46,10 @@ public class SwingGUIBugReporter extends TextUIBugReporter {
 		return bugCollection;
 	}
 	
+	public boolean errorsOccurred() {
+		return errorCount > 0;
+	}
+	
 	public AnalysisErrorDialog getErrorDialog() {
 		return errorDialog;
 	}
@@ -53,12 +58,14 @@ public class SwingGUIBugReporter extends TextUIBugReporter {
 	}
 	
 	public void reportMissingClass(ClassNotFoundException ex) {
+		++errorCount;
 		super.reportMissingClass(ex);
 		String message = getMissingClassName(ex);
 		bugCollection.addMissingClass(message);
 	}
 	
 	public void logError(String message) {
+		++errorCount;
 		analysisRun.getFrame().getLogger().logMessage(ConsoleLogger.WARNING, message);
 		super.logError(message);
 		bugCollection.addError(message);

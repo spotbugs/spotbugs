@@ -143,7 +143,7 @@ public class AnalysisRun {
 	 * Report any errors that may have occurred during analysis.
 	 */
 	public void reportAnalysisErrors() {
-		if (reporter.getErrorDialog() != null) {
+		if (reporter.errorsOccurred()) {
 			reporter.getErrorDialog().generateContents();
 			reporter.getErrorDialog().setSize(750, 520);
 			reporter.getErrorDialog().setLocationRelativeTo(null); // center the dialog
