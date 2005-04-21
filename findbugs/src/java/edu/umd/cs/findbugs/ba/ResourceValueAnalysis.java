@@ -88,17 +88,19 @@ public class ResourceValueAnalysis <Resource> extends FrameDataflowAnalysis<Reso
 				tmpFact.setStatus(ResourceValueFrame.OPEN_ON_EXCEPTION_PATH);
 			}
 
-			// Special case: if the instruction that closes the resource
-			// throws an exception, we consider the resource to be successfully
-			// closed anyway.
-			InstructionHandle exceptionThrower = source.getExceptionThrower();
-			BasicBlock fallThroughSuccessor = cfg.getSuccessorWithEdgeType(source, FALL_THROUGH_EDGE);
-			if (DEBUG && fallThroughSuccessor == null) System.out.println("Null fall through successor!");
-			if (fallThroughSuccessor != null &&
-			        resourceTracker.isResourceClose(fallThroughSuccessor, exceptionThrower, methodGen.getConstantPool(), resource, fact)) {
-				tmpFact = modifyFrame(fact, tmpFact);
-				tmpFact.setStatus(ResourceValueFrame.CLOSED);
-				if (DEBUG) System.out.print("(failed attempt to close)");
+			if (fact.isValid()) {
+				// Special case: if the instruction that closes the resource
+				// throws an exception, we consider the resource to be successfully
+				// closed anyway.
+				InstructionHandle exceptionThrower = source.getExceptionThrower();
+				BasicBlock fallThroughSuccessor = cfg.getSuccessorWithEdgeType(source, FALL_THROUGH_EDGE);
+				if (DEBUG && fallThroughSuccessor == null) System.out.println("Null fall through successor!");
+				if (fallThroughSuccessor != null &&
+						resourceTracker.isResourceClose(fallThroughSuccessor, exceptionThrower, methodGen.getConstantPool(), resource, fact)) {
+					tmpFact = modifyFrame(fact, tmpFact);
+					tmpFact.setStatus(ResourceValueFrame.CLOSED);
+					if (DEBUG) System.out.print("(failed attempt to close)");
+				}
 			}
 
 			if (dest.isExceptionHandler()) {
