@@ -76,6 +76,9 @@ public class ClassContext implements AnalysisFeatures {
 	private static final boolean TIME_ANALYSES = Boolean.getBoolean("classContext.timeAnalyses");
 
 	private static final boolean DEBUG_CFG = Boolean.getBoolean("classContext.debugCFG");
+	
+	private static final boolean MODEL_INSTANCEOF =
+		Boolean.getBoolean("classContext.modelInstanceof");
 
 	/* ----------------------------------------------------------------------
 	 * Helper classes
@@ -400,7 +403,12 @@ public class ClassContext implements AnalysisFeatures {
 
 			        TypeAnalysis typeAnalysis =
 			                new TypeAnalysis(methodGen, cfg, dfs, getLookupFailureCallback(), exceptionSetFactory);
-			        TypeDataflow typeDataflow = new TypeDataflow(cfg, typeAnalysis);
+			        
+					if (MODEL_INSTANCEOF) {
+						typeAnalysis.setValueNumberAnalysis(getValueNumberDataflow(method));
+					}
+					
+					TypeDataflow typeDataflow = new TypeDataflow(cfg, typeAnalysis);
 			        typeDataflow.execute();
 
 			        return typeDataflow;

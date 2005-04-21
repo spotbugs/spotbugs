@@ -36,6 +36,8 @@ import org.apache.bcel.generic.*;
  */
 public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type, TypeFrame>
         implements Constants, Debug {
+			
+	private Type instanceOfType;
 
 	/**
 	 * Constructor.
@@ -48,6 +50,17 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 
 	public Type getDefaultValue() {
 		return TypeFrame.getBottomType();
+	}
+	
+	/**
+	 * Get the type of the most recent instanceof instruction modeled.
+	 * The TypeAnalysis may use this to get more precise types in
+	 * the resulting frame.
+	 * 
+	 * @return the Type checked by the most recent instanceof instruction
+	 */
+	public Type getInstanceOfType() {
+		return instanceOfType;
 	}
 
 	/**
@@ -197,6 +210,10 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 	public void visitINSTANCEOF(INSTANCEOF obj) {
 		consumeStack(obj);
 		pushValue(Type.INT);
+		
+		// The TypeAnalysis may use this type to make other values
+		// in the resulting frame more precise
+		instanceOfType = obj.getType(getCPG());
 	}
 
 	public void visitFCMPL(FCMPL obj) {
