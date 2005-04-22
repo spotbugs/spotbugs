@@ -13,23 +13,20 @@ public class ClassHierarchyGraph
 	public ClassHierarchyGraph() {
 		this.vertexMap = new HashMap<String, ClassHierarchyGraphVertex>();
 	}
+	
+	public ClassHierarchyGraphVertex lookupVertex(String className) {
+		return vertexMap.get(className);
+	}
 			
-	public ClassHierarchyGraphVertex getVertex(String className) {
-		ClassHierarchyGraphVertex vertex = vertexMap.get(className);
+	public ClassHierarchyGraphVertex addVertex(
+			String className,
+			ClassHierarchyGraphVertexType vertexType) {
+		ClassHierarchyGraphVertex vertex = lookupVertex(className);
 		if (vertex == null) {
-			vertex = new ClassHierarchyGraphVertex(className);
+			vertex = new ClassHierarchyGraphVertex(className, vertexType);
 			vertexMap.put(className, vertex);
 		}
 		return vertex;
-	}
-
-	public ClassHierarchyGraphEdge addInheritanceEdge(
-			ClassHierarchyGraphVertex subtype,
-			ClassHierarchyGraphVertex supertype,
-			ClassHierarchyGraphEdgeType edgeType) {
-		ClassHierarchyGraphEdge edge = createEdge(subtype, supertype);
-		edge.setEdgeType(edgeType);
-		return edge;
 	}
 	
 	//@Override

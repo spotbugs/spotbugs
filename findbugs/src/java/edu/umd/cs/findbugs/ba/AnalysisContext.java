@@ -30,6 +30,7 @@ import java.util.BitSet;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -37,6 +38,8 @@ import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.JavaClass;
 
 import edu.umd.cs.findbugs.ba.ch.ClassHierarchyGraph;
+import edu.umd.cs.findbugs.ba.ch.ClassHierarchyGraphVertex;
+import edu.umd.cs.findbugs.ba.ch.ClassHierarchyGraphVertexType;
 
 
 /**
@@ -160,6 +163,78 @@ public class AnalysisContext implements AnalysisFeatures {
 	public void addClasspathEntry(String url) throws IOException {
 		URLClassPathRepository repos = (URLClassPathRepository) Repository.getRepository();
 		repos.addURL(url);
+	}
+	
+	public void addApplicationClassToRepository(JavaClass appClass) {
+		Repository.addClass(appClass);
+	}
+	
+	private static class WorkListItem {
+		private String className;
+		private ClassHierarchyGraphVertex subType;
+		private boolean application;
+		
+		WorkListItem(JavaClass javaClass) {
+			this.className = javaClass.getClassName();
+			this.subType = null;
+			this.application = true;
+		}
+		
+		WorkListItem(String className, ClassHierarchyGraphVertex subType) {
+			this.className = className;
+			this.subType = subType;
+			this.application = false;
+		}
+		
+		public String getClassName() {
+			return className;
+		}
+		
+		public ClassHierarchyGraphVertex getSubType() {
+			return subType;
+		}
+		
+		public boolean isApplication() {
+			return application;
+		}
+	}
+
+	/**
+	 * FIXME: not finished yet
+	 * @param appClass
+	 */
+	public void addToClassHierarchyGraph(JavaClass appClass) {
+		LinkedList<WorkListItem> workList = new LinkedList<WorkListItem>();
+		workList.add(new WorkListItem(appClass));
+		
+		while (!workList.isEmpty()) {
+			WorkListItem item = workList.removeFirst();
+			ClassHierarchyGraphVertex vertex = classHierarchyGraph.lookupVertex(item.getClassName());
+			
+			// Figure out whether or not this is an application class,
+			// and whether it can be found in the repository or on the classpath.
+			if (item.isApplication()) {
+				vertex.setApplication(true);
+				vertex.setMissing(false);
+			} else {
+				vertex.setApplication(false);
+				try {
+					JavaClass javaClass = Repository.lookupClass(item.getClassName());
+					vertex.setMissing(false);
+				} catch (ClassNotFoundException e) {
+					lookupFailureCallback.reportMissingClass(e);
+					vertex.setMissing(true);
+				}
+			}
+			
+			// Create inheritance edge
+			if (item.getSubType() != null) {
+				classHierarchyGraph.createEdge(item.getSubType(), vertex);
+			}
+		}
+	}
+
+	private void addToWorkList(LinkedList<WorkListItem> workList, String superclassName) {
 	}
 
 	/**
