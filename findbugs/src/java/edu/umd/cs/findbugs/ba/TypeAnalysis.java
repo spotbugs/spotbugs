@@ -389,17 +389,21 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 				Type checkedType = fact.getValue(i);
 				if (!(checkedType instanceof ReferenceType))
 					continue;
-				
+
+				tmpFact = modifyFrame(fact, tmpFact);
+
 				// Only refine the type if the cast is a downcast.
+				// Otherwise, just set it to TOP.
 				try {
-					if (!Hierarchy.isSubtype((ReferenceType) instanceOfType, (ReferenceType) checkedType))
+					if (!Hierarchy.isSubtype((ReferenceType) instanceOfType, (ReferenceType) checkedType)) {
+						tmpFact.setValue(i, TopType.instance());
 						continue;
+					}
 				} catch (ClassNotFoundException e) {
 					lookupFailureCallback.reportMissingClass(e);
 					throw new DataflowAnalysisException("Missing class", e);
 				}
 				
-				tmpFact = modifyFrame(fact, tmpFact);
 				tmpFact.setValue(i, instanceOfType);
 			}
 		}
