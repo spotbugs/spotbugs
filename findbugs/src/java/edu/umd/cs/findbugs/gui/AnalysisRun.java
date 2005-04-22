@@ -144,7 +144,6 @@ public class AnalysisRun {
 	 */
 	public void reportAnalysisErrors() {
 		if (reporter.errorsOccurred()) {
-			reporter.getErrorDialog().generateContents();
 			reporter.getErrorDialog().setSize(750, 520);
 			reporter.getErrorDialog().setLocationRelativeTo(null); // center the dialog
 			reporter.getErrorDialog().setVisible(true);

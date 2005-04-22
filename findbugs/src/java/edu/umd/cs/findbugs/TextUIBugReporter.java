@@ -145,7 +145,15 @@ public abstract class TextUIBugReporter extends AbstractBugReporter {
 		emitLine("\t" + message);
 	}
 	
+	/**
+	 * Emit one line of the error message report.
+	 * By default, error messages are printed to System.err.
+	 * Subclasses may override.
+	 * 
+	 * @param line one line of the error report
+	 */
 	protected void emitLine(String line) {
+		line = line.replaceAll("\t", "  ");
 		System.err.println(line);
 	}
 }

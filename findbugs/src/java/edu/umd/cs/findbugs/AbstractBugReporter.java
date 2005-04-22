@@ -32,16 +32,22 @@ public abstract class AbstractBugReporter implements BugReporter {
 	private static final boolean DEBUG_MISSING_CLASSES = Boolean.getBoolean("findbugs.debug.missingclasses");
 	
 	private static class Error {
+		private int sequence;
 		private String message;
 		private Throwable cause;
 		
-		public Error(String message) {
-			this.message = message;
+		public Error(int sequence, String message) {
+			this(sequence, message, null);
 		}
 		
-		public Error(String message, Throwable cause) {
+		public Error(int sequence, String message, Throwable cause) {
+			this.sequence = sequence;
 			this.message = message;
 			this.cause = cause;
+		}
+		
+		public int getSequence() {
+			return sequence;
 		}
 		
 		public String getMessage() {
@@ -51,6 +57,28 @@ public abstract class AbstractBugReporter implements BugReporter {
 		public Throwable getCause() {
 			return cause;
 		}
+		
+		public int hashCode() {
+			int hashCode = message.hashCode();
+			if (cause != null) {
+				hashCode += 1009 * cause.hashCode();
+			}
+			return hashCode;
+		}
+		
+		//@Override
+		public boolean equals(Object obj) {
+			if (obj == null || obj.getClass() != this.getClass())
+				return false;
+			Error other = (Error) obj;
+			if (!message.equals(other.message))
+				return false;
+			if (this.cause == other.cause)
+				return true;
+			if (this.cause == null || other.cause == null)
+				return false;
+			return this.cause.equals(other.cause);
+		}
 	}
 
 	private FindBugs engine;
@@ -59,9 +87,10 @@ public abstract class AbstractBugReporter implements BugReporter {
 	private boolean analysisUnderway, relaxed;
 	private HashSet<String> missingClassMessageSet = new HashSet<String>();
 	private LinkedList<String> missingClassMessageList = new LinkedList<String>();
-	private LinkedList<Error> errorMessageList = new LinkedList<Error>();
+	private Set<Error> errorSet = new HashSet<Error>();
 	private List<BugReporterObserver> observerList = new LinkedList<BugReporterObserver>();
 	private ProjectStats projectStats = new ProjectStats();
+	private int errorCount;
 
 	public void setEngine(FindBugs engine) {
 		this.engine = engine;
@@ -138,19 +167,30 @@ public abstract class AbstractBugReporter implements BugReporter {
 		if (verbosityLevel == SILENT)
 			return;
 
-		errorMessageList.add(new Error(message));
+		Error error = new Error(errorCount++, message);
+		if (!errorSet.contains(error))
+			errorSet.add(error);
 	}
 	
 	public void logError(String message, Throwable e) {
 		if (verbosityLevel == SILENT)
 			return;
 		
-		errorMessageList.add(new Error(message, e));
+		Error error = new Error(errorCount++, message, e);
+		if (!errorSet.contains(error))
+			errorSet.add(error);
 	}
 
 	public void reportQueuedErrors() {
-		for (Iterator<Error> i = errorMessageList.iterator(); i.hasNext(); ) {
-			Error error = i.next();
+		// Report unique errors in order of their sequence
+		Error[] errorList = errorSet.toArray(new Error[errorSet.size()]);
+		Arrays.sort(errorList, new Comparator<Error>() {
+			public int compare(Error o1, Error o2) {
+				return o1.getSequence() - o2.getSequence();
+			}
+		});
+		for (int i = 0; i < errorList.length; ++i) {
+			Error error = errorList[i];
 			reportAnalysisError(new AnalysisError(error.getMessage(), error.getCause()));
 		}
 		

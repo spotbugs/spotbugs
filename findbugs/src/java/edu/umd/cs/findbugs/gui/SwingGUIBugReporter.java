@@ -95,6 +95,7 @@ public class SwingGUIBugReporter extends TextUIBugReporter {
 	
 	//@Override
 	protected void emitLine(String line) {
+		line = line.replaceAll("\t", "  ");
 		errorDialog.addLine(line);
 	}
 }
