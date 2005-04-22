@@ -390,10 +390,9 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 				if (!(checkedType instanceof ReferenceType))
 					continue;
 				
-				// Make sure we don't lose information if the instanceof type
-				// is a supertype of the checked type.
+				// Only refine the type if the cast is a downcast.
 				try {
-					if (Hierarchy.isSubtype((ReferenceType) checkedType, (ReferenceType) instanceOfType))
+					if (!Hierarchy.isSubtype((ReferenceType) instanceOfType, (ReferenceType) checkedType))
 						continue;
 				} catch (ClassNotFoundException e) {
 					lookupFailureCallback.reportMissingClass(e);
