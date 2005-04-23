@@ -114,14 +114,12 @@ public class FindCircularDependencies extends BytecodeScanningDetector implement
 		boolean changed = true;
 		while (changed) {
 			changed = false;
-			Iterator<Map.Entry<String, Set<String>>> it = dependencyGraph.entrySet().iterator();
+			Iterator<Set<String>> it = dependencyGraph.values().iterator();
 			while (it.hasNext()) {
-				Map.Entry<String, Set<String>> entry = it.next();
-				String clsName = entry.getKey();
-				Set<String> dependencies = entry.getValue();
+				Set<String> dependencies = it.next();
 				
 				boolean foundClass = false;
-				Iterator dit = dependencies.iterator();
+				Iterator<String> dit = dependencies.iterator();
 				while (dit.hasNext()) {
 					foundClass = dependencyGraph.containsKey(dit.next());
 					if (!foundClass) {

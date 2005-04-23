@@ -93,7 +93,6 @@ public class FindBadForLoop extends BytecodeScanningDetector implements Constant
 				int offset = offset1 << 8 | offset2;
 			 	int backTarget = branchTarget - 3 + offset;
 			 	int reg = getCodeByte(branchTarget - 5);
-			 	int delta = getCodeByte(branchTarget - 4);
 				int testLineNumber 
 					= lineNumbers.getSourceLine(getPC());
 				int incLineNumber 

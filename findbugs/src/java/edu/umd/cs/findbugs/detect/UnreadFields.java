@@ -422,8 +422,6 @@ public class UnreadFields extends BytecodeScanningDetector implements Constants2
 					+ "\t" + f.isStatic()
 					);
 			}
-			boolean allUpperCase =
-			        fieldName.equals(fieldName.toUpperCase());
 			if (superReadFields.contains(f.getFieldName())) continue;
 			if (!fieldName.startsWith("this$")
 			        && !fieldName.startsWith("this+")
