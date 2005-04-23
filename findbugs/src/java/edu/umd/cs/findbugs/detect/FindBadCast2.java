@@ -216,7 +216,7 @@ public class FindBadCast2 implements Detector {
 					.addClass(refName.replace("/","."))
 					.addClass(castName.replace("/","."))
 					);
-			else {
+			else if (isCast) {
 			int priority = NORMAL_PRIORITY;
 			
 			 if (downcast)
