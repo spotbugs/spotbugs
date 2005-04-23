@@ -767,6 +767,15 @@ This detector looks for bad casts of object references.
 ]]>
     </Details>
   </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.FindBadCast2">
+    <Details>
+<![CDATA[
+<p>
+This detector looks for bad casts of object references using data flow analysis.
+</p>
+]]>
+    </Details>
+  </Detector>
   
   <Detector class="edu.umd.cs.findbugs.detect.BadSyntaxForRegularExpression">
     <Details>
@@ -3387,6 +3396,22 @@ This cast will always throw a ClassCastException.
 ]]>
     </Details>
   </BugPattern>
+
+  <BugPattern type="BC_IMPOSSIBLE_INSTANCEOF">
+    <ShortDescription>instanceof will always return false</ShortDescription>
+    <LongDescription>instanceof will always return false in {1}, since a {3} can't be a {4}</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+This instanceof test will always return false. Although this is safe, make sure it isn't
+an indication of some misunderstanding or some other logic error.
+</p>
+]]>
+    </Details>
+  </BugPattern>
+
+
+
   <BugPattern type="BC_UNCONFIRMED_CAST">
     <ShortDescription>Unchecked/unconfirmed cast</ShortDescription>
     <LongDescription>Unchecked/unconfirmed cast from {3} to class {4} in {1}</LongDescription>

@@ -100,6 +100,10 @@ public abstract class TextUIBugReporter extends AbstractBugReporter {
 				outputStream.print(categoryAbbrev);
 		}
 
+		if (false) {
+		outputStream.print(bugInstance.getType());
+		outputStream.print(" ");
+		}
 		SourceLineAnnotation line =
 		        bugInstance.getPrimarySourceLineAnnotation();
 		if (line == null)

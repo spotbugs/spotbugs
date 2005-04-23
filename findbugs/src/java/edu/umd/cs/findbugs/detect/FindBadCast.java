@@ -24,6 +24,7 @@ import java.util.Set;
 import java.util.HashSet;
 
 import org.apache.bcel.Repository;
+import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Constant;
 import org.apache.bcel.classfile.ConstantClass;
@@ -75,6 +76,12 @@ public class FindBadCast extends BytecodeScanningDetector implements Constants2,
 	public void visit(Method obj) {
 	}
 
+	/*
+        public boolean prescreen(ClassContext classContext, Method method) {
+                BitSet bytecodeSet = classContext.getBytecodeSet(method);
+                return bytecodeSet.get(Constants.CHECKCAST) || bytecodeSet.get(Constants.INSTANCEOF);
+        }
+	*/
 	private int parameters;
 	OpcodeStack stack = new OpcodeStack();
 	public void visit(Code obj) {
@@ -95,7 +102,9 @@ public class FindBadCast extends BytecodeScanningDetector implements Constants2,
 
 
 		if (stack.getStackDepth() > 0) {
-		if (seen == CHECKCAST) {
+		if (seen == CHECKCAST || seen == INSTANCEOF) {
+		if (DEBUG) 
+			System.out.println(" ... checking ... ");
 		OpcodeStack.Item it = stack.getStackItem(0);
 		String signature = it.getSignature();
 		if (signature.length() > 0 && signature.charAt(0) == 'L')
@@ -108,29 +117,13 @@ public class FindBadCast extends BytecodeScanningDetector implements Constants2,
 		if (signature.length() > 0 
 			&& !signature.equals("java/lang/Object") 
 			&& !signature.equals(to)) {
-		   if (concreteCollectionClasses.contains(to)
-					&& !castTo.contains(to)) 
-  bugReporter.reportBug(new BugInstance(this, "BC_BAD_CAST_TO_CONCRETE_COLLECTION", NORMAL_PRIORITY)
-                                .addClassAndMethod(this)
-                                .addSourceLine(this)
-                                .addClass(signatureDot)
-                                .addClass(toDot)
-				);
-		   if (abstractCollectionClasses.contains(to)
-			&& (signature.equals("java/util/Collection") 
-			   ||  signature.equals("java/lang/Iterable") )
-					&& !castTo.contains(to)) 
-  bugReporter.reportBug(new BugInstance(this, "BC_BAD_CAST_TO_ABSTRACT_COLLECTION", NORMAL_PRIORITY)
-                                .addClassAndMethod(this)
-                                .addSourceLine(this)
-                                .addClass(signatureDot)
-                                .addClass(toDot)
-				);
 
 		     try {
 			JavaClass toClass = Repository.lookupClass(toDot);
 			JavaClass signatureClass 
 				= Repository.lookupClass(signatureDot);
+		if (DEBUG) 
+			System.out.println(" ... checking ...... ");
 		     if  ( !castTo.contains(to)
 				 && !Repository.instanceOf( signatureClass, toClass)) {
 			if (
@@ -140,12 +133,14 @@ public class FindBadCast extends BytecodeScanningDetector implements Constants2,
 			 || signatureClass.isFinal()
 			 || toClass.isFinal()
 			))
-  bugReporter.reportBug(new BugInstance(this, "BC_IMPOSSIBLE_CAST", HIGH_PRIORITY)
+  bugReporter.reportBug(new BugInstance(this, 
+				seen == CHECKCAST ? "BC_IMPOSSIBLE_CAST"  : "BC_IMPOSSIBLE_INSTANCEOF", 
+				seen == CHECKCAST ? HIGH_PRIORITY : NORMAL_PRIORITY)
                                 .addClassAndMethod(this)
                                 .addSourceLine(this)
                                 .addClass(signatureDot)
                                 .addClass(toDot));
-		     else {
+		     else if (seen == CHECKCAST){
 			int priority = NORMAL_PRIORITY;
 			if (DEBUG)  {
 			System.out.println("Checking BC in " + getFullyQualifiedMethodName());
@@ -167,7 +162,11 @@ public class FindBadCast extends BytecodeScanningDetector implements Constants2,
 				|| signatureClass.isAbstract())) priority++;
 			if (DEBUG)
 				System.out.println(" priority: " + priority);
-			 if (abstractCollectionClasses.contains(to))
+		   	if (concreteCollectionClasses.contains(signature)
+			    || abstractCollectionClasses.contains(signature))
+				priority--;
+		   	if (concreteCollectionClasses.contains(to)
+			    || abstractCollectionClasses.contains(to))
 				priority--;
 			if (DEBUG)
 				System.out.println(" priority: " + priority);
@@ -187,12 +186,20 @@ public class FindBadCast extends BytecodeScanningDetector implements Constants2,
 				System.out.println(" priority: " + priority);
 			if (priority < HIGH_PRIORITY)
 				priority = HIGH_PRIORITY;
-			if (priority <= LOW_PRIORITY)
-  bugReporter.reportBug(new BugInstance(this, "BC_UNCONFIRMED_CAST", priority)
+			if (priority <= LOW_PRIORITY) {
+				String bug =  "BC_UNCONFIRMED_CAST";
+				if (concreteCollectionClasses.contains(to))
+				  bug =  "BC_BAD_CAST_TO_CONCRETE_COLLECTION";
+				else if (abstractCollectionClasses.contains(to)
+					&& (signature.equals("java/util/Collection") 
+					   ||  signature.equals("java/lang/Iterable") ))
+				  bug = "BC_BAD_CAST_TO_ABSTRACT_COLLECTION";
+				  bugReporter.reportBug(new BugInstance(this, bug, priority)
                                 .addClassAndMethod(this)
                                 .addSourceLine(this)
                                 .addClass(signatureDot)
                                 .addClass(toDot));
+				}
 			}
 
 		     }
@@ -202,7 +209,7 @@ public class FindBadCast extends BytecodeScanningDetector implements Constants2,
 				}
 			}
 		}
-		else if (seen == INSTANCEOF) {
+		if (seen == INSTANCEOF) {
 			String to = getClassConstantOperand();
 			castTo.add(to);
 			}
