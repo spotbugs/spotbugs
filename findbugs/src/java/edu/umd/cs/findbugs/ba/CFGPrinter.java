@@ -60,7 +60,7 @@ public class CFGPrinter {
 			}
 			CodeExceptionGen exceptionGen = bb.getExceptionGen();
 			if (exceptionGen != null) {
-				System.out.println("	CATCHES " + exceptionGen.getCatchType());
+				out.println("	CATCHES " + exceptionGen.getCatchType());
 			}
 			Iterator<InstructionHandle> j = instructionIterator(bb);
 			while (j.hasNext()) {
