@@ -18,6 +18,7 @@ import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.MethodGen;
 import org.apache.bcel.generic.Type;
 
+import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.Detector;
@@ -107,7 +108,30 @@ public class FindBadCast2 implements Detector {
 		 if (DEBUG) {
 			System.out.println("Checking " + methodName);
 			}
-		
+	
+		Set<SourceLineAnnotation> haveInstanceOf = new HashSet<SourceLineAnnotation>();	
+		Set<SourceLineAnnotation> haveCast = new HashSet<SourceLineAnnotation>();	
+		Set<SourceLineAnnotation> haveMultipleInstanceOf = new HashSet<SourceLineAnnotation>();	
+		Set<SourceLineAnnotation> haveMultipleCast = new HashSet<SourceLineAnnotation>();	
+		for (Iterator<Location> i = cfg.locationIterator(); i.hasNext(); ) {
+			Location location = i.next();
+			InstructionHandle handle = location.getHandle();
+			int pc = handle.getPosition();
+			Instruction ins = handle.getInstruction();
+
+			if (!(ins instanceof CHECKCAST) && !(ins instanceof INSTANCEOF))
+				continue;
+
+			SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation.fromVisitedInstruction(methodGen, sourceFile, handle);
+			if (ins instanceof CHECKCAST) {
+				if (!haveCast.add(sourceLineAnnotation))
+				   haveMultipleCast.add(sourceLineAnnotation);
+				}
+			else {
+				if (!haveInstanceOf.add(sourceLineAnnotation))
+				   haveMultipleInstanceOf.add(sourceLineAnnotation);
+				}
+			}
 		for (Iterator<Location> i = cfg.locationIterator(); i.hasNext(); ) {
 			Location location = i.next();
 			InstructionHandle handle = location.getHandle();
@@ -183,6 +207,13 @@ public class FindBadCast2 implements Detector {
 				continue;
 				}
 
+			SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation.fromVisitedInstruction(methodGen, sourceFile, handle);
+
+			if (isCast && haveMultipleCast.contains(sourceLineAnnotation) 
+			    || !isCast && haveMultipleInstanceOf.contains(sourceLineAnnotation)) {
+				// skip; might be due to JSR inlining
+				continue;
+				}
 			String castName = castSig2.substring(1,castSig2.length()-1)
 				.replace('/','.');
 			String refName = refSig2.substring(1,refSig2.length()-1)
@@ -194,7 +225,17 @@ public class FindBadCast2 implements Detector {
 			JavaClass castJavaClass = Repository.lookupClass(castName);
 			JavaClass refJavaClass = Repository.lookupClass(refName);
 			boolean upcast = Repository.instanceOf( refJavaClass, castJavaClass);
-			if (!upcast) {
+			if (upcast) {
+			if (!isCast)
+			  bugReporter.reportBug(new BugInstance(this,
+                                "BC_VACUOUS_INSTANCEOF",
+                                NORMAL_PRIORITY)
+				  .addClassAndMethod(methodGen, sourceFile)
+				  .addSourceLine(sourceLineAnnotation)
+					.addClass(refName.replace("/","."))
+					.addClass(castName.replace("/","."))
+					);
+			} else {
 			boolean downcast = 
 				Repository.instanceOf( castJavaClass, refJavaClass);
 			boolean completeInformation = 
@@ -212,7 +253,7 @@ public class FindBadCast2 implements Detector {
                                 isCast  ? "BC_IMPOSSIBLE_CAST"  : "BC_IMPOSSIBLE_INSTANCEOF",
                                 isCast  ? HIGH_PRIORITY : NORMAL_PRIORITY)
 				  .addClassAndMethod(methodGen, sourceFile)
-				  .addSourceLine(methodGen, sourceFile, location.getHandle())
+				  .addSourceLine(sourceLineAnnotation)
 					.addClass(refName.replace("/","."))
 					.addClass(castName.replace("/","."))
 					);
@@ -267,7 +308,7 @@ public class FindBadCast2 implements Detector {
                                   bug = "BC_BAD_CAST_TO_ABSTRACT_COLLECTION";
                                   bugReporter.reportBug(new BugInstance(this, bug, priority)
 				  .addClassAndMethod(methodGen, sourceFile)
-				  .addSourceLine(methodGen, sourceFile, location.getHandle())
+				  .addSourceLine(sourceLineAnnotation)
 					.addClass(refName.replace("/","."))
 					.addClass(castName.replace("/","."))
 					);

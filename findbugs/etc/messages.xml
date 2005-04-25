@@ -3409,6 +3409,18 @@ an indication of some misunderstanding or some other logic error.
 ]]>
     </Details>
   </BugPattern>
+  <BugPattern type="BC_VACUOUS_INSTANCEOF">
+    <ShortDescription>instanceof will always return true</ShortDescription>
+    <LongDescription>instanceof will always return true in {1}, since all {3} are instances of {4}</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+This instanceof test will always return true. Although this is safe, make sure it isn't
+an indication of some misunderstanding or some other logic error.
+</p>
+]]>
+    </Details>
+  </BugPattern>
 
 
 
