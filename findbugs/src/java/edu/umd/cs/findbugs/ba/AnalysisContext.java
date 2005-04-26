@@ -268,6 +268,7 @@ public class AnalysisContext implements AnalysisFeatures {
 					continue;
 				}
 			}
+			vertex.setJavaClass(javaClass);
 
 			// Add superclass/superinterface edges
 			String superclassName = javaClass.getSuperclassName();

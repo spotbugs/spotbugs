@@ -2,6 +2,8 @@ package edu.umd.cs.findbugs.ba.ch;
 
 import edu.umd.cs.findbugs.graph.AbstractVertex;
 
+import org.apache.bcel.classfile.JavaClass;
+
 public class ClassHierarchyGraphVertex
 		extends AbstractVertex<ClassHierarchyGraphEdge, ClassHierarchyGraphVertex> {
 
@@ -10,6 +12,7 @@ public class ClassHierarchyGraphVertex
 	private boolean finished;
 	private boolean application;
 	private boolean missing;
+	private JavaClass javaClass;
 	
 	public ClassHierarchyGraphVertex(String className, ClassHierarchyGraphVertexType vertexType) {
 		this.className = className;
@@ -46,6 +49,14 @@ public class ClassHierarchyGraphVertex
 	
 	public boolean isMissing() {
 		return missing;
+	}
+	
+	public void setJavaClass(JavaClass javaClass) {
+		this.javaClass = javaClass;
+	}
+	
+	public JavaClass getJavaClass() {
+		return javaClass;
 	}
 	
 }
