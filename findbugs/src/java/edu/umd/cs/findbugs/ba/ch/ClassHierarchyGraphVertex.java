@@ -7,6 +7,7 @@ public class ClassHierarchyGraphVertex
 
 	private String className;
 	private ClassHierarchyGraphVertexType vertexType;
+	private boolean finished;
 	private boolean application;
 	private boolean missing;
 	
@@ -21,6 +22,14 @@ public class ClassHierarchyGraphVertex
 	
 	public ClassHierarchyGraphVertexType getVertexType() {
 		return vertexType;
+	}
+	
+	public void setFinished(boolean finished) {
+		this.finished = finished;
+	}
+	
+	public boolean isFinished() {
+		return finished;
 	}
 	
 	public void setApplication(boolean application) {

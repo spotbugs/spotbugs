@@ -1244,7 +1244,7 @@ public class FindBugs implements Constants2, ExitCodes {
 					if (jclass == null)
 						break;
 					if (DEBUG) System.out.println("Scanned " + jclass.getClassName());
-					Repository.addClass(jclass);
+					analysisContext.addApplicationClassToRepository(jclass);
 					repositoryClassList.add(jclass.getClassName());
 				} catch (ClassFormatException e) {
 					if (DEBUG) e.printStackTrace();

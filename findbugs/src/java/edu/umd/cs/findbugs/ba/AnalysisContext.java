@@ -167,27 +167,44 @@ public class AnalysisContext implements AnalysisFeatures {
 	
 	public void addApplicationClassToRepository(JavaClass appClass) {
 		Repository.addClass(appClass);
+		addToClassHierarchyGraph(appClass);
 	}
 	
 	private static class WorkListItem {
+		private JavaClass javaClass;
 		private String className;
+		private ClassHierarchyGraphVertexType vertexType;
 		private ClassHierarchyGraphVertex subType;
 		private boolean application;
 		
 		WorkListItem(JavaClass javaClass) {
+			this.javaClass = javaClass;
 			this.className = javaClass.getClassName();
+			this.vertexType = javaClass.isInterface()
+					? ClassHierarchyGraphVertexType.INTERFACE_VERTEX
+					: ClassHierarchyGraphVertexType.CLASS_VERTEX;
 			this.subType = null;
 			this.application = true;
 		}
 		
-		WorkListItem(String className, ClassHierarchyGraphVertex subType) {
+		WorkListItem(String className, ClassHierarchyGraphVertexType vertexType,
+				ClassHierarchyGraphVertex subType) {
 			this.className = className;
+			this.vertexType = vertexType;
 			this.subType = subType;
 			this.application = false;
 		}
 		
+		public JavaClass getJavaClass() {
+			return javaClass;
+		}
+		
 		public String getClassName() {
 			return className;
+		}
+		
+		public ClassHierarchyGraphVertexType getVertexType() {
+			return vertexType;
 		}
 		
 		public ClassHierarchyGraphVertex getSubType() {
@@ -200,10 +217,12 @@ public class AnalysisContext implements AnalysisFeatures {
 	}
 
 	/**
-	 * FIXME: not finished yet
-	 * @param appClass
+	 * Add an application class to the class hierarchy graph.
+	 * To the extent possible, supertype vertices are also added.
+	 * 
+	 * @param appClass the application class
 	 */
-	public void addToClassHierarchyGraph(JavaClass appClass) {
+	private void addToClassHierarchyGraph(JavaClass appClass) {
 		LinkedList<WorkListItem> workList = new LinkedList<WorkListItem>();
 		workList.add(new WorkListItem(appClass));
 		
@@ -211,19 +230,32 @@ public class AnalysisContext implements AnalysisFeatures {
 			WorkListItem item = workList.removeFirst();
 			ClassHierarchyGraphVertex vertex = classHierarchyGraph.lookupVertex(item.getClassName());
 			
+			if (vertex == null) {
+				vertex = classHierarchyGraph.addVertex(item.getClassName(), item.getVertexType());
+			} else if (vertex.isFinished() && !item.isApplication()) {
+				continue;
+			}
+			
+			JavaClass javaClass = null;
+			
 			// Figure out whether or not this is an application class,
 			// and whether it can be found in the repository or on the classpath.
 			if (item.isApplication()) {
 				vertex.setApplication(true);
 				vertex.setMissing(false);
+				vertex.setFinished(true); // This vertex is now authoritative
+				javaClass = item.getJavaClass();
 			} else {
 				vertex.setApplication(false);
 				try {
-					JavaClass javaClass = Repository.lookupClass(item.getClassName());
+					javaClass = Repository.lookupClass(item.getClassName());
 					vertex.setMissing(false);
+					vertex.setFinished(true); // This vertex is now authoritative
 				} catch (ClassNotFoundException e) {
 					lookupFailureCallback.reportMissingClass(e);
 					vertex.setMissing(true);
+					// We might see this class or interface later, so
+					// for now leave it unfinished
 				}
 			}
 			
@@ -231,10 +263,27 @@ public class AnalysisContext implements AnalysisFeatures {
 			if (item.getSubType() != null) {
 				classHierarchyGraph.createEdge(item.getSubType(), vertex);
 			}
+			
+			// If we know the representation of this type,
+			// add superclasses and superinterfaces
+			if (javaClass != null) {
+				String superclassName = javaClass.getSuperclassName();
+				if (superclassName != null) {
+					workList.add(new WorkListItem(
+							superclassName,
+							ClassHierarchyGraphVertexType.CLASS_VERTEX,
+							vertex));
+				}
+				
+				String[] interfaceNameList = javaClass.getInterfaceNames();
+				for (int i = 0; i < interfaceNameList.length; ++i) {
+					workList.add(new WorkListItem(
+							interfaceNameList[i],
+							ClassHierarchyGraphVertexType.INTERFACE_VERTEX,
+							vertex));
+				}
+			}
 		}
-	}
-
-	private void addToWorkList(LinkedList<WorkListItem> workList, String superclassName) {
 	}
 
 	/**
