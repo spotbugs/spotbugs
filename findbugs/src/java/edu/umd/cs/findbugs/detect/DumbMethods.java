@@ -42,7 +42,7 @@ import edu.umd.cs.findbugs.ba.Hierarchy;
 import edu.umd.cs.findbugs.ba.TypeDataflow;
 import edu.umd.cs.findbugs.visitclass.Constants2;
 
-public class DumbMethods extends BytecodeScanningDetector implements Constants2, StatelessDetector {
+public class DumbMethods extends BytecodeScanningDetector implements Constants2 {
 	
 	private static final ObjectType CONDITION_TYPE = new ObjectType("java.util.concurrent.locks.Condition");
 
