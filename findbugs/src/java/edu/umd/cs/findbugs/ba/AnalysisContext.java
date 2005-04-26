@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.util.BitSet;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -38,6 +39,7 @@ import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.JavaClass;
 
 import edu.umd.cs.findbugs.ba.ch.ClassHierarchyGraph;
+import edu.umd.cs.findbugs.ba.ch.ClassHierarchyGraphEdge;
 import edu.umd.cs.findbugs.ba.ch.ClassHierarchyGraphVertex;
 import edu.umd.cs.findbugs.ba.ch.ClassHierarchyGraphVertexType;
 
@@ -50,6 +52,8 @@ import edu.umd.cs.findbugs.ba.ch.ClassHierarchyGraphVertexType;
  * @author David Hovemeyer
  */
 public class AnalysisContext implements AnalysisFeatures {
+	private static final boolean DEBUG_HIERARCHY = Boolean.getBoolean("findbugs.debug.hierarchy");
+	
 	private RepositoryLookupFailureCallback lookupFailureCallback;
 	private SourceFinder sourceFinder;
 	private ClassContextCache classContextCache;
@@ -223,67 +227,115 @@ public class AnalysisContext implements AnalysisFeatures {
 	 * @param appClass the application class
 	 */
 	private void addToClassHierarchyGraph(JavaClass appClass) {
+		if (DEBUG_HIERARCHY) {
+			System.out.println("Adding application class: " + appClass.getClassName());
+		}
+		
 		LinkedList<WorkListItem> workList = new LinkedList<WorkListItem>();
 		workList.add(new WorkListItem(appClass));
 		
 		while (!workList.isEmpty()) {
 			WorkListItem item = workList.removeFirst();
-			ClassHierarchyGraphVertex vertex = classHierarchyGraph.lookupVertex(item.getClassName());
-			
-			if (vertex == null) {
-				vertex = classHierarchyGraph.addVertex(item.getClassName(), item.getVertexType());
-			} else if (vertex.isFinished() && !item.isApplication()) {
-				continue;
-			}
-			
-			JavaClass javaClass = null;
-			
-			// Figure out whether or not this is an application class,
-			// and whether it can be found in the repository or on the classpath.
-			if (item.isApplication()) {
+
+			ClassHierarchyGraphVertex vertex = classHierarchyGraph.addVertex(
+					item.getClassName(), item.getVertexType());
+			if (item.isApplication())
 				vertex.setApplication(true);
-				vertex.setMissing(false);
-				vertex.setFinished(true); // This vertex is now authoritative
-				javaClass = item.getJavaClass();
-			} else {
-				vertex.setApplication(false);
-				try {
-					javaClass = Repository.lookupClass(item.getClassName());
-					vertex.setMissing(false);
-					vertex.setFinished(true); // This vertex is now authoritative
-				} catch (ClassNotFoundException e) {
-					lookupFailureCallback.reportMissingClass(e);
-					vertex.setMissing(true);
-					// We might see this class or interface later, so
-					// for now leave it unfinished
-				}
-			}
 			
-			// Create inheritance edge
 			if (item.getSubType() != null) {
+				if (DEBUG_HIERARCHY) {
+					System.out.println("Class hierarchy graph edge: " +
+							item.getSubType().getClassName() +
+							" -> " +
+							vertex.getClassName());
+				}
 				classHierarchyGraph.createEdge(item.getSubType(), vertex);
 			}
 			
-			// If we know the representation of this type,
-			// add superclasses and superinterfaces
-			if (javaClass != null) {
-				String superclassName = javaClass.getSuperclassName();
-				if (superclassName != null) {
-					workList.add(new WorkListItem(
-							superclassName,
-							ClassHierarchyGraphVertexType.CLASS_VERTEX,
-							vertex));
-				}
-				
-				String[] interfaceNameList = javaClass.getInterfaceNames();
-				for (int i = 0; i < interfaceNameList.length; ++i) {
-					workList.add(new WorkListItem(
-							interfaceNameList[i],
-							ClassHierarchyGraphVertexType.INTERFACE_VERTEX,
-							vertex));
+			if (vertex.isFinished()) {
+				// Visited this guy's superclasses/superinterfaces already
+				continue;
+			}
+			
+			// Find the representation of this class or interface in order
+			// to find superclasses/superinterfaces
+			JavaClass javaClass = item.getJavaClass();
+			if (javaClass == null) {
+				try {
+					javaClass = Repository.lookupClass(item.getClassName());
+				} catch (ClassNotFoundException e) {
+					vertex.setMissing(true);
+					continue;
 				}
 			}
+
+			// Add superclass/superinterface edges
+			String superclassName = javaClass.getSuperclassName();
+			if (superclassName != null) {
+				workList.add(new WorkListItem(
+						superclassName,
+						ClassHierarchyGraphVertexType.CLASS_VERTEX,
+						vertex));
+			}
+			
+			String[] interfaceNameList = javaClass.getInterfaceNames();
+			for (int i = 0; i < interfaceNameList.length; ++i) {
+				workList.add(new WorkListItem(
+						interfaceNameList[i],
+						ClassHierarchyGraphVertexType.INTERFACE_VERTEX,
+						vertex));
+			}
+
+			// Now this vertex will have its superclass/superinterface edges discovered
+			vertex.setFinished(true);
 		}
+	}
+	
+	/**
+	 * Get class hierarchy graph vertices representing all subclasses
+	 * and subinterfaces of given class.
+	 * 
+	 * @param classOrInterfaceName name of a class or interface in dotted form
+	 * @return a List of class hierarchy graph vertices which are proper subtypes
+	 *         of the class or interface given
+	 */
+	public List<ClassHierarchyGraphVertex> getKnownSubtypes(String classOrInterfaceName) {
+		if (classOrInterfaceName.indexOf('/') >= 0)
+			throw new IllegalArgumentException();
+		
+		BitSet visited = new BitSet();
+		
+		LinkedList<ClassHierarchyGraphVertex> result = new LinkedList<ClassHierarchyGraphVertex>();
+		LinkedList<ClassHierarchyGraphVertex> workList = new LinkedList<ClassHierarchyGraphVertex>();
+
+		ClassHierarchyGraphVertex start = classHierarchyGraph.lookupVertex(classOrInterfaceName);
+		if (start != null)
+			workList.add(start);
+		
+		if (start == null && DEBUG_HIERARCHY) {
+			System.out.println("Could not find class hierarchy graph vertex for " + classOrInterfaceName);
+		}
+		
+		while (!workList.isEmpty()) {
+			ClassHierarchyGraphVertex vertex = workList.removeFirst();
+			if (visited.get(vertex.getLabel())) {
+				if (DEBUG_HIERARCHY) {
+					System.out.println("Already visited vertex " + vertex.getLabel());
+				}
+				continue;
+			}
+
+			if (vertex != start)
+				result.add(vertex);
+			visited.set(vertex.getLabel());
+			
+			for (Iterator<ClassHierarchyGraphVertex> i = classHierarchyGraph.predecessorIterator(vertex); i.hasNext();) {
+				ClassHierarchyGraphVertex subtype = i.next();
+				workList.add(subtype);
+			}
+		}
+		
+		return result;
 	}
 
 	/**
