@@ -25,6 +25,7 @@ public class ClassHierarchyGraph
 		if (vertex == null) {
 			vertex = new ClassHierarchyGraphVertex(className, vertexType);
 			vertexMap.put(className, vertex);
+			addVertex(vertex);
 		}
 		return vertex;
 	}
