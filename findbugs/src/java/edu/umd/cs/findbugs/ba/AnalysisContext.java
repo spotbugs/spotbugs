@@ -39,9 +39,9 @@ import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.JavaClass;
 
 import edu.umd.cs.findbugs.ba.ch.ClassHierarchyGraph;
-import edu.umd.cs.findbugs.ba.ch.ClassHierarchyGraphEdge;
 import edu.umd.cs.findbugs.ba.ch.ClassHierarchyGraphVertex;
 import edu.umd.cs.findbugs.ba.ch.ClassHierarchyGraphVertexType;
+
 
 
 /**

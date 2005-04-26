@@ -1,8 +1,8 @@
 package edu.umd.cs.findbugs.ba.ch;
 
-import edu.umd.cs.findbugs.graph.AbstractVertex;
-
 import org.apache.bcel.classfile.JavaClass;
+
+import edu.umd.cs.findbugs.graph.AbstractVertex;
 
 public class ClassHierarchyGraphVertex
 		extends AbstractVertex<ClassHierarchyGraphEdge, ClassHierarchyGraphVertex> {
