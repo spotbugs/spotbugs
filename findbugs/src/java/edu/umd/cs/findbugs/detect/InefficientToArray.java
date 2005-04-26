@@ -95,7 +95,7 @@ public class InefficientToArray extends BytecodeScanningDetector implements Cons
 			break;
 
 		case SEEN_ANEWARRAY:
-			if ((seen == INVOKEVIRTUAL)
+			if (((seen == INVOKEVIRTUAL) || (seen == INVOKEINTERFACE))
 			        && (getNameConstantOperand().equals("toArray"))
 			        && (getSigConstantOperand().equals("([Ljava/lang/Object;)[Ljava/lang/Object;"))) {
 				try {
