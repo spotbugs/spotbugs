@@ -232,8 +232,8 @@ public class FindBadCast2 implements Detector {
                                 NORMAL_PRIORITY)
 				  .addClassAndMethod(methodGen, sourceFile)
 				  .addSourceLine(sourceLineAnnotation)
-					.addClass(refName.replace("/","."))
-					.addClass(castName.replace("/","."))
+					.addClass(refName.replace('/','.'))
+					.addClass(castName.replace('/','.'))
 					);
 			} else {
 			boolean downcast = 
@@ -254,8 +254,8 @@ public class FindBadCast2 implements Detector {
                                 isCast  ? HIGH_PRIORITY : NORMAL_PRIORITY)
 				  .addClassAndMethod(methodGen, sourceFile)
 				  .addSourceLine(sourceLineAnnotation)
-					.addClass(refName.replace("/","."))
-					.addClass(castName.replace("/","."))
+					.addClass(refName.replace('/','.'))
+					.addClass(castName.replace('/','.'))
 					);
 			else if (isCast) {
 			int priority = NORMAL_PRIORITY;
@@ -309,8 +309,8 @@ public class FindBadCast2 implements Detector {
                                   bugReporter.reportBug(new BugInstance(this, bug, priority)
 				  .addClassAndMethod(methodGen, sourceFile)
 				  .addSourceLine(sourceLineAnnotation)
-					.addClass(refName.replace("/","."))
-					.addClass(castName.replace("/","."))
+					.addClass(refName.replace('/','.'))
+					.addClass(castName.replace('/','.'))
 					);
 				}
                    
