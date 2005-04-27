@@ -109,7 +109,10 @@ public class ProjectStats implements XMLWriteable {
 		PackageStats stat = getPackageStats(bug.getPrimaryClass().getPackageName());
 		stat.addError(bug);
 		++totalErrors[0];
-		++totalErrors[bug.getPriority()];
+		int priority = bug.getPriority();
+		if (priority >= 1) {
+			++totalErrors[Math.min(priority, totalErrors.length - 1)];
+		}
 	}
 
 	/**
