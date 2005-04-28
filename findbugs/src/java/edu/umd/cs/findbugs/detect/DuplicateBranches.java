@@ -3,12 +3,12 @@ package edu.umd.cs.findbugs.detect;
 import java.util.Iterator;
 
 import org.apache.bcel.classfile.Method;
-import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
+import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.ba.BasicBlock;
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.ClassContext;
@@ -18,13 +18,17 @@ import edu.umd.cs.findbugs.ba.BasicBlock.InstructionIterator;
 import edu.umd.cs.findbugs.visitclass.Constants2;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
-public class DuplicateBranches extends PreorderVisitor implements Detector, Constants2
+public class DuplicateBranches extends PreorderVisitor implements Detector, StatelessDetector, Constants2
 {
 	private ClassContext classContext;
 	private BugReporter bugReporter;
 	
 	public DuplicateBranches(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
+	}
+	
+	public Object clone() throws CloneNotSupportedException {
+		return super.clone();
 	}
 
 	public void visitClassContext(ClassContext classContext) {
@@ -56,10 +60,7 @@ public class DuplicateBranches extends PreorderVisitor implements Detector, Cons
 				
 				if ((thenBB == null) || (elseBB == null))
 					continue;
-				
-				//if (!method.getName().equals("notReportedin086"))
-				//	continue;
-												
+																
 				InstructionIterator thenII = thenBB.instructionIterator();
 				InstructionIterator elseII = elseBB.instructionIterator();
 				boolean matches = true;

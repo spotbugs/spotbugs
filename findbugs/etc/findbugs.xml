@@ -376,7 +376,9 @@
             
   <Detector class="edu.umd.cs.findbugs.detect.DuplicateBranches"
   			speed="moderate"
-  			reports="DB_DUPLICATE_BRANCHES"/>
+  			reports="DB_DUPLICATE_BRANCHES"
+  			disabled="false"
+			hidden="true"/>
             
 
   <BugPattern abbrev="SW" type="SW_SWING_METHODS_INVOKED_IN_SWING_THREAD" category="CORRECTNESS"
