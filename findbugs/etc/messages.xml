@@ -806,6 +806,15 @@ their work on Programming Puzzlers.
 	</Details>
   </Detector>
 
+  <Detector class="edu.umd.cs.findbugs.detect.DuplicateBranches">
+    <Details>
+<![CDATA[
+<p> This detector looks for if else statements that have the
+same code for the two branches, thus rendering the test useless. </p>
+]]>
+    </Details>
+  </Detector>
+  
   <Detector class="edu.umd.cs.findbugs.detect.FindBugsSummaryStats">
     <Details>
 <![CDATA[
@@ -813,7 +822,7 @@ their work on Programming Puzzlers.
 ]]>
     </Details>
   </Detector>
-
+  
   <!--
   **********************************************************************
   BugPatterns
@@ -3551,7 +3560,20 @@ value outside the expected range of 0..11 to a method.
 	</Details>
   </BugPattern>
  
-    <!--
+  <BugPattern type="DB_DUPLICATE_BRANCHES">
+	<ShortDescription>Method uses the same code for two branches</ShortDescription>
+	<LongDescription>Method {1} uses the same code for two branches</LongDescription>
+	<Details>
+		<![CDATA[
+		<p>
+		This method uses the same code to implement to branches of an if else statement
+		or of two cases of a switch statement.
+		</p>
+		]]>
+	</Details>
+  </BugPattern>
+  
+  <!--
   **********************************************************************
    BugCodes
   **********************************************************************
@@ -3653,4 +3675,5 @@ value outside the expected range of 0..11 to a method.
   <BugCode abbrev="ST">Misuse of static fields</BugCode>
   <BugCode abbrev="PZ">Bug inspired by Josh Bloch's and Neal Gafter's Programming Puzzlers</BugCode>
   <BugCode abbrev="SWL">Sleep with lock held</BugCode>
+  <BugCode abbrev="DB">Duplicate Branches</BugCode>
 </MessageCollection>
