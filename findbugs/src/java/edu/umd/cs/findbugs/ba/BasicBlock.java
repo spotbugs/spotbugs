@@ -98,6 +98,10 @@ public class BasicBlock extends AbstractVertex<Edge, BasicBlock> implements Debu
 	public int getId() {
 		return getLabel();
 	}
+	
+	public String toString() {
+		return "block " + String.valueOf(getLabel());
+	}
 
 	/**
 	 * Set the instruction for which this block is the ETB.
