@@ -767,11 +767,22 @@ This detector looks for bad casts of object references.
 ]]>
     </Details>
   </Detector>
+
   <Detector class="edu.umd.cs.findbugs.detect.FindBadCast2">
     <Details>
 <![CDATA[
 <p>
 This detector looks for bad casts of object references using data flow analysis.
+</p>
+]]>
+    </Details>
+  </Detector>
+  
+  <Detector class="edu.umd.cs.findbugs.detect.FindNonSerializableStoreIntoSession">
+    <Details>
+<![CDATA[
+<p>
+This detector looks for stores of non serializable objects into Http sessions.
 </p>
 ]]>
     </Details>
@@ -3380,6 +3391,19 @@ double value2 =  x / (double) y;
     </Details>
   </BugPattern>
 
+  <BugPattern type="J2EE_STORE_OF_NON_SERIALIZABLE_OBJECT_INTO_SESSION">
+    <ShortDescription>Store of non serializable object into HttpSession</ShortDescription>
+    <LongDescription>Store of non serializable {3} into HttpSession in {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+This code seems to be storing a non-serializable object into an HttpSession.
+If this session is passivated or migrated, an error will result.
+</p>
+]]>
+    </Details>
+  </BugPattern>
+
   <BugPattern type="BC_BAD_CAST_TO_ABSTRACT_COLLECTION">
     <ShortDescription>Questionable cast to abstract collection </ShortDescription>
     <LongDescription>Questionable cast from Collection to abstract class {4} in {1}</LongDescription>
@@ -3394,6 +3418,9 @@ to iterate through a collection, you don't need to cast it to a Set or List.
 ]]>
     </Details>
   </BugPattern>
+
+
+
   <BugPattern type="BC_IMPOSSIBLE_CAST">
     <ShortDescription>Impossible cast</ShortDescription>
     <LongDescription>Impossible cast from {3} to class {4} in {1}</LongDescription>
@@ -3675,5 +3702,6 @@ value outside the expected range of 0..11 to a method.
   <BugCode abbrev="ST">Misuse of static fields</BugCode>
   <BugCode abbrev="PZ">Bug inspired by Josh Bloch's and Neal Gafter's Programming Puzzlers</BugCode>
   <BugCode abbrev="SWL">Sleep with lock held</BugCode>
+  <BugCode abbrev="J2EE">J2EE error</BugCode>
   <BugCode abbrev="DB">Duplicate Branches</BugCode>
 </MessageCollection>

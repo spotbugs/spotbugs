@@ -238,6 +238,13 @@ public class FindBadCast2 implements Detector {
 			} else {
 			boolean downcast = 
 				Repository.instanceOf( castJavaClass, refJavaClass);
+			double rank = Analyze.deepInstanceOf(refJavaClass,
+						castJavaClass);
+			if (false)
+			System.out.println("Rank:\t" + rank 
+						+ "\t" + refName
+						+ "\t" + castName
+						);
 			boolean completeInformation = 
 			    (!castJavaClass.isInterface() && !refJavaClass.isInterface())
 						 || refJavaClass.isFinal()
@@ -258,10 +265,17 @@ public class FindBadCast2 implements Detector {
 					.addClass(castName.replace('/','.'))
 					);
 			else if (isCast) {
+
 			int priority = NORMAL_PRIORITY;
+
+			if (rank > 0.75)
+				priority += 2;
+			else if (rank > 0.5)
+				priority += 1;
+			else if (rank > 0.25)
+				priority += 0;
+			else priority--;
 			
-			 if (downcast)
-                                priority+=2;
                         if (DEBUG)
                                 System.out.println(" priority a: " + priority);
                         if (methodGen.getClassName().equals(refName) 
