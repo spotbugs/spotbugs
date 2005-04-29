@@ -1,9 +1,11 @@
 package edu.umd.cs.findbugs.detect;
 
+import java.util.Arrays;
 import java.util.Iterator;
 
 import org.apache.bcel.classfile.Method;
-import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.GotoInstruction;
+import org.apache.bcel.generic.Instruction;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -14,7 +16,6 @@ import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.Edge;
 import edu.umd.cs.findbugs.ba.EdgeTypes;
-import edu.umd.cs.findbugs.ba.BasicBlock.InstructionIterator;
 import edu.umd.cs.findbugs.visitclass.Constants2;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
@@ -38,6 +39,9 @@ public class DuplicateBranches extends PreorderVisitor implements Detector, Stat
 
 	public void visitMethod(Method method) {
 		try {
+			if (method.getCode() == null)
+				return;
+			
 			CFG cfg = classContext.getCFG(method);
 	
 			Iterator<BasicBlock> bbi = cfg.blockIterator();
@@ -60,22 +64,32 @@ public class DuplicateBranches extends PreorderVisitor implements Detector, Stat
 				
 				if ((thenBB == null) || (elseBB == null))
 					continue;
-																
-				InstructionIterator thenII = thenBB.instructionIterator();
-				InstructionIterator elseII = elseBB.instructionIterator();
-				boolean matches = true;
-				int codeSize = 0;
 				
-				while (matches && thenII.hasNext() && elseII.hasNext())
-				{
-					InstructionHandle ih1 = thenII.next();
-					InstructionHandle ih2 = elseII.next();
-					if (!ih1.getInstruction().equals(ih2.getInstruction()))
-						matches = false;
-					codeSize = ih1.getInstruction().getLength();
-				}
+				int thenStartPos = thenBB.getFirstInstruction().getPosition();
+				int elseStartPos = elseBB.getFirstInstruction().getPosition();
 				
-				if (!matches || (codeSize < 2) || thenII.hasNext() || elseII.hasNext())
+				BasicBlock thenFinishBlock = findThenFinish(cfg, thenBB, elseStartPos);
+				
+				if (thenFinishBlock == null)
+					continue;
+				
+				Instruction lastFinishIns = thenFinishBlock.getLastInstruction().getInstruction();
+				if (!(lastFinishIns instanceof GotoInstruction))
+					continue;
+				
+				int thenFinishPos = thenFinishBlock.getLastInstruction().getPosition();
+				int elseFinishPos = ((GotoInstruction) lastFinishIns).getTarget().getPosition();
+				
+				if (thenFinishPos >= elseStartPos)
+					continue;
+				
+				if ((thenFinishPos - thenStartPos) != (elseFinishPos - elseStartPos))
+					continue;
+				
+				byte[] thenBytes = getCodeBytes(method, thenStartPos, thenFinishPos);
+				byte[] elseBytes = getCodeBytes(method, elseStartPos, elseFinishPos);
+				
+				if (!Arrays.equals(thenBytes, elseBytes))
 					continue;
 				
 				bugReporter.reportBug(new BugInstance(this, "DB_DUPLICATE_BRANCHES", LOW_PRIORITY)
@@ -91,6 +105,40 @@ public class DuplicateBranches extends PreorderVisitor implements Detector, Stat
 		} catch (Exception e) {
 			bugReporter.logError("Failure examining basic blocks in Duplicate Branches detector", e);
 		}
+	}
+	
+	private byte[] getCodeBytes(Method m, int start, int end) {
+		byte[] code = m.getCode().getCode();
+		byte[] bytes = new byte[end-start];
+		System.arraycopy( code, start, bytes, 0, end - start);
+		return bytes;
+	}
+	private BasicBlock findThenFinish(CFG cfg, BasicBlock thenBB, int elsePos) {
+		//Follow fall thru links until we find a goto link past the else
+		
+		Iterator<Edge> ie = cfg.outgoingEdgeIterator(thenBB);
+		while (ie.hasNext()) {
+			Edge e = ie.next();
+			if (e.getType() == EdgeTypes.GOTO_EDGE) {
+				int targetPos = e.getTarget().getFirstInstruction().getPosition();
+				if (targetPos > elsePos)
+					return e.getSource();
+			}
+		}
+		
+		ie = cfg.outgoingEdgeIterator(thenBB);
+		while (ie.hasNext()) {
+			Edge e = ie.next();
+			if (e.getType() == EdgeTypes.FALL_THROUGH_EDGE) {
+				BasicBlock target = e.getTarget();
+				if (target.getFirstInstruction() == null)
+					return findThenFinish(cfg, target, elsePos);
+				int targetPos = target.getFirstInstruction().getPosition();
+				if (targetPos < elsePos)
+					return findThenFinish(cfg, target, elsePos);
+			}
+		}
+		return null;
 	}
 	
 	public void report() {
