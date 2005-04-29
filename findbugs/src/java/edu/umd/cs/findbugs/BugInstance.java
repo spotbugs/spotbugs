@@ -1028,7 +1028,7 @@ public class BugInstance implements Comparable, XMLWriteableWithMessages, Serial
 			xmlOutput.closeTag("ShortMessage");
 			
 			xmlOutput.openTag("LongMessage");
-			xmlOutput.writeText(this.toString());
+			xmlOutput.writeText(this.getMessage());
 			xmlOutput.closeTag("LongMessage");
 		}
 
