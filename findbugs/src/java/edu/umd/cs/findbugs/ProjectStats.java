@@ -32,6 +32,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Locale;
 
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
@@ -71,7 +72,7 @@ public class ProjectStats implements XMLWriteable {
 	 *                   reported by writeXML.
 	 */
 	public void setTimestamp(String timestamp) throws ParseException {
-		this.timestamp = new SimpleDateFormat(TIMESTAMP_FORMAT).parse(timestamp);
+		this.timestamp = new SimpleDateFormat(TIMESTAMP_FORMAT, Locale.ENGLISH).parse(timestamp);
 	}
 	
 	/**
@@ -122,7 +123,7 @@ public class ProjectStats implements XMLWriteable {
 		xmlOutput.startTag("FindBugsSummary");
 		
 		xmlOutput.addAttribute("timestamp",
-				new SimpleDateFormat(TIMESTAMP_FORMAT).format(timestamp));
+				new SimpleDateFormat(TIMESTAMP_FORMAT, Locale.ENGLISH).format(timestamp));
 		xmlOutput.addAttribute("total_classes", String.valueOf(totalClasses));
 		xmlOutput.addAttribute("total_bugs", String.valueOf(totalErrors[0]));
 		xmlOutput.addAttribute("total_size", String.valueOf(totalSize));
