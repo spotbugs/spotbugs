@@ -1859,7 +1859,8 @@ in the Ant task.</para>
 
 <para>Greg Bentz provided a fix for the hashcode/equals detector.</para>
 
-<para>K. Hashimoto contributed internationalization fixes.</para>
+<para>K. Hashimoto contributed internationalization fixes and several other
+	bug fixes.</para>
 
 <para>
 	Glenn Boysko contributed support for ignoring specified local
@@ -1869,6 +1870,11 @@ in the Ant task.</para>
 <para>
 	Jay Dunning contributed a detector to find equality comparisons
 	of floating-point values.
+</para>
+
+<para>
+	Olivier Parent contributed updated French translations for bug descriptions and
+	Swing GUI.
 </para>
 
 <para>If you have contributed to &FindBugs;, but aren't mentioned above,
