@@ -6,6 +6,7 @@ import java.util.Iterator;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.GotoInstruction;
 import org.apache.bcel.generic.Instruction;
+import org.apache.bcel.generic.InstructionHandle;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -62,7 +63,8 @@ public class DuplicateBranches extends PreorderVisitor implements Detector, Stat
 					}
 				}
 				
-				if ((thenBB == null) || (elseBB == null))
+				if ((thenBB == null) || (elseBB == null) 
+				||  (thenBB.getFirstInstruction() == null) || (elseBB.getFirstInstruction() == null))
 					continue;
 				
 				int thenStartPos = thenBB.getFirstInstruction().getPosition();
@@ -120,9 +122,12 @@ public class DuplicateBranches extends PreorderVisitor implements Detector, Stat
 		while (ie.hasNext()) {
 			Edge e = ie.next();
 			if (e.getType() == EdgeTypes.GOTO_EDGE) {
-				int targetPos = e.getTarget().getFirstInstruction().getPosition();
-				if (targetPos > elsePos)
-					return e.getSource();
+				InstructionHandle firstInsH = e.getTarget().getFirstInstruction();
+				if (firstInsH != null) {
+					int targetPos = firstInsH.getPosition();
+					if (targetPos > elsePos)
+						return e.getSource();
+				}
 			}
 		}
 		
