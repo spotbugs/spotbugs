@@ -43,7 +43,6 @@ import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.IsNullValue;
-import edu.umd.cs.findbugs.ba.IsNullValueAnalysis;
 import edu.umd.cs.findbugs.ba.IsNullValueDataflow;
 import edu.umd.cs.findbugs.ba.IsNullValueFrame;
 import edu.umd.cs.findbugs.ba.Location;
