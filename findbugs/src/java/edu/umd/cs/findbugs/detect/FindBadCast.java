@@ -55,6 +55,7 @@ public class FindBadCast extends BytecodeScanningDetector implements Constants2,
 		abstractCollectionClasses.add("java/util/Set");
 		abstractCollectionClasses.add("java/util/Map");
 		concreteCollectionClasses.add("java/util/LinkedHashMap");
+		concreteCollectionClasses.add("java/util/LinkedHashSet");
 		concreteCollectionClasses.add("java/util/HashMap");
 		concreteCollectionClasses.add("java/util/HashSet");
 		concreteCollectionClasses.add("java/util/ArrayList");
