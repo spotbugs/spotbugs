@@ -109,7 +109,7 @@ public class ConfigureDetectorsDialog extends javax.swing.JDialog {
                 false, false, true
             };
 
-            public Class getColumnClass(int columnIndex) {
+            public Class<?> getColumnClass(int columnIndex) {
                 return types [columnIndex];
             }
 

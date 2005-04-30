@@ -3017,9 +3017,9 @@ public class FindBugsFrame extends javax.swing.JFrame {
 				bugTreeModel.insertNodeInto(bugNode, currentGroupNode, currentGroupNode.getChildCount());
 				
 				// Insert annotations
-				Iterator j = member.annotationIterator();
+				Iterator<BugAnnotation> j = member.annotationIterator();
 				while (j.hasNext()) {
-					BugAnnotation annotation = (BugAnnotation) j.next();
+					BugAnnotation annotation = j.next();
 					DefaultMutableTreeNode annotationNode = new DefaultMutableTreeNode(annotation);
 					bugTreeModel.insertNodeInto(annotationNode, bugNode, bugNode.getChildCount());
 				}
