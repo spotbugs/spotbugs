@@ -19,7 +19,6 @@
 package edu.umd.cs.findbugs.annotations;
 
 import java.lang.annotation.*;
-import static java.lang.annotation.ElementType.*;
 
 @Documented
 @Target({ElementType.METHOD, ElementType.CONSTRUCTOR})
