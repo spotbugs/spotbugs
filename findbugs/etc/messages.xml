@@ -3598,8 +3598,7 @@ value outside the expected range of 0..11 to a method.
 	<Details>
 		<![CDATA[
 		<p>
-		This method uses the same code to implement to branches of an if else statement
-		or of two cases of a switch statement.
+		This method uses the same code to implement two branches of an if else statement.
 		</p>
 		]]>
 	</Details>

@@ -374,16 +374,14 @@
 	reports="SWL_SLEEP_WITH_LOCK_HELD"
 	 />
   			
+  <Detector class="edu.umd.cs.findbugs.detect.DuplicateBranches"
+  			speed="fast"
+  			reports="DB_DUPLICATE_BRANCHES"/>
+
   <Detector class="edu.umd.cs.findbugs.detect.FindBugsSummaryStats" 
             speed="fast"
             hidden="true" />
-            
-  <Detector class="edu.umd.cs.findbugs.detect.DuplicateBranches"
-  			speed="moderate"
-  			reports="DB_DUPLICATE_BRANCHES"
-  			disabled="false"
-			hidden="true"/>
-            
+                        
 
   <BugPattern abbrev="SW" type="SW_SWING_METHODS_INVOKED_IN_SWING_THREAD" category="CORRECTNESS"
     experimental="true"/>
