@@ -177,8 +177,8 @@ public class PluginLoader extends URLClassLoader {
 		// Create a DetectorFactory for all Detector nodes
 		try {
 			List detectorNodeList = pluginDescriptor.selectNodes("/FindbugsPlugin/Detector");
-			for (Iterator i = detectorNodeList.iterator(); i.hasNext();) {
-				Node detectorNode = (Node) i.next();
+			for (Iterator<Node> i = detectorNodeList.iterator(); i.hasNext();) {
+				Node detectorNode = i.next();
 				String className = detectorNode.valueOf("@class");
 				String speed = detectorNode.valueOf("@speed");
 				String disabled = detectorNode.valueOf("@disabled");
@@ -222,7 +222,7 @@ public class PluginLoader extends URLClassLoader {
 			pluginDescriptor.selectSingleNode("/FindbugsPlugin/OrderingConstraints");
 		if (orderingConstraintsNode != null) {
 			// Get inter-pass and intra-pass constraints
-			for (Iterator i = orderingConstraintsNode.selectNodes("./SplitPass|./WithinPass").iterator();
+			for (Iterator<Node> i = orderingConstraintsNode.selectNodes("./SplitPass|./WithinPass").iterator();
 				i.hasNext();) {
 				Element constraintElement = (Element) i.next();
 
@@ -250,7 +250,7 @@ public class PluginLoader extends URLClassLoader {
 			}
 
 			// Handle FirstInPass elements
-			for (Iterator i = orderingConstraintsNode.selectNodes("./FirstInPass").iterator();
+			for (Iterator<Node> i = orderingConstraintsNode.selectNodes("./FirstInPass").iterator();
 				i.hasNext();) {
 				Element firstInPassElement = (Element) i.next();
 				Attribute detectorAttr = firstInPassElement.attribute("detector");
@@ -270,8 +270,8 @@ public class PluginLoader extends URLClassLoader {
 
 		// Create BugPatterns
 		List bugPatternNodeList = pluginDescriptor.selectNodes("/FindbugsPlugin/BugPattern");
-		for (Iterator i = bugPatternNodeList.iterator(); i.hasNext();) {
-			Node bugPatternNode = (Node) i.next();
+		for (Iterator<Node> i = bugPatternNodeList.iterator(); i.hasNext();) {
+			Node bugPatternNode = i.next();
 			String type = bugPatternNode.valueOf("@type");
 			String abbrev = bugPatternNode.valueOf("@abbrev");
 			String category = bugPatternNode.valueOf("@category");
@@ -298,8 +298,8 @@ public class PluginLoader extends URLClassLoader {
 			Document messageCollection = i.next();
 
 			List bugCodeNodeList = messageCollection.selectNodes("/MessageCollection/BugCode");
-			for (Iterator j = bugCodeNodeList.iterator(); j.hasNext();) {
-				Node bugCodeNode = (Node) j.next();
+			for (Iterator<Node> j = bugCodeNodeList.iterator(); j.hasNext();) {
+				Node bugCodeNode = j.next();
 				String abbrev = bugCodeNode.valueOf("@abbrev");
 				if (abbrev.equals(""))
 					throw new PluginException("BugCode element with missing abbrev attribute");

@@ -22,12 +22,13 @@ package edu.umd.cs.findbugs;
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.*;
+import java.util.Iterator;
 
 import org.dom4j.Attribute;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
+import org.dom4j.Node;
 import org.dom4j.io.SAXReader;
 
 public class Filter extends OrMatcher {
@@ -49,7 +50,7 @@ public class Filter extends OrMatcher {
 		}
 
 		// Iterate over Match elements
-		Iterator i = filterDoc.selectNodes("/FindBugsFilter/Match").iterator();
+		Iterator<Node> i = filterDoc.selectNodes("/FindBugsFilter/Match").iterator();
 		while (i.hasNext()) {
 			Element matchNode = (Element) i.next();
 
@@ -74,9 +75,9 @@ public class Filter extends OrMatcher {
 			if (DEBUG) System.out.println("Match node");
 
 			// Iterate over child elements of Match node.
-			Iterator j = matchNode.elementIterator();
+			Iterator<Element> j = matchNode.elementIterator();
 			while (j.hasNext()) {
-				Element child = (Element) j.next();
+				Element child = j.next();
 				Matcher matcher = getMatcher(child);
 				matchMatcher.addChild(matcher);
 			}
@@ -109,9 +110,9 @@ public class Filter extends OrMatcher {
 				return new MethodMatcher(nameAttr.getValue(), paramsAttr.getValue(), returnsAttr.getValue());
 		} else if (name.equals("Or")) {
 			OrMatcher orMatcher = new OrMatcher();
-			Iterator i = element.elementIterator();
+			Iterator<Element> i = element.elementIterator();
 			while (i.hasNext()) {
-				orMatcher.addChild(getMatcher((Element) i.next()));
+				orMatcher.addChild(getMatcher(i.next()));
 			}
 			return orMatcher;
 		} else

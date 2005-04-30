@@ -243,7 +243,7 @@ public class DetectorFactory {
 	 */
 	public Detector create(BugReporter bugReporter) {
 		try {
-			Constructor constructor = detectorClass.getConstructor(constructorArgTypes);
+			Constructor<Detector> constructor = detectorClass.getConstructor(constructorArgTypes);
 			Detector detector = (Detector) constructor.newInstance(new Object[]{bugReporter});
 			
 			// Backwards-compatibility: if the Detector has a setAnalysisContext()
