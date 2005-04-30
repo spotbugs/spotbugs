@@ -268,6 +268,7 @@ public class OpcodeStack implements Constants2
 	{
 		stack = new ArrayList<Item>();
 		lvValues = new ArrayList<Item>();
+		jumpStack = new Stack<List<Item>>();
 	}
 
 	
@@ -986,12 +987,14 @@ public class OpcodeStack implements Constants2
  	public void clear() {
  		stack.clear();
  		lvValues.clear();
+		jumpStack.clear();
  	}
  	
  	public int resetForMethodEntry(PreorderVisitor v) {
  		stack.clear();
 		jumpTarget = -1;
  		lvValues.clear();
+		jumpStack.clear();
 		seenTransferOfControl = false;
 		String className = v.getClassName();
 		Method m = v.getMethod();
