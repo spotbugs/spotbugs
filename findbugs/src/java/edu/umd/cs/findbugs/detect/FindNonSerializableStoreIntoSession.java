@@ -99,12 +99,11 @@ public class FindNonSerializableStoreIntoSession implements Detector {
 
 		ConstantPoolGen cpg = classContext.getConstantPoolGen();
 		MethodGen methodGen = classContext.getMethodGen(method);
-		String methodName = methodGen.getClassName() + "." +
-					methodGen.getName();
                 String sourceFile = classContext.getJavaClass().getSourceFileName();
 		 if (DEBUG) {
+			String methodName = methodGen.getClassName() + "." + methodGen.getName();
 			System.out.println("Checking " + methodName);
-			}
+		}
 	
 		for (Iterator<Location> i = cfg.locationIterator(); i.hasNext(); ) {
 			Location location = i.next();

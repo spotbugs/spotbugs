@@ -85,7 +85,7 @@ public class Subtypes {
 		if (c == null) return;
 		addClass(c);
 		for(JavaClass x : getReferencedClasses(c))
-			addClass(c);
+			addClass(x);
 		}
 	public void addClass(JavaClass c) {
 		if (c == null) return;
