@@ -60,14 +60,8 @@ public class ConstantFrameModelingVisitor
 	
 	//@Override
 	public void visitLDC2_W(LDC2_W obj) {
-		Object value = obj.getValue(getCPG());
-		if (value instanceof String) {
-			Constant c = new Constant(value);
-			getFrame().pushValue(c);
-		} else {
-			// FIXME: other kinds of constants
-			super.visitLDC2_W(obj);
-		}
+		// FIXME: other kinds of constants
+		super.visitLDC2_W(obj);
 	}
 
 }
