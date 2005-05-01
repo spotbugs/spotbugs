@@ -123,7 +123,7 @@ public class SwitchFallthrough extends BytecodeScanningDetector implements Const
 					String line = r.readLine();
 					if (line == null) return false;
 					line = line.toLowerCase();
-					if (line.indexOf("fall") > 0 || line.indexOf("nobreak") > 0) {
+					if (line.indexOf("fall") >= 0 || line.indexOf("nobreak") >= 0) {
 						return true;
 					}
 				}
