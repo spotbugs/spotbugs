@@ -36,7 +36,7 @@ public class DetectorFactory {
 	private static final boolean DEBUG_JAVA_VERSION = Boolean.getBoolean("findbugs.debug.javaversion");
 	
 	private Plugin plugin;
-	private final Class detectorClass;
+	private final Class<? extends Detector> detectorClass;
 	private boolean defEnabled;
 	private final String speed;
 	private final String reports;
@@ -62,7 +62,7 @@ public class DetectorFactory {
 	 *                      the detector: e.g., "1.5"
 	 */
 	public DetectorFactory(Plugin plugin,
-                           Class detectorClass, boolean enabled, String speed, String reports,
+                           Class<? extends Detector> detectorClass, boolean enabled, String speed, String reports,
 	                       String requireJRE) {
 		this.plugin = plugin;
 		this.detectorClass = detectorClass;
@@ -243,7 +243,7 @@ public class DetectorFactory {
 	 */
 	public Detector create(BugReporter bugReporter) {
 		try {
-			Constructor<Detector> constructor = detectorClass.getConstructor(constructorArgTypes);
+			Constructor<? extends Detector> constructor = detectorClass.getConstructor(constructorArgTypes);
 			Detector detector = (Detector) constructor.newInstance(new Object[]{bugReporter});
 			
 			// Backwards-compatibility: if the Detector has a setAnalysisContext()

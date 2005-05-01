@@ -70,9 +70,9 @@ public class BadlyOverriddenAdapter extends BytecodeScanningDetector implements 
 	}
 	
 	public void visitAfter(JavaClass obj) {
-		Iterator it = badOverrideMap.values().iterator();
+		Iterator<BugInstance> it = badOverrideMap.values().iterator();
 		while (it.hasNext()) {
-			BugInstance bi = (BugInstance) it.next();
+			BugInstance bi = it.next();
 			if (bi != null)
 				bugReporter.reportBug(bi);
 		}

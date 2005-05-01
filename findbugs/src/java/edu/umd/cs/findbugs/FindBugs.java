@@ -27,6 +27,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
+import java.lang.reflect.Constructor;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -1345,10 +1346,10 @@ public class FindBugs implements Constants2, ExitCodes {
 			RuntimeException annotatedEx;
 			try {
 				String sep = System.getProperty("line.separator");
-				java.lang.reflect.Constructor c = re.getClass().getConstructor(new Class[] { String.class });
+				Constructor<? extends RuntimeException> c = re.getClass().getConstructor(new Class[] { String.class });
 				String msg = re.getMessage();
 				msg = sep + "While finding bugs in class: " + className + ((msg == null) ? "" : (sep + msg));
-				annotatedEx = (RuntimeException)c.newInstance(new Object[] {msg});
+				annotatedEx = c.newInstance(new Object[] {msg});
 				annotatedEx.setStackTrace(re.getStackTrace());
 			} catch (Exception e) {
 				throw re;

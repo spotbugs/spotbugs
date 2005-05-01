@@ -526,9 +526,9 @@ public class ConvertToARFF {
 	 * @param appName  the application name
 	 */
 	public void scan(Document document, final String appName) throws MissingNodeException, IOException {
-		List bugInstanceList = getBugInstanceList(document);
+		List<Element> bugInstanceList = getBugInstanceList(document);
 
-		for (Iterator i = bugInstanceList.iterator(); i.hasNext(); ) {
+		for (Iterator<Element> i = bugInstanceList.iterator(); i.hasNext(); ) {
 			final Element element = (Element) i.next();
 			scanAttributeList(new AttributeCallback() {
 				public void apply(Attribute attribute) throws MissingNodeException {
@@ -577,8 +577,8 @@ public class ConvertToARFF {
 			throws MissingNodeException, IOException {
 		List bugInstanceList = getBugInstanceList(document);
 
-		for (Iterator i = bugInstanceList.iterator(); i.hasNext(); ) {
-			final Element element = (Element) i.next();
+		for (Iterator<Element> i = bugInstanceList.iterator(); i.hasNext(); ) {
+			final Element element = i.next();
 			scanAttributeList(new AttributeCallback() {
 				boolean first = true;
 				public void apply(Attribute attribute) throws IOException {
@@ -654,11 +654,11 @@ public class ConvertToARFF {
 			return UNCLASSIFIED;
 	}
 
-	private List getBugInstanceList(Document document) {
-		List bugInstanceList = document.selectNodes("/BugCollection/BugInstance");
+	private List<Element> getBugInstanceList(Document document) {
+		List <Element>bugInstanceList = document.selectNodes("/BugCollection/BugInstance");
 		if (dropUnclassifiedWarnings) {
-			for (Iterator i = bugInstanceList.iterator(); i.hasNext(); ) {
-				Element element = (Element) i.next();
+			for (Iterator<Element> i = bugInstanceList.iterator(); i.hasNext(); ) {
+				Element element = i.next();
 				String annotationText = element.valueOf("./UserAnnotation[text()]");
 				int classification = getBugClassification(annotationText);
 				if (classification == UNCLASSIFIED)

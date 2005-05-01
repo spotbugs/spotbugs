@@ -109,9 +109,9 @@ public class Filter extends OrMatcher {
 				return new MethodMatcher(nameAttr.getValue(), paramsAttr.getValue(), returnsAttr.getValue());
 		} else if (name.equals("Or")) {
 			OrMatcher orMatcher = new OrMatcher();
-			Iterator i = element.elementIterator();
+			Iterator<Element> i = element.elementIterator();
 			while (i.hasNext()) {
-				orMatcher.addChild(getMatcher((Element) i.next()));
+				orMatcher.addChild(getMatcher(i.next()));
 			}
 			return orMatcher;
 		} else

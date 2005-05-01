@@ -29,6 +29,9 @@ package edu.umd.cs.findbugs.ba.type;
  * @author David Hovemeyer
  */
 public class UnknownTypeException extends ClassNotFoundException {
+
+	private static final long serialVersionUID = 1L;
+
 	public UnknownTypeException(String msg) {
 		super(msg);
 	}

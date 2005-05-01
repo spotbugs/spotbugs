@@ -78,10 +78,10 @@ public class AddMessages {
 
 			// Add pre-formatted display strings in "Message"
 			// elements for all bug annotations.
-			Iterator annElementIter = element.elements().iterator();
+			Iterator<Element> annElementIter = element.elements().iterator();
 			Iterator<BugAnnotation> annIter = bugInstance.annotationIterator();
 			while (annElementIter.hasNext() && annIter.hasNext()) {
-				Element annElement = (Element) annElementIter.next();
+				Element annElement = annElementIter.next();
 				BugAnnotation ann = annIter.next();
 				annElement.addElement("Message").addText(ann.toString());
 			}

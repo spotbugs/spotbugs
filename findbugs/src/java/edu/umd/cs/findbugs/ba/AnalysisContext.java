@@ -36,6 +36,7 @@ import java.util.Map;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.JavaClass;
 
+import edu.umd.cs.findbugs.AnalysisLocal;
 import edu.umd.cs.findbugs.ba.ch.Subtypes;
 
 
@@ -53,7 +54,7 @@ public class AnalysisContext implements AnalysisFeatures {
 	private SourceFinder sourceFinder;
 	private ClassContextCache classContextCache;
 	private Subtypes subtypes;
-	public Map analysisLocals = 
+	public Map<AnalysisLocal<?>, ?> analysisLocals = 
 		Collections.synchronizedMap(new HashMap());
 	private BitSet boolPropertySet;
 

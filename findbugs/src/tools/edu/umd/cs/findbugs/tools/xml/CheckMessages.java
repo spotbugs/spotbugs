@@ -73,7 +73,7 @@ public class CheckMessages {
 		 * Get iterator over Nodes selected by
 		 * given XPath expression.
 		 */
-		public Iterator xpathIterator(String xpath) {
+		public Iterator<Node> xpathIterator(String xpath) {
 			return document.selectNodes(xpath).iterator();
 		}
 
@@ -85,8 +85,8 @@ public class CheckMessages {
 			throws DocumentException {
 			Set<String> result = new HashSet<String>();
 
-			for (Iterator i = xpathIterator(xpath); i.hasNext(); ) {
-				Node node = (Node) i.next();
+			for (Iterator<Node> i = xpathIterator(xpath); i.hasNext(); ) {
+				Node node = i.next();
 				String value = checkAttribute(node, attrName).getValue();
 				result.add(value);
 			}
@@ -148,8 +148,8 @@ public class CheckMessages {
 	public void checkMessages(XMLFile messagesDoc) throws DocumentException {
 		// Detector elements must all have a class attribute
 		// and details child element.
-		for (Iterator i = messagesDoc.xpathIterator("/MessageCollection/Detector"); i.hasNext(); ) {
-			Node node = (Node) i.next();
+		for (Iterator<Node> i = messagesDoc.xpathIterator("/MessageCollection/Detector"); i.hasNext(); ) {
+			Node node = i.next();
 			messagesDoc.checkAttribute(node, "class");
 			messagesDoc.checkElement(node, "Details");
 		}
@@ -157,8 +157,8 @@ public class CheckMessages {
 		// BugPattern elements must all have type attribute
 		// and ShortDescription, LongDescription, and Details
 		// child elements.
-		for (Iterator i = messagesDoc.xpathIterator("/MessageCollection/BugPattern"); i.hasNext(); ) {
-			Node node = (Node) i.next();
+		for (Iterator<Node> i = messagesDoc.xpathIterator("/MessageCollection/BugPattern"); i.hasNext(); ) {
+			Node node = i.next();
 			messagesDoc.checkAttribute(node, "type");
 			messagesDoc.checkElement(node, "ShortDescription");
 			messagesDoc.checkElement(node, "LongDescription");
@@ -167,8 +167,8 @@ public class CheckMessages {
 
 		// BugCode elements must contain abbrev attribute
 		// and have non-empty text
-		for (Iterator i = messagesDoc.xpathIterator("/MessageCollection/BugCode"); i.hasNext(); ) {
-			Node node = (Node) i.next();
+		for (Iterator<Node> i = messagesDoc.xpathIterator("/MessageCollection/BugCode"); i.hasNext(); ) {
+			Node node = i.next();
 			messagesDoc.checkAttribute(node, "abbrev");
 			messagesDoc.checkNonEmptyText(node);
 		}

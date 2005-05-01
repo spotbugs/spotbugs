@@ -176,9 +176,9 @@ public class PluginLoader extends URLClassLoader {
 
 		// Create a DetectorFactory for all Detector nodes
 		try {
-			List detectorNodeList = pluginDescriptor.selectNodes("/FindbugsPlugin/Detector");
-			for (Iterator i = detectorNodeList.iterator(); i.hasNext();) {
-				Node detectorNode = (Node) i.next();
+			List<Node> detectorNodeList = pluginDescriptor.selectNodes("/FindbugsPlugin/Detector");
+			for (Iterator<Node> i = detectorNodeList.iterator(); i.hasNext();) {
+				Node detectorNode = i.next();
 				String className = detectorNode.valueOf("@class");
 				String speed = detectorNode.valueOf("@speed");
 				String disabled = detectorNode.valueOf("@disabled");
@@ -189,7 +189,7 @@ public class PluginLoader extends URLClassLoader {
 				//System.out.println("Found detector: class="+className+", disabled="+disabled);
 	
 				// Create DetectorFactory for the detector
-				Class detectorClass = loadClass(className);
+				Class <? extends Detector>detectorClass = loadClass(className).asSubclass(Detector.class);
 				DetectorFactory factory = new DetectorFactory(
 						plugin,
 						detectorClass, !disabled.equals("true"),
@@ -250,9 +250,9 @@ public class PluginLoader extends URLClassLoader {
 			}
 
 			// Handle FirstInPass elements
-			for (Iterator i = orderingConstraintsNode.selectNodes("./FirstInPass").iterator();
+			for (Iterator<Element>i = orderingConstraintsNode.selectNodes("./FirstInPass").iterator();
 				i.hasNext();) {
-				Element firstInPassElement = (Element) i.next();
+				Element firstInPassElement = i.next();
 				Attribute detectorAttr = firstInPassElement.attribute("detector");
 				if (detectorAttr == null) {
 					throw new PluginException("Missing 'detector' attribute in FirstInPass element");
@@ -269,9 +269,9 @@ public class PluginLoader extends URLClassLoader {
 		}
 
 		// Create BugPatterns
-		List bugPatternNodeList = pluginDescriptor.selectNodes("/FindbugsPlugin/BugPattern");
-		for (Iterator i = bugPatternNodeList.iterator(); i.hasNext();) {
-			Node bugPatternNode = (Node) i.next();
+		List<Node> bugPatternNodeList = pluginDescriptor.selectNodes("/FindbugsPlugin/BugPattern");
+		for (Iterator<Node> i = bugPatternNodeList.iterator(); i.hasNext();) {
+			Node bugPatternNode = i.next();
 			String type = bugPatternNode.valueOf("@type");
 			String abbrev = bugPatternNode.valueOf("@abbrev");
 			String category = bugPatternNode.valueOf("@category");

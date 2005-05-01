@@ -116,11 +116,11 @@ public class RuntimeExceptionCapture extends BytecodeScanningDetector implements
 
 		super.visitCode(obj);
 
-		for (Iterator iterator = catchList.iterator(); iterator.hasNext();) {
-			CaughtException caughtException = (CaughtException) iterator.next();
+		for (Iterator<CaughtException> iterator = catchList.iterator(); iterator.hasNext();) {
+			CaughtException caughtException = iterator.next();
 			Set<String> thrownSet = new HashSet<String>();
-			for (Iterator iterator1 = throwList.iterator(); iterator1.hasNext();) {
-				ThrownException thrownException = (ThrownException) iterator1.next();
+			for (Iterator<ThrownException> iterator1 = throwList.iterator(); iterator1.hasNext();) {
+				ThrownException thrownException = iterator1.next();
 				if (thrownException.offset >= caughtException.startOffset
 				        && thrownException.offset < caughtException.endOffset) {
 				    thrownSet.add(thrownException.exceptionClass);
@@ -132,8 +132,8 @@ public class RuntimeExceptionCapture extends BytecodeScanningDetector implements
 			if (caughtException.exceptionClass.equals("java.lang.Exception") && !caughtException.seen) {
 				// Now we have a case where Exception is caught, but not thrown
 				boolean rteCaught = false;
-				for (Iterator iterator1 = catchList.iterator(); iterator1.hasNext();) {
-					CaughtException otherException = (CaughtException) iterator1.next();
+				for (Iterator<CaughtException> iterator1 = catchList.iterator(); iterator1.hasNext();) {
+					CaughtException otherException = iterator1.next();
 					if (otherException.startOffset == caughtException.startOffset
 						&& otherException.endOffset == caughtException.endOffset) {
 					   catchClauses++;

@@ -34,6 +34,8 @@ import org.apache.bcel.generic.Type;
  * @see TypeMerger
  */
 public class NullType extends Type implements ExtendedTypes {
+
+	private static final long serialVersionUID = 1L;
 	private static final Type theInstance = new NullType();
 
 	private NullType() {

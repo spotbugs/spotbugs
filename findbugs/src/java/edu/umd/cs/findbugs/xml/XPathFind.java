@@ -48,8 +48,8 @@ public abstract class XPathFind {
 	}
 
 	public void find(String xpath) {
-		for (Iterator i = document.selectNodes(xpath).iterator(); i.hasNext(); ) {
-			match((Node) i.next());
+		for (Iterator<Node> i = document.selectNodes(xpath).iterator(); i.hasNext(); ) {
+			match(i.next());
 		}
 	}
 
@@ -76,8 +76,8 @@ public abstract class XPathFind {
 					System.out.println("Element: " + element.getQualifiedName());
 					System.out.println("\tText: " + element.getText());
 					System.out.println("\tAttributes:");
-					for (Iterator i = element.attributeIterator(); i.hasNext(); ) {
-						Attribute attribute = (Attribute) i.next();
+					for (Iterator<Attribute> i = element.attributeIterator(); i.hasNext(); ) {
+						Attribute attribute = i.next();
 						System.out.println("\t\t" + attribute.getName() + "=" + attribute.getValue());
 					}
 				} else if (node instanceof Attribute) {

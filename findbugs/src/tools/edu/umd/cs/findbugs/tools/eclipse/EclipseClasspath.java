@@ -211,8 +211,8 @@ public class EclipseClasspath {
 
 			// Extract required plugins
 			List requiredPluginNodeList = document.selectNodes("/plugin/requires/import");
-			for (Iterator i = requiredPluginNodeList.iterator(); i.hasNext(); ) {
-				Node node = (Node) i.next();
+			for (Iterator<Node> i = requiredPluginNodeList.iterator(); i.hasNext(); ) {
+				Node node =  i.next();
 				String requiredPluginId = node.valueOf("@plugin");
 				if (requiredPluginId.equals(""))
 					throw new EclipseClasspathException("Import has no plugin id");
@@ -222,8 +222,8 @@ public class EclipseClasspath {
 
 			// Extract exported libraries
 			List exportedLibraryNodeList = document.selectNodes("/plugin/runtime/library");
-			for (Iterator i = exportedLibraryNodeList.iterator(); i.hasNext(); ) {
-				Node node = (Node) i.next();
+			for (Iterator<Node> i = exportedLibraryNodeList.iterator(); i.hasNext(); ) {
+				Node node =  i.next();
 				String jarName = node.valueOf("@name");
 				if (jarName.equals(""))
 					throw new EclipseClasspathException("Could not get name of exported library");

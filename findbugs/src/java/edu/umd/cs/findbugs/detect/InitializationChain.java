@@ -92,20 +92,20 @@ public class InitializationChain extends BytecodeScanningDetector implements Con
 	public void compute() {
 		Set<String> allClasses = classRequires.keySet();
 		Set<String> emptyClasses = new TreeSet<String>();
-		for (Iterator i = allClasses.iterator(); i.hasNext();) {
-			String c = (String) i.next();
+		for (Iterator<String> i = allClasses.iterator(); i.hasNext();) {
+			String c = i.next();
 			Set<String> needs = classRequires.get(c);
 			needs.retainAll(allClasses);
 			Set<String> extra = new TreeSet<String>();
-			for (Iterator j = needs.iterator(); j.hasNext();)
+			for (Iterator<String> j = needs.iterator(); j.hasNext();)
 				extra.addAll(classRequires.get(j.next()));
 			needs.addAll(extra);
 			needs.retainAll(allClasses);
 			classRequires.put(c, needs);
 			if (needs.isEmpty()) emptyClasses.add(c);
 		}
-		for (Iterator i = emptyClasses.iterator(); i.hasNext();) {
-			String c = (String) i.next();
+		for (Iterator<String> i = emptyClasses.iterator(); i.hasNext();) {
+			String c =  i.next();
 			classRequires.remove(c);
 		}
 	}

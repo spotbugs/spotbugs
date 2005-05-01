@@ -515,9 +515,9 @@ public class FindInconsistentSync2 implements Detector {
 			return false;
 
 		int count = 0;
-		Iterator it = il.iterator();
+		Iterator<InstructionHandle> it = il.iterator();
 		while (it.hasNext()) {
-			InstructionHandle ih = (InstructionHandle) it.next();
+			InstructionHandle ih = it.next();
 			switch (ih.getInstruction().getOpcode()) {
 			case Constants.GETFIELD:
 				count++;
