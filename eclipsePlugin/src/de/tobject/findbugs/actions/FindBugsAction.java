@@ -78,7 +78,7 @@ public class FindBugsAction implements IObjectActionDelegate {
 			if (selection instanceof IStructuredSelection) {
 				IStructuredSelection structuredSelection = (IStructuredSelection) selection;
 				for (Iterator iter = structuredSelection.iterator(); iter.hasNext(); ) {
-					Object element = (Object) iter.next();
+					Object element =  iter.next();
 					IResource resource = (IResource) ((IAdaptable)element).getAdapter(IResource.class);
 					if (resource==null)
 						continue;

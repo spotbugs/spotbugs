@@ -18,8 +18,6 @@
  */
 package de.tobject.findbugs;
 
-import java.io.IOException;
-
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ISaveContext;
 import org.eclipse.core.resources.ISaveParticipant;

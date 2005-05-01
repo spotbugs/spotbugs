@@ -540,7 +540,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 			IProject project, IProgressMonitor monitor)
 			throws CoreException, IOException {
 		if (isBugCollectionDirty(project)) {
-			SortedBugCollection bugCollection = (SortedBugCollection)
+			SortedBugCollection bugCollection = 
 			(SortedBugCollection) project.getSessionProperty(SESSION_PROPERTY_BUG_COLLECTION);
 			Project fbProject = (Project) project.getSessionProperty(SESSION_PROPERTY_FB_PROJECT);
 			

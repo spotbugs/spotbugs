@@ -148,7 +148,7 @@ public class DetailsView extends ViewPart {
 			try {
 				pages[0].showView("de.tobject.findbugs.view.detailsview");
 
-				String bugType = (String) marker.getAttribute(
+				String bugType =  marker.getAttribute(
 						FindBugsMarker.BUG_TYPE, "");
 				BugPattern pattern = I18N.instance().lookupBugPattern(bugType);
 				if (pattern != null) {
