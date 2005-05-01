@@ -61,10 +61,20 @@ public class SerializableIdiom extends PreorderVisitor
 	private boolean hasPublicVoidConstructor;
 	private boolean superClassHasVoidConstructor;
 	private boolean directlyImplementsExternalizable;
+	private JavaClass serializable;
+	private JavaClass collection;
+	private JavaClass map;
 	//private boolean isRemote;
 
 	public SerializableIdiom(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
+		try {
+			serializable = Repository.lookupClass("java.io.Serializable");
+			collection = Repository.lookupClass("java.util.Collection");
+			map = Repository.lookupClass("java.util.Map");
+			} catch (ClassNotFoundException e) {
+				// can't do anything
+				}
 	}
 
 	public void visitClassContext(ClassContext classContext) {
@@ -292,31 +302,19 @@ public class SerializableIdiom extends PreorderVisitor
 			try {
 				String fieldTypeClassName = getFieldSig().substring(getFieldSig().indexOf("L") + 1, getFieldSig().length() - 1).replace('/', '.');
 				JavaClass fieldTypeClass = Repository.lookupClass(fieldTypeClassName);
-
-				if (!fieldTypeClassName.equals("java.lang.Object") &&
-				        !(Repository.instanceOf(fieldTypeClass, "java.io.Serializable")
-				        || Repository.instanceOf(fieldTypeClass, "java.io.Externalizable"))) {
-
+				double isSerializable
+				= Analyze.isDeepSerializable(getFieldSig());
+				if (isSerializable < 0.9) {
 
 					// Priority is LOW for GUI classes (unless explicitly marked Serializable),
 					// HIGH if the class directly implements Serializable,
 					// NORMAL otherwise.
-					int priority = NORMAL_PRIORITY;
+					int priority = (int)(1+isSerializable*3);
 					if (implementsSerializableDirectly || sawSerialVersionUID)
 						priority--;
 					if (isGUIClass)
 						priority++;
-
-					// Lower the priority for fields which are of an interface
-					// or abstract type, since the user may know that all subtypes of
-					// the interface will be Serializable.
-					if (fieldTypeClass.isInterface()
-					        || fieldTypeClass.isAbstract()) {
-						priority = Math.max(LOW_PRIORITY, priority + 1);
-						if (Repository.instanceOf(fieldTypeClass,
-						        "java.util.Collection"))
-							return;
-					}
+					
 					// Report is queued until after the entire class has been seen.
 					fieldWarningList.add(new BugInstance(this, "SE_BAD_FIELD", priority)
 					        .addClass(getThisClass().getClassName())

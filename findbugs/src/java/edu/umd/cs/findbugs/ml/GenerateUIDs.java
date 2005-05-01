@@ -79,9 +79,9 @@ public class GenerateUIDs {
 		
 		int count = 0;
 		
-		List bugInstanceList = document.selectNodes("/BugCollection/BugInstance");
-		for (Iterator i = bugInstanceList.iterator(); i.hasNext(); ) {
-			Element element = (Element) i.next();
+		List<Element> bugInstanceList = document.selectNodes("/BugCollection/BugInstance");
+		for (Iterator<Element> i = bugInstanceList.iterator(); i.hasNext(); ) {
+			Element element = i.next();
 			Attribute uidAttr = element.attribute("uid");
 			if (uidAttr == null) {
 				element.addAttribute("uid", Integer.toString(count++));

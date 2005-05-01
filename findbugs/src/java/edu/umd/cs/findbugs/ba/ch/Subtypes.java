@@ -20,23 +20,18 @@
 package edu.umd.cs.findbugs.ba.ch;
 
 
-import java.io.IOException;
-import java.util.BitSet;
-import java.util.Collections;
-import java.util.Set;
-import java.util.HashSet;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.bcel.Repository;
-import org.apache.bcel.classfile.*;
-
-
+import org.apache.bcel.classfile.Constant;
+import org.apache.bcel.classfile.ConstantClass;
+import org.apache.bcel.classfile.ConstantDouble;
+import org.apache.bcel.classfile.ConstantLong;
+import org.apache.bcel.classfile.ConstantPool;
+import org.apache.bcel.classfile.JavaClass;
 
 
 public class Subtypes {
@@ -45,6 +40,7 @@ public class Subtypes {
 	boolean computed = false;
 	Set<String> referenced = new HashSet<String>();
 	Set<JavaClass> handled = new HashSet<JavaClass>();
+
 	Set<JavaClass> parentsAdded = new HashSet<JavaClass>();
 	Map<JavaClass,Set<JavaClass>> immediateSubtypes =
 		new HashMap<JavaClass,Set<JavaClass>>();
@@ -56,6 +52,7 @@ public class Subtypes {
 		if (!computed) compute();
 		return immediateSubtypes.get(c);
 		}
+
 
 	public Set<JavaClass> getTransitiveSubtypes(JavaClass c) {
 		if (!handled.contains(c)) addClass(c);
@@ -93,6 +90,7 @@ public class Subtypes {
 	public void addClass(JavaClass c) {
 		if (c == null) return;
 		if (!handled.add(c)) return;
+
 		if (DEBUG_HIERARCHY) 
 		System.out.println("Adding " + c.getClassName());
 		Set<JavaClass> children = immediateSubtypes.get(c);

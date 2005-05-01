@@ -30,6 +30,10 @@ import org.apache.bcel.generic.Type;
  * and whether they are explicit or implicit.
  */
 public class ExceptionObjectType extends ObjectType implements Constants, ExtendedTypes {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private ExceptionSet exceptionSet;
 
 	/**

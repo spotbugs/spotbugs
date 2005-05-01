@@ -258,6 +258,7 @@ public class FindBadCast2 implements Detector {
 				System.out.println("  is downcast: " + downcast);
 				System.out.println("  complete information: " +completeInformation);
 				System.out.println("  isParameter: " + vFrame.getTopValue());
+				System.out.println("  score: " + rank);
 				}
 			if (!downcast && completeInformation) 
 			  bugReporter.reportBug(new BugInstance(this,

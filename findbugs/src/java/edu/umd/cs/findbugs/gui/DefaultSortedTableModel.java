@@ -47,6 +47,10 @@ import javax.swing.table.TableModel;
  */
 public class DefaultSortedTableModel extends AbstractTableModel
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	public static final int SORT_NO_ORDER = 0;
 	public static final int SORT_ASCENDING_ORDER = 1;
 	public static final int SORT_DESCENDING_ORDER = 2;

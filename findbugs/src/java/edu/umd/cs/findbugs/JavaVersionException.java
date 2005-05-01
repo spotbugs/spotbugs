@@ -24,8 +24,9 @@ package edu.umd.cs.findbugs;
  * string couldn't be parsed.
  */
 public class JavaVersionException extends Exception {
-	public static final long serialVersionUID = 3941411411676672116L;
-	
+
+	private static final long serialVersionUID = 1L;
+
 	public JavaVersionException(String msg) {
 		super(msg);
 	}

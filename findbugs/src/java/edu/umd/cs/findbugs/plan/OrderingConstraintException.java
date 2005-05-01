@@ -31,6 +31,11 @@ import edu.umd.cs.findbugs.DetectorOrderingConstraint;
  */
 public class OrderingConstraintException extends Exception {
 	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param msg the message describing the exception

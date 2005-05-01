@@ -20,6 +20,11 @@
 package edu.umd.cs.findbugs.ba;
 
 public class CFGBuilderException extends Exception {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public CFGBuilderException(String message) {
 		super(message);
 	}

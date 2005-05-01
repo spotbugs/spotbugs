@@ -27,26 +27,20 @@ import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
-
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
-
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.dom4j.Attribute;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
-import org.dom4j.Element;
 import org.dom4j.Node;
-
 import org.dom4j.io.SAXReader;
 
 /**
@@ -65,6 +59,11 @@ import org.dom4j.io.SAXReader;
 public class EclipseClasspath {
 
 	public static class EclipseClasspathException extends Exception {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		public EclipseClasspathException(String msg) {
 			super(msg);
 		}

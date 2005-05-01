@@ -33,6 +33,10 @@ import org.apache.bcel.generic.Type;
  * @see TypeMerger
  */
 public class LongExtraType extends Type implements ExtendedTypes {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private static final LongExtraType theInstance = new LongExtraType();
 
 	private LongExtraType() {

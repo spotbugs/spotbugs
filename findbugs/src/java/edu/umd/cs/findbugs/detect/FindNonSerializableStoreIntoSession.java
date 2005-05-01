@@ -1,40 +1,38 @@
 package edu.umd.cs.findbugs.detect;
 
-import java.util.*;
+import java.util.BitSet;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 
-import org.apache.bcel.classfile.Method;
 import org.apache.bcel.Constants;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.generic.TypedInstruction;
-import org.apache.bcel.generic.INVOKEINTERFACE;
-import org.apache.bcel.generic.CHECKCAST;
-import org.apache.bcel.generic.INSTANCEOF;
+import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.INVOKEINTERFACE;
 import org.apache.bcel.generic.Instruction;
-import org.apache.bcel.generic.ObjectType;
-import org.apache.bcel.generic.ArrayType;
-import org.apache.bcel.generic.ReferenceType;
+import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.MethodGen;
+import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
 
-import edu.umd.cs.findbugs.SourceLineAnnotation;
-import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
+import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.Location;
-import edu.umd.cs.findbugs.ba.TopType;
 import edu.umd.cs.findbugs.ba.NullType;
-import edu.umd.cs.findbugs.ba.ValueNumberDataflow;
-import edu.umd.cs.findbugs.ba.ValueNumberFrame;
-import edu.umd.cs.findbugs.ba.ValueNumber;
+import edu.umd.cs.findbugs.ba.TopType;
 import edu.umd.cs.findbugs.ba.TypeDataflow;
 import edu.umd.cs.findbugs.ba.TypeFrame;
+import edu.umd.cs.findbugs.ba.ValueNumber;
+import edu.umd.cs.findbugs.ba.ValueNumberDataflow;
+import edu.umd.cs.findbugs.ba.ValueNumberFrame;
 
 public class FindNonSerializableStoreIntoSession implements Detector {
 	
@@ -144,36 +142,25 @@ public class FindNonSerializableStoreIntoSession implements Detector {
 				continue;
 				}
 			String refSig = refType.getSignature();
-			if (refSig.charAt(0) == '[') 
-				continue;
-
-			String refName = refSig.substring(1,refSig.length()-1)
-				.replace('/','.');
-			if (refName.equals("java.lang.Object"))
-				continue;
-
+			
 			SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation.fromVisitedInstruction(methodGen, sourceFile, handle);
 
 			ValueNumberFrame vFrame = vnaDataflow.getFactAtLocation(location);
 			boolean isParameter = paramValueNumberSet.contains(vFrame.getTopValue());
 			try {
-			JavaClass refJavaClass = Repository.lookupClass(refName);
 
-			boolean isSerializable
-				= Repository.instanceOf( refJavaClass, serializable);
-			boolean isProbablySerializable
-				= Repository.instanceOf( refJavaClass, collection)
-				    || Repository.instanceOf( refJavaClass, map);
+			double isSerializable
+				= Analyze.isDeepSerializable(refSig);
 
-			if (!isSerializable && !isProbablySerializable)
+			if (isSerializable < 0.9) 
 			     bugReporter.reportBug(new BugInstance(this,
                                 "J2EE_STORE_OF_NON_SERIALIZABLE_OBJECT_INTO_SESSION",
-				refJavaClass.isFinal() ? HIGH_PRIORITY :
-				refJavaClass.isAbstract() ? LOW_PRIORITY :
+				isSerializable < 0.15 ? HIGH_PRIORITY :
+				isSerializable > 0.5 ? LOW_PRIORITY :
 				NORMAL_PRIORITY)
                                   .addClassAndMethod(methodGen, sourceFile)
                                   .addSourceLine(sourceLineAnnotation)
-				  .addClass(refName)
+				  .addClass(Analyze.getComponentClass(refSig))
 				  );
       
 			} catch (ClassNotFoundException e) {

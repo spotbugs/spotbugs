@@ -132,6 +132,10 @@ public class InnerClassAccessMap {
 	}
 
 	private static class LookupFailure extends RuntimeException {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		private final ClassNotFoundException exception;
 
 		public LookupFailure(ClassNotFoundException exception) {

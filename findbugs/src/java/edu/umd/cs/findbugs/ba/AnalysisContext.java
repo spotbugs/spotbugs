@@ -28,13 +28,8 @@ import edu.umd.cs.findbugs.ba.type.TypeRepository;
 import java.io.IOException;
 import java.util.BitSet;
 import java.util.Collections;
-import java.util.Set;
-import java.util.HashSet;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 

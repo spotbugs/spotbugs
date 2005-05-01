@@ -85,9 +85,9 @@ public class JUnitJarRunner {
 		Class<?> testCaseClass = cl.loadClass("junit.framework.TestCase");
 
 		JarFile jarFile = new JarFile(jarFileName);
-		Enumeration e = jarFile.entries();
+		Enumeration<JarEntry> e = jarFile.entries();
 		while (e.hasMoreElements()) {
-			JarEntry entry = (JarEntry) e.nextElement();
+			JarEntry entry =  e.nextElement();
 			String entryName = entry.getName();
 			if (entryName.endsWith(".class")) {
 				String className =

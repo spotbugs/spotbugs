@@ -30,6 +30,11 @@ import org.apache.bcel.generic.MethodGen;
  */
 public class AnalysisException extends RuntimeException {
 	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param message reason for the error

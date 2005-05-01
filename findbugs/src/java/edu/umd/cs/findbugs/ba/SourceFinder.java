@@ -45,6 +45,11 @@ public class SourceFinder {
 	 * frequently accessed source files.
 	 */
 	private static class Cache extends LinkedHashMap<String, SourceFile> {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		protected boolean removeEldestEntry(Map.Entry<String, SourceFile> eldest) {
 			return size() >= CACHE_SIZE;
 		}

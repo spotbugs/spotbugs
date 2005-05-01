@@ -22,13 +22,12 @@ package edu.umd.cs.findbugs;
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.Iterator;
+import java.util.*;
 
 import org.dom4j.Attribute;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
-import org.dom4j.Node;
 import org.dom4j.io.SAXReader;
 
 public class Filter extends OrMatcher {
@@ -50,9 +49,9 @@ public class Filter extends OrMatcher {
 		}
 
 		// Iterate over Match elements
-		Iterator<Node> i = filterDoc.selectNodes("/FindBugsFilter/Match").iterator();
+		Iterator<Element> i = filterDoc.selectNodes("/FindBugsFilter/Match").iterator();
 		while (i.hasNext()) {
-			Element matchNode = (Element) i.next();
+			Element matchNode =  i.next();
 
 			AndMatcher matchMatcher = new AndMatcher();
 
@@ -110,9 +109,9 @@ public class Filter extends OrMatcher {
 				return new MethodMatcher(nameAttr.getValue(), paramsAttr.getValue(), returnsAttr.getValue());
 		} else if (name.equals("Or")) {
 			OrMatcher orMatcher = new OrMatcher();
-			Iterator<Element> i = element.elementIterator();
+			Iterator i = element.elementIterator();
 			while (i.hasNext()) {
-				orMatcher.addChild(getMatcher(i.next()));
+				orMatcher.addChild(getMatcher((Element) i.next()));
 			}
 			return orMatcher;
 		} else

@@ -1,99 +1,133 @@
 package edu.umd.cs.findbugs.detect;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
 
-import org.apache.bcel.classfile.Method;
-import org.apache.bcel.Constants;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.generic.TypedInstruction;
-import org.apache.bcel.generic.CHECKCAST;
-import org.apache.bcel.generic.INSTANCEOF;
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.InstructionHandle;
-import org.apache.bcel.generic.Instruction;
-import org.apache.bcel.generic.ObjectType;
-import org.apache.bcel.generic.ArrayType;
-import org.apache.bcel.generic.ReferenceType;
-import org.apache.bcel.generic.MethodGen;
-import org.apache.bcel.generic.Type;
 
-import edu.umd.cs.findbugs.SourceLineAnnotation;
-import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.Detector;
-import edu.umd.cs.findbugs.ba.ch.*;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
-import edu.umd.cs.findbugs.ba.CFG;
-import edu.umd.cs.findbugs.ba.CFGBuilderException;
-import edu.umd.cs.findbugs.ba.ClassContext;
-import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
-import edu.umd.cs.findbugs.ba.Location;
-import edu.umd.cs.findbugs.ba.TopType;
-import edu.umd.cs.findbugs.ba.NullType;
-import edu.umd.cs.findbugs.ba.ValueNumberDataflow;
-import edu.umd.cs.findbugs.ba.ValueNumberFrame;
-import edu.umd.cs.findbugs.ba.ValueNumber;
-import edu.umd.cs.findbugs.ba.TypeDataflow;
-import edu.umd.cs.findbugs.ba.TypeFrame;
+import edu.umd.cs.findbugs.ba.ch.Subtypes;
 
 public class Analyze {
+	static private JavaClass serializable;
 
+	static private JavaClass collection;
 
-	public static double deepInstanceOf(JavaClass x, JavaClass y)  {
+	static private JavaClass map;
+	static private ClassNotFoundException storedException;
+
+	static {
 		try {
-		boolean upcast = Repository.instanceOf( x, y);
-		if (upcast) return 1.0;
-		boolean downcast = Repository.instanceOf(y, x);
-		if (!downcast) {
-			if (x.isFinal() || y.isFinal()) return 0.0;
-			if (!x.isInterface() && !y.isInterface()) return 0.0;
-			}
+			serializable = Repository.lookupClass("java.io.Serializable");
+			collection = Repository.lookupClass("java.util.Collection");
+			map = Repository.lookupClass("java.util.Map");
+		} catch (ClassNotFoundException e) {
+			storedException = e;
+		}
+	}
 
-		String xName = x.getClassName().replace('/','.');
-		String yName = y.getClassName().replace('/','.');
-		Subtypes subtypes= AnalysisContext.currentAnalysisContext().getSubtypes();
+	private static boolean containsConcreteClasses(Set<JavaClass> s) {
+		for (JavaClass c : s)
+			if (!c.isInterface() && !c.isAbstract())
+				return true;
+		return false;
+	}
 
-		Set<JavaClass> xSubtypes 
-			= subtypes.getTransitiveSubtypes(x);
+	public static double isDeepSerializable(String refSig)
+			throws ClassNotFoundException {
+		if (storedException != null)
+			throw storedException;
 
-		Set<JavaClass> ySubtypes 
-			= subtypes.getTransitiveSubtypes(y);
+		String refName = getComponentClass(refSig);
+		if (refName.equals("java.lang.Object"))
+			return 0.99;
+
+		JavaClass refJavaClass = Repository.lookupClass(refName);
+		return isDeepSerializable(refJavaClass);
+	}
+
+	public static String getComponentClass(String refSig) {
+		while (refSig.charAt(0) == '[')
+			refSig = refSig.substring(1);
+		assert refSig.charAt(0) == 'L';
+		String refName = refSig.substring(1, refSig.length() - 1).replace('/',
+				'.');
+		return refName;
+	}
+
+	public static double isDeepSerializable(JavaClass x)
+			throws ClassNotFoundException {
+		if (storedException != null)
+			throw storedException;
+
+		double result = deepInstanceOf(x, serializable);
+		if (result >= 0.9)
+			return result;
+		result = Math.max(result, deepInstanceOf(x, collection));
+		if (result >= 0.9)
+			return result;
+		result = Math.max(result, deepInstanceOf(x, map));
+		return result;
+	}
+
+	/**
+	 * Given two JavaClasses, try to estimate the probability that an reference
+	 * of type x is also an instance of type y. Will return 0 only if it is
+	 * impossiblem and 1 only if it is guaranteed.
+	 * 
+	 * @param x
+	 *            Known type of object
+	 * @param y
+	 *            Type queried about
+	 * @return 0 - 1 value indicating probablility
+	 */
+	public static double deepInstanceOf(JavaClass x, JavaClass y)
+			throws ClassNotFoundException {
+
+		if (x.equals(y))
+			return 1.0;
+		boolean xIsSubtypeOfY = Repository.instanceOf(x, y);
+		if (xIsSubtypeOfY)
+			return 1.0;
+		boolean yIsSubtypeOfX = Repository.instanceOf(y, x);
+		if (!yIsSubtypeOfX) {
+			if (x.isFinal() || y.isFinal())
+				return 0.0;
+			if (!x.isInterface() && !y.isInterface())
+				return 0.0;
+		}
+
+		Subtypes subtypes = AnalysisContext.currentAnalysisContext()
+				.getSubtypes();
+
+		Set<JavaClass> xSubtypes = subtypes.getTransitiveSubtypes(x);
+
+		Set<JavaClass> ySubtypes = subtypes.getTransitiveSubtypes(y);
 
 		Set<JavaClass> both = new HashSet<JavaClass>(xSubtypes);
 		both.retainAll(ySubtypes);
 		Set<JavaClass> xButNotY = new HashSet<JavaClass>(xSubtypes);
 		xButNotY.removeAll(ySubtypes);
 
-		boolean concreteClassesInBoth = false;
-		for(JavaClass v : both)
-			if (v.isAbstract())
-				concreteClassesInBoth = true;
+		boolean concreteClassesInXButNotY = containsConcreteClasses(xButNotY);
 
-		boolean concreteClassesInXButNotY = false;
-		for(JavaClass v : xButNotY)
-			if (v.isAbstract())
-				concreteClassesInXButNotY = true;
-
-		if (downcast) {
-			if (!concreteClassesInXButNotY) return 1.0;
-			return 0.7;
-			}
-			
 		if (both.isEmpty()) {
 			if (concreteClassesInXButNotY) {
 				return 0.1;
-				}
-			return 0.2;
 			}
-		if (!concreteClassesInXButNotY) {
-			if (concreteClassesInBoth) return 1.0;
-			return 0.7;
-			}
-		if (concreteClassesInBoth) return 0.5;
-		return 0.4;
-		} catch (ClassNotFoundException e) {
-			return 1.0;
-			}
+			return 0.3;
 		}
+
+		// exist classes that are both X and Y
+
+		if (!concreteClassesInXButNotY) {
+			// only abstract/interfaces that are X but not Y
+			return 0.99;
+		}
+
+		// Concrete classes in X but not Y
+		return 0.7;
+
 	}
+}

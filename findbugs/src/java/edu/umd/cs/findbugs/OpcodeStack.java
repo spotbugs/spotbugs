@@ -515,7 +515,7 @@ public class OpcodeStack implements Constants2
 	 			case GOTO_W:					//It is assumed that no stack items are present when
 					seenTransferOfControl = true;
 					if (getStackDepth() > 0) {
-						jumpStack.push(new ArrayList(stack));
+						jumpStack.push(new ArrayList<Item>(stack));
 						pop();
 						jumpTarget = dbc.getBranchTarget();
 						}

@@ -25,7 +25,6 @@ import java.util.Set;
 
 import org.dom4j.Document;
 import org.dom4j.Element;
-import org.dom4j.Node;
 
 /**
  * Add human-readable messages to a dom4j tree containing
@@ -54,7 +53,7 @@ public class AddMessages {
 	 * Add messages to the dom4j tree.
 	 */
 	public void execute() {
-		Iterator<Node> elementIter = document.selectNodes("/BugCollection/BugInstance").iterator();
+		Iterator<Element> elementIter = document.selectNodes("/BugCollection/BugInstance").iterator();
 		Iterator<BugInstance> bugInstanceIter = bugCollection.iterator();
 
 		Set<String> bugTypeSet = new HashSet<String>();
@@ -63,7 +62,7 @@ public class AddMessages {
 		// We rely on the Document and the BugCollection storing
 		// the bug instances in the same order.
 		while (elementIter.hasNext() && bugInstanceIter.hasNext()) {
-			Element element = (Element) elementIter.next();
+			Element element = elementIter.next();
 			BugInstance bugInstance = bugInstanceIter.next();
 
 			String bugType = bugInstance.getType();
@@ -79,10 +78,10 @@ public class AddMessages {
 
 			// Add pre-formatted display strings in "Message"
 			// elements for all bug annotations.
-			Iterator<Element> annElementIter = element.elements().iterator();
+			Iterator annElementIter = element.elements().iterator();
 			Iterator<BugAnnotation> annIter = bugInstance.annotationIterator();
 			while (annElementIter.hasNext() && annIter.hasNext()) {
-				Element annElement = annElementIter.next();
+				Element annElement = (Element) annElementIter.next();
 				BugAnnotation ann = annIter.next();
 				annElement.addElement("Message").addText(ann.toString());
 			}

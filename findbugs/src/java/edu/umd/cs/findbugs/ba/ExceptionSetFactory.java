@@ -25,6 +25,10 @@ import java.io.Serializable;
 import org.apache.bcel.generic.ObjectType;
 
 public class ExceptionSetFactory implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private HashMap<ObjectType, Integer> typeIndexMap;
 	private ArrayList<ObjectType> typeList;
 

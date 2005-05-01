@@ -27,6 +27,11 @@ package edu.umd.cs.findbugs;
  */
 public class PluginException extends Exception {
 	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param msg message describing the exception

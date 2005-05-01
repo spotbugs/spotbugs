@@ -20,10 +20,7 @@
 package edu.umd.cs.findbugs.tools.xml;
 
 import java.io.File;
-
 import java.net.MalformedURLException;
-
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -33,7 +30,6 @@ import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.Node;
-
 import org.dom4j.io.SAXReader;
 
 /**
@@ -43,6 +39,11 @@ import org.dom4j.io.SAXReader;
 public class CheckMessages {
 
 	private static class CheckMessagesException extends DocumentException {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		public CheckMessagesException(String msg, XMLFile xmlFile, Node node) {
 			super("In " + xmlFile.getFilename() + ", " + node.toString() + ": " + msg);
 		}
