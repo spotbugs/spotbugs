@@ -110,6 +110,16 @@ public class Analyze {
 		Set<JavaClass> xButNotY = new HashSet<JavaClass>(xSubtypes);
 		xButNotY.removeAll(ySubtypes);
 
+		if (yIsSubtypeOfX && both.isEmpty()) {
+			System.out.println("Strange: y is subtype of x, but no classes in both");
+			System.out.println("X : " + x.getClassName());
+			for(JavaClass c : xSubtypes)
+				System.out.println("  " + c.getClassName());
+			System.out.println("Y : " + y.getClassName());
+			for(JavaClass c : xSubtypes)
+				System.out.println("  " + c.getClassName());
+			
+		}
 		boolean concreteClassesInXButNotY = containsConcreteClasses(xButNotY);
 
 		if (both.isEmpty()) {
