@@ -54,7 +54,7 @@ public class AnalysisContext implements AnalysisFeatures {
 	private SourceFinder sourceFinder;
 	private ClassContextCache classContextCache;
 	private Subtypes subtypes;
-	public Map<AnalysisLocal<?>, ?> analysisLocals = 
+	public Map analysisLocals = 
 		Collections.synchronizedMap(new HashMap());
 	private BitSet boolPropertySet;
 
