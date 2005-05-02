@@ -377,6 +377,7 @@
 			<include name="LICENSE.txt"/>
 			<include name="bin/*.bat"/>
 			<include name="lib/buggy.icns"/>
+			<include name="src/xsl/*.xsl"/> <!-- Bug #1187977 -->
 		</patternset>
 		
 		<patternset id="bindist.jar.pats">
