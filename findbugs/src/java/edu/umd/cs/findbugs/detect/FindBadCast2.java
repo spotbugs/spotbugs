@@ -277,7 +277,7 @@ public class FindBadCast2 implements Detector {
 								.addSourceLine(sourceLineAnnotation).addClass(
 										refName.replace('/', '.')).addClass(
 										castName.replace('/', '.')));
-					else if (isCast) {
+					else if (isCast && rank < 0.9) {
 
 						int priority = NORMAL_PRIORITY;
 

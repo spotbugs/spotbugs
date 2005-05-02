@@ -75,7 +75,8 @@ public class Subtypes {
 			try {
 			JavaClass clazz = Repository.lookupClass(name);
 			result.add(clazz);
-			} catch (ClassNotFoundException e) {}
+			} catch (ClassNotFoundException e) {
+				}
 			}
 		}
 		return result;
@@ -83,6 +84,8 @@ public class Subtypes {
 		
 	public void addApplicationClass(JavaClass c) {
 		if (c == null) return;
+		if (DEBUG_HIERARCHY) 
+		System.out.println("Adding application class " + c.getClassName());
 		addClass(c);
 		for(JavaClass x : getReferencedClasses(c))
 			addClass(x);
@@ -96,8 +99,8 @@ public class Subtypes {
 		Set<JavaClass> children = immediateSubtypes.get(c);
 		if (children == null)
 			immediateSubtypes.put(c, new HashSet<JavaClass>());
-		if (DEBUG_HIERARCHY && computed) 
-			System.out.println("Recomputing");
+		if (DEBUG_HIERARCHY && computed)
+			System.out.println("Need to recompute");
 		computed = false;
 		}
 
@@ -107,7 +110,12 @@ public class Subtypes {
 		addParent(c.getSuperClass(),c);
 		for(JavaClass i : c.getInterfaces())
 			addParent(i,c);
-		} catch (ClassNotFoundException e) {}
+		} catch (ClassNotFoundException e) {
+			if (DEBUG_HIERARCHY)  {
+				System.out.println("Error adding parent(s) of " + c.getClassName());
+				e.printStackTrace(System.out);
+				}
+			}
 		}
 	
 	public void addParent(JavaClass p, JavaClass c) {
@@ -123,7 +131,7 @@ public class Subtypes {
 
 	public void compute() {
 		if (DEBUG_HIERARCHY) 
-		System.out.println("Computing");
+		System.out.println("Computing {");
 		immediateSubtypes.clear();
 		transitiveSubtypes.clear();
 		parentsAdded.clear();
@@ -136,17 +144,28 @@ public class Subtypes {
 		for(JavaClass c : handled)  {
 			compute(c);
 			}
+		if (DEBUG_HIERARCHY) 
+		System.out.println("} Done Computing");
 		computed = true;
 		}
 
 	public Set<JavaClass> compute(JavaClass c) {
+		if (DEBUG_HIERARCHY) 
+			System.out.println(" compute " + c.getClassName()
+				+ " : " + immediateSubtypes.get(c).size());
 		Set<JavaClass> descendents = transitiveSubtypes.get(c);
-		if (descendents != null) return descendents;
+		if (descendents != null) {
+			if (!descendents.contains(c))
+				System.out.println("This is wrong for " + c.getClassName());
+			return descendents;
+			}
 		descendents = new HashSet<JavaClass>();
 		descendents.add(c);
 		transitiveSubtypes.put(c, descendents);
-		for(JavaClass child : immediateSubtypes.get(c)) 
+		for(JavaClass child : immediateSubtypes.get(c)) {
+			descendents.add(c);
 			descendents.addAll(compute(child));
+			}
 		if (DEBUG_HIERARCHY) 
 		System.out.println(c.getClassName() + " has " + descendents.size()
 				+ " decendents");

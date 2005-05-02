@@ -100,6 +100,8 @@ public class Analyze {
 
 		Subtypes subtypes = AnalysisContext.currentAnalysisContext()
 				.getSubtypes();
+		subtypes.addClass(x);
+		subtypes.addClass(y);
 
 		Set<JavaClass> xSubtypes = subtypes.getTransitiveSubtypes(x);
 
@@ -110,13 +112,21 @@ public class Analyze {
 		Set<JavaClass> xButNotY = new HashSet<JavaClass>(xSubtypes);
 		xButNotY.removeAll(ySubtypes);
 
-		if (yIsSubtypeOfX && both.isEmpty()) {
+		if (false && yIsSubtypeOfX && both.isEmpty()) {
 			System.out.println("Strange: y is subtype of x, but no classes in both");
 			System.out.println("X : " + x.getClassName());
+			System.out.println("Immediate subtypes:");
+			for(JavaClass c : subtypes.getImmediateSubtypes(x))
+				System.out.println("  " + c.getClassName());
+			System.out.println("transitive subtypes:");
 			for(JavaClass c : xSubtypes)
 				System.out.println("  " + c.getClassName());
 			System.out.println("Y : " + y.getClassName());
-			for(JavaClass c : xSubtypes)
+			System.out.println("Immediate subtypes:");
+			for(JavaClass c : subtypes.getImmediateSubtypes(y))
+				System.out.println("  " + c.getClassName());
+			System.out.println("transitive subtypes:");
+			for(JavaClass c : ySubtypes)
 				System.out.println("  " + c.getClassName());
 			
 		}
