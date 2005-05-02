@@ -38,24 +38,13 @@ public class FindNonSerializableStoreIntoSession implements Detector {
 	
 	private BugReporter bugReporter;
 	private static final boolean DEBUG = false;
-	private JavaClass serializable;
-	private JavaClass collection;
-	private JavaClass map;
 
 	
 	public FindNonSerializableStoreIntoSession(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
-		try {
-		serializable = Repository.lookupClass("java.io.Serializable");
-		collection = Repository.lookupClass("java.util.Collection");
-		map = Repository.lookupClass("java.util.Map");
-		} catch (ClassNotFoundException e) {
-			// can't do anything
-			}
 	}
 
 	public void visitClassContext(ClassContext classContext) {
-		if (serializable == null) return;
 		Method[] methodList = classContext.getJavaClass().getMethods();
 		
 		for (int i = 0; i < methodList.length; ++i) {
