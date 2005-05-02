@@ -310,9 +310,19 @@ public class SerializableIdiom extends PreorderVisitor
 					int priority = (int)(1+isSerializable*3);
 					if (implementsSerializableDirectly || sawSerialVersionUID)
 						priority--;
-					if (isGUIClass)
+					else if (isGUIClass) {
 						priority++;
-					
+						if (priority < LOW_PRIORITY)
+						  priority = LOW_PRIORITY;
+						}
+
+					if (false)
+					System.out.println("SE_BAD_FIELD: " + getThisClass().getClassName()
+						+" " +  obj.getName()	
+						+" " +  isSerializable
+						+" " +  implementsSerializableDirectly
+						+" " +  sawSerialVersionUID
+						+" " +  isGUIClass);
 					// Report is queued until after the entire class has been seen.
 					fieldWarningList.add(new BugInstance(this, "SE_BAD_FIELD", priority)
 					        .addClass(getThisClass().getClassName())

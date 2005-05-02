@@ -117,7 +117,6 @@ import edu.umd.cs.findbugs.config.UserPreferences;
  * @author David Hovemeyer
  */
 public class FindBugsFrame extends javax.swing.JFrame {
-	private static final long serialVersionUID = 3689634696388491575L;
 
 	/* ----------------------------------------------------------------------
 	 * Helper classes
