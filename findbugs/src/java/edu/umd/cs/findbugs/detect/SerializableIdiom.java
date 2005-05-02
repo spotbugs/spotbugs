@@ -300,7 +300,6 @@ public class SerializableIdiom extends PreorderVisitor
 		        && !isExternalizable
 		        && getFieldSig().indexOf("L") >= 0 && !obj.isTransient() && !obj.isStatic()) {
 			try {
-				String fieldTypeClassName = getFieldSig().substring(getFieldSig().indexOf("L") + 1, getFieldSig().length() - 1).replace('/', '.');
 				double isSerializable = Analyze.isDeepSerializable(getFieldSig());
 				if (isSerializable < 0.9) {
 
