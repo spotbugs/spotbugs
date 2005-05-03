@@ -26,11 +26,21 @@ import java.util.StringTokenizer;
 
 import edu.umd.cs.findbugs.BugInstance;
 
+/**
+ * Match BugInstances having one of a particular set of abbreviations.
+ * 
+ * @author David Hovemeyer
+ */
 public class BugCodeMatcher implements Matcher {
 	private List<String> bugCodeList = new LinkedList<String>();
 
+	/**
+	 * Constructor.
+	 * 
+	 * @param bugCodeNames comma-separated list of abbreviations
+	 */
 	public BugCodeMatcher(String bugCodeNames) {
-		StringTokenizer tok = new StringTokenizer(bugCodeNames, ",");
+		StringTokenizer tok = new StringTokenizer(bugCodeNames, ", \t");
 		while (tok.hasMoreTokens()) {
 			bugCodeList.add(tok.nextToken());
 		}
