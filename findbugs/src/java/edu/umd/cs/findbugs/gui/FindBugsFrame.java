@@ -89,7 +89,6 @@ import javax.swing.text.JTextComponent;
 import javax.swing.text.Position;
 import javax.swing.text.View;
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
@@ -97,13 +96,10 @@ import javax.swing.tree.TreeSelectionModel;
 import edu.umd.cs.findbugs.BugAnnotation;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugPattern;
-import edu.umd.cs.findbugs.ClassAnnotation;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
-import edu.umd.cs.findbugs.FieldAnnotation;
 import edu.umd.cs.findbugs.FindBugs;
 import edu.umd.cs.findbugs.I18N;
-import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.ShowHelp;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
@@ -117,114 +113,15 @@ import edu.umd.cs.findbugs.config.UserPreferences;
  * @author David Hovemeyer
  */
 public class FindBugsFrame extends javax.swing.JFrame {
+	private static final long serialVersionUID = 1L;
 
 	/* ----------------------------------------------------------------------
 	 * Helper classes
 	 * ---------------------------------------------------------------------- */
-	private static final Color HIGH_PRIORITY_COLOR = new Color(0xff0000);
-	private static final Color NORMAL_PRIORITY_COLOR = new Color(0x9f0000);
-	private static final Color LOW_PRIORITY_COLOR = Color.BLACK;
-	private static final Color EXP_PRIORITY_COLOR = Color.BLACK;
-
-	/**
-	 * Custom cell renderer for the bug tree.
-	 * We use this to select the tree icons, and to set the
-	 * text color based on the bug priority.
-	 */
-	private static class BugCellRenderer extends DefaultTreeCellRenderer {
-		private static final long serialVersionUID = 1L;
-		private ImageIcon bugGroupIcon;
-		private ImageIcon packageIcon;
-		private ImageIcon bugIcon;
-		private ImageIcon classIcon;
-		private ImageIcon methodIcon;
-		private ImageIcon fieldIcon;
-		private ImageIcon sourceFileIcon;
-		private Object value;
-
-		public BugCellRenderer() {
-			ClassLoader classLoader = this.getClass().getClassLoader();
-			bugGroupIcon = new ImageIcon(classLoader.getResource("edu/umd/cs/findbugs/gui/bug.png"));
-			packageIcon = new ImageIcon(classLoader.getResource("edu/umd/cs/findbugs/gui/package.png"));
-			bugIcon = new ImageIcon(classLoader.getResource("edu/umd/cs/findbugs/gui/bug2.png"));
-			classIcon = new ImageIcon(classLoader.getResource("edu/umd/cs/findbugs/gui/class.png"));
-			methodIcon = new ImageIcon(classLoader.getResource("edu/umd/cs/findbugs/gui/method.png"));
-			fieldIcon = new ImageIcon(classLoader.getResource("edu/umd/cs/findbugs/gui/field.png"));
-			sourceFileIcon = new ImageIcon(classLoader.getResource("edu/umd/cs/findbugs/gui/sourcefile.png"));
-		}
-
-		public Component getTreeCellRendererComponent(JTree tree, Object value, boolean sel,
-													  boolean expanded, boolean leaf, int row, boolean hasFocus) {
-			DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
-			Object obj = node.getUserObject();
-
-			this.value = obj;
-
-			super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
-
-			// Set the icon, depending on what kind of node it is
-			if (obj instanceof BugInstance) {
-				setIcon(bugIcon);
-			} else if (obj instanceof ClassAnnotation) {
-				setIcon(classIcon);
-			} else if (obj instanceof MethodAnnotation) {
-				setIcon(methodIcon);
-			} else if (obj instanceof FieldAnnotation) {
-				setIcon(fieldIcon);
-			} else if (obj instanceof SourceLineAnnotation) {
-				setIcon(sourceFileIcon);
-			} else if (obj instanceof BugInstanceGroup) {
-				// This is a "group" node
-				BugInstanceGroup groupNode = (BugInstanceGroup) obj;
-				String groupType = groupNode.getGroupType();
-				if (groupType == GROUP_BY_CLASS) {
-					setIcon(classIcon);
-				} else if (groupType == GROUP_BY_PACKAGE) {
-					setIcon(packageIcon);
-				} else if (groupType == GROUP_BY_BUG_TYPE) {
-					setIcon(bugGroupIcon);
-								} else if (groupType == GROUP_BY_BUG_CATEGORY) {
-					setIcon(bugGroupIcon);
-				}
-			} else {
-				setIcon(null);
-			}
-
-			return this;
-		}
-
-		public Color getTextNonSelectionColor() {
-			return getCellTextColor();
-		}
-
-		private Color getCellTextColor() {
-			// Based on the priority, color-code the bug instance.
-			Color color = Color.BLACK;
-			if (value instanceof BugInstance) {
-				BugInstance bugInstance = (BugInstance) value;
-				switch (bugInstance.getPriority()) {
-				case Detector.EXP_PRIORITY:
-					color = EXP_PRIORITY_COLOR;
-					break;
-				case Detector.LOW_PRIORITY:
-					color = LOW_PRIORITY_COLOR;
-					break;
-				case Detector.NORMAL_PRIORITY:
-					color = NORMAL_PRIORITY_COLOR;
-					break;
-				case Detector.HIGH_PRIORITY:
-					color = HIGH_PRIORITY_COLOR;
-					break;
-				}
-			}
-			return color;
-		}
-	}
-
-	/**
-	 * The instance of BugCellRenderer.
-	 */
-	private static final FindBugsFrame.BugCellRenderer bugCellRenderer = new FindBugsFrame.BugCellRenderer();
+	static final Color HIGH_PRIORITY_COLOR = new Color(0xff0000);
+	static final Color NORMAL_PRIORITY_COLOR = new Color(0x9f0000);
+	static final Color LOW_PRIORITY_COLOR = Color.BLACK;
+	static final Color EXP_PRIORITY_COLOR = Color.BLACK;
 
 	/**
 	 * Tree node type for BugInstances.
@@ -516,10 +413,10 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	 * Constants
 	 * ---------------------------------------------------------------------- */
 
-	private static final String GROUP_BY_CLASS = "By class";
-	private static final String GROUP_BY_PACKAGE = "By package";
-	private static final String GROUP_BY_BUG_TYPE = "By bug type";
-		private static final String GROUP_BY_BUG_CATEGORY="By bug category";
+	static final String GROUP_BY_CLASS = "By class";
+	static final String GROUP_BY_PACKAGE = "By package";
+	static final String GROUP_BY_BUG_TYPE = "By bug type";
+		static final String GROUP_BY_BUG_CATEGORY="By bug category";
 	private static final String[] GROUP_BY_ORDER_LIST = {
 		GROUP_BY_CLASS, GROUP_BY_PACKAGE, GROUP_BY_BUG_TYPE, GROUP_BY_BUG_CATEGORY
 	};
@@ -2478,7 +2375,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 		for (int i = 0; i < bugTreeList.length; ++i) {
 			JTree bugTree = bugTreeList[i];
 			bugTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
-			bugTree.setCellRenderer(bugCellRenderer);
+			bugTree.setCellRenderer(BugCellRenderer.instance());
 			bugTree.setRootVisible(false);
 			bugTree.setShowsRootHandles(true);
 			bugTree.addTreeSelectionListener(new TreeSelectionListener() {
@@ -2528,6 +2425,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 		logoLabel.setIcon(logoIcon);
 		
 		// Set common Menu Accelerators
+		final int MENU_MASK = getMenuMask();
 		newProjectItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, MENU_MASK));
 		openProjectItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, MENU_MASK));
 		saveProjectItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, MENU_MASK));
@@ -3827,6 +3725,9 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
 	// My constant declarations
 	private final static boolean MAC_OS_X = System.getProperty("os.name").toLowerCase().startsWith("mac os x");
-	private final static int MENU_MASK = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
+
+	private static int getMenuMask() {
+		return Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
+	}
 
 }
