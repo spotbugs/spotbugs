@@ -21,7 +21,19 @@ package edu.umd.cs.findbugs.filter;
 
 import edu.umd.cs.findbugs.BugInstance;
 
+/**
+ * Match BugInstances for some feature.
+ * 
+ * @author David Hovemeyer
+ */
 public interface Matcher {
+	/**
+	 * Determine whether or not the given BugInstance has the
+	 * feature this Matcher tests for.
+	 * 
+	 * @param bugInstance the BugInstance
+	 * @return true if the BugInstance matches, false if not
+	 */
 	public boolean match(BugInstance bugInstance);
 }
 
