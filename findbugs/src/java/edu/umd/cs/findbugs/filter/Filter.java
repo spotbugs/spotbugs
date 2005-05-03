@@ -30,15 +30,34 @@ import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
-
+/**
+ * Filter to match a subset of BugInstances.
+ * The filter criteria are read from an XML file.
+ * 
+ * @author David Hovemeyer
+ */
 
 public class Filter extends OrMatcher {
 	private static final boolean DEBUG = Boolean.getBoolean("filter.debug");
 
+	/**
+	 * Constructor.
+	 * 
+	 * @param fileName name of the filter file
+	 * @throws IOException
+	 * @throws FilterException
+	 */
 	public Filter(String fileName) throws IOException, FilterException {
 		parse(fileName);
 	}
 
+	/**
+	 * Parse and load the given filter file.
+	 * 
+	 * @param fileName name of the filter file
+	 * @throws IOException
+	 * @throws FilterException
+	 */
 	private void parse(String fileName) throws IOException, FilterException {
 
 		Document filterDoc = null;
@@ -89,11 +108,20 @@ public class Filter extends OrMatcher {
 
 	}
 
+	/**
+	 * Get a Matcher for given Element.
+	 * 
+	 * @param element the Element
+	 * @return a Matcher representing that element
+	 * @throws FilterException
+	 */
 	private Matcher getMatcher(Element element) throws FilterException {
 		// These will be either BugCode, Method, or Or elements.
 		String name = element.getName();
 		if (name.equals("BugCode")) {
 			return new BugCodeMatcher(element.valueOf("@name"));
+		} else if (name.equals("BugPattern")) {
+			return new BugPatternMatcher(element.valueOf("@name"));
 		} else if (name.equals("Method")) {
 			Attribute nameAttr = element.attribute("name");
 			Attribute paramsAttr = element.attribute("params");
