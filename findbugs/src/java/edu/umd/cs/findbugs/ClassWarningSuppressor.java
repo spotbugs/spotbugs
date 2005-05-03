@@ -12,6 +12,10 @@ public class ClassWarningSuppressor extends WarningSuppressor {
 		if (DEBUG)
 		System.out.println("Suppressing " + bugPattern + " in " + clazz);
 		}
+	
+	public ClassAnnotation getClassAnnotation() {
+		return clazz;
+	}
 
 	public boolean match(BugInstance bugInstance) {
 

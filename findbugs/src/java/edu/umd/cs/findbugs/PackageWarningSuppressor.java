@@ -10,6 +10,10 @@ public class PackageWarningSuppressor extends WarningSuppressor {
 		super(bugPattern);
 		this.packageName = packageName;
 		}
+	
+	public String getPackageName() {
+		return packageName;
+	}
 
 	public boolean match(BugInstance bugInstance) {
 

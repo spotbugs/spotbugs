@@ -1,6 +1,6 @@
 /*
  * FindBugs - Find bugs in Java programs
- * Copyright (C) 2003,2004 University of Maryland
+ * Copyright (C) 2003-2005, University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -17,22 +17,12 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package edu.umd.cs.findbugs;
+package edu.umd.cs.findbugs.filter;
 
-import java.util.*;
+import edu.umd.cs.findbugs.BugInstance;
 
-public class OrMatcher extends CompoundMatcher {
-
-	public boolean match(BugInstance bugInstance) {
-		Iterator<Matcher> i = childIterator();
-		while (i.hasNext()) {
-			Matcher child = i.next();
-			if (child.match(bugInstance))
-				return true;
-		}
-		return false;
-	}
-
+public interface Matcher {
+	public boolean match(BugInstance bugInstance);
 }
 
 // vim:ts=4

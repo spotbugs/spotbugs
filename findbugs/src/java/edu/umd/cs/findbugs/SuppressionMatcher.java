@@ -21,6 +21,8 @@ package edu.umd.cs.findbugs;
 
 import java.util.*;
 
+import edu.umd.cs.findbugs.filter.Matcher;
+
 public class SuppressionMatcher implements Matcher {
 	private Map <ClassAnnotation, Collection<WarningSuppressor>> suppressedWarnings
             = new HashMap<ClassAnnotation, Collection<WarningSuppressor>>();
@@ -29,7 +31,7 @@ public class SuppressionMatcher implements Matcher {
 	int count = 0;
 
 	public void addPackageSuppressor(PackageWarningSuppressor suppressor) {
-		String packageName = suppressor.packageName;
+		String packageName = suppressor.getPackageName();
 
 		Collection<WarningSuppressor> c =  suppressedPackageWarnings.get(packageName);
 		if (c == null) {
@@ -40,7 +42,7 @@ public class SuppressionMatcher implements Matcher {
 		}
 		
 	public void addSuppressor(ClassWarningSuppressor suppressor) {
-		ClassAnnotation clazz = suppressor.clazz;
+		ClassAnnotation clazz = suppressor.getClassAnnotation();
 		Collection<WarningSuppressor> c =  suppressedWarnings.get(clazz);
 		if (c == null) {
 			c = new LinkedList<WarningSuppressor>();

@@ -1,6 +1,8 @@
 
 package edu.umd.cs.findbugs;
 
+import edu.umd.cs.findbugs.filter.Matcher;
+
 abstract public class WarningSuppressor implements Matcher {
 
 	final static boolean DEBUG = false;

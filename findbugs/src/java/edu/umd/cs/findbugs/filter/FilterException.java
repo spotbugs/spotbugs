@@ -1,6 +1,6 @@
 /*
  * FindBugs - Find bugs in Java programs
- * Copyright (C) 2003,2004 University of Maryland
+ * Copyright (C) 2003-2005, University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -17,23 +17,17 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package edu.umd.cs.findbugs;
+package edu.umd.cs.findbugs.filter;
 
-import java.util.regex.*;
+public class FilterException extends Exception {
+	private static final long serialVersionUID = 1L;
 
-public class ClassRegexMatcher implements Matcher {
-	private Pattern pattern;
-
-	public ClassRegexMatcher(String regexPattern) {
-		pattern = Pattern.compile(regexPattern);
+	public FilterException(String msg) {
+		super(msg);
 	}
 
-	public boolean match(BugInstance bugInstance) {
-		ClassAnnotation primaryClassAnnotation = bugInstance.getPrimaryClass();
-		String bugClassName = primaryClassAnnotation.getClassName();
-
-		java.util.regex.Matcher matcher = pattern.matcher(bugClassName);
-		return matcher.matches();
+	public FilterException(String msg, Throwable cause) {
+		super(msg, cause);
 	}
 }
 

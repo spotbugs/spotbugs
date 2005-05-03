@@ -1,6 +1,6 @@
 /*
  * FindBugs - Find bugs in Java programs
- * Copyright (C) 2003,2004 University of Maryland
+ * Copyright (C) 2003-2005, University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -17,20 +17,21 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package edu.umd.cs.findbugs;
+package edu.umd.cs.findbugs.filter;
 
-public class FilterException extends Exception {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
-	public FilterException(String msg) {
-		super(msg);
+public abstract class CompoundMatcher implements Matcher {
+	private List<Matcher> childList = new LinkedList<Matcher>();
+
+	public void addChild(Matcher child) {
+		childList.add(child);
 	}
 
-	public FilterException(String msg, Throwable cause) {
-		super(msg, cause);
+	public Iterator<Matcher> childIterator() {
+		return childList.iterator();
 	}
 }
 
