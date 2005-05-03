@@ -1476,6 +1476,35 @@ In other words, each of the children must be true for the predicate to be true.
    The <literal>name</literal> attribute is a comma-seperated list of abbreviations.
    </para></listitem>
  </varlistentry>
+ 
+ <varlistentry>
+	<term><literal>&lt;BugPattern&gt;</literal></term>
+	<listitem>
+		<para>
+			This element specifies a particular bug pattern or bug patterns to match.
+			The <literal>name</literal> attribute is a comma-separated list of
+			bug pattern types.  You can find the bug pattern types for particular
+			warnings by looking at the output produced by the <command>-xml</command>
+			output option (the <literal>type</literal> attribute of <literal>BugInstance</literal>
+			elements), or from the bug descriptions listed in the
+			<ulink url="http://findbugs.sourceforge.net/bugDescriptions.html">bug
+			descriptions document</ulink> on the FindBugs website.  (This file is also included
+			in the FindBugs binary and source distributions.)
+		</para>
+	</listitem>
+ </varlistentry>
+ 
+ <varlistentry>
+	<term><literal>&lt;Priority&gt;</literal></term>
+	<listitem>
+		<para>
+			This element matches warnings with a particular priority.
+			The <literal>value</literal> attribute should be an integer value:
+			1 to match high-priority warnings, 2 to match medium-priority warnings,
+			or 3 to match low-priority warnings.
+		</para>
+	</listitem>
+ </varlistentry>
 
  <varlistentry>
    <term><literal>&lt;Method&gt;</literal></term>
@@ -1513,7 +1542,7 @@ bugs by class will work.
 </para>
 
 <para>
-Some bug instances have two classes.  For example, the DE (dropped exception)
+Some bug instances have two (or more) classes.  For example, the DE (dropped exception)
 bugs report both the class containing the method where the dropped exception
 happens, and the class which represents the type of the dropped exception.
 Only the <emphasis>first</emphasis> (primary) class is matched against <literal>Match</literal> clauses.
@@ -1559,7 +1588,7 @@ as expected.
 </para>
 
 <para>
-  2. Match certain tests from a class.
+  2. Match certain tests from a class by specifying their abbreviations.
 <programlisting>
      &lt;Match class="com.foobar.MyClass"&gt;
        &lt;BugCode name="DE,UrF,SIC" /&gt;
@@ -1568,7 +1597,7 @@ as expected.
 </para>
 
 <para>
-  3. Match certain tests from all classes.
+  3. Match certain tests from all classes by specifying their abbreviations.
 
 <programlisting>
      &lt;Match classregex=".*" &gt;
@@ -1578,7 +1607,7 @@ as expected.
 </para>
 
 <para>
-  4. Match bug types from specified methods of a class.
+  4. Match bug types from specified methods of a class by their abbreviations.
 
 <programlisting>
      &lt;Match class="com.foobar.MyClass"&gt;
@@ -1588,6 +1617,35 @@ as expected.
        &lt;/Or&gt;
        &lt;BugCode name="DC" /&gt;
      &lt;/Match&gt;
+</programlisting>
+</para>
+
+<para>
+	4. Match a particular bug pattern in a particular method.
+	
+<programlisting>
+<![CDATA[
+    <!-- A method with an open stream false positive. -->
+    <Match class="com.foobar.MyClass">
+	  <Method name="writeDataToFile"/>
+	  <BugPattern name="OS_OPEN_STREAM"/>
+	</Match>
+]]>
+</programlisting>
+</para>
+
+<para>
+	5. Match a particular bug pattern with a given priority in a particular method.
+	
+<programlisting>
+<![CDATA[
+    <!-- A method with a dead local store false positive (medium priority). -->
+    <Match class="com.foobar.MyClass">
+	  <Method name="someMethod"/>
+	  <BugPattern name="DLS_DEAD_LOCAL_STORE"/>
+	  <Priority value="2"/>
+	</Match>
+]]>
 </programlisting>
 </para>
 
@@ -1619,6 +1677,15 @@ as expected.
        &lt;/Or&gt;
        &lt;BugCode name="DC" /&gt;
      &lt;/Match&gt;
+
+<![CDATA[
+    <!-- A method with a dead local store false positive (medium priority). -->
+    <Match class="com.foobar.MyClass">
+	  <Method name="someMethod"/>
+	  <BugPattern name="DLS_DEAD_LOCAL_STORE"/>
+	  <Priority value="2"/>
+	</Match>
+]]>
 &lt;/FindBugsFilter&gt;
 </programlisting>
 
