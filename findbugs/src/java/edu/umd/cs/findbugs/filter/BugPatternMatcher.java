@@ -18,27 +18,35 @@
  */
 package edu.umd.cs.findbugs.filter;
 
+import java.util.HashSet;
+import java.util.Set;
+import java.util.StringTokenizer;
+
 import edu.umd.cs.findbugs.BugInstance;
 
 /**
  * Matcher class to check whether or not BugInstances have
- * a particular bug pattern type.
+ * one of a particular set of bug pattern types.
  * 
  * @author David Hovemeyer
  */
 public class BugPatternMatcher implements Matcher {
-	private String bugPatternType;
+	private Set<String> bugPatternSet;
 	
 	/**
 	 * Constructor.
 	 * 
-	 * @param bugPatternType the type of bug pattern to check for 
+	 * @param bugPatternTypes comma-separated list of bug pattern to check for 
 	 */
-	public BugPatternMatcher(String bugPatternType) {
-		this.bugPatternType = bugPatternType;
+	public BugPatternMatcher(String bugPatternTypes) {
+		this.bugPatternSet = new HashSet<String>();
+		StringTokenizer tok = new StringTokenizer(bugPatternTypes, ", \t");
+		while (tok.hasMoreTokens()) {
+			bugPatternSet.add(tok.nextToken());
+		}
 	}
 
 	public boolean match(BugInstance bugInstance) {
-		return bugInstance.getType().equals(bugPatternType);
+		return bugPatternSet.contains(bugInstance.getType());
 	}
 }
