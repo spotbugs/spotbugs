@@ -37,8 +37,6 @@ import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
-import org.eclipse.jface.preference.IPreferencePage;
-import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
@@ -93,7 +91,9 @@ public class FindbugsPropertyPage extends PropertyPage {
 	private boolean initialEnabled;
 	private Button chkEnableFindBugs;
 	private Combo minPriorityCombo;
+	/*
 	private Button chkDisplayFalseWarnings;
+	*/
 	private Button[] chkEnableBugCategoryList;
 	private String[] bugCategoryList;
 	private UserPreferences origUserPreferences;
@@ -148,6 +148,7 @@ public class FindbugsPropertyPage extends PropertyPage {
 		minPriorityCombo.setText(origUserPreferences.getFilterSettings().getMinPriority());
 		minPriorityCombo.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
 		
+		/*
 		chkDisplayFalseWarnings = new Button(prioGroup, SWT.CHECK);
 		chkDisplayFalseWarnings.setText("Display false warnings");
 		GridData chkDisplayFalseWarningsLayoutData =
@@ -156,6 +157,7 @@ public class FindbugsPropertyPage extends PropertyPage {
 		chkDisplayFalseWarnings.setLayoutData(chkDisplayFalseWarningsLayoutData);
 		chkDisplayFalseWarnings.setSelection(
 				origUserPreferences.getFilterSettings().displayFalseWarnings());
+		*/
 		
 		Composite categoryGroup = new Composite(composite, SWT.NONE);
 		categoryGroup.setLayout(new GridLayout(2, true));
