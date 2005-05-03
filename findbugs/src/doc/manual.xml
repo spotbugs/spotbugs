@@ -1486,10 +1486,8 @@ In other words, each of the children must be true for the predicate to be true.
 			bug pattern types.  You can find the bug pattern types for particular
 			warnings by looking at the output produced by the <command>-xml</command>
 			output option (the <literal>type</literal> attribute of <literal>BugInstance</literal>
-			elements), or from the bug descriptions listed in the
-			<ulink url="http://findbugs.sourceforge.net/bugDescriptions.html">bug
-			descriptions document</ulink> on the FindBugs website.  (This file is also included
-			in the FindBugs binary and source distributions.)
+			elements), or from the <ulink url="../bugDescriptions.html">bug
+			descriptions document</ulink>.
 		</para>
 	</listitem>
  </varlistentry>
@@ -1627,9 +1625,9 @@ as expected.
 <![CDATA[
     <!-- A method with an open stream false positive. -->
     <Match class="com.foobar.MyClass">
-	  <Method name="writeDataToFile"/>
-	  <BugPattern name="OS_OPEN_STREAM"/>
-	</Match>
+      <Method name="writeDataToFile"/>
+      <BugPattern name="OS_OPEN_STREAM"/>
+    </Match>
 ]]>
 </programlisting>
 </para>
@@ -1641,10 +1639,10 @@ as expected.
 <![CDATA[
     <!-- A method with a dead local store false positive (medium priority). -->
     <Match class="com.foobar.MyClass">
-	  <Method name="someMethod"/>
-	  <BugPattern name="DLS_DEAD_LOCAL_STORE"/>
-	  <Priority value="2"/>
-	</Match>
+      <Method name="someMethod"/>
+      <BugPattern name="DLS_DEAD_LOCAL_STORE"/>
+      <Priority value="2"/>
+    </Match>
 ]]>
 </programlisting>
 </para>
