@@ -492,37 +492,25 @@ To compile &FindBugs; from source, you will need the following:
       <ulink url="http://java.sun.com/j2se/">JDK 1.5.0 beta or later</ulink>
     </para>
   </listitem>
-<!--
-  <listitem>
-    <para>
-      The early-access version of the
-     <ulink url="http://developer.java.sun.com/developer/earlyAccess/adding_generics/index.html"
-     >generics-enabled javac
-     </ulink>
-     <note>
-       <para>If you are using version 2.2 of the generics-enabled javac,
-         you should rename the Jar file <filename>gcj-rt.jar</filename>
-         to <filename>javac.jar</filename></para>
-     </note>
-    </para>
-  </listitem>
--->
   <listitem>
     <para>
       <ulink url="http://ant.apache.org/">Apache &Ant;</ulink>, version 1.5 or later
     </para>
   </listitem>
-<!--
-  <listitem>
-    <para>
-      The <ulink url="http://www.thecortex.net/clover/generics/jsr14adapter-1.1.jar"
-     >JSR 14 adapter for &Ant;</ulink>.  Put the file <filename>jsr14adapter-1.1.jar</filename> in the
-     <filename class="directory">lib</filename> subdirectory of your &Ant; installation.
-    </para>
-  </listitem>
--->
 </itemizedlist>
 </para>
+
+<warning>
+	<para>
+		The version of &Ant; included as <filename>/usr/bin/ant</filename> on
+		Redhat Linux systems will <emphasis>not</emphasis> work for compiling
+		&FindBugs;.  We recommend you install a binary distribution of &Ant;
+		downloaded from the <ulink url="http://ant.apache.org/">&Ant; website</ulink>.
+		Make sure that when you run &Ant; your <replaceable>JAVA_HOME</replaceable>
+		environment variable points to the directory in which you installed
+		JDK 1.5 (or later).
+	</para>
+</warning>
 
 <para>
 If you want to be able to generate formatted versions of the &FindBugs; documentation,
@@ -567,9 +555,15 @@ a working directory.  A typical command to do this is:
 <sect1>
 <title>Modifying <filename>build.properties</filename></title>
 <para>
-You will need to modify the <filename>build.properties</filename> file
+If you intend to build the FindBugs documentation,
+you will need to modify the <filename>build.properties</filename> file
 used by the <ulink url="http://ant.apache.org/">&Ant;</ulink>
 <filename>build.xml</filename> file to build &FindBugs;.
+If you do not want to build the FindBugs documentation, then you
+can ignore this file.
+</para>
+	
+<para>
 The <filename>build.properties</filename> looks like this:
 <programlisting>
 <![CDATA[
@@ -590,24 +584,6 @@ saxon.home              =${local.software.home}/java/saxon-6.5.2
 ]]>
 </programlisting>
 </para>
-<!--
-# Set this to the location where you installed the generics-enabled
-# version of javac.  Note: you need to install the JSR-14 Compiler Adapter,
-# http://www.thecortex.net/clover/generics/jsr14adapter-1.1.jar,
-# in the lib subdirectory of your Ant installation.
-# If you are using version 2.2 of the generics-enabled javac,
-#  then you will need to rename "gjc-rt.jar" to "javac.jar".
-
-jsr14.home              =${local.software.home}/java/adding_generics-2_2-ea
--->
-
-<!--
-<para>
-The first property, <varname>jsr14.home</varname> specifies the directory containing your installation
-of the generics-enabled version of javac.  You must update the value
-of this property to match your system.
-</para>
--->
 
 <para>
 The <varname>xsl.stylesheet.home</varname> property specifies the full
@@ -630,9 +606,11 @@ generating the &FindBugs; documentation.
 <title>Running &Ant;</title>
 
 <para>
-Once you have extracted the source distribution, modified <filename>build.xml</filename>
-to reflect your system, and configured the tools (such as &Saxon;<!-- and the the JSR-14 adapter
-for &Ant;-->), you are ready to build &FindBugs;.  Invoking &Ant; is a simple matter
+Once you have extracted the source distribution,
+made sure that &Ant; is installed,
+modified <filename>build.properties</filename> (optional),
+and configured the tools (such as &Saxon;),
+you are ready to build &FindBugs;.  Invoking &Ant; is a simple matter
 of running the command
 <screen>
 <prompt>$ </prompt><command>ant <replaceable>target</replaceable></command>
@@ -643,28 +621,7 @@ where <replaceable>target</replaceable> is one of the following:
     <term><command>build</command></term>
     <listitem>
        <para>
-         This target compiles the code for &FindBugs;.
-       </para>
-    </listitem>
-  </varlistentry>
-
-  <varlistentry>
-    <term><command>buildAll</command></term>
-    <listitem>
-       <para>
-       This target compiles the code and formats the documentation.
-       </para>
-    </listitem>
-  </varlistentry>
-
-  <varlistentry>
-    <term><command>release</command></term>
-    <listitem>
-       <para>
-       This target generates a complete binary release of &FindBugs; into the
-       <filename class="directory">build/release</filename> subdirectory.
-       You will probably not need to use this target unless you want to
-       distribute your own modified version of &FindBugs;.
+         This target compiles the code for &FindBugs;. It is the default target.
        </para>
     </listitem>
   </varlistentry>
@@ -673,10 +630,32 @@ where <replaceable>target</replaceable> is one of the following:
     <term><command>docs</command></term>
     <listitem>
        <para>
-       This target just formats the documentation.  (It also compiles some of
+       This target formats the documentation.  (It also compiles some of
        the source code as a side-effect.)
        </para>
     </listitem>
+  </varlistentry>
+  
+  <varlistentry>
+	<term><command>runjunit</command></term>
+	<listitem>
+		<para>
+			This target compiles and runs the internal JUnit tests included
+			in &FindBugs;.  It will print an error message if any unit
+			tests fail.
+		</para>
+	</listitem>
+  </varlistentry>
+  
+  <varlistentry>
+	<term><command>bindist</command></term>
+	<listitem>
+		<para>
+			Builds a binary distribution of &FindBugs;.
+			The target creates both <filename>.zip</filename> and
+			<filename>.tar.gz</filename> archives.
+		</para>
+	</listitem>
   </varlistentry>
 </variablelist>
 </para>
