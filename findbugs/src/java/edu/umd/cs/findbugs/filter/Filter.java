@@ -122,6 +122,8 @@ public class Filter extends OrMatcher {
 			return new BugCodeMatcher(element.valueOf("@name"));
 		} else if (name.equals("BugPattern")) {
 			return new BugPatternMatcher(element.valueOf("@name"));
+		} else if (name.equals("Priority")) {
+			return new PriorityMatcher(element.valueOf("@value"));
 		} else if (name.equals("Method")) {
 			Attribute nameAttr = element.attribute("name");
 			Attribute paramsAttr = element.attribute("params");
