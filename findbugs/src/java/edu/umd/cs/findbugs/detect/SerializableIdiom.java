@@ -306,7 +306,10 @@ public class SerializableIdiom extends PreorderVisitor
 					// Priority is LOW for GUI classes (unless explicitly marked Serializable),
 					// HIGH if the class directly implements Serializable,
 					// NORMAL otherwise.
-					int priority = (int)(1+isSerializable*3);
+					int priority = (int)(2+isSerializable*3);
+					if (priority > NORMAL_PRIORITY
+						&& obj.getName().startsWith("this$"))
+					    priority = NORMAL_PRIORITY;
 					if (implementsSerializableDirectly || sawSerialVersionUID)
 						priority--;
 					else if (isGUIClass) {
