@@ -138,7 +138,9 @@ public class PrettyPrintBugDescriptions extends PlainPrintBugDescriptions {
 			BugPattern bugPattern = i.next();
 			out.println("<h3><a name=\"" +
 				bugPattern.getType() + "\">" +
-				bugPattern.getAbbrev() + ": " + bugPattern.getShortDescription() + "</a></h3>");
+				bugPattern.getAbbrev() + ": " + bugPattern.getShortDescription() +
+				" (" + bugPattern.getType() + ")" +
+				"</a></h3>");
 			out.println(bugPattern.getDetailText());
 		}
 	}
