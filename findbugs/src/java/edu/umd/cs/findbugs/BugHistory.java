@@ -1,6 +1,6 @@
 /*
  * FindBugs - Find bugs in Java programs
- * Copyright (C) 2003,2004 University of Maryland
+ * Copyright (C) 2003-2005, University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,25 +19,114 @@
 
 package edu.umd.cs.findbugs;
 
-import java.util.*;
+import java.io.IOException;
+import java.util.Set;
+import java.util.TreeSet;
+
+import org.dom4j.DocumentException;
 
 /**
  * Analyze bug results to find new, fixed, and retained bugs
- * between versions of the same program.  In order to determine that
- * bugs in different versions are the "same", we just eliminate source
- * lines from consideration when comparing bug instances.
- * This isn't guaranteed to do the right thing, so we might want
- * to make this determination more sophisticated in the future.
+ * between versions of the same program.  Uses VersionInsensitiveBugComparator
+ * to determine when two BugInstances are the "same".
+ * 
+ * @author David Hovemeyer
  */
 public class BugHistory {
+	/**
+	 * A set operation between two bug collections.
+	 */
+	public interface SetOperation {
+		/**
+		 * Perform the operation. 
+		 * 
+		 * @param result         Set to put the resulting BugInstances in
+		 * @param origCollection original BugCollection
+		 * @param newCollection  new BugCollection
+		 */
+		public void perform(Set<BugInstance> result,
+				SortedBugCollection origCollection, SortedBugCollection newCollection);
+	}
+	
+	/**
+	 * Get the warnings which were <em>added</em>,
+	 * meaning that they were not part of the original BugCollection.
+	 * The BugInstances returned are from the new BugCollection.
+	 */
+	public static final SetOperation ADDED_WARNINGS = new SetOperation(){
+		public void perform(Set<BugInstance> result,
+				SortedBugCollection origCollection, SortedBugCollection newCollection) {
+			result.addAll(newCollection.getCollection());
+			result.removeAll(origCollection.getCollection());
+		}
+	};
+	
+	/**
+	 * Get the warnings which were <em>retained</em>,
+	 * meaning that they occur in both the original and new BugCollections.
+	 * The BugInstances returned are from the new BugCollection.
+	 */
+	public static final SetOperation RETAINED_WARNINGS = new SetOperation(){
+		public void perform(Set<BugInstance> result,
+				SortedBugCollection origCollection, SortedBugCollection newCollection) {
+			result.addAll(newCollection.getCollection());
+			result.retainAll(origCollection.getCollection());
+		}
+	};
+	
+	/**
+	 * Get the warnings which were <em>removed</em>,
+	 * meaning that they occur in the original BugCollection but not in
+	 * the new BugCollection.
+	 * The BugInstances returned are from the original BugCollection.
+	 */
+	public static final SetOperation REMOVED_WARNINGS = new SetOperation(){
+		public void perform(Set<BugInstance> result,
+				SortedBugCollection origCollection, SortedBugCollection newCollection) {
+			result.addAll(origCollection.getCollection());
+			result.removeAll(newCollection.getCollection());
+		}
+	};
+	
+	private SortedBugCollection origCollection, newCollection;
+	
+	/**
+	 * Contructor.
+	 * 
+	 * @param origCollection the original BugCollection
+	 * @param newCollection  the new BugCollection
+	 */
+	public BugHistory(SortedBugCollection origCollection, SortedBugCollection newCollection) {
+		this.origCollection = origCollection;
+		this.newCollection = newCollection;
+	}
+
+	/**
+	 * Perform a SetOperation.
+	 * 
+	 * @param operation the SetOperation
+	 * @return the BugCollection resulting from performing the SetOperation
+	 */
+	public SortedBugCollection performSetOperation(SetOperation operation) {
+		TreeSet<BugInstance> result = new TreeSet<BugInstance>(VersionInsensitiveBugComparator.instance());
+
+		operation.perform(result, origCollection, newCollection);
+		
+		SortedBugCollection resultCollection = new SortedBugCollection();
+		resultCollection.addAll(result);
+		
+		return resultCollection;
+	}
 
 	public static void main(String[] argv) throws Exception {
 		if (argv.length != 3) {
 			System.err.println("Usage: " + BugHistory.class.getName() +
 			        " <operation> <old results> <new results>\n" +
 			        "Operations:\n" +
-			        "   -new        Output new bugs (in new results but not in old results)\n" +
-			        "   -fixed      Output fixed bugs (in old results but not in new results)\n" +
+			        "   -added      Output added bugs (in new results but not in old results)\n" +
+			        "   -new        Synonym for -added\n" +
+			        "   -removed    Output removed bugs (in old results but not in new results)\n" +
+			        "   -fixed      Synonym for -removed\n" +
 			        "   -retained   Output retained bugs (in both old and new results)");
 			System.exit(1);
 		}
@@ -45,31 +134,28 @@ public class BugHistory {
 		Project project = new Project();
 
 		String op = argv[0];
-		TreeSet<BugInstance> oldBugs = readSet(argv[1], project);
-		TreeSet<BugInstance> newBugs = readSet(argv[2], new Project());
+		SortedBugCollection origCollection = readCollection(argv[1], project);
+		SortedBugCollection newCollection = readCollection(argv[2], new Project());
 
-		SortedBugCollection result = new SortedBugCollection();
+		SortedBugCollection result = null;
+		BugHistory bugHistory = new BugHistory(origCollection, newCollection); 
 
-		if (op.equals("-new")) {
-			newBugs.removeAll(oldBugs);
-			result.addAll(newBugs);
-		} else if (op.equals("-fixed")) {
-			oldBugs.removeAll(newBugs);
-			result.addAll(oldBugs);
+		if (op.equals("-new") || op.equals("-added")) {
+			result = bugHistory.performSetOperation(ADDED_WARNINGS);
+		} else if (op.equals("-fixed") || op.equals("-removed")) {
+			result = bugHistory.performSetOperation(REMOVED_WARNINGS);
 		} else if (op.equals("-retained")) {
-			oldBugs.retainAll(newBugs);
-			result.addAll(oldBugs);
+			result = bugHistory.performSetOperation(RETAINED_WARNINGS);
 		} else
 			throw new IllegalArgumentException("Unknown operation: " + op);
 
 		result.writeXML(System.out, project);
 	}
-
-	private static TreeSet<BugInstance> readSet(String filename, Project project) throws Exception {
-		SortedBugCollection bugCollection = new SortedBugCollection();
-		bugCollection.readXML(filename, project);
-		TreeSet<BugInstance> result = new TreeSet<BugInstance>(VersionInsensitiveBugComparator.instance());
-		result.addAll(bugCollection.getCollection());
+	
+	private static SortedBugCollection readCollection(String fileName, Project project)
+			throws IOException, DocumentException {
+		SortedBugCollection result = new SortedBugCollection();
+		result.readXML(fileName, project);
 		return result;
 	}
 }
