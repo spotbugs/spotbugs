@@ -1,0 +1,48 @@
+<html>
+	<head>
+		<title>FindBugs - Find Bugs in Java Programs</title>
+
+		<script language="Javascript"> 
+		  var javawsInstalled = 0; 
+		  isIE = "false"; 
+		
+		  if (navigator.mimeTypes && navigator.mimeTypes.length) { 
+		     x = navigator.mimeTypes['application/x-java-jnlp-file']; 
+		     if (x) javawsInstalled = 1; 
+		  } else { 
+		     isIE = "true"; 
+		  } 
+		
+		  function insertLink(url, name) { 
+		   if (javawsInstalled) { 
+		        document.write("<a href=" + url + ">"  + name + "</a>"); 
+		     } else { 
+		        document.write("Need to install Java Web Start"); 
+		     } 
+		  } 
+		</script> 
+		
+		<script LANGUAGE="VBScript"> 
+		  on error resume next 
+		  If isIE = "true" Then 
+		    If Not(IsObject(CreateObject("JavaWebStart.IsInstalled"))) Then 
+		          javawsInstalled = 0 
+		    Else 
+		          javawsInstalled = 1 
+		    End If 
+		  End If 
+		</script
+
+	</head>
+	<body>
+		<h1>FindBugs - Find Bugs in Java Programs</h1>
+		<p>Try FindBugs using Java Web Start. Click the link below to start finding bugs.</p>
+	
+		<script language="Javascript"> 
+        <!-- 
+        	insertLink("http://findbugs.sourceforge.net/jnlp/findbugs.jnlp", 
+                   		"Launch FindBugs"); 
+        // --> 
+    	</script>
+	</body>
+</html>

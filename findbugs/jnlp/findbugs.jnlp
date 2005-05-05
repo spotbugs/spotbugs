@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?> 
+<jnlp 
+  spec="1.0+" 
+  codebase="http://findbugs.sourceforge.net/jnlp" 
+  href="findbugs.jnlp">
+  <information> 
+    <title>FindBugs</title>
+    <vendor>University of Maryland</vendor> 
+    <homepage href="http://findbugs.sourceforge.net"/> 
+    <description>Findbugs Static Bug Finder</description> 
+    <description kind="short">A tool for finding bugs in your classes</description> 
+    <icon href="buggy-sm.png"/> 
+    <offline-allowed/> 
+  </information> 
+  <security> 
+      <all-permissions/> 
+  </security> 
+  <resources> 
+    <j2se version="1.4"/> 
+    <jar href="findbugsGUI.jar"/> 
+    <jar href="findbugs.jar"/> 
+    <jar href="bcel.jar"/> 
+    <jar href="dom4j-full.jar"/> 
+    <property name="findbugs.home" value="./"/> 
+  </resources> 
+  <application-desc main-class="edu.umd.cs.findbugs.gui.FindBugsFrame"/> 
+</jnlp> 
+

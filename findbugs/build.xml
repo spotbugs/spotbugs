@@ -23,6 +23,7 @@
 	<property name="etc.dir" value="etc"/>
 	<property name="test.dir" value="test"/>
 	<property name="doc.dir" value="doc"/>
+	<property name="jnlp.dir" value="jnlp"/>
 	<property name="pkg.base" value="edu/umd/cs/findbugs"/>
 	<property name="engine.jar" value="${jar.dir}/findbugs.jar"/>
 	<property name="coreplugin.jar" value="${plugin.dir}/coreplugin.jar"/>
@@ -367,8 +368,22 @@
 		</java>
 	</target>
 	
+	<!-- Generate jnlp jars -->
+	<target name="jnlp" depends="jars">
+		<copy todir="${jnlp.dir}" file="${engine.jar}"/>
+		<copy todir="${jnlp.dir}" file="${gui.jar}"/>
+		<copy todir="${jnlp.dir}" file="${jar.dir}/bcel.jar"/>
+		<copy todir="${jnlp.dir}" file="${jar.dir}/dom4j-full.jar"/>
+		<input message="Enter keystore password:"  addproperty="password"/>
+		<signjar keystore="findbugs.keystore" alias="findbugs" storepass="${password}" keypass="${password}">
+			<fileset dir="${jnlp.dir}">
+				<include name="*.jar"/>
+			</fileset>
+		</signjar>
+	</target>
+	
 	<!-- Generate binary and source distributions. -->
-	<target name="dist" depends="bindist,srcdist"/>
+	<target name="dist" depends="bindist,srcdist,jnlp"/>
 	
 	<!-- Generate binary distribution (both .zip and .tar.gz) -->
 	<target name="bindist" depends="rebuild,docs">
