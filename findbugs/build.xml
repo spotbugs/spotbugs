@@ -370,14 +370,16 @@
 	
 	<!-- Generate jnlp jars -->
 	<target name="jnlp" depends="jars">
+		<mkdir dir="${jnlp.dir}/plugin"/>
 		<copy todir="${jnlp.dir}" file="${engine.jar}"/>
 		<copy todir="${jnlp.dir}" file="${gui.jar}"/>
 		<copy todir="${jnlp.dir}" file="${jar.dir}/bcel.jar"/>
-		<copy todir="${jnlp.dir}" file="${jar.dir}/dom4j-full.jar"/>
+		<copy todir="${jnlp.dir}" file="${jar.dir}/dom4j-full.jar"/>		
+		<copy todir="${jnlp.dir}/plugin" file="${plugin.dir}/coreplugin.jar"/>
 		<input message="Enter keystore password:"  addproperty="password"/>
 		<signjar keystore="findbugs.keystore" alias="findbugs" storepass="${password}" keypass="${password}">
 			<fileset dir="${jnlp.dir}">
-				<include name="*.jar"/>
+				<include name="**/*.jar"/>
 			</fileset>
 		</signjar>
 	</target>

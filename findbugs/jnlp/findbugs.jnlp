@@ -21,7 +21,8 @@
     <jar href="findbugs.jar"/> 
     <jar href="bcel.jar"/> 
     <jar href="dom4j-full.jar"/> 
-    <property name="findbugs.home" value="./"/> 
+    <jar href="plugin/coreplugin.jar"/>
+    <property name="findbugs.home" value="."/> 
   </resources> 
   <application-desc main-class="edu.umd.cs.findbugs.gui.FindBugsFrame"/> 
 </jnlp> 
