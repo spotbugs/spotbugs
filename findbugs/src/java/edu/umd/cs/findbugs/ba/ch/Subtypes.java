@@ -91,10 +91,9 @@ public class Subtypes {
 					}
 			} else if (co instanceof ConstantCP) {
 				ConstantCP co2 = (ConstantCP) co;
-				String className = ConstantNameAndType nt = (ConstantNameAndType) cp
+				ConstantNameAndType nt = (ConstantNameAndType) cp
 						.getConstant(co2.getNameAndTypeIndex());
-				String ref = getMemberName(c, co2.getClassIndex(), nt
-						.getNameIndex(), nt.getSignatureIndex());
+
 		
 			}
 		}
