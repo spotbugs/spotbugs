@@ -78,7 +78,8 @@ public class ClassContext implements AnalysisFeatures {
 	private static final boolean DEBUG_CFG = Boolean.getBoolean("classContext.debugCFG");
 	
 	private static final boolean MODEL_INSTANCEOF =
-		Boolean.getBoolean("classContext.modelInstanceof");
+		System.getProperty("classContext.modelInstanceof") == null ? true
+		: Boolean.getBoolean("classContext.modelInstanceof");
 
 	/* ----------------------------------------------------------------------
 	 * Helper classes
