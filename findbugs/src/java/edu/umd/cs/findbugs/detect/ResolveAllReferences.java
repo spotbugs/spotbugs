@@ -69,13 +69,7 @@ public class ResolveAllReferences extends PreorderVisitor implements Detector,
 	private String getClassName(JavaClass c, int nameIndex) {
 		String name = c.getConstantPool().getConstantString(nameIndex,
 				CONSTANT_Class);
-		if (name.charAt(0) != '[')
-			return name;
-		while (name.charAt(0) == '[')
-			name = name.substring(0);
-		if (name.charAt(0) == 'L' && name.charAt(name.length() - 1) == ';')
-			name = name.substring(1, name.length() - 1);
-		return name;
+		return Subtypes.extractClassName(name);
 	}
 
 	private String getMemberName(JavaClass c, int classNameIndex,

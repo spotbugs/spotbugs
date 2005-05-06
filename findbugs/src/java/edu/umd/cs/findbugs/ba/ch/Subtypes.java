@@ -19,7 +19,6 @@
 
 package edu.umd.cs.findbugs.ba.ch;
 
-
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -27,153 +26,185 @@ import java.util.Set;
 
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Constant;
+import org.apache.bcel.classfile.ConstantCP;
 import org.apache.bcel.classfile.ConstantClass;
 import org.apache.bcel.classfile.ConstantDouble;
 import org.apache.bcel.classfile.ConstantLong;
+import org.apache.bcel.classfile.ConstantNameAndType;
 import org.apache.bcel.classfile.ConstantPool;
 import org.apache.bcel.classfile.JavaClass;
 
-
 public class Subtypes {
-	private static final boolean DEBUG_HIERARCHY = Boolean.getBoolean("findbugs.debug.hierarchy");
+	private static final boolean DEBUG_HIERARCHY = Boolean
+			.getBoolean("findbugs.debug.hierarchy");
 
 	boolean computed = false;
+
 	Set<String> referenced = new HashSet<String>();
+
 	Set<JavaClass> handled = new HashSet<JavaClass>();
 
 	Set<JavaClass> parentsAdded = new HashSet<JavaClass>();
-	Map<JavaClass,Set<JavaClass>> immediateSubtypes =
-		new HashMap<JavaClass,Set<JavaClass>>();
-	Map<JavaClass,Set<JavaClass>> transitiveSubtypes =
-		new HashMap<JavaClass,Set<JavaClass>>();
+
+	Map<JavaClass, Set<JavaClass>> immediateSubtypes = new HashMap<JavaClass, Set<JavaClass>>();
+
+	Map<JavaClass, Set<JavaClass>> transitiveSubtypes = new HashMap<JavaClass, Set<JavaClass>>();
 
 	public Set<JavaClass> getImmediateSubtypes(JavaClass c) {
-		if (!handled.contains(c)) addClass(c);
-		if (!computed) compute();
+		if (!handled.contains(c))
+			addClass(c);
+		if (!computed)
+			compute();
 		return immediateSubtypes.get(c);
-		}
+	}
 
 	public Set<JavaClass> getAllClasses() {
-		if (!computed) compute();
+		if (!computed)
+			compute();
 		return handled;
 	}
+
 	public Set<JavaClass> getTransitiveSubtypes(JavaClass c) {
-		if (!handled.contains(c)) addClass(c);
-		if (!computed) compute();
+		if (!handled.contains(c))
+			addClass(c);
+		if (!computed)
+			compute();
 		return transitiveSubtypes.get(c);
-		}
+	}
 
 	public Set<JavaClass> getReferencedClasses(JavaClass c) {
 		Set<JavaClass> result = new HashSet<JavaClass>();
 		ConstantPool cp = c.getConstantPool();
 		Constant[] constants = cp.getConstantPool();
-		for(int i = 0; i < constants.length; i++) {
-		    Constant co = constants[i];
-		    if (co instanceof ConstantDouble 
-				|| co instanceof ConstantLong)
-			i++;
-		    if (co instanceof ConstantClass) {
-			String name = ((ConstantClass)co).getBytes(cp);
-			while (name.charAt(0) == '[') name = name.substring(1);
-			if (referenced.add(name))
-			try {
-			JavaClass clazz = Repository.lookupClass(name);
-			result.add(clazz);
-			} catch (ClassNotFoundException e) {
-				}
+		for (int i = 0; i < constants.length; i++) {
+			Constant co = constants[i];
+			if (co instanceof ConstantDouble || co instanceof ConstantLong)
+				i++;
+			if (co instanceof ConstantClass) {
+				String name = ((ConstantClass) co).getBytes(cp);
+				name = extractClassName(name);
+				if (referenced.add(name))
+					try {
+						JavaClass clazz = Repository.lookupClass(name);
+						result.add(clazz);
+					} catch (ClassNotFoundException e) {
+					}
+			} else if (co instanceof ConstantCP) {
+				ConstantCP co2 = (ConstantCP) co;
+				String className = ConstantNameAndType nt = (ConstantNameAndType) cp
+						.getConstant(co2.getNameAndTypeIndex());
+				String ref = getMemberName(c, co2.getClassIndex(), nt
+						.getNameIndex(), nt.getSignatureIndex());
+		
 			}
 		}
 		return result;
-		}
-		
-	public void addApplicationClass(JavaClass c) {
-		if (c == null) return;
-		if (DEBUG_HIERARCHY) 
-		System.out.println("Adding application class " + c.getClassName());
-		addClass(c);
-		for(JavaClass x : getReferencedClasses(c))
-			addClass(x);
-		}
-	public void addClass(JavaClass c) {
-		if (c == null) return;
-		if (!handled.add(c)) return;
+	}
 
-		if (DEBUG_HIERARCHY) 
-		System.out.println("Adding " + c.getClassName());
+	public void addApplicationClass(JavaClass c) {
+		if (c == null)
+			return;
+		if (DEBUG_HIERARCHY)
+			System.out.println("Adding application class " + c.getClassName());
+		addClass(c);
+		for (JavaClass x : getReferencedClasses(c))
+			addClass(x);
+	}
+
+	public void addClass(JavaClass c) {
+		if (c == null)
+			return;
+		if (!handled.add(c))
+			return;
+
+		if (DEBUG_HIERARCHY)
+			System.out.println("Adding " + c.getClassName());
 		Set<JavaClass> children = immediateSubtypes.get(c);
 		if (children == null)
 			immediateSubtypes.put(c, new HashSet<JavaClass>());
 		if (DEBUG_HIERARCHY && computed)
 			System.out.println("Need to recompute");
 		computed = false;
-		}
+	}
 
 	public void addParents(JavaClass c) {
-		if (!parentsAdded.add(c)) return;
+		if (!parentsAdded.add(c))
+			return;
 		try {
-		addParent(c.getSuperClass(),c);
-		for(JavaClass i : c.getInterfaces())
-			addParent(i,c);
+			addParent(c.getSuperClass(), c);
+			for (JavaClass i : c.getInterfaces())
+				addParent(i, c);
 		} catch (ClassNotFoundException e) {
-			if (DEBUG_HIERARCHY)  {
-				System.out.println("Error adding parent(s) of " + c.getClassName());
+			if (DEBUG_HIERARCHY) {
+				System.out.println("Error adding parent(s) of "
+						+ c.getClassName());
 				e.printStackTrace(System.out);
-				}
 			}
 		}
-	
+	}
+
 	public void addParent(JavaClass p, JavaClass c) {
-		if (p == null) return;
-		if (DEBUG_HIERARCHY) 
-		System.out.println("adding " + c.getClassName()
-				+ " is a " + p.getClassName());
+		if (p == null)
+			return;
+		if (DEBUG_HIERARCHY)
+			System.out.println("adding " + c.getClassName() + " is a "
+					+ p.getClassName());
 		addClass(p);
 		addParents(p);
 		Set<JavaClass> children = immediateSubtypes.get(p);
 		children.add(c);
-		}
+	}
 
 	public void compute() {
-		if (DEBUG_HIERARCHY) 
-		System.out.println("Computing {");
+		if (DEBUG_HIERARCHY)
+			System.out.println("Computing {");
 		immediateSubtypes.clear();
 		transitiveSubtypes.clear();
 		parentsAdded.clear();
-		for(JavaClass c : handled)  {
+		for (JavaClass c : handled) {
 			immediateSubtypes.put(c, new HashSet<JavaClass>());
-			}
-		for(JavaClass c : new HashSet<JavaClass>(handled))  {
-			addParents(c);
-			}
-		for(JavaClass c : handled)  {
-			compute(c);
-			}
-		if (DEBUG_HIERARCHY) 
-		System.out.println("} Done Computing");
-		computed = true;
 		}
+		for (JavaClass c : new HashSet<JavaClass>(handled)) {
+			addParents(c);
+		}
+		for (JavaClass c : handled) {
+			compute(c);
+		}
+		if (DEBUG_HIERARCHY)
+			System.out.println("} Done Computing");
+		computed = true;
+	}
 
 	public Set<JavaClass> compute(JavaClass c) {
-		if (DEBUG_HIERARCHY) 
-			System.out.println(" compute " + c.getClassName()
-				+ " : " + immediateSubtypes.get(c).size());
+		if (DEBUG_HIERARCHY)
+			System.out.println(" compute " + c.getClassName() + " : "
+					+ immediateSubtypes.get(c).size());
 		Set<JavaClass> descendents = transitiveSubtypes.get(c);
 		if (descendents != null) {
 			if (!descendents.contains(c))
 				System.out.println("This is wrong for " + c.getClassName());
 			return descendents;
-			}
+		}
 		descendents = new HashSet<JavaClass>();
 		descendents.add(c);
 		transitiveSubtypes.put(c, descendents);
-		for(JavaClass child : immediateSubtypes.get(c)) {
+		for (JavaClass child : immediateSubtypes.get(c)) {
 			descendents.add(c);
 			descendents.addAll(compute(child));
-			}
-		if (DEBUG_HIERARCHY) 
-		System.out.println(c.getClassName() + " has " + descendents.size()
-				+ " decendents");
-		return descendents;
 		}
+		if (DEBUG_HIERARCHY)
+			System.out.println(c.getClassName() + " has " + descendents.size()
+					+ " decendents");
+		return descendents;
 	}
-		
+
+	public static String extractClassName(String name) {
+		if (name.charAt(0) != '[' && name.charAt(name.length() -1) != ';')
+			return name;
+		while (name.charAt(0) == '[')
+			name = name.substring(0);
+		if (name.charAt(0) == 'L' && name.charAt(name.length() - 1) == ';')
+			name = name.substring(1, name.length() - 1);
+		return name;
+	}
+}
