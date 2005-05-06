@@ -95,6 +95,15 @@ Normally, this detector does nothing.</p>
     </Details>
   </Detector>
 
+  <Detector class="edu.umd.cs.findbugs.detect.ResolveAllReferences">
+    <Details>
+<![CDATA[
+<p> Checks that all references call be resolved.  </p>
+]]>
+    </Details>
+  </Detector>
+
+
   <Detector class="edu.umd.cs.findbugs.detect.SwitchFallthrough">
     <Details>
 <![CDATA[

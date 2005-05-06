@@ -53,7 +53,10 @@ public class Subtypes {
 		return immediateSubtypes.get(c);
 		}
 
-
+	public Set<JavaClass> getAllClasses() {
+		if (!computed) compute();
+		return handled;
+	}
 	public Set<JavaClass> getTransitiveSubtypes(JavaClass c) {
 		if (!handled.contains(c)) addClass(c);
 		if (!computed) compute();
@@ -71,7 +74,8 @@ public class Subtypes {
 			i++;
 		    if (co instanceof ConstantClass) {
 			String name = ((ConstantClass)co).getBytes(cp);
-			if (name.charAt(0) != '[' && referenced.add(name))
+			while (name.charAt(0) == '[') name = name.substring(1);
+			if (referenced.add(name))
 			try {
 			JavaClass clazz = Repository.lookupClass(name);
 			result.add(clazz);

@@ -34,7 +34,7 @@ import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.visitclass.Constants2;
 
-public class TestingGround extends BytecodeScanningDetector implements Constants2, StatelessDetector {
+public class TestingGround extends BytecodeScanningDetector implements Constants2 {
 
 	private static final boolean active 
 		 = Boolean.getBoolean("findbugs.tg.active");
