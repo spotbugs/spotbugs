@@ -140,6 +140,20 @@ public class DetectorFactoryCollection {
 	private void loadPlugins() {
 		// Load all detector plugins.
 	
+		//If we are running under jaws, just use the loaded plugin
+	    if (Boolean.getBoolean("findbugs.jaws")) {
+			URL u = DetectorFactoryCollection.class.getResource("/findbugs.xml");
+		    File[] plugins = new File[1];
+		    if (u != null) {
+		        String path = new File(u.toString()).getParent();
+		        path = path.substring("jar:file:".length());
+		        path = path.substring(0, path.length() - 1);
+		        System.out.println("Jaws uses plugin: " + path);
+		        plugins[0] = new File(path);
+		        setPluginList(plugins);
+		    }
+		}
+		
 		if (pluginList == null) {
 			String homeDir = FindBugs.getHome();
 			if (homeDir == null)
