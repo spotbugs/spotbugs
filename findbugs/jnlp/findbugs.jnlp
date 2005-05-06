@@ -16,13 +16,14 @@
       <all-permissions/> 
   </security> 
   <resources> 
-    <j2se version="1.4"/> 
+    <j2se version="1.4+" initial-heap-size="300m" max-heap-size="800m"/>
     <jar href="findbugsGUI.jar"/> 
     <jar href="findbugs.jar"/> 
     <jar href="bcel.jar"/> 
     <jar href="dom4j-full.jar"/> 
     <jar href="plugin/coreplugin.jar"/>
-    <property name="findbugs.home" value="."/> 
+    <property name="findbugs.jaws" value="true"/>
+    <property name="findbugs.noSummary" value="true"/>
   </resources> 
   <application-desc main-class="edu.umd.cs.findbugs.gui.FindBugsFrame"/> 
 </jnlp> 
