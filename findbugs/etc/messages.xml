@@ -2306,31 +2306,6 @@ before being initialized.
     </Details>
   </BugPattern>
 
-
-  <BugPattern type="UWF_UNWRITTEN_FIELD">
-    <ShortDescription>Unwritten field</ShortDescription>
-    <LongDescription>Unwritten field: {1}</LongDescription>
-    <Details>
-<![CDATA[
-  <p> This field is never written.&nbsp; All reads of it will return the default
-value. Check for errors (should it have been initialized?), or remove it if it is useless.</p>
-]]>
-    </Details>
-  </BugPattern>
-
-  <BugPattern type="SIC_INNER_SHOULD_BE_STATIC">
-    <ShortDescription>Should be a static inner class</ShortDescription>
-    <LongDescription>Should {0} be a _static_ inner class?</LongDescription>
-    <Details>
-<![CDATA[
-  <p> This class is an inner class, but does not use its embedded reference
-  to the object which created it.&nbsp; This reference makes the instances
-  of the class larger, and may keep the reference to the creator object
-  alive longer than necessary.&nbsp; If possible, the class should be
-  made into a <em>static</em> inner class.</p>
-]]>
-    </Details>
-  </BugPattern>
   <BugPattern type="SIC_INNER_SHOULD_BE_STATIC_ANON">
     <ShortDescription>Could be refactored into a named static inner class</ShortDescription>
     <LongDescription>The class {0} could be refactored into a named _static_ inner class</LongDescription>
