@@ -119,7 +119,7 @@ public class SortedBugCollection extends BugCollection {
 		// unique id.
 		String uniqueId = bugInstance.getUniqueId();
 		if (uniqueId == null || uniqueIdToBugInstanceMap.get(uniqueId) != null) {
-			assignUniqueId(bugInstance);
+			uniqueId = assignUniqueId(bugInstance);
 		}
 		uniqueIdToBugInstanceMap.put(uniqueId, bugInstance);
 	}
@@ -129,13 +129,14 @@ public class SortedBugCollection extends BugCollection {
 	 * 
 	 * @param bugInstance the BugInstance to be assigned a unique id
 	 */
-	private void assignUniqueId(BugInstance bugInstance) {
+	private String assignUniqueId(BugInstance bugInstance) {
 		String uniqueId;
 		do {
 			uniqueId = String.valueOf(generatedUniqueIdCount++);
 		} while (uniqueIdToBugInstanceMap.get(uniqueId) != null);
 		
 		bugInstance.setUniqueId(uniqueId);
+		return uniqueId;
 	}
 
 	public boolean remove(BugInstance bugInstance) {
