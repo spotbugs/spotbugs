@@ -53,14 +53,16 @@ public class XMLBugReporter extends BugCollectionBugReporter {
 
 	//@Override
 	public void doReportBug(BugInstance bugInstance) {
+		// Add it to the bug collection and notify observers
+		super.doReportBug(bugInstance);
+		
+		// Write it to output
 		try {
 			getReady();
 			bugInstance.writeXML(xmlOutput, addMessages);
 		} catch (IOException e) {
 			throw new FatalException("Error writing XML output", e);
 		}
-		
-		super.doReportBug(bugInstance);
 	}
 
 	private void getReady() throws IOException {
