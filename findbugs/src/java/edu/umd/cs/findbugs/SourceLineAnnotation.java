@@ -424,9 +424,16 @@ public class SourceLineAnnotation implements BugAnnotation {
 		String role = getDescription();
 		if (!role.equals(DEFAULT_ROLE))
 			attributeList.addAttribute("role", getDescription());
-		
-		// Note: no Message element added to SourceLine annotations
-		xmlOutput.openCloseTag(ELEMENT_NAME, attributeList);
+
+		if (addMessages) {
+			xmlOutput.openTag(ELEMENT_NAME, attributeList);
+			xmlOutput.openTag("Message");
+			xmlOutput.writeText(this.toString());
+			xmlOutput.closeTag("Message");
+			xmlOutput.closeTag(ELEMENT_NAME);
+		} else {
+			xmlOutput.openCloseTag(ELEMENT_NAME, attributeList);
+		}
 	}
 }
 
