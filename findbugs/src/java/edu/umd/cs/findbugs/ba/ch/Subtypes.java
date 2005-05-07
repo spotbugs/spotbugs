@@ -32,10 +32,15 @@ import org.apache.bcel.classfile.ConstantDouble;
 import org.apache.bcel.classfile.ConstantLong;
 import org.apache.bcel.classfile.ConstantNameAndType;
 import org.apache.bcel.classfile.ConstantPool;
+import org.apache.bcel.classfile.ConstantUtf8;
 import org.apache.bcel.classfile.JavaClass;
 
+import edu.umd.cs.findbugs.ba.AnalysisContext;
+
 public class Subtypes {
-	private static final boolean DEBUG_HIERARCHY = Boolean
+	private static final boolean DEBUG_HIERARCHY 
+	= false ||
+       Boolean
 			.getBoolean("findbugs.debug.hierarchy");
 
 	boolean computed = false;
@@ -74,6 +79,7 @@ public class Subtypes {
 
 	public Set<JavaClass> getReferencedClasses(JavaClass c) {
 		Set<JavaClass> result = new HashSet<JavaClass>();
+		if (DEBUG_HIERARCHY) System.out.println("adding referenced classes for " + c.getClassName());
 		ConstantPool cp = c.getConstantPool();
 		Constant[] constants = cp.getConstantPool();
 		for (int i = 0; i < constants.length; i++) {
@@ -83,21 +89,41 @@ public class Subtypes {
 			if (co instanceof ConstantClass) {
 				String name = ((ConstantClass) co).getBytes(cp);
 				name = extractClassName(name);
-				if (referenced.add(name))
-					try {
-						JavaClass clazz = Repository.lookupClass(name);
-						result.add(clazz);
-					} catch (ClassNotFoundException e) {
-					}
+				if (DEBUG_HIERARCHY) System.out.println(i + " : " + name);
+				addNamedClass(result, name);
 			} else if (co instanceof ConstantCP) {
 				ConstantCP co2 = (ConstantCP) co;
 				ConstantNameAndType nt = (ConstantNameAndType) cp
 						.getConstant(co2.getNameAndTypeIndex());
+				String sig = ((ConstantUtf8) cp.getConstant(nt
+						.getSignatureIndex())).getBytes();
+				while (true) {
+					int j = sig.indexOf('L');
+					if (j == -1)
+						break;
+					int k = sig.indexOf(';', j);
+					String name = sig.substring(j + 1, k);
+					if (DEBUG_HIERARCHY) System.out.println(i + " : " + name);
+					addNamedClass(result, name);
+					sig = sig.substring(k + 1);
+				}
 
-		
 			}
 		}
 		return result;
+	}
+
+	private void addNamedClass(Set<JavaClass> result, String name) {
+		name = name.replace('/','.');
+
+		if (referenced.add(name))
+			try {
+				// System.out.println("Adding " + name);
+				JavaClass clazz = Repository.lookupClass(name);
+				result.add(clazz);
+			} catch (ClassNotFoundException e) {
+				AnalysisContext.currentAnalysisContext().getLookupFailureCallback().reportMissingClass(e);
+			}
 	}
 
 	public void addApplicationClass(JavaClass c) {
@@ -134,11 +160,7 @@ public class Subtypes {
 			for (JavaClass i : c.getInterfaces())
 				addParent(i, c);
 		} catch (ClassNotFoundException e) {
-			if (DEBUG_HIERARCHY) {
-				System.out.println("Error adding parent(s) of "
-						+ c.getClassName());
-				e.printStackTrace(System.out);
-			}
+			AnalysisContext.currentAnalysisContext().getLookupFailureCallback().reportMissingClass(e);
 		}
 	}
 
@@ -198,10 +220,10 @@ public class Subtypes {
 	}
 
 	public static String extractClassName(String name) {
-		if (name.charAt(0) != '[' && name.charAt(name.length() -1) != ';')
+		if (name.charAt(0) != '[' && name.charAt(name.length() - 1) != ';')
 			return name;
 		while (name.charAt(0) == '[')
-			name = name.substring(0);
+			name = name.substring(1);
 		if (name.charAt(0) == 'L' && name.charAt(name.length() - 1) == ';')
 			name = name.substring(1, name.length() - 1);
 		return name;

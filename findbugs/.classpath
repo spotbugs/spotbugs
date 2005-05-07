@@ -5,7 +5,10 @@
 	<classpathentry excluding="**/CVS/*" kind="src" path="src/junit"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/AppleJavaExtensions.jar"/>
-	<classpathentry sourcepath="/home/daveho/work/jakarta-bcel/src/java" kind="lib" path="lib/bcel.jar"/>
+	<classpathentry sourcepath="/bcel/src" kind="lib" path="lib/bcel.jar">
+		<attributes>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="lib" path="lib/dom4j-full.jar"/>
 	<classpathentry kind="lib" path="lib/junit.jar"/>
 	<classpathentry kind="output" path="build/classes"/>

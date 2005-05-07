@@ -1,4 +1,6 @@
-public class A implements I1, I2 {
-	public void i1() { System.out.println("A.i1()"); }
-	public void i2() { System.out.println("A.i2()"); }
+
+class A {
+	public static void main(String args[]) {
+		System.out.println(args[0].replace("x","y"));
+	}
 }

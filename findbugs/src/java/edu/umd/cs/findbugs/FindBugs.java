@@ -978,6 +978,9 @@ public class FindBugs implements Constants2, ExitCodes {
 		// Keep track of the names of all classes to be analyzed
 		List<String> repositoryClassList = new LinkedList<String>();
 
+		// set the initial repository classpath.
+		setRepositoryClassPath();
+		
 		// Record additional entries that should be added to
 		// the aux classpath.  These occur when one or more classes
 		// in a directory or archive are skipped, to ensure that
@@ -991,9 +994,11 @@ public class FindBugs implements Constants2, ExitCodes {
 				additionalAuxClasspathEntryList);
 		}
 		
-		// Now that we have scanned all specified archives and directories,
-		// we can set the repository classpath.
-		setRepositoryClassPath(additionalAuxClasspathEntryList);
+
+		
+		// Add "extra" aux classpath entries needed to ensure that
+		// skipped classes can be referenced.
+		addCollectionToClasspath(additionalAuxClasspathEntryList);
 
 		// Callback for progress dialog: analysis is starting
 		progressCallback.startAnalysis(repositoryClassList.size());
@@ -1138,16 +1143,14 @@ public class FindBugs implements Constants2, ExitCodes {
 	 * by the Repository when looking up classes.
 	 * @throws IOException
 	 */
-	private void setRepositoryClassPath(List<String> additionalAuxClasspathEntryList) {
+	private void setRepositoryClassPath() {
 		// Set aux classpath entries
 		addCollectionToClasspath(project.getAuxClasspathEntryList());
 		
 		// Set implicit classpath entries
 		addCollectionToClasspath(project.getImplicitClasspathEntryList());
 
-		// Add "extra" aux classpath entries needed to ensure that
-		// skipped classes can be referenced.
-		addCollectionToClasspath(additionalAuxClasspathEntryList);
+
 
 		// Add system classpath entries
 		String systemClassPath = ClassPath.getClassPath();
