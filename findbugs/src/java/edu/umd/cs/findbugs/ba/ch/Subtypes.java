@@ -38,48 +38,47 @@ import org.apache.bcel.classfile.JavaClass;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 
 public class Subtypes {
-	private static final boolean DEBUG_HIERARCHY 
-	= false ||
-       Boolean
+	private static final boolean DEBUG_HIERARCHY = false || Boolean
 			.getBoolean("findbugs.debug.hierarchy");
 
-	boolean computed = false;
+	private boolean computed = false;
 
-	Set<String> referenced = new HashSet<String>();
+	private Set<String> referenced = new HashSet<String>();
 
-	Set<JavaClass> handled = new HashSet<JavaClass>();
+	private Set<JavaClass> allClasses = new HashSet<JavaClass>();
 
-	Set<JavaClass> parentsAdded = new HashSet<JavaClass>();
+	private Set<JavaClass> applicationClasses = new HashSet<JavaClass>();
 
-	Map<JavaClass, Set<JavaClass>> immediateSubtypes = new HashMap<JavaClass, Set<JavaClass>>();
+	private Set<JavaClass> parentsAdded = new HashSet<JavaClass>();
 
-	Map<JavaClass, Set<JavaClass>> transitiveSubtypes = new HashMap<JavaClass, Set<JavaClass>>();
+	private Map<JavaClass, Set<JavaClass>> immediateSubtypes = new HashMap<JavaClass, Set<JavaClass>>();
+
+	private Map<JavaClass, Set<JavaClass>> transitiveSubtypes = new HashMap<JavaClass, Set<JavaClass>>();
 
 	public Set<JavaClass> getImmediateSubtypes(JavaClass c) {
-		if (!handled.contains(c))
+		if (!allClasses.contains(c))
 			addClass(c);
-		if (!computed)
-			compute();
+		compute();
 		return immediateSubtypes.get(c);
 	}
 
 	public Set<JavaClass> getAllClasses() {
-		if (!computed)
-			compute();
-		return handled;
+		compute();
+		return allClasses;
 	}
 
 	public Set<JavaClass> getTransitiveSubtypes(JavaClass c) {
-		if (!handled.contains(c))
+		if (!allClasses.contains(c))
 			addClass(c);
-		if (!computed)
-			compute();
+		compute();
 		return transitiveSubtypes.get(c);
 	}
 
-	public Set<JavaClass> getReferencedClasses(JavaClass c) {
+	private Set<JavaClass> getReferencedClasses(JavaClass c) {
 		Set<JavaClass> result = new HashSet<JavaClass>();
-		if (DEBUG_HIERARCHY) System.out.println("adding referenced classes for " + c.getClassName());
+		if (DEBUG_HIERARCHY)
+			System.out.println("adding referenced classes for "
+					+ c.getClassName());
 		ConstantPool cp = c.getConstantPool();
 		Constant[] constants = cp.getConstantPool();
 		for (int i = 0; i < constants.length; i++) {
@@ -89,7 +88,8 @@ public class Subtypes {
 			if (co instanceof ConstantClass) {
 				String name = ((ConstantClass) co).getBytes(cp);
 				name = extractClassName(name);
-				if (DEBUG_HIERARCHY) System.out.println(i + " : " + name);
+				if (DEBUG_HIERARCHY)
+					System.out.println(i + " : " + name);
 				addNamedClass(result, name);
 			} else if (co instanceof ConstantCP) {
 				ConstantCP co2 = (ConstantCP) co;
@@ -103,7 +103,8 @@ public class Subtypes {
 						break;
 					int k = sig.indexOf(';', j);
 					String name = sig.substring(j + 1, k);
-					if (DEBUG_HIERARCHY) System.out.println(i + " : " + name);
+					if (DEBUG_HIERARCHY)
+						System.out.println(i + " : " + name);
 					addNamedClass(result, name);
 					sig = sig.substring(k + 1);
 				}
@@ -114,15 +115,17 @@ public class Subtypes {
 	}
 
 	private void addNamedClass(Set<JavaClass> result, String name) {
-		name = name.replace('/','.');
+		name = name.replace('/', '.');
 
 		if (referenced.add(name))
 			try {
-				// System.out.println("Adding " + name);
+				
 				JavaClass clazz = Repository.lookupClass(name);
 				result.add(clazz);
 			} catch (ClassNotFoundException e) {
-				AnalysisContext.currentAnalysisContext().getLookupFailureCallback().reportMissingClass(e);
+				if (name.length() > 1)
+				AnalysisContext.currentAnalysisContext()
+						.getLookupFailureCallback().reportMissingClass(e);
 			}
 	}
 
@@ -131,28 +134,26 @@ public class Subtypes {
 			return;
 		if (DEBUG_HIERARCHY)
 			System.out.println("Adding application class " + c.getClassName());
-		addClass(c);
-		for (JavaClass x : getReferencedClasses(c))
-			addClass(x);
+		if (applicationClasses.add(c)) {
+			if (DEBUG_HIERARCHY && computed)
+				System.out.println("Need to recompute");
+			computed = false;
+		}
+
 	}
 
 	public void addClass(JavaClass c) {
 		if (c == null)
 			return;
-		if (!handled.add(c))
-			return;
-
-		if (DEBUG_HIERARCHY)
-			System.out.println("Adding " + c.getClassName());
-		Set<JavaClass> children = immediateSubtypes.get(c);
-		if (children == null)
+		if (allClasses.add(c)) {
 			immediateSubtypes.put(c, new HashSet<JavaClass>());
-		if (DEBUG_HIERARCHY && computed)
-			System.out.println("Need to recompute");
-		computed = false;
+			if (DEBUG_HIERARCHY && computed)
+				System.out.println("Need to recompute");
+			computed = false;
+		}
 	}
 
-	public void addParents(JavaClass c) {
+	private void addParents(JavaClass c) {
 		if (!parentsAdded.add(c))
 			return;
 		try {
@@ -160,11 +161,12 @@ public class Subtypes {
 			for (JavaClass i : c.getInterfaces())
 				addParent(i, c);
 		} catch (ClassNotFoundException e) {
-			AnalysisContext.currentAnalysisContext().getLookupFailureCallback().reportMissingClass(e);
+			AnalysisContext.currentAnalysisContext().getLookupFailureCallback()
+					.reportMissingClass(e);
 		}
 	}
 
-	public void addParent(JavaClass p, JavaClass c) {
+	private void addParent(JavaClass p, JavaClass c) {
 		if (p == null)
 			return;
 		if (DEBUG_HIERARCHY)
@@ -177,26 +179,31 @@ public class Subtypes {
 	}
 
 	public void compute() {
+		if (computed) return;
 		if (DEBUG_HIERARCHY)
 			System.out.println("Computing {");
 		immediateSubtypes.clear();
 		transitiveSubtypes.clear();
 		parentsAdded.clear();
-		for (JavaClass c : handled) {
-			immediateSubtypes.put(c, new HashSet<JavaClass>());
+		for (JavaClass c : applicationClasses) {
+			addClass(c);
+			for (JavaClass r : getReferencedClasses(c))
+				addClass(r);
 		}
-		for (JavaClass c : new HashSet<JavaClass>(handled)) {
+
+		for (JavaClass c : new HashSet<JavaClass>(allClasses)) {
 			addParents(c);
 		}
-		for (JavaClass c : handled) {
+		for (JavaClass c : allClasses) {
 			compute(c);
 		}
+		parentsAdded.clear();
 		if (DEBUG_HIERARCHY)
 			System.out.println("} Done Computing");
 		computed = true;
 	}
 
-	public Set<JavaClass> compute(JavaClass c) {
+	private Set<JavaClass> compute(JavaClass c) {
 		if (DEBUG_HIERARCHY)
 			System.out.println(" compute " + c.getClassName() + " : "
 					+ immediateSubtypes.get(c).size());
