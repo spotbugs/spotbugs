@@ -19,20 +19,31 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.regex.Pattern;
 
-import edu.umd.cs.findbugs.OpcodeStack;
+import org.apache.bcel.Repository;
+import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.ConstantValue;
+import org.apache.bcel.classfile.Field;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.Type;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
-import edu.umd.cs.findbugs.MethodAnnotation;
-import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.FieldAnnotation;
+import edu.umd.cs.findbugs.MethodAnnotation;
+import edu.umd.cs.findbugs.OpcodeStack;
+import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.visitclass.Constants2;
 import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
-import org.apache.bcel.Repository;
-import org.apache.bcel.classfile.*;
-import org.apache.bcel.generic.Type;
 
 public class UnreadFields extends BytecodeScanningDetector implements Constants2 {
 	private static final boolean DEBUG = Boolean.getBoolean("unreadfields.debug");
@@ -338,6 +349,7 @@ public class UnreadFields extends BytecodeScanningDetector implements Constants2
 		
 	}
 
+	Pattern dontComplainAbout = Pattern.compile("class[$]");
 	public void report() {
 
 		TreeSet<FieldAnnotation> notInitializedInConstructors =
@@ -417,15 +429,39 @@ public class UnreadFields extends BytecodeScanningDetector implements Constants2
 			if (DEBUG) {
 			System.out.println("Checking write only field " + className
 					+ "." + fieldName
-					+ "\t" + superReadFields.contains(f.getFieldName())
+					+ "\t" + superReadFields.contains(fieldName)
 					+ "\t" + constantFields.contains(f)
 					+ "\t" + f.isStatic()
 					);
 			}
-			if (superReadFields.contains(f.getFieldName())) continue;
-			if (!fieldName.startsWith("this$")
-			        && !fieldName.startsWith("this+")
-			) {
+			if (superReadFields.contains(fieldName)) continue;
+			if (dontComplainAbout.matcher(fieldName).find()) continue;
+			if (fieldName.startsWith("this$")
+			        || fieldName.startsWith("this+")) {
+				 if (!innerClassCannotBeStatic.contains(className)) {
+						boolean easyChange = !needsOuterObjectInConstructor.contains(className);
+						if (easyChange || !isAnonymousInnerClass) {
+
+							// easyChange    isAnonymousInnerClass
+							// true          false			medium, SIC
+							// true          true				low, SIC_ANON
+							// false         true				not reported
+							// false         false			low, SIC_THIS
+							int priority = LOW_PRIORITY;
+							if (easyChange && !isAnonymousInnerClass)
+								priority = NORMAL_PRIORITY;
+
+							String bug = "SIC_INNER_SHOULD_BE_STATIC";
+							if (isAnonymousInnerClass)
+								bug = "SIC_INNER_SHOULD_BE_STATIC_ANON";
+							else if (!easyChange)
+								bug = "SIC_INNER_SHOULD_BE_STATIC_NEEDS_THIS";
+
+							bugReporter.reportBug(new BugInstance(this, bug, priority)
+							        .addClass(className));
+						} 
+				 } 
+			} else  {
 				if (constantFields.contains(f)) {
 					if (!f.isStatic())
 					bugReporter.reportBug(new BugInstance(this, 
@@ -436,7 +472,7 @@ public class UnreadFields extends BytecodeScanningDetector implements Constants2
 					}
 				else if (fieldsOfSerializableOrNativeClassed.contains(f)) {
 					// ignore it
-				} else if (!writtenFields.contains(f) && !superWrittenFields.contains(f.getFieldName()))
+				} else if (!writtenFields.contains(f) && !superWrittenFields.contains(fieldName))
 					bugReporter.reportBug(new BugInstance(this, "UUF_UNUSED_FIELD", NORMAL_PRIORITY)
 					        .addClass(className)
 					        .addField(f));
@@ -444,29 +480,7 @@ public class UnreadFields extends BytecodeScanningDetector implements Constants2
 					bugReporter.reportBug(new BugInstance(this, "URF_UNREAD_FIELD", NORMAL_PRIORITY)
 					        .addClass(className)
 					        .addField(f));
-			} else if (!innerClassCannotBeStatic.contains(className)) {
-				boolean easyChange = !needsOuterObjectInConstructor.contains(className);
-				if (easyChange || !isAnonymousInnerClass) {
-
-					// easyChange    isAnonymousInnerClass
-					// true          false			medium, SIC
-					// true          true				low, SIC_ANON
-					// false         true				not reported
-					// false         false			low, SIC_THIS
-					int priority = LOW_PRIORITY;
-					if (easyChange && !isAnonymousInnerClass)
-						priority = NORMAL_PRIORITY;
-
-					String bug = "SIC_INNER_SHOULD_BE_STATIC";
-					if (isAnonymousInnerClass)
-						bug = "SIC_INNER_SHOULD_BE_STATIC_ANON";
-					else if (!easyChange)
-						bug = "SIC_INNER_SHOULD_BE_STATIC_NEEDS_THIS";
-
-					bugReporter.reportBug(new BugInstance(this, bug, priority)
-					        .addClass(className));
-				}
-			}
+			} 
 		}
 
 	}
