@@ -8,6 +8,7 @@ import org.apache.bcel.classfile.Constant;
 import org.apache.bcel.classfile.ConstantCP;
 import org.apache.bcel.classfile.ConstantClass;
 import org.apache.bcel.classfile.ConstantDouble;
+import org.apache.bcel.classfile.ConstantFieldref;
 import org.apache.bcel.classfile.ConstantLong;
 import org.apache.bcel.classfile.ConstantNameAndType;
 import org.apache.bcel.classfile.ConstantPool;
@@ -38,6 +39,7 @@ public class ResolveAllReferences extends PreorderVisitor implements Detector,
 
 	private void compute() {
 		if (defined == null) {
+			// System.out.println("Computing");
 			defined = new HashSet<String>();
 			Subtypes subtypes = AnalysisContext.currentAnalysisContext()
 					.getSubtypes();
@@ -45,6 +47,7 @@ public class ResolveAllReferences extends PreorderVisitor implements Detector,
 			allClasses = subtypes.getAllClasses();
 			for (JavaClass c : allClasses)
 				addAllDefinitions(c);
+			// System.out.println("Done Computing: " + defined.contains("edu.umd.cs.findbugs.ba.IsNullValueAnalysis.UNKNOWN_VALUES_ARE_NSP : Z"));
 		}
 	}
 
@@ -64,13 +67,14 @@ public class ResolveAllReferences extends PreorderVisitor implements Detector,
 			if (!m.isPrivate()) {
 				String name = getMemberName(obj, className2, m.getNameIndex(),
 						m.getSignatureIndex());
-				
 				defined.add(name);
 			}
 		for (Field f : obj.getFields())
-			if (!f.isPrivate())
-				defined.add(getMemberName(obj, className2, f.getNameIndex(), f
-						.getSignatureIndex()));
+			if (!f.isPrivate()) {
+				String name = getMemberName(obj, className2, f.getNameIndex(), f
+						.getSignatureIndex());
+				defined.add(name);
+			}
 	}
 
 	private String getClassName(JavaClass c, int classIndex) {
@@ -85,7 +89,8 @@ public class ResolveAllReferences extends PreorderVisitor implements Detector,
 				+ "."
 				+ ((ConstantUtf8) c.getConstantPool().getConstant(
 						memberNameIndex, CONSTANT_Utf8)).getBytes()
-				+ ((ConstantUtf8) c.getConstantPool().getConstant(
+						+ " : "
+						+ ((ConstantUtf8) c.getConstantPool().getConstant(
 						signatureIndex, CONSTANT_Utf8)).getBytes();
 	}
 
@@ -101,9 +106,10 @@ public class ResolveAllReferences extends PreorderVisitor implements Detector,
 				String ref = getClassName(obj, i).replace('/','.');
 				if (!defined.contains(ref))
 					System.out.println(getClassName()
-							+ " makes unresolvable reference to " + ref + " : "
-							+ defined.size());
+							+ " makes unresolvable reference to " + ref );
 
+			} else if (co instanceof ConstantFieldref) {
+				// do nothing until we handle static fields defined in interfaces
 			} else if (co instanceof ConstantCP) {
 				ConstantCP co2 = (ConstantCP) co;
 				String className = getClassName(obj, co2.getClassIndex()).replace('/','.');
@@ -113,10 +119,10 @@ public class ResolveAllReferences extends PreorderVisitor implements Detector,
 
 				String ref = getMemberName(obj, className, nt.getNameIndex(),
 						nt.getSignatureIndex());
-
+				// System.out.println("checking " + ref);
 				if (className.equals(obj.getClassName())
 						|| !defined.contains(className)) {
-					
+					// System.out.println("Skipping check of " + ref);
 					continue checkConstant;
 				}
 				
@@ -128,6 +134,10 @@ public class ResolveAllReferences extends PreorderVisitor implements Detector,
 				
 				try {
 					JavaClass target = Repository.lookupClass(className);
+					if (target.isInterface() || target.isAbstract()) {
+						// System.out.println("Skipping interface for " + ref);
+						continue checkConstant;
+					}
 					while (true) {
 						
 						target = target.getSuperClass();
@@ -142,8 +152,7 @@ public class ResolveAllReferences extends PreorderVisitor implements Detector,
 					}
 			
 					System.out.println(getClassName()
-							+ " makes unresolvable reference to " + ref + " : "
-							+ defined.size());
+							+ " makes unresolvable reference to '" + ref + "' : " + defined.contains(ref) );
 				} catch (ClassNotFoundException e) {
 					bugReporter.reportMissingClass(e);
 				}
