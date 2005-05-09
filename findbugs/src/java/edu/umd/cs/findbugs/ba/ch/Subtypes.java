@@ -146,11 +146,18 @@ public class Subtypes {
 		if (c == null)
 			return;
 		if (allClasses.add(c)) {
+			if (DEBUG_HIERARCHY)
+				System.out.println("ADDING " + c.getClassName() + " " + System.identityHashCode(c) + " " + c.hashCode());
+			
 			immediateSubtypes.put(c, new HashSet<JavaClass>());
 			if (DEBUG_HIERARCHY && computed)
 				System.out.println("Need to recompute");
 			computed = false;
-		}
+		} else if (!immediateSubtypes.containsKey(c)) {
+			if (DEBUG_HIERARCHY)
+				System.out.println("INITIALIZING " + c.getClassName() + " " + System.identityHashCode(c) + " " + c.hashCode());
+			immediateSubtypes.put(c, new HashSet<JavaClass>());
+			}
 	}
 
 	private void addParents(JavaClass c) {
@@ -182,9 +189,7 @@ public class Subtypes {
 		if (computed) return;
 		if (DEBUG_HIERARCHY)
 			System.out.println("Computing {");
-		immediateSubtypes.clear();
 		transitiveSubtypes.clear();
-		parentsAdded.clear();
 		for (JavaClass c : applicationClasses) {
 			addClass(c);
 			for (JavaClass r : getReferencedClasses(c))
@@ -205,8 +210,14 @@ public class Subtypes {
 
 	private Set<JavaClass> compute(JavaClass c) {
 		if (DEBUG_HIERARCHY)
-			System.out.println(" compute " + c.getClassName() + " : "
-					+ immediateSubtypes.get(c).size());
+			System.out.println(" compute " + c.getClassName()
+			+ " " 
+			+ System.identityHashCode(c)
+			+ " " 
+			+ c.hashCode()
+			+ " " 
+			+ (immediateSubtypes.get(c) == null 
+			   ? " id is null" : " id is non null"));
 		Set<JavaClass> descendents = transitiveSubtypes.get(c);
 		if (descendents != null) {
 			if (!descendents.contains(c))
@@ -216,8 +227,22 @@ public class Subtypes {
 		descendents = new HashSet<JavaClass>();
 		descendents.add(c);
 		transitiveSubtypes.put(c, descendents);
+		if (DEBUG_HIERARCHY)
+			System.out.println("immediate subtypes of "
+				+ c.getClassName()
+				+ " " 
+				+ System.identityHashCode(c)
+				+ " " 
+				+ c.hashCode()
+		 		+ (immediateSubtypes.get(c) == null 
+				   ? " is null" : " is non null"));
+				
 		for (JavaClass child : immediateSubtypes.get(c)) {
-			descendents.add(c);
+			if (DEBUG_HIERARCHY)
+				System.out.println("Updating child " 
+					+ child.getClassName()
+					+ " of " 
+					+ c.getClassName());
 			descendents.addAll(compute(child));
 		}
 		if (DEBUG_HIERARCHY)

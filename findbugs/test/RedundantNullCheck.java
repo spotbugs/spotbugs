@@ -20,6 +20,19 @@ public class RedundantNullCheck {
 			System.out.println("This is silly");
 		}
 	}
+
+	public int bar(String s) {
+		try {
+		if (s == null)
+			return 17;
+		else return 42;
+		} finally {
+		// Should not signal a RCN warning here
+		if (s != null) System.out.println("foo");
+		}
+		}
+		
+		
 }
 
 // vim:ts=4

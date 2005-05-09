@@ -51,6 +51,9 @@ public class FindBadCast2 implements Detector {
 		abstractCollectionClasses.add("java.util.Collection");
 		abstractCollectionClasses.add("java.util.List");
 		abstractCollectionClasses.add("java.util.Set");
+		abstractCollectionClasses.add("java.util.SortedSet");
+		abstractCollectionClasses.add("java.util.SortedMap");
+		abstractCollectionClasses.add("java.util.Set");
 		abstractCollectionClasses.add("java.util.Map");
 		concreteCollectionClasses.add("java.util.LinkedHashMap");
 		concreteCollectionClasses.add("java.util.LinkedHashSet");
@@ -251,6 +254,16 @@ public class FindBadCast2 implements Detector {
 							refJavaClass);
 					double rank = Analyze.deepInstanceOf(refJavaClass,
 							castJavaClass);
+					boolean badCastToConcreteCollection = concreteCollectionClasses.contains(castName);
+					boolean badCastToAbstractCollection = 
+							abstractCollectionClasses
+							.contains(castName)
+							&& (refName.equals("java.util.Collection") || refName
+									.equals("java.lang.Iterable"));
+					if ((badCastToConcreteCollection || badCastToAbstractCollection)
+						&& rank > 0.3)
+					  rank = 0.3;
+						
 					if (false)
 						System.out.println("Rank:\t" + rank + "\t" + refName
 								+ "\t" + castName);
@@ -297,11 +310,13 @@ public class FindBadCast2 implements Detector {
 							priority += 1;
 						if (DEBUG)
 							System.out.println(" priority b: " + priority);
-						if (castJavaClass.isInterface())
+						if (castJavaClass.isInterface() && !badCastToAbstractCollection)
 							priority++;
 						if (DEBUG)
 							System.out.println(" priority c: " + priority);
-						if (priority <= LOW_PRIORITY
+						if (priority <= LOW_PRIORITY 
+								&& !badCastToAbstractCollection
+								&& !badCastToConcreteCollection
 								&& (refJavaClass.isInterface() || refJavaClass
 										.isAbstract()))
 							priority++;
@@ -328,13 +343,11 @@ public class FindBadCast2 implements Detector {
 							priority = HIGH_PRIORITY;
 						if (priority <= LOW_PRIORITY) {
 							String bug = "BC_UNCONFIRMED_CAST";
-							if (concreteCollectionClasses.contains(castName))
+							if (badCastToConcreteCollection)
 								bug = "BC_BAD_CAST_TO_CONCRETE_COLLECTION";
-							else if (abstractCollectionClasses
-									.contains(castName)
-									&& (refName.equals("java/util/Collection") || refName
-											.equals("java/lang/Iterable")))
+							else if (badCastToAbstractCollection)
 								bug = "BC_BAD_CAST_TO_ABSTRACT_COLLECTION";
+
 							bugReporter.reportBug(new BugInstance(this, bug,
 									priority).addClassAndMethod(methodGen,
 									sourceFile).addSourceLine(
