@@ -43,7 +43,7 @@ public interface XField extends Comparable<XField> {
 	/**
 	 * Get the signature representing the field's type.
 	 */
-	public String getFieldSignature();
+	public String getSignature();
 
 	/**
 	 * Is the type of the field a reference type?

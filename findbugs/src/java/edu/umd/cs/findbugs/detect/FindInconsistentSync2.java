@@ -466,7 +466,7 @@ public class FindInconsistentSync2 implements Detector {
 						if (!instanceClassName.equals(xfield.getClassName())) {
 							xfield = new InstanceField(instanceClassName,
 							        xfield.getFieldName(),
-							        xfield.getFieldSignature(),
+							        xfield.getSignature(),
 							        xfield.getAccessFlags());
 						}
 					}

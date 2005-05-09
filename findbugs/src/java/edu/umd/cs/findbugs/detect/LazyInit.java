@@ -146,7 +146,7 @@ public class LazyInit extends ByteCodePatternDetector implements StatelessDetect
 			}
 
 			// Ignore non-reference fields
-			if (!xfield.getFieldSignature().startsWith("[")) {
+			if (!xfield.getSignature().startsWith("[")) {
 				if (DEBUG) System.out.println("Ignoring non-reference field " + xfield.getFieldName());
 				return;
 			}

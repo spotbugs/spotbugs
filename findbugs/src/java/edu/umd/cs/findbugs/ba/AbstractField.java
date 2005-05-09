@@ -43,7 +43,7 @@ public abstract class AbstractField implements XField {
 		return fieldName;
 	}
 
-	public String getFieldSignature() {
+	public String getSignature() {
 		return fieldSig;
 	}
 
@@ -81,7 +81,7 @@ public abstract class AbstractField implements XField {
 		cmp = fieldName.compareTo(other.getFieldName());
 		if (cmp != 0)
 			return cmp;
-		return fieldSig.compareTo(other.getFieldSignature());
+		return fieldSig.compareTo(other.getSignature());
 	}
 
 	public int hashCode() {

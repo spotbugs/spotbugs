@@ -655,7 +655,7 @@ public class BugInstance implements Comparable, XMLWriteableWithMessages, Serial
 	 * @return this object
 	 */
 	public BugInstance addField(XField xfield) {
-		return addField(xfield.getClassName(), xfield.getFieldName(), xfield.getFieldSignature(), xfield.isStatic());
+		return addField(xfield.getClassName(), xfield.getFieldName(), xfield.getSignature(), xfield.isStatic());
 	}
 
 	/**
