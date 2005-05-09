@@ -29,51 +29,16 @@ package edu.umd.cs.findbugs.ba;
  * objects in BCEL are awkward to deal with.  They are not Comparable,
  * it is difficult to find out what class they belong to, etc.
  */
-public interface XField extends Comparable<XField> {
-	/**
-	 * Get the name of the field.
-	 */
-	public String getName();
-
-	/**
-	 * Get the name of the class the field is defined in.
-	 */
-	public String getClassName();
-
-	/**
-	 * Get the signature representing the field's type.
-	 */
-	public String getSignature();
-
+public interface XField extends PackageMember {
 	/**
 	 * Is the type of the field a reference type?
 	 */
 	public boolean isReferenceType();
 
 	/**
-	 * Get the field's access flags.
-	 */
-	public int getAccessFlags();
-
-	/**
-	 * Is this a static field?
-	 */
-	public boolean isStatic();
-
-	/**
 	 * Is this a volatile field?
 	 */
 	public boolean isVolatile();
-
-	/**
-	 * Is this a final field?
-	 */
-	public boolean isFinal();
-
-	/**
-	 * Is this a public field?
-	 */
-	public boolean isPublic();
 }
 
 // vim:ts=4

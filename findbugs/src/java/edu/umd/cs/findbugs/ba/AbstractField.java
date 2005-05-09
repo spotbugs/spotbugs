@@ -67,8 +67,8 @@ public abstract class AbstractField implements XField {
 		return (accessFlags & Constants.ACC_PUBLIC) != 0;
 	}
 
-	public int compareTo(XField other) {
-		// This may be compared to any kind of XField object.
+	public int compareTo(PackageMember other) {
+		// This may be compared to any kind of PackageMember object.
 		// If the other object is a different kind of field,
 		// just compare class names.
 		if (this.getClass() != other.getClass())
