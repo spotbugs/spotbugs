@@ -33,7 +33,7 @@ public interface XField extends Comparable<XField> {
 	/**
 	 * Get the name of the field.
 	 */
-	public String getFieldName();
+	public String getName();
 
 	/**
 	 * Get the name of the class the field is defined in.
