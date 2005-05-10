@@ -26,9 +26,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -52,37 +50,6 @@ import edu.umd.cs.findbugs.ba.ch.Subtypes;
  */
 public abstract class MethodPropertyDatabase<Property extends MethodProperty<Property>> {
 	private Map<XMethod, Property> propertyMap;
-
-	/**
-	 * Interface representing a direction in which to walk class hierarchy
-	 * graph edges: towards subtypes or towards supertypes.
-	 */
-	public interface HierarchyWalkDirection {
-		public Set<JavaClass> getHierarchyGraphTargets(JavaClass source) throws ClassNotFoundException;
-	}
-
-	/**
-	 * Walk class hierarchy graph towards subtypes.
-	 */
-	public static final HierarchyWalkDirection TOWARDS_SUBTYPES = new HierarchyWalkDirection(){
-		public Set<JavaClass> getHierarchyGraphTargets(JavaClass source) throws ClassNotFoundException {
-			AnalysisContext analysisContext = AnalysisContext.currentAnalysisContext();
-			return analysisContext.getSubtypes().getTransitiveSubtypes(source);
-		}
-	};
-	
-	/**
-	 * Walk class hierarchy graph towards supertypes.
-	 */
-	public static final HierarchyWalkDirection TOWARDS_SUPERTYPES = new HierarchyWalkDirection(){
-		public Set<JavaClass> getHierarchyGraphTargets(JavaClass source) throws ClassNotFoundException {
-			AnalysisContext analysisContext = AnalysisContext.currentAnalysisContext();
-			JavaClass[] superTypeSet = source.getSuperClasses();
-			Set<JavaClass> result = new HashSet<JavaClass>();
-			result.addAll(Arrays.asList(superTypeSet));
-			return result;
-		}
-	};
 	
 	/**
 	 * Constructor.
@@ -116,12 +83,8 @@ public abstract class MethodPropertyDatabase<Property extends MethodProperty<Pro
 	 * Propagate method properties through the class hierarchy.
 	 * Depending on the kind of properties, this might work from supertypes
 	 * to subtypes, or from subtypes to supertypes.
-	 * 
-	 * @param walkDirectory      the HierarchyWalkDirection
-	 * @param propertyCombinator the PropertyCombinator
 	 */
-	public void propagateThroughClassHierarchy(
-			HierarchyWalkDirection walkDirection, PropertyCombinator<Property> combinator) {
+	public void propagateThroughClassHierarchy() {
 		Subtypes subtypes = AnalysisContext.currentAnalysisContext().getSubtypes();
 		
 		// For each method,property pair...
@@ -138,12 +101,14 @@ public abstract class MethodPropertyDatabase<Property extends MethodProperty<Pro
 				JavaClass sourceClass = AnalysisContext.currentAnalysisContext().lookupClass(sourceClassName);
 				
 				// Based on source class, get target classes (either subtypes or supertypes)
-				Set<JavaClass> targetClassSet = walkDirection.getHierarchyGraphTargets(sourceClass);
+				Set<JavaClass> targetClassSet = getHierarchyWalkDirection().getHierarchyGraphTargets(sourceClass);
 
 				// Look for overriding or overridden methods in target classes
 				for (Iterator<JavaClass> j = targetClassSet.iterator(); j.hasNext(); ) {
 					JavaClass targetClass = j.next();
 					XMethod targetMethod = Hierarchy.findXMethod(targetClass, sourceMethod.getName(), sourceMethod.getSignature());
+					if (targetMethod == null)
+						continue;
 					if (targetMethod.isStatic())
 						continue;
 					
@@ -152,7 +117,7 @@ public abstract class MethodPropertyDatabase<Property extends MethodProperty<Pro
 					if (targetProperty == null)
 						propertyMap.put(targetMethod, sourceProperty.duplicate());
 					else
-						propertyMap.put(targetMethod, combinator.combine(sourceProperty, targetProperty));
+						propertyMap.put(targetMethod, getPropertyCombinator().combine(sourceProperty, targetProperty));
 				}
 			} catch (ClassNotFoundException e) {
 				AnalysisContext.currentAnalysisContext().getLookupFailureCallback().reportMissingClass(e);
@@ -199,6 +164,7 @@ public abstract class MethodPropertyDatabase<Property extends MethodProperty<Pro
 
 	/**
 	 * Write method property database to a file.
+	 * Stream is closed unconditionally.
 	 * 
 	 * @param out OutputStream writing to the file
 	 * @throws IOException
@@ -274,4 +240,20 @@ public abstract class MethodPropertyDatabase<Property extends MethodProperty<Pro
 	 * @return a String which encodes the property
 	 */
 	protected abstract String encodeProperty(Property property);
+	
+	/**
+	 * Get the direction in which to walk the class hierarchy when
+	 * propagating method properties.
+	 * 
+	 * @return the HierarchyWalkDirection
+	 */
+	protected abstract HierarchyWalkDirection getHierarchyWalkDirection();
+	
+	/**
+	 * Get the PropertyCombinator used to combine method properties
+	 * when propagating them in the class hierarchy.
+	 * 
+	 * @return
+	 */
+	protected abstract PropertyCombinator<Property> getPropertyCombinator();
 }
