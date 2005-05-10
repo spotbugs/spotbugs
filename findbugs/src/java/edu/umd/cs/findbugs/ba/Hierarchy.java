@@ -274,6 +274,24 @@ public class Hierarchy {
 
 		return null;
 	}
+	
+	/**
+	 * Find a method in given class.
+	 *
+	 * @param javaClass  the class
+	 * @param methodName the name of the method
+	 * @param methodSig  the signature of the method
+	 * @return the XMethod, or null if no such method exists in the class
+	 */
+	public static XMethod findXMethod(JavaClass javaClass, String methodName, String methodSig) {
+		Method m = findMethod(javaClass, methodName, methodSig);
+		if (m == null)
+			return null;
+		if (m.isStatic())
+			return new StaticMethod(javaClass.getClassName(), methodName, methodSig, m.getAccessFlags());
+		else
+			return new InstanceMethod(javaClass.getClassName(), methodName, methodSig, m.getAccessFlags());
+	}
 
 	/**
 	 * Find a method in given list of classes,
