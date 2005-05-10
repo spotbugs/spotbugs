@@ -21,7 +21,7 @@ package edu.umd.cs.findbugs.ba;
 
 import org.apache.bcel.Constants;
 
-public abstract class AbstractField extends AbstractPackageMember implements XField {
+public abstract class AbstractField extends AbstractClassMember implements XField {
 
 	protected AbstractField(String className, String fieldName, String fieldSig, int accessFlags) {
 		super(className, fieldName, fieldSig, accessFlags);

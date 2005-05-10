@@ -20,14 +20,14 @@ package edu.umd.cs.findbugs.ba;
 
 import org.apache.bcel.Constants;
 
-public abstract class AbstractPackageMember implements ClassMember {
+public abstract class AbstractClassMember implements ClassMember {
 	private final String className;
 	private final String name;
 	private final String signature;
 	private final int accessFlags;
 	private int cachedHashCode = 0;
 
-	protected AbstractPackageMember(String className, String name, String signature, int accessFlags) {
+	protected AbstractClassMember(String className, String name, String signature, int accessFlags) {
 		this.className = className;
 		this.name = name;
 		this.signature = signature;
@@ -89,7 +89,7 @@ public abstract class AbstractPackageMember implements ClassMember {
 	public boolean equals(Object o) {
 		if (this.getClass() != o.getClass())
 			return false;
-		AbstractPackageMember other = (AbstractPackageMember) o;
+		AbstractClassMember other = (AbstractClassMember) o;
 		return className.equals(other.className)
 		        && name.equals(other.name)
 		        && signature.equals(other.signature);

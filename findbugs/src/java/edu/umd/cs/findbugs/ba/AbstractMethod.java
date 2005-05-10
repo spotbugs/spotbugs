@@ -20,7 +20,7 @@ package edu.umd.cs.findbugs.ba;
 
 import org.apache.bcel.Constants;
 
-public abstract class AbstractMethod extends AbstractPackageMember implements XMethod {
+public abstract class AbstractMethod extends AbstractClassMember implements XMethod {
 	protected AbstractMethod(String className, String methodName, String methodSig, int accessFlags) {
 		super(className, methodName, methodSig, accessFlags);
 	}
