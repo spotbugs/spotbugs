@@ -48,9 +48,16 @@ public class IsNullValue implements IsNullValueAnalysisFeatures {
 	/** Null on some complex path (at least three branches) to current location. */
 	private static final int NCP3 = 7;
 
-	// This can be bitwise-OR'ed to indicate the value was propagated
-	// along an exception path.
-	private static final int EXCEPTION = 0x100;
+	private static final int FLAG_SHIFT = 8;
+	
+	/** Value was propagated along an exception path. */
+	private static final int EXCEPTION = 1 << FLAG_SHIFT;
+	/** Value is (potentially) null because of a parameter passed to the method. */
+	private static final int PARAM = 2 << FLAG_SHIFT;
+	/** Value is (potentially) null because of a value returned from a called method. */
+	private static final int RETURN_VAL = 4 << FLAG_SHIFT;
+
+	private static final int FLAG_MASK = EXCEPTION | PARAM | RETURN_VAL; 
 
 	private static final int[][] mergeMatrix = {
 		// NULL, CHECKED_NULL, NN,         CHECKED_NN, NSP,  NN_UNKNOWN, NCP2, NCP3
@@ -63,29 +70,30 @@ public class IsNullValue implements IsNullValueAnalysisFeatures {
 		{NCP2,   NCP2,         NCP2,       NCP2,       NCP2, NCP2,        NCP2,},    // NCP2
 		{NCP3,   NCP3,         NCP3,       NCP3,       NCP3, NCP3,        NCP3, NCP3}// NCP3
 	};
+	
+	private static final IsNullValue[][] instanceByFlagsList = createInstanceByFlagList();
 
-	private static IsNullValue[] instanceList = {
-		new IsNullValue(NULL),
-		new IsNullValue(CHECKED_NULL),
-		new IsNullValue(NN),
-		new IsNullValue(CHECKED_NN),
-		new IsNullValue(NSP),
-		new IsNullValue(NN_UNKNOWN),
-		new IsNullValue(NCP2),
-		new IsNullValue(NCP3),
-	};
+	private static IsNullValue[][] createInstanceByFlagList() {
+		final int max = FLAG_MASK >>> FLAG_SHIFT;
+		IsNullValue[][] result = new IsNullValue[max + 1][];
+		for (int i = 0; i <= max; ++i) {
+			final int flags = i << FLAG_SHIFT;
+			result[i] = new IsNullValue[]{
+					new IsNullValue(NULL | flags),
+					new IsNullValue(CHECKED_NULL | flags),
+					new IsNullValue(NN | flags),
+					new IsNullValue(CHECKED_NN | flags),
+					new IsNullValue(NSP | flags),
+					new IsNullValue(NN_UNKNOWN | flags),
+					new IsNullValue(NCP2 | flags),
+					new IsNullValue(NCP3 | flags),
+			};
+		}
+		
+		return result;
+	}
 
-	private static IsNullValue[] exceptionInstanceList = {
-		new IsNullValue(NULL | EXCEPTION),
-		new IsNullValue(CHECKED_NULL | EXCEPTION),
-		new IsNullValue(NN | EXCEPTION),
-		new IsNullValue(CHECKED_NN | EXCEPTION),
-		new IsNullValue(NSP | EXCEPTION),
-		new IsNullValue(NN_UNKNOWN | EXCEPTION),
-		new IsNullValue(NCP2 | EXCEPTION),
-		new IsNullValue(NCP3 | EXCEPTION),
-	};
-
+	// Fields
 	private final int kind;
 
 	private IsNullValue(int kind) {
@@ -104,7 +112,11 @@ public class IsNullValue implements IsNullValueAnalysisFeatures {
 	}
 
 	private int getBaseKind() {
-		return kind & ~EXCEPTION;
+		return kind & ~FLAG_MASK;
+	}
+	
+	private int getFlags() {
+		return kind & FLAG_MASK;
 	}
 
 	/**
@@ -122,21 +134,21 @@ public class IsNullValue implements IsNullValueAnalysisFeatures {
 	}
 
 	private IsNullValue toBaseValue() {
-		return instanceList[getBaseKind()];
+		return instanceByFlagsList[0][getBaseKind()];
 	}
 
 	/**
 	 * Convert to an exception path value.
 	 */
 	public IsNullValue toExceptionValue() {
-		return exceptionInstanceList[getBaseKind()];
+		return instanceByFlagsList[(getFlags() | EXCEPTION) >> FLAG_SHIFT][getBaseKind()];
 	}
 
 	/**
 	 * Get the instance representing values that are definitely null.
 	 */
 	public static IsNullValue nullValue() {
-		return instanceList[NULL];
+		return instanceByFlagsList[0][NULL];
 	}
 
 	/**
@@ -145,13 +157,13 @@ public class IsNullValue implements IsNullValueAnalysisFeatures {
 	 * we saw that it was assigned the null constant.
 	 */
 	public static IsNullValue checkedNullValue() {
-		return instanceList[CHECKED_NULL];
+		return instanceByFlagsList[0][CHECKED_NULL];
 	}
 	/**
 	 * Get the instance representing values that are definitely not null.
 	 */
 	public static IsNullValue nonNullValue() {
-		return instanceList[NN];
+		return instanceByFlagsList[0][NN];
 	}
 
 	/**
@@ -160,7 +172,7 @@ public class IsNullValue implements IsNullValueAnalysisFeatures {
 	 * we saw the object creation.
 	 */
 	public static IsNullValue checkedNonNullValue() {
-		return instanceList[CHECKED_NN];
+		return instanceByFlagsList[0][CHECKED_NN];
 	}
 
 	/**
@@ -168,7 +180,7 @@ public class IsNullValue implements IsNullValueAnalysisFeatures {
 	 * on some simple (no branches) incoming path.
 	 */
 	public static IsNullValue nullOnSimplePathValue() {
-		return instanceList[NSP];
+		return instanceByFlagsList[0][NSP];
 	}
 
 	/**
@@ -176,7 +188,7 @@ public class IsNullValue implements IsNullValueAnalysisFeatures {
 	 * This is what we use for unknown values.
 	 */
 	public static IsNullValue nonReportingNotNullValue() {
-		return instanceList[NN_UNKNOWN];
+		return instanceByFlagsList[0][NN_UNKNOWN];
 	}
 
 	/**
@@ -187,7 +199,7 @@ public class IsNullValue implements IsNullValueAnalysisFeatures {
 	 * then the path on which the value is null may be infeasible.
 	 */
 	public static IsNullValue nullOnComplexPathValue() {
-		return instanceList[NCP2];
+		return instanceByFlagsList[0][NCP2];
 	}
 	
 	/**
@@ -196,28 +208,28 @@ public class IsNullValue implements IsNullValueAnalysisFeatures {
 	 * and the current location.
 	 */
 	public static IsNullValue nullOnComplexPathValue3() {
-		return instanceList[NCP3];
+		return instanceByFlagsList[0][NCP3];
 	}
 
 	/**
 	 * Get null value resulting from comparison to explicit null.
 	 */
 	public static IsNullValue pathSensitiveNullValue() {
-		return instanceList[CHECKED_NULL];
+		return instanceByFlagsList[0][CHECKED_NULL];
 	}
 
 	/**
 	 * Get non-null value resulting from comparison to explicit null.
 	 */
 	public static IsNullValue pathSensitiveNonNullValue() {
-		return instanceList[CHECKED_NN];
+		return instanceByFlagsList[0][CHECKED_NN];
 	}
 
 	/**
 	 * Merge two values.
 	 */
 	public static IsNullValue merge(IsNullValue a, IsNullValue b) {
-		boolean isException = a.isException() || b.isException();
+		int combinedFlags = a.getFlags() | b.getFlags(); // FIXME: union appropriate for all flags?
 		a = a.toBaseValue();
 		b = b.toBaseValue();
 
@@ -230,9 +242,7 @@ public class IsNullValue implements IsNullValueAnalysisFeatures {
 		}
 
 		int result = mergeMatrix[a.kind][b.kind];
-		IsNullValue resultValue = instanceList[result];
-		if (isException)
-			resultValue = resultValue.toExceptionValue();
+		IsNullValue resultValue = instanceByFlagsList[combinedFlags >> FLAG_SHIFT][result];
 		return resultValue;
 	}
 
@@ -282,9 +292,16 @@ public class IsNullValue implements IsNullValueAnalysisFeatures {
 	public String toString() {
 		String pfx = "";
 		if (DEBUG_EXCEPTION) {
-			pfx = (kind & EXCEPTION) != 0 ? "e" : "_";
+			int flags = getFlags();
+			if (flags == 0)
+				pfx = "_";
+			else {
+				if ((flags & EXCEPTION) != 0) pfx += "e";
+				if ((flags & PARAM) != 0) pfx += "p";
+				if ((flags & RETURN_VAL) != 0) pfx += "r";
+			}
 		}
-		switch (kind & ~EXCEPTION) {
+		switch (getBaseKind()) {
 		case NULL:
 			return pfx + "n";
 		case CHECKED_NULL:
