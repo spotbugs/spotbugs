@@ -54,7 +54,7 @@ public abstract class MethodPropertyDatabase<Property extends MethodProperty<Pro
 	private Map<XMethod, Property> propertyMap;
 
 	/**
-	 * Interfact representing a direction in which to talk class hierarchy
+	 * Interface representing a direction in which to talk class hierarchy
 	 * graph edges: towards subtypes or towards supertypes.
 	 */
 	public interface HierarchyWalkDirection {
