@@ -26,15 +26,23 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeSet;
 
 import org.apache.bcel.Constants;
+import org.apache.bcel.classfile.JavaClass;
 
+import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.ba.Hierarchy;
 import edu.umd.cs.findbugs.ba.InstanceMethod;
 import edu.umd.cs.findbugs.ba.StaticMethod;
 import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.ba.ch.Subtypes;
 
 /**
  * A MethodPropertyDatabase keeps track of properties of
@@ -42,8 +50,39 @@ import edu.umd.cs.findbugs.ba.XMethod;
  * 
  * @author David Hovemeyer
  */
-public abstract class MethodPropertyDatabase<Property> {
+public abstract class MethodPropertyDatabase<Property extends MethodProperty<Property>> {
 	private Map<XMethod, Property> propertyMap;
+
+	/**
+	 * Interfact representing a direction in which to talk class hierarchy
+	 * graph edges: towards subtypes or towards supertypes.
+	 */
+	public interface HierarchyWalkDirection {
+		public Set<JavaClass> getHierarchyGraphTargets(JavaClass source) throws ClassNotFoundException;
+	}
+
+	/**
+	 * Walk class hierarchy graph towards subtypes.
+	 */
+	public static final HierarchyWalkDirection TOWARDS_SUBTYPES = new HierarchyWalkDirection(){
+		public Set<JavaClass> getHierarchyGraphTargets(JavaClass source) throws ClassNotFoundException {
+			AnalysisContext analysisContext = AnalysisContext.currentAnalysisContext();
+			return analysisContext.getSubtypes().getTransitiveSubtypes(source);
+		}
+	};
+	
+	/**
+	 * Walk class hierarchy graph towards supertypes.
+	 */
+	public static final HierarchyWalkDirection TOWARDS_SUPERTYPES = new HierarchyWalkDirection(){
+		public Set<JavaClass> getHierarchyGraphTargets(JavaClass source) throws ClassNotFoundException {
+			AnalysisContext analysisContext = AnalysisContext.currentAnalysisContext();
+			JavaClass[] superTypeSet = source.getSuperClasses();
+			Set<JavaClass> result = new HashSet<JavaClass>();
+			result.addAll(Arrays.asList(superTypeSet));
+			return result;
+		}
+	};
 	
 	/**
 	 * Constructor.
@@ -71,6 +110,54 @@ public abstract class MethodPropertyDatabase<Property> {
 	 */
 	public Property getProperty(XMethod method) {
 		return propertyMap.get(method);
+	}
+
+	/**
+	 * Propagate method properties through the class hierarchy.
+	 * Depending on the kind of properties, this might work from supertypes
+	 * to subtypes, or from subtypes to supertypes.
+	 * 
+	 * @param walkDirectory      the HierarchyWalkDirection
+	 * @param propertyCombinator the PropertyCombinator
+	 */
+	public void propagateThroughClassHierarchy(
+			HierarchyWalkDirection walkDirection, PropertyCombinator<Property> combinator) {
+		Subtypes subtypes = AnalysisContext.currentAnalysisContext().getSubtypes();
+		
+		// For each method,property pair...
+		for (Iterator<Map.Entry<XMethod, Property>> i = propertyMap.entrySet().iterator(); i.hasNext();) {
+			Map.Entry<XMethod, Property> entry = i.next();
+			try {
+				XMethod sourceMethod = entry.getKey();
+				if (sourceMethod.isStatic())
+					continue;
+				Property sourceProperty = entry.getValue();
+
+				// Get source class
+				String sourceClassName = sourceMethod.getClassName();
+				JavaClass sourceClass = AnalysisContext.currentAnalysisContext().lookupClass(sourceClassName);
+				
+				// Based on source class, get target classes (either subtypes or supertypes)
+				Set<JavaClass> targetClassSet = walkDirection.getHierarchyGraphTargets(sourceClass);
+
+				// Look for overriding or overridden methods in target classes
+				for (Iterator<JavaClass> j = targetClassSet.iterator(); j.hasNext(); ) {
+					JavaClass targetClass = j.next();
+					XMethod targetMethod = Hierarchy.findXMethod(targetClass, sourceMethod.getName(), sourceMethod.getSignature());
+					if (targetMethod.isStatic())
+						continue;
+					
+					// Combine properties
+					Property targetProperty = propertyMap.get(targetMethod);
+					if (targetProperty == null)
+						propertyMap.put(targetMethod, sourceProperty.duplicate());
+					else
+						propertyMap.put(targetMethod, combinator.combine(sourceProperty, targetProperty));
+				}
+			} catch (ClassNotFoundException e) {
+				AnalysisContext.currentAnalysisContext().getLookupFailureCallback().reportMissingClass(e);
+			}
+		}
 	}
 
 	/**
