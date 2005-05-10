@@ -3563,7 +3563,7 @@ i % 60 * 1000 is (i % 60) * 1000, not i % (60 * 1000).
 ]]>
     </Details>
   </BugPattern>
-  <BugPattern type="PZ_BAD_MONTH">
+  <BugPattern type="DMI_BAD_MONTH">
     <ShortDescription>Passes a constant value for a month outside of the expected range of 0..11</ShortDescription>
     <LongDescription>{1} passes a bad month value of {2} to {3}</LongDescription>
     <Details>
@@ -3571,6 +3571,30 @@ i % 60 * 1000 is (i % 60) * 1000, not i % (60 * 1000).
 <p>
 This code passes a constant month 
 value outside the expected range of 0..11 to a method.
+</p>
+]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="DMI_USELESS_SUBSTRING">
+    <ShortDescription>Invocation of substring(0), which returns the original value</ShortDescription>
+    <LongDescription>{1} invokes substring(0), which returns the original value</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+This code invokes substring(0) on a String, which returns the original value.
+</p>
+]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="DMI_CALLING_NEXT_FROM_HASNEXT">
+    <ShortDescription>hasNext method invokes next</ShortDescription>
+    <LongDescription>{1} invokes {3}</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+The hasNext() method invokes the next() method. This is almost certainly wrong,
+since the hasNext() method is not supposed to change the state of the iterator,
+and the next method is supposed to change the state of the iterator.
 </p>
 ]]>
     </Details>
@@ -3704,6 +3728,7 @@ value outside the expected range of 0..11 to a method.
   <BugCode abbrev="BC">Bad casts of object references</BugCode>
   <BugCode abbrev="IM">Questionable integer math</BugCode>
   <BugCode abbrev="ST">Misuse of static fields</BugCode>
+  <BugCode abbrev="DMI">Dubious method invocation</BugCode>
   <BugCode abbrev="PZ">Bug inspired by Josh Bloch's and Neal Gafter's Programming Puzzlers</BugCode>
   <BugCode abbrev="SWL">Sleep with lock held</BugCode>
   <BugCode abbrev="J2EE">J2EE error</BugCode>

@@ -35,6 +35,7 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.JavaVersion;
+import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.Hierarchy;
@@ -71,11 +72,13 @@ public class DumbMethods extends BytecodeScanningDetector implements Constants2 
 	public Object clone() throws CloneNotSupportedException {
 		return super.clone();
 	}
-
+	OpcodeStack stack = new OpcodeStack();
+	
 	public void visit(Method method) {
 		flush();
 		String cName = getDottedClassName();
-
+		stack.resetForMethodEntry(this);
+		
 		isPublicStaticVoidMain = method.isPublic() && method.isStatic()
 		        && getMethodName().equals("main")
 		        || cName.toLowerCase().indexOf("benchmark") >= 0;
@@ -154,7 +157,39 @@ public class DumbMethods extends BytecodeScanningDetector implements Constants2 
 			bugReporter.reportBug(new BugInstance(this, "SW_SWING_METHODS_INVOKED_IN_SWING_THREAD", LOW_PRIORITY)
 			        .addClassAndMethod(this)
 			        .addSourceLine(this));
-
+		
+		if ((seen == INVOKEVIRTUAL)
+				&& getClassConstantOperand().equals("java/lang/String")
+				&& getNameConstantOperand().equals("substring")
+				&& getSigConstantOperand().equals("(I)Ljava/lang/String;")
+				&& stack.getStackDepth() > 1) {
+			OpcodeStack.Item item = stack.getStackItem(0);
+			Object o = item.getConstant();
+			if (o != null && o instanceof Integer) {
+				int v = ((Integer) o).intValue();
+				if (v == 0)
+					bugReporter.reportBug(new BugInstance(this, "DMI_USELESS_SUBSTRING", NORMAL_PRIORITY)
+					        .addClassAndMethod(this)
+					        .addSourceLine(this));
+			}
+		}
+	
+		if ((seen == INVOKEVIRTUAL)
+				&& getNameConstantOperand().equals("next")
+				&& getSigConstantOperand().equals("()Ljava/lang/Object;")
+				&& getMethodName().equals("hasNext")
+				&& getMethodSig().equals("()Z")
+				&& stack.getStackDepth() > 0) {
+			OpcodeStack.Item item = stack.getStackItem(0);
+			if (item.isInitialParameter() && item.getRegisterNumber() == 0) {
+				bugReporter.reportBug(new BugInstance(this, "DMI_CALLING_NEXT_FROM_HASNEXT", NORMAL_PRIORITY)
+				        .addClassAndMethod(this)
+				        .addSourceLine(this)
+				        .addCalledMethod(this));
+			}
+		}
+			
+	
 		if ((seen == INVOKESPECIAL)
 		        && getClassConstantOperand().equals("java/lang/String")
 		        && getNameConstantOperand().equals("<init>")
@@ -336,6 +371,8 @@ public class DumbMethods extends BytecodeScanningDetector implements Constants2 
 	else
 		sawLDCEmptyString = false;
 */
+		
+		stack.sawOpcode(this,seen);
 	}
 
 	private void checkMonitorWait() {
