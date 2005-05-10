@@ -29,7 +29,7 @@ package edu.umd.cs.findbugs.ba;
  * objects in BCEL are awkward to deal with.  They are not Comparable,
  * it is difficult to find out what class they belong to, etc.
  */
-public interface XField extends PackageMember {
+public interface XField extends ClassMember {
 	/**
 	 * Is the type of the field a reference type?
 	 */

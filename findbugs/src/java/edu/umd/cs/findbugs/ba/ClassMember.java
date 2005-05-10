@@ -19,12 +19,12 @@
 package edu.umd.cs.findbugs.ba;
 
 /**
- * Common super-interface for package members (fields and methods).
+ * Common super-interface for class members (fields and methods).
  * 
  * @see edu.umd.cs.findbugs.ba.XField
  * @author David Hovemeyer
  */
-public interface PackageMember extends Comparable<PackageMember>  {
+public interface ClassMember extends Comparable<ClassMember>  {
 
 	/**
 	 * Get the name of the field.

@@ -20,7 +20,7 @@ package edu.umd.cs.findbugs.ba;
 
 import org.apache.bcel.Constants;
 
-public abstract class AbstractPackageMember implements PackageMember {
+public abstract class AbstractPackageMember implements ClassMember {
 	private final String className;
 	private final String name;
 	private final String signature;
@@ -62,7 +62,7 @@ public abstract class AbstractPackageMember implements PackageMember {
 		return (accessFlags & Constants.ACC_PUBLIC) != 0;
 	}
 
-	public int compareTo(PackageMember other) {
+	public int compareTo(ClassMember other) {
 		// This may be compared to any kind of PackageMember object.
 		// If the other object is a different kind of field,
 		// just compare class names.
