@@ -131,10 +131,14 @@ public class AnalysisContext implements AnalysisFeatures {
 		return sourceFinder;
 	}
 
+	/**
+	 * Get the Subtypes database.
+	 * 
+	 * @return the Subtypes database
+	 */
 	public Subtypes getSubtypes() {
 		return subtypes;
 	}
-
 	
 	/**
 	 * Clear the BCEL Repository in preparation for analysis.
@@ -169,12 +173,29 @@ public class AnalysisContext implements AnalysisFeatures {
 		URLClassPathRepository repos = (URLClassPathRepository) Repository.getRepository();
 		repos.addURL(url);
 	}
-	
+
+	/**
+	 * Add an application class to the repository.
+	 * 
+	 * @param appClass the application class
+	 */
 	public void addApplicationClassToRepository(JavaClass appClass) {
 		Repository.addClass(appClass);
 		subtypes.addApplicationClass(appClass);
 	}
-		
+
+	/**
+	 * Lookup a class.
+	 * <em>Use this method instead of Repository.lookupClass().</em>
+	 * 
+	 * @param className the name of the class
+	 * @return the JavaClass representing the class
+	 * @throws ClassNotFoundException
+	 */
+	public JavaClass lookupClass(String className) throws ClassNotFoundException {
+		// TODO: eventually we should move to our own thread-safe repository implementation
+		return Repository.lookupClass(className);
+	}
 
 	/**
 	 * Get the ClassContext for a class.
