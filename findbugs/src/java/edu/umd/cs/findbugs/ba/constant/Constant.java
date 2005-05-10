@@ -31,7 +31,7 @@ public class Constant {
 	/**
 	 * Single instance representing all non-constant values.
 	 */
-	public static Constant NOT_CONSTANT = new Constant(null);
+	public static final Constant NOT_CONSTANT = new Constant(null);
 	
 	/**
 	 * Constructor for a constant value.
