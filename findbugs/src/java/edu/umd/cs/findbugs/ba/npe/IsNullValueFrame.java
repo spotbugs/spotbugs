@@ -17,15 +17,36 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package edu.umd.cs.findbugs.ba;
+package edu.umd.cs.findbugs.ba.npe;
 
-public class IsNullValueDataflow extends Dataflow<IsNullValueFrame, IsNullValueAnalysis> {
-	public IsNullValueDataflow(CFG cfg, IsNullValueAnalysis analysis) {
-		super(cfg, analysis);
+import edu.umd.cs.findbugs.ba.Frame;
+
+public class IsNullValueFrame extends Frame<IsNullValue> {
+	private IsNullConditionDecision decision;
+
+	public IsNullValueFrame(int numLocals) {
+		super(numLocals);
 	}
 
-	public IsNullValueFrame getFactAtLocation(Location loc) throws DataflowAnalysisException {
-		return getAnalysis().getFactAtLocation(loc);
+	public void toExceptionValues() {
+		for (int i = 0; i < getNumSlots(); ++i)
+			setValue(i, getValue(i).toExceptionValue());
+	}
+
+	public void setDecision(IsNullConditionDecision decision) {
+		this.decision = decision;
+	}
+
+	public IsNullConditionDecision getDecision() {
+		return decision;
+	}
+
+	public String toString() {
+		String result = super.toString();
+		if (decision != null) {
+			result = result + ", [decision=" + decision.toString() + "]";
+		}
+		return result;
 	}
 }
 

@@ -26,6 +26,9 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.ResourceCreationPoint;
 import edu.umd.cs.findbugs.ResourceTrackingDetector;
 import edu.umd.cs.findbugs.ba.*;
+import edu.umd.cs.findbugs.ba.npe.IsNullValue;
+import edu.umd.cs.findbugs.ba.npe.IsNullValueDataflow;
+import edu.umd.cs.findbugs.ba.npe.IsNullValueFrame;
 
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.JavaClass;

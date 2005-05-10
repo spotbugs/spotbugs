@@ -20,7 +20,7 @@
 /*
  * Created on Feb 22, 2005
  */
-package edu.umd.cs.findbugs.ba;
+package edu.umd.cs.findbugs.ba.npe;
 
 /**
  * Knobs for null value analysis.

@@ -45,6 +45,8 @@ import edu.umd.cs.findbugs.ba.ca.CallListAnalysis;
 import edu.umd.cs.findbugs.ba.ca.CallListDataflow;
 import edu.umd.cs.findbugs.ba.constant.ConstantAnalysis;
 import edu.umd.cs.findbugs.ba.constant.ConstantDataflow;
+import edu.umd.cs.findbugs.ba.npe.IsNullValueAnalysis;
+import edu.umd.cs.findbugs.ba.npe.IsNullValueDataflow;
 
 /**
  * A ClassContext caches all of the auxiliary objects used to analyze
