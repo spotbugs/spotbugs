@@ -21,87 +21,14 @@ package edu.umd.cs.findbugs.ba;
 
 import org.apache.bcel.Constants;
 
-public abstract class AbstractField implements XField {
-	private final String className;
-	private final String fieldName;
-	private final String fieldSig;
-	private final int accessFlags;
-	private int cachedHashCode = 0;
+public abstract class AbstractField extends AbstractPackageMember implements XField {
 
 	protected AbstractField(String className, String fieldName, String fieldSig, int accessFlags) {
-		this.className = className;
-		this.fieldName = fieldName;
-		this.fieldSig = fieldSig;
-		this.accessFlags = accessFlags;
-	}
-
-	public String getClassName() {
-		return className;
-	}
-
-	public String getName() {
-		return fieldName;
-	}
-
-	public String getSignature() {
-		return fieldSig;
-	}
-
-	public boolean isReferenceType() {
-		return fieldSig.startsWith("L") || fieldSig.startsWith("[");
-	}
-
-	public int getAccessFlags() {
-		return accessFlags;
+		super(className, fieldName, fieldSig, accessFlags);
 	}
 
 	public boolean isVolatile() {
-		return (accessFlags & Constants.ACC_VOLATILE) != 0;
-	}
-
-	public boolean isFinal() {
-		return (accessFlags & Constants.ACC_FINAL) != 0;
-	}
-
-	public boolean isPublic() {
-		return (accessFlags & Constants.ACC_PUBLIC) != 0;
-	}
-
-	public int compareTo(PackageMember other) {
-		// This may be compared to any kind of PackageMember object.
-		// If the other object is a different kind of field,
-		// just compare class names.
-		if (this.getClass() != other.getClass())
-			return this.getClass().getName().compareTo(other.getClass().getName());
-
-		int cmp;
-		cmp = className.compareTo(other.getClassName());
-		if (cmp != 0)
-			return cmp;
-		cmp = fieldName.compareTo(other.getName());
-		if (cmp != 0)
-			return cmp;
-		return fieldSig.compareTo(other.getSignature());
-	}
-
-	public int hashCode() {
-		if (cachedHashCode == 0) {
-			cachedHashCode = className.hashCode() ^ fieldName.hashCode() ^ fieldSig.hashCode();
-		}
-		return cachedHashCode;
-	}
-
-	public boolean equals(Object o) {
-		if (this.getClass() != o.getClass())
-			return false;
-		AbstractField other = (AbstractField) o;
-		return className.equals(other.className)
-		        && fieldName.equals(other.fieldName)
-		        && fieldSig.equals(other.fieldSig);
-	}
-
-	public String toString() {
-		return className + "." + fieldName;
+		return (getAccessFlags() & Constants.ACC_VOLATILE) != 0;
 	}
 }
 
