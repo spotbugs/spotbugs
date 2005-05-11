@@ -37,35 +37,45 @@ public class SignatureParser {
 
 		public String next() {
 			if (!hasNext()) throw new NoSuchElementException();
-			int ch = signature.charAt(index);
-			String result;
-			switch (ch) {
-			case 'B':
-			case 'C':
-			case 'D':
-			case 'F':
-			case 'I':
-			case 'J':
-			case 'S':
-			case 'Z':
-				result = signature.substring(index, index + 1);
-				++index;
-				break;
-
-			case 'L':
-				int semi = signature.indexOf(';', index + 1);
-				if (semi < 0)
+			StringBuffer result = new StringBuffer();
+			boolean done;
+			do {
+				done = true;
+				int ch = signature.charAt(index);
+				switch (ch) {
+				case 'B':
+				case 'C':
+				case 'D':
+				case 'F':
+				case 'I':
+				case 'J':
+				case 'S':
+				case 'Z':
+					result.append(signature.charAt(index));
+					++index;
+					break;
+					
+				case 'L':
+					int semi = signature.indexOf(';', index + 1);
+					if (semi < 0)
+						throw new IllegalStateException("Invalid method signature: " + signature);
+					result.append(signature.substring(index, semi + 1));
+					index = semi + 1;
+					break;
+					
+				case '[':
+					result.append('[');
+					++index;
+					done = false;
+					break;
+					
+				case 'V':
+				default:
 					throw new IllegalStateException("Invalid method signature: " + signature);
-				result = signature.substring(index, semi + 1);
-				index = semi + 1;
-				break;
+				}
+			} while (!done);
 
-			case 'V':
-			default:
-				throw new IllegalStateException("Invalid method signature: " + signature);
-			}
-
-			return result;
+			return result.toString();
 		}
 
 		public void remove() {

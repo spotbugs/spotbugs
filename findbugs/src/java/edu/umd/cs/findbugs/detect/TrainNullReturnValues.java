@@ -36,8 +36,9 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.Edge;
 import edu.umd.cs.findbugs.ba.EdgeTypes;
-import edu.umd.cs.findbugs.ba.InstanceMethod;
 import edu.umd.cs.findbugs.ba.Location;
+import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.ba.XMethodFactory;
 import edu.umd.cs.findbugs.ba.npe.IsNullValue;
 import edu.umd.cs.findbugs.ba.npe.IsNullValueDataflow;
 import edu.umd.cs.findbugs.ba.npe.IsNullValueFrame;
@@ -108,12 +109,8 @@ public class TrainNullReturnValues implements TrainingDetector {
 				IsNullValue tos = frame.getTopValue();
 				
 				if (tos.mightBeNull()) {
-					InstanceMethod xmethod = new InstanceMethod(
-							classContext.getJavaClass().getClassName(),
-							method.getName(),
-							method.getSignature(),
-							method.getAccessFlags());
-					database.setProperty(xmethod, MayReturnNullProperty.doesReturnNullInstance());
+					XMethod xmethod = XMethodFactory.createXMethod(classContext.getJavaClass(), method); 
+					database.setProperty(xmethod, new MayReturnNullProperty(true));
 					return;
 				}
 			}

@@ -30,17 +30,17 @@ import edu.umd.cs.findbugs.ba.interproc.PropertyCombinator;
  * 
  * @author David Hovemeyer
  */
-public class UnconditionalDerefPropertyDatabase extends MethodPropertyDatabase<UnconditionalDerefParamProperty> {
+public class UnconditionalDerefPropertyDatabase extends MethodPropertyDatabase<UnconditionalDerefProperty> {
 
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.ba.interproc.MethodPropertyDatabase#decodeProperty(java.lang.String)
 	 */
 	//@Override
-	protected UnconditionalDerefParamProperty decodeProperty(String propStr)
+	protected UnconditionalDerefProperty decodeProperty(String propStr)
 			throws MethodPropertyDatabaseFormatException {
 		try {
 			int unconditionalDerefSet = Integer.parseInt(propStr);
-			UnconditionalDerefParamProperty prop = new UnconditionalDerefParamProperty();
+			UnconditionalDerefProperty prop = new UnconditionalDerefProperty();
 			prop.setUnconditionalDerefParamSet(unconditionalDerefSet);
 			return prop;
 		} catch (NumberFormatException e) {
@@ -52,7 +52,7 @@ public class UnconditionalDerefPropertyDatabase extends MethodPropertyDatabase<U
 	 * @see edu.umd.cs.findbugs.ba.interproc.MethodPropertyDatabase#encodeProperty(Property)
 	 */
 	//@Override
-	protected String encodeProperty(UnconditionalDerefParamProperty property) {
+	protected String encodeProperty(UnconditionalDerefProperty property) {
 		return String.valueOf(property.getUnconditionalDerefParamSet());
 	}
 
@@ -72,15 +72,20 @@ public class UnconditionalDerefPropertyDatabase extends MethodPropertyDatabase<U
 	 * @see edu.umd.cs.findbugs.ba.interproc.MethodPropertyDatabase#getPropertyCombinator()
 	 */
 	//@Override
-	protected PropertyCombinator<UnconditionalDerefParamProperty> getPropertyCombinator() {
-		return new PropertyCombinator<UnconditionalDerefParamProperty>() {
-			public UnconditionalDerefParamProperty combine(UnconditionalDerefParamProperty sourceProperty, UnconditionalDerefParamProperty targetProperty) {
+	protected PropertyCombinator<UnconditionalDerefProperty> getPropertyCombinator() {
+		return new PropertyCombinator<UnconditionalDerefProperty>() {
+			public UnconditionalDerefProperty combine(UnconditionalDerefProperty sourceProperty, UnconditionalDerefProperty targetProperty) {
 				// Take the union of unconditional deref param sets.
-				UnconditionalDerefParamProperty prop = new UnconditionalDerefParamProperty();
+				UnconditionalDerefProperty prop = new UnconditionalDerefProperty();
 				prop.setUnconditionalDerefParamSet(sourceProperty.getUnconditionalDerefParamSet() | targetProperty.getUnconditionalDerefParamSet());
 				return prop;
 			}
 		};
+	}
+	
+	//@Override
+	protected UnconditionalDerefProperty createDefault() {
+		return new UnconditionalDerefProperty();
 	}
 
 }

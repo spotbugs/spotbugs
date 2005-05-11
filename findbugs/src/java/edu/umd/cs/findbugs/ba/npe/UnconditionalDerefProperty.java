@@ -26,14 +26,14 @@ import edu.umd.cs.findbugs.ba.interproc.MethodProperty;
  * 
  * @author David Hovemeyer
  */
-public class UnconditionalDerefParamProperty implements MethodProperty<UnconditionalDerefParamProperty> {
+public class UnconditionalDerefProperty implements MethodProperty<UnconditionalDerefProperty> {
 	private int unconditionalDerefParamSet;
 	
 	/**
 	 * Constructor.
 	 * Parameters are all assumed not to be unconditionally dereferenced.
 	 */
-	public UnconditionalDerefParamProperty() {
+	public UnconditionalDerefProperty() {
 		this.unconditionalDerefParamSet = 0;
 	}
 	
@@ -94,13 +94,7 @@ public class UnconditionalDerefParamProperty implements MethodProperty<Unconditi
 		return unconditionalDerefParamSet == 0;
 	}
 
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.ba.interproc.MethodProperty#duplicate()
-	 */
-	public UnconditionalDerefParamProperty duplicate() {
-		UnconditionalDerefParamProperty dup = new UnconditionalDerefParamProperty();
-		dup.unconditionalDerefParamSet = this.unconditionalDerefParamSet;
-		return dup;
+	public void makeSameAs(UnconditionalDerefProperty other) {
+		this.unconditionalDerefParamSet = other.unconditionalDerefParamSet;
 	}
-
 }

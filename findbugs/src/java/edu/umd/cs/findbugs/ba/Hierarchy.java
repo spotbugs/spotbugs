@@ -285,12 +285,7 @@ public class Hierarchy {
 	 */
 	public static XMethod findXMethod(JavaClass javaClass, String methodName, String methodSig) {
 		Method m = findMethod(javaClass, methodName, methodSig);
-		if (m == null)
-			return null;
-		if (m.isStatic())
-			return new StaticMethod(javaClass.getClassName(), methodName, methodSig, m.getAccessFlags());
-		else
-			return new InstanceMethod(javaClass.getClassName(), methodName, methodSig, m.getAccessFlags());
+		return m == null ? null : XMethodFactory.createXMethod(javaClass, m);
 	}
 
 	/**

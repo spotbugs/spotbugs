@@ -26,9 +26,9 @@ package edu.umd.cs.findbugs.ba.interproc;
  */
 public interface MethodProperty<ActualType extends MethodProperty<ActualType>> {
 	/**
-	 * Return an exact copy of this MethodProperty.
-	 * 
-	 * @return an exact copy of this MethodProperty
+	 * Make this MethodProperty exactly the same as the one given.
+	 *  
+	 * @param other another MethodProperty
 	 */
-	public ActualType duplicate();
+	public void makeSameAs(ActualType other);
 }

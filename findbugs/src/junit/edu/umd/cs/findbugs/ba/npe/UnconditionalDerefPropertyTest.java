@@ -3,21 +3,21 @@ package edu.umd.cs.findbugs.ba.npe;
 import junit.framework.Assert;
 import junit.framework.TestCase;
 
-public class UnconditionalDerefParamPropertyTest extends TestCase {
+public class UnconditionalDerefPropertyTest extends TestCase {
 	
-	UnconditionalDerefParamProperty empty;
-	UnconditionalDerefParamProperty nonEmpty;
-	UnconditionalDerefParamProperty extremes;
+	UnconditionalDerefProperty empty;
+	UnconditionalDerefProperty nonEmpty;
+	UnconditionalDerefProperty extremes;
 	
 	//@Override
 	protected void setUp() throws Exception {
-		empty = new UnconditionalDerefParamProperty();
+		empty = new UnconditionalDerefProperty();
 		
-		nonEmpty = new UnconditionalDerefParamProperty();
+		nonEmpty = new UnconditionalDerefProperty();
 		nonEmpty.setParamUnconditionalDeref(11, true);
 		nonEmpty.setParamUnconditionalDeref(25, true);
 		
-		extremes = new UnconditionalDerefParamProperty();
+		extremes = new UnconditionalDerefProperty();
 		extremes.setParamUnconditionalDeref(0, true);
 		extremes.setParamUnconditionalDeref(31, true);
 	}

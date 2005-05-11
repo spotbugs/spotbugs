@@ -34,9 +34,7 @@ public class MayReturnNullPropertyDatabase extends MethodPropertyDatabase<MayRet
 	//@Override
 	protected MayReturnNullProperty decodeProperty(String propStr)
 			throws MethodPropertyDatabaseFormatException {
-		return (Boolean.valueOf(propStr).booleanValue())
-			? MayReturnNullProperty.doesReturnNullInstance()
-			: MayReturnNullProperty.doesNotReturnNullInstance();
+		return new MayReturnNullProperty(Boolean.valueOf(propStr).booleanValue());
 	}
 
 	//@Override
@@ -57,12 +55,14 @@ public class MayReturnNullPropertyDatabase extends MethodPropertyDatabase<MayRet
 	protected PropertyCombinator<MayReturnNullProperty> getPropertyCombinator() {
 		return new PropertyCombinator<MayReturnNullProperty>() {
 			public MayReturnNullProperty combine(MayReturnNullProperty sourceProperty, MayReturnNullProperty targetProperty) {
-				if (sourceProperty.mayReturnNull() || targetProperty.mayReturnNull())
-					return MayReturnNullProperty.doesReturnNullInstance();
-				else
-					return MayReturnNullProperty.doesNotReturnNullInstance();
+				return new MayReturnNullProperty(sourceProperty.mayReturnNull() || targetProperty.mayReturnNull());
 			}
 		};
+	}
+	
+	//@Override
+	protected MayReturnNullProperty createDefault() {
+		return new MayReturnNullProperty(false);
 	}
 
 }

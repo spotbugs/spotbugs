@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.ba;
 
+import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
 /**
@@ -34,8 +35,8 @@ public abstract class XMethodFactory {
 	 * @param method       the Method
 	 * @return an XMethod representing the Method
 	 */
-	public static XMethod createXMethod(ClassContext classContext, Method method) {
-		String className = classContext.getJavaClass().getClassName();
+	public static XMethod createXMethod(JavaClass javaClass, Method method) {
+		String className = javaClass.getClassName();
 		String methodName = method.getName();
 		String methodSig = method.getSignature();
 		int accessFlags = method.getAccessFlags();

@@ -4,20 +4,9 @@ import edu.umd.cs.findbugs.ba.interproc.MethodProperty;
 
 public class MayReturnNullProperty implements MethodProperty<MayReturnNullProperty> {
 	
-	private static final MayReturnNullProperty doesReturnNullInstance = new MayReturnNullProperty(true);
-	private static final MayReturnNullProperty doesNotReturnNullInstance = new MayReturnNullProperty(false);
-	
 	private boolean mayReturnNull;
 	
-	public static MayReturnNullProperty doesReturnNullInstance() {
-		return doesReturnNullInstance;
-	}
-	
-	public static MayReturnNullProperty doesNotReturnNullInstance() {
-		return doesNotReturnNullInstance;
-	}
-	
-	private MayReturnNullProperty(boolean mayReturnNull) {
+	public MayReturnNullProperty(boolean mayReturnNull) {
 		this.mayReturnNull = mayReturnNull;
 	}
 	
@@ -27,6 +16,10 @@ public class MayReturnNullProperty implements MethodProperty<MayReturnNullProper
 
 	public MayReturnNullProperty duplicate() {
 		return this;
+	}
+	
+	public void makeSameAs(MayReturnNullProperty other) {
+		this.mayReturnNull = other.mayReturnNull;
 	}
 
 }
