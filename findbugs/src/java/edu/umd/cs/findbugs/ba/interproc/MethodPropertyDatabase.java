@@ -88,7 +88,6 @@ public abstract class MethodPropertyDatabase<Property extends MethodProperty<Pro
 	 * to subtypes, or from subtypes to supertypes.
 	 */
 	public void propagateThroughClassHierarchy() {
-		/*
 		Subtypes subtypes = AnalysisContext.currentAnalysisContext().getSubtypes();
 		
 		Set<XMethod> methodSet = new HashSet<XMethod>();
@@ -98,6 +97,9 @@ public abstract class MethodPropertyDatabase<Property extends MethodProperty<Pro
 		// depending on which direction we're walking the class hierarchy in.)
 		for (Iterator<XMethod> i = propertyMap.keySet().iterator(); i.hasNext();) {
 			XMethod sourceMethod = i.next();
+			if (sourceMethod.isStatic())
+				continue;
+			
 			JavaClass sourceClass = getClassFor(sourceMethod);
 			if (sourceClass == null)
 				continue;
@@ -117,52 +119,26 @@ public abstract class MethodPropertyDatabase<Property extends MethodProperty<Pro
 		// Step 3.  Propagate method properties to super or subtype methods.
 		// As long as the combine operation is commutative, it doesn't matter
 		// what order we do this in.
-
-		 */
-		
-//
-//		// Build a new database to avoid ConcurrentModificationExceptions
-//		Map<XMethod, Property> resultMap = new HashMap<XMethod, Property>();
-//		resultMap.putAll(propertyMap);
-//		
-//		// For each method,property pair...
-//		for (Iterator<Map.Entry<XMethod, Property>> i = propertyMap.entrySet().iterator(); i.hasNext();) {
-//			Map.Entry<XMethod, Property> entry = i.next();
-//			try {
-//				XMethod sourceMethod = entry.getKey();
-//				if (sourceMethod.isStatic())
-//					continue;
-//				Property sourceProperty = entry.getValue();
-//
-//				// Get source class
-//				String sourceClassName = sourceMethod.getClassName();
-//				JavaClass sourceClass = AnalysisContext.currentAnalysisContext().lookupClass(sourceClassName);
-//				
-//				// Based on source class, get target classes (either subtypes or supertypes)
-//				Set<JavaClass> targetClassSet = getHierarchyWalkDirection().getHierarchyGraphTargets(sourceClass);
-//
-//				// Look for overriding or overridden methods in target classes
-//				for (Iterator<JavaClass> j = targetClassSet.iterator(); j.hasNext(); ) {
-//					JavaClass targetClass = j.next();
-//					
-//					XMethod targetMethod = Hierarchy.findXMethod(targetClass, sourceMethod.getName(), sourceMethod.getSignature());
-//					if (targetMethod == null)
-//						continue;
-//					if (targetMethod.isStatic())
-//						continue;
-//					
-//					// Combine properties
-//					Property targetProperty = propertyMap.get(targetMethod);
-//					if (targetProperty == null)
-//						resultMap.put(targetMethod, sourceProperty.duplicate());
-//					else
-//						resultMap.put(targetMethod, getPropertyCombinator().combine(sourceProperty, targetProperty));
-//				}
-//			} catch (ClassNotFoundException e) {
-//				AnalysisContext.currentAnalysisContext().getLookupFailureCallback().reportMissingClass(e);
-//			}
-//		}
-//		this.propertyMap = resultMap;
+		for (Iterator<Map.Entry<XMethod, Property>> i = propertyMap.entrySet().iterator(); i.hasNext();) {
+			Map.Entry<XMethod, Property> entry = i.next();
+			XMethod sourceMethod = entry.getKey();
+			JavaClass sourceClass = getClassFor(sourceMethod);
+			if (sourceClass == null)
+				continue;
+			
+			Property sourceProperty = entry.getValue();
+			
+			Set<XMethod> targetMethodSet = getTargetMethods(sourceClass, sourceMethod);
+			for (Iterator<XMethod> j = targetMethodSet.iterator(); j.hasNext();) {
+				XMethod targetMethod = j.next();
+				if (targetMethod.isStatic())
+					continue;
+				
+				Property targetProperty = propertyMap.get(targetMethod);
+				Property result = getPropertyCombinator().combine(sourceProperty, targetProperty);
+				targetProperty.makeSameAs(result);
+			}
+		}
 	}
 
 	private JavaClass getClassFor(XMethod method) {
