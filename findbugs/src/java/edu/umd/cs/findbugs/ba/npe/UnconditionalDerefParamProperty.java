@@ -83,6 +83,16 @@ public class UnconditionalDerefParamProperty implements MethodProperty<Unconditi
 		else
 			return (unconditionalDerefParamSet & (1 << param)) != 0;
 	}
+	
+	/**
+	 * Return whether or not the set of unconditionally dereferenced parameters
+	 * is null.
+	 * 
+	 * @return true if the set is null, false if it contains at least one parameter
+	 */
+	public boolean isEmpty() {
+		return unconditionalDerefParamSet == 0;
+	}
 
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.ba.interproc.MethodProperty#duplicate()
