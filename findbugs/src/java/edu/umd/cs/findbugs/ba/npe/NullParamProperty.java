@@ -38,6 +38,24 @@ public class NullParamProperty implements MethodProperty<NullParamProperty> {
 	}
 	
 	/**
+	 * Get the null param bitset.
+	 * 
+	 * @return the null param bitset
+	 */
+	int getNullParamSet() {
+		return nullParamSet;
+	}
+	
+	/**
+	 * Set the null param bitset.
+	 * 
+	 * @param nullParamSet the null param bitset
+	 */
+	void setNullParamSet(int nullParamSet) {
+		this.nullParamSet = nullParamSet;
+	}
+	
+	/**
 	 * Set whether or not a parameter might be null.
 	 * 
 	 * @param param       the parameter index
