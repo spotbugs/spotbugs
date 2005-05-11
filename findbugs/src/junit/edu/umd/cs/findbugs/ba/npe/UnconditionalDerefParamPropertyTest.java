@@ -28,6 +28,12 @@ public class UnconditionalDerefParamPropertyTest extends TestCase {
 		}
 	}
 	
+	public void testIsEmpty() {
+		Assert.assertTrue(empty.isEmpty());
+		Assert.assertFalse(nonEmpty.isEmpty());
+		Assert.assertFalse(extremes.isEmpty());
+	}
+	
 	public void testNonEmpty() {
 		Assert.assertTrue(nonEmpty.paramUnconditionalDeref(11));
 		Assert.assertTrue(nonEmpty.paramUnconditionalDeref(25));
