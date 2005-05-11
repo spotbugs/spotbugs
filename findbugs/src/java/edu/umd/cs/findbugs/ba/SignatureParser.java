@@ -94,6 +94,19 @@ public class SignatureParser {
 	public Iterator<String> parameterSignatureIterator() {
 		return new ParameterSignatureIterator();
 	}
+	
+	/**
+	 * Get the number of parameters in the signature.
+	 * 
+	 * @return the number of parameters
+	 */
+	public int getNumParameters() {
+		int count = 0;
+		for (Iterator<String> i = parameterSignatureIterator(); i.hasNext();) {
+			++count;
+		}
+		return count;
+	}
 }
 
 // vim:ts=4
