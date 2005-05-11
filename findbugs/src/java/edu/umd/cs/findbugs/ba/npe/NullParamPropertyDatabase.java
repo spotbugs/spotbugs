@@ -25,7 +25,10 @@ import edu.umd.cs.findbugs.ba.interproc.MethodPropertyDatabaseFormatException;
 import edu.umd.cs.findbugs.ba.interproc.PropertyCombinator;
 
 /**
- * @author daveho
+ * Method property database storing which method parameters might
+ * be passed a null value.
+ * 
+ * @author David Hovemeyer
  */
 public class NullParamPropertyDatabase extends MethodPropertyDatabase<NullParamProperty> {
 
