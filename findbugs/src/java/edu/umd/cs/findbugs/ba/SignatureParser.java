@@ -103,9 +103,22 @@ public class SignatureParser {
 	public int getNumParameters() {
 		int count = 0;
 		for (Iterator<String> i = parameterSignatureIterator(); i.hasNext();) {
+			i.next();
 			++count;
 		}
 		return count;
+	}
+	
+	public static void main(String[] args) {
+		if (args.length != 1) {
+			System.err.println("Usage: " + SignatureParser.class.getName() + " '<method signature>'");
+			System.exit(1);
+		}
+		SignatureParser parser = new SignatureParser(args[0]);
+		for (Iterator<String> i = parser.parameterSignatureIterator(); i.hasNext();){
+			System.out.println(i.next());
+		}
+		System.out.println(parser.getNumParameters() + " parameter(s)");
 	}
 }
 
