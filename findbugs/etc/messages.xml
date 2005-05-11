@@ -835,6 +835,7 @@ same code for the two branches, thus rendering the test useless. </p>
     </Details>
   </Detector>
 
+<!--
   <Detector class="edu.umd.cs.findbugs.detect.TrainNullReturnValues">
 	<Details>
 		<![CDATA[
@@ -850,6 +851,24 @@ same code for the two branches, thus rendering the test useless. </p>
 		]]>
 	</Details>
   </Detector>
+  
+  <Detector class="edu.umd.cs.findbugs.detect.TrainUnconditionalDerefParams">
+	<Details>
+		<![CDATA[
+		<p>
+		TrainUnconditionalParamDerefs determines which methods may
+		unconditionally dereference parameters and saves them to a file.
+		The resulting file may be used in a subsequent
+		pass to improve the precision of the null-dereference detector.
+		Since this is just a training pass, no warnings are reported. 
+		</p>
+		<p>
+		This is a slow detector.
+		</p>
+		]]>
+	</Details>
+  </Detector>
+-->
   
   <Detector class="edu.umd.cs.findbugs.detect.FindBugsSummaryStats">
     <Details>

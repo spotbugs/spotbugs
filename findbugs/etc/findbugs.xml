@@ -383,8 +383,13 @@
   			speed="fast"
   			reports="DB_DUPLICATE_BRANCHES"/>
 
+<!--
   <Detector class="edu.umd.cs.findbugs.detect.TrainNullReturnValues"
             hidden="true" speed="slow" reports=""/>
+
+  <Detector class="edu.umd.cs.findbugs.detect.TrainUnconditionalDerefParams"
+            hidden="true" speed="slow" reports=""/>
+-->
 
   <Detector class="edu.umd.cs.findbugs.detect.FindBugsSummaryStats" 
             speed="fast"
