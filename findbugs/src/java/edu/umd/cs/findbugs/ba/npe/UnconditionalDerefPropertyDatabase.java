@@ -26,25 +26,25 @@ import edu.umd.cs.findbugs.ba.interproc.PropertyCombinator;
 
 /**
  * Method property database storing which method parameters might
- * be passed a null value.
+ * be unconditionally dereferenced.
  * 
  * @author David Hovemeyer
  */
-public class NullParamPropertyDatabase extends MethodPropertyDatabase<NullParamProperty> {
+public class UnconditionalDerefPropertyDatabase extends MethodPropertyDatabase<UnconditionalDerefParamProperty> {
 
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.ba.interproc.MethodPropertyDatabase#decodeProperty(java.lang.String)
 	 */
 	//@Override
-	protected NullParamProperty decodeProperty(String propStr)
+	protected UnconditionalDerefParamProperty decodeProperty(String propStr)
 			throws MethodPropertyDatabaseFormatException {
 		try {
-			int nullParamSet = Integer.parseInt(propStr);
-			NullParamProperty prop = new NullParamProperty();
-			prop.setNullParamSet(nullParamSet);
+			int unconditionalDerefSet = Integer.parseInt(propStr);
+			UnconditionalDerefParamProperty prop = new UnconditionalDerefParamProperty();
+			prop.setUnconditionalDerefParamSet(unconditionalDerefSet);
 			return prop;
 		} catch (NumberFormatException e) {
-			throw new MethodPropertyDatabaseFormatException("Invalid null param set: " + propStr);
+			throw new MethodPropertyDatabaseFormatException("Invalid unconditional deref param set: " + propStr);
 		}
 	}
 
@@ -52,8 +52,8 @@ public class NullParamPropertyDatabase extends MethodPropertyDatabase<NullParamP
 	 * @see edu.umd.cs.findbugs.ba.interproc.MethodPropertyDatabase#encodeProperty(Property)
 	 */
 	//@Override
-	protected String encodeProperty(NullParamProperty property) {
-		return String.valueOf(property.getNullParamSet());
+	protected String encodeProperty(UnconditionalDerefParamProperty property) {
+		return String.valueOf(property.getUnconditionalDerefParamSet());
 	}
 
 	/* (non-Javadoc)
@@ -61,22 +61,23 @@ public class NullParamPropertyDatabase extends MethodPropertyDatabase<NullParamP
 	 */
 	//@Override
 	protected HierarchyWalkDirection getHierarchyWalkDirection() {
-		// Properties go downwards towards subtypes:
-		// if a null is passed to a supertype parameter,
-		// then we assume it can propagate to any subtype method.
-		return HierarchyWalkDirection.TOWARDS_SUBTYPES;
+		// Properties go upwards towards supertypes:
+		// if a subtype param is dereferenced unconditionally,
+		// then we assume that subtype mether is reachable from
+		// supertype method call sites.
+		return HierarchyWalkDirection.TOWARDS_SUPERTYPES;
 	}
 
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.ba.interproc.MethodPropertyDatabase#getPropertyCombinator()
 	 */
 	//@Override
-	protected PropertyCombinator<NullParamProperty> getPropertyCombinator() {
-		return new PropertyCombinator<NullParamProperty>() {
-			public NullParamProperty combine(NullParamProperty sourceProperty, NullParamProperty targetProperty) {
-				// Take the union of null param sets.
-				NullParamProperty prop = new NullParamProperty();
-				prop.setNullParamSet(sourceProperty.getNullParamSet() | targetProperty.getNullParamSet());
+	protected PropertyCombinator<UnconditionalDerefParamProperty> getPropertyCombinator() {
+		return new PropertyCombinator<UnconditionalDerefParamProperty>() {
+			public UnconditionalDerefParamProperty combine(UnconditionalDerefParamProperty sourceProperty, UnconditionalDerefParamProperty targetProperty) {
+				// Take the union of unconditional deref param sets.
+				UnconditionalDerefParamProperty prop = new UnconditionalDerefParamProperty();
+				prop.setUnconditionalDerefParamSet(sourceProperty.getUnconditionalDerefParamSet() | targetProperty.getUnconditionalDerefParamSet());
 				return prop;
 			}
 		};
