@@ -19,8 +19,11 @@
 
 package edu.umd.cs.findbugs.ba;
 
+import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.InvokeInstruction;
 
 /**
  * Factory methods for creating XMethod objects.
@@ -44,5 +47,25 @@ public abstract class XMethodFactory {
 			return new StaticMethod(className, methodName, methodSig, accessFlags);
 		else
 			return new InstanceMethod(className, methodName, methodSig, accessFlags);
+	}
+	
+	/**
+	 * Create an XMethod object from an InvokeInstruction.
+	 * 
+	 * @param invokeInstruction the InvokeInstruction
+	 * @param cpg               ConstantPoolGen from the class containing the instruction
+	 * @return XMethod representing the method called by the InvokeInstruction
+	 */
+	public static XMethod createXMethod(InvokeInstruction invokeInstruction, ConstantPoolGen cpg) {
+		String className = invokeInstruction.getClassName(cpg);
+		String methodName = invokeInstruction.getName(cpg);
+		String methodSig = invokeInstruction.getSignature(cpg);
+		
+		// NOTE: access flags are ignored when comparing
+		// XMethods.  So it's OK that we make up values here.
+		
+		return (invokeInstruction.getOpcode() == Constants.INVOKESTATIC)
+			? new StaticMethod(className, methodName, methodSig, Constants.ACC_STATIC | Constants.ACC_PUBLIC)
+			: new InstanceMethod(className, methodName, methodSig, Constants.ACC_PUBLIC);
 	}
 }
