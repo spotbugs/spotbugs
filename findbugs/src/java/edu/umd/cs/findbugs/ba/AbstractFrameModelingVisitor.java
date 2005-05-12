@@ -291,7 +291,8 @@ public abstract class AbstractFrameModelingVisitor <Value, FrameType extends Fra
 
 	/**
 	 * This is called to handle any instruction which does not simply
-	 * copy values between stack slots.
+	 * copy values between stack slots.  The default value
+	 * is pushed (if the instruction is a stack producer).
 	 */
 	public void handleNormalInstruction(Instruction ins) {
 		modelNormalInstruction(ins, getNumWordsConsumed(ins), getNumWordsProduced(ins));
@@ -300,8 +301,31 @@ public abstract class AbstractFrameModelingVisitor <Value, FrameType extends Fra
 	/**
 	 * Model the stack for instructions handled by handleNormalInstruction().
 	 * Subclasses may override to provide analysis-specific behavior.
+	 * 
+	 * @param ins              the Instruction to model
+	 * @param numWordsConsumed number of stack words consumed
+	 * @param numWordsProduced number of stack words produced
 	 */
-	public void modelNormalInstruction(Instruction ins, int numWordsConsumed, int numWordsProduced) {
+	public void modelNormalInstruction(
+			Instruction ins,
+			int numWordsConsumed,
+			int numWordsProduced) {
+		modelInstruction(ins, numWordsConsumed, numWordsProduced, getDefaultValue());
+	}
+
+	/**
+	 * Primitive to model the stack effect of a single instruction.
+	 * 
+	 * @param ins              the Instruction to model
+	 * @param numWordsConsumed number of stack words consumed
+	 * @param numWordsProduced number of stack words produced
+	 * @param pushValue        value to push on the stack
+	 */
+	public void modelInstruction(
+			Instruction ins,
+			int numWordsConsumed,
+			int numWordsProduced,
+			Value pushValue) {
 		try {
 			while (numWordsConsumed-- > 0)
 				frame.popValue();
@@ -310,7 +334,7 @@ public abstract class AbstractFrameModelingVisitor <Value, FrameType extends Fra
 		}
 
 		while (numWordsProduced-- > 0)
-			frame.pushValue(getDefaultValue());
+			frame.pushValue(pushValue);
 	}
 
 	/* ---------------------------------------------------------------------- 
