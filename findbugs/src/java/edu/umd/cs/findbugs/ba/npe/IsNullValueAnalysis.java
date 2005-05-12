@@ -86,8 +86,8 @@ public class IsNullValueAnalysis
 		}
 	}
 	
-	public void setNullReturnValueDatabase(MayReturnNullPropertyDatabase mayReturnNullDatabase) {
-		
+	public void setMayReturnNullDatabase(MayReturnNullPropertyDatabase mayReturnNullDatabase) {
+		visitor.setMayReturnNullDatabase(mayReturnNullDatabase);
 	}
 	
 	public void setUnconditionalDerefDatabase(UnconditionalDerefPropertyDatabase unconditionalDerefDatabase) {

@@ -19,12 +19,22 @@
 
 package edu.umd.cs.findbugs.ba.npe;
 
-import org.apache.bcel.generic.*;
+import org.apache.bcel.generic.ACONST_NULL;
+import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.INVOKEINTERFACE;
+import org.apache.bcel.generic.INVOKESPECIAL;
+import org.apache.bcel.generic.INVOKESTATIC;
+import org.apache.bcel.generic.INVOKEVIRTUAL;
+import org.apache.bcel.generic.InvokeInstruction;
+import org.apache.bcel.generic.LDC;
+import org.apache.bcel.generic.LDC2_W;
+import org.apache.bcel.generic.LDC_W;
+import org.apache.bcel.generic.NEW;
+import org.apache.bcel.generic.ReferenceType;
+import org.apache.bcel.generic.Type;
 
 import edu.umd.cs.findbugs.ba.AbstractFrameModelingVisitor;
 import edu.umd.cs.findbugs.ba.AssertionMethods;
-import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
-import edu.umd.cs.findbugs.ba.InvalidBytecodeException;
 
 public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisitor<IsNullValue, IsNullValueFrame> {
 
@@ -38,7 +48,7 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
 		this.assertionMethods = assertionMethods;
 	}
 	
-	public void setMayReturnNullDatbase(MayReturnNullPropertyDatabase mayReturnNullDatabase) {
+	public void setMayReturnNullDatabase(MayReturnNullPropertyDatabase mayReturnNullDatabase) {
 		this.mayReturnNullDatabase = mayReturnNullDatabase;
 	}
 
