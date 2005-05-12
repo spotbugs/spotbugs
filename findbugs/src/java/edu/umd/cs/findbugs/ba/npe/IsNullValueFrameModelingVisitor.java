@@ -35,6 +35,8 @@ import org.apache.bcel.generic.Type;
 
 import edu.umd.cs.findbugs.ba.AbstractFrameModelingVisitor;
 import edu.umd.cs.findbugs.ba.AssertionMethods;
+import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.ba.XMethodFactory;
 
 public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisitor<IsNullValue, IsNullValueFrame> {
 
@@ -96,6 +98,7 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
 		// Determine if we are going to model the return value of this call.
 		boolean modelCallReturnValue =
 			   stringMethodCall
+			|| (mayReturnNullDatabase != null)
 			|| IsNullValueAnalysis.UNKNOWN_VALUES_ARE_NSP;
 		
 		if( !modelCallReturnValue) {
@@ -108,6 +111,15 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
 			if (stringMethodCall) {
 				// String methods always return a non-null value
 				pushValue = IsNullValue.nonNullValue();
+			} else if (mayReturnNullDatabase != null) {
+				// Check to see if this method is in the database
+				XMethod calledMethod = XMethodFactory.createXMethod(obj, getCPG());
+				MayReturnNullProperty prop = mayReturnNullDatabase.getProperty(calledMethod);
+				if (prop != null && prop.mayReturnNull()) {
+					pushValue = IsNullValue.nullOnSimplePathValue();
+				} else {
+					pushValue = IsNullValue.nonReportingNotNullValue();
+				}
 			} else if (IsNullValueAnalysis.UNKNOWN_VALUES_ARE_NSP) {
 				pushValue = (returnType instanceof ReferenceType)
 					? IsNullValue.nullOnSimplePathValue()
