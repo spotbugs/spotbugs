@@ -173,6 +173,17 @@ public class SignatureConverter {
 	/**
 	 * Convenience method for generating a method signature in
 	 * human readable form.
+	 * 
+	 * @param xmethod an XMethod
+	 * @return the formatted version of that signature
+	 */
+	public static String convertMethodSignature(XMethod xmethod) {
+		return convertMethodSignature(xmethod.getClassName(), xmethod.getName(), xmethod.getSignature());
+	}
+	
+	/**
+	 * Convenience method for generating a method signature in
+	 * human readable form.
 	 *
 	 * @param className  name of the class containing the method
 	 * @param methodName the name of the method
