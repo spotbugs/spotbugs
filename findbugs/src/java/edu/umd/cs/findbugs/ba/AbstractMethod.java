@@ -32,4 +32,8 @@ public abstract class AbstractMethod extends AbstractClassMember implements XMet
 	public boolean isSynchronized() {
 		return (getAccessFlags() & Constants.ACC_SYNCHRONIZED) != 0;
 	}
+	
+	public String toString() {
+		return SignatureConverter.convertMethodSignature(this);
+	}
 }
