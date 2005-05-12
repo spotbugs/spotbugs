@@ -829,8 +829,10 @@ their work on Programming Puzzlers.
   <Detector class="edu.umd.cs.findbugs.detect.DuplicateBranches">
     <Details>
 <![CDATA[
-<p> This detector looks for if else statements that have the
-same code for the two branches, thus rendering the test useless. </p>
+<p> This detector looks for if/else or switch statements that have the
+same code for two branches, thus rendering the test useless. This often
+is caused by copying and pasting the two branches, causing incorrect logic
+for the one branch.</p>
 ]]>
     </Details>
   </Detector>
@@ -3639,7 +3641,7 @@ and the next method is supposed to change the state of the iterator.
 	<Details>
 		<![CDATA[
 		<p>
-		This method uses the same code to implement two branches of an if else statement.
+		This method uses the same code to implement two branches of an if/else or switch statement.
 		</p>
 		]]>
 	</Details>
