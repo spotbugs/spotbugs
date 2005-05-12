@@ -53,7 +53,7 @@ import edu.umd.cs.findbugs.ba.ValueNumberFrame;
 public class IsNullValueAnalysis
 		extends FrameDataflowAnalysis<IsNullValue, IsNullValueFrame>
 		implements EdgeTypes, IsNullValueAnalysisFeatures {
-	private static final boolean DEBUG = Boolean.getBoolean("inva.debug");
+	static final boolean DEBUG = Boolean.getBoolean("inva.debug");
 
 	static {
 		if (DEBUG) System.out.println("Debug enabled");

@@ -30,6 +30,7 @@ import edu.umd.cs.findbugs.ba.interproc.PropertyCombinator;
  * @author David Hovemeyer
  */
 public class MayReturnNullPropertyDatabase extends MethodPropertyDatabase<MayReturnNullProperty> {
+	public static final String DEFAULT_FILENAME = "mayReturnNull.db";
 
 	//@Override
 	protected MayReturnNullProperty decodeProperty(String propStr)
@@ -65,4 +66,8 @@ public class MayReturnNullPropertyDatabase extends MethodPropertyDatabase<MayRet
 		return new MayReturnNullProperty(false);
 	}
 
+	public static void main(String[] args) throws Exception {
+		MayReturnNullPropertyDatabase database = new MayReturnNullPropertyDatabase();
+		database.readFromFile(DEFAULT_FILENAME);
+	}
 }

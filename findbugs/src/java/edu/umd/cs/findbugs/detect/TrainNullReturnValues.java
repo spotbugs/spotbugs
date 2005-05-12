@@ -125,8 +125,7 @@ public class TrainNullReturnValues implements TrainingDetector {
 	public void report() {
 		database.propagateThroughClassHierarchy();
 		try {
-			FileOutputStream out = new FileOutputStream("mayReturnNull.db");
-			database.write(out);
+			database.writeToFile(MayReturnNullPropertyDatabase.DEFAULT_FILENAME);
 		} catch (IOException e) {
 			bugReporter.logError("Couldn't write may return null database", e);
 		}

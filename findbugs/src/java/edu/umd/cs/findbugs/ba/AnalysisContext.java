@@ -36,8 +36,11 @@ import java.util.Map;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.JavaClass;
 
-import edu.umd.cs.findbugs.AnalysisLocal;
 import edu.umd.cs.findbugs.ba.ch.Subtypes;
+import edu.umd.cs.findbugs.ba.interproc.MethodProperty;
+import edu.umd.cs.findbugs.ba.interproc.MethodPropertyDatabase;
+import edu.umd.cs.findbugs.ba.interproc.MethodPropertyDatabaseFormatException;
+import edu.umd.cs.findbugs.ba.npe.MayReturnNullPropertyDatabase;
 
 
 /**
@@ -48,7 +51,10 @@ import edu.umd.cs.findbugs.ba.ch.Subtypes;
  * @author David Hovemeyer
  */
 public class AnalysisContext implements AnalysisFeatures {
+	private static final boolean DEBUG = Boolean.getBoolean("findbugs.analysiscontext.debug");
 	private static final boolean DEBUG_HIERARCHY = Boolean.getBoolean("findbugs.debug.hierarchy");
+	
+	private static final boolean INTERPROC_DATABASE = Boolean.getBoolean("findbugs.interproc");
 	
 	private RepositoryLookupFailureCallback lookupFailureCallback;
 	private SourceFinder sourceFinder;
@@ -57,6 +63,10 @@ public class AnalysisContext implements AnalysisFeatures {
 	public Map analysisLocals = 
 		Collections.synchronizedMap(new HashMap());
 	private BitSet boolPropertySet;
+	
+	// Interprocedural fact databases
+	private MayReturnNullPropertyDatabase mayReturnNullDatabase;
+	private boolean interprocDatabasesLoaded;
 
     /*
       // JSR14 does not support Generic ThreadLocal
@@ -204,6 +214,14 @@ public class AnalysisContext implements AnalysisFeatures {
 	 * @return the ClassContext for that class
 	 */
 	public ClassContext getClassContext(JavaClass javaClass) {
+		if (INTERPROC_DATABASE && !interprocDatabasesLoaded) {
+			mayReturnNullDatabase = loadMethodPropertyDatabase(
+					new MayReturnNullPropertyDatabase(),
+					MayReturnNullPropertyDatabase.DEFAULT_FILENAME,
+					"may return null database");
+			interprocDatabasesLoaded = true;
+		}
+		
 		ClassContext classContext = classContextCache.get(javaClass);
 		if (classContext == null) {
 			classContext = new ClassContext(javaClass, this);
@@ -231,6 +249,47 @@ public class AnalysisContext implements AnalysisFeatures {
 	 */
 	public boolean getBoolProperty(int prop) {
 		return boolPropertySet.get(prop);
+	}
+	
+	/**
+	 * Get the method property database containing methods which may return
+	 * a null value. 
+	 * 
+	 * @return the database, or null if there is no database available
+	 */
+	public MayReturnNullPropertyDatabase getMayReturnNullDatabase() {
+		return mayReturnNullDatabase;
+	}
+
+	/**
+	 * Load an interprocedural method property database.
+	 * 
+	 * @param <DatabaseType> actual type of the database
+	 * @param <Property>     type of properties stored in the database
+	 * @param database       the empty database object
+	 * @param fileName       file to load database from
+	 * @param description    description of the database (for diagnostics)
+	 * @return the database object, or null if the database couldn't be loaded
+	 */
+	private<
+		DatabaseType extends MethodPropertyDatabase<Property>,
+		Property extends MethodProperty<Property>
+		> DatabaseType loadMethodPropertyDatabase(
+			DatabaseType database,
+			String fileName,
+			String description) {
+		try {
+			if (DEBUG) System.out.println("Loading " + description + " from " + fileName + "...");
+			
+			database.readFromFile(fileName);
+			return database;
+		} catch (IOException e) {
+			getLookupFailureCallback().logError("Error loading " + description, e);
+		} catch (MethodPropertyDatabaseFormatException e) {
+			getLookupFailureCallback().logError("Invalid " + description, e);
+		}
+		
+		return null;
 	}
 }
 

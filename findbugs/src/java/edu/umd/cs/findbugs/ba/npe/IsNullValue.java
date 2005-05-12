@@ -143,6 +143,13 @@ public class IsNullValue implements IsNullValueAnalysisFeatures {
 	public IsNullValue toExceptionValue() {
 		return instanceByFlagsList[(getFlags() | EXCEPTION) >> FLAG_SHIFT][getBaseKind()];
 	}
+	
+	/**
+	 * Convert to a null return value value.
+	 */
+	public IsNullValue toMayReturnNullValue() {
+		return instanceByFlagsList[(getFlags() | RETURN_VAL) >> FLAG_SHIFT][getBaseKind()];
+	}
 
 	/**
 	 * Get the instance representing values that are definitely null.

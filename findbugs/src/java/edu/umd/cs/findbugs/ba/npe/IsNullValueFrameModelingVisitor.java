@@ -114,9 +114,14 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
 			} else if (mayReturnNullDatabase != null) {
 				// Check to see if this method is in the database
 				XMethod calledMethod = XMethodFactory.createXMethod(obj, getCPG());
+				if (IsNullValueAnalysis.DEBUG) System.out.println("Check " + calledMethod + " for null return...");
 				MayReturnNullProperty prop = mayReturnNullDatabase.getProperty(calledMethod);
 				if (prop != null && prop.mayReturnNull()) {
-					pushValue = IsNullValue.nullOnSimplePathValue();
+					// Method may return null!
+					if (IsNullValueAnalysis.DEBUG) {
+						System.out.println("Null value returned from " + calledMethod);
+					}
+					pushValue = IsNullValue.nullOnSimplePathValue().toMayReturnNullValue();
 				} else {
 					pushValue = IsNullValue.nonReportingNotNullValue();
 				}

@@ -162,8 +162,7 @@ public class TrainUnconditionalDerefParams implements TrainingDetector {
 	public void report() {
 		database.propagateThroughClassHierarchy();
 		try {
-			FileOutputStream out = new FileOutputStream("unconditionalDeref.db");
-			database.write(out);
+			database.writeToFile("unconditionalDeref.db");
 		} catch (IOException e) {
 			bugReporter.logError("Couldn't write unconditional deref database", e);
 		}
