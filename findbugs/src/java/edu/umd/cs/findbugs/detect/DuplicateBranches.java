@@ -146,8 +146,15 @@ public class DuplicateBranches extends PreorderVisitor implements Detector, Stat
 		// otherwise we miss many duplicate branches. Will work on this next
 		// for now we drop off the last byte of the block. This is really incorrect, but ok for now
 		for (int i = 0; i < switchPos.size()-2; i++) {
+			int s1Length = switchPos.get(i+1).intValue() - switchPos.get(i).intValue();
+			byte[] s1Bytes = getCodeBytes(method, switchPos.get(i).intValue(), switchPos.get(i+1).intValue()-1);
+			
 			for (int j = i+1; j < switchPos.size()-1; j++) {
-				byte[] s1Bytes = getCodeBytes(method, switchPos.get(i).intValue(), switchPos.get(i+1).intValue()-1);
+				int s2Length = switchPos.get(j+1).intValue() - switchPos.get(j).intValue();
+				
+				if (s1Length != s2Length)
+					continue;
+				
 				byte[] s2Bytes = getCodeBytes(method, switchPos.get(j).intValue(), switchPos.get(j+1).intValue()-1);
 				
 				if (!Arrays.equals(s1Bytes, s2Bytes))
