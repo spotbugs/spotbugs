@@ -64,6 +64,8 @@ public class IsNullValueAnalysis
 	private ValueNumberDataflow vnaDataflow;
 	private int[] numNonExceptionSuccessorMap;
 	private IsNullValueFrame lastFrame;
+	
+	private UnconditionalDerefPropertyDatabase unconditionalDerefDatabase;
 
 	public IsNullValueAnalysis(MethodGen methodGen, CFG cfg, ValueNumberDataflow vnaDataflow, DepthFirstSearch dfs,
 	                           AssertionMethods assertionMethods) {
@@ -82,6 +84,14 @@ public class IsNullValueAnalysis
 			int srcBlockId = edge.getSource().getId();
 			numNonExceptionSuccessorMap[srcBlockId]++;
 		}
+	}
+	
+	public void setNullReturnValueDatabase(MayReturnNullPropertyDatabase mayReturnNullDatabase) {
+		
+	}
+	
+	public void setUnconditionalDerefDatabase(UnconditionalDerefPropertyDatabase unconditionalDerefDatabase) {
+		this.unconditionalDerefDatabase = unconditionalDerefDatabase;
 	}
 
 	public IsNullValueFrame createFact() {
