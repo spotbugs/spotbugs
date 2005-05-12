@@ -39,6 +39,21 @@ public interface RepositoryLookupFailureCallback {
 	 * @param ex a ClassNotFoundException resulting from the failure
 	 */
 	public void reportMissingClass(ClassNotFoundException ex);
+
+	/**
+	 * Log an error that occurs while performing analysis.
+	 *
+	 * @param message the error message
+	 */
+	public void logError(String message);
+	
+	/**
+	 * Log an error that occurs while performing analysis.
+	 *
+	 * @param message the error message
+	 * @param e       the exception which is the underlying cause of the error
+	 */
+	public void logError(String message, Throwable e);
 }
 
 // vim:ts=4

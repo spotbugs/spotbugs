@@ -111,12 +111,7 @@ public class CFGPrinter {
 
 			String className = argv[0];
 			JavaClass cls = new ClassParser(className).parse();
-			RepositoryLookupFailureCallback lookupFailureCallback = new RepositoryLookupFailureCallback() {
-				public void reportMissingClass(ClassNotFoundException ex) {
-					ex.printStackTrace();
-					System.exit(1);
-				}
-			};
+			RepositoryLookupFailureCallback lookupFailureCallback = new DebugRepositoryLookupFailureCallback();
 
 			AnalysisContext analysisContext = new AnalysisContext(lookupFailureCallback);
 			ClassContext classContext = analysisContext.getClassContext(cls);

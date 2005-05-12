@@ -61,12 +61,7 @@ public class DominatorsAnalysis extends AbstractDominatorsAnalysis {
 			System.exit(1);
 		}
 
-		RepositoryLookupFailureCallback lookupFailureCallback = new RepositoryLookupFailureCallback() {
-			public void reportMissingClass(ClassNotFoundException ex) {
-				ex.printStackTrace();
-				System.exit(1);
-			}
-		};
+		RepositoryLookupFailureCallback lookupFailureCallback = new DebugRepositoryLookupFailureCallback();
 
 		AnalysisContext analysisContext = new AnalysisContext(lookupFailureCallback);
 

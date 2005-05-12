@@ -47,6 +47,7 @@ import edu.umd.cs.findbugs.ba.constant.ConstantAnalysis;
 import edu.umd.cs.findbugs.ba.constant.ConstantDataflow;
 import edu.umd.cs.findbugs.ba.npe.IsNullValueAnalysis;
 import edu.umd.cs.findbugs.ba.npe.IsNullValueDataflow;
+import edu.umd.cs.findbugs.ba.npe.MayReturnNullPropertyDatabase;
 
 /**
  * A ClassContext caches all of the auxiliary objects used to analyze
@@ -390,6 +391,12 @@ public class ClassContext implements AnalysisFeatures {
 			        AssertionMethods assertionMethods = getAssertionMethods();
 
 			        IsNullValueAnalysis invAnalysis = new IsNullValueAnalysis(methodGen, cfg, vnaDataflow, dfs, assertionMethods);
+					
+					MayReturnNullPropertyDatabase mayReturnNullDatabase = analysisContext.getMayReturnNullDatabase();
+					if (mayReturnNullDatabase != null) {
+						invAnalysis.setMayReturnNullDatabase(mayReturnNullDatabase);
+					}
+					
 			        IsNullValueDataflow invDataflow = new IsNullValueDataflow(cfg, invAnalysis);
 			        invDataflow.execute();
 			        return invDataflow;

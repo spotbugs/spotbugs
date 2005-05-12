@@ -36,12 +36,7 @@ public abstract class ResourceValueAnalysisTestDriver <Resource, ResourceTracker
 	public void execute(String classFile, String methodName, int offset)
 	        throws IOException, CFGBuilderException, DataflowAnalysisException {
 
-		final RepositoryLookupFailureCallback lookupFailureCallback = new RepositoryLookupFailureCallback() {
-			public void reportMissingClass(ClassNotFoundException ex) {
-				ex.printStackTrace();
-				System.exit(1);
-			}
-		};
+		final RepositoryLookupFailureCallback lookupFailureCallback = new DebugRepositoryLookupFailureCallback();
 
 		// Set the lookup failure callback in the Analysis Context
 		AnalysisContext analysisContext = new AnalysisContext(lookupFailureCallback);

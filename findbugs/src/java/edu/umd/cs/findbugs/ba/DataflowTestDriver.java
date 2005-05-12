@@ -46,12 +46,7 @@ public abstract class DataflowTestDriver <Fact, AnalysisType extends AbstractDat
 	public void execute(String filename) throws DataflowAnalysisException, CFGBuilderException, IOException {
 		JavaClass jclass = new RepositoryClassParser(filename).parse();
 
-		final RepositoryLookupFailureCallback lookupFailureCallback = new RepositoryLookupFailureCallback() {
-			public void reportMissingClass(ClassNotFoundException e) {
-				e.printStackTrace();
-				System.exit(1);
-			}
-		};
+		final RepositoryLookupFailureCallback lookupFailureCallback = new DebugRepositoryLookupFailureCallback();
 
 		AnalysisContext analysisContext = new AnalysisContext(lookupFailureCallback);
 
