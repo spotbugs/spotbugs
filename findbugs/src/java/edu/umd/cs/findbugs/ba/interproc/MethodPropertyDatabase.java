@@ -20,6 +20,8 @@ package edu.umd.cs.findbugs.ba.interproc;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -176,11 +178,24 @@ public abstract class MethodPropertyDatabase<Property extends MethodProperty<Pro
 			return EMPTY_METHOD_SET;
 		}
 	}
+	
+	/**
+	 * Read property database from given file.
+	 * 
+	 * @param fileName name of the database file
+	 * @throws IOException
+	 * @throws MethodPropertyDatabaseFormatException
+	 */
+	public void readFromFile(String fileName) throws IOException, MethodPropertyDatabaseFormatException {
+		read(new FileInputStream(fileName));
+	}
 
 	/**
-	 * Read method property database from a file.
+	 * Read method property database from an input stream.
+	 * The InputStream is guaranteed to be closed, even if an
+	 * exception is thrown.
 	 * 
-	 * @param in an InputStream reading the file
+	 * @param in the InputStream
 	 * @throws IOException
 	 * @throws MethodPropertyDatabaseFormatException
 	 */
@@ -200,7 +215,7 @@ public abstract class MethodPropertyDatabase<Property extends MethodProperty<Pro
 					throw new MethodPropertyDatabaseFormatException(
 							"Invalid method property database: missing separator");
 				}
-				XMethod method = parseMethod(line.substring(bar));
+				XMethod method = parseMethod(line.substring(0, bar));
 				Property property = decodeProperty(line.substring(bar+1));
 				
 				setProperty(method, property);
@@ -213,12 +228,23 @@ public abstract class MethodPropertyDatabase<Property extends MethodProperty<Pro
 			}
 		}
 	}
+	
+	/**
+	 * Write property database to given file.
+	 * 
+	 * @param fileName name of the database file
+	 * @throws IOException
+	 */
+	public void writeToFile(String fileName) throws IOException {
+		write(new FileOutputStream(fileName));
+	}
 
 	/**
-	 * Write method property database to a file.
-	 * Stream is closed unconditionally.
+	 * Write method property database to an OutputStream.
+	 * The OutputStream is guaranteed to be closed, even if an
+	 * exception is thrown.
 	 * 
-	 * @param out OutputStream writing to the file
+	 * @param out the OutputStream
 	 * @throws IOException
 	 */
 	public void write(OutputStream out) throws IOException {
