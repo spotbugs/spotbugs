@@ -63,6 +63,7 @@ public class IsNullValueAnalysis
 	private IsNullValueFrameModelingVisitor visitor;
 	private ValueNumberDataflow vnaDataflow;
 	private int[] numNonExceptionSuccessorMap;
+	private IsNullValue paramValue;
 	private IsNullValueFrame lastFrame;
 	
 	private UnconditionalDerefPropertyDatabase unconditionalDerefDatabase;
@@ -73,6 +74,9 @@ public class IsNullValueAnalysis
 		this.methodGen = methodGen;
 		this.visitor = new IsNullValueFrameModelingVisitor(methodGen.getConstantPool(), assertionMethods);
 		this.vnaDataflow = vnaDataflow;
+		this.paramValue = UNKNOWN_VALUES_ARE_NSP
+			? IsNullValue.nullOnSimplePathValue()
+			: IsNullValue.nonReportingNotNullValue();
 		this.numNonExceptionSuccessorMap = new int[cfg.getNumBasicBlocks()];
 
 		// For each basic block, calculate the number of non-exception successors.
@@ -97,6 +101,10 @@ public class IsNullValueAnalysis
 	public IsNullValueFrame createFact() {
 		return new IsNullValueFrame(methodGen.getMaxLocals());
 	}
+	
+	public void setParamValue(IsNullValue paramValue) {
+		this.paramValue = paramValue;
+	}
 
 	public void initEntryFact(IsNullValueFrame result) {
 		result.setValid();
@@ -105,14 +113,7 @@ public class IsNullValueAnalysis
 		boolean instanceMethod = !methodGen.isStatic();
 
 		for (int i = 0; i < numLocals; ++i) {
-			IsNullValue paramValue;
-
-			if (UNKNOWN_VALUES_ARE_NSP && !(instanceMethod && i == 0))
-				paramValue = IsNullValue.nullOnSimplePathValue();
-			else
-				paramValue = IsNullValue.nonReportingNotNullValue();
-
-			result.setValue(i, paramValue);
+			result.setValue(i, (instanceMethod && i == 0) ? IsNullValue.nonNullValue() : paramValue);
 		}
 	}
 
