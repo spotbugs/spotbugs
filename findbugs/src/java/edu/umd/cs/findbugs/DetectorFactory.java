@@ -94,6 +94,16 @@ public class DetectorFactory {
 	}
 	
 	/**
+	 * Determine whether the detector class is a subtype of the given class (or interface).
+	 * 
+	 * @param otherClass a class or interface
+	 * @return true if the detector class is a subtype of the given class or interface
+	 */
+	public boolean isDetectorClassSubtypeOf(Class<?> otherClass) {
+		return otherClass.isAssignableFrom(detectorClass);
+	}
+	
+	/**
 	 * Check to see if we are running on a recent-enough JRE for
 	 * this detector to be enabled.
 	 * 
