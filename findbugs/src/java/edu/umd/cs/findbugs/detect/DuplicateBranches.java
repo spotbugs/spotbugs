@@ -123,7 +123,7 @@ public class DuplicateBranches extends PreorderVisitor implements Detector, Stat
 	
 	private void findSwitchDuplicates(CFG cfg, Method method, BasicBlock bb) {		
 		Iterator<Edge> iei = cfg.outgoingEdgeIterator(bb);
-		
+				
 		int[] switchPos = new int[cfg.getNumOutgoingEdges(bb)+1];
 		int idx = 0;
 		
@@ -149,7 +149,7 @@ public class DuplicateBranches extends PreorderVisitor implements Detector, Stat
 			if (s1Length == 0)
 				continue;
 			
-			byte[] s1Bytes = getCodeBytes(method, switchPos[i], switchPos[i+1]);
+			byte[] s1Bytes = null;
 			
 			for (int j = i+1; j < switchPos.length-1; j++) {
 				int s2Length = switchPos[j+1] - switchPos[j];
@@ -158,6 +158,9 @@ public class DuplicateBranches extends PreorderVisitor implements Detector, Stat
 				
 				if (s1Length != s2Length)
 					continue;
+				
+				if (s1Bytes == null)
+					s1Bytes = getCodeBytes(method, switchPos[i], switchPos[i+1]);
 								
 				byte[] s2Bytes = getCodeBytes(method, switchPos[j], switchPos[j+1]);
 				
@@ -169,10 +172,10 @@ public class DuplicateBranches extends PreorderVisitor implements Detector, Stat
 						.addMethod(classContext.getJavaClass().getClassName(), method.getName(), method.getSignature())
 						.addSourceLineRange(this, 
 								switchPos[i],
-								switchPos[i+1])
+								switchPos[i+1]-1)
 						.addSourceLineRange(this, 
 								switchPos[j],
-								switchPos[j+1]));
+								switchPos[j+1]-1));
 				j = switchPos.length;
 			}
 		}
