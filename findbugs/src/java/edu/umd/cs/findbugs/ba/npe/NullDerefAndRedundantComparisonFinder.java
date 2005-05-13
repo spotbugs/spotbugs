@@ -46,7 +46,7 @@ import edu.umd.cs.findbugs.ba.ValueNumberFrame;
  * @author David Hovemeyer
  */
 public class NullDerefAndRedundantComparisonFinder {
-	private static final boolean DEBUG = true;
+	private static final boolean DEBUG = Boolean.getBoolean("fnd.debug");
 	
 	private ClassContext classContext;
 	private Method method;
