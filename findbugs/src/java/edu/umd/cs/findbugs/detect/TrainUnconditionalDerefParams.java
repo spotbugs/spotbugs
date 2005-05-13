@@ -19,37 +19,37 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.BitSet;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.bcel.classfile.Method;
-import org.apache.bcel.generic.InstructionHandle;
 
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.TrainingDetector;
-import edu.umd.cs.findbugs.ba.BasicBlock;
-import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
-import edu.umd.cs.findbugs.ba.EdgeTypes;
-import edu.umd.cs.findbugs.ba.PostDominatorsAnalysis;
+import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.ba.ValueNumber;
-import edu.umd.cs.findbugs.ba.ValueNumberDataflow;
 import edu.umd.cs.findbugs.ba.ValueNumberFrame;
-import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.XMethodFactory;
+import edu.umd.cs.findbugs.ba.npe.IsNullValue;
+import edu.umd.cs.findbugs.ba.npe.IsNullValueAnalysis;
+import edu.umd.cs.findbugs.ba.npe.IsNullValueDataflow;
+import edu.umd.cs.findbugs.ba.npe.NullDerefAndRedundantComparisonCollector;
+import edu.umd.cs.findbugs.ba.npe.NullDerefAndRedundantComparisonFinder;
+import edu.umd.cs.findbugs.ba.npe.RedundantBranch;
 import edu.umd.cs.findbugs.ba.npe.UnconditionalDerefProperty;
 import edu.umd.cs.findbugs.ba.npe.UnconditionalDerefPropertyDatabase;
 
 /**
  * Training pass to find method parameters which are
- * unconditionally dereferenced.
+ * unconditionally dereferenced.  We do this by performing the
+ * usual null-pointer analysis (first setting all parameters to null)
+ * and then seeing which parameters are flagged as a null pointer
+ * dereference.
  * 
  * @author David Hovemeyer
  */
@@ -82,77 +82,81 @@ public class TrainUnconditionalDerefParams implements TrainingDetector {
 	}
 
 	private void analyzeMethod(ClassContext classContext, Method method) {
+		
 		try {
-			// Look for null checks of parameters which postdominate the method entry
+			// Perform null-value analysis with all parameters set to null.
+			// Then see where possibly-null parameters are dereferenced.
 			
-			UnconditionalDerefProperty property = new UnconditionalDerefProperty();
+			IsNullValueAnalysis invAnalysis = new IsNullValueAnalysis(
+					classContext.getMethodGen(method),
+					classContext.getCFG(method),
+					classContext.getValueNumberDataflow(method),
+					classContext.getDepthFirstSearch(method),
+					classContext.getAssertionMethods());
+			
+			invAnalysis.setParamValue(IsNullValue.nullValue());
+			
+			IsNullValueDataflow invDataflow = new IsNullValueDataflow(
+					classContext.getCFG(method),
+					invAnalysis);
+			invDataflow.execute();
 
-			CFG cfg = classContext.getCFG(method);
-			BasicBlock entry = cfg.getEntry();
-			PostDominatorsAnalysis pda = classContext.getNonExceptionPostDominatorsAnalysis(method);
-			ValueNumberDataflow vnaDataflow = classContext.getValueNumberDataflow(method);
+			final Map<ValueNumber, Integer> valueNumberToParamMap = buildValueNumberToParamMap(
+					classContext, method);
 			
-			ValueNumberFrame vnaFrameAtEntry = vnaDataflow.getStartFact(entry);
-			if (VERBOSE_DEBUG) System.out.print("[param map...");
-			Map<ValueNumber, Integer> valueNumberToParamMap = buildValueNumberToParamMap(method, vnaFrameAtEntry);
-			if (VERBOSE_DEBUG) System.out.print("ok]");
-			
-			BitSet entryPostDominatorBlocks = pda.getStartFact(entry);
-			
-			for (Iterator<BasicBlock> i = cfg.getBlocks(entryPostDominatorBlocks).iterator(); i.hasNext();) {
-				BasicBlock basicBlock = i.next();
-				if (VERBOSE_DEBUG) System.out.print(".[block " + basicBlock.getId() + "]");
-				
-				if (!basicBlock.isNullCheck())
-					continue;
-				if (VERBOSE_DEBUG) System.out.println("[found postdominating null check]");
+			final UnconditionalDerefProperty property = new UnconditionalDerefProperty();
 
-				BasicBlock successorBlock = cfg.getSuccessorWithEdgeType(basicBlock, EdgeTypes.FALL_THROUGH_EDGE);
-				if (successorBlock == null || successorBlock.getFirstInstruction() == null) {
-					if (VERBOSE_DEBUG) System.out.println("[successor block null or empty?]");
-					continue;
+			// Find null derefs
+			NullDerefAndRedundantComparisonCollector collector = new NullDerefAndRedundantComparisonCollector() {
+				public void foundNullDeref(Location location, ValueNumber valueNumber, IsNullValue refValue) {
+					Integer param = valueNumberToParamMap.get(valueNumber);
+					if (param != null) {
+						property.setParamUnconditionalDeref(param.intValue(), true);
+					}
 				}
 				
-				ValueNumberFrame successorFrame = vnaDataflow.getStartFact(successorBlock);
-				if (!successorFrame.isValid()) {
-					if (VERBOSE_DEBUG) System.out.println("[Successor frame not valid!]");
-					continue; // Dead code?
+				public void foundRedundantNullCheck(Location location, RedundantBranch redundantBranch) {
+					// Don't care about these
 				}
-				InstructionHandle checkedHandle = successorBlock.getFirstInstruction();
-				ValueNumber checkedValue = successorFrame.getInstance(
-						checkedHandle.getInstruction(), classContext.getConstantPoolGen());
-				
-				Integer param = valueNumberToParamMap.get(checkedValue);
-				if (param != null) {
-					// Found an unconditionally dereferenced parameter
-					property.setParamUnconditionalDeref(param.intValue(), true);
-				}
-			}
+			};
+			NullDerefAndRedundantComparisonFinder worker = new NullDerefAndRedundantComparisonFinder(
+					classContext, method, invDataflow, collector);
+			worker.execute();
 			
 			if (!property.isEmpty()) {
-				XMethod xmethod = XMethodFactory.createXMethod(classContext.getJavaClass(), method);
-				database.setProperty(xmethod, property);
+				database.setProperty(
+						XMethodFactory.createXMethod(classContext.getJavaClass(), method),
+						property);
 			}
-			
+		
 		} catch (CFGBuilderException e) {
 			bugReporter.logError("Error analyzing " + method + " for unconditional deref training", e);
 		} catch (DataflowAnalysisException e) {
 			bugReporter.logError("Error analyzing " + method + " for unconditional deref training", e);
 		}
-		
 	}
 
-	private Map<ValueNumber, Integer> buildValueNumberToParamMap(Method method, ValueNumberFrame vnaFrameAtEntry) {
+	private Map<ValueNumber, Integer> buildValueNumberToParamMap(
+			ClassContext classContext,
+			Method method) throws DataflowAnalysisException, CFGBuilderException {
+		
+		ValueNumberFrame vnaFrameAtEntry =
+			classContext.getValueNumberDataflow(method).getStartFact(classContext.getCFG(method).getEntry());
+		
 		Map<ValueNumber, Integer> valueNumberToParamMap = new HashMap<ValueNumber, Integer>();
+
 		if (VERBOSE_DEBUG) System.out.print(" " + method.getSignature());
+
 		int numParams = new SignatureParser(method.getSignature()).getNumParameters();
 		if (!method.isStatic())
 			++numParams;
+
 		for (int i = 0; i < numParams; ++i) {
 			ValueNumber valueNumber = vnaFrameAtEntry.getValue(i);
 			if (VERBOSE_DEBUG) System.out.println("[" + valueNumber + "->" + i + "]");
 			valueNumberToParamMap.put(valueNumber, new Integer(i));
 		}
+
 		return valueNumberToParamMap;
 	}
 
