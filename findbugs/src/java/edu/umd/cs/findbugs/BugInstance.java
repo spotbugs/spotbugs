@@ -35,6 +35,7 @@ import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.MethodGen;
 
 import edu.umd.cs.findbugs.ba.XField;
+import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.bcp.FieldVariable;
 import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
@@ -789,6 +790,17 @@ public class BugInstance implements Comparable, XMLWriteableWithMessages, Serial
 		String methodSig = inv.getSignature(cpg);
 		addMethod(className, methodName, methodSig);
 		describe("METHOD_CALLED");
+		return this;
+	}
+	
+	/**
+	 * Add a MethodAnnotation from an XMethod.
+	 * 
+	 * @param xmethod the XMethod
+	 * @return this object
+	 */
+	public BugInstance addMethod(XMethod xmethod) {
+		addMethod(MethodAnnotation.fromXMethod(xmethod));
 		return this;
 	}
 
