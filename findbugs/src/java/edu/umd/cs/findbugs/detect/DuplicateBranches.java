@@ -1,12 +1,17 @@
 package edu.umd.cs.findbugs.detect;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Iterator;
 
 import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.BranchInstruction;
 import org.apache.bcel.generic.GotoInstruction;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.LOOKUPSWITCH;
+import org.apache.bcel.generic.TABLESWITCH;
+import org.apache.bcel.util.ByteSequence;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -139,15 +144,12 @@ public class DuplicateBranches extends PreorderVisitor implements Detector, Stat
 		if (switchPos.length < 2)
 			return;
 						
-		//NOTE: We really need to walk the whole block and convert relative branches to absolute branches
-		// otherwise we miss many duplicate branches. Will work on this next
-		// for now we drop off the last byte of the block. This is really incorrect, but ok for now
 		for (int i = 0; i < switchPos.length-2; i++) {
 			int s1Length = switchPos[i+1] - switchPos[i];
 			if (s1Length == 0)
 				continue;
 			
-			byte[] s1Bytes = getCodeBytes(method, switchPos[i], switchPos[i+1]-1);
+			byte[] s1Bytes = getCodeBytes(method, switchPos[i], switchPos[i+1]);
 			
 			for (int j = i+1; j < switchPos.length-1; j++) {
 				int s2Length = switchPos[j+1] - switchPos[j];
@@ -157,7 +159,7 @@ public class DuplicateBranches extends PreorderVisitor implements Detector, Stat
 				if (s1Length != s2Length)
 					continue;
 								
-				byte[] s2Bytes = getCodeBytes(method, switchPos[j], switchPos[j+1]-1);
+				byte[] s2Bytes = getCodeBytes(method, switchPos[j], switchPos[j+1]);
 				
 				if (!Arrays.equals(s1Bytes, s2Bytes))
 					continue;
@@ -180,8 +182,32 @@ public class DuplicateBranches extends PreorderVisitor implements Detector, Stat
 		byte[] code = m.getCode().getCode();
 		byte[] bytes = new byte[end-start];
 		System.arraycopy( code, start, bytes, 0, end - start);
+		
+		try {
+			ByteSequence sequence = new ByteSequence(code);
+			int pos = 0;
+			while (sequence.available() > 0 && ((pos = sequence.getIndex()) < start)) {
+				Instruction ins = Instruction.readInstruction(sequence);
+			}
+			
+			while (sequence.available() > 0 && ((pos = sequence.getIndex()) < end)) {
+				Instruction ins = Instruction.readInstruction(sequence);
+				if ((ins instanceof BranchInstruction)
+				&&  !(ins instanceof TABLESWITCH)
+				&&  !(ins instanceof LOOKUPSWITCH)) {
+					BranchInstruction bi = (BranchInstruction)ins;
+					int offset = bi.getIndex();
+					if ((offset + pos) >= end) {
+						bytes[pos+bi.getLength()-1 - start] = 0;
+					}
+				}
+			}
+		} catch (IOException ioe) {
+		}
+		
 		return bytes;
 	}
+	
 	private BasicBlock findThenFinish(CFG cfg, BasicBlock thenBB, int elsePos) {
 		//Follow fall thru links until we find a goto link past the else
 		
