@@ -126,7 +126,7 @@ public class NullDerefAndRedundantComparisonFinder {
 			// place it is duplicated, and that it is determined in the same way.
 			if (!undeterminedBranchSet.get(lineNumber) &&
 			        !(definitelySameBranchSet.get(lineNumber) && definitelyDifferentBranchSet.get(lineNumber))) {
-				collector.reportRedundantNullCheck(redundantBranch.location, redundantBranch);
+				collector.foundRedundantNullCheck(redundantBranch.location, redundantBranch);
 			}
 		}
 

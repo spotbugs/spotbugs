@@ -41,10 +41,11 @@ public interface NullDerefAndRedundantComparisonCollector {
 	public void foundNullDeref(Location location, ValueNumber valueNumber, IsNullValue refValue);
 
 	/**
-	 * Report a redundant null check.
+	 * Subclasses should override this method to capture locations where
+	 * a redundant null comparision is performed.
 	 * 
 	 * @param location        the Location of the redundant null check
 	 * @param redundantBranch the RedundantBranch
 	 */
-	public void reportRedundantNullCheck(Location location, RedundantBranch redundantBranch);
+	public void foundRedundantNullCheck(Location location, RedundantBranch redundantBranch);
 }
