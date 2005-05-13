@@ -45,12 +45,13 @@ import edu.umd.cs.findbugs.ba.ValueNumberFrame;
  * @see IsNullValueAnalysis
  * @author David Hovemeyer
  */
-public abstract class NullDerefAndRedundantComparisonFinder {
+public class NullDerefAndRedundantComparisonFinder {
 	private static final boolean DEBUG = true;
 	
 	private ClassContext classContext;
 	private Method method;
 	private IsNullValueDataflow invDataflow;
+	private NullDerefAndRedundantComparisonCollector collector;
 	
 	private List<RedundantBranch> redundantBranchList;
 	private BitSet definitelySameBranchSet;
@@ -63,11 +64,18 @@ public abstract class NullDerefAndRedundantComparisonFinder {
 	 * @param classContext the ClassContext
 	 * @param method       the method to analyze
 	 * @param invDataflow  the IsNullValueDataflow to use
+	 * @param collector    the NullDerefAndRedundantComparisonCollector used to report
+	 *                     null derefs and redundant null comparisons
 	 */
-	public NullDerefAndRedundantComparisonFinder(ClassContext classContext, Method method, IsNullValueDataflow invDataflow) {
+	public NullDerefAndRedundantComparisonFinder(
+			ClassContext classContext,
+			Method method,
+			IsNullValueDataflow invDataflow,
+			NullDerefAndRedundantComparisonCollector collector) {
 		this.classContext = classContext;
 		this.method = method;
 		this.invDataflow = invDataflow;
+		this.collector = collector;
 		
 		this.redundantBranchList = new LinkedList<RedundantBranch>();
 		this.definitelySameBranchSet = new BitSet();
@@ -118,7 +126,7 @@ public abstract class NullDerefAndRedundantComparisonFinder {
 			// place it is duplicated, and that it is determined in the same way.
 			if (!undeterminedBranchSet.get(lineNumber) &&
 			        !(definitelySameBranchSet.get(lineNumber) && definitelyDifferentBranchSet.get(lineNumber))) {
-				reportRedundantNullCheck(redundantBranch.location, redundantBranch);
+				collector.reportRedundantNullCheck(redundantBranch.location, redundantBranch);
 			}
 		}
 
@@ -254,7 +262,7 @@ public abstract class NullDerefAndRedundantComparisonFinder {
 		ValueNumber valueNumber = vnaFrame.getInstance(exceptionThrower, classContext.getConstantPoolGen());
 		
 		// Issue a warning
-		foundNullDeref(new Location(exceptionThrowerHandle, basicBlock), valueNumber, refValue);
+		collector.foundNullDeref(new Location(exceptionThrowerHandle, basicBlock), valueNumber, refValue);
 	}
 
 	private static int getLineNumber(Method method, InstructionHandle handle) {
@@ -263,22 +271,4 @@ public abstract class NullDerefAndRedundantComparisonFinder {
 			return -1;
 		return table.getSourceLine(handle.getPosition());
 	}
-
-	/**
-	 * Subclasses should override this method to capture locations where
-	 * a null pointer is dereferenced.
-	 * 
-	 * @param location    the Location of the null dereference
-	 * @param valueNumber the ValueNumber of the possibly-null value
-	 * @param refValue    the kind of possibly-null value dereferenced
-	 */
-	protected abstract void foundNullDeref(Location location, ValueNumber valueNumber, IsNullValue refValue);
-
-	/**
-	 * Report a redundant null check.
-	 * 
-	 * @param location        the Location of the redundant null check
-	 * @param redundantBranch the RedundantBranch
-	 */
-	protected abstract void reportRedundantNullCheck(Location location, RedundantBranch redundantBranch);
 }
