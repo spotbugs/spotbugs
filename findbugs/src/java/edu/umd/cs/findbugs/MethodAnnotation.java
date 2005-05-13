@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs;
 
 import edu.umd.cs.findbugs.ba.SignatureConverter;
+import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
 import edu.umd.cs.findbugs.xml.XMLAttributeList;
@@ -77,6 +78,19 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 		result.setSourceLines(srcLines);
 
 		return result;
+	}
+	
+	/**
+	 * Create a MethodAnnotation from an XMethod.
+	 * 
+	 * @param xmethod the XMethod
+	 * @return the MethodAnnotation
+	 */
+	public static MethodAnnotation fromXMethod(XMethod xmethod) {
+		return new MethodAnnotation(
+				xmethod.getClassName(),
+				xmethod.getName(),
+				xmethod.getSignature());
 	}
 
 	/**
