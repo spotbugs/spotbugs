@@ -445,6 +445,7 @@ public class FindBugs implements Constants2, ExitCodes {
 		private PrintStream outputStream = null;
 		private Set<String> bugCategorySet = null;
 		private UserPreferences userPreferences = UserPreferences.createDefaultUserPreferences();
+		private boolean trainingMode;
 
 		public FindBugsCommandLine() {
 			addOption("-home", "home directory", "specify FindBugs home directory");
@@ -464,6 +465,7 @@ public class FindBugs implements Constants2, ExitCodes {
 				"Generate HTML output (default stylesheet is default.xsl)");
 			addSwitch("-emacs", "Use emacs reporting format");
 			addSwitch("-relaxed", "Relaxed reporting mode (more false positives!)");
+			addSwitch("-train", "Detector training mode (experimental)");
 			addOption("-outputFile", "filename", "Save output in named file");
 			addOption("-visitors", "v1[,v2...]", "run only named visitors");
 			addOption("-omitVisitors", "v1[,v2...]", "omit named visitors");
@@ -538,6 +540,8 @@ public class FindBugs implements Constants2, ExitCodes {
 				bugReporterType = EMACS_REPORTER;
 			} else if (option.equals("-relaxed")) {
 				relaxedReportingMode = true;
+			} else if (option.equals("-train")) {
+				trainingMode = true;
 			} else if (option.equals("-html")) {
 				bugReporterType = HTML_REPORTER;
 				if (!optionExtraPart.equals("")) {
@@ -766,6 +770,7 @@ public class FindBugs implements Constants2, ExitCodes {
 			findBugs.setClassScreener(classScreener);
 			
 			findBugs.setRelaxedReportingMode(relaxedReportingMode);
+			findBugs.setTrainingMode(trainingMode);
 
 			return findBugs;
 		}
@@ -818,6 +823,7 @@ public class FindBugs implements Constants2, ExitCodes {
 	private AnalysisContext analysisContext;
 	private String currentClass;
 	private Map<String,Long> detectorTimings;
+	private boolean trainingMode;
 
 	/* ----------------------------------------------------------------------
 	 * Public methods
@@ -931,6 +937,15 @@ public class FindBugs implements Constants2, ExitCodes {
 	 */
 	public void setRelaxedReportingMode(boolean relaxedReportingMode) {
 		this.relaxedReportingMode = relaxedReportingMode;
+	}
+	
+	/**
+	 * Set training mode.
+	 * 
+	 * @param trainingMode true if training mode should be enabled, false otherwise
+	 */
+	public void setTrainingMode(boolean trainingMode) {
+		this.trainingMode = trainingMode;
 	}
 
 	/**
@@ -1129,7 +1144,8 @@ public class FindBugs implements Constants2, ExitCodes {
 			DetectorFactory factory = i.next();
 			if (factory.getPlugin().isEnabled() &&
 					userPreferences.isDetectorEnabled(factory) &&
-					factory.isEnabledForCurrentJRE()) {
+					factory.isEnabledForCurrentJRE() &&
+					(!trainingMode || (factory.isDetectorClassSubtypeOf(TrainingDetector.class)))) {
 				Detector detector = factory.create(bugReporter);
 				result.add(detector);
 			}
