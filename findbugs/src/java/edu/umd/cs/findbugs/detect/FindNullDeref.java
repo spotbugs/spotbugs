@@ -19,8 +19,11 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import java.util.Iterator;
+
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.MethodGen;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -35,11 +38,16 @@ import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.SignatureConverter;
 import edu.umd.cs.findbugs.ba.ValueNumber;
+import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.ba.XMethodFactory;
 import edu.umd.cs.findbugs.ba.npe.IsNullValue;
 import edu.umd.cs.findbugs.ba.npe.IsNullValueDataflow;
+import edu.umd.cs.findbugs.ba.npe.IsNullValueFrame;
 import edu.umd.cs.findbugs.ba.npe.NullDerefAndRedundantComparisonCollector;
 import edu.umd.cs.findbugs.ba.npe.NullDerefAndRedundantComparisonFinder;
 import edu.umd.cs.findbugs.ba.npe.RedundantBranch;
+import edu.umd.cs.findbugs.ba.npe.UnconditionalDerefProperty;
+import edu.umd.cs.findbugs.ba.npe.UnconditionalDerefPropertyDatabase;
 import edu.umd.cs.findbugs.props.GeneralWarningProperty;
 import edu.umd.cs.findbugs.props.WarningPropertySet;
 import edu.umd.cs.findbugs.props.WarningPropertyUtil;
@@ -111,6 +119,60 @@ public class FindNullDeref
 				invDataflow,
 				this);
 		worker.execute();
+		
+		if (AnalysisContext.USE_INTERPROC_DATABASE) {
+			UnconditionalDerefPropertyDatabase database =
+				AnalysisContext.currentAnalysisContext().getUnconditionalDerefDatabase();
+			if (database != null) {
+				examineCalledMethods(database);
+			}
+		}
+	}
+
+	private void examineCalledMethods(UnconditionalDerefPropertyDatabase database)
+			throws CFGBuilderException, DataflowAnalysisException {
+		for (Iterator<Location> i = classContext.getCFG(method).locationIterator(); i.hasNext();) {
+			Location location = i.next();
+			if (!(location.getHandle().getInstruction() instanceof InvokeInstruction))
+				continue;
+			XMethod calledMethod = XMethodFactory.createXMethod(
+					(InvokeInstruction) location.getHandle().getInstruction(),
+					classContext.getConstantPoolGen()
+					);
+			UnconditionalDerefProperty property = database.getProperty(calledMethod);
+			if (property == null || property.isEmpty())
+				continue;
+			
+			IsNullValueFrame frame =
+				classContext.getIsNullValueDataflow(method).getFactAtLocation(location);
+			if (!frame.isValid())
+				continue;
+			
+			int numParams = calledMethod.getNumParams();
+			int shift = calledMethod.isStatic() ? 0 : 1;
+			
+			for (int index = 0; index < numParams; ++index) {
+				if (index >= frame.getStackDepth()) {
+					break;
+				}
+
+				if (!property.paramUnconditionalDeref(index + shift))
+					continue;
+				
+				IsNullValue arg = frame.getStackValue((numParams - index) - 1);
+				if (arg.mightBeNull()) {
+					MethodGen methodGen = classContext.getMethodGen(method);
+					String sourceFile = classContext.getJavaClass().getSourceFileName();
+					bugReporter.reportBug(new BugInstance("NP_NULL_PARAM_DEREF", NORMAL_PRIORITY)
+							.addClassAndMethod(methodGen, sourceFile)
+							.addMethod(calledMethod).describe("METHOD_CALLED")
+							.addSourceLine(methodGen, sourceFile, location.getHandle())
+					);
+					// XXX: should also indicate which parameter it was
+					break;
+				}
+			}
+		}
 	}
 
 	public void report() {
