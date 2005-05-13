@@ -110,6 +110,11 @@ extends BytecodeScanningDetector implements Constants2, StatelessDetector {
             && getNameConstantOperand().equals("matches")
             ) 
             sawRegExPattern(0);
+        else if (seen == INVOKEVIRTUAL 
+            && getClassConstantOperand().equals("java/lang/String")
+            && getNameConstantOperand().equals("split")
+            ) 
+            sawRegExPattern(0);
 
         stack.sawOpcode(this,seen);
     }
