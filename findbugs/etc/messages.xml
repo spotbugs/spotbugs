@@ -2524,6 +2524,19 @@ be an exception path, since the default case is often infeasible.</p>
 ]]>
     </Details>
   </BugPattern>
+  
+  <BugPattern type="NP_NULL_PARAM_DEREF">
+	<ShortDescription>Method call passes null for unconditionally dereferenced parameter</ShortDescription>
+	<LongDescription>Method call in {1} passes null for unconditionally dereferenced parameter of {2}</LongDescription>
+	<Details>
+		<![CDATA[
+		<p>
+		This method call passes a null value to a method which might
+		dereference it unconditionally.
+		</p>
+		]]>
+	</Details>
+  </BugPattern>
 
   <BugPattern type="SI_INSTANCE_BEFORE_FINALS_ASSIGNED">
     <ShortDescription>Static initializer for class creates instance before all static final fields assigned</ShortDescription>
