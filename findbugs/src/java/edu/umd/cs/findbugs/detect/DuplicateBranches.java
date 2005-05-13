@@ -2,6 +2,7 @@ package edu.umd.cs.findbugs.detect;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -142,19 +143,26 @@ public class DuplicateBranches extends PreorderVisitor implements Detector, Stat
 		if (defaultPos > 0)
 			switchPos.add(new Integer(defaultPos));
 		
+		Collections.sort(switchPos);
+		
 		//NOTE: We really need to walk the whole block and convert relative branches to absolute branches
 		// otherwise we miss many duplicate branches. Will work on this next
 		// for now we drop off the last byte of the block. This is really incorrect, but ok for now
 		for (int i = 0; i < switchPos.size()-2; i++) {
 			int s1Length = switchPos.get(i+1).intValue() - switchPos.get(i).intValue();
+			if (s1Length == 0)
+				continue;
+			
 			byte[] s1Bytes = getCodeBytes(method, switchPos.get(i).intValue(), switchPos.get(i+1).intValue()-1);
 			
 			for (int j = i+1; j < switchPos.size()-1; j++) {
 				int s2Length = switchPos.get(j+1).intValue() - switchPos.get(j).intValue();
+				if (s2Length == 0)
+					continue;
 				
 				if (s1Length != s2Length)
 					continue;
-				
+								
 				byte[] s2Bytes = getCodeBytes(method, switchPos.get(j).intValue(), switchPos.get(j+1).intValue()-1);
 				
 				if (!Arrays.equals(s1Bytes, s2Bytes))
