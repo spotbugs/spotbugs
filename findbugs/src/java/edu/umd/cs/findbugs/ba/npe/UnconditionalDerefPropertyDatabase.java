@@ -32,6 +32,8 @@ import edu.umd.cs.findbugs.ba.interproc.PropertyCombinator;
  */
 public class UnconditionalDerefPropertyDatabase extends MethodPropertyDatabase<UnconditionalDerefProperty> {
 
+	public static final String DEFAULT_FILENAME = "unconditionalDeref.db";
+	
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.ba.interproc.MethodPropertyDatabase#decodeProperty(java.lang.String)
 	 */
