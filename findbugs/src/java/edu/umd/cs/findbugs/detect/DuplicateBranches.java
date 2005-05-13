@@ -1,10 +1,7 @@
 package edu.umd.cs.findbugs.detect;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Iterator;
-import java.util.List;
 
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.GotoInstruction;
@@ -122,48 +119,45 @@ public class DuplicateBranches extends PreorderVisitor implements Detector, Stat
 	private void findSwitchDuplicates(CFG cfg, Method method, BasicBlock bb) {		
 		Iterator<Edge> iei = cfg.outgoingEdgeIterator(bb);
 		
-		List<Integer> switchPos = new ArrayList<Integer>();
-		int defaultPos = 0;
+		int[] switchPos = new int[cfg.getNumOutgoingEdges(bb)+1];
+		int idx = 0;
 		
 		while (iei.hasNext()) {
 			Edge e = iei.next();
 			if (EdgeTypes.SWITCH_EDGE == e.getType()) {
 				BasicBlock target = e.getTarget();
-				switchPos.add(new Integer(target.getFirstInstruction().getPosition()));
+				switchPos[idx++] = target.getFirstInstruction().getPosition();
 			} else if (EdgeTypes.SWITCH_DEFAULT_EDGE == e.getType()) {
 				BasicBlock target = e.getTarget();
-				defaultPos = target.getFirstInstruction().getPosition();
+				switchPos[idx++] = target.getFirstInstruction().getPosition();
 			} else
 				return;
 		}
 		
-		if (switchPos.size() < 2)
+		Arrays.sort(switchPos);
+		
+		if (switchPos.length < 2)
 			return;
-		
-		if (defaultPos > 0)
-			switchPos.add(new Integer(defaultPos));
-		
-		Collections.sort(switchPos);
-		
+						
 		//NOTE: We really need to walk the whole block and convert relative branches to absolute branches
 		// otherwise we miss many duplicate branches. Will work on this next
 		// for now we drop off the last byte of the block. This is really incorrect, but ok for now
-		for (int i = 0; i < switchPos.size()-2; i++) {
-			int s1Length = switchPos.get(i+1).intValue() - switchPos.get(i).intValue();
+		for (int i = 0; i < switchPos.length-2; i++) {
+			int s1Length = switchPos[i+1] - switchPos[i];
 			if (s1Length == 0)
 				continue;
 			
-			byte[] s1Bytes = getCodeBytes(method, switchPos.get(i).intValue(), switchPos.get(i+1).intValue()-1);
+			byte[] s1Bytes = getCodeBytes(method, switchPos[i], switchPos[i+1]-1);
 			
-			for (int j = i+1; j < switchPos.size()-1; j++) {
-				int s2Length = switchPos.get(j+1).intValue() - switchPos.get(j).intValue();
+			for (int j = i+1; j < switchPos.length-1; j++) {
+				int s2Length = switchPos[j+1] - switchPos[j];
 				if (s2Length == 0)
 					continue;
 				
 				if (s1Length != s2Length)
 					continue;
 								
-				byte[] s2Bytes = getCodeBytes(method, switchPos.get(j).intValue(), switchPos.get(j+1).intValue()-1);
+				byte[] s2Bytes = getCodeBytes(method, switchPos[j], switchPos[j+1]-1);
 				
 				if (!Arrays.equals(s1Bytes, s2Bytes))
 					continue;
@@ -172,12 +166,12 @@ public class DuplicateBranches extends PreorderVisitor implements Detector, Stat
 						.addClass(classContext.getJavaClass())
 						.addMethod(classContext.getJavaClass().getClassName(), method.getName(), method.getSignature())
 						.addSourceLineRange(this, 
-								switchPos.get(i).intValue(),
-								switchPos.get(i+1).intValue())
+								switchPos[i],
+								switchPos[i+1])
 						.addSourceLineRange(this, 
-								switchPos.get(j).intValue(),
-								switchPos.get(j+1).intValue()));
-				j = switchPos.size();
+								switchPos[j],
+								switchPos[j+1]));
+				j = switchPos.length;
 			}
 		}
 	}
