@@ -21,4 +21,5 @@ package edu.umd.cs.findbugs.ba;
 public interface XMethod extends ClassMember {
 	public boolean isNative();
 	public boolean isSynchronized();
+	public int getNumParams();
 }

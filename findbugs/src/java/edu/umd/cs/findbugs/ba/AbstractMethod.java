@@ -25,6 +25,11 @@ public abstract class AbstractMethod extends AbstractClassMember implements XMet
 		super(className, methodName, methodSig, accessFlags);
 	}
 	
+	public int getNumParams() {
+		// FIXME: cache this?
+		return new SignatureParser(getSignature()).getNumParameters();
+	}
+	
 	public boolean isNative() {
 		return (getAccessFlags() & Constants.ACC_NATIVE) != 0;
 	}
