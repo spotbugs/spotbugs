@@ -25,6 +25,7 @@ import edu.umd.cs.findbugs.ba.type.BCELRepositoryClassResolver;
 import edu.umd.cs.findbugs.ba.type.TypeRepository;
 */
 
+import java.io.File;
 import java.io.IOException;
 import java.util.BitSet;
 import java.util.Collections;
@@ -41,6 +42,7 @@ import edu.umd.cs.findbugs.ba.interproc.MethodProperty;
 import edu.umd.cs.findbugs.ba.interproc.MethodPropertyDatabase;
 import edu.umd.cs.findbugs.ba.interproc.MethodPropertyDatabaseFormatException;
 import edu.umd.cs.findbugs.ba.npe.MayReturnNullPropertyDatabase;
+import edu.umd.cs.findbugs.ba.npe.UnconditionalDerefPropertyDatabase;
 
 
 /**
@@ -54,7 +56,9 @@ public class AnalysisContext implements AnalysisFeatures {
 	private static final boolean DEBUG = Boolean.getBoolean("findbugs.analysiscontext.debug");
 	private static final boolean DEBUG_HIERARCHY = Boolean.getBoolean("findbugs.debug.hierarchy");
 	
-	private static final boolean INTERPROC_DATABASE = Boolean.getBoolean("findbugs.interproc");
+	public static final boolean USE_INTERPROC_DATABASE = Boolean.getBoolean("findbugs.interproc");
+	public static final String INTERPROC_DATABASE_DIR =
+		System.getProperty("findbugs.interproc.dbdir", ".");
 	
 	private RepositoryLookupFailureCallback lookupFailureCallback;
 	private SourceFinder sourceFinder;
@@ -66,6 +70,7 @@ public class AnalysisContext implements AnalysisFeatures {
 	
 	// Interprocedural fact databases
 	private MayReturnNullPropertyDatabase mayReturnNullDatabase;
+	private UnconditionalDerefPropertyDatabase unconditionalDerefDatabase;
 	private boolean interprocDatabasesLoaded;
 
     /*
@@ -214,13 +219,7 @@ public class AnalysisContext implements AnalysisFeatures {
 	 * @return the ClassContext for that class
 	 */
 	public ClassContext getClassContext(JavaClass javaClass) {
-		if (INTERPROC_DATABASE && !interprocDatabasesLoaded) {
-			mayReturnNullDatabase = loadMethodPropertyDatabase(
-					new MayReturnNullPropertyDatabase(),
-					MayReturnNullPropertyDatabase.DEFAULT_FILENAME,
-					"may return null database");
-			interprocDatabasesLoaded = true;
-		}
+		loadInterproceduralDatabasesIfNeeded();
 		
 		ClassContext classContext = classContextCache.get(javaClass);
 		if (classContext == null) {
@@ -228,6 +227,20 @@ public class AnalysisContext implements AnalysisFeatures {
 			classContextCache.put(javaClass, classContext);
 		}
 		return classContext;
+	}
+
+	private void loadInterproceduralDatabasesIfNeeded() {
+		if (USE_INTERPROC_DATABASE && !interprocDatabasesLoaded) {
+			mayReturnNullDatabase = loadMethodPropertyDatabase(
+					new MayReturnNullPropertyDatabase(),
+					MayReturnNullPropertyDatabase.DEFAULT_FILENAME,
+					"may return null database");
+			unconditionalDerefDatabase = loadMethodPropertyDatabase(
+					new UnconditionalDerefPropertyDatabase(),
+					UnconditionalDerefPropertyDatabase.DEFAULT_FILENAME,
+					"unconditional deref database");
+			interprocDatabasesLoaded = true;
+		}
 	}
 	
 	/**
@@ -260,6 +273,16 @@ public class AnalysisContext implements AnalysisFeatures {
 	public MayReturnNullPropertyDatabase getMayReturnNullDatabase() {
 		return mayReturnNullDatabase;
 	}
+	
+	/**
+	 * Get the method property database for methods which unconditionally
+	 * dereference their parameters.
+	 * 
+	 * @return the database, or null if there is no database available
+	 */
+	public UnconditionalDerefPropertyDatabase getUnconditionalDerefDatabase() {
+		return unconditionalDerefDatabase;
+	}
 
 	/**
 	 * Load an interprocedural method property database.
@@ -281,7 +304,9 @@ public class AnalysisContext implements AnalysisFeatures {
 		try {
 			if (DEBUG) System.out.println("Loading " + description + " from " + fileName + "...");
 			
-			database.readFromFile(fileName);
+			File dbFile = new File(INTERPROC_DATABASE_DIR, fileName);
+			
+			database.readFromFile(dbFile.getPath());
 			return database;
 		} catch (IOException e) {
 			getLookupFailureCallback().logError("Error loading " + description, e);
