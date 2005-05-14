@@ -131,10 +131,16 @@ public class DuplicateBranches extends PreorderVisitor implements Detector, Stat
 			Edge e = iei.next();
 			if (EdgeTypes.SWITCH_EDGE == e.getType()) {
 				BasicBlock target = e.getTarget();
-				switchPos[idx++] = target.getFirstInstruction().getPosition();
+				InstructionHandle firstIns = target.getFirstInstruction();
+				if (firstIns == null)
+					return;
+				switchPos[idx++] = firstIns.getPosition();
 			} else if (EdgeTypes.SWITCH_DEFAULT_EDGE == e.getType()) {
 				BasicBlock target = e.getTarget();
-				switchPos[idx++] = target.getFirstInstruction().getPosition();
+				InstructionHandle firstIns = target.getFirstInstruction();
+				if (firstIns == null)
+					return;
+				switchPos[idx++] = firstIns.getPosition();
 			} else
 				return;
 		}
