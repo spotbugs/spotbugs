@@ -310,11 +310,15 @@ public class ConfigureDetectorsDialog extends javax.swing.JDialog {
 			toolTip.append("</b><br><br><table border='1' width='100%'><tr><th>");
 			toolTip.append(L10N.getLocalString("msg.bugpatternsreported_txt", "Bug Patterns Reported"));
 			toolTip.append("</th></tr>");
+			
 			Collection<BugPattern> patterns = factory.getReportedBugPatterns();
 			Iterator<BugPattern> it = patterns.iterator();
 			while (it.hasNext()) {
 				BugPattern pattern = it.next();
 				toolTip.append("<tr><td align='center'>");
+				toolTip.append("[");
+				toolTip.append(pattern.getAbbrev());
+				toolTip.append("] ");
 				toolTip.append(pattern.getType());
 				toolTip.append("</td></tr>");
 			}
