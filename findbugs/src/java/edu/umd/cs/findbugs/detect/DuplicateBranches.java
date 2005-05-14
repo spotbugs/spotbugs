@@ -194,11 +194,11 @@ public class DuplicateBranches extends PreorderVisitor implements Detector, Stat
 		
 		try {
 			ByteSequence sequence = new ByteSequence(code);
-			int pos = 0;
-			while (sequence.available() > 0 && ((pos = sequence.getIndex()) < start)) {
-				Instruction ins = Instruction.readInstruction(sequence);
+			while ((sequence.available() > 0) && (sequence.getIndex() < start)) {
+				Instruction.readInstruction(sequence);
 			}
 			
+			int pos;
 			while (sequence.available() > 0 && ((pos = sequence.getIndex()) < end)) {
 				Instruction ins = Instruction.readInstruction(sequence);
 				if ((ins instanceof BranchInstruction)

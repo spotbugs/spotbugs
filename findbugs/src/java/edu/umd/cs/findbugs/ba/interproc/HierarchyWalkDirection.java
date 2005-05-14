@@ -58,7 +58,6 @@ public interface HierarchyWalkDirection {
 	 */
 	public static final HierarchyWalkDirection TOWARDS_SUPERTYPES = new HierarchyWalkDirection(){
 		public Set<JavaClass> getHierarchyGraphTargets(JavaClass source) throws ClassNotFoundException {
-			AnalysisContext analysisContext = AnalysisContext.currentAnalysisContext();
 			JavaClass[] superTypeSet = source.getSuperClasses();
 			Set<JavaClass> result = new HashSet<JavaClass>();
 			result.addAll(Arrays.asList(superTypeSet));
