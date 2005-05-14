@@ -90,7 +90,6 @@ public abstract class MethodPropertyDatabase<Property extends MethodProperty<Pro
 	 * to subtypes, or from subtypes to supertypes.
 	 */
 	public void propagateThroughClassHierarchy() {
-		Subtypes subtypes = AnalysisContext.currentAnalysisContext().getSubtypes();
 		
 		Set<XMethod> methodSet = new HashSet<XMethod>();
 		methodSet.addAll(propertyMap.keySet());
