@@ -220,7 +220,8 @@ public abstract class MethodPropertyDatabase<Property extends MethodProperty<Pro
 			}
 		} finally {
 			try {
-				reader.close();
+				if (reader != null)
+					reader.close();
 			} catch (IOException e) {
 				// Ignore
 			}
@@ -263,7 +264,8 @@ public abstract class MethodPropertyDatabase<Property extends MethodProperty<Pro
 			}
 		} finally {
 			try {
-				writer.close();
+				if (writer != null)
+					writer.close();
 			} catch (IOException e) {
 				// Ignore
 			}
