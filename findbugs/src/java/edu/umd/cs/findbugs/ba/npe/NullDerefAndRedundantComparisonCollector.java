@@ -20,7 +20,7 @@
 package edu.umd.cs.findbugs.ba.npe;
 
 import edu.umd.cs.findbugs.ba.Location;
-import edu.umd.cs.findbugs.ba.ValueNumber;
+import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 
 /**
  * Callback interface for collecting null pointer derefs and

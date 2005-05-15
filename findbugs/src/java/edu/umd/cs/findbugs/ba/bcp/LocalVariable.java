@@ -19,7 +19,7 @@
 
 package edu.umd.cs.findbugs.ba.bcp;
 
-import edu.umd.cs.findbugs.ba.ValueNumber;
+import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 
 public class LocalVariable implements Variable {
 	private final ValueNumber valueNumber;

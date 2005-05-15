@@ -25,6 +25,9 @@ import java.util.HashMap;
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Method;
 
+import edu.umd.cs.findbugs.ba.vna.ValueNumber;
+import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
+
 /**
  * Front-end for LockDataflow that can avoid doing unnecessary work
  * (e.g., actually performing the lock dataflow)

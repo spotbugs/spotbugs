@@ -21,7 +21,7 @@ package edu.umd.cs.findbugs.ba.bcp;
 
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.Edge;
-import edu.umd.cs.findbugs.ba.ValueNumberFrame;
+import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.InstructionHandle;
 

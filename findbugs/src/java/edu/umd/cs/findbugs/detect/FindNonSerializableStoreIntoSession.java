@@ -28,9 +28,9 @@ import edu.umd.cs.findbugs.ba.NullType;
 import edu.umd.cs.findbugs.ba.TopType;
 import edu.umd.cs.findbugs.ba.TypeDataflow;
 import edu.umd.cs.findbugs.ba.TypeFrame;
-import edu.umd.cs.findbugs.ba.ValueNumber;
-import edu.umd.cs.findbugs.ba.ValueNumberDataflow;
-import edu.umd.cs.findbugs.ba.ValueNumberFrame;
+import edu.umd.cs.findbugs.ba.vna.ValueNumber;
+import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
+import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 
 public class FindNonSerializableStoreIntoSession implements Detector {
 	

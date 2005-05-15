@@ -17,7 +17,11 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package edu.umd.cs.findbugs.ba;
+package edu.umd.cs.findbugs.ba.vna;
+
+import edu.umd.cs.findbugs.ba.CFG;
+import edu.umd.cs.findbugs.ba.Dataflow;
+import edu.umd.cs.findbugs.ba.Location;
 
 public class ValueNumberDataflow extends Dataflow<ValueNumberFrame, ValueNumberAnalysis> {
 	public ValueNumberDataflow(CFG cfg, ValueNumberAnalysis analysis) {

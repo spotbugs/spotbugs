@@ -21,6 +21,8 @@ package edu.umd.cs.findbugs.ba;
 
 import org.apache.bcel.generic.Type;
 
+import edu.umd.cs.findbugs.ba.vna.ValueNumber;
+
 /**
  * A specialization of {@link Frame} for determining the types
  * of values in the Java stack frame (locals and operand stack).

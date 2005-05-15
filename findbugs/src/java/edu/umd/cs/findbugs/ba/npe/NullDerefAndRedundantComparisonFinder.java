@@ -35,8 +35,8 @@ import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.Location;
-import edu.umd.cs.findbugs.ba.ValueNumber;
-import edu.umd.cs.findbugs.ba.ValueNumberFrame;
+import edu.umd.cs.findbugs.ba.vna.ValueNumber;
+import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 
 /**
  * A user-friendly front end for finding null pointer dereferences

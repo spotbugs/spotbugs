@@ -43,9 +43,9 @@ import edu.umd.cs.findbugs.ba.Hierarchy;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.LockDataflow;
 import edu.umd.cs.findbugs.ba.LockSet;
-import edu.umd.cs.findbugs.ba.ValueNumber;
-import edu.umd.cs.findbugs.ba.ValueNumberDataflow;
-import edu.umd.cs.findbugs.ba.ValueNumberFrame;
+import edu.umd.cs.findbugs.ba.vna.ValueNumber;
+import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
+import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 
 public class FindMismatchedWaitOrNotify implements Detector, StatelessDetector {
 	private BugReporter bugReporter;

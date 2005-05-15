@@ -20,7 +20,7 @@
 package edu.umd.cs.findbugs.ba.npe;
 
 import edu.umd.cs.findbugs.ba.EdgeTypes;
-import edu.umd.cs.findbugs.ba.ValueNumber;
+import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 
 /**
  * A control decision which resulted in information being gained

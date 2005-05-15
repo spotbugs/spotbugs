@@ -19,11 +19,16 @@
 
 package edu.umd.cs.findbugs.ba.npe;
 
-import java.util.*;
+import java.util.BitSet;
+import java.util.Iterator;
 
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Method;
-import org.apache.bcel.generic.*;
+import org.apache.bcel.generic.CodeExceptionGen;
+import org.apache.bcel.generic.Instruction;
+import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.MethodGen;
+import org.apache.bcel.generic.ObjectType;
 
 import edu.umd.cs.findbugs.ba.AssertionMethods;
 import edu.umd.cs.findbugs.ba.BasicBlock;
@@ -38,9 +43,9 @@ import edu.umd.cs.findbugs.ba.Edge;
 import edu.umd.cs.findbugs.ba.EdgeTypes;
 import edu.umd.cs.findbugs.ba.FrameDataflowAnalysis;
 import edu.umd.cs.findbugs.ba.Location;
-import edu.umd.cs.findbugs.ba.ValueNumber;
-import edu.umd.cs.findbugs.ba.ValueNumberDataflow;
-import edu.umd.cs.findbugs.ba.ValueNumberFrame;
+import edu.umd.cs.findbugs.ba.vna.ValueNumber;
+import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
+import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 
 /**
  * A dataflow analysis to detect potential null pointer dereferences.

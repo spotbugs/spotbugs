@@ -19,10 +19,16 @@
 
 package edu.umd.cs.findbugs.ba.bcp;
 
+import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.FieldInstruction;
+import org.apache.bcel.generic.Instruction;
+import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.PUTFIELD;
+import org.apache.bcel.generic.PUTSTATIC;
+
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
-import edu.umd.cs.findbugs.ba.ValueNumber;
-import edu.umd.cs.findbugs.ba.ValueNumberFrame;
-import org.apache.bcel.generic.*;
+import edu.umd.cs.findbugs.ba.vna.ValueNumber;
+import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 
 /**
  * A PatternElement representing a store to a field.

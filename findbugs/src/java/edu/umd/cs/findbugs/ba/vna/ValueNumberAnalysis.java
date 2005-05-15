@@ -17,7 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package edu.umd.cs.findbugs.ba;
+package edu.umd.cs.findbugs.ba.vna;
 
 import java.util.BitSet;
 import java.util.HashMap;
@@ -27,6 +27,18 @@ import java.util.Iterator;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.MethodGen;
+
+import edu.umd.cs.findbugs.ba.BasicBlock;
+import edu.umd.cs.findbugs.ba.CFGBuilderException;
+import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.ba.Dataflow;
+import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
+import edu.umd.cs.findbugs.ba.DataflowTestDriver;
+import edu.umd.cs.findbugs.ba.DepthFirstSearch;
+import edu.umd.cs.findbugs.ba.Edge;
+import edu.umd.cs.findbugs.ba.FrameDataflowAnalysis;
+import edu.umd.cs.findbugs.ba.Location;
+import edu.umd.cs.findbugs.ba.RepositoryLookupFailureCallback;
 
 /**
  * A dataflow analysis to track the production and flow of values in the Java

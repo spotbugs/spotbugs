@@ -19,6 +19,9 @@
 
 package edu.umd.cs.findbugs.ba;
 
+import edu.umd.cs.findbugs.ba.vna.ValueNumber;
+import edu.umd.cs.findbugs.ba.vna.ValueNumberFactory;
+
 /**
  * Lock counts for values (as produced by ValueNumberAnalysis).
  * A LockSet tells us the lock counts for all values in a method,

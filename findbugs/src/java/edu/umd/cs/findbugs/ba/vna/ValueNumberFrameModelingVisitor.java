@@ -17,13 +17,23 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package edu.umd.cs.findbugs.ba;
+package edu.umd.cs.findbugs.ba.vna;
 
 import java.util.*;
 
 import org.apache.bcel.Constants;
 
 import org.apache.bcel.generic.*;
+
+import edu.umd.cs.findbugs.ba.AbstractFrameModelingVisitor;
+import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
+import edu.umd.cs.findbugs.ba.Debug;
+import edu.umd.cs.findbugs.ba.Hierarchy;
+import edu.umd.cs.findbugs.ba.InstanceField;
+import edu.umd.cs.findbugs.ba.InvalidBytecodeException;
+import edu.umd.cs.findbugs.ba.RepositoryLookupFailureCallback;
+import edu.umd.cs.findbugs.ba.StaticField;
+import edu.umd.cs.findbugs.ba.XField;
 
 /**
  * Visitor which models the effects of bytecode instructions

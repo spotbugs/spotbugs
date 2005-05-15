@@ -32,8 +32,6 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.SignatureParser;
-import edu.umd.cs.findbugs.ba.ValueNumber;
-import edu.umd.cs.findbugs.ba.ValueNumberFrame;
 import edu.umd.cs.findbugs.ba.XMethodFactory;
 import edu.umd.cs.findbugs.ba.npe.IsNullValue;
 import edu.umd.cs.findbugs.ba.npe.IsNullValueAnalysis;
@@ -43,6 +41,8 @@ import edu.umd.cs.findbugs.ba.npe.NullDerefAndRedundantComparisonFinder;
 import edu.umd.cs.findbugs.ba.npe.RedundantBranch;
 import edu.umd.cs.findbugs.ba.npe.UnconditionalDerefProperty;
 import edu.umd.cs.findbugs.ba.npe.UnconditionalDerefPropertyDatabase;
+import edu.umd.cs.findbugs.ba.vna.ValueNumber;
+import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 
 /**
  * Training pass to find method parameters which are

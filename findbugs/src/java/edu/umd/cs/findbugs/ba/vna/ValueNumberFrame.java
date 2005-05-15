@@ -17,9 +17,12 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package edu.umd.cs.findbugs.ba;
+package edu.umd.cs.findbugs.ba.vna;
 
 import java.util.*;
+
+import edu.umd.cs.findbugs.ba.Frame;
+import edu.umd.cs.findbugs.ba.XField;
 
 /**
  * A dataflow value representing a Java stack frame with value number

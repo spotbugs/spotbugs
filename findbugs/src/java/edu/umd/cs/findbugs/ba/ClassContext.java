@@ -48,6 +48,9 @@ import edu.umd.cs.findbugs.ba.constant.ConstantDataflow;
 import edu.umd.cs.findbugs.ba.npe.IsNullValueAnalysis;
 import edu.umd.cs.findbugs.ba.npe.IsNullValueDataflow;
 import edu.umd.cs.findbugs.ba.npe.MayReturnNullPropertyDatabase;
+import edu.umd.cs.findbugs.ba.vna.LoadedFieldSet;
+import edu.umd.cs.findbugs.ba.vna.ValueNumberAnalysis;
+import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
 
 /**
  * A ClassContext caches all of the auxiliary objects used to analyze

@@ -19,11 +19,12 @@
 
 package edu.umd.cs.findbugs.ba.bcp;
 
-import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
-import edu.umd.cs.findbugs.ba.Edge;
-import edu.umd.cs.findbugs.ba.ValueNumberFrame;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.InstructionHandle;
+
+import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
+import edu.umd.cs.findbugs.ba.Edge;
+import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 
 /**
  * A wildcard PatternElement, which matches any kind of instruction

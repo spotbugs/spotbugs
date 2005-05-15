@@ -22,6 +22,10 @@ package edu.umd.cs.findbugs.ba;
 import org.apache.bcel.Constants;
 import org.apache.bcel.generic.*;
 
+import edu.umd.cs.findbugs.ba.vna.ValueNumber;
+import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
+import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
+
 /**
  * Visitor to model the effects of bytecode instructions on the
  * types of the values (local and operand stack) in Java stack frames.
