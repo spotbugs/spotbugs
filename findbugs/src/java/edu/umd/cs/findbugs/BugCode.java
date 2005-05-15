@@ -29,8 +29,8 @@ package edu.umd.cs.findbugs;
  * @see BugPattern
  */
 public class BugCode {
-	private String abbrev;
-	private String description;
+	private final String abbrev;
+	private final String description;
 
 	/**
 	 * Constructor.
