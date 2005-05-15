@@ -20,7 +20,7 @@
 package edu.umd.cs.findbugs;
 
 import java.util.regex.Matcher;
-import java.util.regex.*;
+import java.util.regex.Pattern;
 
 /**
  * Support for finding out what version of Java we're running on.
