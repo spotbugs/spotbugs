@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.detect;
 
 import java.io.IOException;
+import java.util.BitSet;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -41,7 +42,9 @@ import edu.umd.cs.findbugs.ba.npe.NullDerefAndRedundantComparisonFinder;
 import edu.umd.cs.findbugs.ba.npe.RedundantBranch;
 import edu.umd.cs.findbugs.ba.npe.UnconditionalDerefProperty;
 import edu.umd.cs.findbugs.ba.npe.UnconditionalDerefPropertyDatabase;
+import edu.umd.cs.findbugs.ba.vna.MergeTree;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
+import edu.umd.cs.findbugs.ba.vna.ValueNumberAnalysis;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 
 /**
@@ -100,6 +103,8 @@ public class TrainUnconditionalDerefParams implements TrainingDetector {
 					classContext.getCFG(method),
 					invAnalysis);
 			invDataflow.execute();
+			
+			final ValueNumberAnalysis valueNumberAnalysis = classContext.getValueNumberDataflow(method).getAnalysis();
 
 			final Map<ValueNumber, Integer> valueNumberToParamMap = buildValueNumberToParamMap(
 					classContext, method);
@@ -109,9 +114,33 @@ public class TrainUnconditionalDerefParams implements TrainingDetector {
 			// Find null derefs
 			NullDerefAndRedundantComparisonCollector collector = new NullDerefAndRedundantComparisonCollector() {
 				public void foundNullDeref(Location location, ValueNumber valueNumber, IsNullValue refValue) {
-					Integer param = valueNumberToParamMap.get(valueNumber);
-					if (param != null) {
-						property.setParamUnconditionalDeref(param.intValue(), true);
+					BitSet inputValueNumberSet = new BitSet();
+					inputValueNumberSet.set(valueNumber.getNumber());
+
+					// If we have a merge tree for the value number analysis,
+					// then we can find all dataflow values that contributed to this
+					// one as input.
+					if (valueNumberAnalysis.getMergeTree() != null) {
+						if (MergeTree.DEBUG) {
+							System.out.println("Unconditional deref of " + valueNumber.getNumber());
+						}
+						inputValueNumberSet.or(valueNumberAnalysis.getMergeTree().getTransitiveInputSet(valueNumber));
+						if (MergeTree.DEBUG) {
+							System.out.println("Input set is " + inputValueNumberSet);
+						}
+					}
+					
+					// For all input value numbers contributing to the dereferenced
+					// value, see which ones are params and mark them as
+					// unconditionally dereferenced.
+					for (int i = 0; i < valueNumberAnalysis.getFactory().getNumValuesAllocated(); ++i) {
+						if (!inputValueNumberSet.get(i))
+							continue;
+						ValueNumber inputValueNumber = valueNumberAnalysis.getFactory().forNumber(i);
+						Integer param = valueNumberToParamMap.get(inputValueNumber);
+						if (param != null) {
+							property.setParamUnconditionalDeref(param.intValue(), true);
+						}
 					}
 				}
 				
