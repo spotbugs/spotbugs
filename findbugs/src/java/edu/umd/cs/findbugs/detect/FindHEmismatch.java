@@ -74,7 +74,6 @@ public class FindHEmismatch extends BytecodeScanningDetector implements Constant
 			} else {
 				whereEqual = we.getClassName();
 				classThatDefinesEqualsIsAbstract = we.isAbstract();
-				;
 				Method m = findMethod(we, "equals", "(Ljava/lang/Object;)Z");
 				if (m != null && m.isFinal()) inheritedEqualsIsFinal = true;
 				if (m != null && m.isAbstract()) inheritedEqualsIsAbstract = true;
