@@ -19,8 +19,6 @@
 
 package edu.umd.cs.findbugs.plan;
 
-import edu.umd.cs.findbugs.DetectorOrderingConstraint;
-
 /**
  * An exception indicating that the detector ordering constraints
  * specified by a plugin are invalid.

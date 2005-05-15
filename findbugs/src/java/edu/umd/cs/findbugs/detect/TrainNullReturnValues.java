@@ -18,7 +18,6 @@
  */
 package edu.umd.cs.findbugs.detect;
 
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Iterator;
 

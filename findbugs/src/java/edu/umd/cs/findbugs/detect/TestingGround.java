@@ -31,7 +31,6 @@ import org.apache.bcel.classfile.Method;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
-import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.visitclass.Constants2;
 
 public class TestingGround extends BytecodeScanningDetector implements Constants2 {
