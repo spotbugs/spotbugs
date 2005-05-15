@@ -64,7 +64,6 @@ public class FindHEmismatch extends BytecodeScanningDetector implements Constant
 		boolean classThatDefinesEqualsIsAbstract = false;
 		boolean inheritedHashCodeIsFinal = false;
 		boolean inheritedEqualsIsFinal = false;
-		boolean inheritedHashCodeIsAbstract = false;
 		boolean inheritedEqualsIsAbstract = false;
 		if (!hasEqualsObject) {
 			JavaClass we = Lookup.findSuperImplementor(obj, "equals",
@@ -90,7 +89,6 @@ public class FindHEmismatch extends BytecodeScanningDetector implements Constant
 				whereHashCode = wh.getClassName();
 				Method m = findMethod(wh, "hashCode", "()I");
 				if (m != null && m.isFinal()) inheritedHashCodeIsFinal = true;
-				if (m != null && m.isAbstract()) inheritedHashCodeIsAbstract = true;
 			}
 		}
 		boolean usesDefaultHashCode = whereHashCode.equals("java.lang.Object");
