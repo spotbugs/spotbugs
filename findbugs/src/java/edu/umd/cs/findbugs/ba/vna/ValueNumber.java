@@ -89,8 +89,20 @@ public class ValueNumber implements Comparable<ValueNumber> {
 	public int compareTo(ValueNumber other) {
 		return number - other.number;
 	}
-
-
+/*
+	//@Override
+	public int hashCode() {
+		return number;
+	}
+	
+	//@Override
+	public boolean equals(Object obj) {
+		if (obj == null || obj.getClass() != this.getClass())
+			return false;
+		ValueNumber other = (ValueNumber) obj;
+		return this.number == other.number;
+	}
+*/
 }
 
 // vim:ts=4

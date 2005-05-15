@@ -64,6 +64,7 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
 	private ValueNumber thisValue;
 	private HashMap<Location, ValueNumberFrame> factAtLocationMap;
 	private HashMap<Location, ValueNumberFrame> factAfterLocationMap;
+	private MergeTree mergeTree;
 
 	public ValueNumberAnalysis(MethodGen methodGen, DepthFirstSearch dfs,
 							   LoadedFieldSet loadedFieldSet,
@@ -91,6 +92,14 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
 
 		this.factAtLocationMap = new HashMap<Location, ValueNumberFrame>();
 		this.factAfterLocationMap = new HashMap<Location, ValueNumberFrame>();
+	}
+	
+	public void setMergeTree(MergeTree mergeTree) {
+		this.mergeTree = mergeTree;
+	}
+	
+	public MergeTree getMergeTree() {
+		return mergeTree;
 	}
 
 	public ValueNumberFactory getFactory() {
@@ -192,16 +201,20 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
 		if (mine.equals(other))
 			return mine;
 
-		ValueNumber mergedValue = frame.getMergedValue(slot);//mergedValueList.get(slot);
+		ValueNumber mergedValue = frame.getMergedValue(slot);
 		if (mergedValue == null) {
 			mergedValue = factory.createFreshValue();
 			mergedValue.setFlags(mine.getFlags() | other.getFlags());
-			//mergedValueList.set(slot, mergedValue);
 			frame.setMergedValue(slot, mergedValue);
+			
+		}
+
+		if (mergeTree != null) {
+			mergeTree.mapInputToOutput(mine, mergedValue);
+			mergeTree.mapInputToOutput(other, mergedValue);
 		}
 
 		return mergedValue;
-
 	}
 
 	public ValueNumberFrame getFactAtLocation(Location location) {

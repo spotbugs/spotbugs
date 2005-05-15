@@ -49,6 +49,7 @@ import edu.umd.cs.findbugs.ba.npe.IsNullValueAnalysis;
 import edu.umd.cs.findbugs.ba.npe.IsNullValueDataflow;
 import edu.umd.cs.findbugs.ba.npe.MayReturnNullPropertyDatabase;
 import edu.umd.cs.findbugs.ba.vna.LoadedFieldSet;
+import edu.umd.cs.findbugs.ba.vna.MergeTree;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberAnalysis;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
 
@@ -377,6 +378,7 @@ public class ClassContext implements AnalysisFeatures {
 			        LoadedFieldSet loadedFieldSet = getLoadedFieldSet(method);
 			        ValueNumberAnalysis analysis = new ValueNumberAnalysis(methodGen, dfs, loadedFieldSet,
 							getLookupFailureCallback());
+					analysis.setMergeTree(new MergeTree(analysis.getFactory()));
 			        CFG cfg = getCFG(method);
 			        ValueNumberDataflow vnaDataflow = new ValueNumberDataflow(cfg, analysis);
 			        vnaDataflow.execute();
