@@ -128,21 +128,21 @@ public abstract class FrameDataflowAnalysis <ValueType, FrameType extends Frame<
 
 		// Usual case: ordinary Frames consisting of the same number of values.
 		// Merge each value in the two slot lists element-wise.
-		for (int i = 0; i < result.getNumSlots(); ++i)
-			result.setValue(i, mergeValues(result, i, result.getValue(i), other.getValue(i)));
+		for (int i = 0; i < result.getNumSlots(); ++i) {
+			mergeValues(other, result, i);
+		}
 	}
 
 	/**
-	 * Merge two values in a particular slot of a Frame.
-	 *
-	 * @param frame the Frame
-	 * @param slot  the slot of the Frame
-	 * @param a     a value
-	 * @param b     another value
-	 * @return the merged value
+	 * Merge the values contained in a given slot of two Frames.
+	 * 
+	 * @param otherFrame  a Frame
+	 * @param resultFrame a Frame which will contain the resulting merged value
+	 * @param slot        a slot in both frames
+	 * @throws DataflowAnalysisException
 	 */
-	protected abstract ValueType mergeValues(FrameType frame, int slot, ValueType a, ValueType b)
-	        throws DataflowAnalysisException;
+	protected abstract void mergeValues(FrameType otherFrame, FrameType resultFrame, int slot)
+			throws DataflowAnalysisException;
 }
 
 // vim:ts=4

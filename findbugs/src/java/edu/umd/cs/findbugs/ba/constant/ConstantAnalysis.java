@@ -93,12 +93,10 @@ public class ConstantAnalysis extends FrameDataflowAnalysis<Constant, ConstantFr
 		mergeInto(fact, result);
 	}
 	
-	protected Constant mergeValues(
-			ConstantFrame frame,
-			int slot,
-			Constant a,
-			Constant b) throws DataflowAnalysisException {
-		return Constant.merge(a, b);
+	protected void mergeValues(ConstantFrame otherFrame, ConstantFrame resultFrame, int slot)
+			throws DataflowAnalysisException {
+		Constant value = Constant.merge(resultFrame.getValue(slot), otherFrame.getValue(slot));
+		resultFrame.setValue(slot, value);
 	}
 	
 	/*

@@ -178,8 +178,14 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
 		result.mergeAvailableLoadSets(frame);
 		super.mergeInto(frame, result);
 	}
+	
+	protected void mergeValues(ValueNumberFrame otherFrame, ValueNumberFrame resultFrame, int slot) throws DataflowAnalysisException {
+		ValueNumber value =
+			mergeValues(resultFrame, slot, resultFrame.getValue(slot), otherFrame.getValue(slot));
+		resultFrame.setValue(slot, value);
+	}
 
-	protected ValueNumber mergeValues(ValueNumberFrame frame, int slot, ValueNumber mine, ValueNumber other)
+	private ValueNumber mergeValues(ValueNumberFrame frame, int slot, ValueNumber mine, ValueNumber other)
 	        throws DataflowAnalysisException {
 
 		// Merging slot values:

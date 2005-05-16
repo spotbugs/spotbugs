@@ -358,10 +358,11 @@ public class IsNullValueAnalysis
 		}
 		return value;
 	}
-
-	protected IsNullValue mergeValues(IsNullValueFrame frame, int slot, IsNullValue a, IsNullValue b)
-	        throws DataflowAnalysisException {
-		return IsNullValue.merge(a, b);
+	
+	protected void mergeValues(IsNullValueFrame otherFrame, IsNullValueFrame resultFrame, int slot)
+			throws DataflowAnalysisException {
+		IsNullValue value = IsNullValue.merge(resultFrame.getValue(slot), otherFrame.getValue(slot));
+		resultFrame.setValue(slot, value);
 	}
 
 	/**

@@ -127,11 +127,12 @@ public class BetterTypeAnalysis extends FrameDataflowAnalysis<Type, BetterTypeFr
 		mergeInto(fact, result);
 
 	}
-
-	protected Type mergeValues(BetterTypeFrame frame, int slot, Type a, Type b)
-	        throws DataflowAnalysisException {
+	
+	//@Override
+	protected void mergeValues(BetterTypeFrame otherFrame, BetterTypeFrame resultFrame, int slot) throws DataflowAnalysisException {
 		try {
-			return typeMerger.mergeTypes(a, b);
+			Type value = typeMerger.mergeTypes(resultFrame.getValue(slot), otherFrame.getValue(slot));
+			resultFrame.setValue(slot, value);
 		} catch (ClassNotFoundException e) {
 			lookupFailureCallback.reportMissingClass(e);
 			throw new DataflowAnalysisException("Missing class for type analysis", e);
