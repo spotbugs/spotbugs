@@ -19,6 +19,9 @@
 
 package edu.umd.cs.findbugs.ba;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.apache.bcel.Constants;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.ExceptionTable;
@@ -287,6 +290,20 @@ public class Hierarchy {
 		Method m = findMethod(javaClass, methodName, methodSig);
 		return m == null ? null : XMethodFactory.createXMethod(javaClass, m);
 	}
+	
+	private static final MethodChooser ANY_METHOD = new MethodChooser() {
+		public boolean choose(Method method) {
+			return true;
+		}
+	};
+	
+	private static final MethodChooser CONCRETE_METHODS = new MethodChooser() {
+		public boolean choose(Method method) {
+			int accessFlags = method.getAccessFlags();
+			return (accessFlags & Constants.ACC_ABSTRACT) == 0
+				&& (accessFlags & Constants.ACC_NATIVE) == 0;
+		}
+	};
 
 	/**
 	 * Find a method in given list of classes,
@@ -298,15 +315,174 @@ public class Hierarchy {
 	 * @return the Method, or null if no such method exists in the class
 	 */
 	public static Method findMethod(JavaClass[] classList, String methodName, String methodSig) {
+		return findMethod(classList, methodName, methodSig, ANY_METHOD);
+	}
+
+	/**
+	 * Find a method in given list of classes,
+	 * searching the classes in order.
+	 *
+	 * @param classList  list of classes in which to search
+	 * @param methodName the name of the method
+	 * @param methodSig  the signature of the method
+	 * @param chooser    MethodChooser to select which methods are considered;
+	 *                   it must return true for a method to be returned
+	 * @return the Method, or null if no such method exists in the class
+	 */
+	public static Method findMethod(JavaClass[] classList, String methodName, String methodSig,
+			MethodChooser chooser) {
 		Method m = null;
 
 		for (int i = 0; i < classList.length; ++i) {
 			JavaClass cls = classList[i];
-			if ((m = findMethod(cls, methodName, methodSig)) != null)
+			if ((m = findMethod(cls, methodName, methodSig)) != null && chooser.choose(m))
 				break;
 		}
 
 		return m;
+		
+	}
+
+	/**
+	 * Find XMethod for method in given list of classes,
+	 * searching the classes in order.
+	 *
+	 * @param classList  list of classes in which to search
+	 * @param methodName the name of the method
+	 * @param methodSig  the signature of the method
+	 * @return the XMethod, or null if no such method exists in the class
+	 */
+	public static XMethod findXMethod(JavaClass[] classList, String methodName, String methodSig) {
+		return findXMethod(classList, methodName, methodSig, ANY_METHOD);
+	}
+
+	/**
+	 * Find XMethod for method in given list of classes,
+	 * searching the classes in order.
+	 *
+	 * @param classList  list of classes in which to search
+	 * @param methodName the name of the method
+	 * @param methodSig  the signature of the method
+	 * @param chooser    MethodChooser to select which methods are considered;
+	 *                   it must return true for a method to be returned
+	 * @return the XMethod, or null if no such method exists in the class
+	 */
+	public static XMethod findXMethod(JavaClass[] classList, String methodName, String methodSig,
+			MethodChooser chooser) {
+		for (int i = 0; i < classList.length; ++i) {
+			JavaClass cls = classList[i];
+			Method m;
+			if ((m = findMethod(cls, methodName, methodSig)) != null && chooser.choose(m)) {
+				return XMethodFactory.createXMethod(cls, m);
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * Resolve possible instance method call targets.
+	 * Assumes that invokevirtual and invokeinterface methods may
+	 * call any subtype of the receiver class.
+	 * 
+	 * @param receiverType      type of the receiver object
+	 * @param invokeInstruction the InvokeInstruction
+	 * @param cpg               the ConstantPoolGen
+	 * @return Set of methods which might be called
+	 * @throws ClassNotFoundException
+	 */
+	public static Set<XMethod> resolveMethodCallTargets(
+			ReferenceType receiverType,
+			InvokeInstruction invokeInstruction,
+			ConstantPoolGen cpg
+			) throws ClassNotFoundException {
+		return resolveMethodCallTargets(receiverType, invokeInstruction, cpg, false);
+	}
+
+	/**
+	 * Resolve possible instance method call targets.
+	 * 
+	 * @param receiverType        type of the receiver object
+	 * @param invokeInstruction   the InvokeInstruction
+	 * @param cpg                 the ConstantPoolGen
+	 * @param receiverTypeIsExact if true, the receiver type is known exactly,
+	 *                            which should allow a precise result
+	 * @return Set of methods which might be called
+	 * @throws ClassNotFoundException
+	 */
+	public static Set<XMethod> resolveMethodCallTargets(
+			ReferenceType receiverType,
+			InvokeInstruction invokeInstruction,
+			ConstantPoolGen cpg,
+			boolean receiverTypeIsExact
+			) throws ClassNotFoundException {
+		HashSet<XMethod> result = new HashSet<XMethod>();
+		
+		if (invokeInstruction.getOpcode() == Constants.INVOKESTATIC)
+			throw new IllegalArgumentException();
+		
+		String className = invokeInstruction.getClassName(cpg);
+		String methodName = invokeInstruction.getName(cpg);
+		String methodSig = invokeInstruction.getSignature(cpg);
+		
+		// Array method calls aren't virtual.
+		// They should just resolve to Object methods.
+		if (receiverType instanceof ArrayType) {
+			result.add(new InstanceMethod(
+					className,
+					methodName,
+					methodSig,
+					Constants.ACC_PUBLIC
+					));
+			return result;
+		}
+		
+		AnalysisContext analysisContext = AnalysisContext.currentAnalysisContext();
+		
+		// Get the receiver class.
+		JavaClass receiverClass = analysisContext.lookupClass(
+				((ObjectType) receiverType).getClassName());
+
+		// Figure out the upper bound for the method.
+		// This is what will be called if this is not a virtual call site.
+		XMethod upperBound = findXMethod(receiverClass, invokeInstruction.getName(cpg), invokeInstruction.getSignature(cpg));
+		if (upperBound == null || !isConcrete(upperBound)) {
+			// Try superclasses
+			JavaClass[] superClassList = receiverClass.getSuperClasses();
+			upperBound = findXMethod(superClassList, methodName, methodSig, CONCRETE_METHODS);
+		}
+		if (upperBound != null) {
+			result.add(upperBound);
+		}
+		
+		// Is this a virtual call site?
+		boolean virtualCall = invokeInstruction.getOpcode() != Constants.INVOKESPECIAL
+			|| !receiverTypeIsExact;
+		
+		if (virtualCall) {
+			// This is a true virtual call: assume that any concrete
+			// subtype method may be called.
+			Set<JavaClass> subTypeSet = analysisContext.getSubtypes().getTransitiveSubtypes(receiverClass);
+			for (JavaClass subtype : subTypeSet) {
+				XMethod subtypeMethod = findXMethod(subtype, methodName, methodSig);
+				if (subtypeMethod != null && isConcrete(subtypeMethod)) {
+					result.add(subtypeMethod);
+				}
+			}
+		}
+		
+		return result;
+	}
+	
+	/**
+	 * Return whether or not the given method is concrete.
+	 * 
+	 * @param xmethod the method
+	 * @return true if the method is concrete, false otherwise
+	 */
+	public static boolean isConcrete(XMethod xmethod) {
+		int accessFlags = xmethod.getAccessFlags();
+		return (accessFlags & Constants.ACC_ABSTRACT) == 0
+			&& (accessFlags & Constants.ACC_NATIVE) == 0;
 	}
 
 	/**
