@@ -19,10 +19,8 @@
 
 package edu.umd.cs.findbugs.ba.npe;
 
-import edu.umd.cs.findbugs.ba.interproc.HierarchyWalkDirection;
 import edu.umd.cs.findbugs.ba.interproc.MethodPropertyDatabase;
 import edu.umd.cs.findbugs.ba.interproc.MethodPropertyDatabaseFormatException;
-import edu.umd.cs.findbugs.ba.interproc.PropertyCombinator;
 
 /**
  * Method property database storing which method parameters might
@@ -56,33 +54,6 @@ public class UnconditionalDerefPropertyDatabase extends MethodPropertyDatabase<U
 	//@Override
 	protected String encodeProperty(UnconditionalDerefProperty property) {
 		return String.valueOf(property.getUnconditionalDerefParamSet());
-	}
-
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.ba.interproc.MethodPropertyDatabase#getHierarchyWalkDirection()
-	 */
-	//@Override
-	protected HierarchyWalkDirection getHierarchyWalkDirection() {
-		// Properties go upwards towards supertypes:
-		// if a subtype param is dereferenced unconditionally,
-		// then we assume that subtype method is reachable from
-		// supertype method call sites.
-		return HierarchyWalkDirection.TOWARDS_SUPERTYPES;
-	}
-
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.ba.interproc.MethodPropertyDatabase#getPropertyCombinator()
-	 */
-	//@Override
-	protected PropertyCombinator<UnconditionalDerefProperty> getPropertyCombinator() {
-		return new PropertyCombinator<UnconditionalDerefProperty>() {
-			public UnconditionalDerefProperty combine(UnconditionalDerefProperty sourceProperty, UnconditionalDerefProperty targetProperty) {
-				// Take the union of unconditional deref param sets.
-				UnconditionalDerefProperty prop = new UnconditionalDerefProperty();
-				prop.setUnconditionalDerefParamSet(sourceProperty.getUnconditionalDerefParamSet() | targetProperty.getUnconditionalDerefParamSet());
-				return prop;
-			}
-		};
 	}
 	
 	//@Override

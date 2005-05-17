@@ -18,10 +18,8 @@
  */
 package edu.umd.cs.findbugs.ba.npe;
 
-import edu.umd.cs.findbugs.ba.interproc.HierarchyWalkDirection;
 import edu.umd.cs.findbugs.ba.interproc.MethodPropertyDatabase;
 import edu.umd.cs.findbugs.ba.interproc.MethodPropertyDatabaseFormatException;
-import edu.umd.cs.findbugs.ba.interproc.PropertyCombinator;
 
 /**
  * MethodPropertyDatabase for keeping track of which methods
@@ -44,28 +42,10 @@ public class MayReturnNullPropertyDatabase extends MethodPropertyDatabase<MayRet
 	}
 
 	//@Override
-	protected HierarchyWalkDirection getHierarchyWalkDirection() {
-		// Information propagates up towards supertypes.
-		// If a subclass method returns null, that means calls to the
-		// (potentially overridden) superclass method may return
-		// null as well.
-		return HierarchyWalkDirection.TOWARDS_SUPERTYPES;
-	}
-
-	//@Override
-	protected PropertyCombinator<MayReturnNullProperty> getPropertyCombinator() {
-		return new PropertyCombinator<MayReturnNullProperty>() {
-			public MayReturnNullProperty combine(MayReturnNullProperty sourceProperty, MayReturnNullProperty targetProperty) {
-				return new MayReturnNullProperty(sourceProperty.mayReturnNull() || targetProperty.mayReturnNull());
-			}
-		};
-	}
-	
-	//@Override
 	protected MayReturnNullProperty createDefault() {
 		return new MayReturnNullProperty(false);
 	}
-
+	
 	public static void main(String[] args) throws Exception {
 		MayReturnNullPropertyDatabase database = new MayReturnNullPropertyDatabase();
 		database.readFromFile(DEFAULT_FILENAME);

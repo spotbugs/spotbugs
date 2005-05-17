@@ -221,20 +221,4 @@ public abstract class MethodPropertyDatabase<Property extends MethodProperty<Pro
 	 * @return a String which encodes the property
 	 */
 	protected abstract String encodeProperty(Property property);
-	
-	/**
-	 * Get the direction in which to walk the class hierarchy when
-	 * propagating method properties.
-	 * 
-	 * @return the HierarchyWalkDirection
-	 */
-	protected abstract HierarchyWalkDirection getHierarchyWalkDirection();
-	
-	/**
-	 * Get the PropertyCombinator used to combine method properties
-	 * when propagating them in the class hierarchy.
-	 * 
-	 * @return
-	 */
-	protected abstract PropertyCombinator<Property> getPropertyCombinator();
 }
