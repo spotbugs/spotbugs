@@ -30,8 +30,6 @@ import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.MethodGen;
-import org.apache.bcel.generic.ReferenceType;
-import org.apache.bcel.generic.Type;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -51,6 +49,7 @@ import edu.umd.cs.findbugs.ba.TypeDataflow;
 import edu.umd.cs.findbugs.ba.TypeFrame;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.npe.IsNullValue;
+import edu.umd.cs.findbugs.ba.npe.IsNullValueAnalysis;
 import edu.umd.cs.findbugs.ba.npe.IsNullValueDataflow;
 import edu.umd.cs.findbugs.ba.npe.IsNullValueFrame;
 import edu.umd.cs.findbugs.ba.npe.NullDerefAndRedundantComparisonCollector;
@@ -200,21 +199,9 @@ public class FindNullDeref
 			System.out.println("Null arguments passed: " + nullArgSet);
 		}
 		
-		// Get the receiver object type
-		TypeFrame typeFrame = typeDataflow.getFactAtLocation(location);
-		if (!typeFrame.isValid())
-			return;
-		Type receiverType = typeFrame.getInstance(invokeInstruction, cpg);
-		if (!(receiverType instanceof ReferenceType))
-			return;
-		
-		// TODO: receiver type might be exact
-		
 		// See what methods might be called here
-		Set<XMethod> targetMethodSet = Hierarchy.resolveMethodCallTargets(
-				(ReferenceType) receiverType,
-				invokeInstruction,
-				cpg);
+		TypeFrame typeFrame = typeDataflow.getFactAtLocation(location);
+		Set<XMethod> targetMethodSet = Hierarchy.resolveMethodCallTargets(invokeInstruction, typeFrame, cpg);
 		if (DEBUG_NULLARG) {
 			System.out.println("Possibly called methods: " + targetMethodSet);
 		}
