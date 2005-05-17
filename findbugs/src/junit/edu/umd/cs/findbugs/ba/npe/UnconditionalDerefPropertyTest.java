@@ -14,17 +14,17 @@ public class UnconditionalDerefPropertyTest extends TestCase {
 		empty = new UnconditionalDerefProperty();
 		
 		nonEmpty = new UnconditionalDerefProperty();
-		nonEmpty.setParamUnconditionalDeref(11, true);
-		nonEmpty.setParamUnconditionalDeref(25, true);
+		nonEmpty.setUnconditionalDeref(11, true);
+		nonEmpty.setUnconditionalDeref(25, true);
 		
 		extremes = new UnconditionalDerefProperty();
-		extremes.setParamUnconditionalDeref(0, true);
-		extremes.setParamUnconditionalDeref(31, true);
+		extremes.setUnconditionalDeref(0, true);
+		extremes.setUnconditionalDeref(31, true);
 	}
 	
 	public void testEmpty() {
 		for (int i = 0; i < 32; ++i) {
-			Assert.assertFalse(empty.paramUnconditionalDeref(i));
+			Assert.assertFalse(empty.isUnconditionalDeref(i));
 		}
 	}
 	
@@ -35,19 +35,19 @@ public class UnconditionalDerefPropertyTest extends TestCase {
 	}
 	
 	public void testNonEmpty() {
-		Assert.assertTrue(nonEmpty.paramUnconditionalDeref(11));
-		Assert.assertTrue(nonEmpty.paramUnconditionalDeref(25));
-		Assert.assertFalse(nonEmpty.paramUnconditionalDeref(5));
+		Assert.assertTrue(nonEmpty.isUnconditionalDeref(11));
+		Assert.assertTrue(nonEmpty.isUnconditionalDeref(25));
+		Assert.assertFalse(nonEmpty.isUnconditionalDeref(5));
 	}
 	
 	public void testExtremes() {
-		Assert.assertTrue(extremes.paramUnconditionalDeref(0));
-		Assert.assertTrue(extremes.paramUnconditionalDeref(31));
-		Assert.assertFalse(extremes.paramUnconditionalDeref(10));
+		Assert.assertTrue(extremes.isUnconditionalDeref(0));
+		Assert.assertTrue(extremes.isUnconditionalDeref(31));
+		Assert.assertFalse(extremes.isUnconditionalDeref(10));
 	}
 	
 	public void testOutOfBounds() {
-		Assert.assertFalse(nonEmpty.paramUnconditionalDeref(-1));
-		Assert.assertFalse(nonEmpty.paramUnconditionalDeref(32));
+		Assert.assertFalse(nonEmpty.isUnconditionalDeref(-1));
+		Assert.assertFalse(nonEmpty.isUnconditionalDeref(32));
 	}
 }

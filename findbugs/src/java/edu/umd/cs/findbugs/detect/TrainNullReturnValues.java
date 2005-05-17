@@ -122,7 +122,6 @@ public class TrainNullReturnValues implements TrainingDetector {
 	}
 
 	public void report() {
-		database.propagateThroughClassHierarchy();
 		try {
 			database.writeToFile(MayReturnNullPropertyDatabase.DEFAULT_FILENAME);
 		} catch (IOException e) {

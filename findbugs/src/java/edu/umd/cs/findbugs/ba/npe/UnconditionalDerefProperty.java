@@ -18,6 +18,8 @@
  */
 package edu.umd.cs.findbugs.ba.npe;
 
+import java.util.BitSet;
+
 import edu.umd.cs.findbugs.ba.interproc.MethodProperty;
 
 /**
@@ -61,7 +63,7 @@ public class UnconditionalDerefProperty implements MethodProperty<UnconditionalD
 	 * @param param              the parameter index
 	 * @param unconditionalDeref true if the parameter might be unconditionally dereferenced, false otherwise
 	 */
-	public void setParamUnconditionalDeref(int param, boolean unconditionalDeref) {
+	public void setUnconditionalDeref(int param, boolean unconditionalDeref) {
 		if (param < 0 || param > 31)
 			return;
 		if (unconditionalDeref) {
@@ -77,11 +79,27 @@ public class UnconditionalDerefProperty implements MethodProperty<UnconditionalD
 	 * @param param the parameter index
 	 * @return true if the parameter might be unconditionally dereferenced, false otherwise
 	 */
-	public boolean paramUnconditionalDeref(int param) {
+	public boolean isUnconditionalDeref(int param) {
 		if (param < 0 || param > 31)
 			return false;
 		else
 			return (unconditionalDerefParamSet & (1 << param)) != 0;
+	}
+	
+	/**
+	 * Given a bitset of null arguments passed to the method represented
+	 * by this property, return a bitset indicating which null arguments
+	 * correspond to an unconditionally dereferenced param.
+	 * 
+	 * @param nullArgSet bitset of null arguments
+	 * @return bitset intersecting null arguments and unconditionally derefed params
+	 */
+	public BitSet getUnconditionallyDereferencedNullArgSet(BitSet nullArgSet) {
+		BitSet result = new BitSet();
+		for (int i = 0; i < 32; ++i) {
+			result.set(i, nullArgSet.get(i) && isUnconditionalDeref(i));
+		}
+		return result;
 	}
 	
 	/**
@@ -96,5 +114,21 @@ public class UnconditionalDerefProperty implements MethodProperty<UnconditionalD
 
 	public void makeSameAs(UnconditionalDerefProperty other) {
 		this.unconditionalDerefParamSet = other.unconditionalDerefParamSet;
+	}
+	
+	public String toString() {
+		StringBuffer buf = new StringBuffer();
+		
+		buf.append('{');
+		for (int i = 0; i < 32; ++i) {
+			if (isUnconditionalDeref(i)) {
+				if (buf.length() > 1)
+					buf.append(',');
+				buf.append(i);
+			}
+		}
+		buf.append('}');
+		
+		return buf.toString();
 	}
 }

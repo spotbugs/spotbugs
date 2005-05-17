@@ -19,26 +19,37 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import java.util.BitSet;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.MethodGen;
+import org.apache.bcel.generic.ReferenceType;
+import org.apache.bcel.generic.Type;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.FindBugsAnalysisProperties;
+import edu.umd.cs.findbugs.MethodAnnotation;
+import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
+import edu.umd.cs.findbugs.ba.Hierarchy;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.SignatureConverter;
+import edu.umd.cs.findbugs.ba.TypeDataflow;
+import edu.umd.cs.findbugs.ba.TypeFrame;
 import edu.umd.cs.findbugs.ba.XMethod;
-import edu.umd.cs.findbugs.ba.XMethodFactory;
 import edu.umd.cs.findbugs.ba.npe.IsNullValue;
 import edu.umd.cs.findbugs.ba.npe.IsNullValueDataflow;
 import edu.umd.cs.findbugs.ba.npe.IsNullValueFrame;
@@ -64,6 +75,7 @@ public class FindNullDeref
 		implements Detector, StatelessDetector, NullDerefAndRedundantComparisonCollector {
 
 	private static final boolean DEBUG = Boolean.getBoolean("fnd.debug");
+	private static final boolean DEBUG_NULLARG = Boolean.getBoolean("fnd.debug.nullarg");
 
 	private BugReporter bugReporter;
 	
@@ -104,7 +116,7 @@ public class FindNullDeref
 		
 		this.method = method;
 
-		if (DEBUG)
+		if (DEBUG || DEBUG_NULLARG)
 			System.out.println(SignatureConverter.convertMethodSignature(classContext.getMethodGen(method)));
 
 		// Get the IsNullValueAnalysis for the method from the ClassContext
@@ -131,48 +143,132 @@ public class FindNullDeref
 
 	private void examineCalledMethods(UnconditionalDerefPropertyDatabase database)
 			throws CFGBuilderException, DataflowAnalysisException {
+		ConstantPoolGen cpg = classContext.getConstantPoolGen();
+		TypeDataflow typeDataflow = classContext.getTypeDataflow(method);
+		
 		for (Iterator<Location> i = classContext.getCFG(method).locationIterator(); i.hasNext();) {
 			Location location = i.next();
-			if (!(location.getHandle().getInstruction() instanceof InvokeInstruction))
-				continue;
-			XMethod calledMethod = XMethodFactory.createXMethod(
-					(InvokeInstruction) location.getHandle().getInstruction(),
-					classContext.getConstantPoolGen()
-					);
-			UnconditionalDerefProperty property = database.getProperty(calledMethod);
-			if (property == null || property.isEmpty())
-				continue;
-			
-			IsNullValueFrame frame =
-				classContext.getIsNullValueDataflow(method).getFactAtLocation(location);
-			if (!frame.isValid())
-				continue;
-			
-			int numParams = calledMethod.getNumParams();
-			int shift = calledMethod.isStatic() ? 0 : 1;
-			
-			for (int index = 0; index < numParams; ++index) {
-				if (index >= frame.getStackDepth()) {
-					break;
-				}
-
-				if (!property.paramUnconditionalDeref(index + shift))
-					continue;
-				
-				IsNullValue arg = frame.getStackValue((numParams - index) - 1);
-				if (arg.mightBeNull()) {
-					MethodGen methodGen = classContext.getMethodGen(method);
-					String sourceFile = classContext.getJavaClass().getSourceFileName();
-					bugReporter.reportBug(new BugInstance("NP_NULL_PARAM_DEREF", NORMAL_PRIORITY)
-							.addClassAndMethod(methodGen, sourceFile)
-							.addMethod(calledMethod).describe("METHOD_CALLED")
-							.addSourceLine(methodGen, sourceFile, location.getHandle())
-					);
-					// XXX: should also indicate which parameter it was
-					break;
-				}
+			try {
+				examineLocation(location, cpg, typeDataflow, database);
+			} catch (ClassNotFoundException e) {
+				bugReporter.reportMissingClass(e);
 			}
 		}
+	}
+	
+	static class CallTarget {
+		JavaClass javaClass;
+		XMethod xmethod;
+		CallTarget(JavaClass javaClass, XMethod xmethod) {
+			this.javaClass = javaClass;
+			this.xmethod = xmethod;
+		}
+	}
+	
+	private void examineLocation(Location location, ConstantPoolGen cpg, TypeDataflow typeDataflow, UnconditionalDerefPropertyDatabase database)
+			throws DataflowAnalysisException, CFGBuilderException, ClassNotFoundException {
+		if (!(location.getHandle().getInstruction() instanceof InvokeInstruction))
+			return;
+		
+		InvokeInstruction invokeInstruction = (InvokeInstruction)
+			location.getHandle().getInstruction();
+		
+		if (DEBUG_NULLARG) {
+			System.out.println("Examining call site: " + location.getHandle());
+		}
+		
+		String signature = invokeInstruction.getSignature(cpg); 
+		int returnTypeStart = signature.indexOf(')');
+		if (returnTypeStart < 0)
+			return;
+		String paramList = signature.substring(0, returnTypeStart + 1);
+		
+		if (paramList.equals("()") ||
+				(paramList.indexOf("L") < 0 && paramList.indexOf('[') < 0))
+			// Method takes no arguments, or takes no reference arguments
+			return;
+
+		// See if any null arguments are passed
+		IsNullValueFrame frame =
+			classContext.getIsNullValueDataflow(method).getFactAtLocation(location);
+		if (!frame.isValid())
+			return;
+		BitSet nullArgSet = frame.getNullArgumentSet(invokeInstruction, cpg);
+		if (nullArgSet.isEmpty())
+			return;
+		if (DEBUG_NULLARG) {
+			System.out.println("Null arguments passed: " + nullArgSet);
+		}
+		
+		// Get the receiver object type
+		TypeFrame typeFrame = typeDataflow.getFactAtLocation(location);
+		if (!typeFrame.isValid())
+			return;
+		Type receiverType = typeFrame.getInstance(invokeInstruction, cpg);
+		if (!(receiverType instanceof ReferenceType))
+			return;
+		
+		// TODO: receiver type might be exact
+		
+		// See what methods might be called here
+		Set<XMethod> targetMethodSet = Hierarchy.resolveMethodCallTargets(
+				(ReferenceType) receiverType,
+				invokeInstruction,
+				cpg);
+		if (DEBUG_NULLARG) {
+			System.out.println("Possibly called methods: " + targetMethodSet);
+		}
+		
+		// See if any call targets unconditionally dereference one of the null arguments
+		BitSet unconditionallyDereferencedNullArgSet = new BitSet();
+		List<CallTarget> dangerousCallTargetList = new LinkedList<CallTarget>();
+		for (XMethod targetMethod : targetMethodSet) {
+			if (DEBUG_NULLARG) {
+				System.out.println("For target method " + targetMethod);
+			}
+			
+			UnconditionalDerefProperty property = database.getProperty(targetMethod);
+			if (property == null)
+				continue;
+			if (DEBUG_NULLARG) {
+				System.out.println("\tUnconditionally dereferenced params: " + property);
+			}
+			
+			BitSet targetUnconditionallyDereferencedNullArgSet =
+				property.getUnconditionallyDereferencedNullArgSet(nullArgSet);
+			
+			if (targetUnconditionallyDereferencedNullArgSet.isEmpty())
+				continue;
+			
+			JavaClass targetClass = AnalysisContext.currentAnalysisContext().lookupClass(targetMethod.getClassName());
+			dangerousCallTargetList.add(new CallTarget(targetClass, targetMethod));
+			
+			unconditionallyDereferencedNullArgSet.or(targetUnconditionallyDereferencedNullArgSet);
+		}
+		
+		if (dangerousCallTargetList.isEmpty())
+			return;
+		
+		MethodGen methodGen = classContext.getMethodGen(method);
+		String sourceFile = classContext.getJavaClass().getSourceFileName();
+		BugInstance warning = new BugInstance("NP_NULL_PARAM_DEREF", NORMAL_PRIORITY)
+				.addClassAndMethod(methodGen, sourceFile)
+				.addSourceLine(methodGen, sourceFile, location.getHandle());
+		for (int i = 0; i < 32; ++i) {
+			if (unconditionallyDereferencedNullArgSet.get(i)) {
+				warning.addInt(i).describe("INT_NULL_PARAM");
+			}
+		}
+		for (CallTarget dangerousCallTarget : dangerousCallTargetList) {
+			MethodAnnotation calledMethod = MethodAnnotation.fromXMethod(dangerousCallTarget.xmethod);
+			SourceLineAnnotation methodSourceLines = SourceLineAnnotation.forEntireMethod(
+					dangerousCallTarget.javaClass,
+					dangerousCallTarget.xmethod);
+			calledMethod.setSourceLines(methodSourceLines);
+			warning.addMethod(calledMethod).describe("METHOD_CALL_TARGET");
+		}
+		
+		bugReporter.reportBug(warning);
 	}
 
 	public void report() {

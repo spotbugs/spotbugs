@@ -139,7 +139,7 @@ public class TrainUnconditionalDerefParams implements TrainingDetector {
 						ValueNumber inputValueNumber = valueNumberAnalysis.getFactory().forNumber(i);
 						Integer param = valueNumberToParamMap.get(inputValueNumber);
 						if (param != null) {
-							property.setParamUnconditionalDeref(param.intValue(), true);
+							property.setUnconditionalDeref(param.intValue(), true);
 						}
 					}
 				}
@@ -177,13 +177,14 @@ public class TrainUnconditionalDerefParams implements TrainingDetector {
 		if (VERBOSE_DEBUG) System.out.print(" " + method.getSignature());
 
 		int numParams = new SignatureParser(method.getSignature()).getNumParameters();
-		if (!method.isStatic())
-			++numParams;
+		int paramOffset = method.isStatic() ? 0 : 1;
 
-		for (int i = 0; i < numParams; ++i) {
-			ValueNumber valueNumber = vnaFrameAtEntry.getValue(i);
-			if (VERBOSE_DEBUG) System.out.println("[" + valueNumber + "->" + i + "]");
-			valueNumberToParamMap.put(valueNumber, new Integer(i));
+		for (int paramIndex = 0; paramIndex < numParams; ++paramIndex) {
+			int paramLocal = paramIndex + paramOffset;
+			
+			ValueNumber valueNumber = vnaFrameAtEntry.getValue(paramLocal);
+			if (VERBOSE_DEBUG) System.out.println("[" + valueNumber + "->" + paramIndex + "]");
+			valueNumberToParamMap.put(valueNumber, new Integer(paramIndex));
 		}
 
 		return valueNumberToParamMap;
@@ -193,7 +194,6 @@ public class TrainUnconditionalDerefParams implements TrainingDetector {
 	 * @see edu.umd.cs.findbugs.Detector#report()
 	 */
 	public void report() {
-		database.propagateThroughClassHierarchy();
 		try {
 			database.writeToFile(UnconditionalDerefPropertyDatabase.DEFAULT_FILENAME);
 		} catch (IOException e) {

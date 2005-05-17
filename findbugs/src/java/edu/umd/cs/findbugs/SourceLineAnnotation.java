@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs;
 
+import edu.umd.cs.findbugs.ba.Hierarchy;
+import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
@@ -28,8 +30,10 @@ import edu.umd.cs.findbugs.xml.XMLOutput;
 import java.io.IOException;
 
 import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.LineNumber;
 import org.apache.bcel.classfile.LineNumberTable;
+import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.MethodGen;
 
@@ -133,7 +137,16 @@ public class SourceLineAnnotation implements BugAnnotation {
 		return forEntireMethod(className, sourceFile, lineNumberTable, codeSize);
 	}
 
-	private static SourceLineAnnotation forEntireMethod(String className, String sourceFile,
+	/**
+	 * Create a SourceLineAnnotation covering an entire method.
+	 * 
+	 * @param className       name of the class the method is in
+	 * @param sourceFile      source file containing the method
+	 * @param lineNumberTable the method's LineNumberTable
+	 * @param codeSize        size in bytes of the method's code
+	 * @return a SourceLineAnnotation covering the entire method
+	 */
+	public static SourceLineAnnotation forEntireMethod(String className, String sourceFile,
 	                                                    LineNumberTable lineNumberTable, int codeSize) {
 		LineNumber[] table = lineNumberTable.getLineNumberTable();
 		if (table != null && table.length > 0) {
@@ -143,6 +156,34 @@ public class SourceLineAnnotation implements BugAnnotation {
 			        0, codeSize - 1);
 		} else {
 			return createUnknown(className, sourceFile, 0, codeSize - 1);
+		}
+	}
+	
+	/**
+	 * Create a SourceLineAnnotation covering an entire method.
+	 * 
+	 * @param javaClass JavaClass containing the method
+	 * @param method    the method
+	 * @return
+	 */
+	public static SourceLineAnnotation forEntireMethod(JavaClass javaClass, Method method) {
+		String sourceFile = javaClass.getSourceFileName();
+		Code code = method.getCode();
+		if (code == null) {
+			return createUnknown(javaClass.getClassName(), sourceFile);
+		}
+		
+		LineNumberTable lineNumberTable = method.getLineNumberTable();
+		
+		return forEntireMethod(javaClass.getClassName(), sourceFile, lineNumberTable, code.getLength());
+	}
+
+	public static SourceLineAnnotation forEntireMethod(JavaClass javaClass, XMethod xmethod) {
+		Method m = Hierarchy.findMethod(javaClass, xmethod.getName(), xmethod.getSignature());
+		if (m == null) {
+			return createUnknown(javaClass.getClassName(), javaClass.getSourceFileName());
+		} else {
+			return forEntireMethod(javaClass, m);
 		}
 	}
 
