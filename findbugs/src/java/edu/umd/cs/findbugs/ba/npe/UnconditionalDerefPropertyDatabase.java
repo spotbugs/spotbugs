@@ -65,7 +65,7 @@ public class UnconditionalDerefPropertyDatabase extends MethodPropertyDatabase<U
 	protected HierarchyWalkDirection getHierarchyWalkDirection() {
 		// Properties go upwards towards supertypes:
 		// if a subtype param is dereferenced unconditionally,
-		// then we assume that subtype mether is reachable from
+		// then we assume that subtype method is reachable from
 		// supertype method call sites.
 		return HierarchyWalkDirection.TOWARDS_SUPERTYPES;
 	}
