@@ -420,6 +420,12 @@ public class Hierarchy {
 		if (invokeInstruction.getOpcode() == Constants.INVOKESTATIC)
 			throw new IllegalArgumentException();
 		
+		// Just return an empty set if a method is called on
+		// a null reference
+		if (receiverType.equals(NullType.instance())) {
+			return result;
+		}
+		
 		String className = invokeInstruction.getClassName(cpg);
 		String methodName = invokeInstruction.getName(cpg);
 		String methodSig = invokeInstruction.getSignature(cpg);
