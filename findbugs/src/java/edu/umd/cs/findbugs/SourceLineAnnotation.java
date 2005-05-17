@@ -164,7 +164,7 @@ public class SourceLineAnnotation implements BugAnnotation {
 	 * 
 	 * @param javaClass JavaClass containing the method
 	 * @param method    the method
-	 * @return
+	 * @return a SourceLineAnnotation for the entire method
 	 */
 	public static SourceLineAnnotation forEntireMethod(JavaClass javaClass, Method method) {
 		String sourceFile = javaClass.getSourceFileName();
@@ -178,6 +178,13 @@ public class SourceLineAnnotation implements BugAnnotation {
 		return forEntireMethod(javaClass.getClassName(), sourceFile, lineNumberTable, code.getLength());
 	}
 
+	/**
+	 * Create a SourceLineAnnotation covering an entire method.
+	 * 
+	 * @param javaClass JavaClass containing the method
+	 * @param xmethod    the method
+	 * @return a SourceLineAnnotation for the entire method
+	 */
 	public static SourceLineAnnotation forEntireMethod(JavaClass javaClass, XMethod xmethod) {
 		Method m = Hierarchy.findMethod(javaClass, xmethod.getName(), xmethod.getSignature());
 		if (m == null) {
