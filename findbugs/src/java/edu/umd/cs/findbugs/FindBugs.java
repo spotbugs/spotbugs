@@ -1142,16 +1142,31 @@ public class FindBugs implements Constants2, ExitCodes {
 		Iterator<DetectorFactory> i = DetectorFactoryCollection.instance().factoryIterator();
 		while (i.hasNext()) {
 			DetectorFactory factory = i.next();
-			if (factory.getPlugin().isEnabled() &&
-					userPreferences.isDetectorEnabled(factory) &&
-					factory.isEnabledForCurrentJRE() &&
-					(!trainingMode || (factory.isDetectorClassSubtypeOf(TrainingDetector.class)))) {
+			if (isDetectorEnabled(factory)) {
 				Detector detector = factory.create(bugReporter);
 				result.add(detector);
 			}
 		}
 
 		detectors = result.toArray(new Detector[result.size()]);
+	}
+
+	private boolean isDetectorEnabled(DetectorFactory factory) {
+		if (!factory.getPlugin().isEnabled())
+			return false;
+		
+		if (!userPreferences.isDetectorEnabled(factory))
+			return false;
+		
+		if (!factory.isEnabledForCurrentJRE())
+			return false;
+
+		// Training detectors are enabled if, and only if, we are in training mode.
+		boolean isTrainingDetector = factory.isDetectorClassSubtypeOf(TrainingDetector.class);
+		if (isTrainingDetector != trainingMode)
+			return false;
+		
+		return true;
 	}
 	
 	/**
