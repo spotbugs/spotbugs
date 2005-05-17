@@ -380,6 +380,45 @@ public class Hierarchy {
 	}
 	
 	/**
+	 * Resolve possible method call targets.
+	 * This works for both static and instance method calls.
+	 * 
+	 * @param invokeInstruction the InvokeInstruction
+	 * @param typeFrame         the TypeFrame containing the types of stack values
+	 * @param cpg               the ConstantPoolGen
+	 * @throws DataflowAnalysisException 
+	 * @throws ClassNotFoundException 
+	 */
+	public static Set<XMethod> resolveMethodCallTargets(
+			InvokeInstruction invokeInstruction,
+			TypeFrame typeFrame,
+			ConstantPoolGen cpg) throws DataflowAnalysisException, ClassNotFoundException {
+		
+		if (invokeInstruction.getOpcode() == Constants.INVOKESTATIC) {
+			HashSet<XMethod> result = new HashSet<XMethod>();
+			result.add(new StaticMethod(
+					invokeInstruction.getClassName(cpg),
+					invokeInstruction.getName(cpg),
+					invokeInstruction.getSignature(cpg),
+					Constants.ACC_STATIC | Constants.ACC_PUBLIC
+					));
+			return result;
+		}
+		
+		if (!typeFrame.isValid()) {
+			return new HashSet<XMethod>();
+		}
+
+		Type receiverType = typeFrame.getInstance(invokeInstruction, cpg);
+		if (!(receiverType instanceof ReferenceType)) {
+			return new HashSet<XMethod>();
+		}
+
+		// XXX: check whether or not type is exact
+		return resolveMethodCallTargets((ReferenceType) receiverType, invokeInstruction, cpg, false);
+	}
+	
+	/**
 	 * Resolve possible instance method call targets.
 	 * Assumes that invokevirtual and invokeinterface methods may
 	 * call any subtype of the receiver class.
