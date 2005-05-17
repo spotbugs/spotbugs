@@ -49,7 +49,6 @@ import edu.umd.cs.findbugs.ba.TypeDataflow;
 import edu.umd.cs.findbugs.ba.TypeFrame;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.npe.IsNullValue;
-import edu.umd.cs.findbugs.ba.npe.IsNullValueAnalysis;
 import edu.umd.cs.findbugs.ba.npe.IsNullValueDataflow;
 import edu.umd.cs.findbugs.ba.npe.IsNullValueFrame;
 import edu.umd.cs.findbugs.ba.npe.NullDerefAndRedundantComparisonCollector;
@@ -68,7 +67,7 @@ import edu.umd.cs.findbugs.props.WarningPropertyUtil;
  * involving null and non-null values.
  *
  * @author David Hovemeyer
- * @see IsNullValueAnalysis
+ * @see edu.umd.cs.findbugs.ba.npe.IsNullValueAnalysis
  */
 public class FindNullDeref
 		implements Detector, StatelessDetector, NullDerefAndRedundantComparisonCollector {

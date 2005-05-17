@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs.ba;
 
+import java.util.BitSet;
+
 import org.apache.bcel.generic.Type;
 
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
@@ -35,12 +37,56 @@ public class TypeFrame extends Frame<Type> {
 	// These are used for more precise modeling of instanceof instructions
 	private ValueNumber instanceOfValueNumber;
 	private Type instanceOfType;
+	private BitSet exactTypeSet;
 	
 	/**
 	 * Constructor.
 	 */
 	public TypeFrame(int numLocals) {
 		super(numLocals);
+		this.exactTypeSet = new BitSet();
+	}
+
+	/**
+	 * Set whether or not a type in a given slot is exact.
+	 * 
+	 * @param slot    the slot
+	 * @param isExact true if the slot contains an exact type, false if just an upper bound
+	 */
+	public void setExact(int slot, boolean isExact) {
+		exactTypeSet.set(slot, isExact);
+	}
+
+	/**
+	 * Get whether or not a type in a given slot is exact.
+	 * 
+	 * @param slot the slot
+	 * @return true if the slot contains an exact type, false if just an upper bound
+	 */
+	public boolean isExact(int slot) {
+		return exactTypeSet.get(slot);
+	}
+	
+	/**
+	 * Clear the exact type set.
+	 * The result is that all slots will be assumed <em>not</em> to
+	 * contain an exact type.
+	 */
+	public void clearExactSet() {
+		exactTypeSet.clear();
+	}
+	
+	//@Override
+	public void setTop() {
+		super.setTop();
+		clearExactSet();
+	}
+ 	
+	//@Override
+	public void copyFrom(Frame<Type> other_) {
+		clearExactSet();
+		exactTypeSet.or(((TypeFrame) other_).exactTypeSet);
+		super.copyFrom(other_);
 	}
 	
 	/**

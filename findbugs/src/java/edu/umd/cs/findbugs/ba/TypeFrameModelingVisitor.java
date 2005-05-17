@@ -649,24 +649,41 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 		// FIXME: type is technically "uninitialized"
 		// However, we don't model that yet.
 		pushValue(obj.getType(getCPG()));
+		
+		// We now have an exact type for this value.
+		setTopOfStackIsExact();
 	}
 
 	public void visitNEWARRAY(NEWARRAY obj) {
 		consumeStack(obj);
 		Type elementType = obj.getType();
 		pushValue(new ArrayType(elementType, 1));
+		
+		// We now have an exact type for this value.
+		setTopOfStackIsExact();
 	}
 
 	public void visitANEWARRAY(ANEWARRAY obj) {
 		consumeStack(obj);
 		Type elementType = obj.getType(getCPG());
 		pushValue(new ArrayType(elementType, 1));
+		
+		// We now have an exact type for this value.
+		setTopOfStackIsExact();
 	}
 
 	public void visitMULTIANEWARRAY(MULTIANEWARRAY obj) {
 		consumeStack(obj);
 		Type elementType = obj.getType(getCPG());
 		pushValue(new ArrayType(elementType, obj.getDimensions()));
+		
+		// We now have an exact type for this value.
+		setTopOfStackIsExact();
+	}
+
+	private void setTopOfStackIsExact() {
+		TypeFrame frame = getFrame();
+		frame.setExact(frame.getNumSlots() - 1, true);
 	}
 
 	public void visitJSR(JSR obj) {

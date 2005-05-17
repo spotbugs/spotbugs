@@ -220,7 +220,7 @@ public abstract class Frame <ValueType> implements Debug {
 			throw new DataflowAnalysisException("not enough values on stack: access=" + loc + ", avail=" + stackDepth);
 		return slotList.get(slotList.size() - (loc + 1));
 	}
-
+	
 	/**
 	 * Get the value corresponding to the object instance used in
 	 * the given instruction.  This relies on the observation that in
@@ -232,10 +232,26 @@ public abstract class Frame <ValueType> implements Debug {
 	 * @param cpg the ConstantPoolGen for the method
 	 */
 	public ValueType getInstance(Instruction ins, ConstantPoolGen cpg) throws DataflowAnalysisException {
+		return getStackValue(getInstanceSlot(ins, cpg));
+	}
+
+	/**
+	 * Get the stack slot containing the object instance referred to
+	 * by given instruction.  This relies on the observation that in
+	 * instructions which use an object instance (such as getfield,
+	 * invokevirtual, etc.), the object instance is the first
+	 * operand used by the instruction.
+	 * 
+	 * @param ins the Instruction
+	 * @param cpg the ConstantPoolGen for the method
+	 * @return stack slot containing the object instance
+	 * @throws DataflowAnalysisException
+	 */
+	public int getInstanceSlot(Instruction ins, ConstantPoolGen cpg) throws DataflowAnalysisException {
 		int numConsumed = ins.consumeStack(cpg);
 		if (numConsumed == Constants.UNPREDICTABLE)
 			throw new DataflowAnalysisException("Unpredictable stack consumption in " + ins);
-		return getStackValue(numConsumed - 1);
+		return numConsumed - 1;
 	}
 	
 	/**

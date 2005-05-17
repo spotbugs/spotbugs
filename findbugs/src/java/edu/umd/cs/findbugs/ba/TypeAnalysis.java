@@ -430,6 +430,7 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 	protected void mergeValues(TypeFrame otherFrame, TypeFrame resultFrame, int slot) throws DataflowAnalysisException {
 		Type value = typeMerger.mergeTypes(resultFrame.getValue(slot), otherFrame.getValue(slot));
 		resultFrame.setValue(slot, value);
+		resultFrame.setExact(slot, resultFrame.isExact(slot) && otherFrame.isExact(slot));
 	}
 
 	/**

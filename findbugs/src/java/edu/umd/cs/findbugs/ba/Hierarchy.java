@@ -409,13 +409,14 @@ public class Hierarchy {
 			return new HashSet<XMethod>();
 		}
 
-		Type receiverType = typeFrame.getInstance(invokeInstruction, cpg);
+		int instanceSlot = typeFrame.getInstanceSlot(invokeInstruction, cpg);
+		Type receiverType = typeFrame.getValue(instanceSlot);
 		if (!(receiverType instanceof ReferenceType)) {
 			return new HashSet<XMethod>();
 		}
+		boolean receiverTypeIsExact = typeFrame.isExact(instanceSlot);
 
-		// XXX: check whether or not type is exact
-		return resolveMethodCallTargets((ReferenceType) receiverType, invokeInstruction, cpg, false);
+		return resolveMethodCallTargets((ReferenceType) receiverType, invokeInstruction, cpg, receiverTypeIsExact);
 	}
 	
 	/**
