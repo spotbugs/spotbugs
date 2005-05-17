@@ -34,18 +34,6 @@ public class IsNullValueFrame extends Frame<IsNullValue> {
 		super(numLocals);
 	}
 	
-//	public boolean isAnyArgumentNull(InvokeInstruction invokeInstruction, ConstantPoolGen cpg) throws DataflowAnalysisException {
-//		int numArguments = getNumArguments(invokeInstruction, cpg);
-//
-//		for (int i = 0; i < numArguments; ++i) {
-//			IsNullValue value = getArgument(invokeInstruction, cpg, i);
-//			if (value.mightBeNull())
-//				return true;
-//		}
-//		
-//		return false;
-//	}
-	
 	/**
 	 * Get set of arguments passed to the given InvokeInstruction
 	 * which might be null.

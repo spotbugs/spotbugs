@@ -29,17 +29,11 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
 import java.util.TreeSet;
 
 import org.apache.bcel.Constants;
-import org.apache.bcel.classfile.JavaClass;
 
-import edu.umd.cs.findbugs.ba.AnalysisContext;
-import edu.umd.cs.findbugs.ba.Hierarchy;
 import edu.umd.cs.findbugs.ba.InstanceMethod;
 import edu.umd.cs.findbugs.ba.StaticMethod;
 import edu.umd.cs.findbugs.ba.XMethod;
@@ -80,102 +74,6 @@ public abstract class MethodPropertyDatabase<Property extends MethodProperty<Pro
 	public Property getProperty(XMethod method) {
 		return propertyMap.get(method);
 	}
-
-//	/**
-//	 * Propagate method properties through the class hierarchy,
-//	 * <em>for instance methods only</em>.
-//	 * This step ensures that method overrides are taken into account.
-//	 * Depending on the kind of properties, this might work from supertypes
-//	 * to subtypes, or from subtypes to supertypes.
-//	 */
-//	public void propagateThroughClassHierarchy() {
-//		
-//		Set<XMethod> methodSet = new HashSet<XMethod>();
-//		methodSet.addAll(propertyMap.keySet());
-//		
-//		// Step 1.  Add all target methods (overridden methods or overriding methods,
-//		// depending on which direction we're walking the class hierarchy in.)
-//		for (Iterator<XMethod> i = propertyMap.keySet().iterator(); i.hasNext();) {
-//			XMethod sourceMethod = i.next();
-//			if (sourceMethod.isStatic())
-//				continue;
-//			
-//			JavaClass sourceClass = getClassFor(sourceMethod);
-//			if (sourceClass == null)
-//				continue;
-//			
-//			Set<XMethod> targetMethods = getTargetMethods(sourceClass, sourceMethod);
-//			methodSet.addAll(targetMethods);
-//		}
-//		
-//		// Step 2.  Make sure the database has an entry for all reachable methods.
-//		for (Iterator<XMethod> i = methodSet.iterator(); i.hasNext();) {
-//			XMethod xmethod = i.next();
-//			if (propertyMap.get(xmethod) == null) {
-//				propertyMap.put(xmethod, createDefault());
-//			}
-//		}
-//		
-//		// Step 3.  Propagate method properties to super or subtype methods.
-//		// As long as the combine operation is commutative, it doesn't matter
-//		// what order we do this in.
-//		for (Iterator<Map.Entry<XMethod, Property>> i = propertyMap.entrySet().iterator(); i.hasNext();) {
-//			Map.Entry<XMethod, Property> entry = i.next();
-//			XMethod sourceMethod = entry.getKey();
-//			JavaClass sourceClass = getClassFor(sourceMethod);
-//			if (sourceClass == null)
-//				continue;
-//			
-//			Property sourceProperty = entry.getValue();
-//			
-//			Set<XMethod> targetMethodSet = getTargetMethods(sourceClass, sourceMethod);
-//			for (Iterator<XMethod> j = targetMethodSet.iterator(); j.hasNext();) {
-//				XMethod targetMethod = j.next();
-//				if (targetMethod.isStatic())
-//					continue;
-//				
-//				Property targetProperty = propertyMap.get(targetMethod);
-//				Property result = getPropertyCombinator().combine(sourceProperty, targetProperty);
-//				targetProperty.makeSameAs(result);
-//			}
-//		}
-//	}
-
-//	private JavaClass getClassFor(XMethod method) {
-//		AnalysisContext analysisContext = AnalysisContext.currentAnalysisContext();
-//		try {
-//			JavaClass javaClass = analysisContext.lookupClass(method.getClassName());
-//			return javaClass;
-//		} catch (ClassNotFoundException e) {
-//			analysisContext.getLookupFailureCallback().reportMissingClass(e);
-//			return null;
-//		}
-//	}
-//	
-//	private static final Set<XMethod> EMPTY_METHOD_SET = new HashSet<XMethod>();
-//
-//	private Set<XMethod> getTargetMethods(JavaClass sourceClass, XMethod sourceMethod) {
-//		try {
-//			Set<XMethod> result = new HashSet<XMethod>();
-//			Set<JavaClass> targetClassSet = getHierarchyWalkDirection().getHierarchyGraphTargets(sourceClass);
-//			for (Iterator<JavaClass> j = targetClassSet.iterator(); j.hasNext(); ) {
-//				JavaClass targetClass = j.next();
-//				
-//				XMethod targetMethod = Hierarchy.findXMethod(targetClass, sourceMethod.getName(), sourceMethod.getSignature());
-//				if (targetMethod == null)
-//					return EMPTY_METHOD_SET;
-//				if (targetMethod.isStatic())
-//					return EMPTY_METHOD_SET;
-//				
-//				result.add(targetMethod);
-//			}
-//			
-//			return result;
-//		} catch (ClassNotFoundException e) {
-//			AnalysisContext.currentAnalysisContext().getLookupFailureCallback().reportMissingClass(e);
-//			return EMPTY_METHOD_SET;
-//		}
-//	}
 	
 	/**
 	 * Read property database from given file.
