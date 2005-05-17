@@ -27,6 +27,8 @@ import org.apache.bcel.generic.INVOKESTATIC;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InvokeInstruction;
 
+import edu.umd.cs.findbugs.ba.npe.IsNullValue;
+
 /**
  * Generic class for representing a Java stack frame as a dataflow value.
  * A frame consists of "slots", which represent the local variables
@@ -285,6 +287,34 @@ public abstract class Frame <ValueType> implements Debug {
 		if (i >= numArguments)
 			throw new IllegalArgumentException();
 		return getStackValue((numArguments - 1) - i);
+	}
+	
+	/**
+	 * Get set of arguments passed to a method invocation
+	 * which match given predicate.
+	 * 
+	 * @param invokeInstruction the InvokeInstruction
+	 * @param cpg               the ConstantPoolGen
+	 * @param chooser           predicate to choose which argument values should
+	 *                          be in the returned set
+	 * @return BitSet specifying which arguments match the predicate,
+	 *                indexed by argument number (starting from 0)
+	 * @throws DataflowAnalysisException
+	 */
+	public BitSet getArgumentSet(
+			InvokeInstruction invokeInstruction,
+			ConstantPoolGen cpg,
+			DataflowValueChooser<ValueType> argumentChooser) throws DataflowAnalysisException {
+		BitSet chosenArgSet = new BitSet();
+		int numArguments = getNumArguments(invokeInstruction, cpg);
+
+		for (int i = 0; i < numArguments; ++i) {
+			ValueType value = getArgument(invokeInstruction, cpg, i);
+			if (argumentChooser.choose(value))
+				chosenArgSet.set(i);
+		}
+	
+		return chosenArgSet;
 	}
 
 	/**

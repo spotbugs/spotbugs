@@ -114,6 +114,12 @@ public class TrainUnconditionalDerefParams implements TrainingDetector {
 			// Find null derefs
 			NullDerefAndRedundantComparisonCollector collector = new NullDerefAndRedundantComparisonCollector() {
 				public void foundNullDeref(Location location, ValueNumber valueNumber, IsNullValue refValue) {
+					
+					// Only consider dereferences of values which are definitely null.
+					if (!refValue.isDefinitelyNull()) {
+						return;
+					}
+					
 					BitSet inputValueNumberSet = new BitSet();
 					inputValueNumberSet.set(valueNumber.getNumber());
 

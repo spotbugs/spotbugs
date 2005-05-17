@@ -42,6 +42,7 @@ import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
+import edu.umd.cs.findbugs.ba.DataflowValueChooser;
 import edu.umd.cs.findbugs.ba.Hierarchy;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.SignatureConverter;
@@ -191,7 +192,14 @@ public class FindNullDeref
 			classContext.getIsNullValueDataflow(method).getFactAtLocation(location);
 		if (!frame.isValid())
 			return;
-		BitSet nullArgSet = frame.getNullArgumentSet(invokeInstruction, cpg);
+		BitSet nullArgSet = frame.getArgumentSet(invokeInstruction, cpg, new DataflowValueChooser<IsNullValue>() {
+			public boolean choose(IsNullValue value) {
+				// Only choose non-exception values.
+				// Values null on an exception path might be due to
+				// infeasible control flow.
+				return value.mightBeNull() && !value.isException();
+			}
+		});
 		if (nullArgSet.isEmpty())
 			return;
 		if (DEBUG_NULLARG) {

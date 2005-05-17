@@ -19,12 +19,6 @@
 
 package edu.umd.cs.findbugs.ba.npe;
 
-import java.util.BitSet;
-
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.InvokeInstruction;
-
-import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.Frame;
 
 public class IsNullValueFrame extends Frame<IsNullValue> {
@@ -32,28 +26,6 @@ public class IsNullValueFrame extends Frame<IsNullValue> {
 
 	public IsNullValueFrame(int numLocals) {
 		super(numLocals);
-	}
-	
-	/**
-	 * Get set of arguments passed to the given InvokeInstruction
-	 * which might be null.
-	 * 
-	 * @param invokeInstruction the InvokeInstruction
-	 * @param cpg               the ConstantPoolGen
-	 * @return BitSet specifying which arguments might be null
-	 * @throws DataflowAnalysisException
-	 */
-	public BitSet getNullArgumentSet(InvokeInstruction invokeInstruction, ConstantPoolGen cpg) throws DataflowAnalysisException {
-		BitSet nullArgSet = new BitSet();
-		int numArguments = getNumArguments(invokeInstruction, cpg);
-
-		for (int i = 0; i < numArguments; ++i) {
-			IsNullValue value = getArgument(invokeInstruction, cpg, i);
-			if (value.mightBeNull())
-				nullArgSet.set(i);
-		}
-	
-		return nullArgSet;
 	}
 
 	public void toExceptionValues() {
