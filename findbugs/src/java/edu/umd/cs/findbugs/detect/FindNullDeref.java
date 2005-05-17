@@ -256,7 +256,8 @@ public class FindNullDeref
 				.addSourceLine(methodGen, sourceFile, location.getHandle());
 		for (int i = 0; i < 32; ++i) {
 			if (unconditionallyDereferencedNullArgSet.get(i)) {
-				warning.addInt(i).describe("INT_NULL_PARAM");
+				// Note: we report params as being indexed starting from 1, not 0
+				warning.addInt(i + 1).describe("INT_NULL_PARAM");
 			}
 		}
 		for (CallTarget dangerousCallTarget : dangerousCallTargetList) {
