@@ -494,8 +494,9 @@ public class Hierarchy {
 		}
 		
 		// Is this a virtual call site?
-		boolean virtualCall = invokeInstruction.getOpcode() != Constants.INVOKESPECIAL
-			|| !receiverTypeIsExact;
+		boolean virtualCall =
+			   invokeInstruction.getOpcode() != Constants.INVOKESPECIAL
+			&& !receiverTypeIsExact;
 		
 		if (virtualCall) {
 			// This is a true virtual call: assume that any concrete
