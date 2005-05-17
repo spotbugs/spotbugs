@@ -100,6 +100,7 @@ import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.FindBugs;
 import edu.umd.cs.findbugs.I18N;
+import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.ShowHelp;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
@@ -3121,6 +3122,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 		
 		// Get the current source line annotation.
 		// If the current leaf selected is not a source line annotation,
+		// or a method annotation containing a source line annotation.
 		// use the default source line annotation from the current bug instance
 		// (if any).
 		JTree bugTree = getCurrentBugTree();
@@ -3135,7 +3137,11 @@ public class FindBugsFrame extends javax.swing.JFrame {
 			Object leaf = ((DefaultMutableTreeNode) selPath.getLastPathComponent()).getUserObject();
 			if (leaf instanceof SourceLineAnnotation)
 				srcLine = (SourceLineAnnotation) leaf;
-			else
+			
+			if (srcLine == null && leaf instanceof MethodAnnotation)
+				srcLine = ((MethodAnnotation) leaf).getSourceLines();
+			
+			if (srcLine == null)
 				srcLine = selected.getPrimarySourceLineAnnotation();
 		}
 		
