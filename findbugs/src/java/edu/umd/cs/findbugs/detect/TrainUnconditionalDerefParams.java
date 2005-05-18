@@ -20,39 +20,27 @@
 package edu.umd.cs.findbugs.detect;
 
 import java.io.IOException;
-import java.util.BitSet;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.apache.bcel.classfile.Method;
 
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.TrainingDetector;
+import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
-import edu.umd.cs.findbugs.ba.Location;
-import edu.umd.cs.findbugs.ba.SignatureParser;
+import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.XMethodFactory;
-import edu.umd.cs.findbugs.ba.npe.IsNullValue;
-import edu.umd.cs.findbugs.ba.npe.IsNullValueAnalysis;
-import edu.umd.cs.findbugs.ba.npe.IsNullValueDataflow;
-import edu.umd.cs.findbugs.ba.npe.NullDerefAndRedundantComparisonCollector;
-import edu.umd.cs.findbugs.ba.npe.NullDerefAndRedundantComparisonFinder;
-import edu.umd.cs.findbugs.ba.npe.RedundantBranch;
+import edu.umd.cs.findbugs.ba.npe.UnconditionalDerefDataflow;
 import edu.umd.cs.findbugs.ba.npe.UnconditionalDerefProperty;
 import edu.umd.cs.findbugs.ba.npe.UnconditionalDerefPropertyDatabase;
-import edu.umd.cs.findbugs.ba.vna.MergeTree;
-import edu.umd.cs.findbugs.ba.vna.ValueNumber;
-import edu.umd.cs.findbugs.ba.vna.ValueNumberAnalysis;
-import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
+import edu.umd.cs.findbugs.ba.npe.UnconditionalDerefSet;
 
 /**
  * Training pass to find method parameters which are
- * unconditionally dereferenced.  We do this by performing the
- * usual null-pointer analysis (first setting all parameters to null)
- * and then seeing which parameters are flagged as a null pointer
- * dereference.
+ * unconditionally dereferenced.  We do this by performing
+ * a backwards dataflow analysis which sees which params are
+ * dereferenced on all non-implicit-exception paths from the CFG entry.
  * 
  * @author David Hovemeyer
  */
@@ -85,115 +73,22 @@ public class TrainUnconditionalDerefParams implements TrainingDetector {
 	}
 
 	private void analyzeMethod(ClassContext classContext, Method method) {
-		
 		try {
-			// Perform null-value analysis with all parameters set to null.
-			// Then see where possibly-null parameters are dereferenced.
-			
-			IsNullValueAnalysis invAnalysis = new IsNullValueAnalysis(
-					classContext.getMethodGen(method),
-					classContext.getCFG(method),
-					classContext.getValueNumberDataflow(method),
-					classContext.getDepthFirstSearch(method),
-					classContext.getAssertionMethods());
-			
-			invAnalysis.setParamValue(IsNullValue.nullValue());
-			
-			IsNullValueDataflow invDataflow = new IsNullValueDataflow(
-					classContext.getCFG(method),
-					invAnalysis);
-			invDataflow.execute();
-			
-			final ValueNumberAnalysis valueNumberAnalysis = classContext.getValueNumberDataflow(method).getAnalysis();
-
-			final Map<ValueNumber, Integer> valueNumberToParamMap = buildValueNumberToParamMap(
-					classContext, method);
-			
-			final UnconditionalDerefProperty property = new UnconditionalDerefProperty();
-
-			// Find null derefs
-			NullDerefAndRedundantComparisonCollector collector = new NullDerefAndRedundantComparisonCollector() {
-				public void foundNullDeref(Location location, ValueNumber valueNumber, IsNullValue refValue) {
-					
-					// Only consider dereferences of values which are definitely null.
-					if (!refValue.isDefinitelyNull()) {
-						return;
-					}
-					
-					BitSet inputValueNumberSet = new BitSet();
-					inputValueNumberSet.set(valueNumber.getNumber());
-
-					// If we have a merge tree for the value number analysis,
-					// then we can find all dataflow values that contributed to this
-					// one as input.
-					if (valueNumberAnalysis.getMergeTree() != null) {
-						if (MergeTree.DEBUG) {
-							System.out.println("Unconditional deref of " + valueNumber.getNumber());
-						}
-						inputValueNumberSet.or(valueNumberAnalysis.getMergeTree().getTransitiveInputSet(valueNumber));
-						if (MergeTree.DEBUG) {
-							System.out.println("Input set is " + inputValueNumberSet);
-						}
-					}
-					
-					// For all input value numbers contributing to the dereferenced
-					// value, see which ones are params and mark them as
-					// unconditionally dereferenced.
-					for (int i = 0; i < valueNumberAnalysis.getFactory().getNumValuesAllocated(); ++i) {
-						if (!inputValueNumberSet.get(i))
-							continue;
-						ValueNumber inputValueNumber = valueNumberAnalysis.getFactory().forNumber(i);
-						Integer param = valueNumberToParamMap.get(inputValueNumber);
-						if (param != null) {
-							property.setUnconditionalDeref(param.intValue(), true);
-						}
-					}
-				}
+			CFG cfg = classContext.getCFG(method);
+			UnconditionalDerefDataflow dataflow = classContext.getUnconditionalDerefDataflow(method);
+			UnconditionalDerefSet unconditionalDerefSet = dataflow.getResultFact(cfg.getEntry());
+			if (unconditionalDerefSet.isValid() && !unconditionalDerefSet.isEmpty()) {
+				UnconditionalDerefProperty property = new UnconditionalDerefProperty();
+				property.setUnconditionalDerefParamSet(unconditionalDerefSet);
 				
-				public void foundRedundantNullCheck(Location location, RedundantBranch redundantBranch) {
-					// Don't care about these
-				}
-			};
-			NullDerefAndRedundantComparisonFinder worker = new NullDerefAndRedundantComparisonFinder(
-					classContext, method, invDataflow, collector);
-			worker.execute();
-			
-			if (!property.isEmpty()) {
-				database.setProperty(
-						XMethodFactory.createXMethod(classContext.getJavaClass(), method),
-						property);
+				XMethod xmethod = XMethodFactory.createXMethod(classContext.getJavaClass(), method);
+				database.setProperty(xmethod, property);
 			}
-		
 		} catch (CFGBuilderException e) {
 			bugReporter.logError("Error analyzing " + method + " for unconditional deref training", e);
 		} catch (DataflowAnalysisException e) {
 			bugReporter.logError("Error analyzing " + method + " for unconditional deref training", e);
 		}
-	}
-
-	private Map<ValueNumber, Integer> buildValueNumberToParamMap(
-			ClassContext classContext,
-			Method method) throws DataflowAnalysisException, CFGBuilderException {
-		
-		ValueNumberFrame vnaFrameAtEntry =
-			classContext.getValueNumberDataflow(method).getStartFact(classContext.getCFG(method).getEntry());
-		
-		Map<ValueNumber, Integer> valueNumberToParamMap = new HashMap<ValueNumber, Integer>();
-
-		if (VERBOSE_DEBUG) System.out.print(" " + method.getSignature());
-
-		int numParams = new SignatureParser(method.getSignature()).getNumParameters();
-		int paramOffset = method.isStatic() ? 0 : 1;
-
-		for (int paramIndex = 0; paramIndex < numParams; ++paramIndex) {
-			int paramLocal = paramIndex + paramOffset;
-			
-			ValueNumber valueNumber = vnaFrameAtEntry.getValue(paramLocal);
-			if (VERBOSE_DEBUG) System.out.println("[" + valueNumber + "->" + paramIndex + "]");
-			valueNumberToParamMap.put(valueNumber, new Integer(paramIndex));
-		}
-
-		return valueNumberToParamMap;
 	}
 
 	/* (non-Javadoc)
