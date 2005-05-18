@@ -24,14 +24,19 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.MethodGen;
 
 import edu.umd.cs.findbugs.ba.BackwardDataflowAnalysis;
 import edu.umd.cs.findbugs.ba.BasicBlock;
 import edu.umd.cs.findbugs.ba.CFG;
+import edu.umd.cs.findbugs.ba.CFGBuilderException;
+import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
+import edu.umd.cs.findbugs.ba.DataflowTestDriver;
 import edu.umd.cs.findbugs.ba.Edge;
+import edu.umd.cs.findbugs.ba.EdgeTypes;
 import edu.umd.cs.findbugs.ba.ExceptionSet;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.ReverseDepthFirstSearch;
@@ -50,7 +55,8 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
  * 
  * @author David Hovemeyer
  */
-public class UnconditionalDerefAnalysis extends BackwardDataflowAnalysis<BitSet> {
+public class UnconditionalDerefAnalysis extends BackwardDataflowAnalysis<UnconditionalDerefSet> {
+	private static final boolean DEBUG = Boolean.getBoolean("npe.deref.debug");
 	
 	private final CFG cfg;
 	private final MethodGen methodGen;
@@ -83,48 +89,50 @@ public class UnconditionalDerefAnalysis extends BackwardDataflowAnalysis<BitSet>
 	}
 	
 	private void buildValueNumberToParamMap() {
-		ValueNumberFrame vnaFrameAtEntry = vnaDataflow.getStartFact(cfg.getEntry());
+		if (DEBUG) {
+			System.out.println("Method has " + numParams + " params");
+		}
 		
-		Map<ValueNumber, Integer> valueNumberToParamMap = new HashMap<ValueNumber, Integer>();
-
+		ValueNumberFrame vnaFrameAtEntry = vnaDataflow.getStartFact(cfg.getEntry());
 		int paramOffset = methodGen.isStatic() ? 0 : 1;
 
 		for (int paramIndex = 0; paramIndex < numParams; ++paramIndex) {
 			int paramLocal = paramIndex + paramOffset;
-			
 			ValueNumber valueNumber = vnaFrameAtEntry.getValue(paramLocal);
+			if (DEBUG) {
+				System.out.println(valueNumber.getNumber() + "->" + paramIndex);
+			}
 			valueNumberToParamMap.put(valueNumber, new Integer(paramIndex));
 			paramValueNumberSet.set(valueNumber.getNumber());
 		}
 	}
 
-	public void copy(BitSet source, BitSet dest) {
+	public void copy(UnconditionalDerefSet source, UnconditionalDerefSet dest) {
 		dest.clear();
 		dest.or(source);
 	}
 	
-	public BitSet createFact() {
-		return new BitSet();
+	public UnconditionalDerefSet createFact() {
+		return new UnconditionalDerefSet(numParams);
 	}
 	
-	public void initEntryFact(BitSet result) throws DataflowAnalysisException {
+	public void initEntryFact(UnconditionalDerefSet result) throws DataflowAnalysisException {
 		// At entry (really the CFG exit, since this is a backwards analysis)
 		// no dereferences have been seen
 		result.clear();
 	}
 	
-	public void initResultFact(BitSet result) {
+	public void initResultFact(UnconditionalDerefSet result) {
 		makeFactTop(result);
 	}
 	
-	public void makeFactTop(BitSet fact) {
-		fact.clear();
-		fact.set(topBit);
+	public void makeFactTop(UnconditionalDerefSet fact) {
+		fact.setTop();
 	}
 	
-	public void meetInto(BitSet fact, Edge edge, BitSet result) throws DataflowAnalysisException {
+	public void meetInto(UnconditionalDerefSet fact, Edge edge, UnconditionalDerefSet result) throws DataflowAnalysisException {
 		// Ignore implicit exceptions
-		if (TypeAnalysis.ACCURATE_EXCEPTIONS) {
+		if (TypeAnalysis.ACCURATE_EXCEPTIONS && edge.isExceptionEdge()) {
 			// Ignore "implicit" exceptions.  These are any runtime
 			// exceptions not explicitly declared by a called method,
 			// or thrown by an ATHROW instruction.
@@ -134,9 +142,9 @@ public class UnconditionalDerefAnalysis extends BackwardDataflowAnalysis<BitSet>
 			}
 		}
 		
-		if (isTop(result) || isBottom(fact)) {
+		if (result.isTop() || fact.isBottom()) {
 			copy(fact, result);
-		} else if (isBottom(result) || isTop(fact)) {
+		} else if (result.isBottom() || fact.isTop()) {
 			// Nothing to do
 		} else {
 			// Meet is intersection
@@ -144,21 +152,26 @@ public class UnconditionalDerefAnalysis extends BackwardDataflowAnalysis<BitSet>
 		}
 	}
 	
-	public boolean same(BitSet fact1, BitSet fact2) {
+	public boolean same(UnconditionalDerefSet fact1, UnconditionalDerefSet fact2) {
 		return fact1.equals(fact2);
 	}
 	
 	//@Override
-	public boolean isFactValid(BitSet fact) {
-		return !isTop(fact) && !isBottom(fact);
+	public boolean isFactValid(UnconditionalDerefSet fact) {
+		return !fact.isTop() && !fact.isBottom();
 	}
 	
-	public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, BitSet fact)
+	public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, UnconditionalDerefSet fact)
 		throws DataflowAnalysisException {
 
-		if (!basicBlock.isNullCheck())
+		// See if this instruction has a null check.
+		if (handle != basicBlock.getFirstInstruction())
 			return;
-		
+		BasicBlock fallThroughPredecessor = cfg.getPredecessorWithEdgeType(basicBlock, EdgeTypes.FALL_THROUGH_EDGE);
+		if (fallThroughPredecessor == null || !fallThroughPredecessor.isNullCheck())
+			return;
+
+		// Get value number of the checked value
 		ValueNumberFrame vnaFrame = vnaDataflow.getFactAtLocation(new Location(handle, basicBlock));
 		if (!vnaFrame.isValid()) {
 			// Probably dead code.
@@ -166,31 +179,50 @@ public class UnconditionalDerefAnalysis extends BackwardDataflowAnalysis<BitSet>
 			makeFactTop(fact);
 			return;
 		}
-		
 		ValueNumber instance = vnaFrame.getInstance(handle.getInstruction(), methodGen.getConstantPool());
-		Integer param = valueNumberToParamMap.get(instance);
-		if (param == null)
-			return;
-		
+		if (DEBUG) {
+			System.out.println("[Null check of value " + instance.getNumber() + "]");
+		}
+
+		// See if the checked value is a parameter (or has one or more parameter values
+		// flowing into it)
 		boolean isParam;
 		MergeTree mergeTree = vnaDataflow.getAnalysis().getMergeTree();
 		if (mergeTree != null) {
 			// Check to see what parameters might have flowed into the
 			// checked value.
-			BitSet inputSet = mergeTree.getTransitiveInputSet(instance);
 			BitSet valueNumbersCheckedHere = new BitSet();
-			valueNumbersCheckedHere.or(inputSet);
+			valueNumbersCheckedHere.set(instance.getNumber());
+			valueNumbersCheckedHere.or(mergeTree.getTransitiveInputSet(instance));
+			
+			if (DEBUG) {
+				System.out.print("[Values checked here: " + valueNumbersCheckedHere + "]");
+			}
+			
 			valueNumbersCheckedHere.and(paramValueNumberSet);
+			if (DEBUG) {
+				System.out.print("[Params checked here: " + valueNumbersCheckedHere + "]");
+			}
 			
 			if (!valueNumbersCheckedHere.isEmpty()) {
+				if (DEBUG) {
+					System.out.print("[checked param set nonempty]");
+					System.out.print("[" + valueNumberToParamMap.entrySet().size() + " entries in param map]");
+				}
 				for (Iterator<Map.Entry<ValueNumber, Integer>> i = valueNumberToParamMap.entrySet().iterator();
 						i.hasNext();) {
 					Map.Entry<ValueNumber, Integer> entry = i.next();
+					ValueNumber paramValueNumber = entry.getKey();
+					Integer param = entry.getValue();
+					if (DEBUG) {
+						System.out.println("[check param vn " + paramValueNumber.getNumber() + "]");
+					}
 					// If the value number of this parameter is one of those
 					// which flow into the checked value...
-					if (valueNumbersCheckedHere.get(entry.getKey().getNumber())) {
+					if (valueNumbersCheckedHere.get(paramValueNumber.getNumber())) {
+						if (DEBUG) System.out.print("[ADDING: " + param.intValue() + "]");
 						// Add the corresponding parameter index to the dataflow fact
-						fact.set(entry.getValue().intValue());
+						fact.set(param.intValue());
 					}
 				}
 			}
@@ -201,12 +233,19 @@ public class UnconditionalDerefAnalysis extends BackwardDataflowAnalysis<BitSet>
 			}
 		}
 	}
-	
-	private boolean isTop(BitSet fact) {
-		return fact.get(topBit);
-	}
-	
-	private boolean isBottom(BitSet fact) {
-		return fact.get(bottomBit);
+
+	public static void main(String[] argv) throws Exception {
+		if (argv.length != 1) {
+			System.err.println("Usage: " + UnconditionalDerefAnalysis.class.getName() + " <class file>");
+			System.exit(1);
+		}
+		DataflowTestDriver<UnconditionalDerefSet, UnconditionalDerefAnalysis> driver =
+			new DataflowTestDriver<UnconditionalDerefSet, UnconditionalDerefAnalysis>() {
+				public UnconditionalDerefDataflow createDataflow(ClassContext classContext, Method method)
+						throws CFGBuilderException, DataflowAnalysisException {
+					return classContext.getUnconditionalDerefDataflow(method);
+				}
+		};
+		driver.execute(argv[0]);
 	}
 }

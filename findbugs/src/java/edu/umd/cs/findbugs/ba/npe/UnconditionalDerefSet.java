@@ -19,23 +19,44 @@
 
 package edu.umd.cs.findbugs.ba.npe;
 
-import edu.umd.cs.findbugs.ba.AbstractDataflow;
-import edu.umd.cs.findbugs.ba.CFG;
+import java.util.BitSet;
 
 /**
- * Dataflow class for UnconditionalDerefAnalysis.
- * 
- * @see edu.umd.cs.findbugs.ba.npe.UnconditionalDerefAnalysis
  * @author David Hovemeyer
  */
-public class UnconditionalDerefDataflow extends AbstractDataflow<UnconditionalDerefSet, UnconditionalDerefAnalysis> {
-	/**
-	 * Constructor.
-	 * 
-	 * @param cfg      the CFG
-	 * @param analysis the analysis
-	 */
-	public UnconditionalDerefDataflow(CFG cfg, UnconditionalDerefAnalysis analysis) {
-		super(cfg, analysis);
+public class UnconditionalDerefSet extends BitSet {
+	private static final long serialVersionUID = 1L;
+	
+	private final int numParams;
+	
+	public UnconditionalDerefSet(int numParams) {
+		this.numParams = numParams;
+	}
+	
+	public void setTop() {
+		clear();
+		set(numParams);
+	}
+	
+	public void setBottom() {
+		clear();
+		set(numParams + 1);
+	}
+	
+	public boolean isTop() {
+		return get(numParams);
+	}
+	
+	public boolean isBottom() {
+		return get(numParams + 1);
+	}
+	
+	public String toString() {
+		if (isTop())
+			return "TOP";
+		else if (isBottom())
+			return "BOTTOM";
+		else
+			return super.toString();
 	}
 }

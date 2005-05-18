@@ -241,6 +241,19 @@ public class CFG extends AbstractGraph<Edge, BasicBlock> implements Debug {
 		}
 		return result;
 	}
+	
+	/**
+	 * Get the first predecessor reachable from given edge type.
+	 *
+	 * @param target   the target block
+	 * @param edgeType the edge type leading from the predecessor
+	 * @return the predecessor, or null if there is no incoming edge with
+	 *         the specified edge type
+	 */
+	public BasicBlock getPredecessorWithEdgeType(BasicBlock target, int edgeType) {
+		Edge edge = getIncomingEdgeWithType(target, edgeType);
+		return edge != null ? edge.getSource() : null;
+	}
 
 	/**
 	 * Get the first successor reachable from given edge type.
@@ -278,6 +291,17 @@ public class CFG extends AbstractGraph<Edge, BasicBlock> implements Debug {
 		
 		return new Location(handle, basicBlock);
 	}
+	
+	/**
+	 * Get the first incoming edge in basic block with given type.
+	 *
+	 * @param basicBlock the basic block
+	 * @param edgeType   the edge type
+	 * @return the Edge, or null if there is no edge with that edge type
+	 */
+	public Edge getIncomingEdgeWithType(BasicBlock basicBlock, int edgeType) {
+		return getEdgeWithType(incomingEdgeIterator(basicBlock), edgeType);
+	}
 
 	/**
 	 * Get the first outgoing edge in basic block with given type.
@@ -287,9 +311,12 @@ public class CFG extends AbstractGraph<Edge, BasicBlock> implements Debug {
 	 * @return the Edge, or null if there is no edge with that edge type
 	 */
 	public Edge getOutgoingEdgeWithType(BasicBlock basicBlock, int edgeType) {
-		Iterator<Edge> i = outgoingEdgeIterator(basicBlock);
-		while (i.hasNext()) {
-			Edge edge = i.next();
+		return getEdgeWithType(outgoingEdgeIterator(basicBlock), edgeType);
+	}
+	
+	private Edge getEdgeWithType(Iterator<Edge> iter, int edgeType) {
+		while (iter.hasNext()) {
+			Edge edge = iter.next();
 			if (edge.getType() == edgeType)
 				return edge;
 		}

@@ -48,6 +48,8 @@ import edu.umd.cs.findbugs.ba.constant.ConstantDataflow;
 import edu.umd.cs.findbugs.ba.npe.IsNullValueAnalysis;
 import edu.umd.cs.findbugs.ba.npe.IsNullValueDataflow;
 import edu.umd.cs.findbugs.ba.npe.MayReturnNullPropertyDatabase;
+import edu.umd.cs.findbugs.ba.npe.UnconditionalDerefAnalysis;
+import edu.umd.cs.findbugs.ba.npe.UnconditionalDerefDataflow;
 import edu.umd.cs.findbugs.ba.vna.LoadedFieldSet;
 import edu.umd.cs.findbugs.ba.vna.MergeTree;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberAnalysis;
@@ -575,7 +577,27 @@ public class ClassContext implements AnalysisFeatures {
 				return dataflow;
 			}
 		};
-			
+
+	private AnalysisFactory<UnconditionalDerefDataflow> unconditionalDerefDataflowFactory =
+		new AnalysisFactory<UnconditionalDerefDataflow>("unconditional deref analysis") {
+			//@Override
+			protected UnconditionalDerefDataflow analyze(Method method) throws CFGBuilderException, DataflowAnalysisException {
+				CFG cfg = getCFG(method); 
+				
+				UnconditionalDerefAnalysis analysis = new UnconditionalDerefAnalysis(
+						getReverseDepthFirstSearch(method),
+						cfg,
+						getMethodGen(method),
+						getValueNumberDataflow(method),
+						getTypeDataflow(method));
+				UnconditionalDerefDataflow dataflow = new UnconditionalDerefDataflow(cfg, analysis);
+				
+				dataflow.execute();
+				
+				return dataflow;
+			}
+		};
+		
 	private static final BitSet fieldInstructionOpcodeSet = new BitSet();
 	static {
 		fieldInstructionOpcodeSet.set(Constants.GETFIELD);
@@ -1006,6 +1028,19 @@ public class ClassContext implements AnalysisFeatures {
 	public ConstantDataflow getConstantDataflow(Method method)
 			throws CFGBuilderException, DataflowAnalysisException {
 		return constantDataflowFactory.getAnalysis(method);
+	}
+	
+	/**
+	 * Get the UnconditionalDerefDataflow for a method.
+	 * 
+	 * @param method the method
+	 * @return the UnconditionalDerefDataflow for the method
+	 * @throws CFGBuilderException
+	 * @throws DataflowAnalysisException
+	 */
+	public UnconditionalDerefDataflow getUnconditionalDerefDataflow(Method method)
+			throws CFGBuilderException, DataflowAnalysisException {
+		return unconditionalDerefDataflowFactory.getAnalysis(method);
 	}
 	
 	/**
