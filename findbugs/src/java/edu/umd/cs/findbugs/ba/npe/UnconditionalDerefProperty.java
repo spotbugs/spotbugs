@@ -56,6 +56,18 @@ public class UnconditionalDerefProperty implements MethodProperty<UnconditionalD
 	void setUnconditionalDerefParamSet(int unconditionalDerefParamSet) {
 		this.unconditionalDerefParamSet = unconditionalDerefParamSet;
 	}
+
+	/**
+	 * Set the unconditional deref set from given BitSet.
+	 * 
+	 * @param unconditionalDerefSet BitSet indicating which parameters are
+	 *                              unconditionally dereferenced
+	 */
+	public void setUnconditionalDerefParamSet(BitSet unconditionalDerefSet) {
+		for (int i = 0; i < 32; ++i) {
+			setUnconditionalDeref(i, unconditionalDerefSet.get(i));
+		}
+	}
 	
 	/**
 	 * Set whether or not a parameter might be unconditionally dereferenced.
