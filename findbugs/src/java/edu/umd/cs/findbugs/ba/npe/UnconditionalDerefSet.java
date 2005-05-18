@@ -43,6 +43,10 @@ public class UnconditionalDerefSet extends BitSet {
 		set(numParams + 1);
 	}
 	
+	public boolean isValid() {
+		return !isTop() && !isBottom();
+	}
+	
 	public boolean isTop() {
 		return get(numParams);
 	}

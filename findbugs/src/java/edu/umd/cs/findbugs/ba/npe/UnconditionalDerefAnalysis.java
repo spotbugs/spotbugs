@@ -158,7 +158,7 @@ public class UnconditionalDerefAnalysis extends BackwardDataflowAnalysis<Uncondi
 	
 	//@Override
 	public boolean isFactValid(UnconditionalDerefSet fact) {
-		return !fact.isTop() && !fact.isBottom();
+		return fact.isValid();
 	}
 	
 	public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, UnconditionalDerefSet fact)
