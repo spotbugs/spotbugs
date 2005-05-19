@@ -133,7 +133,7 @@ public class Hierarchy {
 		String methodName = inv.getMethodName(cpg);
 		String methodSig = inv.getSignature(cpg);
 		
-		return isMonitorNotify(methodName, methodSig);
+		return isMonitorWait(methodName, methodSig);
 	}
 
 	/**
