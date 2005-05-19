@@ -27,7 +27,6 @@ import org.apache.bcel.generic.LDC2_W;
 import org.apache.bcel.generic.SIPUSH;
 
 import edu.umd.cs.findbugs.ba.AbstractFrameModelingVisitor;
-import edu.umd.cs.findbugs.ba.Frame;
 
 /**
  * Visitor to model the effect of bytecode instructions
@@ -63,7 +62,6 @@ public class ConstantFrameModelingVisitor
 		// System.out.println("after iinc: " + getFrame());
 	}
 
-	
 	@Override
 	public void visitICONST(ICONST obj) {
 		Number value = obj.getValue();
@@ -98,6 +96,7 @@ public class ConstantFrameModelingVisitor
 	public void visitLDC2_W(LDC2_W obj) {
 		Object value = obj.getValue(getCPG());
 		Constant c = new Constant(value);
+		getFrame().pushValue(c);
 		getFrame().pushValue(c);
 	}
 
