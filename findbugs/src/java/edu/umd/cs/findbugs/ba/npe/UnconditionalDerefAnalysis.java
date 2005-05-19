@@ -132,14 +132,9 @@ public class UnconditionalDerefAnalysis extends BackwardDataflowAnalysis<Uncondi
 	
 	public void meetInto(UnconditionalDerefSet fact, Edge edge, UnconditionalDerefSet result) throws DataflowAnalysisException {
 		// Ignore implicit exceptions
-		if (TypeAnalysis.ACCURATE_EXCEPTIONS && edge.isExceptionEdge()) {
-			// Ignore "implicit" exceptions.  These are any runtime
-			// exceptions not explicitly declared by a called method,
-			// or thrown by an ATHROW instruction.
-			ExceptionSet exceptionSet = typeDataflow.getAnalysis().getEdgeExceptionSet(edge); 
-			if (!exceptionSet.containsExplicitExceptions()) {
-				return;
-			}
+		if (ClassContext.PRUNE_INFEASIBLE_EXCEPTION_EDGES
+				&& !edge.isFlagSet(EdgeTypes.EXPLICIT_EXCEPTIONS_FLAG)) {
+			return;
 		}
 		
 		if (result.isTop() || fact.isBottom()) {

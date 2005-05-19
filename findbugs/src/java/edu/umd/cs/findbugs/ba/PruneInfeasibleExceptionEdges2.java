@@ -63,6 +63,8 @@ public class PruneInfeasibleExceptionEdges2 implements EdgeTypes {
 			});
 		}
 	}
+	
+	private static boolean DEBUG = Boolean.getBoolean("cfg.prune.debug");
 
 	/**
 	 * A momento to remind us of how we classified a particular
@@ -130,11 +132,11 @@ public class PruneInfeasibleExceptionEdges2 implements EdgeTypes {
 			BasicBlock basicBlock = i.next();
 			if (!basicBlock.isExceptionThrower())
 				continue;
-			thrownExceptionSetMap.put(basicBlock, getThrownExceptions(basicBlock));
+			recordThrownExceptions(basicBlock);
 		}
 	}
 
-	private Set<ObjectType> getThrownExceptions(BasicBlock basicBlock) {
+	private void recordThrownExceptions(BasicBlock basicBlock) {
 		HashSet<ObjectType> exceptionSet = new HashSet<ObjectType>();
 		if (isAthrowBlock(basicBlock)) {
 			exceptionSet.add(getAthrowType(basicBlock));
@@ -142,29 +144,43 @@ public class PruneInfeasibleExceptionEdges2 implements EdgeTypes {
 			InstructionHandle thrower = basicBlock.getExceptionThrower();
 			Instruction ins = thrower.getInstruction();
 			
-			if (ins instanceof InvokeInstruction) {
-				// Look up the declared exceptions
-				try {
-					ObjectType[] declaredExceptionList =
-						Hierarchy.findDeclaredExceptions((InvokeInstruction) ins, methodGen.getConstantPool());
-					
-					if (declaredExceptionList.length > 0) {
-						hasDeclaredExceptions.set(basicBlock.getId());
-						for (ObjectType declaredException : declaredExceptionList) {
-							exceptionSet.add(declaredException);
-						}
-					}
-				} catch (ClassNotFoundException e) {
-					AnalysisContext.currentAnalysisContext().getLookupFailureCallback().reportMissingClass(e);
-				}
-			} else if (ins instanceof ExceptionThrower) {
+			if (ins instanceof ExceptionThrower) {
+				// Get exceptions defined by the instruction.
+				// These are the "implicit" exceptions.
 				Class[] thrownExceptionTypes = ((ExceptionThrower) ins).getExceptions();
 				for (Class thrownException : thrownExceptionTypes) {
 					exceptionSet.add(new ObjectType(thrownException.getName()));
 				}
+				
+				if (ins instanceof InvokeInstruction) {
+					// Look up the declared exceptions.
+					// These are the "explicit" exceptions.
+					try {
+						ObjectType[] declaredExceptionList =
+							Hierarchy.findDeclaredExceptions((InvokeInstruction) ins, methodGen.getConstantPool());
+						if (declaredExceptionList == null) {
+							if (DEBUG) {
+								System.err.println("Unknown declared exceptions for call to  " +
+										SignatureConverter.convertMethodSignature((InvokeInstruction)ins,methodGen.getConstantPool()) +
+										" in " +
+										SignatureConverter.convertMethodSignature(methodGen));
+							}
+							declaredExceptionList = new ObjectType[0];
+						}
+						
+						if (declaredExceptionList.length > 0) {
+							hasDeclaredExceptions.set(basicBlock.getId());
+							for (ObjectType declaredException : declaredExceptionList) {
+								exceptionSet.add(declaredException);
+							}
+						}
+					} catch (ClassNotFoundException e) {
+						AnalysisContext.currentAnalysisContext().getLookupFailureCallback().reportMissingClass(e);
+					}
+				}
 			}
 		}
-		return exceptionSet;
+		thrownExceptionSetMap.put(basicBlock, exceptionSet);
 	}
 
 	private boolean isAthrowBlock(BasicBlock basicBlock) {
