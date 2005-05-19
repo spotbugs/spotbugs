@@ -70,6 +70,26 @@ public class Constant {
 	}
 
 	/**
+	 * Return whether or not this value is a constant int/Integer.
+	 * 
+	 * @return true if the value is a constant int/Integer, false if not
+	 */
+	public boolean isConstantInteger() {
+		return isConstant() && (value instanceof Integer);
+	}
+	
+	
+	/**
+	 * Get the constant int value of this value.
+	 * 
+	 * @return the constant int value
+	 */
+	public int getConstantInt() {
+		return ((Integer) value).intValue();
+	}
+
+	
+	/**
 	 * Merge two Constants.
 	 * 
 	 * @param a a Constant

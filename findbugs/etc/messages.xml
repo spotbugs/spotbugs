@@ -163,6 +163,15 @@ but nothing is done to handle the exception.  It is a fast detector.</p>
 ]]>
     </Details>
   </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.DumbMethodInvocations">
+    <Details>
+<![CDATA[
+<p> This detector looks for bad arguments being passed to methods
+(e.g., substring(0)).
+</p>
+]]>
+    </Details>
+  </Detector>
   <Detector class="edu.umd.cs.findbugs.detect.DumbMethods">
     <Details>
 <![CDATA[
