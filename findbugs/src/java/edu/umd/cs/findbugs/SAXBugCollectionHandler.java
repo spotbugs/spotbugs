@@ -158,10 +158,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 				} else if (qName.equals("Int")) {
 					try {
 						String value = getRequiredAttribute(attributes, "value", qName);
-						String role = attributes.getValue("role");
 						bugAnnotation = new IntAnnotation(Integer.parseInt(value));
-						if (role != null)
-							bugAnnotation.setDescription(role);
 					} catch (NumberFormatException e) {
 						throw new SAXException("Bad integer value in Int");
 					}
@@ -172,8 +169,10 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 					bugInstance.setProperty(propName, propValue);
 				}
 
-				if (bugAnnotation != null)
+				if (bugAnnotation != null) {
+					setAnnotationRole(attributes, bugAnnotation);
 					bugInstance.add(bugAnnotation);
+				}
 			} else if (outerElement.equals("Method")) {
 				if (qName.equals("SourceLine")) {
 					// Method elements can contain nested SourceLine elements.
@@ -199,6 +198,12 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 
 		textBuffer.delete(0, textBuffer.length());
 		elementStack.add(qName);
+	}
+
+	private void setAnnotationRole(Attributes attributes, BugAnnotation bugAnnotation) {
+		String role = attributes.getValue("role");
+		if (role != null)
+			bugAnnotation.setDescription(role);
 	}
 
 	private SourceLineAnnotation createSourceLineAnnotation(String qName, Attributes attributes)
