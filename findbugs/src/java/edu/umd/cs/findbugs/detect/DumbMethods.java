@@ -158,21 +158,21 @@ public class DumbMethods extends BytecodeScanningDetector implements Constants2 
 			        .addClassAndMethod(this)
 			        .addSourceLine(this));
 		
-		if ((seen == INVOKEVIRTUAL)
-				&& getClassConstantOperand().equals("java/lang/String")
-				&& getNameConstantOperand().equals("substring")
-				&& getSigConstantOperand().equals("(I)Ljava/lang/String;")
-				&& stack.getStackDepth() > 1) {
-			OpcodeStack.Item item = stack.getStackItem(0);
-			Object o = item.getConstant();
-			if (o != null && o instanceof Integer) {
-				int v = ((Integer) o).intValue();
-				if (v == 0)
-					bugReporter.reportBug(new BugInstance(this, "DMI_USELESS_SUBSTRING", NORMAL_PRIORITY)
-					        .addClassAndMethod(this)
-					        .addSourceLine(this));
-			}
-		}
+//		if ((seen == INVOKEVIRTUAL)
+//				&& getClassConstantOperand().equals("java/lang/String")
+//				&& getNameConstantOperand().equals("substring")
+//				&& getSigConstantOperand().equals("(I)Ljava/lang/String;")
+//				&& stack.getStackDepth() > 1) {
+//			OpcodeStack.Item item = stack.getStackItem(0);
+//			Object o = item.getConstant();
+//			if (o != null && o instanceof Integer) {
+//				int v = ((Integer) o).intValue();
+//				if (v == 0)
+//					bugReporter.reportBug(new BugInstance(this, "DMI_USELESS_SUBSTRING", NORMAL_PRIORITY)
+//					        .addClassAndMethod(this)
+//					        .addSourceLine(this));
+//			}
+//		}
 	
 		if ((seen == INVOKEVIRTUAL)
 				&& getNameConstantOperand().equals("next")

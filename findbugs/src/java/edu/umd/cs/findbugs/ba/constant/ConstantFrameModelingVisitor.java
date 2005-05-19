@@ -18,11 +18,16 @@
  */
 package edu.umd.cs.findbugs.ba.constant;
 
+import org.apache.bcel.generic.BIPUSH;
 import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.ICONST;
+import org.apache.bcel.generic.IINC;
 import org.apache.bcel.generic.LDC;
 import org.apache.bcel.generic.LDC2_W;
+import org.apache.bcel.generic.SIPUSH;
 
 import edu.umd.cs.findbugs.ba.AbstractFrameModelingVisitor;
+import edu.umd.cs.findbugs.ba.Frame;
 
 /**
  * Visitor to model the effect of bytecode instructions
@@ -41,27 +46,59 @@ public class ConstantFrameModelingVisitor
 		super(cpg);
 	}
 			
-	//@Override
+	@Override
 	public Constant getDefaultValue() {
 		return Constant.NOT_CONSTANT;
 	}
+	@Override
+	public void visitIINC(IINC obj) {
+		// System.out.println("before iinc: " + getFrame());
+		int v = obj.getIndex();
+		int amount = obj.getIncrement();
+		ConstantFrame f = getFrame();
+		Constant c = f.getValue(v);
+		if (c.isConstantInteger())
+			f.setValue(v, new Constant(c.getConstantInt() + amount));
+		else f.setValue(v, Constant.NOT_CONSTANT);
+		// System.out.println("after iinc: " + getFrame());
+	}
+
 	
-	//@Override
-	public void visitLDC(LDC obj) {
-		Object value = obj.getValue(getCPG());
-		if (value instanceof String) {
-			Constant c = new Constant(value);
-			getFrame().pushValue(c);
-		} else {
-			// FIXME: other kinds of constants
-			super.visitLDC(obj);
+	@Override
+	public void visitICONST(ICONST obj) {
+		Number value = obj.getValue();
+		Constant c = new Constant(value);
+		getFrame().pushValue(c);	
 		}
+
+
+	@Override
+	public void visitBIPUSH(BIPUSH obj) {
+		Number value = obj.getValue();
+		Constant c = new Constant(value);
+		getFrame().pushValue(c);
 	}
 	
-	//@Override
+	@Override
+	public void visitSIPUSH(SIPUSH obj) {
+		Number value = obj.getValue();
+		Constant c = new Constant(value);
+		getFrame().pushValue(c);
+	}
+
+	
+	@Override
+	public void visitLDC(LDC obj) {
+		Object value = obj.getValue(getCPG());
+		Constant c = new Constant(value);
+		getFrame().pushValue(c);
+	}
+	
+	@Override
 	public void visitLDC2_W(LDC2_W obj) {
-		// FIXME: other kinds of constants
-		super.visitLDC2_W(obj);
+		Object value = obj.getValue(getCPG());
+		Constant c = new Constant(value);
+		getFrame().pushValue(c);
 	}
 
 }

@@ -72,7 +72,7 @@
             
   <Detector class="edu.umd.cs.findbugs.detect.DumbMethodInvocations" 
             speed="fast"
-            disabled="true"
+            disabled="false"
             reports="TESTING"
 	    />
   <Detector class="edu.umd.cs.findbugs.detect.DumbMethods" 
