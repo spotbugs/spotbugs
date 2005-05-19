@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.detect;
 
 import java.util.BitSet;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -75,6 +76,7 @@ public class FindNullDeref
 
 	private static final boolean DEBUG = Boolean.getBoolean("fnd.debug");
 	private static final boolean DEBUG_NULLARG = Boolean.getBoolean("fnd.debug.nullarg");
+	private static final boolean REPORT_SAFE_METHOD_TARGETS = Boolean.getBoolean("fnd.reportSafeTargets");
 
 	private BugReporter bugReporter;
 	
@@ -255,15 +257,35 @@ public class FindNullDeref
 			}
 		}
 		for (CallTarget dangerousCallTarget : dangerousCallTargetList) {
-			MethodAnnotation calledMethod = MethodAnnotation.fromXMethod(dangerousCallTarget.xmethod);
-			SourceLineAnnotation methodSourceLines = SourceLineAnnotation.forEntireMethod(
-					dangerousCallTarget.javaClass,
-					dangerousCallTarget.xmethod);
-			calledMethod.setSourceLines(methodSourceLines);
-			warning.addMethod(calledMethod).describe("METHOD_CALL_TARGET");
+			JavaClass targetClass = dangerousCallTarget.javaClass;
+			XMethod targetMethod = dangerousCallTarget.xmethod;
+			addMethodAnnotationForCalledMethod(warning, targetClass, targetMethod, "METHOD_DANGEROUS_TARGET");
+		}
+		if (REPORT_SAFE_METHOD_TARGETS) {
+			// This is useful to see which other call targets the analysis
+			// considered.
+			Set<XMethod> safeCallTargetSet = new HashSet<XMethod>();
+			safeCallTargetSet.addAll(targetMethodSet);
+			for (CallTarget dangerousCallTarget : dangerousCallTargetList) {
+				safeCallTargetSet.remove(dangerousCallTarget.xmethod);
+			}
+			for (XMethod safeMethod : safeCallTargetSet) {
+				JavaClass targetClass = AnalysisContext.currentAnalysisContext().lookupClass(safeMethod.getClassName());
+				addMethodAnnotationForCalledMethod(warning, targetClass, safeMethod, "METHOD_SAFE_TARGET");
+			}
 		}
 		
 		bugReporter.reportBug(warning);
+	}
+
+	private void addMethodAnnotationForCalledMethod(BugInstance warning, JavaClass targetClass, XMethod targetMethod,
+			String description) {
+		MethodAnnotation calledMethod = MethodAnnotation.fromXMethod(targetMethod);
+		SourceLineAnnotation methodSourceLines = SourceLineAnnotation.forEntireMethod(
+				targetClass,
+				targetMethod);
+		calledMethod.setSourceLines(methodSourceLines);
+		warning.addMethod(calledMethod).describe(description);
 	}
 
 	public void report() {
