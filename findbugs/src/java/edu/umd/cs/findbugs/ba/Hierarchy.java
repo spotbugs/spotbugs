@@ -40,6 +40,8 @@ import org.apache.bcel.generic.*;
  * @author David Hovemeyer
  */
 public class Hierarchy {
+	private static final boolean DEBUG_METHOD_LOOKUP =
+		Boolean.getBoolean("hier.lookup.debug");
 
 	/**
 	 * Type of java.lang.Exception.
@@ -212,20 +214,25 @@ public class Hierarchy {
 	public static Method findPrototypeMethod(InvokeInstruction inv, ConstantPoolGen cpg)
 	        throws ClassNotFoundException {
 		Method m = null;
-
-		String className = inv.getClassName(cpg);
-		String methodName = inv.getName(cpg);
-		String methodSig = inv.getSignature(cpg);
+		
+		if (DEBUG_METHOD_LOOKUP) {
+			System.out.println("Find prototype method for " +
+					SignatureConverter.convertMethodSignature(inv,cpg));
+		}
 		
 		short opcode = inv.getOpcode();
 
 		// Find the method
-		if (inv instanceof INVOKESPECIAL) {
+		if (opcode == Constants.INVOKESPECIAL) {
 			// Non-virtual dispatch
 			m = findExactMethod(inv, cpg, INSTANCE_METHOD);
 		} else {
-			// Dispatch where the class hierarchy is searched
+			String className = inv.getClassName(cpg);
+			String methodName = inv.getName(cpg);
+			String methodSig = inv.getSignature(cpg);
+
 			if (opcode == Constants.INVOKEVIRTUAL || opcode == Constants.INVOKESTATIC) {
+				// Dispatch where the class hierarchy is searched
 				// Check superclasses
 				MethodChooser methodChooser = (opcode == Constants.INVOKESTATIC)
 						? STATIC_METHOD : INSTANCE_METHOD;
@@ -302,11 +309,17 @@ public class Hierarchy {
 			String methodName,
 			String methodSig,
 			MethodChooser chooser) {
+		if (DEBUG_METHOD_LOOKUP) {
+			System.out.println("Check " + javaClass.getClassName());
+		}
 		Method[] methodList = javaClass.getMethods();
 		for (int i = 0; i < methodList.length; ++i) {
 			Method method = methodList[i];
 			if (method.getName().equals(methodName) && method.getSignature().equals(methodSig)
 					&& chooser.choose(method))
+				if (DEBUG_METHOD_LOOKUP) {
+					System.out.println("\t==> FOUND");
+				}
 				return method;
 		}
 
@@ -395,7 +408,7 @@ public class Hierarchy {
 
 		for (int i = 0; i < classList.length; ++i) {
 			JavaClass cls = classList[i];
-			if ((m = findMethod(cls, methodName, methodSig)) != null && chooser.choose(m))
+			if ((m = findMethod(cls, methodName, methodSig, chooser)) != null)
 				break;
 		}
 
