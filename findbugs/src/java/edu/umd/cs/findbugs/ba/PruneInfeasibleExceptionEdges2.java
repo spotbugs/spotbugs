@@ -52,6 +52,17 @@ import org.apache.bcel.generic.Type;
  * @author David Hovemeyer
  */
 public class PruneInfeasibleExceptionEdges2 implements EdgeTypes {
+	private static boolean STATS = Boolean.getBoolean("cfg.prune.stats");
+	private static int numEdgesPruned;
+	static {
+		if (STATS) {
+			Runtime.getRuntime().addShutdownHook(new Thread() {
+				public void run() {
+					System.err.println("Exception edges pruned: " + numEdgesPruned);
+				}
+			});
+		}
+	}
 
 	/**
 	 * A momento to remind us of how we classified a particular
@@ -201,6 +212,9 @@ public class PruneInfeasibleExceptionEdges2 implements EdgeTypes {
 				boolean feasible = handleException(catchType, exceptionSet);
 				if (!feasible) {
 					removedEdgeList.add(edge);
+					if (STATS) {
+						++numEdgesPruned;
+					}
 				}
 			}
 		}
