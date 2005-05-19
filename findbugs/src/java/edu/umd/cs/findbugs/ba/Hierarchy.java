@@ -159,12 +159,29 @@ public class Hierarchy {
 	 * @return the Method, or null if no such method is defined in the class
 	 */
 	public static Method findExactMethod(InvokeInstruction inv, ConstantPoolGen cpg) throws ClassNotFoundException {
+		return findExactMethod(inv, cpg, ANY_METHOD);
+	}
+
+	/**
+	 * Look up the method referenced by given InvokeInstruction.
+	 * This method does <em>not</em> look for implementations in
+	 * super or subclasses according to the virtual dispatch rules.
+	 *
+	 * @param inv     the InvokeInstruction
+	 * @param cpg     the ConstantPoolGen used by the class the InvokeInstruction belongs to
+	 * @param chooser MethodChooser to use to pick the method from among the candidates
+	 * @return the Method, or null if no such method is defined in the class
+	 */
+	public static Method findExactMethod(
+			InvokeInstruction inv,
+			ConstantPoolGen cpg,
+			MethodChooser chooser) throws ClassNotFoundException {
 		String className = inv.getClassName(cpg);
 		String methodName = inv.getName(cpg);
 		String methodSig = inv.getSignature(cpg);
 
 		JavaClass jclass = Repository.lookupClass(className);
-		return findMethod(jclass, methodName, methodSig);
+		return findMethod(jclass, methodName, methodSig, chooser);
 	}
 
 	/**
@@ -175,11 +192,12 @@ public class Hierarchy {
 	 * method can throw.
 	 * <p/>
 	 * <ul>
-	 * <li> For invokestatic and invokespecial, this is simply an
+	 * <li> For  invokespecial, this is simply an
 	 * exact lookup.
-	 * <li> For invokevirtual, the named class is searched,
+	 * <li> For invokestatic and invokevirtual, the named class is searched,
 	 * followed by superclasses  up to the root of the object
-	 * hierarchy (java.lang.Object).
+	 * hierarchy (java.lang.Object).  Yes, invokestatic really is declared
+	 * to check superclasses.  See VMSpec, 2nd ed, sec. 5.4.3.3.
 	 * <li> For invokeinterface, the named class is searched,
 	 * followed by all interfaces transitively declared by the class.
 	 * (Question: is the order important here? Maybe the VM spec
@@ -198,33 +216,31 @@ public class Hierarchy {
 		String className = inv.getClassName(cpg);
 		String methodName = inv.getName(cpg);
 		String methodSig = inv.getSignature(cpg);
+		
+		short opcode = inv.getOpcode();
 
 		// Find the method
-		if (inv instanceof INVOKESTATIC || inv instanceof INVOKESPECIAL) {
+		if (inv instanceof INVOKESPECIAL) {
 			// Non-virtual dispatch
-			m = findExactMethod(inv, cpg);
-			if (m == null) {
-				// XXX
-/*
-				System.out.println("Could not resolve " + inv + " in " +
-					SignatureConverter.convertMethodSignature(inv, cpg));
-*/
-			} else if (inv instanceof INVOKESTATIC && !m.isStatic()) {
-				m = null;
-			}
-		} else if (inv instanceof INVOKEVIRTUAL) {
-			// Virtual dispatch
-			m = findMethod(Repository.lookupClass(className), methodName, methodSig);
-			if (m == null) {
-				JavaClass[] superClassList = Repository.getSuperClasses(className);
-				m = findMethod(superClassList, methodName, methodSig);
-			}
-		} else if (inv instanceof INVOKEINTERFACE) {
-			// Interface dispatch
-			m = findMethod(Repository.lookupClass(className), methodName, methodSig);
-			if (m == null) {
-				JavaClass[] interfaceList = Repository.getInterfaces(className);
-				m = findMethod(interfaceList, methodName, methodSig);
+			m = findExactMethod(inv, cpg, INSTANCE_METHOD);
+		} else {
+			// Dispatch where the class hierarchy is searched
+			if (opcode == Constants.INVOKEVIRTUAL || opcode == Constants.INVOKESTATIC) {
+				// Check superclasses
+				MethodChooser methodChooser = (opcode == Constants.INVOKESTATIC)
+						? STATIC_METHOD : INSTANCE_METHOD;
+				m = findMethod(Repository.lookupClass(className), methodName, methodSig, methodChooser);
+				if (m == null) {
+					JavaClass[] superClassList = Repository.getSuperClasses(className);
+					m = findMethod(superClassList, methodName, methodSig, methodChooser);
+				}
+			} else {
+				// Check superinterfaces
+				m = findMethod(Repository.lookupClass(className), methodName, methodSig, INSTANCE_METHOD);
+				if (m == null) {
+					JavaClass[] interfaceList = Repository.getInterfaces(className);
+					m = findMethod(interfaceList, methodName, methodSig, INSTANCE_METHOD);
+				}
 			}
 		}
 
@@ -268,10 +284,29 @@ public class Hierarchy {
 	 * @return the Method, or null if no such method exists in the class
 	 */
 	public static Method findMethod(JavaClass javaClass, String methodName, String methodSig) {
+		return findMethod(javaClass, methodName, methodSig, ANY_METHOD);
+	}
+
+	/**
+	 * Find a method in given class.
+	 *
+	 * @param javaClass  the class
+	 * @param methodName the name of the method
+	 * @param methodSig  the signature of the method
+	 * @param chooser    MethodChooser to use to select a matching method
+	 *                   (assuming class, name, and signature already match)
+	 * @return the Method, or null if no such method exists in the class
+	 */
+	public static Method findMethod(
+			JavaClass javaClass,
+			String methodName,
+			String methodSig,
+			MethodChooser chooser) {
 		Method[] methodList = javaClass.getMethods();
 		for (int i = 0; i < methodList.length; ++i) {
 			Method method = methodList[i];
-			if (method.getName().equals(methodName) && method.getSignature().equals(methodSig))
+			if (method.getName().equals(methodName) && method.getSignature().equals(methodSig)
+					&& chooser.choose(method))
 				return method;
 		}
 
@@ -291,17 +326,42 @@ public class Hierarchy {
 		return m == null ? null : XMethodFactory.createXMethod(javaClass, m);
 	}
 	
-	private static final MethodChooser ANY_METHOD = new MethodChooser() {
+	/**
+	 * MethodChooser which accepts any method.
+	 */
+	public static final MethodChooser ANY_METHOD = new MethodChooser() {
 		public boolean choose(Method method) {
 			return true;
 		}
 	};
 	
-	private static final MethodChooser CONCRETE_METHODS = new MethodChooser() {
+	/**
+	 * MethodChooser which accepts only concrete (not abstract or native) methods.
+	 * FIXME: perhaps native methods should be concrete.
+	 */
+	public static final MethodChooser CONCRETE_METHOD = new MethodChooser() {
 		public boolean choose(Method method) {
 			int accessFlags = method.getAccessFlags();
 			return (accessFlags & Constants.ACC_ABSTRACT) == 0
 				&& (accessFlags & Constants.ACC_NATIVE) == 0;
+		}
+	};
+	
+	/**
+	 * MethodChooser which accepts only static methods.
+	 */
+	public static final MethodChooser STATIC_METHOD = new MethodChooser() {
+		public boolean choose(Method method) {
+			return method.isStatic();
+		}
+	};
+	
+	/**
+	 * MethodChooser which accepts only instance methods.
+	 */
+	public static final MethodChooser INSTANCE_METHOD = new MethodChooser() {
+		public boolean choose(Method method) {
+			return !method.isStatic();
 		}
 	};
 
@@ -340,7 +400,6 @@ public class Hierarchy {
 		}
 
 		return m;
-		
 	}
 
 	/**
@@ -488,7 +547,7 @@ public class Hierarchy {
 		if (upperBound == null || !isConcrete(upperBound)) {
 			// Try superclasses
 			JavaClass[] superClassList = receiverClass.getSuperClasses();
-			upperBound = findXMethod(superClassList, methodName, methodSig, CONCRETE_METHODS);
+			upperBound = findXMethod(superClassList, methodName, methodSig, CONCRETE_METHOD);
 		}
 		if (upperBound != null) {
 			result.add(upperBound);
