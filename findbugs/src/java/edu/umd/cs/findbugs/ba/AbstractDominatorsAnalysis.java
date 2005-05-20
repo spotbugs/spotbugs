@@ -33,8 +33,9 @@ import org.apache.bcel.generic.InstructionHandle;
  * <p> Subclasses extend this class to compute either dominators
  * or postdominators.
  * <p/>
- * <p> Exception edges may be ignored, in which case the domination
- * results only take non-exception control flow into account.
+ * <p> An EdgeChooser may be specified to select which edges
+ * to take into account. For example, exception edges could be
+ * ignored.</p>
  *
  * @author David Hovemeyer
  * @see DataflowAnalysis
@@ -43,19 +44,36 @@ import org.apache.bcel.generic.InstructionHandle;
  */
 public abstract class AbstractDominatorsAnalysis implements DataflowAnalysis<BitSet> {
 	private final CFG cfg;
-	private final boolean ignoreExceptionEdges;
+	private EdgeChooser edgeChooser;
 	private final IdentityHashMap<BasicBlock, BitSet> startFactMap;
 	private final IdentityHashMap<BasicBlock, BitSet> resultFactMap;
-
+	
 	/**
 	 * Constructor.
 	 *
 	 * @param cfg                  the CFG to compute dominator relationships for
 	 * @param ignoreExceptionEdges true if exception edges should be ignored
 	 */
-	public AbstractDominatorsAnalysis(CFG cfg, boolean ignoreExceptionEdges) {
+	public AbstractDominatorsAnalysis(CFG cfg, final boolean ignoreExceptionEdges) {
+		this(cfg, new EdgeChooser() {
+			public boolean choose(Edge edge) {
+				if (ignoreExceptionEdges && edge.isExceptionEdge())
+					return false;
+				else
+					return true;
+			}
+		});
+	}
+
+	/**
+	 * Constructor.
+	 * 
+	 * @param cfg         the CFG to compute dominator relationships for
+	 * @param edgeChooser EdgeChooser to choose which Edges to consider significant
+	 */
+	public AbstractDominatorsAnalysis(CFG cfg, EdgeChooser edgeChooser) {
 		this.cfg = cfg;
-		this.ignoreExceptionEdges = ignoreExceptionEdges;
+		this.edgeChooser = edgeChooser;
 		this.startFactMap = new IdentityHashMap<BasicBlock, BitSet>();
 		this.resultFactMap = new IdentityHashMap<BasicBlock, BitSet>();
 	}
@@ -120,7 +138,7 @@ public abstract class AbstractDominatorsAnalysis implements DataflowAnalysis<Bit
 	}
 
 	public void meetInto(BitSet fact, Edge edge, BitSet result) throws DataflowAnalysisException {
-		if (ignoreExceptionEdges && edge.isExceptionEdge())
+		if (!edgeChooser.choose(edge))
 			return;
 
 		if (isTop(fact))

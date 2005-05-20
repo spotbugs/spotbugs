@@ -552,6 +552,28 @@ public class ClassContext implements AnalysisFeatures {
 		        }
 	        };
 
+	private AnalysisFactory<PostDominatorsAnalysis> nonImplicitExceptionPostDominatorsAnalysisFactory =
+		new AnalysisFactory<PostDominatorsAnalysis>("non-implicit-exception postdominators analysis") {
+			protected PostDominatorsAnalysis analyze(Method method) throws CFGBuilderException, DataflowAnalysisException {
+				CFG cfg = getCFG(method);
+				PostDominatorsAnalysis analysis = new PostDominatorsAnalysis(
+						cfg,
+						getReverseDepthFirstSearch(method),
+						new EdgeChooser() {
+					public boolean choose(Edge edge) {
+						return !edge.isExceptionEdge()
+							||  edge.isFlagSet(EdgeTypes.EXPLICIT_EXCEPTIONS_FLAG);
+						}
+					}
+				);
+				Dataflow<BitSet, PostDominatorsAnalysis> dataflow =
+					new Dataflow<BitSet, PostDominatorsAnalysis>(cfg, analysis);
+				dataflow.execute();
+				
+				return analysis;
+			}
+		};
+			
 	private NoExceptionAnalysisFactory<ExceptionSetFactory> exceptionSetFactoryFactory =
 	        new NoExceptionAnalysisFactory<ExceptionSetFactory>("exception set factory") {
 		        protected ExceptionSetFactory analyze(Method method) {
@@ -931,6 +953,18 @@ public class ClassContext implements AnalysisFeatures {
 	public DominatorsAnalysis getNonExceptionDominatorsAnalysis(Method method)
 	        throws CFGBuilderException, DataflowAnalysisException {
 		return nonExceptionDominatorsAnalysisFactory.getAnalysis(method);
+	}
+
+	/**
+	 * Get DominatorsAnalysis for given method,
+	 * where implicit exception edges are ignored.
+	 *
+	 * @param method the method
+	 * @return the DominatorsAnalysis
+	 */
+	public PostDominatorsAnalysis getNonImplicitExceptionDominatorsAnalysis(Method method)
+	        throws CFGBuilderException, DataflowAnalysisException {
+		return nonImplicitExceptionPostDominatorsAnalysisFactory.getAnalysis(method);
 	}
 
 	/**

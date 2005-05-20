@@ -28,6 +28,18 @@ package edu.umd.cs.findbugs.ba;
  */
 public class PostDominatorsAnalysis extends AbstractDominatorsAnalysis {
 	private ReverseDepthFirstSearch rdfs;
+	
+	/**
+	 * Constructor.
+	 *
+	 * @param cfg         the CFG to compute dominator relationships for
+	 * @param rdfs        the ReverseDepthFirstSearch on the CFG
+	 * @param edgeChooser EdgeChooser to choose which Edges to consider significant
+	 */
+	public PostDominatorsAnalysis(CFG cfg, ReverseDepthFirstSearch rdfs, EdgeChooser edgeChooser) {
+		super(cfg, edgeChooser);
+		this.rdfs = rdfs;
+	}
 
 	/**
 	 * Constructor.
