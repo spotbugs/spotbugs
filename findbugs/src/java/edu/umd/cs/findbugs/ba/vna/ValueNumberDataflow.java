@@ -19,9 +19,15 @@
 
 package edu.umd.cs.findbugs.ba.vna;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.bcel.classfile.Method;
+
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.Dataflow;
 import edu.umd.cs.findbugs.ba.Location;
+import edu.umd.cs.findbugs.ba.SignatureParser;
 
 public class ValueNumberDataflow extends Dataflow<ValueNumberFrame, ValueNumberAnalysis> {
 	public ValueNumberDataflow(CFG cfg, ValueNumberAnalysis analysis) {
@@ -34,6 +40,29 @@ public class ValueNumberDataflow extends Dataflow<ValueNumberFrame, ValueNumberA
 
 	public ValueNumberFrame getFactAfterLocation(Location loc) {
 		return getAnalysis().getFactAfterLocation(loc);
+	}
+	
+	/**
+	 * Build map of value numbers to param indices.
+	 * The first parameter has index 0, the second has index 1, etc.
+	 * 
+	 * @param method the Method on which ValueNumberAnalysis was analyzed
+	 * @return the value number to parameter index map
+	 */
+	public Map<ValueNumber, Integer> getValueNumberToParamMap(Method method) {
+		HashMap<ValueNumber, Integer> valueNumberToParamMap =
+			new HashMap<ValueNumber, Integer>();
+		
+		ValueNumberFrame frameAtEntry = getStartFact(getCFG().getEntry());
+
+		int numParams = new SignatureParser(method.getSignature()).getNumParameters(); 
+		int shift = method.isStatic() ? 0 : 1;
+		for (int i = 0; i < numParams; ++i) {
+			valueNumberToParamMap.put(
+					frameAtEntry.getValue(i + shift), new Integer(i));
+		}
+		
+		return valueNumberToParamMap;
 	}
 }
 
