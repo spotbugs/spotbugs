@@ -163,6 +163,14 @@ but nothing is done to handle the exception.  It is a fast detector.</p>
 ]]>
     </Details>
   </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.LoadOfKnownNullValue">
+    <Details>
+<![CDATA[
+<p> Looks for loads of values known to be null.
+</p>
+]]>
+    </Details>
+  </Detector>
   <Detector class="edu.umd.cs.findbugs.detect.DumbMethodInvocations">
     <Details>
 <![CDATA[
@@ -2276,6 +2284,20 @@ value. Check for errors (should it have been initialized?), or remove it if it i
   <p> This instance method writes to a static field. This is tricky to get
 correct if multiple instances are being manipulated, 
 and generally bad practice.
+</p>
+]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="NP_LOAD_OF_KNOWN_NULL_VALUE">
+    <ShortDescription>Load of known null value</ShortDescription>
+    <LongDescription>Load of known null value in {1}</LongDescription>
+    <Details>
+<![CDATA[
+  <p> The variable referenced at this point is known to be null due to an earlier
+	check against null. Although this is valid, it might be a mistake (perhaps you 
+intended to refer to a different variable, or perhaps the earlier check to see if the
+variable is null should have been a check to see if it was nonnull.
 </p>
 ]]>
     </Details>

@@ -70,6 +70,11 @@
             speed="fast"
             reports="DE_MIGHT_DROP,DE_MIGHT_IGNORE" />
             
+  <Detector class="edu.umd.cs.findbugs.detect.LoadOfKnownNullValue" 
+            speed="fast"
+            disabled="false"
+            reports="TESTING"
+	    />
   <Detector class="edu.umd.cs.findbugs.detect.DumbMethodInvocations" 
             speed="fast"
             disabled="false"
@@ -526,6 +531,7 @@
   <BugPattern abbrev="NP" type="NP_NULL_ON_SOME_PATH" category="CORRECTNESS" />
   <BugPattern abbrev="NP" type="NP_NULL_ON_SOME_PATH_EXCEPTION" category="CORRECTNESS" />
   <BugPattern abbrev="NP" type="NP_NULL_PARAM_DEREF" category="CORRECTNESS"/>
+  <BugPattern abbrev="NP" type="NP_LOAD_OF_KNOWN_NULL_VALUE" category="STYLE"/>
   <BugPattern abbrev="OS" type="OS_OPEN_STREAM" category="CORRECTNESS" />
   <BugPattern abbrev="OS" type="OS_OPEN_STREAM_EXCEPTION_PATH" category="CORRECTNESS" />
   <BugPattern abbrev="PZLA" type="PZLA_PREFER_ZERO_LENGTH_ARRAYS" category="STYLE" />
