@@ -181,12 +181,13 @@ public class DumbMethods extends BytecodeScanningDetector implements Constants2 
 				&& getMethodSig().equals("()Z")
 				&& stack.getStackDepth() > 0) {
 			OpcodeStack.Item item = stack.getStackItem(0);
-			if (item.isInitialParameter() && item.getRegisterNumber() == 0) {
-				bugReporter.reportBug(new BugInstance(this, "DMI_CALLING_NEXT_FROM_HASNEXT", NORMAL_PRIORITY)
+			
+				bugReporter.reportBug(new BugInstance(this, "DMI_CALLING_NEXT_FROM_HASNEXT",
+						item.isInitialParameter() && item.getRegisterNumber() == 0 ? NORMAL_PRIORITY : LOW_PRIORITY)
 				        .addClassAndMethod(this)
 				        .addSourceLine(this)
 				        .addCalledMethod(this));
-			}
+			
 		}
 			
 	
