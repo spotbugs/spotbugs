@@ -399,6 +399,9 @@
   <Detector class="edu.umd.cs.findbugs.detect.TrainUnconditionalDerefParams"
             hidden="true" speed="slow" reports=""/>
 
+  <Detector class="edu.umd.cs.findbugs.detect.CheckCalls"
+	        speed="fast" reports="" disabled="true" hidden="true"/>
+
   <Detector class="edu.umd.cs.findbugs.detect.FindBugsSummaryStats" 
             speed="fast"
             hidden="true" />

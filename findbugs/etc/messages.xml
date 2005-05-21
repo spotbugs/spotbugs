@@ -886,7 +886,16 @@ for the one branch.</p>
 		]]>
 	</Details>
   </Detector>
-  
+
+  <Detector class="edu.umd.cs.findbugs.detect.CheckCalls">
+	<Details>
+		<![CDATA[
+		<p>This detector is just for debugging method call resolution in FindBugs.
+		Don't enable it.</p>
+		]]>
+	</Details>
+  </Detector>
+	  
   <Detector class="edu.umd.cs.findbugs.detect.FindBugsSummaryStats">
     <Details>
 <![CDATA[
