@@ -169,11 +169,10 @@ public class SourceLineAnnotation implements BugAnnotation {
 	public static SourceLineAnnotation forEntireMethod(JavaClass javaClass, Method method) {
 		String sourceFile = javaClass.getSourceFileName();
 		Code code = method.getCode();
-		if (code == null) {
+		LineNumberTable lineNumberTable = method.getLineNumberTable();
+		if (code == null || lineNumberTable == null) {
 			return createUnknown(javaClass.getClassName(), sourceFile);
 		}
-		
-		LineNumberTable lineNumberTable = method.getLineNumberTable();
 		
 		return forEntireMethod(javaClass.getClassName(), sourceFile, lineNumberTable, code.getLength());
 	}
