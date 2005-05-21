@@ -96,6 +96,8 @@ public class CheckCalls implements Detector {
 						&& !((InvokeInstruction)ins).getMethodName(classContext.getConstantPoolGen()).equals(TARGET_METHOD))
 					continue;
 				
+				System.out.println("\n*******************************************************\n");
+				
 				System.out.println("Method invocation: " + location.getHandle());
 				System.out.println("\tInvoking: " +
 						SignatureConverter.convertMethodSignature((InvokeInstruction)ins,classContext.getConstantPoolGen()));
@@ -106,8 +108,7 @@ public class CheckCalls implements Detector {
 				if (proto == null) {
 					System.out.println("\tUnknown prototype method");
 				} else {
-					System.out.println("\tPrototype method: " + SignatureConverter.convertMethodSignature(
-							classContext.getJavaClass(), method));
+					System.out.println("\tPrototype method: " + method);
 				}
 				Set<XMethod> calledMethodSet = Hierarchy.resolveMethodCallTargets(
 						(InvokeInstruction) ins,
