@@ -230,14 +230,25 @@ public class Hierarchy {
 			String className = inv.getClassName(cpg);
 			String methodName = inv.getName(cpg);
 			String methodSig = inv.getSignature(cpg);
+			if (DEBUG_METHOD_LOOKUP) {
+				System.out.println("[Class name is " + className + "]");
+				System.out.println("[Method name is " + methodName + "]");
+				System.out.println("[Method signature is " + methodSig + "]");
+			}
 
 			if (opcode == Constants.INVOKEVIRTUAL || opcode == Constants.INVOKESTATIC) {
+				if (DEBUG_METHOD_LOOKUP) {
+					System.out.println("[invokevirtual or invokestatic]");
+				}
 				// Dispatch where the class hierarchy is searched
 				// Check superclasses
 				MethodChooser methodChooser = (opcode == Constants.INVOKESTATIC)
 						? STATIC_METHOD : INSTANCE_METHOD;
 				m = findMethod(Repository.lookupClass(className), methodName, methodSig, methodChooser);
 				if (m == null) {
+					if (DEBUG_METHOD_LOOKUP) {
+						System.out.println("[not in class, checking superclasses...]");
+					}
 					JavaClass[] superClassList = Repository.getSuperClasses(className);
 					m = findMethod(superClassList, methodName, methodSig, methodChooser);
 				}
@@ -310,19 +321,23 @@ public class Hierarchy {
 			String methodSig,
 			MethodChooser chooser) {
 		if (DEBUG_METHOD_LOOKUP) {
-			System.out.println("Check " + javaClass.getClassName());
+			System.out.println("XXX: Check " + javaClass.getClassName());
 		}
 		Method[] methodList = javaClass.getMethods();
 		for (int i = 0; i < methodList.length; ++i) {
 			Method method = methodList[i];
-			if (method.getName().equals(methodName) && method.getSignature().equals(methodSig)
-					&& chooser.choose(method))
+			if (method.getName().equals(methodName)
+					&& method.getSignature().equals(methodSig)
+					&& chooser.choose(method)) {
 				if (DEBUG_METHOD_LOOKUP) {
-					System.out.println("\t==> FOUND");
+					System.out.println("\t==> FOUND: " + method);
 				}
 				return method;
+			}
 		}
-
+		if (DEBUG_METHOD_LOOKUP) {
+			System.out.println("\t==> NOT FOUND");
+		}
 		return null;
 	}
 	
@@ -332,10 +347,12 @@ public class Hierarchy {
 	 * @param javaClass  the class
 	 * @param methodName the name of the method
 	 * @param methodSig  the signature of the method
+	 * @param chooser    the MethodChooser to use to screen possible candidates
 	 * @return the XMethod, or null if no such method exists in the class
 	 */
-	public static XMethod findXMethod(JavaClass javaClass, String methodName, String methodSig) {
-		Method m = findMethod(javaClass, methodName, methodSig);
+	public static XMethod findXMethod(JavaClass javaClass, String methodName, String methodSig,
+			MethodChooser chooser) {
+		Method m = findMethod(javaClass, methodName, methodSig, chooser);
 		return m == null ? null : XMethodFactory.createXMethod(javaClass, m);
 	}
 	
@@ -468,12 +485,12 @@ public class Hierarchy {
 		
 		if (invokeInstruction.getOpcode() == Constants.INVOKESTATIC) {
 			HashSet<XMethod> result = new HashSet<XMethod>();
-			result.add(new StaticMethod(
-					invokeInstruction.getClassName(cpg),
-					invokeInstruction.getName(cpg),
-					invokeInstruction.getSignature(cpg),
-					Constants.ACC_STATIC | Constants.ACC_PUBLIC
-					));
+			Method targetMethod = findPrototypeMethod(invokeInstruction, cpg);
+			if (targetMethod != null) {
+				JavaClass targetClass = AnalysisContext.currentAnalysisContext().lookupClass(
+						invokeInstruction.getClassName(cpg));
+				result.add(XMethodFactory.createXMethod(targetClass, targetMethod));
+			}
 			return result;
 		}
 		
@@ -487,6 +504,10 @@ public class Hierarchy {
 			return new HashSet<XMethod>();
 		}
 		boolean receiverTypeIsExact = typeFrame.isExact(instanceSlot);
+		if (DEBUG_METHOD_LOOKUP) {
+			System.out.println("[receiver type is " + receiverType + ", " +
+					(receiverTypeIsExact ? "exact]" : " not exact]"));
+		}
 
 		return resolveMethodCallTargets((ReferenceType) receiverType, invokeInstruction, cpg, receiverTypeIsExact);
 	}
@@ -556,13 +577,17 @@ public class Hierarchy {
 
 		// Figure out the upper bound for the method.
 		// This is what will be called if this is not a virtual call site.
-		XMethod upperBound = findXMethod(receiverClass, invokeInstruction.getName(cpg), invokeInstruction.getSignature(cpg));
+		XMethod upperBound = findXMethod(receiverClass, methodName, methodSig, CONCRETE_METHOD);
 		if (upperBound == null || !isConcrete(upperBound)) {
 			// Try superclasses
 			JavaClass[] superClassList = receiverClass.getSuperClasses();
 			upperBound = findXMethod(superClassList, methodName, methodSig, CONCRETE_METHOD);
 		}
 		if (upperBound != null) {
+			if (DEBUG_METHOD_LOOKUP) {
+				System.out.println("Adding upper bound: " +
+						SignatureConverter.convertMethodSignature(upperBound));
+			}
 			result.add(upperBound);
 		}
 		
@@ -576,9 +601,9 @@ public class Hierarchy {
 			// subtype method may be called.
 			Set<JavaClass> subTypeSet = analysisContext.getSubtypes().getTransitiveSubtypes(receiverClass);
 			for (JavaClass subtype : subTypeSet) {
-				XMethod subtypeMethod = findXMethod(subtype, methodName, methodSig);
-				if (subtypeMethod != null && isConcrete(subtypeMethod)) {
-					result.add(subtypeMethod);
+				XMethod concreteSubtypeMethod = findXMethod(subtype, methodName, methodSig, CONCRETE_METHOD);
+				if (concreteSubtypeMethod != null) {
+					result.add(concreteSubtypeMethod);
 				}
 			}
 		}
