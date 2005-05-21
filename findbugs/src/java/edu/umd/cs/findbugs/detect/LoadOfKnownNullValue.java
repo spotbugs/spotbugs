@@ -4,8 +4,10 @@ import java.util.Iterator;
 
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ALOAD;
+import org.apache.bcel.generic.ARETURN;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.Instruction;
+import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.MethodGen;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -62,7 +64,8 @@ public class LoadOfKnownNullValue implements Detector {
 		for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
 			Location location = i.next();
 
-			Instruction ins = location.getHandle().getInstruction();
+			InstructionHandle handle = location.getHandle();
+			Instruction ins = handle.getInstruction();
 			if (!(ins instanceof ALOAD))
 				continue;
 			ALOAD load = (ALOAD) ins;
@@ -75,15 +78,33 @@ public class LoadOfKnownNullValue implements Detector {
 			}
 			int index = load.getIndex();
 			IsNullValue v = frame.getValue(index);
-			if (v.isDefinitelyNull())
-
+			if (v.isDefinitelyNull()) {
+				Instruction next = handle.getNext().getInstruction();
+				InstructionHandle prevHandle = handle.getPrev();
+				SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation
+				.fromVisitedInstruction(methodGen, sourceFile, handle);
+				SourceLineAnnotation prevSourceLineAnnotation = SourceLineAnnotation
+				.fromVisitedInstruction(methodGen, sourceFile, prevHandle);
+	
+				if (next instanceof ARETURN) {
+					// probably stored for duration of finally block
+					// continue;
+				}
+				if (sourceLineAnnotation.getStartLine() > prevSourceLineAnnotation.getEndLine()) {
+					// probably stored for duration of finally block
+					// System.out.println("Inverted line");
+					continue;
+				}
+				int priority = NORMAL_PRIORITY;
+				
+				if (!v.isChecked()) priority++;
+				
 				bugReporter.reportBug(new BugInstance(this,
-						"NP_LOAD_OF_KNOWN_NULL_VALUE", v.isChecked() ? NORMAL_PRIORITY : LOW_PRIORITY)
+						"NP_LOAD_OF_KNOWN_NULL_VALUE",
+						priority)
 						.addClassAndMethod(methodGen, sourceFile)
-						.addSourceLine(
-								SourceLineAnnotation.fromVisitedInstruction(
-										methodGen, sourceFile, location
-												.getHandle())));
+						.addSourceLine(sourceLineAnnotation));
+			}
 
 		}
 	}
