@@ -47,6 +47,15 @@ public class IntAnnotation implements BugAnnotation {
 		this.value = value;
 		this.description = DEFAULT_ROLE;
 	}
+	
+	//@Override
+	public Object clone() {
+		try {
+			return super.clone();
+		} catch (CloneNotSupportedException e) {
+			throw new IllegalStateException("impossible", e);
+		}
+	}
 
 	/**
 	 * Get the integer value.

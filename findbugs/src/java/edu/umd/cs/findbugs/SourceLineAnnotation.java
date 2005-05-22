@@ -85,6 +85,15 @@ public class SourceLineAnnotation implements BugAnnotation {
 		this.startBytecode = startBytecode;
 		this.endBytecode = endBytecode;
 	}
+	
+	//@Override
+	public Object clone() {
+		try {
+			return super.clone();
+		} catch (CloneNotSupportedException e) {
+			throw new IllegalStateException("impossible", e);
+		}
+	}
 
 	/**
 	 * Factory method to create an unknown source line annotation.

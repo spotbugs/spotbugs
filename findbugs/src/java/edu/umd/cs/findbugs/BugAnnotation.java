@@ -27,11 +27,14 @@ import java.io.Serializable;
  * @author David Hovemeyer
  * @see BugInstance
  */
-public interface BugAnnotation extends Comparable<BugAnnotation>, XMLWriteableWithMessages, Serializable {
+public interface BugAnnotation
+		extends Comparable<BugAnnotation>, XMLWriteableWithMessages, Serializable, Cloneable {
 	/**
 	 * XML tag for a formatted text message describing the annotation. 
 	 */
 	public static final String MESSAGE_TAG = "Message";
+	
+	public Object clone();
 
 	/**
 	 * Accept a BugAnnotationVisitor.

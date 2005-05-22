@@ -40,6 +40,15 @@ public abstract class PackageMemberAnnotation implements BugAnnotation {
 		this.className = className;
 		this.description = description;
 	}
+	
+	//@Override
+	public Object clone() {
+		try {
+			return super.clone();
+		} catch (CloneNotSupportedException e) {
+			throw new IllegalStateException("impossible", e);
+		}
+	}
 
 	/**
 	 * Get the class name.

@@ -33,7 +33,7 @@ import edu.umd.cs.findbugs.xml.XMLWriteable;
  * 
  * @author David Hovemeyer
  */
-public class BugProperty implements XMLWriteable, Serializable {
+public class BugProperty implements XMLWriteable, Serializable, Cloneable {
 	private static final long serialVersionUID = 1L;
 
 	// Constants defining some standard bug properties
@@ -58,6 +58,15 @@ public class BugProperty implements XMLWriteable, Serializable {
 	BugProperty(String name, String value) {
 		this.name = name.intern();
 		this.value = value;
+	}
+	
+	//@Override
+	protected Object clone() throws CloneNotSupportedException {
+		try {
+			return super.clone();
+		} catch (CloneNotSupportedException e) {
+			throw new IllegalStateException("impossible", e);
+		}
 	}
 	
 	/**

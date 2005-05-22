@@ -67,7 +67,7 @@ import edu.umd.cs.findbugs.xml.XMLOutput;
  * @author David Hovemeyer
  * @see BugAnnotation
  */
-public class BugInstance implements Comparable, XMLWriteableWithMessages, Serializable {
+public class BugInstance implements Comparable, XMLWriteableWithMessages, Serializable, Cloneable {
 	private static final long serialVersionUID = 1L;
 	
 	private String type;
@@ -108,6 +108,28 @@ public class BugInstance implements Comparable, XMLWriteableWithMessages, Serial
 		
 		if (adjustExperimental && isExperimental())
 			this.priority = Detector.EXP_PRIORITY;
+	}
+	
+	//@Override
+	public Object clone() {
+		BugInstance dup;
+		
+		try {
+			dup = (BugInstance) super.clone();
+			
+			// Do deep copying of mutable objects
+			for (int i = 0; i < dup.annotationList.size(); ++i) {
+				dup.annotationList.set(i, (BugAnnotation) dup.annotationList.get(i).clone());
+			}
+ 			dup.propertyListHead = dup.propertyListTail = null;
+			for (Iterator<BugProperty> i = propertyIterator(); i.hasNext(); ) {
+				dup.addProperty((BugProperty) i.next().clone());
+			}
+
+			return dup;
+		} catch (CloneNotSupportedException e) {
+			throw new IllegalStateException("impossible", e);
+		}
 	}
 
 	/**
