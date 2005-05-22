@@ -20,6 +20,8 @@
 package edu.umd.cs.findbugs;
 
 import java.io.IOException;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -38,7 +40,9 @@ public class BugHistory {
 	 */
 	public interface SetOperation {
 		/**
-		 * Perform the operation. 
+		 * Perform the set operation.
+		 * <em>Important Note</em>: BugInstances should be cloned before putting them into
+		 * the result Set. The BugHistory.cloneAll() static method may be used for this purpose.
 		 * 
 		 * @param result         Set to put the resulting BugInstances in
 		 * @param origCollection original BugCollection
@@ -56,7 +60,7 @@ public class BugHistory {
 	public static final SetOperation ADDED_WARNINGS = new SetOperation(){
 		public void perform(Set<BugInstance> result,
 				SortedBugCollection origCollection, SortedBugCollection newCollection) {
-			result.addAll(newCollection.getCollection());
+			cloneAll(result, newCollection.getCollection());
 			result.removeAll(origCollection.getCollection());
 		}
 	};
@@ -69,7 +73,7 @@ public class BugHistory {
 	public static final SetOperation RETAINED_WARNINGS = new SetOperation(){
 		public void perform(Set<BugInstance> result,
 				SortedBugCollection origCollection, SortedBugCollection newCollection) {
-			result.addAll(newCollection.getCollection());
+			cloneAll(result, newCollection.getCollection());
 			result.retainAll(origCollection.getCollection());
 		}
 	};
@@ -83,7 +87,7 @@ public class BugHistory {
 	public static final SetOperation REMOVED_WARNINGS = new SetOperation(){
 		public void perform(Set<BugInstance> result,
 				SortedBugCollection origCollection, SortedBugCollection newCollection) {
-			result.addAll(origCollection.getCollection());
+			cloneAll(result, origCollection.getCollection());
 			result.removeAll(newCollection.getCollection());
 		}
 	};
@@ -116,6 +120,20 @@ public class BugHistory {
 		resultCollection.addAll(result);
 		
 		return resultCollection;
+	}
+	
+	/**
+	 * Clone all of the BugInstance objects in the source Collection
+	 * and add them to the destination Collection.
+	 * 
+	 * @param dest   the destination Collection
+	 * @param source the source Collection
+	 */
+	public static void cloneAll(Collection<BugInstance> dest, Collection<BugInstance> source) {
+		for (Iterator<BugInstance> i = source.iterator(); i.hasNext(); ) {
+			BugInstance obj = i.next();
+			dest.add((BugInstance) obj.clone());
+		}
 	}
 
 	public static void main(String[] argv) throws Exception {
