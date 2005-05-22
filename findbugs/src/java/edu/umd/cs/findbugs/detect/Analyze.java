@@ -39,6 +39,9 @@ public class Analyze {
 		if (storedException != null)
 			throw storedException;
 
+		if (isPrimitiveComponentClass(refSig))
+			return 0.99;
+		
 		String refName = getComponentClass(refSig);
 		if (refName.equals("java.lang.Object"))
 			return 0.99;
@@ -47,10 +50,15 @@ public class Analyze {
 		return isDeepSerializable(refJavaClass);
 	}
 
+	private static boolean isPrimitiveComponentClass(String refSig) {
+		int c = 0;
+		while (refSig.charAt(c++) == '[') {}
+		return refSig.charAt(c) != 'L';
+	}
+	
 	public static String getComponentClass(String refSig) {
 		while (refSig.charAt(0) == '[')
 			refSig = refSig.substring(1);
-		assert refSig.charAt(0) == 'L';
 		
 		//TODO: This method now returns primitive type signatures, is this ok?
 		if (refSig.charAt(0) == 'L')
