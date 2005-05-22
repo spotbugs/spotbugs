@@ -51,9 +51,11 @@ public class Analyze {
 		while (refSig.charAt(0) == '[')
 			refSig = refSig.substring(1);
 		assert refSig.charAt(0) == 'L';
-		String refName = refSig.substring(1, refSig.length() - 1).replace('/',
-				'.');
-		return refName;
+		
+		//TODO: This method now returns primitive type signatures, is this ok?
+		if (refSig.charAt(0) == 'L')
+			return refSig.substring(1, refSig.length() - 1).replace('/', '.');
+		return refSig;
 	}
 
 	public static double isDeepSerializable(JavaClass x)
