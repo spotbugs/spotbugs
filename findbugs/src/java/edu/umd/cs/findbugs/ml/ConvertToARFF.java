@@ -484,6 +484,7 @@ public class ConvertToARFF {
 
 	private List<Attribute> attributeList;
 	private boolean dropUnclassifiedWarnings;
+	private String appName;
 
 	// ------------------------------------------------------------
 	// Public methods
@@ -771,7 +772,10 @@ public class ConvertToARFF {
 		}
 	}
 
-	public static String toAppName(String fileName) {
+	public String toAppName(String fileName) {
+		if (appName != null)
+			return appName;
+		
 		// Remove file extension, if any
 		int lastDot = fileName.lastIndexOf('.');
 		if (lastDot >= 0)
@@ -813,7 +817,7 @@ public class ConvertToARFF {
 			SAXReader reader = new SAXReader();
 			Document document = reader.read(fileName);
 
-			DataFile dataFile = new DataFile(document, toAppName(fileName));
+			DataFile dataFile = new DataFile(document, converter.toAppName(fileName));
 			dataFileList.add(dataFile);
 
 			converter.scan(dataFile.getDocument(), dataFile.getAppName());
