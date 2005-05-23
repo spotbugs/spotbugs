@@ -86,7 +86,7 @@
 		<mkdir dir="${classes.dir}"/>
 		<!-- Compile Java source files. -->
 		<javac srcdir="${src.dir}"
-				excludes="${pkg.base}/ba/ir/**"
+				excludes="${pkg.base}/ba/ir/**,${pkg.base}/ba/type2/**"
 				destdir="${classes.dir}"
 				source="1.5"
 				target="jsr14"
@@ -104,6 +104,7 @@
 		</copy>
 		<!-- Compile JUnit test cases. -->
 		<javac srcdir="${junitsrc.dir}"
+				excludes="${pkg.base}/ba/type2/**"
 				destdir="${classes.dir}"
 				source="1.5"
 				target="jsr14"
