@@ -17,8 +17,9 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package edu.umd.cs.findbugs.ba;
+package edu.umd.cs.findbugs.ba.type2;
 
+import edu.umd.cs.findbugs.ba.Frame;
 import edu.umd.cs.findbugs.ba.type2.Type;
 
 /**
