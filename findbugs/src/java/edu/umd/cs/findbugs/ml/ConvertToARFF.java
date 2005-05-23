@@ -510,7 +510,7 @@ public class ConvertToARFF {
 		addAttribute(new NominalAttribute(name, xpath));
 	}
 	
-	public void addBinaryAttribute(String name, String xpath) {
+	public void addBooleanAttribute(String name, String xpath) {
 		addAttribute(new BooleanAttribute(name, xpath));
 	}
 
@@ -725,21 +725,43 @@ public class ConvertToARFF {
 				converter.addPriorityAttribute();
 			}
 		}
+		
+		private interface XPathAttributeCreator {
+			public Attribute create(String name, String xpath);
+		}
 
 		protected void handleOptionWithArgument(String option, String argument)
 				throws IOException {
-			if (option.equals("-nominal") || option.equals("-numeric")) {
-				int comma = argument.indexOf(',');
-				if (comma < 0) {
-					throw new IllegalArgumentException("Missing comma separating attribute name and xpath in " +
-						option + " option: " + argument);
-				}
-				String attrName = argument.substring(0, comma);
-				String xpath = argument.substring(comma + 1);
-				converter.addAttribute(option.equals("-nominal")
-					? new NominalAttribute(attrName, xpath)
-					: new NumericAttribute(attrName, xpath));
+			if (option.equals("-nominal")) {
+				addXPathAttribute(option, argument, new XPathAttributeCreator() {
+					public Attribute create(String name,String xpath) {
+						return new NominalAttribute(name, xpath);
+					}
+				});
+			} else if (option.equals("-boolean")) {
+				addXPathAttribute(option, argument, new XPathAttributeCreator() {
+					public Attribute create(String name,String xpath) {
+						return new BooleanAttribute(name, xpath);
+					}
+				});
+			} else if (option.equals("-numeric")) {
+				addXPathAttribute(option, argument, new XPathAttributeCreator(){
+					public Attribute create(String name,String xpath) {
+						return new NumericAttribute(name, xpath);
+					}
+				});
 			}
+		}
+		
+		protected void addXPathAttribute(String option, String argument, XPathAttributeCreator creator) {
+			int comma = argument.indexOf(',');
+			if (comma < 0) {
+				throw new IllegalArgumentException("Missing comma separating attribute name and xpath in " +
+					option + " option: " + argument);
+			}
+			String attrName = argument.substring(0, comma);
+			String xpath = argument.substring(comma + 1);
+			converter.addAttribute(creator.create(attrName, xpath));
 		}
 
 		public void printUsage(PrintStream out) {
