@@ -1,6 +1,6 @@
 /*
  * Machine Learning support for FindBugs
- * Copyright (C) 2004, University of Maryland
+ * Copyright (C) 2004,2005 University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -151,6 +151,30 @@ public class ConvertToARFF {
 
 		public String getInstanceValue(Element element, String appName) throws MissingNodeException {
 			return "\"" + super.getInstanceValue(element, appName) + "\"";
+		}
+	}
+	
+	public static class BooleanAttribute extends XPathAttribute {
+		public BooleanAttribute(String name, String xpath) {
+			super(name, xpath);
+		}
+
+		public void scan(Element element, String appName) throws MissingNodeException {
+			// Nothing to do.
+		}
+
+		public String getRange() {
+			return "{true, false}";
+		}
+		
+		//@Override
+		public String getInstanceValue(Element element, String appName) throws MissingNodeException {
+			try {
+				String value = super.getInstanceValue(element, appName);
+				return "\"" + Boolean.valueOf(value).toString() + "\"";
+			} catch (MissingNodeException e) {
+				return "\"false\"";
+			}
 		}
 	}
 
@@ -469,6 +493,10 @@ public class ConvertToARFF {
 		this.attributeList = new LinkedList<Attribute>();
 		this.dropUnclassifiedWarnings = false;
 	}
+	
+	public int getNumAttributes() {
+		return attributeList.size();
+	}
 
 	public void dropUnclassifiedWarnings() {
 		this.dropUnclassifiedWarnings = true;
@@ -480,6 +508,10 @@ public class ConvertToARFF {
 
 	public void addNominalAttribute(String name, String xpath) {
 		addAttribute(new NominalAttribute(name, xpath));
+	}
+	
+	public void addBinaryAttribute(String name, String xpath) {
+		addAttribute(new BooleanAttribute(name, xpath));
 	}
 
 	public void addClassificationAttribute() {
@@ -611,22 +643,6 @@ public class ConvertToARFF {
 		}
 	}
 
-	public void addDefaultAttributes() {
-		// This conversion scheme is arbitrary.
-		// FIXME: method and field signatures?
-		addIdAttribute();
-		addNominalAttribute("bugtype", "@type");
-		addNominalAttribute("class", "./Class[1]/@classname");
-		addNominalAttribute("methodname", "./Method[1]/@name");
-		addNominalAttribute("auxmethodclass", "./Method[2]/@classname");
-		addNominalAttribute("auxmethodname", "./Method[2]/@name");
-		addNominalAttribute("fieldclass", "./Field[1]/@classname");
-		addNominalAttribute("fieldname", "./Field[1]/@name");
-		//addNumericAttribute("priority", "@priority");
-		addPriorityAttribute();
-		addClassificationAttribute();
-	}
-
 	// ------------------------------------------------------------
 	// Implementation
 	// ------------------------------------------------------------
@@ -677,8 +693,8 @@ public class ConvertToARFF {
 			addSwitch("-ids", "add unique id attribute (as string)");
 			addSwitch("-idr", "add random unique id attribtue (as nominal)");
 			addSwitch("-app", "add application name attribute");
-			addSwitch("-default", "add default attributes");
 			addOption("-nominal", "attrName,xpath", "add a nominal attribute");
+			addOption("-boolean", "attrName,xpath", "add a boolean attribute");
 			addOption("-numeric", "attrName,xpath", "add a numeric attribute");
 			addSwitch("-classification", "add bug classification attribute");
 			addSwitch("-binclass", "add binary (bug/not_bug) classification attribute");
@@ -701,8 +717,6 @@ public class ConvertToARFF {
 				converter.addAttribute(new RandomIdAttribute());
 			} else if (option.equals("-app")) {
 				converter.addAppNameAttribute();
-			} else if (option.equals("-default")) {
-				converter.addDefaultAttributes();
 			} else if (option.equals("-classification")) {
 				converter.addClassificationAttribute();
 			} else if (option.equals("-binclass")) {
@@ -759,6 +773,9 @@ public class ConvertToARFF {
 
 		// Create the converter
 		ConvertToARFF converter = commandLine.getConverter();
+		if (converter.getNumAttributes() == 0) {
+			throw new IllegalArgumentException("No attributes specified!");
+		}
 
 		// Open output file
 		Writer out = new OutputStreamWriter(new BufferedOutputStream(
