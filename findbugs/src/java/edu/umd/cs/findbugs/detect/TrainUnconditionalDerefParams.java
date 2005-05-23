@@ -20,27 +20,21 @@
 package edu.umd.cs.findbugs.detect;
 
 import java.io.IOException;
-import java.util.BitSet;
-import java.util.Iterator;
-import java.util.Map;
 
 import org.apache.bcel.classfile.Method;
-import org.apache.bcel.generic.InstructionHandle;
 
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.TrainingDetector;
-import edu.umd.cs.findbugs.ba.BasicBlock;
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
-import edu.umd.cs.findbugs.ba.PostDominatorsAnalysis;
+import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.XMethodFactory;
+import edu.umd.cs.findbugs.ba.npe.UnconditionalDerefDataflow;
 import edu.umd.cs.findbugs.ba.npe.UnconditionalDerefProperty;
 import edu.umd.cs.findbugs.ba.npe.UnconditionalDerefPropertyDatabase;
-import edu.umd.cs.findbugs.ba.vna.ValueNumber;
-import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
-import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
+import edu.umd.cs.findbugs.ba.npe.UnconditionalDerefSet;
 
 /**
  * Training pass to find method parameters which are
@@ -65,12 +59,13 @@ public class TrainUnconditionalDerefParams implements TrainingDetector {
 	 * @see edu.umd.cs.findbugs.Detector#visitClassContext(edu.umd.cs.findbugs.ba.ClassContext)
 	 */
 	public void visitClassContext(ClassContext classContext) {
+		if (VERBOSE_DEBUG) System.out.println("Visiting class " + classContext.getJavaClass().getClassName());
 		Method[] methodList = classContext.getJavaClass().getMethods();
 		for (int i = 0; i < methodList.length; ++i) {
 			Method method = methodList[i];
 			
-			if (method.getCode() == null)
-				continue;
+			if (classContext.getMethodGen(method) == null)
+				continue; // no code
 			
 			if (VERBOSE_DEBUG) System.out.println("Check " + method);
 			analyzeMethod(classContext, method);
@@ -79,71 +74,38 @@ public class TrainUnconditionalDerefParams implements TrainingDetector {
 
 	private void analyzeMethod(ClassContext classContext, Method method) {
 		try {
-			PostDominatorsAnalysis postDominators = classContext.getNonImplicitExceptionDominatorsAnalysis(method);
-			ValueNumberDataflow vnaDataflow = classContext.getValueNumberDataflow(method);
 			CFG cfg = classContext.getCFG(method);
-			Map<ValueNumber,Integer> valueNumberToParamMap =
-				vnaDataflow.getValueNumberToParamMap(method);
-			if (VERBOSE_DEBUG) {
-				System.out.print("Value number to param map: ");
-				for (Iterator<ValueNumber> i = valueNumberToParamMap.keySet().iterator(); i.hasNext();) {
-					ValueNumber valueNumber = i.next();
-					System.out.print(valueNumber.getNumber() + "->" + valueNumberToParamMap.get(valueNumber));
+			UnconditionalDerefDataflow dataflow = classContext.getUnconditionalDerefDataflow(method);
+			UnconditionalDerefSet unconditionalDerefSet = dataflow.getResultFact(cfg.getEntry());
+			
+			if (!unconditionalDerefSet.isValid()) {
+				if (VERBOSE_DEBUG) {
+					System.out.println("\tResult is not valid: " + unconditionalDerefSet.toString());
 				}
-				System.out.println();
+				return;
 			}
 			
-			BitSet entryPostDominators = postDominators.getResultFact(cfg.getEntry());
+			if (unconditionalDerefSet.isEmpty()) {
+				if (VERBOSE_DEBUG) {
+					System.out.println("\tResult is empty");
+				}
+				return;
+			}
+			
 			if (VERBOSE_DEBUG) {
-				System.out.println("Non-implicit exception entry postdominators: " + entryPostDominators);
+				System.out.println("\tAdding result " + unconditionalDerefSet.toString() + " to database");
 			}
-			
+
 			UnconditionalDerefProperty property = new UnconditionalDerefProperty();
-
-			for (Iterator<BasicBlock> i = cfg.blockIterator(); i.hasNext();) {
-				BasicBlock basicBlock = i.next();
-				// We're only interested in null checks which postdominate
-				// the cfg entry
-				if (!basicBlock.isNullCheck() /*|| !entryPostDominators.get(basicBlock.getId())*/) {
-					continue;
-				}
-				if (VERBOSE_DEBUG) {
-					System.out.println("Check block " + basicBlock.getId());
-				}
-				
-				// See if the checked value is a param
-				InstructionHandle handle = basicBlock.getExceptionThrower();
-				ValueNumberFrame vnaFrame = vnaDataflow.getStartFact(basicBlock);
-				if (!vnaFrame.isValid())
-					continue;
-				ValueNumber instance = vnaFrame.getInstance(
-						handle.getInstruction(), classContext.getConstantPoolGen());
-				if (VERBOSE_DEBUG) {
-					System.out.println("\tvn == " + instance.getNumber());
-				}
-				Integer param = valueNumberToParamMap.get(instance);
-				if (param == null) {
-					continue;
-				}
-				
-				property.setUnconditionalDeref(param.intValue(), true);
-			}
+			property.setUnconditionalDerefParamSet(unconditionalDerefSet);
 			
-			if (!property.isEmpty()) {
-				database.setProperty(
-						XMethodFactory.createXMethod(classContext.getJavaClass(), method), property);
-			}
+			XMethod xmethod = XMethodFactory.createXMethod(classContext.getJavaClass(), method);
+			database.setProperty(xmethod, property);
 		} catch (CFGBuilderException e) {
-			reportError(e);
+			bugReporter.logError("Error analyzing " + method + " for unconditional deref training", e);
 		} catch (DataflowAnalysisException e) {
-			reportError(e);
+			bugReporter.logError("Error analyzing " + method + " for unconditional deref training", e);
 		}
-		
-	}
-
-	private void reportError(Exception e) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	/* (non-Javadoc)
