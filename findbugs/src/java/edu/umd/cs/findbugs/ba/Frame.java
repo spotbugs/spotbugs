@@ -234,22 +234,26 @@ public abstract class Frame <ValueType> implements Debug {
 	 * @param cpg the ConstantPoolGen for the method
 	 */
 	public ValueType getInstance(Instruction ins, ConstantPoolGen cpg) throws DataflowAnalysisException {
-		return getStackValue(getInstanceSlot(ins, cpg));
+		return getStackValue(getInstanceStackLocation(ins, cpg));
 	}
 
 	/**
-	 * Get the stack slot containing the object instance referred to
+	 * Get the stack location (counting down from top of stack,
+	 * starting at 0) containing the object instance referred to
 	 * by given instruction.  This relies on the observation that in
 	 * instructions which use an object instance (such as getfield,
 	 * invokevirtual, etc.), the object instance is the first
 	 * operand used by the instruction.
 	 * 
+	 * <p>The value returned may be passed to getStackValue(int).</p>
+	 * 
 	 * @param ins the Instruction
 	 * @param cpg the ConstantPoolGen for the method
-	 * @return stack slot containing the object instance
+	 * @return stack location (counting down from top of stack, starting at 0)
+	 *         containing the object instance
 	 * @throws DataflowAnalysisException
 	 */
-	public int getInstanceSlot(Instruction ins, ConstantPoolGen cpg) throws DataflowAnalysisException {
+	public int getInstanceStackLocation(Instruction ins, ConstantPoolGen cpg) throws DataflowAnalysisException {
 		int numConsumed = ins.consumeStack(cpg);
 		if (numConsumed == Constants.UNPREDICTABLE)
 			throw new DataflowAnalysisException("Unpredictable stack consumption in " + ins);
