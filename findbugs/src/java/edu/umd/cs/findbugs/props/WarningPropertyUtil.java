@@ -195,7 +195,7 @@ public abstract class WarningPropertyUtil {
 			int pc) {
 		try {
 			Location location = pcToLocation(classContext, method, pc);
-			if (location == null) {
+			if (location != null) {
 				addPropertiesForLocation(propertySet, classContext, method, location);
 			}
 		} catch (CFGBuilderException e) {
