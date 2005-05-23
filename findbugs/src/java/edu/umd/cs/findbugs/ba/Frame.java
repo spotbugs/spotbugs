@@ -308,13 +308,13 @@ public abstract class Frame <ValueType> implements Debug {
 	public BitSet getArgumentSet(
 			InvokeInstruction invokeInstruction,
 			ConstantPoolGen cpg,
-			DataflowValueChooser<ValueType> argumentChooser) throws DataflowAnalysisException {
+			DataflowValueChooser<ValueType> chooser) throws DataflowAnalysisException {
 		BitSet chosenArgSet = new BitSet();
 		int numArguments = getNumArguments(invokeInstruction, cpg);
 
 		for (int i = 0; i < numArguments; ++i) {
 			ValueType value = getArgument(invokeInstruction, cpg, i);
-			if (argumentChooser.choose(value))
+			if (chooser.choose(value))
 				chosenArgSet.set(i);
 		}
 	
