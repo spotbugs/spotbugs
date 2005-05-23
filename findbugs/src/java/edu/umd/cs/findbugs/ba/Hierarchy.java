@@ -483,7 +483,9 @@ public class Hierarchy {
 			TypeFrame typeFrame,
 			ConstantPoolGen cpg) throws DataflowAnalysisException, ClassNotFoundException {
 		
-		if (invokeInstruction.getOpcode() == Constants.INVOKESTATIC) {
+		short opcode = invokeInstruction.getOpcode(); 
+		
+		if (opcode == Constants.INVOKESTATIC) {
 			HashSet<XMethod> result = new HashSet<XMethod>();
 			Method targetMethod = findPrototypeMethod(invokeInstruction, cpg);
 			if (targetMethod != null) {
@@ -498,12 +500,26 @@ public class Hierarchy {
 			return new HashSet<XMethod>();
 		}
 
-		int instanceSlot = typeFrame.getInstanceSlot(invokeInstruction, cpg);
-		Type receiverType = typeFrame.getValue(instanceSlot);
-		if (!(receiverType instanceof ReferenceType)) {
-			return new HashSet<XMethod>();
+		Type receiverType;
+		boolean receiverTypeIsExact;
+
+		if (opcode == Constants.INVOKESPECIAL) {
+			// invokespecial instructions are dispatched to EXACTLY
+			// the class specified by the instruction
+			receiverType = new ObjectType(invokeInstruction.getClassName(cpg));
+			receiverTypeIsExact = false; // Doesn't actually matter
+		} else {
+			// For invokevirtual and invokeinterface instructions, we have
+			// virtual dispatch.  By taking the receiver type (which may be a
+			// subtype of the class specified by the instruction),
+			// we may get a more precise set of call targets.
+			int instanceStackLocation = typeFrame.getInstanceStackLocation(invokeInstruction, cpg);
+			receiverType = typeFrame.getStackValue(instanceStackLocation);
+			if (!(receiverType instanceof ReferenceType)) {
+				return new HashSet<XMethod>();
+			}
+			receiverTypeIsExact = typeFrame.isExact(instanceStackLocation);
 		}
-		boolean receiverTypeIsExact = typeFrame.isExact(instanceSlot);
 		if (DEBUG_METHOD_LOOKUP) {
 			System.out.println("[receiver type is " + receiverType + ", " +
 					(receiverTypeIsExact ? "exact]" : " not exact]"));
