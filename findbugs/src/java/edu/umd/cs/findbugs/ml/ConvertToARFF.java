@@ -479,10 +479,17 @@ public class ConvertToARFF {
 	}
 
 	// ------------------------------------------------------------
+	// Constants
+	// ------------------------------------------------------------
+	
+	private static final String DEFAULT_NODE_SELECTION_XPATH = "/BugCollection/BugInstance";
+
+	// ------------------------------------------------------------
 	// Fields
 	// ------------------------------------------------------------
 
 	private List<Attribute> attributeList;
+	private String nodeSelectionXpath;
 	private boolean dropUnclassifiedWarnings;
 	private String appName;
 
@@ -492,7 +499,17 @@ public class ConvertToARFF {
 
 	public ConvertToARFF() {
 		this.attributeList = new LinkedList<Attribute>();
+		this.nodeSelectionXpath = DEFAULT_NODE_SELECTION_XPATH;
 		this.dropUnclassifiedWarnings = false;
+	}
+	
+	/**
+	 * Set the xpath expression used to select BugInstance nodes.
+	 * 
+	 * @param nodeSelectionXpath the node selection xpath expression
+	 */
+	public void setNodeSelectionXpath(String nodeSelectionXpath) {
+		this.nodeSelectionXpath = nodeSelectionXpath;
 	}
 	
 	public int getNumAttributes() {
@@ -672,7 +689,7 @@ public class ConvertToARFF {
 	}
 
 	private List<Element> getBugInstanceList(Document document) {
-		List <Element>bugInstanceList = document.selectNodes("/BugCollection/BugInstance");
+		List <Element>bugInstanceList = document.selectNodes(nodeSelectionXpath);
 		if (dropUnclassifiedWarnings) {
 			for (Iterator<Element> i = bugInstanceList.iterator(); i.hasNext(); ) {
 				Element element = i.next();
@@ -689,6 +706,7 @@ public class ConvertToARFF {
 		private ConvertToARFF converter = new ConvertToARFF();
 
 		public C2ACommandLine() {
+			addOption("-select","xpath expression","select BugInstance elements");
 			addSwitch("-train", "drop unclassified warnings");
 			addSwitch("-id", "add unique id attribute (as nominal)");
 			addSwitch("-ids", "add unique id attribute (as string)");
@@ -733,7 +751,10 @@ public class ConvertToARFF {
 
 		protected void handleOptionWithArgument(String option, String argument)
 				throws IOException {
-			if (option.equals("-nominal")) {
+			
+			if (option.equals("-select")) {
+				converter.setNodeSelectionXpath(argument);
+			} else if (option.equals("-nominal")) {
 				addXPathAttribute(option, argument, new XPathAttributeCreator() {
 					public Attribute create(String name,String xpath) {
 						return new NominalAttribute(name, xpath);
