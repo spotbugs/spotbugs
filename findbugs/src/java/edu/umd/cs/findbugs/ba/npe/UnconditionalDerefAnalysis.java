@@ -19,9 +19,6 @@
 
 package edu.umd.cs.findbugs.ba.npe;
 
-import java.util.BitSet;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.bcel.classfile.Method;
@@ -37,13 +34,10 @@ import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.DataflowTestDriver;
 import edu.umd.cs.findbugs.ba.Edge;
 import edu.umd.cs.findbugs.ba.EdgeTypes;
-import edu.umd.cs.findbugs.ba.ExceptionSet;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.ReverseDepthFirstSearch;
 import edu.umd.cs.findbugs.ba.SignatureParser;
-import edu.umd.cs.findbugs.ba.TypeAnalysis;
 import edu.umd.cs.findbugs.ba.TypeDataflow;
-import edu.umd.cs.findbugs.ba.vna.MergeTree;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
@@ -62,8 +56,7 @@ public class UnconditionalDerefAnalysis extends BackwardDataflowAnalysis<Uncondi
 	private final MethodGen methodGen;
 	private final TypeDataflow typeDataflow;
 	private final ValueNumberDataflow vnaDataflow;
-	private final HashMap<ValueNumber, Integer> valueNumberToParamMap;
-	private final BitSet paramValueNumberSet;
+	private final Map<ValueNumber, Integer> valueNumberToParamMap;
 	private final int numParams;
 	private final int topBit;
 	private final int bottomBit;
@@ -79,32 +72,10 @@ public class UnconditionalDerefAnalysis extends BackwardDataflowAnalysis<Uncondi
 		this.methodGen = methodGen;
 		this.typeDataflow = typeDataflow;
 		this.vnaDataflow = vnaDataflow;
-		this.valueNumberToParamMap = new HashMap<ValueNumber, Integer>();
-		this.paramValueNumberSet = new BitSet();
+		this.valueNumberToParamMap = vnaDataflow.getValueNumberToParamMap(methodGen.getSignature(), methodGen.isStatic());
 		this.numParams = new SignatureParser(methodGen.getSignature()).getNumParameters();
 		this.topBit = numParams;
 		this.bottomBit = numParams + 1;
-		
-		buildValueNumberToParamMap();
-	}
-	
-	private void buildValueNumberToParamMap() {
-		if (DEBUG) {
-			System.out.println("Method has " + numParams + " params");
-		}
-		
-		ValueNumberFrame vnaFrameAtEntry = vnaDataflow.getStartFact(cfg.getEntry());
-		int paramOffset = methodGen.isStatic() ? 0 : 1;
-
-		for (int paramIndex = 0; paramIndex < numParams; ++paramIndex) {
-			int paramLocal = paramIndex + paramOffset;
-			ValueNumber valueNumber = vnaFrameAtEntry.getValue(paramLocal);
-			if (DEBUG) {
-				System.out.println(valueNumber.getNumber() + "->" + paramIndex);
-			}
-			valueNumberToParamMap.put(valueNumber, new Integer(paramIndex));
-			paramValueNumberSet.set(valueNumber.getNumber());
-		}
 	}
 
 	public void copy(UnconditionalDerefSet source, UnconditionalDerefSet dest) {
@@ -133,6 +104,7 @@ public class UnconditionalDerefAnalysis extends BackwardDataflowAnalysis<Uncondi
 	public void meetInto(UnconditionalDerefSet fact, Edge edge, UnconditionalDerefSet result) throws DataflowAnalysisException {
 		// Ignore implicit exceptions
 		if (ClassContext.PRUNE_INFEASIBLE_EXCEPTION_EDGES
+				&& edge.isExceptionEdge()
 				&& !edge.isFlagSet(EdgeTypes.EXPLICIT_EXCEPTIONS_FLAG)) {
 			return;
 		}
@@ -158,6 +130,9 @@ public class UnconditionalDerefAnalysis extends BackwardDataflowAnalysis<Uncondi
 	
 	public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, UnconditionalDerefSet fact)
 		throws DataflowAnalysisException {
+		
+		if (!fact.isValid())
+			throw new IllegalStateException();
 
 		// See if this instruction has a null check.
 		if (handle != basicBlock.getFirstInstruction())
@@ -179,54 +154,14 @@ public class UnconditionalDerefAnalysis extends BackwardDataflowAnalysis<Uncondi
 			System.out.println("[Null check of value " + instance.getNumber() + "]");
 		}
 
-		// See if the checked value is a parameter (or has one or more parameter values
-		// flowing into it)
-		boolean isParam;
-		MergeTree mergeTree = vnaDataflow.getAnalysis().getMergeTree();
-		if (mergeTree != null) {
-			// Check to see what parameters might have flowed into the
-			// checked value.
-			BitSet valueNumbersCheckedHere = new BitSet();
-			valueNumbersCheckedHere.set(instance.getNumber());
-			valueNumbersCheckedHere.or(mergeTree.getTransitiveInputSet(instance));
-			
-			if (DEBUG) {
-				System.out.print("[Values checked here: " + valueNumbersCheckedHere + "]");
-			}
-			
-			valueNumbersCheckedHere.and(paramValueNumberSet);
-			if (DEBUG) {
-				System.out.print("[Params checked here: " + valueNumbersCheckedHere + "]");
-			}
-			
-			if (!valueNumbersCheckedHere.isEmpty()) {
-				if (DEBUG) {
-					System.out.print("[checked param set nonempty]");
-					System.out.print("[" + valueNumberToParamMap.entrySet().size() + " entries in param map]");
-				}
-				for (Iterator<Map.Entry<ValueNumber, Integer>> i = valueNumberToParamMap.entrySet().iterator();
-						i.hasNext();) {
-					Map.Entry<ValueNumber, Integer> entry = i.next();
-					ValueNumber paramValueNumber = entry.getKey();
-					Integer param = entry.getValue();
-					if (DEBUG) {
-						System.out.println("[check param vn " + paramValueNumber.getNumber() + "]");
-					}
-					// If the value number of this parameter is one of those
-					// which flow into the checked value...
-					if (valueNumbersCheckedHere.get(paramValueNumber.getNumber())) {
-						if (DEBUG) System.out.print("[ADDING: " + param.intValue() + "]");
-						// Add the corresponding parameter index to the dataflow fact
-						fact.set(param.intValue());
-					}
-				}
-			}
-		} else {
-			// No merge tree.  Just look for parameters checked explicitly
-			if (paramValueNumberSet.get(instance.getNumber())) {
-				fact.set(valueNumberToParamMap.get(instance).intValue());
-			}
+		Integer param = valueNumberToParamMap.get(instance);
+		if (param == null)
+			return;
+		
+		if (DEBUG) {
+			System.out.println("[Value is a parameter!]");
 		}
+		fact.set(param.intValue());
 	}
 
 	public static void main(String[] argv) throws Exception {
