@@ -46,23 +46,36 @@ public class ValueNumberDataflow extends Dataflow<ValueNumberFrame, ValueNumberA
 	 * Build map of value numbers to param indices.
 	 * The first parameter has index 0, the second has index 1, etc.
 	 * 
-	 * @param method the Method on which ValueNumberAnalysis was analyzed
+	 * @param method the method analyzed by the ValueNumberAnalysis
 	 * @return the value number to parameter index map
 	 */
 	public Map<ValueNumber, Integer> getValueNumberToParamMap(Method method) {
+		return getValueNumberToParamMap(method.getSignature(), method.isStatic());
+	}
+	
+	/**
+	 * Build map of value numbers to param indices.
+	 * The first parameter has index 0, the second has index 1, etc.
+	 * 
+	 * @param methodSignature signature of the method analyzed by the ValueNumberAnalysis
+	 * @param isStatic        true if the method is static, false if not
+	 * @return the value number to parameter index map
+	 */
+	public Map<ValueNumber, Integer> getValueNumberToParamMap(String methodSignature, boolean isStatic) {
 		HashMap<ValueNumber, Integer> valueNumberToParamMap =
 			new HashMap<ValueNumber, Integer>();
 		
 		ValueNumberFrame frameAtEntry = getStartFact(getCFG().getEntry());
 
-		int numParams = new SignatureParser(method.getSignature()).getNumParameters(); 
-		int shift = method.isStatic() ? 0 : 1;
+		int numParams = new SignatureParser(methodSignature).getNumParameters(); 
+		int shift = isStatic ? 0 : 1;
 		for (int i = 0; i < numParams; ++i) {
 			valueNumberToParamMap.put(
 					frameAtEntry.getValue(i + shift), new Integer(i));
 		}
 		
 		return valueNumberToParamMap;
+		
 	}
 }
 
