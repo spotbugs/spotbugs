@@ -17,14 +17,14 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package edu.umd.cs.findbugs.ba;
+package edu.umd.cs.findbugs.ba.type;
 
 import org.apache.bcel.generic.Type;
 
 /**
- * Special type used to represent the "extra" part of a double
- * value.  We say that when a double is stored, local <i>n</i> will
- * have type double, and local <i>n+1</i> will have this
+ * Special type used to represent the "extra" part of a long
+ * value.  We say that when a long is stored, local <i>n</i> will
+ * have type long, and local <i>n+1</i> will have this
  * type.
  *
  * @author David Hovemeyer
@@ -32,15 +32,15 @@ import org.apache.bcel.generic.Type;
  * @see TypeFrame
  * @see TypeMerger
  */
-public class DoubleExtraType extends Type implements ExtendedTypes {
+public class LongExtraType extends Type implements ExtendedTypes {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private static final Type theInstance = new DoubleExtraType();
+	private static final LongExtraType theInstance = new LongExtraType();
 
-	private DoubleExtraType() {
-		super(T_DOUBLE_EXTRA, "<double extra>");
+	private LongExtraType() {
+		super(T_LONG_EXTRA, "<long extra>");
 	}
 
 	public int hashCode() {
@@ -51,7 +51,7 @@ public class DoubleExtraType extends Type implements ExtendedTypes {
 		return o == this;
 	}
 
-	public static final Type instance() {
+	public static Type instance() {
 		return theInstance;
 	}
 }

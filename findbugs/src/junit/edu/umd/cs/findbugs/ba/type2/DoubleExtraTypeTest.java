@@ -1,9 +1,8 @@
 package edu.umd.cs.findbugs.ba.type2;
 
-import edu.umd.cs.findbugs.ba.ExtendedTypes;
-
 import junit.framework.Assert;
 import junit.framework.TestCase;
+import edu.umd.cs.findbugs.ba.type.ExtendedTypes;
 
 public class DoubleExtraTypeTest extends TestCase {
 	private DoubleExtraType doubleExtraType;

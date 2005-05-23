@@ -17,27 +17,44 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package edu.umd.cs.findbugs.ba;
+package edu.umd.cs.findbugs.ba.type;
 
 import org.apache.bcel.generic.Type;
 
 /**
- * Interface for object which merges types for TypeAnalysis.
- * By allowing multiple implementations, we allow creation of
- * specialized type systems.
+ * Special "top" type.
+ * It is the identity element for the type merge operation.
  *
  * @author David Hovemeyer
  * @see TypeAnalysis
+ * @see TypeFrame
+ * @see TypeMerger
  */
-public interface TypeMerger {
+public class TopType extends Type implements ExtendedTypes {
 	/**
-	 * Merge type Types.
-	 *
-	 * @param a a Type
-	 * @param b a Type
-	 * @return the result of merging the two Types
+	 * 
 	 */
-	public Type mergeTypes(Type a, Type b) throws DataflowAnalysisException;
+	private static final long serialVersionUID = 1L;
+	private static final Type theInstance = new TopType();
+
+	private TopType() {
+		super(T_TOP, "<top>");
+	}
+
+	public int hashCode() {
+		return System.identityHashCode(this);
+	}
+
+	public boolean equals(Object o) {
+		return o == this;
+	}
+
+	/**
+	 * Get the single instance of the top type.
+	 */
+	public static Type instance() {
+		return theInstance;
+	}
 }
 
 // vim:ts=4

@@ -17,30 +17,28 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package edu.umd.cs.findbugs.ba;
+package edu.umd.cs.findbugs.ba.type;
 
 import org.apache.bcel.generic.Type;
 
 /**
- * Special type used to represent the "extra" part of a long
- * value.  We say that when a long is stored, local <i>n</i> will
- * have type long, and local <i>n+1</i> will have this
- * type.
+ * Special "bottom" type.
+ * It is the zero element for the type merge operation.
  *
  * @author David Hovemeyer
  * @see TypeAnalysis
  * @see TypeFrame
  * @see TypeMerger
  */
-public class LongExtraType extends Type implements ExtendedTypes {
+public class BottomType extends Type implements ExtendedTypes {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private static final LongExtraType theInstance = new LongExtraType();
+	private static final BottomType theInstance = new BottomType();
 
-	private LongExtraType() {
-		super(T_LONG_EXTRA, "<long extra>");
+	private BottomType() {
+		super(T_BOTTOM, "<bottom>");
 	}
 
 	public int hashCode() {
@@ -51,6 +49,9 @@ public class LongExtraType extends Type implements ExtendedTypes {
 		return o == this;
 	}
 
+	/**
+	 * Get the single instance of the bottom type.
+	 */
 	public static Type instance() {
 		return theInstance;
 	}

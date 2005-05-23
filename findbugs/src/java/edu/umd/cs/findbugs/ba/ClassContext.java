@@ -27,18 +27,16 @@ import java.util.Iterator;
 import java.util.Set;
 
 import org.apache.bcel.Constants;
-
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
-
 import org.apache.bcel.generic.ClassGen;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.FieldInstruction;
+import org.apache.bcel.generic.INVOKESTATIC;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InstructionList;
-import org.apache.bcel.generic.INVOKESTATIC;
 import org.apache.bcel.generic.MethodGen;
 
 import edu.umd.cs.findbugs.ba.ca.CallListAnalysis;
@@ -50,6 +48,9 @@ import edu.umd.cs.findbugs.ba.npe.IsNullValueDataflow;
 import edu.umd.cs.findbugs.ba.npe.MayReturnNullPropertyDatabase;
 import edu.umd.cs.findbugs.ba.npe.UnconditionalDerefAnalysis;
 import edu.umd.cs.findbugs.ba.npe.UnconditionalDerefDataflow;
+import edu.umd.cs.findbugs.ba.type.ExceptionSetFactory;
+import edu.umd.cs.findbugs.ba.type.TypeAnalysis;
+import edu.umd.cs.findbugs.ba.type.TypeDataflow;
 import edu.umd.cs.findbugs.ba.vna.LoadedFieldSet;
 import edu.umd.cs.findbugs.ba.vna.MergeTree;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberAnalysis;

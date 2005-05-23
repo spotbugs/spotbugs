@@ -17,29 +17,30 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package edu.umd.cs.findbugs.ba;
+package edu.umd.cs.findbugs.ba.type;
 
 import org.apache.bcel.generic.Type;
 
 /**
- * Special type representing the null value.
- * This is a type which is higher in the lattice than any object type,
- * but lower than the overall Top type.  It represents the type
- * of the null value, which may logically be merged with any
- * object type without loss of information.
+ * Special type used to represent the "extra" part of a double
+ * value.  We say that when a double is stored, local <i>n</i> will
+ * have type double, and local <i>n+1</i> will have this
+ * type.
  *
  * @author David Hovemeyer
  * @see TypeAnalysis
  * @see TypeFrame
  * @see TypeMerger
  */
-public class NullType extends Type implements ExtendedTypes {
-
+public class DoubleExtraType extends Type implements ExtendedTypes {
+	/**
+	 * 
+	 */
 	private static final long serialVersionUID = 1L;
-	private static final Type theInstance = new NullType();
+	private static final Type theInstance = new DoubleExtraType();
 
-	private NullType() {
-		super(T_NULL, "<null type>");
+	private DoubleExtraType() {
+		super(T_DOUBLE_EXTRA, "<double extra>");
 	}
 
 	public int hashCode() {
@@ -50,7 +51,7 @@ public class NullType extends Type implements ExtendedTypes {
 		return o == this;
 	}
 
-	public static Type instance() {
+	public static final Type instance() {
 		return theInstance;
 	}
 }

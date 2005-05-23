@@ -1,11 +1,11 @@
 package edu.umd.cs.findbugs.ba.type2;
 
-import edu.umd.cs.findbugs.ba.ExtendedTypes;
-
 import junit.framework.Assert;
 import junit.framework.TestCase;
 
 import org.apache.bcel.Constants;
+
+import edu.umd.cs.findbugs.ba.type.ExtendedTypes;
 
 /**
  * Unit tests for TypeRepository.

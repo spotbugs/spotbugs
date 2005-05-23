@@ -43,8 +43,8 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.Hierarchy;
 import edu.umd.cs.findbugs.ba.Location;
-import edu.umd.cs.findbugs.ba.TypeDataflow;
-import edu.umd.cs.findbugs.ba.TypeFrame;
+import edu.umd.cs.findbugs.ba.type.TypeDataflow;
+import edu.umd.cs.findbugs.ba.type.TypeFrame;
 
 /**
  * Find places where ordinary (balanced) synchronization is performed

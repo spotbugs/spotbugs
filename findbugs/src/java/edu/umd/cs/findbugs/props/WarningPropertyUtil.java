@@ -32,11 +32,11 @@ import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.Location;
-import edu.umd.cs.findbugs.ba.TypeDataflow;
-import edu.umd.cs.findbugs.ba.TypeFrame;
 import edu.umd.cs.findbugs.ba.ca.Call;
 import edu.umd.cs.findbugs.ba.ca.CallList;
 import edu.umd.cs.findbugs.ba.ca.CallListDataflow;
+import edu.umd.cs.findbugs.ba.type.TypeDataflow;
+import edu.umd.cs.findbugs.ba.type.TypeFrame;
 
 /**
  * Utility methods for creating general warning properties.

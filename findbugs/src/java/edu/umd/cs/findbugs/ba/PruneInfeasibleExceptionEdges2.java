@@ -36,6 +36,9 @@ import org.apache.bcel.generic.MethodGen;
 import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.Type;
 
+import edu.umd.cs.findbugs.ba.type.TypeDataflow;
+import edu.umd.cs.findbugs.ba.type.TypeFrame;
+
 /**
  * Remove obviously infeasible exception edgges, and mark all exception
  * edges of a CFG to indicate

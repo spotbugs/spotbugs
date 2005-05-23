@@ -17,10 +17,16 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package edu.umd.cs.findbugs.ba;
+package edu.umd.cs.findbugs.ba.type;
 
 import java.util.Collection;
 import java.util.Iterator;
+
+import edu.umd.cs.findbugs.ba.CFG;
+import edu.umd.cs.findbugs.ba.Dataflow;
+import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
+import edu.umd.cs.findbugs.ba.Edge;
+import edu.umd.cs.findbugs.ba.Location;
 
 public class TypeDataflow extends Dataflow<TypeFrame, TypeAnalysis> {
 	public static class LocationAndFactPair {

@@ -17,28 +17,29 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package edu.umd.cs.findbugs.ba;
+package edu.umd.cs.findbugs.ba.type;
 
 import org.apache.bcel.generic.Type;
 
 /**
- * Special "bottom" type.
- * It is the zero element for the type merge operation.
+ * Special type representing the null value.
+ * This is a type which is higher in the lattice than any object type,
+ * but lower than the overall Top type.  It represents the type
+ * of the null value, which may logically be merged with any
+ * object type without loss of information.
  *
  * @author David Hovemeyer
  * @see TypeAnalysis
  * @see TypeFrame
  * @see TypeMerger
  */
-public class BottomType extends Type implements ExtendedTypes {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	private static final BottomType theInstance = new BottomType();
+public class NullType extends Type implements ExtendedTypes {
 
-	private BottomType() {
-		super(T_BOTTOM, "<bottom>");
+	private static final long serialVersionUID = 1L;
+	private static final Type theInstance = new NullType();
+
+	private NullType() {
+		super(T_NULL, "<null type>");
 	}
 
 	public int hashCode() {
@@ -49,9 +50,6 @@ public class BottomType extends Type implements ExtendedTypes {
 		return o == this;
 	}
 
-	/**
-	 * Get the single instance of the bottom type.
-	 */
 	public static Type instance() {
 		return theInstance;
 	}

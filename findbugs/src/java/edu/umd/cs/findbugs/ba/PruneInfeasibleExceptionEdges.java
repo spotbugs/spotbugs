@@ -19,9 +19,17 @@
 
 package edu.umd.cs.findbugs.ba;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 
 import org.apache.bcel.generic.MethodGen;
+
+import edu.umd.cs.findbugs.ba.type.ExceptionSet;
+import edu.umd.cs.findbugs.ba.type.TypeAnalysis;
+import edu.umd.cs.findbugs.ba.type.TypeDataflow;
 
 /**
  * Prune a CFG to remove infeasible exception edges.

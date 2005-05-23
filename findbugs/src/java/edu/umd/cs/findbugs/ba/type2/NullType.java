@@ -19,7 +19,7 @@
 
 package edu.umd.cs.findbugs.ba.type2;
 
-import edu.umd.cs.findbugs.ba.ExtendedTypes;
+import edu.umd.cs.findbugs.ba.type.ExtendedTypes;
 
 /**
  * The type of a null value.

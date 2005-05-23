@@ -19,8 +19,9 @@
 
 package edu.umd.cs.findbugs.ba.type2;
 
-import edu.umd.cs.findbugs.ba.ExtendedTypes;
 import org.apache.bcel.Constants;
+
+import edu.umd.cs.findbugs.ba.type.ExtendedTypes;
 
 /**
  * The standard implementation of TypeMerger for modeling
