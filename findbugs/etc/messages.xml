@@ -886,6 +886,21 @@ for the one branch.</p>
 		]]>
 	</Details>
   </Detector>
+  
+  <Detector class="edu.umd.cs.findbugs.detect.TrainFieldStoreTypes">
+	<Details>
+		<![CDATA[
+		<p>
+		TrainFieldStoreTypes analyzes the types stored into fields
+		and stores them to a database.  The database may be used in a later
+		pass to make type analysis more precise.
+		</p>
+		<p>
+		This is a slow detector.
+		</p>
+		]]>
+	</Details>
+  </Detector>
 
   <Detector class="edu.umd.cs.findbugs.detect.CheckCalls">
 	<Details>
