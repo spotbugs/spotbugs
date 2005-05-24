@@ -43,11 +43,14 @@ public class FindBadCast2 implements Detector {
 	private Set<String> concreteCollectionClasses = new HashSet<String>();
 
 	private Set<String> abstractCollectionClasses = new HashSet<String>();
+	private Set<String> veryAbstractCollectionClasses = new HashSet<String>();
 
 	private static final boolean DEBUG = false;
 
 	public FindBadCast2(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
+		veryAbstractCollectionClasses.add("java.util.Collection");
+		veryAbstractCollectionClasses.add("java.util.Iterable");
 		abstractCollectionClasses.add("java.util.Collection");
 		abstractCollectionClasses.add("java.util.List");
 		abstractCollectionClasses.add("java.util.Set");
@@ -254,15 +257,17 @@ public class FindBadCast2 implements Detector {
 							refJavaClass);
 					double rank = Analyze.deepInstanceOf(refJavaClass,
 							castJavaClass);
-					boolean badCastToConcreteCollection = concreteCollectionClasses.contains(castName);
-					boolean badCastToAbstractCollection = 
-							abstractCollectionClasses
-							.contains(castName)
-							&& (refName.equals("java.util.Collection") || refName
-									.equals("java.lang.Iterable"));
-					if ((badCastToConcreteCollection || badCastToAbstractCollection)
+					boolean castToConcreteCollection = concreteCollectionClasses.contains(castName)
+								&& abstractCollectionClasses.contains(refName);
+					boolean castToAbstractCollection = 
+							abstractCollectionClasses.contains(castName)
+							&& veryAbstractCollectionClasses.contains(refName);
+					if (castToConcreteCollection
+						&& rank > 0.6)
+					  rank = (rank + 0.6) /2;
+					else if (castToAbstractCollection
 						&& rank > 0.3)
-					  rank = 0.3;
+					  rank = (rank + 0.3) /2;
 						
 					if (false)
 						System.out.println("Rank:\t" + rank + "\t" + refName
@@ -310,32 +315,28 @@ public class FindBadCast2 implements Detector {
 							priority += 1;
 						if (DEBUG)
 							System.out.println(" priority b: " + priority);
-						if (castJavaClass.isInterface() && !badCastToAbstractCollection)
+						if (castJavaClass.isInterface() && !castToAbstractCollection)
 							priority++;
 						if (DEBUG)
 							System.out.println(" priority c: " + priority);
+						if (castToConcreteCollection
+							&& veryAbstractCollectionClasses.contains(refName))
+							priority--;
+						if (DEBUG)
+							System.out.println(" priority d: " + priority);
 						if (priority <= LOW_PRIORITY 
-								&& !badCastToAbstractCollection
-								&& !badCastToConcreteCollection
+								&& !castToAbstractCollection
+								&& !castToConcreteCollection
 								&& (refJavaClass.isInterface() || refJavaClass
 										.isAbstract()))
 							priority++;
 						if (DEBUG)
-							System.out.println(" priority d: " + priority);
+							System.out.println(" priority e: " + priority);
 						if (DEBUG)
 							System.out.println(" ref name: " + refName);
-						if (concreteCollectionClasses.contains(refName)
-								|| abstractCollectionClasses.contains(refName)
-							|| concreteCollectionClasses.contains(castName)
-								|| abstractCollectionClasses.contains(castName))
-							priority--;
-						if (DEBUG)
-							System.out.println(" priority f: " + priority);
 						if (methodGen.getName().equals("compareTo"))
 							priority++;
-						if (DEBUG)
-							System.out.println(" priority g: " + priority);
-						if (methodGen.isPublic() && isParameter)
+						else if (methodGen.isPublic() && isParameter)
 							priority--;
 						if (DEBUG)
 							System.out.println(" priority h: " + priority);
@@ -343,9 +344,9 @@ public class FindBadCast2 implements Detector {
 							priority = HIGH_PRIORITY;
 						if (priority <= LOW_PRIORITY) {
 							String bug = "BC_UNCONFIRMED_CAST";
-							if (badCastToConcreteCollection)
+							if (castToConcreteCollection)
 								bug = "BC_BAD_CAST_TO_CONCRETE_COLLECTION";
-							else if (badCastToAbstractCollection)
+							else if (castToAbstractCollection)
 								bug = "BC_BAD_CAST_TO_ABSTRACT_COLLECTION";
 
 							bugReporter.reportBug(new BugInstance(this, bug,
