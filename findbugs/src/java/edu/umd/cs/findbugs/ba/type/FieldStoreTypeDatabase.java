@@ -19,24 +19,39 @@
 
 package edu.umd.cs.findbugs.ba.type;
 
-import java.util.HashSet;
 import java.util.Iterator;
+import java.util.StringTokenizer;
+
+import edu.umd.cs.findbugs.ba.interproc.FieldPropertyDatabase;
+import edu.umd.cs.findbugs.ba.interproc.PropertyDatabaseFormatException;
 
 /**
  * @author David Hovemeyer
  */
-public class TypeSet {
-	private HashSet<String> typeSignatureSet;
-	
-	public TypeSet() {
-		this.typeSignatureSet = new HashSet<String>();
+public class FieldStoreTypeDatabase
+	extends FieldPropertyDatabase<FieldStoreType> {
+
+	//@Override
+	protected FieldStoreType decodeProperty(String propStr) throws PropertyDatabaseFormatException {
+		FieldStoreType property = new FieldStoreType();
+		StringTokenizer t = new StringTokenizer(propStr, ",");
+		while (t.hasMoreTokens()) {
+			String signature = t.nextToken();
+			property.addTypeSignature(signature);
+		}
+		return property;
 	}
-	
-	public void addTypeSignature(String signature) {
-		typeSignatureSet.add(signature);
+
+	//@Override
+	protected String encodeProperty(FieldStoreType property) {
+		StringBuffer buf = new StringBuffer();
+		for (Iterator<String> i = property.signatureIterator(); i.hasNext();) {
+			if (buf.length() > 0) {
+				buf.append(',');
+			}
+			buf.append(i.next());
+		}
+		return buf.toString();
 	}
-	
-	public Iterator<String> signatureIterator() {
-		return typeSignatureSet.iterator();
-	}
+
 }
