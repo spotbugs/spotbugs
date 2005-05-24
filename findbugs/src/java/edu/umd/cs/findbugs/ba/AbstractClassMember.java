@@ -61,6 +61,14 @@ public abstract class AbstractClassMember implements ClassMember {
 	public boolean isPublic() {
 		return (accessFlags & Constants.ACC_PUBLIC) != 0;
 	}
+	
+	public boolean isProtected() {
+		return (accessFlags & Constants.ACC_PROTECTED) != 0;
+	}
+	
+	public boolean isPrivate() {
+		return (accessFlags & Constants.ACC_PRIVATE) != 0;
+	}
 
 	public int compareTo(ClassMember other) {
 		// This may be compared to any kind of PackageMember object.

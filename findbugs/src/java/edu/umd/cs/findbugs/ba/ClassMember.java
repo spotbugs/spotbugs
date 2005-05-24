@@ -22,43 +22,53 @@ package edu.umd.cs.findbugs.ba;
  * Common super-interface for class members (fields and methods).
  * 
  * @see edu.umd.cs.findbugs.ba.XField
+ * @see edu.umd.cs.findbugs.ba.XMethod
  * @author David Hovemeyer
  */
 public interface ClassMember extends Comparable<ClassMember>  {
 
 	/**
-	 * Get the name of the field.
+	 * Get the name of the field/method.
 	 */
-	public abstract String getName();
+	public String getName();
 
 	/**
-	 * Get the name of the class the field is defined in.
+	 * Get the name of the class the field/method is defined in.
 	 */
-	public abstract String getClassName();
+	public String getClassName();
 
 	/**
-	 * Get the signature representing the field's type.
+	 * Get the signature representing the field/method's type.
 	 */
-	public abstract String getSignature();
+	public String getSignature();
 
 	/**
-	 * Get the field's access flags.
+	 * Get the field/method's access flags.
 	 */
-	public abstract int getAccessFlags();
+	public int getAccessFlags();
 
 	/**
-	 * Is this a static field?
+	 * Is this a static field/method?
 	 */
-	public abstract boolean isStatic();
+	public boolean isStatic();
 
 	/**
-	 * Is this a final field?
+	 * Is this a final field/method?
 	 */
-	public abstract boolean isFinal();
+	public boolean isFinal();
 
 	/**
-	 * Is this a public field?
+	 * Is this a public field/method?
 	 */
-	public abstract boolean isPublic();
+	public boolean isPublic();
 
+	/**
+	 * Is this a protected field/method?
+	 */
+	public boolean isProtected();
+	
+	/**
+	 * Is this a private field/method?
+	 */
+	public boolean isPrivate();
 }
