@@ -18,19 +18,8 @@
  */
 package edu.umd.cs.findbugs.ba.interproc;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.nio.charset.Charset;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.TreeSet;
+import java.io.Writer;
 
 import org.apache.bcel.Constants;
 
@@ -44,136 +33,13 @@ import edu.umd.cs.findbugs.ba.XMethod;
  * 
  * @author David Hovemeyer
  */
-public abstract class MethodPropertyDatabase<Property extends MethodProperty<Property>> {
-	private Map<XMethod, Property> propertyMap;
-	
-	/**
-	 * Constructor.
-	 * Creates an empty method property database. 
-	 */
-	protected MethodPropertyDatabase() {
-		this.propertyMap = new HashMap<XMethod, Property>();
-	}
-	
-	/**
-	 * Set a method property.
-	 * 
-	 * @param method   the method
-	 * @param property the property
-	 */
-	public void setProperty(XMethod method, Property property) {
-		propertyMap.put(method, property);
-	}
-	
-	/**
-	 * Get a method property.
-	 * 
-	 * @param method the method
-	 * @return the method property, or null if no property is set for this method
-	 */
-	public Property getProperty(XMethod method) {
-		return propertyMap.get(method);
-	}
-	
-	/**
-	 * Read property database from given file.
-	 * 
-	 * @param fileName name of the database file
-	 * @throws IOException
-	 * @throws MethodPropertyDatabaseFormatException
-	 */
-	public void readFromFile(String fileName) throws IOException, MethodPropertyDatabaseFormatException {
-		read(new FileInputStream(fileName));
-	}
+public abstract class MethodPropertyDatabase<Property>
+		extends PropertyDatabase<XMethod, Property> {
 
-	/**
-	 * Read method property database from an input stream.
-	 * The InputStream is guaranteed to be closed, even if an
-	 * exception is thrown.
-	 * 
-	 * @param in the InputStream
-	 * @throws IOException
-	 * @throws MethodPropertyDatabaseFormatException
-	 */
-	public void read(InputStream in) throws IOException, MethodPropertyDatabaseFormatException {
-		BufferedReader reader = null;
-		
-		try {
-			reader = new BufferedReader(
-				new InputStreamReader(in, Charset.forName("UTF-8")));
-			String line;
-			while ((line = reader.readLine()) != null) {
-				line = line.trim();
-				if (line.equals(""))
-					continue;
-				int bar = line.indexOf('|');
-				if (bar < 0) {
-					throw new MethodPropertyDatabaseFormatException(
-							"Invalid method property database: missing separator");
-				}
-				XMethod method = parseMethod(line.substring(0, bar));
-				Property property = decodeProperty(line.substring(bar+1));
-				
-				setProperty(method, property);
-			}
-		} finally {
-			try {
-				if (reader != null)
-					reader.close();
-			} catch (IOException e) {
-				// Ignore
-			}
-		}
-	}
-	
-	/**
-	 * Write property database to given file.
-	 * 
-	 * @param fileName name of the database file
-	 * @throws IOException
-	 */
-	public void writeToFile(String fileName) throws IOException {
-		write(new FileOutputStream(fileName));
-	}
-
-	/**
-	 * Write method property database to an OutputStream.
-	 * The OutputStream is guaranteed to be closed, even if an
-	 * exception is thrown.
-	 * 
-	 * @param out the OutputStream
-	 * @throws IOException
-	 */
-	public void write(OutputStream out) throws IOException {
-		BufferedWriter writer = null;
-		
-		try {
-			writer = new BufferedWriter(
-					new OutputStreamWriter(out, Charset.forName("UTF-8")));
-			
-			TreeSet<XMethod> sortedMethodSet = new TreeSet<XMethod>();
-			sortedMethodSet.addAll(propertyMap.keySet());
-			for (XMethod method : sortedMethodSet) {
-				Property property = propertyMap.get(method);
-				writeMethod(writer, method);
-				writer.write("|");
-				writer.write(encodeProperty(property));
-				writer.write("\n");
-			}
-		} finally {
-			try {
-				if (writer != null)
-					writer.close();
-			} catch (IOException e) {
-				// Ignore
-			}
-		}
-	}
-
-	private XMethod parseMethod(String methodStr) throws MethodPropertyDatabaseFormatException {
+	protected XMethod parseKey(String methodStr) throws PropertyDatabaseFormatException {
 		String[] tuple = methodStr.split(",");
 		if (tuple.length != 4)
-			throw new MethodPropertyDatabaseFormatException("Invalid method tuple: " + methodStr);
+			throw new PropertyDatabaseFormatException("Invalid method tuple: " + methodStr);
 		
 		try {
 			int accessFlags = Integer.parseInt(tuple[3]);
@@ -187,7 +53,7 @@ public abstract class MethodPropertyDatabase<Property extends MethodProperty<Pro
 		}
 	}
 
-	private void writeMethod(BufferedWriter writer, XMethod method) throws IOException {
+	protected void writeKey(Writer writer, XMethod method) throws IOException {
 		writer.write(method.getClassName());
 		writer.write(",");
 		writer.write(method.getName());
@@ -196,29 +62,4 @@ public abstract class MethodPropertyDatabase<Property extends MethodProperty<Pro
 		writer.write(",");
 		writer.write(String.valueOf(method.getAccessFlags()));
 	}
-	
-	/**
-	 * Create a default property.
-	 */
-	protected abstract Property createDefault();
-
-	/**
-	 * Subclasses must define this to instantiate the actual property
-	 * value from its string encoding.
-	 * 
-	 * @param propStr String containing the encoded method property
-	 * @return the method property
-	 * @throws MethodPropertyDatabaseFormatException
-	 */
-	protected abstract Property decodeProperty(String propStr)
-		throws MethodPropertyDatabaseFormatException;
-
-	/**
-	 * Subclasses must define this to encode a property
-	 * as a string for output to a file.
-	 * 
-	 * @param property the property
-	 * @return a String which encodes the property
-	 */
-	protected abstract String encodeProperty(Property property);
 }

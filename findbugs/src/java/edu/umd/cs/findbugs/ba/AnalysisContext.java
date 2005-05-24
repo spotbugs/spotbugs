@@ -38,9 +38,9 @@ import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.JavaClass;
 
 import edu.umd.cs.findbugs.ba.ch.Subtypes;
-import edu.umd.cs.findbugs.ba.interproc.MethodProperty;
 import edu.umd.cs.findbugs.ba.interproc.MethodPropertyDatabase;
-import edu.umd.cs.findbugs.ba.interproc.MethodPropertyDatabaseFormatException;
+import edu.umd.cs.findbugs.ba.interproc.PropertyDatabase;
+import edu.umd.cs.findbugs.ba.interproc.PropertyDatabaseFormatException;
 import edu.umd.cs.findbugs.ba.npe.MayReturnNullPropertyDatabase;
 import edu.umd.cs.findbugs.ba.npe.UnconditionalDerefPropertyDatabase;
 
@@ -295,8 +295,9 @@ public class AnalysisContext implements AnalysisFeatures {
 	 * @return the database object, or null if the database couldn't be loaded
 	 */
 	private<
-		DatabaseType extends MethodPropertyDatabase<Property>,
-		Property extends MethodProperty<Property>
+		DatabaseType extends PropertyDatabase<KeyType,Property>,
+		KeyType,
+		Property
 		> DatabaseType loadMethodPropertyDatabase(
 			DatabaseType database,
 			String fileName,
@@ -310,7 +311,7 @@ public class AnalysisContext implements AnalysisFeatures {
 			return database;
 		} catch (IOException e) {
 			getLookupFailureCallback().logError("Error loading " + description, e);
-		} catch (MethodPropertyDatabaseFormatException e) {
+		} catch (PropertyDatabaseFormatException e) {
 			getLookupFailureCallback().logError("Invalid " + description, e);
 		}
 		

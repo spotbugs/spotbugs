@@ -76,7 +76,7 @@ public class FindNullDeref
 
 	private static final boolean DEBUG = Boolean.getBoolean("fnd.debug");
 	private static final boolean DEBUG_NULLARG = Boolean.getBoolean("fnd.debug.nullarg");
-	private static final boolean REPORT_SAFE_METHOD_TARGETS = Boolean.getBoolean("fnd.reportSafeTargets");
+	private static final boolean REPORT_SAFE_METHOD_TARGETS = true;//Boolean.getBoolean("fnd.reportSafeTargets");
 
 	private BugReporter bugReporter;
 	

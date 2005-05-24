@@ -20,15 +20,13 @@ package edu.umd.cs.findbugs.ba.npe;
 
 import java.util.BitSet;
 
-import edu.umd.cs.findbugs.ba.interproc.MethodProperty;
-
 /**
  * Method property recording which parameters might be 
  * dereferenced unconditionally.
  * 
  * @author David Hovemeyer
  */
-public class UnconditionalDerefProperty implements MethodProperty<UnconditionalDerefProperty> {
+public class UnconditionalDerefProperty {
 	private int unconditionalDerefParamSet;
 	
 	/**
@@ -122,10 +120,6 @@ public class UnconditionalDerefProperty implements MethodProperty<UnconditionalD
 	 */
 	public boolean isEmpty() {
 		return unconditionalDerefParamSet == 0;
-	}
-
-	public void makeSameAs(UnconditionalDerefProperty other) {
-		this.unconditionalDerefParamSet = other.unconditionalDerefParamSet;
 	}
 	
 	public String toString() {

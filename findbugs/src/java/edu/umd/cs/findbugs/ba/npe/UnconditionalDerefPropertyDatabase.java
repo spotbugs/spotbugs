@@ -20,7 +20,7 @@
 package edu.umd.cs.findbugs.ba.npe;
 
 import edu.umd.cs.findbugs.ba.interproc.MethodPropertyDatabase;
-import edu.umd.cs.findbugs.ba.interproc.MethodPropertyDatabaseFormatException;
+import edu.umd.cs.findbugs.ba.interproc.PropertyDatabaseFormatException;
 
 /**
  * Method property database storing which method parameters might
@@ -37,14 +37,14 @@ public class UnconditionalDerefPropertyDatabase extends MethodPropertyDatabase<U
 	 */
 	//@Override
 	protected UnconditionalDerefProperty decodeProperty(String propStr)
-			throws MethodPropertyDatabaseFormatException {
+			throws PropertyDatabaseFormatException {
 		try {
 			int unconditionalDerefSet = Integer.parseInt(propStr);
 			UnconditionalDerefProperty prop = new UnconditionalDerefProperty();
 			prop.setUnconditionalDerefParamSet(unconditionalDerefSet);
 			return prop;
 		} catch (NumberFormatException e) {
-			throw new MethodPropertyDatabaseFormatException("Invalid unconditional deref param set: " + propStr);
+			throw new PropertyDatabaseFormatException("Invalid unconditional deref param set: " + propStr);
 		}
 	}
 

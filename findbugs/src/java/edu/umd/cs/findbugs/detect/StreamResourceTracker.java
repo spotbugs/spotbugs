@@ -70,7 +70,7 @@ public class StreamResourceTracker implements ResourceTracker<Stream> {
 	 *                              where streams are created
 	 * @param lookupFailureCallback used when class hierarchy lookups fail
 	 */
-	@SuppressWarnings("EI2")
+	//@SuppressWarnings("EI2")
 	public StreamResourceTracker(StreamFactory[] streamFactoryList,
 	                             RepositoryLookupFailureCallback lookupFailureCallback) {
 

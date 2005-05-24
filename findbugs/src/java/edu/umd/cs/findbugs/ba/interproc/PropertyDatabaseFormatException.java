@@ -1,5 +1,5 @@
 /*
- * Bytecode Analysis Framework
+ * Bytecode analysis framework
  * Copyright (C) 2005, University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
@@ -16,12 +16,16 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+
 package edu.umd.cs.findbugs.ba.interproc;
 
-public class MethodPropertyDatabaseFormatException extends Exception {
+/**
+ * @author David Hovemeyer
+ */
+public class PropertyDatabaseFormatException extends Exception {
 	private static final long serialVersionUID = 1L;
-
-	public MethodPropertyDatabaseFormatException(String message) {
+	
+	public PropertyDatabaseFormatException(String message) {
 		super(message);
 	}
 }

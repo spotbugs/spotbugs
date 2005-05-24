@@ -19,7 +19,7 @@
 package edu.umd.cs.findbugs.ba.npe;
 
 import edu.umd.cs.findbugs.ba.interproc.MethodPropertyDatabase;
-import edu.umd.cs.findbugs.ba.interproc.MethodPropertyDatabaseFormatException;
+import edu.umd.cs.findbugs.ba.interproc.PropertyDatabaseFormatException;
 
 /**
  * MethodPropertyDatabase for keeping track of which methods
@@ -32,7 +32,7 @@ public class MayReturnNullPropertyDatabase extends MethodPropertyDatabase<MayRet
 
 	//@Override
 	protected MayReturnNullProperty decodeProperty(String propStr)
-			throws MethodPropertyDatabaseFormatException {
+			throws PropertyDatabaseFormatException {
 		return new MayReturnNullProperty(Boolean.valueOf(propStr).booleanValue());
 	}
 
