@@ -38,11 +38,11 @@ import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.JavaClass;
 
 import edu.umd.cs.findbugs.ba.ch.Subtypes;
-import edu.umd.cs.findbugs.ba.interproc.MethodPropertyDatabase;
 import edu.umd.cs.findbugs.ba.interproc.PropertyDatabase;
 import edu.umd.cs.findbugs.ba.interproc.PropertyDatabaseFormatException;
 import edu.umd.cs.findbugs.ba.npe.MayReturnNullPropertyDatabase;
 import edu.umd.cs.findbugs.ba.npe.UnconditionalDerefPropertyDatabase;
+import edu.umd.cs.findbugs.ba.type.FieldStoreTypeDatabase;
 
 
 /**
@@ -71,6 +71,7 @@ public class AnalysisContext implements AnalysisFeatures {
 	// Interprocedural fact databases
 	private MayReturnNullPropertyDatabase mayReturnNullDatabase;
 	private UnconditionalDerefPropertyDatabase unconditionalDerefDatabase;
+	private FieldStoreTypeDatabase fieldStoreTypeDatabase;
 	private boolean interprocDatabasesLoaded;
 
     /*
@@ -239,6 +240,10 @@ public class AnalysisContext implements AnalysisFeatures {
 					new UnconditionalDerefPropertyDatabase(),
 					UnconditionalDerefPropertyDatabase.DEFAULT_FILENAME,
 					"unconditional deref database");
+			fieldStoreTypeDatabase = loadMethodPropertyDatabase(
+					new FieldStoreTypeDatabase(),
+					FieldStoreTypeDatabase.DEFAULT_FILENAME,
+					"field store type database");
 			interprocDatabasesLoaded = true;
 		}
 	}
@@ -282,6 +287,16 @@ public class AnalysisContext implements AnalysisFeatures {
 	 */
 	public UnconditionalDerefPropertyDatabase getUnconditionalDerefDatabase() {
 		return unconditionalDerefDatabase;
+	}
+	
+	/**
+	 * Get the property database recording the types of values stored
+	 * into fields.
+	 * 
+	 * @return the database, or null if there is no database available
+	 */
+	public FieldStoreTypeDatabase getFieldStoreTypeDatabase() {
+		return fieldStoreTypeDatabase;
 	}
 
 	/**

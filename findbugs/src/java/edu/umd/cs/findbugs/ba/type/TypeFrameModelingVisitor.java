@@ -23,10 +23,13 @@ import org.apache.bcel.Constants;
 import org.apache.bcel.generic.*;
 
 import edu.umd.cs.findbugs.ba.AbstractFrameModelingVisitor;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.Debug;
+import edu.umd.cs.findbugs.ba.Hierarchy;
 import edu.umd.cs.findbugs.ba.InvalidBytecodeException;
 import edu.umd.cs.findbugs.ba.Location;
+import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
@@ -52,6 +55,8 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 	private boolean instanceOfFollowedByBranch;
 	private Type instanceOfType;
 	private ValueNumber instanceOfValueNumber;
+	
+	private FieldStoreTypeDatabase database;
 
 	/**
 	 * Constructor.
@@ -116,6 +121,17 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 	 */
 	public ValueNumber getInstanceOfValueNumber() {
 		return instanceOfValueNumber;
+	}
+	
+	/**
+	 * Set the field store type database.
+	 * We can use this to get more accurate types for values loaded
+	 * from fields.
+	 * 
+	 * @param database the FieldStoreTypeDatabase
+	 */
+	public void setFieldStoreTypeDatabase(FieldStoreTypeDatabase database) {
+		this.database = database;
 	}
 
 	public Type getDefaultValue() {
@@ -261,13 +277,34 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 	}
 
 	public void visitGETSTATIC(GETSTATIC obj) {
-		consumeStack(obj);
-		pushValue(obj.getType(getCPG()));
+		modelFieldLoad(obj);
 	}
 
 	public void visitGETFIELD(GETFIELD obj) {
+		modelFieldLoad(obj);
+	}
+	
+	public void modelFieldLoad(FieldInstruction obj) {
 		consumeStack(obj);
-		pushValue(obj.getType(getCPG()));
+
+		Type loadType = obj.getType(getCPG());
+		if (database != null && (loadType instanceof ReferenceType)) {
+			// Check the field store type database to see if we can
+			// get a more precise type for this load.
+			try {
+				XField xfield = Hierarchy.findXField(obj, getCPG());
+				if (xfield != null) {
+					FieldStoreType property = database.getProperty(xfield);
+					if (property != null) {
+						loadType = property.getLoadType((ReferenceType) loadType);
+					}
+				}
+			} catch (ClassNotFoundException e) {
+				AnalysisContext.currentAnalysisContext().getLookupFailureCallback().reportMissingClass(e);
+			}
+		}
+		
+		pushValue(loadType);
 	}
 
 	public void visitINVOKESTATIC(INVOKESTATIC obj) {

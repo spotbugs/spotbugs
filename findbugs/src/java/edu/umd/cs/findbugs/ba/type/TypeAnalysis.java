@@ -206,6 +206,17 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 		this.valueNumberDataflow = valueNumberDataflow;
 		this.visitor.setValueNumberDataflow(valueNumberDataflow);
 	}
+	
+	/**
+	 * Set the FieldStoreTypeDatabase.
+	 * This can be used to get more accurate types for values loaded
+	 * from fields.
+	 * 
+	 * @param database the FieldStoreTypeDatabase 
+	 */
+	public void setFieldStoreTypeDatabase(FieldStoreTypeDatabase database) {
+		visitor.setFieldStoreTypeDatabase(database);
+	}
 
 	/**
 	 * Get the set of exceptions that can be thrown on given edge.

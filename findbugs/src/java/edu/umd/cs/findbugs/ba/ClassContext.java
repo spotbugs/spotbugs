@@ -434,6 +434,11 @@ public class ClassContext implements AnalysisFeatures {
 						typeAnalysis.setValueNumberDataflow(getValueNumberDataflow(method));
 					}
 					
+					// Field store type database.
+					// If present, this can give us more accurate type information
+					// for values loaded from fields.
+					typeAnalysis.setFieldStoreTypeDatabase(analysisContext.getFieldStoreTypeDatabase());
+					
 					TypeDataflow typeDataflow = new TypeDataflow(cfg, typeAnalysis);
 			        typeDataflow.execute();
 
