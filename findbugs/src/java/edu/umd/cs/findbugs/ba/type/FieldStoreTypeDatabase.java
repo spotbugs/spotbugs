@@ -30,6 +30,8 @@ import edu.umd.cs.findbugs.ba.interproc.PropertyDatabaseFormatException;
  */
 public class FieldStoreTypeDatabase
 	extends FieldPropertyDatabase<FieldStoreType> {
+	
+	public static final String DEFAULT_FILENAME = "fieldStoreTypes.db";
 
 	//@Override
 	protected FieldStoreType decodeProperty(String propStr) throws PropertyDatabaseFormatException {

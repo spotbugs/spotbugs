@@ -134,7 +134,7 @@ public class TrainFieldStoreTypes implements TrainingDetector {
 
 	public void report() {
 		try {
-			database.writeToFile("fieldStoreTypes.db");
+			database.writeToFile(FieldStoreTypeDatabase.DEFAULT_FILENAME);
 		} catch (IOException e) {
 			bugReporter.logError("Error writing store type database", e);
 		}
