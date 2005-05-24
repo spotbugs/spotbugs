@@ -22,7 +22,7 @@ package edu.umd.cs.findbugs.detect;
 import java.util.Map;
 
 import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.Detector;
+import edu.umd.cs.findbugs.NonReportingDetector;
 import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.bcp.Invoke;
@@ -30,7 +30,7 @@ import edu.umd.cs.findbugs.visitclass.AnnotationVisitor;
 import edu.umd.cs.findbugs.visitclass.Constants2;
 
 public class NoteCheckReturnValue extends AnnotationVisitor 
-  implements Detector, Constants2, StatelessDetector {
+  implements NonReportingDetector, Constants2, StatelessDetector {
 
 	private BugReporter bugReporter;
 

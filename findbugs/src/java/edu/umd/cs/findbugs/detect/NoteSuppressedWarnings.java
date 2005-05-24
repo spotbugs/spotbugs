@@ -30,12 +30,12 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.ClassAnnotation;
 import edu.umd.cs.findbugs.ClassWarningSuppressor;
 import edu.umd.cs.findbugs.DelegatingBugReporter;
-import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.FieldAnnotation;
 import edu.umd.cs.findbugs.FieldWarningSuppressor;
 import edu.umd.cs.findbugs.FilterBugReporter;
 import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.MethodWarningSuppressor;
+import edu.umd.cs.findbugs.NonReportingDetector;
 import edu.umd.cs.findbugs.PackageWarningSuppressor;
 import edu.umd.cs.findbugs.SuppressionMatcher;
 import edu.umd.cs.findbugs.ba.ClassContext;
@@ -43,7 +43,7 @@ import edu.umd.cs.findbugs.visitclass.AnnotationVisitor;
 import edu.umd.cs.findbugs.visitclass.Constants2;
 
 public class NoteSuppressedWarnings extends AnnotationVisitor 
-  implements Detector, Constants2 {
+  implements NonReportingDetector, Constants2 {
 
 	private static Set<String> packages = new HashSet<String>();
 
