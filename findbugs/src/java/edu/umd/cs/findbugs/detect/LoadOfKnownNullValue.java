@@ -88,7 +88,7 @@ public class LoadOfKnownNullValue implements Detector {
 	
 				if (next instanceof ARETURN) {
 					// probably stored for duration of finally block
-					// continue;
+					continue;
 				}
 				if (sourceLineAnnotation.getStartLine() > prevSourceLineAnnotation.getEndLine()) {
 					// probably stored for duration of finally block
