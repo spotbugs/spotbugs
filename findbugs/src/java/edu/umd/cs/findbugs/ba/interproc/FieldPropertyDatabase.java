@@ -72,7 +72,7 @@ public abstract class FieldPropertyDatabase<Property>
 		writer.write(",");
 		writer.write(key.getSignature());
 		writer.write(",");
-		writer.write(key.getAccessFlags());
+		writer.write(String.valueOf(key.getAccessFlags()));
 	}
 
 }
