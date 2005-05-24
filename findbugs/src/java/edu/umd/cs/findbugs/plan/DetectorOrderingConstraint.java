@@ -17,7 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package edu.umd.cs.findbugs;
+package edu.umd.cs.findbugs.plan;
 
 /**
  * An ordering constraint which must be taken into account
@@ -27,9 +27,28 @@ package edu.umd.cs.findbugs;
  * @author David Hovemeyer
  */
 public class DetectorOrderingConstraint {
+	/*
+	// NOTYET
+	private DetectorFactorySelector earlier;
+	private DetectorFactorySelector later;
+	
+	public DetectorOrderingConstraint(DetectorFactorySelector earlier, DetectorFactorySelector later) {
+		this.earlier = earlier;
+		this.later = later;
+	}
+	
+	public DetectorFactorySelector getEarlier() {
+		return earlier;
+	}
+	
+	public DetectorFactorySelector getLater() {
+		return later;
+	}
+	 */
+
 	private String earlierDetector;
 	private String laterDetector;
-
+	
 	/**
 	 * Constructor.
 	 * Defines a pair of Detectors with an ordering constraint.

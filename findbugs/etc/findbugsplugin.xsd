@@ -54,8 +54,32 @@
 		<xsd:attribute name="experimental" type="xsd:boolean" use="optional"/>
 	</xsd:complexType>
 	
+	<xsd:complexType name="OrderingConstraintType">
+		<xsd:attribute name="earlier" type="ClassType"/>
+		<xsd:attribute name="later" type="ClassType"/>
+	</xsd:complexType>
+	
+	<xsd:complexType name="FirstInPassConstraintType">
+		<xsd:attribute name="detector" type="ClassType"/>
+	</xsd:complexType>
+	
+	<xsd:complexType name="OrderingConstraintListType">
+		<xsd:sequence>
+			<xsd:choice minOccurs="0" maxOccurs="unbounded">
+				<xsd:element name="SplitPass" type="OrderingConstraintType"></xsd:element>
+				<xsd:element name="WithinPass" type="OrderingConstraintType"></xsd:element>
+				<xsd:element name="FirstInPass" type="FirstInPassConstraintType"></xsd:element>
+			</xsd:choice>
+		</xsd:sequence>
+	</xsd:complexType>
+	
 	<xsd:complexType name="FindBugsPluginType" mixed="true">
 		<xsd:sequence>
+			<xsd:element
+				name="OrderingConstraints"
+				type="OrderingConstraintListType"
+				minOccurs="0"
+				maxOccurs="1"/>
 			<xsd:element name="Detector" type="DetectorType" minOccurs="1" maxOccurs="unbounded"/>
 			<xsd:element name="BugPattern" type="BugPatternType" minOccurs="1" maxOccurs="unbounded"/>
 		</xsd:sequence>

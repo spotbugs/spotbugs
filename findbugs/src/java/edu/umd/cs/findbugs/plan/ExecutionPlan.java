@@ -20,7 +20,6 @@
 package edu.umd.cs.findbugs.plan;
 
 import edu.umd.cs.findbugs.DetectorFactory;
-import edu.umd.cs.findbugs.DetectorOrderingConstraint;
 import edu.umd.cs.findbugs.Plugin;
 
 import edu.umd.cs.findbugs.graph.DepthFirstSearch;

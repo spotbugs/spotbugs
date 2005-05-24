@@ -11,6 +11,10 @@
                 provider="FindBugs project" 
                 website="http://findbugs.sourceforge.net"
                 >
+				
+  <OrderingConstraints>
+  </OrderingConstraints>
+				
   <Detector class="edu.umd.cs.findbugs.detect.NoteSuppressedWarnings" 
 	        speed="fast"
 	        reports="TESTING"

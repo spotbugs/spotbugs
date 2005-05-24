@@ -35,6 +35,9 @@ import org.dom4j.Element;
 import org.dom4j.Node;
 import org.dom4j.io.SAXReader;
 
+import edu.umd.cs.findbugs.plan.DetectorOrderingConstraint;
+import edu.umd.cs.findbugs.plan.SingleDetectorFactorySelector;
+
 /**
  * Loader for a FindBugs plugin.
  * A plugin is a jar file containing two metadata files,
@@ -243,7 +246,10 @@ public class PluginLoader extends URLClassLoader {
 
 				// Create the constraint
 				DetectorOrderingConstraint constraint = new DetectorOrderingConstraint(
-					earlierClass, laterClass);
+						earlierClass, laterClass);
+//				DetectorOrderingConstraint constraint = new DetectorOrderingConstraint(
+//					new SingleDetectorFactorySelector(earlierClass),
+//					new SingleDetectorFactorySelector(laterClass));
 
 				// Add the constraint to the plugin
 				if (constraintElement.getName().equals("SplitPass"))

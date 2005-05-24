@@ -56,6 +56,7 @@ import edu.umd.cs.findbugs.ba.URLClassPath;
 import edu.umd.cs.findbugs.config.UserPreferences;
 import edu.umd.cs.findbugs.filter.Filter;
 import edu.umd.cs.findbugs.filter.FilterException;
+import edu.umd.cs.findbugs.filter.Matcher;
 import edu.umd.cs.findbugs.visitclass.Constants2;
 
 /**
@@ -894,7 +895,7 @@ public class FindBugs implements Constants2, ExitCodes {
 	public void setFilter(String filterFileName, boolean include) throws IOException, FilterException {
 		Filter filter = new Filter(filterFileName);
 		BugReporter origBugReporter = bugReporter.getRealBugReporter();
-		BugReporter filterBugReporter = new FilterBugReporter(origBugReporter, filter, include);
+		BugReporter filterBugReporter = new FilterBugReporter(origBugReporter, (Matcher)filter, include);
 		bugReporter.setRealBugReporter(filterBugReporter);
 	}
 

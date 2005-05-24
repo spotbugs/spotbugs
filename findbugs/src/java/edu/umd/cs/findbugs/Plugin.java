@@ -22,6 +22,8 @@ package edu.umd.cs.findbugs;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import edu.umd.cs.findbugs.plan.DetectorOrderingConstraint;
+
 /**
  * A FindBugs plugin.
  * A plugin contains executable Detector classes, as well as meta
