@@ -40,11 +40,6 @@ public class MayReturnNullPropertyDatabase extends MethodPropertyDatabase<MayRet
 	protected String encodeProperty(MayReturnNullProperty property) {
 		return property.mayReturnNull() ? "true" : "false";
 	}
-
-	//@Override
-	protected MayReturnNullProperty createDefault() {
-		return new MayReturnNullProperty(false);
-	}
 	
 	public static void main(String[] args) throws Exception {
 		MayReturnNullPropertyDatabase database = new MayReturnNullPropertyDatabase();

@@ -55,10 +55,5 @@ public class UnconditionalDerefPropertyDatabase extends MethodPropertyDatabase<U
 	protected String encodeProperty(UnconditionalDerefProperty property) {
 		return String.valueOf(property.getUnconditionalDerefParamSet());
 	}
-	
-	//@Override
-	protected UnconditionalDerefProperty createDefault() {
-		return new UnconditionalDerefProperty();
-	}
 
 }

@@ -183,11 +183,6 @@ public abstract class PropertyDatabase<KeyType, ValueType> {
 	 * @param key    the key
 	 */
 	protected abstract void writeKey(Writer writer, KeyType key) throws IOException;
-	
-	/**
-	 * Create a default property.
-	 */
-	protected abstract ValueType createDefault();
 
 	/**
 	 * Subclasses must define this to instantiate the actual property
