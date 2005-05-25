@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.plan;
 
 import edu.umd.cs.findbugs.DetectorFactory;
+import edu.umd.cs.findbugs.DetectorFactoryChooser;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.Plugin;
 
@@ -49,6 +50,7 @@ public class ExecutionPlan {
 	static final boolean DEBUG = Boolean.getBoolean("findbugs.execplan.debug");
 
 	private List<Plugin> pluginList;
+	private DetectorFactoryChooser factoryChooser;
 	private LinkedList<AnalysisPass> passList;
 	private Map<String, DetectorFactory> factoryMap;
 	private List<DetectorOrderingConstraint> interPassConstraintList;
@@ -61,6 +63,11 @@ public class ExecutionPlan {
 	 */
 	public ExecutionPlan() {
 		this.pluginList = new LinkedList<Plugin>();
+		this.factoryChooser = new DetectorFactoryChooser() {
+			public boolean choose(DetectorFactory factory) {
+				return true;
+			}
+		};
 		this.passList = new LinkedList<AnalysisPass>();
 		this.factoryMap = new HashMap<String, DetectorFactory>();
 		this.interPassConstraintList = new LinkedList<DetectorOrderingConstraint>();
@@ -86,6 +93,14 @@ public class ExecutionPlan {
 						" is defined by multiple plugins");
 			}
 		}
+	}
+	
+	/**
+	 * Set the DetectorFactoryChooser to use to select which
+	 * detectors to enable.
+	 */
+	public void setDetectorFactoryChooser(DetectorFactoryChooser factoryChooser) {
+		this.factoryChooser = factoryChooser;
 	}
 
 	/**
@@ -183,7 +198,7 @@ public class ExecutionPlan {
 		Set<DetectorFactory> result = new HashSet<DetectorFactory>();
 		for (Iterator<DetectorFactory> i = candidateSet.iterator(); i.hasNext();) {
 			DetectorFactory factory = i.next();
-			if (selector.selectFactory(factory)) {
+			if (factoryChooser.choose(factory) && selector.selectFactory(factory)) {
 				result.add(factory);
 			}
 		}
