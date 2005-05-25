@@ -37,6 +37,7 @@ public class DetectorFactory {
 	
 	private Plugin plugin;
 	private final Class<? extends Detector> detectorClass;
+	private int positionSpecifiedInPluginDescriptor;
 	private boolean defEnabled;
 	private final String speed;
 	private final String reports;
@@ -44,7 +45,6 @@ public class DetectorFactory {
 	private String detailHTML;
 	private int priorityAdjustment;
 	private boolean hidden;
-	private boolean firstInPass;
 	
 	private Method setAnalysisContext;
 
@@ -72,7 +72,6 @@ public class DetectorFactory {
 		this.requireJRE = requireJRE;
 		this.priorityAdjustment = 0;
 		this.hidden = false;
-		this.firstInPass = false;
 
 		try {
 			setAnalysisContext = detectorClass.getDeclaredMethod(
@@ -84,6 +83,27 @@ public class DetectorFactory {
 
 	private static final Class[] constructorArgTypes = new Class[]{BugReporter.class};
 
+	/**
+	 * Set the overall position in which this detector was specified
+	 * in the plugin descriptor.
+	 * 
+	 * @param positionSpecifiedInPluginDescriptor position in plugin descriptor
+	 */
+	public void setPositionSpecifiedInPluginDescriptor(
+			int positionSpecifiedInPluginDescriptor) {
+		this.positionSpecifiedInPluginDescriptor = positionSpecifiedInPluginDescriptor;
+	}
+	
+	/**
+	 * Get the overall position in which this detector was specified
+	 * in the plugin descriptor.
+	 * 
+	 * @return position in plugin descriptor
+	 */
+	public int getPositionSpecifiedInPluginDescriptor() {
+		return positionSpecifiedInPluginDescriptor;
+	}
+	
 	/**
 	 * Get the Plugin that this Detector is part of.
 	 * 
@@ -192,24 +212,6 @@ public class DetectorFactory {
 	 */
 	public int getPriorityAdjustment() {
 		return priorityAdjustment;
-	}
-
-	/**
-	 * Mark whether or not this detector needs to be first in its analysis pass.
-	 *
-	 * @param firstInPass true if the detector should be first in its pass,
-	 *                    false if it does not
-	 */
-	public void setFirstInPass(boolean firstInPass) {
-		this.firstInPass = firstInPass;
-	}
-
-	/**
-	 * Return whether or not this detector needs to be first in
-	 * its analysis pass.
-	 */
-	public boolean isFirstInPass() {
-		return firstInPass;
 	}
 
 	/**

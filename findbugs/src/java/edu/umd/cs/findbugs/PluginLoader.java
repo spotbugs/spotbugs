@@ -182,6 +182,7 @@ public class PluginLoader extends URLClassLoader {
 		// Create a DetectorFactory for all Detector nodes
 		try {
 			List<Node> detectorNodeList = pluginDescriptor.selectNodes("/FindbugsPlugin/Detector");
+			int detectorCount = 0;
 			for (Iterator<Node> i = detectorNodeList.iterator(); i.hasNext();) {
 				Node detectorNode = i.next();
 				String className = detectorNode.valueOf("@class");
@@ -204,6 +205,7 @@ public class PluginLoader extends URLClassLoader {
 				        speed, reports, requireJRE);
 				if (Boolean.valueOf(hidden).booleanValue())
 					factory.setHidden(true);
+				factory.setPositionSpecifiedInPluginDescriptor(detectorCount++);
 				plugin.addDetectorFactory(factory);
 
 				// Find Detector node in one of the messages files,
