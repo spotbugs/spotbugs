@@ -92,6 +92,7 @@ import java.util.List;
  * <li>pluginList         (list of plugin Jar files to load)
  * <li>systemProperty     (a system property to set)
  * <li>workHard           (boolean default false)
+ * <li>relaxed            (boolean - default false)
  * <li>adjustExperimental (boolean default false)
  * </ul>
  * Of these arguments, the <b>home</b> is required.
@@ -103,7 +104,7 @@ import java.util.List;
  * @author Mike Fagan <a href="mailto:mfagan@tde.com">mfagan@tde.com</a>
  * @author Michael Tamm <a href="mailto:mail@michaeltamm.de">mail@michaeltamm.de</a>
  *
- * @version $Revision: 1.32 $
+ * @version $Revision: 1.33 $
  *
  * @since Ant 1.5
  *
@@ -122,6 +123,7 @@ public class FindBugsTask extends Task {
 	private boolean failOnError = false;
 	private String errorProperty = null;
 	private boolean workHard = false;
+	private boolean relaxed = false;
 	private boolean adjustExperimental = false;
 	private File homeDir = null;
 	private File projectFile = null;
@@ -191,6 +193,15 @@ public class FindBugsTask extends Task {
 	 */
 	public void setWorkHard(boolean workHard){
 		this.workHard = workHard;   
+	}
+
+	/**
+	 * Set the relaxed flag.
+	 * 
+	 * @param relaxed true if we want findbugs to run with relaxed option enabled
+	 */
+	public void setRelaxed(boolean relaxed) {
+		this.relaxed = relaxed;
 	}
 	
 	/**
@@ -662,6 +673,9 @@ public class FindBugsTask extends Task {
 		if ( outputFileName != null ) {
 			addArg("-outputFile");
 			addArg(outputFileName);
+		}
+		if ( relaxed ) {
+			addArg("-relaxed");
 		}
         
 		addArg("-exitcode");
