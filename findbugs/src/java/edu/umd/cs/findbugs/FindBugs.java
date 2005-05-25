@@ -57,6 +57,9 @@ import edu.umd.cs.findbugs.config.UserPreferences;
 import edu.umd.cs.findbugs.filter.Filter;
 import edu.umd.cs.findbugs.filter.FilterException;
 import edu.umd.cs.findbugs.filter.Matcher;
+import edu.umd.cs.findbugs.plan.AnalysisPass;
+import edu.umd.cs.findbugs.plan.ExecutionPlan;
+import edu.umd.cs.findbugs.plan.OrderingConstraintException;
 import edu.umd.cs.findbugs.visitclass.Constants2;
 
 /**
@@ -818,13 +821,15 @@ public class FindBugs implements Constants2, ExitCodes {
 	private Project project;
 	private UserPreferences userPreferences;
 	private List<ClassObserver> classObserverList;
-	private Detector detectors [];
+	private ExecutionPlan executionPlan;
 	private FindBugsProgress progressCallback;
 	private ClassScreener classScreener;
 	private AnalysisContext analysisContext;
 	private String currentClass;
 	private Map<String,Long> detectorTimings;
 	private boolean trainingMode;
+	
+	private int passCount;
 
 	/* ----------------------------------------------------------------------
 	 * Public methods
@@ -971,8 +976,14 @@ public class FindBugs implements Constants2, ExitCodes {
 		// as the AnalysisContext
 		bugReporter.setEngine(this);
 
-		// Create detectors
-		createDetectors();
+		// Create execution plan
+		try {
+			createExecutionPlan();
+		} catch (OrderingConstraintException e) {
+			IOException ioe = new IOException("Invalid detector ordering constraints");
+			ioe.initCause(e);
+			throw ioe;
+		}
 
 		// Clear the repository of classes
 		analysisContext.clearRepository();
@@ -1010,14 +1021,9 @@ public class FindBugs implements Constants2, ExitCodes {
 				additionalAuxClasspathEntryList);
 		}
 		
-
-		
 		// Add "extra" aux classpath entries needed to ensure that
 		// skipped classes can be referenced.
 		addCollectionToClasspath(additionalAuxClasspathEntryList);
-
-		// Callback for progress dialog: analysis is starting
-		progressCallback.startAnalysis(repositoryClassList.size());
 
 		// Examine all classes for bugs.
 		// Don't examine the same class more than once.
@@ -1026,39 +1032,13 @@ public class FindBugs implements Constants2, ExitCodes {
 		
 		if (DEBUG)
 			detectorTimings = new HashMap<String,Long>();
-		
-		Set<String> examinedClassSet = new HashSet<String>();
-		for (Iterator<String> i = repositoryClassList.iterator(); i.hasNext();) {
-			String className = i.next();
-			if (examinedClassSet.add(className))
-				examineClass(className);
-		}
-		
-		if (DEBUG) {
-			long total = 0;
-			Iterator<Long> timingsIt = detectorTimings.values().iterator();
-			while (timingsIt.hasNext()) {
-				total += timingsIt.next().longValue();
-			}
-			System.out.println();
-			System.out.println("Detector Timings");
-			Iterator<Map.Entry<String,Long>> it = detectorTimings.entrySet().iterator();
-			while (it.hasNext()) {
-				Map.Entry<String,Long> entry = it.next();
-				String detectorName = entry.getKey();
-				long detectorTime = entry.getValue().longValue();
-				System.out.println(detectorName + ": " + detectorTime + " ms  -> (" + (detectorTime * 100.0f / (float)total) + ") %");
-			}
-			System.out.println();
-			detectorTimings = null;
-		}
 
-		// Callback for progress dialog: analysis finished
-		progressCallback.finishPerClassAnalysis();
-
-		// Force any detectors which defer work until all classes have
-		// been seen to do that work.
-		this.reportFinal();
+		// Execute each analysis pass in the execution plan
+		for (Iterator<AnalysisPass> i = executionPlan.passIterator(); i.hasNext();) {
+			AnalysisPass analysisPass = i.next();
+			analysisPass.createDetectors(bugReporter);
+			executeAnalysisPass(analysisPass, repositoryClassList);
+		}
 
 		// Flush any queued bug reports
 		bugReporter.finish();
@@ -1134,24 +1114,40 @@ public class FindBugs implements Constants2, ExitCodes {
 	 * ---------------------------------------------------------------------- */
 
 	/**
-	 * Create Detectors for each DetectorFactory which is enabled.
-	 * This will populate the detectors array.
+	 * Create the ExecutionPlan.
+	 * 
+	 * @throws OrderingConstraintException 
 	 */
-	private void createDetectors() {
-		ArrayList<Detector> result = new ArrayList<Detector>();
+	private void createExecutionPlan() throws OrderingConstraintException {
+		executionPlan = new ExecutionPlan();
 		
-		Iterator<DetectorFactory> i = DetectorFactoryCollection.instance().factoryIterator();
-		while (i.hasNext()) {
-			DetectorFactory factory = i.next();
-			if (isDetectorEnabled(factory)) {
-				Detector detector = factory.create(bugReporter);
-				result.add(detector);
+		// Only enabled detectors should be part of the execution plan
+		executionPlan.setDetectorFactoryChooser(new DetectorFactoryChooser() {
+			public boolean choose(DetectorFactory factory) {
+				boolean enabled = isDetectorEnabled(factory);
+//				if (ExecutionPlan.DEBUG) {
+//					System.out.println(factory.getShortName() + ": enabled=" + enabled);
+//				}
+				return enabled;
 			}
+		});
+
+		// Add plugins
+		for (Iterator<Plugin> i = DetectorFactoryCollection.instance().pluginIterator(); i.hasNext();) {
+			Plugin plugin = i.next();
+			executionPlan.addPlugin(plugin);
 		}
 
-		detectors = result.toArray(new Detector[result.size()]);
+		// Build the plan
+		executionPlan.build();
 	}
 
+	/**
+	 * Determing whether or not given DetectorFactory should be enabled.
+	 * 
+	 * @param factory the DetectorFactory
+	 * @return true if the DetectorFactory should be enabled, false otherwise
+	 */
 	private boolean isDetectorEnabled(DetectorFactory factory) {
 		if (!factory.getPlugin().isEnabled())
 			return false;
@@ -1310,14 +1306,70 @@ public class FindBugs implements Constants2, ExitCodes {
 	}
 
 	/**
+	 * Execute a single AnalysisPass.
+	 * 
+	 * @param analysisPass        the AnalysisPass 
+	 * @param repositoryClassList list of application classes in the repository 
+	 * @throws InterruptedException
+	 */
+	private void executeAnalysisPass(AnalysisPass analysisPass, List<String> repositoryClassList) throws InterruptedException {
+		// Callback for progress dialog: analysis is starting
+		progressCallback.startAnalysis(repositoryClassList.size());
+		
+		if (ExecutionPlan.DEBUG) {
+			System.out.println("************* Analysis pass " + (passCount++) + " *************");
+			for (Iterator<DetectorFactory> i = analysisPass.iterator(); i.hasNext();) {
+				DetectorFactory factory = i.next();
+				System.out.println("\t" + factory.getFullName());
+			}
+		}
+
+		// Examine each class in the application
+		Set<String> examinedClassSet = new HashSet<String>();
+		for (Iterator<String> i = repositoryClassList.iterator(); i.hasNext();) {
+			String className = i.next();
+			if (examinedClassSet.add(className))
+				examineClass(analysisPass, className);
+		}
+		
+		if (DEBUG) {
+			long total = 0;
+			Iterator<Long> timingsIt = detectorTimings.values().iterator();
+			while (timingsIt.hasNext()) {
+				total += timingsIt.next().longValue();
+			}
+			System.out.println();
+			System.out.println("Detector Timings");
+			Iterator<Map.Entry<String,Long>> it = detectorTimings.entrySet().iterator();
+			while (it.hasNext()) {
+				Map.Entry<String,Long> entry = it.next();
+				String detectorName = entry.getKey();
+				long detectorTime = entry.getValue().longValue();
+				System.out.println(detectorName + ": " + detectorTime + " ms  -> (" + (detectorTime * 100.0f / (float)total) + ") %");
+			}
+			System.out.println();
+			detectorTimings = null;
+		}
+
+		// Callback for progress dialog: analysis finished
+		progressCallback.finishPerClassAnalysis();
+
+		// Force any detectors which defer work until all classes have
+		// been seen to do that work.
+		this.reportFinal(analysisPass.getDetectorList());
+	}
+
+	/**
 	 * Examine a single class by invoking all of the Detectors on it.
 	 *
 	 * @param className the fully qualified name of the class to examine
 	 */
-	private void examineClass(String className) throws InterruptedException {
+	private void examineClass(AnalysisPass analysisPass, String className) throws InterruptedException {
 		if (DEBUG) System.out.println("Examining class " + className);
 
 		this.currentClass = className;
+		
+		Detector[] detectors = analysisPass.getDetectorList();
 
 		try {
 			JavaClass javaClass = Repository.lookupClass(className);
@@ -1416,7 +1468,7 @@ public class FindBugs implements Constants2, ExitCodes {
 	 * Call report() on all detectors, to give them a chance to
 	 * report any accumulated bug reports.
 	 */
-	private void reportFinal() throws InterruptedException {
+	private void reportFinal(Detector[] detectors) throws InterruptedException {
 		for (int i = 0; i < detectors.length; ++i) {
 			if (Thread.interrupted())
 				throw new InterruptedException();
