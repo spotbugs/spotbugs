@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.plan;
 
 import edu.umd.cs.findbugs.DetectorFactory;
+import edu.umd.cs.findbugs.Plugin;
 
 /**
  * Select all detector factories for reporting detectors.
@@ -27,12 +28,17 @@ import edu.umd.cs.findbugs.DetectorFactory;
  * @author daveho
  */
 public class ReportingDetectorFactorySelector implements DetectorFactorySelector {
+	private Plugin plugin;
+	
+	public ReportingDetectorFactorySelector(Plugin plugin) {
+		this.plugin = plugin;
+	}
 
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.plan.DetectorFactorySelector#selectFactory(edu.umd.cs.findbugs.DetectorFactory)
 	 */
 	public boolean selectFactory(DetectorFactory factory) {
-		return factory.isReportingDetector();
+		return plugin == factory.getPlugin() && factory.isReportingDetector();
 	}
 
 	public String toString() {

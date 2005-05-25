@@ -246,8 +246,8 @@ public class PluginLoader extends URLClassLoader {
 
 				// Create the constraint
 				DetectorOrderingConstraint constraint = new DetectorOrderingConstraint(
-					new SingleDetectorFactorySelector(earlierClass),
-					new SingleDetectorFactorySelector(laterClass));
+					new SingleDetectorFactorySelector(plugin, earlierClass),
+					new SingleDetectorFactorySelector(plugin, laterClass));
 
 				// Add the constraint to the plugin
 				if (constraintElement.getName().equals("SplitPass"))

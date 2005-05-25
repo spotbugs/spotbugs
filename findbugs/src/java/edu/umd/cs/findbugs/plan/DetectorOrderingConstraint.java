@@ -1,6 +1,6 @@
 /*
  * FindBugs - Find bugs in Java programs
- * Copyright (C) 2004, University of Maryland
+ * Copyright (C) 2004,2005 University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,7 +23,8 @@ package edu.umd.cs.findbugs.plan;
  * An ordering constraint which must be taken into account
  * when Detectors are run.
  *
- * @see Plugin
+ * @see edu.umd.cs.findbugs.Plugin
+ * @see edu.umd.cs.findbugs.plan.ExecutionPlan
  * @author David Hovemeyer
  */
 public class DetectorOrderingConstraint {

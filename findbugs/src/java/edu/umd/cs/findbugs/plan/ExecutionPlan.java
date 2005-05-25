@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.plan;
 
 import edu.umd.cs.findbugs.DetectorFactory;
+import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.Plugin;
 
 import edu.umd.cs.findbugs.graph.DepthFirstSearch;
@@ -68,13 +69,20 @@ public class ExecutionPlan {
 	/**
 	 * Add a Plugin whose Detectors should be added to the execution plan.
 	 */
-	public void addPlugin(Plugin plugin) {
+	public void addPlugin(Plugin plugin) throws OrderingConstraintException {
 		pluginList.add(plugin);
+		
+		// Add ordering constraints
 		copyTo(plugin.interPassConstraintIterator(), interPassConstraintList);
 		copyTo(plugin.intraPassConstraintIterator(), intraPassConstraintList);
+		
+		// Add detector factories
 		for (Iterator<DetectorFactory> i = plugin.detectorFactoryIterator(); i.hasNext(); ) {
 			DetectorFactory factory = i.next();
-			factoryMap.put(factory.getFullName(), factory);
+			if (factoryMap.put(factory.getFullName(), factory) != null) {
+				throw new OrderingConstraintException("Detector " + factory.getFullName() +
+						" is defined by multiple plugins");
+			}
 		}
 	}
 
@@ -95,30 +103,34 @@ public class ExecutionPlan {
 			" nodes in inter-pass constraint graph");
 
 		// Build list of analysis passes.
+		// This will assign all detectors referenced in inter- or intra-pass
+		// ordering constraints to passes.  Detectors with any ordering
+		// constraint will be left unassigned.
 		buildPassList(interPassConstraintGraph);
+		
+		// If there are any unassigned detectors, add them to the final pass
+		// (creating one if required).
+		if (factoryMap.size() > assignedToPassSet.size()) {
+			AnalysisPass lastPass;
+			if (passList.isEmpty()) {
+				lastPass = new AnalysisPass();
+				passList.add(lastPass);
+			} else {
+				lastPass = passList.getLast();
+			}
+			
+			HashSet<DetectorFactory> unassignedSet = new HashSet<DetectorFactory>(factoryMap.values());
+			unassignedSet.removeAll(assignedToPassSet);
+			for (Iterator<DetectorFactory> i = unassignedSet.iterator(); i.hasNext();) {
+				lastPass.addDetectorFactory(i.next());
+			}
+		}
 
 		// Sort detectors in each pass to satisfy intra-pass ordering constraints
 		for (Iterator<AnalysisPass> i = passList.iterator(); i.hasNext(); ) {
 			AnalysisPass pass = i.next();
 			sortPass(intraPassConstraintList, factoryMap, pass);
 		}
-
-		// All remaining detectors are added to the final pass.
-		// Make sure there is at least one pass
-		// TODO: implement this
-//		if (passList.isEmpty())
-//			passList.add(new AnalysisPass());
-//		AnalysisPass finalPass = passList.getLast();
-//		Set<String> remainingDetectorSet = new HashSet<String>();
-//		remainingDetectorSet.addAll(factoryMap.keySet());
-//		remainingDetectorSet.removeAll(nodeMap.keySet());
-//		for (Iterator<String> i = remainingDetectorSet.iterator(); i.hasNext(); ) {
-//			String detectorClass = i.next();
-//			DetectorFactory factory = factoryMap.get(detectorClass);
-//
-//			finalPass.addDetectorFactory(factory);
-//		}
-
 	}
 
 	private static<T> void copyTo(Iterator<T> iter, Collection<T> dest) {
@@ -340,8 +352,8 @@ public class ExecutionPlan {
 	}
 
 	public static void main(String[] argv) throws Exception {
-		edu.umd.cs.findbugs.DetectorFactoryCollection detectorFactoryCollection =
-			edu.umd.cs.findbugs.DetectorFactoryCollection.instance();
+		DetectorFactoryCollection detectorFactoryCollection =
+			DetectorFactoryCollection.instance();
 
 		ExecutionPlan execPlan = new ExecutionPlan();
 
