@@ -47,7 +47,7 @@ import java.util.Set;
  */
 public class ExecutionPlan {
 
-	static final boolean DEBUG = Boolean.getBoolean("findbugs.execplan.debug");
+	public static final boolean DEBUG = Boolean.getBoolean("findbugs.execplan.debug");
 
 	private List<Plugin> pluginList;
 	private DetectorFactoryChooser factoryChooser;
@@ -74,6 +74,15 @@ public class ExecutionPlan {
 		this.intraPassConstraintList = new LinkedList<DetectorOrderingConstraint>();
 		this.assignedToPassSet = new HashSet<DetectorFactory>();
 	}
+	
+	/**
+	 * Set the DetectorFactoryChooser to use to select which
+	 * detectors to enable.  This must be called before any Plugins
+	 * are added to the execution plan.
+	 */
+	public void setDetectorFactoryChooser(DetectorFactoryChooser factoryChooser) {
+		this.factoryChooser = factoryChooser;
+	}
 
 	/**
 	 * Add a Plugin whose Detectors should be added to the execution plan.
@@ -88,19 +97,13 @@ public class ExecutionPlan {
 		// Add detector factories
 		for (Iterator<DetectorFactory> i = plugin.detectorFactoryIterator(); i.hasNext(); ) {
 			DetectorFactory factory = i.next();
+			if (!factoryChooser.choose(factory))
+				continue;
 			if (factoryMap.put(factory.getFullName(), factory) != null) {
 				throw new OrderingConstraintException("Detector " + factory.getFullName() +
-						" is defined by multiple plugins");
+						" is defined by more than one plugin");
 			}
 		}
-	}
-	
-	/**
-	 * Set the DetectorFactoryChooser to use to select which
-	 * detectors to enable.
-	 */
-	public void setDetectorFactoryChooser(DetectorFactoryChooser factoryChooser) {
-		this.factoryChooser = factoryChooser;
 	}
 
 	/**
@@ -150,6 +153,13 @@ public class ExecutionPlan {
 			appendDetectorsToPass(unassignedSet, lastPass);
 		}
 	}
+	
+	/**
+	 * Get an Iterator over the AnalysisPasses.
+	 */
+	public Iterator<AnalysisPass> passIterator() {
+		return passList.iterator();
+	}
 
 	private static<T> void copyTo(Iterator<T> iter, Collection<T> dest) {
 		while (iter.hasNext()) {
@@ -198,7 +208,7 @@ public class ExecutionPlan {
 		Set<DetectorFactory> result = new HashSet<DetectorFactory>();
 		for (Iterator<DetectorFactory> i = candidateSet.iterator(); i.hasNext();) {
 			DetectorFactory factory = i.next();
-			if (factoryChooser.choose(factory) && selector.selectFactory(factory)) {
+			if (selector.selectFactory(factory)) {
 				result.add(factory);
 			}
 		}
@@ -242,8 +252,10 @@ public class ExecutionPlan {
 			Set<DetectorNode> earlierSet,
 			Set<DetectorNode> laterSet, DetectorOrderingConstraint constraint) throws OrderingConstraintException {
 		
+		// It is perfectly fine for a constraint to produce no edges
+		// if any detector it specifies is not enabled.
 		if (earlierSet.isEmpty() || laterSet.isEmpty())
-			throw new OrderingConstraintException("Constraint [" + constraint + "] selects no detectors");
+			return;
 		
 		for (Iterator<DetectorNode> i = earlierSet.iterator(); i.hasNext();) {
 			DetectorNode earlier = i.next();
@@ -294,7 +306,9 @@ public class ExecutionPlan {
 	}
 	
 	private void addPass(AnalysisPass pass) {
-		System.out.println("Adding pass " + passList.size());
+		if (DEBUG) {
+			System.out.println("Adding pass " + passList.size());
+		}
 		passList.add(pass);
 	}
 
