@@ -13,13 +13,18 @@
                 >
 				
   <OrderingConstraints>
+	<!--
+		NoteSuppressedWarnings and NoteCheckReturnValue should be run in
+		an earlier pass than all reporting detectors, including those in
+		other plugins.
+	-->
 	<SplitPass>
 		<Earlier class="edu.umd.cs.findbugs.detect.NoteSuppressedWarnings"/>
-		<LaterCategory name="reporting"/>
+		<LaterCategory name="reporting" spanplugins="true"/>
 	</SplitPass>
 	<SplitPass>
 		<Earlier class="edu.umd.cs.findbugs.detect.NoteCheckReturnValue"/>
-		<LaterCategory name="reporting"/>
+		<LaterCategory name="reporting" spanplugins="true"/>
 	</SplitPass>
   </OrderingConstraints>
 				

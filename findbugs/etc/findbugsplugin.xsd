@@ -66,6 +66,7 @@
 	
 	<xsd:complexType name="DetectorCategorySelectorType">
 		<xsd:attribute name="name" type="DetectorCategoryType" use="required"/>
+		<xsd:attribute name="spanplugins" type="xsd:boolean" use="optional" default="false"/>
 	</xsd:complexType>
 
 	<xsd:complexType name="OrderingConstraintType">
