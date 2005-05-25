@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs.plan;
 
 import edu.umd.cs.findbugs.DetectorFactory;
 
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -34,6 +35,7 @@ import java.util.List;
  */
 public class AnalysisPass {
 	private LinkedList<DetectorFactory> factoryList;
+	private HashSet<DetectorFactory> factorySet;
 
 	/**
 	 * Constructor.
@@ -42,6 +44,7 @@ public class AnalysisPass {
 	 */
 	public AnalysisPass() {
 		this.factoryList = new LinkedList<DetectorFactory>();
+		this.factorySet = new HashSet<DetectorFactory>();
 	}
 
 	/**
@@ -51,6 +54,7 @@ public class AnalysisPass {
 	 */
 	public void addDetectorFactory(DetectorFactory factory) {
 		factoryList.addLast(factory);
+		factorySet.add(factory);
 	}
 
 	/**
@@ -60,6 +64,7 @@ public class AnalysisPass {
 	 */
 	public void prependDetectorFactory(DetectorFactory factory) {
 		factoryList.addFirst(factory);
+		factorySet.add(factory);
 	}
 
 	/**
@@ -75,6 +80,16 @@ public class AnalysisPass {
 	public Iterator<DetectorFactory> detectorFactoryIterator() {
 		return factoryList.iterator();
 	}
+	
+	/**
+	 * Return whether or not this pass contains the given DetectorFactory.
+	 * 
+	 * @param factory the DetectorFactory
+	 * @return true if this pass contains the DetectorFactory, false if not
+	 */
+	public boolean contains(DetectorFactory factory) {
+		return factorySet.contains(factory);
+	}
 
 	/**
 	 * Clear out all of the DetectorFactory objects.
@@ -83,6 +98,7 @@ public class AnalysisPass {
 	 */
 	public void clear() {
 		factoryList.clear();
+		factorySet.clear();
 	}
 }
 

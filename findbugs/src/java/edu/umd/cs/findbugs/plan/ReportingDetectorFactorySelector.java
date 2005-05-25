@@ -35,4 +35,7 @@ public class ReportingDetectorFactorySelector implements DetectorFactorySelector
 		return factory.isReportingDetector();
 	}
 
+	public String toString() {
+		return "All reporting detectors";
+	}
 }

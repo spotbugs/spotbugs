@@ -27,8 +27,6 @@ package edu.umd.cs.findbugs.plan;
  * @author David Hovemeyer
  */
 public class DetectorOrderingConstraint {
-	/*
-	// NOTYET
 	private DetectorFactorySelector earlier;
 	private DetectorFactorySelector later;
 	
@@ -44,41 +42,9 @@ public class DetectorOrderingConstraint {
 	public DetectorFactorySelector getLater() {
 		return later;
 	}
-	 */
-
-	private String earlierDetector;
-	private String laterDetector;
 	
-	/**
-	 * Constructor.
-	 * Defines a pair of Detectors with an ordering constraint.
-	 *
-	 * @param earlierDetector Detector that must be run earlier
-	 * @param laterDetector   Detector that must be run later
-	 */
-	public DetectorOrderingConstraint(String earlierDetector, String laterDetector) {
-		this.earlierDetector = earlierDetector;
-		this.laterDetector = laterDetector;
-	}
-
-	/**
-	 * Get the Detector in the pair of Detectors involved
-	 * in the ordering constraint that must be run earlier.
-	 *
-	 * @return the earlier Detector
-	 */
-	public String getEarlierDetector() {
-		return earlierDetector;
-	}
-
-	/**
-	 * Get the Detector in the pair of Detectors involved
-	 * in the ordering constraint that must be run later.
-	 *
-	 * @return the later Detector
-	 */
-	public String getLaterDetector() {
-		return laterDetector;
+	public String toString() {
+		return earlier.toString() + " -> " + later.toString();
 	}
 }
 

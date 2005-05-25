@@ -1,6 +1,6 @@
 /*
  * FindBugs - Find bugs in Java programs
- * Copyright (C) 2004, University of Maryland
+ * Copyright (C) 2004,2005 University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -47,6 +47,10 @@ public class ExecutionPlan {
 
 	private List<Plugin> pluginList;
 	private LinkedList<AnalysisPass> passList;
+	private Map<String, DetectorFactory> factoryMap;
+	private List<DetectorOrderingConstraint> interPassConstraintList;
+	private List<DetectorOrderingConstraint> intraPassConstraintList;
+	private Set<DetectorFactory> assignedToPassSet;
 
 	/**
 	 * Constructor.
@@ -55,6 +59,10 @@ public class ExecutionPlan {
 	public ExecutionPlan() {
 		this.pluginList = new LinkedList<Plugin>();
 		this.passList = new LinkedList<AnalysisPass>();
+		this.factoryMap = new HashMap<String, DetectorFactory>();
+		this.interPassConstraintList = new LinkedList<DetectorOrderingConstraint>();
+		this.intraPassConstraintList = new LinkedList<DetectorOrderingConstraint>();
+		this.assignedToPassSet = new HashSet<DetectorFactory>();
 	}
 
 	/**
@@ -62,6 +70,12 @@ public class ExecutionPlan {
 	 */
 	public void addPlugin(Plugin plugin) {
 		pluginList.add(plugin);
+		copyTo(plugin.interPassConstraintIterator(), interPassConstraintList);
+		copyTo(plugin.intraPassConstraintIterator(), intraPassConstraintList);
+		for (Iterator<DetectorFactory> i = plugin.detectorFactoryIterator(); i.hasNext(); ) {
+			DetectorFactory factory = i.next();
+			factoryMap.put(factory.getFullName(), factory);
+		}
 	}
 
 	/**
@@ -71,51 +85,17 @@ public class ExecutionPlan {
 	 * and orders the Detectors within those passes.
 	 */
 	public void build() throws OrderingConstraintException {
-		// Build map of detector class names to their factories
-		Map<String, DetectorFactory> factoryMap = buildFactoryMap();
-
-		// Get inter-pass ordering constraints
-		List<DetectorOrderingConstraint> interPassConstraintList =
-			new LinkedList<DetectorOrderingConstraint>();
-		for (Iterator<Plugin> i = pluginList.iterator(); i.hasNext(); ) {
-			Plugin plugin = i.next();
-			copyTo(plugin.interPassConstraintIterator(), interPassConstraintList);
-		}
-
 		// Build inter-pass constraint graph
 		Map<String, DetectorNode> nodeMap = new HashMap<String, DetectorNode>();
 		ConstraintGraph interPassConstraintGraph = buildConstraintGraph(
-			nodeMap, factoryMap, interPassConstraintList);
+			nodeMap,
+			new HashSet<DetectorFactory>(factoryMap.values()),
+			interPassConstraintList);
 		if (DEBUG) System.out.println(interPassConstraintGraph.getNumVertices() +
 			" nodes in inter-pass constraint graph");
 
 		// Build list of analysis passes.
 		buildPassList(interPassConstraintGraph);
-
-		// Make sure there is at least one pass
-		if (passList.isEmpty())
-			passList.add(new AnalysisPass());
-		AnalysisPass finalPass = passList.getLast();
-
-		// All detectors not involved in inter-pass constraints are
-		// added to the final pass.
-		Set<String> remainingDetectorSet = new HashSet<String>();
-		remainingDetectorSet.addAll(factoryMap.keySet());
-		remainingDetectorSet.removeAll(nodeMap.keySet());
-		for (Iterator<String> i = remainingDetectorSet.iterator(); i.hasNext(); ) {
-			String detectorClass = i.next();
-			DetectorFactory factory = factoryMap.get(detectorClass);
-
-			finalPass.addDetectorFactory(factory);
-		}
-
-		// Get intra-pass ordering constraints
-		List<DetectorOrderingConstraint> intraPassConstraintList =
-			new LinkedList<DetectorOrderingConstraint>();
-		for (Iterator<Plugin> i = pluginList.iterator(); i.hasNext(); ) {
-			Plugin plugin = i.next();
-			copyTo(plugin.intraPassConstraintIterator(), intraPassConstraintList);
-		}
 
 		// Sort detectors in each pass to satisfy intra-pass ordering constraints
 		for (Iterator<AnalysisPass> i = passList.iterator(); i.hasNext(); ) {
@@ -123,26 +103,28 @@ public class ExecutionPlan {
 			sortPass(intraPassConstraintList, factoryMap, pass);
 		}
 
+		// All remaining detectors are added to the final pass.
+		// Make sure there is at least one pass
+		// TODO: implement this
+//		if (passList.isEmpty())
+//			passList.add(new AnalysisPass());
+//		AnalysisPass finalPass = passList.getLast();
+//		Set<String> remainingDetectorSet = new HashSet<String>();
+//		remainingDetectorSet.addAll(factoryMap.keySet());
+//		remainingDetectorSet.removeAll(nodeMap.keySet());
+//		for (Iterator<String> i = remainingDetectorSet.iterator(); i.hasNext(); ) {
+//			String detectorClass = i.next();
+//			DetectorFactory factory = factoryMap.get(detectorClass);
+//
+//			finalPass.addDetectorFactory(factory);
+//		}
+
 	}
 
 	private static<T> void copyTo(Iterator<T> iter, Collection<T> dest) {
 		while (iter.hasNext()) {
 			dest.add(iter.next());
 		}
-	}
-
-	private Map<String, DetectorFactory> buildFactoryMap() {
-		Map<String, DetectorFactory> factoryMap = new HashMap<String, DetectorFactory>();
-
-		for (Iterator<Plugin> j = pluginList.iterator(); j.hasNext(); ) {
-			Plugin plugin = j.next();
-			for (Iterator<DetectorFactory> i = plugin.detectorFactoryIterator(); i.hasNext(); ) {
-				DetectorFactory factory = i.next();
-				factoryMap.put(factory.getFullName(), factory);
-			}
-		}
-
-		return factoryMap;
 	}
 
 	/**
@@ -156,48 +138,90 @@ public class ExecutionPlan {
 	 * @param nodeMap        map to be populated with detector
 	 *                       class names to constraint graph nodes for
 	 *                       those detectors
-	 * @param factoryMap     map of class names to DetectorFactory objects
-	 *                       (needed to create graph nodes)
+	 * @param factorySet     build the graph using these DetectorFactories as nodes
 	 * @param constraintList List of ordering constraints
 	 * @return the ConstraintGraph
 	 */
 	private ConstraintGraph buildConstraintGraph(
 		Map<String, DetectorNode> nodeMap,
-		Map<String, DetectorFactory> factoryMap,
+		Set<DetectorFactory> factorySet,
 		List<DetectorOrderingConstraint> constraintList) throws OrderingConstraintException {
 
 		ConstraintGraph result = new ConstraintGraph();
 
 		for (Iterator<DetectorOrderingConstraint> i = constraintList.iterator(); i.hasNext(); ) {
 			DetectorOrderingConstraint constraint = i.next();
+			
+			Set<DetectorNode> earlierSet = addOrCreateDetectorNodes(
+					constraint.getEarlier(), nodeMap, factorySet, result);
+			Set<DetectorNode> laterSet = addOrCreateDetectorNodes(
+					constraint.getLater(), nodeMap, factorySet, result);
+			
+			createConstraintEdges(result, earlierSet, laterSet, constraint);
+		}
 
-			DetectorNode earlier = addOrCreateDetectorNode(
-				constraint.getEarlierDetector(), nodeMap, factoryMap, result);
-			DetectorNode later = addOrCreateDetectorNode(
-				constraint.getLaterDetector(), nodeMap, factoryMap, result);
+		return result;
+	}
+	
+	private Set<DetectorFactory> selectDetectors(
+			DetectorFactorySelector selector, Set<DetectorFactory> candidateSet) {
+		Set<DetectorFactory> result = new HashSet<DetectorFactory>();
+		for (Iterator<DetectorFactory> i = candidateSet.iterator(); i.hasNext();) {
+			DetectorFactory factory = i.next();
+			if (selector.selectFactory(factory)) {
+				result.add(factory);
+			}
+		}
+		return result;
+	}
 
-			result.createEdge(earlier, later);
+	private Set<DetectorNode> addOrCreateDetectorNodes(
+			DetectorFactorySelector selector,
+			Map<String, DetectorNode> nodeMap,
+			Set<DetectorFactory> factorySet,
+			ConstraintGraph constraintGraph) throws OrderingConstraintException {
+		HashSet<DetectorNode> result = new HashSet<DetectorNode>();
+		
+		Set<DetectorFactory> chosenSet = selectDetectors(selector, factorySet);
+		
+		for (Iterator<DetectorFactory> i = chosenSet.iterator(); i.hasNext();) {
+			DetectorFactory factory = i.next();
+			DetectorNode node = addOrCreateDetectorNode(factory, nodeMap, constraintGraph);
+			result.add(node);
 		}
 
 		return result;
 	}
 
 	private DetectorNode addOrCreateDetectorNode(
-			String className,
+			DetectorFactory factory,
 			Map<String, DetectorNode> nodeMap,
-			Map<String, DetectorFactory> factoryMap,
 			ConstraintGraph constraintGraph)
 		throws OrderingConstraintException {
-		DetectorNode node = nodeMap.get(className);
+		DetectorNode node = nodeMap.get(factory.getFullName());
 		if (node == null) {
-			DetectorFactory factory = factoryMap.get(className);
-			if (factory == null)
-				throw new OrderingConstraintException("Unknown detector in ordering constraint: " + className);
 			node = new DetectorNode(factory);
-			nodeMap.put(className, node);
+			nodeMap.put(factory.getFullName(), node);
 			constraintGraph.addVertex(node);
 		}
 		return node;
+	}
+	
+	private void createConstraintEdges(
+			ConstraintGraph result,
+			Set<DetectorNode> earlierSet,
+			Set<DetectorNode> laterSet, DetectorOrderingConstraint constraint) throws OrderingConstraintException {
+		
+		if (earlierSet.isEmpty() || laterSet.isEmpty())
+			throw new OrderingConstraintException("Constraint [" + constraint + "] selects no detectors");
+		
+		for (Iterator<DetectorNode> i = earlierSet.iterator(); i.hasNext();) {
+			DetectorNode earlier = i.next();
+			for (Iterator<DetectorNode> j = laterSet.iterator(); j.hasNext();) {
+				DetectorNode later = j.next();
+				result.createEdge(earlier, later);
+			}
+		}
 	}
 
 	private void buildPassList(ConstraintGraph constraintGraph)
@@ -232,6 +256,7 @@ public class ExecutionPlan {
 			for (Iterator<DetectorNode> i = inDegreeZeroList.iterator(); i.hasNext(); ) {
 				DetectorNode node = i.next();
 				pass.addDetectorFactory(node.getFactory());
+				assignedToPassSet.add(node.getFactory());
 			}
 
 			// Add pass to list of passes in the execution plan.
@@ -245,66 +270,32 @@ public class ExecutionPlan {
 			AnalysisPass pass)
 		throws OrderingConstraintException {
 
-		// Preserve original order of detectors in pass
-		List<DetectorFactory> origDetectorList = new LinkedList<DetectorFactory>();
-		origDetectorList.addAll(pass.getDetectorFactoryList());
-
-		// Build set of all detectors in pass.
-		// Also, check to see if any detectors want to be
-		// first in the pass.
-		Set<String> detectorSet = new HashSet<String>();
-		DetectorFactory firstDetector = null;
-		for (Iterator<DetectorFactory> i = pass.detectorFactoryIterator();
-			i.hasNext(); ) {
-			DetectorFactory factory = i.next();
-
-			if (factory.isFirstInPass()) {
-				if (firstDetector != null) {
-					throw new OrderingConstraintException("Two detectors specified as first in analysis pass: " +
-						firstDetector.getFullName() + " and " + factory.getFullName());
-				} else
-					firstDetector = factory;
-			}
-
-			detectorSet.add(factory.getFullName());
-		}
-
+		// Build set of all (initial) detectors in pass
+		Set<DetectorFactory> detectorSet = new HashSet<DetectorFactory>();
+		copyTo(pass.detectorFactoryIterator(), detectorSet);
+		
 		// Build list of ordering constraints in this pass only
 		List<DetectorOrderingConstraint> passConstraintList =
 			new LinkedList<DetectorOrderingConstraint>();
 		for (Iterator<DetectorOrderingConstraint> i = constraintList.iterator(); i.hasNext(); ) {
 			DetectorOrderingConstraint constraint = i.next();
-
-			if (detectorSet.contains(constraint.getEarlierDetector()) ||
-				detectorSet.contains(constraint.getLaterDetector())) {
-
-				// Make sure that both detectors are in this pass
-				if (!(detectorSet.contains(constraint.getEarlierDetector()) &&
-						detectorSet.contains(constraint.getLaterDetector()))) {
-					throw new OrderingConstraintException("Intra-pass constraint " +
-						constraint.getEarlierDetector() + " earlier than " +
-						constraint.getLaterDetector() + " involves detectors in " +
-						"different passes");
-				}
-
-				// Make sure this constraint doesn't conflict with
-				// a FirstInPass directive (if any).
-				if (firstDetector != null) {
-					if (firstDetector.getFullName().equals(constraint.getEarlierDetector()) ||
-						firstDetector.getFullName().equals(constraint.getLaterDetector())) {
-						throw new OrderingConstraintException("Detector specified as FirstInPass (" +
-							firstDetector.getShortName() +") also appears in an ordering constraint");
-					}
-				}
-
+			
+			// Does this constraint specify any detectors initially made part of the pass?
+			// If so, add it to the pass constraints
+			if (selectDetectors(constraint.getEarlier(), detectorSet).size() > 0
+					|| selectDetectors(constraint.getLater(), detectorSet).size() > 0) {
 				passConstraintList.add(constraint);
 			}
 		}
+		
+		// Build set of all detectors available to be added to this pass
+		HashSet<DetectorFactory> availableSet = new HashSet<DetectorFactory>(factoryMap.values());
+		availableSet.removeAll(assignedToPassSet);
 
 		// Build intra-pass constraint graph
 		Map<String, DetectorNode> nodeMap = new HashMap<String, DetectorNode>();
 		ConstraintGraph constraintGraph = buildConstraintGraph(
-			nodeMap, factoryMap, passConstraintList);
+			nodeMap, availableSet, passConstraintList);
 		if (DEBUG) {
 			System.out.println("Pass constraint graph:");
 			dumpGraph(constraintGraph);
@@ -323,18 +314,7 @@ public class ExecutionPlan {
 		for (Iterator<DetectorNode> i = dfs.topologicalSortIterator(); i.hasNext(); ) {
 			DetectorNode node = i.next();
 			pass.addDetectorFactory(node.getFactory());
-		}
-
-		// Add back detectors that aren't involved in any intra-pass
-		// ordering constraints.
-		for (Iterator<DetectorFactory> i = origDetectorList.iterator(); i.hasNext(); ) {
-			DetectorFactory factory = i.next();
-			if (nodeMap.get(factory.getFullName()) == null) {
-				if (factory.isFirstInPass())
-					pass.prependDetectorFactory(factory);
-				else
-					pass.addDetectorFactory(factory);
-			}
+			assignedToPassSet.add(node.getFactory());
 		}
 	}
 

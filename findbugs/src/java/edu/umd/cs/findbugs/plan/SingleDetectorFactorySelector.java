@@ -38,4 +38,8 @@ public class SingleDetectorFactorySelector implements DetectorFactorySelector {
 			|| factory.getShortName().equals(className);
 	}
 	
+	public String toString() {
+		return className;
+	}
+	
 }
