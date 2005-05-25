@@ -25,7 +25,9 @@ import edu.umd.cs.findbugs.Plugin;
 
 import edu.umd.cs.findbugs.graph.DepthFirstSearch;
 
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -44,7 +46,7 @@ import java.util.Set;
  */
 public class ExecutionPlan {
 
-	private static final boolean DEBUG = Boolean.getBoolean("findbugs.execplan.debug");
+	static final boolean DEBUG = Boolean.getBoolean("findbugs.execplan.debug");
 
 	private List<Plugin> pluginList;
 	private LinkedList<AnalysisPass> passList;
@@ -107,29 +109,30 @@ public class ExecutionPlan {
 		// ordering constraints to passes.  Detectors with any ordering
 		// constraint will be left unassigned.
 		buildPassList(interPassConstraintGraph);
+
+		// Sort each pass by intra-pass ordering constraints.
+		// This may assign some previously unassigned detectors to passes.
+		for (Iterator<AnalysisPass> i = passList.iterator(); i.hasNext(); ) {
+			AnalysisPass pass = i.next();
+			sortPass(intraPassConstraintList, factoryMap, pass);
+		}
 		
-		// If there are any unassigned detectors, add them to the final pass
-		// (creating one if required).
+		// If there are any unassigned detectors remaining,
+		// add them to the final pass.
 		if (factoryMap.size() > assignedToPassSet.size()) {
 			AnalysisPass lastPass;
 			if (passList.isEmpty()) {
 				lastPass = new AnalysisPass();
-				passList.add(lastPass);
+				addPass(lastPass);
 			} else {
 				lastPass = passList.getLast();
 			}
 			
-			HashSet<DetectorFactory> unassignedSet = new HashSet<DetectorFactory>(factoryMap.values());
-			unassignedSet.removeAll(assignedToPassSet);
-			for (Iterator<DetectorFactory> i = unassignedSet.iterator(); i.hasNext();) {
-				lastPass.addDetectorFactory(i.next());
+			Set<DetectorFactory> unassignedSet = getUnassignedSet();
+			for (DetectorFactory factory : unassignedSet) {
+				assignToPass(factory, lastPass);
 			}
-		}
-
-		// Sort detectors in each pass to satisfy intra-pass ordering constraints
-		for (Iterator<AnalysisPass> i = passList.iterator(); i.hasNext(); ) {
-			AnalysisPass pass = i.next();
-			sortPass(intraPassConstraintList, factoryMap, pass);
+			appendDetectorsToPass(unassignedSet, lastPass);
 		}
 	}
 
@@ -264,16 +267,20 @@ public class ExecutionPlan {
 			}
 
 			// Create analysis pass and add detector factories.
+			// Note that this just makes the detectors members of the pass:
+			// it doesn't assign them a position in the pass.
 			AnalysisPass pass = new AnalysisPass();
+			addPass(pass);
 			for (Iterator<DetectorNode> i = inDegreeZeroList.iterator(); i.hasNext(); ) {
 				DetectorNode node = i.next();
-				pass.addDetectorFactory(node.getFactory());
-				assignedToPassSet.add(node.getFactory());
+				assignToPass(node.getFactory(), pass);
 			}
-
-			// Add pass to list of passes in the execution plan.
-			passList.add(pass);
 		}
+	}
+	
+	private void addPass(AnalysisPass pass) {
+		System.out.println("Adding pass " + passList.size());
+		passList.add(pass);
 	}
 
 	private void sortPass(
@@ -283,8 +290,10 @@ public class ExecutionPlan {
 		throws OrderingConstraintException {
 
 		// Build set of all (initial) detectors in pass
-		Set<DetectorFactory> detectorSet = new HashSet<DetectorFactory>();
-		copyTo(pass.detectorFactoryIterator(), detectorSet);
+		Set<DetectorFactory> detectorSet = new HashSet<DetectorFactory>(pass.getMembers());
+		if (DEBUG) {
+			System.out.println(detectorSet.size() + " detectors currently in this pass");
+		}
 		
 		// Build list of ordering constraints in this pass only
 		List<DetectorOrderingConstraint> passConstraintList =
@@ -292,17 +301,21 @@ public class ExecutionPlan {
 		for (Iterator<DetectorOrderingConstraint> i = constraintList.iterator(); i.hasNext(); ) {
 			DetectorOrderingConstraint constraint = i.next();
 			
-			// Does this constraint specify any detectors initially made part of the pass?
+			// Does this constraint specify any detectors in this pass?
 			// If so, add it to the pass constraints
 			if (selectDetectors(constraint.getEarlier(), detectorSet).size() > 0
 					|| selectDetectors(constraint.getLater(), detectorSet).size() > 0) {
 				passConstraintList.add(constraint);
 			}
 		}
+		if (DEBUG) {
+			System.out.println(passConstraintList.size() + " constraints are applicable for this pass");
+		}
 		
 		// Build set of all detectors available to be added to this pass
-		HashSet<DetectorFactory> availableSet = new HashSet<DetectorFactory>(factoryMap.values());
-		availableSet.removeAll(assignedToPassSet);
+		HashSet<DetectorFactory> availableSet = new HashSet<DetectorFactory>();
+		availableSet.addAll(detectorSet);
+		availableSet.addAll(getUnassignedSet());
 
 		// Build intra-pass constraint graph
 		Map<String, DetectorNode> nodeMap = new HashMap<String, DetectorNode>();
@@ -311,6 +324,15 @@ public class ExecutionPlan {
 		if (DEBUG) {
 			System.out.println("Pass constraint graph:");
 			dumpGraph(constraintGraph);
+		}
+		
+		// See if any detectors were brought into the pass by an intrapass ordering constraint.
+		// Assign them to the pass officially.
+		for (Iterator<DetectorNode> i = nodeMap.values().iterator(); i.hasNext();) {
+			DetectorNode node = i.next();
+			if (!pass.contains(node.getFactory())) {
+				assignToPass(node.getFactory(), pass);
+			}
 		}
 
 		// Perform DFS, check for cycles
@@ -322,11 +344,55 @@ public class ExecutionPlan {
 
 		// Do a topological sort to put the detectors in the pass
 		// in the right order.
-		pass.clear();
 		for (Iterator<DetectorNode> i = dfs.topologicalSortIterator(); i.hasNext(); ) {
 			DetectorNode node = i.next();
-			pass.addDetectorFactory(node.getFactory());
-			assignedToPassSet.add(node.getFactory());
+			appendToPass(node.getFactory(), pass);
+		}
+		
+		// Add any detectors not explicitly involved in intra-pass ordering constraints
+		// to the end of the pass.
+		appendDetectorsToPass(pass.getUnpositionedMembers(), pass);
+	}
+	
+	private Set<DetectorFactory> getUnassignedSet() {
+		Set<DetectorFactory> unassignedSet = new HashSet<DetectorFactory>();
+		unassignedSet.addAll(factoryMap.values());
+		unassignedSet.removeAll(assignedToPassSet);
+		return unassignedSet;
+	}
+
+	/**
+	 * Make a DetectorFactory a member of an AnalysisPass.
+	 */
+	private void assignToPass(DetectorFactory factory, AnalysisPass pass) {
+		pass.addToPass(factory);
+		assignedToPassSet.add(factory);
+	}
+
+	/**
+	 * Append a DetectorFactory to the end position in an AnalysisPass.
+	 * The DetectorFactory must be a member of the pass.
+	 */
+	private void appendToPass(DetectorFactory factory, AnalysisPass pass)
+			throws OrderingConstraintException {
+		pass.append(factory);
+	}
+	
+	private void appendDetectorsToPass(Collection<DetectorFactory> detectorSet, AnalysisPass pass)
+			throws OrderingConstraintException {
+		DetectorFactory[] unassignedList = detectorSet.toArray(new DetectorFactory[detectorSet.size()]);
+		Arrays.sort(unassignedList, new Comparator<DetectorFactory>() {
+			public int compare(DetectorFactory a, DetectorFactory b) {
+				// Sort first by plugin id...
+				int cmp = a.getPlugin().getPluginId().compareTo(b.getPlugin().getPluginId());
+				if (cmp != 0)
+					return cmp;
+				// Then by order specified in plugin descriptor
+				return a.getPositionSpecifiedInPluginDescriptor() - b.getPositionSpecifiedInPluginDescriptor();
+			}
+		});
+		for (DetectorFactory factory : unassignedList) {
+			appendToPass(factory, pass);
 		}
 	}
 
@@ -335,7 +401,7 @@ public class ExecutionPlan {
 		for (Iterator<AnalysisPass> i = passList.iterator(); i.hasNext(); ++passCount) {
 			System.out.println("Pass " + passCount);
 			AnalysisPass pass = i.next();
-			for (Iterator<DetectorFactory> j = pass.detectorFactoryIterator(); j.hasNext(); ) {
+			for (Iterator<DetectorFactory> j = pass.iterator(); j.hasNext(); ) {
 				DetectorFactory factory = j.next();
 				System.out.println("  " + factory.getFullName());
 			}

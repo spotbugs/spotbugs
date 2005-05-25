@@ -19,12 +19,13 @@
 
 package edu.umd.cs.findbugs.plan;
 
-import edu.umd.cs.findbugs.DetectorFactory;
-
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.List;
+import java.util.Set;
+
+import edu.umd.cs.findbugs.DetectorFactory;
 
 /**
  * An analysis pass in the overall ExecutionPlan.
@@ -34,8 +35,8 @@ import java.util.List;
  * @author David Hovemeyer
  */
 public class AnalysisPass {
-	private LinkedList<DetectorFactory> factoryList;
-	private HashSet<DetectorFactory> factorySet;
+	private LinkedList<DetectorFactory> orderedFactoryList;
+	private HashSet<DetectorFactory> memberSet;
 
 	/**
 	 * Constructor.
@@ -43,42 +44,56 @@ public class AnalysisPass {
 	 * Creates an empty analysis pass.
 	 */
 	public AnalysisPass() {
-		this.factoryList = new LinkedList<DetectorFactory>();
-		this.factorySet = new HashSet<DetectorFactory>();
+		this.orderedFactoryList = new LinkedList<DetectorFactory>();
+		this.memberSet = new HashSet<DetectorFactory>();
 	}
 
 	/**
-	 * Add a DetectorFactory to the end of the pass.
-	 *
-	 * @param factory the DetectorFactory
+	 * Make given DetectorFactory a member of this pass.
+	 * Does not position the factory within the overall list of detectors.
+	 * 
+	 * @param factory a DetectorFactory
 	 */
-	public void addDetectorFactory(DetectorFactory factory) {
-		factoryList.addLast(factory);
-		factorySet.add(factory);
+	public void addToPass(DetectorFactory factory) {
+		this.memberSet.add(factory);
 	}
 
 	/**
-	 * Add a DetectorFactory to the beginning of the pass.
-	 *
-	 * @param factory the DetectorFactory
+	 * Append the given DetectorFactory to the end of the ordered detector list.
+	 * The factory must be a member of the pass.
+	 * 
+	 * @param factory a DetectorFactory
 	 */
-	public void prependDetectorFactory(DetectorFactory factory) {
-		factoryList.addFirst(factory);
-		factorySet.add(factory);
+	public void append(DetectorFactory factory) {
+		if (!memberSet.contains(factory))
+			throw new IllegalArgumentException("Detector " + factory.getFullName() + " appended to pass it doesn't belong to");
+		this.orderedFactoryList.addLast(factory);
+	}
+	
+	/**
+	 * Get the members of this pass.
+	 * 
+	 * @return members of this pass
+	 */
+	public Collection<DetectorFactory> getMembers() {
+		return memberSet;
+	}
+	
+	/**
+	 * Get Set of pass members which haven't been assigned a position in the pass.
+	 */
+	public Set<DetectorFactory> getUnpositionedMembers() {
+		HashSet<DetectorFactory> result = new HashSet<DetectorFactory>(memberSet);
+		result.removeAll(orderedFactoryList);
+		return result;
 	}
 
 	/**
-	 * Get the List of DetectorFactory objects in the pass.
+	 * Get an Iterator over the DetectorFactory objects in the pass,
+	 * in their assigned order.
 	 */
-	public List<DetectorFactory> getDetectorFactoryList() {
-		return factoryList;
-	}
-
-	/**
-	 * Get an Iterator over the DetectorFactory objects in the pass.
-	 */
-	public Iterator<DetectorFactory> detectorFactoryIterator() {
-		return factoryList.iterator();
+	public Iterator<DetectorFactory> iterator() {
+		return orderedFactoryList.iterator();
 	}
 	
 	/**
@@ -88,17 +103,7 @@ public class AnalysisPass {
 	 * @return true if this pass contains the DetectorFactory, false if not
 	 */
 	public boolean contains(DetectorFactory factory) {
-		return factorySet.contains(factory);
-	}
-
-	/**
-	 * Clear out all of the DetectorFactory objects.
-	 * This can be useful as part of re-ordering the
-	 * DetectorFactory objects within the pass.
-	 */
-	public void clear() {
-		factoryList.clear();
-		factorySet.clear();
+		return memberSet.contains(factory);
 	}
 }
 
