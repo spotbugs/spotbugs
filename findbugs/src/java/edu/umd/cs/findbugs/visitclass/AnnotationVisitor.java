@@ -37,6 +37,12 @@ public class AnnotationVisitor extends PreorderVisitor {
 
 	static final boolean DEBUG = false;
 
+	/**
+	 * Visit annotation on a class, field or method
+	 * @param annotationClass class of annotation
+	 * @param map map from names to values
+	 * @param runtimeVisible true if annotation is runtime visible
+	 */
 	public void visitAnnotation(String annotationClass,
 			Map<String, Object> map, boolean runtimeVisible) {
 		System.out.println("Annotation: " + annotationClass);
@@ -46,6 +52,23 @@ public class AnnotationVisitor extends PreorderVisitor {
 		}
 	}
 
+	/**
+	 * Visit annotation on a method parameter
+	 * @param p  parameter number, starting at zero (this parameter is not counted)
+	 * @param annotationClass class of annotation
+	 * @param map map from names to values
+	 * @param runtimeVisible true if annotation is runtime visible
+	 */
+	public void visitParameterAnnotation(int p, String annotationClass,
+			Map<String, Object> map, boolean runtimeVisible) {
+//		System.out
+//				.println("Parameter " + p + " Annotation: " + annotationClass);
+//		for (Map.Entry<String, Object> e : map.entrySet()) {
+//			System.out.println("    " + e.getKey());
+//			System.out.println(" -> " + e.getValue());
+//		}
+	}
+
 	public void visit(Attribute obj) {
 		try {
 			if (obj instanceof Unknown) {
@@ -53,39 +76,46 @@ public class AnnotationVisitor extends PreorderVisitor {
 				if (DEBUG)
 					System.out.println("In " + getDottedClassName() + " found "
 							+ name);
-				if (!(name.equals("RuntimeVisibleAnnotations") || name
-						.equals("RuntimeInvisibleAnnotations")))
-					return;
 				byte[] b = ((Unknown) obj).getBytes();
 				DataInputStream bytes = new DataInputStream(
 						new ByteArrayInputStream(b));
-				int numAnnotations = bytes.readUnsignedShort();
-				if (DEBUG)
-					System.out.println("# of annotations: " + numAnnotations);
-				for (int i = 0; i < numAnnotations; i++) {
-					int annotationNameIndex = bytes.readUnsignedShort();
-					String annotationName = ((ConstantUtf8) getConstantPool()
-							.getConstant(annotationNameIndex)).getBytes();
-					annotationName = annotationName.substring(1, annotationName
-							.length() - 1);
+				if (name.equals("RuntimeVisibleAnnotations")
+						|| name.equals("RuntimeInvisibleAnnotations")) {
+
+					int numAnnotations = bytes.readUnsignedShort();
 					if (DEBUG)
-						System.out
-								.println("Annotation name: " + annotationName);
-					int numPairs = bytes.readUnsignedShort();
-					Map<String, Object> values = new HashMap<String, Object>();
-					for (int j = 0; j < numPairs; j++) {
-						int memberNameIndex = bytes.readUnsignedShort();
-						String memberName = ((ConstantUtf8) getConstantPool()
-								.getConstant(memberNameIndex)).getBytes();
-						if (DEBUG)
-							System.out.println("memberName: " + memberName);
-						Object value = readAnnotationValue(bytes);
-						if (DEBUG)
-							System.out.println(memberName + ":" + value);
-						values.put(memberName, value);
+						System.out.println("# of annotations: "
+								+ numAnnotations);
+					for (int i = 0; i < numAnnotations; i++) {
+						String annotationName = getAnnotationName(bytes);
+						int numPairs = bytes.readUnsignedShort();
+						Map<String, Object> values = readAnnotationValues(
+								bytes, numPairs);
+						visitAnnotation(annotationName, values, name
+								.equals("RuntimeVisibleAnnotations"));
 					}
-					visitAnnotation(annotationName, values, name
-							.equals("RuntimeVisibleAnnotations"));
+
+				} else if (name.equals("RuntimeVisibleParameterAnnotations")
+						|| name.equals("RuntimeInvisibleParameterAnnotations")) {
+					int numParameters = bytes.readUnsignedByte();
+					for (int p = 0; p < numParameters; p++) {
+						int numAnnotations = bytes.readUnsignedShort();
+						if (DEBUG)
+							System.out.println("# of annotations: "
+									+ numAnnotations);
+						for (int i = 0; i < numAnnotations; i++) {
+							String annotationName = getAnnotationName(bytes);
+							int numPairs = bytes.readUnsignedShort();
+							Map<String, Object> values = readAnnotationValues(
+									bytes, numPairs);
+							visitParameterAnnotation(
+									p,
+									annotationName,
+									values,
+									name.equals("RuntimeVisibleParameterAnnotations"));
+						}
+					}
+
 				}
 
 				if (DEBUG) {
@@ -99,6 +129,34 @@ public class AnnotationVisitor extends PreorderVisitor {
 		} catch (Exception e) {
 			// ignore
 		}
+	}
+
+	private Map<String, Object> readAnnotationValues(DataInputStream bytes,
+			int numPairs) throws IOException {
+		Map<String, Object> values = new HashMap<String, Object>();
+		for (int j = 0; j < numPairs; j++) {
+			int memberNameIndex = bytes.readUnsignedShort();
+			String memberName = ((ConstantUtf8) getConstantPool().getConstant(
+					memberNameIndex)).getBytes();
+			if (DEBUG)
+				System.out.println("memberName: " + memberName);
+			Object value = readAnnotationValue(bytes);
+			if (DEBUG)
+				System.out.println(memberName + ":" + value);
+			values.put(memberName, value);
+		}
+		return values;
+	}
+
+	private String getAnnotationName(DataInputStream bytes) throws IOException {
+		int annotationNameIndex = bytes.readUnsignedShort();
+		String annotationName = ((ConstantUtf8) getConstantPool().getConstant(
+				annotationNameIndex)).getBytes();
+		annotationName = annotationName.substring(1,
+				annotationName.length() - 1);
+		if (DEBUG)
+			System.out.println("Annotation name: " + annotationName);
+		return annotationName;
 	}
 
 	private Object readAnnotationValue(DataInputStream bytes)
