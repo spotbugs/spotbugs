@@ -6,7 +6,7 @@
 -->
 <FindbugsPlugin xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
    				xsi:noNamespaceSchemaLocation="findbugsplugin.xsd"
-				pluginid="core"
+				pluginid="edu.umd.cs.findbugs.plugins.core"
                 defaultenabled="true"
                 provider="FindBugs project" 
                 website="http://findbugs.sourceforge.net"
