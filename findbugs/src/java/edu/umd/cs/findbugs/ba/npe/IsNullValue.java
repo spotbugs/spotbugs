@@ -108,7 +108,7 @@ public class IsNullValue implements IsNullValueAnalysisFeatures {
 	}
 
 	public int hashCode() {
-		throw new UnsupportedOperationException();
+		return kind;
 	}
 
 	private int getBaseKind() {
