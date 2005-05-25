@@ -13,6 +13,14 @@
                 >
 				
   <OrderingConstraints>
+	<SplitPass>
+		<Earlier class="edu.umd.cs.findbugs.detect.NoteSuppressedWarnings"/>
+		<LaterCategory name="reporting"/>
+	</SplitPass>
+	<SplitPass>
+		<Earlier class="edu.umd.cs.findbugs.detect.NoteCheckReturnValue"/>
+		<LaterCategory name="reporting"/>
+	</SplitPass>
   </OrderingConstraints>
 				
   <Detector class="edu.umd.cs.findbugs.detect.NoteSuppressedWarnings" 
