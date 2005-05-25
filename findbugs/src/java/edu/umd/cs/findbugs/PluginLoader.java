@@ -35,7 +35,9 @@ import org.dom4j.Element;
 import org.dom4j.Node;
 import org.dom4j.io.SAXReader;
 
+import edu.umd.cs.findbugs.plan.DetectorFactorySelector;
 import edu.umd.cs.findbugs.plan.DetectorOrderingConstraint;
+import edu.umd.cs.findbugs.plan.ReportingDetectorFactorySelector;
 import edu.umd.cs.findbugs.plan.SingleDetectorFactorySelector;
 
 /**
@@ -232,46 +234,22 @@ public class PluginLoader extends URLClassLoader {
 				i.hasNext();) {
 				Element constraintElement =  i.next();
 
-				// Make sure the constraint element is fully specified
-				Attribute earlierAttr = constraintElement.attribute("earlier");
-				Attribute laterAttr = constraintElement.attribute("later");
-				if (earlierAttr == null || laterAttr == null) {
-					throw new PluginException("Missing 'earlier' or 'later' attribute in '" +
-						constraintElement.getName() + "' element");
-				}
-
-				// Find the actual detector classes in the constraint
-				String earlierClass = lookupDetectorClass(plugin, earlierAttr.getValue());
-				String laterClass = lookupDetectorClass(plugin, laterAttr.getValue());
-
+				// Create the selectors which determine which detectors are
+				// involved in the constraint
+				DetectorFactorySelector earlierSelector = getConstraintSelector(
+						constraintElement, plugin, "Earlier", "EarlierCategory");
+				DetectorFactorySelector laterSelector = getConstraintSelector(
+						constraintElement, plugin, "Later", "LaterCategory");
+				
 				// Create the constraint
 				DetectorOrderingConstraint constraint = new DetectorOrderingConstraint(
-					new SingleDetectorFactorySelector(plugin, earlierClass),
-					new SingleDetectorFactorySelector(plugin, laterClass));
+						earlierSelector, laterSelector);
 
 				// Add the constraint to the plugin
 				if (constraintElement.getName().equals("SplitPass"))
 					plugin.addInterPassOrderingConstraint(constraint);
 				else
 					plugin.addIntraPassOrderingConstraint(constraint);
-			}
-
-			// Handle FirstInPass elements
-			for (Iterator<Element>i = orderingConstraintsNode.selectNodes("./FirstInPass").iterator();
-				i.hasNext();) {
-				Element firstInPassElement = i.next();
-				Attribute detectorAttr = firstInPassElement.attribute("detector");
-				if (detectorAttr == null) {
-					throw new PluginException("Missing 'detector' attribute in FirstInPass element");
-				}
-				String detectorClass = lookupDetectorClass(plugin, detectorAttr.getValue());
-				DetectorFactory factory = plugin.getFactoryByFullName(detectorClass);
-				if (factory == null) {
-					throw new PluginException("Unknown detector class '" +
-						detectorClass +
-						"' in FirstInPass element");
-				}
-				factory.setFirstInPass(true);
 			}
 		}
 
@@ -325,6 +303,32 @@ public class PluginLoader extends URLClassLoader {
 		// new Plugin object.
 		this.plugin = plugin;
 
+	}
+
+	private static DetectorFactorySelector getConstraintSelector(
+			Element constraintElement,
+			Plugin plugin,
+			String singleDetectorElementName,
+			String detectorCategoryElementName) throws PluginException {
+		Node node = constraintElement.selectSingleNode("./" + singleDetectorElementName);
+		if (node != null) {
+			String detectorClass = node.valueOf("@class");
+			return new SingleDetectorFactorySelector(plugin, detectorClass);
+		}
+		
+		node = constraintElement.selectSingleNode("./" + detectorCategoryElementName);
+		if (node != null) {
+			String categoryName = node.valueOf("@name");
+			String spanPlugins = node.valueOf("@spanplugins");
+			if (categoryName.equals("reporting")) {
+				return new ReportingDetectorFactorySelector(
+						Boolean.valueOf(spanPlugins).booleanValue() ? plugin : null);
+			} else {
+				throw new PluginException("Invalid constraint selector node");
+			}
+		}
+		
+		throw new PluginException("Invalid constraint selector node");
 	}
 
 	private String lookupDetectorClass(Plugin plugin, String name) throws PluginException {
