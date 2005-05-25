@@ -19,15 +19,14 @@
 
 package edu.umd.cs.findbugs.ba;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.BitSet;
 
 import org.apache.bcel.Constants;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.INVOKESTATIC;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InvokeInstruction;
-
-import edu.umd.cs.findbugs.ba.npe.IsNullValue;
 
 /**
  * Generic class for representing a Java stack frame as a dataflow value.
