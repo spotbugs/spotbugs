@@ -43,6 +43,18 @@ This plugin contains all of the standard FindBugs detectors.
     </Details>
   </Detector>
 
+  <Detector class="edu.umd.cs.findbugs.detect.NoteNonNullAnnotations">
+	<Details>
+		<![CDATA[
+		<p>
+		Looks for @NonNull annotations on methods, fields, and parameters.
+		These can be used by the FindNullDeref detector to generate warnings
+		when a possibly-null value is used in a context where only
+		non-null values should be used.
+		</p>
+		]]>
+	</Details>
+  </Detector>
 
   <Detector class="edu.umd.cs.findbugs.detect.BadUseOfReturnValue">
     <Details>

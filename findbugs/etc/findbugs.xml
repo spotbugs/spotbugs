@@ -14,7 +14,7 @@
 				
   <OrderingConstraints>
 	<!--
-		NoteSuppressedWarnings and NoteCheckReturnValue should be run in
+		NoteSuppressedWarnings should be run in
 		an earlier pass than all reporting detectors, including those in
 		other plugins.
 	-->
@@ -22,9 +22,17 @@
 		<Earlier class="edu.umd.cs.findbugs.detect.NoteSuppressedWarnings"/>
 		<LaterCategory name="reporting" spanplugins="true"/>
 	</SplitPass>
+
+	<!-- NoteCheckReturnValue should happen in an earlier pass than BCPMethodReturnCheck. -->
 	<SplitPass>
 		<Earlier class="edu.umd.cs.findbugs.detect.NoteCheckReturnValue"/>
-		<LaterCategory name="reporting" spanplugins="true"/>
+		<Later class="edu.umd.cs.findbugs.detect.BCPMethodReturnCheck"/>
+	</SplitPass>
+
+	<!-- NoteNonNullAnnotation should happen in an earlier pass than FindNullDeref. -->	
+	<SplitPass>
+		<Earlier class="edu.umd.cs.findbugs.detect.NoteNonNullAnnotations"/>
+		<Later class="edu.umd.cs.findbugs.detect.FindNullDeref"/>
 	</SplitPass>
   </OrderingConstraints>
 				
@@ -37,6 +45,12 @@
 	        speed="fast"
 	        reports="TESTING"
             hidden="true" /> 
+			
+  <Detector class="edu.umd.cs.findbugs.detect.NoteNonNullAnnotations"
+            speed="fast"
+            reports=""
+			hidden="true"
+			disabled="true"/>
 	        
   <Detector class="edu.umd.cs.findbugs.detect.InfiniteRecursiveLoop" 
 	        speed="fast"
