@@ -292,6 +292,8 @@ public class BCPMethodReturnCheck extends ByteCodePatternDetector implements Sta
 		        || calledMethodClass.endsWith("Error")
 		        || calledMethodClass.endsWith("Exception"))
 			priority = HIGH_PRIORITY;
+		if (calledMethodClass.equals(javaClass.getClassName()))
+			priority++;
 		/*
 		String calledPackage = extractPackageName(calledMethodClass);
 		String callingPackage = extractPackageName(javaClass.getClassName());
