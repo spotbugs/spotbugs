@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -535,6 +536,21 @@ public class BugInstance implements Comparable, XMLWriteableWithMessages, Serial
 			propertyListHead = propertyListTail = prop;
 		}
 		prop.setNext(null);
+	}
+	
+	/* ----------------------------------------------------------------------
+	 * Generic BugAnnotation adders
+	 * ---------------------------------------------------------------------- */
+	
+	/**
+	 * Add a Collection of BugAnnotations.
+	 * 
+	 * @param annotationCollection Collection of BugAnnotations
+	 */
+	public void addAnnotations(Collection<BugAnnotation> annotationCollection) {
+		for (BugAnnotation annotation : annotationCollection) {
+			add(annotation);
+		}
 	}
 
 	/* ----------------------------------------------------------------------
