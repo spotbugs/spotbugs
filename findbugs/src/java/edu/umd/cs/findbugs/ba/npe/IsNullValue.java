@@ -132,6 +132,12 @@ public class IsNullValue implements IsNullValueAnalysisFeatures {
 	public boolean isException() {
 		return (kind & EXCEPTION) != 0;
 	}
+	/**
+	 * Was this value propagated on an exception path?
+	 */
+	public boolean isReturnValue() {
+		return (kind & RETURN_VAL) != 0;
+	}
 
 	/**
 	 * Is this value known because of an explicit null check?
