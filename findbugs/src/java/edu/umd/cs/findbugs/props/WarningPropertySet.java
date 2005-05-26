@@ -35,9 +35,8 @@ import edu.umd.cs.findbugs.ba.AnalysisContext;
  * 
  * @author David Hovemeyer
  */
-public class WarningPropertySet {
+public class WarningPropertySet implements Cloneable {
 	private Map<WarningProperty, Object> map;
-
 
 	public String toString() {
 		StringBuffer buf = new StringBuffer("{ ");
@@ -65,6 +64,15 @@ public class WarningPropertySet {
 	public WarningPropertySet() {
 		this.map = new HashMap<WarningProperty, Object>();
 	}
+
+	//@Override
+	public Object clone() {
+		try {
+			return super.clone();
+		} catch (CloneNotSupportedException e) {
+			throw new IllegalStateException();
+		}
+	}
 	
 	/**
 	 * Add a warning property to the set.
@@ -72,9 +80,11 @@ public class WarningPropertySet {
 	 * as its attribute.
 	 * 
 	 * @param prop the WarningProperty
+	 * @return this object
 	 */
-	public void addProperty(WarningProperty prop) {
+	public WarningPropertySet addProperty(WarningProperty prop) {
 		map.put(prop, Boolean.TRUE);
+		return this;
 	}
 
 	/**
@@ -82,9 +92,11 @@ public class WarningPropertySet {
 	 * 
 	 * @param prop  the WarningProperty
 	 * @param value the attribute value
+	 * @return this object
 	 */
-	public void setProperty(WarningProperty prop, String value) {
+	public WarningPropertySet setProperty(WarningProperty prop, String value) {
 		map.put(prop, value);
+		return this;
 	}
 	
 	/**
