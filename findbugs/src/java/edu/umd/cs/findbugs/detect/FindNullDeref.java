@@ -202,6 +202,11 @@ public class FindNullDeref
 				return value.mightBeNull() && !value.isException();
 			}
 		});
+		BitSet definitelyNullArgSet = frame.getArgumentSet(invokeInstruction, cpg, new DataflowValueChooser<IsNullValue>() {
+			public boolean choose(IsNullValue value) {
+				return value.isDefinitelyNull();
+			}
+		});
 		if (nullArgSet.isEmpty())
 			return;
 		if (DEBUG_NULLARG) {
@@ -253,7 +258,8 @@ public class FindNullDeref
 		for (int i = 0; i < 32; ++i) {
 			if (unconditionallyDereferencedNullArgSet.get(i)) {
 				// Note: we report params as being indexed starting from 1, not 0
-				warning.addInt(i + 1).describe("INT_NULL_PARAM");
+				warning.addInt(i + 1).describe(
+						definitelyNullArgSet.get(i) ? "INT_NULL_ARG" : "INT_MAYBE_NULL_ARG");
 			}
 		}
 		for (CallTarget dangerousCallTarget : dangerousCallTargetList) {
