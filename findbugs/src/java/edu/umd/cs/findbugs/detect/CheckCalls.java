@@ -103,7 +103,7 @@ public class CheckCalls implements Detector {
 				System.out.println("\tInvoking: " +
 						SignatureConverter.convertMethodSignature((InvokeInstruction)ins,classContext.getConstantPoolGen()));
 				
-				JavaClassAndMethod proto = Hierarchy.findPrototypeMethod(
+				JavaClassAndMethod proto = Hierarchy.findInvocationLeastUpperBound(
 						(InvokeInstruction) ins,
 						classContext.getConstantPoolGen());
 				if (proto == null) {

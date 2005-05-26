@@ -168,7 +168,7 @@ public class Hierarchy {
 	 *
 	 * @param inv the InvokeInstruction
 	 * @param cpg the ConstantPoolGen used by the class the InvokeInstruction belongs to
-	 * @return the Method, or null if no such method is defined in the class
+	 * @return the JavaClassAndMethod, or null if no such method is defined in the class
 	 */
 	public static JavaClassAndMethod findExactMethod(InvokeInstruction inv, ConstantPoolGen cpg) throws ClassNotFoundException {
 		return findExactMethod(inv, cpg, ANY_METHOD);
@@ -182,7 +182,7 @@ public class Hierarchy {
 	 * @param inv     the InvokeInstruction
 	 * @param cpg     the ConstantPoolGen used by the class the InvokeInstruction belongs to
 	 * @param chooser MethodChooser to use to pick the method from among the candidates
-	 * @return the Method, or null if no such method is defined in the class
+	 * @return the JavaClassAndMethod, or null if no such method is defined in the class
 	 */
 	public static JavaClassAndMethod findExactMethod(
 			InvokeInstruction inv,
@@ -197,11 +197,11 @@ public class Hierarchy {
 	}
 
 	/**
-	 * Get the method which serves as a "prototype" for the
-	 * given InvokeInstruction.  The "prototype" is the method
-	 * which defines the contract for the invoked method,
-	 * in particular the declared list of exceptions that the
-	 * method can throw.
+	 * Find the least upper bound method in the class hierarchy
+	 * which could be called by the given InvokeInstruction.
+	 * One reason this method is useful is that it indicates 
+	 * which declared exceptions are thrown by the called methods.
+	 * 
 	 * <p/>
 	 * <ul>
 	 * <li> For  invokespecial, this is simply an
@@ -219,9 +219,9 @@ public class Hierarchy {
 	 *
 	 * @param inv the InvokeInstruction
 	 * @param cpg the ConstantPoolGen used by the class the InvokeInstruction belongs to
-	 * @return the Method, or null if no matching method can be found
+	 * @return the JavaClassAndMethod, or null if no matching method can be found
 	 */
-	public static JavaClassAndMethod findPrototypeMethod(InvokeInstruction inv, ConstantPoolGen cpg)
+	public static JavaClassAndMethod findInvocationLeastUpperBound(InvokeInstruction inv, ConstantPoolGen cpg)
 	        throws ClassNotFoundException {
 		JavaClassAndMethod result = null;
 		
@@ -286,7 +286,7 @@ public class Hierarchy {
 	 */
 	public static ObjectType[] findDeclaredExceptions(InvokeInstruction inv, ConstantPoolGen cpg)
 	        throws ClassNotFoundException {
-		JavaClassAndMethod method = findPrototypeMethod(inv, cpg);
+		JavaClassAndMethod method = findInvocationLeastUpperBound(inv, cpg);
 
 		if (method == null)
 			return null;
@@ -309,7 +309,7 @@ public class Hierarchy {
 	 * @param javaClass  the class
 	 * @param methodName the name of the method
 	 * @param methodSig  the signature of the method
-	 * @return the Method, or null if no such method exists in the class
+	 * @return the JavaClassAndMethod, or null if no such method exists in the class
 	 */
 	public static JavaClassAndMethod findMethod(JavaClass javaClass, String methodName, String methodSig) {
 		return findMethod(javaClass, methodName, methodSig, ANY_METHOD);
@@ -323,7 +323,7 @@ public class Hierarchy {
 	 * @param methodSig  the signature of the method
 	 * @param chooser    MethodChooser to use to select a matching method
 	 *                   (assuming class, name, and signature already match)
-	 * @return the Method, or null if no such method exists in the class
+	 * @return the JavaClassAndMethod, or null if no such method exists in the class
 	 */
 	public static JavaClassAndMethod findMethod(
 			JavaClass javaClass,
@@ -412,7 +412,7 @@ public class Hierarchy {
 	 * @param classList  list of classes in which to search
 	 * @param methodName the name of the method
 	 * @param methodSig  the signature of the method
-	 * @return the Method, or null if no such method exists in the class
+	 * @return the JavaClassAndMethod, or null if no such method exists in the class
 	 */
 	public static JavaClassAndMethod findMethod(JavaClass[] classList, String methodName, String methodSig) {
 		return findMethod(classList, methodName, methodSig, ANY_METHOD);
@@ -427,7 +427,7 @@ public class Hierarchy {
 	 * @param methodSig  the signature of the method
 	 * @param chooser    MethodChooser to select which methods are considered;
 	 *                   it must return true for a method to be returned
-	 * @return the Method, or null if no such method exists in the class
+	 * @return the JavaClassAndMethod, or null if no such method exists in the class
 	 */
 	public static JavaClassAndMethod findMethod(JavaClass[] classList, String methodName, String methodSig,
 			MethodChooser chooser) {
@@ -497,7 +497,7 @@ public class Hierarchy {
 		
 		if (opcode == Constants.INVOKESTATIC) {
 			HashSet<XMethod> result = new HashSet<XMethod>();
-			JavaClassAndMethod targetMethod = findPrototypeMethod(invokeInstruction, cpg);
+			JavaClassAndMethod targetMethod = findInvocationLeastUpperBound(invokeInstruction, cpg);
 			if (targetMethod != null) {
 				result.add(XMethodFactory.createXMethod(
 						targetMethod.getJavaClass(), targetMethod.getMethod()));
