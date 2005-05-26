@@ -25,6 +25,9 @@ import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.InvokeInstruction;
 
+import edu.umd.cs.findbugs.visitclass.BetterVisitor;
+import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
+
 /**
  * Factory methods for creating XMethod objects.
  * 
@@ -67,5 +70,18 @@ public abstract class XMethodFactory {
 		return (invokeInstruction.getOpcode() == Constants.INVOKESTATIC)
 			? new StaticMethod(className, methodName, methodSig, Constants.ACC_STATIC | Constants.ACC_PUBLIC)
 			: new InstanceMethod(className, methodName, methodSig, Constants.ACC_PUBLIC);
+	}
+	
+	/**
+	 * Create an XMethod object from the method currently being visited by
+	 * the given PreorderVisitor.
+	 * 
+	 * @param visitor the PreorderVisitor
+	 * @return the XMethod representing the method currently being visited
+	 */
+	public static XMethod createXMethod(PreorderVisitor visitor) {
+		JavaClass javaClass = visitor.getThisClass();
+		Method method = visitor.getMethod();
+		return createXMethod(javaClass, method);
 	}
 }
