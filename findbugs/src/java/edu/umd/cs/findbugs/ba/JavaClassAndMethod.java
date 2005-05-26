@@ -1,0 +1,60 @@
+/*
+ * Bytecode analysis framework
+ * Copyright (C) 2005, University of Maryland
+ * 
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ * 
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
+package edu.umd.cs.findbugs.ba;
+
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
+
+/**
+ * A JavaClass and a Method belonging to the class.
+ * This is useful for answering a method lookup query
+ * which must concretely identify both the class and the method.
+ * 
+ * @author David Hovemeyer
+ */
+public class JavaClassAndMethod {
+	private final JavaClass javaClass;
+	private final Method method;
+	
+	/**
+	 * Constructor.
+	 * 
+	 * @param javaClass the JavaClass
+	 * @param method    a Method belonging to the JavaClass
+	 */
+	public JavaClassAndMethod(JavaClass javaClass, Method method) {
+		this.javaClass = javaClass;
+		this.method = method;
+	}
+
+	/**
+	 * Get the JavaClass.
+	 */
+	public JavaClass getJavaClass() {
+		return javaClass;
+	}
+
+	/**
+	 * Get the Method.
+	 */
+	public Method getMethod() {
+		return method;
+	}
+}
