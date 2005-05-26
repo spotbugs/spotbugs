@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs;
 
 import edu.umd.cs.findbugs.ba.Hierarchy;
+import edu.umd.cs.findbugs.ba.JavaClassAndMethod;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
@@ -194,11 +195,11 @@ public class SourceLineAnnotation implements BugAnnotation {
 	 * @return a SourceLineAnnotation for the entire method
 	 */
 	public static SourceLineAnnotation forEntireMethod(JavaClass javaClass, XMethod xmethod) {
-		Method m = Hierarchy.findMethod(javaClass, xmethod.getName(), xmethod.getSignature());
+		JavaClassAndMethod m = Hierarchy.findMethod(javaClass, xmethod.getName(), xmethod.getSignature());
 		if (m == null) {
 			return createUnknown(javaClass.getClassName(), javaClass.getSourceFileName());
 		} else {
-			return forEntireMethod(javaClass, m);
+			return forEntireMethod(javaClass, m.getMethod());
 		}
 	}
 

@@ -170,7 +170,7 @@ public class Hierarchy {
 	 * @param cpg the ConstantPoolGen used by the class the InvokeInstruction belongs to
 	 * @return the Method, or null if no such method is defined in the class
 	 */
-	public static Method findExactMethod(InvokeInstruction inv, ConstantPoolGen cpg) throws ClassNotFoundException {
+	public static JavaClassAndMethod findExactMethod(InvokeInstruction inv, ConstantPoolGen cpg) throws ClassNotFoundException {
 		return findExactMethod(inv, cpg, ANY_METHOD);
 	}
 
@@ -184,7 +184,7 @@ public class Hierarchy {
 	 * @param chooser MethodChooser to use to pick the method from among the candidates
 	 * @return the Method, or null if no such method is defined in the class
 	 */
-	public static Method findExactMethod(
+	public static JavaClassAndMethod findExactMethod(
 			InvokeInstruction inv,
 			ConstantPoolGen cpg,
 			MethodChooser chooser) throws ClassNotFoundException {
@@ -221,9 +221,9 @@ public class Hierarchy {
 	 * @param cpg the ConstantPoolGen used by the class the InvokeInstruction belongs to
 	 * @return the Method, or null if no matching method can be found
 	 */
-	public static Method findPrototypeMethod(InvokeInstruction inv, ConstantPoolGen cpg)
+	public static JavaClassAndMethod findPrototypeMethod(InvokeInstruction inv, ConstantPoolGen cpg)
 	        throws ClassNotFoundException {
-		Method m = null;
+		JavaClassAndMethod result = null;
 		
 		if (DEBUG_METHOD_LOOKUP) {
 			System.out.println("Find prototype method for " +
@@ -235,7 +235,7 @@ public class Hierarchy {
 		// Find the method
 		if (opcode == Constants.INVOKESPECIAL) {
 			// Non-virtual dispatch
-			m = findExactMethod(inv, cpg, INSTANCE_METHOD);
+			result = findExactMethod(inv, cpg, INSTANCE_METHOD);
 		} else {
 			String className = inv.getClassName(cpg);
 			String methodName = inv.getName(cpg);
@@ -254,25 +254,25 @@ public class Hierarchy {
 				// Check superclasses
 				MethodChooser methodChooser = (opcode == Constants.INVOKESTATIC)
 						? STATIC_METHOD : INSTANCE_METHOD;
-				m = findMethod(Repository.lookupClass(className), methodName, methodSig, methodChooser);
-				if (m == null) {
+				result = findMethod(Repository.lookupClass(className), methodName, methodSig, methodChooser);
+				if (result == null) {
 					if (DEBUG_METHOD_LOOKUP) {
 						System.out.println("[not in class, checking superclasses...]");
 					}
 					JavaClass[] superClassList = Repository.getSuperClasses(className);
-					m = findMethod(superClassList, methodName, methodSig, methodChooser);
+					result = findMethod(superClassList, methodName, methodSig, methodChooser);
 				}
 			} else {
 				// Check superinterfaces
-				m = findMethod(Repository.lookupClass(className), methodName, methodSig, INSTANCE_METHOD);
-				if (m == null) {
+				result = findMethod(Repository.lookupClass(className), methodName, methodSig, INSTANCE_METHOD);
+				if (result == null) {
 					JavaClass[] interfaceList = Repository.getInterfaces(className);
-					m = findMethod(interfaceList, methodName, methodSig, INSTANCE_METHOD);
+					result = findMethod(interfaceList, methodName, methodSig, INSTANCE_METHOD);
 				}
 			}
 		}
 
-		return m;
+		return result;
 	}
 
 	/**
@@ -286,12 +286,12 @@ public class Hierarchy {
 	 */
 	public static ObjectType[] findDeclaredExceptions(InvokeInstruction inv, ConstantPoolGen cpg)
 	        throws ClassNotFoundException {
-		Method m = findPrototypeMethod(inv, cpg);
+		JavaClassAndMethod method = findPrototypeMethod(inv, cpg);
 
-		if (m == null)
+		if (method == null)
 			return null;
 
-		ExceptionTable exTable = m.getExceptionTable();
+		ExceptionTable exTable = method.getMethod().getExceptionTable();
 		if (exTable == null)
 			return new ObjectType[0];
 
@@ -311,7 +311,7 @@ public class Hierarchy {
 	 * @param methodSig  the signature of the method
 	 * @return the Method, or null if no such method exists in the class
 	 */
-	public static Method findMethod(JavaClass javaClass, String methodName, String methodSig) {
+	public static JavaClassAndMethod findMethod(JavaClass javaClass, String methodName, String methodSig) {
 		return findMethod(javaClass, methodName, methodSig, ANY_METHOD);
 	}
 
@@ -325,7 +325,7 @@ public class Hierarchy {
 	 *                   (assuming class, name, and signature already match)
 	 * @return the Method, or null if no such method exists in the class
 	 */
-	public static Method findMethod(
+	public static JavaClassAndMethod findMethod(
 			JavaClass javaClass,
 			String methodName,
 			String methodSig,
@@ -342,7 +342,7 @@ public class Hierarchy {
 				if (DEBUG_METHOD_LOOKUP) {
 					System.out.println("\t==> FOUND: " + method);
 				}
-				return method;
+				return new JavaClassAndMethod(javaClass, method);
 			}
 		}
 		if (DEBUG_METHOD_LOOKUP) {
@@ -362,8 +362,8 @@ public class Hierarchy {
 	 */
 	public static XMethod findXMethod(JavaClass javaClass, String methodName, String methodSig,
 			MethodChooser chooser) {
-		Method m = findMethod(javaClass, methodName, methodSig, chooser);
-		return m == null ? null : XMethodFactory.createXMethod(javaClass, m);
+		JavaClassAndMethod result = findMethod(javaClass, methodName, methodSig, chooser);
+		return result == null ? null : XMethodFactory.createXMethod(result.getJavaClass(), result.getMethod());
 	}
 	
 	/**
@@ -414,7 +414,7 @@ public class Hierarchy {
 	 * @param methodSig  the signature of the method
 	 * @return the Method, or null if no such method exists in the class
 	 */
-	public static Method findMethod(JavaClass[] classList, String methodName, String methodSig) {
+	public static JavaClassAndMethod findMethod(JavaClass[] classList, String methodName, String methodSig) {
 		return findMethod(classList, methodName, methodSig, ANY_METHOD);
 	}
 
@@ -429,9 +429,9 @@ public class Hierarchy {
 	 *                   it must return true for a method to be returned
 	 * @return the Method, or null if no such method exists in the class
 	 */
-	public static Method findMethod(JavaClass[] classList, String methodName, String methodSig,
+	public static JavaClassAndMethod findMethod(JavaClass[] classList, String methodName, String methodSig,
 			MethodChooser chooser) {
-		Method m = null;
+		JavaClassAndMethod m = null;
 
 		for (int i = 0; i < classList.length; ++i) {
 			JavaClass cls = classList[i];
@@ -470,9 +470,9 @@ public class Hierarchy {
 			MethodChooser chooser) {
 		for (int i = 0; i < classList.length; ++i) {
 			JavaClass cls = classList[i];
-			Method m;
-			if ((m = findMethod(cls, methodName, methodSig)) != null && chooser.choose(m)) {
-				return XMethodFactory.createXMethod(cls, m);
+			JavaClassAndMethod m;
+			if ((m = findMethod(cls, methodName, methodSig)) != null && chooser.choose(m.getMethod())) {
+				return XMethodFactory.createXMethod(cls, m.getMethod());
 			}
 		}
 		return null;
@@ -497,11 +497,10 @@ public class Hierarchy {
 		
 		if (opcode == Constants.INVOKESTATIC) {
 			HashSet<XMethod> result = new HashSet<XMethod>();
-			Method targetMethod = findPrototypeMethod(invokeInstruction, cpg);
+			JavaClassAndMethod targetMethod = findPrototypeMethod(invokeInstruction, cpg);
 			if (targetMethod != null) {
-				JavaClass targetClass = AnalysisContext.currentAnalysisContext().lookupClass(
-						invokeInstruction.getClassName(cpg));
-				result.add(XMethodFactory.createXMethod(targetClass, targetMethod));
+				result.add(XMethodFactory.createXMethod(
+						targetMethod.getJavaClass(), targetMethod.getMethod()));
 			}
 			return result;
 		}

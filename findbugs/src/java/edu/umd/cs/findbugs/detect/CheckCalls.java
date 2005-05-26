@@ -34,6 +34,7 @@ import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.Hierarchy;
+import edu.umd.cs.findbugs.ba.JavaClassAndMethod;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.SignatureConverter;
 import edu.umd.cs.findbugs.ba.XMethod;
@@ -102,13 +103,15 @@ public class CheckCalls implements Detector {
 				System.out.println("\tInvoking: " +
 						SignatureConverter.convertMethodSignature((InvokeInstruction)ins,classContext.getConstantPoolGen()));
 				
-				Method proto = Hierarchy.findPrototypeMethod(
+				JavaClassAndMethod proto = Hierarchy.findPrototypeMethod(
 						(InvokeInstruction) ins,
 						classContext.getConstantPoolGen());
 				if (proto == null) {
 					System.out.println("\tUnknown prototype method");
 				} else {
-					System.out.println("\tPrototype method: " + method);
+					System.out.println("\tPrototype method: class=" +
+							proto.getJavaClass().getClassName() + ", method=" +
+							proto.getMethod());
 				}
 				Set<XMethod> calledMethodSet = Hierarchy.resolveMethodCallTargets(
 						(InvokeInstruction) ins,

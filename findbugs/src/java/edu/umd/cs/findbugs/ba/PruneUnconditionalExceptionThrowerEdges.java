@@ -72,11 +72,12 @@ public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes, Analy
 				ClassContext classContext = analysisContext.getClassContext(javaClass);
 
 				if (DEBUG) System.out.println("\tlooking up method for " + basicBlock.getExceptionThrower());
-				Method method = Hierarchy.findExactMethod(inv, cpg);
-				if (method == null) {
+				JavaClassAndMethod classAndMethod = Hierarchy.findExactMethod(inv, cpg);
+				if (classAndMethod == null) {
 					if (DEBUG) System.out.println("\tNOT FOUND");
 					continue;
 				}
+				Method method = classAndMethod.getMethod();
 				if (DEBUG) System.out.println("\tFound " + method.toString());
 
 				// FIXME: for now, only allow static and private methods.
