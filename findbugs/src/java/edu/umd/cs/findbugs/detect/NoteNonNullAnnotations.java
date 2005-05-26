@@ -23,27 +23,63 @@ import java.util.Map;
 
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.NonReportingDetector;
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.ba.XMethodFactory;
+import edu.umd.cs.findbugs.ba.npe.NonNullParamProperty;
+import edu.umd.cs.findbugs.ba.npe.NonNullParamPropertyDatabase;
 import edu.umd.cs.findbugs.visitclass.AnnotationVisitor;
 
 /**
+ * Scan application classes for @NonNull annotations.
+ * 
  * @author David Hovemeyer
  */
 public class NoteNonNullAnnotations extends AnnotationVisitor implements NonReportingDetector {
+	private static final boolean DEBUG = Boolean.getBoolean("findbugs.nonnull.debug");
+	
+	private static final String NONNULL_ANNOTATION_CLASS = NonNull.class.getName().replace('.', '/');
 	
 	private BugReporter bugReporter;
+	private NonNullParamPropertyDatabase database;
 	
 	public NoteNonNullAnnotations(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 	}
 
 	public void visitClassContext(ClassContext classContext) {
+		if (database == null) {
+			database = new NonNullParamPropertyDatabase();
+			AnalysisContext.currentAnalysisContext().setNonNullParamDatabase(database);
+		}
+		
 		classContext.getJavaClass().accept(this);
 	}
 	
+	// TODO: non-null fields
+	
 	//@Override
 	public void visitAnnotation(String annotationClass, Map<String, Object> map, boolean runtimeVisible) {
-		System.out.println("nonnull?: " + annotationClass);
+		// TODO: non-null return values
+	}
+	
+	//@Override
+	public void visitParameterAnnotation(int p, String annotationClass, Map<String, Object> map, boolean runtimeVisible) {
+		if (!annotationClass.equals(NONNULL_ANNOTATION_CLASS))
+			return;
+
+		XMethod xmethod = XMethodFactory.createXMethod(this);
+		if (DEBUG) {
+			System.out.println("Parameter " + p + " @NonNull in " + xmethod.toString());
+		}
+		
+		NonNullParamProperty property = database.getProperty(xmethod);
+		if (property == null) {
+			property = new NonNullParamProperty();
+		}
+		property.setNonNull(p, true);
 	}
 
 	public void report() {
