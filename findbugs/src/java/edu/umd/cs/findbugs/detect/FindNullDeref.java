@@ -374,20 +374,31 @@ public class FindNullDeref
 		String sourceFile = classContext.getJavaClass().getSourceFileName();
 		MethodGen methodGen = classContext.getMethodGen(method);
 		
-		boolean isChecked = redundantBranch.firstValue.isChecked() ||  redundantBranch.secondValue.isChecked();
-		boolean wouldHaveBeenAKaboom = redundantBranch.firstValue.wouldHaveBeenAKaboom() ||  redundantBranch.secondValue.wouldHaveBeenAKaboom();
+		boolean isChecked = redundantBranch.firstValue.isChecked();
+		boolean wouldHaveBeenAKaboom = redundantBranch.firstValue.wouldHaveBeenAKaboom();
 		
 		
-		int priority = NORMAL_PRIORITY;
-		if (isChecked) priority--;
-		if (wouldHaveBeenAKaboom) priority--;
-		
-		boolean bothNull =  redundantBranch.firstValue.isDefinitelyNull() && redundantBranch.secondValue.isDefinitelyNull();		
-		
+		int priority = LOW_PRIORITY;
 		String warning;
-		if (bothNull) warning = "RCN_REDUNDANT_COMPARISON_TO_NULL_BOTH_NULL";
-		else warning = "RCN_REDUNDANT_COMPARISON_TO_NULL_DIFFERENT";
+		if (redundantBranch.secondValue == null) {
+			if (redundantBranch.firstValue.isDefinitelyNull() ) {
+				warning = "RCN_REDUNDANT_NULLCHECK_OF_NULL_VALUE";
+			}
+			else {
+				warning = "RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE";
+			}
+
+		} else {
+			boolean bothNull =  redundantBranch.firstValue.isDefinitelyNull() && redundantBranch.secondValue.isDefinitelyNull();		
+			if (bothNull) warning = "RCN_REDUNDANT_COMPARISON_TWO_NULL_VALUES";
+			else warning = "RCN_REDUNDANT_COMPARISON_OF_NULL_AND_NONNULL_VALUE";
+			if (redundantBranch.secondValue.isChecked()) isChecked = true;
+			if (redundantBranch.secondValue.wouldHaveBeenAKaboom()) wouldHaveBeenAKaboom = true;
+
+		}
 		
+		if (wouldHaveBeenAKaboom) priority = HIGH_PRIORITY;
+		else if (isChecked) priority = NORMAL_PRIORITY;
 		BugInstance bugInstance =
 			new BugInstance(this, warning, priority)
 				.addClassAndMethod(methodGen, sourceFile)

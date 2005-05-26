@@ -2693,7 +2693,27 @@ body of an <code>if</code> statement, e.g.:</p>
     </Details>
   </BugPattern>
 
-  <BugPattern type="RCN_REDUNDANT_COMPARISON_TO_NULL_BOTH_NULL">
+  <BugPattern type="RCN_REDUNDANT_NULLCHECK_OF_NULL_VALUE">
+    <ShortDescription>Redundant nullcheck of value known to be null</ShortDescription>
+    <LongDescription>Redundant nullcheck of value known to be null {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p> This method contains a redundant check of a known null value against
+the constant null.
+]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE">
+    <ShortDescription>Redundant comparison of two null values</ShortDescription>
+    <LongDescription>Redundant comparison of two null values {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p> This method contains a redundant check of a known non-null value against
+the constant null.
+]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="RCN_REDUNDANT_COMPARISON_TWO_NULL_VALUES">
     <ShortDescription>Redundant comparison of two null values</ShortDescription>
     <LongDescription>Redundant comparison of two null values {1}</LongDescription>
     <Details>
@@ -2705,7 +2725,7 @@ both be definitely null.
   </BugPattern>
 
 
-  <BugPattern type="RCN_REDUNDANT_COMPARISON_TO_NULL_DIFFERENT">
+  <BugPattern type="RCN_REDUNDANT_COMPARISON_OF_NULL_AND_NONNULL_VALUE">
     <ShortDescription>Redundant comparison of non-null value to null</ShortDescription>
     <LongDescription>Redundant comparison of non-null value to null in {1}</LongDescription>
     <Details>

@@ -221,13 +221,7 @@ public class NullDerefAndRedundantComparisonFinder {
 			definitelyDifferentBranchSet.set(lineNumber);
 		}
 
-		// Is this a null check made redundant by an earlier check?
-		// Such code is not as likely to be an error
-		// as when a check is done after an explicit dereference.
-		boolean redundantNullCheck = top.isChecked();
-
-		RedundantBranch redundantBranch = new RedundantBranch(location, lineNumber, top, opcode == Constants.IFNULL ? IsNullValue.nullValue()
-										: IsNullValue.nonNullValue());
+		RedundantBranch redundantBranch = new RedundantBranch(location, lineNumber, top);
 		if (DEBUG) System.out.println("Adding redundant branch: " + redundantBranch);
 		redundantBranchList.add(redundantBranch);
 	}
