@@ -92,23 +92,29 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
 	private void handleInvoke(InvokeInstruction obj) {
 		Type callType = obj.getLoadClassType(getCPG());
 		Type returnType = obj.getReturnType(getCPG());
+		String methodName = obj.getMethodName(getCPG());
 		
 		boolean stringMethodCall = callType.equals(Type.STRING) && returnType.equals(Type.STRING);
-		
+
+		boolean isReadLine =  false && methodName.equals("readLine");
 		// Determine if we are going to model the return value of this call.
 		boolean modelCallReturnValue =
-			   stringMethodCall
+			  isReadLine
+			  || stringMethodCall
 			|| (mayReturnNullDatabase != null)
 			|| IsNullValueAnalysis.UNKNOWN_VALUES_ARE_NSP;
-		
+
+			
 		if( !modelCallReturnValue) {
 			// Normal case: Assume returned values are non-reporting non-null.
 			handleNormalInstruction(obj);
 		} else {
 			// Special case: some special value is pushed on the stack for the return value
 			IsNullValue pushValue = null;
-			
-			if (stringMethodCall) {
+			if (isReadLine) {
+				// String methods always return a non-null value
+				pushValue = IsNullValue.nullOnSimplePathValue();
+			} else if (stringMethodCall) {
 				// String methods always return a non-null value
 				pushValue = IsNullValue.nonNullValue();
 			} else if (mayReturnNullDatabase != null) {
