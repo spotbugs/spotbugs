@@ -250,16 +250,26 @@ public class FindNullDeref
 		if (dangerousCallTargetList.isEmpty())
 			return;
 		
+		WarningPropertySet propertySet = new WarningPropertySet();
+		
 		MethodGen methodGen = classContext.getMethodGen(method);
 		String sourceFile = classContext.getJavaClass().getSourceFileName();
 		BugInstance warning = new BugInstance("NP_NULL_PARAM_DEREF", NORMAL_PRIORITY)
 				.addClassAndMethod(methodGen, sourceFile)
 				.addSourceLine(methodGen, sourceFile, location.getHandle());
+		
+		// Check which params might be null
 		for (int i = 0; i < 32; ++i) {
 			if (unconditionallyDereferencedNullArgSet.get(i)) {
+				boolean definitelyNull = definitelyNullArgSet.get(i);
+				
+				if (definitelyNull) {
+					propertySet.addProperty(NullArgumentWarningProperty.ARG_DEFINITELY_NULL);
+				}
+
 				// Note: we report params as being indexed starting from 1, not 0
 				warning.addInt(i + 1).describe(
-						definitelyNullArgSet.get(i) ? "INT_NULL_ARG" : "INT_MAYBE_NULL_ARG");
+						definitelyNull ? "INT_NULL_ARG" : "INT_MAYBE_NULL_ARG");
 			}
 		}
 		for (CallTarget dangerousCallTarget : dangerousCallTargetList) {
@@ -267,18 +277,34 @@ public class FindNullDeref
 			XMethod targetMethod = dangerousCallTarget.xmethod;
 			addMethodAnnotationForCalledMethod(warning, targetClass, targetMethod, "METHOD_DANGEROUS_TARGET");
 		}
+
+		// See if there are any safe targets
+		Set<XMethod> safeCallTargetSet = new HashSet<XMethod>();
+		safeCallTargetSet.addAll(targetMethodSet);
+		for (CallTarget dangerousCallTarget : dangerousCallTargetList) {
+			safeCallTargetSet.remove(dangerousCallTarget.xmethod);
+		}
+		if (safeCallTargetSet.isEmpty()) {
+			propertySet.addProperty(NullArgumentWarningProperty.ALL_DANGEROUS_TARGETS);
+			if (dangerousCallTargetList.size() == 1) {
+				propertySet.addProperty(NullArgumentWarningProperty.MONOMORPHIC_CALL_SITE);
+			}
+		}
 		if (REPORT_SAFE_METHOD_TARGETS) {
 			// This is useful to see which other call targets the analysis
 			// considered.
-			Set<XMethod> safeCallTargetSet = new HashSet<XMethod>();
-			safeCallTargetSet.addAll(targetMethodSet);
-			for (CallTarget dangerousCallTarget : dangerousCallTargetList) {
-				safeCallTargetSet.remove(dangerousCallTarget.xmethod);
-			}
 			for (XMethod safeMethod : safeCallTargetSet) {
 				JavaClass targetClass = AnalysisContext.currentAnalysisContext().lookupClass(safeMethod.getClassName());
 				addMethodAnnotationForCalledMethod(warning, targetClass, safeMethod, "METHOD_SAFE_TARGET");
 			}
+		}
+
+		warning.setPriority(propertySet.computePriority(NORMAL_PRIORITY));
+		
+		if (AnalysisContext.currentAnalysisContext().getBoolProperty(
+				FindBugsAnalysisProperties.RELAXED_REPORTING_MODE)) {
+			WarningPropertyUtil.addPropertiesForLocation(propertySet, classContext, method, location);
+			propertySet.decorateBugInstance(warning);
 		}
 		
 		bugReporter.reportBug(warning);
