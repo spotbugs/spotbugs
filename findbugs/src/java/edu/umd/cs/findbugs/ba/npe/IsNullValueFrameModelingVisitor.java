@@ -152,19 +152,19 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
 	}
 
 	public void visitNEW(NEW obj) {
-		produce(IsNullValue.checkedNonNullValue());
+		produce(IsNullValue.nonNullValue());
 	}
 
 	public void visitLDC(LDC obj) {
-		produce(IsNullValue.checkedNonNullValue());
+		produce(IsNullValue.nonNullValue());
 	}
 
 	public void visitLDC_W(LDC_W obj) {
-		produce(IsNullValue.checkedNonNullValue());
+		produce(IsNullValue.nonNullValue());
 	}
 
 	public void visitLDC2_W(LDC2_W obj) {
-		produce2(IsNullValue.checkedNonNullValue());
+		produce2(IsNullValue.nonNullValue());
 	}
 
 	public void visitINVOKESTATIC(INVOKESTATIC obj) {
