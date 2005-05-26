@@ -2616,6 +2616,21 @@ be an exception path, since the default case is often infeasible.</p>
 		]]>
 	</Details>
   </BugPattern>
+  
+  <BugPattern type="NP_NONNULL_PARAM_VIOLATION">
+	<ShortDescription>Method call passes null to a parameter declared @NonNull</ShortDescription>
+	<LongDescription>Method call in {1} passes null to a parameter declared @NonNull in {2}</LongDescription>
+	<Details>
+		<![CDATA[
+		<p>
+		This method passes a null value as the parameter of a method which
+		has declared that parameter to be @NonNull.  (Note that the method
+		with the @NonNull annotation may be in a subclass of the receiver object's
+		class.)
+		</p>
+		]]>
+	</Details>
+  </BugPattern>
 
   <BugPattern type="SI_INSTANCE_BEFORE_FINALS_ASSIGNED">
     <ShortDescription>Static initializer for class creates instance before all static final fields assigned</ShortDescription>

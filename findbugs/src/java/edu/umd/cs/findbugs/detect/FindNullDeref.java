@@ -132,17 +132,20 @@ public class FindNullDeref
 				invDataflow,
 				this);
 		worker.execute();
-		
-		if (AnalysisContext.USE_INTERPROC_DATABASE) {
-			NonNullParamPropertyDatabase database =
-				AnalysisContext.currentAnalysisContext().getUnconditionalDerefDatabase();
-			if (database != null) {
-				examineCalledMethods(database);
-			}
+
+		NonNullParamPropertyDatabase unconditionalDerefDatabase =
+			AnalysisContext.currentAnalysisContext().getUnconditionalDerefDatabase();
+		NonNullParamPropertyDatabase nonNullParamDatabase =
+			AnalysisContext.currentAnalysisContext().getNonNullParamDatabase();
+			
+		if (unconditionalDerefDatabase != null || nonNullParamDatabase != null) {
+			examineCalledMethods(unconditionalDerefDatabase, nonNullParamDatabase);
 		}
 	}
 
-	private void examineCalledMethods(NonNullParamPropertyDatabase database)
+	private void examineCalledMethods(
+			NonNullParamPropertyDatabase unconditionalDerefDatabase,
+			NonNullParamPropertyDatabase nonNullParamDatabase)
 			throws CFGBuilderException, DataflowAnalysisException {
 		ConstantPoolGen cpg = classContext.getConstantPoolGen();
 		TypeDataflow typeDataflow = classContext.getTypeDataflow(method);
@@ -150,7 +153,7 @@ public class FindNullDeref
 		for (Iterator<Location> i = classContext.getCFG(method).locationIterator(); i.hasNext();) {
 			Location location = i.next();
 			try {
-				examineLocation(location, cpg, typeDataflow, database);
+				examineLocation(location, cpg, typeDataflow, unconditionalDerefDatabase, nonNullParamDatabase);
 			} catch (ClassNotFoundException e) {
 				bugReporter.reportMissingClass(e);
 			}
@@ -166,7 +169,12 @@ public class FindNullDeref
 		}
 	}
 	
-	private void examineLocation(Location location, ConstantPoolGen cpg, TypeDataflow typeDataflow, NonNullParamPropertyDatabase database)
+	private void examineLocation(
+			Location location,
+			ConstantPoolGen cpg,
+			TypeDataflow typeDataflow,
+			NonNullParamPropertyDatabase unconditionalDerefDatabase,
+			NonNullParamPropertyDatabase nonNullParamDatabase)
 			throws DataflowAnalysisException, CFGBuilderException, ClassNotFoundException {
 		if (!(location.getHandle().getInstruction() instanceof InvokeInstruction))
 			return;
@@ -213,6 +221,16 @@ public class FindNullDeref
 			System.out.println("Null arguments passed: " + nullArgSet);
 		}
 		
+		if (unconditionalDerefDatabase != null) {
+			checkUnconditionallyDereferencedParam(location, cpg, typeDataflow, unconditionalDerefDatabase, invokeInstruction, nullArgSet, definitelyNullArgSet);
+		}
+		
+		if (nonNullParamDatabase != null) {
+			checkNonNullParam(location, cpg, typeDataflow, nonNullParamDatabase, invokeInstruction, nullArgSet, definitelyNullArgSet);
+		}
+	}
+
+	private void checkUnconditionallyDereferencedParam(Location location, ConstantPoolGen cpg, TypeDataflow typeDataflow, NonNullParamPropertyDatabase database, InvokeInstruction invokeInstruction, BitSet nullArgSet, BitSet definitelyNullArgSet) throws DataflowAnalysisException, ClassNotFoundException {
 		// See what methods might be called here
 		TypeFrame typeFrame = typeDataflow.getFactAtLocation(location);
 		Set<XMethod> targetMethodSet = Hierarchy.resolveMethodCallTargets(invokeInstruction, typeFrame, cpg);
@@ -308,6 +326,11 @@ public class FindNullDeref
 		}
 		
 		bugReporter.reportBug(warning);
+	}
+
+	private void checkNonNullParam(Location location, ConstantPoolGen cpg, TypeDataflow typeDataflow, NonNullParamPropertyDatabase nonNullParamDatabase, InvokeInstruction invokeInstruction, BitSet nullArgSet, BitSet definitelyNullArgSet) {
+		// TODO Auto-generated method stub
+		
 	}
 
 	private void addMethodAnnotationForCalledMethod(BugInstance warning, JavaClass targetClass, XMethod targetMethod,
