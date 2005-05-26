@@ -32,8 +32,8 @@ import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.XMethodFactory;
 import edu.umd.cs.findbugs.ba.npe.UnconditionalDerefDataflow;
-import edu.umd.cs.findbugs.ba.npe.UnconditionalDerefProperty;
-import edu.umd.cs.findbugs.ba.npe.UnconditionalDerefPropertyDatabase;
+import edu.umd.cs.findbugs.ba.npe.NonNullParamProperty;
+import edu.umd.cs.findbugs.ba.npe.NonNullParamPropertyDatabase;
 import edu.umd.cs.findbugs.ba.npe.UnconditionalDerefSet;
 
 /**
@@ -48,11 +48,11 @@ public class TrainUnconditionalDerefParams implements TrainingDetector {
 	private static final boolean VERBOSE_DEBUG = Boolean.getBoolean("upd.debug"); 
 	
 	private BugReporter bugReporter;
-	private UnconditionalDerefPropertyDatabase database;
+	private NonNullParamPropertyDatabase database;
 	
 	public TrainUnconditionalDerefParams(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
-		this.database = new UnconditionalDerefPropertyDatabase();
+		this.database = new NonNullParamPropertyDatabase();
 	}
 
 	/* (non-Javadoc)
@@ -96,8 +96,8 @@ public class TrainUnconditionalDerefParams implements TrainingDetector {
 				System.out.println("\tAdding result " + unconditionalDerefSet.toString() + " to database");
 			}
 
-			UnconditionalDerefProperty property = new UnconditionalDerefProperty();
-			property.setUnconditionalDerefParamSet(unconditionalDerefSet);
+			NonNullParamProperty property = new NonNullParamProperty();
+			property.setNonNullParamSet(unconditionalDerefSet);
 			
 			XMethod xmethod = XMethodFactory.createXMethod(classContext.getJavaClass(), method);
 			database.setProperty(xmethod, property);
@@ -113,7 +113,7 @@ public class TrainUnconditionalDerefParams implements TrainingDetector {
 	 */
 	public void report() {
 		try {
-			database.writeToFile(UnconditionalDerefPropertyDatabase.DEFAULT_FILENAME);
+			database.writeToFile(NonNullParamPropertyDatabase.DEFAULT_FILENAME);
 		} catch (IOException e) {
 			bugReporter.logError("Couldn't write unconditional deref database", e);
 		}

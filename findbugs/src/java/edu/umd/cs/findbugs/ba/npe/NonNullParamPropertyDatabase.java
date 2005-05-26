@@ -28,7 +28,7 @@ import edu.umd.cs.findbugs.ba.interproc.PropertyDatabaseFormatException;
  * 
  * @author David Hovemeyer
  */
-public class UnconditionalDerefPropertyDatabase extends MethodPropertyDatabase<UnconditionalDerefProperty> {
+public class NonNullParamPropertyDatabase extends MethodPropertyDatabase<NonNullParamProperty> {
 
 	public static final String DEFAULT_FILENAME = "unconditionalDeref.db";
 	
@@ -36,12 +36,12 @@ public class UnconditionalDerefPropertyDatabase extends MethodPropertyDatabase<U
 	 * @see edu.umd.cs.findbugs.ba.interproc.MethodPropertyDatabase#decodeProperty(java.lang.String)
 	 */
 	//@Override
-	protected UnconditionalDerefProperty decodeProperty(String propStr)
+	protected NonNullParamProperty decodeProperty(String propStr)
 			throws PropertyDatabaseFormatException {
 		try {
 			int unconditionalDerefSet = Integer.parseInt(propStr);
-			UnconditionalDerefProperty prop = new UnconditionalDerefProperty();
-			prop.setUnconditionalDerefParamSet(unconditionalDerefSet);
+			NonNullParamProperty prop = new NonNullParamProperty();
+			prop.setNonNullParamSet(unconditionalDerefSet);
 			return prop;
 		} catch (NumberFormatException e) {
 			throw new PropertyDatabaseFormatException("Invalid unconditional deref param set: " + propStr);
@@ -52,8 +52,8 @@ public class UnconditionalDerefPropertyDatabase extends MethodPropertyDatabase<U
 	 * @see edu.umd.cs.findbugs.ba.interproc.MethodPropertyDatabase#encodeProperty(Property)
 	 */
 	//@Override
-	protected String encodeProperty(UnconditionalDerefProperty property) {
-		return String.valueOf(property.getUnconditionalDerefParamSet());
+	protected String encodeProperty(NonNullParamProperty property) {
+		return String.valueOf(property.getNonNullParamSet());
 	}
 
 }

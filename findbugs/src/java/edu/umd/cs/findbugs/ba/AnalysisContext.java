@@ -41,7 +41,7 @@ import edu.umd.cs.findbugs.ba.ch.Subtypes;
 import edu.umd.cs.findbugs.ba.interproc.PropertyDatabase;
 import edu.umd.cs.findbugs.ba.interproc.PropertyDatabaseFormatException;
 import edu.umd.cs.findbugs.ba.npe.MayReturnNullPropertyDatabase;
-import edu.umd.cs.findbugs.ba.npe.UnconditionalDerefPropertyDatabase;
+import edu.umd.cs.findbugs.ba.npe.NonNullParamPropertyDatabase;
 import edu.umd.cs.findbugs.ba.type.FieldStoreTypeDatabase;
 
 
@@ -70,7 +70,8 @@ public class AnalysisContext implements AnalysisFeatures {
 	
 	// Interprocedural fact databases
 	private MayReturnNullPropertyDatabase mayReturnNullDatabase;
-	private UnconditionalDerefPropertyDatabase unconditionalDerefDatabase;
+	private NonNullParamPropertyDatabase unconditionalDerefDatabase;
+	private NonNullParamPropertyDatabase nonNullParamDatabase;
 	private FieldStoreTypeDatabase fieldStoreTypeDatabase;
 	private boolean interprocDatabasesLoaded;
 
@@ -237,8 +238,8 @@ public class AnalysisContext implements AnalysisFeatures {
 					MayReturnNullPropertyDatabase.DEFAULT_FILENAME,
 					"may return null database");
 			unconditionalDerefDatabase = loadMethodPropertyDatabase(
-					new UnconditionalDerefPropertyDatabase(),
-					UnconditionalDerefPropertyDatabase.DEFAULT_FILENAME,
+					new NonNullParamPropertyDatabase(),
+					NonNullParamPropertyDatabase.DEFAULT_FILENAME,
 					"unconditional deref database");
 			fieldStoreTypeDatabase = loadMethodPropertyDatabase(
 					new FieldStoreTypeDatabase(),
@@ -285,7 +286,7 @@ public class AnalysisContext implements AnalysisFeatures {
 	 * 
 	 * @return the database, or null if there is no database available
 	 */
-	public UnconditionalDerefPropertyDatabase getUnconditionalDerefDatabase() {
+	public NonNullParamPropertyDatabase getUnconditionalDerefDatabase() {
 		return unconditionalDerefDatabase;
 	}
 	

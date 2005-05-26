@@ -71,7 +71,7 @@ public class IsNullValueAnalysis
 	private IsNullValue paramValue;
 	private IsNullValueFrame lastFrame;
 	
-	private UnconditionalDerefPropertyDatabase unconditionalDerefDatabase;
+	private NonNullParamPropertyDatabase unconditionalDerefDatabase;
 
 	public IsNullValueAnalysis(MethodGen methodGen, CFG cfg, ValueNumberDataflow vnaDataflow, DepthFirstSearch dfs,
 	                           AssertionMethods assertionMethods) {
@@ -99,7 +99,7 @@ public class IsNullValueAnalysis
 		visitor.setMayReturnNullDatabase(mayReturnNullDatabase);
 	}
 	
-	public void setUnconditionalDerefDatabase(UnconditionalDerefPropertyDatabase unconditionalDerefDatabase) {
+	public void setUnconditionalDerefDatabase(NonNullParamPropertyDatabase unconditionalDerefDatabase) {
 		this.unconditionalDerefDatabase = unconditionalDerefDatabase;
 	}
 

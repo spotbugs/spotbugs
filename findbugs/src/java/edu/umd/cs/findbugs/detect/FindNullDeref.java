@@ -54,8 +54,8 @@ import edu.umd.cs.findbugs.ba.npe.IsNullValueFrame;
 import edu.umd.cs.findbugs.ba.npe.NullDerefAndRedundantComparisonCollector;
 import edu.umd.cs.findbugs.ba.npe.NullDerefAndRedundantComparisonFinder;
 import edu.umd.cs.findbugs.ba.npe.RedundantBranch;
-import edu.umd.cs.findbugs.ba.npe.UnconditionalDerefProperty;
-import edu.umd.cs.findbugs.ba.npe.UnconditionalDerefPropertyDatabase;
+import edu.umd.cs.findbugs.ba.npe.NonNullParamProperty;
+import edu.umd.cs.findbugs.ba.npe.NonNullParamPropertyDatabase;
 import edu.umd.cs.findbugs.ba.type.TypeDataflow;
 import edu.umd.cs.findbugs.ba.type.TypeFrame;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
@@ -134,7 +134,7 @@ public class FindNullDeref
 		worker.execute();
 		
 		if (AnalysisContext.USE_INTERPROC_DATABASE) {
-			UnconditionalDerefPropertyDatabase database =
+			NonNullParamPropertyDatabase database =
 				AnalysisContext.currentAnalysisContext().getUnconditionalDerefDatabase();
 			if (database != null) {
 				examineCalledMethods(database);
@@ -142,7 +142,7 @@ public class FindNullDeref
 		}
 	}
 
-	private void examineCalledMethods(UnconditionalDerefPropertyDatabase database)
+	private void examineCalledMethods(NonNullParamPropertyDatabase database)
 			throws CFGBuilderException, DataflowAnalysisException {
 		ConstantPoolGen cpg = classContext.getConstantPoolGen();
 		TypeDataflow typeDataflow = classContext.getTypeDataflow(method);
@@ -166,7 +166,7 @@ public class FindNullDeref
 		}
 	}
 	
-	private void examineLocation(Location location, ConstantPoolGen cpg, TypeDataflow typeDataflow, UnconditionalDerefPropertyDatabase database)
+	private void examineLocation(Location location, ConstantPoolGen cpg, TypeDataflow typeDataflow, NonNullParamPropertyDatabase database)
 			throws DataflowAnalysisException, CFGBuilderException, ClassNotFoundException {
 		if (!(location.getHandle().getInstruction() instanceof InvokeInstruction))
 			return;
@@ -228,7 +228,7 @@ public class FindNullDeref
 				System.out.println("For target method " + targetMethod);
 			}
 			
-			UnconditionalDerefProperty property = database.getProperty(targetMethod);
+			NonNullParamProperty property = database.getProperty(targetMethod);
 			if (property == null)
 				continue;
 			if (DEBUG_NULLARG) {
@@ -236,7 +236,7 @@ public class FindNullDeref
 			}
 			
 			BitSet targetUnconditionallyDereferencedNullArgSet =
-				property.getUnconditionallyDereferencedNullArgSet(nullArgSet);
+				property.getViolatedParamSet(nullArgSet);
 			
 			if (targetUnconditionallyDereferencedNullArgSet.isEmpty())
 				continue;
