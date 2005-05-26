@@ -195,7 +195,7 @@ public class Hierarchy {
 		JavaClass jclass = Repository.lookupClass(className);
 		return findMethod(jclass, methodName, methodSig, chooser);
 	}
-
+	
 	/**
 	 * Find the least upper bound method in the class hierarchy
 	 * which could be called by the given InvokeInstruction.
@@ -217,11 +217,19 @@ public class Hierarchy {
 	 * so the extended lookup will not be required. Should check.)
 	 * </ul>
 	 *
-	 * @param inv the InvokeInstruction
-	 * @param cpg the ConstantPoolGen used by the class the InvokeInstruction belongs to
+	 * @param inv           the InvokeInstruction
+	 * @param cpg           the ConstantPoolGen used by the class the InvokeInstruction belongs to
+	 * @param methodChooser MethodChooser which selects among candidate methods
 	 * @return the JavaClassAndMethod, or null if no matching method can be found
 	 */
-	public static JavaClassAndMethod findInvocationLeastUpperBound(InvokeInstruction inv, ConstantPoolGen cpg)
+	public static JavaClassAndMethod findInvocationLeastUpperBound(
+			InvokeInstruction inv, ConstantPoolGen cpg)
+	        throws ClassNotFoundException {
+		return findInvocationLeastUpperBound(inv, cpg, ANY_METHOD);
+	}
+
+	public static JavaClassAndMethod findInvocationLeastUpperBound(
+			InvokeInstruction inv, ConstantPoolGen cpg, MethodChooser methodChooser)
 	        throws ClassNotFoundException {
 		JavaClassAndMethod result = null;
 		
@@ -231,11 +239,17 @@ public class Hierarchy {
 		}
 		
 		short opcode = inv.getOpcode();
+		
+		if (methodChooser != ANY_METHOD) {
+			methodChooser = new CompoundMethodChooser(new MethodChooser[]{
+					methodChooser, opcode == Constants.INVOKESTATIC ? STATIC_METHOD : INSTANCE_METHOD
+			});
+		}
 
 		// Find the method
 		if (opcode == Constants.INVOKESPECIAL) {
 			// Non-virtual dispatch
-			result = findExactMethod(inv, cpg, INSTANCE_METHOD);
+			result = findExactMethod(inv, cpg, methodChooser);
 		} else {
 			String className = inv.getClassName(cpg);
 			String methodName = inv.getName(cpg);
@@ -252,8 +266,6 @@ public class Hierarchy {
 				}
 				// Dispatch where the class hierarchy is searched
 				// Check superclasses
-				MethodChooser methodChooser = (opcode == Constants.INVOKESTATIC)
-						? STATIC_METHOD : INSTANCE_METHOD;
 				result = findMethod(Repository.lookupClass(className), methodName, methodSig, methodChooser);
 				if (result == null) {
 					if (DEBUG_METHOD_LOOKUP) {
@@ -497,7 +509,7 @@ public class Hierarchy {
 		
 		if (opcode == Constants.INVOKESTATIC) {
 			HashSet<XMethod> result = new HashSet<XMethod>();
-			JavaClassAndMethod targetMethod = findInvocationLeastUpperBound(invokeInstruction, cpg);
+			JavaClassAndMethod targetMethod = findInvocationLeastUpperBound(invokeInstruction, cpg, CONCRETE_METHOD);
 			if (targetMethod != null) {
 				result.add(XMethodFactory.createXMethod(
 						targetMethod.getJavaClass(), targetMethod.getMethod()));
