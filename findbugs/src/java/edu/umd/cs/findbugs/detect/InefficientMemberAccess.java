@@ -73,6 +73,7 @@ public class InefficientMemberAccess extends BytecodeScanningDetector implements
 			if (argTypes.length != 2)
 				return;
 			String parCls = argTypes[0].getSignature();
+			if (parCls.length() < 3) return;
 			parCls = parCls.substring(1, parCls.length() - 1);
 			if (!parCls.equals(getClassConstantOperand()))
 				return;
