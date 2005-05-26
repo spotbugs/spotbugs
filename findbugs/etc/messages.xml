@@ -861,7 +861,19 @@ their work on Programming Puzzlers.
 <p> This detector looks for if/else or switch statements that have the
 same code for two branches, thus rendering the test useless. This often
 is caused by copying and pasting the two branches, causing incorrect logic
-for the one branch.</p>
+for the one branch.</p><p>It is a fast detector.</p>
+]]>
+    </Details>
+  </Detector>
+  
+  <Detector class="edu.umd.cs.findbugs.detect.InefficientMemberAccess">
+  	<Details>
+<![CDATA[
+<p> This detector looks for internal classes that write to member variables of the
+owning class, when that member variable is private. In this case, a special compiler
+generated accessor method needs to be used to write to this variable. Relaxing the 
+visibility to protected will allow the field to be directly written.</p>
+<p>It is a fast detector.</p>
 ]]>
     </Details>
   </Detector>
@@ -3727,6 +3739,21 @@ and the next method is supposed to change the state of the iterator.
 	</Details>
   </BugPattern>
   
+  <BugPattern type="IMA_INEFFICIENT_MEMBER_ACCESS">
+    <ShortDescription>Method writes to a private member variable of owning class</ShortDescription>
+    <LongDescription>Method {1} writes to a private member variable of owning class</LongDescription>
+    <Details>
+    	<![CDATA[
+    	<p>
+    	This method of an inner class writes to a private member variable of the owning class. 
+    	The compiler must generate a special method to access this variable, causing this to be 
+    	less efficient. Relaxing the protection of the member variable will allow the compiler 
+    	to treat this as a normal member store.
+    	</p>
+    	]]>
+    </Details>
+  </BugPattern>
+  
   <!--
   **********************************************************************
    BugCodes
@@ -3832,4 +3859,5 @@ and the next method is supposed to change the state of the iterator.
   <BugCode abbrev="SWL">Sleep with lock held</BugCode>
   <BugCode abbrev="J2EE">J2EE error</BugCode>
   <BugCode abbrev="DB">Duplicate Branches</BugCode>
+  <BugCode abbrev="IMA">Inefficient Member Access</BugCode>
 </MessageCollection>

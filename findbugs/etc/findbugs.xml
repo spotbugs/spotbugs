@@ -419,6 +419,11 @@
 	speed="slow"
 	reports="SWL_SLEEP_WITH_LOCK_HELD"
 	 />
+	 
+  <Detector class="edu.umd.cs.findbugs.detect.InefficientMemberAccess"
+  	speed="fast" 
+  	reports="IMA_INEFFICIENT_MEMBER_ACCESS"
+  	 />
   			
   <Detector class="edu.umd.cs.findbugs.detect.DuplicateBranches"
   			speed="fast"
@@ -435,7 +440,7 @@
 
   <Detector class="edu.umd.cs.findbugs.detect.CheckCalls"
 	        speed="fast" reports="" disabled="true" hidden="true"/>
-
+	        
   <Detector class="edu.umd.cs.findbugs.detect.FindBugsSummaryStats" 
             speed="fast"
             hidden="true" />
@@ -647,4 +652,5 @@
   <BugPattern abbrev="SWL" type="SWL_SLEEP_WITH_LOCK_HELD" category="MT_CORRECTNESS"/>
   <BugPattern abbrev="J2EE" type="J2EE_STORE_OF_NON_SERIALIZABLE_OBJECT_INTO_SESSION" category="CORRECTNESS"/>
   <BugPattern abbrev="DB" type="DB_DUPLICATE_BRANCHES" category="STYLE" experimental="true"/>
+  <BugPattern abbrev="IMA" type="IMA_INEFFICIENT_MEMBER_ACCESS" category="PERFORMANCE" experimental="true"/>
 </FindbugsPlugin>
