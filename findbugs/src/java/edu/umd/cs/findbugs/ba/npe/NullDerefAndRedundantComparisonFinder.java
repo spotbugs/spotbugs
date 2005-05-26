@@ -226,7 +226,8 @@ public class NullDerefAndRedundantComparisonFinder {
 		// as when a check is done after an explicit dereference.
 		boolean redundantNullCheck = top.isChecked();
 
-		RedundantBranch redundantBranch = new RedundantBranch(location, lineNumber, top, IsNullValue.nullValue());
+		RedundantBranch redundantBranch = new RedundantBranch(location, lineNumber, top, opcode == Constants.IFNULL ? IsNullValue.nullValue()
+										: IsNullValue.nonNullValue());
 		if (DEBUG) System.out.println("Adding redundant branch: " + redundantBranch);
 		redundantBranchList.add(redundantBranch);
 	}
