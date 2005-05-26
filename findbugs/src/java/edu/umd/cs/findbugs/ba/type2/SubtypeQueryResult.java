@@ -19,9 +19,11 @@
 
 package edu.umd.cs.findbugs.ba.type2;
 
-import edu.umd.cs.findbugs.annotations.SuppressWarnings;
-
-import java.util.*;
+import java.util.ArrayList;
+import java.util.BitSet;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 
 /**
  * Class to cache the result of an isSubtype() query

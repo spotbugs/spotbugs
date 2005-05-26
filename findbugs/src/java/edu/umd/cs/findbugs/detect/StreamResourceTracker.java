@@ -19,11 +19,28 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+
+import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.Instruction;
+import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.ObjectType;
+import org.apache.bcel.generic.Type;
+import org.apache.bcel.generic.TypedInstruction;
+
 import edu.umd.cs.findbugs.ResourceCollection;
-import edu.umd.cs.findbugs.annotations.SuppressWarnings;
-import edu.umd.cs.findbugs.ba.*;
-import java.util.*;
-import org.apache.bcel.generic.*;
+import edu.umd.cs.findbugs.ba.BasicBlock;
+import edu.umd.cs.findbugs.ba.Edge;
+import edu.umd.cs.findbugs.ba.Location;
+import edu.umd.cs.findbugs.ba.RepositoryLookupFailureCallback;
+import edu.umd.cs.findbugs.ba.ResourceTracker;
+import edu.umd.cs.findbugs.ba.ResourceValueFrame;
+import edu.umd.cs.findbugs.ba.ResourceValueFrameModelingVisitor;
 
 /**
  * Resource tracker which determines where streams are created,

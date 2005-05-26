@@ -19,7 +19,10 @@
 
 package edu.umd.cs.findbugs.ba.type2;
 
-import edu.umd.cs.findbugs.annotations.SuppressWarnings;
+import org.apache.bcel.Constants;
+import org.apache.bcel.generic.CodeExceptionGen;
+import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.MethodGen;
 
 import edu.umd.cs.findbugs.ba.BasicBlock;
 import edu.umd.cs.findbugs.ba.CFG;
@@ -28,14 +31,6 @@ import edu.umd.cs.findbugs.ba.DepthFirstSearch;
 import edu.umd.cs.findbugs.ba.Edge;
 import edu.umd.cs.findbugs.ba.FrameDataflowAnalysis;
 import edu.umd.cs.findbugs.ba.RepositoryLookupFailureCallback;
-import edu.umd.cs.findbugs.ba.type2.InvalidSignatureException;
-import edu.umd.cs.findbugs.ba.type2.Type;
-import edu.umd.cs.findbugs.ba.type2.TypeMerger;
-import edu.umd.cs.findbugs.ba.type2.TypeRepository;
-import org.apache.bcel.Constants;
-import org.apache.bcel.generic.CodeExceptionGen;
-import org.apache.bcel.generic.InstructionHandle;
-import org.apache.bcel.generic.MethodGen;
 
 public class BetterTypeAnalysis extends FrameDataflowAnalysis<Type, BetterTypeFrame> {
 	private static final String JAVA_LANG_THROWABLE_SIGNATURE = "Ljava/lang/Throwable;";

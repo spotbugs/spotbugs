@@ -25,7 +25,6 @@ import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.InvokeInstruction;
 
-import edu.umd.cs.findbugs.visitclass.BetterVisitor;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
 /**

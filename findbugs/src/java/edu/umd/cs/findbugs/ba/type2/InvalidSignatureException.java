@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.ba.type2;
 
 public class InvalidSignatureException extends Exception {
+	private static final long serialVersionUID = 1L;
 	public InvalidSignatureException(String msg) {
 		super(msg);
 	}

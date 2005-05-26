@@ -20,6 +20,9 @@
 package edu.umd.cs.findbugs.ba.type2;
 
 public class UnknownSupertypesException extends ClassNotFoundException {
+
+	private static final long serialVersionUID = 1L;
+
 	public UnknownSupertypesException(ObjectType type) {
 		super("Unknown supertypes for type " + type);
 	}
