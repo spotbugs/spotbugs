@@ -299,6 +299,25 @@ public class AnalysisContext implements AnalysisFeatures {
 	public FieldStoreTypeDatabase getFieldStoreTypeDatabase() {
 		return fieldStoreTypeDatabase;
 	}
+	
+	/**
+	 * Set the non-null param database.
+	 * 
+	 * @param nonNullParamDatabase the non-null param database
+	 */
+	public void setNonNullParamDatabase(
+			NonNullParamPropertyDatabase nonNullParamDatabase) {
+		this.nonNullParamDatabase = nonNullParamDatabase;
+	}
+	
+	/**
+	 * Get the non-null param database.
+	 * 
+	 * @return the non-null param database
+	 */
+	public NonNullParamPropertyDatabase getNonNullParamDatabase() {
+		return nonNullParamDatabase;
+	}
 
 	/**
 	 * Load an interprocedural method property database.
