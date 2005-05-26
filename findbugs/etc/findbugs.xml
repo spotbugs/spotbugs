@@ -239,7 +239,7 @@
             
   <Detector class="edu.umd.cs.findbugs.detect.FindNullDeref" 
             speed="slow"
-            reports="NP_ALWAYS_NULL_EXCEPTION,NP_ALWAYS_NULL,NP_NULL_ON_SOME_PATH_EXCEPTION,NP_NULL_ON_SOME_PATH,RCN_REDUNDANT_COMPARISON_TO_NULL,RCN_REDUNDANT_CHECKED_NULL_COMPARISON,NP_NULL_PARAM_DEREF" />
+            reports="NP_ALWAYS_NULL_EXCEPTION,NP_ALWAYS_NULL,NP_NULL_ON_SOME_PATH_EXCEPTION,NP_NULL_ON_SOME_PATH,RCN_REDUNDANT_COMPARISON_TO_NULL_BOTH_NULL,RCN_REDUNDANT_COMPARISON_TO_NULL_DIFFERENT,NP_NULL_PARAM_DEREF" />
 
   <Detector class="edu.umd.cs.findbugs.detect.FindOpenStream" 
             speed="slow"
@@ -422,6 +422,7 @@
 	 
   <Detector class="edu.umd.cs.findbugs.detect.InefficientMemberAccess"
   	speed="fast" 
+  	disabled="true" 
   	reports="IMA_INEFFICIENT_MEMBER_ACCESS"
   	 />
   			
@@ -578,8 +579,8 @@
   <BugPattern abbrev="OS" type="OS_OPEN_STREAM_EXCEPTION_PATH" category="CORRECTNESS" />
   <BugPattern abbrev="PZLA" type="PZLA_PREFER_ZERO_LENGTH_ARRAYS" category="STYLE" />
   <BugPattern abbrev="UCF" type="UCF_USELESS_CONTROL_FLOW" category="CORRECTNESS" />
-  <BugPattern abbrev="RCN" type="RCN_REDUNDANT_COMPARISON_TO_NULL" category="CORRECTNESS" />
-  <BugPattern abbrev="RCN" type="RCN_REDUNDANT_CHECKED_NULL_COMPARISON" category="CORRECTNESS"/>
+  <BugPattern abbrev="RCN" type="RCN_REDUNDANT_COMPARISON_TO_NULL_BOTH_NULL" category="CORRECTNESS" />
+  <BugPattern abbrev="RCN" type="RCN_REDUNDANT_COMPARISON_TO_NULL_DIFFERENT" category="CORRECTNESS" />
   <BugPattern abbrev="UL" type="UL_UNRELEASED_LOCK" category="MT_CORRECTNESS" />
   <BugPattern abbrev="UL" type="UL_UNRELEASED_LOCK_EXCEPTION_PATH" category="MT_CORRECTNESS" />
   <BugPattern abbrev="RC" type="RC_REF_COMPARISON" category="CORRECTNESS" />

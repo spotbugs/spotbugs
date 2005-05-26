@@ -8,3 +8,4 @@ findbugsAnnotations.jar
 foo
 log
 foo2
+*.categories

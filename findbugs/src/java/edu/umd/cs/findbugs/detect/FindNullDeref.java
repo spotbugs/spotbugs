@@ -373,12 +373,23 @@ public class FindNullDeref
 	public void foundRedundantNullCheck(Location location, RedundantBranch redundantBranch) {
 		String sourceFile = classContext.getJavaClass().getSourceFileName();
 		MethodGen methodGen = classContext.getMethodGen(method);
-
-		boolean redundantNullCheck = redundantBranch.checkedValue;
-		int priority = redundantNullCheck ? LOW_PRIORITY : NORMAL_PRIORITY;
+		
+		boolean isChecked = redundantBranch.firstValue.isChecked() ||  redundantBranch.secondValue.isChecked();
+		boolean wouldHaveBeenAKaboom = redundantBranch.firstValue.wouldHaveBeenAKaboom() ||  redundantBranch.secondValue.wouldHaveBeenAKaboom();
+		
+		
+		int priority = NORMAL_PRIORITY;
+		if (isChecked) priority--;
+		if (wouldHaveBeenAKaboom) priority--;
+		
+		boolean bothNull =  redundantBranch.firstValue.isDefinitelyNull() && redundantBranch.secondValue.isDefinitelyNull();		
+		
+		String warning;
+		if (bothNull) warning = "RCN_REDUNDANT_COMPARISON_TO_NULL_BOTH_NULL";
+		else warning = "RCN_REDUNDANT_COMPARISON_TO_NULL_DIFFERENT";
 		
 		BugInstance bugInstance =
-			new BugInstance(this, "RCN_REDUNDANT_COMPARISON_TO_NULL", priority)
+			new BugInstance(this, warning, priority)
 				.addClassAndMethod(methodGen, sourceFile)
 				.addSourceLine(methodGen, sourceFile, location.getHandle());
 		
@@ -386,9 +397,11 @@ public class FindNullDeref
 				FindBugsAnalysisProperties.RELAXED_REPORTING_MODE)) {
 			WarningPropertySet propertySet = new WarningPropertySet();
 			WarningPropertyUtil.addPropertiesForLocation(propertySet, classContext, method, location);
-			if (redundantBranch.checkedValue) {
+			if (isChecked) 
 				propertySet.addProperty(NullDerefProperty.CHECKED_VALUE);
-			}
+			if (wouldHaveBeenAKaboom) 
+				propertySet.addProperty(NullDerefProperty.WOULD_HAVE_BEEN_A_KABOOM);
+			
 			
 			propertySet.decorateBugInstance(bugInstance);
 			

@@ -170,14 +170,9 @@ public class NullDerefAndRedundantComparisonFinder {
 				definitelyDifferentBranchSet.set(lineNumber);
 			}
 
-			// If at least one of the values compared was
-			// the result of an explicit null value or null check,
-			// remember it.  We report these cases as low
-			// priority.
-			boolean checkedValue = top.isChecked() || topNext.isChecked();
 
 			//reportRedundantNullCheck(classContext, method, lastHandle);
-			RedundantBranch redundantBranch = new RedundantBranch(location, lineNumber, checkedValue);
+			RedundantBranch redundantBranch = new RedundantBranch(location, lineNumber, top, topNext);
 			if (DEBUG) System.out.println("Adding redundant branch: " + redundantBranch);
 			redundantBranchList.add(redundantBranch);
 		} else {

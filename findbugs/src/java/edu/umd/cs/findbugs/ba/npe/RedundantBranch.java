@@ -29,19 +29,19 @@ import edu.umd.cs.findbugs.ba.Location;
 public class RedundantBranch {
 	public final Location location;
 	public final int lineNumber;
-	public boolean checkedValue;
+	public final IsNullValue firstValue, secondValue;
 
 	/**
 	 * Constructor.
 	 * 
 	 * @param location     Location of ref comparison
 	 * @param lineNumber   line number of ref comparison
-	 * @param checkedValue true if the value is a "checked" value
 	 */
-	public RedundantBranch(Location location, int lineNumber, boolean checkedValue) {
+	public RedundantBranch(Location location, int lineNumber,  IsNullValue firstValue, IsNullValue secondValue) {
 		this.location = location;
 		this.lineNumber = lineNumber;
-		this.checkedValue = checkedValue;
+		this.firstValue = firstValue;
+		this.secondValue = secondValue;
 	}
 
 	public String toString() {

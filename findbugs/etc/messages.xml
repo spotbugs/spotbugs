@@ -2693,32 +2693,30 @@ body of an <code>if</code> statement, e.g.:</p>
     </Details>
   </BugPattern>
 
-  <BugPattern type="RCN_REDUNDANT_COMPARISON_TO_NULL">
-    <ShortDescription>Redundant comparison to null</ShortDescription>
-    <LongDescription>Redundant comparison to null in {1}</LongDescription>
+  <BugPattern type="RCN_REDUNDANT_COMPARISON_TO_NULL_BOTH_NULL">
+    <ShortDescription>Redundant comparison of two null values</ShortDescription>
+    <LongDescription>Redundant comparison of two null values {1}</LongDescription>
     <Details>
 <![CDATA[
-<p> This method contains a redundant comparison of a reference value
-to null. Two types of redundant comparison are reported:
-</p>
-<ul>
-<li> Both values compared are definitely null</li>
-<li> One value is definitely null and the other is definitely not null</li>
-</ul>
-
-<p> This particular warning represents two specific kinds of
-redundant comparisons:
-</p>
-<ol>
-<li> A value was dereferenced, and later explicitly compared to null:
-     this often indicates an error in the method</li>
-<li> A literal null value was explicitly compared to null:
-     this may indicate that the method was modified without
-     complete understanding of the invariants of the method</li>
-</ol>
+<p> This method contains a redundant comparison of two references known to 
+both be definitely null.
 ]]>
     </Details>
   </BugPattern>
+
+
+  <BugPattern type="RCN_REDUNDANT_COMPARISON_TO_NULL_DIFFERENT">
+    <ShortDescription>Redundant comparison of non-null value to null</ShortDescription>
+    <LongDescription>Redundant comparison of non-null value to null in {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p> This method contains a reference known to be non-null with another reference
+known to be null.
+]]>
+    </Details>
+  </BugPattern>
+
+
 
   <BugPattern type="RCN_REDUNDANT_CHECKED_NULL_COMPARISON">
     <ShortDescription>Redundant comparison to null of previously checked value</ShortDescription>
