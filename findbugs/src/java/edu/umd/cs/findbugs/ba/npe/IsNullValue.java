@@ -35,18 +35,23 @@ public class IsNullValue implements IsNullValueAnalysisFeatures {
 	private static final int NULL = 0;
 	/** Definitely null because of a comparison to a known null value. */
 	private static final int CHECKED_NULL = 1;
+	
 	/** Definitely not null. */
 	private static final int NN = 2;
 	/** Definitely not null because of a comparison to a known null value. */
 	private static final int CHECKED_NN = 3;
+	/** Definitely not null an NPE would have occurred and we would not be here if it were null. */
+	private static final int NO_KABOOM_NN = 4;
+	
+	
 	/** Null on some simple path (at most one branch) to current location. */
-	private static final int NSP = 4;
+	private static final int NSP = 5;
 	/** Unknown value (method param, value read from heap, etc.), assumed not null. */
-	private static final int NN_UNKNOWN = 5;
+	private static final int NN_UNKNOWN = 6;
 	/** Null on some complex path (at least two branches) to current location. */
-	private static final int NCP2 = 6;
+	private static final int NCP2 = 7;
 	/** Null on some complex path (at least three branches) to current location. */
-	private static final int NCP3 = 7;
+	private static final int NCP3 = 8;
 
 	private static final int FLAG_SHIFT = 8;
 	
@@ -60,15 +65,16 @@ public class IsNullValue implements IsNullValueAnalysisFeatures {
 	private static final int FLAG_MASK = EXCEPTION | PARAM | RETURN_VAL; 
 
 	private static final int[][] mergeMatrix = {
-		// NULL, CHECKED_NULL, NN,         CHECKED_NN, NSP,  NN_UNKNOWN, NCP2, NCP3
+		// NULL, CHECKED_NULL, NN,         CHECKED_NN, NO_KABOOM_NN, NSP,  NN_UNKNOWN, NCP2, NCP3
 		{NULL},                                                                      // NULL
 		{NULL,   CHECKED_NULL, },                                                    // CHECKED_NULL
 		{NSP,    NSP,          NN},                                                  // NN
 		{NSP,    NSP,          NN,         CHECKED_NN, },                            // CHECKED_NN
-		{NSP,    NSP,          NSP,        NSP,        NSP},                         // NSP
-		{NSP,    NSP,          NN_UNKNOWN, NN_UNKNOWN, NSP,  NN_UNKNOWN, },          // NN_UNKNOWN
-		{NCP2,   NCP2,         NCP2,       NCP2,       NCP2, NCP2,        NCP2,},    // NCP2
-		{NCP3,   NCP3,         NCP3,       NCP3,       NCP3, NCP3,        NCP3, NCP3}// NCP3
+		{NSP,    NSP,          NN,         NN,			 NO_KABOOM_NN},                // NO_KABOOM_NN
+		{NSP,    NSP,          NSP,        NSP,		NSP,     NSP},                         // NSP
+		{NSP,    NSP,          NN_UNKNOWN, NN_UNKNOWN, NN_UNKNOWN,	NSP,  NN_UNKNOWN, },          // NN_UNKNOWN
+		{NCP2,   NCP2,         NCP2,       NCP2,       NCP2, NCP2, NCP2,        NCP2,},    // NCP2
+		{NCP3,   NCP3,         NCP3,       NCP3,       NCP3, NCP3, NCP3,        NCP3, NCP3}// NCP3
 	};
 	
 	private static final IsNullValue[][] instanceByFlagsList = createInstanceByFlagList();
@@ -83,6 +89,7 @@ public class IsNullValue implements IsNullValueAnalysisFeatures {
 					new IsNullValue(CHECKED_NULL | flags),
 					new IsNullValue(NN | flags),
 					new IsNullValue(CHECKED_NN | flags),
+					new IsNullValue(NO_KABOOM_NN | flags),
 					new IsNullValue(NSP | flags),
 					new IsNullValue(NN_UNKNOWN | flags),
 					new IsNullValue(NCP2 | flags),
@@ -132,6 +139,12 @@ public class IsNullValue implements IsNullValueAnalysisFeatures {
 	public boolean isChecked() {
 		return getBaseKind() == CHECKED_NULL || getBaseKind() == CHECKED_NN;
 	}
+/**
+	 * Is this value known to be non null because a NPE would have occurred otherwise?
+	 */
+	public boolean wouldHaveBeenAKaboom() {
+		return getBaseKind() == NO_KABOOM_NN;
+	}
 
 	private IsNullValue toBaseValue() {
 		return instanceByFlagsList[0][getBaseKind()];
@@ -180,6 +193,13 @@ public class IsNullValue implements IsNullValueAnalysisFeatures {
 	 */
 	public static IsNullValue checkedNonNullValue() {
 		return instanceByFlagsList[0][CHECKED_NN];
+	}
+/**
+	 * Get the instance representing a value known to be non-null
+	 * because a NPE would have occurred if it were null.
+	 */
+	public static IsNullValue noKaboomNonNullValue() {
+		return instanceByFlagsList[0][NO_KABOOM_NN];
 	}
 
 	/**
@@ -294,7 +314,7 @@ public class IsNullValue implements IsNullValueAnalysisFeatures {
 	 */
 	public boolean isDefinitelyNotNull() {
 		int baseKind = getBaseKind();
-		return baseKind == NN || baseKind == CHECKED_NN;
+		return baseKind == NN || baseKind == CHECKED_NN || baseKind == NO_KABOOM_NN;
 	}
 
 	public String toString() {
@@ -318,6 +338,8 @@ public class IsNullValue implements IsNullValueAnalysisFeatures {
 			return pfx + "N";
 		case CHECKED_NN:
 			return pfx + "W";
+		case NO_KABOOM_NN:
+			return pfx + "K";
 		case NSP:
 			return pfx + "s";
 		case NN_UNKNOWN:

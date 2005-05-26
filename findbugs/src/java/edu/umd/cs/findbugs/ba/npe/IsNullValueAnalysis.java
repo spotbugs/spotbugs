@@ -322,7 +322,7 @@ public class IsNullValueAnalysis
 					IsNullValue instance = fact.getInstance(firstInDest, methodGen.getConstantPool());
 					if (!instance.isDefinitelyNotNull()) {
 						ValueNumber replaceMe = vnaFrame.getInstance(firstInDest, methodGen.getConstantPool());
-						tmpFact = replaceValues(fact, tmpFact, replaceMe, vnaFrame, targetVnaFrame, IsNullValue.nonNullValue());
+						tmpFact = replaceValues(fact, tmpFact, replaceMe, vnaFrame, targetVnaFrame, IsNullValue.noKaboomNonNullValue());
 					}
 				}
 			}
