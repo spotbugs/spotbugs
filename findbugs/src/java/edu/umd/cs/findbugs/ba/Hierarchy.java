@@ -499,10 +499,11 @@ public class Hierarchy {
 	 * @param invokeInstruction the InvokeInstruction
 	 * @param typeFrame         the TypeFrame containing the types of stack values
 	 * @param cpg               the ConstantPoolGen
+	 * @return Set of methods which might be called
 	 * @throws DataflowAnalysisException 
 	 * @throws ClassNotFoundException 
 	 */
-	public static Set<XMethod> resolveMethodCallTargets(
+	public static Set<JavaClassAndMethod> resolveMethodCallTargets(
 			InvokeInstruction invokeInstruction,
 			TypeFrame typeFrame,
 			ConstantPoolGen cpg) throws DataflowAnalysisException, ClassNotFoundException {
@@ -510,17 +511,16 @@ public class Hierarchy {
 		short opcode = invokeInstruction.getOpcode(); 
 		
 		if (opcode == Constants.INVOKESTATIC) {
-			HashSet<XMethod> result = new HashSet<XMethod>();
+			HashSet<JavaClassAndMethod> result = new HashSet<JavaClassAndMethod>();
 			JavaClassAndMethod targetMethod = findInvocationLeastUpperBound(invokeInstruction, cpg, CONCRETE_METHOD);
 			if (targetMethod != null) {
-				result.add(XMethodFactory.createXMethod(
-						targetMethod.getJavaClass(), targetMethod.getMethod()));
+				result.add(targetMethod);
 			}
 			return result;
 		}
 		
 		if (!typeFrame.isValid()) {
-			return new HashSet<XMethod>();
+			return new HashSet<JavaClassAndMethod>();
 		}
 
 		Type receiverType;
@@ -539,7 +539,7 @@ public class Hierarchy {
 			int instanceStackLocation = typeFrame.getInstanceStackLocation(invokeInstruction, cpg);
 			receiverType = typeFrame.getStackValue(instanceStackLocation);
 			if (!(receiverType instanceof ReferenceType)) {
-				return new HashSet<XMethod>();
+				return new HashSet<JavaClassAndMethod>();
 			}
 			receiverTypeIsExact = typeFrame.isExact(instanceStackLocation);
 		}
@@ -562,7 +562,7 @@ public class Hierarchy {
 	 * @return Set of methods which might be called
 	 * @throws ClassNotFoundException
 	 */
-	public static Set<XMethod> resolveMethodCallTargets(
+	public static Set<JavaClassAndMethod> resolveMethodCallTargets(
 			ReferenceType receiverType,
 			InvokeInstruction invokeInstruction,
 			ConstantPoolGen cpg
@@ -581,13 +581,13 @@ public class Hierarchy {
 	 * @return Set of methods which might be called
 	 * @throws ClassNotFoundException
 	 */
-	public static Set<XMethod> resolveMethodCallTargets(
+	public static Set<JavaClassAndMethod> resolveMethodCallTargets(
 			ReferenceType receiverType,
 			InvokeInstruction invokeInstruction,
 			ConstantPoolGen cpg,
 			boolean receiverTypeIsExact
 			) throws ClassNotFoundException {
-		HashSet<XMethod> result = new HashSet<XMethod>();
+		HashSet<JavaClassAndMethod> result = new HashSet<JavaClassAndMethod>();
 		
 		if (invokeInstruction.getOpcode() == Constants.INVOKESTATIC)
 			throw new IllegalArgumentException();
@@ -599,12 +599,10 @@ public class Hierarchy {
 		// Array method calls aren't virtual.
 		// They should just resolve to Object methods.
 		if (receiverType instanceof ArrayType) {
-			result.add(new InstanceMethod(
-					className,
-					methodName,
-					methodSig,
-					Constants.ACC_PUBLIC
-					));
+			JavaClass javaLangObject = AnalysisContext.currentAnalysisContext().lookupClass("java.lang.Object");
+			JavaClassAndMethod classAndMethod = findMethod(javaLangObject, methodName, methodSig, INSTANCE_METHOD);
+			if (classAndMethod != null)
+				result.add(classAndMethod);
 			return result;
 		}
 		
@@ -616,16 +614,16 @@ public class Hierarchy {
 
 		// Figure out the upper bound for the method.
 		// This is what will be called if this is not a virtual call site.
-		XMethod upperBound = findXMethod(receiverClass, methodName, methodSig, CONCRETE_METHOD);
-		if (upperBound == null || !isConcrete(upperBound)) {
+		JavaClassAndMethod upperBound = findMethod(receiverClass, methodName, methodSig, CONCRETE_METHOD);
+		if (upperBound == null) {
 			// Try superclasses
 			JavaClass[] superClassList = receiverClass.getSuperClasses();
-			upperBound = findXMethod(superClassList, methodName, methodSig, CONCRETE_METHOD);
+			upperBound = findMethod(superClassList, methodName, methodSig, CONCRETE_METHOD);
 		}
 		if (upperBound != null) {
 			if (DEBUG_METHOD_LOOKUP) {
 				System.out.println("Adding upper bound: " +
-						SignatureConverter.convertMethodSignature(upperBound));
+						SignatureConverter.convertMethodSignature(upperBound.getJavaClass(), upperBound.getMethod()));
 			}
 			result.add(upperBound);
 		}
@@ -640,7 +638,7 @@ public class Hierarchy {
 			// subtype method may be called.
 			Set<JavaClass> subTypeSet = analysisContext.getSubtypes().getTransitiveSubtypes(receiverClass);
 			for (JavaClass subtype : subTypeSet) {
-				XMethod concreteSubtypeMethod = findXMethod(subtype, methodName, methodSig, CONCRETE_METHOD);
+				JavaClassAndMethod concreteSubtypeMethod = findMethod(subtype, methodName, methodSig, CONCRETE_METHOD);
 				if (concreteSubtypeMethod != null) {
 					result.add(concreteSubtypeMethod);
 				}
@@ -649,18 +647,18 @@ public class Hierarchy {
 		
 		return result;
 	}
-	
-	/**
-	 * Return whether or not the given method is concrete.
-	 * 
-	 * @param xmethod the method
-	 * @return true if the method is concrete, false otherwise
-	 */
-	public static boolean isConcrete(XMethod xmethod) {
-		int accessFlags = xmethod.getAccessFlags();
-		return (accessFlags & Constants.ACC_ABSTRACT) == 0
-			&& (accessFlags & Constants.ACC_NATIVE) == 0;
-	}
+//	
+//	/**
+//	 * Return whether or not the given method is concrete.
+//	 * 
+//	 * @param xmethod the method
+//	 * @return true if the method is concrete, false otherwise
+//	 */
+//	public static boolean isConcrete(XMethod xmethod) {
+//		int accessFlags = xmethod.getAccessFlags();
+//		return (accessFlags & Constants.ACC_ABSTRACT) == 0
+//			&& (accessFlags & Constants.ACC_NATIVE) == 0;
+//	}
 
 	/**
 	 * Find a field with given name defined in given class.

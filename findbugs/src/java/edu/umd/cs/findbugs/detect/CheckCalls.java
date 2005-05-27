@@ -37,7 +37,6 @@ import edu.umd.cs.findbugs.ba.Hierarchy;
 import edu.umd.cs.findbugs.ba.JavaClassAndMethod;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.SignatureConverter;
-import edu.umd.cs.findbugs.ba.XMethod;
 
 /**
  * This is just for debugging method call resolution.
@@ -113,7 +112,7 @@ public class CheckCalls implements Detector {
 							proto.getJavaClass().getClassName() + ", method=" +
 							proto.getMethod());
 				}
-				Set<XMethod> calledMethodSet = Hierarchy.resolveMethodCallTargets(
+				Set<JavaClassAndMethod> calledMethodSet = Hierarchy.resolveMethodCallTargets(
 						(InvokeInstruction) ins,
 						classContext.getTypeDataflow(method).getFactAtLocation(location),
 						classContext.getConstantPoolGen()
