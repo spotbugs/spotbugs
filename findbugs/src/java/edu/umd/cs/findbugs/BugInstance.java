@@ -30,6 +30,7 @@ import java.util.Set;
 import java.util.StringTokenizer;
 
 import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InvokeInstruction;
@@ -766,6 +767,27 @@ public class BugInstance implements Comparable, XMLWriteableWithMessages, Serial
 		        new MethodAnnotation(methodGen.getClassName(), methodGen.getName(), methodGen.getSignature());
 		addMethod(methodAnnotation);
 		addSourceLinesForMethod(methodAnnotation, SourceLineAnnotation.fromVisitedMethod(methodGen, sourceFile));
+		return this;
+	}
+	
+	/**
+	 * Add a method annotation.  If this is the first method annotation added,
+	 * it becomes the primary method annotation.
+	 * If the method has source line information, then a SourceLineAnnotation
+	 * is added to the method.
+	 *
+	 * @param javaClass the class the method is defined in
+	 * @param method    the method
+	 * @return this object
+	 */
+	public BugInstance addMethod(JavaClass javaClass, Method method) {
+		MethodAnnotation methodAnnotation =
+			new MethodAnnotation(javaClass.getClassName(), method.getName(), method.getSignature());
+		SourceLineAnnotation methodSourceLines = SourceLineAnnotation.forEntireMethod(
+				javaClass,
+				method);
+		methodAnnotation.setSourceLines(methodSourceLines);
+		addMethod(methodAnnotation);
 		return this;
 	}
 
