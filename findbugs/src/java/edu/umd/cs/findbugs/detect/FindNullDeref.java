@@ -37,8 +37,6 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.FindBugsAnalysisProperties;
-import edu.umd.cs.findbugs.MethodAnnotation;
-import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
@@ -56,11 +54,11 @@ import edu.umd.cs.findbugs.ba.XMethodFactory;
 import edu.umd.cs.findbugs.ba.npe.IsNullValue;
 import edu.umd.cs.findbugs.ba.npe.IsNullValueDataflow;
 import edu.umd.cs.findbugs.ba.npe.IsNullValueFrame;
+import edu.umd.cs.findbugs.ba.npe.NonNullParamProperty;
+import edu.umd.cs.findbugs.ba.npe.NonNullParamPropertyDatabase;
 import edu.umd.cs.findbugs.ba.npe.NullDerefAndRedundantComparisonCollector;
 import edu.umd.cs.findbugs.ba.npe.NullDerefAndRedundantComparisonFinder;
 import edu.umd.cs.findbugs.ba.npe.RedundantBranch;
-import edu.umd.cs.findbugs.ba.npe.NonNullParamProperty;
-import edu.umd.cs.findbugs.ba.npe.NonNullParamPropertyDatabase;
 import edu.umd.cs.findbugs.ba.type.TypeDataflow;
 import edu.umd.cs.findbugs.ba.type.TypeFrame;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
@@ -185,15 +183,6 @@ public class FindNullDeref
 		}
 	}
 	
-	static class CallTarget {
-		JavaClass javaClass;
-		XMethod xmethod;
-		CallTarget(JavaClass javaClass, XMethod xmethod) {
-			this.javaClass = javaClass;
-			this.xmethod = xmethod;
-		}
-	}
-	
 	private void examineLocation(
 			Location location,
 			ConstantPoolGen cpg,
@@ -267,20 +256,20 @@ public class FindNullDeref
 		
 		// See what methods might be called here
 		TypeFrame typeFrame = typeDataflow.getFactAtLocation(location);
-		Set<XMethod> targetMethodSet = Hierarchy.resolveMethodCallTargets(invokeInstruction, typeFrame, cpg);
+		Set<JavaClassAndMethod> targetMethodSet = Hierarchy.resolveMethodCallTargets(invokeInstruction, typeFrame, cpg);
 		if (DEBUG_NULLARG) {
 			System.out.println("Possibly called methods: " + targetMethodSet);
 		}
 		
 		// See if any call targets unconditionally dereference one of the null arguments
 		BitSet unconditionallyDereferencedNullArgSet = new BitSet();
-		List<CallTarget> dangerousCallTargetList = new LinkedList<CallTarget>();
-		for (XMethod targetMethod : targetMethodSet) {
+		List<JavaClassAndMethod> dangerousCallTargetList = new LinkedList<JavaClassAndMethod>();
+		for (JavaClassAndMethod targetMethod : targetMethodSet) {
 			if (DEBUG_NULLARG) {
 				System.out.println("For target method " + targetMethod);
 			}
 			
-			NonNullParamProperty property = database.getProperty(targetMethod);
+			NonNullParamProperty property = database.getProperty(targetMethod.toXMethod());
 			if (property == null)
 				continue;
 			if (DEBUG_NULLARG) {
@@ -293,8 +282,7 @@ public class FindNullDeref
 			if (targetUnconditionallyDereferencedNullArgSet.isEmpty())
 				continue;
 			
-			JavaClass targetClass = AnalysisContext.currentAnalysisContext().lookupClass(targetMethod.getClassName());
-			dangerousCallTargetList.add(new CallTarget(targetClass, targetMethod));
+			dangerousCallTargetList.add(targetMethod);
 			
 			unconditionallyDereferencedNullArgSet.or(targetUnconditionallyDereferencedNullArgSet);
 		}
@@ -314,18 +302,14 @@ public class FindNullDeref
 		addParamAnnotations(definitelyNullArgSet, unconditionallyDereferencedNullArgSet, propertySet, warning);
 
 		// Add annotations for dangerous method call targets
-		for (CallTarget dangerousCallTarget : dangerousCallTargetList) {
-			JavaClass targetClass = dangerousCallTarget.javaClass;
-			XMethod targetMethod = dangerousCallTarget.xmethod;
-			addMethodAnnotationForCalledMethod(warning, targetClass, targetMethod, "METHOD_DANGEROUS_TARGET");
+		for (JavaClassAndMethod dangerousCallTarget : dangerousCallTargetList) {
+			warning.addMethod(dangerousCallTarget.getJavaClass(), dangerousCallTarget.getMethod()).describe("METHOD_DANGEROUS_TARGET");
 		}
 
 		// See if there are any safe targets
-		Set<XMethod> safeCallTargetSet = new HashSet<XMethod>();
+		Set<JavaClassAndMethod> safeCallTargetSet = new HashSet<JavaClassAndMethod>();
 		safeCallTargetSet.addAll(targetMethodSet);
-		for (CallTarget dangerousCallTarget : dangerousCallTargetList) {
-			safeCallTargetSet.remove(dangerousCallTarget.xmethod);
-		}
+		safeCallTargetSet.removeAll(dangerousCallTargetList);
 		if (safeCallTargetSet.isEmpty()) {
 			propertySet.addProperty(NullArgumentWarningProperty.ALL_DANGEROUS_TARGETS);
 			if (dangerousCallTargetList.size() == 1) {
@@ -335,9 +319,8 @@ public class FindNullDeref
 		if (REPORT_SAFE_METHOD_TARGETS) {
 			// This is useful to see which other call targets the analysis
 			// considered.
-			for (XMethod safeMethod : safeCallTargetSet) {
-				JavaClass targetClass = AnalysisContext.currentAnalysisContext().lookupClass(safeMethod.getClassName());
-				addMethodAnnotationForCalledMethod(warning, targetClass, safeMethod, "METHOD_SAFE_TARGET");
+			for (JavaClassAndMethod safeMethod : safeCallTargetSet) {
+				warning.addMethod(safeMethod.getJavaClass(), safeMethod.getMethod()).describe("METHOD_SAFE_TARGET");
 			}
 		}
 
@@ -469,30 +452,13 @@ public class FindNullDeref
 		addParamAnnotations(definitelyNullArgSet, violatedParamSet, propertySet, warning);
 		
 		for (NonNullParamViolation violation : violationList) {
-			addMethodAnnotationForCalledMethod(
-					warning,
-					violation.classAndMethod.getJavaClass(),
-					XMethodFactory.createXMethod(violation.classAndMethod.getJavaClass(), violation.classAndMethod.getMethod()),
-					"METHOD_DEFAULT");
+			warning.addMethod(violation.classAndMethod.getJavaClass(), violation.classAndMethod.getMethod());
 			warning.addInt(violation.param).describe("INT_NONNULL_PARAM");
 		}
 
 		finishWarning(location, propertySet, warning);
 		
 		bugReporter.reportBug(warning);
-	}
-
-	private void addMethodAnnotationForCalledMethod(
-			BugInstance warning,
-			JavaClass targetClass,
-			XMethod targetMethod,
-			String description) {
-		MethodAnnotation calledMethod = MethodAnnotation.fromXMethod(targetMethod);
-		SourceLineAnnotation methodSourceLines = SourceLineAnnotation.forEntireMethod(
-				targetClass,
-				targetMethod);
-		calledMethod.setSourceLines(methodSourceLines);
-		warning.addMethod(calledMethod).describe(description);
 	}
 
 	public void report() {
