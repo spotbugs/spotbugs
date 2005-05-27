@@ -57,4 +57,28 @@ public class JavaClassAndMethod {
 	public Method getMethod() {
 		return method;
 	}
+	
+	/**
+	 * Convert to an XMethod.
+	 */
+	public XMethod toXMethod() {
+		return XMethodFactory.createXMethod(javaClass, method);
+	}
+	
+	//@Override
+	public int hashCode() {
+		return javaClass.hashCode() + method.hashCode();
+	}
+	
+	//@Override
+	public boolean equals(Object obj) {
+		if (obj == null || obj.getClass() != this.getClass())
+			return false;
+		JavaClassAndMethod other = (JavaClassAndMethod) obj;
+		return javaClass.equals(other.javaClass) && method.equals(other.method);
+	}
+	
+	public String toString() {
+		return SignatureConverter.convertMethodSignature(javaClass, method);
+	}
 }
