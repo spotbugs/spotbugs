@@ -19,12 +19,6 @@
 
 package edu.umd.cs.findbugs.ba;
 
-/*
-// Not yet
-import edu.umd.cs.findbugs.ba.type.BCELRepositoryClassResolver;
-import edu.umd.cs.findbugs.ba.type.TypeRepository;
-*/
-
 import java.io.File;
 import java.io.IOException;
 import java.util.BitSet;
@@ -70,8 +64,6 @@ public class AnalysisContext implements AnalysisFeatures {
 	
 	// Interprocedural fact databases
 	private MayReturnNullPropertyDatabase mayReturnNullDatabase;
-	private NonNullParamPropertyDatabase unconditionalDerefDatabase;
-	private NonNullParamPropertyDatabase nonNullParamDatabase;
 	private FieldStoreTypeDatabase fieldStoreTypeDatabase;
 	private boolean interprocDatabasesLoaded;
 
@@ -82,10 +74,6 @@ public class AnalysisContext implements AnalysisFeatures {
     */
 	private static InheritableThreadLocal currentAnalysisContext
 		= new InheritableThreadLocal();
-/*
-	// Not yet
-	private TypeRepository typeRepository;
-*/
 
 	/**
 	 * The maximum number of ClassContext objects to cache.
@@ -111,11 +99,6 @@ public class AnalysisContext implements AnalysisFeatures {
 		this.classContextCache = new ClassContextCache();
 		this.subtypes = new Subtypes();
 		this.boolPropertySet = new BitSet();
-/*
-		// Not yet
-		// FIXME: eventually change to not use BCEL global repository
-		this.typeRepository = new TypeRepository(new BCELRepositoryClassResolver());
-*/
 
 		currentAnalysisContext.set(this);
 	}
@@ -233,15 +216,11 @@ public class AnalysisContext implements AnalysisFeatures {
 
 	private void loadInterproceduralDatabasesIfNeeded() {
 		if (USE_INTERPROC_DATABASE && !interprocDatabasesLoaded) {
-			mayReturnNullDatabase = loadMethodPropertyDatabase(
+			mayReturnNullDatabase = loadPropertyDatabase(
 					new MayReturnNullPropertyDatabase(),
 					MayReturnNullPropertyDatabase.DEFAULT_FILENAME,
 					"may return null database");
-			unconditionalDerefDatabase = loadMethodPropertyDatabase(
-					new NonNullParamPropertyDatabase(),
-					NonNullParamPropertyDatabase.DEFAULT_FILENAME,
-					"unconditional deref database");
-			fieldStoreTypeDatabase = loadMethodPropertyDatabase(
+			fieldStoreTypeDatabase = loadPropertyDatabase(
 					new FieldStoreTypeDatabase(),
 					FieldStoreTypeDatabase.DEFAULT_FILENAME,
 					"field store type database");
@@ -281,16 +260,6 @@ public class AnalysisContext implements AnalysisFeatures {
 	}
 	
 	/**
-	 * Get the method property database for methods which unconditionally
-	 * dereference their parameters.
-	 * 
-	 * @return the database, or null if there is no database available
-	 */
-	public NonNullParamPropertyDatabase getUnconditionalDerefDatabase() {
-		return unconditionalDerefDatabase;
-	}
-	
-	/**
 	 * Get the property database recording the types of values stored
 	 * into fields.
 	 * 
@@ -299,41 +268,23 @@ public class AnalysisContext implements AnalysisFeatures {
 	public FieldStoreTypeDatabase getFieldStoreTypeDatabase() {
 		return fieldStoreTypeDatabase;
 	}
-	
-	/**
-	 * Set the non-null param database.
-	 * 
-	 * @param nonNullParamDatabase the non-null param database
-	 */
-	public void setNonNullParamDatabase(
-			NonNullParamPropertyDatabase nonNullParamDatabase) {
-		this.nonNullParamDatabase = nonNullParamDatabase;
-	}
-	
-	/**
-	 * Get the non-null param database.
-	 * 
-	 * @return the non-null param database
-	 */
-	public NonNullParamPropertyDatabase getNonNullParamDatabase() {
-		return nonNullParamDatabase;
-	}
 
 	/**
-	 * Load an interprocedural method property database.
+	 * Load an interprocedural property database.
 	 * 
 	 * @param <DatabaseType> actual type of the database
+	 * @param <KeyType>      type of key (e.g., method or field)
 	 * @param <Property>     type of properties stored in the database
 	 * @param database       the empty database object
 	 * @param fileName       file to load database from
 	 * @param description    description of the database (for diagnostics)
 	 * @return the database object, or null if the database couldn't be loaded
 	 */
-	private<
+	public<
 		DatabaseType extends PropertyDatabase<KeyType,Property>,
 		KeyType,
 		Property
-		> DatabaseType loadMethodPropertyDatabase(
+		> DatabaseType loadPropertyDatabase(
 			DatabaseType database,
 			String fileName,
 			String description) {

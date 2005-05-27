@@ -24,7 +24,6 @@ import java.util.Map;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.NonReportingDetector;
 import edu.umd.cs.findbugs.annotations.NonNull;
-import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.XMethodFactory;
@@ -52,7 +51,7 @@ public class NoteNonNullAnnotations extends AnnotationVisitor implements NonRepo
 	public void visitClassContext(ClassContext classContext) {
 		if (database == null) {
 			database = new NonNullParamPropertyDatabase();
-			AnalysisContext.currentAnalysisContext().setNonNullParamDatabase(database);
+			FindNullDeref.nonNullParamDatabase.set(database);
 		}
 		
 		classContext.getJavaClass().accept(this);

@@ -29,8 +29,6 @@ import edu.umd.cs.findbugs.ba.interproc.PropertyDatabaseFormatException;
  * @author David Hovemeyer
  */
 public class NonNullParamPropertyDatabase extends MethodPropertyDatabase<NonNullParamProperty> {
-
-	public static final String DEFAULT_FILENAME = "unconditionalDeref.db";
 	
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.ba.interproc.MethodPropertyDatabase#decodeProperty(java.lang.String)

@@ -32,6 +32,7 @@ import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.MethodGen;
 
+import edu.umd.cs.findbugs.AnalysisLocal;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
@@ -78,15 +79,25 @@ public class FindNullDeref
 
 	private static final boolean DEBUG = Boolean.getBoolean("fnd.debug");
 	private static final boolean DEBUG_NULLARG = Boolean.getBoolean("fnd.debug.nullarg");
-	private static final boolean REPORT_SAFE_METHOD_TARGETS = true;//Boolean.getBoolean("fnd.reportSafeTargets");
+	private static final boolean REPORT_SAFE_METHOD_TARGETS = true;
 
 	private static final String METHOD = System.getProperty("fnd.method");
+
+	public static final String UNCONDITIONAL_DEREF_DB_FILENAME = "unconditionalDeref.db";
 	
+	// Method property databases
+	static AnalysisLocal<NonNullParamPropertyDatabase> unconditionalDerefDatabase =
+		new AnalysisLocal<NonNullParamPropertyDatabase>();
+	static AnalysisLocal<NonNullParamPropertyDatabase> nonNullParamDatabase =
+		new AnalysisLocal<NonNullParamPropertyDatabase>();
+	
+	// Fields
 	private BugReporter bugReporter;
 	
 	// Transient state
 	private ClassContext classContext;
 	private Method method;
+	private boolean loadedDatabase;
 
 	public FindNullDeref(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
@@ -97,6 +108,16 @@ public class FindNullDeref
 	}
 
 	public void visitClassContext(ClassContext classContext) {
+		if (!loadedDatabase) {
+			if (AnalysisContext.USE_INTERPROC_DATABASE) {
+				unconditionalDerefDatabase.set(AnalysisContext.currentAnalysisContext().loadPropertyDatabase(
+						new NonNullParamPropertyDatabase(),
+						UNCONDITIONAL_DEREF_DB_FILENAME,
+						"unconditional param deref database"));
+			}
+			loadedDatabase = true;
+		}
+		
 		this.classContext = classContext;
 		
 		try {
@@ -140,13 +161,8 @@ public class FindNullDeref
 				this);
 		worker.execute();
 
-		NonNullParamPropertyDatabase unconditionalDerefDatabase =
-			AnalysisContext.currentAnalysisContext().getUnconditionalDerefDatabase();
-		NonNullParamPropertyDatabase nonNullParamDatabase =
-			AnalysisContext.currentAnalysisContext().getNonNullParamDatabase();
-			
-		if (unconditionalDerefDatabase != null || nonNullParamDatabase != null) {
-			examineCalledMethods(unconditionalDerefDatabase, nonNullParamDatabase);
+		if (unconditionalDerefDatabase.get() != null || nonNullParamDatabase.get() != null) {
+			examineCalledMethods(unconditionalDerefDatabase.get(), nonNullParamDatabase.get());
 		}
 	}
 
