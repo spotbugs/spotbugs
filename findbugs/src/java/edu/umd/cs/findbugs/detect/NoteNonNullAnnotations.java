@@ -78,6 +78,7 @@ public class NoteNonNullAnnotations extends AnnotationVisitor implements NonRepo
 		NonNullParamProperty property = database.getProperty(xmethod);
 		if (property == null) {
 			property = new NonNullParamProperty();
+			database.setProperty(xmethod, property);
 		}
 		property.setNonNull(p, true);
 	}

@@ -80,6 +80,8 @@ public class FindNullDeref
 	private static final boolean DEBUG_NULLARG = Boolean.getBoolean("fnd.debug.nullarg");
 	private static final boolean REPORT_SAFE_METHOD_TARGETS = true;//Boolean.getBoolean("fnd.reportSafeTargets");
 
+	private static final String METHOD = System.getProperty("fnd.method");
+	
 	private BugReporter bugReporter;
 	
 	// Transient state
@@ -103,6 +105,9 @@ public class FindNullDeref
 			for (int i = 0; i < methodList.length; ++i) {
 				Method method = methodList[i];
 				if (method.isAbstract() || method.isNative() || method.getCode() == null)
+					continue;
+				
+				if (METHOD != null && !method.getName().equals(METHOD))
 					continue;
 
 				analyzeMethod(classContext, method);

@@ -2619,7 +2619,7 @@ be an exception path, since the default case is often infeasible.</p>
   
   <BugPattern type="NP_NONNULL_PARAM_VIOLATION">
 	<ShortDescription>Method call passes null to a parameter declared @NonNull</ShortDescription>
-	<LongDescription>Method call in {1} passes null to a parameter declared @NonNull in {2}</LongDescription>
+	<LongDescription>Method call in {1} passes null to a parameter declared @NonNull in {3}</LongDescription>
 	<Details>
 		<![CDATA[
 		<p>
