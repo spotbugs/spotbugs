@@ -24,6 +24,7 @@ import java.util.Map;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.NonReportingDetector;
 import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.PossiblyNull;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.XMethodFactory;
@@ -40,18 +41,22 @@ public class NoteNonNullAnnotations extends AnnotationVisitor implements NonRepo
 	private static final boolean DEBUG = Boolean.getBoolean("fnd.debug.nullarg");
 	
 	private static final String NONNULL_ANNOTATION_CLASS = NonNull.class.getName().replace('.', '/');
+	private static final String POSSIBLY_NULL_ANNOTATION_CLASS = PossiblyNull.class.getName().replace('.','/');
 	
 	private BugReporter bugReporter;
-	private NonNullParamPropertyDatabase database;
+	private NonNullParamPropertyDatabase nonNullDatabase;
+	private NonNullParamPropertyDatabase possiblyNullDatabase;
 	
 	public NoteNonNullAnnotations(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 	}
 
 	public void visitClassContext(ClassContext classContext) {
-		if (database == null) {
-			database = new NonNullParamPropertyDatabase();
-			FindNullDeref.nonNullParamDatabase.set(database);
+		if (nonNullDatabase == null) {
+			nonNullDatabase = new NonNullParamPropertyDatabase();
+			FindNullDeref.nonNullParamDatabase.set(nonNullDatabase);
+			possiblyNullDatabase = new NonNullParamPropertyDatabase();
+			FindNullDeref.possiblyNullParamDatabase.set(possiblyNullDatabase);
 		}
 		
 		classContext.getJavaClass().accept(this);
@@ -66,12 +71,18 @@ public class NoteNonNullAnnotations extends AnnotationVisitor implements NonRepo
 	
 	//@Override
 	public void visitParameterAnnotation(int p, String annotationClass, Map<String, Object> map, boolean runtimeVisible) {
-		if (!annotationClass.equals(NONNULL_ANNOTATION_CLASS))
+		if (!annotationClass.equals(NONNULL_ANNOTATION_CLASS) &&
+				!annotationClass.equals(POSSIBLY_NULL_ANNOTATION_CLASS))
 			return;
+		
+		NonNullParamPropertyDatabase database = annotationClass.equals(NONNULL_ANNOTATION_CLASS)
+				? nonNullDatabase : possiblyNullDatabase;
 
 		XMethod xmethod = XMethodFactory.createXMethod(this);
 		if (DEBUG) {
-			System.out.println("Parameter " + p + " @NonNull in " + xmethod.toString());
+			System.out.println("Parameter " + p + " @" +
+					annotationClass.substring(annotationClass.lastIndexOf('/') + 1) +
+					" in " + xmethod.toString());
 		}
 		
 		NonNullParamProperty property = database.getProperty(xmethod);

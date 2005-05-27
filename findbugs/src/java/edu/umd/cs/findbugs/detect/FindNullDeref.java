@@ -90,6 +90,8 @@ public class FindNullDeref
 		new AnalysisLocal<NonNullParamPropertyDatabase>();
 	static AnalysisLocal<NonNullParamPropertyDatabase> nonNullParamDatabase =
 		new AnalysisLocal<NonNullParamPropertyDatabase>();
+	static AnalysisLocal<NonNullParamPropertyDatabase> possiblyNullParamDatabase =
+		new AnalysisLocal<NonNullParamPropertyDatabase>();
 	
 	// Fields
 	private BugReporter bugReporter;
