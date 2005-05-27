@@ -276,10 +276,10 @@ public class Hierarchy {
 				}
 			} else {
 				// Check superinterfaces
-				result = findMethod(Repository.lookupClass(className), methodName, methodSig, INSTANCE_METHOD);
+				result = findMethod(Repository.lookupClass(className), methodName, methodSig, methodChooser);
 				if (result == null) {
 					JavaClass[] interfaceList = Repository.getInterfaces(className);
-					result = findMethod(interfaceList, methodName, methodSig, INSTANCE_METHOD);
+					result = findMethod(interfaceList, methodName, methodSig, methodChooser);
 				}
 			}
 		}
