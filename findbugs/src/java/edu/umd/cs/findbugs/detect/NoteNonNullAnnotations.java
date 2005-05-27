@@ -38,7 +38,7 @@ import edu.umd.cs.findbugs.visitclass.AnnotationVisitor;
  * @author David Hovemeyer
  */
 public class NoteNonNullAnnotations extends AnnotationVisitor implements NonReportingDetector {
-	private static final boolean DEBUG = Boolean.getBoolean("findbugs.nonnull.debug");
+	private static final boolean DEBUG = Boolean.getBoolean("fnd.debug.nullarg");
 	
 	private static final String NONNULL_ANNOTATION_CLASS = NonNull.class.getName().replace('.', '/');
 	

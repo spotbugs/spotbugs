@@ -45,9 +45,11 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.DataflowValueChooser;
 import edu.umd.cs.findbugs.ba.Hierarchy;
+import edu.umd.cs.findbugs.ba.JavaClassAndMethod;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.SignatureConverter;
 import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.ba.XMethodFactory;
 import edu.umd.cs.findbugs.ba.npe.IsNullValue;
 import edu.umd.cs.findbugs.ba.npe.IsNullValueDataflow;
 import edu.umd.cs.findbugs.ba.npe.IsNullValueFrame;
@@ -226,11 +228,20 @@ public class FindNullDeref
 		}
 		
 		if (nonNullParamDatabase != null) {
+			if (DEBUG_NULLARG) {
+				System.out.println("Checking nonnull params");
+			}
 			checkNonNullParam(location, cpg, typeDataflow, nonNullParamDatabase, invokeInstruction, nullArgSet, definitelyNullArgSet);
 		}
 	}
 
-	private void checkUnconditionallyDereferencedParam(Location location, ConstantPoolGen cpg, TypeDataflow typeDataflow, NonNullParamPropertyDatabase database, InvokeInstruction invokeInstruction, BitSet nullArgSet, BitSet definitelyNullArgSet) throws DataflowAnalysisException, ClassNotFoundException {
+	private void checkUnconditionallyDereferencedParam(
+			Location location,
+			ConstantPoolGen cpg,
+			TypeDataflow typeDataflow,
+			NonNullParamPropertyDatabase database,
+			InvokeInstruction invokeInstruction,
+			BitSet nullArgSet, BitSet definitelyNullArgSet) throws DataflowAnalysisException, ClassNotFoundException {
 		// See what methods might be called here
 		TypeFrame typeFrame = typeDataflow.getFactAtLocation(location);
 		Set<XMethod> targetMethodSet = Hierarchy.resolveMethodCallTargets(invokeInstruction, typeFrame, cpg);
@@ -277,19 +288,9 @@ public class FindNullDeref
 				.addSourceLine(methodGen, sourceFile, location.getHandle());
 		
 		// Check which params might be null
-		for (int i = 0; i < 32; ++i) {
-			if (unconditionallyDereferencedNullArgSet.get(i)) {
-				boolean definitelyNull = definitelyNullArgSet.get(i);
-				
-				if (definitelyNull) {
-					propertySet.addProperty(NullArgumentWarningProperty.ARG_DEFINITELY_NULL);
-				}
+		addParamAnnotations(definitelyNullArgSet, unconditionallyDereferencedNullArgSet, propertySet, warning);
 
-				// Note: we report params as being indexed starting from 1, not 0
-				warning.addInt(i + 1).describe(
-						definitelyNull ? "INT_NULL_ARG" : "INT_MAYBE_NULL_ARG");
-			}
-		}
+		// Add annotations for dangerous method call targets
 		for (CallTarget dangerousCallTarget : dangerousCallTargetList) {
 			JavaClass targetClass = dangerousCallTarget.javaClass;
 			XMethod targetMethod = dangerousCallTarget.xmethod;
@@ -317,20 +318,100 @@ public class FindNullDeref
 			}
 		}
 
-		warning.setPriority(propertySet.computePriority(NORMAL_PRIORITY));
+		finishWarning(location, propertySet, warning);
 		
+		bugReporter.reportBug(warning);
+	}
+
+	private void finishWarning(Location location, WarningPropertySet propertySet, BugInstance warning) {
+		warning.setPriority(propertySet.computePriority(NORMAL_PRIORITY));
 		if (AnalysisContext.currentAnalysisContext().getBoolProperty(
 				FindBugsAnalysisProperties.RELAXED_REPORTING_MODE)) {
 			WarningPropertyUtil.addPropertiesForLocation(propertySet, classContext, method, location);
 			propertySet.decorateBugInstance(warning);
 		}
-		
-		bugReporter.reportBug(warning);
 	}
 
-	private void checkNonNullParam(Location location, ConstantPoolGen cpg, TypeDataflow typeDataflow, NonNullParamPropertyDatabase nonNullParamDatabase, InvokeInstruction invokeInstruction, BitSet nullArgSet, BitSet definitelyNullArgSet) {
-		// TODO Auto-generated method stub
+	private void addParamAnnotations(
+			BitSet definitelyNullArgSet,
+			BitSet violatedParamSet,
+			WarningPropertySet propertySet,
+			BugInstance warning) {
+		for (int i = 0; i < 32; ++i) {
+			if (violatedParamSet.get(i)) {
+				boolean definitelyNull = definitelyNullArgSet.get(i);
+				
+				if (definitelyNull) {
+					propertySet.addProperty(NullArgumentWarningProperty.ARG_DEFINITELY_NULL);
+				}
+
+				// Note: we report params as being indexed starting from 1, not 0
+				warning.addInt(i + 1).describe(
+						definitelyNull ? "INT_NULL_ARG" : "INT_MAYBE_NULL_ARG");
+			}
+		}
+	}
+
+	private void checkNonNullParam(
+			Location location, 
+			ConstantPoolGen cpg,
+			TypeDataflow typeDataflow,
+			NonNullParamPropertyDatabase nonNullParamDatabase,
+			InvokeInstruction invokeInstruction,
+			BitSet nullArgSet,
+			BitSet definitelyNullArgSet) throws ClassNotFoundException {
+//		XMethod xmethod = XMethodFactory.createXMethod(invokeInstruction, cpg);
+//		NonNullParamProperty property = nonNullParamDatabase.getProperty(xmethod);
+//		if (property != null) {
+//			BitSet violatedParamSet = property.getViolatedParamSet(nullArgSet);
+//			if (!violatedParamSet.isEmpty()) {
+//				
+//			}
+//		}
+
+		JavaClassAndMethod callTarget = Hierarchy.findInvocationLeastUpperBound(
+				invokeInstruction,
+				cpg);
+		if (callTarget == null)
+			return;
 		
+		XMethod xmethod = XMethodFactory.createXMethod(
+				callTarget.getJavaClass(), callTarget.getMethod());
+		
+		if (DEBUG_NULLARG) {
+			System.out.println("Call " + xmethod);
+		}
+		
+		NonNullParamProperty property = nonNullParamDatabase.getProperty(xmethod);
+		if (property == null)
+			return;
+		
+		if (DEBUG_NULLARG) {
+			System.out.println("Property=" + property);
+		}
+		
+		BitSet violatedParamSet = property.getViolatedParamSet(nullArgSet);
+		if (violatedParamSet.isEmpty())
+			return;
+		if (DEBUG_NULLARG) {
+			System.out.println("Violated params: " + violatedParamSet);
+		}
+		
+		WarningPropertySet propertySet = new WarningPropertySet();
+
+		MethodGen methodGen = classContext.getMethodGen(method);
+		String sourceFile = classContext.getJavaClass().getSourceFileName();
+
+		BugInstance warning = new BugInstance("NP_NONNULL_PARAM_VIOLATION", NORMAL_PRIORITY)
+			.addClassAndMethod(methodGen, sourceFile)
+			.addSourceLine(methodGen, sourceFile, location.getHandle())
+			.addMethod(xmethod).describe("METHOD_CALLED");
+		
+		addParamAnnotations(definitelyNullArgSet, violatedParamSet, propertySet, warning);
+		
+		finishWarning(location, propertySet, warning);
+		
+		bugReporter.reportBug(warning);
 	}
 
 	private void addMethodAnnotationForCalledMethod(BugInstance warning, JavaClass targetClass, XMethod targetMethod,
