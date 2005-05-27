@@ -47,6 +47,7 @@ import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.DataflowValueChooser;
 import edu.umd.cs.findbugs.ba.Hierarchy;
 import edu.umd.cs.findbugs.ba.JavaClassAndMethod;
+import edu.umd.cs.findbugs.ba.JavaClassAndMethodChooser;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.SignatureConverter;
 import edu.umd.cs.findbugs.ba.XMethod;
@@ -99,7 +100,7 @@ public class FindNullDeref
 	// Transient state
 	private ClassContext classContext;
 	private Method method;
-	private boolean loadedDatabase;
+	private boolean checkDatabase;
 
 	public FindNullDeref(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
@@ -110,14 +111,14 @@ public class FindNullDeref
 	}
 
 	public void visitClassContext(ClassContext classContext) {
-		if (!loadedDatabase) {
+		if (!checkDatabase) {
 			if (AnalysisContext.USE_INTERPROC_DATABASE) {
 				unconditionalDerefDatabase.set(AnalysisContext.currentAnalysisContext().loadPropertyDatabase(
 						new NonNullParamPropertyDatabase(),
 						UNCONDITIONAL_DEREF_DB_FILENAME,
 						"unconditional param deref database"));
 			}
-			loadedDatabase = true;
+			checkDatabase = true;
 		}
 		
 		this.classContext = classContext;
@@ -164,13 +165,11 @@ public class FindNullDeref
 		worker.execute();
 
 		if (unconditionalDerefDatabase.get() != null || nonNullParamDatabase.get() != null) {
-			examineCalledMethods(unconditionalDerefDatabase.get(), nonNullParamDatabase.get());
+			examineCalledMethods();
 		}
 	}
 
-	private void examineCalledMethods(
-			NonNullParamPropertyDatabase unconditionalDerefDatabase,
-			NonNullParamPropertyDatabase nonNullParamDatabase)
+	private void examineCalledMethods()
 			throws CFGBuilderException, DataflowAnalysisException {
 		ConstantPoolGen cpg = classContext.getConstantPoolGen();
 		TypeDataflow typeDataflow = classContext.getTypeDataflow(method);
@@ -178,7 +177,7 @@ public class FindNullDeref
 		for (Iterator<Location> i = classContext.getCFG(method).locationIterator(); i.hasNext();) {
 			Location location = i.next();
 			try {
-				examineLocation(location, cpg, typeDataflow, unconditionalDerefDatabase, nonNullParamDatabase);
+				examineLocation(location, cpg, typeDataflow);
 			} catch (ClassNotFoundException e) {
 				bugReporter.reportMissingClass(e);
 			}
@@ -197,9 +196,7 @@ public class FindNullDeref
 	private void examineLocation(
 			Location location,
 			ConstantPoolGen cpg,
-			TypeDataflow typeDataflow,
-			NonNullParamPropertyDatabase unconditionalDerefDatabase,
-			NonNullParamPropertyDatabase nonNullParamDatabase)
+			TypeDataflow typeDataflow)
 			throws DataflowAnalysisException, CFGBuilderException, ClassNotFoundException {
 		if (!(location.getHandle().getInstruction() instanceof InvokeInstruction))
 			return;
@@ -246,15 +243,15 @@ public class FindNullDeref
 			System.out.println("Null arguments passed: " + nullArgSet);
 		}
 		
-		if (unconditionalDerefDatabase != null) {
-			checkUnconditionallyDereferencedParam(location, cpg, typeDataflow, unconditionalDerefDatabase, invokeInstruction, nullArgSet, definitelyNullArgSet);
+		if (unconditionalDerefDatabase.get() != null) {
+			checkUnconditionallyDereferencedParam(location, cpg, typeDataflow, invokeInstruction, nullArgSet, definitelyNullArgSet);
 		}
 		
-		if (nonNullParamDatabase != null) {
+		if (nonNullParamDatabase.get() != null && possiblyNullParamDatabase.get() != null) {
 			if (DEBUG_NULLARG) {
 				System.out.println("Checking nonnull params");
 			}
-			checkNonNullParam(location, cpg, typeDataflow, nonNullParamDatabase, invokeInstruction, nullArgSet, definitelyNullArgSet);
+			checkNonNullParam(location, cpg, typeDataflow, invokeInstruction, nullArgSet, definitelyNullArgSet);
 		}
 	}
 
@@ -262,9 +259,11 @@ public class FindNullDeref
 			Location location,
 			ConstantPoolGen cpg,
 			TypeDataflow typeDataflow,
-			NonNullParamPropertyDatabase database,
 			InvokeInstruction invokeInstruction,
 			BitSet nullArgSet, BitSet definitelyNullArgSet) throws DataflowAnalysisException, ClassNotFoundException {
+		
+		NonNullParamPropertyDatabase database = unconditionalDerefDatabase.get();
+		
 		// See what methods might be called here
 		TypeFrame typeFrame = typeDataflow.getFactAtLocation(location);
 		Set<XMethod> targetMethodSet = Hierarchy.resolveMethodCallTargets(invokeInstruction, typeFrame, cpg);
@@ -374,24 +373,34 @@ public class FindNullDeref
 			}
 		}
 	}
+	
+//	static class NonNullSpecification {
+//		XMethod xmethod;
+//		NonNullParamProperty nonNullProperty;
+//		NonNullParamProperty possiblyNullProperty;
+//	}
 
 	private void checkNonNullParam(
 			Location location, 
 			ConstantPoolGen cpg,
 			TypeDataflow typeDataflow,
-			NonNullParamPropertyDatabase nonNullParamDatabase,
 			InvokeInstruction invokeInstruction,
 			BitSet nullArgSet,
 			BitSet definitelyNullArgSet) throws ClassNotFoundException {
-//		XMethod xmethod = XMethodFactory.createXMethod(invokeInstruction, cpg);
-//		NonNullParamProperty property = nonNullParamDatabase.getProperty(xmethod);
-//		if (property != null) {
-//			BitSet violatedParamSet = property.getViolatedParamSet(nullArgSet);
-//			if (!violatedParamSet.isEmpty()) {
-//				
-//			}
-//		}
 
+//		List<NonNullSpecification> specificationList = new LinkedList<NonNullSpecification>();
+//		
+//		JavaClassAndMethodChooser nonNullContractCollector = new JavaClassAndMethodChooser() {
+//			public boolean choose(JavaClassAndMethod classAndMethod) {
+//				XMethod xmethod = XMethodFactory.createXMethod(
+//						classAndMethod.getJavaClass(), classAndMethod.getMethod());
+//				
+////				NonNullParamProperty nonNullProperty = nonNullParamDatabase.getProperty(xmethod);
+//				
+//				return false;
+//			}
+//		};
+		
 		JavaClassAndMethod callTarget = Hierarchy.findInvocationLeastUpperBound(
 				invokeInstruction,
 				cpg);
@@ -405,7 +414,7 @@ public class FindNullDeref
 			System.out.println("Call " + xmethod);
 		}
 		
-		NonNullParamProperty property = nonNullParamDatabase.getProperty(xmethod);
+		NonNullParamProperty property = nonNullParamDatabase.get().getProperty(xmethod);
 		if (property == null)
 			return;
 		
