@@ -181,13 +181,13 @@ public class Hierarchy {
 	 *
 	 * @param inv     the InvokeInstruction
 	 * @param cpg     the ConstantPoolGen used by the class the InvokeInstruction belongs to
-	 * @param chooser MethodChooser to use to pick the method from among the candidates
+	 * @param chooser JavaClassAndMethodChooser to use to pick the method from among the candidates
 	 * @return the JavaClassAndMethod, or null if no such method is defined in the class
 	 */
 	public static JavaClassAndMethod findExactMethod(
 			InvokeInstruction inv,
 			ConstantPoolGen cpg,
-			MethodChooser chooser) throws ClassNotFoundException {
+			JavaClassAndMethodChooser chooser) throws ClassNotFoundException {
 		String className = inv.getClassName(cpg);
 		String methodName = inv.getName(cpg);
 		String methodSig = inv.getSignature(cpg);
@@ -219,7 +219,7 @@ public class Hierarchy {
 	 *
 	 * @param inv           the InvokeInstruction
 	 * @param cpg           the ConstantPoolGen used by the class the InvokeInstruction belongs to
-	 * @param methodChooser MethodChooser which selects among candidate methods
+	 * @param methodChooser JavaClassAndMethodChooser which selects among candidate methods
 	 * @return the JavaClassAndMethod, or null if no matching method can be found
 	 */
 	public static JavaClassAndMethod findInvocationLeastUpperBound(
@@ -229,7 +229,7 @@ public class Hierarchy {
 	}
 
 	public static JavaClassAndMethod findInvocationLeastUpperBound(
-			InvokeInstruction inv, ConstantPoolGen cpg, MethodChooser methodChooser)
+			InvokeInstruction inv, ConstantPoolGen cpg, JavaClassAndMethodChooser methodChooser)
 	        throws ClassNotFoundException {
 		JavaClassAndMethod result = null;
 		
@@ -241,7 +241,7 @@ public class Hierarchy {
 		short opcode = inv.getOpcode();
 		
 		if (methodChooser != ANY_METHOD) {
-			methodChooser = new CompoundMethodChooser(new MethodChooser[]{
+			methodChooser = new CompoundMethodChooser(new JavaClassAndMethodChooser[]{
 					methodChooser, opcode == Constants.INVOKESTATIC ? STATIC_METHOD : INSTANCE_METHOD
 			});
 		}
@@ -333,7 +333,7 @@ public class Hierarchy {
 	 * @param javaClass  the class
 	 * @param methodName the name of the method
 	 * @param methodSig  the signature of the method
-	 * @param chooser    MethodChooser to use to select a matching method
+	 * @param chooser    JavaClassAndMethodChooser to use to select a matching method
 	 *                   (assuming class, name, and signature already match)
 	 * @return the JavaClassAndMethod, or null if no such method exists in the class
 	 */
@@ -341,16 +341,17 @@ public class Hierarchy {
 			JavaClass javaClass,
 			String methodName,
 			String methodSig,
-			MethodChooser chooser) {
+			JavaClassAndMethodChooser chooser) {
 		if (DEBUG_METHOD_LOOKUP) {
-			System.out.println("XXX: Check " + javaClass.getClassName());
+			System.out.println("Check " + javaClass.getClassName());
 		}
 		Method[] methodList = javaClass.getMethods();
 		for (int i = 0; i < methodList.length; ++i) {
 			Method method = methodList[i];
+			JavaClassAndMethod javaClassAndMethod = new JavaClassAndMethod(javaClass, method);
 			if (method.getName().equals(methodName)
 					&& method.getSignature().equals(methodSig)
-					&& chooser.choose(method)) {
+					&& chooser.choose(javaClassAndMethod)) {
 				if (DEBUG_METHOD_LOOKUP) {
 					System.out.println("\t==> FOUND: " + method);
 				}
@@ -369,30 +370,31 @@ public class Hierarchy {
 	 * @param javaClass  the class
 	 * @param methodName the name of the method
 	 * @param methodSig  the signature of the method
-	 * @param chooser    the MethodChooser to use to screen possible candidates
+	 * @param chooser    the JavaClassAndMethodChooser to use to screen possible candidates
 	 * @return the XMethod, or null if no such method exists in the class
 	 */
 	public static XMethod findXMethod(JavaClass javaClass, String methodName, String methodSig,
-			MethodChooser chooser) {
+			JavaClassAndMethodChooser chooser) {
 		JavaClassAndMethod result = findMethod(javaClass, methodName, methodSig, chooser);
 		return result == null ? null : XMethodFactory.createXMethod(result.getJavaClass(), result.getMethod());
 	}
 	
 	/**
-	 * MethodChooser which accepts any method.
+	 * JavaClassAndMethodChooser which accepts any method.
 	 */
-	public static final MethodChooser ANY_METHOD = new MethodChooser() {
-		public boolean choose(Method method) {
+	public static final JavaClassAndMethodChooser ANY_METHOD = new JavaClassAndMethodChooser() {
+		public boolean choose(JavaClassAndMethod javaClassAndMethod) {
 			return true;
 		}
 	};
 	
 	/**
-	 * MethodChooser which accepts only concrete (not abstract or native) methods.
+	 * JavaClassAndMethodChooser which accepts only concrete (not abstract or native) methods.
 	 * FIXME: perhaps native methods should be concrete.
 	 */
-	public static final MethodChooser CONCRETE_METHOD = new MethodChooser() {
-		public boolean choose(Method method) {
+	public static final JavaClassAndMethodChooser CONCRETE_METHOD = new JavaClassAndMethodChooser() {
+		public boolean choose(JavaClassAndMethod javaClassAndMethod) {
+			Method method = javaClassAndMethod.getMethod();
 			int accessFlags = method.getAccessFlags();
 			return (accessFlags & Constants.ACC_ABSTRACT) == 0
 				&& (accessFlags & Constants.ACC_NATIVE) == 0;
@@ -400,20 +402,20 @@ public class Hierarchy {
 	};
 	
 	/**
-	 * MethodChooser which accepts only static methods.
+	 * JavaClassAndMethodChooser which accepts only static methods.
 	 */
-	public static final MethodChooser STATIC_METHOD = new MethodChooser() {
-		public boolean choose(Method method) {
-			return method.isStatic();
+	public static final JavaClassAndMethodChooser STATIC_METHOD = new JavaClassAndMethodChooser() {
+		public boolean choose(JavaClassAndMethod javaClassAndMethod) {
+			return javaClassAndMethod.getMethod().isStatic();
 		}
 	};
 	
 	/**
-	 * MethodChooser which accepts only instance methods.
+	 * JavaClassAndMethodChooser which accepts only instance methods.
 	 */
-	public static final MethodChooser INSTANCE_METHOD = new MethodChooser() {
-		public boolean choose(Method method) {
-			return !method.isStatic();
+	public static final JavaClassAndMethodChooser INSTANCE_METHOD = new JavaClassAndMethodChooser() {
+		public boolean choose(JavaClassAndMethod javaClassAndMethod) {
+			return !javaClassAndMethod.getMethod().isStatic();
 		}
 	};
 
@@ -437,12 +439,12 @@ public class Hierarchy {
 	 * @param classList  list of classes in which to search
 	 * @param methodName the name of the method
 	 * @param methodSig  the signature of the method
-	 * @param chooser    MethodChooser to select which methods are considered;
+	 * @param chooser    JavaClassAndMethodChooser to select which methods are considered;
 	 *                   it must return true for a method to be returned
 	 * @return the JavaClassAndMethod, or null if no such method exists in the class
 	 */
 	public static JavaClassAndMethod findMethod(JavaClass[] classList, String methodName, String methodSig,
-			MethodChooser chooser) {
+			JavaClassAndMethodChooser chooser) {
 		JavaClassAndMethod m = null;
 
 		for (int i = 0; i < classList.length; ++i) {
@@ -474,16 +476,16 @@ public class Hierarchy {
 	 * @param classList  list of classes in which to search
 	 * @param methodName the name of the method
 	 * @param methodSig  the signature of the method
-	 * @param chooser    MethodChooser to select which methods are considered;
+	 * @param chooser    JavaClassAndMethodChooser to select which methods are considered;
 	 *                   it must return true for a method to be returned
 	 * @return the XMethod, or null if no such method exists in the class
 	 */
 	public static XMethod findXMethod(JavaClass[] classList, String methodName, String methodSig,
-			MethodChooser chooser) {
+			JavaClassAndMethodChooser chooser) {
 		for (int i = 0; i < classList.length; ++i) {
 			JavaClass cls = classList[i];
 			JavaClassAndMethod m;
-			if ((m = findMethod(cls, methodName, methodSig)) != null && chooser.choose(m.getMethod())) {
+			if ((m = findMethod(cls, methodName, methodSig)) != null && chooser.choose(m)) {
 				return XMethodFactory.createXMethod(cls, m.getMethod());
 			}
 		}

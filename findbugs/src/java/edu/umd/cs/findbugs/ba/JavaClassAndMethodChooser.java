@@ -22,19 +22,6 @@ package edu.umd.cs.findbugs.ba;
 /**
  * @author David Hovemeyer
  */
-public class CompoundMethodChooser implements JavaClassAndMethodChooser {
-	JavaClassAndMethodChooser[] conjunctList;
-	
-	public CompoundMethodChooser(JavaClassAndMethodChooser[] conjunctList) {
-		this.conjunctList = conjunctList;
-	}
-
-	public boolean choose(JavaClassAndMethod javaClassAndMethod) {
-		for (JavaClassAndMethodChooser chooser : conjunctList) {
-			if (!chooser.choose(javaClassAndMethod))
-				return false;
-		}
-		return true;
-	}
-
+public interface JavaClassAndMethodChooser {
+	public boolean choose(JavaClassAndMethod javaClassAndMethod);
 }
