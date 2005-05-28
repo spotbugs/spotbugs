@@ -27,18 +27,18 @@ import edu.umd.cs.findbugs.ba.interproc.PropertyDatabaseFormatException;
  * 
  * @author David Hovemeyer
  */
-public class MayReturnNullPropertyDatabase extends MethodPropertyDatabase<MayReturnNullProperty> {
+public class MayReturnNullPropertyDatabase extends MethodPropertyDatabase<Boolean> {
 	public static final String DEFAULT_FILENAME = "mayReturnNull.db";
 
 	//@Override
-	protected MayReturnNullProperty decodeProperty(String propStr)
+	protected Boolean decodeProperty(String propStr)
 			throws PropertyDatabaseFormatException {
-		return new MayReturnNullProperty(Boolean.valueOf(propStr).booleanValue());
+		return Boolean.valueOf(propStr);
 	}
 
 	//@Override
-	protected String encodeProperty(MayReturnNullProperty property) {
-		return property.mayReturnNull() ? "true" : "false";
+	protected String encodeProperty(Boolean property) {
+		return property.toString();
 	}
 	
 	public static void main(String[] args) throws Exception {

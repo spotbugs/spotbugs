@@ -121,8 +121,9 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
 				// Check to see if this method is in the database
 				XMethod calledMethod = XMethodFactory.createXMethod(obj, getCPG());
 				if (IsNullValueAnalysis.DEBUG) System.out.println("Check " + calledMethod + " for null return...");
-				MayReturnNullProperty prop = mayReturnNullDatabase.getProperty(calledMethod);
-				if (prop != null && prop.mayReturnNull()) {
+				//MayReturnNullProperty prop = mayReturnNullDatabase.getProperty(calledMethod);
+				Boolean prop = mayReturnNullDatabase.getProperty(calledMethod);
+				if (prop != null && prop.booleanValue()) {
 					// Method may return null!
 					if (IsNullValueAnalysis.DEBUG) {
 						System.out.println("Null value returned from " + calledMethod);

@@ -41,7 +41,6 @@ import edu.umd.cs.findbugs.ba.XMethodFactory;
 import edu.umd.cs.findbugs.ba.npe.IsNullValue;
 import edu.umd.cs.findbugs.ba.npe.IsNullValueDataflow;
 import edu.umd.cs.findbugs.ba.npe.IsNullValueFrame;
-import edu.umd.cs.findbugs.ba.npe.MayReturnNullProperty;
 import edu.umd.cs.findbugs.ba.npe.MayReturnNullPropertyDatabase;
 
 /**
@@ -109,7 +108,7 @@ public class TrainNullReturnValues implements TrainingDetector {
 				
 				if (tos.mightBeNull()) {
 					XMethod xmethod = XMethodFactory.createXMethod(classContext.getJavaClass(), method); 
-					database.setProperty(xmethod, new MayReturnNullProperty(true));
+					database.setProperty(xmethod, Boolean.TRUE);
 					return;
 				}
 			}
