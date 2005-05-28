@@ -35,6 +35,7 @@ import edu.umd.cs.findbugs.ba.ch.Subtypes;
 import edu.umd.cs.findbugs.ba.interproc.PropertyDatabase;
 import edu.umd.cs.findbugs.ba.interproc.PropertyDatabaseFormatException;
 import edu.umd.cs.findbugs.ba.npe.MayReturnNullPropertyDatabase;
+import edu.umd.cs.findbugs.ba.npe.NonNullParamPropertyDatabase;
 import edu.umd.cs.findbugs.ba.type.FieldStoreTypeDatabase;
 
 
@@ -65,6 +66,8 @@ public class AnalysisContext implements AnalysisFeatures {
 	private String databaseOutputDir;
 	private MayReturnNullPropertyDatabase mayReturnNullDatabase;
 	private FieldStoreTypeDatabase fieldStoreTypeDatabase;
+	private NonNullParamPropertyDatabase nonNullParamDatabase;
+	private NonNullParamPropertyDatabase possiblyNullParamDatabase;
 
 	private static InheritableThreadLocal<AnalysisContext> currentAnalysisContext
 		= new InheritableThreadLocal<AnalysisContext>();
@@ -218,6 +221,14 @@ public class AnalysisContext implements AnalysisFeatures {
 				new FieldStoreTypeDatabase(),
 				FieldStoreTypeDatabase.DEFAULT_FILENAME,
 				"field store type database");
+		nonNullParamDatabase = loadPropertyDatabase(
+				new NonNullParamPropertyDatabase(),
+				DEFAULT_NONNULL_PARAM_DATABASE_FILENAME,
+				"@NonNull parameter annotation database");
+		possiblyNullParamDatabase = loadPropertyDatabase(
+				new NonNullParamPropertyDatabase(),
+				DEFAULT_POSSIBLYNULL_PARAM_DATABASE_FILENAME,
+				"@PossiblyNull parameter annotation database");
 	}
 	
 	/**
@@ -297,6 +308,36 @@ public class AnalysisContext implements AnalysisFeatures {
 	 */
 	public FieldStoreTypeDatabase getFieldStoreTypeDatabase() {
 		return fieldStoreTypeDatabase;
+	}
+	
+	/**
+	 * Set non-null param database.
+	 * Based on NonNull annotations.
+	 * 
+	 * @param nonNullParamDatabase the non-null param database
+	 */
+	public void setNonNullParamDatabase(
+			NonNullParamPropertyDatabase nonNullParamDatabase) {
+		this.nonNullParamDatabase = nonNullParamDatabase;
+	}
+	
+	public NonNullParamPropertyDatabase getNonNullParamDatabase() {
+		return nonNullParamDatabase;
+	}
+	
+	/**
+	 * Set possibly-null param database.
+	 * Based on PossiblyNull annotations.
+	 * 
+	 * @param possiblyNullParamDatabase the possibly-null param database
+	 */
+	public void setPossiblyNullParamDatabase(
+			NonNullParamPropertyDatabase possiblyNullParamDatabase) {
+		this.possiblyNullParamDatabase = possiblyNullParamDatabase;
+	}
+	
+	public NonNullParamPropertyDatabase getPossiblyNullParamDatabase() {
+		return possiblyNullParamDatabase;
 	}
 
 	/**

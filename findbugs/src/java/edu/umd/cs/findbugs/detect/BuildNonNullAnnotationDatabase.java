@@ -19,10 +19,12 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import java.util.HashSet;
 import java.util.Map;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.annotations.PossiblyNull;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.XMethodFactory;
 import edu.umd.cs.findbugs.ba.npe.NonNullParamProperty;
@@ -42,10 +44,24 @@ public class BuildNonNullAnnotationDatabase extends AnnotationVisitor {
 
 	private NonNullParamPropertyDatabase nonNullDatabase;
 	private NonNullParamPropertyDatabase possiblyNullDatabase;
+	private HashSet<XMethod> createdPropertySet;
 	
 	public BuildNonNullAnnotationDatabase() {
-		this.nonNullDatabase = new NonNullParamPropertyDatabase();
-		this.possiblyNullDatabase = new NonNullParamPropertyDatabase();
+		// Ensure we are using the same databases as the AnalysisContext.
+		AnalysisContext analysisContext = AnalysisContext.currentAnalysisContext();
+		analysisContext.setNonNullParamDatabase(
+				nonNullDatabase = createIfNeeded(analysisContext.getNonNullParamDatabase()));
+		analysisContext.setPossiblyNullParamDatabase(
+				possiblyNullDatabase = createIfNeeded(analysisContext.getPossiblyNullParamDatabase()));
+
+		// Keep track of which properties we created.
+		// When we encounter @NonNull and @PossiblyNull annotations, we
+		// will override any existing properties in the database.
+		createdPropertySet = new HashSet<XMethod>();
+	}
+
+	private static NonNullParamPropertyDatabase createIfNeeded(NonNullParamPropertyDatabase database) {
+		return database != null ? database : new NonNullParamPropertyDatabase();
 	}
 	
 	protected NonNullParamPropertyDatabase getNonNullDatabase() {
@@ -66,9 +82,6 @@ public class BuildNonNullAnnotationDatabase extends AnnotationVisitor {
 		if (!annotationClass.equals(NONNULL_ANNOTATION_CLASS) &&
 				!annotationClass.equals(POSSIBLY_NULL_ANNOTATION_CLASS))
 			return;
-		
-		NonNullParamPropertyDatabase database = annotationClass.equals(NONNULL_ANNOTATION_CLASS)
-				? nonNullDatabase : possiblyNullDatabase;
 
 		XMethod xmethod = XMethodFactory.createXMethod(this);
 		if (DEBUG) {
@@ -76,6 +89,16 @@ public class BuildNonNullAnnotationDatabase extends AnnotationVisitor {
 					annotationClass.substring(annotationClass.lastIndexOf('/') + 1) +
 					" in " + xmethod.toString());
 		}
+
+		if (!createdPropertySet.contains(xmethod)) {
+			// Remove any existing properties for this method.
+			nonNullDatabase.removeProperty( xmethod);
+			possiblyNullDatabase.removeProperty(xmethod);
+			createdPropertySet.add(xmethod);
+		}
+		
+		NonNullParamPropertyDatabase database = annotationClass.equals(NONNULL_ANNOTATION_CLASS)
+				? nonNullDatabase : possiblyNullDatabase;
 		
 		NonNullParamProperty property = database.getProperty(xmethod);
 		if (property == null) {

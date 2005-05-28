@@ -84,12 +84,8 @@ public class FindNullDeref
 
 	public static final String UNCONDITIONAL_DEREF_DB_FILENAME = "unconditionalDeref.db";
 	
-	// Method property databases
+	// Method property databases local to this detector
 	static AnalysisLocal<NonNullParamPropertyDatabase> unconditionalDerefDatabase =
-		new AnalysisLocal<NonNullParamPropertyDatabase>();
-	static AnalysisLocal<NonNullParamPropertyDatabase> nonNullParamDatabase =
-		new AnalysisLocal<NonNullParamPropertyDatabase>();
-	static AnalysisLocal<NonNullParamPropertyDatabase> possiblyNullParamDatabase =
 		new AnalysisLocal<NonNullParamPropertyDatabase>();
 	
 	// Fields
@@ -102,10 +98,6 @@ public class FindNullDeref
 
 	public FindNullDeref(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
-	}
-	
-	public Object clone() throws CloneNotSupportedException {
-		return super.clone();
 	}
 
 	public void visitClassContext(ClassContext classContext) {
@@ -162,7 +154,8 @@ public class FindNullDeref
 				this);
 		worker.execute();
 
-		if (unconditionalDerefDatabase.get() != null || nonNullParamDatabase.get() != null) {
+		if (unconditionalDerefDatabase.get() != null
+				|| AnalysisContext.currentAnalysisContext().getNonNullParamDatabase() != null) {
 			examineCalledMethods();
 		}
 	}
@@ -236,7 +229,8 @@ public class FindNullDeref
 			checkUnconditionallyDereferencedParam(location, cpg, typeDataflow, invokeInstruction, nullArgSet, definitelyNullArgSet);
 		}
 		
-		if (nonNullParamDatabase.get() != null && possiblyNullParamDatabase.get() != null) {
+		if (AnalysisContext.currentAnalysisContext().getNonNullParamDatabase() != null 
+				&& AnalysisContext.currentAnalysisContext().getPossiblyNullParamDatabase() != null) {
 			if (DEBUG_NULLARG) {
 				System.out.println("Checking nonnull params");
 			}
@@ -402,7 +396,9 @@ public class FindNullDeref
 			InvokeInstruction invokeInstruction,
 			BitSet nullArgSet,
 			BitSet definitelyNullArgSet) throws ClassNotFoundException {
-
+		final NonNullParamPropertyDatabase nonNullParamDatabase = AnalysisContext.currentAnalysisContext().getNonNullParamDatabase();
+		final NonNullParamPropertyDatabase possiblyNullParamDatabase = AnalysisContext.currentAnalysisContext().getPossiblyNullParamDatabase();
+		
 		// Go up the class hierarchy finding @NonNull and @PossiblyNull annotations.
 		final List<NonNullSpecification> specificationList = new LinkedList<NonNullSpecification>();
 		JavaClassAndMethodChooser nonNullContractCollector = new JavaClassAndMethodChooser() {
@@ -412,8 +408,8 @@ public class FindNullDeref
 
 				NonNullSpecification specification = new NonNullSpecification(
 						classAndMethod,
-						wrapProperty(nonNullParamDatabase.get().getProperty(xmethod)),
-						wrapProperty(possiblyNullParamDatabase.get().getProperty(xmethod)));
+						wrapProperty(nonNullParamDatabase.getProperty(xmethod)),
+						wrapProperty(possiblyNullParamDatabase.getProperty(xmethod)));
 				if (DEBUG_NULLARG) {
 					System.out.println("Found specification: " + specification);
 				}

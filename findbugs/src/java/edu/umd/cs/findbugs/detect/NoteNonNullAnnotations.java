@@ -39,8 +39,6 @@ public class NoteNonNullAnnotations extends BuildNonNullAnnotationDatabase imple
 
 	public void visitClassContext(ClassContext classContext) {
 		if (!setDatabase) {
-			FindNullDeref.nonNullParamDatabase.set(getNonNullDatabase());
-			FindNullDeref.possiblyNullParamDatabase.set(getPossiblyNullDatabase());
 			setDatabase = true;
 		}
 		
