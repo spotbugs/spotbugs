@@ -73,6 +73,16 @@ public abstract class PropertyDatabase<KeyType, ValueType> {
 	}
 	
 	/**
+	 * Remove a property.
+	 * 
+	 * @param key the key
+	 * @return the old property, or null if there was no property defined for this key
+	 */
+	public ValueType removeProperty(KeyType key) {
+		return propertyMap.remove(key);
+	}
+	
+	/**
 	 * Read property database from given file.
 	 * 
 	 * @param fileName name of the database file
