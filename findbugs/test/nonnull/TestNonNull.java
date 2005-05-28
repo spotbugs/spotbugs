@@ -1,0 +1,33 @@
+package nonnull;
+
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.PossiblyNull;
+
+interface A {
+	public void f(@NonNull Object obj, @NonNull Object obj2);
+}
+
+interface B extends A {
+	// relax constraint on second param	 
+	public void f(@NonNull Object obj, @PossiblyNull Object obj2);
+}
+
+interface C extends A {
+}
+
+public class TestNonNull {
+	public void report(A a) {
+		// Report: first arg is declared @NonNull by A
+		a.f(null, new Object());
+	}
+	
+	public void doNotReport(B b) {
+		// The B interface declared  arg 2 to be @PossiblyNull, so this is OK
+		b.f(new Object(), null);
+	}
+	
+	public void report2(B b) {
+		// arg1 must still not be null, though
+		b.f(null, new Object());
+	}
+}
