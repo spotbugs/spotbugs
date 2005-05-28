@@ -53,6 +53,8 @@ public class AnalysisContext implements AnalysisFeatures {
 	public static final String DEFAULT_NONNULL_PARAM_DATABASE_FILENAME = "nonnullParam.db";
 	public static final String DEFAULT_POSSIBLYNULL_PARAM_DATABASE_FILENAME = "possiblyNullParam.db";
 	
+	public static final String DEFAULT_NULL_RETURN_VALUE_ANNOTATION_DATABASE = "nonnullReturn.db";
+	
 	private RepositoryLookupFailureCallback lookupFailureCallback;
 	private SourceFinder sourceFinder;
 	private ClassContextCache classContextCache;
@@ -65,6 +67,7 @@ public class AnalysisContext implements AnalysisFeatures {
 	private String databaseInputDir;
 	private String databaseOutputDir;
 	private MayReturnNullPropertyDatabase mayReturnNullDatabase;
+	private MayReturnNullPropertyDatabase nullReturnValueAnnotationDatabase;
 	private FieldStoreTypeDatabase fieldStoreTypeDatabase;
 	private NonNullParamPropertyDatabase nonNullParamDatabase;
 	private NonNullParamPropertyDatabase possiblyNullParamDatabase;
@@ -229,6 +232,11 @@ public class AnalysisContext implements AnalysisFeatures {
 				new NonNullParamPropertyDatabase(),
 				DEFAULT_POSSIBLYNULL_PARAM_DATABASE_FILENAME,
 				"@PossiblyNull parameter annotation database");
+		nullReturnValueAnnotationDatabase= loadPropertyDatabase(
+				new MayReturnNullPropertyDatabase(),
+				DEFAULT_NULL_RETURN_VALUE_ANNOTATION_DATABASE,
+				"@NonNull/@PossiblyNull return value annotation database"
+				);
 	}
 	
 	/**
@@ -338,6 +346,15 @@ public class AnalysisContext implements AnalysisFeatures {
 	
 	public NonNullParamPropertyDatabase getPossiblyNullParamDatabase() {
 		return possiblyNullParamDatabase;
+	}
+	
+	public void setNullReturnValueAnnotationDatabase(
+			MayReturnNullPropertyDatabase nullReturnValueAnnotationDatabase) {
+		this.nullReturnValueAnnotationDatabase = nullReturnValueAnnotationDatabase;
+	}
+	
+	public MayReturnNullPropertyDatabase getNullReturnValueAnnotationDatabase() {
+		return nullReturnValueAnnotationDatabase;
 	}
 
 	/**

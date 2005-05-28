@@ -58,6 +58,10 @@ public class TrainNonNullAnnotations extends BuildNonNullAnnotationDatabase
 				getPossiblyNullDatabase(),
 				AnalysisContext.DEFAULT_POSSIBLYNULL_PARAM_DATABASE_FILENAME,
 				"possibly-null param database");
+		AnalysisContext.currentAnalysisContext().storePropertyDatabase(
+				getNullReturnValueDatabase(),
+				AnalysisContext.DEFAULT_NULL_RETURN_VALUE_ANNOTATION_DATABASE,
+				"non-null and possibly-null return value database");
 	}
 
 }
