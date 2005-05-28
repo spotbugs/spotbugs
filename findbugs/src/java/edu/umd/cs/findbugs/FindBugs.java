@@ -449,7 +449,8 @@ public class FindBugs implements Constants2, ExitCodes {
 		private PrintStream outputStream = null;
 		private Set<String> bugCategorySet = null;
 		private UserPreferences userPreferences = UserPreferences.createDefaultUserPreferences();
-		private boolean trainingMode;
+		private String trainingOutputDir;
+		private String trainingInputDir;
 
 		public FindBugsCommandLine() {
 			addOption("-home", "home directory", "specify FindBugs home directory");
@@ -469,7 +470,10 @@ public class FindBugs implements Constants2, ExitCodes {
 				"Generate HTML output (default stylesheet is default.xsl)");
 			addSwitch("-emacs", "Use emacs reporting format");
 			addSwitch("-relaxed", "Relaxed reporting mode (more false positives!)");
-			addSwitch("-train", "Detector training mode (experimental)");
+			addSwitchWithOptionalExtraPart("-train", "outputDir",
+					"Save training data (experimental); output dir defaults to '.'");
+			addSwitchWithOptionalExtraPart("-useTraining", "inputDir",
+					"Use training data (experimental); input dir defaults to '.'");
 			addOption("-outputFile", "filename", "Save output in named file");
 			addOption("-visitors", "v1[,v2...]", "run only named visitors");
 			addOption("-omitVisitors", "v1[,v2...]", "omit named visitors");
@@ -545,7 +549,9 @@ public class FindBugs implements Constants2, ExitCodes {
 			} else if (option.equals("-relaxed")) {
 				relaxedReportingMode = true;
 			} else if (option.equals("-train")) {
-				trainingMode = true;
+				trainingOutputDir = !optionExtraPart.equals("") ? optionExtraPart : ".";
+			} else if (option.equals("-useTraining")) {
+				trainingInputDir = !optionExtraPart.equals("") ? optionExtraPart : ".";
 			} else if (option.equals("-html")) {
 				bugReporterType = HTML_REPORTER;
 				if (!optionExtraPart.equals("")) {
@@ -774,7 +780,13 @@ public class FindBugs implements Constants2, ExitCodes {
 			findBugs.setClassScreener(classScreener);
 			
 			findBugs.setRelaxedReportingMode(relaxedReportingMode);
-			findBugs.setTrainingMode(trainingMode);
+
+			if (trainingOutputDir != null) {
+				findBugs.enableTrainingOutput(trainingOutputDir);
+			}
+			if (trainingInputDir != null) {
+				findBugs.enableTrainingInput(trainingInputDir);
+			}
 
 			return findBugs;
 		}
@@ -827,7 +839,10 @@ public class FindBugs implements Constants2, ExitCodes {
 	private AnalysisContext analysisContext;
 	private String currentClass;
 	private Map<String,Long> detectorTimings;
-	private boolean trainingMode;
+	private boolean useTrainingInput;
+	private boolean emitTrainingOutput;
+	private String trainingInputDir;
+	private String trainingOutputDir;
 	
 	private int passCount;
 
@@ -946,12 +961,24 @@ public class FindBugs implements Constants2, ExitCodes {
 	}
 	
 	/**
-	 * Set training mode.
+	 * Set whether or not training output should be emitted.
 	 * 
-	 * @param trainingMode true if training mode should be enabled, false otherwise
+	 * @param trainingOutputDir  directory to save training output in
 	 */
-	public void setTrainingMode(boolean trainingMode) {
-		this.trainingMode = trainingMode;
+	public void enableTrainingOutput(String trainingOutputDir) {
+		this.emitTrainingOutput = true;
+		this.trainingOutputDir = trainingOutputDir;
+	}
+	
+	/**
+	 * Set whether or not training input should be used to
+	 * make the analysis more precise.
+	 * 
+	 * @param trainingInputDir directory to load training input from
+	 */
+	public void enableTrainingInput(String trainingInputDir) {
+		this.useTrainingInput = true;
+		this.trainingInputDir = trainingInputDir;
 	}
 
 	/**
@@ -967,10 +994,22 @@ public class FindBugs implements Constants2, ExitCodes {
 		analysisContext = new AnalysisContext(bugReporter);
 		analysisContext.setSourcePath(project.getSourceDirList());
 		
-		if (relaxedReportingMode) {
-			analysisContext.setBoolProperty(FindBugsAnalysisProperties.RELAXED_REPORTING_MODE,true);
+		// Enable/disable relaxed reporting mode
+		FindBugsAnalysisProperties.setRelaxedMode(relaxedReportingMode);
+		
+		// Enable input/output of interprocedural property databases
+		if (emitTrainingOutput) {
+			if (!new File(trainingOutputDir).isDirectory())
+				throw new IOException("Training output directory " + trainingOutputDir + " does not exist");
+			AnalysisContext.currentAnalysisContext().setDatabaseOutputDir(trainingOutputDir);
 		}
-
+		if (useTrainingInput) {
+			if (!new File(trainingInputDir).isDirectory())
+				throw new IOException("Training input directory " + trainingInputDir + " does not exist");
+			AnalysisContext.currentAnalysisContext().setDatabaseInputDir(trainingInputDir);
+			AnalysisContext.currentAnalysisContext().loadInterproceduralDatabases();
+		}
+		
 		// Give the BugReporter a reference to this object,
 		// in case it wants to access information such
 		// as the AnalysisContext
@@ -1158,9 +1197,9 @@ public class FindBugs implements Constants2, ExitCodes {
 		if (!factory.isEnabledForCurrentJRE())
 			return false;
 
-		// Training detectors are enabled if, and only if, we are in training mode.
+		// Training detectors are enabled if, and only if, we are emitting training output
 		boolean isTrainingDetector = factory.isDetectorClassSubtypeOf(TrainingDetector.class);
-		if (isTrainingDetector != trainingMode)
+		if (isTrainingDetector != emitTrainingOutput)
 			return false;
 		
 		return true;

@@ -51,7 +51,6 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.FindBugsAnalysisProperties;
-import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.ClassContext;
@@ -495,8 +494,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 		});
 		
 		// Report violations
-		boolean relaxed = AnalysisContext.currentAnalysisContext().getBoolProperty(
-				FindBugsAnalysisProperties.RELAXED_REPORTING_MODE);
+		boolean relaxed = FindBugsAnalysisProperties.isRelaxedMode();
 		reportBest(classContext, method, stringComparisonList, relaxed);
 		reportBest(classContext, method, refComparisonList, relaxed);
 	}

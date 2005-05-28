@@ -18,7 +18,6 @@
  */
 package edu.umd.cs.findbugs.detect;
 
-import java.io.IOException;
 import java.util.Iterator;
 
 import org.apache.bcel.classfile.Method;
@@ -28,6 +27,7 @@ import org.apache.bcel.generic.ReturnInstruction;
 
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.TrainingDetector;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.BasicBlock;
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
@@ -122,11 +122,8 @@ public class TrainNullReturnValues implements TrainingDetector {
 	}
 
 	public void report() {
-		try {
-			database.writeToFile(MayReturnNullPropertyDatabase.DEFAULT_FILENAME);
-		} catch (IOException e) {
-			bugReporter.logError("Couldn't write may return null database", e);
-		}
+		AnalysisContext.currentAnalysisContext().storePropertyDatabase(
+				database, MayReturnNullPropertyDatabase.DEFAULT_FILENAME, "null return database");
 	}
 
 }

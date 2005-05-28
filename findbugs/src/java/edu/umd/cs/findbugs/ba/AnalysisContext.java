@@ -49,10 +49,6 @@ public class AnalysisContext implements AnalysisFeatures {
 	private static final boolean DEBUG = Boolean.getBoolean("findbugs.analysiscontext.debug");
 	private static final boolean DEBUG_HIERARCHY = Boolean.getBoolean("findbugs.debug.hierarchy");
 	
-	public static final boolean USE_INTERPROC_DATABASE = Boolean.getBoolean("findbugs.interproc");
-	public static final String INTERPROC_DATABASE_DIR =
-		System.getProperty("findbugs.interproc.dbdir", ".");
-	
 	private RepositoryLookupFailureCallback lookupFailureCallback;
 	private SourceFinder sourceFinder;
 	private ClassContextCache classContextCache;
@@ -62,9 +58,10 @@ public class AnalysisContext implements AnalysisFeatures {
 	private BitSet boolPropertySet;
 	
 	// Interprocedural fact databases
+	private String databaseInputDir;
+	private String databaseOutputDir;
 	private MayReturnNullPropertyDatabase mayReturnNullDatabase;
 	private FieldStoreTypeDatabase fieldStoreTypeDatabase;
-	private boolean interprocDatabasesLoaded;
 
     /*
       // JSR14 does not support Generic ThreadLocal
@@ -203,8 +200,6 @@ public class AnalysisContext implements AnalysisFeatures {
 	 * @return the ClassContext for that class
 	 */
 	public ClassContext getClassContext(JavaClass javaClass) {
-		loadInterproceduralDatabasesIfNeeded();
-		
 		ClassContext classContext = classContextCache.get(javaClass);
 		if (classContext == null) {
 			classContext = new ClassContext(javaClass, this);
@@ -213,18 +208,18 @@ public class AnalysisContext implements AnalysisFeatures {
 		return classContext;
 	}
 
-	private void loadInterproceduralDatabasesIfNeeded() {
-		if (USE_INTERPROC_DATABASE && !interprocDatabasesLoaded) {
-			mayReturnNullDatabase = loadPropertyDatabase(
-					new MayReturnNullPropertyDatabase(),
-					MayReturnNullPropertyDatabase.DEFAULT_FILENAME,
-					"may return null database");
-			fieldStoreTypeDatabase = loadPropertyDatabase(
-					new FieldStoreTypeDatabase(),
-					FieldStoreTypeDatabase.DEFAULT_FILENAME,
-					"field store type database");
-			interprocDatabasesLoaded = true;
-		}
+	/**
+	 * If possible, load interprocedural property databases.
+	 */
+	public void loadInterproceduralDatabases() {
+		mayReturnNullDatabase = loadPropertyDatabase(
+				new MayReturnNullPropertyDatabase(),
+				MayReturnNullPropertyDatabase.DEFAULT_FILENAME,
+				"may return null database");
+		fieldStoreTypeDatabase = loadPropertyDatabase(
+				new FieldStoreTypeDatabase(),
+				FieldStoreTypeDatabase.DEFAULT_FILENAME,
+				"field store type database");
 	}
 	
 	/**
@@ -246,6 +241,44 @@ public class AnalysisContext implements AnalysisFeatures {
 	 */
 	public boolean getBoolProperty(int prop) {
 		return boolPropertySet.get(prop);
+	}
+	
+	/**
+	 * Set the interprocedural database input directory.
+	 * 
+	 * @param databaseInputDir the interprocedural database input directory
+	 */
+	public void setDatabaseInputDir(String databaseInputDir) {
+		if (DEBUG) System.out.println("Setting database input directory: " + databaseInputDir);
+		this.databaseInputDir = databaseInputDir;
+	}
+	
+	/**
+	 * Get the interprocedural database input directory.
+	 * 
+	 * @return the interprocedural database input directory
+	 */
+	public String getDatabaseInputDir() {
+		return databaseInputDir;
+	}
+	
+	/**
+	 * Set the interprocedural database output directory.
+	 * 
+	 * @param databaseOutputDir the interprocedural database output directory
+	 */
+	public void setDatabaseOutputDir(String databaseOutputDir) {
+		if (DEBUG) System.out.println("Setting database output directory: " + databaseOutputDir);
+		this.databaseOutputDir = databaseOutputDir;
+	}
+	
+	/**
+	 * Get the interprocedural database output directory.
+	 * 
+	 * @return the interprocedural database output directory
+	 */
+	public String getDatabaseOutputDir() {
+		return databaseOutputDir;
 	}
 	
 	/**
@@ -288,9 +321,8 @@ public class AnalysisContext implements AnalysisFeatures {
 			String fileName,
 			String description) {
 		try {
-			if (DEBUG) System.out.println("Loading " + description + " from " + fileName + "...");
-			
-			File dbFile = new File(INTERPROC_DATABASE_DIR, fileName);
+			File dbFile = new File(getDatabaseInputDir(), fileName);
+			if (DEBUG) System.out.println("Loading " + description + " from " + dbFile.getPath() + "...");
 			
 			database.readFromFile(dbFile.getPath());
 			return database;
@@ -301,6 +333,31 @@ public class AnalysisContext implements AnalysisFeatures {
 		}
 		
 		return null;
+	}
+	
+	/**
+	 * Write an interprocedural property database.
+	 * 
+	 * @param <DatabaseType> actual type of the database
+	 * @param <KeyType>      type of key (e.g., method or field)
+	 * @param <Property>     type of properties stored in the database
+	 * @param database    the database
+	 * @param fileName    name of database file
+	 * @param description description of the database
+	 */
+	public<
+		DatabaseType extends PropertyDatabase<KeyType,Property>,
+		KeyType,
+		Property
+		> void storePropertyDatabase(DatabaseType database, String fileName, String description) {
+
+		try {
+			File dbFile = new File(getDatabaseOutputDir(), fileName);
+			if (DEBUG) System.out.println("Writing " + description + " to " + dbFile.getPath() + "...");
+			database.writeToFile(dbFile.getPath());
+		} catch (IOException e) {
+			getLookupFailureCallback().logError("Error writing " + description, e);
+		}
 	}
 }
 

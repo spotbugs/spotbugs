@@ -32,9 +32,9 @@ import org.apache.bcel.classfile.LocalVariable;
 import org.apache.bcel.classfile.LocalVariableTable;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ALOAD;
-import org.apache.bcel.generic.GETFIELD;
 import org.apache.bcel.generic.ANEWARRAY;
 import org.apache.bcel.generic.ASTORE;
+import org.apache.bcel.generic.GETFIELD;
 import org.apache.bcel.generic.IINC;
 import org.apache.bcel.generic.INVOKESPECIAL;
 import org.apache.bcel.generic.IndexedInstruction;
@@ -51,7 +51,6 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.FindBugs;
 import edu.umd.cs.findbugs.FindBugsAnalysisProperties;
-import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.ClassContext;
@@ -307,8 +306,7 @@ public class FindDeadLocalStores implements Detector {
 				}
 				
 				// If in relaxed reporting mode, encode heuristic information.
-				if (AnalysisContext.currentAnalysisContext().getBoolProperty(
-						FindBugsAnalysisProperties.RELAXED_REPORTING_MODE)) {
+				if (FindBugsAnalysisProperties.isRelaxedMode()) {
 					// Add general-purpose warning properties
 					WarningPropertyUtil.addPropertiesForLocation(
 							propertySet,

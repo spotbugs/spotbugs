@@ -25,7 +25,6 @@ import java.util.Map;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.FindBugsAnalysisProperties;
-import edu.umd.cs.findbugs.ba.AnalysisContext;
 
 /**
  * A Set of WarningProperty objects, each with an optional attribute Object.
@@ -154,8 +153,7 @@ public class WarningPropertySet implements Cloneable {
 	 * @return the computed warning priority
 	 */
 	public int computePriority(int basePriority) {
-		boolean relaxedReporting = AnalysisContext.currentAnalysisContext().getBoolProperty(
-				FindBugsAnalysisProperties.RELAXED_REPORTING_MODE);
+		boolean relaxedReporting = FindBugsAnalysisProperties.isRelaxedMode();
 		
 		int priority = basePriority;
 		if (!relaxedReporting) {

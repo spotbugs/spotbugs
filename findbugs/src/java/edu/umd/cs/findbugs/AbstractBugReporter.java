@@ -19,9 +19,14 @@
 
 package edu.umd.cs.findbugs;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 
-import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassNotFoundExceptionParser;
 
 /**
@@ -111,8 +116,7 @@ public abstract class AbstractBugReporter implements BugReporter {
 	// Subclasses must override doReportBug(), not this method.
 	public final void reportBug(BugInstance bugInstance) {
 		if (!analysisUnderway) {
-			if (AnalysisContext.currentAnalysisContext().getBoolProperty(
-					FindBugsAnalysisProperties.RELAXED_REPORTING_MODE)) {
+			if (FindBugsAnalysisProperties.isRelaxedMode()) {
 				relaxed = true;
 			}
 

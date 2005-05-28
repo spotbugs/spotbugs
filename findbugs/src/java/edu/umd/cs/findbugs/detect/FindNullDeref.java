@@ -37,7 +37,6 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.FindBugsAnalysisProperties;
-import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.ClassContext;
@@ -75,7 +74,7 @@ import edu.umd.cs.findbugs.props.WarningPropertyUtil;
  * @see edu.umd.cs.findbugs.ba.npe.IsNullValueAnalysis
  */
 public class FindNullDeref
-		implements Detector, StatelessDetector, NullDerefAndRedundantComparisonCollector {
+		implements Detector, NullDerefAndRedundantComparisonCollector {
 
 	private static final boolean DEBUG = Boolean.getBoolean("fnd.debug");
 	private static final boolean DEBUG_NULLARG = Boolean.getBoolean("fnd.debug.nullarg");
@@ -111,7 +110,7 @@ public class FindNullDeref
 
 	public void visitClassContext(ClassContext classContext) {
 		if (!checkDatabase) {
-			if (AnalysisContext.USE_INTERPROC_DATABASE) {
+			if (AnalysisContext.currentAnalysisContext().getDatabaseInputDir() != null) {
 				unconditionalDerefDatabase.set(AnalysisContext.currentAnalysisContext().loadPropertyDatabase(
 						new NonNullParamPropertyDatabase(),
 						UNCONDITIONAL_DEREF_DB_FILENAME,
@@ -331,8 +330,7 @@ public class FindNullDeref
 
 	private void finishWarning(Location location, WarningPropertySet propertySet, BugInstance warning) {
 		warning.setPriority(propertySet.computePriority(NORMAL_PRIORITY));
-		if (AnalysisContext.currentAnalysisContext().getBoolProperty(
-				FindBugsAnalysisProperties.RELAXED_REPORTING_MODE)) {
+		if (FindBugsAnalysisProperties.isRelaxedMode()) {
 			WarningPropertyUtil.addPropertiesForLocation(propertySet, classContext, method, location);
 			propertySet.decorateBugInstance(warning);
 		}
@@ -501,8 +499,7 @@ public class FindNullDeref
 		if (DEBUG)
 			bugInstance.addInt(location.getHandle().getPosition()).describe("INT_BYTECODE_OFFSET");
 
-		if (AnalysisContext.currentAnalysisContext().getBoolProperty(
-				FindBugsAnalysisProperties.RELAXED_REPORTING_MODE)) {
+		if (FindBugsAnalysisProperties.isRelaxedMode()) {
 			WarningPropertyUtil.addPropertiesForLocation(propertySet, classContext, method, location);
 			propertySet.decorateBugInstance(bugInstance);
 		}
@@ -544,8 +541,7 @@ public class FindNullDeref
 				.addClassAndMethod(methodGen, sourceFile)
 				.addSourceLine(methodGen, sourceFile, location.getHandle());
 		
-		if (AnalysisContext.currentAnalysisContext().getBoolProperty(
-				FindBugsAnalysisProperties.RELAXED_REPORTING_MODE)) {
+		if (FindBugsAnalysisProperties.isRelaxedMode()) {
 			WarningPropertySet propertySet = new WarningPropertySet();
 			WarningPropertyUtil.addPropertiesForLocation(propertySet, classContext, method, location);
 			if (isChecked) 

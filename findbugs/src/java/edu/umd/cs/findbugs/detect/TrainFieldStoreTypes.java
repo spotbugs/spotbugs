@@ -19,7 +19,6 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.io.IOException;
 import java.util.Iterator;
 
 import org.apache.bcel.Constants;
@@ -32,6 +31,7 @@ import org.apache.bcel.generic.Type;
 
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.TrainingDetector;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.ClassContext;
@@ -133,11 +133,8 @@ public class TrainFieldStoreTypes implements TrainingDetector {
 	}
 
 	public void report() {
-		try {
-			database.writeToFile(FieldStoreTypeDatabase.DEFAULT_FILENAME);
-		} catch (IOException e) {
-			bugReporter.logError("Error writing store type database", e);
-		}
+		AnalysisContext.currentAnalysisContext().storePropertyDatabase(
+				database, FieldStoreTypeDatabase.DEFAULT_FILENAME, "store type database");
 	}
 
 }

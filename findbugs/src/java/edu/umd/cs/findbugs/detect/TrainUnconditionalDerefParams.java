@@ -19,21 +19,20 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.io.IOException;
-
 import org.apache.bcel.classfile.Method;
 
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.TrainingDetector;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.XMethodFactory;
-import edu.umd.cs.findbugs.ba.npe.UnconditionalDerefDataflow;
 import edu.umd.cs.findbugs.ba.npe.NonNullParamProperty;
 import edu.umd.cs.findbugs.ba.npe.NonNullParamPropertyDatabase;
+import edu.umd.cs.findbugs.ba.npe.UnconditionalDerefDataflow;
 import edu.umd.cs.findbugs.ba.npe.UnconditionalDerefSet;
 
 /**
@@ -112,11 +111,8 @@ public class TrainUnconditionalDerefParams implements TrainingDetector {
 	 * @see edu.umd.cs.findbugs.Detector#report()
 	 */
 	public void report() {
-		try {
-			database.writeToFile(FindNullDeref.UNCONDITIONAL_DEREF_DB_FILENAME);
-		} catch (IOException e) {
-			bugReporter.logError("Couldn't write unconditional deref database", e);
-		}
+		AnalysisContext.currentAnalysisContext().storePropertyDatabase(
+				database, FindNullDeref.UNCONDITIONAL_DEREF_DB_FILENAME, "unconditional deref database");
 	}
 
 }

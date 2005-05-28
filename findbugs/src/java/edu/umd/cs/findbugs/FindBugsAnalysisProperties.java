@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs;
 
+import edu.umd.cs.findbugs.ba.AnalysisContext;
+
 /**
  * Boolean-valued analysis properties for FindBugs.
  * 
@@ -26,7 +28,7 @@ package edu.umd.cs.findbugs;
  * @see edu.umd.cs.findbugs.ba.AnalysisContext#getBoolProperty(int)
  * @author David Hovemeyer
  */
-public interface FindBugsAnalysisProperties {
+public abstract class FindBugsAnalysisProperties {
 	/**
 	 * "Relaxed" warning reporting mode.
 	 * Rather than using hard-coded heuristics to decide when
@@ -34,5 +36,31 @@ public interface FindBugsAnalysisProperties {
 	 * encode the heuristics as BugProperties (for consumption
 	 * by a machine-learning-based ranking algorithm).
 	 */
-	public static final int RELAXED_REPORTING_MODE = 0; 
+	private static final int RELAXED_REPORTING_MODE = 0;
+
+	private static void setProperty(int property, boolean value) {
+		AnalysisContext.currentAnalysisContext().setBoolProperty(property, value);
+	}
+	
+	private static boolean getProperty(int property) {
+		return AnalysisContext.currentAnalysisContext().getBoolProperty(property);
+	}
+
+	/**
+	 * Set relaxed reporting mode.
+	 * 
+	 * @param relaxedMode true if relaxed reporting mode should be enabled, false if not
+	 */
+	public static void setRelaxedMode(boolean relaxedMode) {
+		setProperty(RELAXED_REPORTING_MODE, relaxedMode);
+	}
+	
+	/**
+	 * Get relaxed reporting mode.
+	 * 
+	 * @return true if relaxed reporting mode should be enabled, false if not
+	 */
+	public static boolean isRelaxedMode() {
+		return getProperty(RELAXED_REPORTING_MODE);
+	}
 }
