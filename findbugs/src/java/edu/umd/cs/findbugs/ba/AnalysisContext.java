@@ -63,13 +63,8 @@ public class AnalysisContext implements AnalysisFeatures {
 	private MayReturnNullPropertyDatabase mayReturnNullDatabase;
 	private FieldStoreTypeDatabase fieldStoreTypeDatabase;
 
-    /*
-      // JSR14 does not support Generic ThreadLocal
 	private static InheritableThreadLocal<AnalysisContext> currentAnalysisContext
 		= new InheritableThreadLocal<AnalysisContext>();
-    */
-	private static InheritableThreadLocal currentAnalysisContext
-		= new InheritableThreadLocal();
 
 	/**
 	 * The maximum number of ClassContext objects to cache.
@@ -103,7 +98,7 @@ public class AnalysisContext implements AnalysisFeatures {
 	 * Get the AnalysisContext associated with this thread
 	 */
 	static public AnalysisContext currentAnalysisContext() {
-		return (AnalysisContext)currentAnalysisContext.get();
+		return currentAnalysisContext.get();
 	}
 
 	/**
