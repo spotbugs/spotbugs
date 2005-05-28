@@ -234,7 +234,7 @@
 		</javac>
 		<jar destfile="${test.jar}">
 			<fileset dir="${test.dir}">
-				<include name="*.class"/>
+				<include name="**/*.class"/>
 			</fileset>
 		</jar>
 	</target>

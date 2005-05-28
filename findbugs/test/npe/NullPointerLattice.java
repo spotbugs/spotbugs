@@ -1,4 +1,4 @@
-
+package npe;
 
 class NullPointerLattice {
 

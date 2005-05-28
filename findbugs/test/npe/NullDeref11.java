@@ -1,3 +1,5 @@
+package npe;
+
 class NullDeref11 {
 
   int foo(Object o) {

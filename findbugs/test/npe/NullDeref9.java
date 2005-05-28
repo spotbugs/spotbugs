@@ -1,3 +1,5 @@
+package npe;
+
 
 final class NullDeref9 {
 

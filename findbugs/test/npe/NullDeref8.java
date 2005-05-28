@@ -1,3 +1,5 @@
+package npe;
+
 import java.io.*;
 
 class NullDeref8 {

@@ -1,3 +1,5 @@
+package npe;
+
 import java.util.*;
 
 class NP {

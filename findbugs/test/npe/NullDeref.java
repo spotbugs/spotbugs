@@ -1,3 +1,5 @@
+package npe;
+
 public class NullDeref {
 
 	private int x;

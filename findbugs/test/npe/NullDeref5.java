@@ -1,3 +1,5 @@
+package npe;
+
 
 class NullDeref5 {
 	Object lock;

@@ -1,3 +1,5 @@
+package npe;
+
 public class NullComplexPath {
 	public static void main(String[] argv) {
 		if (argv.length < 1)
