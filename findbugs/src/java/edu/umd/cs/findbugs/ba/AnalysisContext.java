@@ -49,6 +49,9 @@ public class AnalysisContext implements AnalysisFeatures {
 	private static final boolean DEBUG = Boolean.getBoolean("findbugs.analysiscontext.debug");
 	private static final boolean DEBUG_HIERARCHY = Boolean.getBoolean("findbugs.debug.hierarchy");
 	
+	public static final String DEFAULT_NONNULL_PARAM_DATABASE_FILENAME = "nonnullParam.db";
+	public static final String DEFAULT_POSSIBLYNULL_PARAM_DATABASE_FILENAME = "possiblyNullParam.db";
+	
 	private RepositoryLookupFailureCallback lookupFailureCallback;
 	private SourceFinder sourceFinder;
 	private ClassContextCache classContextCache;

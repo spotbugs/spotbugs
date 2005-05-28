@@ -441,6 +441,9 @@ RCN_REDUNDANT_COMPARISON_TO_NULL_BOTH_NULL,RCN_REDUNDANT_COMPARISON_TO_NULL_DIFF
   <Detector class="edu.umd.cs.findbugs.detect.TrainFieldStoreTypes"
 	        hidden="true" speed="slow" reports=""/>
 
+  <Detector class="edu.umd.cs.findbugs.detect.TrainNonNullAnnotations"
+            hidden="true" speed="fast" reports=""/>
+
   <Detector class="edu.umd.cs.findbugs.detect.CheckCalls"
 	        speed="fast" reports="" disabled="true" hidden="true"/>
 	        
