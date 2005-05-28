@@ -41,6 +41,7 @@ public class NoteNonNullAnnotations extends BuildNonNullAnnotationDatabase imple
 		if (!setDatabase) {
 			FindNullDeref.nonNullParamDatabase.set(getNonNullDatabase());
 			FindNullDeref.possiblyNullParamDatabase.set(getPossiblyNullDatabase());
+			setDatabase = true;
 		}
 		
 		classContext.getJavaClass().accept(this);
