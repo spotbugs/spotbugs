@@ -30,4 +30,9 @@ public class TestNonNull {
 		// arg1 must still not be null, though
 		b.f(null, new Object());
 	}
+	
+	public void report3(C c) {
+		// C doesn't relax any constraints: A's constraints should apply
+		c.f(new Object(), null);
+	}
 }
