@@ -366,6 +366,20 @@ public class FindNullDeref
 			this.nonNullProperty = nonParamProperty;
 			this.possiblyNullProperty = possiblyNullProperty;
 		}
+		public String toString() {
+			StringBuffer buf = new StringBuffer();
+			buf.append(classAndMethod);
+			buf.append(":");
+			if (!nonNullProperty.isEmpty()) {
+				buf.append(" nonull=");
+				buf.append(nonNullProperty);
+			}
+			if (!possiblyNullProperty.isEmpty()) {
+				buf.append(" possiblynull=");
+				buf.append(possiblyNullProperty);
+			}
+			return buf.toString();
+		}
 	}
 
 	static NonNullParamProperty wrapProperty(NonNullParamProperty property) {
@@ -400,6 +414,9 @@ public class FindNullDeref
 						classAndMethod,
 						wrapProperty(nonNullParamDatabase.get().getProperty(xmethod)),
 						wrapProperty(possiblyNullParamDatabase.get().getProperty(xmethod)));
+				if (DEBUG_NULLARG) {
+					System.out.println("Found specification: " + specification);
+				}
 				specificationList.add(specification);
 				
 				return false;
@@ -407,28 +424,51 @@ public class FindNullDeref
 		};
 
 		// See if any null arguments violate a @NonNull annotation.
-		int numParams = new SignatureParser(method.getSignature()).getNumParameters();
+		int numParams = new SignatureParser(invokeInstruction.getSignature(cpg)).getNumParameters();
+		if (DEBUG_NULLARG) {
+			System.out.println("Checking " + numParams + " parameter(s)");
+		}
 		Hierarchy.findInvocationLeastUpperBound(invokeInstruction, cpg, nonNullContractCollector);
 		BitSet checkedParams = new BitSet();
 		BitSet violatedParamSet = new BitSet();
 		List<NonNullParamViolation> violationList = new LinkedList<NonNullParamViolation>();
 		for (NonNullSpecification specification : specificationList) {
+			if (DEBUG_NULLARG) {
+				System.out.println("Check specification: " + specification);
+			}
+			
+		paramLoop:
 			for (int i = 0; i < numParams; ++i) {
-				if (!nullArgSet.get(i) || checkedParams.get(i))
-					continue;
+				if (DEBUG_NULLARG) {
+					System.out.print("\tParam " + i);
+				}
+
+				if (!nullArgSet.get(i)) {
+					if (DEBUG_NULLARG) System.out.println(" ==> not null");
+					continue paramLoop;
+				}
+				
+				if (checkedParams.get(i)) {
+					if (DEBUG_NULLARG) System.out.println(" ==> already checked");
+					continue paramLoop;
+				}
 				
 				// Arg is null, and we haven't seen a specification for the parameter yet.
 				// See if this method defines a specification.
 				if (specification.possiblyNullProperty.isNonNull(i)) {
 					// Parameter declared @PossiblyNull.
 					// So it's OK to pass null.
+					if (DEBUG_NULLARG) System.out.println(" ==> @PossiblyNull");
 					checkedParams.set(i);
 				} else if (specification.nonNullProperty.isNonNull(i)) {
 					// Parameter declated @NonNull.
 					// This is a violation.
+					if (DEBUG_NULLARG) System.out.println(" ==> @NonNull violation!");
 					violationList.add(new NonNullParamViolation(specification.classAndMethod, i));
 					violatedParamSet.set(i);
 					checkedParams.set(i);
+				} else {
+					if (DEBUG_NULLARG) System.out.println(" ==> no constraint");
 				}
 			}
 		}
