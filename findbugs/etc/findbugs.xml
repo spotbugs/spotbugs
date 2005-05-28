@@ -49,8 +49,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.NoteNonNullAnnotations"
             speed="fast"
             reports=""
-			hidden="true"
-			disabled="true"/>
+			hidden="true"/>
 	        
   <Detector class="edu.umd.cs.findbugs.detect.InfiniteRecursiveLoop" 
 	        speed="fast"
