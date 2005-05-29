@@ -96,6 +96,10 @@ public class IsNullValueAnalysis
 	public void setMayReturnNullDatabase(MayReturnNullPropertyDatabase mayReturnNullDatabase) {
 		visitor.setMayReturnNullDatabase(mayReturnNullDatabase);
 	}
+	
+	public void setNullReturnAnnotationDatabase(MayReturnNullPropertyDatabase nullReturnAnnotationDatabase) {
+		visitor.setNullReturnAnnotationDatabase(nullReturnAnnotationDatabase);
+	}
 
 	public IsNullValueFrame createFact() {
 		return new IsNullValueFrame(methodGen.getMaxLocals());

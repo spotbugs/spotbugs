@@ -44,6 +44,7 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
 
 	private AssertionMethods assertionMethods;
 	private MayReturnNullPropertyDatabase mayReturnNullDatabase;
+	private MayReturnNullPropertyDatabase nullReturnAnnotationDatabase;
 
 	public IsNullValueFrameModelingVisitor(ConstantPoolGen cpg, AssertionMethods assertionMethods) {
 		super(cpg);
@@ -52,6 +53,11 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
 	
 	public void setMayReturnNullDatabase(MayReturnNullPropertyDatabase mayReturnNullDatabase) {
 		this.mayReturnNullDatabase = mayReturnNullDatabase;
+	}
+	
+	public void setNullReturnAnnotationDatabase(
+			MayReturnNullPropertyDatabase nullReturnAnnotationDatabase) {
+		this.nullReturnAnnotationDatabase = nullReturnAnnotationDatabase;
 	}
 
 	public IsNullValue getDefaultValue() {
@@ -117,18 +123,33 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
 			} else if (stringMethodCall) {
 				// String methods always return a non-null value
 				pushValue = IsNullValue.nonNullValue();
-			} else if (mayReturnNullDatabase != null) {
-				// Check to see if this method is in the database
+			} else if (mayReturnNullDatabase != null || nullReturnAnnotationDatabase != null) {
+				// Check to see if this method is in either database
 				XMethod calledMethod = XMethodFactory.createXMethod(obj, getCPG());
 				if (IsNullValueAnalysis.DEBUG) System.out.println("Check " + calledMethod + " for null return...");
-				//MayReturnNullProperty prop = mayReturnNullDatabase.getProperty(calledMethod);
-				Boolean prop = mayReturnNullDatabase.getProperty(calledMethod);
-				if (prop != null && prop.booleanValue()) {
-					// Method may return null!
-					if (IsNullValueAnalysis.DEBUG) {
-						System.out.println("Null value returned from " + calledMethod);
+				
+				Boolean prop = null;
+				if (mayReturnNullDatabase != null) {
+					prop = mayReturnNullDatabase.getProperty(calledMethod);
+				}
+				if (prop == null && nullReturnAnnotationDatabase != null) {
+					prop = nullReturnAnnotationDatabase.getProperty(calledMethod);
+				}
+				
+				if (prop != null) {
+					if (prop.booleanValue()) {
+						// Method may return null!
+						if (IsNullValueAnalysis.DEBUG) {
+							System.out.println("Null value returned from " + calledMethod);
+						}
+						pushValue = IsNullValue.nullOnSimplePathValue().toMayReturnNullValue();
+					} else {
+						// Method is declared NOT to return null
+						if (IsNullValueAnalysis.DEBUG) {
+							System.out.println("NonNull value return from " + calledMethod);
+						}
+						pushValue = IsNullValue.nonNullValue().toMayReturnNullValue();
 					}
-					pushValue = IsNullValue.nullOnSimplePathValue().toMayReturnNullValue();
 				} else {
 					pushValue = IsNullValue.nonReportingNotNullValue();
 				}

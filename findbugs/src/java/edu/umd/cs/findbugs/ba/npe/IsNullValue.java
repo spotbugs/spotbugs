@@ -164,7 +164,8 @@ public class IsNullValue implements IsNullValueAnalysisFeatures {
 	}
 	
 	/**
-	 * Convert to a null return value value.
+	 * Convert to a value known because it was returned from a method
+	 * in a method property database.
 	 */
 	public IsNullValue toMayReturnNullValue() {
 		return instanceByFlagsList[(getFlags() | RETURN_VAL) >> FLAG_SHIFT][getBaseKind()];

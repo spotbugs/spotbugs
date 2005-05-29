@@ -45,7 +45,6 @@ import edu.umd.cs.findbugs.ba.constant.ConstantAnalysis;
 import edu.umd.cs.findbugs.ba.constant.ConstantDataflow;
 import edu.umd.cs.findbugs.ba.npe.IsNullValueAnalysis;
 import edu.umd.cs.findbugs.ba.npe.IsNullValueDataflow;
-import edu.umd.cs.findbugs.ba.npe.MayReturnNullPropertyDatabase;
 import edu.umd.cs.findbugs.ba.npe.UnconditionalDerefAnalysis;
 import edu.umd.cs.findbugs.ba.npe.UnconditionalDerefDataflow;
 import edu.umd.cs.findbugs.ba.type.ExceptionSetFactory;
@@ -407,11 +406,10 @@ public class ClassContext implements AnalysisFeatures {
 			        AssertionMethods assertionMethods = getAssertionMethods();
 
 			        IsNullValueAnalysis invAnalysis = new IsNullValueAnalysis(methodGen, cfg, vnaDataflow, dfs, assertionMethods);
-					
-					MayReturnNullPropertyDatabase mayReturnNullDatabase = analysisContext.getMayReturnNullDatabase();
-					if (mayReturnNullDatabase != null) {
-						invAnalysis.setMayReturnNullDatabase(mayReturnNullDatabase);
-					}
+
+					// Set return value databases
+					invAnalysis.setMayReturnNullDatabase(analysisContext.getMayReturnNullDatabase());
+					invAnalysis.setNullReturnAnnotationDatabase(analysisContext.getNullReturnValueAnnotationDatabase());
 					
 			        IsNullValueDataflow invDataflow = new IsNullValueDataflow(cfg, invAnalysis);
 			        invDataflow.execute();
