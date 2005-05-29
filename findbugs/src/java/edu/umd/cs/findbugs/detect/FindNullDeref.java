@@ -29,8 +29,10 @@ import java.util.Set;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.MethodGen;
+import org.apache.bcel.generic.ReturnInstruction;
 
 import edu.umd.cs.findbugs.AnalysisLocal;
 import edu.umd.cs.findbugs.BugInstance;
@@ -53,8 +55,10 @@ import edu.umd.cs.findbugs.ba.XMethodFactory;
 import edu.umd.cs.findbugs.ba.npe.IsNullValue;
 import edu.umd.cs.findbugs.ba.npe.IsNullValueDataflow;
 import edu.umd.cs.findbugs.ba.npe.IsNullValueFrame;
+import edu.umd.cs.findbugs.ba.npe.MayReturnNullPropertyDatabase;
 import edu.umd.cs.findbugs.ba.npe.NonNullParamProperty;
 import edu.umd.cs.findbugs.ba.npe.NonNullParamPropertyDatabase;
+import edu.umd.cs.findbugs.ba.npe.NonNullReturnValueAnnotationChecker;
 import edu.umd.cs.findbugs.ba.npe.NullDerefAndRedundantComparisonCollector;
 import edu.umd.cs.findbugs.ba.npe.NullDerefAndRedundantComparisonFinder;
 import edu.umd.cs.findbugs.ba.npe.RedundantBranch;
@@ -94,6 +98,8 @@ public class FindNullDeref
 	// Transient state
 	private ClassContext classContext;
 	private Method method;
+	private boolean nonNullReturn;
+	
 	private boolean checkDatabase;
 
 	public FindNullDeref(BugReporter bugReporter) {
@@ -137,6 +143,19 @@ public class FindNullDeref
 	        throws CFGBuilderException, DataflowAnalysisException {
 		
 		this.method = method;
+		
+		MayReturnNullPropertyDatabase nullReturnValueAnnotationDatabase;
+		if ((nullReturnValueAnnotationDatabase = AnalysisContext.currentAnalysisContext().getNullReturnValueAnnotationDatabase()) != null
+				&& method.getSignature().indexOf(")L") >= 0) {
+			// Check to see if there is a @NonNull annotation on this method
+			NonNullReturnValueAnnotationChecker annotationChecker =
+				new NonNullReturnValueAnnotationChecker(nullReturnValueAnnotationDatabase);
+			// FIXME: enumerate superclass methods and find the annotation
+			
+			nonNullReturn = false;
+		} else {
+			nonNullReturn = false;
+		}
 
 		if (DEBUG || DEBUG_NULLARG)
 			System.out.println(SignatureConverter.convertMethodSignature(classContext.getMethodGen(method)));
@@ -167,21 +186,24 @@ public class FindNullDeref
 		
 		for (Iterator<Location> i = classContext.getCFG(method).locationIterator(); i.hasNext();) {
 			Location location = i.next();
+			Instruction ins = location.getHandle().getInstruction();
 			try {
-				examineLocation(location, cpg, typeDataflow);
+				if (ins instanceof InvokeInstruction) {
+					examineCallSite(location, cpg, typeDataflow);
+				} else if (nonNullReturn && ins instanceof ReturnInstruction) {
+					examineReturnInstruction(location);
+				}
 			} catch (ClassNotFoundException e) {
 				bugReporter.reportMissingClass(e);
 			}
 		}
 	}
-	
-	private void examineLocation(
+
+	private void examineCallSite(
 			Location location,
 			ConstantPoolGen cpg,
 			TypeDataflow typeDataflow)
 			throws DataflowAnalysisException, CFGBuilderException, ClassNotFoundException {
-		if (!(location.getHandle().getInstruction() instanceof InvokeInstruction))
-			return;
 		
 		InvokeInstruction invokeInstruction = (InvokeInstruction)
 			location.getHandle().getInstruction();
@@ -236,6 +258,11 @@ public class FindNullDeref
 			}
 			checkNonNullParam(location, cpg, typeDataflow, invokeInstruction, nullArgSet, definitelyNullArgSet);
 		}
+	}
+	
+	private void examineReturnInstruction(Location location) {
+		// TODO Auto-generated method stub
+		
 	}
 
 	private void checkUnconditionallyDereferencedParam(
