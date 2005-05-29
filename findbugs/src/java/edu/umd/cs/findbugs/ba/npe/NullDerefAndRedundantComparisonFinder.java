@@ -60,6 +60,9 @@ public class NullDerefAndRedundantComparisonFinder {
 	private BitSet undeterminedBranchSet;
 	private BitSet lineMentionedMultipleTimes;
 
+	static {
+		if (DEBUG) System.out.println("fnd.debug enabled");
+	}
 	/**
 	 * Constructor.
 	 * 
@@ -74,6 +77,7 @@ public class NullDerefAndRedundantComparisonFinder {
 			Method method,
 			IsNullValueDataflow invDataflow,
 			NullDerefAndRedundantComparisonCollector collector) {
+		
 		this.classContext = classContext;
 		this.method = method;
 		this.invDataflow = invDataflow;
@@ -257,6 +261,7 @@ public class NullDerefAndRedundantComparisonFinder {
 		IsNullValueFrame frame = invDataflow.getStartFact(basicBlock);
 		if (!frame.isValid())
 			return;
+
 		
 		// Could the reference be null?
 		IsNullValue refValue = frame.getInstance(exceptionThrower, classContext.getConstantPoolGen());

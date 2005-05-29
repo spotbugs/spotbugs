@@ -63,7 +63,7 @@ public class IsNullValueAnalysis
 	static final boolean DEBUG = Boolean.getBoolean("inva.debug");
 
 	static {
-		if (DEBUG) System.out.println("Debug enabled");
+		if (DEBUG) System.out.println("inva.debug enabled");
 	}
 
 	private MethodGen methodGen;
@@ -316,8 +316,8 @@ public class IsNullValueAnalysis
 				ObjectType catchType = handler.getCatchType();
 				if (catchType != null) {
 					String catchClass = catchType.getClassName();
-					if (catchClass.equals("java.lang.CloneNotSupportedException") ||
-					        catchClass.equals("java.lang.InterruptedException")) {
+					if (false && (catchClass.equals("java.lang.CloneNotSupportedException") ||
+					        catchClass.equals("java.lang.InterruptedException"))) {
 						for (int i = 0; i < tmpFact.getNumSlots(); ++i) {
 							IsNullValue value = tmpFact.getValue(i);
 							if (value.isDefinitelyNull() || value.isNullOnSomePath())

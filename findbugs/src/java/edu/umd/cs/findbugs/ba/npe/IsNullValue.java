@@ -264,7 +264,7 @@ public class IsNullValue implements IsNullValueAnalysisFeatures {
 	 */
 	public static IsNullValue merge(IsNullValue a, IsNullValue b) {
 		if (a == b) return a;
-		int combinedFlags = a.getFlags() | b.getFlags(); // FIXME: union appropriate for all flags?
+		int combinedFlags = a.getFlags() & b.getFlags(); // FIXME: union appropriate for all flags?
 		a = a.toBaseValue();
 		b = b.toBaseValue();
 
