@@ -30,6 +30,7 @@ import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.MethodGen;
 import org.apache.bcel.generic.ObjectType;
 
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.AssertionMethods;
 import edu.umd.cs.findbugs.ba.BasicBlock;
 import edu.umd.cs.findbugs.ba.CFG;
@@ -42,6 +43,7 @@ import edu.umd.cs.findbugs.ba.DepthFirstSearch;
 import edu.umd.cs.findbugs.ba.Edge;
 import edu.umd.cs.findbugs.ba.EdgeTypes;
 import edu.umd.cs.findbugs.ba.FrameDataflowAnalysis;
+import edu.umd.cs.findbugs.ba.JavaClassAndMethod;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
@@ -74,6 +76,7 @@ public class IsNullValueAnalysis
 	
 	private NonNullParamPropertyDatabase nonNullParamDatabase;
 	private NonNullParamPropertyDatabase possiblyNullParamDatabase;
+	private JavaClassAndMethod classAndMethod;
 
 	public IsNullValueAnalysis(MethodGen methodGen, CFG cfg, ValueNumberDataflow vnaDataflow, DepthFirstSearch dfs,
 	                           AssertionMethods assertionMethods) {
@@ -114,6 +117,10 @@ public class IsNullValueAnalysis
 	public void setPossiblyNullParamDatabase(NonNullParamPropertyDatabase possiblyNullParamDatabase) {
 		this.possiblyNullParamDatabase = possiblyNullParamDatabase;
 	}
+	
+	public void setClassAndMethod(JavaClassAndMethod classAndMethod) {
+		this.classAndMethod = classAndMethod;
+	}
 
 	public IsNullValueFrame createFact() {
 		return new IsNullValueFrame(methodGen.getMaxLocals());
@@ -130,8 +137,12 @@ public class IsNullValueAnalysis
 			if (nonNullParamDatabase != null && possiblyNullParamDatabase != null) {
 				NonNullContractCollector nonNullContractCollector =
 					new NonNullContractCollector(nonNullParamDatabase, possiblyNullParamDatabase);
-				
-				
+				try {
+					nonNullContractCollector.findContractForMethod(classAndMethod);
+					nonNullContractCollector.getAnnotationSets(methodGen.getMaxLocals(), nonNullParamSet, possiblyNullParamSet);
+				} catch (ClassNotFoundException e) {
+					AnalysisContext.currentAnalysisContext().getLookupFailureCallback().reportMissingClass(e);
+				}
 			}
 			
 			cachedEntryFact = createFact();
@@ -140,8 +151,25 @@ public class IsNullValueAnalysis
 			int numLocals = methodGen.getMaxLocals();
 			boolean instanceMethod = !methodGen.isStatic();
 
+			int paramShift = instanceMethod ? 1 : 0;
 			for (int i = 0; i < numLocals; ++i) {
-				cachedEntryFact.setValue(i, (instanceMethod && i == 0) ? IsNullValue.nonNullValue() : paramValue);
+				IsNullValue value;
+
+				int paramIndex = i - paramShift;
+				
+				if (instanceMethod && i == 0) {
+					value = IsNullValue.nonNullValue();
+				} else if (possiblyNullParamSet.get(paramIndex)) {
+					// Parameter declared @PossiblyNull
+					value = IsNullValue.nullOnSimplePathValue();
+				} else if (nonNullParamSet.get(paramIndex)) {
+					// Parameter declared @NonNull
+					value = IsNullValue.nonNullValue();
+				} else {
+					// Don't know; use default value, normally non-reporting nonnull
+					value = paramValue;
+				}
+				cachedEntryFact.setValue(i, value);
 			}
 		}
 		copy(cachedEntryFact, result);

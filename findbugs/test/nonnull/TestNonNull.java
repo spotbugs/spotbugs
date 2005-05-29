@@ -15,7 +15,7 @@ interface B extends A {
 interface C extends A {
 }
 
-public class TestNonNull {
+public class TestNonNull implements B {
 	public void report(A a) {
 		// Report: first arg is declared @NonNull by A
 		a.f(null, new Object());
@@ -34,5 +34,11 @@ public class TestNonNull {
 	public void report3(C c) {
 		// C doesn't relax any constraints: A's constraints should apply
 		c.f(new Object(), null);
+	}
+	
+	public void f(Object obj, Object obj2) {
+		System.out.println(obj.hashCode()); // ok, declared @NonNull
+		
+		System.out.println(obj2.hashCode()); // BAD - declared @PossiblyNull
 	}
 }

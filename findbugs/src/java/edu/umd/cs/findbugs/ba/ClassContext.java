@@ -412,6 +412,7 @@ public class ClassContext implements AnalysisFeatures {
 					invAnalysis.setNullReturnAnnotationDatabase(analysisContext.getNullReturnValueAnnotationDatabase());
 					invAnalysis.setNonNullParamDatabase(analysisContext.getNonNullParamDatabase());
 					invAnalysis.setPossiblyNullParamDatabase(analysisContext.getPossiblyNullParamDatabase());
+					invAnalysis.setClassAndMethod(new JavaClassAndMethod(getJavaClass(), method));
 					
 			        IsNullValueDataflow invDataflow = new IsNullValueDataflow(cfg, invAnalysis);
 			        invDataflow.execute();
