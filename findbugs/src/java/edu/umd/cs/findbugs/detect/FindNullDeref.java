@@ -46,7 +46,6 @@ import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.DataflowValueChooser;
 import edu.umd.cs.findbugs.ba.Hierarchy;
 import edu.umd.cs.findbugs.ba.JavaClassAndMethod;
-import edu.umd.cs.findbugs.ba.JavaClassAndMethodChooser;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.SignatureConverter;
 import edu.umd.cs.findbugs.ba.SignatureParser;
@@ -56,8 +55,10 @@ import edu.umd.cs.findbugs.ba.npe.IsNullValue;
 import edu.umd.cs.findbugs.ba.npe.IsNullValueDataflow;
 import edu.umd.cs.findbugs.ba.npe.IsNullValueFrame;
 import edu.umd.cs.findbugs.ba.npe.MayReturnNullPropertyDatabase;
+import edu.umd.cs.findbugs.ba.npe.NonNullContractCollector;
 import edu.umd.cs.findbugs.ba.npe.NonNullParamProperty;
 import edu.umd.cs.findbugs.ba.npe.NonNullParamPropertyDatabase;
+import edu.umd.cs.findbugs.ba.npe.NonNullParamViolation;
 import edu.umd.cs.findbugs.ba.npe.NonNullReturnValueAnnotationChecker;
 import edu.umd.cs.findbugs.ba.npe.NullDerefAndRedundantComparisonCollector;
 import edu.umd.cs.findbugs.ba.npe.NullDerefAndRedundantComparisonFinder;
@@ -447,46 +448,7 @@ public class FindNullDeref
 			}
 		}
 	}
-	
-	static class NonNullSpecification {
-		//final XMethod xmethod;
-		final JavaClassAndMethod classAndMethod;
-		final NonNullParamProperty nonNullProperty;
-		final NonNullParamProperty possiblyNullProperty;
-		NonNullSpecification(JavaClassAndMethod classAndMethod, NonNullParamProperty nonParamProperty, NonNullParamProperty possiblyNullProperty) {
-			this.classAndMethod = classAndMethod;
-			this.nonNullProperty = nonParamProperty;
-			this.possiblyNullProperty = possiblyNullProperty;
-		}
-		public String toString() {
-			StringBuffer buf = new StringBuffer();
-			buf.append(classAndMethod);
-			buf.append(":");
-			if (!nonNullProperty.isEmpty()) {
-				buf.append(" nonull=");
-				buf.append(nonNullProperty);
-			}
-			if (!possiblyNullProperty.isEmpty()) {
-				buf.append(" possiblynull=");
-				buf.append(possiblyNullProperty);
-			}
-			return buf.toString();
-		}
-	}
 
-	static NonNullParamProperty wrapProperty(NonNullParamProperty property) {
-		return property != null ? property : new NonNullParamProperty();
-	}
-	
-	static class NonNullParamViolation {
-		JavaClassAndMethod classAndMethod;
-		int param;
-		NonNullParamViolation(JavaClassAndMethod classAndMethod, int param) {
-			this.classAndMethod = classAndMethod;
-			this.param = param;
-		}
-	}
-	
 	private void checkNonNullParam(
 			Location location, 
 			ConstantPoolGen cpg,
@@ -497,77 +459,23 @@ public class FindNullDeref
 		final NonNullParamPropertyDatabase nonNullParamDatabase = AnalysisContext.currentAnalysisContext().getNonNullParamDatabase();
 		final NonNullParamPropertyDatabase possiblyNullParamDatabase = AnalysisContext.currentAnalysisContext().getPossiblyNullParamDatabase();
 		
-		// Go up the class hierarchy finding @NonNull and @PossiblyNull annotations.
-		final List<NonNullSpecification> specificationList = new LinkedList<NonNullSpecification>();
-		JavaClassAndMethodChooser nonNullContractCollector = new JavaClassAndMethodChooser() {
-			public boolean choose(JavaClassAndMethod classAndMethod) {
-				XMethod xmethod = XMethodFactory.createXMethod(
-						classAndMethod.getJavaClass(), classAndMethod.getMethod());
-
-				NonNullSpecification specification = new NonNullSpecification(
-						classAndMethod,
-						wrapProperty(nonNullParamDatabase.getProperty(xmethod)),
-						wrapProperty(possiblyNullParamDatabase.getProperty(xmethod)));
-				if (DEBUG_NULLARG) {
-					System.out.println("Found specification: " + specification);
-				}
-				specificationList.add(specification);
-				
-				return false;
-			}
-		};
+		// Go up the class hierarchy finding @NonNull and @PossiblyNull annotations
+		// for parameters.
+		NonNullContractCollector nonNullContractCollector = new NonNullContractCollector(nonNullParamDatabase, possiblyNullParamDatabase);
+		nonNullContractCollector.findContractForCallSite(invokeInstruction, cpg);
 
 		// See if any null arguments violate a @NonNull annotation.
 		int numParams = new SignatureParser(invokeInstruction.getSignature(cpg)).getNumParameters();
 		if (DEBUG_NULLARG) {
 			System.out.println("Checking " + numParams + " parameter(s)");
 		}
-		Hierarchy.findInvocationLeastUpperBound(invokeInstruction, cpg, nonNullContractCollector);
-		BitSet checkedParams = new BitSet();
 		BitSet violatedParamSet = new BitSet();
 		List<NonNullParamViolation> violationList = new LinkedList<NonNullParamViolation>();
-		for (NonNullSpecification specification : specificationList) {
-			if (DEBUG_NULLARG) {
-				System.out.println("Check specification: " + specification);
-			}
-			
-		paramLoop:
-			for (int i = 0; i < numParams; ++i) {
-				if (DEBUG_NULLARG) {
-					System.out.print("\tParam " + i);
-				}
-
-				if (!nullArgSet.get(i)) {
-					if (DEBUG_NULLARG) System.out.println(" ==> not null");
-					continue paramLoop;
-				}
-				
-				if (checkedParams.get(i)) {
-					if (DEBUG_NULLARG) System.out.println(" ==> already checked");
-					continue paramLoop;
-				}
-				
-				// Arg is null, and we haven't seen a specification for the parameter yet.
-				// See if this method defines a specification.
-				if (specification.possiblyNullProperty.isNonNull(i)) {
-					// Parameter declared @PossiblyNull.
-					// So it's OK to pass null.
-					if (DEBUG_NULLARG) System.out.println(" ==> @PossiblyNull");
-					checkedParams.set(i);
-				} else if (specification.nonNullProperty.isNonNull(i)) {
-					// Parameter declated @NonNull.
-					// This is a violation.
-					if (DEBUG_NULLARG) System.out.println(" ==> @NonNull violation!");
-					violationList.add(new NonNullParamViolation(specification.classAndMethod, i));
-					violatedParamSet.set(i);
-					checkedParams.set(i);
-				} else {
-					if (DEBUG_NULLARG) System.out.println(" ==> no constraint");
-				}
-			}
-		}
+		nonNullContractCollector.getViolationList(numParams, nullArgSet, violationList, violatedParamSet);
 		if (violationList.isEmpty())
 			return;
+
+		// Issue a warning
 		
 		XMethod xmethod = XMethodFactory.createXMethod(invokeInstruction, cpg);
 		
@@ -584,8 +492,8 @@ public class FindNullDeref
 		addParamAnnotations(definitelyNullArgSet, violatedParamSet, propertySet, warning);
 		
 		for (NonNullParamViolation violation : violationList) {
-			warning.addMethod(violation.classAndMethod.getJavaClass(), violation.classAndMethod.getMethod());
-			warning.addInt(violation.param).describe("INT_NONNULL_PARAM");
+			warning.addMethod(violation.getClassAndMethod());
+			warning.addInt(violation.getParam()).describe("INT_NONNULL_PARAM");
 		}
 
 		finishWarning(location, propertySet, warning);

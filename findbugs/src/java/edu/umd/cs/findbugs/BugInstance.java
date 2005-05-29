@@ -36,6 +36,7 @@ import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.MethodGen;
 
+import edu.umd.cs.findbugs.ba.JavaClassAndMethod;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.bcp.FieldVariable;
@@ -789,6 +790,19 @@ public class BugInstance implements Comparable, XMLWriteableWithMessages, Serial
 		methodAnnotation.setSourceLines(methodSourceLines);
 		addMethod(methodAnnotation);
 		return this;
+	}
+	
+	/**
+	 * Add a method annotation.  If this is the first method annotation added,
+	 * it becomes the primary method annotation.
+	 * If the method has source line information, then a SourceLineAnnotation
+	 * is added to the method.
+	 *
+	 * @param classAndMethod JavaClassAndMethod identifying the method to add
+	 * @return this object
+	 */
+	public BugInstance addMethod(JavaClassAndMethod classAndMethod) {
+		return addMethod(classAndMethod.getJavaClass(), classAndMethod.getMethod());
 	}
 
 	/**
