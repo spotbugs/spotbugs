@@ -197,6 +197,40 @@ public class Hierarchy {
 	}
 	
 	/**
+	 * Visit all superclass methods which the given method overrides. 
+	 * 
+	 * @param method  the method
+	 * @param chooser chooser which visits each superclass method
+	 * @return the chosen method, or null if no method is chosen
+	 * @throws ClassNotFoundException
+	 */
+	public static JavaClassAndMethod visitSuperClassMethods(
+			JavaClassAndMethod method, JavaClassAndMethodChooser chooser) throws ClassNotFoundException {
+		return findMethod(
+				method.getJavaClass().getSuperClasses(),
+				method.getMethod().getName(),
+				method.getMethod().getSignature(),
+				chooser);
+	}
+	
+	/**
+	 * Visit all superinterface methods which the given method implements. 
+	 * 
+	 * @param method  the method
+	 * @param chooser chooser which visits each superinterface method
+	 * @return the chosen method, or null if no method is chosen
+	 * @throws ClassNotFoundException
+	 */
+	public static JavaClassAndMethod visitSuperInterfaceMethods(
+			JavaClassAndMethod method, JavaClassAndMethodChooser chooser) throws ClassNotFoundException {
+		return findMethod(
+				method.getJavaClass().getAllInterfaces(),
+				method.getMethod().getName(),
+				method.getMethod().getSignature(),
+				chooser);
+	}
+	
+	/**
 	 * Find the least upper bound method in the class hierarchy
 	 * which could be called by the given InvokeInstruction.
 	 * One reason this method is useful is that it indicates 
