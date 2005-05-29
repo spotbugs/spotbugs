@@ -25,6 +25,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.bcel.Constants;
+import org.apache.bcel.classfile.LineNumber;
 import org.apache.bcel.classfile.LineNumberTable;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Instruction;
@@ -57,6 +58,7 @@ public class NullDerefAndRedundantComparisonFinder {
 	private BitSet definitelySameBranchSet;
 	private BitSet definitelyDifferentBranchSet;
 	private BitSet undeterminedBranchSet;
+	private BitSet lineMentionedMultipleTimes;
 
 	/**
 	 * Constructor.
@@ -76,6 +78,21 @@ public class NullDerefAndRedundantComparisonFinder {
 		this.method = method;
 		this.invDataflow = invDataflow;
 		this.collector = collector;
+		this.lineMentionedMultipleTimes = new BitSet();
+		BitSet foundOnce = new BitSet();
+		int lineNum = -1;
+
+		LineNumberTable lineNumberTable = method.getLineNumberTable();
+		if (lineNumberTable != null) 
+		for(LineNumber  line : lineNumberTable.getLineNumberTable()) {
+			int newLine = line.getLineNumber();
+			if (newLine == lineNum || newLine == -1) continue;
+			lineNum = newLine;
+			if (foundOnce.get(lineNum))
+				this.lineMentionedMultipleTimes.set(lineNum);
+			else 
+				foundOnce.set(lineNum);	
+		}
 		
 		this.redundantBranchList = new LinkedList<RedundantBranch>();
 		this.definitelySameBranchSet = new BitSet();
@@ -124,7 +141,7 @@ public class NullDerefAndRedundantComparisonFinder {
 			// code along different control paths.  So, to report the bug,
 			// we check to ensure that the branch is REALLY determined each
 			// place it is duplicated, and that it is determined in the same way.
-			if (!undeterminedBranchSet.get(lineNumber) &&
+			if (!lineMentionedMultipleTimes.get(lineNumber) || !undeterminedBranchSet.get(lineNumber) &&
 			        !(definitelySameBranchSet.get(lineNumber) && definitelyDifferentBranchSet.get(lineNumber))) {
 				collector.foundRedundantNullCheck(redundantBranch.location, redundantBranch);
 			}
@@ -189,6 +206,7 @@ public class NullDerefAndRedundantComparisonFinder {
 		Location location = new Location(lastHandle, basicBlock);
 
 		IsNullValueFrame frame = invDataflow.getFactAtLocation(location);
+
 		if (!frame.isValid()) {
 			// This is probably dead code due to an infeasible exception edge.
 			return;
@@ -200,7 +218,7 @@ public class NullDerefAndRedundantComparisonFinder {
 		int lineNumber = getLineNumber(method, lastHandle);
 		if (lineNumber < 0)
 			return;
-
+		
 		if (!(top.isDefinitelyNull() || top.isDefinitelyNotNull())) {
 			if (DEBUG) System.out.println("Line " + lineNumber + " undetermined");
 			undeterminedBranchSet.set(lineNumber);
