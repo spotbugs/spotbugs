@@ -107,7 +107,7 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
 		boolean modelCallReturnValue =
 			  isReadLine
 			  || stringMethodCall
-			|| (mayReturnNullDatabase != null)
+			|| (mayReturnNullDatabase != null || nullReturnAnnotationDatabase != null)
 			|| IsNullValueAnalysis.UNKNOWN_VALUES_ARE_NSP;
 
 			
