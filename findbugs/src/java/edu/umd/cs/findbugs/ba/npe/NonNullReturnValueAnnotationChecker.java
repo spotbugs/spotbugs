@@ -12,7 +12,10 @@ import edu.umd.cs.findbugs.ba.XMethod;
  * @author David Hovemeyer
  */
 public class NonNullReturnValueAnnotationChecker implements JavaClassAndMethodChooser {
+	private static final boolean DEBUG = Boolean.getBoolean("fnd.debug.nullreturn");
+	
 	private MayReturnNullPropertyDatabase database;
+	private JavaClassAndMethod annotatedMethod;
 	private Boolean property;
 	
 	public NonNullReturnValueAnnotationChecker(MayReturnNullPropertyDatabase database) {
@@ -23,12 +26,26 @@ public class NonNullReturnValueAnnotationChecker implements JavaClassAndMethodCh
 		return property;
 	}
 	
+	public JavaClassAndMethod getAnnotatedMethod() {
+		return annotatedMethod;
+	}
+	
 	public boolean choose(JavaClassAndMethod javaClassAndMethod) {
 		XMethod xmethod = javaClassAndMethod.toXMethod();
+		if (DEBUG) {
+			System.out.print("Checking " + xmethod + " for @NonNull or @PossiblyNull...");
+		}
 		Boolean prop = database.getProperty(xmethod);
 		if (prop != null) {
 			this.property = prop;
+			this.annotatedMethod = javaClassAndMethod;
+			if (DEBUG) {
+				System.out.println(prop.booleanValue() ? "@PossiblyNull" : "@NonNull");
+			}
 			return true;
+		}
+		if (DEBUG) {
+			System.out.println("not found");
 		}
 		return false;
 	}

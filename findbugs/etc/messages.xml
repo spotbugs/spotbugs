@@ -2642,6 +2642,19 @@ be an exception path, since the default case is often infeasible.</p>
 		]]>
 	</Details>
   </BugPattern>
+  
+  <BugPattern type="NP_NONNULL_RETURN_VIOLATION">
+	<ShortDescription>Method may return null, but is declared @NonNull</ShortDescription>
+	<LongDescription>Method {1} may return null, but is declared @NonNull</LongDescription>
+	<Details>
+		<![CDATA[
+		<p>
+		This method may return a null value, but the method (or a superclass method
+		which it overrides) is declared to return @NonNull.
+		</p>
+		]]>
+	</Details>
+  </BugPattern>
 
   <BugPattern type="SI_INSTANCE_BEFORE_FINALS_ASSIGNED">
     <ShortDescription>Static initializer for class creates instance before all static final fields assigned</ShortDescription>

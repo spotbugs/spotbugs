@@ -26,13 +26,13 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.MethodGen;
-import org.apache.bcel.generic.ReturnInstruction;
 
 import edu.umd.cs.findbugs.AnalysisLocal;
 import edu.umd.cs.findbugs.BugInstance;
@@ -82,6 +82,7 @@ public class FindNullDeref
 
 	private static final boolean DEBUG = Boolean.getBoolean("fnd.debug");
 	private static final boolean DEBUG_NULLARG = Boolean.getBoolean("fnd.debug.nullarg");
+	private static final boolean DEBUG_NULLRETURN = Boolean.getBoolean("fnd.debug.nullreturn");
 	private static final boolean REPORT_SAFE_METHOD_TARGETS = true;
 
 	private static final String METHOD = System.getProperty("fnd.method");
@@ -98,7 +99,7 @@ public class FindNullDeref
 	// Transient state
 	private ClassContext classContext;
 	private Method method;
-	private boolean nonNullReturn;
+	private JavaClassAndMethod nonNullReturn;
 	
 	private boolean checkDatabase;
 
@@ -144,18 +145,7 @@ public class FindNullDeref
 		
 		this.method = method;
 		
-		MayReturnNullPropertyDatabase nullReturnValueAnnotationDatabase;
-		if ((nullReturnValueAnnotationDatabase = AnalysisContext.currentAnalysisContext().getNullReturnValueAnnotationDatabase()) != null
-				&& method.getSignature().indexOf(")L") >= 0) {
-			// Check to see if there is a @NonNull annotation on this method
-			NonNullReturnValueAnnotationChecker annotationChecker =
-				new NonNullReturnValueAnnotationChecker(nullReturnValueAnnotationDatabase);
-			// FIXME: enumerate superclass methods and find the annotation
-			
-			nonNullReturn = false;
-		} else {
-			nonNullReturn = false;
-		}
+		checkForNonNullAnnotation();
 
 		if (DEBUG || DEBUG_NULLARG)
 			System.out.println(SignatureConverter.convertMethodSignature(classContext.getMethodGen(method)));
@@ -175,11 +165,58 @@ public class FindNullDeref
 
 		if (unconditionalDerefDatabase.get() != null
 				|| AnalysisContext.currentAnalysisContext().getNonNullParamDatabase() != null) {
-			examineCalledMethods();
+			checkCallSitesAndReturnInstructions();
 		}
 	}
 
-	private void examineCalledMethods()
+	/**
+	 * See if the currently-visited method declares a @NonNull annotation,
+	 * or overrides a method which declares a @NonNull annotation.
+	 */
+	private void checkForNonNullAnnotation() {
+		nonNullReturn = null;
+		
+		MayReturnNullPropertyDatabase nullReturnValueAnnotationDatabase;
+		
+		if ((nullReturnValueAnnotationDatabase = AnalysisContext.currentAnalysisContext().getNullReturnValueAnnotationDatabase()) != null
+				&& method.getSignature().indexOf(")L") >= 0) {
+			if (DEBUG_NULLRETURN) {
+				System.out.println("Checking return annotation for " +
+						SignatureConverter.convertMethodSignature(classContext.getJavaClass(), method));
+			}
+			
+			// Check to see if there is a @NonNull annotation on this method
+			NonNullReturnValueAnnotationChecker annotationChecker =
+				new NonNullReturnValueAnnotationChecker(nullReturnValueAnnotationDatabase);
+			
+			try {
+				JavaClassAndMethod classAndMethod = new JavaClassAndMethod(
+						classContext.getJavaClass(), method);
+				
+				annotationChecker.choose(classAndMethod);
+				if (annotationChecker.getProperty() == null) {
+					Hierarchy.visitSuperClassMethods(classAndMethod, annotationChecker);
+				}
+				if (annotationChecker.getProperty() == null) {
+					Hierarchy.visitSuperInterfaceMethods(classAndMethod, annotationChecker);
+				}
+				
+				if(annotationChecker.getProperty() != null
+						&& !annotationChecker.getProperty().booleanValue()) {
+					nonNullReturn = annotationChecker.getAnnotatedMethod();
+				}
+				
+				if (DEBUG_NULLRETURN && nonNullReturn != null) {
+					System.out.println("\t==> found: " + nonNullReturn);
+				}
+			} catch (ClassNotFoundException e) {
+				bugReporter.reportMissingClass(e);
+			}
+			
+		}
+	}
+
+	private void checkCallSitesAndReturnInstructions()
 			throws CFGBuilderException, DataflowAnalysisException {
 		ConstantPoolGen cpg = classContext.getConstantPoolGen();
 		TypeDataflow typeDataflow = classContext.getTypeDataflow(method);
@@ -190,7 +227,7 @@ public class FindNullDeref
 			try {
 				if (ins instanceof InvokeInstruction) {
 					examineCallSite(location, cpg, typeDataflow);
-				} else if (nonNullReturn && ins instanceof ReturnInstruction) {
+				} else if (nonNullReturn != null && ins.getOpcode() == Constants.ARETURN) {
 					examineReturnInstruction(location);
 				}
 			} catch (ClassNotFoundException e) {
@@ -260,9 +297,43 @@ public class FindNullDeref
 		}
 	}
 	
-	private void examineReturnInstruction(Location location) {
-		// TODO Auto-generated method stub
+	private void examineReturnInstruction(Location location) throws DataflowAnalysisException, CFGBuilderException {
+		if (DEBUG_NULLRETURN) {
+			System.out.println("Checking null return at " + location);
+		}
 		
+		IsNullValueDataflow invDataflow = classContext.getIsNullValueDataflow(method);
+		IsNullValueFrame frame = invDataflow.getFactAtLocation(location);
+		if (!frame.isValid())
+			return;
+		IsNullValue tos = frame.getTopValue();
+		if (tos.mightBeNull()) {
+			MethodGen methodGen = classContext.getMethodGen(method);
+			String sourceFile = classContext.getJavaClass().getSourceFileName();
+			
+			WarningPropertySet propertySet = new WarningPropertySet();
+			
+			BugInstance warning = new BugInstance("NP_NONNULL_RETURN_VIOLATION", NORMAL_PRIORITY)
+				.addClassAndMethod(methodGen, sourceFile)
+				.addSourceLine(methodGen, sourceFile, location.getHandle())
+				.addMethod(nonNullReturn.getJavaClass(), nonNullReturn.getMethod()).describe("METHOD_DECLARED_NONNULL");
+			;
+			
+			JavaClassAndMethod visitedMethod = new JavaClassAndMethod(classContext.getJavaClass(), method);
+			if (visitedMethod.equals(nonNullReturn)) {
+				// It's sort of blatant to declare a method @NonNull,
+				// and then return null from it :-)
+				propertySet.addProperty(NonNullReturnProperty.EXACT_METHOD);
+			}
+			
+			int priority = propertySet.computePriority(NORMAL_PRIORITY);
+			if (FindBugsAnalysisProperties.isRelaxedMode()) {
+				WarningPropertyUtil.addPropertiesForLocation(propertySet, classContext, method, location);
+				propertySet.decorateBugInstance(warning);
+			}
+			
+			bugReporter.reportBug(warning);
+		}
 	}
 
 	private void checkUnconditionallyDereferencedParam(
