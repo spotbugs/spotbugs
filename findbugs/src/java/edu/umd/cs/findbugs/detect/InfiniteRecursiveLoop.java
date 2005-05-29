@@ -123,12 +123,20 @@ public class InfiniteRecursiveLoop extends BytecodeScanningDetector implements C
 			int firstParameter = 0;
 			if (getMethodName().equals("<init>")) firstParameter = 1;
 			
+			// match1 should be true if it is any call to the exact same method
+			// and no state has been change. 
+			// if match1 is true, the method may not always perform
+			// a recursive infinite loop, but this particular method call is an infinite
+			// recursive loop
+			
 			boolean match1 = !seenStateChange;
 			for(int i = firstParameter; match1 && i < parameters; i++) {
 				OpcodeStack.Item it = stack.getStackItem(parameters-1-i);
 				if (!it.isInitialParameter() || it.getRegisterNumber() != i)
 					match1 = false;
 				}
+			
+
 			boolean sameMethod = 
 				seen == INVOKESTATIC
 				|| getNameConstantOperand().equals("<init>");
@@ -139,6 +147,14 @@ public class InfiniteRecursiveLoop extends BytecodeScanningDetector implements C
 				sameMethod = p.isInitialParameter()
 					&& p.getRegisterNumber() == 0;
 				}
+			
+			// match2 and match3 are two different ways of seeing if the call site
+			// postdominates the method entry. 
+			
+			// technically, we use (!seenTransferOfControl || !seenReturn && largestBranchTarget < getPC())
+			// as a check that the call site postdominates the method entry. If those are true,
+			// and sameMethod is true, we have a guaranteed IL.
+			
 			boolean match2 = sameMethod && !seenTransferOfControl;
 			boolean match3 = sameMethod && !seenReturn && largestBranchTarget < getPC();
 			if (match1 || match2 || match3)  
