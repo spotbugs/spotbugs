@@ -37,8 +37,6 @@ import edu.umd.cs.findbugs.ba.AbstractFrameModelingVisitor;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.AssertionMethods;
 import edu.umd.cs.findbugs.ba.Hierarchy;
-import edu.umd.cs.findbugs.ba.JavaClassAndMethod;
-import edu.umd.cs.findbugs.ba.JavaClassAndMethodChooser;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.XMethodFactory;
 
@@ -94,20 +92,6 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
 		frame.pushValue(value);
 	}
 	
-	class NonNullAnnotationChecker implements JavaClassAndMethodChooser {
-		Boolean property;
-		
-		public boolean choose(JavaClassAndMethod javaClassAndMethod) {
-			XMethod xmethod = javaClassAndMethod.toXMethod();
-			Boolean prop = nullReturnAnnotationDatabase.getProperty(xmethod);
-			if (prop != null) {
-				this.property = prop;
-				return true;
-			}
-			return false;
-		}
-	}
-
 	/**
 	 * Handle method invocations.
 	 * Generally, we want to get rid of null information following a
@@ -153,10 +137,10 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
 				if (prop == null && nullReturnAnnotationDatabase != null) {
 					// Traverse upwards in class hierarchy until we find
 					// a @NonNull or @PossiblyNull annotation.
-					NonNullAnnotationChecker annotationChecker = new NonNullAnnotationChecker();
+					NonNullReturnValueAnnotationChecker annotationChecker = new NonNullReturnValueAnnotationChecker(nullReturnAnnotationDatabase);
 					try {
 						Hierarchy.findInvocationLeastUpperBound(obj, getCPG(), annotationChecker);
-						prop = annotationChecker.property;
+						prop = annotationChecker.getProperty();
 					} catch (ClassNotFoundException e) {
 						AnalysisContext.currentAnalysisContext().getLookupFailureCallback().reportMissingClass(e);
 					}
