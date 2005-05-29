@@ -34,11 +34,11 @@ import org.dom4j.Element;
 import org.dom4j.Node;
 import org.dom4j.io.SAXReader;
 
+import edu.umd.cs.findbugs.plan.ByInterfaceDetectorFactorySelector;
 import edu.umd.cs.findbugs.plan.DetectorFactorySelector;
 import edu.umd.cs.findbugs.plan.DetectorOrderingConstraint;
 import edu.umd.cs.findbugs.plan.ReportingDetectorFactorySelector;
 import edu.umd.cs.findbugs.plan.SingleDetectorFactorySelector;
-import edu.umd.cs.findbugs.plan.TrainingDetectorFactorySelector;
 
 /**
  * Loader for a FindBugs plugin.
@@ -325,7 +325,9 @@ public class PluginLoader extends URLClassLoader {
 			if (categoryName.equals("reporting")) {
 				return new ReportingDetectorFactorySelector(spanPlugins ? null : plugin);
 			} else if (categoryName.equals("training")) {
-				return new TrainingDetectorFactorySelector(spanPlugins ? null : plugin);
+				return new ByInterfaceDetectorFactorySelector(spanPlugins ? null : plugin, TrainingDetector.class);
+			} else if (categoryName.equals("slowfirstpass")) {
+				return new ByInterfaceDetectorFactorySelector(spanPlugins ? null : plugin, SlowFirstPassDetector.class);
 			} else {
 				throw new PluginException("Invalid constraint selector node");
 			}
