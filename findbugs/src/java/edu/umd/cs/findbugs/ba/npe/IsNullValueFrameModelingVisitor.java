@@ -34,7 +34,11 @@ import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
 
 import edu.umd.cs.findbugs.ba.AbstractFrameModelingVisitor;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.AssertionMethods;
+import edu.umd.cs.findbugs.ba.Hierarchy;
+import edu.umd.cs.findbugs.ba.JavaClassAndMethod;
+import edu.umd.cs.findbugs.ba.JavaClassAndMethodChooser;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.XMethodFactory;
 
@@ -89,6 +93,20 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
 		frame.pushValue(value);
 		frame.pushValue(value);
 	}
+	
+	class NonNullAnnotationChecker implements JavaClassAndMethodChooser {
+		Boolean property;
+		
+		public boolean choose(JavaClassAndMethod javaClassAndMethod) {
+			XMethod xmethod = javaClassAndMethod.toXMethod();
+			Boolean prop = nullReturnAnnotationDatabase.getProperty(xmethod);
+			if (prop != null) {
+				this.property = prop;
+				return true;
+			}
+			return false;
+		}
+	}
 
 	/**
 	 * Handle method invocations.
@@ -133,7 +151,15 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
 					prop = mayReturnNullDatabase.getProperty(calledMethod);
 				}
 				if (prop == null && nullReturnAnnotationDatabase != null) {
-					prop = nullReturnAnnotationDatabase.getProperty(calledMethod);
+					// Traverse upwards in class hierarchy until we find
+					// a @NonNull or @PossiblyNull annotation.
+					NonNullAnnotationChecker annotationChecker = new NonNullAnnotationChecker();
+					try {
+						Hierarchy.findInvocationLeastUpperBound(obj, getCPG(), annotationChecker);
+						prop = annotationChecker.property;
+					} catch (ClassNotFoundException e) {
+						AnalysisContext.currentAnalysisContext().getLookupFailureCallback().reportMissingClass(e);
+					}
 				}
 				
 				if (prop != null) {
