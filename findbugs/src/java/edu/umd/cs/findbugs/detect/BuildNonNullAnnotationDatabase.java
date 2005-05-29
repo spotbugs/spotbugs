@@ -38,7 +38,7 @@ import edu.umd.cs.findbugs.visitclass.AnnotationVisitor;
  * @author David Hovemeyer
  */
 public class BuildNonNullAnnotationDatabase extends AnnotationVisitor {
-	private static final boolean DEBUG = Boolean.getBoolean("fnd.debug.nullarg");
+	private static final boolean DEBUG = Boolean.getBoolean("fnd.debug.annotation");
 	
 	private static final String NONNULL_ANNOTATION_CLASS = NonNull.class.getName().replace('.', '/');
 	private static final String POSSIBLY_NULL_ANNOTATION_CLASS = PossiblyNull.class.getName().replace('.','/');
