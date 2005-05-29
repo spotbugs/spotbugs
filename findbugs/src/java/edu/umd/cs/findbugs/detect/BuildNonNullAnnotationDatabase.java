@@ -98,6 +98,11 @@ public class BuildNonNullAnnotationDatabase extends AnnotationVisitor {
 				? Boolean.FALSE : Boolean.TRUE;
 		XMethod xmethod = XMethodFactory.createXMethod(this);
 		nullReturnValueDatabase.setProperty(xmethod, property);
+		if (DEBUG) {
+			System.out.println("Return value @" +
+					annotationClass.substring(annotationClass.lastIndexOf('/') + 1) +
+					" in " + xmethod);
+		}
 	}
 	
 	//@Override

@@ -94,10 +94,12 @@ public class IsNullValueAnalysis
 	}
 	
 	public void setMayReturnNullDatabase(MayReturnNullPropertyDatabase mayReturnNullDatabase) {
+		if (DEBUG) System.out.println("May return null database is " + (mayReturnNullDatabase == null ? "null" : "not null"));
 		visitor.setMayReturnNullDatabase(mayReturnNullDatabase);
 	}
 	
 	public void setNullReturnAnnotationDatabase(MayReturnNullPropertyDatabase nullReturnAnnotationDatabase) {
+		if (DEBUG) System.out.println("Null return annotation database is " + (nullReturnAnnotationDatabase == null ? "null" : "not null"));
 		visitor.setNullReturnAnnotationDatabase(nullReturnAnnotationDatabase);
 	}
 
@@ -157,7 +159,7 @@ public class IsNullValueAnalysis
 				result.setDecision(null);
 			else {
 				IsNullConditionDecision decision = getDecision(basicBlock, lastFrame);
-				if (DEBUG) System.out.println("Decision=" + decision);
+				//if (DEBUG) System.out.println("Decision=" + decision);
 				result.setDecision(decision);
 			}
 		}
