@@ -70,6 +70,10 @@ public class IsNullValueAnalysis
 	private int[] numNonExceptionSuccessorMap;
 	private IsNullValue paramValue;
 	private IsNullValueFrame lastFrame;
+	private IsNullValueFrame cachedEntryFact;
+	
+	private NonNullParamPropertyDatabase nonNullParamDatabase;
+	private NonNullParamPropertyDatabase possiblyNullParamDatabase;
 
 	public IsNullValueAnalysis(MethodGen methodGen, CFG cfg, ValueNumberDataflow vnaDataflow, DepthFirstSearch dfs,
 	                           AssertionMethods assertionMethods) {
@@ -102,6 +106,14 @@ public class IsNullValueAnalysis
 		if (DEBUG) System.out.println("Null return annotation database is " + (nullReturnAnnotationDatabase == null ? "null" : "not null"));
 		visitor.setNullReturnAnnotationDatabase(nullReturnAnnotationDatabase);
 	}
+	
+	public void setNonNullParamDatabase(NonNullParamPropertyDatabase nonNullParamDatabase) {
+		this.nonNullParamDatabase = nonNullParamDatabase;
+	}
+	
+	public void setPossiblyNullParamDatabase(NonNullParamPropertyDatabase possiblyNullParamDatabase) {
+		this.possiblyNullParamDatabase = possiblyNullParamDatabase;
+	}
 
 	public IsNullValueFrame createFact() {
 		return new IsNullValueFrame(methodGen.getMaxLocals());
@@ -112,14 +124,27 @@ public class IsNullValueAnalysis
 	}
 
 	public void initEntryFact(IsNullValueFrame result) {
-		result.setValid();
+		if (cachedEntryFact ==  null) {
+			BitSet nonNullParamSet = new BitSet();
+			BitSet possiblyNullParamSet = new BitSet();
+			if (nonNullParamDatabase != null && possiblyNullParamDatabase != null) {
+				NonNullContractCollector nonNullContractCollector =
+					new NonNullContractCollector(nonNullParamDatabase, possiblyNullParamDatabase);
+				
+				
+			}
+			
+			cachedEntryFact = createFact();
+			cachedEntryFact.setValid();
 
-		int numLocals = methodGen.getMaxLocals();
-		boolean instanceMethod = !methodGen.isStatic();
+			int numLocals = methodGen.getMaxLocals();
+			boolean instanceMethod = !methodGen.isStatic();
 
-		for (int i = 0; i < numLocals; ++i) {
-			result.setValue(i, (instanceMethod && i == 0) ? IsNullValue.nonNullValue() : paramValue);
+			for (int i = 0; i < numLocals; ++i) {
+				cachedEntryFact.setValue(i, (instanceMethod && i == 0) ? IsNullValue.nonNullValue() : paramValue);
+			}
 		}
+		copy(cachedEntryFact, result);
 	}
 
 /*

@@ -75,6 +75,10 @@ public class NonNullContractCollector implements JavaClassAndMethodChooser {
 		Hierarchy.findInvocationLeastUpperBound(invokeInstruction, cpg, this);
 	}
 	
+	public void findContractForMethod(JavaClassAndMethod classAndMethod) {
+		// TODO
+	}
+	
 	public void getViolationList(int numParams, BitSet nullArgSet, List<NonNullParamViolation> violationList, BitSet violatedParamSet) {
 		BitSet checkedParams = new BitSet();
 		for (NonNullSpecification specification : specificationList) {
