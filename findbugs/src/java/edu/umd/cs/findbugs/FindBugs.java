@@ -1228,7 +1228,9 @@ public class FindBugs implements Constants2, ExitCodes {
 			return false;
 
 		// Training detectors are enabled if, and only if, we are emitting training output
-		boolean isTrainingDetector = factory.isDetectorClassSubtypeOf(TrainingDetector.class);
+		// XXX: grotesque hack for NoteCheckReturnValue. Need to fix for real.
+		boolean isTrainingDetector = factory.isDetectorClassSubtypeOf(TrainingDetector.class)
+			|| (emitTrainingOutput && factory.getFullName().equals("edu.umd.cs.findbugs.detect.NoteCheckReturnValue"));
 		if (isTrainingDetector != emitTrainingOutput)
 			return false;
 		
