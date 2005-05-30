@@ -73,6 +73,15 @@ public abstract class PropertyDatabase<KeyType, ValueType> {
 	}
 	
 	/**
+	 * Return whether or not the database is empty.
+	 * 
+	 * @return true if the database is empty, false it it has at least one entry
+	 */
+	public boolean isEmpty() {
+		return propertyMap.isEmpty();
+	}
+	
+	/**
 	 * Remove a property.
 	 * 
 	 * @param key the key
