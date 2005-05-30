@@ -9,4 +9,13 @@ public class UnconditionalDeref {
 	void report() {
 		f(null);
 	}
+	
+	Object returnsNull() {
+		return null;
+	}
+	
+	void report2() {
+		Object o = returnsNull();
+		System.out.println(o.hashCode());
+	}
 }

@@ -54,6 +54,7 @@ public class AnalysisContext implements AnalysisFeatures {
 	public static final String DEFAULT_POSSIBLYNULL_PARAM_DATABASE_FILENAME = "possiblyNullParam.db";
 	public static final String DEFAULT_NULL_RETURN_VALUE_ANNOTATION_DATABASE = "nonnullReturn.db";
 	public static final String UNCONDITIONAL_DEREF_DB_FILENAME = "unconditionalDeref.db";
+	public static final String DEFAULT_NULL_RETURN_VALUE_DB_FILENAME = "mayReturnNull.db";
 	
 	private RepositoryLookupFailureCallback lookupFailureCallback;
 	private SourceFinder sourceFinder;
@@ -155,6 +156,9 @@ public class AnalysisContext implements AnalysisFeatures {
 		
 		// Purge repository of previous contents
 		Repository.clearCache();
+		
+		// Clear any ClassContexts
+		clearClassContextCache();
 
 		// Clear InnerClassAccessMap cache.
 		InnerClassAccessMap.instance().clearCache();
@@ -162,6 +166,14 @@ public class AnalysisContext implements AnalysisFeatures {
 		// Create a URLClassPathRepository and make it current.
 		URLClassPathRepository repository = new URLClassPathRepository(); 
 		Repository.setRepository(repository);
+	}
+	
+	/**
+	 * Clear the ClassContext cache.
+	 * This should be done between analysis passes.
+	 */
+	public void clearClassContextCache() {
+		classContextCache.clear();
 	}
 	
 	/**
@@ -219,7 +231,7 @@ public class AnalysisContext implements AnalysisFeatures {
 	public void loadInterproceduralDatabases() {
 		mayReturnNullDatabase = loadPropertyDatabase(
 				new MayReturnNullPropertyDatabase(),
-				MayReturnNullPropertyDatabase.DEFAULT_FILENAME,
+				DEFAULT_NULL_RETURN_VALUE_DB_FILENAME,
 				"may return null database");
 		fieldStoreTypeDatabase = loadPropertyDatabase(
 				new FieldStoreTypeDatabase(),
@@ -301,6 +313,11 @@ public class AnalysisContext implements AnalysisFeatures {
 	 */
 	public String getDatabaseOutputDir() {
 		return databaseOutputDir;
+	}
+	
+	public void setMayReturnNullDatabase(
+			MayReturnNullPropertyDatabase mayReturnNullDatabase) {
+		this.mayReturnNullDatabase = mayReturnNullDatabase;
 	}
 	
 	/**

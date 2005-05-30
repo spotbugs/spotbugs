@@ -1094,6 +1094,10 @@ public class FindBugs implements Constants2, ExitCodes {
 			AnalysisPass analysisPass = i.next();
 			analysisPass.createDetectors(bugReporter);
 			executeAnalysisPass(analysisPass, repositoryClassList);
+			
+			// Clear the ClassContext cache.
+			// It may contain data that should be recomputed on the next pass.
+			analysisContext.clearClassContextCache();
 		}
 
 		// Flush any queued bug reports

@@ -71,6 +71,18 @@ This plugin contains all of the standard FindBugs detectors.
 		]]>
 	</Details>
   </Detector>
+  
+  <Detector class="edu.umd.cs.findbugs.detect.NoteNullReturnValues">
+	<Details>
+		<![CDATA[
+		<p>
+		First pass to find methods which may return null.
+		Produces information used by FindNullDeref in a later pass.
+		</p>
+		<p>This is a slow detector.</p>
+		]]>
+	</Details>
+  </Detector>
 
   <Detector class="edu.umd.cs.findbugs.detect.BadUseOfReturnValue">
     <Details>

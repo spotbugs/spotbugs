@@ -1,5 +1,5 @@
 /*
- * FindBugs - Find bugs in Java programs
+ * FindBugs - Find Bugs in Java programs
  * Copyright (C) 2005, University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
@@ -16,33 +16,31 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+
 package edu.umd.cs.findbugs.detect;
 
 import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.TrainingDetector;
-import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.SlowFirstPassDetector;
 
 /**
- * Detector to find methods which may return a null value.
- * This is only used as a training pass to produce a MethodPropertyDatabase.
- * No warnings are reported.
+ * First analysis pass to find methods which may return null.
+ * This information can be used by FindNullDeref in a later pass.
  * 
  * @author David Hovemeyer
  */
-public class TrainNullReturnValues
+public class NoteNullReturnValues
 		extends BuildNullReturnValueDatabase
-		implements TrainingDetector {
+		implements SlowFirstPassDetector {
 	private BugReporter bugReporter;
 	
-	public TrainNullReturnValues(BugReporter bugReporter) {
+	public NoteNullReturnValues(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.Detector#report()
+	 */
 	public void report() {
-		AnalysisContext.currentAnalysisContext().storePropertyDatabase(
-				getDatabase(),
-				AnalysisContext.DEFAULT_NULL_RETURN_VALUE_DB_FILENAME,
-				"null return database");
 	}
 
 }

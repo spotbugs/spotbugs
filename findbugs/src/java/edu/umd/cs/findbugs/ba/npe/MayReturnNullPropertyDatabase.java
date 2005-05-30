@@ -18,6 +18,7 @@
  */
 package edu.umd.cs.findbugs.ba.npe;
 
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.interproc.MethodPropertyDatabase;
 import edu.umd.cs.findbugs.ba.interproc.PropertyDatabaseFormatException;
 
@@ -28,8 +29,6 @@ import edu.umd.cs.findbugs.ba.interproc.PropertyDatabaseFormatException;
  * @author David Hovemeyer
  */
 public class MayReturnNullPropertyDatabase extends MethodPropertyDatabase<Boolean> {
-	public static final String DEFAULT_FILENAME = "mayReturnNull.db";
-
 	//@Override
 	protected Boolean decodeProperty(String propStr)
 			throws PropertyDatabaseFormatException {
@@ -43,6 +42,6 @@ public class MayReturnNullPropertyDatabase extends MethodPropertyDatabase<Boolea
 	
 	public static void main(String[] args) throws Exception {
 		MayReturnNullPropertyDatabase database = new MayReturnNullPropertyDatabase();
-		database.readFromFile(DEFAULT_FILENAME);
+		database.readFromFile(AnalysisContext.DEFAULT_NULL_RETURN_VALUE_DB_FILENAME);
 	}
 }
