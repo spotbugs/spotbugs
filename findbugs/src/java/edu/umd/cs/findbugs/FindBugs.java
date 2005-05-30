@@ -1019,12 +1019,16 @@ public class FindBugs implements Constants2, ExitCodes {
 			if (!new File(trainingOutputDir).isDirectory())
 				throw new IOException("Training output directory " + trainingOutputDir + " does not exist");
 			AnalysisContext.currentAnalysisContext().setDatabaseOutputDir(trainingOutputDir);
+			// XXX: hack
+			System.setProperty("findbugs.checkreturn.savetraining", new File(trainingOutputDir, "checkReturn.db").getPath());
 		}
 		if (useTrainingInput) {
 			if (!new File(trainingInputDir).isDirectory())
 				throw new IOException("Training input directory " + trainingInputDir + " does not exist");
 			AnalysisContext.currentAnalysisContext().setDatabaseInputDir(trainingInputDir);
 			AnalysisContext.currentAnalysisContext().loadInterproceduralDatabases();
+			// XXX: hack
+			System.setProperty("findbugs.checkreturn.loadtraining", new File(trainingInputDir, "checkReturn.db").getPath());
 		}
 		
 		// Give the BugReporter a reference to this object,
