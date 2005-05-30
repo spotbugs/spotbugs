@@ -34,7 +34,6 @@ import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.MethodGen;
 
-import edu.umd.cs.findbugs.AnalysisLocal;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
@@ -87,12 +86,6 @@ public class FindNullDeref
 	private static final boolean REPORT_SAFE_METHOD_TARGETS = true;
 
 	private static final String METHOD = System.getProperty("fnd.method");
-
-	//public static final String UNCONDITIONAL_DEREF_DB_FILENAME = "unconditionalDeref.db";
-	
-//	// Method property databases local to this detector
-//	static AnalysisLocal<NonNullParamPropertyDatabase> unconditionalDerefDatabase =
-//		new AnalysisLocal<NonNullParamPropertyDatabase>();
 	
 	// Fields
 	private BugReporter bugReporter;
@@ -101,24 +94,12 @@ public class FindNullDeref
 	private ClassContext classContext;
 	private Method method;
 	private JavaClassAndMethod nonNullReturn;
-	
-//	private boolean checkDatabase;
 
 	public FindNullDeref(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 	}
 
 	public void visitClassContext(ClassContext classContext) {
-//		if (!checkDatabase) {
-//			if (AnalysisContext.currentAnalysisContext().getDatabaseInputDir() != null) {
-//				unconditionalDerefDatabase.set(AnalysisContext.currentAnalysisContext().loadPropertyDatabase(
-//						new NonNullParamPropertyDatabase(),
-//						UNCONDITIONAL_DEREF_DB_FILENAME,
-//						"unconditional param deref database"));
-//			}
-//			checkDatabase = true;
-//		}
-//		
 		this.classContext = classContext;
 		
 		try {
