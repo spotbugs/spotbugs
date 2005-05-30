@@ -50,6 +50,7 @@ import edu.umd.cs.findbugs.ba.SignatureConverter;
 import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.XMethodFactory;
+import edu.umd.cs.findbugs.ba.interproc.PropertyDatabase;
 import edu.umd.cs.findbugs.ba.npe.IsNullValue;
 import edu.umd.cs.findbugs.ba.npe.IsNullValueDataflow;
 import edu.umd.cs.findbugs.ba.npe.IsNullValueFrame;
@@ -90,6 +91,18 @@ public class FindNullDeref
 	// Fields
 	private BugReporter bugReporter;
 	
+	// Cached database stuff
+	private NonNullParamPropertyDatabase unconditionalDerefParamDatabase;
+	private NonNullParamPropertyDatabase nonNullParamDatabase;
+	private NonNullParamPropertyDatabase possiblyNullParamDatabase;
+	private MayReturnNullPropertyDatabase nullReturnValueAnnotationDatabase;
+	private boolean checkedDatabases;
+	private boolean checkUnconditionalDeref;
+	private boolean checkParamAnnotations;
+	private boolean checkReturnValueAnnotations;
+	private boolean checkCallSites;
+	private boolean checkCallSitesOrReturnInstructions;
+	
 	// Transient state
 	private ClassContext classContext;
 	private Method method;
@@ -124,10 +137,16 @@ public class FindNullDeref
 
 	private void analyzeMethod(ClassContext classContext, Method method)
 	        throws CFGBuilderException, DataflowAnalysisException {
+		if (!checkedDatabases) {
+			checkDatabases();
+			checkedDatabases = true;
+		}
 		
 		this.method = method;
 		
-		checkForNonNullAnnotation();
+		if (checkReturnValueAnnotations) {
+			checkForNonNullAnnotation();
+		}
 
 		if (DEBUG || DEBUG_NULLARG)
 			System.out.println(SignatureConverter.convertMethodSignature(classContext.getMethodGen(method)));
@@ -145,10 +164,33 @@ public class FindNullDeref
 				this);
 		worker.execute();
 
-		if (AnalysisContext.currentAnalysisContext().getUnconditionalDerefParamDatabase() != null
-				|| AnalysisContext.currentAnalysisContext().getNonNullParamDatabase() != null) {
+		if (checkUnconditionalDeref || checkParamAnnotations || checkReturnValueAnnotations) {
 			checkCallSitesAndReturnInstructions();
 		}
+	}
+
+	/**
+	 * Check whether or not the various interprocedural databases we can
+	 * use exist and are nonempty.
+	 */
+	private void checkDatabases() {
+		AnalysisContext analysisContext = AnalysisContext.currentAnalysisContext();
+		unconditionalDerefParamDatabase = analysisContext.getUnconditionalDerefParamDatabase();
+		nonNullParamDatabase = analysisContext.getNonNullParamDatabase();
+		possiblyNullParamDatabase = analysisContext.getPossiblyNullParamDatabase();
+		nullReturnValueAnnotationDatabase = analysisContext.getNullReturnValueAnnotationDatabase();
+		
+		checkUnconditionalDeref = isDatabaseNonEmpty(unconditionalDerefParamDatabase);
+		checkParamAnnotations = isDatabaseNonEmpty(nonNullParamDatabase) && isDatabaseNonEmpty(possiblyNullParamDatabase);
+		checkReturnValueAnnotations = isDatabaseNonEmpty(nullReturnValueAnnotationDatabase);
+		
+		checkCallSites = checkUnconditionalDeref || checkParamAnnotations;
+		checkCallSitesOrReturnInstructions = checkCallSites || checkReturnValueAnnotations;
+	}
+
+	private<
+		DatabaseType extends PropertyDatabase<?,?>> boolean isDatabaseNonEmpty(DatabaseType database) {
+		return database != null && !database.isEmpty();
 	}
 
 	/**
@@ -158,10 +200,7 @@ public class FindNullDeref
 	private void checkForNonNullAnnotation() {
 		nonNullReturn = null;
 		
-		MayReturnNullPropertyDatabase nullReturnValueAnnotationDatabase;
-		
-		if ((nullReturnValueAnnotationDatabase = AnalysisContext.currentAnalysisContext().getNullReturnValueAnnotationDatabase()) != null
-				&& method.getSignature().indexOf(")L") >= 0) {
+		if (method.getSignature().indexOf(")L") >= 0) {
 			if (DEBUG_NULLRETURN) {
 				System.out.println("Checking return annotation for " +
 						SignatureConverter.convertMethodSignature(classContext.getJavaClass(), method));
@@ -207,9 +246,9 @@ public class FindNullDeref
 			Location location = i.next();
 			Instruction ins = location.getHandle().getInstruction();
 			try {
-				if (ins instanceof InvokeInstruction) {
+				if (checkCallSites && ins instanceof InvokeInstruction) {
 					examineCallSite(location, cpg, typeDataflow);
-				} else if (nonNullReturn != null && ins.getOpcode() == Constants.ARETURN) {
+				} else if (checkReturnValueAnnotations && nonNullReturn != null && ins.getOpcode() == Constants.ARETURN) {
 					examineReturnInstruction(location);
 				}
 			} catch (ClassNotFoundException e) {
@@ -266,12 +305,11 @@ public class FindNullDeref
 			System.out.println("Null arguments passed: " + nullArgSet);
 		}
 		
-		if (AnalysisContext.currentAnalysisContext().getUnconditionalDerefParamDatabase() != null) {
+		if (unconditionalDerefParamDatabase != null) {
 			checkUnconditionallyDereferencedParam(location, cpg, typeDataflow, invokeInstruction, nullArgSet, definitelyNullArgSet);
 		}
 		
-		if (AnalysisContext.currentAnalysisContext().getNonNullParamDatabase() != null 
-				&& AnalysisContext.currentAnalysisContext().getPossiblyNullParamDatabase() != null) {
+		if (nonNullParamDatabase != null && possiblyNullParamDatabase != null) {
 			if (DEBUG_NULLARG) {
 				System.out.println("Checking nonnull params");
 			}
@@ -325,8 +363,6 @@ public class FindNullDeref
 			InvokeInstruction invokeInstruction,
 			BitSet nullArgSet, BitSet definitelyNullArgSet) throws DataflowAnalysisException, ClassNotFoundException {
 		
-		NonNullParamPropertyDatabase database = AnalysisContext.currentAnalysisContext().getUnconditionalDerefParamDatabase();
-		
 		// See what methods might be called here
 		TypeFrame typeFrame = typeDataflow.getFactAtLocation(location);
 		Set<JavaClassAndMethod> targetMethodSet = Hierarchy.resolveMethodCallTargets(invokeInstruction, typeFrame, cpg);
@@ -342,7 +378,7 @@ public class FindNullDeref
 				System.out.println("For target method " + targetMethod);
 			}
 			
-			NonNullParamProperty property = database.getProperty(targetMethod.toXMethod());
+			NonNullParamProperty property = unconditionalDerefParamDatabase.getProperty(targetMethod.toXMethod());
 			if (property == null)
 				continue;
 			if (DEBUG_NULLARG) {
@@ -437,8 +473,6 @@ public class FindNullDeref
 			InvokeInstruction invokeInstruction,
 			BitSet nullArgSet,
 			BitSet definitelyNullArgSet) throws ClassNotFoundException {
-		final NonNullParamPropertyDatabase nonNullParamDatabase = AnalysisContext.currentAnalysisContext().getNonNullParamDatabase();
-		final NonNullParamPropertyDatabase possiblyNullParamDatabase = AnalysisContext.currentAnalysisContext().getPossiblyNullParamDatabase();
 		
 		// Go up the class hierarchy finding @NonNull and @PossiblyNull annotations
 		// for parameters.
