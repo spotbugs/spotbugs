@@ -475,7 +475,7 @@ public class FindBugs implements Constants2, ExitCodes {
 					"Save training data (experimental); output dir defaults to '.'");
 			addSwitchWithOptionalExtraPart("-useTraining", "inputDir",
 					"Use training data (experimental); input dir defaults to '.'");
-			addSwitch("-slowFirstPass","run slow interprocedural first pass");
+			addSwitch("-interproc","enable interprocedural analysis (slow!)");
 			addOption("-outputFile", "filename", "Save output in named file");
 			addOption("-visitors", "v1[,v2...]", "run only named visitors");
 			addOption("-omitVisitors", "v1[,v2...]", "omit named visitors");
@@ -554,7 +554,7 @@ public class FindBugs implements Constants2, ExitCodes {
 				trainingOutputDir = !optionExtraPart.equals("") ? optionExtraPart : ".";
 			} else if (option.equals("-useTraining")) {
 				trainingInputDir = !optionExtraPart.equals("") ? optionExtraPart : ".";
-			} else if (option.equals("-slowFirstPass")) {
+			} else if (option.equals("-interproc")) {
 				runSlowFirstPassDetectors = true;
 			} else if (option.equals("-html")) {
 				bugReporterType = HTML_REPORTER;
