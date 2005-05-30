@@ -278,9 +278,9 @@ public class IsNullValue implements IsNullValueAnalysisFeatures {
 		}
 
 		int result = mergeMatrix[a.kind][b.kind];
-		int combinedFlags = andFlags;
-		if (result == NSP && (a.kind <= NN || b.kind < NN))
-			combinedFlags = orFlags;
+		int combinedFlags = orFlags;
+		if (result < NN)
+			combinedFlags = andFlags;
 		IsNullValue resultValue = instanceByFlagsList[combinedFlags >> FLAG_SHIFT][result];
 		return resultValue;
 	}
