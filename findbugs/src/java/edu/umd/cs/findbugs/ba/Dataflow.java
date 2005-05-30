@@ -19,7 +19,9 @@
 
 package edu.umd.cs.findbugs.ba;
 
-import java.util.*;
+import java.util.Iterator;
+
+import edu.umd.cs.findbugs.ba.npe.IsNullValueAnalysis;
 
 /**
  * Perform dataflow analysis on a method using a control flow graph.
@@ -88,7 +90,15 @@ public class Dataflow <Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 			if (pkgEnd >= 0) {
 				shortAnalysisName = shortAnalysisName.substring(pkgEnd + 1);
 			}
-			System.out.println("Executing " + shortAnalysisName);
+			if (analysis instanceof IsNullValueAnalysis) {
+				IsNullValueAnalysis a = (IsNullValueAnalysis) analysis;
+				String method = a.getClassAndMethod().toString();
+
+				System.out.println("Executing " + shortAnalysisName  + " on " + a.getClassAndMethod());
+				if (method.indexOf("appendEncoded") >= 0)
+					System.out.println("Found it");
+			}
+			else System.out.println("Executing " + shortAnalysisName );
 		}
 
 		do {

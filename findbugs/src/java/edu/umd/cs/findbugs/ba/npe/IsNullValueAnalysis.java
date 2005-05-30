@@ -121,7 +121,9 @@ public class IsNullValueAnalysis
 	public void setClassAndMethod(JavaClassAndMethod classAndMethod) {
 		this.classAndMethod = classAndMethod;
 	}
-
+	public JavaClassAndMethod getClassAndMethod( ) {
+		return  classAndMethod;
+	}
 	public IsNullValueFrame createFact() {
 		return new IsNullValueFrame(methodGen.getMaxLocals());
 	}
