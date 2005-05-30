@@ -88,11 +88,11 @@ public class FindNullDeref
 
 	private static final String METHOD = System.getProperty("fnd.method");
 
-	public static final String UNCONDITIONAL_DEREF_DB_FILENAME = "unconditionalDeref.db";
+	//public static final String UNCONDITIONAL_DEREF_DB_FILENAME = "unconditionalDeref.db";
 	
-	// Method property databases local to this detector
-	static AnalysisLocal<NonNullParamPropertyDatabase> unconditionalDerefDatabase =
-		new AnalysisLocal<NonNullParamPropertyDatabase>();
+//	// Method property databases local to this detector
+//	static AnalysisLocal<NonNullParamPropertyDatabase> unconditionalDerefDatabase =
+//		new AnalysisLocal<NonNullParamPropertyDatabase>();
 	
 	// Fields
 	private BugReporter bugReporter;
@@ -102,23 +102,23 @@ public class FindNullDeref
 	private Method method;
 	private JavaClassAndMethod nonNullReturn;
 	
-	private boolean checkDatabase;
+//	private boolean checkDatabase;
 
 	public FindNullDeref(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 	}
 
 	public void visitClassContext(ClassContext classContext) {
-		if (!checkDatabase) {
-			if (AnalysisContext.currentAnalysisContext().getDatabaseInputDir() != null) {
-				unconditionalDerefDatabase.set(AnalysisContext.currentAnalysisContext().loadPropertyDatabase(
-						new NonNullParamPropertyDatabase(),
-						UNCONDITIONAL_DEREF_DB_FILENAME,
-						"unconditional param deref database"));
-			}
-			checkDatabase = true;
-		}
-		
+//		if (!checkDatabase) {
+//			if (AnalysisContext.currentAnalysisContext().getDatabaseInputDir() != null) {
+//				unconditionalDerefDatabase.set(AnalysisContext.currentAnalysisContext().loadPropertyDatabase(
+//						new NonNullParamPropertyDatabase(),
+//						UNCONDITIONAL_DEREF_DB_FILENAME,
+//						"unconditional param deref database"));
+//			}
+//			checkDatabase = true;
+//		}
+//		
 		this.classContext = classContext;
 		
 		try {
@@ -164,7 +164,7 @@ public class FindNullDeref
 				this);
 		worker.execute();
 
-		if (unconditionalDerefDatabase.get() != null
+		if (AnalysisContext.currentAnalysisContext().getUnconditionalDerefParamDatabase() != null
 				|| AnalysisContext.currentAnalysisContext().getNonNullParamDatabase() != null) {
 			checkCallSitesAndReturnInstructions();
 		}
@@ -285,7 +285,7 @@ public class FindNullDeref
 			System.out.println("Null arguments passed: " + nullArgSet);
 		}
 		
-		if (unconditionalDerefDatabase.get() != null) {
+		if (AnalysisContext.currentAnalysisContext().getUnconditionalDerefParamDatabase() != null) {
 			checkUnconditionallyDereferencedParam(location, cpg, typeDataflow, invokeInstruction, nullArgSet, definitelyNullArgSet);
 		}
 		
@@ -344,7 +344,7 @@ public class FindNullDeref
 			InvokeInstruction invokeInstruction,
 			BitSet nullArgSet, BitSet definitelyNullArgSet) throws DataflowAnalysisException, ClassNotFoundException {
 		
-		NonNullParamPropertyDatabase database = unconditionalDerefDatabase.get();
+		NonNullParamPropertyDatabase database = AnalysisContext.currentAnalysisContext().getUnconditionalDerefParamDatabase();
 		
 		// See what methods might be called here
 		TypeFrame typeFrame = typeDataflow.getFactAtLocation(location);

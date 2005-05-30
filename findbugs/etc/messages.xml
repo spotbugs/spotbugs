@@ -55,6 +55,22 @@ This plugin contains all of the standard FindBugs detectors.
 		]]>
 	</Details>
   </Detector>
+  
+  <Detector class="edu.umd.cs.findbugs.detect.NoteUnconditionalParamDerefs">
+	<Details>
+		<![CDATA[
+		<p>
+		Analyze all methods in the application to determine which
+		dereference parameters unconditionally.  This information is used in
+		a later analysis pass to find call sites where null values may
+		be passed to those methods.
+		</p>
+		<p>
+		This is a slow detector.
+		</p>
+		]]>
+	</Details>
+  </Detector>
 
   <Detector class="edu.umd.cs.findbugs.detect.BadUseOfReturnValue">
     <Details>

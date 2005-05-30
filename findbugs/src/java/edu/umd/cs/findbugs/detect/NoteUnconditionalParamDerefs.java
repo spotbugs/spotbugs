@@ -20,25 +20,20 @@
 package edu.umd.cs.findbugs.detect;
 
 import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.TrainingDetector;
-import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.SlowFirstPassDetector;
 
 /**
- * Training pass to find method parameters which are
- * unconditionally dereferenced.  We do this by performing
- * a backwards dataflow analysis which sees which params are
- * dereferenced on all non-implicit-exception paths from the CFG entry.
+ * As a first scanning pass, make a note of unconditionally dereferenced
+ * parameters for later use by FindNullDerefs.
  * 
  * @author David Hovemeyer
  */
-public class TrainUnconditionalDerefParams
-		extends BuildUnconditionalParamDerefDatabase
-		implements TrainingDetector {
-	private static final boolean VERBOSE_DEBUG = Boolean.getBoolean("upd.debug"); 
+public class NoteUnconditionalParamDerefs extends
+		BuildUnconditionalParamDerefDatabase implements SlowFirstPassDetector {
 	
-	private BugReporter bugReporter;
+	BugReporter bugReporter;
 	
-	public TrainUnconditionalDerefParams(BugReporter bugReporter) {
+	public NoteUnconditionalParamDerefs(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 	}
 
@@ -46,10 +41,6 @@ public class TrainUnconditionalDerefParams
 	 * @see edu.umd.cs.findbugs.Detector#report()
 	 */
 	public void report() {
-		AnalysisContext.currentAnalysisContext().storePropertyDatabase(
-				getDatabase(),
-				AnalysisContext.UNCONDITIONAL_DEREF_DB_FILENAME,
-				"unconditional deref database");
 	}
 
 }

@@ -451,6 +451,7 @@ public class FindBugs implements Constants2, ExitCodes {
 		private UserPreferences userPreferences = UserPreferences.createDefaultUserPreferences();
 		private String trainingOutputDir;
 		private String trainingInputDir;
+		private boolean runSlowFirstPassDetectors;
 
 		public FindBugsCommandLine() {
 			addOption("-home", "home directory", "specify FindBugs home directory");
@@ -474,6 +475,7 @@ public class FindBugs implements Constants2, ExitCodes {
 					"Save training data (experimental); output dir defaults to '.'");
 			addSwitchWithOptionalExtraPart("-useTraining", "inputDir",
 					"Use training data (experimental); input dir defaults to '.'");
+			addSwitch("-slowFirstPass","run slow interprocedural first pass");
 			addOption("-outputFile", "filename", "Save output in named file");
 			addOption("-visitors", "v1[,v2...]", "run only named visitors");
 			addOption("-omitVisitors", "v1[,v2...]", "omit named visitors");
@@ -552,6 +554,8 @@ public class FindBugs implements Constants2, ExitCodes {
 				trainingOutputDir = !optionExtraPart.equals("") ? optionExtraPart : ".";
 			} else if (option.equals("-useTraining")) {
 				trainingInputDir = !optionExtraPart.equals("") ? optionExtraPart : ".";
+			} else if (option.equals("-slowFirstPass")) {
+				runSlowFirstPassDetectors = true;
 			} else if (option.equals("-html")) {
 				bugReporterType = HTML_REPORTER;
 				if (!optionExtraPart.equals("")) {
@@ -787,6 +791,8 @@ public class FindBugs implements Constants2, ExitCodes {
 			if (trainingInputDir != null) {
 				findBugs.enableTrainingInput(trainingInputDir);
 			}
+			
+			findBugs.setRunSlowFirstPassDetectors(runSlowFirstPassDetectors);
 
 			return findBugs;
 		}
@@ -843,6 +849,7 @@ public class FindBugs implements Constants2, ExitCodes {
 	private boolean emitTrainingOutput;
 	private String trainingInputDir;
 	private String trainingOutputDir;
+	private boolean runSlowFirstPassDetectors;
 	
 	private int passCount;
 
@@ -979,6 +986,16 @@ public class FindBugs implements Constants2, ExitCodes {
 	public void enableTrainingInput(String trainingInputDir) {
 		this.useTrainingInput = true;
 		this.trainingInputDir = trainingInputDir;
+	}
+	
+	/**
+	 * Set whether slow interprocedural first pass detectors should be run.
+	 * 
+	 * @param runSlowFirstPassDetectors true if slow interprocedural first pass detectors
+	 *                                  should be run, false if not
+	 */
+	public void setRunSlowFirstPassDetectors(boolean runSlowFirstPassDetectors) {
+		this.runSlowFirstPassDetectors = runSlowFirstPassDetectors;
 	}
 
 	/**
@@ -1195,6 +1212,11 @@ public class FindBugs implements Constants2, ExitCodes {
 			return false;
 		
 		if (!factory.isEnabledForCurrentJRE())
+			return false;
+		
+		// Slow first pass detectors are usually disabled, but may be explicitly enabled
+		if (!runSlowFirstPassDetectors
+				&& factory.isDetectorClassSubtypeOf(SlowFirstPassDetector.class))
 			return false;
 
 		// Training detectors are enabled if, and only if, we are emitting training output

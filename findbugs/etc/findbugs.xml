@@ -29,9 +29,14 @@
 		<Later class="edu.umd.cs.findbugs.detect.BCPMethodReturnCheck"/>
 	</SplitPass>
 
-	<!-- NoteNonNullAnnotation should happen in an earlier pass than FindNullDeref. -->	
+	<!-- NoteNonNullAnnotation and NoteUnconditionalParamDerefs
+		 should happen in an earlier pass than FindNullDeref. -->	
 	<SplitPass>
 		<Earlier class="edu.umd.cs.findbugs.detect.NoteNonNullAnnotations"/>
+		<Later class="edu.umd.cs.findbugs.detect.FindNullDeref"/>
+	</SplitPass>
+	<SplitPass>
+		<Earlier class="edu.umd.cs.findbugs.detect.NoteUnconditionalParamDerefs"/>
 		<Later class="edu.umd.cs.findbugs.detect.FindNullDeref"/>
 	</SplitPass>
   </OrderingConstraints>
@@ -50,6 +55,9 @@
             speed="fast"
             reports=""
 			hidden="true"/>
+
+  <Detector class="edu.umd.cs.findbugs.detect.NoteUnconditionalParamDerefs"
+	        speed="slow" reports="" hidden="true"/>
 	        
   <Detector class="edu.umd.cs.findbugs.detect.InfiniteRecursiveLoop" 
 	        speed="fast"

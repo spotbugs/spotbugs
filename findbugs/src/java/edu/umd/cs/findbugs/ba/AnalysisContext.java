@@ -52,8 +52,8 @@ public class AnalysisContext implements AnalysisFeatures {
 	
 	public static final String DEFAULT_NONNULL_PARAM_DATABASE_FILENAME = "nonnullParam.db";
 	public static final String DEFAULT_POSSIBLYNULL_PARAM_DATABASE_FILENAME = "possiblyNullParam.db";
-	
 	public static final String DEFAULT_NULL_RETURN_VALUE_ANNOTATION_DATABASE = "nonnullReturn.db";
+	public static final String UNCONDITIONAL_DEREF_DB_FILENAME = "unconditionalDeref.db";
 	
 	private RepositoryLookupFailureCallback lookupFailureCallback;
 	private SourceFinder sourceFinder;
@@ -71,6 +71,7 @@ public class AnalysisContext implements AnalysisFeatures {
 	private FieldStoreTypeDatabase fieldStoreTypeDatabase;
 	private NonNullParamPropertyDatabase nonNullParamDatabase;
 	private NonNullParamPropertyDatabase possiblyNullParamDatabase;
+	private NonNullParamPropertyDatabase unconditionalDerefParamDatabase;
 
 	private static InheritableThreadLocal<AnalysisContext> currentAnalysisContext
 		= new InheritableThreadLocal<AnalysisContext>();
@@ -237,6 +238,10 @@ public class AnalysisContext implements AnalysisFeatures {
 				DEFAULT_NULL_RETURN_VALUE_ANNOTATION_DATABASE,
 				"@NonNull/@PossiblyNull return value annotation database"
 				);
+		unconditionalDerefParamDatabase = loadPropertyDatabase(
+				new NonNullParamPropertyDatabase(),
+				UNCONDITIONAL_DEREF_DB_FILENAME,
+				"unconditional param deref database");
 	}
 	
 	/**
@@ -355,6 +360,15 @@ public class AnalysisContext implements AnalysisFeatures {
 	
 	public MayReturnNullPropertyDatabase getNullReturnValueAnnotationDatabase() {
 		return nullReturnValueAnnotationDatabase;
+	}
+	
+	public void setUnconditionalDerefParamDatabase(
+			NonNullParamPropertyDatabase unconditionalDerefParamDatabase) {
+		this.unconditionalDerefParamDatabase = unconditionalDerefParamDatabase;
+	}
+	
+	public NonNullParamPropertyDatabase getUnconditionalDerefParamDatabase() {
+		return unconditionalDerefParamDatabase;
 	}
 
 	/**
