@@ -534,6 +534,8 @@ public class FindNullDeref
 		} else if (refValue.isNullOnSomePath()) {
 			String type = onExceptionPath ? "NP_NULL_ON_SOME_PATH_EXCEPTION" : "NP_NULL_ON_SOME_PATH";
 			int priority = onExceptionPath ? LOW_PRIORITY : NORMAL_PRIORITY;
+			if (refValue.isReturnValue())
+				type = "NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE";
 			if (DEBUG) System.out.println("Reporting null on some path: value=" + refValue);
 			reportNullDeref(propertySet, classContext, method, location, type, priority);
 		}
@@ -571,7 +573,6 @@ public class FindNullDeref
 		boolean isChecked = redundantBranch.firstValue.isChecked();
 		boolean wouldHaveBeenAKaboom = redundantBranch.firstValue.wouldHaveBeenAKaboom();
 		
-		
 		int priority = LOW_PRIORITY;
 		String warning;
 		if (redundantBranch.secondValue == null) {
@@ -593,6 +594,16 @@ public class FindNullDeref
 		
 		if (wouldHaveBeenAKaboom) priority = HIGH_PRIORITY;
 		else if (isChecked) priority = NORMAL_PRIORITY;
+
+		if (false) {
+		System.out.println("RCN" + priority + " " 
+						+ redundantBranch.firstValue + " =? "
+						+ redundantBranch.secondValue 
+						+ " : " + warning 
+						);
+		if (isChecked) System.out.println("isChecked");
+		if (wouldHaveBeenAKaboom) System.out.println("wouldHaveBeenAKaboom");
+		}
 		BugInstance bugInstance =
 			new BugInstance(this, warning, priority)
 				.addClassAndMethod(methodGen, sourceFile)
