@@ -284,17 +284,17 @@ public class BCPMethodReturnCheck extends ByteCodePatternDetector implements Sta
 		System.out.println("CalledMethodClass: " + calledMethodClass);
 		System.out.println("CalledMethodName: " + calledMethodName);
 		*/
-		int priority = NORMAL_PRIORITY;
+		int priority = HIGH_PRIORITY;
 		if (calledMethodName.equals("createNewFile"))
 			priority = LOW_PRIORITY;
-		else if ( calledMethodClass.startsWith("java.lang")
+
+		if ( calledMethodClass.startsWith("java.lang")
 			|| calledMethodClass.startsWith("java.math")
 		        || calledMethodClass.endsWith("Error")
 		        || calledMethodClass.endsWith("Exception"))
-			priority = HIGH_PRIORITY;
+			priority--;
 		if (calledMethodClass.equals(javaClass.getClassName()))
 			priority++;
-		/*
 		String calledPackage = extractPackageName(calledMethodClass);
 		String callingPackage = extractPackageName(javaClass.getClassName());
 		if (calledPackage.length() > 0
@@ -302,7 +302,6 @@ public class BCPMethodReturnCheck extends ByteCodePatternDetector implements Sta
 		        && (calledPackage.startsWith(callingPackage)
 		        || callingPackage.startsWith(calledPackage)))
 			priority++;
-		*/
 		// System.out.println("priority: " + priority);
 				
 		bugReporter.reportBug(new BugInstance(this, "RV_RETURN_VALUE_IGNORED",
