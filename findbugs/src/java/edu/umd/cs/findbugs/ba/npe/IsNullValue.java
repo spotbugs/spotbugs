@@ -264,8 +264,9 @@ public class IsNullValue implements IsNullValueAnalysisFeatures {
 	 */
 	public static IsNullValue merge(IsNullValue a, IsNullValue b) {
 		if (a == b) return a;
-		int andFlags = a.getFlags() & b.getFlags(); // FIXME: union appropriate for all flags?
-		int orFlags = a.getFlags() | b.getFlags(); // FIXME: union appropriate for all flags?
+		int aFlags = a.getFlags();
+		int bFlags = b.getFlags();
+		
 		a = a.toBaseValue();
 		b = b.toBaseValue();
 
@@ -275,12 +276,16 @@ public class IsNullValue implements IsNullValueAnalysisFeatures {
 			IsNullValue tmp = a;
 			a = b;
 			b = tmp;
+			int tmpFlags = aFlags;
+			aFlags = bFlags;
+			bFlags = tmpFlags;
 		}
-
+		assert a.kind >= b.kind;
 		int result = mergeMatrix[a.kind][b.kind];
-		int combinedFlags = orFlags;
-		if (result < NN)
-			combinedFlags = andFlags;
+		int combinedFlags;
+		if (result < NN) combinedFlags =  aFlags & bFlags;
+		else combinedFlags =  bFlags & (aFlags | EXCEPTION);
+
 		IsNullValue resultValue = instanceByFlagsList[combinedFlags >> FLAG_SHIFT][result];
 		return resultValue;
 	}
