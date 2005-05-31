@@ -372,10 +372,18 @@ public class IsNullValueAnalysis
 						throw new IllegalStateException("no vna frame at block entry?");
 
 					Instruction firstInDest = edge.getTarget().getFirstInstruction().getInstruction();
-					// If we're not sure that the instance is definitely non-null,
-					// update the is-null information for the dereferenced value.
+			
 					IsNullValue instance = fact.getInstance(firstInDest, methodGen.getConstantPool());
-					if (!instance.isDefinitelyNotNull()) {
+					
+					
+					if (instance.isDefinitelyNull()) {
+						// If we know the variable is null, this edge is infeasible
+						tmpFact = createFact();
+						tmpFact.setTop();
+					}
+					else if (!instance.isDefinitelyNotNull()) {
+						// If we're not sure that the instance is definitely non-null,
+						// update the is-null information for the dereferenced value.
 						ValueNumber replaceMe = vnaFrame.getInstance(firstInDest, methodGen.getConstantPool());
 						tmpFact = replaceValues(fact, tmpFact, replaceMe, vnaFrame, targetVnaFrame, IsNullValue.noKaboomNonNullValue());
 					}
