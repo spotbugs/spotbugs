@@ -592,7 +592,10 @@ public class FindNullDeref
 
 		}
 		
-		if (wouldHaveBeenAKaboom) priority = HIGH_PRIORITY;
+		if (wouldHaveBeenAKaboom) {
+			priority = HIGH_PRIORITY;
+			warning = "RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE";
+		}
 		else if (isChecked) priority = NORMAL_PRIORITY;
 
 		if (false) {

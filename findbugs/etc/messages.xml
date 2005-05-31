@@ -2760,6 +2760,19 @@ body of an <code>if</code> statement, e.g.:</p>
     </Details>
   </BugPattern>
 
+  <BugPattern type="RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE">
+    <ShortDescription>Nullcheck of value previously dereferenced</ShortDescription>
+    <LongDescription>Nullcheck of value previously dereferenced {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p> A value is checked here to see whether it is null, but this value can't
+be null because it was previously dereferences and if it were null a null pointer
+exception would have occurred. Essentially, this code and the previous dereference
+disagree as to whether this value is allowed to be null. Either the check is redundant
+or the previous dereference is erroneous.
+]]>
+    </Details>
+  </BugPattern>
   <BugPattern type="RCN_REDUNDANT_NULLCHECK_OF_NULL_VALUE">
     <ShortDescription>Redundant nullcheck of value known to be null</ShortDescription>
     <LongDescription>Redundant nullcheck of value known to be null {1}</LongDescription>
@@ -2770,6 +2783,9 @@ the constant null.
 ]]>
     </Details>
   </BugPattern>
+
+
+
   <BugPattern type="RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE">
     <ShortDescription>Redundant comparison of two null values</ShortDescription>
     <LongDescription>Redundant comparison of two null values {1}</LongDescription>
