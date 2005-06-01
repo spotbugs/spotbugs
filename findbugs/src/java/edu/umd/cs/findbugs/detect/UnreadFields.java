@@ -166,8 +166,10 @@ public class UnreadFields extends BytecodeScanningDetector implements Constants2
 	int count_aload_1;
 
 	private OpcodeStack opcodeStack = new OpcodeStack();
+	private int previousOpcode;
 	public void visit(Code obj) {
 		count_aload_1 = 0;
+		previousOpcode = -1;
 		nullTested.clear();
 		seenInvokeStatic = false;
                 opcodeStack.resetForMethodEntry(this);
@@ -328,7 +330,7 @@ public class UnreadFields extends BytecodeScanningDetector implements Constants2
 				item = opcodeStack.getStackItem(0);
 				if (!item.isNull()) nullTested.add(f);
 			}
-			if (item == null || !item.isNull()) {
+			if (previousOpcode != ACONST_NULL ) {
 				if (DEBUG) System.out.println("put: " + f);
 				writtenFields.add(f);
 				if (
@@ -346,6 +348,7 @@ public class UnreadFields extends BytecodeScanningDetector implements Constants2
 			}
 		}
 		opcodeStack.sawOpcode(this, seen);
+		previousOpcode = seen;
 		if (DEBUG) {
 		System.out.println("After " + OPCODE_NAMES[seen] + " opcode stack is");
 		System.out.println(opcodeStack);
