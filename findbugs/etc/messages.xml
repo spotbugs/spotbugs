@@ -2625,6 +2625,17 @@ This may lead to a <code>NullPointerException</code> when the code is executed.<
 ]]>
     </Details>
   </BugPattern>
+  <BugPattern type="NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE">
+    <ShortDescription>Possible null pointer returned by method could be dereferenced </ShortDescription>
+    <LongDescription>Possible null pointer returned by method could be dereferenced {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p> A reference value dereferenced could be returned by a method that could have
+returned a null value. 
+This may lead to a <code>NullPointerException</code> when the code is executed.</p>
+]]>
+    </Details>
+  </BugPattern>
 
   <BugPattern type="NP_NULL_ON_SOME_PATH_EXCEPTION">
     <ShortDescription>Possible null pointer dereference in method on exception path</ShortDescription>
@@ -2800,8 +2811,8 @@ the constant null.
 
 
   <BugPattern type="RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE">
-    <ShortDescription>Redundant comparison of two null values</ShortDescription>
-    <LongDescription>Redundant comparison of two null values {1}</LongDescription>
+    <ShortDescription>Redundant nullcheck of value known to be null</ShortDescription>
+    <LongDescription>Redundant nullcheck of value known to be non-null {1}</LongDescription>
     <Details>
 <![CDATA[
 <p> This method contains a redundant check of a known non-null value against
