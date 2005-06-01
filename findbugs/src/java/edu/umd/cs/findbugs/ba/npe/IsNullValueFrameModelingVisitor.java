@@ -104,7 +104,7 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
 		
 		boolean stringMethodCall = callType.equals(Type.STRING) && returnType.equals(Type.STRING);
 
-		boolean isReadLine =  false && methodName.equals("readLine");
+		boolean isReadLine =  methodName.equals("readLine");
 		// Determine if we are going to model the return value of this call.
 		boolean modelCallReturnValue =
 			  isReadLine
@@ -121,7 +121,7 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
 			IsNullValue pushValue = null;
 			if (isReadLine) {
 				// String methods always return a non-null value
-				pushValue = IsNullValue.nullOnSimplePathValue();
+				pushValue = IsNullValue.nullOnSimplePathValue().toMayReturnNullValue();
 			} else if (stringMethodCall) {
 				// String methods always return a non-null value
 				pushValue = IsNullValue.nonNullValue();
