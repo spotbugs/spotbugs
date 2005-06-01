@@ -80,7 +80,8 @@ public class BasicBlock extends AbstractVertex<Edge, BasicBlock> implements Debu
 	private InstructionHandle lastInstruction;
 	private InstructionHandle exceptionThrower; // instruction for which this block is the ETB
 	private CodeExceptionGen exceptionGen; // set if this block is the entry point of an exception handler
-
+	private boolean inJSRSubroutine;
+	
 	/* ----------------------------------------------------------------------
 	 * Public methods
 	 * ---------------------------------------------------------------------- */
@@ -93,6 +94,15 @@ public class BasicBlock extends AbstractVertex<Edge, BasicBlock> implements Debu
 		this.lastInstruction = null;
 		this.exceptionThrower = null;
 		this.exceptionGen = null;
+		this.inJSRSubroutine = false;
+	}
+	
+	public boolean isInJSRSubroutine() {
+		return inJSRSubroutine;
+	}
+	
+	void setInJSRSubroutine(boolean inJSRSubroutine) {
+		this.inJSRSubroutine = inJSRSubroutine;
 	}
 
 	public int getId() {

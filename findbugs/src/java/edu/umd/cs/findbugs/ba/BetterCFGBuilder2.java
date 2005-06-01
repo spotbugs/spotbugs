@@ -790,6 +790,9 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 		while (context.hasMoreWork()) {
 			BasicBlock subBlock = context.nextItem();
 			BasicBlock resultBlock = context.getBlock(subBlock);
+			
+			// Mark blocks which are in JSR subroutines
+			resultBlock.setInJSRSubroutine(context.getCaller() != null);
 
 			// Copy instructions into the result block
 			BasicBlock.InstructionIterator insIter = subBlock.instructionIterator();
