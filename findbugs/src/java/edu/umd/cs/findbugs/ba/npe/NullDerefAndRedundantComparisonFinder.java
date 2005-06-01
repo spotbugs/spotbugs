@@ -154,10 +154,10 @@ public class NullDerefAndRedundantComparisonFinder {
 			boolean reportIt = true;
 			if (lineMentionedMultipleTimes.get(lineNumber) && confused)
 				reportIt = false;
-			if (false /* occurs in a JSR */
+			if (redundantBranch.location.getBasicBlock().isInJSRSubroutine() /* occurs in a JSR */
 					&& confused)
 				reportIt = false;
-			if (reportIt)
+			if (reportIt) {
 				collector.foundRedundantNullCheck(redundantBranch.location, redundantBranch);
 			}
 		}
