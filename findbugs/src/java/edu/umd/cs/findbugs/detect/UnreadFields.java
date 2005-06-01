@@ -323,22 +323,26 @@ public class UnreadFields extends BytecodeScanningDetector implements Constants2
 			}
 		} else if (seen == PUTFIELD || seen == PUTSTATIC) {
 			FieldAnnotation f = FieldAnnotation.fromReferencedField(this);
+			OpcodeStack.Item item = null;
 			if (opcodeStack.getStackDepth() > 0) {
-			OpcodeStack.Item item = opcodeStack.getStackItem(0);
-			if (!item.isNull()) nullTested.add(f);
+				item = opcodeStack.getStackItem(0);
+				if (!item.isNull()) nullTested.add(f);
 			}
-			if (DEBUG) System.out.println("put: " + f);
-			writtenFields.add(f);
-			if (
-				getMethodName().equals("<init>") 
-				|| getMethodName().equals("<clinit>") 
-				|| getMethod().isPrivate()) {
-				writtenInConstructorFields.add(f);
-				assumedNonNull.remove(f);
+			if (item == null || !item.isNull()) {
+				if (DEBUG) System.out.println("put: " + f);
+				writtenFields.add(f);
+				if (
+						getMethodName().equals("<init>") 
+						|| getMethodName().equals("<clinit>") 
+						|| getMethod().isPrivate()) {
+					writtenInConstructorFields.add(f);
+					assumedNonNull.remove(f);
 				}
-			if (getClassConstantOperand().equals(getClassName()) &&
-			        !allMyFields.contains(f)) {
-				superWrittenFields.add(getNameConstantOperand());
+				
+				if (getClassConstantOperand().equals(getClassName()) &&
+						!allMyFields.contains(f)) {
+					superWrittenFields.add(getNameConstantOperand());
+				}
 			}
 		}
 		opcodeStack.sawOpcode(this, seen);
