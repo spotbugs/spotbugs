@@ -2643,6 +2643,19 @@ be an exception path, since the default case is often infeasible.</p>
     </Details>
   </BugPattern>
   
+  <BugPattern type="NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE">
+	<ShortDescription>Possible null pointer dereference due to return value of called method</ShortDescription>
+	<LongDescription>Possible null pointer dereference in {1} due to return value of called method</LongDescription>
+	<Details>
+		<![CDATA[
+<p> A reference value which is null on some exception control path is
+dereferenced here.&nbsp; This may lead to a <code>NullPointerException</code>
+when the code is executed.&nbsp; The value may be null because it
+was return from a method which is known to return possibly-null values.</p>
+		]]>
+	</Details>
+  </BugPattern>
+  
   <BugPattern type="NP_NULL_PARAM_DEREF">
 	<ShortDescription>Method call passes null for unconditionally dereferenced parameter</ShortDescription>
 	<LongDescription>Method call in {1} passes null for unconditionally dereferenced parameter of {2}</LongDescription>
