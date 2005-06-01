@@ -145,8 +145,19 @@ public class NullDerefAndRedundantComparisonFinder {
 			// code along different control paths.  So, to report the bug,
 			// we check to ensure that the branch is REALLY determined each
 			// place it is duplicated, and that it is determined in the same way.
-			if (!lineMentionedMultipleTimes.get(lineNumber) || !undeterminedBranchSet.get(lineNumber) &&
-			        !(definitelySameBranchSet.get(lineNumber) && definitelyDifferentBranchSet.get(lineNumber))) {
+			
+			boolean confused = undeterminedBranchSet.get(lineNumber) ||
+	        				(definitelySameBranchSet.get(lineNumber) && definitelyDifferentBranchSet.get(lineNumber));
+			
+			// confused if there is JSR confusion or multiple null checks with different results on the same line
+			
+			boolean reportIt = true;
+			if (lineMentionedMultipleTimes.get(lineNumber) && confused)
+				reportIt = false;
+			if (false /* occurs in a JSR */
+					&& confused)
+				reportIt = false;
+			if (reportIt)
 				collector.foundRedundantNullCheck(redundantBranch.location, redundantBranch);
 			}
 		}
