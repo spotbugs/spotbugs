@@ -149,6 +149,7 @@ public class OpcodeStack implements Constants2
 			if (i2 == null) return i1;
 			if (i1.equals(i2)) return i1;
 			Item m = new Item();
+			m.isNull = false;	
 			if (equals(i1.signature,i2.signature))
 				m.signature = i1.signature;
 			if (equals(i1.constValue,i2.constValue))
