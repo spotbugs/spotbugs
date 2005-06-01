@@ -73,8 +73,8 @@ public class IsNullValue implements IsNullValueAnalysisFeatures {
 		{NSP,    NSP,          NN,         NN,			 NO_KABOOM_NN},                // NO_KABOOM_NN
 		{NSP,    NSP,          NSP,        NSP,		NSP,     NSP},                         // NSP
 		{NSP,    NSP,          NN_UNKNOWN, NN_UNKNOWN, NN_UNKNOWN,	NSP,  NN_UNKNOWN, },          // NN_UNKNOWN
-		{NCP2,   NCP2,         NCP2,       NCP2,       NCP2, NCP2, NCP2,        NCP2,},    // NCP2
-		{NCP3,   NCP3,         NCP3,       NCP3,       NCP3, NCP3, NCP3,        NCP3, NCP3}// NCP3
+		{NSP,   NSP,         NCP2,       NCP2,       NCP2, NCP2, NCP2,        NCP2,},    // NCP2
+		{NSP,   NSP,         NCP3,       NCP3,       NCP3, NCP3, NCP3,        NCP3, NCP3}// NCP3
 	};
 	
 	private static final IsNullValue[][] instanceByFlagsList = createInstanceByFlagList();

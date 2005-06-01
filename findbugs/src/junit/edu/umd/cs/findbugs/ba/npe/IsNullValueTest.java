@@ -33,4 +33,18 @@ public class IsNullValueTest extends TestCase {
 		assertTrue(nsp_e2.isNullOnSomePath());
 		assertTrue(nsp_e2.isException());
 	}
+	public void testMerge5() {
+		IsNullValue checkedNonNull = IsNullValue.checkedNonNullValue();	
+		IsNullValue nsp_e = IsNullValue.nullOnSimplePathValue().toExceptionValue();
+		IsNullValue nsp_e2 = IsNullValue.merge(checkedNonNull, nsp_e);
+		assertTrue(nsp_e2.isNullOnSomePath());
+		assertTrue(nsp_e2.isException());
+	}
+	public void testMerge6() {
+		IsNullValue checkedNull_e = IsNullValue.checkedNullValue().toExceptionValue();	
+		IsNullValue unknown = IsNullValue.nonReportingNotNullValue();
+		IsNullValue nsp_e = IsNullValue.merge(checkedNull_e, unknown);
+		assertTrue(nsp_e.isNullOnSomePath());
+		assertTrue(nsp_e.isException());
+	}
 }
