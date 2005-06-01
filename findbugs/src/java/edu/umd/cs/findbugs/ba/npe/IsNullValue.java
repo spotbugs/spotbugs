@@ -267,9 +267,19 @@ public class IsNullValue implements IsNullValueAnalysisFeatures {
 		int aFlags = a.getFlags();
 		int bFlags = b.getFlags();
 		
+
+		int combinedFlags =  aFlags & bFlags;
+
+		
+		if (!(a.isNullOnSomePath() || a.isDefinitelyNull()) && b.isException())
+				combinedFlags |= EXCEPTION;
+		else
+			if (!(b.isNullOnSomePath() || b.isDefinitelyNull()) && a.isException())
+				combinedFlags |= EXCEPTION;
 		a = a.toBaseValue();
 		b = b.toBaseValue();
-
+		
+		
 		// Left hand value should be >=, since it is used
 		// as the first dimension of the matrix to index.
 		if (a.kind < b.kind) {
@@ -282,9 +292,7 @@ public class IsNullValue implements IsNullValueAnalysisFeatures {
 		}
 		assert a.kind >= b.kind;
 		int result = mergeMatrix[a.kind][b.kind];
-		int combinedFlags;
-		if (result < NN) combinedFlags =  aFlags & bFlags;
-		else combinedFlags =  bFlags & (aFlags | EXCEPTION);
+		
 
 		IsNullValue resultValue = instanceByFlagsList[combinedFlags >> FLAG_SHIFT][result];
 		return resultValue;
