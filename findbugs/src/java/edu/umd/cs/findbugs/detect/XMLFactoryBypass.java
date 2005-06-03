@@ -42,7 +42,7 @@ public class XMLFactoryBypass extends BytecodeScanningDetector implements Consta
         add("org.xml.sax.XMLFilter");
         add("javax.xml.transform.Transformer");
     }};
-    private final Set<String> checkedClasses = new HashSet<String>();
+    private final Set<String> rejectedXMLClasses = new HashSet<String>();
     private JavaClass curClass;
 
     public XMLFactoryBypass(BugReporter bugReporter) {
@@ -58,9 +58,9 @@ public class XMLFactoryBypass extends BytecodeScanningDetector implements Consta
 	    try {
 		    if (seen == INVOKESPECIAL) {
 		        String newClsName = getClassConstantOperand();
-		        if (checkedClasses.contains(newClsName))
+		        if (rejectedXMLClasses.contains(newClsName))
 		        	return;
-		        checkedClasses.add(newClsName);
+		        rejectedXMLClasses.add(newClsName);
 		        
 		        if (newClsName.startsWith("java/") || newClsName.startsWith("javax/"))
 		            return;
@@ -84,6 +84,7 @@ public class XMLFactoryBypass extends BytecodeScanningDetector implements Consta
 		                bugReporter.reportBug( new BugInstance(this, "XFB_XML_FACTORY_BYPASS", LOW_PRIORITY)
 		                	.addClassAndMethod(this)
 		                	.addSourceLine(this));
+		                rejectedXMLClasses.remove(newClsName);
 		            }
 		        }
 		    }
