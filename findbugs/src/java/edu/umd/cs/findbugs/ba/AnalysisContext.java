@@ -60,8 +60,8 @@ public class AnalysisContext implements AnalysisFeatures {
 	private SourceFinder sourceFinder;
 	private ClassContextCache classContextCache;
 	private Subtypes subtypes;
-	public Map analysisLocals = 
-		Collections.synchronizedMap(new HashMap());
+	public Map<Object,Object> analysisLocals = 
+		Collections.synchronizedMap(new HashMap<Object,Object>());
 	private BitSet boolPropertySet;
 	
 	// Interprocedural fact databases

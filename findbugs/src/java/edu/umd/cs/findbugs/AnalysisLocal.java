@@ -26,20 +26,25 @@ public class AnalysisLocal<T> {
 		return null;
 	}
 	
-	protected Map<AnalysisLocal<T>, T> getMap() {
-		AnalysisContext t = AnalysisContext.currentAnalysisContext();
-		return  t.analysisLocals;
+//	protected Map<AnalysisLocal<T>, T> getMap() {
+//		AnalysisContext t = AnalysisContext.currentAnalysisContext();
+//		return  t.analysisLocals;
+//	}
+	
+	protected Map<Object,Object> getMap() {
+		return AnalysisContext.currentAnalysisContext().analysisLocals;
 	}
 	
 	public T get() {
-		Map<AnalysisLocal<T>, T> m = getMap();
+		//Map<AnalysisLocal<T>, T> m = getMap();
+		Map<Object,Object> m = getMap();
 		if (m.containsKey(this)) {
-			return m.get(this);
+			return (T) m.get(this);
 		}
 		
 		synchronized(m) {
 			if (m.containsKey(this)) {
-				return m.get(this);
+				return (T) m.get(this);
 			}
 			T result = initialValue();
 			m.put(this,result);
@@ -47,11 +52,11 @@ public class AnalysisLocal<T> {
 		}
 	}
 	public  void set(T value) {
-		Map<AnalysisLocal<T>, T> m = getMap();
+		Map<Object, Object> m = getMap();
 		m.put(this, value);
 	}
 	public  void  remove() {
-		Map<AnalysisLocal<T>, T> m = getMap();
+		Map<Object, Object> m = getMap();
 		m.remove(this);
 	}
 }
