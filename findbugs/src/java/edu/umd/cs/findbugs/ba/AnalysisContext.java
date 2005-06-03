@@ -229,10 +229,10 @@ public class AnalysisContext implements AnalysisFeatures {
 	 * If possible, load interprocedural property databases.
 	 */
 	public void loadInterproceduralDatabases() {
-		mayReturnNullDatabase = loadPropertyDatabase(
-				new MayReturnNullPropertyDatabase(),
-				DEFAULT_NULL_RETURN_VALUE_DB_FILENAME,
-				"may return null database");
+//		mayReturnNullDatabase = loadPropertyDatabase(
+//				new MayReturnNullPropertyDatabase(),
+//				DEFAULT_NULL_RETURN_VALUE_DB_FILENAME,
+//				"may return null database");
 		fieldStoreTypeDatabase = loadPropertyDatabase(
 				new FieldStoreTypeDatabase(),
 				FieldStoreTypeDatabase.DEFAULT_FILENAME,

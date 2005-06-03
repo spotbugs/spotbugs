@@ -64,7 +64,7 @@
 	        speed="slow" reports="" hidden="true"/>
 
   <Detector class="edu.umd.cs.findbugs.detect.NoteNullReturnValues"
-            speed="slow" reports="" hidden="true"/>
+            speed="slow" reports="" hidden="true" disabled="true"/>
 	        
   <Detector class="edu.umd.cs.findbugs.detect.InfiniteRecursiveLoop" 
 	        speed="fast"
