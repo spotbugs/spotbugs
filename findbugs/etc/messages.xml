@@ -906,6 +906,17 @@ visibility to protected will allow the field to be directly written.</p>
     </Details>
   </Detector>
 
+  <Detector class="edu.umd.cs.findbugs.detect.XMLFactoryBypass">
+  	<Details>
+<![CDATA[
+<p> This detector looks for direct allocations of implementations of XML interfaces.
+This ties the code to a specific implementation, rather than using the supplied 
+factory pattern to create these objects.</p>
+<p>It is a fast detector.</p>
+]]>
+    </Details>
+  </Detector>
+
   <Detector class="edu.umd.cs.findbugs.detect.TrainNullReturnValues">
 	<Details>
 		<![CDATA[
@@ -3879,6 +3890,25 @@ and the next method is supposed to change the state of the iterator.
     </Details>
   </BugPattern>
   
+  <BugPattern type="XFB_XML_FACTORY_BYPASS">
+    <ShortDescription>Method directly allocates a specific implementation of xml interfaces</ShortDescription>
+    <LongDescription>Method {1} directly allocates a specific implementation of xml interfaces</LongDescription>
+    <Details>
+    	<![CDATA[
+    	<p>
+    	This method allocates a specific implementation of an xml interface. It is preferable to use
+		the supplied factory classes to create these objects so that the implementation can be
+		changed at runtime. See 
+		<ul>
+			<li>javax.xml.parsers.DocumentBuilderFactory</li>
+			<li>javax.xml.parsers.SAXParserFactory</li>
+			<li>javax.xml.transform.TransformerFactory</li>
+		</ul>
+		for details.
+    	</p>
+    	]]>
+    </Details>
+  </BugPattern>
   <!--
   **********************************************************************
    BugCodes
@@ -3985,4 +4015,5 @@ and the next method is supposed to change the state of the iterator.
   <BugCode abbrev="J2EE">J2EE error</BugCode>
   <BugCode abbrev="DB">Duplicate Branches</BugCode>
   <BugCode abbrev="IMA">Inefficient Member Access</BugCode>
+  <BugCode abbrev="XFB">XML Factory Bypass</BugCode>
 </MessageCollection>
