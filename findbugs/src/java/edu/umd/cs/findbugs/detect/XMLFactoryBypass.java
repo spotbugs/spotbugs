@@ -28,10 +28,10 @@ import org.apache.bcel.classfile.JavaClass;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
-import edu.umd.cs.findbugs.StatelessDetector;
+import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.visitclass.Constants2;
 
-public class XMLFactoryBypass extends BytecodeScanningDetector implements Constants2, StatelessDetector {
+public class XMLFactoryBypass extends BytecodeScanningDetector implements Constants2 {
     private BugReporter bugReporter;
     private static final Set<String> xmlInterfaces = new HashSet<String>()
     {{
@@ -42,19 +42,26 @@ public class XMLFactoryBypass extends BytecodeScanningDetector implements Consta
         add("org.xml.sax.XMLFilter");
         add("javax.xml.transform.Transformer");
     }};
+    private final Set<String> checkedClasses = new HashSet<String>();
+    private JavaClass curClass;
 
     public XMLFactoryBypass(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 	}
     
-	public Object clone() throws CloneNotSupportedException {
-		return super.clone();
-	}
-	
+    public void visitClassContext(ClassContext classContext) {
+    	curClass = classContext.getJavaClass();
+    	super.visitClassContext(classContext);
+    }
+    	
 	public void sawOpcode(int seen) {
 	    try {
 		    if (seen == INVOKESPECIAL) {
 		        String newClsName = getClassConstantOperand();
+		        if (checkedClasses.contains(newClsName))
+		        	return;
+		        checkedClasses.add(newClsName);
+		        
 		        if (newClsName.startsWith("java/") || newClsName.startsWith("javax/"))
 		            return;
 		        
@@ -64,8 +71,13 @@ public class XMLFactoryBypass extends BytecodeScanningDetector implements Consta
 		        String invokerClsName = this.getClassName();
 		        if (samePackageBase(invokerClsName, newClsName))
 		            return;
-		        
+		        		        
 		        JavaClass newCls = Repository.lookupClass(getClassConstantOperand());
+		        
+		        JavaClass superCls = curClass.getSuperClass();
+		        if (superCls.getClassName().equals(newClsName.replace('/', '.')))
+		        	return;
+		        
 		        JavaClass[] infs = newCls.getAllInterfaces();
 		        for (int i = 0; i < infs.length; i++) {
 		            if (xmlInterfaces.contains(infs[i].getClassName())) {
