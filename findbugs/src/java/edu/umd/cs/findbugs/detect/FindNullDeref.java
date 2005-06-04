@@ -404,8 +404,8 @@ public class FindNullDeref
 		MethodGen methodGen = classContext.getMethodGen(method);
 		String sourceFile = classContext.getJavaClass().getSourceFileName();
 		BugInstance warning = new BugInstance("NP_NULL_PARAM_DEREF", NORMAL_PRIORITY)
-				.addClassAndMethod(methodGen, sourceFile)
-				.addSourceLine(methodGen, sourceFile, location.getHandle());
+				.addClassAndMethod(methodGen, sourceFile);
+				
 		
 		// Check which params might be null
 		addParamAnnotations(definitelyNullArgSet, unconditionallyDereferencedNullArgSet, propertySet, warning);
@@ -432,9 +432,9 @@ public class FindNullDeref
 				warning.addMethod(safeMethod.getJavaClass(), safeMethod.getMethod()).describe("METHOD_SAFE_TARGET");
 			}
 		}
-
-		finishWarning(location, propertySet, warning);
 		
+		finishWarning(location, propertySet, warning);
+		warning.addSourceLine(methodGen, sourceFile, location.getHandle());
 		bugReporter.reportBug(warning);
 	}
 
