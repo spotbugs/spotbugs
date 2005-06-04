@@ -3903,6 +3903,8 @@ and the next method is supposed to change the state of the iterator.
 			<li>javax.xml.parsers.DocumentBuilderFactory</li>
 			<li>javax.xml.parsers.SAXParserFactory</li>
 			<li>javax.xml.transform.TransformerFactory</li>
+			<li>org.w3c.dom.Document.create<i>XXXX</i></li>
+			
 		</ul>
 		for details.
     	</p>
