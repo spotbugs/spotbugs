@@ -460,6 +460,7 @@ public class FindBugs implements Constants2, ExitCodes {
 			        "specify list of plugin Jar files to load");
 			addSwitch("-showPlugins", "show list of available plugins");
 			addSwitch("-quiet", "suppress error messages");
+			addSwitch("-longBugCodes", "report long bug codes");
 			addSwitch("-experimental", "report all warnings including experimental bug patterns");
 			addSwitch("-low", "report all warnings");
 			addSwitch("-medium", "report only medium and high priority warnings [default]");
