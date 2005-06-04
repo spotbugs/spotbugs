@@ -62,7 +62,7 @@ public class InefficientMemberAccess extends BytecodeScanningDetector implements
 			if (!methodName.startsWith(ACCESS_PREFIX))
 				return;
 			try {
-				varSlot = Integer.valueOf(methodName.substring(ACCESS_PREFIX.length()));
+				varSlot = Integer.parseInt(methodName.substring(ACCESS_PREFIX.length()));
 			}
 			catch (NumberFormatException nfe) {
 				return;
