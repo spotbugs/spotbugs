@@ -46,7 +46,6 @@ public class XMLFactoryBypass extends BytecodeScanningDetector implements Consta
         add("org.w3c.dom.Comment");
         add("org.w3c.dom.Element");
         add("org.w3c.dom.Text");
-        add("org.w3c.dom.Text");
     }};
     private final Set<String> rejectedXMLClasses = new HashSet<String>();
     private JavaClass curClass;
