@@ -34,7 +34,9 @@ import edu.umd.cs.findbugs.visitclass.Constants2;
 public class XMLFactoryBypass extends BytecodeScanningDetector implements Constants2 {
     private BugReporter bugReporter;
     private static final Set<String> xmlInterfaces = new HashSet<String>()
-    {{
+    {
+    	static final long serialVersionUID = -9117982073509840017L;
+    	{
         add("javax.xml.parsers.DocumentBuilder");
         add("org.w3c.dom.Document");
         add("javax.xml.parsers.SAXParser");
@@ -46,7 +48,8 @@ public class XMLFactoryBypass extends BytecodeScanningDetector implements Consta
         add("org.w3c.dom.Comment");
         add("org.w3c.dom.Element");
         add("org.w3c.dom.Text");
-    }};
+    	}
+    };
     private final Set<String> rejectedXMLClasses = new HashSet<String>();
     private JavaClass curClass;
 
