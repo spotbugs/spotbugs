@@ -437,6 +437,7 @@ public class FindBugs implements Constants2, ExitCodes {
 	private static class FindBugsCommandLine extends CommandLine {
 		private int bugReporterType = PRINTING_REPORTER;
 		private boolean relaxedReportingMode = false;
+		private boolean useLongBugCodes = false;
 		private boolean xmlWithMessages = false;
 		private String stylesheet = null;
 		private Project project = new Project();
@@ -528,6 +529,8 @@ public class FindBugs implements Constants2, ExitCodes {
 				System.exit(0);
 			} else if (option.equals("-experimental"))
 				priorityThreshold = Detector.EXP_PRIORITY;
+			else if (option.equals("-longBugCodes"))
+				useLongBugCodes = true;
 			else if (option.equals("-low"))
 				priorityThreshold = Detector.LOW_PRIORITY;
 			else if (option.equals("-medium"))
@@ -764,6 +767,7 @@ public class FindBugs implements Constants2, ExitCodes {
 				textuiBugReporter.setErrorVerbosity(BugReporter.SILENT);
 
 			textuiBugReporter.setPriorityThreshold(priorityThreshold);
+			textuiBugReporter.setUseLongBugCodes(useLongBugCodes);
 
 			if (outputStream != null)
 				textuiBugReporter.setOutputStream(outputStream);

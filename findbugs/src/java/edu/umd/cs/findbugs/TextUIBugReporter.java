@@ -35,7 +35,7 @@ import java.util.HashMap;
  */
 public abstract class TextUIBugReporter extends AbstractBugReporter {
 	private boolean reportStackTrace;
-
+	private boolean useLongBugCodes = false;
 	// Map of category codes to abbreviations used in printBug()
 	private static final HashMap<String, String> categoryMap = new HashMap<String, String>();
 
@@ -54,6 +54,7 @@ public abstract class TextUIBugReporter extends AbstractBugReporter {
 		reportStackTrace = true;
 	}
 
+	
 	/**
 	 * Set the PrintStream to write bug output to.
 	 * 
@@ -100,7 +101,7 @@ public abstract class TextUIBugReporter extends AbstractBugReporter {
 				outputStream.print(categoryAbbrev);
 		}
 
-		if (false) {
+		if (useLongBugCodes) {
 		outputStream.print(bugInstance.getType());
 		outputStream.print(" ");
 		}
@@ -159,6 +160,16 @@ public abstract class TextUIBugReporter extends AbstractBugReporter {
 	protected void emitLine(String line) {
 		line = line.replaceAll("\t", "  ");
 		System.err.println(line);
+	}
+
+
+	public boolean getUseLongBugCodes() {
+		return useLongBugCodes;
+	}
+
+
+	public void setUseLongBugCodes(boolean useLongBugCodes) {
+		this.useLongBugCodes = useLongBugCodes;
 	}
 }
 
