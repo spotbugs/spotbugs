@@ -71,6 +71,9 @@ public class XMLFactoryBypass extends BytecodeScanningDetector implements Consta
 		        if (newClsName.startsWith("java/") || newClsName.startsWith("javax/"))
 		            return;
 		        
+		        if (newClsName.endsWith("Adapter"))
+		        	return;
+		        
 		        if (!getNameConstantOperand().equals("<init>"))
 		            return;
 		        
