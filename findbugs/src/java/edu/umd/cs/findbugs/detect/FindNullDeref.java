@@ -269,8 +269,16 @@ public class FindNullDeref
 		if (DEBUG_NULLARG) {
 			System.out.println("Examining call site: " + location.getHandle());
 		}
+
+		String methodName = invokeInstruction.getName(cpg);
+		String signature = invokeInstruction.getSignature(cpg);
 		
-		String signature = invokeInstruction.getSignature(cpg); 
+		// Don't check equals() calls.
+		// If an equals() call unconditionally dereferences the parameter,
+		// it is the fault of the method, not the caller.
+		if (methodName.equals("equals") && signature.equals("(Ljava/lang/Object;)Z"))
+			return;
+		
 		int returnTypeStart = signature.indexOf(')');
 		if (returnTypeStart < 0)
 			return;
