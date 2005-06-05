@@ -400,20 +400,6 @@ public class FindNullDeref
 			return;
 		
 		WarningPropertySet propertySet = new WarningPropertySet();
-		
-		MethodGen methodGen = classContext.getMethodGen(method);
-		String sourceFile = classContext.getJavaClass().getSourceFileName();
-		BugInstance warning = new BugInstance("NP_NULL_PARAM_DEREF", NORMAL_PRIORITY)
-				.addClassAndMethod(methodGen, sourceFile);
-				
-		
-		// Check which params might be null
-		addParamAnnotations(definitelyNullArgSet, unconditionallyDereferencedNullArgSet, propertySet, warning);
-
-		// Add annotations for dangerous method call targets
-		for (JavaClassAndMethod dangerousCallTarget : dangerousCallTargetList) {
-			warning.addMethod(dangerousCallTarget.getJavaClass(), dangerousCallTarget.getMethod()).describe("METHOD_DANGEROUS_TARGET");
-		}
 
 		// See if there are any safe targets
 		Set<JavaClassAndMethod> safeCallTargetSet = new HashSet<JavaClassAndMethod>();
@@ -425,6 +411,34 @@ public class FindNullDeref
 				propertySet.addProperty(NullArgumentWarningProperty.MONOMORPHIC_CALL_SITE);
 			}
 		}
+		
+		MethodGen methodGen = classContext.getMethodGen(method);
+		String sourceFile = classContext.getJavaClass().getSourceFileName();
+		
+		String bugType;
+		int priority;
+		if (invokeInstruction.getOpcode() == Constants.INVOKESTATIC ||
+				invokeInstruction.getOpcode() == Constants.INVOKESPECIAL) {
+			bugType = "NP_NULL_PARAM_DEREF_NONVIRTUAL";
+			priority = HIGH_PRIORITY;
+		} else if (safeCallTargetSet.isEmpty()) {
+			bugType = "NP_NULL_PARAM_DEREF_ALL_TARGETS_DANGEROUS";
+			priority = NORMAL_PRIORITY;
+		} else {
+			bugType = "NP_NULL_PARAM_DEREF";
+			priority = LOW_PRIORITY;
+		}
+		
+		BugInstance warning = new BugInstance(bugType, priority)
+				.addClassAndMethod(methodGen, sourceFile);
+		
+		// Check which params might be null
+		addParamAnnotations(definitelyNullArgSet, unconditionallyDereferencedNullArgSet, propertySet, warning);
+
+		// Add annotations for dangerous method call targets
+		for (JavaClassAndMethod dangerousCallTarget : dangerousCallTargetList) {
+			warning.addMethod(dangerousCallTarget.getJavaClass(), dangerousCallTarget.getMethod()).describe("METHOD_DANGEROUS_TARGET");
+		}
 		if (REPORT_SAFE_METHOD_TARGETS) {
 			// This is useful to see which other call targets the analysis
 			// considered.
@@ -433,17 +447,16 @@ public class FindNullDeref
 			}
 		}
 		
-		finishWarning(location, propertySet, warning);
+		decorateWarning(location, propertySet, warning);
 		warning.addSourceLine(methodGen, sourceFile, location.getHandle());
 		bugReporter.reportBug(warning);
 	}
 
-	private void finishWarning(Location location, WarningPropertySet propertySet, BugInstance warning) {
-		warning.setPriority(propertySet.computePriority(NORMAL_PRIORITY));
+	private void decorateWarning(Location location, WarningPropertySet propertySet, BugInstance warning) {
 		if (FindBugsAnalysisProperties.isRelaxedMode()) {
 			WarningPropertyUtil.addPropertiesForLocation(propertySet, classContext, method, location);
-			propertySet.decorateBugInstance(warning);
 		}
+		propertySet.decorateBugInstance(warning);
 	}
 
 	private void addParamAnnotations(
@@ -511,7 +524,7 @@ public class FindNullDeref
 			warning.addInt(violation.getParam()).describe("INT_NONNULL_PARAM");
 		}
 
-		finishWarning(location, propertySet, warning);
+		decorateWarning(location, propertySet, warning);
 		
 		bugReporter.reportBug(warning);
 	}

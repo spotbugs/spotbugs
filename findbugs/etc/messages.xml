@@ -2678,9 +2678,36 @@ was return from a method which is known to return possibly-null values.</p>
 	</Details>
   </BugPattern>
   
+  <BugPattern type="NP_NULL_PARAM_DEREF_NONVIRTUAL">
+	<ShortDescription>Non-virtual method call passes null for unconditionally dereferenced parameter</ShortDescription>
+	<LongDescription>Non-virtual method call in {1} passes null for unconditionally dereferenced parameter of {3}</LongDescription>
+	<Details>
+		<![CDATA[
+		<p>
+		A possibly-null value is passed to a method which unconditionally
+		dereferences.  This will almost certainly result in a null pointer exception.
+		</p>
+		]]>
+	</Details>
+  </BugPattern>
+
+  <BugPattern type="NP_NULL_PARAM_DEREF_ALL_TARGETS_DANGEROUS">
+	<ShortDescription>Method call passes null for unconditionally dereferenced parameter</ShortDescription>
+	<LongDescription>Method call in {1} passes null for unconditionally dereferenced parameter of {3}</LongDescription>
+	<Details>
+		<![CDATA[
+		<p>
+		A possibly-null value is passed at a call site where all known
+		target methods will unconditionally dereference it.
+		This is very likely to result in a null pointer exception.
+		</p>
+		]]>
+	</Details>
+  </BugPattern>
+  
   <BugPattern type="NP_NULL_PARAM_DEREF">
 	<ShortDescription>Method call passes null for unconditionally dereferenced parameter</ShortDescription>
-	<LongDescription>Method call in {1} passes null for unconditionally dereferenced parameter of {2}</LongDescription>
+	<LongDescription>Method call in {1} passes null for unconditionally dereferenced parameter of {3}</LongDescription>
 	<Details>
 		<![CDATA[
 		<p>
