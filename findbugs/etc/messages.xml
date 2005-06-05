@@ -916,6 +916,20 @@ factory pattern to create these objects.</p>
 ]]>
     </Details>
   </Detector>
+  
+  <Detector class="edu.umd.cs.findbugs.detect.FindBadEqualsImplementation">
+	<Details>
+		<![CDATA[
+		<p>
+		This detector looks for equals(Object) method implementations which
+		unconditionally dereference their parameter.  This violates the contract
+		defined by java.lang.Object.equals(), which states that if the parameter
+		is null, the method must return null.
+		</p>
+		<p>It is a slow detector.</p>
+		]]>
+	</Details>
+  </Detector>
 
   <Detector class="edu.umd.cs.findbugs.detect.TrainNullReturnValues">
 	<Details>
@@ -1518,6 +1532,22 @@ SQL injection attacks.
 ]]>
     </Details>
   </BugPattern>
+  
+  <BugPattern type="EQ_DOES_NOT_HANDLE_NULL">
+	<ShortDescription>equals() method does not check for null parameter</ShortDescription>
+	<LongDescription>{1} does not check for null parameter</LongDescription>
+	<Details>
+		<![CDATA[
+		<p>
+		This implementation of equals(Object) violates the contract defined
+		by java.lang.Object.equals() because it does not check for null
+		being passed as the parameter.  All equals() methods should return
+		null if passed a null value.
+		</p>
+		]]>
+	</Details>
+  </BugPattern>
+  
   <BugPattern type="CO_SELF_NO_OBJECT">
     <ShortDescription>Covariant compareTo() method defined</ShortDescription>
     <LongDescription>{0} defines compareTo({0}) method but not compareTo(Object)</LongDescription>
