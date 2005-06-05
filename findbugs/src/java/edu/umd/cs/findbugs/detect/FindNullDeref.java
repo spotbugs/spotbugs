@@ -412,13 +412,20 @@ public class FindNullDeref
 			}
 		}
 		
+		// Call to private method?  In theory there should be only one possible target.
+		boolean privateCall =
+			   safeCallTargetSet.isEmpty()
+			&& dangerousCallTargetList.size() == 1
+			&& dangerousCallTargetList.get(0).getMethod().isPrivate();
+		
 		MethodGen methodGen = classContext.getMethodGen(method);
 		String sourceFile = classContext.getJavaClass().getSourceFileName();
 		
 		String bugType;
 		int priority;
-		if (invokeInstruction.getOpcode() == Constants.INVOKESTATIC ||
-				invokeInstruction.getOpcode() == Constants.INVOKESPECIAL) {
+		if (privateCall
+				|| invokeInstruction.getOpcode() == Constants.INVOKESTATIC
+				|| invokeInstruction.getOpcode() == Constants.INVOKESPECIAL) {
 			bugType = "NP_NULL_PARAM_DEREF_NONVIRTUAL";
 			priority = HIGH_PRIORITY;
 		} else if (safeCallTargetSet.isEmpty()) {
