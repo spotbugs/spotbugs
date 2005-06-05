@@ -583,6 +583,7 @@ public class BugInstance implements Comparable, XMLWriteableWithMessages, Serial
 		addMethod(methodAnnotation);
 		return this;
 	}
+
 	/**
 	 * Add class and method annotations for given method.
 	 *
@@ -593,6 +594,19 @@ public class BugInstance implements Comparable, XMLWriteableWithMessages, Serial
 	public BugInstance addClassAndMethod(MethodGen methodGen, String sourceFile) {
 		addClass(methodGen.getClassName());
 		addMethod(methodGen, sourceFile);
+		return this;
+	}
+	
+	/**
+	 * Add class and method annotations for given class and method.
+	 *  
+	 * @param javaClass the class
+	 * @param method    the method
+	 * @return this object
+	 */
+	public BugInstance addClassAndMethod(JavaClass javaClass, Method method) {
+		addClass(javaClass.getClassName());
+		addMethod(javaClass, method);
 		return this;
 	}
 
