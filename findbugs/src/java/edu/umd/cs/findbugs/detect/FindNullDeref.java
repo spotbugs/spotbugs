@@ -447,6 +447,8 @@ public class FindNullDeref
 		BugInstance warning = new BugInstance(bugType, priority)
 				.addClassAndMethod(methodGen, sourceFile);
 		
+		warning.addMethod(XMethodFactory.createXMethod(invokeInstruction, cpg)).describe("METHOD_CALLED");
+		
 		// Check which params might be null
 		addParamAnnotations(definitelyNullArgSet, unconditionallyDereferencedNullArgSet, propertySet, warning);
 

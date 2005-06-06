@@ -2710,7 +2710,7 @@ was return from a method which is known to return possibly-null values.</p>
   
   <BugPattern type="NP_NULL_PARAM_DEREF_NONVIRTUAL">
 	<ShortDescription>Non-virtual method call passes null for unconditionally dereferenced parameter</ShortDescription>
-	<LongDescription>Non-virtual method call in {1} passes null for unconditionally dereferenced parameter of {3}</LongDescription>
+	<LongDescription>Non-virtual method call in {1} passes null for unconditionally dereferenced parameter of {2}</LongDescription>
 	<Details>
 		<![CDATA[
 		<p>
@@ -2723,7 +2723,7 @@ was return from a method which is known to return possibly-null values.</p>
 
   <BugPattern type="NP_NULL_PARAM_DEREF_ALL_TARGETS_DANGEROUS">
 	<ShortDescription>Method call passes null for unconditionally dereferenced parameter</ShortDescription>
-	<LongDescription>Method call in {1} passes null for unconditionally dereferenced parameter of {3}</LongDescription>
+	<LongDescription>Method call in {1} passes null for unconditionally dereferenced parameter of {2}</LongDescription>
 	<Details>
 		<![CDATA[
 		<p>
@@ -2737,7 +2737,7 @@ was return from a method which is known to return possibly-null values.</p>
   
   <BugPattern type="NP_NULL_PARAM_DEREF">
 	<ShortDescription>Method call passes null for unconditionally dereferenced parameter</ShortDescription>
-	<LongDescription>Method call in {1} passes null for unconditionally dereferenced parameter of {3}</LongDescription>
+	<LongDescription>Method call in {1} passes null for unconditionally dereferenced parameter of {2}</LongDescription>
 	<Details>
 		<![CDATA[
 		<p>
@@ -2750,7 +2750,7 @@ was return from a method which is known to return possibly-null values.</p>
   
   <BugPattern type="NP_NONNULL_PARAM_VIOLATION">
 	<ShortDescription>Method call passes null to a parameter declared @NonNull</ShortDescription>
-	<LongDescription>Method call in {1} passes null to a parameter declared @NonNull in {3}</LongDescription>
+	<LongDescription>Method call in {1} passes null to a parameter declared @NonNull in {2}</LongDescription>
 	<Details>
 		<![CDATA[
 		<p>
