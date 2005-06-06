@@ -445,27 +445,26 @@ public class FindNullDeref
 		}
 		
 		BugInstance warning = new BugInstance(bugType, priority)
-				.addClassAndMethod(methodGen, sourceFile);
-		
-		warning.addMethod(XMethodFactory.createXMethod(invokeInstruction, cpg)).describe("METHOD_CALLED");
+				.addClassAndMethod(methodGen, sourceFile)
+				.addSourceLine(methodGen, sourceFile, location.getHandle())
+				.addMethod(XMethodFactory.createXMethod(invokeInstruction, cpg)).describe("METHOD_CALLED");
 		
 		// Check which params might be null
 		addParamAnnotations(definitelyNullArgSet, unconditionallyDereferencedNullArgSet, propertySet, warning);
 
 		// Add annotations for dangerous method call targets
 		for (JavaClassAndMethod dangerousCallTarget : dangerousCallTargetList) {
-			warning.addMethod(dangerousCallTarget.getJavaClass(), dangerousCallTarget.getMethod()).describe("METHOD_DANGEROUS_TARGET");
+			warning.addMethod(dangerousCallTarget).describe("METHOD_DANGEROUS_TARGET");
 		}
-		if (REPORT_SAFE_METHOD_TARGETS) {
-			// This is useful to see which other call targets the analysis
-			// considered.
-			for (JavaClassAndMethod safeMethod : safeCallTargetSet) {
-				warning.addMethod(safeMethod.getJavaClass(), safeMethod.getMethod()).describe("METHOD_SAFE_TARGET");
-			}
+
+		// Add safe method call targets.
+		// This is useful to see which other call targets the analysis
+		// considered.
+		for (JavaClassAndMethod safeMethod : safeCallTargetSet) {
+			warning.addMethod(safeMethod).describe("METHOD_SAFE_TARGET");
 		}
 		
 		decorateWarning(location, propertySet, warning);
-		warning.addSourceLine(methodGen, sourceFile, location.getHandle());
 		bugReporter.reportBug(warning);
 	}
 
