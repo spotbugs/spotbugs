@@ -394,6 +394,7 @@ public class URLClassPath implements Serializable {
 			Entry entry = i.next();
 			entry.close();
 		}
+		entryList.clear();
 	}
 
 	/**
