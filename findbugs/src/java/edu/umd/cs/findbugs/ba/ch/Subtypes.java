@@ -37,6 +37,12 @@ import org.apache.bcel.classfile.JavaClass;
 
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 
+/**
+ * Support for class hierarchy queries.
+ * 
+ * @author Bill Pugh
+ * @author David Hovemeyer
+ */
 public class Subtypes {
 	private static final boolean DEBUG_HIERARCHY = false || Boolean
 			.getBoolean("findbugs.debug.hierarchy");
@@ -55,6 +61,12 @@ public class Subtypes {
 
 	private Map<JavaClass, Set<JavaClass>> transitiveSubtypes = new HashMap<JavaClass, Set<JavaClass>>();
 
+	/**
+	 * Get immediate subtypes of given class or interface.
+	 * 
+	 * @param c a class or interface
+	 * @return set of immediate subtypes
+	 */
 	public Set<JavaClass> getImmediateSubtypes(JavaClass c) {
 		if (!allClasses.contains(c))
 			addClass(c);
@@ -62,16 +74,41 @@ public class Subtypes {
 		return immediateSubtypes.get(c);
 	}
 
+	/**
+	 * Get set of all known classes and interfaces. 
+	 * 
+	 * @return set of all known classes and interfaces
+	 */
 	public Set<JavaClass> getAllClasses() {
 		compute();
 		return allClasses;
 	}
 
+	/**
+	 * Get set of all transitive subtypes of given class or interface.
+	 * 
+	 * @param c a class or interface
+	 * @return set of all transitive subtypes
+	 */
 	public Set<JavaClass> getTransitiveSubtypes(JavaClass c) {
 		if (!allClasses.contains(c))
 			addClass(c);
 		compute();
 		return transitiveSubtypes.get(c);
+	}
+	
+	/**
+	 * Get set of all known transitive classes and interfaces which are subtypes of
+	 * both of the given classes and/or interfaces.
+	 * 
+	 * @param a a class or interface
+	 * @param b another class or interface
+	 * @return set of all common subtypes of <i>a</i> and <i>b</i>
+	 */
+	public Set<JavaClass> getTransitiveCommonSubtypes(JavaClass a, JavaClass b) {
+		Set<JavaClass> result = getTransitiveSubtypes(a);
+		result.retainAll(getTransitiveSubtypes(b));
+		return result;
 	}
 
 	private Set<JavaClass> getReferencedClasses(JavaClass c) {
@@ -185,7 +222,7 @@ public class Subtypes {
 		children.add(c);
 	}
 
-	public void compute() {
+	private void compute() {
 		if (computed) return;
 		if (DEBUG_HIERARCHY)
 			System.out.println("Computing {");
