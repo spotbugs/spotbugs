@@ -2997,9 +2997,17 @@ not be compared by reference are java.lang.Integer, java.lang.Float, etc.</p>
     <Details>
 <![CDATA[
 <p> This method calls equals(Object) on two references of different
-types.  According to the contract of equals(), objects of different
-classes should always compare as unequal; therefore, it is likely
-that the result of this comparison will always be false at runtime.</p>
+class types with no common subclasses.
+Therefore, the objects being compared
+are unlikely to be members of the same class at runtime
+(unless some application classes were not analyzed, or dynamic class
+loading can occur at runtime).
+According to the contract of equals(),
+objects of different
+classes should always compare as unequal; therefore, according to the
+contract defined by java.lang.Object.equals(Object),
+the result of this comparison will always be false at runtime.
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -3010,15 +3018,45 @@ that the result of this comparison will always be false at runtime.</p>
     <Details>
 <![CDATA[
 <p> This method calls equals(Object) on two references of unrelated
-interface types (neither is a subtype of the other).  According to
-the contract of equals(), objects of different classes should always
-compare as unequal. Note that it is possible that
-the program contains classes that implement both interfaces,
-so the comparison may be valid.  However, it is worth
-inspecting closely.</p>
+interface types, where neither is a subtype of the other,
+and there are no known non-abstract classes which implement both interfaces.
+Therefore, the objects being compared
+are unlikely to be members of the same class at runtime
+(unless some application classes were not analyzed, or dynamic class
+loading can occur at runtime).
+According to the contract of equals(),
+objects of different
+classes should always compare as unequal; therefore, according to the
+contract defined by java.lang.Object.equals(Object),
+the result of this comparison will always be false at runtime.
+</p>
 ]]>
     </Details>
   </BugPattern>
+  
+  <BugPattern type="EC_UNRELATED_CLASS_AND_INTERFACE">
+	<ShortDescription>Call to equals() comparing unrelated class and interface</ShortDescription>
+	<LongDescription>Call to equals() comparing unrelated class and interface in {1}</LongDescription>
+	<Details>
+		<![CDATA[
+<p>
+This method calls equals(Object) on two references,  one of which is a class
+and the other an interface, where neither the class nor any of its
+non-abstract subclasses implement the interface.
+Therefore, the objects being compared
+are unlikely to be members of the same class at runtime
+(unless some application classes were not analyzed, or dynamic class
+loading can occur at runtime).
+According to the contract of equals(),
+objects of different
+classes should always compare as unequal; therefore, according to the
+contract defined by java.lang.Object.equals(Object),
+the result of this comparison will always be false at runtime.
+</p>
+		]]>
+	</Details>
+  </BugPattern>
+	
 
   <BugPattern type="EC_NULL_ARG">
     <ShortDescription>Call to equals() with null argument</ShortDescription>

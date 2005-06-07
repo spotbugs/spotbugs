@@ -24,6 +24,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Field;
@@ -51,6 +52,7 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.FindBugsAnalysisProperties;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.ClassContext;
@@ -740,22 +742,37 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 		// See if the types are related by inheritance.
 		try {
 			if (!Hierarchy.isSubtype(lhsType, rhsType) && !Hierarchy.isSubtype(rhsType, lhsType)) {
-				// We have unrelated types.
-				// If both types are interfaces, then it is conceivable that
-				// there are class types that implement both interfaces,
-				// so the comparision might be meaningful.  Classify such
-				// cases as medium.  Other cases are high priority.
-				if (lhsType.referencesInterfaceExact() && rhsType.referencesInterfaceExact()) {
-					// TODO: This would be a good place to assume a closed
-					// universe and look at subclasses.
-					priority = NORMAL_PRIORITY;
-					bugType = "EC_UNRELATED_INTERFACES";
-				} else {
-					// TODO: it is possible that an unknown subclass of
-					// the class type implements the interface.
-					// Again, a subclass search could answer this
-					// question if we had a closed universe.
+				AnalysisContext analysisContext = AnalysisContext.currentAnalysisContext();
+				
+				// Look up the classes
+				JavaClass lhsClass = analysisContext.lookupClass(lhsType.getClassName());
+				JavaClass rhsClass = analysisContext.lookupClass(rhsType.getClassName());
+
+				if (!lhsClass.isInterface() && !rhsClass.isInterface()) {
+					// Both are class types, and therefore there is no possible way
+					// the compared objects can have the same runtime type.
 					priority = HIGH_PRIORITY;
+				} else {
+					/*
+					if (DEBUG) {
+						System.out.println("Subtypes of " + lhsClass.getClassName() + " are " +
+								classSetToString(analysisContext.getSubtypes().getTransitiveSubtypes(lhsClass)));
+						System.out.println("Subtypes of " + rhsClass.getClassName() + " are " +
+								classSetToString(analysisContext.getSubtypes().getTransitiveSubtypes(rhsClass)));
+					}
+					*/
+					
+					// Look up the common subtypes of the two types.  If the
+					// intersection does not contain at least one instantiable class,
+					// then issue a warning of the appropriate type.
+					Set<JavaClass> commonSubtypes =
+						analysisContext.getSubtypes().getTransitiveCommonSubtypes(lhsClass, rhsClass);
+					
+					if (!containsAtLeastOneInstantiableClass(commonSubtypes)) {
+						priority = HIGH_PRIORITY;
+						bugType = (lhsClass.isInterface() && rhsClass.isInterface())
+							? "EC_UNRELATED_INTERFACES" : "EC_UNRELATED_CLASS_AND_INTERFACE";
+					}
 				}
 			}
 		} catch (ClassNotFoundException e) {
@@ -771,6 +788,26 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 			        .addClass(rhsType.getClassName()).describe("CLASS_REFTYPE"));
 		}
 	}
+	
+	private static boolean containsAtLeastOneInstantiableClass(Set<JavaClass> commonSubtypes) {
+		for (JavaClass javaClass : commonSubtypes) {
+			if (!javaClass.isInterface() && !javaClass.isAbstract())
+				return true;
+		}
+		return false;
+	}
+
+	/*
+	private static String classSetToString(Set<JavaClass> classSet) {
+		StringBuffer buf = new StringBuffer();
+		for (JavaClass javaClass : classSet) {
+			if (buf.length() > 0)
+				buf.append(',');
+			buf.append(javaClass.getClassName());
+		}
+		return buf.toString();
+	}
+	*/
 
 	public void report() {
 	}
