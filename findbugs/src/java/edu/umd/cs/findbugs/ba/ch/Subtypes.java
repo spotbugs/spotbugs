@@ -85,7 +85,8 @@ public class Subtypes {
 	}
 
 	/**
-	 * Get set of all transitive subtypes of given class or interface.
+	 * Get set of all transitive subtypes of given class or interface,
+	 * <em>not including the class or interface itself</em>.
 	 * 
 	 * @param c a class or interface
 	 * @return set of all transitive subtypes
@@ -99,15 +100,33 @@ public class Subtypes {
 	
 	/**
 	 * Get set of all known transitive classes and interfaces which are subtypes of
-	 * both of the given classes and/or interfaces.
+	 * both of the given classes and/or interfaces.  Note that in this method,
+	 * we consider a class to be a subtype of itself.  Therefore, this method
+	 * can be used to determine, e.g., if there are any classes implementing
+	 * both of two given interfaces.
 	 * 
 	 * @param a a class or interface
 	 * @param b another class or interface
 	 * @return set of all common subtypes of <i>a</i> and <i>b</i>
 	 */
 	public Set<JavaClass> getTransitiveCommonSubtypes(JavaClass a, JavaClass b) {
-		Set<JavaClass> result = getTransitiveSubtypes(a);
+		Set<JavaClass> result = new HashSet<JavaClass>();
+		
+		// Get all subtypes of A, inclusive
+		result.addAll(getTransitiveSubtypes(a));
+		result.add(a);
+		
+		// Is B a subtype of A?
+		boolean bIsSubtypeOfA = result.contains(b); 
+		
+		// Remove all subtypes of A which aren't proper subtypes of B
 		result.retainAll(getTransitiveSubtypes(b));
+		
+		// Fix up: if B is a subtype of A, then we were wrong to
+		// remove it.  Add it back if appropriate.
+		if (bIsSubtypeOfA)
+			result.add(b);
+		
 		return result;
 	}
 
