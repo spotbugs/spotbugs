@@ -27,6 +27,7 @@ import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.INVOKESTATIC;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InvokeInstruction;
+import org.apache.bcel.generic.StackConsumer;
 
 /**
  * Generic class for representing a Java stack frame as a dataflow value.
@@ -269,10 +270,24 @@ public abstract class Frame <ValueType> implements Debug {
 	 * @throws DataflowAnalysisException
 	 */
 	public int getNumArguments(InvokeInstruction ins, ConstantPoolGen cpg) throws DataflowAnalysisException {
+		int numConsumed = getNumArgumentsIncludingObjectInstance(ins, cpg);
+		return (ins instanceof INVOKESTATIC) ? numConsumed : numConsumed - 1;
+	}
+	
+	/**
+	 * Get the number of arguments passed to given method invocation,
+	 * including the object instance if the call is to an instance method. 
+	 * 
+	 * @param ins the method invocation instruction
+	 * @param cpg the ConstantPoolGen for the class containing the method
+	 * @return number of arguments, including object instance if appropriate
+	 * @throws DataflowAnalysisException
+	 */
+	public int getNumArgumentsIncludingObjectInstance(InvokeInstruction ins, ConstantPoolGen cpg) throws DataflowAnalysisException {
 		int numConsumed = ins.consumeStack(cpg);
 		if (numConsumed == Constants.UNPREDICTABLE)
 			throw new DataflowAnalysisException("Unpredictable stack consumption in " + ins);
-		return (ins instanceof INVOKESTATIC) ? numConsumed : numConsumed - 1;
+		return numConsumed;
 	}
 	
 	/**
@@ -290,6 +305,22 @@ public abstract class Frame <ValueType> implements Debug {
 		if (i >= numArguments)
 			throw new IllegalArgumentException();
 		return getStackValue((numArguments - 1) - i);
+	}
+	
+	/**
+	 * Get the <i>i</i>th operand used by given instruction.
+	 * 
+	 * @param ins the instruction, which must be a StackConsumer
+	 * @param cpg the ConstantPoolGen
+	 * @param i   index of operand to get: 0 for the first operand, etc.
+	 * @return
+	 * @throws DataflowAnalysisException 
+	 */
+	public ValueType getOperand(StackConsumer ins, ConstantPoolGen cpg, int i) throws DataflowAnalysisException {
+		int numOperands = ins.consumeStack(cpg);
+		if (numOperands == Constants.UNPREDICTABLE)
+			throw new DataflowAnalysisException("Unpredictable stack consumption in " + ins);
+		return getStackValue((numOperands - 1) - i);
 	}
 	
 	/**
