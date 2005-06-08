@@ -110,6 +110,15 @@ another package. It is a fast detector</p>
 ]]>
     </Details>
   </Detector>
+  
+  <Detector class="edu.umd.cs.findbugs.detect.InfiniteRecursiveLoop2">
+	<Details>
+<![CDATA[
+<p>Looks for an infinite recursive loop. It is a slow detector.</p>
+]]>
+	</Details>
+  </Detector>
+  
   <Detector class="edu.umd.cs.findbugs.detect.VolatileUsage">
     <Details>
 <![CDATA[

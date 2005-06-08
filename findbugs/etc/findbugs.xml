@@ -75,6 +75,9 @@
   <Detector class="edu.umd.cs.findbugs.detect.InfiniteRecursiveLoop" 
 	        speed="fast"
             reports="IL_INFINITE_RECURSIVE_LOOP,IL_CONTAINER_ADDED_TO_ITSELF" /> 
+
+  <Detector class="edu.umd.cs.findbugs.detect.InfiniteRecursiveLoop2"
+            speed="slow" reports="IL_INFINITE_RECURSIVE_LOOP,IL_CONTAINER_ADDED_TO_ITSELF" disabled="true"/>
             
   <Detector class="edu.umd.cs.findbugs.detect.VolatileUsage" 
 	        speed="fast"
