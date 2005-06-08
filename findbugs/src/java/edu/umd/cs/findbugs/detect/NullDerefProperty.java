@@ -18,8 +18,8 @@
  */
 package edu.umd.cs.findbugs.detect;
 
+import edu.umd.cs.findbugs.props.AbstractWarningProperty;
 import edu.umd.cs.findbugs.props.PriorityAdjustment;
-import edu.umd.cs.findbugs.props.WarningProperty;
 
 /**
  * Warning properties for null pointer dereference and redundant null
@@ -27,13 +27,10 @@ import edu.umd.cs.findbugs.props.WarningProperty;
  * 
  * @author David Hovemeyer
  */
-public class NullDerefProperty implements WarningProperty {
-	private String name;
-	private PriorityAdjustment priorityAdjustment;
+public class NullDerefProperty extends AbstractWarningProperty {
 	
 	private NullDerefProperty(String name, PriorityAdjustment priorityAdjustment) {
-		this.name = name;
-		this.priorityAdjustment = priorityAdjustment;
+		super(name, priorityAdjustment);
 	}
 	
 	/** Redundant null comparison is of a checked null value. */
@@ -41,13 +38,4 @@ public class NullDerefProperty implements WarningProperty {
 		new NullDerefProperty("CHECKED_VALUE", PriorityAdjustment.RAISE_PRIORITY);
 	public static final NullDerefProperty WOULD_HAVE_BEEN_A_KABOOM =
 		new NullDerefProperty("WOULD_HAVE_BEEN_A_KABOOM", PriorityAdjustment.RAISE_PRIORITY);
-
-	public PriorityAdjustment getPriorityAdjustment() {
-		return priorityAdjustment;
-	}
-
-	public String getName() {
-		return NullDerefProperty.class.getName() + "." + name;
-	}
-
 }

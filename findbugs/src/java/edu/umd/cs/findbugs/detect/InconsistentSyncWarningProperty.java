@@ -18,21 +18,17 @@
  */
 package edu.umd.cs.findbugs.detect;
 
+import edu.umd.cs.findbugs.props.AbstractWarningProperty;
 import edu.umd.cs.findbugs.props.PriorityAdjustment;
-import edu.umd.cs.findbugs.props.WarningProperty;
 
 /**
  * Warning properties for inconsistent synchronization detector.
  * 
  * @author David Hovemeyer
  */
-public class InconsistentSyncWarningProperty implements WarningProperty {
-	private String name;
-	private PriorityAdjustment priorityAdjustment;
-	
+public class InconsistentSyncWarningProperty extends AbstractWarningProperty {
 	private InconsistentSyncWarningProperty(String name, PriorityAdjustment priorityAdjustment) {
-		this.name = name;
-		this.priorityAdjustment = priorityAdjustment;
+		super(name, priorityAdjustment);
 	}
 	
 //	/** Field is never accessed while locked. */
@@ -65,13 +61,5 @@ public class InconsistentSyncWarningProperty implements WarningProperty {
 	/** The only unlocked accesses are in getter methods. */
 	public static final InconsistentSyncWarningProperty ONLY_UNSYNC_IN_GETTERS =
 		new InconsistentSyncWarningProperty("ONLY_UNSYNC_IN_GETTERS", PriorityAdjustment.LOWER_PRIORITY);
-
-	public PriorityAdjustment getPriorityAdjustment() {
-		return priorityAdjustment;
-	}
-
-	public String getName() {
-		return this.getClass().getName() + "." + name;
-	}
 
 }

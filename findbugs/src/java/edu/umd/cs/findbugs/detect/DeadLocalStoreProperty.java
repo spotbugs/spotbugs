@@ -1,20 +1,16 @@
 package edu.umd.cs.findbugs.detect;
 
+import edu.umd.cs.findbugs.props.AbstractWarningProperty;
 import edu.umd.cs.findbugs.props.PriorityAdjustment;
-import edu.umd.cs.findbugs.props.WarningProperty;
 
 /**
  * Warning property for FindDeadLocalStores.
  * 
  * @author David Hovemeyer
  */
-public class DeadLocalStoreProperty implements WarningProperty {
-	private PriorityAdjustment priorityAdjustment;
-	private String name;
-	
+public class DeadLocalStoreProperty extends AbstractWarningProperty {
 	private DeadLocalStoreProperty(String name, PriorityAdjustment priorityAdjustment) {
-		this.name = name;
-		this.priorityAdjustment = priorityAdjustment;
+		super(name, priorityAdjustment);
 	}
 	
 	/** Store is killed by a subsequent store. */
@@ -57,15 +53,5 @@ public class DeadLocalStoreProperty implements WarningProperty {
 	/** many stores */
 	public static final DeadLocalStoreProperty MANY_STORES =
 		new DeadLocalStoreProperty("MANY_STORES", PriorityAdjustment.LOWER_PRIORITY);
-
-	//@Override
-	public PriorityAdjustment getPriorityAdjustment() {
-		return priorityAdjustment;
-	}
-
-	//@Override
-	public String getName() {
-		return DeadLocalStoreProperty.class.getName() + "." + name;
-	}
 
 }

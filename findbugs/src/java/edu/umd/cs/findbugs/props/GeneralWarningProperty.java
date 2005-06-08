@@ -27,13 +27,9 @@ package edu.umd.cs.findbugs.props;
  * 
  * @author David Hovemeyer
  */
-public class GeneralWarningProperty implements WarningProperty {
-	private String name;
-	private PriorityAdjustment priorityAdjustment;
-	
+public class GeneralWarningProperty extends AbstractWarningProperty {
 	private GeneralWarningProperty(String name, PriorityAdjustment priorityAdjustment) {
-		this.name = name;
-		this.priorityAdjustment = priorityAdjustment;
+		super(name, priorityAdjustment);
 	}
 	
 	/** The type of the receiver object in a method call or instance field access. */
@@ -56,13 +52,4 @@ public class GeneralWarningProperty implements WarningProperty {
 	/** Warning occurs on an exception control path. */
 	public static final GeneralWarningProperty ON_EXCEPTION_PATH =
 		new GeneralWarningProperty("ON_EXCEPTION_PATH", PriorityAdjustment.NO_ADJUSTMENT);
-
-	public PriorityAdjustment getPriorityAdjustment() {
-		return priorityAdjustment;
-	}
-
-	public String getName() {
-		return this.getClass().getName() + "." + name;
-	}
-
 }

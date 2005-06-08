@@ -19,29 +19,17 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import edu.umd.cs.findbugs.props.AbstractWarningProperty;
 import edu.umd.cs.findbugs.props.PriorityAdjustment;
-import edu.umd.cs.findbugs.props.WarningProperty;
 
 /**
  * @author David Hovemeyer
  */
-public class NonNullReturnProperty implements WarningProperty {
-	private String name;
-	private PriorityAdjustment priorityAdjustment;
-	
+public class NonNullReturnProperty extends AbstractWarningProperty {
 	private NonNullReturnProperty(String name, PriorityAdjustment priorityAdjustment) {
-		this.name = name;
-		this.priorityAdjustment = priorityAdjustment;
+		super(name, priorityAdjustment);
 	}
-	
+
 	public static final NonNullReturnProperty EXACT_METHOD =
 		new NonNullReturnProperty("EXACT_METHOD", PriorityAdjustment.RAISE_PRIORITY);
-	
-	public PriorityAdjustment getPriorityAdjustment() {
-		return priorityAdjustment;
-	}
-	
-	public String getName() {
-		return NonNullReturnProperty.class.getName() + "." + name;
-	}
 }

@@ -19,8 +19,8 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import edu.umd.cs.findbugs.props.AbstractWarningProperty;
 import edu.umd.cs.findbugs.props.PriorityAdjustment;
-import edu.umd.cs.findbugs.props.WarningProperty;
 
 /**
  * Warning property for a null argument being passed to a
@@ -28,13 +28,9 @@ import edu.umd.cs.findbugs.props.WarningProperty;
  * 
  * @author David Hovemeyer
  */
-public class NullArgumentWarningProperty implements WarningProperty {
-	private String name;
-	private PriorityAdjustment priorityAdjustment;
-	
+public class NullArgumentWarningProperty extends AbstractWarningProperty {
 	private NullArgumentWarningProperty(String name, PriorityAdjustment priorityAdjustment) {
-		this.name = name;
-		this.priorityAdjustment = priorityAdjustment;
+		super(name, priorityAdjustment);
 	}
 	
 	public static final NullArgumentWarningProperty ARG_DEFINITELY_NULL =
@@ -43,19 +39,4 @@ public class NullArgumentWarningProperty implements WarningProperty {
 		new NullArgumentWarningProperty("MONOMORPHIC_CALL_SITE", PriorityAdjustment.RAISE_PRIORITY);
 	public static final NullArgumentWarningProperty ALL_DANGEROUS_TARGETS =
 		new NullArgumentWarningProperty("ALL_DANGEROUS_TARGETS", PriorityAdjustment.RAISE_PRIORITY);
-
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.props.WarningProperty#getPriorityAdjustment()
-	 */
-	public PriorityAdjustment getPriorityAdjustment() {
-		return priorityAdjustment;
-	}
-
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.props.WarningProperty#getName()
-	 */
-	public String getName() {
-		return NullArgumentWarningProperty.class.getName() + "." + name;
-	}
-
 }

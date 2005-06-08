@@ -18,21 +18,17 @@
  */
 package edu.umd.cs.findbugs.detect;
 
+import edu.umd.cs.findbugs.props.AbstractWarningProperty;
 import edu.umd.cs.findbugs.props.PriorityAdjustment;
-import edu.umd.cs.findbugs.props.WarningProperty;
 
 /**
  * Warning properties for FindRefComparison detector.
  * 
  * @author David Hovemeyer
  */
-public class RefComparisonWarningProperty implements WarningProperty {
-	private String name;
-	private PriorityAdjustment priorityAdjustment;
-	
+public class RefComparisonWarningProperty extends AbstractWarningProperty {
 	private RefComparisonWarningProperty(String name, PriorityAdjustment priorityAdjustment) {
-		this.name= name;
-		this.priorityAdjustment = priorityAdjustment;
+		super(name, priorityAdjustment);
 	}
 	
 	/** There is a call to equals() in the method. */
@@ -53,13 +49,4 @@ public class RefComparisonWarningProperty implements WarningProperty {
 	/** Saw a call to String.intern(). */
 	public static final RefComparisonWarningProperty SAW_INTERN =
 		new RefComparisonWarningProperty("SAW_INTERN", PriorityAdjustment.LOWER_PRIORITY);
-	
-	public PriorityAdjustment getPriorityAdjustment() {
-		return priorityAdjustment;
-	}
-
-	public String getName() {
-		return this.getClass().getName() + "." + name;
-	}
-
 }
