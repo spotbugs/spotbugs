@@ -47,12 +47,24 @@ public class MultithreadedInstanceAccess extends BytecodeScanningDetector implem
 	private static final String STRUTS_ACTION_NAME = "org.apache.struts.action.Action";
 	private static final String SERVLET_NAME = "javax.servlet.Servlet";
 	private BugReporter bugReporter;
-	private Set<JavaClass> mtClasses = new HashSet<JavaClass>();
+	private Set<JavaClass> mtClasses;
 	private String mtClassName;
 	private int monitorCount;
 	private Set<String> alreadyReported;
 	
 	public MultithreadedInstanceAccess(BugReporter bugReporter) {
+		this.bugReporter = bugReporter;
+	}
+	
+	public Object clone() throws CloneNotSupportedException {
+		return super.clone();
+	}
+	
+	private Set<JavaClass> getMtClasses() {
+		if (mtClasses != null) 
+			return mtClasses;
+		
+		mtClasses = new HashSet<JavaClass>();
 		try {
 			mtClasses.add(Repository.lookupClass(STRUTS_ACTION_NAME));
 		} catch (ClassNotFoundException cnfe) {
@@ -62,13 +74,9 @@ public class MultithreadedInstanceAccess extends BytecodeScanningDetector implem
 			mtClasses.add(Repository.lookupClass(SERVLET_NAME));
 		} catch (ClassNotFoundException cnfe) {
 			//probably would be annoying to report
-		}		
-	
-		this.bugReporter = bugReporter;
-	}
-	
-	public Object clone() throws CloneNotSupportedException {
-		return super.clone();
+		}
+		
+		return mtClasses;
 	}
 	
 	public void visitClassContext(ClassContext classContext) {
@@ -87,7 +95,7 @@ public class MultithreadedInstanceAccess extends BytecodeScanningDetector implem
 				super.visitClassContext(classContext);
 			}
 			else {
-				Iterator<JavaClass> it = mtClasses.iterator();
+				Iterator<JavaClass> it = getMtClasses().iterator();
 				while (it.hasNext())
 				{
 					JavaClass mtClass = it.next();
@@ -118,8 +126,8 @@ public class MultithreadedInstanceAccess extends BytecodeScanningDetector implem
 		if (c instanceof ConstantFieldref) {
 			fieldRef = (ConstantFieldref)c;
 			
-			if (fieldRef.getClass(getConstantPool()).equals( this.getClassName())) {
-
+			String className = fieldRef.getClass(getConstantPool()).replace('.', '/');
+			if (className.equals( this.getClassName())) {
 				ConstantPool cp = getConstantPool();
 				int nameAndTypeIdx = fieldRef.getNameAndTypeIndex();
 				ConstantNameAndType ntc = (ConstantNameAndType)cp.getConstant(nameAndTypeIdx);
