@@ -151,7 +151,20 @@ public abstract class AbstractDominatorsAnalysis implements DataflowAnalysis<Bit
 	}
 
 	/**
-	 * Get all blocks in CFG dominated (or postdominated, depending
+	 * Get a bitset containing the unique IDs of
+	 * all blocks which dominate (or postdominate) the given block.
+	 * 
+	 * @param block a BasicBlock
+	 * @return BitSet of the unique IDs of all blocks that dominate
+	 *         (or postdominate) the BasicBlock
+	 */
+	public BitSet getAllDominatorsOf(BasicBlock block) {
+		return getResultFact(block);
+	}
+
+	/**
+	 * Get a bitset containing the unique IDs of 
+	 * all blocks in CFG dominated (or postdominated, depending
 	 * on how the analysis was done) by given block.
 	 *
 	 * @param dominator we want to get all blocks dominated (or postdominated)
