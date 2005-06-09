@@ -69,14 +69,14 @@ public class InefficientMemberAccess extends BytecodeScanningDetector implements
 			}
 			String methodSig = getSigConstantOperand();
 			Type[] argTypes = Type.getArgumentTypes(methodSig);
-			if (argTypes.length != 2)
+			if ((argTypes.length < 1) || (argTypes.length > 2))
 				return;
 			String parCls = argTypes[0].getSignature();
 			if (parCls.length() < 3) return;
 			parCls = parCls.substring(1, parCls.length() - 1);
 			if (!parCls.equals(getClassConstantOperand()))
 				return;
-			if (!argTypes[1].getSignature().equals(Type.getReturnType(methodSig).getSignature()))
+			if ((argTypes.length == 2) && !argTypes[1].getSignature().equals(Type.getReturnType(methodSig).getSignature()))
 				return;
 			
 			bugReporter.reportBug(new BugInstance(this, "IMA_INEFFICIENT_MEMBER_ACCESS", LOW_PRIORITY)
