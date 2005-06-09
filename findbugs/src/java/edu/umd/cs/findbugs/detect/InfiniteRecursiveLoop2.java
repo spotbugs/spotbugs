@@ -62,6 +62,7 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
  */
 public class InfiniteRecursiveLoop2 implements Detector {
 	private static final boolean DEBUG = Boolean.getBoolean("irl.debug");
+	private static final String IRL_METHOD = System.getProperty("irl.method");
 	
 	private BugReporter bugReporter;
 	
@@ -78,7 +79,15 @@ public class InfiniteRecursiveLoop2 implements Detector {
 			Method method = methodList[i];
 			if (method.getCode() == null)
 				continue;
+			
+			if (IRL_METHOD != null && !method.getName().equals(IRL_METHOD))
+				continue;
+			
 			try {
+				if (DEBUG) {
+					System.out.println("Checking method " +
+							SignatureConverter.convertMethodSignature(classContext.getJavaClass(), method));
+				}
 				analyzeMethod(classContext, method);
 			} catch (CFGBuilderException e) {
 				bugReporter.logError("Error checking for infinite recursive loop in " +
