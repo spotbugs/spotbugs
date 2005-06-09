@@ -75,7 +75,7 @@ public abstract class FieldSetAnalysis extends ForwardDataflowAnalysis<FieldSet>
 	
 	//@Override
 	public boolean isFactValid(FieldSet fact) {
-		return !(fact.isTop() || fact.isBottom());
+		return fact.isValid();
 	}
 	
 	public void copy(FieldSet source, FieldSet dest) {

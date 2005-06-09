@@ -41,6 +41,7 @@ public class FieldSet {
 	}
 	
 	public boolean isTop() {
+		clear();
 		return isTop;
 	}
 	
@@ -51,6 +52,10 @@ public class FieldSet {
 	
 	public boolean isBottom() {
 		return isBottom;
+	}
+	
+	public boolean isValid() {
+		return !isTop && !isBottom;
 	}
 	
 	public boolean isEmpty() {
@@ -71,11 +76,11 @@ public class FieldSet {
 	}
 	
 	public void mergeWith(FieldSet other) {
-		if (other.isTop())
+		if (other.isTop() || this.isBottom())
 			return;
 		
-		if (other.isBottom()) {
-			this.setBottom();
+		if (other.isBottom() || this.isTop()) {
+			this.copyFrom(other);
 			return;
 		}
 		
