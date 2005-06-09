@@ -41,6 +41,9 @@ import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.PostDominatorsAnalysis;
 import edu.umd.cs.findbugs.ba.SignatureConverter;
 import edu.umd.cs.findbugs.ba.SignatureParser;
+import edu.umd.cs.findbugs.ba.heap.FieldSet;
+import edu.umd.cs.findbugs.ba.heap.LoadDataflow;
+import edu.umd.cs.findbugs.ba.heap.StoreDataflow;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
@@ -117,31 +120,6 @@ public class InfiniteRecursiveLoop2 implements Detector {
 		}
 	}
 
-	private void checkCallToAdd(
-			ClassContext classContext,
-			Method method,
-			BasicBlock basicBlock,
-			InstructionHandle thrower) throws DataflowAnalysisException, CFGBuilderException {
-		ValueNumberDataflow vnaDataflow = classContext.getValueNumberDataflow(method);
-		ValueNumberFrame vnaFrame = vnaDataflow.getStartFact(basicBlock);
-
-		if (vnaFrame.isValid() && vnaFrame.getStackDepth() >= 2) {
-			ValueNumber top = vnaFrame.getStackValue(0);
-			ValueNumber next = vnaFrame.getStackValue(1);
-			if (DEBUG) {
-				System.out.println("top=" + top.getNumber() + ", next=" + next.getNumber());
-			}
-			if (top.equals(next)) {
-				JavaClass javaClass = classContext.getJavaClass();
-				String sourceFile = javaClass.getSourceFileName();
-				BugInstance warning = new BugInstance("IL_CONTAINER_ADDED_TO_ITSELF", NORMAL_PRIORITY)
-					.addClassAndMethod(javaClass, method)
-					.addSourceLine(classContext.getMethodGen(method), sourceFile, thrower);
-				bugReporter.reportBug(warning);
-			}
-		}
-	}
-
 	private boolean isRecursiveCall(InvokeInstruction instruction, ClassContext classContext, Method method) {
 		if ((instruction.getOpcode() == Constants.INVOKESTATIC) != method.isStatic())
 			return false;
@@ -189,9 +167,13 @@ public class InfiniteRecursiveLoop2 implements Detector {
 		report = entryPostDominators.get(basicBlock.getId());
 		
 		if (!report) {
-			// See if all parameters are passed unconditionally as arguments
+			// See if 
+			// (1) all parameters are passed unconditionally as arguments
+			// (2) no fields which might have been read have been written to
 			report = allParamsPassedAsArgs(
-					classContext, vnaDataflow, vnaFrameAtEntry, numArgsToCheck, basicBlock, (InvokeInstruction) ins);
+					classContext, vnaDataflow, vnaFrameAtEntry, numArgsToCheck, basicBlock, (InvokeInstruction) ins)
+					&&
+					!checkedStateHasBeenModified(classContext, method, basicBlock);
 		}
 		
 		if (report) {
@@ -236,11 +218,63 @@ public class InfiniteRecursiveLoop2 implements Detector {
 		
 		return allParamsPassedAsArgs;
 	}
+
+	private boolean checkedStateHasBeenModified(ClassContext classContext, Method method, BasicBlock basicBlock)
+			throws CFGBuilderException, DataflowAnalysisException {
+
+		LoadDataflow loadDataflow = classContext.getLoadDataflow(method);
+		FieldSet loadSet = loadDataflow.getStartFact(basicBlock);
+		
+		StoreDataflow storeDataflow = classContext.getStoreDataflow(method);
+		FieldSet storeSet = storeDataflow.getStartFact(basicBlock);
+
+		if (DEBUG) {
+			System.out.println("Checking state: loads=" + loadSet + ", stores=" + storeSet);
+		}
+		
+		if (loadSet.isEmpty() || storeSet.isEmpty())
+			return false;
+		
+		// Bottom means "any field is potentially loaded or stored"
+		if (loadSet.isBottom() || storeSet.isBottom())
+			return true;
+		
+		// Top generally means dead code, so we should repress the warning
+		if (loadSet.isTop() || storeSet.isTop())
+			return true;
+
+		return loadSet.isIntersectionNonEmpty(storeSet);
+	}
 	
 	private boolean isCallToAdd(InvokeInstruction ins, ConstantPoolGen cpg) {
 		return ins.getOpcode() != Constants.INVOKESTATIC 
 			&& ins.getName(cpg).equals("add")
 			&& ins.getSignature(cpg).equals("(Ljava/lang/Object;)Z");
+	}
+
+	private void checkCallToAdd(
+			ClassContext classContext,
+			Method method,
+			BasicBlock basicBlock,
+			InstructionHandle thrower) throws DataflowAnalysisException, CFGBuilderException {
+		ValueNumberDataflow vnaDataflow = classContext.getValueNumberDataflow(method);
+		ValueNumberFrame vnaFrame = vnaDataflow.getStartFact(basicBlock);
+
+		if (vnaFrame.isValid() && vnaFrame.getStackDepth() >= 2) {
+			ValueNumber top = vnaFrame.getStackValue(0);
+			ValueNumber next = vnaFrame.getStackValue(1);
+			if (DEBUG) {
+				System.out.println("top=" + top.getNumber() + ", next=" + next.getNumber());
+			}
+			if (top.equals(next)) {
+				JavaClass javaClass = classContext.getJavaClass();
+				String sourceFile = javaClass.getSourceFileName();
+				BugInstance warning = new BugInstance("IL_CONTAINER_ADDED_TO_ITSELF", NORMAL_PRIORITY)
+					.addClassAndMethod(javaClass, method)
+					.addSourceLine(classContext.getMethodGen(method), sourceFile, thrower);
+				bugReporter.reportBug(warning);
+			}
+		}
 	}
 
 	/* (non-Javadoc)
