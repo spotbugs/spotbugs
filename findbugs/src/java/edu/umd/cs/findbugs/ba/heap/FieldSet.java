@@ -41,7 +41,6 @@ public class FieldSet {
 	}
 	
 	public boolean isTop() {
-		clear();
 		return isTop;
 	}
 	
@@ -68,6 +67,8 @@ public class FieldSet {
 	}
 	
 	public void addField(XField field) {
+		if (!isValid())
+			throw new IllegalStateException();
 		fieldSet.add(field);
 	}
 	
