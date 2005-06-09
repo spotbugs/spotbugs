@@ -53,6 +53,10 @@ public class FieldSet {
 		return isBottom;
 	}
 	
+	public boolean isEmpty() {
+		return !isTop && !isBottom && fieldSet.isEmpty();
+	}
+	
 	public void clear() {
 		isTop = isBottom = false;
 		fieldSet.clear();
@@ -89,5 +93,22 @@ public class FieldSet {
 		this.isBottom = other.isBottom;
 		this.fieldSet.clear();
 		this.fieldSet.addAll(other.fieldSet);
+	}
+	
+	public boolean isIntersectionNonEmpty(FieldSet other) {
+		for (XField field : fieldSet) {
+			if (other.fieldSet.contains(field))
+				return true;
+		}
+		return false;
+	}
+	
+	public String toString() {
+		if (isTop)
+			return "TOP";
+		else if (isBottom)
+			return "BOTTOM";
+		else
+			return fieldSet.toString();
 	}
 }
