@@ -293,6 +293,11 @@ public class Hierarchy {
 				System.out.println("[Method name is " + methodName + "]");
 				System.out.println("[Method signature is " + methodSig + "]");
 			}
+			
+			if (className.startsWith("[")) {
+				// Java 1.5 allows array classes to appear as the class name
+				className= "java.lang.Object";
+			}
 
 			if (opcode == Constants.INVOKEVIRTUAL || opcode == Constants.INVOKESTATIC) {
 				if (DEBUG_METHOD_LOOKUP) {
