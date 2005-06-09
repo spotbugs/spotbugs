@@ -370,6 +370,31 @@ public class ValueNumberFrameModelingVisitor
 
 		getFrame().pushValue(value);
 	}
+	
+	//@Override
+	public void visitIINC(IINC obj) {
+		if (obj.getIncrement() == 0) {
+			// A no-op.
+			return;
+		}
+		
+		// IINC is a special case because its input and output are not on the stack.
+		// However, we still want to use the value number cache to ensure that
+		// this operation is modeled consistently.  (If we do nothing, we miss
+		// the fact that the referenced local is modified.)
+		
+		int local = obj.getIndex();
+		
+		ValueNumber[] input = new ValueNumber[]{ getFrame().getValue(local) };
+		ValueNumberCache.Entry entry = new ValueNumberCache.Entry(handle, input);
+		ValueNumber[] output = cache.lookupOutputValues(entry);
+		if (output == null) {
+			output = new ValueNumber[]{ factory.createFreshValue() };
+			cache.addOutputValues(entry, output);
+		}
+		
+		getFrame().setValue(local, output[0]);
+	}
 
 	/* ----------------------------------------------------------------------
 	 * Implementation
