@@ -19,20 +19,34 @@
 
 package edu.umd.cs.findbugs.ba.heap;
 
+import org.apache.bcel.Constants;
+import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.FieldInstruction;
+import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
 
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.BasicBlock;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.DepthFirstSearch;
 import edu.umd.cs.findbugs.ba.Edge;
 import edu.umd.cs.findbugs.ba.ForwardDataflowAnalysis;
+import edu.umd.cs.findbugs.ba.Hierarchy;
+import edu.umd.cs.findbugs.ba.XField;
 
 /**
  * @author David Hovemeyer
  */
-public class FieldSetAnalysis extends ForwardDataflowAnalysis<FieldSet> {
-	public FieldSetAnalysis(DepthFirstSearch dfs) {
+public abstract class FieldSetAnalysis extends ForwardDataflowAnalysis<FieldSet> {
+	private ConstantPoolGen cpg;
+	
+	public FieldSetAnalysis(DepthFirstSearch dfs, ConstantPoolGen cpg) {
 		super(dfs);
+		this.cpg = cpg;
+	}
+	
+	public ConstantPoolGen getCPG() {
+		return cpg;
 	}
 	
 	public void makeFactTop(FieldSet fact) {
@@ -72,6 +86,52 @@ public class FieldSetAnalysis extends ForwardDataflowAnalysis<FieldSet> {
 			InstructionHandle handle,
 			BasicBlock basicBlock,
 			FieldSet fact) throws DataflowAnalysisException {
-		// TODO: implement
+		if (!isFactValid(fact))
+			return;
+		
+		try {
+			handleInstruction(handle, basicBlock, fact);
+		} catch (ClassNotFoundException e) {
+			AnalysisContext.currentAnalysisContext().getLookupFailureCallback().reportMissingClass(e);
+			fact.setBottom();
+		}
 	}
+	
+	private void handleInstruction(
+			InstructionHandle handle,
+			BasicBlock basicBlock,
+			FieldSet fact) throws DataflowAnalysisException, ClassNotFoundException {
+		Instruction ins = handle.getInstruction();
+		short opcode = ins.getOpcode();
+		XField field;
+		
+		switch (opcode) {
+		case Constants.GETFIELD:
+		case Constants.GETSTATIC:
+			field = Hierarchy.findXField((FieldInstruction) ins, getCPG());
+			if (field != null) {
+				sawLoad(fact, field);
+			}
+			break;
+		
+		case Constants.PUTFIELD:
+		case Constants.PUTSTATIC:
+			field = Hierarchy.findXField((FieldInstruction) ins, getCPG());
+			if (field != null) {
+				sawStore(fact, field);
+			}
+			break;
+		
+		case Constants.INVOKEINTERFACE:
+		case Constants.INVOKESPECIAL:
+		case Constants.INVOKESTATIC:
+		case Constants.INVOKEVIRTUAL:
+			// Assume that the called method assigns loads and stores all possible fields
+			fact.setBottom();
+			break;
+		}
+	}
+	
+	protected abstract void sawLoad(FieldSet fact, XField field);
+	protected abstract void sawStore(FieldSet fact, XField field);
 }
