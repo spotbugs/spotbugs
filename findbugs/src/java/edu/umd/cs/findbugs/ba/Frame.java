@@ -261,6 +261,24 @@ public abstract class Frame <ValueType> implements Debug {
 	}
 	
 	/**
+	 * Get the slot the object instance referred to by given instruction
+	 * is located in.
+	 * 
+	 * @param ins the Instruction
+	 * @param cpg the ConstantPoolGen for the method
+	 * @return stack slot the object instance is in
+	 * @throws DataflowAnalysisException
+	 */
+	public int getInstanceSlot(Instruction ins, ConstantPoolGen cpg) throws DataflowAnalysisException {
+		int numConsumed = ins.consumeStack(cpg);
+		if (numConsumed == Constants.UNPREDICTABLE)
+			throw new DataflowAnalysisException("Unpredictable stack consumption in " + ins);
+		if (numConsumed > getStackDepth())
+			throw new DataflowAnalysisException("Stack underflow " + ins);
+		return getNumSlots() - numConsumed;
+	}
+	
+	/**
 	 * Get the number of arguments passed to given method invocation.
 	 * 
 	 * @param ins the method invocation instruction
