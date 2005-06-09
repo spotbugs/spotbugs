@@ -19,6 +19,9 @@
 
 package edu.umd.cs.findbugs.ba.heap;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.bcel.Constants;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.FieldInstruction;
@@ -40,9 +43,12 @@ import edu.umd.cs.findbugs.ba.XField;
 public abstract class FieldSetAnalysis extends ForwardDataflowAnalysis<FieldSet> {
 	private ConstantPoolGen cpg;
 	
+	private Map<InstructionHandle, XField> instructionToFieldMap;
+	
 	public FieldSetAnalysis(DepthFirstSearch dfs, ConstantPoolGen cpg) {
 		super(dfs);
 		this.cpg = cpg;
+		this.instructionToFieldMap = new HashMap<InstructionHandle, XField>();
 	}
 	
 	public ConstantPoolGen getCPG() {
@@ -108,7 +114,7 @@ public abstract class FieldSetAnalysis extends ForwardDataflowAnalysis<FieldSet>
 		switch (opcode) {
 		case Constants.GETFIELD:
 		case Constants.GETSTATIC:
-			field = Hierarchy.findXField((FieldInstruction) ins, getCPG());
+			field = lookupField(handle, (FieldInstruction) ins);
 			if (field != null) {
 				sawLoad(fact, field);
 			}
@@ -116,7 +122,7 @@ public abstract class FieldSetAnalysis extends ForwardDataflowAnalysis<FieldSet>
 		
 		case Constants.PUTFIELD:
 		case Constants.PUTSTATIC:
-			field = Hierarchy.findXField((FieldInstruction) ins, getCPG());
+			field = lookupField(handle, (FieldInstruction) ins);
 			if (field != null) {
 				sawStore(fact, field);
 			}
@@ -130,6 +136,15 @@ public abstract class FieldSetAnalysis extends ForwardDataflowAnalysis<FieldSet>
 			fact.setBottom();
 			break;
 		}
+	}
+	
+	private XField lookupField(InstructionHandle handle, FieldInstruction fins) throws ClassNotFoundException {
+		XField field = instructionToFieldMap.get(handle);
+		if (field == null) {
+			field = Hierarchy.findXField(fins, getCPG());
+			instructionToFieldMap.put(handle, field);
+		}
+		return field;
 	}
 	
 	protected abstract void sawLoad(FieldSet fact, XField field);
