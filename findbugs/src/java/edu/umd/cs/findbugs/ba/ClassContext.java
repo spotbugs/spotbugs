@@ -43,6 +43,10 @@ import edu.umd.cs.findbugs.ba.ca.CallListAnalysis;
 import edu.umd.cs.findbugs.ba.ca.CallListDataflow;
 import edu.umd.cs.findbugs.ba.constant.ConstantAnalysis;
 import edu.umd.cs.findbugs.ba.constant.ConstantDataflow;
+import edu.umd.cs.findbugs.ba.heap.LoadAnalysis;
+import edu.umd.cs.findbugs.ba.heap.LoadDataflow;
+import edu.umd.cs.findbugs.ba.heap.StoreAnalysis;
+import edu.umd.cs.findbugs.ba.heap.StoreDataflow;
 import edu.umd.cs.findbugs.ba.npe.IsNullValueAnalysis;
 import edu.umd.cs.findbugs.ba.npe.IsNullValueDataflow;
 import edu.umd.cs.findbugs.ba.npe.UnconditionalDerefAnalysis;
@@ -634,6 +638,34 @@ public class ClassContext implements AnalysisFeatures {
 				return dataflow;
 			}
 		};
+	
+	private AnalysisFactory<LoadDataflow> loadDataflowFactory =
+		new AnalysisFactory<LoadDataflow>("field load analysis") {
+			//@Override
+			protected LoadDataflow analyze(Method method) throws CFGBuilderException, DataflowAnalysisException {
+				LoadAnalysis analysis = new LoadAnalysis(
+						getDepthFirstSearch(method),
+						getConstantPoolGen()
+						);
+				LoadDataflow dataflow = new LoadDataflow(getCFG(method), analysis);
+				dataflow.execute();
+				return dataflow;
+			}
+		};
+
+	private AnalysisFactory<StoreDataflow> storeDataflowFactory =
+		new AnalysisFactory<StoreDataflow>("field store analysis") {
+			//@Override
+			protected StoreDataflow analyze(Method method) throws CFGBuilderException, DataflowAnalysisException {
+				StoreAnalysis analysis = new StoreAnalysis(
+						getDepthFirstSearch(method),
+						getConstantPoolGen()
+						);
+				StoreDataflow dataflow = new StoreDataflow(getCFG(method), analysis);
+				dataflow.execute();
+				return dataflow;
+			}
+		};
 		
 	private static final BitSet fieldInstructionOpcodeSet = new BitSet();
 	static {
@@ -1090,6 +1122,14 @@ public class ClassContext implements AnalysisFeatures {
 	public UnconditionalDerefDataflow getUnconditionalDerefDataflow(Method method)
 			throws CFGBuilderException, DataflowAnalysisException {
 		return unconditionalDerefDataflowFactory.getAnalysis(method);
+	}
+	
+	public LoadDataflow getLoadDataflow(Method method) throws CFGBuilderException, DataflowAnalysisException {
+		return loadDataflowFactory.getAnalysis(method);
+	}
+	
+	public StoreDataflow getStoreDataflow(Method method) throws CFGBuilderException, DataflowAnalysisException {
+		return storeDataflowFactory.getAnalysis(method);
 	}
 	
 	/**
