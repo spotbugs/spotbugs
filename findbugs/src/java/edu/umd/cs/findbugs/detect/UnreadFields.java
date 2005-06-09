@@ -68,6 +68,8 @@ public class UnreadFields extends BytecodeScanningDetector implements Constants2
 	Set<FieldAnnotation> allMyFields = new TreeSet<FieldAnnotation>();
 	Set<FieldAnnotation> myFields = new TreeSet<FieldAnnotation>();
 	Set<FieldAnnotation> writtenFields = new HashSet<FieldAnnotation>();
+	Set<FieldAnnotation> writtenNonNullFields = new HashSet<FieldAnnotation>();
+	
 	Set<FieldAnnotation> writtenInConstructorFields = new HashSet<FieldAnnotation>();
 	Set<FieldAnnotation> readFields = new HashSet<FieldAnnotation>();
 	Set<FieldAnnotation> constantFields = new HashSet<FieldAnnotation>();
@@ -332,22 +334,23 @@ public class UnreadFields extends BytecodeScanningDetector implements Constants2
 				item = opcodeStack.getStackItem(0);
 				if (!item.isNull()) nullTested.add(f);
 			}
-			if (previousOpcode != ACONST_NULL || previousPreviousOpcode == GOTO ) {
-				if (DEBUG) System.out.println("put: " + f);
-				writtenFields.add(f);
-				if (
-						getMethodName().equals("<init>") 
-						|| getMethodName().equals("<clinit>") 
-						|| getMethod().isPrivate()) {
-					writtenInConstructorFields.add(f);
-					assumedNonNull.remove(f);
-				}
-				
-				if (getClassConstantOperand().equals(getClassName()) &&
-						!allMyFields.contains(f)) {
-					superWrittenFields.add(getNameConstantOperand());
-				}
+			
+			if (DEBUG) System.out.println("put: " + f);
+			writtenFields.add(f);
+			if (previousOpcode != ACONST_NULL || previousPreviousOpcode == GOTO ) writtenNonNullFields.add(f);
+			if (
+					getMethodName().equals("<init>") 
+					|| getMethodName().equals("<clinit>") 
+					|| getMethod().isPrivate()) {
+				writtenInConstructorFields.add(f);
+				assumedNonNull.remove(f);
 			}
+			
+			if (getClassConstantOperand().equals(getClassName()) &&
+					!allMyFields.contains(f)) {
+				superWrittenFields.add(getNameConstantOperand());
+			}
+			
 		}
 		opcodeStack.sawOpcode(this, seen);
 		previousPreviousOpcode = previousOpcode;
@@ -368,10 +371,17 @@ public class UnreadFields extends BytecodeScanningDetector implements Constants2
 		notInitializedInConstructors.retainAll(writtenFields);
 		notInitializedInConstructors.retainAll(assumedNonNull.keySet());
 		notInitializedInConstructors.removeAll(writtenInConstructorFields);
+		
 		TreeSet<FieldAnnotation> readOnlyFields =
 		        new TreeSet<FieldAnnotation>(declaredFields);
 		readOnlyFields.removeAll(writtenFields);
 		readOnlyFields.retainAll(readFields);
+		
+		TreeSet<FieldAnnotation> nullOnlyFields =
+	        new TreeSet<FieldAnnotation>(declaredFields);
+		nullOnlyFields.removeAll(writtenNonNullFields);
+		nullOnlyFields.retainAll(readFields);
+		
 		Set<FieldAnnotation> writeOnlyFields = declaredFields;
 		writeOnlyFields.removeAll(readFields);
 
@@ -404,16 +414,7 @@ public class UnreadFields extends BytecodeScanningDetector implements Constants2
 				int priority = NORMAL_PRIORITY;
 				if (!(fieldSignature.charAt(0) == 'L' || fieldSignature.charAt(0) == '['))
 					priority++;
-				else if (assumedNonNull.containsKey(f)) {
-				priority--;
-				for(ProgramPoint p : assumedNonNull.get(f)) 
-				bugReporter.reportBug(new BugInstance(this, 
-					"NP_UNWRITTEN_FIELD", 
-					NORMAL_PRIORITY)
-				        .addClassAndMethod(p.method)
-				        .addSourceLine(p.sourceLine)
-					);
-				}
+				
 				bugReporter.reportBug(new BugInstance(this, 
 					"UWF_UNWRITTEN_FIELD", 
 					priority)
@@ -422,7 +423,25 @@ public class UnreadFields extends BytecodeScanningDetector implements Constants2
 			}
 				
 		}
-
+		for (Iterator<FieldAnnotation> i = nullOnlyFields.iterator(); i.hasNext();) {
+			FieldAnnotation f = i.next();
+			String fieldName = f.getFieldName();
+			String className = f.getClassName();
+			String fieldSignature = f.getFieldSignature();
+			if (!superWrittenFields.contains(fieldName)
+					&& !fieldsOfSerializableOrNativeClassed.contains(f) && assumedNonNull.containsKey(f)) 
+				for(ProgramPoint p : assumedNonNull.get(f)) 
+					bugReporter.reportBug(new BugInstance(this, 
+							"NP_UNWRITTEN_FIELD", 
+							NORMAL_PRIORITY)
+							.addClassAndMethod(p.method)
+							.addSourceLine(p.sourceLine)
+					);
+			
+			
+			
+			
+		}
 
 		for (Iterator<FieldAnnotation> i = writeOnlyFields.iterator(); i.hasNext();) {
 			FieldAnnotation f = i.next();
