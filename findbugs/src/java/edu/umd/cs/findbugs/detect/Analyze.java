@@ -84,7 +84,7 @@ public class Analyze {
 	/**
 	 * Given two JavaClasses, try to estimate the probability that an reference
 	 * of type x is also an instance of type y. Will return 0 only if it is
-	 * impossiblem and 1 only if it is guaranteed.
+	 * impossible and 1 only if it is guaranteed.
 	 * 
 	 * @param x
 	 *            Known type of object
