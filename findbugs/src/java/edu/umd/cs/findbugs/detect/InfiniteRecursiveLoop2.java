@@ -29,6 +29,8 @@ import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InvokeInstruction;
+import org.apache.bcel.generic.ObjectType;
+import org.apache.bcel.generic.Type;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -44,6 +46,7 @@ import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.ba.heap.FieldSet;
 import edu.umd.cs.findbugs.ba.heap.LoadDataflow;
 import edu.umd.cs.findbugs.ba.heap.StoreDataflow;
+import edu.umd.cs.findbugs.ba.type.TypeFrame;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
@@ -172,17 +175,18 @@ public class InfiniteRecursiveLoop2 implements Detector {
 
 		boolean report = false;
 
-		// Check to see if this block postdominates the method entry
-		report = entryPostDominators.get(basicBlock.getId());
+		// Check to see if this block postdominates the method entry,
+		// and the called method is known exactly.
+		report = entryPostDominators.get(basicBlock.getId())
+				&& targetMethodKnownExactly(classContext, method, basicBlock, ins);
 		
 		if (!report) {
 			// See if 
 			// (1) all parameters are passed unconditionally as arguments
 			// (2) no fields which might have been read have been written to
-			report = allParamsPassedAsArgs(
-					classContext, vnaDataflow, vnaFrameAtEntry, numArgsToCheck, basicBlock, (InvokeInstruction) ins)
-					&&
-					!checkedStateHasBeenModified(classContext, method, basicBlock);
+			//     (meaning a different path could be taken in the called method)
+			report = allParamsPassedAsArgs(classContext, vnaDataflow, vnaFrameAtEntry, numArgsToCheck, basicBlock, (InvokeInstruction) ins)
+					&& !checkedStateHasBeenModified(classContext, method, basicBlock);
 		}
 		
 		if (report) {
@@ -193,6 +197,52 @@ public class InfiniteRecursiveLoop2 implements Detector {
 					.addSourceLine(classContext.getMethodGen(method), sourceFile, thrower);
 			bugReporter.reportBug(warning);
 		}
+	}
+
+	private boolean targetMethodKnownExactly(ClassContext classContext, Method method, BasicBlock basicBlock, InvokeInstruction ins)
+			throws DataflowAnalysisException, CFGBuilderException {
+		
+		// Ways in which we can be confident that the called method
+		// is the same as the calling method:
+		// 1. invocation is nonvirtual: invokestatic or invokespecial
+		// 2. method is private
+		// 3. method or class is final
+		// 4. receiver instance is the same as "this"
+		// 5. receiver type is known exactly, and is the same as the class
+		//    containing the calling method
+		
+		if (ins.getOpcode() == Constants.INVOKESTATIC || ins.getOpcode() == Constants.INVOKESPECIAL)
+			return true;
+		
+		if (method.isPrivate())
+			return true;
+		
+		if (method.isFinal() || classContext.getJavaClass().isFinal())
+			return true;
+		
+		// See if caller and callee are the same.
+		// Technically, the call could still dispatch to a subclass,
+		// but that's pretty unlikely.
+		ValueNumberDataflow vnaDataflow = classContext.getValueNumberDataflow(method);
+		ValueNumber caller = vnaDataflow.getAnalysis().getThisValue();
+		ValueNumberFrame frameAtCall = vnaDataflow.getStartFact(basicBlock);
+		ValueNumber callee = frameAtCall.getInstance(ins, classContext.getConstantPoolGen());
+		if (caller.equals(callee)) {
+			return true;
+		}
+		
+		TypeFrame typeFrame = classContext.getTypeDataflow(method).getStartFact(basicBlock); 
+		int receiverStackSlot = typeFrame.getInstanceSlot(ins, classContext.getConstantPoolGen());
+		
+		if (!typeFrame.isExact(receiverStackSlot))
+			return false;
+		
+		Type receiverType = typeFrame.getValue(receiverStackSlot);
+		if (!(receiverType instanceof ObjectType))
+			return false;
+		
+		return (((ObjectType) receiverType).getClassName().equals(
+				classContext.getJavaClass().getClassName()));
 	}
 
 	private boolean allParamsPassedAsArgs(
