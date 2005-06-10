@@ -133,13 +133,14 @@ public class FindBugsWorker {
 
 		Reporter bugReporter = new Reporter(this.project, this.monitor, findBugsProject);
 		bugReporter.setPriorityThreshold(Detector.LOW_PRIORITY);
-		FindBugs findBugs = new FindBugs(bugReporter, findBugsProject);
-
+    
 		String[] classPathEntries = createClassPathEntries();
 		// add to findbugs classpath
 		for (int i = 0; i < classPathEntries.length; i++) {
 			findBugsProject.addAuxClasspathEntry(classPathEntries[i]);
 		}
+        
+		FindBugs findBugs = new FindBugs(bugReporter, findBugsProject);
 
 		// configure detectors.
 		findBugs.setUserPreferences(this.userPrefs);
