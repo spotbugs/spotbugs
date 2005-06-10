@@ -503,6 +503,10 @@ public class ConvertToARFF {
 		this.dropUnclassifiedWarnings = false;
 	}
 	
+	public void setAppName(String appName) {
+		this.appName = appName;
+	}
+	
 	/**
 	 * Set the xpath expression used to select BugInstance nodes.
 	 * 
@@ -718,6 +722,7 @@ public class ConvertToARFF {
 			addSwitch("-classification", "add bug classification attribute");
 			addSwitch("-binclass", "add binary (bug/not_bug) classification attribute");
 			addSwitch("-priority", "add priority attribute");
+			addOption("-appname", "app name", "set application name of all tuples");
 		}
 
 		public ConvertToARFF getConverter() {
@@ -772,6 +777,8 @@ public class ConvertToARFF {
 						return new NumericAttribute(name, xpath);
 					}
 				});
+			} else if (option.equals("-appname")) {
+				converter.setAppName(argument);
 			}
 		}
 		
