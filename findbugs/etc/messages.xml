@@ -2403,6 +2403,17 @@ object is stored in this field.</p>
 ]]>
     </Details>
   </BugPattern>
+  <BugPattern type="UWF_NULL_FIELD">
+    <ShortDescription>Field only ever set to null</ShortDescription>
+    <LongDescription>Field only ever set to null: {1}</LongDescription>
+    <Details>
+<![CDATA[
+  <p> All writes to this field are of the constant value null, and thus
+all reads of the field will return null.
+Check for errors, or remove it if it is useless.</p>
+]]>
+    </Details>
+  </BugPattern>
   <BugPattern type="UWF_UNWRITTEN_FIELD">
     <ShortDescription>Unwritten field</ShortDescription>
     <LongDescription>Unwritten field: {1}</LongDescription>
@@ -2413,6 +2424,8 @@ value. Check for errors (should it have been initialized?), or remove it if it i
 ]]>
     </Details>
   </BugPattern>
+
+
   <BugPattern type="ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD">
     <ShortDescription>Write to static field from instance method</ShortDescription>
     <LongDescription>Write to static field {2} from instance method {1}</LongDescription>

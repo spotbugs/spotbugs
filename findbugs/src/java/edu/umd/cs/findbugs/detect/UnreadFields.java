@@ -439,8 +439,11 @@ public class UnreadFields extends BytecodeScanningDetector implements Constants2
 			System.out.println("Null only: " + f);
 			System.out.println("   : " + assumedNonNull.containsKey(f));
 			}
-			if (!superWrittenFields.contains(fieldName)
-					&& !fieldsOfSerializableOrNativeClassed.contains(f) && assumedNonNull.containsKey(f)) 
+			if (superWrittenFields.contains(fieldName)) continue;
+			if (fieldsOfSerializableOrNativeClassed.contains(f)) continue;
+			int priority = NORMAL_PRIORITY;
+			if (assumedNonNull.containsKey(f))  {
+				priority = HIGH_PRIORITY;
 				for(ProgramPoint p : assumedNonNull.get(f)) 
 					bugReporter.reportBug(new BugInstance(this, 
 							"NP_UNWRITTEN_FIELD", 
@@ -448,10 +451,13 @@ public class UnreadFields extends BytecodeScanningDetector implements Constants2
 							.addClassAndMethod(p.method)
 							.addSourceLine(p.sourceLine)
 					);
-			
-			
-			
-			
+				}
+			if (!readOnlyFields.contains(f))
+			bugReporter.reportBug(new BugInstance(this, 
+				"UWF_NULL_FIELD", 
+				priority)
+				        .addClass(className)
+				        .addField(f));
 		}
 
 		for (Iterator<FieldAnnotation> i = writeOnlyFields.iterator(); i.hasNext();) {

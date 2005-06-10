@@ -99,7 +99,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.ResolveAllReferences" 
             speed="fast"
             reports="TESTING"
-            disabled="false"
+            disabled="true"
             hidden="true" />
             
   <Detector class="edu.umd.cs.findbugs.detect.DontCatchIllegalMonitorStateException" 
@@ -250,7 +250,7 @@
 		/>
   <Detector class="edu.umd.cs.findbugs.detect.UnreadFields" 
             speed="fast"
-            reports="ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD,NP_UNWRITTEN_FIELD,NP_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR,UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR,UWF_UNWRITTEN_FIELD,SS_SHOULD_BE_STATIC,UUF_UNUSED_FIELD,URF_UNREAD_FIELD,SIC_INNER_SHOULD_BE_STATIC,SIC_INNER_SHOULD_BE_STATIC_ANON,SIC_INNER_SHOULD_BE_STATIC_NEEDS_THIS" />
+            reports="ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD,NP_UNWRITTEN_FIELD,NP_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR,UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR,UWF_NULL_FIELD,UWF_UNWRITTEN_FIELD,SS_SHOULD_BE_STATIC,UUF_UNUSED_FIELD,URF_UNREAD_FIELD,SIC_INNER_SHOULD_BE_STATIC,SIC_INNER_SHOULD_BE_STATIC_ANON,SIC_INNER_SHOULD_BE_STATIC_NEEDS_THIS" />
             
   <Detector class="edu.umd.cs.findbugs.detect.WaitInLoop" 
             speed="fast"
@@ -597,6 +597,7 @@ RCN_REDUNDANT_COMPARISON_TO_NULL_BOTH_NULL,RCN_REDUNDANT_COMPARISON_TO_NULL_DIFF
   <BugPattern abbrev="NP" type="NP_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR" category="STYLE" />
   <BugPattern abbrev="NP" type="NP_UNWRITTEN_FIELD" category="CORRECTNESS" />
   <BugPattern abbrev="UwF" type="UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR" category="STYLE" />
+  <BugPattern abbrev="UwF" type="UWF_NULL_FIELD" category="CORRECTNESS" />
   <BugPattern abbrev="UwF" type="UWF_UNWRITTEN_FIELD" category="CORRECTNESS" />
   <BugPattern abbrev="SIC" type="SIC_INNER_SHOULD_BE_STATIC" category="PERFORMANCE" />
   <BugPattern abbrev="SIC" type="SIC_INNER_SHOULD_BE_STATIC_NEEDS_THIS" category="PERFORMANCE" />
