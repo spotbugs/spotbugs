@@ -23,19 +23,72 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 
+import edu.umd.cs.findbugs.config.AnalysisFeatureSetting;
 import edu.umd.cs.findbugs.config.CommandLine;
 
+/**
+ * Base class for FindBugs command line classes.
+ * Handles all shared switches/options.
+ * 
+ * @author David Hovemeyer
+ */
 public abstract class FindBugsCommandLine extends CommandLine {
-	
+	/**
+	 * Analysis settings to configure the analysis effort.
+	 */
+	protected AnalysisFeatureSetting[] settingList = FindBugs.DEFAULT_EFFORT;
+
+	/**
+	 * Project to analyze.
+	 */
+	protected Project project = new Project();
+
+	/**
+	 * Constructor.
+	 * Adds shared options/switches.
+	 */
 	public FindBugsCommandLine() {
+		addOption("-project", "project", "analyze given project");
 		addOption("-home", "home directory", "specify FindBugs home directory");
 		addOption("-pluginList", "jar1[" + File.pathSeparator + "jar2...]",
 		        "specify list of plugin Jar files to load");
+		addSwitchWithOptionalExtraPart("-effort", "min|default|max", "set analysis effort level");
+		addSwitch("-adjustExperimental", "lower priority of experimental Bug Patterns");
+		addSwitch("-workHard", "ensure analysis effort is at least 'default'");
+		addSwitch("-conserveSpace", "same as -effort:min (for backward compatibility)");
+	}
+	
+	public AnalysisFeatureSetting[] getSettingList() {
+		return settingList;
+	}
+	
+	public Project getProject() {
+		return project;
 	}
 
 	//@Override
 	protected void handleOption(String option, String optionExtraPart) {
-		throw new IllegalStateException();
+		if (option.equals("-effort")) {
+			if (optionExtraPart.equals("min")) {
+				settingList = FindBugs.MIN_EFFORT;
+			} else if (optionExtraPart.equals("default")) {
+				settingList = FindBugs.DEFAULT_EFFORT;
+			} else if (optionExtraPart.equals("max")) {
+				settingList = FindBugs.MAX_EFFORT;
+			} else {
+				throw new IllegalArgumentException("-effort:<value> must be one of min,default,max");
+			}
+		} else if (option.equals("-workHard")) {
+			if (settingList == FindBugs.DEFAULT_EFFORT) {
+				settingList = FindBugs.DEFAULT_EFFORT;
+			}
+		} else if (option.equals("-conserveSpace")) {
+			settingList = FindBugs.MIN_EFFORT;
+		} else if (option.equals("-adjustExperimental")) {
+			BugInstance.setAdjustExperimental(true);
+		} else {
+			throw new IllegalStateException();
+		}
 	}
 
 	//@Override
@@ -51,6 +104,20 @@ public abstract class FindBugsCommandLine extends CommandLine {
 			}
 
 			DetectorFactoryCollection.setPluginList((File[]) pluginList.toArray(new File[pluginList.size()]));
+		} else if (option.equals("-project")) {
+			String projectFile = argument;
+
+			// Convert project file to be an absolute path
+			projectFile = new File(projectFile).getAbsolutePath();
+
+			try {
+				project = new Project();
+				project.read(projectFile);
+			} catch (IOException e) {
+				System.err.println("Error opening " + projectFile);
+				e.printStackTrace(System.err);
+				throw e;
+			}
 		} else {
 			throw new IllegalStateException();
 		}

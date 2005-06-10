@@ -92,6 +92,9 @@ public class AnalysisRun {
 		
 		// Honor current UserPreferences
 		findBugs.setUserPreferences(UserPreferences.getUserPreferences());
+		
+		// Set analysis feature settings
+		findBugs.setAnalysisFeatureSettings(frame.getSettingList());
 
 		// Run the analysis!
 		findBugs.execute();

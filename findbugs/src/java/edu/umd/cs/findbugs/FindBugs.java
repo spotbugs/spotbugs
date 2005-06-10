@@ -463,7 +463,6 @@ public class FindBugs implements Constants2, ExitCodes {
 		private boolean useLongBugCodes = false;
 		private boolean xmlWithMessages = false;
 		private String stylesheet = null;
-		private Project project = new Project();
 		private boolean quiet = false;
 		private ClassScreener classScreener = new ClassScreener();
 		private String filterFile = null;
@@ -475,7 +474,6 @@ public class FindBugs implements Constants2, ExitCodes {
 		private UserPreferences userPreferences = UserPreferences.createDefaultUserPreferences();
 		private String trainingOutputDir;
 		private String trainingInputDir;
-		private AnalysisFeatureSetting[] settingList = DEFAULT_EFFORT;
 
 		public TextUICommandLine() {
 			super();
@@ -498,13 +496,11 @@ public class FindBugs implements Constants2, ExitCodes {
 					"Save training data (experimental); output dir defaults to '.'");
 			addSwitchWithOptionalExtraPart("-useTraining", "inputDir",
 					"Use training data (experimental); input dir defaults to '.'");
-			addSwitchWithOptionalExtraPart("-effort", "min|default|max", "set analysis effort level");
 			addOption("-outputFile", "filename", "Save output in named file");
 			addOption("-visitors", "v1[,v2...]", "run only named visitors");
 			addOption("-omitVisitors", "v1[,v2...]", "omit named visitors");
 			addOption("-chooseVisitors", "+v1,-v2,...", "selectively enable/disable detectors");
 			addOption("-choosePlugins", "+p1,-p2,...", "selectively enable/disable plugins");
-			addSwitch("-adjustExperimental", "lower the priority of Bug Patterns that are experimental");
 			addOption("-adjustPriority", "v1=(raise|lower)[,...]",
 					"raise/lower priority of warnings for given visitor(s)");
 			addOption("-bugCategories", "cat1[,cat2...]", "only report bugs in given categories");
@@ -513,7 +509,6 @@ public class FindBugs implements Constants2, ExitCodes {
 			addOption("-include", "filter file", "include only bugs matching given filter");
 			addOption("-auxclasspath", "classpath", "set aux classpath for analysis");
 			addOption("-sourcepath", "source path", "set source path for analyzed classes");
-			addOption("-project", "project", "analyze given project");
 			addSwitch("-exitcode", "set exit code of process");
 		}
 
@@ -559,8 +554,6 @@ public class FindBugs implements Constants2, ExitCodes {
 				priorityThreshold = Detector.NORMAL_PRIORITY;
 			else if (option.equals("-high"))
 				priorityThreshold = Detector.HIGH_PRIORITY;
-			else if (option.equals("-adjustExperimental"))
-				BugInstance.setAdjustExperimental(true);
 			else if (option.equals("-sortByClass"))
 				bugReporterType = SORTING_REPORTER;
 			else if (option.equals("-xml")) {
@@ -579,16 +572,6 @@ public class FindBugs implements Constants2, ExitCodes {
 				trainingOutputDir = !optionExtraPart.equals("") ? optionExtraPart : ".";
 			} else if (option.equals("-useTraining")) {
 				trainingInputDir = !optionExtraPart.equals("") ? optionExtraPart : ".";
-			} else if (option.equals("-effort")) {
-				if (optionExtraPart.equals("min")) {
-					settingList = MIN_EFFORT;
-				} else if (optionExtraPart.equals("default")) {
-					settingList = DEFAULT_EFFORT;
-				} else if (optionExtraPart.equals("max")) {
-					settingList = MAX_EFFORT;
-				} else {
-					throw new IllegalArgumentException("-effort:<value> must be one of min,default,max");
-				}
 			} else if (option.equals("-html")) {
 				bugReporterType = HTML_REPORTER;
 				if (!optionExtraPart.equals("")) {
@@ -718,20 +701,6 @@ public class FindBugs implements Constants2, ExitCodes {
 				StringTokenizer tok = new StringTokenizer(argument, File.pathSeparator);
 				while (tok.hasMoreTokens())
 					project.addSourceDir(new File(tok.nextToken()).getAbsolutePath());
-			} else if (option.equals("-project")) {
-				String projectFile = argument;
-
-				// Convert project file to be an absolute path
-				projectFile = new File(projectFile).getAbsolutePath();
-
-				try {
-					project = new Project();
-					project.read(projectFile);
-				} catch (IOException e) {
-					System.err.println("Error opening " + projectFile);
-					e.printStackTrace(System.err);
-					throw e;
-				}
 			} else {
 				super.handleOptionWithArgument(option, argument);
 			}

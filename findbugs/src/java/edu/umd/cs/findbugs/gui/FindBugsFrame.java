@@ -99,12 +99,14 @@ import edu.umd.cs.findbugs.BugPattern;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.FindBugs;
+import edu.umd.cs.findbugs.FindBugsCommandLine;
 import edu.umd.cs.findbugs.I18N;
 import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.ShowHelp;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.ba.SourceFinder;
+import edu.umd.cs.findbugs.config.AnalysisFeatureSetting;
 import edu.umd.cs.findbugs.config.ProjectFilterSettings;
 import edu.umd.cs.findbugs.config.UserPreferences;
 
@@ -3501,26 +3503,33 @@ public class FindBugsFrame extends javax.swing.JFrame {
 		return getFilterSettings().getMinPriorityAsInt();
 	}
 	
+	/**
+	 * Get list of AnalysisFeatureSettings.
+	 * 
+	 * @return list of AnalysisFeatureSettings
+	 */
+	public AnalysisFeatureSetting[] getSettingList() {
+		return settingList;
+	}
+	
 	/* ----------------------------------------------------------------------
 	 * main() method
 	 * ---------------------------------------------------------------------- */
 	
-	/**
-	 * Invoke from the command line.
-	 *
-	 * @param args the command line arguments
-	 */
-	public static void main(String args[]) {
-		Project project = null;
+	private static class SwingCommandLine extends FindBugsCommandLine {
+		public SwingCommandLine() {
+			addSwitch("-debug", "enable debug output");
+			addSwitchWithOptionalExtraPart("-look", "plastic|gtk|native", "set look and feel");
+			addOption("-project", "project file", "load given project");
+		}
 		
-		for (int i = 0; i < args.length; ++i) {
-			String arg = args[i];
-			
-			if (arg.equals("-debug")) {
+		//@Override
+		protected void handleOption(String option, String optionExtraPart) {
+			if (option.equals("-debug")) {
 				System.out.println("Setting findbugs.debug=true");
 				System.setProperty("findbugs.debug", "true");
-			} else if (arg.startsWith("-look:")) {
-				arg = arg.substring(6);
+			} else if (option.equals("-look")) {
+				String arg = optionExtraPart;
 				
 				String theme = null;
 				if (arg.equals("plastic")) {
@@ -3545,27 +3554,39 @@ public class FindBugsFrame extends javax.swing.JFrame {
 								" look and feel: " + e.toString());
 					}
 				}
-			} else if (arg.equals("-project")) {
-				++i;
-				if (i == args.length)
-					throw new IllegalArgumentException(arg + " option requires argument");
-				
-				String projectFile = args[i];
-				
-				try {
-					project = new Project();
-					project.read(projectFile);
-				} catch (IOException e) {
-					System.err.println("Couldn't load project: " + e.getMessage());
-				}
-			} else if (arg.equals("-adjustExperimental")) {
-				BugInstance.setAdjustExperimental(true);
 			} else {
-				showSynopsis();
-				ShowHelp.showGeneralOptions();
-				showCommandLineOptions();
-				System.exit(1);
+				super.handleOption(option, optionExtraPart);
 			}
+		}
+		
+		//@Override
+		protected void handleOptionWithArgument(String option, String argument) throws IOException {
+			super.handleOptionWithArgument(option, argument);
+		}
+	}
+	
+	/**
+	 * Invoke from the command line.
+	 *
+	 * @param args the command line arguments
+	 * @throws IOException 
+	 */
+	public static void main(String args[]) throws IOException {
+		Project project = null;
+		
+		SwingCommandLine commandLine = new SwingCommandLine();
+		try {
+			commandLine.parse(args);
+		} catch (IllegalArgumentException e) {
+			System.err.println("Error: " + e.getMessage());
+			showSynopsis();
+			ShowHelp.showGeneralOptions();
+			showCommandLineOptions();
+			System.exit(1);
+		}
+		
+		if (commandLine.getProject().getFileCount() > 0) {
+			project = commandLine.getProject();
 		}
 		
 		//	  Uncomment one of these to test I18N
@@ -3592,10 +3613,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
 	public static void showCommandLineOptions() {
 		System.out.println("GUI options:");
-		System.out.println("  -debug                   Print diagnostic information");
-		System.out.println("  -look:<lnf class>        Use the Swing look&feel whose class is given");
-		System.out.println("  -project <project file>  Open given FindBugs project");
-		System.out.println("  -adjustExperimental      Lower priority of warnings from experimental detectors");
+		new SwingCommandLine().printUsage(System.out);
 	}
 
 	public static void showSynopsis() {
@@ -3728,6 +3746,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	private String currentBugDetailsKey;
 	private JCheckBoxMenuItem[] bugCategoryCheckBoxList;
 	private String[] bugCategoryList;
+	private AnalysisFeatureSetting[] settingList;
 
 	// My constant declarations
 	private final static boolean MAC_OS_X = System.getProperty("os.name").toLowerCase().startsWith("mac os x");

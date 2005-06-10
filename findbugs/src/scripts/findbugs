@@ -59,10 +59,6 @@ while [ $# -gt 0 ]; do
 		conservespace_arg="-Dfindbugs.conserveSpace=true"
 		;;
 
-#	-workHard)
-#		workhard_arg="-Dfindbugs.workHard=true"
-#		;;
-
 	-property)
 		shift
 		user_props="-D$1 $user_props"

@@ -51,7 +51,5 @@ public class ShowHelp {
 		System.out.println("  -javahome <dir>  Specify location of JRE");
 		System.out.println("  -help            Display command line options");
 		System.out.println("  -debug           Enable debug tracing in FindBugs");
-		System.out.println("  -conserveSpace   Conserve memory at the expense of precision");
-		System.out.println("  -workHard        Do extra work to make the analysis more precise");
 	}
 }
