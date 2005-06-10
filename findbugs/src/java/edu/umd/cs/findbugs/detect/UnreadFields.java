@@ -302,7 +302,10 @@ public class UnreadFields extends BytecodeScanningDetector implements Constants2
 			if (opcodeStack.getStackDepth() > pos) {
 			OpcodeStack.Item item = opcodeStack.getStackItem(pos);
 			FieldAnnotation f = item.getField();
-			if (f != null && !nullTested.contains(f) && !writtenInConstructorFields.contains(f)) {
+			if (f != null && !nullTested.contains(f) 
+					&& ! (writtenInConstructorFields.contains(f)
+						 && writtenNonNullFields.contains(f))
+					) {
 				ProgramPoint p = new ProgramPoint(this);
 				HashSet <ProgramPoint> s = assumedNonNull.get(f);
 				if (s == null) {
@@ -334,16 +337,20 @@ public class UnreadFields extends BytecodeScanningDetector implements Constants2
 				item = opcodeStack.getStackItem(0);
 				if (!item.isNull()) nullTested.add(f);
 			}
-			
-			if (DEBUG) System.out.println("put: " + f);
 			writtenFields.add(f);
-			if (previousOpcode != ACONST_NULL || previousPreviousOpcode == GOTO ) writtenNonNullFields.add(f);
+			if (previousOpcode != ACONST_NULL || previousPreviousOpcode == GOTO )  {
+				writtenNonNullFields.add(f);
+				if (DEBUG) System.out.println("put nn: " + f);
+			}
+			else if (DEBUG) System.out.println("put: " + f);
+			
 			if (
 					getMethodName().equals("<init>") 
 					|| getMethodName().equals("<clinit>") 
 					|| getMethod().isPrivate()) {
 				writtenInConstructorFields.add(f);
-				assumedNonNull.remove(f);
+				if (previousOpcode != ACONST_NULL || previousPreviousOpcode == GOTO ) 
+					assumedNonNull.remove(f);
 			}
 			
 			if (getClassConstantOperand().equals(getClassName()) &&
@@ -428,6 +435,9 @@ public class UnreadFields extends BytecodeScanningDetector implements Constants2
 			String fieldName = f.getFieldName();
 			String className = f.getClassName();
 			String fieldSignature = f.getFieldSignature();
+			if (DEBUG) 
+			System.out.println("Null only: " + f);
+			System.out.println("   : " + assumedNonNull.containsKey(f));
 			if (!superWrittenFields.contains(fieldName)
 					&& !fieldsOfSerializableOrNativeClassed.contains(f) && assumedNonNull.containsKey(f)) 
 				for(ProgramPoint p : assumedNonNull.get(f)) 
