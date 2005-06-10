@@ -31,12 +31,12 @@ public class Version {
 	/**
 	 * Minor version number.
 	 */
-	public static final int MINOR = 8;
+	public static final int MINOR = 9;
 
 	/**
 	 * Patch level.
 	 */
-	public static final int PATCHLEVEL = 9;
+	public static final int PATCHLEVEL = 0;
 
 	/**
 	 * Development version or release candidate?
@@ -61,7 +61,7 @@ public class Version {
 	/**
 	 * Release date.
 	 */
-	public static final String DATE = "June 3, 2005";
+	public static final String DATE = "June 11, 2005";
 
 	/**
 	 * Version of Eclipse plugin.
