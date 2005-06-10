@@ -19,7 +19,7 @@
 
 package edu.umd.cs.findbugs.ml;
 
-import edu.umd.cs.findbugs.CommandLine;
+import edu.umd.cs.findbugs.config.CommandLine;
 
 import java.io.BufferedOutputStream;
 import java.io.FileOutputStream;

@@ -29,7 +29,6 @@ import java.io.InputStream;
 import java.io.PrintStream;
 import java.lang.reflect.Constructor;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -55,6 +54,7 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.ClassObserver;
 import edu.umd.cs.findbugs.ba.URLClassPath;
 import edu.umd.cs.findbugs.config.AnalysisFeatureSetting;
+import edu.umd.cs.findbugs.config.CommandLine;
 import edu.umd.cs.findbugs.config.UserPreferences;
 import edu.umd.cs.findbugs.filter.Filter;
 import edu.umd.cs.findbugs.filter.FilterException;
@@ -457,7 +457,7 @@ public class FindBugs implements Constants2, ExitCodes {
 	 * Helper class to parse the command line and create
 	 * the FindBugs engine object.
 	 */
-	private static class FindBugsCommandLine extends CommandLine {
+	private static class TextUICommandLine extends FindBugsCommandLine {
 		private int bugReporterType = PRINTING_REPORTER;
 		private boolean relaxedReportingMode = false;
 		private boolean useLongBugCodes = false;
@@ -477,10 +477,8 @@ public class FindBugs implements Constants2, ExitCodes {
 		private String trainingInputDir;
 		private AnalysisFeatureSetting[] settingList = DEFAULT_EFFORT;
 
-		public FindBugsCommandLine() {
-			addOption("-home", "home directory", "specify FindBugs home directory");
-			addOption("-pluginList", "jar1[" + File.pathSeparator + "jar2...]",
-			        "specify list of plugin Jar files to load");
+		public TextUICommandLine() {
+			super();
 			addSwitch("-showPlugins", "show list of available plugins");
 			addSwitch("-quiet", "suppress error messages");
 			addSwitch("-longBugCodes", "report long bug codes");
@@ -604,23 +602,13 @@ public class FindBugs implements Constants2, ExitCodes {
 				quiet = true;
 			else if (option.equals("-exitcode"))
 				setExitCode = true;
-			else
-				throw new IllegalStateException();
+			else {
+				super.handleOption(option, optionExtraPart);
+			}
 		}
 
 		protected void handleOptionWithArgument(String option, String argument) throws IOException {
-			if (option.equals("-home")) {
-				FindBugs.setHome(argument);
-			} else if (option.equals("-pluginList")) {
-				String pluginListStr = argument;
-				ArrayList<File> pluginList = new ArrayList<File>();
-				StringTokenizer tok = new StringTokenizer(pluginListStr, File.pathSeparator);
-				while (tok.hasMoreTokens()) {
-					pluginList.add(new File(tok.nextToken()));
-				}
-
-				DetectorFactoryCollection.setPluginList((File[]) pluginList.toArray(new File[pluginList.size()]));
-			} else if (option.equals("-outputFile")) {
+			if (option.equals("-outputFile")) {
 				String outputFile = argument;
 
 				try {
@@ -744,6 +732,8 @@ public class FindBugs implements Constants2, ExitCodes {
 					e.printStackTrace(System.err);
 					throw e;
 				}
+			} else {
+				super.handleOptionWithArgument(option, argument);
 			}
 		}
 
@@ -1691,7 +1681,7 @@ public class FindBugs implements Constants2, ExitCodes {
 
 	public static void main(String[] argv) {
 		try {
-			FindBugsCommandLine commandLine = new FindBugsCommandLine();
+			TextUICommandLine commandLine = new TextUICommandLine();
 			FindBugs findBugs = createEngine(commandLine, argv);
 
 			try {
@@ -1723,7 +1713,7 @@ public class FindBugs implements Constants2, ExitCodes {
 		}
 	}
 
-	private static FindBugs createEngine(FindBugsCommandLine commandLine, String[] argv)
+	private static FindBugs createEngine(TextUICommandLine commandLine, String[] argv)
 	        throws java.io.IOException, FilterException {
 		
 		// Expand option files in command line.
@@ -1753,14 +1743,14 @@ public class FindBugs implements Constants2, ExitCodes {
 		return commandLine.createEngine();
 	}
 
-	private static void showHelp(FindBugsCommandLine commandLine) {
+	private static void showHelp(TextUICommandLine commandLine) {
 		showSynopsis();
 		ShowHelp.showGeneralOptions();
 		FindBugs.showCommandLineOptions(commandLine);
 		System.exit(1);
 	}
 
-	private static void runMain(FindBugs findBugs, FindBugsCommandLine commandLine)
+	private static void runMain(FindBugs findBugs, TextUICommandLine commandLine)
 	        throws java.io.IOException, RuntimeException, FilterException {
 		try {
 			findBugs.execute();
@@ -1798,10 +1788,10 @@ public class FindBugs implements Constants2, ExitCodes {
 	 * Print command line options synopses to stdout.
 	 */
 	public static void showCommandLineOptions() {
-		showCommandLineOptions(new FindBugsCommandLine());
+		showCommandLineOptions(new TextUICommandLine());
 	}
 	
-	public static void showCommandLineOptions(FindBugsCommandLine commandLine) {
+	public static void showCommandLineOptions(TextUICommandLine commandLine) {
 		System.out.println("Command line options:");
 		commandLine.printUsage(System.out);
 	}
