@@ -435,9 +435,10 @@ public class UnreadFields extends BytecodeScanningDetector implements Constants2
 			String fieldName = f.getFieldName();
 			String className = f.getClassName();
 			String fieldSignature = f.getFieldSignature();
-			if (DEBUG) 
+			if (DEBUG)  {
 			System.out.println("Null only: " + f);
 			System.out.println("   : " + assumedNonNull.containsKey(f));
+			}
 			if (!superWrittenFields.contains(fieldName)
 					&& !fieldsOfSerializableOrNativeClassed.contains(f) && assumedNonNull.containsKey(f)) 
 				for(ProgramPoint p : assumedNonNull.get(f)) 
