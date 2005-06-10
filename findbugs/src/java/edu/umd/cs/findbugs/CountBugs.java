@@ -60,7 +60,8 @@ public class CountBugs {
 		}
 
 		public boolean equals(Object o) {
-			if (this.getClass() != o.getClass()) return false;
+			if (o == null || this.getClass() != o.getClass())
+				return false;
 			return category.equals(((CategoryKey) o).category);
 		}
 
@@ -122,7 +123,7 @@ public class CountBugs {
 		}
 
 		public boolean equals(Object o) {
-			if (this.getClass() != o.getClass()) return false;
+			if (o == null || this.getClass() != o.getClass()) return false;
 			KingdomAndPriorityKey other = (KingdomAndPriorityKey) o;
 			return legend.equals(other.legend);
 		}

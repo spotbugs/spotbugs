@@ -108,7 +108,7 @@ public class IsNullValue implements IsNullValueAnalysisFeatures {
 	}
 
 	public boolean equals(Object o) {
-		if (this.getClass() != o.getClass())
+		if (o == null || this.getClass() != o.getClass())
 			return false;
 		IsNullValue other = (IsNullValue) o;
 		return kind == other.kind;

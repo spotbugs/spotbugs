@@ -102,7 +102,7 @@ public class Edge extends AbstractEdge<Edge, BasicBlock> implements EdgeTypes, D
 	}
 
 	public boolean equals(Object o) {
-		if (this.getClass() != o.getClass())
+		if (o == null || this.getClass() != o.getClass())
 			return false;
 		Edge other = (Edge) o;
 		return this.getSource() == other.getSource() && this.getTarget() == other.getTarget()

@@ -102,7 +102,7 @@ public class AvailableLoad implements Comparable<AvailableLoad> {
 	}
 
 	public boolean equals(Object o) {
-		if (this.getClass() != o.getClass())
+		if (o == null || this.getClass() != o.getClass())
 			return false;
 		AvailableLoad other = (AvailableLoad) o;
 		return (reference == other.reference ||
