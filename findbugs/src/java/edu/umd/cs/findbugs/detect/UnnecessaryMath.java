@@ -100,6 +100,11 @@ public class UnnecessaryMath extends BytecodeScanningDetector implements Constan
 	}
 
 	public void visit(Method obj) {
+		// Don't complain about unnecessary math calls in class initializers,
+		// since they may be there to improve readability.
+		if (obj.getName().equals("<clinit>"))
+			return;
+		
 		state = SEEN_NOTHING;
 		super.visit(obj);
 	}
