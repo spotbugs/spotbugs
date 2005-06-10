@@ -11,3 +11,4 @@ mergeResults
 unionResults
 updateBugCollection
 xpathFind
+classifyBugs
