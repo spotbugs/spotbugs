@@ -50,9 +50,11 @@ import org.apache.bcel.util.ClassPath;
 
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.AnalysisException;
+import edu.umd.cs.findbugs.ba.AnalysisFeatures;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.ClassObserver;
 import edu.umd.cs.findbugs.ba.URLClassPath;
+import edu.umd.cs.findbugs.config.AnalysisFeatureSetting;
 import edu.umd.cs.findbugs.config.UserPreferences;
 import edu.umd.cs.findbugs.filter.Filter;
 import edu.umd.cs.findbugs.filter.FilterException;
@@ -429,6 +431,27 @@ public class FindBugs implements Constants2, ExitCodes {
 	private static final int EMACS_REPORTER = 3;
 	private static final int HTML_REPORTER = 4;
 	private static final int XDOCS_REPORTER = 5;
+	
+	public static final AnalysisFeatureSetting[] MIN_EFFORT = new AnalysisFeatureSetting[]{
+			new AnalysisFeatureSetting(AnalysisFeatures.CONSERVE_SPACE, true),
+			new AnalysisFeatureSetting(AnalysisFeatures.ACCURATE_EXCEPTIONS, false),
+			new AnalysisFeatureSetting(AnalysisFeatures.MODEL_INSTANCEOF, false),
+			new AnalysisFeatureSetting(FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS, false),
+	};
+	
+	public static final AnalysisFeatureSetting[] DEFAULT_EFFORT = new AnalysisFeatureSetting[]{
+			new AnalysisFeatureSetting(AnalysisFeatures.CONSERVE_SPACE, false),
+			new AnalysisFeatureSetting(AnalysisFeatures.ACCURATE_EXCEPTIONS, true),
+			new AnalysisFeatureSetting(AnalysisFeatures.MODEL_INSTANCEOF, true),
+			new AnalysisFeatureSetting(FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS, false),
+	};
+	
+	public static final AnalysisFeatureSetting[] MAX_EFFORT = new AnalysisFeatureSetting[]{
+			new AnalysisFeatureSetting(AnalysisFeatures.CONSERVE_SPACE, false),
+			new AnalysisFeatureSetting(AnalysisFeatures.ACCURATE_EXCEPTIONS, true),
+			new AnalysisFeatureSetting(AnalysisFeatures.MODEL_INSTANCEOF, true),
+			new AnalysisFeatureSetting(FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS, true),
+	};
 
 	/**
 	 * Helper class to parse the command line and create
@@ -452,7 +475,7 @@ public class FindBugs implements Constants2, ExitCodes {
 		private UserPreferences userPreferences = UserPreferences.createDefaultUserPreferences();
 		private String trainingOutputDir;
 		private String trainingInputDir;
-		private boolean runSlowFirstPassDetectors;
+		private AnalysisFeatureSetting[] settingList = DEFAULT_EFFORT;
 
 		public FindBugsCommandLine() {
 			addOption("-home", "home directory", "specify FindBugs home directory");
@@ -477,7 +500,7 @@ public class FindBugs implements Constants2, ExitCodes {
 					"Save training data (experimental); output dir defaults to '.'");
 			addSwitchWithOptionalExtraPart("-useTraining", "inputDir",
 					"Use training data (experimental); input dir defaults to '.'");
-			addSwitch("-interproc","enable interprocedural analysis (slow!)");
+			addSwitchWithOptionalExtraPart("-effort", "min|default|max", "set analysis effort level");
 			addOption("-outputFile", "filename", "Save output in named file");
 			addOption("-visitors", "v1[,v2...]", "run only named visitors");
 			addOption("-omitVisitors", "v1[,v2...]", "omit named visitors");
@@ -558,8 +581,16 @@ public class FindBugs implements Constants2, ExitCodes {
 				trainingOutputDir = !optionExtraPart.equals("") ? optionExtraPart : ".";
 			} else if (option.equals("-useTraining")) {
 				trainingInputDir = !optionExtraPart.equals("") ? optionExtraPart : ".";
-			} else if (option.equals("-interproc")) {
-				runSlowFirstPassDetectors = true;
+			} else if (option.equals("-effort")) {
+				if (optionExtraPart.equals("min")) {
+					settingList = MIN_EFFORT;
+				} else if (optionExtraPart.equals("default")) {
+					settingList = DEFAULT_EFFORT;
+				} else if (optionExtraPart.equals("max")) {
+					settingList = MAX_EFFORT;
+				} else {
+					throw new IllegalArgumentException("-effort:<value> must be one of min,default,max");
+				}
 			} else if (option.equals("-html")) {
 				bugReporterType = HTML_REPORTER;
 				if (!optionExtraPart.equals("")) {
@@ -797,7 +828,7 @@ public class FindBugs implements Constants2, ExitCodes {
 				findBugs.enableTrainingInput(trainingInputDir);
 			}
 			
-			findBugs.setRunSlowFirstPassDetectors(runSlowFirstPassDetectors);
+			findBugs.setAnalysisFeatureSettings(settingList);
 
 			return findBugs;
 		}
@@ -854,7 +885,8 @@ public class FindBugs implements Constants2, ExitCodes {
 	private boolean emitTrainingOutput;
 	private String trainingInputDir;
 	private String trainingOutputDir;
-	private boolean runSlowFirstPassDetectors;
+	//private boolean runSlowFirstPassDetectors;
+	private AnalysisFeatureSetting[] settingList = DEFAULT_EFFORT;
 	
 	private int passCount;
 
@@ -992,17 +1024,16 @@ public class FindBugs implements Constants2, ExitCodes {
 		this.useTrainingInput = true;
 		this.trainingInputDir = trainingInputDir;
 	}
-	
-	/**
-	 * Set whether slow interprocedural first pass detectors should be run.
-	 * 
-	 * @param runSlowFirstPassDetectors true if slow interprocedural first pass detectors
-	 *                                  should be run, false if not
-	 */
-	public void setRunSlowFirstPassDetectors(boolean runSlowFirstPassDetectors) {
-		this.runSlowFirstPassDetectors = runSlowFirstPassDetectors;
-	}
 
+	/**
+	 * Set analysis feature settings.
+	 * 
+	 * @param settingList list of analysis feature settings
+	 */
+	public void setAnalysisFeatureSettings(AnalysisFeatureSetting[] settingList) {
+		this.settingList  = settingList;
+	}
+	
 	/**
 	 * Execute FindBugs on the Project.
 	 * All bugs found are reported to the BugReporter object which was set
@@ -1017,7 +1048,7 @@ public class FindBugs implements Constants2, ExitCodes {
 		analysisContext.setSourcePath(project.getSourceDirList());
 		
 		// Enable/disable relaxed reporting mode
-		FindBugsAnalysisProperties.setRelaxedMode(relaxedReportingMode);
+		FindBugsAnalysisFeatures.setRelaxedMode(relaxedReportingMode);
 		
 		// Enable input/output of interprocedural property databases
 		if (emitTrainingOutput) {
@@ -1035,6 +1066,8 @@ public class FindBugs implements Constants2, ExitCodes {
 			// XXX: hack
 			System.setProperty("findbugs.checkreturn.loadtraining", new File(trainingInputDir, "checkReturn.db").getPath());
 		}
+		
+		configureAnalysisFeatures();
 		
 		// Give the BugReporter a reference to this object,
 		// in case it wants to access information such
@@ -1183,6 +1216,15 @@ public class FindBugs implements Constants2, ExitCodes {
 	 * ---------------------------------------------------------------------- */
 
 	/**
+	 * Configure analysis features.
+	 */
+	private void configureAnalysisFeatures() {
+		for (AnalysisFeatureSetting setting : settingList) {
+			setting.configure(analysisContext);
+		}
+	}
+
+	/**
 	 * Create the ExecutionPlan.
 	 * 
 	 * @throws OrderingConstraintException 
@@ -1228,8 +1270,8 @@ public class FindBugs implements Constants2, ExitCodes {
 			return false;
 		
 		// Slow first pass detectors are usually disabled, but may be explicitly enabled
-		if (!runSlowFirstPassDetectors
-				&& factory.isDetectorClassSubtypeOf(SlowFirstPassDetector.class))
+		if (!analysisContext.getBoolProperty(FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS)
+				&& factory.isDetectorClassSubtypeOf(InterproceduralFirstPassDetector.class))
 			return false;
 
 		// Training detectors are enabled if, and only if, we are emitting training output

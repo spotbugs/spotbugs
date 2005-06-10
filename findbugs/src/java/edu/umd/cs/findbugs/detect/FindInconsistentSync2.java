@@ -47,7 +47,7 @@ import edu.umd.cs.findbugs.CallGraphEdge;
 import edu.umd.cs.findbugs.CallGraphNode;
 import edu.umd.cs.findbugs.CallSite;
 import edu.umd.cs.findbugs.Detector;
-import edu.umd.cs.findbugs.FindBugsAnalysisProperties;
+import edu.umd.cs.findbugs.FindBugsAnalysisFeatures;
 import edu.umd.cs.findbugs.SelfCalls;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.ba.CFG;
@@ -354,7 +354,7 @@ public class FindInconsistentSync2 implements Detector {
 					.addField(xfield)
 					.addInt(freq).describe("INT_SYNC_PERCENT");
 				
-				if (FindBugsAnalysisProperties.isRelaxedMode()) {
+				if (FindBugsAnalysisFeatures.isRelaxedMode()) {
 					propertySet.decorateBugInstance(bugInstance);
 				}
 				

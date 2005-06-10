@@ -51,7 +51,7 @@ import org.apache.bcel.generic.Type;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
-import edu.umd.cs.findbugs.FindBugsAnalysisProperties;
+import edu.umd.cs.findbugs.FindBugsAnalysisFeatures;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
@@ -496,7 +496,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 		});
 		
 		// Report violations
-		boolean relaxed = FindBugsAnalysisProperties.isRelaxedMode();
+		boolean relaxed = FindBugsAnalysisFeatures.isRelaxedMode();
 		reportBest(classContext, method, stringComparisonList, relaxed);
 		reportBest(classContext, method, refComparisonList, relaxed);
 	}

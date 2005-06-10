@@ -37,6 +37,8 @@ import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
 
+import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.ba.AnalysisFeatures;
 import edu.umd.cs.findbugs.ba.BasicBlock;
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
@@ -83,7 +85,8 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 	 * on each exception edge.
 	 */
 	public static final boolean ACCURATE_EXCEPTIONS =
-	        Boolean.getBoolean("ta.accurateExceptions") || ClassContext.PRUNE_INFEASIBLE_EXCEPTION_EDGES;
+	           Boolean.getBoolean("ta.accurateExceptions")
+	        || AnalysisContext.currentAnalysisContext().getBoolProperty(AnalysisFeatures.ACCURATE_EXCEPTIONS);
 
 	/**
 	 * Repository of information about thrown exceptions computed for

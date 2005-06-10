@@ -1,6 +1,6 @@
 /*
  * Bytecode Analysis Framework
- * Copyright (C) 2003,2004 University of Maryland
+ * Copyright (C) 2003-2005 University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,7 +19,9 @@
 
 package edu.umd.cs.findbugs.ba;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.JavaClass;
@@ -29,7 +31,7 @@ import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.MethodGen;
 
-public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes, AnalysisFeatures {
+public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes {
 	private static final boolean DEBUG = Boolean.getBoolean("cfg.prune.throwers.debug");
 
 	private MethodGen methodGen;
@@ -46,7 +48,8 @@ public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes, Analy
 	}
 
 	public void execute() throws CFGBuilderException, DataflowAnalysisException {
-		if (CONSERVE_SPACE) throw new IllegalStateException("This should not happen");
+		if (AnalysisContext.currentAnalysisContext().getBoolProperty(AnalysisFeatures.CONSERVE_SPACE))
+			throw new IllegalStateException("This should not happen");
 
 		Set<Edge> deletedEdgeSet = new HashSet<Edge>();
 

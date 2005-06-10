@@ -66,21 +66,7 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
  *
  * @author David Hovemeyer
  */
-public class ClassContext implements AnalysisFeatures {
-	/**
-	 * We only do pruning of infeasible exception edges
-	 * if the <code>WORK_HARD</code> analysis feature
-	 * is enabled.
-	 */
-	public static final boolean PRUNE_INFEASIBLE_EXCEPTION_EDGES = WORK_HARD;
-
-	/**
-	 * Only try to determine unconditional exception throwers
-	 * if we're not trying to conserve space.
-	 */
-	public static final boolean PRUNE_UNCONDITIONAL_EXCEPTION_THROWER_EDGES =
-	        !CONSERVE_SPACE;
-
+public class ClassContext {
 	public static final boolean DEBUG = Boolean.getBoolean("classContext.debug");
 
 	private static final int PRUNED_INFEASIBLE_EXCEPTIONS = 1;
@@ -89,10 +75,6 @@ public class ClassContext implements AnalysisFeatures {
 	private static final boolean TIME_ANALYSES = Boolean.getBoolean("classContext.timeAnalyses");
 
 	private static final boolean DEBUG_CFG = Boolean.getBoolean("classContext.debugCFG");
-	
-	private static final boolean MODEL_INSTANCEOF =
-		System.getProperty("classContext.modelInstanceof") == null ? true
-		: Boolean.getBoolean("classContext.modelInstanceof");
 
 	/* ----------------------------------------------------------------------
 	 * Helper classes
@@ -324,18 +306,15 @@ public class ClassContext implements AnalysisFeatures {
 			if (!busyCFGSet.add(methodId))
 				return cfg;
 
+			final boolean PRUNE_INFEASIBLE_EXCEPTION_EDGES =
+				analysisContext.getBoolProperty(AnalysisFeatures.ACCURATE_EXCEPTIONS);
+			
 			if (PRUNE_INFEASIBLE_EXCEPTION_EDGES && !cfg.isFlagSet(PRUNED_INFEASIBLE_EXCEPTIONS)) {
 				try {
 					TypeDataflow typeDataflow = getTypeDataflow(method);
-//					if (TypeAnalysis.ACCURATE_EXCEPTIONS) {
-						// Exception edge pruning based on ExceptionSets.
-						// Note: this is incredibly slow.
-						new PruneInfeasibleExceptionEdges(cfg, getMethodGen(method), typeDataflow).execute();
-//					} else {
-//						// Exception edge pruning based on declared exception types.
-//						// Hopefully faster and not too inaccurate.
-//						new PruneInfeasibleExceptionEdges2(cfg, getMethodGen(method), typeDataflow).execute();
-//					}
+					// Exception edge pruning based on ExceptionSets.
+					// Note: this is quite slow.
+					new PruneInfeasibleExceptionEdges(cfg, getMethodGen(method), typeDataflow).execute();
 				} catch (DataflowAnalysisException e) {
 					// FIXME: should report the error
 				} catch (ClassNotFoundException e) {
@@ -343,6 +322,9 @@ public class ClassContext implements AnalysisFeatures {
 				}
 			}
 			cfg.setFlags(cfg.getFlags() | PRUNED_INFEASIBLE_EXCEPTIONS);
+			
+			final boolean PRUNE_UNCONDITIONAL_EXCEPTION_THROWER_EDGES =
+				!analysisContext.getBoolProperty(AnalysisFeatures.CONSERVE_SPACE);
 
 			if (PRUNE_UNCONDITIONAL_EXCEPTION_THROWER_EDGES && !cfg.isFlagSet(PRUNED_UNCONDITIONAL_THROWERS)) {
 				try {
@@ -435,7 +417,7 @@ public class ClassContext implements AnalysisFeatures {
 			        TypeAnalysis typeAnalysis =
 			                new TypeAnalysis(methodGen, cfg, dfs, getLookupFailureCallback(), exceptionSetFactory);
 			        
-					if (MODEL_INSTANCEOF) {
+					if (analysisContext.getBoolProperty(AnalysisFeatures.MODEL_INSTANCEOF)) {
 						typeAnalysis.setValueNumberDataflow(getValueNumberDataflow(method));
 					}
 					

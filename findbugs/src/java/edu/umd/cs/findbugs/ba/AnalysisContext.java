@@ -46,7 +46,7 @@ import edu.umd.cs.findbugs.ba.type.FieldStoreTypeDatabase;
  *
  * @author David Hovemeyer
  */
-public class AnalysisContext implements AnalysisFeatures {
+public class AnalysisContext {
 	private static final boolean DEBUG = Boolean.getBoolean("findbugs.analysiscontext.debug");
 	private static final boolean DEBUG_HIERARCHY = Boolean.getBoolean("findbugs.debug.hierarchy");
 	
@@ -63,6 +63,7 @@ public class AnalysisContext implements AnalysisFeatures {
 	public Map<Object,Object> analysisLocals = 
 		Collections.synchronizedMap(new HashMap<Object,Object>());
 	private BitSet boolPropertySet;
+	private int cacheSize;
 	
 	// Interprocedural fact databases
 	private String databaseInputDir;
@@ -78,17 +79,16 @@ public class AnalysisContext implements AnalysisFeatures {
 		= new InheritableThreadLocal<AnalysisContext>();
 
 	/**
-	 * The maximum number of ClassContext objects to cache.
-	 * FIXME: need to evaluate this parameter. Need to keep stats
-	 * about accesses.
+	 * Default maximum number of ClassContext objects to cache.
+	 * FIXME: need to evaluate this parameter. Need to keep stats about accesses.
 	 */
-	private static final int MAX_SIZE = CONSERVE_SPACE ? 1 : 60;
+	private static final int DEFAULT_CACHE_SIZE = 60;
 
-	private static class ClassContextCache extends LinkedHashMap<JavaClass, ClassContext> {
-		private static final long serialVersionUID = 3258410621153196086L;
+	private class ClassContextCache extends LinkedHashMap<JavaClass, ClassContext> {
+		private static final long serialVersionUID = 1L;
 
 		public boolean removeEldestEntry(Map.Entry<JavaClass, ClassContext> entry) {
-			return size() >= MAX_SIZE;
+			return size() >= cacheSize;
 		}
 	}
 
@@ -217,6 +217,10 @@ public class AnalysisContext implements AnalysisFeatures {
 	 * @return the ClassContext for that class
 	 */
 	public ClassContext getClassContext(JavaClass javaClass) {
+		if (cacheSize == 0) {
+			cacheSize = getBoolProperty(AnalysisFeatures.CONSERVE_SPACE) ? 1 : DEFAULT_CACHE_SIZE;
+		}
+		
 		ClassContext classContext = classContextCache.get(javaClass);
 		if (classContext == null) {
 			classContext = new ClassContext(javaClass, this);

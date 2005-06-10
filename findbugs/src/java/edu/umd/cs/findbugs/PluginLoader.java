@@ -326,8 +326,8 @@ public class PluginLoader extends URLClassLoader {
 				return new ReportingDetectorFactorySelector(spanPlugins ? null : plugin);
 			} else if (categoryName.equals("training")) {
 				return new ByInterfaceDetectorFactorySelector(spanPlugins ? null : plugin, TrainingDetector.class);
-			} else if (categoryName.equals("slowfirstpass")) {
-				return new ByInterfaceDetectorFactorySelector(spanPlugins ? null : plugin, SlowFirstPassDetector.class);
+			} else if (categoryName.equals("interprocedural")) {
+				return new ByInterfaceDetectorFactorySelector(spanPlugins ? null : plugin, InterproceduralFirstPassDetector.class);
 			} else {
 				throw new PluginException("Invalid constraint selector node");
 			}

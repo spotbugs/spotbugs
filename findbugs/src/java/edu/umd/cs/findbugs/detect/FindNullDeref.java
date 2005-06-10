@@ -37,7 +37,7 @@ import org.apache.bcel.generic.MethodGen;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
-import edu.umd.cs.findbugs.FindBugsAnalysisProperties;
+import edu.umd.cs.findbugs.FindBugsAnalysisFeatures;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.ClassContext;
@@ -355,7 +355,7 @@ public class FindNullDeref
 			}
 			
 			int priority = propertySet.computePriority(NORMAL_PRIORITY);
-			if (FindBugsAnalysisProperties.isRelaxedMode()) {
+			if (FindBugsAnalysisFeatures.isRelaxedMode()) {
 				WarningPropertyUtil.addPropertiesForLocation(propertySet, classContext, method, location);
 				propertySet.decorateBugInstance(warning);
 			}
@@ -469,7 +469,7 @@ public class FindNullDeref
 	}
 
 	private void decorateWarning(Location location, WarningPropertySet propertySet, BugInstance warning) {
-		if (FindBugsAnalysisProperties.isRelaxedMode()) {
+		if (FindBugsAnalysisFeatures.isRelaxedMode()) {
 			WarningPropertyUtil.addPropertiesForLocation(propertySet, classContext, method, location);
 		}
 		propertySet.decorateBugInstance(warning);
@@ -587,7 +587,7 @@ public class FindNullDeref
 		if (DEBUG)
 			bugInstance.addInt(location.getHandle().getPosition()).describe("INT_BYTECODE_OFFSET");
 
-		if (FindBugsAnalysisProperties.isRelaxedMode()) {
+		if (FindBugsAnalysisFeatures.isRelaxedMode()) {
 			WarningPropertyUtil.addPropertiesForLocation(propertySet, classContext, method, location);
 			propertySet.decorateBugInstance(bugInstance);
 		}
@@ -641,7 +641,7 @@ public class FindNullDeref
 				.addClassAndMethod(methodGen, sourceFile)
 				.addSourceLine(methodGen, sourceFile, location.getHandle());
 		
-		if (FindBugsAnalysisProperties.isRelaxedMode()) {
+		if (FindBugsAnalysisFeatures.isRelaxedMode()) {
 			WarningPropertySet propertySet = new WarningPropertySet();
 			WarningPropertyUtil.addPropertiesForLocation(propertySet, classContext, method, location);
 			if (isChecked) 

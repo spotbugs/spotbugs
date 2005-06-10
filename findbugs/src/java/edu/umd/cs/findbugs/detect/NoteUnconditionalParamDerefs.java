@@ -20,7 +20,7 @@
 package edu.umd.cs.findbugs.detect;
 
 import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.SlowFirstPassDetector;
+import edu.umd.cs.findbugs.InterproceduralFirstPassDetector;
 
 /**
  * As a first scanning pass, make a note of unconditionally dereferenced
@@ -29,7 +29,7 @@ import edu.umd.cs.findbugs.SlowFirstPassDetector;
  * @author David Hovemeyer
  */
 public class NoteUnconditionalParamDerefs extends
-		BuildUnconditionalParamDerefDatabase implements SlowFirstPassDetector {
+		BuildUnconditionalParamDerefDatabase implements InterproceduralFirstPassDetector {
 	
 	BugReporter bugReporter;
 	

@@ -50,7 +50,7 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.FindBugs;
-import edu.umd.cs.findbugs.FindBugsAnalysisProperties;
+import edu.umd.cs.findbugs.FindBugsAnalysisFeatures;
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.ClassContext;
@@ -306,7 +306,7 @@ public class FindDeadLocalStores implements Detector {
 				}
 				
 				// If in relaxed reporting mode, encode heuristic information.
-				if (FindBugsAnalysisProperties.isRelaxedMode()) {
+				if (FindBugsAnalysisFeatures.isRelaxedMode()) {
 					// Add general-purpose warning properties
 					WarningPropertyUtil.addPropertiesForLocation(
 							propertySet,

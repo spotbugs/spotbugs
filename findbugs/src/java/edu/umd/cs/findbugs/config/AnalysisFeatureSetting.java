@@ -17,16 +17,37 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package edu.umd.cs.findbugs;
+package edu.umd.cs.findbugs.config;
+
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 
 /**
- * Detector implementing a slow first pass to collect
- * interprocedural properties for a later detector pass.
- * We assign these a special interface because they are
- * probably too slow to be enabled by default. 
+ * Configure a specific boolean analysis property.
  * 
  * @author David Hovemeyer
  */
-public interface SlowFirstPassDetector extends NonReportingDetector {
+public class AnalysisFeatureSetting {
+	private int property;
+	private boolean enabled;
 
+	/**
+	 * Constructor.
+	 * 
+	 * @param property the analysis property to configure
+	 * @param enabled  true if the property is enabled, false if not
+	 */
+	public AnalysisFeatureSetting(int property, boolean enabled) {
+		this.property = property;
+		this.enabled = enabled;
+	}
+	
+	/**
+	 * Set the configured value of the analysis property in the given
+	 * AnalysisContext.
+	 * 
+	 * @param analysisContext the AnalysisContext
+	 */
+	public void configure(AnalysisContext analysisContext) {
+		analysisContext.setBoolProperty(property, enabled);
+	}
 }

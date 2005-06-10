@@ -17,30 +17,16 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package edu.umd.cs.findbugs.detect;
-
-import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.InterproceduralFirstPassDetector;
+package edu.umd.cs.findbugs;
 
 /**
- * First analysis pass to find methods which may return null.
- * This information can be used by FindNullDeref in a later pass.
+ * Detector implementing a slow first pass to collect
+ * interprocedural properties for a later detector pass.
+ * We assign these a special interface because they are
+ * probably too slow to be enabled by default. 
  * 
  * @author David Hovemeyer
  */
-public class NoteNullReturnValues
-		extends BuildNullReturnValueDatabase
-		implements InterproceduralFirstPassDetector {
-	private BugReporter bugReporter;
-	
-	public NoteNullReturnValues(BugReporter bugReporter) {
-		this.bugReporter = bugReporter;
-	}
-
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.Detector#report()
-	 */
-	public void report() {
-	}
+public interface InterproceduralFirstPassDetector extends NonReportingDetector {
 
 }

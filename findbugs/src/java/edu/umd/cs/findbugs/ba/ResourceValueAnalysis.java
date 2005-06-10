@@ -73,7 +73,7 @@ public class ResourceValueAnalysis <Resource> extends FrameDataflowAnalysis<Reso
 			// (as determined by TypeAnalysis and PruneInfeasibleExceptionEdges),
 			// and the resource tracker says to ignore implicit exceptions
 			// for this resource, ignore it.
-			if (ClassContext.PRUNE_INFEASIBLE_EXCEPTION_EDGES &&
+			if (AnalysisContext.currentAnalysisContext().getBoolProperty(AnalysisFeatures.ACCURATE_EXCEPTIONS) &&
 			        ignoreImplicitExceptions &&
 			        !edge.isFlagSet(EXPLICIT_EXCEPTIONS_FLAG))
 				return;

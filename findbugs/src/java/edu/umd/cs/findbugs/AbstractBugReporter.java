@@ -116,7 +116,7 @@ public abstract class AbstractBugReporter implements BugReporter {
 	// Subclasses must override doReportBug(), not this method.
 	public final void reportBug(BugInstance bugInstance) {
 		if (!analysisUnderway) {
-			if (FindBugsAnalysisProperties.isRelaxedMode()) {
+			if (FindBugsAnalysisFeatures.isRelaxedMode()) {
 				relaxed = true;
 			}
 
