@@ -1542,7 +1542,7 @@ SQL injection attacks.
     </Details>
   </BugPattern>
   
-  <BugPattern type="EQ_DOES_NOT_HANDLE_NULL">
+  <BugPattern type="NP_DOES_NOT_HANDLE_NULL">
 	<ShortDescription>equals() method does not check for null parameter</ShortDescription>
 	<LongDescription>{1} does not check for null parameter</LongDescription>
 	<Details>

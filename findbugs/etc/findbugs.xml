@@ -462,7 +462,7 @@ RCN_REDUNDANT_COMPARISON_TO_NULL_BOTH_NULL,RCN_REDUNDANT_COMPARISON_TO_NULL_DIFF
 
   <Detector class="edu.umd.cs.findbugs.detect.FindBadEqualsImplementation"
             speed="slow"
-            reports="EQ_DOES_NOT_HANDLE_NULL"/>
+            reports="NP_DOES_NOT_HANDLE_NULL"/>
 
   <Detector class="edu.umd.cs.findbugs.detect.TrainNullReturnValues"
             hidden="true" speed="slow" reports=""/>
@@ -531,7 +531,7 @@ RCN_REDUNDANT_COMPARISON_TO_NULL_BOTH_NULL,RCN_REDUNDANT_COMPARISON_TO_NULL_DIFF
   <BugPattern abbrev="FI" type="FI_EXPLICIT_INVOCATION" category="CORRECTNESS" />
   <BugPattern abbrev="Eq" type="EQ_SELF_USE_OBJECT" category="CORRECTNESS" />
   <BugPattern abbrev="Eq" type="EQ_SELF_NO_OBJECT" category="CORRECTNESS" />
-  <BugPattern abbrev="Eq" type="EQ_DOES_NOT_HANDLE_NULL" category="CORRECTNESS"/>
+  <BugPattern abbrev="NP" type="NP_DOES_NOT_HANDLE_NULL" category="CORRECTNESS"/>
   <BugPattern abbrev="Co" type="CO_SELF_NO_OBJECT" category="CORRECTNESS" />
   <BugPattern abbrev="ES" type="ES_COMPARING_STRINGS_WITH_EQ" category="CORRECTNESS" />
   <BugPattern abbrev="HE" type="HE_HASHCODE_USE_OBJECT_EQUALS" category="CORRECTNESS" />
