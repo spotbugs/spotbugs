@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="Shift_JIS"?>
 
-<!-- This messages file is based on revision 1.220 of message.xml. -->
+<!-- This messages file is based on revision 1.233 of message.xml. -->
 
 <MessageCollection xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xsi:noNamespaceSchemaLocation="messagecollection.xsd">
@@ -1304,6 +1304,18 @@ TrainNonNullAnnotationsディテクタは@NonNullと@PossiblyNullアノテーションの指定を
     </Details>
   </BugPattern>
 
+  <BugPattern type="NP_DOES_NOT_HANDLE_NULL">
+	<ShortDescription>equals() メソッドがnull引数をチェックしていません。</ShortDescription>
+	<LongDescription>{1} でnull引数をチェックしていません。</LongDescription>
+	<Details>
+<![CDATA[
+<p>
+このequals(Object)実装は引数にnullが渡された場合のチェックが行なわれていないため、java.lang.Object.equals()で定義された契約を破っています。全てのequals()メソッドは引数にnullが渡された場合にfalseを返さなければなりません。
+</p>
+]]>
+	</Details>
+  </BugPattern>
+  
   <BugPattern type="CO_SELF_NO_OBJECT">
     <ShortDescription>共変な compareTo() メソッドが定義されています。</ShortDescription>
     <LongDescription>{0} は compareTo({0}) メソッドを定義していますが、 comparesTo(Object) は定義されていません。</LongDescription>
@@ -1964,6 +1976,16 @@ finalでないフィールド名は、最初の文字以外の構成単語の最初の文字を大文字として、�
     </Details>
   </BugPattern>
 
+  <BugPattern type="UWF_NULL_FIELD">
+    <ShortDescription>このフィールドはnullに設定されるだけです。</ShortDescription>
+    <LongDescription>このフィールドはnullに設定されるだけです: {1}。</LongDescription>
+    <Details>
+<![CDATA[
+<p> このフィールドへの全ての書き込みは定数のnullであり、このフィールドからの読み出しは全てnullになります。間違いが無いかチェックしてください、不要であるなら削除してください。</p>
+]]>
+    </Details>
+  </BugPattern>
+
   <BugPattern type="UWF_UNWRITTEN_FIELD">
     <ShortDescription>書かれないフィールドがあります。</ShortDescription>
     <LongDescription>書かれないフィールド {1} があります。</LongDescription>
@@ -2206,6 +2228,30 @@ dateString = dateString.trim();
     </Details>
   </BugPattern>
   
+  <BugPattern type="NP_NULL_PARAM_DEREF_NONVIRTUAL">
+	<ShortDescription>無条件に引数の参照外しを行なうfinalメソッドにnullを渡しています。</ShortDescription>
+	<LongDescription>無条件に引数の参照外しを行うfinalメソッド {2} に {1} でnullを渡しています。</LongDescription>
+	<Details>
+<![CDATA[
+<p>
+引数を無条件に参照外しするメソッドにnullとなり得る値を渡しています。これはNullPointerExceptionの発生を招きます。
+</p>
+]]>
+	</Details>
+  </BugPattern>
+
+  <BugPattern type="NP_NULL_PARAM_DEREF_ALL_TARGETS_DANGEROUS">
+	<ShortDescription>無条件に引数の参照外しを行うメソッドにnullを渡しています。</ShortDescription>
+	<LongDescription>無条件に引数の参照外しを行なうメソッド {2} に {1} でnullを渡しています。</LongDescription>
+	<Details>
+<![CDATA[
+<p>
+引数を無条件に参照外しするメソッドにnullとなり得る値を渡しています。これはNullPointerExceptionの発生を招くと見受けられます。
+</p>
+]]>
+	</Details>
+  </BugPattern>
+  
   <BugPattern type="NP_NULL_PARAM_DEREF">
     <ShortDescription>メソッド内で無条件に参照外しされる引数へのnullの引き渡し。</ShortDescription>
     <LongDescription>{1} におけるメソッド呼び出しでnullを渡していますが、{2}のパラメータは無条件に参照外しされます。</LongDescription>
@@ -2434,6 +2480,18 @@ nullを返すかもしれないのに、このメソッド(あるいは、親クラスの該当メソッド)は@Non
 プログラムを良く調べた方がいいでしょう。</p>
 ]]>
     </Details>
+  </BugPattern>
+
+  <BugPattern type="EC_UNRELATED_CLASS_AND_INTERFACE">
+	<ShortDescription>関係の無いクラスとインターフェースをequals()で比較しています。</ShortDescription>
+	<LongDescription>関係の無いクラスとインターフェースを {1} でequals()で比較しています。</LongDescription>
+	<Details>
+<![CDATA[
+<p>
+このメソッドで2つの参照をequals(Object)で比較しています。片方はクラス、もう片方はインターフェースですが、このクラスと抽象クラスでないサブクラスのいずれもこのインターフェースを実装していません。このため(もしも調査外となってしまったアプリケーションクラスが存在する、あるいは実行時に動的なクラスロードが行なわれるというケースを除けば)、2つの比較されているオブジェクトは同じクラスのインスタンスではありません。equals()契約によれば、異なるクラスのオブジェクトは常に等しくありません。このためjava.lang.Object.equals(Object)の契約によって、この比較は実行時には常にnullになるでしょう。
+</p>
+		]]>
+	</Details>
   </BugPattern>
 
   <BugPattern type="EC_NULL_ARG">
