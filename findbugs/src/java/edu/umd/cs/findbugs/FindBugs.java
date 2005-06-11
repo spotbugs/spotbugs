@@ -990,7 +990,8 @@ public class FindBugs implements Constants2, ExitCodes {
 	 * @param settingList list of analysis feature settings
 	 */
 	public void setAnalysisFeatureSettings(AnalysisFeatureSetting[] settingList) {
-		this.settingList  = settingList;
+		if (settingList != null)
+			this.settingList  = settingList;
 	}
 	
 	/**
