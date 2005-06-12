@@ -221,7 +221,7 @@ These options may be used with both the GUI and Text UI.
       </para>
     </listitem>
   </varlistentry>
-
+<!--
   <varlistentry>
     <term><command>-conserveSpace</command></term>
     <listitem>
@@ -233,15 +233,25 @@ These options may be used with both the GUI and Text UI.
       </para>
     </listitem>
   </varlistentry>
-
+-->
   <varlistentry>
-    <term><command>-workHard</command></term>
+    <term><command>-effort:min</command></term>
     <listitem>
       <para>
-      This option makes the analysis performed by &FindBugs; more precise,
-      at the expense of slowing down the execution by 30%-100%.
-      Currently, this option is mainly useful for reducing false positives
-      in the open stream detector.
+      This option disables analyses that increase precision but also
+      increase memory consumption.  You may want to try this option if
+      you find that &FindBugs; runs out of memory, or takes an unusually
+      long time to complete its analysis.
+      </para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><command>-effort:max</command></term>
+    <listitem>
+      <para>
+		Enable analyses which increase precision and find more bugs, but which
+		may require more memory and take more time to complete.
       </para>
     </listitem>
   </varlistentry>
