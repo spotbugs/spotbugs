@@ -99,7 +99,7 @@ public class Constant {
 	public static Constant merge(Constant a, Constant b) {
 		if (!a.isConstant() || !b.isConstant())
 			return NOT_CONSTANT;
-		if (!a.value.equals(b.value))
+		if (a.value.getClass() != b.value.getClass() || !a.value.equals(b.value))
 			return NOT_CONSTANT;
 		return a;
 	}
