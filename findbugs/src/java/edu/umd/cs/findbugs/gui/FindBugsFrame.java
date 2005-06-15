@@ -3606,6 +3606,10 @@ public class FindBugsFrame extends javax.swing.JFrame {
 		if (project != null) {
 			frame.setProject(project);
 		}
+		if (commandLine.getSettingList() != null) {
+			frame.settingList = commandLine.getSettingList();
+		}
+		
 		frame.setSize(800, 600);
 		frame.setLocationRelativeTo(null); // center the frame
 		frame.setVisible(true);
@@ -3746,7 +3750,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	private String currentBugDetailsKey;
 	private JCheckBoxMenuItem[] bugCategoryCheckBoxList;
 	private String[] bugCategoryList;
-	private AnalysisFeatureSetting[] settingList;
+	private AnalysisFeatureSetting[] settingList = FindBugs.DEFAULT_EFFORT;
 
 	// My constant declarations
 	private final static boolean MAC_OS_X = System.getProperty("os.name").toLowerCase().startsWith("mac os x");
