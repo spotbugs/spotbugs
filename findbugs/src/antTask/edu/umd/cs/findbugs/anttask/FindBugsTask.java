@@ -91,6 +91,8 @@ import java.util.List;
  * <li>classpath          (classpath for running FindBugs)
  * <li>pluginList         (list of plugin Jar files to load)
  * <li>systemProperty     (a system property to set)
+ * <li>effort             (enum min|default|max)</li>
+ * <li>conserveSpace      (boolean - default false)</li>
  * <li>workHard           (boolean default false)
  * <li>relaxed            (boolean - default false)
  * <li>adjustExperimental (boolean default false)
@@ -104,7 +106,7 @@ import java.util.List;
  * @author Mike Fagan <a href="mailto:mfagan@tde.com">mfagan@tde.com</a>
  * @author Michael Tamm <a href="mailto:mail@michaeltamm.de">mail@michaeltamm.de</a>
  *
- * @version $Revision: 1.33 $
+ * @version $Revision: 1.34 $
  *
  * @since Ant 1.5
  *
@@ -117,6 +119,7 @@ public class FindBugsTask extends Task {
     private static final long DEFAULT_TIMEOUT = 600000; // ten minutes
 
 	private boolean debug = false;
+	private String effort;
 	private boolean conserveSpace = false;
 	private boolean sorted = true;
 	private boolean quietErrors = false;
@@ -289,6 +292,15 @@ public class FindBugsTask extends Task {
 	 */
 	public void setDebug(boolean flag) {
 		this.debug = flag;
+	}
+
+	/**
+	 * Set effort level.
+	 * 
+	 * @param effort the effort level
+	 */
+	public void setEffort(String effort) {
+		this.effort = effort;
 	}
 
 	/**
@@ -559,6 +571,10 @@ public class FindBugsTask extends Task {
 			if (systemProperty.getName() == null || systemProperty.getValue() == null)
 				throw new BuildException("systemProperty elements must have name and value attributes");
 		}
+		
+		if (effort != null && !effort.equals("min") && !effort.equals("default") && !effort.equals("max")) {
+			throw new BuildException("effort attribute must be one of 'min', 'default', or 'max'");
+		}
     } 
 
 	/**
@@ -581,13 +597,8 @@ public class FindBugsTask extends Task {
 		findbugsEngine.setFork( true );
 		findbugsEngine.setTimeout( new Long( timeout ) );
 
-		if ( workHard ){
-			jvmargs = jvmargs + " -Dfindbugs.workHard=true";
-		}
 		if ( debug )
 			jvmargs = jvmargs + " -Dfindbugs.debug=true";
-		if ( conserveSpace )
-			jvmargs = jvmargs + " -Dfindbugs.conserveSpace=true";
 		findbugsEngine.createJvmarg().setLine( jvmargs ); 
 
 		// Add JVM arguments for system properties
@@ -620,6 +631,16 @@ public class FindBugsTask extends Task {
 		
 		if (adjustExperimental) {
 			addArg("-adjustExperimental");
+		}
+
+		if ( conserveSpace ) {
+			addArg("-conserveSpace");
+		}
+		if ( workHard ){
+			addArg("-workHard");
+		}
+		if ( effort != null ) {
+			addArg("-effort:" + effort);
 		}
 
 		if ( sorted ) addArg("-sortByClass");
