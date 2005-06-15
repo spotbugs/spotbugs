@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.ba;
 
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.HashMap;
@@ -768,10 +769,26 @@ public class ClassContext {
 				return dataflow;
 			}
 		};
+		
+	private NoExceptionAnalysisFactory<MethodHash> methodHashFactory =
+		new NoExceptionAnalysisFactory<MethodHash>("method bytecode hash") {
+			//@Override
+			protected MethodHash analyze(Method method) throws CFGBuilderException, DataflowAnalysisException {
+				try {
+					MethodHash methodHash = new MethodHash(method);
+					methodHash.computeHash();
+					return methodHash;
+				} catch (NoSuchAlgorithmException e) {
+					// Should not happen
+					throw new IllegalStateException("No algorithm for computing MethodHash", e);
+				}
+			}
+		};
 			
 	private ClassGen classGen;
 	private AssignedFieldMap assignedFieldMap;
 	private AssertionMethods assertionMethods;
+	private ClassHash classHash;
 
 	/* ----------------------------------------------------------------------
 	 * Public methods
@@ -788,6 +805,7 @@ public class ClassContext {
 		this.classGen = null;
 		this.assignedFieldMap = null;
 		this.assertionMethods = null;
+		this.classHash = null;
 	}
 
 	/**
@@ -1106,10 +1124,26 @@ public class ClassContext {
 		return unconditionalDerefDataflowFactory.getAnalysis(method);
 	}
 	
+	/**
+	 * Get load dataflow.
+	 * 
+	 * @param method the method
+	 * @return the LoadDataflow
+	 * @throws CFGBuilderException
+	 * @throws DataflowAnalysisException
+	 */
 	public LoadDataflow getLoadDataflow(Method method) throws CFGBuilderException, DataflowAnalysisException {
 		return loadDataflowFactory.getAnalysis(method);
 	}
 	
+	/**
+	 * Get store dataflow.
+	 * 
+	 * @param method the method
+	 * @return the StoreDataflow
+	 * @throws CFGBuilderException
+	 * @throws DataflowAnalysisException
+	 */
 	public StoreDataflow getStoreDataflow(Method method) throws CFGBuilderException, DataflowAnalysisException {
 		return storeDataflowFactory.getAnalysis(method);
 	}
@@ -1125,6 +1159,33 @@ public class ClassContext {
 	public CallListDataflow getCallListDataflow(Method method)
 			throws CFGBuilderException, DataflowAnalysisException {
 		return callListDataflowFactory.getAnalysis(method);
+	}
+	
+	/**
+	 * Get MethodHash for method.
+	 * 
+	 * @param method the method
+	 * @return the MethodHash
+	 */
+	public MethodHash getMethodHash(Method method) {
+		return methodHashFactory.getAnalysis(method);
+	}
+
+	/**
+	 * Get the ClassHash for the class.
+	 * 
+	 * @return the ClassHash
+	 */
+	public ClassHash getClassHash() {
+		if (classHash == null) {
+			try {
+				classHash = new ClassHash(jclass).computeHash();
+			} catch (NoSuchAlgorithmException e) {
+				// Should not happen
+				throw new IllegalStateException("Cannot get algorithm for computing ClassHash", e);
+			}
+		}
+		return classHash;
 	}
 }
 
