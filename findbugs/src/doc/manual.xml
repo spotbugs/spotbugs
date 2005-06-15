@@ -1110,18 +1110,33 @@ using the &FindBugs; task.
        </para>
     </listitem>
   </varlistentry>
+	
+  <varlistentry>
+	  <term><literal>effort</literal></term>
+	  <listitem>
+		  <para>
+			  Set the analysis effort level.  The value specified should be
+			  one of <literal>min</literal>, <literal>default</literal>,
+			  or <literal>max</literal>.  See <xref linkend="commandLineOptions"/>
+			  for more information about setting the analysis level.
+		  </para>
+	  </listitem>
+  </varlistentry>
 
   <varlistentry>
     <term><literal>conserveSpace</literal></term>
     <listitem>
-       <para>
-      Optional boolean attribute.  If set to true, &FindBugs;
-      will disable analyses that improve precision but consume extra memory.
-      Default is false.
-       </para>
+       <para>Synonym for effort="min".</para>
     </listitem>
   </varlistentry>
 
+  <varlistentry>
+    <term><literal>workHard</literal></term>
+    <listitem>
+       <para>Synonym for effort="max".</para>
+    </listitem>
+  </varlistentry>
+	
   <varlistentry>
     <term><literal>visitors</literal></term>
     <listitem>
@@ -1223,19 +1238,6 @@ using the &FindBugs; task.
        <para>
        Optional boolean attribute.  Whether to abort the build process if there is an 
        error running &FindBugs;. Defaults to "false"
-       </para>
-    </listitem>
-  </varlistentry>
-
-  <varlistentry>
-    <term><literal>workHard</literal></term>
-    <listitem>
-       <para>
-       Optional boolean attribute.  If set to "true", sets the
-       findbugs.workhard analysis property to true (as described in
-       <xref linkend="analysisprops"/>).  This property currently reduces
-       the false positive rate of open stream detector,
-       at the expense of making the analysis slower. Defaults to "false".
        </para>
     </listitem>
   </varlistentry>
