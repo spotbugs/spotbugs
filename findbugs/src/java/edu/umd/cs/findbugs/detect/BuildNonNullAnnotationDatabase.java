@@ -22,8 +22,6 @@ package edu.umd.cs.findbugs.detect;
 import java.util.HashSet;
 import java.util.Map;
 
-import edu.umd.cs.findbugs.annotations.NonNull;
-import edu.umd.cs.findbugs.annotations.PossiblyNull;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.XMethodFactory;
@@ -39,10 +37,10 @@ import edu.umd.cs.findbugs.visitclass.AnnotationVisitor;
  */
 public class BuildNonNullAnnotationDatabase extends AnnotationVisitor {
 	private static final boolean DEBUG = Boolean.getBoolean("fnd.debug.annotation");
-	
-	private static final String NONNULL_ANNOTATION_CLASS = NonNull.class.getName().replace('.', '/');
-	private static final String POSSIBLY_NULL_ANNOTATION_CLASS = PossiblyNull.class.getName().replace('.','/');
 
+	private static final String NONNULL_ANNOTATION_CLASS = "edu/umd/cs/findbugs/annotations/NonNull";
+	private static final String POSSIBLY_NULL_ANNOTATION_CLASS = "edu/umd/cs/findbugs/annotations/PossiblyNull";
+	
 	private NonNullParamPropertyDatabase nonNullDatabase;
 	private NonNullParamPropertyDatabase possiblyNullDatabase;
 	private MayReturnNullPropertyDatabase nullReturnValueDatabase;
