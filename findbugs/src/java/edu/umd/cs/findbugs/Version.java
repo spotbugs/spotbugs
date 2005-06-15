@@ -36,7 +36,7 @@ public class Version {
 	/**
 	 * Patch level.
 	 */
-	public static final int PATCHLEVEL = 0;
+	public static final int PATCHLEVEL = 1;
 
 	/**
 	 * Development version or release candidate?
@@ -61,7 +61,7 @@ public class Version {
 	/**
 	 * Release date.
 	 */
-	public static final String DATE = "June 11, 2005";
+	public static final String DATE = "June 15, 2005";
 
 	/**
 	 * Version of Eclipse plugin.
