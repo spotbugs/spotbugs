@@ -144,9 +144,15 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 					String fieldOrMethodName = getRequiredAttribute(attributes, "name", qName);
 					String signature = getRequiredAttribute(attributes, "signature", qName);
 					if (qName.equals("Method")) {
+						String isStatic = attributes.getValue("isStatic");
+						if (isStatic == null) {
+							isStatic = "false"; // Hack for old data
+						}
+
 						// Save in field in case of nested SourceLine elements.
 						methodAnnotation =
-							new MethodAnnotation(classname, fieldOrMethodName, signature);
+							new MethodAnnotation(classname, fieldOrMethodName, signature, Boolean.valueOf(isStatic).booleanValue());
+						
 						bugAnnotation = methodAnnotation;
 					} else {
 						String isStatic = getRequiredAttribute(attributes, "isStatic", qName);

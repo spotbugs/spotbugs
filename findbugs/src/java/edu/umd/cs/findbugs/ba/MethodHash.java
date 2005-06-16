@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs.ba;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 
 import org.apache.bcel.classfile.Method;
 
@@ -91,5 +92,15 @@ public class MethodHash {
 		hash = digest.digest();
 		
 		return this;
+	}
+	
+	/**
+	 * Return whether or not this method hash has the same value as the one given.
+	 * 
+	 * @param other another MethodHash
+	 * @return true if the hash values are the same, false if not
+	 */
+	public boolean isSameHash(MethodHash other) {
+		return Arrays.equals(this.hash, other.hash);
 	}
 }

@@ -186,4 +186,15 @@ public class ClassHash implements XMLWriteable {
 		}
 		return buf.toString();
 	}
+
+	/**
+	 * Return whether or not this class hash has the same hash value
+	 * as the one given.
+	 * 
+	 * @param other another ClassHash
+	 * @return true if the hash values are the same, false if not
+	 */
+	public boolean isSameHash(ClassHash other) {
+		return Arrays.equals(classHash, other.classHash);
+	}
 }

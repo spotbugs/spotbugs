@@ -29,6 +29,7 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.StringTokenizer;
 
+import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ConstantPoolGen;
@@ -760,10 +761,11 @@ public class BugInstance implements Comparable, XMLWriteableWithMessages, Serial
 	 * @param className  name of the class containing the method
 	 * @param methodName name of the method
 	 * @param methodSig  type signature of the method
+	 * @param isStatic   true if the method is static, false otherwise
 	 * @return this object
 	 */
-	public BugInstance addMethod(String className, String methodName, String methodSig) {
-		addMethod(new MethodAnnotation(className, methodName, methodSig));
+	public BugInstance addMethod(String className, String methodName, String methodSig, boolean isStatic) {
+		addMethod(new MethodAnnotation(className, methodName, methodSig, isStatic));
 		return this;
 	}
 
@@ -779,7 +781,7 @@ public class BugInstance implements Comparable, XMLWriteableWithMessages, Serial
 	 */
 	public BugInstance addMethod(MethodGen methodGen, String sourceFile) {
 		MethodAnnotation methodAnnotation =
-		        new MethodAnnotation(methodGen.getClassName(), methodGen.getName(), methodGen.getSignature());
+		        new MethodAnnotation(methodGen.getClassName(), methodGen.getName(), methodGen.getSignature(), methodGen.isStatic());
 		addMethod(methodAnnotation);
 		addSourceLinesForMethod(methodAnnotation, SourceLineAnnotation.fromVisitedMethod(methodGen, sourceFile));
 		return this;
@@ -797,7 +799,7 @@ public class BugInstance implements Comparable, XMLWriteableWithMessages, Serial
 	 */
 	public BugInstance addMethod(JavaClass javaClass, Method method) {
 		MethodAnnotation methodAnnotation =
-			new MethodAnnotation(javaClass.getClassName(), method.getName(), method.getSignature());
+			new MethodAnnotation(javaClass.getClassName(), method.getName(), method.getSignature(), method.isStatic());
 		SourceLineAnnotation methodSourceLines = SourceLineAnnotation.forEntireMethod(
 				javaClass,
 				method);
@@ -847,7 +849,7 @@ public class BugInstance implements Comparable, XMLWriteableWithMessages, Serial
 		String className = visitor.getDottedClassConstantOperand();
 		String methodName = visitor.getNameConstantOperand();
 		String methodSig = visitor.getDottedSigConstantOperand();
-		addMethod(className, methodName, methodSig);
+		addMethod(className, methodName, methodSig, visitor.getMethod().isStatic());
 		describe("METHOD_CALLED");
 		return this;
 	}
@@ -855,10 +857,14 @@ public class BugInstance implements Comparable, XMLWriteableWithMessages, Serial
 	/**
 	 * Add a method annotation.
 	 *
+	 * @param className  name of class containing called method
+	 * @param methodName name of called method
+	 * @param methodSig  signature of called method
+	 * @param isStatic   true if called method is static, false if not
 	 * @return this object
 	 */
-	public BugInstance addCalledMethod(String className, String methodName, String methodSig) {
-		addMethod(className, methodName, methodSig);
+	public BugInstance addCalledMethod(String className, String methodName, String methodSig, boolean isStatic) {
+		addMethod(className, methodName, methodSig, isStatic);
 		describe("METHOD_CALLED");
 		return this;
 	}
@@ -876,7 +882,7 @@ public class BugInstance implements Comparable, XMLWriteableWithMessages, Serial
 		String className = inv.getClassName(cpg);
 		String methodName = inv.getMethodName(cpg);
 		String methodSig = inv.getSignature(cpg);
-		addMethod(className, methodName, methodSig);
+		addMethod(className, methodName, methodSig, inv.getOpcode() == Constants.INVOKESTATIC);
 		describe("METHOD_CALLED");
 		return this;
 	}

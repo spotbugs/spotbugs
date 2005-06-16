@@ -112,7 +112,7 @@ public class DuplicateBranches extends PreorderVisitor implements Detector, Stat
 		
 		bugReporter.reportBug(new BugInstance(this, "DB_DUPLICATE_BRANCHES", LOW_PRIORITY)
 				.addClass(classContext.getJavaClass())
-				.addMethod(classContext.getJavaClass().getClassName(), method.getName(), method.getSignature())
+				.addMethod(classContext.getJavaClass(), method)
 				.addSourceLineRange(this, 
 						thenBB.getFirstInstruction().getPosition(),
 						thenBB.getLastInstruction().getPosition())
@@ -175,7 +175,7 @@ public class DuplicateBranches extends PreorderVisitor implements Detector, Stat
 				
 				bugReporter.reportBug(new BugInstance(this, "DB_DUPLICATE_BRANCHES", LOW_PRIORITY)
 						.addClass(classContext.getJavaClass())
-						.addMethod(classContext.getJavaClass().getClassName(), method.getName(), method.getSignature())
+						.addMethod(classContext.getJavaClass(), method)
 						.addSourceLineRange(this, 
 								switchPos[i],
 								switchPos[i+1]-1)

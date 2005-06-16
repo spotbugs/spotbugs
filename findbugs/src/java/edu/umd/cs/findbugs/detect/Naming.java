@@ -28,6 +28,8 @@ import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
+import sun.security.krb5.internal.i;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
@@ -43,11 +45,13 @@ public class Naming extends PreorderVisitor implements Detector, Constants2 {
 		final String className;
 		final String methodName;
 		final String methodSig;
+		final boolean isStatic;
 
-		MyMethod(String cName, String n, String s) {
+		MyMethod(String cName, String n, String s, boolean isStatic) {
 			className = cName;
 			methodName = n;
 			methodSig = s;
+			this.isStatic = isStatic;
 		}
 
 		public String getClassName() {
@@ -107,14 +111,14 @@ public class Naming extends PreorderVisitor implements Detector, Constants2 {
 			try {
 				if (m.confusingMethodNames(m2)
 				        && Repository.instanceOf(m.className, m2.className)) {
-					MyMethod m3 = new MyMethod(m.className, m2.methodName, m.methodSig);
+					MyMethod m3 = new MyMethod(m.className, m2.methodName, m.methodSig, m.isStatic);
 					boolean r = others.contains(m3);
 					if (r) continue;
 					bugReporter.reportBug(new BugInstance(this, "NM_VERY_CONFUSING", HIGH_PRIORITY)
 					        .addClass(m.getClassName())
-					        .addMethod(m.getClassName(), m.methodName, m.methodSig)
+					        .addMethod(m.getClassName(), m.methodName, m.methodSig, m.isStatic)
 					        .addClass(m2.getClassName())
-					        .addMethod(m2.getClassName(), m2.methodName, m2.methodSig));
+					        .addMethod(m2.getClassName(), m2.methodName, m2.methodSig, m2.isStatic));
 					return true;
 				}
 			} catch (ClassNotFoundException e) {
@@ -129,8 +133,9 @@ public class Naming extends PreorderVisitor implements Detector, Constants2 {
 			if (m.confusingMethodNames(m2)) {
 				bugReporter.reportBug(new BugInstance(this, "NM_CONFUSING", LOW_PRIORITY)
 				        .addClass(m.getClassName())
-				        .addMethod(m.getClassName(), m.methodName, m.methodSig)
-				        .addClass(m2.getClassName()) .addMethod(m2.getClassName(), m2.methodName, m2.methodSig));
+				        .addMethod(m.getClassName(), m.methodName, m.methodSig, m.isStatic)
+				        .addClass(m2.getClassName())
+				        .addMethod(m2.getClassName(), m2.methodName, m2.methodSig, m2.isStatic));
 				return true;
 			}
 		}
@@ -276,7 +281,7 @@ public class Naming extends PreorderVisitor implements Detector, Constants2 {
 		String trueName = getMethodName() + getMethodSig();
 		String allSmall = getMethodName().toLowerCase() + getMethodSig();
 
-		MyMethod mm = new MyMethod(getThisClass().getClassName(), getMethodName(), getMethodSig());
+		MyMethod mm = new MyMethod(getThisClass().getClassName(), getMethodName(), getMethodSig(), obj.isStatic());
 		{
 			HashSet<String> s = canonicalToTrueMapping.get(allSmall);
 			if (s == null) {

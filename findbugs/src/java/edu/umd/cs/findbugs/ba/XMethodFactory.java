@@ -83,4 +83,22 @@ public abstract class XMethodFactory {
 		Method method = visitor.getMethod();
 		return createXMethod(javaClass, method);
 	}
+	
+	/**
+	 * Create an XMethod.
+	 * Note that the method access flags are set to a plausible, but not
+	 * necessarily correct value.
+	 * 
+	 * @param className  class containing the method
+	 * @param methodName method name
+	 * @param methodSig  method signature
+	 * @param isStatic   true if method is static, false if not
+	 * @return
+	 */
+	public static XMethod createXMethod(String className, String methodName, String methodSig, boolean isStatic) {
+		if (isStatic)
+			return new StaticMethod(className, methodName, methodSig, Constants.ACC_STATIC);
+		else
+			return new InstanceMethod(className, methodName, methodSig, 0);
+	}
 }

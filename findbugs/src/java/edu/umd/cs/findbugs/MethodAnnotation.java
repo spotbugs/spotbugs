@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs;
 
 import edu.umd.cs.findbugs.ba.SignatureConverter;
 import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.ba.XMethodFactory;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
 import edu.umd.cs.findbugs.xml.XMLAttributeList;
@@ -38,7 +39,7 @@ import java.io.IOException;
  * @see BugAnnotation
  */
 public class MethodAnnotation extends PackageMemberAnnotation {
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 2L;
 
 	private static final boolean UGLY_METHODS = Boolean.getBoolean("ma.ugly");
 
@@ -47,6 +48,7 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 	private String methodName;
 	private String methodSig;
 	private String fullMethod;
+	private boolean isStatic;
 	private SourceLineAnnotation sourceLines;
 
 	/**
@@ -55,11 +57,13 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 	 * @param className  the name of the class containing the method
 	 * @param methodName the name of the method
 	 * @param methodSig  the Java type signature of the method
+	 * @param isStatic   true if the method is static, false if not
 	 */
-	public MethodAnnotation(String className, String methodName, String methodSig) {
+	public MethodAnnotation(String className, String methodName, String methodSig, boolean isStatic) {
 		super(className, DEFAULT_ROLE);
 		this.methodName = methodName;
 		this.methodSig = methodSig;
+		this.isStatic = isStatic;
 		fullMethod = null;
 		sourceLines = null;
 	}
@@ -71,7 +75,11 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 	 * @param visitor the BetterVisitor currently visiting the method
 	 */
 	public static MethodAnnotation fromVisitedMethod(PreorderVisitor visitor) {
-		MethodAnnotation result = new MethodAnnotation(visitor.getDottedClassName(), visitor.getMethodName(), visitor.getMethodSig());
+		MethodAnnotation result = new MethodAnnotation(
+				visitor.getDottedClassName(),
+				visitor.getMethodName(),
+				visitor.getMethodSig(),
+				visitor.getMethod().isStatic());
 
 		// Try to find the source lines for the method
 		SourceLineAnnotation srcLines = SourceLineAnnotation.fromVisitedMethod(visitor);
@@ -90,7 +98,8 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 		return new MethodAnnotation(
 				xmethod.getClassName(),
 				xmethod.getName(),
-				xmethod.getSignature());
+				xmethod.getSignature(),
+				xmethod.isStatic());
 	}
 
 	/**
@@ -105,6 +114,24 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 	 */
 	public String getMethodSignature() {
 		return methodSig;
+	}
+	
+	/**
+	 * Return whether or not the method is static.
+	 * 
+	 * @return true if the method is static, false otherwise
+	 */
+	public boolean isStatic() {
+		return isStatic;
+	}
+	
+	/**
+	 * Convert to an XMethod.
+	 * 
+	 * @return an XMethod specifying the same method as this MethodAnnotation
+	 */
+	public XMethod toXMethod() {
+		return XMethodFactory.createXMethod(className, methodName, methodSig, isStatic);
 	}
 
 	/**
@@ -228,7 +255,8 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 		XMLAttributeList attributeList = new XMLAttributeList()
 			.addAttribute("classname", getClassName())
 			.addAttribute("name", getMethodName())
-			.addAttribute("signature", getMethodSignature());
+			.addAttribute("signature", getMethodSignature())
+			.addAttribute("isStatic", String.valueOf(isStatic()));
 		
 		String role = getDescription();
 		if (!role.equals(DEFAULT_ROLE))

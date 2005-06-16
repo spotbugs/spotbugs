@@ -124,14 +124,14 @@ public class ReadReturnShouldBeChecked extends BytecodeScanningDetector implemen
 			if (sawRead) {
 				bugReporter.reportBug(new BugInstance(this, "RR_NOT_CHECKED", NORMAL_PRIORITY)
 				        .addClassAndMethod(this)
-				        .addCalledMethod(lastCallClass, lastCallMethod, lastCallSig)
+				        .addCalledMethod(lastCallClass, lastCallMethod, lastCallSig, false)
 				        .addSourceLine(this, readPC));
 			} else if (sawSkip) {
 
 				bugReporter.reportBug(new BugInstance(this, "SR_NOT_CHECKED",
 				        (wasBufferedInputStream ? HIGH_PRIORITY : NORMAL_PRIORITY))
 				        .addClassAndMethod(this)
-				        .addCalledMethod(lastCallClass, lastCallMethod, lastCallSig)
+				        .addCalledMethod(lastCallClass, lastCallMethod, lastCallSig, false)
 				        .addSourceLine(this, skipPC));
 			}
 		}

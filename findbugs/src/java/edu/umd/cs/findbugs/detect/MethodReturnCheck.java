@@ -276,7 +276,7 @@ public class MethodReturnCheck extends BytecodeScanningDetector {
 					BugInstance warning =
 						new BugInstance(this, "RV_RETURN_VALUE_IGNORED", NORMAL_PRIORITY)
 							.addClassAndMethod(this)
-							.addMethod(className, methodName, signature).describe("METHOD_CALLED")
+							.addMethod(className, methodName, signature, seen == Constants.INVOKESTATIC).describe("METHOD_CALLED")
 							.addSourceLine(this, callPC);
 					bugReporter.reportBug(warning);
 				} else {

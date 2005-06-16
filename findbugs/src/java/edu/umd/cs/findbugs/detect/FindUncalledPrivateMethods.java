@@ -72,7 +72,11 @@ public class FindUncalledPrivateMethods extends BytecodeScanningDetector impleme
 		case INVOKESPECIAL:
 		case INVOKESTATIC:
 			if (getDottedClassConstantOperand().equals(className)) {
-				MethodAnnotation called = new MethodAnnotation(getDottedClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand());
+				MethodAnnotation called = new MethodAnnotation(
+						getDottedClassConstantOperand(),
+						getNameConstantOperand(),
+						getSigConstantOperand(),
+						seen == INVOKESTATIC);
 				calledMethods.add(called);
 				calledMethodNames.add(getNameConstantOperand().toLowerCase());
 				// System.out.println("Saw call to " + called);
