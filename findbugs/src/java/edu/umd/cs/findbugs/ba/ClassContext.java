@@ -773,7 +773,6 @@ public class ClassContext {
 	private ClassGen classGen;
 	private AssignedFieldMap assignedFieldMap;
 	private AssertionMethods assertionMethods;
-	private ClassHash classHash;
 
 	/* ----------------------------------------------------------------------
 	 * Public methods
@@ -790,7 +789,6 @@ public class ClassContext {
 		this.classGen = null;
 		this.assignedFieldMap = null;
 		this.assertionMethods = null;
-		this.classHash = null;
 	}
 
 	/**
@@ -1144,23 +1142,6 @@ public class ClassContext {
 	public CallListDataflow getCallListDataflow(Method method)
 			throws CFGBuilderException, DataflowAnalysisException {
 		return callListDataflowFactory.getAnalysis(method);
-	}
-
-	/**
-	 * Get the ClassHash for the class.
-	 * 
-	 * @return the ClassHash
-	 */
-	public ClassHash getClassHash() {
-		if (classHash == null) {
-			try {
-				classHash = new ClassHash().computeHash(jclass);
-			} catch (NoSuchAlgorithmException e) {
-				// Should not happen
-				throw new IllegalStateException("Cannot get algorithm for computing ClassHash", e);
-			}
-		}
-		return classHash;
 	}
 }
 

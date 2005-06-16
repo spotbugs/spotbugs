@@ -51,6 +51,7 @@ import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.AnalysisException;
 import edu.umd.cs.findbugs.ba.AnalysisFeatures;
 import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.ba.ClassHash;
 import edu.umd.cs.findbugs.ba.ClassObserver;
 import edu.umd.cs.findbugs.ba.URLClassPath;
 import edu.umd.cs.findbugs.config.AnalysisFeatureSetting;
@@ -830,6 +831,7 @@ public class FindBugs implements Constants2, ExitCodes {
 	}
 
 	private ErrorCountingBugReporter bugReporter;
+	private BugCollectionBugReporter bugCollectionBugReporter;
 	private boolean relaxedReportingMode;
 	private Project project;
 	private UserPreferences userPreferences;
@@ -844,7 +846,6 @@ public class FindBugs implements Constants2, ExitCodes {
 	private boolean emitTrainingOutput;
 	private String trainingInputDir;
 	private String trainingOutputDir;
-	//private boolean runSlowFirstPassDetectors;
 	private AnalysisFeatureSetting[] settingList = DEFAULT_EFFORT;
 	
 	private int passCount;
@@ -1033,6 +1034,13 @@ public class FindBugs implements Constants2, ExitCodes {
 		// in case it wants to access information such
 		// as the AnalysisContext
 		bugReporter.setEngine(this);
+		
+		// If we have a BugCollectionBugReporter, get a handle to it.
+		// We use this reference to add extra information to the BugCollection,
+		// such as hashes of methods and classes.
+		if (bugReporter.getRealBugReporter() instanceof BugCollectionBugReporter) {
+			bugCollectionBugReporter = (BugCollectionBugReporter) bugReporter.getRealBugReporter();
+		}
 
 		// Create execution plan
 		try {
@@ -1358,6 +1366,12 @@ public class FindBugs implements Constants2, ExitCodes {
 					if (DEBUG) System.out.println("Scanned " + jclass.getClassName());
 					analysisContext.addApplicationClassToRepository(jclass);
 					repositoryClassList.add(jclass.getClassName());
+
+					if (bugCollectionBugReporter != null) {
+						// Add class hash.
+						bugCollectionBugReporter.getBugCollection().setClassHash(
+								jclass.getClassName(), new ClassHash().computeHash(jclass));
+					}
 				} catch (ClassFormatException e) {
 					if (DEBUG) e.printStackTrace();
 					bugReporter.logError("Invalid classfile format", e);
@@ -1440,7 +1454,8 @@ public class FindBugs implements Constants2, ExitCodes {
 	/**
 	 * Examine a single class by invoking all of the Detectors on it.
 	 *
-	 * @param className the fully qualified name of the class to examine
+	 * @param analysisPass the AnalysisPass currently being executed
+	 * @param className    the fully qualified name of the class to examine
 	 */
 	private void examineClass(AnalysisPass analysisPass, String className) throws InterruptedException {
 		if (DEBUG) System.out.println("Examining class " + className);

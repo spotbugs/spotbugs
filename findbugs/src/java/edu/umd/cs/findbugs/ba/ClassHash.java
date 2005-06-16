@@ -46,6 +46,18 @@ import edu.umd.cs.findbugs.xml.XMLWriteable;
  * @author David Hovemeyer
  */
 public class ClassHash implements XMLWriteable {
+	/**
+	 * XML element name for a ClassHash.
+	 */
+	public static final String CLASS_HASH_ELEMENT_NAME = "ClassHash";
+	
+	/**
+	 * XML element name for a MethodHash.
+	 */
+	public static final String METHOD_HASH_ELEMENT_NAME = "MethodHash";
+	
+	// Fields
+	private String className;
 	private byte[] classHash;
 	private Map<XMethod, MethodHash> methodHashMap;
 	
@@ -61,8 +73,9 @@ public class ClassHash implements XMLWriteable {
 	 * 
 	 * @param classHash pre-computed class hash
 	 */
-	public ClassHash(byte[] classHash) {
+	public ClassHash(String className, byte[] classHash) {
 		this();
+		this.className = className;
 		this.classHash = new byte[classHash.length];
 		System.arraycopy(classHash, 0, this.classHash, 0, classHash.length);
 	}
@@ -74,7 +87,18 @@ public class ClassHash implements XMLWriteable {
 	 * @param methodHash the method hash
 	 */
 	public void setMethodHash(XMethod method, byte[] methodHash) {
-		methodHashMap.put(method, new MethodHash(methodHash));
+		methodHashMap.put(method, new MethodHash(
+				method.getName(),
+				method.getSignature(),
+				method.isStatic(),
+				methodHash));
+	}
+	
+	/**
+	 * @return Returns the className.
+	 */
+	public String getClassName() {
+		return className;
 	}
 
 	/**
@@ -84,6 +108,16 @@ public class ClassHash implements XMLWriteable {
 	 */
 	public byte[] getClassHash() {
 		return classHash;
+	}
+	
+	/**
+	 * Set class hash.
+	 * 
+	 * @param classHash the class hash value to set
+	 */
+	public void setClassHash(byte[] classHash) {
+		this.classHash= new byte[classHash.length];
+		System.arraycopy(classHash, 0, this.classHash, 0, classHash.length);
 	}
 	
 	/**
@@ -101,9 +135,10 @@ public class ClassHash implements XMLWriteable {
 	 * 
 	 * @param javaClass the class
 	 * @return this object
-	 * @throws NoSuchAlgorithmException
 	 */
-	public ClassHash computeHash(JavaClass javaClass) throws NoSuchAlgorithmException {
+	public ClassHash computeHash(JavaClass javaClass) {
+		this.className = javaClass.getClassName();
+		
 		Method[] methodList = new Method[javaClass.getMethods().length];
 		
 		// Sort methods
@@ -119,7 +154,12 @@ public class ClassHash implements XMLWriteable {
 			}
 		});
 		
-		MessageDigest digest = MessageDigest.getInstance("MD5");
+		MessageDigest digest;
+		try {
+			digest = MessageDigest.getInstance("MD5");
+		} catch (NoSuchAlgorithmException e) {
+			throw new IllegalStateException("No algorithm for computing class hash", e);
+		}
 		
 		// Compute digest of names and signatures, in order.
 		// Also, compute method hashes.
@@ -129,13 +169,8 @@ public class ClassHash implements XMLWriteable {
 			work(digest, method.getName(), encoder); 
 			work(digest, method.getSignature(), encoder);
 			
-			try {
-				MethodHash methodHash = new MethodHash().computeHash(method);
-				methodHashMap.put(XMethodFactory.createXMethod(javaClass, method), methodHash);
-			} catch (NoSuchAlgorithmException e) {
-				throw new IllegalStateException("No algorithm for computing method hash", e);
-			}
-			
+			MethodHash methodHash = new MethodHash().computeHash(method);
+			methodHashMap.put(XMethodFactory.createXMethod(javaClass, method), methodHash);
 		}
 		
 		classHash = digest.digest();
@@ -158,12 +193,13 @@ public class ClassHash implements XMLWriteable {
 	}
 	
 	public void writeXML(XMLOutput xmlOutput) throws IOException {
-		xmlOutput.startTag("ClassHash");
+		xmlOutput.startTag(CLASS_HASH_ELEMENT_NAME);
+		xmlOutput.addAttribute("class", className);
 		xmlOutput.addAttribute("value", hashToString(classHash));
 		xmlOutput.stopTag(false);
 
 		for (Map.Entry<XMethod, MethodHash> entry : methodHashMap.entrySet()) {
-			xmlOutput.startTag("MethodHash");
+			xmlOutput.startTag(METHOD_HASH_ELEMENT_NAME);
 			xmlOutput.addAttribute("name", entry.getKey().getName());
 			xmlOutput.addAttribute("signature", entry.getKey().getSignature());
 			xmlOutput.addAttribute("isStatic", String.valueOf(entry.getKey().isStatic()));
@@ -171,14 +207,20 @@ public class ClassHash implements XMLWriteable {
 			xmlOutput.stopTag(true);
 		}
 		
-		xmlOutput.closeTag("ClassHash");
+		xmlOutput.closeTag(CLASS_HASH_ELEMENT_NAME);
 	}
 	
 	private static final char[] HEX_CHARS = {
 		'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f',
 	};
 
-	private static String hashToString(byte[] hash) {
+	/**
+	 * Convert a hash to a string of hex digits.
+	 *
+	 * @param hash the hash
+	 * @return a String representation of the hash
+	 */
+	public static String hashToString(byte[] hash) {
 		StringBuffer buf = new StringBuffer();
 		for (byte b : hash) {
 			buf.append(HEX_CHARS[(b >> 4) & 0xF]);
@@ -187,6 +229,34 @@ public class ClassHash implements XMLWriteable {
 		return buf.toString();
 	}
 
+	private static int hexDigitValue(char c) {
+		if (c >= '0' && c <= '9')
+			return c - '0';
+		else if (c >= 'a' && c <= 'f')
+			return 10 + (c - 'a');
+		else if (c >= 'A' && c <= 'F')
+			return 10 + (c - 'A');
+		else
+			throw new IllegalArgumentException("Illegal hex character: " + c);
+	}
+	
+	/**
+	 * Convert a string of hex digits to a hash.
+	 * 
+	 * @param s string of hex digits
+	 * @return the hash value represented by the string
+	 */
+	public static byte[] stringToHash(String s) {
+		if (s.length() % 2 != 0)
+			throw new IllegalArgumentException("Invalid hash string: " + s);
+		byte[] hash = new byte[s.length() / 2];
+		for (int i = 0; i < s.length(); i += 2) {
+			byte b = (byte) ((hexDigitValue(s.charAt(i)) << 4) + hexDigitValue(s.charAt(i+1)));
+			hash[i / 2] = b;
+		}
+		return hash;
+	}
+	
 	/**
 	 * Return whether or not this class hash has the same hash value
 	 * as the one given.

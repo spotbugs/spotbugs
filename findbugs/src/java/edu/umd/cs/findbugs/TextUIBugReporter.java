@@ -171,6 +171,13 @@ public abstract class TextUIBugReporter extends AbstractBugReporter {
 	public void setUseLongBugCodes(boolean useLongBugCodes) {
 		this.useLongBugCodes = useLongBugCodes;
 	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.BugReporter#getRealBugReporter()
+	 */
+	public BugReporter getRealBugReporter() {
+		return this;
+	}
 }
 
 // vim:ts=4

@@ -34,12 +34,16 @@ import org.apache.bcel.classfile.Method;
  * @author David Hovemeyer
  */
 public class MethodHash {
+	public static final String METHOD_HASH_ELEMENT_NAME = "MethodHash";
+	
 	private byte[] hash;
+	private String methodName;
+	private String methodSig;
+	private boolean isStatic;
 
 	/**
 	 * Constructor.
-	 * 
-	 * @param method method to compute bytecode hash for
+	 * computeHash(Method) must be used to initialize the contents.
 	 */
 	public MethodHash() {
 	}
@@ -47,11 +51,38 @@ public class MethodHash {
 	/**
 	 * Constructor.
 	 * 
-	 * @param hash the pre-computed hash
+	 * @param methodName method name
+	 * @param methodSig  method signature
+	 * @param isStatic   true if the method is static, false if not
+	 * @param hash       the pre-computed hash
 	 */
-	public MethodHash(byte[] hash) {
+	public MethodHash(String methodName, String methodSig, boolean isStatic, byte[] hash) {
+		this.methodName = methodName;
+		this.methodSig = methodSig;
+		this.isStatic = isStatic;
 		this.hash = new byte[hash.length];
 		System.arraycopy(hash, 0, this.hash, 0, hash.length);
+	}
+	
+	/**
+	 * @return Returns the method name.
+	 */
+	public String getMethodName() {
+		return methodName;
+	}
+	
+	/**
+	 * @return Returns the method signature.
+	 */
+	public String getMethodSig() {
+		return methodSig;
+	}
+	
+	/**
+	 * @return Returns whether the method is static.
+	 */
+	public boolean isStatic() {
+		return isStatic;
 	}
 	
 	/**
@@ -68,10 +99,15 @@ public class MethodHash {
 	 * 
 	 * @param method the method
 	 * @return this object
-	 * @throws NoSuchAlgorithmException 
 	 */
-	public MethodHash computeHash(Method method) throws NoSuchAlgorithmException {
-		final MessageDigest digest = MessageDigest.getInstance("MD5");;
+	public MethodHash computeHash(Method method) {
+		MessageDigest digest_;
+		try {
+			digest_ = MessageDigest.getInstance("MD5");
+		} catch (NoSuchAlgorithmException e) {
+			throw new IllegalStateException("No algorithm for computing method hash", e);
+		}
+		final MessageDigest digest = digest_;
 
 		byte[] code;
 		if (method.getCode() == null || method.getCode().getCode() == null) {

@@ -35,7 +35,7 @@ public class DelegatingBugReporter implements BugReporter {
 	}
 
 	public BugReporter getRealBugReporter() {
-		return realBugReporter;
+		return realBugReporter.getRealBugReporter();
 	}
 
 	public void setRealBugReporter(BugReporter realBugReporter) {

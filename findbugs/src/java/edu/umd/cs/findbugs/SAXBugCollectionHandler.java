@@ -20,7 +20,6 @@
 package edu.umd.cs.findbugs;
 
 import java.io.FileReader;
-
 import java.util.ArrayList;
 
 import org.xml.sax.Attributes;
@@ -29,6 +28,9 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.helpers.XMLReaderFactory;
+
+import edu.umd.cs.findbugs.ba.ClassHash;
+import edu.umd.cs.findbugs.ba.XMethodFactory;
 
 /**
  * Build a BugCollection based on SAX events.
@@ -46,6 +48,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 	private BugInstance bugInstance;
 	private MethodAnnotation methodAnnotation;
 	private AnalysisError analysisError;
+	private ClassHash classHash;
 	private ArrayList<String> stackTrace;
 
 	public SAXBugCollectionHandler(BugCollection bugCollection, Project project) {
@@ -199,11 +202,47 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 						getRequiredAttribute(attributes, "size", qName));
 					bugCollection.getProjectStats().addClass(className, isInterface, size);
 				}
+			} else if (outerElement.equals(BugCollection.CLASS_HASHES_ELEMENT_NAME)) {
+				if (qName.equals(ClassHash.CLASS_HASH_ELEMENT_NAME)) {
+					String className = getRequiredAttribute(attributes, "class", qName);
+					byte[] hash = extractHash(qName, attributes);
+					classHash = new ClassHash(className, hash);
+					bugCollection.setClassHash(className, classHash);
+				}
+			} else if (outerElement.equals(ClassHash.CLASS_HASH_ELEMENT_NAME)) {
+				if (qName.equals(ClassHash.METHOD_HASH_ELEMENT_NAME) && classHash != null) {
+					String methodName = getRequiredAttribute(attributes, "name", qName);
+					String methodSig = getRequiredAttribute(attributes, "signature", qName);
+					boolean isStatic = Boolean.valueOf(getRequiredAttribute(attributes, "isStatic", qName)).booleanValue();
+					byte[] hash = extractHash(qName, attributes);
+					classHash.setMethodHash(
+							XMethodFactory.createXMethod(classHash.getClassName(), methodName, methodSig, isStatic),
+							hash);
+				}
 			}
 		}
 
 		textBuffer.delete(0, textBuffer.length());
 		elementStack.add(qName);
+	}
+
+	/**
+	 * Extract a hash value from an element.
+	 * 
+	 * @param qName      name of element containing hash value
+	 * @param attributes element attributes
+	 * @return the decoded hash value
+	 * @throws SAXException
+	 */
+	private byte[] extractHash(String qName, Attributes attributes) throws SAXException {
+		String encodedHash = getRequiredAttribute(attributes, "value", qName);
+		byte[] hash;
+		try {
+			hash= ClassHash.stringToHash(encodedHash);
+		} catch (IllegalArgumentException e) {
+			throw new SAXException("Invalid class hash", e);
+		}
+		return hash;
 	}
 
 	private void setAnnotationRole(Attributes attributes, BugAnnotation bugAnnotation) {
@@ -280,6 +319,10 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 					analysisError.setExceptionMessage(textBuffer.toString());
 				} else if (qName.equals(BugCollection.ERROR_STACK_TRACE_ELEMENT_NAME)) {
 					stackTrace.add(textBuffer.toString());
+				}
+			} else if (outerElement.equals(BugCollection.CLASS_HASHES_ELEMENT_NAME)) {
+				if (qName.equals(ClassHash.CLASS_HASH_ELEMENT_NAME)) {
+					classHash = null;
 				}
 			}
 		}

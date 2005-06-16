@@ -60,20 +60,13 @@ public abstract class BugCollectionBugReporter extends TextUIBugReporter {
 		if (bugCollection.add(bugInstance))
 			notifyObservers(bugInstance);
 	}
-//
-//	protected void generateSummary() {
-//		try {
-//			StringWriter writer = new StringWriter();
-//			ProjectStats stats = getProjectStats();
-//			stats.transformSummaryToHTML(writer);
-//			String html = writer.toString();
-//			bugCollection.setSummaryHTML(html);
-//		} catch (IOException e) {
-//			logError("Couldn't generate summary HTML", e);
-//		} catch (TransformerException e) {
-//			logError("Couldn't generate summary HTML", e);
-//		}
-//	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.BugReporter#getRealBugReporter()
+	 */
+	public BugReporter getRealBugReporter() {
+		return this;
+	}
 }
 
 // vim:ts=4

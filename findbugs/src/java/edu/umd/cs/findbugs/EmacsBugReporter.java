@@ -113,6 +113,13 @@ public class EmacsBugReporter extends TextUIBugReporter {
 	public void finish() {
 		outputStream.close();
 	}
+
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.BugReporter#getRealBugReporter()
+	 */
+	public BugReporter getRealBugReporter() {
+		return this;
+	}
 }
 
 /*

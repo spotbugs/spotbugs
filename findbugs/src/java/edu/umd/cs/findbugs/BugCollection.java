@@ -41,6 +41,7 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 
+import edu.umd.cs.findbugs.ba.ClassHash;
 import edu.umd.cs.findbugs.xml.Dom4JXMLOutput;
 import edu.umd.cs.findbugs.xml.OutputStreamXMLOutput;
 import edu.umd.cs.findbugs.xml.XMLAttributeList;
@@ -175,6 +176,12 @@ public abstract class BugCollection {
 	 * @param timestamp the timestamp
 	 */
 	public abstract void setTimestamp(long timestamp);
+	
+	public abstract ClassHash getClassHash(String className);
+	
+	public abstract void setClassHash(String className, ClassHash classHash);
+	
+	public abstract Iterator<ClassHash> classHashIterator();
 
 	private static final boolean REPORT_SUMMARY_HTML = 
 		Boolean.getBoolean("findbugs.report.SummaryHTML");
@@ -191,6 +198,7 @@ public abstract class BugCollection {
 	static final String MISSING_CLASS_ELEMENT_NAME = "MissingClass";
 	static final String SUMMARY_HTML_ELEMENT_NAME = "SummaryHTML";
 	static final String APP_CLASS_ELEMENT_NAME = "AppClass";
+	static final String CLASS_HASHES_ELEMENT_NAME = "ClassHashes"; // 0.9.2 and later
 
 	/**
 	 * Read XML data from given file into this object,
@@ -359,15 +367,16 @@ public abstract class BugCollection {
 		// Errors, missing classes
 		emitErrors(xmlOutput);
 
-		// Summary HTML
-//		String html = getSummaryHTML();
-//		if (!html.equals("")) {
-//			xmlOutput.openTag(SUMMARY_HTML_ELEMENT_NAME);
-//			xmlOutput.writeCDATA(html);
-//			xmlOutput.closeTag(SUMMARY_HTML_ELEMENT_NAME);
-//		}
 		// Statistics
 		getProjectStats().writeXML(xmlOutput);
+		
+		// Class and method hashes
+		xmlOutput.openTag(CLASS_HASHES_ELEMENT_NAME);
+		for (Iterator<ClassHash> i = classHashIterator(); i.hasNext();) {
+			ClassHash classHash = i.next();
+			classHash.writeXML(xmlOutput);
+		}
+		xmlOutput.openTag(CLASS_HASHES_ELEMENT_NAME);
 		
 		// Summary HTML
 		if ( REPORT_SUMMARY_HTML ) {
