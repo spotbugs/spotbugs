@@ -257,6 +257,37 @@ public class SortedBugCollection extends BugCollection {
 	public Iterator<ClassHash> classHashIterator() {
 		return classHashMap.values().iterator();
 	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.BugCollection#duplicate()
+	 */
+	//@Override
+	public SortedBugCollection duplicate() {
+		SortedBugCollection dup = new SortedBugCollection((ProjectStats) projectStats.clone());
+		
+		BugCollection.cloneAll(dup.bugSet, this.bugSet);
+		dup.errorList.addAll(this.errorList);
+		dup.missingClassSet.addAll(this.missingClassSet);
+		dup.summaryHTML = this.summaryHTML;
+		dup.classHashMap.putAll(this.classHashMap);
+		for (BugInstance bugInstance : dup.bugSet) {
+			uniqueIdToBugInstanceMap.put(bugInstance.getUniqueId(), bugInstance);
+		}
+		dup.generatedUniqueIdCount = this.generatedUniqueIdCount;
+		dup.timestamp = this.timestamp;
+		
+		return dup;
+	}
+
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.BugCollection#clearBugInstances()
+	 */
+	//@Override
+	public void clearBugInstances() {
+		bugSet.clear();
+		uniqueIdToBugInstanceMap.clear();
+		generatedUniqueIdCount = 0;
+	}
 }
 
 // vim:ts=4

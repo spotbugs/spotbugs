@@ -47,7 +47,7 @@ import edu.umd.cs.findbugs.xml.XMLWriteable;
 /**
  * Statistics resulting from analyzing a project.
  */
-public class ProjectStats implements XMLWriteable {
+public class ProjectStats implements XMLWriteable, Cloneable {
 	private static final String TIMESTAMP_FORMAT = "EEE, d MMM yyyy HH:mm:ss Z";
 	private HashMap<String, PackageStats> packageStatsMap;
 	private int[] totalErrors = new int[] { 0, 0, 0, 0, 0 };
@@ -62,6 +62,15 @@ public class ProjectStats implements XMLWriteable {
 		this.packageStatsMap = new HashMap<String, PackageStats>();
 		this.totalClasses = 0;
 		this.timestamp = new Date();
+	}
+	
+	public Object clone() {
+		try {
+			return super.clone();
+		} catch (CloneNotSupportedException e) {
+			// can't happen
+			throw new IllegalStateException();
+		}
 	}
 
 	/**

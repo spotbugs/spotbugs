@@ -31,7 +31,7 @@ import java.util.*;
  * @author Mike Fagan
  * @author Jay Dunning
  */
-public class PackageStats implements XMLWriteable {
+public class PackageStats implements XMLWriteable, Cloneable {
 
 	private static class ClassStats implements XMLWriteable {
 		private String name;
@@ -42,6 +42,15 @@ public class PackageStats implements XMLWriteable {
 
 		public ClassStats(String name) {
 			this.name = name;
+		}
+		
+		public Object clone() {
+			try {
+				return super.clone();
+			} catch (CloneNotSupportedException e) {
+				// can't happen
+				throw new IllegalStateException();
+			}
 		}
 
 		public void setInterface(boolean isInterface) {

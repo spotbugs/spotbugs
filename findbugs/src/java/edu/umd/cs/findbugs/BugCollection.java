@@ -182,6 +182,18 @@ public abstract class BugCollection {
 	public abstract void setClassHash(String className, ClassHash classHash);
 	
 	public abstract Iterator<ClassHash> classHashIterator();
+	
+	/**
+	 * Make an exact deep copy of this BugCollection.
+	 * 
+	 * @return an exact copy of this BugCollection
+	 */
+	public abstract BugCollection duplicate();
+	
+	/**
+	 * Clear out all BugInstances, but preserve other metadata.
+	 */
+	public abstract void clearBugInstances();
 
 	private static final boolean REPORT_SUMMARY_HTML = 
 		Boolean.getBoolean("findbugs.report.SummaryHTML");
@@ -453,6 +465,20 @@ public abstract class BugCollection {
 			}
 
 			throw new IOException("XML does not contain saved bug data");
+		}
+	}
+
+	/**
+	 * Clone all of the BugInstance objects in the source Collection
+	 * and add them to the destination Collection.
+	 * 
+	 * @param dest   the destination Collection
+	 * @param source the source Collection
+	 */
+	public static void cloneAll(Collection<BugInstance> dest, Collection<BugInstance> source) {
+		for (Iterator<BugInstance> i = source.iterator(); i.hasNext(); ) {
+			BugInstance obj = i.next();
+			dest.add((BugInstance) obj.clone());
 		}
 	}
 

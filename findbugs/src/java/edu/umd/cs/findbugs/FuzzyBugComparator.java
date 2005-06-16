@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs;
 
 import java.util.Comparator;
 import java.util.HashSet;
+import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
@@ -90,10 +91,23 @@ public class FuzzyBugComparator implements Comparator<BugInstance> {
 		}
 	}
 	
-	private SortedBugCollection bugCollection;
+	/** Keep track of which BugCollections the various BugInstances have come from. */
+	private IdentityHashMap<BugInstance, BugCollection> bugCollectionMap;
 	
-	public FuzzyBugComparator(SortedBugCollection bugCollection) {
-		this.bugCollection = bugCollection;
+	public FuzzyBugComparator() {
+		this.bugCollectionMap = new IdentityHashMap<BugInstance, BugCollection>();
+	}
+	
+	/**
+	 * Register a BugCollection.  This allows us to find the class and method
+	 * hashes for BugInstances to be compared.
+	 * 
+	 * @param bugCollection a BugCollection
+	 */
+	public void registerBugCollection(BugCollection bugCollection) {
+		for (Iterator<BugInstance> i = bugCollection.iterator(); i.hasNext(); ) {
+			bugCollectionMap.put(i.next(), bugCollection);
+		}
 	}
 	
 	public int compare(BugInstance a, BugInstance b) {
@@ -106,6 +120,9 @@ public class FuzzyBugComparator implements Comparator<BugInstance> {
 		cmp = a.getType().compareTo(b.getType());
 		if (cmp != 0)
 			return cmp;
+		
+		BugCollection lhsCollection = bugCollectionMap.get(a);
+		BugCollection rhsCollection = bugCollectionMap.get(b);
 		
 		// Scan through bug annotations, comparing fuzzily if possible
 		
@@ -122,9 +139,9 @@ public class FuzzyBugComparator implements Comparator<BugInstance> {
 				return cmp;
 			
 			if (lhs.getClass() == ClassAnnotation.class)
-				cmp = compareClasses((ClassAnnotation) lhs, (ClassAnnotation) rhs);
+				cmp = compareClasses(lhsCollection, rhsCollection, (ClassAnnotation) lhs, (ClassAnnotation) rhs);
 			else if (lhs.getClass() == MethodAnnotation.class)
-				cmp = compareMethods((MethodAnnotation) lhs, (MethodAnnotation) rhs);
+				cmp = compareMethods(lhsCollection, rhsCollection, (MethodAnnotation) lhs, (MethodAnnotation) rhs);
 			else if (lhs.getClass() == SourceLineAnnotation.class)
 				cmp = compareSourceLines((SourceLineAnnotation) lhs, (SourceLineAnnotation) rhs);
 			else
@@ -151,8 +168,15 @@ public class FuzzyBugComparator implements Comparator<BugInstance> {
 			return 0;
 	}
 	
+	private static ClassHash getClassHash(BugCollection bugCollection, String className) {
+		if (bugCollection == null)
+			return null;
+		else
+			return bugCollection.getClassHash(className);
+	}
+	
 	// Compare classes: either exact fully qualified name must match, or class hash must match
-	public int compareClasses(ClassAnnotation lhsClass, ClassAnnotation rhsClass) {
+	public int compareClasses(BugCollection lhsCollection, BugCollection rhsCollection, ClassAnnotation lhsClass, ClassAnnotation rhsClass) {
 		if (lhsClass == null || rhsClass == null) {
 			return compareNullElements(lhsClass, rhsClass);
 		}
@@ -165,8 +189,8 @@ public class FuzzyBugComparator implements Comparator<BugInstance> {
 			return 0;
 		
 		// Get class hashes
-		ClassHash lhsHash = bugCollection.getClassHash(lhsClass.getClassName());
-		ClassHash rhsHash = bugCollection.getClassHash(rhsClass.getClassName());
+		ClassHash lhsHash = getClassHash(lhsCollection, lhsClass.getClassName());
+		ClassHash rhsHash = getClassHash(rhsCollection, rhsClass.getClassName());
 		if (lhsHash == null || rhsHash == null)
 			return cmp;
 		
@@ -174,7 +198,7 @@ public class FuzzyBugComparator implements Comparator<BugInstance> {
 	}
 	
 	// Compare methods: either exact name and signature must match, or method hash must match
-	public int compareMethods(MethodAnnotation lhsMethod, MethodAnnotation rhsMethod) {
+	public int compareMethods(BugCollection lhsCollection, BugCollection rhsCollection, MethodAnnotation lhsMethod, MethodAnnotation rhsMethod) {
 		if (lhsMethod == null || rhsMethod == null) {
 			return compareNullElements(lhsMethod, rhsMethod);
 		}
@@ -185,8 +209,8 @@ public class FuzzyBugComparator implements Comparator<BugInstance> {
 			return 0;
 		
 		// Get class hashes for primary classes
-		ClassHash lhsClassHash = bugCollection.getClassHash(lhsMethod.getClassName());
-		ClassHash rhsClassHash = bugCollection.getClassHash(rhsMethod.getClassName());
+		ClassHash lhsClassHash = getClassHash(lhsCollection, lhsMethod.getClassName());
+		ClassHash rhsClassHash = getClassHash(rhsCollection, rhsMethod.getClassName());
 		if (lhsClassHash == null || rhsClassHash == null)
 			return cmp;
 		
@@ -203,8 +227,8 @@ public class FuzzyBugComparator implements Comparator<BugInstance> {
 	 * Compare source line annotations.
 	 * FIXME: decide if there is an easy way to handle changes in bytecode offsets.
 	 * 
-	 * @param lhs a SourceLineAnnotation
-	 * @param rhs another SourceLineAnnotation
+	 * @param lhs           a SourceLineAnnotation
+	 * @param rhs           another SourceLineAnnotation
 	 * @return comparison of lhs and rhs
 	 */
 	public int compareSourceLines(SourceLineAnnotation lhs, SourceLineAnnotation rhs) {
