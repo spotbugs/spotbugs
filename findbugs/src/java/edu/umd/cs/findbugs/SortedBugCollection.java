@@ -33,6 +33,8 @@ import java.util.TreeSet;
 
 import javax.xml.transform.TransformerException;
 
+import edu.umd.cs.findbugs.ba.ClassHash;
+
 /**
  * An implementation of {@link BugCollection} that keeps the BugInstances
  * sorted by class (using the native comparison ordering of BugInstance's
@@ -225,6 +227,17 @@ public class SortedBugCollection extends BugCollection {
 	// @Override
 	public void setTimestamp(long timestamp) {
 		this.timestamp = timestamp;
+	}
+	
+	/**
+	 * Get ClassHash for given class.
+	 * 
+	 * @param className name of class
+	 * @return the ClassHash for that class, or null if we don't have a hash for that class
+	 */
+	public ClassHash getClassHash(String className) {
+		// TODO: implement
+		return null;
 	}
 }
 
