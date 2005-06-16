@@ -107,6 +107,8 @@ public class FuzzyBugComparator implements Comparator<BugInstance> {
 		if (cmp != 0)
 			return cmp;
 		
+		// Scan through bug annotations, comparing fuzzily if possible
+		
 		Iterator<BugAnnotation> lhsIter = new FilteringBugAnnotationIterator(a.annotationIterator());
 		Iterator<BugAnnotation> rhsIter = new FilteringBugAnnotationIterator(b.annotationIterator());
 		
@@ -125,10 +127,19 @@ public class FuzzyBugComparator implements Comparator<BugInstance> {
 				cmp = compareMethods((MethodAnnotation) lhs, (MethodAnnotation) rhs);
 			else if (lhs.getClass() == SourceLineAnnotation.class)
 				cmp = compareSourceLines((SourceLineAnnotation) lhs, (SourceLineAnnotation) rhs);
+			else
+				// everything else just compare directly
+				cmp = lhs.compareTo(rhs);
+			
+			if (cmp != 0)
+				return cmp;
 		}
 		
-		// TODO
-		return 0;
+		// Number of bug annotations must match
+		if (!lhsIter.hasNext() && !rhsIter.hasNext())
+			return 0;
+		else
+			return (lhsIter.hasNext() ? 1 : -1);
 	}
 
 	private static <T> int compareNullElements(T a, T b) {
