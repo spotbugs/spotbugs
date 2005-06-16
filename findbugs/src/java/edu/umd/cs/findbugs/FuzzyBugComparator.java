@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs;
 
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
@@ -29,7 +30,7 @@ import edu.umd.cs.findbugs.ba.MethodHash;
 /**
  * A slightly more intellegent way of comparing BugInstances from two versions
  * to see if they are the "same".  Uses class and method hashes to try to
- * handle renamings.
+ * handle renamings, at least for simple cases.
  * 
  * @see edu.umd.cs.findbugs.BugInstance
  * @see edu.umd.cs.findbugs.VersionInsensitiveBugComparator
@@ -40,7 +41,7 @@ public class FuzzyBugComparator implements Comparator<BugInstance> {
 	/**
 	 * Filter ignored BugAnnotations from given Iterator.
 	 */
-	class FilteringBugAnnotationIterator implements Iterator<BugAnnotation> {
+	private static class FilteringBugAnnotationIterator implements Iterator<BugAnnotation> {
 		
 		Iterator<BugAnnotation> iter;
 		BugAnnotation next;
@@ -89,7 +90,6 @@ public class FuzzyBugComparator implements Comparator<BugInstance> {
 		}
 	}
 	
-	
 	private SortedBugCollection bugCollection;
 	
 	public FuzzyBugComparator(SortedBugCollection bugCollection) {
@@ -99,6 +99,10 @@ public class FuzzyBugComparator implements Comparator<BugInstance> {
 	public int compare(BugInstance a, BugInstance b) {
 		int cmp;
 		
+		// Bug types must match exactly.
+		// TODO: might want to experiment with just matching abbreviation:
+		// maybe annotations provide enough context
+		// to detect when bug patterns are renamed.
 		cmp = a.getType().compareTo(b.getType());
 		if (cmp != 0)
 			return cmp;
@@ -110,7 +114,7 @@ public class FuzzyBugComparator implements Comparator<BugInstance> {
 			BugAnnotation lhs = lhsIter.next();
 			BugAnnotation rhs = rhsIter.next();
 
-			// Annotation classes must match
+			// Annotation classes must match exactly
 			cmp = lhs.getClass().getName().compareTo(rhs.getClass().getName());
 			if (cmp != 0)
 				return cmp;
@@ -185,16 +189,44 @@ public class FuzzyBugComparator implements Comparator<BugInstance> {
 	}
 	
 	/**
-	 * @param lhs
-	 * @param rhs
-	 * @return
+	 * Compare source line annotations.
+	 * FIXME: decide if there is an easy way to handle changes in bytecode offsets.
+	 * 
+	 * @param lhs a SourceLineAnnotation
+	 * @param rhs another SourceLineAnnotation
+	 * @return comparison of lhs and rhs
 	 */
 	public int compareSourceLines(SourceLineAnnotation lhs, SourceLineAnnotation rhs) {
-		// TODO Auto-generated method stub
-		return 0;
+		return lhs.getStartBytecode() - rhs.getStartBytecode();
 	}
 	
-	public boolean ignore(BugAnnotation annotation) {
-		return false;
+	// See "FindBugsAnnotationDescriptions.properties"
+	private static final HashSet<String> significantDescriptionSet = new HashSet<String>();
+	static {
+		// Classes, methods, and fields are significant.
+		significantDescriptionSet.add("CLASS_DEFAULT");
+		significantDescriptionSet.add("CLASS_EXCEPTION");
+		significantDescriptionSet.add("CLASS_REFTYPE");
+		significantDescriptionSet.add("INTERFACE_TYPE");
+		significantDescriptionSet.add("METHOD_DEFAULT");
+		significantDescriptionSet.add("METHOD_CALLED");
+		significantDescriptionSet.add("METHOD_DANGEROUS_TARGET"); // but do NOT use safe targets
+		significantDescriptionSet.add("METHOD_DECLARED_NONNULL");
+		significantDescriptionSet.add("FIELD_DEFAULT");
+		significantDescriptionSet.add("FIELD_ON");
+		significantDescriptionSet.add("FIELD_SUPER");
+		significantDescriptionSet.add("FIELD_MASKED");
+		significantDescriptionSet.add("FIELD_MASKING");
+		// Many int annotations are NOT significant: e.g., sync %, biased locked %, bytecode offset, etc.
+		// The null parameter annotations, however, are definitely significant.
+		significantDescriptionSet.add("INT_NULL_ARG");
+		significantDescriptionSet.add("INT_MAYBE_NULL_ARG");
+		significantDescriptionSet.add("INT_NONNULL_PARAM");
+		// Only DEFAULT source line annotations are significant.
+		significantDescriptionSet.add("SOURCE_LINE_DEFAULT");
+	}
+	
+	public static boolean ignore(BugAnnotation annotation) {
+		return !significantDescriptionSet.contains(annotation.getDescription());
 	}
 }
