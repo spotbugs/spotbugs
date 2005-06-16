@@ -1426,7 +1426,7 @@ public class FindBugs implements Constants2, ExitCodes {
 				System.out.println(detectorName + ": " + detectorTime + " ms  -> (" + (detectorTime * 100.0f / (float)total) + ") %");
 			}
 			System.out.println();
-			detectorTimings = null;
+			detectorTimings = new HashMap<String,Long>();
 		}
 
 		// Callback for progress dialog: analysis finished
