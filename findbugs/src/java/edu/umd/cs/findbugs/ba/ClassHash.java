@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.ba;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.CharacterCodingException;
@@ -28,9 +29,14 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
+
+import edu.umd.cs.findbugs.xml.XMLOutput;
+import edu.umd.cs.findbugs.xml.XMLWriteable;
 
 /**
  * Compute a hash of method names and signatures.
@@ -39,17 +45,65 @@ import org.apache.bcel.classfile.Method;
  * 
  * @author David Hovemeyer
  */
-public class ClassHash {
-	private JavaClass javaClass;
-	private MessageDigest digest;
-	private byte[] hash;
+public class ClassHash implements XMLWriteable {
+	private byte[] classHash;
+	private Map<XMethod, MethodHash> methodHashMap;
 	
-	public ClassHash(JavaClass javaClass) throws NoSuchAlgorithmException {
-		this.javaClass = javaClass;
-		this.digest = MessageDigest.getInstance("MD5");
+	/**
+	 * Constructor.
+	 */
+	public ClassHash() {
+		this.methodHashMap = new HashMap<XMethod, MethodHash>();
+	}
+
+	/**
+	 * Constructor.
+	 * 
+	 * @param classHash pre-computed class hash
+	 */
+	public ClassHash(byte[] classHash) {
+		this();
+		this.classHash = new byte[classHash.length];
+		System.arraycopy(classHash, 0, this.classHash, 0, classHash.length);
+	}
+
+	/**
+	 * Set method hash for given method.
+	 * 
+	 * @param method     the method
+	 * @param methodHash the method hash
+	 */
+	public void setMethodHash(XMethod method, byte[] methodHash) {
+		methodHashMap.put(method, new MethodHash(methodHash));
+	}
+
+	/**
+	 * Get class hash.
+	 * 
+	 * @return the class hash
+	 */
+	public byte[] getClassHash() {
+		return classHash;
 	}
 	
-	public ClassHash computeHash() {
+	/**
+	 * Get method hash for given method.
+	 * 
+	 * @param method the method
+	 * @return the MethodHash
+	 */
+	public MethodHash getMethodHash(XMethod method) {
+		return methodHashMap.get(method);
+	}
+	
+	/**
+	 * Compute hash for given class and all of its methods.
+	 * 
+	 * @param javaClass the class
+	 * @return this object
+	 * @throws NoSuchAlgorithmException
+	 */
+	public ClassHash computeHash(JavaClass javaClass) throws NoSuchAlgorithmException {
 		Method[] methodList = new Method[javaClass.getMethods().length];
 		
 		// Sort methods
@@ -65,20 +119,31 @@ public class ClassHash {
 			}
 		});
 		
-		// Compute digest of names and signatures, in order
+		MessageDigest digest = MessageDigest.getInstance("MD5");
+		
+		// Compute digest of names and signatures, in order.
+		// Also, compute method hashes.
 		CharsetEncoder encoder = Charset.forName("UTF-8").newEncoder();
 		for (int i = 0; i < methodList.length; ++i) {
 			Method method = methodList[i];
-			work(method.getName(), encoder); 
-			work(method.getSignature(), encoder); 
+			work(digest, method.getName(), encoder); 
+			work(digest, method.getSignature(), encoder);
+			
+			try {
+				MethodHash methodHash = new MethodHash().computeHash(method);
+				methodHashMap.put(XMethodFactory.createXMethod(javaClass, method), methodHash);
+			} catch (NoSuchAlgorithmException e) {
+				throw new IllegalStateException("No algorithm for computing method hash", e);
+			}
+			
 		}
 		
-		hash = digest.digest();
+		classHash = digest.digest();
 		
 		return this;
 	}
 	
-	private void work(String s, CharsetEncoder encoder) {
+	private static void work(MessageDigest digest, String s, CharsetEncoder encoder) {
 		try {
 			CharBuffer cbuf = CharBuffer.allocate(s.length());
 			cbuf.append(s);
@@ -91,8 +156,34 @@ public class ClassHash {
 			// This should never happen, since we're encoding to UTF-8.
 		}
 	}
+	
+	public void writeXML(XMLOutput xmlOutput) throws IOException {
+		xmlOutput.startTag("ClassHash");
+		xmlOutput.addAttribute("value", hashToString(classHash));
+		xmlOutput.stopTag(false);
 
-	public byte[] getHash() {
-		return hash;
+		for (Map.Entry<XMethod, MethodHash> entry : methodHashMap.entrySet()) {
+			xmlOutput.startTag("MethodHash");
+			xmlOutput.addAttribute("name", entry.getKey().getName());
+			xmlOutput.addAttribute("signature", entry.getKey().getSignature());
+			xmlOutput.addAttribute("isStatic", String.valueOf(entry.getKey().isStatic()));
+			xmlOutput.addAttribute("value", hashToString(entry.getValue().getMethodHash()));
+			xmlOutput.stopTag(true);
+		}
+		
+		xmlOutput.closeTag("ClassHash");
+	}
+	
+	private static final char[] HEX_CHARS = {
+		'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f',
+	};
+
+	private static String hashToString(byte[] hash) {
+		StringBuffer buf = new StringBuffer();
+		for (byte b : hash) {
+			buf.append(HEX_CHARS[(b >> 4) & 0xF]);
+			buf.append(HEX_CHARS[b & 0xF]);
+		}
+		return buf.toString();
 	}
 }

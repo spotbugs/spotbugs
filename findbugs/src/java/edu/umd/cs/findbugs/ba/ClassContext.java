@@ -769,21 +769,6 @@ public class ClassContext {
 				return dataflow;
 			}
 		};
-		
-	private NoExceptionAnalysisFactory<MethodHash> methodHashFactory =
-		new NoExceptionAnalysisFactory<MethodHash>("method bytecode hash") {
-			//@Override
-			protected MethodHash analyze(Method method) throws CFGBuilderException, DataflowAnalysisException {
-				try {
-					MethodHash methodHash = new MethodHash(method);
-					methodHash.computeHash();
-					return methodHash;
-				} catch (NoSuchAlgorithmException e) {
-					// Should not happen
-					throw new IllegalStateException("No algorithm for computing MethodHash", e);
-				}
-			}
-		};
 			
 	private ClassGen classGen;
 	private AssignedFieldMap assignedFieldMap;
@@ -1160,16 +1145,6 @@ public class ClassContext {
 			throws CFGBuilderException, DataflowAnalysisException {
 		return callListDataflowFactory.getAnalysis(method);
 	}
-	
-	/**
-	 * Get MethodHash for method.
-	 * 
-	 * @param method the method
-	 * @return the MethodHash
-	 */
-	public MethodHash getMethodHash(Method method) {
-		return methodHashFactory.getAnalysis(method);
-	}
 
 	/**
 	 * Get the ClassHash for the class.
@@ -1179,7 +1154,7 @@ public class ClassContext {
 	public ClassHash getClassHash() {
 		if (classHash == null) {
 			try {
-				classHash = new ClassHash(jclass).computeHash();
+				classHash = new ClassHash().computeHash(jclass);
 			} catch (NoSuchAlgorithmException e) {
 				// Should not happen
 				throw new IllegalStateException("Cannot get algorithm for computing ClassHash", e);

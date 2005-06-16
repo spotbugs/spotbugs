@@ -33,22 +33,45 @@ import org.apache.bcel.classfile.Method;
  * @author David Hovemeyer
  */
 public class MethodHash {
-	private Method method;
-	private MessageDigest digest;
 	private byte[] hash;
 
 	/**
 	 * Constructor.
 	 * 
 	 * @param method method to compute bytecode hash for
-	 * @throws NoSuchAlgorithmException
 	 */
-	public MethodHash(Method method) throws NoSuchAlgorithmException {
-		this.method = method;
-		this.digest = MessageDigest.getInstance("MD5");
+	public MethodHash() {
 	}
 	
-	public MethodHash computeHash() {
+	/**
+	 * Constructor.
+	 * 
+	 * @param hash the pre-computed hash
+	 */
+	public MethodHash(byte[] hash) {
+		this.hash = new byte[hash.length];
+		System.arraycopy(hash, 0, this.hash, 0, hash.length);
+	}
+	
+	/**
+	 * Get the computed method hash.
+	 * 
+	 * @return the method hash
+	 */
+	public byte[] getMethodHash() {
+		return hash;
+	}
+	
+	/**
+	 * Compute hash on given method.
+	 * 
+	 * @param method the method
+	 * @return this object
+	 * @throws NoSuchAlgorithmException 
+	 */
+	public MethodHash computeHash(Method method) throws NoSuchAlgorithmException {
+		final MessageDigest digest = MessageDigest.getInstance("MD5");;
+
 		byte[] code;
 		if (method.getCode() == null || method.getCode().getCode() == null) {
 			code = new byte[0];
@@ -68,9 +91,5 @@ public class MethodHash {
 		hash = digest.digest();
 		
 		return this;
-	}
-	
-	public byte[] getHash() {
-		return hash;
 	}
 }
