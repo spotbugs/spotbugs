@@ -40,8 +40,6 @@ import org.dom4j.DocumentException;
  * @author David Hovemeyer
  */
 public class BugHistory {
-	public static final boolean FUZZY_COMPARATOR = Boolean.getBoolean("findbugs.history.fuzzy");
-	
 	/**
 	 * A set operation between two bug collections.
 	 */
@@ -102,6 +100,7 @@ public class BugHistory {
 	};
 	
 	private SortedBugCollection origCollection, newCollection;
+	private boolean useFuzzyComparator;
 	private Comparator<BugInstance> comparator;
 	
 	/**
@@ -113,6 +112,16 @@ public class BugHistory {
 	public BugHistory(SortedBugCollection origCollection, SortedBugCollection newCollection) {
 		this.origCollection = origCollection;
 		this.newCollection = newCollection;
+	}
+	
+	/**
+	 * Set whether or not to use the FuzzyBugComparator.
+	 * 
+	 * @param useFuzzyComparator true if we should use FuzzyBugComparator, false for
+	 *         VersionInsensitiveBugComparator
+	 */
+	public void setUseFuzzyComparator(boolean useFuzzyComparator) {
+		this.useFuzzyComparator = useFuzzyComparator;
 	}
 
 	/**
@@ -152,7 +161,7 @@ public class BugHistory {
 	 */
 	private Comparator<BugInstance> getComparator() {
 		if (comparator == null) {
-			if (FUZZY_COMPARATOR) {
+			if (useFuzzyComparator) {
 				FuzzyBugComparator fuzzyComparator = new FuzzyBugComparator();
 				fuzzyComparator.registerBugCollection(origCollection);
 				fuzzyComparator.registerBugCollection(newCollection);
@@ -165,23 +174,25 @@ public class BugHistory {
 	}
 
 	public static void main(String[] argv) throws Exception {
-		if (argv.length != 3) {
-			System.err.println("Usage: " + BugHistory.class.getName() +
-			        " <operation> <old results> <new results>\n" +
-			        "Operations:\n" +
-			        "   -added      Output added bugs (in new results but not in old results)\n" +
-			        "   -new        Synonym for -added\n" +
-			        "   -removed    Output removed bugs (in old results but not in new results)\n" +
-			        "   -fixed      Synonym for -removed\n" +
-			        "   -retained   Output retained bugs (in both old and new results)");
-			System.exit(1);
+		if (argv.length < 3) {
+			printUsage();
 		}
 
 		Project project = new Project();
+		
+		boolean useFuzzyComparator = false;
+		int argCount = 0;
+		if (argv[argCount].equals("-fuzzy")) {
+			if (argv.length < 4) {
+				printUsage();
+			}
+			useFuzzyComparator = true;
+			++argCount;
+		}
 
-		String op = argv[0];
-		SortedBugCollection origCollection = readCollection(argv[1], project);
-		SortedBugCollection newCollection = readCollection(argv[2], new Project());
+		String op = argv[argCount++];
+		SortedBugCollection origCollection = readCollection(argv[argCount++], project);
+		SortedBugCollection newCollection = readCollection(argv[argCount++], new Project());
 
 		SortedBugCollection result = null;
 		BugHistory bugHistory = new BugHistory(origCollection, newCollection); 
@@ -196,6 +207,23 @@ public class BugHistory {
 			throw new IllegalArgumentException("Unknown operation: " + op);
 
 		result.writeXML(System.out, project);
+	}
+
+	/**
+	 * Print usage and exit.
+	 */
+	private static void printUsage() {
+		System.err.println("Usage: " + BugHistory.class.getName() +
+		        " [options] <operation> <old results> <new results>\n" +
+		        "Options:\n" +
+		        "   -fuzzy      Use fuzzy bug comparison\n" +
+		        "Operations:\n" +
+		        "   -added      Output added bugs (in new results but not in old results)\n" +
+		        "   -new        Synonym for -added\n" +
+		        "   -removed    Output removed bugs (in old results but not in new results)\n" +
+		        "   -fixed      Synonym for -removed\n" +
+		        "   -retained   Output retained bugs (in both old and new results)");
+		System.exit(1);
 	}
 	
 	private static SortedBugCollection readCollection(String fileName, Project project)
