@@ -22,7 +22,9 @@ package edu.umd.cs.findbugs;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -40,6 +42,8 @@ import org.dom4j.DocumentException;
  * @author David Hovemeyer
  */
 public class BugHistory {
+	private static final boolean DEBUG = false;
+	
 	/**
 	 * A set operation between two bug collections.
 	 */
@@ -79,7 +83,18 @@ public class BugHistory {
 		public SortedBugCollection perform(Set<BugInstance> result,
 				SortedBugCollection origCollection, SortedBugCollection newCollection) {
 			result.addAll(newCollection.getCollection());
-			result.retainAll(origCollection.getCollection());
+			if (DEBUG) System.out.println(result.size() + " instances initially");
+			//result.retainAll(origCollection.getCollection());
+			List<BugInstance> retained = new LinkedList<BugInstance>();
+			for (Iterator<BugInstance> i = origCollection.iterator(); i.hasNext();) {
+				BugInstance origBugInstance = i.next();
+				if (result.contains(origBugInstance)) {
+					retained.add(origBugInstance);
+				}
+			}
+			result.clear();
+			result.addAll(retained);
+			if (DEBUG) System.out.println(result.size() + " after retaining new instances");
 			return newCollection;
 		}
 	};
@@ -196,6 +211,7 @@ public class BugHistory {
 
 		SortedBugCollection result = null;
 		BugHistory bugHistory = new BugHistory(origCollection, newCollection); 
+		bugHistory.setUseFuzzyComparator(useFuzzyComparator);
 
 		if (op.equals("-new") || op.equals("-added")) {
 			result = bugHistory.performSetOperation(ADDED_WARNINGS);
