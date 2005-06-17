@@ -388,7 +388,7 @@ public abstract class BugCollection {
 			ClassHash classHash = i.next();
 			classHash.writeXML(xmlOutput);
 		}
-		xmlOutput.openTag(CLASS_HASHES_ELEMENT_NAME);
+		xmlOutput.closeTag(CLASS_HASHES_ELEMENT_NAME);
 		
 		// Summary HTML
 		if ( REPORT_SUMMARY_HTML ) {
