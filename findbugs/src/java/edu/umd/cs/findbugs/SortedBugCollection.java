@@ -45,7 +45,7 @@ import edu.umd.cs.findbugs.ba.ClassHash;
  * @author David Hovemeyer
  */
 public class SortedBugCollection extends BugCollection {
-	private static class BugInstanceComparator implements Comparator<BugInstance> {
+	public static class BugInstanceComparator implements Comparator<BugInstance> {
 		public int compare(BugInstance lhs, BugInstance rhs) {
 			ClassAnnotation lca = lhs.getPrimaryClass();
 			ClassAnnotation rca = rhs.getPrimaryClass();
