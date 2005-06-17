@@ -24,6 +24,8 @@ import java.util.*;
 
 import org.dom4j.DocumentException;
 
+import edu.umd.cs.findbugs.config.CommandLine;
+
 /**
  * Merge a saved results file (containing annotations) with a new results file.
  * This is useful when re-running FindBugs after changing the detectors
@@ -35,11 +37,14 @@ import org.dom4j.DocumentException;
  * @author David Hovemeyer
  */
 public class MergeResults {
-	private static final boolean VERSION_INSENSITIVE = Boolean.getBoolean("mergeResults.vi");
-	private static final boolean UPDATE_CATEGORIES = Boolean.getBoolean("mergeResults.update");
+	public static final int DEFAULT_COMPARATOR = 0;
+	public static final int VERSION_INSENSITIVE_COMPARATOR = 1;
+	public static final int FUZZY_COMPARATOR = 2;
 
 	private SortedBugCollection origCollection, newCollection;
 	private Project project;
+	private int comparatorType;
+	private Comparator<BugInstance> comparator;
 
 	private int numPreserved;
 	private int numAlreadyAnnotated;
@@ -50,12 +55,44 @@ public class MergeResults {
 		this(new SortedBugCollection(), new SortedBugCollection(), new Project());
 		origCollection.readXML(origFilename, new Project());
 		newCollection.readXML(newFilename, this.project);
+		
+		this.comparatorType = DEFAULT_COMPARATOR;
 	}
 
 	public MergeResults(SortedBugCollection origCollection, SortedBugCollection newCollection, Project project) {
 		this.origCollection = origCollection;
 		this.newCollection = newCollection;
 		this.project = project;
+		this.comparatorType = DEFAULT_COMPARATOR;
+	}
+	
+	public Comparator<BugInstance> getComparator() {
+		if (comparator == null) {
+			switch (comparatorType) {
+			case DEFAULT_COMPARATOR:
+				comparator = new SortedBugCollection.BugInstanceComparator();
+				break;
+			case VERSION_INSENSITIVE_COMPARATOR:
+				comparator = VersionInsensitiveBugComparator.instance();
+				break;
+			case FUZZY_COMPARATOR:
+				FuzzyBugComparator fuzzyComparator = new FuzzyBugComparator();
+				fuzzyComparator.registerBugCollection(origCollection);
+				fuzzyComparator.registerBugCollection(newCollection);
+				comparator  = fuzzyComparator;
+				break;
+			default:
+				throw new IllegalStateException("Unknown comparator type: " + comparatorType);
+			}
+		}
+		return comparator;
+	}
+	
+	/**
+	 * @param comparatorType The comparatorType to set.
+	 */
+	public void setComparatorType(int comparatorType) {
+		this.comparatorType = comparatorType;
 	}
 
 	public SortedBugCollection getOrigCollection() {
@@ -92,60 +129,61 @@ public class MergeResults {
 
 	protected void lostWithAnnotation(BugInstance bugInstance) {
 	}
-
-	public static void main(String[] argv) throws Exception {
-		if (argv.length != 3) {
-			System.err.println("Usage: " + MergeResults.class.getName() + " <orig results> <new results> <output file>");
-			System.exit(1);
+	
+	static class MergeResultsCommandLine extends CommandLine {
+		int comparatorType = DEFAULT_COMPARATOR;
+		boolean updateCategories = false;
+		
+		MergeResultsCommandLine() {
+			addSwitch("-vi", "use version-insensitive bug comparator");
+			addSwitch("-fuzzy", "use fuzzy bug comparator");
+			addSwitch("-update", "only update bug categories contained in new results");
 		}
 
-		if (VERSION_INSENSITIVE) {
-			System.out.println("Using version-insensitive bug comparator");
+		/**
+		 * @return Returns the comparatorType.
+		 */
+		public int getComparatorType() {
+			return comparatorType;
+		}
+		
+		/**
+		 * @return true if only bug categories from new results should be updated
+		 */
+		public boolean updateCategories() {
+			return updateCategories;
+		}
+		
+		/* (non-Javadoc)
+		 * @see edu.umd.cs.findbugs.config.CommandLine#handleOption(java.lang.String, java.lang.String)
+		 */
+		//@Override
+		protected void handleOption(String option, String optionExtraPart) throws IOException {
+			if (option.equals("-vi")) {
+				comparatorType = VERSION_INSENSITIVE_COMPARATOR;
+			} else if (option.equals("-fuzzy")) {
+				comparatorType = FUZZY_COMPARATOR;
+			} else if (option.equals("-updateCategories")) {
+				updateCategories = true;
+			} else {
+				throw new IllegalArgumentException("Unexpected option: " + option);
+			}
 		}
 
-		String origResultsFile = argv[0];
-		String newResultsFile = argv[1];
-		String outputFile = argv[2];
+		/* (non-Javadoc)
+		 * @see edu.umd.cs.findbugs.config.CommandLine#handleOptionWithArgument(java.lang.String, java.lang.String)
+		 */
+		//@Override
+		protected void handleOptionWithArgument(String option, String argument) throws IOException {
+			throw new IllegalArgumentException("Unexpected option " + option);
+		}
+		
+	}
 
-		MergeResults mergeResults = new MergeResults(origResultsFile, newResultsFile) {
-			final Set<String> updateCategorySet = new HashSet<String>();
-
-			protected boolean preserveUnconditionally(BugInstance bugInstance) {
-				return UPDATE_CATEGORIES && !updateCategorySet.contains(bugInstance.getAbbrev());
-			}
-
-			protected void lostWithAnnotation(BugInstance bugInstance) {
-				System.out.println("Losing a bug with an annotation:");
-				System.out.println(bugInstance.getMessage());
-				SourceLineAnnotation srcLine = bugInstance.getPrimarySourceLineAnnotation();
-				if (srcLine != null)
-					System.out.println("\t" + srcLine.toString());
-				System.out.println(bugInstance.getAnnotationText());
-			}
-
-			public void execute() {
-				if (UPDATE_CATEGORIES) {
-					DetectorFactoryCollection.instance(); // as a side effect, loads detector plugins
-					for (Iterator<BugInstance> i = getNewCollection().iterator(); i.hasNext();) {
-						// All bugs not in categories contained in the
-						// original set will be preserved unconditionally.
-						updateCategorySet.add(i.next().getAbbrev());
-					}
-					System.out.println("Updating only categories: " + updateCategorySet);
-				}
-				super.execute();
-			}
-		};
-
-		mergeResults.execute();
-
-		System.out.println(mergeResults.getNumPreserved() + " preserved, " +
-		        mergeResults.getNumAlreadyAnnotated() + " already annotated, " +
-		        mergeResults.getNumLost() + " lost (" +
-		        mergeResults.getNumLostWithAnnotations() + " lost with annotations)");
-
-		SortedBugCollection result = mergeResults.getNewCollection();
-		result.writeXML(outputFile, mergeResults.getProject());
+	private SortedSet<BugInstance> createSet(BugCollection bugCollection) {
+		TreeSet<BugInstance> set = new TreeSet<BugInstance>(getComparator());
+		set.addAll(bugCollection.getCollection());
+		return set;
 	}
 
 	public void execute() {
@@ -188,12 +226,74 @@ public class MergeResults {
 		}
 	}
 
-	private static SortedSet<BugInstance> createSet(BugCollection bugCollection) {
-		TreeSet<BugInstance> set = VERSION_INSENSITIVE
-		        ? new TreeSet<BugInstance>(VersionInsensitiveBugComparator.instance())
-		        : new TreeSet<BugInstance>();
-		set.addAll(bugCollection.getCollection());
-		return set;
+	public static void main(String[] argv) throws Exception {
+//		if (argv.length != 3) {
+//			System.err.println("Usage: " + MergeResults.class.getName() + " <orig results> <new results> <output file>");
+//			System.exit(1);
+//		}
+
+//		if (VERSION_INSENSITIVE) {
+//			System.out.println("Using version-insensitive bug comparator");
+//		}
+//
+//		String origResultsFile = argv[0];
+//		String newResultsFile = argv[1];
+//		String outputFile = argv[2];
+		
+		final MergeResultsCommandLine commandLine = new MergeResultsCommandLine();
+		int argCount = commandLine.parse(argv);
+		if (argv.length - argCount != 3) {
+			System.out.println("Usage: " + MergeResults.class.getName() + " [options] <orig results> <new results> <output file>");
+			System.out.println("Options:");
+			commandLine.printUsage(System.out);
+			System.exit(1);
+		}
+
+		String origResultsFile = argv[argCount++];
+		String newResultsFile = argv[argCount++];
+		String outputFile = argv[argCount++];
+
+		MergeResults mergeResults = new MergeResults(origResultsFile, newResultsFile) {
+			final Set<String> updateCategorySet = new HashSet<String>();
+
+			protected boolean preserveUnconditionally(BugInstance bugInstance) {
+				return commandLine.updateCategories() && !updateCategorySet.contains(bugInstance.getAbbrev());
+			}
+
+			protected void lostWithAnnotation(BugInstance bugInstance) {
+				System.out.println("Losing a bug with an annotation:");
+				System.out.println(bugInstance.getMessage());
+				SourceLineAnnotation srcLine = bugInstance.getPrimarySourceLineAnnotation();
+				if (srcLine != null)
+					System.out.println("\t" + srcLine.toString());
+				System.out.println(bugInstance.getAnnotationText());
+			}
+
+			public void execute() {
+				if (commandLine.updateCategories()) {
+					DetectorFactoryCollection.instance(); // as a side effect, loads detector plugins
+					for (Iterator<BugInstance> i = getNewCollection().iterator(); i.hasNext();) {
+						// All bugs not in categories contained in the
+						// original set will be preserved unconditionally.
+						updateCategorySet.add(i.next().getAbbrev());
+					}
+					System.out.println("Updating only categories: " + updateCategorySet);
+				}
+				super.execute();
+			}
+		};
+		
+		mergeResults.setComparatorType(commandLine.getComparatorType());
+
+		mergeResults.execute();
+
+		System.out.println(mergeResults.getNumPreserved() + " preserved, " +
+		        mergeResults.getNumAlreadyAnnotated() + " already annotated, " +
+		        mergeResults.getNumLost() + " lost (" +
+		        mergeResults.getNumLostWithAnnotations() + " lost with annotations)");
+
+		SortedBugCollection result = mergeResults.getNewCollection();
+		result.writeXML(outputFile, mergeResults.getProject());
 	}
 }
 
