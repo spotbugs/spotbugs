@@ -38,6 +38,7 @@ import edu.umd.cs.findbugs.ba.MethodHash;
  * @author David Hovemeyer
  */
 public class FuzzyBugComparator implements Comparator<BugInstance> {
+	private static final boolean DEBUG = false;
 	
 	/**
 	 * Filter ignored BugAnnotations from given Iterator.
@@ -95,6 +96,7 @@ public class FuzzyBugComparator implements Comparator<BugInstance> {
 	private IdentityHashMap<BugInstance, BugCollection> bugCollectionMap;
 	
 	public FuzzyBugComparator() {
+		if (DEBUG) System.out.println("Created fuzzy comparator");
 		this.bugCollectionMap = new IdentityHashMap<BugInstance, BugCollection>();
 	}
 	
@@ -113,13 +115,17 @@ public class FuzzyBugComparator implements Comparator<BugInstance> {
 	public int compare(BugInstance a, BugInstance b) {
 		int cmp;
 		
+		if (DEBUG) System.out.println("Fuzzy comparison");
+		
 		// Bug types must match exactly.
 		// TODO: might want to experiment with just matching abbreviation:
 		// maybe annotations provide enough context
 		// to detect when bug patterns are renamed.
 		cmp = a.getType().compareTo(b.getType());
-		if (cmp != 0)
+		if (cmp != 0) {
+			if (DEBUG) System.out.println("type mismatch: " + a.getType() + "," + b.getType());
 			return cmp;
+		}
 		
 		BugCollection lhsCollection = bugCollectionMap.get(a);
 		BugCollection rhsCollection = bugCollectionMap.get(b);
@@ -132,11 +138,16 @@ public class FuzzyBugComparator implements Comparator<BugInstance> {
 		while (lhsIter.hasNext() && rhsIter.hasNext()) {
 			BugAnnotation lhs = lhsIter.next();
 			BugAnnotation rhs = rhsIter.next();
+			
+			if (DEBUG) System.out.println("Compare annotations: " + lhs + "," + rhs);
 
 			// Annotation classes must match exactly
 			cmp = lhs.getClass().getName().compareTo(rhs.getClass().getName());
-			if (cmp != 0)
+			if (cmp != 0) {
+				if (DEBUG) System.out.println("annotation class mismatch: " + lhs.getClass().getName() +
+						"," + rhs.getClass().getName());
 				return cmp;
+			}
 			
 			if (lhs.getClass() == ClassAnnotation.class)
 				cmp = compareClasses(lhsCollection, rhsCollection, (ClassAnnotation) lhs, (ClassAnnotation) rhs);
@@ -153,9 +164,10 @@ public class FuzzyBugComparator implements Comparator<BugInstance> {
 		}
 		
 		// Number of bug annotations must match
-		if (!lhsIter.hasNext() && !rhsIter.hasNext())
+		if (!lhsIter.hasNext() && !rhsIter.hasNext()) {
+			if (DEBUG) System.out.println("Match!");
 			return 0;
-		else
+		} else
 			return (lhsIter.hasNext() ? 1 : -1);
 	}
 
@@ -191,10 +203,18 @@ public class FuzzyBugComparator implements Comparator<BugInstance> {
 		// Get class hashes
 		ClassHash lhsHash = getClassHash(lhsCollection, lhsClass.getClassName());
 		ClassHash rhsHash = getClassHash(rhsCollection, rhsClass.getClassName());
-		if (lhsHash == null || rhsHash == null)
+		if (lhsHash == null || rhsHash == null) {
+			if (DEBUG) System.out.println("missing class hash!");
 			return cmp;
+		}
 		
-		return lhsHash.isSameHash(rhsHash) ? 0 : cmp;
+		if (lhsHash.isSameHash(rhsHash)) {
+			if (DEBUG) System.out.println("class hash match!");
+			return 0;
+		} else {
+			if (DEBUG) System.out.println("class hash mismatch");
+			return cmp;
+		}
 	}
 	
 	// Compare methods: either exact name and signature must match, or method hash must match
