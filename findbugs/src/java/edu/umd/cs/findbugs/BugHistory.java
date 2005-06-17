@@ -69,7 +69,13 @@ public class BugHistory {
 		public SortedBugCollection perform(Set<BugInstance> result,
 				SortedBugCollection origCollection, SortedBugCollection newCollection) {
 			result.addAll(newCollection.getCollection());
-			result.removeAll(origCollection.getCollection());
+
+			// Get shared instances
+			List<BugInstance> inBoth = getSharedInstances(result, origCollection);
+			
+			// Remove the shared instances from the result
+			removeBugInstances(result, inBoth);
+			
 			return newCollection;
 		}
 	};
@@ -84,16 +90,13 @@ public class BugHistory {
 				SortedBugCollection origCollection, SortedBugCollection newCollection) {
 			result.addAll(newCollection.getCollection());
 			if (DEBUG) System.out.println(result.size() + " instances initially");
-			//result.retainAll(origCollection.getCollection());
-			List<BugInstance> retained = new LinkedList<BugInstance>();
-			for (Iterator<BugInstance> i = origCollection.iterator(); i.hasNext();) {
-				BugInstance origBugInstance = i.next();
-				if (result.contains(origBugInstance)) {
-					retained.add(origBugInstance);
-				}
-			}
-			result.clear();
-			result.addAll(retained);
+			
+			// Get shared instances
+			List<BugInstance> inBoth = getSharedInstances(result, origCollection);
+			
+			// Replace instances with only those shared
+			replaceBugInstances(result, inBoth);
+			
 			if (DEBUG) System.out.println(result.size() + " after retaining new instances");
 			return newCollection;
 		}
@@ -109,7 +112,13 @@ public class BugHistory {
 		public SortedBugCollection perform(Set<BugInstance> result,
 				SortedBugCollection origCollection, SortedBugCollection newCollection) {
 			result.addAll(origCollection.getCollection());
-			result.removeAll(newCollection.getCollection());
+			
+			// Get shared instances
+			List<BugInstance> inBoth = getSharedInstances(result, newCollection);
+			
+			// Remove shared instances
+			removeBugInstances(result, inBoth);
+			
 			return origCollection;
 		}
 	};
@@ -169,6 +178,49 @@ public class BugHistory {
 		resultCollection.addAll(selected);
 		
 		return resultCollection;
+	}
+
+	/**
+	 * Get instances shared between given Set and BugCollection.
+	 * The Set is queried for membership, because it has a special Comparator
+	 * which can match BugInstances from different versions.
+	 * 
+	 * @param result     the Set
+	 * @param collection the BugCollection
+	 * @return List of shared instances
+	 */
+	private static List<BugInstance> getSharedInstances(Set<BugInstance> result, SortedBugCollection collection) {
+		List<BugInstance> inBoth = new LinkedList<BugInstance>();
+		for (Iterator<BugInstance> i = collection.iterator(); i.hasNext();) {
+			BugInstance origBugInstance = i.next();
+			if (result.contains(origBugInstance)) {
+				inBoth.add(origBugInstance);
+			}
+		}
+		return inBoth;
+	}
+
+	/**
+	 * Replace all of the BugInstances in given Set with the given Collection.
+	 * 
+	 * @param dest   the Set to replace the instances of
+	 * @param source the Collection containing the instances to put in the Set
+	 */
+	private static void replaceBugInstances(Set<BugInstance> dest, Collection<BugInstance> source) {
+		dest.clear();
+		dest.addAll(source);
+	}
+
+	/**
+	 * Remove bug instances from Set.
+	 * 
+	 * @param result   the Set
+	 * @param toRemove Collection of BugInstances to remove
+	 */
+	private static void removeBugInstances(Set<BugInstance> result, Collection<BugInstance> toRemove) {
+		for (Iterator<BugInstance> i = toRemove.iterator(); i.hasNext(); ) {
+			result.remove(i.next());
+		}
 	}
 	
 	/**
