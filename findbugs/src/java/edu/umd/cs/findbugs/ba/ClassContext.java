@@ -19,7 +19,6 @@
 
 package edu.umd.cs.findbugs.ba;
 
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.HashMap;
@@ -80,6 +79,34 @@ public class ClassContext {
 	/* ----------------------------------------------------------------------
 	 * Helper classes
 	 * ---------------------------------------------------------------------- */
+	
+	/**
+	 * Unpacked code for a method.
+	 * Contains set of all opcodes in the method, as well as a map
+	 * of bytecode offsets to opcodes.
+	 */
+	private static class UnpackedCode {
+		private BitSet bytecodeSet;
+		private short[] offsetToBytecodeMap;
+		public UnpackedCode(BitSet bytecodeSet, short[] offsetToBytecodeMap) {
+			this.bytecodeSet = bytecodeSet;
+			this.offsetToBytecodeMap = offsetToBytecodeMap;
+		}
+		
+		/**
+		 * @return Returns the bytecodeSet.
+		 */
+		public BitSet getBytecodeSet() {
+			return bytecodeSet;
+		}
+		
+		/**
+		 * @return Returns the offsetToBytecodeMap.
+		 */
+		public short[] getOffsetToBytecodeMap() {
+			return offsetToBytecodeMap;
+		}
+	}
 
 	private static int depth;
 
@@ -453,30 +480,46 @@ public class ClassContext {
 			        return rdfs;
 		        }
 	        };
+	private static class UnpackedBytecodeCallback implements BytecodeScanner.Callback {
+		private BitSet bytecodeSet;
+		private short[] offsetToOpcodeMap;
+		
+		public UnpackedBytecodeCallback(int codeSize) {
+			this.bytecodeSet = new BitSet();
+			this.offsetToOpcodeMap = new short[codeSize];
+		}
+		
+		/* (non-Javadoc)
+		 * @see edu.umd.cs.findbugs.ba.BytecodeScanner.Callback#handleInstruction(int, int)
+		 */
+		public void handleInstruction(int opcode, int index) {
+			bytecodeSet.set(opcode);
+			offsetToOpcodeMap[index] = (short) opcode;
+		}
+		
+		public UnpackedCode getUnpackedCode() {
+			return new UnpackedCode(bytecodeSet, offsetToOpcodeMap);
+		}
+	};
 
-	private NoExceptionAnalysisFactory<BitSet> bytecodeSetFactory =
-	        new NoExceptionAnalysisFactory<BitSet>("bytecode set construction") {
-		        protected BitSet analyze(Method method) {
-			        final BitSet result = new BitSet();
+	private NoExceptionAnalysisFactory<UnpackedCode> unpackedCodeFactory =
+	        new NoExceptionAnalysisFactory<UnpackedCode>("unpacked bytecode") {
+		        protected UnpackedCode analyze(Method method) {
 
 			        Code code = method.getCode();
-			        if (code != null) {
-				        byte[] instructionList = code.getCode();
-
-				        // Create a callback to put the opcodes of the method's
-				        // bytecode instructions into the BitSet.
-				        BytecodeScanner.Callback callback = new BytecodeScanner.Callback() {
-					        public void handleInstruction(int opcode, int index) {
-						        result.set(opcode, true);
-					        }
-				        };
-
-				        // Scan the method.
-				        BytecodeScanner scanner = new BytecodeScanner();
-				        scanner.scan(instructionList, callback);
-			        }
-
-			        return result;
+			        if (code == null)
+			        	return null;
+			        
+			        byte[] instructionList = code.getCode();
+			        
+			        // Create callback
+			        UnpackedBytecodeCallback callback = new UnpackedBytecodeCallback(instructionList.length);
+			        
+			        // Scan the method.
+			        BytecodeScanner scanner = new BytecodeScanner();
+			        scanner.scan(instructionList, callback);
+			        
+			        return callback.getUnpackedCode();
 		        }
 	        };
 
@@ -922,10 +965,26 @@ public class ClassContext {
 	 * very expensive analysis, which is a Big Win for the user.
 	 *
 	 * @param method the method
-	 * @return the BitSet containing the opcodes which appear in the method
+	 * @return the BitSet containing the opcodes which appear in the method,
+	 *          or null if the method has no code
 	 */
 	public BitSet getBytecodeSet(Method method) {
-		return bytecodeSetFactory.getAnalysis(method);
+		UnpackedCode unpackedCode = unpackedCodeFactory.getAnalysis(method);
+		return unpackedCode != null ? unpackedCode.getBytecodeSet() : null;
+	}
+	
+	/**
+	 * Get array mapping bytecode offsets to opcodes for given method.
+	 * Array elements containing zero are either not valid instruction offsets,
+	 * or contain a NOP instruction.  (It is convenient not to distinguish
+	 * these cases.)
+	 * 
+	 * @param method the method
+	 * @return map of bytecode offsets to opcodes, or null if the method has no code
+	 */
+	public short[] getOffsetToOpcodeMap(Method method) {
+		UnpackedCode unpackedCode = unpackedCodeFactory.getAnalysis(method);
+		return unpackedCode != null ? unpackedCode.getOffsetToBytecodeMap() : null;
 	}
 
 	/**
