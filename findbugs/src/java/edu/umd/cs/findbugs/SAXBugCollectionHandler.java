@@ -261,6 +261,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 		String endLine = getRequiredAttribute(attributes, "end", qName);
 		String startBytecode = attributes.getValue("startBytecode");
 		String endBytecode = attributes.getValue("endBytecode");
+		String surroundingOpcodes = attributes.getValue("opcodes");
 
 		try {
 			int sl = Integer.parseInt(startLine);
@@ -268,7 +269,14 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 			int sb = startBytecode != null ? Integer.parseInt(startBytecode) : -1;
 			int eb = endBytecode != null ? Integer.parseInt(endBytecode) : -1;
 
-			return new SourceLineAnnotation(classname, sourceFile, sl, el, sb, eb);
+			SourceLineAnnotation annotation =
+				new SourceLineAnnotation(classname, sourceFile, sl, el, sb, eb);
+			
+			if (surroundingOpcodes != null) {
+				annotation.setSurroundingOpcodes(surroundingOpcodes);
+			}
+			
+			return annotation;
 		} catch (NumberFormatException e) {
 			throw new SAXException("Bad integer value in SourceLine element", e);
 		}

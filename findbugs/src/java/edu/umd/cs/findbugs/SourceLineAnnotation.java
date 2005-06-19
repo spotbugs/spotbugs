@@ -19,16 +19,6 @@
 
 package edu.umd.cs.findbugs;
 
-import edu.umd.cs.findbugs.ba.ClassContext;
-import edu.umd.cs.findbugs.ba.Hierarchy;
-import edu.umd.cs.findbugs.ba.JavaClassAndMethod;
-import edu.umd.cs.findbugs.ba.XMethod;
-import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
-import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
-
-import edu.umd.cs.findbugs.xml.XMLAttributeList;
-import edu.umd.cs.findbugs.xml.XMLOutput;
-
 import java.io.IOException;
 
 import org.apache.bcel.classfile.Code;
@@ -38,6 +28,14 @@ import org.apache.bcel.classfile.LineNumberTable;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.MethodGen;
+
+import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.ba.Hierarchy;
+import edu.umd.cs.findbugs.ba.JavaClassAndMethod;
+import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
+import edu.umd.cs.findbugs.xml.XMLAttributeList;
+import edu.umd.cs.findbugs.xml.XMLOutput;
 
 /**
  * A BugAnnotation that records a range of source lines
@@ -64,6 +62,7 @@ public class SourceLineAnnotation implements BugAnnotation {
 	private int endLine;
 	private int startBytecode;
 	private int endBytecode;
+	private String surroundingOpcodes;
 
 	/**
 	 * Constructor.
@@ -86,6 +85,7 @@ public class SourceLineAnnotation implements BugAnnotation {
 		this.endLine = endLine;
 		this.startBytecode = startBytecode;
 		this.endBytecode = endBytecode;
+		this.surroundingOpcodes = "";
 	}
 	
 	//@Override
@@ -353,8 +353,63 @@ public class SourceLineAnnotation implements BugAnnotation {
 		return code.getLineNumberTable();
 	}
 	
+	private static final int NUM_CONTEXT_OPCODES = 5;
+	
+	/**
+	 * Fill in context information about surrounding opcodes.
+	 * 
+	 * @param classContext the ClassContext
+	 * @param method       the method
+	 */
 	private SourceLineAnnotation addInstructionContext(ClassContext classContext, Method method) {
-		// TODO: implement
+		if (classContext != null && method != null && !isUnknown()) {
+			
+			short[] offsetToOpcodeMap = classContext.getOffsetToOpcodeMap(method);
+			if (offsetToOpcodeMap != null) {
+				// Format is:
+				//    "earlier opcodes|target opcodes|later opcodes"
+				StringBuffer buf = new StringBuffer();
+				int offset, count;
+				
+				short[] earlier = new short[NUM_CONTEXT_OPCODES];
+				for (offset = startBytecode - 1, count = 0;
+					offset >= 0 && count < NUM_CONTEXT_OPCODES;
+					--offset) {
+					if (offsetToOpcodeMap[offset] != 0) {
+						earlier[count++] = offsetToOpcodeMap[offset];
+					}
+				}
+				while (--count >= 0) {
+					if (buf.length() > 0)
+						buf.append(',');
+					buf.append(String.valueOf((int) earlier[count]));
+				}
+				
+				buf.append('|');
+				
+				for (offset = startBytecode; offset <= endBytecode; ++offset) {
+					if (offsetToOpcodeMap[offset] == 0)
+						continue;
+					if (buf.charAt(buf.length() - 1) != '|')
+						buf.append(',');
+					buf.append(String.valueOf((int) offsetToOpcodeMap[offset]));
+				}
+				
+				buf.append('|');
+				
+				for (offset = endBytecode + 1, count = 0;
+					offset < offsetToOpcodeMap.length && count < NUM_CONTEXT_OPCODES;
+					++offset) {
+					if (offsetToOpcodeMap[offset] == 0)
+						continue;
+					if (buf.charAt(buf.length() - 1) != '|')
+						buf.append(',');
+					buf.append(String.valueOf((int) offsetToOpcodeMap[offset]));
+				}
+				
+				this.surroundingOpcodes = buf.toString();
+			}
+		}
 		return this;
 	}
 
@@ -432,6 +487,20 @@ public class SourceLineAnnotation implements BugAnnotation {
 	 */
 	public boolean isUnknown() {
 		return startLine < 0 || endLine < 0;
+	}
+	
+	/**
+	 * @return Returns the surroundingOpcodes.
+	 */
+	public String getSurroundingOpcodes() {
+		return surroundingOpcodes;
+	}
+	
+	/**
+	 * @param surroundingOpcodes The surroundingOpcodes to set.
+	 */
+	public void setSurroundingOpcodes(String surroundingOpcodes) {
+		this.surroundingOpcodes = surroundingOpcodes;
 	}
 
 	public void accept(BugAnnotationVisitor visitor) {
@@ -530,7 +599,8 @@ public class SourceLineAnnotation implements BugAnnotation {
 			.addAttribute("start", String.valueOf(getStartLine()))
 			.addAttribute("end", String.valueOf(getEndLine()))
 			.addAttribute("startBytecode", String.valueOf(getStartBytecode()))
-			.addAttribute("endBytecode", String.valueOf(getEndBytecode()));
+			.addAttribute("endBytecode", String.valueOf(getEndBytecode()))
+			.addAttribute("opcodes", surroundingOpcodes);
 		
 		if (isSourceFileKnown())
 			attributeList.addAttribute("sourcefile", sourceFile);
